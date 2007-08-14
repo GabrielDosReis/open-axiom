@@ -1,0 +1,58 @@
+Requirements
+============
+
+  * GCL-2.6.8pre
+  * Noweb
+  * Working C compiler
+  * X11 headers and libraries (optional for MinGW/MSYS)
+
+---------------------------
+-- Configuring OpenAxiom --
+---------------------------
+
+Type:
+	./configure
+
+----------------------
+-- Making OpenAxiom --
+----------------------
+
+Type:
+	make
+
+--------------------------
+-- Installing OpenAxiom --
+--------------------------
+
+Type:
+	make install
+
+==
+
+The above chain of commands should build OpenAxiom and install an
+executable script called 'axiom' in  /usr/local/bin.  You can
+configure OpenAxiom as
+
+   ./configure --prefix=/banana/space
+
+to have the script 'axiom' installed in /banana/space/bin.
+
+
+About Make
+==========
+
+OpenAxiom build system requires GNU Make.  It migth theoretically be
+possible to cram the Makefiles so that they can work with a large set 
+of Make programs.  However, doing so will not be cost effective.  GNU 
+Make has been ported to virtually any system current OpenAxiom can build
+one.  In particular, OpenAxiom uses GCL, which in turns requires GCC.
+GCC requires GNU Make.  GCL too requires GNU Make.  Consequently,
+the GNU Make requirement is not a stringent requirement.  It just
+reflects reality.
+
+So, if you're using a system where "make" is not GNU Make, then try
+"gmake" instead. 
+
+Send comments and suggestions to open-axiom-devel@lists.sf.net
+
+Gabriel Dos Reis
