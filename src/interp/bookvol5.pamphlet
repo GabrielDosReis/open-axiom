@@ -290,7 +290,7 @@ where the Lisp image has been started.
 The [[reroot]] function sets this variable to the value of
 [[$spadroot]] which itself has the value of the argument to the
 [[reroot]] function. Since the argument to the [[reroot]] function is
-an string which represents an absolute pathname pointing to AXIOM the
+an string which represents an absolute pathname pointing to OpenAxiom the
 net result is that the [[$current-directory]] is set to point to the
 shell [[AXIOM]] variable.
 
@@ -1389,12 +1389,12 @@ S2IZ0076
  do you really want to import everything from the frame %1b ?
  If so, please enter %b y %d or %b yes %d :
 S2IZ0077
- On your request, AXIOM will not import everything from frame %1b.
+ On your request, OpenAxiom will not import everything from frame %1b.
 S2IZ0078
  Import from frame %1b is complete. Please issue %b )display all %d
  if you wish to see the contents of the current frame.
 S2IZ0079
- AXIOM cannot import %1b from frame %2b because it cannot be found.
+ OpenAxiom cannot import %1b from frame %2b because it cannot be found.
 @
 \chapter{The Undo Mechanism}
 \section{)undo}
@@ -1632,19 +1632,11 @@ DEBUGSYS=${OBJ}/${SYS}/bin/debugsys
 @
 \chapter{Makefile.bookvol5}
 <<*>>=
-LATEX=/usr/bin/latex
-LISP=${AXIOM}/obj/linux/bin/lisp
-TANGLE=/usr/local/bin/NOTANGLE
-WEAVE=/usr/local/bin/NOWEAVE -delay
 
 all: bookvol5
 	@echo 0 done
 
 bookvol5: bookvol5.pamphlet
-	@echo 1 extracting the bookvol5reter
-	${WEAVE} bookvol5.pamphlet >bookvol5.tex
-	${LATEX} bookvol5.tex
-	${LATEX} bookvol5.tex
 	${TANGLE} -R"Interpreter" bookvol5.pamphlet >bookvol5.lisp
 
 remake:	

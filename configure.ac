@@ -31,7 +31,7 @@ AC_SUBST(axiom_src_subdirs)
 AC_CANONICAL_SYSTEM
 if test $build != $target; then
    AC_MSG_WARN([Cross build is not supported.])
-   AC_MSG_WARN([Please notify axiom-developer@nongnu.org if you succeed.])
+   AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
 fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
