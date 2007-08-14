@@ -1,0 +1,74 @@
+
+pamphlets = Makefile.pamphlet
+
+subdir = src/
+
+SUBDIRS = @axiom_src_subdirs@
+
+.PHONY: all all-ax all-src all-clef all-sman 
+
+all: all-ax
+
+all-ax all-src: stamp
+	@echo finished $(builddir)
+
+stamp: @axiom_src_all@
+	-rm -f stamp
+	$(STAMP) stamp
+
+all-clef: all-lib
+	@$(mkinstalldirs) $(axiom_target_bindir)
+	cd clef && ${MAKE}
+all-sman: all-lib
+	$(mkinstalldirs) $(axiom_target_bindir)
+	$(mkinstalldirs) $(axiom_target_libdir)
+	cd sman && ${MAKE}
+all-hyper: all-lib
+	$(mkinstalldirs) $(axiom_target_bindir)
+	$(mkinstalldirs) $(axiom_target_datadir)
+	cd hyper && ${MAKE}
+all-share:
+	$(mkinstalldirs) $(axiom_target_libdir)
+	cd share && ${MAKE}
+all-doc:
+	cd doc && ${MAKE}
+all-book:
+	cd booklets && ${MAKE}
+all-lib:
+	$(mkinstalldirs) $(OUT)
+	@cd lib && ${MAKE}
+all-lisp: all-lib
+	$(mkinstalldirs) $(axiom_build_bindir)
+	cd lisp && $(MAKE) all-lisp
+all-boot: all-lisp
+	$(mkinstalldirs) $(axiom_build_bindir)
+	@cd boot && ${MAKE}
+all-depsys: all-boot
+	cd interp && $(MAKE) all-depsys
+
+all-interpsys: all-depsys all-lisp
+	cd interp && ${MAKE} all-interpsys
+
+all-axiomsys: all-asq
+	cd interp && $(MAKE) all-axiomsys
+ifeq (@axiom_use_x@,yes)
+all-algebra: all-interpsys all-share all-hyper
+else
+all-algebra: all-interpsys all-share
+endif
+	@ $(mkinstalldirs) algebra/strap
+	cd algebra && ${MAKE}
+all-input: all-axiomsys
+	cd input && ${MAKE}
+all-asq: all-algebra
+	cd etc && ${MAKE}
+all-graph: all-lib
+	cd graph && ${MAKE}
+
+mostlyclean-local:
+	-rm -f stamp
+
+clean-local: mostlyclean-local
+
+distclean-local: clean-local
+

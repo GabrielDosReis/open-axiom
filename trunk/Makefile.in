@@ -1,0 +1,99 @@
+
+## ----------------------------------------
+## -- Old-style Axiom makefile variables --
+## ----------------------------------------
+
+GCLOPTS=@GCLOPTS@
+
+pamphlets = configure.ac.pamphlet Makefile.pamphlet
+
+PART=	cprogs
+SUBPART= everything
+
+
+
+subdir = 
+
+SUBDIRS = src
+
+build_srcdir = $(builddir)/src
+
+AXIOM_SRC_TARGETS = all-algebra all-asq all-axiomsys all-book all-boot \
+	all-clef all-doc all-graph all-hyper all-input all-interpsys \
+	all-lib all-lisp all-sman all-src all-depsys
+
+.PHONY: all $(AXIOM_SRC_TARGETS)
+all: all-ax
+
+all-ax: all-src
+	@echo finished system build on `date` | tee >lastBuildDate
+
+all-src: stamp-rootdirs @axiom_all_prerequisites@
+
+ifeq ($(strip $(axiom_include_gcl)),yes)
+all-boot all-lisp all-depsys all-interpsys all-axiomsys \
+  all-algebra all-input: all-gcl
+endif
+
+$(AXIOM_SRC_TARGETS):
+	cd $(build_srcdir) && \
+		$(MAKE) "PATH=$(axiom_abs_build_bindir):$(PATH)" $@
+
+stamp-rootdirs: $(axiom_build_document)
+	@mkdir -p ${TMP}
+	@$(STAMP) stamp-rootdirs
+
+
+.PHONY: all-gcl
+all-gcl: $(axiom_build_bindir)/gcl$(EXEEXT)
+
+$(axiom_build_bindir)/gcl$(EXEEXT):
+	if test "$(srcdir)" != "$(builddir)" -a ! -d gcl; then \
+	   cp -r $(srcdir)/gcl $(builddir); \
+	fi; cd gcl; \
+	./configure --prefix=$(axiom_abs_builddir) ${GCLOPTS} && \
+		$(MAKE) && $(MAKE) install
+book:
+	@ echo 79 building the book as $(axiom_target_docdir)/book.dvi 
+	@ mkdir -p ${TMP}
+	@ mkdir -p $(axiom_target_docdir)
+	@ $(INSTALL) $(axiom_src_docdir)/book.pamphlet $(axiom_target_docdir)
+	@ cp -pr $(axiom_src_docdir)/ps $(axiom_target_docdir)
+	@ (cd $(axiom_target_docdir) ; \
+          if [ .${NOISE} = . ] ; then \
+	    ( latex book.pamphlet --interaction nonstopmode ; \
+	      latex book.pamphlet --interaction nonstopmode ) ; \
+	   else \
+	    ( latex book.pamphlet --interaction nonstopmode >${TMP}/trace ; \
+	      latex book.pamphlet --interaction nonstopmode >${TMP}/trace ) ; \
+	  fi ; \
+	  rm book.pamphlet ; \
+	  rm book.toc ; \
+	  rm book.log ; \
+	  rm book.aux )
+	@ echo 80 The book is at $(axiom_target_docdir)/book.dvi 
+
+install:
+	@echo Installing Axiom in $(prefix)
+	@mkdir -p $(DESTDIR)$(libdir)/axiom
+	@cp -pr $(builddir)/target $(DESTDIR)$(libdir)/axiom
+	@ rm -f $(bindir)/axiom
+	@ $(mkinstalldirs) $(bindir)
+	@ $(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
+	@echo Axiom installation finished.
+
+mostlyclean-local:
+	@-rm -f lastBuildDate
+
+clean-local: mostlyclean-local
+	@ rm -f stamp-*
+	@ rm -rf int
+
+distclean-local: clean-local
+	@-rm -rf build
+	@-rm -rf $(axiom_targetdir)
+	@-rm -f config.status config.log
+	@-rm -f Makefile
+
+$(top_builddir)/config.status: $(top_srcdir)/configure
+	$(SHELL) ./config.status --recheck

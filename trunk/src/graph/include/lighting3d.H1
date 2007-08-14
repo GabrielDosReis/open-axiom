@@ -1,0 +1,11 @@
+#ifdef _NO_PROTO
+extern int makeLightingPanel();
+extern void drawLightingAxes();
+extern void drawLightTransArrow();
+extern void drawLightingPanel();
+#else
+extern int makeLightingPanel(void);
+extern void drawLightingAxes(void);
+extern void drawLightTransArrow(void);
+extern void drawLightingPanel(void);
+#endif

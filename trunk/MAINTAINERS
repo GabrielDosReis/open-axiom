@@ -1,0 +1,34 @@
+This file contains information about people who are permitted to make
+changes to various part of the OpenAxiom system.
+
+For general information about OpenAxiom, please visit:
+
+         http://www.open-axiom.org/
+
+To report problems in OpenAxiom, please visit:
+
+         http://www.open-axiom.org/bugs.html
+
+
+
+
+            Release Manager
+
+Gabriel Dos Reis                     gdr at integrable-solutions.net
+
+	    Blanket Write Privilege
+
+Gabriel Dos Reis                     gdr at integrable-solutions.net
+
+
+	    Interpreter and Compiler Maintainers
+
+Gabriel Dos Reis                     gdr at integrable-solutions.net
+
+
+	    Algebra Maintainers
+
+Gabriel Dos Reis                     gdr at integrable-solutions.net
+
+
+	    Write After Approval

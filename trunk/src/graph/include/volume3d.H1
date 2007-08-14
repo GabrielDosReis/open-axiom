@@ -1,0 +1,23 @@
+#ifdef _NO_PROTO
+extern int initVolumeButtons();
+extern void makeVolumePanel();
+extern void drawClipXBut();
+extern void drawClipYBut();
+extern void drawClipZBut();
+extern void drawClipVolume();
+extern void drawHitherControl();
+extern void drawEyeControl();
+extern void drawFrustrum();
+extern void drawVolumePanel();
+#else
+extern int initVolumeButtons(buttonStruct * );
+extern void makeVolumePanel(void );
+extern void drawClipXBut(void );
+extern void drawClipYBut(void );
+extern void drawClipZBut(void );
+extern void drawClipVolume(void );
+extern void drawHitherControl(void );
+extern void drawEyeControl(void );
+extern void drawFrustrum(void );
+extern void drawVolumePanel(void );
+#endif

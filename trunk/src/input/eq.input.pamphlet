@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input EQ.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from EquationXmpPage
+)clear all
+
+eq1 := 3*x + 4*y = 5
+eq2 := 2*x + 2*y = 3
+lhs eq1
+rhs eq1
+eq1 + eq2
+eq1 * eq2
+2*eq2 - eq1
+eq1**2
+if x+1 = y then "equal" else "unequal"
+eqpol := x+1 = y
+if eqpol then "equal" else "unequal"
+eqpol::Boolean
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

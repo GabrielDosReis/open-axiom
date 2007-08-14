@@ -1,0 +1,112 @@
+============
+=== TODO ===
+============
+
+* Revisit the underlying definition of the types DFlo in foam
+  interface, and Float in OpenAxiom.
+
+* Audit all codes that manipulate sockets.
+
+* Automate the process of "optimized" OpenAxiom: this requires a two-pass
+  build; once to gather type information, a second time to use the
+  information.  
+
+* Find a better of structuring for PLF, CCF, LDF, LISP.
+
+* Have OpenAxiom configure pass options specified on the
+  invokation line down to GCL.
+
+* Properly document the new build in a very intelligible way
+
+* Document src/scripts/document.in
+
+* cleanup the Makefile pamphlets
+
+* Improve Boot documentation
+
+* Have OpenAxiom use bootsys compile all Boot codes in src/interp. This
+  requires auditing the code for uses of special functions which
+  act differently in boot and shoe (like MEMBER). 
+
+* Reduce the number of bar Lisp codes to the minimum residual.
+
+* Fix codes in src/interp, src/hyper, and src/hyper/pages/util.ht that 
+  hardcode pathnames.
+  In general, the OpenAxiom system should be able to work properly with
+  relative paths to that it can be "moved" around seamlessly. 
+
+* Audit cleanup rules
+
+* Audit file copying.
+
+* Document the installation structure.
+
+============
+=== DONE ===
+============
+
+* Support out-of-source build.
+
+* Support parallel build.
+  Notice that GCL does not support parallel build.  So we can punt
+  on build of GCL.  We should work with Camm to fix GCL build upstream.
+
+* Convince GCL to find its internal header files. 
+  -- it turns out to be a bug in OpenAxiom.
+
+* Fix Makefile generation dependencies.
+  -- This turns out to be a bug in Autoconf 2.59 whereby the value of
+  -- @top_builddir@ is empty.  Work around the bug by using
+  -- $(abs_top_builddir).
+
+* Have an automated, smooth bootstrapping process for boot.
+
+* Implement framework for recursive rules in Makefiles.
+
+* Fix fall-outs of missed DVI files.
+  This is believed to be fixed with the recursive rule support.
+
+* Reorganize the makefile pamphlets so that OpenAxiom can build without
+  LaTeX or X11.
+
+* Support standard "clean", "mostlyclean", and "distclean" Makefile
+  targets
+
+* Add support for --with-lisp=lisp-image for building OpenAxiom with
+  a specific lisp-image.
+
+* --enable-gcl uses the GCL from OpenAxiom repository to build OpenAxiom.
+
+* src/boot can be built with Lisp images other than GCL:
+     --with-lisp=sbcl
+     --with-lisp=clisp
+
+* Build on Windows platforms, more specifically MSYS/MinGW, is
+  supported.
+
+* Components known to build with various Lisp implementations:
+   + bootsys: GCL, SBCL, CLISP
+   + depsys: GCL, CLISP
+   + interpsys: GCL
+   + AXIOMsys: GCL
+
+* Use Libtool to build the C part of the OpenAxiom system.  In particular,
+  this facilitates support for Lisps that rely on dynamic loading
+  (e.g. SBCL, ECL).
+
+================================================
+=== New Boot vs. Old Boot compatibility notes ==
+================================================
+
+The Old Boot translator renames some LISP identifiers
+(i.e. identifiers, used in Boot codes, that consist of only
+capital letters), a renaming not done by the New Boot translator.
+Consequently, when converting a Boot program to the New Boot
+translator, special care must be given to those identifiers
+so as to preserve meanings.
+
+* As of today, the following identifiers are no longer used in
+  Boot programs found in src/interp:
+  
+  REMOVE  GET  RASSOC  DELETE  INTERSECTION  UNION
+
