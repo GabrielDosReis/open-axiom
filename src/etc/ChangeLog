@@ -1,3 +1,9 @@
+2007-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(axiom_targetdir)/algebra/*.daase): Don't
+	copy gloss.text.  Don't copy topics.data twice.
+	* Makefile.in: Regenerate.
+
 2007-05-08  Gabriel Dos Reis  <gdr@cs.tamu,edu>
 
 	* Makefile.pamphlet (<<axiomcmd>>): Remove.
