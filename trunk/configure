@@ -19060,8 +19060,8 @@ test -n "$target_alias" &&
 if test $build != $target; then
    { echo "$as_me:$LINENO: WARNING: Cross build is not supported." >&5
 echo "$as_me: WARNING: Cross build is not supported." >&2;}
-   { echo "$as_me:$LINENO: WARNING: Please notify axiom-developer@nongnu.org if you succeed." >&5
-echo "$as_me: WARNING: Please notify axiom-developer@nongnu.org if you succeed." >&2;}
+   { echo "$as_me:$LINENO: WARNING: Please notify open-axiom-devel@open-axiom.org if you succeed." >&5
+echo "$as_me: WARNING: Please notify open-axiom-devel@open-axiom.org if you succeed." >&2;}
 fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share

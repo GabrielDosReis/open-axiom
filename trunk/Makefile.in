@@ -1,15 +1,11 @@
 
 ## ----------------------------------------
-## -- Old-style Axiom makefile variables --
+## -- Old-style OpenAxiom makefile variables --
 ## ----------------------------------------
 
 GCLOPTS=@GCLOPTS@
 
 pamphlets = configure.ac.pamphlet Makefile.pamphlet
-
-PART=	cprogs
-SUBPART= everything
-
 
 
 subdir = 
@@ -53,34 +49,14 @@ $(axiom_build_bindir)/gcl$(EXEEXT):
 	fi; cd gcl; \
 	./configure --prefix=$(axiom_abs_builddir) ${GCLOPTS} && \
 		$(MAKE) && $(MAKE) install
-book:
-	@ echo 79 building the book as $(axiom_target_docdir)/book.dvi 
-	@ mkdir -p ${TMP}
-	@ mkdir -p $(axiom_target_docdir)
-	@ $(INSTALL) $(axiom_src_docdir)/book.pamphlet $(axiom_target_docdir)
-	@ cp -pr $(axiom_src_docdir)/ps $(axiom_target_docdir)
-	@ (cd $(axiom_target_docdir) ; \
-          if [ .${NOISE} = . ] ; then \
-	    ( latex book.pamphlet --interaction nonstopmode ; \
-	      latex book.pamphlet --interaction nonstopmode ) ; \
-	   else \
-	    ( latex book.pamphlet --interaction nonstopmode >${TMP}/trace ; \
-	      latex book.pamphlet --interaction nonstopmode >${TMP}/trace ) ; \
-	  fi ; \
-	  rm book.pamphlet ; \
-	  rm book.toc ; \
-	  rm book.log ; \
-	  rm book.aux )
-	@ echo 80 The book is at $(axiom_target_docdir)/book.dvi 
-
 install:
-	@echo Installing Axiom in $(prefix)
-	@mkdir -p $(DESTDIR)$(libdir)/axiom
-	@cp -pr $(builddir)/target $(DESTDIR)$(libdir)/axiom
+	@echo Installing OpenAxiom in $(prefix)
+	@mkdir -p $(DESTDIR)$(libdir)/open-axiom
+	@cp -pr $(builddir)/target $(DESTDIR)$(libdir)/open-axiom
 	@ rm -f $(bindir)/axiom
 	@ $(mkinstalldirs) $(bindir)
 	@ $(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
-	@echo Axiom installation finished.
+	@echo OpenAxiom installation finished.
 
 mostlyclean-local:
 	@-rm -f lastBuildDate

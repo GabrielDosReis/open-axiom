@@ -2,6 +2,14 @@
 === TODO ===
 ============
 
+* Support more Lisp systems
+* Better support on Windows platform (MinGW/MSYS)
+* Modernize algebras
+* Better documentations
+* Interfaces to mainstream programming languages
+* Improve Boot, Spad
+* Integrate to development environments
+
 * Revisit the underlying definition of the types DFlo in foam
   interface, and Float in OpenAxiom.
 

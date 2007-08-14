@@ -26,7 +26,7 @@
 ## Where The Axiom system resides
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-AXIOM=@libdir@/axiom/target/@target@
+AXIOM=@libdir@/open-axiom/target/@target@
 export AXIOM
 
 ## We adjust the value of PATH here because, currently, some Axiom 

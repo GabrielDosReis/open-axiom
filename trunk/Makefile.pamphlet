@@ -3,7 +3,7 @@
 \usepackage{axiom}
 
 \title{The Top Level \File{Makefile}}
-\author{Timothy Daly \and Gabriel Dos~Reis}
+\author{Gabriel Dos~Reis \and Timothy Daly}
 
 \begin{document}
 \maketitle
@@ -18,36 +18,36 @@
 \section{General Makefile Structure}
 \label{sec:general-structure}
 
-All the Makfiles in the \Tool{Axiom} build systen are structured in very
+All the Makfiles in the \Tool{OpenAxiom} build systen are structured in very
 similar ways.  First, they have to build all of the files
 in their own directory. Second, they have to invoke \Tool{Make} on each
 of their subdirectories.  This forms a natural recursive tree walk of 
-the Axiom source system directory structure. Third, they have to 
+the OpenAxiom source system directory structure. Third, they have to 
 explain all of the details about the directory, the files and the 
 target rules it manages and its subdirectories.
 
 This section also serves as a reference for the meaning of the
-general targets and variables within the \Tool{Axiom} build system.
+general targets and variables within the \Tool{OpenAxiom} build system.
 
 \subsection{Standard targets}
 \label{sec:general-structure:std-targets}
 
 This section describes the meaning of \Tool{Make} targets present in every 
-Makefile of the \Tool{Axiom} build system.  These are quite standard,
-so that \Tool{Axiom} can be built just like most software using the 
+Makefile of the \Tool{OpenAxiom} build system.  These are quite standard,
+so that \Tool{OpenAxiom} can be built just like most software using the 
 GNU build machinery.  All of the targets discussed in this sub-section
 are recursive.
 
 \subsubsection{[[all]]}
 \label{sec:general-structure:std-targets:all}
 
-This target builds all of the \Tool{Axiom} sub-system controlled by the
+This target builds all of the \Tool{OpenAxiom} sub-system controlled by the
 specific \File{Makefile}.  In particular, the [[all]] target in the
-toplevel \File{Makefile} builds all the \Tool{Axiom} system.
+toplevel \File{Makefile} builds all the \Tool{OpenAxiom} system.
 
 According to GNU standard practice, the [[all]] target should not
 build documentation files and those should be explicitly asked for.
-However, \Tool{Axiom} uses the literate programming paradigm (which is
+However, \Tool{OpenAxiom} uses the literate programming paradigm (which is
 not mainstream in most GNU software).  Consequently, some rules must 
 be broken somewhere.  Which ones and where are questions not answered;
 those would be suject to discussion.
@@ -55,7 +55,7 @@ those would be suject to discussion.
 \subsubsection{[[install]]}
 \label{sec:general-structure:std-targets:install}
 
-The purpose of this target is to build \Tool{Axiom} and install for
+The purpose of this target is to build \Tool{OpenAxiom} and install for
 use.  The build system is set up  so that if [[make all]] just completed
 then [[make install]] will not modify any file in the build directory,
 Consequently it is possible to issue [[make all]] as one
@@ -65,7 +65,7 @@ superuser.
 
 At the moment [[make install]] will create the sub-directory \File{axiom}
 under the directory given [[$(prefix)]] --- default \File{/usr/local} ---
-and install the \Tool{Axiom} systen there.  We don't use
+and install the \Tool{OpenAxiom} systen there.  We don't use
 [[$(exec_prefix)]] yet --- and we should.
 
 \paragraph{Pre-installation commands.}
@@ -241,7 +241,7 @@ FIXME: To be written
 \section{The Build Flow}
 \label{sec:build-flow}
 
-The build flow of \Tool{Axiom} seems, first, a bit intricate to describe.
+The build flow of \Tool{OpenAxiom} seems, first, a bit intricate to describe.
 This description is STILL IN WORK IN PROGRESS.  Therefore it is
 incorrekt, incomplet, and iNconSiStenT.
 
@@ -254,7 +254,7 @@ the build environment, we are done.  In fact, currently we do insist that
 the Lisp runtime system is \Tool{GCL}.  Otherwise, we have to build one.
 
 Third, we have to make the subdirectory \File{src/} where all the
-work actually happens.  Part of \Tool{Axiom} is written in Boot, part
+work actually happens.  Part of \Tool{OpenAxiom} is written in Boot, part
 in Common Lisp, part in C, and the rest in SPAD.  The SPAD compiler
 is written partly in Boot, thefore \File{src/algebra/}, 
 \File{src/input/}, \File{src/interp/} depend on \File{src/boot/}.  The rest
@@ -293,7 +293,7 @@ Hue. This discussion is better done in src/Makefile.  Move it there.
 
 \subsection{Build components}
 
-Building \Tool{Axiom} consists of building several logical components.
+Building \Tool{OpenAxiom} consists of building several logical components.
 These loosely correspond to the sub-directories of \File{src/} shown in
 the previous section.  They can be built individually by invoking 
 [[make all-xxx]] where [[xxx]] is one of
@@ -302,11 +302,11 @@ the previous section.  They can be built individually by invoking
    input interpsys lib lisp sman src
 \end{verbatim}
 
-The \Tool{Axiom} source files reside in \File{src/}.  The directory
+The \Tool{OpenAxiom} source files reside in \File{src/}.  The directory
 \File{gcl/} contains the source code for \Tool{GCL}.  They are 
 not formally part of the  
-\Tool{Axiom} distribution.  Rather, they are tools \Tool{Axiom} depends on.
-They are bundled with the \Tool{Axiom} source code only for convenience.
+\Tool{OpenAxiom} distribution.  Rather, they are tools \Tool{OpenAxiom} depends on.
+They are bundled with the \Tool{OpenAxiom} source code only for convenience.
 
 \section{The Top Level \File{Makefile}}
 <<*>>=
@@ -342,7 +342,6 @@ $(AXIOM_SRC_TARGETS):
 <<rootdirs>>
 
 <<gcl>>
-<<book>>
 <<install>>
 
 mostlyclean-local:
@@ -401,134 +400,27 @@ the [[SPAD]] variable should look like:
 
 \subsubsection{SYS}
 From the [[SPAD]] variable we look at the last directory name
-and create a version of Axiom for that system. The [[SYS]]
+and create a version of OpenAxiom for that system. The [[SYS]]
 environment variable is the last directory name in the [[SPAD]]
 variable.
-
-\subsubsection{SPD}
-The [[SPD]] variable is taken to be the current working directory
-where this Makefile lives. This is obviously the root of the whole
-system source tree. All Makefiles form environment variables based
-on this value.
-
-Next we see the six top-level directories discussed above being
-defined using the [[SPD]] variable. 
 
 \subsubsection{AXIOM\_X11\_CFLAGS}
 
 The variable [[AXIOM_X11_CFLAGS]] holds the C compiler flags necessary
-to compile part of Axiom that depends on the X Window System.  It is
+to compile part of OpenAxiom that depends on the X Window System.  It is
 computed at configure-time, based on the characteristics of the target
 platform. 
 
 \subsubsection{AXIOM\_X11\_LDFLAGS}
 
 The variable [[AXIOM_X11_LDFLAGS]] holds the linker flags necessary
-for parts of Axiom thar depends on the X Window System.  It is
+for parts of OpenAxiom thar depends on the X Window System.  It is
 computed at configure-time, based on the characteristics of the target
 platform. 
-
-\subsubsection{INT}
-
-The [[INT]] subdirectory is a machine-generated, system-independent
-top-level directory containing source code. Axiom builds from literate
-sources.  This work only needs to be done once at the first build. The
-[[INT]] directory is a cache of work. It can be erased at will. 
-However steps such as generating lisp code from spad code, while
-done by machine, are system-independent. Therefore this subdirectory,
-once built, can reside with the [[$(top_srcdir)/src]] subdirectory on CD
-or NFS as a read-only branch.
-
-\subsubsection{ZIPS}
-The [[ZIPS]] subdirectory contains particular versions of subsystems
-that Axiom needs in tar-gzip format. The Makefiles will unpack them.
-It also contains patch files to these subsystems. The Makefile will
-apply those patches. Then it will configure and build the required
-subsystems.
-
-\subsubsection{TMP}
-The [[TMP]] directory is used in place of [[/tmp]] in order to
-avoid writing outside of our build tree.
-
-Note that TMP is a workspace in the current build directory. It is
-working space for temporary files since we cannot assume that
-we can write outside our own tree. Output from commands like
-the [[document]] command will generally be written to the
-[[TMP/trace]] file. If the build seems to hang while making a
-document file then check this file. It will contain the output
-of the latex command and the likely error in the tex file.
-
-\subsubsection{SPADBIN}
-The [[SPADBIN]] directory is the path to the executable 
-binary directory of the shipped system. The directory contains
-all of the executable commands, such as the [[document]]
-command. The [[document]] command lives in the [[src/scripts]]
-subdirectory and will be copied to [[SPADBIN]] before we start
-walking the build subtree.
 
 \subsubsection{INC}
 The [[INC]] directory contains all the include files for the C
 programs.
-
-\subsubsection{CCLBASE}
-The [[CCLBASE]] subdirectory contains the path to the [[CCL]]
-version of lisp. This was the original lisp used by NAG. 
-
-\subsubsection{The [[NOISE]] variable }
-The [[NOISE]] variable is used in the calls to the document
-command. In general, where the document command is called in
-the Makefiles it is called with the following form:
-\begin{verbatim}
-   ${SPADBIN}/document ${NOISE} foo
-\end{verbatim}
-with the default value of {\bf NOISE} being:
-\begin{verbatim}
-   NOISE="-o ${TMP}/trace"
-\end{verbatim}
-
-The reason [[NOISE]] exists is that the latex command will
-generate a page of output which is uninteresting during the
-make. However if there is a latex syntax error in a pamphlet
-file the make will continue past the error due to the nonstopmode
-flag. To see the actual error message rerun the make as:
-\begin{verbatim}
-  make NOISE=
-\end{verbatim}
-
-\subsubsection{PART and SUBPART}
-Because of the size of this build we do everything possible to
-minimize the work necessary to rebuild. In order to allow
-finer control of the build we have two options that can be
-specified. The first is the [[PART]] variable. The second
-is the [[SUBPART]] variable. The [[PART]] variable basically
-specifies which directory we wish to build.
-
-Setting the PART as:
-
-PART=foo
-
-will look for a stanza in the Makefile as:
-
-\${PART}dir 
-
-which expands to:
-
-foodir
-
-Variable PART can be specified (environment or command-line) as
-one of:
-
-\begin{verbatim}
- (all | lib | install | lisp | interp | comp | graph | hyper 
-      | clef | input | sman | boot | include | doc | algebra )
-\end{verbatim}
-
-It is possible to be more specific with a directory.
-<<part>>=
-PART=	cprogs
-SUBPART= everything
-
-@
 
 \subsubsection{[[subdir]]}
 
@@ -544,7 +436,7 @@ configuration time --- to recreate a particular Makefile if needed.
 \subsubsection{The [[axiom]] command}
 The install directory prefix is \File{/usr/local/} by default.  This 
 means that the script \Tool{axiom} is installed in the directory
-\File{/usr/local/bin/}, and the rest of the \Tool{Axiom} system
+\File{/usr/local/bin/}, and the rest of the \Tool{OpenAxiom} system
 is installed in \File{/usr/local/lib/axiom/}.  The install directory
 prefix can be defined at configure time using the option
 \verb!--prefix!.
@@ -555,14 +447,12 @@ changed on the command line.
 <<environment>>=
 
 ## ----------------------------------------
-## -- Old-style Axiom makefile variables --
+## -- Old-style OpenAxiom makefile variables --
 ## ----------------------------------------
 
 GCLOPTS=@GCLOPTS@
 
 <<pamphlets>>
-
-<<part>>
 
 @
 \subsection{rootdirs}
@@ -576,39 +466,9 @@ stamp-rootdirs: $(axiom_build_document)
 
 @
 
-\subsection{book}
-This stanza constructs the book from the original pamphlet file.
-At this time there is no difference between the pamphlet file
-and straight latex (intentionally). Thus we just need to make 
-sure the correct directories are in place, copy the files, and
-run latex over the pamphlet file.
-
-<<book>>=
-book:
-	@ echo 79 building the book as $(axiom_target_docdir)/book.dvi 
-	@ mkdir -p ${TMP}
-	@ mkdir -p $(axiom_target_docdir)
-	@ $(INSTALL) $(axiom_src_docdir)/book.pamphlet $(axiom_target_docdir)
-	@ cp -pr $(axiom_src_docdir)/ps $(axiom_target_docdir)
-	@ (cd $(axiom_target_docdir) ; \
-          if [ .${NOISE} = . ] ; then \
-	    ( latex book.pamphlet --interaction nonstopmode ; \
-	      latex book.pamphlet --interaction nonstopmode ) ; \
-	   else \
-	    ( latex book.pamphlet --interaction nonstopmode >${TMP}/trace ; \
-	      latex book.pamphlet --interaction nonstopmode >${TMP}/trace ) ; \
-	  fi ; \
-	  rm book.pamphlet ; \
-	  rm book.toc ; \
-	  rm book.log ; \
-	  rm book.aux )
-	@ echo 80 The book is at $(axiom_target_docdir)/book.dvi 
-
-@
-
 \subsection{\File{gcl/}}
 
-At the moment, \Tool{Axiom} uses \Tool{GCL} as its Lisp platform.
+At the moment, \Tool{OpenAxiom} uses \Tool{GCL} as its Lisp platform.
 \Tool{GCL} may not be available for a given host.  In that case,
 we must build a running image.
 
@@ -621,7 +481,7 @@ The \File{gcl} binary will be accessible as
 
 The augmented fresh Lisp image is also accessible as
 [[$(axiom_build_bindir)/lisp$(EXEEXT)]] for use to build Boot translators
-and the \Tool{Axiom} interpreter and compiler.
+and the \Tool{OpenAxiom} interpreter and compiler.
 
 \subsubsection{\File{src/lisp}}
 
@@ -650,13 +510,13 @@ $(axiom_build_bindir)/gcl$(EXEEXT):
 \subsection{install}
 <<install>>=
 install:
-	@echo Installing Axiom in $(prefix)
-	@mkdir -p $(DESTDIR)$(libdir)/axiom
-	@cp -pr $(builddir)/target $(DESTDIR)$(libdir)/axiom
+	@echo Installing OpenAxiom in $(prefix)
+	@mkdir -p $(DESTDIR)$(libdir)/open-axiom
+	@cp -pr $(builddir)/target $(DESTDIR)$(libdir)/open-axiom
 	@ rm -f $(bindir)/axiom
 	@ $(mkinstalldirs) $(bindir)
 	@ $(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
-	@echo Axiom installation finished.
+	@echo OpenAxiom installation finished.
 @
 
 Until now, pamphlet files are also \LaTeX{}ed as part of a normal build.
@@ -706,10 +566,6 @@ On most systems the gnu toolset is the default. Thus we can just use
 specify that we are using the gnu toolset, and we need to use
 [[gpatch]] instead of [[patch]].
 
-\subsubsection{The [[RANLIB]] variable }
-
-\subsubsection{The [[TOUCH]] variable }
-
 \subsubsection{The [[AXIOMXLROOT]] variable }
 
 \subsubsection{The [[O]] variable }
@@ -718,28 +574,24 @@ This defaults to ``o'' so a compile of foo.lisp becomes foo.o
 but other systems prefer .fasl so a compile of foo.lisp becomes
 foo.fasl. Change this based on the target lisp.
 
-\subsubsection{The [[BYE]] variable }
-
-\subsubsection{The [[LISP]] variable }
-
 \subsubsection{The [[DAASE]] variable}
-Axiom uses 5 files, the *.daase files, which are called ``the
+OpenAxiom uses 5 files, the *.daase files, which are called ``the
 databases''. They contain cross-reference, signatures,
 and other information needed by the interpreter and compiler.
 When the system is being built from scratch these databases
 need to exist. However, they get dynamically rebuilt after
 the algebra files are compiled. The bootstrap versions of these
-databases live in the [[src/share]] subdirectory. Axiom will
+databases live in the [[src/share]] subdirectory. OpenAxiom will
 use the value of the shell variable [[DAASE]] to find its 
 databases. If this variable is unbound it uses the standard
-[[$(axiom_targetdir)]] path. Note that Axiom will append the string
+[[$(axiom_targetdir)]] path. Note that OpenAxiom will append the string
 [[/algebra]] to the value of [[DAASE]]. The default value setting
 given here is:
 
 [[DAASE=$(axiom_src_datadir)]]
 
 so [[$(axiom_src_datadir)/algebra/*.daase]] will be the
-Axiom bootstrap database files.
+OpenAxiom bootstrap database files.
 
 \subsection{Makefile.MACOSX}
 On the MAC OSX someone decided (probably a BSDism) to rename the
@@ -754,7 +606,7 @@ moved on this platform.
 We need to explicitly put [[-I/usr/include]] before 
 [[-I/usr/include/sys]] because the MAC seems to search in a
 different order than linux systems. The [[sys]] versions of 
-the include files are broken, at least for Axiom use.
+the include files are broken, at least for OpenAxiom use.
 
 
 
@@ -805,7 +657,7 @@ They are handled by generic cleanup rules
 \item [[distclean-generic]]
 \end{itemize}
 For instances, they delete intermediate files produced by \LaTeX{}.
-If you're writing a new Makefile for Axiom, you do not have to
+If you're writing a new Makefile for OpenAxiom, you do not have to
 define these rules.
 
 \subsection{[[local cleanups]]}
@@ -824,14 +676,5 @@ Notice that each Makefile should define those targets, even if they do
 nothing. 
 
 
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} CMUCL {\bf http://www.cons.org/cmucl}
-\bibitem{2} GCL {\bf http://savannah.gnu.org/projects/gcl}
-\bibitem{3} Codemist Ltd, ``Alta'', Horsecombe Vale Combs Down
-Bath BA2 5QR UK Tel. +44-1225-837430 
-{\bf http://www.codemist.co.uk}
-\bibitem{5} \$SPAD/zips/advi-1.2.0.tar.gz, the advi source tree
-\end{thebibliography}
 \end{document}
 

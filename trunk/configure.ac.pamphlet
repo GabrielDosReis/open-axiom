@@ -139,7 +139,7 @@ a warning when we detect attempt at cross build:
 <<host build target platfoms>>=
 if test $build != $target; then
    AC_MSG_WARN([Cross build is not supported.])
-   AC_MSG_WARN([Please notify axiom-developer@nongnu.org if you succeed.])
+   AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
 fi
 @
 Note that we do not stop the configuration process because we do seek

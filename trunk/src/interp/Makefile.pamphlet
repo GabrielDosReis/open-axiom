@@ -65,7 +65,7 @@ COMPILE_LISP = $(DEPSYS) -- --compile --output=$@ $<
 
 \subsection{Autloload}
 
-In order to minimize the size of the Axiom image at load time
+In order to minimize the size of the OpenAxiom image at load time
 we put some of the compiled files into a separate directory
 that will be autoloaded on demand. This directory of code
 will be shipped with the final system and so it belongs in
@@ -211,7 +211,7 @@ The [[depsys]] image is made of the following Lisp source files
     It is not needed for translating Boot codes to Common Lisp.
 
     \item[\File{axext\_l.lisp}]  This file defines various macros and
-    functions for interoperability between Aldor and Axiom.  Not needed
+    functions for interoperability between Aldor and OpenAxiom.  Not needed
     for translating Boot codes to Common Lisp.
   \end{description}
 
@@ -329,7 +329,7 @@ DEBUGSYS=$(axiom_build_bindir)/debugsys$(EXEEXT)
 
 These are the files that need to be compiled (in {\bf BOOTSYS}),
 loaded into a clean lisp image ({\bf LOADSYS}) and saved as
-a runnable \Tool{Axiom} interpreter ({\bf SAVESYS}) usually named
+a runnable \Tool{OpenAxiom} interpreter ({\bf SAVESYS}) usually named
 \Tool{interpsys}. Most of these files
 are translated from Boot to Common Lisp and then 
 compiled. There are two exceptions, \File{bootfuns.lisp}
@@ -579,7 +579,7 @@ ASAUTO= ${AUTO}/ax.$(FASLEXT)
 autoload_objects += $(ASAUTO)
 @
 
-Axiom versions are given as a string of the form:
+OpenAxiom versions are given as a string of the form:
 "Sunday September 21, 2003 at 20:38:05 "
 which describe the day, date, and time of the build.
 This is used for reporting bugs. It is only partially useful
@@ -589,7 +589,7 @@ and use the MD5 hash of that file as the version stamp. Ultimately
 though, this would be chasing the elusive "perfect information" idea.
 
 A new variable [[boot::*build-version*]] is set here and used by the
-[[yearweek]] function to display the version number of the Axiom build.
+[[yearweek]] function to display the version number of the OpenAxiom build.
 This information is set by hand in the top level Makefile.
 <<environment>>=
 TIMESTAMP=$(axiom_targetdir)/timestamp
@@ -1095,7 +1095,7 @@ tail-recursive call. This happens when the last form in a function
 is a call to the same function. In general, we don't care so we set
 compiler::*suppress-compiler-notes* to true in order to reduce the noise.
 
-Notice that when Axiom uses GCL as the Lisp platform, it is usually not 
+Notice that when OpenAxiom uses GCL as the Lisp platform, it is usually not 
 a good idea to mess with GCL's internal variables.  In particular, GCL
 has its own idea about what to do with [[si::*system-directory*]], which 
 should not be set here just because we happen to save an GCL-based image.
