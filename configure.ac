@@ -132,8 +132,14 @@ if test -z $axiom_lisp; then
                        *) AC_MSG_ERROR([erroneous value for --enable-gcl]) ;;
                    esac])
 fi
-## We need to build our own GCL is none is avalaible
+## We need to build our own GCL if none is avalaible
 if test -z $axiom_lisp; then
+    ## A lisp may not be available AND the GCL source may also
+    ## be missing.  Instruct user to either build one or get
+    ## the dependencies from our website.
+    if test ! -d ${srcdir}/gcl; then
+       AC_MSG_ERROR([OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website.])
+    fi
     AC_PATH_PROG([AXIOM_LISP], [gcl])
     axiom_lisp=$AXIOM_LISP
 else
@@ -153,6 +159,11 @@ case $axiom_include_gcl,$axiom_lisp in
 
        ## No Lisp image was specified and none was available from
        ## the build environment; build GCL from OpenAxiom source.
+       ## User may explicilty specify --enable-gcl, but may be missing
+       ## the dependency tarball.
+       if test ! -d ${srcdir}/gcl; then
+          AC_MSG_ERROR([The OpenAxiom dependency tarball is missing; please get it from our website.])
+       fi
        AXIOM_LISP='$(axiom_build_bindir)/gcl'
        axiom_all_prerequisites="$axiom_all_prerequisites all-gcl"
        axiom_include_gcl=yes
