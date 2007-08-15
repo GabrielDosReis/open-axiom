@@ -1,3 +1,8 @@
+2007-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Check GCL tarball dependency.
+	* configure.in: Regenerate.
+
 2007-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (install): Ensure $(bindir) exists before
