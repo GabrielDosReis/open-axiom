@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en">
+
+<head>
+
+<title>OpenAxiom: The Open Scientific Computation Platform</title>
+<meta http-equiv="Content-Type"
+      content="text/html; charset=iso-8859-1" />
+
+<meta name="description"
+      content="OpenAxiom Project Homepage" />
+
+<meta name="keywords"
+      content="OpenAxiom, compter algebra, algebraic computations,
+               symbolic computations, open source" />
+
+<link rel="stylesheet" type="text/css" href="layout.css" />
+
+</style>
+
+</head>
+
+
+<body>
+
+<div id="header">
+  <h1>OpenAxiom: The Open Scientific Computation Platform</h1>
+</div>
+
+<div id="navigation">
+  <ul>
+    <li><a href="index.html">About OpenAxiom</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="lists.html">Mailing Lists</a></li>
+    <li><a href="download.html">Getting OpenAxiom</a></li>
+    <li><a href="docs.html">Documentation</a></li>
+    <li><a href="license.html">License</a></li>
+    <li><a href="bugs.html">Bug Reports</a></li>
+    <li><a href="contribute.html">Contributing</a></li>
+    <li><a href="links.html">Related Projects</a></li>
+    <li><a href="http://sourceforge.net"><img
+        src="http://sflogo.sourceforge.net/sflogo.php?group_id=203172&amp;type=2"
+        width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></li>
+  </ul>
+</div>
+
+<div id="main">
+  <h2>Contributing to OpenAxiom</h2>
+
+  The OpenAxiom developers highly encourage individuals (researchers,
+  teachers, students, etc) as well as organizations to contribute
+  to the development of OpenAxiom, in form of new algorithms, libraries,
+  new features, bug fixes, documentations, web page improvements, etc.
+
+  <h3>Legal Prerequisites</h3>
+
+  OpenAxiom is an open source software under a BSD-type license described
+  <a href="license.html">here</a>.
+
+  <h3>Submitting Patches</h3>
+
+   Every patch must have several pieces of information, <em>before</em>
+   it can be properly evaluated:
+
+   <ul>
+     <li>A description of the problem/bug and how your patch addresses it.
+
+       <p>
+       For new features a description of the feature and your
+       implementation. For bugs a description of what was wrong with the
+       existing code, and a reference to any previous bug report and any
+       existing testcases for the problem in the OpenAxiom testsuite.
+       </p>
+     </li>
+
+     <li>Testcases.
+
+       <p>
+       If you cannot include testcases, you should include a justification for
+       why adequate testcases cannot be added.
+       </p>
+     </li>
+
+      <li>ChangeLog.
+	<p>
+	A ChangeLog entry as plaintext; see the various ChangeLog files for
+	format and content, GNU Coding
+	Standards for further information. The ChangeLog entries should be
+	plaintext rather than part of the patch since the top of the ChangeLog
+	changes rapidly and a patch to the ChangeLog would probably no longer
+	apply by the time your patch is reviewed. 
+	</p>
+      </li>
+
+      <li>Bootstrapping and testing.
+	<p>
+	State the host and target combinations you used to do proper testing,
+	and the results of your testing. 
+	</p>
+      </li>
+
+      <li>The Patch Itself.
+	<p>
+	If you are accessing the 
+	<a href="download.html">SVN repository</a>
+	at SF.net, please configure
+	your svn to use GNU diff and generate patches using the "-p" or "-up"
+	options. See SVN setup instructions for more details. If your version
+	of diff does not support these options, then get the latest version of
+	GNU diff. Patches against current development (SVN trunk) are preferred
+	to patches against releases, unless your patch is intended as a
+	candidate for the release branch.
+	</p>
+      </li>
+   </ul>
+
+   <p>
+   Don't mix together changes made for different reasons. Send them
+   individually. Ideally, each change you send should be impossible to
+   subdivide into parts that we might want to consider separately, because each
+   of its parts gets its motivation from the other parts. In particular,
+   changes to code formatting to conform to coding standards are best not mixed
+   with substantive changes, because that makes it difficult to see what the
+   real changes are. (In the case of a very large reorganization of code, it
+   may make sense to separate changes even further to make it clearer what has
+   changed; for example, by first sending structural changes that make
+   subsequent changes easier but do not change OpenAxiom's behavior, then 
+   new code,  then the changes that actually make use of the new code and 
+   change OpenAxiom's behavior.)
+   </p>
+
+   <p>
+   When you have all these pieces, bundle them up in a mail message and 
+   send it to <a href="lists.html">open-axiom-patches@lists.sf.net</a>.
+   </p>
+</div>
+
+
+<div id="footer">
+  Copyright &copy; 2007 Gabriel Dos Reis
+</div>
+
+</body>
+</html>
