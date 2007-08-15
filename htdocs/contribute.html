@@ -51,60 +51,64 @@
 <div id="main">
   <h2>Contributing to OpenAxiom</h2>
 
+  <p>
   The OpenAxiom developers highly encourage individuals (researchers,
   teachers, students, etc) as well as organizations to contribute
   to the development of OpenAxiom, in form of new algorithms, libraries,
   new features, bug fixes, documentations, web page improvements, etc.
+  </p>
 
   <h3>Legal Prerequisites</h3>
 
+  <p>
   OpenAxiom is an open source software under a BSD-type license described
   <a href="license.html">here</a>.
+  </p>
 
   <h3>Submitting Patches</h3>
 
-   Every patch must have several pieces of information, <em>before</em>
-   it can be properly evaluated:
+  <p>
+  Every patch must have several pieces of information, <em>before</em>
+  it can be properly evaluated:
+  </p>
 
-   <ul>
-     <li>A description of the problem/bug and how your patch addresses it.
+   <dl class="description">
+     <dt>A description of the problem/bug and how your patch addresses it.</dt>
 
-       <p>
+     <dd>
        For new features a description of the feature and your
        implementation. For bugs a description of what was wrong with the
        existing code, and a reference to any previous bug report and any
        existing testcases for the problem in the OpenAxiom testsuite.
-       </p>
-     </li>
+     </dd>
 
-     <li>Testcases.
 
-       <p>
+     <dt>Testcases.</dt>
+
+     <dd>
        If you cannot include testcases, you should include a justification for
        why adequate testcases cannot be added.
-       </p>
-     </li>
+     </dd>
 
-      <li>ChangeLog.
-	<p>
+      <dt>ChangeLog.</dt>
+
+      <dd>
 	A ChangeLog entry as plaintext; see the various ChangeLog files for
 	format and content, GNU Coding
 	Standards for further information. The ChangeLog entries should be
 	plaintext rather than part of the patch since the top of the ChangeLog
 	changes rapidly and a patch to the ChangeLog would probably no longer
 	apply by the time your patch is reviewed. 
-	</p>
-      </li>
+      </dd>
 
-      <li>Bootstrapping and testing.
-	<p>
+      <dt>Bootstrapping and testing.</dt>
+      <dd>
 	State the host and target combinations you used to do proper testing,
 	and the results of your testing. 
-	</p>
-      </li>
+      </dd>
 
-      <li>The Patch Itself.
-	<p>
+      <dt>The Patch Itself.</dt>
+      <dd>
 	If you are accessing the 
 	<a href="download.html">SVN repository</a>
 	at SF.net, please configure
@@ -114,9 +118,8 @@
 	GNU diff. Patches against current development (SVN trunk) are preferred
 	to patches against releases, unless your patch is intended as a
 	candidate for the release branch.
-	</p>
-      </li>
-   </ul>
+       </dd>
+   </dl>
 
    <p>
    Don't mix together changes made for different reasons. Send them

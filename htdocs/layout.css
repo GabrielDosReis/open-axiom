@@ -1,32 +1,40 @@
 body {
   font-family: Times, "Times New Roman", serif;
-  font-size: 62.5%;
+  font-size: 80%;
 
   color: navy;
-  width: 15cm;
+  width: 800px;
   background-color: white;
   margin-left: auto;
   margin-right: auto;
 }
 
 h1 {
-   font-size: 2.4em;
+   font-size: 3em;
 }
 
 h2 {
-   font-size: 2.0em;
+   font-size: 2.5em;
 }
 
 h3 {
-   font-size: 1.5em;
+   font-size: 2em;
+}
+
+h4 {
+   font-size: 1.7em;
 }
 
 p {
-   font-size: 1.0em;
+   font-size: 1.5em;
+}
+
+pre {
+   font-size: medium;
 }
 
 #header {
-   border: 1px solid navy;
+   border-bottom: 0.5em solid navy;
    text-align: center;
    width: 100%;
 }
@@ -35,9 +43,14 @@ p {
 #navigation {
    float: left;
    left: 0;
-   width: 4cm;
+   font-size: 1.2em;
+   font-weight: bold;
+   /* The following width has been chosen
+      so that it boxes correctly the SF logo.  */
+   width: 125px;
    border: 2px solid black;
-   margin-top: 1cm;
+   margin-top: 1em;
+   margin-bottom: 1em;
 }
 
 #navigation ul {
@@ -48,37 +61,66 @@ p {
 
 #navigation ul li {
    margin: 0;
-   border: 1px solid #003;
+   padding: 0;
+   border-top: 1px solid navy; 
    text-align: center;
+   /* The following dimensions have been chosen
+      so that the boxes look right, when compared
+      to the SF logo.  */
+   width: 125px;
    height: 37px;
 }
 
 #navigation ul li a {
    display: block;
-   padding: 2px 2px 2px 0.5em;
-   border: 0 solid navy;
+   padding: auto;
    color: navy;
+   /* border-top: 0.5em solid red; */
+   border-bottom: none;
    text-decoration: none;
+   width: 100%;
+   height: 100%;
+}
+
+#navigation ul li a:link:hover {
+   color: white;
+   background-color: navy;
 }
 
 
 #main {
-   margin-top: 1cm;
-   margin-left: 5cm;    
-   width: 10cm;
+   margin-top: 0;
+   padding-top: 0;
+   margin-left: 200px;    
+   width: 600px;
    text-align: justify
 }
 
 
 #footer {
-   float: center;
+   font-size: medium;
    text-align: center;
    clear: both;
    border-top: 1px solid navy;
-   bottom: 1cm;
-   width: 50%;
-   margin-top: 2cm;
+   width: 75%;
+   margin-top: 5px;
    margin-left: auto;
    margin-right: auto;
-   padding-top: 1cm;
+   padding-top: 10px;
+}
+
+.description {
+   font-size: 1.5em;
+}
+
+.description dt {
+   font-weight: bold;
+}
+
+.description dd {
+   margin-bottom: 0.5em;
+}
+
+.description ul {
+   font-size: 1.5em;
 }
