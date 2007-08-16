@@ -110,8 +110,14 @@ AC_CHECK_PROGS([NOWEAVE], [noweave])
 
 ## In case noweb is missing we need to build our own.
 if test -z $NOTANGLE -o -z $NOWEAVE ; then
-    AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
-    AC_MSG_ERROR([Please install noweb and reconfigure])
+    ## Yes, but do we have the source files to build from?
+    if test ! -d ${srcdir}/noweb; then
+       AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
+       AC_MSG_ERROR([Please get the tarball of dependencies and reconfigure])
+    fi
+    NOTANGLE='$(axiom_build_bindir)/notangle'
+    NOWEAVE='$(axiom_build_bindir)/noweave'
+    axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
 fi
 
 ## ------------------------

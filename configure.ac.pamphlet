@@ -681,9 +681,14 @@ AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 OpenAxiom sources is literate, and it uses the \Tool{noweb} technology.
 \Tool{noweb} is used to extract both the actual source code from the
 pamphlet files, and the documentation as \LaTeX{} source files.
-There are many platforms on which \Tool{noweb} is inexistent.  OpenAxiom source
-repository used to cache a copy of \Tool{noweb}.  We now require
-that an external [[noweb]] executable.
+There are many platforms on which \Tool{noweb} is not installed
+by default.  There is tarball of the dependencies on OpenAxiom's
+web site to people to grab in case they don't have \Tool{noweb}
+or \Tool{GCL}.  What we do is that if noweb is not found, then
+we try to build one from the tarball of dependency.  For that
+to work, the protocol is that the user has placed \Tool{noweb}'s source
+files in a directory named \File{noweb/} at the top level.  Normally, 
+this works right when one follows the installation instructions.
 %
 <<doc utils>>=
 AC_PATH_PROG([LATEX], [latex])
@@ -704,8 +709,14 @@ AC_CHECK_PROGS([NOWEAVE], [noweave])
 
 ## In case noweb is missing we need to build our own.
 if test -z $NOTANGLE -o -z $NOWEAVE ; then
-    AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
-    AC_MSG_ERROR([Please install noweb and reconfigure])
+    ## Yes, but do we have the source files to build from?
+    if test ! -d ${srcdir}/noweb; then
+       AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
+       AC_MSG_ERROR([Please get the tarball of dependencies and reconfigure])
+    fi
+    NOTANGLE='$(axiom_build_bindir)/notangle'
+    NOWEAVE='$(axiom_build_bindir)/noweave'
+    axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
 fi
 @
 

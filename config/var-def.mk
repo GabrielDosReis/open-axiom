@@ -207,6 +207,7 @@ axiom_include_gcl = @axiom_include_gcl@
 ## -- Files generated for the build machine --
 ## -------------------------------------------
 axiom_build_document = $(axiom_top_builddir)/scripts/document
+axiom_build_nowebdir = $(axiom_builddir)/noweb
 
 TANGLE = @NOTANGLE@
 WEAVE = @NOWEAVE@

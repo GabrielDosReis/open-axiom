@@ -20506,11 +20506,17 @@ done
 
 ## In case noweb is missing we need to build our own.
 if test -z $NOTANGLE -o -z $NOWEAVE ; then
-    { echo "$as_me:$LINENO: OpenAxiom requires noweb utilties" >&5
+    ## Yes, but do we have the source files to build from?
+    if test ! -d ${srcdir}/noweb; then
+       { echo "$as_me:$LINENO: OpenAxiom requires noweb utilties" >&5
 echo "$as_me: OpenAxiom requires noweb utilties" >&6;}
-    { { echo "$as_me:$LINENO: error: Please install noweb and reconfigure" >&5
-echo "$as_me: error: Please install noweb and reconfigure" >&2;}
+       { { echo "$as_me:$LINENO: error: Please get the tarball of dependencies and reconfigure" >&5
+echo "$as_me: error: Please get the tarball of dependencies and reconfigure" >&2;}
    { (exit 1); exit 1; }; }
+    fi
+    NOTANGLE='$(axiom_build_bindir)/notangle'
+    NOWEAVE='$(axiom_build_bindir)/noweave'
+    axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
 fi
 
 ## ------------------------
