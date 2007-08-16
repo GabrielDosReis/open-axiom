@@ -1,5 +1,9 @@
 2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* TODO: Update
+
+2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* configure.ac.pamphlet: Don't error out if noweb source files
 	are present when no executable is available.
 	* configure.ac.: Regenerate.
