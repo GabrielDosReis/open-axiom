@@ -40,6 +40,33 @@ stamp-rootdirs: $(axiom_build_document)
 	@$(STAMP) stamp-rootdirs
 
 
+.PHONY: all-noweb
+all-noweb: $(addprefix $(axiom_build_bindir)/, notangle noweave)
+
+$(addprefix $(axiom_build_bindir)/, notangle noweave):
+	$(mkinstalldirs) $(axiom_build_bindir)
+	$(mkinstalldirs) $(axiom_build_libdir)
+	$(mkinstalldirs) $(axiom_build_texdir)
+	$(mkinstalldirs) $(axiom_build_mandir)
+	if test "$(srcdir)" != "$(builddir)" -a ! -d noweb; then \
+		cp -r $(srcdir)/noweb $(builddir); \
+	fi;
+	cd noweb/src && \
+	touch *.h *.c && \
+	cat Makefile \
+	   | sed -e "s,^BIN=.*,BIN=$(axiom_abs_build_bindir)," \
+	         -e "s,^LIB=.*,LIB=$(axiom_abs_build_libdir)," \
+	         -e "s,^MAN=.*,MAN=$(axiom_abs_build_mandir)," \
+	         -e "s,^TEXINPUTS=.*,TEXINPUTS=$(axiom_abs_build_texdir)," \
+	         -e "s, make , $$\(MAKE\) ," \
+	         -e "s,c/nt,c/nt$(EXEEXT)," \
+	         -e "s,c/markup,c/markup$(EXEEXT)," \
+	         -e "s,c/mnt,c/mnt$(EXEEXT)," \
+	         -e "s,c/finduses,c/finduses$(EXEEXT)," \
+	         -e "s/-texhash.*/:/" \
+	         -e "s/ install-elisp//" \
+	   > Makefile.tmp && mv Makefile.tmp Makefile && \
+	./awkname $(AWK) && $(MAKE) all install
 .PHONY: all-gcl
 all-gcl: $(axiom_build_bindir)/gcl$(EXEEXT)
 
@@ -62,6 +89,7 @@ mostlyclean-local:
 	@-rm -f lastBuildDate
 
 clean-local: mostlyclean-local
+	@rm -fr $(axiom_build_nowebdir)
 	@ rm -f stamp-*
 	@ rm -rf int
 

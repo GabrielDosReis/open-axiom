@@ -1,3 +1,14 @@
+2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Don't error out if noweb source files
+	are present when no executable is available.
+	* configure.ac.: Regenerate.
+	* configure: Likewise.
+	* config/var-def.mk (axiom_build_nowebdir): Resurect.
+	* Makefile.pamphlet (<<noweb>>): Resurect.
+	(clean-local): Remove noweb build dir too.
+	* Makefile.in: Regenerate.
+
 2007-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Check GCL tarball dependency.
