@@ -122,21 +122,21 @@
 
 (DEFUN LEXVGREATERP (VECTOR-COMPERAND-1 VECTOR-COMPERAND-2)
   (declare (simple-vector vector-comperand-1 vector-comperand-2))
-    (PROG (L1 L2 I T1 T2)
-     (declare (fixnum i l1 l2) )
-      (SETQ I -1)
-      (SETQ L1 (length VECTOR-COMPERAND-1))
-      (SETQ L2 (length VECTOR-COMPERAND-2))
-  LP  (setq i (1+ i))
-      (COND
-        ((EQL L1 I) (RETURN NIL))
-        ((EQL L2 I) (RETURN 'T)))
-      (COND
-        ((EQUAL
-            (SETQ T1 (svref VECTOR-COMPERAND-1 I))
-            (SETQ T2 (svref VECTOR-COMPERAND-2 I)))
-          (GO LP)))
-      (RETURN (LEXGREATERP T1 T2)) ) )
+  (let ((I -1)
+	(L1 (length VECTOR-COMPERAND-1))
+	(L2 (length VECTOR-COMPERAND-2)))
+    (declare (fixnum I L1 L2) )
+    (PROG (T1 T2)
+	  LP 
+	  (setq I (1+ I))
+	  (COND ((EQL L1 I) 
+		 (RETURN NIL))
+		((EQL L2 I)
+		 (RETURN 'T)))
+	  (COND ((EQUAL (SETQ T1 (svref VECTOR-COMPERAND-1 I))
+			(SETQ T2 (svref VECTOR-COMPERAND-2 I)))
+		 (GO LP)))
+	  (RETURN (LEXGREATERP T1 T2)) ) ))
 
 
 (DEFUN GGREATERP (COMPERAND-1 COMPERAND-2)
@@ -206,21 +206,21 @@
 
 (DEFUN VGREATERP (VECTOR-COMPERAND-1 VECTOR-COMPERAND-2)
   (declare (simple-vector vector-comperand-1 vector-comperand-2))
-    (PROG (L1 L2 I T1 T2)
-     (declare (fixnum i l1 l2) )
-      (SETQ I -1)
-      (SETQ L1 (length VECTOR-COMPERAND-1))
-      (SETQ L2 (length VECTOR-COMPERAND-2))
-  LP  (setq i (1+ i))
-      (COND
-        ((EQL L1 I) (RETURN NIL))
-        ((EQL L2 I) (RETURN 'T)))
-      (COND
-        ((EQUAL
-            (SETQ T1 (svref VECTOR-COMPERAND-1 I))
-            (SETQ T2 (svref VECTOR-COMPERAND-2 I)))
-          (GO LP)))
-      (RETURN (GGREATERP T1 T2)) ) )
+  (let ((I -1)
+	(L1 (length VECTOR-COMPERAND-1))
+	(L2 (length VECTOR-COMPERAND-2)))
+    (declare (fixnum I L1 L2))
+    (PROG (T1 T2)
+	  LP 
+	  (setq I (1+ I))
+	  (COND ((EQL L1 I) 
+		 (RETURN NIL))
+		((EQL L2 I) 
+		 (RETURN 'T)))
+	  (COND ((EQUAL (SETQ T1 (svref VECTOR-COMPERAND-1 I))
+			(SETQ T2 (svref VECTOR-COMPERAND-2 I)))
+		 (GO LP)))
+	  (RETURN (GGREATERP T1 T2)) ) ))
 
 (defvar SORTGREATERP #'GGREATERP "default sorting predicate")
 
