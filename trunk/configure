@@ -20548,14 +20548,6 @@ fi
 fi
 ## We need to build our own GCL if none is avalaible
 if test -z $axiom_lisp; then
-    ## A lisp may not be available AND the GCL source may also
-    ## be missing.  Instruct user to either build one or get
-    ## the dependencies from our website.
-    if test ! -d ${srcdir}/gcl; then
-       { { echo "$as_me:$LINENO: error: OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website." >&5
-echo "$as_me: error: OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website." >&2;}
-   { (exit 1); exit 1; }; }
-    fi
     # Extract the first word of "gcl", so it can be a program name with args.
 set dummy gcl; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -20595,6 +20587,15 @@ else
 echo "${ECHO_T}no" >&6; }
 fi
 
+
+    ## A lisp may not be available AND the GCL source may also
+    ## be missing.  Instruct user to either build one or get
+    ## the dependencies from our website.
+    if test -z $AXIOM_LISP -a ! -d ${srcdir}/gcl; then
+       { { echo "$as_me:$LINENO: error: OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website." >&5
+echo "$as_me: error: OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website." >&2;}
+   { (exit 1); exit 1; }; }
+    fi
 
     axiom_lisp=$AXIOM_LISP
 else

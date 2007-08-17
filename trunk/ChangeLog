@@ -1,5 +1,12 @@
 2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet: Check for executable gcl before
+	toplevel directory gcl.
+	* configure.ac: Regenerate.
+	* configure: Likewise.
+
+2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* TODO: Update
 
 2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
