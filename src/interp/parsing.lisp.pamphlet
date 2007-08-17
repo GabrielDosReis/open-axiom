@@ -95,6 +95,7 @@
 ;       BOOTLEX.LISP:  Boot file handling, auxiliary parsing actions and tokenizing
 ;       NEWMETA.LISP:  Boot parsing
 
+(import-module "bootfuns")
 (in-package "BOOT")
 
 ; 0. Current I/O Stream definition

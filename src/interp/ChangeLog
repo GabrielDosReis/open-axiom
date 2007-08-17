@@ -1,5 +1,16 @@
 2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* vmlisp.lisp.pamphlet (define-function): Define in all situations.
+	* parsing.lisp.pamphlet: Import "bootfuns".
+	* util.lisp.pamphlet: Import "vmlisp" and "parsing".
+	* bootfuns.lisp.pamphlet: Add GCL-specific bug workaround.
+	* Makefile.pamphlet (${DEPSYS}): Load "parsing" before "util".
+	(util.$(FASLEXT)): Has parsing.$(FASLEXT) as prerequisite.
+	(parsing.$(FASLEXT)): New rule.
+	* Makefile.in: Regenerate.
+
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* ggreater.lisp.pamphlet (VGREATERP): Initialize I, L1 and L2
 	with appropriate values.
 	(LEXVGREATERP): Likewise.
