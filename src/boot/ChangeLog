@@ -1,3 +1,17 @@
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (BOOTSYS_FOR_TARGET): Remove.
+	(stamp): Update prerequisite.
+	($(axiom_build_bindir)/bootsys$(EXEEXT)): Rename from
+	$(BOOTSYS_FOR_TARGET). 
+	(%/.started): Rename from mk-statge0-dir.  Tidy.
+	(stage0/%.clisp): Update prerequisite.
+	(%/initial-env.$(FASLEXT)): Likewise.
+	(mk-stage1-dir): Remove.
+	(mk-stage2-dir): Likewise.
+	(mostlyclean-local): Update.
+	* Makefile.in: Regenerate.
+
 2007-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* ast.boot.pamphlet (bfColonColon): Use SYMBOL-NAME, not

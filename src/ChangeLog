@@ -1,3 +1,11 @@
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-lisp): Don't make $(axiom_build_bindir)
+	here. Pass target tp $(MAKE).
+	(all-boot): Likewise.
+	(all-lib): Don't make $(OUT) here.  Pass target to $(MAKE).
+	* Makefile.in: Regenerate.
+
 2007-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (all-lisp): Don't make all-boot a prereqsite.

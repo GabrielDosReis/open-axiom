@@ -44,6 +44,7 @@ ifeq (@axiom_lisp_flavor@,gcl)
                       ' si::*system-directory* (quote (list ".lsp")))' \
                '  "$(lisp_c_objects) @axiom_c_runtime_extra@"))' \
             | ./base-lisp$(EXEEXT)
+	$(mkinstalldirs) $(OUT)
 	$(INSTALL_PROGRAM) lisp$(EXEEXT) $(OUT)
 endif
 

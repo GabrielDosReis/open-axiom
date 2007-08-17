@@ -1,3 +1,10 @@
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet ($(axiom_target_libdir)/libspad.la): Remove
+	prerequisite mk-target-libdir.
+	(mk-target-libdir): Remove.
+	* Makefile.in: Regenerate.
+
 2007-07-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet: Partially rework, taking advantage of libtool.

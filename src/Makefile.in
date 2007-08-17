@@ -35,14 +35,11 @@ all-doc:
 all-book:
 	cd booklets && ${MAKE}
 all-lib:
-	$(mkinstalldirs) $(OUT)
-	@cd lib && ${MAKE}
+	@cd lib && $(MAKE) $@
 all-lisp: all-lib
-	$(mkinstalldirs) $(axiom_build_bindir)
 	cd lisp && $(MAKE) all-lisp
 all-boot: all-lisp
-	$(mkinstalldirs) $(axiom_build_bindir)
-	@cd boot && ${MAKE}
+	@cd boot && $(MAKE) $@
 all-depsys: all-boot
 	cd interp && $(MAKE) all-depsys
 
