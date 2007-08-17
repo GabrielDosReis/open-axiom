@@ -1,3 +1,9 @@
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ggreater.lisp.pamphlet (VGREATERP): Initialize I, L1 and L2
+	with appropriate values.
+	(LEXVGREATERP): Likewise.
+
 2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* vmlisp.lisp.pamphlet:  Use ANSI eval-when situation syntax for
