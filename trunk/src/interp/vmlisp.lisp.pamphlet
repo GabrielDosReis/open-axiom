@@ -759,13 +759,11 @@ and works properly.
 
 ;; defuns
 
-#-(or :CCL (and :Lucid (not :rios)))
-(defun define-function (f v)
- (setf (symbol-function f) v))
-#+:CCL
-(defun define-function (f v)
- (setf (symbol-function f) v)
- (setf (get f 's:newname) v))
+(eval-when 
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
+ (defun define-function (f v)
+   (setf (symbol-function f) v)))
 
 (define-function 'tempus-fugit #'get-internal-run-time)
 
@@ -1030,10 +1028,13 @@ and works properly.
       nil
       (cons (cons (first x) (second x)) (plist2alist (cddr x)))))
 
-#-:CCL
-(defun put (sym ind val) (setf (get sym ind) val))
-
-(define-function 'MAKEPROP #'put)
+(eval-when
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
+ (progn
+   (defun put (sym ind val) (setf (get sym ind) val))
+   
+   (define-function 'MAKEPROP #'put)))
 
 ; 12.0 Operations on Numbers
 

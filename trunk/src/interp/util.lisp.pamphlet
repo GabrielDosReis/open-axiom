@@ -1547,7 +1547,8 @@ function assumes that \\ can only appear as first character of name.
 <<*>>=
 <<license>>
 
-#-:common-lisp (IMPORT-MODULE "vmlisp")
+(IMPORT-MODULE "vmlisp")
+(import-module "parsing")
 
 (in-package "BOOT")
 (export '($spadroot $directory-list $current-directory reroot

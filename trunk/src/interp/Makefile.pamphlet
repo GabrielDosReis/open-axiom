@@ -1017,6 +1017,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(|importModule| "bootfuns")' >> makedep.lisp
 	@ echo '(|importModule| "nocompil")' >> makedep.lisp
 	@ echo '(|importModule| "bookvol5")' >> makedep.lisp
+	@ echo '(|importModule| "parsing")' >> makedep.lisp
 	@ echo '(|importModule| "util")' >> makedep.lisp
 	@ echo '(in-package "BOOT")' >> makedep.lisp
 	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))) "${AXIOM}")' >> makedep.lisp
@@ -1024,8 +1025,6 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(load "postpar")' >> makedep.lisp
 	@ echo '(unless (probe-file "parse.$(FASLEXT)") (compile-file "parse.clisp" :output-file "parse.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "parse")' >> makedep.lisp
-	@ echo '(unless (probe-file "parsing.$(FASLEXT)") (compile-file "parsing.lisp" :output-file "parsing.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "parsing")' >> makedep.lisp
 	@ echo '(unless (probe-file "metalex.$(FASLEXT)") (compile-file "metalex.lisp" :output-file "metalex.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "metalex")' >> makedep.lisp
 	@ echo '(unless (probe-file "bootlex.$(FASLEXT)") (compile-file "bootlex.lisp" :output-file "bootlex.$(FASLEXT)"))' >> makedep.lisp
@@ -1056,13 +1055,16 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(load "g-util")' >> makedep.lisp
 <<save depsys image>>
 	@rm $(addsuffix .$(FASLEXT), \
-		postpar parse parsing metalex bootlex newaux preparse \
+		postpar parse metalex bootlex newaux preparse \
 		postprop def metameta fnewmeta clam slam g-error \
 		g-boot c-util g-util)
 	@ echo 4 ${DEPSYS} created
 
 
-util.$(FASLEXT): util.lisp bootfuns.$(FASLEXT)
+util.$(FASLEXT): util.lisp parsing.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+parsing.$(FASLEXT): parsing.lisp bootfuns.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 bookvol5.$(FASLEXT): bookvol5.lisp bootfuns.$(FASLEXT)
