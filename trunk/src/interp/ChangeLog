@@ -1,3 +1,13 @@
+2007-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet:  Use ANSI eval-when situation syntax for
+	Common Lisps.  
+	(QUOTIENT): Define unconditionaly.  Remove
+	reference to Lisp package.
+	(rplacstr): Remove CCL-dependent code.  Remove reference to Lisp
+	package. 
+	(EBCDIC): Use code-char, not int-char.
+
 2007-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* union.lisp.pamphlet: Import vmlisp.

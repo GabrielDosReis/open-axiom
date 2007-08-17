@@ -239,9 +239,6 @@ and works properly.
 
 (in-package "VMLISP")
 
-; #-:common-lisp 
-;  (setq *features* (adjoin :common-lisp *features*))
-
 ;; DEFVARS
 
 (defvar *comp370-apply* nil "function (name def) for comp370 to apply")
@@ -352,7 +349,10 @@ and works properly.
  `(equalp ,x ,y))
 
 (defmacro evalandfileactq (name &optional (form name))
- `(eval-when (eval load) ,form))  
+ `(eval-when 
+   #+:common-lisp (:load-toplevel :execute)
+   #-:common-lisp (eval load)
+   ,form))  
 
 (defmacro exit (&rest value)
  `(return-from seq ,@value))
@@ -470,7 +470,10 @@ and works properly.
 	 (if (consp ,xx) (qcar ,xx) ,xx)))))
 
 (defmacro oraddtempdefs (filearg)
- `(eval-when (compile) (load ,filearg)))
+ `(eval-when 
+   #+:common-lisp (:compile-toplevel)
+   #-:common-lisp (compile)
+   (load ,filearg)))
 
 (defmacro pairp (x)
  `(consp ,x)) 
@@ -681,7 +684,9 @@ and works properly.
  `(typep ,v '(vector float)))
 
 (defmacro setandfileq (id item)
- `(eval-when (eval load) 
+ `(eval-when
+   #+:common-lisp (:load-toplevel :execute)
+   #-:common-lisp (eval load) 
    (setq ,id ,item)
    (lam\,fileactq ',id (list 'setq ',id (list 'quote ,id)))))
 
@@ -1056,11 +1061,6 @@ and works properly.
 ;(define-function 'minus #'-)
 ;(define-function 'absval #'abs)
 
-#-:CCL
-(defun QUOTIENT (x y)
-  (cond ((or (floatp x) (floatp y)) (lisp:/ x y))
-        (t (truncate x y))))
-#+:CCL
 (defun QUOTIENT (x y)
   (cond ((or (floatp x) (floatp y)) (/ x y))
         (t (truncate x y))))
@@ -1397,8 +1397,7 @@ can be restored.
           (setq start1 (1+ start1))
           (setq start2 (1+ start2)))
       (let* ((l1 (length cvec1))
-#+:CCL       (r (lisp::make-simple-string (- (+ l1 length2) length1)))
-#-:CCL       (r (lisp::make-string (- (+ l1 length2) length1)))
+	     (r (make-string (- (+ l1 length2) length1)))
              (i 0))
          (do ((j 0 (1+ j)))
              ((= j start1))
@@ -1431,7 +1430,9 @@ can be restored.
 
 ; Gen code for SETQP expr
 
-(eval-when (compile load eval)
+(eval-when 
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
  (defun DCQEXP (FORM EQTAG)
   (PROG (SV pvl avl CODE)
         (declare (special pvl avl))
@@ -1445,7 +1446,9 @@ can be restored.
                 BAD (RETURN NIL) ) ))))
 )
 ; Generate Expr code for DCQ
-(eval-when (compile load eval)
+(eval-when 
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
  (defun DCQGENEXP (SV FORM EQTAG QFLAG)
   (PROG (D A I L C W)
         (declare (special pvl avl))
@@ -1514,7 +1517,9 @@ can be restored.
 
 ; Generate code for EQQ
 
-(eval-when (compile load eval)
+(eval-when 
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
  (defun ECQEXP (FORM QFLAG)
   (PROG (SV PVL CODE)
         (declare (special pvl))
@@ -1530,7 +1535,9 @@ can be restored.
 
 ; Generate code for EQQ innards
 
-(eval-when (compile load eval)
+(eval-when 
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
  (defun ECQGENEXP (SV FORM QFLAG)
   (PROG (D A I L C W)
         (declare (special pvl))
@@ -1616,7 +1623,9 @@ can be restored.
 
 ; Generate code for RPLQ exprs
 
-(eval-when (compile load eval)
+(eval-when 
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
  (defun RCQEXP (FORM)
     (PROG (SV PVL CODE)
           (declare (special pvl))
@@ -1632,7 +1641,9 @@ can be restored.
 
 ; Generate code for RPLQ expr innards
 
-(eval-when (compile load eval)
+(eval-when 
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
  (defun RCQGENEXP (SV FORM QFLAG)
     (PROG (D A I L C W)
           (declare (special pvl))
@@ -1899,7 +1910,7 @@ can be restored.
 
 ; 97.0 Stuff In The Manual But Wierdly Documented
 
-(defun EBCDIC (x) (int-char x))
+(defun EBCDIC (x) (code-char x))
 
 ;; This isn't really compatible but is as close as you can get in common lisp
 ;; In place of ((one-of 1 2 3) l)  you should use
