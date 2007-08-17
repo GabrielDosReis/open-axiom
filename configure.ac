@@ -140,13 +140,14 @@ if test -z $axiom_lisp; then
 fi
 ## We need to build our own GCL if none is avalaible
 if test -z $axiom_lisp; then
+    AC_PATH_PROG([AXIOM_LISP], [gcl])
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
-    if test ! -d ${srcdir}/gcl; then
+    if test -z $AXIOM_LISP -a ! -d ${srcdir}/gcl; then
        AC_MSG_ERROR([OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website.])
     fi
-    AC_PATH_PROG([AXIOM_LISP], [gcl])
+
     axiom_lisp=$AXIOM_LISP
 else
     ## Honor use of Lisp image specified on command line
