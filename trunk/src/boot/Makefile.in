@@ -1,6 +1,5 @@
 AXIOM_LOCAL_LISP_sources = initial-env.lisp
 AXIOM_LOCAL_LISP = ../lisp/base-lisp$(EXEEXT)
-BOOTSYS_FOR_TARGET = $(axiom_target_bindir)/bootsys$(EXEEXT)
 PROCLAIMS=(load "$(srcdir)/boot-proclaims.lisp")
 
 boot_objects = initial-env.$(FASLEXT) $(boot_sources:.boot=.$(FASLEXT))
@@ -32,11 +31,12 @@ all: all-ax all-boot
 
 all-ax all-boot: stamp
 
-stamp: $(BOOTSYS_FOR_TARGET)
+stamp: $(axiom_build_bindir)/bootsys$(EXEEXT)
 	@rm -f stamp
 	$(STAMP) $@
 
-$(BOOTSYS_FOR_TARGET): stage2/bootsys$(EXEEXT)
+$(axiom_build_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)
+	$(mkinstalldirs) $(axiom_build_bindir)
 	$(INSTALL_PROGRAM) stage2/bootsys$(EXEEXT) $(axiom_build_bindir)
 
 .PRECIOUS: stage0/%.clisp
@@ -56,9 +56,10 @@ stage0/bootsys$(EXEEXT): $(stage0_boot_objects)
 		$(stage0_boot_objects)
 
 
-.PHONY: mk-stage0-dir
-mk-stage0-dir:
-	@[ -d stage0 ] || $(mkinstalldirs) stage0
+.PRECIOUS: %/.started
+%/.started:
+	$(mkinstalldirs) $*
+	$(STAMP) $@
 
 $(stage0_boot_objects): $(AXIOM_LOCAL_LISP)
 
@@ -66,11 +67,10 @@ stage0/%.$(FASLEXT): stage0/%.clisp
 	$(AXIOM_LOCAL_LISP) -- --compile \
 		--load-directory=stage0 --output=$@ $<
 
-
-stage0/%.clisp: $(srcdir)/%.boot.pamphlet mk-stage0-dir
+stage0/%.clisp: $(srcdir)/%.boot.pamphlet stage0/.started
 	$(axiom_build_document) --tangle=$*.clisp --output=$@ $<
 
-%/initial-env.$(FASLEXT): initial-env.lisp mk-%-dir
+%/initial-env.$(FASLEXT): initial-env.lisp %/.started
 	$(AXIOM_LOCAL_LISP) -- --compile --output=$@ $<
 
 .PRECIOUS: stage1/%.$(FASLEXT)
@@ -89,12 +89,8 @@ stage1/%.$(FASLEXT): stage1/%.clisp
 	$(AXIOM_LOCAL_LISP) -- --compile \
 		--load-directory=stage1 $<
 
-stage1/%.clisp: %.boot stage0/stamp mk-stage1-dir
+stage1/%.clisp: %.boot stage0/stamp stage1/.started
 	stage0/bootsys -- --translate --output=$@ $<
-
-.PHONY: mk-stage1-dir
-mk-stage1-dir:
-	@[ -d stage1 ] || $(mkinstalldirs) stage1
 
 .PRECIOUS: stage2/%.$(FASLEXT)
 .PRECIOUS: stage2/%.clisp
@@ -112,12 +108,8 @@ stage2/%.$(FASLEXT): stage2/%.clisp
 	$(AXIOM_LOCAL_LISP) -- --compile \
 		--load-directory=stage2 $<
 
-stage2/%.clisp: %.boot stage1/stamp mk-stage2-dir
+stage2/%.clisp: %.boot stage1/stamp stage2/.started
 	stage1/bootsys -- --translate --output=$@ $<
-
-.PHONY: mk-stage2-dir
-mk-stage2-dir:
-	@[ -d stage2 ] || $(mkinstalldirs) stage2
 
 ## Dependency for various modules.  
 ## FIXME: This should be automatically extracted from the
@@ -153,7 +145,7 @@ initial-env.lisp: initial-env.lisp.pamphlet
 
 mostlyclean-local:
 	@rm -f $(AXIOM_LOCAL_LISP)
-	@rm -f $(BOOTSYS_FOR_TARGET)
+	@rm -f $(axiom_build_bindir)/bootsys$(EXEEXT)
 	@rm -rf prev-stage
 	@rm -rf stage0 stage1 stage2
 	@rm -f *.data *.fn

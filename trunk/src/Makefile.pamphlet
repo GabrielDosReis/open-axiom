@@ -113,8 +113,7 @@ need to make {\bf libspad.a} before we make Lisp image we use.
 
 <<libdir>>=
 all-lib:
-	$(mkinstalldirs) $(OUT)
-	@cd lib && ${MAKE}
+	@cd lib && $(MAKE) $@
 @
 
 \subsection{The \File{boot/} directory}
@@ -129,8 +128,7 @@ common lisp form. This directory contains those files.
 
 <<bootdir>>=
 all-boot: all-lisp
-	$(mkinstalldirs) $(axiom_build_bindir)
-	@cd boot && ${MAKE}
+	@cd boot && $(MAKE) $@
 @
 
 \subsection{The \File{interp/} directory}
@@ -173,7 +171,6 @@ comes from the local Lisp image used to initiate \Tool{bootsys}.
 
 <<lispdir>>=
 all-lisp: all-lib
-	$(mkinstalldirs) $(axiom_build_bindir)
 	cd lisp && $(MAKE) all-lisp
 @
 

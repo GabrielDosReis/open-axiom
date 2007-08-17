@@ -41,13 +41,8 @@ stamp: $(axiom_target_libdir)/libspad.la
 	rm -f stamp
 	$(STAMP) stamp
 
-.PHONY: mk-target-libdir
-mk-target-libdir:
-	[ -d $(axiom_target_libdir) ] \
-		|| $(mkinstalldirs) $(axiom_target_libdir)
-
-
-$(axiom_target_libdir)/libspad.la: $(libspad_la_objects) mk-target-libdir
+$(axiom_target_libdir)/libspad.la: $(libspad_la_objects)
+	$(mkinstalldirs) $(axiom_target_libdir)
 	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_la_objects) \
 		-rpath $(libdir)/axiom/target/$(target)/lib
 
