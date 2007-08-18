@@ -1,5 +1,16 @@
 2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* translator.boot.pamphlet (bpOutItem): Translate ConstantDefinition
+	nodes.  Update cached Lisp translation.
+	* parser.boot.pamphlet (bpSimpleDefinitionTail): Build a
+	ConstantDefinition Ast.  Update cached Lisp translation.
+	* ast.boot.pamphlet (ConstantDefinition): A separate Ast node
+	for constant definitions.
+	(bfCompDef): Don't compile ConstantDefinition here.
+	Update cached Lisp translation.
+
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (BOOTSYS_FOR_TARGET): Remove.
 	(stamp): Update prerequisite.
 	($(axiom_build_bindir)/bootsys$(EXEEXT)): Rename from
