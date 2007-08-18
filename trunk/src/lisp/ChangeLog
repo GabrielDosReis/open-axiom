@@ -1,5 +1,14 @@
 2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (GCL_LTCC): New variable.
+	(GCL_LTLD): Likewise.
+	(COBJEXT): Likewise.
+	(CORE): Likewise.
+	($(OUT)/lisp$(EXEEXT)): Tidy.
+	* Makefile.in: Regenerate.
+
+2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Create $(OUT)
 	directory before installing lisp executable.
 	* Makefile.in: Regenerate.
