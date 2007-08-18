@@ -408,9 +408,18 @@ bpOutItem()==
     b is ["L%T",l,r] and IDENTP l =>
                  bpPush [shoeEVALANDFILEACTQ ["DEFPARAMETER",l,r]]
     case b of
-      Module(m) => bpPush [shoeCompileTimeEvaluation ["PROVIDE", m]]
-      Import(m) => bpPush [["IMPORT-MODULE", m]]
-      TypeAlias(t, args, rhs) => bpPush [["DEFTYPE", t, args, ["QUOTE", rhs]]]
+      Module(m) => 
+        bpPush [shoeCompileTimeEvaluation ["PROVIDE", m]]
+
+      Import(m) => 
+        bpPush [["IMPORT-MODULE", m]]
+
+      TypeAlias(t, args, rhs) => 
+        bpPush [["DEFTYPE", t, args, ["QUOTE", rhs]]]
+
+      ConstantDefinition(n, e) =>
+        bpPush [["DEFCONSTANT", n, e]]
+
       otherwise =>
         b:=shoeCompTran ["LAMBDA",["x"],b]
         bpPush [shoeEVALANDFILEACTQ CADDR b]
@@ -1272,8 +1281,7 @@ associateRequestWithFileType(Option '"compile", '"boot",
                                    (LIST 'PROVIDE |m|))))))
                (|Import|
                    (LET ((|m| (CAR |bfVar#6|)))
-                     (|bpPush|
-                         (LIST (LIST 'IMPORT-MODULE |m|)))))
+                     (|bpPush| (LIST (LIST 'IMPORT-MODULE |m|)))))
                (|TypeAlias|
                    (LET ((|t| (CAR |bfVar#6|))
                          (|args| (CADR |bfVar#6|))
@@ -1281,6 +1289,9 @@ associateRequestWithFileType(Option '"compile", '"boot",
                      (|bpPush|
                          (LIST (LIST 'DEFTYPE |t| |args|
                                      (LIST 'QUOTE |rhs|))))))
+               (|ConstantDefinition|
+                   (LET ((|n| (CAR |bfVar#6|)) (|e| (CADR |bfVar#6|)))
+                     (|bpPush| (LIST (LIST 'DEFCONSTANT |n| |e|)))))
                (T (PROGN
                     (SETQ |b|
                           (|shoeCompTran|

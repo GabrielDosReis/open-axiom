@@ -848,7 +848,7 @@ bpDDef() ==  bpName() and bpDefTail()
 bpSimpleDefinitionTail() ==
   bpEqKey "DEF" and
     (bpWhere() or bpTrap())
-      and bpPush bfDefinition(bpPop2(),bfTuple nil, bpPop1())
+      and bpPush ConstantDefinition(bpPop2(), bpPop1())
 
 ++ Parse the remaining of a compound definition.
 bpCompoundDefinitionTail() ==
@@ -2099,8 +2099,7 @@ bpCaseItem()==
   (PROG ()
     (RETURN
       (AND (|bpEqKey| 'DEF) (OR (|bpWhere|) (|bpTrap|))
-           (|bpPush|
-               (|bfDefinition| (|bpPop2|) (|bfTuple| NIL) (|bpPop1|)))))))
+           (|bpPush| (|ConstantDefinition| (|bpPop2|) (|bpPop1|)))))))
 
 (DEFUN |bpCompoundDefinitionTail| ()
   (PROG ()
