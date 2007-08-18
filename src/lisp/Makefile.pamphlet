@@ -31,16 +31,23 @@ some specific C-routines.
 ## as they must be present in the final interpreter
 ## and image.
 lisp_c_objects = \
-		$(build_libdir)/bsdsignal.lo \
-		$(build_libdir)/cfuns-c.lo \
-		$(build_libdir)/sockio-c.lo
+		$(build_libdir)/bsdsignal.$(COBJEXT) \
+		$(build_libdir)/cfuns-c.$(COBJEXT) \
+		$(build_libdir)/sockio-c.$(COBJEXT)
 
 $(OUT)/lisp$(EXEEXT): base-lisp$(EXEEXT)
 ifeq (@axiom_lisp_flavor@,gcl)
 	@axiom_gcl_rsym_hack@
-	echo '(let ((compiler::*ld* "$(LINK) -o"))' \
-	      '(compiler::link (quote ("core.$(FASLEXT)")) "lisp$(EXEEXT)" ' \
-              ' (format nil "(progn (let ((*load-path* (cons ~S *load-path*))'\
+	echo '(let* ((sys-cc compiler::*cc*) ' \
+	     '      (sys-ld compiler::*ld*) ' \
+	     '      (compiler::*cc* (concatenate (quote string) ' \
+	     '                                   $(GCL_LTCC)    ' \
+	     '                                   sys-cc))       ' \
+	     '      (compiler::*ld* (concatenate (quote string) ' \
+	     '                                   $(GCL_LTLD)    ' \
+	     '                                   sys-ld)))       ' \
+             '(compiler::link (quote ("$(CORE)")) "lisp$(EXEEXT)" ' \
+             ' (format nil "(progn (let ((*load-path* (cons ~S *load-path*))'\
                                         ' (si::*load-types* ~S))' \
                                        ' (compiler::emit-fn t))' \
                                   ' (when (fboundp (quote si::sgc-on))' \
@@ -85,6 +92,24 @@ build_libdir = ./$(top_builddir)/src/lib
 lisp_DEPENDENCIES = $(build_libdir)/cfuns-c.lo \
 		    $(build_libdir)/sockio-c.lo \
 		    $(build_libdir)/libspad.la
+
+
+## Ideally, we would like to use Libtool for producing, and linking with,
+## object files from C codes.  That means any C source code
+## explicitly included in OpenAxiom, or produced internally by a Lisp
+## compiler.  However, the SYSTEM calls by GCL on Windows is very tricky
+## to convince to properly resolve path names to executables.
+## Consequently we temporarily give up here, e.g., we don't
+## instruct GCL to use Libtool on Windows.
+GCL_LTCC = $(if $(findstring mingw, $(target)),"","$(LIBTOOL) --mode=compile ")
+GCL_LTLD = $(if $(findstring mingw, $(target)),"","$(LIBTOOL) --mode=link ")
+COBJEXT = $(if $(findstring mingw, $(target)),$(OBJEXT),lo)
+
+## Again, ideally, we would like GCL to link with the compiled Lisp
+## code from core.lisp.  However, the general interface compiler::link
+## that GCL provides for that task is unsupported on Windows platforms.
+## So, we instruct GCL so load the source file instead.
+CORE = $(if $(findstring mingw, $(target)),core.lisp,core.$(FASLEXT))
 
 .PHONY: all all-lisp
 all: all-ax all-lisp
