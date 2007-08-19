@@ -2373,6 +2373,12 @@ SETANDFILEQ($setOptions,'(
 <<userlevel>>
  ))
 
+--%
+printLoadMessages u ==
+  MEMQ(u, '(%display% %describe%)) =>
+    ($printLoadMsgs => '"on"; '"off")
+  $printLoadMsgs := u is ["on"]
+
 -- The following creates a list of option names in the above table.
 
 SETANDFILEQ($setOptionNames, [x.0 for x in $setOptions])

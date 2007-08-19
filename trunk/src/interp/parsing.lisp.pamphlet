@@ -90,12 +90,18 @@
 ;       5. Routines for inspecting and resetting total I/O system state
 ;
 ;       METALEX.LISP:  Meta file handling, auxiliary parsing actions and tokenizing
-;       METAMETA.LISP: Meta parsing
 ;
 ;       BOOTLEX.LISP:  Boot file handling, auxiliary parsing actions and tokenizing
 ;       NEWMETA.LISP:  Boot parsing
 
-(import-module "bootfuns")
+;; This is a horrible hack to work around a horrible bug in GCL
+;; as reported here:
+;;    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
+;; 
+#+(and :gcl (not :common-lisp)) (in-package "VMLISP")
+#+(and :gcl (not :common-lisp)) (in-package "AxiomCore")
+
+(import-module "boot-pkg")
 (in-package "BOOT")
 
 ; 0. Current I/O Stream definition
