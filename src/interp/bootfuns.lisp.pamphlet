@@ -196,11 +196,6 @@ Contributed by Juergen Weiss.
 
 <<non-portable-codes>>
 
-(defmacro def-boot-fun (f args where)
-  `(compiler-let nil
-     (defun ,f ,args ,where (print (list ',f . ,args)))
-     (export '(,f) "BOOT")))
-
 (defmacro def-boot-var (p where)
   `(compiler-let nil
      (defparameter ,p nil ,where)
@@ -211,8 +206,6 @@ Contributed by Juergen Weiss.
      (defparameter ,p ,val ,where)
      (export '(,p) "BOOT")))
 
-(def-boot-fun |initializeSetVariables| (arg) "early temp def")
-(def-boot-fun |updateSourceFiles| (x) "temp def")
 #-:CCL
 (def-boot-val |$timerTicksPerSecond| INTERNAL-TIME-UNITS-PER-SECOND
     "for TEMPUS-FUGIT and $TOTAL-ELAPSED-TIME")
@@ -255,9 +248,6 @@ Contributed by Juergen Weiss.
 (def-boot-val |$Boolean| '(|Boolean|)		    "???")
 (def-boot-val |$BooleanOpt| '(|Boolean| . OPT)	    "???")
 (def-boot-val |$bootStrapMode| ()  "if T compCapsule skips body")
-(def-boot-fun |bootUnionPrint| (x s tt)		    "Interpreter>Coerce.boot")
-(def-boot-fun |break| (msg)			    "Interpreter>Trace.boot")
-(def-boot-fun |breaklet| (fn vars)		    "Interpreter>Trace.boot")
 (def-boot-var |$brightenCommentsFlag|		    "???")
 (def-boot-var |$brightenCommentsIfTrue|		    "???")
 (def-boot-val |$BreakMode| '|query|		    "error.boot")
@@ -567,7 +557,6 @@ for primitive domains.	Also used by putInLocalDomainReferences and optCal.")
 (def-boot-val |$useBFasDefault| T
 	  "Determines whether to use BF as default floating point type.")
 (def-boot-val |$useDCQnotLET| () "checked in DEF-LET for use of DCQ")
-(def-boot-fun BUMPCOMPERRORCOUNT ()		    "errorSupervisor1")
 (def-boot-var |$VariableCount|			    "???")
 (def-boot-val |$Void| '(|Void|) "compiler constant")
 (def-boot-var |$warningStack|			    "???")

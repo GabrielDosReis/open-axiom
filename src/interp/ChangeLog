@@ -1,5 +1,15 @@
 2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* bootfuns.lisp.pamphlet (def-boot-fun): Remove.
+	(|initializeSetVariables|): Likewise.
+	(|updateSourceFiles|): Likewise.
+	(|bootUnionPrint|): Likewise.
+	(|break|): Likewise.
+	(|breaklet|): Likewise.
+	(BUMPCOMPERRORCOUNT): Likewise.
+
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* c-util.boot.pamphlet (addContour): Remove trailing semicolon.
 
 2007-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
