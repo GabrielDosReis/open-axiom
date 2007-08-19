@@ -1,5 +1,10 @@
 2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* i-syscmd.boot.pamphlet (SPADRWRITE): Don't confuse Boot comments
+	with Lisp comments.
+
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* bootfuns.lisp.pamphlet (def-boot-fun): Remove.
 	(|initializeSetVariables|): Likewise.
 	(|updateSourceFiles|): Likewise.
