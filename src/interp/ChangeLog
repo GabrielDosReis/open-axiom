@@ -1,3 +1,53 @@
+2007-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootlex.lisp.pamphlet (|boot-LEXPR|): Remove
+
+	* spad.lisp.pamphlet (BOOT-LEXPR): Remove.
+	(NBOOT-LEXPR): Likewise.
+	(New-LEXPR): Likewise.
+	(New-LEXPR1): Likewise.
+	(New-LEXPR-Interactive): Likewise.
+	(|getTranslation|): Likewise.
+	(|New-LEXPR|): Likewise.
+	(|boot2Lisp|): Likewise.
+	(|boot2LispError|): Likewise.
+	(|New,ENTRY|): Likewise.
+	(new): Likewise.
+	(newpo): Likewise.
+	(|New,ENTRY,SYS|): Likewise.
+	(|New,ENTRY1|): Likewise.
+	(/cx): Likewise.
+	(/foobar): Likewise.
+	(|/cxd|): Likewise.
+	(|/rx|): Likewise.
+	(|/ry|): Likewise.
+	(|/tb|): Likewise.
+	(|$lisp2lispRenameAssoc|): Likewise..
+	(|$spadOpList|): Likewise.
+	(SPAD-MDTR-1): Likewise.
+	(SPAD-MDTR-2): Likewise.
+	(foobar): Likewise.
+
+	* metalex.lisp.pamphlet (in-meta): Remove.
+	(newrule): Likewise.
+	(meta): Likrwise.
+
+	* spad.lisp.pamphlet (/TRANSMETA): Remove.
+	(/TRANSBOOT): Likewise.
+	(/TRANSNBOOT): Likewise.
+
+	* debug.lisp.pamphlet (META): Don't set property.
+
+	* Makefile.pamphlet (depsys_lisp_compiled_sources): Don't include
+	metameta.lisp
+	(OPOBJS): Likewise.
+	(depsys_lisp_sources): Likewise.
+	(depsys_objects): Likewise.
+	(${DEPSYS}): Don't depend on it.  Don't load it.
+	(${AUTO}/metameta.$(FASLEXT)): Remove.
+
+	* metameta.lisp.pamphlet: Remove.
+
 2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* msg.boot.pamphlet (putDatabaseStuff): Fix thinko.

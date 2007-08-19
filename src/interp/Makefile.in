@@ -22,7 +22,7 @@ BOOTSYS= $(axiom_build_bindir)/bootsys
 
 DEPSYS = ./depsys
 depsys_lisp_compiled_sources += parsing.lisp metalex.lisp bootlex.lisp \
-	newaux.lisp preparse.lisp postprop.lisp def.lisp metameta.lisp \
+	newaux.lisp preparse.lisp postprop.lisp def.lisp \
 	fnewmeta.lisp
 
 depsys_lisp_sources = $(depsys_lisp_noncompiled_sources) \
@@ -149,7 +149,6 @@ IN_modules = $(patsubst %.$(FASLEXT), "%", $(INOBJS))
 OPOBJS=	${AUTO}/parsing.$(FASLEXT)	${AUTO}/bootlex.$(FASLEXT)	\
         ${AUTO}/def.$(FASLEXT)	\
 	${AUTO}/fnewmeta.$(FASLEXT)	${AUTO}/metalex.$(FASLEXT)	\
-	${AUTO}/metameta.$(FASLEXT)	\
 	${AUTO}/parse.$(FASLEXT)	${AUTO}/postpar.$(FASLEXT)	\
 	${AUTO}/postprop.$(FASLEXT)	${AUTO}/preparse.$(FASLEXT)
 
@@ -322,7 +321,7 @@ ${SAVESYS}: makeint.lisp
 	$(mkinstalldirs) $(axiom_target_bindir)
 depsys_lisp_sources += parsing.lisp metalex.lisp bootlex.lisp \
 			newaux.lisp preparse.lisp postprop.lisp \
-			metameta.lisp fnewmeta.lisp
+			fnewmeta.lisp
 
 depsys_boot_sources = postpar.boot parse.boot clam.boot slam.boot \
 			g-boot.boot g-error.boot c-util.boot g-util.boot
@@ -333,7 +332,7 @@ depsys_objects = nocompil.$(FASLEXT) bookvol5.$(FASLEXT) g-error.$(FASLEXT) \
 		util.$(FASLEXT) postpar.$(FASLEXT) parse.$(FASLEXT) \
 		parsing.$(FASLEXT) metalex.$(FASLEXT) bootlex.$(FASLEXT) \
 		newaux.$(FASLEXT) preparse.$(FASLEXT) postprop.$(FASLEXT) \
-		metameta.$(FASLEXT) fnewmeta.$(FASLEXT) clam.$(FASLEXT) \
+		fnewmeta.$(FASLEXT) clam.$(FASLEXT) \
 		slam.$(FASLEXT) g-boot.$(FASLEXT) c-util.$(FASLEXT) \
 		g-util.$(FASLEXT)
 
@@ -351,7 +350,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	        bootlex.lisp newaux.lisp \
 	        preparse.lisp \
 	        postprop.lisp def.lisp \
-	        metameta.lisp fnewmeta.lisp \
+	        fnewmeta.lisp \
 		g-error.clisp \
 	        g-boot.clisp c-util.${LISP} \
 	        g-util.clisp \
@@ -387,8 +386,6 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(load "postprop")' >> makedep.lisp
 	@ echo '(unless (probe-file "def.$(FASLEXT)") (compile-file "def.lisp" :output-file "def.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "def")' >> makedep.lisp
-	@ echo '(unless (probe-file "metameta.$(FASLEXT)") (compile-file "metameta.lisp" :output-file "metameta.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "metameta")' >> makedep.lisp
 	@ echo '(unless (probe-file "fnewmeta.$(FASLEXT)") (compile-file "fnewmeta.lisp" :output-file "fnewmeta.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "fnewmeta")' >> makedep.lisp
 	@ echo '(unless (probe-file "clam.$(FASLEXT)") (compile-file "clam.clisp" :output-file "clam.$(FASLEXT)"))' >> makedep.lisp
@@ -407,7 +404,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		--load-directory=. makedep.lisp
 	@rm $(addsuffix .$(FASLEXT), \
 		postpar parse metalex bootlex newaux preparse \
-		postprop def metameta fnewmeta clam slam g-error \
+		postprop def fnewmeta clam slam g-error \
 		g-boot c-util g-util)
 	@ echo 4 ${DEPSYS} created
 
@@ -828,11 +825,6 @@ match.clisp: match.boot
 ${AUTO}/metalex.$(FASLEXT): metalex.$(FASLEXT)
 	@ echo 66 making ${AUTO}/metalex.$(FASLEXT) from metalex.$(FASLEXT)
 	@ cp metalex.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/metameta.$(FASLEXT): metameta.$(FASLEXT)
-	@ echo 71 making ${AUTO}/metameta.$(FASLEXT) from metameta.$(FASLEXT)
-	@ cp metameta.$(FASLEXT) ${AUTO}
 
 
 ${AUTO}/modemap.$(FASLEXT): modemap.$(FASLEXT)
