@@ -231,8 +231,6 @@ The [[depsys]] image is made of the following Lisp source files
 
     \item[\File{def.lisp}]
 
-    \item[\File{metameta.lisp}]
- 
     \item[\File{fnewmeta.lisp}]
   \end{description}
 
@@ -258,7 +256,7 @@ The [[depsys]] image is made of the following Lisp source files
 %
 <<environment>>=
 depsys_lisp_compiled_sources += parsing.lisp metalex.lisp bootlex.lisp \
-	newaux.lisp preparse.lisp postprop.lisp def.lisp metameta.lisp \
+	newaux.lisp preparse.lisp postprop.lisp def.lisp \
 	fnewmeta.lisp
 
 depsys_lisp_sources = $(depsys_lisp_noncompiled_sources) \
@@ -479,7 +477,6 @@ rethinking.
 OPOBJS=	${AUTO}/parsing.$(FASLEXT)	${AUTO}/bootlex.$(FASLEXT)	\
         ${AUTO}/def.$(FASLEXT)	\
 	${AUTO}/fnewmeta.$(FASLEXT)	${AUTO}/metalex.$(FASLEXT)	\
-	${AUTO}/metameta.$(FASLEXT)	\
 	${AUTO}/parse.$(FASLEXT)	${AUTO}/postpar.$(FASLEXT)	\
 	${AUTO}/postprop.$(FASLEXT)	${AUTO}/preparse.$(FASLEXT)
 
@@ -972,7 +969,7 @@ of the form:
 <<depsys>>=
 depsys_lisp_sources += parsing.lisp metalex.lisp bootlex.lisp \
 			newaux.lisp preparse.lisp postprop.lisp \
-			metameta.lisp fnewmeta.lisp
+			fnewmeta.lisp
 
 depsys_boot_sources = postpar.boot parse.boot clam.boot slam.boot \
 			g-boot.boot g-error.boot c-util.boot g-util.boot
@@ -983,7 +980,7 @@ depsys_objects = nocompil.$(FASLEXT) bookvol5.$(FASLEXT) g-error.$(FASLEXT) \
 		util.$(FASLEXT) postpar.$(FASLEXT) parse.$(FASLEXT) \
 		parsing.$(FASLEXT) metalex.$(FASLEXT) bootlex.$(FASLEXT) \
 		newaux.$(FASLEXT) preparse.$(FASLEXT) postprop.$(FASLEXT) \
-		metameta.$(FASLEXT) fnewmeta.$(FASLEXT) clam.$(FASLEXT) \
+		fnewmeta.$(FASLEXT) clam.$(FASLEXT) \
 		slam.$(FASLEXT) g-boot.$(FASLEXT) c-util.$(FASLEXT) \
 		g-util.$(FASLEXT)
 
@@ -1001,7 +998,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	        bootlex.lisp newaux.lisp \
 	        preparse.lisp \
 	        postprop.lisp def.lisp \
-	        metameta.lisp fnewmeta.lisp \
+	        fnewmeta.lisp \
 		g-error.clisp \
 	        g-boot.clisp c-util.${LISP} \
 	        g-util.clisp \
@@ -1037,8 +1034,6 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(load "postprop")' >> makedep.lisp
 	@ echo '(unless (probe-file "def.$(FASLEXT)") (compile-file "def.lisp" :output-file "def.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "def")' >> makedep.lisp
-	@ echo '(unless (probe-file "metameta.$(FASLEXT)") (compile-file "metameta.lisp" :output-file "metameta.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "metameta")' >> makedep.lisp
 	@ echo '(unless (probe-file "fnewmeta.$(FASLEXT)") (compile-file "fnewmeta.lisp" :output-file "fnewmeta.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "fnewmeta")' >> makedep.lisp
 	@ echo '(unless (probe-file "clam.$(FASLEXT)") (compile-file "clam.clisp" :output-file "clam.$(FASLEXT)"))' >> makedep.lisp
@@ -1056,7 +1051,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 <<save depsys image>>
 	@rm $(addsuffix .$(FASLEXT), \
 		postpar parse metalex bootlex newaux preparse \
-		postprop def metameta fnewmeta clam slam g-error \
+		postprop def fnewmeta clam slam g-error \
 		g-boot c-util g-util)
 	@ echo 4 ${DEPSYS} created
 
@@ -1259,15 +1254,6 @@ fortcall.clisp: fortcall.boot
 ${AUTO}/metalex.$(FASLEXT): metalex.$(FASLEXT)
 	@ echo 66 making ${AUTO}/metalex.$(FASLEXT) from metalex.$(FASLEXT)
 	@ cp metalex.$(FASLEXT) ${AUTO}
-
-@
-
-\subsection{metameta.lisp \cite{23}}
-
-<<metameta.o (AUTO from OUT)>>=
-${AUTO}/metameta.$(FASLEXT): metameta.$(FASLEXT)
-	@ echo 71 making ${AUTO}/metameta.$(FASLEXT) from metameta.$(FASLEXT)
-	@ cp metameta.$(FASLEXT) ${AUTO}
 
 @
 
@@ -2651,8 +2637,6 @@ distclean-local: clean-local
 
 <<metalex.o (AUTO from OUT)>>
 
-<<metameta.o (AUTO from OUT)>>
-
 <<modemap.o (AUTO from OUT)>>
 <<modemap.clisp>>
 
@@ -2790,7 +2774,6 @@ pp
 \bibitem{20} \File{src/interp/hash.lisp.pamphlet}
 \bibitem{21} \File{src/interp/macros.lisp.pamphlet}
 \bibitem{22} \File{src/interp/metalex.lisp.pamphlet}
-\bibitem{23} \File{src/interp/metameta.lisp.pamphlet}
 \bibitem{24} \File{src/interp/monitor.lisp.pamphlet}
 \bibitem{25} \File{src/interp/newaux.lisp.pamphlet}
 \bibitem{26} \File{src/interp/nlib.lisp.pamphlet}

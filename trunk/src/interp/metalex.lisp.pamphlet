@@ -63,38 +63,6 @@
  
 (in-package "BOOT")
  
-; *** 1. META file handling
- 
-(defun in-meta ()
-  (setq XTokenReader 'get-META-token)
-  (setq Line-Handler 'next-META-line)
-  (setq Meta_Error_Handler 'meta-meta-error-handler)
-  (setq $BOOT nil))
- 
-(defun newrule ()
-  (in-meta)
-  (setq meta_prefix "PARSE-")
-  (test Rule1)
-  (eval (pop-stack-1))
-  (ioclear)
-  (in-boot))
- 
-(defun meta (&optional (*meta-input-file* "/spad/meta.meta")
-                       (*meta-output-file* nil))
-  (ioclear)
-  (in-meta)
-  (with-open-stream
-    (in-stream (open *meta-input-file* :direction :input))
-    (with-open-stream
-      (out-stream (if *meta-output-file*
-               (open *meta-output-file* :direction :output)
-               *terminal-io*))
-      (format out-stream
-	      "~&;;; -*- Mode:Lisp; Package:Boot  -*-~%~%")
-      (parse-program)
-      (IOClear in-stream out-stream)))
-  T)
- 
 ; *** 2. META Line Handling
  
 (defun next-META-line (&optional (in-stream t))
