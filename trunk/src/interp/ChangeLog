@@ -1,3 +1,9 @@
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* msg.boot.pamphlet (putDatabaseStuff): Fix thinko.
+	(setMsgCatlessAttr): Quote catless.
+	(posPointers): Fix thinko.
+
 2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* vmlisp.lisp.pamphlet (define-function): Define in all situations.
