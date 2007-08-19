@@ -1874,7 +1874,7 @@ SPADRREAD(vec, stream) ==
 SPADRWRITE(vec, item, stream) ==
   val := SPADRWRITE0(vec, item, stream) 
   val = 'writifyFailed =>
-    throwKeyedMsg("S2IH0036", nil) ; cannot save value to file
+    throwKeyedMsg("S2IH0036", nil) -- cannot save value to file
   item
 
 SPADRWRITE0(vec, item, stream) ==
