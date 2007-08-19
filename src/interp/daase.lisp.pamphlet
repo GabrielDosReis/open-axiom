@@ -814,6 +814,17 @@ database.
 (defun |with| (args)
  (|library| args))
 
+;; Current directory
+;; Contributed by Juergen Weiss.
+#+:cmu
+(defun get-current-directory ()
+  (namestring (extensions::default-directory)))
+
+#+(or :akcl :gcl)
+(defun get-current-directory ()
+  (namestring (truename "")))
+
+
 ; )library top level command
 
 (defun |library| (args)

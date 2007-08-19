@@ -335,11 +335,15 @@ depsys_objects = nocompil.$(FASLEXT) bookvol5.$(FASLEXT) g-error.$(FASLEXT) \
 		fnewmeta.$(FASLEXT) clam.$(FASLEXT) \
 		slam.$(FASLEXT) g-boot.$(FASLEXT) c-util.$(FASLEXT) \
 		g-util.$(FASLEXT)
+VPATH =
+
+
 
 ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		hash.$(FASLEXT) \
 		ggreater.$(FASLEXT) \
 		union.$(FASLEXT) \
+		boot-pkg.$(FASLEXT) \
 		bootfuns.$(FASLEXT) \
 		${DEP} \
 		nocompil.$(FASLEXT) \
@@ -412,16 +416,19 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 util.$(FASLEXT): util.lisp parsing.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-parsing.$(FASLEXT): parsing.lisp bootfuns.$(FASLEXT)
+parsing.$(FASLEXT): parsing.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-bookvol5.$(FASLEXT): bookvol5.lisp bootfuns.$(FASLEXT)
+bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-nocompil.$(FASLEXT): nocompil.lisp bootfuns.$(FASLEXT)
+nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-bootfuns.$(FASLEXT): bootfuns.lisp hash.$(FASLEXT)
+bootfuns.$(FASLEXT): bootfuns.lisp hash.$(FASLEXT) boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+boot-pkg.$(FASLEXT): boot-pkg.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 hash.$(FASLEXT): hash.lisp vmlisp.$(FASLEXT)
@@ -435,6 +442,16 @@ ggreater.$(FASLEXT): ggreater.lisp vmlisp.$(FASLEXT)
 
 vmlisp.$(FASLEXT): vmlisp.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
+
+
+## GCL-2.6.8pre has the following behaviour that it will
+## try to forcefully put the compiled code in the same directory
+## as the source.  This is hardly what we want, especially when
+## the source file reside in non-writeable areas.  Consequently,
+## we copy the source file to the current working directory --
+## until we find a better way to convince GCL to do the right thing.
+boot-pkg.lisp: $(srcdir)/boot-pkg.lisp
+	cp $< $@
 
 .PHONY: all-axiomsys
 

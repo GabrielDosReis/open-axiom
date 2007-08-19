@@ -62,17 +62,7 @@ interpreter or algebra uses has to (cough, cough) appear here.
 <<*>>=
 <<license>>
 
-;; This is a horrible hack to work around a horrible bug in GCL
-;; as reported here:
-;;    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
-#+:gcl (in-package "VMLISP")
-#+:gcl (in-package "AxiomCore")
-
-(IMPORT-MODULE "hash")
-(defpackage "BOOT"
-  #+:common-lisp (:use "COMMON-LISP")
-  #-:common-lisp (:use "LISP")
-  (:use "VMLISP" "AxiomCore"))
+(IMPORT-MODULE "boot-pkg")
 
 @
 
@@ -111,79 +101,6 @@ offer it as extensions.
 <<non-portable-codes>>=
 #+:clisp (import 'ext:compiler-let)
 @
-
-\subsection{Missing DFLOAT Transcendental functions}
-
-These functions should be defined for DoubleFloat inputs but are not.
-These are cheap and easy definitions that work but should be rewritten.
-<<Missing DFLOAT Transcendental functions>>=
-(defun sec (x) (/ 1 (cos x)))
-(defun csc (x) (/ 1 (sin x)))
-(defun acsc (x) (asin (/ 1 x)))
-(defun asec (x) (acos (/ 1 x)))
-(defun csch (x) (/ 1 (sinh x)))
-(defun coth (x) (* (cosh x) (csch x)))
-(defun sech (x) (/ 1 (cosh x)))
-(defun acsch (x) (asinh (/ 1 x)))
-(defun acoth (x) (atanh (/ 1 x)))
-(defun asech (x) (acosh (/ 1 x)))
-@
-
-\subsection{The manexp fix}
-
-Contributed by Juergen Weiss from a suggestion by Arthur Norman.
-This is a Mantissa and Exponent function. 
-<<manexp>>=
-#+(or :cmu :akcl :gcl)
-(defun manexp (u)
-  (multiple-value-bind (f e s) 
-    (decode-float u)
-    (cons (* s f) e)))
-
-@
-
-\subsection{The arc cotangent function}
-
-Contributed by Juergen Weiss from Arthur Norman's CCL.
-<<acot>>=
-#+(or :cmu :akcl :gcl)
-(defun acot (a)
-  (if (> a 0.0)
-    (if (> a 1.0)
-       (atan (/ 1.0 a))
-       (- (/ pi 2.0) (atan a)))
-    (if (< a -1.0)
-       (- pi (atan (/ -1.0 a)))
-       (+ (/ pi 2.0) (atan (- a))))))
-
-@
-
-\subsection{The arc cotangent function}
-
-Contributed by Juergen Weiss from Arthur Norman's CCL.
-<<cot>>=
-#+(or :cmu :akcl :gcl)
-(defun cot (a)
-  (if (or (> a 1000.0) (< a -1000.0))
-    (/ (cos a) (sin a))
-    (/ 1.0 (tan a))))
-
-@
-
-\subsection{The get-current-directory function}
-
-Contributed by Juergen Weiss.
-<<getCD>>=
-#+:cmu
-(defun get-current-directory ()
-  (namestring (extensions::default-directory)))
-
-#+(or :akcl :gcl)
-(defun get-current-directory ()
-  (namestring (truename "")))
-
-@
-
 
 <<*>>=
 
@@ -575,19 +492,6 @@ for primitive domains.	Also used by putInLocalDomainReferences and optCal.")
 (def-boot-val |$inputPromptType| '|step|  "checked in MKPROMPT")
 (def-boot-val |$IOindex| 0		   "step counter")
 
-(defun |printLoadMessages| (u)
-  (if (memq u '(|%display%| |%describe%|)) 
-        (if |$printLoadMsgs| "on" "off")
-        (seq 
-          (setq |$printLoadMsgs| (and (listp u) (equal (car u) '|on|)))
-#+:CCL    (verbos (if |$printLoadMsgs| 2 0))
-)))
-
-<<manexp>>
-<<acot>>
-<<cot>>
-<<getCD>>
-<<Missing DFLOAT Transcendental functions>>
 @
 \eject
 \begin{thebibliography}{99}

@@ -1,5 +1,31 @@
 2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot-pkg.lisp: New.
+
+	* Makefile.pamphlet (${DEPSYS}): Depend on it
+	(parsing.$(FASLEXT)): Likewise.
+	(bookvol5.$(FASLEXT)): Likewise.
+	(nocompil.$(FASLEXT)): Likewise.
+	(bootfuns.$(FASLEXT)): Likewise.
+	(boot-pkg.$(FASLEXT)): New rule.
+	(boot-pkg.lisp): New rule; work around GCL+VPATH voodoo.
+	(VPATH): Clear.
+	* Makefile.in: Regenerate.
+
+	* bootfuns.lisp.pamphlet: Don't define package "BOOT" here.
+	Import "boot-pkg".
+	(|printLoadMessages|): Move to setvart.boot.pamphlet.
+	Move special functions to boot-pkg.lisp.
+	Move get-current-directory to daase.lisp.pamphlet.
+
+	* setvart.boot.pamphlet (printLoadMessages): Move from
+	bootfuns.lisp.pamphlet. Write as Boot code.
+
+	* daase.lisp.pamphlet (get-current-directory): Move from 
+        bootfuns.lisp.pamphlet
+
+2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* i-syscmd.boot.pamphlet (SPADRWRITE): Don't confuse Boot comments
 	with Lisp comments.
 
