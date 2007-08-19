@@ -269,7 +269,7 @@ it would return $0$, meaning that everything is OK.
 (defun |quit| (&optional (status 0))
   #+:sbcl (sb-ext:quit :unix-status status)
   #+:clisp (ext:quit status)
-  #+:gcl (quit status)
+  #+:gcl (si::bye status)
   #+:ecl (ext:quit status)
   #-(or :sbcl :clisp :gcl :ecl) 
   (error "`quit' not implemented for this Lisp"))
@@ -699,14 +699,12 @@ it would return $0$, meaning that everything is OK.
 (defun |importModule| (module)
   (do-import-module module |$LoadDirectories|))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
 (defmacro import-module (module)
-  `(progn (eval-when (:execute :compile-toplevel)
-		     (|importModule| ,module))
-	      
-	  (eval-when (:execute :load-toplevel)
+  `(progn (eval-when 
+	   #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+	   #-:common-lisp (compile load eval)
 		     (|importModule| ,module))))
-)
+
 @
 
 
