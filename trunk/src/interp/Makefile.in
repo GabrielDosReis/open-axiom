@@ -53,6 +53,7 @@ AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
 DEBUGSYS=$(axiom_build_bindir)/debugsys$(EXEEXT)
 
 OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
+	diagnostics.$(FASLEXT)				\
 	bootfuns.$(FASLEXT)	macros.$(FASLEXT)	\
 	unlisp.$(FASLEXT)	setq.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
@@ -344,6 +345,9 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		ggreater.$(FASLEXT) \
 		union.$(FASLEXT) \
 		boot-pkg.$(FASLEXT) \
+		sys-constants.$(FASLEXT) \
+		sys-globals.$(FASLEXT) \
+		diagnostics.$(FASLEXT) \
 		bootfuns.$(FASLEXT) \
 		${DEP} \
 		nocompil.$(FASLEXT) \
@@ -425,7 +429,18 @@ bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
 nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-bootfuns.$(FASLEXT): bootfuns.lisp hash.$(FASLEXT) boot-pkg.$(FASLEXT)
+bootfuns.$(FASLEXT): bootfuns.lisp hash.$(FASLEXT) \
+			sys-constants.$(FASLEXT) sys-globals.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+diagnostics.$(FASLEXT): diagnostics.boot sys-constants.$(FASLEXT) \
+				sys-globals.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sys-globals.$(FASLEXT): sys-globals.boot boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sys-constants.$(FASLEXT): sys-constants.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 boot-pkg.$(FASLEXT): boot-pkg.lisp vmlisp.$(FASLEXT)
@@ -451,6 +466,15 @@ vmlisp.$(FASLEXT): vmlisp.lisp
 ## we copy the source file to the current working directory --
 ## until we find a better way to convince GCL to do the right thing.
 boot-pkg.lisp: $(srcdir)/boot-pkg.lisp
+	cp $< $@
+
+diagnostics.boot: $(srcdir)/diagnostics.boot
+	cp $< $@
+
+sys-globals.boot: $(srcdir)/sys-globals.boot
+	cp $< $@
+
+sys-constants.boot: $(srcdir)/sys-constants.boot
 	cp $< $@
 
 .PHONY: all-axiomsys

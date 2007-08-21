@@ -179,7 +179,7 @@ f01brfSolve htPage ==
      '(domainConditions 
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
-          (isDomain EM (EmptyMode))
+          (isDomain EM ($EmptyMode))
            (isDomain F (Float))
             (isDomain PI (PositiveInteger))),
 	     :labelList,:abortList]
@@ -503,7 +503,7 @@ f01mafSolve htPage ==
      '(domainConditions 
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
-          (isDomain EM (EmptyMode))
+          (isDomain EM ($EmptyMode))
            (isDomain F (Float))
             (isDomain PI (PositiveInteger))),
 	     :labelList,:abortList]
