@@ -1,3 +1,190 @@
+2007-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* g-error.boot.pamphlet: Import "diagnostics.
+	(errorSupervisor1): Call BUMPERRORCOUNT, not BUMPCOMPERRORCOUNT.
+	The latter no longer exists.
+	* msgdb.boot.pamphlet (throwKeyedErrorMsg): Likewise.
+
+	* Makefile.pamphlet (${DEPSYS}): Depend also on
+	sys-constant.$(FASLEXT), sys-globals.$(FASLEXT), and
+	diagnostics.$(FASLEXT). 
+	(bootfuns.$(FASLEXT)): Likewise.
+	(diagnostics.boot): New rule.
+	(sys-globals.boot): Likewise.
+	(sys-constants.boot): Likewise.
+	* Makefile.in: Regenerate.
+
+	* diagnostics.boot: New.
+	(BUMPERRORCOUNT): Move from bootlex.lisp.pamphlet.  Rewrite as
+	Boot code.
+
+	* sys-constants.boot: New.
+	* sys-globals.boot: Likewise.
+
+	* bootlex.lisp.pamphlet (BUMPERRORCOUNT): Move to diagnostics.boot.
+	* varini.boot.pamphlet ($NoValueMode): Don't duplicate define.
+
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind $LocalFrame here.
+
+	* patches.lisp.pamphlet: Tidy.
+
+	* nag-f01.boot.pamphlet (f01mafSolve): Use $EmptyMode to refer to
+	the wildcar type.
+	(f01brfSolve): Likewise.
+
+
+	* setq.lisp.pamphlet: Move variables already defined in
+	bootfuns.lisp.pamphlet to sys-contants, and merge initial values.
+
+	($SPAD_ERRORS): Move to sys-globals.boot.
+
+	* bootfuns.lisp.pamphlet: Now import both "sys-constants" and
+	"sys-globals".
+	(|$timerTicksPerSecond|): Move to sys-constants.boot.
+	(|$quadSymbol|): Likewise.
+	($escapeString): Likewise.
+	($boxString): Likewise.
+	($boldString): Likewise.
+	($normalString): Likewise.
+	($reverseVideoString): Likewise.
+	($underlineString): Likewise.
+	($COMPILE): Likewise.
+	($BasicPredicates): Likewise.
+	($BFTag): Likewise.
+	($BigFloat): Likewise.
+	($Boolean): Likewise.
+	($Category): Likewise.
+	($CategoryNames): Likewise.
+	($Domain): Likewise.
+	($DomainNames): Likewise.
+	($DomainsInScope): Likewise.
+	($DoubleQuote): Likewise.
+	($DummyFunctorNames): Likewise.
+	($EmptyEnvironment): Likewise.
+	($EmptyList): Likewise.
+	($EmptyMode): Likewise.
+	($EmptyString): Likewise.
+	($EmptyVector): Likewise.
+	($Expression): Likewise.
+	($Exit): Likewise.
+	($failure): Likewise.
+	($Float): Likewise.
+	($FormalMapVariableList): Likewise.
+	($ConstructorNames): Likewise.
+	($InitialDomainsInScope): Likewise.
+	($InitialModemapFrame): Likewise.
+	($Integer): Likewise.
+	($LocalFrame): Likewise.
+	($NegativeInteger): Likewise.
+	($NonNegativeInteger): Likewise.
+	($NonPositiveInteger): Likewise.
+	($NonMentionableDomainNames): Likewise.
+	($noParseCommands): Likewise.
+	($NoValueMode): Likewise.
+	($NoValue): Likewise.
+	($Mode): Likewise.
+	($ModeVariableList): Likewise.
+	($One): Likewise.
+	($PatternVariableList): Likewise.
+	($PositiveInteger): Likewise.
+	($PrimitiveDomainNames): Likewise.
+	($RationalNumber): Likewise.
+	($SideEffectFreeFunctionList): Likewise.
+	($SmallInteger): Likewise.
+	($SpecialDomainNames): Likewise.
+	($StringCategory): Likewise.
+	($String): Likewise.
+	($Symbol): Likewise.
+	($systemCommands): Likewise.
+	($ThrowAwayMode): Likewise.
+	($tokenCommands): Likewise.
+	($true): Likeiwse.
+	($underDomainAlist): Likewise.
+	($Void): Likewise.
+	($Zero): Likewise.
+	(|$DomainVariableList|): Likewise.
+	
+	(|$quadSym|): Remove.
+	($BigFloatOpt): Likewise.
+	($BooleanOpt): Likewise.
+	($EM): Likewise.
+	($ExpressionOpt): Likewise.
+	($FloatOpt): Likewise.
+	($FormalMapVariableList2): Likewise.
+	($IntegerOpt): Likewise.
+	($NegativeIntegerOpt): Likewise.
+	($NonNegativeIntegerOpt): Likewise.
+	($NonPositiveIntegerOpt): Likewise.
+	($PositiveIntegerOpt): Likewise.
+	($RationalNumberOpt): Likewise.
+	($SmallIntegerOpt): Likewise.
+	($StringOpt): Likewise.
+	($SymbolOpt): Likewise.
+
+	* setq.lisp.pamphlet (|$timerTicksPerSecond|): Remove.
+	(|$quadSymbol|): Likewise.
+	($escapeString): Likewise.
+	($boxString): Likewise.
+	($boldString): Likewise.
+	($normalString): Likewise.
+	($reverseVideoString): Likewise.
+	($underlineString): Likewise.
+	($COMPILE): Likewise.
+	($BasicPredicates): Likewise.
+	($BFTag): Likewise.
+	($BigFloat): Likewise.
+	($Boolean): Likewise.
+	($Category): Likewise.
+	($CategoryNames): Likewise.
+	($Domain): Likewise.
+	($DomainNames): Likewise.
+	($DomainsInScope): Likewise.
+	($DoubleQuote): Likewise.
+	($DummyFunctorNames): Likewise.
+	($EmptyEnvironment): Likewise.
+	($EmptyList): Likewise.
+	($EmptyMode): Likewise.
+	($EmptyString): Likewise.
+	($EmptyVector): Likewise.
+	($Expression): Likewise.
+	($Exit): Likewise.
+	($failure): Likewise.
+	($Float): Likewise.
+	($FormalMapVariableList): Likewise.
+	($ConstructorNames): Likewise.
+	($InitialDomainsInScope): Likewise.
+	($InitialModemapFrame): Likewise.
+	($Integer): Likewise.
+	($LocalFrame): Likewise.
+	($NegativeInteger): Likewise.
+	($NonNegativeInteger): Likewise.
+	($NonPositiveInteger): Likewise.
+	($NonMentionableDomainNames): Likewise.
+	($noParseCommands): Likewise.
+	($NoValueMode): Likewise.
+	($NoValue): Likewise.
+	($Mode): Likewise.
+	($ModeVariableList): Likewise.
+	($One): Likewise.
+	($PatternVariableList): Likewise.
+	($PositiveInteger): Likewise.
+	($PrimitiveDomainNames): Likewise.
+	($RationalNumber): Likewise.
+	($SideEffectFreeFunctionList): Likewise.
+	($SmallInteger): Likewise.
+	($SpecialDomainNames): Likewise.
+	($StringCategory): Likewise.
+	($String): Likewise.
+	($Symbol): Likewise.
+	($systemCommands): Likewise.
+	($ThrowAwayMode): Likewise.
+	($tokenCommands): Likewise.
+	($true): Likeiwse.
+	($underDomainAlist): Likewise.
+	($Void): Likewise.
+	($Zero): Likewise.
+	(|$DomainVariableList|): Likewise.
+	
 2007-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot-pkg.lisp: New.

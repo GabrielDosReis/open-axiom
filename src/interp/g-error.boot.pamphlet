@@ -49,6 +49,7 @@
 <<*>>=
 <<license>>
 
+import '"diagnostics"
 )package "BOOT"
 
 -- This file contains the error printing code used in BOOT and SPAD.
@@ -93,7 +94,7 @@ errorSupervisor(errorType,errorMsg) ==
 errorSupervisor1(errorType,errorMsg,$BreakMode) ==
   $cclSystem and $BreakMode = 'trapNumerics => 
     THROW('trapNumerics,$numericFailure)
-  BUMPCOMPERRORCOUNT()
+  BUMPERRORCOUNT "semantic"
   errorLabel :=
       errorType = $SystemError  => '"System error"
       errorType = $UserError    => '"Apparent user error"

@@ -467,17 +467,6 @@ or the chracters ?, !, ' or %"
 (defun SPAD_ERROR_LOC (STR)
   (format str "******** Boot Syntax Error detected ********"))
 
-(defun BUMPERRORCOUNT (KIND)
-  (unless |$InteractiveMode|
-	  (LET ((INDEX (case KIND
-			 (|syntax| 0)
-			 (|precompilation| 1)
-			 (|semantic| 2)
-			 (T (ERROR "BUMPERRORCOUNT")))))
-	    (SETELT $SPAD_ERRORS INDEX (1+ (ELT $SPAD_ERRORS INDEX))))))
-
-
-
 @
 \eject
 \begin{thebibliography}{99}
