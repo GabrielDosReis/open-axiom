@@ -1,3 +1,7 @@
+2007-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet ($SPAD_ERRORS): Don't define here.
+
 2007-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* g-error.boot.pamphlet: Import "diagnostics.
