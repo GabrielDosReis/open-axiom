@@ -110,7 +110,6 @@ offer it as extensions.
      (export '(,p) "BOOT")))
 
 
-(def-boot-var |$abbreviationTable|		    "???")
 (def-boot-val |$algebraList|
 	'(|QuotientField| |Polynomial|
 	  |UnivariatePoly|
@@ -122,12 +121,8 @@ offer it as extensions.
 (def-boot-val |$BasicDomains|
 	  '(|Integer| |Float| |Symbol|
 	    |Boolean| |String|)			"???")
-(def-boot-val |$bootStrapMode| ()  "if T compCapsule skips body")
 (def-boot-var |$brightenCommentsFlag|		    "???")
 (def-boot-var |$brightenCommentsIfTrue|		    "???")
-(def-boot-val |$BreakMode| '|query|		    "error.boot")
-(def-boot-var |$cacheAlist|			    "Interpreter>System.boot")
-(def-boot-val |$cacheCount| 0			    "???")
 ;  modemap:==  ( <map> (p e) (p e) ... (p e) )
 ;  modemaplist:= ( modemap ... )
 
@@ -138,15 +133,6 @@ offer it as extensions.
       (((|Category|) (|Category|) (|List| |Category|)) (|Category|)) (T *))
 	)))))
 	"Compiler>CUtil.boot")
-(def-boot-val |$clamList|
-	  '((|getModemapsFromDatabase| |hash| UEQUAL |count|)
-	    (|getOperationAlistFromLisplib| |hash| UEQUAL |count|)
-	    (|getFileProperty| |hash| UEQUAL |count|)
-	    (|canCoerceFrom| |hash| UEQUAL |count|)
-	    (|selectMms1| |hash| UEQUAL |count|)
-	    (|coerceMmSelection| |hash| UEQUAL |count|)
-	    (|isValidType| |hash| UEQUAL |count|))
-						"Interpreter>Clammed.boot")
 (def-boot-val |$CommonDomains|
 	 '(|Record| |Union| |List| |Vector|
 	   |String| |Float| |Integer|
@@ -155,16 +141,9 @@ offer it as extensions.
 	   |PositiveInteger| |SmallInteger|
 	   |Boolean|) "???")
 
-(def-boot-var |$compCount|			    "???")
 (def-boot-var |$compileMapFlag|			    "Interpreter>SetVars.boot")
-(def-boot-var |$compUniquelyIfTrue|		    "Compiler>Compiler.boot")
-(def-boot-val |$consistencyCheck| nil		    "Interpreter>Consis.boot")
-(def-boot-val |$ConstructorCache| (MAKE-HASHTABLE 'ID)	"???")
 (def-boot-var |$constructorsNotInDatabase|	    "Interpreter>Database.boot")
-(def-boot-var |$createUpdateFiles|		    "Interpreter>SetVarT.boot")
 (def-boot-var |$croakIfTrue|			    "See moan in U.")
-(def-boot-var |$currentFunction|		    "???")
-(def-boot-val |$currentLine|	""          "current input line for history")
 (def-boot-val $delay 0				    "???")
 (def-boot-var $Directory			    "???")
 (def-boot-var $DISPLAY				    "???")
