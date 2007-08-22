@@ -292,7 +292,6 @@ offer it as extensions.
 	  '(SPAD BOOT LISP LISP370 META)
 	  "Interpreter>System.boot")
 (def-boot-val $SPAD nil				    "Is this Spad code?")
-(def-boot-var $SPAD_ERRORS			    "???")
 (def-boot-val |$spadLibFT| 'LISPLIB		    "???")
 (def-boot-var |$spadOpList|			    "???")
 (def-boot-var |$spadSystemDisks|		    "Interpreter>Database.boot")
