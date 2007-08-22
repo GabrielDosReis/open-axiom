@@ -37,6 +37,7 @@
 -- the interpreter or the compiler or both.
 --
 
+import '"hash"
 import '"boot-pkg"
 )package "BOOT"
 
@@ -45,3 +46,50 @@ $saturn := false
 
 ++ FIXME
 $SPAD__ERRORS := VECTOR(0, 0, 0)
+
+++
+$abbreviationTable := nil
+
+++
+$bootStrapMode := false
+
+++
+$BreakMode := "query"
+
+++
+$cacheAlist := nil
+$cacheCount := 0
+
+
+++
+$clamList :=
+  '((canCoerce hash UEQUAL count)                 _
+    (canCoerceFrom hash UEQUAL count)             _
+    (coerceConvertMmSelection hash UEQUAL count)  _
+    (hasFileProperty hash UEQUAL count)           _
+    (isLegitimateMode hash UEQUAL count)          _
+    (isValidType hash UEQUAL count)               _
+    (resolveTT hash UEQUAL count)                 _
+    (selectMms1 hash UEQUAL count)                _
+    (underDomainOf hash UEQUAL count))
+
+++
+$compCount := 0
+
+++
+$compUniquelyIfTrue := false
+
+++
+$consistencyCheck := true
+
+++
+$ConstructorCache := MAKE_-HASHTABLE "ID"
+
+++
+$createUpdateFiles := false
+
+++
+$currentFunction := nil
+
+++
+$currentLine := nil

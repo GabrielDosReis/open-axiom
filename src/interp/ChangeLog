@@ -1,3 +1,23 @@
+2007-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet ($bootStrapMode): Move to sys-globals.boot.
+	($BreakMode): Likewise.
+	($cacheAlist): Likewise.
+	($cacheCount): Likewise.
+	($clamList): Likewise.
+	($compCount): Likewise.
+	($compUniquelyIfTrue): Likewise.
+	($ConstructorCache): Likewise.
+	($createUpdateFiles): Likewise.
+	($currentFunction): Likewise.
+	($currentLine): Likewise.
+	* setq.lisp.pamphlet: Merge the definitions of the above mentioned
+	variables into sys-globals.boot.
+
+	* Makefile.pamphlet (sys-globals.$(FASLEXT)): Require
+	hash.$(FASLEXT). 
+	* Makefile.in: Regenerate.
+
 2007-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* bootfuns.lisp.pamphlet ($SPAD_ERRORS): Don't define here.

@@ -94,7 +94,6 @@
 (SETQ |$permitWhere| NIL)
 (SETQ |$newSystem| T)
 (SETQ |$noSubsumption| NIL)
-(SETQ |$bootStrapMode| NIL) ;; if true skip functor bodies
 (SETQ |$compileDontDefineFunctions| 'T)
 (SETQ |$compileOnlyCertainItems| NIL)
 (SETQ |$devaluateList| NIL)
@@ -121,8 +120,6 @@
 (defvar $dalymode nil "if true then leading paren implies lisp cmd")
 (setq |$Newline| #\Newline)
 
-
-(setq |$createUpdateFiles| nil)
 
 (SETQ $FUNNAME NIL)   ;; this and next used in COMP,TRAN,1
 (SETQ $FUNNAME_TAIL '(()))
@@ -204,7 +201,6 @@
 (SETQ OPASSOC NIL)
 (SETQ SPADSYSKEY '(EOI EOL))
 
-(SETQ $cacheAlist NIL)
 (SETQ $streamAlist NIL)
 
 ;; following 2 variables are referenced by PREPARSE1
@@ -307,7 +303,6 @@
 (SETQ |$existingFiles| (MAKE-HASHTABLE 'UEQUAL))
 (SETQ |$updateCatTableIfTrue| 'T)
 
-(SETQ |$ConstructorCache| (MAKE-HASHTABLE 'ID))
 (SETQ |$instantRecord| (MAKE-HASHTABLE 'ID))
 (SETQ |$immediateDataSymbol| '|--immediateData--|)
 
@@ -317,22 +312,6 @@
 ;; Directories/disks on which to place various kinds of files
 (SETQ |$libraryDirectory| 'A)
 (SETQ |$listingDirectory| 'A)
-
-;; See CLAMMED BOOT for defs of following functions
-(SETQ |$clamList| '(
-  (|canCoerce| |hash| UEQUAL |count|)
-  (|canCoerceFrom| |hash| UEQUAL |count|)
-  (|coerceConvertMmSelection| |hash| UEQUAL |count|)
-; (|getModemapsFromDatabase| |hash| UEQUAL |count|)
-; (|getOperationAlistFromLisplib| |hash| UEQUAL |count|)
-  (|hasFileProperty| |hash| UEQUAL |count|)
-  (|isLegitimateMode| |hash| UEQUAL |count|)
-  (|isValidType| |hash| UEQUAL |count|)
-  (|resolveTT|	 |hash| UEQUAL |count|)
-  (|selectMms1| |hash| UEQUAL |count|)
-  (|underDomainOf|   |hash| UEQUAL |count|)
-;  (|isSubDomain|   |hash| UEQUAL |count|)
-))
 
 ;; the following symbol holds the canonical "failed" value
 (SETQ |$failed| "failed")
@@ -377,8 +356,6 @@
 (SETQ |$leftPren| "(")    ;;[for use in SAY expressions]
 (SETQ |$rightPren| ")")
 
-(SETQ |$abbreviationTable| NIL)
-
 (|SETQ| |$BasicDomains| '(|Integer| |Float| |Symbol| |Boolean| |String|))
 
 (SETQ |$PrintCompilerMessagesIfTrue| NIL)
@@ -416,7 +393,6 @@
 (SETQ |$reportCoerce| NIL)
 (SETQ |$reportCompilation| NIL)
 (SETQ |$streamCount| 0)
-(SETQ |$cacheCount| 0)
 (SETQ |$streamIndexing| NIL)
 (SETQ |$reportExitModeStack| NIL)
 (SETQ |$prefix| NIL)

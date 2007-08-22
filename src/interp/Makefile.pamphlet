@@ -1084,7 +1084,8 @@ diagnostics.$(FASLEXT): diagnostics.boot sys-constants.$(FASLEXT) \
 				sys-globals.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-sys-globals.$(FASLEXT): sys-globals.boot boot-pkg.$(FASLEXT)
+sys-globals.$(FASLEXT): sys-globals.boot boot-pkg.$(FASLEXT) \
+				hash.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 sys-constants.$(FASLEXT): sys-constants.boot boot-pkg.$(FASLEXT)
