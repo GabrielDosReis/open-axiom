@@ -1,3 +1,8 @@
+2007-08-22  Alfredo Portes  <doeynatccny@gmail.com>
+
+	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Turn off SGC.
+	* Makefile.in Regenerate.
+
 2007-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* core.lisp.pamphlet (|quit|)[GCL]: Don't quit, say si::bye.
