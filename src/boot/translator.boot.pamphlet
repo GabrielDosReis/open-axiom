@@ -406,7 +406,7 @@ bpOutItem()==
     EQCAR(b,"TUPLE")=> bpPush cdr b
     EQCAR(b,"+LINE")=> bpPush [ b ]
     b is ["L%T",l,r] and IDENTP l =>
-                 bpPush [shoeEVALANDFILEACTQ ["DEFPARAMETER",l,r]]
+                 bpPush [["DEFPARAMETER",l,r]]
     case b of
       Module(m) => 
         bpPush [shoeCompileTimeEvaluation ["PROVIDE", m]]
@@ -1267,8 +1267,7 @@ associateRequestWithFileType(Option '"compile", '"boot",
                               (PROGN (SETQ |r| (CAR |ISTMP#2|)) 'T)))))
                 (IDENTP |l|))
            (|bpPush|
-               (LIST (|shoeEVALANDFILEACTQ|
-                         (LIST 'DEFPARAMETER |l| |r|)))))
+               (LIST (LIST 'DEFPARAMETER |l| |r|))))
           ('T
            (PROGN
              (SETQ |bfVar#5| |b|)
