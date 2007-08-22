@@ -85,6 +85,11 @@ install:
 	@ $(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
 	@echo OpenAxiom installation finished.
 
+.PHONY: check
+check:
+	cd src && $(MAKE) all-check
+
+
 mostlyclean-local:
 	@-rm -f lastBuildDate
 

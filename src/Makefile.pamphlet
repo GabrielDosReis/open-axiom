@@ -289,6 +289,10 @@ stamp: @axiom_src_all@
 <<etcdir>>
 <<graphdir>>
 
+.PHONY: all-check
+all-check:
+	cd input && $(MAKE) all-check
+
 mostlyclean-local:
 	-rm -f stamp
 

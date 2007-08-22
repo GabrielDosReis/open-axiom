@@ -62,6 +62,10 @@ all-asq: all-algebra
 all-graph: all-lib
 	cd graph && ${MAKE}
 
+.PHONY: all-check
+all-check:
+	cd input && $(MAKE) all-check
+
 mostlyclean-local:
 	-rm -f stamp
 
