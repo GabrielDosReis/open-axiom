@@ -345,6 +345,11 @@ $(AXIOM_SRC_TARGETS):
 <<gcl>>
 <<install>>
 
+.PHONY: check
+check:
+	cd src && $(MAKE) all-check
+
+
 mostlyclean-local:
 	@-rm -f lastBuildDate
 

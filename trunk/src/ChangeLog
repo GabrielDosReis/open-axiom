@@ -1,3 +1,8 @@
+2007-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-check): New rule.
+	* Makefile.in: Regenerate.
+
 2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (all-lisp): Don't make $(axiom_build_bindir)

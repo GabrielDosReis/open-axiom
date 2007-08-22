@@ -501,7 +501,7 @@ DOCFILES= \
 
 all: all-ax
 
-all-ax all-input: $(OUT) ${FILES} ${FILES2} ${ASFILES} regress
+all-ax all-input: $(OUT) ${FILES} ${FILES2} ${ASFILES}
 	@echo 1 finished $(srcdir)
 
 $(OUT):
@@ -509,39 +509,23 @@ $(OUT):
 
 
 ${OUT}/%.input: %.input
-	@ echo generic 10 making $@ from $<
 	@ $(INSTALL) $< $@
 
 .PRECIOUS: %.input
 
 %.input: ${IN}/%.input.pamphlet
-	@ echo generic 11 making $@ from $<
 	@$(axiom_build_document) --output=$@ --tangle $<
 
 ${OUT}/%.as: %.as
-	@echo generic 12 making $@ from $<
 	@ $(INSTALL) $< $@
 
 %.as: ${IN}/%.as.pamphlet
-	@echo generic 13 making $@ from $<
 	@ $(axiom_build_document) --output=$@ --tangle $<
 
 pamphlets = \
 	Makefile.pamphlet \
 	$(wildchar *.input.pamphlet) \
 	$(wildchar.as.pamplhet)
-
-use:
-	@echo 2 making ${OUT} from ${IN}
-
-regress:
-	${MAKE} regression-tests
-
-bug:
-	@echo 4 making ${OUT} from ${IN}
-
-document:
-	@echo 5 documenting ${OUT}
 
 mostlyclean-local:
 	-rm -rf $(MID)
@@ -753,8 +737,8 @@ OUTS= algaggr.output   algbrbf.output   algfacob.output  alist.output     \
 # These files are tested in a different directory.
 ALGEBRA=INTHEORY.output VIEW2D.output TESTFR.output
 
-.PHONY: regression-tests
-regression-tests: ${OUTS}
+.PHONY: all-check
+all-check: ${OUTS}
 	@ echo 1 finished ./$(top_builddir)/int/input
  
 %.output: %.input
