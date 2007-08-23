@@ -1975,13 +1975,28 @@ can be restored.
 
 ; A version of GET that works with lists
 
-; (defun getl (sym key )
-;   (cond ((consp sym) (cdr (assoc key sym :test #'eq)))
-;         ((symbolp sym) (get sym key))))
-(defun getl (sym key )
-  (cond ((consp sym) (cdr (assq key sym)))
-        ((symbolp sym) (get sym key))))
-
+;; GETL(SYM, KEY)
+;;   KEY: a SYMBOL
+;;   SYM: a SYMBOL or a LIST whose elements are SYMBOLs or LISTs.
+;; Returns:
+;;   when SYM is a SYMBOL, returns the KEY-property of SYM.
+;;   when SYM is a LIST, returns the either the KEY-property of the
+;;   first SYMBOL of SYM that has the KEY-property, or the CDR of the
+;;   first cons-cell whose CAR is EQ KEY.
+(defun getl (sym key)
+  (cond ((symbolp sym)
+	 (get sym key))
+	((null sym) nil)
+	((consp sym)
+	 (let ((sym-1 (car sym)))
+	   (cond ((symbolp sym-1)
+		  (get sym-1 key))
+		 ((and (consp sym-1)
+		       (symbolp (car sym-1)))
+		  (if (eq (car sym-1) key)
+		      (cdr sym-1)
+		    (getl (cdr sym) key))))))))
+		      
 ; The following should actually position the cursor at the sint'th line of the screen:
 
 (defun $showline (cvec sint) (terpri) sint (princ cvec))
