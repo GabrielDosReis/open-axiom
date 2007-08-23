@@ -1,3 +1,8 @@
+2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* vmlisp.lisp.pamphlet (getl): Rewrite to accept list of symbols
+	of lists too.
+
 2007-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* bootfuns.lisp.pamphlet (|$algebraList|): Remove unused variable.
