@@ -353,16 +353,10 @@
 (SETQ |$highlightAllowed| 'T)
 	 ;" used in BRIGHTPRINT and is a )set variable"
 
-(SETQ |$leftPren| "(")    ;;[for use in SAY expressions]
-(SETQ |$rightPren| ")")
-
-(|SETQ| |$BasicDomains| '(|Integer| |Float| |Symbol| |Boolean| |String|))
-
 (SETQ |$PrintCompilerMessagesIfTrue| NIL)
 (SETQ |$printStorageIfTrue| NIL) ;; storage info disabled in common lisp
 (SETQ |$mostRecentOpAlist| NIL)
 (SETQ |$noEnv| NIL)
-(SETQ |$croakIfTrue| NIL) ;" see moan in UT"
 (SETQ |$opFilter| NIL)	 ;" used to |/s a function "
 (SETQ |$evalDomain| NIL)
 
@@ -371,7 +365,6 @@
 
 (SETQ |$OutputForm| '(|OutputForm|))
 
-(SETQ |$FontTable| '(|FontTable|))
 (SETQ |$ComplexInteger| (LIST '|Complex| |$Integer|))
 (SETQ |$QuotientField| '|Fraction|)
 (SETQ |$FunctionalExpression| '|Expression|)
@@ -384,7 +377,6 @@
 (SETQ $NE (LIST (LIST NIL)))
 (SETQ |$InteractiveFrame| (LIST (LIST NIL)))
 (SETQ |$gauss01| '(|gauss| 0 1))
-(SETQ |$NETail| (CONS |$EmptyEnvironment| NIL))
 (SETQ |$form| NIL)
 (SETQ |$Index| 0)
 (SETQ |$false| NIL)
