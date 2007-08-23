@@ -1,5 +1,41 @@
 2007-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* bootfuns.lisp.pamphlet (|$algebraList|): Remove unused variable.
+	(|$xyStack|): Likewise.
+	(|$xyMin|): Likewise.
+	(|$xyMax|): Likewise.
+	(|$xyInitial|): Likewise.
+	(|$xyCurrent|): Likewise.
+	(|$xeditIsConsole|): Likewise.
+	(|$xCount|): Likewise.
+	(|$BasicDomains|): Likewise.
+	(|$FontTable|): Likewise.
+	(|$CommonDomains|): Likewise.
+	(|$PolyDomains|): Likewise.
+	(|$leftPren|): Likewise.
+	(|$rightPren|): Likewise.
+	(|$tempCategoryTable|): Likewise.
+	(|$domainsWithUnderDomains|): Likewise.
+	(|$hasCategoryTable|): Likewise.
+	(|$hasYield|): Likewise.
+	(|$LastCxArg|): Likewise.
+	(|$NETail|): Likewise.
+	(|$polyDefaultAssoc|): Likewise.
+	(|$brightenCommentsFlag|): Likewise.
+	(|$brightenCommentsIfTrue|): Likewise.
+	(|$UserSynonyms|): Likewise.
+	(|$report3|): Likewise.
+	(|$croakIfTrue|): Likewise.
+	* setq.lisp.pamphlet (|$xeditIsConsole|): Likewise.
+	(|$BasicDomains|): Likewise.
+	(|$FontTable|): Likewise.
+	(|$leftPren|): Likewise.
+	(|$rightPren|): Likewise.
+	(|$NETail|): Likewise.
+	(|$croakIfTrue|): Likewise.
+
+2007-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* bootfuns.lisp.pamphlet ($bootStrapMode): Move to sys-globals.boot.
 	($BreakMode): Likewise.
 	($cacheAlist): Likewise.
