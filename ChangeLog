@@ -1,5 +1,12 @@
 2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet ($(addprefix $(axiom_build_bindir)/, notangle
+	noweave)): Fix path to noweb C files.  Refer to the touch command
+	through $(TOUCH).
+	* Makefile.in: Regenerate.
+
+2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* INSTALL: Tidy.
 
 2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>

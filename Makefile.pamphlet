@@ -533,8 +533,9 @@ $(addprefix $(axiom_build_bindir)/, notangle noweave):
 	if test "$(srcdir)" != "$(builddir)" -a ! -d noweb; then \
 		cp -r $(srcdir)/noweb $(builddir); \
 	fi;
+	$(TOUCH) $(wildcard $(builddir)/noweb/src/c/*.h) \
+			$(wildcard $(builddir)/noweb/src/c/*.c) && \
 	cd noweb/src && \
-	touch *.h *.c && \
 	cat Makefile \
 	   | sed -e "s,^BIN=.*,BIN=$(axiom_abs_build_bindir)," \
 	         -e "s,^LIB=.*,LIB=$(axiom_abs_build_libdir)," \
