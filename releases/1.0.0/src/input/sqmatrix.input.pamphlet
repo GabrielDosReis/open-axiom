@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input SQMATRIX.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from SquareMatrixXmpPage
+)clear all
+
+)set expose add constructor SquareMatrix
+m := squareMatrix [[1,-%i],[%i,4]]
+m*m - m
+mm := squareMatrix [[m, 1], [1-m, m**2]]
+p := (x + m)**2
+p::SquareMatrix(2, ?)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

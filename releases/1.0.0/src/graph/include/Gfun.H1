@@ -1,0 +1,79 @@
+#ifdef _NO_PROTO
+extern int PSCreateFile();
+extern int Gdraws_drawFrame();
+extern int Gdraws_setDimension();
+extern int GDrawImageString();
+extern int GDrawArc();
+extern int GDrawLine();
+extern int GDrawLines();
+extern int GDrawPoint();
+extern int GDrawString();
+extern int GFillArc();
+extern int PSGlobalInit();
+extern int PSInit();
+extern int PSCreateContext();
+extern char * PSfindGC();
+extern int GSetForeground();
+extern int GSetBackground();
+extern int GSetLineAttributes();
+extern int PSClose();
+extern int centerX();
+extern int centerY();
+extern int PSColorPolygon();
+extern int PSColorwOutline();
+extern int PSDrawColor();
+extern int PSFillPolygon();
+extern int PSFillwOutline();
+extern HashTable * XCreateAssocTable();
+extern void XMakeAssoc();
+extern int * XLookUpAssoc();
+extern void XDeleteAssoc();
+extern int GDrawRectangle();
+extern int GDraw3DButtonOut();
+extern int GDraw3DButtonIn();
+extern int GDrawPushButton();
+#ifdef _GFUN_C
+static void filecopy();
+static int TrivEqual();
+static int TrivHash_code();
+#endif
+#else
+extern int PSCreateFile(int , Window , Window , char * );
+extern int Gdraws_drawFrame(int , Window , Window , char * );
+extern int Gdraws_setDimension(Window , Window );
+extern int GDrawImageString(GC , Window , int , int , char * , int , int );
+extern int GDrawArc(GC , Window , int , int , unsigned int , unsigned int , int , int , int );
+extern int GDrawLine(GC , Window , int , int , int , int , int );
+extern int GDrawLines(GC , Window , XPoint * , int , int , int );
+extern int GDrawPoint(Window , GC , int , int , int );
+extern int GDrawString(GC , Window , int , int , char * , int , int );
+extern int GFillArc(GC , Window , int , int , unsigned int , unsigned int , int , int , int );
+extern int PSGlobalInit(void );
+extern int PSInit(Window , Window );
+extern int PSCreateContext(GC , char * , int , int , int , float , float );
+extern char * PSfindGC(GC );
+extern int GSetForeground(GC , float , int );
+extern int GSetBackground(GC , float , int );
+extern int GSetLineAttributes(GC , int , int , int , int , int );
+extern int PSClose(void );
+extern int centerX(GC , char * , int , int );
+extern int centerY(GC , int );
+extern int PSColorPolygon(float , float , float , XPoint * , int );
+extern int PSColorwOutline(float , float , float , XPoint * , int );
+extern int PSDrawColor(float , float , float , XPoint * , int );
+extern int PSFillPolygon(GC , XPoint * , int );
+extern int PSFillwOutline(GC , XPoint * , int );
+extern HashTable * XCreateAssocTable(int );
+extern void XMakeAssoc(Display * , HashTable * , Window , int * );
+extern int * XLookUpAssoc(Display * , HashTable * , Window );
+extern void XDeleteAssoc(Display * , HashTable * , Window );
+extern int GDrawRectangle(GC , Window , short , short , short , short , int );
+extern int GDraw3DButtonOut(GC , Window , short , short , short , short , int );
+extern int GDraw3DButtonIn(GC , Window , short , short , short , short , int );
+extern int GDrawPushButton(Display * , GC , GC , GC , Window , short , short , short , short , int , char * , unsigned long , unsigned long , int );
+#ifdef _GFUN_C
+static void filecopy(FILE * , FILE * );
+static int TrivEqual(Window , Window );
+static int TrivHash_code(Window , int );
+#endif
+#endif

@@ -1,0 +1,33 @@
+#ifdef _NO_PROTO
+extern void drawLineComponent();
+extern void drawOpaquePolygon();
+extern poly * copyPolygons();
+extern void minMaxPolygons();
+extern int polyCompare();
+extern void calcEyePoint();
+extern void drawRenderedPolygon();
+extern void freePointResevoir();
+extern void freeListOfPolygons();
+extern void drawPolygons();
+extern int lessThan();
+extern int greaterThan();
+extern int isNaN();
+extern int isNaNPoint();
+extern int equal();
+#else
+extern void drawLineComponent(poly *  , int );
+extern void drawOpaquePolygon(poly *  , GC  , GC  , int );
+extern poly * copyPolygons(poly * );
+extern void minMaxPolygons(poly * );
+extern int polyCompare(poly *  , poly * );
+extern void calcEyePoint(void );
+extern void drawRenderedPolygon(poly *  , int );
+extern void freePointResevoir(void);
+extern void freeListOfPolygons(poly * );
+extern void drawPolygons(int );
+extern int lessThan(float  , float );
+extern int greaterThan(float  , float );
+extern int isNaN(float );
+extern int isNaNPoint(float  , float  , float );
+extern int equal(float  , float );
+#endif

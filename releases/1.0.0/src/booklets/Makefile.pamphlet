@@ -1,0 +1,36 @@
+%% Oh Emacs, this is a -*- Makefile -*-, so give me tabs.
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/booklets Makefile.pamphlet}
+\author{Timothy Daly \and Gabriel Dos~Reis}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+
+<<*>>=
+
+subdir = src/booklets/
+
+pamphlets = Rosetta.pamphlet
+
+.PHONY: all all-book
+all: all-ax
+all-book all-ax:
+
+mostlyclean-local:
+
+clean-local: mostlyclean-local
+
+distclean-local: clean-local
+
+@
+
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

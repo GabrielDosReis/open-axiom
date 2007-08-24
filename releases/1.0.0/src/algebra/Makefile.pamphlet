@@ -1,0 +1,2305 @@
+%% Oh Emacs, this is a -*- Makefile -*-, so give me tabs.
+\documentclass{article}
+\usepackage{axiom}
+
+\title{\$SPAD/src/algebra Makefile}
+\author{Timothy Daly \and Gabriel Dos~Reis}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+\eject
+
+\tableofcontents
+\eject
+
+\section{Adding new algebra}
+
+This is a complex process by its very nature. Developers and Maintainers
+who undertake the process need to understand quite a lot of detail. The
+ultimate steps to add algebra are tedious but simple. Note that only
+algebra code that gets shipped with the system needs to undergo this
+process. User code can be compiled once the distributed algebra exists
+and does not need either this Makefile or this installation process.
+
+NOTE: If you add new algebra to this file you must also update
+
+\File{src/algebra/exposed.lsp.pamphlet}
+
+otherwise the new algebra won't be loaded by the interpreter when needed.
+
+Since understanding is the key to making correct changes to this file
+I'll work on explaining the details of why things need to exist. 
+
+The first idea that you need to understand is the overall process
+of adding algebra code. Lets assume that you have a brand new spad
+file, called \File{foo.spad} containing a simple domain [[BAR]]. The
+steps in the process of adding this file are:
+\begin{enumerate}
+\item Find out where the algebra code lives in the lattice.
+
+You do this by 
+\begin{enumerate}
+\item starting a new interpsys session
+\item collecting all the names of the algebra files BAR requires
+\item determining which layer each of the required files resides
+\item determine the highest layer (e.g. 14) that contains the required files
+\end{enumerate}
+
+\item insert the documentation into the next layer (e.g. 15)
+\item insert the [[\${OUT}/BAR.o]] file into the layer's file list
+\end{enumerate}
+
+\section{Rebuilding the algebra from scratch}
+
+Compile order is important. Here we try to define the ordered lattice
+of spad file dependencies. However this is, in reality, a graph rather
+than a lattice. In order to break cycles in this graph we explicitly
+cache a few of the intermediate generated lisp code for certain files.
+These are marked throughout (both here and in the various pamphlet
+files) with the word {\bf BOOTSTRAP}.
+
+If we take a cycle such as [[RING]] we discover that in order to
+compile the spad code we must load the compiled definition of [[RING]].
+In this case we must compile the cached lisp code before we try to 
+compile the spad file.
+
+The cycle for [[SETCAT]] is longer consisting of: [[SETCAT]] needs
+{\bf SINT} needs {\bf UFD} needs {\bf GCDDOM} needs {\bf COMRING} needs
+{\bf RING} needs {\bf RNG} needs {\bf ABELGRP} needs {\bf CABMON} needs
+{\bf ABELMON} needs {\bf ABELSG} needs {\bf SETCAT}.
+
+It is highly recommended that you try to become a developer of Axiom
+and read the archived mailing lists before you decide to change a
+cached file. In the fullness of time we will rewrite the whole algebra
+structure into a proper lattice if possible. Alternatively we'll
+reimplement the compiler to handle graphs. Or deeply adopt the
+extensible domains. Whatever we do will be much discussed (and cause
+much disgust) around the campfire. If you come up with a brilliant
+plan that gets adopted we'll even inscribe your name on a log and add
+it to the fire.
+
+In the code that follows we find the categories, packages and domains
+that compile with no dependencies and call this set ``layer 0''. Next
+we find the categories, packages and domains that will compile using
+only ``layer 0'' code and call this ``layer 1''. We walk up the
+lattice in this fashion adding layers. Note that at layer 3 this
+process runs into cycles and we create the ``layer 3 bootstrap''
+stanzas before continuing upward.
+
+\section{The Algebra Lattice Layers}
+
+\subsection{Layer 0 Bootstrap}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+si.spad.pamphlet (INS SINT)
+\end{verbatim}
+
+Note well that none of the algebra stanzas should include these
+files in the preconditions otherwise we have an infinite compile
+loop. These files are originally bootstrapped from lisp code
+when we build the system for the first time but they are
+forcibly recompiled at the end of the build so they reflect
+current code (just in case someone changes the spad code but
+does not re-cache the generated lisp). If you add these files
+as preconditions (note that they are all in the \File{strap/}
+directory rather than the {\bf OUT} directory like everything
+else) then the final recompile will invalidate all of the
+rest of the algebra targets which will get rebuilt again causing
+these targets to be out of date. The rest of the loop is left
+up to the student.
+
+The bootstrap process works because first we ask for the compiled
+lisp code stanzas (the \File{strap/BAR.o} files), THEN we ask for
+the final algebra code stanzas (the [[\${OUT}/BAR.o]] files). This
+is a very subtle point so think it through carefully. Notice that
+this is the only layer calling for \File{strap/} files. All other 
+layers call for [[\${OUT}]] files. If you break this the world
+will no longer compile so don't change it if you don't understand it.
+
+\begin{verbatim}
+LAYER0BOOTSTRAP=${OUT}/XPR.o 
+\end{verbatim}
+
+<<layer0 bootstrap>>=
+# The list of objects necessary to bootstrap the whole algebra library.
+axiom_algebra_layer_strap_objects = \
+  strap/ABELGRP.o  strap/ABELGRP-.o strap/ABELMON.o  strap/ABELMON-.o \
+  strap/ABELSG.o   strap/ABELSG-.o  strap/ALAGG.o    strap/BOOLEAN.o  \
+  strap/CABMON.o   strap/CHAR.o     strap/CLAGG.o    strap/CLAGG-.o   \
+  strap/COMRING.o  strap/DFLOAT.o   strap/DIFRING.o  strap/DIFRING-.o \
+  strap/DIVRING.o  strap/DIVRING-.o strap/ENTIRER.o  strap/ES.o       \
+  strap/ES-.o      strap/EUCDOM.o   strap/EUCDOM-.o  strap/FFIELDC.o  \
+  strap/FFIELDC-.o strap/FPS.o      strap/FPS-.o     strap/GCDDOM.o   \
+  strap/GCDDOM-.o  strap/HOAGG.o    strap/HOAGG-.o   strap/ILIST.o    \
+  strap/INS.o      strap/INS-.o     strap/INT.o      strap/INTDOM.o   \
+  strap/INTDOM-.o  strap/ISTRING.o  strap/LIST.o     strap/LNAGG.o    \
+  strap/LNAGG-.o   strap/LSAGG.o    strap/LSAGG-.o   strap/MONOID.o   \
+  strap/MONOID-.o  strap/MTSCAT.o   strap/NNI.o      strap/OINTDOM.o  \
+  strap/ORDRING.o  strap/ORDRING-.o strap/OUTFORM.o  strap/PI.o       \
+  strap/PRIMARR.o  strap/POLYCAT.o  strap/POLYCAT-.o strap/PSETCAT.o  \
+  strap/PSETCAT-.o strap/QFCAT.o    strap/QFCAT-.o   strap/RCAGG.o    \
+  strap/RCAGG-.o   strap/REF.o      strap/RING.o     strap/RING-.o    \
+  strap/RNG.o      strap/RNS.o      strap/RNS-.o     strap/SETAGG.o   \
+  strap/SETAGG-.o  strap/SETCAT.o   strap/SETCAT-.o  strap/SINT.o     \
+  strap/STAGG.o    strap/STAGG-.o   strap/SYMBOL.o   strap/TSETCAT.o  \
+  strap/TSETCAT-.o strap/UFD.o      strap/UFD-.o     strap/ULSCAT.o   \
+  strap/UPOLYC.o   strap/UPOLYC-.o  strap/URAGG.o    strap/URAGG-.o   \
+  strap/VECTOR.o
+
+@
+<<layer0 copy>>=
+
+axiom_algebra_bootstrap = \
+  ABELGRP.o  ABELGRP-.o ABELMON.o  ABELMON-.o \
+  ABELSG.o   ABELSG-.o  ALAGG.o    BOOLEAN.o  \
+  CABMON.o   CHAR.o     CLAGG.o    CLAGG-.o   \
+  COMRING.o  DFLOAT.o   DIFRING.o  DIFRING-.o \
+  DIVRING.o  DIVRING-.o ENTIRER.o  ES.o       \
+  ES-.o      EUCDOM.o   EUCDOM-.o  FFIELDC.o  \
+  FFIELDC-.o FPS.o      FPS-.o     GCDDOM.o   \
+  GCDDOM-.o  HOAGG.o    HOAGG-.o   ILIST.o    \
+  INS.o      INS-.o     INT.o      INTDOM.o   \
+  INTDOM-.o  ISTRING.o  LIST.o     LNAGG.o    \
+  LNAGG-.o   LSAGG.o    LSAGG-.o   MONOID.o   \
+  MONOID-.o  MTSCAT.o   NNI.o      OINTDOM.o  \
+  ORDRING.o  ORDRING-.o OUTFORM.o  PI.o       \
+  PRIMARR.o  POLYCAT.o  POLYCAT-.o PSETCAT.o  \
+  PSETCAT-.o QFCAT.o    QFCAT-.o   RCAGG.o    \
+  RCAGG-.o   REF.o      RING.o     RING-.o    \
+  RNG.o      RNS.o      RNS-.o     SETAGG.o   \
+  SETAGG-.o  SETCAT.o   SETCAT-.o  SINT.o     \
+  STAGG.o    STAGG-.o   SYMBOL.o   TSETCAT.o  \
+  TSETCAT-.o UFD.o      UFD-.o     ULSCAT.o   \
+  UPOLYC.o   UPOLYC-.o  URAGG.o    URAGG-.o   \
+  VECTOR.o
+
+axiom_algebra_bootstrap_nrlibs = \
+	$(axiom_algebra_bootstrap:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_bootstrap_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_bootstrap))
+@
+
+\subsection{Layer 0}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+attreg.spad.pamphlet  (ATTREG)
+dhmatrix.spad.pamphlet (DHMATRIX)
+omcat.spad.pamphlet   (OM)
+print.spad.pamphlet   (PRINT)
+ptranfn.spad.pamphlet (PTRANFN)
+system.spad.pamphlet  (MSYSCMD)
+\end{verbatim}
+
+<<layer0>>=
+
+axiom_algebra_layer_0 = \
+  AHYP.o    ATTREG.o  CFCAT.o   ELTAB.o    \
+  KOERCE.o  KONVERT.o MSYSCMD.o ODEIFTBL.o \
+  OM.o      OMCONN.o  OMDEV.o   OUT.o      \
+  PRIMCAT.o PRINT.o   PTRANFN.o SPFCAT.o   \
+  TYPE.o
+
+axiom_algebra_layer_0_nrlibs = \
+	$(axiom_algebra_layer_0:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_0_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_0))
+@
+
+\subsection{Layer 1}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+ituple.spad.pamphlet   (ITFUN2 ITFUN3 ITUPLE)
+mkrecord.spad.pamphlet (MKRECORD)
+pcurve.spad.pamphlet   (PPCURVE PSCURVE)
+coerce.spad.pamphlet   (TYPE KOERCE KONVERT RETRACT)
+\end{verbatim}
+
+<<layer1>>=
+axiom_algebra_layer_1 = \
+  ANY1.o     COMBOPC.o  DROPT1.o   EQ2.o      \
+  FORTCAT.o  ITFUN2.o   ITFUN3.o   ITUPLE.o   \
+  MKBCFUNC.o MKRECORD.o MKUCFUNC.o NONE1.o    \
+  PATAB.o    PLOT1.o    PPCURVE.o  PSCURVE.o  \
+  REAL.o     RESLATC.o  RETRACT.o  RETRACT-.o \
+  SEGBIND2.o SEGCAT.o   STREAM1.o  STREAM2.o  \
+  STREAM3.o
+
+axiom_algebra_layer_1_nrlibs = \
+	$(axiom_algebra_layer_1:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_1_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_1))
+@
+
+\subsection{Layer 2}
+
+\subsubsection{Completed spad files}
+
+<<layer2>>=
+axiom_algebra_layer_2 = \
+  FMC.o   FMFUN.o   FORTFN.o  FVC.o  \
+  FVFUN.o INTRET.o  SEGXCAT.o 
+
+axiom_algebra_layer_2_nrlibs = \
+	$(axiom_algebra_layer_2:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_2_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_2))
+@
+
+\subsection{Layer 3}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+grdef.spad.pamphlet (GRDEF)
+\end{verbatim}
+
+<<layer3>>=
+axiom_algebra_layer_3 = \
+  AGG.o   AGG-.o  BASTYPE.o BASTYPE-.o \
+  GRDEF.o LIST3.o MKFUNC.o
+
+axiom_algebra_layer_3_nrlibs = \
+	$(axiom_algebra_layer_3:.$(OBJEXT=./NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_3_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_3))
+@
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+annacat.spad.pamphlet (NIPROB ODEPROB PDEPROB OPTPROB NUMINT ODECAT PDECAT
+                       OPTCAT)
+color.spad.pamphlet (COLOR PALETTE)
+mappkg.spad.pamphlet (MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1 MAPPKG2 MAPPKG3)
+paramete.spad.pamphlet (PARPCURV PARPC2 PARSCURV PARSC2 PARSURF PARSU2
+suchthat.spad.pamphlet (SUCH)
+ystream.spad.pamphlet (YSTREAM)
+\end{verbatim}
+
+<<layer4>>=
+axiom_algebra_layer_4 = \
+  ANON.o     COLOR.o    COMM.o     COMPPROP.o \
+  ELTAGG.o   ELTAGG-.o  ESCONT1.o  EXIT.o     \
+  FAMONC.o   FILECAT.o  FINITE.o   FNCAT.o    \
+  FORMULA1.o IDPC.o     IEVALAB.o  IEVALAB-.o \
+  INTBIT.o   LMODULE.o  LOGIC.o    LOGIC-.o   \
+  MAPHACK1.o MAPHACK2.o MAPHACK3.o MAPPKG1.o  \
+  MAPPKG2.o  MAPPKG3.o  MONAD.o    MONAD-.o   \
+  NIPROB.o   NONE.o     NUMINT.o   ODECAT.o   \
+  ODEPROB.o  OMENC.o    ONECOMP2.o OPTCAT.o   \
+  OPTPROB.o  ORDSET.o   ORDSET-.o  PALETTE.o  \
+  PARPCURV.o PARPC2.o   PARSCURV.o PARSC2.o   \
+  PARSURF.o  PARSU2.o   PATMAB.o   PATRES2.o  \
+  PATTERN1.o PDECAT.o   PDEPROB.o  REPSQ.o    \
+  REPDB.o    RFDIST.o   RIDIST.o   RMODULE.o  \
+  SEXCAT.o   SGROUP.o   SGROUP-.o  SPACEC.o   \
+  SPLNODE.o  STEP.o     SUCH.o     TEX1.o     \
+  UDVO.o     YSTREAM.o
+
+axiom_algebra_layer_4_nrlibs = \
+	$(axiom_algebra_layer_4:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_4_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_4))
+@
+
+\subsection{Layer 5}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+equation1.spad.pamphlet (EVALAB IEVALAB)
+\end{verbatim}
+
+<<layer5>>=
+axiom_algebra_layer_5 = \
+  ATRIG.o    ATRIG-.o   BMODULE.o  CACHSET.o  \
+  CHARNZ.o   CHARZ.o    DVARCAT.o  DVARCAT-.o \
+  ELEMFUN.o  ELEMFUN-.o ESTOOLS2.o EVALAB.o   \
+  EVALAB-.o  FCOMP.o    FEVALAB.o  FEVALAB-.o \
+  FPATMAB.o  GROUP.o    GROUP-.o   IDPAM.o    \
+  IDPO.o     INCRMAPS.o IXAGG.o    IXAGG-.o   \
+  KERNEL2.o  LALG.o     LALG-.o    LINEXP.o   \
+  MODMONOM.o MONADWU.o  MONADWU-.o MRF2.o     \
+  NARNG.o    NARNG-.o   NSUP2.o    OASGP.o    \
+  ODVAR.o    OPQUERY.o  ORDFIN.o   ORDMON.o   \
+  PATMATCH.o PERMCAT.o  PDRING.o   PDRING-.o  \
+  SDVAR.o    SUP2.o     TRIGCAT.o  TRIGCAT-.o \
+  ULS2.o     UP2.o
+
+axiom_algebra_layer_5_nrlibs = \
+	$(axiom_algebra_layer_5:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_5_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_5))
+@
+
+\subsection{Layer6}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+fmod.spad.pamphlet (ZMOD)
+sortpak.spad.pamphlet (SORTPAK)
+\end{verbatim}
+
+<<layer6>>=
+axiom_algebra_layer_6 = \
+  AUTOMOR.o  BGAGG.o   BGAGG-.o   BRAGG.o    \
+  BRAGG-.o   CARTEN2.o CHARPOL.o  COMPLEX2.o \
+  DIFEXT.o   DIFEXT-.o DLAGG.o    ELAGG.o    \
+  ELAGG-.o   ES1.o     ES2.o      GRMOD.o    \
+  GRMOD-.o   HYPCAT.o  HYPCAT-.o  MKCHSET.o  \
+  MODRING.o  MODULE.o  MODULE-.o  NASRING.o  \
+  NASRING-.o OAMON.o   SORTPAK.o  ZMOD.o 
+
+axiom_algebra_layer_6_nrlibs = \
+	$(axiom_algebra_layer_6:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_6_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_6))
+@
+
+\subsection{Layer7}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+\end{verbatim}
+
+<<layer7>>=
+axiom_algebra_layer_7 = \
+  ALGEBRA.o ALGEBRA-.o BTCAT.o  BTCAT-.o \
+  FMCAT.o   IDPOAM.o   IFAMON.o GRALG.o  \
+  GRALG-.o  OCAMON.o   PRQAGG.o QUAGG.o  \
+  SKAGG.o 
+
+axiom_algebra_layer_7_nrlibs = \
+	$(axiom_algebra_layer_7:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_7_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_7))
+@
+
+\subsection{Layer8}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+card.spad.pamphlet (CARD)
+fortcat.spad.pamphlet (FORTFN FMC FORTCAT FVC FMTC FMFUN FVFUN)
+\end{verbatim}
+
+<<layer8>>=
+axiom_algebra_layer_8 = \
+  BSTREE.o  BTOURN.o   CARD.o    DRAWHACK.o \
+  DQAGG.o   FACTFUNC.o FMTC.o    FR2.o      \
+  FRAC2.o   FRUTIL.o   ITAYLOR.o MLO.o      \
+  NAALG.o   NAALG-.o   OAGROUP.o OAMONS.o   \
+  OP.o      ORDCOMP2.o PID.o     RANDSRC.o  \
+  UNISEG2.o XALG.o 
+
+axiom_algebra_layer_8_nrlibs = \
+	$(axiom_algebra_layer_8:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_8_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_8))
+@
+
+\subsection{Layer9}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+degred.spad.pamphlet (DEGRED)
+indexedp.spad.pamphlet (IDPC IDPO IDPAM IDPOAM  IDPOAMS IDPAG)
+product.spad.pamphlet (PRODUCT)
+retract.spad.pamphlet (RETRACT FRETRCT RATRET)
+sf.spad.pamphlet (REAL RADCAT RNS FPS DFLOAT)
+\end{verbatim}
+
+<<layer9>>=
+axiom_algebra_layer_9 = \
+  AMR.o      AMR-.o     DEGRED.o  DLP.o      \
+  EAB.o      ESTOOLS1.o FAGROUP.o FAMONOID.o \
+  FIELD.o    FIELD-.o   FLAGG.o   FLAGG-.o   \
+  FLINEXP.o  FLINEXP-.o FRETRCT.o FRETRCT-.o \
+  FSERIES.o  FT.o       IDPAG.o   IDPOAMS.o  \
+  INFINITY.o LA.o       OMLO.o    ORTHPOL.o  \
+  PRODUCT.o  PADICCT.o  PMPRED.o  PMASS.o    \
+  PTFUNC2.o  RADCAT.o   RADCAT-.o RATRET.o   \
+  RADUTIL.o  UPXS2.o    XFALG.o   ZLINDEP.o 
+
+axiom_algebra_layer_9_nrlibs = \
+	$(axiom_algebra_layer_9:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_9_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_9))
+@
+
+\subsection{Layer10}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+complet.spad.pamphlet (ORDCOMP ORDCOMP2 ONECOMP ONECOMP2 INFINITY)
+cra.spad.pamphlet (CRAPACK)
+defaults.spad.pamphlet (REPSQ REPDB FLASORT)
+drawpak.spad.pamphlet (DRAWCX)
+free.spad.pamphlet (LMOPS FMONOID FGROUP FAMONC IFAMON FAMONOID FAGROUP)
+fourier.spad.pamphlet (FCOMP FSERIES)
+functions.spad.pamphlet (BFUNCT)
+mesh.spad.pamphlet (MESH)
+moebius.spad.pamphlet (MOEBIUS)
+mring.spad.pamphlet (MRING MRF2)
+opalg.spad.pamphlet (MODOP OP)
+partperm.spad.pamphlet (PARTPERM)
+pgrobner.spad.pamphlet (PGROEB)
+plottool.spad.pamphlet (PLOTTOOL)
+setorder.spad.pamphlet (UDPO UDVO)
+sttaylor.spad.pamphlet (STTAYLOR)
+tableau.spad.pamphlet (TABLBUMP TABLEAU)
+viewpack.spad.pamphlet (VIEW)
+\end{verbatim}
+
+<<layer10>>=
+axiom_algebra_layer_10 = \
+  A1AGG.o    A1AGG-.o   ARR2CAT.o  ARR2CAT-.o \
+  ASP34.o    BBTREE.o   BFUNCT.o   BPADIC.o   \
+  BTREE.o    CRAPACK.o  DEQUEUE.o  DLIST.o    \
+  DRAWCX.o   D01GBFA.o  D02EJFA.o  D03FAFA.o  \
+  DRAWPT.o   FAMR.o     FAMR-.o    FLASORT.o  \
+  FLAGG2.o   FGROUP.o   FM.o       FM1.o      \
+  FPC.o      FPC-.o     FMONOID.o  INDE.o     \
+  IPADIC.o   IROOT.o    IR2.o      LEXP.o     \
+  LIECAT.o   LIECAT-.o  LIST2.o    LIST2MAP.o \
+  LMOPS.o    LZSTAGG.o  LZSTAGG-.o MAGMA.o    \
+  MESH.o     MOEBIUS.o  MODFIELD.o MODOP.o    \
+  MRING.o    MTHING.o   NCNTFRAC.o NCODIV.o   \
+  NUMTUBE.o  ODR.o      OFMONOID.o ONECOMP.o  \
+  ORDCOMP.o  OREPCAT.o  OREPCAT-.o OWP.o      \
+  PADIC.o    PATTERN2.o PATLRES.o  PARTPERM.o \
+  PBWLB.o    PENDTREE.o PGE.o      PGROEB.o   \
+  PINTERP.o  PLOTTOOL.o PFR.o      PMDOWN.o   \
+  PRTITION.o PMINS.o    PMLSAGG.o  PMTOOLS.o  \
+  PSCAT.o    PSCAT-.o   QFORM.o    QUEUE.o    \
+  SCACHE.o   SEG.o      SEG2.o     SEXOF.o    \
+  STACK.o    STTAYLOR.o TABLBUMP.o TABLEAU.o  \
+  TOPSP.o    TRANFUN.o  TRANFUN-.o TUBE.o     \
+  UDPO.o     UNISEG.o   VIEW.o     VSPACE.o   \
+  VSPACE-.o  XPOLYC.o   XPR.o
+
+axiom_algebra_layer_10_nrlibs = \
+	$(axiom_algebra_layer_10:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_10_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_10))
+@
+
+\subsection{Layer11}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+array1.spad.pamphlet (PRIMARR PRIMARR2 TUPLE IFARRAY FARRAY IARRAY1 ARRAY1
+                      ARRAY12)
+bags.spad.pamphlet (STACK ASTACK QUEUE DEQUEUE HEAP)
+combinat.spad.pamphlet (COMBINAT)
+ffx.spad.pamphlet (IRREDFFX)
+galutil.spad.pamphlet (GALUTIL)
+matstor.spad.pamphlet (MATSTOR)
+ore.spad.pamphlet (OREPCAT APPLYORE AUTOMOR OREPCTO ORESUP OREUP)
+plot3d.spad.pamphlet (PLOT3D)
+prtition.spad.pamphlet (PRTITION SYMPOLY)
+stream.spad.pamphlet (LZSTAGG CSTTOOLS STREAM STREAM1 STREAM2 STREAM3)
+trigcat.spad.pamphlet (ELEMFUN AHYP ATRIG HYPCAT TRANFUN TRIGCAT PRIMCAT
+                       LFCAT CFCAT SPFCAT)
+xlpoly.spad.pamphlet (MAGMA LWORD LIECAT FLALG XEXPPKG LPOLY PBWLB XPBWPOLY
+                      LEXP)
+xpoly.spad.pamphlet (OFMONOID FMCAT FM1 XALG XFALG XPOLYC XPR XDPOLY XRPOLY
+                     XPOLY)
+\end{verbatim}
+
+<<layer11>>=
+axiom_algebra_layer_11 = \
+  APPLYORE.o ARRAY1.o   ARRAY12.o  ARRAY2.o   \
+  ASTACK.o   BTAGG.o    BTAGG-.o   COMBINAT.o \
+  CSTTOOLS.o D01FCFA.o  E04MBFA.o  FARRAY.o   \
+  FLALG.o    GALUTIL.o  HEAP.o     IARRAY1.o  \
+  IARRAY2.o  IFARRAY.o  INTCAT.o   INTHEORY.o \
+  IRREDFFX.o LFCAT.o    LODOCAT.o  LODOCAT-.o \
+  LWORD.o    MATCAT.o   MATCAT-.o  MATSTOR.o  \
+  ORESUP.o   OREPCTO.o  OREUP.o    PLOT3D.o   \
+  PR.o       PREASSOC.o PRIMARR2.o REDORDER.o \
+  SRAGG.o    SRAGG-.o   STREAM.o   SYMPOLY.o  \
+  TS.o       TUPLE.o    UPSCAT.o   UPSCAT-.o  \
+  VECTCAT.o  VECTCAT-.o XDPOLY.o   XEXPPKG.o  \
+  XF.o       XF-.o      XPBWPOLY.o XPOLY.o    \
+  XRPOLY.o
+
+axiom_algebra_layer_11_nrlibs = \
+	$(axiom_algebra_layer_11:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_11_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_11))
+@
+
+\subsection{Layer12}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+\end{verbatim}
+
+<<layer12>>=
+axiom_algebra_layer_12 = \
+ BITS.o    DIRPROD2.o IMATRIX.o  IVECTOR.o \
+ LPOLY.o   LSMP.o     LSMP1.o    MATCAT2.o \
+ PTCAT.o   STRICAT.o  TRIMAT.o 
+
+axiom_algebra_layer_12_nrlibs = \
+	$(axiom_algebra_layer_12:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_12_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_12))
+@
+
+\subsection{Layer13}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+carten.spad.pamphlet (GRMOD GRALG CARTEN CARTEN2)
+catdef.spad.pamphlet (ABELGRP ABELMON ABELSG ALGEBRA BASTYPE BMODULE CABMON
+                      CHARNZ CHARZ COMRING DIFRING DIFEXT DIVRING ENTIRER
+                      EUCDOM FIELD FINITE FLINEXP GCDDOM GROUP INTDOM LMODULE
+                      LINEXP MODULE MONOID OAGROUP OAMON OAMONS OASGP OCAMON
+                      ORDFIN OINTDOM ORDMON ORDRING ORDSET PDRING PFECAT PID
+                      RMODULE RING RNG SGROUP SETCAT STEP UFD VSPACE)
+clifford.spad.pamphlet (QFORM CLIF)
+clip.spad.pamphlet (CLIP)
+coordsys.spad.pamphlet (COORDSYS)
+dhmatrix.spad.pamphlet (DHMATRIX)
+d02routine.spad.pamphlet (D02BBFA D02BHFA D02CJFA D02EJFA)
+ffpoly2.spad.pamphlet (FFPOLY2)
+irsn.spad.pamphlet (IRSN)
+numode.spad.pamphlet (NUMODE)
+numquad.spad.pamphlet (NUMQUAD)
+perman.spad.pamphlet (GRAY PERMAN)
+pseudolin.spad.pamphlet (PSEUDLIN)
+rep2.spad.pamphlet (REP2)
+sex.spad.pamphlet (SEXCAT SEXOF SEX)
+solvedio.spad.pamphlet (DIOSP)
+\end{verbatim}
+
+<<layer13>>=
+axiom_algebra_layer_13 = \
+  ASSOCEQ.o  CARTEN.o   CLIF.o     CLIP.o     \
+  COORDSYS.o DBASE.o    DHMATRIX.o DIOSP.o    \
+  DIRPCAT.o  DIRPCAT-.o D02BBFA.o  D02BHFA.o  \
+  D02CJFA.o  FAXF.o     FAXF-.o    FFPOLY2.o  \
+  FNLA.o     GRAY.o     HB.o       IRSN.o     \
+  MCALCFN.o  MHROWRED.o NUMODE.o   NUMQUAD.o  \
+  ODESYS.o   ODETOOLS.o ORDFUNS.o  PERMAN.o   \
+  PFECAT.o   PFECAT-.o  POINT.o    PSEUDLIN.o \
+  PTPACK.o   REP2.o     SETMN.o    SEX.o      \
+  STRING.o   SYMFUNC.o  VECTOR2.o
+
+axiom_algebra_layer_13_nrlibs = \
+	$(axiom_algebra_layer_13:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_13_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_13))
+@
+
+\subsection{Layer14}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+allfact.spad.pamphlet (MRATFAC MPRFF MPCPF GENMFACT RFFACTOR SUPFRACF)
+array2.spad.pamphlet (ARR2CAT IIARRAY2 IARRAY2 ARRAY2)
+bezout.spad.pamphlet (BEZOUT)
+boolean.spad.pamphlet (REF LOGIC BOOLEAN IBITS BITS)
+brill.spad.pamphlet (BRILL)
+cden.spad.pamphlet (ICDEN CDEN UPCDEN MCDEN)
+contfrac.spad.pamphlet (CONTFRAC NCNTFRAC)
+cycles.spad.pamphlet (CYCLES EVALCYC)
+cyclotom.spad.pamphlet (CYCLOTOM)
+ddfact.spad.pamphlet (DDFACT)
+equation2.spad.pamphlet (EQ EQ2 FEVALAB)
+error.spad.pamphlet (ERROR)
+facutil.spad.pamphlet (FACUTIL PUSHVAR)
+ffcat.spad.pamphlet (FPC XF FAXF DLP FFIELDC FFSLPE)
+fff.spad.pamphlet (FFF)
+ffhom.spad.pamphlet (FFHOM)
+ffpoly.spad.pamphlet (FFPOLY)
+fname.spad.pamphlet (FNCAT FNAME)
+formula.spad.pamphlet (FORMULA FORMULA1)
+fraction.spad.pamphlet (LO LA QFCAT QFCAT2 FRAC LPEFRAC FRAC2)
+galfactu.spad.pamphlet (GALFACTU)
+galpolyu.spad.pamphlet (GALPOLYU)
+gb.spad.pamphlet (GB)
+gbeuclid.spad.pamphlet (GBEUCLID)
+gbintern.spad.pamphlet (GBINTERN)
+gdirprod.spad.pamphlet (ORDFUNS ODP HDP SHDP)
+geneez.spad.pamphlet (GENEEZ)
+ghensel.spad.pamphlet (GHENSEL)
+gpgcd.spad.pamphlet (GENPGCD)
+gpol.spad.pamphlet (LAUPOL)
+groebf.spad.pamphlet (GBF)
+groebsol.spad.pamphlet (GROEBSOL)
+intrf.spad.pamphlet (SUBRESP MONOTOOL INTHERTR INTTR INTRAT INTRF)
+idecomp.spad.pamphlet (IDECOMP)
+leadcdet.spad.pamphlet (LEADCDET)
+lindep.spad.pamphlet (LINDEP ZLINDEP)
+lingrob.spad.pamphlet (LGROBP)
+listgcd.spad.pamphlet (HEUGCD)
+matfuns.spad.pamphlet (IMATLIN MATCAT2 RMCAT2 IMATQF MATLIN)
+mfinfact.spad.pamphlet (MFINFACT)
+mlift.spad.pamphlet (MLIST)
+moddfact.spad.pamphlet (MDDFACT)
+modmon.spad.pamphlet (MODMON)
+modring.spad.pamphlet (MODRING EMR MODFIELD)
+mts.spad.pamphlet (SMTS TS)
+multsqfr.spad.pamphlet (MULTSQFR)
+newpoint.spad.pamphlet (PTCAT POINT COMPPROP SUBSPACE PTPACK PTFUNC2)
+numtheor.spad.pamphlet (INTHEORY PNTHEORY)
+npcoef.spad.pamphlet (NPCOEF)
+omdev.spad.pamphlet (OMENC OMDEV OMCONN OMPKG)
+omserver.spad.pamphlet (OMSERVER)
+padic.spad.pamphlet (PADICCT IPADIC PADIC BPADIC PADICRC PADICRAT BPADICRT)
+pdecomp.spad.pamphlet (PCOMP PDECOMP)
+pfbr.spad.pamphlet (PFBRU PFBR)
+pfr.spad.pamphlet (PFR PFRPAC)
+pgcd.spad.pamphlet (PGCD)
+pinterp.spad.pamphlet (PINTERPA PINTERP)
+pleqn.spad.pamphlet (PLEQN)
+poltopol.spad.pamphlet (MPC2 MPC3 POLTOPOL)
+poly.spad.pamphlet (FM PR SUP SUP2 UP UP2 POLY2UP UPSQFREE PSQFR UPMP)
+polycat.spad.pamphlet (AMR FAMR POLYCAT POLYLIFT UPOLYC UPOLYC2 COMMUPC)
+prs.spad.pamphlet (PRS)
+radix.spad.pamphlet (RADIX BINARY DECIMAL HEXADEC RADUTIL)
+ratfact.spad.pamphlet (RATFACT)
+rderf.spad.pamphlet (RDETR)
+realzero.spad.pamphlet (REAL0)
+real0q.spad.pamphlet (REAL0Q)
+resring.spad.pamphlet (RESRING)
+rf.spad.pamphlet (POLYCATQ RF)
+solvefor.spad.pamphlet (SOLVEFOR)
+solvelin.spad.pamphlet (LSMP LSMP1 LSPP)
+smith.spad.pamphlet (SMITH)
+sttf.spad.pamphlet (STTF STTFNC)
+sturm.spad.pamphlet (SHP)
+sum.spad.pamphlet (ISUMP GOSPER SUMRF)
+tex.spad.pamphlet (TEX)
+tree.spad.pamphlet (TREE BTCAT BTREE BSTREE BTOURN BBTREE PENDTREE)
+twofact.spad.pamphlet (NORMRETR TWOFACT)
+unifact.spad.pamphlet (UNIFACT)
+updecomp.spad.pamphlet (UPDECOMP)
+updivp.spad.pamphlet (UPDIVP)
+viewDef.spad.pamphlet (VIEWDEF)
+vector.spad.pamphlet (VECTCAT IVECTOR VECTOR VECTOR2 DIRPCAT DIRPROD DIRPROD2)
+view2D.spad.pamphlet (GRIMAGE VIEW2D)
+void.spad.pamphlet (VOID EXIT)
+weier.spad.pamphlet (WEIER)
+wtpol.spad.pamphlet (WP OWP)
+\end{verbatim}
+
+<<layer14>>=
+axiom_algebra_layer_14 = \
+  ASP1.o     ASP10.o    ASP24.o    ASP4.o     \
+  ASP50.o    ASP6.o     ASP73.o    BALFACT.o  \
+  BEZOUT.o   BINARY.o   BINFILE.o  BOUNDZRO.o \
+  BPADICRT.o BRILL.o    CDEN.o     CHVAR.o    \
+  COMMUPC.o  CONTFRAC.o CVMP.o     CYCLOTOM.o \
+  CYCLES.o   DDFACT.o   DECIMAL.o  DIOPS.o    \
+  DIOPS-.o   DIRPROD.o  DISPLAY.o  DMP.o      \
+  DPMO.o     DPOLCAT.o  DPOLCAT-.o D01AJFA.o  \
+  D01AKFA.o  D01ALFA.o  D01AMFA.o  D01APFA.o  \
+  D01AQFA.o  EMR.o      EQ.o       ERROR.o    \
+  EVALCYC.o  E04DGFA.o  E04FDFA.o  E04GCFA.o  \
+  E04JAFA.o  FACUTIL.o  FF.o       FFCG.o     \
+  FFCGX.o    FFHOM.o    FFNB.o     FFNBX.o    \
+  FFPOLY.o   FFX.o      FFSLPE.o   FGLMICPK.o \
+  FILE.o     FINAALG.o  FINAALG-.o FINRALG.o  \
+  FINRALG-.o FFF.o      FLOATRP.o  FNAME.o    \
+  FOP.o      FORMULA.o  FORT.o     FRAC.o     \
+  FTEM.o     GENEEZ.o   GENMFACT.o GENPGCD.o  \
+  GALFACTU.o GALPOLYU.o GB.o       GBEUCLID.o \
+  GBF.o      GBINTERN.o GHENSEL.o  GMODPOL.o  \
+  GOSPER.o   GRIMAGE.o  GROEBSOL.o HDMP.o     \
+  HDP.o      HEXADEC.o  HEUGCD.o   IBPTOOLS.o \
+  IFF.o      IBITS.o    ICARD.o    ICDEN.o    \
+  IDECOMP.o  IIARRAY2.o IMATLIN.o  IMATQF.o   \
+  INMODGCD.o INNMFACT.o INPSIGN.o  INTHERTR.o \
+  INTRAT.o   INTRF.o    INTSLPE.o  INTTR.o    \
+  ISUMP.o    LAUPOL.o   LEADCDET.o LGROBP.o   \
+  LIMITRF.o  LINDEP.o   LO.o       LPEFRAC.o  \
+  LSPP.o     MATLIN.o   MCDEN.o    MDDFACT.o  \
+  MFINFACT.o MFLOAT.o   MINT.o     MLIFT.o    \
+  MMAP.o     MODMON.o   MONOTOOL.o MPCPF.o    \
+  MPC2.o     MPC3.o     MPOLY.o    MPRFF.o    \
+  MRATFAC.o  MULTSQFR.o NORMRETR.o NPCOEF.o   \
+  NSUP.o     NTPOLFN.o  ODP.o      ODEPRIM.o  \
+  ODEPRRIC.o OMPKG.o    OMSERVER.o PADEPAC.o  \
+  PADICRAT.o PADICRC.o  PCOMP.o    PDECOMP.o  \
+  PF.o       PFBR.o     PFBRU.o    PFOTOOLS.o \
+  PFRPAC.o   PGCD.o     PINTERPA.o PLEQN.o    \
+  PMPLCAT.o  PMQFCAT.o  PNTHEORY.o POLUTIL.o  \
+  POLTOPOL.o POLYCATQ.o POLYLIFT.o POLYROOT.o \
+  POLY2.o    POLY2UP.o  PRS.o      PSQFR.o    \
+  PUSHVAR.o  QALGSET.o  QFCAT2.o   RADIX.o    \
+  RATFACT.o  RCFIELD.o  RCFIELD-.o RDETR.o    \
+  RDETRS.o   REAL0.o    REAL0Q.o   REALSOLV.o \
+  RESRING.o  RETSOL.o   RF.o       RFFACTOR.o \
+  RMATCAT.o  RMATCAT-.o RRCC.o     RRCC-.o    \
+  SCPKG.o    SHDP.o     SHP.o      SIGNRF.o   \
+  SMITH.o    SMP.o      SMTS.o     SOLVEFOR.o \
+  SPLTREE.o  STINPROD.o STTFNC.o   SUBRESP.o  \
+  SUMRF.o    SUP.o      SUPFRACF.o TANEXP.o   \
+  TEMUTL.o   TEX.o      TEXTFILE.o TREE.o     \
+  TWOFACT.o  UNIFACT.o  UP.o       UPCDEN.o   \
+  UPDECOMP.o UPDIVP.o   UPMP.o     UPOLYC2.o  \
+  UPXSCAT.o  UPSQFREE.o VIEWDEF.o  VIEW2D.o   \
+  VOID.o     WEIER.o    WP.o
+
+axiom_algebra_layer_14_nrlibs = \
+	$(axiom_algebra_layer_14:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_14_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_14))
+@
+
+\subsection{Layer15}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+dpolcat.spad.pamphlet (DVARCAT ODVAR SDVAR DPOLCAT DSMP ODPOL SDPOL)
+matcat.spad.pamphlet (MATCAT RMATCAT SMATCAT)
+plot.spad.pamphlet (PLOT PLOT1)
+\end{verbatim}
+
+<<layer15>>=
+axiom_algebra_layer_15 = \
+  DIAGG.o   DIAGG-.o   DSMP.o     EXPUPXS.o \
+  FRAMALG.o FRAMALG-.o MDAGG.o    ODPOL.o   \
+  PLOT.o    RMCAT2.o   ROIRC.o    SDPOL.o   \
+  SMATCAT.o SMATCAT-.o TUBETOOL.o UPXSCCA.o \
+  UPXSCCA-.o
+
+axiom_algebra_layer_15_nrlibis = \
+	$(axiom_algebra_layer_15:.$(OBJEXT)=.NRLIBS/code.$(OBJEXT))
+
+axiom_algebra_layer_15_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_15))
+@
+
+\subsection{Layer16}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+efupxs.spad.pamphlet (EFUPXS)
+lodop.spad.pamphlet (MLO OMLO NCODIV ODR DPMO DPMM)
+space.spad.pamphlet (SPACEC SPACE3 TOPSP)
+\end{verbatim}
+
+<<layer16>>=
+axiom_algebra_layer_16 = \
+  DPMM.o     EFUPXS.o  FFINTBAS.o FRIDEAL.o  \
+  FRIDEAL2.o FRMOD.o   FSAGG.o    FSAGG-.o   \
+  IBATOOL.o  INTFACT.o KDAGG.o    KDAGG-.o   \
+  MSETAGG.o  MONOGEN.o MONOGEN-.o NFINTBAS.o \
+  SPACE3.o 
+
+axiom_algebra_layer_16_nrlibs = \
+	$(axiom_algebra_layer_16:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_16_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_16))
+@
+
+\subsection{Layer17}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+algext.spad.pamphlet (SAE)
+aggcat.spad.pamphlet (AGG HOAGG CLAGG BGAGG SKAGG QUAGG DQAGG PRQAGG DIOPS
+                      DIAGG MDAGG SETAGG FSAGG MSETAGG OMSAGG KDAGG ELTAB
+                      ELTAGG ISAGG TBAGG RCAGG BRAGG DLAGG URAGG STAGG LNAGG
+                      FLAGG A1AGG ELAGG LSAGG ALAGG SRAGG BTAGG ITAGG) 
+aggcat2.spad.pamphlet (FLAGG2 FSAGG2)
+galfact.spad.pamphlet (GALFACT)
+intfact.spad.pamphlet (PRIMES IROOT INTFACT)
+padiclib.spad.pamphlet (IBPTOOLS IBACHIN PWFFINTB)
+perm.spad.pamphlet (PERMCAT PERM)
+permgrps.spad.pamphlet (PERMGRP PGE)
+random.spad.pamphlet (RANDSRC RDIST INTBIT RIDIST RFDIST)
+sgcf.spad.pamphlet (SGCF)
+string.spad.pamphlet (CHAR CCLASS ISTRING STRING STRICAT)
+view3D.spad.pamphlet (VIEW3D)
+\end{verbatim}
+
+<<layer17>>=
+axiom_algebra_layer_17 = \
+  CCLASS.o  FSAGG2.o  GALFACT.o IALGFACT.o \
+  IBACHIN.o NORMMA.o  ODERED.o  OMSAGG.o   \
+  PERM.o    PERMGRP.o PRIMES.o  PWFFINTB.o \
+  RDIST.o   SAE.o     SAEFACT.o SAERFFC.o  \
+  SGCF.o    TBAGG.o   TBAGG-.o  VIEW3D.o 
+
+axiom_algebra_layer_17_nrlibs = \
+	$(axiom_algebra_layer_17:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_17_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_17))
+@
+
+\subsection{Layer18}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+d01Package.spad.pamphlet (INTPACK)
+list.spad.pamphlet (ILIST LIST LIST2 LIST3 LIST2MAP ALIST)
+pf.spad.pamphlet (IPF PF)
+table.spad.pamphlet (HASHTBL INTABL TABLE EQTBL STRTBL GSTBL STBL)
+\end{verbatim}
+
+<<layer18>>=
+axiom_algebra_layer_18 = \
+  ALIST.o   EQTBL.o   GSTBL.o   HASHTBL.o \
+  INTABL.o  INTFTBL.o INTPACK.o IPF.o     \
+  KAFILE.o  PATRES.o  STBL.o    STRTBL.o  \
+  TABLE.o   TBCMPPK.o 
+
+axiom_algebra_layer_18_nrlibs = \
+	$(axiom_algebra_layer_18:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_18_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_18))
+@
+
+\subsection{Layer19}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+acplot.spad.pamphlet (REALSOLV ACPLOT)
+alql.spad.pamphlet (DLIST ICARD DBASE QEQUAT MTHING OPQUERY)
+any.spad.pamphlet (NONE NONE1 ANY ANY1)
+c02.spad.pamphlet (NAGC02)
+c05.spad.pamphlet (NAGC05)
+c06.spad.pamphlet (NAGC06)
+d01routine.spad.pamphlet (D01AJFA D01AKFA D01AMFA D01APFA D01AQFA D01ALFA 
+                          D01ANFA D01ASFA D01GBFA D01FCFA)
+d02Package.spad.pamphlet (ODEPACK)
+d03agents.spad.pamphlet (D03AGNT)
+d03Package.spad.pamphlet (PDEPACK)
+drawopt.spad.pamphlet (DROPT DROPT1 DROPT0)
+eigen.spad.pamphlet (EP CHARPOL)
+e01.spad.pamphlet (NAGE01)
+e02.spad.pamphlet (NAGE02)
+e04.spad.pamphlet (NAGE04)
+e04agents.spad.pamphlet (E04AGNT)
+e04Package.spad.pamphlet (OPTPACK)
+ffcg.spad.pamphlet (FFCGP FFCGX FFCG)
+ffp.spad.pamphlet (FFP FFX IFF FF)
+files.spad.pamphlet (FILECAT FILE TEXTFILE BINFILE KAFILE LIB)
+float.spad.pamphlet (FLOAT)
+fnla.spad.pamphlet (OSI COMM HB FNLA)
+fortpak.spad.pamphlet (FCPAK1 NAGSP FORT FOP TEMUTL MCALCFN)
+forttyp.spad.pamphlet (FST FT SYMTAB SYMS)
+fparfrac.spad.pamphlet (FPARFRAC)
+fr.spad.pamphlet (FR FRUTIL FR2)
+f07.spad.pamphlet (NAGF07)
+gdpoly.spad.pamphlet (GDMP DMP HDMP)
+ideal.spad.pamphlet (IDEAL)
+intaux.spad.pamphlet (IR IR2)
+intclos.spad.pamphlet (TRIMAT IBATOOL FFINTBAS WFFINTBS NFINTBAS)
+integer.spad.pamphlet (INTSLPE INT NNI PI ROMAN)
+kl.spad.pamphlet (CACHSET SCACHE MKCHSET KERNEL KERNEL2)
+lmdict.spad.pamphlet (LMDICT)
+matrix.spad.pamphlet (IMATRIX MATRIX RMATRIX SQMATRIX)
+misc.spad.pamphlet (SAOS)
+mkfunc.spad.pamphlet (INFORM INFORM1 MKFUNC MKUCFUNC MKBCFUNC MKFLCFN)
+modgcd.spad.pamphlet (INMODGCD)
+mset.spad.pamphlet (MSET)
+multpoly.spad.pamphlet (POLY POLY2 MPOLY SMP INDE)
+naalgc.spad.pamphlet (MONAD MONADWU NARNG NASRING NAALG FINAALG FRNAALG)
+newdata.spad.pamphlet (IPRNTPK TBCMPPK SPLNODE SPLTREE)
+omerror.spad.pamphlet (OMERRK OMERR)
+op.spad.pamphlet (BOP BOP1 COMMONOP)
+out.spad.pamphlet (OUT SPECOUT DISPLAY)
+outform.spad.pamphlet (NUMFMT OUTFORM)
+patmatch1.spad.pamphlet (PATRES PATRES2 PATLRES PATMAB FPATMAB PMSYM PMKERNEL
+                         PMDOWN PMTOOLS PMLSAGG)
+pattern.spad.pamphlet (PATTERN PATTERN1 PATTERN2 PATAB)
+pscat.spad.pamphlet (PSCAT UPSCAT UTSCAT ULSCAT UPXSCAT MTSCAT)
+qalgset.spad.pamphlet (QALGSET QALGSET2)
+reclos.spad.pamphlet (POLUTIL RRCC RCFIELD ROIRC RECLOS)
+rep1.spad.pamphlet (REP1)
+routines.spad.pamphlet (ROUTINE ATTRBUT)
+s.spad.pamphlet (NAGS)
+seg.spad.pamphlet (SEGCAT SEGXCAT SEG SEG2 SEGBIND SETBIND2 UNISEG UNISEG2
+                   INCRMAPS)
+sets.spad.pamphlet (SET)
+sups.spad.pamphlet (ISUPS)
+syssolp.spad.pamphlet (SYSSOLP)
+variable.spad.pamphlet (OVAR VARIABLE RULECOLD FUNCTION ANON)
+\end{verbatim}
+
+<<layer19>>=
+axiom_algebra_layer_19 = \
+  ACF.o      ACF-.o     ACPLOT.o   ANTISYM.o \
+  ANY.o      ASP12.o    ASP27.o    ASP28.o   \
+  ASP33.o    ASP49.o    ASP55.o    ASP7.o    \
+  ASP78.o    ASP8.o     ASP9.o     ATTRBUT.o \
+  BOP.o      BOP1.o     COMMONOP.o COMPCAT.o \
+  COMPCAT-.o DRAW.o     DRAWCFUN.o DROPT.o   \
+  DROPT0.o   D01ANFA.o  D01ASFA.o  D03AGNT.o \
+  EP.o       E04AGNT.o  FCPAK1.o   FEXPR.o   \
+  FFCAT.o    FFCAT-.o   FFCGP.o    FFNBP.o   \
+  FFP.o      FLOAT.o    FPARFRAC.o FR.o      \
+  FRNAALG.o  FRNAALG-.o FS.o       FS-.o     \
+  FST.o      FUNCTION.o GDMP.o     HACKPI.o  \
+  IDEAL.o    INFORM.o   INFORM1.o  IPRNTPK.o \
+  IR.o       ISUPS.o    KERNEL.o   LIB.o     \
+  LMDICT.o   LODOOPS.o  MATRIX.o   MKFLCFN.o \
+  MSET.o     M3D.o      NAGC02.o   NAGC05.o  \
+  NAGC06.o   NAGD03.o   NAGE01.o   NAGE02.o  \
+  NAGE04.o   NAGF07.o   NAGS.o     NAGSP.o   \
+  NREP.o     NUMFMT.o   OC.o       OC-.o     \
+  ODEPACK.o  ODERAT.o   OMERR.o    OMERRK.o  \
+  OPTPACK.o  OSI.o      PATTERN.o  OVAR.o    \
+  PMKERNEL.o PMSYM.o    POLY.o     PRIMELT.o \
+  QALGSET2.o QEQUAT.o   RECLOS.o   REP1.o    \
+  RESULT.o   QUATCAT.o  QUATCAT-.o RFFACT.o  \
+  RMATRIX.o  ROMAN.o    ROUTINE.o  RPOLCAT.o \
+  RPOLCAT-.o RULECOLD.o SAOS.o     SEGBIND.o \
+  SET.o      SPECOUT.o  SQMATRIX.o SWITCH.o  \
+  SYMS.o     SYMTAB.o   SYSSOLP.o  UTSCAT.o  \
+  UTSCAT-.o  VARIABLE.o WFFINTBS.o 
+
+axiom_algebra_layer_19_nrlibs = \
+	$(axiom_algebra_layer_19:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_19_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_19))
+@
+
+\subsection{Layer20}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+algfact.spad.pamphlet (IALGFACT SAEFACT RFFACT SAERFFC ALGFACT)
+algfunc.spad.pamphlet (ACF ACFS AF)
+asp.spad.pamphlet (ASP1 ASP10 ASP12 ASP19 ASP20 ASP24 ASP27 ASP28 ASP29 ASP30
+                   ASP31 ASP33 ASP34 ASP35 ASP4 ASP41 ASP42 ASP49 ASP50 ASP55
+                   ASP6 ASP7 ASP73 ASP74 ASP77 ASP78 ASP8 ASP80 ASP9)
+constant.spad.pamphlet (IAN AN)
+cmplxrt.spad.pamphlet (CMPLXRT)
+crfp.spad.pamphlet (CRFP)
+curve.spad.pamphlet (FFCAT MMAP FFCAT2 CHAVAR RDFF ALGFF)
+derham.spad.pamphlet (LALG EAB ANTISYM DERHAM)
+draw.spad.pamphlet (DRAWCFUN DRAW DRAWCURV DRAWPT)
+d01.spad.pamphlet (NAGD01)
+efstruc.spad.pamphlet (SYMFUNC TANEXP EFSTRUC ITRIGMNP TRIGMNIP CTRIGMNP)
+elemntry.spad.pamphlet (EF)
+elfuts.spad.pamphlet (ELFUTS)
+expexpan.spad.pamphlet (EXPUPXS UPXSSING EXPEXPAN)
+exprode.spad.pamphlet (EXPRODE)
+e04routine.spad.pamphlet (E04DFGA E04FDFA E04GCFA E04JAFA E04MBFA E04NAFA 
+                          E04UCFA)
+f01.spad.pamphlet (NAGF01)
+f02.spad.pamphlet (NAGF02)
+f04.spad.pamphlet (NAGF04)
+fortmac.spad.pamphlet (MINT MFLOAT MCMPLX)
+fortran.spad.pamphlet (RESULT FC FORTRAN M3D SFORT SWITCH FTEM FEXPR)
+fspace.spad.pamphlet (ES ES1 ES2 FS FS2)
+fs2ups.spad.pamphlet (FS2UPS)
+funcpkgs.spad.pamphlet (FSUPFACT)
+gaussfac.spad.pamphlet (GAUSSFAC)
+gaussian.spad.pamphlet (COMPCAT COMPLPAT CPMATCH COMPLEX COMPLEX2 COMPFACT
+                        CINTSLPE)
+generic.spad.pamphlet (GCNAALG CVMP)
+genufact.spad.pamphlet (GENUFACT)
+genups.spad.pamphlet (GENUPS)
+infprod.spad.pamphlet (STINPROD INFPROD0 INPRODPF INPRODFF)
+intaf.spad.pamphlet (INTG0 INTPAF INTAF)
+intalg.spad.pamphlet (DBLRESP INTHERAL INTALG)
+intef.spad.pamphlet (INTEF)
+intpm.spad.pamphlet (INTPM)
+kovacic.spad.pamphlet (KOVACIC)
+lie.spad.pamphlet (LIE JORDAN LSQM)
+liouv.spad.pamphlet (LF)
+lodof.spad.pamphlet (SETMN PREASSOC ASSOCEQ LODOF)
+manip.spad.pamphlet (FACTFUNC POLYROOT ALGMANIP SIMPAN TRMANIP)
+multfact.spad.pamphlet (INNMFACT MULTFACT ALGMFACT)
+naalg.spad.pamphlet (ALGSC SCPKG ALGPKG FRNAAF2)
+newpoly.spad.pamphlet (NSUP NSUP2 RPOLCAT NSMP)
+nlinsol.spad.pamphlet (RETSOL NLINSOL)
+numeigen.spad.pamphlet (IFSPRMELT.oNEP NREP NCEP)
+numeric.spad.pamphlet (NUMERIC DRAWHACK)
+numsolve.spad.pamphlet (INFSP FLOATRP FLOATCP)
+oct.spad.pamphlet (OC OCT OCTCT2)
+odealg.spad.pamphlet (ODESYS ODERED ODEPAL)
+openmath.spad.pamphlet (OMEXPR)
+pade.spad.pamphlet (PADEPAC PADE)
+patmatch2.spad.pamphlet (PMINS PMQFCAT PMPLCT PMFS PATMATCH)
+pfo.spad.pamphlet (FORDER RDIV PFOTOOLS PFOQ FSRED PFO)
+polset.spad.pamphlet (PSETCAT GPOLSET)
+primelt.spad.pamphlet (PRIMELT FSPRMELT)
+quat.spad.pamphlet (QUATCAT QUAT QUATCT2)
+rdeef.spad.pamphlet (INTTOOLS RDEEF)
+rdesys.spad.pamphlet (RDETRS RDEEFS)
+riccati.spad.pamphlet (ODEPRRIC ODERTRIC)
+rule.spad.pamphlet (RULE APPRULE RULESET)
+sign.spad.pamphlet (TOOLSIGN INPSIGN SIGNRF LIMITRF)
+special.spad.pamphlet (DFSFUN ORTHPOL NTPOLFN)
+suts.spad.pamphlet (SUTS)
+tools.spad.pamphlet (ESTOOLS ESTOOLS1 ESTOOLS2)
+triset.spad.pamphlet (TSETCAT GTSET PSETPK)
+tube.spad.pamphlet (TUBE TUBETOOL EXPRTUBE NUMTUBE)
+utsode.spad.pamphlet (UTSODE)
+\end{verbatim}
+
+<<layer20>>=
+axiom_algebra_layer_20 = \
+  ACFS.o     ACFS-.o    AF.o       ALGFACT.o  \
+  ALGFF.o    ALGMANIP.o ALGMFACT.o ALGPKG.o   \
+  ALGSC.o    AN.o       APPRULE.o  ASP19.o    \
+  ASP20.o    ASP30.o    ASP31.o    ASP35.o    \
+  ASP41.o    ASP42.o    ASP74.o    ASP77.o    \
+  ASP80.o    CINTSLPE.o COMPFACT.o COMPLEX.o  \
+  COMPLPAT.o CMPLXRT.o  CPMATCH.o  CRFP.o     \
+  CTRIGMNP.o D01WGTS.o  D02AGNT.o  D03EEFA.o  \
+  DBLRESP.o  DERHAM.o   DFSFUN.o   DRAWCURV.o \
+  E04NAFA.o  E04UCFA.o  EF.o       EFSTRUC.o  \
+  ELFUTS.o   ESTOOLS.o  EXPEXPAN.o EXPRODE.o  \
+  EXPRTUBE.o EXPR2.o    FC.o       FDIVCAT.o  \
+  FDIVCAT-.o FDIV2.o    FFCAT2.o   FLOATCP.o  \
+  FORDER.o   FORTRAN.o  FSRED.o    FSUPFACT.o \
+  FRNAAF2.o  FSPECF.o   FS2.o      FS2UPS.o   \
+  GAUSSFAC.o GCNAALG.o  GENUFACT.o GENUPS.o   \
+  GTSET.o    GPOLSET.o  IAN.o      INEP.o     \
+  INFPROD0.o INFSP.o    INPRODFF.o INPRODPF.o \
+  INTAF.o    INTALG.o   INTEF.o    INTG0.o    \
+  INTHERAL.o INTPAF.o   INTPM.o    INTTOOLS.o \
+  ITRIGMNP.o JORDAN.o   KOVACIC.o  LF.o       \
+  LIE.o      LODOF.o    LSQM.o     OMEXPR.o   \
+  MCMPLX.o   MULTFACT.o NAGD01.o   NAGD02.o   \
+  NAGF01.o   NAGF02.o   NAGF04.o   NCEP.o     \
+  NLINSOL.o  NSMP.o     NUMERIC.o  OCT.o      \
+  OCTCT2.o   ODEPAL.o   ODERTRIC.o PADE.o     \
+  PAN2EXPR.o PDEPACK.o  PFO.o      PFOQ.o     \
+  PICOERCE.o PMASSFS.o  PMFS.o     PMPREDFS.o \
+  PSETPK.o   QUAT.o     QUATCT2.o  RADFF.o    \
+  RDEEF.o    RDEEFS.o   RDIV.o     RSETCAT.o  \
+  RSETCAT-.o RULE.o     RULESET.o  SIMPAN.o   \
+  SFORT.o    SOLVESER.o SUMFS.o    SUTS.o     \
+  TOOLSIGN.o TRIGMNIP.o TRMANIP.o  ULSCCAT.o  \
+  ULSCCAT-.o UPXSSING.o UTSODE.o   UTSODETL.o \
+  UTS2.o     WUTSET.o 
+
+axiom_algebra_layer_20_nrlibs = \
+	$(axiom_algebra_layer_20:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_20_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_20))
+@
+
+\subsection{Layer21}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+cont.spad.pamphlet (ESCONT ESCONT1)
+ddfact.spad.pamphlet (DDFACT)
+defintef.spad.pamphlet (DEFINTEF)
+defintrf.spad.pamphlet (DFINTTLS DEFINTRF)
+divisor.spad.pamphlet (FRIDEAL FRIDEAL2 MHROWRED FRMOD FDIVCAT HELLFDIV FDIV
+                       FDIV2)
+d01transform.spad.pamphlet (D01TRNS)
+efuls.spad.pamphlet (EFULS)
+expr.spad.pamphlet (EXPR PAN2EXPR EXPR2 PMPREDFS PMASSFS PMPRED PMASS HACKPI
+                    PICOERCE)
+expr2ups.spad.pamphlet (EXPR2UPS)
+fs2expxp.spad.pamphlet (FS2EXPXP)
+gseries.spad.pamphlet (GSERIES)
+integrat.spad.pamphlet (FSCINT FSINT)
+irexpand.spad.pamphlet (IR2F IRRF2F)
+laplace.spad.pamphlet (LAPLACE INVLAPLA)
+laurent.spad.pamphlet (ULSCCAT ULSCONS ULS USL2)
+nlode.spad.pamphlet (NODE1)
+oderf.spad.pamphlet (BALFACT BOUNDZRO ODEPRIM UTSODETL ODERAT ODETOOLS ODEINT
+                     ODECONST)
+puiseux.spad.pamphlet (UPXSCCA UPXSCONS UPXS UPXS2)
+radeigen.spad.pamphlet (REP)
+solverad.spad.pamphlet (SOLVERAD)
+suls.spad.pamphlet (SULS)
+supxs.spad.pamphlet (SUPXS)
+taylor.spad.pamphlet (ITAYLOR UTS UTS2)
+\end{verbatim}
+
+<<layer21>>=
+axiom_algebra_layer_21 = \
+  DEFINTEF.o DFINTTLS.o DEFINTRF.o D01TRNS.o  \
+  EFULS.o    ESCONT.o   EXPR.o     EXPR2UPS.o \
+  FDIV.o     FSCINT.o   FSINT.o    FS2EXPXP.o \
+  GSERIES.o  HELLFDIV.o INVLAPLA.o IR2F.o     \
+  IRRF2F.o   LAPLACE.o  LIMITPS.o  LODEEF.o   \
+  NODE1.o    ODECONST.o ODEINT.o   REP.o      \
+  SOLVERAD.o SULS.o     SUPXS.o    ULS.o      \
+  ULSCONS.o  UPXS.o     UPXSCONS.o UTS.o 
+
+axiom_algebra_layer_21_nrlibs = \
+	$(axiom_algebra_layer_21:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_21_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_21))
+@
+
+\subsection{Layer22}
+
+\subsubsection{Completed spad files}
+
+\begin{verbatim}
+asp.spad.pamphlet (ASP29)
+combfunc.spad.pamphlet (COMBF)
+d01agents.spad.pamphlet (D01AGNT SNTSCAT)
+ffnb.spad.pamphlet (INBFF)
+limitps.spad.pamphlet (SIGNEF)
+lodo.spad.pamphlet (LODO LODO1 LODO2)
+newpoint.spad.pamphlet (SUBSPACE)
+nregset.spad.pamphlet (NTSCAT)
+primelt.spad.pamphlet (FSPRMELT)
+regset.spad.pamphlet (REGSET RSETGCD RSDCMPK)
+sregset.spad.pamphlet (SFRTCAT SRDCMPK SREGSET)
+sttf.spad.pamphlet (STTF)
+transsolve.spad.pamphlet (SOLVETRA)
+zerodim.spad.pamphlet (RGCHAIN ZDSOLVE)
+\end{verbatim}
+\subsection{Layer21}
+<<layer22>>=
+axiom_algebra_layer_22 = \
+  ASP29.o    COMBF.o    D01AGNT.o  FSPRMELT.o \
+  INBFF.o    LODO.o     LODO1.o    LODO2.o    \
+  NTSCAT.o   REGSET.o   RGCHAIN.o  RSETGCD.o  \
+  RSDCMPK.o  SFRTCAT.o  SIGNEF.o   SNTSCAT.o  \
+  SOLVETRA.o SRDCMPK.o  SREGSET.o  STTF.o     \
+  SUBSPACE.o ZDSOLVE.o
+
+axiom_algebra_layer_22_nrlibs = \
+	$(axiom_algebra_layer_22:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_22_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_22))
+@
+
+\subsection{Final layer spad files}
+
+These files have not yet been fully analyzed for dependencies but
+have added in alphabetical order in this final layer. This
+ordering is apparently adequate.
+
+These files all depend on layer22.
+\begin{verbatim}
+algcat.spad.pamphlet (CPIMA)
+nregset.spad.pamphlet (NORMPK)
+nsregset.spad.pamphlet (LAZM3PK)
+regset.spad.pamphlet (QCMPACK)
+sregset.spad.pamphlet (SFRGCD SFQCMPK)
+zerodim.spad.pamphlet (LEXTRIPK IRURPK RURPK)
+\end{verbatim}
+
+<<layer23>>=
+axiom_algebra_layer_23 = \
+  CPIMA.o    IRURPK.o   LAZM3PK.o  LEXTRIPK.o \
+  NORMPK.o   QCMPACK.o  RURPK.o    SFRGCD.o   \
+  SFQCMPK.o  INTRVL.o   ODEEF.o
+
+axiom_algebra_layer_23_nrlibs = \
+	$(axiom_algebra_layer_23:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_23_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_23))
+@
+
+\subsection{User Layer for newly added algebra}
+
+Rather than classify newly created algebra into the existing type lattice
+we add it here.
+<<USERLAYER>>=
+axiom_algebra_layer_user =  RINTERP.o
+
+axiom_algebra_layer_user_nrlibs = \
+	$(axiom_algebra_layer_user:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
+
+axiom_algebra_layer_user_objects = \
+	$(addprefix $(OUT)/, $(axiom_algebra_layer_user))
+@
+
+\section{Broken Files}
+
+These files are Aldor files
+\begin{verbatim}
+axtimer.as Timer
+iviews.as  InventorRenderPackage IVREND
+ffrac.as   FormalFraction FORMAL
+iviews.as  InventorViewPort IVVIEW
+iviews.as  InventorDataSink IVDATA
+herm.as    PackedHermitianSequence PACKED
+nsfip.as   NagSpecialFunctionsInterfacePackage NAGSPE
+nrc.as     NagResultChecks NAGRES
+nqip.as    NagQuadratureInterfacePackage NAGQUA
+noptip.as  NagOptimizationInterfacePackage NAGOPT
+nepip.as   NagEigenInterfacePackage NAGEIG
+ndftip.as  NagDiscreteFourierTransformInterfacePackage NAGDIS
+\end{verbatim}
+
+These domains are referenced but don't exist
+\begin{verbatim}
+OBJECT
+\end{verbatim}
+
+\section{The Environment}
+
+\subsection{The working directories}
+
+We define 5 directories for this build. The{\bf IN} directory
+contains the pamphlet files for the algebra. These are expanded
+into the{\bf MID} directory as either .spad or .as files. The
+.spad files are compiled by the native spad internal compiler.
+The .as files are compiled using the Aldor compiler. The output
+of the compilation has two purposes. Part of the information is
+used to build various database files (daase files). The other
+part is executable code which is placed in the {\bf OUT}
+directory. When invoked as ``make document'' we construct
+the .dvi files in the{\bf DOC} directory.
+
+The [[OUTSRC=$(axiom_target_srcdir)/algebra]] subdirectory contains the 
+algebra source files extracted from the pamphlet files. These sources 
+allow the end user to change the algebra if needed.
+
+<<environment>>=
+
+IN=$(srcdir)
+OUT=$(axiom_targetdir)/algebra
+DOC=$(axiom_target_docdir)/src/algebra
+OUTSRC=$(axiom_target_srcdir)/algebra
+INPUT=../input
+
+EXTRACT_BOOTSTRAP_FILE = \
+	$(axiom_build_document) --output=$@ --tangle="$@ BOOTSTRAP" $<
+
+@
+
+\subsection{The depsys variable}
+
+The {\bf depsys} image is the compile-time environment for boot and lisp
+files.
+
+<<environment>>=
+
+DEPSYS= ../interp/depsys$(EXEEXT)
+
+@
+
+\subsection{The interpsys variable}
+The {\bf interpsys} image is the compile-time environment for algebra
+files.
+
+<<environment>>=
+
+INTERPSYS = \
+	AXIOM="$(AXIOM)" \
+	DAASE="$(axiom_src_datadir)" \
+	../interp/interpsys$(EXEEXT)
+
+@
+
+\subsection{The SPADFILES list}
+Note that we have excluded {\bf mlift.spad.jhd} from this list.
+We need to figure out which mlift.spad to keep.
+
+<<environment>>=
+
+SPADFILES= \
+ ${OUTSRC}/acplot.spad ${OUTSRC}/aggcat2.spad ${OUTSRC}/aggcat.spad \
+ ${OUTSRC}/algcat.spad ${OUTSRC}/algext.spad ${OUTSRC}/algfact.spad \
+ ${OUTSRC}/algfunc.spad ${OUTSRC}/allfact.spad ${OUTSRC}/alql.spad \
+ ${OUTSRC}/annacat.spad ${OUTSRC}/any.spad ${OUTSRC}/array1.spad \
+ ${OUTSRC}/array2.spad ${OUTSRC}/asp.spad ${OUTSRC}/attreg.spad \
+ ${OUTSRC}/bags.spad ${OUTSRC}/bezout.spad ${OUTSRC}/boolean.spad \
+ ${OUTSRC}/brill.spad \
+ ${OUTSRC}/c02.spad ${OUTSRC}/c05.spad ${OUTSRC}/c06.spad \
+ ${OUTSRC}/card.spad ${OUTSRC}/carten.spad ${OUTSRC}/catdef.spad \
+ ${OUTSRC}/cden.spad ${OUTSRC}/clifford.spad ${OUTSRC}/clip.spad \
+ ${OUTSRC}/cmplxrt.spad ${OUTSRC}/coerce.spad ${OUTSRC}/color.spad \
+ ${OUTSRC}/combfunc.spad ${OUTSRC}/combinat.spad ${OUTSRC}/complet.spad \
+ ${OUTSRC}/constant.spad ${OUTSRC}/contfrac.spad ${OUTSRC}/cont.spad \
+ ${OUTSRC}/coordsys.spad ${OUTSRC}/cra.spad ${OUTSRC}/crfp.spad \
+ ${OUTSRC}/curve.spad ${OUTSRC}/cycles.spad ${OUTSRC}/cyclotom.spad \
+ ${OUTSRC}/d01agents.spad ${OUTSRC}/d01Package.spad \
+ ${OUTSRC}/d01routine.spad ${OUTSRC}/d01.spad ${OUTSRC}/d01transform.spad \
+ ${OUTSRC}/d01weights.spad ${OUTSRC}/d02agents.spad \
+ ${OUTSRC}/d02Package.spad ${OUTSRC}/d02routine.spad ${OUTSRC}/d02.spad \
+ ${OUTSRC}/d03agents.spad ${OUTSRC}/d03Package.spad \
+ ${OUTSRC}/d03routine.spad ${OUTSRC}/d03.spad ${OUTSRC}/ddfact.spad \
+ ${OUTSRC}/defaults.spad ${OUTSRC}/defintef.spad ${OUTSRC}/defintrf.spad \
+ ${OUTSRC}/degred.spad ${OUTSRC}/derham.spad ${OUTSRC}/dhmatrix.spad \
+ ${OUTSRC}/divisor.spad ${OUTSRC}/dpolcat.spad ${OUTSRC}/drawopt.spad \
+ ${OUTSRC}/drawpak.spad ${OUTSRC}/draw.spad \
+ ${OUTSRC}/e01.spad ${OUTSRC}/e02.spad ${OUTSRC}/e04agents.spad \
+ ${OUTSRC}/e04Package.spad ${OUTSRC}/e04routine.spad ${OUTSRC}/e04.spad \
+ ${OUTSRC}/efstruc.spad ${OUTSRC}/efuls.spad ${OUTSRC}/efupxs.spad \
+ ${OUTSRC}/eigen.spad ${OUTSRC}/elemntry.spad ${OUTSRC}/elfuts.spad \
+ ${OUTSRC}/equation1.spad ${OUTSRC}/equation2.spad ${OUTSRC}/error.spad \
+ ${OUTSRC}/expexpan.spad ${OUTSRC}/expr2ups.spad \
+ ${OUTSRC}/exprode.spad ${OUTSRC}/expr.spad \
+ ${OUTSRC}/f01.spad ${OUTSRC}/f02.spad ${OUTSRC}/f04.spad \
+ ${OUTSRC}/f07.spad ${OUTSRC}/facutil.spad ${OUTSRC}/ffcat.spad \
+ ${OUTSRC}/ffcg.spad ${OUTSRC}/fff.spad ${OUTSRC}/ffhom.spad \
+ ${OUTSRC}/ffnb.spad ${OUTSRC}/ffpoly2.spad ${OUTSRC}/ffpoly.spad \
+ ${OUTSRC}/ffp.spad ${OUTSRC}/ffx.spad \
+ ${OUTSRC}/files.spad ${OUTSRC}/float.spad ${OUTSRC}/fmod.spad \
+ ${OUTSRC}/fname.spad ${OUTSRC}/fnla.spad ${OUTSRC}/formula.spad \
+ ${OUTSRC}/fortcat.spad ${OUTSRC}/fortmac.spad ${OUTSRC}/fortpak.spad \
+ ${OUTSRC}/fortran.spad ${OUTSRC}/forttyp.spad ${OUTSRC}/fourier.spad \
+ ${OUTSRC}/fparfrac.spad ${OUTSRC}/fraction.spad ${OUTSRC}/free.spad \
+ ${OUTSRC}/fr.spad ${OUTSRC}/fs2expxp.spad ${OUTSRC}/fs2ups.spad \
+ ${OUTSRC}/fspace.spad ${OUTSRC}/funcpkgs.spad ${OUTSRC}/functions.spad \
+ ${OUTSRC}/galfact.spad ${OUTSRC}/galfactu.spad ${OUTSRC}/galpolyu.spad \
+ ${OUTSRC}/galutil.spad ${OUTSRC}/gaussfac.spad ${OUTSRC}/gaussian.spad \
+ ${OUTSRC}/gbeuclid.spad ${OUTSRC}/gbintern.spad ${OUTSRC}/gb.spad \
+ ${OUTSRC}/gdirprod.spad ${OUTSRC}/gdpoly.spad ${OUTSRC}/geneez.spad \
+ ${OUTSRC}/generic.spad ${OUTSRC}/genufact.spad ${OUTSRC}/genups.spad \
+ ${OUTSRC}/ghensel.spad ${OUTSRC}/gpgcd.spad ${OUTSRC}/gpol.spad \
+ ${OUTSRC}/grdef.spad ${OUTSRC}/groebf.spad ${OUTSRC}/groebsol.spad \
+ ${OUTSRC}/gseries.spad \
+ ${OUTSRC}/ideal.spad ${OUTSRC}/idecomp.spad ${OUTSRC}/indexedp.spad \
+ ${OUTSRC}/infprod.spad ${OUTSRC}/intaf.spad ${OUTSRC}/intalg.spad \
+ ${OUTSRC}/intaux.spad ${OUTSRC}/intclos.spad ${OUTSRC}/intef.spad \
+ ${OUTSRC}/integer.spad ${OUTSRC}/integrat.spad \
+ ${OUTSRC}/interval.spad \
+ ${OUTSRC}/intfact.spad ${OUTSRC}/intpm.spad \
+ ${OUTSRC}/intrf.spad \
+ ${OUTSRC}/irexpand.spad \
+ ${OUTSRC}/irsn.spad ${OUTSRC}/ituple.spad \
+ ${OUTSRC}/kl.spad ${OUTSRC}/kovacic.spad \
+ ${OUTSRC}/laplace.spad ${OUTSRC}/laurent.spad ${OUTSRC}/leadcdet.spad \
+ ${OUTSRC}/lie.spad ${OUTSRC}/limitps.spad ${OUTSRC}/lindep.spad \
+ ${OUTSRC}/lingrob.spad ${OUTSRC}/liouv.spad ${OUTSRC}/listgcd.spad \
+ ${OUTSRC}/list.spad ${OUTSRC}/lmdict.spad ${OUTSRC}/lodof.spad \
+ ${OUTSRC}/lodop.spad ${OUTSRC}/lodo.spad \
+ ${OUTSRC}/manip.spad ${OUTSRC}/mappkg.spad ${OUTSRC}/matcat.spad \
+ ${OUTSRC}/matfuns.spad ${OUTSRC}/matrix.spad ${OUTSRC}/matstor.spad \
+ ${OUTSRC}/mesh.spad ${OUTSRC}/mfinfact.spad ${OUTSRC}/misc.spad \
+ ${OUTSRC}/mkfunc.spad ${OUTSRC}/mkrecord.spad \
+ ${OUTSRC}/mlift.spad ${OUTSRC}/moddfact.spad ${OUTSRC}/modgcd.spad \
+ ${OUTSRC}/modmonom.spad ${OUTSRC}/modmon.spad ${OUTSRC}/modring.spad \
+ ${OUTSRC}/moebius.spad ${OUTSRC}/mring.spad ${OUTSRC}/mset.spad \
+ ${OUTSRC}/mts.spad ${OUTSRC}/multfact.spad ${OUTSRC}/multpoly.spad \
+ ${OUTSRC}/multsqfr.spad \
+ ${OUTSRC}/naalgc.spad ${OUTSRC}/naalg.spad \
+ ${OUTSRC}/newdata.spad ${OUTSRC}/newpoint.spad \
+ ${OUTSRC}/newpoly.spad ${OUTSRC}/nlinsol.spad ${OUTSRC}/nlode.spad \
+ ${OUTSRC}/npcoef.spad \
+ ${OUTSRC}/nregset.spad \
+ ${OUTSRC}/nsregset.spad ${OUTSRC}/numeigen.spad ${OUTSRC}/numeric.spad \
+ ${OUTSRC}/numode.spad ${OUTSRC}/numquad.spad ${OUTSRC}/numsolve.spad \
+ ${OUTSRC}/numtheor.spad \
+ ${OUTSRC}/oct.spad ${OUTSRC}/odealg.spad ${OUTSRC}/odeef.spad \
+ ${OUTSRC}/oderf.spad ${OUTSRC}/omcat.spad ${OUTSRC}/omdev.spad \
+ ${OUTSRC}/omerror.spad ${OUTSRC}/omserver.spad ${OUTSRC}/opalg.spad \
+ ${OUTSRC}/openmath.spad ${OUTSRC}/op.spad ${OUTSRC}/ore.spad \
+ ${OUTSRC}/outform.spad ${OUTSRC}/out.spad \
+ ${OUTSRC}/pade.spad ${OUTSRC}/padiclib.spad ${OUTSRC}/padic.spad \
+ ${OUTSRC}/paramete.spad ${OUTSRC}/partperm.spad ${OUTSRC}/patmatch1.spad \
+ ${OUTSRC}/patmatch2.spad ${OUTSRC}/pattern.spad ${OUTSRC}/pcurve.spad \
+ ${OUTSRC}/pdecomp.spad ${OUTSRC}/perman.spad ${OUTSRC}/permgrps.spad \
+ ${OUTSRC}/perm.spad ${OUTSRC}/pfbr.spad ${OUTSRC}/pfo.spad \
+ ${OUTSRC}/pfr.spad ${OUTSRC}/pf.spad ${OUTSRC}/pgcd.spad \
+ ${OUTSRC}/pgrobner.spad ${OUTSRC}/pinterp.spad ${OUTSRC}/pleqn.spad \
+ ${OUTSRC}/plot3d.spad ${OUTSRC}/plot.spad ${OUTSRC}/plottool.spad \
+ ${OUTSRC}/polset.spad ${OUTSRC}/poltopol.spad ${OUTSRC}/polycat.spad \
+ ${OUTSRC}/poly.spad ${OUTSRC}/primelt.spad ${OUTSRC}/print.spad \
+ ${OUTSRC}/product.spad ${OUTSRC}/prs.spad ${OUTSRC}/prtition.spad \
+ ${OUTSRC}/pscat.spad ${OUTSRC}/pseudolin.spad ${OUTSRC}/ptranfn.spad \
+ ${OUTSRC}/puiseux.spad \
+ ${OUTSRC}/qalgset.spad ${OUTSRC}/quat.spad \
+ ${OUTSRC}/radeigen.spad ${OUTSRC}/radix.spad ${OUTSRC}/random.spad \
+ ${OUTSRC}/ratfact.spad ${OUTSRC}/rdeef.spad ${OUTSRC}/rderf.spad \
+ ${OUTSRC}/rdesys.spad ${OUTSRC}/real0q.spad ${OUTSRC}/realzero.spad \
+ ${OUTSRC}/reclos.spad ${OUTSRC}/regset.spad ${OUTSRC}/rep1.spad \
+ ${OUTSRC}/rep2.spad ${OUTSRC}/resring.spad ${OUTSRC}/retract.spad \
+ ${OUTSRC}/rf.spad ${OUTSRC}/riccati.spad ${OUTSRC}/rinterp.spad \
+ ${OUTSRC}/routines.spad \
+ ${OUTSRC}/rule.spad \
+ ${OUTSRC}/seg.spad ${OUTSRC}/setorder.spad ${OUTSRC}/sets.spad \
+ ${OUTSRC}/sex.spad ${OUTSRC}/sf.spad ${OUTSRC}/sgcf.spad \
+ ${OUTSRC}/sign.spad ${OUTSRC}/si.spad ${OUTSRC}/smith.spad \
+ ${OUTSRC}/solvedio.spad ${OUTSRC}/solvefor.spad ${OUTSRC}/solvelin.spad \
+ ${OUTSRC}/solverad.spad ${OUTSRC}/sortpak.spad ${OUTSRC}/space.spad \
+ ${OUTSRC}/special.spad ${OUTSRC}/sregset.spad ${OUTSRC}/s.spad \
+ ${OUTSRC}/stream.spad ${OUTSRC}/string.spad ${OUTSRC}/sttaylor.spad \
+ ${OUTSRC}/sttf.spad ${OUTSRC}/sturm.spad ${OUTSRC}/suchthat.spad \
+ ${OUTSRC}/suls.spad ${OUTSRC}/sum.spad ${OUTSRC}/sups.spad \
+ ${OUTSRC}/supxs.spad ${OUTSRC}/suts.spad ${OUTSRC}/symbol.spad \
+ ${OUTSRC}/syssolp.spad ${OUTSRC}/system.spad \
+ ${OUTSRC}/tableau.spad ${OUTSRC}/table.spad ${OUTSRC}/taylor.spad \
+ ${OUTSRC}/tex.spad ${OUTSRC}/tools.spad ${OUTSRC}/transsolve.spad \
+ ${OUTSRC}/tree.spad ${OUTSRC}/trigcat.spad ${OUTSRC}/triset.spad \
+ ${OUTSRC}/tube.spad ${OUTSRC}/twofact.spad \
+ ${OUTSRC}/unifact.spad ${OUTSRC}/updecomp.spad ${OUTSRC}/updivp.spad \
+ ${OUTSRC}/utsode.spad \
+ ${OUTSRC}/variable.spad ${OUTSRC}/vector.spad ${OUTSRC}/view2D.spad \
+ ${OUTSRC}/view3D.spad ${OUTSRC}/viewDef.spad ${OUTSRC}/viewpack.spad \
+ ${OUTSRC}/void.spad \
+ ${OUTSRC}/weier.spad ${OUTSRC}/wtpol.spad \
+ ${OUTSRC}/xlpoly.spad ${OUTSRC}/xpoly.spad \
+ ${OUTSRC}/ystream.spad \
+ ${OUTSRC}/zerodim.spad
+
+@
+
+\subsection{The ALDORFILES list}
+<<environment>>=
+
+ALDORFILES= \
+	axtimer.as \
+	ffrac.as \
+	herm.as \
+	interval.as \
+	invnode.as \
+	invrender.as \
+	invtypes.as \
+	invutils.as \
+	iviews.as \
+	ndftip.as \
+	nepip.as \
+	noptip.as nqip.as \
+	nrc.as nsfip.as 
+
+@
+
+\subsection{The DOCFILES list}
+<<environment>>=
+
+DOCFILES= \
+ ${DOC}/acplot.spad.dvi ${DOC}/aggcat2.spad.dvi ${DOC}/aggcat.spad.dvi \
+ ${DOC}/algcat.spad.dvi ${DOC}/algext.spad.dvi ${DOC}/algfact.spad.dvi \
+ ${DOC}/algfunc.spad.dvi ${DOC}/allfact.spad.dvi ${DOC}/alql.spad.dvi \
+ ${DOC}/annacat.spad.dvi ${DOC}/any.spad.dvi ${DOC}/array1.spad.dvi \
+ ${DOC}/array2.spad.dvi ${DOC}/asp.spad.dvi ${DOC}/attreg.spad.dvi \
+ ${DOC}/axtimer.as.dvi \
+ ${DOC}/bags.spad.dvi ${DOC}/bezout.spad.dvi ${DOC}/boolean.spad.dvi \
+ ${DOC}/brill.spad.dvi \
+ ${DOC}/c02.spad.dvi ${DOC}/c05.spad.dvi ${DOC}/c06.spad.dvi \
+ ${DOC}/card.spad.dvi ${DOC}/carten.spad.dvi ${DOC}/catdef.spad.dvi \
+ ${DOC}/cden.spad.dvi ${DOC}/clifford.spad.dvi ${DOC}/clip.spad.dvi \
+ ${DOC}/cmplxrt.spad.dvi ${DOC}/coerce.spad.dvi ${DOC}/color.spad.dvi \
+ ${DOC}/combfunc.spad.dvi ${DOC}/combinat.spad.dvi ${DOC}/complet.spad.dvi \
+ ${DOC}/constant.spad.dvi ${DOC}/contfrac.spad.dvi ${DOC}/cont.spad.dvi \
+ ${DOC}/coordsys.spad.dvi ${DOC}/cra.spad.dvi ${DOC}/crfp.spad.dvi \
+ ${DOC}/curve.spad.dvi ${DOC}/cycles.spad.dvi ${DOC}/cyclotom.spad.dvi \
+ ${DOC}/d01agents.spad.dvi ${DOC}/d01Package.spad.dvi \
+ ${DOC}/d01routine.spad.dvi ${DOC}/d01.spad.dvi ${DOC}/d01transform.spad.dvi \
+ ${DOC}/d01weights.spad.dvi ${DOC}/d02agents.spad.dvi \
+ ${DOC}/d02Package.spad.dvi ${DOC}/d02routine.spad.dvi ${DOC}/d02.spad.dvi \
+ ${DOC}/d03agents.spad.dvi ${DOC}/d03Package.spad.dvi \
+ ${DOC}/d03routine.spad.dvi ${DOC}/d03.spad.dvi ${DOC}/ddfact.spad.dvi \
+ ${DOC}/defaults.spad.dvi ${DOC}/defintef.spad.dvi ${DOC}/defintrf.spad.dvi \
+ ${DOC}/degred.spad.dvi ${DOC}/derham.spad.dvi ${DOC}/dhmatrix.spad.dvi \
+ ${DOC}/divisor.spad.dvi ${DOC}/dpolcat.spad.dvi ${DOC}/drawopt.spad.dvi \
+ ${DOC}/drawpak.spad.dvi ${DOC}/draw.spad.dvi \
+ ${DOC}/e01.spad.dvi ${DOC}/e02.spad.dvi ${DOC}/e04agents.spad.dvi \
+ ${DOC}/e04Package.spad.dvi ${DOC}/e04routine.spad.dvi ${DOC}/e04.spad.dvi \
+ ${DOC}/efstruc.spad.dvi ${DOC}/efuls.spad.dvi ${DOC}/efupxs.spad.dvi \
+ ${DOC}/eigen.spad.dvi ${DOC}/elemntry.spad.dvi ${DOC}/elfuts.spad.dvi \
+ ${DOC}/equation1.spad.dvi ${DOC}/equation2.spad.dvi ${DOC}/error.spad.dvi \
+ ${DOC}/expexpan.spad.dvi ${DOC}/exposed.lsp.dvi ${DOC}/expr2ups.spad.dvi \
+ ${DOC}/exprode.spad.dvi ${DOC}/expr.spad.dvi \
+ ${DOC}/f01.spad.dvi ${DOC}/f02.spad.dvi ${DOC}/f04.spad.dvi \
+ ${DOC}/f07.spad.dvi ${DOC}/facutil.spad.dvi ${DOC}/ffcat.spad.dvi \
+ ${DOC}/ffcg.spad.dvi ${DOC}/fff.spad.dvi ${DOC}/ffhom.spad.dvi \
+ ${DOC}/ffnb.spad.dvi ${DOC}/ffpoly2.spad.dvi ${DOC}/ffpoly.spad.dvi \
+ ${DOC}/ffp.spad.dvi ${DOC}/ffrac.as.dvi ${DOC}/ffx.spad.dvi \
+ ${DOC}/files.spad.dvi ${DOC}/float.spad.dvi ${DOC}/fmod.spad.dvi \
+ ${DOC}/fname.spad.dvi ${DOC}/fnla.spad.dvi ${DOC}/formula.spad.dvi \
+ ${DOC}/fortcat.spad.dvi ${DOC}/fortmac.spad.dvi ${DOC}/fortpak.spad.dvi \
+ ${DOC}/fortran.spad.dvi ${DOC}/forttyp.spad.dvi ${DOC}/fourier.spad.dvi \
+ ${DOC}/fparfrac.spad.dvi ${DOC}/fraction.spad.dvi ${DOC}/free.spad.dvi \
+ ${DOC}/fr.spad.dvi ${DOC}/fs2expxp.spad.dvi ${DOC}/fs2ups.spad.dvi \
+ ${DOC}/fspace.spad.dvi ${DOC}/funcpkgs.spad.dvi ${DOC}/functions.spad.dvi \
+ ${DOC}/galfact.spad.dvi ${DOC}/galfactu.spad.dvi ${DOC}/galpolyu.spad.dvi \
+ ${DOC}/galutil.spad.dvi ${DOC}/gaussfac.spad.dvi ${DOC}/gaussian.spad.dvi \
+ ${DOC}/gbeuclid.spad.dvi ${DOC}/gbintern.spad.dvi ${DOC}/gb.spad.dvi \
+ ${DOC}/gdirprod.spad.dvi ${DOC}/gdpoly.spad.dvi ${DOC}/geneez.spad.dvi \
+ ${DOC}/generic.spad.dvi ${DOC}/genufact.spad.dvi ${DOC}/genups.spad.dvi \
+ ${DOC}/ghensel.spad.dvi ${DOC}/gpgcd.spad.dvi ${DOC}/gpol.spad.dvi \
+ ${DOC}/grdef.spad.dvi ${DOC}/groebf.spad.dvi ${DOC}/groebsol.spad.dvi \
+ ${DOC}/gseries.spad.dvi \
+ ${DOC}/herm.as.dvi \
+ ${DOC}/ideal.spad.dvi ${DOC}/idecomp.spad.dvi ${DOC}/indexedp.spad.dvi \
+ ${DOC}/infprod.spad.dvi ${DOC}/intaf.spad.dvi ${DOC}/intalg.spad.dvi \
+ ${DOC}/intaux.spad.dvi ${DOC}/intclos.spad.dvi ${DOC}/intef.spad.dvi \
+ ${DOC}/integer.spad.dvi ${DOC}/integrat.spad.dvi \
+ ${DOC}/interval.as.dvi ${DOC}/interval.spad.dvi \
+ ${DOC}/intfact.spad.dvi ${DOC}/intpm.spad.dvi \
+ ${DOC}/intrf.spad.dvi ${DOC}/invnode.as.dvi ${DOC}/invrender.as.dvi \
+ ${DOC}/invtypes.as.dvi ${DOC}/invutils.as.dvi ${DOC}/irexpand.spad.dvi \
+ ${DOC}/irsn.spad.dvi ${DOC}/ituple.spad.dvi ${DOC}/iviews.as.dvi \
+ ${DOC}/kl.spad.dvi ${DOC}/kovacic.spad.dvi \
+ ${DOC}/laplace.spad.dvi ${DOC}/laurent.spad.dvi ${DOC}/leadcdet.spad.dvi \
+ ${DOC}/lie.spad.dvi ${DOC}/limitps.spad.dvi ${DOC}/lindep.spad.dvi \
+ ${DOC}/lingrob.spad.dvi ${DOC}/liouv.spad.dvi ${DOC}/listgcd.spad.dvi \
+ ${DOC}/list.spad.dvi ${DOC}/lmdict.spad.dvi ${DOC}/lodof.spad.dvi \
+ ${DOC}/lodop.spad.dvi ${DOC}/lodo.spad.dvi \
+ ${DOC}/manip.spad.dvi ${DOC}/mappkg.spad.dvi ${DOC}/matcat.spad.dvi \
+ ${DOC}/matfuns.spad.dvi ${DOC}/matrix.spad.dvi ${DOC}/matstor.spad.dvi \
+ ${DOC}/mesh.spad.dvi ${DOC}/mfinfact.spad.dvi ${DOC}/misc.spad.dvi \
+ ${DOC}/mkfunc.spad.dvi ${DOC}/mkrecord.spad.dvi ${DOC}/mlift.spad.jhd.dvi \
+ ${DOC}/mlift.spad.dvi ${DOC}/moddfact.spad.dvi ${DOC}/modgcd.spad.dvi \
+ ${DOC}/modmonom.spad.dvi ${DOC}/modmon.spad.dvi ${DOC}/modring.spad.dvi \
+ ${DOC}/moebius.spad.dvi ${DOC}/mring.spad.dvi ${DOC}/mset.spad.dvi \
+ ${DOC}/mts.spad.dvi ${DOC}/multfact.spad.dvi ${DOC}/multpoly.spad.dvi \
+ ${DOC}/multsqfr.spad.dvi \
+ ${DOC}/naalgc.spad.dvi ${DOC}/naalg.spad.dvi ${DOC}/ndftip.as.dvi \
+ ${DOC}/nepip.as.dvi ${DOC}/newdata.spad.dvi ${DOC}/newpoint.spad.dvi \
+ ${DOC}/newpoly.spad.dvi ${DOC}/nlinsol.spad.dvi ${DOC}/nlode.spad.dvi \
+ ${DOC}/noptip.as.dvi ${DOC}/npcoef.spad.dvi ${DOC}/nqip.as.dvi \
+ ${DOC}/nrc.as.dvi ${DOC}/nregset.spad.dvi ${DOC}/nsfip.as.dvi \
+ ${DOC}/nsregset.spad.dvi ${DOC}/numeigen.spad.dvi ${DOC}/numeric.spad.dvi \
+ ${DOC}/numode.spad.dvi ${DOC}/numquad.spad.dvi ${DOC}/numsolve.spad.dvi \
+ ${DOC}/numtheor.spad.dvi \
+ ${DOC}/oct.spad.dvi ${DOC}/odealg.spad.dvi ${DOC}/odeef.spad.dvi \
+ ${DOC}/oderf.spad.dvi ${DOC}/omcat.spad.dvi ${DOC}/omdev.spad.dvi \
+ ${DOC}/omerror.spad.dvi ${DOC}/omserver.spad.dvi ${DOC}/opalg.spad.dvi \
+ ${DOC}/openmath.spad.dvi ${DOC}/op.spad.dvi ${DOC}/ore.spad.dvi \
+ ${DOC}/outform.spad.dvi ${DOC}/out.spad.dvi \
+ ${DOC}/pade.spad.dvi ${DOC}/padiclib.spad.dvi ${DOC}/padic.spad.dvi \
+ ${DOC}/paramete.spad.dvi ${DOC}/partperm.spad.dvi ${DOC}/patmatch1.spad.dvi \
+ ${DOC}/patmatch2.spad.dvi ${DOC}/pattern.spad.dvi ${DOC}/pcurve.spad.dvi \
+ ${DOC}/pdecomp.spad.dvi ${DOC}/perman.spad.dvi ${DOC}/permgrps.spad.dvi \
+ ${DOC}/perm.spad.dvi ${DOC}/pfbr.spad.dvi ${DOC}/pfo.spad.dvi \
+ ${DOC}/pfr.spad.dvi ${DOC}/pf.spad.dvi ${DOC}/pgcd.spad.dvi \
+ ${DOC}/pgrobner.spad.dvi ${DOC}/pinterp.spad.dvi ${DOC}/pleqn.spad.dvi \
+ ${DOC}/plot3d.spad.dvi ${DOC}/plot.spad.dvi ${DOC}/plottool.spad.dvi \
+ ${DOC}/polset.spad.dvi ${DOC}/poltopol.spad.dvi ${DOC}/polycat.spad.dvi \
+ ${DOC}/poly.spad.dvi ${DOC}/primelt.spad.dvi ${DOC}/print.spad.dvi \
+ ${DOC}/product.spad.dvi ${DOC}/prs.spad.dvi ${DOC}/prtition.spad.dvi \
+ ${DOC}/pscat.spad.dvi ${DOC}/pseudolin.spad.dvi ${DOC}/ptranfn.spad.dvi \
+ ${DOC}/puiseux.spad.dvi \
+ ${DOC}/qalgset.spad.dvi ${DOC}/quat.spad.dvi \
+ ${DOC}/radeigen.spad.dvi ${DOC}/radix.spad.dvi ${DOC}/random.spad.dvi \
+ ${DOC}/ratfact.spad.dvi ${DOC}/rdeef.spad.dvi ${DOC}/rderf.spad.dvi \
+ ${DOC}/rdesys.spad.dvi ${DOC}/real0q.spad.dvi ${DOC}/realzero.spad.dvi \
+ ${DOC}/reclos.spad.dvi ${DOC}/regset.spad.dvi ${DOC}/rep1.spad.dvi \
+ ${DOC}/rep2.spad.dvi ${DOC}/resring.spad.dvi ${DOC}/retract.spad.dvi \
+ ${DOC}/rf.spad.dvi ${DOC}/riccati.spad.dvi ${DOC}/rinterp.spad.dvi \
+ ${DOC}/routines.spad.dvi \
+ ${DOC}/rule.spad.dvi \
+ ${DOC}/seg.spad.dvi ${DOC}/setorder.spad.dvi ${DOC}/sets.spad.dvi \
+ ${DOC}/sex.spad.dvi ${DOC}/sf.spad.dvi ${DOC}/sgcf.spad.dvi \
+ ${DOC}/sign.spad.dvi ${DOC}/si.spad.dvi ${DOC}/smith.spad.dvi \
+ ${DOC}/solvedio.spad.dvi ${DOC}/solvefor.spad.dvi ${DOC}/solvelin.spad.dvi \
+ ${DOC}/solverad.spad.dvi ${DOC}/sortpak.spad.dvi ${DOC}/space.spad.dvi \
+ ${DOC}/special.spad.dvi ${DOC}/sregset.spad.dvi ${DOC}/s.spad.dvi \
+ ${DOC}/stream.spad.dvi ${DOC}/string.spad.dvi ${DOC}/sttaylor.spad.dvi \
+ ${DOC}/sttf.spad.dvi ${DOC}/sturm.spad.dvi ${DOC}/suchthat.spad.dvi \
+ ${DOC}/suls.spad.dvi ${DOC}/sum.spad.dvi ${DOC}/sups.spad.dvi \
+ ${DOC}/supxs.spad.dvi ${DOC}/suts.spad.dvi ${DOC}/symbol.spad.dvi \
+ ${DOC}/syssolp.spad.dvi ${DOC}/system.spad.dvi \
+ ${DOC}/tableau.spad.dvi ${DOC}/table.spad.dvi ${DOC}/taylor.spad.dvi \
+ ${DOC}/tex.spad.dvi ${DOC}/tools.spad.dvi ${DOC}/transsolve.spad.dvi \
+ ${DOC}/tree.spad.dvi ${DOC}/trigcat.spad.dvi ${DOC}/triset.spad.dvi \
+ ${DOC}/tube.spad.dvi ${DOC}/twofact.spad.dvi \
+ ${DOC}/unifact.spad.dvi ${DOC}/updecomp.spad.dvi ${DOC}/updivp.spad.dvi \
+ ${DOC}/utsode.spad.dvi \
+ ${DOC}/variable.spad.dvi ${DOC}/vector.spad.dvi ${DOC}/view2D.spad.dvi \
+ ${DOC}/view3D.spad.dvi ${DOC}/viewDef.spad.dvi ${DOC}/viewpack.spad.dvi \
+ ${DOC}/void.spad.dvi \
+ ${DOC}/weier.spad.dvi ${DOC}/wtpol.spad.dvi \
+ ${DOC}/xlpoly.spad.dvi ${DOC}/xpoly.spad.dvi \
+ ${DOC}/ystream.spad.dvi \
+ ${DOC}/zerodim.spad.dvi
+
+@
+
+\section{Test Cases}
+
+<<environment>>=
+
+TESTS=${INPUT}/INTHEORY.input ${INPUT}/VIEW2D.input ${INPUT}/TESTFR.input
+
+@
+
+<<testrules>>=
+
+${INPUT}/TESTFR.input: $(srcdir)/fr.spad.pamphlet
+	$(axiom_build_document) --tangle='TEST FR' --output=$@ $<
+
+${INPUT}/INTHEORY.input: $(srcdir)/numtheor.spad.pamphlet
+	$(axiom_build_document) --tangle='TEST INTHEORY' --output=$@ $<
+
+${INPUT}/VIEW2D.input: $(srcdir)/view2D.spad.pamphlet
+	$(axiom_build_document) --tangle='TEST VIEW2D' --output=$@ $<
+
+@
+
+\section{The Makefile Stanzas}
+
+A [[spad]] pamphlet can contain many Axiom [[categories]], [[domains]], and
+[[packages]]. 
+
+For the purpose of explanation we assume that the pamphlet file is 
+named [[foo.spad.pamphlet]]. It contains the domains [[BAR]], [[BAX]],
+and [[BAZ]]. Thus there will be a subsection named [[foo.spad]].
+
+Since pamphlet files (e.g. [[foo.spad.pamphlet]] contain a spad file
+e.g. [[foo.spad]], it follows that every subsection contains a Makefile
+stanza that extract the [[foo.spad]] file using [[notangle]].
+
+Since pamphlet files are intended as documents it follows that each
+subsection contains a Makefile stanza that extracts a [[dvi]] file
+using [[noweave]].
+
+We could have a category, domain, or package that is in
+the ``bootstrap'' list. Bootstrap spad files contain their generated
+lisp code in special sections. The way bootstrapping works is that
+we extract the lisp code and compile it rather than extracting the
+spad code. We do this because we need the domain to exist before we
+can compile the domain. Some domains depend on themselves directly.
+Some domains depend on themselves thru a long chain of other domains.
+In either case we can't compile the domain until it exists so we
+cache the generated lisp code and, when we need to bootstrap the
+domain, we compile the raw lisp rather than the spad.
+
+This will only happen when the system is built from scratch. Once
+the system has been built the bootstrap code is no longer executed
+and these algebra files will appear as normal algebra files. That
+means that once the system has been built once only the last three
+rules will ever be executed. The first two rules happen when the
+system is built from scratch.
+
+A 5 stanza group for this case performs the following functions:
+\begin{enumerate}
+\item extract the lisp [[BAR.lsp]] from the pamphlet [[foo.spad.pamphlet]]
+\item compile and copy the bootstrap lisp to the final algebra directory
+\item extract the bootstrap [[BAR.lsp]] from the spad file [[foo.spad]]
+\item compile the extracted [[BAR]] domain
+\item copy the compiled [[BAR]] to the final algebra directory
+\end{enumerate}
+
+The subtle point here occurs in the first item. The bootstrap code
+group (in the [[layer0 bootstrap]] code chunk above) asks for the
+compiled [[.o]] files in the \File{strap/} directory. Essentially this
+code group calls for intermediate compiled files. This triggers the
+bootstrap stanzas (items 1 and 2 above). All of the other layer 
+chunks ask for compiled code in the [[\${OUT}]] directory which is
+the final algebra directory. 
+
+The bootstrap process works because first we ask for the compiled
+lisp code stanzas (the \File{strap/BAR.o} files), THEN we ask for
+the final algebra code stanzas (the [[\${OUT}/BAR.o]] files). This
+is a very subtle point so think it through carefully. The layer0
+bootstrap list is the only file list that calls for \File{strap/} files.
+All other layers ask for [[\${OUT}]] files. Make sure you
+understand this before you change things. If you break it the
+world will no longer compile.
+
+So we have a 3 stanza group for normal files, a 3+2 (5) stanza
+group for normal files with default code, and a 3+2 (5) stanza
+group for normal files that need to be bootstrapped. There is
+another combination that occurs, namely bootstrap code that
+also contains default code which gives a 3+2+2+2 (9) stanza case.
+(see TSETCAT for an example. Be sure to read the items in reverse order).
+
+A 9 stanza group for this case performs the following functions:
+\begin{enumerate}
+\item extract the bootstrap \File{BAR.lsp} from the \File{foo.spad.pamphlet}
+\item compile the bootstrap \File{BAR.lsp} to the \File{strap/} directory
+\item extract the bootstrap \File{BAR-.lsp} from the \File{foo.spad.pamphlet}
+\item compile the bootstrap \File{BAR-.lsp} to the \File{strap/} directory
+\item extract the spad \File{BAR.spad} from the pamphlet 
+  \File{foo.spad.pamphlet}
+\item compile the extracted \File{BAR.spad} domain (to get [[BAR.o]])
+\item copy the \File{BAR.o} to the final algebra directory
+\item compile the extracted \File{BAR-.spad} domain (to get [[BAR-.o]])
+\item copy the [[BAR-.o]] to the final algebra directory
+\end{enumerate}
+
+As you can see this is just the combination of the two possible 5
+stanza case. We just have to deal with the [[BAR-]] both in regular
+and bootstrap files. The first four stanzas will only happen when
+the system is built from scratch. Once the system is built these
+four rules no longer apply and these stanzas effectively act like
+the 5 stanza rules above.
+
+I'm sure all of this seems confusing but it is very stylized code.
+Basically you need to figure out which kind of stanza group you need,
+copy an existing stanza group, and do a correct renaming of the parts.
+The decision tree looks something like:
+\begin{verbatim}
+IF (you have a regular spad domain)
+ THEN use a 3 stanza form (see YSTREAM)
+IF (you have a default spad domain (it generates [[-]] files)) AND
+   (it does not require bootstrapping)
+ THEN use the first 5 stanza form explained above (see LIECAT)
+IF (you have a normal spad domain) AND
+   (it requires bootstrapping)
+ THEN use the second 5 stanza form explained above (see VECTOR)
+IF (you have a default spad domain (it generates [[-]] files)) AND
+   (it requires bootstrapping)
+ THEN use the 9 stanza form explained above (see TSETCAT)
+\end{verbatim}
+
+\section{Generic Make Rules}
+
+The idea is to use generic rules to try to cut down the size of this file.
+
+This Makefile works very hard to cache
+intermediate results in order to minimize the re-build time. The cached
+files are kept in the current build and \File{strap/} directories. 
+If one of these
+files disappears but the original pamphlet file is unchanged we only
+need to rebuild the intermediate file. These rule will attempt to do
+that and they succeed however these are intermediate files created by
+implicit rules so they would normally be deleted. To prevent the removal
+the NRLIB directory and its contents, the files are marked as .PRECIOUS.
+
+The output of the compile step is saved in a file of the same name
+and extension .out in the \${MID} directory. These files are useful for
+deriving the dependencies by scanning the ``Loading ...'' messages.
+
+<<genericDotOfiles>>=
+
+${OUT}/%.o: %.NRLIB/code.o
+	cp $*.NRLIB/code.o ${OUT}/$*.o
+
+@ 
+
+<<genericNRLIBfiles>>=
+
+.PRECIOUS: %.NRLIB/code.o
+%.NRLIB/code.o: %.spad
+	@ rm -rf $*.NRLIB
+	echo ")co $*.spad" | ${INTERPSYS}
+@
+
+<<genericBOOTSTRAPfiles>>=
+# Compile bootstrap file to machine object code, and the result
+# immediately available for AXIOMsys consumption.
+strap/%.o: %.lsp
+	$(DEPSYS) -- --compile --output=$@ $<
+	cp $@ ${OUT}
+@
+
+<<genericSPADfiles>>=
+
+$(OUTSRC)/%.spad: mk-target-src-algabra-dir
+
+${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
+	$(axiom_build_document) --tangle --output=$@ $<
+
+.PHONY: mk-target-src-algabra-dir
+mk-target-src-algabra-dir:
+	@ [ -d $(OUTSRC) ] || $(mkinstalldirs) $(OUTSRC)
+
+@
+<<genericDOCfiles>>=
+.PRECIOUS: $(builddir)/%.tex
+.PRECIOUS: $(builddir)/%.dvi
+
+$(DOC)/%.dvi:  mk-target-doc-dir
+
+.PHONY: mk-target-doc-dir
+mk-target-doc-dir:
+	@ [ -d $(DOC) ] || $(mkinstalldirs) $(DOC)
+
+$(DOC)/%.dvi: $(builddir)/%.dvi
+	$(INSTALL_DATA) $< $@
+
+$(builddir)/%.dvi: $(axiom_build_texdir)/diagrams.tex \
+		   $(axiom_build_texdir)/axiom.sty
+
+$(builddir)/%.dvi: $(builddir)/%.tex
+	$(axiom_build_document) --latex $<
+
+$(builddir)/%.tex: $(srcdir)/%.pamphlet
+	$(axiom_build_document) --weave --output=$@ $<
+
+$(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
+	$(INSTALL_DATA) $< $@
+@
+<<genericRules>>=
+
+<<genericDotOfiles>>
+<<genericNRLIBfiles>>
+<<genericBOOTSTRAPfiles>>
+<<genericSPADfiles>>
+<<genericDOCfiles>>
+
+@
+<<diagrams.tex (OUT from IN)>>=
+
+${DOC}/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
+	$(INSTALL_DATA) $< $@
+ 
+@
+
+\section{Pamphlet file structure}
+
+Because the individual .spad files are grouped into higher-level
+algebra pamphlet files, the rules for extracting them are coded
+below as simple ``awk'' scripts that are called when the Makefile
+is constructed.
+
+There are, at present, 3 kinds of algebra files to be handled.
+First we have [[.as]] files which use the [[aldor]] compiler.
+These are ignored here as the compiler is not yet integrated.
+
+Second, there are the bootstrap files. These files live within
+their respective pamphlet files and are "captured" lisp code.
+These are necessary to create the algebra. See the 
+[[src/algebra/Makefile.pamphlet]] for details.
+
+Third, there are 3 "types" of algebra which are all treated 
+the same at compile time, namely the "domain", "category", and
+"package" algebra.
+
+\subsection{Finding the algebra code}
+
+NOTE: This construct is now moved to configure time.  Update.
+
+Step 1 is to scan all of the algebra pamphlet files for the
+chunk names which contain the string "domain", "package", or
+"category". This is done using egrep (same as grep -E, which
+means that the pattern is an extended regular expression) because
+extended regular expressions allows the use of alternatives
+written as (domain|package|category). Thus the command
+\begin{verbatim}
+ egrep '@<<(domain|package|category) .*>>=' *.spad.pamphlet 
+\end{verbatim}
+will scan the algebra files looking for special chunknames.
+Axiom's chunk names are written in a stylized form so that each
+algebra chunk name begins with one of those three symbols. Thus 
+in zerodim.spad.pamphlet the LexTriangularPackage chunkname is:
+\begin{verbatim}
+@<<package LEXTRIPK LexTriangularPackage>>
+\end{verbatim}
+so this egrep will generate an output line, prefixed by the filename
+that looks like:
+\begin{verbatim}
+zerodim.spad.pamphlet:@<<package LEXTRIPK LexTriangularPackage>>=
+\end{verbatim}
+There can be many lines of output per pamphlet file, one for
+each domain, package and category cod chunk contained in the file.
+
+Step 2 is an [[awk]] command line.
+
+\subsection{Write the Makefile stanzas for the algebra files}
+
+NOTE: This construct is now moved to configure time.
+
+[awk] processes each line of the [[egrep]] output. 
+
+The awk script uses [[-F:]] which is a flag that says that a [[:]] is
+the field separator. As a result the \$1 and \$2 in the awk script
+refer to the parts of the egrep output that come before and after the
+[[:]] respectively.
+
+The variable [[chunk]] is assigned the actual chunk name minus
+the @<< and >>= delimiters. In the example given above this will become
+\begin{verbatim}
+package LEXTRIPK LexTriangularPackage
+\end{verbatim}
+The call to [[split]] splits the chunk into parts separated
+by spaces. Thus
+\begin{verbatim}
+  part[1]=package
+  part[2]=LEXTRIPK
+  part[3]=LexTriangularPackage
+\end{verbatim}
+The variable [[spadfile]] in the above example is set to
+\begin{verbatim}
+${MID}/LEXTRIPK.spad
+\end{verbatim}
+Finally, in the domain example given above we print two lines.
+The first line is the Makefile stanza header which depends on the
+original [[zerodim.spad.pamphlet]] file.
+
+The second line is the body of the makefile stanza which calls 
+notangle to extract the algebra from the original pamphlet using
+the chunk name and writes it to the intermediate subdirectory. In
+the case above this would resolve to [[\${MID}/LEXTRIPK.spad]].
+
+For the line given above it outputs the following:
+\begin{verbatim}
+${MID}/LEXTRIPK.spad: $(srcdir)/zerodim.spad.pamphlet
+	$(axiom_build_document) --tangle='package LEXTRIPK LexTriangularPackage' --output=$@ $<
+\end{verbatim}
+
+\subsection{Find the algebra bootstrap code}
+
+Step 3 works like step 1 above except that we are looking for
+chunk names that have the "BOOTSTRAP" string. The output will look like:
+\begin{verbatim}
+vector.spad.pamphlet:@<<VECTOR.lsp BOOTSTRAP>>=
+\end{verbatim}
+This output, which can consist of many lines per input file is piped
+into [[awk]].
+
+The process is the same way as described above except that
+there are only two parts to the chunk names
+\begin{verbatim}
+  part[1]=VECTOR.lsp
+  part[2]=BOOTSTRAP
+\end{verbatim}
+The [[lspfile]] variable is assigned
+\begin{verbatim}
+${MID}/VECTOR.lsp
+\end{verbatim}
+Finally we output two lines:
+\begin{verbatim}
+${MID}/vector.spad.pamphlet: $(srcdir)/vector.spad.pamphlet
+	$(axiom_build_document) --tangle='VECTOR.lsp BOOTSTRAP' --output=$@ $<
+\end{verbatim}
+
+The first line is the stanza head and creates a dependence between
+the intermediate file, in this case [[int/algebra/VECTOR.lsp]] and
+the input file [[src/algebra/vector.spad.pamphlet]]
+
+The second line calls [[notangle]] to extract the required chunk
+from the source file.
+
+\section{Stage markers}
+
+We output these as each stage completes.
+<<stages>>=
+$(axiom_algebra_layer_0_objects): strap-stamp
+$(axiom_algebra_layer_1_objects): 0-stamp
+$(axiom_algebra_layer_2_objects): 1-stamp
+$(axiom_algebra_layer_3_objects): 2-stamp
+$(axiom_algebra_layer_4_objects): 3-stamp
+$(axiom_algebra_layer_5_objects): 4-stamp
+$(axiom_algebra_layer_6_objects): 5-stamp
+$(axiom_algebra_layer_7_objects): 6-stamp
+$(axiom_algebra_layer_8_objects): 7-stamp
+$(axiom_algebra_layer_9_objects): 8-stamp
+$(axiom_algebra_layer_10_objects): 9-stamp
+$(axiom_algebra_layer_11_objects): 10-stamp
+$(axiom_algebra_layer_12_objects): 11-stamp
+$(axiom_algebra_layer_13_objects): 12-stamp
+$(axiom_algebra_layer_14_objects): 13-stamp
+$(axiom_algebra_layer_15_objects): 14-stamp
+$(axiom_algebra_layer_16_objects): 15-stamp
+$(axiom_algebra_layer_17_objects): 16-stamp
+$(axiom_algebra_layer_18_objects): 17-stamp
+$(axiom_algebra_layer_19_objects): 18-stamp
+$(axiom_algebra_layer_20_objects): 19-stamp
+$(axiom_algebra_layer_21_objects): 20-stamp
+$(axiom_algebra_layer_22_objects): 21-stamp
+$(axiom_algebra_layer_23_objects): 22-stamp
+$(axiom_algebra_layer_user_objects): 23-stamp
+$(axiom_algebra_bootstrap_objects): user-stamp
+
+strap-stamp: $(axiom_algebra_layer_strap_objects)
+	@ rm -f strap-stamp
+	@ $(STAMP) strap-stamp
+	@ echo =====================================
+	@ echo === algebra bootstrap complete ======
+	@ echo =====================================
+
+0-stamp: strap-stamp $(axiom_algebra_layer_0_objects)
+	@ rm -f 0-stamp
+	@ $(STAMP) 0-stamp
+	@ echo ==================================
+	@ echo === layer 0 of 23 complete ======
+	@ echo ==================================
+
+1-stamp: 0-stamp $(axiom_algebra_layer_1_objects)
+	@ rm -f 1-stamp
+	@ $(STAMP) 1-stamp
+	@ echo ==================================
+	@ echo === layer 1 of 23 complete ======
+	@ echo ==================================
+
+2-stamp: 1-stamp $(axiom_algebra_layer_2_objects)
+	@ rm -f 2-stamp
+	@ $(STAMP) 2-stamp
+	@ echo ==================================
+	@ echo === layer 2 of 23 complete ======
+	@ echo ==================================
+
+3-stamp: 2-stamp $(axiom_algebra_layer_3_objects)
+	@ rm -f 3-stamp
+	@ $(STAMP) 3-stamp
+	@ echo ==================================
+	@ echo === layer 3 of 23 complete ======
+	@ echo ==================================
+
+4-stamp: 3-stamp $(axiom_algebra_layer_4_objects)
+	@ rm -f 4-stamp
+	@ $(STAMP) 4-stamp
+	@ echo ==================================
+	@ echo === layer 4 of 23 complete ======
+	@ echo ==================================
+
+5-stamp: 4-stamp $(axiom_algebra_layer_5_objects)
+	@ rm -f 5-stamp
+	@ $(STAMP) 5-stamp
+	@ echo ==================================
+	@ echo === layer 5 of 23 complete ======
+	@ echo ==================================
+
+6-stamp: 5-stamp $(axiom_algebra_layer_6_objects)
+	@ rm -f 6-stamp
+	@ $(STAMP) 6-stamp
+	@ echo ==================================
+	@ echo === layer 6 of 23 complete ======
+	@ echo ==================================
+
+7-stamp: 6-stamp $(axiom_algebra_layer_7_objects)
+	@ rm -f 7-stamp
+	@ $(STAMP) 7-stamp
+	@ echo ==================================
+	@ echo === layer 7 of 23 complete ======
+	@ echo ==================================
+
+8-stamp: 7-stamp $(axiom_algebra_layer_8_objects)
+	@ rm -f 8-stamp
+	@ $(STAMP) 8-stamp
+	@ echo ==================================
+	@ echo === layer 8 of 23 complete ======
+	@ echo ==================================
+
+9-stamp: 8-stamp $(axiom_algebra_layer_9_objects)
+	@ rm -f 9-stamp
+	@ $(STAMP) 9-stamp
+	@ echo ==================================
+	@ echo === layer 9 of 23 complete ======
+	@ echo ==================================
+
+10-stamp: 9-stamp $(axiom_algebra_layer_10_objects)
+	@ rm -f 10-stamp
+	@ $(STAMP) 10-stamp
+	@ echo ==================================
+	@ echo === layer 10 of 23 complete ======
+	@ echo ==================================
+
+11-stamp: 10-stamp $(axiom_algebra_layer_11_objects)
+	@ rm -f 11-stamp
+	@ $(STAMP) 11-stamp
+	@ echo ==================================
+	@ echo === layer 11 of 23 complete ======
+	@ echo ==================================
+
+12-stamp: 11-stamp $(axiom_algebra_layer_12_objects)
+	@ rm -f 12-stamp
+	@ $(STAMP) 12-stamp
+	@ echo ==================================
+	@ echo === layer 12 of 23 complete ======
+	@ echo ==================================
+
+13-stamp: 12-stamp $(axiom_algebra_layer_13_objects)
+	@ rm -f 13-stamp
+	@ $(STAMP) 13-stamp
+	@ echo ==================================
+	@ echo === layer 13 of 23 complete ======
+	@ echo ==================================
+
+14-stamp: 13-stamp $(axiom_algebra_layer_14_objects)
+	@ rm -f 14-stamp
+	@ $(STAMP) 14-stamp
+	@ echo ==================================
+	@ echo === layer 14 of 23 complete ======
+	@ echo ==================================
+
+15-stamp: 14-stamp $(axiom_algebra_layer_15_objects)
+	@ rm -f 15-stamp
+	@ $(STAMP) 15-stamp
+	@ echo ==================================
+	@ echo === layer 15 of 23 complete ======
+	@ echo ==================================
+
+16-stamp: 15-stamp $(axiom_algebra_layer_16_objects)
+	@ rm -f 16-stamp
+	@ $(STAMP) 16-stamp
+	@ echo ==================================
+	@ echo === layer 16 of 23 complete ======
+	@ echo ==================================
+
+17-stamp: 16-stamp $(axiom_algebra_layer_17_objects)
+	@ rm -f 17-stamp
+	@ $(STAMP) 17-stamp
+	@ echo ==================================
+	@ echo === layer 17 of 23 complete ======
+	@ echo ==================================
+
+18-stamp: 17-stamp $(axiom_algebra_layer_18_objects)
+	@ rm -f 18-stamp
+	@ $(STAMP) 18-stamp
+	@ echo ==================================
+	@ echo === layer 18 of 23 complete ======
+	@ echo ==================================
+
+19-stamp: 18-stamp $(axiom_algebra_layer_19_objects)
+	@ rm -f 19-stamp
+	@ $(STAMP) 19-stamp
+	@ echo ==================================
+	@ echo === layer 19 of 23 complete ======
+	@ echo ==================================
+
+20-stamp: 19-stamp $(axiom_algebra_layer_20_objects)
+	@ rm -f 20-stamp
+	@ $(STAMP) 20-stamp
+	@ echo ==================================
+	@ echo === layer 20 of 23 complete ======
+	@ echo ==================================
+
+21-stamp: 20-stamp $(axiom_algebra_layer_21_objects)
+	@ rm -f 21-stamp
+	@ $(STAMP) 21-stamp
+	@ echo ==================================
+	@ echo === layer 21 of 23 complete ======
+	@ echo ==================================
+
+22-stamp: 21-stamp $(axiom_algebra_layer_22_objects)
+	@ rm -f 22-stamp
+	@ $(STAMP) 22-stamp
+	@ echo ==================================
+	@ echo === layer 22 of 23 complete ======
+	@ echo ==================================
+
+23-stamp: 22-stamp $(axiom_algebra_layer_23_objects)
+	@ rm -f 23-stamp
+	@ $(STAMP) 23-stamp
+	@ echo ==================================
+	@ echo === layer 23 of 23 complete ======
+	@ echo ==================================
+
+user-stamp: 23-stamp $(axiom_algebra_layer_user_objects)
+	@ rm -f user-stamp
+	@ $(STAMP) user-stamp
+
+
+# bootstrap-pre: user-stamp $(axiom_algebra_bootstrap_nrlibs)
+# $(axiom_algebra_bootstrap_nrlibs): user-stamp
+
+# bootstrap-post: bootstrap-pre $(axiom_algebra_bootstrap_objects)
+
+bootstrap-stamp: $(axiom_algebra_bootstrap_objects)
+	@ rm -f bootstrap-stamp
+	@ $(STAMP) bootstrap-stamp
+	@ echo ==================================
+	@ echo ===    algebra complete     ======
+	@ echo ==================================
+@
+
+\section{The Makefile}
+
+<<*>>=
+<<environment>>
+
+subdir = src/algebra/
+
+<<layer0 bootstrap>>
+<<layer0 copy>>
+<<layer0>> 
+<<layer1>>
+<<layer2>>
+<<layer3>>
+<<layer4>>
+<<layer5>>
+<<layer6>>
+<<layer7>>
+<<layer8>>
+<<layer9>>
+<<layer10>>
+<<layer11>>
+<<layer12>>
+<<layer13>>
+<<layer14>>
+<<layer15>>
+<<layer16>>
+<<layer17>>
+<<layer18>>
+<<layer19>>
+<<layer20>>
+<<layer21>>
+<<layer22>>
+<<layer23>>
+<<USERLAYER>>
+
+# The algebra build is not yet ready for parallel build.
+.NOTPARALLEL:
+
+.PHONY: all all-algebra mkdir-output-directory
+all: all-ax
+
+all-ax all-algebra: stamp
+	@ echo finished $(builddir)
+
+stamp: mkdir-output-directory ${SPADFILES} bootstrap-stamp ${TESTS}
+	-rm -f stamp
+	$(STAMP) stamp
+
+mkdir-output-directory:
+	$(mkinstalldirs) $(OUTSRC)
+
+everything: check lib db cmd gloss
+	@ echo 4303 invoking make in `pwd` with parms:
+	@ echo SYS= ${SYS} LSP= ${LSP}
+	@ echo MNT= ${MNT} LISP=${LISP} BYE=${BYE}
+
+check:
+	@ echo 4305 Checking that INTERP.EXPOSED and NRLIBs are consistent
+	@ echo 4306 libcheck needs to use exposed.lsp, not INTERP.EXPOSED
+
+
+<<genericRules>>
+
+<<testrules>>
+<<diagrams.tex (OUT from IN)>>
+<<stages>>
+
+mostlyclean-local:
+	@ -rm -f $(OUT)/*.$(OBJEXT)
+	@ -rm -rf *.NRLIB
+
+clean-local: mostlyclean-local
+
+distclean-local: clean-local
+
+include extract-lisp-files.mk
+include extract-spad.mk
+
+.NOTPARALLEL:
+
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

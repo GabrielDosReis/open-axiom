@@ -1,0 +1,5 @@
+#ifdef _NO_PROTO
+extern void makeView2DFromSpadData();
+#else
+extern void makeView2DFromSpadData(view2DStruct * viewdata , graphStateStruct graphState[]);
+#endif

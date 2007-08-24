@@ -1,0 +1,5 @@
+#ifdef _NO_PROTO
+extern void closeViewport();
+#else
+extern void closeViewport(void);
+#endif
