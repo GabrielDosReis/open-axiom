@@ -1,3 +1,7 @@
+2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* INSTALL: Tidy.
+
 2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Set release info to 1.1.0 (experimental).

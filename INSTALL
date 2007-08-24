@@ -34,6 +34,7 @@ Please, notice that GCL and noweb are needed only to *build*
 OpenAxiom.  If you plan to build OpenAxiom often, then it probably is
 a good idea to separately build and install those tools once for all.
 
+
 If you already have GCL and noweb installed, please go to step 2.
 
 1.a. Download the dependency tarball open-axiom-1.0.x-dep.tar.bz2
@@ -64,9 +65,14 @@ or have separately installed them before proceeding.
 
 2.b. Configure OpenAxiom
 
-      cd open-axiom-1.0.0 
-      ./configure
+It is highly recommended that you build OpenAxiom in a directory
+different from the one that contains the sources.  For example, you
+may create a directory sibling to open-axiom-1.0.0 and build the
+system from there:
 
+      mkdir build-oa
+      cd build-oa
+      ../open-axiom-1.0.0/configure
 
 It is possible to tell configure where to put the final OpenAxiom
 executables.  By default, when you just type in configure like above,
@@ -74,7 +80,7 @@ it will configure the system with prefix /usr/local.  You can instead
 say where you want it to be installed, let's say /banana/space.  You
 would then have typed
 
-     ./configure --prefix=/banana/space
+     ../open-axiom-1.0.0/configure --prefix=/banana/space
 
 2.c. Make the system
 
@@ -115,9 +121,18 @@ make sure that you've gained the adequate privileges.  Then, type:
       make install
 
 3.c. The system is ready for use
+
+After step 3.b., your should have a script called `axiom', in
+/usr/local/bin or /banana/space/bin or /whichever/prefix/you/used/bin,
+ready for your.  Just type in
+
+    axiom
+
+in the shell.
   
 
-4.  Enjoy.
+4.  Enjoy
+    -----
 
 About Make
 ==========
