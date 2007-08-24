@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input LWORD.input}
+\author{Michel Petitot}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+)cl all
+
+a:Symbol :='a
+b:Symbol :='b
+c:Symbol :='c
+lword:= LyndonWord(Symbol)
+magma := Magma(Symbol)
+word   := OrderedFreeMonoid(Symbol)
+LyndonWordsList1([a,b,c],3)$lword
+LyndonWordsList([a,b,c],3)$lword
+lw := LyndonWordsList([a,b],5)$lword
+w1 : word := lw.4 :: word
+w2 : word := lw.5 :: word
+factor(a::word)$lword
+factor(w1*w2)$lword
+factor(w2*w2)$lword
+factor(w2*w1)$lword
+lyndon?(w1)$lword
+lyndon?(w1*w2)$lword
+lyndon?(w2*w1)$lword
+lyndonIfCan(w1)$lword
+lyndonIfCan(w2*w1)$lword
+lyndon(w1)$lword
+lyndon(w1*w2)$lword
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

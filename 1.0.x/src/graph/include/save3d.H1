@@ -1,0 +1,7 @@
+#ifdef _NO_PROTO
+extern int makeSavePanel();
+extern void drawSavePanel();
+#else
+extern int makeSavePanel(void);
+extern void drawSavePanel(void);
+#endif

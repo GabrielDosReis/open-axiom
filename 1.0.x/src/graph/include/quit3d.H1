@@ -1,0 +1,7 @@
+#ifdef _NO_PROTO
+extern int makeQuitPanel();
+extern void drawQuitPanel();
+#else
+extern int makeQuitPanel(void);
+extern void drawQuitPanel(void);
+#endif

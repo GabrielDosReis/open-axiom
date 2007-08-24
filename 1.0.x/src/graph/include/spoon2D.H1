@@ -1,0 +1,9 @@
+#ifdef _NO_PROTO
+extern void spoonView2D();
+extern void makeView2DFromFileData();
+extern void sendGraphToView2D();
+#else
+extern void spoonView2D(void);
+extern void makeView2DFromFileData(view2DStruct * );
+extern void sendGraphToView2D(int  , int  , viewManager * );
+#endif
