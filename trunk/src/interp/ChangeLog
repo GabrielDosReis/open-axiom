@@ -1,3 +1,8 @@
+2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* setvart.boot.pamphlet (quit): Set value to unprotected,
+	as documented.
+
 2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu,edu>
 
 	* vmlisp.lisp.pamphlet (getl): Rewrite to accept list of symbols
