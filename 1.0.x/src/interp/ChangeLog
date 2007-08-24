@@ -1,4 +1,8 @@
 2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	
+        * OpenAxiom 1.0.0 released.
+	
+2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sys-globals.boot ($printLoadMsgs): Define here.
 	* bookvol5.pamphlet (RESTART): Don't set $printLoadMsgs here.

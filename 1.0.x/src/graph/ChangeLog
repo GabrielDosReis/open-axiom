@@ -1,3 +1,7 @@
+2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	
+        * OpenAxiom 1.0.0 released.
+	
 2007-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet: Propagate libtoolization changes.
