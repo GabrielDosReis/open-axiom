@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom 1.0.0 (experimental)], [2007-08-23], 
+AC_INIT([OpenAxiom 1.0.0 (prerelease)], [2007-08-23], 
         [open-axiom-devel@lists.sf.org])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)

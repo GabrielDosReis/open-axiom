@@ -1,5 +1,9 @@
 2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet: Set release info to 1.0.0 (prerelease).
+
+2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* INSTALL: Update instructions.
 
 2007-08-23 Alfredo Portes <alfredo.portes@gmail.com>
