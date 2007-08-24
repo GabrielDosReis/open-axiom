@@ -1,3 +1,8 @@
+2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($printLoadMsgs): Define here.
+	* bookvol5.pamphlet (RESTART): Don't set $printLoadMsgs here.
+
 2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu,edu>
 
 	* vmlisp.lisp.pamphlet (getl): Rewrite to accept list of symbols
