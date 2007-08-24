@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input FPARFRAC.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from FullPartialFractionExpansionXmpPage
+)clear all
+
+Fx := FRAC UP(x, FRAC INT)
+f : Fx := 36 / (x**5-2*x**4-2*x**3+4*x**2+x-2)
+g := fullPartialFraction f
+g :: Fx
+g5 := D(g, 5)
+f5 := D(f, 5)
+g5::Fx - f5
+f : Fx := (x**5 * (x-1)) / ((x**2 + x + 1)**2 * (x-2)**3)
+g := fullPartialFraction f
+g :: Fx - f
+f : Fx := (2*x**7-7*x**5+26*x**3+8*x) / (x**8-5*x**6+6*x**4+4*x**2-8)
+g := fullPartialFraction f
+g :: Fx - f
+f:Fx := x**3 / (x**21 + 2*x**20 + 4*x**19 + 7*x**18 + 10*x**17 + 17*x**16 + 22*x**15 + 30*x**14 + 36*x**13 + 40*x**12 + 47*x**11 + 46*x**10 + 49*x**9 + 43*x**8 + 38*x**7 + 32*x**6 + 23*x**5 + 19*x**4 + 10*x**3 + 7*x**2 + 2*x + 1)
+g := fullPartialFraction f
+g :: Fx - f
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

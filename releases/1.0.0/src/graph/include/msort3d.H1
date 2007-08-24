@@ -1,0 +1,7 @@
+#ifdef _NO_PROTO
+extern poly * merge();
+extern poly * msort();
+#else
+extern poly * merge(poly *  , poly *  , int (*)(poly *  , poly * ));
+extern poly * msort(poly *  , int  , int  , int (*)(poly *  , poly * ));
+#endif

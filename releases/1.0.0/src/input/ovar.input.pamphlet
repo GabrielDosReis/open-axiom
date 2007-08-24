@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input OVAR.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from OrderedVariableListXmpPage
+)clear all
+
+ls:List Symbol:=['x,'a,'z]
+Z:=OVAR ls
+size()$Z
+lv:=[index(i::PI)$Z for i in 1..size()$Z]
+sorted?(>,lv)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

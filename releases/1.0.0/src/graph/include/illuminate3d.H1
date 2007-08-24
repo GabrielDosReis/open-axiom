@@ -1,0 +1,13 @@
+#ifdef _NO_PROTO
+extern float phong();
+extern int hueValue();
+extern int getHue();
+extern float Value();
+extern RGB hlsTOrgb();
+#else
+extern float phong(triple  , float [3]);
+extern int hueValue(float );
+extern int getHue(float );
+extern float Value(float  , float  , float );
+extern RGB hlsTOrgb(float  , float  , float );
+#endif
