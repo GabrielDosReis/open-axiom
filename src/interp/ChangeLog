@@ -1,5 +1,24 @@
 2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* bootfuns.lisp.pamphlet (|$constructorsNotInDatabase|): Remove.
+	(|$DomainFrame|): Remove.
+	(|$eltIfNil|): Remove.
+	(|$compileMapFlag|): Remove.
+	(|$evalDomain|): Don't set here.
+	(|$false|): Move to sys-constants.boot.
+	(|$domainTraceNameAssoc|): Move to sys-globals.boot. 
+	(|$evalDomain|): Move to sys-globals.boot.
+	(|$exitModeStack|): Move to sys-globals.boot
+	* pspad1.boot.pamphlet (lisp2Boot): Don't declare $eltIfNil anymore.
+	* setvars.boot.pamphlet (resetWorkspaceVariables): Don't set
+	anymore. 
+	* setq.lisp.pamphlet (|$domainTraceNameAssoc|): Don't set here.
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind |$DomainFrame| anymore.
+	(S-PROCESS): Set $exitModeStack to nil.
+	(|$false|): Don't set here.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* ccl-depsys.lsp.pamphlet: Remove.
 
 2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
