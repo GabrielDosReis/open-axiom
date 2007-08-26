@@ -1,5 +1,20 @@
 2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* sys-globals.boot ($IOindex): Move from bootfuns.lisp.pamphlet.
+	($inputPromptType): Likewise.
+	($whereList): Likewise.
+	($warningStack): Likewise.
+
+	* patches.lisp.pamphlet (|$inputPromptType|): Don't set here.
+
+	* bootfuns.lisp.pamphlet ($Type): Remove.
+	(|$warningStack|): Move to sys-globals.boot.
+	(|$whereList|): Likewise.
+	(|$inputPromptType|): Likewise.
+	(|$IOindex|): Likewise.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (<<apply.o (AUTO from OUT)>>): Remove.
 	(<<bootlex.o (AUTO from OUT)>>): Likewise.
 	(<<def.o (AUTO from OUT)>>): Likewise.
