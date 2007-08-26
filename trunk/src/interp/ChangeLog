@@ -1,5 +1,69 @@
 2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (<<apply.o (AUTO from OUT)>>): Remove.
+	(<<bootlex.o (AUTO from OUT)>>): Likewise.
+	(<<def.o (AUTO from OUT)>>): Likewise.
+	(<<fnewmeta.o (AUTO from OUT)>>): Likewise.
+	(<<metalex.o (AUTO from OUT)>>): Likewise.
+	(<<nspadaux.o (AUTO from OUT)>>): Likewise.
+	(<<parsing.o (AUTO from OUT)>>): Likewise.
+	(<<postprop.o (AUTO from OUT)>>): Likewise.
+	(<<preparse.o (AUTO from OUT)>>): Likewise.
+	(<<c-util.o (AUTO from OUT)>>): Likewise.
+	(<<nag-c02.o (AUTO from OUT)>>): Likewise.
+	(<<nag-c05.o (AUTO from OUT)>>): Likewise.
+	(<<nag-d01.o (AUTO from OUT)>>): Likewise.
+	(<<nag-d02.o (AUTO from OUT)>>): Likewise.
+	(<<nag-d03.o (AUTO from OUT)>>): Likewise.
+	(<<nag-e01.o (AUTO from OUT)>>): Likewise.
+	(<<nag-e02.o (AUTO from OUT)>>): Likewise.
+	(<<nag-e04.o (AUTO from OUT)>>): Likewise.
+	(<<nag-f01.o (AUTO from OUT)>>): Likewise.
+	(<<nag-f02.o (AUTO from OUT)>>): Likewise.
+	(<<nag-f04.o (AUTO from OUT)>>): Likewise.
+	(<<nag-f07.o (AUTO from OUT)>>): Likewise.
+	(<<nag-s.o (AUTO from OUT)>>): Likewise.
+	(<<category.o (AUTO from OUT)>>): Likewise.
+	(<<c-doc.o (AUTO from OUT)>>): Likewise.
+	(<<compiler.o (AUTO from OUT)>>): Likewise.
+	(<<profile.o (AUTO from OUT)>>): Likewise.
+	(<<define.o (AUTO from OUT)>>): Likewise.
+	(<<functor.o (AUTO from OUT)>>): Likewise.
+	(<<info.o (AUTO from OUT)>>): Likewise.
+	(<<iterator.o (AUTO from OUT)>>): Likewise.
+	(<<modemap.o (AUTO from OUT)>>): Likewise.
+	(<<nruncomp.o (AUTO from OUT)>>): Likewise.
+	(<<package.o (AUTO from OUT)>>): Likewise.
+	(<<parse.o (AUTO from OUT)>>): Likewise.
+	(<<postpar.o (AUTO from OUT)>>): Likewise.
+	(<<bc-matrix.o (AUTO from OUT)>>): Likewise.
+	(<<bc-misc.o (AUTO from OUT)>>): Likewise.
+	(<<bc-solve.o (AUTO from OUT)>>): Likewise.
+	(<<bc-util.o (AUTO from OUT)>>): Likewise.
+	(<<ht-util.o (AUTO from OUT)>>): Likewise.
+	(<<htsetvar.o (AUTO from OUT)>>): Likewise.
+	(<<ht-root.o (AUTO from OUT)>>): Likewise.
+	(<<htcheck.o (AUTO from OUT)>>): Likewise.
+	(<<xruncomp.o (AUTO from OUT)>>): Likewise.
+	(<<ax.o (AUTO from OUT)>>): Likewise.
+	(<<br-con.o (AUTO from OUT)>>): Likewise.
+	(<<br-search.o (AUTO from OUT)>>): Likewise.
+	(<<br-op1.o (AUTO from OUT)>>): Likewise.
+	(<<br-op2.o (AUTO from OUT)>>): Likewise.
+	(<<br-data.o (AUTO from OUT)>>): Likewise.
+	(<<br-util.o (AUTO from OUT)>>): Likewise.
+	(<<br-saturn.o (AUTO from OUT)>>): Likewise.
+	(<<topics.o (AUTO from OUT)>>): Likewise.
+	(<<br-prof.o (AUTO from OUT)>>): Likewise.
+	(<<showimp.o (AUTO from OUT)>>): Likewise.
+	(<<wi1.o (AUTO from OUT)>>): Likewise.
+	(<<wi2.o (AUTO from OUT)>>): Likewise.
+	(<<pspad1.o (AUTO from OUT)>>): Likewise.
+	(<<pspad2.o (AUTO from OUT)>>): Likewise.
+	(<<mark.o (AUTO from OUT)>>): Likewise.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* bootfuns.lisp.pamphlet (|$constructorsNotInDatabase|): Remove.
 	(|$DomainFrame|): Remove.
 	(|$eltIfNil|): Remove.

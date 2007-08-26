@@ -506,95 +506,51 @@ database.date:
 	@ touch database.date
 
 
-${AUTO}/apply.$(FASLEXT): apply.$(FASLEXT)
-	@ echo 9 making ${AUTO}/apply.$(FASLEXT) from apply.$(FASLEXT)
-	@ cp apply.$(FASLEXT) ${AUTO}
+## Copy FASLs that are autoloaded to the autoload directory.
+.PREVIOUS: $(AUTO)/%.$(FASLEXT)
 
+$(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
+	$(INSTALL) $< $@
 
 as.clisp: as.boot
 	@ echo 417 making $@ from $<
 	@ echo '(progn (old-boot::boot "as.boot"))' | ${DEPSYS}
 
-${AUTO}/ax.$(FASLEXT): ax.$(FASLEXT)
-	@ echo 461 making ${AUTO}/ax.$(FASLEXT) from ax.$(FASLEXT)
-	@ cp ax.$(FASLEXT) ${AUTO}
-
 ax.clisp: ax.boot
 	@ echo 463 making $@ $<
 	@ echo '(progn (old-boot::boot "ax.boot"))' | ${DEPSYS} 
-
-${AUTO}/bc-matrix.$(FASLEXT): bc-matrix.$(FASLEXT)
-	@ echo 422 making ${AUTO}/bc-matrix.$(FASLEXT) from bc-matrix.$(FASLEXT)
-	@ cp bc-matrix.$(FASLEXT) ${AUTO}
 
 bc-matrix.clisp: bc-matrix.boot
 	@ echo 424 making $@ from $<
 	@ echo '(progn (old-boot::boot "bc-matrix.boot"))' | ${DEPSYS}
 
-${AUTO}/bc-misc.$(FASLEXT): bc-misc.$(FASLEXT)
-	@ echo 426 making ${AUTO}/bc-misc.$(FASLEXT) from bc-misc.$(FASLEXT)
-	@ cp bc-misc.$(FASLEXT) ${AUTO}
-
 bc-misc.clisp: bc-misc.boot
 	@ echo 428 making $@ from $<
 	@ echo '(progn (old-boot::boot "bc-misc.boot"))' | ${DEPSYS}
-
-${AUTO}/bc-solve.$(FASLEXT): bc-solve.$(FASLEXT)
-	@ echo 430 making ${AUTO}/bc-solve.$(FASLEXT) from bc-solve.$(FASLEXT)
-	@ cp bc-solve.$(FASLEXT) ${AUTO}
 
 bc-solve.clisp: bc-solve.boot
 	@ echo 432 making $@ from $<
 	@ echo '(progn (old-boot::boot "bc-solve.boot"))' | ${DEPSYS}
 
-${AUTO}/bc-util.$(FASLEXT): bc-util.$(FASLEXT)
-	@ echo 434 making ${AUTO}/bc-util.$(FASLEXT) from bc-util.$(FASLEXT)
-	@ cp bc-util.$(FASLEXT) ${AUTO}
-
 bc-util.clisp: bc-util.boot
 	@ echo 436 making $@ from $<
 	@ echo '(progn (old-boot::boot "bc-util.boot"))' | ${DEPSYS}
-
-${AUTO}/bootlex.$(FASLEXT): bootlex.$(FASLEXT)
-	@ echo 19 making ${AUTO}/bootlex.$(FASLEXT) from bootlex.$(FASLEXT)
-	@ cp bootlex.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/br-con.$(FASLEXT): br-con.$(FASLEXT)
-	@ echo 465 making ${AUTO}/br-con.$(FASLEXT) from br-con.$(FASLEXT)
-	@ cp br-con.$(FASLEXT) ${AUTO}
 
 br-con.clisp: br-con.boot
 	@ echo 467 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-con.boot"))' | ${DEPSYS} 
 
-${AUTO}/br-data.$(FASLEXT): br-data.$(FASLEXT)
-	@ echo 481 making ${AUTO}/br-data.$(FASLEXT) from br-data.$(FASLEXT)
-	@ cp br-data.$(FASLEXT) ${AUTO}
-
 br-data.clisp: br-data.boot
 	@ echo 483 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-data.boot"))' | ${DEPSYS} 
-
-${AUTO}/br-op1.$(FASLEXT): br-op1.$(FASLEXT)
-	@ echo 473 making ${AUTO}/br-op1.$(FASLEXT) from br-op1.$(FASLEXT)
-	@ cp br-op1.$(FASLEXT) ${AUTO}
 
 br-op1.clisp: br-op1.boot
 	@ echo 475 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-op1.boot"))' | ${DEPSYS}
 
-${AUTO}/br-op2.$(FASLEXT): br-op2.$(FASLEXT)
-	@ echo 477 making ${AUTO}/br-op2.$(FASLEXT) from br-op2.$(FASLEXT)
-	@ cp br-op2.$(FASLEXT) ${AUTO}
-
 br-op2.clisp: br-op2.boot
 	@ echo 479 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-op2.boot"))' | ${DEPSYS} 
-
-${AUTO}/br-prof.$(FASLEXT): br-prof.$(FASLEXT)
-	@ echo 497 making ${AUTO}/br-prof.$(FASLEXT) from br-prof.$(FASLEXT)
-	@ cp br-prof.$(FASLEXT) ${AUTO}
 
 br-prof.clisp: br-prof.boot
 	@ echo 499 making $@ from $<
@@ -603,25 +559,13 @@ br-prof.clisp: br-prof.boot
 	  rm br-prof.boot )
 
 
-${AUTO}/br-saturn.$(FASLEXT): br-saturn.$(FASLEXT)
-	@ echo 489 making ${AUTO}/br-saturn.$(FASLEXT) from br-saturn.$(FASLEXT)
-	@ cp br-saturn.$(FASLEXT) ${AUTO}
-
 br-saturn.clisp: br-saturn.boot
 	@ echo 491 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-saturn.boot"))' | ${DEPSYS}
 
-${AUTO}/br-search.$(FASLEXT): br-search.$(FASLEXT)
-	@ echo 469 making ${AUTO}/br-search.$(FASLEXT) from br-search.$(FASLEXT)
-	@ cp br-search.$(FASLEXT) ${AUTO}
-
 br-search.clisp: br-search.boot
 	@ echo 471 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-search.boot"))' | ${DEPSYS} 
-
-${AUTO}/br-util.$(FASLEXT): br-util.$(FASLEXT)
-	@ echo 485 making ${AUTO}/br-util.$(FASLEXT) from br-util.$(FASLEXT)
-	@ cp br-util.$(FASLEXT) ${AUTO}
 
 br-util.clisp: br-util.boot
 	@ echo 487 making $@ from $<
@@ -632,10 +576,6 @@ buildom.clisp: buildom.boot
 	@ echo '(progn (old-boot::boot "buildom.boot"))' | ${DEPSYS}
 
 
-${AUTO}/category.$(FASLEXT): category.$(FASLEXT)
-	@ echo 210 making ${AUTO}/ category.$(FASLEXT) from category.$(FASLEXT)
-	@ cp category.$(FASLEXT) ${AUTO}
-
 category.clisp: category.boot
 	@ echo 212 making $@ from $<
 	@ echo '(progn (old-boot::boot "category.boot"))' | ${DEPSYS} 
@@ -643,10 +583,6 @@ category.clisp: category.boot
 cattable.clisp: cattable.boot
 	@ echo 215 making $@ from $<
 	@ echo '(progn (old-boot::boot "cattable.boot"))' | ${DEPSYS}
-
-${AUTO}/c-doc.$(FASLEXT): c-doc.$(FASLEXT)
-	@ echo 217 making ${AUTO}/c-doc.$(FASLEXT) from c-doc.$(FASLEXT)
-	@ cp c-doc.$(FASLEXT) ${AUTO}
 
 c-doc.clisp: c-doc.boot
 	@ echo 219 making $@ from $<
@@ -660,17 +596,9 @@ compat.clisp: compat.boot
 	@ echo 229 making $@ from $<
 	@ echo '(progn (old-boot::boot "compat.boot"))' | ${DEPSYS} 
 
-${AUTO}/compiler.$(FASLEXT): compiler.$(FASLEXT)
-	@ echo 231 making ${AUTO}/compiler.$(FASLEXT) from compiler.$(FASLEXT)
-	@ cp compiler.$(FASLEXT) ${AUTO}
-
 compiler.clisp: compiler.boot
 	@ echo 233 making $@ from $<
 	@ echo '(progn (old-boot::boot "compiler.boot"))' | ${DEPSYS}
-
-${AUTO}/c-util.$(FASLEXT): c-util.$(FASLEXT)
-	@ echo 145 making ${AUTO}/c-util.$(FASLEXT) from c-util.$(FASLEXT)
-	@ cp c-util.$(FASLEXT) ${AUTO}
 
 c-util.${LISP}: $(srcdir)/c-util.boot.pamphlet
 	@ echo 146 making c-util.${LISP} from $(srcdir)/c-util.boot.pamphlet
@@ -689,23 +617,9 @@ database.clisp: database.boot
 debugsys.lisp: $(srcdir)/debugsys.lisp.pamphlet
 	$(axiom_build_document) --tangle --output=$@ $<
 
-${AUTO}/def.$(FASLEXT): def.$(FASLEXT)
-	@ echo 41 making ${AUTO}/def.$(FASLEXT) from def.$(FASLEXT)
-	@ cp def.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/define.$(FASLEXT): define.$(FASLEXT)
-	@ echo 245 making ${AUTO}/define.$(FASLEXT) from define.$(FASLEXT)
-	@ cp define.$(FASLEXT) ${AUTO}
-
 define.clisp: define.boot
 	@ echo 247 making $@ from $<
 	@ echo '(progn (old-boot::boot "define.boot"))' | ${DEPSYS}
-
-${AUTO}/fnewmeta.$(FASLEXT): fnewmeta.$(FASLEXT)
-	@ echo 49 making ${AUTO}/fnewmeta.$(FASLEXT) from fnewmeta.$(FASLEXT)
-	@ cp fnewmeta.$(FASLEXT) ${AUTO}
-
 
 format.clisp: format.boot
 	@ echo 250 making $@ from $<
@@ -715,10 +629,6 @@ fortcall.clisp: fortcall.boot
 	@ echo 55 making $@ from $<
 	@ echo '(progn (old-boot::boot "fortcall.boot"))' | ${DEPSYS}
 
-
-${AUTO}/functor.$(FASLEXT): functor.$(FASLEXT)
-	@ echo 252 making ${AUTO}/functor.$(FASLEXT) from functor.$(FASLEXT)
-	@ cp functor.$(FASLEXT) ${AUTO}
 
 functor.clisp: functor.boot
 	@ echo 254 making $@ from $<
@@ -736,33 +646,17 @@ g-timer.clisp: g-timer.boot
 	@ echo 270 making $@ from $<
 	@ echo '(progn (old-boot::boot "g-timer.boot"))' | ${DEPSYS}
 
-${AUTO}/htcheck.$(FASLEXT): htcheck.$(FASLEXT)
-	@ echo 453 making ${AUTO}/htcheck.$(FASLEXT) from htcheck.$(FASLEXT)
-	@ cp htcheck.$(FASLEXT) ${AUTO}
-
 htcheck.clisp: htcheck.boot
 	@ echo 455 making $@ from $<
 	@ echo '(progn (old-boot::boot "htcheck.boot"))' | ${DEPSYS}
-
-${AUTO}/ht-root.$(FASLEXT): ht-root.$(FASLEXT)
-	@ echo 449 making ${AUTO}/ht-root.$(FASLEXT) from ht-root.$(FASLEXT)
-	@ cp ht-root.$(FASLEXT) ${AUTO}
 
 ht-root.clisp: ht-root.boot
 	@ echo 451 making $@ from $<
 	@ echo '(progn (old-boot::boot "ht-root.boot"))' | ${DEPSYS}
 
-${AUTO}/htsetvar.$(FASLEXT): htsetvar.$(FASLEXT)
-	@ echo 442 making ${AUTO}/htsetvar.$(FASLEXT) from htsetvar.$(FASLEXT)
-	@ cp htsetvar.$(FASLEXT) ${AUTO}
-
 htsetvar.clisp: htsetvar.boot
 	@ echo 444 making $@ from $<
 	@ echo '(progn (old-boot::boot "htsetvar.boot"))' | ${DEPSYS}
-
-${AUTO}/ht-util.$(FASLEXT): ht-util.$(FASLEXT)
-	@ echo 438 making ${AUTO}/ht-util.$(FASLEXT) from ht-util.$(FASLEXT)
-	@ cp ht-util.$(FASLEXT) ${AUTO}
 
 ht-util.clisp: ht-util.boot
 	@ echo 440 making $@ from $<
@@ -808,10 +702,6 @@ i-map.clisp: i-map.boot
 	@ echo 304 making $@ from $<
 	@ echo '(progn (old-boot::boot "i-map.boot"))' | ${DEPSYS} 
 
-${AUTO}/info.$(FASLEXT): info.$(FASLEXT)
-	@ echo 327 making ${AUTO}/info.$(FASLEXT) from info.$(FASLEXT)
-	@ cp info.$(FASLEXT) ${AUTO}
-
 info.clisp: info.boot
 	@ echo 329 making $@ from $<
 	@ echo '(progn (old-boot::boot "info.boot"))' | ${DEPSYS}
@@ -836,10 +726,6 @@ i-syscmd.clisp: i-syscmd.boot
 	@ echo 319 making $@ from $<
 	@ echo '(progn (old-boot::boot "i-syscmd.boot"))' | ${DEPSYS}
 
-${AUTO}/iterator.$(FASLEXT): iterator.$(FASLEXT)
-	@ echo 331 making ${AUTO}/iterator.$(FASLEXT) from iterator.$(FASLEXT)
-	@ cp iterator.$(FASLEXT) ${AUTO}
-
 iterator.clisp: iterator.boot
 	@ echo 333 making $@ from $<
 	@ echo '(progn (old-boot::boot "iterator.boot"))' | ${DEPSYS}
@@ -856,22 +742,9 @@ lisplib.clisp: lisplib.boot
 	@ echo 336 making $@ from $<
 	@ echo '(progn (old-boot::boot "lisplib.boot"))' | ${DEPSYS}
 
-${AUTO}/mark.$(FASLEXT): mark.$(FASLEXT)
-	@ cp $< $@
-
-
 match.clisp: match.boot
 	@ echo 339 making $@ from $<
 	@ echo '(progn (old-boot::boot "match.boot"))' | ${DEPSYS}
-
-${AUTO}/metalex.$(FASLEXT): metalex.$(FASLEXT)
-	@ echo 66 making ${AUTO}/metalex.$(FASLEXT) from metalex.$(FASLEXT)
-	@ cp metalex.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/modemap.$(FASLEXT): modemap.$(FASLEXT)
-	@ echo 341 making ${AUTO}/modemap.$(FASLEXT) from modemap.$(FASLEXT)
-	@ cp modemap.$(FASLEXT) ${AUTO}
 
 modemap.clisp: modemap.boot
 	@ echo 343 making $@ from $<
@@ -881,126 +754,70 @@ msgdb.clisp: msgdb.boot
 	@ echo 346 making $@ from $<
 	@ echo '(progn (old-boot::boot "msgdb.boot"))' | ${DEPSYS}
 
-${AUTO}/nag-c02.$(FASLEXT): nag-c02.$(FASLEXT)
-	@ echo 150 making${AUTO}/nag-c02.$(FASLEXT) from nag-c02.$(FASLEXT)
-	@ cp nag-c02.$(FASLEXT) ${AUTO}
-
 nag-c02.clisp: nag-c02.boot
 	@ echo 152 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-c02.boot"))' | ${DEPSYS}
 
-
-${AUTO}/nag-c05.$(FASLEXT): nag-c05.$(FASLEXT)
-	@ echo 154 making ${AUTO}/nag-c05.$(FASLEXT) from nag-c05.$(FASLEXT)
-	@ cp nag-c05.$(FASLEXT) ${AUTO}
 
 nag-c05.clisp: nag-c05.boot
 	@ echo 156 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-c05.boot"))' | ${DEPSYS}
 
 
-${AUTO}/nag-c06.$(FASLEXT): nag-c06.$(FASLEXT)
-	@ echo 158 making${AUTO}/nag-c06.$(FASLEXT) from nag-c06.$(FASLEXT)
-	@ cp nag-c06.$(FASLEXT) ${AUTO}
-
 nag-c06.clisp: nag-c06.boot
 	@ echo 160 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-c06.boot"))' | ${DEPSYS}
 
-
-${AUTO}/nag-d01.$(FASLEXT): nag-d01.$(FASLEXT)
-	@ echo 162 making${AUTO}/nag-d01.$(FASLEXT) from nag-d01.$(FASLEXT)
-	@ cp nag-d01.$(FASLEXT) ${AUTO}
 
 nag-d01.clisp: nag-d01.boot
 	@ echo 164 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-d01.boot"))' | ${DEPSYS}
 
 
-${AUTO}/nag-d02.$(FASLEXT): nag-d02.$(FASLEXT)
-	@ echo 166 making${AUTO}/nag-d02.$(FASLEXT) from nag-d02.$(FASLEXT)
-	@ cp nag-d02.$(FASLEXT) ${AUTO}
-
 nag-d02.clisp: nag-d02.boot
 	@ echo 168 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-d02.boot"))' | ${DEPSYS}
 
-
-${AUTO}/nag-d03.$(FASLEXT): nag-d03.$(FASLEXT)
-	@ echo 170 making${AUTO}/nag-d03.$(FASLEXT) from nag-d03.$(FASLEXT)
-	@ cp nag-d03.$(FASLEXT) ${AUTO}
 
 nag-d03.clisp: nag-d03.boot
 	@ echo 172 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-d03.boot"))' | ${DEPSYS}
 
 
-${AUTO}/nag-e01.$(FASLEXT): nag-e01.$(FASLEXT)
-	@ echo 174 making ${AUTO}/nag-e01.$(FASLEXT) from nag-e01.$(FASLEXT)
-	@ cp nag-e01.$(FASLEXT) ${AUTO}
-
 nag-e01.clisp: nag-e01.boot
 	@ echo 176 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-e01.boot"))' | ${DEPSYS}
 
-
-${AUTO}/nag-e02.$(FASLEXT): nag-e02.$(FASLEXT)
-	@ echo 182 making ${AUTO}/nag-e02.$(FASLEXT) from nag-e02.$(FASLEXT)
-	@ cp nag-e02.$(FASLEXT) ${AUTO}
 
 nag-e02.clisp: nag-e02.boot
 	@ echo 184 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-e02.boot"))' | ${DEPSYS}
 
 
-${AUTO}/nag-e04.$(FASLEXT): nag-e04.$(FASLEXT)
-	@ echo 186 making ${AUTO}/nag-e04.$(FASLEXT) from nag-e04.$(FASLEXT)
-	@ cp nag-e04.$(FASLEXT) ${AUTO}
-
 nag-e04.clisp: nag-e04.boot
 	@ echo 188 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-e04.boot"))' | ${DEPSYS}
 
-
-${AUTO}/nag-f01.$(FASLEXT): nag-f01.$(FASLEXT)
-	@ echo 190 making ${AUTO}/nag-f01.$(FASLEXT) from nag-f01.$(FASLEXT)
-	@ cp nag-f01.$(FASLEXT) ${AUTO}
 
 nag-f01.clisp: nag-f01.boot
 	@ echo 192 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-f01.boot"))' | ${DEPSYS}
 
 
-${AUTO}/nag-f02.$(FASLEXT): nag-f02.$(FASLEXT)
-	@ echo 194 making ${AUTO}/nag-f02.$(FASLEXT) from nag-f02.$(FASLEXT)
-	@ cp nag-f02.$(FASLEXT) ${AUTO}
-
 nag-f02.clisp: nag-f02.boot
 	@ echo 196 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-f02.boot"))' | ${DEPSYS}
 
-
-${AUTO}/nag-f04.$(FASLEXT): nag-f04.$(FASLEXT)
-	@ echo 198 making ${AUTO}/nag-f04.$(FASLEXT) from nag-f04.$(FASLEXT)
-	@ cp nag-f04.$(FASLEXT) ${AUTO}
 
 nag-f04.clisp: nag-f04.boot
 	@ echo 200 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-f04.boot"))' | ${DEPSYS}
 
 
-${AUTO}/nag-f07.$(FASLEXT): nag-f07.$(FASLEXT)
-	@ echo 202 making ${AUTO}/nag-f07.$(FASLEXT) from nag-f07.$(FASLEXT)
-	@ cp nag-f07.$(FASLEXT) ${AUTO}
-
 nag-f07.clisp: nag-f07.boot
 	@ echo 204 making $@ from $<
 	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-f07.boot"))' | ${DEPSYS}
 
-
-${AUTO}/nag-s.$(FASLEXT): nag-s.$(FASLEXT)
-	@ echo 206 making ${AUTO}/nag-s.$(FASLEXT) from nag-s.$(FASLEXT)
-	@ cp nag-s.$(FASLEXT) ${AUTO}
 
 nag-s.clisp: nag-s.boot
 	@ echo 208 making $@ from $<
@@ -1010,10 +827,6 @@ nag-s.clisp: nag-s.boot
 newfort.clisp: newfort.boot
 	@ echo 349 making $@ from $<
 	@ echo '(progn (old-boot::boot "newfort.boot"))' | ${DEPSYS}
-
-${AUTO}/nruncomp.$(FASLEXT): nruncomp.$(FASLEXT)
-	@ echo 351 making ${AUTO}/nruncomp.$(FASLEXT) from nruncomp.$(FASLEXT)
-	@ cp nruncomp.$(FASLEXT) ${AUTO}
 
 nruncomp.clisp: nruncomp.boot
 	@ echo 353 making $@ from $<
@@ -1035,54 +848,9 @@ nrunopt.clisp: nrunopt.boot
 	@ echo 365 making $@ from $<
 	@ echo '(progn (old-boot::boot "nrunopt.boot"))' | ${DEPSYS}
 
-${AUTO}/nspadaux.$(FASLEXT): nspadaux.$(FASLEXT)
-	@ echo 89 making ${AUTO}/nspadaux.$(FASLEXT) from nspadaux.$(FASLEXT)
-	@ cp nspadaux.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/package.$(FASLEXT): package.$(FASLEXT)
-	@ echo 370 making ${AUTO}/package.$(FASLEXT) from package.$(FASLEXT)
-	@ cp package.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/parse.$(FASLEXT): parse.$(FASLEXT)
-	@ echo 374 making ${AUTO}/parse.$(FASLEXT) from parse.$(FASLEXT)
-	@ cp parse.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/parsing.$(FASLEXT): parsing.$(FASLEXT)
-	@ echo 94 making ${AUTO}/parsing.$(FASLEXT) from parsing.$(FASLEXT)
-	@ cp parsing.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/postpar.$(FASLEXT): postpar.$(FASLEXT)
-	@ echo 382 making ${AUTO}/postpar.$(FASLEXT) from postpar.$(FASLEXT)
-	@ cp postpar.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/postprop.$(FASLEXT): postprop.$(FASLEXT)
-	@ echo 102 making $@ from $<
-	@ cp $< ${AUTO}
-
-
-${AUTO}/preparse.$(FASLEXT): preparse.$(FASLEXT)
-	@ echo 106 making ${AUTO}/preparse.$(FASLEXT) from preparse.$(FASLEXT)
-	@ cp preparse.$(FASLEXT) ${AUTO}
-
-
-${AUTO}/profile.$(FASLEXT): profile.$(FASLEXT)
-	@ echo 235 making ${AUTO}/profile.$(FASLEXT) from profile.$(FASLEXT)
-	@ cp profile.$(FASLEXT) ${AUTO}
-
 profile.clisp: profile.boot
 	@ echo 237 making $@ from $<
 	@ echo '(progn (old-boot::boot "profile.boot"))' | ${DEPSYS}
-
-${AUTO}/pspad1.$(FASLEXT):  pspad1.$(FASLEXT)
-	@ cp $< $@
-
-${AUTO}/pspad2.$(FASLEXT):  pspad2.$(FASLEXT)
-	@ cp $< $@
 
 record.clisp: record.boot
 	@ echo 447 making $@ $<
@@ -1100,11 +868,6 @@ setvart.clisp: setvart.boot
 	@ echo 398 making $@ from $<
 	@ echo '(progn (old-boot::boot "setvart.boot"))' | ${DEPSYS}
 
-${AUTO}/showimp.$(FASLEXT): showimp.$(FASLEXT)
-	@ echo 579 making ${AUTO}/showimp.$(FASLEXT) from showimp.$(FASLEXT)
-	@ cp showimp.$(FASLEXT) ${AUTO}
-
-
 template.clisp: template.boot
 	@ echo 408 making $@ from $<
 	@ echo '(progn (old-boot::boot "template.boot"))' | ${DEPSYS} 
@@ -1112,10 +875,6 @@ template.clisp: template.boot
 termrw.clisp: termrw.boot
 	@ echo 411 making $@ from $<
 	@ echo '(progn (old-boot::boot "termrw.boot"))' | ${DEPSYS} 
-
-${AUTO}/topics.$(FASLEXT): topics.$(FASLEXT)
-	@ echo 493 making ${AUTO}/topics.$(FASLEXT) from topics.$(FASLEXT)
-	@ cp topics.$(FASLEXT) ${AUTO}
 
 topics.clisp: topics.boot
 	@ echo 495 making $@ from $<
@@ -1129,16 +888,6 @@ trace.clisp: trace.boot
 	@ echo 2 building warm.data
 	$(axiom_build_document) --tangle=warm.data --output=$@ $<
 
-
-${AUTO}/wi1.$(FASLEXT): wi1.$(FASLEXT) 
-	@ cp $< $@
-
-${AUTO}/wi2.$(FASLEXT):  wi2.$(FASLEXT)
-	@ cp $< $@
-
-${AUTO}/xruncomp.$(FASLEXT): xruncomp.$(FASLEXT)
-	@ echo 457 making ${AUTO}/xruncomp.$(FASLEXT) from xruncomp.$(FASLEXT)
-	@ cp xruncomp.$(FASLEXT) ${AUTO}
 
 xruncomp.clisp: xruncomp.boot
 	@ echo 459 making $@ from $<
