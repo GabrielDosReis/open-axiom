@@ -32,8 +32,7 @@ all-boot all-lisp all-depsys all-interpsys all-axiomsys \
 endif
 
 $(AXIOM_SRC_TARGETS):
-	cd $(build_srcdir) && \
-		$(MAKE) "PATH=$(axiom_abs_build_bindir):$(PATH)" $@
+	cd $(build_srcdir) && $(MAKE) $@
 
 stamp-rootdirs: $(axiom_build_document)
 	@mkdir -p ${TMP}
