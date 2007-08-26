@@ -249,7 +249,6 @@ offer it as extensions.
 (def-boot-var |$traceNoisely|			    "Interpreter>Trace.boot")
 (def-boot-var |$TranslateOnly|			    "???")
 (def-boot-var |$tripleCache|			    "Compiler>Compiler.boot")
-(def-boot-var $Type				    "???")
 
 (def-boot-val |$updateCatTableIfTrue| T	   "update category table on load")
 (def-boot-var |$updateIfTrue|
@@ -258,13 +257,6 @@ offer it as extensions.
 	  "Determines whether to use BF as default floating point type.")
 (def-boot-val |$useDCQnotLET| () "checked in DEF-LET for use of DCQ")
 (def-boot-var |$VariableCount|			    "???")
-(def-boot-var |$warningStack|			    "???")
-(def-boot-val |$whereList| () "referenced in format boot formDecl2String")
-
-
-(def-boot-val |$inputPromptType| '|step|  "checked in MKPROMPT")
-(def-boot-val |$IOindex| 0		   "step counter")
-
 @
 \eject
 \begin{thebibliography}{99}

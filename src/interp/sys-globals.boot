@@ -102,3 +102,16 @@ $evalDomain := false
 
 ++
 $exitModeStack := []
+
+++
+$IOindex := 0
+
+++
+$inputPromptType := "step"
+
+++
+$whereList := []
+
+++
+$warningStack := []
+

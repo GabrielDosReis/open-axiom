@@ -138,7 +138,6 @@ previous definition.
 
 (setq |$useInternalHistoryTable| T)
 (defvar |$internalHistoryTable| ())
-(setq |$inputPromptType| '|step|)
 (setq |nullstream| '|nullstream|)
 (setq |nonnullstream| '|nonnullstream|)
 (defun |cpCms| (prefix &optional (string (|getSystemCommandLine|)))
