@@ -347,8 +347,6 @@
  ;" used for )restore option of )trace."
 (SETQ |$mathTraceList| NIL)
 	 ;" controls mathprint output for )trace."
-(SETQ |$domainTraceNameAssoc| NIL)
-	;"alist of traced domains"
 (SETQ |$tracedMapSignatures| ())
 (SETQ |$highlightAllowed| 'T)
 	 ;" used in BRIGHTPRINT and is a )set variable"
@@ -358,7 +356,6 @@
 (SETQ |$mostRecentOpAlist| NIL)
 (SETQ |$noEnv| NIL)
 (SETQ |$opFilter| NIL)	 ;" used to |/s a function "
-(SETQ |$evalDomain| NIL)
 
 (SETQ |$AnonymousFunction| '(|AnonymousFunction|))
 (SETQ |$Any|   '(|Any|))
@@ -379,7 +376,6 @@
 (SETQ |$gauss01| '(|gauss| 0 1))
 (SETQ |$form| NIL)
 (SETQ |$Index| 0)
-(SETQ |$false| NIL)
 (SETQ |$suffix| NIL)
 (SETQ |$coerceIntByMapCounter| 0)
 (SETQ |$reportCoerce| NIL)

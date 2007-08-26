@@ -93,3 +93,12 @@ $currentFunction := nil
 
 ++
 $currentLine := nil
+
+++
+$domainTraceNameAssoc := []
+
+++
+$evalDomain := false
+
+++
+$exitModeStack := []

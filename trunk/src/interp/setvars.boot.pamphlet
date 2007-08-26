@@ -81,7 +81,6 @@ resetWorkspaceVariables () ==
   SETQ($existingFiles               , MAKE_-HASHTABLE 'UEQUAL)
   SETQ($functionTable               , NIL)
   SETQ($BOOT                        , NIL)
-  SETQ($compileMapFlag              , NIL)
   SETQ($echoLineStack               , NIL)
   SETQ($operationNameList           , NIL)
   SETQ($slamFlag                    , NIL)
