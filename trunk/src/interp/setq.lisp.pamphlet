@@ -124,7 +124,6 @@
 (SETQ $FUNNAME NIL)   ;; this and next used in COMP,TRAN,1
 (SETQ $FUNNAME_TAIL '(()))
 (SETQ $LASTPREFIX "S:")    ;"default setting"
-(SETQ |$inLispVM| 'T)
 (SETQ STAKCOLUMN -1)
 (SETQ ECHOMETA NIL)
 (SETQ |$checkParseIfTrue| 'NIL)
@@ -138,7 +137,6 @@
 (SETQ INITCOLUMN 0)
 (SETQ |$functionTable| NIL)
 (SETQ |$spaddefs| NIL)
-(SETQ |$InteractiveMode| T)
 (SETQ |$xeditIsConsole|	 NIL)
 (SETQ |$echoInputLines|	 NIL)	    ;; This is in SETVART also
 (SETQ |$Slot1DataBase| (MAKE-HASHTABLE 'ID))  ;; See NRUNTIME BOOT
@@ -240,7 +238,6 @@
 (SETQ $LISPLIB NIL)
 (SETQ |$dependeeClosureAlist|	    NIL)
 (SETQ |$userModemaps| NIL)
-(SETQ |$forceDatabaseUpdate| NIL)  ;; see "load" function
 (SETQ |$spadSystemDisks|  '(I J K L))
 (SETQ |$functorForm| NIL)
 
@@ -372,10 +369,7 @@
 
 (SETQ $TOP_LEVEL T)
 (SETQ $NE (LIST (LIST NIL)))
-(SETQ |$InteractiveFrame| (LIST (LIST NIL)))
 (SETQ |$gauss01| '(|gauss| 0 1))
-(SETQ |$form| NIL)
-(SETQ |$Index| 0)
 (SETQ |$suffix| NIL)
 (SETQ |$coerceIntByMapCounter| 0)
 (SETQ |$reportCoerce| NIL)

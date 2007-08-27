@@ -354,6 +354,10 @@ $ThrowAwayMode ==
 $NoValueMode ==
   "$NoValueMode"
 
+++
+$ExitMode ==
+  "$ExitMode"
+
 --%
   
 ++ Category constructor form
@@ -520,3 +524,6 @@ $false ==
 $NoValue ==
   "$NoValue"
 
+
+++
+$exitMode == $EmptyMode

@@ -1,5 +1,72 @@
 2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* bootfuns.lisp.pamphlet (|$forceDatabaseUpdate|): Move to
+	sys-globals.boot.
+	(|$form|): Likewise.
+	(|$fromSpadTrace|): Likewise
+	(|$genSDVar|): Likewise.
+	(|$Index|): Likewise.
+	(|$inLispVM|): Likewise.
+	(|$insideCapsuleFunctionIfTrue|): Likewise.
+	(|$insideCategoryIfTrue|): Likewise.
+	(|$insideCoerceInteractiveHardIfTrue|): Likewise.
+	(|$insideCompTypeOf|): Likewise.
+	(|$insideConstructIfTrue|): Likewise.
+	(|$insideExpressionIfTrue|): Likewise.
+	(|$insideFunctorIfTrue|): Likewise.
+	(|$insideWhereIfTrue|): Likewise.
+	(|$instantRecord|): Likewise.
+	(|$InteractiveFrame|): Likewise.
+	(|$InteractiveMode|): Likewise.
+	(|$InteractiveTimingStatsIfTrue|): Likewise.
+
+	(|$genFVar|): Remove.
+	(|$ignoreCommentsIfTrue|): Likewise.
+	(|$InteractiveModemapFrame|): Likewise.
+
+	* setq.lisp.pamphlet (|$inLispVM|): Remove.
+	(|$InteractiveMode|): Likewise.
+	(|$forceDatabaseUpdate|): Likewise.
+	(|$InteractiveFrame|): Likewise.
+	(|$form|): Likewise.
+	(|$Index|): Likewise.
+
+	* sys-constants.boot ($ExitMode): Define.
+	($exitMode): Move from bootfuns.lisp.pamphlet.
+
+	* sys-globals.boot ($form): Likewise.
+	($fromSpadTrace): Likewise.
+	($genSDVar): Likewise.
+	($Index): Likewise.
+	($inLispVM): Likewise.
+	($insideCapsuleFunctionIfTrue): Likewise.
+	($insideCategoryIfTrue): Likewise.
+	($insideCoerceInteractiveHardIfTrue): Likewise.
+	($insideConstructIfTrue): Likewise.
+	($insideExpressionIfTrue): Likewise.
+	($insideFunctorIfTrue): Likewise.
+	($insideWhereIfTrue): Likewise.
+	($instantRecord): Likewise.
+	($InteractiveFrame): Likewise.
+	($(InteractiveMode): Likewise.
+	($InteractiveTimingStatsIftrue): Likewise.
+	($forceDatabaseUpdate): Likewise.
+
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind $exitMode here.
+
+	* bootfuns.lisp.pamphlet (|$exitMode|): Move to sys-constants.boot
+
+	* wi2.boot.pamphlet (compDefineFunctor1): Likewise.
+
+	* spad.lisp.pamphlet (S-PROCESS): Likewise.
+
+	* define.boot.pamphlet (compDefineFunctor1): Remove unused
+	$genFVar. 
+
+	* varini.boot.pamphlet ($ExitMode): Don't double define here.
+
+2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* sys-globals.boot ($IOindex): Move from bootfuns.lisp.pamphlet.
 	($inputPromptType): Likewise.
 	($whereList): Likewise.
