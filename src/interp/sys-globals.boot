@@ -115,3 +115,56 @@ $whereList := []
 ++
 $warningStack := []
 
+++
+$form := nil
+
+++
+$fromSpadTrace := false
+
+++
+$genSDVar := 0
+
+++
+$Index := 0
+
+++
+$inLispVM := true
+
+++
+$insideCapsuleFunctionIfTrue := false
+
+++
+$insideCategoryIfTrue := false
+
+++
+$insideCoerceInteractiveHardIfTrue := false
+
+++
+$insideCompTypeOf := false
+
+++
+$insideConstructIfTrue := false
+
+++
+$insideExpressionIfTrue := false
+
+++
+$insideFunctorIfTrue := false
+
+++
+$insideWhereIfTrue := false
+
+++
+$instantRecord := MAKE_-HASHTABLE "ID"
+
+++
+$InteractiveFrame := [[nil]]
+
+++
+$InteractiveMode := true
+
+++
+$InteractiveTimingStatsIfTrue := false
+
+++
+$forceDatabaseUpdate := false

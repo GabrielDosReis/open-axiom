@@ -358,7 +358,6 @@
 	|$topOp|
 	(|$semanticErrorStack| ())
 	(|$warningStack| ())
-	(|$exitMode| |$EmptyMode|)
 	(|$returnMode| |$EmptyMode|)
 	(|$leaveMode| |$EmptyMode|)
 	(|$leaveLevelStack| ())
@@ -366,7 +365,6 @@
 	|$insideCoerceInteractiveHardIfTrue| |$insideWhereIfTrue|
 	|$insideCategoryIfTrue| |$insideCapsuleFunctionIfTrue| |$form|
 	(|$e| |$EmptyEnvironment|)
-	(|$genFVar| 0)
 	(|$genSDVar| 0)
 	(|$VariableCount| 0)
 	(|$previousTime| (TEMPUS-FUGIT)))

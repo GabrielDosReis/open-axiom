@@ -171,7 +171,6 @@ $compSayPrefix :=      '"Msg"
 $charNumSymVector := NIL
  
 -- Modes
-$ExitMode :=          'ExitMode
 $FullMode :=          'FullMode
 $ValueMode :=         'ValueMode
  
@@ -193,7 +192,6 @@ $sefoDerivedAttributes := [ 'type, 'tfinfo, 'signature, 'pooled ]
 --from NCMODE BOOT
 $ValueMode   := 'ValueMode
 $FullMode    := 'FullMode
-$ExitMode    := 'ExitMode
  
 -- Miscellaneous nonsense.
 $newcompInteractiveRecovery := 'T
