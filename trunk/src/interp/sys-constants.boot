@@ -527,3 +527,9 @@ $NoValue ==
 
 ++
 $exitMode == $EmptyMode
+
+++
+$leaveMode == $EmptyMode
+
+++
+$noEnv == nil

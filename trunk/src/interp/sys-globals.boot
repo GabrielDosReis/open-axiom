@@ -168,3 +168,44 @@ $InteractiveTimingStatsIfTrue := false
 
 ++
 $forceDatabaseUpdate := false
+
+++
+$leaveLevelStack := []
+
+++
+++ FIXME: eventually move to trace.boot.
+$letAssoc := false
+
+++
+$libFile := nil
+
+++
+$lisplibForm := nil
+
+++
+$lisplibKind := nil
+
+++
+$lisplibModemapAlist := []
+
+++
+$lisplibModemap := nil
+
+++
+$lisplibOperationAlist := []
+
+++
+$lisplibSignatureAlist := []
+
+++
+$lisplibVariableAlist := []
+
+++
+$mapSubNameAlist := []
+
+++
+$mathTrace := false
+
+++
+$mathTraceList := []
+

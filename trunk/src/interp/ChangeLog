@@ -1,3 +1,59 @@
+2007-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($leaveLevelStack): Move from
+	bootfuns.lisp.pamphlet. 
+	($letAssoc): Likewise.
+	($libFile): Likewise.
+	($lisplibForm): Likewise.
+	($lisplibKind): Likewise.
+	($lisplibModemapAlist): Likewise.
+	($lisplibModemap): Likewise.
+	($lisplibOperationAlist): Likewise.
+	($lisplibSignatureAlist): Likewise.
+	($lisplibVariableAlist): Likewise.
+	($mapSubNameAlist): Likewise.
+	($mathTrace): Lilkewise.
+	($mathTraceList): Likewise.
+
+	* sys-constants.boot ($exitMode): Likewise.
+	($leaveMode): Likewise.
+	($noEnv): Likewise.
+
+	* trace.boot.pamphlet ($lastUntraced): Likewise.
+
+	* spad.lisp.pamphlet (|$leaveMode|): Don't bind here.
+
+	* setq.lisp.pamphlet (|$Lisp|): Remove.
+	(|$noEnv|): Don't set here.
+	(|$lastUntraced|): Likewise.
+	(|$mostRecentOpAlist|): Likewise.
+	(|$mathTraceList|): Likewise.
+	(|$letAssoc|): Likewise.
+
+	* bootfuns.lisp.pamphlet (|$noEnv|): Move to sys-constants.boot.
+	(|$leaveMode|): Likewise.
+	(|$lastUntraced|): Move to trace.boot.pamphlet.
+	(|$leaveLevelStack|): Move to sys-globals.boot.
+	(|$letAssoc|): Likewise.
+	(|$libFile|): Likewise.
+	(|$lisplibDomainDependents|): Likewise.
+	(|$lisplibForm|): Likewise.
+	(|$lisplibKind|): Likewise.
+	(|$lisplibModemapAlist|): Likewise.
+	(|$lisplibModemap|): Likewise.
+	(|$lisplibOperationAlist|): Likewise.
+	(|$lisplibSignatureAlist|): Likewise.
+	(|$lisplibVariableAlist|): Likewise.
+	(|$mapSubNameAlist|): Likewise.
+	(|$mathTrace|): Likewise.
+	(|$mathTraceList|): Likewise.
+
+	(|$Lisp|): Remove.
+	(|$lisplibDependentCategories|): Likewise.
+	(|$lisp2lispRenameAssoc|): Likewise.
+	(|$ModemapFrame|): Likewise.
+	(|$mostRecentOpAlist|): Likewise.
+
 2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* bootfuns.lisp.pamphlet (|$forceDatabaseUpdate|): Move to
