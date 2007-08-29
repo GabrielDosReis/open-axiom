@@ -359,7 +359,6 @@
 	(|$semanticErrorStack| ())
 	(|$warningStack| ())
 	(|$returnMode| |$EmptyMode|)
-	(|$leaveMode| |$EmptyMode|)
 	(|$leaveLevelStack| ())
 	$TOP_LEVEL |$insideFunctorIfTrue| |$insideExpressionIfTrue|
 	|$insideCoerceInteractiveHardIfTrue| |$insideWhereIfTrue|

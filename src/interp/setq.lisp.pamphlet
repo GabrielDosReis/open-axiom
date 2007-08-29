@@ -333,25 +333,17 @@
 (SETQ |$DomainsWithoutLisplibs| '(
   CAPSULE |Union| |Record| |SubDomain| |Mapping| |Enumeration| |Domain| |Mode|))
 
-(SETQ |$letAssoc| NIL)
-	;" used for trace of assignments in SPAD code -- see macro LETT"
 (SETQ |$useDCQnotLET| NIL)	;; use DCQs for destructuring := patterns
 (SETQ |$QuickCode| T)
 	 ;" controls generation of QREFELT etc."
 (SETQ |$QuickLet| T)
 	 ;" controls generation of LET tracing."
-(SETQ |$lastUntraced| NIL)
- ;" used for )restore option of )trace."
-(SETQ |$mathTraceList| NIL)
-	 ;" controls mathprint output for )trace."
 (SETQ |$tracedMapSignatures| ())
 (SETQ |$highlightAllowed| 'T)
 	 ;" used in BRIGHTPRINT and is a )set variable"
 
 (SETQ |$PrintCompilerMessagesIfTrue| NIL)
 (SETQ |$printStorageIfTrue| NIL) ;; storage info disabled in common lisp
-(SETQ |$mostRecentOpAlist| NIL)
-(SETQ |$noEnv| NIL)
 (SETQ |$opFilter| NIL)	 ;" used to |/s a function "
 
 (SETQ |$AnonymousFunction| '(|AnonymousFunction|))
@@ -380,7 +372,6 @@
 (SETQ |$prefix| NIL)
 (SETQ |$Polvar| '(WRAPPED . ((1 . 1))))
 (SETQ |$OneCoef| '(1 1 . 1))
-(SETQ |$Lisp| '(|Lisp|))
 (SETQ |$formalArgList| ())
 (SETQ |$TriangleVariableList|
    '(|t#1| |t#2| |t#3| |t#4| |t#5| |t#6| |t#7| |t#8| |t#9| |t#10|

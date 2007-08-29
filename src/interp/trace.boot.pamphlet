@@ -84,6 +84,9 @@ SETANDFILEQ($traceOptionList,'(
     within _
     ))
 
+
+SETANDFILEQ($lastUntraced,NIL)
+
 trace l == traceSpad2Cmd l
 
 traceSpad2Cmd l ==
