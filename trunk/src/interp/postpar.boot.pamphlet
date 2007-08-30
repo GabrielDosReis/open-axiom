@@ -51,6 +51,8 @@
 
 )package "BOOT"
 
+$postStack := []
+
 --% Yet Another Parser Transformation File
 --These functions are used by for BOOT and SPAD code
 --(see new2OldLisp, e.g.)

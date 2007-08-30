@@ -342,9 +342,7 @@
 (SETQ |$highlightAllowed| 'T)
 	 ;" used in BRIGHTPRINT and is a )set variable"
 
-(SETQ |$PrintCompilerMessagesIfTrue| NIL)
 (SETQ |$printStorageIfTrue| NIL) ;; storage info disabled in common lisp
-(SETQ |$opFilter| NIL)	 ;" used to |/s a function "
 
 (SETQ |$AnonymousFunction| '(|AnonymousFunction|))
 (SETQ |$Any|   '(|Any|))
@@ -370,8 +368,6 @@
 (SETQ |$streamIndexing| NIL)
 (SETQ |$reportExitModeStack| NIL)
 (SETQ |$prefix| NIL)
-(SETQ |$Polvar| '(WRAPPED . ((1 . 1))))
-(SETQ |$OneCoef| '(1 1 . 1))
 (SETQ |$formalArgList| ())
 (SETQ |$TriangleVariableList|
    '(|t#1| |t#2| |t#3| |t#4| |t#5| |t#6| |t#7| |t#8| |t#9| |t#10|

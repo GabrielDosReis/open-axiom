@@ -82,7 +82,6 @@ resetWorkspaceVariables () ==
   SETQ($functionTable               , NIL)
   SETQ($BOOT                        , NIL)
   SETQ($echoLineStack               , NIL)
-  SETQ($operationNameList           , NIL)
   SETQ($slamFlag                    , NIL)
   SETQ($CommandSynonymAlist         , COPY($InitialCommandSynonymAlist))
   SETQ($UserAbbreviationsAlist      , NIL)

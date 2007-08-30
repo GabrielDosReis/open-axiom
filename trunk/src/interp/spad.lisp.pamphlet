@@ -351,10 +351,8 @@
 	(*print-pretty* t)
 	($MACROASSOC ())
 	($NEWSPAD T)
-	(|$PolyMode| |$EmptyMode|)
 	(|$compUniquelyIfTrue| nil)
 	|$currentFunction|
-	(|$postStack| nil)
 	|$topOp|
 	(|$semanticErrorStack| ())
 	(|$warningStack| ())
@@ -370,6 +368,7 @@
     (prog ((CURSTRM CUROUTSTREAM) |$s| |$x| |$m| u)
 	  (declare (special CURSTRM |$s| |$x| |$m| CUROUTSTREAM))
 	  (SETQ |$exitModeStack| ())
+	  (SETQ |$postStack| nil)
 	  (SETQ $TRACEFLAG T)
 	  (if (NOT X) (RETURN NIL))
 	  (setq X (if $BOOT (DEF-RENAME (|new2OldLisp| X))

@@ -209,3 +209,12 @@ $mathTrace := false
 ++
 $mathTraceList := []
 
+++
+$prefix := nil
+
+++ FIXME: Eventually move to comp.lisp.pamphlet
+$PrettyPrint := false
+
+++
+$previousTime := 0
+
