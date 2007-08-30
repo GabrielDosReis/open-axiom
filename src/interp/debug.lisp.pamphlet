@@ -1111,6 +1111,8 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 ; Functions to run a timer for tracing
 ; It avoids timing the tracing function itself by turning the timer
 ; on and off
+
+(defvar |$oldTime| 0)
  
 (defun |startTimer| ()
     (SETQ $delay (PLUS $delay (DIFFERENCE (TEMPUS-FUGIT) |$oldTime|)))

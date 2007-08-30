@@ -1,3 +1,40 @@
+2007-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($prefix): Move from bootfuns.lisp.pamphlet.
+	($PrettyPrint): Likewise.
+	($previousTime): Likewise.
+
+	* bootfuns.lisp.pamphlet (|$prefix|): Move to sys-globals.boot.
+	(|$PrettyPrint|): Likewise.
+	(|$previousTime|): Likewise.
+	(|$postStack|): Move to postpar.boot.pamphlet.
+	(|$OneCoef|): Remove.
+	(|$operationNameList|): Likewise.
+	(|$opFilter|): Likewise.
+	(|$optionAlist|): Likewise.
+	(|$OutsideStringIfTrue|): Likewise.
+	(|$PolyMode|): Likewise.
+	(|$Polvar|): Likewise.
+	(|$optimizableDomainNames|): Likewise.
+	(|$PrintBox|): Likewise.
+	(|$PrintCompilerMessagesIfTrue|): Likewise.
+	(|$printConStats|): Likewise.
+	
+	* setq.lisp.pamphlet (|$opFilter|): Remove.
+	(|$OneCoef|): Likewise.
+	(|$Polvar|): Likewise.
+	(|$PrintCompilerMessagesIfTrue|): Likewise.
+
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind |$postStack|.  Set it
+	to nil.
+	
+	* debug.lisp.pamphlet (|$oldTime|): Move from bootfuns.lisp.pamphlet.
+
+	* bootfuns.lisp.pamphlet (|$oldTime|): Move to debug.lisp.pamphlet.
+	* setvars.boot.pamphlet (resetWorkspaceVariables): Don't set
+	$operationNameList anymore.
+	* spad.lisp.pamphlet (S-PROCESS): Don't bind $PolyMode anymore.
+
 2007-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sys-globals.boot ($leaveLevelStack): Move from
