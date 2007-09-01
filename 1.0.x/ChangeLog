@@ -1,3 +1,14 @@
+2007-09-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (<<find lisp>>): Keep gcl directory test
+	simple. 
+	* Makefile.pamphlet (maybe-cp-noweb-srcdir): New rule.  Factored
+	from the rule below.
+	($(addprefix $(axiom_build_bindir)/, notangle noweave)): Make it a
+	prerequisite. 
+	* config/var-def.mk (WEAVE): Export.
+	(WEAVE): Likewise.
+
 2007-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet ($(AXIOM_SRC_TARGETS)): Don't augment the PATH

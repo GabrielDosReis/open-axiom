@@ -1,3 +1,9 @@
+2007-09-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* document.in (TANGLE): New environment variable.  Use in place
+	nacked notangle.
+	(WEAVE): New environment variable. Use in place of noweave.
+
 2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	
         * OpenAxiom 1.0.0 released.
