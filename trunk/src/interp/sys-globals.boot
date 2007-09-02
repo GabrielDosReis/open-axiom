@@ -218,3 +218,32 @@ $PrettyPrint := false
 ++
 $previousTime := 0
 
+++
+$VariableCount := 0
+
+++
+++ FIXME: Eventually move to define.boot.pamphlet.
+$suffix := 0
+
+++
+$useBFasDefault := true
+
+++
+$semanticErrorStack := []
+
+++
+++ FIXME: Eventually move to compiler.boot.pamphlet.
+$reportExitModeStack := false
+
+++
+$tracedModemap := nil
+
+++
+$tracedSpadModemap := nil
+
+++
+$traceletFunctions := []
+
+
+
+
