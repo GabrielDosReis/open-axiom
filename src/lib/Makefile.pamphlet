@@ -40,7 +40,7 @@ they depend on [[<unistd.h>]], [[<sys/stat.h>]], and
 [[<sys/socket.h>]]
 
 <<environment>>=
-core_sources = bsdsignal.c cfuns-c.c sockio-c.c
+core_SOURCES = bsdsignal.c cfuns-c.c sockio-c.c
 @
 
 
@@ -50,7 +50,7 @@ This component provides all the routines necessary to build
 the \Tool{Superman} component.
 
 <<environment>>=
-terminal_io_sources = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
+terminal_io_SOURCES = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
 @
 
 
@@ -59,7 +59,7 @@ terminal_io_sources = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
 HyperDoc and any other graphics capability.
 
 <<environment>>=
-graphics_sources = \
+graphics_SOURCES = \
 		halloc.c \
 		hash.c \
 		pixmap.c \
@@ -81,34 +81,22 @@ It is a list of the main components.  It also contain [[core]]
 
 <<environment>>=
 
-libspad_la_sources = $(foreach comp, \
-			 $(addsuffix _sources, @axiom_c_runtime@), \
+libspad_la_SOURCES = $(foreach comp, \
+			 $(addsuffix _SOURCES, @axiom_c_runtime@), \
 			 $($(comp)))
 
-libspad_la_SOURCES = $(addsuffix .pamphlet,$(libspad_la_sources))
+other_SOURCES = cfuns-c.c
 
-other_sources = cfuns-c.c
+unused_SOURCES = emupty.c
 
-other_SOURCES = $(addsuffix .pamphlet,$(other_sources))
+libspad_la_objects = $(libspad_la_SOURCES:.c=.lo)
 
-unused_sources = emupty.c
+other_objects = $(other_SOURCES:.c=.$(OBJEXT))
 
-libspad_la_objects = $(libspad_la_sources:.c=.lo)
-
-other_objects = $(other_sources:.c=.$(OBJEXT))
-
-pamphlets = Makefile.pamphlet $(libspad_la_SOURCES) $(other_SOURCES)
+pamphlets = Makefile.pamphlet
 @
 
 \section{Files}
-
-\subsection{C from pamphlet}
-<<C from pamphlet>>=
-.PRECIOUS: %.c
-
-%.c: $(srcdir)/%.c.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
-@
 
 \subsection{object from C}
 <<object from C>>=
@@ -150,7 +138,7 @@ mostlyclean-local:
 clean-local: mostlyclean-local
 	@$(LIBTOOL) --mode=clean $(axiom_target_libdir)/libspad.la
 	@rm -f $(other_objects)
-	@rm -f $(libspad_la_sources) $(other_sources)
+	@rm -f $(libspad_la_SOURCES) $(other_SOURCES)
 	@rm -fr .libs _libs
 	@rm -f stamp
 
@@ -178,30 +166,9 @@ $(axiom_target_libdir)/libspad.la: $(libspad_la_objects)
 	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_la_objects) \
 		-rpath $(libdir)/axiom/target/$(target)/lib
 
-<<C from pamphlet>>
-
 <<object from C>>
 
 <<cleanup>>
 @
 
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} {\$SPAD/src/lib/bsdssignal.c.pamphlet}
-\bibitem{2} {\$SPAD/src/lib/cfuns-c.c.pamphlet}
-\bibitem{3} {\$SPAD/src/lib/cursor.c.pamphlet}
-\bibitem{4} {\$SPAD/src/lib/edin.c.pamphlet}
-\bibitem{5} {\$SPAD/src/lib/fnct\_key.c.pamphlet}
-\bibitem{6} {\$SPAD/src/lib/halloc.c.pamphlet}
-\bibitem{7} {\$SPAD/src/lib/openpty.c.pamphlet}
-\bibitem{8} {\$SPAD/src/lib/pixmap.c.pamphlet}
-\bibitem{9} {\$SPAD/src/lib/prt.c.pamphlet}
-\bibitem{10} {\$SPAD/src/lib/sockio-c.c.pamphlet}
-\bibitem{11} {\$SPAD/src/lib/spadcolors.c.pamphlet}
-\bibitem{12} {\$SPAD/src/lib/util.c.pamphlet}
-\bibitem{13} {\$SPAD/src/lib/wct.c.pamphlet}
-\bibitem{14} {\$SPAD/src/lib/XDither.c.pamphlet}
-\bibitem{15} {\$SPAD/src/lib/XShade.c.pamphlet}
-\bibitem{16} {\$SPAD/src/lib/XSpadFill.c.pamphlet}
-\end{thebibliography}
 \end{document}
