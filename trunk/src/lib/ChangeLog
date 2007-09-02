@@ -1,3 +1,40 @@
+2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* XSpadFill.c: New.  Replace corresponding pamphlet.
+	* XSpadFill.c.pamphlet: Remove.
+	* XShade.c: New.  Replace corresponding pamphlet.
+	* XShade.c.pamphlet: Remove.
+	* XDither.c: New.  Replace corresponding pamphlet.
+	* XDither.c.pamphlet: Remove.
+	* wct.c: New.  Replace corresponding pamphlet.
+	* wct.c.pamphlet: Remove.
+	* util.c: New.  Replace corresponding pamphlet.
+	* util.c.pamphlet: Remove.
+	* spadcolors.c: New.  Replace corresponding pamphlet.
+	* spadcolors.c.pamphlet: Remove.
+	* sockio-c.c: New. Replace corresponding pamphlet.
+	* sockio-c.c.pamphlet: Remove.
+	* prt.c: New.  Replace corresponding pamphlet.
+	* prt.c.pamphlet: Remove.
+	* pixmap.c: New.  Replace corresponding pamphlet.
+	* pixmap.c.pamphlet: Remove.
+	* openpty.c: New.  Replace corresponding pamphlet.
+	* openpty.c.pamphlet: Remove.
+	* hash.c: New.  Replace corresponding pamphlet.
+	* hash.c.pamphlet: Remove.
+	* halloc.c: New. Replace corresponding pamphlet.
+	* halloc.c.pamphlet: Remove.
+	* fnct_key.c: New.  Replace corresponding pamphlet.
+	* fnct_key.c.pamphlet: Remove.
+	* edin.c: New.  Replace corresponding pamphlet.
+	* edin.c.pamphlet: Remove.
+	* bsdsignal.c: New.  Replace correponding pamphlet.
+	* bsdsignal.c.pamphlet: Remove.
+	* cursor.c: New.  Replace corresponding pamphlet.
+	* cursor.c.pamphlet: Remove.
+	* cfuns-c.c: New.  Replace corresponding pamphlet.
+	* cfuns-c.c.pamphlet: Remove.
+
 2007-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet ($(axiom_target_libdir)/libspad.la): Remove

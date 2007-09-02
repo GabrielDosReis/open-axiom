@@ -1,6 +1,6 @@
-core_sources = bsdsignal.c cfuns-c.c sockio-c.c
-terminal_io_sources = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
-graphics_sources = \
+core_SOURCES = bsdsignal.c cfuns-c.c sockio-c.c
+terminal_io_SOURCES = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
+graphics_SOURCES = \
 		halloc.c \
 		hash.c \
 		pixmap.c \
@@ -10,23 +10,19 @@ graphics_sources = \
 		XShade.c \
 		XSpadFill.c
 
-libspad_la_sources = $(foreach comp, \
-			 $(addsuffix _sources, @axiom_c_runtime@), \
+libspad_la_SOURCES = $(foreach comp, \
+			 $(addsuffix _SOURCES, @axiom_c_runtime@), \
 			 $($(comp)))
 
-libspad_la_SOURCES = $(addsuffix .pamphlet,$(libspad_la_sources))
+other_SOURCES = cfuns-c.c
 
-other_sources = cfuns-c.c
+unused_SOURCES = emupty.c
 
-other_SOURCES = $(addsuffix .pamphlet,$(other_sources))
+libspad_la_objects = $(libspad_la_SOURCES:.c=.lo)
 
-unused_sources = emupty.c
+other_objects = $(other_SOURCES:.c=.$(OBJEXT))
 
-libspad_la_objects = $(libspad_la_sources:.c=.lo)
-
-other_objects = $(other_sources:.c=.$(OBJEXT))
-
-pamphlets = Makefile.pamphlet $(libspad_la_SOURCES) $(other_SOURCES)
+pamphlets = Makefile.pamphlet
 
 subdir = src/lib/
 
@@ -46,11 +42,6 @@ $(axiom_target_libdir)/libspad.la: $(libspad_la_objects)
 	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_la_objects) \
 		-rpath $(libdir)/axiom/target/$(target)/lib
 
-.PRECIOUS: %.c
-
-%.c: $(srcdir)/%.c.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
-
 .PRECIOUS: %.$(OBJEXT) %.lo
 
 %.lo: %.c $(axiom_c_macros_h)
@@ -65,7 +56,7 @@ mostlyclean-local:
 clean-local: mostlyclean-local
 	@$(LIBTOOL) --mode=clean $(axiom_target_libdir)/libspad.la
 	@rm -f $(other_objects)
-	@rm -f $(libspad_la_sources) $(other_sources)
+	@rm -f $(libspad_la_SOURCES) $(other_SOURCES)
 	@rm -fr .libs _libs
 	@rm -f stamp
 

@@ -1,63 +1,35 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/lib openpty.c}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{MAC OSX and BSD platform changes}
-Since we have no other information we are adding the [[MACOSXplatform]] variable
-to the list everywhere we find [[LINUXplatform]]. This may not be correct but
-we have no way to know yet. We have also added the [[BSDplatform]] variable.
-MAC OSX is some variant of BSD. These should probably be merged but we
-cannot yet prove that.
-<<mac osx platform change 1>>=
-#if defined(SUN4OS5platform) ||defined(ALPHAplatform) || defined(HP10platform) || defined(LINUXplatform) || defined(MACOSXplatform) || defined(BSDplatform)
-@
-<<mac osx platform change 2>>=
-#if defined(SUNplatform) || defined(HP9platform) || defined(LINUXplatform) || defined(MACOSXplatform) || defined(BSDplatform)
-@
-\section{License}
-<<license>>=
 /*
-Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
-All rights reserved.
+    Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+    All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
 
-    - Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
+        - Redistributions of source code must retain the above copyright
+          notice, this list of conditions and the following disclaimer.
 
-    - Redistributions in binary form must reproduce the above copyright
-     notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
+        - Redistributions in binary form must reproduce the above copyright
+         notice, this list of conditions and the following disclaimer in
+          the documentation and/or other materials provided with the
+          distribution.
 
-    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+        - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+          names of its contributors may be used to endorse or promote products
+          derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
-OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+    IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+    TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+    PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+    OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-@
-<<*>>=
-<<license>>
 
 #include "axiom-c-macros.h"
 #include <stdlib.h>
@@ -107,9 +79,9 @@ ptyopen(int *controller,int * server, char *controllerPath,char * serverPath)
     if (*controller >= 0) {
       *server = open(serverPath, oflag, 0);
       if (*server > 0)
-	looking = 0;
+        looking = 0;
       else
-	close(*controller);
+        close(*controller);
     }
   }
   if (looking) {
@@ -139,7 +111,7 @@ ptyopen(int *controller,int * server, char *controllerPath,char * serverPath)
   return(fdm);
 #endif
 
-<<mac osx platform change 1>>
+#if defined(SUN4OS5platform) ||defined(ALPHAplatform) || defined(HP10platform) || defined(LINUXplatform) || defined(MACOSXplatform) || defined(BSDplatform)
 extern int grantpt(int);
 extern int unlockpt(int);
 extern char* ptsname(int);
@@ -198,29 +170,23 @@ void
 makeNextPtyNames(char *cont,char * serv)
 {
 #ifdef AIX370platform
-	static int channelNo = 0;
-	sprintf(cont, "/dev/ptyp%02x", channelNo);
-	sprintf(serv, "/dev/ttyp%02x", channelNo);
-	channelNo++;
+        static int channelNo = 0;
+        sprintf(cont, "/dev/ptyp%02x", channelNo);
+        sprintf(serv, "/dev/ttyp%02x", channelNo);
+        channelNo++;
 #endif
-<<mac osx platform change 2>>
-	static int channelNo = 0;
-	static char group[] = "pqrstuvwxyzPQRST";
-	static int groupNo = 0;
+#if defined(SUNplatform) || defined(HP9platform) || defined(LINUXplatform) || defined(MACOSXplatform) || defined(BSDplatform)
+        static int channelNo = 0;
+        static char group[] = "pqrstuvwxyzPQRST";
+        static int groupNo = 0;
 
-	sprintf(cont, "/dev/pty%c%x", group[groupNo], channelNo);
-	sprintf(serv, "/dev/tty%c%x", group[groupNo], channelNo);
-	channelNo++;                /* try next */
-	if (channelNo == 16) {      /* move to new group */
-		channelNo = 0;
-		groupNo++;
-		if (groupNo == 16) groupNo = 0;        /* recycle */
-		}
+        sprintf(cont, "/dev/pty%c%x", group[groupNo], channelNo);
+        sprintf(serv, "/dev/tty%c%x", group[groupNo], channelNo);
+        channelNo++;                /* try next */
+        if (channelNo == 16) {      /* move to new group */
+                channelNo = 0;
+                groupNo++;
+                if (groupNo == 16) groupNo = 0;        /* recycle */
+                }
 #endif
 }
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
