@@ -45,15 +45,15 @@ If you already have GCL and noweb installed, please go to step 2.
 
 
     That should decompress the dependency tarball in a directory
-named   open-axiom-1.0.x.  Rename it to open-axiom-1.0.0, e.g.:
+named   open-axiom-1.0.x.  Rename it to open-axiom-1.0.1, e.g.:
 
-       mv open-axiom-1.0.x open-axiom-1.0.0
+       mv open-axiom-1.0.x open-axiom-1.0.1
 
 2. Building OpenAxiom
    ------------------
 
 It is assumed you have already downloaded open-axiom source tarball,
-e.g. open-axiom-1.0.0.tar.bz2.  
+e.g. open-axiom-1.0.1.tar.bz2.  
 
 Note: If you don't have GCL or noweb in the build environment, please
 make sure that you have either followed the instructions in step 1.,
@@ -61,18 +61,18 @@ or have separately installed them before proceeding.
 
 2.a. Decompress the OpenAxiom source tarball
 
-      tar jfxv open-axiom-1.0.0.tar.bz2
+      tar jfxv open-axiom-1.0.1.tar.bz2
 
 2.b. Configure OpenAxiom
 
 It is highly recommended that you build OpenAxiom in a directory
 different from the one that contains the sources.  For example, you
-may create a directory sibling to open-axiom-1.0.0 and build the
+may create a directory sibling to open-axiom-1.0.1 and build the
 system from there:
 
       mkdir build-oa
       cd build-oa
-      ../open-axiom-1.0.0/configure
+      ../open-axiom-1.0.1/configure
 
 It is possible to tell configure where to put the final OpenAxiom
 executables.  By default, when you just type in configure like above,
@@ -80,7 +80,7 @@ it will configure the system with prefix /usr/local.  You can instead
 say where you want it to be installed, let's say /banana/space.  You
 would then have typed
 
-     ../open-axiom-1.0.0/configure --prefix=/banana/space
+     ../open-axiom-1.0.1/configure --prefix=/banana/space
 
 2.c. Make the system
 

@@ -1,3 +1,8 @@
+  Changes from previous release:
+  
+  × Build with the dependency tarball open-axiom-1.0.x-dep.tar.bz2 has
+    been improved.
+
 * August 24, 2007
 
   OpenAxiom-1.0.0 has been released.
