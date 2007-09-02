@@ -141,7 +141,6 @@
 	(setq proplist (LIST '(FLUID . |true|)
 			     (CONS '|special|
 				   (COPY-TREE |$InitialDomainsInScope|))))
-	(SETQ |$tripleCache| NIL)
 	(SETQ |$InteractiveFrame|
 	      (|addBinding| '|$DomainsInScope| proplist
 			  (|addBinding| '|$Information| NIL

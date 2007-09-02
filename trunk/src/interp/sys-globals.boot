@@ -244,6 +244,17 @@ $tracedSpadModemap := nil
 ++
 $traceletFunctions := []
 
+++
+$useDCQnotLET := false
 
+++
+$updateCatTableIfTrue := true
 
+++
+$TranslateOnly := false
 
+++
+$topOp := nil
+
+++
+$streamCount := 0

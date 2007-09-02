@@ -1,5 +1,28 @@
 2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* compiler.boot.pamphlet (tc): Don't set $tripleCache.
+	* define.boot.pamphlet (compDefine): Likewise.
+	* wi1.boot.pamphlet (compDefine): Likewise.
+	* c-util.boot.pamphlet (displayComp): Likewise.
+	* spad.lisp.pamphlet (/TRANSPAD): Likewise.
+	* bootfuns.lisp.pamphlet (|$useDCQnotLET|): Move to
+	sys-globals.boot. 
+	(|$updateCatTableIfTrue|): Likewise.
+	(|$updateIfTrue|): Remove.
+	(|$streamCount|): Likewise.
+	(|$tripleCache|): Remove.
+	(|$TranslateOnly|): Likewise.
+	(|$topOp|): Likewise.
+	(|$streamIndexing|): Remove.
+	(|$streamAlist|): Likewise.
+	* setq.lisp.pamphlet (|$useDCQnotLET|): Don't set here.
+	($streamAlist): Likewise.
+	(|$updateCatTableIfTrue|): Likewise.
+	(|$streamIndexing|): Likewise.
+	(|$streamCount|): Likewise.
+
+2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* sys-globals.boot ($VariableCount): Move from
 	bootfuns.lisp.pamphlet.
 	($suffix): Likewise.

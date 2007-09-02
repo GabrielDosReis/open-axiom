@@ -108,7 +108,6 @@ displayWarning(l,stream) ==
     sayBrightly(['"      [",i,'"] ",:x],stream)
  
 displayComp level ==
-  $tripleCache:= nil
   $bright:= " << "
   $dim:= " >> "
   if $insideCapsuleFunctionIfTrue=true then
@@ -911,7 +910,6 @@ traverse(fn, arg, ob) ==
 (DEFUN |displayWarning| (|l| |stream|) (SEQ (DO ((#0=#:G2550 |l| (CDR #0#)) (|x| NIL) (|i| 1 (QSADD1 |i|))) ((OR (ATOM #0#) (PROGN (SETQ |x| (CAR #0#)) NIL)) NIL) (SEQ (EXIT (|sayBrightly| (CONS (MAKESTRING "      [") (CONS |i| (CONS (MAKESTRING "] ") |x|))) |stream|)))))) 
 ;
 ;displayComp level ==
-;  $tripleCache:= nil
 ;  $bright:= " << "
 ;  $dim:= " >> "
 ;  if $insideCapsuleFunctionIfTrue=true then
@@ -929,7 +927,7 @@ traverse(fn, arg, ob) ==
 
 ;;;     ***       |displayComp| REDEFINED
 
-(DEFUN |displayComp| (|level|) (PROG (|LETTMP#1|) (RETURN (PROGN (SPADLET |$tripleCache| NIL) (SPADLET |$bright| (QUOTE | << |)) 
+(DEFUN |displayComp| (|level|) (PROG (|LETTMP#1|) (RETURN (PROGN (SPADLET |$bright| (QUOTE | << |)) 
 (SPADLET |$dim| (QUOTE | >> |)) (COND ((BOOT-EQUAL |$insideCapsuleFunctionIfTrue| (QUOTE T)) (|sayBrightly| (CONS (MAKESTRING "error in function") (CONS (QUOTE |%b|) (CONS |$op| (CONS (QUOTE |%d|) (CONS (QUOTE |%l|) NIL)))))))) (|pp| (|removeZeroOne| (|mkErrorExpr| |level|))) (|sayBrightly| (CONS (MAKESTRING "****** level") (CONS (QUOTE |%b|) (CONS |level| (CONS (QUOTE |%d|) (CONS (MAKESTRING " ******") NIL)))))) (SPADLET |LETTMP#1| (ELEM |$s| |level|)) (SPADLET |$x| (CAR |LETTMP#1|)) (SPADLET |$m| (CADR |LETTMP#1|)) (SPADLET |$f| (CADDR |LETTMP#1|)) (SPADLET |$exitModeStack| (CADDDR |LETTMP#1|)) (SPADLET $X |$x|) (SPADLET $M |$m|) (SPADLET $F |$f|) (SAY (MAKESTRING "$x:= ") |$x|) (SAY (MAKESTRING "$m:= ") |$m|) (SAY (MAKESTRING "$f:=")) (|F,PRINT-ONE| |$f|) NIL)))) 
 ;
 ;mkErrorExpr level ==

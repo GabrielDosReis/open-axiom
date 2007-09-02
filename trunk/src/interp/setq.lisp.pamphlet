@@ -199,8 +199,6 @@
 (SETQ OPASSOC NIL)
 (SETQ SPADSYSKEY '(EOI EOL))
 
-(SETQ $streamAlist NIL)
-
 ;; following 2 variables are referenced by PREPARSE1
 
 (defvar |$byConstructors| () "list of constructors to be compiled")
@@ -292,7 +290,6 @@
 (SETQ |$spadLibFT| 'LISPLIB)
 
 (SETQ |$existingFiles| (MAKE-HASHTABLE 'UEQUAL))
-(SETQ |$updateCatTableIfTrue| 'T)
 
 (SETQ |$instantRecord| (MAKE-HASHTABLE 'ID))
 (SETQ |$immediateDataSymbol| '|--immediateData--|)
@@ -327,7 +324,6 @@
 (SETQ |$DomainsWithoutLisplibs| '(
   CAPSULE |Union| |Record| |SubDomain| |Mapping| |Enumeration| |Domain| |Mode|))
 
-(SETQ |$useDCQnotLET| NIL)	;; use DCQs for destructuring := patterns
 (SETQ |$QuickCode| T)
 	 ;" controls generation of QREFELT etc."
 (SETQ |$QuickLet| T)
@@ -358,8 +354,6 @@
 (SETQ |$coerceIntByMapCounter| 0)
 (SETQ |$reportCoerce| NIL)
 (SETQ |$reportCompilation| NIL)
-(SETQ |$streamCount| 0)
-(SETQ |$streamIndexing| NIL)
 (SETQ |$prefix| NIL)
 (SETQ |$formalArgList| ())
 (SETQ |$TriangleVariableList|
