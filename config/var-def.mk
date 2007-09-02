@@ -211,6 +211,9 @@ axiom_build_nowebdir = $(axiom_builddir)/noweb
 
 TANGLE = @NOTANGLE@
 WEAVE = @NOWEAVE@
+## We export TANGLE and WEAVE for use in subshells, such as document.
+export TANGLE
+export WEAVE
 
 AXIOM_LISP = @AXIOM_LISP@
 # Extension of the output file name returned by compile-file

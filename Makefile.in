@@ -42,16 +42,33 @@ stamp-rootdirs: $(axiom_build_document)
 .PHONY: all-noweb
 all-noweb: $(addprefix $(axiom_build_bindir)/, notangle noweave)
 
-$(addprefix $(axiom_build_bindir)/, notangle noweave):
+.PHONY: maybe-cp-noweb-srcdir
+maybe-cp-noweb-srcdir: $(srcdir)/noweb
+	## Even though out-of-source build is what we recommend,
+	## noweb does not directly support that sort of build.
+	## So we copy the source to the build directory.
+	## We try to be nice to those who chose otherwise
+	## to build directly from the OpenAxiom source dir.
+	if test "$(srcdir)" != "$(builddir)" -a ! -d noweb; then \
+		cp -r $(srcdir)/noweb $(builddir); \
+	fi
+
+$(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
+	## Noweb would like to install many things even if we
+	## are not interested in those.  Prepare the ground.
 	$(mkinstalldirs) $(axiom_build_bindir)
 	$(mkinstalldirs) $(axiom_build_libdir)
 	$(mkinstalldirs) $(axiom_build_texdir)
 	$(mkinstalldirs) $(axiom_build_mandir)
-	if test "$(srcdir)" != "$(builddir)" -a ! -d noweb; then \
-		cp -r $(srcdir)/noweb $(builddir); \
-	fi;
 	$(TOUCH) $(wildcard $(builddir)/noweb/src/c/*.h) \
-			$(wildcard $(builddir)/noweb/src/c/*.c) && \
+			$(wildcard $(builddir)/noweb/src/c/*.c)
+	## noweb's Makefile needs editing before we can build to suit
+	## our needs.  In particular, we must say when helper programs go,
+	## where the noweb style file goes, where the man pages go (even though
+	## in this specific context, they are not needed).  Finally,
+	## noweb insists on running `texhash' after installation, which is
+	## of no practical value for us in ths specific context.  We must
+	## convince it not to go there.
 	cd noweb/src && \
 	cat Makefile \
 	   | sed -e "s,^BIN=.*,BIN=$(axiom_abs_build_bindir)," \
