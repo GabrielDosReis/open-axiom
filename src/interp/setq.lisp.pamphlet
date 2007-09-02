@@ -230,15 +230,9 @@
 
 ;; These were originally in INIT LISP
 
-(SETQ |$systemCreation|
-  (STRCONC (SUBSTRING (CURRENTTIME) 0 8) " at "
-	   (SUBSTRING (CURRENTTIME) 8 5)))
-(SETQ |$systemLastChanged| |$systemCreation|)
-
 (SETQ $LISPLIB NIL)
 (SETQ |$dependeeClosureAlist|	    NIL)
 (SETQ |$userModemaps| NIL)
-(SETQ |$spadSystemDisks|  '(I J K L))
 (SETQ |$functorForm| NIL)
 
 (SETQ |$InitialCommandSynonymAlist| '(
@@ -366,7 +360,6 @@
 (SETQ |$reportCompilation| NIL)
 (SETQ |$streamCount| 0)
 (SETQ |$streamIndexing| NIL)
-(SETQ |$reportExitModeStack| NIL)
 (SETQ |$prefix| NIL)
 (SETQ |$formalArgList| ())
 (SETQ |$TriangleVariableList|
@@ -448,10 +441,6 @@
 
 ;; ---- end of initial settings for variables used in test.boot
 
-;; Next flag determines whether to use BF as default floating point
-;; type. (actually, now means NewFloat)
-
-(SETQ |$useBFasDefault| 'T)
 
 ;; Next are initial values for fluid variables in G-BOOT BOOT
 

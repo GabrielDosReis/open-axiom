@@ -527,7 +527,9 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 (DEFUN /TRACE-1 (FNLIST OPTIONS)
    (mapcar #'(lambda (X) (/TRACE-2 X OPTIONS)) FNLIST)
    (/TRACEREPLY))
- 
+
+(defvar |$traceDomains| t)
+
 (DEFUN /TRACE-2 (FN OPTIONS)
   (PROG (U FNVAL COUNTNAM TRACECODE BEFORE AFTER CONDITION
          TRACENAME CALLER VARS BREAK FROM_CONDITION VARBREAK TIMERNAM
@@ -1015,6 +1017,8 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
                   COUNTNAM TIMERNAM BEFORE AFTER
                   CONDITION BREAK |$tracedModemap| ''T)))))
         (RETURN G1)))
+
+(defvar |$TraceFlag| t)
  
 (defun /MONITORX (/ARGS FUNCT OPTS &AUX NAME TYPE TRACECODE COUNTNAM TIMERNAM
                         BEFORE AFTER CONDITION BREAK TRACEDMODEMAP
@@ -1113,6 +1117,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 ; on and off
 
 (defvar |$oldTime| 0)
+(defvar |$timerOn| t)
  
 (defun |startTimer| ()
     (SETQ $delay (PLUS $delay (DIFFERENCE (TEMPUS-FUGIT) |$oldTime|)))

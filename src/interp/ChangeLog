@@ -1,3 +1,37 @@
+2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($VariableCount): Move from
+	bootfuns.lisp.pamphlet.
+	($suffix): Likewise.
+	($useBFasDefault): Likewise.
+	($semanticErrorStack): Likewise.
+	($tracedModemap): Likewise.
+	($tracedSpadModemap): Likewise.
+	($traceletFunctions): Likewise.
+	* bootfuns.lisp.pamphlet (|$VariableCount|): Move to
+	sys-globals.boot. 
+	(|$suffix|): Likewise.
+	(|$useBFasDefault|): Likewise.
+	(|$semanticErrorStack|): Likewise.
+	(|$tracedModemap|): Likewise.
+	(|$tracedSpadModemap|): Likewise.
+	(|$traceletFunctions|): Likewise.
+	(|$TraceFlag|): Move to debug.lisp.pamphlet.
+	(|$traceDomains|): Likewise.
+	(|$systemLastChanged|): Remove.
+	(|$systemCreation|): Likewise.
+	(|$StreamIndex|): Remove.
+	(|$spadSystemDisks|): Likewise.
+	(|$spadOpList|): Likewise.
+	(|$traceNoisely|): Remove from here.
+	(|$timerOn|): Move to debug.lisp.pamphlet.
+	* setq.lisp.pamphlet (|$systemLastChanged|): Remove.
+	(|$systemCreation|): Likewise.
+	* setq.lisp.pamphlet (|$useBFasDefault|): Don't set here.
+	* setq.lisp.pamphlet (|$reportExitModeStack|): Likewise.
+	* setq.lisp.pamphlet (|$spadSystemDisks|): Likewise.
+	* spad.lisp.pamphlet (|$useBFasDefault|): Likewise.
+
 2007-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sys-globals.boot ($prefix): Move from bootfuns.lisp.pamphlet.

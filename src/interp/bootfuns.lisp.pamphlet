@@ -148,13 +148,11 @@ offer it as extensions.
 (def-boot-var |$reportCoerce|			    "???")
 (def-boot-var |$reportCoerceIfTrue|		    "???")
 (def-boot-var |$reportCompilation|		    "???")
-(def-boot-var |$reportExitModeStack|		    "???")
 (def-boot-var |$reportFlag|			    "Interpreter>SetVars.boot")
 (def-boot-val |$reportSpadTrace| ()    "report list of traced functions")
 (def-boot-var |$resolveFlag|			    "Interpreter>SetVars.boot")
 (def-boot-var |$returnMode|			    "???")
 (def-boot-var |$scanModeFlag|			    "???")
-(def-boot-var |$semanticErrorStack|		    "???")
 (def-boot-val |$SetFunctions| nil  "checked in SetFunctionSlots")
 (def-boot-var |$slamFlag|			    "Interpreter>SetVars.boot")
 (def-boot-val |$sourceFileTypes|
@@ -162,37 +160,20 @@ offer it as extensions.
 	  "Interpreter>System.boot")
 (def-boot-val $SPAD nil				    "Is this Spad code?")
 (def-boot-val |$spadLibFT| 'LISPLIB		    "???")
-(def-boot-var |$spadOpList|			    "???")
-(def-boot-var |$spadSystemDisks|		    "Interpreter>Database.boot")
 (def-boot-var |$streamAlist|			    "???")
 (def-boot-val |$streamCount| 0			    "???")
 (def-boot-var |$streamIndexing|			    "???")
-(def-boot-val |$StreamIndex| 0			    "???")
-(def-boot-var |$suffix|				    "???")
-(def-boot-val |$systemCreation| (currenttime)	    "???")
-(def-boot-val |$systemLastChanged|
-	  |$systemCreation|			"???")
-(def-boot-val |$timerOn| t			    "???")
 (def-boot-var |$topOp|				   "See displayPreCompilationErrors")
 (def-boot-var $TOKSTACK				    "???")
 (def-boot-val $TOP_LEVEL t			    "???")
 (def-boot-var $top_stack			    "???")
-(def-boot-var |$tracedModemap|			    "Interpreter>Trace.boot")
-(def-boot-val |$traceDomains| t			     "enables domain tracing")
-(def-boot-val |$TraceFlag| t			    "???")
-(def-boot-var |$tracedSpadModemap|		    "Interpreter>Trace.boot")
-(def-boot-var |$traceletFunctions|		    "???")
-(def-boot-var |$traceNoisely|			    "Interpreter>Trace.boot")
 (def-boot-var |$TranslateOnly|			    "???")
 (def-boot-var |$tripleCache|			    "Compiler>Compiler.boot")
 
 (def-boot-val |$updateCatTableIfTrue| T	   "update category table on load")
 (def-boot-var |$updateIfTrue|
 	  "Should SPAD databases be updated&squeezed?")
-(def-boot-val |$useBFasDefault| T
-	  "Determines whether to use BF as default floating point type.")
 (def-boot-val |$useDCQnotLET| () "checked in DEF-LET for use of DCQ")
-(def-boot-var |$VariableCount|			    "???")
 @
 \eject
 \begin{thebibliography}{99}
