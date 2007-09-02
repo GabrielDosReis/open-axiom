@@ -146,7 +146,6 @@ compOrCroak1(x,m,e,compFn) ==
       userError errorMessage
 
 tc() ==
-  $tripleCache:= nil
   comp($x,$m,$f)
 
 

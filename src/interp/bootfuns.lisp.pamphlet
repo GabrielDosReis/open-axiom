@@ -160,20 +160,9 @@ offer it as extensions.
 	  "Interpreter>System.boot")
 (def-boot-val $SPAD nil				    "Is this Spad code?")
 (def-boot-val |$spadLibFT| 'LISPLIB		    "???")
-(def-boot-var |$streamAlist|			    "???")
-(def-boot-val |$streamCount| 0			    "???")
-(def-boot-var |$streamIndexing|			    "???")
-(def-boot-var |$topOp|				   "See displayPreCompilationErrors")
 (def-boot-var $TOKSTACK				    "???")
 (def-boot-val $TOP_LEVEL t			    "???")
 (def-boot-var $top_stack			    "???")
-(def-boot-var |$TranslateOnly|			    "???")
-(def-boot-var |$tripleCache|			    "Compiler>Compiler.boot")
-
-(def-boot-val |$updateCatTableIfTrue| T	   "update category table on load")
-(def-boot-var |$updateIfTrue|
-	  "Should SPAD databases be updated&squeezed?")
-(def-boot-val |$useDCQnotLET| () "checked in DEF-LET for use of DCQ")
 @
 \eject
 \begin{thebibliography}{99}
