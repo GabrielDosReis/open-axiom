@@ -1,5 +1,38 @@
 2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* bootfuns.lisp.pamphlet ($TOP_LEVEL): Move to sys-globals.boot.
+	($TOKSTACK): Likewise.
+	($function): Likewise.
+	($FUNNAME): Likewise.
+	($FunName_Tail): Likewise.
+	($lastprefix): Likewise.
+	($linestack): Likewise.
+	($maxlinenumber): Likewise.
+	($OLDLINE): Likewise.
+	($SPAD): Likewise.
+	($delay): Move to debug.lisp.pamphlet.
+	($LINENUMBER): Likewise.
+	($Directory): Remove.
+	($top_stack): Remove.
+	($DISPLAY): Likewise.
+	(|$gauss01|): Likewise.
+	($NBOOT): Likewise.
+	($NEWLINSTACK): Likewise.
+	($num_of_meta_errors): Move to metalex.lisp.pamphlet.
+	* setq.lisp.pamphlet ($TOP_LEVEL): Don't set here.
+	($DISPLAY): Likewise.
+	($FUNNAME): Likewise.
+	($FUNNAME_TAIL): Likewise.
+	(|$gauss01|): Likewise.
+	($LASTPREFIX): Likewise.
+	($NBOOT): Likewise.
+	($OLDLINE): Likewise.
+	* spad.lisp.pamphlet ($linestack): Likewise.
+	($maxlinenumber): Likewise.
+	(|New,ENTRY,1|): Don't bind here.
+
+2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* compiler.boot.pamphlet (tc): Don't set $tripleCache.
 	* define.boot.pamphlet (compDefine): Likewise.
 	* wi1.boot.pamphlet (compDefine): Likewise.

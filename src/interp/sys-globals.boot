@@ -258,3 +258,34 @@ $topOp := nil
 
 ++
 $streamCount := 0
+
+++
+$TOP__LEVEL := true
+
+++
+$TOKSTACK := nil
+
+++
+$FUNCTION := nil
+
+++
+$FUNNAME := nil
+
+++
+$FUNNAME__TAIL := '(())
+
+++
+$LASTPREFIX := '"S_:"
+
+++
+$LINESTACK := "BEGIN__UNIT"
+
+++
+$MAXLINENUMBER := 0
+
+++
+$OLDLINE := nil
+
+++
+$SPAD := false
+

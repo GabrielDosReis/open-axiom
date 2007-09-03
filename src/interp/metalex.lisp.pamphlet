@@ -274,6 +274,8 @@ special character be the atom whose print name is the character itself."
 (defun print-rule (x)  (print x out-stream) (format out-stream "~%~%"))
  
 ; *** 5. META Error Handling
+
+(defparameter $num_of_meta_errors 0)
  
 (defun meta-meta-error-handler (&optional (wanted nil) (parsing nil))
   "Print syntax error indication, underline character, scrub line."
