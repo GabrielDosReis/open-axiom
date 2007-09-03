@@ -289,3 +289,39 @@ $OLDLINE := nil
 ++
 $SPAD := false
 
+++
+$PrintOnly := false
+
+++
+$QuickCode := true
+
+++
+$QuickLet := true
+
+++
+$reportBottomUpFlag := false
+
+++
+$reportFlag := false
+
+++
+$returnMode := $EmptyMode
+
+++
+$SetFunctions := nil
+
+++
+++ FIXME: Eventually remove.
+$slamFlag := false
+
+++
+++ FIXME: Eventually remove.
+$sourceFileTypes := ["SPAD"]
+
+++
+++ If true, make the system verbose about object files being loaded
+$printLoadMsgs := false
+
+++
+$reportCompilation := false
+

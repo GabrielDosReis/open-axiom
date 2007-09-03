@@ -2374,6 +2374,9 @@ SETANDFILEQ($setOptions,'(
  ))
 
 --%
+SETANDFILEQ($reportCoerceIfTrue,NIL)
+
+--%
 printLoadMessages u ==
   MEMQ(u, '(%display% %describe%)) =>
     ($printLoadMsgs => '"on"; '"off")

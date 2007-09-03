@@ -318,10 +318,6 @@
 (SETQ |$DomainsWithoutLisplibs| '(
   CAPSULE |Union| |Record| |SubDomain| |Mapping| |Enumeration| |Domain| |Mode|))
 
-(SETQ |$QuickCode| T)
-	 ;" controls generation of QREFELT etc."
-(SETQ |$QuickLet| T)
-	 ;" controls generation of LET tracing."
 (SETQ |$tracedMapSignatures| ())
 (SETQ |$highlightAllowed| 'T)
 	 ;" used in BRIGHTPRINT and is a )set variable"
@@ -344,8 +340,6 @@
 (SETQ $NE (LIST (LIST NIL)))
 (SETQ |$suffix| NIL)
 (SETQ |$coerceIntByMapCounter| 0)
-(SETQ |$reportCoerce| NIL)
-(SETQ |$reportCompilation| NIL)
 (SETQ |$prefix| NIL)
 (SETQ |$formalArgList| ())
 (SETQ |$TriangleVariableList|

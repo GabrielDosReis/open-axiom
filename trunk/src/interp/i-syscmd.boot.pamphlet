@@ -131,7 +131,6 @@ This will have to be pushed down from the top level Makefile.
 --% Utility Variable Initializations
 
 SETANDFILEQ($cacheAlist,nil)
-SETANDFILEQ($reportCompilation,nil)
 SETANDFILEQ($compileRecurrence,true)
 SETANDFILEQ($errorReportLevel,'warning)
 SETANDFILEQ($sourceFileTypes,'(INPUT SPAD BOOT LISP LISP370 META))

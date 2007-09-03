@@ -99,11 +99,6 @@ offer it as extensions.
 
 <<non-portable-codes>>
 
-(defmacro def-boot-var (p where)
-  `(compiler-let nil
-     (defparameter ,p nil ,where)
-     (export '(,p) "BOOT")))
-
 (defmacro def-boot-val (p val where)
   `(compiler-let nil
      (defparameter ,p ,val ,where)
@@ -121,28 +116,6 @@ offer it as extensions.
 	)))))
 	"Compiler>CUtil.boot")
 (def-boot-val $LISPLIB nil		    "whether to produce a lisplib or not")
-(def-boot-var |OptionList|			    "???")
-(def-boot-val |$printLoadMsgs|	't	    "Interpreter>SetVarT.boot")
-(def-boot-var |$PrintOnly|			    "Compiler>LispLib.boot")
-(def-boot-val |$SystemSynonyms| () "list of system defined synonyms")
-(def-boot-val |$QuickCode| NIL	    "Controls generation of QREFELT, etc.")
-(def-boot-val |$QuickLet| NIL	    "Set to T for no LET tracing.")
-(def-boot-var |$QuietIfNil|			    "???")
-(def-boot-var |$readingFile|			    "???")
-(def-boot-var |$reportBottomUpFlag|		    "Interpreter>SetVarT.boot")
-(def-boot-var |$reportCoerce|			    "???")
-(def-boot-var |$reportCoerceIfTrue|		    "???")
-(def-boot-var |$reportCompilation|		    "???")
-(def-boot-var |$reportFlag|			    "Interpreter>SetVars.boot")
-(def-boot-val |$reportSpadTrace| ()    "report list of traced functions")
-(def-boot-var |$resolveFlag|			    "Interpreter>SetVars.boot")
-(def-boot-var |$returnMode|			    "???")
-(def-boot-var |$scanModeFlag|			    "???")
-(def-boot-val |$SetFunctions| nil  "checked in SetFunctionSlots")
-(def-boot-var |$slamFlag|			    "Interpreter>SetVars.boot")
-(def-boot-val |$sourceFileTypes|
-	  '(SPAD BOOT LISP LISP370 META)
-	  "Interpreter>System.boot")
 (def-boot-val |$spadLibFT| 'LISPLIB		    "???")
 @
 \eject
