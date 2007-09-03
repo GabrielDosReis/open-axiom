@@ -84,7 +84,6 @@
 ;; These were originally in SPAD LISP
 
 (SETQ $BOOT NIL)
-(SETQ $NBOOT NIL)
 (setq |$interpOnly| nil)
 (SETQ |$testingSystem| NIL)
 (SETQ |$publicSystem| NIL)
@@ -121,16 +120,11 @@
 (setq |$Newline| #\Newline)
 
 
-(SETQ $FUNNAME NIL)   ;; this and next used in COMP,TRAN,1
-(SETQ $FUNNAME_TAIL '(()))
-(SETQ $LASTPREFIX "S:")    ;"default setting"
 (SETQ STAKCOLUMN -1)
 (SETQ ECHOMETA NIL)
 (SETQ |$checkParseIfTrue| 'NIL)
 (SETQ |$oldParserExpandAbbrs| NIL)
-(SETQ $DISPLAY NIL)
 (SETQ |S:SPADKEY| NIL) ;" this is augmented by MAKESPADOP"
-(SETQ $OLDLINE NIL)  ;"used to output command lines"
 (SETQ |/EDIT,FT| 'SPAD)
 (SETQ |/EDIT,FM| 'A)
 (SETQ /EDITFILE NIL)
@@ -347,9 +341,7 @@
 ;; New Names
 (SETQ |$SingleInteger| '(|SingleInteger|))
 
-(SETQ $TOP_LEVEL T)
 (SETQ $NE (LIST (LIST NIL)))
-(SETQ |$gauss01| '(|gauss| 0 1))
 (SETQ |$suffix| NIL)
 (SETQ |$coerceIntByMapCounter| 0)
 (SETQ |$reportCoerce| NIL)

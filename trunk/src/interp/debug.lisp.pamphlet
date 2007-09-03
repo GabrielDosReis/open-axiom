@@ -188,6 +188,8 @@ exit (rds ifile)
        (declare (special CUROUTSTREAM))
   "Called from compConLib1 (see LISPLIB BOOT) to bind CUROUTSTREAM."
   (/D-2 FN INFILE CUROUTSTREAM OP EDITFLAG TRACEFLAG))
+
+(defparameter $linenumber 0)
  
 (DEFUN /D-2 (FN INFILE OUTPUTSTREAM OP EDITFLAG TRACEFLAG)
        (declare (special OUTPUTSTREAM))
@@ -1118,6 +1120,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 
 (defvar |$oldTime| 0)
 (defvar |$timerOn| t)
+(defvar $delay 0)
  
 (defun |startTimer| ()
     (SETQ $delay (PLUS $delay (DIFFERENCE (TEMPUS-FUGIT) |$oldTime|)))
