@@ -540,9 +540,6 @@ The [[$previousBindings]] is a copy of the
 compute the [[delta(i)]]s stored in [[$frameRecord]].
 This is part of the undo mechanism.
 
-\subsection{\$printLoadMsgs}
-The [[$printLoadMsgs]] variable is set to [[T]] in [[restart]].
-
 \subsection{\$PrintCompilerMessageIfTrue}
 The [[$PrintCompilerMessageIfTrue]] variable is set to [[NIL]] in [[spad]].
 
@@ -707,7 +704,6 @@ We do not care that tail recursion occurs.
       (setq |$SpadServer| t)))))
   (setq |$IOindex| 1)
   (setq |$InteractiveFrame| (|makeInitialModemapFrame|))
-  (setq |$printLoadMsgs| t)
 #+(and :lucid :ibm/370)
   (setq vmlisp::$current-directory "")
 #-(and :lucid :ibm/370)
