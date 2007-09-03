@@ -1,50 +1,35 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/clef edible.c}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-<<license>>=
 /*
-Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
-All rights reserved.
+    Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+    All rights reserved.
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
 
-    - Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
+        - Redistributions of source code must retain the above copyright
+          notice, this list of conditions and the following disclaimer.
 
-    - Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
+        - Redistributions in binary form must reproduce the above copyright
+          notice, this list of conditions and the following disclaimer in
+          the documentation and/or other materials provided with the
+          distribution.
 
-    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
+        - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+          names of its contributors may be used to endorse or promote products
+          derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
-OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+    IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+    TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+    PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+    OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-@
-<<*>>=
-<<license>>
 
 #include "axiom-c-macros.h"
 #include "useproto.h"
@@ -209,8 +194,8 @@ main(int argc, char *argv[])
     if (dup2(serverNum, 1) == -1) perror("dup2 1 failed");
     if (dup2(serverNum, 2) == -1) perror("dup2 2 failed");
     if( (dup2(serverNum, 0) == -1)  ||
-	(dup2(serverNum, 1) == -1) ||
-	(dup2(serverNum, 2) == -1)  ) {
+        (dup2(serverNum, 1) == -1) ||
+        (dup2(serverNum, 2) == -1)  ) {
       perror("clef trying to dup2");
       exit(-1);
     }
@@ -238,9 +223,9 @@ main(int argc, char *argv[])
     else{
       program = getenv("SHELL");
       if (!program)
-	program = strdup("/bin/sh");  
+        program = strdup("/bin/sh");  
       else 
-	program = strdup (program);
+        program = strdup (program);
       execlp( program,program, 0);
       perror("clef trying to execlp the default child");
       fprintf(stderr, "Process --> %s\n", program);
@@ -287,7 +272,7 @@ main(int argc, char *argv[])
       char pbuff[1024];
       tcgetattr(contNum, &ptermio);
       sprintf(pbuff, "child's settings: Lflag = %d, Oflag = %d, Iflag = %d\n",
-	      ptermio.c_lflag, ptermio.c_oflag, ptermio.c_iflag);
+              ptermio.c_lflag, ptermio.c_oflag, ptermio.c_iflag);
       write(logfd, pbuff, strlen(pbuff));
     }
 #endif
@@ -328,8 +313,8 @@ main(int argc, char *argv[])
       if(FD_ISSET(0,&rfds)) {          
         num_read = read(0, in_buff, MAXLINE);
 #ifdef log 
-	write(logfd, "IN<<<<<", strlen("IN<<<<<"));
-	write(logfd, in_buff, num_read);
+        write(logfd, "IN<<<<<", strlen("IN<<<<<"));
+        write(logfd, in_buff, num_read);
 #endif
         check_flip();
         if(MODE == CLEFRAW ) 
@@ -601,9 +586,3 @@ set_function_chars(void)
   _EOL = childbuf.c_cc[VEOL];
   return;
 }
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

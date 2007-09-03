@@ -1,3 +1,15 @@
+2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (clef_SOURCES): Don't reference pamphlet.
+	(clef_sources): Remove.
+	(clef_objects): Adjust.
+	(%.c): Remove.
+	(mostlyclean-local): Don't remove sources.
+	(pamphlets): _SOURCES are no longer pamphlet.
+	* Makefile.in: Regenerate.
+	* edible.c: New.  Replace corresponding pamphlet.
+	* edible.c.pamphlet: Remove.
+
 2007-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (clef_LDADD): Set to libtoolized libspad.
