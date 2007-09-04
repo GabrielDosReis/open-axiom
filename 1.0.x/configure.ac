@@ -138,14 +138,27 @@ if test -z $axiom_lisp; then
                        *) AC_MSG_ERROR([erroneous value for --enable-gcl]) ;;
                    esac])
 fi
-## We need to build our own GCL if none is avalaible
+## We need to build our own GCL if none is avalaible, or the existing
+## one is too old.
 if test -z $axiom_lisp; then
     AC_PATH_PROG([AXIOM_LISP], [gcl])
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
+    if test -n "$AXIOM_LISP"; then
+       AC_MSG_CHECKING([$AXIOM_LISP version])
+       v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+       AC_MSG_RESULT([$v])
+       case $v in
+           *2.6.7*|*2.6.8*) ;;         # OK
+           *)
+              AC_MSG_WARN([$v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored.])
+              AXIOM_LISP=
+              ;;
+       esac
+    fi
     if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       AC_MSG_ERROR([OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website.])
+       AC_MSG_ERROR([OpenAxiom requires GCL-2.6.7 or GCL-2.6.8.  Either separately build one, or get the dependency tarball from OpenAxiom download website.])
     fi
 
     axiom_lisp=$AXIOM_LISP

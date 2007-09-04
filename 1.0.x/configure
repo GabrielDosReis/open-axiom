@@ -20546,7 +20546,8 @@ echo "$as_me: error: erroneous value for --enable-gcl" >&2;}
 fi
 
 fi
-## We need to build our own GCL if none is avalaible
+## We need to build our own GCL if none is avalaible, or the existing
+## one is too old.
 if test -z $axiom_lisp; then
     # Extract the first word of "gcl", so it can be a program name with args.
 set dummy gcl; ac_word=$2
@@ -20591,9 +20592,24 @@ fi
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
+    if test -n "$AXIOM_LISP"; then
+       { echo "$as_me:$LINENO: checking $AXIOM_LISP version" >&5
+echo $ECHO_N "checking $AXIOM_LISP version... $ECHO_C" >&6; }
+       v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+       { echo "$as_me:$LINENO: result: $v" >&5
+echo "${ECHO_T}$v" >&6; }
+       case $v in
+           *2.6.7*|*2.6.8*) ;;         # OK
+           *)
+              { echo "$as_me:$LINENO: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored." >&5
+echo "$as_me: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored." >&2;}
+              AXIOM_LISP=
+              ;;
+       esac
+    fi
     if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       { { echo "$as_me:$LINENO: error: OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website." >&5
-echo "$as_me: error: OpenAxiom needs GCL.  Either separately build one, or get the dependency tarball from OpenAxiom website." >&2;}
+       { { echo "$as_me:$LINENO: error: OpenAxiom requires GCL-2.6.7 or GCL-2.6.8.  Either separately build one, or get the dependency tarball from OpenAxiom download website." >&5
+echo "$as_me: error: OpenAxiom requires GCL-2.6.7 or GCL-2.6.8.  Either separately build one, or get the dependency tarball from OpenAxiom download website." >&2;}
    { (exit 1); exit 1; }; }
     fi
 
