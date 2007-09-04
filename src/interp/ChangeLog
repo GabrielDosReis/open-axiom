@@ -1,3 +1,8 @@
+2007-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootfuns.lisp.pamphlet (|$CategoryFrame|): Move to sys-globals.boot.
+	* setq.lisp.pamphlet (|$CategoryFrame|): Don't set here.
+
 2007-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* bootfuns.lisp.pamphlet ($LISPLIB): Move to sys-globals.boot.

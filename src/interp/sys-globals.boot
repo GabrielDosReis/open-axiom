@@ -327,3 +327,9 @@ $reportCompilation := false
 
 ++
 $LISPLIB := false
+
+++
+$CategoryFrame :=
+  '((((Category (modemap (((Category) (Category)) (T *))))_
+      (Join (modemap (((Category) (Category) (Category)) (T *))_
+                     (((Category) (Category) (List Category)) (T *)))))))
