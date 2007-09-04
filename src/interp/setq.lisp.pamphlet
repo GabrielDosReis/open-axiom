@@ -222,7 +222,6 @@
 
 ;; These were originally in INIT LISP
 
-(SETQ $LISPLIB NIL)
 (SETQ |$dependeeClosureAlist|	    NIL)
 (SETQ |$userModemaps| NIL)
 (SETQ |$functorForm| NIL)

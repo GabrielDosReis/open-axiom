@@ -325,3 +325,5 @@ $printLoadMsgs := false
 ++
 $reportCompilation := false
 
+++
+$LISPLIB := false

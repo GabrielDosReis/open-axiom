@@ -115,7 +115,6 @@ offer it as extensions.
       (((|Category|) (|Category|) (|List| |Category|)) (|Category|)) (T *))
 	)))))
 	"Compiler>CUtil.boot")
-(def-boot-val $LISPLIB nil		    "whether to produce a lisplib or not")
 (def-boot-val |$spadLibFT| 'LISPLIB		    "???")
 @
 \eject
