@@ -332,25 +332,6 @@ AC_SUBST(axiom_use_sman)
 
 \subsection{Graphics}
 
-\subsubsection{HyperDoc}
-
-The HyperDoc component needs string pattern matching.  
-We require [[<regex.h>]], with POSIX-conformant definition.  We use
-to key build of HyperDoc component on the availability of X11
-functionalities.  That, however, is a severe restriction.  Not all
-of the HyperDoc components need X11.  Some, such as [[htadd]], don't
-need X11 at all.  Therefore we have lifted part of the restrictions.
-See \File{src/hyper/Makefile} for more details.  Note that is we don't
-build the HyperDoc component, the compilation of algebra files are
-drawn in [[Unexpected HT command]] noise.
-<<C headers and libraries>>=
-AC_CHECK_HEADER([regex.h], 
-		[axiom_src_all="$axiom_src_all all-hyper"
-		 axiom_src_subdirs="$axiom_src_subdirs hyper"
-		 AXIOM_MAKEFILE([src/hyper/Makefile])], 
-		[AC_MSG_NOTICE([HyperDoc is disabled.])])
-@
-
 \subsubsection{Where is X11?}
 
 One of the thorniest issues with programs that use the X Window System
@@ -411,6 +392,30 @@ else
 fi
 AC_SUBST(axiom_src_all)
 AC_SUBST(axiom_use_x)
+@
+
+\subsubsection{HyperDoc}
+
+The HyperDoc component needs string pattern matching.  
+We require [[<regex.h>]], with POSIX-conformant definition.  We used
+to key build of HyperDoc component on the availability of X11
+functionalities.  That, however, is a severe restriction.  Not all
+of the HyperDoc components need X11.  Some, such as [[htadd]], don't
+need X11 at all.  Therefore we have lifted part of the restrictions.
+See \File{src/hyper/Makefile} for more details.  Note that is we don't
+build the HyperDoc component, the compilation of algebra files are
+drawn in [[Unexpected HT command]] noise.  We still haven't clean up
+the X11 dependencies, so we are back to the old requirements.
+<<C headers and libraries>>=
+if test x"$axiom_use_x" != xyes; then
+   AC_MSG_NOTICE([HyperDoc is disabled because it depends on X11])
+else
+   AC_CHECK_HEADER([regex.h], 
+		   [axiom_src_all="$axiom_src_all all-hyper"
+		    axiom_src_subdirs="$axiom_src_subdirs hyper"
+		    AXIOM_MAKEFILE([src/hyper/Makefile])], 
+		   [AC_MSG_NOTICE([HyperDoc is disabled.])])
+fi
 @
 
 \subsection{Lisp runtime}
@@ -987,7 +992,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom 1.0.1 (prerelease)], [2007-09-01], 
+AC_INIT([OpenAxiom 1.0.1 (prerelease)], [2007-09-03], 
         [open-axiom-devel@lists.sf.net])
 @
 
