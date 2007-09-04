@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom 1.1.0 (experimental)], [2007-08-23], 
+AC_INIT([OpenAxiom 1.1.0 (experimental)], [2007-09-03], 
         [open-axiom-devel@lists.sf.org])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
@@ -365,11 +365,6 @@ fi
 
 axiom_src_all="all-input $axiom_src_all"
 AC_SUBST(axiom_use_sman)
-AC_CHECK_HEADER([regex.h], 
-                [axiom_src_all="$axiom_src_all all-hyper"
-                 axiom_src_subdirs="$axiom_src_subdirs hyper"
-                 AXIOM_MAKEFILE([src/hyper/Makefile])], 
-                [AC_MSG_NOTICE([HyperDoc is disabled.])])
 AC_PATH_XTRA
 ## Output directives for the C compiler
 AC_SUBST(X_CLFAGS)
@@ -409,6 +404,15 @@ else
 fi
 AC_SUBST(axiom_src_all)
 AC_SUBST(axiom_use_x)
+if test x"$axiom_use_x" != xyes; then
+   AC_MSG_NOTICE([HyperDoc is disabled because it depends on X11])
+else
+   AC_CHECK_HEADER([regex.h], 
+                   [axiom_src_all="$axiom_src_all all-hyper"
+                    axiom_src_subdirs="$axiom_src_subdirs hyper"
+                    AXIOM_MAKEFILE([src/hyper/Makefile])], 
+                   [AC_MSG_NOTICE([HyperDoc is disabled.])])
+fi
 
 axiom_host_has_libbfd=
 AC_CHECK_HEADER([bfd.h])
