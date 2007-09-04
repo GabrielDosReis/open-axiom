@@ -1,5 +1,12 @@
 2007-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+ 	* configure.ac.pamphlet: Ignore any existing GCL that is not
+	either 2.6.7 or 2.6.8.
+	* configure.ac: Regenerate.
+	* configure: Likewise.
+
+2007-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* config/setup-dep.mk ($(top_srcdir)/configure.ac): Robustify
 	regeneration from pamphlet.
 	($(srcdir)/Makefile.in): Likewise.
