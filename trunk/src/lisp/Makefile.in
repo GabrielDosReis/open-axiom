@@ -64,7 +64,6 @@ ifeq (@axiom_lisp_flavor@,gcl)
                                        ' (compiler::emit-fn t))' \
                                   ' (when (fboundp (quote si::sgc-on))' \
                                         ' (si::sgc-on nil))' \
-                                  ' (setq compiler::*default-system-p* t)' \
 				  ' (setq si::*top-level-hook* (read-from-string \"|AxiomCore|::|topLevel|\")))"' \
                       ' si::*system-directory* (quote (list ".lsp")))' \
                '  "$(lisp_c_objects) @axiom_c_runtime_extra@"))' \
