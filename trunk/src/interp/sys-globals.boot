@@ -161,7 +161,7 @@ $instantRecord := MAKE_-HASHTABLE "ID"
 $InteractiveFrame := [[nil]]
 
 ++
-$InteractiveMode := true
+$InteractiveMode := false
 
 ++
 $InteractiveTimingStatsIfTrue := false
@@ -333,3 +333,6 @@ $CategoryFrame :=
   '((((Category (modemap (((Category) (Category)) (T *))))_
       (Join (modemap (((Category) (Category) (Category)) (T *))_
                      (((Category) (Category) (List Category)) (T *)))))))
+
+++
+$spadLibFT := "NRLIB"

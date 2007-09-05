@@ -39,7 +39,7 @@ DEP=	nlib.lisp	\
 	axext_l.lisp
 
 depsys_lisp_macro_sources = vmlisp.lisp ggreater.lisp hash.lisp \
-	bootfuns.lisp union.lisp nlib.lisp macros.lisp	\
+	union.lisp nlib.lisp macros.lisp	\
 	comp.lisp spaderror.lisp debug.lisp \
 	spad.lisp bits.lisp setq.lisp property.lisp \
 	unlisp.lisp foam_l.lisp axext_l.lisp
@@ -54,7 +54,7 @@ DEBUGSYS=$(axiom_build_bindir)/debugsys$(EXEEXT)
 
 OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	diagnostics.$(FASLEXT)				\
-	bootfuns.$(FASLEXT)	macros.$(FASLEXT)	\
+	macros.$(FASLEXT)	\
 	unlisp.$(FASLEXT)	setq.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
 	alql.$(FASLEXT)	buildom.$(FASLEXT)	\
@@ -110,7 +110,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 
-AXIOMsys_noncompiled_lisp_sources = bootfuns.lisp nocompil.lisp \
+AXIOMsys_noncompiled_lisp_sources = nocompil.lisp \
 	postprop.lisp property.lisp setq.lisp 
 
 AXIOMsys_compiled_lisp_sources = bits.lisp \
@@ -296,7 +296,6 @@ makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 		 $(axiom_target_datadir)/msgs
 	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
 	@ echo '(|importModule| "hash")' >> makeint.lisp
-	@ echo '(|importModule| "bootfuns")' >> makeint.lisp
 	@ echo '(gbc t)' >> makeint.lisp
 	@ echo '(load "nocompil.lisp")' >> makeint.lisp
 	@ echo '(|importModule| "bookvol5")' >> makeint.lisp
@@ -348,7 +347,6 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		sys-constants.$(FASLEXT) \
 		sys-globals.$(FASLEXT) \
 		diagnostics.$(FASLEXT) \
-		bootfuns.$(FASLEXT) \
 		${DEP} \
 		nocompil.$(FASLEXT) \
 	        bookvol5.$(FASLEXT)\
@@ -371,10 +369,9 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(|importModule| "hash")' >> makedep.lisp
 	@ echo '(|importModule| "ggreater")' >> makedep.lisp
 	@ echo '(|importModule| "union")' >> makedep.lisp
-	@ echo '(|importModule| "bootfuns")' >> makedep.lisp
 	@ echo '(|importModule| "nocompil")' >> makedep.lisp
-	@ echo '(|importModule| "bookvol5")' >> makedep.lisp
 	@ echo '(|importModule| "parsing")' >> makedep.lisp
+	@ echo '(|importModule| "bookvol5")' >> makedep.lisp
 	@ echo '(|importModule| "util")' >> makedep.lisp
 	@ echo '(in-package "BOOT")' >> makedep.lisp
 	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))) "${AXIOM}")' >> makedep.lisp
@@ -427,10 +424,6 @@ bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-bootfuns.$(FASLEXT): bootfuns.lisp hash.$(FASLEXT) \
-			sys-constants.$(FASLEXT) sys-globals.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 diagnostics.$(FASLEXT): diagnostics.boot sys-constants.$(FASLEXT) \

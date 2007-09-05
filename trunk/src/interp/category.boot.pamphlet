@@ -601,6 +601,12 @@ JoinInner(l,$e) ==
   if pName and not member(pName,c) then c:= [pName,:c]
   $NewCatVec.4:= [c,FundamentalAncestors,CADDR $NewCatVec.4]
   mkCategory("domain",sigl,attl,globalDomains,$NewCatVec)
+
+Join(:l) ==
+  e :=
+    (not BOUNDP '$e) or null $e or $InteractiveMode => $CategoryFrame
+    $e
+  JoinInner(l, e)
  
 --ProduceDomainAlist(u,e) ==
 --  -- Gives a complete Alist for all the functions in the Domain

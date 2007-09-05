@@ -1,3 +1,15 @@
+2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (depsys_lisp_macro_sources): Remove
+	bootfuns.lisp from the list.
+	(OBJS): Likewise.
+	(AXIOMsys_noncompiled_lisp_sources): Likewise.
+	(${DEPSYS}): Don't depend on bootfuns.  Don't load it.
+	(bootfuns.$(FASLEXT)): Remove.
+	* Makefile.in: Regenerate.
+	* setq.lisp.pamphlet: Move to sys-globals.boot.
+	* bootfuns.lisp.pamphlet: Remove.
+
 2007-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* bootfuns.lisp.pamphlet (|$CategoryFrame|): Move to sys-globals.boot.

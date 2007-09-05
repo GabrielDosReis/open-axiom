@@ -157,12 +157,6 @@ The [[depsys]] image is made of the following Lisp source files
     \item[\File{hash.lisp}]  This file defines a ``hash table'' module.
     Its content is defined in package [[VMLISP]].
 
-    \item[\File{bootfuns.lisp}]  This file collects forward references
-    of functions that are needed in the [[BOOT]] package, to be defined
-    latter.  It is not at all clear that this file is needed to
-    build the Boot to Common Lisp translator.  Its content is
-    defined in package [[BOOT]].
-
     \item[\File{union.lisp}]  This file defines functions that
     compute set-theoretic operations (union, difference, intersection, etc.).
     Its content is in package [[VMLISP]].
@@ -283,7 +277,7 @@ DEP=	nlib.lisp	\
 	axext_l.lisp
 
 depsys_lisp_macro_sources = vmlisp.lisp ggreater.lisp hash.lisp \
-	bootfuns.lisp union.lisp nlib.lisp macros.lisp	\
+	union.lisp nlib.lisp macros.lisp	\
 	comp.lisp spaderror.lisp debug.lisp \
 	spad.lisp bits.lisp setq.lisp property.lisp \
 	unlisp.lisp foam_l.lisp axext_l.lisp
@@ -330,9 +324,7 @@ loaded into a clean lisp image ({\bf LOADSYS}) and saved as
 a runnable \Tool{OpenAxiom} interpreter ({\bf SAVESYS}) usually named
 \Tool{interpsys}. Most of these files
 are translated from Boot to Common Lisp and then 
-compiled. There are two exceptions, \File{bootfuns.lisp}
-and \File{setq.lisp}. The \File{bootfuns.lisp} \cite{3} file
-contains forward references for Boot code. The \File{setq.lisp}
+compiled.  The \File{setq.lisp}
 file contains constant initialization code which gains nothing
 by being compiled.
 
@@ -348,7 +340,7 @@ interpreted) in [[depsys]].
 <<environment>>=
 OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	diagnostics.$(FASLEXT)				\
-	bootfuns.$(FASLEXT)	macros.$(FASLEXT)	\
+	macros.$(FASLEXT)	\
 	unlisp.$(FASLEXT)	setq.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
 	alql.$(FASLEXT)	buildom.$(FASLEXT)	\
@@ -404,7 +396,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 
-AXIOMsys_noncompiled_lisp_sources = bootfuns.lisp nocompil.lisp \
+AXIOMsys_noncompiled_lisp_sources = nocompil.lisp \
 	postprop.lisp property.lisp setq.lisp 
 
 AXIOMsys_compiled_lisp_sources = bits.lisp \
@@ -996,7 +988,6 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		sys-constants.$(FASLEXT) \
 		sys-globals.$(FASLEXT) \
 		diagnostics.$(FASLEXT) \
-		bootfuns.$(FASLEXT) \
 		${DEP} \
 		nocompil.$(FASLEXT) \
 	        bookvol5.$(FASLEXT)\
@@ -1019,10 +1010,9 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(|importModule| "hash")' >> makedep.lisp
 	@ echo '(|importModule| "ggreater")' >> makedep.lisp
 	@ echo '(|importModule| "union")' >> makedep.lisp
-	@ echo '(|importModule| "bootfuns")' >> makedep.lisp
 	@ echo '(|importModule| "nocompil")' >> makedep.lisp
-	@ echo '(|importModule| "bookvol5")' >> makedep.lisp
 	@ echo '(|importModule| "parsing")' >> makedep.lisp
+	@ echo '(|importModule| "bookvol5")' >> makedep.lisp
 	@ echo '(|importModule| "util")' >> makedep.lisp
 	@ echo '(in-package "BOOT")' >> makedep.lisp
 	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))) "${AXIOM}")' >> makedep.lisp
@@ -1074,10 +1064,6 @@ bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-bootfuns.$(FASLEXT): bootfuns.lisp hash.$(FASLEXT) \
-			sys-constants.$(FASLEXT) sys-globals.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 diagnostics.$(FASLEXT): diagnostics.boot sys-constants.$(FASLEXT) \
@@ -1159,7 +1145,6 @@ makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 		 $(axiom_target_datadir)/msgs
 	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
 	@ echo '(|importModule| "hash")' >> makeint.lisp
-	@ echo '(|importModule| "bootfuns")' >> makeint.lisp
 	@ echo '(gbc t)' >> makeint.lisp
 	@ echo '(load "nocompil.lisp")' >> makeint.lisp
 	@ echo '(|importModule| "bookvol5")' >> makeint.lisp
@@ -2300,7 +2285,6 @@ pp
 \begin{thebibliography}{99}
 \bibitem{1} \File{Makefile.pamphlet}
 \bibitem{2} \File{src/boot/Makefile.pamphlet}
-\bibitem{3} \File{src/interp/bootfuns.lisp.pamphlet}
 \bibitem{4} \File{src/interp/setq.lisp.pamphlet}
 \bibitem{5} \File{src/interp/patches.lisp.pamphlet}
 \bibitem{6} {\bf www.aldor.org}

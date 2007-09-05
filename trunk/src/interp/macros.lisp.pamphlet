@@ -140,8 +140,7 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
 <<*>>=
 <<license>>
 
-(provide 'Boot)
- 
+(import-module "sys-constants") 
 (in-package "BOOT")
  
 (defvar |$compilingMap| ())
