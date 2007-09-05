@@ -69,6 +69,7 @@ with this hack and will try to convince the GCL crowd to fix this.
 
 <<gcl-cmpnote>>
 
+(import-module "boot-pkg")
 (in-package "BOOT")
 
 (defun protected-symbol-warn (&rest arg))
@@ -88,13 +89,6 @@ with this hack and will try to convince the GCL crowd to fix this.
 (defun enable-backtrace (&rest arg)
 #+:ccl
   (format t "protected-symbol-warn called with ~A~%" arg))
-
-;; NOTE: JoinInner is defined in CATEGORY BOOT
-;; following code needs to run interpreted to overcome arglist length limits
-(defun |Join| (&rest L)
-  (|JoinInner| L (if (OR (not (boundp '|$e|)) (NULL |$e|) |$InteractiveMode|)
-		   |$CategoryFrame|
-		   |$e|)))
 
 @
 \eject

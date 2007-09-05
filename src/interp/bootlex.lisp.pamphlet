@@ -129,7 +129,6 @@
 	     &aux
 	     (Echo-Meta t)
 	     ($BOOT T)
-	     (|$InteractiveMode| NIL)
 	     (XCape #\_)
 	     (File-Closed NIL)
 	     (*EOF* NIL)
@@ -137,6 +136,7 @@
 	     (*fileactq-apply* (function print-defun))
 	     (*comp370-apply* (function print-defun)))
   (declare (special echo-meta *comp370-apply* *EOF* File-Closed XCape))
+  (setq |$InteractiveMode| NIL)
   (init-boot/spad-reader)
   (with-open-stream
     (in-stream (if *boot-input-file* (open *boot-input-file* :direction :input)
@@ -177,7 +177,6 @@
 	 ;;  (*comp370-apply* (function print-and-eval-defun))
 	   (*comp370-apply* (function print-defun))
 	   (*fileactq-apply* (function print-defun))
-	 ;;  (|$InteractiveMode| nil)
 	   ($SPAD T)
 	   ($BOOT nil)
 	   (XCape #\_)
@@ -190,6 +189,7 @@
 	   in-stream out-stream)
   (declare (special echo-meta /editfile *comp370-apply* *EOF*
 		    File-Closed Xcape |$noSubsumption|))
+  (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
   (progv (if (not |$InteractiveMode|) '(|$InteractiveFrame|))
 	 (if (not |$InteractiveMode|)
