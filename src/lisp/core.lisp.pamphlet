@@ -561,7 +561,13 @@ it would return $0$, meaning that everything is OK.
 		       (unless result
 			 (|error| "compilation of Lisp code failed"))
 		       (cond ((and failure-p)
+			      ;; Since we believe the source code must
+			      ;; be fixed, we don't want to leave
+			      ;; the generated FASL behing us, as that
+			      ;; would confuse both user and tools.
+			      (delete-file result)
 			      (|error| "Lisp code contained errors"))
+
 			     (warning-p
 			      (|warn| "Lisp code contained warnings")))
 		       result))
