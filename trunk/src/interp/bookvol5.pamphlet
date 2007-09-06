@@ -1,3 +1,4 @@
+%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
 \documentclass{book}
 \usepackage{axiom}
 \usepackage{graphicx}
@@ -761,21 +762,7 @@ Call the garbage collector on various platforms.
 #+sbcl
 (defun reclaim () (sb-ext::gc))
 @
-\subsection{defun getenviron}
-<<defun getenviron>>=
-(defun getenviron (shellvar)
- #+allegro (sys::getenv (string var))
- #+clisp (ext:getenv (string var))
- #+(or cmu scl)
-  (cdr 
-   (assoc (string var) ext:*environment-list* :test #'equalp :key #'string))
- #+(or kcl akcl gcl) (si::getenv (string var))
- #+lispworks (lw:environment-variable (string var))
- #+lucid (lcl:environment-variable (string var))
- #+mcl (ccl::getenv var)
- #+sbcl (sb-ext:posix-getenv var)
- )
-@
+
 \subsection{defun init-memory-config}
 Austin-Kyoto Common Lisp (AKCL), now known as Gnu Common Lisp (GCL)
 requires some changes to the default memory setup to run Axiom efficently.
@@ -1605,9 +1592,6 @@ DEBUGSYS=${OBJ}/${SYS}/bin/debugsys
 (IMPORT-MODULE "vmlisp")
 (in-package "BOOT")
 <<initvars>>
-
-
-<<defun getenviron>>
 
 <<defun init-memory-config>>
 <<defun initroot>>
