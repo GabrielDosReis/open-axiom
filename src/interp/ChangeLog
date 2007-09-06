@@ -1,5 +1,9 @@
 2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* bookvol5.pamphlet (getenviron): Remove.
+
+2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (depsys_lisp_macro_sources): Remove
 	bootfuns.lisp from the list.
 	(OBJS): Likewise.
