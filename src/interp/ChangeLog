@@ -1,3 +1,14 @@
+2007-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* patches.lisp.pamphlet (reset-highlight): Move to i-syscmd.boot.
+	(clear-highlight): Likewise.
+	(|spool|): Likewise.
+	* i-syscmd.boot.pamphlet (clearHighlight): Move from
+	patches.lisp.pamphlet. Rename from clear-highlight.  Implement as
+	Boot code.
+	(resetHighlight): Move from patches.lisp.pamphlet.  Rename from
+	clear-highlight. Implement as Boot code.
+
 2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (boot-pkg.lisp): Remove rule.

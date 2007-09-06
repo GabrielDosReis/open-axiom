@@ -2425,6 +2425,29 @@ displayOperationsFromLisplib form ==
   say2PerLine ops
   nil
 
+--% )spool
+
+clearHighlight() ==
+  $saveHighlight := $highlightAllowed
+  $highlightAllowed := false
+  $saveSpecialchars := $specialCharacters
+  setOutputCharacters ["plain"]
+
+resetHighlight() ==
+  $highlightAllowed := $saveHighlight
+  $specialCharacters := $saveSpecialchars
+
+spool filename ==
+  null filename =>
+    DRIBBLE()
+    TERPRI()
+    resetHighlight()
+  PROBE_-FILE car filename =>
+    systemError CONCAT('"file ", STRING car filename, '" already exists")
+  DRIBBLE car filename
+  TERPRI()
+  clearHighlight
+
 --% )synonym
 
 synonym(:l) == synonymSpad2Cmd()  -- always passed a null list

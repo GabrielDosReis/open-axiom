@@ -92,29 +92,6 @@ previous definition.
   `(if (is-console ,streamvar)
        (setq ,streamvar *terminal-io*)))
 
-(defun clear-highlight ()
-  (let ((|$displaySetValue| nil))
-    (declare (special |$displaySetValue| |$saveHighlight| |$saveSpecialchars|))
-    (setq |$saveHighlight| |$highlightAllowed|
-	  |$highlightAllowed| nil)
-    (setq |$saveSpecialchars| |$specialCharacters|)
-    (|setOutputCharacters| '(|plain|))))
-
-(defun reset-highlight ()
-  (setq |$highlightAllowed| |$saveHighlight|)
-  (setq |$specialCharacters| |$saveSpecialchars|))
-
-(defun |spool| (filename)
-  (cond ((null filename)
-	 (dribble) (TERPRI)
-	 (reset-highlight))
-	((probe-file (car filename))
-	 (error (format nil "file ~a already exists" (car filename))))
-	(t (dribble (car filename))
-	   (TERPRI)
-	   (clear-highlight))
-    ))
-
 (defun |cd| (args)
   (cond ((null args)
 #+(and :lucid :ibm/370)
