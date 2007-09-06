@@ -1,6 +1,10 @@
+2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet (|compileLispFile|): Don't leave a FASL if
+	source code compilation has FAILURE-P.
+
 2007-09-04  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
             Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
 
 	* Makefile.pamphlet ($(OUT)/lisp$(EXEEXT)): Don't pretend this is the
 	system GCL.
