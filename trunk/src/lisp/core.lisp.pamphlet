@@ -532,6 +532,13 @@ it would return $0$, meaning that everything is OK.
   #-:ecl (compile-file-pathname file)
   #+:ecl (compile-file-pathname file :type :object))
 
+(defun |currentDirectoryName| nil
+  (let* ((dir (namestring (truename "")))
+	 (n (1- (length dir))))
+    (if (char= (char dir n) #\/)
+	(subseq dir 0 n)
+      dir)))	
+
 ;; Compile Lisp source files to target object code.  Most of the time
 ;; this function is called externally to accomplish just that: compile
 ;; a Lisp file.  So, by default, we exit the read-eval-print loop after
@@ -549,6 +556,19 @@ it would return $0$, meaning that everything is OK.
 ;; twice: once as object code, once as FASL.  That is surely wrong.  There
 ;; me be ways to build one from the one with less work.
 (defun |compileLispFile| (file out-file)
+  ;; When OUT-FILE does not have a specified parent directory, it is
+  ;; implied that the compiled file is placed in the current directory.
+  ;; This is a very common convention on traditional systems and
+  ;; environments.  However GCL would insist to pick the parent
+  ;; directory from FILE, which clearly is bogus.  
+  ;; Consequently, we must convince GCL to do what we expected.
+  #+gcl (when (and (pathname-directory file)
+		   (not (pathname-directory out-file)))
+	  (setq out-file 
+		(make-pathname :name (pathname-name out-file)
+			       :type (pathname-type out-file)
+			       :directory (list (|currentDirectoryName|)))))
+
   (multiple-value-bind (result warning-p failure-p) 
 		       #-:ecl (compile-file file :output-file out-file)
 		       #+:ecl (multiple-value-prog1

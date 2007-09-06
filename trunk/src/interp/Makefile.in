@@ -335,8 +335,6 @@ depsys_objects = nocompil.$(FASLEXT) bookvol5.$(FASLEXT) g-error.$(FASLEXT) \
 		fnewmeta.$(FASLEXT) clam.$(FASLEXT) \
 		slam.$(FASLEXT) g-boot.$(FASLEXT) c-util.$(FASLEXT) \
 		g-util.$(FASLEXT)
-VPATH =
-
 
 
 ${DEPSYS}:	vmlisp.$(FASLEXT) \
@@ -451,25 +449,6 @@ ggreater.$(FASLEXT): ggreater.lisp vmlisp.$(FASLEXT)
 
 vmlisp.$(FASLEXT): vmlisp.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
-
-
-## GCL-2.6.8pre has the following behaviour that it will
-## try to forcefully put the compiled code in the same directory
-## as the source.  This is hardly what we want, especially when
-## the source file reside in non-writeable areas.  Consequently,
-## we copy the source file to the current working directory --
-## until we find a better way to convince GCL to do the right thing.
-boot-pkg.lisp: $(srcdir)/boot-pkg.lisp
-	cp $< $@
-
-diagnostics.boot: $(srcdir)/diagnostics.boot
-	cp $< $@
-
-sys-globals.boot: $(srcdir)/sys-globals.boot
-	cp $< $@
-
-sys-constants.boot: $(srcdir)/sys-constants.boot
-	cp $< $@
 
 .PHONY: all-axiomsys
 
