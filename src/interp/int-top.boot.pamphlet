@@ -154,6 +154,40 @@ intloopPrefix?(prefix,whole) ==
 
 )package "BOOT"
 
+ncParseAndInterpretString s ==
+  processInteractive(packageTran parseFromString s, nil)
+
+ncParseFromString s ==
+  zeroOneTran packageTran CATCH("SPAD_READER", parseFromString s)
+
+ncINTERPFILE(file, echo) ==
+  savedEcho := $EchoLines
+  savedReadingFile := $ReadingFile
+  $EchoLines: fluid := echo
+  $ReadingFile: fluid := true
+  result := SpadInterpretFile file
+  $EchoLines := savedEcho
+  $ReadingFile := savedReadingFile
+  result
+
+ncGetFunction(op, dom, sig) ==
+  applyInPackage(function getNCfunction,_
+                 [rePackageTran(op, '"boot"),_
+                  rePackageTran(dom, '"boot"),_
+                  rePackageTran(sig, '"boot")],_
+                 '"BOOT")
+
+applyInPackage(fun, args, package) ==
+  savedPackage := _*PACKAGE_*
+  SETQ(_*PACKAGE_*, FIND_-PACKAGE package)
+  result := apply(fun, args)
+  SETQ(_*PACKAGE_*, savedPackage)
+  result  
+
+ncSetCurrentLine l ==
+  setCurrentLine l
+
+
 --% INTERPRETER TOP LEVEL
 
 spad() ==
@@ -279,6 +313,9 @@ intloopInclude0(st, name, n) ==
       next(function intloopEchoParse,
         next(function insertpile,
           next(function lineoftoks,$lines))))
+
+intloopInclude(name, n) ==
+  WITH_-OPEN_-FILE(st name, intloopInclude0(st, name, n))
  
 intloopInclude1(name,n) ==
           a:=ncloopIncFileName name
@@ -408,6 +445,9 @@ ncloopInclude0(st, name, n) ==
          next(function ncloopEchoParse,
            next(function insertpile,
             next(function lineoftoks,$lines))))
+
+ncloopInclude(name, n) ==
+  WITH_-OPEN_-FILE(st name, ncloopInclude0(st, name, n))
  
 ncloopInclude1(name,n) ==
           a:=ncloopIncFileName name
@@ -487,6 +527,19 @@ PullAndExecuteSpadSystemCommand stream ==
 
 ExecuteSpadSystemCommand string ==
   FUNCALL($systemCommandFunction, string)
+
+
+clearMacroTable() ==
+  $pfMacros := nil
+
+getParserMacros() ==
+  $pfMacros
+
+displayParserMacro m ==
+  m := ASSQ(m, $pfMacros)
+  null m => nil
+  pfPrintSrcLines CADDR m
+
 
 @
 \eject
