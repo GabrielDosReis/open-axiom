@@ -85,7 +85,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	lisplib.$(FASLEXT)	macex.$(FASLEXT)	\
 	match.$(FASLEXT)				\
 	monitor.$(FASLEXT)	msg.$(FASLEXT)		\
-	msgdb.$(FASLEXT)	nci.$(FASLEXT)		\
+	msgdb.$(FASLEXT)	\
 	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
 	nlib.$(FASLEXT)	nrunfast.$(FASLEXT)	\
 	nrungo.$(FASLEXT)	nrunopt.$(FASLEXT)	\
@@ -121,7 +121,7 @@ AXIOMsys_compiled_lisp_sources = bits.lisp \
 	patches.lisp preparse.lisp \
 	sockio.lisp spad.lisp spaderror.lisp \
 	union.lisp util.lisp vmlisp.lisp obey.lisp \
-	unlisp.lisp intint.lisp nci.lisp sfsfun-l.lisp \
+	unlisp.lisp intint.lisp sfsfun-l.lisp \
 	axext_l.lisp foam_l.lisp
 
 AXIOMsys_boot_sources = astr.boot alql.boot buildom.boot cattable.boot \

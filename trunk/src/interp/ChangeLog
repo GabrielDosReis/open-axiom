@@ -1,5 +1,24 @@
 2007-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (OBJS): Don't include nci.
+	(AXIOMsys_compiled_lisp_sources): Likewise.
+	* Makefile.in: Regenerate.
+	* nci.lisp.pamphlet (|ncParseAndInterpretString|): Move to
+	int-top.boot.pamphlet. 
+	(|ncParseFromString|): Likewise.
+	(|ncINTERPFILE|): Likewise.
+	(|ncGetFunction|): Likewise.
+	(|ncSetCurrentLine|): Likewise.
+	(|applyInPackage|): Likewise.
+	(|clearMacroTable|): Likewise.
+	(|getParserMacros|): Likewise.
+	(|displayParserMacro|): Likewise.
+	(|intloopInclude|): Likewise.
+	(|ncloopInclude|): Likewise.
+	Remove file.
+
+2007-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* patches.lisp.pamphlet (reset-highlight): Move to i-syscmd.boot.
 	(clear-highlight): Likewise.
 	(|spool|): Likewise.
