@@ -1,5 +1,11 @@
 2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet: Fix thinko.
+	* config/var-def.mk (SYS): Remove.
+	(AX_FLAGS): Likewise.
+
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* configure.ac.pamphlet (axiom_optimize_options): New substitued
 	variable. 
 	Genrate src/lisp/core.lisp at configure time.

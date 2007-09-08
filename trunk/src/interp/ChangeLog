@@ -1,3 +1,11 @@
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (makeint.lisp): Don't print SYS, LISP, BYE.
+	(DEBUGSYS): Remove.
+	(all-debugsys): Likewise.
+	(<<debugsys.lisp>>): Likewise.
+	* debugsys.lisp.pamphlet: Remove.
+
 2007-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (OBJS): Don't include nci.

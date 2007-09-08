@@ -19007,7 +19007,7 @@ echo "$as_me: error: erroneous value for --enable-checking" >&2;}
                esac
 fi
 
-if test x"axiom_enable_checking" = xyes; then
+if test x"$axiom_enable_checking" = xyes; then
    axiom_optimize_options="$axiom_optimize_options safety"
    { echo "$as_me:$LINENO: runtime checking may increase compilation time" >&5
 echo "$as_me: runtime checking may increase compilation time" >&6;}

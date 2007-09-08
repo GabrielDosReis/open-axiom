@@ -50,8 +50,6 @@ LOADSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
 SAVESYS= interpsys$(EXEEXT)
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
 
-DEBUGSYS=$(axiom_build_bindir)/debugsys$(EXEEXT)
-
 OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	diagnostics.$(FASLEXT)				\
 	macros.$(FASLEXT)	\
@@ -223,7 +221,7 @@ UNUSED= ${DOC}/anna.boot.dvi ${DOC}/construc.lisp.dvi \
 .SUFFIXES:
 .SUFFIXES: .boot .clisp .lisp .pamphlet
 
-.PHONY: all all-ax all-depsys all-interpsys all-axiomsys all-debugsys
+.PHONY: all all-ax all-depsys all-interpsys all-axiomsys
 
 all: all-ax
 
@@ -238,7 +236,7 @@ remove-stamp:
 	-rm -f stamp
 
 .PHONY: build-images
-build-images: remove-stamp all-interpsys all-debugsys
+build-images: remove-stamp all-interpsys
 
 all-interpsys: all-depsys 
 	$(mkinstalldirs) $(AUTO)
@@ -246,9 +244,6 @@ all-interpsys: all-depsys
 
 all-axiomsys: all-depsys 
 	$(MAKE) $(AXIOMSYS)
-
-all-debugsys: all-interpsys
-	$(MAKE) $(DEBUGSYS)
 
 all-depsys: $(DEPSYS)
 
@@ -289,8 +284,6 @@ makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 	        ../algebra/warm.data
 	@ echo 5 invoking make in `pwd` with parms:
 	@rm -f makeint.lisp
-	@ echo SYS= ${SYS} 
-	@ echo LISP=${LISP} BYE=${BYE}
 	$(mkinstalldirs) $(axiom_target_datadir)/msgs
 	$(INSTALL_DATA) $(axiom_src_docdir)/msgs/s2-us.msgs \
 		 $(axiom_target_datadir)/msgs
@@ -459,11 +452,6 @@ ${AXIOMSYS}: makeint.lisp
 		$(LOADSYS) -- --make --output=$@ --main="BOOT::RESTART" \
 			--load-directory=. makeint.lisp
 	@ echo 6a ${AXIOMSYS} created
-${DEBUGSYS}: debugsys.lisp
-	@ echo 7 building debugsys
-	@ echo '(progn (gbc t) (load "debugsys.lisp") (in-package "BOOT") (spad-save "$@"))' | ${LISPSYS}
-	@ echo 8 ${DEBUGSYS} created
-
 exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
 	@ echo 615 making exposed.lsp from $(axiom_src_algdir)/exposed.lsp.pamphlet
 	$(axiom_build_document) --tangle --output=$@ $<
@@ -585,9 +573,6 @@ c-util.clisp: c-util.boot
 database.clisp: database.boot
 	@ echo 243 making $@ from $<
 	@ echo '(progn (old-boot::boot "database.boot"))' | ${DEPSYS}
-
-debugsys.lisp: $(srcdir)/debugsys.lisp.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
 
 define.clisp: define.boot
 	@ echo 247 making $@ from $<
