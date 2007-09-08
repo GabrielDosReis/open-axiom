@@ -190,15 +190,7 @@ AXIOM = $(top_builddir)/target/$(target)
 ## Where to find OpenAxiom data bases.
 DAASE = $(axiom_src_datadir)
 
-# What platform is this build for?  The use of `export' below,
-# as much as I dislike it is OK: we now require GNU Make.
-SYS = $(target)
-export SYS
-
 TMP=$(axiom_builddir)
-
-## Variables to export to sub-processes of Make
-AX_FLAGS = SYS=$(SYS)
 
 ## Shall we build GCL?
 axiom_include_gcl = @axiom_include_gcl@

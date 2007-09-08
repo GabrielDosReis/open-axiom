@@ -21,7 +21,7 @@ AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
                   yes|no) axiom_enable_checking=$enableval ;;
                   *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
                esac])
-if test x"axiom_enable_checking" = xyes; then
+if test x"$axiom_enable_checking" = xyes; then
    axiom_optimize_options="$axiom_optimize_options safety"
    AC_MSG_NOTICE([runtime checking may increase compilation time])
 fi
