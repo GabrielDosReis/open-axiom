@@ -13,6 +13,7 @@ AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
+axiom_optimize_options=speed
 ## Shall we proclaim safety?
 axiom_enable_checking=no          # don't turn on checking by default.
 AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
@@ -21,9 +22,11 @@ AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
                   *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
                esac])
 if test x"axiom_enable_checking" = xyes; then
+   axiom_optimize_options="$axiom_optimize_options safety"
    AC_MSG_NOTICE([runtime checking may increase compilation time])
 fi
 AC_SUBST(axiom_enable_checking)
+AC_SUBST(axiom_optimize_options)
 
 axiom_src_subdirs="lib lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
@@ -484,6 +487,7 @@ AXIOM_MAKEFILE([Makefile])
 AXIOM_MAKEFILE([src/Makefile])
 AXIOM_MAKEFILE([src/lib/Makefile])
 AXIOM_MAKEFILE([src/lisp/Makefile])
+AC_CONFIG_FILES([src/lisp/core.lisp])
 AXIOM_MAKEFILE([src/boot/Makefile])
 AXIOM_MAKEFILE([src/interp/Makefile])
 AXIOM_MAKEFILE([src/share/Makefile])

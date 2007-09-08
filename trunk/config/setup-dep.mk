@@ -136,6 +136,12 @@ $(axiom_build_document): $(axiom_src_srcdir)/scripts/document.in
 	cd $(abs_top_builddir) && \
 	$(SHELL) ./config.status build/scripts/document
 
+$(top_builddir)/src/lisp/core.lisp: \
+	$(top_srcdir)/src/lisp/core.lisp.in \
+	$(top_builddir)/config.status
+	cd $(top_builddir) && \
+	$(SHELL) ./config.status src/lisp/core.lisp
+
 ## Cleanup.
 ##   Each Makefile is responsible of defining targets named
 ##   mostlyclean-local, clean-local, and distclean-local.

@@ -824,6 +824,7 @@ ac_ct_F77
 LIBTOOL
 LIBTOOL_DEPS
 axiom_enable_checking
+axiom_optimize_options
 axiom_src_subdirs
 target
 target_cpu
@@ -3770,7 +3771,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 3773 "configure"' > conftest.$ac_ext
+  echo '#line 3774 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -6625,11 +6626,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6628: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6629: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6632: \$? = $ac_status" >&5
+   echo "$as_me:6633: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -6893,11 +6894,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6896: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6897: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6900: \$? = $ac_status" >&5
+   echo "$as_me:6901: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -6997,11 +6998,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7000: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7001: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7004: \$? = $ac_status" >&5
+   echo "$as_me:7005: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9449,7 +9450,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9452 "configure"
+#line 9453 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9549,7 +9550,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9552 "configure"
+#line 9553 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11917,11 +11918,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11920: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11921: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11924: \$? = $ac_status" >&5
+   echo "$as_me:11925: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -12021,11 +12022,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12024: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12025: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:12028: \$? = $ac_status" >&5
+   echo "$as_me:12029: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -13591,11 +13592,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13594: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13595: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13598: \$? = $ac_status" >&5
+   echo "$as_me:13599: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13695,11 +13696,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13698: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13699: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13702: \$? = $ac_status" >&5
+   echo "$as_me:13703: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15925,11 +15926,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15928: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15929: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15932: \$? = $ac_status" >&5
+   echo "$as_me:15933: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16193,11 +16194,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16196: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16197: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16200: \$? = $ac_status" >&5
+   echo "$as_me:16201: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16297,11 +16298,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16300: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16301: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16304: \$? = $ac_status" >&5
+   echo "$as_me:16305: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18993,6 +18994,7 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
+axiom_optimize_options=speed
 ## Shall we proclaim safety?
 axiom_enable_checking=no          # don't turn on checking by default.
 # Check whether --enable-checking was given.
@@ -19006,9 +19008,11 @@ echo "$as_me: error: erroneous value for --enable-checking" >&2;}
 fi
 
 if test x"axiom_enable_checking" = xyes; then
+   axiom_optimize_options="$axiom_optimize_options safety"
    { echo "$as_me:$LINENO: runtime checking may increase compilation time" >&5
 echo "$as_me: runtime checking may increase compilation time" >&6;}
 fi
+
 
 
 axiom_src_subdirs="lib lisp boot interp share algebra input etc doc"
@@ -24782,6 +24786,8 @@ ac_config_files="$ac_config_files src/lib/Makefile:config/var-def.mk:src/lib/Mak
 
 ac_config_files="$ac_config_files src/lisp/Makefile:config/var-def.mk:src/lisp/Makefile.in:config/setup-dep.mk"
 
+ac_config_files="$ac_config_files src/lisp/core.lisp"
+
 ac_config_files="$ac_config_files src/boot/Makefile:config/var-def.mk:src/boot/Makefile.in:config/setup-dep.mk"
 
 ac_config_files="$ac_config_files src/interp/Makefile:config/var-def.mk:src/interp/Makefile.in:config/setup-dep.mk"
@@ -25361,6 +25367,7 @@ do
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile:config/var-def.mk:src/Makefile.in:config/setup-dep.mk" ;;
     "src/lib/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk" ;;
     "src/lisp/Makefile") CONFIG_FILES="$CONFIG_FILES src/lisp/Makefile:config/var-def.mk:src/lisp/Makefile.in:config/setup-dep.mk" ;;
+    "src/lisp/core.lisp") CONFIG_FILES="$CONFIG_FILES src/lisp/core.lisp" ;;
     "src/boot/Makefile") CONFIG_FILES="$CONFIG_FILES src/boot/Makefile:config/var-def.mk:src/boot/Makefile.in:config/setup-dep.mk" ;;
     "src/interp/Makefile") CONFIG_FILES="$CONFIG_FILES src/interp/Makefile:config/var-def.mk:src/interp/Makefile.in:config/setup-dep.mk" ;;
     "src/share/Makefile") CONFIG_FILES="$CONFIG_FILES src/share/Makefile:config/var-def.mk:src/share/Makefile.in:config/setup-dep.mk" ;;
@@ -25501,6 +25508,7 @@ ac_ct_F77!$ac_ct_F77$ac_delim
 LIBTOOL!$LIBTOOL$ac_delim
 LIBTOOL_DEPS!$LIBTOOL_DEPS$ac_delim
 axiom_enable_checking!$axiom_enable_checking$ac_delim
+axiom_optimize_options!$axiom_optimize_options$ac_delim
 axiom_src_subdirs!$axiom_src_subdirs$ac_delim
 target!$target$ac_delim
 target_cpu!$target_cpu$ac_delim
@@ -25527,7 +25535,6 @@ axiom_quiet_flags!$axiom_quiet_flags$ac_delim
 axiom_eval_flags!$axiom_eval_flags$ac_delim
 axiom_fasl_type!$axiom_fasl_type$ac_delim
 axiom_all_prerequisites!$axiom_all_prerequisites$ac_delim
-axiom_c_runtime!$axiom_c_runtime$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -25569,6 +25576,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+axiom_c_runtime!$axiom_c_runtime$ac_delim
 axiom_c_runtime_extra!$axiom_c_runtime_extra$ac_delim
 axiom_use_sman!$axiom_use_sman$ac_delim
 XMKMF!$XMKMF$ac_delim
@@ -25588,7 +25596,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 17; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 18; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
