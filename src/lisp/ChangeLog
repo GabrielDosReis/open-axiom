@@ -1,3 +1,7 @@
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.pamphlet (|%hasFeature|): New.
+
 2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* core.lisp.pamphlet (|compileLispFile|): Tidy.
