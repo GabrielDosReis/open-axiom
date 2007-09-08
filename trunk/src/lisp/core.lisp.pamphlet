@@ -33,6 +33,9 @@
 	   "errorCount"
 	   "countError"
 	   "warn"
+	   
+	   "%hasFeature"
+
 	   "getCommandLineArguments"
 	   "processCommandLine"
 	   "handleCommandLine"
@@ -735,6 +738,13 @@ it would return $0$, meaning that everything is OK.
 
 
 \subsection{Lisp implementation-dependent support}
+
+\subsectionFeature tests}
+
+<<AxiomCore>>=
+(defun |%hasFeature| (f)
+  (member f *features* :test #'eq))
+@
 
 \subsubsection{SBCL}
 
