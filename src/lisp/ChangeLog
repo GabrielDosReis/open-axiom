@@ -1,5 +1,19 @@
 2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (fasl_ext): New.  Factor out the logic
+	for computing file extensions.
+	(FASLS): Rename from CORE.  Use it to compute the list of files to
+	load. 
+	($(OUT)/lisp$(EXEEXT)): Adjust.
+	(base-lisp$(EXEEXT)): sb-cltl2 module is no longer need.
+	(core.lisp): Now depend on core.lisp.in.  Regenerate if necessary.
+	(mostlyclean-local): Remove FASLs too.
+	* Makefile.in: Regenerate.
+	* core.lisp.in: New.
+	* core.lisp.pamphlet: Move content to core.lisp.in.  Remove.
+
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* core.lisp.pamphlet (|%hasFeature|): New.
 
 2007-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>

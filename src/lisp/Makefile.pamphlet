@@ -46,7 +46,7 @@ ifeq (@axiom_lisp_flavor@,gcl)
 	     '      (compiler::*ld* (concatenate (quote string) ' \
 	     '                                   $(GCL_LTLD)    ' \
 	     '                                   sys-ld)))       ' \
-             '(compiler::link (quote ("$(CORE)")) "lisp$(EXEEXT)" ' \
+             '(compiler::link (quote ($(FASLS))) "lisp$(EXEEXT)" ' \
              ' (format nil "(progn (let ((*load-path* (cons ~S *load-path*))'\
                                         ' (si::*load-types* ~S))' \
                                        ' (compiler::emit-fn t))' \
@@ -63,16 +63,15 @@ endif
 
 base-lisp$(EXEEXT): core.$(FASLEXT)
 	$(AXIOM_LISP) \
-		$(eval_flags) '(progn #+:sbcl (require :sb-cltl2))' \
-		$(eval_flags) '(load "$<")' \
+		$(eval_flags) '(load "core")' \
 		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote nil) (function |AxiomCore|::|topLevel|))'
 
-core.lisp: $(srcdir)/core.lisp.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
+core.lisp: $(srcdir)/core.lisp.in
+	cd $(top_builddir) && \
+	$(SHELL) ./config.status src/lisp/sys-conf.lisp
 
 core.$(FASLEXT): core.lisp
 	$(AXIOM_LISP) $(quiet_flags) \
-		$(eval_flags) '(progn #+:sbcl (require :sb-cltl2))' \
 		$(eval_flags) '(progn #-:ecl (compile-file "$<"))' \
 		$(eval_flags) '(progn #+:ecl (progn (require (quote cmp)) (compile-file "$<" :system-p t) (c::build-fasl "$@" :lisp-files (quote ("core.$(OBJEXT)")))))' \
 		$(eval_flags) '(quit)'
@@ -108,7 +107,8 @@ COBJEXT = $(if $(findstring mingw, $(target)),$(OBJEXT),lo)
 ## code from core.lisp.  However, the general interface compiler::link
 ## that GCL provides for that task is unsupported on Windows platforms.
 ## So, we instruct GCL so load the source file instead.
-CORE = $(if $(findstring mingw, $(target)),core.lisp,core.$(FASLEXT))
+fasl_ext = $(if $(findstring mingw, $(target)),.lisp,.$(FASLEXT))
+FASLS = $(patsubst %,"%", $(addsuffix $(fasl_ext),core))
 
 .PHONY: all all-lisp
 all: all-ax all-lisp
@@ -122,6 +122,7 @@ stamp: $(OUT)/lisp$(EXEEXT)
 <<build augmented lisp>>
 
 mostlyclean-local:
+	rm -f *.$(FASLEXT)
 	@rm -f $(OUT)/lisp$(EXEEXT) lisp$(EXEEXT)
 	@rm -f stamp
 
