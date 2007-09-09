@@ -381,25 +381,6 @@ foo defined inside of fum gets renamed as fum,foo.")
                     (LIST ''T (LIST 'LET_ERROR (LIST 'MAKESTRING
                                                   (MK_LEFORM FORM)) G))  ) )))
 
-(defun MK_LEFORM (U)
-  (COND ((IDENTP U) (PNAME U))
-        ((STRINGP U) U)
-        ((ATOM U) (STRINGIMAGE U))
-        ((MEMBER (FIRST U) '(VCONS CONS) :test #'eq)
-         (STRCONC "(" (MK_LEFORM-CONS U) ")") )
-        ((EQ (FIRST U) 'LIST) (STRCONC "(" (MK_LEFORM (SECOND U)) ")") )
-        ((EQ (FIRST U) 'APPEND) (STRCONC "(" (MK_LEFORM-CONS U) ")") )
-        ((EQ (FIRST U) 'QUOTE) (MK_LEFORM (SECOND U)))
-        ((EQ (FIRST U) 'EQUAL) (STRCONC "=" (MK_LEFORM (SECOND U)) ))
-        ((EQ (FIRST U) 'SPADLET) (MK_LEFORM (THIRD U)))
-        ((ERRHUH))))
-
-(defun MK_LEFORM-CONS (U)
-  (COND ((ATOM U) (STRCONC ":" (MK_LEFORM U)))
-        ((EQ (FIRST U) 'APPEND)
-         (STRCONC ":" (MK_LEFORM (SECOND U)) "\," (MK_LEFORM-CONS (THIRD U)) ))
-        ((EQ (THIRD U) NIL) (MK_LEFORM (SECOND U)))
-        ((STRCONC (MK_LEFORM (SECOND U)) "\," (MK_LEFORM-CONS (THIRD U))))))
 
 (defun LET_ERROR (FORM VAL)
   (|systemError| (format nil "~S is not matched by structure ~S~%" FORM VAL)))
@@ -563,7 +544,6 @@ foo defined inside of fum gets renamed as fum,foo.")
     (SETQ $DEFSTACK (CONS (LIST (CONS OP (CDR XP)) Y) $DEFSTACK))
     NIL))
 
-(defun ERRHUH () (|systemError| "problem with BOOT to LISP translation"))
 
 (mapcar #'(lambda (x) (MAKEPROP (first X) 'SEL\,FUNCTION (second X)))
         '((|aTree| 0)           (|aMode| 1)
