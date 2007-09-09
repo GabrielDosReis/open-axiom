@@ -38,7 +38,7 @@
 --
 
 import '"hash"
-import '"boot-pkg"
+import '"sys-constants"
 )package "BOOT"
 
 ++ FIXME
@@ -336,3 +336,19 @@ $CategoryFrame :=
 
 ++
 $spadLibFT := "NRLIB"
+
+++
+$compilingMap := false
+
+++
+$definingMap := false
+
+++
+$TRACELETFLAG := false
+
+++
+$NEWSPAD := false
+
+++
+$BOOT := false
+

@@ -53,3 +53,15 @@ BUMPERRORCOUNT kind ==
       kind = "semantic" => 2
       ERROR '"BUMPERRORCOUNT: unknown error kind"
     $SPAD__ERRORS.index := 1 + $SPAD__ERRORS.index
+
+FAIL() ==
+  systemError '"Antique error (FAIL ENTERED)"
+
+ERRHUH() ==
+  systemError '"problem with BOOT to LISP translation"
+
+MOAN(:x) ==
+  sayBrightly ['"%l", '"===> ", :x, '"%l"]
+
+THETA__ERROR op ==
+  userError ['"Sorry, do not know the identity element for ", op]

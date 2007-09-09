@@ -338,6 +338,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		sys-constants.$(FASLEXT) \
 		sys-globals.$(FASLEXT) \
 		diagnostics.$(FASLEXT) \
+		sys-macros.$(FASLEXT) \
 		${DEP} \
 		nocompil.$(FASLEXT) \
 	        bookvol5.$(FASLEXT)\
@@ -417,11 +418,15 @@ bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
 nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+sys-macros.$(FASLEXT): sys-macros.lisp diagnostics.$(FASLEXT) \
+			union.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 diagnostics.$(FASLEXT): diagnostics.boot sys-constants.$(FASLEXT) \
 				sys-globals.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-sys-globals.$(FASLEXT): sys-globals.boot boot-pkg.$(FASLEXT) \
+sys-globals.$(FASLEXT): sys-globals.boot sys-constants.$(FASLEXT) \
 				hash.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 

@@ -1,3 +1,98 @@
+2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-macros.lisp: New.
+	* sys-globals.boot: Import sys-constants.
+	* macros.lisp.pamphlet (|$compilingMape): Move to sys-globals.boot.
+	(|$definingMap|): Likewise.
+	($TRACELETFLAG): Likewise.
+	($NEWSPAD): Likewise.
+	($BOOT): Likewise.
+	(MOAN): Move to diagnostic.boot
+	(FAIL): Likewise.
+	(KAR): move to sys-macros.lisp
+	(KDR): Likewise.
+	(KADR): Likewise.
+	(KADDR): Likewise.
+	(|function|): Likewise.
+	(|dispatchFunction|): Likewise.
+	(QEQCAR): Likewise.
+	(BOOT-EQUAL): Likewise.
+	(IDENT-CHAR-LIT): Likewise.
+	(EQQUAL): Likewise.
+	(NEQUAL): Likewise.
+	(EQUABLE): Likewise.
+	(MKQ): Likewise.
+	(IS): Likewise.
+	(LETT): Likewise.
+	(SPADLET): Likewise.
+	(RPLAC): Likewise.
+	(CARCDREXPAND): Likewise.
+	(RENAME): Likewise.
+	(CARCDRX1): Likewise.
+	(APPLYR): Likewise.
+	(REPEAT): Likewise.
+	(REPEAT-TRAN): Likewise.
+	(MKPF): Likewise.
+	(MKPFFLATTEN): Likewise.
+	(MKPFFLATTEN-1): Likewise.
+	(MKPF1): Likewise.
+	(-REPEAT): Likewise.
+	(SEQOPT): Likewise.
+	(SUCHTHATCLAUSE): Likewise.
+	(SPADDO): Likewise.
+	(SPAD_LET): Likewise.
+	(COLLECT): Likewise.
+	(COLLECTVEC): Likewise.
+	(COLLECTV): Likewise.
+	(MKQSADD1): Likewise.
+	(YIELD): Likewise.
+	(REMFLAG): Likewise.
+	(FLAGP): Likewise.
+	(INTERNL): Likewise.
+	(SPADCATCH): Likewise.
+	(SPADTHROW): Likewise.
+	(IEQUAL): Likewise.
+	(GE): Likewise.
+	(GT): Likewise.
+	(LE): Likewise.
+	(LT): Likewise.
+	(QSADDMOD): Likewise.
+	(QSDIFMOD): Likewise.
+	(QSMULTMOD): Likewise.
+	(NLIST): Likewise.
+	(SPADREDUCE): Likewise.
+	(AND2): Likewise.
+	(OR2): Likewise.
+	(REDUCE-1): Likewise.
+	(-REDUCE): Likewise.
+	(-REDUCE-OP): Likewise.
+	(NREVERSE-N): Likewise.
+	(CONS-N): Likewise.
+	(APPEND-N): Likewise.
+	(REDUCE-N): Likewise.
+	(REDUCE-N-1): Likewise.
+	(REDUCE-N-2): Likewise.
+	(THETA): Likewise.
+	(THETA1): Likewise.
+	(THETA_ERROR): Likewise.
+	(SPADFIRST): Likewise.
+	(FIRST-ERROR): Likewise.
+	(ELEM): Likewise.
+	(TAIL): Likewise.
+	(PARTCODET): Likewise.
+	(SPADCALL): Likewise.
+	(S+): Likewise.
+	(S*): Likewise.
+	(S-): Likewise.
+	(DELASC): Likewise.
+	(|char|): Likewise.
+	(MAKE-BF): Likewise.
+	(MAKE-FLOAT): Likewise.
+	* def.lisp.pamphlet (MK_LEFORM): Move to sys-macros.lisp.
+	(MK_LEFORM-CONS): Likewise.
+	* Makefile.pamphlet (${DEPSYS}): Depend on sys-macros.lisp.
+	(sys-globals.$(FASLEXT)): New rule.
+
 2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (makeint.lisp): Don't print SYS, LISP, BYE.
