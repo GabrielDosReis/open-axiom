@@ -31,7 +31,7 @@ depsys_lisp_sources = $(depsys_lisp_noncompiled_sources) \
 depsys_boot_sources = postpar.boot parse.boot clam.boot slam.boot \
 	g-boot.boot g-error.boot c-util.boot g-util.boot
 DEP=	nlib.lisp	\
-	macros.lisp	comp.lisp	\
+	macros.lisp	$(srcdir)/comp.lisp	\
 	spaderror.lisp	debug.lisp	\
 	spad.lisp	bits.lisp	\
 	setq.lisp	property.lisp	\
@@ -367,35 +367,35 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(|importModule| "util")' >> makedep.lisp
 	@ echo '(in-package "BOOT")' >> makedep.lisp
 	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))) "${AXIOM}")' >> makedep.lisp
-	@ echo '(unless (probe-file "postpar.$(FASLEXT)") (compile-file "postpar.clisp" :output-file "postpar.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "postpar.$(FASLEXT)") (|compileLispFile| "postpar.clisp" "postpar.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "postpar")' >> makedep.lisp
-	@ echo '(unless (probe-file "parse.$(FASLEXT)") (compile-file "parse.clisp" :output-file "parse.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "parse.$(FASLEXT)") (|compileLispFile| "parse.clisp" "parse.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "parse")' >> makedep.lisp
-	@ echo '(unless (probe-file "metalex.$(FASLEXT)") (compile-file "metalex.lisp" :output-file "metalex.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "metalex.$(FASLEXT)") (|compileLispFile| "$(srcdir)/metalex.lisp" "metalex.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "metalex")' >> makedep.lisp
-	@ echo '(unless (probe-file "bootlex.$(FASLEXT)") (compile-file "bootlex.lisp" :output-file "bootlex.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "bootlex.$(FASLEXT)") (|compileLispFile| "$(srcdir)/bootlex.lisp" "bootlex.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "bootlex")' >> makedep.lisp
-	@ echo '(unless (probe-file "newaux.$(FASLEXT)") (compile-file "newaux.lisp" :output-file "newaux.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "newaux.$(FASLEXT)") (|compileLispFile| "newaux.lisp" "newaux.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "newaux")' >> makedep.lisp
-	@ echo '(unless (probe-file "preparse.$(FASLEXT)") (compile-file "preparse.lisp" :output-file "preparse.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "preparse.$(FASLEXT)") (|compileLispFile| "preparse.lisp" "preparse.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "preparse")' >> makedep.lisp
-	@ echo '(unless (probe-file "postprop.$(FASLEXT)") (compile-file "postprop.lisp" :output-file "postprop.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "postprop.$(FASLEXT)") (|compileLispFile| "$(srcdir)/postprop.lisp" "postprop.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "postprop")' >> makedep.lisp
-	@ echo '(unless (probe-file "def.$(FASLEXT)") (compile-file "def.lisp" :output-file "def.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "def.$(FASLEXT)") (|compileLispFile| "$(srcdir)/def.lisp" "def.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "def")' >> makedep.lisp
-	@ echo '(unless (probe-file "fnewmeta.$(FASLEXT)") (compile-file "fnewmeta.lisp" :output-file "fnewmeta.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "fnewmeta.$(FASLEXT)") (|compileLispFile| "fnewmeta.lisp" "fnewmeta.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "fnewmeta")' >> makedep.lisp
-	@ echo '(unless (probe-file "clam.$(FASLEXT)") (compile-file "clam.clisp" :output-file "clam.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "clam.$(FASLEXT)") (|compileLispFile| "clam.clisp" "clam.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "clam")' >> makedep.lisp
-	@ echo '(unless (probe-file "slam.$(FASLEXT)") (compile-file "slam.clisp" :output-file "slam.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "slam.$(FASLEXT)") (|compileLispFile| "slam.clisp" "slam.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "slam")' >> makedep.lisp
-	@ echo '(unless (probe-file "g-error.$(FASLEXT)") (compile-file "g-error.clisp" :output-file "g-error.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "g-error.$(FASLEXT)") (|compileLispFile| "g-error.clisp" "g-error.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "g-error")' >> makedep.lisp
-	@ echo '(unless (probe-file "g-boot.$(FASLEXT)") (compile-file "g-boot.clisp" :output-file "g-boot.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "g-boot.$(FASLEXT)") (|compileLispFile| "g-boot.clisp" "g-boot.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "g-boot")' >> makedep.lisp
-	@ echo '(unless (probe-file "c-util.$(FASLEXT)") (compile-file "c-util.${LISP}" :output-file "c-util.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "c-util.$(FASLEXT)") (|compileLispFile| "c-util.${LISP}" "c-util.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "c-util")' >> makedep.lisp
-	@ echo '(unless (probe-file "g-util.$(FASLEXT)") (compile-file "g-util.clisp" :output-file "g-util.$(FASLEXT)"))' >> makedep.lisp
+	@ echo '(unless (probe-file "g-util.$(FASLEXT)") (|compileLispFile| "g-util.clisp" "g-util.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "g-util")' >> makedep.lisp
 	../lisp/base-lisp$(EXEEXT) -- --make --output=$@ \
 		--load-directory=. makedep.lisp

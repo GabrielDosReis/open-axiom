@@ -1,20 +1,3 @@
-%% Oh Emacs, this is a -*- Lisp -*- file, despite appearance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/def.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -46,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 ; NAME:     Def
 ; PURPOSE:  Defines BOOT code
@@ -80,7 +60,7 @@ foo defined inside of fum gets renamed as fum,foo.")
          ($body (deftran $body))
          (argl (DEF-INSERT_LET argl))
          (arglp (DEF-STRINGTOQUOTE argl))
-	 ($body (|bootTransform| $body)))
+         ($body (|bootTransform| $body)))
       (COMP (SUBLIS $OPASSOC (list (list $OP (list 'LAM arglp $body)))))))
 
 ; We are making shallow binding cells for these functions as well
@@ -102,14 +82,14 @@ foo defined inside of fum gets renamed as fum,foo.")
         ((NOT (SECOND X)) (LIST 'NULL (FIRST X)))
        ; ((AND (EQCAR (SECOND X) 'QUOTE) (IDENTP (CADADR X))) (CONS 'EQ X))
         ($BOOT (CONS 'BOOT-EQUAL X))
-	((CONS 'EQUAL X))))
+        ((CONS 'EQUAL X))))
  
 (defun DEF-LESSP (x)
   (cond ((null (cdr x)) (cons '< x))
-	((eq (cadr x) 0) (list 'minusp (car x)))
-	((and (smint-able (car x)) (smint-able (cadr x)))
-	 (cons 'qslessp x))
-	('t (list '> (CADR x) (CAR x)))))
+        ((eq (cadr x) 0) (list 'minusp (car x)))
+        ((and (smint-able (car x)) (smint-able (cadr x)))
+         (cons 'qslessp x))
+        ('t (list '> (CADR x) (CAR x)))))
 
 (defun smint-able (x)
   (or (smintp x)
@@ -125,8 +105,8 @@ foo defined inside of fum gets renamed as fum,foo.")
                               (car (setq Y (cdr Y)))
                               (car (setq Y (cdr Y)))
                               (CONS 'WHERE (cons (car (setq Y (cdr Y))) (cddr X)))))))
-	((IS-CONSOLE *STANDARD-OUTPUT*)
-	 (SAY "  VALUE = " (EVAL (DEFTRAN X))))
+        ((IS-CONSOLE *STANDARD-OUTPUT*)
+         (SAY "  VALUE = " (EVAL (DEFTRAN X))))
         ((print-full (DEFTRAN X)))))
 
 (defun B-MDEF (FORM SIGNATURE $BODY)
@@ -176,8 +156,8 @@ foo defined inside of fum gets renamed as fum,foo.")
       (if (STRINGP X) `(QUOTE ,(intern x))  X)
       (let ((g (gensym)))
         (setq $body (mkprogn
-		     (list (def-let (comp\,fluidize x) g)
-			   $body)))
+                     (list (def-let (comp\,fluidize x) g)
+                           $body)))
         g)))
 
 (mapcar #'(lambda (x) (MAKEPROP (CAR X) 'RENAME (CDR X)))
@@ -187,7 +167,7 @@ foo defined inside of fum gets renamed as fum,foo.")
           (|setDifference| SETDIFFERENCE) (INTERSECTION |intersection|)
           (|setIntersection| |intersection|) (|setUnion| |union|)
           (UNION |union|) (REMOVE |remove|) (MEMBER |member|) (ASSOC |assoc|)
-	  (READ VMREAD) (READ-LINE |read-line|)
+          (READ VMREAD) (READ-LINE |read-line|)
           (|apply| APPLY) (|lastNode| LASTPAIR) (LAST |last|)
           (|in| |member|) (|strconc| STRCONC) (|append| APPEND)
           (|copy| COPY) (DELETE |delete|) (RASSOC |rassoc|)
@@ -257,9 +237,9 @@ foo defined inside of fum gets renamed as fum,foo.")
 (defun |DEF-:| (X &aux Y)
        (DCQ (x y) x)
        `(SPADLET ,(if (or (eq y '|fluid|)
-			  (and (identp x) (char= #\$ (ELT (PNAME X) 0))))
-		      `(FLUID ,X) X)
-		 NIL))
+                          (and (identp x) (char= #\$ (ELT (PNAME X) 0))))
+                      `(FLUID ,X) X)
+                 NIL))
 
 (defmacro |DEF-::| (X)
   (let ((expr (first x)) (type (second x)))
@@ -336,8 +316,8 @@ foo defined inside of fum gets renamed as fum,foo.")
                  (COND
                    ((THIRD U) (LIST 'STEP (SECOND X) (SECOND U) 1 (THIRD U)))
                    ((LIST 'STEP (SECOND X) (SECOND U) 1))  ))
-		((AND (EQCAR X 'INBY) (EQCAR (setq U (THIRD X)) 'SEGMENT))
-		 (COND
+                ((AND (EQCAR X 'INBY) (EQCAR (setq U (THIRD X)) 'SEGMENT))
+                 (COND
                    ((THIRD U) (LIST 'STEP (SECOND X) (SECOND U) (|last| x) (THIRD U)))
                    ((LIST 'STEP (SECOND X) (SECOND U) (|last| x)))  ))
                 (X))))
@@ -360,7 +340,7 @@ foo defined inside of fum gets renamed as fum,foo.")
            (DEFTRAN (LIST 'SETELT (CADR FORM) (CADDR FORM) RHS)) )))
    (RETURN 
      (COND (|$useDCQnotLET| (|defLETdcq| FORM (DEFTRAN RHS)))
-	   ('T            (|defLET| FORM (DEFTRAN RHS)))))))
+           ('T            (|defLET| FORM (DEFTRAN RHS)))))))
 
 (defun |defLETdcq| (FORM RHS &AUX G NAME)
   ;; see defLET in G-BOOT BOOT
@@ -664,9 +644,3 @@ except that elements are separated by commas."
 (defun |newConstruct| (l)
   (if (ATOM l) l
       `(CONS  ,(CAR l) ,(|newConstruct| (CDR l)))))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

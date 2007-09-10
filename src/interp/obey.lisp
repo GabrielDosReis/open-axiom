@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp obey.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -42,16 +29,13 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 (in-package "VMLISP")
 
 #+ (and :lucid :unix)
 (defun OBEY (S)
    (system:run-aix-program (make-absolute-filename "/lib/obey")
-             :arguments	(list "-c" S)))
+             :arguments (list "-c" S)))
 
 #+ (and :lucid :unix)
 (defun makedir (fname)
@@ -69,7 +53,7 @@
 (defun copy-lib-directory (name1 name2)
    (vmlisp::makedir name2)
    (system:run-aix-program "sh" :arguments
-			(list "-c" (concat "cp " name1 "/* " name2))))
+                        (list "-c" (concat "cp " name1 "/* " name2))))
 
 #+ (and :lucid :unix)
 (defun copy-file (namestring1 namestring2)
@@ -78,9 +62,3 @@
 (setq |$algebraOutputStream| *terminal-io*)
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
