@@ -32,6 +32,13 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;; 
 
+;; This is a horrible hack to work around a horrible bug in GCL
+;; as reported here:
+;;    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
+;; 
+#+(and :gcl (not :common-lisp)) (in-package "VMLISP")
+#+(and :gcl (not :common-lisp)) (in-package "AxiomCore")
+
 
 (IMPORT-MODULE "union")
 (IMPORT-MODULE "sys-globals") 

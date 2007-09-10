@@ -358,6 +358,11 @@ $NoValueMode ==
 $ExitMode ==
   "$ExitMode"
 
+
++++ List of domains that are (currently) built-in into the system.
+$Primitives == 
+  '(Union Record Mapping Enumeration)
+
 --%
   
 ++ Category constructor form

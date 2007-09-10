@@ -1174,15 +1174,6 @@ fortcall.clisp: fortcall.boot
 
 @
 
-\subsection{buildom.boot \cite{41}}
-
-<<buildom.clisp>>=
-buildom.clisp: buildom.boot
-	@ echo 143 making $@ from $<
-	@ echo '(progn (old-boot::boot "buildom.boot"))' | ${DEPSYS}
-
-@
-
 \subsection{c-util.boot \cite{42}}
 
 Note that the {\bf c-util.boot.pamphlet} file contains both the
@@ -2057,8 +2048,6 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 
 <<br-util.clisp>>
 
-<<buildom.clisp>>
-
 <<category.clisp>>
 
 <<cattable.clisp>>
@@ -2205,6 +2194,11 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 <<warm.data.stanza>>
 
 <<xruncomp.clisp>>
+
+
+buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 
 <<DVI from pamphlet>>
 

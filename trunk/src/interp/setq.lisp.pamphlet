@@ -310,8 +310,6 @@
     |GeneralDistributedMultivariatePolynomial|
     ))
 
-(SETQ |$Primitives| '(|Union| |Mapping| |Record| |Enumeration|))
-
 (SETQ |$DomainsWithoutLisplibs| '(
   CAPSULE |Union| |Record| |SubDomain| |Mapping| |Enumeration| |Domain| |Mode|))
 
