@@ -63,10 +63,6 @@ stage0/bootsys$(EXEEXT): $(stage0_boot_objects)
 
 $(stage0_boot_objects): $(AXIOM_LOCAL_LISP)
 
-stage0/%.$(FASLEXT): stage0/%.clisp
-	$(AXIOM_LOCAL_LISP) -- --compile \
-		--load-directory=stage0 --output=$@ $<
-
 stage0/%.clisp: $(srcdir)/%.boot.pamphlet stage0/.started
 	$(axiom_build_document) --tangle=$*.clisp --output=$@ $<
 
@@ -85,10 +81,6 @@ stage1/bootsys$(EXEEXT): $(addprefix stage1/, $(boot_objects))
 		 --output=$@ --load-directory=stage1 \
 		$(addprefix stage1/, $(boot_objects))
 
-stage1/%.$(FASLEXT): stage1/%.clisp
-	$(AXIOM_LOCAL_LISP) -- --compile \
-		--load-directory=stage1 $<
-
 stage1/%.clisp: %.boot stage0/stamp stage1/.started
 	stage0/bootsys -- --translate --output=$@ $<
 
@@ -104,10 +96,6 @@ stage2/bootsys$(EXEEXT): $(addprefix stage2/, $(boot_objects))
 		--output=$@ --load-directory=stage2 \
 		$(addprefix stage2/, $(boot_objects))
 
-stage2/%.$(FASLEXT): stage2/%.clisp
-	$(AXIOM_LOCAL_LISP) -- --compile \
-		--load-directory=stage2 $<
-
 stage2/%.clisp: %.boot stage1/stamp stage2/.started
 	stage1/bootsys -- --translate --output=$@ $<
 
@@ -115,21 +103,29 @@ stage2/%.clisp: %.boot stage1/stamp stage2/.started
 ## FIXME: This should be automatically extracted from the
 ## Boot source file at packaging time.
 
-%/tokens.($FASLEXT): %/initial-env.$(FASLEXT)
+%/tokens.$(FASLEXT): %/tokens.clisp %/initial-env.$(FASLEXT)
+	$(AXIOM_LOCAL_LISP) -- --compile --load-directory=$* $<
 
-%/includer.$(FASLEXT): %/tokens.$(FASLEXT)
+%/includer.$(FASLEXT): %/includer.clisp %/tokens.$(FASLEXT)
+	$(AXIOM_LOCAL_LISP) -- --compile --load-directory=$* $<
 
-%/scanner.$(FASLEXT): %/tokens.$(FASLEXT) %/includer.$(FASLEXT)
+%/scanner.$(FASLEXT): %/scanner.clisp %/tokens.$(FASLEXT) %/includer.$(FASLEXT)
+	$(AXIOM_LOCAL_LISP) -- --compile --load-directory=$* $<
 
-%/pile.$(FASLEXT): %/scanner.$(FASLEXT) %/includer.$(FASLEXT)
+%/pile.$(FASLEXT): %/pile.clisp %/scanner.$(FASLEXT) %/includer.$(FASLEXT)
+	$(AXIOM_LOCAL_LISP) -- --compile --load-directory=$* $<
 
-%/ast.$(FASLEXT): %/includer.$(FASLEXT)
+%/ast.$(FASLEXT): %/ast.clisp %/includer.$(FASLEXT)
+	$(AXIOM_LOCAL_LISP) -- --compile --load-directory=$* $<
 
-%/parser.$(FASLEXT): %/ast.$(FASLEXT) %/scanner.$(FASLEXT) %/includer.$(FASLEXT)
+%/parser.$(FASLEXT): %/parser.clisp %/ast.$(FASLEXT) %/scanner.$(FASLEXT) \
+		 %/includer.$(FASLEXT)
+	$(AXIOM_LOCAL_LISP) -- --compile --load-directory=$* $<
 
-%/translator.$(FASLEXT): %/parser.$(FASLEXT) %/ast.$(FASLEXT) \
-		%/pile.$(FASLEXT) %/scanner.$(FASLEXT) \
+%/translator.$(FASLEXT): %/translator.clisp %/parser.$(FASLEXT) \
+		%/ast.$(FASLEXT) %/pile.$(FASLEXT) %/scanner.$(FASLEXT) \
 		%/includer.$(FASLEXT)
+	$(AXIOM_LOCAL_LISP) -- --compile --load-directory=$* $<
 
 .PRECIOUS: %.boot
 %.boot: $(srcdir)/%.boot.pamphlet
@@ -144,7 +140,6 @@ initial-env.lisp: initial-env.lisp.pamphlet
 	$(axiom_build_document) --tangle $<
 
 mostlyclean-local:
-	@rm -f $(AXIOM_LOCAL_LISP)
 	@rm -f $(axiom_build_bindir)/bootsys$(EXEEXT)
 	@rm -rf prev-stage
 	@rm -rf stage0 stage1 stage2
