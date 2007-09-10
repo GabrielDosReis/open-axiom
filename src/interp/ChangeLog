@@ -1,3 +1,25 @@
+2007-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-output.boot.pamphlet ($defaultSpecialCharacters): Define as
+	constant. 
+	($plainSpecialCharacters0): Likewise.
+	($plainSpecialCharacters1): Likewise.
+	($plainSpecialCharacters2): Likewise.
+	($plainSpecialCharacters3): Likewise.
+	($plainRTspecialCharacters): Likewise.
+	($RTspecialCharacters): Likewise.
+	($specialCharacterAlist): Likewise.
+	(makeCharacter): Define as macro.
+	(leftBindingPowerOf): Move from macros.lisp.pamphlet.  Define as
+	Boot code.
+	(rightBindingPowerOf): Likewise.
+	* patches.lisp.pamphlet (|$specialCharacters|): Don't set here.
+	* Makefile.pamphlet (<<i-output.clisp>>): Remove.
+	* Makefile.in: Regenerate.
+	* macros.lisp.pamphlet (ELEMN): Move to g-util.boot.pamphlet.
+	(|leftBindingPowerOf|): Move to i-output.boot.pamphlet.
+	(|rightBindingPowerOf|): Likewise.
+
 2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (DEP): Adjust path to comp.lisp.

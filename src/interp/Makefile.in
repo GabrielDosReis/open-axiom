@@ -663,10 +663,6 @@ info.clisp: info.boot
 	@ echo 329 making $@ from $<
 	@ echo '(progn (old-boot::boot "info.boot"))' | ${DEPSYS}
 
-i-output.clisp: i-output.boot
-	@ echo 307 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-output.boot"))' | ${DEPSYS}
-
 i-resolv.clisp: i-resolv.boot
 	@ echo 310 making $@ from $<
 	@ echo '(progn (old-boot::boot "i-resolv.boot"))' | ${DEPSYS}

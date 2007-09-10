@@ -1520,14 +1520,6 @@ i-map.clisp: i-map.boot
 	@ echo '(progn (old-boot::boot "i-map.boot"))' | ${DEPSYS} 
 @
 
-\subsection{i-output.boot}
-
-<<i-output.clisp>>=
-i-output.clisp: i-output.boot
-	@ echo 307 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-output.boot"))' | ${DEPSYS}
-@
-
 \subsection{i-resolv.boot}
 
 <<i-resolv.clisp>>=
@@ -2108,8 +2100,6 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 <<i-map.clisp>>
 
 <<info.clisp>>
-
-<<i-output.clisp>>
 
 <<i-resolv.clisp>>
 
