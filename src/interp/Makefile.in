@@ -536,11 +536,6 @@ br-util.clisp: br-util.boot
 	@ echo 487 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-util.boot"))' | ${DEPSYS}
 
-buildom.clisp: buildom.boot
-	@ echo 143 making $@ from $<
-	@ echo '(progn (old-boot::boot "buildom.boot"))' | ${DEPSYS}
-
-
 category.clisp: category.boot
 	@ echo 212 making $@ from $<
 	@ echo '(progn (old-boot::boot "category.boot"))' | ${DEPSYS} 
@@ -854,6 +849,11 @@ trace.clisp: trace.boot
 xruncomp.clisp: xruncomp.boot
 	@ echo 459 making $@ from $<
 	@ echo '(progn (old-boot::boot "xruncomp.boot"))' | ${DEPSYS}
+
+
+buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	$(INSTALL_DATA) $< $@

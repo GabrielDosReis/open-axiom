@@ -77,7 +77,7 @@ We plan to move the content of [[VMLISP]] to [[BOOT]].
 ;;; Definitions for package VMLISP of type EXPORT
 (in-package "VMLISP")
 (export
-    '(VMLISP::SINTP VMLISP::$FCOPY 
+    '(VMLISP::SINTP VMLISP::$FCOPY VMLISP::WRAP
          VMLISP::PUT VMLISP::PNAME
 	 VMLISP::QVELT-1 VMLISP::QSETVELT-1 vmlisp::throw-protect
 	 VMLISP::EQCAR

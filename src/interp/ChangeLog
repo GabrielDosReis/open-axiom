@@ -1,5 +1,16 @@
 2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* sys-macros.lisp: Add ugly work-around about infamous GCL bug.
+	* vmlisp.lisp.pamphlet: Export WRAP.
+	* Makefile.pamphlet (<<buildom.clisp>>): Remove.
+	(buildom.$(FASLEXT)): New rule, setup dependency.
+	* Makefile.in: Regenerate.
+	* buildom.boot.pamphlet: Make compilable by bootsys.  Import
+	sys-constants. 
+	* setq.lisp.pamphlet (|$Primitives|): Move to sys-constants.
+
+2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* sys-macros.lisp: New.
 	* sys-globals.boot: Import sys-constants.
 	* macros.lisp.pamphlet (|$compilingMape): Move to sys-globals.boot.
