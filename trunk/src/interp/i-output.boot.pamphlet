@@ -70,6 +70,9 @@ and should be restored when the GCL bug is fixed.
 <<*>>=
 <<license>>
 
+import '"sys-macros"
+)package "BOOT"
+
 --Modified JHD February 1993: see files miscout.input for some tests of this
 -- General principle is that maprin0 is the top-level routine,
 -- which calls maprinChk to print the object (placing certain large
@@ -79,7 +82,7 @@ and should be restored when the GCL bug is fixed.
 
 --% Output display routines
 
-SETANDFILEQ($defaultSpecialCharacters,[
+$defaultSpecialCharacters == [
     EBCDIC( 28),      -- upper left corner
     EBCDIC( 27),      -- upper right corner
     EBCDIC( 30),      -- lower left corner
@@ -97,9 +100,9 @@ SETANDFILEQ($defaultSpecialCharacters,[
     EBCDIC( 61),      -- left   box tee
     EBCDIC( 44),      -- center box tee
     EBCDIC(224)       -- back slash
-     ])
+     ]
 
-SETANDFILEQ($plainSpecialCharacters0,[
+$plainSpecialCharacters0 == [
     EBCDIC( 78),      -- upper left corner   (+)
     EBCDIC( 78),      -- upper right corner  (+)
     EBCDIC( 78),      -- lower left corner   (+)
@@ -117,9 +120,9 @@ SETANDFILEQ($plainSpecialCharacters0,[
     EBCDIC( 78),      -- left   box tee      (+)
     EBCDIC( 78),      -- center box tee      (+)
     EBCDIC(224)       -- back slash
-     ])
+     ]
 
-SETANDFILEQ($plainSpecialCharacters1,[
+$plainSpecialCharacters1 == [
     EBCDIC(107),      -- upper left corner   (,)
     EBCDIC(107),      -- upper right corner  (,)
     EBCDIC(125),      -- lower left corner   (')
@@ -137,9 +140,9 @@ SETANDFILEQ($plainSpecialCharacters1,[
     EBCDIC( 78),      -- left   box tee      (+)
     EBCDIC( 78),      -- center box tee      (+)
     EBCDIC(224)       -- back slash
-     ])
+     ]
 
-SETANDFILEQ($plainSpecialCharacters2,[
+$plainSpecialCharacters2 == [
     EBCDIC( 79),      -- upper left corner   (|)
     EBCDIC( 79),      -- upper right corner  (|)
     EBCDIC( 79),      -- lower left corner   (|)
@@ -157,9 +160,9 @@ SETANDFILEQ($plainSpecialCharacters2,[
     EBCDIC( 78),      -- left   box tee      (+)
     EBCDIC( 78),      -- center box tee      (+)
     EBCDIC(224)       -- back slash
-     ])
+     ]
 
-SETANDFILEQ($plainSpecialCharacters3,[
+$plainSpecialCharacters3 == [
     EBCDIC( 96),      -- upper left corner   (-)
     EBCDIC( 96),      -- upper right corner  (-)
     EBCDIC( 96),      -- lower left corner   (-)
@@ -177,9 +180,9 @@ SETANDFILEQ($plainSpecialCharacters3,[
     EBCDIC( 78),      -- left   box tee      (+)
     EBCDIC( 78),      -- center box tee      (+)
     EBCDIC(224)       -- back slash
-     ])
+     ]
 
-SETANDFILEQ($plainRTspecialCharacters,[
+$plainRTspecialCharacters == [
     '_+,      -- upper left corner   (+)
     '_+,      -- upper right corner  (+)
     '_+,      -- lower left corner   (+)
@@ -197,11 +200,11 @@ SETANDFILEQ($plainRTspecialCharacters,[
     '_+,      -- left   box tee      (+)
     '_+,      -- center box tee      (+)
     '_\       -- back slash
-     ])
+     ]
 
-makeCharacter n == INTERN(STRING(CODE_-CHAR n))
+makeCharacter n ==> INTERN(STRING(CODE_-CHAR n))
 
-SETANDFILEQ($RTspecialCharacters,[
+$RTspecialCharacters == [
     makeCharacter 218,      -- upper left corner   (+)
     makeCharacter 191,      -- upper right corner  (+)
     makeCharacter 192,      -- lower left corner   (+)
@@ -219,11 +222,11 @@ SETANDFILEQ($RTspecialCharacters,[
     makeCharacter 195,      -- left   box tee      (+)
     makeCharacter 197,      -- center box tee      (+)
     '_\       -- back slash
-     ])
+     ]
 
-SETANDFILEQ($specialCharacters,$RTspecialCharacters)
+$specialCharacters := $RTspecialCharacters
 
-SETANDFILEQ($specialCharacterAlist, '(
+$specialCharacterAlist == '(
   (ulc  .  0)_
   (urc  .  1)_
   (llc  .  2)_
@@ -241,7 +244,7 @@ SETANDFILEQ($specialCharacterAlist, '(
   (ltee . 14)_
   (ctee . 15)_
   (bslash . 16)_
-  ))
+  )
 
 $collectOutput := nil
 
@@ -806,6 +809,16 @@ appInfixArg(u,x,y,d,prec,leftOrRight,string) ==
   if string then d:= appconc(d,x,y,string)
   [d,(insertPrensIfTrue => x+2; x)]
 
+leftBindingPowerOf(x, ind) ==
+  y := GETL(x, ind)
+  y => ELEMN(y, 3, 0)
+  0
+
+rightBindingPowerOf(x, ind) ==
+  y := GETL(x, ind)
+  y => ELEMN(y, 4, 105)
+  105
+
 getBindingPowerOf(key,x) ==
   --binding powers can be found in file NEWAUX LISP
   x is ['REDUCE,:.] => (key='left => 130; key='right => 0)
@@ -923,7 +936,7 @@ putWidth u ==
         0=interSpace and infixArgNeedsParens(firstArg,leftPrec,"right")=>
           2+WIDTH firstArg
         WIDTH firstArg
-      widthFirstArg + +/[interSpace+w for x in restArg] where w ==
+      widthFirstArg + +/[interSpace+w for x in restArg] where w() ==
         0=interSpace and infixArgNeedsParens(x, rightPrec, "left") =>
           2+WIDTH x
         WIDTH x
@@ -1467,7 +1480,7 @@ getOutputAbbreviatedForm form ==
     u:= constructor? op or op
     null argl => u
     ml:= getPartialConstructorModemapSig(op)
-    argl:= [fn for x in argl for m in ml] where fn ==
+    argl:= [fn for x in argl for m in ml] where fn() ==
       categoryForm?(m) => outputDomainConstructor x
       x' := coerceInteractive(objNewWrap(x,m),$OutputForm)
       x' => objValUnwrap x'

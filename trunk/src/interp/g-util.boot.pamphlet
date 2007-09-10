@@ -54,6 +54,11 @@
 
 --% Utility Functions of General Use
 
+ELEMN(x, n, d) ==
+  null x => d
+  n = 1 => car x
+  ELEMN(cdr x, SUB1 n, d)
+
 PPtoFile(x, fname) ==
     stream := DEFIOSTREAM([['MODE, :'OUTPUT], ['FILE, :fname]], 80, 0)
     PRETTYPRINT(x, stream)

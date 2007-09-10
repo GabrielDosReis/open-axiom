@@ -327,11 +327,6 @@ This version is needed so that (COLLECT (IN X Y) ... (RETURN 'JUNK))=>JUNK."
 ; 15.2 Lists
  
  
-(defun ELEMN (X N DEFAULT)
-  (COND ((NULL X) DEFAULT)
-        ((EQL N 1) (CAR X))
-        ((ELEMN (CDR X) (SUB1 N) DEFAULT))))
- 
 (defmacro TL (&rest L) `(tail . ,L))
  
  
@@ -826,12 +821,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 
 (defun |deleteWOC| (item list) (lisp::delete item list :test #'equal))
-
-(DEFUN |leftBindingPowerOf| (X IND &AUX (Y (GETL X IND)))
-   (IF Y (ELEMN Y 3 0) 0))
-
-(DEFUN |rightBindingPowerOf| (X IND &AUX (Y (GETL X IND)))
-   (IF Y (ELEMN Y 4 105) 105))
 
 ;;---- Added by WFS.
  
