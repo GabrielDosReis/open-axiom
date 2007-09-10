@@ -1,3 +1,17 @@
+2007-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (stage0/%.$(FASLEXT)): Remove.
+	(stage1/%.$(FASLEXT)): Likewise.
+	(stage2/%.$(FASLEXT)): Likewise.
+	(%/tokens.$(FASLEXT)): Tidy.
+	(%/includer.$(FASLEXT)): Likewise.
+	(%/scanner.$(FASLEXT)): Likewise.
+	(%/pile.$(FASLEXT)): Likewise.
+	(%/ast.$(FASLEXT)): Likewise.
+	(%/parser.$(FASLEXT)): Likewise.
+	(mostlyclean-local): Don't remove $(AXIOM_LOCAL_LISP).
+	* Makefile.in: Regenerate.
+
 2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	
         * OpenAxiom 1.0.0 released.
