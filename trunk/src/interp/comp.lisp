@@ -1,22 +1,3 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/comp.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -48,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 ; NAME:    Compiler Utilities Package
 
@@ -100,22 +78,22 @@
 
 (defun |compQuietly| (fn)
   (let ((*comp370-apply*
-	 (if |$InteractiveMode|
-	     (if |$compileDontDefineFunctions| #'compile-defun #'eval-defun)
-	   #'print-defun))
+         (if |$InteractiveMode|
+             (if |$compileDontDefineFunctions| #'compile-defun #'eval-defun)
+           #'print-defun))
      ;; following creates a null outputstream if $InteractiveMode
-	(*standard-output*
-	 (if |$InteractiveMode| (make-broadcast-stream)
-	   *standard-output*)))
+        (*standard-output*
+         (if |$InteractiveMode| (make-broadcast-stream)
+           *standard-output*)))
     (COMP fn)))
 
 #-:CCL
 (defun |compileFileQuietly| (fn) 
   (let (
      ;; following creates a null outputstream if $InteractiveMode
-	(*standard-output*
-	 (if |$InteractiveMode| (make-broadcast-stream)
-	   *standard-output*)))
+        (*standard-output*
+         (if |$InteractiveMode| (make-broadcast-stream)
+           *standard-output*)))
     (COMPILE-FILE fn)))
 
 #+:CCL
@@ -168,26 +146,26 @@
 
 (defun |compileQuietly| (fn)
   (let ((*comp370-apply*
-	 (if |$InteractiveMode|
-	     (if |$compileDontDefineFunctions| #'compile-defun #'eval-defun)
-	   #'print-defun))
+         (if |$InteractiveMode|
+             (if |$compileDontDefineFunctions| #'compile-defun #'eval-defun)
+           #'print-defun))
      ;; following creates a null outputstream if $InteractiveMode
-	(*standard-output*
-	 (if |$InteractiveMode| (make-broadcast-stream)
-	   *standard-output*)))
+        (*standard-output*
+         (if |$InteractiveMode| (make-broadcast-stream)
+           *standard-output*)))
     (COMP370 fn)))
 
 (defun COMP-1 (X)
   (let* ((FNAME (car X))
-	 ($FUNNAME FNAME)
+         ($FUNNAME FNAME)
          ($FUNNAME_TAIL (LIST FNAME))
-	 (LAMEX (second X))
-	 ($closedfns nil))
+         (LAMEX (second X))
+         ($closedfns nil))
     (declare (special $FUNNAME $FUNNAME_TAIL $CLOSEDFNS))
     (setq LAMEX (COMP-TRAN LAMEX))
     (COMP-NEWNAM LAMEX)
     (if (fboundp FNAME)
-	(format t "~&~%;;;     ***       ~S REDEFINED~%" FNAME))
+        (format t "~&~%;;;     ***       ~S REDEFINED~%" FNAME))
     (CONS (LIST FNAME LAMEX) $CLOSEDFNS)))
 
 (defun Comp-2 (args &aux name type argl bodyl junk)
@@ -287,11 +265,11 @@
           ((ATOM (setq Y (CAR X)))
           ;; (AND (IDENTP Y) (setq U (GET Y 'NEWNAM)) (RPLACA X U))
            (AND (NOT (eq Y 'QUOTE)) (COMP-NEWNAM (CDR X)))
-	   (WHEN (and (EQ Y 'CLOSEDFN) (boundp '$closedfns))
-		 (SETQ U (MAKE-CLOSEDFN-NAME))
-		 (PUSH (list U (CADR X)) $closedfns)
-		 (rplaca x 'FUNCTION)
-		 (rplaca (cdr x) u)))
+           (WHEN (and (EQ Y 'CLOSEDFN) (boundp '$closedfns))
+                 (SETQ U (MAKE-CLOSEDFN-NAME))
+                 (PUSH (list U (CADR X)) $closedfns)
+                 (rplaca x 'FUNCTION)
+                 (rplaca (cdr x) u)))
           (t (COMP-NEWNAM (CAR X)) (COMP-NEWNAM (CDR X))))))
 
 (defun make-closedfn-name ()
@@ -305,7 +283,7 @@
                   (if (and (null (cdddr x))
                            (or (atom (third x))
                                (eq (car (third x)) 'SEQ)
-			       (not (contained 'EXIT (third x)))))
+                               (not (contained 'EXIT (third x)))))
                       (caddr x)
                       (cons 'SEQ (cddr x))))) ;catch naked EXITs
     (let* ((FluidVars (REMDUP (NREVERSE FLUIDVARS)))
@@ -319,9 +297,9 @@
                     (prog ,lvars (declare (special . ,fluids))
                       (return ,(third x))))
                   (list (first x) (second x)
-		     (if (or lvars (contained 'RETURN (third x)))
-			 `(prog ,lvars (return ,(third x)))
-		         (third x)) )))))
+                     (if (or lvars (contained 'RETURN (third x)))
+                         `(prog ,lvars (return ,(third x)))
+                         (third x)) )))))
     (let ((fluids (S+ (comp-fluidize (second x)) SpecialVars)))
       (if fluids
           `(,(first x) ,(second x) (declare (special . ,fluids)) . ,(cddr x))
@@ -332,7 +310,7 @@
 (DEFUN COMP-FLUIDIZE (X)
   (COND ((AND (symbolp X)
               (NE X '$)
-	      (NE X '$$)
+              (NE X '$$)
               (char= #\$ (ELT (PNAME X) 0))
               (NOT (DIGITP (ELT (PNAME X) 1))))
          x)
@@ -362,7 +340,7 @@
 
 (defparameter $COMP-MACROLIST
   '(COLLECT REPEAT SUCHTHATCLAUSE THETA COLLECTV COLLECTVEC
-	    THETA1 SPADREDUCE SPADDO)
+            THETA1 SPADREDUCE SPADDO)
   "???")
 
 (DEFUN COMP-EXPAND (X)
@@ -429,9 +407,3 @@
 (defmacro RELET (L) `(spadlet . ,L))
 (defmacro PRESET (L) `(spadlet . ,L))
 (defmacro RESET (L) `(spadlet . ,L))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

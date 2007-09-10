@@ -1,21 +1,3 @@
-%% Oh Emacs, this is a -*- Lisp -*- file, despite appearance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\$SPAD/src/interp metalex.lisp}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -47,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 ; NAME:         MetaLex.lisp
 ; PURPOSE:      Parsing support routines for Meta code
@@ -75,7 +54,7 @@ if it gets a non-blank line, and NIL at end of stream."
   (prog (string)
 empty (if File-Closed (return nil))
       (setq string (kill-trailing-blanks (kill-comments
-					  (get-a-line in-stream))))
+                                          (get-a-line in-stream))))
       (if (= (length string) 0) (go empty))
       (Line-New-Line (suffix #\Space string) Current-Line)
       (if Echo-Meta (Print-New-Line (Line-Buffer Current-Line) out-stream))
@@ -246,10 +225,10 @@ special character be the atom whose print name is the character itself."
                  (go nu1))))
         (advance-char) 
  formint(return (token-install
-		 (read-from-string buf)
+                 (read-from-string buf)
                   'number token
-		  (size buf) ;used to keep track of digit count
-		  ))))
+                  (size buf) ;used to keep track of digit count
+                  ))))
  
 ; *** 4. META Auxiliary Parsing Actions
  
@@ -294,9 +273,3 @@ special character be the atom whose print name is the character itself."
              (incf $num_of_meta_errors)
              (setq Meta_Errors_Occurred t)))
    nil)
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

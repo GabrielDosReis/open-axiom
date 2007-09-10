@@ -1,21 +1,3 @@
-%% Oh Emacs, this is a -*- Lisp -*- file, despite appearance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/parsing.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -47,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 ; NAME:    META/LISP Parser Generator and Lexical Analysis Utilities (Parsing)
 ;
@@ -545,17 +524,17 @@ the stack, then stack a NIL. Return the value of prod."
     (string             (strconc "'" (token-symbol token) "'"))
     (spadstring         (strconc "\"" (underscore (token-symbol token)) "\""))
     (number             (format nil "~v,'0D" (token-nonblank token)
-				(token-symbol token)))
+                                (token-symbol token)))
     (special-char       (string (token-symbol token)))
     (identifier         (let ((id (symbol-name (token-symbol token)))
-			      (pack (package-name (symbol-package
-						   (token-symbol token)))))
+                              (pack (package-name (symbol-package
+                                                   (token-symbol token)))))
                           (if (or $BOOT $SPAD)
-			      (if (equal pack "BOOT")
-				  (escape-keywords (underscore id) (token-symbol token))
-				(concatenate 'string
-					     (underscore pack) "'" (underscore id)))
-			    id)))
+                              (if (equal pack "BOOT")
+                                  (escape-keywords (underscore id) (token-symbol token))
+                                (concatenate 'string
+                                             (underscore pack) "'" (underscore id)))
+                            id)))
     (t                  (token-symbol token)))
    nil))
 
@@ -567,15 +546,15 @@ the stack, then stack a NIL. Return the value of prod."
 (defun underscore (string)
   (if (every #'alpha-char-p string) string
     (let* ((size (length string))
-	   (out-string (make-array (* 2 size)
-				   :element-type 'character
-				   :fill-pointer 0))
-	   next-char)
+           (out-string (make-array (* 2 size)
+                                   :element-type 'character
+                                   :fill-pointer 0))
+           next-char)
       (dotimes (i size)
-	       (setq next-char (char string i))
-	       (if (not (alpha-char-p next-char))
-		   (vector-push #\_ out-string))
-	       (vector-push next-char out-string))
+               (setq next-char (char string i))
+               (if (not (alpha-char-p next-char))
+                   (vector-push #\_ out-string))
+               (vector-push next-char out-string))
       out-string)))
 
 (defun Unget-Tokens ()
@@ -642,7 +621,7 @@ the stack, then stack a NIL. Return the value of prod."
       (try-get-token Next-Token)))
 
 (defun advance-token ()
-  (current-token)			;don't know why this is needed
+  (current-token)                       ;don't know why this is needed
   "Makes the next token be the current token."
   (case Valid-Tokens
     (0 (try-get-token (Current-Token)))
@@ -1009,11 +988,11 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
    (embed x
           (cond ((eqcar y 'lambda) y)
                 ((eqcar y 'before)
-		 `(lambda ,(cadr y)
-		    (prog2 ,(caddr y) ,(cons 'funcall (cons x (cadr y))))))
+                 `(lambda ,(cadr y)
+                    (prog2 ,(caddr y) ,(cons 'funcall (cons x (cadr y))))))
                 ((eqcar y 'after)
-		 `(lambda ,(cadr y)
-		    (prog1 ,(cons 'funcall (cons x (cadr y))) ,(caddr y))))))
+                 `(lambda ,(cadr y)
+                    (prog1 ,(cons 'funcall (cons x (cadr y))) ,(caddr y))))))
    (/embedreply))
 
 (defun /embedreply ()
@@ -1087,9 +1066,3 @@ Symbolics read-line returns embedded newlines in a c-m-Y.")
          (if (and (not (atom rand)) (cdr rand))
              (cons (list eltWord dom (car rand)) (cdr rand))
              (list eltWord dom rand))))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

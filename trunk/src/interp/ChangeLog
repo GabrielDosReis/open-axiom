@@ -1,5 +1,32 @@
 2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (DEP): Adjust path to comp.lisp.
+	(${DEPSYS}): Likewise for def.lisp, bootlex.lisp, postprop.lisp,
+	metalex.lisp.  Use |compileLispFile| instead of COMPILE-FILE.
+	* Makefile.in: Regenerate.
+	* union.lisp: New.
+	* union.lisp.pamphlet: Move content to union.lisp.  Remove.
+	* obey.lisp: New.
+	* obey.lisp.pamphlet: Move content to obey.lisp.  Remove.
+	* nspadaux.lisp: New.
+	* nspadaux.lisp.pamphlet: Move content to nspadaux.lisp.  Remove.
+	* fname.lisp: New.
+	* fname.lisp.pamphlet: Move content to fname.lisp.  Remove.
+	* def.lisp: New.
+	* def.lisp.pamphlet: Move content to def.lisp.  Remove.
+	* comp.lisp: New.
+	* comp.lisp.pamphlet: Move content to comp.lisp.  Remove.
+	* bootlex.lisp: New.
+	* bootlex.lisp.pamphlet: Move content to bootlex.lisp.  Remove.
+	* postprop.lisp: New.
+	* postprop.lisp.pamphlet: Move content to postprop.lisp.  Remove.
+	* metalex.lisp: New.
+	* metalex.lisp.pamphlet: Move content to metalex.lisp.  Remove.
+	* parsing.lisp: New.
+	* parsing.lisp.pamphlet: Move content to parsing.lisp. Remove.
+
+2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* sys-macros.lisp: Add ugly work-around about infamous GCL bug.
 	* vmlisp.lisp.pamphlet: Export WRAP.
 	* Makefile.pamphlet (<<buildom.clisp>>): Remove.
