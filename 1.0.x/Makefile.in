@@ -40,7 +40,7 @@ stamp-rootdirs: $(axiom_build_document)
 
 
 .PHONY: all-noweb
-all-noweb: $(addprefix $(axiom_build_bindir)/, notangle noweave)
+all-noweb: $(axiom_build_bindir)/notangle
 
 .PHONY: maybe-cp-noweb-srcdir
 maybe-cp-noweb-srcdir: $(srcdir)/noweb
@@ -60,8 +60,10 @@ $(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
 	$(mkinstalldirs) $(axiom_build_libdir)
 	$(mkinstalldirs) $(axiom_build_texdir)
 	$(mkinstalldirs) $(axiom_build_mandir)
-	$(TOUCH) $(wildcard $(builddir)/noweb/src/c/*.h) \
-			$(wildcard $(builddir)/noweb/src/c/*.c)
+	$(TOUCH) $(addprefix noweb/src/shell/, \
+			noweave notangle noweb noroff toroff) \
+		 $(wildcard $(builddir)/noweb/src/c/*.h) \
+		 $(wildcard $(builddir)/noweb/src/c/*.c)
 	## noweb's Makefile needs editing before we can build to suit
 	## our needs.  In particular, we must say when helper programs go,
 	## where the noweb style file goes, where the man pages go (even though
