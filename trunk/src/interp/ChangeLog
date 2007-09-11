@@ -1,3 +1,25 @@
+2007-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* template.boot: New.
+	* template.boot.pamphlet: Move content to template.boot.  Remove.
+	* termrw.boot: New.
+	* termrw.boot.pamphlet: Move content to template.boot.  Remove.
+	* topics.boot: New.
+	* topics.boot.pamphlet: Move content to topics.boot.  Remove.
+	* trace.boot: New.
+	* trace.boot.pamphlet: Move content to trace.boot.  Remove.
+	* varini.boot: New.
+	* varini.boot.pamphlet: Move content to varini.boot.  Remove.
+	* xrun.boot: New.
+	* xrun.boot.pamphlet: Move content to xrun.boot.  Remove
+	* xruncomp.boot: New.
+	* xruncomp.boot.pamphlet: Move content to xruncomp.boot.  Remove.
+	* Makefile.pamphlet (<<xruncomp.clisp>>): Remove.
+	(<<trace.lisp>>): Likewise.
+	(<<topics.clisp>>): Likewise.
+	(<<template.clisp>>): Likewise.
+	(<<termrw.clisp>>): Likewise.
+
 2007-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* i-output.boot.pamphlet ($defaultSpecialCharacters): Define as

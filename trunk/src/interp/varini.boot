@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp varini.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -66,7 +50,7 @@ $SpadNcIncludeRelPath     := '"src/include/lang/"
 
 --$LibrariesSearchPath      := [PathnameDirectory '"./x",
 --                              SpadDirectory $SpadNcLibraryRelPath , 
---			      SpadDirectory $SpadNcLibraryRelPathSrc]
+--                            SpadDirectory $SpadNcLibraryRelPathSrc]
 
 --$IncludesSearchPath       := [PathnameDirectory '"./x",
 --                              SpadDirectory $SpadNcIncludeRelPath]
@@ -155,9 +139,9 @@ $LispViaSam :=        false
 -- the prefix $ncm, since catExcpts (in ncsetvar boot) strips the
 -- prefix and uses the name.  ie. $ncmWarning ==> "Warning"
 $ncmPhase :=      NIL
-$ncmWarning :=    'T
+$ncmWarning :=    "T"
 $ncmStatistic :=  NIL
-$ncmRemark :=     'T
+$ncmRemark :=     "T"
 $statTmSpShow :=   4
 $compBugPrefix :=      '"Bug!"
 $compUnimplPrefix :=   '"Unimp"
@@ -194,7 +178,7 @@ $ValueMode   := 'ValueMode
 $FullMode    := 'FullMode
  
 -- Miscellaneous nonsense.
-$newcompInteractiveRecovery := 'T
+$newcompInteractiveRecovery := "T"
 $newcompErrorCount :=           0
 $floatdolla :=        ['$elt, ['BigFloat], 'bigfloat]
 $floatilla :=         [ 'elt, ['BigFloat], 'bigfloat]
@@ -244,11 +228,11 @@ $attrCats    := ['$imPrGuys, '$toWhereGuys, '$repGuys]
 -- Soon to be obsolete
 $showConcrete1 := NIL
 $showConcrete2 := NIL
-$showPhases :=    'T
+$showPhases :=    "T"
 $showSAM :=       NIL
 $showform :=      NIL
 $showsetr :=      NIL
-$showval :=       'T
+$showval :=       "T"
 $tafon :=         NIL
  
 -- Inits for pseudo kaf files
@@ -268,9 +252,3 @@ $oldLibraryInterface := nil  -- don't consider old library information.
 
 --## Bug in RIOS version of KCL
 NeedAtLeastOneFunctionInThisFile(x) == x
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

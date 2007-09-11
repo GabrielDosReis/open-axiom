@@ -56,7 +56,7 @@ DOC=$(axiom_target_docdir)/src/interp
 BOOK=$(axiom_target_docdir)
 
 # Command to translate Boot to Common Lisp
-BOOT_TO_LISP = $(BOOTSYS) -- --translate $< 
+BOOT_TO_LISP = $(BOOTSYS) -- --translate --output=$@ $< 
 
 # Command to translate Common Lisp to native object code
 COMPILE_LISP = $(DEPSYS) -- --compile --output=$@ $<
@@ -1718,30 +1718,6 @@ setvart.clisp: setvart.boot
 	@ echo '(progn (old-boot::boot "setvart.boot"))' | ${DEPSYS}
 @
 
-\subsection{template.boot}
-
-<<template.clisp>>=
-template.clisp: template.boot
-	@ echo 408 making $@ from $<
-	@ echo '(progn (old-boot::boot "template.boot"))' | ${DEPSYS} 
-@
-
-\subsection{termrw.boot}
-
-<<termrw.clisp>>=
-termrw.clisp: termrw.boot
-	@ echo 411 making $@ from $<
-	@ echo '(progn (old-boot::boot "termrw.boot"))' | ${DEPSYS} 
-@
-
-\subsection{trace.boot}
-
-<<trace.clisp>>=
-trace.clisp: trace.boot
-	@ echo 414 making $@ from $<
-	@ echo '(progn (old-boot::boot "trace.boot"))' | ${DEPSYS}
-@
-
 \subsection{as.boot}
 
 <<as.clisp>>=
@@ -1822,14 +1798,6 @@ htcheck.clisp: htcheck.boot
 	@ echo '(progn (old-boot::boot "htcheck.boot"))' | ${DEPSYS}
 @
 
-\subsection{xruncomp.boot}
-
-<<xruncomp.clisp>>=
-xruncomp.clisp: xruncomp.boot
-	@ echo 459 making $@ from $<
-	@ echo '(progn (old-boot::boot "xruncomp.boot"))' | ${DEPSYS}
-@
-
 \subsection{ax.boot}
 
 <<ax.clisp>>=
@@ -1892,14 +1860,6 @@ br-util.clisp: br-util.boot
 br-saturn.clisp: br-saturn.boot
 	@ echo 491 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-saturn.boot"))' | ${DEPSYS}
-@
-
-\subsection{topics.boot}
-
-<<topics.clisp>>=
-topics.clisp: topics.boot
-	@ echo 495 making $@ from $<
-	@ echo '(progn (old-boot::boot "topics.boot"))' | ${DEPSYS} 
 @
 
 \subsection{br-prof.boot}
@@ -2173,18 +2133,7 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 
 <<setvart.clisp>>
 
-<<template.clisp>>
-
-<<termrw.clisp>>
-
-<<topics.clisp>>
-
-<<trace.clisp>>
-
 <<warm.data.stanza>>
-
-<<xruncomp.clisp>>
-
 
 buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
@@ -2193,71 +2142,5 @@ buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
 <<DVI from pamphlet>>
 
 @
-pp
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} \File{Makefile.pamphlet}
-\bibitem{2} \File{src/boot/Makefile.pamphlet}
-\bibitem{4} \File{src/interp/setq.lisp.pamphlet}
-\bibitem{5} \File{src/interp/patches.lisp.pamphlet}
-\bibitem{6} {\bf www.aldor.org}
-\bibitem{7} \File{src/interp/apply.boot.pamphlet}
-\bibitem{8} \File{src/interp/bits.lisp.pamphlet}
-\bibitem{9} \File{src/interp/bootlex.lisp.pamphlet}
-\bibitem{10} \File{src/interp/cfuns.lisp.pamphlet}
-\bibitem{11} \File{src/interp/comp.lisp.pamphlet}
-\bibitem{12} \File{src/interp/construc.lisp.pamphlet}
-\bibitem{13} \File{src/interp/daase.lisp.pamphlet}
-\bibitem{14} \File{src/interp/debug.lisp.pamphlet}
-\bibitem{15} \File{src/interp/def.lisp.pamphlet}
-\bibitem{16} \File{src/interp/fortcall.boot.pamphlet}
-\bibitem{17} \File{src/interp/fname.lisp.pamphlet}
-\bibitem{18} \File{src/interp/fnewmeta.lisp.pamphlet}
-\bibitem{19} \File{src/interp/ggreater.lisp.pamphlet}
-\bibitem{20} \File{src/interp/hash.lisp.pamphlet}
-\bibitem{21} \File{src/interp/macros.lisp.pamphlet}
-\bibitem{22} \File{src/interp/metalex.lisp.pamphlet}
-\bibitem{24} \File{src/interp/monitor.lisp.pamphlet}
-\bibitem{25} \File{src/interp/newaux.lisp.pamphlet}
-\bibitem{26} \File{src/interp/nlib.lisp.pamphlet}
-\bibitem{27} \File{src/interp/nocompil.lisp.pamphlet}
-\bibitem{28} \File{src/interp/nspadaux.lisp.pamphlet}
-\bibitem{29} \File{src/interp/parsing.lisp.pamphlet}
-\bibitem{30} \File{src/interp/postprop.lisp.pamphlet}
-\bibitem{31} \File{src/interp/preparse.lisp.pamphlet}
-\bibitem{32} \File{src/interp/property.lisp.pamphlet}
-\bibitem{33} \File{src/interp/sockio.lisp.pamphlet}
-\bibitem{34} \File{src/interp/spad.lisp.pamphlet}
-\bibitem{35} \File{src/interp/spaderror.lisp.pamphlet}
-\bibitem{37} \File{src/interp/union.lisp.pamphlet}
-\bibitem{38} \File{src/interp/util.lisp.pamphlet}
-\bibitem{39} \File{src/interp/vmlisp.lisp.pamphlet}
-\bibitem{40} \File{src/interp/alql.boot.pamphlet}
-\bibitem{41} \File{src/interp/buildom.boot.pamphlet}
-\bibitem{42} \File{src/interp/c-util.boot.pamphlet}
-\bibitem{43} \File{src/interp/nag-c02.boot.pamphlet}
-\bibitem{44} \File{src/interp/nag-c05.boot.pamphlet}
-\bibitem{45} \File{src/interp/nag-c06.boot.pamphlet}
-\bibitem{46} \File{src/interp/nag-d01.boot.pamphlet}
-\bibitem{47} \File{src/interp/nag-d02.boot.pamphlet}
-\bibitem{48} \File{src/interp/nag-d03.boot.pamphlet}
-\bibitem{49} \File{src/interp/nag-e01.boot.pamphlet}
-\bibitem{51} \File{src/interp/nag-e02.boot.pamphlet}
-\bibitem{52} \File{src/interp/nag-e04.boot.pamphlet}
-\bibitem{53} \File{src/interp/nag-f01.boot.pamphlet}
-\bibitem{54} \File{src/interp/nag-f02.boot.pamphlet}
-\bibitem{55} \File{src/interp/nag-f04.boot.pamphlet}
-\bibitem{56} \File{src/interp/nag-f07.boot.pamphlet}
-\bibitem{57} \File{src/interp/nag-s.boot.pamphlet}
-\bibitem{58} \File{src/interp/category.boot.pamphlet}
-\bibitem{59} \File{src/interp/cattable.boot.pamphlet}
-\bibitem{60} \File{src/interp/c-doc.boot.pamphlet}
-\bibitem{61} \File{src/interp/clam.boot.pamphlet}
-\bibitem{62} \File{src/interp/clammed.boot.pamphlet}
-\bibitem{63} \File{src/interp/compat.boot.pamphlet}
-\bibitem{64} \File{src/interp/compiler.boot.pamphlet}
-\bibitem{65} \File{src/interp/profile.boot.pamphlet}
-\bibitem{66} \File{src/interp/compress.boot.pamphlet}
-\bibitem{67} \File{src/interp/database.boot.pamphlet}
-\end{thebibliography}
+
 \end{document}

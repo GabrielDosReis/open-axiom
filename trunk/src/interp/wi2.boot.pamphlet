@@ -791,7 +791,7 @@ genDeltaEntry opMmPair ==
       RPLACA(saveNRTdeltaListComp,compEntry)
       chk(saveNRTdeltaListComp,102)
   u :=
-    [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index ==
+    [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
       (n:= POSN1(opModemapPair,$NRTdeltaList)) => n + 1
         --n + 1 since $NRTdeltaLength is 1 too large
       $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]

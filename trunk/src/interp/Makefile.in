@@ -6,7 +6,7 @@ DOC=$(axiom_target_docdir)/src/interp
 BOOK=$(axiom_target_docdir)
 
 # Command to translate Boot to Common Lisp
-BOOT_TO_LISP = $(BOOTSYS) -- --translate $< 
+BOOT_TO_LISP = $(BOOTSYS) -- --translate --output=$@ $< 
 
 # Command to translate Common Lisp to native object code
 COMPILE_LISP = $(DEPSYS) -- --compile --output=$@ $<
@@ -821,30 +821,9 @@ setvart.clisp: setvart.boot
 	@ echo 398 making $@ from $<
 	@ echo '(progn (old-boot::boot "setvart.boot"))' | ${DEPSYS}
 
-template.clisp: template.boot
-	@ echo 408 making $@ from $<
-	@ echo '(progn (old-boot::boot "template.boot"))' | ${DEPSYS} 
-
-termrw.clisp: termrw.boot
-	@ echo 411 making $@ from $<
-	@ echo '(progn (old-boot::boot "termrw.boot"))' | ${DEPSYS} 
-
-topics.clisp: topics.boot
-	@ echo 495 making $@ from $<
-	@ echo '(progn (old-boot::boot "topics.boot"))' | ${DEPSYS} 
-
-trace.clisp: trace.boot
-	@ echo 414 making $@ from $<
-	@ echo '(progn (old-boot::boot "trace.boot"))' | ${DEPSYS}
-
 ../algebra/warm.data: $(srcdir)/Makefile.pamphlet
 	@ echo 2 building warm.data
 	$(axiom_build_document) --tangle=warm.data --output=$@ $<
-
-
-xruncomp.clisp: xruncomp.boot
-	@ echo 459 making $@ from $<
-	@ echo '(progn (old-boot::boot "xruncomp.boot"))' | ${DEPSYS}
 
 
 buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)

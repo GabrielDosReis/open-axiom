@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp xrun.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -56,26 +40,26 @@ $noSubsumption:=true
 NRTmakeCategoryAlist() ==
   $depthAssocCache: local := MAKE_-HASHTABLE 'ID
   $catAncestorAlist: local := NIL
-  pcAlist := [:[[x,:'T] for x in $uncondAlist],:$condAlist]
+  pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
   opcAlist := NREVERSE SORTBY(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
   slot1 := [[a,:k] for [a,:b] in SUBLIS($pairlis,opcAlist)
-		   | (k := predicateBitIndex b) ^= -1]
+                   | (k := predicateBitIndex b) ^= -1]
   slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
   sixEtc := [5 + i for i in 1..#$pairlis]
   formals := ASSOCRIGHT $pairlis
   for x in slot1 repeat
        RPLACA(x,EQSUBSTLIST(CONS("$$",sixEtc),CONS('$,formals),CAR x))
   -----------code to make a new style slot4 -----------------
-  predList := ASSOCRIGHT slot1	--is list of predicate indices
+  predList := ASSOCRIGHT slot1  --is list of predicate indices
   maxPredList := "MAX"/predList
   catformvec := ASSOCLEFT slot1
   maxElement := "MAX"/$byteVec
   ['CONS, ['makeByteWordVec2,MAX(maxPredList,1),MKQ predList],
     ['CONS, MKQ LIST2VEC slot0,
       ['CONS, MKQ LIST2VEC [encodeCatform x for x in catformvec],
-	['makeByteWordVec2,maxElement,MKQ $byteVec]]]]
+        ['makeByteWordVec2,maxElement,MKQ $byteVec]]]]
   --NOTE: this is new form: old form satisfies VECP CDDR form
 
 --------------------> NEW DEFINITION (see nrunopt.boot.pamphlet)
@@ -120,7 +104,7 @@ replaceGoGetSlot env ==
   slot
 
 --=======================================================
---	  Expand Signature from Encoded Slot Form
+--        Expand Signature from Encoded Slot Form
 --=======================================================
 --------------------> NEW DEFINITION (see nrunfast.boot.pamphlet)
 newExpandGoGetTypeSlot(slot,dollar,domain) ==
@@ -136,22 +120,22 @@ newExpandTypeSlot(slot, dollar, domain) ==
 newExpandLocalType(lazyt,dollar,domain) ==
   VECP lazyt => lazyt.0
   ATOM lazyt => lazyt
-  lazyt is [vec,.,:lazyForm] and VECP vec =>		  --old style
+  lazyt is [vec,.,:lazyForm] and VECP vec =>              --old style
     newExpandLocalTypeForm(lazyForm,dollar,domain)
-  newExpandLocalTypeForm(lazyt,dollar,domain)		  --new style
+  newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
 
 --------------------> NEW DEFINITION (see nrunfast.boot.pamphlet)
 newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
   MEMQ(functorName, '(Record Union)) and first argl is [":",:.] =>
     [functorName,:[['_:,tag,newExpandLocalTypeArgs(dom,dollar,domain,true)]
-				 for [.,tag,dom] in argl]]
+                                 for [.,tag,dom] in argl]]
   MEMQ(functorName, '(Union Mapping)) =>
-	  [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
+          [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
   functorName = 'QUOTE => [functorName,:argl]
   coSig := GETDATABASE(functorName,'COSIG)
   NULL coSig => error ["bad functorName", functorName]
   [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,flag)
-	for a in argl for flag in rest coSig]]
+        for a in argl for flag in rest coSig]]
 
 --------------------> NEW DEFINITION (see nrunfast.boot.pamphlet)
 newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
@@ -162,7 +146,7 @@ newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   u is ['NRTEVAL,y] => nrtEval(y,domain)
   u is ['QUOTE,y] => y
   u = "$$" => domain.0
-  atom u => u	--can be first, rest, etc.
+  atom u => u   --can be first, rest, etc.
   newExpandLocalTypeForm(u,dollar,domain)
 
 --------------------> NEW DEFINITION (see nrunfast.boot.pamphlet)
@@ -188,9 +172,9 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
       s = d.0 => true
       domainArg := ($isDefaultingPackage => domain.6.0; domain.0)
       KAR s = QCAR d.0 and
-	lazyMatchArgDollarCheck(replaceSharpCalls s,d.0,dollar.0,domainArg)
-    --VECP CAR d => lazyMatch(s,CDDR d,dollar,domain)	   --old style (erase)
-    lazyMatch(replaceSharpCalls s,d,dollar,domain)	 --new style
+        lazyMatchArgDollarCheck(replaceSharpCalls s,d.0,dollar.0,domainArg)
+    --VECP CAR d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
+    lazyMatch(replaceSharpCalls s,d,dollar,domain)       --new style
   a = '$ => s = devaluate dollar
   a = "$$" => s = devaluate domain
   STRINGP a =>
@@ -218,19 +202,19 @@ evalSlotDomain(u,dollar) ==
     VECP (y := dollar.u) => y
     y is ['SETELT,:.] => eval y--lazy domains need to marked; this is dangerous?
     y is [v,:.] =>
-      VECP v => lazyDomainSet(y,dollar,u)		--old style has [$,code,:lazyt]
+      VECP v => lazyDomainSet(y,dollar,u)               --old style has [$,code,:lazyt]
       constructor? v or MEMQ(v,'(Record Union Mapping)) =>
-	lazyDomainSet(y,dollar,u)			--new style has lazyt
+        lazyDomainSet(y,dollar,u)                       --new style has lazyt
       y
     y
   u is ['NRTEVAL,y] => eval  y
   u is ['QUOTE,y] => y
   u is ['Record,:argl] =>
      FUNCALL('Record0,[[tag,:evalSlotDomain(dom,dollar)]
-				 for [.,tag,dom] in argl])
+                                 for [.,tag,dom] in argl])
   u is ['Union,:argl] and first argl is ['_:,.,.] =>
      APPLY('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
-				 for [.,tag,dom] in argl])
+                                 for [.,tag,dom] in argl])
   u is [op,:argl] => APPLY(op,[evalSlotDomain(x,dollar) for x in argl])
   systemErrorHere '"evalSlotDomain"
 
@@ -242,8 +226,8 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
   tslot = '$ => s = tslot -- devaluate dollar  --needed for browser
   INTEGERP tslot and PAIRP(lazyt:=domain.tslot) and PAIRP s =>
       lazyt is [.,.,.,[.,item,.]] and
-	item is [.,[functorName,:.]] and functorName = CAR s =>
-	  compareSigEqual(s,(NRTevalDomain lazyt).0,dollar,domain)
+        item is [.,[functorName,:.]] and functorName = CAR s =>
+          compareSigEqual(s,(NRTevalDomain lazyt).0,dollar,domain)
       nil
   compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
 
@@ -251,7 +235,7 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
 
 --------------------> NEW DEFINITION (see i-funsel.boot.pamphlet)
 findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
-  -- looks for a modemap for op with signature	args1 -> tar
+  -- looks for a modemap for op with signature  args1 -> tar
   --   in the domain of computation dc
   -- tar may be NIL (= unknown)
   null isLegitimateMode(tar, nil, nil) => nil
@@ -261,16 +245,16 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
     -- When domains no longer have to have Set, the hard coded 6 and 7
     -- should go.
     op = '_= =>
-	#args1 ^= 2 or args1.0 ^= dc or args1.1 ^= dc => NIL
-	tar and tar ^= '(Boolean) => NIL
-	[[[dc, '(Boolean), dc, dc], ['(Boolean),'$,'$], [NIL, NIL]]]
+        #args1 ^= 2 or args1.0 ^= dc or args1.1 ^= dc => NIL
+        tar and tar ^= '(Boolean) => NIL
+        [[[dc, '(Boolean), dc, dc], ['(Boolean),'$,'$], [NIL, NIL]]]
     op = 'coerce =>
-	#args1 ^= 1 
+        #args1 ^= 1 
         dcName='Enumeration and (args1.0=$Symbol or tar=dc)=>
            [[[dc, dc, $Symbol], ['$,$Symbol], [NIL, NIL]]]
         args1.0 ^= dc => NIL
-	tar and tar ^= $Expression => NIL
-	[[[dc, $Expression, dc], [$Expression,'$], [NIL, NIL]]]
+        tar and tar ^= $Expression => NIL
+        [[[dc, $Expression, dc], [$Expression,'$], [NIL, NIL]]]
     member(dcName,'(Record Union)) =>
       findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom)
     NIL
@@ -283,22 +267,22 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       q := NIL
       r := NIL
       for mm in CDR p repeat
-	-- CDAR of mm is the signature argument list
-	if isHomogeneousList CDAR mm then q := [mm,:q]
-	else r := [mm,:r]
+        -- CDAR of mm is the signature argument list
+        if isHomogeneousList CDAR mm then q := [mm,:q]
+        else r := [mm,:r]
       q := allOrMatchingMms(q,args1,tar,dc)
       for mm in q repeat
-	fun:= nconc(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
+        fun:= nconc(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
       r := reverse r
     else r := CDR p
     r := allOrMatchingMms(r,args1,tar,dc)
     if not fun then    -- consider remaining modemaps
       for mm in r repeat
-	fun:= nconc(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
+        fun:= nconc(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
   if not fun and $reportBottomUpFlag then
     sayMSG concat
       ['"   -> no appropriate",:bright op,'"found in",
-	:bright prefix2String dc]
+        :bright prefix2String dc]
   fun
 
 --------------------> NEW DEFINITION (see i-funsel.boot.pamphlet)
@@ -321,9 +305,9 @@ findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
       -- hmmmm: do Union check in following because (as in DP)
       -- Unions are subsumed by total modemaps which are in the
       -- mm list in findFunctionInDomain.
-      y := 'ELT	     -- if subsumed fails try it again
+      y := 'ELT      -- if subsumed fails try it again
       not $SubDom and CAR sig isnt ['Union,:.] and slot is [tar,:args] and
-	(f := findFunctionInDomain(op,dc,tar,args,args,NIL,NIL)) => f
+        (f := findFunctionInDomain(op,dc,tar,args,args,NIL,NIL)) => f
     EQ(y,'ELT) => [[CONS(dc,sig),osig,nreverse $RTC]]
     EQ(y,'CONST) => [[CONS(dc,sig),osig,nreverse $RTC]]
     EQ(y,'ASCONST) => [[CONS(dc,sig),osig,nreverse $RTC]]
@@ -333,7 +317,7 @@ findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
 
 --------------------> NEW DEFINITION (see i-funsel.boot.pamphlet)
 findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
-  -- looks for a modemap for op with signature	args1 -> tar
+  -- looks for a modemap for op with signature  args1 -> tar
   --   in the domain of computation dc
   -- tar may be NIL (= unknown)
   dcName:= CAR dc
@@ -365,7 +349,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   if not fun and $reportBottomUpFlag then
     sayMSG concat
       ['"   -> no appropriate",:bright op,'"found in",
-	:bright prefix2String dc]
+        :bright prefix2String dc]
   fun
 
 ------- from i-eval.boot -----------
@@ -379,45 +363,45 @@ evalForm(op,opName,argl,mmS) ==
     #argl ^= #CDDR sig => 'skip ---> RDJ 6/95
     form:=
       $genValue or null cond =>
-	[getArgValue2(x,t,sideEffectedArg?(t,sig,opName),opName) or return NIL
-	 for x in argl for t in CDDR sig]
+        [getArgValue2(x,t,sideEffectedArg?(t,sig,opName),opName) or return NIL
+         for x in argl for t in CDDR sig]
       [getArgValueComp2(x,t,c,sideEffectedArg?(t,sig,opName),opName) or return NIL
-	for x in argl for t in CDDR sig for c in cond]
+        for x in argl for t in CDDR sig for c in cond]
     form or null argl =>
       dc:= CAR sig
       form :=
-	dc='local => --[fun,:form]
-	  atom fun =>
-	    fun in $localVars => ['SPADCALL,:form,fun]
-	    [fun,:form,NIL]
-	  ['SPADCALL,:form,fun]
-	dc is ["__FreeFunction__",:freeFun] =>
-	  ['SPADCALL,:form,freeFun]
-	fun is ['XLAM,xargs,:xbody] =>
-	  rec :=  first form
-	  xbody is [['RECORDELT,.,ind,len]] =>
-	    optRECORDELT([CAAR xbody,rec,ind,len])
-	  xbody is [['SETRECORDELT,.,ind,len,.]] =>
-	    optSETRECORDELT([CAAR xbody,rec,ind,len,CADDR form])
-	  xbody is [['RECORDCOPY,.,len]] =>
-	    optRECORDCOPY([CAAR xbody,rec,len])
-	  ['FUNCALL,['function , ['LAMBDA,xargs,:xbody]],:TAKE(#xargs, form)]
-	dcVector := evalDomain dc
-	fun0 :=
-	  newType? CAAR mm =>
-	    mm' := first ncSigTransform mm
-	    ncGetFunction(opName, first mm', rest mm')
-	  NRTcompileEvalForm(opName,fun,dcVector)
-	null fun0 => throwKeyedMsg("S2IE0008",[opName])
-	[bpi,:domain] := fun0
-	EQ(bpi,function Undef) =>
-	 sayKeyedMsg("S2IE0009",[opName,formatSignature CDR sig,CAR sig])
-	 NIL
-	if $NRTmonitorIfTrue = true then
-	  sayBrightlyNT ['"Applying ",first fun0,'" to:"]
-	  pp [devaluateDeeply x for x in form]
-	_$:fluid := domain
-	['SPADCALL, :form, fun0]
+        dc='local => --[fun,:form]
+          atom fun =>
+            fun in $localVars => ['SPADCALL,:form,fun]
+            [fun,:form,NIL]
+          ['SPADCALL,:form,fun]
+        dc is ["__FreeFunction__",:freeFun] =>
+          ['SPADCALL,:form,freeFun]
+        fun is ['XLAM,xargs,:xbody] =>
+          rec :=  first form
+          xbody is [['RECORDELT,.,ind,len]] =>
+            optRECORDELT([CAAR xbody,rec,ind,len])
+          xbody is [['SETRECORDELT,.,ind,len,.]] =>
+            optSETRECORDELT([CAAR xbody,rec,ind,len,CADDR form])
+          xbody is [['RECORDCOPY,.,len]] =>
+            optRECORDCOPY([CAAR xbody,rec,len])
+          ['FUNCALL,['function , ['LAMBDA,xargs,:xbody]],:TAKE(#xargs, form)]
+        dcVector := evalDomain dc
+        fun0 :=
+          newType? CAAR mm =>
+            mm' := first ncSigTransform mm
+            ncGetFunction(opName, first mm', rest mm')
+          NRTcompileEvalForm(opName,fun,dcVector)
+        null fun0 => throwKeyedMsg("S2IE0008",[opName])
+        [bpi,:domain] := fun0
+        EQ(bpi,function Undef) =>
+         sayKeyedMsg("S2IE0009",[opName,formatSignature CDR sig,CAR sig])
+         NIL
+        if $NRTmonitorIfTrue = true then
+          sayBrightlyNT ['"Applying ",first fun0,'" to:"]
+          pp [devaluateDeeply x for x in form]
+        _$:fluid := domain
+        ['SPADCALL, :form, fun0]
   not form => nil
 --  not form => throwKeyedMsg("S2IE0008",[opName])
   form='interpOnly => rewriteMap(op,opName,argl)
@@ -452,7 +436,7 @@ coerceByFunction(T,m2) ==
     dcVector := evalDomain ud
     fun :=
       isWrapped x =>
-	NRTcompiledLookup("=", [$Boolean, '$, '$], dcVector)
+        NRTcompiledLookup("=", [$Boolean, '$, '$], dcVector)
       NRTcompileEvalForm("=", [$Boolean, '$, '$], dcVector)
     [fn,:d]:= fun
     isWrapped x =>
@@ -470,7 +454,7 @@ coerceByFunction(T,m2) ==
     fun:=
 --+
       isWrapped x =>
-	NRTcompiledLookup(funName,slot,dcVector)
+        NRTcompiledLookup(funName,slot,dcVector)
       NRTcompileEvalForm(funName,slot,dcVector)
     [fn,:d]:= fun
     fn = function Undef => NIL
@@ -510,9 +494,3 @@ algEqual(object1, object2, domain) ==
 --  eqfunc := getFunctionFromDomain("=",domain,[domain,domain])
   eqfunc := compiledLookupCheck("=",[$Boolean,'$,'$],evalDomain domain)
   SPADCALL(object1,object2, eqfunc)
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

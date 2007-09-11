@@ -1,38 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp termrw.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\begin{verbatim}
-Algorithms for Term Reduction
- 
-The following assumptions are made:
-
-a term rewrite system is represented by a pair (varlist,varRules) where
-  varlist is the list of rewrite variables (test by MEMQ) and varRules
-  is an alist (no variables may occur in varRules)
-
-the following rewrite functions are available:
-  termRW looks for a fixpoint in applying varRules, where the outermost
-    leftmost is reduced first by term1RW
-  term1RW applies the first rule
-
-subCopy uses an alist (calls of ASSQ) to substitute a list structure
-  no left side of a pair of alist may appear on a righthand side
-  this means, subCopy is an idempotent function
-
-in both cases copying is only done if necessary to avoid destruction
-this means, EQ can be used to check whether something was done
- 
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -64,9 +29,7 @@ this means, EQ can be used to check whether something was done
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+)package "BOOT"
  
 termRW(t,R) ==
   -- reduce t by rewrite system R
@@ -189,9 +152,3 @@ deepSubCopyOrNil(t,SL) ==
   t2 and ( t0:= deepSubCopyOrNil(t2,SL) ) => CONS(t, CONS(t1,CDR t0))
  
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

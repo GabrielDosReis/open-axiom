@@ -141,7 +141,7 @@ getDomainSigs(D,:option) ==
   getDomainSigs1(D,first option)
   
 getDomainSigs1(D,ops) == listSort(function GLESSEQP,u) where
-  u == [x for x in getDomainOpTable(D,nil) | null ops or MEMQ(CAR x,ops)]
+  u() == [x for x in getDomainOpTable(D,nil) | null ops or MEMQ(CAR x,ops)]
  
 getDomainDocs(D,:option) ==
   domname := D.0
@@ -182,7 +182,7 @@ getCategoriesOfDomain domain ==
   predkeyVec := domain.4.0
   catforms := CADR domain.4
   [fn for i in 0..MAXINDEX predkeyVec | test] where 
-     test == predkeyVec.i and 
+     test() == predkeyVec.i and 
        (x := catforms . i) isnt ['DomainSubstitutionMacro,:.]
      fn ==
        VECP x => devaluate x
@@ -194,7 +194,7 @@ getInheritanceByDoc(D,op,sig,:options) ==
   catList := KAR options or getExtensionsOfDomain D
   getDocDomainForOpSig(op,sig,devaluate D,D) or
     or/[fn for x in catList] or '(NIL NIL)
-      where fn == getDocDomainForOpSig(op,sig,substDomainArgs(D,x),D)
+      where fn() == getDocDomainForOpSig(op,sig,substDomainArgs(D,x),D)
  
 getDocDomainForOpSig(op,sig,dollar,D) ==
   (u := LASSOC(op,GETDATABASE(CAR dollar,'DOCUMENTATION)))

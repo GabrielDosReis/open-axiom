@@ -241,7 +241,7 @@ parseTypeEvaluate form ==
   form
  
 parseTypeEvaluateArgs(argl,argml) ==
-  [argVal for arg in argl for md in argml for i in 1..] where argVal ==
+  [argVal for arg in argl for md in argml for i in 1..] where argVal() ==
       isCategoryForm(md,$CategoryFrame) => parseTypeEvaluate arg
       arg
  
