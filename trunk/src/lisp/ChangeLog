@@ -1,3 +1,7 @@
+2007-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in (|coreError|): Rename from |error|.  Adjust callers.
+
 2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (fasl_ext): New.  Factor out the logic

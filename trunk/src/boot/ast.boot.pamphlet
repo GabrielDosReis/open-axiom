@@ -176,7 +176,7 @@ bfCompDef x ==
     otherwise =>
       x is [def, op, args, body] =>
         bfDef(def,op,args,body)
-      error '"invalid AST"
+      coreError '"invalid AST"
  
 bfBeginsDollar x==  EQL('"$".0,(PNAME x).0)
  
@@ -1257,7 +1257,7 @@ bfDs n== if n=0 then '"" else CONCAT('"D",bfDs(n-1))
                                         (SETQ |body| (CAR |ISTMP#3|))
                                         'T))))))))
                 (|bfDef| |def| |op| |args| |body|))
-               ('T (|error| "invalid AST")))))))))
+               ('T (|coreError| "invalid AST")))))))))
 
 (DEFUN |bfBeginsDollar| (|x|)
   (PROG () (RETURN (EQL (ELT "$" 0) (ELT (PNAME |x|) 0)))))
