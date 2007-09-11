@@ -362,7 +362,7 @@ shoeCLOSE stream ==
 
 -- error out if file is not found. 
 shoeNotFound fn == 
-  error [fn, '" not found"]
+  coreError [fn, '" not found"]
   nil
 
  
@@ -382,7 +382,7 @@ shoeConsole line ==
 shoeSpaces n  ==  MAKE_-FULL_-CVEC(n, '".")
  
 SoftShoeError(posn,key)==
-    error ['"in line ", STRINGIMAGE lineNo posn]
+    coreError ['"in line ", STRINGIMAGE lineNo posn]
     shoeConsole lineString posn
     shoeConsole CONCAT(shoeSpaces lineCharacter posn,'"|")
     shoeConsole key
@@ -691,7 +691,7 @@ bPremStreamNull(s)==
 (DEFUN |shoeCLOSE| (|stream|) (PROG () (RETURN (CLOSE |stream|))))
 
 (DEFUN |shoeNotFound| (|fn|)
-  (PROG () (RETURN (PROGN (|error| (LIST |fn| " not found")) NIL))))
+  (PROG () (RETURN (PROGN (|coreError| (LIST |fn| " not found")) NIL))))
 
 (DEFUN |shoeReadLispString| (|s| |n|)
   (PROG (|l|)
@@ -716,7 +716,7 @@ bPremStreamNull(s)==
   (PROG ()
     (RETURN
       (PROGN
-        (|error| (LIST "in line " (STRINGIMAGE (|lineNo| |posn|))))
+        (|coreError| (LIST "in line " (STRINGIMAGE (|lineNo| |posn|))))
         (|shoeConsole| (|lineString| |posn|))
         (|shoeConsole|
             (CONCAT (|shoeSpaces| (|lineCharacter| |posn|)) "|"))

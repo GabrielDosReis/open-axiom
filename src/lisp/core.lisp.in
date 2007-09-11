@@ -56,7 +56,7 @@
   (:export "quit"
            "fatalError"
            "internalError"
-           "error"
+           "coreError"
            "errorCount"
            "countError"
            "warn"
@@ -330,7 +330,7 @@
   (|diagnosticMessage| "internal error" msg)
   (|quit| 1))
 
-(defun |error| (msg)
+(defun |coreError| (msg)
   (|countError|)
   (|diagnosticMessage| "error"
    (cond ((consp msg) 
@@ -595,14 +595,14 @@
                                 (compile-file-pathname out-file)
                                 :lisp-files `(,out-file)))
                        (unless result
-                         (|error| "compilation of Lisp code failed"))
+                         (|coreError| "compilation of Lisp code failed"))
                        (cond ((and failure-p)
                               ;; Since we believe the source code must
                               ;; be fixed, we don't want to leave
                               ;; the generated FASL behing us, as that
                               ;; would confuse both user and tools.
                               (delete-file result)
-                              (|error| "Lisp code contained errors"))
+                              (|coreError| "Lisp code contained errors"))
 
                              (warning-p
                               (|warn| "Lisp code contained warnings")))
