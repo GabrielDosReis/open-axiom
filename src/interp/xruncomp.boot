@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/xruncomp.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,8 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+
+)package "BOOT"
 
 ------- from info.boot -----------
 
@@ -161,7 +143,7 @@ actOnInfo(u,$e) ==
       --    SAY("augmenting ",name,": ",cat)
       --    put(name, "value", (vval, cat, venv), $e)
       member(cat,first ocatvec.4) or
-         ASSOC(cat,CADR ocatvec.4) is [.,'T,.] => $e
+         ASSOC(cat,CADR ocatvec.4) is [.,"T",.] => $e
         --SAY("Category extension error:
         --cat shouldn't be a join
                       --what was being asserted is an ancestor of what was known
@@ -204,18 +186,18 @@ genDeltaEntry opMmPair ==
  --   sig := substitute('$,dc,sig)
  --   cform := substitute('$,dc,cform)
   opModemapPair :=
-    [op,[dc,:[genDeltaSig x for x in nsig]],['T,cform]] -- force pred to T
+    [op,[dc,:[genDeltaSig x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and dc ^= $NRTaddForm and
     (member(dc,$functorLocalParameters) or null atom dc) then
     --create "domain" entry to $NRTdeltaList
       $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
-      compEntry:= compOrCroak(odc,$EmptyMode,$e).expr
+      compEntry:= (compOrCroak(odc,$EmptyMode,$e)).expr
 --      dc
       RPLACA(saveNRTdeltaListComp,compEntry)
   u :=
-    [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index ==
+    [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
       (n:= POSN1(opModemapPair,$NRTdeltaList)) => n + 1
         --n + 1 since $NRTdeltaLength is 1 too large
       $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
@@ -239,7 +221,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     ['NRTEVAL,NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]
   MEMQ(x,$formalArgList) =>
     v := $FormalMapVariableList.(POSN1(x,$formalArgList))
-    firstTime => ['local,v]
+    firstTime => ["local",v]
     v
   x = '$ => x
   x = "$$" => x
@@ -277,7 +259,7 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
   if $insideCategoryPackageIfTrue then
       sig := substitute('$,CADR($functorForm),sig)
   sig := [genDeltaSig x for x in sig]
-  opModemapPair := [op,['_$,:sig],['T,implementation]]
+  opModemapPair := [op,['_$,:sig],["T",implementation]]
   POSN1(opModemapPair,$NRTdeltaList) => nil   --already there
   $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
   $NRTdeltaListComp := [nil,:$NRTdeltaListComp]
@@ -310,7 +292,7 @@ changeDirectoryInSlot1() ==  --called by NRTbuildFunctor
             $lastPred := pred
        newfnsel :=
          fnsel is ['Subsumed,op1,sig1] =>
-           ['Subsumed,op1,genSlotSig(sig1,'T,$newEnv)]
+           ['Subsumed,op1,genSlotSig(sig1,"T",$newEnv)]
          fnsel
        [[op, genSlotSig(sig,pred,$newEnv)] ,pred,newfnsel]
 
@@ -346,9 +328,3 @@ LookUpSigSlots(sig,siglist) ==
   REMDUP [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=CADDR u)
               and KADDR implem]
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

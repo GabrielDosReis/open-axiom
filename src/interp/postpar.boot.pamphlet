@@ -533,7 +533,7 @@ aplTranList x ==
 
 hasAplExtension argl ==
   or/[x is ["_!",:.] for x in argl] =>
-    u:= [futureArg for x in argl] where futureArg ==
+    u:= [futureArg for x in argl] where futureArg() ==
       x is ["_!",y] =>
         z:= deepestExpression y
         arglAssoc := [[g := GENVAR(),:aplTran1 z],:arglAssoc]

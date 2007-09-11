@@ -619,7 +619,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     start := QSPLUS(start,QSPLUS(numTableArgs,4))
   (success ^= 'failed) and success =>
     if $monitorNewWorld then
-      sayLooking1('"<----",uu) where uu ==
+      sayLooking1('"<----",uu) where uu() ==
         PAIRP success => [first success,:devaluate rest success]
         success
     success

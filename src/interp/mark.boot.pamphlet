@@ -281,7 +281,7 @@ markRepeat(form, T)        ==
   
 markTran(form,form',[dc,:sig],env) ==  --from compElt/compFormWithModemap
   dc ^= 'Rep or ^MEMQ('_$,sig) => mkWi('markTran,'WI,form,['call,:form'])
-  argl := [u for t in rest sig for arg in rest form'] where u ==
+  argl := [u for t in rest sig for arg in rest form'] where u() ==
     t='_$ => 
       argSource := getSourceWI arg
       IDENTP argSource and getmode(argSource,env) = 'Rep => arg
@@ -1294,7 +1294,7 @@ moveImportsAfterDefinitions lines ==
 --  pp defineAlist
 --  pp importAlist
   for [name, :i] in defineAlist repeat
-    or/[fn for [imp, :j] in importAlist] where fn ==
+    or/[fn for [imp, :j] in importAlist] where fn() ==
       substring?(name,imp,0) =>
         moveAlist := [[i,:j], :moveAlist]
       nil
@@ -1465,7 +1465,7 @@ rplacaSubst(x, y, u) == (fn(x, y, u); u) where fn(x,y,u) ==
     u := q
     
 buildNewDefinition(op,theSig,formPredAlist) ==
-  newAlist := [fn for item in formPredAlist] where fn ==
+  newAlist := [fn for item in formPredAlist] where fn() ==
     [form,:predl] := item
     pred :=
       null predl => 'T
