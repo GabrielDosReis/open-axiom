@@ -1,21 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/incl.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,11 +31,39 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+-- This is a horrible hack to work around a horrible bug in GCL
+-- as reported here:
+--    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
+--
+)if %hasFeature KEYWORD::GCL
+)package "VMLISP"
+)package "AxiomCore"
+)endif 
+
+import '"unlisp"
+import '"cstream"
+import '"cformat"
 
 )package "BOOT"
+ 
+Top            := 01
+IfSkipToEnd    := 10
+IfKeepPart     := 11
+IfSkipPart     := 12
+ElseifSkipToEnd:= 20
+ElseifKeepPart := 21
+ElseifSkipPart := 22
+ElseSkipToEnd  := 30
+ElseKeepPart   := 31
+ 
+Top?     (st) == QUOTIENT(st,10) = 0
+If?      (st) == QUOTIENT(st,10) = 1
+Elseif?  (st) == QUOTIENT(st,10) = 2
+Else?    (st) == QUOTIENT(st,10) = 3
+SkipEnd? (st) == REMAINDER(st,10) = 0
+KeepPart?(st) == REMAINDER(st,10) = 1
+SkipPart?(st) == REMAINDER(st,10) = 2
+Skipping?(st) == not KeepPart? st
  
 incStringStream s==
    incRenumber incLude(0,incRgen s,0,['"strings"] ,[Top])
@@ -160,25 +173,6 @@ incActive?(fn,ufos)==member(fn,ufos)
 incNConsoles ufos==
         a:=member('"console",ufos)
         if a then 1+incNConsoles CDR a else 0
- 
-Top            := 01
-IfSkipToEnd    := 10
-IfKeepPart     := 11
-IfSkipPart     := 12
-ElseifSkipToEnd:= 20
-ElseifKeepPart := 21
-ElseifSkipPart := 22
-ElseSkipToEnd  := 30
-ElseKeepPart   := 31
- 
-Top?     (st) == QUOTIENT(st,10) = 0
-If?      (st) == QUOTIENT(st,10) = 1
-Elseif?  (st) == QUOTIENT(st,10) = 2
-Else?    (st) == QUOTIENT(st,10) = 3
-SkipEnd? (st) == REMAINDER(st,10) = 0
-KeepPart?(st) == REMAINDER(st,10) = 1
-SkipPart?(st) == REMAINDER(st,10) = 2
-Skipping?(st) == not KeepPart? st
  
         --% Message Handling
 incHandleMessage(xl) ==
@@ -307,7 +301,7 @@ incLude1 (:z) ==
                      cons(xlSkip(eb,str,lno,ufos.0), Rest s)
                 fn1 := inclFname(str, info)
                 not fn1 =>
-                    cons(xlNoSuchFile(eb, str, lno,ufos,fn),Rest s)
+                    cons(xlNoSuchFile(eb, str, lno,ufos,fn1),Rest s)
                 not PROBE_-FILE fn1 =>
                     cons(xlCannotRead(eb, str, lno,ufos,fn1),Rest s)
                 incActive?(fn1,ufos) =>
@@ -439,9 +433,3 @@ inclmsgIfBug() ==
 inclmsgCmdBug() ==
     ['S2CB0003, []]
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
