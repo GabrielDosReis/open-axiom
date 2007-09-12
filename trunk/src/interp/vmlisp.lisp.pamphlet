@@ -2090,6 +2090,13 @@ can be restored.
      (intern (symbol-name (symbol-function x)) "BOOT")
     nil))
 
+#+:SBCL
+(defun BPINAME (x)
+  (multiple-value-bind (l c n)
+   (function-lambda-expression x)
+   (declare (ignore l c))
+   n))
+
 (defun LISTOFQUOTES (bpi)
  (declare (ignore bpi))
   ())
