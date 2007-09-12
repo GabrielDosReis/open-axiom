@@ -1,5 +1,9 @@
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* vmlisp.lisp.pamphlet (BPINAME): Define for SBCL.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* ggreater.lisp: New.
 	* ggreater.lisp.pamphlet: Move content to ggreater.lisp.  Remove.
 
