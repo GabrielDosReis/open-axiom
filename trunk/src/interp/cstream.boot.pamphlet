@@ -60,6 +60,8 @@ explains the strange parsing technique).
 <<*>>=
 <<license>>
 
+import '"sys-macros"
+
 )package "BOOT"
 
 --% Stream Utilities
