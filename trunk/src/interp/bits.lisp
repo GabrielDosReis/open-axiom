@@ -1,22 +1,3 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/bits.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-
-\maketitle
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -48,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 ;;; The types "bit" and "bit vector" are implemented differently
 ;;; in different variants of lisp.
@@ -62,6 +40,7 @@
 ;;; The operations which extract or set a single part of the vector are
 ;;; provided as macros.
 
+(IMPORT-MODULE "boot-pkg")
 (in-package "BOOT")
 
 ;;; SMW Nov 88: Created
@@ -82,18 +61,12 @@
 (defun    bvec-greater   (bv1 bv2)
   (let ((pos (mismatch bv1 bv2)))
     (cond ((or (null pos) (>= pos (length bv1))) nil)
-	  ((< pos (length bv2)) (> (bit bv1 pos) (bit bv2 pos)))
-	  ((find 1 bv1 :start pos) t)
-	  (t nil))))
+          ((< pos (length bv2)) (> (bit bv1 pos) (bit bv2 pos)))
+          ((find 1 bv1 :start pos) t)
+          (t nil))))
 (defun    bvec-and       (bv1 bv2) (bit-and  bv1 bv2))
 (defun    bvec-or        (bv1 bv2) (bit-ior  bv1 bv2))
 (defun    bvec-xor       (bv1 bv2) (bit-xor  bv1 bv2))
 (defun    bvec-nand      (bv1 bv2) (bit-nand bv1 bv2))
 (defun    bvec-nor       (bv1 bv2) (bit-nor  bv1 bv2))
 (defun    bvec-not       (bv)      (bit-not  bv))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
