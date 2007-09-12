@@ -1,5 +1,37 @@
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* posit.boot: New.  Import sys-macros, astr.
+	(tokConstruct): Move from ptrees.boot.pamphlet.
+	(tokType): Likewise.
+	(tokPart): Likewise.
+	(tokPosn): Likewise.
+	(pfAbSynOp): Likewise.
+	(pfAbSynOp?): Likewise.
+	(pfLeaf?): Likewise.
+	(pfLeaf): Likewise.
+	(pfLeafToken): Likewise.
+	(pfLeafPosition): Likewise.
+	(pfTree): Likewise.
+	(pfParts): Likewise.
+	(pfFirst): Likewise.
+	(pfSecond): Likewise.
+	* astr.boot: New.  Import boot-pkg.
+	* sys-constants.boot (IDENTITY): Define.
+	* patches.lisp.pamphlet (identity): Move definition to sys-constants.
+	* cformat.boot: New.  Import unlisp, posit.  Add ugly workwound
+	for GCL bug. 
+	* incl.boot: New.  Import unlisp, cstream, cformat.  Tweak.
+	Add ugly workwound for GCL bug.
+	(incLude1): Fix thinko
+	* Makefile.pamphlet (incl.$(FASLEXT)): New rule.
+	(cformat.$(FASLEXT)): Likewise.
+	(posit.$(FASLEXT)): Likewise.
+	(astr.$(FASLEXT)): Likewise.
+	(DEP): Don't include bits.lisp.
+	(${DEPSYS}): Explicitly load "bits" here.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* unlisp.lisp.pamphlet: Import sys-macros.
 	(|CsetString|): Use code-char.
 	(|WriteLispExpr|): Remove.  It is unused.

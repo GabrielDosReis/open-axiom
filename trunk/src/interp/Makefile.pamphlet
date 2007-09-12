@@ -271,7 +271,7 @@ in this list of files.
 DEP=	nlib.lisp	\
 	macros.lisp	$(srcdir)/comp.lisp	\
 	spaderror.lisp	debug.lisp	\
-	spad.lisp	bits.lisp	\
+	spad.lisp	\
 	setq.lisp	property.lisp	\
 	unlisp.lisp     foam_l.lisp      \
 	axext_l.lisp
@@ -965,6 +965,7 @@ depsys_objects = nocompil.$(FASLEXT) bookvol5.$(FASLEXT) g-error.$(FASLEXT) \
 
 ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		hash.$(FASLEXT) \
+		bits.$(FASLEXT) \
 		ggreater.$(FASLEXT) \
 		union.$(FASLEXT) \
 		boot-pkg.$(FASLEXT) \
@@ -991,6 +992,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ rm -f makedep.lisp
 	@ $(mkinstalldirs) $(axiom_build_bindir)
 	@ echo '(|importModule| "vmlisp")' >> makedep.lisp
+	@ echo '(|importModule| "bits")' >> makedep.lisp
 	@ echo '(|importModule| "hash")' >> makedep.lisp
 	@ echo '(|importModule| "ggreater")' >> makedep.lisp
 	@ echo '(|importModule| "union")' >> makedep.lisp
@@ -1972,10 +1974,23 @@ distclean-local: clean-local
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
+
+incl.$(FASLEXT): incl.clisp cstream.$(FASLEXT) unlisp.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+cformat.$(FASLEXT): cformat.clisp unlisp.$(FASLEXT) posit.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 unlisp.$(FASLEXT): unlisp.lisp sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+posit.$(FASLEXT): posit.clisp sys-macros.$(FASLEXT) astr.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 cstream.$(FASLEXT): cstream.clisp sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+astr.$(FASLEXT): astr.clisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 bits.$(FASLEXT): bits.lisp boot-pkg.$(FASLEXT)

@@ -64,44 +64,6 @@ THE PFORM DATA STRUCTURE
 
 )package "BOOT"
 
---constructer and selectors for leaf tokens
-
-tokConstruct(hd,tok,:pos)==
-         a:=cons(hd,tok)
-         IFCAR pos =>
-             pfNoPosition? CAR pos=> a
-             ncPutQ(a,"posn",CAR pos)
-             a
-         a
-
-tokType x== ncTag x
-tokPart x== CDR x
-tokPosn x==
-     a:= QASSQ("posn",ncAlist x)
-     if a then CDR a else pfNoPosition()
-
-pfAbSynOp form ==
-    hd := CAR form
-    IFCAR hd or hd
-
-pfAbSynOp?(form, op) ==
-    hd := CAR form
-    EQ(hd, op) or EQCAR(hd, op)
-
-pfLeaf? form ==
-  MEMQ(pfAbSynOp form,
-       '(id idsy symbol string char float expression integer
-          Document error))
-
-pfLeaf(x,y,:z)      == tokConstruct(x,y, IFCAR z or pfNoPosition())
-pfLeafToken form    == tokPart form
-pfLeafPosition form == tokPosn form
-
-pfTree(x,y)         == CONS(x,y)       -- was ==>
-pfParts  form       == CDR form       -- was ==>
-pfFirst  form       == CADR form       -- was ==>
-pfSecond form       == CADDR form       -- was ==>
-
 --% SPECIAL NODES
 pfListOf x          == pfTree('listOf,x)
 pfListOf? x         == pfAbSynOp?(x,'listOf)

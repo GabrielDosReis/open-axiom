@@ -1,17 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp posit.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,9 +31,8 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+import '"sys-macros"
+import '"astr"
 
 )package "BOOT"
 
@@ -110,7 +98,45 @@ pfSourceToken form ==
     else if null pfParts form
          then 'NoToken
          else pfSourceToken(pfFirst form)
- 
+
+--constructer and selectors for leaf tokens
+
+tokConstruct(hd,tok,:pos)==
+         a:=cons(hd,tok)
+         IFCAR pos =>
+             pfNoPosition? CAR pos=> a
+             ncPutQ(a,"posn",CAR pos)
+             a
+         a
+
+tokType x== ncTag x
+tokPart x== CDR x
+tokPosn x==
+     a:= QASSQ("posn",ncAlist x)
+     if a then CDR a else pfNoPosition()
+
+pfAbSynOp form ==
+    hd := CAR form
+    IFCAR hd or hd
+
+pfAbSynOp?(form, op) ==
+    hd := CAR form
+    EQ(hd, op) or EQCAR(hd, op)
+
+pfLeaf? form ==
+  MEMQ(pfAbSynOp form,
+       '(id idsy symbol string char float expression integer
+          Document error))
+
+pfLeaf(x,y,:z)      == tokConstruct(x,y, IFCAR z or pfNoPosition())
+pfLeafToken form    == tokPart form
+pfLeafPosition form == tokPosn form
+
+pfTree(x,y)         == CONS(x,y)       -- was ==>
+pfParts  form       == CDR form       -- was ==>
+pfFirst  form       == CADR form       -- was ==>
+pfSecond form       == CADDR form       -- was ==>
+
 pfPosn pf == pfSourcePosition pf
  
 pfSourcePosition form ==
@@ -192,9 +218,3 @@ pfPrintSrcLines(pf) ==
       FORMAT(true, '"   ~A~%",  lnString line)
       lno := lnGlobalNum(line)
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

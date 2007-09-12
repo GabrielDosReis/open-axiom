@@ -1,17 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp cformat.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copryight (C) 2007, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,9 +31,17 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+-- This is a horrible hack to work around a horrible bug in GCL
+-- as reported here:
+--    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
+--
+)if %hasFeature KEYWORD::GCL
+)package "VMLISP"
+)package "AxiomCore"
+)endif 
+
+import '"unlisp"
+import '"posit"
 
 )package "BOOT"
 
@@ -100,9 +97,3 @@ pkey keyStuff ==
         allMsgs := NCONC (oneMsg,allMsgs)
     allMsgs
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
