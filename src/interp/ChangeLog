@@ -1,5 +1,11 @@
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* bits.lisp: New. Import boot-pkg.
+	* bits.lisp.pamphlet: Move content to bits.lisp.  Remove.
+	* Makefile.pamphlet (bits.$(FASLEXT)): New rule.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (cstream.$(FASLEXT)): New rule.
 	* cstream.boot.pamphlet: Import sys-macros.
 	* sys-macros.lisp (|shoeConsole|): Move from macros.lisp.pamphlet.

@@ -480,6 +480,9 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 cstream.$(FASLEXT): cstream.clisp sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+bits.$(FASLEXT): bits.lisp boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
