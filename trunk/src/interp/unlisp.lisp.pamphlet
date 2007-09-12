@@ -88,6 +88,7 @@ The following functions are provided:
 <<*>>=
 <<license>>
 
+(IMPORT-MODULE "sys-macros")
 (in-package "BOOT")  
 
 (defun |OsRunProgram| (program &rest args)
@@ -314,9 +315,6 @@ The following functions are provided:
    (eval expr)
    (compile (second expr)) )
    
-(defun |LispCompileFileQuietlyToObject| (source object)
-   (compile-file source :output-file object :messages nil :warnings nil)) 
-
 (defun |LispLoadFileQuietly| (object)
    (load object :verbose nil :print nil))
 
@@ -432,13 +430,6 @@ The following functions are provided:
 ;;; Lucid 1.01 bug:  Must flush output after each write or else
 ;;;                  strange errors arise from invalid buffer reuse.
 
-(defun |WriteLispExpr| (expr &optional (outstream *standard-output*))
-  (let ((*package* (find-package "USER")))
-    (declare (special *package*))
-    (write expr :stream outstream 
-        :level nil :length nil :pretty nil :escape 't ) 
-    (finish-output outstream) ))
-
 (defmacro |WriteByte| (byte &rest outstream)
   `(write-byte ,byte ,@outstream) )
 
@@ -463,12 +454,6 @@ The following functions are provided:
   (write-byte (char-code #\Newline) outstream)
   (finish-output outstream) )
 
-
-
-(defun |ReadLispExpr| (&optional (instream *standard-input*))
-  (let ((*package* (find-package "USER")))
-    (declare (special *package*))
-    (read instream nil nil) ))
 
 (defmacro |ReadByte| (instream)
   `(read-byte ,instream nil nil) )
@@ -869,7 +854,7 @@ The following functions are provided:
     (len (length cset)))
    (do ((i 0 (+ 1 i)))
        ((= i len))
-       (if (eql 1 (sbit cset i)) (push (string (int-char i)) chars)) )
+       (if (eql 1 (sbit cset i)) (push (string (code-char i)) chars)) )
    (apply #'concatenate (cons 'string (nreverse chars))) ))
 
 (defvar |NumericCset|      (|Cset| "0123456789") )

@@ -1,5 +1,14 @@
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* unlisp.lisp.pamphlet: Import sys-macros.
+	(|CsetString|): Use code-char.
+	(|WriteLispExpr|): Remove.  It is unused.
+	(|ReadLispExpr|): Likewise.
+	(|LispCompileFileQuietlyToObject|): Likewise.
+	* Makefile.pamphlet (unlisp.$(FASLEXT)): New rule.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* bits.lisp: New. Import boot-pkg.
 	* bits.lisp.pamphlet: Move content to bits.lisp.  Remove.
 	* Makefile.pamphlet (bits.$(FASLEXT)): New rule.
