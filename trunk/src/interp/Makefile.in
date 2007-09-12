@@ -477,6 +477,10 @@ database.date:
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
+
+dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 as.clisp: as.boot
 	@ echo 417 making $@ from $<
 	@ echo '(progn (old-boot::boot "as.boot"))' | ${DEPSYS}

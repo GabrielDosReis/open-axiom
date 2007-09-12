@@ -1,6 +1,9 @@
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* dq.boot: New.
+	* dq.boot.pamphlet: Move content to dq.boot.pamphlet.  Remove.
 	* vmlisp.lisp.pamphlet (BPINAME): Define for SBCL.
+	* Makefile.pamphlet (dq.$(FASLEXT)): New rule.
 
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
