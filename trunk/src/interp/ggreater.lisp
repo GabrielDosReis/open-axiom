@@ -1,22 +1,3 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/ggreater.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -48,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 (IMPORT-MODULE "vmlisp")
 (in-package "VMLISP")
@@ -100,11 +78,11 @@
           ('else t)))
       ((numberp COMPERAND-2) NIL)
       ((CHARACTERP COMPERAND-1)
-	(COND 
+        (COND 
           ((CHARACTERP COMPERAND-2)
-	    (CHAR-GREATERP COMPERAND-1 COMPERAND-2) )
-	  ('else t)))
-      ((CHARACTERP COMPERAND-2)	NIL )
+            (CHAR-GREATERP COMPERAND-1 COMPERAND-2) )
+          ('else t)))
+      ((CHARACTERP COMPERAND-2) NIL )
       ((FBPIP COMPERAND-1)
         (COND
           ((FBPIP COMPERAND-2)
@@ -123,20 +101,20 @@
 (DEFUN LEXVGREATERP (VECTOR-COMPERAND-1 VECTOR-COMPERAND-2)
   (declare (simple-vector vector-comperand-1 vector-comperand-2))
   (let ((I -1)
-	(L1 (length VECTOR-COMPERAND-1))
-	(L2 (length VECTOR-COMPERAND-2)))
+        (L1 (length VECTOR-COMPERAND-1))
+        (L2 (length VECTOR-COMPERAND-2)))
     (declare (fixnum I L1 L2) )
     (PROG (T1 T2)
-	  LP 
-	  (setq I (1+ I))
-	  (COND ((EQL L1 I) 
-		 (RETURN NIL))
-		((EQL L2 I)
-		 (RETURN 'T)))
-	  (COND ((EQUAL (SETQ T1 (svref VECTOR-COMPERAND-1 I))
-			(SETQ T2 (svref VECTOR-COMPERAND-2 I)))
-		 (GO LP)))
-	  (RETURN (LEXGREATERP T1 T2)) ) ))
+          LP 
+          (setq I (1+ I))
+          (COND ((EQL L1 I) 
+                 (RETURN NIL))
+                ((EQL L2 I)
+                 (RETURN 'T)))
+          (COND ((EQUAL (SETQ T1 (svref VECTOR-COMPERAND-1 I))
+                        (SETQ T2 (svref VECTOR-COMPERAND-2 I)))
+                 (GO LP)))
+          (RETURN (LEXGREATERP T1 T2)) ) ))
 
 
 (DEFUN GGREATERP (COMPERAND-1 COMPERAND-2)
@@ -184,11 +162,11 @@
           ('else t)))
       ((numberp COMPERAND-2) NIL)
       ((CHARACTERP COMPERAND-1)
-	(COND 
+        (COND 
           ((CHARACTERP COMPERAND-2)
-	    (CHAR> COMPERAND-1 COMPERAND-2) )
-	  ('else t)))
-      ((CHARACTERP COMPERAND-2)	NIL )
+            (CHAR> COMPERAND-1 COMPERAND-2) )
+          ('else t)))
+      ((CHARACTERP COMPERAND-2) NIL )
       ((FBPIP COMPERAND-1)
         (COND
           ((FBPIP COMPERAND-2)
@@ -207,28 +185,22 @@
 (DEFUN VGREATERP (VECTOR-COMPERAND-1 VECTOR-COMPERAND-2)
   (declare (simple-vector vector-comperand-1 vector-comperand-2))
   (let ((I -1)
-	(L1 (length VECTOR-COMPERAND-1))
-	(L2 (length VECTOR-COMPERAND-2)))
+        (L1 (length VECTOR-COMPERAND-1))
+        (L2 (length VECTOR-COMPERAND-2)))
     (declare (fixnum I L1 L2))
     (PROG (T1 T2)
-	  LP 
-	  (setq I (1+ I))
-	  (COND ((EQL L1 I) 
-		 (RETURN NIL))
-		((EQL L2 I) 
-		 (RETURN 'T)))
-	  (COND ((EQUAL (SETQ T1 (svref VECTOR-COMPERAND-1 I))
-			(SETQ T2 (svref VECTOR-COMPERAND-2 I)))
-		 (GO LP)))
-	  (RETURN (GGREATERP T1 T2)) ) ))
+          LP 
+          (setq I (1+ I))
+          (COND ((EQL L1 I) 
+                 (RETURN NIL))
+                ((EQL L2 I) 
+                 (RETURN 'T)))
+          (COND ((EQUAL (SETQ T1 (svref VECTOR-COMPERAND-1 I))
+                        (SETQ T2 (svref VECTOR-COMPERAND-2 I)))
+                 (GO LP)))
+          (RETURN (GGREATERP T1 T2)) ) ))
 
 (defvar SORTGREATERP #'GGREATERP "default sorting predicate")
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
