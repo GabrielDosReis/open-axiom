@@ -1972,6 +1972,10 @@ distclean-local: clean-local
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
+
+dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 <<as.clisp>>
 
 <<ax.clisp>>
