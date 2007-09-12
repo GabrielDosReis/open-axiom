@@ -1209,3 +1209,16 @@
        (if (STATEP ,g) 
 	   (throw 'YIELD (list 'pair ,L) ,g)))))
 
+;; 
+;; -*- Input/Output -*-
+;; 
+
+(defmacro |shoeConsole| (line)
+ `(write-line ,line *terminal-io*))
+
+(defmacro |shoeInputFile| (filespec)
+ `(open ,filespec :direction :input :if-does-not-exist nil))
+
+(defmacro |shoeread-line| (st)
+ `(read-line ,st nil nil))
+
