@@ -6,9 +6,24 @@
 	shell scripts too.
 	* Makefile.in: Regenerate.
 
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Fix thinko.
+	* config/var-def.mk (SYS): Remove.
+	(AX_FLAGS): Likewise.
+
+2007-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (axiom_optimize_options): New substitued
+	variable. 
+	Genrate src/lisp/core.lisp at configure time.
+	* configure.ac: Regenerate.
+	* configure: Likewise.
+	* config/setup-dep.mk ($(top_builddir)/src/lisp/core.lisp): New rule.
+
 2007-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* configure.ac.pamphlet: Ignore any existing GCL that is not
+ 	* configure.ac.pamphlet: Ignore any existing GCL that is not
 	either 2.6.7 or 2.6.8.
 	* configure.ac: Regenerate.
 	* configure: Likewise.
@@ -24,11 +39,6 @@
 	* configure.ac.pamphlet: Disable HyperDoc if X11 is not available.
 	* configure.ac: Regenerate.
 	* configure: Likewise.
-
-2007-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
-	* INSTALL: Update instructions for 1.0.1 release.
-	* NEWS: Record changes for 1.0.1 release.
 
 2007-09-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
@@ -49,19 +59,6 @@
 
 2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-        * OpenAxiom 1.0.0 released.
-	
-2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
-	* Makefile.pamphlet ($(addprefix $(axiom_build_bindir)/, notangle
-	noweave)):  Fix typo.
-
-2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
-	* configure.ac.pamphlet: Update datestamp.
-
-2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
 	* Makefile.pamphlet ($(addprefix $(axiom_build_bindir)/, notangle
 	noweave)): Fix path to noweb C files.  Refer to the touch command
 	through $(TOUCH).
@@ -73,7 +70,7 @@
 
 2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* configure.ac.pamphlet: Set release info to 1.0.0 (prerelease).
+	* configure.ac.pamphlet: Set release info to 1.1.0 (experimental).
 
 2007-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
@@ -536,7 +533,7 @@
 	install elisp files -- the Make target rule contains non-portable
 	instructions; and this is not needed anyway.
 	($(axiom_build_bindir)/gcl$(EXEEXT)): Don't overwrite existing
-	directtory. 
+	directory. 
 	* Makefile.in: Regenerate.
 	* config/axiom-c-macros.h.in: Regenerate.
 	* configure.ac.pamphlet: Check for AF_UNIX and AF_LOCAL.  Check
