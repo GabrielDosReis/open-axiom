@@ -1,5 +1,24 @@
 2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (OBJS): Don't include ptrop.$(FASLEXT).
+	(ptrees.$(FASLEXT)): New rule.
+	(cparse.$(FASLEXT)): Likewise.
+	* ptrop.boot.pamphlet: Move content to ptrees.boot.pamphlet.
+	* ptrees.boot.pamphlet: Import posit, serror.
+	* cparse.boot: New. Import ptrees.
+	* cparse.boot.pamphlet: Move content to cparse.boot.  Remove.
+	* serror.boot: New.
+	(pfSourceStok): Move to posit.boot.
+	(npMissingMate): Move to cparse.boot.
+	(npMissing): Likewise.
+	(npCompMissing): Likewise.
+	(npRecorverTrap): Likewise.
+	(npListAndRecover): Likewise.
+	(npMoveTo): Likewise.
+	* serror.boot.pamphlet: Move content to serror.boot.  Remove.
+
+2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* i-output.boot.pamphlet (exptNeedsPren): Use GETL, not GET.
 
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>

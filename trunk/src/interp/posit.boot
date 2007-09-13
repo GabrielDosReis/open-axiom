@@ -92,6 +92,13 @@ poGetLineObject posn ==
     CAR posn
 pfGetLineObject posn == poGetLineObject posn
  
+pfSourceStok x==
+       if pfLeaf? x
+       then x
+       else if null pfParts x
+            then 'NoToken
+            else pfSourceStok pfFirst x
+ 
 pfSourceToken form ==
     if pfLeaf? form
     then pfLeafToken form

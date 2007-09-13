@@ -1,21 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/cparse.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -47,9 +29,7 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+import '"ptrees"
 
 )package "BOOT"
 
@@ -933,9 +913,76 @@ npDefinition()== npPP function npDefinitionItem
 pfSequenceToList x==
         pfSequence? x =>  pfSequenceArgs  x
         pfListOf [x]
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
+
+--% Diagnostic routines
+
+npMissingMate(close,open)==
+   ncSoftError(tokPosn open, 'S2CY0008, [])
+   npMissing close
+ 
+npMissing s==
+   ncSoftError(tokPosn $stok,'S2CY0007, [PNAME s])
+   THROW("TRAPPOINT","TRAPPED")
+ 
+npCompMissing s == npEqKey s or npMissing s
+ 
+npRecoverTrap()==
+  npFirstTok()
+  pos1 := tokPosn $stok
+  npMoveTo 0
+  pos2 := tokPosn $stok
+  syIgnoredFromTo(pos1, pos2)
+  npPush [pfWrong(pfDocument ['"pile syntax error"],pfListOf [])]
+ 
+ 
+npListAndRecover(f)==
+   a:=$stack
+   b:=nil
+   $stack:=nil
+   done:=false
+   c:=$inputStream
+   while not done repeat
+     found:=CATCH("TRAPPOINT",APPLY(f,nil))
+     if found="TRAPPED"
+     then
+        $inputStream:=c
+        npRecoverTrap()
+     else if not found
+          then
+            $inputStream:=c
+            syGeneralErrorHere()
+            npRecoverTrap()
+     if npEqKey "BACKSET"
+     then
+        c:=$inputStream
+     else if npEqPeek "BACKTAB"
+          then
+             done:=true
+          else
+            $inputStream:=c
+            syGeneralErrorHere()
+            npRecoverTrap()
+            if npEqPeek "BACKTAB"
+            then done:=true
+            else
+                npNext()
+                c:=$inputStream
+     b:=cons(npPop1(),b)
+   $stack:=a
+   npPush NREVERSE b
+ 
+npMoveTo n==
+      if null $inputStream
+      then true
+      else
+           if npEqPeek "BACKTAB"
+           then if n=0
+                then true
+                else (npNext();npMoveTo(n-1))
+           else if npEqPeek "BACKSET"
+                then if n=0
+                     then true
+                     else (npNext();npMoveTo n)
+                 else if npEqKey "SETTAB"
+                      then npMoveTo(n+1)
+                      else (npNext();npMoveTo n)
