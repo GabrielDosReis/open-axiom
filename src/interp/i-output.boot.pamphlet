@@ -713,7 +713,7 @@ exptNeedsPren a ==
   atom a and null (INTEGERP a and a < 0)  => false
   key:= keyp a
   key = "OVER" => true  -- added JHD 2/Aug/90
-  (key="SUB") or (null GET(key,"Nud") and null GET(key,"Led")) => false
+  (key="SUB") or (null GETL(key,"Nud") and null GETL(key,"Led")) => false
   true
 
 exptSub u == subspan CADR u
