@@ -1,7 +1,8 @@
-2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-	
-        * OpenAxiom 1.0.0 released.
-	
+2007-09-13  Alfredo Portes  <alfredo.portes@gmail.com>
+	    Waldek Hebisch <hebisch@math.uni.wroc.pl>
+
+	* sman.c.pamphlet: Add cleanup function for HyperDoc sockets.
+
 2007-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sman.c.pamphlet (HypertexProgram): hypertex is installed in lib/
