@@ -1,3 +1,7 @@
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in (|coreQuit|): Rename from |quit|.  Adjust calles.
+
 2007-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* core.lisp.in (|coreError|): Rename from |error|.  Adjust callers.
