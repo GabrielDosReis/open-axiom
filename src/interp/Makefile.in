@@ -91,7 +91,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	packtran.$(FASLEXT)	pathname.$(FASLEXT)	\
 	pf2sex.$(FASLEXT)	pile.$(FASLEXT)	\
 	posit.$(FASLEXT)	property.$(FASLEXT)	\
-	ptrees.$(FASLEXT)	ptrop.$(FASLEXT)	\
+	ptrees.$(FASLEXT)	\
 	record.$(FASLEXT)				\
 	rulesets.$(FASLEXT)	\
 	scan.$(FASLEXT)	serror.$(FASLEXT)	\
@@ -133,7 +133,7 @@ AXIOMsys_boot_sources = astr.boot alql.boot buildom.boot cattable.boot \
 	intfile.boot lisplib.boot macex.boot match.boot msg.boot \
 	msgdb.boot newfort.boot nrunfast.boot nrungo.boot nrunopt.boot \
 	nruntime.boot osyscmd.boot packtran.boot pathname.boot \
-	pf2sex.boot pile.boot posit.boot ptrees.boot ptrop.boot \
+	pf2sex.boot pile.boot posit.boot ptrees.boot \
 	record.boot rulesets.boot scan.boot serror.boot server.boot \
 	setvars.boot sfsfun.boot simpbool.boot slam.boot template.boot \
 	termrw.boot trace.boot fortcall.boot
@@ -480,6 +480,12 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
 
+cparse.$(FASLEXT): cparse.clisp ptrees.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+ptrees.$(FASLEXT): ptrees.clisp posit.$(FASLEXT) serror.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 pile.$(FASLEXT): pile.clisp scan.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
@@ -490,6 +496,9 @@ incl.$(FASLEXT): incl.clisp cstream.$(FASLEXT) cformat.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 cformat.$(FASLEXT): cformat.clisp unlisp.$(FASLEXT) posit.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+serror.$(FASLEXT): serror.boot posit.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 unlisp.$(FASLEXT): unlisp.lisp sys-macros.$(FASLEXT)

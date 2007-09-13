@@ -1,17 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp serror.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,9 +31,7 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+import '"posit"
 
 --% Functions to handle specific errors (mostly syntax)
  
@@ -67,23 +54,6 @@ syIgnoredFromTo(pos1, pos2) ==
       ncSoftError(From pos1, 'S2CY0003, [])
       ncSoftError(To   pos2, 'S2CY0004, [])
  
-npMissingMate(close,open)==
-   ncSoftError(tokPosn open, 'S2CY0008, [])
-   npMissing close
- 
-npMissing s==
-   ncSoftError(tokPosn $stok,'S2CY0007, [PNAME s])
-   THROW("TRAPPOINT","TRAPPED")
- 
-npCompMissing s == npEqKey s or npMissing s
- 
-pfSourceStok x==
-       if pfLeaf? x
-       then x
-       else if null pfParts x
-            then 'NoToken
-            else pfSourceStok pfFirst x
- 
 npTrapForm(x)==
    a:=pfSourceStok x
    EQ(a,'NoToken)=>
@@ -96,69 +66,3 @@ npTrap()==
    ncSoftError(tokPosn $stok,'S2CY0002,[])
    THROW("TRAPPOINT","TRAPPED")
  
-npRecoverTrap()==
-  npFirstTok()
-  pos1 := tokPosn $stok
-  npMoveTo 0
-  pos2 := tokPosn $stok
-  syIgnoredFromTo(pos1, pos2)
-  npPush [pfWrong(pfDocument ['"pile syntax error"],pfListOf [])]
- 
- 
-npListAndRecover(f)==
-   a:=$stack
-   b:=nil
-   $stack:=nil
-   done:=false
-   c:=$inputStream
-   while not done repeat
-     found:=CATCH("TRAPPOINT",APPLY(f,nil))
-     if found="TRAPPED"
-     then
-        $inputStream:=c
-        npRecoverTrap()
-     else if not found
-          then
-            $inputStream:=c
-            syGeneralErrorHere()
-            npRecoverTrap()
-     if npEqKey "BACKSET"
-     then
-        c:=$inputStream
-     else if npEqPeek "BACKTAB"
-          then
-             done:=true
-          else
-            $inputStream:=c
-            syGeneralErrorHere()
-            npRecoverTrap()
-            if npEqPeek "BACKTAB"
-            then done:=true
-            else
-                npNext()
-                c:=$inputStream
-     b:=cons(npPop1(),b)
-   $stack:=a
-   npPush NREVERSE b
- 
-npMoveTo n==
-      if null $inputStream
-      then true
-      else
-           if npEqPeek "BACKTAB"
-           then if n=0
-                then true
-                else (npNext();npMoveTo(n-1))
-           else if npEqPeek "BACKSET"
-                then if n=0
-                     then true
-                     else (npNext();npMoveTo n)
-                 else if npEqKey "SETTAB"
-                      then npMoveTo(n+1)
-                      else (npNext();npMoveTo n)
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
