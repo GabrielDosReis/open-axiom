@@ -533,7 +533,7 @@
 	install elisp files -- the Make target rule contains non-portable
 	instructions; and this is not needed anyway.
 	($(axiom_build_bindir)/gcl$(EXEEXT)): Don't overwrite existing
-	directtory. 
+	directory. 
 	* Makefile.in: Regenerate.
 	* config/axiom-c-macros.h.in: Regenerate.
 	* configure.ac.pamphlet: Check for AF_UNIX and AF_LOCAL.  Check
