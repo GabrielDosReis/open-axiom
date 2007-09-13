@@ -68,7 +68,7 @@ base-lisp$(EXEEXT): core.$(FASLEXT)
 
 core.lisp: $(srcdir)/core.lisp.in
 	cd $(top_builddir) && \
-	$(SHELL) ./config.status src/lisp/sys-conf.lisp
+	$(SHELL) ./config.status src/lisp/core.lisp
 
 core.$(FASLEXT): core.lisp
 	$(AXIOM_LISP) $(quiet_flags) \
