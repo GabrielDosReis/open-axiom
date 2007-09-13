@@ -1,17 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp scan.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,11 +31,221 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+-- This is a horrible hack to work around a horrible bug in GCL
+-- as reported here:
+--    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
+--
+)if %hasFeature KEYWORD::GCL
+)package "VMLISP"
+)package "AxiomCore"
+)endif 
+
+import '"bits"
+import '"dq"
+import '"incl"
 
 )package "BOOT"
+
+--% Separators
+
+$SPACE       := QENUM('"    ", 0)
+ESCAPE      := QENUM('"__  ", 0)
+STRING_CHAR := QENUM('"_"  ", 0)
+PLUSCOMMENT := QENUM('"+   ", 0)
+MINUSCOMMENT:= QENUM('"-   ", 0)
+RADIX_CHAR  := QENUM('"r   ", 0)
+DOT         := QENUM('".   ", 0)
+EXPONENT1   := QENUM('"E   ", 0)
+EXPONENT2   := QENUM('"e   ", 0)
+CLOSEPAREN  := QENUM('")   ", 0)
+CLOSEANGLE  := QENUM('">   ", 0)
+QUESTION    := QENUM('"?   ",0)
+
+
+--% Keywords
+
+scanKeyWords := [ _
+           ['"add",      "ADD" ],_
+           ['"and",      "AND" ],_
+           ['"break",   "BREAK" ],_
+           ['"by",        "BY" ],_
+           ['"case",     "CASE" ],_
+           ['"default",  "DEFAULT" ],_
+           ['"define",  "DEFN" ],_
+           ['"do",        "DO"],_
+           ['"else",    "ELSE" ],_
+           ['"exit",    "EXIT" ],_
+           ['"export","EXPORT" ],_
+           ['"for",      "FOR" ],_
+           ['"free",    "FREE" ],_
+           ['"from",    "FROM" ],_
+           ['"has",      "HAS" ],_
+           ['"if",       "IF" ],_
+           ['"import", "IMPORT" ],_
+           ['"in", "IN" ],_
+           ['"inline", "INLINE" ],_
+           ['"is", "IS" ],_
+           ['"isnt", "ISNT" ],_
+           ['"iterate", "ITERATE"],_
+           ['"local", "local" ],_
+           ['"macro", "MACRO" ],_
+           ['"mod", "MOD" ],_
+           ['"or", "OR" ],_
+           ['"pretend","PRETEND" ],_
+           ['"quo","QUO" ],_
+           ['"rem","REM" ],_
+           ['"repeat","REPEAT" ],_
+           ['"return","RETURN" ],_
+           ['"rule","RULE" ],_
+           ['"then","THEN" ],_
+           ['"where","WHERE" ],_
+           ['"while","WHILE" ],_
+           ['"with","WITH" ],_
+           ['"|","BAR"],_
+           ['".","DOT" ],_
+           ['"::","COERCE" ],_
+           ['":","COLON" ],_
+           ['":-","COLONDASH" ],_
+           ['"@","AT" ],_
+           ['"@@","ATAT" ],_
+           ['",","COMMA" ],_
+           ['";","SEMICOLON" ],_
+           ['"**","POWER" ],_
+           ['"*","TIMES" ],_
+           ['"+","PLUS" ],_
+           ['"-","MINUS" ],_
+           ['"<","LT" ],_
+           ['">","GT" ],_
+           ['"<=","LE" ],_
+           ['">=","GE" ],_
+           ['"=", "EQUAL"],_
+           ['"~=","NOTEQUAL" ],_
+           ['"~","~" ],_
+           ['"^","CARAT" ],_
+           ['"..","SEG" ],_
+           ['"#","#" ],_
+           ['"&","AMPERSAND" ],_
+           ['"$","$" ],_
+           ['"/","SLASH" ],_
+           ['"\","BACKSLASH" ],_
+           ['"//","SLASHSLASH" ],_
+           ['"\\","BACKSLASHBACKSLASH" ],_
+           ['"/\","SLASHBACKSLASH" ],_
+           ['"\/","BACKSLASHSLASH" ],_
+           ['"=>","EXIT" ],_
+           ['":=","BECOMES" ],_
+           ['"==","DEF" ],_
+           ['"==>","MDEF" ],_
+           ['"->","ARROW" ],_
+           ['"<-","LARROW" ],_
+           ['"+->","GIVES" ],_
+           ['"(","(" ],_
+           ['")",")" ],_
+           ['"(|","(|" ],_
+           ['"|)","|)" ],_
+           ['"[","[" ],_
+           ['"]","]" ],_
+           ['"[__]","[]" ],_
+           ['"{","{" ],_
+           ['"}","}" ],_
+           ['"{__}","{}" ],_
+           ['"[|","[|" ],_
+           ['"|]","|]" ],_
+           ['"[|__|]","[||]" ],_
+           ['"{|","{|" ],_
+           ['"|}","|}" ],_
+           ['"{|__|}","{||}" ],_
+           ['"<<","OANGLE" ],_
+           ['">>","CANGLE" ],_
+           ['"'", "'" ],_
+           ['"`", "BACKQUOTE" ]_
+                          ]
+
+
+scanKeyTableCons()==
+   KeyTable:=MAKE_-HASHTABLE("CVEC",true)
+   for st in scanKeyWords repeat
+      HPUT(KeyTable,CAR st,CADR st)
+   KeyTable
+
+scanKeyTable:=scanKeyTableCons()
+
+
+scanInsert(s,d) ==
+      l := #s
+      h := QENUM(s,0)
+      u := ELT(d,h)
+      n := #u
+      k:=0
+      while l <= #(ELT(u,k)) repeat
+          k:=k+1
+      v := MAKE_-VEC(n+1)
+      for i in 0..k-1 repeat VEC_-SETELT(v,i,ELT(u,i))
+      VEC_-SETELT(v,k,s)
+      for i in k..n-1 repeat VEC_-SETELT(v,i+1,ELT(u,i))
+      VEC_-SETELT(d,h,v)
+      s
+
+scanDictCons()==
+      l:= HKEYS scanKeyTable
+      d :=
+          a:=MAKE_-VEC(256)
+          b:=MAKE_-VEC(1)
+          VEC_-SETELT(b,0,MAKE_-CVEC 0)
+          for i in 0..255 repeat VEC_-SETELT(a,i,b)
+          a
+      for s in l repeat scanInsert(s,d)
+      d
+
+scanDict:=scanDictCons()
+
+
+scanPunCons()==
+    listing := HKEYS scanKeyTable
+    a:=MAKE_-BVEC 256
+--  SETSIZE(a,256)
+    for i in 0..255 repeat BVEC_-SETELT(a,i,0)
+    for k in listing repeat
+       if not startsId? k.0
+       then BVEC_-SETELT(a,QENUM(k,0),1)
+    a
+
+scanPun:=scanPunCons()
+
+--for i in ["COLON","MINUS"] repeat
+--   MAKEPROP(i,'PREGENERIC,'TRUE)
+
+for i in   [ _
+   ["EQUAL"    ,"="], _
+   ["TIMES"    ,"*"], _
+   ["HAS"      ,"has"], _
+   ["CASE"     ,"case"], _
+   ["REM"      ,"rem"], _
+   ["MOD"      ,"mod"], _
+   ["QUO"      ,"quo"], _
+   ["SLASH"    ,"/"], _
+   ["BACKSLASH","\"], _
+   ["SLASHSLASH"    ,"//"], _
+   ["BACKSLASHBACKSLASH","\\"], _
+   ["SLASHBACKSLASH"    ,"/\"], _
+   ["BACKSLASHSLASH","\/"], _
+   ["POWER"    ,"**"], _
+   ["CARAT"    ,"^"], _
+   ["PLUS"     ,"+"], _
+   ["MINUS"    ,"-"], _
+   ["LT"       ,"<"], _
+   ["GT"       ,">"], _
+   ["OANGLE"       ,"<<"], _
+   ["CANGLE"       ,">>"], _
+   ["LE"       ,"<="], _
+   ["GE"       ,">="], _
+   ["NOTEQUAL" ,"~="], _
+   ["BY"       ,"by"], _
+   ["ARROW"       ,"->"], _
+   ["LARROW"       ,"<-"], _
+   ["BAR"       ,"|"], _
+   ["SEG"       ,".."] _
+    ] repeat MAKEPROP(CAR i,'INFGENERIC,CADR i)
 
 -- Scanner
 
@@ -122,7 +321,7 @@ scanToken () ==
                                lfid '"?"
             punctuation? c            => scanPunct ()
             startsId? ch              => scanWord  (false)
-            c=SPACE                   =>
+            c=$SPACE                   =>
                            scanSpace ()
                            []
             c = STRING_CHAR           => scanString ()
@@ -485,21 +684,6 @@ keyword st   == HGET(scanKeyTable,st)
 
 keyword? st  ==  not null HGET(scanKeyTable,st)
 
-scanInsert(s,d) ==
-      l := #s
-      h := QENUM(s,0)
-      u := ELT(d,h)
-      n := #u
-      k:=0
-      while l <= #(ELT(u,k)) repeat
-          k:=k+1
-      v := MAKE_-VEC(n+1)
-      for i in 0..k-1 repeat VEC_-SETELT(v,i,ELT(u,i))
-      VEC_-SETELT(v,k,s)
-      for i in k..n-1 repeat VEC_-SETELT(v,i+1,ELT(u,i))
-      VEC_-SETELT(d,h,v)
-      s
-
 subMatch(l,i)==substringMatch(l,scanDict,i)
 
 substringMatch (l,d,i)==
@@ -525,41 +709,6 @@ substringMatch (l,d,i)==
        s1
 
 
-scanKeyTableCons()==
-   KeyTable:=MAKE_-HASHTABLE("CVEC",true)
-   for st in scanKeyWords repeat
-      HPUT(KeyTable,CAR st,CADR st)
-   KeyTable
-
-scanDictCons()==
-      l:= HKEYS scanKeyTable
-      d :=
-          a:=MAKE_-VEC(256)
-          b:=MAKE_-VEC(1)
-          VEC_-SETELT(b,0,MAKE_-CVEC 0)
-          for i in 0..255 repeat VEC_-SETELT(a,i,b)
-          a
-      for s in l repeat scanInsert(s,d)
-      d
-
-
-scanPunCons()==
-    listing := HKEYS scanKeyTable
-    a:=MAKE_-BVEC 256
---  SETSIZE(a,256)
-    for i in 0..255 repeat BVEC_-SETELT(a,i,0)
-    for k in listing repeat
-       if not startsId? k.0
-       then BVEC_-SETELT(a,QENUM(k,0),1)
-    a
-
-
 
 punctuation? c== scanPun.c=1
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

@@ -418,7 +418,7 @@ for various parts of the system. The {\bf patches.lisp} \cite{5}
 file contains last-minute changes to various functions and
 constants.
 <<environment>>=
-INOBJS=	varini.$(FASLEXT)	parini.$(FASLEXT)	\
+INOBJS=	varini.$(FASLEXT)	\
 	setvart.$(FASLEXT)	intint.$(FASLEXT)	\
         xrun.$(FASLEXT)        interop.$(FASLEXT)     \
         patches.$(FASLEXT)
@@ -1975,7 +1975,13 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
 
-incl.$(FASLEXT): incl.clisp cstream.$(FASLEXT) unlisp.$(FASLEXT)
+pile.$(FASLEXT): pile.clisp scan.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+scan.$(FASLEXT): scan.clisp incl.$(FASLEXT) bits.$(FASLEXT) dq.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+incl.$(FASLEXT): incl.clisp cstream.$(FASLEXT) cformat.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 cformat.$(FASLEXT): cformat.clisp unlisp.$(FASLEXT) posit.$(FASLEXT)

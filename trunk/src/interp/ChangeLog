@@ -4,6 +4,20 @@
 
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (scan.$(FASLEXT)): New rule.
+	(pile.$(FASLEXT)): Likewise.
+	(INOBJS): Don't include parini.$(FASLEXT).
+	* pile.boot: New.  Import scan.
+	* pile.boot.pamphlet: Move content to pile.boot.  Remove.
+	* vmlisp.lisp.pamphlet (|startsId?|): Move to sys-macros.lisp.
+	* parini.boot.pamphlet:  Move content to scan.boot.  Remove.
+	* scan.boot: New. Import bits, dq, incl.  Add workaround for GCL
+	bug. 
+	($SPACE): Rename from SPACE to avoid conflict with CL name.
+	* scan.boot.pamphlet: Move content to scan.boot.  Remove.
+
+2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* posit.boot: New.  Import sys-macros, astr.
 	(tokConstruct): Move from ptrees.boot.pamphlet.
 	(tokType): Likewise.
