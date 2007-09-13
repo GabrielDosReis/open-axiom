@@ -1,3 +1,7 @@
+2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-output.boot.pamphlet (exptNeedsPren): Use GETL, not GET.
+
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* posit.boot: New.  Import sys-macros, astr.
