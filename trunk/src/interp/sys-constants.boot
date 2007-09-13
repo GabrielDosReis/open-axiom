@@ -520,7 +520,7 @@ $One ==
 
 ++
 $true ==
-  ''T
+  true
 
 $false ==
   false
@@ -531,13 +531,16 @@ $NoValue ==
 
 
 ++
-$exitMode == $EmptyMode
+$exitMode == 
+  $EmptyMode
 
 ++
-$leaveMode == $EmptyMode
+$leaveMode == 
+  $EmptyMode
 
 ++
 $noEnv == nil
 
 ++
-IDENTITY == function IDENTITY
+IDENTITY == 
+  function IDENTITY

@@ -479,6 +479,23 @@ database.date:
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
+##
+## OpenAxiom's front-end consists of two parts:
+##    (a) the interprerter's parser -- also referred to as new parser
+##    (b) the compiler parser -- also referred to as parser
+##
+## The new parser component is always included in a running OpenAxiom
+## image.  However the old parser component is so called `autoloaded'.
+## While in theory that should work, in practice it turns out that 
+## people tend to override functions in the autoload part, correcting
+## bugs only there.  The consequence is that the same function will
+## bahave very differently based on the history of the seesion.  Ideal
+## recipe for creating heisenbugs.
+##
+## The new parser component roughtly is:
+##   astr.boot dq.boot incl.boot pile.boot ptrees.boot
+##   posit.boot cparse.boot format.boot cstream.boot
+##
 
 cparse.$(FASLEXT): cparse.clisp ptrees.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
