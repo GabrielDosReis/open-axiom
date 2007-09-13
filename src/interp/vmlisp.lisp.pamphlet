@@ -721,9 +721,6 @@ and works properly.
 (defmacro smintp (n)
   `(fixp ,n))
 
-(defmacro |startsId?| (x)
- `(or (alpha-char-p ,x) (member ,x '(#\? #\% #\!) :test #'char=)))
-
 (defmacro stringlength (x)
  `(length (the string ,x)))
 

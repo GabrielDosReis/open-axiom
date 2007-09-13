@@ -59,6 +59,11 @@
 	 (character (cadr arg)))
 	(t `(character ,arg))))
 
+
+(defmacro |startsId?| (x)
+ `(or (alpha-char-p ,x)
+      (member ,x '(#\? #\% #\!) :test #'char=)))
+
 ;; 
 ;; -*- BigFloat Constructors -*-
 ;; 
