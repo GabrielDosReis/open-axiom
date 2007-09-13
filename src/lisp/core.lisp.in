@@ -53,7 +53,7 @@
   ;; image obtained from compiler link will not work.  The root cause
   ;; is a non-ANSI compliant organization of GCL's implementation.
   #+:gcl (:use "DEFPACKAGE")
-  (:export "quit"
+  (:export "coreQuit"
            "fatalError"
            "internalError"
            "coreError"
@@ -287,17 +287,17 @@
 ;; Lisp implementations provide an `exit' function as extensions, though
 ;; they don't agree on the exact spelling, therefore on the API.
 
-;; The function |quit| is our abstractions over those variabilties.
+;; The function |coreQuit| is our abstractions over those variabilties.
 ;; It takes an optional small integer value, the exit status code to
 ;; return to the calling shell.  When no exit status code is specified,
 ;; it would return $0$, meaning that everything is OK.
-(defun |quit| (&optional (status 0))
+(defun |coreQuit| (&optional (status 0))
   #+:sbcl (sb-ext:quit :unix-status status)
   #+:clisp (ext:quit status)
   #+:gcl (si::bye status)
   #+:ecl (ext:quit status)
   #-(or :sbcl :clisp :gcl :ecl) 
-  (error "`quit' not implemented for this Lisp"))
+  (error "`coreQuit' not implemented for this Lisp"))
 
 
 ;; 
@@ -323,12 +323,12 @@
 (defun |fatalError| (msg)
   (|countError|)
   (|diagnosticMessage| "fatal error" msg)
-  (|quit| 1))
+  (|coreQuit| 1))
 
 (defun |internalError| (msg)
   (|countError|)
   (|diagnosticMessage| "internal error" msg)
-  (|quit| 1))
+  (|coreQuit| 1))
 
 (defun |coreError| (msg)
   (|countError|)
@@ -396,11 +396,11 @@
     (when (null command-args) 
       (|internalError| "empty command line args"))
     (when (fboundp '|main|)
-      (|quit| (funcall '|main| command-args)))
+      (|coreQuit| (funcall '|main| command-args)))
 
     ;; Huh, the main entry point was not defined.
     (|fatalError| "missing definition for main function")
-    (|quit| 1)))
+    (|coreQuit| 1)))
 
 
 ;; 
@@ -424,7 +424,7 @@
            (c:build-program core-image 
                             :lisp-files lisp-files
                             :epilogue-code `(funcall ,entry-point))
-           (|quit|)))
+           (|coreQuit|)))
 
 
 ;; 
@@ -463,7 +463,7 @@
         
           ((null args)                 ; we must have at least one arg
            (|printUsage| prog-name)
-           (|quit| 1))
+           (|coreQuit| 1))
         
           ((|useFileType?| (car opt))   ; process based on file type
            (dolist (f args)
@@ -499,7 +499,7 @@
 
 (defun |helpHandler|(prog-name)
   (|printUsage| prog-name)
-  (|quit|))
+  (|coreQuit|))
 
 (|installDriver| (|Option| "help") #'|helpHandler|)
 
@@ -514,7 +514,7 @@
     (|fatalError| "--make requires at least one file"))
 
   (|link| (|getOutputPathname| options) args (|getMainEntryPoint| options))
-  (|quit|))
+  (|coreQuit|))
 
 (|installDriver| (|Option| "make") #'|makeHandler|)
 
@@ -646,7 +646,7 @@
        (setq *package* (find-package (symbol-value '|$sysScope|))))
      
      (|handleCommandLine| (car command-args) options args)
-     (|quit| (if (> (|errorCount|) 0) 1 0)))))
+     (|coreQuit| (if (> (|errorCount|) 0) 1 0)))))
 
 
 ;; 
