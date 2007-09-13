@@ -1,3 +1,7 @@
+2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (core.lisp): Fix thinko.
+
 2007-09-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* core.lisp.in (|coreQuit|): Rename from |quit|.  Adjust calles.
