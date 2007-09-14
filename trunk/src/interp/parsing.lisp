@@ -73,14 +73,8 @@
 ;       BOOTLEX.LISP:  Boot file handling, auxiliary parsing actions and tokenizing
 ;       NEWMETA.LISP:  Boot parsing
 
-;; This is a horrible hack to work around a horrible bug in GCL
-;; as reported here:
-;;    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
-;; 
-#+(and :gcl (not :common-lisp)) (in-package "VMLISP")
-#+(and :gcl (not :common-lisp)) (in-package "AxiomCore")
 
-(import-module "boot-pkg")
+(import-module "vmlisp")
 (in-package "BOOT")
 
 ; 0. Current I/O Stream definition

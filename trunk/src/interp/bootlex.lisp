@@ -78,7 +78,7 @@
 (defun |oldParserAutoloadOnceTrigger| () nil)
 
 (defun print-defun (name body)
-   (let* ((sp (assoc 'vmlisp::compiler-output-stream vmlisp::optionlist))
+   (let* ((sp (assoc 'compiler-output-stream optionlist))
           (st (if sp (cdr sp) *standard-output*)))
      (if (and (is-console st) (symbolp name) (fboundp name)
               (not (compiled-function-p (symbol-function name))))

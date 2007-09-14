@@ -1067,9 +1067,6 @@ sys-globals.$(FASLEXT): sys-globals.boot sys-constants.$(FASLEXT) \
 sys-constants.$(FASLEXT): sys-constants.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-boot-pkg.$(FASLEXT): boot-pkg.lisp vmlisp.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
 hash.$(FASLEXT): hash.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
@@ -1079,7 +1076,10 @@ union.$(FASLEXT): union.lisp vmlisp.$(FASLEXT)
 ggreater.$(FASLEXT): ggreater.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-vmlisp.$(FASLEXT): vmlisp.lisp
+vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+boot-pkg.$(FASLEXT): boot-pkg.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
 
 @

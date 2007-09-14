@@ -31,14 +31,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
--- This is a horrible hack to work around a horrible bug in GCL
--- as reported here:
---    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
---
-)if %hasFeature KEYWORD::GCL
-)package "VMLISP"
-)package "AxiomCore"
-)endif 
 
 import '"unlisp"
 import '"cstream"

@@ -114,7 +114,7 @@ exit (rds ifile)
 ; PURPOSE: Debugging hooks for Boot code
  
 (in-package "BOOT")
-(use-package '("LISP" "VMLISP"))
+(use-package '("LISP" ))
  
 (DEFPARAMETER /COUNTLIST NIL)
 (DEFPARAMETER /TIMERLIST NIL)
@@ -281,7 +281,7 @@ exit (rds ifile)
 	  ;; next is done in case the diskmode changed
 	  (SHUT INPUTSTREAM) ))
 	;;(SETQ INFILE (|pathname| (IFCAR ($LISTFILE INFILE))))
-	(SETQ INFILE (vmlisp::make-input-filename INFILE))
+	(SETQ INFILE (make-input-filename INFILE))
 	(MAKEPROP /FN 'DEFLOC
 		  (CONS RECNO INFILE))
 	(SETQ oft (|object2Identifier| (UPCASE (|pathnameType| INFILE))))

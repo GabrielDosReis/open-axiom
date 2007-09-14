@@ -520,7 +520,7 @@ $One ==
 
 ++
 $true ==
-  true
+  ''T
 
 $false ==
   false

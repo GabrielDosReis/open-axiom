@@ -896,7 +896,7 @@ database.
      (mapcan #'(lambda (f)
       (when (string-equal (pathname-type f) "NRLIB")
        (list (concatenate 'string (namestring f) "/"
-			  vmlisp::*index-filename*)))) allfiles)
+			  *index-filename*)))) allfiles)
      (mapcan #'(lambda (f)
       (when (string= (pathname-type f) "asy")
        (push (pathname-name f) skipasos)
@@ -931,7 +931,7 @@ database.
     (cond
      ((setq file (probe-file
        (concatenate 'string namedir filename ".NRLIB/"
-                    vmlisp::*index-filename*)))
+                    *index-filename*)))
       (push (namestring file) nrlibs))
      ((setq file (probe-file
        (concatenate 'string namedir filename ".asy")))

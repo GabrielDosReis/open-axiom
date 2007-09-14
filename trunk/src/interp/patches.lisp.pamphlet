@@ -137,7 +137,7 @@ previous definition.
 
 (defun /RF-1 (ignore)
  (declare (ignore ignore))
-  (let* ((input-file (vmlisp::make-input-filename /EDITFILE))
+  (let* ((input-file (make-input-filename /EDITFILE))
      (lfile ())
      (type (pathname-type input-file)))
     (cond
@@ -159,7 +159,7 @@ previous definition.
      (t (spad input-file)))))
 
 (defun /EF (&rest foo)
-  (obey (concat "vi " (namestring (vmlisp::make-input-filename /EDITFILE)))))
+  (obey (concat "vi " (namestring (make-input-filename /EDITFILE)))))
 #-:CCL
   (defun user::start () (in-package "BOOT") (boot::|start|))
 #+:CCL
@@ -263,9 +263,9 @@ previous definition.
 
 
 #+(or :CCL (and :lucid :ibm/370))
-(setq vmlisp::$current-directory (truename "."))
+(setq $current-directory (truename "."))
 #-(or :CCL (and :lucid :ibm/370))
-(setq vmlisp::$current-directory (make-directory *default-pathname-defaults*))
+(setq $current-directory (make-directory *default-pathname-defaults*))
 
 (defvar *msghash* nil "hash table keyed by msg number")
 
@@ -318,9 +318,9 @@ previous definition.
    (unless (zerop returncode) (bye returncode)))))
 
 #+:dos
-(setq vmlisp::$current-directory (truename "."))
+(setq $current-directory (truename "."))
 #+:dos
-(setq vmlisp::$spadroot "/spad/mnt/dos")
+(setq $spadroot "/spad/mnt/dos")
 #+:dos
 (defun user-homedir-pathname ()
  (truename "."))

@@ -31,7 +31,7 @@
 
 
 (IMPORT-MODULE "vmlisp")
-(in-package "VMLISP")
+(in-package "BOOT")
 
 (DEFUN LEXGREATERP (COMPERAND-1 COMPERAND-2)
     ;;  "Order of types: pair NIL vec ivec/rvec cvec ident num fbpi mbpi other"
