@@ -204,10 +204,10 @@
  (rdefiostream (list (cons 'file p) '(mode . input)) nil fn))
 
 
-(in-package "VMLISP")
+(in-package "BOOT")
 
 ; from nlib.lisp
-(defun vmlisp::get-index-table-from-stream (stream &optional abbrev)
+(defun get-index-table-from-stream (stream &optional abbrev)
  (let (pos)
   (file-position stream 0)
   (setq pos (read stream))
@@ -221,18 +221,18 @@
      (read stream))
    ('else pos))))
 
-(defun vmlisp::loadvol (&rest filearg)
+(defun loadvol (&rest filearg)
   (cond ((typep (car filearg) 'libstream)
 	 (load (concat (libstream-dirname (car filearg)) "/code")))
 	(t 
           (setq filearg (make-input-filename (boot::mergelib filearg) 'LISPLIB))
-	  (if (vmlisp::library-file filearg)
+	  (if (library-file filearg)
 	      (load (concat filearg "/code"))
 	    (load filearg)))))
 
 ; from nlib.lisp
 ;; (RDEFIOSTREAM ((MODE . IO) (FILE fn ft dir))) IO is I,O,INPUT,OUTPUT
-(defun vmlisp::rdefiostream
+(defun rdefiostream
               (options &optional (missing-file-error-flag t) abbrev)
   (let ((mode (cdr (assoc 'mode options)))
 	(file (assoc 'file options))
@@ -241,14 +241,14 @@
 	(indextable nil))
         (cond ((equal (elt (string mode) 0) #\I)
 	       (setq fullname (make-input-filename (cdr file) 'LISPLIB))
-	       (setq stream (vmlisp::get-input-index-stream fullname))
+	       (setq stream (get-input-index-stream fullname))
                (if (null stream)
 		   (if missing-file-error-flag
 		       (ERROR (format nil "Library ~s doesn't exist"
 			      (make-filename (cdr file) 'LISPLIB)))
 		     NIL)
                (make-libstream :mode 'input  :dirname fullname
-                   :indextable (vmlisp::get-index-table-from-stream stream abbrev)
+                   :indextable (get-index-table-from-stream stream abbrev)
                    :indexstream stream)))
               ((equal (elt (string mode) 0) #\O)
 	       (setq fullname (make-full-namestring (cdr file) 'LISPLIB))

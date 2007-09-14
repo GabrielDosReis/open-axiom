@@ -178,7 +178,7 @@ NAME                         & SET                 & USE \\
 coerceFailure                &                     & runspad \\
 curinstream                  & ncIntLoop           & \\
 curoutstream                 & ncIntLoop           & \\
-vmlisp::\$current-directory  & restart             & \\
+\$current-directory  & restart             & \\
                              & reroot              & \\
 \$currentLine                & restart             & removeUndoLines \\
 \$dalymode                   &                     & intloopReadConsole \\
@@ -276,7 +276,7 @@ The [[curoutstream]] variable is set to the value of the
 [[*standard-output*]] common lisp variable in [[ncIntLoop]].
 While not using the ``dollar'' convention this variable is still ``global''.
 
-\subsection{vmlisp::\$current-directory}
+\subsection{\$current-directory}
 When running in Lucid Common Lisp ([[:lucid]]) on an IBM/370 mainframe
 ([[:ibm/370]]) this variable is used in place of the 
 [[*default-pathname-defaults*]] common lisp variable. 
@@ -706,9 +706,9 @@ We do not care that tail recursion occurs.
   (setq |$IOindex| 1)
   (setq |$InteractiveFrame| (|makeInitialModemapFrame|))
 #+(and :lucid :ibm/370)
-  (setq vmlisp::$current-directory "")
+  (setq $current-directory "")
 #-(and :lucid :ibm/370)
-  (setq vmlisp::$current-directory
+  (setq $current-directory
      (make-directory *default-pathname-defaults*))
   (|loadExposureGroupData|)
   (|statisticsInitialization|)

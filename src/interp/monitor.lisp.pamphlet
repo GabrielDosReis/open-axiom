@@ -660,7 +660,7 @@ for example:
 
 (defun monitor-autoload ()
  "traces autoload of algebra to monitor corresponding source files"
- (trace (vmlisp::loadvol 
+ (trace (loadvol 
           :entrycond nil
           :exitcond (progn (monitor-dirname system::arglist) nil))))
 

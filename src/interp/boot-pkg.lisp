@@ -32,20 +32,10 @@
 ;; Copyright (C) 2007 Gabriel Dos Reis
 
 
-;; This file contains the primary definition of the BOOT package
-
-;; This is a horrible hack to work around a horrible bug in GCL
-;; as reported here:
-;;    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
-;; 
-#+(and :gcl (not :common-lisp)) (in-package "VMLISP")
-#+(and :gcl (not :common-lisp)) (in-package "AxiomCore")
-
-(import-module "vmlisp")
 (defpackage "BOOT"
   #+:common-lisp (:use "COMMON-LISP")
   #-:common-lisp (:use "LISP")
-  (:use "VMLISP" "AxiomCore"))
+  (:use "AxiomCore"))
 
 (in-package "BOOT")
 

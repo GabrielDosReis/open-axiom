@@ -1,3 +1,32 @@
+2007-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* vmlisp.lisp.pamphlet: Don't define package VMLISP.  Remove
+	export declarations.  Import "boot-pkg".
+	* sys-macros.lisp (EQUABLE): Remove definition.
+	* sys-constants.boot ($true): Define as twice quoted T.
+	* hash.lisp.pamphlet: Push into package BOOT, VMLISP.
+	* ggreater.lisp: Likewise.
+	* nlib.lisp.pamphlet: Likewise.
+	* obey.lisp: Likewise.
+	* construc.lisp.pamphlet: Remove reference to VMLISP package.
+	* daase.lisp.pamphlet: Likewise.
+	* debug.lisp.pamphlet: Likewise.
+	* util.lisp.pamphlet: Likewise.
+	* cformat.boot: Remove hack for GCL limitation.
+	* scan.boot: Likewise.
+	* incl.boot: Likewise.
+	* parsing.lisp: Likewise.
+	* bootlex.lisp: Remove reference to VMLISP package.
+	* union.lisp: Likewise.
+	* boot-pkg.lisp: Remove hack for GCL limitation.  Don't import 
+	"vmlisp" anymore.
+	* bookvol5.pamphlet (vmlisp::$current-directory): Remove.
+	* patches.lisp.pamphlet: Likewise.
+	* astr.boot: Import "vmlisp" instead of "boot-pkg".
+	* Makefile.pamphlet (boot-pkg.$(FASLEXT)): Don't depend on
+	vmlisp.$(FASLEXT). 
+	(vmlisp.$(FASLEXT)): Depend on boot=pkg.$(FASLEXT).
+
 2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (OBJS): Don't include ptrop.$(FASLEXT).

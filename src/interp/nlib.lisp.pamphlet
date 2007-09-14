@@ -79,7 +79,7 @@ but has been changed to read:
 <<*>>=
 <<license>>
 
-(in-package "VMLISP")
+(in-package "BOOT")
 
 #+:AKCL (defvar *lisp-bin-filetype* "o")
 
@@ -511,7 +511,7 @@ but has been changed to read:
   (system (concat "cp " namestring1 " " namestring2)))
 
 
-(defvar vmlisp::$filetype-table
+(defvar $filetype-table
   '((BOOT::LISPLIB . |LILIB|)
     (BOOT::SPADLIB . |slib|)
     (BOOT::HISTORY . |hist|)

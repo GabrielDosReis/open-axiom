@@ -1018,7 +1018,7 @@ need to be compiled without optimize due to compiler bugs
    (error "makelib:MID=~a OUT=~a~% these are not set properly~%" mid out))
 #+:akcl (compiler::emit-fn nil)
 #+:akcl (si::chdir mid)
-#-:akcl (vmlisp::obey (concatenate 'string "cd " mid))
+#-:akcl (obey (concatenate 'string "cd " mid))
   (setq libs (directory "*.NRLIB"))
   (unless libs
    (format t "makelib:directory of ~a returned NIL~%" mid)
@@ -1042,7 +1042,7 @@ need to be compiled without optimize due to compiler bugs
       (concatenate 'string out "/" (pathname-name lib) ".NRLIB/index.KAF*"))
     (unless (probe-file mntlib)
      (format t "creating directory ~a~%" mntlib)
-     (vmlisp::obey (concatenate 'string "cp -pr " (namestring lib) " " out))
+     (obey (concatenate 'string "cp -pr " (namestring lib) " " out))
      (when (probe-file (concatenate 'string mntlib "/code." stype))
       (delete-file  (concatenate 'string mntlib "/code." stype))))
     (setq intkafdate (and (probe-file intkaf) (file-write-date intkaf)))
@@ -1050,7 +1050,7 @@ need to be compiled without optimize due to compiler bugs
     (when intkafdate
      (unless (and mntkafdate (> mntkafdate intkafdate))
       (format t "~&copying ~s to ~s" intkaf mntkaf)
-      (vmlisp::obey
+      (obey
        (concatenate 'string "cp " 
          (namestring intkaf) " " (namestring mntkaf)))))
     (setq lspdate (and (probe-file dotlsp) (file-write-date dotlsp)))
@@ -1105,7 +1105,7 @@ quality we check anyway.
    (format t "doing directory on ~s...~%" (concatenate 'string src "/*"))
    (error "makespad:SRC=~a MID=~a not set properly~%" src mid))
 #+:akcl (si::chdir mid)
-#-:akcl (vmlisp::obey (concatenate 'string "cd " mid))
+#-:akcl (obey (concatenate 'string "cd " mid))
   (setq mntlibs (directory "*.NRLIB"))
   (unless mntlibs
    (format t "makespad:directory of ~a returned NIL~%" src)
@@ -1204,7 +1204,7 @@ of the exposed constructors, is consistent with the actual libraries.
    "read the NRLIB directory and return a sorted abbreviation list"
    (let (libs nrlibs)
 #+:akcl (si::chdir algebra)
-#-:akcl (vmlisp::obey (concatenate 'string "cd " algebra))
+#-:akcl (obey (concatenate 'string "cd " algebra))
     (setq nrlibs (directory "*.NRLIB"))
     (unless nrlibs
      (error "libcheck: (directory ~s) returned NIL~%" 
@@ -1246,7 +1246,7 @@ of the exposed constructors, is consistent with the actual libraries.
   (SRCSCAN ()
    (let (longnames names)
 #+:gcl (system::chdir int)
-#-:gcl (vmlisp::obey (concatenate 'string "cd " int))
+#-:gcl (obey (concatenate 'string "cd " int))
     (setq spads (directory "*.spad"))
     (dolist (spad spads)
      (multiple-value-setq (short long) (srcabbrevs spad))
@@ -1289,7 +1289,7 @@ final TAGS file is constructed in the {\bf tmp} directory.
 <<make-tags-file>>=
 (defun make-tags-file ()
 #+:gcl (system:chdir "/tmp")
-#-:gcl (vmlisp::obey (concatenate 'string "cd " "/tmp"))
+#-:gcl (obey (concatenate 'string "cd " "/tmp"))
   (obey (concat "etags " (make-absolute-filename "../../src/interp/*.lisp")))
   (spadtags-from-directory "../../src/interp" "boot")
   (obey "cat /tmp/boot.TAGS >> /tmp/TAGS"))

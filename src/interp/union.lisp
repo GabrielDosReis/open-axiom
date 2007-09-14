@@ -31,7 +31,7 @@
 
 
 (IMPORT-MODULE "vmlisp")
-(in-package "VMLISP")
+(in-package "BOOT")
 ;;macros from file vmlisp are necessary to compile this file
 
 (DEFUN |intersection|  (LIST-OF-ITEMS-1 LIST-OF-ITEMS-2)

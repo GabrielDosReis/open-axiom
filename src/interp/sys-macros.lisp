@@ -32,13 +32,6 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;; 
 
-;; This is a horrible hack to work around a horrible bug in GCL
-;; as reported here:
-;;    http://lists.gnu.org/archive/html/gcl-devel/2007-08/msg00004.html
-;; 
-#+(and :gcl (not :common-lisp)) (in-package "VMLISP")
-#+(and :gcl (not :common-lisp)) (in-package "AxiomCore")
-
 
 (IMPORT-MODULE "union")
 (IMPORT-MODULE "sys-globals") 
@@ -118,13 +111,6 @@
 	 `(or (eql ,a ,b) (eql ,a (character ,b))))
 	(t `(EQQUAL ,a ,b))))
 
-
-(eval-when
- #+:common-lisp (:compile-toplevel :load-toplevel :execute)
- #-:common-lisp (compile load eval)
- (defun EQUABLE (X)
-   (OR (NULL X) 
-       (AND (EQCAR X 'QUOTE) (symbolp (CADR X))))))
 
 (defmacro EQQUAL (a b)
   (cond ((OR (EQUABLE a) (EQUABLE b))

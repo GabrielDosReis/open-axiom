@@ -30,7 +30,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-(in-package "VMLISP")
+(in-package "BOOT")
 
 #+ (and :lucid :unix)
 (defun OBEY (S)
@@ -51,7 +51,7 @@
 
 #+ (and :lucid :unix)
 (defun copy-lib-directory (name1 name2)
-   (vmlisp::makedir name2)
+   (makedir name2)
    (system:run-aix-program "sh" :arguments
                         (list "-c" (concat "cp " name1 "/* " name2))))
 
