@@ -1,5 +1,10 @@
 2007-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* sys-globals.boot ($insideCoerceInteracticve): Define.
+	($insideEvalMmCondIfTrue): Likewise.
+
+2007-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* vmlisp.lisp.pamphlet: Don't define package VMLISP.  Remove
 	export declarations.  Import "boot-pkg".
 	* sys-macros.lisp (EQUABLE): Remove definition.
