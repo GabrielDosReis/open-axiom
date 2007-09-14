@@ -352,3 +352,9 @@ $NEWSPAD := false
 ++
 $BOOT := false
 
+++
+$insideCoerceInteractive := false
+
+++
+$insideEvalMmCondIfTrue := false
+
