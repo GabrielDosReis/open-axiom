@@ -96,3 +96,9 @@ $currentLine := nil
 
 ++ If true, make the system verbose about object files being loaded.
 $printLoadMsgs := false
+
+++
+$insideCoerceInteractive := false
+
+++
+$insideEvalMmCondIfTrue := false

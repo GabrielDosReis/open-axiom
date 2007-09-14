@@ -1,3 +1,8 @@
+2007-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sys-globals.boot ($insideCoerceInteracticve): Define.
+	($insideEvalMmCondIfTrue): Likewise.
+
 2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* i-output.boot.pamphlet (exptNeedsPren): Use GETL, not GET.
