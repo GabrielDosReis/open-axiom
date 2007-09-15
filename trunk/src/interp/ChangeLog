@@ -1,3 +1,9 @@
+2007-09-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix Bug SF/1790563
+	* i-output.boot.pamphlet (outputDomainConstructor): Devaluate
+	domain form only if it is in vector representation.
+
 2007-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sys-globals.boot ($insideCoerceInteracticve): Define.
@@ -179,6 +185,18 @@
 	* macros.lisp.pamphlet (ELEMN): Move to g-util.boot.pamphlet.
 	(|leftBindingPowerOf|): Move to i-output.boot.pamphlet.
 	(|rightBindingPowerOf|): Likewise.
+
+2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* macros.lisp.pamphlet (CROAK): Move to diagnostics.boot.
+	(SAY): Likewise.
+	(MESSAGEPRINT): Likewise.
+	(MESSAGEPRINT-1): Likewise.
+	(MESSAGEPRINT-2): Likewise.
+	(|shoeConsole|): Move to sys-macros.lisp.
+	(|shoeInputFile|): Likewise.
+	(|shoeread-line|): Likewise.
+	(ELEMN): Move to fnewmeta.lisp.pamphlet.
 
 2007-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
