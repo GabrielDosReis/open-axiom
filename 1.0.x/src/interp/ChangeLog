@@ -1,3 +1,9 @@
+2007-09-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix Bug SF/1790563
+	* i-output.boot.pamphlet (outputDomainConstructor): Devaluate
+	domain form only if it is in vector representation.
+
 2007-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sys-globals.boot ($insideCoerceInteracticve): Define.
