@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -29,7 +31,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
--- Copyright (C) 2007 Gabriel Dos Reis
 --
 
 --
@@ -63,5 +64,35 @@ ERRHUH() ==
 MOAN(:x) ==
   sayBrightly ['"%l", '"===> ", :x, '"%l"]
 
+CROAK(:x) ==
+  systemError x
+
 THETA__ERROR op ==
   userError ['"Sorry, do not know the identity element for ", op]
+
+SAY(:x) ==
+  MESSAGEPRINT x
+  TERPRI()
+
+MESSAGEPRINT x ==
+  MAPC(function MESSAGEPRINT_-1, x)
+
+MESSAGEPRINT_-1 x ==
+  x = "%l" or x = '"%l" => TERPRI()
+  STRINGP x => PRINC x
+  IDENTP x => PRINC x
+  ATOM x => PRINC x
+  PRINC '"("
+  MESSAGEPRINT_-1 car x
+  MESSAGEPRINT_-2 cdr x
+  PRINC '")"
+
+MESSAGEPRINT_-2 x ==
+  atom x =>
+    not null x =>
+      PRINC '" . "
+      MESSAGEPRINT_-1 x
+  PRINC '" "
+  MESSAGEPRINT_-1 car x
+  MESSAGEPRINT_-2 cdr x
+

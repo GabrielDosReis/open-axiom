@@ -652,23 +652,6 @@ This version is needed so that (COLLECT (IN X Y) ... (RETURN 'JUNK))=>JUNK."
 ;; --------------------> NEW DEFINITION (override in msgdb.boot.pamphlet)
 (DEFUN BRIGHTPRINT-0 (x) (MESSAGEPRINT-1 X))
  
-(defun SAY (&rest x) (progn (MESSAGEPRINT X) (TERPRI)))
- 
-(DEFUN MESSAGEPRINT (X) (mapc #'messageprint-1 X))
- 
-(DEFUN MESSAGEPRINT-1 (X)
-  (COND ((OR (EQ X '|%l|) (EQUAL X "%l")) (TERPRI))
-        ((STRINGP X) (PRINC X))
-        ((IDENTP X) (PRINC X))
-        ((ATOM X) (PRINC X))
-        ((PRINC "(") (MESSAGEPRINT-1 (CAR X))
-	 (MESSAGEPRINT-2 (CDR X)) (PRINC ")"))))
- 
-(DEFUN MESSAGEPRINT-2 (X)
-  (if (ATOM X)
-      (if (NULL X) NIL (progn (PRINC " . ") (MESSAGEPRINT-1 X)))
-      (progn (PRINC " ") (MESSAGEPRINT-1 (CAR X)) (MESSAGEPRINT-2 (CDR X)))))
- 
 (DEFUN BLANKS (N &optional (stream *standard-output*)) "Print N blanks."
     (do ((i 1 (the fixnum(1+ i))))
 	((> i N))(declare (fixnum i n)) (princ " " stream)))
@@ -713,12 +696,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
     (read-char STRM)
     (SETQ *EOF* (STREAM-EOF STRM))
     strm))
- 
-; 24 ERRORS
- 
-; 24.2 Specialized Error-Signalling Forms and Macros
- 
-(defun CROAK (&rest x) (|systemError| x))
  
 ; 25 MISCELLANEOUS FEATURES
  
