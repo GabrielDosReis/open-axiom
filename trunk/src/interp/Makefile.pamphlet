@@ -377,7 +377,10 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	template.$(FASLEXT)	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	\
 	union.$(FASLEXT)       daase.$(FASLEXT)  	\
-	fortcall.$(FASLEXT)
+	fortcall.$(FASLEXT) \
+	$(OPOBJS) \
+	$(OCOBJS) \
+	$(BROBJS)
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 
@@ -452,11 +455,11 @@ rethinking.
 
 <<environment>>=
 # These are autloaded old parser files
-OPOBJS=	${AUTO}/parsing.$(FASLEXT)	${AUTO}/bootlex.$(FASLEXT)	\
-        ${AUTO}/def.$(FASLEXT)	\
-	${AUTO}/fnewmeta.$(FASLEXT)	${AUTO}/metalex.$(FASLEXT)	\
-	${AUTO}/parse.$(FASLEXT)	${AUTO}/postpar.$(FASLEXT)	\
-	${AUTO}/postprop.$(FASLEXT)	${AUTO}/preparse.$(FASLEXT)
+OPOBJS=	parsing.$(FASLEXT)	bootlex.$(FASLEXT)	\
+        def.$(FASLEXT)	\
+	fnewmeta.$(FASLEXT)	metalex.$(FASLEXT)	\
+	parse.$(FASLEXT)	postpar.$(FASLEXT)	\
+	postprop.$(FASLEXT)	preparse.$(FASLEXT)
 
 autoload_objects += $(OPBJS)
 @
@@ -464,14 +467,14 @@ autoload_objects += $(OPBJS)
 The {\bf OCOBJS} list contains files from the old compiler. Again,
 ``old'' is meaningless. These files should probably be autoloaded.
 <<environment>>=
-OCOBJS=	${AUTO}/apply.$(FASLEXT)	${AUTO}/c-doc.$(FASLEXT)	\
-	${AUTO}/c-util.$(FASLEXT)	${AUTO}/profile.$(FASLEXT)	\
-	${AUTO}/category.$(FASLEXT)	${AUTO}/compiler.$(FASLEXT)	\
-	${AUTO}/define.$(FASLEXT)	${AUTO}/functor.$(FASLEXT)	\
-	${AUTO}/info.$(FASLEXT)	${AUTO}/iterator.$(FASLEXT)	\
-	${AUTO}/modemap.$(FASLEXT)	${AUTO}/nruncomp.$(FASLEXT)	\
-	${AUTO}/package.$(FASLEXT)	${AUTO}/htcheck.$(FASLEXT)	\
-        ${AUTO}/xruncomp.$(FASLEXT)   
+OCOBJS=	apply.$(FASLEXT)	c-doc.$(FASLEXT)	\
+	c-util.$(FASLEXT)	profile.$(FASLEXT)	\
+	category.$(FASLEXT)	compiler.$(FASLEXT)	\
+	define.$(FASLEXT)	functor.$(FASLEXT)	\
+	info.$(FASLEXT)	iterator.$(FASLEXT)	\
+	modemap.$(FASLEXT)	nruncomp.$(FASLEXT)	\
+	package.$(FASLEXT)	htcheck.$(FASLEXT)	\
+        xruncomp.$(FASLEXT)   
 
 autoload_objects += $(OCOBJS)
 
@@ -480,17 +483,17 @@ autoload_objects += $(OCOBJS)
 The {\bf BROBJS} list contains files only used by the hypertex
 browser. These files should probably be autoloaded.
 <<environment>>=
-BROBJS=	${AUTO}/bc-matrix.$(FASLEXT)				\
-	${AUTO}/bc-misc.$(FASLEXT)	${AUTO}/bc-solve.$(FASLEXT)	\
-	${AUTO}/bc-util.$(FASLEXT)				\
-	${AUTO}/ht-util.$(FASLEXT)	${AUTO}/htsetvar.$(FASLEXT)	\
-	${AUTO}/ht-root.$(FASLEXT)	\
-	${AUTO}/br-con.$(FASLEXT)	\
-	${AUTO}/br-data.$(FASLEXT)	${AUTO}/showimp.$(FASLEXT)    \
-	${AUTO}/br-op1.$(FASLEXT)	${AUTO}/br-op2.$(FASLEXT)	\
-	${AUTO}/br-search.$(FASLEXT)	${AUTO}/br-util.$(FASLEXT)	\
-	${AUTO}/topics.$(FASLEXT)     ${AUTO}/br-prof.$(FASLEXT)    \
-	${AUTO}/br-saturn.$(FASLEXT)
+BROBJS=	bc-matrix.$(FASLEXT)				\
+	bc-misc.$(FASLEXT)	bc-solve.$(FASLEXT)	\
+	bc-util.$(FASLEXT)				\
+	ht-util.$(FASLEXT)	htsetvar.$(FASLEXT)	\
+	ht-root.$(FASLEXT)	\
+	br-con.$(FASLEXT)	\
+	br-data.$(FASLEXT)	showimp.$(FASLEXT)    \
+	br-op1.$(FASLEXT)	br-op2.$(FASLEXT)	\
+	br-search.$(FASLEXT)	br-util.$(FASLEXT)	\
+	topics.$(FASLEXT)     br-prof.$(FASLEXT)    \
+	br-saturn.$(FASLEXT)
 
 autoload_objects += $(BFOBJS)
 
@@ -1100,7 +1103,7 @@ Doing otherwise causes havoc.
 <<savesys>>=
 makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
                 nocompil.lisp \
-	        ${OUTINTERP} ${OCOBJS} ${OPOBJS} ${BROBJS} obey.$(FASLEXT) \
+	        ${OUTINTERP} obey.$(FASLEXT) \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
 		${NAGBROBJS} ${TRANOBJS} \
 	        ${LOADSYS} \
@@ -1121,7 +1124,7 @@ makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules)))) (quote ($(patsubst %, "%", ${OPOBJS}))) (quote ($(patsubst %, "%", ${OCOBJS}))) (quote ($(patsubst %, "%", ${BROBJS}))) (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${NAGBROBJS}))) (quote ($(patsubst %, "%", ${ASAUTO})))  "${AXIOM}")' >> makeint.lisp
+	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${NAGBROBJS}))) (quote ($(patsubst %, "%", ${ASAUTO})))  "${AXIOM}")' >> makeint.lisp
 	@ echo '(boot::set-restart-hook)' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ echo '(load "../algebra/warm.data")' >> makeint.lisp

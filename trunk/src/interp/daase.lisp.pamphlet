@@ -1193,10 +1193,6 @@ database.
 						  (format nil "./~a" 
 							  dir)))))
 			 'make-database))
-;browse.daase
-#+:AKCL  (load (concatenate 'string (|getEnv| "AXIOM") "/autoload/topics"))  ;; hack
-  (|oldCompilerAutoloadOnceTrigger|)
-  (|browserAutoloadOnceTrigger|)
 #+:AKCL    (|mkTopicHashTable|)
   (setq |$constructorList| nil) ;; affects buildLibdb
   (|buildLibdb|)

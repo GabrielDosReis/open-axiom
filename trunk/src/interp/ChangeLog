@@ -1,5 +1,31 @@
 2007-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/1792002
+	* util.lisp.pamphlet (build-interpsys): Lose parse-files,
+	comp-files and browse-files parameters.  Don't set AutoLoad
+	properties for those files anymore.
+	(parse-functions): Remove definition.
+	(comp-functions): Likewise.
+	(browse-functions): Likewise.
+	(|tr|): Don't call |oldCompilerAutoloadOnceTrigger| and
+	|browserAutloadOnceTrigger| anymore.
+	* daase.lisp.pamphlet (make-databases): Don't call
+	|oldCompilerAutoloadOnceTrigger| anymore.
+	* compiler.boot.pamphlet (compileSpad2Cmd): Don't call
+	oldParserAutoloadOnceTrigger anymore.
+	* bootlex.lisp (|oldParserAutoloadOnceTrigger|): Remove.
+	* Makefile.pamphlet (OBJS): Include $(OPOBJS), $(OCOBJS) and
+	$(BROBJS).
+	(OPOBJS): Objects are not in autoload directory anymore.
+	(OCOBJS): Likewise.
+	(BROBJS): Likewise.
+	(makeint.lisp): Remove explicit dependency on $(OCOBJS), $(OPOBJS)
+	and $(BROBJS).  Don't call build-interpsys with those arguments
+	anymore.
+	* Makefile.in: Regenerate.
+
+2007-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* i-spec1.boot.pamphlet (mkAndApplyZippedPredicates): Fix typo.
 	(mkIterZippedFun): Use indexList, not the global $indexVars.
 
