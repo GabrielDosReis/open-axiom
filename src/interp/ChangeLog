@@ -1,3 +1,8 @@
+2007-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-spec1.boot.pamphlet (mkAndApplyZippedPredicates): Fix typo.
+	(mkIterZippedFun): Use indexList, not the global $indexVars.
+
 2007-09-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix Bug SF/1790563
