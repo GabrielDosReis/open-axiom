@@ -1,3 +1,9 @@
+2007-09-16  Alfredo Portes <alfredo.portes@gmail.com>
+	    Alasdair McAndrew <amca01@gmail.com>
+
+	* newdata.spad.pamphlet: Call FORCE_-OUTPUT
+	function instead of FLUSH.
+
 2007-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	
 	* OpenAxiom 1.0.0 released.
