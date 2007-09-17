@@ -1,3 +1,9 @@
+2007-09-16  Alfredo Portes <alfredo.portes@gmail.com>
+	    Alasdair McAndrew <amca01@gmail.com>
+
+	* newdata.spad.pamphlet: Call FORCE_-OUTPUT
+	function instead of FLUSH.
+
 2007-08-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (strap/%.o): Tidy.  Don't pipe command
@@ -6,7 +12,7 @@
 
 	* Makefile.in: Regenerate.
 
-2007-06-20  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+2007-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (mkdir-output-directory): Use $(mkinstalldirs).
 	(${OUT}/%.o): Be verbose.
