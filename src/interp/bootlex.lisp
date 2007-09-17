@@ -75,8 +75,6 @@
      (initialize-preparse *terminal-io*)
      (,(intern (strconc "PARSE-" x)) . ,y)))
 
-(defun |oldParserAutoloadOnceTrigger| () nil)
-
 (defun print-defun (name body)
    (let* ((sp (assoc 'compiler-output-stream optionlist))
           (st (if sp (cdr sp) *standard-output*)))

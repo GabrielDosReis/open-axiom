@@ -1380,8 +1380,6 @@ compileSpad2Cmd args ==
 
     $InteractiveMode : local := nil
     if translateOldToNew then
-	oldParserAutoloadOnceTrigger()
-        browserAutoloadOnceTrigger()
         spad2AsTranslatorAutoloadOnceTrigger()
         sayKeyedMsg("S2IZ0085", nil)
         convertSpadToAsFile path
