@@ -1,3 +1,7 @@
+2007-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-interpsys): Now depend on all-depsys.
+
 2007-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (all-check): New rule.

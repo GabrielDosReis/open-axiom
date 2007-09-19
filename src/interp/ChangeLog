@@ -1,3 +1,37 @@
+2007-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* util.lisp.pamphlet ($directory-list): Move to sys-globals.boot.
+	($library-directory-list): Likewise.
+	* spad.lisp.pamphlet: Import "bootlex".
+	* preparse.lisp.pamphlet: Import "fnewmeta".
+	* postprop.lisp: Import "macros".
+	* postpar.boot.pamphlet: Import "postprop".
+	* nlib.lisp.pamphlet (rdefiostream): Define unconditionally.
+	(get-io-index-stream): Likewise.
+	(makedir): Likewise.
+	(get-directory-list): Don't use $current-diretory.
+	($filetype-table): Move to sys-constants.boot.
+	* patches.lisp.pamphlet ($current-directory): Remove.
+	(|cd|): Simplify implementation.
+	* newaux.lisp.pamphlet: Import "macros".
+	(|PARSE-NewKEY|): Define.
+	* metalex.lisp: Move various file, line, stack, character
+	utilities to here.
+	* macros.lisp.pamphlet (NREVERSE0): Move to sys-macros.lisp.  Tidy.
+	* fnewmeta.lisp.pamphlet: Import "parsing".
+	* comp.lisp: Import "macros".
+	* def.lisp: Likewise.
+	(B-MDEF): Fix thinko.
+	* bootlex.lisp: Import "preparse", "def", and "nlib".
+	(BOOT-LINE-STACK): Move to metalex.lisp.
+	(NEXT-LINES-CLEAR): Likewise.
+	(NEXT-LINES-SHOW): Likewise.
+	(XCAPE): Likewise.
+	(KEYWORDS): Likewise.
+	* Makefile.pamphlet (${DEPSYS}): Now have all Lisp in compiled
+	form and load them.  
+	* bookvol5.pamphlet ($current-directory): Remove.
+
 2007-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/1792002

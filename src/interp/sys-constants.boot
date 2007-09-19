@@ -544,3 +544,27 @@ $noEnv == nil
 ++
 IDENTITY == 
   function IDENTITY
+
++++
+_*INDEX_-FILENAME_* ==
+  '"index.KAF"
+
+++
+$FILETYPE_-TABLE ==
+  [["LISPLIB", :"LILIB"],
+   ["SPADLIB", :"slib"],
+   ["HISTORY", :"hist"],
+   ["HELPSPAD", :"help"],
+   ["INPUT", :"input"],
+   ["SPAD", :"spad"],
+   ["BOOT", :"boot"],
+   ["LISP", :"lsp"],
+   ["META", :"meta"],
+   ["OUTPUT", :"splog"],
+   ["ERRORLIB", :"erlib"],
+   ["DATABASE", :"DAASE"],
+   ["SPADDATA", :"sdata"],
+   ["SPADFORT", :"sfort"],
+   ["SPADFORM", :"sform"],
+   ["SPADTEX", :"stex"],
+   ["SPADOUT", :"spout"]]

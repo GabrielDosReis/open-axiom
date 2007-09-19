@@ -296,6 +296,7 @@ IteratorTail:   ('repeat' <Iterator*>! / Iterator*) ;
 <<*>>=
 <<license>>
 
+(IMPORT-MODULE "parsing")
 (IN-PACKAGE "BOOT" )
 
 
@@ -304,6 +305,9 @@ IteratorTail:   ('repeat' <Iterator*>! / Iterator*) ;
 (DEFPARAMETER |ParseMode| NIL)
 (DEFPARAMETER DEFINITION_NAME NIL)
 (DEFPARAMETER LABLASOC NIL)
+
+(defun |isTokenDelimiter| () 
+       (MEMBER (CURRENT-SYMBOL) '(\) END\_UNIT NIL)))
 
 
 (DEFUN |PARSE-NewExpr| ()

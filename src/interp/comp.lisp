@@ -49,6 +49,7 @@
 ;          The package also causes traced things which are recompiled to
 ;          become untraced.
 
+(IMPORT-MODULE "macros")
 (in-package "BOOT")
 
 (export '(Comp FluidVars LocVars OptionList SLAM SPADSLAM ILAM FLUID))

@@ -41,19 +41,12 @@
 ;               4. BOOT Token Parsing Actions
 ;               5. BOOT Error Handling
 
+(IMPORT-MODULE "preparse")
+(IMPORT-MODULE "def")
+(IMPORT-MODULE "nlib")
 (in-package "BOOT")
 
 ; *** 0. Global parameters
-
-(defparameter Boot-Line-Stack nil       "List of lines returned from PREPARSE.")
-
-(defun Next-Lines-Clear () (setq Boot-Line-Stack nil))
-
-(defun Next-Lines-Show ()
-  (and Boot-Line-Stack (format t "Currently preparsed lines are:~%~%"))
-  (mapcar #'(lambda (line)
-              (format t "~&~5D> ~A~%" (car line) (cdr Line)))
-          Boot-Line-Stack))
 
 ; *** 1. BOOT file handling
 
@@ -165,7 +158,6 @@
            (OPTIONLIST nil)
            (*EOF* NIL)
            (File-Closed NIL)
-         ;;  ($current-directory "/spad/libraries/")
            (/editfile *spad-input-file*)
            (|$noSubsumption| |$noSubsumption|)
            in-stream out-stream)
@@ -233,6 +225,7 @@
             '|%l| '|%b| (ELT $SPAD_ERRORS 2) '|%d| '|semantic errors| '|%l|)))
       (+ (ELT $SPAD_ERRORS 0) (ELT $SPAD_ERRORS 1) (ELT $SPAD_ERRORS 2))))
 
+
 (defun READBOOT ()
   (let (form expr ($BOOT 'T))
     (declare (special $BOOT))
@@ -264,8 +257,6 @@ if it gets a non-blank line, and NIL at end of stream."
         Line-Buffer)))
 
 ;  *** 3. BOOT Token Handling ***
-
-(defparameter xcape #\_ "Escape character for Boot code.")
 
 (defun get-BOOT-token (token)
 
@@ -318,18 +309,6 @@ Otherwise, get a .. identifier."
   (token-install (intern (strconc "#" (format nil "~D" (token-symbol token))))
                  'argument-designator token nonblank))
 
-(defvar Keywords '(|or| |and| |isnt| |is| |otherwise| |when| |where|
-                  |has| |with| |add| |case| |in| |by| |pretend| |mod|
-                  |exquo| |div| |quo| |else| |rem| |then| |suchthat|
-                  |if| |yield| |iterate| |from| |exit| |leave| |return|
-                  |not| |unless| |repeat| |until| |while| |for| |import|)
-
-
-
-"Alphabetic literal strings occurring in the New Meta code constitute
-keywords.   These are recognized specifically by the AnyId production,
-GET-BOOT-IDENTIFIER will recognize keywords but flag them
-as keywords.")
 
 (defun get-boot-identifier-token (token &optional (escaped? nil))
   "An identifier consists of an escape followed by any character, a %, ?,
@@ -405,11 +384,6 @@ or the chracters ?, !, ' or %"
 
 ; **** 4. BOOT token parsing actions
 
-; Parsing of operator tokens depends on tables initialized by BOTTOMUP.LISP
-
-(defun-parse-token SPADSTRING)
-(defun-parse-token KEYWORD)
-(defun-parse-token ARGUMENT-DESIGNATOR)
 
 (defun TRANSLABEL (X AL) (TRANSLABEL1 X AL) X)
 
