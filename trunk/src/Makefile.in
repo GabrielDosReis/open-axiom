@@ -43,16 +43,16 @@ all-boot: all-lisp
 all-depsys: all-boot
 	cd interp && $(MAKE) all-depsys
 
-all-interpsys: all-depsys all-lisp
+ifeq (@axiom_use_x@,yes)
+all-interpsys: all-depsys all-hyper
+else
+all-interpsys: all-depsys
+endif
 	cd interp && ${MAKE} all-interpsys
 
 all-axiomsys: all-asq
 	cd interp && $(MAKE) all-axiomsys
-ifeq (@axiom_use_x@,yes)
-all-algebra: all-interpsys all-share all-hyper
-else
 all-algebra: all-interpsys all-share
-endif
 	@ $(mkinstalldirs) algebra/strap
 	cd algebra && ${MAKE}
 all-input: all-axiomsys

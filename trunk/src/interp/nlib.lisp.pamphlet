@@ -79,6 +79,7 @@ but has been changed to read:
 <<*>>=
 <<license>>
 
+(IMPORT-MODULE "macros")
 (in-package "BOOT")
 
 #+:AKCL (defvar *lisp-bin-filetype* "o")
@@ -101,10 +102,7 @@ but has been changed to read:
                          :direction :output :if-exists :supersede))
              optionlist)))
 
-(defun directory? (filename) (boot::|directoryp| filename))
-
 ;; (RDEFIOSTREAM ((MODE . IO) (FILE fn ft dir))) IO is I,O,INPUT,OUTPUT
-#+:AKCL
 (defun rdefiostream (options &optional (missing-file-error-flag t))
   (let ((mode (cdr (assoc 'mode options)))
 	(file (assoc 'file options))
@@ -127,7 +125,7 @@ but has been changed to read:
               ((equal (elt (string mode) 0) #\O)
 	       ;;(setq fullname (make-full-namestring (cdr file) 'LISPLIB))
 	       (setq fullname (make-full-namestring (cdr file) 'NIL))
-	       (case (directory? fullname)
+	       (case (|directoryp| fullname)
 		     (-1 (makedir fullname))
 		     (0 (error (format nil "~s is an existing file, not a library" fullname)))
 		     (otherwise))
@@ -137,36 +135,6 @@ but has been changed to read:
 			       :indexstream stream ))
               ('t  (ERROR "Unknown MODE")))))
 
-#+:CCL
-(defun rdefiostream (options &optional (missing-file-error-flag t))
-  (let ((mode (cdr (assoc 'mode options)))
-        (file (assoc 'file options))
-        (stream nil)
-        (fullname nil)
-        (indextable nil))
-        (cond ((equal (elt (string mode) 0) #\I)
-               (setq fullname (make-input-filename (cdr file) NIL))
-               (setq stream (get-input-index-stream fullname))
-               (if (null stream)
-                   (if missing-file-error-flag
-                       (ERROR (format nil "Library ~s doesn't exist"
-                              (make-filename (cdr file) NIL)))
-                     NIL)
-               (make-libstream :mode 'input  :dirname fullname
-                               :indextable (get-index-table-from-stream stream)
-                               :indexstream stream)))
-              ((equal (elt (string mode) 0) #\O)
-               (setq fullname (make-full-namestring (cdr file) NIL))
-               (create-directory fullname)
-               (multiple-value-setq (stream indextable)
-                        (get-io-index-stream fullname))
-               (make-libstream :mode 'output  :dirname fullname
-                               :indextable indextable
-                               :indexstream stream ))
-              ('t  (ERROR "Unknown MODE")))))
-
-#+:AKCL (defvar *index-filename* "index.KAF")
-#+:CCL (defvar *index-filename* "index.KAF")
 
 ;get the index table of the lisplib in dirname
 (defun getindextable (dirname)
@@ -188,7 +156,6 @@ but has been changed to read:
 	   (read stream))
 	  (t pos))))
 
-#+:AKCL
 (defun get-io-index-stream (dirname)
   (let* ((index-file (concat dirname "/" *index-filename*))
 	 (stream (open index-file :direction :io :if-exists :overwrite
@@ -203,24 +170,6 @@ but has been changed to read:
 	     (princ "                    " stream)
 	     (setq indextable pos)))
     (values stream indextable)))
-
-#+:CCL
-(defun get-io-index-stream (dirname)
-  (let ((index-file (concat dirname "/" *index-filename*))
-        (indextable ())
-        (stream) (pos))
-    (cond ((probe-file index-file)
-           (setq stream (open index-file :direction :io :if-exists :overwrite))
-           (setq pos (read stream))
-           (file-position stream pos)
-           (setq indextable (read stream))
-           (file-position stream pos))
-          (t (setq stream (open index-file :direction :io
-                       :if-does-not-exist :create))
-             ;(file-position stream 0)
-             (princ "                    " stream)))
-    (values stream indextable)))
-
 
 ;substitute indextable in dirname
 
@@ -248,10 +197,11 @@ but has been changed to read:
     (file-position stream :end)
     (write-indextable indextable stream)))
 
-;makedir (fname) fname is a directory name.
-#+:AKCL
+;; makedir (fname) fname is a directory name.
 (defun makedir (fname)
-  (system (concat "mkdir " fname)))
+  #+ (and (not :GCL) :COMMON-LISP) (ensure-directories-exist fname)
+  #+ :GCL (system (concat "mkdir " fname))
+  )
 
 ;; (RREAD key rstream)
 (defun rread (key rstream &optional (error-val nil error-val-p))
@@ -366,14 +316,14 @@ but has been changed to read:
         (if (or (not mdate) (datelessp mdate ldate)) 
           (seq
             (if (null output-library)
-                (boot::|openOutputLibrary|
-                  (setq boot::|$outputLibraryName|
-                   (if (null boot::|$outputLibraryName|)
+                (|openOutputLibrary|
+                  (setq |$outputLibraryName|
+                   (if (null |$outputLibraryName|)
                        (make-pathname :directory (get-current-directory)
                                       :name "user.lib")
-                        (if (filep boot::|$outputLibraryName|)
-                            (truename boot::|$outputLibraryName|)
-                            boot::|$outputLibraryName|)))))
+                        (if (filep |$outputLibraryName|)
+                            (truename |$outputLibraryName|)
+                            |$outputLibraryName|)))))
             (compile-file lfile 
                           :output-file (intern (pathname-name
                                                (directory-namestring lfile))))))))
@@ -444,10 +394,9 @@ but has been changed to read:
 (defun probe-name (file)
   (if (probe-file file) (namestring file) nil))
 
-(defun get-directory-list (ft &aux (cd (namestring $current-directory)))
-  (declare (special $current-directory))
+(defun get-directory-list (ft &aux (cd (namestring (get-current-directory))))
   (cond ((member ft '("NRLIB" "DAASE" "EXPOSED") :test #'string=)
-	   (if (eq BOOT::|$UserLevel| 'BOOT::|development|)
+	   (if (eq |$UserLevel| '|development|)
 	       (cons cd $library-directory-list)
 	       $library-directory-list))
 	(t (adjoin cd 
@@ -511,24 +460,6 @@ but has been changed to read:
   (system (concat "cp " namestring1 " " namestring2)))
 
 
-(defvar $filetype-table
-  '((BOOT::LISPLIB . |LILIB|)
-    (BOOT::SPADLIB . |slib|)
-    (BOOT::HISTORY . |hist|)
-    (BOOT::HELPSPAD . |help|)
-    (BOOT::INPUT . |input|)
-    (BOOT::SPAD . |spad|)
-    (BOOT::BOOT . |boot|)
-    (BOOT::LISP . |lsp|)
-    (BOOT::META . |meta|)
-    (BOOT::OUTPUT . |splog|)
-    (BOOT::ERRORLIB . |erlib|)
-    (BOOT::DATABASE . |DAASE|)
-    (BOOT::SPADDATA . |sdata|)
-    (BOOT::SPADFORT . |sfort|)
-    (BOOT::SPADFORM . |sform|)
-    (BOOT::SPADTEX . |stex|)
-    (BOOT::SPADOUT . |spout|)))
 @
 \eject
 \begin{thebibliography}{99}

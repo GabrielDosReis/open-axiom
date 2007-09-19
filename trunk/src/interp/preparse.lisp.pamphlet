@@ -72,7 +72,7 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
 <<*>>=
 <<license>>
 
-(provide 'Boot)
+(IMPORT-MODULE "fnewmeta")
  
 (in-package "BOOT")
  
@@ -105,6 +105,10 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
       (initialize-preparse in-stream)
       (do ((lines (PREPARSE in-stream) (PREPARSE in-stream))) ((null lines)))))
   T)
+
+
+(defvar $skipme)
+(defvar $COMBLOCKLIST)
  
 (defun PREPARSE (Strm &aux (stack ()))
   (SETQ $COMBLOCKLIST NIL $skipme NIL)

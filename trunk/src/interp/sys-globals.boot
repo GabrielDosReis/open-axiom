@@ -358,3 +358,43 @@ $insideCoerceInteractive := false
 ++
 $insideEvalMmCondIfTrue := false
 
+++
+$libraryDirectory := "A"
+
+++
+$listingDirectory := "A"
+
+++
+$texOutputStream := MAKE_-SYNONYM_-STREAM '_*TERMINAL_-IO_*
+
+++
+$UserLevel := "development"
+
+++
+$DIRECTORY_-LIST := []
+
+++
+$LIBRARY_-DIRECTORY_-LIST := []
+
+++
+$byConstructors := nil
+
+++
+$constructorsSeen := nil
+
+++
+$docList := []
+
+++
+$headerDocumentation := nil
+
+++
+$constructorLineNumber := 0
+
+++
+$maxSignatureLineNumber := 0
+
+++
+$noSubsumption := false
+
+SPADERRORSTREAM := _*ERROR_-OUTPUT_*

@@ -967,6 +967,13 @@
 		   'APPEND-N)
 		  ((FAIL))))
 	   ((FAIL))))
+
+
+
+   ;; # Gives the number of elements of a list, 0 for atoms.
+   ;; If we quote it, then an interpreter trip is necessary every time
+   ;; we call #, and this costs us - 4% in the RATINT DEMO."
+   (define-function '|#| #'SIZE)
     
    ))
 

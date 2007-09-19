@@ -276,28 +276,6 @@ The [[curoutstream]] variable is set to the value of the
 [[*standard-output*]] common lisp variable in [[ncIntLoop]].
 While not using the ``dollar'' convention this variable is still ``global''.
 
-\subsection{\$current-directory}
-When running in Lucid Common Lisp ([[:lucid]]) on an IBM/370 mainframe
-([[:ibm/370]]) this variable is used in place of the 
-[[*default-pathname-defaults*]] common lisp variable. 
-Otherwise this variable is
-set to the empty string in [[restart]]. 
-
-Notice that the variable [[*default-pathname-defaults*]] is a Common
-Lisp standard variable with implementation defined meaning.
-Typically, its value is an object that represents the directory from
-where the Lisp image has been started.
-
-The [[reroot]] function sets this variable to the value of
-[[$spadroot]] which itself has the value of the argument to the
-[[reroot]] function. Since the argument to the [[reroot]] function is
-an string which represents an absolute pathname pointing to OpenAxiom the
-net result is that the [[$current-directory]] is set to point to the
-shell [[AXIOM]] variable.
-
-So during execute both [[$current-directory]] and [[$spadroot]] reflect
-the value of the [[AXIOM]] shell variable.
-
 \subsection{\$currentLine}
 The [[$currentLine]] line is set to [[NIL]] in [[restart]].
 It is used in [[removeUndoLines]] in the undo mechanism.
@@ -705,11 +683,6 @@ We do not care that tail recursion occurs.
       (setq |$SpadServer| t)))))
   (setq |$IOindex| 1)
   (setq |$InteractiveFrame| (|makeInitialModemapFrame|))
-#+(and :lucid :ibm/370)
-  (setq $current-directory "")
-#-(and :lucid :ibm/370)
-  (setq $current-directory
-     (make-directory *default-pathname-defaults*))
   (|loadExposureGroupData|)
   (|statisticsInitialization|)
   (|initHist|)
@@ -859,8 +832,7 @@ where the [[${SYS}]] variable is the same one set at build time.
    (mapcar #'make-absolute-filename $relative-library-directory-list))
   (setq |$defaultMsgDatabaseName|
 	(pathname (make-absolute-filename "/share/msgs/s2-us.msgs")))
-  (setq |$msgDatabaseName| ())
-  (setq $current-directory $spadroot))
+  (setq |$msgDatabaseName| ()))
 
 @
 \subsection{defun statisticsInitialization}

@@ -73,7 +73,7 @@
   (SETQ OPASSOC (ADDASSOC Y (CONS (CONS X X) (LASSOC Y OPASSOC)) OPASSOC))
   (SECOND X))
  
-(setq |PARSE-NewKEY| nil) ;;list of keywords
+(defvar |PARSE-NewKEY| nil) ;;list of keywords
  
 (mapcar #'(LAMBDA(J) (MAKENEWOP J '|Led|))
         '((* 800 801)   (|rem| 800 801)   (|mod| 800 801)
@@ -235,7 +235,8 @@ is [[+]] for Integers.
 @
 <<*>>=
 <<license>>
- 
+
+(IMPORT-MODULE "macros") 
 (in-package "BOOT")
  
 <<LEDNUDTables>>

@@ -93,15 +93,15 @@ previous definition.
        (setq ,streamvar *terminal-io*)))
 
 (defun |cd| (args)
-  (cond ((null args)
-#+(and :lucid :ibm/370)
-         (setq $current-directory "")
-#-(and :lucid :ibm/370)
-         (setq $current-directory (truename (user-homedir-pathname))) )
-        ((eql (|directoryp| (interp-make-directory (car args))) 1)
-         (setq $current-directory (namestring (truename (interp-make-directory (car args)))))))
-#+(or :kcl :ibcl :CCL) (system:CHDIR $current-directory)
-  (|sayKeyedMsg| 'S2IZ0070 (list (namestring $current-directory))))
+  (let ((dir (truename (string (or (car args) "")))))
+    #+ :SBCL (sb-posix::chdir (namestring dir))
+    #+ :GCL (system::chdir (namestring dir))
+    #- (or :SBCL :GCL) (error "don't know how to chdir in this Lisp")
+    ;; FIXME: some Lisps may not properly end the name with slash
+    ;;        investigate.
+    (setf *default-pathname-defaults* dir)
+    (|sayKeyedMsg| 'S2IZ0070 
+                   (list (namestring *default-pathname-defaults*)))))
 
 <<toplevel>>
 (define-function 'top-level #'toplevel)
@@ -123,14 +123,17 @@ previous definition.
     (obey string))
    (|terminateSystemCommand|))
 (setq *print-escape* nil) ;; so stringimage doesn't escape idents?
-#+(or :IEEE-FLOATING-POINT)
+#+(and :GCL :IEEE-FLOATING-POINT )
  (setq system:*print-nans* T)
+
 (defun /RF (&rest foo &aux (Echo-Meta 'T))
   (declare (special Echo-Meta))
   (/RF-1 nil))
+
 (defun /RQ (&rest foo &aux (Echo-Meta nil))
   (declare (special Echo-Meta))
   (/RF-1 nil))
+
 (defun |/RQ,LIB| (&rest foo &aux (Echo-Meta nil) ($LISPLIB T))
   (declare (special Echo-Meta $LISPLIB))
   (/RF-1 nil))
@@ -188,7 +191,6 @@ previous definition.
     (set-file-getter (strconc asharprootlib "axextend.o")))
 )
 
-(defun AKCL-VERSION () system::*akcl-version*)
 (defun SHAREDITEMS (x) T) ;;checked in history code
 (defun whocalled (n) nil) ;; no way to look n frames up the stack
 (defun setletprintflag (x) x)

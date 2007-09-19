@@ -141,7 +141,11 @@ same Makefile.
 all-depsys: all-boot
 	cd interp && $(MAKE) all-depsys
 
-all-interpsys: all-depsys all-lisp
+ifeq (@axiom_use_x@,yes)
+all-interpsys: all-depsys all-hyper
+else
+all-interpsys: all-depsys
+endif
 	cd interp && ${MAKE} all-interpsys
 
 all-axiomsys: all-asq
@@ -191,11 +195,7 @@ steps. The first step uses the [[document]] command to extract
 the normal Makefile information.
 
 <<algebradir>>=
-ifeq (@axiom_use_x@,yes)
-all-algebra: all-interpsys all-share all-hyper
-else
 all-algebra: all-interpsys all-share
-endif
 	@ $(mkinstalldirs) algebra/strap
 	cd algebra && ${MAKE}
 @

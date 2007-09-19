@@ -158,15 +158,6 @@ on the system we are using.
 
 @
 
-\subsubsection{directory-list}
-
-This is the system-wide list of directories to search.
-It is set up in the {\bf reroot} function.
-<<directory-list>>=
-(defvar $directory-list ())
-
-@
-
 
 \subsubsection{relative-directory-list}
 
@@ -183,15 +174,6 @@ NAG distribution back to the original form.
 
 @
 
-
-\subsubsection{library-directory-list}
-
-This is the system-wide search path for library files.
-It is set up in the {\bf reroot} function.
-<<library-directory-list>>=
-(defvar $library-directory-list ())
-
-@
 
 \subsubsection{relative-library-directory-list}
 
@@ -1480,8 +1462,6 @@ function assumes that \\ can only appear as first character of name.
 <<translist>>
 <<relative-directory-list>>
 <<relative-library-directory-list>>
-<<directory-list>>
-<<library-directory-list>>
 <<boottocl>>
 
 (in-package "BOOT")

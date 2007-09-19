@@ -33,7 +33,7 @@
 ; NAME:     Def
 ; PURPOSE:  Defines BOOT code
 
-(provide 'Boot)
+(IMPORT-MODULE "macros")
 
 (in-package "BOOT")
 
@@ -113,7 +113,7 @@ foo defined inside of fum gets renamed as fum,foo.")
   (declare (ignore SIGNATURE))
  (let* ($OpAssoc
         ($op (first form)) (argl (cdr form))
-        (GARGL (MAPCAR '(LAMBDA (X) (GENSYM)) ARGL))
+        (GARGL (MAPCAR #'(LAMBDA (X) (GENSYM)) ARGL))
         ($BODY (SUBLISLIS GARGL ARGL (|bootTransform| (DEFTRAN $BODY))))
         ($BODY (LIST 'SUBLISLIS (CONS 'LIST GARGL) (LIST 'QUOTE GARGL)
                      (LIST 'QUOTE $BODY))))

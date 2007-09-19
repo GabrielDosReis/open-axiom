@@ -214,13 +214,6 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
  "Needed by spadCompileOrSetq" 1)
  
  
- 
-#-:CCL
-(defun NREVERSE0 (X) ; Already built-in to CCL
-  "Returns LST, reversed. The argument is modified.
-This version is needed so that (COLLECT (IN X Y) ... (RETURN 'JUNK))=>JUNK."
- (if (ATOM X) X (NREVERSE X)))
- 
 ; 7.8.4 Mapping
  
  
@@ -732,12 +725,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 (defmacro |do| (&rest args) (CONS 'PROGN args))
 
 (defun DROPTRAILINGBLANKS  (LINE) (string-right-trim " " LINE))
- 
-; # Gives the number of elements of a list, 0 for atoms.
-; If we quote it, then an interpreter trip is necessary every time
-; we call #, and this costs us - 4% in the RATINT DEMO."
-
-(define-function '\# #'SIZE)
 
 (defun print-and-eval-defun (name body)
    (eval body)
@@ -797,7 +784,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 (defun compile-defun (name body) (eval body) (compile name))
 
 
-(defun |deleteWOC| (item list) (lisp::delete item list :test #'equal))
+(defun |deleteWOC| (item list) (delete item list :test #'equal))
 
 ;;---- Added by WFS.
  
@@ -892,14 +879,14 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 (defun |applyWithOutputToString| (func args)
   ;; returns the cons of applying func to args and a string produced
   ;; from standard-output while executing.
-  (let* ((*standard-output* (make-string-output-stream))
-	 (curoutstream *standard-output*)
-	 (*terminal-io* *standard-output*)
-	 (|$algebraOutputStream| *standard-output*)
-         (erroroutstream *standard-output*)
+  (let* ((out-stream (make-string-output-stream))
+	 (curoutstream out-stream)
+	 (|$algebraOutputStream| out-stream)
+         (erroroutstream out-stream)
 	val)
-    (declare (special *standard-output* curoutstream
-		      *terminal-io* |$algebraOutputStream|))
+    (declare (special curoutstream |$algebraOutputStream|))
+    (setq *standard-output* out-stream)
+    (setq *terminal-io* out-stream)
     (setq val (catch 'spad_reader
 		(catch 'TOP_LEVEL
 		  (apply (symbol-function func) args))))
@@ -979,6 +966,8 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
       (markhash ,b 3)
 
 )))   
+
+(defvar HT nil)
 
 (defun markhash (key n) (progn (cond
   ((equal n 3) (remhash key ht))

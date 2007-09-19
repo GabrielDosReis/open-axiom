@@ -30,6 +30,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+(IMPORT-MODULE "macros")
 (in-package "BOOT")
 
 (mapcar #'(lambda (x) (MAKEPROP (CAR X) '|special| (CADR X)))
