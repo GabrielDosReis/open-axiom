@@ -1,59 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp pf2sex.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{Changes}
-In the function [[float2Sex]] we need to special case the return value
-if the global variable [[$useBFasDefault]] is set to true. This variable
-allows ``big'' floating point values.
-
-The change can be seen from this email from Greg Vanuxem:
-\begin{verbatim}
-Attached is the patch (pf2sex.patch) that allows the use 
-of DoubleFloat by default in the interpreter. Test it.
-
-(1) -> 1.7+7.2
-
-   (1)  8.9
-                               Type: Float
-(2) -> 1.7-7.2
-
-   (2)  - 5.5
-                               Type: Float
-(3) -> -1.7-7.2
-
-   (3)  - 8.9
-                               Type: Float
-(4) -> )boot $useBFasDefault:=false
-
-(SPADLET |$useBFasDefault| NIL)
-Value = NIL
-
-(4) -> 1.7+7.2
-
-   (4)  8.9000000000000004
-                               Type: DoubleFloat
-(5) -> 1.7-7.2
-
-   (5)  - 5.5
-                               Type: DoubleFloat
-(6) -> -1.7-7.2
-
-   (6)  - 8.9000000000000004
-                               Type: DoubleFloat
-
-
-
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -85,9 +29,6 @@ Value = NIL
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -518,9 +459,3 @@ pfSuchThat2Sex args ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

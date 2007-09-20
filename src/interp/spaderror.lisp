@@ -1,22 +1,3 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/spaderroor.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -48,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 ;; this files contains basic routines for error handling
 (in-package "BOOT")
@@ -80,8 +58,8 @@
 
 (defmacro |trapNumericErrors| (form)
   `(let ((|$oldBreakMode| |$BreakMode|)
-	 (|$BreakMode| '|trapNumerics|)
-	 (val))
+         (|$BreakMode| '|trapNumerics|)
+         (val))
      (setq val (catch '|trapNumerics| ,form))
      (if (eq val |$numericFailure|) val
        (cons 0 val))))
@@ -98,31 +76,31 @@
  (load eval)
  (unembed 'system:universal-error-handler)
  (embed 'system:universal-error-handler
-	    '(lambda (type correctable? op
-			   continue-string error-string &rest args)
-	       (block
-		nil
-		(setq |$NeedToSignalSessionManager| T)
-		(if (and (boundp '|$inLispVM|) (boundp '|$BreakMode|))
-		    (cond ((eq |$BreakMode| '|validate|)
-			   (|systemError| (error-format error-string args)))
-			  ((and (eq |$BreakMode| '|trapNumerics|)
-				(eq type :ERROR))
-			   (setq |$BreakMode| nil)			   (throw '|trapNumerics| |$numericFailure|))
+            '(lambda (type correctable? op
+                           continue-string error-string &rest args)
+               (block
+                nil
+                (setq |$NeedToSignalSessionManager| T)
+                (if (and (boundp '|$inLispVM|) (boundp '|$BreakMode|))
+                    (cond ((eq |$BreakMode| '|validate|)
+                           (|systemError| (error-format error-string args)))
                           ((and (eq |$BreakMode| '|trapNumerics|)
-				(boundp '|$oldBreakMode|)
-				(setq |$BreakMode| |$oldBreakMode|)
-				nil)) ;; resets error handler
-			  ((and (null |$inLispVM|)
-				(memq |$BreakMode| '(|nobreak| |query| |resume|)))
-			   (let ((|$inLispVM| T)) ;; turn off handler
-			     (return
-			      (|systemError| (error-format error-string args)))))
-			  ((eq |$BreakMode| '|letPrint2|)
-			   (setq |$BreakMode| nil)
-			   (throw '|letPrint2| nil))))
-		(apply system:universal-error-handler type correctable? op
-		       continue-string error-string args )))))
+                                (eq type :ERROR))
+                           (setq |$BreakMode| nil)                         (throw '|trapNumerics| |$numericFailure|))
+                          ((and (eq |$BreakMode| '|trapNumerics|)
+                                (boundp '|$oldBreakMode|)
+                                (setq |$BreakMode| |$oldBreakMode|)
+                                nil)) ;; resets error handler
+                          ((and (null |$inLispVM|)
+                                (memq |$BreakMode| '(|nobreak| |query| |resume|)))
+                           (let ((|$inLispVM| T)) ;; turn off handler
+                             (return
+                              (|systemError| (error-format error-string args)))))
+                          ((eq |$BreakMode| '|letPrint2|)
+                           (setq |$BreakMode| nil)
+                           (throw '|letPrint2| nil))))
+                (apply system:universal-error-handler type correctable? op
+                       continue-string error-string args )))))
 
 
 
@@ -133,9 +111,3 @@
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

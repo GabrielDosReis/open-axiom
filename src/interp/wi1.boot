@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/wi1.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -95,7 +75,7 @@ put(x,prop,val,e) ==
     SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
     $CapsuleModemapFrame:=
       addBinding(x,augProplistOf(x,"modemap",val,$CapsuleModemapFrame),
-	$CapsuleModemapFrame)
+        $CapsuleModemapFrame)
     e
   addBinding(x,newProplist,e)
 
@@ -104,11 +84,11 @@ addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
   EQ(proplist,getProplist(var,e)) => e
   $InteractiveMode => addBindingInteractive(var,proplist,e)
   if curContour is [[ =var,:.],:.] then curContour:= rest curContour
-		 --Previous line should save some space
+                 --Previous line should save some space
   [[[lx,:curContour],:tailContour],:tailEnv] where lx:= [var,:proplist]
 
 --======================================================================
---		      From define.boot
+--                    From define.boot
 --======================================================================
 compJoin(["Join",:argl],m,e) ==
   catList:= [(compForMode(x,$Category,e) or return 'failed).expr for x in argl]
@@ -158,12 +138,12 @@ compDefineLisplib(df,m,e,prefix,fal,fn) ==
   $lisplibKind: local := NIL
   $lisplibModemap: local := NIL
   $lisplibModemapAlist: local := NIL
-  $lisplibSlot1 : local := NIL	 -- used by NRT mechanisms
+  $lisplibSlot1 : local := NIL   -- used by NRT mechanisms
   $lisplibOperationAlist: local := NIL
   $lisplibSuperDomain: local := NIL
   $libFile: local := NIL
   $lisplibVariableAlist: local := NIL
-  $lisplibRelatedDomains: local := NIL	 --from ++ Related Domains: see c-doc
+  $lisplibRelatedDomains: local := NIL   --from ++ Related Domains: see c-doc
   $lisplibCategory: local := nil
   --for categories, is rhs of definition; otherwise, is target of functor
   --will eventually become the "constructorCategory" property in lisplib
@@ -204,7 +184,7 @@ compTopLevel(x,m,e) ==
     'sorry
   x is ["DEF",:.] or x is ["where",["DEF",:.],:.] =>
     ([val,mode,.]:= FUNCALL(compFun,x,m,e); [val,mode,e])
-	--keep old environment after top level function defs
+        --keep old environment after top level function defs
   FUNCALL(compFun,x,m,e)
 
 markWhereTran ["where",["DEF",form,sig,clist,body],:tail] ==
@@ -219,24 +199,24 @@ markWhereTran ["where",["DEF",form,sig,clist,body],:tail] ==
   for x in items repeat
     x is [":",a,b] =>
       a is ['LISTOF,:r] =>
-	for y in r repeat decls := [[":",y,b],:decls]
+        for y in r repeat decls := [[":",y,b],:decls]
       decls := [x,:decls]
     x is [key,fn,p,q,bd] and MEMQ(key,'(DEF MDEF)) and p='(NIL) and q='(NIL) =>
       fn = target or fn is [=target] => ttype := bd
-      fn = body	  or fn is [=body]   => body  := bd
+      fn = body   or fn is [=body]   => body  := bd
       macros := [x,:macros]
     systemError ['"unexpected WHERE item: ",x]
   nargtypes := [p for arg in argl |
-		  p := or/[t for d in decls | d is [.,=arg,t]] or
-		    systemError ['"Missing WHERE declaration for :", arg]]
+                  p := or/[t for d in decls | d is [.,=arg,t]] or
+                    systemError ['"Missing WHERE declaration for :", arg]]
   nform := form
   ntarget := ttype or target
   ndef := ['DEF,nform,[ntarget,:nargtypes],clist,body]
   result :=
     REVERSE macros is [:m,e] =>
       mpart :=
-	m => ['SEQ,:m,['exit,1,e]]
-	e
+        m => ['SEQ,:m,['exit,1,e]]
+        e
       ['where,ndef,mpart]
     ndef
   result
@@ -309,9 +289,9 @@ compNoStacking01(x,m,e) ==
   T:= comp2(x,m,e) =>
     (m=$EmptyMode and T.mode=IFCAR(get('Rep,'value,e)) => 
        [T.expr,"Rep",T.env]; qt(12,T))
-	 --$Representation is bound in compDefineFunctor, set by doIt
-	 --this hack says that when something is undeclared, $ is
-	 --preferred to the underlying representation -- RDJ 9/12/83
+         --$Representation is bound in compDefineFunctor, set by doIt
+         --this hack says that when something is undeclared, $ is
+         --preferred to the underlying representation -- RDJ 9/12/83
   T := compNoStacking1(x,m,e,$compStack)
   qt(13,T)
 
@@ -337,7 +317,7 @@ compWithMappingMode(x,m,oldE) ==
   isFunctor x =>
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
-	) and extendsCategoryForm("$",target,m') then return [x,m,e]
+        ) and extendsCategoryForm("$",target,m') then return [x,m,e]
   if STRINGP x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration([":",v,m],$EmptyMode,e)
@@ -394,8 +374,8 @@ compSymbol(s,m,e) ==
   v:= get(s,"value",e) =>
 --+
     MEMQ(s,$functorLocalParameters) =>
-	NRTgetLocalIndex s
-	[s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
+        NRTgetLocalIndex s
+        [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
     [s,v.mode,e] --s has been SETQd
   m':= getmode(s,e) =>
     if not member(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
@@ -438,8 +418,8 @@ compForm1(form,m,e) ==
 -------> new <-------------
     domain= 'Rep and
       (ans := compForm2([op',:argl],SUBST('Rep,'_$,m),e:= addDomain(domain,e),
-	[SUBST('Rep,'_$,x) for x in getFormModemaps([op',:argl],e)
-	  | x is [[ =domain,:.],:.]])) => ans
+        [SUBST('Rep,'_$,x) for x in getFormModemaps([op',:argl],e)
+          | x is [[ =domain,:.],:.]])) => ans
 -------> new <-------------
     ans := compForm2([op',:argl],m,e:= addDomain(domain,e),
       [x for x in getFormModemaps([op',:argl],e) | x is [[ =domain,:.],:.]]) => ans
@@ -460,7 +440,7 @@ compForm3(form is [op,:argl],m,e,modemapList) ==
   T:=
     or/
       [compFormWithModemap(form,m,e,first (mml:= ml))
-	for ml in tails modemapList] or return nil
+        for ml in tails modemapList] or return nil
   qt(14,T)
   result := 
     $compUniquelyIfTrue =>
@@ -498,11 +478,11 @@ compWhere([.,form,:exprList],m,eInit) ==
 --  if not $insideFunctorIfTrue then
 --   $originalTarget :=
 --    form is ['DEF,a,osig,:.] and osig is [otarget,:.] =>
---	exprList is [['SEQ,:l,['exit,n,y]]] and (u := [:l,y]) and
---	  (ntarget := or/[def for x in u | x is [op,a',:.,def] and ([op,a',otarget]) and
---	    MEMQ(op,'(DEF MDEF)) and (a' = otarget or a' is [=otarget])]) =>
---	      [ntarget,:rest osig]
---	osig
+--      exprList is [['SEQ,:l,['exit,n,y]]] and (u := [:l,y]) and
+--        (ntarget := or/[def for x in u | x is [op,a',:.,def] and ([op,a',otarget]) and
+--          MEMQ(op,'(DEF MDEF)) and (a' = otarget or a' is [=otarget])]) =>
+--            [ntarget,:rest osig]
+--      osig
 --    nil
 --  foobum exprList
   e:= eInit
@@ -524,9 +504,9 @@ compMacro(form,m,e) ==
   markMacro(first lhs,rhs)
   rhs :=
     rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
-    rhs is ['Join,:.]	  => ['"-- the constructor category"]
+    rhs is ['Join,:.]     => ['"-- the constructor category"]
     rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
-    rhs is ['add,:.]	  => ['"-- the constructor capsule"]
+    rhs is ['add,:.]      => ['"-- the constructor capsule"]
     formatUnabbreviated rhs
   sayBrightly ['"   processing macro definition",'%b,
     :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
@@ -539,9 +519,9 @@ compMacro(form,m,e) ==
 --  ["MDEF",lhs,signature,specialCases,rhs]:= form
 --  rhs :=
 --    rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
---    rhs is ['Join,:.]	    => ['"-- the constructor category"]
+--    rhs is ['Join,:.]     => ['"-- the constructor category"]
 --    rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
---    rhs is ['add,:.]	    => ['"-- the constructor capsule"]
+--    rhs is ['add,:.]      => ['"-- the constructor capsule"]
 --    formatUnabbreviated rhs
 --  sayBrightly ['"   processing macro definition",'%b,
 --    :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
@@ -583,11 +563,11 @@ setqSingle(id,val,m,E) ==
   T:=
     (trialT and coerce(trialT,m'')) or eval or return nil where
       eval() ==
-	T:= comp(val,m'',E) => T
-	not get(id,"mode",E) and m'' ^= (maxm'':=maxSuperType(m'',E)) and
-	   (T:=comp(val,maxm'',E)) => T
-	(T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
-	  assignError(val,T.mode,id,m'')
+        T:= comp(val,m'',E) => T
+        not get(id,"mode",E) and m'' ^= (maxm'':=maxSuperType(m'',E)) and
+           (T:=comp(val,maxm'',E)) => T
+        (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
+          assignError(val,T.mode,id,m'')
   T':= [x,m',e']:= convert(T,m) or return nil
   if $profileCompiler = true then
     null IDENTP id => nil
@@ -601,7 +581,7 @@ setqSingle(id,val,m,E) ==
   if isDomainForm(x1,e') then
     if isDomainInScope(id,e') then
       stackWarning ["domain valued variable","%b",id,"%d",
-	"has been reassigned within its scope"]
+        "has been reassigned within its scope"]
     e':= augModemapsFromDomain1(id,x1,e')
       --all we do now is to allocate a slot number for lhs
       --e.g. the LET form below will be changed by putInLocalDomainReferences
@@ -611,9 +591,9 @@ setqSingle(id,val,m,E) ==
        $markFreeStack := [id,:$markFreeStack]
        form:=['SETELT,"$",k,x]
      else form:=
-	 $QuickLet => ["LET",id,x]
-	 ["LET",id,x,
-	    (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
+         $QuickLet => ["LET",id,x]
+         ["LET",id,x,
+            (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
   [form,m',e']
 
 setqMultiple(nameList,val,m,e) ==
@@ -632,13 +612,13 @@ setqMultiple(nameList,val,m,e) ==
     convert([["PROGN",x,["LET",nameList,g],g],m',e],m)
   --2. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
-						--list of modes
+                                                --list of modes
     decompose(m1,#nameList,e) or return nil where
       decompose(t,length,e) ==
-	t is ["Record",:l] => [[name,:mode] for [":",name,mode] in l]
-	comp(t,$EmptyMode,e) is [.,["RecordCategory",:l],.] =>
-	  [[name,:mode] for [":",name,mode] in l]
-	stackMessage ["no multiple assigns to mode: ",t]
+        t is ["Record",:l] => [[name,:mode] for [":",name,mode] in l]
+        comp(t,$EmptyMode,e) is [.,["RecordCategory",:l],.] =>
+          [[name,:mode] for [":",name,mode] in l]
+        stackMessage ["no multiple assigns to mode: ",t]
   #nameList^=#selectorModePairs =>
     stackMessage [val," must decompose into ",#nameList," components"]
   -- 3.generate code; return
@@ -656,7 +636,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
   for g in gensymList for name in nameList repeat
     e := put(g,"mode",get(name,"mode",e),e)
   assignList:=
-	     --should be fixed to declare genVar when possible
+             --should be fixed to declare genVar when possible
     [[.,.,e]:= compSetq1(g,val,$EmptyMode,e) or return "failed"
       for g in gensymList for val in valList for name in nameList]
   assignList="failed" => nil
@@ -681,18 +661,18 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
     [.,gs,data]:= expr
     (findThrow(gs,data,level,exitCount,ValueFlag) => true) where
       findThrow(gs,expr,level,exitCount,ValueFlag) ==
-	atom expr => nil
-	expr is ["THROW", =gs,data] => true
-	    --this is pessimistic, but I know of no more accurate idea
-	expr is ["SEQ",:l] =>
-	  or/[findThrow(gs,u,level+1,exitCount,ValueFlag) for u in l]
-	or/[findThrow(gs,u,level,exitCount,ValueFlag) for u in rest expr]
+        atom expr => nil
+        expr is ["THROW", =gs,data] => true
+            --this is pessimistic, but I know of no more accurate idea
+        expr is ["SEQ",:l] =>
+          or/[findThrow(gs,u,level+1,exitCount,ValueFlag) for u in l]
+        or/[findThrow(gs,u,level,exitCount,ValueFlag) for u in rest expr]
     canReturn(data,level,exitCount,ValueFlag)
   op = "COND" =>
     level = exitCount =>
       or/[canReturn(last u,level,exitCount,ValueFlag) for u in rest expr]
     or/[or/[canReturn(u,level,exitCount,ValueFlag) for u in v]
-		for v in rest expr]
+                for v in rest expr]
   op="IF" =>
     expr is [.,a,b,c]
     if not canReturn(a,0,0,true) and not (BOUNDP '$convert2NewCompiler and $convert2NewCompiler) then
@@ -744,16 +724,16 @@ compColon([":",f,t],m,e) ==
     f is [op,:argl] and not (t is ["Mapping",:.]) =>
       --for MPOLY--replace parameters by formal arguments: RDJ 3/83
       newTarget:= EQSUBSTLIST(take(#argl,$FormalMapVariableList),
-	[(x is [":",a,m] => a; x) for x in argl],t)
+        [(x is [":",a,m] => a; x) for x in argl],t)
       signature:=
-	["Mapping",newTarget,:
-	  [(x is [":",a,m] => m;
-	      getmode(x,e) or systemErrorHere '"compColonOld") for x in argl]]
+        ["Mapping",newTarget,:
+          [(x is [":",a,m] => m;
+              getmode(x,e) or systemErrorHere '"compColonOld") for x in argl]]
       put(op,"mode",signature,e)
     put(f,"mode",t,e)
   if not $bootStrapMode and $insideFunctorIfTrue and
     makeCategoryForm(t,e) is [catform,e] then
-	e:= put(f,"value",[genSomeVariable(),t,$noEnv],e)
+        e:= put(f,"value",[genSomeVariable(),t,$noEnv],e)
   ["/throwAway",getmode(f,e),e]
 
 compConstruct(form,m,e) == (T := compConstruct1(form,m,e)) and markConstruct(form,T) 
@@ -840,7 +820,7 @@ coerce(T,m) ==
 coerce0(T,m) ==
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => markCoerce(T,T','AUTOSUBSET)
-  T':= coerceHard(T,m)	 => markCoerce(T,T','AUTOHARD)
+  T':= coerceHard(T,m)   => markCoerce(T,T','AUTOHARD)
   T':= coerceExtraHard(T,m) => T'
   T.expr = "$fromCoerceable$" or isSomeDomainVariable m => nil
   T' := coerceRep(T,m) => markCoerce(T,T','AUTOREP)
@@ -849,7 +829,7 @@ coerce0(T,m) ==
       -- from compFormWithModemap to filter through the modemaps
     fn(x,m1,m2) ==
       ["Cannot coerce","%b",x,"%d","%l","      of mode","%b",m1,"%d","%l",
-	"      to mode","%b",m2,"%d"]
+        "      to mode","%b",m2,"%d"]
 
 coerceSubset(T := [x,m,e],m') ==
   m = $SmallInteger =>
@@ -876,18 +856,18 @@ coerceRep(T,m) ==
 
 --- GET rid of XLAMs
 spadCompileOrSetq form ==
-	--bizarre hack to take account of the existence of "known" functions
-	--good for performance (LISPLLIB size, BPI size, NILSEC)
+        --bizarre hack to take account of the existence of "known" functions
+        --good for performance (LISPLLIB size, BPI size, NILSEC)
   [nam,[lam,vl,body]] := form
   CONTAINED("",body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
   if vl is [:vl',E] and body is [nam',: =vl'] then
       LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
   else if (ATOM body or and/[ATOM x for x in body])
-	 and vl is [:vl',E] and not CONTAINED(E,body) then
-	   macform := ['XLAM,vl',body]
-	   LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
-	   sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
+         and vl is [:vl',E] and not CONTAINED(E,body) then
+           macform := ['XLAM,vl',body]
+           LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
+           sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
   $insideCapsuleFunctionIfTrue => first COMP LIST form
   compileConstructor form
 
@@ -970,7 +950,7 @@ autoCoerceByModemap([x,source,e],target) ==
   markCoerceByModemap(x,source,target,[["call",fn,x],target,e],true)
 
 --======================================================================
---		      From compiler.boot
+--                    From compiler.boot
 --======================================================================
 --comp3x(x,m,$e) ==
 
@@ -1070,7 +1050,7 @@ compBoolean(p,pWas,m,Einit) ==
     T := comp(p,m,Einit) or return nil
     markAny('compBoolean,pWas,T) 
   [p',m,getSuccessEnvironment(markKillAll p,E),
-	getInverseEnvironment(markKillAll p,E)]
+        getInverseEnvironment(markKillAll p,E)]
 
 compAnd([op,:args], pWas, m, e) ==
 --called ONLY from compBoolean
@@ -1122,7 +1102,7 @@ compDefine1(form,m,e) ==
 --  the modemap by a declaration, then strip off declarations and recurse
   e := compDefineAddSignature(lhs,signature,e)
 -- 2. if signature list for arguments is not empty, replace ('DEF,..) by
---	 ('where,('DEF,..),..) with an empty signature list;
+--       ('where,('DEF,..),..) with an empty signature list;
 --     otherwise, fill in all NILs in the signature
   not (and/[null x for x in rest signature]) => compDefWhereClause(form,m,e)
   signature.target=$Category =>
@@ -1130,7 +1110,7 @@ compDefine1(form,m,e) ==
   isDomainForm(rhs,e) and not $insideFunctorIfTrue =>
     if null signature.target then signature:=
       [getTargetFromRhs(lhs,rhs,giveFormalParametersValues(rest lhs,e)),:
-	  rest signature]
+          rest signature]
     rhs:= addEmptyCapsuleIfNecessary(signature.target,rhs)
     compDefineFunctor(['DEF,lhs,signature,specialCases,rhs],m,e,nil,
       $formalArgList)
@@ -1148,19 +1128,19 @@ compDefineCategory(df,m,e,prefix,fal) ==
   compDefineCategory1(df,m,e,prefix,fal)
 
 compDefineCategory1(df,m,e,prefix,fal) ==
-  $DEFdepth     : local := 0		--for conversion to new compiler 3/93
-  $capsuleStack : local := nil		--for conversion to new compiler 3/93
+  $DEFdepth     : local := 0            --for conversion to new compiler 3/93
+  $capsuleStack : local := nil          --for conversion to new compiler 3/93
   $predicateStack:local := nil          --for conversion to new compiler 3/93
   $signatureStack:local := nil          --for conversion to new compiler 3/93
-  $importStack	: local := nil		--for conversion to new compiler 3/93
-  $globalImportStack  : local := nil	--for conversion to new compiler 3/93
+  $importStack  : local := nil          --for conversion to new compiler 3/93
+  $globalImportStack  : local := nil    --for conversion to new compiler 3/93
   $catAddForm  : local := nil           --for conversion to new compiler 2/95
   $globalDeclareStack : local := nil
   $globalImportDefAlist: local:= nil
-  $localMacroStack  : local := nil	--for conversion to new compiler 3/93
-  $freeStack   : local := nil		--for conversion to new compiler 3/93
+  $localMacroStack  : local := nil      --for conversion to new compiler 3/93
+  $freeStack   : local := nil           --for conversion to new compiler 3/93
   $domainLevelVariableList: local := nil--for conversion to new compiler 3/93
-  $categoryTranForm : local := nil	--for conversion to new compiler 10/93
+  $categoryTranForm : local := nil      --for conversion to new compiler 10/93
   ['DEF,form,sig,sc,body] := df
   body := markKillAll body --these parts will be replaced by compDefineLisplib
   categoryCapsule :=
@@ -1177,7 +1157,7 @@ compDefineCategory1(df,m,e,prefix,fal) ==
     [.,.,e] :=
       $insideCategoryPackageIfTrue: local := true  --see NRTmakeSlot1
       $categoryPredicateList: local :=
-	  makeCategoryPredicates(form,$lisplibCategory)
+          makeCategoryPredicates(form,$lisplibCategory)
       defform := mkCategoryPackage(form,cat,categoryCapsule)
       ['DEF,[.,arg,:.],:.] := defform
       $categoryNameForDollar :local := arg
@@ -1194,12 +1174,12 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $insideCategoryIfTrue: local:= true
     $TOP__LEVEL: local
     $definition: local
-		 --used by DomainSubstitutionFunction
+                 --used by DomainSubstitutionFunction
     $form: local
     $op: local
     $extraParms: local
-	     --Set in DomainSubstitutionFunction, used further down
---  1.1	 augment e to add declaration $: <form>
+             --Set in DomainSubstitutionFunction, used further down
+--  1.1  augment e to add declaration $: <form>
     [$op,:argl]:= $definition:= form
     e:= addBinding("$",[['mode,:$definition]],e)
 
@@ -1229,7 +1209,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     op':= $op
     -- following line causes cats with no with or Join to be fresh copies
     if opOf(formalBody)^='Join and opOf(formalBody)^='mkCategory then
-	   formalBody := ['Join, formalBody]
+           formalBody := ['Join, formalBody]
     T := compOrCroak(formalBody,signature'.target,e)
 --------------------> new <-------------------
     $catAddForm :=
@@ -1241,12 +1221,12 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     if $extraParms then
       formals:=actuals:=nil
       for u in $extraParms repeat
-	formals:=[CAR u,:formals]
-	actuals:=[MKQ CDR u,:actuals]
+        formals:=[CAR u,:formals]
+        actuals:=[MKQ CDR u,:actuals]
       body := ['sublisV,['PAIR,['QUOTE,formals],['LIST,:actuals]],body]
-    if argl then body:=	 -- always subst for args after extraparms
-	['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
-	  [['devaluate,u] for u in sargl]]],body]
+    if argl then body:=  -- always subst for args after extraparms
+        ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
+          [['devaluate,u] for u in sargl]]],body]
     body:=
       ['PROG1,['LET,g:= GENSYM(),body],['SETELT,g,0,mkConstructor $functorForm]]
     fun:= compile [op',['LAM,sargl,body]]
@@ -1255,33 +1235,27 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
-----	lisplibWrite('"compilerInfo",
-----	  ['SETQ,'$CategoryFrame,
-----	   ['put,['QUOTE,op'],'
-----	    (QUOTE isCategory),true,['addModemap,MKQ op',MKQ parForm,
-----	      MKQ parSignature,true,MKQ fun,'$CategoryFrame]]],$libFile)
+----    lisplibWrite('"compilerInfo",
+----      ['SETQ,'$CategoryFrame,
+----       ['put,['QUOTE,op'],'
+----        (QUOTE isCategory),true,['addModemap,MKQ op',MKQ parForm,
+----          MKQ parSignature,true,MKQ fun,'$CategoryFrame]]],$libFile)
     --Equivalent to the following two lines, we hope
     if null sargl then
       evalAndRwriteLispForm('NILADIC,
-	    ['MAKEPROP,['QUOTE,op'],'(QUOTE NILADIC),true])
+            ['MAKEPROP,['QUOTE,op'],'(QUOTE NILADIC),true])
 
 --   6. put modemaps into InteractiveModemapFrame
     $domainShell :=
       BOUNDP '$convertingSpadFile and $convertingSpadFile => nil
       eval [op',:MAPCAR('MKQ,sargl)]
     $lisplibCategory:= formalBody
-----	if $LISPLIB then
-----	  $lisplibForm:= form
-----	  $lisplibKind:= 'category
-----	  modemap:= [[parForm,:parSignature],[true,op']]
-----	  $lisplibModemap:= modemap
-----	  $lisplibCategory:= formalBody
-----	  form':=[op',:sargl]
-----	  augLisplibModemapsFromCategory(form',formalBody,signature')
+----    if $LISPLIB then
+----      $lisplibForm:= form
+----      $lisplibKind:= 'category
+----      modemap:= [[parForm,:parSignature],[true,op']]
+----      $lisplibModemap:= modemap
+----      $lisplibCategory:= formalBody
+----      form':=[op',:sargl]
+----      augLisplibModemapsFromCategory(form',formalBody,signature')
     [fun,'(Category),e]
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

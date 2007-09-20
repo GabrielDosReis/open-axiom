@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp sfsfun-l.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -42,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 (in-package "BOOT")
 
@@ -62,8 +46,8 @@
 (defun c-to-r (c)
     (let ((r (realpart c)) (i (imagpart c)))
       (if (or (zerop i) (< (abs i) (* 1.0E-10 (abs r))))
-	  r
-	(|error| "Result is not real.")) ))
+          r
+        (|error| "Result is not real.")) ))
 
 ;; Wrappers for functions in the special function package
 (defun rlngamma  (x)           (|lnrgamma| x) )
@@ -83,9 +67,3 @@
 (defun cbesseli  (v z) (c-to-s (|BesselI| (s-to-c v) (s-to-c z)) ))
 
 (defun chyper0f1 (a z) (c-to-s (|chebf01| (s-to-c a) (s-to-c z)) ))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
