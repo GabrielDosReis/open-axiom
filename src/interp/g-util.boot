@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/g-util.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-
-\maketitle
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -653,11 +633,3 @@ gensymInt g ==
 
 -- Push into the BOOT package when invoked in batch mode.
 AxiomCore::$sysScope := '"BOOT"
-@
-
-
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
