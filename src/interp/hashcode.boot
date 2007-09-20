@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp hashcode.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -54,67 +38,67 @@
 getDomainHash dom == SPADCALL(CDR dom, (CAR dom).4)
 
 hashType(type, percentHash) ==
-	SYMBOLP type  =>
+        SYMBOLP type  =>
            type = '$ => percentHash
            type = "%" => percentHash
            hashString SYMBOL_-NAME type
         STRINGP type  => hashCombine(hashString type, 
-   					hashString('"Enumeration"))
+                                        hashString('"Enumeration"))
         type is ['QUOTE, val] => hashType(val, percentHash)
-	type is [dom] => hashString SYMBOL_-NAME dom
-	type is ['_:, ., type2] => hashType(type2, percentHash)
+        type is [dom] => hashString SYMBOL_-NAME dom
+        type is ['_:, ., type2] => hashType(type2, percentHash)
         isDomain type => getDomainHash type
-	[op, :args] := type
-	hash := hashString SYMBOL_-NAME op
-	op = 'Mapping =>
-		hash := hashString '"->"
-		[retType, :mapArgs] := args
-		for arg in mapArgs repeat
-			hash := hashCombine(hashType(arg, percentHash), hash)
+        [op, :args] := type
+        hash := hashString SYMBOL_-NAME op
+        op = 'Mapping =>
+                hash := hashString '"->"
+                [retType, :mapArgs] := args
+                for arg in mapArgs repeat
+                        hash := hashCombine(hashType(arg, percentHash), hash)
                 retCode := hashType(retType, percentHash)
                 EQL(retCode, $VoidHash) => hash
-		hashCombine(retCode, hash)
-	op = 'Enumeration =>
-		for arg in args repeat
-			hash := hashCombine(hashString(STRING arg), hash)
-		hash
-	op in $DomainsWithoutLisplibs =>
-		for arg in args repeat
-			hash := hashCombine(hashType(arg, percentHash), hash)
-		hash
+                hashCombine(retCode, hash)
+        op = 'Enumeration =>
+                for arg in args repeat
+                        hash := hashCombine(hashString(STRING arg), hash)
+                hash
+        op in $DomainsWithoutLisplibs =>
+                for arg in args repeat
+                        hash := hashCombine(hashType(arg, percentHash), hash)
+                hash
 
-	cmm :=   CDDAR getConstructorModemap(op)
-	cosig := CDR   GETDATABASE(op, 'COSIG)
-	for arg in args for c in cosig for ct in cmm repeat
-		if c then
-			hash := hashCombine(hashType(arg, percentHash), hash)
-		else
-			hash := hashCombine(7, hash)
+        cmm :=   CDDAR getConstructorModemap(op)
+        cosig := CDR   GETDATABASE(op, 'COSIG)
+        for arg in args for c in cosig for ct in cmm repeat
+                if c then
+                        hash := hashCombine(hashType(arg, percentHash), hash)
+                else
+                        hash := hashCombine(7, hash)
 --           !!!   If/when asharp hashes values using their type, use instead
---			ctt := EQSUBSTLIST(args, $FormalMapVariableList, ct)
---			hash := hashCombine(hashType(ctt, percentHash), hash)
+--                      ctt := EQSUBSTLIST(args, $FormalMapVariableList, ct)
+--                      hash := hashCombine(hashType(ctt, percentHash), hash)
 
 
-	hash
+        hash
 
 --The following are in cfuns.lisp
-$hashModulus := 1073741789 			-- largest 30-bit prime
+$hashModulus := 1073741789                      -- largest 30-bit prime
 
 -- Produce a 30-bit hash code.  This function must produce the same codes
 -- as the asharp string hasher in src/strops.c
 hashString str ==
-	h := 0
-	for i in 0..#str-1 repeat
-		j := CHAR_-CODE char str.i
-		h := LOGXOR(h, ASH(h, 8))
-		h := h + j + 200041
-		h := LOGAND(h, 1073741823)	-- 0x3FFFFFFF
-	REM(h, $hashModulus)
+        h := 0
+        for i in 0..#str-1 repeat
+                j := CHAR_-CODE char str.i
+                h := LOGXOR(h, ASH(h, 8))
+                h := h + j + 200041
+                h := LOGAND(h, 1073741823)      -- 0x3FFFFFFF
+        REM(h, $hashModulus)
 
 -- Combine two hash codes to make a new one.  Must be the same as in
 -- the hashCombine function in aslib/runtime.as in asharp.
 hashCombine(hash1, hash2) ==
-	 MOD(ASH(LOGAND(hash2, 16777215), 6) + hash1, $hashModulus)
+         MOD(ASH(LOGAND(hash2, 16777215), 6) + hash1, $hashModulus)
 
 
 $VoidHash := hashString '"Void"
@@ -123,9 +107,3 @@ $VoidHash := hashString '"Void"
 -- following two lines correct bad coSig properties due to SubsetCategory
 --putConstructorProperty('LocalAlgebra,'coSig,'(NIL T T T))
 --putConstructorProperty('Localize,'coSig,'(NIL T T T))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
