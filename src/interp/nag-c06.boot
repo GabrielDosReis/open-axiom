@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-c06.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 c06eaf() ==
   htInitPage('"C06EAF - Single 1-D real discrete Fourier transform ",nil)
@@ -90,7 +74,7 @@ c06eafSolve htPage ==
   equationPart := [ 
      '(domainConditions 
         (isDomain F (Float))),
-	    :labelList]
+            :labelList]
   page := htInitPage("C06EAF - Single 1-D real discrete Fourier transform ", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter the sequence to be transformed: "
@@ -133,7 +117,7 @@ c06eafDefaultSolve (htPage, ifail) ==
     (text . "Note : On exit, the transformed sequence is stored ")
     (text . "in Hermitian form ")
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'c06eafGen)    	
+  htMakeDoneButton('"Continue",'c06eafGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -195,7 +179,7 @@ c06ebfSolve htPage ==
   equationPart := [ 
      '(domainConditions 
         (isDomain F (Float))),
-	    :labelList]
+            :labelList]
   page := htInitPage("C06EBF - Single 1-D real discrete Fourier transform ", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter the sequence to be transformed, stored in Hermitian form: "
@@ -236,7 +220,7 @@ c06ebfDefaultSolve (htPage, ifail) ==
     (text . "\blankline ")
     (text . "Note : On exit, the components of the discrete Fourier transform")
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'c06ebfGen)    	
+  htMakeDoneButton('"Continue",'c06ebfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -305,7 +289,7 @@ c06ecfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
           (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("C06ECF - Single 1-D complex discrete Fourier transform ",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Real parts of sequence: \tab{30} "
   htSay '"\menuitemstyle{}\tab{32} Imaginary parts: "
@@ -355,7 +339,7 @@ c06ecfDefaultSolve (htPage, ifail) ==
     (text . "\tab{32} ")
     (bcStrings (10 "0.16298" y7 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'c06ecfGen)    	
+  htMakeDoneButton('"Continue",'c06ecfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -439,7 +423,7 @@ c06ekfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
           (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("C06EKF - Single 1-D complex discrete Fourier transform ",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Elements of period of vector {\em x}: "
   htSay '"\tab{31} "
@@ -499,7 +483,7 @@ c06ekfDefaultSolve (htPage, job, ifail) ==
     (text . "\tab{34} ")
     (bcStrings (10 "0.00" y9 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'c06ekfGen)    	
+  htMakeDoneButton('"Continue",'c06ekfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'job,job)
@@ -598,7 +582,7 @@ c06fpfSolve htPage ==
   equationPart := [ 
      '(domainConditions 
         (isDomain F (Float))),
-	    :matList,:trigList]
+            :matList,:trigList]
   page := htInitPage("C06FPF - Multiple 1-D real discrete Fourier transform ", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter each sequence to be transformed, {\it x}. "
@@ -676,7 +660,7 @@ c06fpfDefaultSolve (htPage, init,ifail) ==
     (text . "\newline \tab{2} ")
     (bcStrings (6 "0.0" t12 F))
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'c06fpfGen)    	
+  htMakeDoneButton('"Continue",'c06fpfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'init,init)
@@ -781,7 +765,7 @@ c06fqfSolve htPage ==
   equationPart := [ 
      '(domainConditions 
         (isDomain F (Float))),
-	    :matList,:trigList]
+            :matList,:trigList]
   page := htInitPage("C06FQF - Multiple 1-D Hermitian discrete Fourier transform ", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter each sequence to be transformed, {\it x}. "
@@ -859,7 +843,7 @@ c06fqfDefaultSolve (htPage, init,ifail) ==
     (text . "\newline \tab{2} ")
     (bcStrings (6 "0.0" t12 F))
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'c06fqfGen)    	
+  htMakeDoneButton('"Continue",'c06fqfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'init,init)
@@ -977,7 +961,7 @@ c06frfSolve htPage ==
   equationPart := [ 
      '(domainConditions 
         (isDomain F (Float))),
-	    :xList,:yList,:trigList]
+            :xList,:yList,:trigList]
   page := htInitPage("C06FRF - Multiple 1-D real discrete Fourier transform ", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter the real parts of each sequence to be transformed, {\it x}. "
@@ -1085,7 +1069,7 @@ c06frfDefaultSolve (htPage, init,ifail) ==
     (text . "\newline \tab{2} ")
     (bcStrings (6 "0.0" t12 F))
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'c06frfGen)    	
+  htMakeDoneButton('"Continue",'c06frfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'init,init)
@@ -1217,7 +1201,7 @@ c06fufSolve htPage ==
   equationPart := [ 
      '(domainConditions 
         (isDomain F (Float))),
-	    :xList,:yList,:trigmList,:trignList]
+            :xList,:yList,:trigmList,:trignList]
   page := htInitPage("C06FUF - 2-D complex discrete Fourier transform ", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter the real part of each sequence to be transformed, {\it x}. "
@@ -1328,7 +1312,7 @@ c06fufDefaultSolve (htPage, init,ifail) ==
     (text . "\newline \tab{2} ")
     (bcStrings (6 "0.0" tn10 F))
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'c06fufGen)    	
+  htMakeDoneButton('"Continue",'c06fufGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'init,init)
@@ -1413,7 +1397,7 @@ c06gbfSolve htPage ==
   equationPart := [ 
      '(domainConditions 
         (isDomain F (Float))),
-	    :labelList]
+            :labelList]
   page := htInitPage("C06GBF - Complex conjugate of a Hermitian sequence ", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter the Hermitian sequence to be transformed stored in Hermitian form: "
@@ -1455,7 +1439,7 @@ c06gbfDefaultSolve (htPage, ifail) ==
     (text . "\blankline ")
     (text . "Note : On exit, the imaginary values are negated ")
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'c06gbfGen)    	
+  htMakeDoneButton('"Continue",'c06gbfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -1519,7 +1503,7 @@ c06gcfSolve htPage ==
   equationPart := [ 
      '(domainConditions 
         (isDomain F (Float))),
-	    :labelList]
+            :labelList]
   page := htInitPage("C06GCF - Complex conjugate of a Hermitian sequence ", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter the imaginary parts of the sequence: "
@@ -1560,7 +1544,7 @@ c06gcfDefaultSolve (htPage, ifail) ==
     (text . "\blankline ")
     (text . "Note : On exit, these values are negated ")
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'c06gcfGen)    	
+  htMakeDoneButton('"Continue",'c06gcfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -1639,7 +1623,7 @@ c06gqfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
           (isDomain PI (PositiveInteger))),
-	    :newList]
+            :newList]
   page := htInitPage("C06GQF - Complex conjugate of multiple Hermitian sequences ",htpPropertyList htPage)
   htSay '"\newline "
   htSay '"\menuitemstyle{}\tab{2} Please enter each sequence to be "
@@ -1690,7 +1674,7 @@ c06gqfDefaultSolve (htPage, ifail) ==
     (bcStrings (6 "0.8723" y26 F))
     (bcStrings (6 "0.4815" y36 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'c06gqfGen)    	
+  htMakeDoneButton('"Continue",'c06gqfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'ifail,ifail)
@@ -1773,7 +1757,7 @@ c06gsfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
           (isDomain PI (PositiveInteger))),
-	    :newList]
+            :newList]
   page := htInitPage("C06GSF - Convert Hermitian sequences to general complex sequences ",htpPropertyList htPage)
   htSay '"\newline "
   htSay '"\menuitemstyle{}\tab{2} Please enter each sequence to be "
@@ -1824,7 +1808,7 @@ c06gsfDefaultSolve (htPage, ifail) ==
     (bcStrings (6 "0.8723" y26 F))
     (bcStrings (6 "0.4815" y36 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'c06gsfGen)    	
+  htMakeDoneButton('"Continue",'c06gsfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'ifail,ifail)
@@ -1846,9 +1830,3 @@ c06gsfGen htPage ==
   linkGen STRCONC ('"c06gsf(",STRINGIMAGE m,",",STRINGIMAGE n,",[",realstring,"],", STRINGIMAGE ifail,")")
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

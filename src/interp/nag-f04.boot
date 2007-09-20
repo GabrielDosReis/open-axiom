@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-f04.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 f04adf() ==
   htInitPage("F04ADF - Solution of complex simultaneous linear equations, with multiple right-hand sides (Black box)",nil)
@@ -117,7 +101,7 @@ f04adfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             ianam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[12, "0.0 + 0.0*%i", ianam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -125,7 +109,7 @@ f04adfSolve htPage ==
   bmatList :=
     "append"/[fb(i,m) for i in 1..ib] where fb(i,m) ==
        blabelList := 
-	 "append"/[gb(i,j) for j in 1..m] where gb(i,j) ==
+         "append"/[gb(i,j) for j in 1..m] where gb(i,j) ==
             bnam := INTERN STRCONC ('"b",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[12, "0.0 + 0.0*%i", bnam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -280,7 +264,7 @@ f04arfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             ianam := INTERN STRCONC ('"ia",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", ianam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -441,7 +425,7 @@ f04asfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             ianam := INTERN STRCONC ('"ia",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", ianam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -620,7 +604,7 @@ f04atfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             ianam := INTERN STRCONC ('"ia",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", ianam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -824,7 +808,7 @@ f04fafSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :dList,:eList,:bList]
+            :dList,:eList,:bList]
   page := htInitPage("F04FAF - Solution of real symmetric positive-definite tridiagonal simultaneous linear equations, one right-hand side (Black box)",nil)
   htMakePage equationPart
   htMakeDoneButton('"Continue",'f04fafGen)
@@ -880,7 +864,7 @@ f04fafDefaultSolve  (htPage,job,ifail) ==
     (bcStrings (10 14 b4 F))
     (text . "\newline \tab{2} ")
     (bcStrings (10 7 b5 F)))
-  htMakeDoneButton('"Continue",'f04fafGen)    	
+  htMakeDoneButton('"Continue",'f04fafGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'job,job)
   htpSetProperty(page,'ifail,ifail)
@@ -989,7 +973,7 @@ f04jgfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..m] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1007,7 +991,7 @@ f04jgfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bmatList]
+            :matList,:bmatList]
   page := htInitPage("F04JGF - Least-squares (if rank = {\it n}) or minimal least-squares (if rank < {\it n}) solution of {\it m} real equations in {\it n} unknowns, rank \inputbitmap{\htbmdir{}/less=.bitmap} {\it n}, {\it m} \inputbitmap{\htbmdir{}/great=.bitmap} {\it n}",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -1239,7 +1223,7 @@ f04mcfSolve htPage ==
   bList :=
     "append"/[f(i,ir) for i in 1..nrb] where f(i,ir) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..ir] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..ir] where g(i,j) ==
             bnam := INTERN STRCONC ('"b",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", bnam, 'F]]]
        prefix := ('"\newline ")
@@ -1253,7 +1237,7 @@ f04mcfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:dList,:nrowList,:bList]
+            :labelList,:dList,:nrowList,:bList]
   page := htInitPage("F04MCF - Approximate solution of real symmetric positive-definite variable-bandwidth simultaneous linear equations (coefficient matrix already factorized)",nil)
   htSay '"\menuitemstyle{}\tab{2} Elements of matrix {\it AL} in row by row "
   htSay '"order as returned by F01MCF: \newline "
@@ -1347,7 +1331,7 @@ f04mcfDefaultSolve  (htPage,iselct,ifail) ==
     (text . "\tab{10} ")
     (bcStrings (6 "67" b62 PI))
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'f04mcfGen)    	
+  htMakeDoneButton('"Continue",'f04mcfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'lal,lal)
   htpSetProperty(page,'ir,ir)
@@ -2323,9 +2307,3 @@ f04qafGen htPage ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

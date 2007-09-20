@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-e04.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 e04dgf() ==
   htInitPage('"E04DGF - Unconstrained minimum, pre-conditioned conjugate gradient algorithm, function of several variables using 1st derivatives",nil)
@@ -155,9 +139,9 @@ e04dgfSolve(htPage) ==
      '(domainConditions 
          (isDomain EM $EmptyMode)
           (isDomain F (Float))
-	    (isDomain I (Integer))),
- 		:funcList,
-		  :optList]
+            (isDomain I (Integer))),
+                :funcList,
+                  :optList]
   page := htInitPage('"E04DGF - Unconstrained minimum, pre-conditioned conjugate gradient algorithm, function of several variables using 1st derivatives",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the objective function, {\it F(x)} in terms of X[1]...X[n]: "
@@ -216,7 +200,7 @@ e04dgfGen htPage ==
     lis := '"true"
     for i in 1..n repeat
       temp := STRCONC ((first y).1," ")
-      xlist := [temp,:xlist]	
+      xlist := [temp,:xlist]    
       y := rest y
     xstring := bcwords2liststring xlist
     f := (first y).1
@@ -250,7 +234,7 @@ e04dgfGen htPage ==
     y := rest y
     for i in 1..n repeat
       temp := STRCONC ((first y).1," ")
-      xlist := [temp,:xlist]	
+      xlist := [temp,:xlist]    
       y := rest y
     xstring := bcwords2liststring xlist
     f := (first y).1
@@ -348,7 +332,7 @@ e04fdfSolve htPage ==
         (isDomain EM $EmptyMode)
           (isDomain F (Float))
            (isDomain I (Integer))),
- 		:funcList]
+                :funcList]
   page:= htInitPage('"E04FDF - Unconstrained minimum of a sum of squares, combined Gauss-Newton and modified Newton algorithm using function values only",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions \htbitmap{fi} below in terms XC[1]...XC[n]: "
@@ -433,12 +417,12 @@ e04fdfGen htPage ==
   y := alist
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    xlist := [temp,:xlist]	
+    xlist := [temp,:xlist]      
     y := rest y
   xstring := bcwords2liststring xlist    
   for i in 1..m repeat
     temp := STRCONC ((first y).1," ")
-    ulist := [temp,:ulist]	
+    ulist := [temp,:ulist]      
     y := rest y
   ustring := bcwords2liststring ulist    
   prefix := STRCONC("e04fdf(",STRINGIMAGE m,",",STRINGIMAGE n,", ")
@@ -534,7 +518,7 @@ e04gcfSolve htPage ==
         (isDomain EM $EmptyMode)
           (isDomain F (Float))
             (isDomain I (Integer))),
- 		:funcList]
+                :funcList]
   page:= htInitPage('"E04GCF - Unconstrained minimum of a sum of squares, combined Gauss-Newton and modified Newton algorithm using 1st derivatives",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions \htbitmap{fi} below in terms of XC[1]...XC[n]: "
@@ -619,12 +603,12 @@ e04gcfGen htPage ==
   y := alist
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    xlist := [temp,:xlist]	
+    xlist := [temp,:xlist]      
     y := rest y
   xstring := bcwords2liststring xlist    
   for i in 1..m repeat
     temp := STRCONC ((first y).1," ")
-    ulist := [temp,:ulist]	
+    ulist := [temp,:ulist]      
     y := rest y
   ustring := bcwords2liststring ulist    
   prefix := STRCONC("e04gcf(",STRINGIMAGE m,",",STRINGIMAGE n,", ")
@@ -736,7 +720,7 @@ e04jafSolve htPage ==
         (isDomain EM $EmptyMode)
           (isDomain F (Float))
             (isDomain I (Integer))),
- 		:funcList,:blList,:buList,:xList]
+                :funcList,:blList,:buList,:xList]
   page:= htInitPage('"E04JAF - Minimum, function of several variables, quasi-Newton algorithm, simple bounds, using function values only",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the function {\it F(x)} below in terms of XC[1]...XC[n]: "
@@ -805,17 +789,17 @@ e04jafGen htPage ==
   y := alist
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    xlist := [temp,:xlist]	
+    xlist := [temp,:xlist]      
     y := rest y
   xstring := bcwords2liststring xlist    
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    bulist := [temp,:bulist]	
+    bulist := [temp,:bulist]    
     y := rest y
   bustring := bcwords2liststring bulist    
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    bllist := [temp,:bllist]	
+    bllist := [temp,:bllist]    
     y := rest y
   blstring := bcwords2liststring bllist    
   f := (first y).1
@@ -830,7 +814,7 @@ e04mbf() ==
   htInitPage('"E04MBF - Linear programming problem",nil)
   htMakePage '(
     (domainConditions 
-  	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
         (isDomain PI (PositiveInteger))
         (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXe04mbf} for this routine ")
@@ -973,7 +957,7 @@ e04mbfSolve htPage ==
         (isDomain EM $EmptyMode)
           (isDomain F (Float))
             (isDomain I (Integer))),
- 		:aList,:blList,:buList,:cList,:xList]
+                :aList,:blList,:buList,:cList,:xList]
   page:= htInitPage('"E04MBF - Linear programming problem",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the elements of the array {\it a(nrowa,n)}: \newline "
@@ -1143,22 +1127,22 @@ e04mbfGen htPage ==
   y := alist
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    xlist := [temp,:xlist]	
+    xlist := [temp,:xlist]      
     y := rest y
   xstring := bcwords2liststring xlist    
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    clist := [temp,:clist]	
+    clist := [temp,:clist]      
     y := rest y
   cstring := bcwords2liststring clist    
   for i in 1..(n+nclin) repeat
     temp := STRCONC ((first y).1," ")
-    bulist := [temp,:bulist]	
+    bulist := [temp,:bulist]    
     y := rest y
   bustring := bcwords2liststring bulist    
   for i in 1..(n+nclin) repeat
     temp := STRCONC ((first y).1," ")
-    bllist := [temp,:bllist]	
+    bllist := [temp,:bllist]    
     y := rest y
   blstring := bcwords2liststring bllist    
   for i in 1..nrowa repeat -- matrix A
@@ -1187,7 +1171,7 @@ e04naf() ==
   htInitPage('"E04NAF - Quadratic programming problem",nil)
   htMakePage '(
     (domainConditions 
-  	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
         (isDomain PI (PositiveInteger))
         (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXe04naf} for this routine ")
@@ -1417,7 +1401,7 @@ e04nafSolve htPage ==
         (isDomain EM $EmptyMode)
           (isDomain F (Float))
             (isDomain I (Integer))),
- 		:aList,:blList,:buList,:cList,:fList,:hList,:xList,:iList]
+                :aList,:blList,:buList,:cList,:fList,:hList,:xList,:iList]
   page:= htInitPage('"E04NAF - Quadratic programming problem",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the elements of the array {\it a(nrowa,n)}: \newline "
@@ -1699,12 +1683,12 @@ e04nafGen htPage ==
   y := alist
   for i in 1..(n+nclin) repeat
     temp := STRCONC ((first y).1," ")
-    ilist := [temp,:ilist]	
+    ilist := [temp,:ilist]      
     y := rest y
   istring := bcwords2liststring ilist    
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    xlist := [temp,:xlist]	
+    xlist := [temp,:xlist]      
     y := rest y
   xstring := bcwords2liststring xlist    
   for i in 1..nrowh repeat -- matrix H
@@ -1718,22 +1702,22 @@ e04nafGen htPage ==
   hmatstr := bcwords2liststring [bcwords2liststring x for x in hmatlist]  
   for i in 1..(n+nclin) repeat
     temp := STRCONC ((first y).1," ")
-    flist := [temp,:flist]	
+    flist := [temp,:flist]      
     y := rest y
   fstring := bcwords2liststring flist    
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    clist := [temp,:clist]	
+    clist := [temp,:clist]      
     y := rest y
   cstring := bcwords2liststring clist    
   for i in 1..(n+nclin) repeat
     temp := STRCONC ((first y).1," ")
-    bulist := [temp,:bulist]	
+    bulist := [temp,:bulist]    
     y := rest y
   bustring := bcwords2liststring bulist    
   for i in 1..(n+nclin) repeat
     temp := STRCONC ((first y).1," ")
-    bllist := [temp,:bllist]	
+    bllist := [temp,:bllist]    
     y := rest y
   blstring := bcwords2liststring bllist    
   for i in 1..nrowa repeat -- matrix A
@@ -1764,7 +1748,7 @@ e04ucf() ==
   htInitPage('"E04UCF - Minimum, function of several variables, sequential QP method, nonlinear constraints, using function values and optionally 1st derivatives", nil)
   htMakePage '(
     (domainConditions 
-  	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
         (isDomain PI (PositiveInteger))
         (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXe04ucf} for this routine ")
@@ -1912,7 +1896,7 @@ e04ucfSolve(htPage) ==
         (isDomain EM $EmptyMode)
           (isDomain F (Float))
             (isDomain I (Integer))),
- 		:aList,:blList,:buList,:cList,:funcList,:xList,
+                :aList,:blList,:buList,:cList,:funcList,:xList,
                   :'(
     (text . "\blankline ")
     (text . "\newline ")
@@ -2102,16 +2086,16 @@ e04ucfDefaultSolve(htPage,nclin,ncnln,nrowa,nrowj,nrowr,liwork,lwork,ifail) ==
     (text . "\menuitemstyle{}\tab{2}")
     (text . "Enter the nonlinear constraint functions, {\it c(ncnln)} ")
     (text . "in terms of X[1]...X[n]: ")
-    (text . "\newline ")	
+    (text . "\newline ")        
     (bcStrings (55 "X[1]**2 + X[2]**2 + X[3]**2 + X[4]**2" cx1 EM))
-    (text . "\newline ")	
+    (text . "\newline ")        
     (bcStrings (55 "X[1]*X[2]*X[3]*X[4]" cx2 EM))
-    (text . "\newline ")	
+    (text . "\newline ")        
     (text . "\blankline ")
     (text . "\menuitemstyle{}\tab{2}")
     (text . "Enter the objective function, {\it F(x)} ")
     (text . "in terms of X[1]...X[n]: ")
-    (text . "\newline ")	
+    (text . "\newline ")        
     (bcStrings (55 "X[1]*X[4]*(X[1] + X[2] + X[3]) + X[3]" of  EM))
     (text . "\blankline ")
     (text . "\menuitemstyle{}\tab{2}")
@@ -2177,24 +2161,24 @@ e04ucfGen htPage ==
     ver := 3
     for i in 1..n repeat
       temp := STRCONC ((first y).1," ")
-      xlist := [temp,:xlist]	
+      xlist := [temp,:xlist]    
       y := rest y
     xstring := bcwords2liststring xlist
     f := (first y).1
     y := rest y
     for i in 1..ncnln repeat
       temp := STRCONC ((first y).1," ")
-      cxlist := [temp,:cxlist]	
+      cxlist := [temp,:cxlist]  
       y := rest y
     cxstring := bcwords2liststring cxlist
     for i in 1..(n+nclin+ncnln) repeat
       temp := STRCONC ((first y).1," ")
-      bulist := [temp,:bulist]	
+      bulist := [temp,:bulist]  
       y := rest y
     buu := bcwords2liststring bulist
     for i in 1..(n+nclin+ncnln) repeat
       temp := STRCONC ((first y).1," ")
-      bllist := [temp,:bllist]	
+      bllist := [temp,:bllist]  
       y := rest y
     bll := bcwords2liststring bllist
     for i in 1..nrowa repeat -- matrix A
@@ -2265,24 +2249,24 @@ e04ucfGen htPage ==
     y := rest y
     for i in 1..n repeat
       temp := STRCONC ((first y).1," ")
-      xlist := [temp,:xlist]	
+      xlist := [temp,:xlist]    
       y := rest y
     xstring := bcwords2liststring xlist
     f := (first y).1
     y := rest y
     for i in 1..ncnln repeat
       temp := STRCONC ((first y).1," ")
-      cxlist := [temp,:cxlist]	
+      cxlist := [temp,:cxlist]  
       y := rest y
     cxstring := bcwords2liststring cxlist
     for i in 1..(n+nclin+ncnln) repeat
       temp := STRCONC ((first y).1," ")
-      bulist := [temp,:bulist]	
+      bulist := [temp,:bulist]  
       y := rest y
     buu := bcwords2liststring bulist
     for i in 1..(n+nclin+ncnln) repeat
       temp := STRCONC ((first y).1," ")
-      bllist := [temp,:bllist]	
+      bllist := [temp,:bllist]  
       y := rest y
     bll := bcwords2liststring bllist
     for i in 1..nrowa repeat -- matrix A
@@ -2334,7 +2318,7 @@ e04ycf() ==
   htInitPage('"E04YCF - Covariance matrix for non-linear least-squares problem", nil)
   htMakePage '(
     (domainConditions 
-  	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
         (isDomain PI (PositiveInteger))
         (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXe04ycf} for this routine ")
@@ -2429,7 +2413,7 @@ e04ycfSolve htPage ==
         (isDomain EM $EmptyMode)
           (isDomain F (Float))
             (isDomain I (Integer))),
- 		:sList,:vList]
+                :sList,:vList]
   page:= htInitPage('"E04YCF - Covariance matrix for non-linear least-squares problem", nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the elements of the array {\it s(n)}: \newline "
@@ -2496,12 +2480,12 @@ e04ycfGen htPage ==
   y := alist
   for i in 1..(lv*n) repeat
     temp := STRCONC ((first y).1," ")
-    vlist := [temp,:vlist]	
+    vlist := [temp,:vlist]      
     y := rest y
   vstring := bcwords2liststring vlist    
   for i in 1..n repeat
     temp := STRCONC ((first y).1," ")
-    slist := [temp,:slist]	
+    slist := [temp,:slist]      
     y := rest y
   sstring := bcwords2liststring slist    
   prefix := STRCONC("e04ycf(",STRINGIMAGE job,",", STRINGIMAGE m,", ")
@@ -2512,9 +2496,3 @@ e04ycfGen htPage ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

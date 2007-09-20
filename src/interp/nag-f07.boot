@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-f07.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 f07adf() ==
   htInitPage('"F07ADF - {\it LU} factorization of real {\it m} by {\it n} matrix",nil)
@@ -96,11 +80,11 @@ f07adfSolve htPage ==
        labelList := [['text,:prefix],:labelList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:aList]
+              (isDomain I (Integer))),
+                :aList]
   page := htInitPage('"F07ADF - {\it LU} factorization of real {\it m} by {\it n} matrix",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the array {\it A}:"
@@ -271,7 +255,7 @@ f07aefSolve htPage ==
          (isDomain S (String))
          (isDomain F (Float))
          (isDomain I (Integer)))
-	     ,:aList,:ipList,:bList]
+             ,:aList,:ipList,:bList]
   page := htInitPage('"F07AEF - Solution of a real system of linear equations with multiple right-hand sides after factorization by F07ADF",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the matrix {\it A}:"
@@ -612,7 +596,7 @@ f07fefSolve htPage ==
          (isDomain S (String))
          (isDomain F (Float))
          (isDomain I (Integer)))
-	     ,:aList,:bList]
+             ,:aList,:bList]
   page := htInitPage('"F07FEF - Solution of a real symmetric positive-definite system of linear equations with multiple right-hand sides after factorization by F07FDF",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the matrix {\it A}:"
@@ -718,9 +702,3 @@ f07fefGen htPage ==
   prefix := STRCONC(prefix,STRINGIMAGE ldb,", ",bstring,"::Matrix DoubleFloat)")
   linkGen prefix
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

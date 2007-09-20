@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-c02.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 c02aff() ==
   htInitPage('"C02AFF - All Zeros of a Complex Polynomial",nil)
@@ -66,7 +50,7 @@ c02aff() ==
     (text . "\newline")
     (text . "\newline \menuitemstyle{} \tab{2} Scale value:")
     (radioButtons scale
-	("" "  True" true)
+        ("" "  True" true)
         ("" "  False" false))
     (text . "\blankline ")
     (text . "\newline \menuitemstyle{} \tab{2} Ifail value:")
@@ -104,7 +88,7 @@ c02affSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("C02AFF - All Zeros of a Complex Polynomial", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} Enter the coefficients of the polynomial: "
   htSay '"\blankline "
@@ -165,7 +149,7 @@ c02affDefaultSolve (htPage, scale, ifail) ==
     (bcStrings (10 "1.0" i6 F))
     (text . "\newline ")
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'c02affGen)    	
+  htMakeDoneButton('"Continue",'c02affGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'scale,scale)
   htpSetProperty(page,'ifail,ifail)
@@ -210,7 +194,7 @@ c02agf() ==
     (text . "\newline")
     (text . "\newline \menuitemstyle{} \tab{2} Scale value:")
     (radioButtons scale
-	("" "  True" true)
+        ("" "  True" true)
         ("" "  False" false))
     (text . "\blankline ")
     (text . "\newline \menuitemstyle{} \tab{2} Ifail value:")
@@ -244,7 +228,7 @@ c02agfSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("C02AGF - All Zeros of a Real Polynomial", htpPropertyList htPage)
   htSay '"\menuitemstyle{} \tab{2} "
   htSay '"Enter the coefficients of the polynomial: "
@@ -286,7 +270,7 @@ c02agfDefaultSolve (htPage, scale, ifail) ==
     (bcStrings (10 "6.0" r6 F))
     (text . "\newline ")
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'c02agfGen)    	
+  htMakeDoneButton('"Continue",'c02agfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'scale,scale)
   htpSetProperty(page,'ifail,ifail)
@@ -308,9 +292,3 @@ c02agfGen htPage ==
   linkGen STRCONC ('"c02agf([",realstring,"],",STRINGIMAGE n,",",scale,",",STRINGIMAGE ifail,")")
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
