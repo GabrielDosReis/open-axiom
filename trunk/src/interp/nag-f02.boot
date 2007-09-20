@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-f02.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 f02aaf() ==
   htInitPage('"F02AAF - All eigenvalues of real symmetric matrix (Black box)",nil)
@@ -98,7 +82,7 @@ f02aafSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -109,7 +93,7 @@ f02aafSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList]
+            :matList]
   page := htInitPage("F02AAF - All eigenvalues of real symmetric matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -242,7 +226,7 @@ f02abfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -253,7 +237,7 @@ f02abfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList]
+            :matList]
   page := htInitPage("F02ABF - All eigenvalues and eigenvectors of real symmetric matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -387,7 +371,7 @@ f02adfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -408,7 +392,7 @@ f02adfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bmatList]
+            :matList,:bmatList]
   page := htInitPage("F02ADF - All eigenvalues of generalized real eigenproblem of the form Ax = \lambda Bx where A and B are symmetric and B is positive definite",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -582,7 +566,7 @@ f02aefSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -603,7 +587,7 @@ f02aefSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bmatList]
+            :matList,:bmatList]
   page := htInitPage("F02AEF - All eigenvalues and eigenvectors of generalized real eigenproblem of the form Ax = \lambda Bx where A and B are symmetric and B is positive definite",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -767,7 +751,7 @@ f02affSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -778,7 +762,7 @@ f02affSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList]
+            :matList]
   page := htInitPage("F02AFF - All eigenvalues of real matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -920,7 +904,7 @@ f02agfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -931,7 +915,7 @@ f02agfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList]
+            :matList]
   page := htInitPage("F02AGF - All eigenvalues and eigenvectors of real matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -1071,7 +1055,7 @@ f02ajfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..iar] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1092,7 +1076,7 @@ f02ajfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bmatList]
+            :matList,:bmatList]
   page := htInitPage("F02AJF - All eigenvalues of complex matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter real values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -1276,7 +1260,7 @@ f02akfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..iar] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1297,7 +1281,7 @@ f02akfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bmatList]
+            :matList,:bmatList]
   page := htInitPage("F02AKF - All eigenvalues and eigenvectors of complex matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter real values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -1472,7 +1456,7 @@ f02awfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..iar] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1493,7 +1477,7 @@ f02awfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bmatList]
+            :matList,:bmatList]
   page := htInitPage("F02AWF - All eigenvalues of complex Hermitian matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter real values of {\it AR}: "
   htSay '"\newline \tab{2} "
@@ -1677,7 +1661,7 @@ f02axfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..iar] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1698,7 +1682,7 @@ f02axfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bmatList]
+            :matList,:bmatList]
   page := htInitPage("F02AXF - All eigenvalues and eigenvectors of complex Hermitian matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter real values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -1894,7 +1878,7 @@ f02bbfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1905,7 +1889,7 @@ f02bbfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList]
+            :matList]
   page := htInitPage('"F02BBF - Selected eigenvalues and eigenvectors of real symmetric matrix (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -2084,7 +2068,7 @@ f02bjfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..ia] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -2105,7 +2089,7 @@ f02bjfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bmatList]
+            :matList,:bmatList]
   page := htInitPage('"F02BJF - All eigenvalues and optionally eigenvectors of generalized eigenproblem by {\it QZ} algorithm, real matrices (Black box)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -2359,11 +2343,11 @@ f02wefSolve htPage ==
     error = 'one => '1
     '-1
   ((m = '5 and n = '3) and ncolb = '1)  => 
-	f02wefDefaultSolve(htPage,lda,ldb,wantq,ldq,ldpt,wantp,ifail)
+        f02wefDefaultSolve(htPage,lda,ldb,wantq,ldq,ldpt,wantp,ifail)
   matList :=
     "append"/[fa(i,n) for i in 1..lda] where fa(i,n) ==
        labelList := 
-	 "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
+         "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[10, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -2384,7 +2368,7 @@ f02wefSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bList]
+            :matList,:bList]
   page := htInitPage('"F02WEF - SVD of real matrix",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -2606,11 +2590,11 @@ f02xefSolve htPage ==
     error = 'one => '1
     '-1
   ((m = '5 and n = '3) and ncolb = '1)  => 
-	f02xefDefaultSolve(htPage,lda,ldb,wantq,ldq,ldph,wantp,ifail)
+        f02xefDefaultSolve(htPage,lda,ldb,wantq,ldq,ldph,wantp,ifail)
   matList :=
     "append"/[fa(i,n) for i in 1..lda] where fa(i,n) ==
        labelList := 
-	 "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
+         "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[15, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -2631,7 +2615,7 @@ f02xefSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bList]
+            :matList,:bList]
   page := htInitPage('"F02XEF - SVD of complex matrix",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -2747,9 +2731,3 @@ f02xefGen htPage ==
   linkGen STRCONC(prefix,STRINGIMAGE ifail,")")
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

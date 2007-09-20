@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/lisplib.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 --% Standard Library Creation Functions
  
@@ -257,7 +237,7 @@ systemDependentMkAutoload(fn,cnam) ==
          kind := GETDATABASE(cnam, 'CONSTRUCTORKIND)
          cosig := GETDATABASE(cnam, 'COSIG)
          file := GETDATABASE(cnam, 'OBJECT)
-	 SET_-LIB_-FILE_-GETTER(file, cnam)
+         SET_-LIB_-FILE_-GETTER(file, cnam)
          kind = 'category =>
               ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
          ASHARPMKAUTOLOADFUNCTOR(file, cnam, asharpName, cosig)
@@ -340,7 +320,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $libFile: local := NIL
   $lisplibVariableAlist: local := NIL
 --  $lisplibRelatedDomains: local := NIL   --from ++ Related Domains: see c-doc
-  $lisplibCategory: local := nil	
+  $lisplibCategory: local := nil        
   --for categories, is rhs of definition; otherwise, is target of functor
   --will eventually become the "constructorCategory" property in lisplib
   --set in compDefineCategory1 if category, otherwise in finalizeLisplib
@@ -360,7 +340,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
       PROGN(res:= FUNCALL(fn,df,m,e,prefix,fal),
             sayMSG ['"   finalizing ",$spadLibFT,:bright libName],
             finalizeLisplib libName,
-	    ok := true),
+            ok := true),
       RSHUT $libFile)
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
@@ -704,9 +684,3 @@ isFunctor x ==
  
  
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

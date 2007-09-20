@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-d02.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 d02bbf() ==
   htInitPage('"D02BBF - ODEs, IVP, Runge-Kutta-Merson method, over a range, intermediate output",nil)
@@ -136,11 +120,11 @@ d02bbfSolve htPage ==
   vList :=  [['text,:mid],:vList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:funcList,:yList,:vList]
+              (isDomain I (Integer))),
+                :funcList,:yList,:vList]
   page :=   htInitPage('"D02BBF - ODEs, IVP, Runge-Kutta-Merson method, over a range, intermediate output",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions (i.e. the derivatives) below "
@@ -330,11 +314,11 @@ d02bhfSolve htPage ==
   vList :=  [['text,:mid],:vList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:funcList,:yList,:vList]
+              (isDomain I (Integer))),
+                :funcList,:yList,:vList]
   page :=   htInitPage('"D02BHF - ODEs, IVP, Runge-Kutta-Merson method, until function of solution is zero",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions (i.e. the derivatives) below \htbitmap{fi} "
@@ -517,11 +501,11 @@ d02cjfSolve htPage ==
   uList :=  [['text,:midd],:uList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:funcList,:yList,:vList,:uList]
+              (isDomain I (Integer))),
+                :funcList,:yList,:vList,:uList]
   page :=  htInitPage('"D02CJF - ODEs, IVP, Adams method, until function of solution is zero, intermediate output",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions (i.e. the derivatives) below \htbitmap{fi} "
@@ -718,11 +702,11 @@ d02ejfSolve htPage ==
   uList :=  [['text,:midd],:uList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:funcList,:yList,:vList,:uList]
+              (isDomain I (Integer))),
+                :funcList,:yList,:vList,:uList]
   page := htInitPage('"D02EJF - ODEs, stiff IVP, BDF method, until function of solution is zero, intermediate output",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions (i.e. the derivatives) below \htbitmap{fi} "
@@ -970,11 +954,11 @@ d02gafSolve htPage ==
   xList :=  [['text,:end],:xList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:funcList,:uList,:vList,:xList]
+              (isDomain I (Integer))),
+                :funcList,:uList,:vList,:xList]
   page := htInitPage('"D02GAF - ODEs, boundary value problem, finite difference technique with deferred correction, simple nonlinear problem", nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions (i.e. the derivatives) below as functions of "
@@ -1319,11 +1303,11 @@ d02gbfSolve htPage ==
   xList :=  [['text,:end],:xList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:cList,:dList,:gamList,:fList,:gList,:xList]
+              (isDomain I (Integer))),
+                :cList,:dList,:gamList,:fList,:gList,:xList]
   page := htInitPage('"D02GBF - ODEs, boundary value problem, finite difference technique with deferred correction, general nonlinear problem", nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the matrix {\it C} form the equation {\it Cy(a) + Dy(b)} "
@@ -1665,11 +1649,11 @@ d02kefSolve htPage ==
   hList := [['text,:middle],:hList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:xpList,:cList,:ylList,:yrList,:hList]
+              (isDomain I (Integer))),
+                :xpList,:cList,:ylList,:yrList,:hList]
   page := htInitPage('"D02KEF - 2nd order Sturm-Liouville problem, regular/singular system, finite/infinite range, eigenvalue and eigenfunction, user-specified break-points", nil)
   htSay '"\menuitemstyle{}\tab{2} Enter points where boundary "
   htSay '"conditions are to be imposed {\it xpoint}: \newline "
@@ -1984,11 +1968,11 @@ d02rafSolve htPage ==
   xList :=  [['text,:mid],:xList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:funcList,:gList,:xList]
+              (isDomain I (Integer))),
+                :funcList,:gList,:xList]
   page := htInitPage('"D02RAF - ODEs, general nonlinear boundary value problem, finite difference technique with deferred correction, continuation facility",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions \htbitmap{fi} (i.e. the derivatives) below "
@@ -2160,9 +2144,3 @@ d02rafCopOut() ==
     (text . "{\center{\em Please use the command line.}}"))
   htMakeDoneButton('"Continue",'d02raf)
   htShowPage()
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

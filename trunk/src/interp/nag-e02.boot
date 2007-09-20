@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-e02.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 e02adf() ==
   htInitPage('"E02ADF - Least-squares curve fit, by polynomials, arbitrary data points", nil)
@@ -128,7 +112,7 @@ e02adfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E02ADF - Least-squares curve fit, by polynomials, arbitrary data points", htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -225,7 +209,7 @@ e02adfDefaultSolve  (htPage,k,nrows,ifail) ==
     (text . "\tab{42} ")
     (bcStrings (10 "0.20" z11 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02adfGen)    	
+  htMakeDoneButton('"Continue",'e02adfGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'k,k)
   htpSetProperty(page,'nrows,nrows)
@@ -314,7 +298,7 @@ e02aefSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E02AEF - Evaluation of fitted polynomial in one variable from Chebyshev series from", nil)
   htSay '"\menuitemstyle{}\tab{2} Enter the coefficients of {\it a(n+1)}:"
   htSay '"\blankline "
@@ -349,7 +333,7 @@ e02aefDefaultSolve  (htPage,xcap,ifail) ==
     (text . "\newline \tab{15} ")
     (bcStrings (10 "0.0625" a5 F))
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'e02aefGen)    	
+  htMakeDoneButton('"Continue",'e02aefGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'xcap,xcap)
   htpSetProperty(page,'ifail,ifail)
@@ -508,7 +492,7 @@ e02agfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:xfList,:ipList,:yfList]
+            :labelList,:xfList,:ipList,:yfList]
   page := htInitPage("E02AGF - Least-squares polynomial fit, values and derivatives may be constrained, arbitrary data values",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -620,7 +604,7 @@ e02agfDefaultSolve  (htPage,nrows,xmin,xmax,ifail) ==
     (bcStrings (10 "0.0" lyf14 F))
     (text . "\newline \tab{2} ")
     (bcStrings (10 "0.0" lyf15 F)))
-  htMakeDoneButton('"Continue",'e02agfGen)    	
+  htMakeDoneButton('"Continue",'e02agfGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'k,k)
   htpSetProperty(page,'nrows,nrows)
@@ -793,7 +777,7 @@ e02ahfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E02AHF - Derivative of fitted polynomial in Chebyshev series",nil)
   htSay '"\menuitemstyle{}\tab{2} Coefficients of {\it a(la)}:"
   htMakePage equationPart
@@ -837,7 +821,7 @@ e02ahfDefaultSolve  (htPage,xmin,xmax,iaone,ladifone,ifail) ==
     (text . "\newline \tab{15}")
     (bcStrings (10 "0.00004" a7 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02ahfGen)    	
+  htMakeDoneButton('"Continue",'e02ahfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'la,la)
   htpSetProperty(page,'ladif,ladif)
@@ -976,7 +960,7 @@ e02ajfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E02AJF - Integral of fitted polynomial in Chebyshev series form",nil)
   htSay '"\menuitemstyle{}\tab{2} Coefficients of {\it a(la)}: "
   htMakePage equationPart
@@ -1021,7 +1005,7 @@ e02ajfDefaultSolve  (htPage,xmin,xmax,iaone,iaintone,qatmone,ifail) ==
     (text . "\newline \tab{15}")
     (bcStrings (10 "0.00004" a7 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02ajfGen)    	
+  htMakeDoneButton('"Continue",'e02ajfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'la,la)
   htpSetProperty(page,'laint,laint)
@@ -1144,7 +1128,7 @@ e02akfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E02AKF - Evaluation of fitted polynomial in one variable, from Chebyshev series form",nil)
   htSay '"\menuitemstyle{}\tab{2} Coefficients of {\it a(la)}:"
   htMakePage equationPart
@@ -1186,7 +1170,7 @@ e02akfDefaultSolve  (htPage,xmin,xmax,x,iaone,ifail) ==
     (text . "\newline \tab{15}")
     (bcStrings (10 "0.00004" a7 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02akfGen)    	
+  htMakeDoneButton('"Continue",'e02akfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'la,la)
   htpSetProperty(page,'x,x)
@@ -1297,7 +1281,7 @@ e02bafSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:lamdaList]
+            :labelList,:lamdaList]
   page := htInitPage("E02BAF - Least-squares curve cubic spline fit",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -1419,7 +1403,7 @@ e02bafDefaultSolve (htPage,ifail) ==
     (bcStrings (6 "4.00" l3 F))
     (bcStrings (6 "8.00" l4 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02bafGen)    	
+  htMakeDoneButton('"Continue",'e02bafGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'ncap,ncap)
   htpSetProperty(page,'ifail,ifail)
@@ -1524,7 +1508,7 @@ e02bbfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E02BBF - Evaluation of fitted cubic spline, function only",nil)
   htSay '"\menuitemstyle{}\tab{2} Knots \htbitmap{lamdai}: "
   htSay '"\tab{20} \menuitemstyle{}\tab{22} "
@@ -1594,7 +1578,7 @@ e02bbfDefaultSolve (htPage,x,ifail) ==
     (text . "\tab{22} ")
     (bcStrings (10 "0.00" c11 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02bbfGen)    	
+  htMakeDoneButton('"Continue",'e02bbfGen)      
   htpSetProperty(page,'ncap,ncap)
   htpSetProperty(page,'x,x)
   htpSetProperty(page,'ifail,ifail)
@@ -1695,7 +1679,7 @@ e02bcfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E02BCF - Evaluation of fitted cubic spline, function and derivatives",nil)
   htSay '"\menuitemstyle{}\tab{2} Knots \htbitmap{lamdai}: "
   htSay '"\tab{20} \menuitemstyle{}\tab{22} "
@@ -1777,7 +1761,7 @@ e02bcfDefaultSolve (htPage,x,deriv,ifail) ==
     (text . "\tab{22} ")
     (bcStrings (10 "0.00" c14 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02bcfGen)    	
+  htMakeDoneButton('"Continue",'e02bcfGen)      
   htpSetProperty(page,'ncap,ncap)
   htpSetProperty(page,'x,x)
   htpSetProperty(page,'deriv,deriv)
@@ -1864,7 +1848,7 @@ e02bdfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E02BDF - Evaluation of fitted cubic spline, definite integral",nil)
   htSay '"\menuitemstyle{}\tab{2} Knots \htbitmap{lamdai}: "
   htSay '"\tab{20} \menuitemstyle{}\tab{22} "
@@ -1948,7 +1932,7 @@ e02bdfDefaultSolve(htPage,ifail) ==
     (bcStrings (10 "0.00" c14 F)))
   htpSetProperty(page,'ncap,ncap)
   htpSetProperty(page,'ifail,ifail)
-  htMakeDoneButton('"Continue",'e02bdfGen)    	
+  htMakeDoneButton('"Continue",'e02bdfGen)      
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
   htShowPage()
 
@@ -2081,7 +2065,7 @@ e02befColdSolve(htPage,m,nest,lwrk,s,ifail) ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage('"E02BEF - Least-squares curve cubic spline fit, automatic knot placement",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -2203,7 +2187,7 @@ e02befDefaultSolve (htPage,nest,lwrk,s,ifail) ==
     (text . "\tab{42} ")
     (bcStrings (10 "1.00" z15 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02befColdGen)    	
+  htMakeDoneButton('"Continue",'e02befColdGen)          
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'nest,nest)
   htpSetProperty(page,'lwrk,lwrk)
@@ -2338,7 +2322,7 @@ e02defSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:lamList,:muList,:cList]
+            :labelList,:lamList,:muList,:cList]
   page := htInitPage('"E02DEF - Evaluation of a fitted bicubic spline at a vector of points",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of \htbitmap{xr}: "
   htSay '"\tab{20} \menuitemstyle{}\tab{22} Values of \htbitmap{yr}:"
@@ -2423,50 +2407,50 @@ e02defDefaultSolve (htPage,ifail) ==
     (text . "\blankline \menuitemstyle{}\tab{2} ")
     (text . "Enter values for {\it c((nxest-4)*(nyest-4))}:")
     (text . "\newline ")
-    (bcStrings (8 "1" c1 F))	
-    (bcStrings (8 "1.1333" c2 F))	
-    (bcStrings (8 "1.3667" c3 F))	
-    (bcStrings (8 "1.7" c4 F))	
-    (bcStrings (8 "1.9" c5 F))	
-    (bcStrings (8 "2" c6 F))	
-    (bcStrings (8 "1.2" c7 F))	
-    (bcStrings (8 "1.3333" c8 F))	
-    (bcStrings (8 "1.5667" c9 F))	
-    (bcStrings (8 "1.9" c10 F))	
-    (bcStrings (8 "2.1" c11 F))	
-    (bcStrings (8 "2.2" c12 F))	
-    (bcStrings (8 "1.5833" c13 F))	
-    (bcStrings (8 "1.7167" c14 F))	
-    (bcStrings (8 "1.95" c15 F))	
-    (bcStrings (8 "2.2833" c16 F))	
-    (bcStrings (8 "2.4833" c17 F))	
-    (bcStrings (8 "2.5833" c18 F))	
-    (bcStrings (8 "2.1433" c19 F))	
-    (bcStrings (8 "2.2767" c20 F))	
-    (bcStrings (8 "2.51" c21 F))	
-    (bcStrings (8 "2.8433" c22 F))	
-    (bcStrings (8 "3.0433" c23 F))	
-    (bcStrings (8 "3.1433" c24 F))	
-    (bcStrings (8 "2.8667" c25 F))	
-    (bcStrings (8 "3" c26 F))	
-    (bcStrings (8 "3.2333" c27 F))	
-    (bcStrings (8 "3.5667" c28 F))	
-    (bcStrings (8 "3.7667" c29 F))	
-    (bcStrings (8 "3.8667" c30 F))	
-    (bcStrings (8 "3.4667" c31 F))	
-    (bcStrings (8 "3.6" c32 F))	
-    (bcStrings (8 "3.8333" c33 F))	
-    (bcStrings (8 "4.1667" c34 F))	
-    (bcStrings (8 "4.3667" c35 F))	
-    (bcStrings (8 "4.4667" c36 F))	
-    (bcStrings (8 "4" c37 F))	
-    (bcStrings (8 "4.1333" c38 F))	
-    (bcStrings (8 "4.3667" c39 F))	
-    (bcStrings (8 "4.7" c40 F))	
-    (bcStrings (8 "4.9" c41 F))	
-    (bcStrings (8 "5" c42 F))	
+    (bcStrings (8 "1" c1 F))    
+    (bcStrings (8 "1.1333" c2 F))       
+    (bcStrings (8 "1.3667" c3 F))       
+    (bcStrings (8 "1.7" c4 F))  
+    (bcStrings (8 "1.9" c5 F))  
+    (bcStrings (8 "2" c6 F))    
+    (bcStrings (8 "1.2" c7 F))  
+    (bcStrings (8 "1.3333" c8 F))       
+    (bcStrings (8 "1.5667" c9 F))       
+    (bcStrings (8 "1.9" c10 F)) 
+    (bcStrings (8 "2.1" c11 F)) 
+    (bcStrings (8 "2.2" c12 F)) 
+    (bcStrings (8 "1.5833" c13 F))      
+    (bcStrings (8 "1.7167" c14 F))      
+    (bcStrings (8 "1.95" c15 F))        
+    (bcStrings (8 "2.2833" c16 F))      
+    (bcStrings (8 "2.4833" c17 F))      
+    (bcStrings (8 "2.5833" c18 F))      
+    (bcStrings (8 "2.1433" c19 F))      
+    (bcStrings (8 "2.2767" c20 F))      
+    (bcStrings (8 "2.51" c21 F))        
+    (bcStrings (8 "2.8433" c22 F))      
+    (bcStrings (8 "3.0433" c23 F))      
+    (bcStrings (8 "3.1433" c24 F))      
+    (bcStrings (8 "2.8667" c25 F))      
+    (bcStrings (8 "3" c26 F))   
+    (bcStrings (8 "3.2333" c27 F))      
+    (bcStrings (8 "3.5667" c28 F))      
+    (bcStrings (8 "3.7667" c29 F))      
+    (bcStrings (8 "3.8667" c30 F))      
+    (bcStrings (8 "3.4667" c31 F))      
+    (bcStrings (8 "3.6" c32 F)) 
+    (bcStrings (8 "3.8333" c33 F))      
+    (bcStrings (8 "4.1667" c34 F))      
+    (bcStrings (8 "4.3667" c35 F))      
+    (bcStrings (8 "4.4667" c36 F))      
+    (bcStrings (8 "4" c37 F))   
+    (bcStrings (8 "4.1333" c38 F))      
+    (bcStrings (8 "4.3667" c39 F))      
+    (bcStrings (8 "4.7" c40 F)) 
+    (bcStrings (8 "4.9" c41 F)) 
+    (bcStrings (8 "5" c42 F))   
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'e02defGen)    	
+  htMakeDoneButton('"Continue",'e02defGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'px,px)
   htpSetProperty(page,'py,py)
@@ -2625,7 +2609,7 @@ e02dffSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :xList,:yList,:lamList,:muList,:cList]
+            :xList,:yList,:lamList,:muList,:cList]
   page := htInitPage('"E02DFF - Evaluation of a fitted bicubic spline at a mesh of points",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of \htbitmap{xr}:\newline "
   htMakePage equationPart
@@ -2700,50 +2684,50 @@ e02dffDefaultSolve (htPage,lwrk,liwrk,ifail) ==
     (text . "\blankline ")
     (text . "\menuitemstyle{}\tab{2} Enter values of {\it c((px-4)*(py-4))}:")
     (text . "\newline ")
-    (bcStrings (8 "1" c1 F))	
-    (bcStrings (8 "1.1333" c2 F))	
-    (bcStrings (8 "1.3667" c3 F))	
-    (bcStrings (8 "1.7" c4 F))	
-    (bcStrings (8 "1.9" c5 F))	
-    (bcStrings (8 "2" c6 F))	
-    (bcStrings (8 "1.2" c7 F))	
-    (bcStrings (8 "1.3333" c8 F))	
-    (bcStrings (8 "1.5667" c9 F))	
-    (bcStrings (8 "1.9" c10 F))	
-    (bcStrings (8 "2.1" c11 F))	
-    (bcStrings (8 "2.2" c12 F))	
-    (bcStrings (8 "1.5833" c13 F))	
-    (bcStrings (8 "1.7167" c14 F))	
-    (bcStrings (8 "1.95" c15 F))	
-    (bcStrings (8 "2.2833" c16 F))	
-    (bcStrings (8 "2.4833" c17 F))	
-    (bcStrings (8 "2.5833" c18 F))	
-    (bcStrings (8 "2.1433" c19 F))	
-    (bcStrings (8 "2.2767" c20 F))	
-    (bcStrings (8 "2.51" c21 F))	
-    (bcStrings (8 "2.8433" c22 F))	
-    (bcStrings (8 "3.0433" c23 F))	
-    (bcStrings (8 "3.1433" c24 F))	
-    (bcStrings (8 "2.8667" c25 F))	
-    (bcStrings (8 "3" c26 F))	
-    (bcStrings (8 "3.2333" c27 F))	
-    (bcStrings (8 "3.5667" c28 F))	
-    (bcStrings (8 "3.7667" c29 F))	
-    (bcStrings (8 "3.8667" c30 F))	
-    (bcStrings (8 "3.4667" c31 F))	
-    (bcStrings (8 "3.6" c32 F))	
-    (bcStrings (8 "3.8333" c33 F))	
-    (bcStrings (8 "4.1667" c34 F))	
-    (bcStrings (8 "4.3667" c35 F))	
-    (bcStrings (8 "4.4667" c36 F))	
-    (bcStrings (8 "4" c37 F))	
-    (bcStrings (8 "4.1333" c38 F))	
-    (bcStrings (8 "4.3667" c39 F))	
-    (bcStrings (8 "4.7" c40 F))	
-    (bcStrings (8 "4.9" c41 F))	
-    (bcStrings (8 "5" c42 F))	
+    (bcStrings (8 "1" c1 F))    
+    (bcStrings (8 "1.1333" c2 F))       
+    (bcStrings (8 "1.3667" c3 F))       
+    (bcStrings (8 "1.7" c4 F))  
+    (bcStrings (8 "1.9" c5 F))  
+    (bcStrings (8 "2" c6 F))    
+    (bcStrings (8 "1.2" c7 F))  
+    (bcStrings (8 "1.3333" c8 F))       
+    (bcStrings (8 "1.5667" c9 F))       
+    (bcStrings (8 "1.9" c10 F)) 
+    (bcStrings (8 "2.1" c11 F)) 
+    (bcStrings (8 "2.2" c12 F)) 
+    (bcStrings (8 "1.5833" c13 F))      
+    (bcStrings (8 "1.7167" c14 F))      
+    (bcStrings (8 "1.95" c15 F))        
+    (bcStrings (8 "2.2833" c16 F))      
+    (bcStrings (8 "2.4833" c17 F))      
+    (bcStrings (8 "2.5833" c18 F))      
+    (bcStrings (8 "2.1433" c19 F))      
+    (bcStrings (8 "2.2767" c20 F))      
+    (bcStrings (8 "2.51" c21 F))        
+    (bcStrings (8 "2.8433" c22 F))      
+    (bcStrings (8 "3.0433" c23 F))      
+    (bcStrings (8 "3.1433" c24 F))      
+    (bcStrings (8 "2.8667" c25 F))      
+    (bcStrings (8 "3" c26 F))   
+    (bcStrings (8 "3.2333" c27 F))      
+    (bcStrings (8 "3.5667" c28 F))      
+    (bcStrings (8 "3.7667" c29 F))      
+    (bcStrings (8 "3.8667" c30 F))      
+    (bcStrings (8 "3.4667" c31 F))      
+    (bcStrings (8 "3.6" c32 F)) 
+    (bcStrings (8 "3.8333" c33 F))      
+    (bcStrings (8 "4.1667" c34 F))      
+    (bcStrings (8 "4.3667" c35 F))      
+    (bcStrings (8 "4.4667" c36 F))      
+    (bcStrings (8 "4" c37 F))   
+    (bcStrings (8 "4.1333" c38 F))      
+    (bcStrings (8 "4.3667" c39 F))      
+    (bcStrings (8 "4.7" c40 F)) 
+    (bcStrings (8 "4.9" c41 F)) 
+    (bcStrings (8 "5" c42 F))   
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02dffGen)    	
+  htMakeDoneButton('"Continue",'e02dffGen)      
   htpSetProperty(page,'mx,mx)
   htpSetProperty(page,'my,my)
   htpSetProperty(page,'px,px)
@@ -2881,7 +2865,7 @@ e02gafSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:bList]
+            :labelList,:bList]
   page := htInitPage('"E02GAF - \htbitmap{l1}-approximation by general linear function",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of {\it A(la,n+2)}:"
   htMakePage equationPart
@@ -2956,7 +2940,7 @@ e02gafDefaultSolve (htPage,toler,ifail) ==
     (bcStrings (9 "4.333" b3 F))  
     (bcStrings (9 "4.418" b4 F))  
     (bcStrings (9 "4.625" b5 F)))  
-  htMakeDoneButton('"Continue",'e02gafGen)    	
+  htMakeDoneButton('"Continue",'e02gafGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'toler,toler)
@@ -3117,7 +3101,7 @@ e02dafSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:lamList,:muList,:pList]
+            :labelList,:lamList,:muList,:pList]
   page := htInitPage('"E02DAF - Least-squares surface fit, bicubic splines",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of \htbitmap{xr}: "
   htSay '"\tab{15} \menuitemstyle{}\tab{17} Values of \htbitmap{yr}:"
@@ -3399,93 +3383,93 @@ e02dafDefaultSolve (htPage,eps,nws,npoint,ifail) ==
     (text . "\blankline ")
     (text . "\menuitemstyle{}\tab{2} Enter values for point:")
     (text . "\newline \tab{2}")
-    (bcStrings (6 3 p1 PI))	
+    (bcStrings (6 3 p1 PI))     
     (text . "\newline \tab{2}")
-    (bcStrings (6 6 p2 PI))	
+    (bcStrings (6 6 p2 PI))     
     (text . "\newline \tab{2}")
-    (bcStrings (6 4 p3 PI))	
+    (bcStrings (6 4 p3 PI))     
     (text . "\newline \tab{2}")
-    (bcStrings (6 5 p4 PI))	
+    (bcStrings (6 5 p4 PI))     
     (text . "\newline \tab{2}")
-    (bcStrings (6 7 p5 PI))	
+    (bcStrings (6 7 p5 PI))     
     (text . "\newline \tab{2}")
-    (bcStrings (6 10 p6 PI))	
+    (bcStrings (6 10 p6 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 8 p7 PI))	
+    (bcStrings (6 8 p7 PI))     
     (text . "\newline \tab{2}")
-    (bcStrings (6 9 p8 PI))	
+    (bcStrings (6 9 p8 PI))     
     (text . "\newline \tab{2}")
-    (bcStrings (6 11 p9 PI))	
+    (bcStrings (6 11 p9 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 13 p10 PI))	
+    (bcStrings (6 13 p10 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 12 p11 PI))	
+    (bcStrings (6 12 p11 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 15 p12 PI))	
+    (bcStrings (6 15 p12 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 14 p13 PI))	
+    (bcStrings (6 14 p13 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 18 p14 PI))	
+    (bcStrings (6 18 p14 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 16 p15 PI))	
+    (bcStrings (6 16 p15 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 17 p16 PI))	
+    (bcStrings (6 17 p16 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 19 p17 PI))	
+    (bcStrings (6 19 p17 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 20 p18 PI))	
+    (bcStrings (6 20 p18 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 21 p19 PI))	
+    (bcStrings (6 21 p19 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 30 p20 PI))	
+    (bcStrings (6 30 p20 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 23 p21 PI))	
+    (bcStrings (6 23 p21 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 26 p22 PI))	
+    (bcStrings (6 26 p22 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 24 p23 PI))	
+    (bcStrings (6 24 p23 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 25 p24 PI))	
+    (bcStrings (6 25 p24 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 27 p25 PI))	
+    (bcStrings (6 27 p25 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 28 p26 PI))	
+    (bcStrings (6 28 p26 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p27 PI))	
+    (bcStrings (6 0 p27 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 29 p28 PI))	
+    (bcStrings (6 29 p28 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p29 PI))	
+    (bcStrings (6 0 p29 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p30 PI))	
+    (bcStrings (6 0 p30 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 2 p31 PI))	
+    (bcStrings (6 2 p31 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 22 p32 PI))	
+    (bcStrings (6 22 p32 PI))   
     (text . "\newline \tab{2}")
-    (bcStrings (6 1 p33 PI))	
+    (bcStrings (6 1 p33 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p34 PI))	
+    (bcStrings (6 0 p34 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p35 PI))	
+    (bcStrings (6 0 p35 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p36 PI))	
+    (bcStrings (6 0 p36 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p37 PI))	
+    (bcStrings (6 0 p37 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p38 PI))	
+    (bcStrings (6 0 p38 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p39 PI))	
+    (bcStrings (6 0 p39 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p40 PI))	
+    (bcStrings (6 0 p40 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p41 PI))	
+    (bcStrings (6 0 p41 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p42 PI))	
+    (bcStrings (6 0 p42 PI))    
     (text . "\newline \tab{2}")
-    (bcStrings (6 0 p43 PI))	
+    (bcStrings (6 0 p43 PI))    
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02dafGen)    	
+  htMakeDoneButton('"Continue",'e02dafGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'px,px)
   htpSetProperty(page,'py,py)
@@ -3652,7 +3636,7 @@ e02dcfSolve htPage ==
     error = 'one => '1
     '-1
   ((mx = 11 and my = 9) and start = 1) => 
-		e02dcfDefaultSolve (htPage,nxest,nyest,lwrk,liwrk,s,ifail)
+                e02dcfDefaultSolve (htPage,nxest,nyest,lwrk,liwrk,s,ifail)
   start = 1 => e02dcfColdSolve (htPage,mx,my,nxest,nyest,lwrk,liwrk,s,ifail)
   -- warm start not really possible from hyperdoc
   -- as inputing a workspace array of dimension 592 is asking too much
@@ -3694,7 +3678,7 @@ e02dcfColdSolve(htPage,mx,my,nxest,nyest,lwrk,liwrk,s,ifail) ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :xList,:yList,:fList]
+            :xList,:yList,:fList]
   page := htInitPage('"E02DCF - Least-squares curve by bicubic splines with automatic knot placement, data on a rectangular grid",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of {\it x(mx)}: \newline "
   htMakePage equationPart
@@ -3847,7 +3831,7 @@ e02dcfDefaultSolve (htPage,nxest,nyest,lwrk,liwrk,s,ifail) ==
     (bcStrings (8 "-5.93" f97 F))
     (bcStrings (8 "-5.6387" f98 F))
     (bcStrings (8 "-3.9319" f99 F)))
-  htMakeDoneButton('"Continue",'e02dcfColdGen)    	
+  htMakeDoneButton('"Continue",'e02dcfColdGen)          
   htpSetProperty(page,'mx,mx)
   htpSetProperty(page,'my,my)
   htpSetProperty(page,'nxest,nxest)
@@ -4024,7 +4008,7 @@ e02ddfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:lamdaList,:muList,:nxList,:nyList,:wList]
+            :labelList,:lamdaList,:muList,:nxList,:nyList,:wList]
   page := htInitPage('"E02DDF - Least-squares surface fit by bicubic splines with automatic knot placement, scattered data",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{15} \menuitemstyle{}\tab{17} "
@@ -4069,7 +4053,7 @@ e02ddfColdSolve(htPage,m,nxest,nyest,lwrk,liwrk,s,ifail)  ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage('"E02DDF - Least-squares surface fit by bicubic splines with automatic knot placement, scattered data",nil)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{15} \menuitemstyle{}\tab{17} "
@@ -4344,7 +4328,7 @@ e02ddfDefaultSolve (htPage,nxest,nyest,lwrk,liwrk,s,ifail) ==
     (text . "\tab{47}")
     (bcStrings (8 "1" w30 F))    
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e02ddfColdGen)    	
+  htMakeDoneButton('"Continue",'e02ddfColdGen)          
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'nxest,nxest)
   htpSetProperty(page,'nyest,nyest)
@@ -4552,7 +4536,7 @@ e02zafSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:lamList,:muList]
+            :labelList,:lamList,:muList]
   page := htInitPage('"E02ZAF - Sort 2-D sata into panels for fitting bicubic splines",nil)
   htSay '"\menuitemstyle{}\tab{2} {\it x(m)}: "
   htSay '"\tab{30} \menuitemstyle{}\tab{32} {\it y(m)}: "
@@ -4629,7 +4613,7 @@ e02zafDefaultSolve (htPage,npoint,ifail) ==
     (bcStrings (8 "0.80" mu5 F))
     (bcStrings (8 "1.20" mu6 F))
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'e02zafGen)    	
+  htMakeDoneButton('"Continue",'e02zafGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'px,px)
   htpSetProperty(page,'py,py)
@@ -4685,9 +4669,3 @@ e02zafGen htPage ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
