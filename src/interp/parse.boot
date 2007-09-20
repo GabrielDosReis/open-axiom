@@ -1,91 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/parse.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{parseTransform}
-This is the top-level function in this file. 
-
-When parsing spad code we walk an source code expression such as
-
-[[P ==> PositiveInteger]]
-
-This gets translated by [[|postTransform|]]\cite{1} into
-
-[[(MDEF P NIL NIL (|PositiveInteger|))]]
-
-[[|parseTranform|]] is called with this expression. The [[%]] symbol,
-which represents the current domain, is replaced with the [[$]] symbol
-internally. This hack was introduced because the Aldor compiler wanted
-to use [[%]] for the [[current domain]]. The Spad compiler used [[$]].
-In order not to have to change this everywhere we do a subsitution here.
-<<parseTransform>>=
-parseTransform x ==
-  $defOp: local:= nil
-  x := substitute('$,'%,x) -- for new compiler compatibility
-  parseTran x
-
-@
-
-\section{parseTran}
-[[|parseTran|]] sees an expression such as
-
-[[(MDEF P NIL NIL (|PositiveInteger|))]]
-
-It walks the
-expression, which is a list, item by item (note the tail recursive
-call in this function). In general, we are converting certain 
-source-level constructs into internal constructs. Note the subtle
-way that functions get called in this file. The information about
-what function to call is stored on the property list of the symbol.
-
-For example, given the form: [[(|has| S (|OrderedSet|))]]
-the symbol [[|has|]] occurs in the car of the list. [[|parseTran|]]
-assigns [[$op]] to be [[|has|]] and [[argl]] to be the list
-[[(S (|OrderedSet|))]]. Next, a local function [[g]], which checks
-for the compile-time elts, returns [[$op]] unchanged. The variable
-[[u]] is set to [[|has|]].
-
-Since [[|has|]] is an atom we do 
-[[(GET '|has| '|parseTran|)]] which returns [[|parseHas|]]
-because the symbol [[|has|]] contains the association 
-[[|parseTran| |parseHas|]] on it's symbol property list.
-You can see this by calling [[(symbol-plist '|has|)]].
-
-This ends up calling [[(|parseHas| '(S (|OrderedSet|)))]].
-
-The [[|parseTran|]] function walks the entire s-expression
-calling special parsers for various special forms in the input.
-This does things like reverse tests so that [[(if (not x) a b)]]
-becomes [[(if x b a)]], etc.
-
-<<parseTran>>= 
-parseTran x ==
-  $op: local
-  atom x => parseAtom x
-  [$op,:argl]:= x
-  u := g($op) where g op == (op is ["elt",op,x] => g x; op)
-  u="construct" =>
-    r:= parseConstruct argl
-    $op is ["elt",:.] => [parseTran $op,:rest r]
-    r
-  SYMBOLP u and (fn:= GETL(u,'parseTran)) => FUNCALL(fn,argl)
-  [parseTran $op,:parseTranList argl]
- 
-@ 
-
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -116,17 +31,29 @@ parseTran x ==
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
 
-<<*>>=
-<<license>>
-
+import '"postpar"
 )package "BOOT"
 
 --% Transformation of Parser Output
  
-<<parseTransform>>
-<<parseTran>>
+parseTransform x ==
+  $defOp: local:= nil
+  x := substitute('$,'%,x) -- for new compiler compatibility
+  parseTran x
+
+parseTran x ==
+  $op: local
+  atom x => parseAtom x
+  [$op,:argl]:= x
+  u := g($op) where g op == (op is ["elt",op,x] => g x; op)
+  u="construct" =>
+    r:= parseConstruct argl
+    $op is ["elt",:.] => [parseTran $op,:rest r]
+    r
+  SYMBOLP u and (fn:= GETL(u,'parseTran)) => FUNCALL(fn,argl)
+  [parseTran $op,:parseTranList argl]
+ 
 
 parseAtom x ==
  -- next line for compatibility with new compiler
@@ -406,9 +333,7 @@ parseOr u ==
   (x:= parseTran first u) is ["not",y] => parseIf [y,parseOr rest u,"true"]
   true => parseIf [x,"true",parseOr rest u]
  
-parseNot u ==
-  $InteractiveMode => ["not",parseTran first u]
-  parseTran ["IF",first u,:'(false true)]
+parseNot u ==  ['not,parseTran first u]
  
 parseEquivalence [a,b] == parseIf [a,b,parseIf [b,:'(false true)]]
  
@@ -481,23 +406,20 @@ parseIf t ==
   t isnt [p,a,b] => t
   ifTran(parseTran p,parseTran a,parseTran b) where
     ifTran(p,a,b) ==
-      null($InteractiveMode) and p="true"  => a
-      null($InteractiveMode) and p="false"  => b
-      p is ["not",p'] => ifTran(p',b,a)
-      p is ["IF",p',a',b'] => ifTran(p',ifTran(a',COPY a,COPY b),ifTran(b',a,b))
-      p is ["SEQ",:l,["exit",1,p']] =>
-        ["SEQ",:l,["exit",1,ifTran(p',incExitLevel a,incExitLevel b)]]
+      null($InteractiveMode) and p='true  => a
+      null($InteractiveMode) and p='false  => b
+      p is ['not,p'] => ifTran(p',b,a)
+      p is ['IF,p',a',b'] => ifTran(p',ifTran(a',COPY a,COPY b),ifTran(b',a,b))
+      p is ['SEQ,:l,['exit,1,p']] =>
+        ['SEQ,:l,['exit,1,ifTran(p',incExitLevel a,incExitLevel b)]]
          --this assumes that l has no exits
-      a is ["IF", =p,a',.] => ["IF",p,a',b]
-      b is ["IF", =p,.,b'] => ["IF",p,a,b']
-      makeSimplePredicateOrNil p is ["SEQ",:s,["exit",1,val]] =>
-        parseTran ["SEQ",:s,["exit",1,incExitLevel ["IF",val,a,b]]]
-      ["IF",p,a,b]
+      a is ['IF, =p,a',.] => ['IF,p,a',b]
+      b is ['IF, =p,.,b'] => ['IF,p,a,b']
+--      makeSimplePredicateOrNil p is ['SEQ,:s,['exit,1,val]] =>
+--        parseTran ['SEQ,:s,['exit,1,incExitLevel ['IF,val,a,b]]]
+      ['IF,p,a,b]
  
-makeSimplePredicateOrNil p ==
-  isSimple p => nil
-  u:= isAlmostSimple p => u
-  true => wrapSEQExit [["LET",g:= GENSYM(),p],g]
+makeSimplePredicateOrNil p == nil
  
 parseWhere l == ["where",:mapInto(l, function parseTran)]
  
@@ -562,10 +484,3 @@ scriptTranRow1 x ==
   STRCONC(",",$quadSymbol,scriptTranRow1 rest x)
  
 parseVCONS l == ["VECTOR",:parseTranList l]
-@
-
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

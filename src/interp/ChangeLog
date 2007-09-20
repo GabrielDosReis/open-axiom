@@ -1,5 +1,13 @@
 2007-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (${DEPSYS}): Now depend on the compiled form
+	of parse.  Load it.
+	(parse.$(FASLEXT)): New rule.
+	* parse.boot: New.  Import "postpar".
+	* parse.boot.pamphlet: Move content to parse.boot.pamphlet.  Remove.
+
+2007-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* util.lisp.pamphlet ($directory-list): Move to sys-globals.boot.
 	($library-directory-list): Likewise.
 	* spad.lisp.pamphlet: Import "bootlex".
