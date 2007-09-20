@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp format.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 --% Functions for display formatting system objects
 
@@ -646,7 +630,7 @@ application2String(op,argl, linkInfo) ==
       concat(first argl, '"..")
     concat(first argl, concat('"..", first rest argl))
   concat(app2StringWrap(formWrapId op, linkInfo) ,
-			concat("_(",concat(tuple2String argl,"_)")))
+                        concat("_(",concat(tuple2String argl,"_)")))
 
 app2StringConcat0(x,y) ==
   FORMAT(NIL, '"~a ~a", x, y)
@@ -794,9 +778,3 @@ form2FenceQuoteTail x ==
 form2StringList u ==
   atom (r := form2String u) => [r]
   r
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

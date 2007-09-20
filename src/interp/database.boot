@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/database.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 SETANDFILEQ($getUnexposedOperations,true)
 
@@ -72,7 +52,7 @@ augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
       pred':= MKPF([pred,:catPredList],'AND)
       modemap:= [["*1",:sig],[pred',sel]]
       $lisplibModemapAlist:=
-	[[op,:interactiveModemapForm modemap],:$lisplibModemapAlist]
+        [[op,:interactiveModemapForm modemap],:$lisplibModemapAlist]
 
 augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
   form:= [formOp,:argl]:= formal2Pattern form
@@ -88,30 +68,30 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
     or/[(sig in catSig) for catSig in
       allLASSOCs(op,nonCategorySigAlist)] repeat
-	skip:=
-	  argl and CONTAINED("$",rest sig) => 'SKIP
-	  nil
-	sel:= substitute(form,"$",sel)
-	patternList:= listOfPatternIds sig
-	--get relevant predicates
-	predList:=
-	  [[a,m] for a in argl for m in rest signature
-	    | MEMQ(a,$PatternVariableList)]
-	sig:= substitute(form,"$",sig)
-	pred':= MKPF([pred,:[mkDatabasePred y for y in predList]],'AND)
-	l:=listOfPatternIds predList
-	if "OR"/[null MEMQ(u,l) for u in argl] then
-	  sayMSG ['"cannot handle modemap for",:bright op,
-			  '"by pattern match" ]
-	  skip:= 'SKIP
-	modemap:= [[form,:sig],[pred',sel,:skip]]
-	$lisplibModemapAlist:= [[op,:interactiveModemapForm modemap],
-	  :$lisplibModemapAlist]
+        skip:=
+          argl and CONTAINED("$",rest sig) => 'SKIP
+          nil
+        sel:= substitute(form,"$",sel)
+        patternList:= listOfPatternIds sig
+        --get relevant predicates
+        predList:=
+          [[a,m] for a in argl for m in rest signature
+            | MEMQ(a,$PatternVariableList)]
+        sig:= substitute(form,"$",sig)
+        pred':= MKPF([pred,:[mkDatabasePred y for y in predList]],'AND)
+        l:=listOfPatternIds predList
+        if "OR"/[null MEMQ(u,l) for u in argl] then
+          sayMSG ['"cannot handle modemap for",:bright op,
+                          '"by pattern match" ]
+          skip:= 'SKIP
+        modemap:= [[form,:sig],[pred',sel,:skip]]
+        $lisplibModemapAlist:= [[op,:interactiveModemapForm modemap],
+          :$lisplibModemapAlist]
 
 rebuildCDT(filemode) ==
   clearConstructorAndLisplibCaches()
   $databaseQueue:local :=nil
-  $e: local := [[NIL]]	  -- We may need to evaluate Categories
+  $e: local := [[NIL]]    -- We may need to evaluate Categories
   buildDatabase(filemode,false)
   $IOindex:= 1
   $InteractiveFrame:= [[NIL]]
@@ -119,7 +99,7 @@ rebuildCDT(filemode) ==
 
 buildDatabase(filemode,expensive) ==
   $InteractiveMode: local:= true
-  $constructorList := nil	--looked at by buildLibdb
+  $constructorList := nil       --looked at by buildLibdb
   $ConstructorCache:= MAKE_-HASHTABLE('ID)
   SAY '"Making constructor autoload"
   makeConstructorsAutoLoad()
@@ -189,14 +169,14 @@ orderPredicateItems(pred1,sig,skip) ==
 orderPredTran(oldList,sig,skip) ==
   lastPreds:=nil
   --(1) make two kinds of predicates appear last:
-  -----	 (op *target ..) when *target does not appear later in sig
-  -----	 (isDomain *1 ..)
+  -----  (op *target ..) when *target does not appear later in sig
+  -----  (isDomain *1 ..)
   for pred in oldList repeat
     ((pred is [op,pvar,.] and MEMQ(op,'(isDomain ofCategory))
        and pvar=first sig and ^(pvar in rest sig)) or
-	(^skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
-	  oldList:=delete(pred,oldList)
-	  lastPreds:=[pred,:lastPreds]
+        (^skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
+          oldList:=delete(pred,oldList)
+          lastPreds:=[pred,:lastPreds]
 --sayBrightlyNT "lastPreds="
 --pp lastPreds
 
@@ -221,7 +201,7 @@ orderPredTran(oldList,sig,skip) ==
       indepvl := listOfPatternIds x
       depvl := nil
     (INTERSECTIONQ(indepvl,dependList) = nil)
-	and INTERSECTIONQ(indepvl,lastDependList) =>
+        and INTERSECTIONQ(indepvl,lastDependList) =>
       somethingDone := true
       lastPreds := [:lastPreds,x]
       oldList := delete(x,oldList)
@@ -235,14 +215,14 @@ orderPredTran(oldList,sig,skip) ==
   while oldList repeat
     for x in oldList repeat
       if (x is ['ofCategory,v,body]) or (x is ['isDomain,v,body]) then
-	indepvl:=listOfPatternIds v
-	depvl:=listOfPatternIds body
+        indepvl:=listOfPatternIds v
+        depvl:=listOfPatternIds body
       else
-	indepvl := listOfPatternIds x
-	depvl := nil
+        indepvl := listOfPatternIds x
+        depvl := nil
       (INTERSECTIONQ(indepvl,dependList) = nil) =>
-	dependList:= setDifference(dependList,depvl)
-	newList:= [:newList,x]
+        dependList:= setDifference(dependList,depvl)
+        newList:= [:newList,x]
 --  sayBrightlyNT "newList="
 --  pp newList
 
@@ -259,7 +239,7 @@ orderPredTran(oldList,sig,skip) ==
     if pred is ['isDomain,x,y] or x is ['ofCategory,x,y] then
       ids:= listOfPatternIds y
       if and/[id in fullDependList for id in ids] then
-	fullDependList:= insertWOC(x,fullDependList)
+        fullDependList:= insertWOC(x,fullDependList)
       fullDependList:= UNIONQ(fullDependList,ids)
 
   newList:=[:newList,:lastPreds]
@@ -274,8 +254,8 @@ isDomainSubst u == main where
   main ==
     u is [head,:tail] =>
       nhead :=
-	head is ['isDomain,x,y] => ['isDomain,x,fn(y,tail)]
-	head
+        head is ['isDomain,x,y] => ['isDomain,x,fn(y,tail)]
+        head
       [nhead,:isDomainSubst rest u]
     u
   fn(x,alist) ==
@@ -397,7 +377,7 @@ getDomainFromMm mm ==
   if cond is ['partial, :c] then cond := c
   condList :=
     cond is ['AND, :cl] => cl
-    cond is ['OR, ['AND, :cl],:.] => cl	 --all cl's should give same info
+    cond is ['OR, ['AND, :cl],:.] => cl  --all cl's should give same info
     [cond]
   val :=
     for condition in condList repeat
@@ -417,7 +397,7 @@ getFirstArgTypeFromMm mm ==
   if cond is ['partial, :c] then cond := c
   condList :=
     cond is ['AND, :cl] => cl
-    cond is ['OR, ['AND, :cl],:.] => cl	 --all cl's should give same info
+    cond is ['OR, ['AND, :cl],:.] => cl  --all cl's should give same info
     [cond]
   type := nil
   for condition in condList while not type repeat
@@ -436,7 +416,7 @@ isFreeFunctionFromMmCond cond ==
   if cond is ['partial, :c] then cond := c
   condList :=
     cond is ['AND, :cl] => cl
-    cond is ['OR, ['AND, :cl],:.] => cl	 --all cl's should give same info
+    cond is ['OR, ['AND, :cl],:.] => cl  --all cl's should give same info
     [cond]
   iff := false
   for condition in condList while not iff repeat
@@ -463,7 +443,7 @@ getSystemModemaps(op,nargs) ==
     for (x := [[.,:sig],.]) in mml repeat
       (NUMBERP nargs) and (nargs ^= #QCDR sig) => 'iterate
       $getUnexposedOperations or isFreeFunctionFromMm(x) or
-	isExposedConstructor(getDomainFromMm(x)) => mms := [x,:mms]
+        isExposedConstructor(getDomainFromMm(x)) => mms := [x,:mms]
       'iterate
     mms
   nil
@@ -473,8 +453,8 @@ getInCoreModemaps(modemapList,op,nargs) ==
     mml:= CAR mml
     [x for (x:= [[dc,:sig],.]) in mml |
       (NUMBERP nargs => nargs=#rest sig; true) and
-	(cfn := abbreviate (domName := getDomainFromMm x)) and
-	  ($getUnexposedOperations or isExposedConstructor(domName))]
+        (cfn := abbreviate (domName := getDomainFromMm x)) and
+          ($getUnexposedOperations or isExposedConstructor(domName))]
   nil
 
 mkAlistOfExplicitCategoryOps target ==
@@ -486,16 +466,16 @@ mkAlistOfExplicitCategoryOps target ==
     l:= flattenSignatureList ['PROGN,:l]
     u:=
       [[atomizeOp op,:sig] for x in l | x is ['SIGNATURE,op,sig,:.]]
-	    where
-	      atomizeOp op ==
-		atom op => op
-		op is [a] => a
-		keyedSystemError("S2GE0016",
-		  ['"mkAlistOfExplicitCategoryOps",'"bad signature"])
+            where
+              atomizeOp op ==
+                atom op => op
+                op is [a] => a
+                keyedSystemError("S2GE0016",
+                  ['"mkAlistOfExplicitCategoryOps",'"bad signature"])
     opList:= REMDUP ASSOCLEFT u
     [[x,:fn(x,u)] for x in opList] where
       fn(op,u) ==
-	u is [[a,:b],:c] => (a=op => [b,:fn(op,c)]; fn(op,c))
+        u is [[a,:b],:c] => (a=op => [b,:fn(op,c)]; fn(op,c))
   isCategoryForm(target,$e) => nil
   keyedSystemError("S2GE0016",
     ['"mkAlistOfExplicitCategoryOps",'"bad signature"])
@@ -508,8 +488,8 @@ flattenSignatureList(x) ==
   x is ['PROGN,:l] =>
      ll:= []
      for x in l repeat
-	x is ['SIGNATURE,:.] => ll:=cons(x,ll)
-	ll:= append(flattenSignatureList x,ll)
+        x is ['SIGNATURE,:.] => ll:=cons(x,ll)
+        ll:= append(flattenSignatureList x,ll)
      ll
   nil
 
@@ -569,16 +549,16 @@ loadDependents fn ==
       l:= rread('dependents,stream,nil)
       RSHUT stream
       for x in l repeat
-	x='SubDomain => nil
-	loadIfNecessary x
+        x='SubDomain => nil
+        loadIfNecessary x
 
 --% Miscellaneous Stuff
 
 getOplistForConstructorForm (form := [op,:argl]) ==
   --  The new form is an op-Alist which has entries (<op> . signature-Alist)
-  --	where signature-Alist has entries (<signature> . item)
-  --	  where item has form (<slotNumber> <condition> <kind>)
-  --	    where <kind> =  ELT | CONST | Subsumed | (XLAM..) ..
+  --    where signature-Alist has entries (<signature> . item)
+  --      where item has form (<slotNumber> <condition> <kind>)
+  --        where <kind> =  ELT | CONST | Subsumed | (XLAM..) ..
   pairlis:= [[fv,:arg] for fv in $FormalMapVariableList for arg in argl]
   opAlist := getOperationAlistFromLisplib op
   [:getOplistWithUniqueSignatures(op,pairlis,signatureAlist)
@@ -588,8 +568,8 @@ getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
   alist:= nil
   for [sig,:[slotNumber,pred,kind]] in signatureAlist | kind ^= 'Subsumed repeat
     alist:= insertAlist(SUBLIS(pairlis,[op,sig]),
-		SUBLIS(pairlis,[pred,[kind,nil,slotNumber]]),
-		alist)
+                SUBLIS(pairlis,[pred,[kind,nil,slotNumber]]),
+                alist)
   alist
 
 --% Code For Modemap Insertion
@@ -617,21 +597,21 @@ dropPrefix(fn) ==
 --++  egFiles := NIL
 --++  while (not PLACEP (x:= READ_-LINE stream)) repeat
 --++    x := DROPTRAILINGBLANKS x
---++    SIZE(x) = 0 => 'iterate				-- blank line
+--++    SIZE(x) = 0 => 'iterate                         -- blank line
 --++    (x.0 = char "#") or (x.0 = char "*") => 'iterate    -- comment
 --++    x.0 = char " " =>
 --++       -- possible exposure group member name and library name
 --++       null egName =>
---++	 throwKeyedMsg("S2IZ0069A",[namestring egFile,x])
+--++     throwKeyedMsg("S2IZ0069A",[namestring egFile,x])
 --++       x := dropLeadingBlanks x
 --++       -- should be two tokens on the line
 --++       p := STRPOS('" ",x,1,NIL)
 --++       NULL p =>
---++	 throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
+--++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       n := object2Identifier SUBSTRING(x,0,p)
 --++       x := dropLeadingBlanks SUBSTRING(x,p+1,NIL)
 --++       SIZE(x) = 0 =>
---++	 throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
+--++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       egFiles := [[n,:object2Identifier x],:egFiles]
 --++    -- have a new group name
 --++    if egName then $globalExposureGroupAlist :=
@@ -689,9 +669,3 @@ displayHiddenConstructors() ==
       centerAndHighlight c
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

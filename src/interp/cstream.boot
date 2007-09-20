@@ -1,30 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp cstream.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-The input stream is parsed into a large s-expression by repeated calls
-to Delay. Delay takes a function f and an argument x and returns a list
-consisting of ("nonnullstream" f x). Eventually multiple calls are made
-and a large list structure is created that consists of 
-("nonnullstream" f x ("nonnullstream" f1 x1 ("nonnullstream" f2 x2...
-
-This delay structure is given to StreamNull which walks along the
-list looking at the head. If the head is "nonnullstream" then the
-function is applied to the argument.
-
-So, in effect, the input is "zipped up" into a Delay data structure
-which is then evaluated by calling StreamNull. This "zippered stream"
-parser was a research project at IBM and Axiom was the testbed (which
-explains the strange parsing technique).
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -56,9 +29,6 @@ explains the strange parsing technique).
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"sys-macros"
 
@@ -139,9 +109,3 @@ spadcall1(g)==
 spadcall2(f,args) ==
     [impl, :env] := f
     APPLY(impl, [args, env])
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

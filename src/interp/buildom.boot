@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp buildom.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 -- This file contains the constructors for the domains that cannot
 -- be written in ScratchpadII yet.  They are not cached because they
@@ -74,36 +58,36 @@ Record0 args ==
     -- JHD added an extra slot to cache EQUAL methods
     dom.0 := ["Record", :[["_:", CAR a, devaluate CDR a] for a in args]]
     dom.1 :=
-	   [function lookupInTable,dom,
-	       [["_=",[[["Boolean"],"_$","_$"],:12]],
-		 ["coerce",[[$Expression,"_$"],:14]]]]
+           [function lookupInTable,dom,
+               [["_=",[[["Boolean"],"_$","_$"],:12]],
+                 ["coerce",[[$Expression,"_$"],:14]]]]
     dom.2 := NIL
     dom.3 := ["RecordCategory",:QCDR dom.0]
     dom.4 :=
-	  [[ '(SetCategory) ],[ '(SetCategory) ]]
+          [[ '(SetCategory) ],[ '(SetCategory) ]]
     dom.5 := [CDR a for a in args]
     dom.6 := [function RecordEqual, :dom]
     dom.7 := [function RecordPrint, :dom]
     dom.8 := [function Undef, :dom]
   -- following is cache for equality functions
     dom.9 := if (n:= LENGTH args) <= 2
-	      then [NIL,:NIL]
-	      else GETREFV n
+              then [NIL,:NIL]
+              else GETREFV n
     dom
 
 RecordEqual(x,y,dom) ==
   PAIRP x =>
     b:=
        SPADCALL(CAR x, CAR y, CAR(dom.9) or
-			   CAR RPLACA(dom.9,findEqualFun(dom.5.0)))
+                           CAR RPLACA(dom.9,findEqualFun(dom.5.0)))
     NULL rest(dom.5) => b
     b and
        SPADCALL(CDR x, CDR y, CDR (dom.9) or
-			   CDR RPLACD(dom.9,findEqualFun(dom.5.1)))
+                           CDR RPLACD(dom.9,findEqualFun(dom.5.1)))
   VECP x =>
     equalfuns := dom.9
     and/[SPADCALL(x.i,y.i,equalfuns.i or (equalfuns.i:=findEqualFun(fdom)))
-	 for i in 0.. for fdom in dom.5]
+         for i in 0.. for fdom in dom.5]
   error '"Bug: Silly record representation"
 
 RecordPrint(x,dom) == coerceRe2E(x,dom.3)
@@ -136,16 +120,16 @@ coerceRe2E(x,source) ==
 Union(:args) ==
     dom := GETREFV 9
     dom.0 := ["Union", :[(if a is ["_:",tag,domval] then ["_:",tag,devaluate domval]
-			  else devaluate a) for a in args]]
+                          else devaluate a) for a in args]]
     dom.1 :=
-	    [function lookupInTable,dom,
-	       [["_=",[[["Boolean"],"_$","_$"],:12]],
-		 ["coerce",[[$Expression,"_$"],:14]]]]
+            [function lookupInTable,dom,
+               [["_=",[[["Boolean"],"_$","_$"],:12]],
+                 ["coerce",[[$Expression,"_$"],:14]]]]
     dom.2 := NIL
     dom.3 :=
       '(SetCategory)
     dom.4 :=
-	  [[ '(SetCategory) ],[ '(SetCategory) ]]
+          [[ '(SetCategory) ],[ '(SetCategory) ]]
     dom.5 := args
     dom.6 := [function UnionEqual, :dom]
     dom.7 := [function UnionPrint, :dom]
@@ -190,14 +174,14 @@ Mapping(:args) ==
     dom := GETREFV 9
     dom.0 := ["Mapping", :[devaluate a for a in args]]
     dom.1 :=
-	    [function lookupInTable,dom,
-	       [["_=",[[["Boolean"],"_$","_$"],:12]],
-		 ["coerce",[[$Expression,"_$"],:14]]]]
+            [function lookupInTable,dom,
+               [["_=",[[["Boolean"],"_$","_$"],:12]],
+                 ["coerce",[[$Expression,"_$"],:14]]]]
     dom.2 := NIL
     dom.3 :=
       '(SetCategory)
     dom.4 :=
-	  [[ '(SetCategory) ],[ '(SetCategory) ]]
+          [[ '(SetCategory) ],[ '(SetCategory) ]]
     dom.5 := args
     dom.6 := [function MappingEqual, :dom]
     dom.7 := [function MappingPrint, :dom]
@@ -221,14 +205,14 @@ Enumeration(:"args") ==
     -- JHD added an extra slot to cache EQUAL methods
     dom.0 := ["Enumeration", :args]
     dom.1 :=
-	   [function lookupInTable,dom,
-	       [["_=",[[["Boolean"],"_$","_$"],:12]],
-		 ["coerce",[[$Expression,"_$"],:14], [["_$", $Symbol], :16]]
+           [function lookupInTable,dom,
+               [["_=",[[["Boolean"],"_$","_$"],:12]],
+                 ["coerce",[[$Expression,"_$"],:14], [["_$", $Symbol], :16]]
                          ]]
     dom.2 := NIL
     dom.3 := ["EnumerationCategory",:QCDR dom.0]
     dom.4 :=
-	  [[ '(SetCategory) ],[ '(SetCategory) ]]
+          [[ '(SetCategory) ],[ '(SetCategory) ]]
     dom.5 := args
     dom.6 := [function EnumEqual, :dom]
     dom.7 := [function EnumPrint, :dom]
@@ -256,11 +240,11 @@ UnionCategory(:"x") == constructorCategory ["Union",:x]
 --ListCategory(:"x") == constructorCategory ("List",:x)
 
 --VectorCategory(:"x") == constructorCategory ("Vector",:x)
-	  --above two now defined in SPAD code.
+          --above two now defined in SPAD code.
 
 constructorCategory (title is [op,:.]) ==
   constructorFunction:= GETL(op,"makeFunctionList") or
-	      systemErrorHere '"constructorCategory"
+              systemErrorHere '"constructorCategory"
   [funlist,.]:= FUNCALL(constructorFunction,"$",title,$CategoryFrame)
   oplist:= [[[a,b],true,c] for [a,b,c] in funlist]
   cat:=
@@ -282,23 +266,23 @@ mkRecordFunList(nam,["Record",:Alist],e) ==
 
 --  for (.,a,.) in Alist do
 --    if getmode(a,e) then MOAN("Symbol: ",a,
---	  " must not be both a variable and literal")
+--        " must not be both a variable and literal")
 --    e:= put(a,"isLiteral","true",e)
   dc := GENSYM()
   sigFunAlist:=
      --:((a,(A,nam),("XLAM",("$1","$2"),("RECORDELT","$1",i,len)))
-     --	      for i in 0..,(.,a,A) in Alist),
+     --       for i in 0..,(.,a,A) in Alist),
 
     [["construct",[nam,:[A for [.,a,A] in Alist]],"mkRecord"],
       ["_=",[["Boolean"],nam ,nam],["ELT",dc,6]],
        ["coerce",[$Expression,nam],["ELT",dc,7]],:
-	[["elt",[A,nam,PNAME a],["XLAM",["$1","$2"],["RECORDELT","$1",i,len]]]
-	    for i in 0.. for [.,a,A] in Alist],:
-	  [["setelt",[A,nam,PNAME a,A],["XLAM",["$1","$2","$3"],
-	    ["SETRECORDELT","$1",i, len,"$3"]]]
-	      for i in 0.. for [.,a,A] in Alist],:
-		[["copy",[nam,nam],["XLAM",["$1"],["RECORDCOPY",
-		  "$1",len]]]]]
+        [["elt",[A,nam,PNAME a],["XLAM",["$1","$2"],["RECORDELT","$1",i,len]]]
+            for i in 0.. for [.,a,A] in Alist],:
+          [["setelt",[A,nam,PNAME a,A],["XLAM",["$1","$2","$3"],
+            ["SETRECORDELT","$1",i, len,"$3"]]]
+              for i in 0.. for [.,a,A] in Alist],:
+                [["copy",[nam,nam],["XLAM",["$1"],["RECORDCOPY",
+                  "$1",len]]]]]
   [substitute(nam,dc,substitute("$","Rep",sigFunAlist)),e]
 
 mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
@@ -309,18 +293,18 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
     [["_=",[["Boolean"],name ,name],["ELT",dc,6]],
      ["coerce",[$Expression,name],["ELT",dc,7]],:
        ("append"/
-	[[["construct",[name,type],["XLAM",["#1"],["CONS",i,"#1"]]],
-	  ["elt",[type,name,tag],cdownFun],
-	    ["case",['(Boolean),name,tag],
-	       ["XLAM",["#1"],["QEQCAR","#1",i]]]]
-		 for [.,tag,type] in listOfEntries for i in 0..])] where
-		   cdownFun() ==
-		    gg:=GENSYM()
-		    $InteractiveMode =>
-		      ["XLAM",["#1"],["PROG1",["QCDR","#1"],
-			["check_-union",["QEQCAR","#1",i],type,"#1"]]]
-		    ["XLAM",["#1"],["PROG2",["LET",gg,"#1"],["QCDR",gg],
-		      ["check_-union",["QEQCAR",gg,i],type,gg]]]
+        [[["construct",[name,type],["XLAM",["#1"],["CONS",i,"#1"]]],
+          ["elt",[type,name,tag],cdownFun],
+            ["case",['(Boolean),name,tag],
+               ["XLAM",["#1"],["QEQCAR","#1",i]]]]
+                 for [.,tag,type] in listOfEntries for i in 0..])] where
+                   cdownFun() ==
+                    gg:=GENSYM()
+                    $InteractiveMode =>
+                      ["XLAM",["#1"],["PROG1",["QCDR","#1"],
+                        ["check_-union",["QEQCAR","#1",i],type,"#1"]]]
+                    ["XLAM",["#1"],["PROG2",["LET",gg,"#1"],["QCDR",gg],
+                      ["check_-union",["QEQCAR",gg,i],type,gg]]]
   [cList,e]
 
 mkEnumerationFunList(nam,["Enumeration",:SL],e) ==
@@ -347,40 +331,34 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
     ["coerce",[$Expression,g],["ELT",op,7]],:
      ("append"/
       [[["autoCoerce",[g,t],upFun],
-	["coerce",[t,g],cdownFun],
-	["autoCoerce",[t,g],downFun], --this should be removed eventually
-	["case",['(Boolean),g,t],typeFun]]
-	  for p in predList for t in listOfEntries])] where
-	     upFun() ==
-	       p is ["EQCAR",x,n] => ["XLAM",["#1"],["CONS",n,"#1"]]
-	       ["XLAM",["#1"],"#1"]
-	     cdownFun() ==
-	       gg:=GENSYM()
-	       if p is ["EQCAR",x,n] then
-		  ref:=["QCDR",gg]
-		  q:= ["QEQCAR", gg, n]
-	       else
-		  ref:=gg
-		  q:= substitute(gg,"#1",p)
-	       ["XLAM",["#1"],["PROG2",["LET",gg,"#1"],ref,
-		    ["check_-union",q,t,gg]]]
-	     downFun() ==
-		p is ["EQCAR",x,.] =>
-		  ["XLAM",["#1"],["QCDR","#1"]]
-		["XLAM",["#1"],"#1"]
-	     typeFun() ==
-		p is ["EQCAR",x,n] =>
-		  ["XLAM",["#1"],["QEQCAR",x,n]]
-		["XLAM",["#1"],p]
+        ["coerce",[t,g],cdownFun],
+        ["autoCoerce",[t,g],downFun], --this should be removed eventually
+        ["case",['(Boolean),g,t],typeFun]]
+          for p in predList for t in listOfEntries])] where
+             upFun() ==
+               p is ["EQCAR",x,n] => ["XLAM",["#1"],["CONS",n,"#1"]]
+               ["XLAM",["#1"],"#1"]
+             cdownFun() ==
+               gg:=GENSYM()
+               if p is ["EQCAR",x,n] then
+                  ref:=["QCDR",gg]
+                  q:= ["QEQCAR", gg, n]
+               else
+                  ref:=gg
+                  q:= substitute(gg,"#1",p)
+               ["XLAM",["#1"],["PROG2",["LET",gg,"#1"],ref,
+                    ["check_-union",q,t,gg]]]
+             downFun() ==
+                p is ["EQCAR",x,.] =>
+                  ["XLAM",["#1"],["QCDR","#1"]]
+                ["XLAM",["#1"],"#1"]
+             typeFun() ==
+                p is ["EQCAR",x,n] =>
+                  ["XLAM",["#1"],["QEQCAR",x,n]]
+                ["XLAM",["#1"],p]
   op:=
     op="Rep" => "$"
     op
   cList:= substitute(op,g,cList)
   [cList,e]
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
