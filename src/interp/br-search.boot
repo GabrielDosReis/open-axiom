@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/br-search.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 --====================> WAS b-search.boot <================================
 
@@ -509,7 +489,7 @@ genSearchSay(pair,summarize,kind,who,fn) ==
     htSay('"{\em 1 ",kind,'"} ")
   else
     htSay('"{\em ",count,'" ",pluralize kind,'"} ")
-  short => 'done	
+  short => 'done        
   if uniqueCount ^= 1 then
     htSayStandard '"\indent{4}"
     htSay '"\newline "
@@ -1032,9 +1012,3 @@ dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

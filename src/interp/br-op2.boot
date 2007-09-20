@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/br-op2.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,31 +29,28 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 --====================> WAS br-op2.boot <================================
 
 --=======================================================================
---		     Operation Description
+--                   Operation Description
 --=======================================================================
 
 displayDomainOp(htPage,which,origin,op,sig,predicate,
-		doc,index,chooseFn,unexposed?,$generalSearch?) ==
+                doc,index,chooseFn,unexposed?,$generalSearch?) ==
 -----------------------> OBSELETE
   $saturn =>
     displayDomainOp1(htPage,which,origin,op,sig,predicate,
-		doc,index,chooseFn,unexposed?,$generalSearch?)
-  $chooseDownCaseOfType : local := true	  --see dbGetContrivedForm
+                doc,index,chooseFn,unexposed?,$generalSearch?)
+  $chooseDownCaseOfType : local := true   --see dbGetContrivedForm
   $whereList  : local := nil
   $NumberList : local := '(i j k l m n i1 j1 k1 l1 m1 n1 i2 j2 k2 l2 m2 n2 i3 j3 k3 l3 m3 n3 i4 j4 k4 l4 m4 n4 )
   $ElementList: local := '(x y z u v w x1 y1 z1 u1 v1 w1 x2 y2 z2 u2 v2 w2 x3 y3 z3 u3 v3 w3 x4 y4 z4 u4 v4 w4 )
   $FunctionList:local := '(f g h d e F G H)
-  $DomainList:	local := '(D R S E T A B C M N P Q U V W)
+  $DomainList:  local := '(D R S E T A B C M N P Q U V W)
   exactlyOneOpSig     := null index
   conform   := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
-		 or origin
+                 or origin
   if $generalSearch? then $DomainList := rest $DomainList
   opform :=
     which = '"attribute" =>
@@ -105,7 +85,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   constring := form2HtString conform
   conname   := first conform
   $conkind   : local := htpProperty(htPage,'kind) -- a string e.g. "category"
-			  or STRINGIMAGE GETDATABASE(conname,'CONSTRUCTORKIND)
+                          or STRINGIMAGE GETDATABASE(conname,'CONSTRUCTORKIND)
   $conlength : local := #constring
   $conform   : local := conform
   $conargs   : local := rest conform
@@ -131,11 +111,11 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSayStandard '"\tab{2}"
       htSay '"{\em Arguments:}"
       for a in args for t in rest $sig repeat
-	htSayIndentRel(15,true)
-	htSay('"{\em ",form2HtString(a),'"}, ")
-	htSayValue t
-	htSayIndentRel(-15,true)
-	htSay('"\newline ")
+        htSayIndentRel(15,true)
+        htSay('"{\em ",form2HtString(a),'"}, ")
+        htSayValue t
+        htSayIndentRel(-15,true)
+        htSay('"\newline ")
     if first $sig then
       $displayReturnValue := true
       htSay('"\newline\tab{2}{\em Returns:}")
@@ -166,8 +146,8 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSayStandard '"{\em \$} is "
       htSaySaturn '"{\em \%} is "
       htSay
-	$conkind = '"category" => '"of category "
-	'"the domain "
+        $conkind = '"category" => '"of category "
+        '"the domain "
       bcConform(conform,true,true)
       htSayIndentRel(-15,true)
     for [d,key,:t] in $whereList | d ^= "$" repeat
@@ -218,11 +198,11 @@ htSayConstructor(key,u) ==
       htSay '"categories "
       bcConform(first middle,true)
       for x in rest middle repeat
-	htSay '", "
-	bcConform(x,true)
+        htSay '", "
+        bcConform(x,true)
       r is ['CATEGORY,.,:r] =>
-	htSay '" and "
-	htSayExplicitExports(r)
+        htSay '" and "
+        htSayExplicitExports(r)
       htSay '" and "
       bcConform(r,true)
     htSay '"category "
@@ -267,7 +247,7 @@ htSayValue t ==
   t is [op,:.] and MEMQ(op,'(Join CATEGORY)) or constructor? opOf t =>
     htSayConstructor(nil,t)
   htSay('"an element of domain ")
-  htSayArgument t			     --continue for operations
+  htSayArgument t                            --continue for operations
 
 htSayArgument t == --called only for operations not for constructors
   null $signature => htSay ['"{\em ",t,'"}"]
@@ -318,7 +298,7 @@ dbMakeContrivedForm(op,sig,:options) ==
   $NumberList : local := '(i j k l m n i1 j1 k1 l1 m1 n1 i2 j2 k2 l2 m2 n2 i3 j3 k3 l3 m3 n3 i4 j4 k4 l4 m4 n4 )
   $ElementList: local := '(x y z u v w x1 y1 z1 u1 v1 w1 x2 y2 z2 u2 v2 w2 x3 y3 z3 u3 v3 w3 x4 y4 z4 u4 v4 w4 )
   $FunctionList:local := '(f g h d e F G H)
-  $DomainList:	local := '(R S D E T A B C M N P Q U V W)
+  $DomainList:  local := '(R S D E T A B C M N P Q U V W)
   dbGetContrivedForm(op,sig)
 
 dbGetContrivedForm(op,sig) ==
@@ -343,10 +323,10 @@ dbChooseOperandName(typ) ==
       x
     x :=
       $chooseDownCaseOfType =>
-	y := DOWNCASE typ
-	x :=
-	  member(y,$ElementList) => y
-	  first $ElementList
+        y := DOWNCASE typ
+        x :=
+          member(y,$ElementList) => y
+          first $ElementList
       first $ElementList
     $ElementList := delete(x,$ElementList)
     x
@@ -386,12 +366,12 @@ getSubstSignature sig ==
       null rest candidates => newsig
       count := NUMOFNODES newsig
       for x in rest candidates repeat
-	trial := fullSubstitute(D,x,sig)
-	trialCount := NUMOFNODES trial
-	trialCount < count =>
-	  newsig := trial
-	  count	 := trialCount
-	  winner := x
+        trial := fullSubstitute(D,x,sig)
+        trialCount := NUMOFNODES trial
+        trialCount < count =>
+          newsig := trial
+          count  := trialCount
+          winner := x
       newsig
     addWhereList(D,'is,winner)
     newsig
@@ -409,7 +389,7 @@ getSubstInsert(x,candidates) ==
 
 
 --=======================================================================
---			Who Uses
+--                      Who Uses
 --=======================================================================
 whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
   key = 'filter => koaPageFilterByName(htPage,'whoUsesOperation)
@@ -465,7 +445,7 @@ whoUses(opSigList,conform) ==
   hash := MAKE_-HASH_-TABLE()
   for name in allConstructors() | MEMQ(name,domList) repeat
     $infovec : local := dbInfovec name
-    null $infovec => 'skip	     --category
+    null $infovec => 'skip           --category
     template := $infovec . 0
     found := false
     opacc := nil
@@ -480,7 +460,7 @@ whoUses(opSigList,conform) ==
       template . whereNumber isnt [= $conname,:.] => 'skip
       signumList := dcSig(numvec,index + 1,numOfArgs)
       opsig := or/[pair for (pair := [op1,:sig]) in opSigList | op1 = op and whoUsesMatch?(signumList,sig,nil)]
-	=> opacc := [opsig,:opacc]
+        => opacc := [opsig,:opacc]
     if opacc then acc := [[name,:opacc],:acc]
   acc
 
@@ -499,7 +479,7 @@ whoUsesMatch1?(signumList,sig,al) ==
   true
 
 --=======================================================================
---		     Get Attribute/Operation Alist
+--                   Get Attribute/Operation Alist
 --=======================================================================
 
 koAttrs(conform,domname) ==
@@ -532,15 +512,15 @@ koOps(conform,domname,:options) == main where
 --    if relatives? then
 --      relatives := relativesOf(conform,domname)
 --      if domname then relatives :=
---	SUBLISLIS([domname,:rest domname],['_$,:rest conform],relatives)
+--      SUBLISLIS([domname,:rest domname],['_$,:rest conform],relatives)
 --      --kill all relatives that have a sharp variable remaining in them
 --      for x in relatives repeat
---	or/[y for y in CDAR x | isSharpVar y] => 'skip
---	acc := [x,:acc]
+--      or/[y for y in CDAR x | isSharpVar y] => 'skip
+--      acc := [x,:acc]
 --      relatives := NREVERSE acc
 --      for (pair := [pakform,:.]) in relatives repeat
---	$packageItem := sublisFormal(rest conform,pair)
---	ours := merge(fn(pakform,nil),ours)
+--      $packageItem := sublisFormal(rest conform,pair)
+--      ours := merge(fn(pakform,nil),ours)
     listSort(function GLESSEQP,trim ours)
   trim u == [pair for pair in u | IFCDR pair]
   fn(conform,domname) ==
@@ -550,7 +530,7 @@ koOps(conform,domname,:options) == main where
     ----------> new <------------------
     u := koCatOps(conform,domname) => u
 --    'category = GETDATABASE(conname,'CONSTRUCTORKIND) =>
---	  koCatOps(conform,domname)
+--        koCatOps(conform,domname)
     asharpConstructorName? opOf conform => nil
     ----------> new <------------------
     $infovec: local := dbInfovec conname--------> removed 94/10/24
@@ -562,15 +542,15 @@ koOps(conform,domname,:options) == main where
       op1 := zeroOneConvert op
       acc :=
        [[op1,:[[sig,npred,:exposureTail] for [sig,slot,pred,key,:.] in sublisFormal(subargs,u) |
-	 (key ^= 'Subsumed) and (npred := simpHasPred pred)]],:acc]
+         (key ^= 'Subsumed) and (npred := simpHasPred pred)]],:acc]
     acc
   merge(alist,alist1) == --alist1 takes precedence
     for [op,:al] in alist1 repeat
       u := LASSOC(op,alist) =>
-	for [sig,:item] in al | not LASSOC(sig,u) repeat
-	  u := insertAlist(sig,item,u)
-	alist := insertAlist(op,u,DELASC(op,alist)) --add the merge of two alists
-      alist := insertAlist(op,al,alist)	 --add the whole inner alist
+        for [sig,:item] in al | not LASSOC(sig,u) repeat
+          u := insertAlist(sig,item,u)
+        alist := insertAlist(op,u,DELASC(op,alist)) --add the merge of two alists
+      alist := insertAlist(op,al,alist)  --add the whole inner alist
     alist
 
 zeroOneConvert x ==
@@ -628,12 +608,12 @@ koCatAttrsAdd(catform,pred) ==
         then HPUT($if,name,[[argl,simpHasPred npred],:exists])
 
 --=======================================================================
---	      Filter by Category
+--            Filter by Category
 --=======================================================================
 
 koaPageFilterByCategory(htPage,calledFrom) ==
   opAlist := htpProperty(htPage,'opAlist)
-  which	  := htpProperty(htPage,'which)
+  which   := htpProperty(htPage,'which)
   page := htInitPageNoScroll(htCopyProplist htPage,
              dbHeading(opAlist,which,htpProperty(htPage,'heading)))
   htSay('"Select a category ancestor below or ")
@@ -665,7 +645,7 @@ koaPageFilterByCategory1(htPage,i) ==
   ancestor := htpProperty(htPage,'ancestors) . i
   ancestorList := [ancestor,:ASSOCLEFT ancestorsOf(ancestor,nil)]
   newOpAlist := nil
-  which	   := htpProperty(htPage,'which)
+  which    := htpProperty(htPage,'which)
   opAlist  := htpProperty(htPage,'opAlist)
   domname  := htpProperty(htPage,'domname)
   conform  := htpProperty(htPage,'conform)
@@ -674,15 +654,15 @@ koaPageFilterByCategory1(htPage,i) ==
   for [op,:alist] in opAlist repeat
     nalist := [[origin,:item] for item in alist | split]
       where split ==
-	[sig,pred,:aux] := item
-	u := dbGetDocTable(op,sig,docTable,which,aux)
-	origin := IFCAR u
-	doc    := IFCDR u
-	true
+        [sig,pred,:aux] := item
+        u := dbGetDocTable(op,sig,docTable,which,aux)
+        origin := IFCAR u
+        doc    := IFCDR u
+        true
     for [origin,:item] in nalist | origin repeat
       member(origin,ancestorList) =>
-	newEntry   := [item,:LASSOC(op,newOpAlist)]
-	newOpAlist := insertAlist(op,newEntry,newOpAlist)
+        newEntry   := [item,:LASSOC(op,newOpAlist)]
+        newOpAlist := insertAlist(op,newEntry,newOpAlist)
   falist := nil
   for [op,:alist] in newOpAlist repeat
     falist := [[op,:NREVERSE alist],:falist]
@@ -690,7 +670,7 @@ koaPageFilterByCategory1(htPage,i) ==
   dbShowOperationsFromConform(htPage,which,falist)
 
 --=======================================================================
---	     New code for search operation alist for exact matches
+--           New code for search operation alist for exact matches
 --=======================================================================
 
 opPageFast opAlist == --called by oSearch
@@ -782,9 +762,3 @@ pairlis(u,v) ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

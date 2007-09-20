@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/br-util.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,14 +29,11 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 --====================> WAS b-util.boot <================================
 
 --=======================================================================
---		       AXIOM Browser
+--                     AXIOM Browser
 -- Initial entry is from man0.ht page to one of these functions:
 --   kSearch (cSearch, dSearch, or pSearch), for constructors
 --   oSearch, for operations
@@ -67,27 +47,27 @@ browserAutoloadOnceTrigger() == nil
 
 ----------------------> Global Variables <-----------------------
 $includeUnexposed? := true   --default setting
-$tick := char '_`	     --field separator for database files
+$tick := char '_`            --field separator for database files
 $charUnderscore := ('__)     --needed because of parser bug
 $wild1 := '"[^`]*"           --phrase used to convert keys to grep strings
 $browseCountThreshold := 10  --the maximum number of names that will display
-			     --on a general search
+                             --on a general search
 $opDescriptionThreshold := 4 --if <= 4 operations with unique name, give desc
                              --otherwise, give signatures
 $browseMixedCase := true     --distinquish case in the browser?
-$docTable := nil	     --cache for documentation table
-$conArgstrings := nil	     --bound by conPage so that kPage
-			     --will display arguments if given
-$conformsAreDomains  := false	  --are all arguments of a constructor given?
+$docTable := nil             --cache for documentation table
+$conArgstrings := nil        --bound by conPage so that kPage
+                             --will display arguments if given
+$conformsAreDomains  := false     --are all arguments of a constructor given?
 $returnNowhereFromGoGet := false  --special branch out for goget for browser
-$dbDataFunctionAlist := nil	  --set by dbGatherData
-$domain	  := nil	     --bound in koOps
-$infovec  := nil	     --bound in koOps
-$predvec  := nil	     --bound in koOps
+$dbDataFunctionAlist := nil       --set by dbGatherData
+$domain   := nil             --bound in koOps
+$infovec  := nil             --bound in koOps
+$predvec  := nil             --bound in koOps
 $exposedOnlyIfTrue := nil    --see repeatSearch, dbShowOps, dbShowCon
-$bcMultipleNames := nil	     --see bcNameConTable
+$bcMultipleNames := nil      --see bcNameConTable
 $bcConformBincount := nil    --see bcConform1
-$docTableHash := MAKE_-HASHTABLE 'EQUAL	 --see dbExpandOpAlistIfNecessary
+$docTableHash := MAKE_-HASHTABLE 'EQUAL  --see dbExpandOpAlistIfNecessary
 $groupChoice := nil  --see dbShowOperationsFromConform
 
 ------------------> Initial Settings <---------------------
@@ -97,14 +77,14 @@ $dbKindAlist :=
     [char 'd,:'"domain"],[char 'p,:'"package"],
       [char 'c,:'"category"],[char 'x,:'"default_ package"]]
 $OpViewTable := '(
-  (names	   "Name"      "Names"           dbShowOpNames)
+  (names           "Name"      "Names"           dbShowOpNames)
   (documentation   "Name"      "Names"           dbShowOpDocumentation)
-  (domains	   "Domain"    "Domains"         dbShowOpDomains)
-  (signatures	   "Signature" "Signatures"      dbShowOpSignatures)
-  (parameters	   "Form"      "Forms"           dbShowOpParameters)
-  (origins	   "Origin"    "Origins"         dbShowOpOrigins)
-  (implementation  nil	       "Implementation Domains" dbShowOpImplementations)
-  (conditions	   "Condition" "Conditions"      dbShowOpConditions))
+  (domains         "Domain"    "Domains"         dbShowOpDomains)
+  (signatures      "Signature" "Signatures"      dbShowOpSignatures)
+  (parameters      "Form"      "Forms"           dbShowOpParameters)
+  (origins         "Origin"    "Origins"         dbShowOpOrigins)
+  (implementation  nil         "Implementation Domains" dbShowOpImplementations)
+  (conditions      "Condition" "Conditions"      dbShowOpConditions))
 
 bcBlankLine() == bcHt '"\vspace{1}\newline "
 
@@ -124,7 +104,7 @@ capitalize s ==
     SETELT(res,0,UPCASE res.0)
     res
 
-escapeSpecialIds u ==	--very expensive function
+escapeSpecialIds u ==   --very expensive function
   x := LASSOC(u,$htCharAlist) => [x]
   #u = 1 =>
     member(u, $htSpecialChars) => [CONCAT('"_\", u)]
@@ -154,37 +134,37 @@ htPred2English(x,:options) ==
   fn(x,100) where
     fn(x,prec) ==
       x is [op,:l] =>
-	LASSOC(op,$precList) is [iprec,:rename] =>
-	  if iprec > prec then htSay '"("
-	  fn(first l,iprec)
-	  for y in rest l repeat
-	    htSay('" ",rename or op,'" ")
-	    fn(y,iprec)
-	  if iprec > prec then htSay '")"
-	if prec < 5 then htSay '"("
-	gn(x,op,l,prec)
-	if prec < 5 then htSay '")"
+        LASSOC(op,$precList) is [iprec,:rename] =>
+          if iprec > prec then htSay '"("
+          fn(first l,iprec)
+          for y in rest l repeat
+            htSay('" ",rename or op,'" ")
+            fn(y,iprec)
+          if iprec > prec then htSay '")"
+        if prec < 5 then htSay '"("
+        gn(x,op,l,prec)
+        if prec < 5 then htSay '")"
       x = 'etc => htSay '"..."
       IDENTP x and not MEMQ(x,$emList) => htSay escapeSpecialIds PNAME x
       htSay form2HtString(x,$emList)
     gn(x,op,l,prec) ==
       MEMQ(op,'(NOT not)) =>
-	htSay('"not ")
-	fn(first l,0)
+        htSay('"not ")
+        fn(first l,0)
       op = 'HasCategory =>
-	bcConform(first l,$emList)
-	htSay('" has ")
-	bcConform(CADADR l,$emList)
+        bcConform(first l,$emList)
+        htSay('" has ")
+        bcConform(CADADR l,$emList)
       op = 'HasAttribute =>
-	bcConform(first l,$emList)
-	htSay('" has ")
-	fnAttr CADADR l
+        bcConform(first l,$emList)
+        htSay('" has ")
+        fnAttr CADADR l
       MEMQ(op,'(has ofCategory)) =>
-	bcConform(first l,$emList)
-	htSay('" has ")
-	[a,b] := l
-	b is ['ATTRIBUTE,c] and not constructor? c => fnAttr c
-	bcConform(b, $emList)
+        bcConform(first l,$emList)
+        htSay('" has ")
+        [a,b] := l
+        b is ['ATTRIBUTE,c] and not constructor? c => fnAttr c
+        bcConform(b, $emList)
       bcConform(x,$emList)
     fnAttr c ==
       s := form2HtString c
@@ -217,11 +197,11 @@ form2HtString(x,:options) ==
   fn(x) where
     fn x ==
       atom x =>
-	MEMQ(x,$FormalMapVariableList) => STRCONC('"\",STRINGIMAGE x)
-	u := escapeSpecialChars STRINGIMAGE x
-	MEMQ(x,$emList) => STRCONC('"{\em ",u,'"}")
-	STRINGP x => STRCONC('"_"",u,'"_"")
-	u
+        MEMQ(x,$FormalMapVariableList) => STRCONC('"\",STRINGIMAGE x)
+        u := escapeSpecialChars STRINGIMAGE x
+        MEMQ(x,$emList) => STRCONC('"{\em ",u,'"}")
+        STRINGP x => STRCONC('"_"",u,'"_"")
+        u
       first x = 'QUOTE => STRCONC('"'",sexpr2HtString first rest x)
       first x = ":" => STRCONC(fn first rest x,'": ",fn first rest rest x)
       first x = 'Mapping =>
@@ -286,7 +266,7 @@ dbConstructorKind x ==
   'domain
 
 getConstructorForm name ==
-  name = 'Union	  => '(Union  (_: a A) (_: b B))
+  name = 'Union   => '(Union  (_: a A) (_: b B))
   name = 'UntaggedUnion => '(Union A B)
   name = 'Record  => '(Record (_: a A) (_: b B))
   name = 'Mapping => '(Mapping T S)
@@ -490,8 +470,8 @@ bcConTable u ==
 bcAbbTable u ==
   htBeginTable()
   firstTime := true
-  for x in REMDUP u repeat	  --allow x to be NIL meaning "no abbreviation"
-  -- for x in u repeat	  --allow x to be NIL meaning "no abbreviation"
+  for x in REMDUP u repeat        --allow x to be NIL meaning "no abbreviation"
+  -- for x in u repeat    --allow x to be NIL meaning "no abbreviation"
     if firstTime then firstTime := false
     else htSaySaturn '"&"
     if x is [con,abb,:.] then
@@ -539,7 +519,7 @@ splitConTable cons ==
   uncond := cond := nil
   for (pair := [con,:pred]) in cons repeat
     null pred => 'skip
-    pred = 'T or pred is ['hasArgs,:.]	=> uncond := [pair,:uncond]
+    pred = 'T or pred is ['hasArgs,:.]  => uncond := [pair,:uncond]
     cond := [pair,:cond]
   [NREVERSE uncond,:NREVERSE cond]
 
@@ -629,7 +609,7 @@ dbGetInputString htPage ==
 
 
 --=======================================================================
---		     Error Pages
+--                   Error Pages
 --=======================================================================
 bcErrorPage u ==
   u is ['error,:r] =>
@@ -642,7 +622,7 @@ bcErrorPage u ==
 errorPage(htPage,[heading,kind,:info]) ==
   kind = 'invalidType => kInvalidTypePage first info
   if heading = 'error then htInitPage('"Error",nil) else
-			   htInitPage(heading,nil)
+                           htInitPage(heading,nil)
   bcBlankLine()
   for x in info repeat htSay x
   htShowPage()
@@ -684,7 +664,7 @@ dbNotAvailablePage(:options) ==
   htShowPage()
 
 --=======================================================================
---	 Utility Functions for Manipulating Browse Datalines
+--       Utility Functions for Manipulating Browse Datalines
 --=======================================================================
 dbpHasDefaultCategory? s ==  #s > 1 and s.1 = char 'x  --s is part 3 of line
 
@@ -730,9 +710,3 @@ mySort u == listSort(function GLESSEQP,u)
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

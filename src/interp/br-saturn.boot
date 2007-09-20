@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/br-saturn.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 --====================> WAS b-saturn.boot <================================
 -- New file as of 6/95
@@ -1222,16 +1202,16 @@ htShowPageStarSaturn() ==
 
 --------------> NEW DEFINITION (see br-op2.boot.pamphlet)
 displayDomainOp(htPage,which,origin,op,sig,predicate,
-		doc,index,chooseFn,unexposed?,$generalSearch?) ==
-  $chooseDownCaseOfType : local := true	  --see dbGetContrivedForm
+                doc,index,chooseFn,unexposed?,$generalSearch?) ==
+  $chooseDownCaseOfType : local := true   --see dbGetContrivedForm
   $whereList  : local := nil
   $NumberList : local := '(i j k l m n i1 j1 k1 l1 m1 n1 i2 j2 k2 l2 m2 n2 i3 j3 k3 l3 m3 n3 i4 j4 k4 l4 m4 n4 )
   $ElementList: local := '(x y z u v w x1 y1 z1 u1 v1 w1 x2 y2 z2 u2 v2 w2 x3 y3 z3 u3 v3 w3 x4 y4 z4 u4 v4 w4 )
   $FunctionList:local := '(f g h d e F G H)
-  $DomainList:	local := '(D R S E T A B C M N P Q U V W)
+  $DomainList:  local := '(D R S E T A B C M N P Q U V W)
   exactlyOneOpSig     := null index
   conform   := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
-		 or origin
+                 or origin
   if $generalSearch? then $DomainList := rest $DomainList
   opform :=
     which = '"attribute" =>
@@ -1269,7 +1249,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   constring := form2HtString conform
   conname   := first conform
   $conkind   : local := htpProperty(htPage,'kind) -- a string e.g. "category"
-			  or STRINGIMAGE GETDATABASE(conname,'CONSTRUCTORKIND)
+                          or STRINGIMAGE GETDATABASE(conname,'CONSTRUCTORKIND)
   $conlength : local := #constring
   $conform   : local := conform
   $conargs   : local := rest conform
@@ -1314,7 +1294,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
             coSig := KDR coSig
             htSayValue t
             htSayIndentRel(-15,true)
-	    htSayStandard('"\newline ")
+            htSayStandard('"\newline ")
       htSaySaturn '"\\"
     if first $sig then
       $displayReturnValue := true
@@ -1364,8 +1344,8 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSayStandard '"{\em \$} is "
       htSaySaturn '"{\em \%} is "
       htSay
-	$conkind = '"category" => '"of category "
-	'"the domain "
+        $conkind = '"category" => '"of category "
+        '"the domain "
       bcConform(conform,true,true)
       firstTime := false
       htSayIndentRel(-15,true)
@@ -1908,9 +1888,3 @@ purgeLocalLibdb() ==   --called by the user through a clear command?
 --  TERSYSCOMMAND()
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
