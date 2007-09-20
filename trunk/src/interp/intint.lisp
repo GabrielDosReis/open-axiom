@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp intint.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -42,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 (in-package "BOOT")
 
@@ -130,13 +114,13 @@
 
 (defun |setCurrentLine| (s)
   (setq |$currentLine|
-	(cond ((null |$currentLine|) s)
-	      ((stringp |$currentLine|)
-	       (cons |$currentLine|
-			 (if (stringp s) (cons s nil) s)))
-	      (t (rplacd (last |$currentLine|)
-			 (if (stringp s) (cons s nil) s))
-		 |$currentLine|))))
+        (cond ((null |$currentLine|) s)
+              ((stringp |$currentLine|)
+               (cons |$currentLine|
+                         (if (stringp s) (cons s nil) s)))
+              (t (rplacd (last |$currentLine|)
+                         (if (stringp s) (cons s nil) s))
+                 |$currentLine|))))
 
 (defun |intnplisp| (s)
  (setq |$currentLine| s)
@@ -160,9 +144,3 @@
 ;;(defun |readingFile?| ()
 ;;  |$ReadingFile|)
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

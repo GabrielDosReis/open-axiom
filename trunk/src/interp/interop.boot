@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/interop.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -97,7 +77,7 @@ DNameToSExpr1 dname ==
 
 DNameToSExpr dname ==
   CAR dname = DNameOtherID  =>
-	CDR dname
+        CDR dname
   sx := DNameToSExpr1 dname
   CONSP sx => sx
   LIST sx
@@ -113,7 +93,7 @@ SExprToDName(sexpr, cosigVal) ==
     [DNameApplyID,
          [DNameStringID,: StringToCompStr '"->"],
               [DNameTupleID, : CDR args],
-		 [DNameTupleID, CAR args]]
+                 [DNameTupleID, CAR args]]
   name0 :=   [DNameStringID, : StringToCompStr SYMBOL_-NAME CAR sexpr]
   CAR sexpr = 'Union or CAR sexpr = 'Record =>
     [DNameApplyID, name0, 
@@ -170,7 +150,7 @@ $lazyOldAxiomDomainDispatch :=
    VECTOR('lazyOldAxiomDomain,
           [function lazyOldAxiomDomainDevaluate],
           [nil],
-	  [function lazyOldAxiomDomainLookupExport],
+          [function lazyOldAxiomDomainLookupExport],
           [function lazyOldAxiomDomainHashCode],
           [function lazyOldAxiomAddChild])
 
@@ -367,8 +347,8 @@ $oldAxiomDomainDispatch :=
    VECTOR('oldAxiomDomain,
           [function oldAxiomDomainDevaluate],
           [nil],
-	  [function oldAxiomDomainLookupExport],
-	  [function oldAxiomDomainHashCode],
+          [function oldAxiomDomainLookupExport],
+          [function oldAxiomDomainHashCode],
           [function oldAxiomAddChild])
 
 --------------------> NEW DEFINITION (see g-util.boot.pamphlet)
@@ -412,7 +392,7 @@ basicLookup(op,sig,domain,dollar) ==
   dispatch.0 = 0 =>  -- new compiler domain object
        hashSig :=
            hashCode? sig => sig
-	   opIsHasCat op => hashType(sig, hashPercent)
+           opIsHasCat op => hashType(sig, hashPercent)
            hashType(['Mapping,:sig], hashPercent)
 
        if SYMBOLP op then
@@ -924,10 +904,3 @@ getFunctionFromDomain(op,dc,args) ==
     b or  throwKeyedMsg("S2IS0023",[op,dc])
   throwKeyedMsg("S2IF0004",[op,dc])
 
-@
-
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
