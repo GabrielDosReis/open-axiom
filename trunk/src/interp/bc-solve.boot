@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp bc-solve.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
   -- HyperTeX basic Solve Command
 $systemType := nil
@@ -159,8 +143,8 @@ bcInputEquations(htPage,solutionMethod) ==
       lnam := INTERN STRCONC('"l",STRINGIMAGE i)
       rnam := INTERN STRCONC('"r",STRINGIMAGE i)
       var:= 
-	linearp => bcMakeLinearEquations(i,n)
-	bcMakeEquations(i,n)
+        linearp => bcMakeLinearEquations(i,n)
+        bcMakeEquations(i,n)
       [['text,:prefix],['bcStrings,[30,var,lnam,'P]],'(text . " = "),['bcStrings,[5,"0",rnam,'P]]]
   equationPart := [
      '(domainConditions 
@@ -202,18 +186,18 @@ bcMakeEquations(i,number)==
    STRCONC(
      STRCONC(
       APPLY('CONCAT,[STRCONC(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
-	STRCONC("-2*",STRCONC(bcCreateVariableString(i),"^2")))
+        STRCONC("-2*",STRCONC(bcCreateVariableString(i),"^2")))
 
 
 bcMakeLinearEquations(i,number)==
    number = 1 => bcCreateVariableString(1)
    number = 2 => 
-	i=1 => STRCONC(bcCreateVariableString(1),STRCONC("+",bcCreateVariableString(2)))
-	STRCONC(bcCreateVariableString(1),STRCONC("-",bcCreateVariableString(2)))
+        i=1 => STRCONC(bcCreateVariableString(1),STRCONC("+",bcCreateVariableString(2)))
+        STRCONC(bcCreateVariableString(1),STRCONC("-",bcCreateVariableString(2)))
    STRCONC(
      STRCONC(
       APPLY('CONCAT,[STRCONC(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
-	STRCONC("-2*",bcCreateVariableString(i)))
+        STRCONC("-2*",bcCreateVariableString(i)))
       
 
 bcInputEquationsEnd htPage ==
@@ -376,9 +360,3 @@ bcGenEquations alist ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

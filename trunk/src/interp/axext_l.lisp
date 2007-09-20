@@ -1,23 +1,3 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/axext\_l.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -49,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 ;; File containing primitives needed by exextend in order to interop with axiom
 ;; This file could do with some declares
@@ -62,7 +39,7 @@
 
 (defun H-integer (l e)
   (|AXL-LiteralToInteger| l))
-	
+        
 (defun  H-string (l e)
   (|AXL-LiteralToString| l))
 
@@ -70,9 +47,9 @@
   (|AXL-error| l))
 
 (eval-when (load eval)
-	   (defconstant |G-axclique_string_305639517| (cons #'H-String nil))
-	   (defconstant |G-axclique_integer_685864888| (cons #'H-integer nil))
-	   (defconstant |G-axclique_error_011667951| (cons #'H-error nil)))
+           (defconstant |G-axclique_string_305639517| (cons #'H-String nil))
+           (defconstant |G-axclique_integer_685864888| (cons #'H-integer nil))
+           (defconstant |G-axclique_error_011667951| (cons #'H-error nil)))
 
 ;; Literals should be null-terminated strings
 
@@ -86,7 +63,7 @@
 
 (defmacro |AXL-LiteralToDoubleFloat| (l)
   `(read-from-string ,l nil (|DFlo0|)
-		     :preserve-whitespace t))
+                     :preserve-whitespace t))
 
 (defmacro |AXL-LiteralToString| (l)
   `(subseq ,l 0 (- (length ,l) 1)))
@@ -105,15 +82,15 @@
 
 (defmacro |AXL-plusInteger| (a b)
   `(the |BInt| (+ (the |BInt| ,a)
-		  (the |BInt| ,b))))
+                  (the |BInt| ,b))))
 
 (defmacro |AXL-minusInteger| (a b)
   `(the |BInt| (- (the |BInt| ,a)
-		  (the |BInt| ,b))))
+                  (the |BInt| ,b))))
 
 (defmacro |AXL-timesInteger| (a b)
   `(the |BInt| (* (the |BInt| ,a)
-		  (the |BInt| ,b))))
+                  (the |BInt| ,b))))
 
 (defmacro |AXL-eqInteger| (a b)
   `(= (the |BInt| ,a)
@@ -137,15 +114,15 @@
 
 (defmacro |AXL-plusSingleInteger| (a b)
   `(the |SInt| (+ (the |SInt| ,a)
-		  (the |SInt| ,b))))
+                  (the |SInt| ,b))))
 
 (defmacro |AXL-minusSingleInteger| (a b)
   `(the |SInt| (- (the |SInt| ,a)
-		  (the |SInt| ,b))))
+                  (the |SInt| ,b))))
 
 (defmacro |AXL-timesSingleInteger| (a b)
   `(the |SInt| (* (the |SInt| ,a)
-		  (the |SInt| ,b))))
+                  (the |SInt| ,b))))
 
 (defmacro |AXL-eqSingleInteger| (a b)
   `(= (the |SInt| ,a)
@@ -222,9 +199,3 @@
 (defun |AXL-spitSInt| (x)
   (print x))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/br-con.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 --====================> WAS b-con.boot <================================
 
@@ -1339,7 +1319,7 @@ PUT('Union,'documentation,SUBST(MESSAGE,'MESSAGE,'(
     "\spad{u = v} tests if two objects of the union are equal, that is, \spad{u} and \spad{v} are objects of same branch which are equal."))
   (case (((Boolean) $ "A")
     "\spad{u case a} tests if \spad{u} is of branch \spad{a} of the union.")
-	        (((Boolean) $ "B")
+                (((Boolean) $ "B")
     "\spad{u case b} tests if \spad{u} is of branch \spad{b} of the union."))
   (coerce ((A $)
     "\spad{coerce(u)} returns \spad{x} of type \spad{A} if \spad{x} is of branch \spad{a} of the union. Error: if \spad{u} is of branch \spad{b} of the union.")
@@ -1399,9 +1379,3 @@ digits2Names s ==
       c
     CONCAT(str, segment)
   str
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
