@@ -465,6 +465,9 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 ## The old parser component roughtly is:
 ##
 
+parse.$(FASLEXT): parse.clisp postpar.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 postpar.$(FASLEXT): postpar.clisp postprop.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
