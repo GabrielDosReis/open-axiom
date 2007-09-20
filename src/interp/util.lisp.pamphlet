@@ -820,19 +820,16 @@ because of {\bf *print-level*} or {\bf *print-length*}.
 <<boottocl>>=
 (in-package "OLD-BOOT") 
 
-(defun boot (file) ;; translates a single boot file
+(defun boot (in-file out-file) ;; translates a single boot file
 #+:CCL
   (setq *package* (find-package "BOOT"))
 #+:AKCL
   (in-package "BOOT")
   (let (*print-level* 
 	*print-length* 
-	(fn (pathname-name file))
 	(*print-pretty* t))
     (declare (special *print-level* *print-length*))
-    (boot::boot
-      file
-      (merge-pathnames (make-pathname :type "clisp") file))))
+    (boot::boot in-file out-file)))
 
 @
 
