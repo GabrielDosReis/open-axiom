@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nrunfast.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 --=======================================================================
 --                     Basic Functions
@@ -548,7 +532,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
     [functorName,:[['_:,tag,newExpandLocalTypeArgs(dom,dollar,domain,true)]
                                  for [.,tag,dom] in argl]]
   MEMQ(functorName, '(Union Mapping)) =>
-	  [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
+          [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
   functorName = 'QUOTE => [functorName,:argl]
   coSig := GETDATABASE(functorName,'COSIG)
   NULL coSig => error ["bad functorName", functorName]
@@ -628,7 +612,7 @@ newHasTest(domform,catOrAtt) ==
       for [aCat,:cond] in [:ancestorsOf(domform,NIL),:SUBLISLIS (rest domform,$FormalMapVariableList,GETDATABASE(opOf domform,'ATTRIBUTES))] |  aCat = catOrAtt  repeat
          return evalCond cond where
            evalCond x ==
-	     ATOM x => x
+             ATOM x => x
              [pred,:l] := x
              pred = 'has => 
                   l is [ w1,['ATTRIBUTE,w2]] => newHasTest(w1,w2) 
@@ -684,9 +668,3 @@ sayLooking1(prefix,dom) ==
 cc() == -- don't remove this function
   clearConstructorCaches()
   clearClams()
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

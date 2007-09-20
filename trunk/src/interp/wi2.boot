@@ -1,20 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/wi2.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -46,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -749,7 +729,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
          not(IDENTP x) => x
          get(x,'value,$e) => x
          x='$ => x
-	 MKQ x
+         MKQ x
      fn := compiledLookup(op,nsig,dcval)
      if null fn then return nil
   eltOrConst="CONST" => 
@@ -1247,9 +1227,3 @@ chk(x,key) == fn(x,0,key) where fn(x,cnt,key) ==
   for y in x repeat cnt := fn(y, cnt + 1, key)
   cnt
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

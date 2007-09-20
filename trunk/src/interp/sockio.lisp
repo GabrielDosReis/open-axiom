@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp sockio.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
 ;;
@@ -42,9 +29,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 ;; load C socket functions
 
@@ -180,10 +164,10 @@
 (defconstant SessionIO          4)
 (defconstant MessageServer      5)
 (defconstant InterpWindow       6)
-(defconstant KillSpad		7)
-(defconstant DebugWindow	8)
+(defconstant KillSpad           7)
+(defconstant DebugWindow        8)
 (defconstant NAGLinkServer      8)
-(defconstant Forker		9)
+(defconstant Forker             9)
 
 ;; same constants for use in BOOT
 (defconstant |$SessionManager|  SessionManager)
@@ -192,10 +176,10 @@
 (defconstant |$SessionIO|       SessionIO)
 (defconstant |$MessageServer|   MessageServer)
 (defconstant |$InterpWindow|    InterpWindow)
-(defconstant |$KillSpad|	KillSpad)
+(defconstant |$KillSpad|        KillSpad)
 (defconstant |$DebugWindow|     DebugWindow)
 (defconstant |$NAGLinkServer|   NAGLinkServer)
-(defconstant |$Forker|		Forker)
+(defconstant |$Forker|          Forker)
 
 ;; Session Manager action requests
 
@@ -210,8 +194,8 @@
 (defconstant QuietSpadCommand   9)
 (defconstant CloseClient        10)
 (defconstant QueryClients       11)
-(defconstant QuerySpad		12)
-(defconstant NonSmanSession	13)
+(defconstant QuerySpad          12)
+(defconstant NonSmanSession     13)
 (defconstant KillLispSystem     14)
 
 (defconstant |$CreateFrame|     CreateFrame)
@@ -225,27 +209,27 @@
 (defconstant |$QuietSpadCommand| QuietSpadCommand)
 (defconstant |$CloseClient|     CloseClient)
 (defconstant |$QueryClients|    QueryClients)
-(defconstant |$QuerySpad|	QuerySpad)
-(defconstant |$NonSmanSession|	NonSmanSession)
+(defconstant |$QuerySpad|       QuerySpad)
+(defconstant |$NonSmanSession|  NonSmanSession)
 (defconstant |$KillLispSystem|  KillLispSystem)
 
 ;; signal types (from /usr/include/sys/signal.h)
 #+(and :Lucid (not :ibm/370))
 (progn 
-  (defconstant	SIGUSR1	16)	;; user defined signal 1
-  (defconstant	SIGUSR2	17)	;; user defined signal 2
+  (defconstant  SIGUSR1 16)     ;; user defined signal 1
+  (defconstant  SIGUSR2 17)     ;; user defined signal 2
   )
 
 #+:RIOS
 (progn 
-  (defconstant	SIGUSR1	30)	;; user defined signal 1
-  (defconstant	SIGUSR2	31)	;; user defined signal 2
+  (defconstant  SIGUSR1 30)     ;; user defined signal 1
+  (defconstant  SIGUSR2 31)     ;; user defined signal 2
   )
 
 #+:IBMPS2
 (progn
-  (defconstant	SIGUSR1	30)	;; user defined signal 1
-  (defconstant	SIGUSR2	31)	;; user defined signal 2
+  (defconstant  SIGUSR1 30)     ;; user defined signal 1
+  (defconstant  SIGUSR2 31)     ;; user defined signal 2
   )
 
 (setq |$NaNvalue| (NANQ))
@@ -255,9 +239,3 @@
   (setq |$plusInfinity| MOST-POSITIVE-LONG-FLOAT)
 (setq |$minusInfinity| (- |$plusInfinity|))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

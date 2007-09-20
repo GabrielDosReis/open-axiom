@@ -29,10 +29,9 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-)package "BOOT"
 
 $topicsDefaults := '(
-  (basic elt setelt qelt qsetelt eval xRange yRange zRange map map_! qsetelt_!)
+  (basic elt setelt qelt qsetelt eval xRange yRange zRange map map! qsetelt!)
   (conversion coerce convert retract)
   (hidden retractIfCan Zero One)
   (predicate _< _=)
@@ -41,7 +40,7 @@ $topicsDefaults := '(
   (hyperbolic acosh acoth acsch asech asinh atanh cosh coth csch sech sinh tanh)
   (destructive setelt qsetelt)
   (extraction xRange yRange zRange elt qelt)
-  (transformation map map_!))
+  (transformation map map!))
 
 $topicSynonyms := '(
   (b . basic)
@@ -139,7 +138,7 @@ skipBlanks(u,i,m) ==
 --           Compute Topic Code for Operation
 --=======================================================================
 topicCode lst ==
-  u := [y for x in lst] where y() ==
+  u := [y for x in lst] where y ==
     rename := LASSOC(x,$topicSynonyms) => rename
     x
   if null intersection('(basic extended hidden),u) then u := ['extended,:u]
@@ -157,7 +156,7 @@ topicCode lst ==
 --called to modify DOCUMENTATION property for each "con"
 addTopic2Documentation(con,docAlist) ==
   alist := HGET($conTopicHash,con) or return docAlist
-  [y for x in docAlist] where y() ==
+  [y for x in docAlist] where y ==
     [op,:pairlist] := x
     code := LASSOC(op,alist) or 0
     for sigDoc in pairlist repeat 

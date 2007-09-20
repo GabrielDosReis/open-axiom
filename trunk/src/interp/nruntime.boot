@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp redefs.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,51 +29,30 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
-)package "BOOT"
+unloadOneConstructor(cnam,fn) ==
+    REMPROP(cnam,'LOADED)
+    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
 
-BLANKS n== MAKE_-FULL_-CVEC (n)
+devaluateDeeply x ==
+  VECP x => devaluate x
+  atom x => x
+  [devaluateDeeply y for y in x]
 
-object2String x==
-   STRINGP x=>x
-   IDENTP x=> PNAME x
-   STRINGIMAGE x
- 
-sayMSG x== shoeConsole x
-sayBrightly x==
-       brightPrint x
-       TERPRI()
-;;char x==CHAR(PNAME x,0)
-pathname x==CONCAT(PNAME(x.0),'".",PNAME(x.1))
-CVECP x== STRINGP x
-concat(:l) == concatList l
- 
-concatList [x,:y] ==
-  null y => x
-  null x => concatList y
-  concat1(x,concatList y)
- 
-concat1(x,y) ==
-  null x => y
-  atom x => (null y => x; atom y => [x,y]; [x,:y])
-  null y => x
-  atom y => [:x,y]
-  [:x,:y]
- 
---$FILESIZE x==
---     a:=OPEN MAKE_-INPUT_-FILENAME x
---     b:=FILE_-LENGTH a
---     CLOSE a
---     b
-SPADCATCH(x,y)==CATCH(x,y)
-SPADTHROW(x,y)==THROW(x,y)
-listSort(f,l)== SORT(l,f)
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
+lookupDisplay(op,sig,vectorOrForm,suffix) ==
+  null $NRTmonitorIfTrue => nil
+  prefix := (suffix = '"" => ">"; "<")
+  sayBrightly
+    concat(prefix,formatOpSignature(op,sig),
+        '" from ", prefix2String devaluateDeeply vectorOrForm,suffix)
+
+isInstantiated [op,:argl] ==
+  u:= lassocShiftWithFunction(argl,HGET($ConstructorCache,op),'domainEqualList)
+    => CDRwithIncrement u
+  nil
+
+isCategoryPackageName nam ==
+  p := PNAME opOf nam
+  p.(MAXINDEX p) = char '_&
+
+
