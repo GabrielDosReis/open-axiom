@@ -333,7 +333,9 @@ parseOr u ==
   (x:= parseTran first u) is ["not",y] => parseIf [y,parseOr rest u,"true"]
   true => parseIf [x,"true",parseOr rest u]
  
-parseNot u ==  ['not,parseTran first u]
+parseNot u ==
+  $InteractiveMode => ["not",parseTran first u]
+  parseTran ["IF",first u,:'(false true)]
  
 parseEquivalence [a,b] == parseIf [a,b,parseIf [b,:'(false true)]]
  
@@ -406,20 +408,23 @@ parseIf t ==
   t isnt [p,a,b] => t
   ifTran(parseTran p,parseTran a,parseTran b) where
     ifTran(p,a,b) ==
-      null($InteractiveMode) and p='true  => a
-      null($InteractiveMode) and p='false  => b
-      p is ['not,p'] => ifTran(p',b,a)
-      p is ['IF,p',a',b'] => ifTran(p',ifTran(a',COPY a,COPY b),ifTran(b',a,b))
-      p is ['SEQ,:l,['exit,1,p']] =>
-        ['SEQ,:l,['exit,1,ifTran(p',incExitLevel a,incExitLevel b)]]
+      null($InteractiveMode) and p="true"  => a
+      null($InteractiveMode) and p="false"  => b
+      p is ["not",p'] => ifTran(p',b,a)
+      p is ["IF",p',a',b'] => ifTran(p',ifTran(a',COPY a,COPY b),ifTran(b',a,b))
+      p is ["SEQ",:l,["exit",1,p']] =>
+        ["SEQ",:l,["exit",1,ifTran(p',incExitLevel a,incExitLevel b)]]
          --this assumes that l has no exits
-      a is ['IF, =p,a',.] => ['IF,p,a',b]
-      b is ['IF, =p,.,b'] => ['IF,p,a,b']
---      makeSimplePredicateOrNil p is ['SEQ,:s,['exit,1,val]] =>
---        parseTran ['SEQ,:s,['exit,1,incExitLevel ['IF,val,a,b]]]
-      ['IF,p,a,b]
+      a is ["IF", =p,a',.] => ["IF",p,a',b]
+      b is ["IF", =p,.,b'] => ["IF",p,a,b']
+      makeSimplePredicateOrNil p is ["SEQ",:s,["exit",1,val]] =>
+        parseTran ["SEQ",:s,["exit",1,incExitLevel ["IF",val,a,b]]]
+      ["IF",p,a,b]
  
-makeSimplePredicateOrNil p == nil
+makeSimplePredicateOrNil p ==
+  isSimple p => nil
+  u:= isAlmostSimple p => u
+  true => wrapSEQExit [["LET",g:= GENSYM(),p],g]
  
 parseWhere l == ["where",:mapInto(l, function parseTran)]
  
