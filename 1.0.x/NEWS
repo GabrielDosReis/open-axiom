@@ -1,7 +1,16 @@
+* September 21, 2007
+
+  OpenAxiom-1.0.1 has been released.
   Changes from previous release:
+
+  × Now OpenAxiom ignores system-installed GCL versions that are too old.
+
+  × Problem with HyperDoc not restarting fixed.
+  
+  × Build failure on Windows XP or Vista fixed.
   
   × Build with the dependency tarball open-axiom-1.0.x-dep.tar.bz2 has
-    been improved.
+    been improved.  Many problems fixed.
 
 * August 24, 2007
 
