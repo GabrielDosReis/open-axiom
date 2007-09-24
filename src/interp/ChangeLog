@@ -1,5 +1,12 @@
 2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* i-output.boot.pamphlet (half): New macro.
+	(bigopAppAux): Use it.
+	(charyTop): Likewise.
+	(binomApp): Likewise.
+
+2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* bookvol5.pamphlet (restart): Simplify.  Handle command line
 	arguments.
 
