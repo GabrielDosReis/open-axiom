@@ -1313,14 +1313,10 @@ EXTRACT_BOOTSTRAP_FILE = \
 
 @
 
-\subsection{The depsys variable}
-
-The {\bf depsys} image is the compile-time environment for boot and lisp
-files.
-
 <<environment>>=
-
-DEPSYS= ../interp/depsys$(EXEEXT)
+## We use interpsys, built from previous stage, to bootstrap the algebra
+## files.  In fact, we use interpsys to build everything.
+COMPILE_LISP = ../interp/interpsys$(EXEEXT) -- --compile --output=$@ $<
 
 @
 
@@ -1811,8 +1807,7 @@ ${OUT}/%.o: %.NRLIB/code.o
 # Compile bootstrap file to machine object code, and the result
 # immediately available for AXIOMsys consumption.
 strap/%.o: %.lsp
-	$(DEPSYS) -- --compile --output=$@ $<
-	cp $@ ${OUT}
+	$(COMPILE_LISP) && $(INSTALL) $@ $(OUT)
 @
 
 <<genericSPADfiles>>=

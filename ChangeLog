@@ -1,3 +1,8 @@
+2007-09-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/setup-dep.mk ($(top_builddir)/libtool): Regenerate when
+	out of date.
+
 2007-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (all-noweb): Depend only on one target,

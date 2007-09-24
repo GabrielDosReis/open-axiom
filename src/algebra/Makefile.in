@@ -8,8 +8,9 @@ INPUT=../input
 EXTRACT_BOOTSTRAP_FILE = \
 	$(axiom_build_document) --output=$@ --tangle="$@ BOOTSTRAP" $<
 
-
-DEPSYS= ../interp/depsys$(EXEEXT)
+## We use interpsys, built from previous stage, to bootstrap the algebra
+## files.  In fact, we use interpsys to build everything.
+COMPILE_LISP = ../interp/interpsys$(EXEEXT) -- --compile --output=$@ $<
 
 
 INTERPSYS = \
@@ -866,8 +867,7 @@ ${OUT}/%.o: %.NRLIB/code.o
 # Compile bootstrap file to machine object code, and the result
 # immediately available for AXIOMsys consumption.
 strap/%.o: %.lsp
-	$(DEPSYS) -- --compile --output=$@ $<
-	cp $@ ${OUT}
+	$(COMPILE_LISP) && $(INSTALL) $@ $(OUT)
 
 $(OUTSRC)/%.spad: mk-target-src-algabra-dir
 

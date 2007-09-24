@@ -1,3 +1,10 @@
+2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in (|handleCommandLine|): Return truthvalue on success.
+	Don't call $originalLispTopLevel.
+	(|compileLispHandler|): Rename file to in-file.
+	(|topLevel|): Exit only whne handleCommandLine indicates so.
+
 2007-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (core.lisp): Fix thinko.
