@@ -118,6 +118,9 @@ $(top_srcdir)/configure: $(top_srcdir)/configure.ac \
 			 $(top_srcdir)/config/axiom.m4
 	cd $(top_srcdir) && $(AUTOCONF)
 
+$(top_builddir)/libtool: $(LIBTOOL_DEPS)
+	cd $(top_builddir) && $(SHELL) ./config.status --recheck
+
 
 ## Rules for regenerating Makefile.in from pamphlets.
 $(srcdir)/Makefile.in: $(srcdir)/Makefile.pamphlet 

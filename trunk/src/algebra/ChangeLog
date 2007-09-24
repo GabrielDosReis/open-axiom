@@ -1,3 +1,9 @@
+2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (DEPSYS): Remove.
+	(COMPILE_LISP): New.
+	(strap/%.o): Use it to compile cached Lisp files.
+
 2007-09-16  Alfredo Portes <alfredo.portes@gmail.com>
 	    Alasdair McAndrew <amca01@gmail.com>
 

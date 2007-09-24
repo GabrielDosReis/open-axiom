@@ -436,7 +436,7 @@
     (when (null driver) 
       (|fatalError| (format nil "invalid option ~S" request)))
     (funcall driver prog-name options args)))
-
+  
 (defun |hasHandler?| (request)
   (|getDriver| request))
 
@@ -444,42 +444,38 @@
   (get request 'use-file-type))
 
 (defun |handleCommandLine| (prog-name options args)
-  ;; If no argument was specified on command line, then pretend
-  ;; we must act as the underlying Lisp system's REPL.  This is hard
-  ;; to do portabl and correctly, for obvious reasons  So what follows
-  ;; is an approximation, good enough for now.  FIXME: revisit this
-  ;; gorss hack.
-  (unless (or options args)
-    ;; GCL called us through system::*top-level-hook* which we set
-    ;; in a previous life.  Now unset it, otherwise, it will call
-    ;; us again, and we will find ourselves in the same place
-    ;; again, again, until death follows.
-    #+:gcl (setq system::*top-level-hook* nil)
-    (funcall |$originalLispTopLevel|))
-
-  (dolist (opt options)
+  (when (or options args)
+  (dolist (opt options t)
     (cond ((eq (car opt) (|Option| "help")) ; print help, get out of here
            (|helpHandler| prog-name))
-        
-          ((null args)                 ; we must have at least one arg
-           (|printUsage| prog-name)
-           (|coreQuit| 1))
-        
-          ((|useFileType?| (car opt))   ; process based on file type
+       
+	  ;; If we need to do an action based on the extension of 
+	  ;; input file, make sure we have at least one.
+          ((|useFileType?| (car opt))
+	   (unless args
+	     (|coreError| "missing input files")
+	     (return t))
            (dolist (f args)
              (let* ((file-type (|getFileType| f))
                     (opt-name (car opt))
                     (request (cons opt-name file-type)))
-               (|handleRequest| prog-name request options f))))
+               (unless (|handleRequest| prog-name request options f)
+		 (return nil)))))
 
-          ((stringp (cdr opt))          ; option value
-           (when (|hasHandler?| (car opt))
-             (|handleRequest| prog-name (car opt) options args)))
+	  ;; In general, nothing is to be done for option value 
+	  ;; specification.  However, some specifications may require
+	  ;; some special handlers.
+          ((stringp (cdr opt))
+	   (when (|hasHandler?| (car opt))
+	     (unless (|handleRequest| prog-name (car opt) options args)
+	       (return nil))))
           
-          (t                            ; assume we must execute this
-           (|handleRequest| prog-name (car opt) options args)))))
+	  ;; By now, we are assumed to execute a driver associated
+	  ;; with the option.  Hope one is installed...
+	  (t (unless (|handleRequest| prog-name (car opt) options args)
+	       (return nil))))))
 
-
+)
 
 ;; 
 ;; -*- --help Handler -*-
@@ -608,11 +604,11 @@
                               (|warn| "Lisp code contained warnings")))
                        result))
 
-(defun |compileLispHandler| (prog-name options file)
+(defun |compileLispHandler| (prog-name options in-file)
   (declare (ignore prog-name))
   (let ((out-file (|getOutputPathname| options 
-                                       (|compileFilePathname| file))))
-    (|compileLispFile| file out-file)))
+                                       (|compileFilePathname| in-file))))
+    (|compileLispFile| in-file out-file)))
 
 (|associateRequestWithFileType| (|Option| "compile") |$LispFileType|
  #'|compileLispHandler|)
@@ -645,8 +641,8 @@
      (when (boundp '|$sysScope|)
        (setq *package* (find-package (symbol-value '|$sysScope|))))
      
-     (|handleCommandLine| (car command-args) options args)
-     (|coreQuit| (if (> (|errorCount|) 0) 1 0)))))
+     (when (|handleCommandLine| (car command-args) options args)
+       (|coreQuit| (if (> (|errorCount|) 0) 1 0))))))
 
 
 ;; 
