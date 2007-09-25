@@ -1,3 +1,12 @@
+2007-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<bc-matrix.clisp>>): Remove.
+	(<<bc-util.clisp>>): Likewise.
+	(<<br-prof.clisp>>): Likewise.
+	* bc-matrix.boot.pamphlet: Push into BOOT package.
+	* bc-util.boot.pamphlet: Likewise.
+	* br-prof.boot.pamphlet: Likewise.
+
 2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* i-output.boot.pamphlet (half): New macro.

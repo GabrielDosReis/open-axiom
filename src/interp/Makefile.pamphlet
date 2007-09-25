@@ -1695,14 +1695,6 @@ as.clisp: as.boot
 	@ echo '(progn (old-boot::boot "as.boot"))' | ${DEPSYS}
 @
 
-\subsection{bc-matrix.boot}
-
-<<bc-matrix.clisp>>=
-bc-matrix.clisp: bc-matrix.boot
-	@ echo 424 making $@ from $<
-	@ echo '(progn (old-boot::boot "bc-matrix.boot"))' | ${DEPSYS}
-@
-
 \subsection{bc-misc.boot}
 
 <<bc-misc.clisp>>=
@@ -1717,14 +1709,6 @@ bc-misc.clisp: bc-misc.boot
 bc-solve.clisp: bc-solve.boot
 	@ echo 432 making $@ from $<
 	@ echo '(progn (old-boot::boot "bc-solve.boot"))' | ${DEPSYS}
-@
-
-\subsection{bc-util.boot}
-
-<<bc-util.clisp>>=
-bc-util.clisp: bc-util.boot
-	@ echo 436 making $@ from $<
-	@ echo '(progn (old-boot::boot "bc-util.boot"))' | ${DEPSYS}
 @
 
 \subsection{ht-util.boot}
@@ -1829,17 +1813,6 @@ br-util.clisp: br-util.boot
 br-saturn.clisp: br-saturn.boot
 	@ echo 491 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-saturn.boot"))' | ${DEPSYS}
-@
-
-\subsection{br-prof.boot}
-
-<<br-prof.clisp>>=
-br-prof.clisp: br-prof.boot
-	@ echo 499 making $@ from $<
-	@ ($(axiom_build_document) --tangle --output=br-prof.boot $< ;\
-	  echo '(progn (old-boot::boot "br-prof.boot"))' | ${DEPSYS}; \
-	  rm br-prof.boot )
-
 @
 
 \section{The databases}
@@ -2077,13 +2050,9 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 <<ax.clisp>>
 
-<<bc-matrix.clisp>>
-
 <<bc-misc.clisp>>
 
 <<bc-solve.clisp>>
-
-<<bc-util.clisp>>
 
 <<br-con.clisp>>
 
@@ -2092,8 +2061,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<br-op1.clisp>>
 
 <<br-op2.clisp>>
-
-<<br-prof.clisp>>
 
 <<br-saturn.clisp>>
 
