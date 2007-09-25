@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 bcFinish(name,arg,:args) == bcGen bcMkFunction(name,arg,args)
 
 bcMkFunction(name,arg,args) ==

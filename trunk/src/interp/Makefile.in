@@ -349,7 +349,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	        bookvol5.$(FASLEXT)\
 		util.$(FASLEXT) \
 	        postpar.$(FASLEXT) \
-		 parse.clisp \
+		parse.$(FASLEXT) \
 	        parsing.$(FASLEXT) \
 		metalex.$(FASLEXT) \
 	        bootlex.$(FASLEXT) \
@@ -378,10 +378,9 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(|importModule| "util")' >> makedep.lisp
 	@ echo '(in-package "BOOT")' >> makedep.lisp
 	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))) "${AXIOM}")' >> makedep.lisp
-	@ echo '(unless (probe-file "parse.$(FASLEXT)") (|compileLispFile| "parse.clisp" "parse.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(in-package "AxiomCore")' >> makedep.lisp
 	@ echo '(|importModule| "newaux")' >> makedep.lisp
-	@ echo '(load "parse")' >> makedep.lisp
+	@ echo '(|importModule| "parse")' >> makedep.lisp
 	@ echo '(|importModule| "metalex")' >> makedep.lisp
 	@ echo '(|importModule| "parsing")' >> makedep.lisp
 	@ echo '(|importModule| "fnewmeta")' >> makedep.lisp
@@ -406,8 +405,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	../lisp/base-lisp$(EXEEXT) -- --make --output=$@ \
 		--load-directory=. makedep.lisp
 	@rm $(addsuffix .$(FASLEXT), \
-		parse clam slam g-error \
-		g-boot c-util g-util)
+		clam slam g-error g-boot c-util g-util)
 	@ echo 4 ${DEPSYS} created
 
 
@@ -588,10 +586,6 @@ ax.clisp: ax.boot
 	@ echo 463 making $@ $<
 	@ echo '(progn (old-boot::boot "ax.boot"))' | ${DEPSYS} 
 
-bc-matrix.clisp: bc-matrix.boot
-	@ echo 424 making $@ from $<
-	@ echo '(progn (old-boot::boot "bc-matrix.boot"))' | ${DEPSYS}
-
 bc-misc.clisp: bc-misc.boot
 	@ echo 428 making $@ from $<
 	@ echo '(progn (old-boot::boot "bc-misc.boot"))' | ${DEPSYS}
@@ -599,10 +593,6 @@ bc-misc.clisp: bc-misc.boot
 bc-solve.clisp: bc-solve.boot
 	@ echo 432 making $@ from $<
 	@ echo '(progn (old-boot::boot "bc-solve.boot"))' | ${DEPSYS}
-
-bc-util.clisp: bc-util.boot
-	@ echo 436 making $@ from $<
-	@ echo '(progn (old-boot::boot "bc-util.boot"))' | ${DEPSYS}
 
 br-con.clisp: br-con.boot
 	@ echo 467 making $@ from $<
@@ -619,13 +609,6 @@ br-op1.clisp: br-op1.boot
 br-op2.clisp: br-op2.boot
 	@ echo 479 making $@ from $<
 	@ echo '(progn (old-boot::boot "br-op2.boot"))' | ${DEPSYS} 
-
-br-prof.clisp: br-prof.boot
-	@ echo 499 making $@ from $<
-	@ ($(axiom_build_document) --tangle --output=br-prof.boot $< ;\
-	  echo '(progn (old-boot::boot "br-prof.boot"))' | ${DEPSYS}; \
-	  rm br-prof.boot )
-
 
 br-saturn.clisp: br-saturn.boot
 	@ echo 491 making $@ from $<
