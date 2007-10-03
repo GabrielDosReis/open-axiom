@@ -1,0 +1,281 @@
+%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
+\documentclass{article}
+\usepackage{axiom}
+
+\title{\File{src/interp/bootfuns.lisp} Pamphlet}
+\author{Timothy Daly}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+
+\section{License}
+
+<<license>>=
+;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;;
+;; Redistribution and use in source and binary forms, with or without
+;; modification, are permitted provided that the following conditions are
+;; met:
+;;
+;;     - Redistributions of source code must retain the above copyright
+;;       notice, this list of conditions and the following disclaimer.
+;;
+;;     - Redistributions in binary form must reproduce the above copyright
+;;       notice, this list of conditions and the following disclaimer in
+;;       the documentation and/or other materials provided with the
+;;       distribution.
+;;
+;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;       names of its contributors may be used to endorse or promote products
+;;       derived from this software without specific prior written permission.
+;;
+;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+;; IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+;; TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+;; PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+;; OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+;; EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+;; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+;; PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+;; LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@
+
+
+
+\section{The [[BOOT]] package}
+
+Everything in axiom that the user references eventually shows
+up here. The interpreter and the algebra are run after switching
+to the boot package (in-package "BOOT") so any symbol that the
+interpreter or algebra uses has to (cough, cough) appear here.
+<<*>>=
+<<license>>
+
+(IMPORT-MODULE "sys-constants")
+(IMPORT-MODULE "sys-globals")
+
+@
+
+Note that it is confusing the package \Tool{Axiom}'s compiler and
+interpreter use is called [[BOOT]].  It should have been
+[[Spad]], or better yet [[Axiom]].
+
+
+
+\section{Portability issues}
+
+This section discusses some portability issues known to affect
+this module.
+
+\subsection{[[compiler-let]]}
+
+The construct [[compiler-let]] is not part of ANSI Lisp, although
+it had been described in CLTL.  Therefore some Lisp implementations
+offer it as extensions.
+
+<<non-portable-codes>>=
+#+:clisp (import 'ext:compiler-let)
+@
+
+<<*>>=
+
+; NAME:	   Boot Package
+; PURPOSE: Provide forward references to Boot Code for functions to be at
+;	   defined at the boot level, but which must be accessible
+;	   not defined at lower levels.
+
+(in-package "BOOT")
+
+<<non-portable-codes>>
+
+(defmacro def-boot-var (p where)
+  `(compiler-let nil
+     (defparameter ,p nil ,where)
+     (export '(,p) "BOOT")))
+
+(defmacro def-boot-val (p val where)
+  `(compiler-let nil
+     (defparameter ,p ,val ,where)
+     (export '(,p) "BOOT")))
+
+
+;  modemap:==  ( <map> (p e) (p e) ... (p e) )
+;  modemaplist:= ( modemap ... )
+
+(def-boot-val |$CategoryFrame|
+	  '((((|Category| . ((|modemap| (((|Category|) (|Category|)) (T *)))))
+	      (|Join| . ((|modemap|
+      (((|Category|) (|Category|) (|Category|) (|Category|)) (T *))
+      (((|Category|) (|Category|) (|List| |Category|)) (|Category|)) (T *))
+	)))))
+	"Compiler>CUtil.boot")
+(def-boot-var |$compileMapFlag|			    "Interpreter>SetVars.boot")
+(def-boot-var |$constructorsNotInDatabase|	    "Interpreter>Database.boot")
+(def-boot-val $delay 0				    "???")
+(def-boot-var $Directory			    "???")
+(def-boot-var $DISPLAY				    "???")
+(def-boot-var |$DomainFrame|			    "???")
+(def-boot-val |$domainTraceNameAssoc| ()    "association list of trace domains")
+(def-boot-var |$eltIfNil|			    "SpecialFunctions>PSpad.boot")
+(def-boot-var |$evalDomain|			    "???")
+(def-boot-var |$exitMode|			    "???")
+(def-boot-var |$exitModeStack|			    "???")
+(def-boot-val |$false| NIL			    "???")
+(def-boot-var |$forceDatabaseUpdate|		    "See load function.")
+(def-boot-var |$form|				    "???")
+(def-boot-var |$fromSpadTrace|			    "Interpreter>Trace.boot")
+(def-boot-var $function				    "Interpreter>System.boot")
+(def-boot-var $FunName				    "???")
+(def-boot-var $FunName_Tail			    "???")
+(def-boot-val |$gauss01| '(|gauss| 0 1)		    "???")
+(def-boot-var |$genFVar|			    "???")
+(def-boot-val |$genSDVar| 0	    "counter for genSomeVariable" )
+(def-boot-var |$ignoreCommentsIfTrue|		    "???")
+(def-boot-var |$Index|				    "???")
+(def-boot-var |$inLispVM|			    "Interpreter>Eval.boot")
+(def-boot-var |$insideCapsuleFunctionIfTrue|	    "???")
+(def-boot-var |$insideCategoryIfTrue|		    "???")
+(def-boot-var |$insideCoerceInteractiveHardIfTrue|  "???")
+(def-boot-val |$insideCompTypeOf| NIL  "checked in comp3")
+(def-boot-val |$insideConstructIfTrue| NIL "checked in parse.boot")
+(def-boot-var |$insideExpressionIfTrue|		    "???")
+(def-boot-var |$insideFunctorIfTrue|		    "???")
+(def-boot-var |$insideWhereIfTrue|		    "???")
+(def-boot-val |$instantRecord| (MAKE-HASHTABLE 'ID) "???")
+(def-boot-val |$InteractiveFrame| '((NIL))	    "top level environment")
+(def-boot-var |$InteractiveMode|		    "Interactive>System.boot")
+(def-boot-val |$InteractiveModemapFrame| '((NIL))   "???")
+(def-boot-var |$InteractiveTimingStatsIfTrue|	    "???")
+(def-boot-val $lastprefix "S-"                      "???")
+(def-boot-val |$lastUntraced| NIL      "Used for )restore option of )trace.")
+(def-boot-var |$leaveLevelStack|		    "???")
+(def-boot-var |$leaveMode|			    "???")
+(def-boot-val |$letAssoc| NIL	    "Used for trace of assignments in SPAD code.")
+(def-boot-var |$libFile|			    "Compiler>LispLib.boot")
+(def-boot-var $LINENUMBER			    "???")
+(def-boot-var $linestack			    "???")
+(def-boot-val |$Lisp| '(|Lisp|)			    "???")
+(def-boot-val $LISPLIB nil		    "whether to produce a lisplib or not")
+(def-boot-var |$lisplibDependentCategories|	    "Compiler>LispLib.boot")
+(def-boot-var |$lisplibDomainDependents|	    "Compiler>LispLib.boot")
+(def-boot-var |$lisplibForm|			    "Compiler>LispLib.boot")
+(def-boot-var |$lisplibKind|			    "Compiler>LispLib.boot")
+(def-boot-var |$lisplibModemapAlist|		    "Compiler>LispLib.boot")
+(def-boot-var |$lisplibModemap|			    "Compiler>LispLib.boot")
+(def-boot-var |$lisplibOperationAlist|		    "Compiler>LispLib.boot")
+(def-boot-var |$lisplibSignatureAlist|		    "Compiler>LispLib.boot")
+(def-boot-var |$lisplibVariableAlist|		    "Compiler>LispLib.boot")
+(def-boot-var |$lisp2lispRenameAssoc|		    "???")
+(def-boot-var |$mapSubNameAlist|		    "Interpreter>Trace.boot")
+(def-boot-var |$mathTrace|			    "Interpreter>Trace.boot")
+(def-boot-var |$mathTraceList|		    "Controls mathprint output for )trace.")
+(def-boot-var $maxlinenumber			    "???")
+(def-boot-var |$ModemapFrame|			    "???")
+(def-boot-var |$mostRecentOpAlist|		    "???")
+(def-boot-var $NBOOT				    "???")
+(def-boot-var $NEWLINSTACK			    "???")
+(def-boot-var |$noEnv|				    "???")
+(def-boot-val $num_of_meta_errors 0		    "Number of errors seen so far")
+(def-boot-var $OLDLINE				    "Used to output command lines.")
+(def-boot-val |$oldTime| 0			    "???")
+(def-boot-val |$OneCoef| '(1 1 . 1)		    "???")
+(def-boot-val |$operationNameList| NIL		 "op names for apropos")
+(def-boot-var |$opFilter|			    "Used to /s a function")
+(def-boot-var |OptionList|			    "???")
+(def-boot-val |$optionAlist| nil       "info for trace boot")
+(def-boot-var |$OutsideStringIfTrue|		    "???")
+(def-boot-var |$PolyMode|			    "???")
+(def-boot-val |$Polvar| '(WRAPPED . ((1 . 1)))	    "???")
+(def-boot-var |$postStack|			    "???")
+(def-boot-var |$prefix|				    "???")
+(def-boot-val |$PrettyPrint| nil "if t generated code is prettyprinted")
+(def-boot-var |$previousTime|			    "???")
+(def-boot-val |$optimizableDomainNames|
+      '(|FactoredForm| |List| |Vector|
+	|Integer| |NonNegativeInteger| |PositiveInteger|
+	|SmallInteger| |String| |Boolean| |Symbol| |BooleanFunctions|)
+   "used in optCall to decide which domains can be optimized")
+(def-boot-val |$PrintBox| '(|PrintBox|)		    "???")
+(def-boot-var |$PrintCompilerMessagesIfTrue|	    "???")
+(def-boot-val |$printConStats| nil  "display constructor cache totals")
+(def-boot-val |$printLoadMsgs|	't	    "Interpreter>SetVarT.boot")
+(def-boot-var |$PrintOnly|			    "Compiler>LispLib.boot")
+(def-boot-val |$SystemSynonyms| () "list of system defined synonyms")
+(def-boot-val |$QuickCode| NIL	    "Controls generation of QREFELT, etc.")
+(def-boot-val |$QuickLet| NIL	    "Set to T for no LET tracing.")
+(def-boot-var |$QuietIfNil|			    "???")
+(def-boot-var |$readingFile|			    "???")
+(def-boot-var |$reportBottomUpFlag|		    "Interpreter>SetVarT.boot")
+(def-boot-var |$reportCoerce|			    "???")
+(def-boot-var |$reportCoerceIfTrue|		    "???")
+(def-boot-var |$reportCompilation|		    "???")
+(def-boot-var |$reportExitModeStack|		    "???")
+(def-boot-var |$reportFlag|			    "Interpreter>SetVars.boot")
+(def-boot-val |$reportSpadTrace| ()    "report list of traced functions")
+(def-boot-var |$resolveFlag|			    "Interpreter>SetVars.boot")
+(def-boot-var |$returnMode|			    "???")
+(def-boot-var |$scanModeFlag|			    "???")
+(def-boot-var |$semanticErrorStack|		    "???")
+(def-boot-val |$SetFunctions| nil  "checked in SetFunctionSlots")
+(def-boot-var |$slamFlag|			    "Interpreter>SetVars.boot")
+(def-boot-val |$sourceFileTypes|
+	  '(SPAD BOOT LISP LISP370 META)
+	  "Interpreter>System.boot")
+(def-boot-val $SPAD nil				    "Is this Spad code?")
+(def-boot-val |$spadLibFT| 'LISPLIB		    "???")
+(def-boot-var |$spadOpList|			    "???")
+(def-boot-var |$spadSystemDisks|		    "Interpreter>Database.boot")
+(def-boot-var |$streamAlist|			    "???")
+(def-boot-val |$streamCount| 0			    "???")
+(def-boot-var |$streamIndexing|			    "???")
+(def-boot-val |$StreamIndex| 0			    "???")
+(def-boot-var |$suffix|				    "???")
+(def-boot-val |$systemCreation| (currenttime)	    "???")
+(def-boot-val |$systemLastChanged|
+	  |$systemCreation|			"???")
+(def-boot-val |$timerOn| t			    "???")
+(def-boot-var |$topOp|				   "See displayPreCompilationErrors")
+(def-boot-var $TOKSTACK				    "???")
+(def-boot-val $TOP_LEVEL t			    "???")
+(def-boot-var $top_stack			    "???")
+(def-boot-var |$tracedModemap|			    "Interpreter>Trace.boot")
+(def-boot-val |$traceDomains| t			     "enables domain tracing")
+(def-boot-val |$TraceFlag| t			    "???")
+(def-boot-var |$tracedSpadModemap|		    "Interpreter>Trace.boot")
+(def-boot-var |$traceletFunctions|		    "???")
+(def-boot-var |$traceNoisely|			    "Interpreter>Trace.boot")
+(def-boot-var |$TranslateOnly|			    "???")
+(def-boot-var |$tripleCache|			    "Compiler>Compiler.boot")
+(def-boot-var $Type				    "???")
+
+(def-boot-val |$updateCatTableIfTrue| T	   "update category table on load")
+(def-boot-var |$updateIfTrue|
+	  "Should SPAD databases be updated&squeezed?")
+(def-boot-val |$useBFasDefault| T
+	  "Determines whether to use BF as default floating point type.")
+(def-boot-val |$useDCQnotLET| () "checked in DEF-LET for use of DCQ")
+(def-boot-var |$VariableCount|			    "???")
+(def-boot-var |$warningStack|			    "???")
+(def-boot-val |$whereList| () "referenced in format boot formDecl2String")
+
+
+(def-boot-val |$inputPromptType| '|step|  "checked in MKPROMPT")
+(def-boot-val |$IOindex| 0		   "step counter")
+
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

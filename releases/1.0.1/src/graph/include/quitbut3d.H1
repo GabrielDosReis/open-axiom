@@ -1,0 +1,5 @@
+#ifdef _NO_PROTO
+extern int initQuitButtons();
+#else
+extern int initQuitButtons(buttonStruct * );
+#endif

@@ -1,0 +1,7 @@
+#ifdef _NO_PROTO
+extern int readViewman();
+extern int spadAction();
+#else
+extern int readViewman(void *  , int );
+extern int spadAction(void);
+#endif

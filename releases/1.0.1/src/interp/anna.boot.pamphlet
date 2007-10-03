@@ -1,0 +1,1932 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/interp anna.boot}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+\section{License}
+<<license>>=
+-- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+--
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are
+-- met:
+--
+--     - Redistributions of source code must retain the above copyright
+--       notice, this list of conditions and the following disclaimer.
+--
+--     - Redistributions in binary form must reproduce the above copyright
+--       notice, this list of conditions and the following disclaimer in
+--       the documentation and/or other materials provided with the
+--       distribution.
+--
+--     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--       names of its contributors may be used to endorse or promote products
+--       derived from this software without specific prior written permission.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+-- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+-- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+-- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+-- OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+-- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+-- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@
+<<*>>=
+<<license>>
+
+annaGen command ==
+  htInitPage('"AXIOM/NAG Expert System Command",nil)
+  string :=
+    #command < 50 => STRCONC('"{\centerline{\tt ",command,'" }}")
+    STRCONC('"{\tt ",command,'" }")
+  htMakePage [
+     '(text
+        "\center{{\em Here is the AXIOM command}}"
+          "\center{{\em you could have issued to compute this result:}}"
+            "\vspace{2}\newline "),
+      ['text,: string]]
+  htMakeDoitButton('"Do It", command)
+  htShowPage()
+
+annaInt() ==
+  htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\blankline ")
+    (text . "Analyses the function for various attributes, chooses and ")
+    (text . "then uses a suitable integration routine to ")
+    (text . "evaluate the finite, semi-infinite or infinite integral ")
+    (text . "\blankline ")
+    (text . "\tab{22} \space{1} \vspace{-32} ")
+    (text . "\inputbitmap{\htbmdir{}/ing.bitmap} \vspace{-34} f(x) dx ")
+    (text . "\blankline ")
+    (text . "\newline")
+    (text . "\newline \menuitemstyle{} \tab{2} {\em Lower} bound of the interval {\em a}: ")
+    (radioButtons lower
+        ("" "  Finite" lowerFinite)
+        ("" "  Minus Infinity" lowerInfinite))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{} \tab{2} {\em Upper} bound of the interval {\em b}: ")
+    (radioButtons upper
+        ("" "  Finite" upperFinite)
+        ("" "  Plus Infinity" upperInfinite)))
+  htMakeDoneButton('"Continue",'annaIntSolve)
+  htShowPage()
+
+annaDan() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "(log(2-x)*log(x))/((2-x)^(2/3)*sqrt(x))" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "0.0" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "2.0" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaBar() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "exp(-y)/sqrt(y)" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "0.0" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "%plusInfinity" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaFoo() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "(exp(-x^3)+exp(-3*x^2))/sqrt(x)" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "0.0" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "%plusInfinity" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaBlah() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "exp(-omega)/((omega-5)*(omega-1/2))" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "0.0" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "%plusInfinity" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaJoe() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "(exp(-x^3)+exp(-3*x^2))/(x^2-2)" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "0.0" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "2.0" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaSue() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "1/(x^6-1)" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "0.0" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "2.0" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaAnn() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "cos(t^2)+sin(t)+cos(sin(t^3))" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "-%pi" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "%pi" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaBab() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "x*product(x-i/10,i=-4..4)" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "-1" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "1" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaFnar() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "cos(20*rho)*(sin(rho^2) + cos(rho^2))" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "0" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "1" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaTub() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "exp(-z^2/2)/sqrt(2*%pi)" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "%minusInfinity" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "%plusInfinity" upper EM))
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaRats() ==
+
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (50 "log(u*u)" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "-1" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "1" upper EM))
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htShowPage()
+
+annaIntSolve htPage ==
+
+  l := htpButtonValue(htPage,'lower)
+  u := htpButtonValue(htPage,'upper)
+  a := 
+    l = 'lowerFinite => '"finite"
+    '"%minusInfinity"
+  b := 
+    u = 'upperFinite => '"finite"
+    '"%plusInfinity"
+  (a = b) => annaDan()
+  a = '"finite" => annaFoo()
+  b = '"%plusInfinity" => annaTub()
+  page := htInitPage('"Integration using AXIOM/NAG Expert System",htPage)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f to be integrated: \newline \tab{2} ")
+    (bcStrings (45 "exp(-x^2/2)/sqrt(2*%pi)" expression EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline {\em Lower} bound of the interval {\em a}: ")
+    (text . "\tab{30} \menuitemstyle{}\tab{32} ")
+    (text . "{\em Upper} bound of the interval {\em b}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (15 "%minusInfinity" lower EM))
+    (text . "\tab{32} ")
+    (bcStrings (15 "0.0" upper EM))
+    (text . "\blankline ")
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-6" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaIntGen)
+  htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
+  htShowPage()
+
+
+annaIntGen htPage ==
+  lower := htpLabelInputString(htPage,'lower)
+  upper := htpLabelInputString(htPage,'upper)
+  expression := htpLabelInputString(htPage,'expression)
+  epsabs := htpLabelInputString(htPage,'epsabs)
+  epsrel := htpLabelInputString(htPage,'epsrel)
+  annaGen STRCONC('"integrate(",expression,", ",lower,"..",upper,", ",epsabs,", ",epsrel,")")
+
+annaMInt() ==
+  htInitPage('"Integration using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "Analyses the function for various attributes, chooses and ")
+    (text . "then uses a suitable integration routine ")
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the {\em function} f of the form: ")
+    (text . "\center{\inputbitmap{\htbmdir{}/d01fcf.bitmap}} ")
+    (text . "\newline ")
+    (text . "to be integrated in terms of subscripted ") 
+    (text . "variables e.g. X[1]...X[n]: \newline \tab{2} ")
+    (bcStrings (58 "4.0*X[1]*X[3]*X[3]*exp(2.0*X[1]*X[3])/((1.0+X[2]+X[4])**2)" expression EM))
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Number of dimensions n in the integral, 2 \htbitmap{less=} ")
+    (text . "{\it N} \htbitmap{less=} 15: ")
+    (text . "\newline\tab{2} ")
+    (bcStrings (2 4 n PI))
+    (text . "\blankline ")
+    (text . "\blankline "))
+  htMakeDoneButton('"Continue", 'annaMIntSolve)
+  htShowPage()
+
+annaMIntSolve htPage ==
+  n :=
+    $bcParseOnly => PARSE_-INTEGER htpLabelInputString(htPage, 'n)
+    objValUnwrap htpLabelSpadValue(htPage, 'n)
+  n = '4 => annaMIntDefaultSolve(htPage)
+  expression := htpLabelInputString(htPage,'expression)
+  rangeList :=
+    "append"/[f(i,n) for i in 1..n] where f(i,n) ==
+      prefix := ('"\newline a")
+      prefix := STRCONC(prefix,STRINGIMAGE i,'"\space{1}")
+      post   := ('"\tab{30} b")
+      post   := STRCONC(post,STRINGIMAGE i,'"\space{1}")
+      rnam := INTERN STRCONC ('"x",STRINGIMAGE i)
+      inam := INTERN STRCONC ('"y",STRINGIMAGE i)
+      [['text,:prefix],['bcStrings,[5, 0.0, rnam, 'EM]],
+       ['text,:post],['bcStrings,[5, 1.0, inam, 'EM]]]
+  errList :=
+    errtext := ('"\newline \blankline \menuitemstyle{}\tab{2}")
+    errtext := STRCONC(errtext,'"Absolute accuracy required:")
+    errtext := STRCONC(errtext,'"\tab{30} \menuitemstyle{}\tab{32}")
+    errtext := STRCONC(errtext,'"Relative accuracy required: \newline\tab{2} ")
+    [['text,:errtext],['bcStrings,[10, 0.0, 'abserr, 'F]],
+     ['text,"\tab{32} "],['bcStrings,[10, 1.0e-4, 'relerr, 'F]]]
+  equationPart := [
+     '(domainConditions
+        (isDomain EM ($EmptyMode))
+         (isDomain F (Float))
+          (isDomain S (String))
+            (isDomain PI (PositiveInteger))),
+              :rangeList,:errList]
+  page := htInitPage("AXIOM/NAG Multiple Integration", htpPropertyList htPage)
+  htSay '"Please enter the limits of integration:-  "
+  htSay '"\blankline \menuitemstyle{} \tab{2} "
+  htSay '"Lower Limits: \tab{30} \menuitemstyle{} \tab{32} "
+  htSay '"Upper Limits: \newline "
+  htMakePage equationPart
+  htMakeDoneButton('"Continue",'annaMIntGen)
+  htpSetProperty(page,'expression,expression)
+  htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
+  htShowPage()
+
+annaMIntDefaultSolve (htPage) ==
+
+  page := htInitPage('"AXIOM/NAG Multiple Integration",nil)
+  expression := htpLabelInputString(htPage,'expression)
+  htMakePage '(
+    (domainConditions
+       (isDomain F (Float))
+        (isDomain EM $EmptyMode))
+    (text . "\newline ")
+    (text . "Please enter the limits of integration:- ")
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{} \tab{2} ")
+    (text . "Lower limits: \tab{30} ")
+    (text . "\menuitemstyle{} \tab{32} Upper limits: ")
+    (text . "\newline a1 ")
+    (bcStrings (10 "0.0" a1 F))
+    (text . "\tab{30} b1 ")
+    (bcStrings (10 "1.0" b1 F))
+    (text . "\newline a2 ")
+    (bcStrings (10 "0.0" a2 F))
+    (text . "\tab{30} b2 ")
+    (bcStrings (10 "1.0" b2 F))
+    (text . "\newline a3 ")
+    (bcStrings (10 "0.0" a3 F))
+    (text . "\tab{30} b3 ")
+    (bcStrings (10 "1.0" b3 F))
+    (text . "\newline a4 ")
+    (bcStrings (10 "0.0" a4 F))
+    (text . "\tab{30} b4 ")
+    (bcStrings (10 "1.0" b4 F))
+    (text . "\newline ")
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "\newline Absolute accuracy required:")
+    (text . "\tab{30} \menuitemstyle{}\tab{32}")
+    (text . "Relative accuracy required:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" epsabs F))
+    (text . "\tab{32} ")
+    (bcStrings (10 "1.0e-4" epsrel F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaMIntGen)
+  htpSetProperty(page,'expression,expression)
+  htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
+  htShowPage()
+
+
+annaMIntGen htPage ==
+  expression := htpProperty(htPage,'expression)
+  alist := htpInputAreaAlist htPage
+  y := alist
+  epsrel := STRCONC((first y).1,'"")
+  y := rest y
+  epsabs := STRCONC((first y).1,'"")
+  y := rest y
+  while y repeat
+    right := STRCONC((first y).1,'"")
+    y := rest y
+    left := STRCONC((first y).1,"..")
+    y := rest y
+    rangelist := [STRCONC(left,right),:rangelist]
+  rangestring := bcwords2liststring rangelist
+  annaGen STRCONC ('"integrate( ",expression,", ",rangestring,", ",epsabs,", ",epsrel,")")
+
+annaOde() ==
+  htInitPage('"Solution of Initial Value Problems of Ordinary Differential Equations using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "Analyses the function for various attributes, chooses and ")
+    (text . "then uses a suitable ODE solver to provide a ")
+    (text . "solution to the system of n ODEs \center{\htbitmap{d02gaf},}" )
+    (text . "for i = 1,2,...,n.")
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{} \tab{2} Is there any stopping criteria (i.e. some function ")
+    (text . "G(X,Y) such that the algorithm should stop when G(X,Y) = 0)? ")
+    (radioButtons stoppingCriteria
+        ("" "  No \space{1} If No, G(X,Y) is set to 1.0" nostop)
+        ("" "  Yes" stop))
+    (text . "\blankline")
+    (text . "\newline \menuitemstyle{} \tab{2} Are intermediate values required? ")
+    (radioButtons intermediateValues
+        ("" "  No" noint)
+        ("" "  Yes" int))
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "\newline Size of the system of equations:\space{1}")
+    (bcStrings (3 3 n PI))
+    (text . "\newline"))
+  htMakeDoneButton('"Continue",'annaOdeSolve)
+  htShowPage()
+
+annaOdeSolve htPage ==
+
+  s := htpButtonValue(htPage,'stoppingCriteria)
+  i := htpButtonValue(htPage,'intermediateValues)
+  stoppingCriteria := 
+    s = 'nostop => '"no"
+    '"stopping"
+  intermediateValues := 
+    i = 'noint => '"no"
+    '"intervals"
+  n :=
+    $bcParseOnly => PARSE_-INTEGER htpLabelInputString(htPage, 'n)
+    objValUnwrap htpLabelSpadValue(htPage, 'n)
+  (n = '3) => 
+    (stoppingCriteria = intermediateValues) => annaOdeDefaultSolve()
+    (stoppingCriteria = '"stopping") =>
+      (intermediateValues = '"intervals") => annaOdeDefaultSolve1() 
+      annaOdeDefaultSolve2()
+    annaOdeDefaultSolve3()
+  expressionList :=
+    "append"/[fe(i,n) for i in 1..n] where fe(i,n) ==
+      prefix := ('"\blankline \newline Y")
+      prefix := STRCONC(prefix,STRINGIMAGE i,'"'\space{1}")
+      expression := INTERN STRCONC ('"Y",STRINGIMAGE i)
+      [['text,:prefix],
+       ['bcStrings,[45, STRCONC ('"Y[",STRINGIMAGE i,'"]"), expression, 'EM]]]
+  xList :=
+    prefix := ('"\blankline \newline \menuitemstyle{} \tab{2} Initial Value for X: ")
+    middle := ('"\tab{24} \menuitemstyle{} \tab{26} Final Value for X: ")
+    [['text,:prefix],['bcStrings,[5, "0.0", "xinit", 'EM]],
+     ['text,:middle],['bcStrings,[5, "10.0", "xend", 'EM]]]
+  middle := ('"\blankline \menuitemstyle{} \tab{2} Initial Value for Y[i]: ")
+  middle := STRCONC(middle,"\newline ")
+  yinitList := 
+    "append"/[fy(i,n) for i in 1..n] where fy(i,n) ==
+      prefix := ('"\newline Y")
+      prefix := STRCONC(prefix,STRINGIMAGE i,'"\space{1}")
+      yinit := INTERN STRCONC ('"y",STRINGIMAGE i)
+      [['text,:prefix],['bcStrings,[10, '"0.0", yinit, 'EM]]]
+  yinitList := [['text,:middle],:yinitList]
+  if stoppingCriteria = '"no" then
+    sExpression := []
+  else 
+    sText := '"\blankline \newline \menuitemstyle{} \tab{2}"
+    sText := STRCONC(sText,'"\newline Enter the function G(x,y) (The Stopping Criteria): ")
+    sText := STRCONC(sText,'"\newline \tab{2}")
+    sExpression := [['bcStrings,[15, '"Y[1]", "stop", 'EM]]]
+    sExpression := [['text,sText],:sExpression]
+  if intermediateValues = '"no" then
+    ilist := []
+  else 
+    iText := '"\blankline \newline \menuitemstyle{} \tab{2}"
+    iText := STRCONC(iText,'"Enter the list of Intermediate Values required: ")
+    iText := STRCONC(iText,"\newline \tab{2}")
+    iList := [['bcStrings,[15, '"[2,4,6,8]", "ivals", 'EM]]]
+    iList := [['text,iText],:iList]
+  tolList := 
+    tolText := '"\blankline \newline \menuitemstyle{} \tab{2}"
+    tolText := STRCONC(tolText,'"Relative accuracy required:\space{1}")
+    [['text,tolText],['bcStrings,[10, '"1.0e-4", "relerr", 'F]]]
+  expressionPart := [
+     '(domainConditions
+        (isDomain EM ($EmptyMode))
+         (isDomain F (Float))
+           (isDomain S (String))
+            (isDomain PI (PositiveInteger))),
+              :expressionList,:xList,:yinitList,:sExpression,:iList,:tolList]
+  page := htInitPage("AXIOM/NAG ODE Solvers", htpPropertyList htPage)
+  htSay '"\menuitemstyle{} \tab{2} Enter the list of ODE's (i.e.~the derivatives "
+  htSay '"Y[1]'..Y[n]') in terms of Y[1]..Y[n]: "
+  htSay '"\newline "
+  htMakePage expressionPart
+  htMakeDoneButton('"Continue",'annaOdeGen)
+  htpSetProperty(page,'n,n)
+  htpSetProperty(page,'stoppingCriteria,stoppingCriteria)
+  htpSetProperty(page,'intermediateValues,intermediateValues)
+  htShowPage()
+
+
+annaOdeDefaultSolve() ==
+
+  n := '3
+  stoppingCriteria := '"no"
+  intermediateValues :=  '"no"
+  page := htInitPage('"Solution of Initial Value Problems of Ordinary Differential Equations using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{} \tab{2} Enter the list of ODE's (i.e. the derivatives Y[1]'..Y[n]') ")
+    (text . "in terms of Y[1]..Y[n]: ")
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[1]':} \space{1}")
+    (bcStrings (42 "tan(Y[3])" Y1 EM))
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[2]':} \space{1}")
+    (bcStrings (42 "-0.032*tan(Y[3])/Y[2]-0.02*Y[2]/cos(Y[3])" Y2 EM))
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[3]':} \space{1}")
+    (bcStrings (42 "-0.032/(Y[2]**2)" Y3 EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Initial Value for X: ")
+    (text . "\tab{24} \menuitemstyle{}\tab{26} ")
+    (text . "Final Value for X:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" xinit EM))
+    (text . "\tab{26} ")
+    (bcStrings (10 "10.0" xend EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Initial Value for Y[i]: ")
+    (text . "\newline \tab{2} {\em Y[1]:} \space{1}")
+    (bcStrings (10 "0.5" y1 EM))
+    (text . "\newline \tab{2} {\em Y[2]:} \space{1}")
+    (bcStrings (10 "0.5" y2 EM))
+    (text . "\newline \tab{2} {\em Y[3]:} \space{1}")
+    (bcStrings (10 "%pi*0.2" y3 EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "Relative accuracy required:\space{1}")
+    (bcStrings (10 "1.0e-4" tol F))
+    (text . "\blankline "))
+  htMakeDoneButton('"Continue",'annaOdeGen)
+  htpSetProperty(page,'stoppingCriteria,stoppingCriteria)
+  htpSetProperty(page,'intermediateValues,intermediateValues)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOdeDefaultSolve3() ==
+
+  n := '3
+  stoppingCriteria := '"no"
+  intermediateValues := '"intervals"
+  page := htInitPage('"Solution of Initial Value Problems of Ordinary Differential Equations using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{} \tab{2} Enter the list of ODE's (i.e. the derivatives Y[1]'..Y[n]') ")
+    (text . "in terms of Y[1]..Y[n]:  ")
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[1]':} \space{1}")
+    (bcStrings (42 "-0.04*Y[1]+1.0e4*Y[2]*Y[3]" Y1 EM))
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[2]':} \space{1}")
+    (bcStrings (42 "0.04*Y[1]-1.0e4*Y[2]*Y[3]-3.0e7*Y[2]*Y[2]" Y2 EM))
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[3]':} \space{1}")
+    (bcStrings (42 "3.0e7*Y[2]*Y[2]" Y3 EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Initial Value for X: ")
+    (text . "\tab{24} \menuitemstyle{}\tab{26} ")
+    (text . "Final Value for X:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" xinit EM))
+    (text . "\tab{26} ")
+    (bcStrings (10 "10.0" xend EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Initial Value for Y[i]: ")
+    (text . "\newline \tab{2} {\em Y[1]:} \space{1}")
+    (bcStrings (10 "1.0" y1 EM))
+    (text . "\newline \tab{2} {\em Y[2]:} \space{1}")
+    (bcStrings (10 "0.0" y2 EM))
+    (text . "\newline \tab{2} {\em Y[3]:} \space{1}")
+    (bcStrings (10 "0.0" y3 EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Enter the list of Intermediate Values required: ")
+    (bcStrings (10 "[2,4,6,8]" intvals EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "Relative accuracy required:\space{1}")
+    (bcStrings (10 "1.0e-4" tol F))
+    (text . "\blankline "))
+  htMakeDoneButton('"Continue",'annaOdeGen)
+  htpSetProperty(page,'stoppingCriteria,stoppingCriteria)
+  htpSetProperty(page,'intermediateValues,intermediateValues)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOdeDefaultSolve2() ==
+
+  n := '3
+  stoppingCriteria := '"stopping"
+  intermediateValues := '"no"
+  page := htInitPage('"Solution of Initial Value Problems of Ordinary Differential Equations using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{} \tab{2} Enter the list of ODE's (i.e. the derivatives Y[1]'..Y[n]') ")
+    (text . "in terms of Y[1]..Y[n]:  ")
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[1]':} \space{1}")
+    (bcStrings (42 "tan(Y[3])" Y1 EM))
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[2]':} \space{1}")
+    (bcStrings (42 "-0.032*tan(Y[3])/Y[2]-0.02*Y[2]/cos(Y[3])" Y2 EM))
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[3]':} \space{1}")
+    (bcStrings (42 "-0.032/(Y[2]**2)" Y3 EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Initial Value for X: ")
+    (text . "\tab{24} \menuitemstyle{}\tab{26} ")
+    (text . "Final Value for X:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" xinit EM))
+    (text . "\tab{26} ")
+    (bcStrings (10 "10.0" xend EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Initial Value for Y[i]: ")
+    (text . "\newline \tab{2} {\em Y[1]:} \space{1}")
+    (bcStrings (10 "0.5" y1 EM))
+    (text . "\newline \tab{2} {\em Y[2]:} \space{1}")
+    (bcStrings (10 "0.5" y2 EM))
+    (text . "\newline \tab{2} {\em Y[3]:} \space{1}")
+    (bcStrings (10 "%pi*0.2" y3 EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Enter the function G(x,y) (The Stopping Criteria): ")
+    (bcStrings (10 "Y[1]" g EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "Relative accuracy required:\space{1}")
+    (bcStrings (10 "1.0e-4" tol F))
+    (text . "\blankline "))
+  htMakeDoneButton('"Continue",'annaOdeGen)
+  htpSetProperty(page,'stoppingCriteria,stoppingCriteria)
+  htpSetProperty(page,'intermediateValues,intermediateValues)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOdeDefaultSolve1() ==
+
+  n := '3
+  stoppingCriteria := '"stopping"
+  intermediateValues := '"intervals"
+  page := htInitPage('"Solution of Initial Value Problems of Ordinary Differential Equations using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain PI (PositiveInteger))
+        (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{} \tab{2} Enter the list of ODE's (i.e. the derivatives Y[1]'..Y[n]') ")
+    (text . "in terms of Y[1]..Y[n]:  ")
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[1]':} \space{1}")
+    (bcStrings (42 "-0.04*Y[1]+1.0e4*Y[2]*Y[3]" Y1 EM))
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[2]':} \space{1}")
+    (bcStrings (42 "0.04*Y[1]-1.0e4*Y[2]*Y[3]-3.0e7*Y[2]*Y[2]" Y2 EM))
+    (text . "\blankline ")
+    (text . "\newline \tab{2} {\em Y[3]':} \space{1}")
+    (bcStrings (42 "3.0e7*Y[2]*Y[2]" Y3 EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Initial Value for X: ")
+    (text . "\tab{24} \menuitemstyle{}\tab{26} ")
+    (text . "Final Value for X:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (10 "0.0" xinit EM))
+    (text . "\tab{26} ")
+    (bcStrings (10 "10.0" xend EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Initial Value for Y[i]: ")
+    (text . "\newline \tab{2} {\em Y[1]:} \space{1}")
+    (bcStrings (10 "1.0" y1 EM))
+    (text . "\newline \tab{2} {\em Y[2]:} \space{1}")
+    (bcStrings (10 "0.0" y2 EM))
+    (text . "\newline \tab{2} {\em Y[3]:} \space{1}")
+    (bcStrings (10 "0.0" y3 EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Enter the function G(x,y) (The Stopping Criteria): ")
+    (bcStrings (10 "Y[1]-0.9" g EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "\newline Enter the list of Intermediate Values required: ")
+    (bcStrings (10 "[2,4,6,8]" intvals EM))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{}\tab{2} ")
+    (text . "Relative accuracy required:\space{1}")
+    (bcStrings (10 "1.0e-4" tol F))
+    (text . "\blankline "))
+  htMakeDoneButton('"Continue",'annaOdeGen)
+  htpSetProperty(page,'stoppingCriteria,stoppingCriteria)
+  htpSetProperty(page,'intermediateValues,intermediateValues)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOdeGen htPage ==
+
+  n := htpProperty(htPage,'n)
+  stoppingCriteria := htpProperty(htPage,'stoppingCriteria)
+  intermediateValues := htpProperty(htPage,'intermediateValues)
+  alist := htpInputAreaAlist htPage
+  y := alist
+  epsrel := STRCONC((first y).1,'"")
+  epsrelString := STRCONC(", ",epsrel)
+  y := rest y
+  if intermediateValues = '"no" then 
+    intvalsString := '""
+  else 
+    intvals := STRCONC((first y).1,'"")
+    intvalsString := STRCONC(", ",intvals)
+    y := rest y
+  if stoppingCriteria = '"no" then
+    gString := '""
+  else 
+    g := STRCONC((first y).1,'"")
+    gString := STRCONC(", ",g)
+    y := rest y
+  for i in 1..n repeat
+    yi := STRCONC((first y).1,'"")
+    yiList := [yi,:yiList]
+    y := rest y
+  yiString := bcwords2liststring yiList
+  xend := STRCONC((first y).1,'"")
+  y := rest y
+  xinit := STRCONC((first y).1,'"")
+  y := rest y
+  for i in 1..n repeat
+    fi := STRCONC((first y).1,'"")
+    fiList := [fi,:fiList]
+    y := rest y
+  fiString := bcwords2liststring fiList
+  prefix := STRCONC('"solve(",fiString,", ", xinit,", ", xend,", ")
+  prefix := STRCONC(prefix,yiString,gString,intvalsString,epsrelString)
+  prefix := STRCONC(prefix,")")
+  annaGen prefix
+
+--d03fafVariables() ==
+--  htInitPage('"Helmholtz Equation in 3-D, Cartesian Coordinates",nil)
+--  htMakePage '(
+--    (domainConditions
+--      (isDomain F (Float))
+--        (isDomain S (String)))
+--    (text . "Descretizing the PDE:")
+--    (text . "\newline\centerline{\inputbitmap{\htbmdir{}/d03faf.xbm}}")
+--    (text . "\newline and solving the resulting seven-diagonal finite ") 
+--    (text . "difference equations using a method based on the Fast ")
+--    (text . "Fourier Transform.\blankline Entering the names of pre-prepared ")
+--    (text . "variables for xCond, yCond, zCond and f(x,y,z)")
+--    (text . "\blankline Please enter the names of the condition variables")
+--    (text . "\blankline \menuitemstyle{}\tab{2} xCond:\space{1} ")
+--    (bcStrings (10 "xCond" x S))
+--    (text . "\newline \menuitemstyle{}\tab{2} yCond:\space{1} ")
+--    (bcStrings (10 "yCond" y S))
+--    (text . "\newline \menuitemstyle{}\tab{2} zCond:\space{1} ")
+--    (bcStrings (10 "zCond" z S))
+--    (text . "\blankline \menuitemstyle{}\tab{2} Please enter the value of lambda:\space{1} ")
+--    (bcStrings (8 "-1.0" lambda F))
+--    (text . "\blankline \menuitemstyle{}\tab{2} Please enter the name of the variable for f(x,y,z):")
+--    (text . "\space{1} ")
+--    (bcStrings (10 "foo" f S))
+--    (text . "\blankline "))
+--  htMakeDoneButton('"Continue",'annaOptSolve)
+--  htShowPage()
+
+annaPDESolve() ==
+  htInitPage('"Second Order Elliptic Partial Differential Equation",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+        (isDomain S (String))
+          (isDomain EM $EmptyMode))
+    (text . "Descretizing the PDE:")
+    (text . "\newline\centerline{\inputbitmap{\htbmdir{}/d03eef.xbm}}")
+    (text . "\newline defined on a rectangular region with boundary conditions of the form ")
+    (text . "\centerline{\inputbitmap{\htbmdir{}/d03eef1.bitmap}} ")
+    (text . " and solving the resulting seven-diagonal finite ") 
+    (text . "difference equations using a multigrid technique. \blankline ")
+    (text . "\menuitemstyle{} \tab{2} Enter the rectangle on which to discretize the PDE : \newline ")
+    (text . "\tab{11} Start \tab{20} Number of grid lines \tab{41} End ")
+    (text . " \newline \tab{6} X : \space{1} " ) 
+    (bcStrings(7 "0.0" xmin F))
+    (text . "\space{7} ")
+    (bcStrings(3 "9" ngx I))
+    (text . "\space{7} ")
+    (bcStrings(7 "1.0" xmax F))
+    (text . "\newline \tab{6} Y : \space{1} " )
+    (bcStrings(7 "0.0" ymin F))
+    (text . "\space{7} ")
+    (bcStrings(3 "9" ngy I))
+    (text . "\space{7} ")
+    (bcStrings(7 "1.0" ymax F))
+    (text . "\blankline \menuitemstyle{} Enter the values of the expressions\space{1}")
+    (text . " \inputbitmap{\htbmdir{}/alpha.xbm}(X,Y) to\space{1}")
+    (text . " \inputbitmap{\htbmdir{}/psi.xbm}(X,Y) : ")
+    (text . "\blankline \tab{3} \inputbitmap{\htbmdir{}/alpha.xbm}(X,Y) : ")
+    (bcStrings (36 "1" alpha EM))
+    (text . "\newline \tab{3} \inputbitmap{\htbmdir{}/beta.xbm}(X,Y) : ")
+    (bcStrings (36 "0" beta EM))
+    (text . "\newline \tab{3} \inputbitmap{\htbmdir{}/gamma.xbm}(X,Y) : ")
+    (bcStrings (36 "1" gamma EM))
+    (text . "\newline \tab{3} \inputbitmap{\htbmdir{}/delta.xbm}(X,Y) : ")
+    (bcStrings (36 "50" delta EM))
+    (text . "\newline \tab{3} \inputbitmap{\htbmdir{}/epsilon.xbm}(X,Y) : ")
+    (bcStrings (36 "50" epsilon EM))
+    (text . "\newline \tab{3} \inputbitmap{\htbmdir{}/phi.xbm}(X,Y) : ")
+    (bcStrings (36 "0" phi EM))
+    (text . "\newline \tab{3} \inputbitmap{\htbmdir{}/psi.xbm}(X,Y) : ")
+    (bcStrings (36 "-2*sin(X)*sin(Y) + 50*cos(X)*sin(Y) + 50*sin(X)*cos(Y)" psi EM))
+    (text . "\blankline \menuitemstyle{} Enter the values of the boundary ")
+    (text . " condition expressions for the bottom, top, left and right sides : ")
+    (text . " \blankline \tab{2} \menuitemstyle{} Bottom boundary conditions :")
+    (text . " (Y := \inputbitmap{\htbmdir{}/ys.xbm})")
+    (text . "\newline \tab{4} a(X,Y) : ")
+    (bcStrings (34 "0" ba EM))
+    (text . "\newline \tab{4} b(X,Y) : ")
+    (bcStrings (34 "1" bb EM))
+    (text . "\newline \tab{4} c(X,Y) : ")
+    (bcStrings (34 "-sin(X)" bc EM))
+    (text . " \blankline \tab{2} \menuitemstyle{} Top boundary conditions :")
+    (text . " (Y := \inputbitmap{\htbmdir{}/ye.xbm})")
+    (text . "\newline \tab{4} a(X,Y) : ")
+    (bcStrings (34 "1" ta EM))
+    (text . "\newline \tab{4} b(X,Y) : ")
+    (bcStrings (34 "0" tb EM))
+    (text . "\newline \tab{4} c(X,Y) : ")
+    (bcStrings (34 "sin(X)*sin(Y)" tc EM))
+    (text . " \blankline \tab{2} \menuitemstyle{} Left boundary conditions :")
+    (text . " (X := \inputbitmap{\htbmdir{}/xs.xbm})")
+    (text . "\newline \tab{4} a(X,Y) : ")
+    (bcStrings (34 "0" la EM))
+    (text . "\newline \tab{4} b(X,Y) : ")
+    (bcStrings (34 "1" lb EM))
+    (text . "\newline \tab{4} c(X,Y) : ")
+    (bcStrings (34 "-sin(Y)" lc EM))
+    (text . " \blankline \tab{2} \menuitemstyle{} Right boundary conditions :")
+    (text . " (Y := \inputbitmap{\htbmdir{}/xe.xbm})")
+    (text . "\newline \tab{4} a(X,Y) : ")
+    (bcStrings (34 "1" ra EM))
+    (text . "\newline \tab{4} b(X,Y) : ")
+    (bcStrings (34 "0" rb EM))
+    (text . "\newline \tab{4} c(X,Y) : ")
+    (bcStrings (34 "sin(X)*sin(Y)" rc EM))
+    (text . "\blankline \menuitemstyle{} Do you know that the PDE described is elliptic? \space{2}")
+    (text . "\newline \tab{6} ")
+    (bcRadioButtons ell
+        ("" " Yes \space{2} " yes)
+        ("" " Unknown" no))
+    (text . "\blankline \menuitemstyle{} Required Tolerance : ")
+    (bcStrings (10 "1.0e-4" tol F))
+    (text . " \newline "))
+  htMakeDoneButton('"Continue",'annaPDESolve2)
+  htShowPage()
+
+annaPDESolve2 htPage ==
+  e := htpButtonValue(htPage,'ell)
+  ell := 
+    e = 'yes => '"elliptic"
+    '"unknown"
+  xmin := htpLabelInputString(htPage,'xmin)
+  ngx := htpLabelInputString(htPage,'ngx)
+  xmax := htpLabelInputString(htPage,'xmax)
+  ymin := htpLabelInputString(htPage,'ymin)
+  ngy := htpLabelInputString(htPage,'ngy)
+  ymax := htpLabelInputString(htPage,'ymax)
+  alpha := htpLabelInputString(htPage,'alpha)
+  beta := htpLabelInputString(htPage,'beta)
+  gamma := htpLabelInputString(htPage,'gamma)
+  delta := htpLabelInputString(htPage,'delta)
+  epsilon := htpLabelInputString(htPage,'epsilon)
+  phi := htpLabelInputString(htPage,'phi)
+  psi := htpLabelInputString(htPage,'psi)
+  ba := htpLabelInputString(htPage,'ba)
+  bb := htpLabelInputString(htPage,'bb)
+  bc := htpLabelInputString(htPage,'bc)
+  ta := htpLabelInputString(htPage,'ta)
+  tb := htpLabelInputString(htPage,'tb)
+  tc := htpLabelInputString(htPage,'tc)
+  la := htpLabelInputString(htPage,'la)
+  lb := htpLabelInputString(htPage,'lb)
+  lc := htpLabelInputString(htPage,'lc)
+  ra := htpLabelInputString(htPage,'ra)
+  rb := htpLabelInputString(htPage,'rb)
+  rc := htpLabelInputString(htPage,'rc)
+  tol := htpLabelInputString(htPage,'tol)
+  bCond := STRCONC('"[[ ", ba, '", ", bb, '", ", bc, '"],")
+  bCond := STRCONC(bCond, '"[ ", ra, '", ", rb, '", ", rc, '"],")
+  bCond := STRCONC(bCond, '"[ ", ta, '", ", tb, '", ", tc, '"],")
+  bCond := STRCONC(bCond, '"[ ", la, '", ", lb, '", ", lc, '"]]")
+  pde := STRCONC('"[", alpha, '", ", beta, '", ", gamma, '", ", delta)
+  pde := STRCONC( pde, '", ", epsilon, '", ", phi, '", ", psi, '"]")
+  outputString := STRCONC('"solve(", xmin, '", ", xmax, '", ", ymin, '", ", ymax, '", ")
+  outputString := STRCONC(outputString , ngx, '", ", ngy, '", ", pde, '", ")
+  outputString := STRCONC(outputString , bCond, '", _"", ell ,'"_", ", tol, " )")
+  annaGen outputString
+
+annaOpt() ==
+  htInitPage('"Minimization of a Multivariate Function using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain NNI (NonNegativeInteger))
+        (isDomain S (String))
+         (isDomain PI (PositiveInteger))
+          (isDomain I (Integer))
+           (isDomain EM $EmptyMode))
+    (text . "Analyses the function for various attributes, chooses and ")
+    (text . "then uses a suitable optimization routine for finding the ")
+    (text . "minimum of a nonlinear function {\it F(x)} of {\it n} variables.")
+    (text . "\newline {\bf Minimize F(x)} where \center{\htbitmap{e04fdf1}} possibly subject to linear or non-linear ")
+    (text . "constraints on the variables. ")
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "Number of variables \htbitmap{xj}, {\it n}:")
+    (text . "\space{1} ")
+    (bcStrings (2 4 n PI))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{} \tab{2} Are there any constraints ")
+    (text . "on the function?")
+    (radioButtons constraints
+        (" " "  No" nocons)
+        (" " "  Yes" cFunctions))
+    (text . "\blankline \menuitemstyle{}")
+    (text . "Number of linear and/or non-linear constraint functions:\space{1}")
+    (bcStrings (2 "0" cons NNI))
+    (text . "\blankline "))
+  htMakeDoneButton('"Continue",'annaOptSolve)
+  htShowPage()
+
+annaOptSolve htPage ==
+  n :=
+    $bcParseOnly => PARSE_-INTEGER htpLabelInputString(htPage, 'n)
+    objValUnwrap htpLabelSpadValue(htPage, 'n)
+  c := htpButtonValue(htPage,'constraints)
+  constraints := 
+    c = 'nocons => '"none"
+    '"cf"
+  cons :=
+    $bcParseOnly => PARSE_-INTEGER htpLabelInputString(htPage, 'cons)
+    objValUnwrap htpLabelSpadValue(htPage, 'cons)
+  constraints = '"none" => annaOptSolve1(n)
+  ((n = '4) and (cons = '0)) => annaOptDefaultSolve2()
+  ((n = '4) and (cons = '3)) => annaOptDefaultSolve3()
+  ((n = '7) and (cons = '7)) => annaOptDefaultSolve4()
+  cText := ('"\blankline \menuitemstyle{}\tab{2} Enter lower and upper ")
+  cText := STRCONC(cText,'"boundary conditions {\it bl(n)} and {\it bu(n)}: ")
+  cText := STRCONC(cText,'"\newline \tab{5} Lower \tab{25} Constraint ")
+  cText := STRCONC(cText,'"\tab{45} Upper ")
+  cList := 
+    "append"/[fc(i) for i in 1..n] where fc(i) ==
+      prefix := ('"\newline \tab{2}")
+      xn := INTERN STRCONC ("\tab{27}",'"X",STRINGIMAGE i,"\tab{42}")
+      blnam := INTERN STRCONC ('"bl",STRINGIMAGE i)
+      bunam := INTERN STRCONC ('"bu",STRINGIMAGE i)
+      [['text,:prefix],['bcStrings,[8, '"-1.0", blnam, 'F]],['text,:xn],
+       ['bcStrings,[8, '"1.0", bunam, 'F]]]
+  consList := 
+    "append"/[fe(i) for i in n+1..n+cons] where fe(i) ==
+      lineEnd := ('"\newline\tab{2}")
+      space := ('"\space{1}")
+      space2 := ('"\tab{42}")
+      cnam := INTERN STRCONC ('"c",STRINGIMAGE i)
+      blnam := INTERN STRCONC ('"bl",STRINGIMAGE i)
+      bunam := INTERN STRCONC ('"bu",STRINGIMAGE i)
+      [['text,:lineEnd],['bcStrings,[8, '"-1.0", blnam, 'F]],['text,:space],
+       ['bcStrings,[26, '"X[1]", cnam, 'EM]],['text,:space2],
+        ['bcStrings,[8, '"1.0", bunam, 'F]]]
+  cList := [['text,:cText],:cList,:consList]
+  funcList := [['bcStrings,[48, '"X[1]", 'f, 'EM]]]
+  xmiddle := ('"\blankline \menuitemstyle{}\tab{2} Enter initial guess of the")
+  xmiddle := STRCONC(xmiddle,'" solution vector {\it x(n)}: ")
+  xList := 
+    "append"/[fg(i) for i in 1..n] where fg(i) ==
+      xnam := INTERN STRCONC ('"x",STRINGIMAGE i)
+      [['text,'"\newline\tab{2}"],['bcStrings,[8, '"0.0", xnam, 'F]]]
+  xList := [['text,:xmiddle],:xList]
+  equationPart := [
+     '(domainConditions 
+        (isDomain EM $EmptyMode)
+          (isDomain F (Float))),
+              :funcList,:cList,:xList]
+  page := htInitPage('"Minimization of a Multivariate Function using AXIOM/NAG Expert System", nil)
+  htSay '"\menuitemstyle{}\tab{2} "
+  htSay '"Enter the objective function, {\it F(x)} in terms of X[1]...X[n]: "
+  htSay '"\newline \tab{2} "
+  htMakePage equationPart
+  htMakeDoneButton('"Continue",'annaOptGen)
+  htpSetProperty(page,'constraints,constraints)
+  htpSetProperty(page,'cons,cons)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOptSolve1(n) ==
+
+  n = '2 => annaOptDefaultSolve1()
+  constraints := '"none"
+  cons := '0
+  funcList := [['bcStrings,[48, "X[1]", 'f, 'EM]]]
+  xmiddle := ('"\blankline \menuitemstyle{}\tab{2} Enter initial guess of the")
+  xmiddle := STRCONC(xmiddle,'" solution vector {\it x(n)}: ")
+  xList := 
+    "append"/[fg(i) for i in 1..n] where fg(i) ==
+      xnam := INTERN STRCONC ('"x",STRINGIMAGE i)
+      [['text,'"\newline\tab{2}"],['bcStrings,[8, '"0.0", xnam, 'F]]]
+  xList := [['text,:xmiddle],:xList]
+  equationPart := [
+     '(domainConditions 
+        (isDomain EM $EmptyMode)
+           (isDomain F (Float))),
+                  :funcList,:xList]
+  page := htInitPage('"Minimization of a Multivariate Function using AXIOM/NAG Expert System", nil)
+  htSay '"\menuitemstyle{}\tab{2} "
+  htSay '"Enter the objective function, {\it F(x)} in terms of X[1]...X[n]: "
+  htSay '"\newline \tab{2} "
+  htMakePage equationPart
+  htMakeDoneButton('"Continue",'annaOptGen)
+  htpSetProperty(page,'constraints,constraints)
+  htpSetProperty(page,'cons,cons)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOptDefaultSolve5() ==
+  n := '7
+  constraints := '"cf"
+  cons := '7
+  page := htInitPage('"Minimization of a Multivariate Function using AXIOM/NAG Expert System", nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the objective function, {\it F(x)} in terms of X[1]...X[n]: ")
+    (text . "\newline \tab{2} ")
+    (bcStrings (51 "(X[1]-0.02)*X[1]+(X[2]-0.2)*X[2]+(X[3]-0.2)*X[3]+(X[4]+2*X[3]-0.2)*X[4]+(X[5]-0.2)*X[5]+(0.04-X[6])*X[6]+(0.04-2*X[6]-X[7])*X[7]" f EM))
+    (text . "\blankline \menuitemstyle{}\tab{2} Enter lower and upper ")
+    (text . "boundary conditions {\it bl(n)} and {\it bu(n)}: ")
+    (text . "\newline \tab{5} Lower \tab{25} Constraint \tab{45} Upper ")
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.01" bl1 F))
+    (text . "\tab{27} X1 \tab{42}")
+    (bcStrings (8 "0.01" bu1 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.1" bl2 F))
+    (text . "\tab{27} X2 \tab{42}")
+    (bcStrings (8 "0.15" bu2 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.01" bl3 F))
+    (text . "\tab{27} X3 \tab{42}")
+    (bcStrings (8 "0.03" bu3 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.04" bl4 F))
+    (text . "\tab{27} X4 \tab{42}")
+    (bcStrings (8 "0.04" bu4 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.1" bl5 F))
+    (text . "\tab{27} X5 \tab{42}")
+    (bcStrings (8 "0.05" bu5 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.01" bl6 F))
+    (text . "\tab{27} X6 \tab{42}")
+    (bcStrings (8 "1.0E21" bu6 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.01" bl7 F))
+    (text . "\tab{27} X7 \tab{42}")
+    (bcStrings (8 "1.0E21" bu7 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.13" bl8 F))
+    (text . "\space{1}")
+    (bcStrings (26 "X[1]+X[2]+X[3]+X[4]+X[5]+X[6]+X[7]" c8 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.13" bu8 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E21" bl9 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.15*X[1]+0.04*X[2]+0.02*X[3]+0.04*X[4]+0.02*X[5]+0.01*X[6]+0.03*X[7]" c9 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.0049" bu9 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E21" bl10 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.03*X[1]+0.05*X[2]+0.08*X[3]+0.02*X[4]+0.06*X[5]+0.01*X[6]" c10 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.0064" bu10 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E21" bl11 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.02*X[1]+0.04*X[2]+0.01*X[3]+0.02*X[4]+0.02*X[5]" c11 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.0037" bu11 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E21" bl12 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.02*X[1]+0.03*X[2]+0.01*X[5]" c12 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.0012" bu12 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.0992" bl13 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.7*X[1]+0.75*X[2]+0.8*X[3]+0.75*X[4]+0.8*X[5]+0.97*X[6]" c13 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "1.0E21" bu13 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.003" bl14 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.02*X[1]+0.06*X[2]+0.08*X[3]+0.12*X[4]+0.02*X[5]+0.01*X[6]+0.97*X[7]" c14 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "0.002" bu14 F))
+    (text . "\blankline \menuitemstyle{}\tab{2} Enter initial guess of the")
+    (text . " solution vector {\it x(n)}: \newline \tab{2} ")
+    (bcStrings (8 "-0.01" x1 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "-0.03" x2 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "0.0" x3 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "-0.01" x4 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "-0.1" x5 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "0.02" x6 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "0.01" x7 F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaOptGen)
+  htpSetProperty(page,'constraints,constraints)
+  htpSetProperty(page,'cons,cons)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOptDefaultSolve4() ==
+  n := '7
+  constraints := '"cf"
+  cons := '7
+  page := htInitPage('"Minimization of a Multivariate Function using AXIOM/NAG Expert System", nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the objective function, {\it F(x)} in terms of X[1]...X[n]: ")
+    (text . "\newline \tab{2} ")
+    (bcStrings (51 "-0.2*(0.1*X[1]+X[2]+X[3]+X[4]+X[5]-0.2*(X[6]+X[7]))" f EM))
+    (text . "\blankline \menuitemstyle{}\tab{2} Enter lower and upper ")
+    (text . "boundary conditions {\it bl(n)} and {\it bu(n)}: ")
+    (text . "\newline \tab{5} Lower \tab{25} Constraint \tab{45} Upper ")
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.01" bl1 F))
+    (text . "\tab{27} X1 \tab{42}")
+    (bcStrings (8 "0.01" bu1 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.1" bl2 F))
+    (text . "\tab{27} X2 \tab{42}")
+    (bcStrings (8 "0.15" bu2 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.01" bl3 F))
+    (text . "\tab{27} X3 \tab{42}")
+    (bcStrings (8 "0.03" bu3 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.04" bl4 F))
+    (text . "\tab{27} X4 \tab{42}")
+    (bcStrings (8 "0.04" bu4 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.1" bl5 F))
+    (text . "\tab{27} X5 \tab{42}")
+    (bcStrings (8 "0.05" bu5 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.01" bl6 F))
+    (text . "\tab{27} X6 \tab{42}")
+    (bcStrings (8 "1.0E21" bu6 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.01" bl7 F))
+    (text . "\tab{27} X7 \tab{42}")
+    (bcStrings (8 "1.0E21" bu7 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.13" bl8 F))
+    (text . "\space{1}")
+    (bcStrings (26 "X[1]+X[2]+X[3]+X[4]+X[5]+X[6]+X[7]" c8 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.13" bu8 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E21" bl9 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.15*X[1]+0.04*X[2]+0.02*X[3]+0.04*X[4]+0.02*X[5]+0.01*X[6]+0.03*X[7]" c9 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.0049" bu9 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E21" bl10 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.03*X[1]+0.05*X[2]+0.08*X[3]+0.02*X[4]+0.06*X[5]+0.01*X[6]" c10 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.0064" bu10 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E21" bl11 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.02*X[1]+0.04*X[2]+0.01*X[3]+0.02*X[4]+0.02*X[5]" c11 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.0037" bu11 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E21" bl12 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.02*X[1]+0.03*X[2]+0.01*X[5]" c12 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "-0.0012" bu12 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.0992" bl13 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.7*X[1]+0.75*X[2]+0.8*X[3]+0.75*X[4]+0.8*X[5]+0.97*X[6]" c13 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "1.0E21" bu13 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-0.003" bl14 F))
+    (text . "\space{1}")
+    (bcStrings (26 "0.02*X[1]+0.06*X[2]+0.08*X[3]+0.12*X[4]+0.02*X[5]+0.01*X[6]+0.97*X[7]" c14 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "0.002" bu14 F))
+    (text . "\blankline \menuitemstyle{}\tab{2} Enter initial guess of the")
+    (text . " solution vector {\it x(n)}: \newline \tab{2} ")
+    (bcStrings (8 "-0.01" x1 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "-0.03" x2 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "0.0" x3 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "-0.01" x4 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "-0.1" x5 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "0.02" x6 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "0.01" x7 F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaOptGen)
+  htpSetProperty(page,'constraints,constraints)
+  htpSetProperty(page,'cons,cons)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOptDefaultSolve3() ==
+  n := '4
+  constraints := '"cf"
+  cons := '3
+  page := htInitPage('"Minimization of a Multivariate Function using AXIOM/NAG Expert System", nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the objective function, {\it F(x)} in terms of X[1]...X[n]: ")
+    (text . "\newline \tab{2} ")
+    (bcStrings (48 "X[1]*X[4]*(X[1]+X[2]+X[3])+X[3]" f EM))
+    (text . "\blankline \menuitemstyle{}\tab{2} Enter lower and upper ")
+    (text . "boundary conditions {\it bl(n)} and {\it bu(n)}: ")
+    (text . "\newline \tab{5} Lower \tab{25} Constraint \tab{45} Upper ")
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1.0" bl1 F))
+    (text . "\tab{27} X1 \tab{42}")
+    (bcStrings (8 "5.0" bu1 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1.0" bl2 F))
+    (text . "\tab{27} X2 \tab{42}")
+    (bcStrings (8 "5.0" bu2 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1.0" bl3 F))
+    (text . "\tab{27} X3 \tab{42}")
+    (bcStrings (8 "5.0" bu3 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1.0" bl4 F))
+    (text . "\tab{27} X4 \tab{42}")
+    (bcStrings (8 "5.0" bu4 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.E25" bl5 F))
+    (text . "\space{1}")
+    (bcStrings (26 "X[1]+X[2]+X[3]+X[4]" c5 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "20.0" bu5 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.E25" bl6 F))
+    (text . "\space{1}")
+    (bcStrings (26 "X[1]**2+X[2]**2+X[3]**2+X[4]**2" c6 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "40.0" bu6 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "25.0" bl7 F))
+    (text . "\space{1}")
+    (bcStrings (26 "X[1]*X[2]*X[3]*X[4]" c7 EM))
+    (text . "\tab{42}")
+    (bcStrings (8 "1.E25" bu7 F))
+    (text . "\blankline \menuitemstyle{}\tab{2} Enter initial guess of the")
+    (text . " solution vector {\it x(n)}: \newline \tab{2} ")
+    (bcStrings (8 "1.0" x1 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "5.0" x2 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "5.0" x3 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "1.0" x4 F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaOptGen)
+  htpSetProperty(page,'constraints,constraints)
+  htpSetProperty(page,'cons,cons)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOptDefaultSolve2() ==
+  n := '4
+  constraints := '"cf"
+  cons := '0
+  page := htInitPage('"Minimization of a Multivariate Function using AXIOM/NAG Expert System", nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{}\tab{2} ")
+    (text . "Enter the objective function, {\it F(x)} in terms of X[1]...X[n]: ")
+    (text . "\newline \tab{2} ")
+    (bcStrings (70 "(X[1]+10*X[2])**2+5*(X[3]-X[4])**2+(X[2]-2*X[3])**4+10*(X[1]-X[4])**4" f EM))
+    (text . "\blankline \menuitemstyle{}\tab{2} Enter lower and upper ")
+    (text . "boundary conditions {\it bl(n)} and {\it bu(n)}: ")
+    (text . "\newline \tab{5} Lower \tab{25} Constraint \tab{45} Upper ")
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1" bl1 F))
+    (text . "\tab{27} X1 \tab{42}")
+    (bcStrings (8 "3" bu1 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-2" bl2 F))
+    (text . "\tab{27} X2 \tab{42}")
+    (bcStrings (8 "0" bu2 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "-1.0E-6" bl3 F))
+    (text . "\tab{27} X3 \tab{42}")
+    (bcStrings (8 "1.0E6" bu3 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1" bl4 F))
+    (text . "\tab{27} X4 \tab{42}")
+    (bcStrings (8 "3" bu4 F))
+    (text . "\blankline \menuitemstyle{}\tab{2} Enter initial guess of the")
+    (text . " solution vector {\it x(n)}: \newline \tab{2} ")
+    (bcStrings (8 "3" x1 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "-1" x2 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "0" x3 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "1" x4 F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaOptGen)
+  htpSetProperty(page,'constraints,constraints)
+  htpSetProperty(page,'cons,cons)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOptDefaultSolve1() ==
+
+  n := '2
+  constraints := '"none"
+  cons := '0
+  page := htInitPage('"Minimization of a Multivariate Function using AXIOM/NAG Expert System", nil)
+  htMakePage '(
+    (domainConditions
+      (isDomain F (Float))
+       (isDomain EM $EmptyMode))
+    (text . "\menuitemstyle{} \tab{2} Enter the objective function,")
+    (text . " {\it F(x)} in terms of X[1]...X[n]: \newline \tab{2} ")
+    (bcStrings (52 "exp(X[1])*(4*X[1]**2+2*X[2]**2+4*X[1]*X[2]+2*X[2]+1)" f EM))
+    (text . "\blankline \menuitemstyle{} \tab{2} Enter initial guess of the ")
+    (text . "solution vector {\it x(n)}: \newline\tab{2}") 
+    (bcStrings (8 "-1.0" x1 F))
+    (text . "\newline\tab{2}")
+    (bcStrings (8 "1.0" x2 F))
+    (text . "\blankline"))
+  htMakeDoneButton('"Continue",'annaOptGen)
+  htpSetProperty(page,'constraints,constraints)
+  htpSetProperty(page,'cons,cons)
+  htpSetProperty(page,'n,n)
+  htShowPage()
+
+annaOptGen htPage ==
+  n := htpProperty(htPage,'n)
+  cons := htpProperty(htPage,'cons)
+  constraints := htpProperty(htPage,'constraints)
+  alist := htpInputAreaAlist htPage
+  y := alist
+  for i in 1..n repeat
+    init := STRCONC((first y).1,'"")
+    initList := [init,:initList]
+    y := rest y
+  initString := bcwords2liststring initList
+  if constraints = '"cf" then
+    for i in 1..cons repeat 
+      upper := STRCONC((first y).1,'"") 
+      uList := [upper,:uList]
+      y := rest y
+      con := STRCONC((first y).1," ")
+      cList := [con,:cList]
+      y := rest y
+      lower := STRCONC((first y).1,'"")
+      lList := [lower,:lList]
+      y := rest y
+    for i in 1..n repeat
+      upper := STRCONC((first y).1,'"")
+      uList := [upper,:uList]
+      y := rest y
+      lower := STRCONC((first y).1,'"")
+      lList := [lower,:lList]
+      y := rest y
+  uString := bcwords2liststring uList
+  cString := bcwords2liststring cList
+  lString := bcwords2liststring lList
+  f := STRCONC((first y).1,'"")
+  prefix := STRCONC('"optimize(",f,", ")
+  if constraints = '"none" then
+    midfix := initString
+  else
+    if cons = '0 then
+      midfix := STRCONC(initString,", ",lString,", ",uString)
+    else
+      midfix := STRCONC(initString,", ",lString,", ",cString,", ",uString)
+  suffix := STRCONC(prefix, midfix,")")
+  annaGen suffix
+
+annaOpt2() ==
+  htInitPage('"Minimization of a Sum of Squares using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions
+     (isDomain PI (PositiveInteger)))
+    (text . "Analyses the functions for various attributes, chooses and ")
+    (text . "then uses a suitable optimization routine for finding the ")
+    (text . "minimum of a sum of squares of {\it m} nonlinear functions in ")
+    (text . "{\it n} variables ({\it m} \htbitmap{great=} {\it n}), i.e., it ")
+    (text . "is applicable to problems of the form ")
+    (text . "\center{\htbitmap{e04fdf}} where \center{\htbitmap{e04fdf1}}")
+    (text . "The routines are intended for ")
+    (text . "functions which have continous first and second derivatives, ")
+    (text . "though they will usually work if the derivatives have occasional ")
+    (text . "discontinuities. ")
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "Number of functions {\it \htbitmap{fi}(x)}, {\it m}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (5 15 m PI))
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "Number of variables \htbitmap{xj}, {\it n}:")
+    (text . "\newline\tab{2} ")
+    (bcStrings (5 3 n PI))
+    (text . "\blankline ")
+    (text . "\newline \menuitemstyle{} \tab{2} Do you wish for a check for ")
+    (text . "goodness of fit of the least squares model?")
+    (radioButtons goodness
+        (" " "  No" nogood)
+        (" " "  Yes" good))
+    (text . "\blankline "))
+  htMakeDoneButton('"Continue", 'annaOpt2Solve)
+  htShowPage()
+
+annaOpt2Solve htPage ==
+  g := htpButtonValue(htPage,'goodness)
+  goodness := 
+    g = 'nogood => '"nogood"
+    '"good"
+  n :=
+    $bcParseOnly => PARSE_-INTEGER htpLabelInputString(htPage, 'n)
+    objValUnwrap htpLabelSpadValue(htPage, 'n)
+  m :=
+    $bcParseOnly => PARSE_-INTEGER htpLabelInputString(htPage, 'm)
+    objValUnwrap htpLabelSpadValue(htPage, 'm)
+  m = '15 and n = '3 and goodness = '"nogood" => annaOpt2DefaultSolve()
+  m = '15 and n = '3  => annaOpt2DefaultSolve2()
+  fList := 
+    "append"/[f(i) for i in 1..m] where f(i) ==
+      lineEnd := ('"\newline\tab{2}")
+      fnam := INTERN STRCONC ('"f",STRINGIMAGE i)
+      [['text,:lineEnd], ['bcStrings,[42, '"X[1]", fnam, 'EM]]]
+  xmiddle := ('"\blankline \menuitemstyle{}\tab{2} Enter initial guess of the")
+  xmiddle := STRCONC(xmiddle,'" solution vector {\it x(n)}: ")
+  xList := 
+    "append"/[fg(i) for i in 1..n] where fg(i) ==
+      xnam := INTERN STRCONC ('"x",STRINGIMAGE i)
+      [['text,'"\newline\tab{2}"],['bcStrings,[8, '"0.0", xnam, 'F]]]
+  xList := [['text,:xmiddle],:xList]
+  equationPart := [
+     '(domainConditions 
+        (isDomain EM $EmptyMode)
+          (isDomain F (Float))),
+              :fList,:xList]
+  page := htInitPage('"Minimization of a Sum of Squares using AXIOM/NAG Expert System",nil)
+  htSay '"\menuitemstyle{}\tab{2} "
+  htSay '"Enter the objective functions, {\it F(x)} in terms of X[1]...X[n]: "
+  htSay '"\newline \tab{2} "
+  htMakePage equationPart
+  htMakeDoneButton('"Continue",'annaOpt2Gen)
+  htpSetProperty(page,'n,n)
+  htpSetProperty(page,'m,m)
+  htpSetProperty(page,'goodness,goodness)
+  htShowPage()
+
+annaOpt2DefaultSolve() ==
+  goodness := '"nogood"
+  n := '3
+  m := '15
+  page := htInitPage('"Minimization of a Sum of Squares using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions 
+       (isDomain EM $EmptyMode)
+       (isDomain F (Float))
+       (isDomain I (Integer)))
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "Enter the functions \htbitmap{fi} below ")
+    (text . "in terms of X[1]...X[n]: ")
+    (text . "\newline ")
+    (text . "\newline {\em Function 1:} \space{1}")
+    (bcStrings (42 "(X[3]+15*X[2])**(-1)+X[1]-0.14" f1 EM))
+    (text . "\newline {\em Function 2:} \space{1}")
+    (bcStrings (42 "2*(2*X[3]+14*X[2])**(-1)+X[1]-0.18" f2 EM))
+    (text . "\newline {\em Function 3:} \space{1}")
+    (bcStrings (42 "3*(3*X[3]+13*X[2])**(-1)+X[1]-0.22" f3 EM))
+    (text . "\newline {\em Function 4:} \space{1}")
+    (bcStrings (42 "4*(4*X[3]+12*X[2])**(-1)+X[1]-0.25" f4 EM))
+    (text . "\newline {\em Function 5:} \space{1}")
+    (bcStrings (42 "5*(5*X[3]+11*X[2])**(-1)+X[1]-0.29" f5 EM))
+    (text . "\newline {\em Function 6:} \space{1}")
+    (bcStrings (42 "6*(6*X[3]+10*X[2])**(-1)+X[1]-0.32" f6 EM))
+    (text . "\newline {\em Function 7:} \space{1}")
+    (bcStrings (42 "7*(7*X[3]+9*X[2])**(-1)+X[1]-0.35" f7 EM))
+    (text . "\newline {\em Function 8:} \space{1}")
+    (bcStrings (42 "8*(8*X[3]+8*X[2])**(-1)+X[1]-0.39" f8 EM))
+    (text . "\newline {\em Function 9:} \space{1}")
+    (bcStrings (42 "9*(7*X[3]+7*X[2])**(-1)+X[1]-0.37" f9 EM))
+    (text . "\newline {\em Function 10:} \space{1}")
+    (bcStrings (42 "10*(6*X[3]+6*X[2])**(-1)+X[1]-0.58" f10 EM))
+    (text . "\newline {\em Function 11:} \space{1}")
+    (bcStrings (42 "11*(5*X[3]+5*X[2])**(-1)+X[1]-0.73" f11 EM))
+    (text . "\newline {\em Function 12:} \space{1}")
+    (bcStrings (42 "12*(4*X[3]+4*X[2])**(-1)+X[1]-0.96" f12 EM))
+    (text . "\newline {\em Function 13:} \space{1}")
+    (bcStrings (42 "13*(3*X[3]+3*X[2])**(-1)+X[1]-1.34" f13 EM))
+    (text . "\newline {\em Function 14:} \space{1}")
+    (bcStrings (42 "14*(2*X[3]+2*X[2])**(-1)+X[1]-2.1" f14 EM))
+    (text . "\newline {\em Function 15:} \space{1}")
+    (bcStrings (42 "15*(X[3]+X[2])**(-1)+X[1]-4.39" f15 EM))
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "Enter initial guess of the solution vector {\it x(n)}: \newline \tab{2}")
+    (bcStrings (8 "0.5" x1 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1.0" x2 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1.5" x3 F)))
+  htMakeDoneButton('"Continue",'annaOpt2Gen)
+  htpSetProperty(page,'n,n)
+  htpSetProperty(page,'m,m)
+  htpSetProperty(page,'goodness,goodness)
+  htShowPage()
+
+annaOpt2DefaultSolve2() ==
+  goodness := '"good"
+  n := '3
+  m := '15
+  page := htInitPage('"Minimization of a Sum of Squares using AXIOM/NAG Expert System",nil)
+  htMakePage '(
+    (domainConditions 
+       (isDomain EM $EmptyMode)
+       (isDomain F (Float))
+       (isDomain I (Integer)))
+    (text . "\newline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "Enter the functions \htbitmap{fi} below ")
+    (text . "in terms of X[1]...X[n]: ")
+    (text . "\newline ")
+    (text . "\newline {\em Function 1:} \space{1}")
+    (bcStrings (42 "(X[3]+15*X[2])**(-1)+X[1]-0.14" f1 EM))
+    (text . "\newline {\em Function 2:} \space{1}")
+    (bcStrings (42 "2*(2*X[3]+14*X[2])**(-1)+X[1]-0.18" f2 EM))
+    (text . "\newline {\em Function 3:} \space{1}")
+    (bcStrings (42 "3*(3*X[3]+13*X[2])**(-1)+X[1]-0.22" f3 EM))
+    (text . "\newline {\em Function 4:} \space{1}")
+    (bcStrings (42 "4*(4*X[3]+12*X[2])**(-1)+X[1]-0.25" f4 EM))
+    (text . "\newline {\em Function 5:} \space{1}")
+    (bcStrings (42 "5*(5*X[3]+11*X[2])**(-1)+X[1]-0.29" f5 EM))
+    (text . "\newline {\em Function 6:} \space{1}")
+    (bcStrings (42 "6*(6*X[3]+10*X[2])**(-1)+X[1]-0.32" f6 EM))
+    (text . "\newline {\em Function 7:} \space{1}")
+    (bcStrings (42 "7*(7*X[3]+9*X[2])**(-1)+X[1]-0.35" f7 EM))
+    (text . "\newline {\em Function 8:} \space{1}")
+    (bcStrings (42 "8*(8*X[3]+8*X[2])**(-1)+X[1]-0.39" f8 EM))
+    (text . "\newline {\em Function 9:} \space{1}")
+    (bcStrings (42 "9*(7*X[3]+7*X[2])**(-1)+X[1]-0.37" f9 EM))
+    (text . "\newline {\em Function 10:} \space{1}")
+    (bcStrings (42 "10*(6*X[3]+6*X[2])**(-1)+X[1]-0.58" f10 EM))
+    (text . "\newline {\em Function 11:} \space{1}")
+    (bcStrings (42 "11*(5*X[3]+5*X[2])**(-1)+X[1]-0.73" f11 EM))
+    (text . "\newline {\em Function 12:} \space{1}")
+    (bcStrings (42 "12*(4*X[3]+4*X[2])**(-1)+X[1]-0.96" f12 EM))
+    (text . "\newline {\em Function 13:} \space{1}")
+    (bcStrings (42 "13*(3*X[3]+3*X[2])**(-1)+X[1]-1.34" f13 EM))
+    (text . "\newline {\em Function 14:} \space{1}")
+    (bcStrings (42 "14*(2*X[3]+2*X[2])**(-1)+X[1]-2.1" f14 EM))
+    (text . "\newline {\em Function 15:} \space{1}")
+    (bcStrings (42 "15*(X[3]+X[2])**(-1)+X[1]-4.39" f15 EM))
+    (text . "\blankline ")
+    (text . "\menuitemstyle{}\tab{2}")
+    (text . "Enter initial guess of the solution vector {\it x(n)}: \newline \tab{2}")
+    (bcStrings (8 "0.5" x1 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1.0" x2 F))
+    (text . "\newline \tab{2}")
+    (bcStrings (8 "1.5" x3 F)))
+  htMakeDoneButton('"Continue",'annaOpt2Gen)
+  htpSetProperty(page,'n,n)
+  htpSetProperty(page,'m,m)
+  htpSetProperty(page,'goodness,goodness)
+  htShowPage()
+
+annaOpt2Gen htPage ==
+
+  goodness := htpProperty(htPage,'goodness)
+  n := htpProperty(htPage,'n)
+  m := htpProperty(htPage,'m)
+  alist := htpInputAreaAlist htPage
+  y := alist
+  for i in 1..n repeat
+    init := STRCONC((first y).1,'"")
+    initList := [init,:initList]
+    y := rest y
+  initString := bcwords2liststring initList
+  for i in 1..m repeat
+    f := STRCONC((first y).1," ")
+    fList := [f,:fList]
+    y := rest y
+  fString := bcwords2liststring fList
+  prefix :=
+    goodness = '"good" => '"goodnessOfFit( "
+    '"optimize( "
+  midfix := STRCONC(fString,", ",initString)
+  suffix := STRCONC(prefix, midfix,")")
+  annaGen suffix
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}
