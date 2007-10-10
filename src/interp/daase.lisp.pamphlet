@@ -452,7 +452,6 @@ database.
 ;  )
 (defun interpOpen ()
  "open the interpreter database and hash the keys"
- (declare (special $spadroot))
  (let (constructors pos stamp dbstruct)
   (setq *interp-stream* (open (DaaseName "interp.daase" nil)))
   (setq stamp (read *interp-stream*))
@@ -508,7 +507,6 @@ database.
 
 (defun browseOpen ()
  "open the constructor database and hash the keys"
- (declare (special $spadroot))
  (let (constructors pos stamp dbstruct)
   (setq *browse-stream* (open (DaaseName "browse.daase" nil)))
   (setq stamp (read *browse-stream*))
@@ -538,7 +536,6 @@ database.
 
 (defun categoryOpen ()
  "open category.daase and hash the keys"
- (declare (special $spadroot))
  (let (pos keys stamp)
   (setq *category-stream* (open (DaaseName "category.daase" nil)))
   (setq stamp (read *category-stream*))
@@ -556,7 +553,6 @@ database.
 
 (defun operationOpen ()
  "read operation database and hash the keys"
- (declare (special $spadroot))
  (let (operations pos stamp)
   (setq *operation-stream* (open (DaaseName "operation.daase" nil)))
   (setq stamp (read *operation-stream*))
@@ -653,7 +649,7 @@ database.
      (setf (get constructor 'abbreviationfor) nil)))))
 
 (defun getdatabase (constructor key)
- (declare (special $spadroot) (special *miss*))
+ (declare (special *miss*))
  (when (eq *miss* t) (format t "getdatabase call: ~20a ~a~%" constructor key))
  (let (data table stream ignore struct)
   (declare (ignore ignore))
@@ -794,7 +790,7 @@ database.
      (when (and data (string= (directory-namestring data) "")
 	     (string= (pathname-type data) "spad"))
       (setq data
-       (concatenate 'string $spadroot "/../../src/algebra/" data))))
+       (concatenate 'string (|systemRootDirectory|) "/../../src/algebra/" data))))
     (asharp?                               ; is this asharp code?
      (if (consp data)
       (setq data (cdr data))
@@ -803,10 +799,10 @@ database.
      (if (consp data)
        (setq data
 	     (if (string= (directory-namestring (car data)) "")
-		 (concatenate 'string $spadroot "/algebra/" (car data) ".o")
+		 (concatenate 'string (|systemRootDirectory|) "/algebra/" (car data) ".o")
 	       (car data)))
       (when (and data (string= (directory-namestring data) ""))
-       (setq data (concatenate 'string $spadroot "/algebra/" data ".o")))))))
+       (setq data (concatenate 'string (|systemRootDirectory|) "/algebra/" data ".o")))))))
   data))
 
 ; )library top level command  -- soon to be obsolete
@@ -1283,7 +1279,6 @@ short negative numbers.
 
 (defun compressOpen ()
  (let (lst stamp pos)
-  (declare (special $spadroot))
   (setq *compress-stream*
     (open (DaaseName "compress.daase"  nil) :direction :input))
   (setq stamp (read *compress-stream*))
@@ -1369,7 +1364,7 @@ Here I'll try to outline the interp database write procedure
 \begin{verbatim}
 (defun write-interpdb ()
  "build interp.daase from hash tables"
- (declare (special $spadroot) (special *ancestors-hash*))
+ (declare (special *ancestors-hash*))
  (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
 	concategory categorypos kind niladic cosig abbrev defaultdomain
 	ancestors ancestorspos out)
@@ -1554,7 +1549,7 @@ Here I'll try to outline the interp database write procedure
 <<*>>=
 (defun write-interpdb ()
  "build interp.daase from hash tables"
- (declare (special $spadroot) (special *ancestors-hash*))
+ (declare (special *ancestors-hash*))
  (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
 	concategory categorypos kind niladic cosig abbrev defaultdomain
 	ancestors ancestorspos out)
@@ -1638,7 +1633,6 @@ time stamp at the top of the file and close the file.
 <<*>>=
 (defun write-browsedb ()
  "make browse.daase from hash tables"
- (declare (special $spadroot))
  (let (master masterpos src formpos docpos attpos predpos *print-pretty* out)
   (declare (special *print-pretty*))
   (print "building browse.daase")

@@ -245,9 +245,6 @@ curoutstream                 & ncIntLoop           & \\
 \$reportUndo                 & initvars            & diffAlist \\
 \$shoeReadLineFunction       & SpadInterpretStream & \\
 \$spad                       & ncTopLevel          & \\
-\$spadroot                   & reroot              & initroot \\
-                             &                     & make-absolute-filename \\
-                             &                     & reroot \\
 \$SpadServer                 & restart             & \\
 \$SpadServerName             & initvars            & restart \\
 \$systemCommandFunction      & SpadInterpretStream & \\
@@ -556,18 +553,6 @@ The [[$shoeReadLineFunction]] is set in [[SpadInterpretStream]]
 to point to the 
 [[serverReadLine]] 
 
-\subsection{\$spadroot}
-The [[$spadroot]] variable is the internal name for the [[AXIOM]]
-shell variable. 
-
-The [[$spadroot]] variable is set in [[reroot]] to the value of the
-argument. The argument is expected to be a directory name. 
-
-The [[$spadroot]] variable is tested in [[initroot]].
-
-The [[$spadroot]] variable is used by the function 
-[[make-absolute-filename]]. It concatenates this variable to the 
-front of a relative pathname to make it absolute.
 \subsection{\$spad}
 The [[$spad]] variable is set to [[T]] in [[ncTopLevel]].
 
@@ -636,8 +621,7 @@ function which is the entry to the Axiom interpreter.
 The restart function is the real root of the world. It sets up memory
 if we are working in a GCL/akcl version of the system. It sets the
 current package to be the ``BOOT'' package which is the standard
-package in which the interpreter runs. It calls initroot \cite{1}
-to set the \$spadroot variable (usually the \$AXIOM variable).
+package in which the interpreter runs. 
 
 The [[compiler::*compile-verbose*]] flag has been set to nil globally.
 We do not want to know about the microsteps of GCL's compile facility.
@@ -660,7 +644,7 @@ We do not care that tail recursion occurs.
 
   ;; Do any command-line processing that may be needed
   (|AxiomCore|::|topLevel|)
-  (initroot)
+  (reroot)
 #+:akcl (system:gbc-time 0)
 
   (when (and $openServerIfTrue (fboundp '|openServer|))
@@ -758,15 +742,7 @@ This function performs those setup commands.
   nil)
 
 @
-\subsection{defun initroot}
-Sets up the system to use the {\bf AXIOM} shell variable if we can
-and default to the {\bf \$spadroot} variable (which was the value
-of the {\bf AXIOM} shell variable at build time) if we can't.
-<<defun initroot>>=
-(defun initroot (&optional (newroot (|systemRootDirectory|)))
-  (reroot (or newroot $spadroot (error "setenv AXIOM or (setq $spadroot)"))))
 
-@
 \subsection{defun loadExposureGroupData}
 <<defun loadExposureGroupData>>=
 #+:AKCL
@@ -792,29 +768,19 @@ of the {\bf AXIOM} shell variable at build time) if we can't.
 Prefix a filename with the {\bf AXIOM} shell variable.
 <<defun make-absolute-filename>>=
 (defun make-absolute-filename (name)
- (concatenate 'string $spadroot name))
+ (concatenate 'string (|systemRootDirectory|) name))
 
 @
 
 \subsection{defun reroot}
 The reroot function is used to reset the important variables used by
-the system. In particular, these variables are sensitive to the
-{\bf AXIOM} shell variable. That variable is renamed internally to
-be {\bf \$spadroot}. The {\bf reroot} function will change the
-system to use a new root directory and will have the same effect
-as changing the {\bf AXIOM} shell variable and rerunning the system
-from scratch. Note that we have changed from the
+the system.  The {\bf reroot} function will change the
+system to use a new root directory. Note that we have changed from the
 NAG distribution back to the original form. If you need the NAG
 version you can push {\bf :tpd} on the {\bf *features*} variable
-before compiling this file. A correct call looks like:
-\begin{verbatim}
-(in-package "BOOT")
-(reroot "/spad/mnt/${SYS}")
-\end{verbatim}
-where the [[${SYS}]] variable is the same one set at build time.
+before compiling this file.
 <<defun reroot>>=
-(defun reroot (dir)
-  (setq $spadroot dir)
+(defun reroot ()
   (setq $directory-list
    (mapcar #'make-absolute-filename $relative-directory-list))
   (setq $library-directory-list
@@ -1555,7 +1521,6 @@ DEBUGSYS=${OBJ}/${SYS}/bin/debugsys
 <<initvars>>
 
 <<defun init-memory-config>>
-<<defun initroot>>
 
 <<defun loadExposureGroupData>>
 

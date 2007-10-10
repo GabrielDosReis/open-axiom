@@ -47,13 +47,13 @@ the necessary functions and macros to compile any file. The
 image but it does not have any autoload triggers or databases
 loaded.
 <<build-depsys>>=
-(defun build-depsys (load-files spad)
+(defun build-depsys (load-files)
 #+:CCL
   (setq *package* (find-package "BOOT"))
 #+:AKCL
   (in-package "BOOT")
   (mapcar #'load load-files)
-  (initroot spad)
+  (reroot)
   #+:AKCL
   (init-memory-config :cons 1000 :fixnum 400 :symbol 1000 :package 16
 		      :array 800 :string 1000 :cfun 200 :cpages 2000
@@ -90,20 +90,17 @@ loaded.
 The {\bf build-interpsys} function takes a list of files to load
 into the image ({\bf load-files}). It also takes several lists of files, 
 one for each subsystem which will be autoloaded. Autoloading is explained
-below. Next it takes a set of shell variables, the most important of 
-which is the {\bf spad} variable. This is normally set to be the same
-as the final build location. This function is called in the 
-src/interp/Makefile. 
+below. This function is called in the src/interp/Makefile. 
 
-This function calls {\bf initroot} to set up pathnames we need. Next
+This function calls {\bf reroot} to set up pathnames we need. Next
 it sets up the lisp system memory (at present only for AKCL/GCL). Next
 it loads all of the named files, resets a few global state variables,
 loads the databases, sets up autoload triggers and clears out hash tables.
 After this function is called the image is clean and can be saved.
 <<build-interpsys>>=
 (defun build-interpsys (load-files
-	     translate-files nagbr-files asauto-files spad)
-  (initroot spad)
+	     translate-files nagbr-files asauto-files)
+  (reroot)
   #+:AKCL
   (init-memory-config :cons 500 :fixnum 200 :symbol 500 :package 8
 		      :array 400 :string 500 :cfun 100 :cpages 1000
@@ -255,7 +252,9 @@ It is called by {\bf mkBootAutoLoad} above to find the necessary
 files.
 <<boot-load>>=
 (defun boot-load (file)
-  (let ((name (concat $SPADROOT "/autoload/" (pathname-name file))))
+  (let ((name (concat (|systemRootDirectory|)
+		      "/autoload/" 
+		      (pathname-name file))))
     (if |$printLoadMsgs|
 	(format t "   Loading ~A.~%" name))
     (load name)))
@@ -490,7 +489,7 @@ Translate a single boot file to common lisp
 #+:AKCL
   (in-package "BOOT")
   (let (*print-level* *print-length* (fn (pathname-name file))
-	(bootfile  (merge-pathnames file (concat $spadroot "nboot/.boot"))))
+	(bootfile  (merge-pathnames file (concat (|systemRootDirectory|) "nboot/.boot"))))
     (declare (special *print-level* *print-length*))
     (boot bootfile (make-pathname :type "lisp" :defaults bootfile))))
 
@@ -648,7 +647,9 @@ src/interp/TAGS file.
     (system::run-aix-program "fc"
 	 :arguments (list (string function)
 			  (namestring
-			   (merge-pathnames file (concat $SPADROOT "nboot/.boot"))))
+			   (merge-pathnames file 
+					    (concat (|systemRootDirectory|) 
+						    "nboot/.boot"))))
 	 :if-output-exists :supersede :output tbootfile)
     (boot tbootfile tlispfile)
     (if compflag (progn (compile-file tlispfile)
@@ -673,7 +674,8 @@ The filelist should be a file containing names of files to compile.
 <<compspadfiles>>=
 (defun compspadfiles (filelist ;; should be a file containing files to compile
 		      &optional (*default-pathname-defaults*
-				 (pathname (concat $SPADROOT "nalgebra/"))))
+				 (pathname (concat (|systemRootDirectory|)
+						   "nalgebra/"))))
    (with-open-file (stream filelist)
 	(do ((fname (read-line stream nil nil) (read-line stream nil nil)))
 	    ((null fname) 'done)
@@ -730,16 +732,16 @@ This is used by the ")cd" system command.
 
 \subsubsection{make-directory}
 
-Make a directory relative to the {\bf \$spadroot} variable.
+Make a directory relative to the running system root directory.
 <<make-directory>>=
 (defun make-directory (direc)
   (setq direc (namestring direc))
-  (if (string= direc "")  $SPADROOT
+  (if (string= direc "")  (|systemRootDirectory|)
    (if (or (memq :unix *features*)
 	   (memq 'unix *features*))
     (progn
       (if (char/= (char direc 0) #\/)
-	  (setq direc (concat $SPADROOT "/" direc)))
+	  (setq direc (concat (|systemRootDirectory|) "/" direc)))
       (if (char/= (char direc (1- (length direc))) #\/)
 	  (setq direc (concat direc "/")))
       direc)
@@ -747,7 +749,7 @@ Make a directory relative to the {\bf \$spadroot} variable.
       (if (not (or (char= (char direc 0) #\/)
                    (char= (char direc 0) #\\)
                    (find #\: direc)))
-          (setq direc (concat $SPADROOT "\\" direc)))
+          (setq direc (concat (|systemRootDirectory|) "\\" direc)))
       (if (not (or (char= (char direc (1- (length direc))) #\/)
                    (char= (char direc (1- (length direc))) #\\ )))
 	  (setq direc (concat direc "\\")))
@@ -1276,7 +1278,7 @@ The {\bf findtag} function is a user-level function to figure out
 which file contains a given tag. This is sometimes useful if Emacs
 is not around or TAGS are not loaded.
 <<findtag>>=
-(defun findtag (tag &optional (tagfile (concat $spadroot "/../../src/interp/TAGS")) )
+(defun findtag (tag &optional (tagfile (concat (|systemRootDirectory|) "/../../src/interp/TAGS")) )
   ;; tag is an identifier
     (with-open-file (tagstream tagfile)
 	(do ((tagline (read-line tagstream nil nil)
@@ -1429,7 +1431,7 @@ function assumes that \\ can only appear as first character of name.
 (import-module "parsing")
 
 (in-package "BOOT")
-(export '($spadroot $directory-list $current-directory reroot
+(export '($directory-list $current-directory reroot
 	  make-absolute-filename |$msgDatabaseName| |$defaultMsgDatabaseName|))
 
 <<our-write-date>>

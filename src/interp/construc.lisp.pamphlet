@@ -142,9 +142,9 @@
   (lspname (name) (concatenate 'string (string name) ".NRLIB/code.lsp"))
   (fullname (name)
     (concatenate 'string
-     $spadroot "/../../int/algebra/" (string name) ".NRLIB/index.KAF"))
+     (|systemRootDirectory|) "/../../int/algebra/" (string name) ".NRLIB/index.KAF"))
   (fullcode (name)
-   (concatenate 'string $spadroot "/../../int/algebra/" (string name) ".NRLIB/code.lsp")))
+   (concatenate 'string (|systemRootDirectory|) "/../../int/algebra/" (string name) ".NRLIB/code.lsp")))
  (let (masterindex blanks index newindex (space (* 22 (length innames))))
  (setq newindex space)
  (system::system (concatenate 'string "rm -r " (libname outname)))
@@ -759,13 +759,12 @@
 ; it sets up 2 hash tables, opens the database and hashes the index values
 
 (defun constructOpen ()
- (declare (special $spadroot))
  "open the constructor database and hash the keys"
  (let (constructors pos)
   (setq *opalist-hash* (make-hash-table))
   (setq *modemap-hash* (make-hash-table))
   (setq *construct-stream*
-   (open (concatenate 'string $spadroot "/algebra/construct.daase")))
+   (open (concatenate 'string (|systemRootDirectory|) "/algebra/construct.daase")))
   (setq pos (read *construct-stream*))
   (file-position *construct-stream* pos)
   (setq constructors (read *construct-stream*))
@@ -809,11 +808,10 @@
 ; the list (it should be a list of *SYMBOLS*, not strings, like
 ; '(pi nni ....) and constructs the contstruct.daase database
 (defun constructdb (libs)
- (declare (special $spadroot))
  (let (alist opalist modemap opalistpos modemappos index master masterpos pos)
  (labels (
   (name (x)
-   (concatenate 'string $spadroot "/algebra/" (string x) ".NRLIB/index.KAF")))
+   (concatenate 'string (|systemRootDirectory|) "/algebra/" (string x) ".NRLIB/index.KAF")))
  (with-open-file (out "construct.daase" :direction :output)
   (print "                " out)
   (finish-output out)

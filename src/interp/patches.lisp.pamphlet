@@ -322,8 +322,6 @@ previous definition.
 #+:dos
 (setq $current-directory (truename "."))
 #+:dos
-(setq $spadroot "/spad/mnt/dos")
-#+:dos
 (defun user-homedir-pathname ()
  (truename "."))
 
