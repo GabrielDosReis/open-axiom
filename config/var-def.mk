@@ -160,7 +160,7 @@ axiom_c_macros = $(axiom_configdir)/axiom-c-macros.h
 LATEX = @LATEX@
 
 ## Staging directory for the target DESTDIR
-axiom_targetdir = $(top_builddir)/target/$(target)
+axiom_targetdir = $(top_builddir)/$(target)
 axiom_target_bindir = $(axiom_targetdir)/bin
 axiom_target_libdir = $(axiom_targetdir)/lib
 axiom_target_srcdir = $(axiom_targetdir)/src
@@ -171,6 +171,10 @@ axiom_target_texdir = $(axiom_target_datadir)/texmf/tex
 
 ## Where OpenAxiom keeps the tarballs for optional components
 axiom_optional_srcdir = $(abs_top_srcdir)/zips
+
+## The final directory where OpenAxiom is installed.  This is usually
+## the directory deduced or specified at configuration time.
+open_axiom_installdir = @open_axiom_installdir@
 
 INC=$(top_srcdir)/src/include
 PLF=@PLF@
@@ -185,7 +189,7 @@ AXIOM_X11_LDFLAGS = @X_LIBS@ @X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@
 axiom_includes = -I$(axiom_src_srcdir)/include -I$(axiom_configdir)
 
 ## Where the staging build directory is found
-AXIOM = $(top_builddir)/target/$(target)
+AXIOM = $(top_builddir)/$(target)
 
 ## Where to find OpenAxiom data bases.
 DAASE = $(axiom_src_datadir)

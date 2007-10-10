@@ -1499,7 +1499,7 @@ function assumes that \\ can only appear as first character of name.
 (defun sourcepath (f)
  "find the sourcefile in the system directories"
  (let (axiom algebra naglink)
-  (setq axiom (|getEnv| "AXIOM"))
+  (setq axiom (|systemRootDirectory|))
   (setq algebra (concatenate 'string axiom "/../../src/algebra/" f ".spad"))
   (setq naglink (concatenate 'string axiom "/../../src/naglink/" f ".spad"))
   (cond

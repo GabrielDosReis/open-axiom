@@ -66,9 +66,19 @@ base-lisp$(EXEEXT): core.$(FASLEXT)
 		$(eval_flags) '(load "core")' \
 		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote nil) (function |AxiomCore|::|topLevel|))'
 
+
+axiom_optimize_options = @axiom_optimize_options@
+
+edit = sed \
+	-e 's|@open_axiom_installdir[@]|$(open_axiom_installdir)|g' \
+	-e 's|@axiom_optimize_options[@]|$(axiom_optimize_options)|g' \
+	-e 's|@host[@]|$(host)|g' \
+	-e 's|@build[@]|$(build)|g' \
+	-e 's|@target[@]|$(target)|g'
+
 core.lisp: $(srcdir)/core.lisp.in
-	cd $(top_builddir) && \
-	$(SHELL) ./config.status src/lisp/core.lisp
+	$(edit) $< > $@.tmp
+	$(top_srcdir)/config/move-if-change $@.tmp $@
 
 core.$(FASLEXT): core.lisp
 	$(AXIOM_LISP) $(quiet_flags) \

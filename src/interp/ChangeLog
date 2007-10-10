@@ -1,3 +1,32 @@
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bookvol5.pamphlet (initroot): Use |systemRootDirectory| instead
+	of environment variable AXIOM.
+	(|loadExposureGroupData|): Likewise.
+	* br-data.boot.pamphlet (dbHasExamplePage): Likewise.
+	(dbRead): Likewise.
+	(dbReadComments): Likewise.
+	(buildGloss): Likewise.
+	* br-saturn.boot.pamphlet (getSaturnExampleList): Likewise.
+	* br-search.boot.pamphlet (grepSplit): Likewise.
+	* daase.lisp.pamphlet (asharp): Likewise.
+	(initial-getdatabase): Likewise.
+	(DaaseName): Likewise.
+	(create-initializers): Likewise.
+	* ht-root.boot.pamphlet (htGlossPage): Likewise.
+	* htcheck.boot.pamphlet (buildHtMacroTable): Likewise.
+	* i-syscmd.boot.pamphlet (summary): Likewise.
+	(copyright): Likewise.
+	* patches.lisp.pamphlet (restart0): Likewise.
+	* util.lisp.pamphlet (sourcepath): Likewise.
+	* Makefile.pamphlet (OBJS): Include sys-driver.$(FASLEXT).
+	(${SAVESYS}): Tidy.
+	(${AXIOMSYS}): Likewise.
+	(${DEPSYS}): Depend on sys-driver.$(FASLEXT).  Load it.
+	(sys-driver.$(FASLEXT)): New rule.
+	* Makefile.in: Regenerate.
+	* sys-driver.boot: New.
+
 2007-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (<<bc-matrix.clisp>>): Remove.

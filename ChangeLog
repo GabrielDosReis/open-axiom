@@ -1,3 +1,14 @@
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Tidy.  Don't instantiate src/lisp/core.lisp.
+	* configure.ac: Regenerate.
+	* configure: Likewise.
+	* config/var-def.mk (open_axiom_installdir): New.
+	(AXIOM): Support versioning.
+	* Makefile.pamphlet (install): Tidy.
+	Remove sections on SPAD and SYS variables.
+	* Makefile.in: Regenerate.
+
 2007-09-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/setup-dep.mk ($(top_builddir)/libtool): Regenerate when
