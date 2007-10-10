@@ -1,5 +1,22 @@
 2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* br-search.boot.pamphlet: Replace uses of $SPAROOT with
+	systemRootDirectory. 
+	* construc.lisp.pamphlet: Likewise.
+	* daase.lisp.pamphlet: Likewise.
+	* i-toplev.boot.pamphlet: Likewise.
+	* patches.lisp.pamphlet: Likewise.
+	* pathname.boot.pamphlet: Likewise.
+	* util.lisp.pamphlet: Likewise.
+	* bookvol5.pamphlet: Remove $spadroot throughout.
+	(initroot): Remove.
+	(reroot): Lose argument.
+	* Makefile.pamphlet (makeint.lisp): Depend on
+	sys-driver.$(FASLEXT).  Explicitly load it.
+	Miscellaneous cleanup.
+
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* bookvol5.pamphlet (initroot): Use |systemRootDirectory| instead
 	of environment variable AXIOM.
 	(|loadExposureGroupData|): Likewise.

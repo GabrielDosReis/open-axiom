@@ -539,10 +539,8 @@ distclean-local: clean-local
 .SUFFIXES:
 .SUFFIXES: .input .output
  
-TESTSYS= \
-	AXIOM="$(AXIOM)" \
-	DAASE="$(axiom_targetdir)" \
-	$(axiom_target_bindir)/AXIOMsys
+TESTSYS= $(axiom_target_bindir)/AXIOMsys -- --system="$(AXIOM)" \
+		 --sysalg="$(axiom_targetdir)/algebra/"
  
 SKIP= antoine.output as-eg1.output as-eg2.output    \
       as-eg3.output    as-eg4.output    as-eg5.output    as-eg6.output    \

@@ -103,7 +103,8 @@ mergePathnames(a,b) ==
   (fm := pathnameDirectory(a)) = ['"*"] => b
   a
  
-isSystemDirectory dir == EVERY(function CHAR_=,$SPADROOT,dir)
+isSystemDirectory dir == 
+  EVERY(function CHAR_=,systemRootDirectory(),dir)
  
 -- the next function is an improved version of the one in DEBUG LISP
  

@@ -1012,7 +1012,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(|importModule| "bookvol5")' >> makedep.lisp
 	@ echo '(|importModule| "util")' >> makedep.lisp
 	@ echo '(in-package "BOOT")' >> makedep.lisp
-	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))) "${AXIOM}")' >> makedep.lisp
+	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))))' >> makedep.lisp
 	@ echo '(in-package "AxiomCore")' >> makedep.lisp
 	@ echo '(|importModule| "newaux")' >> makedep.lisp
 	@ echo '(|importModule| "parse")' >> makedep.lisp
@@ -1068,7 +1068,8 @@ Doing otherwise causes havoc.
 
 <<savesys>>=
 makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
-                nocompil.lisp \
+                nocompil.$(FASLEXT) \
+		sys-driver.$(FASLEXT) \
 	        ${OUTINTERP} obey.$(FASLEXT) \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
 		${NAGBROBJS} ${TRANOBJS} \
@@ -1081,16 +1082,17 @@ makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 	$(mkinstalldirs) $(axiom_target_datadir)/msgs
 	$(INSTALL_DATA) $(axiom_src_docdir)/msgs/s2-us.msgs \
 		 $(axiom_target_datadir)/msgs
+	@ echo '(|importModule| "sys-driver")' >> makeint.lisp
 	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
 	@ echo '(|importModule| "hash")' >> makeint.lisp
 	@ echo '(gbc t)' >> makeint.lisp
-	@ echo '(load "nocompil.lisp")' >> makeint.lisp
+	@ echo '(|importModule| "nocompil")' >> makeint.lisp
 	@ echo '(|importModule| "bookvol5")' >> makeint.lisp
 	@ echo '(|importModule| "util")' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${NAGBROBJS}))) (quote ($(patsubst %, "%", ${ASAUTO})))  "${AXIOM}")' >> makeint.lisp
+	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${NAGBROBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
 	@ echo '(boot::set-restart-hook)' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ echo '(load "../algebra/warm.data")' >> makeint.lisp
@@ -1178,7 +1180,7 @@ c-util.clisp: c-util.boot
 <<nag-c02.clisp>>=
 nag-c02.clisp: nag-c02.boot
 	@ echo 152 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-c02.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-c02.boot")' | ${DEPSYS}
 
 @
 
@@ -1187,7 +1189,7 @@ nag-c02.clisp: nag-c02.boot
 <<nag-c05.clisp>>=
 nag-c05.clisp: nag-c05.boot
 	@ echo 156 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-c05.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-c05.boot")' | ${DEPSYS}
 
 @
 
@@ -1196,7 +1198,7 @@ nag-c05.clisp: nag-c05.boot
 <<nag-c06.clisp>>=
 nag-c06.clisp: nag-c06.boot
 	@ echo 160 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-c06.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-c06.boot")' | ${DEPSYS}
 
 @
 
@@ -1205,7 +1207,7 @@ nag-c06.clisp: nag-c06.boot
 <<nag-d01.clisp>>=
 nag-d01.clisp: nag-d01.boot
 	@ echo 164 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-d01.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-d01.boot")' | ${DEPSYS}
 
 @
 
@@ -1214,7 +1216,7 @@ nag-d01.clisp: nag-d01.boot
 <<nag-d02.clisp>>=
 nag-d02.clisp: nag-d02.boot
 	@ echo 168 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-d02.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-d02.boot")' | ${DEPSYS}
 
 @
 
@@ -1223,7 +1225,7 @@ nag-d02.clisp: nag-d02.boot
 <<nag-d03.clisp>>=
 nag-d03.clisp: nag-d03.boot
 	@ echo 172 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-d03.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-d03.boot")' | ${DEPSYS}
 
 @
 
@@ -1232,7 +1234,7 @@ nag-d03.clisp: nag-d03.boot
 <<nag-e01.clisp>>=
 nag-e01.clisp: nag-e01.boot
 	@ echo 176 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-e01.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-e01.boot")' | ${DEPSYS}
 
 @
 
@@ -1241,7 +1243,7 @@ nag-e01.clisp: nag-e01.boot
 <<nag-e02.clisp>>=
 nag-e02.clisp: nag-e02.boot
 	@ echo 184 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-e02.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-e02.boot")' | ${DEPSYS}
 
 @
 
@@ -1250,7 +1252,7 @@ nag-e02.clisp: nag-e02.boot
 <<nag-e04.clisp>>=
 nag-e04.clisp: nag-e04.boot
 	@ echo 188 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-e04.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-e04.boot")' | ${DEPSYS}
 
 @
 
@@ -1259,7 +1261,7 @@ nag-e04.clisp: nag-e04.boot
 <<nag-f01.clisp>>=
 nag-f01.clisp: nag-f01.boot
 	@ echo 192 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-f01.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-f01.boot")' | ${DEPSYS}
 
 @
 
@@ -1268,7 +1270,7 @@ nag-f01.clisp: nag-f01.boot
 <<nag-f02.clisp>>=
 nag-f02.clisp: nag-f02.boot
 	@ echo 196 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-f02.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-f02.boot")' | ${DEPSYS}
 
 @
 
@@ -1277,7 +1279,7 @@ nag-f02.clisp: nag-f02.boot
 <<nag-f04.clisp>>=
 nag-f04.clisp: nag-f04.boot
 	@ echo 200 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-f04.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-f04.boot")' | ${DEPSYS}
 
 @
 
@@ -1286,7 +1288,7 @@ nag-f04.clisp: nag-f04.boot
 <<nag-f07.clisp>>=
 nag-f07.clisp: nag-f07.boot
 	@ echo 204 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-f07.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-f07.boot")' | ${DEPSYS}
 
 @
 
@@ -1295,7 +1297,7 @@ nag-f07.clisp: nag-f07.boot
 <<nag-s.clisp>>=
 nag-s.clisp: nag-s.boot
 	@ echo 208 making $@ from $<
-	@ echo '(progn (boot::reroot "${AXIOM}") (old-boot::boot "nag-s.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nag-s.boot")' | ${DEPSYS}
 
 @
 
@@ -1304,7 +1306,7 @@ nag-s.clisp: nag-s.boot
 <<category.clisp>>=
 category.clisp: category.boot
 	@ echo 212 making $@ from $<
-	@ echo '(progn (old-boot::boot "category.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "category.boot")' | ${DEPSYS} 
 @
 
 \subsection{cattable.boot \cite{59}}
@@ -1312,7 +1314,7 @@ category.clisp: category.boot
 <<cattable.clisp>>=
 cattable.clisp: cattable.boot
 	@ echo 215 making $@ from $<
-	@ echo '(progn (old-boot::boot "cattable.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "cattable.boot")' | ${DEPSYS}
 @
 
 \subsection{c-doc.boot \cite{60}}
@@ -1320,7 +1322,7 @@ cattable.clisp: cattable.boot
 <<c-doc.clisp>>=
 c-doc.clisp: c-doc.boot
 	@ echo 219 making $@ from $<
-	@ echo '(progn (old-boot::boot "c-doc.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "c-doc.boot")' | ${DEPSYS} 
 @
 
 
@@ -1329,7 +1331,7 @@ c-doc.clisp: c-doc.boot
 <<clammed.clisp>>=
 clammed.clisp: clammed.boot
 	@ echo 226 making $@ from $<
-	@ echo '(progn (old-boot::boot "clammed.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "clammed.boot")' | ${DEPSYS} 
 @
 
 \subsection{compat.boot \cite{63}}
@@ -1337,7 +1339,7 @@ clammed.clisp: clammed.boot
 <<compat.clisp>>=
 compat.clisp: compat.boot
 	@ echo 229 making $@ from $<
-	@ echo '(progn (old-boot::boot "compat.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "compat.boot")' | ${DEPSYS} 
 @
 
 \subsection{compiler.boot \cite{64}}
@@ -1345,7 +1347,7 @@ compat.clisp: compat.boot
 <<compiler.clisp>>=
 compiler.clisp: compiler.boot
 	@ echo 233 making $@ from $<
-	@ echo '(progn (old-boot::boot "compiler.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "compiler.boot")' | ${DEPSYS}
 @
 
 \subsection{profile.boot \cite{65}}
@@ -1353,7 +1355,7 @@ compiler.clisp: compiler.boot
 <<profile.clisp>>=
 profile.clisp: profile.boot
 	@ echo 237 making $@ from $<
-	@ echo '(progn (old-boot::boot "profile.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "profile.boot")' | ${DEPSYS}
 @
 
 \subsection{database.boot \cite{67}}
@@ -1361,7 +1363,7 @@ profile.clisp: profile.boot
 <<database.clisp>>=
 database.clisp: database.boot
 	@ echo 243 making $@ from $<
-	@ echo '(progn (old-boot::boot "database.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "database.boot")' | ${DEPSYS}
 @
 
 \subsection{define.boot}
@@ -1369,7 +1371,7 @@ database.clisp: database.boot
 <<define.clisp>>=
 define.clisp: define.boot
 	@ echo 247 making $@ from $<
-	@ echo '(progn (old-boot::boot "define.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "define.boot")' | ${DEPSYS}
 @
 
 \subsection{format.boot}
@@ -1377,7 +1379,7 @@ define.clisp: define.boot
 <<format.clisp>>=
 format.clisp: format.boot
 	@ echo 250 making $@ from $<
-	@ echo '(progn (old-boot::boot "format.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "format.boot")' | ${DEPSYS}
 @
 
 \subsection{functor.boot}
@@ -1385,7 +1387,7 @@ format.clisp: format.boot
 <<functor.clisp>>=
 functor.clisp: functor.boot
 	@ echo 254 making $@ from $<
-	@ echo '(progn (old-boot::boot "functor.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "functor.boot")' | ${DEPSYS}
 @
 
 \subsection{g-cndata.boot}
@@ -1393,7 +1395,7 @@ functor.clisp: functor.boot
 <<g-cndata.clisp>>=
 g-cndata.clisp: g-cndata.boot
 	@ echo 261 making $@ from $<
-	@ echo '(progn (old-boot::boot "g-cndata.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "g-cndata.boot")' | ${DEPSYS}
 @
 
 \subsection{g-opt.boot}
@@ -1401,7 +1403,7 @@ g-cndata.clisp: g-cndata.boot
 <<g-opt.clisp>>=
 g-opt.clisp: g-opt.boot
 	@ echo 267 making $@ from $<
-	@ echo '(progn (old-boot::boot "g-opt.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "g-opt.boot")' | ${DEPSYS}
 @
 
 \subsection{g-timer.boot}
@@ -1409,7 +1411,7 @@ g-opt.clisp: g-opt.boot
 <<g-timer.clisp>>=
 g-timer.clisp: g-timer.boot
 	@ echo 270 making $@ from $<
-	@ echo '(progn (old-boot::boot "g-timer.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "g-timer.boot")' | ${DEPSYS}
 @
 
 
@@ -1418,7 +1420,7 @@ g-timer.clisp: g-timer.boot
 <<hypertex.clisp>>=
 hypertex.clisp: hypertex.boot
 	@ echo 277 making $@ from $<
-	@ echo '(progn (old-boot::boot "hypertex.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "hypertex.boot")' | ${DEPSYS}
 @
 
 \subsection{i-analy.boot}
@@ -1426,7 +1428,7 @@ hypertex.clisp: hypertex.boot
 <<i-analy.clisp>>=
 i-analy.clisp: i-analy.boot
 	@ echo 280 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-analy.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-analy.boot")' | ${DEPSYS}
 @
 
 \subsection{i-code.boot}
@@ -1434,7 +1436,7 @@ i-analy.clisp: i-analy.boot
 <<i-code.clisp>>=
 i-code.clisp: i-code.boot
 	@ echo 283 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-code.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-code.boot")' | ${DEPSYS}
 @
 
 \subsection{i-coerce.boot}
@@ -1442,7 +1444,7 @@ i-code.clisp: i-code.boot
 <<i-coerce.clisp>>=
 i-coerce.clisp: i-coerce.boot
 	@ echo 286 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-coerce.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-coerce.boot")' | ${DEPSYS}
 @
 
 \subsection{i-coerfn.boot}
@@ -1450,7 +1452,7 @@ i-coerce.clisp: i-coerce.boot
 <<i-coerfn.clisp>>=
 i-coerfn.clisp: i-coerfn.boot
 	@ echo 289 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-coerfn.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-coerfn.boot")' | ${DEPSYS}
 @
 
 \subsection{i-eval.boot}
@@ -1458,7 +1460,7 @@ i-coerfn.clisp: i-coerfn.boot
 <<i-eval.clisp>>=
 i-eval.clisp: i-eval.boot
 	@ echo 292 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-eval.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-eval.boot")' | ${DEPSYS}
 @
 
 \subsection{i-funsel.boot}
@@ -1466,7 +1468,7 @@ i-eval.clisp: i-eval.boot
 <<i-funsel.clisp>>=
 i-funsel.clisp: i-funsel.boot
 	@ echo 295 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-funsel.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-funsel.boot")' | ${DEPSYS}
 @
 
 \subsection{bookvol5.lsp}
@@ -1483,7 +1485,7 @@ bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
 <<i-intern.clisp>>=
 i-intern.clisp: i-intern.boot
 	@ echo 301 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-intern.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-intern.boot")' | ${DEPSYS}
 @
 
 \subsection{i-map.boot}
@@ -1491,7 +1493,7 @@ i-intern.clisp: i-intern.boot
 <<i-map.clisp>>=
 i-map.clisp: i-map.boot
 	@ echo 304 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-map.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "i-map.boot")' | ${DEPSYS} 
 @
 
 \subsection{i-resolv.boot}
@@ -1499,7 +1501,7 @@ i-map.clisp: i-map.boot
 <<i-resolv.clisp>>=
 i-resolv.clisp: i-resolv.boot
 	@ echo 310 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-resolv.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-resolv.boot")' | ${DEPSYS}
 @
 
 \subsection{i-spec1.boot}
@@ -1507,7 +1509,7 @@ i-resolv.clisp: i-resolv.boot
 <<i-spec1.clisp>>=
 i-spec1.clisp: i-spec1.boot
 	@ echo 313 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-spec1.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-spec1.boot")' | ${DEPSYS}
 @
 
 \subsection{i-spec2.boot}
@@ -1515,7 +1517,7 @@ i-spec1.clisp: i-spec1.boot
 <<i-spec2.clisp>>=
 i-spec2.clisp: i-spec2.boot
 	@ echo 316 making $@ from i-spec2.boot
-	@ echo '(progn (old-boot::boot "i-spec2.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "i-spec2.boot")' | ${DEPSYS} 
 @
 
 \subsection{i-syscmd.boot}
@@ -1523,7 +1525,7 @@ i-spec2.clisp: i-spec2.boot
 <<i-syscmd.clisp>>=
 i-syscmd.clisp: i-syscmd.boot
 	@ echo 319 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-syscmd.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-syscmd.boot")' | ${DEPSYS}
 @
 
 \subsection{i-toplev.boot}
@@ -1531,7 +1533,7 @@ i-syscmd.clisp: i-syscmd.boot
 <<i-toplev.clisp>>=
 i-toplev.clisp: i-toplev.boot
 	@ echo 322 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-toplev.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-toplev.boot")' | ${DEPSYS}
 @
 
 \subsection{i-util.boot}
@@ -1539,7 +1541,7 @@ i-toplev.clisp: i-toplev.boot
 <<i-util.clisp>>=
 i-util.clisp: i-util.boot
 	@ echo 325 making $@ from $<
-	@ echo '(progn (old-boot::boot "i-util.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "i-util.boot")' | ${DEPSYS}
 @
 
 \subsection{info.boot}
@@ -1547,7 +1549,7 @@ i-util.clisp: i-util.boot
 <<info.clisp>>=
 info.clisp: info.boot
 	@ echo 329 making $@ from $<
-	@ echo '(progn (old-boot::boot "info.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "info.boot")' | ${DEPSYS}
 @
 
 \subsection{iterator.boot}
@@ -1555,7 +1557,7 @@ info.clisp: info.boot
 <<iterator.clisp>>=
 iterator.clisp: iterator.boot
 	@ echo 333 making $@ from $<
-	@ echo '(progn (old-boot::boot "iterator.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "iterator.boot")' | ${DEPSYS}
 @
 
 \subsection{lisplib.boot}
@@ -1563,7 +1565,7 @@ iterator.clisp: iterator.boot
 <<lisplib.clisp>>=
 lisplib.clisp: lisplib.boot
 	@ echo 336 making $@ from $<
-	@ echo '(progn (old-boot::boot "lisplib.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "lisplib.boot")' | ${DEPSYS}
 @
 
 \subsection{match.boot}
@@ -1571,7 +1573,7 @@ lisplib.clisp: lisplib.boot
 <<match.clisp>>=
 match.clisp: match.boot
 	@ echo 339 making $@ from $<
-	@ echo '(progn (old-boot::boot "match.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "match.boot")' | ${DEPSYS}
 @
 
 \subsection{modemap.boot}
@@ -1579,7 +1581,7 @@ match.clisp: match.boot
 <<modemap.clisp>>=
 modemap.clisp: modemap.boot
 	@ echo 343 making $@ from $<
-	@ echo '(progn (old-boot::boot "modemap.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "modemap.boot")' | ${DEPSYS}
 @
 
 \subsection{msgdb.boot}
@@ -1587,7 +1589,7 @@ modemap.clisp: modemap.boot
 <<msgdb.clisp>>=
 msgdb.clisp: msgdb.boot
 	@ echo 346 making $@ from $<
-	@ echo '(progn (old-boot::boot "msgdb.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "msgdb.boot")' | ${DEPSYS}
 @
 
 \subsection{newfort.boot}
@@ -1595,7 +1597,7 @@ msgdb.clisp: msgdb.boot
 <<newfort.clisp>>=
 newfort.clisp: newfort.boot
 	@ echo 349 making $@ from $<
-	@ echo '(progn (old-boot::boot "newfort.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "newfort.boot")' | ${DEPSYS}
 @
 
 \subsection{nruncomp.boot}
@@ -1603,7 +1605,7 @@ newfort.clisp: newfort.boot
 <<nruncomp.clisp>>=
 nruncomp.clisp: nruncomp.boot
 	@ echo 353 making $@ from $<
-	@ echo '(progn (old-boot::boot "nruncomp.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nruncomp.boot")' | ${DEPSYS}
 @
 
 \subsection{nrunfast.boot}
@@ -1611,7 +1613,7 @@ nruncomp.clisp: nruncomp.boot
 <<nrunfast.clisp>>=
 nrunfast.clisp: nrunfast.boot
 	@ echo 356 making $@ from $<
-	@ echo '(progn (old-boot::boot "nrunfast.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nrunfast.boot")' | ${DEPSYS}
 @
 
 \subsection{nrungo.boot}
@@ -1619,7 +1621,7 @@ nrunfast.clisp: nrunfast.boot
 <<nrungo.clisp>>=
 nrungo.clisp: nrungo.boot
 	@ echo 359 making $@ from $<
-	@ echo '(progn (old-boot::boot "nrungo.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nrungo.boot")' | ${DEPSYS}
 @
 
 \subsection{nruntime.boot}
@@ -1627,7 +1629,7 @@ nrungo.clisp: nrungo.boot
 <<nruntime.clisp>>=
 nruntime.clisp: nruntime.boot
 	@ echo 362 making $@ from $<
-	@ echo '(progn (old-boot::boot "nruntime.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nruntime.boot")' | ${DEPSYS}
 @
 
 \subsection{nrunopt.boot}
@@ -1635,7 +1637,7 @@ nruntime.clisp: nruntime.boot
 <<nrunopt.clisp>>=
 nrunopt.clisp: nrunopt.boot
 	@ echo 365 making $@ from $<
-	@ echo '(progn (old-boot::boot "nrunopt.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "nrunopt.boot")' | ${DEPSYS}
 @
 
 
@@ -1654,7 +1656,7 @@ to a new platform.
 <<pathname.clisp>>=
 pathname.clisp: pathname.boot
 	@ echo 380 making $@ from $<
-	@ echo '(progn (old-boot::boot "pathname.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "pathname.boot")' | ${DEPSYS}
 @
 
 \subsection{postpar.boot}
@@ -1672,7 +1674,7 @@ to a new platform.
 <<rulesets.clisp>>=
 rulesets.clisp: rulesets.boot
 	@ echo 388 making $@ from $<
-	@ echo '(progn (old-boot::boot "rulesets.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "rulesets.boot")' | ${DEPSYS}
 @
 
 \subsection{server.boot}
@@ -1680,7 +1682,7 @@ rulesets.clisp: rulesets.boot
 <<server.clisp>>=
 server.clisp: server.boot
 	@ echo 391 making $@ from $<
-	@ echo '(progn (old-boot::boot "server.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "server.boot")' | ${DEPSYS}
 @
 
 
@@ -1689,7 +1691,7 @@ server.clisp: server.boot
 <<setvart.clisp>>=
 setvart.clisp: setvart.boot
 	@ echo 398 making $@ from $<
-	@ echo '(progn (old-boot::boot "setvart.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "setvart.boot")' | ${DEPSYS}
 @
 
 \subsection{as.boot}
@@ -1697,7 +1699,7 @@ setvart.clisp: setvart.boot
 <<as.clisp>>=
 as.clisp: as.boot
 	@ echo 417 making $@ from $<
-	@ echo '(progn (old-boot::boot "as.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "as.boot")' | ${DEPSYS}
 @
 
 \subsection{bc-misc.boot}
@@ -1705,7 +1707,7 @@ as.clisp: as.boot
 <<bc-misc.clisp>>=
 bc-misc.clisp: bc-misc.boot
 	@ echo 428 making $@ from $<
-	@ echo '(progn (old-boot::boot "bc-misc.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "bc-misc.boot")' | ${DEPSYS}
 @
 
 \subsection{bc-solve.boot}
@@ -1713,7 +1715,7 @@ bc-misc.clisp: bc-misc.boot
 <<bc-solve.clisp>>=
 bc-solve.clisp: bc-solve.boot
 	@ echo 432 making $@ from $<
-	@ echo '(progn (old-boot::boot "bc-solve.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "bc-solve.boot")' | ${DEPSYS}
 @
 
 \subsection{ht-util.boot}
@@ -1721,7 +1723,7 @@ bc-solve.clisp: bc-solve.boot
 <<ht-util.clisp>>=
 ht-util.clisp: ht-util.boot
 	@ echo 440 making $@ from $<
-	@ echo '(progn (old-boot::boot "ht-util.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "ht-util.boot")' | ${DEPSYS}
 @
 
 \subsection{htsetvar.boot}
@@ -1729,7 +1731,7 @@ ht-util.clisp: ht-util.boot
 <<htsetvar.clisp>>=
 htsetvar.clisp: htsetvar.boot
 	@ echo 444 making $@ from $<
-	@ echo '(progn (old-boot::boot "htsetvar.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "htsetvar.boot")' | ${DEPSYS}
 @
 
 \subsection{record.boot}
@@ -1737,7 +1739,7 @@ htsetvar.clisp: htsetvar.boot
 <<record.clisp>>=
 record.clisp: record.boot
 	@ echo 447 making $@ $<
-	@ echo '(progn (old-boot::boot "record.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "record.boot")' | ${DEPSYS}
 @
 
 \subsection{ht-root.boot}
@@ -1745,7 +1747,7 @@ record.clisp: record.boot
 <<ht-root.clisp>>=
 ht-root.clisp: ht-root.boot
 	@ echo 451 making $@ from $<
-	@ echo '(progn (old-boot::boot "ht-root.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "ht-root.boot")' | ${DEPSYS}
 @
 
 \subsection{htcheck.boot}
@@ -1753,7 +1755,7 @@ ht-root.clisp: ht-root.boot
 <<htcheck.clisp>>=
 htcheck.clisp: htcheck.boot
 	@ echo 455 making $@ from $<
-	@ echo '(progn (old-boot::boot "htcheck.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "htcheck.boot")' | ${DEPSYS}
 @
 
 \subsection{ax.boot}
@@ -1761,7 +1763,7 @@ htcheck.clisp: htcheck.boot
 <<ax.clisp>>=
 ax.clisp: ax.boot
 	@ echo 463 making $@ $<
-	@ echo '(progn (old-boot::boot "ax.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "ax.boot")' | ${DEPSYS} 
 @
 
 \subsection{br-con.boot}
@@ -1769,7 +1771,7 @@ ax.clisp: ax.boot
 <<br-con.clisp>>=
 br-con.clisp: br-con.boot
 	@ echo 467 making $@ from $<
-	@ echo '(progn (old-boot::boot "br-con.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "br-con.boot")' | ${DEPSYS} 
 @
 
 \subsection{br-search.boot}
@@ -1777,7 +1779,7 @@ br-con.clisp: br-con.boot
 <<br-search.clisp>>=
 br-search.clisp: br-search.boot
 	@ echo 471 making $@ from $<
-	@ echo '(progn (old-boot::boot "br-search.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "br-search.boot")' | ${DEPSYS} 
 @
 
 \subsection{br-op1.boot}
@@ -1785,7 +1787,7 @@ br-search.clisp: br-search.boot
 <<br-op1.clisp>>=
 br-op1.clisp: br-op1.boot
 	@ echo 475 making $@ from $<
-	@ echo '(progn (old-boot::boot "br-op1.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "br-op1.boot")' | ${DEPSYS}
 @
 
 \subsection{br-op2.boot}
@@ -1793,7 +1795,7 @@ br-op1.clisp: br-op1.boot
 <<br-op2.clisp>>=
 br-op2.clisp: br-op2.boot
 	@ echo 479 making $@ from $<
-	@ echo '(progn (old-boot::boot "br-op2.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "br-op2.boot")' | ${DEPSYS} 
 @
 
 \subsection{br-data.boot}
@@ -1801,7 +1803,7 @@ br-op2.clisp: br-op2.boot
 <<br-data.clisp>>=
 br-data.clisp: br-data.boot
 	@ echo 483 making $@ from $<
-	@ echo '(progn (old-boot::boot "br-data.boot"))' | ${DEPSYS} 
+	@ echo '(old-boot::boot "br-data.boot")' | ${DEPSYS} 
 @
 
 \subsection{br-util.boot}
@@ -1809,7 +1811,7 @@ br-data.clisp: br-data.boot
 <<br-util.clisp>>=
 br-util.clisp: br-util.boot
 	@ echo 487 making $@ from $<
-	@ echo '(progn (old-boot::boot "br-util.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "br-util.boot")' | ${DEPSYS}
 @
 
 \subsection{br-saturn.boot}
@@ -1817,7 +1819,7 @@ br-util.clisp: br-util.boot
 <<br-saturn.clisp>>=
 br-saturn.clisp: br-saturn.boot
 	@ echo 491 making $@ from $<
-	@ echo '(progn (old-boot::boot "br-saturn.boot"))' | ${DEPSYS}
+	@ echo '(old-boot::boot "br-saturn.boot")' | ${DEPSYS}
 @
 
 \section{The databases}
