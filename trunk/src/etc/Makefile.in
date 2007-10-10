@@ -1,7 +1,5 @@
-INTERPSYS= \
-	AXIOM="$(AXIOM)" \
-	DAASE="$(axiom_src_datadir)" \
-	../interp/interpsys$(EXEEXT)
+INTERPSYS = ../interp/interpsys$(EXEEXT) -- --system="$(AXIOM)" \
+		--sysalg="$(axiom_src_datadir)/algebra/"
 
 subdir = src/etc/
 

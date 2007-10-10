@@ -62,10 +62,14 @@
            "warn"
            
            "%hasFeature"
+	   "%systemOptions"
+	   "%systemArguments"
 	   
 	   "$hostPlatform"
 	   "$buildPlatform"
 	   "$targetPlatform"
+
+	   "$systemInstallationDirectory"
 
            "getCommandLineArguments"
            "processCommandLine"
@@ -95,6 +99,12 @@
 (defconstant |$hostPlatform| "@host@")
 (defconstant |$buildPlatform| "@build@")
 (defconstant |$targetPlatform| "@target@")
+
+;; The directory that contains the final installation directory, as
+;; specified at configuration time (or in exoteric cases, as overriden
+;; on the Make command line). 
+(defconstant |$systemInstallationDirectory| 
+  "@open_axiom_installdir@/")
 
 ;; Lisp compiler optimization settings.
 (proclaim '(optimize @axiom_optimize_options@))
@@ -144,6 +154,8 @@
 ;; Ideally we want to handle
 ;;    --help: just print a help menu and exit
 ;;    --version: Print version information and exit
+;;    --system=<dir>: specify <dir> as the root directory
+;;    --sysalg=<dir>: specify <dir> as directory containing algebras
 ;;    --compile: boot or lisp files
 ;;    --translate: boot files
 ;;    --make: boot, lisp, or fasl files
@@ -349,6 +361,16 @@
 
 ;; 
 ;; -*- Command Line Arguments -*-
+
+(defparameter |$sysOpts| nil)
+(defparameter |$sysArgs| nil)
+
+(defun |%systemOptions| ()
+  |$sysOpts|)
+
+(defun |%systemArguments| ()
+  |$sysArgs|)
+
 ;; 
 ;; Ideally, we would just like to have a traditional command line
 ;; passing mechanism from the shell to the application.  That 
@@ -445,7 +467,7 @@
 
 (defun |handleCommandLine| (prog-name options args)
   (when (or options args)
-  (dolist (opt options t)
+  (dolist (opt options nil)
     (cond ((eq (car opt) (|Option| "help")) ; print help, get out of here
            (|helpHandler| prog-name))
        
@@ -460,7 +482,8 @@
                     (opt-name (car opt))
                     (request (cons opt-name file-type)))
                (unless (|handleRequest| prog-name request options f)
-		 (return nil)))))
+		 (return nil))))
+	   (return t))
 
 	  ;; In general, nothing is to be done for option value 
 	  ;; specification.  However, some specifications may require
@@ -482,16 +505,18 @@
 ;; 
 
 ;; Print help screen
-(defun |printUsage|(prog-name)
+(defun |printUsage| (prog-name)
   (write-line "usage:")
   (write-line 
-   (concatenate 'string prog-name " -- options [files]"))
+   (concatenate 'string prog-name " -- [options] [files]"))
   (write-line "option:")
-  (write-line "   --help                 print this message")
-  (write-line "   --compile              compile file")
-  (write-line "   --output=OUT           set output file to OUT")
-  (write-line "   --load-directory=DIR   use DIR as search path for modules")
-  (write-line "   --make                 create an executable"))
+  (write-line "   --help                   print this message")
+  (write-line "   --system=<dir>           set <dir> to the root directory of running system")
+  (write-line "   --sysalg=<dir>           set <dir> to the algebra directory of running system")
+  (write-line "   --compile                compile file")
+  (write-line "   --output=<out>           set output file to <out>")
+  (write-line "   --load-directory=<dir>   use <dir> as search path for modules")
+  (write-line "   --make                   create an executable"))
 
 (defun |helpHandler|(prog-name)
   (|printUsage| prog-name)
@@ -633,13 +658,13 @@
     ;;        a filename.
     (multiple-value-bind 
      (options args) (|processCommandLine| (cdr command-args) nil)
+
+     (setq |$sysOpts| options)
+     (setq |$sysArgs| args)
                         
-     ;; Push into the system's preferred namespace.  Ideally, this should
-     ;; be run of initialization code if needed.  However, a curiously
-     ;; nasty bug in GCL prevents us from expressing the natural semantics
-     ;; in a clean way.
-     (when (boundp '|$sysScope|)
-       (setq *package* (find-package (symbol-value '|$sysScope|))))
+     ;; Run the system-specific initialization.
+     (when (fboundp '|%sysInit|)
+       (funcall '|%sysInit|))
      
      (when (|handleCommandLine| (car command-args) options args)
        (|coreQuit| (if (> (|errorCount|) 0) 1 0))))))

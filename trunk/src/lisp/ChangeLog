@@ -1,3 +1,14 @@
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* core.lisp.in (|%systemOptions|): New.
+	(|%systemArguments|): Likewise.
+	(|$systemInstallationDirectory|): Likewise.
+	(|$sysOpts|): Likewise.
+	(|$sysArgs|): Likewise.
+	(|handleCommandLine|): Tidy.
+	(|printUsage|): Update.
+	* Makefile.pamphlet (core.lisp): Instantiate here.
+
 2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* core.lisp.in (|handleCommandLine|): Return truthvalue on success.

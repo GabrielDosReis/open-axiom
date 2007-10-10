@@ -396,20 +396,6 @@ of its file information. See the [[YEARWEEK]] variable in the
 [[src/interp/Makefile.pamphlet]] and the [[yearweek]] function in 
 [[src/interp/util.lisp.pamphlet]].
 
-\subsubsection{SPAD}
-The [[SPAD]] variable is normally specified in the environment. 
-It is expected to be a path to the top level directory of the
-shipped system. For example, if we want to build a linux system
-the [[SPAD]] variable should look like:
-
-    `pwd`/target/i686-pc-linux
-
-\subsubsection{SYS}
-From the [[SPAD]] variable we look at the last directory name
-and create a version of OpenAxiom for that system. The [[SYS]]
-environment variable is the last directory name in the [[SPAD]]
-variable.
-
 \subsubsection{AXIOM\_X11\_CFLAGS}
 
 The variable [[AXIOM_X11_CFLAGS]] holds the C compiler flags necessary
@@ -575,11 +561,11 @@ $(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
 <<install>>=
 install:
 	@echo Installing OpenAxiom in $(prefix)
-	@mkdir -p $(DESTDIR)$(libdir)/open-axiom
-	@cp -pr $(builddir)/target $(DESTDIR)$(libdir)/open-axiom
-	@ rm -f $(bindir)/axiom
-	@ $(mkinstalldirs) $(bindir)
-	@ $(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
+	@$(mkinstalldirs) $(DESTDIR)$(open_axiom_installdir)
+	cp -pr $(builddir)/$(target)/* $(DESTDIR)$(open_axiom_installdir)
+	rm -f $(bindir)/axiom
+	@$(mkinstalldirs) $(bindir)
+	$(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
 	@echo OpenAxiom installation finished.
 @
 

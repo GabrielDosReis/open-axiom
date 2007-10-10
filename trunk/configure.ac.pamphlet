@@ -1010,8 +1010,9 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom 1.1.0 experimental], [2007-10-08], 
+AC_INIT([OpenAxiom], [1.1.0-2007-10-09], 
         [open-axiom-bugs@lists.sf.net])
+
 @
 
 \Tool{Autoconf} needs some auxilary files that are present in the 
@@ -1079,7 +1080,6 @@ AXIOM_MAKEFILE([Makefile])
 AXIOM_MAKEFILE([src/Makefile])
 AXIOM_MAKEFILE([src/lib/Makefile])
 AXIOM_MAKEFILE([src/lisp/Makefile])
-AC_CONFIG_FILES([src/lisp/core.lisp])
 AXIOM_MAKEFILE([src/boot/Makefile])
 AXIOM_MAKEFILE([src/interp/Makefile])
 AXIOM_MAKEFILE([src/share/Makefile])
@@ -1164,6 +1164,9 @@ axiom_src_subdirs="lib lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
 <<host build target platfoms>>
+
+open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
+AC_SUBST(open_axiom_installdir)
 
 <<build utils>>
 

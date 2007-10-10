@@ -792,7 +792,7 @@ saturnHasExamplePage conname ==
   ASSQ(conname, $exampleConstructors)
   
 getSaturnExampleList() == 
-  file := STRCONC( getEnv('"AXIOM"), "/doc/axug/examples.lsp")
+  file := STRCONC(systemRootDirectory(), "/doc/axug/examples.lsp")
   not PROBE_-FILE file => nil
   fp := MAKE_-INSTREAM file
   lst := READ fp

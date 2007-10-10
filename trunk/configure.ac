@@ -1,7 +1,8 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom 1.1.0 experimental], [2007-10-08], 
+AC_INIT([OpenAxiom], [1.1.0-2007-10-09], 
         [open-axiom-bugs@lists.sf.net])
+
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
 AC_CONFIG_HEADERS([config/axiom-c-macros.h])
@@ -38,6 +39,9 @@ if test $build != $target; then
 fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
+
+open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
+AC_SUBST(open_axiom_installdir)
 
 ## Accumulate list of utils needed for the build platform
 ## It is vital that noweb is present in the build environement.
@@ -487,7 +491,6 @@ AXIOM_MAKEFILE([Makefile])
 AXIOM_MAKEFILE([src/Makefile])
 AXIOM_MAKEFILE([src/lib/Makefile])
 AXIOM_MAKEFILE([src/lisp/Makefile])
-AC_CONFIG_FILES([src/lisp/core.lisp])
 AXIOM_MAKEFILE([src/boot/Makefile])
 AXIOM_MAKEFILE([src/interp/Makefile])
 AXIOM_MAKEFILE([src/share/Makefile])

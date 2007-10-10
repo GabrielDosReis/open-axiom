@@ -839,9 +839,10 @@ withAsharpCmd args ==
 --% )copyright -- display copyright notice
 
 summary l ==
- OBEY STRCONC ('"cat ",getEnv('"AXIOM"),'"/lib/summary")
+ OBEY STRCONC ('"cat ", systemRootDirectory(),'"/lib/summary")
+
 copyright () ==
- OBEY STRCONC ('"cat ",getEnv('"AXIOM"),'"/lib/copyright")
+ OBEY STRCONC ('"cat ", systemRootDirectory(),'"/lib/copyright")
 
 --% )credits -- display credit list
 

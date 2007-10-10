@@ -763,7 +763,7 @@ Sets up the system to use the {\bf AXIOM} shell variable if we can
 and default to the {\bf \$spadroot} variable (which was the value
 of the {\bf AXIOM} shell variable at build time) if we can't.
 <<defun initroot>>=
-(defun initroot (&optional (newroot (BOOT::|getEnv| "AXIOM")))
+(defun initroot (&optional (newroot (|systemRootDirectory|)))
   (reroot (or newroot $spadroot (error "setenv AXIOM or (setq $spadroot)"))))
 
 @
@@ -783,7 +783,7 @@ of the {\bf AXIOM} shell variable at build time) if we can't.
 (defun |loadExposureGroupData| ()
  (cond
   ((load "./exposed.lsp" :verbose NIL :if-does-not-exist NIL) '|done|)
-  ((load (concat (BOOT::|getEnv| "AXIOM") "/../../src/algebra/exposed.lsp") 
+  ((load (concat (|systemRootDirectory|) "/../../src/algebra/exposed.lsp") 
     :verbose nil :if-does-not-exist nil) '|done|)
   (t nil) ))
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Start everything for Axiom.
+# Start everything for OpenAxiom.
 #
 # axiom
 #      [-ht   |-noht]	    whether to use HyperDoc
@@ -23,13 +23,13 @@
 #
 #
 
-## Where The Axiom system resides
+## Where The OpenAxiom system resides
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-AXIOM=@libdir@/open-axiom/target/@target@
+AXIOM=@open_axiom_installdir@
 export AXIOM
 
-## We adjust the value of PATH here because, currently, some Axiom 
+## We adjust the value of PATH here because, currently, some OpenAxiom 
 ## programs are called from the executing shell, and relying on the 
 ## fact that the executables are reachable from the PATH.
 PATH=$AXIOM/bin:$PATH
@@ -88,29 +88,6 @@ if [ "$*" = "-h" ] ; then
      showuse
 fi
 
-if [ "$SPAD" = "" ] ; then
-  if [ "$AXIOM" = "" ] ; then
-    echo "AXIOM variable is not set"
-    exit 1
-  else
-    SPAD=$AXIOM
-  fi
-  export SPAD
-else
-  if [ "$AXIOM" = "" ] ; then
-    echo "AXIOM variable is not set"
-    echo "but SPAD = $SPAD"
-    echo "Using AXIOM = $SPAD"
-    AXIOM=$SPAD
-    export AXIOM
-  else
-    if [ ! "$SPAD" = "$AXIOM" ] ; then
-       echo "ignoring SPAD variable"
-       SPAD=$AXIOM
-    fi
-  fi
-fi
-
 if [ "$AXIOMXLROOT" = "" ] ; then 
 AXIOMXLROOT=${AXIOM}/compiler
 fi
@@ -120,13 +97,13 @@ export PATH
 
 
 
-if [ ! -d "$SPAD" ] ; then
-  echo "The directory for Axiom, $SPAD, does not exist."
+if [ ! -d "$AXIOM" ] ; then
+  echo "The directory for OpenAxiom, $AXIOM, does not exist."
   ciao
 fi
 
 # Name the workspace directories.
-rootwsdir=$SPAD/bin
+rootwsdir=$AXIOM/bin
 
 # 2. Process command line arguments.
 
@@ -204,12 +181,12 @@ fi
 
 if [ $go = no ] ; then
 	echo "Would now start the processes."
-	echo exec $SPAD/bin/sman $otheropts -ws $serverws
+	echo exec $AXIOM/bin/sman $otheropts -ws $serverws
 	exit 0
 fi
 
 if [ $use_sman = "yes" ]; then
-    exec $SPAD/bin/sman $otheropts -ws $serverws
+    exec $AXIOM/bin/sman $otheropts -ws $serverws
 else
     exec $serverws
 fi

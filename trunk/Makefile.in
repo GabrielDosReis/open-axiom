@@ -97,11 +97,11 @@ $(axiom_build_bindir)/gcl$(EXEEXT):
 		$(MAKE) && $(MAKE) install
 install:
 	@echo Installing OpenAxiom in $(prefix)
-	@mkdir -p $(DESTDIR)$(libdir)/open-axiom
-	@cp -pr $(builddir)/target $(DESTDIR)$(libdir)/open-axiom
-	@ rm -f $(bindir)/axiom
-	@ $(mkinstalldirs) $(bindir)
-	@ $(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
+	@$(mkinstalldirs) $(DESTDIR)$(open_axiom_installdir)
+	cp -pr $(builddir)/$(target)/* $(DESTDIR)$(open_axiom_installdir)
+	rm -f $(bindir)/axiom
+	@$(mkinstalldirs) $(bindir)
+	$(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
 	@echo OpenAxiom installation finished.
 
 .PHONY: check

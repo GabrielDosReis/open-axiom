@@ -49,7 +49,7 @@ SAVESYS= interpsys$(EXEEXT)
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
 
 OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
-	diagnostics.$(FASLEXT)				\
+	diagnostics.$(FASLEXT)	sys-driver.$(FASLEXT) \
 	macros.$(FASLEXT)	\
 	unlisp.$(FASLEXT)	setq.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
@@ -308,9 +308,10 @@ makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 	@ echo '(gbc t)' >> makeint.lisp
 
 ${SAVESYS}: makeint.lisp
-	AXIOM="$(AXIOM)" DAASE="$(axiom_src_datadir)" \
-		$(LOADSYS) -- --make --output=$@ --main="BOOT::RESTART" \
-			 --load-directory=. makeint.lisp
+	$(LOADSYS) -- --system="$(AXIOM)/" \
+		--sysalg="$(axiom_src_datadir)/algebra/" \
+		--make --output=$@ --main="BOOT::RESTART" \
+		--load-directory=. makeint.lisp
 	@ echo 6 ${SAVESYS} created
 	$(mkinstalldirs) $(axiom_target_bindir)
 depsys_lisp_sources += parsing.lisp metalex.lisp bootlex.lisp \
@@ -339,6 +340,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		boot-pkg.$(FASLEXT) \
 		sys-constants.$(FASLEXT) \
 		sys-globals.$(FASLEXT) \
+		sys-driver.$(FASLEXT) \
 		diagnostics.$(FASLEXT) \
 		sys-macros.$(FASLEXT) \
 		macros.$(FASLEXT) \
@@ -366,6 +368,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo 3 making ${DEPSYS} 
 	@ rm -f makedep.lisp
 	@ $(mkinstalldirs) $(axiom_build_bindir)
+	@ echo '(|importModule| "sys-driver")' >> makedep.lisp
 	@ echo '(|importModule| "vmlisp")' >> makedep.lisp
 	@ echo '(|importModule| "bits")' >> makedep.lisp
 	@ echo '(|importModule| "hash")' >> makedep.lisp
@@ -422,9 +425,11 @@ nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
 all-axiomsys: ${AXIOMSYS}
 
 ${AXIOMSYS}: makeint.lisp
-	AXIOM="$(AXIOM)" DAASE="$(axiom_targetdir)" \
-		$(LOADSYS) -- --make --output=$@ --main="BOOT::RESTART" \
-			--load-directory=. makeint.lisp
+	$(LOADSYS) -- \
+		--system="$(AXIOM)/" \
+		--sysalg="$(axiom_targetdir)/algebra/" \
+		--make --output=$@ --main="BOOT::RESTART" \
+		--load-directory=. makeint.lisp
 	@ echo 6a ${AXIOMSYS} created
 exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
 	@ echo 615 making exposed.lsp from $(axiom_src_algdir)/exposed.lsp.pamphlet
@@ -554,6 +559,9 @@ sys-macros.$(FASLEXT): sys-macros.lisp diagnostics.$(FASLEXT) \
 
 diagnostics.$(FASLEXT): diagnostics.boot sys-constants.$(FASLEXT) \
 				sys-globals.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sys-driver.$(FASLEXT): sys-driver.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 sys-globals.$(FASLEXT): sys-globals.boot sys-constants.$(FASLEXT) \
