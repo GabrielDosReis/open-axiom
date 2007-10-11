@@ -745,23 +745,14 @@ This function performs those setup commands.
 
 \subsection{defun loadExposureGroupData}
 <<defun loadExposureGroupData>>=
-#+:AKCL
 (defun |loadExposureGroupData| ()
  (cond
   ((load "./exposed" :verbose nil :if-does-not-exist nil)
     '|done|)
-  ((load (concat (system:getenv "AXIOM") "/algebra/exposed")
+  ((load (concat (|systemRootDirectory|) "/algebra/exposed")
      :verbose nil :if-does-not-exist nil)
    '|done|)
   (t '|failed|) ))
-
-#+:CCL
-(defun |loadExposureGroupData| ()
- (cond
-  ((load "./exposed.lsp" :verbose NIL :if-does-not-exist NIL) '|done|)
-  ((load (concat (|systemRootDirectory|) "/../../src/algebra/exposed.lsp") 
-    :verbose nil :if-does-not-exist nil) '|done|)
-  (t nil) ))
 
 @
 \subsection{make-absolute-filename}
