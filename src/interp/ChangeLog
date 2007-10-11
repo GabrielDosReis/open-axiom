@@ -1,5 +1,11 @@
 2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* bookvol5.pamphlet (|loadExposureGroupData|): Define
+	unconditionally.  Don't use "AXIOM" variable.
+	* as.boot.pamphlet (as): Remove dead code.
+
+2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (<<lisplib.clisp>>): Remove.
 	* lisplib.boot.pamphlet: Push into package "BOOT".
 	(findConstructorSlotNumber): Tidy.

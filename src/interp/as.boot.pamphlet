@@ -86,8 +86,6 @@ asAll lines ==
 
 as name ==
   astran STRCONC(STRINGIMAGE name,'".asy")
---  astran STRCONC(getEnv('"AXIOM"),
---     '"/../../obj/rios/as/",STRINGIMAGE name,'".asy")
   'done
 
 astran asyFile ==
