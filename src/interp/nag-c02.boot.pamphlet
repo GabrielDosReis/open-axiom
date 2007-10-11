@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 c02aff() ==
   htInitPage('"C02AFF - All Zeros of a Complex Polynomial",nil)
   htMakePage '(

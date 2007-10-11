@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 d01ajf() ==
   htInitPage('"D01AJF - 1-D quadrature, adaptive, finite interval, allowing for badly-behaved integrands", nil)
   htMakePage '(
@@ -782,7 +784,7 @@ d01gafSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain F (Float))
-          (isDomain PI (PositiveInteger))),
+           (isDomain PI (PositiveInteger))),
 	    :labelList]
   page := htInitPage("D01GAF - 1-D quadrature, integration of function defined by data values", htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Enter values for {\em x}: \tab{38} "

@@ -127,7 +127,7 @@ bcInputExplicitMatrix(htPage,junk) ==
   wrows := # STRINGIMAGE nrows
   wcols := # STRINGIMAGE ncols
   labelList := 
-    "append"/[[f for j in 1..ncols] for i in 1..nrows] where f ==
+    "append"/[[f for j in 1..ncols] for i in 1..nrows] where f() ==
       rowpart := STRCONC('"{\em Row",htStringPad(i,wrows))
       colpart := STRCONC('", Column",htStringPad(j,wcols),'":}\space{2}")
       prefix := STRCONC(rowpart,colpart)

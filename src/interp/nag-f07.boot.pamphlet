@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 f07adf() ==
   htInitPage('"F07ADF - {\it LU} factorization of real {\it m} by {\it n} matrix",nil)
   htMakePage '(
@@ -267,10 +269,10 @@ f07aefSolve htPage ==
   bList := [['text,:prefix],:bList]
   equationPart := [
      '(domainConditions
-         (isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
          (isDomain S (String))
-         (isDomain F (Float))
-         (isDomain I (Integer)))
+          (isDomain F (Float))
+           (isDomain I (Integer)))
 	     ,:aList,:ipList,:bList]
   page := htInitPage('"F07AEF - Solution of a real system of linear equations with multiple right-hand sides after factorization by F07ADF",nil)
   htSay '"\menuitemstyle{}\tab{2} "
@@ -608,10 +610,10 @@ f07fefSolve htPage ==
   bList := [['text,:prefix],:bList]
   equationPart := [
      '(domainConditions
-         (isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
          (isDomain S (String))
-         (isDomain F (Float))
-         (isDomain I (Integer)))
+          (isDomain F (Float))
+           (isDomain I (Integer)))
 	     ,:aList,:bList]
   page := htInitPage('"F07FEF - Solution of a real symmetric positive-definite system of linear equations with multiple right-hand sides after factorization by F07FDF",nil)
   htSay '"\menuitemstyle{}\tab{2} "

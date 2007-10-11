@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 f02aaf() ==
   htInitPage('"F02AAF - All eigenvalues of real symmetric matrix (Black box)",nil)
   htMakePage '(

@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 -- READ THIS NOW!
 --
 -- The automatic make fails to compile this file properly, leaving a 

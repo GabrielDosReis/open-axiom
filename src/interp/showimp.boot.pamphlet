@@ -184,7 +184,7 @@ getCategoriesOfDomain domain ==
   [fn for i in 0..MAXINDEX predkeyVec | test] where 
      test() == predkeyVec.i and 
        (x := catforms . i) isnt ['DomainSubstitutionMacro,:.]
-     fn ==
+     fn() ==
        VECP x => devaluate x
        devaluateSlotDomain(x,domain)
 

@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 d02bbf() ==
   htInitPage('"D02BBF - ODEs, IVP, Runge-Kutta-Merson method, over a range, intermediate output",nil)
   htMakePage '(

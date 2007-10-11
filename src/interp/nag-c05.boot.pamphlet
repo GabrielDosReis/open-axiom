@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 c05adf() ==
   htInitPage('"C05ADF - Zero of continuous function in given interval, Bus and Dekker algorithm",nil)
   htMakePage '(

@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 e04dgf() ==
   htInitPage('"E04DGF - Unconstrained minimum, pre-conditioned conjugate gradient algorithm, function of several variables using 1st derivatives",nil)
   htMakePage '(
@@ -1914,125 +1916,125 @@ e04ucfSolve(htPage) ==
             (isDomain I (Integer))),
  		:aList,:blList,:buList,:cList,:funcList,:xList,
                   :'(
-    (text . "\blankline ")
-    (text . "\newline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Crash tolerance, {\it cra}: ")
-    (text . "\newline ")
-    (bcStrings (20 "0.01" cra F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Derivative level, {\it der}: ")
-    (text . "\newline ")
-    (bcStrings (5 3 der PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Feasibility tolerance, {\it fea}: ")
-    (text . "\newline ")
-    (bcStrings (20 "0.1053671201E-7" fea F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Function Precision, {\it fun}: ")
-    (text . "\newline ")
-    (bcStrings (20 "0.4373903510E-14" fun F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2}")
-    (text . "{\it r} is a Hessian matrix :")
-    (radioButtons hess
-        ("" " No" hFalse)
-        ("" " Yes" hTrue))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Infinite bound size, {\it infb}: ")
-    (text . "\newline ")
-    (bcStrings (20 "1.00E+15" infb F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Infinite step size, {\it infs}: ")
-    (text . "\newline ")
-    (bcStrings (20 "1.00E+15" infs F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Linear feasibility tolerance, {\it linf}: ")
-    (text . "\newline ")
-    (bcStrings (20 "0.1053671201E-7" linf F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Linesearch tolerance, {\it lint}: ")
-    (text . "\newline ")
-    (bcStrings (20 "0.9" lint F))
-    (text . "\blankline ")
-    (text . "\newline ")
-    (text . "\menuitemstyle{}\tab{2}")
-    (text . "List parameters:")
-    (radioButtons list
-        ("" " No" false)
-        ("" " Yes" true))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Major iteration limit, {\it maji}: ")
-    (text . "\newline ")
-    (bcStrings (5 30 maji PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Major print level, {\it majp}: ")
-    (text . "\newline ")
-    (bcStrings (5 1 majp PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Minor iteration limit, {\it mini}: ")
-    (text . "\newline ")
-    (bcStrings (5 81 mini PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Minor print level, {\it minp}: ")
-    (text . "\newline ")
-    (bcStrings (5 0 minp PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Monitoring channel, {\it mon}. ")
-    (text . "(Ignored in Foundation Library version.) ")
-    (text . "\newline ")
-    (bcStrings (5 "-1" mon F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Nonlinear feasibiltity tolerance, {\it nonf}: ")
-    (text . "\newline ")
-    (bcStrings (20 "1.05E-08" nonf F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Optimality tolerance, {\it opt}: ")
-    (text . "\newline ")
-    (bcStrings (20 "3.26E-08" opt F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Step limit, {\it ste}: ")
-    (text . "\newline ")
-    (bcStrings (5 "2.0" ste F))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Start objective check at variable, {\it stao}: ")
-    (text . "\newline ")
-    (bcStrings (5 1 stao PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Start constraint check at variable, {\it stac}: ")
-    (text . "\newline ")
-    (bcStrings (5 1 stac PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Stop objective check at variable, {\it stoo}: ")
-    (text . "\newline ")
-    (bcStrings (5 9 stoo PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Stop objective check at variable, {\it stoc}: ")
-    (text . "\newline ")
-    (bcStrings (5 9 stoc PI))
-    (text . "\blankline ")
-    (text . "\menuitemstyle{}\tab{2} ")
-    (text . "Verify level, {\it ver}: ")
-    (text . "\newline ")
+    (text . "\blankline ")_
+    (text . "\newline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Crash tolerance, {\it cra}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "0.01" cra F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Derivative level, {\it der}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 3 der PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Feasibility tolerance, {\it fea}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "0.1053671201E-7" fea F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Function Precision, {\it fun}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "0.4373903510E-14" fun F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2}")_
+    (text . "{\it r} is a Hessian matrix :")_
+    (radioButtons hess _
+        ("" " No" hFalse)_
+        ("" " Yes" hTrue))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Infinite bound size, {\it infb}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "1.00E+15" infb F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Infinite step size, {\it infs}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "1.00E+15" infs F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Linear feasibility tolerance, {\it linf}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "0.1053671201E-7" linf F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Linesearch tolerance, {\it lint}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "0.9" lint F))_
+    (text . "\blankline ")_
+    (text . "\newline ")_
+    (text . "\menuitemstyle{}\tab{2}")_
+    (text . "List parameters:")_
+    (radioButtons list _
+        ("" " No" false)_
+        ("" " Yes" true))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Major iteration limit, {\it maji}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 30 maji PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Major print level, {\it majp}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 1 majp PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Minor iteration limit, {\it mini}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 81 mini PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Minor print level, {\it minp}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 0 minp PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Monitoring channel, {\it mon}. ")_
+    (text . "(Ignored in Foundation Library version.) ")_
+    (text . "\newline ")_
+    (bcStrings (5 "-1" mon F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Nonlinear feasibiltity tolerance, {\it nonf}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "1.05E-08" nonf F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Optimality tolerance, {\it opt}: ")_
+    (text . "\newline ")_
+    (bcStrings (20 "3.26E-08" opt F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Step limit, {\it ste}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 "2.0" ste F))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Start objective check at variable, {\it stao}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 1 stao PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Start constraint check at variable, {\it stac}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 1 stac PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Stop objective check at variable, {\it stoo}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 9 stoo PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Stop objective check at variable, {\it stoc}: ")_
+    (text . "\newline ")_
+    (bcStrings (5 9 stoc PI))_
+    (text . "\blankline ")_
+    (text . "\menuitemstyle{}\tab{2} ")_
+    (text . "Verify level, {\it ver}: ")_
+    (text . "\newline ")_
     (bcStrings (5 3 ver PI)))]
   page := htInitPage('"E04UCF - Unconstrained minimum, pre-conditioned conjugate gradient algorithm, function of several variables using 1st derivatives",nil)
   htSay '"\menuitemstyle{}\tab{2} "

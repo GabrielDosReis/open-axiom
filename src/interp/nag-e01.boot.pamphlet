@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 e01baf() ==
   htInitPage('"E01BAF - Interpolating functions, cubic spline interpolant, one variable", nil)
   htMakePage '(
@@ -97,7 +99,7 @@ e01bafSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain F (Float))
-          (isDomain PI (PositiveInteger))),
+           (isDomain PI (PositiveInteger))),
 	    :labelList]
   page := htInitPage("E01BAF - Interpolating functions, cubic spline interpolant, one variable",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of x: \tab{30} "
@@ -229,7 +231,7 @@ e01befSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain F (Float))
-          (isDomain PI (PositiveInteger))),
+           (isDomain PI (PositiveInteger))),
 	    :labelList]
   page := htInitPage("E01BEF - Interpolating functions, monoticity preserving, piecewise cubic Hermite, one variable",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
