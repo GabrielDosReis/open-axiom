@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-c05.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -178,10 +162,10 @@ c05nbfSolve htPage ==
   funcList := [:funcList,middle,:vecList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain F (Float))
-	    (isDomain I (Integer))),
- 		:funcList]
+            (isDomain I (Integer))),
+                :funcList]
   page := htInitPage("C05NBF - Solution of system of nonlinear equations using function values only", htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions \htbitmap{fi} below in terms of X[1]...X[n]: "
@@ -254,10 +238,10 @@ c05nbfGen htPage ==
   while y repeat
     if i < (n+1) then 
       temp1 := STRCONC ((first y).1," ")
-      temp1list := [temp1,:temp1list]	
+      temp1list := [temp1,:temp1list]   
     else
       temp2 := (first y).1
-      temp2list := [temp2,:temp2list]	
+      temp2list := [temp2,:temp2list]   
     y := rest y
     i := i + 1
   string1 := bcwords2liststring temp1list
@@ -328,10 +312,10 @@ c05pbfSolve htPage ==
   funcList := [:funcList,middle,:vecList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain F (Float))
-	    (isDomain I (Integer))),
- 		:funcList]
+            (isDomain I (Integer))),
+                :funcList]
   page := htInitPage('"C05PBF - Solution of system of nonlinear equations using first derivatives",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the functions \htbitmap{fi} below in terms of X[1]...X[n]: "
@@ -404,10 +388,10 @@ c05pbfGen htPage ==
   while y repeat
     if i < (n+1) then 
       temp1 := STRCONC ((first y).1," ")
-      temp1list := [temp1,:temp1list]	
+      temp1list := [temp1,:temp1list]   
     else
       temp2 := (first y).1
-      temp2list := [temp2,:temp2list]	
+      temp2list := [temp2,:temp2list]   
     y := rest y
     i := i + 1
   string1 := bcwords2liststring temp1list
@@ -418,9 +402,3 @@ c05pbfGen htPage ==
   middle := STRCONC (middle,xtol,",",STRINGIMAGE ifail,",")
   linkGen STRCONC (prefix,middle,"(",string2,"::Vector Expression(Float))::ASP35(FCN))")
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
