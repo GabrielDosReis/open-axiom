@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 e02adf() ==
   htInitPage('"E02ADF - Least-squares curve fit, by polynomials, arbitrary data points", nil)
   htMakePage '(

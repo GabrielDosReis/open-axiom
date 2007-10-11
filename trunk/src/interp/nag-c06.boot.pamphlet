@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 c06eaf() ==
   htInitPage('"C06EAF - Single 1-D real discrete Fourier transform ",nil)
   htMakePage '(
@@ -304,7 +306,7 @@ c06ecfSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain F (Float))
-          (isDomain PI (PositiveInteger))),
+           (isDomain PI (PositiveInteger))),
 	    :labelList]
   page := htInitPage("C06ECF - Single 1-D complex discrete Fourier transform ",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Real parts of sequence: \tab{30} "
@@ -438,7 +440,7 @@ c06ekfSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain F (Float))
-          (isDomain PI (PositiveInteger))),
+           (isDomain PI (PositiveInteger))),
 	    :labelList]
   page := htInitPage("C06EKF - Single 1-D complex discrete Fourier transform ",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Elements of period of vector {\em x}: "
@@ -1638,7 +1640,7 @@ c06gqfSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain F (Float))
-          (isDomain PI (PositiveInteger))),
+           (isDomain PI (PositiveInteger))),
 	    :newList]
   page := htInitPage("C06GQF - Complex conjugate of multiple Hermitian sequences ",htpPropertyList htPage)
   htSay '"\newline "
@@ -1772,7 +1774,7 @@ c06gsfSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain F (Float))
-          (isDomain PI (PositiveInteger))),
+           (isDomain PI (PositiveInteger))),
 	    :newList]
   page := htInitPage("C06GSF - Convert Hermitian sequences to general complex sequences ",htpPropertyList htPage)
   htSay '"\newline "

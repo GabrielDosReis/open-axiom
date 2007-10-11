@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 d03edf() ==
   htInitPage('"D03EDF - Elliptic PDE, solution of finite difference equations by a multigrid technique ",nil)
   htMakePage '(

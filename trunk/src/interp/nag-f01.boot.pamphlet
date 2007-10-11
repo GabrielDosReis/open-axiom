@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 f01brf() ==
   htInitPage("F01BRF - LU factorization of real sparse matrix",nil)
   htMakePage '(

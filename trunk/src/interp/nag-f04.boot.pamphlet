@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 f04adf() ==
   htInitPage("F04ADF - Solution of complex simultaneous linear equations, with multiple right-hand sides (Black box)",nil)
   htMakePage '(

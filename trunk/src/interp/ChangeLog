@@ -1,5 +1,40 @@
 2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (<<nag-c02.clisp>>): Remove.
+	(<<nag-c05.clisp>>): Likewise.
+	(<<nag-c06.clisp>>): Likewise.
+	(<<nag-d01.clisp>>): Likewise.
+	(<<nag-d02.clisp>>): Likewise.
+	(<<nag-d03.clisp>>): Likewise.
+	(<<nag-e01.clisp>>): Likewise.
+	(<<nag-e02.clisp>>): Likewise.
+	(<<nag-e04.clisp>>): Likewise.
+	(<<nag-f01.clisp>>): Likewise.
+	(<<nag-f02.clisp>>): Likewise.
+	(<<nag-f04.clisp>>): Likewise.
+	(<<nag-f07.clisp>>): Likewise.
+	(<<nag-s.clisp>>): Likewise.
+	* bc-matrix.boot.pamphlet (bcInputExplicitMatrix): Fix thinko.
+	* showimp.boot.pamphlet (getCategoriesOfDomain): Likewise.
+	* nag-c02.boot.pamphlet: Push into package "BOOT".
+ 	* nag-c05.boot.pamphlet: Likewise.
+ 	* nag-c06.boot.pamphlet: Likewise. Fix thinko.
+ 	* nag-d01.boot.pamphlet: Likewise.
+ 	* nag-d02.boot.pamphlet: Push into package "BOOT".
+ 	* nag-d03.boot.pamphlet: Likewise.
+ 	* nag-e01.boot.pamphlet: Likewise. Fix thinko.
+ 	* nag-e02.boot.pamphlet: Push into package "BOOT".
+ 	* nag-e02b.boot.pamphlet: Likewise.
+ 	* nag-e04.boot.pamphlet: Likewise. Make compilable by bootsys.
+ 	* nag-f01.boot.pamphlet: Push into package "BOOT".
+ 	* nag-f02.boot.pamphlet: Likewise.
+ 	* nag-f04.boot.pamphlet: Likewise.
+ 	* nag-f07.boot.pamphlet: Likewise.  Fix thinko.
+ 	* nag-s.boot.pamphlet: Likewise.
+	* showimp.boot.pamphlet: Fix thinko.
+
+2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* bookvol5.pamphlet (|loadExposureGroupData|): Define
 	unconditionally.  Don't use "AXIOM" variable.
 	* as.boot.pamphlet (as): Remove dead code.

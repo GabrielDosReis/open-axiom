@@ -46,6 +46,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 s01eaf() ==
   page := htInitPage("S01EAF - Complex exponential {\em exp(z)} ",nil)
   htMakePage '(
