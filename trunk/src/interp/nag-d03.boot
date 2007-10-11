@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-d03.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -204,11 +188,11 @@ d03edfSolve htPage ==
   uList :=  [['text,:mid],:uList]
   equationPart := [
      '(domainConditions 
-	(isDomain EM $EmptyMode)
+        (isDomain EM $EmptyMode)
           (isDomain S (String))
             (isDomain F (Float))
-	      (isDomain I (Integer))),
- 		:aList,:rList,:uList]
+              (isDomain I (Integer))),
+                :aList,:rList,:uList]
   page := htInitPage('"D03EDF - Elliptic PDE, solution of finite difference equations by a multigrid technique ",nil)
   htSay '"\menuitemstyle{}\tab{2} "
   htSay '"Enter the matrix {\it a(lda,7)}: "
@@ -655,9 +639,3 @@ d03faf() ==
     (text . "\menuitemstyle{}\tab{2} ")
     (text . "\spadcommand{)read d03faf \bound{s0}} "))
   htShowPage()
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

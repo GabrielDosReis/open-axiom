@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-e01.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -100,7 +84,7 @@ e01bafSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E01BAF - Interpolating functions, cubic spline interpolant, one variable",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of x: \tab{30} "
   htSay '"\menuitemstyle{}\tab{32} Corresponding values of y: "
@@ -150,7 +134,7 @@ e01bafDefaultSolve (htPage, ifail) ==
     (text . "\tab{32} ")
     (bcStrings (10 "2.7183" y7 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e01bafGen)    	
+  htMakeDoneButton('"Continue",'e01bafGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -232,7 +216,7 @@ e01befSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E01BEF - Interpolating functions, monoticity preserving, piecewise cubic Hermite, one variable",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{30} "
@@ -293,7 +277,7 @@ e01befDefaultSolve (htPage, ifail) ==
     (text . "\tab{32} ")
     (bcStrings (10 "0.99999" y9 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e01befGen)    	
+  htMakeDoneButton('"Continue",'e01befGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -391,7 +375,7 @@ e01bffSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E01BFF - Interpolated values, interpolant computed by E01BEF, function only, one variable",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -500,7 +484,7 @@ e01bffDefaultSolve (htPage, ifail) ==
     (text . "\newline \tab{2} ")
     (bcStrings (10 "20.0" px11 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e01bffGen)    	
+  htMakeDoneButton('"Continue",'e01bffGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'ifail,ifail)
@@ -611,7 +595,7 @@ e01bgfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E01BGF - Interpolated values, interpolant computed by E01BEF, function and 1st derivative, one variable",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -719,7 +703,7 @@ e01bgfDefaultSolve (htPage, ifail) ==
     (text . "\newline \tab{2} ")
     (bcStrings (10 "20.0" px11 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e01bgfGen)    	
+  htMakeDoneButton('"Continue",'e01bgfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'ifail,ifail)
@@ -823,7 +807,7 @@ e01bhfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E01BHF - Interpolated values, interpolant computed by E01BEF, definite integral, one variable",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -906,7 +890,7 @@ e01bhfDefaultSolve (htPage,a,b,ifail) ==
     (text . "\tab{42} ")
     (bcStrings (10 "0.00000" z9 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e01bhfGen)    	
+  htMakeDoneButton('"Continue",'e01bhfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'a,a)
   htpSetProperty(page,'b,b)
@@ -1112,7 +1096,7 @@ e01dafDefaultSolve (htPage,ifail) ==
     (bcStrings (6 "4.90" z57 F))
     (bcStrings (6 "5.00" z67 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e01dafGen)    	
+  htMakeDoneButton('"Continue",'e01dafGen)      
   htpSetProperty(page,'mx,mx)
   htpSetProperty(page,'my,my)
   htpSetProperty(page,'ifail,ifail)
@@ -1200,7 +1184,7 @@ e01safSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E01SAF - Interpolating functions, method of Renka and Cline,two variables",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -1408,7 +1392,7 @@ e01safDefaultSolve  (htPage, ifail) ==
     (text . "\tab{42} ")
     (bcStrings (10 "44.08" z30 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e01safGen)    	
+  htMakeDoneButton('"Continue",'e01safGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -1526,7 +1510,7 @@ e01sefSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("E01SEF - Interpolating functions, modified Shepard's method, two variables",htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Values of \space{1} "
   htSay '"\htbitmap{xr}: \tab{20} \menuitemstyle{}\tab{22} "
@@ -1738,7 +1722,7 @@ e01sefDefaultSolve  (htPage,rnq,rnw,nq,nw,ifail) ==
     (text . "\tab{42} ")
     (bcStrings (10 "44.08" z30 F))
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'e01sefGen)    	
+  htMakeDoneButton('"Continue",'e01sefGen)      
   htpSetProperty(page,'m,m)
   htpSetProperty(page,'rnq,rnq)
   htpSetProperty(page,'rnw,rnw)
@@ -1774,9 +1758,3 @@ e01sefGen htPage ==
   prefix := STRCONC(prefix,dstring,"],",STRINGIMAGE nw,", ",STRINGIMAGE nq)
   prefix := STRCONC(prefix,", ",rnw,", ",rnq,", ",STRINGIMAGE ifail,")")
   linkGen prefix
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

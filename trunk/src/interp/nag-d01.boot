@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-d01.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -52,9 +36,9 @@ d01ajf() ==
   htInitPage('"D01AJF - 1-D quadrature, adaptive, finite interval, allowing for badly-behaved integrands", nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01ajf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01ajf| '|NagIntegrationPackage|)} for this routine")
@@ -126,9 +110,9 @@ d01akf() ==
   htInitPage('"D01AKF - 1-D quadrature, adaptive, finite interval, method suitable for oscillating functions", nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01akf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01akf| '|NagIntegrationPackage|)} for this routine")
@@ -200,9 +184,9 @@ d01alf() ==
   htInitPage('"D01ALF - 1-D quadrature, adaptive, finite interval, allowing for singularities at user-specified break-points ", nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01alf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01alf| '|NagIntegrationPackage|)} for this routine")
@@ -292,9 +276,9 @@ d01amf() ==
   htInitPage('"D01AMF   1-D quadrature, adaptive, infinite or semi-infinite interval",nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01amf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01amf| '|NagIntegrationPackage|)} for this routine")
@@ -376,9 +360,9 @@ d01anf() ==
   htInitPage('"D01ANF - 1-D quadrature, adaptive, finite interval, weight function cos(\omega x) or sin(\omega x)", nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01anf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01anf| '|NagIntegrationPackage|)} for this routine")
@@ -466,9 +450,9 @@ d01apf() ==
   htInitPage('"D01APF - 1-D quadrature, adaptive, finite interval, weight function with end point singularities of algebraico-logarithmic type", nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01apf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01apf| '|NagIntegrationPackage|)} for this routine")
@@ -567,9 +551,9 @@ d01aqf() ==
   htInitPage('"D01AQF - 1-D quadrature, adaptive, finite interval, weight function 1/(x-c), Cauchy principal value (Hilbert transform)",nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01aqf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01aqf| '|NagIntegrationPackage|)} for this routine")
@@ -647,9 +631,9 @@ d01asf() ==
   htInitPage('"D01ASF - 1-D quadrature, adaptive, semi-infinite interval, weight function cos(\omega x) or sin(\omega x)", nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01asf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01asf| '|NagIntegrationPackage|)} for this routine")
@@ -785,7 +769,7 @@ d01gafSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage("D01GAF - 1-D quadrature, integration of function defined by data values", htpPropertyList htPage)
   htSay '"\menuitemstyle{}\tab{2} Enter values for {\em x}: \tab{38} "
   htSay '"\menuitemstyle{}\tab{40} Enter values for {\em y}: "
@@ -895,7 +879,7 @@ d01gafDefaultSolve (htPage, ifail) ==
     (text . "\blankline ")
     (text . "Note:\space{1}{\em x} values in ascending or descending order only ")
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'d01gafGen)    	
+  htMakeDoneButton('"Continue",'d01gafGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'ifail,ifail)
   htpSetProperty(page,'inputArea, htpInputAreaAlist htPage)
@@ -922,9 +906,9 @@ d01fcf() ==
   htInitPage('"D01FCF - Multi-dimensional adaptive quadrature over hyper-rectangle",nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01fcf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01fcf| '|NagIntegrationPackage|)} for this routine")
@@ -1011,7 +995,7 @@ d01fcfSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage('"D01FCF - Multi-dimensional adaptive quadrature over hyper-rectangle",nil)
   htSay '"Please enter the limits of integration:- "
   htSay '"\blankline "
@@ -1059,7 +1043,7 @@ d01fcfDefaultSolve(htPage,minpts,maxpts,eps,lenwrk,expression,ifail) ==
     (bcStrings (10 "1.0" b4 F))
     (text . "\newline ")
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'d01fcfGen)    	
+  htMakeDoneButton('"Continue",'d01fcfGen)      
   htpSetProperty(page,'ndim,ndim)
   htpSetProperty(page,'expression,expression)
   htpSetProperty(page,'minpts,minpts)
@@ -1100,9 +1084,9 @@ d01gbf() ==
   htInitPage('"D01GBF - Multi-dimensional quadrature over hyper-rectangle, Monte Carlo method",nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01gbf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01gbf| '|NagIntegrationPackage|)} for this routine")
@@ -1188,7 +1172,7 @@ d01gbfSolve htPage ==
         (isDomain P (Polynomial $EmptyMode))
          (isDomain S (String))
           (isDomain PI (PositiveInteger))),
-	    :labelList]
+            :labelList]
   page := htInitPage('"D01GBF - Multi-dimensional quadrature over hyper-rectangle, Monte Carlo method",nil)
   htSay '"Please enter the limits of integration:- "
   htSay '"\blankline "
@@ -1236,7 +1220,7 @@ d01gbfDefaultSolve(htPage,mincls,maxcls,eps,lenwrk,expression,ifail) ==
     (bcStrings (10 "1.0" b4 F))
     (text . "\newline ")
     (text . "\blankline"))
-  htMakeDoneButton('"Continue",'d01gbfGen)    	
+  htMakeDoneButton('"Continue",'d01gbfGen)      
   htpSetProperty(page,'ndim,ndim)
   htpSetProperty(page,'expression,expression)
   htpSetProperty(page,'mincls,mincls)
@@ -1280,9 +1264,9 @@ d01bbf() ==
   htInitPage('"D01BBF - Weights and abscissae for Gaussian quadrature rules",nil)
   htMakePage '(
     (domainConditions
-	(isDomain EM $EmptyMode)
-	(isDomain PI (PositiveInteger))
-	(isDomain F (Float)))
+        (isDomain EM $EmptyMode)
+        (isDomain PI (PositiveInteger))
+        (isDomain F (Float)))
     (text . "\windowlink{Manual Page}{manpageXXd01bbf} for this routine ")
     (text . "\newline ")
     (text . "\lispwindowlink{Browser operation page}{(|oPageFrom| '|d01bbf| '|NagIntegrationPackage|)} for this routine")
@@ -1353,9 +1337,3 @@ d01bbfGen htPage ==
   prefix := STRCONC("d01bbf(",a," ,",b," ,",STRINGIMAGE itype," ,")
   end := STRCONC(STRINGIMAGE n," ,",STRINGIMAGE gtype," ,",STRINGIMAGE ifail,")")
   linkGen STRCONC(prefix,end)
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

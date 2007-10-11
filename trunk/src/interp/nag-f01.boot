@@ -1,16 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nag-f01.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -42,9 +29,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -91,12 +75,12 @@ f01brf() ==
     (text . "\blankline")
     (text . "\menuitemstyle{}\tab{2} Grow value:")
     (radioButtons grow
-	("" "  True" gr_true)
+        ("" "  True" gr_true)
         ("" "  False" gr_false))
     (text . "\blankline")
     (text . "\menuitemstyle{}\tab{2} Lblock value:")
     (radioButtons lblock
-	("" "  True" lb_true)
+        ("" "  True" lb_true)
         ("" "  False" lb_false))
     (text . "\blankline ")
     (text . "\newline \tab{2} ")
@@ -158,7 +142,7 @@ f01brfSolve htPage ==
     '0
   ifail := 100*cfail + 10*bfail + afail
   ((n = '6 and nz = '15) and (licn = '150 and lirn = '75))
-		=> f01brfDefaultSolve(htPage,pivot,grow,lblock,ifail)
+                => f01brfDefaultSolve(htPage,pivot,grow,lblock,ifail)
   labelList :=
     "append"/[f(i) for i in 1..nz] where f(i) ==
       prefix := ('"\newline \tab{2} ")
@@ -184,7 +168,7 @@ f01brfSolve htPage ==
           (isDomain EM ($EmptyMode))
            (isDomain F (Float))
             (isDomain PI (PositiveInteger))),
-	     :labelList,:abortList]
+             :labelList,:abortList]
   page :=  htInitPage("F01BRF - LU factorization of real sparse matrix",nil)
   htSay '"\menuitemstyle{}\tab{2} Non-zero elements of A: "
   htSay '"\tab{30} \menuitemstyle{}\tab{32} Row: "
@@ -315,7 +299,7 @@ f01brfDefaultSolve(htPage,pivot,grow,lblock,ifail) ==
     (bcStrings (8 "true" abort_two EM))
     (bcStrings (8 "false" abort_three EM))
     (bcStrings (8 "true" abort_four EM)))
-  htMakeDoneButton('"Continue",'f01brfGen)    	
+  htMakeDoneButton('"Continue",'f01brfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'nz,nz)
   htpSetProperty(page,'licn,licn)
@@ -483,7 +467,7 @@ f01mafSolve htPage ==
   droptl := htpLabelInputString(htPage, 'droptl)
   densw := htpLabelInputString(htPage, 'densw)
   ((n = '16 and nz = '40) and (licn = '90 and lirn = '50))
-		=> f01mafDefaultSolve(htPage,droptl,densw,ifail)
+                => f01mafDefaultSolve(htPage,droptl,densw,ifail)
   labelList :=
     "append"/[f(i) for i in 1..nz] where f(i) ==
       prefix := ('"\newline \tab{2} ")
@@ -508,7 +492,7 @@ f01mafSolve htPage ==
           (isDomain EM ($EmptyMode))
            (isDomain F (Float))
             (isDomain PI (PositiveInteger))),
-	     :labelList,:abortList]
+             :labelList,:abortList]
   page :=  htInitPage("F01MAF - \htbitmap{llt} factorization of real sparse symmetric positive-definite matrix",nil)
   htSay '"\menuitemstyle{}\tab{2} Non-zero elements of A: "
   htSay '"\tab{30} \menuitemstyle{}\tab{32} Row: "
@@ -788,7 +772,7 @@ f01mafDefaultSolve(htPage,droptl,densw,ifail) ==
     (bcStrings (8 "true" abort_one EM))
     (bcStrings (8 "true" abort_two EM))
     (bcStrings (8 "true" abort_three EM)))
-  htMakeDoneButton('"Continue",'f01mafGen)    	
+  htMakeDoneButton('"Continue",'f01mafGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'nz,nz)
   htpSetProperty(page,'licn,licn)
@@ -906,7 +890,7 @@ f01mcfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :labelList,:nrowList]
+            :labelList,:nrowList]
   page := htInitPage("F01MCF - \htbitmap{ldlt} factorization of real symmetric positive-definite variable-bandwidth matrix",nil)
   htSay '"\menuitemstyle{}\tab{2} Elements of matrix {\it A} in row by row "
   htSay '"order: \newline \tab{2} "
@@ -957,7 +941,7 @@ f01mcfDefaultSolve  (htPage,ifail) ==
     (bcStrings (6 5 n5 PI))
     (bcStrings (6 3 n6 PI))
     (text . "\blankline "))
-  htMakeDoneButton('"Continue",'f01mcfGen)    	
+  htMakeDoneButton('"Continue",'f01mcfGen)      
   htpSetProperty(page,'n,n)
   htpSetProperty(page,'lal,lal)
   htpSetProperty(page,'ifail,ifail)
@@ -1055,7 +1039,7 @@ f01qcfSolve htPage ==
   matList :=
     "append"/[f(i,n) for i in 1..lda] where f(i,n) ==
        labelList := 
-	 "append"/[g(i,j) for j in 1..n] where g(i,j) ==
+         "append"/[g(i,j) for j in 1..n] where g(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1066,7 +1050,7 @@ f01qcfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList]
+            :matList]
   page := htInitPage("F01QCF - QR factorization or real m by n matrix (m \htbitmap{great=} n)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -1251,7 +1235,7 @@ f01qdfSolve htPage ==
   matList :=
     "append"/[fa(i,n) for i in 1..lda] where fa(i,n) ==
        labelList := 
-	 "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
+         "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1259,7 +1243,7 @@ f01qdfSolve htPage ==
   bList :=
     "append"/[fb(i,ncolb) for i in 1..ldb] where fb(i,ncolb) ==
        labelList := 
-	 "append"/[gb(i,j) for j in 1..ncolb] where gb(i,j) ==
+         "append"/[gb(i,j) for j in 1..ncolb] where gb(i,j) ==
             bnam := INTERN STRCONC ('"b",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[6, "0.0", bnam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1279,7 +1263,7 @@ f01qdfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bList,:zList]
+            :matList,:bList,:zList]
   page := htInitPage('"F01QDF - Operations with orthogonal matrices, compute {\it QB} or \htbitmap{f01qdf} after factorization by F01QCF or F01QDF",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -1493,7 +1477,7 @@ f01qefSolve htPage ==
   matList :=
     "append"/[fa(i,ncolq) for i in 1..lda] where fa(i,ncolq) ==
        labelList := 
-	 "append"/[ga(i,j) for j in 1..ncolq] where ga(i,j) ==
+         "append"/[ga(i,j) for j in 1..ncolq] where ga(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[7, "0.0", anam, 'F]]]
        prefix := ('"\newline ")
@@ -1511,7 +1495,7 @@ f01qefSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:zList]
+            :matList,:zList]
   page := htInitPage('"F01QEF - Operations with orthogonal matrices, form columns of {\it Q} after factorization by F01QCF or F01QFF",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it Q}: "
   htSay '"\newline  "
@@ -1688,7 +1672,7 @@ f01rcfSolve htPage ==
   matList :=
     "append"/[fa(i,n) for i in 1..lda] where fa(i,n) ==
        labelList := 
-	 "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
+         "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[16, "0.0 + 0.0*%i", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1699,7 +1683,7 @@ f01rcfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList]
+            :matList]
   page := htInitPage('"F01RCF - {\it QR} factorization of complex {\it m} by {\it n} matrix (m \htbitmap{great=} n)",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -1885,7 +1869,7 @@ f01rdfSolve htPage ==
   matList :=
     "append"/[fa(i,n) for i in 1..lda] where fa(i,n) ==
        labelList := 
-	 "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
+         "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[16, "0.0 + 0.0*%i", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1893,7 +1877,7 @@ f01rdfSolve htPage ==
   bList :=
     "append"/[fb(i,ncolb) for i in 1..ldb] where fb(i,ncolb) ==
        labelList := 
-	 "append"/[gb(i,j) for j in 1..ncolb] where gb(i,j) ==
+         "append"/[gb(i,j) for j in 1..ncolb] where gb(i,j) ==
             bnam := INTERN STRCONC ('"b",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[16, "0.0 + 0.0*%i", bnam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -1913,7 +1897,7 @@ f01rdfSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:bList,:zList]
+            :matList,:bList,:zList]
   page := htInitPage('"F01RDF - Operations with orthogonal matrices, compute {\it QB} or \htbitmap{f01rdf} after factorization by F01QCF or F01RDF",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -2132,7 +2116,7 @@ f01refSolve htPage ==
   matList :=
     "append"/[fa(i,n) for i in 1..lda] where fa(i,n) ==
        labelList := 
-	 "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
+         "append"/[ga(i,j) for j in 1..n] where ga(i,j) ==
             anam := INTERN STRCONC ('"a",STRINGIMAGE i, STRINGIMAGE j)
             [['bcStrings,[20, "0.0 + 0.0*%i", anam, 'F]]]
        prefix := ('"\newline \tab{2} ")
@@ -2150,7 +2134,7 @@ f01refSolve htPage ==
          (isDomain S (String))
           (isDomain F (Float))
            (isDomain PI (PositiveInteger))),
-	    :matList,:zList]
+            :matList,:zList]
   page := htInitPage('"F01REF - Operations with unitary matrices, form columns of {\it Q} after factorization by F01RCF",nil)
   htSay '"\newline \menuitemstyle{}\tab{2} Enter values of {\it A}: "
   htSay '"\newline \tab{2} "
@@ -2246,9 +2230,3 @@ f01refGen htPage ==
   prefix := STRCONC(prefix,matstring,", ",STRINGIMAGE ifail,")")
   linkGen prefix
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
