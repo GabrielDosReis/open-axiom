@@ -787,10 +787,6 @@ i-util.clisp: i-util.boot
 	@ echo 325 making $@ from $<
 	@ echo '(old-boot::boot "i-util.boot")' | ${DEPSYS}
 
-lisplib.clisp: lisplib.boot
-	@ echo 336 making $@ from $<
-	@ echo '(old-boot::boot "lisplib.boot")' | ${DEPSYS}
-
 match.clisp: match.boot
 	@ echo 339 making $@ from $<
 	@ echo '(old-boot::boot "match.boot")' | ${DEPSYS}

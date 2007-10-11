@@ -50,6 +50,8 @@
 <<*>>=
 <<license>>
 
+)package "BOOT"
+
 --% Standard Library Creation Functions
  
 readLib(fn,ft) == readLib1(fn,ft,"*")
@@ -577,7 +579,7 @@ findConstructorSlotNumber(domainForm,domain,op,sig) ==
   constructorArglist:= rest domainForm
   nsig:=#sig
   tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
-    and/[compare for a in sig for b in sig1]] where compare ==
+    "and"/[compare for a in sig for b in sig1]] where compare() ==
       a=b => true
       FIXP b => a=constructorArglist.b
       isSuperDomain(bustUnion b,bustUnion a,$CategoryFrame)
@@ -615,7 +617,7 @@ sigsMatch(sig,sig1,domainForm) ==
 findDomainSlotNumber(domain,op,sig) == --using slot 1 of the domain
   nsig:=#sig
   tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
-    and/[a=b or isSuperDomain(bustUnion b,bustUnion a,$CategoryFrame)
+    "and"/[a=b or isSuperDomain(bustUnion b,bustUnion a,$CategoryFrame)
       for a in sig for b in sig1]]
   tail is [.,["ELT",.,n]] => n
   systemErrorHere '"findDomainSlotNumber"
