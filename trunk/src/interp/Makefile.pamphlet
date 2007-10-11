@@ -1560,14 +1560,6 @@ iterator.clisp: iterator.boot
 	@ echo '(old-boot::boot "iterator.boot")' | ${DEPSYS}
 @
 
-\subsection{lisplib.boot}
-
-<<lisplib.clisp>>=
-lisplib.clisp: lisplib.boot
-	@ echo 336 making $@ from $<
-	@ echo '(old-boot::boot "lisplib.boot")' | ${DEPSYS}
-@
-
 \subsection{match.boot}
 
 <<match.clisp>>=
@@ -2152,8 +2144,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<i-toplev.clisp>>
 
 <<i-util.clisp>>
-
-<<lisplib.clisp>>
 
 <<match.clisp>>
 
