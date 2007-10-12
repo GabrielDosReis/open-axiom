@@ -50,6 +50,10 @@
 <<*>>=
 <<license>>
 
+import '"sys-driver"
+import '"macros"
+)package "BOOT"
+
 $primitiveHtCommands := '(
   ("\ContinueButton"     . 1)
   ("\andexample"         . 1)

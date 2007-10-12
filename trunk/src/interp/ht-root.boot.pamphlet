@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"ht-util"
+)package "BOOT"
+
 $historyDisplayWidth := 120
 $newline := char 10
 
@@ -72,7 +75,7 @@ dbNonEmptyPattern pattern ==
   '"*"
 
 htSystemVariables() == main where
-  main ==
+  main() ==
     not $fullScreenSysVars => htSetVars()
     classlevel := $UserLevel
     $levels : local := '(compiler development interpreter)
@@ -102,35 +105,36 @@ htSystemVariables() == main where
       displayOptions(name,key,variable,val,options)
     htSay '"\endmenu"
     htShowPage()
-  functionTail(name,class,var,valuesOrFunction) ==
-    val := eval var
-    atom valuesOrFunction =>
-      htMakePage '((domainConditions (isDomain STR (String))))
-      htMakePage [['bcLinks,['"reset",'"",'htSetSystemVariableKind,[var,name,nil]]]]
-      htMakePage [['bcStrings,[30,STRINGIMAGE val,name,valuesOrFunction]]]
-    displayOptions(name,class,var,val,valuesOrFunction)
-  displayOptions(name,class,variable,val,options) ==
-    class = 'INTEGER =>
-      htMakePage [['bcLispLinks,[[['text,options.0,'"-",options.1 or '""]],'"",'htSetSystemVariableKind,[variable,name,'PARSE_-INTEGER]]]]
-      htMakePage '((domainConditions (isDomain INT (Integer))))
-      htMakePage  [['bcStrings,[5,STRINGIMAGE val,name,'INT]]]
-    class = 'STRING =>
-      htSay('"{\em ",val,'"}\space{1}")
-    for x in options repeat
-      val = x or val = true and x = 'on or null val and x = 'off =>
-        htSay('"{\em ",x,'"}\space{1}")
-      htMakePage [['bcLispLinks,[x,'" ",'htSetSystemVariable,[variable,x]]]]
-  fn(t,al,firstTime) ==
-    atom t => al
-    if firstTime then $heading := opOf first t
-    fn(rest t,gn(first t,al),firstTime)
-  gn(t,al) ==
-    [.,.,class,key,.,options,:.] := t
-    not MEMQ(class,$levels) => al
-    key = 'LITERALS or key = 'INTEGER or key = 'STRING => [[$heading,:t],:al]
-    key = 'TREE => fn(options,al,false)
-    key = 'FUNCTION => [[$heading,:t],:al]
-    systemError key
+   where
+    functionTail(name,class,var,valuesOrFunction) ==
+      val := eval var
+      atom valuesOrFunction =>
+	htMakePage '((domainConditions (isDomain STR (String))))
+	htMakePage [['bcLinks,['"reset",'"",'htSetSystemVariableKind,[var,name,nil]]]]
+	htMakePage [['bcStrings,[30,STRINGIMAGE val,name,valuesOrFunction]]]
+      displayOptions(name,class,var,val,valuesOrFunction)
+    displayOptions(name,class,variable,val,options) ==
+      class = 'INTEGER =>
+	htMakePage [['bcLispLinks,[[['text,options.0,'"-",options.1 or '""]],'"",'htSetSystemVariableKind,[variable,name,'PARSE_-INTEGER]]]]
+	htMakePage '((domainConditions (isDomain INT (Integer))))
+	htMakePage  [['bcStrings,[5,STRINGIMAGE val,name,'INT]]]
+      class = 'STRING =>
+	htSay('"{\em ",val,'"}\space{1}")
+      for x in options repeat
+	val = x or val = true and x = 'on or null val and x = 'off =>
+	  htSay('"{\em ",x,'"}\space{1}")
+	htMakePage [['bcLispLinks,[x,'" ",'htSetSystemVariable,[variable,x]]]]
+    fn(t,al,firstTime) ==
+      atom t => al
+      if firstTime then $heading := opOf first t
+      fn(rest t,gn(first t,al),firstTime)
+    gn(t,al) ==
+      [.,.,class,key,.,options,:.] := t
+      not MEMQ(class,$levels) => al
+      key = 'LITERALS or key = 'INTEGER or key = 'STRING => [[$heading,:t],:al]
+      key = 'TREE => fn(options,al,false)
+      key = 'FUNCTION => [[$heading,:t],:al]
+      systemError key
 
 htSetSystemVariableKind(htPage,[variable,name,fun]) ==
   value := htpLabelInputString(htPage,name)

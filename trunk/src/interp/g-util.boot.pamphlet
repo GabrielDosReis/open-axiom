@@ -50,6 +50,7 @@
 <<*>>=
 <<license>>
 
+import '"macros"
 )package "BOOT"
 
 --% Utility Functions of General Use

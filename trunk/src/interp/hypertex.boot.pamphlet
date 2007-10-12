@@ -46,20 +46,23 @@
 <<*>>=
 <<license>>
 
+import '"boot-pkg"
+)package "BOOT"
+
 -- HyperTex Spad interface
 
 -- SETANDFILEQ($SendXEventToHyperTeX, 8)
-SETANDFILEQ($LinkToPage, 96)
-SETANDFILEQ($StartPage, 97)
-SETANDFILEQ($SendLine, 98)
-SETANDFILEQ($EndOfPage, 99)
-SETANDFILEQ($PopUpPage, 95)
-SETANDFILEQ($PopUpNamedPage, 94)
-SETANDFILEQ($KillPage, 93)
-SETANDFILEQ($ReplacePage, 92)
-SETANDFILEQ($ReplaceNamedPage, 91)
-SETANDFILEQ($SpadError, 90)
-SETANDFILEQ($PageStuff, 100)
+$LinkToPage == 96
+$StartPage == 97
+$SendLine == 98
+$EndOfPage == 99
+$PopUpPage == 95
+$PopUpNamedPage == 94
+$KillPage == 93
+$ReplacePage == 92
+$ReplaceNamedPage == 91
+$SpadError == 90
+$PageStuff == 100
 
 
 

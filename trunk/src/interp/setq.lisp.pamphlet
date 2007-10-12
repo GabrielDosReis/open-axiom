@@ -62,7 +62,6 @@
 (in-package "BOOT")
 
 (SETQ |/MAJOR-VERSION| 7)
-(SETQ /VERSION 0)
 (SETQ /RELEASE 0)
 
 (defconstant |$cclSystem|

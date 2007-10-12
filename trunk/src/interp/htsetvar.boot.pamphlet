@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"macros"
+)package "BOOT"
+
 htsv() ==
   startHTPage(50)
   htSetVars()
