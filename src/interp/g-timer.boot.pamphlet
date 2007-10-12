@@ -46,6 +46,10 @@
 <<*>>=
 <<license>>
 
+import '"macros"
+import '"g-util"
+)package "BOOT"
+
 --% Code instrumentation facilities
 --  These functions can be used with arbitrary lists of
 --  named stats (listofnames) grouped in classes (listofclasses)

@@ -46,12 +46,15 @@
 <<*>>=
 <<license>>
 
+import '"macros"
+)package "BOOT"
+
 --$profileCompiler := true
 $profileAlist := nil
 
 profileWrite() ==  --called from finalizeLisplib
   outStream := MAKE_-OUTSTREAM CONCAT(LIBSTREAM_-DIRNAME $libFile,'"/info")
-  _*PRINT_-PRETTY_* :local := 'T
+  SETQ(_*PRINT_-PRETTY_*, true)
   PRINT_-FULL(profileTran $profileAlist,outStream)
   SHUT outStream
 

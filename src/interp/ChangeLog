@@ -1,5 +1,48 @@
 2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (${DEPSYS}): Depend on g-util.$(FASLEXT).
+	Load explicitly.
+	(<<profile.clisp>>): Remove.
+	(<<g-cndata.clisp>>): Likewise.
+	(<<g-opt.clisp>>): Likewise.
+	(<<g-timer.clisp>>): Likewise.
+	(<<hypertex.clisp>>): Likewise.
+	(<<rulesets.clisp>>): Likewise.
+	(<<ht-util.clisp>>): Likewise.
+	(<<htsetvar.clisp>>): Likewise.
+	(<<ht-root.clisp>>): Likewise.
+	(<<htcheck.clisp>>): Likewise.
+	(ht-root.$(FASLEXT)): New rule.
+	(htcheck.$(FASLEXT)): Likewise.
+	(ht-util.$(FASLEXT)): Likewise.
+	(htsetvar.$(FASLEXT)): Likewise.
+	(hypertex.$(FASLEXT)): Likewise.
+	(profile.$(FASLEXT)): Likewise.
+	(rulesets.$(FASLEXT)): Likewise.
+	(g-opt.$(FASLEXT)): Likewise.
+	(g-timer.$(FASLEXT)): Likewise.
+	(g-util.$(FASLEXT)): Likewise.
+	(g-cndata.$(FASLEXT)): Likewise.
+	* daase.lisp.pamphlet (*attributes*): Move definition to
+	sys-constants.boot.
+	* g-cndata.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* g-opt.boot.pamphlet: Likewise.
+	(EqualBarGensym): Fix thinko.
+	* g-timer.boot.pamphlet: Push into package "BOOT".
+	* g-util.boot.pamphlet: Likewise.
+	* ht-root.boot.pamphlet: Likewise.  Fix syntax.
+	* ht-util.boot.pamphlet: Push into package "BOOT".
+	* htcheck.boot.pamphlet: Likewise.
+	* htsetvar.boot.pamphlet: Likewise.
+	* hypertex.boot.pamphlet: Likewise. Fix syntax.
+	* profile.boot.pamphlet: Likewise.
+	* rulesets.boot.pamphlet: Likewise.
+	* setq.lisp.pamphlet (/VERSION): Move definition to sys-globals.boot.
+	* spad.lisp.pamphlet (/WSNAME): Likewise.
+	(|rplac|): Move to sys-macros.boot.
+
+2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (<<nag-c02.clisp>>): Remove.
 	(<<nag-c05.clisp>>): Likewise.
 	(<<nag-c06.clisp>>): Likewise.

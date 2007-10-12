@@ -46,6 +46,10 @@
 <<*>>=
 <<license>>
 
+import '"def"
+
+)package "BOOT"
+
 --% OPTIMIZER
  
 optimizeFunctionDef(def) ==
@@ -119,12 +123,12 @@ optCatch (x is ["CATCH",g,a]) ==
         changeThrowToExit(rest s,g)
     rplac(rest a,[:s,["EXIT",u]])
     ["CATCH",y,a]:= optimize x
-  if hasNoThrows(a,g)
-     then (rplac(first x,first a); rplac(rest x,rest a)) where
-      hasNoThrows(a,g) ==
-        a is ["THROW", =g,:.] => false
-        atom a => true
-        hasNoThrows(first a,g) and hasNoThrows(rest a,g)
+  if hasNoThrows(a,g) where
+       hasNoThrows(a,g) ==
+	 a is ["THROW", =g,:.] => false
+	 atom a => true
+	 hasNoThrows(first a,g) and hasNoThrows(rest a,g)
+     then (rplac(first x,first a); rplac(rest x,rest a))
    else
     changeThrowToGo(a,g) where
       changeThrowToGo(s,g) ==
@@ -264,7 +268,7 @@ AssocBarGensym(key,l) ==
       EqualBarGensym(key,CAR x) => return x
  
 EqualBarGensym(x,y) ==
-  $GensymAssoc: nil
+  $GensymAssoc: fluid
   fn(x,y) where
     fn(x,y) ==
       x=y => true
@@ -391,27 +395,23 @@ optEQ u ==
     u
   u
  
-EVALANDFILEACTQ
- (
-   for x in '( (call         optCall) _
-              (SEQ          optSEQ)_
-              (EQ optEQ)
-              (MINUS        optMINUS)_
-              (QSMINUS      optQSMINUS)_
-              (_-           opt_-)_
-              (LESSP        optLESSP)_
-              (SPADCALL     optSPADCALL)_
-              (_|           optSuchthat)_
-              (CATCH        optCatch)_
-              (COND         optCond)_
-              (mkRecord     optMkRecord)_
-              (RECORDELT    optRECORDELT)_
-              (SETRECORDELT optSETRECORDELT)_
-              (RECORDCOPY   optRECORDCOPY)) _
-      repeat MAKEPROP(CAR x,'OPTIMIZE,CREATE_-SBC CADR x)
-          --much quicker to call functions if they have an SBC
-    )
- 
+for x in '( (call         optCall) _
+	   (SEQ          optSEQ)_
+	   (EQ optEQ)
+	   (MINUS        optMINUS)_
+	   (QSMINUS      optQSMINUS)_
+	   (_-           opt_-)_
+	   (LESSP        optLESSP)_
+	   (SPADCALL     optSPADCALL)_
+	   (_|           optSuchthat)_
+	   (CATCH        optCatch)_
+	   (COND         optCond)_
+	   (mkRecord     optMkRecord)_
+	   (RECORDELT    optRECORDELT)_
+	   (SETRECORDELT optSETRECORDELT)_
+	   (RECORDCOPY   optRECORDCOPY)) _
+   repeat MAKEPROP(CAR x,'OPTIMIZE,CREATE_-SBC CADR x)
+       --much quicker to call functions if they have an SBC
 
 @
 \eject

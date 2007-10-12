@@ -46,8 +46,10 @@
 <<*>>=
 <<license>>
 
+import '"macros"
+)package "BOOT"
+
 -- HyperTeX Utilities for generating basic Command pages
---)package "BOOT"
 
 $bcParseOnly := true
 

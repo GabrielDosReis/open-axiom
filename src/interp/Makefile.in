@@ -364,7 +364,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	        fnewmeta.$(FASLEXT) \
 		g-error.clisp \
 	        g-boot.clisp c-util.${LISP} \
-	        g-util.clisp \
+	        g-util.$(FASLEXT) \
 	        clam.clisp \
 	        slam.clisp
 	@ echo 3 making ${DEPSYS} 
@@ -405,12 +405,11 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(load "g-boot")' >> makedep.lisp
 	@ echo '(unless (probe-file "c-util.$(FASLEXT)") (|compileLispFile| "c-util.${LISP}" "c-util.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "c-util")' >> makedep.lisp
-	@ echo '(unless (probe-file "g-util.$(FASLEXT)") (|compileLispFile| "g-util.clisp" "g-util.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "g-util")' >> makedep.lisp
+	@ echo '(|importModule| "g-util")' >> makedep.lisp
 	../lisp/base-lisp$(EXEEXT) -- --make --output=$@ \
 		--load-directory=. makedep.lisp
 	@rm $(addsuffix .$(FASLEXT), \
-		clam slam g-error g-boot c-util g-util)
+		clam slam g-error g-boot c-util)
 	@ echo 4 ${DEPSYS} created
 
 
@@ -452,6 +451,31 @@ database.date:
 
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
+
+## HyperDoc
+ht-root.$(FASLEXT): ht-root.boot ht-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+htcheck.$(FASLEXT): htcheck.boot sys-driver.$(FASLEXT) macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+ht-util.$(FASLEXT): ht-util.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+htsetvar.$(FASLEXT): htsetvar.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+hypertex.$(FASLEXT): hypertex.boot boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+## OpenAxiom's interpreter.
+
+profile.$(FASLEXT): profile.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 
 ##
 ## OpenAxiom's front-end consists of two parts:
@@ -555,6 +579,19 @@ dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 ## General support and utilities.
+
+g-opt.$(FASLEXT): g-opt.boot def.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+g-timer.$(FASLEXT): g-timer.boot macros.$(FASLEXT) g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+g-cndata.$(FASLEXT): g-cndata.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 sys-macros.$(FASLEXT): sys-macros.lisp diagnostics.$(FASLEXT) \
 			union.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
@@ -687,38 +724,6 @@ functor.clisp: functor.boot
 	@ echo 254 making $@ from $<
 	@ echo '(old-boot::boot "functor.boot")' | ${DEPSYS}
 
-g-cndata.clisp: g-cndata.boot
-	@ echo 261 making $@ from $<
-	@ echo '(old-boot::boot "g-cndata.boot")' | ${DEPSYS}
-
-g-opt.clisp: g-opt.boot
-	@ echo 267 making $@ from $<
-	@ echo '(old-boot::boot "g-opt.boot")' | ${DEPSYS}
-
-g-timer.clisp: g-timer.boot
-	@ echo 270 making $@ from $<
-	@ echo '(old-boot::boot "g-timer.boot")' | ${DEPSYS}
-
-htcheck.clisp: htcheck.boot
-	@ echo 455 making $@ from $<
-	@ echo '(old-boot::boot "htcheck.boot")' | ${DEPSYS}
-
-ht-root.clisp: ht-root.boot
-	@ echo 451 making $@ from $<
-	@ echo '(old-boot::boot "ht-root.boot")' | ${DEPSYS}
-
-htsetvar.clisp: htsetvar.boot
-	@ echo 444 making $@ from $<
-	@ echo '(old-boot::boot "htsetvar.boot")' | ${DEPSYS}
-
-ht-util.clisp: ht-util.boot
-	@ echo 440 making $@ from $<
-	@ echo '(old-boot::boot "ht-util.boot")' | ${DEPSYS}
-
-hypertex.clisp: hypertex.boot
-	@ echo 277 making $@ from $<
-	@ echo '(old-boot::boot "hypertex.boot")' | ${DEPSYS}
-
 i-analy.clisp: i-analy.boot
 	@ echo 280 making $@ from $<
 	@ echo '(old-boot::boot "i-analy.boot")' | ${DEPSYS}
@@ -823,17 +828,9 @@ nrunopt.clisp: nrunopt.boot
 	@ echo 365 making $@ from $<
 	@ echo '(old-boot::boot "nrunopt.boot")' | ${DEPSYS}
 
-profile.clisp: profile.boot
-	@ echo 237 making $@ from $<
-	@ echo '(old-boot::boot "profile.boot")' | ${DEPSYS}
-
 record.clisp: record.boot
 	@ echo 447 making $@ $<
 	@ echo '(old-boot::boot "record.boot")' | ${DEPSYS}
-
-rulesets.clisp: rulesets.boot
-	@ echo 388 making $@ from $<
-	@ echo '(old-boot::boot "rulesets.boot")' | ${DEPSYS}
 
 server.clisp: server.boot
 	@ echo 391 making $@ from $<

@@ -568,3 +568,13 @@ $FILETYPE_-TABLE ==
    ["SPADFORM", :"sform"],
    ["SPADTEX", :"stex"],
    ["SPADOUT", :"spout"]]
+
++++
+_*ATTRIBUTES_* ==
+ '(nil infinite arbitraryExponent approximate complex
+   shallowMutable canonical noetherian central
+   partiallyOrderedSet arbitraryPrecision canonicalsClosed
+   noZeroDivisors rightUnitary leftUnitary
+   additiveValuation unitsKnown canonicalUnitNormal
+   multiplicativeValuation finiteAggregate shallowlyMutable
+   commutative)

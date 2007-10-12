@@ -994,7 +994,7 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	        fnewmeta.$(FASLEXT) \
 		g-error.clisp \
 	        g-boot.clisp c-util.${LISP} \
-	        g-util.clisp \
+	        g-util.$(FASLEXT) \
 	        clam.clisp \
 	        slam.clisp
 	@ echo 3 making ${DEPSYS} 
@@ -1035,11 +1035,10 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(load "g-boot")' >> makedep.lisp
 	@ echo '(unless (probe-file "c-util.$(FASLEXT)") (|compileLispFile| "c-util.${LISP}" "c-util.$(FASLEXT)"))' >> makedep.lisp
 	@ echo '(load "c-util")' >> makedep.lisp
-	@ echo '(unless (probe-file "g-util.$(FASLEXT)") (|compileLispFile| "g-util.clisp" "g-util.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "g-util")' >> makedep.lisp
+	@ echo '(|importModule| "g-util")' >> makedep.lisp
 <<save depsys image>>
 	@rm $(addsuffix .$(FASLEXT), \
-		clam slam g-error g-boot c-util g-util)
+		clam slam g-error g-boot c-util)
 	@ echo 4 ${DEPSYS} created
 
 
@@ -1225,14 +1224,6 @@ compiler.clisp: compiler.boot
 	@ echo '(old-boot::boot "compiler.boot")' | ${DEPSYS}
 @
 
-\subsection{profile.boot \cite{65}}
-
-<<profile.clisp>>=
-profile.clisp: profile.boot
-	@ echo 237 making $@ from $<
-	@ echo '(old-boot::boot "profile.boot")' | ${DEPSYS}
-@
-
 \subsection{database.boot \cite{67}}
 
 <<database.clisp>>=
@@ -1263,39 +1254,6 @@ format.clisp: format.boot
 functor.clisp: functor.boot
 	@ echo 254 making $@ from $<
 	@ echo '(old-boot::boot "functor.boot")' | ${DEPSYS}
-@
-
-\subsection{g-cndata.boot}
-
-<<g-cndata.clisp>>=
-g-cndata.clisp: g-cndata.boot
-	@ echo 261 making $@ from $<
-	@ echo '(old-boot::boot "g-cndata.boot")' | ${DEPSYS}
-@
-
-\subsection{g-opt.boot}
-
-<<g-opt.clisp>>=
-g-opt.clisp: g-opt.boot
-	@ echo 267 making $@ from $<
-	@ echo '(old-boot::boot "g-opt.boot")' | ${DEPSYS}
-@
-
-\subsection{g-timer.boot}
-
-<<g-timer.clisp>>=
-g-timer.clisp: g-timer.boot
-	@ echo 270 making $@ from $<
-	@ echo '(old-boot::boot "g-timer.boot")' | ${DEPSYS}
-@
-
-
-\subsection{hypertex.boot}
-
-<<hypertex.clisp>>=
-hypertex.clisp: hypertex.boot
-	@ echo 277 making $@ from $<
-	@ echo '(old-boot::boot "hypertex.boot")' | ${DEPSYS}
 @
 
 \subsection{i-analy.boot}
@@ -1536,14 +1494,6 @@ if these two things are done then a DEPSYS image can be bootstrapped
 to a new platform.
 \end{verbatim}
 
-\subsection{rulesets.boot}
-
-<<rulesets.clisp>>=
-rulesets.clisp: rulesets.boot
-	@ echo 388 making $@ from $<
-	@ echo '(old-boot::boot "rulesets.boot")' | ${DEPSYS}
-@
-
 \subsection{server.boot}
 
 <<server.clisp>>=
@@ -1585,44 +1535,12 @@ bc-solve.clisp: bc-solve.boot
 	@ echo '(old-boot::boot "bc-solve.boot")' | ${DEPSYS}
 @
 
-\subsection{ht-util.boot}
-
-<<ht-util.clisp>>=
-ht-util.clisp: ht-util.boot
-	@ echo 440 making $@ from $<
-	@ echo '(old-boot::boot "ht-util.boot")' | ${DEPSYS}
-@
-
-\subsection{htsetvar.boot}
-
-<<htsetvar.clisp>>=
-htsetvar.clisp: htsetvar.boot
-	@ echo 444 making $@ from $<
-	@ echo '(old-boot::boot "htsetvar.boot")' | ${DEPSYS}
-@
-
 \subsection{record.boot}
 
 <<record.clisp>>=
 record.clisp: record.boot
 	@ echo 447 making $@ $<
 	@ echo '(old-boot::boot "record.boot")' | ${DEPSYS}
-@
-
-\subsection{ht-root.boot}
-
-<<ht-root.clisp>>=
-ht-root.clisp: ht-root.boot
-	@ echo 451 making $@ from $<
-	@ echo '(old-boot::boot "ht-root.boot")' | ${DEPSYS}
-@
-
-\subsection{htcheck.boot}
-
-<<htcheck.clisp>>=
-htcheck.clisp: htcheck.boot
-	@ echo 455 making $@ from $<
-	@ echo '(old-boot::boot "htcheck.boot")' | ${DEPSYS}
 @
 
 \subsection{ax.boot}
@@ -1788,6 +1706,31 @@ distclean-local: clean-local
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
+## HyperDoc
+ht-root.$(FASLEXT): ht-root.boot ht-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+htcheck.$(FASLEXT): htcheck.boot sys-driver.$(FASLEXT) macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+ht-util.$(FASLEXT): ht-util.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+htsetvar.$(FASLEXT): htsetvar.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+hypertex.$(FASLEXT): hypertex.boot boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+## OpenAxiom's interpreter.
+
+profile.$(FASLEXT): profile.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+
 ##
 ## OpenAxiom's front-end consists of two parts:
 ##    (a) the interprerter's parser -- also referred to as new parser
@@ -1890,6 +1833,19 @@ dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 ## General support and utilities.
+
+g-opt.$(FASLEXT): g-opt.boot def.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+g-timer.$(FASLEXT): g-timer.boot macros.$(FASLEXT) g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+g-cndata.$(FASLEXT): g-cndata.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 sys-macros.$(FASLEXT): sys-macros.lisp diagnostics.$(FASLEXT) \
 			union.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
@@ -1970,22 +1926,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 <<functor.clisp>>
 
-<<g-cndata.clisp>>
-
-<<g-opt.clisp>>
-
-<<g-timer.clisp>>
-
-<<htcheck.clisp>>
-
-<<ht-root.clisp>>
-
-<<htsetvar.clisp>>
-
-<<ht-util.clisp>>
-
-<<hypertex.clisp>>
-
 <<i-analy.clisp>>
 
 <<i-code.clisp>>
@@ -2038,11 +1978,7 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 <<nrunopt.clisp>>
 
-<<profile.clisp>>
-
 <<record.clisp>>
-
-<<rulesets.clisp>>
 
 <<server.clisp>>
 
