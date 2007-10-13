@@ -30,57 +30,42 @@
 ;; LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-;; 
-;; Copyright (C) 2007 Gabriel Dos Reis
 
-
-(defpackage "BOOT"
-  #+:common-lisp (:use "COMMON-LISP")
-  #-:common-lisp (:use "LISP")
-  (:use "AxiomCore"))
 
 (in-package "BOOT")
 
-;; Below are some missing functions.  There here for lack of better
-;; place (sys-funs.lisp?)
 ;;
-;; These functions should be defined for DoubleFloat inputs but are not.
-;; These are cheap and easy definitions that work but should be rewritten.
+;; Lisp part of the Scratchpad special function interface.
+;; SMW Feb 91
+;;
 
-;; Contributed by Juergen Weiss from a suggestion by Arthur Norman.
+;; #-:CCL
+;; (defun |float| (x) (|float| x))
 
-(defun sec (x) (/ 1 (cos x)))
-(defun csc (x) (/ 1 (sin x)))
-(defun acsc (x) (asin (/ 1 x)))
-(defun asec (x) (acos (/ 1 x)))
-(defun csch (x) (/ 1 (sinh x)))
-(defun coth (x) (* (cosh x) (csch x)))
-(defun sech (x) (/ 1 (cosh x)))
-(defun acsch (x) (asinh (/ 1 x)))
-(defun acoth (x) (atanh (/ 1 x)))
-(defun asech (x) (acosh (/ 1 x)))
+;; Conversion between spad and lisp complex representations
+(defun s-to-c (c) (complex (car c) (cdr c)))
+(defun c-to-s (c) (cons (realpart c) (imagpart c)))
+(defun c-to-r (c)
+    (let ((r (realpart c)) (i (imagpart c)))
+      (if (or (zerop i) (< (abs i) (* 1.0E-10 (abs r))))
+          r
+        (|error| "Result is not real.")) ))
 
-#+(or :cmu :akcl :gcl)
-(defun cot (a)
-  (if (or (> a 1000.0) (< a -1000.0))
-    (/ (cos a) (sin a))
-    (/ 1.0 (tan a))))
+;; Wrappers for functions in the special function package
+(defun rlngamma  (x)           (|lnrgamma| x) )
+(defun clngamma  (z)   (c-to-s (|lncgamma| (s-to-c z)) ))
 
-#+(or :cmu :akcl :gcl)
-(defun acot (a)
-  (if (> a 0.0)
-    (if (> a 1.0)
-       (atan (/ 1.0 a))
-       (- (/ pi 2.0) (atan a)))
-    (if (< a -1.0)
-       (- pi (atan (/ -1.0 a)))
-       (+ (/ pi 2.0) (atan (- a))))))
+;; #-:CCL
+(defun rgamma    (x)           (|rgamma|   x))
+(defun cgamma    (z)   (c-to-s (|cgamma|   (s-to-c z)) ))
 
-; This is a Mantissa and Exponent function. 
-#+(or :cmu :akcl :gcl)
-(defun manexp (u)
-  (multiple-value-bind (f e s) 
-    (decode-float u)
-    (cons (* s f) e)))
+(defun rpsi      (n x)         (|rPsi|     n x) )
+(defun cpsi      (n z) (c-to-s (|cPsi|     n (s-to-c z)) ))
 
+(defun rbesselj  (n x) (c-to-r (|BesselJ| n x)) ))
+(defun cbesselj  (v z) (c-to-s (|BesselJ| (s-to-c v) (s-to-c z)) ))
+ 
+(defun rbesseli  (n x) (c-to-r (|BesselI| n x)) ))
+(defun cbesseli  (v z) (c-to-s (|BesselI| (s-to-c v) (s-to-c z)) ))
 
+(defun chyper0f1 (a z) (c-to-s (|chebf01| (s-to-c a) (s-to-c z)) ))

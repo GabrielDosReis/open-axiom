@@ -1,24 +1,6 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/foam\_l.lisp} Pamphlet}
-\author{Stephen M. Watt, Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -49,43 +31,15 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
 
+;;
+;; FOAM is the intermediate language for the aldor compiler. FOAM
+;; means "first order abstract machine" and functions similar to
+;; RTL for the GCC compiler. It is a "machine" that is used as the
+;; target for meta-assembler level statments. These are eventually
+;; expanded for the real target machine (or interpreted directly)
+;;
 
-
-\section{The [[FOAM]] package}
-
-FOAM is the intermediate language for the aldor compiler. FOAM
-means "first order abstract machine" and functions similar to
-RTL for the GCC compiler. It is a "machine" that is used as the
-target for meta-assembler level statments. These are eventually
-expanded for the real target machine (or interpreted directly)
-<<FOAM>>=
-#+:common-lisp (in-package "COMMON-LISP-USER")
-#-:common-lisp (in-package "USER")
-
-(defpackage "FOAM"
-  #+:common-lisp (:use "COMMON-LISP")
-  #-:common-lisp (:use "LISP"))
-
-@
-
-\section{The [[FOAM-USER]] package}
-
-FOAM-USER is the package containing foam statements and macros
-that get inserted into user code versus the foam package which
-provides support for compiler code.
-<<FOAM>>=
-(defpackage "FOAM-USER"
-  #+:common-lisp (:use "COMMON-LISP")
-  #-:common-lisp (:use "LISP")
-  (:use "FOAM"))
-
-@
-
-
-<<*>>=
-<<license>>
 ;;;
 ;;; FOAM Operations for Common Lisp
 ;;;
@@ -101,7 +55,23 @@ provides support for compiler code.
 ;;    Deftypes for each Foam type?
 ;;
 
-<<FOAM>>
+#+:common-lisp (in-package "COMMON-LISP-USER")
+#-:common-lisp (in-package "USER")
+
+(defpackage "FOAM"
+  #+:common-lisp (:use "COMMON-LISP")
+  #-:common-lisp (:use "LISP"))
+
+
+;; FOAM-USER is the package containing foam statements and macros
+;; that get inserted into user code versus the foam package which
+;; provides support for compiler code.
+
+(defpackage "FOAM-USER"
+  #+:common-lisp (:use "COMMON-LISP")
+  #-:common-lisp (:use "LISP")
+  (:use "FOAM"))
+
 (in-package "FOAM")
 
 (export '(
@@ -300,13 +270,13 @@ provides support for compiler code.
 (defmacro |SFloEQ|    (x y) `(= (the |SFlo| ,x) (the |SFlo| ,y)))
 (defmacro |SFloNE|    (x y) `(/= (the |SFlo| ,x) (the |SFlo| ,y)))
 (defmacro |SFloNegate|  (x) `(the |SFlo| (- (the |SFlo| ,x))))
-(defmacro |SFloNext|	(x) `(the |SFlo| (+ (the |SFlo| ,x) 1.0s0)))
-(defmacro |SFloPrev|	(x) `(the |SFlo| (- (the |SFlo| ,x) 1.0s0)))
+(defmacro |SFloNext|    (x) `(the |SFlo| (+ (the |SFlo| ,x) 1.0s0)))
+(defmacro |SFloPrev|    (x) `(the |SFlo| (- (the |SFlo| ,x) 1.0s0)))
 (defmacro |SFloMinus| (x y) `(the |SFlo| (- (the |SFlo| ,x) (the |SFlo| ,y))))
 (defmacro |SFloTimes| (x y) `(the |SFlo| (* (the |SFlo| ,x) (the |SFlo| ,y))))
 (defmacro |SFloTimesPlus| (x y z)
   `(the |SFlo| (+ (* (the |SFlo| ,x) (the |SFlo| ,y)) (the |SFlo| ,z))))
-(defmacro |SFloDivide|	(x y) `(the |SFlo| (/ (the |SFlo| ,x) (the |SFlo| ,y))))
+(defmacro |SFloDivide|  (x y) `(the |SFlo| (/ (the |SFlo| ,x) (the |SFlo| ,y))))
 (defmacro |SFloRPlus|  (x y r) `(error "unimplemented operation -- SFloRPlus"))
 (defmacro |SFloRMinus| (x y r) `(error "unimplemented operation -- SFloRTimes"))
 (defmacro |SFloRTimes| (x y r) `(error "unimplemented operation -- SFloRTimes"))
@@ -334,8 +304,8 @@ provides support for compiler code.
 (defmacro |DFloLT|     (x y) `(< (the |DFlo| ,x) (the |DFlo| ,y)))
 (defmacro |DFloNE|     (x y) `(/= (the |DFlo| ,x) (the |DFlo| ,y)))
 (defmacro |DFloNegate|   (x) `(the |DFlo| (- (the |DFlo| ,x))))
-(defmacro |DFloNext| 	 (x) `(the |DFlo| (+ (the |DFlo| ,x) 1.0d0)))
-(defmacro |DFloPrev|	 (x) `(the |DFlo| (- (the |DFlo| ,x) 1.0d0)))
+(defmacro |DFloNext|     (x) `(the |DFlo| (+ (the |DFlo| ,x) 1.0d0)))
+(defmacro |DFloPrev|     (x) `(the |DFlo| (- (the |DFlo| ,x) 1.0d0)))
 (defmacro |DFloPlus|   (x y) `(the |DFlo| (+ (the |DFlo| ,x) (the |DFlo| ,y))))
 (defmacro |DFloMinus|  (x y) `(the |DFlo| (- (the |DFlo| ,x) (the |DFlo| ,y))))
 (defmacro |DFloTimes|  (x y) `(the |DFlo| (* (the |DFlo| ,x) (the |DFlo| ,y))))
@@ -479,7 +449,7 @@ provides support for compiler code.
 
 (defmacro |BIntBit|   (x i)
   `(let ((xx ,x) (ii ,i)) (declare (type |BInt| xx) (type |SInt| ii))
-	(logbitp ii xx)))
+        (logbitp ii xx)))
 ;;(defmacro |BIntAbs|     (x) `(the |BInt| (abs (the |BInt| ,x))))
 
 (defmacro |PtrNil|      () ())
@@ -509,10 +479,10 @@ provides support for compiler code.
 
 (defmacro |ScanSFlo| (arr i)
   `(read-from-string ,arr nil (|SFlo0|)
-		     :start ,i :preserve-whitespace t))
+                     :start ,i :preserve-whitespace t))
 (defmacro |ScanDFlo| (arr i)
   `(read-from-string ,arr nil (|DFlo0|)
-		     :start ,i :preserve-whitespace t))
+                     :start ,i :preserve-whitespace t))
 (defmacro |ScanSInt| (arr i)
   `(parse-integer ,arr :start ,i :junk-allowed t))
 (defmacro |ScanBInt| (arr i)
@@ -543,14 +513,14 @@ provides support for compiler code.
 (defmacro |SetClosFun| (x y) `(rplaca ,x ,y))
 (defmacro |SetClosEnv| (x y) `(rplacd ,x ,y))
 
-(defmacro |MakeEnv| 	(x y) 
+(defmacro |MakeEnv|     (x y) 
   `(let ((xx ,x) (yy ,y)) (cons yy (cons xx nil))))
 
-(defmacro |EnvLevel|	(x)   `(car ,x))
-(defmacro |EnvNext|	(x)   `(cadr ,x))
-(defmacro |EnvInfo|	(x)   `(if (and (consp ,x) (consp (cdr ,x)))
-				   (cddr ,x) nil))
-(defmacro |SetEnvInfo|	(x val)   `(rplacd (cdr  ,x) ,val))
+(defmacro |EnvLevel|    (x)   `(car ,x))
+(defmacro |EnvNext|     (x)   `(cadr ,x))
+(defmacro |EnvInfo|     (x)   `(if (and (consp ,x) (consp (cdr ,x)))
+                                   (cddr ,x) nil))
+(defmacro |SetEnvInfo|  (x val)   `(rplacd (cdr  ,x) ,val))
 
 #+:CCL
 (defmacro |FoamEnvEnsure| (e) 
@@ -601,32 +571,32 @@ provides support for compiler code.
 
 (defun insert-types (slots)
   (mapcar #'(lambda (slot)
-	      `(,(car slot) ,(type2init (cadr slot))
-		:type ,(cadr slot)))
-	  slots))
+              `(,(car slot) ,(type2init (cadr slot))
+                :type ,(cadr slot)))
+          slots))
 
 (defmacro |RNew| (name)
   (let* ((struct-args (get name 'struct-args))
-	 (init-args (mapcar #'(lambda (x) (type2init (cadr x)))
-			    struct-args))
-	 (count (length struct-args)))
+         (init-args (mapcar #'(lambda (x) (type2init (cadr x)))
+                            struct-args))
+         (count (length struct-args)))
     (cond ((> count 2) `(vector ,@init-args))
-	  ((= count 2) `(cons ,@init-args))
-	  (t `(list ,@init-args)))))
+          ((= count 2) `(cons ,@init-args))
+          (t `(list ,@init-args)))))
 
 (defmacro |RElt| (name field index rec)
   (let ((count (length (get name 'struct-args))))
     (cond ((> count 2) `(svref ,rec ,index))
-	  ((= count 2)
-	   (if (zerop index) `(car ,rec) `(cdr ,rec)))
-	  (t `(car ,rec)))))
+          ((= count 2)
+           (if (zerop index) `(car ,rec) `(cdr ,rec)))
+          (t `(car ,rec)))))
 
 (defmacro |SetRElt| (name field index rec val)
   (let ((count (length (get name 'struct-args))))
     (cond ((> count 2) `(setf (svref ,rec ,index) ,val))
-	  ((= count 2)
-	   (if (zerop index) `(rplaca ,rec ,val) `(rplacd ,rec ,val)))
-	  (t `(rplaca ,rec ,val)))))
+          ((= count 2)
+           (if (zerop index) `(rplaca ,rec ,val) `(rplacd ,rec ,val)))
+          (t `(rplaca ,rec ,val)))))
 
 (defmacro |AElt| (name index)
   `(aref ,name ,index))
@@ -651,25 +621,25 @@ provides support for compiler code.
 
 (defmacro |SetLex| (accessor n var val)
   `(progn ;; (print ',accessor)
-	  (setf (,accessor ,var) ,val)))
+          (setf (,accessor ,var) ,val)))
 
 ;; Atomic arguments for fun don't need a let to hold the fun.
 ;; CCall's with arguments need a let to hold the prog and the env.
 (defmacro |CCall| (fun &rest args)
   (cond ((and (atom fun) (null args))
-	 `(funcall (|FunProg| (|ClosFun| ,fun)) (|ClosEnv| ,fun)))
-	((null args)
-	 `(let ((c ,fun))
-	    (funcall (|FunProg| (|ClosFun| c)) (|ClosEnv| c))))
-	((atom fun)
-	 `(let ((fun (|FunProg| (|ClosFun| ,fun)))
-		(env (|ClosEnv| ,fun)))
-	    (funcall fun ,@args env)))
-	(t
-	 `(let ((c ,fun))
-	    (let ((fun (|FunProg| (|ClosFun| c)))
-		  (env (|ClosEnv| c)))
-	      (funcall fun ,@args env))))))
+         `(funcall (|FunProg| (|ClosFun| ,fun)) (|ClosEnv| ,fun)))
+        ((null args)
+         `(let ((c ,fun))
+            (funcall (|FunProg| (|ClosFun| c)) (|ClosEnv| c))))
+        ((atom fun)
+         `(let ((fun (|FunProg| (|ClosFun| ,fun)))
+                (env (|ClosEnv| ,fun)))
+            (funcall fun ,@args env)))
+        (t
+         `(let ((c ,fun))
+            (let ((fun (|FunProg| (|ClosFun| c)))
+                  (env (|ClosEnv| c)))
+              (funcall fun ,@args env))))))
 
 (defmacro |FoamFree| (o) '())
 
@@ -683,8 +653,8 @@ provides support for compiler code.
 
 (defmacro defprog (type temps &rest body)
   `(progn (defun ,(caar type) ,(mapcar #'car (cadr type))
-	    (typed-let ,temps ,@body))
-	  (alloc-prog-info #',(caar type) (make-FoamProgInfoStruct))))
+            (typed-let ,temps ,@body))
+          (alloc-prog-info #',(caar type) (make-FoamProgInfoStruct))))
 
 (defmacro defspecials (&rest lst)
   `(proclaim '(special ,@lst)))
@@ -701,17 +671,17 @@ provides support for compiler code.
 #-:CCL
 (defmacro typed-let (letvars &rest forms)
   `(let ,(mapcar #'(lambda (var)
-		     (list (car var) (type2init (cadr var))))
-		 letvars )
+                     (list (car var) (type2init (cadr var))))
+                 letvars )
      (declare ,@(mapcar #'(lambda (var)
-			    (list 'type (cadr var) (car var)))
-			letvars))
+                            (list 'type (cadr var) (car var)))
+                        letvars))
      ,@forms))
 
 #+:CCL
 (defmacro typed-let (letvars &rest forms)
   `(let ,(mapcar #'(lambda (var) (car var))
-		 letvars )
+                 letvars )
      ,@forms))
 
 (defmacro cases (&rest junk)
@@ -721,15 +691,15 @@ provides support for compiler code.
 ;;; Boot macros
 (defmacro file-exports (lst)
   `(eval-when (load eval)
-	      (when (fboundp 'process-export-entry)
-		    (mapcar #'process-export-entry ,lst))
-	nil))
+              (when (fboundp 'process-export-entry)
+                    (mapcar #'process-export-entry ,lst))
+        nil))
 
 (defmacro file-imports (lst)
   `(eval-when (load eval)
-	      (when (fboundp 'process-import-entry)
-		    (mapcar #'process-import-entry ,lst))
-	nil))
+              (when (fboundp 'process-import-entry)
+                    (mapcar #'process-import-entry ,lst))
+        nil))
 
 (defmacro ignore-var (var)
   `(declare (ignore ,var)))
@@ -738,8 +708,8 @@ provides support for compiler code.
   (if (eq type '|Char|)
       `(make-string ,size)
       `(make-array ,size
-	       :element-type ',type
-	       :initial-element ,(type2init type))))
+               :element-type ',type
+               :initial-element ,(type2init type))))
 
 #-:CCL
 (defun type2init (x)
@@ -777,9 +747,9 @@ provides support for compiler code.
 ;needs to stop when it gets a null character
 (defun |strLength| (s)
   (dotimes (i (length s))
-	   (let ((c (schar s i)))
-	     (if (char= c |CharCode0|)
-		 (return i))))
+           (let ((c (schar s i)))
+             (if (char= c |CharCode0|)
+                 (return i))))
   (length s))
 
 (defun |formatSInt| (n) (format nil "~D" n))
@@ -795,10 +765,10 @@ provides support for compiler code.
 ;needs to stop when it gets a null character
 (defun |printString| (cs s)
   (dotimes (i (length s))
-	   (let ((c (schar s i)))
-	     (if (char= c |CharCode0|)
-		 (return i)
-	       (princ c cs)))))
+           (let ((c (schar s i)))
+             (if (char= c |CharCode0|)
+                 (return i)
+               (princ c cs)))))
 
 (defun |printSInt| (cs n) (format cs "~D" n))
 (defun |printBInt| (cs n) (format cs "~D" n))
@@ -819,46 +789,46 @@ provides support for compiler code.
 ;; the given input stream
 (defun |fgetss| (s i1 i2 f)
   (labels ((aux (n)
-		(if (= n i2)
-		    (progn (setf (schar s n) (code-char 0))
-			   (- n i1))
-		  (let ((c (read-char f)))
-		    (setf (schar s n) c)
-		    (if (equal c #\newline)
-			(progn (setf (char s (+ n 1)) (code-char 0))
-			       (- n i1))
-		      (aux (+ n 1)))))))
-	  (aux i1)))
-		
+                (if (= n i2)
+                    (progn (setf (schar s n) (code-char 0))
+                           (- n i1))
+                  (let ((c (read-char f)))
+                    (setf (schar s n) c)
+                    (if (equal c #\newline)
+                        (progn (setf (char s (+ n 1)) (code-char 0))
+                               (- n i1))
+                      (aux (+ n 1)))))))
+          (aux i1)))
+                
 ;; write s[i1..i2) to the output stream f
 ;; stop on any null characters
 
 (defun |fputss| (s i1 i2 f)
   (labels ((aux (n)
-		(if (= n i2) (- n i1)
-		  (let ((c (schar s n)))
-		    (if  (equal (code-char 0) c)
-			 (- n i1)
-		      (progn (princ c f)	
-			     (aux (+ n 1))))))))
-	  (setq i2 (if (minusp i2) (|strLength| s)
-		     (min i2 (|strLength| s))))
-	  (aux i1)))
+                (if (= n i2) (- n i1)
+                  (let ((c (schar s n)))
+                    (if  (equal (code-char 0) c)
+                         (- n i1)
+                      (progn (princ c f)        
+                             (aux (+ n 1))))))))
+          (setq i2 (if (minusp i2) (|strLength| s)
+                     (min i2 (|strLength| s))))
+          (aux i1)))
 
 ;; function for compiling and loading from lisp
 
 (defun compile-as-file (file &optional (opts nil))
   (let* ((path (pathname file))
-	 (name (pathname-name path))
-	 (dir (pathname-directory path))
-	 (type (pathname-type path))
-	 (lpath (make-pathname :name name :type "l"))
-	 (cpath (make-pathname :name name :type "o")))
+         (name (pathname-name path))
+         (dir (pathname-directory path))
+         (type (pathname-type path))
+         (lpath (make-pathname :name name :type "l"))
+         (cpath (make-pathname :name name :type "o")))
     (if (null type)
-	(setq path (make-pathname :directory dir :name name :type "as")))
+        (setq path (make-pathname :directory dir :name name :type "as")))
     (if opts
-	(system (format nil "axiomxl ~A -Flsp ~A" opts (namestring path)))
-	(system (format nil "axiomxl -Flsp ~A" (namestring path))))
+        (system (format nil "axiomxl ~A -Flsp ~A" opts (namestring path)))
+        (system (format nil "axiomxl -Flsp ~A" (namestring path))))
     (compile-file (namestring lpath))
     (load (namestring cpath))))
 
@@ -895,10 +865,10 @@ provides support for compiler code.
 
 (defun |Halt| (n) 
   (error (cond ((= n 101) "System Error: Unfortunate use of dependant type")
-	       ((= n 102) "User error: Reached a 'never'")
-	       ((= n 103) "User error: Bad union branch")
-	       ((= n 104) "User error: Assertion failed")
-	       (t (format nil "Unknown halt condition ~a" n)))))
+               ((= n 102) "User error: Reached a 'never'")
+               ((= n 103) "User error: Bad union branch")
+               ((= n 104) "User error: Assertion failed")
+               (t (format nil "Unknown halt condition ~a" n)))))
 ;; debuging
 (defvar *foam-debug-var* nil)
 (defun |fiGetDebugVar| () *foam-debug-var*)
@@ -937,9 +907,3 @@ provides support for compiler code.
        ( (|politicallySound| (car u) (car v)) (|magicEq1| (cdr u) (cdr v)))
        nil ))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

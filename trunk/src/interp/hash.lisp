@@ -1,21 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/hash.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -46,16 +31,13 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 (IMPORT-MODULE "vmlisp")
 (in-package "BOOT")
 
 (export '(MAKE-HASHTABLE HGET HKEYS HCOUNT HPUT HPUT* HREM HCLEAR HREMPROP
           HASHEQ HASHUEQUAL HASHCVEC HASHID HASHTABLEP CVEC UEQUAL ID HPUTPROP
-	  HASHTABLE-CLASS))
+          HASHTABLE-CLASS))
 
 ;17.0 Operations on Hashtables
 ;17.1 Creation
@@ -63,12 +45,12 @@
 (defun MAKE-HASHTABLE (id1 &optional (id2 nil))
  (declare (ignore id2))
    (let ((test (case id1
-		     ((EQ ID) #'eq)
-		     (CVEC #'equal)
-		     (EQL #'eql)
-		     #+Lucid ((UEQUAL EQUALP) #'EQUALP)
-		     #-Lucid ((UEQUAL EQUAL) #'equal)
-		     (otherwise (error "bad arg to make-hashtable")))))     
+                     ((EQ ID) #'eq)
+                     (CVEC #'equal)
+                     (EQL #'eql)
+                     #+Lucid ((UEQUAL EQUALP) #'EQUALP)
+                     #-Lucid ((UEQUAL EQUAL) #'equal)
+                     (otherwise (error "bad arg to make-hashtable")))))     
       (make-hash-table :test test)))
 
 ;17.2 Accessing
@@ -95,18 +77,18 @@
 #+AKCL
 (defun HASHTABLE-CLASS (table)
   (case (memory-value-short table 12)
-	(0 'EQ)
-	(1 'EQL)
-	(2 'EQUAL)
-	(t "error unknown hash table class")))
+        (0 'EQ)
+        (1 'EQL)
+        (2 'EQUAL)
+        (t "error unknown hash table class")))
 
 #+:CCL
 (defun HASHTABLE-CLASS (table)
   (case (hashtable-flavour table)
-	(0 'EQ)
-	(1 'EQL)
-	(2 'EQUAL)
-	(t (format nil "error unknown hash table class ~a" (hashtable-flavour table)))))
+        (0 'EQ)
+        (1 'EQL)
+        (2 'EQUAL)
+        (t (format nil "error unknown hash table class ~a" (hashtable-flavour table)))))
 
 (define-function 'HCOUNT #'hash-table-count)
 
@@ -139,9 +121,3 @@
 (define-function 'HASHCVEC #'sxhash)
 
 (define-function 'HASHID #'sxhash)
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

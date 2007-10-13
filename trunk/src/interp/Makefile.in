@@ -21,29 +21,11 @@ LISPSYS= $(axiom_build_bindir)/lisp
 BOOTSYS= $(axiom_build_bindir)/bootsys    
 
 DEPSYS = ./depsys
-depsys_lisp_compiled_sources += parsing.lisp metalex.lisp bootlex.lisp \
-	newaux.lisp preparse.lisp postprop.lisp def.lisp \
-	fnewmeta.lisp
-
-depsys_lisp_sources = $(depsys_lisp_noncompiled_sources) \
-			$(depsys_lisp_compiled_sources)
-
-depsys_boot_sources = postpar.boot parse.boot clam.boot slam.boot \
-	g-boot.boot g-error.boot c-util.boot g-util.boot
-DEP=	spaderror.lisp	debug.lisp	\
-	spad.lisp	\
-	setq.lisp	property.lisp	\
-	unlisp.lisp     foam_l.lisp      \
-	axext_l.lisp
-
-depsys_lisp_macro_sources = vmlisp.lisp ggreater.lisp hash.lisp \
-	union.lisp nlib.lisp macros.lisp	\
-	comp.lisp spaderror.lisp debug.lisp \
-	spad.lisp bits.lisp setq.lisp property.lisp \
-	unlisp.lisp foam_l.lisp axext_l.lisp
-
-depsys_lisp_noncompiled_sources += $(depsys_lisp_macro_sources)
-depsys_lisp_SOURCES = $(addsuffix .pamphlet, $(depsys_lisp_sources))
+DEP=	$(srcdir)/spaderror.lisp	$(srcdir)/debug.lisp	\
+	$(srcdir)/spad.lisp	\
+	$(srcdir)/setq.lisp	$(srcdir)/property.lisp	\
+	$(srcdir)/unlisp.lisp     $(srcdir)/foam_l.lisp      \
+	$(srcdir)/axext_l.lisp
 LOADSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
 SAVESYS= interpsys$(EXEEXT)
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
@@ -108,36 +90,6 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	$(BROBJS)
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
-
-AXIOMsys_noncompiled_lisp_sources = nocompil.lisp \
-	postprop.lisp property.lisp setq.lisp 
-
-AXIOMsys_compiled_lisp_sources = bits.lisp \
-	bootlex.lisp cfuns.lisp comp.lisp construc.lisp daase.lisp \
-	debug.lisp def.lisp fname.lisp fnewmeta.lisp ggreater.lisp \
-	hash.lisp macros.lisp metalex.lisp monitor.lisp newaux.lisp \
-	nlib.lisp nspadaux.lisp parsing.lisp \
-	patches.lisp preparse.lisp \
-	sockio.lisp spad.lisp spaderror.lisp \
-	union.lisp util.lisp vmlisp.lisp obey.lisp \
-	unlisp.lisp intint.lisp sfsfun-l.lisp \
-	axext_l.lisp foam_l.lisp
-
-AXIOMsys_boot_sources = astr.boot alql.boot buildom.boot cattable.boot \
-	cformat.boot clam.boot clammed.boot compat.boot compress.boot \
-	cparse.boot cstream.boot database.boot dq.boot format.boot \
-	g-boot.boot g-cndata.boot g-error.boot g-opt.boot g-timer.boot \
-	g-util.boot hypertex.boot i-analy.boot i-code.boot i-coerce.boot \
-	i-coerfn.boot i-eval.boot i-funsel.boot i-intern.boot i-map.boot \
-	i-output.boot i-resolv.boot i-spec1.boot i-spec2.boot \
-	i-syscmd.boot i-toplev.boot i-util.boot incl.boot int-top.boot \
-	intfile.boot lisplib.boot macex.boot match.boot msg.boot \
-	msgdb.boot newfort.boot nrunfast.boot nrungo.boot nrunopt.boot \
-	nruntime.boot osyscmd.boot packtran.boot pathname.boot \
-	pf2sex.boot pile.boot posit.boot ptrees.boot \
-	record.boot rulesets.boot scan.boot serror.boot server.boot \
-	setvars.boot sfsfun.boot simpbool.boot slam.boot template.boot \
-	termrw.boot trace.boot fortcall.boot
 INOBJS=	varini.$(FASLEXT)	\
 	setvart.$(FASLEXT)	intint.$(FASLEXT)	\
         xrun.$(FASLEXT)        interop.$(FASLEXT)     \

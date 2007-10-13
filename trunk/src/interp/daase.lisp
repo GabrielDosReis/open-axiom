@@ -1,84 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp daase.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{Database structure}
-In order to understand this program you need to understand some details
-of the structure of the databases it reads. Axiom has 5 databases,
-the interp.daase, operation.daase, category.daase, compress.daase, and
-browse.daase. The compress.daase is special and does not follow the
-normal database format.
-
-\subsection{KAF File Format}
-This documentation refers to KAF files which are random access files.
-NRLIB files are KAF files (look for NRLIB/index.KAF)
-The format of a random access file is
-\begin{verbatim}
-byte-offset-of-key-table
-first-entry
-second-entry
-...
-last-entry
-((key1 . first-entry-byte-address)
- (key2 . second-entry-byte-address)
- ...
- (keyN . last-entry-byte-address))
-\end{verbatim}
-The key table is a standard lisp alist.
-
-To open a database you fetch the first number, seek to that location,
-and (read) which returns the key-data alist. To look up data you
-index into the key-data alist, find the ith-entry-byte-address,
-seek to that address, and (read).
-
-For instance, see src/share/algebra/USERS.DAASE/index.KAF
-
-One existing optimization is that if the data is a simple thing like a
-symbol then the nth-entry-byte-address is replaced by immediate data.
-
-Another existing one is a compression algorithm applied to the
-data so that the very long names don't take up so much space.
-We could probably remove the compression algorithm as 64k is no
-longer considered 'huge'. The database-abbreviation routine
-handles this on read and write-compress handles this on write.
-The squeeze routine is used to compress the keys, the unsqueeze
-routine uncompresses them. Making these two routines disappear
-should remove all of the compression.
-
-Indeed, a faster optimization is to simply read the whole database
-into the image before it is saved. The system would be easier to
-understand and the interpreter would be faster.
-
-The system uses another optimization: database contains a stamp
-(consisting of offset to the main list and build time).  Before
-saving the image selected data is fetched to memory.  When the
-saved image starts it checks if the stamp of saved data matches
-in-core data -- in case of agreement in-core data is used.
-Parts of the datatabase which was not pre-loaded is still
-(lazily) fetched from the filesystem.
-
-\subsection{Database Files}
-
-Database files are very similar to KAF files except that there
-is an optimization (currently broken) which makes the first
-item a pair of two numbers. The first number in the pair is
-the offset of the key-value table, the second is a time stamp.
-If the time stamp in the database matches the time stamp in
-the image the database is not needed (since the internal hash
-tables already contain all of the information). When the database
-is built the time stamp is saved in both the gcl image and the
-database.
-
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -109,9 +31,70 @@ database.
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+
+;; In order to understand this program you need to understand some details
+;; of the structure of the databases it reads. Axiom has 5 databases,
+;; the interp.daase, operation.daase, category.daase, compress.daase, and
+;; browse.daase. The compress.daase is special and does not follow the
+;; normal database format.
+;;
+;; This documentation refers to KAF files which are random access files.
+;; NRLIB files are KAF files (look for NRLIB/index.KAF)
+;; The format of a random access file is
+;; \begin{verbatim}
+;; byte-offset-of-key-table
+;; first-entry
+;; second-entry
+;; ...
+;; last-entry
+;; ((key1 . first-entry-byte-address)
+;;  (key2 . second-entry-byte-address)
+;;  ...
+;;  (keyN . last-entry-byte-address))
+;; \end{verbatim}
+;; The key table is a standard lisp alist.
+;;
+;; To open a database you fetch the first number, seek to that location,
+;; and (read) which returns the key-data alist. To look up data you
+;; index into the key-data alist, find the ith-entry-byte-address,
+;; seek to that address, and (read).
+;;
+;; For instance, see src/share/algebra/USERS.DAASE/index.KAF
+;;
+;; One existing optimization is that if the data is a simple thing like a
+;; symbol then the nth-entry-byte-address is replaced by immediate data.
+;;
+;; Another existing one is a compression algorithm applied to the
+;; data so that the very long names don't take up so much space.
+;; We could probably remove the compression algorithm as 64k is no
+;; longer considered 'huge'. The database-abbreviation routine
+;; handles this on read and write-compress handles this on write.
+;; The squeeze routine is used to compress the keys, the unsqueeze
+;; routine uncompresses them. Making these two routines disappear
+;; should remove all of the compression.
+;;
+;; Indeed, a faster optimization is to simply read the whole database
+;; into the image before it is saved. The system would be easier to
+;; understand and the interpreter would be faster.
+;;
+;; The system uses another optimization: database contains a stamp
+;; (consisting of offset to the main list and build time).  Before
+;; saving the image selected data is fetched to memory.  When the
+;; saved image starts it checks if the stamp of saved data matches
+;; in-core data -- in case of agreement in-core data is used.
+;; Parts of the datatabase which was not pre-loaded is still
+;; (lazily) fetched from the filesystem.
+;;
+;; Database files are very similar to KAF files except that there
+;; is an optimization (currently broken) which makes the first
+;; item a pair of two numbers. The first number in the pair is
+;; the offset of the key-value table, the second is a time stamp.
+;; If the time stamp in the database matches the time stamp in
+;; the image the database is not needed (since the internal hash
+;; tables already contain all of the information). When the database
+;; is built the time stamp is saved in both the gcl image and the
+;; database.
+
 
 ;;TTT 7/2/97
 ; Regarding the 'ancestors field for a category: At database build
@@ -438,17 +421,17 @@ database.
 ;  (constructor-name
 ;    operationalist
 ;    constructormodemap
-;    modemaps		 -- this should not be needed. eliminate it.
-;    object		 -- the name of the object file to load for this con.
+;    modemaps            -- this should not be needed. eliminate it.
+;    object              -- the name of the object file to load for this con.
 ;    constructorcategory -- note that this info is the cadar of the
-;	  constructormodemap for domains and packages so it is stored
-;	  as NIL for them. it is valid for categories.
-;    niladic		 -- t or nil directly
+;         constructormodemap for domains and packages so it is stored
+;         as NIL for them. it is valid for categories.
+;    niladic             -- t or nil directly
 ;    unused
-;    cosig		 -- kept directly
-;    constructorkind	 -- kept directly
-;    defaultdomain	 -- a short list, for %i
-;    ancestors		 -- used to compute new category updates
+;    cosig               -- kept directly
+;    constructorkind     -- kept directly
+;    defaultdomain       -- a short list, for %i
+;    ancestors           -- used to compute new category updates
 ;  )
 (defun interpOpen ()
  "open the interpreter database and hash the keys"
@@ -759,7 +742,7 @@ database.
     (when (setq struct (get constructor 'database))
      (setq data (database-dependents struct))))
    (otherwise  (warn "~%(GETDATABASE ~a ~a) failed~%" constructor key)))
-  (when (numberp data)		       ;fetch the real data
+  (when (numberp data)                 ;fetch the real data
    (when *miss* (format t "getdatabase miss: ~20a ~a~%" key constructor))
    (file-position stream data)
    (setq data (unsqueeze (read stream)))
@@ -788,19 +771,19 @@ database.
    (case key ; fixup the special cases
     (sourcefile
      (when (and data (string= (directory-namestring data) "")
-	     (string= (pathname-type data) "spad"))
+             (string= (pathname-type data) "spad"))
       (setq data
        (concatenate 'string (|systemRootDirectory|) "/../../src/algebra/" data))))
     (asharp?                               ; is this asharp code?
      (if (consp data)
       (setq data (cdr data))
       (setq data nil)))
-    (object				   ; fix up system object pathname
+    (object                                ; fix up system object pathname
      (if (consp data)
        (setq data
-	     (if (string= (directory-namestring (car data)) "")
-		 (concatenate 'string (|systemRootDirectory|) "/algebra/" (car data) ".o")
-	       (car data)))
+             (if (string= (directory-namestring (car data)) "")
+                 (concatenate 'string (|systemRootDirectory|) "/algebra/" (car data) ".o")
+               (car data)))
       (when (and data (string= (directory-namestring data) ""))
        (setq data (concatenate 'string (|systemRootDirectory|) "/algebra/" data ".o")))))))
   data))
@@ -892,14 +875,14 @@ database.
      (mapcan #'(lambda (f)
       (when (string-equal (pathname-type f) "NRLIB")
        (list (concatenate 'string (namestring f) "/"
-			  *index-filename*)))) allfiles)
+                          *index-filename*)))) allfiles)
      (mapcan #'(lambda (f)
       (when (string= (pathname-type f) "asy")
        (push (pathname-name f) skipasos)
        (list (namestring f)))) allfiles)
      (mapcan #'(lambda (f)
       (when (and (string= (pathname-type f) "ao")
-	     (not (member (pathname-name f) skipasos :test #'string=)))
+             (not (member (pathname-name f) skipasos :test #'string=)))
        (list (namestring f))))
      allfiles)
      ;; At the moment we will only look for user.lib: others are taken care
@@ -922,7 +905,7 @@ database.
   (when dir (multiple-value-setq (nrlibs asys asos libs) (processDir dir thisdir)))
   (dolist (file filelist)
    (let ((filename (pathname-name file))
-	 (namedir (directory-namestring file)))
+         (namedir (directory-namestring file)))
     (unless namedir (setq thisdir (concatenate 'string thisdir "/")))
     (cond
      ((setq file (probe-file
@@ -970,19 +953,19 @@ database.
      (setq key (first domain))
      (setq alist (rest domain))
      (setq asharp-name
-	   (foam::axiomxl-global-name (pathname-name object) key
-				     (lassoc '|typeCode| alist)))
+           (foam::axiomxl-global-name (pathname-name object) key
+                                     (lassoc '|typeCode| alist)))
      (if (< (length alist) 4) ;we have a naked function object
-	 (let ((opname key)
-	       (modemap (car (LASSOC '|modemaps| alist))) )
-	   (setq oldmaps (getdatabase opname 'operation))
-	   (setf (gethash opname *operation-hash*)
-		 (adjoin (subst asharp-name opname (cdr modemap))
-			 oldmaps :test #'equal))
-	   (asharpMkAutoloadFunction object asharp-name))
+         (let ((opname key)
+               (modemap (car (LASSOC '|modemaps| alist))) )
+           (setq oldmaps (getdatabase opname 'operation))
+           (setf (gethash opname *operation-hash*)
+                 (adjoin (subst asharp-name opname (cdr modemap))
+                         oldmaps :test #'equal))
+           (asharpMkAutoloadFunction object asharp-name))
        (when (if (null only) (not (eq key '%%)) (member key only))
-	(setq *allOperations* nil)	  ; force this to recompute
-	(setq oldmaps (getdatabase key 'modemaps))
+        (setq *allOperations* nil)        ; force this to recompute
+        (setq oldmaps (getdatabase key 'modemaps))
         (setq dbstruct (make-database))
         (setf (get key 'database) dbstruct)
         (setq *allconstructors* (adjoin key *allconstructors*))
@@ -993,10 +976,10 @@ database.
         (setf (database-constructormodemap dbstruct)
          (fetchdata alist "constructorModemap"))
         (unless (setf (database-abbreviation dbstruct)
-		      (fetchdata alist "abbreviation"))
-		(setf (database-abbreviation dbstruct) key)) ; default
-	(setq abbrev (database-abbreviation dbstruct))
-	(setf (get abbrev 'abbreviationfor) key)
+                      (fetchdata alist "abbreviation"))
+                (setf (database-abbreviation dbstruct) key)) ; default
+        (setq abbrev (database-abbreviation dbstruct))
+        (setf (get abbrev 'abbreviationfor) key)
         (setf (database-constructorcategory dbstruct)
          (fetchdata alist "constructorCategory"))
         (setf (database-attributes dbstruct)
@@ -1013,23 +996,23 @@ database.
          (fetchdata alist "predicates"))
         (setf (database-niladic dbstruct)
          (fetchdata alist "NILADIC"))
-	(addoperations key oldmaps)
-	(setq cname  (|opOf| (database-constructorform dbstruct)))
-	(setq kind (database-constructorkind dbstruct))
-	(if (null noexpose) (|setExposeAddConstr| (cons cname nil)))
-	(unless make-database?
+        (addoperations key oldmaps)
+        (setq cname  (|opOf| (database-constructorform dbstruct)))
+        (setq kind (database-constructorkind dbstruct))
+        (if (null noexpose) (|setExposeAddConstr| (cons cname nil)))
+        (unless make-database?
          (|updateDatabase| key cname systemdir?) ;makes many hashtables???
          (|installConstructor| cname kind)
           ;; following can break category database build
-	 (if (eq kind '|category|)
-	     (setf (database-ancestors dbstruct)
-		   (fetchdata alist "ancestors")))
-	 (if (eq kind '|domain|)
-	     (dolist (pair (cdr (assoc "ancestors" alist :test #'string=)))
-		     (setf (gethash (cons cname (caar pair)) *hascategory-hash*)
-			   (cdr pair))))
-	 (if |$InteractiveMode| (setq |$CategoryFrame| |$EmptyEnvironment|)))
-	(setf (database-cosig dbstruct)
+         (if (eq kind '|category|)
+             (setf (database-ancestors dbstruct)
+                   (fetchdata alist "ancestors")))
+         (if (eq kind '|domain|)
+             (dolist (pair (cdr (assoc "ancestors" alist :test #'string=)))
+                     (setf (gethash (cons cname (caar pair)) *hascategory-hash*)
+                           (cdr pair))))
+         (if |$InteractiveMode| (setq |$CategoryFrame| |$EmptyEnvironment|)))
+        (setf (database-cosig dbstruct)
          (cons nil (mapcar #'|categoryForm?|
           (cddar (database-constructormodemap dbstruct)))))
         (setf (database-object dbstruct) (cons object asharp-name))
@@ -1038,7 +1021,7 @@ database.
           (database-cosig dbstruct))
          (asharpMkAutoLoadFunctor object cname asharp-name
           (database-cosig dbstruct)))
-	(|sayKeyedMsg| 'S2IU0001 (list cname object))))))))
+        (|sayKeyedMsg| 'S2IU0001 (list cname object))))))))
 
 (defun localnrlib (key nrlib object make-database? noexpose)
  "given a string pathname of an index.KAF and the object update the database"
@@ -1062,7 +1045,7 @@ database.
    (setq *allconstructors* (adjoin key *allconstructors*))
    (setf (get key 'database) dbstruct) ; store the struct, side-effect it...
    (setf (database-constructorform dbstruct) constructorform)
-   (setq *allOperations* nil)	; force this to recompute
+   (setq *allOperations* nil)   ; force this to recompute
    (setf (database-object dbstruct) object)
    (setq abbrev
      (intern (pathname-name (first (last (pathname-directory object))))))
@@ -1094,7 +1077,7 @@ database.
   (unless make-database?
    (if (eq kind '|category|)
        (setf (database-ancestors dbstruct)
-	     (SUBLISLIS |$FormalMapVariableList| (cdr constructorform) (fetchdata alist in "ancestors"))))
+             (SUBLISLIS |$FormalMapVariableList| (cdr constructorform) (fetchdata alist in "ancestors"))))
    (|updateDatabase| key key systemdir?) ;makes many hashtables???
    (|installConstructor| key kind) ;used to be key cname ...
    (|updateCategoryTable| key kind)
@@ -1183,12 +1166,12 @@ database.
      (list (list '|dir| (namestring (truename "./")) ))
      'make-database)
   (dolist (dir dirlist)
-	  (localdatabase nil 
-			 (list (list '|dir| 
-				     (namestring (probe-file 
-						  (format nil "./~a" 
-							  dir)))))
-			 'make-database))
+          (localdatabase nil 
+                         (list (list '|dir| 
+                                     (namestring (probe-file 
+                                                  (format nil "./~a" 
+                                                          dir)))))
+                         'make-database))
 #+:AKCL    (|mkTopicHashTable|)
   (setq |$constructorList| nil) ;; affects buildLibdb
   (|buildLibdb|)
@@ -1209,37 +1192,37 @@ database.
   (dolist (con (|allConstructors|))
    (let (dbstruct)
      (when (setq dbstruct (get con 'database))
-	   (setf (database-cosig dbstruct)
-		 (cons nil (mapcar #'|categoryForm?|
-				   (cddar (database-constructormodemap dbstruct)))))
-	   (when (and (|categoryForm?| con)
-		      (= (length (setq d (|domainsOf| (list con) NIL NIL))) 1))
-		 (setq d (caar d))
-		 (when (= (length d) (length (|getConstructorForm| con)))
-		       (format t "   ~a has a default domain of ~a~%" con (car d))
-		       (setf (database-defaultdomain dbstruct) (car d)))))))
-					; note: genCategoryTable creates *ancestors-hash*. write-interpdb
-					; does gethash calls into it rather than doing a getdatabase call.
+           (setf (database-cosig dbstruct)
+                 (cons nil (mapcar #'|categoryForm?|
+                                   (cddar (database-constructormodemap dbstruct)))))
+           (when (and (|categoryForm?| con)
+                      (= (length (setq d (|domainsOf| (list con) NIL NIL))) 1))
+                 (setq d (caar d))
+                 (when (= (length d) (length (|getConstructorForm| con)))
+                       (format t "   ~a has a default domain of ~a~%" con (car d))
+                       (setf (database-defaultdomain dbstruct) (car d)))))))
+                                        ; note: genCategoryTable creates *ancestors-hash*. write-interpdb
+                                        ; does gethash calls into it rather than doing a getdatabase call.
   (write-interpdb)
 #+:AKCL  (write-warmdata)
   (create-initializers)
   (when (probe-file (final-name "compress"))
-	(delete-file (final-name "compress")))
+        (delete-file (final-name "compress")))
   (rename-file "compress.build" (final-name "compress"))
   (when (probe-file (final-name "interp"))
-	(delete-file (final-name "interp")))
+        (delete-file (final-name "interp")))
   (rename-file "interp.build" (final-name "interp"))
   (when (probe-file (final-name "operation"))
-	(delete-file (final-name "operation")))
+        (delete-file (final-name "operation")))
   (rename-file "operation.build" (final-name "operation"))
   (when (probe-file (final-name "browse")) 
-	(delete-file (final-name "browse")))
+        (delete-file (final-name "browse")))
   (rename-file "browse.build" 
-	       (final-name "browse"))
+               (final-name "browse"))
   (when (probe-file (final-name "category"))
-	(delete-file (final-name "category")))
+        (delete-file (final-name "category")))
   (rename-file "category.build" 
-	       (final-name "category")))))
+               (final-name "category")))))
 
 (defun DaaseName (name erase?)
  (let (daase filename)
@@ -1248,9 +1231,9 @@ database.
     (setq filename  (concatenate 'string daase name))
     (format t "   Using local database ~a.." filename))
    (setq filename (concatenate 'string 
-			       (|systemRootDirectory|)
-			       "/algebra/"
-			       name)))
+                               (|systemRootDirectory|)
+                               "/algebra/"
+                               name)))
   (when erase? (system::system (concatenate 'string "rm -f " filename)))
   filename))
 
@@ -1266,16 +1249,6 @@ database.
 ;;  (when erase? (system::system (concatenate 'string "rm -f " filename)))
 ;;  filename))
 
-@
-\subsection{compress.daase}
-The compress database is special. It contains a list of symbols.
-The character string name of a symbol in the other databases is
-represented by a negative number. To get the real symbol back you
-take the absolute value of the number and use it as a byte index
-into the compress database. In this way long symbol names become
-short negative numbers.
-
-<<*>>=
 
 (defun compressOpen ()
  (let (lst stamp pos)
@@ -1300,7 +1273,7 @@ short negative numbers.
   (finish-output out)
   (setq masterpos (file-position out))
   (setq compresslist
-	(append (|allConstructors|) (|allOperations|) *attributes*))
+        (append (|allConstructors|) (|allOperations|) *attributes*))
   (push "algebra" compresslist)
   (push "failed" compresslist)
   (push 'signature compresslist)
@@ -1329,221 +1302,12 @@ short negative numbers.
   (finish-output out)
   (close out)))
 
-@
-\subsubsection{interp.daase} 
-\begin{verbatim}
- format of an entry in interp.daase:
-  (constructor-name
-    operationalist
-    constructormodemap
-    modemaps		 -- this should not be needed. eliminate it.
-    object		 -- the name of the object file to load for this con.
-    constructorcategory -- note that this info is the cadar of the
-	  constructormodemap for domains and packages so it is stored
-	  as NIL for them. it is valid for categories.
-    niladic		 -- t or nil directly
-    unused
-    cosig		 -- kept directly
-    constructorkind	 -- kept directly
-    defaultdomain	 -- a short list, for %i
-    ancestors		 -- used to compute new category updates
-  )
-\end{verbatim}
-
-Here I'll try to outline the interp database write procedure
-
-\begin{verbatim}
 (defun write-interpdb ()
  "build interp.daase from hash tables"
  (declare (special *ancestors-hash*))
  (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
-	concategory categorypos kind niladic cosig abbrev defaultdomain
-	ancestors ancestorspos out)
-  (declare (special *print-pretty*))
-  (print "building interp.daase")
-
-; 1. We open the file we're going to create
-
-  (setq out (open "interp.build" :direction :output))
-
-; 2. We reserve some space at the top of the file for the key-time pair
-;    We will overwrite these spaces just before we close the file.
-
-  (princ "                              " out)
-
-; 3. Make sure we write it out
-  (finish-output out)
-
-; 4. For every constructor in the system we write the parts:
-
-  (dolist (constructor (|allConstructors|))
-   (let (struct)
-
-; 4a. Each constructor has a property list. A property list is a list
-;     of (key . value) pairs. The property we want is called 'database
-;     so there is a ('database . something) in the property list
-
-    (setq struct (get constructor 'database))
-
-; 5 We write the "operationsalist"
-; 5a. We remember the current file position before we write
-;     We need this information so we can seek to this position on read
-
-    (setq opalistpos (file-position out))
-
-; 5b. We get the "operationalist", compress it, and write it out
-
-    (print (squeeze (database-operationalist struct)) out)
-
-; 5c. We make sure it was written
-
-    (finish-output out)
-
-; 6 We write the "constructormodemap"
-; 6a. We remember the current file position before we write
-
-    (setq cmodemappos (file-position out))
-
-; 6b. We get the "constructormodemap", compress it, and write it out
-
-    (print (squeeze (database-constructormodemap struct)) out)
-
-; 6c. We make sure it was written
-
-    (finish-output out)
-
-; 7. We write the "modemaps"
-; 7a. We remember the current file position before we write
-
-    (setq modemapspos (file-position out))
-
-; 7b. We get the "modemaps", compress it, and write it out
-
-    (print (squeeze (database-modemaps struct)) out)
-
-; 7c. We make sure it was written
-
-    (finish-output out)
-
-; 8. We remember source file pathnames in the obj variable
-
-    (if (consp (database-object struct)) ; if asharp code ...
-     (setq obj
-      (cons (pathname-name (car (database-object struct)))
-            (cdr (database-object struct))))
-     (setq obj
-      (pathname-name
-        (first (last (pathname-directory (database-object struct)))))))
-
-; 9. We write the "constructorcategory", if it is a category, else nil
-; 9a. Get the constructorcategory and compress it
-
-    (setq concategory (squeeze (database-constructorcategory struct)))
-
-; 9b. If we have any data we write it out, else we don't write it
-;     Note that if there is no data then the byte index for the
-;     constructorcatagory will not be a number but will be nil.
-
-    (if concategory  ; if category then write data else write nil
-     (progn
-      (setq categorypos (file-position out))
-      (print concategory out)
-      (finish-output out))
-     (setq categorypos nil))
-
-; 10. We get a set of properties which are kept as "immediate" data
-;     This means that the key table will hold this data directly
-;     rather than as a byte index into the file.
-; 10a. niladic data
-
-    (setq niladic (database-niladic struct))
-
-; 10b. abbreviation data (e.g. POLY for polynomial)
-
-    (setq abbrev (database-abbreviation struct))
-
-; 10c. cosig data
-
-    (setq cosig (database-cosig struct))
-
-; 10d. kind data
-
-    (setq kind (database-constructorkind struct))
-
-; 10e. defaultdomain data
-
-    (setq defaultdomain (database-defaultdomain struct))
-
-; 11. The ancestor data might exist. If it does we fetch it, 
-;     compress it, and write it out. If it does not we place
-;     and immediate value of nil in the key-value table
-
-    (setq ancestors (squeeze (gethash constructor *ancestors-hash*))) ;cattable.boot
-    (if ancestors
-     (progn
-      (setq ancestorspos (file-position out))
-      (print ancestors out)
-      (finish-output out))
-     (setq ancestorspos nil))
-
-; 12. "master" is an alist. Each element of the alist has the name of
-;     the constructor and all of the above attributes. When the loop
-;     finishes we will have constructed all of the data for the key-value
-;     table
-
-    (push (list constructor opalistpos cmodemappos modemapspos
-      obj categorypos niladic abbrev cosig kind defaultdomain
-      ancestorspos) master)))
-
-; 13. The loop is done, we make sure all of the data is written
-
-  (finish-output out)
-
-; 14. We remember where the key-value table will be written in the file
-
-  (setq masterpos (file-position out))
-
-; 15. We compress and print the key-value table
-
-  (print (mapcar #'squeeze master) out)
-
-; 16. We make sure we write the table
-
-  (finish-output out)
-
-; 17. We go to the top of the file
-
-  (file-position out 0)
-
-; 18. We write out the (master-byte-position . universal-time) pair
-;     Note that if the universal-time value matches the value of
-;     *interp-stream-stamp* then there is no reason to read the
-;     interp database because all of the data is already cached in
-;     the image. This happens if you build a database and immediatly
-;     save the image. The saved image already has the data since we
-;     just wrote it out. If the *interp-stream-stamp* and the database
-;     time stamp differ we "reread" the database on startup. Actually
-;     we just open the database and fetch as needed. You can see fetches
-;     by setting the *miss* variable non-nil.
-
-  (print (cons masterpos (get-universal-time)) out)
-
-; 19. We make sure we write it.
-
-  (finish-output out)
-
-; 20 And we are done
-
-  (close out)))
-\end{verbatim}
-
-<<*>>=
-(defun write-interpdb ()
- "build interp.daase from hash tables"
- (declare (special *ancestors-hash*))
- (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
-	concategory categorypos kind niladic cosig abbrev defaultdomain
-	ancestors ancestorspos out)
+        concategory categorypos kind niladic cosig abbrev defaultdomain
+        ancestors ancestorspos out)
   (declare (special *print-pretty*))
   (print "building interp.daase")
   (setq out (open "interp.build" :direction :output))
@@ -1599,29 +1363,6 @@ Here I'll try to outline the interp database write procedure
   (finish-output out)
   (close out)))
 
-@
-\subsubsection{browse.daase}
-\begin{verbatim}
- format of an entry in browse.daase:
- ( constructorname
-     sourcefile
-     constructorform
-     documentation
-     attributes
-     predicates
- )
-\end{verbatim}
-This is essentially the same overall process as write-interpdb.
-
-We reserve some space for the (key-table-byte-position . timestamp)
-
-We loop across the list of constructors dumping the data and
-remembering the byte positions in a key-value pair table.
-
-We dump the final key-value pair table, write the byte position and
-time stamp at the top of the file and close the file.
-
-<<*>>=
 (defun write-browsedb ()
  "make browse.daase from hash tables"
  (let (master masterpos src formpos docpos attpos predpos *print-pretty* out)
@@ -1657,11 +1398,6 @@ time stamp at the top of the file and close the file.
   (finish-output out)
   (close out)))
 
-@
-\subsubsection{category.daase}
-This is a single table of category hash table information, dumped in the 
-database format.
-<<*>>=
 (defun write-categorydb ()
  "make category.daase from scratch. contains the *hasCategory-hash* table"
  (let (out master pos *print-pretty*)
@@ -1690,12 +1426,12 @@ database format.
 
 (defun unsqueeze (expr)
   (cond ((atom expr)
-	 (cond ((and (numberp expr) (<= expr 0))
-		(svref *compressVector* (- expr)))
-	       (t expr)))
-	(t (rplaca expr (unsqueeze (car expr)))
-	   (rplacd expr (unsqueeze (cdr expr)))
-	   expr)))
+         (cond ((and (numberp expr) (<= expr 0))
+                (svref *compressVector* (- expr)))
+               (t expr)))
+        (t (rplaca expr (unsqueeze (car expr)))
+           (rplacd expr (unsqueeze (cdr expr)))
+           expr)))
 
 (defun squeeze (expr)
  (let (leaves pos (bound (length *compressvector*)))
@@ -1718,11 +1454,6 @@ database format.
      (nsubst (- pos) leaf expr)))
   expr)))
 
-@
-\subsubsection{operation.daase}
-This is a single table of operations hash table information, dumped in the 
-database format.
-<<*>>=
 (defun write-operationdb ()
  (let (pos master out)
   (declare (special leaves))
@@ -1772,8 +1503,8 @@ database format.
 ;; (dolist (con (|allConstructors|))
 ;;   (let ((sourcefile (getdatabase con 'sourcefile)))
 ;;     (if sourcefile
-;;	 (set (foam::axiomxl-file-init-name (pathname-name sourcefile))
-;;	       NOPfuncall))))
+;;       (set (foam::axiomxl-file-init-name (pathname-name sourcefile))
+;;             NOPfuncall))))
  (set (foam::axiomxl-file-init-name "axiom") NOPfuncall)
 ;; (set (foam::axiomxl-file-init-name "axclique") NOPfuncall)
  (set (foam::axiomxl-file-init-name "filecliq") NOPfuncall)
@@ -1814,8 +1545,8 @@ database format.
   (let ((ccc (gensym)) (cfun (gensym)) (cenv (gensym)))
     `(let ((,ccc ,fun))
        (let ((,cfun (|ClosFun| ,ccc))
-	     (,cenv (|ClosEnv| ,ccc)))
-	 (funcall ,cfun ,@args ,cenv )))))
+             (,cenv (|ClosEnv| ,ccc)))
+         (funcall ,cfun ,@args ,cenv )))))
 
 (defmacro |ClosFun| (x) `(car ,x))
 (defmacro |ClosEnv| (x) `(cdr ,x))
@@ -1845,7 +1576,7 @@ database format.
 
 (defun wrapDomArgs (obj type?)
   (cond ((not type?) obj)
-	(t (|makeOldAxiomDispatchDomain| obj))))
+        (t (|makeOldAxiomDispatchDomain| obj))))
 
 ;; CCL doesn't have closures, so we use an intermediate function in
 ;; asharpMkAutoLoadFunctor.
@@ -1921,15 +1652,15 @@ database format.
      (let ((func (getconstructor (eval (file-getter-name file)) asharp-name)))
       (setf (symbol-function packname)
        (if (vectorp (car func))
-	#'(lambda (self)
-	    (|CCall| (elt (car func) 5) (cdr func) (wrapDomArgs self t))) ;; constant category
-	#'(lambda (self &rest args)
-	    (let ((precat
-		   (apply (|ClosFun| func)
-			  (nconc
-			   (mapcar #'wrapDomArgs args (cdr cosig))
-			   (list (|ClosEnv| func))))))
-	      (|CCall| (elt (car precat) 5) (cdr precat) (wrapDomArgs self t))))))
+        #'(lambda (self)
+            (|CCall| (elt (car func) 5) (cdr func) (wrapDomArgs self t))) ;; constant category
+        #'(lambda (self &rest args)
+            (let ((precat
+                   (apply (|ClosFun| func)
+                          (nconc
+                           (mapcar #'wrapDomArgs args (cdr cosig))
+                           (list (|ClosEnv| func))))))
+              (|CCall| (elt (car precat) 5) (cdr precat) (wrapDomArgs self t))))))
       (apply packname self args))))))
 
 #+:CCL
@@ -1947,10 +1678,10 @@ database format.
   (set asharpname
    (cons
     #'(lambda (&rest l)
-	(let ((args (butlast l))
-	      (func (getconstructor (eval (file-getter-name file)) asharpname)))
-	  (apply (car func) (append args (list (cdr func))))))
-	())))
+        (let ((args (butlast l))
+              (func (getconstructor (eval (file-getter-name file)) asharpname)))
+          (apply (car func) (append args (list (cdr func))))))
+        ())))
 
 ; this function will return the internal name of the file object getter
 
@@ -1963,11 +1694,11 @@ database format.
 (defun set-file-getter (filename)
   (let ((getter-name (file-getter-name filename)))
     (set getter-name
-	 (cons #'init-file-getter  (cons getter-name filename)))))
+         (cons #'init-file-getter  (cons getter-name filename)))))
 
 (defun init-file-getter (env)
   (let ((getter-name (car env))
-	(filename (cdr env)))
+        (filename (cdr env)))
 #-:CCL
     (load filename)
 #+:CCL
@@ -1977,12 +1708,12 @@ database format.
 (defun set-lib-file-getter (filename cname)
   (let ((getter-name (file-getter-name filename)))
     (set getter-name
-	 (cons #'init-lib-file-getter  (cons getter-name cname)))))
+         (cons #'init-lib-file-getter  (cons getter-name cname)))))
 
 (defun init-lib-file-getter (env)
   (let* ((getter-name (car env))
-	 (cname (cdr env))
-	 (filename (getdatabase cname 'object)))
+         (cname (cdr env))
+         (filename (getdatabase cname 'object)))
 #-:CCL
     (load filename)
 #+:CCL
@@ -1992,36 +1723,36 @@ database format.
 ;; following 2 functions are called by file-exports and file-imports macros
 (defun foam::process-import-entry (entry)
   (let* ((asharpname (car entry))
-	 (stringname (cadr entry))
-	 (hcode (caddr entry))
-	 (libname (cadddr entry))
-	 (bootname (intern stringname 'boot)))
+         (stringname (cadr entry))
+         (hcode (caddr entry))
+         (libname (cadddr entry))
+         (bootname (intern stringname 'boot)))
     (declare (ignore libname))
     (if (and (eq hcode 'foam-user::|initializer|) (not (boundp asharpname)))
-	(error (format nil "AxiomXL file ~s is missing!" stringname)))
+        (error (format nil "AxiomXL file ~s is missing!" stringname)))
     (unless (or (not (numberp hcode)) (zerop hcode) (boundp asharpname))
-	  (when (|constructor?| bootname)
-		(set asharpname
-		     (if (getdatabase bootname 'niladic)
-			 (|makeLazyOldAxiomDispatchDomain| (list bootname))
-		       (cons '|runOldAxiomFunctor|  bootname))))
-	  (when (|attribute?| bootname)
-		(set asharpname (|makeLazyOldAxiomDispatchDomain| bootname))))))
-	  
-		 
+          (when (|constructor?| bootname)
+                (set asharpname
+                     (if (getdatabase bootname 'niladic)
+                         (|makeLazyOldAxiomDispatchDomain| (list bootname))
+                       (cons '|runOldAxiomFunctor|  bootname))))
+          (when (|attribute?| bootname)
+                (set asharpname (|makeLazyOldAxiomDispatchDomain| bootname))))))
+          
+                 
 
 ;(defun foam::process-export-entry (entry)
 ;  (let* ((asharpname (car entry))
-;	 (stringname (cadr entry))
-;	 (hcode (caddr entry))
-;	 (libname (cadddr entry))
-;	 (bootname (intern stringname 'boot)))
+;        (stringname (cadr entry))
+;        (hcode (caddr entry))
+;        (libname (cadddr entry))
+;        (bootname (intern stringname 'boot)))
 ;    (declare (ignore libname))
 ;    (when (numberp hcode)
-;	  (setf (get bootname 'asharp-name)
-;		(cons (cons *this-file* asharpname)
-;		      (get bootname 'asharp-name)))
-;	  )))
+;         (setf (get bootname 'asharp-name)
+;               (cons (cons *this-file* asharpname)
+;                     (get bootname 'asharp-name)))
+;         )))
 
 
 
@@ -2029,9 +1760,3 @@ database format.
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

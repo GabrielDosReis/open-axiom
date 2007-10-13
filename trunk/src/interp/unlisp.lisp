@@ -1,59 +1,6 @@
-%% Oh Emacs, this is a -*- Lisp -*- file, despite appearance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/unlisp.lisp} Pamphlet}
-\author{Stephen M. Watt, Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\begin{verbatim}
-Uncommon 1.6
-This package is a Boot interface for Common Lisp.
-SMW 1989, 1990
-
-Operating system interface
-
-The only non-common lisp functions used in this file are in this section.
-The following functions are provided:
-
-  OsRunProgram program &rest args  
-     Run the named program with given arguments.
-     All I/O is to the current places.
-     Value returned is implementation-dependent.
-
-  OsRunProgramToStream program &rest args
-     Run the named program  with given arguments.
-     Input and error output to the current places.
-     Value returned is a stream of the program's standard output.
-
-  OsEnvVarCharacter
-     The character which indicates OS environment variables in a string.
-     On Unix this is "$".
-
-  OsEnvGet name
-     name is a string or a symbol
-     The string associated with the given name is returned.
-     This is from the environment on Unix. On CMS globalvars could be used.
-
-  OsProcessNumber
-     Returns a unique number associated with the current session.
-     On Unix this is the process id.  
-     The same workspace started a second time must give a different result.
-
-\end{verbatim}
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -84,9 +31,40 @@ The following functions are provided:
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+;; Uncommon 1.6
+;; This package is a Boot interface for Common Lisp.
+;; SMW 1989, 1990
+
+;; Operating system interface
+
+;; The only non-common lisp functions used in this file are in this section.
+;; The following functions are provided:
+
+;;   OsRunProgram program &rest args  
+;;      Run the named program with given arguments.
+;;      All I/O is to the current places.
+;;      Value returned is implementation-dependent.
+
+;;   OsRunProgramToStream program &rest args
+;;      Run the named program  with given arguments.
+;;      Input and error output to the current places.
+;;      Value returned is a stream of the program's standard output.
+
+;;   OsEnvVarCharacter
+;;      The character which indicates OS environment variables in a string.
+;;      On Unix this is "$".
+
+;;   OsEnvGet name
+;;      name is a string or a symbol
+;;      The string associated with the given name is returned.
+;;      This is from the environment on Unix. On CMS globalvars could be used.
+
+;;   OsProcessNumber
+;;      Returns a unique number associated with the current session.
+;;      On Unix this is the process id.  
+;;      The same workspace started a second time must give a different result.
+
+
 
 (IMPORT-MODULE "sys-macros")
 (in-package "BOOT")  
@@ -285,8 +263,8 @@ The following functions are provided:
 ;;
 ;;(defun |ReadFileLineAt| (path pos)
 ;;  (with-open-file (stream path :direction :input)
-;;        	  (file-position stream pos)
-;;        	  (read-line stream) ))
+;;                (file-position stream pos)
+;;                (read-line stream) ))
 ;;
 ;;(defun |UserHomeDirectory| ()
 ;;  (pathname-directory (user-homedir-pathname)) )
@@ -1119,16 +1097,10 @@ The following functions are provided:
   (let ((key-list nil))
        (maphash 
         #'(lambda (key val) (declare (ignore val))
-        	  (setq key-list (cons key key-list)) )
+                  (setq key-list (cons key key-list)) )
         tab )
        key-list ))
 
 ;; CCL supplies a slightly more efficient version of logs to base 10, which
 ;; is useful in the WIDTH function. MCD.
 #+:KCL (defun log10 (u) (log u 10))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

@@ -1,43 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp preparse.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\begin{verbatim}
-NAME:    Pre-Parsing Code
-PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
-       1. Trailing -- comments are removed (this is already done, actually).
-       2. Comments between { and } are removed.
-       3. BOOT code is column-sensitive. Code which lines up columnarly is
-          parenthesized and semicolonized accordingly.  For example,
-
-               a
-                       b
-                       c
-                               d
-               e
-
-          becomes
-
-               a
-                       (b;
-                        c
-                               d)
-               e
-
-          Note that to do this correctly, we also need to keep track of
-          parentheses already in the code.
- 
-\end{verbatim}
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -68,9 +31,31 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+;; NAME:    Pre-Parsing Code
+;; PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
+;;        1. Trailing -- comments are removed (this is already done, actually).
+;;        2. Comments between { and } are removed.
+;;        3. BOOT code is column-sensitive. Code which lines up columnarly is
+;;           parenthesized and semicolonized accordingly.  For example,
+;;
+;;                a
+;;                        b
+;;                        c
+;;                                d
+;;                e
+;;
+;;           becomes
+;;
+;;                a
+;;                        (b;
+;;                         c
+;;                                d)
+;;                e
+;;
+;;           Note that to do this correctly, we also need to keep track of
+;;           parentheses already in the code.
+ 
+
 
 (IMPORT-MODULE "fnewmeta")
  
@@ -113,19 +98,19 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
 (defun PREPARSE (Strm &aux (stack ()))
   (SETQ $COMBLOCKLIST NIL $skipme NIL)
   (when $preparse-last-line
-	(if (pairp $preparse-last-line)
-	    (setq stack $preparse-last-line)
-	  (push $preparse-last-line stack))
+        (if (pairp $preparse-last-line)
+            (setq stack $preparse-last-line)
+          (push $preparse-last-line stack))
         (setq $INDEX (- $INDEX (length stack))))
   (let ((U (PREPARSE1 stack)))
     (if $skipme (preparse strm)
       (progn
-	(if $preparseReportIfTrue (PARSEPRINT U))
-	(setq |$headerDocumentation| NIL)
-	(SETQ |$docList| NIL)
-	(SETQ |$maxSignatureLineNumber| 0)
-	(SETQ |$constructorLineNumber| (IFCAR (IFCAR U)))
-	U))))
+        (if $preparseReportIfTrue (PARSEPRINT U))
+        (setq |$headerDocumentation| NIL)
+        (SETQ |$docList| NIL)
+        (SETQ |$maxSignatureLineNumber| 0)
+        (SETQ |$constructorLineNumber| (IFCAR (IFCAR U)))
+        U))))
  
 (defun PREPARSE1 (LineList)
  (PROG (($LINELIST LineList) $EchoLineStack NUM A I L PSLOC
@@ -145,8 +130,8 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
                 (PREPARSE-ECHO LineList)
                 (setq $preparse-last-line nil) ;don't reread this line
                 (SETQ LINE a)
-		(CATCH 'SPAD_READER (|doSystemCommand| (subseq LINE 1)))
-		(GO READLOOP)))
+                (CATCH 'SPAD_READER (|doSystemCommand| (subseq LINE 1)))
+                (GO READLOOP)))
          (setq L (LENGTH A))
          (if (EQ L 0) (GO READLOOP))
          (setq PSLOC SLOC)
@@ -197,9 +182,9 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
          (when (and LINES (EQL SLOC 0))
              (IF (AND NCOMBLOCK (NOT (ZEROP (CAR NCOMBLOCK))))
                (FINCOMBLOCK NUM NUMS LOCS NCOMBLOCK linelist))
-	     (IF (NOT (IS-CONSOLE in-stream))
-		 (setq $preparse-last-line
-		       (nreverse $echolinestack)))
+             (IF (NOT (IS-CONSOLE in-stream))
+                 (setq $preparse-last-line
+                       (nreverse $echolinestack)))
              (RETURN (PAIR (NREVERSE NUMS)
                         (PARSEPILES (NREVERSE LOCS) (NREVERSE LINES)))))
          (cond ((> PARENLEV 0) (PUSH NIL LOCS) (setq SLOC PSLOC) (GO REREAD)))
@@ -225,22 +210,22 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
 (DEFUN FINCOMBLOCK (NUM OLDNUMS OLDLOCS NCBLOCK linelist)
   (PUSH
     (COND ((EQL (CAR NCBLOCK) 0) (CONS (1- NUM) (REVERSE (CDR NCBLOCK))))
-	      ;; comment for constructor itself paired with 1st line -1
+              ;; comment for constructor itself paired with 1st line -1
           ('T
            (COND ($EchoLineStack
                   (setq NUM (POP $EchoLineStack))
                   (PREPARSE-ECHO linelist)
                   (SETQ $EchoLineStack (LIST NUM))))
-	   (cons
+           (cons
             ;; scan backwards for line to left of current
-	    (DO ((onums oldnums (cdr onums))
-		 (olocs oldlocs (cdr olocs))
-		 (sloc (car ncblock)))
-		((null onums) nil)
-		(if (and (numberp (car olocs))
-			 (<= (car olocs) sloc))
-		    (return (car onums))))
-	    (REVERSE (CDR NCBLOCK)))))
+            (DO ((onums oldnums (cdr onums))
+                 (olocs oldlocs (cdr olocs))
+                 (sloc (car ncblock)))
+                ((null onums) nil)
+                (if (and (numberp (car olocs))
+                         (<= (car olocs) sloc))
+                    (return (car onums))))
+            (REVERSE (CDR NCBLOCK)))))
     $COMBLOCKLIST))
  
 (defun PARSEPRINT (L)
@@ -276,7 +261,7 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
             ((INITIAL-SUBSTRING ")endif" LINE)
              (RETURN (preparseReadLine X)))
             ((INITIAL-SUBSTRING ")fin" LINE)
-	     (RETURN (CONS IND NIL))))))
+             (RETURN (CONS IND NIL))))))
       (RETURN (SKIP-IFBLOCK X)) ) )
  
 (DEFUN SKIP-TO-ENDIF (X)
@@ -307,8 +292,8 @@ PURPOSE: BOOT lines are massaged by PREPARSE to make them easier to parse:
             ((INITIAL-SUBSTRING ")endif" LINE)
              (RETURN (preparseReadLine X)))
             ((INITIAL-SUBSTRING ")fin" LINE)
-	     (SETQ *EOF* T)
-	     (RETURN (CONS IND NIL)) ) )))
+             (SETQ *EOF* T)
+             (RETURN (CONS IND NIL)) ) )))
       (RETURN (CONS IND LINE)) ))
  
 (DEFUN preparseReadLine1 (X)
@@ -412,9 +397,3 @@ C. If the entire line consists of the single keyword then or else, leave it alon
          (SETELT LINE (MAXINDEX LINE) CHAR)
          (if (char= CHAR #\;) LINE (suffix #\; LINE)))
         ((suffix char LINE))))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

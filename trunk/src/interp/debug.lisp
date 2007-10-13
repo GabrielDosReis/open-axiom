@@ -1,79 +1,6 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/debug.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{interrupt}
-
-A "resumable" break loop for use in trace etc. Unfortunately this
-only works for CCL. We need to define a Common Lisp version. For
-now the function is defined but does nothing.
-<<interrupt>>=
-#-:CCL
-(defun interrupt (&rest ignore))
-
-#+:CCL
-(defun interrupt (&rest ignore)
-  (prog (prompt ifile ofile u v)
-    (setq ifile (rds *debug-io*))
-    (setq ofile (wrs *debug-io*))
-    (setq prompt (setpchar "Break loop (:? for help)> "))
-top (setq u (read))
-    (cond
-      ((equal u ':x) (go exit))
-      ((equal u ':r) (go resume))
-      ((equal u ':q)
-        (progn (lisp::enable-backtrace nil) 
-               (princ "Backtrace now disabled")
-               (terpri)))
-      ((equal u ':v)
-        (progn (lisp::enable-backtrace t)
-               (princ "Backtrace now enabled")
-               (terpri)))
-      ((equal u ':?)
-        (progn
-           (princ ":Q   disables backtrace")
-           (terpri)
-           (princ ":V   enables backtrace")
-           (terpri)
-           (princ ":R   resumes from break")
-           (terpri)
-           (princ ":X   exits from break loop")
-           (terpri)
-           (princ "else enter LISP expressions for evaluation")
-           (terpri)))
-      ((equal u #\eof)
-       (go exit))
-     (t (progn
-           (setq v (errorset u nil nil))
-           (if (listp v) (progn (princ "=> ") (prinl (car v)) (terpri))))) )
-     (go top)
-resume (rds ifile)
-     (wrs ofile)
-     (setpchar prompt)
-     (return nil)
-exit (rds ifile)
-     (wrs ofile)
-     (setpchar prompt)
-     (lisp::unwind)))
-
-@
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -104,11 +31,14 @@ exit (rds ifile)
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
-;;;  @(#)debug.lisp	2.5      90/02/15  10:27:33
+
+;; A "resumable" break loop for use in trace etc. Unfortunately this
+;; only works for CCL. We need to define a Common Lisp version. For
+;; now the function is defined but does nothing.
+
+
+;;;  @(#)debug.lisp     2.5      90/02/15  10:27:33
  
 ; NAME:    Debugging Package
 ; PURPOSE: Debugging hooks for Boot code
@@ -141,7 +71,7 @@ exit (rds ifile)
 (MAKEPROP 'SPAD '/TRAN '/TRANSPAD)
  
 (defmacro |/C,LIB| (&rest L &aux optionlist /editfile
-			  ($prettyprint 't) ($reportCompilation 't))
+                          ($prettyprint 't) ($reportCompilation 't))
   (declare (special optionlist /editfile $prettyprint $reportComilation))
   `',(|compileConstructorLib| L (/COMP) NIL NIL))
  
@@ -182,7 +112,7 @@ exit (rds ifile)
           (SETQ OUTSTREAM (if TO (DEFSTREAM TO 'OUTPUT) CUROUTSTREAM))
           (RETURN (mapcar #'(lambda (fn)
                               (/D-2 FN INFILE OUTSTREAM OP EFLG TFLG))
-			  (or fnl (list /fn)))))))
+                          (or fnl (list /fn)))))))
  
 (DEFUN |/D,2,LIB| (FN INFILE CUROUTSTREAM OP EDITFLAG TRACEFLAG)
        (declare (special CUROUTSTREAM))
@@ -194,38 +124,38 @@ exit (rds ifile)
 (DEFUN /D-2 (FN INFILE OUTPUTSTREAM OP EDITFLAG TRACEFLAG)
        (declare (special OUTPUTSTREAM))
   (PROG (FT oft SFN X EDINFILE FILE DEF KEY RECNO U W SOURCEFILES
-	 ECHOMETA SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM SPADERRORSTREAM
-	 ISID NBLNK COMMENTCHR $TOKSTACK (/SOURCEFILES |$sourceFiles|)
-	 METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
-	 ($FUNCTION FN) $BOOT $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
-	 TRAPFLAG |$InteractiveMode| TOK COUNT ERRCOL COLUMN *QUERY CHR LINE
-	 (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
-	(declare (special ECHOMETA SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM
-		     SPADERRORSTREAM ISID NBLNK COMMENTCHR $TOKSTACK /SOURCEFILES
-		     METAKEYLST DEFINITION_NAME |$sourceFileTypes|
-		     $FUNCTION $BOOT $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
-		     TRAPFLAG |$InteractiveMode| TOK COUNT ERRCOL COLUMN *QUERY CHR LINE))
+         ECHOMETA SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM SPADERRORSTREAM
+         ISID NBLNK COMMENTCHR $TOKSTACK (/SOURCEFILES |$sourceFiles|)
+         METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
+         ($FUNCTION FN) $BOOT $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
+         TRAPFLAG |$InteractiveMode| TOK COUNT ERRCOL COLUMN *QUERY CHR LINE
+         (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
+        (declare (special ECHOMETA SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM
+                     SPADERRORSTREAM ISID NBLNK COMMENTCHR $TOKSTACK /SOURCEFILES
+                     METAKEYLST DEFINITION_NAME |$sourceFileTypes|
+                     $FUNCTION $BOOT $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
+                     TRAPFLAG |$InteractiveMode| TOK COUNT ERRCOL COLUMN *QUERY CHR LINE))
         (if (PAIRP FN) (SETQ FN (QCAR FN)))
         (SETQ INFILE (OR INFILE (|getFunctionSourceFile| FN)))
-	  ;; $FUNCTION is freely set in getFunctionSourceFile
-	(IF (PAIRP $FUNCTION) (SETQ $FUNCTION (QCAR $FUNCTION)))
+          ;; $FUNCTION is freely set in getFunctionSourceFile
+        (IF (PAIRP $FUNCTION) (SETQ $FUNCTION (QCAR $FUNCTION)))
         (SETQ FN $FUNCTION)
         (SETQ /FN $FUNCTION)
    LOOP (SETQ SOURCEFILES
               (cond ( INFILE
-		      (SETQ /SOURCEFILES (CONS INFILE (REMOVE INFILE /SOURCEFILES)))
-		      (LIST INFILE))
-		    ( /EDITFILE
-		      (|insert| (|pathname| /EDITFILE) /SOURCEFILES))
-		    ( 't /SOURCEFILES)))
+                      (SETQ /SOURCEFILES (CONS INFILE (REMOVE INFILE /SOURCEFILES)))
+                      (LIST INFILE))
+                    ( /EDITFILE
+                      (|insert| (|pathname| /EDITFILE) /SOURCEFILES))
+                    ( 't /SOURCEFILES)))
         (SETQ RECNO
               (dolist (file sourcefiles)
                     (SETQ INPUTSTREAM (DEFSTREAM FILE 'INPUT))
  
                     ;;?(REMFLAG S-SPADKEY 'KEY)    ;  hack !!
-		    (SETQ  FT (|pathnameType| FILE))
-		    (SETQ  oft (|object2Identifier| (UPCASE FT)))
-		    (SETQ XCAPE (OR (GET oft '/XCAPE) #\|))
+                    (SETQ  FT (|pathnameType| FILE))
+                    (SETQ  oft (|object2Identifier| (UPCASE FT)))
+                    (SETQ XCAPE (OR (GET oft '/XCAPE) #\|))
                     (SETQ COMMENTCHR (GET oft '/COMMENTCHR))
                     (SETQ XTOKENREADER (OR (GET oft '/NXTTOK) 'METATOK))
                     (SETQ DEFINITION_NAME FN)
@@ -238,7 +168,7 @@ exit (rds ifile)
                             (PNAME FN)))
                     (SETQ SFN (GET oFT '/READFUN))
                     (SETQ RECNO (/LOCATE FN KEY FILE 0))
-		    (SHUT INPUTSTREAM)
+                    (SHUT INPUTSTREAM)
                     (cond ((NUMBERP RECNO)
                            (SETQ /SOURCEFILES (CONS FILE (REMOVE FILE /SOURCEFILES)))
                            (SETQ INFILE FILE)
@@ -247,9 +177,9 @@ exit (rds ifile)
             (if (SETQ INFILE (/MKINFILENAM '(NIL))) (GO LOOP) (UNWIND)))
         (TERPRI)
         (TERPRI)
-	(SETQ INFILE (|pathname| INFILE))
-	(COND
-	 ( EDITFLAG
+        (SETQ INFILE (|pathname| INFILE))
+        (COND
+         ( EDITFLAG
           ;;%% next form is used because $FINDFILE seems to screw up
           ;;%% sometimes. The stream is opened and closed several times
           ;;%% in case the filemode has changed during editing.
@@ -265,81 +195,81 @@ exit (rds ifile)
               (STRINGIMAGE $LINENUMBER)))
           (SHUT INPUTSTREAM)
           ;(COND
-	  ;  ( (EQ (READ ERRORINSTREAM) 'ABORTPROCESS)
-	  ;    (RETURN 'ABORT) ) )
+          ;  ( (EQ (READ ERRORINSTREAM) 'ABORTPROCESS)
+          ;    (RETURN 'ABORT) ) )
           ;;%% next is done in case the diskmode changed
           ;;(SETQ INFILE (|pathname| (IFCAR
-	  ;; (QSORT ($LISTFILE INFILE)))))
+          ;; (QSORT ($LISTFILE INFILE)))))
           (SETQ INPUTSTREAM (DEFSTREAM INFILE 'INPUT))
           (SETQ RECNO (/LOCATE FN KEY INFILE RECNO))
-	
-	  (COND ((NOT RECNO)
-		 (|sayBrightly| (LIST "   Warning: function" "%b" /FN "%d"
-				      "was not found in the file" "%l" "  " "%b"
-				      (|namestring| INFILE) "%d" "after editing."))
-		 (RETURN NIL)))
-	  ;; next is done in case the diskmode changed
-	  (SHUT INPUTSTREAM) ))
-	;;(SETQ INFILE (|pathname| (IFCAR ($LISTFILE INFILE))))
-	(SETQ INFILE (make-input-filename INFILE))
-	(MAKEPROP /FN 'DEFLOC
-		  (CONS RECNO INFILE))
-	(SETQ oft (|object2Identifier| (UPCASE (|pathnameType| INFILE))))
-	(COND
-	 ( (NULL OP)
-	   (RETURN /FN) ) )
-	(COND
-	 ( (EQ TRACEFLAG 'TRACELET)
-	   (RETURN (/TRACELET-1 (LIST FN) NIL)) ) )
-	(SETQ INPUTSTREAM (DEFSTREAM INFILE 'INPUT))
-	(|sayBrightly|
-	 (LIST  "   Reading file" '|%b| (|namestring| INFILE) '|%d|))
-	(TERPRI)
-	(SETQ $BOOT (EQ oft 'BOOT))
-	(SETQ $NEWSPAD (OR $BOOT (EQ oft 'SPAD)))
-	(SETQ DEF
-	      (COND
-	       ( SFN
-		 ;(+VOL 'METABASE)
-		 (POINT RECNO INPUTSTREAM)
-		 ;(SETQ CHR (CAR INPUTSTREAM))
-		 ;(SETQ ERRCOL 0)
-		 ;(SETQ COUNT 0)
-		 ;(SETQ COLUMN 0)
-		 ;(SETQ TRAPFLAG NIL)
-		 (SETQ OK 'T)
-		 ;(NXTTOK)
-		 ;(SETQ LINE (CURINPUTLINE))
-		 ;(SETQ SPADERRORSTREAM CUROUTSTREAM)
-		 ;(AND /ECHO (SETQ ECHOMETA 'T) (PRINTEXP LINE) (TERPRI))
-		 ;(SFN)
-		 (SETQ DEF (BOOT-PARSE-1 INPUTSTREAM))
-		 (SETQ DEBUGMODE 'YES)
-		 (COND
-		  ( (NULL OK)
-		    (FUNCALL (GET oft 'SYNTAX_ERROR))
-		    NIL )
-		  ( 'T
-		    DEF ) ) )
-	       ( 'T
-		 (let* ((mode-line (read-line inputstream))
-			(pacpos (search "package:" mode-line :test #'equalp))
-			(endpos (search "-*-" mode-line :from-end t))
-			(*package* *package*)
-			(newpac nil))
-		   (when pacpos
-			 (setq newpac (read-from-string mode-line nil nil
-							:start (+ pacpos 8)
-							:end endpos))
-			 (setq *package*
-			       (cond ((find-package newpac))
-				     (t *package*))))
-		   (POINT RECNO INPUTSTREAM)
-		   (READ INPUTSTREAM)))))
+        
+          (COND ((NOT RECNO)
+                 (|sayBrightly| (LIST "   Warning: function" "%b" /FN "%d"
+                                      "was not found in the file" "%l" "  " "%b"
+                                      (|namestring| INFILE) "%d" "after editing."))
+                 (RETURN NIL)))
+          ;; next is done in case the diskmode changed
+          (SHUT INPUTSTREAM) ))
+        ;;(SETQ INFILE (|pathname| (IFCAR ($LISTFILE INFILE))))
+        (SETQ INFILE (make-input-filename INFILE))
+        (MAKEPROP /FN 'DEFLOC
+                  (CONS RECNO INFILE))
+        (SETQ oft (|object2Identifier| (UPCASE (|pathnameType| INFILE))))
+        (COND
+         ( (NULL OP)
+           (RETURN /FN) ) )
+        (COND
+         ( (EQ TRACEFLAG 'TRACELET)
+           (RETURN (/TRACELET-1 (LIST FN) NIL)) ) )
+        (SETQ INPUTSTREAM (DEFSTREAM INFILE 'INPUT))
+        (|sayBrightly|
+         (LIST  "   Reading file" '|%b| (|namestring| INFILE) '|%d|))
+        (TERPRI)
+        (SETQ $BOOT (EQ oft 'BOOT))
+        (SETQ $NEWSPAD (OR $BOOT (EQ oft 'SPAD)))
+        (SETQ DEF
+              (COND
+               ( SFN
+                 ;(+VOL 'METABASE)
+                 (POINT RECNO INPUTSTREAM)
+                 ;(SETQ CHR (CAR INPUTSTREAM))
+                 ;(SETQ ERRCOL 0)
+                 ;(SETQ COUNT 0)
+                 ;(SETQ COLUMN 0)
+                 ;(SETQ TRAPFLAG NIL)
+                 (SETQ OK 'T)
+                 ;(NXTTOK)
+                 ;(SETQ LINE (CURINPUTLINE))
+                 ;(SETQ SPADERRORSTREAM CUROUTSTREAM)
+                 ;(AND /ECHO (SETQ ECHOMETA 'T) (PRINTEXP LINE) (TERPRI))
+                 ;(SFN)
+                 (SETQ DEF (BOOT-PARSE-1 INPUTSTREAM))
+                 (SETQ DEBUGMODE 'YES)
+                 (COND
+                  ( (NULL OK)
+                    (FUNCALL (GET oft 'SYNTAX_ERROR))
+                    NIL )
+                  ( 'T
+                    DEF ) ) )
+               ( 'T
+                 (let* ((mode-line (read-line inputstream))
+                        (pacpos (search "package:" mode-line :test #'equalp))
+                        (endpos (search "-*-" mode-line :from-end t))
+                        (*package* *package*)
+                        (newpac nil))
+                   (when pacpos
+                         (setq newpac (read-from-string mode-line nil nil
+                                                        :start (+ pacpos 8)
+                                                        :end endpos))
+                         (setq *package*
+                               (cond ((find-package newpac))
+                                     (t *package*))))
+                   (POINT RECNO INPUTSTREAM)
+                   (READ INPUTSTREAM)))))
       #+Lucid(system::compiler-options :messages t :warnings t)
-	(COND
-	 ( (SETQ U (GET oft '/TRAN))
-	   (SETQ DEF (FUNCALL U DEF)) ) )
+        (COND
+         ( (SETQ U (GET oft '/TRAN))
+           (SETQ DEF (FUNCALL U DEF)) ) )
       (/WRITEUPDATE
         /FN
         (|pathnameName| INFILE)
@@ -352,8 +282,8 @@ exit (rds ifile)
           (PRETTYPRINT DEF OUTPUTSTREAM) ) )
       (COND
         ( (EQ oft 'LISP)
-	  (if (EQ OP 'DEFINE) (EVAL DEF)
-	    (compile (EVAL DEF))))
+          (if (EQ OP 'DEFINE) (EVAL DEF)
+            (compile (EVAL DEF))))
         ( DEF
           (FUNCALL OP (LIST DEF)) ) )
       #+Lucid(system::compiler-options :messages nil :warnings nil)
@@ -375,37 +305,37 @@ exit (rds ifile)
         (if (AND (NOT (eq 'FROMWRITEUPDATE (|pathnameName| INFILE)))
                     (NOT (make-input-filename INFILE)))
             (RETURN NIL))
-	(SETQ FT (UPCASE (|object2Identifier| (|pathnameType| INFILE))))
+        (SETQ FT (UPCASE (|object2Identifier| (|pathnameType| INFILE))))
         (SETQ KEYLENGTH (STRINGLENGTH KEY))
-	(WHEN (> INITRECNO 1)  ;; we think we know where it is
-	      (POINT INITRECNO INPUTSTREAM)
-	      (SETQ LN (READ-LINE INPUTSTREAM NIL NIL))
-	      (IF (AND LN (MATCH-FUNCTION-DEF FN KEY KEYLENGTH LN FT))
-		  (RETURN INITRECNO)))
-	(SETQ $LINENUMBER 0)
-	(POINT 0 INPUTSTREAM)
+        (WHEN (> INITRECNO 1)  ;; we think we know where it is
+              (POINT INITRECNO INPUTSTREAM)
+              (SETQ LN (READ-LINE INPUTSTREAM NIL NIL))
+              (IF (AND LN (MATCH-FUNCTION-DEF FN KEY KEYLENGTH LN FT))
+                  (RETURN INITRECNO)))
+        (SETQ $LINENUMBER 0)
+        (POINT 0 INPUTSTREAM)
 EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
-	(SETQ LN (READ-LINE INPUTSTREAM NIL NIL))
-	(INCF $LINENUMBER)
-	(if (NULL LN) (RETURN NIL))
-	(IF (MATCH-FUNCTION-DEF FN KEY KEYLENGTH LN FT)
-	    (RETURN RECNO))
+        (SETQ LN (READ-LINE INPUTSTREAM NIL NIL))
+        (INCF $LINENUMBER)
+        (if (NULL LN) (RETURN NIL))
+        (IF (MATCH-FUNCTION-DEF FN KEY KEYLENGTH LN FT)
+            (RETURN RECNO))
         (GO EXAMINE)))
  
 (DEFUN MATCH-FUNCTION-DEF (fn key keylength line type)
        (if (eq type 'LISP) (match-lisp-tag fn line "(def")
-	 (let ((n (mismatch key line)))
-	   (and (= n keylength)
-		(or (= n (length line))
-		    (member (elt line n)
-			    (or (get type '/termchr) '(#\space ))))))))
+         (let ((n (mismatch key line)))
+           (and (= n keylength)
+                (or (= n (length line))
+                    (member (elt line n)
+                            (or (get type '/termchr) '(#\space ))))))))
  
 (define-function '|/D,1| #'/D-1)
  
 (DEFUN /INITUPDATES (/VERSION)
    (SETQ FILENAME (STRINGIMAGE /VERSION))
    (SETQ /UPDATESTREAM (open (strconc "/tmp/update." FILENAME) :direction :output
-			     :if-exists :append :if-does-not-exist :create))
+                             :if-exists :append :if-does-not-exist :create))
    (PRINTEXP
  "       Function Name                    Filename             Date   Time"
       /UPDATESTREAM)
@@ -417,7 +347,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
  
 (defun /UPDATE (&rest ARGS)
   (LET (( FILENAME (OR (KAR ARGS)
-		       (strconc "/tmp/update." (STRINGIMAGE /VERSION))))
+                       (strconc "/tmp/update." (STRINGIMAGE /VERSION))))
         (|$createUpdateFiles| NIL))
        (DECLARE (SPECIAL |$createUpdateFiles|))
        (CATCH 'FILENAM (/UPDATE-1 FILENAME '(/COMP)))
@@ -425,7 +355,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 
 (defun /DUPDATE (&rest ARGS)
   (LET (( FILENAME (OR (KAR ARGS)
-		       (strconc "/tmp/update." (STRINGIMAGE /VERSION))))
+                       (strconc "/tmp/update." (STRINGIMAGE /VERSION))))
         (|$createUpdateFiles| NIL))
        (DECLARE (SPECIAL |$createUpdateFiles|))
        (CATCH 'FILENAM (/UPDATE-1 FILENAME 'DEFINE))
@@ -464,7 +394,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 ;               ((SAY "A disk is not read-write. Update file not modified")
 ;                (RETURN NIL)))
          (if (OR (NOT (BOUNDP '/UPDATESTREAM))
-		 (NOT (STREAMP /UPDATESTREAM)))
+                 (NOT (STREAMP /UPDATESTREAM)))
              (/INITUPDATES /VERSION))
 ;         (SETQ IFT (INTERN (STRINGIMAGE /VERSION)))
 ;         (SETQ INPUTSTREAM (open (strconc IFT /WSNAME) :direction :input))
@@ -482,32 +412,32 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 ;         (COND ((NUMBERP RECNO)
 ;                (SETQ ORECNO (NOTE /UPDATESTREAM))
 ;                (POINTW RECNO /UPDATESTREAM) ))
-	 (SETQ DATETIME (|getDateAndTime|))
-	 (SETQ DATE (CAR DATETIME))
-	 (SETQ TIME (CDR DATETIME))
+         (SETQ DATETIME (|getDateAndTime|))
+         (SETQ DATE (CAR DATETIME))
+         (SETQ TIME (CDR DATETIME))
          (PRINTEXP (STRCONC
                   (COND ((NOT FUN) "                                QUAD ")
                         ((STRINGPAD (PNAME FUN) 28))) " "
-		  (STRINGIMAGE FM)
-		  (STRINGIMAGE FN) "." (STRINGIMAGE FT)
+                  (STRINGIMAGE FM)
+                  (STRINGIMAGE FN) "." (STRINGIMAGE FT)
                   " "
                   DATE " " TIME) /UPDATESTREAM)
          (TERPRI /UPDATESTREAM)
 ;         (if (NUMBERP RECNO) (POINTW ORECNO /UPDATESTREAM))
-	 ))
+         ))
  
 (defun |getDateAndTime| ()
    (MULTIPLE-VALUE-BIND (sec min hour day mon year) (get-decoded-time)
    (CONS (STRCONC (LENGTH2STR mon) "/"
-		  (LENGTH2STR day) "/"
-		  (LENGTH2STR year) )
-	 (STRCONC (LENGTH2STR hour) ":"
-		  (LENGTH2STR min)))))
+                  (LENGTH2STR day) "/"
+                  (LENGTH2STR year) )
+         (STRCONC (LENGTH2STR hour) ":"
+                  (LENGTH2STR min)))))
  
 (DEFUN LENGTH2STR (X &aux XLEN)
        (cond ( (= 1 (SETQ XLEN (LENGTH (SETQ X (STRINGIMAGE X))))) (STRCONC "0" X))
-	     ( (= 2 XLEN) X)
-	     ( (subseq x (- XLEN 2)))))
+             ( (= 2 XLEN) X)
+             ( (subseq x (- XLEN 2)))))
  
 (defmacro /T (&rest L) (CONS '/TRACE (OR L (LIST /FN))))
  
@@ -570,8 +500,8 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
                     (T (|sayBrightly| (format nil "~A is not a function" FN))))
               (RETURN NIL)))
         (if (and (symbolp fn) (boundp FN)
-		 (|isDomainOrPackage| (SETQ FNVAL (EVAL FN))))
-	    (RETURN (|spadTrace| FNVAL OPTIONS)))
+                 (|isDomainOrPackage| (SETQ FNVAL (EVAL FN))))
+            (RETURN (|spadTrace| FNVAL OPTIONS)))
         (if (SETQ U (/GETTRACEOPTIONS OPTIONS 'MASK=))
             (MAKEPROP FN '/TRANSFORM (CADR U)))
         (SETQ /TRACENAMES
@@ -622,7 +552,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
         (SETQ COUNT_CONDITION
               (COND ((SETQ U (/GETTRACEOPTIONS OPTIONS 'COUNT))
                      (SETQ /COUNTLIST (adjoin TRACENAME /COUNTLIST
-					      :test 'equal))
+                                              :test 'equal))
                      (if (AND (CDR U) (integerp (CADR U)))
                          `(cond ((<= ,COUNTNAM ,(CADR U)) t)
                                 (t (/UNTRACE-2 ,(MKQ FN) NIL) NIL))
@@ -634,8 +564,8 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
         (SETQ DEPTH_CONDITION
               (if (SETQ U (/GETTRACEOPTIONS OPTIONS 'DEPTH))
                   (if (AND (CDR U) (integerp (CADR U)))
-		      (LIST 'LE 'FUNDEPTH (CADR U))
-		    (TRACE_OPTION_ERROR 'DEPTH))
+                      (LIST 'LE 'FUNDEPTH (CADR U))
+                    (TRACE_OPTION_ERROR 'DEPTH))
                   T))
         (SETQ CONDITION
               (MKPF
@@ -728,17 +658,17 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
          (|untraceDomainConstructor| X))
         ((OR (|isDomainOrPackage| (SETQ U X))
              (and (symbolp X) (boundp X)
-		  (|isDomain| (SETQ U (EVAL X)))))
+                  (|isDomain| (SETQ U (EVAL X)))))
          (|spadUntrace| U OPTIONS))
         ((EQCAR OPTIONS 'ALIAS)
            (if |$traceNoisely|
                (|sayBrightly| (LIST '|%b| (CADR OPTIONS) '|%d| '**untraced)))
            (SETQ /TIMERLIST
-		 (REMOVE (STRINGIMAGE (CADR OPTIONS)) /TIMERLIST :test 'equal))
+                 (REMOVE (STRINGIMAGE (CADR OPTIONS)) /TIMERLIST :test 'equal))
            (SETQ /COUNTLIST
-		 (REMOVE (STRINGIMAGE (CADR OPTIONS)) /COUNTLIST :test 'equal))
+                 (REMOVE (STRINGIMAGE (CADR OPTIONS)) /COUNTLIST :test 'equal))
            (SETQ |$mathTraceList|
-		 (REMOVE (CADR OPTIONS) |$mathTraceList| :test 'equal))
+                 (REMOVE (CADR OPTIONS) |$mathTraceList| :test 'equal))
            (UNEMBED X))
         ((AND (NOT (MEMBER X /TRACENAMES))
               (NOT (|isSubForRedundantMapName| X)))
@@ -771,16 +701,16 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
     (COND ((setq U (GET NAME '/TRANSFORM))
            (COND
              ((EQCAR U '&)
-	      (PRINC "//" CURSTRM) (PRIN1 VAL CURSTRM) (TERPRI CURSTRM))
-	     (T (PRINC "! " CURSTRM)
-		(PRIN1 (EVAL (SUBST (MKQ VAL) '* (CAR U))) CURSTRM)
-		(TERPRI CURSTRM)) ))
+              (PRINC "//" CURSTRM) (PRIN1 VAL CURSTRM) (TERPRI CURSTRM))
+             (T (PRINC "! " CURSTRM)
+                (PRIN1 (EVAL (SUBST (MKQ VAL) '* (CAR U))) CURSTRM)
+                (TERPRI CURSTRM)) ))
           (T
-	   (PRINC ": " CURSTRM)
+           (PRINC ": " CURSTRM)
            (COND ((NOT (SMALL-ENOUGH VAL)) (|F,PRINT-ONE| VAL CURSTRM))
                  (/PRETTY (PRETTYPRINT VAL CURSTRM))
                  (T (COND (|$mathTrace| (TERPRI)))
-		    (PRINMATHOR0 VAL CURSTRM)))))))
+                    (PRINMATHOR0 VAL CURSTRM)))))))
  
 (DEFUN MONITOR-BLANKS (N) (PRINC (MAKE-FULL-CVEC N " ") CURSTRM))
  
@@ -831,7 +761,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
            (mapcar
              #'(lambda (x y)
                  (COND ((EQ Y '*)
-			(PRINC "\\ " CURSTRM)
+                        (PRINC "\\ " CURSTRM)
                         (MONITOR-PRINT X CURSTRM))
                        ((EQ Y '&)
                         (PRINC "\\\\" CURSTRM)
@@ -839,18 +769,18 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
                         (PRINT X CURSTRM))
                        ((NOT Y) (PRINC "! " CURSTRM))
                        (T
-			(PRINC "! " CURSTRM)
+                        (PRINC "! " CURSTRM)
                         (MONITOR-PRINT
                           (EVAL (SUBST (MKQ X) '* Y)) CURSTRM))))
-	    L (cdr /transform)))
-	 (T (PRINC ": " CURSTRM)
+            L (cdr /transform)))
+         (T (PRINC ": " CURSTRM)
             (COND ((NOT (ATOM L))
                    (if |$mathTrace| (TERPRI CURSTRM))
                    (MONITOR-PRINT (CAR L) CURSTRM) (SETQ L (CDR L))))
             (mapcar #'monitor-printrest L))))
       ((do ((istep 2 (+ istep 1))
             (k (maxindex code)))
-	   ((> istep k) nil)
+           ((> istep k) nil)
         (when (not (= 0 (SETQ N (digit-char-p (elt CODE ISTEP)))))
          (PRINC "\\" CURSTRM)
          (PRINMATHOR0 N CURSTRM)
@@ -1032,9 +962,9 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
          (/DEPTH (if (and (BOUNDP '/DEPTH) (numberp /depth)) (1+ /DEPTH) 1))
          (|depthAlist| (if (BOUNDP '|depthAlist|) (COPY-TREE |depthAlist|) NIL))
          FUNDEPTH NAMEID YES (|$tracedSpadModemap| TRACEDMODEMAP) (|$mathTrace| NIL)
-	 /caller /name /value /breakcondition curdepth)
+         /caller /name /value /breakcondition curdepth)
     (declare (special curstrm /depth fundepth |$tracedSpadModemap| |$mathTrace|
-		      /caller /name /value /breakcondition |depthAlist|))
+                      /caller /name /value /breakcondition |depthAlist|))
         (SETQ /NAME NAME)
         (SETQ NAME1 (PNAME (|rassocSub| (INTERN NAME) |$mapSubNameAlist|)))
         (SETQ /BREAKCONDITION BREAKCONDITION)
@@ -1234,11 +1164,52 @@ exit (rds ifile)
     (boot::|handleLispBreakLoop| boot::|$BreakMode|))
 #+:CCL (setq lisp:*break-loop* 'boot::lisp-break-from-axiom)
 
-<<interrupt>>
+#-:CCL
+(defun interrupt (&rest ignore))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
+#+:CCL
+(defun interrupt (&rest ignore)
+  (prog (prompt ifile ofile u v)
+    (setq ifile (rds *debug-io*))
+    (setq ofile (wrs *debug-io*))
+    (setq prompt (setpchar "Break loop (:? for help)> "))
+top (setq u (read))
+    (cond
+      ((equal u ':x) (go exit))
+      ((equal u ':r) (go resume))
+      ((equal u ':q)
+        (progn (lisp::enable-backtrace nil) 
+               (princ "Backtrace now disabled")
+               (terpri)))
+      ((equal u ':v)
+        (progn (lisp::enable-backtrace t)
+               (princ "Backtrace now enabled")
+               (terpri)))
+      ((equal u ':?)
+        (progn
+           (princ ":Q   disables backtrace")
+           (terpri)
+           (princ ":V   enables backtrace")
+           (terpri)
+           (princ ":R   resumes from break")
+           (terpri)
+           (princ ":X   exits from break loop")
+           (terpri)
+           (princ "else enter LISP expressions for evaluation")
+           (terpri)))
+      ((equal u #\eof)
+       (go exit))
+     (t (progn
+           (setq v (errorset u nil nil))
+           (if (listp v) (progn (princ "=> ") (prinl (car v)) (terpri))))) )
+     (go top)
+resume (rds ifile)
+     (wrs ofile)
+     (setpchar prompt)
+     (return nil)
+exit (rds ifile)
+     (wrs ofile)
+     (setpchar prompt)
+     (lisp::unwind)))
+
+
