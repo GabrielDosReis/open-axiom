@@ -1,17 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp sfsfun-l.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -42,50 +31,73 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 (in-package "BOOT")
 
-;;
-;; Lisp part of the Scratchpad special function interface.
-;; SMW Feb 91
-;;
+#+(and :Lucid (not :ibm/370))
+(progn
+;  (system:define-foreign-function :c '|findString| :fixnum)
+  (system:define-foreign-function :c '|addtopath|  :fixnum)
+  (system:define-foreign-function :c '|chdir|      :fixnum)
+  (system:define-foreign-function :c '|writeablep| :fixnum)
+  (system:define-foreign-function :c '|directoryp| :fixnum)
+  (system:define-foreign-function :c '|copyEnvValue| :fixnum)
+  )
 
-;; #-:CCL
-;; (defun |float| (x) (|float| x))
+#+KCL
+(progn
+  (defentry |directoryp| (string)        (int "directoryp"))
+  (defentry |writeablep| (string)        (int "writeablep"))
+;  (defentry |findString| (string string) (int "findString"))
+  )
 
-;; Conversion between spad and lisp complex representations
-(defun s-to-c (c) (complex (car c) (cdr c)))
-(defun c-to-s (c) (cons (realpart c) (imagpart c)))
-(defun c-to-r (c)
-    (let ((r (realpart c)) (i (imagpart c)))
-      (if (or (zerop i) (< (abs i) (* 1.0E-10 (abs r))))
-	  r
-	(|error| "Result is not real.")) ))
+#+:CCL
+(defun |directoryp| (fn)
+  (cond ((not (probe-file fn)) -1)
+        ((directoryp fn) 1)
+        (t 0)))
 
-;; Wrappers for functions in the special function package
-(defun rlngamma  (x)           (|lnrgamma| x) )
-(defun clngamma  (z)   (c-to-s (|lncgamma| (s-to-c z)) ))
 
-;; #-:CCL
-(defun rgamma    (x)           (|rgamma|   x))
-(defun cgamma    (z)   (c-to-s (|cgamma|   (s-to-c z)) ))
 
-(defun rpsi      (n x)         (|rPsi|     n x) )
-(defun cpsi      (n z) (c-to-s (|cPsi|     n (s-to-c z)) ))
+; (defun |findStringInFile| (str p) 
+;     (|findString| (namestring p) str) )
 
-(defun rbesselj  (n x) (c-to-r (|BesselJ| n x)) ))
-(defun cbesselj  (v z) (c-to-s (|BesselJ| (s-to-c v) (s-to-c z)) ))
- 
-(defun rbesseli  (n x) (c-to-r (|BesselI| n x)) ))
-(defun cbesseli  (v z) (c-to-s (|BesselI| (s-to-c v) (s-to-c z)) ))
 
-(defun chyper0f1 (a z) (c-to-s (|chebf01| (s-to-c a) (s-to-c z)) ))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
+(defun |getEnv| (var-name)  (system::getenv var-name))
+
+;;stolen from AXIOM-XL src/strops.c
+#+(AND KCL (NOT ELF))
+(Clines 
+"MYHASH(s)"
+"char *s;"
+"{"
+" register unsigned int   h = 0;"
+" register int    c;"
+""
+" while ((c = *s++) != 0) {"
+"  h ^= (h << 8);"
+"  h += ((c) + 200041);"
+"  h &= 0x3FFFFFFF;"
+" }"
+" return h;"
+"}"
+)
+#+(AND KCL (NOT ELF))
+(defentry |hashString| (string) (int "MYHASH"))
+#+(AND KCL ELF)
+(defun |hashString| (string) (system:|hashString| string))
+
+#+(AND KCL (NOT ELF))
+(Clines
+"int MYCOMBINE(i,j)"
+"int i,j;"
+"{"
+"return ( (((((unsigned int)j) & 16777215) << 6)+((unsigned int)i)) % 1073741789);"
+"}"
+)
+#+(AND KCL (NOT ELF))
+(defentry |hashCombine| (int int) (int "MYCOMBINE"))
+#+(AND KCL  ELF)
+(defun |hashCombine| (x y) (system:|hashCombine| x y))
+
+

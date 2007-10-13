@@ -1,24 +1,6 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/vmlisp.lisp} Pamphlet}
-\author{Lars Ericson, Barry Trager, Martial Schor, Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -48,48 +30,6 @@
 ;; LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@
-
-
-\section{The [[VMLISP]] package}
-
-This is the package that originally contained the \Tool{VMLisp} macros
-but in fact contains macros to support several other lisps. It
-is essentially the place where most of the macros to support
-idioms from prior ports (like [[rdefiostream]] and [[fileactq]])
-
-The content of [[VMLISP]] was moved to [[BOOT]].
-
-\section{The StringImage Fix}
-
-In GCL 2.5 there is a bug in the write-to-string function.
-It should respect *print-escape* but it does not. That is,
-\begin{verbatim}
-
-In GCL 2.4.1:
-(setq *print-escape* nil)
-(write-to-string '|a|) ==> "a"
-
-In GCL 2.5:
-(setq *print-escape* nil)
-(write-to-string '|a|) ==> "|a|"
-
-\end{verbatim}
-The form2LispString function uses stringimage and fails.
-The princ-to-string function assumes *print-escape* is nil
-and works properly.
-
-<<stringimage fix>>=
-;(define-function 'prin2cvec #'write-to-string)
-(define-function 'prin2cvec #'princ-to-string)
-;(define-function 'stringimage #'write-to-string)
-(define-function 'stringimage #'princ-to-string)
-
-@
-
-
-<<*>>=
 
 (IMPORT-MODULE "boot-pkg")
 
@@ -196,15 +136,15 @@ and works properly.
  (defun equable (x) 
    (or (null x) 
        (and (consp x) (eq (car x) 'quote) 
-	    (symbolp (cadr x))))))
+            (symbolp (cadr x))))))
 
 #-:CCL
 (defmacro eqcar (x y)
  (let ((test
         (cond
          ((equable y) 'eq)
-	 ((integerp y) 'i=)
-	 ('eql))))
+         ((integerp y) 'i=)
+         ('eql))))
   (if (atom x)
    `(and (consp ,x) (,test (qcar ,x) ,y))
     (let ((xx (gensym)))
@@ -240,13 +180,13 @@ and works properly.
 (defmacro i= (x y) ;; integer equality
   (if (typep y 'fixnum)
       (let ((gx (gensym)))
-	`(let ((,gx ,x))
-	   (and (typep ,gx 'fixnum) (eql (the fixnum ,gx) ,y))))
+        `(let ((,gx ,x))
+           (and (typep ,gx 'fixnum) (eql (the fixnum ,gx) ,y))))
     (let ((gx (gensym)) (gy (gensym)))
       `(let ((,gx ,x) (,gy ,y))
-	 (cond ((and (typep ,gx 'fixnum) (typep ,gy 'fixnum))
-		(eql (the fixnum ,gx) (the fixnum ,gy)))
-	       ((eql (the integer ,gx) (the integer,gy))))))))
+         (cond ((and (typep ,gx 'fixnum) (typep ,gy 'fixnum))
+                (eql (the fixnum ,gx) (the fixnum ,gy)))
+               ((eql (the integer ,gx) (the integer,gy))))))))
 
 (defmacro |idChar?| (x)
  `(or (alphanumericp ,x) (member ,x '(#\? #\% #\' #\!) :test #'char=)))
@@ -263,14 +203,14 @@ and works properly.
       `(and (consp ,x) (qcar ,x))
     (let ((xx (gensym)))
       `(let ((,xx ,x))
-	 (and (consp ,xx) (qcar ,xx))))))
+         (and (consp ,xx) (qcar ,xx))))))
 
 (defmacro ifcdr (x)
   (if (atom x)
       `(and (consp ,x) (qcdr ,x))
     (let ((xx (gensym)))
       `(let ((,xx ,x))
-	 (and (consp ,xx) (qcdr ,xx))))))
+         (and (consp ,xx) (qcdr ,xx))))))
 
 (defmacro intp (x)
  `(integerp ,x))
@@ -326,7 +266,7 @@ and works properly.
       `(if (atom ,x) ,x (nreverse ,x))
     (let ((xx (gensym)))
       `(let ((,xx ,x))
-	 (if (atom ,xx) ,xx (nreverse ,xx))))))
+         (if (atom ,xx) ,xx (nreverse ,xx))))))
 
 (defmacro nump (n)
  `(numberp ,n))
@@ -336,7 +276,7 @@ and works properly.
       `(if (consp ,x) (qcar ,x) ,x)
     (let ((xx (gensym)))
       `(let ((,xx ,x))
-	 (if (consp ,xx) (qcar ,xx) ,xx)))))
+         (if (consp ,xx) (qcar ,xx) ,xx)))))
 
 (defmacro oraddtempdefs (filearg)
  `(eval-when 
@@ -747,7 +687,7 @@ and works properly.
           (setq lamda (eval lamda) ltype (car lamda) body (cddr lamda))))
     (let ((dectest (car body)))
       (if (and (eqcar dectest 'declare) (eqcar (cadr dectest) 'special))
-	  (setq *decl* (cdr (cadr dectest)) body (cdr body))))
+          (setq *decl* (cdr (cadr dectest)) body (cdr body))))
     (setq args (remove-fluids (cadr lamda)))
     (cond ((and (eq ltype 'lambda) (simple-arglist args)) (setq nargs args))
           (t (setq nargs (gensym))
@@ -798,9 +738,9 @@ and works properly.
                          (compiled-function-p (macro-function item))))
 
 (defun FBPIP (item) (or (compiled-function-p item)
-			(and (symbolp item) (fboundp item)
-			     (not (macro-function item))
-			     (compiled-function-p (symbol-function item)))))
+                        (and (symbolp item) (fboundp item)
+                             (not (macro-function item))
+                             (compiled-function-p (symbol-function item)))))
 
 ; 9.5 Identifiers
 
@@ -830,7 +770,7 @@ and works properly.
     (and (streamp stream)
          (or (not (consp (pathname-directory stream)))
              (equal (qcar (pathname-directory stream)) "dev")
-	     (null (pathname-name stream) ))))
+             (null (pathname-name stream) ))))
 
 #+KCL
 (defun IS-CONSOLE (stream)
@@ -877,8 +817,8 @@ and works properly.
 ;; note it is important that PNAME returns nil not an error for non-symbols
 (defun pname (x)
   (cond ((symbolp x) (symbol-name x))
-	((characterp x) (string x))
-	(t nil)))
+        ((characterp x) (string x))
+        (t nil)))
 
 ;; property lists in vmlisp are alists
 (defun PROPLIST (x)
@@ -982,9 +922,9 @@ and works properly.
 ;;(defun INTERSECTIONQ (l1 l2) (intersection l1 l2 :test #'eq))
 (defun |member| (item sequence)
    (cond ((symbolp item) (member item sequence :test #'eq))
-	 ((stringp item) (member item sequence :test #'equal))
-	 ((and (atom item) (not (arrayp item))) (member item sequence))
-	 (T (member item sequence :test #'equalp))))
+         ((stringp item) (member item sequence :test #'equal))
+         ((and (atom item) (not (arrayp item))) (member item sequence))
+         (T (member item sequence :test #'equalp))))
 
 (defun |remove| (list item &optional (count 1))
   (if (integerp count)
@@ -1011,26 +951,26 @@ and works properly.
   ; ignores non-nil list terminators
   ; ignores non-pair a-list entries
   (cond ((symbolp X)
-	 (PROG NIL
-	       A  (COND ((ATOM Y) (RETURN NIL))
-			((NOT (consp (CAR Y))) )
-			((EQ (CAAR Y) X) (RETURN (CAR Y))) )
-	       (SETQ Y (CDR Y))
-	       (GO A)))
-	((or (numberp x) (characterp x))
-	 (PROG NIL
-	       A  (COND ((ATOM Y) (RETURN NIL))
-			((NOT (consp (CAR Y))) )
-			((EQL (CAAR Y) X) (RETURN (CAR Y))) )
-	       (SETQ Y (CDR Y))
-	       (GO A)))
-	(t
-	 (PROG NIL
-	       A  (COND ((ATOM Y) (RETURN NIL))
-			((NOT (consp (CAR Y))) )
-			((EQUAL (CAAR Y) X) (RETURN (CAR Y))) )
-	       (SETQ Y (CDR Y))
-	       (GO A)))))
+         (PROG NIL
+               A  (COND ((ATOM Y) (RETURN NIL))
+                        ((NOT (consp (CAR Y))) )
+                        ((EQ (CAAR Y) X) (RETURN (CAR Y))) )
+               (SETQ Y (CDR Y))
+               (GO A)))
+        ((or (numberp x) (characterp x))
+         (PROG NIL
+               A  (COND ((ATOM Y) (RETURN NIL))
+                        ((NOT (consp (CAR Y))) )
+                        ((EQL (CAAR Y) X) (RETURN (CAR Y))) )
+               (SETQ Y (CDR Y))
+               (GO A)))
+        (t
+         (PROG NIL
+               A  (COND ((ATOM Y) (RETURN NIL))
+                        ((NOT (consp (CAR Y))) )
+                        ((EQUAL (CAAR Y) X) (RETURN (CAR Y))) )
+               (SETQ Y (CDR Y))
+               (GO A)))))
 ; 14.5 Updating
 
 (defun NREMOVE (list item &optional (count 1))
@@ -1065,20 +1005,6 @@ and works properly.
 
 (define-function 'GETREFV #'make-array)
 
-@
-Waldek Hebisch points out that, in the expression:
-\begin{verbatim}
-  reduce(+,[1.0/i for i in 1..20000])
-\end{verbatim}
-a significant amount of the time is spent in this function.
-A special case was added to significantly reduce the execution time.
-This was a problem in GCL as of 2.6.8pre and may be fixed in future
-releases. If it is fixed then the original definition, which was
-\begin{verbatim}
-(defun LIST2VEC (list) (coerce list 'vector))
-\end{verbatim}
-can be restored.
-<<*>>=
 (defun LIST2VEC (list)
  (if (consp list)
   (let* ((len (length list))
@@ -1102,7 +1028,7 @@ can be restored.
 #+:CCL  ((stringp l) (length l)) ;; Until ACN fixes his lisp -> C translator.
 #-:CCL  ((consp l)   (list-length l))
 #+:CCL  ((consp l)   (length l))
-	(t           0)))
+        (t           0)))
 
 (define-function 'MOVEVEC #'replace)
 
@@ -1126,15 +1052,15 @@ can be restored.
 (defun concat (a b &rest l)
    (let ((type (cond ((bit-vector-p a) 'bit-vector) (t 'string))))
       (cond ((eq type 'string)
-	     (setq a (string a) b (string b))
+             (setq a (string a) b (string b))
              (if l (setq l (mapcar #'string l)))))
       (if l (apply #'concatenate type a b l)
-	(concatenate type a b))) )
+        (concatenate type a b))) )
 #+AKCL
 (defun concat (a b &rest l)
   (if (bit-vector-p a)
       (if l (apply #'concatenate 'bit-vector a b l)
-	(concatenate 'bit-vector a b))
+        (concatenate 'bit-vector a b))
     (if l (apply #'system:string-concatenate a b l)
       (system:string-concatenate a b))))
 
@@ -1178,17 +1104,17 @@ can be restored.
 ;;- (defun strpos (what in start dontcare)
 ;;-    (setq what (string what) in (string in))
 ;;-    (if dontcare (progn (setq dontcare (character dontcare))
-;;- 		       (search what in :start2 start
-;;- 			       :test #'(lambda (x y) (or (eql x dontcare)
-;;- 							 (eql x y)))))
+;;-                    (search what in :start2 start
+;;-                            :test #'(lambda (x y) (or (eql x dontcare)
+;;-                                                      (eql x y)))))
 ;;-                 (search what in :start2 start)))
 
 (defun strpos (what in start dontcare)
    (setq what (string what) in (string in))
    (if dontcare (progn (setq dontcare (character dontcare))
-		       (search what in :start2 start
-			       :test #'(lambda (x y) (or (eql x dontcare)
-							 (eql x y)))))
+                       (search what in :start2 start
+                               :test #'(lambda (x y) (or (eql x dontcare)
+                                                         (eql x y)))))
                 (if (= start 0)
                    (search what in)
                    (search what in :start2 start))
@@ -1209,14 +1135,14 @@ can be restored.
     changing CVEC."
   (unless (characterp id) (setq id (elt (string id) 0)))
   (cond ((array-has-fill-pointer-p cvec)
-	 (vector-push-extend id cvec)
-	 cvec)
-	((adjustable-array-p cvec)
-	 (let ((l (length cvec)))
-	   (adjust-array cvec (1+ l))
-	   (setf (elt cvec l) id)
-	   cvec))
-	(t (concat cvec id))))
+         (vector-push-extend id cvec)
+         cvec)
+        ((adjustable-array-p cvec)
+         (let ((l (length cvec)))
+           (adjust-array cvec (1+ l))
+           (setf (elt cvec l) id)
+           cvec))
+        (t (concat cvec id))))
 
 (defun setsize (vector size) (adjust-array vector size))
 
@@ -1264,7 +1190,7 @@ can be restored.
           (setq start1 (1+ start1))
           (setq start2 (1+ start2)))
       (let* ((l1 (length cvec1))
-	     (r (make-string (- (+ l1 length2) length1)))
+             (r (make-string (- (+ l1 length2) length1)))
              (i 0))
          (do ((j 0 (1+ j)))
              ((= j start1))
@@ -1598,7 +1524,11 @@ can be restored.
 
 ; 24.0 Printing
 
-<<stringimage fix>>
+;(define-function 'prin2cvec #'write-to-string)
+(define-function 'prin2cvec #'princ-to-string)
+;(define-function 'stringimage #'write-to-string)
+(define-function 'stringimage #'princ-to-string)
+
 (define-function 'printexp #'princ)
 (define-function 'prin0  #'prin1)
 
@@ -1653,17 +1583,17 @@ can be restored.
          (filename (cdr (assoc 'FILE stream-alist)))
          (dev (cdr (assoc 'DEVICE stream-alist))))
       (if (EQ dev 'CONSOLE) (make-synonym-stream '*terminal-io*)
-	(let ((strm (case mode
-			  ((OUTPUT O) (open (make-filename filename)
-					    :direction :output))
-			  ((INPUT I) (open (make-input-filename filename)
-					   :direction :input)))))
-	  (if (and (numberp char-position) (> char-position 0))
-	      (file-position strm char-position))
-	  strm))))
+        (let ((strm (case mode
+                          ((OUTPUT O) (open (make-filename filename)
+                                            :direction :output))
+                          ((INPUT I) (open (make-input-filename filename)
+                                           :direction :input)))))
+          (if (and (numberp char-position) (> char-position 0))
+              (file-position strm char-position))
+          strm))))
 
 (defun shut (st) (if (is-console st) st
-		   (if (streamp st) (close st) -1)))
+                   (if (streamp st) (close st) -1)))
 
 (defun EOFP (stream) (null (peek-char nil stream nil nil)))
 
@@ -1771,7 +1701,7 @@ can be restored.
 (defun CurrentTime ()
   (multiple-value-bind (sec min hour day month year) (get-decoded-time)
     (format nil "~2,'0D/~2,'0D/~2,'0D~2,'0D:~2,'0D:~2,'0D"
-	    month day (rem year 100) hour min sec)))
+            month day (rem year 100) hour min sec)))
 
 (defun $screensize () '(24 80))          ; You tell me!!
 
@@ -1816,11 +1746,11 @@ can be restored.
   (setq MACERRORCOUNT (+ 1 (eval 'MACERRORCOUNT)))
   (let ((nargs (abs N)))
     (error (concatenate 'string (symbol-name NAME) " requires "
-			(if (minusp N) "at least " "exactly ")
-			(case nargs (0 "no") (1 "one") (2 "two") (3 "three")
-			      (4 "four") (5 "five") (6 "six")
-			      (t (princ-to-string nargs)))
-			(if (eq nargs 1) " argument," " arguments,")))))
+                        (if (minusp N) "at least " "exactly ")
+                        (case nargs (0 "no") (1 "one") (2 "two") (3 "three")
+                              (4 "four") (5 "five") (6 "six")
+                              (t (princ-to-string nargs)))
+                        (if (eq nargs 1) " argument," " arguments,")))))
 
 (defun MACERR (MESSAGE &rest ignore)
   (declare (ignore ignore))
@@ -1851,18 +1781,18 @@ can be restored.
 ;;   first cons-cell whose CAR is EQ KEY.
 (defun getl (sym key)
   (cond ((symbolp sym)
-	 (get sym key))
-	((null sym) nil)
-	((consp sym)
-	 (let ((sym-1 (car sym)))
-	   (cond ((symbolp sym-1)
-		  (get sym-1 key))
-		 ((and (consp sym-1)
-		       (symbolp (car sym-1)))
-		  (if (eq (car sym-1) key)
-		      (cdr sym-1)
-		    (getl (cdr sym) key))))))))
-		      
+         (get sym key))
+        ((null sym) nil)
+        ((consp sym)
+         (let ((sym-1 (car sym)))
+           (cond ((symbolp sym-1)
+                  (get sym-1 key))
+                 ((and (consp sym-1)
+                       (symbolp (car sym-1)))
+                  (if (eq (car sym-1) key)
+                      (cdr sym-1)
+                    (getl (cdr sym) key))))))))
+                      
 ; The following should actually position the cursor at the sint'th line of the screen:
 
 (defun $showline (cvec sint) (terpri) sint (princ cvec))
@@ -1924,20 +1854,20 @@ can be restored.
 (defun BPINAME (func)
   (if (functionp func)
       (if (symbolp func) func
-	(let ((name (svref func 0)))
-	  (if (and (consp name) (eq (car name) 'SYSTEM::NAMED-LAMBDA))
-	      (cadr name)
-	    name)) )))
+        (let ((name (svref func 0)))
+          (if (and (consp name) (eq (car name) 'SYSTEM::NAMED-LAMBDA))
+              (cadr name)
+            name)) )))
 
 #+(OR IBCL KCL)
 (defun BPINAME (func)
   (if (functionp func)
       (cond ((symbolp func) func)
-	    ((and (consp func) (eq (car func) 'LAMBDA-BLOCK))
-	      (cadr func))
-	    ((compiled-function-p func)
-	     (system:compiled-function-name func))
-	    ('t func))))
+            ((and (consp func) (eq (car func) 'LAMBDA-BLOCK))
+              (cadr func))
+            ((compiled-function-p func)
+             (system:compiled-function-name func))
+            ('t func))))
 #+:cmulisp
 (defun BPINAME (func)
  (when (functionp func)
@@ -1971,11 +1901,11 @@ can be restored.
 (defun LISTOFFREES (bpi)
   (if (compiled-function-p bpi)
       (let ((end (- (lucid::procedure-length bpi) 2)))
-	(do ((i 3 (1+ i))
-	     (ans nil))
-	    ((> i end) ans)
-	    (let ((locexp (svref bpi i)))
-	      (if (symbolp locexp) (push locexp ans)))))))
+        (do ((i 3 (1+ i))
+             (ans nil))
+            ((> i end) ans)
+            (let ((locexp (svref bpi i)))
+              (if (symbolp locexp) (push locexp ans)))))))
 
 #-Lucid
 (defun LISTOFFREES (bpi)
@@ -1986,11 +1916,11 @@ can be restored.
 #+(and :Lucid (not :ibm/370))
 (defun OBEY (S)
   (system::run-aix-program (make-absolute-filename "/lib/obey")
-		       :arguments	(list "-c" S)))
+                       :arguments       (list "-c" S)))
 #+:cmulisp
 (defun OBEY (S)
    (ext:run-program (make-absolute-filename "/lib/obey")
-		    (list "-c" S) :input t :output t))
+                    (list "-c" S) :input t :output t))
 #+(OR IBCL KCL :CCL)
 (defun OBEY (S) (SYSTEM S))
 
@@ -2007,9 +1937,3 @@ can be restored.
 (defun MAKE-BVEC (n)
  (make-array (list n) :element-type 'bit :initial-element 0))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

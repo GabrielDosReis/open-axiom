@@ -1,111 +1,6 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/macros.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\begin{verbatim}
-PURPOSE: Provide generally useful macros and functions for MetaLanguage
-         and Boot code.  Contents are organized along Common Lisp datatype
-         lines, with sections numbered to match the section headings of the
-         Common Lisp Reference Manual, by Guy Steele, Digital Press, 1984,
-         Digital Press Order Number EY-00031-DP.  This way you can
-         look up the corresponding section in the manual and see if
-         there isn't a cleaner and non-VM-specific way of doing things.
- 
-\end{verbatim}
-
-\section{Performance change}
-
-Camm has identified a performace problem during compiles. There is
-a loop that continually adds one element to a vector. This causes
-the vector to get extended by 1 and copied. These patches fix the 
-problem since vectors with fill pointers don't need to be copied.
-
-These cut out the lion's share of the gc problem
-on this compile.  30min {\tt ->} 7 min on my box.  There is still some gc
-churning in cons pages due to many calls to 'list' with small n.  One
-can likely improve things further with an appropriate (declare
-(:dynamic-extent ...)) in the right place -- gcl will allocate such
-lists on the C stack (very fast).
-
-\subsection{lengthenvec}
-
-The original code was:
-\begin{verbatim}
-(defun lengthenvec (v n)
-  (if (adjustable-array-p v) (adjust-array v n)
-    (replace (make-array n) v)))
-\end{verbatim}
-
-<<lengthenvec>>=
-(defun lengthenvec (v n)
-  (if 
-    (and (array-has-fill-pointer-p v) (adjustable-array-p v))
-    (if 
-      (>= n (array-total-size v)) 
-        (adjust-array v (* n 2) :fill-pointer n) 
-        (progn 
-          (setf (fill-pointer v) n) 
-          v))
-    (replace (make-array n :fill-pointer t) v)))
-
-@
-
-\subsection{make-init-vector}
-
-The original code was
-\begin{verbatim}
-(defun make-init-vector (n val) (make-array n :initial-element val))
-\end{verbatim}
-
-<<make-init-vector>>=
-(defun make-init-vector (n val) 
-  (make-array n :initial-element val :fill-pointer t))
-
-@
-
-\section{DEFUN CONTAINED}
-
-The [[CONTAINED]] predicate is used to walk internal structures
-such as modemaps to see if the $X$ object occurs within $Y$. One
-particular use is in a function called [[isPartialMode]] (see
-i-funsel.boot) to decide
-if a modemap is only partially complete. If this is true then the 
-modemap will contain the constant [[$EmptyMode]]. So the call 
-ends up being [[CONTAINED |$EmptyMode| Y]]. 
-<<DEFUN CONTAINED>>=
-#-:CCL
-(DEFUN CONTAINED (X Y)
-  (if (symbolp x)
-      (contained\,eq X Y)
-      (contained\,equal X Y)))
- 
-(defun contained\,eq (x y)
-       (if (atom y) (eq x y)
-           (or (contained\,eq x (car y)) (contained\,eq x (cdr y)))))
- 
-(defun contained\,equal (x y)
-   (cond ((atom y) (equal x y))
-         ((equal x y) 't)
-         ('t (or (contained\,equal x (car y)) (contained\,equal x (cdr y))))))
- 
-@
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -136,9 +31,27 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+;; PURPOSE: Provide generally useful macros and functions for MetaLanguage
+;;          and Boot code.  Contents are organized along Common Lisp datatype
+;;          lines, with sections numbered to match the section headings of the
+;;          Common Lisp Reference Manual, by Guy Steele, Digital Press, 1984,
+;;          Digital Press Order Number EY-00031-DP.  This way you can
+;;          look up the corresponding section in the manual and see if
+;;          there isn't a cleaner and non-VM-specific way of doing things.
+ 
+
+;; Camm has identified a performace problem during compiles. There is
+;; a loop that continually adds one element to a vector. This causes
+;; the vector to get extended by 1 and copied. These patches fix the 
+;; problem since vectors with fill pointers don't need to be copied.
+;;
+;; These cut out the lion's share of the gc problem
+;; on this compile.  30min {\tt ->} 7 min on my box.  There is still some gc
+;; churning in cons pages due to many calls to 'list' with small n.  One
+;; can likely improve things further with an appropriate (declare
+;; (:dynamic-extent ...)) in the right place -- gcl will allocate such
+;; lists on the C stack (very fast).
+
 
 (import-module "sys-macros") 
 (in-package "BOOT")
@@ -302,8 +215,8 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
  
 (defun |delete| (item sequence)
    (cond ((symbolp item) (remove item sequence :test #'eq))
-	 ((and (atom item) (not (arrayp item))) (remove item sequence))
-	 (T (remove item sequence :test #'equalp))))
+         ((and (atom item) (not (arrayp item))) (remove item sequence))
+         (T (remove item sequence :test #'equalp))))
  
  
  
@@ -349,7 +262,7 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
   "Returns a list of the first N elements of list X."
   (COND ((EQL N 0) NIL)
         ((> N 0) (CONS (CAR X) (TAKE (1- N) (CDR X))))
-	((>= (setq m (+ (length x) N)) 0) (drop m x))
+        ((>= (setq m (+ (length x) N)) 0) (drop m x))
         ((CROAK (list "Bad args to DROP" N X)))))
  
 (DEFUN NUMOFNODES (X) (if (ATOM X) 0 (+ 1 (NUMOFNODES (CAR X)) (NUMOFNODES (CDR X)))))
@@ -401,7 +314,21 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
 
 ; 15.5 Using Lists as Sets
 
-<<DEFUN CONTAINED>> 
+#-:CCL
+(DEFUN CONTAINED (X Y)
+  (if (symbolp x)
+      (contained\,eq X Y)
+      (contained\,equal X Y)))
+ 
+(defun contained\,eq (x y)
+       (if (atom y) (eq x y)
+           (or (contained\,eq x (car y)) (contained\,eq x (cdr y)))))
+ 
+(defun contained\,equal (x y)
+   (cond ((atom y) (equal x y))
+         ((equal x y) 't)
+         ('t (or (contained\,equal x (car y)) (contained\,equal x (cdr y))))))
+  
  
 (DEFUN PREDECESSOR (TL L)
   "Returns the sublist of L whose CDR is EQ to TL."
@@ -434,16 +361,16 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
 (DEFUN ADDASSOC (X Y L)
   "Put the association list pair (X . Y) into L, erasing any previous association for X"
   (COND ((ATOM L) 
-	 (CONS (CONS X Y) L))
+         (CONS (CONS X Y) L))
         ((EQUAL X (CAAR L)) 
-	 (CONS (CONS X Y) (CDR L)))
+         (CONS (CONS X Y) (CDR L)))
         ((CONS (CAR L) (ADDASSOC X Y (CDR L))))))
  
 (DEFUN DELLASOS (U V)
   "Remove any assocation pair (U . X) from list V."
   (COND ((ATOM V) NIL)
         ((EQUAL U (CAAR V))
-	 (CDR V))
+         (CDR V))
         ((CONS (CAR V) (DELLASOS U (CDR V))))))
 
  
@@ -451,11 +378,11 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
 (DEFUN LASSOC (X Y)
   "Return the datum associated with key X in association list Y."
   (PROG NIL
-	A  
-	(COND ((ATOM Y) 
-	       (RETURN NIL))
+        A  
+        (COND ((ATOM Y) 
+               (RETURN NIL))
               ((EQUAL (CAAR Y) X) 
-	       (RETURN (CDAR Y))) )
+               (RETURN (CDAR Y))) )
         (SETQ Y (CDR Y))
         (GO A)))
 
@@ -463,11 +390,11 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
 (DEFUN |rassoc| (X Y)
   "Return the key associated with datum X in association list Y."
   (PROG NIL
-	A  
-	(COND ((ATOM Y) 
-	       (RETURN NIL))
+        A  
+        (COND ((ATOM Y) 
+               (RETURN NIL))
               ((EQUAL (CDAR Y) X) 
-	       (RETURN (CAAR Y))) )
+               (RETURN (CAAR Y))) )
         (SETQ Y (CDR Y))
         (GO A)))
 
@@ -500,8 +427,20 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
 ; 17.6 Changing the Dimensions of an Array
  
 
-<<lengthenvec>>
-<<make-init-vector>> 
+(defun lengthenvec (v n)
+  (if 
+    (and (array-has-fill-pointer-p v) (adjustable-array-p v))
+    (if 
+      (>= n (array-total-size v)) 
+        (adjust-array v (* n 2) :fill-pointer n) 
+        (progn 
+          (setf (fill-pointer v) n) 
+          v))
+    (replace (make-array n :fill-pointer t) v)))
+
+(defun make-init-vector (n val) 
+  (make-array n :initial-element val :fill-pointer t))
+ 
  
 ; 22 INPUT/OUTPUT
  
@@ -576,7 +515,7 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
  
 (defun |sayBrightly| (x &optional (out-stream *standard-output*))
   (COND ((NULL X) NIL)
-	(|$sayBrightlyStream| (sayBrightly1 X |$sayBrightlyStream|))
+        (|$sayBrightlyStream| (sayBrightly1 X |$sayBrightlyStream|))
         ((IS-CONSOLE out-stream) (sayBrightly1 X out-stream))
         ((sayBrightly1 X out-stream) (sayBrightly1 X *terminal-io*))))
  
@@ -586,7 +525,7 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
  
 (defun |sayBrightlyNT| (x &optional (S *standard-output*))
   (COND ((NULL X) NIL)
-	(|$sayBrightlyStream| (sayBrightlyNT1 X |$sayBrightlyStream|))
+        (|$sayBrightlyStream| (sayBrightlyNT1 X |$sayBrightlyStream|))
         ((IS-CONSOLE S) (sayBrightlyNT1 X S))
         ((sayBrightly1 X S) (sayBrightlyNT1 X *terminal-io*))))
  
@@ -595,7 +534,7 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
  
 (defun sayBrightly1 (X *standard-output*)
     (if (ATOM X)
-	(progn (BRIGHTPRINT-0 X) (TERPRI) (force-output))
+        (progn (BRIGHTPRINT-0 X) (TERPRI) (force-output))
       (progn (BRIGHTPRINT X) (TERPRI) (force-output))))
  
 (defvar |$algebraOutputStream| *standard-output*)
@@ -614,13 +553,13 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
  
 (defun |sayMSG2File| (msg)
   (PROG (file str)
-	(SETQ file (|makePathname| '|spadmsg| '|listing| |$listingDirectory|))
-	(SETQ str
-	      (DEFIOSTREAM
-	       (CONS '(MODE . OUTPUT) (CONS (CONS 'FILE file) NIL))
-	       255 0))
-	(sayBrightly1 msg str)
-	(SHUT str) ) )
+        (SETQ file (|makePathname| '|spadmsg| '|listing| |$listingDirectory|))
+        (SETQ str
+              (DEFIOSTREAM
+               (CONS '(MODE . OUTPUT) (CONS (CONS 'FILE file) NIL))
+               255 0))
+        (sayBrightly1 msg str)
+        (SHUT str) ) )
  
 (defvar |$fortranOutputStream|)
  
@@ -647,7 +586,7 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
  
 (DEFUN BLANKS (N &optional (stream *standard-output*)) "Print N blanks."
     (do ((i 1 (the fixnum(1+ i))))
-	((> i N))(declare (fixnum i n)) (princ " " stream)))
+        ((> i N))(declare (fixnum i n)) (princ " " stream)))
  
 ; 23 FILE SYSTEM INTERFACE
  
@@ -655,8 +594,8 @@ ends up being [[CONTAINED |$EmptyMode| Y]].
  
 (DEFUN DEFSTREAM (file MODE)
        (if (member mode '(i input))
-	   (MAKE-INSTREAM file)
-	 (MAKE-OUTSTREAM file)))
+           (MAKE-INSTREAM file)
+         (MAKE-OUTSTREAM file)))
  
 ; 23.3 Renaming, Deleting and Other File Operations
  
@@ -698,8 +637,8 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
  
 (defun coerce-failure-msg (val mode)
    (STRCONC (MAKE-REASONABLE (STRINGIMAGE val))
-	    " cannot be coerced to mode "
-	    (STRINGIMAGE (|devaluate| mode))))
+            " cannot be coerced to mode "
+            (STRINGIMAGE (|devaluate| mode))))
  
 (defmacro |check-subtype| (pred submode val)
    `(|assert| ,pred (coerce-failure-msg ,val ,submode)))
@@ -769,7 +708,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
   ((and (symbolp (car sexpr)) (macro-function (car sexpr)))
    (do ()
        ((not (and (consp sexpr) (symbolp (car sexpr))
-		  (macro-function (car sexpr)))))
+                  (macro-function (car sexpr)))))
      (setq sexpr (macroexpand sexpr)))
    (if (consp sexpr) 
      (let ((a (car sexpr)) (b (caadr sexpr)))
@@ -777,7 +716,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
          (cons a (list (cons b (mapcar #'macroexpandall (cdadr sexpr)))))
          (mapcar #'macroexpandall sexpr)))
        sexpr))
-  ('else	
+  ('else        
     (mapcar #'macroexpandall sexpr))))
 
 
@@ -851,10 +790,10 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 ;;(defun expand-tabs (str)
 ;;  (let ((bpos (nonblankloc str))
-;;	(tpos (indent-pos str)))
+;;      (tpos (indent-pos str)))
 ;;    (if (eql bpos tpos) str
 ;;      (concatenate 'string (make-string tpos :initial-element #\space)
-;;		   (subseq str bpos)))))
+;;                 (subseq str bpos)))))
 (defun expand-tabs (str)
    (if (and (stringp str) (> (length str) 0))
       (let ((bpos (nonblankloc str))
@@ -880,16 +819,16 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
   ;; returns the cons of applying func to args and a string produced
   ;; from standard-output while executing.
   (let* ((out-stream (make-string-output-stream))
-	 (curoutstream out-stream)
-	 (|$algebraOutputStream| out-stream)
+         (curoutstream out-stream)
+         (|$algebraOutputStream| out-stream)
          (erroroutstream out-stream)
-	val)
+        val)
     (declare (special curoutstream |$algebraOutputStream|))
     (setq *standard-output* out-stream)
     (setq *terminal-io* out-stream)
     (setq val (catch 'spad_reader
-		(catch 'TOP_LEVEL
-		  (apply (symbol-function func) args))))
+                (catch 'TOP_LEVEL
+                  (apply (symbol-function func) args))))
     (cons val (get-output-stream-string *standard-output*))))
 
 (defun |breakIntoLines| (str)
@@ -898,7 +837,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
      (setq eol (position #\Newline str :start bol))
      (if (null eol) (return))
      (if (> eol bol) 
-	 (setq line-list (cons (subseq str bol eol) line-list)))
+         (setq line-list (cons (subseq str bol eol) line-list)))
      (setq bol (+ eol 1)))
     (nreverse line-list)))
 
@@ -910,8 +849,8 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 (defmacro |try| (X)
   `(LET ((|$autoLine|))
-	(declare (special |$autoLine|))
-	(|tryToFit| (|saveState|) ,X)))
+        (declare (special |$autoLine|))
+        (|tryToFit| (|saveState|) ,X)))
 
 (defmacro |embrace| (X) `(|wrapBraces| (|saveC|) ,X (|restoreC|)))
 (defmacro |indentNB| (X) `(|wrapBraces| (|saveD|) ,X (|restoreD|)))
@@ -926,7 +865,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
     (setq state (|saveState| 't))
     (or
       (LET ((|$autoLine|))
-	 (declare (special |$autoLine|))
+         (declare (special |$autoLine|))
          (and ,a (|formatRight| '|formatPreferPile| ,b ,c ,d)))
       (|restoreState| state)
       (and (eqcar ,b (quote seq))
@@ -950,7 +889,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
     (or
       (markhash ,b 0)
       (LET ((|$autoLine|))
-	 (declare (special |$autoLine|))
+         (declare (special |$autoLine|))
          (and ,a (|formatRight| '|formatPreferPile| ,b ,c ,d)))
       (|restoreState| state)
       (markhash ,b 1)
@@ -979,15 +918,9 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 (defmacro |Record| (&rest x)
   `(|Record0| (LIST ,@(COLLECT (IN Y X)
-			       (list 'CONS (MKQ (CADR Y)) (CADDR Y))))))
+                               (list 'CONS (MKQ (CADR Y)) (CADDR Y))))))
 
 (defmacro |:| (tag expr)
   `(LIST '|:| ,(MKQ tag) ,expr))
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

@@ -1,39 +1,6 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/property.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\begin{verbatim}
-This file contains most of the code that puts properties on
-identifiers in the Scratchpad II system.  If it was not possible
-to actually put the code here, we have pointers to where such
-property list manipulation is being done.
-
-Pointers:
-o  see NEWAUX LISP for some code that puts GENERIC and RENAMETOK
-   properties on identifiers for the parser
-o  coerceIntCommute puts the "commute" property on constructors.
-o  coerceRetract puts the "retract" property on constructors.
-o  there is some code at the end of SPECEVAL BOOT that puts "up"
-   properties on some special handlers.
-
-\end{verbatim}
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -64,25 +31,21 @@ o  there is some code at the end of SPECEVAL BOOT that puts "up"
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
 
-\section{bug fix}
+;; This file contains most of the code that puts properties on
+;; identifiers in the Scratchpad II system.  If it was not possible
+;; to actually put the code here, we have pointers to where such
+;; property list manipulation is being done.
 
-These two lines were commented out in the original sources.
-However both of these lines involved control characters that
-latex cannot handle. control-V and control-H should be the
-actual control characters, not the text replacement shown here.
-;;(control-V |parseUpArrow|) 
-;;(|control-H| |parseLeftArrow|) 
-<<clip>>=
-@
-We have a similar problem with the control-G character.
-;;  (control-G |compContained|)
-<<clip1>>=
-@
+;; Pointers:
+;; o  see NEWAUX LISP for some code that puts GENERIC and RENAMETOK
+;;    properties on identifiers for the parser
+;; o  coerceIntCommute puts the "commute" property on constructors.
+;; o  coerceRetract puts the "retract" property on constructors.
+;; o  there is some code at the end of SPECEVAL BOOT that puts "up"
+;;    properties on some special handlers.
 
-<<*>>=
-<<license>>
+
 
 (in-package "BOOT")
 
@@ -170,10 +133,10 @@ We have a similar problem with the control-G character.
   (|binom| SUBSPAN |binomSub|)
   (|binom| SUPERSPAN |binomSuper|)
   (|binom| WIDTH |binomWidth|)
-  (ALTSUPERSUB APP	 |altSuperSubApp|)
-  (ALTSUPERSUB SUBSPAN	 |altSuperSubSub|)
+  (ALTSUPERSUB APP       |altSuperSubApp|)
+  (ALTSUPERSUB SUBSPAN   |altSuperSubSub|)
   (ALTSUPERSUB SUPERSPAN |altSuperSubSuper|)
-  (ALTSUPERSUB WIDTH	 |altSuperSubWidth|)
+  (ALTSUPERSUB WIDTH     |altSuperSubWidth|)
   (BOX APP |boxApp|)
   (BOX SUBSPAN |boxSub|)
   (BOX SUPERSPAN |boxSuper|)
@@ -190,7 +153,7 @@ We have a similar problem with the control-G character.
   (MATRIX SUBSPAN |matSub|)
   (MATRIX SUPERSPAN |matSuper|)
   (MATRIX WIDTH |matWidth|)
-  (NOTHING APP	     |nothingApp|)
+  (NOTHING APP       |nothingApp|)
   (NOTHING SUPERSPAN |nothingSuper|)
   (NOTHING SUBSPAN   |nothingSub|)
   (NOTHING WIDTH     |nothingWidth|)
@@ -208,10 +171,10 @@ We have a similar problem with the control-G character.
   (PAREN SUBSPAN |qTSub|)
   (PAREN SUPERSPAN |qTSuper|)
   (PAREN WIDTH |qTWidth|)
-  (ROOT APP	  |rootApp|)
-  (ROOT SUBSPAN	  |rootSub|)
+  (ROOT APP       |rootApp|)
+  (ROOT SUBSPAN   |rootSub|)
   (ROOT SUPERSPAN |rootSuper|)
-  (ROOT WIDTH	  |rootWidth|)
+  (ROOT WIDTH     |rootWidth|)
   (ROW WIDTH |eq0|)
   (SC APP |appsc|)
   (SC SUBSPAN |agggsub|)
@@ -219,10 +182,10 @@ We have a similar problem with the control-G character.
   (SC WIDTH |widthSC|)
   (SETQ APP |appsetq|)
   (SETQ WIDTH |letWidth|)
-  (SLASH APP	   |slashApp|)
+  (SLASH APP       |slashApp|)
   (SLASH SUBSPAN   |slashSub|)
   (SLASH SUPERSPAN |slashSuper|)
-  (SLASH WIDTH	   |slashWidth|)
+  (SLASH WIDTH     |slashWidth|)
   (SUB APP |appsub|)
   (SUB SUBSPAN |subSub|)
   (SUB SUPERSPAN |subSuper|)
@@ -400,7 +363,12 @@ We have a similar problem with the control-G character.
   (\: |parseColon|)
   (|::| |parseCoerce|)
   (@ |parseAtSign|)
-<<clip>>
+;; These two lines were commented out in the original sources.
+;; However both of these lines involved control characters that
+;; latex cannot handle. control-V and control-H should be the
+;; actual control characters, not the text replacement shown here.
+;; ;;(control-V |parseUpArrow|) 
+;; ;;(|control-H| |parseLeftArrow|) 
   (|and| |parseAnd|)
   (CATEGORY |parseCategory|)
   (|construct| |parseConstruct|)
@@ -440,7 +408,7 @@ We have a similar problem with the control-G character.
   (COLLECT |postCollect|)
   (|:BF:| |postBigFloat|)
   (|in| |postin|)  ;" the infix operator version of in"
-  (IN |postIn|)	 ;" the iterator form of in"
+  (IN |postIn|)  ;" the iterator form of in"
   (REPEAT |postRepeat|)
   (|TupleCollect| |postTupleCollect|)
   (|add| |postAdd|)
@@ -456,7 +424,7 @@ We have a similar problem with the control-G character.
   (|Join| |postJoin|)
   (|Signature| |postSignature|)
   (CATEGORY |postCategory|)
-;;(	 |postDef|)
+;;(      |postDef|)
   (== |postDef|)
   (|==>| |postMDef|)
   (|->| |postMapping|)
@@ -584,7 +552,9 @@ We have a similar problem with the control-G character.
   (|:| |compColon|)
   (\:\: |compCoerce|)
   (QUOTE |compQuote|)
-<<clip1>>
+;; We have a similar problem with the control-G character.
+;; ;;  (control-G |compContained|)
+
   (|add| |compAdd|)
   (CAPSULE |compCapsule|)
   (|case| |compCase|)
@@ -631,9 +601,3 @@ We have a similar problem with the control-G character.
   (LET |compSetqInteractive|)
 )) (MAKEPROP (CAR X) 'INTERACTIVE (CREATE-SBC (CADR X))))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

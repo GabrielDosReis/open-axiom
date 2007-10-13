@@ -1,38 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp nocompil.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-The function {\bf protected-symbol-warn} was added because it is
-used in {\bf setvart.boot} but apparently is nowhere defined. It
-is probably primitive to {\bf CCL}.
-
-The function {\bf protect-symbols} was added because it is
-used in {\bf setvart.boot} but apparently is nowhere defined. It
-is probably primitive to {\bf CCL}.
-
-The output of these functions is just a noisy warning message
-and this has been commented out.
-\section{GCL cmpnote function}
-GCL keeps noting the fact that the compiler is performing tail-recursion.
-Bill Schelter added this as a debugging tool for Axiom and it was never
-removed. Patching the lisp code in the GCL build fails as the system
-is actually built from the pre-compiled C code. Thus, we can only step
-on this message after the fact. The cmpnote function is used nowhere
-else in GCL so stepping on the function call seems best. We're unhappy
-with this hack and will try to convince the GCL crowd to fix this.
-<<gcl-cmpnote>>=
-#+:gcl (defun compiler::cmpnote (&rest x))
-@ 
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -63,11 +31,28 @@ with this hack and will try to convince the GCL crowd to fix this.
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
-<<gcl-cmpnote>>
+;; The function {\bf protected-symbol-warn} was added because it is
+;; used in {\bf setvart.boot} but apparently is nowhere defined. It
+;; is probably primitive to {\bf CCL}.
+
+;; The function {\bf protect-symbols} was added because it is
+;; used in {\bf setvart.boot} but apparently is nowhere defined. It
+;; is probably primitive to {\bf CCL}.
+
+;; The output of these functions is just a noisy warning message
+;; and this has been commented out.
+;; \section{GCL cmpnote function}
+;; GCL keeps noting the fact that the compiler is performing tail-recursion.
+;; Bill Schelter added this as a debugging tool for Axiom and it was never
+;; removed. Patching the lisp code in the GCL build fails as the system
+;; is actually built from the pre-compiled C code. Thus, we can only step
+;; on this message after the fact. The cmpnote function is used nowhere
+;; else in GCL so stepping on the function call seems best. We're unhappy
+;; with this hack and will try to convince the GCL crowd to fix this.
+
+
+#+:gcl (defun compiler::cmpnote (&rest x))
 
 (import-module "boot-pkg")
 (in-package "BOOT")
@@ -90,9 +75,3 @@ with this hack and will try to convince the GCL crowd to fix this.
 #+:ccl
   (format t "protected-symbol-warn called with ~A~%" arg))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

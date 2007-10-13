@@ -1,31 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp patches.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\subsection{toplevel}
-The function top-level is the very root of the normal invocation
-history stack. Control will pass to the restart function which is 
-also in this file.
-
-For some unknown reason toplevel was redefined to incorrectly
-call lisp::unwind whereas it is defined (in this file) to be
-interned in the boot package. We've returned toplevel to its
-previous definition.
-<<toplevel>>=
-(defun toplevel (&rest foo) (throw '|top_level| '|restart|))
-;;(defun toplevel (&rest foo) (lisp::unwind))
-
-@
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -56,9 +31,6 @@ previous definition.
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 (in-package "BOOT")
 ;;patches for now
@@ -82,8 +54,8 @@ previous definition.
 
 (defun |mkAutoLoad| (fn cname)
    (function (lambda (&rest args)
-		 (|autoLoad| fn cname)
-		 (apply cname args))))
+                 (|autoLoad| fn cname)
+                 (apply cname args))))
 
 (setq |$printTimeIfTrue| nil)
 
@@ -103,7 +75,16 @@ previous definition.
     (|sayKeyedMsg| 'S2IZ0070 
                    (list (namestring *default-pathname-defaults*)))))
 
-<<toplevel>>
+;; The function top-level is the very root of the normal invocation
+;; history stack. Control will pass to the restart function which is 
+;; also in this file.
+;; For some unknown reason toplevel was redefined to incorrectly
+;; call lisp::unwind whereas it is defined (in this file) to be
+;; interned in the boot package. We've returned toplevel to its
+;; previous definition.
+(defun toplevel (&rest foo) (throw '|top_level| '|restart|))
+;;(defun toplevel (&rest foo) (lisp::unwind))
+
 (define-function 'top-level #'toplevel)
 (define-function 'unwind #'|spadThrow|)
 (define-function 'resume #'|spadThrow|)
@@ -147,8 +128,8 @@ previous definition.
      ((string= type "boot")
 #-:CCL
       (boot input-file
-	 (setq lfile (make-pathname :type "lisp"
-			   :defaults input-file)))
+         (setq lfile (make-pathname :type "lisp"
+                           :defaults input-file)))
 #+:CCL
       (boot input-file
          (setq lfile (make-pathname :name (pathname-name input-file)
@@ -157,7 +138,7 @@ previous definition.
      ((string= type "lisp") (load input-file))
      ((string= type "bbin") (load input-file))
      ((and (string= type "input")
-	   |$useNewParser|)
+           |$useNewParser|)
       (|ncINTERPFILE| input-file Echo-Meta))
      (t (spad input-file)))))
 
@@ -171,8 +152,8 @@ previous definition.
 (setq |$algebraOutputStream|
    (setq |$fortranOutputStream|
       (setq |$texOutputStream|
-	  (setq |$formulaOutputStream|
-	     (setq |conOutStream| (make-synonym-stream '*terminal-io*))))))
+          (setq |$formulaOutputStream|
+             (setq |conOutStream| (make-synonym-stream '*terminal-io*))))))
 
 ;; non-interactive restarts...
 (defun restart0 ()
@@ -216,7 +197,7 @@ previous definition.
 
 (setq |$sourceFiles| ()) ;; set in readSpad2Cmd
 
-(setq |$localVars| ())	;checked by isType
+(setq |$localVars| ())  ;checked by isType
 
 (setq |$highlightFontOn| (concat " " |$boldString|))
 (setq |$highlightFontOff| (concat |$normalString| " "))
@@ -240,12 +221,12 @@ previous definition.
       (UNTRACE)
       (|untrace| NIL)
       (|clearClams|)
-	;; bind output to nulloutstream
+        ;; bind output to nulloutstream
       (let ((*standard-output* (make-broadcast-stream)))
-	(|resetWorkspaceVariables|))
+        (|resetWorkspaceVariables|))
       (setq |$specialCharacters| |$plainRTspecialCharacters|)
 
-	  (load (make-absolute-filename "lib/interp/obey"))
+          (load (make-absolute-filename "lib/interp/obey"))
       (system:disksave filename :restart-function restart-hook :full-gc t))
 #+:Lucid (define-function 'user::save-system  #'boot::save-system)
 (defun |undoINITIALIZE| () ())
@@ -279,17 +260,17 @@ previous definition.
       (setq line (read-line in nil nil))
       (cond
        ((null line)
-	 (when key
-	  (setf (gethash key *msghash*) msg))
-	  (throw 'done nil))
+         (when key
+          (setf (gethash key *msghash*) msg))
+          (throw 'done nil))
        ((= (length line) 0))
        ((char= (schar line 0) #\S)
-	 (when key
-	  (setf (gethash key *msghash*) msg))
-	 (setq key (intern line "BOOT"))
-	 (setq msg ""))
+         (when key
+          (setf (gethash key *msghash*) msg))
+         (setq key (intern line "BOOT"))
+         (setq msg ""))
        ('else
-	(setq msg (concatenate 'string msg line)))))))))
+        (setq msg (concatenate 'string msg line)))))))))
 
 (defun |fetchKeyedMsg| (key ignore)
  (declare (ignore ignore))
@@ -331,16 +312,16 @@ previous definition.
 (defun |setViewportProcess| ()
   (setq |$ViewportProcessToWatch|
      (stringimage (CDR
-	  (|processInteractive|	 '(|key| (|%%| -2)) NIL) ))))
+          (|processInteractive|  '(|key| (|%%| -2)) NIL) ))))
 
 (defun |waitForViewport| ()
   (progn
    (do ()
        ((not (zerop (obey
-	 (concat
-	  "ps "
-	  |$ViewportProcessToWatch|
-	  " > /dev/null")))))
+         (concat
+          "ps "
+          |$ViewportProcessToWatch|
+          " > /dev/null")))))
        ())
    (|sockSendInt| |$MenuServer| 1)
    (|setIOindex| (- |$IOindex| 3))
@@ -358,7 +339,7 @@ previous definition.
 (defun print-xdr-stream (x y z) (format y "XDR:~A" (xdr-stream-name x)))
 #+:akcl
 (defstruct (xdr-stream
-		(:print-function  print-xdr-stream))
+                (:print-function  print-xdr-stream))
            "A structure to hold XDR streams. The stream is printed out."
            (handle ) ;; this is what is used for xdr-open xdr-read xdr-write
            (name ))  ;; this is used for printing
@@ -415,9 +396,3 @@ previous definition.
 (setq echo-meta nil)
 (defun /versioncheck (n) (unless (= n /MAJOR-VERSION) (throw 'versioncheck -1)))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} CMUCL {\bf src/interp/util.lisp.pamphlet}
-\end{thebibliography}
-\end{document}

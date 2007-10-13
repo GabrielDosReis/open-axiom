@@ -1,16 +1,36 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp newaux.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{Operator Precedence Table Initialization} 
-\begin{verbatim}
+;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
+;; All rights reserved.
+;;
+;; Redistribution and use in source and binary forms, with or without
+;; modification, are permitted provided that the following conditions are
+;; met:
+;;
+;;     - Redistributions of source code must retain the above copyright
+;;       notice, this list of conditions and the following disclaimer.
+;;
+;;     - Redistributions in binary form must reproduce the above copyright
+;;       notice, this list of conditions and the following disclaimer in
+;;       the documentation and/or other materials provided with the
+;;       distribution.
+;;
+;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;       names of its contributors may be used to endorse or promote products
+;;       derived from this software without specific prior written permission.
+;;
+;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+;; IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+;; TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+;; PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+;; OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+;; EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+;; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+;; PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+;; LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 ; PURPOSE: This file sets up properties which are used by the Boot lexical
 ;          analyzer for bottom-up recognition of operators.  Also certain
 ;          other character-class definitions are included, as well as
@@ -23,9 +43,7 @@
 ;               3. RENAMETOK Table
 ;               4. GENERIC Table
 ;               5. Character syntax class predicates
-\end{verbatim}
-\subsection{LED and NUD Tables}
-\begin{verbatim}
+
 ; **** 1. LED and NUD Tables
  
 ; ** TABLE PURPOSE
@@ -54,8 +72,11 @@
 ; this is just an ordinary operator (as opposed to a surfix operator like 
 ; if-then-else).
  
-\end{verbatim}
-<<LEDNUDTables>>=
+
+
+(IMPORT-MODULE "macros") 
+(in-package "BOOT")
+ 
 ; ** TABLE CREATION
  
 (defparameter OpAssoc nil 
@@ -143,14 +164,12 @@
           (|then| 0 114)
           (|else| 0 114)))
 
-@ 
-\section{Gliph Table}
-Gliphs are symbol clumps. The gliph property of a symbol gives
-the tree describing the tokens which begin with that symbol.
-The token reader uses the gliph property to determine the longest token.
-Thus [[:=]] is read as one token not as [[:]] followed by [[=]].
- 
-<<GLIPHTable>>=
+
+;; Gliphs are symbol clumps. The gliph property of a symbol gives
+;; the tree describing the tokens which begin with that symbol.
+;; The token reader uses the gliph property to determine the longest token.
+;; Thus `:=' is read as one token not as `:' followed by `='.
+
 (mapcar #'(lambda (x) (makeprop (car x) 'gliph (cdr x)))
         `(
           ( \| (\))        )
@@ -167,86 +186,27 @@ Thus [[:=]] is read as one token not as [[:]] followed by [[=]].
           ( ^  (=)         )
           ( \~ (=)         )
           ( \: (=) (-) (\:))))
- 
-@
-\subsection{Rename Token Table} 
-RENAMETOK defines alternate token strings which can be used for different
-keyboards which define equivalent tokens.
-<<RENAMETOKTable>>=
+
+;; RENAMETOK defines alternate token strings which can be used for different
+;; keyboards which define equivalent tokens.
+  
 (mapcar 
   #'(lambda (x) (MAKEPROP (CAR X) 'RENAMETOK (CADR X)) (MAKENEWOP X NIL))
         '((\(\| \[)                     ; (| |) means []
           (\|\) \])
           (\(< \{)                      ; (< >) means {}
           (>\) \})))
+
+;; GENERIC operators be suffixed by `$' qualifications in SPAD code.  
+;; `$' is then followed by a domain label, such as I for Integer, which 
+;; signifies which domain the operator refers to.  For example `+$Integer' 
+;; is `+' for Integers.
  
-@
-\subsection{Generic function table}
-GENERIC operators be suffixed by [[$]] qualifications in SPAD code.  
-[[$]] is then followed by a domain label, such as I for Integer, which 
-signifies which domain the operator refers to.  For example [[+$Integer]] 
-is [[+]] for Integers.
-<<GENERICTable>>=
 (mapcar #'(lambda (x) (MAKEPROP X 'GENERIC 'TRUE))
         '(- = * |rem| |mod| |quo| |div| / ** |exquo| + - < > <= >= ^= ))
 
-@  
-\subsection{Character Syntax Table}
-<<CharacterSyntaxTable>>=
 (defun SPECIALCASESYNTAX () (OR (AND (char= TOK '#\#) (DIGITP CHR))))
  
 (defun TERMINATOR (CHR)
   (member CHR '(#\  #\( #\) #\. #\; #\, #\Return)) :test #'char=)
  
-@  
-\section{License}
-<<license>>=
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
-;; All rights reserved.
-;;
-;; Redistribution and use in source and binary forms, with or without
-;; modification, are permitted provided that the following conditions are
-;; met:
-;;
-;;     - Redistributions of source code must retain the above copyright
-;;       notice, this list of conditions and the following disclaimer.
-;;
-;;     - Redistributions in binary form must reproduce the above copyright
-;;       notice, this list of conditions and the following disclaimer in
-;;       the documentation and/or other materials provided with the
-;;       distribution.
-;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
-;;       names of its contributors may be used to endorse or promote products
-;;       derived from this software without specific prior written permission.
-;;
-;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-;; IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-;; TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-;; PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
-;; OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-;; EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-;; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-;; PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-;; LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@
-<<*>>=
-<<license>>
-
-(IMPORT-MODULE "macros") 
-(in-package "BOOT")
- 
-<<LEDNUDTables>>
-<<GLIPHTable>> 
-<<RENAMETOKTable>>
-<<GENERICTable>>
-<<CharacterSyntaxTable>>
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

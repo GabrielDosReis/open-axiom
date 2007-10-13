@@ -1,23 +1,6 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/setq.lisp} Pamphlet}
-\author{Timothy Daly}
-
-\begin{document}
-
-\maketitle
-\begin{abstract}
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -48,9 +31,6 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 (setq copyrights '(
  "Copyright The Numerical Algorithms Group Limited 1991-94."
@@ -95,8 +75,8 @@
 (SETQ |$compileOnlyCertainItems| NIL)
 (SETQ |$devaluateList| NIL)
 (SETQ |$doNotCompressHashTableIfTrue| NIL)
-(SETQ |$mutableChecking| NIL)	 ; used in DEFINE BOOT
-(SETQ |$mutableDomains| NIL)	 ; checked in DEFINE BOOT
+(SETQ |$mutableChecking| NIL)    ; used in DEFINE BOOT
+(SETQ |$mutableDomains| NIL)     ; checked in DEFINE BOOT
 (SETQ |$functionLocations| NIL)
 (SETQ |$functorLocalParameters| NIL) ; used in compSymbol
 (SETQ /RELEASE '"UNKNOWN")
@@ -128,8 +108,8 @@
 (SETQ INITCOLUMN 0)
 (SETQ |$functionTable| NIL)
 (SETQ |$spaddefs| NIL)
-(SETQ |$xeditIsConsole|	 NIL)
-(SETQ |$echoInputLines|	 NIL)	    ;; This is in SETVART also
+(SETQ |$xeditIsConsole|  NIL)
+(SETQ |$echoInputLines|  NIL)       ;; This is in SETVART also
 (SETQ |$Slot1DataBase| (MAKE-HASHTABLE 'ID))  ;; See NRUNTIME BOOT
 (SETQ |$pfKeysForBrowse|  NIL)
 (SETQ MARG 0)
@@ -161,12 +141,12 @@
 
 (SETQ |$InterpreterMacroAlist|
       '((|%i| . (|complex| 0 1))
-	(|%e| . (|exp| 1))
-	(|%pi| . (|pi|))
-	(|SF| . (|DoubleFloat|))
-	(|%infinity| . (|infinity|))
-	(|%plusInfinity| . (|plusInfinity|))
-	(|%minusInfinity| . (|minusInfinity|))))
+        (|%e| . (|exp| 1))
+        (|%pi| . (|pi|))
+        (|SF| . (|DoubleFloat|))
+        (|%infinity| . (|infinity|))
+        (|%plusInfinity| . (|plusInfinity|))
+        (|%minusInfinity| . (|minusInfinity|))))
 
 ;; variables controlling companion pages (see copage.boot)
 (SETQ |$HTCompanionWindowID| nil)
@@ -185,7 +165,7 @@
 (SETQ RLGENSYMLST NIL)
 (SETQ XTOKENREADER 'SPADTOK)
 (SETQ |$delimiterTokenList|
-  '(| |	 |)| |(| |{| |}| |[| |]| ENDOFLINECHR EOI EOL |END_LINE|))
+  '(| |  |)| |(| |{| |}| |[| |]| ENDOFLINECHR EOI EOL |END_LINE|))
 (SETQ |$generalTokenIfTrue| NIL)
 (SETQ OPASSOC NIL)
 (SETQ SPADSYSKEY '(EOI EOL))
@@ -214,60 +194,60 @@
 
 ;; These were originally in INIT LISP
 
-(SETQ |$dependeeClosureAlist|	    NIL)
+(SETQ |$dependeeClosureAlist|       NIL)
 (SETQ |$userModemaps| NIL)
 (SETQ |$functorForm| NIL)
 
 (SETQ |$InitialCommandSynonymAlist| '(
-       (|?|	     . "what commands")
-       (|ap|	     . "what things")
-       (|apr|	     . "what things")
+       (|?|          . "what commands")
+       (|ap|         . "what things")
+       (|apr|        . "what things")
        (|apropos|    . "what things")
-       (|cache|	     . "set functions cache")
-       (|cl|	     . "clear")
-       (|cls|	     . "zsystemdevelopment )cls")
-       (|cms|	     . "system")
-       (|co|	     . "compiler")
-       (|d|	     . "display")
-       (|dep|	     . "display dependents")
+       (|cache|      . "set functions cache")
+       (|cl|         . "clear")
+       (|cls|        . "zsystemdevelopment )cls")
+       (|cms|        . "system")
+       (|co|         . "compiler")
+       (|d|          . "display")
+       (|dep|        . "display dependents")
        (|dependents| . "display dependents")
-       (|e|	     . "edit")
+       (|e|          . "edit")
        (|expose|     . "set expose add constructor")
-       (|fc|	     . "zsystemdevelopment )c")
-       (|fd|	     . "zsystemdevelopment )d")
-       (|fdt|	     . "zsystemdevelopment )dt")
-       (|fct|	     . "zsystemdevelopment )ct")
-       (|fctl|	     . "zsystemdevelopment )ctl")
-       (|fe|	     . "zsystemdevelopment )e")
-       (|fec|	     . "zsystemdevelopment )ec")
-       (|fect|	     . "zsystemdevelopment )ect")
-       (|fns|	     . "exec spadfn")
+       (|fc|         . "zsystemdevelopment )c")
+       (|fd|         . "zsystemdevelopment )d")
+       (|fdt|        . "zsystemdevelopment )dt")
+       (|fct|        . "zsystemdevelopment )ct")
+       (|fctl|       . "zsystemdevelopment )ctl")
+       (|fe|         . "zsystemdevelopment )e")
+       (|fec|        . "zsystemdevelopment )ec")
+       (|fect|       . "zsystemdevelopment )ect")
+       (|fns|        . "exec spadfn")
        (|fortran|    . "set output fortran")
-       (|h|	     . "help")
-       (|hd|	     . "system hypertex &")
-       (|kclam|	     . "boot clearClams ( )")
+       (|h|          . "help")
+       (|hd|         . "system hypertex &")
+       (|kclam|      . "boot clearClams ( )")
        (|killcaches| . "boot clearConstructorAndLisplibCaches ( )")
-       (|patch|	     . "zsystemdevelopment )patch")
-       (|pause|	     . "zsystemdevelopment )pause")
+       (|patch|      . "zsystemdevelopment )patch")
+       (|pause|      . "zsystemdevelopment )pause")
        (|prompt|     . "set message prompt")
        (|recurrence| . "set functions recurrence")
        (|restore|    . "history )restore")
-       (|save|	     . "history )save")
+       (|save|       . "history )save")
        (|startGraphics|    .  "system $AXIOM/lib/viewman &")
        (|startNAGLink|     .  "system $AXIOM/lib/nagman &")
        (|stopGraphics|     .  "lisp (|sockSendSignal| 2 15)")
        (|stopNAGLink|      .  "lisp (|sockSendSignal| 8 15)")
-       (|time|	     . "set message time")
-       (|type|	     . "set message type")
+       (|time|       . "set message time")
+       (|type|       . "set message type")
        (|unexpose|   . "set expose drop constructor")
-       (|up|	     . "zsystemdevelopment )update")
+       (|up|         . "zsystemdevelopment )update")
        (|version|    . "lisp *yearweek*")
-       (|w|	     . "what")
-       (|wc|	     . "what categories")
-       (|wd|	     . "what domains")
+       (|w|          . "what")
+       (|wc|         . "what categories")
+       (|wd|         . "what domains")
        (|who|        . "lisp (pprint credits)")
-       (|wp|	     . "what packages")
-       (|ws|	     . "what synonyms")
+       (|wp|         . "what packages")
+       (|ws|         . "what synonyms")
 ))
 
 (SETQ |$CommandSynonymAlist| (COPY |$InitialCommandSynonymAlist|))
@@ -303,7 +283,7 @@
 
 (SETQ |$tracedMapSignatures| ())
 (SETQ |$highlightAllowed| 'T)
-	 ;" used in BRIGHTPRINT and is a )set variable"
+         ;" used in BRIGHTPRINT and is a )set variable"
 
 (SETQ |$printStorageIfTrue| NIL) ;; storage info disabled in common lisp
 
@@ -349,44 +329,44 @@
 
 ;; Following were originally in EXPLORE BOOT
 
-(SETQ |$xdatabase|	   NIL)
+(SETQ |$xdatabase|         NIL)
 (SETQ |$CatOfCatDatabase|  NIL)
 (SETQ |$DomOfCatDatabase|  NIL)
 (SETQ |$JoinOfDomDatabase| NIL)
 (SETQ |$JoinOfCatDatabase| NIL)
-(SETQ |$attributeDb|	   NIL)
+(SETQ |$attributeDb|       NIL)
 
 (SETQ |$abbreviateIfTrue|  NIL)
-(SETQ |$deltax|	 0)
-(SETQ |$deltay|	 0)
-(SETQ |$displayDomains|	 'T)
-(SETQ |$displayTowardAncestors|	 NIL)
-(SETQ |$focus|	NIL)
+(SETQ |$deltax|  0)
+(SETQ |$deltay|  0)
+(SETQ |$displayDomains|  'T)
+(SETQ |$displayTowardAncestors|  NIL)
+(SETQ |$focus|  NIL)
 (SETQ |$focusAccessPath|  NIL)
 (SETQ |$minimumSeparation|  3)
-(SETQ |$origMaxColumn|	80)
+(SETQ |$origMaxColumn|  80)
 (SETQ |$origMaxRow|  20)
-(SETQ |$origMinColumn|	1)
+(SETQ |$origMinColumn|  1)
 (SETQ |$origMinRow|  1)
 
 ;; ---- start of initial settings for variables used in test.boot
 
 (SETQ |$testOutputLineFlag| NIL)   ;; referenced by charyTop, prnd
-				   ;; to stash lines
+                                   ;; to stash lines
 (SETQ |$testOutputLineStack| NIL)  ;; saves lines to be printed
-				   ;; (needed to convert lines for use
-				   ;; in hypertex)
-(SETQ |$runTestFlag| NIL)	   ;; referenced by maPrin to stash
-				   ;; output by recordAndPrint to not
-				   ;; print type/time
-(SETQ |$mkTestFlag| NIL)	   ;; referenced by READLN to stash input
-				   ;; by maPrin to stash output
-				   ;; by recordAndPrint to write i/o
-				   ;; onto $testStream
-(SETQ |$mkTestInputStack| NIL)	   ;; saves input for $testStream
-				   ;; (see READLN)
-(SETQ |$mkTestOutputStack| NIL)	   ;; saves output for $testStream
-				   ;; (see maPrin)
+                                   ;; (needed to convert lines for use
+                                   ;; in hypertex)
+(SETQ |$runTestFlag| NIL)          ;; referenced by maPrin to stash
+                                   ;; output by recordAndPrint to not
+                                   ;; print type/time
+(SETQ |$mkTestFlag| NIL)           ;; referenced by READLN to stash input
+                                   ;; by maPrin to stash output
+                                   ;; by recordAndPrint to write i/o
+                                   ;; onto $testStream
+(SETQ |$mkTestInputStack| NIL)     ;; saves input for $testStream
+                                   ;; (see READLN)
+(SETQ |$mkTestOutputStack| NIL)    ;; saves output for $testStream
+                                   ;; (see maPrin)
 
 ;; ---- end of initial settings for variables used in test.boot
 
@@ -487,9 +467,3 @@
 "Dan Zwillinger"
 ))
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
