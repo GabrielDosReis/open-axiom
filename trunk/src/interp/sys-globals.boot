@@ -403,3 +403,6 @@ SPADERRORSTREAM := _*ERROR_-OUTPUT_*
 _/VERSION := 0
 _/WSNAME := "NOBOOT"
 
+++
+CHR := nil
+TOK := nil
