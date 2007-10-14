@@ -1,3 +1,14 @@
+2007-10-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ast.boot.pamphlet (bfGetOldBootName): New.
+	(bfSameMeaning): Likewise.
+	(bfReName): Use them.
+	* parser.boot.pamphlet (bpCompare): Tidy.
+	* tokens.boot.pamphlet: Rename NE to SHOENE.  Record Old Boot
+	renaming tokens. Likewise for tokens with same meaning.
+	* translator.boot.pamphlet (AxiomCore::%sysInit): New.
+	($translatingOldBoot): Likewise.
+
 2007-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* ast.boot.pamphlet (bfCompDef): Call coreError, not error.
