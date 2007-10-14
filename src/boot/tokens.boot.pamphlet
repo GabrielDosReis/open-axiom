@@ -461,7 +461,7 @@ for i in [ _
   ["MINUS", "SPADDIFFERENCE"], _
   ["SLASH", "QUOTIENT"], _
   ["=", "EQUAL"], _
-  ["SHOEEQ", "BOOT-EQUAL"], _
+  ["SHOEEQ", "EQUAL"], _
   ["ASSOC",  "assoc"], _
   ["DELETE", "delete"], _
   ["GET", "GETL"], _
@@ -484,6 +484,7 @@ for i in [ _
 for i in [ _
   "LT", "LE", _
   "GT", "GE", _
+  "SHOENE", _
   "TIMES", "PLUS", _
   "MINUS", "function",_
   "PAIRP"

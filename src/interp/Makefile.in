@@ -405,28 +405,51 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
 ## HyperDoc
+bc-solve.$(FASLEXT): bc-solve.boot bc-matrix.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+bc-matrix.$(FASLEXT): bc-matrix.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+bc-misc.$(FASLEXT): bc-misc.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+bc-util.$(FASLEXT): bc-util.boot ht-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 ht-root.$(FASLEXT): ht-root.boot ht-util.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 htcheck.$(FASLEXT): htcheck.boot sys-driver.$(FASLEXT) macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ht-util.$(FASLEXT): ht-util.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 htsetvar.$(FASLEXT): htsetvar.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 hypertex.$(FASLEXT): hypertex.boot boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## OpenAxiom's interpreter.
 
 profile.$(FASLEXT): profile.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+
+format.$(FASLEXT): format.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+## Interface with the Aldor compiler.
+ax.$(FASLEXT): ax.boot as.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+as.$(FASLEXT): as.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 
 ##
@@ -446,11 +469,11 @@ rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
 ## The old parser component roughtly is:
 ##
 
-parse.$(FASLEXT): parse.clisp postpar.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+parse.$(FASLEXT): parse.boot postpar.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-postpar.$(FASLEXT): postpar.clisp postprop.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+postpar.$(FASLEXT): postpar.boot postprop.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 postprop.$(FASLEXT): postprop.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
@@ -491,58 +514,58 @@ macros.$(FASLEXT): macros.lisp sys-macros.$(FASLEXT)
 ##   posit.boot cparse.boot format.boot cstream.boot
 ##
 
-cparse.$(FASLEXT): cparse.clisp ptrees.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+cparse.$(FASLEXT): cparse.boot ptrees.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-ptrees.$(FASLEXT): ptrees.clisp posit.$(FASLEXT) serror.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+ptrees.$(FASLEXT): ptrees.boot posit.$(FASLEXT) serror.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-pile.$(FASLEXT): pile.clisp scan.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+pile.$(FASLEXT): pile.boot scan.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-scan.$(FASLEXT): scan.clisp incl.$(FASLEXT) bits.$(FASLEXT) dq.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+scan.$(FASLEXT): scan.boot incl.$(FASLEXT) bits.$(FASLEXT) dq.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-incl.$(FASLEXT): incl.clisp cstream.$(FASLEXT) cformat.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+incl.$(FASLEXT): incl.boot cstream.$(FASLEXT) cformat.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-cformat.$(FASLEXT): cformat.clisp unlisp.$(FASLEXT) posit.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+cformat.$(FASLEXT): cformat.boot unlisp.$(FASLEXT) posit.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 serror.$(FASLEXT): serror.boot posit.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 unlisp.$(FASLEXT): unlisp.lisp sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-posit.$(FASLEXT): posit.clisp sys-macros.$(FASLEXT) astr.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+posit.$(FASLEXT): posit.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-cstream.$(FASLEXT): cstream.clisp sys-macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+cstream.$(FASLEXT): cstream.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-astr.$(FASLEXT): astr.clisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+astr.$(FASLEXT): astr.boot boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 bits.$(FASLEXT): bits.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## General support and utilities.
 
 g-opt.$(FASLEXT): g-opt.boot def.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-timer.$(FASLEXT): g-timer.boot macros.$(FASLEXT) g-util.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-cndata.$(FASLEXT): g-cndata.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 sys-macros.$(FASLEXT): sys-macros.lisp diagnostics.$(FASLEXT) \
 			union.$(FASLEXT)
@@ -576,22 +599,6 @@ vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
 
 boot-pkg.$(FASLEXT): boot-pkg.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
-
-as.clisp: as.boot
-	@ echo 417 making $@ from $<
-	@ echo '(old-boot::boot "as.boot")' | ${DEPSYS}
-
-ax.clisp: ax.boot
-	@ echo 463 making $@ $<
-	@ echo '(old-boot::boot "ax.boot")' | ${DEPSYS} 
-
-bc-misc.clisp: bc-misc.boot
-	@ echo 428 making $@ from $<
-	@ echo '(old-boot::boot "bc-misc.boot")' | ${DEPSYS}
-
-bc-solve.clisp: bc-solve.boot
-	@ echo 432 making $@ from $<
-	@ echo '(old-boot::boot "bc-solve.boot")' | ${DEPSYS}
 
 br-con.clisp: br-con.boot
 	@ echo 467 making $@ from $<
@@ -662,10 +669,6 @@ database.clisp: database.boot
 define.clisp: define.boot
 	@ echo 247 making $@ from $<
 	@ echo '(old-boot::boot "define.boot")' | ${DEPSYS}
-
-format.clisp: format.boot
-	@ echo 250 making $@ from $<
-	@ echo '(old-boot::boot "format.boot")' | ${DEPSYS}
 
 fortcall.clisp: fortcall.boot
 	@ echo 55 making $@ from $<
@@ -798,7 +801,7 @@ setvart.clisp: setvart.boot
 
 
 buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex

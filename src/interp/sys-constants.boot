@@ -578,3 +578,6 @@ _*ATTRIBUTES_* ==
    additiveValuation unitsKnown canonicalUnitNormal
    multiplicativeValuation finiteAggregate shallowlyMutable
    commutative)
+
++++
+BLANK == '" "

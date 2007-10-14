@@ -46,6 +46,7 @@
 <<*>>=
 <<license>>
 
+import '"ht-util"
 )package "BOOT"
 
 bcFinish(name,arg,:args) == bcGen bcMkFunction(name,arg,args)

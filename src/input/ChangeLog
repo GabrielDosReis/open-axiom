@@ -1,3 +1,7 @@
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lexp.input.pamphlet: Fix indentation thinko.
+
 2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (TESTSYS): Tidy.
