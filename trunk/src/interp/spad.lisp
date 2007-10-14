@@ -489,7 +489,6 @@
 (defvar LITTLEI '|i|)
 (defvar *TALLPAR NIL)
 (defvar ALLSTAR NIL)
-(defvar BLANK " ")
 (defvar PLUSS "+")
 (defvar PERIOD ".")
 (defvar SLASH "/")

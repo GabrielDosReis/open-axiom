@@ -46,6 +46,10 @@
 <<*>>=
 <<license>>
 
+import '"bc-matrix"
+import '"bc-misc"
+)package "BOOT"
+
   -- HyperTeX basic Solve Command
 $systemType := nil
 $numberOfEquations := 0
@@ -343,7 +347,7 @@ finalExactRequest(equations,unknowns) ==
   sayBrightly '"   (3) more information on the meaning of the output"
   tt := bcQueryInteger(1,3,true)
   tt=1 => sayBrightly '"Bye Bye"
-  tt=2 => moreExactSolution(equations,unknowns,flag)
+--  tt=2 => moreExactSolution(equations,unknowns,flag)
   tt=3 => explainExact(equations,unknowns)
 
 bcLinearSolveEqnsGen htPage == 

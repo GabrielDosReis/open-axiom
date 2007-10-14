@@ -64,6 +64,9 @@ but was changed to:
 <<*>>=
 <<license>>
 
+import '"macros"
+)package "BOOT"
+
 --global hash tables for new compiler
 $docHash  := MAKE_-HASH_-TABLE()
 $conHash  := MAKE_-HASH_-TABLE()
@@ -220,7 +223,7 @@ asGetExports(kind, conform, catform) ==
   u := asCategoryParts(kind, conform, catform, true) or return nil
   -- ensure that signatures are lists
   [[op, sigpred] for [op,sig,:pred] in CDDR u] where
-    sigpred ==
+    sigpred() ==
       pred :=
         pred = "T" => nil
         pred
@@ -243,7 +246,7 @@ getAttributesFromCATEGORY catform ==
   nil
 
 displayDatabase x == main where
-  main ==
+  main() ==
     for y in
      '(CONSTRUCTORFORM CONSTRUCTORKIND _
        CONSTRUCTORMODEMAP _
@@ -257,9 +260,10 @@ displayDatabase x == main where
        MODEMAPS _
        SOURCEFILE _
        DOCUMENTATION) repeat fn(x,y)
-  fn(x,y) ==
-    sayBrightly ['"----------------- ",y,'" --------------------"]
-    pp GETDATABASE(x,y)
+   where
+    fn(x,y) ==
+      sayBrightly ['"----------------- ",y,'" --------------------"]
+      pp GETDATABASE(x,y)
 
 -- For some reason Dick has modified as.boot to convert the
 -- identifier |0| or |1| to an integer in the list of operations.
@@ -726,7 +730,7 @@ asyCosigType u ==
   error false
 
 asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
-  main ==
+  main() ==
     a := createAbbreviation id => a
     name := PNAME id
 --  #name < 8 => INTERN UPCASE name
@@ -1134,7 +1138,7 @@ hput(table,name,value) ==
 -- NB: This is categoryParts, but with the kind supplied by
 -- an arguments
 asCategoryParts(kind,conform,category,:options) == main where
-  main ==
+  main() ==
     cons? := IFCAR options  --means to include constructors as well
     $attrlist: local := nil
     $oplist  : local := nil
@@ -1149,31 +1153,32 @@ asCategoryParts(kind,conform,category,:options) == main where
       tvl := TAKE(#rest conform,$TriangleVariableList)
       res := SUBLISLIS($FormalMapVariableList,tvl,res)
     res
-  build(item,pred) ==
-    item is ['SIGNATURE,op,sig,:.] => $oplist   := [[opOf op,sig,:pred],:$oplist]
-    --note: opOf is needed!!! Bug in compiler puts in (One) and (Zero)
-    item is ['ATTRIBUTE,attr] =>
-      constructor? opOf attr =>
-        $conslist := [[attr,:pred],:$conslist]
-        nil
-      opOf attr = 'nothing => 'skip
-      $attrlist := [[opOf attr,IFCDR attr,:pred],:$attrlist]
-    item is ['TYPE,op,type] =>
-        $oplist := [[op,[type],:pred],:$oplist]
-    item is ['IF,pred1,s1,s2] =>
-      build(s1,quickAnd(pred,pred1))
-      s2 => build(s2,quickAnd(pred,['NOT,pred1]))
-    item is ['PROGN,:r] => for x in r repeat build(x,pred)
-    item in '(noBranch) => 'ok
-    null item => 'ok
-    systemError '"build error"
-  exportsOf(target) ==
-    target is ['CATEGORY,.,:r] => r
-    target is ['Join,:r,f] =>
-      for x in r repeat $conslist := [[x,:true],:$conslist]
-      exportsOf f
-    $conslist := [[target,:true],:$conslist]
-    nil
+   where
+    build(item,pred) ==
+      item is ['SIGNATURE,op,sig,:.] => $oplist   := [[opOf op,sig,:pred],:$oplist]
+      --note: opOf is needed!!! Bug in compiler puts in (One) and (Zero)
+      item is ['ATTRIBUTE,attr] =>
+	constructor? opOf attr =>
+	  $conslist := [[attr,:pred],:$conslist]
+	  nil
+	opOf attr = 'nothing => 'skip
+	$attrlist := [[opOf attr,IFCDR attr,:pred],:$attrlist]
+      item is ['TYPE,op,type] =>
+	  $oplist := [[op,[type],:pred],:$oplist]
+      item is ['IF,pred1,s1,s2] =>
+	build(s1,quickAnd(pred,pred1))
+	s2 => build(s2,quickAnd(pred,['NOT,pred1]))
+      item is ['PROGN,:r] => for x in r repeat build(x,pred)
+      item in '(noBranch) => 'ok
+      null item => 'ok
+      systemError '"build error"
+    exportsOf(target) ==
+      target is ['CATEGORY,.,:r] => r
+      target is ['Join,:r,f] =>
+	for x in r repeat $conslist := [[x,:true],:$conslist]
+	exportsOf f
+      $conslist := [[target,:true],:$conslist]
+      nil
 
 --============================================================================
 --               Dead Code (for a very odd value of 'dead')
@@ -1201,7 +1206,7 @@ asyTypeJoinPartExport x ==
 asyTypeJoinStack r ==
   al := [[[x while r is [[x, :q],:s] and p = q and (r := s; true)],:p]
            while r is [[.,:p],:.]]
-  result := "append"/[fn for [y,:p] in al] where fn ==
+  result := "append"/[fn for [y,:p] in al] where fn() ==
     p => [['IF,asyTypeMakePred p,:y]]
     y
   result

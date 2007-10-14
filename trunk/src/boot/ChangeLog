@@ -1,3 +1,8 @@
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* tokens.boot.pamphlet: SHOEEQ and Old Boot EQUAL are know to 
+	be semantically equivalent.
+
 2007-10-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* ast.boot.pamphlet (bfGetOldBootName): New.

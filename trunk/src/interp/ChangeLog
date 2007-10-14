@@ -1,3 +1,26 @@
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Compile Boot code with --boot=old.
+	(bc-solve.$(FASLEXT)): New rule.
+	(bc-matrix.$(FASLEXT)): Likewise.
+	(bc-misc.$(FASLEXT)): Likewise.
+	(bc-util.$(FASLEXT)): Likewise.
+	(ax.$(FASLEXT)): Likewise.
+	(as.$(FASLEXT)): Likewise.
+	(<<as.clisp>>): Remove.
+	(<<ax.clisp>>): Likewise.
+	(<<bc-misc.clisp>>): Likewise.
+	(<<bc-solve.clisp>>): Likewise.
+	(<<format.clisp>>): Likewise.
+	* as.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* ax.boot.pamphlet: Likewise.
+	* bc-matrix.boot.pamphlet: Import "bc-util".
+	* bc-solve.boot.pamphlet: Make compilable by bootsys.
+	* bc-util.boot.pamphlet: Import "ht-util".
+	* format.boot.pamphlet: Make compilable by bootsys.
+	* g-util.boot.pamphlet (freeOfShapVars): Use union.
+	* setq.lisp (BLANK): Move definition to sys-constant.boot.
+
 2007-10-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (${DEPSYS}): Depend on g-util.$(FASLEXT).

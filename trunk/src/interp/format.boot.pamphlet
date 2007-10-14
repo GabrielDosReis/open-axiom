@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"macros"
+)package "BOOT"
+
 --% Functions for display formatting system objects
 
 -- some of these are redundant and should be compacted
@@ -196,21 +199,22 @@ reportOpSymbol op1 ==
     isFreeFunctionFromMm(mm) or isExposedConstructor getDomainFromMm(mm) => mmsE := [mm,:mmsE]
     mmsU := [mm,:mmsU]
   if mmsE then
-    sayMms(op,mmsE,'"exposed") where
-      sayMms(op,mms,label) ==
-        m := # mms
-        sayMSG
-          m = 1 =>
-            ['"There is one",:bright label,'"function called",
-              :bright op,'":"]
-          ['"There are ",m,:bright label,'"functions called",
-            :bright op,'":"]
-        for mm in mms for i in 1.. repeat
-          sayModemapWithNumber(mm,i)
+    sayMms(op,mmsE,'"exposed")
   if mmsU then
     if mmsE then sayNewLine()
     sayMms(op,mmsU,'"unexposed")
   nil
+ where
+  sayMms(op,mms,label) ==
+    m := # mms
+    sayMSG
+      m = 1 =>
+	['"There is one",:bright label,'"function called",
+	  :bright op,'":"]
+      ['"There are ",m,:bright label,'"functions called",
+	:bright op,'":"]
+    for mm in mms for i in 1.. repeat
+      sayModemapWithNumber(mm,i)
 
 formatOpType (form:=[op,:argl]) ==
   null argl => unabbrev op
@@ -229,7 +233,7 @@ formatOperationAlistEntry (entry:= [op,:modemaps]) ==
 
 formatOperation([[op,sig],.,[fn,.,n]],domain) ==
   opSigString := formatOpSignature(op,sig)
-  INTEGERP n and Undef = KAR domain.n =>
+  INTEGERP n and function Undef = KAR domain.n =>
     if INTEGERP $commentedOps then $commentedOps := $commentedOps + 1
     concat(" --",opSigString)
   opSigString
@@ -505,7 +509,7 @@ formatJoinKey(r,key) ==
       concat(opString,catString)
     '"?? unknown mkCategory format ??"
   -- otherwise we have the CATEGORY form
-  "append"/[fn for x in r] where fn ==
+  "append"/[fn for x in r] where fn() ==
     x is ['SIGNATURE,op,sig] => concat("%l",formatOpSignature(op,sig))
     x is ['ATTRIBUTE,a] => concat("%l",formatAttribute a)
     x
@@ -544,16 +548,17 @@ tuple2String argl ==
     then string := STRCONC('"_"",string,'"_"")
     else string :=
       ATOM string => object2String string
-      [f x for x in string] where
-        f x ==
-          ATOM x => object2String x
-          -- [f CAR x,:f CDR x]
-          [f y for y in x]
+      [f x for x in string]
   for x in rest argl repeat
     if x in '("failed" "nil" "prime" "sqfr" "irred") then
       x := STRCONC('"_"",x,'"_"")
     string:= concat(string,concat(",",f x))
   string
+ where
+  f x ==
+    ATOM x => object2String x
+    -- [f CAR x,:f CDR x]
+    [f y for y in x]
 
 script2String s ==
   null s => '""   -- just to be safe
