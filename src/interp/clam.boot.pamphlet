@@ -49,6 +49,7 @@
 <<*>>=
 <<license>>
 
+import '"g-timer"
 )package "BOOT"
 
 --% Cache Lambda Facility
@@ -405,7 +406,7 @@ displayCacheFrequency al ==
  
 mkCircularCountAlist(cl,len) ==
   for [x,count,:.] in cl for i in 1..len while x ^= '_$failed repeat
-    u:= ASSOC(count,al) => RPLACD(u,1 + CDR u)
+    u:= assoc(count,al) => RPLACD(u,1 + CDR u)
     if INTEGERP $reportFavoritesIfNumber and count >= $reportFavoritesIfNumber then
       sayBrightlyNT ["   ",count,"  "]
       pp x
@@ -422,7 +423,7 @@ reportHashCacheStats fn ==
  
 mkHashCountAlist vl ==
   for [count,:.] in vl repeat
-    u:= ASSOC(count,al) => RPLACD(u,1 + CDR u)
+    u:= assoc(count,al) => RPLACD(u,1 + CDR u)
     al:= [[count,:1],:al]
   al
  
@@ -540,7 +541,7 @@ haddProp(ht,op,prop,val) ==
     recordInstantiation(op,prop,false)
     stopTimingProcess 'debug
   u:= HGET(ht,op) =>     --hope that one exists most of the time
-    ASSOC(prop,u) => val     --value is already there--must = val; exit now
+    assoc(prop,u) => val     --value is already there--must = val; exit now
     RPLACD(u,[CAR u,:CDR u])
     RPLACA(u,[prop,:val])
     $op: local := op

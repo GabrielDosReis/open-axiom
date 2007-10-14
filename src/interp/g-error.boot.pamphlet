@@ -50,6 +50,7 @@
 <<license>>
 
 import '"diagnostics"
+import '"g-util"
 )package "BOOT"
 
 -- This file contains the error printing code used in BOOT and SPAD.
@@ -63,9 +64,9 @@ import '"diagnostics"
 --   nobreak  -- do not enter lisp break mode
 --   query    -- ask the user if break mode should be entered
 
-SETANDFILEQ($SystemError,'SystemError)
-SETANDFILEQ($UserError,'UserError)
-SETANDFILEQ($AlgebraError,'AlgebraError)
+$SystemError == 'SystemError
+$UserError == 'UserError
+$AlgebraError =='AlgebraError
 
 -- REDERR is used in BFLOAT LISP, should be a macro
 -- REDERR msg == error msg
@@ -178,7 +179,7 @@ sayErrorly(errorLabel, msg) ==
   sayErrorly1(errorLabel, msg)
 
 saturnSayErrorly(errorLabel, msg) ==
-  _*STANDARD_-OUTPUT_* : fluid := $texOutputStream
+  SETQ(_*STANDARD_-OUTPUT_*, $texOutputStream)
   old := pushSatOutput("line")
   sayString '"\bgroup\color{red}"
   sayString '"\begin{verbatim}"

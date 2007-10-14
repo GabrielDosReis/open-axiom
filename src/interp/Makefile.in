@@ -314,11 +314,12 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	        postprop.$(FASLEXT)\
 		def.$(FASLEXT) \
 	        fnewmeta.$(FASLEXT) \
-		g-error.clisp \
-	        g-boot.clisp c-util.${LISP} \
+		g-error.$(FASLEXT) \
+	        g-boot.$(FASLEXT) \
+		c-util.$(FASLEXT) \
 	        g-util.$(FASLEXT) \
-	        clam.clisp \
-	        slam.clisp
+	        clam.$(FASLEXT) \
+	        slam.$(FASLEXT)
 	@ echo 3 making ${DEPSYS} 
 	@ rm -f makedep.lisp
 	@ $(mkinstalldirs) $(axiom_build_bindir)
@@ -347,21 +348,14 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 	@ echo '(|importModule| "bootlex")' >> makedep.lisp
 	@ echo '(|importModule| "postprop")' >> makedep.lisp
 	@ echo '(|importModule| "postpar")' >> makedep.lisp
-	@ echo '(unless (probe-file "clam.$(FASLEXT)") (|compileLispFile| "clam.clisp" "clam.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "clam")' >> makedep.lisp
-	@ echo '(unless (probe-file "slam.$(FASLEXT)") (|compileLispFile| "slam.clisp" "slam.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "slam")' >> makedep.lisp
-	@ echo '(unless (probe-file "g-error.$(FASLEXT)") (|compileLispFile| "g-error.clisp" "g-error.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "g-error")' >> makedep.lisp
-	@ echo '(unless (probe-file "g-boot.$(FASLEXT)") (|compileLispFile| "g-boot.clisp" "g-boot.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "g-boot")' >> makedep.lisp
-	@ echo '(unless (probe-file "c-util.$(FASLEXT)") (|compileLispFile| "c-util.${LISP}" "c-util.$(FASLEXT)"))' >> makedep.lisp
-	@ echo '(load "c-util")' >> makedep.lisp
+	@ echo '(|importModule| "clam")' >> makedep.lisp
+	@ echo '(|importModule| "slam")' >> makedep.lisp
+	@ echo '(|importModule| "g-error")' >> makedep.lisp
+	@ echo '(|importModule| "g-boot")' >> makedep.lisp
+	@ echo '(|importModule| "c-util")' >> makedep.lisp
 	@ echo '(|importModule| "g-util")' >> makedep.lisp
 	../lisp/base-lisp$(EXEEXT) -- --make --output=$@ \
 		--load-directory=. makedep.lisp
-	@rm $(addsuffix .$(FASLEXT), \
-		clam slam g-error g-boot c-util)
 	@ echo 4 ${DEPSYS} created
 
 
@@ -555,10 +549,25 @@ dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
 
 ## General support and utilities.
 
+slam.$(FASLEXT): slam.boot g-timer.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+clam.$(FASLEXT): clam.boot g-timer.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 g-opt.$(FASLEXT): g-opt.boot def.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-timer.$(FASLEXT): g-timer.boot macros.$(FASLEXT) g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+g-boot.$(FASLEXT): g-boot.boot def.$(FASLEXT) g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+g-error.$(FASLEXT): g-error.boot diagnostics.$(FASLEXT) g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+c-util.$(FASLEXT): c-util.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT)
@@ -651,16 +660,6 @@ compat.clisp: compat.boot
 compiler.clisp: compiler.boot
 	@ echo 233 making $@ from $<
 	@ echo '(old-boot::boot "compiler.boot")' | ${DEPSYS}
-
-c-util.${LISP}: $(srcdir)/c-util.boot.pamphlet
-	@ echo 146 making c-util.${LISP} from $(srcdir)/c-util.boot.pamphlet
-	@ rm -f c-util.$(FASLEXT)
-	$(axiom_build_document) --tangle=c-util.clisp --output=$@ $<
-
-c-util.clisp: c-util.boot
-	@ echo 148 making $@ from $<
-	@ echo '(progn (old-boot::boot "c-util.boot"))' | ${DEPSYS}
-
 
 database.clisp: database.boot
 	@ echo 243 making $@ from $<

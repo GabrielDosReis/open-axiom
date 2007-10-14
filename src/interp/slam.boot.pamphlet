@@ -47,6 +47,7 @@
 <<*>>=
 <<license>>
 
+import '"g-timer"
 )package "BOOT"
 
 reportFunctionCompilation(op,nam,argl,body,isRecursive) ==

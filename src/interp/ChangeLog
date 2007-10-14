@@ -1,5 +1,26 @@
 2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (${DEPSYS}): Depend on g-error.$(FASLEXT),
+	g-boot.$(FASLEXT), c-util.$(FASLEXT), clam.$(FASLEXT),
+	slam.$(FASLEXT).  
+	(slam.$(FASLEXT)): New rule.
+	(clam.$(FASLEXT)): Likewise.
+	(g-boot.$(FASLEXT)): Likewise.
+	(g-error.$(FASLEXT)): Likewise.
+	(c-util.$(FASLEXT)): Likewise.
+	(<<c-util.lisp (OUT from IN)>>): Remove.
+	(<<c-util.clisp>>): Likewise.
+	* c-util.boot.pamphlet: Remove cached Lisp translation.
+	Push into package "BOOT". Fix syntax. Remove unused functions.
+	* clam.boot.pamphlet: Push into package "BOOT". Fix syntax.
+	* g-error.boot.package: Likewise.
+	* g-boot.boot.pamphlet: Push into package "BOOT".
+	* slam.boot.pamphlet: Likewise.
+	* sys-global.boot (CHR): Define.
+	(TOK): Likewise.
+
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet: Compile Boot code with --boot=old.
 	(bc-solve.$(FASLEXT)): New rule.
 	(bc-matrix.$(FASLEXT)): Likewise.
