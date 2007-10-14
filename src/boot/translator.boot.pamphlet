@@ -113,6 +113,13 @@ import '"ast"
 
 )package "BOOTTRAN"
 
++++ True if we are translating code written in Old Boot.
+$translatingOldBoot := false
+
+AxiomCore::%sysInit() ==
+  if cdr ASSOC(Option '"boot", %systemOptions()) = '"old"
+  then $translatingOldBoot := true
+
 -- Make x, the current package
 setCurrentPackage x ==
   SETQ(_*PACKAGE_*,x)
