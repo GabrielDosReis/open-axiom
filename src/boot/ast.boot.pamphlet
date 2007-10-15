@@ -447,7 +447,7 @@ bfSUBLIS(p,e)==
 bfSUBLIS1(p,e)==
    null p =>e
    f:=CAR p
-   EQ(CAR f,e)=>CDR f
+   EQ(CAR f,e)=> bfSUBLIS(p, CDR f)
    bfSUBLIS1(cdr p,e)
  
 defSheepAndGoats(x)==
