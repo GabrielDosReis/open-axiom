@@ -1,3 +1,7 @@
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* macros.lisp.pamphlet (SETANDFILE): Use defparameter, not setq.
+
 2007-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
   
 	* i-output.boot.pamphlet (half): New macro.
