@@ -46,22 +46,25 @@
 <<*>>=
 <<license>>
 
+import '"macros"
+)package "BOOT"
+
 -- Scratchpad-II server
 
 -- Assoc list of interpreter frame names and unique integer identifiers
 
-SETANDFILEQ($frameAlist, nil)
-SETANDFILEQ($frameNumber, 0)
-SETANDFILEQ($currentFrameNum, 0)
-SETANDFILEQ($EndServerSession, false)
-SETANDFILEQ($NeedToSignalSessionManager, false)
-SETANDFILEQ($sockBufferLength, 9217)
+$frameAlist := nil
+$frameNumber := 0
+$currentFrameNum := 0
+$EndServerSession := false
+$NeedToSignalSessionManager := false
+$sockBufferLength := 9217
 
 serverReadLine(stream) ==
 -- used in place of READ-LINE in a scratchpad server system.
   FORCE_-OUTPUT()
   not $SpadServer or not IS_-CONSOLE stream =>
-    READ_-LINE(stream)
+    read_-line(stream)
   IN_-STREAM: fluid := stream
   _*EOF_*: fluid := NIL
   line :=
@@ -71,7 +74,7 @@ serverReadLine(stream) ==
     $NeedToSignalSessionManager := false
     action := serverSwitch()
     action = $CallInterp =>
-      l := READ_-LINE(stream)
+      l := read_-line(stream)
       $NeedToSignalSessionManager := true
       return l
     action = $CreateFrame =>
@@ -144,7 +147,7 @@ serverLoop() ==
     action := serverSwitch()
     action = $CallInterp =>
       CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
-        parseAndInterpret READ_-LINE(CURINSTREAM) )))
+        parseAndInterpret read_-line(CURINSTREAM) )))
       PRINC MKPROMPT()
       FINISH_-OUTPUT()
       sockSendInt($SessionManager, $EndOfOutput)
