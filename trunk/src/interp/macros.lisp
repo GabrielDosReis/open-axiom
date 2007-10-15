@@ -60,7 +60,7 @@
  
 ; 5.3 Top-Level Forms
  
-(defun SETANDFILE (x y) (LAM\,EVALANDFILEACTQ `(setq ,x ',y)))
+(defun SETANDFILE (x y) (LAM\,EVALANDFILEACTQ `(defparameter ,x ',y)))
  
 ; 5.3.2 Declaring Global Variables and Named Constants
  

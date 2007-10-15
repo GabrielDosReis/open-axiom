@@ -1,5 +1,9 @@
 2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* macros.lisp (SETANDFILE): Use defparameter, not setq.
+
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (${DEPSYS}): Depend on g-error.$(FASLEXT),
 	g-boot.$(FASLEXT), c-util.$(FASLEXT), clam.$(FASLEXT),
 	slam.$(FASLEXT).  
