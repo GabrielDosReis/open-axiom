@@ -196,7 +196,7 @@ intersectionContour(c,c') ==
       [[x,:mp] for x in varlist | (mp:= modeCompare(LASSOC(x,c),LASSOC(x,c')))]
     compare(pair is [prop,:val],p') ==
       --1. if the property-value pair are identical, accept it immediately
-      pair=(pair':= ASSOC(prop,p')) => pair
+      pair=(pair':= assoc(prop,p')) => pair
       --2. if property="value" and modes are unifiable, give intersection
       --       property="value" but value=genSomeVariable)()
       (val':= KDR pair') and prop="value" and

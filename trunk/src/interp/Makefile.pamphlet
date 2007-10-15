@@ -1402,15 +1402,6 @@ if these two things are done then a DEPSYS image can be bootstrapped
 to a new platform.
 \end{verbatim}
 
-\subsection{server.boot}
-
-<<server.clisp>>=
-server.clisp: server.boot
-	@ echo 391 making $@ from $<
-	@ echo '(old-boot::boot "server.boot")' | ${DEPSYS}
-@
-
-
 \subsection{setvart.boot}
 
 <<setvart.clisp>>=
@@ -1629,6 +1620,8 @@ ax.$(FASLEXT): ax.boot as.$(FASLEXT)
 as.$(FASLEXT): as.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+server.$(FASLEXT): server.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ##
 ## OpenAxiom's front-end consists of two parts:
@@ -1880,8 +1873,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<nrunopt.clisp>>
 
 <<record.clisp>>
-
-<<server.clisp>>
 
 <<setvart.clisp>>
 
