@@ -399,27 +399,22 @@ domainOne(domain) == getConstantFromDomain('(One),domain)
 
 domainZero(domain) == getConstantFromDomain('(Zero),domain)
 
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 equalOne(object, domain) ==
   -- tries using constant One and "=" from domain
   -- object should not be wrapped
-  eqfunc := getFunctionFromDomain("=",domain,[domain,domain])
-  SPADCALL(object,getConstantFromDomain('(One),domain),eqfunc)
+  algEqual(object, getConstantFromDomain('(One),domain), domain)
 
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 equalZero(object, domain) ==
   -- tries using constant Zero and "=" from domain
   -- object should not be wrapped
-  eqfunc := getFunctionFromDomain("=",domain,[domain,domain])
-  SPADCALL(object,getConstantFromDomain('(Zero),domain),eqfunc)
+  algEqual(object, getConstantFromDomain('(Zero),domain), domain)
 
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 algEqual(object1, object2, domain) ==
   -- sees if 2 objects of the same domain are equal by using the
   -- "=" from the domain
   -- objects should not be wrapped
 --  eqfunc := getFunctionFromDomain("=",domain,[domain,domain])
-  eqfunc := compiledLookupCheck("=",[$Boolean,domain,domain],evalDomain domain)
+  eqfunc := compiledLookupCheck("=",[$Boolean,'$,'$],evalDomain domain)
   SPADCALL(object1,object2, eqfunc)
 
 --%  main algorithms for canCoerceFrom and coerceInteractive
@@ -1389,7 +1384,6 @@ coercionFailure() ==
   -- does the throw on coercion failure
   THROW('coerceFailure,$coerceFailure)
 
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 coerceByFunction(T,m2) ==
   -- using the new modemap selection without coercions
   -- should not be called by canCoerceFrom
@@ -1401,12 +1395,12 @@ coerceByFunction(T,m2) ==
     dcVector := evalDomain ud
     fun :=
       isWrapped x =>
-        NRTcompiledLookup("=", [$Boolean, ud, ud], dcVector)
-      NRTcompileEvalForm("=", [$Boolean, ud, ud], dcVector)
+        NRTcompiledLookup("=", [$Boolean, '$, '$], dcVector)
+      NRTcompileEvalForm("=", [$Boolean, '$, '$], dcVector)
     [fn,:d]:= fun
     isWrapped x =>
       x:= unwrap x
-      objNewWrap(SPADCALL(CAR x,CDR x,fun),m2)
+      mkObjWrap(SPADCALL(CAR x,CDR x,fun),m2)
     x isnt ['SPADCALL,a,b,:.] => keyedSystemError("S2IC0015",NIL)
     code := ['SPADCALL, a, b, fun]
     objNew(code,$Boolean)
@@ -1417,12 +1411,14 @@ coerceByFunction(T,m2) ==
     [[dc,tar,:args],slot,.]:= mm
     dcVector := evalDomain(dc)
     fun:=
+--+
       isWrapped x =>
-        NRTcompiledLookup(funName,[tar,:args],dcVector)
-      NRTcompileEvalForm(funName,[tar,:args],dcVector)
+        NRTcompiledLookup(funName,slot,dcVector)
+      NRTcompileEvalForm(funName,slot,dcVector)
     [fn,:d]:= fun
     fn = function Undef => NIL
     isWrapped x =>
+--+
       $: fluid := dcVector
       val := CATCH('coerceFailure, SPADCALL(unwrap x,fun))
       (val = $coerceFailure) => NIL

@@ -89,18 +89,18 @@ stuffSlots(dollar,template) ==
       pp item
 
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 evalSlotDomain(u,dollar) ==
   $returnNowhereFromGoGet: local := false
   $ : fluid := dollar
   $lookupDefaults : local := nil -- new world
   u = '$ => dollar
+  u = "$$" => dollar
   FIXP u =>
     VECP (y := dollar.u) => y
     y is ['SETELT,:.] => eval y--lazy domains need to marked; this is dangerous?
     y is [v,:.] =>
       VECP v => lazyDomainSet(y,dollar,u)               --old style has [$,code,:lazyt]
-      GETDATABASE(v,'CONSTRUCTOR?) =>
+      constructor? v or MEMQ(v,'(Record Union Mapping)) =>
         lazyDomainSet(y,dollar,u)                       --new style has lazyt
       y
     y

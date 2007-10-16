@@ -84,7 +84,6 @@ newGoGet(:l) ==
   APPLY(first slot,[:arglist,rest slot])  --SPADCALL it!
  
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 replaceGoGetSlot env ==
   [thisDomain,index,:op] := env
   thisDomainForm := devaluate thisDomain
@@ -103,7 +102,7 @@ replaceGoGetSlot env ==
   if $monitorNewWorld then
     sayLooking(concat('"%l","..",form2String thisDomainForm,
       '" wants",'"%l",'"  "),op,sig,goGetDomain)
-  slot :=  .basicLookup(op,sig,goGetDomain,goGetDomain)
+  slot :=  basicLookup(op,sig,goGetDomain,goGetDomain)
   slot = nil =>
     $returnNowhereFromGoGet = true =>
       ['nowhere,:goGetDomain]  --see newGetDomainOpTable
@@ -431,7 +430,6 @@ newCompareSig(sig, numvec, index, dollar, domain) ==
 lazyMatchArg(s,a,dollar,domain) == lazyMatchArg2(s,a,dollar,domain,true)
  
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   if s = '$ then
 --  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
@@ -442,11 +440,14 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     VECP (d := domainVal(dollar,domain,a)) =>
       s = d.0 => true
       domainArg := ($isDefaultingPackage => domain.6.0; domain.0)
-      KAR s = QCAR d.0 and lazyMatchArgDollarCheck(s,d.0,dollar.0,domainArg)
+      KAR s = QCAR d.0 and
+        lazyMatchArgDollarCheck(replaceSharpCalls s,d.0,dollar.0,domainArg)
     --VECP CAR d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
-    lazyMatch(s,d,dollar,domain)                         --new style
+    lazyMatch(replaceSharpCalls s,d,dollar,domain)       --new style
   a = '$ => s = devaluate dollar
+  a = "$$" => s = devaluate domain
   STRINGP a =>
+    STRINGP s => a = s
     s is ['QUOTE,y] and PNAME y = a
     IDENTP s and PNAME s = a
   atom a =>  a = s
@@ -524,49 +525,45 @@ lookupInDomainByName(op,domain,arg) ==
 --=======================================================
 --        Expand Signature from Encoded Slot Form
 --=======================================================
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 newExpandGoGetTypeSlot(slot,dollar,domain) ==
   newExpandTypeSlot(slot,domain,domain)
  
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 newExpandTypeSlot(slot, dollar, domain) ==
 --> returns domain form for dollar.slot
-   newExpandLocalType(domainVal(dollar, domain, slot), dollar,domain)
+   newExpandLocalType(sigDomainVal(dollar, domain, slot), dollar,domain)
  
  
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 newExpandLocalType(lazyt,dollar,domain) ==
   VECP lazyt => lazyt.0
+  ATOM lazyt => lazyt
   lazyt is [vec,.,:lazyForm] and VECP vec =>              --old style
     newExpandLocalTypeForm(lazyForm,dollar,domain)
   newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
  
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
   MEMQ(functorName, '(Record Union)) and first argl is [":",:.] =>
     [functorName,:[['_:,tag,newExpandLocalTypeArgs(dom,dollar,domain,true)]
                                  for [.,tag,dom] in argl]]
   MEMQ(functorName, '(Union Mapping)) =>
-	  [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
+          [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
   functorName = 'QUOTE => [functorName,:argl]
   coSig := GETDATABASE(functorName,'COSIG)
   NULL coSig => error ["bad functorName", functorName]
   [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,flag)
         for a in argl for flag in rest coSig]]
  
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
-  u = '$ => dollar.0      -------eliminate this as $ is rep by 0
+  u = '$ => u
   INTEGERP u =>
      typeFlag => newExpandTypeSlot(u, dollar,domain)
      domain.u
   u is ['NRTEVAL,y] => nrtEval(y,domain)
   u is ['QUOTE,y] => y
+  u = "$$" => domain.0
   atom u => u   --can be first, rest, etc.
   newExpandLocalTypeForm(u,dollar,domain)
  
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 nrtEval(expr,dom) ==
   $:fluid := dom
   eval expr
@@ -576,8 +573,14 @@ domainVal(dollar,domain,index) ==
   index = 0 => dollar
   index = 2 => domain
   domain.index
- 
- 
+
+-- ??? This function should be merged into the preceding one. 
+sigDomainVal(dollar,domain,index) ==
+--returns a domain or a lazy slot
+  index = 0 => "$"
+  index = 2 => domain
+  domain.index
+
 --=======================================================
 --          Convert Lazy Domain to Domain Form
 --=======================================================
