@@ -65,15 +65,14 @@ canCoerce(t1, t2) ==
     canCoerce1(t1, newMode) and canCoerce1(newMode, t2)
   nil
 
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
 coerceConvertMmSelection(funName,m1,m2) ==
   -- calls selectMms with $Coerce=NIL and tests for required
   -- target type. funName is either 'coerce or 'convert.
   $declaredMode : local:= NIL
   $reportBottomUpFlag : local:= NIL
   l := selectMms1(funName,m2,[m1],[m1],NIL)
-  mmS := [x for x in l | x is [sig,:.] and hasCorrectTarget(m2,sig) and
-    isEqualOrSubDomain(m1, first rest rest sig)]
+  mmS := [[sig,[targ,arg],:pred] for x in l | x is [sig,[.,arg],:pred] and
+    hasCorrectTarget(m2,sig) and sig is [dc,targ,oarg] and oarg = m1]
   mmS and CAR mmS
 
 hasFileProperty(p,id,abbrev) == hasFilePropertyNoCache(p,id,abbrev)

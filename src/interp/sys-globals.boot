@@ -397,7 +397,7 @@ $constructorLineNumber := 0
 $maxSignatureLineNumber := 0
 
 ++
-$noSubsumption := false
+$noSubsumption :=true
 
 SPADERRORSTREAM := _*ERROR_-OUTPUT_*
 
@@ -408,3 +408,4 @@ _/WSNAME := "NOBOOT"
 ++
 CHR := nil
 TOK := nil
+

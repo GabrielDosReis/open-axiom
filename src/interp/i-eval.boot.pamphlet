@@ -218,10 +218,8 @@ splitIntoBlocksOf200 a ==
   [[first (r:=x) for x in tails a for i in 1..200],
     :splitIntoBlocksOf200 rest r]
 
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 evalForm(op,opName,argl,mmS) ==
   -- applies the first applicable function
-
   for mm in mmS until form repeat
     [sig,fun,cond]:= mm
     (CAR sig) = 'interpOnly => form := CAR sig
@@ -256,7 +254,7 @@ evalForm(op,opName,argl,mmS) ==
           newType? CAAR mm =>
             mm' := first ncSigTransform mm
             ncGetFunction(opName, first mm', rest mm')
-          NRTcompileEvalForm(opName,rest sig,dcVector)
+          NRTcompileEvalForm(opName,fun,dcVector)
         null fun0 => throwKeyedMsg("S2IE0008",[opName])
         [bpi,:domain] := fun0
         EQ(bpi,function Undef) =>

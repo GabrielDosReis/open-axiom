@@ -369,7 +369,7 @@ constants.
 <<environment>>=
 INOBJS=	varini.$(FASLEXT)	\
 	setvart.$(FASLEXT)	intint.$(FASLEXT)	\
-        xrun.$(FASLEXT)        interop.$(FASLEXT)     \
+        interop.$(FASLEXT)     \
         patches.$(FASLEXT)
 
 IN_modules = $(patsubst %.$(FASLEXT), "%", $(INOBJS))

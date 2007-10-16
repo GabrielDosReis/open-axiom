@@ -359,32 +359,32 @@ bitsOf n ==
 --=======================================================================
 --               Generate Slot 4 Constructor Vectors
 --=======================================================================
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 NRTmakeCategoryAlist() ==
   $depthAssocCache: local := MAKE_-HASHTABLE 'ID
-  pcAlist := [:[[x,:'T] for x in $uncondAlist],:$condAlist]
+  $catAncestorAlist: local := NIL
+  pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
   opcAlist := NREVERSE SORTBY(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
-  slot1 := [[a,:k] for [a,:b] in SUBLIS($pairlis,opcAlist) 
+  slot1 := [[a,:k] for [a,:b] in SUBLIS($pairlis,opcAlist)
                    | (k := predicateBitIndex b) ^= -1]
   slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
   sixEtc := [5 + i for i in 1..#$pairlis]
   formals := ASSOCRIGHT $pairlis
-  for x in slot1 repeat RPLACA(x,EQSUBSTLIST(sixEtc,formals,CAR x))
-  -----------code to make a new style slot4-----------------
+  for x in slot1 repeat
+       RPLACA(x,EQSUBSTLIST(CONS("$$",sixEtc),CONS('$,formals),CAR x))
+  -----------code to make a new style slot4 -----------------
   predList := ASSOCRIGHT slot1  --is list of predicate indices
   maxPredList := "MAX"/predList
   catformvec := ASSOCLEFT slot1
   maxElement := "MAX"/$byteVec
-  ['CONS, ['makeByteWordVec2,MAX(maxPredList,1),MKQ predList], 
-    ['CONS, MKQ LIST2VEC slot0, 
+  ['CONS, ['makeByteWordVec2,MAX(maxPredList,1),MKQ predList],
+    ['CONS, MKQ LIST2VEC slot0,
       ['CONS, MKQ LIST2VEC [encodeCatform x for x in catformvec],
         ['makeByteWordVec2,maxElement,MKQ $byteVec]]]]
   --NOTE: this is new form: old form satisfies VECP CDDR form
 
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
-encodeCatform x == 
+encodeCatform x ==
   k := NRTassocIndex x => k
   atom x or atom rest x => x
   [first x,:[encodeCatform y for y in rest x]]

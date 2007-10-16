@@ -255,9 +255,8 @@ compareSig(sig,tableSig,dollar,domain) ==
      and/[lazyCompareSigEqual(s,t,dollar,domain)
               for s in rest sig for t in rest tableSig]
 
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
 lazyCompareSigEqual(s,tslot,dollar,domain) ==
-  tslot = '$ => s = devaluate dollar  --needed for browser
+  tslot = '$ => s = tslot -- devaluate dollar  --needed for browser
   INTEGERP tslot and PAIRP(lazyt:=domain.tslot) and PAIRP s =>
       lazyt is [.,.,.,[.,item,.]] and
         item is [.,[functorName,:.]] and functorName = CAR s =>
