@@ -943,7 +943,7 @@ putWidth u ==
     0
   newFirst:=
     atom (oldFirst:= first u) =>
-      fn:= GET(oldFirst,"WIDTH") =>
+      fn:= GETL(oldFirst,"WIDTH") =>
         [oldFirst,:FUNCALL(fn,[oldFirst,:l])]
       if l then ll := rest l else ll := nil
       [oldFirst,:opWidth(oldFirst,ll)+argsWidth]
