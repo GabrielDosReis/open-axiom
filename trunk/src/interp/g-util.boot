@@ -536,9 +536,9 @@ intern x ==
     INTERN x
   x
 
---------------------> NEW DEFINITION (override in interop.boot.pamphlet)
 isDomain a ==
-  REFVECP a and #a>5 and GETDATABASE(a.0,'CONSTRUCTORKIND) = 'domain
+  PAIRP a and VECP(CAR a) and
+    member(CAR(a).0, $domainTypeTokens)
 
 -- variables used by browser
 

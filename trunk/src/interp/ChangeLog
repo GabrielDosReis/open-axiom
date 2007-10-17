@@ -1,5 +1,29 @@
 2007-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* g-util.boot (isDomain): Merge with version in interop.boot.pamphlet.
+	* i-funsel.boot.pamphlet (getFunctionFromDomain): Likewise.
+	* interop.boot.pamphlet (devaluate): Remove.
+	(isDomain): Likewise.
+	(NRTcompiledLookup): Likewise.
+	(compiledLookup): Likewise.
+	(basicLookup): Likewise.
+	(lookupInDomainVector): Likewise.
+	(lookupComplete): Likewise.
+	(lookupIncomplete): Likewise.
+	(lookupInCompactTable): Likewise.
+	(lazyMatchArg2): Likewise.
+	(getOpCode): Likewise.
+	(newExpandLocalType): Likewise.
+	(replaceGoGetSlot): Likewise.
+	(lazyMatchAssocV): Likewise.
+	(lazyDomainSet): Likewise.
+	(evalSlotDomain): Likewise.
+	(domainEqual): Likewise.
+	(coerceConvertMmSelection): Likewise.
+	(getFunctionFromDomain): Likewise.
+
+2007-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/1814510
 	* i-output.boot.pamphlet (putWidth): Use GETL.
 	* Makefile.pamphlet (i-output.$(FASLEXT)): New rule.

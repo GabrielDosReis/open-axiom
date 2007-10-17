@@ -308,21 +308,6 @@ instantiate domenv ==
 hashTypeForm([fn,: args], percentHash) == 
    hashType([fn,:devaluateList args], percentHash)
 
---------------------> NEW DEFINITION (override in i-util.boot.pamphlet)
-devaluate(d) ==
-  isDomain d =>
-      -- ?need a shortcut for old domains
-      -- ELT(CAR d, 0) = 'oldAxiomDomain => ...
-      -- FIXP(ELT(CAR d,0)) => d
-      DNameToSExpr(SPADCALL(CDR d,CAR(d).1))
-  not REFVECP d => d
-  QSGREATERP(QVSIZE d,5) and QREFELT(d,3) is ['Category] => QREFELT(d,0)
-  QSGREATERP(QVSIZE d,0) =>
-    d':=QREFELT(d,0)
-    isFunctor d' => d'
-    d
-  d
-
 $hashOp1 := hashString '"1"
 $hashOp0 := hashString '"0"
 $hashOpApply := hashString '"apply"
@@ -371,76 +356,6 @@ $oldAxiomDomainDispatch :=
 	  [function oldAxiomDomainHashCode],
           [function oldAxiomAddChild])
 
---------------------> NEW DEFINITION (see g-util.boot.pamphlet)
-isDomain a ==
-  PAIRP a and VECP(CAR a) and
-    member(CAR(a).0, $domainTypeTokens)
-
--- following is interpreter interfact to function lookup
--- perhaps it should always work with hashcodes for signature?
---------------------> NEW DEFINITION (override in nrungo.boot.pamphlet)
-NRTcompiledLookup(op,sig,dom) ==
-  if CONTAINED('_#,sig) then
-      sig := [NRTtypeHack t for t in sig]
-  hashCode? sig =>   compiledLookupCheck(op,sig,dom)
-  (fn := compiledLookup(op,sig,dom)) => fn
-  percentHash :=
-      VECP dom => hashType(dom.0, 0)
-      getDomainHash dom
-  compiledLookupCheck(op, hashType(['Mapping,:sig], percentHash), dom)
-
---------------------> NEW DEFINITION (override in nrungo.boot.pamphlet)
-compiledLookup(op, sig, dollar) ==
-  if not isDomain dollar then dollar := NRTevalDomain dollar
-  basicLookup(op, sig, dollar, dollar)
-
---------------------> NEW DEFINITION (override in nrungo.boot.pamphlet)
-basicLookup(op,sig,domain,dollar) ==
-   -- following case is for old domains like Record and Union
-   -- or for getting operations out of yourself
-  VECP domain =>
-     isNewWorldDomain domain => -- getting ops from yourself (or for defaults)
-        oldCompLookup(op, sig, domain, dollar)
-     -- getting ops from Record or Union
-     lookupInDomainVector(op,sig,domain,dollar)
-  hashPercent :=
-     VECP dollar => hashType(dollar.0,0)
-     hashType(dollar,0)
-  box := [nil]
-  not VECP(dispatch := CAR domain) => error "bad domain format"
-  lookupFun := dispatch.3
-  dispatch.0 = 0 =>  -- new compiler domain object
-       hashSig :=
-           hashCode? sig => sig
-	   opIsHasCat op => hashType(sig, hashPercent)
-           hashType(['Mapping,:sig], hashPercent)
-
-       if SYMBOLP op then
-          op = 'Zero => op := $hashOp0
-          op = 'One => op := $hashOp1
-          op = 'elt => op := $hashOpApply
-          op = 'setelt => op := $hashOpSet
-          op := hashString SYMBOL_-NAME op
-       val:=CAR SPADCALL(CDR domain, dollar, op, hashSig, box, false,
-                               lookupFun) => val
-       hashCode? sig => nil
-       #sig>1 or opIsHasCat op => nil
-       boxval := SPADCALL(CDR dollar, dollar, op, hashType(first sig, hashPercent),
-                     box, false, lookupFun) =>
-          [FUNCTION IDENTITY,: CAR boxval]
-       nil
-  opIsHasCat op =>
-      HasCategory(domain, sig)
-  if hashCode? op then
-     EQL(op, $hashOp1) => op := 'One
-     EQL(op, $hashOp0) => op := 'Zero
-     EQL(op, $hashOpApply) => op := 'elt
-     EQL(op, $hashOpSet) => op := 'setelt
-     EQL(op, $hashSeg) => op := 'SEGMENT
-  hashCode? sig and EQL(sig, hashPercent) =>
-      SPADCALL CAR SPADCALL(CDR dollar, dollar, op, '($), box, false, lookupFun)
-  CAR SPADCALL(CDR dollar, dollar, op, sig, box, false, lookupFun)
-
 basicLookupCheckDefaults(op,sig,domain,dollar) ==
   box := [nil]
   not VECP(dispatch := CAR dollar) => error "bad domain format"
@@ -477,72 +392,6 @@ oldCompLookup(op, sig, domvec, dollar) ==
 oldCompLookupNoDefaults(op, sig, domvec, dollar) ==
   $lookupDefaults:local := nil
   lookupInDomainVector(op,sig,domvec,dollar)
-
---------------------> NEW DEFINITION (override in nrungo.boot.pamphlet)
-lookupInDomainVector(op,sig,domain,dollar) ==
-  PAIRP domain => basicLookupCheckDefaults(op,sig,domain,domain)
-  slot1 := domain.1
-  SPADCALL(op,sig,dollar,slot1)
-
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-lookupComplete(op,sig,dollar,env) ==
-   hashCode? sig => hashNewLookupInTable(op,sig,dollar,env,nil)
-   newLookupInTable(op,sig,dollar,env,nil)
- 
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-lookupIncomplete(op,sig,dollar,env) == 
-   hashCode? sig => hashNewLookupInTable(op,sig,dollar,env,true)
-   newLookupInTable(op,sig,dollar,env,true)
- 
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-lookupInCompactTable(op,sig,dollar,env) ==
-   hashCode? sig => hashNewLookupInTable(op,sig,dollar,env,true)
-   newLookupInTable(op,sig,dollar,env,true)
-
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
-  if s = '$ then
---  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
-    s := devaluate dollar -- calls from HasCategory can have $s
-  INTEGERP a =>
-    not typeFlag => s = domain.a
-    a = 6 and $isDefaultingPackage => s = devaluate dollar
-    VECP (d := domainVal(dollar,domain,a)) =>
-      s = d.0 => true
-      domainArg := ($isDefaultingPackage => domain.6.0; domain.0)
-      KAR s = QCAR d.0 and lazyMatchArgDollarCheck(s,d.0,dollar.0,domainArg)
-    --VECP CAR d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
-    isDomain d =>
-        dhash:=getDomainHash d
-        dhash =
-           (if hashCode? s then s else hashType(s, dhash))
---      s = devaluate d
-    lazyMatch(s,d,dollar,domain)                         --new style
-  a = '$ => s = devaluate dollar
-  a = "$$" => s = devaluate domain
-  STRINGP a =>
-    STRINGP s => a = s
-    s is ['QUOTE,y] and PNAME y = a
-    IDENTP s and PNAME s = a
-  atom a =>  a = s
-  op := opOf a
-  op  = 'NRTEVAL => s = nrtEval(CADR a,domain)
-  op = 'QUOTE => s = CADR a
-  lazyMatch(s,a,dollar,domain)
-  --above line is temporarily necessary until system is compiled 8/15/90
---s = a
- 
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-getOpCode(op,vec,max) ==
---search Op vector for "op" returning code if found, nil otherwise
-  res := nil
-  hashCode? op =>
-    for i in 0..max by 2 repeat
-      EQL(hashString PNAME QVELT(vec,i),op) => return (res := QSADD1 i)
-    res
-  for i in 0..max by 2 repeat
-    EQ(QVELT(vec,i),op) => return (res := QSADD1 i)
-  res
 
 hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   opIsHasCat op =>
@@ -627,15 +476,6 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   flag or someMatch => newLookupInAddChain(op,sig,domain,dollar)
   nil
 
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-newExpandLocalType(lazyt,dollar,domain) ==
-  VECP lazyt => lazyt.0
-  isDomain lazyt => devaluate lazyt
-  ATOM lazyt => lazyt
-  lazyt is [vec,.,:lazyForm] and VECP vec =>              --old style
-    newExpandLocalTypeForm(lazyForm,dollar,domain)
-  newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
-
 hashNewLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
   catVec := CADR slot4
@@ -711,39 +551,6 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
       sayBrightly '"candidate fails -- continuing to search categories"
     nil
 
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-replaceGoGetSlot env ==
-  [thisDomain,index,:op] := env
-  thisDomainForm := devaluate thisDomain
-  bytevec := getDomainByteVector thisDomain
-  numOfArgs := bytevec.index
-  goGetDomainSlotIndex := bytevec.(index := QSADD1 index)
-  goGetDomain :=
-     goGetDomainSlotIndex = 0 => thisDomain
-     thisDomain.goGetDomainSlotIndex
-  if PAIRP goGetDomain and SYMBOLP CAR goGetDomain then
-     goGetDomain := lazyDomainSet(goGetDomain,thisDomain,goGetDomainSlotIndex)
-  sig :=
-    [newExpandTypeSlot(bytevec.(index := QSADD1 index),thisDomain,thisDomain)
-      for i in 0..numOfArgs]
-  thisSlot := bytevec.(QSADD1 index)
-  if $monitorNewWorld then
-    sayLooking(concat('"%l","..",form2String thisDomainForm,
-      '" wants",'"%l",'"  "),op,sig,goGetDomain)
-  slot :=  basicLookup(op,sig,goGetDomain,goGetDomain)
-  slot = nil =>
-    $returnNowhereFromGoGet = true =>
-      ['nowhere,:goGetDomain]  --see newGetDomainOpTable
-    sayBrightly concat('"Function: ",formatOpSignature(op,sig),
-      '" is missing from domain: ",form2String goGetDomain.0)
-    keyedSystemError("S2NR0001",[op,sig,goGetDomain.0])
-  if $monitorNewWorld then
-    sayLooking1(['"goget stuffing slot",:bright thisSlot,'"of "],thisDomain)
-  SETELT(thisDomain,thisSlot,slot)
-  if $monitorNewWorld then
-    sayLooking1('"<------",[CAR slot,:devaluate CDR slot])
-  slot
-
 HasAttribute(domain,attrib) ==
   hashPercent :=
        VECP domain => hashType(domain.0,0)
@@ -789,21 +596,6 @@ newHasCategory(domain,catform) ==
     testBitVector(predvec,predIndex)
   lazyMatchAssocV(catform,auxvec,catvec,domain)         --new style
 
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
-  n : FIXNUM := MAXINDEX catvec
-  -- following call to hashType was missing 2nd arg. 0 added on 3/31/94 by RSS
-  hashCode? x =>
-    percentHash :=
-      VECP domain => hashType(domain.0, 0)
-      getDomainHash domain
-    or/[ELT(auxvec,i) for i in 0..n |
-        x = hashType(newExpandLocalType(QVELT(catvec,i),domain,domain), percentHash)]
-  xop := CAR x
-  or/[ELT(auxvec,i) for i in 0..n |
-    --xop = CAR (lazyt := QVELT(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
-    xop = CAR (lazyt := getCatForm(catvec,i,domain)) and lazyMatch(x,lazyt,domain,domain)]
-
 getCatForm(catvec, index, domain) ==
    NUMBERP(form := QVELT(catvec,index)) => domain.form
    form
@@ -830,99 +622,6 @@ HasCategory(domain,catform') ==
 --systemDependentMkAutoload(fn,cnam) ==
 --    FBOUNDP(cnam) => "next"
 --    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
-
---------------------> NEW DEFINITION (override in nrunfast.boot.pamphlet)
-lazyDomainSet(lazyForm,thisDomain,slot) ==
-  form :=
-    --lazyForm is [vec,.,:u] and VECP vec => u        --old style
-    lazyForm                                        --new style
-  slotDomain := evalSlotDomain(form,thisDomain)
-  if $monitorNewWorld then
-    sayLooking1(concat(form2String devaluate thisDomain,
-      '" activating lazy slot ",slot,'": "),slotDomain)
--- name := CAR form
---getInfovec name
-  SETELT(thisDomain,slot,slotDomain)
-
-
---------------------> NEW DEFINITION (override in template.boot.pamphlet)
-evalSlotDomain(u,dollar) ==
-  $returnNowhereFromGoGet: local := false
-  $ : fluid := dollar
-  $lookupDefaults : local := nil -- new world
-  isDomain u => u
-  u = '$ => dollar
-  u = "$$" => dollar
-  FIXP u =>
-    VECP (y := dollar.u) => y
-    isDomain y => y
-    y is ['SETELT,:.] => eval y--lazy domains need to marked; this is dangerous?
-    y is [v,:.] => 
-      VECP v => lazyDomainSet(y,dollar,u)               --old style has [$,code,:lazyt]
-      constructor? v or MEMQ(v,'(Record Union Mapping)) => 
-        lazyDomainSet(y,dollar,u)                       --new style has lazyt
-      y
-    y
-  u is ['NRTEVAL,y] => 
-    y is ['ELT,:.] => evalSlotDomain(y,dollar)
-    eval  y
-  u is ['QUOTE,y] => y
-  u is ['Record,:argl] =>
-     FUNCALL('Record0,[[tag,:evalSlotDomain(dom,dollar)]
-                                 for [.,tag,dom] in argl])
-  u is ['Union,:argl] and first argl is ['_:,.,.] =>
-     APPLY('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
-                                 for [.,tag,dom] in argl])
-  u is ['spadConstant,d,n] =>
-    dom := evalSlotDomain(d,dollar)
-    SPADCALL(dom . n)
-  u is ['ELT,d,n] =>
-    dom := evalSlotDomain(d,dollar)
-    slot := dom . n
-    slot is ['newGoGet,:env] => replaceGoGetSlot env
-    slot
-  u is [op,:argl] => APPLY(op,[evalSlotDomain(x,dollar) for x in argl])
-  systemErrorHere '"evalSlotDomain"
- 
---------------------> NEW DEFINITION (override in i-util.boot.pamphlet)
-domainEqual(a,b) ==
-  devaluate(a) = devaluate(b)
-
---makeConstructorsAutoLoad()
-
--- following changes should go back into xrun.boot
--- patched version from xrun.boot
---------------------> NEW DEFINITION (override in clammed.boot.pamphlet)
---------------------> NEW DEFINITION (override in xrun.boot.pamphlet)
-coerceConvertMmSelection(funName,m1,m2) ==
-  -- calls selectMms with $Coerce=NIL and tests for required
-  -- target type. funName is either 'coerce or 'convert.
-  $declaredMode : local:= NIL
-  $reportBottomUpFlag : local:= NIL
-  l := selectMms1(funName,m2,[m1],[m1],NIL)
---  mmS := [[sig,[targ,arg],:pred] for x in l | x is [sig,[.,arg],:pred] and
-  mmS := [x for x in l | x is [sig,:.] and hasCorrectTarget(m2,sig) and
-      sig is [dc,targ,oarg] and isEqualOrSubDomain(m1,oarg)]
-  mmS and CAR mmS
-
---------------------> NEW DEFINITION (see i-funsel.boot.pamphlet)
-getFunctionFromDomain(op,dc,args) ==
-  -- finds the function op with argument types args in dc
-  -- complains, if no function or ambiguous
-  $reportBottomUpFlag:local:= NIL
-  member(CAR dc,$nonLisplibDomains) =>
-    throwKeyedMsg("S2IF0002",[CAR dc])
-  not constructor? CAR dc =>
-    throwKeyedMsg("S2IF0003",[CAR dc])
-  p:= findFunctionInDomain(op,dc,NIL,args,args,NIL,NIL) =>
---+
-    --sig := [NIL,:args]
-    domain := evalDomain dc
-    for mm in nreverse p until b repeat
-      [[.,:osig],nsig,:.] := mm
-      b := compiledLookup(op,nsig,domain)
-    b or  throwKeyedMsg("S2IS0023",[op,dc])
-  throwKeyedMsg("S2IF0004",[op,dc])
 
 @
 

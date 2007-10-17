@@ -715,39 +715,22 @@ hitListOfTarget(t) ==
   EQ(CAR t,'Expression) => 1600
   500
 
---------------------> NEW DEFINITION (override in interop.boot.pamphlet)
 getFunctionFromDomain(op,dc,args) ==
   -- finds the function op with argument types args in dc
   -- complains, if no function or ambiguous
-
   $reportBottomUpFlag:local:= NIL
   member(CAR dc,$nonLisplibDomains) =>
     throwKeyedMsg("S2IF0002",[CAR dc])
   not constructor? CAR dc =>
     throwKeyedMsg("S2IF0003",[CAR dc])
-
-  p := findFunctionInDomain(op,dc,NIL,args,args,NIL,NIL)
-
-  -- NEW COMPILER COMPATIBILITY ON
-
-  if not p then
-    p :=
-      op = "^" =>
-	  findFunctionInDomain("**",dc,NIL,args,args,NIL,NIL)
-      op = "**" =>
-	  findFunctionInDomain("^",dc,NIL,args,args,NIL,NIL)
-      nil
-
-  -- NEW COMPILER COMPATIBILITY OFF
-
-  p =>
+  p:= findFunctionInDomain(op,dc,NIL,args,args,NIL,NIL) =>
+--+
+    --sig := [NIL,:args]
     domain := evalDomain dc
     for mm in nreverse p until b repeat
-      [[.,:sig],:.] := mm
-      b := compiledLookup(op,sig,domain)
+      [[.,:osig],nsig,:.] := mm
+      b := compiledLookup(op,nsig,domain)
     b or  throwKeyedMsg("S2IS0023",[op,dc])
-
-
   throwKeyedMsg("S2IF0004",[op,dc])
 
 isOpInDomain(opName,dom,nargs) ==
