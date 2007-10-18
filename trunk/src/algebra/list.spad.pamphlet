@@ -97,7 +97,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
          x := Qrest x
       (NREVERSE(y)$Lisp)@%
 
-   if S has SetCategory then
+   if S has CoercibleTo(OutputForm) then
      coerce(x):OutputForm ==
         -- displays cycle with overbar over the cycle
         y := empty()$List(OutputForm)
@@ -114,6 +114,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
            z := concat((first x)::OutputForm, z)
         bracket concat_!(y, overbar commaSeparate reverse_! z)
 
+   if S has SetCategory then
      x = y ==
        Qeq(x,y) => true
        while not Qnull x and not Qnull y repeat
