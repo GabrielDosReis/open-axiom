@@ -86,6 +86,7 @@ Aggregate: Category == Type with
 ++ Those with attribute \spadatt{shallowlyMutable} allow an element
 ++ to be modified or updated without changing its overall value.
 HomogeneousAggregate(S:Type): Category == Aggregate with
+   if S has CoercibleTo(OutputForm) then CoercibleTo(OutputForm)
    if S has SetCategory then SetCategory
    if S has SetCategory then
       if S has Evalable S then Evalable S
@@ -136,6 +137,7 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
        member?(e, c)   == any?(e = #1,c)
        x = y ==
 	  size?(x, #y) and _and/[a = b for a in parts x for b in parts y]
+     if S has CoercibleTo(OutputForm) then
        coerce(x:%):OutputForm ==
 	 bracket
 	    commaSeparate [a::OutputForm for a in parts x]$List(OutputForm)
@@ -1502,18 +1504,18 @@ BinaryRecursiveAggregate(S:Type):Category == RecursiveAggregate S with
 	 x = value u => true
 	 member?(x,left u) or member?(x,right u)
 
-   if S has SetCategory then
+   if S has CoercibleTo(OutputForm) then
      coerce(t:%): OutputForm ==
        empty? t =>  "[]"::OutputForm
        v := value(t):: OutputForm
        empty? left t =>
 	 empty? right t => v
-	 r := coerce(right t)@OutputForm
+	 r := (right t)::OutputForm
 	 bracket ["."::OutputForm, v, r]
-       l := coerce(left t)@OutputForm
+       l := (left t)::OutputForm
        r :=
 	 empty? right t => "."::OutputForm
-	 coerce(right t)@OutputForm
+	 (right t)::OutputForm
        bracket [l, v, r]
 
    if % has finiteAggregate then
@@ -2549,16 +2551,17 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       copyInto_!(z, y, i + #x)
       z
 
+    if S has CoercibleTo(OutputForm) then
+      coerce(r:%):OutputForm ==
+	bracket commaSeparate
+	      [qelt(r, k)::OutputForm for k in minIndex r .. maxIndex r]
+
     if S has SetCategory then
       x = y ==
 	#x ^= #y => false
 	for i in minIndex x .. maxIndex x repeat
 	  not(qelt(x, i) = qelt(y, i)) => return false
 	true
-
-      coerce(r:%):OutputForm ==
-	bracket commaSeparate
-	      [qelt(r, k)::OutputForm for k in minIndex r .. maxIndex r]
 
       position(x:S, t:%, s:Integer) ==
 	n := maxIndex t

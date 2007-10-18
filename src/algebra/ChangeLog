@@ -1,3 +1,15 @@
+2007-10-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1795259
+	* aggcat.spad.pamphlet (HomogeneousAggregate): Make
+	CoercibleTo(OutputForm) if argument is of that category.
+	(BinaryRecursiveAggregate): Weaken condition for coercion to
+	OutputForm. 
+	(OneDimensionalArrayAggregate): Likewise.
+	(Tuple): Likewise.
+	(IndexedList): Likewise.
+	* tree.spad.pamphlet: Likewise.
+
 2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (INTERPSYS): Now take system root directory

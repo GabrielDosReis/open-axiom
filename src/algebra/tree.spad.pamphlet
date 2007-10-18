@@ -182,7 +182,7 @@ Tree(S: SetCategory): T==C where
     insert: (%, List %) -> List %
 
     -----> coerce to OutputForm
-    if S has SetCategory then
+    if S has CoercibleTo(OutputForm) then
       multipleOverbar: (OutputForm, Integer, List %) -> OutputForm
       coerce1: (%, List %, List %) -> OutputForm
 
