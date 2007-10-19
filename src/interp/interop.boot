@@ -1,21 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/interop.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,9 +31,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -97,7 +79,7 @@ DNameToSExpr1 dname ==
 
 DNameToSExpr dname ==
   CAR dname = DNameOtherID  =>
-	CDR dname
+        CDR dname
   sx := DNameToSExpr1 dname
   CONSP sx => sx
   LIST sx
@@ -113,7 +95,7 @@ SExprToDName(sexpr, cosigVal) ==
     [DNameApplyID,
          [DNameStringID,: StringToCompStr '"->"],
               [DNameTupleID, : CDR args],
-		 [DNameTupleID, CAR args]]
+                 [DNameTupleID, CAR args]]
   name0 :=   [DNameStringID, : StringToCompStr SYMBOL_-NAME CAR sexpr]
   CAR sexpr = 'Union or CAR sexpr = 'Record =>
     [DNameApplyID, name0, 
@@ -170,7 +152,7 @@ $lazyOldAxiomDomainDispatch :=
    VECTOR('lazyOldAxiomDomain,
           [function lazyOldAxiomDomainDevaluate],
           [nil],
-	  [function lazyOldAxiomDomainLookupExport],
+          [function lazyOldAxiomDomainLookupExport],
           [function lazyOldAxiomDomainHashCode],
           [function lazyOldAxiomAddChild])
 
@@ -352,8 +334,8 @@ $oldAxiomDomainDispatch :=
    VECTOR('oldAxiomDomain,
           [function oldAxiomDomainDevaluate],
           [nil],
-	  [function oldAxiomDomainLookupExport],
-	  [function oldAxiomDomainHashCode],
+          [function oldAxiomDomainLookupExport],
+          [function oldAxiomDomainHashCode],
           [function oldAxiomAddChild])
 
 basicLookupCheckDefaults(op,sig,domain,dollar) ==
@@ -623,10 +605,3 @@ HasCategory(domain,catform') ==
 --    FBOUNDP(cnam) => "next"
 --    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
 
-@
-
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
