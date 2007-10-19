@@ -1,30 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\$SPAD/src/interp mark.boot}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\begin{verbatim}
-
-HOW THE TRANSLATOR WORKS
-
-Unit of code is markedUp as follows (unit= item in a capsule pile, e.g.)
-  (WI/.. a b)            means    source code a --> markedUpCode b
-  (REPPER/.. . . a)      means    source code for a ---> (rep a) or (per a)
-Source code is extracted, modified from markedUpCode, and stacked
-Entire constructor is then assembled and prettyprinted
-
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,7 +15,7 @@ Entire constructor is then assembled and prettyprinted
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -55,9 +31,15 @@ Entire constructor is then assembled and prettyprinted
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+
+-- HOW THE TRANSLATOR WORKS
+
+-- Unit of code is markedUp as follows (unit= item in a capsule pile, e.g.)
+--   (WI/.. a b)            means    source code a --> markedUpCode b
+--   (REPPER/.. . . a)      means    source code for a ---> (rep a) or (per a)
+-- Source code is extracted, modified from markedUpCode, and stacked
+-- Entire constructor is then assembled and prettyprinted
+
 
 )package "BOOT"
 
@@ -1391,7 +1373,7 @@ mkCheckRun() ==
 
 mkGetPaths(x,y) ==
   u := REMDUP mkPaths(x,y) => getLocationsOf(u,y,nil)
-  nil	
+  nil   
 
 mkPaths(x,y) ==   --x < y; find location s of x in y (initially s=nil)
   markPathsEqual(x,y) => [y]
@@ -1512,9 +1494,3 @@ ppf x ==
   _*PRETTYPRINT_* : local := true
   PRINT_-FULL x
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
