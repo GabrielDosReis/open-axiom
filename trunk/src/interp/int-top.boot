@@ -1,123 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp int-top.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{intloopReadConsole}
-
-This is the top level loop when reading from the input console.  This
-function calls itself after processing the current line.  Because of
-this it is important that the underlying common lisp supports
-tail-recursion.
-
-Normally we never really exit this function.
-
-We read a string from the input. The serverReadLine\cite{1} function
-is a special readline function that handles communication with the 
-session manager code, which is a separate process running in parallel.
-In the usual case it just returns the current string.
-
-If the user enters a blank line ([[#a=]]) then just put up another prompt
-and then tail-recursively call [[intloopReadConsole]].
-
-If the user has set [[$DALYMODE]] to true and the new line starts with
-an open parenthesis then the input is assumed to be a lisp expression
-and is evaluated by the underlying common lisp. This is useful if you
-are doing a lot of debugging. Commands can also be executed in the
-underlying common lisp by using the [[)lisp]] command. In either case we
-tail-recursively call [[intloopReadConsole]].
-
-If the user typed [[)fin]] then we exit the loop and drop into the
-underlying common lisp. You can use the [[(restart)]] function call
-to return to the top level loop.
-
-If the input line starts with a close parenthesis we parse the 
-input line as a command rather than an expression. We execute the command
-and then tail-recursively call [[intloopReadConsole]].
-
-If the input line contains a trailing underscore, which is the standard
-end-of-line escape character, then we continue to read the line by
-tail-recursively calling [[intloopReadConsole]].
-
-If none of the above conditions occur we simply evaluate the input line
-and then tail-recursively call [[intloopReadConsole]].
-
-However, there was a small bug in the test for the system command
-[[)fin]]. Originally, the test took the form:
-\begin{verbatim}
-   intloopPrefix?('")fin",a) => []
-\end{verbatim}
-This test was flawed in two ways. First, it would match {\sl any}
-command beginning with [[)fin]]. Second, it would {\sl only} match
-names beginning with [[)fin]], although [[)fi]] is an acceptable
-abbreviation for this command. The improved test takes the form:
-\begin{verbatim}
-    pfx := stripSpaces intloopPrefix?('")fi",a)
-    pfx and ((pfx = '")fi") or (pfx = '")fin")) => []
-\end{verbatim}
-
-\section{intloopPrefix?}
-The [[intloopPrefix?(prefix, whole)]] function simply tests if the string
-[[prefix]] is a prefix of the string [[whole]]. The original
-implementation discounts {\sl any} whitespace in [[whole]] in deciding a
-match, when a more sensible behavior would be to discount only leading
-whitespace.
-
-Moreover, the function SUBSTRING\cite{2} was being improperly called.
-The reason why this improper call had gone undetected is that
-generally [[intloopPrefix?]] is invoked with a prefix string of length
-one -- hence the start position for the substring would generally
-begin at index [[spaces]] (which is what we want).
-
-The original code read:
-\begin{verbatim}
-intloopPrefix?(prefix,whole) ==
-     #prefix > #whole => false
-     good:=true
-     spaces := 0
-     i := 0
-     len := #prefix
-     wlen := #whole
-     for j in 0.. while (good and i < len and j < wlen) repeat
-       good:= (prefix.i = whole.j) or (whole.j = char " ")
-       if prefix.i = whole.j then i := i+1
-       if whole.j = char " " then spaces := spaces + 1
-     spaces = wlen => nil
-     if good then SUBSTRING(whole,#prefix+spaces-1,nil) else good
-
-\end{verbatim}
-
-The improved version of [[inloopPrefix?(prefix, whole)]] returns the
-string [[whole]] sans leading whitespace if the match succeeds, else nil.
-
-<<intloopPrefix?>>=
-intloopPrefix?(prefix,whole) ==
-     #prefix > #whole => false
-     good := true
-     leading := true
-     spaces := 0
-     i := 0
-     len := #prefix
-     wlen := #whole
-     for j in 0.. while (good and i < len and j < wlen) repeat
-       good := (prefix.i = whole.j) or (leading and (whole.j = char " "))
-       if prefix.i = whole.j then i := i+1
-       if (whole.j = char " ") and leading then 
-         spaces := spaces + 1
-       else leading := false
-     spaces = wlen => nil
-     if good then SUBSTRING(whole,spaces,nil) else good
-
-@
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -148,9 +31,6 @@ intloopPrefix?(prefix,whole) ==
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 )package "BOOT"
 
@@ -287,7 +167,23 @@ intloopReadConsole(b, n)==
     PRINC(MKPROMPT())
     intloopReadConsole('"", c)
  
-<<intloopPrefix?>> 
+intloopPrefix?(prefix,whole) ==
+     #prefix > #whole => false
+     good := true
+     leading := true
+     spaces := 0
+     i := 0
+     len := #prefix
+     wlen := #whole
+     for j in 0.. while (good and i < len and j < wlen) repeat
+       good := (prefix.i = whole.j) or (leading and (whole.j = char " "))
+       if prefix.i = whole.j then i := i+1
+       if (whole.j = char " ") and leading then 
+         spaces := spaces + 1
+       else leading := false
+     spaces = wlen => nil
+     if good then SUBSTRING(whole,spaces,nil) else good
+ 
  
 intloopProcess(n,interactive,s)==
      StreamNull s => n
@@ -541,10 +437,3 @@ displayParserMacro m ==
   pfPrintSrcLines CADDR m
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} [[src/interp/server.boot.pamphlet]]
-\bibitem{2} [[src/interp/vmlisp.lisp.pamphlet]]
-\end{thebibliography}
-\end{document}
