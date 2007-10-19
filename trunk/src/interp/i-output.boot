@@ -1,41 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/i-output.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{GCL\_log10\_bug}
-
-In some versions of GCL the LOG10 function returns improperly rounded values.
-The symptom is:
-\begin{verbatim}
-(24) -> [1000]
-   (24)  [100]
-\end{verbatim}
-The common lisp failure can be shown with:
-\begin{verbatim}
-(25) -> )lisp (log10 1000)
-Value = 2.9999999999999996
-\end{verbatim}
-This previous boot code was:
-\begin{verbatim}
-    u < MOST_-POSITIVE_-LONG_-FLOAT => 1+negative+FLOOR LOG10 u
-\end{verbatim}
-and should be restored when the GCL bug is fixed.
-<<GCLlog10bug>>=
-    u < MOST_-POSITIVE_-LONG_-FLOAT => 1+negative+FLOOR ((LOG10 u) + 0.0000001)
-@ 
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -66,9 +31,6 @@ and should be restored when the GCL bug is fixed.
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"sys-macros"
 )package "BOOT"
@@ -909,7 +871,7 @@ WIDTH u ==
       negative := 0
     -- Try and be fairly exact for smallish integers:
     u = 0 => 1
-<<GCLlog10bug>>
+    u < MOST_-POSITIVE_-LONG_-FLOAT => 1+negative+FLOOR ((LOG10 u) + 0.0000001)
     -- Rough guess: integer-length returns log2 rounded up, so divide it by
     -- roughly log2(10). This should return an over-estimate, but for objects
     -- this big does it matter?
@@ -1113,7 +1075,7 @@ quoteSuper [.,a] == superspan a
 quoteWidth [.,a] == 1 + WIDTH a
 
 SubstWhileDesizing(u,m) ==
-    -- arg. m is always nil (historical: EU directive to increase argument lists 1991/XGII)	
+    -- arg. m is always nil (historical: EU directive to increase argument lists 1991/XGII)     
     --Replaces all occurrences of matrix m by name in u
     --Taking out any outdated size information as it goes
   ATOM u => u
@@ -1150,7 +1112,7 @@ SubstWhileDesizingList(u,m) ==
        [SubstWhileDesizing(a,m)] 
      tail:=res
      for i in b repeat
-	if ATOM i then  RPLACD(tail,[i]) else RPLACD(tail,[SubstWhileDesizing(i,m)])
+        if ATOM i then  RPLACD(tail,[i]) else RPLACD(tail,[SubstWhileDesizing(i,m)])
         tail:=CDR tail
      res   
    u  
@@ -2475,9 +2437,3 @@ maPrin u ==
     form
   if ^$collectOutput then PRETTYPRINT(u,$algebraOutputStream)
   nil
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
