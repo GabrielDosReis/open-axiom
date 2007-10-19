@@ -1235,7 +1235,7 @@ zerodim.spad.pamphlet (LEXTRIPK IRURPK RURPK)
 axiom_algebra_layer_23 = \
   CPIMA.o    IRURPK.o   LAZM3PK.o  LEXTRIPK.o \
   NORMPK.o   QCMPACK.o  RURPK.o    SFRGCD.o   \
-  SFQCMPK.o  INTRVL.o   ODEEF.o
+  SFQCMPK.o  INTRVL.o   ODEEF.o    DOMAIN.o
 
 axiom_algebra_layer_23_nrlibs = \
 	$(axiom_algebra_layer_23:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -1852,6 +1852,10 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 <<genericBOOTSTRAPfiles>>
 <<genericSPADfiles>>
 <<genericDOCfiles>>
+
+DOMAIN.NRLIB/code.$(FASLEXT): domain.spad
+	@ rm -rf $*.NRLIB
+	echo ")co $(srcdir)/domain.spad" | ${INTERPSYS}
 
 @
 <<diagrams.tex (OUT from IN)>>=
