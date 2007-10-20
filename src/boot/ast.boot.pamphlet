@@ -444,6 +444,11 @@ bfSUBLIS(p,e)==
   EQCAR(e,"QUOTE")=>e
   cons(bfSUBLIS(p,car e),bfSUBLIS(p,cdr e))
  
++++ Returns e/p, where e is an atom.  We assume that the
++++ DEFs form a system admitting a fix point; otherwise we may
++++ loop forever.  That can happen only if nullary goats
++++ are recursive -- which they are not supposed to be.
++++ We don't enforce that restriction though.
 bfSUBLIS1(p,e)==
    null p =>e
    f:=CAR p
