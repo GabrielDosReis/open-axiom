@@ -1083,15 +1083,6 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	$(INSTALL_DATA) $< $@
 @
 
-\subsection{fortcall.boot \cite{16}}
-
-<<fortcall.clisp>>=
-fortcall.clisp: fortcall.boot
-	@ echo 55 making $@ from $<
-	@ echo '(progn (old-boot::boot "fortcall.boot"))' | ${DEPSYS}
-
-@
-
 \subsection{category.boot \cite{58}}
 
 <<category.clisp>>=
@@ -1300,14 +1291,6 @@ info.clisp: info.boot
 iterator.clisp: iterator.boot
 	@ echo 333 making $@ from $<
 	@ echo '(old-boot::boot "iterator.boot")' | ${DEPSYS}
-@
-
-\subsection{match.boot}
-
-<<match.clisp>>=
-match.clisp: match.boot
-	@ echo 339 making $@ from $<
-	@ echo '(old-boot::boot "match.boot")' | ${DEPSYS}
 @
 
 \subsection{modemap.boot}
@@ -1574,6 +1557,10 @@ distclean-local: clean-local
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
+## Translation to Fortran
+fortcall.$(FASLEXT): fortcall.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 ## HyperDoc
 bc-solve.$(FASLEXT): bc-solve.boot bc-matrix.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -1617,6 +1604,9 @@ i-object.$(FASLEXT): i-object.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 format.$(FASLEXT): format.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## Interface with the Aldor compiler.
@@ -1822,8 +1812,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 <<define.clisp>>
 
-<<fortcall.clisp>>
-
 <<functor.clisp>>
 
 <<i-analy.clisp>>
@@ -1859,8 +1847,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<i-toplev.clisp>>
 
 <<i-util.clisp>>
-
-<<match.clisp>>
 
 <<modemap.clisp>>
 

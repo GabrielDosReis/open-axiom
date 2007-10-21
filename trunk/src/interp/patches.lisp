@@ -328,13 +328,6 @@
   )
 )
 
-
-(defun |makeVector| (els type)
- (make-array (length els) :element-type (or type t) :initial-contents els))
-
-
-(defun |makeList| (size el) (make-list size :initial-element el) )
-
 #+:akcl
 (defun print-xdr-stream (x y z) (format y "XDR:~A" (xdr-stream-name x)))
 #+:akcl
