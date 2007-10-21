@@ -1,3 +1,15 @@
+2007-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (<<fortcall.clisp>>): Remove.
+	(<<match.clisp>>): Likewise.
+	(fortcall.$(FASLEXT)): New rule.
+	(match.$(FASLEXT)): Likewise.
+	* fortcall.boot.pamphlet: Push into package "BOOT".  Import
+	"sys-macros". Fix syntax.
+	* match.boot.pamphlet: Likewise.
+	* patches.lisp (|makeVector): Move to fortcall.boot.
+	(|makeList|): Likewise.
+
 2007-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (OBJS): Include i-object.$(FASLEXT).

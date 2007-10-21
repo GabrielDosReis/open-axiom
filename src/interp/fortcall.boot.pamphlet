@@ -46,6 +46,16 @@
 <<*>>=
 <<license>>
 
+import '"sys-macros"
+)package "BOOT"
+
+makeVector(elts, t) ==
+  MAKE_-ARRAY(#elts, KEYWORD::ELEMENT_-TYPE, t or true,
+              KEYWORD::INITIAL_-CONTENTS, elts)
+
+makeList(n, e) ==
+  MAKE_-LIST(n, KEYWORD::INITIAL_-ELEMENT, e)
+
 makeFort(name,args,decls,results,returnType,aspInfo) ==
   -- Create an executable Fortran file to call a given library function,
   -- and a stub Axiom function to process its arguments.
@@ -103,7 +113,7 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
   WRITE_-LINE('"  XDR xdrs;",fp)
   WRITE_-LINE('"  {",fp)
   if $addUnderscoreToFortranNames then
-    routineName := STRCONC(name,STRING(95))
+    routineName := STRCONC(name,STRING CODE_-CHAR 95)
   else
     routineName := name
   -- If it is a function then give it somewhere to stick its result:
@@ -161,7 +171,7 @@ isPointer?(u,decls) ==
 printCName(u,ispointer,asps,fp) ==
   member(u,asps) =>
     PRINC(u,fp)
-    if $addUnderscoreToFortranNames then PRINC(STRING(95),fp)
+    if $addUnderscoreToFortranNames then PRINC(STRING CODE_-CHAR 95,fp)
   if not ispointer then PRINC('"&",fp)
   PRINC(u,fp)
 
@@ -203,7 +213,7 @@ printDec(type,dec,asps,fp) ==
   wt(['"    ",if LISTP(type) then first(type) else type,'" "],fp)
   member(dec,asps) =>
     if $addUnderscoreToFortranNames then
-      wl([dec,STRING(95),'"();"],fp)
+      wl([dec,STRING CODE_-CHAR 95,'"();"],fp)
     else
       wl([dec,'"();"],fp)
   LISTP(type) =>
@@ -216,7 +226,7 @@ printDec(type,dec,asps,fp) ==
 writeXDR(v,str,fp) ==
   -- Generate the calls to the filters which will read from the temp
   -- file.  The CHECK macro ensures that the translation worked.
-  underscore := STRING CHAR("__:",0) -- to avoid a compiler bug which won't
+  underscore := STRING CHAR('"__:",0) -- to avoid a compiler bug which won't
                                      -- parse " ... __" properly.
   wt(['"    CHECK(xdr",underscore, XDRFun(v), '"(", str, '",&", first(v)],fp)
   if (LISTP (ty :=SECOND v)) and not EQUAL(first ty,'"char") then
@@ -438,7 +448,7 @@ spadify(l,results,decls,names,actual) ==
   -- The elements of list l are the output forms returned from the Fortran
   -- code: integers, floats and vectors.  Return spad forms of these, of 
   -- type Record(key:Symbol,entry:Any) (for use with the Result domain).
-  SETQ(RESULTS,l)
+  -- SETQ(RESULTS,l)
   spadForms := nil
   for i in 0..(#l -1) repeat
     fort := NTH(i,l)
@@ -559,10 +569,11 @@ checkForBoolean u ==
   u = "BOOLEAN" => "FIXNUM"
   u
 
+shortZero == COERCE(0.0,'SHORT_-FLOAT)
+longZero == COERCE(0.0,'DOUBLE_-FLOAT)
+
 prepareResults(results,args,dummies,values,decls) ==
   -- Create the floating point zeros (boot doesn't like 0.0d0, 0.0D0 etc)
-  shortZero : fluid := COERCE(0.0,'SHORT_-FLOAT)
-  longZero : fluid := COERCE(0.0,'DOUBLE_-FLOAT)
   data := nil
   for u in results repeat
     type := getFortranType(u,decls)

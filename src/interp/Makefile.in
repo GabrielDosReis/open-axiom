@@ -399,6 +399,10 @@ database.date:
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
+## Translation to Fortran
+fortcall.$(FASLEXT): fortcall.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 ## HyperDoc
 bc-solve.$(FASLEXT): bc-solve.boot bc-matrix.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -442,6 +446,9 @@ i-object.$(FASLEXT): i-object.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 format.$(FASLEXT): format.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## Interface with the Aldor compiler.
@@ -677,11 +684,6 @@ define.clisp: define.boot
 	@ echo 247 making $@ from $<
 	@ echo '(old-boot::boot "define.boot")' | ${DEPSYS}
 
-fortcall.clisp: fortcall.boot
-	@ echo 55 making $@ from $<
-	@ echo '(progn (old-boot::boot "fortcall.boot"))' | ${DEPSYS}
-
-
 functor.clisp: functor.boot
 	@ echo 254 making $@ from $<
 	@ echo '(old-boot::boot "functor.boot")' | ${DEPSYS}
@@ -753,10 +755,6 @@ i-toplev.clisp: i-toplev.boot
 i-util.clisp: i-util.boot
 	@ echo 325 making $@ from $<
 	@ echo '(old-boot::boot "i-util.boot")' | ${DEPSYS}
-
-match.clisp: match.boot
-	@ echo 339 making $@ from $<
-	@ echo '(old-boot::boot "match.boot")' | ${DEPSYS}
 
 modemap.clisp: modemap.boot
 	@ echo 343 making $@ from $<
