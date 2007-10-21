@@ -759,57 +759,6 @@ srcPosDisplay(sp) ==
     sayBrightly [fillerSpaces(#s, '" "), dots, '"^"]
     true
 
---% Functions on interpreter objects
-
--- Interpreter objects used to be called triples because they had the
--- structure [value, type, environment].  For many years, the environment
--- was not used, so finally in January, 1990, the structure of objects
--- was changed to be (type . value).  This was chosen because it was the
--- structure of objects of type Any.  Sometimes the values are wrapped
--- (see the function isWrapped to see what this means physically).
--- Wrapped values are not actual values belonging to their types.  An
--- unwrapped value must be evaluated to get an actual value.  A wrapped
--- value must be unwrapped before being passed to a library function.
--- Typically, an unwrapped value in the interpreter consists of LISP
--- code, e.g., parts of a function that is being constructed.
---                 RSS 1/14/90
-
--- These are the new structure functions.
-
-mkObj(val, mode) == CONS(mode,val)              -- old names
-mkObjWrap(val, mode) == CONS(mode,wrap val)
-mkObjCode(val, mode) == ['CONS, MKQ mode,val ]
-
-objNew(val, mode) == CONS(mode,val)             -- new names as of 10/14/93
-objNewWrap(val, mode) == CONS(mode,wrap val)
-objNewCode(val, mode) == ['CONS, MKQ mode,val ]
-objSetVal(obj,val) == RPLACD(obj,val)
-objSetMode(obj,mode) == RPLACA(obj,mode)
-
-objVal obj == CDR obj
-objValUnwrap obj == unwrap CDR obj
-objMode obj == CAR obj
-objEnv obj == $NE
-
-objCodeVal obj == CADDR obj
-objCodeMode obj == CADR obj
-
-
-
-
---% Library compiler structures needed by the interpreter
-
--- Tuples and Crosses
-
-asTupleNew(size, listOfElts) == CONS(size, LIST2VEC listOfElts)
-asTupleNew0(listOfElts) == CONS(#listOfElts, LIST2VEC listOfElts)
-
-asTupleNewCode(size, listOfElts) == ["asTupleNew", size, ['LIST, :listOfElts]]
-asTupleNewCode0(listForm) == ["asTupleNew0", listForm]
-
-asTupleSize(at) == CAR at
-asTupleAsVector(at) == CDR at
-asTupleAsList(at) == VEC2LIST asTupleAsVector at
 @
 \eject
 \begin{thebibliography}{99}

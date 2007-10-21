@@ -50,6 +50,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	g-timer.$(FASLEXT)	g-util.$(FASLEXT)	\
 	ggreater.$(FASLEXT)				\
 	hypertex.$(FASLEXT)	i-analy.$(FASLEXT)	\
+	i-object.$(FASLEXT)				\
 	i-code.$(FASLEXT)	i-coerce.$(FASLEXT)	\
 	i-coerfn.$(FASLEXT)	i-eval.$(FASLEXT)	\
 	i-funsel.$(FASLEXT)	bookvol5.$(FASLEXT)	\
@@ -435,6 +436,9 @@ rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 i-output.$(FASLEXT): i-output.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-object.$(FASLEXT): i-object.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 format.$(FASLEXT): format.boot macros.$(FASLEXT)
