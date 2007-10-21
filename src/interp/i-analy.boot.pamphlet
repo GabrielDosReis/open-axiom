@@ -48,37 +48,6 @@
 
 --% Interpreter Analysis Functions
 
---% Basic Object Type Identification
-
-getBasicMode x ==  getBasicMode0(x,$useIntegerSubdomain)
-
-getBasicMode0(x,useIntegerSubdomain) ==
-  --  if x is one of the basic types (Integer String Float Boolean) then
-  --  this function returns its type, and nil otherwise
-  x is nil => $EmptyMode
-  STRINGP x => $String
-  INTEGERP x =>
-    useIntegerSubdomain =>
-      x > 0 => $PositiveInteger
-      x = 0 => $NonNegativeInteger
-      $Integer
-    $Integer
-  FLOATP x => $DoubleFloat
-  (x='noBranch) or (x='noValue) => $NoValueMode
-  nil
-
-getBasicObject x ==
-  INTEGERP    x =>
-    t :=
-      not $useIntegerSubdomain => $Integer
-      x > 0 => $PositiveInteger
-      x = 0 => $NonNegativeInteger
-      $Integer
-    objNewWrap(x,t)
-  STRINGP x => objNewWrap(x,$String)
-  FLOATP  x => objNewWrap(x,$DoubleFloat)
-  NIL
-
 getMinimalVariableTower(var,t) ==
   -- gets the minimal polynomial subtower of t that contains the
   -- given variable. Returns NIL if none.

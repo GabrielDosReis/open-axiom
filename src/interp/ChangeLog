@@ -1,3 +1,33 @@
+2007-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (OBJS): Include i-object.$(FASLEXT).
+	(i-object.$(FASLEXT)): New rule.
+	* i-object.boot: New.
+	* i-analy.boot.pamphlet (getBasicMode): Move to i-object.boot.
+	(getBasicMode0): Likewise.
+	(getBasicObject): Likewise.
+	* i-intern.boot.pamphlet (mkObj): Likewise.
+	(mkObjWrap): Likewise.
+	(mkObjCode): Likewise.
+	(objNew): Likewise.
+	(objNewWrap): Likewise.
+	(objNewCode): Likewise.
+	(objSetVal): Likewise.
+	(objSetMode): Likewise.
+	(objVal): Likewise.
+	(objValUnwrap): Likewise.
+	(objMode): Likewise.
+	(objEnv): Likewise.
+	(objCodeVal): Likewise.
+	(objCodeMode): Likewise.
+	(asTupleNew): Likewise.
+	(asTupleNew0): Likewise.
+	(asTupleNewCode): Likewise.
+	(asTupleNewCode0): Likewise.
+	(asTupleSize): Likewise.
+	(asTupleAsVector): Likewise.
+	(asTupleAsList): Likewise.
+
 2007-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* g-util.boot (isDomain): Merge with version in interop.boot.pamphlet.
