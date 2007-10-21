@@ -1,17 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp fortcall.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,9 +31,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"sys-macros"
 )package "BOOT"
@@ -602,21 +588,21 @@ prepareResults(results,args,dummies,values,decls) ==
   NREVERSE data
 
 -- TTT this is dead code now
---	transposeVector(u,type) ==
---	  -- Take a vector of vectors and return a single vector which is in column
---	  -- order (i.e. swap from C to Fortran order).
---	  els  := nil
---	  rows := CAR ARRAY_-DIMENSIONS(u)-1
---	  cols := CAR ARRAY_-DIMENSIONS(ELT(u,0))-1
---	  -- Could be a 3D Matrix
---	  if VECTORP ELT(ELT(u,0),0) then
---	    planes := CAR ARRAY_-DIMENSIONS(ELT(ELT(u,0),0))-1
---	    for k in 0..planes repeat for j in 0..cols repeat for i in 0..rows repeat
---	      els := [ELT(ELT(ELT(u,i),j),k),:els]
---	  else
---	    for j in 0..cols repeat for i in 0..rows repeat
---	      els := [ELT(ELT(u,i),j),:els]
---	  makeVector(NREVERSE els,type)
+--      transposeVector(u,type) ==
+--        -- Take a vector of vectors and return a single vector which is in column
+--        -- order (i.e. swap from C to Fortran order).
+--        els  := nil
+--        rows := CAR ARRAY_-DIMENSIONS(u)-1
+--        cols := CAR ARRAY_-DIMENSIONS(ELT(u,0))-1
+--        -- Could be a 3D Matrix
+--        if VECTORP ELT(ELT(u,0),0) then
+--          planes := CAR ARRAY_-DIMENSIONS(ELT(ELT(u,0),0))-1
+--          for k in 0..planes repeat for j in 0..cols repeat for i in 0..rows repeat
+--            els := [ELT(ELT(ELT(u,i),j),k),:els]
+--        else
+--          for j in 0..cols repeat for i in 0..rows repeat
+--            els := [ELT(ELT(u,i),j),:els]
+--        makeVector(NREVERSE els,type)
 
 
 writeData(tmpFile,indata) ==
@@ -627,47 +613,47 @@ writeData(tmpFile,indata) ==
   xstr := xdrOpen(str,true)
   [args,dummies,values,decls] := indata
   for v in values repeat
-	-- the two Boolean values
-	v = "T" => 
-		xdrWrite(xstr,1)
-	NULL v =>   
-		xdrWrite(xstr,0)
-	-- characters  
-	STRINGP v => 
-		xdrWrite(xstr,v)
-	-- some array
-	VECTORP v =>  
-		rows := CAR ARRAY_-DIMENSIONS(v)
-		-- is it 2d or more (most likely) ?
-		VECTORP ELT(v,0) =>	
-			cols := CAR ARRAY_-DIMENSIONS(ELT(v,0))
-			-- is it 3d ?
-			VECTORP ELT(ELT(v,0),0) =>
-				planes := CAR ARRAY_-DIMENSIONS(ELT(ELT(v,0),0))
-				-- write 3d array
-				xdrWrite(xstr,rows*cols*planes)
-				for k in 0..planes-1 repeat 
-					for j in 0..cols-1 repeat 
-						for i in 0..rows-1 repeat 
-							xdrWrite(xstr,ELT(ELT(ELT(v,i),j),k))
-			-- write 2d array
-			xdrWrite(xstr,rows*cols)
-			for j in 0..cols-1 repeat
-				for i in 0..rows-1 repeat xdrWrite(xstr,ELT(ELT(v,i),j))
-		-- write 1d array
-		xdrWrite(xstr,rows)
-		for i in 0..rows-1 repeat xdrWrite(xstr,ELT(v,i))
-	-- this is used for lists of booleans apparently in f01
-     	LISTP v => 
-		xdrWrite(xstr,LENGTH v)
-	        for el in v repeat 
-			if el then xdrWrite(xstr,1) else xdrWrite(xstr,0) 
-	-- integers
-	INTEGERP v => 
-		xdrWrite(xstr,v)
-	-- floats
-	FLOATP v => 
-		xdrWrite(xstr,v)
+        -- the two Boolean values
+        v = "T" => 
+                xdrWrite(xstr,1)
+        NULL v =>   
+                xdrWrite(xstr,0)
+        -- characters  
+        STRINGP v => 
+                xdrWrite(xstr,v)
+        -- some array
+        VECTORP v =>  
+                rows := CAR ARRAY_-DIMENSIONS(v)
+                -- is it 2d or more (most likely) ?
+                VECTORP ELT(v,0) =>     
+                        cols := CAR ARRAY_-DIMENSIONS(ELT(v,0))
+                        -- is it 3d ?
+                        VECTORP ELT(ELT(v,0),0) =>
+                                planes := CAR ARRAY_-DIMENSIONS(ELT(ELT(v,0),0))
+                                -- write 3d array
+                                xdrWrite(xstr,rows*cols*planes)
+                                for k in 0..planes-1 repeat 
+                                        for j in 0..cols-1 repeat 
+                                                for i in 0..rows-1 repeat 
+                                                        xdrWrite(xstr,ELT(ELT(ELT(v,i),j),k))
+                        -- write 2d array
+                        xdrWrite(xstr,rows*cols)
+                        for j in 0..cols-1 repeat
+                                for i in 0..rows-1 repeat xdrWrite(xstr,ELT(ELT(v,i),j))
+                -- write 1d array
+                xdrWrite(xstr,rows)
+                for i in 0..rows-1 repeat xdrWrite(xstr,ELT(v,i))
+        -- this is used for lists of booleans apparently in f01
+        LISTP v => 
+                xdrWrite(xstr,LENGTH v)
+                for el in v repeat 
+                        if el then xdrWrite(xstr,1) else xdrWrite(xstr,0) 
+        -- integers
+        INTEGERP v => 
+                xdrWrite(xstr,v)
+        -- floats
+        FLOATP v => 
+                xdrWrite(xstr,v)
   SHUT(str)
   tmpFile
 
@@ -732,7 +718,7 @@ protectedNagCall(objFiles,nfile,data,results) ==
  td:=generateDataName()
  tr:=generateResultsName()
  UNWIND_-PROTECT( (val:=nagCall(objFiles,nfile,data,results,td,tr) ;errors :=NIL),
-	errors =>( resetStackLimits(); sendNagmanErrorSignal();cleanUpAfterNagman(td,tr,objFiles)))
+        errors =>( resetStackLimits(); sendNagmanErrorSignal();cleanUpAfterNagman(td,tr,objFiles)))
  val
 
 
@@ -823,9 +809,3 @@ vectorOfFunctions f ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
