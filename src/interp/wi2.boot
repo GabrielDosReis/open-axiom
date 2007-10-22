@@ -1054,8 +1054,8 @@ doIt(item,$predl) ==
   item is [":",a,t] => [.,.,$e]:= 
     markDeclaredImport markKillAll t
     compOrCroak(item,$EmptyMode,$e)
-  item is ['import,:doms] =>
-     item := ['import,:(doms := markKillAll doms)]
+  item is ["import",:doms] =>
+     item := ["import",:(doms := markKillAll doms)]
      for dom in doms repeat
        sayBrightly ['"   importing ",:formatUnabbreviated dom]
      [.,.,$e] := compOrCroak(item,$EmptyMode,$e)
@@ -1119,7 +1119,7 @@ doItSeq item ==
 
 doItDomain item ==
   -- convert naked top level domains to import
-  u:= ['import, [first item,:rest item]]
+  u:= ["import", [first item,:rest item]]
   markImport CADR u
   stackWarning ["Use: import ", [first item,:rest item]]
 --wiReplaceNode(item, u, 14)

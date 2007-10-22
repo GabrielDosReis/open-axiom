@@ -1,5 +1,13 @@
 2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* br-data.boot.pamphlet (getImports): Rename `import' to `doImport'.
+	* define.boot.pamphlet (hasSigInTargetCategory): Pretty-print
+	signature in diagnostics.
+	* i-syscmd.boot.pamphlet: Fix syntax.
+	* mark.boot: Likewise.
+
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* i-object.boot (mkObj): Remove.
 	(mkObjWrap): Likewise.
 	(mkObjCode): Likewise.

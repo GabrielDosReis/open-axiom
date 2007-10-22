@@ -894,7 +894,8 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
   0=c => (#(sig:= getSignatureFromMode(form,e))=#form => sig; nil)
   1<c =>
     sig:= first potentialSigList
-    stackWarning ["signature of lhs not unique:",:bright sig,"chosen"]
+    stackWarning ["signature of lhs not unique:",
+                  :bright formatSignature sig, "chosen"]
     sig
   nil --this branch will force all arguments to be declared
  
@@ -1263,7 +1264,7 @@ doIt(item,$predl) ==
         --This will RPLAC as appropriate
   isDomainForm(item,$e) =>
      -- convert naked top level domains to import
-    u:= ['import, [first item,:rest item]]
+    u:= ["import", [first item,:rest item]]
     stackWarning ["Use: import ", [first item,:rest item]]
     RPLACA(item,first u)
     RPLACD(item,rest u)
@@ -1302,7 +1303,7 @@ doIt(item,$predl) ==
     RPLACA(item,first code)
     RPLACD(item,rest code)
   item is [":",a,t] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
-  item is ['import,:doms] =>
+  item is ["import",:doms] =>
      for dom in doms repeat
        sayBrightly ['"   importing ",:formatUnabbreviated dom]
      [.,.,$e] := compOrCroak(item,$EmptyMode,$e)
