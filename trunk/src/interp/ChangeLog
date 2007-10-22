@@ -1,5 +1,10 @@
 2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* c-doc.boot.pamphlet (escapePercent): New.
+	(transformAndRecheckComments): Use it.
+
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* br-data.boot.pamphlet (getImports): Rename `import' to `doImport'.
 	* define.boot.pamphlet (hasSigInTargetCategory): Pretty-print
 	signature in diagnostics.
