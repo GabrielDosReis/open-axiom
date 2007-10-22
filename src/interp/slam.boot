@@ -54,7 +54,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   cacheCount:= getCacheCount op
   cacheCount = "all" => reportFunctionCacheAll(op,nam,argl,body)
   cacheCount = 0 or null argl =>
-    function:= [nam,['LAMBDA,[:argl,'envArg],body]]
+    function:= [nam,["LAMBDA",[:argl,'envArg],body]]
     compileInteractive function
     nam
   num :=
@@ -79,23 +79,23 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   thirdPredPair:=
     null argl => ['(QUOTE T),['SETQ,cacheName,computeValue]]
     ['(QUOTE T),
-      ['SETQ,g2,computeValue],
-        ['SETQ,g3,
-            ['CAR,['SETQ,cacheName,['predCircular,cacheName,cacheCount]]]],
-          ['RPLACA,g3,g1],
-            ['RPLACD,g3,g2],
+      ["SETQ",g2,computeValue],
+        ["SETQ",g3,
+            ["CAR",["SETQ",cacheName,['predCircular,cacheName,cacheCount]]]],
+          ["RPLACA",g3,g1],
+            ["RPLACD",g3,g2],
               g2]
   codeBody:=
-    ['PROG,[g2,g3],['RETURN,['COND,secondPredPair,thirdPredPair]]]
+    ["PROG",[g2,g3],["RETURN",["COND",secondPredPair,thirdPredPair]]]
   -- cannot use envArg in next statement without redoing much
   -- of above.
-  lamex:= ['LAM,arg,codeBody]
+  lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
-  computeFunction:= [auxfn,['LAMBDA,[:argl, 'envArg],body]]
+  computeFunction:= [auxfn,["LAMBDA",[:argl, 'envArg],body]]
   compileInteractive mainFunction
   compileInteractive computeFunction
-  cacheType:= 'function
-  cacheResetCode:= ['SETQ,cacheName,['mkCircularAlist,cacheCount]]
+  cacheType:= "function"
+  cacheResetCode:= ["SETQ",cacheName,['mkCircularAlist,cacheCount]]
   cacheCountCode:= ['countCircularAlist,cacheName,cacheCount]
   cacheVector:=
     mkCacheVec(op,cacheName,cacheType,cacheResetCode,cacheCountCode)
@@ -115,20 +115,20 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   [arg,computeValue] :=
     null argl => [['envArg],[auxfn, 'envArg]]
     argl is [.] => [[g1, 'envArg],[auxfn,g1, 'envArg]]  --g1 is a parameter
-    [g1,['APPLX,MKQ auxfn,g1]]          --g1 is a parameter list
+    [g1,["APPLX",MKQ auxfn,g1]]          --g1 is a parameter list
   if null argl then g1:=nil
   cacheName:= mkCacheName nam
   g2:= GENSYM()  --value computed by calling function
-  secondPredPair:= [['SETQ,g2,['HGET,cacheName,g1]],g2]
-  thirdPredPair:= ['(QUOTE T),['HPUT,cacheName,g1,computeValue]]
-  codeBody:= ['PROG,[g2],['RETURN,['COND,secondPredPair,thirdPredPair]]]
-  lamex:= ['LAM,arg,codeBody]
+  secondPredPair:= [["SETQ",g2,["HGET",cacheName,g1]],g2]
+  thirdPredPair:= ['(QUOTE T),["HPUT",cacheName,g1,computeValue]]
+  codeBody:= ["PROG",[g2],["RETURN",["COND",secondPredPair,thirdPredPair]]]
+  lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
-  computeFunction:= [auxfn,['LAMBDA,[:argl, 'envArg],body]]
+  computeFunction:= [auxfn,["LAMBDA",[:argl, 'envArg],body]]
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= 'hash_-table
-  cacheResetCode:= ['SETQ,cacheName,['MAKE_-HASHTABLE,''UEQUAL]]
+  cacheResetCode:= ["SETQ",cacheName,['MAKE_-HASHTABLE,''UEQUAL]]
   cacheCountCode:= ['hashCount,cacheName]
   cacheVector:=
     mkCacheVec(op,cacheName,cacheType,cacheResetCode,cacheCountCode)
@@ -175,67 +175,67 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   stateVal:= GENSYM()
   lastArg := INTERNL STRCONC('"#",STRINGIMAGE QSADD1 LENGTH argl)
   decomposeCode:=
-    [['LET,gIndex,['ELT,lastArg,0]],:[['LET,g,['ELT,lastArg,i]]
+    [["LET",gIndex,["ELT",lastArg,0]],:[["LET",g,["ELT",lastArg,i]]
       for g in gsList for i in 1..]]
   gsRev:= REVERSE gsList
-  rotateCode:= [['LET,p,q] for p in gsRev for q in [:rest gsRev,g]]
-  advanceCode:= ['LET,gIndex,['ADD1,gIndex]]
+  rotateCode:= [["LET",p,q] for p in gsRev for q in [:rest gsRev,g]]
+  advanceCode:= ["LET",gIndex,['ADD1,gIndex]]
  
-  newTripleCode := ['LIST,sharpArg,:gsList]
+  newTripleCode := ["LIST",sharpArg,:gsList]
   newStateCode :=
-    null extraArguments => ['SETQ,stateNam,newTripleCode]
-    ['HPUT,stateNam,extraArgumentCode,newTripleCode]
+    null extraArguments => ["SETQ",stateNam,newTripleCode]
+    ["HPUT",stateNam,extraArgumentCode,newTripleCode]
  
-  computeFunction:= [auxfn,['LAM,cargl,cbody]] where
+  computeFunction:= [auxfn,["LAM",cargl,cbody]] where
     cargl:= [:argl,lastArg]
-    returnValue:= ['PROGN,newStateCode,first gsList]
+    returnValue:= ["PROGN",newStateCode,first gsList]
     cbody:=
       endTest:=
-        ['COND, [['EQL,sharpArg,gIndex],['RETURN,returnValue]]]
-      newValueCode:= ['LET,g,SUBST(gIndex,sharpArg,
+        ["COND", [["EQL",sharpArg,gIndex],['RETURN,returnValue]]]
+      newValueCode:= ["LET",g,SUBST(gIndex,sharpArg,
         EQSUBSTLIST(gsList,rest $TriangleVariableList,body))]
-      ['PROGN,:decomposeCode,
-        ['REPEAT,['WHILE,'T],['PROGN,endTest,advanceCode,
+      ["PROGN",:decomposeCode,
+        ["REPEAT",["WHILE",'T],["PROGN",endTest,advanceCode,
           newValueCode,:rotateCode]]]
   fromScratchInit:=
-    [['LET,gIndex,n],:[['LET,g,x] for g in gsList for x in initCode]]
+    [["LET",gIndex,n],:[["LET",g,x] for g in gsList for x in initCode]]
   continueInit:=
-    [['LET,gIndex,['ELT,stateVar,0]],
-      :[['LET,g,['ELT,stateVar,i]] for g in gsList for i in 1..]]
-  mainFunction:= [nam,['LAM,margl,mbody]] where
+    [["LET",gIndex,["ELT",stateVar,0]],
+      :[["LET",g,["ELT",stateVar,i]] for g in gsList for i in 1..]]
+  mainFunction:= [nam,["LAM",margl,mbody]] where
     margl:= [:argl,'envArg]
     max:= GENSYM()
-    tripleCode := ['CONS,n,['LIST,:initCode]]
+    tripleCode := ["CONS",n,["LIST",:initCode]]
  
     -- initialSetCode initializes the global variable if necessary and
     --  also binds "stateVar" to its current value
     initialSetCode :=
       initialValueCode :=
-        extraArguments => ['MAKE_-HASHTABLE,''UEQUAL]
+        extraArguments => ["MAKE_-HASHTABLE",''UEQUAL]
         tripleCode
-      cacheResetCode := ['SETQ,stateNam,initialValueCode]
-      ['COND,[['NULL,['AND,['BOUNDP,MKQ stateNam], _
-                          ['PAIRP,stateNam]]],    _
-                 ['LET,stateVar,cacheResetCode]], _
-             [''T, ['LET,stateVar,stateNam]]]
+      cacheResetCode := ["SETQ",stateNam,initialValueCode]
+      ["COND",[["NULL",["AND",["BOUNDP",MKQ stateNam], _
+                          ["PAIRP",stateNam]]],    _
+                 ["LET",stateVar,cacheResetCode]], _
+             [''T, ["LET",stateVar,stateNam]]]
  
     -- when there are extra arguments, initialResetCode resets "stateVar"
     --  to the hashtable entry for the extra arguments
     initialResetCode :=
       null extraArguments => nil
-      [['LET,stateVar,['OR,
-         ['HGET,stateVar,extraArgumentCode],
-          ['HPUT,stateVar,extraArgumentCode,tripleCode]]]]
+      [["LET",stateVar,["OR",
+         ["HGET",stateVar,extraArgumentCode],
+          ["HPUT",stateVar,extraArgumentCode,tripleCode]]]]
  
     mbody :=
-      preset := [initialSetCode,:initialResetCode,['LET,max,['ELT,stateVar,0]]]
-      phrase1:= [['AND,['LET,max,['ELT,stateVar,0]],['GE,sharpArg,max]],
+      preset := [initialSetCode,:initialResetCode,["LET",max,["ELT",stateVar,0]]]
+      phrase1:= [["AND",["LET",max,["ELT",stateVar,0]],["GE",sharpArg,max]],
                   [auxfn,:argl,stateVar]]
-      phrase2:= [['GT,sharpArg,['SETQ,max,['DIFFERENCE,max,k]]],
-                  ['ELT,stateVar,['QSADD1,['QSDIFFERENCE,k,['DIFFERENCE,sharpArg,max]]]]]
-      phrase3:= [['GT,sharpArg,n],[auxfn,:argl,['LIST,n,:initCode]]]
-      phrase4:= [['GT,sharpArg,n-k],
-        ['ELT,['LIST,:initCode],['QSDIFFERENCE,n,sharpArg]]]
+      phrase2:= [["GT",sharpArg,["SETQ",max,["DIFFERENCE",max,k]]],
+                  ["ELT",stateVar,["QSADD1",["QSDIFFERENCE",k,["DIFFERENCE",sharpArg,max]]]]]
+      phrase3:= [["GT",sharpArg,n],[auxfn,:argl,["LIST",n,:initCode]]]
+      phrase4:= [["GT",sharpArg,n-k],
+        ["ELT",["LIST",:initCode],["QSDIFFERENCE",n,sharpArg]]]
       phrase5:= ['(QUOTE T),['recurrenceError,MKQ op,sharpArg]]
       ['PROGN,:preset,['COND,phrase1,phrase2,phrase3,phrase4,phrase5]]
   sayKeyedMsg("S2IX0001",[op])
@@ -300,7 +300,7 @@ clearLocalModemaps x ==
     for mm in u repeat
       [.,fn,:.] := mm
       if def:= get(fn,'definition,$e) then
-        $e:= putHist(x,'value,mkObj(def,$EmptyMode),$e)
+        $e:= putHist(x,'value,objNew(def,$EmptyMode),$e)
       if cacheVec:= get(fn,'cacheInfo,$e) then
         SET(cacheVec.cacheName,NIL)
       -- now clear the property list of the identifier

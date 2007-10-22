@@ -98,7 +98,7 @@ InputForm():
 
     interpret x ==
       v := interpret(x)$Lisp
-      mkObj(unwrap(objVal(v)$Lisp)$Lisp, objMode(v)$Lisp)$Lisp
+      objNew(unwrap(objVal(v)$Lisp)$Lisp, objMode(v)$Lisp)$Lisp
 
     convert(x:DoubleFloat):% ==
       zero? x => 0

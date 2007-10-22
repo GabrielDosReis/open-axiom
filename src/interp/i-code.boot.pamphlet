@@ -138,7 +138,7 @@ intCodeGenCoerce1(val,t1,t2) ==
   -- Internal function to previous one
   -- designed to ensure that we don't use coerceOrCroak on mappings
 --(t2 is ['Mapping,:.]) => THROW('coerceOrCroaker, 'croaked)
-  objNew(['coerceOrCroak,mkObjCode(['wrap,val],t1),
+  objNew(['coerceOrCroak,objNewCode(['wrap,val],t1),
         MKQ t2, MKQ $mapName],t2)
 
 --% Map components

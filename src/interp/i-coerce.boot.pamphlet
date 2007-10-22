@@ -1400,7 +1400,7 @@ coerceByFunction(T,m2) ==
     [fn,:d]:= fun
     isWrapped x =>
       x:= unwrap x
-      mkObjWrap(SPADCALL(CAR x,CDR x,fun),m2)
+      objNewWrap(SPADCALL(CAR x,CDR x,fun),m2)
     x isnt ['SPADCALL,a,b,:.] => keyedSystemError("S2IC0015",NIL)
     code := ['SPADCALL, a, b, fun]
     objNew(code,$Boolean)

@@ -51,13 +51,9 @@ import '"sys-macros"
 
 -- These are the new structure functions.
 
-mkObj(val, mode) == CONS(mode,val)              -- old names
-mkObjWrap(val, mode) == CONS(mode,wrap val)
-mkObjCode(val, mode) == ['CONS, MKQ mode,val ]
-
 objNew(val, mode) == CONS(mode,val)             -- new names as of 10/14/93
 objNewWrap(val, mode) == CONS(mode,wrap val)
-objNewCode(val, mode) == ['CONS, MKQ mode,val ]
+objNewCode(val, mode) == ["CONS", MKQ mode,val ]
 objSetVal(obj,val) == RPLACD(obj,val)
 objSetMode(obj,mode) == RPLACA(obj,mode)
 
@@ -77,7 +73,7 @@ objCodeMode obj == CADR obj
 asTupleNew(size, listOfElts) == CONS(size, LIST2VEC listOfElts)
 asTupleNew0(listOfElts) == CONS(#listOfElts, LIST2VEC listOfElts)
 
-asTupleNewCode(size, listOfElts) == ["asTupleNew", size, ['LIST, :listOfElts]]
+asTupleNewCode(size, listOfElts) == ["asTupleNew", size, ["LIST", :listOfElts]]
 asTupleNewCode0(listForm) == ["asTupleNew0", listForm]
 
 asTupleSize(at) == CAR at
