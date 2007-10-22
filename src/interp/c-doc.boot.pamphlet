@@ -270,13 +270,25 @@ checkExtractItemList l ==  --items are separated by commas or end of line
 --      if (t := trimString SUBSTRING(string,i,k-i)) ^= '"" then acc := [t,:acc]
 --    acc
 
+++ Translate '%' in signature to '%%' for proper printing.
+escapePercent x ==
+  x is [y, :z] =>
+    y1 := escapePercent y
+    z1 := escapePercent z
+    EQ(y, y1) and EQ(z, z1) => x
+    [y1, :z1]
+  x = "%" => "%%"
+  x
+
 transformAndRecheckComments(name,lines) ==
   $checkingXmptex? := false
   $x            : local := name
   $name         : local := 'GlossaryPage
   $origin       : local := 'gloss
   $recheckingFlag : local := false
-  $exposeFlagHeading : local := ['"--------",name,'"---------"]
+  $exposeFlagHeading : local := 
+    atom name => ['"     -- ",name]
+    concat('"     --",formatOpSignature(name.0, escapePercent name.1))
   if null $exposeFlag then sayBrightly $exposeFlagHeading
   u := checkComments(name,lines)
   $recheckingFlag := true
