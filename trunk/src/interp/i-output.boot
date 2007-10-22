@@ -344,7 +344,7 @@ outputTran x ==
     domain is ['Float]) and INTEGERP x and INTEGERP y and INTEGERP z and
         z > 0  and (float := getFunctionFromDomain("float",domain,[$Integer,$Integer,$PositiveInteger])) =>
             f := SPADCALL(x,y,z,float)
-            o := coerceInteractive(mkObjWrap(f, domain), '(OutputForm))
+            o := coerceInteractive(objNewWrap(f, domain), '(OutputForm))
             objValUnwrap o
 
   [op,:l]:= flattenOps x

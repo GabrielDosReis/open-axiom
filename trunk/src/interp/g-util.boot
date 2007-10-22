@@ -411,7 +411,7 @@ parse2Outform x ==
 
 str2Tex s ==
   outf := str2Outform s
-  val := coerceInt(mkObj(wrap outf, '(OutputForm)), '(TexFormat))
+  val := coerceInt(objNew(wrap outf, '(OutputForm)), '(TexFormat))
   val := objValUnwrap val
   CAR val.1
 

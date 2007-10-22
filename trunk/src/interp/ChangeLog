@@ -1,3 +1,17 @@
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-object.boot (mkObj): Remove.
+	(mkObjWrap): Likewise.
+	(mkObjCode): Likewise.
+	* g-util.boot (str2Tex): Use objNew.
+	* i-code.boot.pamphlet (intCodeGenCoerce1): Likewise.
+	* i-coerce.boot.pamphlet (coerceByFunction): Likewise.
+	* i-coerfn.boot.pamphlet (L2Tuple): Likewise.
+	* i-intern.boot.pamphlet (mkAtree2): Likewise.
+	* i-output.boot (outputTran): Likewise.
+	* msgdb.boot.pamphlet (throwKeyedMsgCannotCoerceWithValue): Likewise.
+	* slam.boot (clearLocalModemaps): Likewise.
+
 2007-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (<<fortcall.clisp>>): Remove.

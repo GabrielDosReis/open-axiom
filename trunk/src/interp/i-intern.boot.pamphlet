@@ -219,7 +219,7 @@ mkAtree2(x,op,argl) ==
         t := evaluateType unabbrev [D]
         typeIsASmallInteger(t) and SINTP a =>
             v := mkAtreeNode $immediateDataSymbol
-            putValue(v,mkObjWrap(a, t))
+            putValue(v,objNewWrap(a, t))
             v
         mkAtree1 ["*",a,[['_$elt,D,'One]]]
       [mkAtreeNode 'Dollar,D,mkAtree1 a]

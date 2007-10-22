@@ -635,7 +635,7 @@ I2NNI(n,source,target) ==
 
 L2Tuple(val, source is [.,S], target is [.,T]) ==
     val = '_$fromCoerceable_$ => canCoerce(S,T)
-    null (object := coerceInt1(mkObjWrap(val,source), ['List, T])) =>
+    null (object := coerceInt1(objNewWrap(val,source), ['List, T])) =>
       coercionFailure()
     asTupleNew0 objValUnwrap object
 
