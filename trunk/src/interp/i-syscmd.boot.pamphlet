@@ -1224,13 +1224,13 @@ frameSpad2Cmd args ==
   arg = 'drop  =>
     args and PAIRP(args) => throwKeyedMsg("S2IZ0017",[args])
     closeInterpreterFrame(args)
-  arg = 'import =>  importFromFrame args
-  arg = 'last  =>   previousInterpreterFrame()
-  arg = 'names =>   displayFrameNames()
-  arg = 'new   =>
+  arg = "import" =>  importFromFrame args
+  arg = "last"  =>   previousInterpreterFrame()
+  arg = "names" =>   displayFrameNames()
+  arg = "new"   =>
     args and PAIRP(args) => throwKeyedMsg("S2IZ0017",[args])
     addNewInterpreterFrame(args)
-  arg = 'next  =>   nextInterpreterFrame()
+  arg = "next"  =>   nextInterpreterFrame()
 
   NIL
 

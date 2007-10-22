@@ -950,7 +950,7 @@ markRemImportsAndLeadingMacros(leadingMacros,body) ==
 mkNewCapsuleItem(frees,i,x) ==
   [originalDef,:ndef] := x
   imports := REVERSE orderByContainment REMDUP SETDIFFERENCE(i,$finalImports)
-  importPart := [['import,d] for d in imports]
+  importPart := [["import",d] for d in imports]
   nbody := 
     ndef is ['LET,.,x] => x
     ndef is ['DEF,.,.,.,x] => x

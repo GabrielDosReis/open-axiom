@@ -486,26 +486,26 @@ getImports conname == --called by mkUsersHashTable
   conform := GETDATABASE(conname,'CONSTRUCTORFORM)
   infovec := dbInfovec conname or return nil
   template := infovec.0
-  u := [import(i,template)
+  u := [doImport(i,template)
           for i in 5..(MAXINDEX template) | test]  where
     test == template.i is [op,:.] and IDENTP op
               and not MEMQ(op,'(Mapping Union Record Enumeration CONS QUOTE local))
-    import(x,template) ==
+    doImport(x,template) ==
       x is [op,:args] =>
         op = 'QUOTE or op = 'NRTEVAL => CAR args
         op = 'local => first args
         op = 'Record =>
-          ['Record,:[[":",CADR y,import(CADDR y,template)] for y in args]]
+          ['Record,:[[":",CADR y,doImport(CADDR y,template)] for y in args]]
 
 --TTT next three lines: handles some tagged/untagged Union case.
         op = 'Union=>
           args is [['_:,:x1],:x2] =>
 --          CAAR args = '_: => -- tagged!
-               ['Union,:[[":",CADR y,import(CADDR y,template)] for y in args]]
-          [op,:[import(y,template) for y in args]]
+               ['Union,:[[":",CADR y,doImport(CADDR y,template)] for y in args]]
+          [op,:[doImport(y,template) for y in args]]
 
-        [op,:[import(y,template) for y in args]]
-      INTEGERP x => import(template.x,template)
+        [op,:[doImport(y,template) for y in args]]
+      INTEGERP x => doImport(template.x,template)
       x = '$ => '$
       x = "$$" => "$$"
       STRINGP x => x
