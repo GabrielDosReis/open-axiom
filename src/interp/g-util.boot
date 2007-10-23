@@ -345,8 +345,8 @@ spadThrowBrightly x ==
 --% Type Formatting Without Abbreviation
 
 formatUnabbreviatedSig sig ==
-  null sig => ["() -> ()"]
-  [target,:args] := sig
+  null sig => ['"() -> ()"]
+  [target,:args] := dollarPercentTran sig
   target := formatUnabbreviated target
   null args => ['"() -> ",:target]
   null rest args => [:formatUnabbreviated QCAR args,'" -> ",:target]

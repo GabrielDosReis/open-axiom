@@ -1,5 +1,10 @@
 2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* g-util.boot (formatUnabbreviatedSig): Translate '$' to '%'
+	before printing.
+
+2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* c-doc.boot.pamphlet (escapePercent): New.
 	(transformAndRecheckComments): Use it.
 
