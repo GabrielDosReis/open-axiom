@@ -1,3 +1,14 @@
+2007-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ast.boot.pamphlet (bfLp1): Simplify loop code generation.
+	Update cached Lisp translation.
+	* includer.boot.pamphlet: Update cached Lisp translation.
+	* parser.boot.pamphlet: Likewise.
+	* pile.boot.pamphlet: Likewise.
+	* scanner.boot.pamphlet: Likewise.
+	* tokens.boot.pamphlet: Likewise.
+	* translator.boot.pamphlet: Likewise.
+
 2007-10-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* ast.boot.pamphlet (bfSUBLIS1): Return fix point.

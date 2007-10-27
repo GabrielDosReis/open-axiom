@@ -641,13 +641,11 @@ shoePunctuation c== shoePun.c =1
                (#0#
                 (PROGN
                   (SETQ |toks| NIL)
-                  ((LAMBDA ()
-                     (LOOP
-                       (COND
-                         ((NOT (< |$n| |$sz|)) (RETURN NIL))
-                         ('T
-                          (SETQ |toks|
-                                (|dqAppend| |toks| (|shoeToken|))))))))
+                  (LOOP
+                    (COND
+                      ((NOT (< |$n| |$sz|)) (RETURN NIL))
+                      ('T
+                       (SETQ |toks| (|dqAppend| |toks| (|shoeToken|))))))
                   (COND
                     ((NULL |toks|) (|shoeLineToks| |$r|))
                     (#0# (CONS (LIST |toks|) |$r|)))))))))))))
@@ -754,7 +752,8 @@ shoePunctuation c== shoePun.c =1
       (PROGN
         (SETQ |b| (|shoeIntValue| (CONCAT |a| |w|)))
         (SETQ |c|
-              (* (|double| |b|) (EXPT (|double| 10) (- |e| (LENGTH |w|)))))
+              (* (|double| |b|)
+                 (EXPT (|double| 10) (- |e| (LENGTH |w|)))))
         (LIST 'FLOAT |c|)))))
 
 (DEFUN |shoeLeafString| (|x|) (PROG () (RETURN (LIST 'STRING |x|))))
@@ -818,21 +817,15 @@ shoePunctuation c== shoePun.c =1
         ((NOT (< |$n| |$sz|))
          (COND
            ((|shoeNextLine| |$r|)
-            ((LAMBDA ()
-               (LOOP
-                 (COND
-                   (|$n| (RETURN NIL))
-                   (#0='T (|shoeNextLine| |$r|))))))
+            (LOOP
+              (COND (|$n| (RETURN NIL)) (#0='T (|shoeNextLine| |$r|))))
             (|shoeEsc|) NIL)
            (#1='T NIL)))
         (#1# (SETQ |n1| (STRPOSL " " |$ln| |$n| T))
          (COND
            ((NULL |n1|) (|shoeNextLine| |$r|)
-            ((LAMBDA ()
-               (LOOP
-                 (COND
-                   (|$n| (RETURN NIL))
-                   (#0# (|shoeNextLine| |$r|))))))
+            (LOOP
+              (COND (|$n| (RETURN NIL)) (#0# (|shoeNextLine| |$r|))))
             (|shoeEsc|) NIL)
            (#1# T)))))))
 
@@ -966,13 +959,12 @@ shoePunctuation c== shoePun.c =1
   (PROG ()
     (RETURN
       (PROGN
-        ((LAMBDA ()
-           (LOOP
-             (COND
-               ((NOT (AND (< |n| (LENGTH |line|))
-                          (|shoeIdChar| (ELT |line| |n|))))
-                (RETURN NIL))
-               ('T (SETQ |n| (+ |n| 1)))))))
+        (LOOP
+          (COND
+            ((NOT (AND (< |n| (LENGTH |line|))
+                       (|shoeIdChar| (ELT |line| |n|))))
+             (RETURN NIL))
+            ('T (SETQ |n| (+ |n| 1)))))
         |n|))))
 
 (DEFUN |shoeDigit| (|x|) (PROG () (RETURN (DIGIT-CHAR-P |x|))))
@@ -1019,12 +1011,11 @@ shoePunctuation c== shoePun.c =1
       (PROGN
         (SETQ |n| |$n|)
         (SETQ |l| |$sz|)
-        ((LAMBDA ()
-           (LOOP
-             (COND
-               ((NOT (AND (< |$n| |l|) (|shoeDigit| (ELT |$ln| |$n|))))
-                (RETURN NIL))
-               ('T (SETQ |$n| (+ |$n| 1)))))))
+        (LOOP
+          (COND
+            ((NOT (AND (< |$n| |l|) (|shoeDigit| (ELT |$ln| |$n|))))
+             (RETURN NIL))
+            ('T (SETQ |$n| (+ |$n| 1)))))
         (COND
           ((OR (EQUAL |$n| |l|)
                (NOT (EQUAL (QENUM |$ln| |$n|) |shoeESCAPE|)))
@@ -1041,16 +1032,15 @@ shoePunctuation c== shoePun.c =1
       (PROGN
         (SETQ |ns| (LENGTH |s|))
         (SETQ |ival| 0)
-        ((LAMBDA (|bfVar#1| |i|)
-           (LOOP
-             (COND
-               ((> |i| |bfVar#1|) (RETURN NIL))
-               ('T
-                (PROGN
-                  (SETQ |d| (|shoeOrdToNum| (ELT |s| |i|)))
-                  (SETQ |ival| (+ (* 10 |ival|) |d|)))))
-             (SETQ |i| (+ |i| 1))))
-         (- |ns| 1) 0)
+        (LET ((|bfVar#1| (- |ns| 1)) (|i| 0))
+          (LOOP
+            (COND
+              ((> |i| |bfVar#1|) (RETURN NIL))
+              ('T
+               (PROGN
+                 (SETQ |d| (|shoeOrdToNum| (ELT |s| |i|)))
+                 (SETQ |ival| (+ (* 10 |ival|) |d|)))))
+            (SETQ |i| (+ |i| 1))))
         |ival|))))
 
 (DEFUN |shoeNumber| ()
@@ -1139,32 +1129,30 @@ shoePunctuation c== shoePun.c =1
         (SETQ |ll| (SIZE |l|))
         (SETQ |done| NIL)
         (SETQ |s1| "")
-        ((LAMBDA (|bfVar#2| |j|)
-           (LOOP
-             (COND
-               ((OR (> |j| |bfVar#2|) |done|) (RETURN NIL))
-               (#0='T
-                (PROGN
-                  (SETQ |s| (ELT |u| |j|))
-                  (SETQ |ls| (SIZE |s|))
-                  (SETQ |done|
-                        (COND
-                          ((< |ll| (+ |ls| |i|)) NIL)
-                          (#1='T (SETQ |eql| T)
-                           ((LAMBDA (|bfVar#3| |k|)
-                              (LOOP
-                                (COND
-                                  ((OR (> |k| |bfVar#3|) (NOT |eql|))
-                                   (RETURN NIL))
-                                  (#0#
-                                   (SETQ |eql|
-                                    (EQL (QENUM |s| |k|)
-                                     (QENUM |l| (+ |k| |i|))))))
-                                (SETQ |k| (+ |k| 1))))
-                            (- |ls| 1) 1)
-                           (COND (|eql| (SETQ |s1| |s|) T) (#1# NIL))))))))
-             (SETQ |j| (+ |j| 1))))
-         (- (SIZE |u|) 1) 0)
+        (LET ((|bfVar#2| (- (SIZE |u|) 1)) (|j| 0))
+          (LOOP
+            (COND
+              ((OR (> |j| |bfVar#2|) |done|) (RETURN NIL))
+              (#0='T
+               (PROGN
+                 (SETQ |s| (ELT |u| |j|))
+                 (SETQ |ls| (SIZE |s|))
+                 (SETQ |done|
+                       (COND
+                         ((< |ll| (+ |ls| |i|)) NIL)
+                         (#1='T (SETQ |eql| T)
+                          (LET ((|bfVar#3| (- |ls| 1)) (|k| 1))
+                            (LOOP
+                              (COND
+                                ((OR (> |k| |bfVar#3|) (NOT |eql|))
+                                 (RETURN NIL))
+                                (#0#
+                                 (SETQ |eql|
+                                       (EQL (QENUM |s| |k|)
+                                        (QENUM |l| (+ |k| |i|))))))
+                              (SETQ |k| (+ |k| 1))))
+                          (COND (|eql| (SETQ |s1| |s|) T) (#1# NIL))))))))
+            (SETQ |j| (+ |j| 1))))
         |s1|))))
 
 (DEFUN |shoePunctuation| (|c|)

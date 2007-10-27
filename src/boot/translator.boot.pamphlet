@@ -822,6 +822,17 @@ associateRequestWithFileType(Option '"compile", '"boot",
 
 (IN-PACKAGE "BOOTTRAN")
 
+(DEFPARAMETER |$translatingOldBoot| NIL)
+
+(DEFUN |AxiomCore|::|%sysInit| ()
+  (PROG ()
+    (DECLARE (SPECIAL |$translatingOldBoot|))
+    (RETURN
+      (COND
+        ((EQUAL (CDR (ASSOC (|Option| "boot") (|%systemOptions|)))
+                "old")
+         (SETQ |$translatingOldBoot| T))))))
+
 (DEFUN |setCurrentPackage| (|x|)
   (PROG () (RETURN (SETQ *PACKAGE* |x|))))
 
@@ -868,15 +879,14 @@ associateRequestWithFileType(Option '"compile", '"boot",
         ('T (SETQ |$GenVarCounter| 0)
          (|shoeOpenOutputFile| |stream| |outfn|
              (PROGN
-               ((LAMBDA (|bfVar#1| |line|)
-                  (LOOP
-                    (COND
-                      ((OR (ATOM |bfVar#1|)
-                           (PROGN (SETQ |line| (CAR |bfVar#1|)) NIL))
-                       (RETURN NIL))
-                      ('T (|shoeFileLine| |line| |stream|)))
-                    (SETQ |bfVar#1| (CDR |bfVar#1|))))
-                |lines| NIL)
+               (LET ((|bfVar#1| |lines|) (|line| NIL))
+                 (LOOP
+                   (COND
+                     ((OR (ATOM |bfVar#1|)
+                          (PROGN (SETQ |line| (CAR |bfVar#1|)) NIL))
+                      (RETURN NIL))
+                     ('T (|shoeFileLine| |line| |stream|)))
+                   (SETQ |bfVar#1| (CDR |bfVar#1|))))
                (|shoeFileTrees| (|shoeTransformStream| |a|) |stream|)))
          |outfn|)))))
 
@@ -907,15 +917,14 @@ associateRequestWithFileType(Option '"compile", '"boot",
         ('T (SETQ |$GenVarCounter| 0)
          (|shoeOpenOutputFile| |stream| |outfn|
              (PROGN
-               ((LAMBDA (|bfVar#2| |line|)
-                  (LOOP
-                    (COND
-                      ((OR (ATOM |bfVar#2|)
-                           (PROGN (SETQ |line| (CAR |bfVar#2|)) NIL))
-                       (RETURN NIL))
-                      ('T (|shoeFileLine| |line| |stream|)))
-                    (SETQ |bfVar#2| (CDR |bfVar#2|))))
-                |lines| NIL)
+               (LET ((|bfVar#2| |lines|) (|line| NIL))
+                 (LOOP
+                   (COND
+                     ((OR (ATOM |bfVar#2|)
+                          (PROGN (SETQ |line| (CAR |bfVar#2|)) NIL))
+                      (RETURN NIL))
+                     ('T (|shoeFileLine| |line| |stream|)))
+                   (SETQ |bfVar#2| (CDR |bfVar#2|))))
                (|shoeFileTrees|
                    (|shoeTransformToFile| |stream|
                        (|shoeInclude|
@@ -1050,12 +1059,10 @@ associateRequestWithFileType(Option '"compile", '"boot",
 (DEFUN |shoeCompileTrees| (|s|)
   (PROG ()
     (RETURN
-      ((LAMBDA ()
-         (LOOP
-           (COND
-             ((|bStreamNull| |s|) (RETURN NIL))
-             ('T
-              (PROGN (|shoeCompile| (CAR |s|)) (SETQ |s| (CDR |s|)))))))))))
+      (LOOP
+        (COND
+          ((|bStreamNull| |s|) (RETURN NIL))
+          ('T (PROGN (|shoeCompile| (CAR |s|)) (SETQ |s| (CDR |s|)))))))))
 
 (DEFUN |shoeCompile| (|fn|)
   (PROG (|body| |bv| |ISTMP#2| |name| |ISTMP#1|)
@@ -1160,15 +1167,14 @@ associateRequestWithFileType(Option '"compile", '"boot",
     (RETURN
       (PROGN
         (|shoeFileLine| " " |fn|)
-        ((LAMBDA (|bfVar#3| |line|)
-           (LOOP
-             (COND
-               ((OR (ATOM |bfVar#3|)
-                    (PROGN (SETQ |line| (CAR |bfVar#3|)) NIL))
-                (RETURN NIL))
-               ('T (|shoeFileLine| (|shoeAddComment| |line|) |fn|)))
-             (SETQ |bfVar#3| (CDR |bfVar#3|))))
-         |lines| NIL)
+        (LET ((|bfVar#3| |lines|) (|line| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#3|)
+                   (PROGN (SETQ |line| (CAR |bfVar#3|)) NIL))
+               (RETURN NIL))
+              ('T (|shoeFileLine| (|shoeAddComment| |line|) |fn|)))
+            (SETQ |bfVar#3| (CDR |bfVar#3|))))
         (|shoeFileLine| " " |fn|)))))
 
 (DEFUN |shoeConsoleLines| (|lines|)
@@ -1176,15 +1182,14 @@ associateRequestWithFileType(Option '"compile", '"boot",
     (RETURN
       (PROGN
         (|shoeConsole| " ")
-        ((LAMBDA (|bfVar#4| |line|)
-           (LOOP
-             (COND
-               ((OR (ATOM |bfVar#4|)
-                    (PROGN (SETQ |line| (CAR |bfVar#4|)) NIL))
-                (RETURN NIL))
-               ('T (|shoeConsole| (|shoeAddComment| |line|))))
-             (SETQ |bfVar#4| (CDR |bfVar#4|))))
-         |lines| NIL)
+        (LET ((|bfVar#4| |lines|) (|line| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#4|)
+                   (PROGN (SETQ |line| (CAR |bfVar#4|)) NIL))
+               (RETURN NIL))
+              ('T (|shoeConsole| (|shoeAddComment| |line|))))
+            (SETQ |bfVar#4| (CDR |bfVar#4|))))
         (|shoeConsole| " ")))))
 
 (DEFUN |shoeFileLine| (|x| |stream|)
@@ -1193,17 +1198,16 @@ associateRequestWithFileType(Option '"compile", '"boot",
 (DEFUN |shoeFileTrees| (|s| |st|)
   (PROG (|a|)
     (RETURN
-      ((LAMBDA ()
-         (LOOP
-           (COND
-             ((|bStreamNull| |s|) (RETURN NIL))
-             ('T
-              (PROGN
-                (SETQ |a| (CAR |s|))
-                (COND
-                  ((EQCAR |a| '+LINE) (|shoeFileLine| (CADR |a|) |st|))
-                  ('T (REALLYPRETTYPRINT |a| |st|) (TERPRI |st|)))
-                (SETQ |s| (CDR |s|)))))))))))
+      (LOOP
+        (COND
+          ((|bStreamNull| |s|) (RETURN NIL))
+          ('T
+           (PROGN
+             (SETQ |a| (CAR |s|))
+             (COND
+               ((EQCAR |a| '+LINE) (|shoeFileLine| (CADR |a|) |st|))
+               ('T (REALLYPRETTYPRINT |a| |st|) (TERPRI |st|)))
+             (SETQ |s| (CDR |s|)))))))))
 
 (DEFUN |shoePPtoFile| (|x| |stream|)
   (PROG () (RETURN (PROGN (SHOENOTPRETTYPRINT |x| |stream|) |x|))))
@@ -1211,17 +1215,16 @@ associateRequestWithFileType(Option '"compile", '"boot",
 (DEFUN |shoeConsoleTrees| (|s|)
   (PROG (|fn|)
     (RETURN
-      ((LAMBDA ()
-         (LOOP
-           (COND
-             ((|bStreamPackageNull| |s|) (RETURN NIL))
-             ('T
-              (PROGN
-                (SETQ |fn|
-                      (|stripm| (CAR |s|) *PACKAGE*
-                          (FIND-PACKAGE "BOOTTRAN")))
-                (REALLYPRETTYPRINT |fn|)
-                (SETQ |s| (CDR |s|)))))))))))
+      (LOOP
+        (COND
+          ((|bStreamPackageNull| |s|) (RETURN NIL))
+          ('T
+           (PROGN
+             (SETQ |fn|
+                   (|stripm| (CAR |s|) *PACKAGE*
+                       (FIND-PACKAGE "BOOTTRAN")))
+             (REALLYPRETTYPRINT |fn|)
+             (SETQ |s| (CDR |s|)))))))))
 
 (DEFUN |shoeAddComment| (|l|)
   (PROG () (RETURN (CONCAT "; " (CAR |l|)))))
@@ -1273,8 +1276,7 @@ associateRequestWithFileType(Option '"compile", '"boot",
                               (EQ (CDR |ISTMP#2|) NIL)
                               (PROGN (SETQ |r| (CAR |ISTMP#2|)) 'T)))))
                 (IDENTP |l|))
-           (|bpPush|
-               (LIST (LIST 'DEFPARAMETER |l| |r|))))
+           (|bpPush| (LIST (LIST 'DEFPARAMETER |l| |r|))))
           ('T
            (PROGN
              (SETQ |bfVar#5| |b|)
@@ -1355,22 +1357,22 @@ associateRequestWithFileType(Option '"compile", '"boot",
 
 (DEFUN |shoeReport| (|stream|)
   (PROG (|b| |a|)
-    (DECLARE (SPECIAL |$bootDefinedTwice| |$bootDefined| |$bootUsed|))
+    (DECLARE (SPECIAL |$bootDefinedTwice| |$bootUsed| |$bootDefined|))
     (RETURN
       (PROGN
         (|shoeFileLine| "DEFINED and not USED" |stream|)
         (SETQ |a|
-              ((LAMBDA (|bfVar#8| |bfVar#7| |i|)
-                 (LOOP
-                   (COND
-                     ((OR (ATOM |bfVar#7|)
-                          (PROGN (SETQ |i| (CAR |bfVar#7|)) NIL))
-                      (RETURN (NREVERSE |bfVar#8|)))
-                     (#0='T
-                      (AND (NULL (GETHASH |i| |$bootUsed|))
-                           (SETQ |bfVar#8| (CONS |i| |bfVar#8|)))))
-                   (SETQ |bfVar#7| (CDR |bfVar#7|))))
-               NIL (HKEYS |$bootDefined|) NIL))
+              (LET ((|bfVar#8| NIL) (|bfVar#7| (HKEYS |$bootDefined|))
+                    (|i| NIL))
+                (LOOP
+                  (COND
+                    ((OR (ATOM |bfVar#7|)
+                         (PROGN (SETQ |i| (CAR |bfVar#7|)) NIL))
+                     (RETURN (NREVERSE |bfVar#8|)))
+                    (#0='T
+                     (AND (NULL (GETHASH |i| |$bootUsed|))
+                          (SETQ |bfVar#8| (CONS |i| |bfVar#8|)))))
+                  (SETQ |bfVar#7| (CDR |bfVar#7|)))))
         (|bootOut| (SSORT |a|) |stream|)
         (|shoeFileLine| "             " |stream|)
         (|shoeFileLine| "DEFINED TWICE" |stream|)
@@ -1378,45 +1380,43 @@ associateRequestWithFileType(Option '"compile", '"boot",
         (|shoeFileLine| "             " |stream|)
         (|shoeFileLine| "USED and not DEFINED" |stream|)
         (SETQ |a|
-              ((LAMBDA (|bfVar#10| |bfVar#9| |i|)
-                 (LOOP
-                   (COND
-                     ((OR (ATOM |bfVar#9|)
-                          (PROGN (SETQ |i| (CAR |bfVar#9|)) NIL))
-                      (RETURN (NREVERSE |bfVar#10|)))
-                     (#0#
-                      (AND (NULL (GETHASH |i| |$bootDefined|))
-                           (SETQ |bfVar#10| (CONS |i| |bfVar#10|)))))
-                   (SETQ |bfVar#9| (CDR |bfVar#9|))))
-               NIL (HKEYS |$bootUsed|) NIL))
-        ((LAMBDA (|bfVar#11| |i|)
-           (LOOP
-             (COND
-               ((OR (ATOM |bfVar#11|)
-                    (PROGN (SETQ |i| (CAR |bfVar#11|)) NIL))
-                (RETURN NIL))
-               (#0#
-                (PROGN
-                  (SETQ |b| (CONCAT (PNAME |i|) " is used in "))
-                  (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
-                      |stream| |b|))))
-             (SETQ |bfVar#11| (CDR |bfVar#11|))))
-         (SSORT |a|) NIL)))))
+              (LET ((|bfVar#10| NIL) (|bfVar#9| (HKEYS |$bootUsed|))
+                    (|i| NIL))
+                (LOOP
+                  (COND
+                    ((OR (ATOM |bfVar#9|)
+                         (PROGN (SETQ |i| (CAR |bfVar#9|)) NIL))
+                     (RETURN (NREVERSE |bfVar#10|)))
+                    (#0#
+                     (AND (NULL (GETHASH |i| |$bootDefined|))
+                          (SETQ |bfVar#10| (CONS |i| |bfVar#10|)))))
+                  (SETQ |bfVar#9| (CDR |bfVar#9|)))))
+        (LET ((|bfVar#11| (SSORT |a|)) (|i| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#11|)
+                   (PROGN (SETQ |i| (CAR |bfVar#11|)) NIL))
+               (RETURN NIL))
+              (#0#
+               (PROGN
+                 (SETQ |b| (CONCAT (PNAME |i|) " is used in "))
+                 (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
+                     |stream| |b|))))
+            (SETQ |bfVar#11| (CDR |bfVar#11|))))))))
 
 (DEFUN |shoeDefUse| (|s|)
   (PROG ()
     (RETURN
-      ((LAMBDA ()
-         (LOOP
-           (COND
-             ((|bStreamPackageNull| |s|) (RETURN NIL))
-             ('T (PROGN (|defuse| NIL (CAR |s|)) (SETQ |s| (CDR |s|)))))))))))
+      (LOOP
+        (COND
+          ((|bStreamPackageNull| |s|) (RETURN NIL))
+          ('T (PROGN (|defuse| NIL (CAR |s|)) (SETQ |s| (CDR |s|)))))))))
 
 (DEFUN |defuse| (|e| |x|)
   (PROG (|$used| |niens| |nee| |LETTMP#1| |exp| |ISTMP#5| |id|
                  |ISTMP#4| |ISTMP#3| |body| |bv| |ISTMP#2| |name|
                  |ISTMP#1|)
-    (DECLARE (SPECIAL |$used| |$bootUsed| |$bootDefinedTwice|
+    (DECLARE (SPECIAL |$bootUsed| |$used| |$bootDefinedTwice|
                       |$bootDefined|))
     (RETURN
       (PROGN
@@ -1501,17 +1501,16 @@ associateRequestWithFileType(Option '"compile", '"boot",
                    (#1# (CONS |nee| |$bootDefinedTwice|)))))
           ('T (HPUT |$bootDefined| |nee| T)))
         (|defuse1| |e| |niens|)
-        ((LAMBDA (|bfVar#12| |i|)
-           (LOOP
-             (COND
-               ((OR (ATOM |bfVar#12|)
-                    (PROGN (SETQ |i| (CAR |bfVar#12|)) NIL))
-                (RETURN NIL))
-               ('T
-                (HPUT |$bootUsed| |i|
-                      (CONS |nee| (GETHASH |i| |$bootUsed|)))))
-             (SETQ |bfVar#12| (CDR |bfVar#12|))))
-         |$used| NIL)))))
+        (LET ((|bfVar#12| |$used|) (|i| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#12|)
+                   (PROGN (SETQ |i| (CAR |bfVar#12|)) NIL))
+               (RETURN NIL))
+              ('T
+               (HPUT |$bootUsed| |i|
+                     (CONS |nee| (GETHASH |i| |$bootUsed|)))))
+            (SETQ |bfVar#12| (CDR |bfVar#12|))))))))
 
 (DEFUN |defuse1| (|e| |y|)
   (PROG (|ndol| |dol| |LETTMP#1| |b| |a| |ISTMP#1|)
@@ -1549,15 +1548,14 @@ associateRequestWithFileType(Option '"compile", '"boot",
            (SETQ |LETTMP#1| (|defSeparate| |a|))
            (SETQ |dol| (CAR |LETTMP#1|))
            (SETQ |ndol| (CADR |LETTMP#1|))
-           ((LAMBDA (|bfVar#13| |i|)
-              (LOOP
-                (COND
-                  ((OR (ATOM |bfVar#13|)
-                       (PROGN (SETQ |i| (CAR |bfVar#13|)) NIL))
-                   (RETURN NIL))
-                  (#2='T (HPUT |$bootDefined| |i| T)))
-                (SETQ |bfVar#13| (CDR |bfVar#13|))))
-            |dol| NIL)
+           (LET ((|bfVar#13| |dol|) (|i| NIL))
+             (LOOP
+               (COND
+                 ((OR (ATOM |bfVar#13|)
+                      (PROGN (SETQ |i| (CAR |bfVar#13|)) NIL))
+                  (RETURN NIL))
+                 (#2='T (HPUT |$bootDefined| |i| T)))
+               (SETQ |bfVar#13| (CDR |bfVar#13|))))
            (|defuse1| (APPEND |ndol| |e|) |b|)))
         ((AND (CONSP |y|) (EQ (CAR |y|) 'QUOTE)
               (PROGN (SETQ |a| (CDR |y|)) #1#))
@@ -1566,15 +1564,14 @@ associateRequestWithFileType(Option '"compile", '"boot",
               (PROGN (SETQ |a| (CDR |y|)) #1#))
          NIL)
         (#0#
-         ((LAMBDA (|bfVar#14| |i|)
-            (LOOP
-              (COND
-                ((OR (ATOM |bfVar#14|)
-                     (PROGN (SETQ |i| (CAR |bfVar#14|)) NIL))
-                 (RETURN NIL))
-                (#2# (|defuse1| |e| |i|)))
-              (SETQ |bfVar#14| (CDR |bfVar#14|))))
-          |y| NIL))))))
+         (LET ((|bfVar#14| |y|) (|i| NIL))
+           (LOOP
+             (COND
+               ((OR (ATOM |bfVar#14|)
+                    (PROGN (SETQ |i| (CAR |bfVar#14|)) NIL))
+                (RETURN NIL))
+               (#2# (|defuse1| |e| |i|)))
+             (SETQ |bfVar#14| (CDR |bfVar#14|)))))))))
 
 (DEFUN |defSeparate| (|x|)
   (PROG (|x2| |x1| |LETTMP#1| |f|)
@@ -1610,15 +1607,14 @@ associateRequestWithFileType(Option '"compile", '"boot",
 (DEFUN |bootOut| (|l| |outfn|)
   (PROG ()
     (RETURN
-      ((LAMBDA (|bfVar#15| |i|)
-         (LOOP
-           (COND
-             ((OR (ATOM |bfVar#15|)
-                  (PROGN (SETQ |i| (CAR |bfVar#15|)) NIL))
-              (RETURN NIL))
-             ('T (|shoeFileLine| (CONCAT "   " (PNAME |i|)) |outfn|)))
-           (SETQ |bfVar#15| (CDR |bfVar#15|))))
-       |l| NIL))))
+      (LET ((|bfVar#15| |l|) (|i| NIL))
+        (LOOP
+          (COND
+            ((OR (ATOM |bfVar#15|)
+                 (PROGN (SETQ |i| (CAR |bfVar#15|)) NIL))
+             (RETURN NIL))
+            ('T (|shoeFileLine| (CONCAT "   " (PNAME |i|)) |outfn|)))
+          (SETQ |bfVar#15| (CDR |bfVar#15|)))))))
 
 (DEFUN CLESSP (|s1| |s2|)
   (PROG () (RETURN (NULL (SHOEGREATERP |s1| |s2|)))))
@@ -1671,19 +1667,18 @@ associateRequestWithFileType(Option '"compile", '"boot",
       (PROGN
         (|shoeFileLine| "USED and where DEFINED" |stream|)
         (SETQ |c| (SSORT (HKEYS |$bootUsed|)))
-        ((LAMBDA (|bfVar#16| |i|)
-           (LOOP
-             (COND
-               ((OR (ATOM |bfVar#16|)
-                    (PROGN (SETQ |i| (CAR |bfVar#16|)) NIL))
-                (RETURN NIL))
-               ('T
-                (PROGN
-                  (SETQ |a| (CONCAT (PNAME |i|) " is used in "))
-                  (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
-                      |stream| |a|))))
-             (SETQ |bfVar#16| (CDR |bfVar#16|))))
-         |c| NIL)))))
+        (LET ((|bfVar#16| |c|) (|i| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#16|)
+                   (PROGN (SETQ |i| (CAR |bfVar#16|)) NIL))
+               (RETURN NIL))
+              ('T
+               (PROGN
+                 (SETQ |a| (CONCAT (PNAME |i|) " is used in "))
+                 (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
+                     |stream| |a|))))
+            (SETQ |bfVar#16| (CDR |bfVar#16|))))))))
 
 (DEFUN FBO (|name| |fn|)
   (PROG () (RETURN (|shoeGeneralFC| #'BO |name| |fn|))))
@@ -1725,17 +1720,16 @@ associateRequestWithFileType(Option '"compile", '"boot",
                      (SETQ |filename|
                            (CONCAT "/tmp/" |filename| ".boot"))
                      (|shoeOpenOutputFile| |stream| |filename|
-                         ((LAMBDA (|bfVar#17| |line|)
-                            (LOOP
-                              (COND
-                                ((OR (ATOM |bfVar#17|)
-                                     (PROGN
-                                       (SETQ |line| (CAR |bfVar#17|))
-                                       NIL))
-                                 (RETURN NIL))
-                                ('T (|shoeFileLine| |line| |stream|)))
-                              (SETQ |bfVar#17| (CDR |bfVar#17|))))
-                          |lines| NIL))
+                         (LET ((|bfVar#17| |lines|) (|line| NIL))
+                           (LOOP
+                             (COND
+                               ((OR (ATOM |bfVar#17|)
+                                    (PROGN
+                                      (SETQ |line| (CAR |bfVar#17|))
+                                      NIL))
+                                (RETURN NIL))
+                               ('T (|shoeFileLine| |line| |stream|)))
+                             (SETQ |bfVar#17| (CDR |bfVar#17|)))))
                      T))
           ('T NIL))))))
 
@@ -1752,19 +1746,20 @@ associateRequestWithFileType(Option '"compile", '"boot",
     (RETURN
       (PROGN
         (SETQ |dq| (CAR |str|))
-        (CONS (LIST ((LAMBDA (|bfVar#19| |bfVar#18| |line|)
-                       (LOOP
-                         (COND
-                           ((OR (ATOM |bfVar#18|)
-                                (PROGN
-                                  (SETQ |line| (CAR |bfVar#18|))
-                                  NIL))
-                            (RETURN (NREVERSE |bfVar#19|)))
-                           ('T
-                            (SETQ |bfVar#19|
-                                  (CONS (CAR |line|) |bfVar#19|))))
-                         (SETQ |bfVar#18| (CDR |bfVar#18|))))
-                     NIL (|shoeDQlines| |dq|) NIL))
+        (CONS (LIST (LET ((|bfVar#19| NIL)
+                          (|bfVar#18| (|shoeDQlines| |dq|))
+                          (|line| NIL))
+                      (LOOP
+                        (COND
+                          ((OR (ATOM |bfVar#18|)
+                               (PROGN
+                                 (SETQ |line| (CAR |bfVar#18|))
+                                 NIL))
+                           (RETURN (NREVERSE |bfVar#19|)))
+                          ('T
+                           (SETQ |bfVar#19|
+                                 (CONS (CAR |line|) |bfVar#19|))))
+                        (SETQ |bfVar#18| (CDR |bfVar#18|)))))
               (CDR |str|))))))
 
 (DEFUN |stripm| (|x| |pk| |bt|)
@@ -1825,14 +1820,13 @@ associateRequestWithFileType(Option '"compile", '"boot",
 (DEFUN |shoePCompileTrees| (|s|)
   (PROG ()
     (RETURN
-      ((LAMBDA ()
-         (LOOP
-           (COND
-             ((|bStreamPackageNull| |s|) (RETURN NIL))
-             ('T
-              (PROGN
-                (REALLYPRETTYPRINT (|shoePCompile| (CAR |s|)))
-                (SETQ |s| (CDR |s|)))))))))))
+      (LOOP
+        (COND
+          ((|bStreamPackageNull| |s|) (RETURN NIL))
+          ('T
+           (PROGN
+             (REALLYPRETTYPRINT (|shoePCompile| (CAR |s|)))
+             (SETQ |s| (CDR |s|)))))))))
 
 (DEFUN |bStreamPackageNull| (|s|)
   (PROG (|b| |a|)

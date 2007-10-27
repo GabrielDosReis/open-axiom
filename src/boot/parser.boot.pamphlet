@@ -1126,11 +1126,9 @@ bpCaseItem()==
 
 (IN-PACKAGE "BOOTTRAN")
 
-(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (DEFPARAMETER |$sawParenthesizedHead| NIL))
+(DEFPARAMETER |$sawParenthesizedHead| NIL)
 
-(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (DEFPARAMETER |$bodyHasReturn| NIL))
+(DEFPARAMETER |$bodyHasReturn| NIL)
 
 (DEFUN |bpFirstToken| ()
   (PROG ()
@@ -1329,13 +1327,12 @@ bpCaseItem()==
          (COND
            ((AND (|bpEqKey| |str1|) (OR (APPLY |f| NIL) (|bpTrap|)))
             (SETQ |a| |$stack|) (SETQ |$stack| NIL)
-            ((LAMBDA ()
-               (LOOP
-                 (COND
-                   ((NOT (AND (|bpEqKey| |str1|)
-                              (OR (APPLY |f| NIL) (|bpTrap|))))
-                    (RETURN NIL))
-                   ('T 0)))))
+            (LOOP
+              (COND
+                ((NOT (AND (|bpEqKey| |str1|)
+                           (OR (APPLY |f| NIL) (|bpTrap|))))
+                 (RETURN NIL))
+                ('T 0)))
             (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
             (|bpPush|
                 (FUNCALL |g|
@@ -1352,13 +1349,12 @@ bpCaseItem()==
          (COND
            ((AND (APPLY |h| NIL) (OR (APPLY |f| NIL) (|bpTrap|)))
             (SETQ |a| |$stack|) (SETQ |$stack| NIL)
-            ((LAMBDA ()
-               (LOOP
-                 (COND
-                   ((NOT (AND (APPLY |h| NIL)
-                              (OR (APPLY |f| NIL) (|bpTrap|))))
-                    (RETURN NIL))
-                   ('T 0)))))
+            (LOOP
+              (COND
+                ((NOT (AND (APPLY |h| NIL)
+                           (OR (APPLY |f| NIL) (|bpTrap|))))
+                 (RETURN NIL))
+                ('T 0)))
             (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
             (|bpPush|
                 (FUNCALL |g|
@@ -1377,13 +1373,12 @@ bpCaseItem()==
          (COND
            ((AND (|bpEqKey| |str1|) (OR (APPLY |f| NIL) (|bpTrap|)))
             (SETQ |a| |$stack|) (SETQ |$stack| NIL)
-            ((LAMBDA ()
-               (LOOP
-                 (COND
-                   ((NOT (AND (|bpEqKey| |str1|)
-                              (OR (APPLY |f| NIL) (|bpTrap|))))
-                    (RETURN NIL))
-                   ('T 0)))))
+            (LOOP
+              (COND
+                ((NOT (AND (|bpEqKey| |str1|)
+                           (OR (APPLY |f| NIL) (|bpTrap|))))
+                 (RETURN NIL))
+                ('T 0)))
             (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
             (|bpPush|
                 (FUNCALL |g|
@@ -1400,9 +1395,7 @@ bpCaseItem()==
          (PROGN
            (SETQ |a| |$stack|)
            (SETQ |$stack| NIL)
-           ((LAMBDA ()
-              (LOOP
-                (COND ((NOT (APPLY |f| NIL)) (RETURN NIL)) ('T 0)))))
+           (LOOP (COND ((NOT (APPLY |f| NIL)) (RETURN NIL)) ('T 0)))
            (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
            (|bpPush| (CONS (|bpPop2|) (|bpPop1|)))))
         ('T NIL)))))
@@ -1411,8 +1404,7 @@ bpCaseItem()==
   (PROG ()
     (RETURN
       (PROGN
-        ((LAMBDA ()
-           (LOOP (COND ((NOT (APPLY |s| NIL)) (RETURN NIL)) ('T 0)))))
+        (LOOP (COND ((NOT (APPLY |s| NIL)) (RETURN NIL)) ('T 0)))
         T))))
 
 (DEFUN |bpAndOr| (|keyword| |p| |f|)
@@ -1527,30 +1519,28 @@ bpCaseItem()==
         (SETQ |$stack| NIL)
         (SETQ |done| NIL)
         (SETQ |c| |$inputStream|)
-        ((LAMBDA ()
-           (LOOP
-             (COND
-               (|done| (RETURN NIL))
-               ('T
-                (PROGN
-                  (SETQ |found| (CATCH 'TRAPPOINT (APPLY |f| NIL)))
+        (LOOP
+          (COND
+            (|done| (RETURN NIL))
+            ('T
+             (PROGN
+               (SETQ |found| (CATCH 'TRAPPOINT (APPLY |f| NIL)))
+               (COND
+                 ((EQ |found| 'TRAPPED) (SETQ |$inputStream| |c|)
+                  (|bpRecoverTrap|))
+                 ((NULL |found|) (SETQ |$inputStream| |c|)
+                  (|bpGeneralErrorHere|) (|bpRecoverTrap|)))
+               (COND
+                 ((|bpEqKey| 'BACKSET) (SETQ |c| |$inputStream|))
+                 ((OR (|bpEqPeek| 'BACKTAB) (NULL |$inputStream|))
+                  (SETQ |done| T))
+                 (#0='T (SETQ |$inputStream| |c|)
+                  (|bpGeneralErrorHere|) (|bpRecoverTrap|)
                   (COND
-                    ((EQ |found| 'TRAPPED) (SETQ |$inputStream| |c|)
-                     (|bpRecoverTrap|))
-                    ((NULL |found|) (SETQ |$inputStream| |c|)
-                     (|bpGeneralErrorHere|) (|bpRecoverTrap|)))
-                  (COND
-                    ((|bpEqKey| 'BACKSET) (SETQ |c| |$inputStream|))
                     ((OR (|bpEqPeek| 'BACKTAB) (NULL |$inputStream|))
                      (SETQ |done| T))
-                    (#0='T (SETQ |$inputStream| |c|)
-                     (|bpGeneralErrorHere|) (|bpRecoverTrap|)
-                     (COND
-                       ((OR (|bpEqPeek| 'BACKTAB)
-                            (NULL |$inputStream|))
-                        (SETQ |done| T))
-                       (#0# (|bpNext|) (SETQ |c| |$inputStream|)))))
-                  (SETQ |b| (CONS (|bpPop1|) |b|))))))))
+                    (#0# (|bpNext|) (SETQ |c| |$inputStream|)))))
+               (SETQ |b| (CONS (|bpPop1|) |b|))))))
         (SETQ |$stack| |a|)
         (|bpPush| (NREVERSE |b|))))))
 
@@ -1810,16 +1800,15 @@ bpCaseItem()==
         (SETQ |a| (|bpState|))
         (COND
           ((APPLY |p| NIL)
-           ((LAMBDA ()
-              (LOOP
-                (COND
-                  ((NOT (AND (|bpInfGeneric| |o|)
-                             (OR (|bpRightAssoc| |o| |p|) (|bpTrap|))))
-                   (RETURN NIL))
-                  ('T
-                   (|bpPush|
-                       (|bfInfApplication| (|bpPop2|) (|bpPop2|)
-                           (|bpPop1|))))))))
+           (LOOP
+             (COND
+               ((NOT (AND (|bpInfGeneric| |o|)
+                          (OR (|bpRightAssoc| |o| |p|) (|bpTrap|))))
+                (RETURN NIL))
+               ('T
+                (|bpPush|
+                    (|bfInfApplication| (|bpPop2|) (|bpPop2|)
+                        (|bpPop1|))))))
            T)
           ('T (|bpRestore| |a|) NIL))))))
 
@@ -1828,16 +1817,14 @@ bpCaseItem()==
     (RETURN
       (COND
         ((APPLY |parser| NIL)
-         ((LAMBDA ()
-            (LOOP
-              (COND
-                ((NOT (AND (|bpInfGeneric| |operations|)
-                           (OR (APPLY |parser| NIL) (|bpTrap|))))
-                 (RETURN NIL))
-                ('T
-                 (|bpPush|
-                     (|bfInfApplication| (|bpPop2|) (|bpPop2|)
-                         (|bpPop1|))))))))
+         (LOOP
+           (COND
+             ((NOT (AND (|bpInfGeneric| |operations|)
+                        (OR (APPLY |parser| NIL) (|bpTrap|))))
+              (RETURN NIL))
+             ('T
+              (|bpPush|
+                  (|bfInfApplication| (|bpPop2|) (|bpPop2|) (|bpPop1|))))))
          T)
         ('T NIL)))))
 
@@ -2271,19 +2258,18 @@ bpCaseItem()==
     (RETURN
       (COND
         ((|bpRegularPatternItemL|)
-         ((LAMBDA ()
-            (LOOP
-              (COND
-                ((NOT (AND (|bpEqKey| 'COMMA)
-                           (OR (|bpRegularPatternItemL|)
-                               (PROGN
-                                 (OR (AND (|bpPatternTail|)
-                                      (|bpPush|
-                                       (APPEND (|bpPop2|) (|bpPop1|))))
-                                     (|bpTrap|))
-                                 NIL))))
-                 (RETURN NIL))
-                ('T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))))
+         (LOOP
+           (COND
+             ((NOT (AND (|bpEqKey| 'COMMA)
+                        (OR (|bpRegularPatternItemL|)
+                            (PROGN
+                              (OR (AND (|bpPatternTail|)
+                                       (|bpPush|
+                                        (APPEND (|bpPop2|) (|bpPop1|))))
+                                  (|bpTrap|))
+                              NIL))))
+              (RETURN NIL))
+             ('T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))
          T)
         ('T (|bpPatternTail|))))))
 
@@ -2333,20 +2319,19 @@ bpCaseItem()==
     (RETURN
       (COND
         ((|bpRegularBVItemL|)
-         ((LAMBDA ()
-            (LOOP
-              (COND
-                ((NOT (AND (|bpEqKey| 'COMMA)
-                           (OR (|bpRegularBVItemL|)
-                               (PROGN
-                                 (OR (AND (|bpColonName|)
-                                      (|bpPush|
-                                       (|bfColonAppend| (|bpPop2|)
-                                        (|bpPop1|))))
-                                     (|bpTrap|))
-                                 NIL))))
-                 (RETURN NIL))
-                ('T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))))
+         (LOOP
+           (COND
+             ((NOT (AND (|bpEqKey| 'COMMA)
+                        (OR (|bpRegularBVItemL|)
+                            (PROGN
+                              (OR (AND (|bpColonName|)
+                                       (|bpPush|
+                                        (|bfColonAppend| (|bpPop2|)
+                                         (|bpPop1|))))
+                                  (|bpTrap|))
+                              NIL))))
+              (RETURN NIL))
+             ('T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))
          T)
         ('T
          (AND (|bpColonName|)

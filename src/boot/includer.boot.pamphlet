@@ -691,7 +691,8 @@ bPremStreamNull(s)==
 (DEFUN |shoeCLOSE| (|stream|) (PROG () (RETURN (CLOSE |stream|))))
 
 (DEFUN |shoeNotFound| (|fn|)
-  (PROG () (RETURN (PROGN (|coreError| (LIST |fn| " not found")) NIL))))
+  (PROG ()
+    (RETURN (PROGN (|coreError| (LIST |fn| " not found")) NIL))))
 
 (DEFUN |shoeReadLispString| (|s| |n|)
   (PROG (|l|)
@@ -804,8 +805,7 @@ bPremStreamNull(s)==
               ((NULL |lines|) (|shoeConsole| ")package not found")))
             (APPEND (REVERSE |lines|) (CAR |b|)))))))))
 
-(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (DEFPARAMETER |$bStreamNil| (LIST '|nullstream|)))
+(DEFPARAMETER |$bStreamNil| (LIST '|nullstream|))
 
 (DEFUN |bStreamNull| (|x|)
   (PROG (|st|)
@@ -814,15 +814,14 @@ bPremStreamNull(s)==
         ((OR (NULL |x|) (EQCAR |x| '|nullstream|)) T)
         ('T
          (PROGN
-           ((LAMBDA ()
-              (LOOP
-                (COND
-                  ((NOT (EQCAR |x| '|nonnullstream|)) (RETURN NIL))
-                  ('T
-                   (PROGN
-                     (SETQ |st| (APPLY (CADR |x|) (CDDR |x|)))
-                     (RPLACA |x| (CAR |st|))
-                     (RPLACD |x| (CDR |st|))))))))
+           (LOOP
+             (COND
+               ((NOT (EQCAR |x| '|nonnullstream|)) (RETURN NIL))
+               ('T
+                (PROGN
+                  (SETQ |st| (APPLY (CADR |x|) (CDDR |x|)))
+                  (RPLACA |x| (CAR |st|))
+                  (RPLACD |x| (CDR |st|))))))
            (EQCAR |x| '|nullstream|)))))))
 
 (DEFUN |bMap| (|f| |x|)
@@ -830,6 +829,7 @@ bPremStreamNull(s)==
 
 (DEFUN |bMap1| (&REST |z|)
   (PROG (|x| |f|)
+    (DECLARE (SPECIAL |$bStreamNil|))
     (RETURN
       (PROGN
         (SETQ |f| (CAR |z|))
@@ -840,6 +840,7 @@ bPremStreamNull(s)==
 
 (DEFUN |shoeFileMap| (|f| |fn|)
   (PROG (|a|)
+    (DECLARE (SPECIAL |$bStreamNil|))
     (RETURN
       (PROGN
         (SETQ |a| (|shoeInputFile| |fn|))
@@ -941,16 +942,15 @@ bPremStreamNull(s)==
         ('T
          (PROGN
            (SETQ |good| T)
-           ((LAMBDA (|bfVar#1| |i| |j|)
-              (LOOP
-                (COND
-                  ((OR (> |i| |bfVar#1|) (NOT |good|)) (RETURN NIL))
-                  ('T
-                   (SETQ |good|
-                         (EQUAL (ELT |prefix| |i|) (ELT |whole| |j|)))))
-                (SETQ |i| (+ |i| 1))
-                (SETQ |j| (+ |j| 1))))
-            (- (LENGTH |prefix|) 1) 0 0)
+           (LET ((|bfVar#1| (- (LENGTH |prefix|) 1)) (|i| 0) (|j| 0))
+             (LOOP
+               (COND
+                 ((OR (> |i| |bfVar#1|) (NOT |good|)) (RETURN NIL))
+                 ('T
+                  (SETQ |good|
+                        (EQUAL (ELT |prefix| |i|) (ELT |whole| |j|)))))
+               (SETQ |i| (+ |i| 1))
+               (SETQ |j| (+ |j| 1))))
            (COND
              (|good| (SUBSTRING |whole| (LENGTH |prefix|) NIL))
              ('T |good|))))))))
@@ -1061,6 +1061,7 @@ bPremStreamNull(s)==
 
 (DEFUN |shoeInclude1| (|s|)
   (PROG (|command| |string| |t| |h|)
+    (DECLARE (SPECIAL |$bStreamNil|))
     (RETURN
       (COND
         ((|bStreamNull| |s|) |s|)
@@ -1202,6 +1203,7 @@ bPremStreamNull(s)==
 
 (DEFUN |bPremStreamNil| (|h|)
   (PROG ()
+    (DECLARE (SPECIAL |$bStreamNil|))
     (RETURN
       (PROGN
         (|shoeConsole|
