@@ -1034,19 +1034,6 @@ coerceIntAlgebraicConstant(object,t2) ==
       objNewWrap(getConstantFromDomain('(Zero),t2),t2)
   NIL
 
-stripUnionTags doms ==
-  [if dom is [":",.,dom'] then dom' else dom for dom in doms]
-
-isTaggedUnion u ==
-  u is ['Union,:tl] and tl and first tl is [":",.,.] and true
-
-getUnionOrRecordTags u ==
-  tags := nil
-  if u is ['Union, :tl] or u is ['Record, :tl] then
-      for t in tl repeat
-         if t is [":",tag,.] then tags := cons(tag, tags)
-  tags
-
 coerceUnion2Branch(object) ==
   [.,:unionDoms] := objMode object
   doms := orderUnionEntries unionDoms

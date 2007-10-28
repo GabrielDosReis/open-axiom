@@ -1083,14 +1083,6 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	$(INSTALL_DATA) $< $@
 @
 
-\subsection{category.boot \cite{58}}
-
-<<category.clisp>>=
-category.clisp: category.boot
-	@ echo 212 making $@ from $<
-	@ echo '(old-boot::boot "category.boot")' | ${DEPSYS} 
-@
-
 \subsection{cattable.boot \cite{59}}
 
 <<cattable.clisp>>=
@@ -1609,6 +1601,12 @@ format.$(FASLEXT): format.boot macros.$(FASLEXT)
 match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+## OpenAxiom's compiler
+
+category.$(FASLEXT): category.boot g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+
 ## Interface with the Aldor compiler.
 ax.$(FASLEXT): ax.boot as.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -1795,8 +1793,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<br-search.clisp>>
 
 <<br-util.clisp>>
-
-<<category.clisp>>
 
 <<cattable.clisp>>
 

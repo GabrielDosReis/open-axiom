@@ -451,6 +451,12 @@ format.$(FASLEXT): format.boot macros.$(FASLEXT)
 match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+## OpenAxiom's compiler
+
+category.$(FASLEXT): category.boot g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+
 ## Interface with the Aldor compiler.
 ax.$(FASLEXT): ax.boot as.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -651,10 +657,6 @@ br-search.clisp: br-search.boot
 br-util.clisp: br-util.boot
 	@ echo 487 making $@ from $<
 	@ echo '(old-boot::boot "br-util.boot")' | ${DEPSYS}
-
-category.clisp: category.boot
-	@ echo 212 making $@ from $<
-	@ echo '(old-boot::boot "category.boot")' | ${DEPSYS} 
 
 cattable.clisp: cattable.boot
 	@ echo 215 making $@ from $<
