@@ -1,3 +1,21 @@
+2007-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (category.$(FASLEXT)): New rule.
+	(<<category.clisp>>): Remove.
+	* category.boot.pamphlet: Push into package "BOOT".
+	Replace ASSOC with assoc throughout.
+	(mkCategory): Fix syntax.
+	* i-coerce.boot.pamphlet (stripUnionTags): Move to g-util.boot.
+	(isTaggeUnion): Likewise.
+	(getUnionOrRecordTags): Likewise.
+	* i-util.boot.pamphlet (wrap): Move to i-object.boot.
+	(isWrapped): Likewise.
+	(unwrap): Likewise.
+	(wrapped2Quote): Likewise.
+	(quote2Wrapped): Likewise.
+	(removeQuote): Likewise.
+	(TruthP): Move to g-util.boot.
+
 2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* g-util.boot (formatUnabbreviatedSig): Translate '$' to '%'

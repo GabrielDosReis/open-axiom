@@ -51,6 +51,28 @@ PPtoFile(x, fname) ==
 -- Convert an arbitrary lisp object to canonical boolean.
 bool x ==
     NULL NULL x
+ 
+TruthP x ==
+    --True if x is a predicate that's always true
+  x is nil => nil
+  x=true => true
+  x is ['QUOTE,:.] => true
+  nil
+
+--% Record and Union utils.
+
+stripUnionTags doms ==
+  [if dom is [":",.,dom'] then dom' else dom for dom in doms]
+
+isTaggedUnion u ==
+  u is ['Union,:tl] and tl and first tl is [":",.,.] and true
+
+getUnionOrRecordTags u ==
+  tags := nil
+  if u is ['Union, :tl] or u is ['Record, :tl] then
+      for t in tl repeat
+         if t is [":",tag,.] then tags := cons(tag, tags)
+  tags
 
 --% Various lispy things
 

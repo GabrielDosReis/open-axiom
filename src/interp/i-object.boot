@@ -65,7 +65,35 @@ objEnv obj == $NE
 objCodeVal obj == CADDR obj
 objCodeMode obj == CADR obj
 
-
+--% Utility Functions Used Only by the Intepreter
+ 
+wrap x ==
+  isWrapped x => x
+  ['WRAPPED,:x]
+ 
+isWrapped x == x is ['WRAPPED,:.] or NUMBERP x or FLOATP x or CVECP x
+ 
+unwrap x ==
+  NUMBERP x or FLOATP x or CVECP x => x
+  x is ["WRAPPED",:y] => y
+  x
+ 
+wrapped2Quote x ==
+  x is ["WRAPPED",:y] => MKQ y
+  x
+ 
+quote2Wrapped x ==
+  x is ['QUOTE,y] => wrap y
+  x
+ 
+removeQuote x ==
+  x is ["QUOTE",y] => y
+  x
+ 
+-- addQuote x ==
+--   NUMBERP x => x
+--   ['QUOTE,x]
+ 
 --% Library compiler structures needed by the interpreter
 
 -- Tuples and Crosses

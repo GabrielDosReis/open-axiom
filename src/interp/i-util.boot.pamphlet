@@ -58,35 +58,6 @@ lisp code is unwrapped.
 <<*>>=
 <<license>>
 
---% Utility Functions Used Only by the Intepreter
- 
-wrap x ==
-  isWrapped x => x
-  ['WRAPPED,:x]
- 
-isWrapped x == x is ['WRAPPED,:.] or NUMBERP x or FLOATP x or CVECP x
- 
-unwrap x ==
-  NUMBERP x or FLOATP x or CVECP x => x
-  x is ["WRAPPED",:y] => y
-  x
- 
-wrapped2Quote x ==
-  x is ["WRAPPED",:y] => MKQ y
-  x
- 
-quote2Wrapped x ==
-  x is ['QUOTE,y] => wrap y
-  x
- 
-removeQuote x ==
-  x is ["QUOTE",y] => y
-  x
- 
--- addQuote x ==
---   NUMBERP x => x
---   ['QUOTE,x]
- 
 --% The function for making prompts
  
 spadPrompt() ==
@@ -287,16 +258,6 @@ mkPredList listOfEntries ==
         [u,:tagPredList]:= tagPredList
         u
   predList
- 
-TruthP x ==
-    --True if x is a predicate that's always true
-  x is nil => nil
-  x=true => true
-  x is ['QUOTE,:.] => true
-  nil
-
-
-
 
 
 
