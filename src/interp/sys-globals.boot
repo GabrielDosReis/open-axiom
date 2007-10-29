@@ -409,3 +409,8 @@ _/WSNAME := "NOBOOT"
 CHR := nil
 TOK := nil
 
+++ answers x has y category questions
+_*HASCATEGORY_-HASH_* := nil
+
+_*ANCESTORS_-HASH_* := nil
+

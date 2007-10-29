@@ -456,6 +456,11 @@ match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 category.$(FASLEXT): category.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+cattable.$(FASLEXT): cattable.boot simpbool.$(FASLEXT) g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## Interface with the Aldor compiler.
 ax.$(FASLEXT): ax.boot as.$(FASLEXT)
@@ -657,10 +662,6 @@ br-search.clisp: br-search.boot
 br-util.clisp: br-util.boot
 	@ echo 487 making $@ from $<
 	@ echo '(old-boot::boot "br-util.boot")' | ${DEPSYS}
-
-cattable.clisp: cattable.boot
-	@ echo 215 making $@ from $<
-	@ echo '(old-boot::boot "cattable.boot")' | ${DEPSYS}
 
 c-doc.clisp: c-doc.boot
 	@ echo 219 making $@ from $<
