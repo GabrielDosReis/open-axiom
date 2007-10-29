@@ -252,7 +252,6 @@
 ; (x . y) and doing an equal hash into this table.
 
 (defvar *operation-hash* nil "given an operation name, what are its modemaps?")
-(defvar *hasCategory-hash* nil "answers x has y category questions")
 
 (defvar *miss* nil "print out cache misses on getdatabase calls")
 

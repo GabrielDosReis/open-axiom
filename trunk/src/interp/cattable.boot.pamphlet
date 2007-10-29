@@ -50,6 +50,10 @@
 <<*>>=
 <<license>>
 
+import '"simpbool"
+import '"g-util"
+)package "BOOT"
+
 hasCat(domainOrCatName,catName) ==
   catName='Object or catName='Type  -- every domain is a Type (Object)
    or GETDATABASE([domainOrCatName,:catName],'HASCATEGORY)
@@ -95,7 +99,7 @@ simpTempCategoryTable() ==
       RPLACD(u,simpHasPred b)
 
 simpCategoryTable() == main where
-  main ==
+  main() ==
     for key in HKEYS _*HASCATEGORY_-HASH_* repeat
       entry := HGET(_*HASCATEGORY_-HASH_*,key)
       null entry => HREM(_*HASCATEGORY_-HASH_*,key)
@@ -105,16 +109,16 @@ simpCategoryTable() == main where
       HPUT(_*HASCATEGORY_-HASH_*,key,change)
 
 simpHasPred(pred,:options) == main where
-  main ==
+  main() ==
     $hasArgs: local := IFCDR IFCAR options
     simp pred
   simp pred ==
     pred is [op,:r] =>
-      op = 'has => simpHas(pred,first r,first rest r)
+      op = "has" => simpHas(pred,first r,first rest r)
       op = 'HasCategory => simp ['has,CAR r,simpDevaluate CADR r]
       op = 'HasSignature =>
          [op,sig] := simpDevaluate CADR r
-         ['has,CAR r,['SIGNATURE,op,sig]]
+         ["has",CAR r,['SIGNATURE,op,sig]]
       op = 'HasAttribute =>
         form := ['has,a := CAR r,['ATTRIBUTE,b := simpDevaluate CADR r]]
         simpHasAttribute(form,a,b)
@@ -231,7 +235,7 @@ encodeCategoryAlist(id,alist) ==
     newEntry:=
       argl => [[argl,:b]]
       b
-    u:= ASSOC(key,newAl) =>
+    u:= assoc(key,newAl) =>
       argl => RPLACD(u,encodeUnion(id,first newEntry,rest u))
       if newEntry ^= rest u then
         p:= moreGeneralCategoryPredicate(id,newEntry,rest u) => RPLACD(u,p)
@@ -241,7 +245,7 @@ encodeCategoryAlist(id,alist) ==
   newAl
 
 encodeUnion(id,new:=[a,:b],alist) ==
-  u := ASSOC(a,alist) =>
+  u := assoc(a,alist) =>
     RPLACD(u,moreGeneralCategoryPredicate(id,b,rest u))
     alist
   [new,:alist]
@@ -323,7 +327,7 @@ mkCategoryExtensionAlistBasic cform ==
 
 catPairUnion(oldList,newList,op,cat) ==
   for pair in newList repeat
-    u:= ASSOC(first pair,oldList) =>
+    u:= assoc(first pair,oldList) =>
       rest u = rest pair => nil
       RPLACD(u,addConflict(rest pair,rest u)) where addConflict(new,old) ==
         quickOr(new,old)
@@ -346,7 +350,7 @@ simpOrUnion1(x,l) ==
   [first l,:simpOrUnion1(x,rest l)]
 
 mergeOr(x,y) ==
-  x is ['has,a,b] and y is ['has,=a,c] =>
+  x is ["has",a,b] and y is ['has,=a,c] =>
     testExtend(b,c) => y
     testExtend(c,b) => x
     nil
@@ -385,7 +389,7 @@ getConstructorExports(conform,:options) == categoryParts(conform,
   GETDATABASE(opOf conform,'CONSTRUCTORCATEGORY),IFCAR options)
 
 categoryParts(conform,category,:options) == main where
-  main ==
+  main() ==
     cons? := IFCAR options  --means to include constructors as well
     $attrlist: local := nil
     $oplist  : local := nil
