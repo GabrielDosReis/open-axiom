@@ -1,134 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp category.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{mkCategory}
-
-This code defines the structure of a category. 
-<<mkCategory>>=
-mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
-  NSigList:= nil
-  if PrincipalAncestor=nil then count:= 6 else count:= SIZE PrincipalAncestor
-  sigList:=
-    [if s is [sig,pred]
-       then
-         or/[x is [[ =sig,.,:impl],:num] for x in NSigList] => [sig,pred,:impl]
-                 --only needed for multiple copies of sig
-         num:= if domainOrPackage="domain" then count else count-5
-         nsig:= mkOperatorEntry("domain",sig,pred,num)
-         NSigList:= [[nsig,:count],:NSigList]
-         count:= count+1
-         nsig
-     else s for s in sigList]
-  NewLocals:= nil
-  for s in sigList repeat
-    NewLocals:= union(NewLocals,Prepare CADAR s) where
-      Prepare u == "union"/[Prepare2 v for v in u]
-      Prepare2 v ==
-	v is "$" => nil
-	STRINGP v => nil
-	atom v => [v]
-	MEMQ(first v,$PrimitiveDomainNames) => nil
-	  --This variable is set in INIT LISP
-	  --It is a list of all the domains that we need not cache
-	v is ["Union",:w] =>
-	  "union"/[Prepare2 x for x in stripUnionTags w]
-	v is ["Mapping",:w] => "union"/[Prepare2 x for x in w]
-	v is ["List",w] => Prepare2 w
-	v is ["Record",.,:w] => "union"/[Prepare2 CADDR x for x in w]
-	[v]
-  OldLocals:= nil
-  if PrincipalAncestor then for u in (OldLocals:= CADDR PrincipalAncestor.4)
-     repeat NewLocals:= delete(first u,NewLocals)
-  for u in NewLocals repeat
-    (OldLocals:= [[u,:count],:OldLocals]; count:= count+1)
-  v:= GETREFV count
-  v.(0):= nil
-  v.(1):= sigList
-  v.2:= attList
-  v.3:= ["Category"]
-  if not PrincipalAncestor=nil
-     then
-      for x in 6..SIZE PrincipalAncestor-1 repeat v.x:= PrincipalAncestor.x
-      v.4:= [first PrincipalAncestor.4,CADR PrincipalAncestor.4,OldLocals]
-   else v.4:= [nil,nil,OldLocals] --associated categories and domains
-  v.5:= domList
-  for [nsig,:sequence] in NSigList repeat v.sequence:= nsig
-  v
-
-@
-\section{hasCategoryBug}
-The hasCategoryBug (bug000001)\cite{2} manifests itself by causing a
-value stack overflow when compiling algebra code that uses conditions
-that read ``if R has ...'' when using GCL (but not CCL). Essentially
-the [[|Ring|]] category keeps getting added to the list each time
-[[|Ring|]] is processed. Camm Maguire's mail explains it thus:
-
-The bottom line is that [[(|Ring|)]] is totally correct until
-[[|Algebra|]] is executed, at which point the fourth element returned
-by [[(|Ring|)]] is overwritten by the result returned in the fourth
-element of the vector returned by [[|Algebra|]].  The point of this
-overwrite is at the following form of [[|JoinInner|]] from
-[[(int/interp/category.clisp)]]
-
-\begin{verbatim}
- (SETELT |$NewCatVec| 4 (CONS |c| (CONS |FundamentalAncestors| (CONS
- (CADDR (ELT |$NewCatVec| 4)) NIL))))
-\end{verbatim}
-
-called from [[|Algebra;|]] [[(int/algebra/ALGEBRA.NRLIB/code.lsp)]] through 
-
-\begin{verbatim}
-(|Join| (|Ring|) (|Module| (QUOTE |t#1|)) (|mkCategory| (QUOTE
-|domain|) (QUOTE (((|coerce| ($ |t#1|)) T))) NIL (QUOTE NIL) NIL))
-\end{verbatim}
-
-I haven't parsed [[|JoinInner|]] yet, but my guess is that there is a
-copy-seq in there which is not getting executed in the assignment of
-[[|$NewCatVec|]] before the setelt.
-
-The original code failed to copy the NewCatVec before updating
-it. This code from macros.lisp\cite{1} checks whether the array is
-adjustable.
-
-\begin{verbatim}
-(defun lengthenvec (v n)
-  (if (adjustable-array-p v) (adjust-array v n)
-    (replace (make-array n) v)))
-\end{verbatim}
-At least in GCL, the code for lengthenvec need not copy the vec to a
-new location. In this case the FundamentalAncesters array is adjustable
-and in GCL the adjust-array need not, and in this case, does not do a 
-copy.
-<<hasCategoryBug>>=
-      if reallynew then
-        n:= SIZE $NewCatVec
-        FundamentalAncestors:= [[b.(0),condition,n],:FundamentalAncestors]
-        $NewCatVec:= LENGTHENVEC($NewCatVec,n+1)
--- We need to copy the vector otherwise the FundamentalAncestors
--- list will get stepped on while compiling "If R has ... " code
--- Camm Maguire July 26, 2003
---        copied:= true
-        copied:= false
-        originalvector:= false
-        $NewCatVec.n:= b.(0)
-  if not copied then $NewCatVec:= COPY_-SEQ $NewCatVec
-    -- It is important to copy the vector now,
-    -- in case SigListUnion alters it while
-    -- performing Operator Subsumption
-@ 
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -160,9 +29,6 @@ copy.
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"g-util"
 )package "BOOT"
@@ -191,7 +57,56 @@ CategoryPrint(D,$e) ==
     atom first u => SAY("Alternate View corresponding to: ",u)
     PRETTYPRINT u
  
-<<mkCategory>>
+mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
+  NSigList:= nil
+  if PrincipalAncestor=nil then count:= 6 else count:= SIZE PrincipalAncestor
+  sigList:=
+    [if s is [sig,pred]
+       then
+         or/[x is [[ =sig,.,:impl],:num] for x in NSigList] => [sig,pred,:impl]
+                 --only needed for multiple copies of sig
+         num:= if domainOrPackage="domain" then count else count-5
+         nsig:= mkOperatorEntry("domain",sig,pred,num)
+         NSigList:= [[nsig,:count],:NSigList]
+         count:= count+1
+         nsig
+     else s for s in sigList]
+  NewLocals:= nil
+  for s in sigList repeat
+    NewLocals:= union(NewLocals,Prepare CADAR s) where
+      Prepare u == "union"/[Prepare2 v for v in u]
+      Prepare2 v ==
+        v is "$" => nil
+        STRINGP v => nil
+        atom v => [v]
+        MEMQ(first v,$PrimitiveDomainNames) => nil
+          --This variable is set in INIT LISP
+          --It is a list of all the domains that we need not cache
+        v is ["Union",:w] =>
+          "union"/[Prepare2 x for x in stripUnionTags w]
+        v is ["Mapping",:w] => "union"/[Prepare2 x for x in w]
+        v is ["List",w] => Prepare2 w
+        v is ["Record",.,:w] => "union"/[Prepare2 CADDR x for x in w]
+        [v]
+  OldLocals:= nil
+  if PrincipalAncestor then for u in (OldLocals:= CADDR PrincipalAncestor.4)
+     repeat NewLocals:= delete(first u,NewLocals)
+  for u in NewLocals repeat
+    (OldLocals:= [[u,:count],:OldLocals]; count:= count+1)
+  v:= GETREFV count
+  v.(0):= nil
+  v.(1):= sigList
+  v.2:= attList
+  v.3:= ["Category"]
+  if not PrincipalAncestor=nil
+     then
+      for x in 6..SIZE PrincipalAncestor-1 repeat v.x:= PrincipalAncestor.x
+      v.4:= [first PrincipalAncestor.4,CADR PrincipalAncestor.4,OldLocals]
+   else v.4:= [nil,nil,OldLocals] --associated categories and domains
+  v.5:= domList
+  for [nsig,:sequence] in NSigList repeat v.sequence:= nsig
+  v
+
 isCategory a == REFVECP a and #a>5 and a.3=["Category"]
  
 --% Subsumption code (for operators)
@@ -568,7 +483,21 @@ JoinInner(l,$e) ==
                     if c=true
                        then attl:= [[a,condition],:attl]
                        else attl:= [[a,["and",condition,c]],:attl]
-<<hasCategoryBug>>
+      if reallynew then
+        n:= SIZE $NewCatVec
+        FundamentalAncestors:= [[b.(0),condition,n],:FundamentalAncestors]
+        $NewCatVec:= LENGTHENVEC($NewCatVec,n+1)
+-- We need to copy the vector otherwise the FundamentalAncestors
+-- list will get stepped on while compiling "If R has ... " code
+-- Camm Maguire July 26, 2003
+--        copied:= true
+        copied:= false
+        originalvector:= false
+        $NewCatVec.n:= b.(0)
+  if not copied then $NewCatVec:= COPY_-SEQ $NewCatVec
+    -- It is important to copy the vector now,
+    -- in case SigListUnion alters it while
+    -- performing Operator Subsumption
   for b in l repeat
     sigl:= SigListUnion([DropImplementations u for u in b.(1)],sigl)
     attl:=
@@ -624,10 +553,3 @@ isCategoryForm(x,e) ==
   x is [name,:.] => categoryForm? name
   atom x => u:= get(x,"macro",e) => isCategoryForm(u,e)
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} [[pamphlet:src/interp/macros.lisp.pamphlet]]
-\bibitem{2} [[pamphlet:KNOWN.BUGS.pamphlet]]
-\end{thebibliography}
-\end{document}
