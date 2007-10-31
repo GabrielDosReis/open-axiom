@@ -453,6 +453,10 @@ match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 
 ## OpenAxiom's compiler
 
+define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
+			c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 category.$(FASLEXT): category.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 

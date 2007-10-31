@@ -37,7 +37,7 @@ import '"g-util"
 
 --% Debugging Functions
  
-CONTINUE() == continue()
+--CONTINUE() == continue()
 continue() == FIN comp($x,$m,$f)
  
 LEVEL(:l) == APPLY('level,l)

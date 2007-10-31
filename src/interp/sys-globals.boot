@@ -404,6 +404,7 @@ SPADERRORSTREAM := _*ERROR_-OUTPUT_*
 ++
 _/VERSION := 0
 _/WSNAME := "NOBOOT"
+_/EDITFILE := nil
 
 ++
 CHR := nil
