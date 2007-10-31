@@ -1,3 +1,18 @@
+2007-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (define.$(FASLEXT)): New rule.
+	(<<define.clisp>>): Remove.
+	* c-util.boot (CONTINUE): Comment out.
+	* define.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* i-intern.boot.pamphlet (put): Move to g-util.boot
+	(get): Likewise.
+	(get0): Likewise.
+	(get1): Likewise.
+	(get2): Likewise.
+	* setq.lisp (/EDITFILE): Don't set here.  Define it in
+	sys-globals.boot. 
+	(NRTPARSE): Don't set here.  Define in define.boot.
+
 2007-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	
 	* Makefile.pamphlet (cattable.$(FASLEXT)): New rule.

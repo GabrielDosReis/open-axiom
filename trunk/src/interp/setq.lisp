@@ -104,7 +104,6 @@
 (SETQ |S:SPADKEY| NIL) ;" this is augmented by MAKESPADOP"
 (SETQ |/EDIT,FT| 'SPAD)
 (SETQ |/EDIT,FM| 'A)
-(SETQ /EDITFILE NIL)
 (SETQ INITCOLUMN 0)
 (SETQ |$functionTable| NIL)
 (SETQ |$spaddefs| NIL)
@@ -311,7 +310,6 @@
      |t#31| |t#32| |t#33| |t#34| |t#35| |t#36| |t#37| |t#38| |t#39| |t#40|
      |t#41| |t#42| |t#43| |t#44| |t#45| |t#46| |t#47| |t#48| |t#49| |t#50|))
 
-(SETQ NRTPARSE NIL)
 (SETQ |$NRTflag| T)
 (SETQ |$NRTaddForm| NIL)
 (SETQ |$NRTdeltaList| NIL)

@@ -48,6 +48,48 @@ PPtoFile(x, fname) ==
     SHUT stream
     x
 
+
+get(x,prop,e) ==
+  $InteractiveMode => get0(x,prop,e)
+  get1(x,prop,e)
+
+get0(x,prop,e) ==
+  null atom x => get(QCAR x,prop,e)
+  u:= QLASSQ(x,CAR QCAR e) => QLASSQ(prop,u)
+  (tail:= CDR QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
+    QLASSQ(prop,u)
+  nil
+
+get1(x,prop,e) ==
+    --this is the old get
+  null atom x => get(QCAR x,prop,e)
+  prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
+    LASSOC("modemap",getProplist(x,$CapsuleModemapFrame))
+      or get2(x,prop,e)
+  LASSOC(prop,getProplist(x,e)) or get2(x,prop,e)
+
+get2(x,prop,e) ==
+  prop="modemap" and constructor? x =>
+    (u := getConstructorModemap(x)) => [u]
+    nil
+  nil
+
+put(x,prop,val,e) ==
+  $InteractiveMode and not EQ(e,$CategoryFrame) =>
+    putIntSymTab(x,prop,val,e)
+  --e must never be $CapsuleModemapFrame
+  null atom x => put(first x,prop,val,e)
+  newProplist:= augProplistOf(x,prop,val,e)
+  prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
+    SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
+    $CapsuleModemapFrame:=
+      addBinding(x,augProplistOf(x,"modemap",val,$CapsuleModemapFrame),
+        $CapsuleModemapFrame)
+    e
+  addBinding(x,newProplist,e)
+
+
+
 -- Convert an arbitrary lisp object to canonical boolean.
 bool x ==
     NULL NULL x

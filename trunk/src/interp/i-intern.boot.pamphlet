@@ -629,31 +629,6 @@ getFlag x == get("--flags--",x,$e)
 putFlag(flag,value) ==
   $e := put ("--flags--", flag, value, $e)
 
-get(x,prop,e) ==
-  $InteractiveMode => get0(x,prop,e)
-  get1(x,prop,e)
-
-get0(x,prop,e) ==
-  null atom x => get(QCAR x,prop,e)
-  u:= QLASSQ(x,CAR QCAR e) => QLASSQ(prop,u)
-  (tail:= CDR QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
-    QLASSQ(prop,u)
-  nil
-
-get1(x,prop,e) ==
-    --this is the old get
-  null atom x => get(QCAR x,prop,e)
-  prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
-    LASSOC("modemap",getProplist(x,$CapsuleModemapFrame))
-      or get2(x,prop,e)
-  LASSOC(prop,getProplist(x,e)) or get2(x,prop,e)
-
-get2(x,prop,e) ==
-  prop="modemap" and constructor? x =>
-    (u := getConstructorModemap(x)) => [u]
-    nil
-  nil
-
 getI(x,prop) == get(x,prop,$InteractiveFrame)
 
 putI(x,prop,val) == ($InteractiveFrame := put(x,prop,val,$InteractiveFrame))
@@ -682,20 +657,6 @@ fastSearchCurrentEnv(x,currentEnv) ==
   u:= QLASSQ(x,CAR currentEnv) => u
   while (currentEnv:= QCDR currentEnv) repeat
     u:= QLASSQ(x,CAR currentEnv) => u
-
-put(x,prop,val,e) ==
-  $InteractiveMode and not EQ(e,$CategoryFrame) =>
-    putIntSymTab(x,prop,val,e)
-  --e must never be $CapsuleModemapFrame
-  null atom x => put(first x,prop,val,e)
-  newProplist:= augProplistOf(x,prop,val,e)
-  prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
-    SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
-    $CapsuleModemapFrame:=
-      addBinding(x,augProplistOf(x,"modemap",val,$CapsuleModemapFrame),
-        $CapsuleModemapFrame)
-    e
-  addBinding(x,newProplist,e)
 
 putIntSymTab(x,prop,val,e) ==
   null atom x => putIntSymTab(first x,prop,val,e)
