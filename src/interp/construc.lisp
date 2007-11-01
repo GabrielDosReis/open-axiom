@@ -1,99 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp construc.lisp}
-\author{Timothy Daly}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\begin{verbatim}
- the old compiler splits source files on a domain by domain basis
-
- the new compiler compiles all of the domains in a file together into a
- single output file
-
- in order to converge these two approaches nrlibs are being combined on
- a file basis rather than split on a domain basis. this change should be
- transparent to all code that properly accesses the files.
-
- INTERP.EXPOSED will be enhanced to contain the source file name of
- the domain. thus, instead of:
-    INT                             Integer
- it will be:
-    INT   integer                   Integer
-
- which would mean that the library that contains INT would be integer.NRLIB
- by using this mechanism we can continue to use the old libraries 
- since each entry would now contain:
-    INT   INT                       Integer
- which would mean that the library that contains the domain INT is INT.NRLIB
-
- old file formats for nrlibs:
-
- first sexpr is integer specifying the byte position of the index of the file
- next n sexprs are information in the nrlib
- last sexpr is an alist (pointed at by the first number in the file) which
- contains triples. e.g. (("slot1info" 0 2550)...)
- each triple consists of a string, a zero, and an byte offset into the file
- of the information requested e.g. slot1info starts at byte 2550
-
- new file formats for libs:
-
- first sexpr is either an integer (in which case this is exactly an old nrlib
-       --- or ---
- first sexpr is an alist of the form:
- ((abbreviation . index) ...)
- where each abbreviation is the abbreviation of the domain name and each
- index is a pointer to the triples alist
-
- so, for example, integer.spad contains 5 domains:
-  INTSLPE, INT, NNI, PI and ROMAN
- previously INT.NRLIB/index.KAF contained:
- 2550  
- (sexpr1...) 
- (sexpr2....) 
- (sexpr3...) 
- (("sexpr1" 0 8) ("sexpr2" 0 22) ("sexpr3 0 45))
- and the individual index.KAF files were similar for the other 4 domains.
-
- under the new scheme integer.nrlib/index.KAF would contain:
- ((INTSLPE . 2000) (INT . 4000) (NNI . 6000) (PI . 8000) (ROMAN . 10000))
- (sexpr1...)       --- info for INTSLPE
- (sexpr2....) 
- (sexpr3...) 
- (("sexpr1" 0 8) ("sexpr2" 0 22) ("sexpr3 0 45))
- (sexpr1...)       --- info for INT
- (sexpr2....) 
- (sexpr3...) 
- (("sexpr1" 0 2800) ("sexpr2" 0 2900) ("sexpr3 0 3000))
- (sexpr1...)       --- info for NNI
- (sexpr2....) 
- (sexpr3...) 
- (("sexpr1" 0 4100) ("sexpr2" 0 4200) ("sexpr3 0 4300))
- (sexpr1...)       --- info for PI
- (sexpr2....) 
- (sexpr3...) 
- (("sexpr1" 0 6100) ("sexpr2" 0 6200) ("sexpr3 0 6300))
- (sexpr1...)       --- info for ROMAN
- (sexpr2....) 
- (sexpr3...) 
- (("sexpr1" 0 8100) ("sexpr2" 0 8200) ("sexpr3 0 8300))
-
- when an NRLIB is opened currently the position information is first
- read into the libstream-indextable slot, then this information is
- overwritten by the index table itself.
-
- we need the name of the NRLIB passed down to the low level functions
- so they can open the new NRLIB format and perform the correct file
- position operation. once the NRLIB is open it is only referenced
- within one constructor so we can lose the master index table. 
-\end{verbatim}
-\section{License}
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -124,9 +31,88 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+
+;;  the old compiler splits source files on a domain by domain basis
+
+;;  the new compiler compiles all of the domains in a file together into a
+;;  single output file
+
+;;  in order to converge these two approaches nrlibs are being combined on
+;;  a file basis rather than split on a domain basis. this change should be
+;;  transparent to all code that properly accesses the files.
+
+;;  INTERP.EXPOSED will be enhanced to contain the source file name of
+;;  the domain. thus, instead of:
+;;     INT                             Integer
+;;  it will be:
+;;     INT   integer                   Integer
+
+;;  which would mean that the library that contains INT would be integer.NRLIB
+;;  by using this mechanism we can continue to use the old libraries 
+;;  since each entry would now contain:
+;;     INT   INT                       Integer
+;;  which would mean that the library that contains the domain INT is INT.NRLIB
+
+;;  old file formats for nrlibs:
+
+;;  first sexpr is integer specifying the byte position of the index of the file
+;;  next n sexprs are information in the nrlib
+;;  last sexpr is an alist (pointed at by the first number in the file) which
+;;  contains triples. e.g. (("slot1info" 0 2550)...)
+;;  each triple consists of a string, a zero, and an byte offset into the file
+;;  of the information requested e.g. slot1info starts at byte 2550
+
+;;  new file formats for libs:
+
+;;  first sexpr is either an integer (in which case this is exactly an old nrlib
+;;        --- or ---
+;;  first sexpr is an alist of the form:
+;;  ((abbreviation . index) ...)
+;;  where each abbreviation is the abbreviation of the domain name and each
+;;  index is a pointer to the triples alist
+
+;;  so, for example, integer.spad contains 5 domains:
+;;   INTSLPE, INT, NNI, PI and ROMAN
+;;  previously INT.NRLIB/index.KAF contained:
+;;  2550  
+;;  (sexpr1...) 
+;;  (sexpr2....) 
+;;  (sexpr3...) 
+;;  (("sexpr1" 0 8) ("sexpr2" 0 22) ("sexpr3 0 45))
+;;  and the individual index.KAF files were similar for the other 4 domains.
+
+;;  under the new scheme integer.nrlib/index.KAF would contain:
+;;  ((INTSLPE . 2000) (INT . 4000) (NNI . 6000) (PI . 8000) (ROMAN . 10000))
+;;  (sexpr1...)       --- info for INTSLPE
+;;  (sexpr2....) 
+;;  (sexpr3...) 
+;;  (("sexpr1" 0 8) ("sexpr2" 0 22) ("sexpr3 0 45))
+;;  (sexpr1...)       --- info for INT
+;;  (sexpr2....) 
+;;  (sexpr3...) 
+;;  (("sexpr1" 0 2800) ("sexpr2" 0 2900) ("sexpr3 0 3000))
+;;  (sexpr1...)       --- info for NNI
+;;  (sexpr2....) 
+;;  (sexpr3...) 
+;;  (("sexpr1" 0 4100) ("sexpr2" 0 4200) ("sexpr3 0 4300))
+;;  (sexpr1...)       --- info for PI
+;;  (sexpr2....) 
+;;  (sexpr3...) 
+;;  (("sexpr1" 0 6100) ("sexpr2" 0 6200) ("sexpr3 0 6300))
+;;  (sexpr1...)       --- info for ROMAN
+;;  (sexpr2....) 
+;;  (sexpr3...) 
+;;  (("sexpr1" 0 8100) ("sexpr2" 0 8200) ("sexpr3 0 8300))
+
+;;  when an NRLIB is opened currently the position information is first
+;;  read into the libstream-indextable slot, then this information is
+;;  overwritten by the index table itself.
+
+;;  we need the name of the NRLIB passed down to the low level functions
+;;  so they can open the new NRLIB format and perform the correct file
+;;  position operation. once the NRLIB is open it is only referenced
+;;  within one constructor so we can lose the master index table. 
+
 
 (in-package "BOOT")
 
@@ -223,43 +209,43 @@
 
 (defun loadvol (&rest filearg)
   (cond ((typep (car filearg) 'libstream)
-	 (load (concat (libstream-dirname (car filearg)) "/code")))
-	(t 
+         (load (concat (libstream-dirname (car filearg)) "/code")))
+        (t 
           (setq filearg (make-input-filename (boot::mergelib filearg) 'LISPLIB))
-	  (if (library-file filearg)
-	      (load (concat filearg "/code"))
-	    (load filearg)))))
+          (if (library-file filearg)
+              (load (concat filearg "/code"))
+            (load filearg)))))
 
 ; from nlib.lisp
 ;; (RDEFIOSTREAM ((MODE . IO) (FILE fn ft dir))) IO is I,O,INPUT,OUTPUT
 (defun rdefiostream
               (options &optional (missing-file-error-flag t) abbrev)
   (let ((mode (cdr (assoc 'mode options)))
-	(file (assoc 'file options))
-	(stream nil)
-	(fullname nil)
-	(indextable nil))
+        (file (assoc 'file options))
+        (stream nil)
+        (fullname nil)
+        (indextable nil))
         (cond ((equal (elt (string mode) 0) #\I)
-	       (setq fullname (make-input-filename (cdr file) 'LISPLIB))
-	       (setq stream (get-input-index-stream fullname))
+               (setq fullname (make-input-filename (cdr file) 'LISPLIB))
+               (setq stream (get-input-index-stream fullname))
                (if (null stream)
-		   (if missing-file-error-flag
-		       (ERROR (format nil "Library ~s doesn't exist"
-			      (make-filename (cdr file) 'LISPLIB)))
-		     NIL)
+                   (if missing-file-error-flag
+                       (ERROR (format nil "Library ~s doesn't exist"
+                              (make-filename (cdr file) 'LISPLIB)))
+                     NIL)
                (make-libstream :mode 'input  :dirname fullname
                    :indextable (get-index-table-from-stream stream abbrev)
                    :indexstream stream)))
               ((equal (elt (string mode) 0) #\O)
-	       (setq fullname (make-full-namestring (cdr file) 'LISPLIB))
-	       (case (directory? fullname)
-		     (-1 (makedir fullname))
-		     (0 (error (format nil "~s is an existing file, not a library" fullname)))
-		     (otherwise))
-	       (multiple-value-setq (stream indextable) (get-io-index-stream fullname))
-	       (make-libstream :mode 'output  :dirname fullname
-			       :indextable indextable
-			       :indexstream stream ))
+               (setq fullname (make-full-namestring (cdr file) 'LISPLIB))
+               (case (directory? fullname)
+                     (-1 (makedir fullname))
+                     (0 (error (format nil "~s is an existing file, not a library" fullname)))
+                     (otherwise))
+               (multiple-value-setq (stream indextable) (get-io-index-stream fullname))
+               (make-libstream :mode 'output  :dirname fullname
+                               :indextable indextable
+                               :indexstream stream ))
               ('t  (ERROR "Unknown MODE")))))
 
 (in-package "BOOT")
@@ -851,9 +837,3 @@
   (file-position out 0)
   (print masterpos out)
   (finish-output out)))))
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
