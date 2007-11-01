@@ -38,7 +38,7 @@ ncParseAndInterpretString s ==
   processInteractive(packageTran parseFromString s, nil)
 
 ncParseFromString s ==
-  zeroOneTran packageTran CATCH("SPAD_READER", parseFromString s)
+  zeroOneTran packageTran CATCH("SPAD__READER", parseFromString s)
 
 ncINTERPFILE(file, echo) ==
   savedEcho := $EchoLines
