@@ -1100,14 +1100,6 @@ clammed.clisp: clammed.boot
 	@ echo '(old-boot::boot "clammed.boot")' | ${DEPSYS} 
 @
 
-\subsection{compat.boot \cite{63}}
-
-<<compat.clisp>>=
-compat.clisp: compat.boot
-	@ echo 229 making $@ from $<
-	@ echo '(old-boot::boot "compat.boot")' | ${DEPSYS} 
-@
-
 \subsection{compiler.boot \cite{64}}
 
 <<compiler.clisp>>=
@@ -1331,25 +1323,6 @@ nruntime.clisp: nruntime.boot
 nrunopt.clisp: nrunopt.boot
 	@ echo 365 making $@ from $<
 	@ echo '(old-boot::boot "nrunopt.boot")' | ${DEPSYS}
-@
-
-
-\subsection{pathname.boot}
-
-\begin{verbatim}
-NOTE: the .clisp file is copies back into the src directory so that
-it is possible to create a new obootsys system from scratch for a 
-new platform. parse.clisp needs to be compiled in a depsys.
-One thing need to be done to create an obootsys by hand:
-  parse and postpar must be loaded along with the depsys files
-     into a bare lisp system.
-if these two things are done then a obootsys image can be bootstrapped
-to a new platform.
-\end{verbatim}
-<<pathname.clisp>>=
-pathname.clisp: pathname.boot
-	@ echo 380 making $@ from $<
-	@ echo '(old-boot::boot "pathname.boot")' | ${DEPSYS}
 @
 
 \subsection{postpar.boot}
@@ -1597,6 +1570,9 @@ category.$(FASLEXT): category.boot g-util.$(FASLEXT)
 cattable.$(FASLEXT): cattable.boot simpbool.$(FASLEXT) g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+compat.$(FASLEXT): compat.boot pathname.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1734,6 +1710,9 @@ g-error.$(FASLEXT): g-error.boot diagnostics.$(FASLEXT) g-util.$(FASLEXT)
 c-util.$(FASLEXT): c-util.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+pathname.$(FASLEXT): pathname.boot nlib.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1790,8 +1769,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<c-doc.clisp>>
 
 <<clammed.clisp>>
-
-<<compat.clisp>>
 
 <<compiler.clisp>>
 

@@ -58,6 +58,9 @@ READLINE(:s) ==
 <<*>>=
 <<license>>
 
+import '"pathname"
+)package "BOOT"
+
 -- some functions that may need to be changed on different lisp
 -- systems.
  
