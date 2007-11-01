@@ -1,51 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp sfsfun.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\begin{verbatim}
-NOTEfrom TTT: at least BesselJAsymptOrder needs work
-
-1. This file contains the contents of BWC's original files:
-      floaterrors.boot
-      floatutils.boot
-      rgamma.boot
-      cgamma.boot
-      rpsi.boot
-      cpsi.boot
-      f01.boot
-      chebf01cmake.boot
-      chebevalsf.boot
-      besselIJ.boot
-
-2. All declarations have been commented out with "--@@"
-   since the boot translator is generating bad lisp code from them.
-
-3. The functions PsiAsymptotic, PsiEps and PsiAsymptoticOrder
-   had inconpatible definitions in rpsi.boot and cpsi.boot --
-   the local variables were declared float in one file and COMPLEX in
-   the other.  The type declarations have been commented out and the
-   duplicate definitions have been deleted.
-
-4. BesselIJ was not compiling.  I have modified the code from that
-   file to make it compile.  It should be checked for correctness.
-
-SMW June 25, 1991
-
-"Fixes" to BesselJ, B. Char June 14, 1992.  Needs extensive testing and
-  further fixes to BesselI and BesselJ.
-More fixes to BesselJ, T. Tsikas 24 Feb, 1995.
-
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -76,9 +31,41 @@ More fixes to BesselJ, T. Tsikas 24 Feb, 1995.
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+
+-- NOTEfrom TTT: at least BesselJAsymptOrder needs work
+
+-- 1. This file contains the contents of BWC's original files:
+--       floaterrors.boot
+--       floatutils.boot
+--       rgamma.boot
+--       cgamma.boot
+--       rpsi.boot
+--       cpsi.boot
+--       f01.boot
+--       chebf01cmake.boot
+--       chebevalsf.boot
+--       besselIJ.boot
+
+-- 2. All declarations have been commented out with "--@@"
+--    since the boot translator is generating bad lisp code from them.
+
+-- 3. The functions PsiAsymptotic, PsiEps and PsiAsymptoticOrder
+--    had inconpatible definitions in rpsi.boot and cpsi.boot --
+--    the local variables were declared float in one file and COMPLEX in
+--    the other.  The type declarations have been commented out and the
+--    duplicate definitions have been deleted.
+
+-- 4. BesselIJ was not compiling.  I have modified the code from that
+--    file to make it compile.  It should be checked for correctness.
+
+-- SMW June 25, 1991
+
+-- "Fixes" to BesselJ, B. Char June 14, 1992.  Needs extensive testing and
+--   further fixes to BesselI and BesselJ.
+-- More fixes to BesselJ, T. Tsikas 24 Feb, 1995.
+
+
+
 
 -- Used to be SPECFNSF
 )package "BOOT" 
@@ -119,7 +106,7 @@ horner(l,x) ==
 
 rgamma (x) ==
         if COMPLEXP(x) then FloatError('"Gamma not implemented for complex value ~D",x)
-	ZEROP (x-1.0) => 1.0
+        ZEROP (x-1.0) => 1.0
         if x>20 then gammaStirling(x) else gammaRatapprox(x)
 
 lnrgamma (x) ==
@@ -742,12 +729,12 @@ BesselJ(v,z) ==
         n := 50         --- number of terms in Chebychev series.
         --- tests for negative integer order
         (FLOATP(v) and ZEROP fracpart(v) and (v<0)) or (COMPLEXP(v) and ZEROP IMAGPART(v) and ZEROP fracpart(REALPART(v)) and REALPART(v)<0.0) =>
-	     --- odd or even according to v (9.1.5 A&S)
-	     --- $J_{-n}(z)=(-1)^{n} J_{n}(z)$
+             --- odd or even according to v (9.1.5 A&S)
+             --- $J_{-n}(z)=(-1)^{n} J_{n}(z)$
              BesselJ(-v,z)*EXPT(-1.0,v)
         (FLOATP(z) and  (z<0)) or (COMPLEXP(z) and REALPART(z)<0.0) =>
           --- negative argument (9.1.35 A&S) 
-	  --- $J_{\nu}(z e^{m \pi i}) = e^{m \nu \pi i} J_{\nu}(z)$
+          --- $J_{\nu}(z e^{m \pi i}) = e^{m \nu \pi i} J_{\nu}(z)$
              BesselJ(v,-z)*EXPT(-1.0,v)
         ZEROP z and ((FLOATP(v) and (v>=0.0)) or (COMPLEXP(v) and 
            ZEROP IMAGPART(v) and REALPART(v)>=0.0)) =>  --- zero arg, pos. real order
@@ -764,29 +751,29 @@ BesselJ(v,z) ==
                  w := 2.0*arg
                  vp1 := v+1.0
                  [sum,arr] := chebf01coefmake(vp1,w,n)
-		 ---if we get NaNs then half n
-		 while not _=(sum,sum) repeat
-			n:=FLOOR(n/2)
+                 ---if we get NaNs then half n
+                 while not _=(sum,sum) repeat
+                        n:=FLOOR(n/2)
                         [sum,arr] := chebf01coefmake(vp1,w,n)
-	         ---now n is safe, can we increase it (we know that 2*n is bad)?
+                 ---now n is safe, can we increase it (we know that 2*n is bad)?
                  chebstarevalarr(arr,arg/w,n)/cgamma(vp1)*EXPT(z/2.0,v)
         true => BesselJRecur(v,z)
         FloatError('"BesselJ not implemented for ~S", [v,z])
 
 BesselJRecur(v,z) ==
-	-- boost order
+        -- boost order
         --Numerical.Recipes. suggest so:=v+sqrt(n.s.f.^2*v)
-	so:=15.0*z
-	-- reduce order until non-zero
+        so:=15.0*z
+        -- reduce order until non-zero
         while ZEROP ABS(BesselJAsymptOrder(so,z)) repeat so:=so/2.0 
-	if ABS(so)<ABS(z) then so:=v+18.*SQRT(v)
-	m:= FLOOR(ABS(so-v))+1
-	w:=MAKE_-ARRAY(m)
-	SETF(AREF(w,m-1),BesselJAsymptOrder(v+m-1,z))
+        if ABS(so)<ABS(z) then so:=v+18.*SQRT(v)
+        m:= FLOOR(ABS(so-v))+1
+        w:=MAKE_-ARRAY(m)
+        SETF(AREF(w,m-1),BesselJAsymptOrder(v+m-1,z))
         SETF(AREF(w,m-2),BesselJAsymptOrder(v+m-2,z))
         for i in m-3 .. 0 by -1 repeat
           SETF(AREF(w,i), 2.0 * (v+i+1.0) * AREF(w,i+1) /z -AREF(w,i+2)) 
-	AREF(w,0)
+        AREF(w,0)
 
 BesselI(v,z) ==
         B1 := 15.0
@@ -952,24 +939,24 @@ BesselJAsymptOrder(v,z) ==
         ca := 1.0/tanhalpha
 
         Pi := PI
-	ca2:=ca*ca
-	ca4:=ca2*ca2
-	ca8:=ca4*ca4
+        ca2:=ca*ca
+        ca4:=ca2*ca2
+        ca8:=ca4*ca4
         EXP(-v*(alpha-tanhalpha))/SQRT(2.0*Pi*v*tanhalpha)*_
-	(1.0+_
-	horner([              -5.0,                3.0],_
-								ca2)*ca/(v*24.0)+_
-	horner([             385.0,             -462.0,              81.0],_
-								ca2)*ca2/(1152.0*v*v)+_
-	horner([         -425425.0,           765765.0,         -369603.0,             30375.0],_
-								ca2)*ca2*ca/(414720.0*v*v*v)+_
-	horner([       185910725.0,       -446185740.0,       349922430.0,        -94121676.0,         4465125.0],_
-								ca2)*ca4/(39813120.0*v*v*v*v)+_
-	horner([   -188699385875.0,     566098157625.0,   -614135872350.0,     284499769554.0,    -49286948607.0,      1519035525.0],_
-								ca2)*ca4*ca/(6688604160.0*v*v*v*v*v)+_
-	horner([1023694168371875.0,-3685299006138750.0,5104696716244125.0,-3369032068261860.0,1050760774457901.0,-127577298354750.0,2757049477875.0],_
-								ca2)*ca4*ca2/(4815794995200.0*v*v*v*v*v*v))
-		
+        (1.0+_
+        horner([              -5.0,                3.0],_
+                                                                ca2)*ca/(v*24.0)+_
+        horner([             385.0,             -462.0,              81.0],_
+                                                                ca2)*ca2/(1152.0*v*v)+_
+        horner([         -425425.0,           765765.0,         -369603.0,             30375.0],_
+                                                                ca2)*ca2*ca/(414720.0*v*v*v)+_
+        horner([       185910725.0,       -446185740.0,       349922430.0,        -94121676.0,         4465125.0],_
+                                                                ca2)*ca4/(39813120.0*v*v*v*v)+_
+        horner([   -188699385875.0,     566098157625.0,   -614135872350.0,     284499769554.0,    -49286948607.0,      1519035525.0],_
+                                                                ca2)*ca4*ca/(6688604160.0*v*v*v*v*v)+_
+        horner([1023694168371875.0,-3685299006138750.0,5104696716244125.0,-3369032068261860.0,1050760774457901.0,-127577298354750.0,2757049477875.0],_
+                                                                ca2)*ca4*ca2/(4815794995200.0*v*v*v*v*v*v))
+                
 
 ---  See Olver, p. 376-382.
 BesselIAsymptOrder(v,vz) ==
@@ -1023,9 +1010,3 @@ BesselKAsymptOrder (v,vz) ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

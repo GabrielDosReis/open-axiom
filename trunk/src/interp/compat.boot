@@ -1,29 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp compat.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\section{readline}
-Reads a line, defaulting stream to *standard-input*
-
-This was commented out in the NAG version, probably due to the
-use of the saturn GUI interface but the real reason is uncertain.
-<<readline>>=
-READLINE(:s) ==
-  s => read_-line(first s)
-  read_-line(_*STANDARD_-INPUT_*)
-
-@
-\section{compat.boot}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -54,9 +31,6 @@ READLINE(:s) ==
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"pathname"
 )package "BOOT"
@@ -82,7 +56,7 @@ isSharpVarWithNum x ==
 -- RREAD which takes erroval to return if key is missing
 rread(key,rstream,errorval) ==
   if IDENTP key then key := PNAME key
-  RREAD(key,rstream,errorval)	
+  RREAD(key,rstream,errorval)   
 
 rwrite(key,val,stream) ==
   if IDENTP key then key := PNAME key
@@ -105,10 +79,7 @@ editFile file ==
 makeBigFloat(mantissa,expon) ==
   [$BFtag,mantissa,:expon]
 
-<<readline>>
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
+READLINE(:s) ==
+  s => read_-line(first s)
+  read_-line(_*STANDARD_-INPUT_*)
+
