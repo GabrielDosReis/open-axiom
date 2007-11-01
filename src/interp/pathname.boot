@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"nlib"
 )package "BOOT"
 
 -- This file implements the Common Lisp pathname functions for

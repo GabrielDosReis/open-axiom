@@ -463,6 +463,9 @@ category.$(FASLEXT): category.boot g-util.$(FASLEXT)
 cattable.$(FASLEXT): cattable.boot simpbool.$(FASLEXT) g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+compat.$(FASLEXT): compat.boot pathname.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -600,6 +603,9 @@ g-error.$(FASLEXT): g-error.boot diagnostics.$(FASLEXT) g-util.$(FASLEXT)
 c-util.$(FASLEXT): c-util.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+pathname.$(FASLEXT): pathname.boot nlib.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -675,10 +681,6 @@ clammed.clisp: clammed.boot
 	@ echo 226 making $@ from $<
 	@ echo '(old-boot::boot "clammed.boot")' | ${DEPSYS} 
 
-compat.clisp: compat.boot
-	@ echo 229 making $@ from $<
-	@ echo '(old-boot::boot "compat.boot")' | ${DEPSYS} 
-
 compiler.clisp: compiler.boot
 	@ echo 233 making $@ from $<
 	@ echo '(old-boot::boot "compiler.boot")' | ${DEPSYS}
@@ -686,10 +688,6 @@ compiler.clisp: compiler.boot
 database.clisp: database.boot
 	@ echo 243 making $@ from $<
 	@ echo '(old-boot::boot "database.boot")' | ${DEPSYS}
-
-define.clisp: define.boot
-	@ echo 247 making $@ from $<
-	@ echo '(old-boot::boot "define.boot")' | ${DEPSYS}
 
 functor.clisp: functor.boot
 	@ echo 254 making $@ from $<
