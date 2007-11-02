@@ -1,3 +1,8 @@
+2007-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (database.$(FASLEXT)): New rule.
+	* database.boot.pamphlet: Push into package "BOOT".
+
 2007-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (functor.$(FASLEXT)): New rule.

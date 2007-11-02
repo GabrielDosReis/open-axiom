@@ -1108,14 +1108,6 @@ compiler.clisp: compiler.boot
 	@ echo '(old-boot::boot "compiler.boot")' | ${DEPSYS}
 @
 
-\subsection{database.boot \cite{67}}
-
-<<database.clisp>>=
-database.clisp: database.boot
-	@ echo 243 making $@ from $<
-	@ echo '(old-boot::boot "database.boot")' | ${DEPSYS}
-@
-
 \subsection{i-analy.boot}
 
 <<i-analy.clisp>>=
@@ -1556,6 +1548,10 @@ define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
 			c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+database.$(FASLEXT): database.boot clam.$(FASLEXT) nlib.$(FASLEXT) \
+		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 functor.$(FASLEXT): functor.boot category.$(FASLEXT) c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1766,8 +1762,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<clammed.clisp>>
 
 <<compiler.clisp>>
-
-<<database.clisp>>
 
 <<i-analy.clisp>>
 
