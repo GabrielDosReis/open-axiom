@@ -1,44 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/define.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{compCapsuleItems}
-
-The variable [[data]] appears to be unbound at runtime. Optimized
-code won't check for this but interpreted code fails. We should
-PROVE that data is unbound at runtime but have not done so yet.
-Rather than remove the code entirely (since there MIGHT be a 
-path where it is used) we check for the runtime bound case and
-assign [[$myFunctorBody]] if data has a value.
-
-The [[compCapsuleInner]] function in this file LOOKS like it sets
-data and expects code to manipulate the assigned data structure.
-Since we can't be sure we take the least disruptive course of action.
-<<compCapsuleItems>>=
-compCapsuleItems(itemlist,$predl,$e) ==
-  $TOP__LEVEL: local
-  $myFunctorBody :local         -- := data    ---needed for translator
-  if (BOUNDP 'data) then 
-    $myFunctorBody:= SYMBOL_-VALUE 'data -- unbound at runtime?
-  $signatureOfForm: local
-  $suffix: local:= 0
-  for item in itemlist repeat $e:= compSingleCapsuleItem(item,$predl,$e)
-  $e
- 
-@ 
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -69,9 +31,6 @@ compCapsuleItems(itemlist,$predl,$e) ==
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"c-util"
 import '"cattable"
@@ -183,7 +142,7 @@ macroExpand(x,e) ==   --not worked out yet
 macroExpandList(l,e) ==
   -- macros should override niladic props
   (l is [name]) and IDENTP name and GETDATABASE(name, 'NILADIC) and
-	(u := get(name, 'macro, e)) => macroExpand(u,e)
+        (u := get(name, 'macro, e)) => macroExpand(u,e)
   [macroExpand(x,e) for x in l]
  
 compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
@@ -1078,8 +1037,8 @@ compile u ==
       encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
      where
        isLocalFunction op ==
-	 null member(op,$formalArgList) and
-	   getmode(op,$e) is ['Mapping,:.]
+         null member(op,$formalArgList) and
+           getmode(op,$e) is ['Mapping,:.]
     u:= [op',lamExpr]
   -- If just updating certain functions, check for previous existence.
   -- Deduce old sequence number and use it (items have been skipped).
@@ -1259,7 +1218,18 @@ processFunctor(form,signature,data,localParList,e) ==
     error "CategoryDefaults is a reserved name"
   buildFunctor(form,signature,data,localParList,e)
  
-<<compCapsuleItems>>
+compCapsuleItems(itemlist,$predl,$e) ==
+  $TOP__LEVEL: local
+  $myFunctorBody :local         -- := data    ---needed for translator
+  -- ??? the following line needs more investigation.  Why is data
+  -- ??? expected to be a dynamic variable? Looks more like a bug.
+  if (BOUNDP 'data) then 
+    $myFunctorBody:= SYMBOL_-VALUE 'data -- unbound at runtime?
+  $signatureOfForm: local
+  $suffix: local:= 0
+  for item in itemlist repeat $e:= compSingleCapsuleItem(item,$predl,$e)
+  $e
+ 
 compSingleCapsuleItem(item,$predl,$e) ==
   doIt(macroExpandInPlace(item,$e),$predl)
   $e
@@ -1370,11 +1340,11 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
    for u in flp1 repeat -- is =u form always an ATOM?
      if ATOM u or (or/[v is [.,=u,:.] for v in $getDomainCode])
        then
-	 nils:=[u,:nils]
+         nils:=[u,:nils]
        else
-	 gv := GENSYM()
-	 ans:=[['LET,gv,u],:ans]
-	 nils:=[gv,:nils]
+         gv := GENSYM()
+         ans:=[['LET,gv,u],:ans]
+         nils:=[gv,:nils]
      n:=n+1
    $functorLocalParameters:=[:oldFLP,:NREVERSE nils]
    NREVERSE ans
@@ -1535,9 +1505,3 @@ compCategoryItem(x,predl) ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

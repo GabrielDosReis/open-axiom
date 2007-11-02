@@ -457,6 +457,9 @@ define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
 			c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+functor.$(FASLEXT): functor.boot category.$(FASLEXT) c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 category.$(FASLEXT): category.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -688,10 +691,6 @@ compiler.clisp: compiler.boot
 database.clisp: database.boot
 	@ echo 243 making $@ from $<
 	@ echo '(old-boot::boot "database.boot")' | ${DEPSYS}
-
-functor.clisp: functor.boot
-	@ echo 254 making $@ from $<
-	@ echo '(old-boot::boot "functor.boot")' | ${DEPSYS}
 
 i-analy.clisp: i-analy.boot
 	@ echo 280 making $@ from $<

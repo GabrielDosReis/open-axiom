@@ -50,6 +50,10 @@
 <<*>>=
 <<license>>
 
+import '"c-util"
+import '"category"
+)package "BOOT"
+
 --%  Domain printing
 keyItem a ==
   isDomain a => CDAR a.4
@@ -243,7 +247,7 @@ compCategories1(u,v) ==
 NewbFVectorCopy(u,domName) ==
   v:= GETREFV SIZE u
   for i in 0..5 repeat v.i:= u.i
-  for i in 6..MAXINDEX v | PAIRP u.i repeat v.i:= [Undef,[domName,i],:first u.i]
+  for i in 6..MAXINDEX v | PAIRP u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
   v
  
 mkVector u ==
@@ -360,11 +364,12 @@ setVector12 args ==
     args2:=[CDR u,:args2]
   freeof($domainShell.1,args1) and
       freeof($domainShell.2,args1) and
-          freeof($domainShell.4,args1) => nil  where freeof(a,b) ==
-                  ATOM a => NULL MEMQ(a,b)
-                  freeof(CAR a,b) => freeof(CDR a,b)
-                  false
+          freeof($domainShell.4,args1) => nil  
   [['SetDomainSlots124,'$,['QUOTE,args1],['LIST,:args2]]]
+ where freeof(a,b) ==
+	 ATOM a => NULL MEMQ(a,b)
+	 freeof(CAR a,b) => freeof(CDR a,b)
+	 false
  
 SetDomainSlots124(vec,names,vals) ==
   l:= PAIR(names,vals)
@@ -483,7 +488,7 @@ setVector4part3(catNames,catvecList) ==
   generated:= nil
   for u in catvecList for uname in catNames repeat
     for v in CADDR u.4 repeat
-      if w:= ASSOC(first v,generated)
+      if w:= assoc(first v,generated)
          then RPLACD(w,[[rest v,:uname],:rest w])
          else generated:= [[first v,[rest v,:uname]],:generated]
   codeList := nil
@@ -500,7 +505,7 @@ PrepareConditional u == u
 setVector5(catNames,locals) ==
   generated:= nil
   for u in locals for uname in catNames repeat
-    if w:= ASSOC(u,generated)
+    if w:= assoc(u,generated)
        then RPLACD(w,[uname,:rest w])
        else generated:= [[u,uname],:generated]
   [(w:= mkVectorWithDeferral(first u,first rest u);
@@ -611,7 +616,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
       NREVERSE [v for u in REVERSE codelist |
                     (v:= DescendCode(u,flag,viewAssoc,EnvToPass))^=nil]]
   code is ['COND,:condlist] =>
-    c:= [[u2:= ProcessCond(first u,viewAssoc),:q] for u in condlist] where q ==
+    c:= [[u2:= ProcessCond(first u,viewAssoc),:q] for u in condlist] where q() ==
           null u2 => nil
           f:=
             TruthP u2 => flag;
@@ -769,7 +774,7 @@ CheckVector(vec,name,catvecListMaker) ==
         if y=v then code:=
           [[($QuickCode => 'QSETREFV; 'SETELT),name,i,x],:code]
     if name='$ then
-      ASSOC(first v,$CheckVectorList) => nil
+      assoc(first v,$CheckVectorList) => nil
       $CheckVectorList:=
         [[first v,:makeMissingFunctionEntry(condAlist,i)],:$CheckVectorList]
 --  member(first v,$CheckVectorList) => nil
@@ -863,7 +868,7 @@ InvestigateConditions catvecListMaker ==
       ['AND,:u]
     for [v,:.] in newS repeat
       for v' in [v,:CAR (CatEval v).4] repeat
-        if (w:=ASSOC(v',$HackSlot4)) then
+        if (w:=assoc(v',$HackSlot4)) then
           RPLAC(rest w,if rest w then mkOr(u,rest w) else u)
     (list:= update(list,u,secondaries,newS)) where
       update(list,cond,secondaries,newS) ==
@@ -907,17 +912,7 @@ ICformat u ==
           l1:=mkAnd(u,l1)
         l1
       u is ['OR,:l] =>
-        (l:= ORreduce l) where
-          ORreduce l ==
-            for u in l | u is ['AND,:.] or u is ['and,:.] repeat
-                                  --check that B causes (and A B) to go
-              for v in l | not (v=u) repeat
-                if member(v,u) or (and/[member(w,u) for w in v]) then l:=
-                  delete(u,l)
-                       --v subsumes u
-                           --Note that we are ignoring AND as a component.
-                           --Convince yourself that this code still works
-            l
+        (l:= ORreduce l)
         LENGTH l=1 => ICformat first l
         l:= ORreduce REMDUP [ICformat u for u in l]
                  --causes multiple ANDs to be squashed, etc.
@@ -941,6 +936,17 @@ ICformat u ==
         LENGTH l=1 => first l
         ['OR,:l]
       systemErrorHere '"ICformat"
+  where
+    ORreduce l ==
+      for u in l | u is ['AND,:.] or u is ['and,:.] repeat
+			    --check that B causes (and A B) to go
+	for v in l | not (v=u) repeat
+	  if member(v,u) or (and/[member(w,u) for w in v]) then l:=
+	    delete(u,l)
+		 --v subsumes u
+		     --Note that we are ignoring AND as a component.
+		     --Convince yourself that this code still works
+      l
  
 partPessimise(a,trueconds) ==
   atom a => a
