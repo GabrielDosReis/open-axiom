@@ -1,21 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\$SPAD/src/interp functor.boot}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,9 +31,6 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"c-util"
 import '"category"
@@ -367,9 +349,9 @@ setVector12 args ==
           freeof($domainShell.4,args1) => nil  
   [['SetDomainSlots124,'$,['QUOTE,args1],['LIST,:args2]]]
  where freeof(a,b) ==
-	 ATOM a => NULL MEMQ(a,b)
-	 freeof(CAR a,b) => freeof(CDR a,b)
-	 false
+         ATOM a => NULL MEMQ(a,b)
+         freeof(CAR a,b) => freeof(CDR a,b)
+         false
  
 SetDomainSlots124(vec,names,vals) ==
   l:= PAIR(names,vals)
@@ -939,13 +921,13 @@ ICformat u ==
   where
     ORreduce l ==
       for u in l | u is ['AND,:.] or u is ['and,:.] repeat
-			    --check that B causes (and A B) to go
-	for v in l | not (v=u) repeat
-	  if member(v,u) or (and/[member(w,u) for w in v]) then l:=
-	    delete(u,l)
-		 --v subsumes u
-		     --Note that we are ignoring AND as a component.
-		     --Convince yourself that this code still works
+                            --check that B causes (and A B) to go
+        for v in l | not (v=u) repeat
+          if member(v,u) or (and/[member(w,u) for w in v]) then l:=
+            delete(u,l)
+                 --v subsumes u
+                     --Note that we are ignoring AND as a component.
+                     --Convince yourself that this code still works
       l
  
 partPessimise(a,trueconds) ==
@@ -1007,9 +989,3 @@ resolvePatternVars(p,args) ==
 --  [SetFunctionSlots(sig,implem,flag,'adding)
 --                   for u in baseops | u is [sig,[pred,implem]]]
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
