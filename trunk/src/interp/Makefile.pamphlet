@@ -1116,14 +1116,6 @@ database.clisp: database.boot
 	@ echo '(old-boot::boot "database.boot")' | ${DEPSYS}
 @
 
-\subsection{functor.boot}
-
-<<functor.clisp>>=
-functor.clisp: functor.boot
-	@ echo 254 making $@ from $<
-	@ echo '(old-boot::boot "functor.boot")' | ${DEPSYS}
-@
-
 \subsection{i-analy.boot}
 
 <<i-analy.clisp>>=
@@ -1564,6 +1556,9 @@ define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
 			c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+functor.$(FASLEXT): functor.boot category.$(FASLEXT) c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 category.$(FASLEXT): category.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1773,8 +1768,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<compiler.clisp>>
 
 <<database.clisp>>
-
-<<functor.clisp>>
 
 <<i-analy.clisp>>
 
