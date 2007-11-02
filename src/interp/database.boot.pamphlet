@@ -50,7 +50,14 @@
 <<*>>=
 <<license>>
 
-SETANDFILEQ($getUnexposedOperations,true)
+import '"nlib"
+import '"g-cndata"
+import '"clam"
+import '"cattable"
+import '"compat"
+)package "BOOT"
+
+$getUnexposedOperations := true
 
 --% Functions for manipulating MODEMAP DATABASE
 
@@ -258,7 +265,7 @@ orderPredTran(oldList,sig,skip) ==
   for pred in newList repeat
     if pred is ['isDomain,x,y] or x is ['ofCategory,x,y] then
       ids:= listOfPatternIds y
-      if and/[id in fullDependList for id in ids] then
+      if "and"/[id in fullDependList for id in ids] then
 	fullDependList:= insertWOC(x,fullDependList)
       fullDependList:= UNIONQ(fullDependList,ids)
 
@@ -271,7 +278,7 @@ orderPredTran(oldList,sig,skip) ==
 --pp answer
 
 isDomainSubst u == main where
-  main ==
+  main() ==
     u is [head,:tail] =>
       nhead :=
 	head is ['isDomain,x,y] => ['isDomain,x,fn(y,tail)]
