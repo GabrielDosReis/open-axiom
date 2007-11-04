@@ -1,40 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/record.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\begin{verbatim}
-                        Usage
-
-)bo inputFile2RecordFile('"<idir>fn.input",'"<odir>a.b")
-  converts input file "fn" to a record file stored at "<odir>fn.record".
-  If you give one argument, <idir> is used for <odir>
-
-)bo htFile2RecordFile('"<idir>fn.ht",'"<odir>a.b")
-   converts HT file "fn" to a record file stored at "<odir>fn.record".
-   If you give one argument, record file goes to "<idir>fn.record".
-   A file "<odir>fn.input" is produced as a side-effect.
-
-)bo htFile2InputFile('"<idir>fn.input",'"<odir>a.b")
-   converts input file "fn" to an input file stored at "<odir>fn.input"
-
-)bo printRecordFile('"<idir>fn.record") to display results recorded
-
-)bo verifyRecordFile('"<idir>fn.record") to verfiy that same output
-   results from running original fn.input file
-\end{verbatim}
-
-\section{License}
-
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -66,9 +29,30 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+
+--                         Usage
+
+-- )bo inputFile2RecordFile('"<idir>fn.input",'"<odir>a.b")
+--   converts input file "fn" to a record file stored at "<odir>fn.record".
+--   If you give one argument, <idir> is used for <odir>
+
+-- )bo htFile2RecordFile('"<idir>fn.ht",'"<odir>a.b")
+--    converts HT file "fn" to a record file stored at "<odir>fn.record".
+--    If you give one argument, record file goes to "<idir>fn.record".
+--    A file "<odir>fn.input" is produced as a side-effect.
+
+-- )bo htFile2InputFile('"<idir>fn.input",'"<odir>a.b")
+--    converts input file "fn" to an input file stored at "<odir>fn.input"
+
+-- )bo printRecordFile('"<idir>fn.record") to display results recorded
+
+-- )bo verifyRecordFile('"<idir>fn.record") to verfiy that same output
+--    results from running original fn.input file
+
+
+import '"nlib"
+import '"pathname"
+)package "BOOT"
 
 --=======================================================================
 --                      Global Variables
@@ -95,7 +79,7 @@ inputFile2RecordFile(pathname,:option) ==
   opath := KAR option or pathname
   odirect := pathnameDirectory opath
   opathname := htMkPath(odirect,ifn,'"rec")
-  _*PRINT_-ARRAY_*: local := true
+  SETQ(_*PRINT_-ARRAY_*, true)
   $mkTestFlag: local := true
   $runTestFlag: local := false
   $mkTestInputStack: local := nil
@@ -119,7 +103,7 @@ printRecordFile(pathname,:option) ==
   stream := DEFIOSTREAM([['FILE,:pathname], '(MODE . INPUT)],80,0)
   repeat
     NULL (PEEK_-CHAR ( true, stream , nil, nil )) => return nil
-    [i,t,:o] := dewritify READ stream
+    [i,t,:o] := dewritify VMREAD stream
     sayNewLine()
     for x in i repeat sayBrightly x
     sayNewLine()
@@ -166,11 +150,11 @@ verifyRecordFile(pathname) ==
   result := 'ok
   for j in 1.. repeat
     NULL (PEEK_-CHAR ( true, stream ,nil,nil ))=>return nil
-    [i,t,:o] := dewritify READ stream
+    [i,t,:o] := dewritify VMREAD stream
     null i => return nil
     t = 'ForSystemCommands => 
       return testInput2Output(i,nil)  
-	--read trailing system commands
+        --read trailing system commands
     [typ,:output] := testInput2Output(i,j)
     typ = t =>
       output = o => 'ok
@@ -292,9 +276,3 @@ recordAndPrintTest md ==  --called by recordAndPrint
   $mkTestOutputStack := nil
  
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

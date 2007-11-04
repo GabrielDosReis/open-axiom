@@ -451,6 +451,9 @@ format.$(FASLEXT): format.boot macros.$(FASLEXT)
 match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+record.$(FASLEXT): record.boot nlib.$(FASLEXT) pathname.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 ## OpenAxiom's compiler
 
 define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
@@ -474,6 +477,9 @@ compat.$(FASLEXT): compat.boot pathname.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+newfort.$(FASLEXT): newfort.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## Interface with the Aldor compiler.
@@ -768,10 +774,6 @@ msgdb.clisp: msgdb.boot
 	@ echo 346 making $@ from $<
 	@ echo '(old-boot::boot "msgdb.boot")' | ${DEPSYS}
 
-newfort.clisp: newfort.boot
-	@ echo 349 making $@ from $<
-	@ echo '(old-boot::boot "newfort.boot")' | ${DEPSYS}
-
 nruncomp.clisp: nruncomp.boot
 	@ echo 353 making $@ from $<
 	@ echo '(old-boot::boot "nruncomp.boot")' | ${DEPSYS}
@@ -791,10 +793,6 @@ nruntime.clisp: nruntime.boot
 nrunopt.clisp: nrunopt.boot
 	@ echo 365 making $@ from $<
 	@ echo '(old-boot::boot "nrunopt.boot")' | ${DEPSYS}
-
-record.clisp: record.boot
-	@ echo 447 making $@ $<
-	@ echo '(old-boot::boot "record.boot")' | ${DEPSYS}
 
 setvart.clisp: setvart.boot
 	@ echo 398 making $@ from $<

@@ -1,3 +1,11 @@
+2007-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (record.$(FASLEXT)): New rule.
+	(newfort.$(FASLEXT)): Likewise.
+	(<<record.clisp>>): Remove.
+	(<<newfort.clisp>>): Likewise.
+	* newfort.boot.pamphlet: Push into package "BOOT".
+
 2007-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (database.$(FASLEXT)): New rule.
