@@ -415,3 +415,6 @@ _*HASCATEGORY_-HASH_* := nil
 
 _*ANCESTORS_-HASH_* := nil
 
+++
+_*BUILD_-VERSION_* := nil
+_*YEARWEEK_* := nil

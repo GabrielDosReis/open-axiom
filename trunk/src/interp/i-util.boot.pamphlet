@@ -189,15 +189,6 @@ HasSignature(domain,[op,sig]) ==
  
 makeInitialModemapFrame() == COPY $InitialModemapFrame
  
-addModemap(op,mc,sig,pred,fn,$e) ==
-  $InteractiveMode => $e
-  if knownInfo pred then pred:=true
-  $insideCapsuleFunctionIfTrue=true =>
-    $CapsuleModemapFrame :=
-      addModemap0(op,mc,sig,pred,fn,$CapsuleModemapFrame)
-    $e
-  addModemap0(op,mc,sig,pred,fn,$e)
- 
 isCapitalWord x ==
   (y := PNAME x) and and/[UPPER_-CASE_-P y.i for i in 0..MAXINDEX y]
  

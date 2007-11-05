@@ -1,5 +1,26 @@
 2007-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (iterator.$(FASLEXT)): New rule.
+	(modemap.$(FASLEXT)): Likewise.
+	(info.$(FASLEXT)): Likewise.
+	(msgdb.$(FASLEXT)): Likewise.
+	(<<info.clisp>>): Remove.
+	(<<iterator.clisp>>): Likewise.
+	(<<modemap.clisp>>): Likewise.
+	(<<msgdb.clisp>>): Likewise.
+	* c-util.boot (intersectionContour): Change setIntersection to
+	intersection.  Change SetUnion to union.
+	* database.boot (insertModemap): Move to modemap.boot.pamphlet.
+	* i-util.boot.pamphlet (addModemap): Likewise.
+	* info.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* iterator.boot.pamphlet: Push into package "BOOT".
+	* modemap.boot.pamphlet: Likewise.
+	* msgdb.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* sys-globals.boot (*BUILD-VERSION*): Define.
+	(*YEARWEEK*): Likewise.
+
+2007-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (record.$(FASLEXT)): New rule.
 	(newfort.$(FASLEXT)): Likewise.
 	(<<record.clisp>>): Remove.

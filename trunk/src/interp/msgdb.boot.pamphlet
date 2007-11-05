@@ -94,15 +94,18 @@ above for examples.
 <<*>>=
 <<license>>
 
+import '"g-util"
+)package "BOOT"
+
 --% Message Database Code and Message Utility Functions
 
-SETANDFILEQ($msgDatabase,NIL)
-SETANDFILEQ($cacheMessages,'T)  -- for debugging purposes
-SETANDFILEQ($msgAlist,NIL)
-SETANDFILEQ($msgDatabaseName,NIL)
-SETANDFILEQ($testingErrorPrefix, '"Daly Bug")
+$msgDatabase := NIL
+$cacheMessages := 'T  -- for debugging purposes
+$msgAlist := NIL
+$msgDatabaseName := NIL
+$testingErrorPrefix :=  '"Daly Bug"
 
-SETANDFILEQ($texFormatting, false)
+$texFormatting := false
 
 --% Accessing the Database
 
@@ -353,7 +356,7 @@ throwKeyedMsg(key,args) ==
   throwKeyedMsg1(key, args)
 
 saturnThrowKeyedMsg(key,args) ==
-  _*STANDARD_-OUTPUT_* : fluid := $texOutputStream
+  SETQ(_*STANDARD_-OUTPUT_*, $texOutputStream)
   last := pushSatOutput("line")
   sayString '"\bgroup\color{red}\begin{list}\item{} "
   sayKeyedMsgAsTeX(key,args)
@@ -362,7 +365,7 @@ saturnThrowKeyedMsg(key,args) ==
   spadThrow()
 
 throwKeyedMsg1(key,args) ==
-  _*STANDARD_-OUTPUT_* : fluid := $texOutputStream
+  SETQ(_*STANDARD_-OUTPUT_*, $texOutputStream)
   sayMSG '" "
   if $testingSystem then sayMSG $testingErrorPrefix
   sayKeyedMsg(key,args)
@@ -395,7 +398,7 @@ keyedSystemError(key,args) ==
   keyedSystemError1(key, args)
 
 saturnKeyedSystemError(key, args) ==
-  _*STANDARD_-OUTPUT_* : fluid := $texOutputStream
+  SETQ(_*STANDARD_-OUTPUT_*, $texOutputStream)
   sayString '"\bgroup\color{red}"
   sayString '"\begin{verbatim}"
   sayKeyedMsg("S2GE0000",NIL)

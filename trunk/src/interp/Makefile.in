@@ -269,24 +269,6 @@ ${SAVESYS}: makeint.lisp
 		--load-directory=. makeint.lisp
 	@ echo 6 ${SAVESYS} created
 	$(mkinstalldirs) $(axiom_target_bindir)
-depsys_lisp_sources += parsing.lisp metalex.lisp bootlex.lisp \
-			newaux.lisp preparse.lisp postprop.lisp \
-			fnewmeta.lisp
-
-depsys_boot_sources = postpar.boot parse.boot clam.boot slam.boot \
-			g-boot.boot g-error.boot c-util.boot g-util.boot
-
-depsys_SOURCES = $(depsys_lisp_SOURCES) $(depsys_boot_SOURCES)
-
-depsys_objects = nocompil.$(FASLEXT) bookvol5.$(FASLEXT) g-error.$(FASLEXT) \
-		util.$(FASLEXT) postpar.$(FASLEXT) parse.$(FASLEXT) \
-		parsing.$(FASLEXT) metalex.$(FASLEXT) bootlex.$(FASLEXT) \
-		newaux.$(FASLEXT) preparse.$(FASLEXT) postprop.$(FASLEXT) \
-		fnewmeta.$(FASLEXT) clam.$(FASLEXT) \
-		slam.$(FASLEXT) g-boot.$(FASLEXT) c-util.$(FASLEXT) \
-		g-util.$(FASLEXT)
-
-
 ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		hash.$(FASLEXT) \
 		bits.$(FASLEXT) \
@@ -456,6 +438,9 @@ record.$(FASLEXT): record.boot nlib.$(FASLEXT) pathname.$(FASLEXT)
 
 ## OpenAxiom's compiler
 
+iterator.$(FASLEXT): iterator.boot g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
 			c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -595,6 +580,12 @@ dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
 
 ## General support and utilities.
 
+modemap.$(FASLEXT): modemap.boot c-util.$(FASLEXT) info.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+info.$(FASLEXT): info.boot g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 slam.$(FASLEXT): slam.boot g-timer.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -605,6 +596,9 @@ g-opt.$(FASLEXT): g-opt.boot def.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-timer.$(FASLEXT): g-timer.boot macros.$(FASLEXT) g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+msgdb.$(FASLEXT): msgdb.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-boot.$(FASLEXT): g-boot.boot def.$(FASLEXT) g-util.$(FASLEXT)
@@ -734,10 +728,6 @@ i-map.clisp: i-map.boot
 	@ echo 304 making $@ from $<
 	@ echo '(old-boot::boot "i-map.boot")' | ${DEPSYS} 
 
-info.clisp: info.boot
-	@ echo 329 making $@ from $<
-	@ echo '(old-boot::boot "info.boot")' | ${DEPSYS}
-
 i-resolv.clisp: i-resolv.boot
 	@ echo 310 making $@ from $<
 	@ echo '(old-boot::boot "i-resolv.boot")' | ${DEPSYS}
@@ -754,10 +744,6 @@ i-syscmd.clisp: i-syscmd.boot
 	@ echo 319 making $@ from $<
 	@ echo '(old-boot::boot "i-syscmd.boot")' | ${DEPSYS}
 
-iterator.clisp: iterator.boot
-	@ echo 333 making $@ from $<
-	@ echo '(old-boot::boot "iterator.boot")' | ${DEPSYS}
-
 i-toplev.clisp: i-toplev.boot
 	@ echo 322 making $@ from $<
 	@ echo '(old-boot::boot "i-toplev.boot")' | ${DEPSYS}
@@ -765,14 +751,6 @@ i-toplev.clisp: i-toplev.boot
 i-util.clisp: i-util.boot
 	@ echo 325 making $@ from $<
 	@ echo '(old-boot::boot "i-util.boot")' | ${DEPSYS}
-
-modemap.clisp: modemap.boot
-	@ echo 343 making $@ from $<
-	@ echo '(old-boot::boot "modemap.boot")' | ${DEPSYS}
-
-msgdb.clisp: msgdb.boot
-	@ echo 346 making $@ from $<
-	@ echo '(old-boot::boot "msgdb.boot")' | ${DEPSYS}
 
 nruncomp.clisp: nruncomp.boot
 	@ echo 353 making $@ from $<

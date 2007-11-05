@@ -576,51 +576,6 @@ and compiled to native object code, as usual.
 	$(axiom_build_document) --tangle --output=$@ $<
 @
 
-\section{Proclaim optimization}
-
-\Tool{GCL}, and possibly other common lisps, can generate much better
-code if the function argument types and return values are proclaimed.
-
-In theory what we should do is scan all of the functions in the system
-and create a file of proclaim definitions. These proclaim definitions
-should be loaded into the image before we do any compiles so they can
-allow the compiler to optimize function calling.
-
-\Tool{GCL} has an approximation to this scanning which we use here. 
-
-The first step is to build a version of GCL that includes [[gcl_collectfn]].
-This file contains code that enhances the lisp compiler and creates a
-hash table of structs. Each struct in the hash table describes information
-that about the types of the function being compiled and the types of its
-arguments. At the end of the compile-file this hash table is written out
-to a ".fn" file. 
-
-The second step is to build axiom images (depsys, interpsys, AXIOMsys)
-which contain the [[gcl_collectfn]] code.
-
-The third step is to build the system. This generates a .fn file for 
-each lisp file that gets compiled.
-
-The fourth step is to build the proclaims.lisp files. There is one
-proclaims.lisp file for 
-boot (boot-proclaims.lisp), 
-interp (interp-proclaims.lisp), and 
-algebra (algebra-proclaims.lisp).
-
-To build the proclaims file (e.g. for interp) we:
-\begin{verbatim}
-(a) cd to obj/linux/interp
-(b) (yourpath)/axiom/obj/linux/bin/lisp
-(c) (load "sys-pkg.lsp") 
-(d) (mapcar #'load (directory "*.fn"))
-(e) (with-open-file (out "interp-proclaims.lisp" :direction :output) 
-      (compiler::make-proclaims out))
-\end{verbatim}
-Note that step (c) is only used for interp, not for boot.
-
-The fifth step is to copy the newly constructed proclaims file back
-into the src/interp diretory (or boot, algebra).
-
 \section{The warm.data file}
 
 This is a file of commands that will be loaded into interpsys
@@ -697,222 +652,8 @@ This code used to read:
 @
 \end{verbatim}
 
-Now game is much more difficult. 
-\begin{verbatim}
-
- '(progn \
-
-\end{verbatim}
-
-[[si::*collect-binary-modules*]] instructs GCL to build a list of 
-binary object modules loaded into the current session with (load ...)
-The list will be stored in [[si::*binary-modules*]].
-\begin{verbatim}
-
-	       (setq si::*collect-binary-modules* t) \
-	       (load "makedep.lisp") \
-
-\end{verbatim}
-
-[[compiler::link]] is a lisp interface to the ``ld'' C-based system linker.
-The first argumet is a list of [[.o]] binary object modules to link into a
-fresh gcl image. The second argument is the name of the new output
-image.  The third argument is a string containing an initialization
-command to run in the new image to reinitialize the heap.  The fourth
-argument is a list of external C libraries, either static or dynamic,
-that one wishes to link into the fresh image.  The last argument is a
-flag which indicates whether GCL should initialize all of the freshly
-linked in new lisp modules, or whether it should transparently
-redirect load calls in the new image to initialization calls for the
-already linked in module.
-
-Some lisp systems, such as acl2, have a complex heap initialization,
-in which load calls must be interspersed with other form evaluation
-comprising the logic of the heap construction.  Others, such as
-maxima, have no such complex initialization sequence.
-\begin{verbatim}
-
-	       (compiler::link \
-
-\end{verbatim}
-[[si::*binary-modules*]] here has the list of compiled lisp binary module
-.o files loaded by makedep.lsp above.
-\begin{verbatim}
-
-				 (remove-duplicates si::*binary-modules* :test (quote equal)) \
-
-\end{verbatim}
-
-The name of the output image.
-\begin{verbatim}
-
-				 "$(DEPSYS)" \
-
-\end{verbatim}
-
-This will be run in the newly linked sub-image.
-\begin{verbatim}
-
-				 (format nil "\
-
-\end{verbatim}
-
-Collect loaded binary modules again to make sure that there are none,
-as all should be already linked in via ld.  For error checking
-purposes.
-\begin{verbatim}
-
-(setq si::*collect-binary-modules* t) \
-
-\end{verbatim}
-
-We need to find [[gcl_collectfn.lsp]], so set the [[*load-path*]], and make
-sure the source, not the binary, form is loaded here, as we're only
-using this entire sequence on machines which cannot load binary object
-modules and preserve them in saved images.
-\begin{verbatim}
-
-(let ((si::*load-path* (cons ~S si::*load-path*))\
-                                     (si::*load-types* ~S))\
-
-\end{verbatim}
-
-Turn on function analyzation and autoload thereby [[gcl_collectfn.lsp]].
-\begin{verbatim}
-
-(compiler::emit-fn t))\
-
-\end{verbatim}
-
-Load the heap creation sequence again in the fresh new image, this
-time transparently redirecting all calls to load of binary modules
-invoked thereby into initialization calls for the already linkned in
-module.
-
-Load has code in it to recognize when a module is already linked in,
-and to forgo in this case the actual load and replace with a mere
-initialization call instead.
-\begin{verbatim}
-
-(load \"makedep.lisp\")\
-
-(gbc t)\
-
-\end{verbatim}
-
-It is an error to load a binary module. Calling load will not
-reload them but only run initialization.
-Throw an error if we've actually loaded any binary modules.
-\begin{verbatim}
-
-(when si::*binary-modules* \
-(error si::*binary-modules*))\
-
-\end{verbatim}
-
-Unset the binary module collection flags.
-\begin{verbatim}
-
-(setq si::collect-binary-modules* nil si::*binary-modules* nil)\
-(gbc t)\
-
-\end{verbatim}
-
-Turn on SGC (Stratified Garbage Collection) in the final image.  This
-is a optional gbc algorithm which is suitable for images which will
-not grow much further.  It marks a large fraction of the heap
-read-only, eliminating such pages from the time-consuming gbc
-processing.  When writes are actually made to such pages, a segfault
-is triggered which is handled by a function which remarks the pages
-read-write and continues.
-\begin{verbatim}
-
-(when (fboundp (quote si::sgc-on)) (si::sgc-on t))\
-
-\end{verbatim}
-
-This is a flag which instructs the GCL compiler to make unique
-initialzation function C names.  This is necessary when using ld, as
-all function names must be unique.
-\begin{verbatim}
-
-(setq compiler::*default-system-p* t)\
-
-si::*system-directory* goes into the *load-path*, and .lsp in the *load-types*.
-
-" si::*system-directory* (quote (list ".lsp")))\
-
-\end{verbatim}
-No C libraries to link in here.
-\begin{verbatim}
-
-"" \
-
-\end{verbatim}
-
-Do not run the initialization code for the newly linked in lisp
-modules ``by hand'', but rather rely on the transparent load redirection
-described above to initialize at the proper moment in the heap
-initialization sequence.
-\begin{verbatim}
-
-nil))' | $(LISPSYS))
-
-\end{verbatim}
-The [[save depsys image]] was supposed to read:
-\begin{verbatim}
-	@ (cd ${OBJ}/${SYS}/bin ; \
-	   echo '(progn \
-		(setq si::*collect-binary-modules* t) \
-		(load "makedep.lisp") \
-		(compiler::link \
-			(remove-duplicates si::*binary-modules* :test (quote equal)) \
-			"$(DEPSYS)" \
-			(format nil "\
-				(setq si::*collect-binary-modules* t) \
-				(let ((si::*load-path* (cons ~S si::*load-path*))\
-					(si::*load-types* ~S))\
-					(compiler::emit-fn t))\
-				(load \"makedep.lisp\")\
-				(gbc t)\
-				(when si::*binary-modules* \
-					(error si::*binary-modules*))\
-				(setq si::collect-binary-modules* nil si::*binary-modules* nil)\
-				(gbc t)\
-				(when (fboundp (quote si::sgc-on)) (si::sgc-on t))\
-				(setq compiler::*default-system-p* t)\
-			" si::*system-directory* (quote (list ".lsp")))\
-			"" \
-			nil))' | $(LISPSYS))
-\end{verbatim}
-
-This scheme does not work. It fails during loading with multiple messages
-of the form:
-\begin{verbatim}
-/home/axiom--main--1--patch-33/obj/linux/interp/parse.o(.text+0x5660): In function `init_code':
-: multiple definition of `init_code'
-/home/axiom--main--1--patch-33/obj/linux/interp/postpar.o(.text+0x4e78): first defined here
-\end{verbatim}
 
 <<depsys>>=
-depsys_lisp_sources += parsing.lisp metalex.lisp bootlex.lisp \
-			newaux.lisp preparse.lisp postprop.lisp \
-			fnewmeta.lisp
-
-depsys_boot_sources = postpar.boot parse.boot clam.boot slam.boot \
-			g-boot.boot g-error.boot c-util.boot g-util.boot
-
-depsys_SOURCES = $(depsys_lisp_SOURCES) $(depsys_boot_SOURCES)
-
-depsys_objects = nocompil.$(FASLEXT) bookvol5.$(FASLEXT) g-error.$(FASLEXT) \
-		util.$(FASLEXT) postpar.$(FASLEXT) parse.$(FASLEXT) \
-		parsing.$(FASLEXT) metalex.$(FASLEXT) bootlex.$(FASLEXT) \
-		newaux.$(FASLEXT) preparse.$(FASLEXT) postprop.$(FASLEXT) \
-		fnewmeta.$(FASLEXT) clam.$(FASLEXT) \
-		slam.$(FASLEXT) g-boot.$(FASLEXT) c-util.$(FASLEXT) \
-		g-util.$(FASLEXT)
-
-
 ${DEPSYS}:	vmlisp.$(FASLEXT) \
 		hash.$(FASLEXT) \
 		bits.$(FASLEXT) \
@@ -1229,38 +970,6 @@ i-util.clisp: i-util.boot
 	@ echo '(old-boot::boot "i-util.boot")' | ${DEPSYS}
 @
 
-\subsection{info.boot}
-
-<<info.clisp>>=
-info.clisp: info.boot
-	@ echo 329 making $@ from $<
-	@ echo '(old-boot::boot "info.boot")' | ${DEPSYS}
-@
-
-\subsection{iterator.boot}
-
-<<iterator.clisp>>=
-iterator.clisp: iterator.boot
-	@ echo 333 making $@ from $<
-	@ echo '(old-boot::boot "iterator.boot")' | ${DEPSYS}
-@
-
-\subsection{modemap.boot}
-
-<<modemap.clisp>>=
-modemap.clisp: modemap.boot
-	@ echo 343 making $@ from $<
-	@ echo '(old-boot::boot "modemap.boot")' | ${DEPSYS}
-@
-
-\subsection{msgdb.boot}
-
-<<msgdb.clisp>>=
-msgdb.clisp: msgdb.boot
-	@ echo 346 making $@ from $<
-	@ echo '(old-boot::boot "msgdb.boot")' | ${DEPSYS}
-@
-
 \subsection{nruncomp.boot}
 
 <<nruncomp.clisp>>=
@@ -1531,6 +1240,9 @@ record.$(FASLEXT): record.boot nlib.$(FASLEXT) pathname.$(FASLEXT)
 
 ## OpenAxiom's compiler
 
+iterator.$(FASLEXT): iterator.boot g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
 			c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -1670,6 +1382,12 @@ dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
 
 ## General support and utilities.
 
+modemap.$(FASLEXT): modemap.boot c-util.$(FASLEXT) info.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+info.$(FASLEXT): info.boot g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 slam.$(FASLEXT): slam.boot g-timer.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1680,6 +1398,9 @@ g-opt.$(FASLEXT): g-opt.boot def.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-timer.$(FASLEXT): g-timer.boot macros.$(FASLEXT) g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+msgdb.$(FASLEXT): msgdb.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-boot.$(FASLEXT): g-boot.boot def.$(FASLEXT) g-util.$(FASLEXT)
@@ -1771,8 +1492,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 <<i-map.clisp>>
 
-<<info.clisp>>
-
 <<i-resolv.clisp>>
 
 <<i-spec1.clisp>>
@@ -1781,15 +1500,9 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 <<i-syscmd.clisp>>
 
-<<iterator.clisp>>
-
 <<i-toplev.clisp>>
 
 <<i-util.clisp>>
-
-<<modemap.clisp>>
-
-<<msgdb.clisp>>
 
 <<nruncomp.clisp>>
 

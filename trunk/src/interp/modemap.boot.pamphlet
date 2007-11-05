@@ -50,6 +50,10 @@
 <<*>>=
 <<license>>
 
+import '"c-util"
+import '"info"
+)package "BOOT"
+
 --% EXTERNAL ROUTINES
  
 --These functions are called from outside this file to add a domain
@@ -111,6 +115,22 @@ getModemapListFromDomain(op,numOfArgs,D,e) ==
   [mm
     for (mm:= [[dc,:sig],:.]) in get(op,'modemap,e) | dc=D and #rest sig=
       numOfArgs]
+
+
+insertModemap(new,mmList) ==
+  null mmList => [new]
+--isMoreSpecific(new,old:= first mmList) => [new,:mmList]
+--[old,:insertModemap(new,rest mmList)]
+  [new,:mmList]
+
+addModemap(op,mc,sig,pred,fn,$e) ==
+  $InteractiveMode => $e
+  if knownInfo pred then pred:=true
+  $insideCapsuleFunctionIfTrue=true =>
+    $CapsuleModemapFrame :=
+      addModemap0(op,mc,sig,pred,fn,$CapsuleModemapFrame)
+    $e
+  addModemap0(op,mc,sig,pred,fn,$e)
  
 addModemapKnown(op,mc,sig,pred,fn,$e) ==
 --  if knownInfo pred then pred:=true
@@ -173,7 +193,7 @@ addModemap1(op,mc,sig,pred,fn,e) ==
 mkNewModemapList(mc,sig,pred,fn,curModemapList,e,filenameOrNil) ==
   entry:= [map:= [mc,:sig],[pred,fn],:filenameOrNil]
   member(entry,curModemapList) => curModemapList
-  (oldMap:= ASSOC(map,curModemapList)) and oldMap is [.,[opred, =fn],:.] =>
+  (oldMap:= assoc(map,curModemapList)) and oldMap is [.,[opred, =fn],:.] =>
     $forceAdd => mergeModemap(entry,curModemapList,e)
     opred=true => curModemapList
     if pred^=true and pred^=opred then pred:= ["OR",pred,opred]
@@ -257,7 +277,7 @@ augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   e:= putDomainsInScope(domainName,e)
   $base:= 4
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
-    u:=ASSOC(SUBST('Rep,domainName,lhs),repFnAlist)
+    u:=assoc(SUBST('Rep,domainName,lhs),repFnAlist)
     u and not AMFCR_,redefinedList(op,functorBody) =>
       fnsel':=CADDR u
       e:= addModemap(op,domainName,sig,cond,fnsel',e)
