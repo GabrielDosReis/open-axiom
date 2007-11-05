@@ -438,6 +438,10 @@ record.$(FASLEXT): record.boot nlib.$(FASLEXT) pathname.$(FASLEXT)
 
 ## OpenAxiom's compiler
 
+compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
+			modemap.$(FASLEXT) pathname.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 iterator.$(FASLEXT): iterator.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -465,6 +469,9 @@ simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 newfort.$(FASLEXT): newfort.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+c-doc.$(FASLEXT): c-doc.boot c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## Interface with the Aldor compiler.
@@ -680,17 +687,9 @@ br-util.clisp: br-util.boot
 	@ echo 487 making $@ from $<
 	@ echo '(old-boot::boot "br-util.boot")' | ${DEPSYS}
 
-c-doc.clisp: c-doc.boot
-	@ echo 219 making $@ from $<
-	@ echo '(old-boot::boot "c-doc.boot")' | ${DEPSYS} 
-
 clammed.clisp: clammed.boot
 	@ echo 226 making $@ from $<
 	@ echo '(old-boot::boot "clammed.boot")' | ${DEPSYS} 
-
-compiler.clisp: compiler.boot
-	@ echo 233 making $@ from $<
-	@ echo '(old-boot::boot "compiler.boot")' | ${DEPSYS}
 
 i-analy.clisp: i-analy.boot
 	@ echo 280 making $@ from $<

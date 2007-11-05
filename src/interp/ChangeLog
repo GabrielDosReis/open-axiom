@@ -1,3 +1,13 @@
+2007-11-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (compiler.$(FASLEXT)): New rule.
+	(c-doc.$(FASLEXT)): Likewise.
+	(<<c-doc.clisp>>): Likewise.
+	(<<compiler.clisp>>): Likewise.
+	* c-doc.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	Document functions.  Remove dead codes.
+	* compiler.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+
 2007-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (iterator.$(FASLEXT)): New rule.

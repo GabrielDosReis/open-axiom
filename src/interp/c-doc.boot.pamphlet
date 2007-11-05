@@ -50,9 +50,15 @@
 <<*>>=
 <<license>>
 
+import '"c-util"
+)package "BOOT"
+
 batchExecute() ==
   _/RF_-1 '(GENCON INPUT)
 
+++ returns the documentation for operator `op' with given
+++ `modemap', supposedly defined in domain or category
+++ constructed from `conName'.
 getDoc(conName,op,modemap) ==
   [dc,target,sl,pred,D] := simplifyModemap modemap
   sig := [target,:sl]
@@ -65,6 +71,9 @@ getDoc(conName,op,modemap) ==
   sig := SUBST('$,dc,sig)
   getDocForCategory(conName,op,sig)
 
+++ Given a preidcate `pred' for a modemap, returns the first
+++ argument to the ofCategory predicate it contains.  Return
+++ nil otherwise.
 getOfCategoryArgument pred ==
   pred is [fn,:.] and MEMQ(fn,'(AND OR NOT)) =>
     or/[getOfCategoryArgument x for x in rest pred]
@@ -79,6 +88,9 @@ getDocForDomain(name,op,sig) ==
   getOpDoc(constructor? name,op,sig) or
     or/[getOpDoc(constructor? x,op,sig) for x in whatCatExtDom name]
 
+++ returns the documentation, known to the global DB, for a operator
+++ `op' and given signature `sigPart'.  The operator `op' is assumed
+++ to have been defined in the domain or catagory `abb'.
 getOpDoc(abb,op,:sigPart) ==
   u := LASSOC(op,GETDATABASE(abb,'DOCUMENTATION))
   $argList : local := $FormalMapVariableList
@@ -86,10 +98,14 @@ getOpDoc(abb,op,:sigPart) ==
   sigPart is [sig] => or/[d for [s,:d] in u | sig = s]
   u
 
+++ Parse the content of source file `fn' only for the purpose of
+++ documentation.
 readForDoc fn ==
   $bootStrapMode: local:= true
   _/RQ_-LIB_-1 [fn,'SPAD]
 
+++ record the documentation location for an operator wih given
+++ signature.
 recordSignatureDocumentation(opSig,lineno) ==
   recordDocumentation(rest postTransform opSig,lineno)
 
@@ -204,6 +220,9 @@ transDocList($constructorName,doclist) == --returns ((key line)...)
   checkDocError1 ['"Missing Description"]
   acc
 
+++ Given a functor `conname', and a list of documenation strings,
+++ sanity-check the documentation.  In particular extract information
+++ such as `Description', etc.
 transDoc(conname,doclist) ==
 --$exposeFlag and not isExposedConstructor conname => nil
 --skip over unexposed constructors when checking system files
@@ -258,18 +277,6 @@ checkExtractItemList l ==  --items are separated by commas or end of line
     l := rest l
   "STRCONC"/[x for x in NREVERSE acc]
 
---NREVERSE("append"/[fn string for string in acc]) where
---  fn(string) ==
---    m := MAXINDEX string
---    acc := nil
---    i := 0
---    while i < m and (k := charPosition(char '_,,string,i)) < m repeat
---      if (t := trimString SUBSTRING(string,i,k-i)) ^= '"" then acc := [t,:acc]
---      i := k + 1
---    if i < m then
---      if (t := trimString SUBSTRING(string,i,k-i)) ^= '"" then acc := [t,:acc]
---    acc
-
 ++ Translate '%' in signature to '%%' for proper printing.
 escapePercent x ==
   x is [y, :z] =>
@@ -297,7 +304,7 @@ transformAndRecheckComments(name,lines) ==
   u
 
 checkRewrite(name,lines) == main where   --similar to checkComments from c-doc
-  main ==
+  main() ==
     $checkErrorFlag: local := true
     margin := 0
     lines := checkRemoveComments lines
@@ -407,13 +414,14 @@ checkRecordHash u ==
           checkDocError ['"Wrong number of arguments: ",form2HtString key]
       else if member(x,'("\spadop" "\keyword")) and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           x := intern checkGetStringBeforeRightBrace u
-          not (GET(x,'Led) or GET(x,'Nud)) =>
+          not (GETL(x,'Led) or GETL(x,'Nud)) =>
             checkDocError ['"Unknown \spadop: ",x]
     u := rest u
   'done
 
 checkGetParse s == ncParseFromString removeBackslashes s
 
+++ remove non-leading backslash characters from string `s'.
 removeBackslashes s ==
     s = '"" => '""
     (k := charPosition($charBack,s,0)) < #s =>
@@ -421,15 +429,19 @@ removeBackslashes s ==
       STRCONC(SUBSTRING(s,0,k),removeBackslashes SUBSTRING(s,k + 1,nil))
     s
 
+++ returns the arity (as known to the global DB) of the functor
+++ instantiated by `conform'.  Returns nil when `conform' does
+++ not imply  aknown functor.
 checkNumOfArgs conform ==
   conname := opOf conform
   constructor? conname or (conname := abbreviation? conname) =>
     #GETDATABASE(conname,'CONSTRUCTORARGS)
   nil  --signals error
 
+++ returns ok if correct, form if wrong number of arguments, nil if unknown
+++ The check is down recursively on the argument to the instantiated functor.
 checkIsValidType form == main where
---returns ok if correct, form is wrong number of arguments, nil if unknown
-  main ==
+  main() ==
     atom form => 'ok
     [op,:args] := form
     conname := (constructor? op => op; abbreviation? op)
@@ -524,6 +536,9 @@ checkRemoveComments lines ==
     lines := rest lines
   NREVERSE acc
 
+++ return the part of `line' that is not a comment.  A comment
+++ is introduced by a leading percent character (%), or a double
+++ percent character (%%).
 checkTrimCommented line ==
   n := #line
   k := htcharPosition(char '_%,line,0)
@@ -562,7 +577,7 @@ checkAddMacros u ==
   NREVERSE acc
 
 checkComments(nameSig,lines) == main where
-  main ==
+  main() ==
     $checkErrorFlag: local := false
     margin := checkGetMargin lines
     if (null BOUNDP '$attribute? or null $attribute?)
@@ -625,7 +640,7 @@ newString2Words l ==
   [w while newWordFrom(l,i,m) is [w,i]]
 
 newWordFrom(l,i,m) ==
-  while i <= m and l.i = " " repeat i := i + 1
+  while i <= m and l.i = char " " repeat i := i + 1
   i > m => NIL
   buf := '""
   ch := l.i
@@ -634,7 +649,7 @@ newWordFrom(l,i,m) ==
   while i <= m and not done repeat
     ch := l.i
     ch = $charBlank or ch = $charFauxNewline => done := true
-    buf := STRCONC(buf,ch)
+    buf := STRCONC(buf, STRING ch)
     i := i + 1
   [buf,i]
 
@@ -697,7 +712,7 @@ checkAddSpaceSegments(u,k) ==
   checkAddSpaceSegments(u,j)
 
 checkTrim($x,lines) == main where
-  main ==
+  main() ==
     s := [wherePP first lines]
     for x in rest lines repeat
       j := wherePP x
@@ -760,11 +775,11 @@ checkFixCommonProblem u ==
   NREVERSE acc
 
 checkDecorate u ==
-  count := 0
+  count := 0           -- number of enclosing opening braces
   spadflag := false    --means OK to wrap single letter words with \s{}
   mathSymbolsOk := false
   acc := nil
-  verbatim := false
+  verbatim := false    -- true if inside `verbatim' environment
   while u repeat
     x := first u
 
@@ -810,18 +825,18 @@ checkDecorate u ==
       x = char '_, or x = '","  => ['",{}",:acc]
       x = '"\spad" => ['"\spad",:acc]
       STRINGP x and DIGITP x.0 => [x,:acc]
-      null spadflag and
+      not spadflag and
         (CHARP x and ALPHA_-CHAR_-P x and not MEMQ(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
-      null spadflag and ((STRINGP x and not x.0 = $charBack and DIGITP(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
+      not spadflag and ((STRINGP x and not x.0 = $charBack and DIGITP(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
-      xcount := #x
+      xcount := SIZE x
       xcount = 3 and x.1 = char 't and x.2 = char 'h =>
         ['"th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
       xcount = 4 and x.1 = char '_- and x.2 = char 't and x.3 = char 'h =>
         ['"-th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
       xcount = 2 and x.1 = char 'i or              --wrap ei, xi, hi
-        null spadflag and xcount > 0 and xcount < 4 and not member(x,'("th" "rd" "st")) and
+        not spadflag and xcount > 0 and xcount < 4 and not member(x,'("th" "rd" "st")) and
           hasNoVowels x =>                         --wrap words with no vowels
             [$charRbrace,x,$charLbrace,'"\spad",:acc]
       [checkAddBackSlashes x,:acc]
@@ -1003,7 +1018,7 @@ checkBalance u ==
   while u repeat
     do
       x := first u
-      openClose := ASSOC(x,$checkPrenAlist)  --is it an open bracket?
+      openClose := assoc(x,$checkPrenAlist)  --is it an open bracket?
         => stack := [CAR openClose,:stack]   --yes, push the open bracket
       open  := rassoc(x,$checkPrenAlist) =>  --it is a close bracket!
         stack is [top,:restStack] => --does corresponding open bracket match?
@@ -1018,6 +1033,10 @@ checkBalance u ==
       checkDocError ['"Missing right ",checkSayBracket x]
   u
 
+++ returns the class of the parenthesis x
+++    pren    ::= '(' | ')'
+++    brace   ::= '{' | '}'
+++    bracket ::= '[' | ']'
 checkSayBracket x ==
   x = char '_( or x = char '_) => '"pren"
   x = char '_{ or x = char '_} => '"brace"
@@ -1137,7 +1156,7 @@ checkTransformFirsts(opname,u,margin) ==
       STRCONC('"\spad{",SUBSTRING(u,0,k + 1),'"}",SUBSTRING(u,k + 1,nil))
     k := checkSkipToken(u,j,m) or return u
     infixOp := INTERN SUBSTRING(u,j,k - j)
-    not GET(infixOp,'Led) =>                                     --case 3
+    not GETL(infixOp,'Led) =>                                     --case 3
       namestring ^= (firstWord := SUBSTRING(u,0,i)) =>
         checkDocError ['"Improper first word in comments: ",firstWord]
         u
@@ -1159,7 +1178,7 @@ checkTransformFirsts(opname,u,margin) ==
       checkDocError ['"Improper first word in comments: ",firstWord]
       u
     prefixOp := INTERN SUBSTRING(u,0,i)
-    not GET(prefixOp,'Nud) =>
+    not GETL(prefixOp,'Nud) =>
       u ---what could this be?
     j := checkSkipBlanks(u,i,m) or return u
     u.j = char '_( =>                                            --case 4
@@ -1205,6 +1224,7 @@ checkSkipIdentifierToken(u,i,m) ==
   i = m => nil
   i
 
+++ returns true if character `c' is alphabetic.
 checkAlphabetic c ==
   ALPHA_-CHAR_-P c or DIGITP c or MEMQ(c,$charIdentifierEndings)
 
@@ -1265,6 +1285,8 @@ checkDocError u ==
   if $exposeFlag then SAYBRIGHTLY1(msg,$outStream)
   --if called by checkDocFile (see file checkdoc.boot)
 
+++ Augment `u' with information about the owner of the source file
+++ containing the current functor definition being processed.
 checkDocMessage u ==
   sourcefile := GETDATABASE($constructorName,'SOURCEFILE)
   person := whoOwns $constructorName or '"---"
@@ -1298,9 +1320,6 @@ checkDecorateForHt u ==
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u
-
-
-
 
 @
 \eject
