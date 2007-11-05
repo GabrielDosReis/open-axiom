@@ -50,6 +50,9 @@
 <<*>>=
 <<license>>
 
+import '"g-util"
+)package "BOOT"
+
 --% ITERATORS
  
 compReduce(form,m,e) ==

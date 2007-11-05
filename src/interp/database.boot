@@ -581,14 +581,6 @@ getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
                 alist)
   alist
 
---% Code For Modemap Insertion
-
-insertModemap(new,mmList) ==
-  null mmList => [new]
---isMoreSpecific(new,old:= first mmList) => [new,:mmList]
---[old,:insertModemap(new,rest mmList)]
-  [new,:mmList]
-
 --% Exposure Group Code
 
 dropPrefix(fn) ==
