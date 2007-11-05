@@ -824,29 +824,12 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	$(INSTALL_DATA) $< $@
 @
 
-\subsection{c-doc.boot \cite{60}}
-
-<<c-doc.clisp>>=
-c-doc.clisp: c-doc.boot
-	@ echo 219 making $@ from $<
-	@ echo '(old-boot::boot "c-doc.boot")' | ${DEPSYS} 
-@
-
-
 \subsection{clammed.boot \cite{62}}
 
 <<clammed.clisp>>=
 clammed.clisp: clammed.boot
 	@ echo 226 making $@ from $<
 	@ echo '(old-boot::boot "clammed.boot")' | ${DEPSYS} 
-@
-
-\subsection{compiler.boot \cite{64}}
-
-<<compiler.clisp>>=
-compiler.clisp: compiler.boot
-	@ echo 233 making $@ from $<
-	@ echo '(old-boot::boot "compiler.boot")' | ${DEPSYS}
 @
 
 \subsection{i-analy.boot}
@@ -1240,6 +1223,10 @@ record.$(FASLEXT): record.boot nlib.$(FASLEXT) pathname.$(FASLEXT)
 
 ## OpenAxiom's compiler
 
+compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
+			modemap.$(FASLEXT) pathname.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 iterator.$(FASLEXT): iterator.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1267,6 +1254,9 @@ simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 newfort.$(FASLEXT): newfort.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+c-doc.$(FASLEXT): c-doc.boot c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## Interface with the Aldor compiler.
@@ -1468,11 +1458,7 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 <<br-util.clisp>>
 
-<<c-doc.clisp>>
-
 <<clammed.clisp>>
-
-<<compiler.clisp>>
 
 <<i-analy.clisp>>
 
