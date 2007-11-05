@@ -1,65 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/msgdb.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\begin{verbatim}
-Description of Messages
-
-Axiom messages are read from a flat file database and returned
-as one long string.  They are preceded in the database by a key and
-this is how they are referenced from code.  For example, one key is
-S2IL0001 which means:
-   S2          Scratchpad II designation
-   I           from the interpreter
-   L           originally from LISPLIB BOOT
-   0001        a sequence number
-
-Each message may contain formatting codes and and parameter codes.
-The formatting codes are:
-   %b          turn on bright printing
-   %ceoff      turn off centering
-   %ceon       turn on centering
-   %d          turn off bright printing
-   %f          user defined printing
-   %i          start indentation of 3 more spaces
-   %l          start a new line
-   %m          math-print an expression
-   %rjoff      turn off right justification (actually ragged left)
-   %rjon       turn on right justification (actually ragged left)
-   %s          pretty-print as an S-expression
-   %u          unindent 3 spaces
-   %x#         insert # spaces
-
-The parameter codes look like %1, %2b, %3p, %4m, %5bp, %6s where the
-digit is the parameter number ans the letters following indicate
-additional formatting. You can indicate as many additional formatting
-qualifiers as you like, to the degree they make sense. The "p" code
-means to call prefix2String on the parameter, a standard way of
-printing abbreviated types.  The "P" operator maps prefix2String over 
-its arguments.  The "o" operation formats the argument as an operation 
-name.  "b" means to print that parameter in
-a bold (bright) font. "c" means to center that parameter on a
-new line.  "f" means that the parameter is a list [fn, :args]
-and that "fn" is to be called on "args" to get the text. "r" means
-to right justify (ragged left) the argument.
-
-Look in the file with the name defined in $defaultMsgDatabaseName
-above for examples.
-
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -90,9 +31,50 @@ above for examples.
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+
+--% Description of Messages
+
+--% Axiom messages are read from a flat file database and returned
+--% as one long string.  They are preceded in the database by a key and
+--% this is how they are referenced from code.  For example, one key is
+--% S2IL0001 which means:
+--%    S2          Scratchpad II designation
+--%    I           from the interpreter
+--%    L           originally from LISPLIB BOOT
+--%    0001        a sequence number
+
+--% Each message may contain formatting codes and and parameter codes.
+--% The formatting codes are:
+--%    %b          turn on bright printing
+--%    %ceoff      turn off centering
+--%    %ceon       turn on centering
+--%    %d          turn off bright printing
+--%    %f          user defined printing
+--%    %i          start indentation of 3 more spaces
+--%    %l          start a new line
+--%    %m          math-print an expression
+--%    %rjoff      turn off right justification (actually ragged left)
+--%    %rjon       turn on right justification (actually ragged left)
+--%    %s          pretty-print as an S-expression
+--%    %u          unindent 3 spaces
+--%    %x#         insert # spaces
+
+--% The parameter codes look like %1, %2b, %3p, %4m, %5bp, %6s where the
+--% digit is the parameter number ans the letters following indicate
+--% additional formatting. You can indicate as many additional formatting
+--% qualifiers as you like, to the degree they make sense. The "p" code
+--% means to call prefix2String on the parameter, a standard way of
+--% printing abbreviated types.  The "P" operator maps prefix2String over 
+--% its arguments.  The "o" operation formats the argument as an operation 
+--% name.  "b" means to print that parameter in
+--% a bold (bright) font. "c" means to center that parameter on a
+--% new line.  "f" means that the parameter is a list [fn, :args]
+--% and that "fn" is to be called on "args" to get the text. "r" means
+--% to right justify (ragged left) the argument.
+
+--% Look in the file with the name defined in $defaultMsgDatabaseName
+--% above for examples.
+
 
 import '"g-util"
 )package "BOOT"
@@ -1071,9 +1053,3 @@ escapeSpecialChars s ==
 
 dbSpecialDisplayOpChar? c == (c = char '_~)
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

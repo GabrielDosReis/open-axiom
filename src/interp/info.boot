@@ -1,44 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/info.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\begin{verbatim}
-ADDINFORMATION CODE
-This code adds various items to the special value of $Information,
-in order to keep track of all the compiler's information about
-various categories and similar objects
-An actual piece of (unconditional) information can have one of 3 forms:
- (ATTRIBUTE domainname attribute)
-             --These are only stored here
- (SIGNATURE domainname operator signature)
-             --These are also stored as 'modemap' properties
- (has domainname categoryexpression)
-             --These are also stored as 'value' properties
-Conditional attributes are of the form
- (COND
- (condition info info ...)
- ... )
-where the condition looks like a 'has' clause, or the 'and' of several
-'has' clauses:
-  (has name categoryexpression)
-  (has name (ATTRIBUTE attribute))
-  (has name (SIGNATURE operator signature))
-The use of two representations is admitted to be clumsy
- 
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -69,9 +31,30 @@ The use of two representations is admitted to be clumsy
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
+
+
+--% ADDINFORMATION CODE
+--% This code adds various items to the special value of $Information,
+--% in order to keep track of all the compiler's information about
+--% various categories and similar objects
+--% An actual piece of (unconditional) information can have one of 3 forms:
+--%  (ATTRIBUTE domainname attribute)
+--%              --These are only stored here
+--%  (SIGNATURE domainname operator signature)
+--%              --These are also stored as 'modemap' properties
+--%  (has domainname categoryexpression)
+--%              --These are also stored as 'value' properties
+--% Conditional attributes are of the form
+--%  (COND
+--%  (condition info info ...)
+--%  ... )
+--% where the condition looks like a 'has' clause, or the 'and' of several
+--% 'has' clauses:
+--%   (has name categoryexpression)
+--%   (has name (ATTRIBUTE attribute))
+--%   (has name (SIGNATURE operator signature))
+--% The use of two representations is admitted to be clumsy
+
 
 import '"g-util"
 )package "BOOT"
@@ -300,9 +283,3 @@ GetValue name ==
   u:= comp(name,$EmptyMode,$e) => u  --name may be a form
   systemError [name,'" is not bound in the current environment"]
  
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
