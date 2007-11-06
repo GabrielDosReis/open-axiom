@@ -1,70 +1,6 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/compiler.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{Bug fixes}
-
-The compMacro function does macro expansion during spad file compiles.
-If a macro occurs twice in the same file the macro expands infinitely
-causing a stack overflow. The reason for the infinite recursion is that
-the left hand side of the macro definition is expanded. Thus defining
-a macro:
-\begin{verbatim}
-name ==> 1
-\end{verbatim}
-will expand properly the first time. The second time it turns into:
-\begin{verbatim}
-1 ==> 1
-\end{verbatim}
-The original code read:
-\begin{verbatim}
-compMacro(form,m,e) ==
-  $macroIfTrue: local:= true
-  ["MDEF",lhs,signature,specialCases,rhs]:= form
-  rhs :=
-    rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
-    rhs is ['Join,:.]     => ['"-- the constructor category"]
-    rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
-    rhs is ['add,:.]      => ['"-- the constructor capsule"]
-    formatUnabbreviated rhs
-  sayBrightly ['"   processing macro definition",'%b,
-    :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
-  ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
-  m=$EmptyMode or m=$NoValueMode =>
-    ["/throwAway",$NoValueMode,put(first lhs,"macro",rhs,e)]
-
-\end{verbatim}
-Juergen Weiss proposed the following fixed code. This does not expand
-the left hand side of the macro.
-<<compMacro>>=
-compMacro(form,m,e) ==
-  $macroIfTrue: local:= true
-  ["MDEF",lhs,signature,specialCases,rhs]:= form
-  prhs :=
-    rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
-    rhs is ['Join,:.]     => ['"-- the constructor category"]
-    rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
-    rhs is ['add,:.]      => ['"-- the constructor capsule"]
-    formatUnabbreviated rhs
-  sayBrightly ['"   processing macro definition",'%b,
-    :formatUnabbreviated lhs,'" ==> ",:prhs,'%d]
-  m=$EmptyMode or m=$NoValueMode =>
-    ["/throwAway",$NoValueMode,put(first lhs,"macro",macroExpand(rhs,e),e)]
-
-@
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -95,9 +31,6 @@ compMacro(form,m,e) ==
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"c-util"
 import '"pathname"
@@ -771,7 +704,20 @@ compVector(l,m is ["Vector",mUnder],e) ==
   [["VECTOR",:[T.expr for T in Tl]],m,e]
 
 --% MACROS
-<<compMacro>>
+compMacro(form,m,e) ==
+  $macroIfTrue: local:= true
+  ["MDEF",lhs,signature,specialCases,rhs]:= form
+  prhs :=
+    rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
+    rhs is ['Join,:.]     => ['"-- the constructor category"]
+    rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
+    rhs is ['add,:.]      => ['"-- the constructor capsule"]
+    formatUnabbreviated rhs
+  sayBrightly ['"   processing macro definition",'%b,
+    :formatUnabbreviated lhs,'" ==> ",:prhs,'%d]
+  m=$EmptyMode or m=$NoValueMode =>
+    ["/throwAway",$NoValueMode,put(first lhs,"macro",macroExpand(rhs,e),e)]
+
 --% SEQ
 
 compSeq(["SEQ",:l],m,e) == compSeq1(l,[m,:$exitModeStack],e)
@@ -1456,9 +1402,3 @@ compilerDoitWithScreenedLisplib(constructor, fun) ==
                    SEQ(UNEMBED 'RWRITE))
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
