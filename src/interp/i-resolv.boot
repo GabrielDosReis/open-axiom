@@ -1,57 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/i-resolv.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\begin{verbatim}
-new resolution: types and modes
-
-a type is any term (structure) which can be regarded as a
-  functor call
-a basic type is the call of a nullary functor (e.g. (Integer)),
-  otherwise it is a structured type (e.g. (Polynomial (Integer)))
-a functor together with its non-type arguments is called a
-  type constructor
-
-a mode is a type which can be partially specified, i.e. a term
-  containing term variables
-a term variable (denoted by control-L) stands for any nullary or unary function
-  which was build from type constructors
-this means, a term variable can be:
-  a function LAMBDA ().T, where T is a type
-  a function LAMBDA (X).T(X), where X is a variable for a type and
-    T a type containing this variable
-  a function LAMBDA X.X ("control-L can be disregarded")
-examples:
-  P(control-L) can stand for (Polynomial (RationalFunction (Integer)))
-  G(control-L(I)) can stand for (Gaussian (Polynomial (Integer))), but also
-    for (Gaussian (Integer))
-
-
-Resolution of Two Types
-
-this symmetric resolution is done the following way:
-1. if the same type constructor occurs in both terms, then the
-   type tower is built around this constructor (resolveTTEq)
-2. the next step is to look for two constructors which have an
-   "algebraic relationship", this means, a rewrite rule is
-   applicable (e.g. UP(x,I) and MP([x,y],I))
-   this is done by resolveTTRed
-3. if none of this is true, then a tower of types is built
-   e.g. resolve P I and G I to P G I
-
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -83,9 +29,6 @@ this symmetric resolution is done the following way:
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"i-object"
 )package "BOOT"
@@ -855,9 +798,3 @@ compareTT(t1,t2) ==
     MEMQ(opOf t2,[$QuotientField, 'SimpleAlgebraicExtension]) => NIL
     CGREATERP(PRIN2CVEC opOf t1,PRIN2CVEC opOf t2)
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

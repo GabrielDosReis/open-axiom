@@ -1,59 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/interp i-spec2.boot}
-\author{The Axiom Team}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-\begin{verbatim}
-Handlers for Special Forms (2 of 2)
-
-This file contains the functions which do type analysis and
-evaluation of special functions in the interpreter.
-Special functions are ones which are not defined in the algebra
-code, such as assignment, construct, COLLECT and declaration.
-
-Operators which require special handlers all have a LISP "up"
-property which is the name of the special handler, which is
-always the word "up" followed by the operator name.
-If an operator has this "up" property the handler is called
-automatically from bottomUp instead of general modemap selection.
-
-The up handlers are usually split into two pieces, the first is
-the up function itself, which performs the type analysis, and an
-"eval" function, which generates (and executes, if required) the
-code for the function.
-The up functions always take a single argument, which is the
-entire attributed tree for the operation, and return the modeSet
-of the node, which is a singleton list containing the type
-computed for the node.
-The eval functions can take any arguments deemed necessary.
-Actual evaluation is done if $genValue is true, otherwise code is
-generated.
-(See the function analyzeMap for other things that may affect
-what is generated in these functions.)
-
-These functions are required to do two things:
-  1) do a putValue on the operator vector with the computed value
-     of the node, which is a triple.  This is usually done in the
-     eval functions.
-  2) do a putModeSet on the operator vector with a list of the
-     computed type of the node.  This is usually done in the
-     up functions.
-
-There are several special modes used in these functions:
-  1) Void is the mode that should be used for all statements
-     that do not otherwise return values, such as declarations,
-     loops, IF-THEN's without ELSE's, etc..
-  2) $NoValueMode and $ThrowAwayMode used to be used in situations
-     where Void is now used, and are being phased out completely.
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -85,9 +29,6 @@ There are several special modes used in these functions:
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"i-spec1"
 )package "BOOT"
@@ -1207,9 +1148,3 @@ for name in $specialOps repeat
    MAKEPROP(name,'up,functionName)
    CREATE_-SBC functionName
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

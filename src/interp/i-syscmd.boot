@@ -1,98 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/i-syscmd.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\begin{verbatim}
-This file contains the BOOT code for the Axiom system command
-and synonym processing facility.  The code for )trace is in the file
-TRACE BOOT.  The list of system commands is $SYSCOMMANDS which is
-initialized in SETQ LISP.
-
-\end{verbatim}
-
-\section{Filenames change}
-
-It appears that probe-file is now case-sensitive. In order to get around
-this we include the file extensions in both upper and lower case in the
-search lists. Lower case names are preferred.
-
-\section{handleNoParseCommands}
-
-The system commands given by the global variable
-[[|$noParseCommands|]]\cite{1} require essentially no
-preprocessing/parsing of their arguments. Here we dispatch the
-functions which implement these commands.
-
-There are four standard commands which receive arguments -- [[lisp]],
-[[synonym]], [[system]] and [[boot]]. There are five standard commands
-which do not receive arguments -- [[quit]], [[fin]], [[pquit]],
-[[credits]] and [[copyright]]. As these commands do not necessarily
-exhaust those mentioned in [[|$noParseCommands|]], we provide a
-generic dispatch based on two conventions: commands which do not
-require an argument name themselves, those which do have their names
-prefixed by [[np]].
-
-<<handleNoParseCommands>>=
-handleNoParseCommands(unab, string) ==
-  string := stripSpaces string
-  spaceIndex := SEARCH('" ", string)
-  unab = "lisp" =>
-    if (null spaceIndex) then
-      sayKeyedMsg("S2IV0005", NIL)
-      nil
-    else nplisp(stripLisp string)
-  unab = "boot" =>
-    if (null spaceIndex) then
-      sayKeyedMsg("S2IV0005", NIL)
-      nil
-    else npboot(SUBSEQ(string, spaceIndex+1))
-  unab = "system" =>
-    if (null spaceIndex) then
-      sayKeyedMsg("S2IV0005", NIL)
-      nil
-    else npsystem(unab, string)
-  unab = "synonym" =>
-    npsynonym(unab, (null spaceIndex => '""; SUBSEQ(string, spaceIndex+1)))
-  null spaceIndex =>
-    FUNCALL unab
-  member(unab, '( quit     _
-                  fin      _
-		  pquit    _
-		  credits  _
-		  copyright )) => 
-    sayKeyedMsg("S2IV0005", NIL)
-    nil
-  funName := INTERN CONCAT('"np",STRING unab)
-  FUNCALL(funName, SUBSEQ(string, spaceIndex+1))
-
-@
-\section{TRUENAME change}
-This change was made to make the open source Axiom work with the 
-new aldor compiler.z
-This used to read:
-\begin{verbatim}
-     STRCONC(TRUENAME(STRCONC(GETENV('"AXIOM"),'"/compiler/bin/")),"axiomxl ", asharpArgs, '" ", namestring args)
-\end{verbatim}
-but now reads:
-<<remove TRUENAME>>=
-     STRCONC(STRCONC(GETENV('"ALDORROOT"),'"/bin/"),_
-               "aldor ", asharpArgs, '" ", namestring args)
-@
-Notice that we've introduced the [[ALDORROOT]] shell variable.
-This will have to be pushed down from the top level Makefile.
-
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -124,9 +29,6 @@ This will have to be pushed down from the top level Makefile.
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"i-object"
 )package "BOOT"
@@ -667,7 +569,8 @@ compileAsharpCmd1 args ==
     if ^beQuiet then sayKeyedMsg("S2IZ0038A",[namestring args, asharpArgs])
 
     command :=
-<<remove TRUENAME>>
+     STRCONC(STRCONC(GETENV('"ALDORROOT"),'"/bin/"),_
+               "aldor ", asharpArgs, '" ", namestring args)
     rc := OBEY command
 
     if (rc = 0) and doCompileLisp then
@@ -2126,7 +2029,7 @@ dewritify ob ==
                 type = 'NULLSTREAM => $NullStream
                 type = 'NONNULLSTREAM => $NonNullStream
                 type = 'FLOAT =>
-	           [fval, signif, expon, sign] := CDDR ob
+                   [fval, signif, expon, sign] := CDDR ob
                    fval := SCALE_-FLOAT( FLOAT(signif, fval), expon)
                    sign<0 => -fval
                    fval
@@ -3045,7 +2948,38 @@ doSystemCommand string ==
         nil
    nil
 
-<<handleNoParseCommands>>
+handleNoParseCommands(unab, string) ==
+  string := stripSpaces string
+  spaceIndex := SEARCH('" ", string)
+  unab = "lisp" =>
+    if (null spaceIndex) then
+      sayKeyedMsg("S2IV0005", NIL)
+      nil
+    else nplisp(stripLisp string)
+  unab = "boot" =>
+    if (null spaceIndex) then
+      sayKeyedMsg("S2IV0005", NIL)
+      nil
+    else npboot(SUBSEQ(string, spaceIndex+1))
+  unab = "system" =>
+    if (null spaceIndex) then
+      sayKeyedMsg("S2IV0005", NIL)
+      nil
+    else npsystem(unab, string)
+  unab = "synonym" =>
+    npsynonym(unab, (null spaceIndex => '""; SUBSEQ(string, spaceIndex+1)))
+  null spaceIndex =>
+    FUNCALL unab
+  member(unab, '( quit     _
+                  fin      _
+                  pquit    _
+                  credits  _
+                  copyright )) => 
+    sayKeyedMsg("S2IV0005", NIL)
+    nil
+  funName := INTERN CONCAT('"np",STRING unab)
+  FUNCALL(funName, SUBSEQ(string, spaceIndex+1))
+
 
 npboot str ==
   sex := string2BootTree str
@@ -3195,9 +3129,3 @@ npProcessSynonym(str) ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} [[src/interp/setq.lisp.pamphlet]]
-\end{thebibliography}
-\end{document}
