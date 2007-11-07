@@ -61,6 +61,12 @@
 ;; -*- BigFloat Constructors -*-
 ;; 
 
+(defmacro |float| (x &optional (y 0.0d0))
+  `(float ,x ,y))
+
+(defun |makeSF| (mantissa exponent)
+  (|float| (/ mantissa (expt 2 (- exponent)))))
+
 (defmacro MAKE-BF (MT EP)
   `(CONS |$BFtag| (CONS ,MT ,EP)))
 
@@ -151,6 +157,10 @@
 
 (defmacro KADDR (ARG)
   `(IFCAR (IFCDR (IFCDR ,arg))))
+
+
+(defmacro APPEND2 (x y)
+  `(append ,x ,y))
 
 (eval-when 
  #+:common-lisp (:compile-toplevel :load-toplevel :execute)

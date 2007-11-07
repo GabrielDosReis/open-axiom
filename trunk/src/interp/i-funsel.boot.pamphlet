@@ -79,7 +79,10 @@ isPartialMode m ==
 <<*>>=
 <<license>>
 
-SETANDFILEQ($constructorExposureList, '(Boolean Integer String))
+import '"i-coerfn"
+)package "BOOT"
+
+$constructorExposureList := '(Boolean Integer String)
 
 sayFunctionSelection(op,args,target,dc,func) ==
   $abbreviateTypes : local := true
@@ -442,7 +445,7 @@ defaultTarget(opNode,op,nargs,args) ==
 	target
       target
 
-    op = '_/ =>
+    op = "/" =>
       isEqualOrSubDomain(a1, $Integer) and isEqualOrSubDomain(a2, $Integer) =>
 	putTarget(opNode, target := $RationalNumber)
 	target
@@ -1094,39 +1097,12 @@ selectMmsGen(op,tar,args1,args2) ==
     sayMSG ['%l,:bright '"Modemaps from Associated Packages"]
 
   if haves then
-    [havesExact,havesInexact] := exact?(haves,tar,args1) where
-      exact?(mmS,tar,args) ==
-	ex := inex := NIL
-	for (mm := [sig,[mmC,:.],:.]) in mmS repeat
-	  [c,t,:a] := sig
-	  ok := true
-	  for pat in a for arg in args while ok repeat
-	    not CONTAINED(['isDomain,pat,arg],mmC) => ok := NIL
-	  ok => ex := CONS(mm,ex)
-	  inex := CONS(mm,inex)
-	[ex,inex]
+    [havesExact,havesInexact] := exact?(haves,tar,args1)
     if $reportBottomUpFlag then
       for mm in APPEND(havesExact,havesInexact) for i in 1.. repeat
 	sayModemapWithNumber(mm,i)
     if havesExact then
-      mmS := matchMms(havesExact,op,tar,args1,args2) where
-	matchMms(mmaps,op,tar,args1,args2) ==
-	  mmS := NIL
-	  for [sig,mmC] in mmaps repeat
-	    -- sig is [dc,result,:args]
-	    $Subst :=
-	      tar and not isPartialMode tar =>
-		-- throw in the target if it is not the same as one
-		-- of the arguments
-		res := CADR sig
-		member(res,CDDR sig) => NIL
-		[[res,:tar]]
-	      NIL
-	    [c,t,:a] := sig
-	    if a then matchTypes(a,args1,args2)
-	    not EQ($Subst,'failed) =>
-	      mmS := nconc(evalMm(op,tar,sig,mmC),mmS)
-	  mmS
+      mmS := matchMms(havesExact,op,tar,args1,args2)
       if mmS then
 	if $reportBottomUpFlag then
 	  sayMSG '"   found an exact match!"
@@ -1153,6 +1129,34 @@ selectMmsGen(op,tar,args1,args2) ==
     mmS := matchMms(havesNInexact,op,tar,args1,args2)
   else if $reportBottomUpFlag then sayMSG '"   no modemaps"
   mmS
+ where
+  exact?(mmS,tar,args) ==
+    ex := inex := NIL
+    for (mm := [sig,[mmC,:.],:.]) in mmS repeat
+      [c,t,:a] := sig
+      ok := true
+      for pat in a for arg in args while ok repeat
+	not CONTAINED(['isDomain,pat,arg],mmC) => ok := NIL
+      ok => ex := CONS(mm,ex)
+      inex := CONS(mm,inex)
+    [ex,inex]
+  matchMms(mmaps,op,tar,args1,args2) ==
+    mmS := NIL
+    for [sig,mmC] in mmaps repeat
+      -- sig is [dc,result,:args]
+      $Subst :=
+	tar and not isPartialMode tar =>
+	  -- throw in the target if it is not the same as one
+	  -- of the arguments
+	  res := CADR sig
+	  member(res,CDDR sig) => NIL
+	  [[res,:tar]]
+	NIL
+      [c,t,:a] := sig
+      if a then matchTypes(a,args1,args2)
+      not EQ($Subst,'failed) =>
+	mmS := nconc(evalMm(op,tar,sig,mmC),mmS)
+    mmS
 
 matchTypes(pm,args1,args2) ==
   -- pm is a list of pattern variables, args1 a list of argument types,
@@ -1658,11 +1662,11 @@ hasAtt(dom,att,SL) ==
   'failed
 
 hasCatExpression(cond,SL) ==
-  cond is ['OR,:l] =>
+  cond is ["OR",:l] =>
     or/[(y:=hasCatExpression(x,SL)) ^= 'failed for x in l] => y
-  cond is ['AND,:l] =>
+  cond is ["AND",:l] =>
     and/[(SL:= hasCatExpression(x,SL)) ^= 'failed for x in l] => SL
-  cond is ['has,a,b] => hasCate(a,b,SL)
+  cond is ["has",a,b] => hasCate(a,b,SL)
   keyedSystemError("S2GE0016",
     ['"hasSig",'"unexpected condition for attribute"])
 
@@ -1670,8 +1674,8 @@ unifyStruct(s1,s2,SL) ==
   -- tests for equality of s1 and s2 under substitutions SL and $Subst
   -- the result is a substitution list or 'failed
   s1=s2 => SL
-  if s1 is ['_:,x,.] then s1:= x
-  if s2 is ['_:,x,.] then s2:= x
+  if s1 is [":",x,.] then s1:= x
+  if s2 is [":",x,.] then s2:= x
   if ^atom s1 and CAR s1 = '_# then s1:= LENGTH CADR s1
   if ^atom s2 and CAR s2 = '_# then s2:= LENGTH CADR s2
   s1=s2 => SL

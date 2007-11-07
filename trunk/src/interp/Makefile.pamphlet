@@ -832,54 +832,6 @@ clammed.clisp: clammed.boot
 	@ echo '(old-boot::boot "clammed.boot")' | ${DEPSYS} 
 @
 
-\subsection{i-analy.boot}
-
-<<i-analy.clisp>>=
-i-analy.clisp: i-analy.boot
-	@ echo 280 making $@ from $<
-	@ echo '(old-boot::boot "i-analy.boot")' | ${DEPSYS}
-@
-
-\subsection{i-code.boot}
-
-<<i-code.clisp>>=
-i-code.clisp: i-code.boot
-	@ echo 283 making $@ from $<
-	@ echo '(old-boot::boot "i-code.boot")' | ${DEPSYS}
-@
-
-\subsection{i-coerce.boot}
-
-<<i-coerce.clisp>>=
-i-coerce.clisp: i-coerce.boot
-	@ echo 286 making $@ from $<
-	@ echo '(old-boot::boot "i-coerce.boot")' | ${DEPSYS}
-@
-
-\subsection{i-coerfn.boot}
-
-<<i-coerfn.clisp>>=
-i-coerfn.clisp: i-coerfn.boot
-	@ echo 289 making $@ from $<
-	@ echo '(old-boot::boot "i-coerfn.boot")' | ${DEPSYS}
-@
-
-\subsection{i-eval.boot}
-
-<<i-eval.clisp>>=
-i-eval.clisp: i-eval.boot
-	@ echo 292 making $@ from $<
-	@ echo '(old-boot::boot "i-eval.boot")' | ${DEPSYS}
-@
-
-\subsection{i-funsel.boot}
-
-<<i-funsel.clisp>>=
-i-funsel.clisp: i-funsel.boot
-	@ echo 295 making $@ from $<
-	@ echo '(old-boot::boot "i-funsel.boot")' | ${DEPSYS}
-@
-
 \subsection{bookvol5.lsp}
 
 
@@ -887,70 +839,6 @@ i-funsel.clisp: i-funsel.boot
 bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
 	@ echo 298 making $@ from $<
 	$(axiom_build_document) --tangle=Interpreter --output=$@ $<
-@
-
-\subsection{i-intern.boot}
-
-<<i-intern.clisp>>=
-i-intern.clisp: i-intern.boot
-	@ echo 301 making $@ from $<
-	@ echo '(old-boot::boot "i-intern.boot")' | ${DEPSYS}
-@
-
-\subsection{i-map.boot}
-
-<<i-map.clisp>>=
-i-map.clisp: i-map.boot
-	@ echo 304 making $@ from $<
-	@ echo '(old-boot::boot "i-map.boot")' | ${DEPSYS} 
-@
-
-\subsection{i-resolv.boot}
-
-<<i-resolv.clisp>>=
-i-resolv.clisp: i-resolv.boot
-	@ echo 310 making $@ from $<
-	@ echo '(old-boot::boot "i-resolv.boot")' | ${DEPSYS}
-@
-
-\subsection{i-spec1.boot}
-
-<<i-spec1.clisp>>=
-i-spec1.clisp: i-spec1.boot
-	@ echo 313 making $@ from $<
-	@ echo '(old-boot::boot "i-spec1.boot")' | ${DEPSYS}
-@
-
-\subsection{i-spec2.boot}
-
-<<i-spec2.clisp>>=
-i-spec2.clisp: i-spec2.boot
-	@ echo 316 making $@ from i-spec2.boot
-	@ echo '(old-boot::boot "i-spec2.boot")' | ${DEPSYS} 
-@
-
-\subsection{i-syscmd.boot}
-
-<<i-syscmd.clisp>>=
-i-syscmd.clisp: i-syscmd.boot
-	@ echo 319 making $@ from $<
-	@ echo '(old-boot::boot "i-syscmd.boot")' | ${DEPSYS}
-@
-
-\subsection{i-toplev.boot}
-
-<<i-toplev.clisp>>=
-i-toplev.clisp: i-toplev.boot
-	@ echo 322 making $@ from $<
-	@ echo '(old-boot::boot "i-toplev.boot")' | ${DEPSYS}
-@
-
-\subsection{i-util.boot}
-
-<<i-util.clisp>>=
-i-util.clisp: i-util.boot
-	@ echo 325 making $@ from $<
-	@ echo '(old-boot::boot "i-util.boot")' | ${DEPSYS}
 @
 
 \subsection{nruncomp.boot}
@@ -1206,10 +1094,52 @@ profile.$(FASLEXT): profile.boot macros.$(FASLEXT)
 rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+i-toplev.$(FASLEXT): i-toplev.boot i-analy.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-syscmd.$(FASLEXT): i-syscmd.boot i-object.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 i-output.$(FASLEXT): i-output.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-i-object.$(FASLEXT): i-object.boot sys-macros.$(FASLEXT)
+i-spec2.$(FASLEXT): i-spec2.boot i-spec1.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-spec1.$(FASLEXT): i-spec1.boot i-analy.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-funsel.$(FASLEXT): i-funsel.boot i-coerfn.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-map.$(FASLEXT): i-map.boot i-object.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-eval.$(FASLEXT): i-eval.boot i-analy.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-coerfn.$(FASLEXT): i-coerfn.boot i-coerce.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-coerce.$(FASLEXT): i-coerce.boot i-analy.$(FASLEXT) i-resolv.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-resolv.$(FASLEXT): i-resolv.boot i-object.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-analy.$(FASLEXT): i-analy.boot i-object.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-intern.$(FASLEXT): i-intern.boot i-object.$(FASLEXT) ptrees.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-code.$(FASLEXT): i-code.boot i-object.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-object.$(FASLEXT): i-object.boot g-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+i-util.$(FASLEXT): i-util.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 format.$(FASLEXT): format.boot macros.$(FASLEXT)
@@ -1460,35 +1390,7 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 <<clammed.clisp>>
 
-<<i-analy.clisp>>
-
-<<i-code.clisp>>
-
-<<i-coerce.clisp>>
-
-<<i-coerfn.clisp>>
-
-<<i-eval.clisp>>
-
-<<i-funsel.clisp>>
-
 <<bookvol5.lisp>>
-
-<<i-intern.clisp>>
-
-<<i-map.clisp>>
-
-<<i-resolv.clisp>>
-
-<<i-spec1.clisp>>
-
-<<i-spec2.clisp>>
-
-<<i-syscmd.clisp>>
-
-<<i-toplev.clisp>>
-
-<<i-util.clisp>>
 
 <<nruncomp.clisp>>
 

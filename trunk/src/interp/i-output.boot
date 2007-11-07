@@ -335,9 +335,9 @@ outputTran x ==
   x is ['MAP,:l] => outputMapTran l
   x is ['brace, :l]    =>
     ['BRACE,  ['AGGLST,:[outputTran y for y in l]]]
-  x is ['return,l] => ['return,outputTran l]
-  x is ['return,.,:l] => ['return,:outputTran l]
-  x is ['construct,:l] =>
+  x is ["return",l] => ["return",outputTran l]
+  x is ["return",.,:l] => ["return",:outputTran l]
+  x is ["construct",:l] =>
     ['BRACKET,['AGGLST,:[outputTran y for y in l]]]
 
   x is [["$elt",domain,"float"], x, y, z] and (domain = $DoubleFloat or
@@ -963,11 +963,11 @@ maprin0 x ==
 
 maprinChk x ==
   null $MatrixList => maPrin x
-  ATOM x and (u:= ASSOC(x,$MatrixList)) =>
+  ATOM x and (u:= assoc(x,$MatrixList)) =>
     $MatrixList := delete(u,$MatrixList)
     maPrin deMatrix CDR u
   x is ["=",arg,y]  =>     --case for tracing with )math and printing matrices
-    u:=ASSOC(y,$MatrixList) =>
+    u:=assoc(y,$MatrixList) =>
       -- we don't want to print matrix1 = matrix2 ...
       $MatrixList := delete(u,$MatrixList)
       maPrin ["=",arg, deMatrix CDR u]
@@ -981,7 +981,7 @@ maprinChk x ==
       -- m:=[[1,2,3],[4,5,6],[7,8,9]]
       -- mm:=[[m,1,0],[0,m,1],[0,1,m]]
       -- and try to print mm**5
-      u := ASSOC(y,$MatrixList)
+      u := assoc(y,$MatrixList)
       --$MatrixList := deleteAssoc(first u,$MatrixList)
       -- deleteAssoc no longer exists
       $MatrixList := delete(u,$MatrixList)
@@ -1556,8 +1556,8 @@ charyTrouble1(u,v,start,linelength) ==
   d := GETL(x,'INFIXOP) => charyBinary(d,u,v,start,linelength)
   x = 'OVER  =>
     charyBinary(GETL("/",'INFIXOP),u,v,start,linelength)
-  EQ(3,LENGTH u) and GET(x,'Led) =>
-    d:= PNAME first GET(x,'Led)
+  EQ(3,LENGTH u) and GETL(x,'Led) =>
+    d:= PNAME first GETL(x,'Led)
     charyBinary(d,u,v,start,linelength)
   EQ(x,'CONCAT) =>
     concatTrouble(rest v,d,start,linelength,nil)
@@ -2199,7 +2199,7 @@ qTWidth(u) ==
 remWidth(x) ==
   atom x => x
   true => CONS( (atom first x => first x; true => CAAR x),
-                MMAPCAR(remWidth, rest x) )
+                MMAPCAR(function remWidth, rest x) )
 
 subSub(u) ==
   height CDDR u

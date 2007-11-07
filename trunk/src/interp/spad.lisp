@@ -75,7 +75,6 @@
 (defvar |$kernelProtect| NIL "")
 (defvar |$HiFiAccess| nil "if true maintain history file")
 (defvar |$mapReturnTypes| nil)
-(defvar /TRACENAMES NIL)
 
 (defvar INPUTSTREAM t "bogus initialization for now")
 
@@ -299,13 +298,6 @@
 (defun DIVIDE2 (X Y)
   (if (zerop y) (truncate 1 Y)
     (multiple-value-call #'cons (TRUNCATE X Y))))
-
-(defmacro APPEND2 (x y) `(append ,x ,y))
-
-(defmacro |float| (x &optional (y 0.0d0)) `(float ,x ,y))
-
-(defun |makeSF| (mantissa exponent)
-  (|float| (/ mantissa (expt 2 (- exponent)))))
 
 (define-function 'list1 #'list)
 (define-function '|not| #'NOT)

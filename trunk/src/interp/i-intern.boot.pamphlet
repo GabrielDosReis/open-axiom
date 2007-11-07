@@ -9,30 +9,7 @@
 \eject
 \tableofcontents
 \eject
-\begin{verbatim}
-Internal Interpreter Facilities
 
-Vectorized Attributed Trees
-
-The interpreter translates parse forms into vats for analysis.
-These contain a number of slots in each node for information.
-The leaves are now all vectors, though the leaves for basic types
-such as integers and strings used to just be the objects themselves.
-The vectors for the leaves with such constants now have the value
-of $immediateDataSymbol as their name. Their are undoubtably still
-some functions that still check whether a leaf is a constant. Note
-that if it is not a vector it is a subtree.
-
-attributed tree nodes have the following form:
-slot         description
-----         -----------------------------------------------------
- 0           operation name or literal
- 1           declared mode of variable
- 2           computed value of subtree from this node
- 3           modeset: list of single computed mode of subtree
- 4           prop list for extra things
-
-\end{verbatim}
 \section{License}
 <<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
@@ -70,16 +47,14 @@ slot         description
 <<*>>=
 <<license>>
 
-SETANDFILEQ($useParserSrcPos, NIL)
-SETANDFILEQ($transferParserSrcPos, NIL)
+import '"i-object"
+import '"ptrees"
+)package "BOOT"
+
+$useParserSrcPos :=  NIL
+$transferParserSrcPos := NIL
 
 --  Making Trees
-
-mkAtreeNode x ==
-  -- maker of attrib tree node
-  v := MAKE_-VEC 5
-  v.0 := x
-  v
 
 mkAtree x ==
   -- maker of attrib tree from parser form
@@ -111,14 +86,14 @@ transferSrcPosInfo(pf, atree) ==
 mkAtreeExpandMacros x ==
   -- handle macro expansion. if the macros have args we require that
   -- we match the correct number of args
-  if x isnt ['MDEF,:.] and x isnt ['DEF,['macro,:.],:.] then
+  if x isnt ["MDEF",:.] and x isnt ["DEF",["macro",:.],:.] then
     atom x and (m := isInterpMacro x) =>
       [args,:body] := m
-      args => 'doNothing
+      args => "doNothing"
       x := body
     x is [op,:argl] =>
-      op = 'QUOTE => 'doNothing
-      op = 'where and argl is [before,after] =>
+      op = "QUOTE" => "doNothing"
+      op = "where" and argl is [before,after] =>
         -- in a where clause, what follows "where" (the "after" parm
         -- above) might be a local macro, so do not expand the "before"
         -- part yet
@@ -160,23 +135,23 @@ mkAtree1 x ==
 
 mkAtree2(x,op,argl) ==
   nargl := #argl
-  (op= '_-) and (nargl = 1) and (INTEGERP CAR argl) =>
+  (op= "-") and (nargl = 1) and (INTEGERP CAR argl) =>
     mkAtree1(MINUS CAR argl)
-  op='_: and argl is [y,z] => [mkAtreeNode 'Declare,:argl]
-  op='COLLECT => [mkAtreeNode op,:transformCollect argl]
-  op= 'break =>
+  op=":" and argl is [y,z] => [mkAtreeNode "Declare",:argl]
+  op="COLLECT" => [mkAtreeNode op,:transformCollect argl]
+  op= "break" =>
     argl is [.,val] =>
       if val = '$NoValue then val := '(void)
       [mkAtreeNode op,mkAtree1 val]
     [mkAtreeNode op,mkAtree1 '(void)]
-  op= 'return =>
+  op= "return" =>
     argl is [val] =>
       if val = '$NoValue then val := '(void)
       [mkAtreeNode op,mkAtree1 val]
     [mkAtreeNode op,mkAtree1 '(void)]
-  op='exit => mkAtree1 CADR argl
-  op = 'QUOTE => [mkAtreeNode op,:argl]
-  op='SEGMENT =>
+  op="exit" => mkAtree1 CADR argl
+  op = "QUOTE" => [mkAtreeNode op,:argl]
+  op="SEGMENT" =>
     argl is [a] => [mkAtreeNode op, mkAtree1 a]
     z :=
       null argl.1 => nil
@@ -184,9 +159,9 @@ mkAtree2(x,op,argl) ==
     [mkAtreeNode op, mkAtree1 argl.0,z]
   op in '(pretend is isnt) =>
     [mkAtreeNode op,mkAtree1 first argl,:rest argl]
-  op =  '_:_: =>
-    [mkAtreeNode 'COERCE,mkAtree1 first argl,CADR argl]
-  x is ['_@, expr, type] =>
+  op =  "::" =>
+    [mkAtreeNode "COERCE",mkAtree1 first argl,CADR argl]
+  x is ["@", expr, type] =>
     t := evaluateType unabbrev type
     t = '(DoubleFloat) and expr is [['_$elt, '(Float), 'float], :args] =>
         mkAtree1 [['_$elt, '(DoubleFloat), 'float], :args]
@@ -199,18 +174,18 @@ mkAtree2(x,op,argl) ==
     typeIsASmallInteger(t) and INTEGERP expr =>
         mkAtree1 ["::", expr, t]
     [mkAtreeNode 'TARGET,mkAtree1 expr, type]
-  (op='case) and (nargl = 2)  =>
-    [mkAtreeNode 'case,mkAtree1 first argl,unabbrev CADR argl]
-  op='REPEAT => [mkAtreeNode op,:transformREPEAT argl]
-  op='LET and argl is [['construct,:.],rhs] =>
-    [mkAtreeNode 'LET,first argl,mkAtree1 rhs]
-  op='LET and argl is [['_:,a,.],rhs] =>
-    mkAtree1 ['SEQ,first argl,['LET,a,rhs]]
+  (op="case") and (nargl = 2)  =>
+    [mkAtreeNode "case",mkAtree1 first argl,unabbrev CADR argl]
+  op="REPEAT" => [mkAtreeNode op,:transformREPEAT argl]
+  op="LET" and argl is [['construct,:.],rhs] =>
+    [mkAtreeNode "LET",first argl,mkAtree1 rhs]
+  op="LET" and argl is [[":",a,.],rhs] =>
+    mkAtree1 ["SEQ",first argl,["LET",a,rhs]]
   op is ['_$elt,D,op1] =>
-    op1 is '_= =>
+    op1 is "=" =>
       a' := [mkAtreeNode '_=,:[mkAtree1 arg for arg in argl]]
-      [mkAtreeNode 'Dollar,D,a']
-    [mkAtreeNode 'Dollar,D,mkAtree1 [op1,:argl]]
+      [mkAtreeNode "Dollar",D,a']
+    [mkAtreeNode "Dollar",D,mkAtree1 [op1,:argl]]
   op='_$elt =>
     argl is [D,a] =>
       INTEGERP a =>
@@ -222,20 +197,20 @@ mkAtree2(x,op,argl) ==
             putValue(v,objNewWrap(a, t))
             v
         mkAtree1 ["*",a,[['_$elt,D,'One]]]
-      [mkAtreeNode 'Dollar,D,mkAtree1 a]
+      [mkAtreeNode "Dollar",D,mkAtree1 a]
     keyedSystemError("S2II0003",['"$",argl,
       '"not qualifying an operator"])
   mkAtree3(x,op,argl)
 
 mkAtree3(x,op,argl) ==
-  op='REDUCE and argl is [op1,axis,body] =>
+  op="REDUCE" and argl is [op1,axis,body] =>
     [mkAtreeNode op,axis,mkAtree1 op1,mkAtree1 body]
-  op='has => [mkAtreeNode op, :argl]
-  op='_| => [mkAtreeNode 'AlgExtension,:[mkAtree1 arg for arg in argl]]
-  op='_= => [mkAtreeNode 'equation,:[mkAtree1 arg for arg in argl]]
-  op='not and argl is [["=",lhs,rhs]] =>
-    [mkAtreeNode 'not,[mkAtreeNode "=",mkAtree1 lhs,mkAtree1 rhs]]
-  op='in and argl is [var ,['SEGMENT,lb,ul]] =>
+  op="has" => [mkAtreeNode op, :argl]
+  op="|" => [mkAtreeNode "AlgExtension",:[mkAtree1 arg for arg in argl]]
+  op="=" => [mkAtreeNode "equation",:[mkAtree1 arg for arg in argl]]
+  op="not" and argl is [["=",lhs,rhs]] =>
+    [mkAtreeNode "not",[mkAtreeNode "=",mkAtree1 lhs,mkAtree1 rhs]]
+  op="in" and argl is [var ,["SEGMENT",lb,ul]] =>
     upTest:=
       null ul => NIL
       mkLessOrEqual(var,ul)
@@ -244,13 +219,13 @@ mkAtree3(x,op,argl) ==
       ul => ['and,lowTest,upTest]
       lowTest
     mkAtree1 z
-  x is ['IF,p,'noBranch,a] => mkAtree1 ['IF,['not,p],a,'noBranch]
-  x is ['RULEDEF,:.] => [mkAtreeNode 'RULEDEF,:CDR x]
-  x is ['MDEF,sym,junk1,junk2,val] =>
+  x is ["IF",p,"noBranch",a] => mkAtree1 ["IF",["not",p],a,"noBranch"]
+  x is ["RULEDEF",:.] => [mkAtreeNode "RULEDEF",:CDR x]
+  x is ["MDEF",sym,junk1,junk2,val] =>
     -- new macros look like  macro f ==  or macro f(x) ===
     -- so transform into that format
-    mkAtree1 ['DEF,['macro,sym],junk1,junk2,val]
-  x is ["~=",a,b] => mkAtree1 ['not,["=",a,b]]
+    mkAtree1 ["DEF",["macro",sym],junk1,junk2,val]
+  x is ["~=",a,b] => mkAtree1 ["not",["=",a,b]]
   x is ["+->",funargs,funbody] =>
     if funbody is [":",body,type] then
       types := [type]
@@ -258,7 +233,7 @@ mkAtree3(x,op,argl) ==
     else types := [NIL]
     v := collectDefTypesAndPreds funargs
     types := [:types,:v.1]
-    [mkAtreeNode 'ADEF,[v.0,types,[NIL for a in types],funbody],
+    [mkAtreeNode "ADEF",[v.0,types,[NIL for a in types],funbody],
       if v.2 then v.2 else true, false]
   x is ['ADEF,arg,:r] =>
     r := mkAtreeValueOf r
@@ -269,19 +244,14 @@ mkAtree3(x,op,argl) ==
       null rest arg => collectDefTypesAndPreds first arg
       collectDefTypesAndPreds arg
     [types,:r'] := r
-    at := [fn(x,y) for x in rest types for y in v.1] where
-      fn(a,b) ==
-        a and b =>
-          if a = b then a
-          else throwMessage '"   double declaration of parameter"
-        a or b
+    at := [fn(x,y) for x in rest types for y in v.1]
     r := [[first types,:at],:r']
-    [mkAtreeNode 'ADEF,[v.0,:r],if v.2 then v.2 else true,false]
-  x is ['where,before,after] =>
-    [mkAtreeNode 'where,before,mkAtree1 after]
-  x is ['DEF,['macro,form],.,.,body] =>
-    [mkAtreeNode 'MDEF,form,body]
-  x is ['DEF,a,:r] =>
+    [mkAtreeNode "ADEF",[v.0,:r],if v.2 then v.2 else true,false]
+  x is ["where",before,after] =>
+    [mkAtreeNode "where",before,mkAtree1 after]
+  x is ["DEF",["macro",form],.,.,body] =>
+    [mkAtreeNode "MDEF",form,body]
+  x is ["DEF",a,:r] =>
     r := mkAtreeValueOf r
     a is [op,:arg] =>
       v :=
@@ -313,6 +283,12 @@ mkAtree3(x,op,argl) ==
     atom op => mkAtreeNode op
     mkAtree1 op
   [z,:[mkAtree1 y for y in argl]]
+ where
+  fn(a,b) ==
+    a and b =>
+      if a = b then a
+      else throwMessage '"   double declaration of parameter"
+    a or b
 
 collectDefTypesAndPreds args ==
   -- given an arglist to a DEF-like form, this function returns
@@ -329,11 +305,7 @@ collectDefTypesAndPreds args ==
       types := [type]
       var is ["|",var',p] =>
         vars := [var']
-        pred := addPred(pred,p) where
-          addPred(old,new) ==
-            null new => old
-            null old => new
-            ['and,old,new]
+        pred := addPred(pred,p)
       vars := [var]
     args is ["|",var,p] =>
       pred := addPred(pred,p)
@@ -356,211 +328,27 @@ collectDefTypesAndPreds args ==
     types := [NIL]
     vars  := [args]
   VECTOR(vars,types,pred)
+ where
+  addPred(old,new) ==
+    null new => old
+    null old => new
+    ['and,old,new]
 
 mkAtreeValueOf l ==
   -- scans for ['valueOf,atom]
-  not CONTAINED('valueOf,l) => l
+  not CONTAINED("valueOf",l) => l
   mkAtreeValueOf1 l
 
 mkAtreeValueOf1 l ==
   null l or atom l or null rest l => l
-  l is ['valueOf,u] and IDENTP u =>
+  l is ["valueOf",u] and IDENTP u =>
     v := mkAtreeNode $immediateDataSymbol
-    putValue(v,get(u,'value,$InteractiveFrame) or
+    putValue(v,get(u,"value",$InteractiveFrame) or
       objNewWrap(u,['Variable,u]))
     v
   [mkAtreeValueOf1 x for x in l]
 
-mkLessOrEqual(lhs,rhs) == ['not,['_<,rhs,lhs]]
-
-emptyAtree expr ==
-  -- remove mode, value, and misc. info from attrib tree
-  VECP expr =>
-    $immediateDataSymbol = expr.0 => nil
-    expr.1:= NIL
-    expr.2:= NIL
-    expr.3:= NIL
-    -- kill proplist too?
-  atom expr => nil
-  for e in expr repeat emptyAtree e
-
-unVectorize body ==
-  -- transforms from an atree back into a tree
-  VECP body =>
-    name := getUnname body
-    name ^= $immediateDataSymbol => name
-    objValUnwrap getValue body
-  atom body => body
-  body is [op,:argl] =>
-    newOp:=unVectorize op
-    if newOp = 'SUCHTHAT then newOp := '_|
-    if newOp = 'COERCE then newOp := '_:_:
-    if newOp = 'Dollar then newOp := "$elt"
-    [newOp,:unVectorize argl]
-  systemErrorHere '"unVectorize"
-
-
---  Stuffing and Getting Info
-
-putAtree(x,prop,val) ==
-  x is [op,:.] =>
-    -- only willing to add property if op is a vector
-    -- otherwise will be pushing to deeply into calling structure
-    if VECP op then putAtree(op,prop,val)
-    x
-  null VECP x => x     -- just ignore it
-  n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
-    => x.n := val
-  x.4 := insertShortAlist(prop,val,x.4)
-  x
-
-getAtree(x,prop) ==
-  x is [op,:.] =>
-    -- only willing to get property if op is a vector
-    -- otherwise will be pushing to deeply into calling structure
-    VECP op => getAtree(op,prop)
-    NIL
-  null VECP x => NIL     -- just ignore it
-  n:= QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
-    => x.n
-  QLASSQ(prop,x.4)
-
-putTarget(x, targ) ==
-  -- want to put nil modes perhaps to clear old target
-  if targ = $EmptyMode then targ := nil
-  putAtree(x,'target,targ)
-
-getTarget(x) == getAtree(x,'target)
-
-insertShortAlist(prop,val,al) ==
-  pair := QASSQ(prop,al) =>
-    RPLACD(pair,val)
-    al
-  [[prop,:val],:al]
-
-transferPropsToNode(x,t) ==
-  propList := getProplist(x,$env)
-  QLASSQ('Led,propList) or QLASSQ('Nud,propList) => nil
-  node :=
-    VECP t => t
-    first t
-  for prop in '(mode localModemap value name generatedCode)
-    repeat transfer(x,node,prop)
-      where
-        transfer(x,node,prop) ==
-          u := get(x,prop,$env) => putAtree(node,prop,u)
-          (not (x in $localVars)) and (u := get(x,prop,$e)) =>
-            putAtree(node,prop,u)
-  if not getMode(t) and (am := get(x,'automode,$env)) then
-    putModeSet(t,[am])
-    putMode(t,am)
-  t
-
-isLeaf x == atom x     --may be a number or a vector
-
-getMode x ==
-  x is [op,:.] => getMode op
-  VECP x => x.1
-  m := getBasicMode x => m
-  keyedSystemError("S2II0001",[x])
-
-putMode(x,y) ==
-  x is [op,:.] => putMode(op,y)
-  null VECP x => keyedSystemError("S2II0001",[x])
-  x.1 := y
-
-getValue x ==
-  VECP x => x.2
-  atom x =>
-    t := getBasicObject x => t
-    keyedSystemError("S2II0001",[x])
-  getValue first x
-
-putValue(x,y) ==
-  x is [op,:.] => putValue(op,y)
-  null VECP x => keyedSystemError("S2II0001",[x])
-  x.2 := y
-
-putValueValue(vec,val) ==
-  putValue(vec,val)
-  vec
-
-getUnnameIfCan x ==
-  VECP x => x.0
-  x is [op,:.] => getUnnameIfCan op
-  atom x => x
-  nil
-
-getUnname x ==
-  x is [op,:.] => getUnname op
-  getUnname1 x
-
-getUnname1 x ==
-  VECP x => x.0
-  null atom x => keyedSystemError("S2II0001",[x])
-  x
-
-computedMode t ==
-  getModeSet t is [m] => m
-  keyedSystemError("S2GE0016",['"computedMode",'"non-singleton modeset"])
-
-putModeSet(x,y) ==
-  x is [op,:.] => putModeSet(op,y)
-  not VECP x => keyedSystemError("S2II0001",[x])
-  x.3 := y
-  y
-
-getModeOrFirstModeSetIfThere x ==
-  x is [op,:.] => getModeOrFirstModeSetIfThere op
-  VECP x =>
-    m := x.1 => m
-    val := x.2 => objMode val
-    y := x.aModeSet =>
-      (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) => m
-      first y
-    NIL
-  m := getBasicMode x => m
-  NIL
-
-getModeSet x ==
-  x and PAIRP x => getModeSet first x
-  VECP x =>
-    y:= x.aModeSet =>
-      (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
-        [m]
-      y
-    keyedSystemError("S2GE0016",['"getModeSet",'"no mode set"])
-  m:= getBasicMode x => [m]
-  null atom x => getModeSet first x
-  keyedSystemError("S2GE0016",['"getModeSet",
-    '"not an attributed tree"])
-
-getModeSetUseSubdomain x ==
-  x and PAIRP x => getModeSetUseSubdomain first x
-  VECP(x) =>
-    -- don't play subdomain games with retracted args
-    getAtree(x,'retracted) => getModeSet x
-    y := x.aModeSet =>
-      (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
-        [m]
-      val := getValue x
-      (x.0 = $immediateDataSymbol) and (y = [$Integer]) =>
-        val := objValUnwrap val
-        m := getBasicMode0(val,true)
-        x.2 := objNewWrap(val,m)
-        x.aModeSet := [m]
-        [m]
-      null val => y
-      isEqualOrSubDomain(objMode(val),$Integer) and
-        INTEGERP(f := objValUnwrap val) =>
-          [getBasicMode0(f,true)]
-      y
-    keyedSystemError("S2GE0016",
-      ['"getModeSetUseSubomain",'"no mode set"])
-  m := getBasicMode0(x,true) => [m]
-  null atom x => getModeSetUseSubdomain first x
-  keyedSystemError("S2GE0016",
-    ['"getModeSetUseSubomain",'"not an attributed tree"])
+mkLessOrEqual(lhs,rhs) == ["not",["<",rhs,lhs]]
 
 atree2EvaluatedTree x == atree2Tree1(x,true)
 
@@ -681,44 +469,6 @@ addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
   RPLAC(CAAR e,[[var,:proplist],:curContour])
   e
 
-
---% Source and position information
-
--- In the following, src is a string containing an original input line,
--- line is the line number of the string within the source file,
--- and col is the index within src of the start of the form represented
--- by x. x is a VAT.
-
-putSrcPos(x, file, src, line, col) ==
-    putAtree(x, 'srcAndPos, srcPos_New(file, src, line, col))
-
-getSrcPos(x) == getAtree(x, 'srcAndPos)
-
-srcPosNew(file, src, line, col) == LIST2VEC [file, src, line, col]
-
-srcPosFile(sp) ==
-    if sp then sp.0 else nil
-
-srcPosSource(sp) ==
-    if sp then sp.1 else nil
-
-srcPosLine(sp) ==
-    if sp then sp.2 else nil
-
-srcPosColumn(sp) ==
-    if sp then sp.3 else nil
-
-srcPosDisplay(sp) ==
-    null sp => nil
-    s := STRCONC('"_"", srcPosFile sp, '"_", line ",
-        STRINGIMAGE srcPosLine sp, '": ")
-    sayBrightly [s, srcPosSource sp]
-    col  := srcPosColumn sp
-    dots :=
-        col = 0 => '""
-        fillerSpaces(col, '".")
-    sayBrightly [fillerSpaces(#s, '" "), dots, '"^"]
-    true
 
 @
 \eject

@@ -52,15 +52,18 @@ from LISP.
 <<*>>=
 <<license>>
 
+import '"i-analy"
+)package "BOOT"
+
 --% Top Level Interpreter Code
 
 -- When $QuiteCommand is true Spad will not produce any output from
 --  a top level command
-SETANDFILEQ($QuietCommand, NIL)
+$QuietCommand := NIL
 -- When $ProcessInteractiveValue is true, we don't want the value printed
 -- or recorded.
-SETANDFILEQ($ProcessInteractiveValue, NIL)
-SETANDFILEQ($HTCompanionWindowID, NIL)
+$ProcessInteractiveValue := NIL
+$HTCompanionWindowID := NIL
 
 --% Starting the interpreter from LISP
 

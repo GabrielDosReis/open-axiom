@@ -100,6 +100,11 @@ getConstantFromDomain(form,domainForm) ==
 @
 <<*>>=
 <<license>>
+
+import '"i-analy"
+import '"i-resolv"
+)package "BOOT"
+
 --%  Algebraic coercions using interactive code
 
 algCoerceInteractive(p,source,target) ==

@@ -89,6 +89,9 @@ There are several special modes used in these functions:
 <<*>>=
 <<license>>
 
+import '"i-spec1"
+)package "BOOT"
+
 -- Functions which require special handlers (also see end of file)
 
 --% Handlers for map definitions
@@ -96,7 +99,7 @@ There are several special modes used in these functions:
 upDEF t ==
   -- performs map definitions.  value is thrown away
   t isnt [op,def,pred,.] => nil
-  v:=addDefMap(['DEF,:def],pred)
+  v:=addDefMap(["DEF",:def],pred)
   null(LISTP(def)) or null(def) =>
     keyedSystemError("S2GE0016",['"upDEF",'"bad map definition"])
   mapOp := first def
@@ -104,7 +107,7 @@ upDEF t ==
     null mapOp =>
       keyedSystemError("S2GE0016",['"upDEF",'"bad map definition"])
     mapOp := first mapOp
-  put(mapOp,'value,v,$e)
+  put(mapOp,"value",v,$e)
   putValue(op,objNew(voidValue(), $Void))
   putModeSet(op,[$Void])
 
@@ -114,9 +117,9 @@ upDollar t ==
   -- Puts "dollar" property in atree node, and calls bottom up
   t isnt [op,D,form] => nil
   t2 := t
-  (not $genValue) and or/[CONTAINED(var,D) for var in $localVars] =>
+  (not $genValue) and "or"/[CONTAINED(var,D) for var in $localVars] =>
     keyedMsgCompFailure("S2IS0032",NIL)
-  EQ(D,'Lisp) => upLispCall(op,form)
+  EQ(D,"Lisp") => upLispCall(op,form)
   if VECP D and (SIZE(D) > 0) then D := D.0
   t := evaluateType unabbrev D
   categoryForm? t =>
@@ -131,7 +134,7 @@ upDollar t ==
     isPartialMode t => throwKeyedMsg("S2IS0020",NIL)
     if $genValue then
       val := wrap getConstantFromDomain([f],t)
-    else val := ['getConstantFromDomain,['LIST,MKQ f],MKQ t]
+    else val := ["getConstantFromDomain",["LIST",MKQ f],MKQ t]
     putValue(op,objNew(val,t))
     putModeSet(op,[t])
 
@@ -139,12 +142,12 @@ upDollar t ==
 
   (ms := upDollarTuple(op, f, t, t2, rest form, nargs)) => ms
 
-  f ^= 'construct and null isOpInDomain(f,t,nargs) =>
+  f ^= "construct" and null isOpInDomain(f,t,nargs) =>
     throwKeyedMsg("S2IS0023",[f,t])
   if (sig := findCommonSigInDomain(f,t,nargs)) then
     for x in sig for y in form repeat
       if x then putTarget(y,x)
-  putAtree(first form,'dollar,t)
+  putAtree(first form,"dollar",t)
   ms := bottomUp form
   f in '(One Zero) and PAIRP(ms) and CAR(ms) = $OutputForm =>
     throwKeyedMsg("S2IS0021",[f,t])
@@ -167,7 +170,7 @@ upDollarTuple(op, f, t, t2, args, nargs) ==
   ms := bottomUp newArg
   first ms ^= tuple => NIL
   form := [first form, newArg]
-  putAtree(first form,'dollar,t)
+  putAtree(first form,"dollar",t)
   ms := bottomUp form
   putValue(op,getValue first form)
   putModeSet(op,ms)
@@ -236,13 +239,13 @@ uphas t ==
   t isnt [op,type,prop] => nil
   -- handler for category and attribute queries
   type :=
-    isLocalVar(type) => ['unabbrev, type]
+    isLocalVar(type) => ["unabbrev", type]
     MKQ unabbrev type
   catCode :=
     prop := unabbrev prop
-    evaluateType0 prop => ['evaluateType, MKQ prop]
+    evaluateType0 prop => ["evaluateType", MKQ prop]
     MKQ prop
-  code:=['newHasTest,['evaluateType, type], catCode]
+  code:=["newHasTest",["evaluateType", type], catCode]
   if $genValue then code := wrap timedEVALFUN code
   putValue(op,objNew(code,$Boolean))
   putModeSet(op,[$Boolean])
@@ -263,10 +266,10 @@ compileIF(op,cond,a,b,t) ==
   --  IF are resolved.
   ms1 := bottomUp a
   [m1] := ms1
-  b = 'noBranch =>
+  b = "noBranch" =>
     evalIF(op,rest t,$Void)
     putModeSet(op,[$Void])
-  b = 'noMapVal =>
+  b = "noMapVal" =>
     -- if this was a return statement, we take the mode to be that
     -- of what is being returned.
     if getUnname a = 'return then
@@ -280,9 +283,9 @@ compileIF(op,cond,a,b,t) ==
     m2=m1 => m1
     m2 = $Exit => m1
     m1 = $Exit => m2
-    if EQCAR(m1,'Symbol) then
+    if EQCAR(m1,"Symbol") then
       m1:=getMinimalVarMode(getUnname a,$declaredMode)
-    if EQCAR(m2,'Symbol) then
+    if EQCAR(m2,"Symbol") then
       m2:=getMinimalVarMode(getUnname b,$declaredMode)
     (r := resolveTTAny(m2,m1)) => r
     rempropI($mapName,'localModemap)
@@ -295,14 +298,14 @@ compileIF(op,cond,a,b,t) ==
 evalIF(op,[cond,a,b],m) ==
   -- generate code form compiled IF
   elseCode:=
-    b='noMapVal =>
-      [[MKQ true, ['throwKeyedMsg,MKQ "S2IM0018",
-        ['CONS,MKQ object2Identifier $mapName,NIL]]]]
+    b="noMapVal" =>
+      [[MKQ true, ["throwKeyedMsg",MKQ "S2IM0018",
+        ["CONS",MKQ object2Identifier $mapName,NIL]]]]
     b='noBranch =>
-      $lastLineInSEQ => [[MKQ true,['voidValue]]]
+      $lastLineInSEQ => [[MKQ true,["voidValue"]]]
       NIL
     [[MKQ true,genIFvalCode(b,m)]]
-  code:=['COND,[getArgValue(cond,$Boolean),
+  code:=["COND",[getArgValue(cond,$Boolean),
     genIFvalCode(a,m)],:elseCode]
   triple:= objNew(code,m)
   putValue(op,triple)
@@ -318,9 +321,9 @@ genIFvalCode(t,m) ==
 IFcodeTran(code,m,m1) ==
   -- coerces values at branches of IF
   null code => code
-  code is ['spadThrowBrightly,:.] => code
+  code is ["spadThrowBrightly",:.] => code
   m1 = $Exit => code
-  code isnt ['COND,[p1,a1],[''T,a2]] =>
+  code isnt ["COND",[p1,a1],[''T,a2]] =>
     m = $Void => code
     code' := coerceInteractive(objNew(quote2Wrapped code,m1),m) =>
       wrapped2Quote objVal code'
@@ -335,7 +338,7 @@ interpIF(op,cond,a,b) ==
   val:= getValue cond
   val:= coerceInteractive(val,$Boolean) =>
     objValUnwrap(val) => upIFgenValue(op,a)
-    EQ(b,'noBranch) =>
+    EQ(b,"noBranch") =>
       putValue(op,objNew(voidValue(), $Void))
       putModeSet(op,[$Void])
     upIFgenValue(op,b)
@@ -371,13 +374,13 @@ upisAndIsnt(t:=[op,a,pattern]) ==
 
 putPvarModes(pattern,m) ==
   -- Puts the modes for the pattern variables into $env
-  m isnt ['List,um] => throwKeyedMsg("S2IS0030",NIL)
+  m isnt ["List",um] => throwKeyedMsg("S2IS0030",NIL)
   for pvar in pattern repeat
     IDENTP pvar => (null (pvar=$quadSymbol)) and put(pvar,'mode,um,$env)
     pvar is ['_:,var] =>
-      null (var=$quadSymbol) and put(var,'mode,m,$env)
+      null (var=$quadSymbol) and put(var,"mode",m,$env)
     pvar is ['_=,var] =>
-      null (var=$quadSymbol) and put(var,'mode,um,$env)
+      null (var=$quadSymbol) and put(var,"mode",um,$env)
     putPvarModes(pvar,um)
 
 evalis(op,[a,pattern],mode) ==
@@ -398,8 +401,8 @@ isLocalPred pattern ==
   -- returns true if the is predicate is to be compiled
   for pat in pattern repeat
     IDENTP pat and isLocalVar(pat) => return true
-    pat is ['_:,var] and isLocalVar(var) => return true
-    pat is ['_=,var] and isLocalVar(var) => return true
+    pat is [":",var] and isLocalVar(var) => return true
+    pat is ["=",var] and isLocalVar(var) => return true
 
 compileIs(val,pattern) ==
   -- produce code for compiled "is" predicate.  makes pattern variables
@@ -407,15 +410,15 @@ compileIs(val,pattern) ==
   vars:= NIL
   for pat in CDR pattern repeat
     IDENTP(pat) and isLocalVar(pat) => vars:=[pat,:vars]
-    pat is ['_:,var] => vars:= [var,:vars]
-    pat is ['_=,var] => vars:= [var,:vars]
-  predCode:=['LET,g:=GENSYM(),['isPatternMatch,
+    pat is [":",var] => vars:= [var,:vars]
+    pat is ["=",var] => vars:= [var,:vars]
+  predCode:=["LET",g:=GENSYM(),["isPatternMatch",
     getArgValue(val,computedMode val),MKQ removeConstruct pattern]]
   for var in REMDUP vars repeat
-    assignCode:=[['LET,var,['CDR,['ASSQ,MKQ var,g]]],:assignCode]
+    assignCode:=[["LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
   null $opIsIs =>
-    ['COND,[['EQ,predCode,MKQ 'failed],['SEQ,:assignCode,MKQ 'T]]]
-  ['COND,[['NOT,['EQ,predCode,MKQ 'failed]],['SEQ,:assignCode,MKQ 'T]]]
+    ["COND",[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,MKQ 'T]]]
+  ["COND",[["NOT",["EQ",predCode,MKQ "failed"]],["SEQ",:assignCode,MKQ 'T]]]
 
 evalIsPredicate(value,pattern,mode) ==
   --This function pattern matches value to pattern, and returns
@@ -435,8 +438,8 @@ evalIsntPredicate(value,pattern,mode) ==
 
 removeConstruct pat ==
   -- removes the "construct" from the beginning of patterns
-  if pat is ['construct,:p] then pat:=p
-  if pat is ['cons, a, b] then pat := [a, ['_:, b]]
+  if pat is ["construct",:p] then pat:=p
+  if pat is ["cons", a, b] then pat := [a, [":", b]]
   atom pat => pat
   RPLACA(pat,removeConstruct CAR pat)
   RPLACD(pat,removeConstruct CDR pat)
@@ -454,26 +457,26 @@ isPatMatch(l,pats) ==
     $subs:='failed
   null l =>
     null pats => $subs
-    pats is [['_:,var]] =>
+    pats is [[":",var]] =>
       $subs := [[var],:$subs]
     $subs:='failed
   pats is [pat,:restPats] =>
     IDENTP pat =>
       $subs:=[[pat,:first l],:$subs]
       isPatMatch(rest l,restPats)
-    pat is ['_=,var] =>
+    pat is ["=",var] =>
       p:=ASSQ(var,$subs) =>
         CAR l = CDR p => isPatMatch(rest l, restPats)
-        $subs:='failed
-      $subs:='failed
-    pat is ['_:,var] =>
+        $subs:="failed"
+      $subs:="failed"
+    pat is [":",var] =>
       n:=#restPats
       m:=#l-n
-      m<0 => $subs:='failed
+      m<0 => $subs:="failed"
       ZEROP n => $subs:=[[var,:l],:$subs]
       $subs:=[[var,:[x for x in l for i in 1..m]],:$subs]
       isPatMatch(DROP(m,l),restPats)
-    isPatMatch(first l,pat) = 'failed => 'failed
+    isPatMatch(first l,pat) = "failed" => "failed"
     isPatMatch(rest l,restPats)
   keyedSystemError("S2GE0016",['"isPatMatch",
      '"unknown form of is predicate"])
@@ -483,7 +486,7 @@ isPatMatch(l,pats) ==
 upiterate t ==
   null $repeatBodyLabel => throwKeyedMsg("S2IS0029",['"iterate"])
   $iterateCount := $iterateCount + 1
-  code := ['THROW,$repeatBodyLabel,'(voidValue)]
+  code := ["THROW",$repeatBodyLabel,'(voidValue)]
   $genValue => THROW(eval $repeatBodyLabel,voidValue())
   putValue(t,objNew(code,$Void))
   putModeSet(t,[$Void])
@@ -494,7 +497,7 @@ upbreak t ==
   t isnt [op,.] => nil
   null $repeatLabel => throwKeyedMsg("S2IS0029",['"break"])
   $breakCount := $breakCount + 1
-  code := ['THROW,$repeatLabel,'(voidValue)]
+  code := ["THROW",$repeatLabel,'(voidValue)]
   $genValue => THROW(eval $repeatLabel,voidValue())
   putValue(op,objNew(code,$Void))
   putModeSet(op,[$Void])
@@ -508,8 +511,8 @@ upLET t ==
   $declaredMode: local := NIL
   PAIRP lhs =>
     var:= getUnname first lhs
-    var = 'construct => upLETWithPatternOnLhs t
-    var = 'QUOTE => throwKeyedMsg("S2IS0027",['"A quoted form"])
+    var = "construct" => upLETWithPatternOnLhs t
+    var = "QUOTE" => throwKeyedMsg("S2IS0027",['"A quoted form"])
     upLETWithFormOnLhs(op,lhs,rhs)
   var:= getUnname lhs
   var = $immediateDataSymbol =>
@@ -685,7 +688,7 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
 seteltable(lhs is [f,:argl],rhs) ==
   -- produces the setelt form for trees such as "l.2:= 3"
   null (g := getUnnameIfCan f) => NIL
-  EQ(g,'elt) => altSeteltable [:argl, rhs]
+  EQ(g,"elt") => altSeteltable [:argl, rhs]
   get(g,'value,$e) is [expr,:.] and isMapExpr expr => NIL
   transferPropsToNode(g,f)
   getValue(lhs) or getMode(lhs) =>
@@ -735,12 +738,27 @@ upTableSetelt(op,lhs is [htOp,:args],rhs) ==
   -- function to give it an initial value.
   bottomUp [mkAtreeNode 'LET,htOp,[mkAtreeNode 'table]]
   tableCode := objVal getValue htOp
-  r := upSetelt(op, lhs, [mkAtreeNode 'setelt,:lhs,rhs])
+  r := upSetelt(op, lhs, [mkAtreeNode "setelt",:lhs,rhs])
   $genValue => r
   -- construct code
   t := getValue op
   putValue(op,objNew(['PROGN,tableCode,objVal t],objMode t))
   r
+
+unVectorize body ==
+  -- transforms from an atree back into a tree
+  VECP body =>
+    name := getUnname body
+    name ^= $immediateDataSymbol => name
+    objValUnwrap getValue body
+  atom body => body
+  body is [op,:argl] =>
+    newOp:=unVectorize op
+    if newOp = 'SUCHTHAT then newOp := "|"
+    if newOp = 'COERCE then newOp := "::"
+    if newOp = 'Dollar then newOp := "$elt"
+    [newOp,:unVectorize argl]
+  systemErrorHere '"unVectorize"
 
 isType t ==
   -- Returns the evaluated type if t is a tree representing a type,
@@ -766,7 +784,7 @@ isType t ==
 upLETtype(op,lhs,type) ==
   -- performs type assignment
   opName:= getUnname lhs
-  (not $genValue) and or/[CONTAINED(var,type) for var in $localVars] =>
+  (not $genValue) and "or"/[CONTAINED(var,type) for var in $localVars] =>
     compFailure ['"   Cannot compile type assignment to",:bright opName]
   mode :=
     if isPartialMode type then '(Mode)
@@ -792,7 +810,7 @@ assignSymbol(symbol, value, domain) ==
 
 getInterpMacroNames() ==
   names := [n for [n,:.] in $InterpreterMacroAlist]
-  if (e := CAAR $InteractiveFrame) and (m := ASSOC("--macros--",e)) then
+  if (e := CAAR $InteractiveFrame) and (m := assoc("--macros--",e)) then
     names := append(names,[n for [n,:.] in CDR m])
   MSORT names
 
@@ -804,7 +822,7 @@ isInterpMacro name ==
   (m := get("--macros--",name,$e))   => m
   (m := get("--macros--",name,$InteractiveFrame))   => m
   -- $InterpreterMacroAlist will probably be phased out soon
-  (sv := ASSOC(name,$InterpreterMacroAlist)) => CONS(NIL,CDR sv)
+  (sv := assoc(name,$InterpreterMacroAlist)) => CONS(NIL,CDR sv)
   NIL
 
 --% Handlers for prefix QUOTE
@@ -853,7 +871,7 @@ getReduceFunction(op,type,result, locale) ==
   if locale then putAtree(vecOp,'dollar,locale)
   mmS:= selectMms(vecOp,args,result)
   mm:= or/[mm for (mm:=[[.,:sig],fun,cond]) in mmS |
-    (isHomogeneousArgs sig) and and/[null c for c in cond]]
+    (isHomogeneousArgs sig) and "and"/[null c for c in cond]]
   null mm => 'failed
   [[dc,:sig],fun,:.]:=mm
   dc='local => [MKQ [fun,:'local],:CAR sig]
@@ -878,25 +896,25 @@ isHomogeneousArgs sig ==
 
 transformREPEAT [:itrl,body] ==
   -- syntactic transformation of repeat iterators, called from mkAtree2
-  iterList:=[:iterTran1 for it in itrl] where iterTran1 ==
-    it is ['STEP,index,lower,step,:upperList] =>
-      [['STEP,index,mkAtree1 lower,mkAtree1 step,:[mkAtree1 upper
+  iterList:=[:iterTran1 for it in itrl] where iterTran1() ==
+    it is ["STEP",index,lower,step,:upperList] =>
+      [["STEP",index,mkAtree1 lower,mkAtree1 step,:[mkAtree1 upper
         for upper in upperList]]]
-    it is ['IN,index,s] =>
+    it is ["IN",index,s] =>
       [['IN,index,mkAtree1 s]]
-    it is ['ON,index,s] =>
+    it is ["ON",index,s] =>
       [['IN,index,mkAtree1 ['tails,s]]]
-    it is ['WHILE,b] =>
-      [['WHILE,mkAtree1 b]]
-    it is ['_|,pred] =>
-      [['SUCHTHAT,mkAtree1 pred]]
+    it is ["WHILE",b] =>
+      [["WHILE",mkAtree1 b]]
+    it is ["|",pred] =>
+      [["SUCHTHAT",mkAtree1 pred]]
     it is [op,:.] and (op in '(VALUE UNTIL)) => nil
   bodyTree:=mkAtree1 body
-  iterList:=NCONC(iterList,[:iterTran2 for it in itrl]) where iterTran2 ==
-    it is ['STEP,:.] => nil
-    it is ['IN,:.] => nil
-    it is ['ON,:.] => nil
-    it is ['WHILE,:.] => nil
+  iterList:=NCONC(iterList,[:iterTran2 for it in itrl]) where iterTran2() ==
+    it is ["STEP",:.] => nil
+    it is ["IN",:.] => nil
+    it is ["ON",:.] => nil
+    it is ["WHILE",:.] => nil
     it is [op,b] and (op in '(UNTIL VALUE)) =>
       [[op,mkAtree1 b]]
     it is ['_|,pred] => nil
@@ -942,7 +960,7 @@ upREPEAT1 t ==
   -- now that the body is analyzed, we should know everything that
   -- is in the UNTIL clause
   for itr in itrl repeat
-    itr is ['UNTIL, pred] => bottomUpCompilePredicate(pred,'"until")
+    itr is ["UNTIL", pred] => bottomUpCompilePredicate(pred,'"until")
 
   -- now go do it
   evalREPEAT(op,rest t,repeatMode)
@@ -953,7 +971,7 @@ evalREPEAT(op,[:itrl,body],repeatMode) ==
   bodyMode := computedMode body
   bodyCode := getArgValue(body,bodyMode)
   if $iterateCount > 0 then
-    bodyCode := ['CATCH,$repeatBodyLabel,bodyCode]
+    bodyCode := ["CATCH",$repeatBodyLabel,bodyCode]
   code := ['REPEAT,:[evalLoopIter itr for itr in itrl], bodyCode]
   if repeatMode = $Void then code := ['OR,code,'(voidValue)]
   code := timedOptimization code
@@ -977,8 +995,8 @@ interpREPEAT(op,itrl,body,repeatMode) ==
   $indexTypes: local := NIL
   code :=
       -- we must insert a CATCH for the iterate clause
-      ['REPEAT,:[interpIter itr for itr in itrl],
-        ['CATCH,$repeatBodyLabel,interpLoop(body,$indexVars,
+      ["REPEAT",:[interpIter itr for itr in itrl],
+        ["CATCH",$repeatBodyLabel,interpLoop(body,$indexVars,
           $indexTypes,nil)]]
   SPADCATCH(eval $repeatLabel,timedEVALFUN code)
   val:= objNewWrap(voidValue(),repeatMode)
@@ -987,7 +1005,7 @@ interpREPEAT(op,itrl,body,repeatMode) ==
 
 interpLoop(expr,indexList,indexTypes,requiredType) ==
   -- generates code for interp-only repeat body
-  ['interpLoopIter,MKQ expr,MKQ indexList,['LIST,:indexList],
+  ['interpLoopIter,MKQ expr,MKQ indexList,["LIST",:indexList],
     MKQ indexTypes, MKQ requiredType]
 
 interpLoopIter(exp,indexList,indexVals,indexTypes,requiredType) ==
@@ -1184,15 +1202,10 @@ copyHack(env) ==
 -- Creates the function names of the special function handlers and puts
 --  them on the property list of the function name
 
-EVALANDFILEACTQ
- (
-   for name in $specialOps repeat
-    (
-      functionName:=INTERNL('up,name) ;
-      MAKEPROP(name,'up,functionName) ;
-      CREATE_-SBC functionName
-     )
-  )
+for name in $specialOps repeat
+   functionName:=INTERNL('up,name)
+   MAKEPROP(name,'up,functionName)
+   CREATE_-SBC functionName
 
 @
 \eject
