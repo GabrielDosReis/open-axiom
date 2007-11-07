@@ -1,71 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/i-coerce.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\section{Coercion conventions}
-
-\begin{verbatim}
-Coercion conventions
-
-Coercion involves the  changing of the datatype of an  object.  This
-   can be  done for conformality of  operations or, for  example, to
-   change the structure of an object  into one that is understood by
-   the printing routines.
-
-The actual coercion  is controlled  by the  function "coerce"  which
-   takes  and delivers  wrapped operands.   Also  see the  functions
-   interpCoerce and coerceInteractive.
-
-Sometimes one  does not  want to  actually change  the datatype  but
-   rather wants to determine  whether it is possible to do  so.  The
-   controlling function  to do this  is "canCoerceFrom".   The value
-   passed   to  specific   coercion  routines   in   this  case   is
-   "$fromCoerceable$".   The value returned is  true or false.   See
-   specific examples for more info.
-
-The special routines that  do the coercions typically  involve a "2"
-   in their  names.   For example, G2E  converts type  "Gaussian" to
-   type  "Expression".   These  special  routines take  and  deliver
-   unwrapped operands.   The determination of which  special routine
-   to  use  is  often  made  by  consulting  the  list  $CoerceTable
-   (currently in COT BOOT) and  this is controlled by coerceByTable.
-   Note that the special routines are in the file COERCEFN BOOT.
-\end{verbatim}
-\section{Function getConstantFromDomain}
-[[getConstantFromDomain]] is used to look up the constants $0$ and $1$
-from the given [[domainForm]].
-\begin{enumerate}
-\item if [[isPartialMode]] (see i-funsel.boot) returns true then the
-domain modemap contains the constant [[$EmptyMode]] which indicates
-that the domain is not fully formed. In this case we return [[NIL]].
-\end{enumerate}
-<<getConstantFromDomain>>=
-getConstantFromDomain(form,domainForm) ==
-    isPartialMode domainForm => NIL
-    opAlist := getOperationAlistFromLisplib first domainForm
-    key := opOf form
-    entryList := LASSOC(key,opAlist)
-    entryList isnt [[sig, ., ., .]] =>
-        key = "One" => getConstantFromDomain(["1"], domainForm)
-        key = "Zero" => getConstantFromDomain(["0"], domainForm)
-        throwKeyedMsg("S2IC0008",[form,domainForm])
-    -- i.e., there should be exactly one item under this key of that form
-    domain := evalDomain domainForm
-    SPADCALL compiledLookupCheck(key,sig,domain)
-
-@
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -97,9 +29,6 @@ getConstantFromDomain(form,domainForm) ==
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"i-analy"
 import '"i-resolv"
@@ -398,7 +327,19 @@ constantInDomain?(form,domainForm) ==
     key = "Zero" => constantInDomain?(["0"], domainForm)
     false
 
-<<getConstantFromDomain>>
+getConstantFromDomain(form,domainForm) ==
+    isPartialMode domainForm => NIL
+    opAlist := getOperationAlistFromLisplib first domainForm
+    key := opOf form
+    entryList := LASSOC(key,opAlist)
+    entryList isnt [[sig, ., ., .]] =>
+        key = "One" => getConstantFromDomain(["1"], domainForm)
+        key = "Zero" => getConstantFromDomain(["0"], domainForm)
+        throwKeyedMsg("S2IC0008",[form,domainForm])
+    -- i.e., there should be exactly one item under this key of that form
+    domain := evalDomain domainForm
+    SPADCALL compiledLookupCheck(key,sig,domain)
+
 
 domainOne(domain) == getConstantFromDomain('(One),domain)
 
@@ -1434,9 +1375,3 @@ hasCorrectTarget(m,sig is [dc,tar,:.]) ==
   tar is ['Union,t,'failed] => t=m
   tar is ['Union,'failed,t] and t=m
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}

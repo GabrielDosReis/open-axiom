@@ -1,28 +1,3 @@
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/interp/i-util.boot} Pamphlet}
-\author{The Axiom Team}
-
-\begin{document}
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
-
-\begin{verbatim}
-Wrapping and Unwrapping Values
- 
-A wrapped value represents something that need not be evaluated
-when code is generated.  This includes objects from domains or things
-that just happed to evaluate to themselves.  Typically generated
-lisp code is unwrapped.
- 
-\end{verbatim}
-\section{License}
-<<license>>=
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
 --
@@ -54,9 +29,6 @@ lisp code is unwrapped.
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@
-<<*>>=
-<<license>>
 
 import '"g-util"
 )package "BOOT"
@@ -255,9 +227,3 @@ mkPredList listOfEntries ==
 
 
 
-@
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
