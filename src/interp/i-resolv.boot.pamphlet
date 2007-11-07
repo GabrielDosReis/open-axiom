@@ -87,6 +87,9 @@ this symmetric resolution is done the following way:
 <<*>>=
 <<license>>
 
+import '"i-object"
+)package "BOOT"
+
 resolveTypeList u ==
   u is [a,:tail] =>
 
@@ -391,7 +394,7 @@ resolveTTRed3(t) ==
   t is ['SetUnion,a,b] => union(a,b)
   t is ['VarEqual,a,b] => (a = b) and a
   t is ['SetEqual,a,b] =>
-    (and/[member(x,a) for x in b] and and/[member(x,b) for x in a]) and a
+    (and/[member(x,a) for x in b] and "and"/[member(x,b) for x in a]) and a
   [( atom x and x ) or ((not cs and x and not interpOp? x and x)
     or resolveTTRed3 x) or return NIL
       for x in t for cs in GETDATABASE(CAR t, 'COSIG) ]
@@ -442,7 +445,7 @@ resolveTCat1(t,c) ==
   null (conds := getConditionsForCategoryOnType(t,c)) => NIL
 --rest(conds) => NIL   -- will handle later
   cond := first conds
-  cond isnt [.,['has, pat, c1],:.] => NIL
+  cond isnt [.,["has", pat, c1],:.] => NIL
   rest(c1) => NIL      -- make it simple
 
   argN := 0
@@ -498,7 +501,7 @@ matchUpToPatternVars(pat,form,patAlist) ==
   EQUAL(pat,form) => true
   isSharpVarWithNum(pat) =>
     -- see is pattern variable is in alist
-    (p := ASSOC(pat,patAlist)) => EQUAL(form,CDR p)
+    (p := assoc(pat,patAlist)) => EQUAL(form,CDR p)
     patAlist := [[pat,:form],:patAlist]
     true
   PAIRP(pat) =>
@@ -738,12 +741,12 @@ resolveTMRed1(t) ==
       resolveTM1(a,b)
   t is ['Incl,a,b] => PAIRP b and member(a,b) and b
   t is ['Diff,a,b] => PAIRP a and member(b,a) and SETDIFFERENCE(a,[b])
-  t is ['SetIncl,a,b] => PAIRP b and and/[member(x,b) for x in a] and b
+  t is ['SetIncl,a,b] => PAIRP b and "and"/[member(x,b) for x in a] and b
   t is ['SetDiff,a,b] => PAIRP b and PAIRP b and
                          intersection(a,b) and SETDIFFERENCE(a,b)
   t is ['VarEqual,a,b] => (a = b) and b
   t is ['SetComp,a,b] => PAIRP a and PAIRP b and
-    and/[member(x,a) for x in b] and SETDIFFERENCE(a,b)
+    "and"/[member(x,a) for x in b] and SETDIFFERENCE(a,b)
   t is ['SimpleAlgebraicExtension,a,b,p] =>  -- this is a hack. RSS
     ['SimpleAlgebraicExtension, resolveTMRed1 a, resolveTMRed1 b,p]
   [( atom x and x ) or resolveTMRed1 x or return NIL for x in t]

@@ -50,18 +50,21 @@
 <<*>>=
 <<license>>
 
+import '"i-object"
+)package "BOOT"
+
 --% User Function Creation and Analysis Code
 
-SETANDFILEQ($mapTarget,nil)
-SETANDFILEQ($mapReturnTypes,nil)
-SETANDFILEQ($mapName,'noMapName)
-SETANDFILEQ($mapThrowCount, 0) -- times a "return" occurs in map
-SETANDFILEQ($compilingMap, NIL)
-SETANDFILEQ($definingMap, NIL)
+$mapTarget := nil
+$mapReturnTypes := nil
+$mapName := 'noMapName
+$mapThrowCount := 0 -- times a "return" occurs in map
+$compilingMap := NIL
+$definingMap := NIL
 
 --% Generating internal names for functions
 
-SETANDFILEQ($specialMapNameSuffix, NIL)
+$specialMapNameSuffix := NIL
 
 makeInternalMapName(userName,numArgs,numMms,extraPart) ==
   name := CONCAT('"*",STRINGIMAGE numArgs,'";",
@@ -183,7 +186,7 @@ addMap(lhs,rhs,pred) ==
     for x in argl for s in $FormalMapVariableList]
   argList:=
     [fn for x in formalArgList] where
-      fn ==
+      fn() ==
         if x is ["SUCHTHAT",s,p] then (predList:= [p,:predList]; x:= s)
         x
   mkMapAlias(op,argl)
@@ -223,7 +226,7 @@ augmentMap(op,args,pred,body,oldMap) ==
 
 deleteMap(op,pattern,map) ==
   map is ["MAP",:tail] =>
-    newMap:= ['MAP,:[x for x in tail | w]] where w ==
+    newMap:= ['MAP,:[x for x in tail | w]] where w() ==
       x is [=pattern,:replacement] => sayDroppingFunctions(op,[x])
       true
     null rest newMap => nil
@@ -244,7 +247,7 @@ getUserIdentifiersIn body ==
   body is [op,:l] =>
     argIdList:= "append"/[getUserIdentifiersIn y for y in l]
     bodyIdList :=
-      CONSP op or not (GET(op,'Nud) or GET(op,'Led) or GET(op,'up))=>
+      CONSP op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
         NCONC(getUserIdentifiersIn op, argIdList)
       argIdList
     REMDUP bodyIdList
@@ -384,7 +387,7 @@ clearDep1(x,toDoList,doneList,depList) ==
     a:= ASSQ(x,depList)
     a =>
       depList:= delete(a,depList)
-      toDoList:= setUnion(toDoList,
+      toDoList:= union(toDoList,
         setDifference(CDR a,doneList))
   toDoList is [a,:res] => clearDep1(a,res,newDone,depList)
   'done
@@ -551,7 +554,7 @@ mkInterpFun(op,opName,argTypes) ==
   getMode op isnt ['Mapping,:sig] => nil
   parms := [var for type in argTypes for var in $FormalMapVariableList]
   arglCode := ['LIST,:[argCode for type in argTypes
-    for argName in parms]] where argCode ==
+    for argName in parms]] where argCode() ==
       ['putValueValue,['mkAtreeNode,MKQ argName],
         objNewCode(['wrap,argName],type)]
   funName := GENSYM()
@@ -567,7 +570,7 @@ rewriteMap(op,opName,argl) ==
     get(opName,'mode,$e) isnt ['Mapping,:sig] =>
       compFailure  ['"   Cannot compile map:",:bright opName]
     arglCode := ['LIST,:[argCode for arg in argl for argName in
-      $FormalMapVariableList]] where argCode ==
+      $FormalMapVariableList]] where argCode() ==
         ['putValueValue,['mkAtreeNode,MKQ argName],
           objNewCode(['wrap,wrapped2Quote(objVal getValue arg)],
             getMode arg)]

@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -116,8 +118,8 @@ compFormWithModemap(form is [op,:argl],m,e,modemap) ==
         -- try to deal with new-style Unions where we know the conditions
         op = "elt" and f is ['XLAM,:.] and IDENTP(z:=CAR argl) and
           (c:=get(z,'condition,e)) and
-            c is [['case,=z,c1]] and
-              (c1 is ['_:,=(CADR argl),=m] or EQ(c1,CADR argl) ) =>
+            c is [["case",=z,c1]] and
+              (c1 is [":",=(CADR argl),=m] or EQ(c1,CADR argl) ) =>
 -- first is a full tag, as placed by getInverseEnvironment
 -- second is what getSuccessEnvironment will place there
                 ["CDR",z]

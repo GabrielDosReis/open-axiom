@@ -89,17 +89,20 @@ There are several special modes used in these functions:
 <<*>>=
 <<license>>
 
+import '"i-analy"
+)package "BOOT"
+
 
 -- Functions which require special handlers (also see end of file)
 
-SETANDFILEQ($repeatLabel, NIL)
-SETANDFILEQ($breakCount, 0)
-SETANDFILEQ($anonymousMapCounter, 0)
+$repeatLabel := NIL
+$breakCount := 0
+$anonymousMapCounter := 0
 
-SETANDFILEQ($specialOps, '(
-  ADEF AlgExtension and case COERCE COLLECT construct Declare DEF Dollar
-   equation error free has IF is isnt iterate break LET local MDEF or
-    pretend QUOTE REDUCE REPEAT return SEQ TARGET Tuple typeOf where ))
+$specialOps := '(
+  ADEF AlgExtension _and _case COERCE COLLECT construct Declare DEF Dollar
+   equation error free has IF _is _isnt iterate _break LET _local MDEF _or
+    pretend QUOTE REDUCE REPEAT _return SEQ TARGET Tuple typeOf _where )
 
 --% Void stuff
 
@@ -185,9 +188,9 @@ mkInterpTargetedADEF(t,vars,types,oldBody) ==
   null first types =>
     throwKeyedMsg("S2IS0056",NIL)
     throwMessage '"   map result type needed but not present."
-  arglCode := ['LIST,:[argCode for type in rest types for var in vars]]
-    where argCode == ['putValueValue,['mkAtreeNode,MKQ var],
-      objNewCode(['wrap,var],type)]
+  arglCode := ["LIST",:[argCode for type in rest types for var in vars]]
+    where argCode() == ['putValueValue,['mkAtreeNode,MKQ var],
+      objNewCode(["wrap",var],type)]
   put($mapName,'mapBody,oldBody,$e)
   body := ['rewriteMap1,MKQ $mapName,arglCode,MKQ types]
   compileADEFBody(t,vars,types,body,first types)
@@ -227,7 +230,7 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   --
   -- MCD 13/3/96
   if not $definingMap and ($genValue or $compilingMap) then
-    fun := ['function,['LAMBDA,[:vars,'envArg],body]]
+    fun := ["function",["LAMBDA",[:vars,'envArg],body]]
     code :=  wrap timedEVALFUN ['LIST,fun]
   else
     $freeVariables := []
@@ -235,8 +238,8 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
     -- CCL does not support upwards funargs, so we check for any free variables
     -- and pass them into the lambda as part of envArg.
     body := checkForFreeVariables(body,"ALL")
-    fun := ['function,['LAMBDA,[:vars,'envArg],body]]
-    code := ['CONS, fun, ["VECTOR", :reverse $freeVariables]]
+    fun := ["function",["LAMBDA",[:vars,'envArg],body]]
+    code := ["CONS", fun, ["VECTOR", :reverse $freeVariables]]
 
   val := objNew(code,rt := ['Mapping,computedResultType,:rest types])
   putValue(t,val)
@@ -316,9 +319,9 @@ upand x ==
   ms := bottomUp term2
   ms isnt [=$Boolean] => throwKeyedMsgSP("S2IS0054",[2,'"_"and_""],term2)
   -- generate an IF expression and let the rest of the code handle it
-  cond := [mkAtreeNode "=",mkAtree 'false,term1]
+  cond := [mkAtreeNode "=",mkAtree "false",term1]
   putTarget(cond,$Boolean)
-  code := [mkAtreeNode 'IF,cond,mkAtree 'false,term2]
+  code := [mkAtreeNode "IF",cond,mkAtree "false",term2]
   putTarget(code,$Boolean)
   bottomUp code
   putValue(x,getValue code)
@@ -346,9 +349,9 @@ upor x ==
   ms := bottomUp term2
   ms isnt [=$Boolean] => throwKeyedMsgSP("S2IS0054",[2,'"_"or_""],term2)
   -- generate an IF expression and let the rest of the code handle it
-  cond := [mkAtreeNode "=",mkAtree 'true,term1]
+  cond := [mkAtreeNode "=",mkAtree "true",term1]
   putTarget(cond,$Boolean)
-  code := [mkAtreeNode 'IF,cond,mkAtree 'true,term2]
+  code := [mkAtreeNode "IF",cond,mkAtree "true",term2]
   putTarget(code,$Boolean)
   bottomUp code
   putValue(x,getValue code)
@@ -363,16 +366,16 @@ upcase t ==
   objMode(triple) isnt ['Union,:unionDoms] =>
     throwKeyedMsg("S2IS0004",NIL)
   if (rhs' := isDomainValuedVariable(rhs)) then rhs := rhs'
-  if first unionDoms is ['_:,.,.] then
+  if first unionDoms is [":",.,.] then
      for i in 0.. for d in unionDoms repeat
-        if d is ['_:,=rhs,.] then rhstag := i
-     if NULL rhstag then error "upcase: bad Union form"
+        if d is [":",=rhs,.] then rhstag := i
+     if NULL rhstag then error '"upcase: bad Union form"
      $genValue =>
         rhstag = first unwrap objVal triple => code := wrap 'TRUE
         code := wrap NIL
      code :=
-        ['COND,
-          [['EQL,rhstag,['CAR,['unwrap,objVal triple]]],
+        ["COND",
+          [["EQL",rhstag,["CAR",["unwrap",objVal triple]]],
             ''TRUE],
               [''T,NIL]]
   else
@@ -380,10 +383,10 @@ upcase t ==
         t' := coerceUnion2Branch triple
         rhs = objMode t' => code := wrap 'TRUE
         code := wrap NIL
-    triple' := objNewCode(['wrap,objVal triple],objMode triple)
+    triple' := objNewCode(["wrap",objVal triple],objMode triple)
     code :=
-        ['COND,
-          [['EQUAL,MKQ rhs,['objMode,['coerceUnion2Branch,triple']]],
+        ["COND",
+          [["EQUAL",MKQ rhs,["objMode",['coerceUnion2Branch,triple']]],
             ''TRUE],
               [''T,NIL]]
   putValue(op,objNew(code,$Boolean))
@@ -463,29 +466,29 @@ evalCOERCE(op,tree,m) ==
 
 transformCollect [:itrl,body] ==
   -- syntactic transformation for COLLECT form, called from mkAtree1
-  iterList:=[:iterTran1 for it in itrl] where iterTran1 ==
-    it is ['STEP,index,lower,step,:upperList] =>
-      [['STEP,index,mkAtree1 lower,mkAtree1 step,:[mkAtree1 upper
+  iterList:=[:iterTran1 for it in itrl] where iterTran1() ==
+    it is ["STEP",index,lower,step,:upperList] =>
+      [["STEP",index,mkAtree1 lower,mkAtree1 step,:[mkAtree1 upper
         for upper in upperList]]]
-    it is ['IN,index,s] =>
-      [['IN,index,mkAtree1 s]]
-    it is ['ON,index,s] =>
+    it is ["IN",index,s] =>
+      [["IN",index,mkAtree1 s]]
+    it is ["ON",index,s] =>
       [['IN,index,mkAtree1 ['tails,s]]]
-    it is ['WHILE,b] =>
-      [['WHILE,mkAtree1 b]]
-    it is ['_|,pred] =>
-      [['SUCHTHAT,mkAtree1 pred]]
+    it is ["WHILE",b] =>
+      [["WHILE",mkAtree1 b]]
+    it is ["|",pred] =>
+      [["SUCHTHAT",mkAtree1 pred]]
     it is [op,:.] and (op in '(VALUE UNTIL)) => nil
   bodyTree:=mkAtree1 body
   iterList:=NCONC(iterList,[:iterTran2 for it in itrl]) where
-    iterTran2 ==
-      it is ['STEP,:.] => nil
-      it is ['IN,:.] => nil
-      it is ['ON,:.] => nil
-      it is ['WHILE,:.] => nil
+    iterTran2() ==
+      it is ["STEP",:.] => nil
+      it is ["IN",:.] => nil
+      it is ["ON",:.] => nil
+      it is ["WHILE",:.] => nil
       it is [op,b] and (op in '(UNTIL)) =>
         [[op,mkAtree1 b]]
-      it is ['_|,pred] => nil
+      it is ["|",pred] => nil
       keyedSystemError("S2GE0016",
         ['"transformCollect",'"Unknown type of iterator"])
   [:iterList,bodyTree]
@@ -515,7 +518,7 @@ upCOLLECT1 t ==
   ms:= bottomUpCompile body
   [m]:= ms
   for itr in itrl repeat
-    itr is ['UNTIL, pred] => bottomUpCompilePredicate(pred,'"until")
+    itr is ["UNTIL", pred] => bottomUpCompilePredicate(pred,'"until")
   mode:= ['Tuple,m]
   evalCOLLECT(op,rest t,mode)
   putModeSet(op,[mode])
@@ -523,15 +526,15 @@ upCOLLECT1 t ==
 upLoopIters itrl ==
   -- type analyze iterator loop iterators
   for iter in itrl repeat
-    iter is ['WHILE,pred] =>
+    iter is ["WHILE",pred] =>
       bottomUpCompilePredicate(pred,'"while")
-    iter is ['SUCHTHAT,pred] =>
+    iter is ["SUCHTHAT",pred] =>
       bottomUpCompilePredicate(pred,'"|")
-    iter is ['UNTIL,:.] =>
+    iter is ["UNTIL",:.] =>
       NIL      -- handle after body is analyzed
-    iter is ['IN,index,s] =>
+    iter is ["IN",index,s] =>
       upLoopIterIN(iter,index,s)
-    iter is ['STEP,index,lower,step,:upperList] =>
+    iter is ["STEP",index,lower,step,:upperList] =>
       upLoopIterSTEP(index,lower,step,upperList)
       -- following is an optimization
       typeIsASmallInteger(get(index,'mode,$env)) =>
@@ -985,10 +988,10 @@ subVecNodes(new,old,form) ==
 mkIterVarSub(var,numVars) ==
   n := iterVarPos var
   n=2 =>
-    [mkAtreeNode 'elt,mkNestedElts(numVars-2),mkAtreeNode 'part2]
+    [mkAtreeNode "elt",mkNestedElts(numVars-2),mkAtreeNode 'part2]
   n=1 =>
-    [mkAtreeNode 'elt,mkNestedElts(numVars-2),mkAtreeNode 'part1]
-  [mkAtreeNode 'elt,mkNestedElts(numVars-n),mkAtreeNode 'part1]
+    [mkAtreeNode "elt",mkNestedElts(numVars-2),mkAtreeNode 'part1]
+  [mkAtreeNode "elt",mkNestedElts(numVars-n),mkAtreeNode 'part1]
 
 iterVarPos var ==
   for [index,:.] in reverse $indexVars for i in 1.. repeat
@@ -996,7 +999,7 @@ iterVarPos var ==
 
 mkNestedElts n ==
   n=0 => mkAtreeNode($index or ($index:= GENSYM()))
-  [mkAtreeNode 'elt, mkNestedElts(n-1), mkAtreeNode 'part2]
+  [mkAtreeNode "elt", mkNestedElts(n-1), mkAtreeNode 'part2]
 
 --% Handlers for construct
 
@@ -1135,8 +1138,8 @@ upRecordConstruct(op,l,tar) ==
         for arg in l for ['_:,.,type] in types]
   len := #l
   code :=
-    (len = 1) => ['CONS, :argCode, '()]
-    (len = 2) => ['CONS,:argCode]
+    (len = 1) => ["CONS", :argCode, '()]
+    (len = 2) => ["CONS",:argCode]
     ['VECTOR,:argCode]
   if $genValue then code :=  wrap timedEVALFUN code
   putValue(op,objNew(code,tar))
@@ -1154,13 +1157,13 @@ upDeclare t ==
   categoryForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'category],op)
   packageForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'package],op)
   junk :=
-    lhs is ['free,['Tuple,:vars]] or lhs is ['free,['LISTOF,:vars]] or
-      lhs is ['free,:vars] =>
+    lhs is ["free",['Tuple,:vars]] or lhs is ['free,['LISTOF,:vars]] or
+      lhs is ["free",:vars] =>
         for var in vars repeat declare(['free,var],mode)
-    lhs is ['local,['Tuple,:vars]] or lhs is ['local,['LISTOF,:vars]] or
-      lhs is ['local,:vars] =>
-        for var in vars repeat declare(['local,var],mode)
-    lhs is ['Tuple,:vars] or lhs is ['LISTOF,:vars] =>
+    lhs is ["local",['Tuple,:vars]] or lhs is ['local,['LISTOF,:vars]] or
+      lhs is ["local",:vars] =>
+        for var in vars repeat declare(["local",var],mode)
+    lhs is ["Tuple",:vars] or lhs is ["LISTOF",:vars] =>
       for var in vars repeat declare(var,mode)
     declare(lhs,mode)
   putValue(op,objNewWrap(voidValue(), $Void))

@@ -112,7 +112,10 @@ all these coercion functions have the following result:
 <<*>>=
 <<license>>
 
-SETANDFILEQ($coerceFailure,GENSYM())
+import '"i-coerce"
+)package "BOOT"
+
+$coerceFailure := GENSYM()
 
 position1(x,y) ==
   -- this is used where we want to assume a 1-based index
@@ -684,7 +687,7 @@ L2M(u,[.,D],[.,R]) ==
 L2Record(l,[.,D],[.,:al]) ==
   l = '_$fromCoerceable_$ => nil
   #l = #al =>
-    v:= [u for x in l for [":",.,D'] in al] where u ==
+    v:= [u for x in l for [":",.,D'] in al] where u() ==
       T:= coerceInt(objNewWrap(x,D),D') or return 'failed
       objValUnwrap(T)
     v = 'failed => coercionFailure()

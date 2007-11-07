@@ -58,6 +58,9 @@ lisp code is unwrapped.
 <<*>>=
 <<license>>
 
+import '"g-util"
+)package "BOOT"
+
 --% The function for making prompts
  
 spadPrompt() ==
@@ -145,7 +148,7 @@ Undef(:u) ==
   u':= LAST u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
-  ^EQ(CAR ELT(domain',slot),Undef) =>
+  ^EQ(CAR ELT(domain',slot), function Undef) =>
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then

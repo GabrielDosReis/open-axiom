@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"i-object"
+)package "BOOT"
+
 --% Interpreter Code Generation Routines
 
 --Modified by JHD 9/9/93 to fix a problem with coerces inside

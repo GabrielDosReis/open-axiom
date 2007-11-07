@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"i-object"
+)package "BOOT"
+
 --% Interpreter Analysis Functions
 
 getMinimalVariableTower(var,t) ==

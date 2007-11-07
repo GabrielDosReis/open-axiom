@@ -407,6 +407,7 @@ _/WSNAME := "NOBOOT"
 _/EDITFILE := nil
 
 ++
+LINE := nil
 CHR := nil
 TOK := nil
 
@@ -418,3 +419,6 @@ _*ANCESTORS_-HASH_* := nil
 ++
 _*BUILD_-VERSION_* := nil
 _*YEARWEEK_* := nil
+
+++
+_/TRACENAMES := nil

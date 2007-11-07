@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"i-analy"
+)package "BOOT"
+
 --% Constructor Evaluation
 
 $noEvalTypeMsg := nil
@@ -70,7 +73,7 @@ mkEvalable form ==
     loadIfNecessary op
     kind:= GETDATABASE(op,'CONSTRUCTORKIND)
     cosig := GETDATABASE(op, 'COSIG) =>
-      [op,:[val for x in argl for typeFlag in rest cosig]] where val ==
+      [op,:[val for x in argl for typeFlag in rest cosig]] where val() ==
         typeFlag =>
           kind = 'category => MKQ x
           VECP x => MKQ x
@@ -178,7 +181,7 @@ evaluateType1 form ==
     ml := replaceSharps(ml,form)
     # argl ^= #ml => throwEvalTypeMsg("S2IE0003",[form,form])
     for x in argl for m in ml for argnum in 1.. repeat
-      typeList := [v,:typeList] where v ==
+      typeList := [v,:typeList] where v() ==
         categoryForm?(m) =>
           m := evaluateType MSUBSTQ(x,'_$,m)
           evalCategory(x' := (evaluateType x), m) => x'
@@ -187,7 +190,7 @@ evaluateType1 form ==
         GETDATABASE(opOf m,'CONSTRUCTORKIND) = 'domain and 
             (tree := mkAtree x) and  putTarget(tree,m) and ((bottomUp tree) is [m1]) =>
                 [zt,:zv]:= z1:= getAndEvalConstructorArgument tree
-                (v:= coerceOrRetract(z1,m)) => objValUnwrap v
+                (v' := coerceOrRetract(z1,m)) => objValUnwrap v'
                 throwKeyedMsgCannotCoerceWithValue(zv,zt,m)
         if x = $EmptyMode then x := $quadSymbol
         throwEvalTypeMsg("S2IE0006",[makeOrdinal argnum,m,form])

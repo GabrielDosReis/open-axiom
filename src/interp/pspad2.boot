@@ -118,9 +118,9 @@ formatDeftranRepper([op,a],SEQflag) ==
     a is ['LET,a,b] => formatDeftran(['LET,a,[op,b]],SEQflag)
     a is ['not,[op,a,b]] and (op1 := LASSOC(op,$pspadRelationAlist)) =>
       formatDeftran [op1,a,b]
-    a is ['return,n,r] => 
+    a is ["return",n,r] => 
       MEMQ(opOf r,'(true false)) => a
-      ['return,n,[op,formatDeftran(r,SEQflag)]]
+      ["return",n,[op,formatDeftran(r,SEQflag)]]
     a is ['error,:.] => a
     [op,formatDeftran(a,SEQflag)]
 

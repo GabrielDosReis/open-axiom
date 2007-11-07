@@ -31,7 +31,7 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import '"sys-macros"
+import '"g-util"
 )package "BOOT"
 
 --% Functions on interpreter objects
@@ -69,7 +69,7 @@ objCodeMode obj == CADR obj
  
 wrap x ==
   isWrapped x => x
-  ['WRAPPED,:x]
+  ["WRAPPED",:x]
  
 isWrapped x == x is ['WRAPPED,:.] or NUMBERP x or FLOATP x or CVECP x
  
@@ -83,7 +83,7 @@ wrapped2Quote x ==
   x
  
 quote2Wrapped x ==
-  x is ['QUOTE,y] => wrap y
+  x is ["QUOTE",y] => wrap y
   x
  
 removeQuote x ==
@@ -142,3 +142,270 @@ getBasicObject x ==
   FLOATP  x => objNewWrap(x,$DoubleFloat)
   NIL
 
+
+--%% Vectorized Attributed Trees
+
+--% The interpreter translates parse forms into vats for analysis.
+--% These contain a number of slots in each node for information.
+--% The leaves are now all vectors, though the leaves for basic types
+--% such as integers and strings used to just be the objects themselves.
+--% The vectors for the leaves with such constants now have the value
+--% of $immediateDataSymbol as their name. Their are undoubtably still
+--% some functions that still check whether a leaf is a constant. Note
+--% that if it is not a vector it is a subtree.
+
+--% attributed tree nodes have the following form:
+--% slot         description
+--% ----         -----------------------------------------------------
+--%  0           operation name or literal
+--%  1           declared mode of variable
+--%  2           computed value of subtree from this node
+--%  3           modeset: list of single computed mode of subtree
+--%  4           prop list for extra things
+
+
+++ create a leaf VAT node.
+mkAtreeNode x ==
+  -- maker of attrib tree node
+  v := MAKE_-VEC 5
+  v.0 := x
+  v
+
+++ remove mode, value, and misc. info from attrib tree
+emptyAtree expr ==
+  VECP expr =>
+    $immediateDataSymbol = expr.0 => nil
+    expr.1:= NIL
+    expr.2:= NIL
+    expr.3:= NIL
+    -- kill proplist too?
+  atom expr => nil
+  for e in expr repeat emptyAtree e
+
+
+++ returns true if x is a leaf VAT object.
+isLeaf x == 
+  atom x     --may be a number or a vector
+
+++ returns the mode of the VAT node x.
+getMode x ==
+  x is [op,:.] => getMode op
+  VECP x => x.1
+  m := getBasicMode x => m
+  keyedSystemError("S2II0001",[x])
+
+++ sets the mode for the VAT node x to y.
+putMode(x,y) ==
+  x is [op,:.] => putMode(op,y)
+  null VECP x => keyedSystemError("S2II0001",[x])
+  x.1 := y
+
+++ returns an interpreter object that represents the value of node x.
+++ Note that an interpreter object is a pair of mode and value.
+getValue x ==
+  VECP x => x.2
+  atom x =>
+    t := getBasicObject x => t
+    keyedSystemError("S2II0001",[x])
+  getValue first x
+
+++ sets the value of VAT node x to interpreter object y.
+putValue(x,y) ==
+  x is [op,:.] => putValue(op,y)
+  null VECP x => keyedSystemError("S2II0001",[x])
+  x.2 := y
+
+++ same as putValue(vec, val), except that vec is returned instead of val.
+putValueValue(vec,val) ==
+  putValue(vec,val)
+  vec
+
+++ Returns the node class of x, if possible; otherwise nil.
+getUnnameIfCan x ==
+  VECP x => x.0
+  x is [op,:.] => getUnnameIfCan op
+  atom x => x
+  nil
+
+++ Returns the node class of x; otherwise raise an error.
+getUnname x ==
+  x is [op,:.] => getUnname op
+  getUnname1 x
+
+++ Subroutine of getUnname.
+getUnname1 x ==
+  VECP x => x.0
+  null atom x => keyedSystemError("S2II0001",[x])
+  x
+
+++ returns the mode-set of VAT node x.
+getModeSet x ==
+  x and PAIRP x => getModeSet first x
+  VECP x =>
+    y:= x.aModeSet =>
+      (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
+        [m]
+      y
+    keyedSystemError("S2GE0016",['"getModeSet",'"no mode set"])
+  m:= getBasicMode x => [m]
+  not atom x => getModeSet first x
+  keyedSystemError("S2GE0016",['"getModeSet",
+    '"not an attributed tree"])
+
+++ Sets the mode-set of VAT node x to y.
+putModeSet(x,y) ==
+  x is [op,:.] => putModeSet(op,y)
+  not VECP x => keyedSystemError("S2II0001",[x])
+  x.3 := y
+  y
+
+getModeOrFirstModeSetIfThere x ==
+  x is [op,:.] => getModeOrFirstModeSetIfThere op
+  VECP x =>
+    m := x.1 => m
+    val := x.2 => objMode val
+    y := x.aModeSet =>
+      (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) => m
+      first y
+    NIL
+  m := getBasicMode x => m
+  NIL
+
+getModeSetUseSubdomain x ==
+  x and PAIRP x => getModeSetUseSubdomain first x
+  VECP(x) =>
+    -- don't play subdomain games with retracted args
+    getAtree(x,'retracted) => getModeSet x
+    y := x.aModeSet =>
+      (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
+        [m]
+      val := getValue x
+      (x.0 = $immediateDataSymbol) and (y = [$Integer]) =>
+        val := objValUnwrap val
+        m := getBasicMode0(val,true)
+        x.2 := objNewWrap(val,m)
+        x.aModeSet := [m]
+        [m]
+      null val => y
+      isEqualOrSubDomain(objMode(val),$Integer) and
+        INTEGERP(f := objValUnwrap val) =>
+          [getBasicMode0(f,true)]
+      y
+    keyedSystemError("S2GE0016",
+      ['"getModeSetUseSubomain",'"no mode set"])
+  m := getBasicMode0(x,true) => [m]
+  null atom x => getModeSetUseSubdomain first x
+  keyedSystemError("S2GE0016",
+    ['"getModeSetUseSubomain",'"not an attributed tree"])
+
+
+computedMode t ==
+  getModeSet t is [m] => m
+  keyedSystemError("S2GE0016",['"computedMode",'"non-singleton modeset"])
+
+--% Other VAT properties
+
+insertShortAlist(prop,val,al) ==
+  pair := QASSQ(prop,al) =>
+    RPLACD(pair,val)
+    al
+  [[prop,:val],:al]
+
+putAtree(x,prop,val) ==
+  x is [op,:.] =>
+    -- only willing to add property if op is a vector
+    -- otherwise will be pushing to deeply into calling structure
+    if VECP op then putAtree(op,prop,val)
+    x
+  null VECP x => x     -- just ignore it
+  n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
+    => x.n := val
+  x.4 := insertShortAlist(prop,val,x.4)
+  x
+
+getAtree(x,prop) ==
+  x is [op,:.] =>
+    -- only willing to get property if op is a vector
+    -- otherwise will be pushing to deeply into calling structure
+    VECP op => getAtree(op,prop)
+    NIL
+  null VECP x => NIL     -- just ignore it
+  n:= QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
+    => x.n
+  QLASSQ(prop,x.4)
+
+putTarget(x, targ) ==
+  -- want to put nil modes perhaps to clear old target
+  if targ = $EmptyMode then targ := nil
+  putAtree(x,'target,targ)
+
+getTarget(x) == 
+  getAtree(x,'target)
+
+--% Source and position information
+
+-- In the following, src is a string containing an original input line,
+-- line is the line number of the string within the source file,
+-- and col is the index within src of the start of the form represented
+-- by x. x is a VAT.
+
+++ returns source position information for VAT node x.
+getSrcPos(x) == 
+  getAtree(x, 'srcAndPos)
+
+++ sets the source location information for VAT node x.
+putSrcPos(x, file, src, line, col) ==
+  putAtree(x, 'srcAndPos, srcPos_New(file, src, line, col))
+
+srcPosNew(file, src, line, col) == 
+  LIST2VEC [file, src, line, col]
+
+++ returns the name of source file for source location `sp'.
+srcPosFile(sp) ==
+  if sp then sp.0 else nil
+
+++ returns the input source string for source location `sp'.
+srcPosSource(sp) ==
+  if sp then sp.1 else nil
+
+++ returns the line number for source location `sp'.
+srcPosLine(sp) ==
+  if sp then sp.2 else nil
+
+++ returns the column number for source location `sp'.
+srcPosColumn(sp) ==
+  if sp then sp.3 else nil
+
+srcPosDisplay(sp) ==
+  null sp => nil
+  s := STRCONC('"_"", srcPosFile sp, '"_", line ",
+      STRINGIMAGE srcPosLine sp, '": ")
+  sayBrightly [s, srcPosSource sp]
+  col  := srcPosColumn sp
+  dots :=
+      col = 0 => '""
+      fillerSpaces(col, '".")
+  sayBrightly [fillerSpaces(#s, '" "), dots, '"^"]
+  true
+
+
+--% Transfer of VAT properties.
+
+
+transferPropsToNode(x,t) ==
+  propList := getProplist(x,$env)
+  QLASSQ('Led,propList) or QLASSQ('Nud,propList) => nil
+  node :=
+    VECP t => t
+    first t
+  for prop in '(mode localModemap value name generatedCode)
+    repeat transfer(x,node,prop)
+      where
+        transfer(x,node,prop) ==
+          u := get(x,prop,$env) => putAtree(node,prop,u)
+          (not (x in $localVars)) and (u := get(x,prop,$e)) =>
+            putAtree(node,prop,u)
+  if not getMode(t) and (am := get(x,'automode,$env)) then
+    putModeSet(t,[am])
+    putMode(t,am)
+  t

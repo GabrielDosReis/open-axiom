@@ -1,3 +1,48 @@
+2007-11-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (i-toplev.$(FASLEXT)): New rule.
+	(i-syscmd.$(FASLEXT)): Likewise.
+	(i-spec2.$(FASLEXT)): Likewise.
+	(i-spec1.$(FASLEXT)): Likewise.
+	(i-funsel.$(FASLEXT)): Likewise.
+	(i-map.$(FASLEXT)): Likewise.
+	(i-eval.$(FASLEXT)): Likewise.
+	(i-coerfn.$(FASLEXT)): Likewise.
+	(i-coerce.$(FASLEXT)): Likewise.
+	(i-resolv.$(FASLEXT)): Likewise.
+	(i-analy.$(FASLEXT)): Likewise.
+	(i-code.$(FASLEXT)): Likewise.
+	(i-intern.$(FASLEXT)): Likewise.
+	(<<i-analy.clisp>>): Remove.
+	(<<i-code.clisp>>): Likewise.
+	(<<i-coerce.clisp>>): Likewise.
+	(<<i-coerfn.clisp>>): Likewise.
+	(<<i-eval.clisp>>): Likewise.
+	(<<i-funsel.clisp>>): Likewise.
+	(<<i-intern.clisp>>): Likewise.
+	(<<i-map.clisp>>): Likewise.
+	(<<i-resolv.clisp>>): Likewise.
+	(<<i-spec1.clisp>>): Likewise.
+	(<<i-spec2.clisp>>): Likewise.
+	(<<i-syscmd.clisp>>): Likewise.
+	(<<i-toplev.clisp>>): Likewise.
+	(<<i-util.clisp>>): Likewise.
+	* apply.boot (compFormWithModemap): Fix syntax.
+	* i-analy.boot.pamphlet: Push into package "BOOT".
+	* i-code.boot.pamphlet: Likewise.
+	* i-coerce.boot.pamphlet: Likewise.
+	* i-coerfn.boot.pamphlet: Likewise.
+	* i-eval.boot.pamphlet: Likewise.
+	* i-funsel.boot.pamphlet: Likewise.
+	* i-intern.boot.pamphlet: Likewise.
+	* i-map.boot.pamphlet: Likewise.
+	* i-resolv.boot.pamphlet: Likewise.
+	* i-spec1.boot.pamphlet: Likewise.
+	* i-spec2.boot.pamphlet: Likewise.
+	* i-syscmd.bot.pamphlet: Likewise.
+	* i-toplev.boot.pamphlet: Likewise.
+	* i-util.boot.pamphlet: Likewise.
+
 2007-11-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (compiler.$(FASLEXT)): New rule.
