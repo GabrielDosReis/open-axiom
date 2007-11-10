@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"c-util"
+)package "BOOT"
+
 unloadOneConstructor(cnam,fn) ==
     REMPROP(cnam,'LOADED)
     SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))

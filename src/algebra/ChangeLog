@@ -1,3 +1,9 @@
+2007-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (mostlyclean-local): Remove stamp files and
+	strap/ directory too.
+	(clean-local): Remove database directories too.
+
 2007-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* mkfunc.spad.pamphlet (InputForm$interpret): Use objNew.

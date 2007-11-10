@@ -857,22 +857,6 @@ nrunfast.clisp: nrunfast.boot
 	@ echo '(old-boot::boot "nrunfast.boot")' | ${DEPSYS}
 @
 
-\subsection{nrungo.boot}
-
-<<nrungo.clisp>>=
-nrungo.clisp: nrungo.boot
-	@ echo 359 making $@ from $<
-	@ echo '(old-boot::boot "nrungo.boot")' | ${DEPSYS}
-@
-
-\subsection{nruntime.boot}
-
-<<nruntime.clisp>>=
-nruntime.clisp: nruntime.boot
-	@ echo 362 making $@ from $<
-	@ echo '(old-boot::boot "nruntime.boot")' | ${DEPSYS}
-@
-
 \subsection{nrunopt.boot}
 
 <<nrunopt.clisp>>=
@@ -1157,6 +1141,12 @@ compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
 			modemap.$(FASLEXT) pathname.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+nrungo.$(FASLEXT): nrungo.boot c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+nruntime.$(FASLEXT): nruntime.boot c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 iterator.$(FASLEXT): iterator.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1395,10 +1385,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<nruncomp.clisp>>
 
 <<nrunfast.clisp>>
-
-<<nrungo.clisp>>
-
-<<nruntime.clisp>>
 
 <<nrunopt.clisp>>
 
