@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"c-util"
+)package "BOOT"
+
 --=======================================================
 --             Lookup From Interpreter
 --=======================================================
@@ -213,7 +216,7 @@ lookupInCategories(op,sig,dom,dollar) ==
   nsig := MSUBST(dom.0,dollar.0,sig)
   r := or/[lookupInDomainVector(op,nsig,
                    eval EQSUBSTLIST(valueList,varList,catform),dollar)
-        for catform in catformList | pred] where pred ==
+        for catform in catformList | pred] where pred() ==
    (table := HGET($Slot1DataBase,first catform)) and
       (u := LASSQ(op,table))  --compare without checking predicates
          and (v := or/[rest x for x in u | #sig = #x.0])

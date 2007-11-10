@@ -2284,8 +2284,11 @@ check:
 mostlyclean-local:
 	@ -rm -f $(OUT)/*.$(OBJEXT)
 	@ -rm -rf *.NRLIB
+	rm -rf strap
+	rm -f *stamp
 
 clean-local: mostlyclean-local
+	rm -rf *.DAASE
 
 distclean-local: clean-local
 

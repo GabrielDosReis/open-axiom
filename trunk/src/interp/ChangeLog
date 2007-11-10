@@ -1,3 +1,12 @@
+2007-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (nrungo.$(FASLEXT)): New rule.
+	(nruntime.$(FASLEXT)): Likewise.
+	(<<nrungo.clisp>>): Remove.
+	(<<nruntime.clisp>>): Likewise.
+	* nrungo.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* nruntime.boot.pamphlet: Push into package "BOOT".
+
 2007-11-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (i-toplev.$(FASLEXT)): New rule.

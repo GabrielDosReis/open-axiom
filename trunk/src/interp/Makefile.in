@@ -484,6 +484,12 @@ compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
 			modemap.$(FASLEXT) pathname.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+nrungo.$(FASLEXT): nrungo.boot c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+nruntime.$(FASLEXT): nruntime.boot c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 iterator.$(FASLEXT): iterator.boot g-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -744,14 +750,6 @@ nruncomp.clisp: nruncomp.boot
 nrunfast.clisp: nrunfast.boot
 	@ echo 356 making $@ from $<
 	@ echo '(old-boot::boot "nrunfast.boot")' | ${DEPSYS}
-
-nrungo.clisp: nrungo.boot
-	@ echo 359 making $@ from $<
-	@ echo '(old-boot::boot "nrungo.boot")' | ${DEPSYS}
-
-nruntime.clisp: nruntime.boot
-	@ echo 362 making $@ from $<
-	@ echo '(old-boot::boot "nruntime.boot")' | ${DEPSYS}
 
 nrunopt.clisp: nrunopt.boot
 	@ echo 365 making $@ from $<
