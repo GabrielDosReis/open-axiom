@@ -841,22 +841,6 @@ bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
 	$(axiom_build_document) --tangle=Interpreter --output=$@ $<
 @
 
-\subsection{nruncomp.boot}
-
-<<nruncomp.clisp>>=
-nruncomp.clisp: nruncomp.boot
-	@ echo 353 making $@ from $<
-	@ echo '(old-boot::boot "nruncomp.boot")' | ${DEPSYS}
-@
-
-\subsection{nrunfast.boot}
-
-<<nrunfast.clisp>>=
-nrunfast.clisp: nrunfast.boot
-	@ echo 356 making $@ from $<
-	@ echo '(old-boot::boot "nrunfast.boot")' | ${DEPSYS}
-@
-
 \subsection{nrunopt.boot}
 
 <<nrunopt.clisp>>=
@@ -1141,6 +1125,12 @@ compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
 			modemap.$(FASLEXT) pathname.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+nrunfast.$(FASLEXT): nrunfast.boot c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+nruncomp.$(FASLEXT): nruncomp.boot c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 nrungo.$(FASLEXT): nrungo.boot c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1381,10 +1371,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<clammed.clisp>>
 
 <<bookvol5.lisp>>
-
-<<nruncomp.clisp>>
-
-<<nrunfast.clisp>>
 
 <<nrunopt.clisp>>
 

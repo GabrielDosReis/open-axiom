@@ -1,3 +1,12 @@
+2007-11-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (nrunfast.$(FASLEXT)): New rule.
+	(nruncomp.$(FASLEXT)): Likewise.
+	(<<nrunfast.clisp>>): Remove
+	(<<nruncomp.clisp>>): Likewise.
+	* nruncomp.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* nrunfast.boot.pamphlet: Likewise.
+
 2007-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (nrungo.$(FASLEXT)): New rule.
