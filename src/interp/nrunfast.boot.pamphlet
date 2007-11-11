@@ -46,6 +46,9 @@
 <<*>>=
 <<license>>
 
+import '"c-util"
+)package "BOOT"
+
 --=======================================================================
 --                     Basic Functions
 --=======================================================================
@@ -196,7 +199,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     start := QSPLUS(start,QSPLUS(numTableArgs,4))
   NE(success,'failed) and success =>
     if $monitorNewWorld then
-      sayLooking1('"<----",uu) where uu ==
+      sayLooking1('"<----",uu) where uu() ==
         PAIRP success => [first success,:devaluate rest success]
         success
     success
@@ -385,34 +388,6 @@ newLookupInCategories1(op,sig,dom,dollar) ==
     nil
  
 --=======================================================
---     Instantiate Default Package if Signature Matches
---=======================================================
- 
-getNewDefaultPackage(op,sig,infovec,dom,dollar) ==
-  hohohoho()
-  opvec := infovec . 1
-  numvec := CDDR infovec . 3
-  max := MAXINDEX opvec
-  k := getOpCode(op,opvec,max) or return nil
-  maxIndex := MAXINDEX numvec
-  start := ELT(opvec,k)
-  finish :=
-    QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
-    maxIndex
-  if QSGREATERP(finish,maxIndex) then systemError '"limit too large"
-  numArgs := QSDIFFERENCE(#sig,1)
-  success := nil
-  while finish > start repeat
-    PROGN
-      i := start
-      numArgs ^= (numTableArgs :=numvec.i) => nil
-      newCompareSigCheaply(sig,numvec,(i := QSPLUS(i,2))) =>
-        return (success := true)
-    start := QSPLUS(start,QSPLUS(numTableArgs,4))
-  null success => nil
-  defaultPackage := cacheCategoryPackage(packageVec,catVec,i)
- 
---=======================================================
 --         Compare Signature to One Derived from Table
 --=======================================================
 newCompareSig(sig, numvec, index, dollar, domain) ==
@@ -486,7 +461,7 @@ lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
   if MEMQ(opOf s, '(Union Mapping Record)) then 
      scoSig := [true for x in s]
   and/[fn for x in rest s for arg in rest d for xt in rest scoSig] where
-   fn ==
+   fn() ==
     x = arg => true
     x is ['elt,someDomain,opname] => lookupInDomainByName(opname,evalDomain someDomain,arg)
     x = '$ and (arg = dollarName or arg = domainName) => true
@@ -646,13 +621,13 @@ newHasTest(domform,catOrAtt) ==
   newHasAttribute(eval mkEvalable domform,catOrAtt)
  
 lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
-  n : FIXNUM := MAXINDEX catvec
+  n := MAXINDEX catvec
   xop := CAR x
   or/[ELT(auxvec,i) for i in 0..n |
     xop = CAR (lazyt := QVELT(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
-  n : FIXNUM := MAXINDEX vec
+  n  := MAXINDEX vec
   xop := CAR x
   or/[QCDR QVELT(vec,i) for i in 0..n |
     xop = CAR (lazyt := CAR QVELT(vec,i)) and lazyMatch(x,lazyt,domain,domain)]
@@ -671,7 +646,7 @@ lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
 sayLooking(prefix,op,sig,dom) ==
   $monitorNewWorld := false
   dollar := devaluate dom
-  atom dollar or VECP dollar or or/[VECP x for x in dollar] => systemError nil
+  atom dollar or VECP dollar or "or"/[VECP x for x in dollar] => systemError nil
   sayBrightly
     concat(prefix,formatOpSignature(op,sig),bright '"from ",form2String dollar)
   $monitorNewWorld := true

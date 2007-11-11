@@ -50,6 +50,10 @@
 <<*>>=
 <<license>>
 
+import '"c-util"
+import '"simpbool"
+)package "BOOT"
+
 -----------------------------NEW buildFunctor CODE-----------------------------
 NRTaddDeltaCode() ==
 --NOTES: This function is called from NRTbuildFunctor to initially
@@ -195,11 +199,11 @@ genDeltaEntry opMmPair ==
       $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
-      compEntry:= compOrCroak(dc,$EmptyMode,$e).expr
+      compEntry:= (compOrCroak(dc,$EmptyMode,$e)).expr
 --      dc
       RPLACA(saveNRTdeltaListComp,compEntry)
   u :=
-    [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index ==
+    [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
       (n:= POSN1(opModemapPair,$NRTdeltaList)) => n + 1
         --n + 1 since $NRTdeltaLength is 1 too large
       $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
@@ -249,7 +253,7 @@ NRTgetLocalIndex1(item,killBindingIfTrue) ==
   saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
   saveIndex := $NRTbase + $NRTdeltaLength
   $NRTdeltaLength := $NRTdeltaLength+1
-  compEntry:= compOrCroak(item,$EmptyMode,$e).expr
+  compEntry:= (compOrCroak(item,$EmptyMode,$e)).expr
 --    item
   RPLACA(saveNRTdeltaListComp,compEntry)
   saveIndex
