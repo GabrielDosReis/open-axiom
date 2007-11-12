@@ -1,3 +1,7 @@
+2007-11-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* mappkg.spad.pamphlet: Through use "import" for importing packages.
+
 2007-11-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (mostlyclean-local): Remove stamp files and
