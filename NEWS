@@ -1,4 +1,9 @@
-  × OpenAxiom now supports collections of domains.
+  × OpenAxiom now has a domain domain for representing the abstract
+    syntax tree of Spad and Boot programs.
+
+  × OpenAxiom now supports collections of domains.  More generally,
+    it is now possible define and call functions with arguments
+    that are of domain type.
 
   × OpenAxiom no longer uses global setting of the environment
     variable AXIOM.  Now, OpenAxiom's AXIOMsys can be invoked with

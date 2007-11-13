@@ -776,7 +776,7 @@ axiom_algebra_layer_14 = \
   TWOFACT.o  UNIFACT.o  UP.o       UPCDEN.o   \
   UPDECOMP.o UPDIVP.o   UPMP.o     UPOLYC2.o  \
   UPXSCAT.o  UPSQFREE.o VIEWDEF.o  VIEW2D.o   \
-  VOID.o     WEIER.o    WP.o
+  VOID.o     WEIER.o    WP.o       SYNTAX.o
 
 axiom_algebra_layer_14_nrlibs = \
 	$(axiom_algebra_layer_14:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -1852,6 +1852,10 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 <<genericBOOTSTRAPfiles>>
 <<genericSPADfiles>>
 <<genericDOCfiles>>
+
+SYNTAX.NRLIB/code.$(FASLEXT): syntax.spad
+	@ rm -rf $*.NRLIB
+	echo ")co $(srcdir)/syntax.spad" | ${INTERPSYS}
 
 DOMAIN.NRLIB/code.$(FASLEXT): domain.spad
 	@ rm -rf $*.NRLIB
