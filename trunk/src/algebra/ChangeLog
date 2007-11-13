@@ -1,3 +1,10 @@
+2007-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (SYNTAX.NRLIB/code.$(FASLEXT)): New rule.
+	(axiom_algebra_layer_14): Include SYNTAX.o.
+	* syntax.spad: New algebra file.
+	* domain.spad (Domain$reify): New.
+
 2007-11-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* mappkg.spad.pamphlet: Through use "import" for importing packages.
