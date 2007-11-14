@@ -50,6 +50,9 @@
 <<*>>=
 <<license>>
 
+import '"bc-util"
+)package "BOOT"
+
 --====================> WAS b-saturn.boot <================================
 -- New file as of 6/95
 $aixTestSaturn := false
@@ -73,7 +76,7 @@ $saturnMacros := '(
   "\def\spadtype#1{\lispLink[d]{\verb!(|spadtype| '|#1|)!}{\sf #1}}"_
   "\def\spad#1{{\em #1}}"_
   "\def\spadfun#1{{\em #1}}"_
-)
+ )
 $FormalFunctionParameterList := '(_#_#1 _#_#2 _#_#3 _#_#4 _#_#5 _#_#6 _#_#7 _#_#8 _#_#9 _#_#10 _#_#11 _#_#12 _#_#13 _#_#14 _#_#15)
 
 on() ==
@@ -815,7 +818,7 @@ dbPresentCons(htPage,kind,:exclusions) ==
     then htSay '"{\em Abbreviations}"
     else htMakePage [['bcLispLinks,['"Abbreviations",'"",'dbShowCons,'abbrs]]]
   htSay '"}{"
-  if one? or member('conditions,exclusions) or and/[CDR x = true for x in cAlist]
+  if one? or member('conditions,exclusions) or "and"/[CDR x = true for x in cAlist]
     then htSay '"{\em Conditions}"
     else htMakePage [['bcLispLinks,['"Conditions",'"",'dbShowCons,'conditions]]]
   htSay '"}{"
@@ -836,7 +839,7 @@ dbPresentCons(htPage,kind,:exclusions) ==
     then htSay '"{\em Names}"
     else htMakePage [['bcLispLinks,['"Names",'"",'dbShowCons,'names]]]
   htSay '"}{"
-  if one? or member('parameters,exclusions) or not or/[CDAR x for x in cAlist]
+  if one? or member('parameters,exclusions) or not "or"/[CDAR x for x in cAlist]
     then htSay '"{\em Parameters}"
     else htMakePage [['bcLispLinks,['"Parameters",'"",'dbShowCons,'parameters]]]
   htSay '"}{"
@@ -866,7 +869,7 @@ dbPresentConsSaturn(htPage,kind,exclusions) ==
   if one? or member('abbrs,exclusions)
     then htSayCold '"\&Abbreviations"
     else htMakePage [['bcLispLinks,['"\&Abbreviations",'"",'dbShowCons,'abbrs]]]
-  if one? or member('conditions,exclusions) or and/[CDR x = true for x in cAlist]
+  if one? or member('conditions,exclusions) or "and"/[CDR x = true for x in cAlist]
     then htSayCold '"\&Conditions"
     else htMakePage [['bcLispLinks,['"\&Conditions",'"",'dbShowCons,'conditions]]]
   if empty? or member('documentation,exclusions)
@@ -881,7 +884,7 @@ dbPresentConsSaturn(htPage,kind,exclusions) ==
   if one? or member('names,exclusions)
     then htSayCold '"\&Names"
     else htMakePage [['bcLispLinks,['"\&Names",'"",'dbShowCons,'names]]]
-  if one? or member('parameters,exclusions) or not or/[CDAR x for x in cAlist]
+  if one? or member('parameters,exclusions) or not "or"/[CDAR x for x in cAlist]
     then htSayCold '"\&Parameters"
     else htMakePage [['bcLispLinks,['"\&Parameters",'"",'dbShowCons,'parameters]]]
   htSaySaturn '"\hrule"
@@ -1784,7 +1787,7 @@ postDoubleSharp sig ==
 
 -- override in  br-util.boot.pamphlet
 bcConform1 form == main where
-  main ==
+  main() ==
     form is ['ifp,form1,:pred] =>
       hd form1
       bcPred pred

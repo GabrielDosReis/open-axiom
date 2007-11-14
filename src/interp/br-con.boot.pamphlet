@@ -50,6 +50,10 @@
 <<*>>=
 <<license>>
 
+import '"bc-util"
+)package "BOOT"
+
+
 --====================> WAS b-con.boot <================================
 
 --=======================================================================
@@ -282,7 +286,7 @@ mkDomTypeForm(typeForm,conform,domname) == --called by kargPage
   nil
 
 domainDescendantsOf(conform,domform) == main where --called by kargPage
-  main ==
+  main() ==
     conform is [op,:r] =>
       op = 'Join => jfn(delete('(Type Object),r),delete('(Type Object),IFCDR domform))
       op = 'CATEGORY => nil
@@ -424,7 +428,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
   catinfo    := CADR u
   catvec     := CADDR u
   catforms := [[pakform,:pred] for i in 0..MAXINDEX catvec | test ] where
-    test ==
+    test() ==
       pred := simpCatPredicate
         p:=SUBLISLIS(rest conform,$FormalMapVariableList,kTestPred catpredvec.i)
         $domain => EVAL p
@@ -432,7 +436,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
       if domname and CONTAINED('$,pred) then pred := SUBST(domname,'$,pred)
 --    which = '"attribute" => pred    --all categories
       (pak := catinfo . i) and pred   --only those with default packages
-    pakform ==
+    pakform() ==
       pak and not IDENTP pak => devaluate pak --in case it has been instantiated
       catform := kFormatSlotDomain catvec . i
 --    which = '"attribute" => dbSubConform(rest conform,catform)
@@ -600,7 +604,7 @@ augmentHasArgs(alist,conform) ==
   conname := opOf conform
   args    := KDR conform or return alist
   n       := #args
-  [[name,:pred] for [name,:p] in alist] where pred ==
+  [[name,:pred] for [name,:p] in alist] where pred() ==
      extractHasArgs p is [a,:b] => p
      quickAnd(p,['hasArgs,:TAKE(n,KDR getConstructorForm opOf name)])
 
@@ -649,7 +653,7 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => INTERN STRCONC(PNAME conname,char '_&)
+    kind = '"category" => INTERN STRCONC(PNAME name,char '_&)
     opOf conform
   domList := getImports pakname
   if domname then
@@ -718,7 +722,7 @@ kCheckArgumentNumbers t ==
   [conname,:args] := t
   cosig := KDR GETDATABASE(conname,'COSIG)
   #cosig ^= #args => false
-  and/[foo for domain? in cosig for x in args] where foo ==
+  and/[foo for domain? in cosig for x in args] where foo() ==
     domain? => kCheckArgumentNumbers x
     true
 
@@ -862,7 +866,7 @@ dbConstructorDoc(conform,$op,$sig) == fn conform where
   fn (conform := [conname,:$args]) ==
     or/[gn y for y in GETDATABASE(conname,'DOCUMENTATION)]
   gn([op,:alist]) ==
-    op = $op and or/[doc or '("") for [sig,:doc] in alist | hn sig]
+    op = $op and "or"/[doc or '("") for [sig,:doc] in alist | hn sig]
   hn sig ==
     #$sig = #sig and $sig = SUBLISLIS($args,$FormalMapVariableList,sig)
 
@@ -903,7 +907,7 @@ dbAddDocTable conform ==
 dbGetDocTable(op,$sig,docTable,$which,aux) == main where
 --docTable is [[origin,entry1,...,:code] ...] where
 --  each entry is [sig,doc] and code is NIL or else a topic code for op
-  main ==
+  main() ==
     if null FIXP op and
       DIGITP (s := STRINGIMAGE op).0 then op := string2Integer s
     -- the above hack should be removed after 3/94 when 0 is not |0|
@@ -978,7 +982,7 @@ dbPresentCons(htPage,kind,:exclusions) ==  -- calist is ((catform . pred)...)
     then htSay '"{\em kinds}"
     else htMakePage [['bcLispLinks,['"kinds",'"",'dbShowCons,'kinds]]]
   htSayStandard(if star? then '"\tab{29}" else '"\tab{25}")
-  if empty? or member('parameters,exclusions) or not or/[CDAR x for x in cAlist]
+  if empty? or member('parameters,exclusions) or not "or"/[CDAR x for x in cAlist]
     then htSay '"{\em parameters}"
     else htMakePage [['bcLispLinks,['"parameters",'"",'dbShowCons,'parameters]]]
   if star? then htSayStandard('"\tab{42}") else htSayStandard('"\tab{38}")
@@ -1002,7 +1006,7 @@ dbPresentCons(htPage,kind,:exclusions) ==  -- calist is ((catform . pred)...)
     then htSay '"{\em files}"
     else htMakePage [['bcLispLinks,['"files",'"",'dbShowCons,'files]]]
   htSayStandard(if star? then '"\tab{29}" else '"\tab{25}")
-  if empty? or member('conditions,exclusions) or and/[CDR x = true for x in cAlist]
+  if empty? or member('conditions,exclusions) or "and"/[CDR x = true for x in cAlist]
     then htSay '"{\em conditions}"
     else htMakePage [['bcLispLinks,['"conditions",'"",'dbShowCons,'conditions]]]
   if star? then htSayStandard('"\tab{42}") else htSayStandard('"\tab{38}")
@@ -1017,7 +1021,7 @@ dbShowCons(htPage,key,:options) ==
     filter := pmTransFilter(IFCAR options or dbGetInputString htPage)
     filter is ['error,:.] => bcErrorPage filter
     abbrev? := htpProperty(htPage,'exclusion) = 'abbrs
-    u := [x for x in cAlist | test] where test ==
+    u := [x for x in cAlist | test] where test() ==
       conname := CAAR x
       subject := (abbrev? => constructor? conname; conname)
       superMatch?(filter,DOWNCASE STRINGIMAGE subject)
@@ -1038,7 +1042,7 @@ conPageChoose conname ==
 
 dbShowCons1(htPage,cAlist,key) ==
   conlist := REMDUP [item for x in cAlist | pred] where
-    pred ==
+    pred() ==
       item := CAR x
       $exposedOnlyIfTrue => isExposedConstructor opOf item
       item
@@ -1126,7 +1130,7 @@ dbShowConsDoc(htPage,conlist) ==
   index := 0
   for x in REMDUP conlist repeat
   -- for x in conlist repeat
-    dbShowConsDoc1(htPage,getConstructorForm x,i) where i ==
+    dbShowConsDoc1(htPage,getConstructorForm x,i) where i() ==
       while CAAAR cAlist ^= x repeat
         index := index + 1
         cAlist := rest cAlist
@@ -1157,7 +1161,7 @@ getConstructorDocumentation conname ==
     is [[nil,line,:.],:.] and line or '""
 
 dbSelectCon(htPage,which,index) ==
-  conPage opOf first htpProperty(htPage,'cAlist) . index
+  conPage opOf first (htpProperty(htPage,'cAlist)).index
 
 dbShowConditions(htPage,cAlist,kind) ==
   conform := htpProperty(htPage,'conform)
@@ -1386,7 +1390,7 @@ PUT('Enumeration, 'documentation, SUBST(MESSAGE, 'MESSAGE, '(
 
 mkConArgSublis args ==
   [[arg,:INTERN digits2Names PNAME arg] for arg in args
-     | (s := PNAME arg) and or/[DIGITP ELT(s,i) for i in 0..MAXINDEX s]]
+     | (s := PNAME arg) and "or"/[DIGITP ELT(s,i) for i in 0..MAXINDEX s]]
 
 digits2Names s ==
 --This is necessary since arguments of conforms CANNOT have digits in TechExplorer
