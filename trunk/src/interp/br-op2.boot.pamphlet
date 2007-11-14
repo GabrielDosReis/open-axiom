@@ -50,6 +50,9 @@
 <<*>>=
 <<license>>
 
+import '"br-op1"
+)package "BOOT"
+
 --====================> WAS br-op2.boot <================================
 
 --=======================================================================
@@ -434,7 +437,7 @@ whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
       sofar    := LASSOC(opsig,nopAlist)
       nopAlist := insertAlist(opsig,[name,:LASSOC(opsig,nopAlist)],nopAlist)
   usedList := nil
-  for [(pair := [op,:sig]),:namelist] in nopAlist repeat
+  for [pair := [op,:sig],:namelist] in nopAlist repeat
     ops := escapeSpecialChars STRINGIMAGE op
     usedList := [pair,:usedList]
     htSay('"Users of {\em ",ops,'": ")
@@ -523,7 +526,7 @@ koAttrs(conform,domname) ==
 
 koOps(conform,domname,:options) == main where
 --returns alist of form ((op (sig . pred) ...) ...)
-  main ==
+  main() ==
     $packageItem: local := nil
 --  relatives? := IFCAR options
     ours :=
@@ -597,7 +600,7 @@ koCatOps(conform,domname) ==
   [[zeroOneConvert op,:nalist] for [op,:alist] in oplist | nalist := koCatOps1(alist)]
 
 koCatOps1 alist == [x for item in alist | x := pair] where
-  pair ==
+  pair() ==
     [sig,:r] := item
     null r => [sig,true]
     [key,:options] := r
@@ -662,7 +665,7 @@ dbHeading(items,which,heading,:options) ==
   [:prefix,'" for ",:heading]
 
 koaPageFilterByCategory1(htPage,i) ==
-  ancestor := htpProperty(htPage,'ancestors) . i
+  ancestor := (htpProperty(htPage,'ancestors)) . i
   ancestorList := [ancestor,:ASSOCLEFT ancestorsOf(ancestor,nil)]
   newOpAlist := nil
   which	   := htpProperty(htPage,'which)
@@ -673,7 +676,7 @@ koaPageFilterByCategory1(htPage,i) ==
   docTable := dbDocTable(domname or conform)
   for [op,:alist] in opAlist repeat
     nalist := [[origin,:item] for item in alist | split]
-      where split ==
+      where split() ==
 	[sig,pred,:aux] := item
 	u := dbGetDocTable(op,sig,docTable,which,aux)
 	origin := IFCAR u
@@ -707,7 +710,7 @@ opPageFastPath opstring ==
   charPosition(char '_*,x,0) < #x => nil     --quit if name has * in it
   op := (STRINGP x => INTERN x; x)
   mmList := getAllModemapsFromDatabase(op,nil) or return nil
-  opAlist := [[op,:[item for mm in mmList]]] where item ==
+  opAlist := [[op,:[item for mm in mmList]]] where item() ==
     [predList, origin, sig] := modemap2Sig(op, mm)
     predicate := predList and MKPF(predList,'AND)
     exposed? := isExposedConstructor opOf origin

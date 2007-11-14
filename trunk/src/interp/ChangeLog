@@ -1,5 +1,29 @@
 2007-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (br-search.$(FASLEXT)): New rule.
+	(br-saturn.$(FASLEXT)): Likewise.
+	(br-op2.$(FASLEXT)): Likewise.
+	(br-op1.$(FASLEXT)): Likewise.
+	(br-con.$(FASLEXT)): Likewise.
+	(br-data.$(FASLEXT)): Likewise.
+	(br-util.$(FASLEXT)): Likewise.
+	(<<br-search.clisp>>): Remove.
+	(<<br-saturn.clisp>>): Likewise.
+	(<<br-op2.clisp>>): Likewise.
+	(<<br-op1.clisp>>): Likewise.
+	(<<br-con.clisp>>): Likewise.
+	(<<br-data.clisp>>): Likewise.
+	(<<br-util.clisp>>): Likewise.
+	* br-search.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+	* br-saturn.boot.pamphlet: Likewise.
+	* br-op2.boot.pamphlet: Likewise.
+	* br-op1.boot.pamphlet: Likewise.
+	* br-con.boot.pamphlet: Likewise.
+	* br-data.boot.pamphlet: Likewise.
+	* br-util.boot.pamphlet: Likewise.
+
+2007-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* i-funsel.boot (selectMms): Don't reject modemaps involving
 	Domain. 
 

@@ -50,6 +50,9 @@
 <<*>>=
 <<license>>
 
+import '"bc-util"
+)package "BOOT"
+
 --====================> WAS b-util.boot <================================
 
 --=======================================================================
@@ -119,7 +122,8 @@ capitalize s ==
       ("domain"   . "Domain")
       ("category" . "Category")
       ("package"  . "Package")
-      ("default package" . "Default Package"))) or
+      ("default package" . "Default Package"))) 
+   or
     res := COPY_-SEQ s
     SETELT(res,0,UPCASE res.0)
     res
@@ -323,7 +327,7 @@ bcConform(form,:options) ==
 
 bcConform1 form == main where
 -----------------> OBSELETE
-  main ==
+  main() ==
     form is ['ifp,form1,:pred] =>
       hd form1
       bcPred pred

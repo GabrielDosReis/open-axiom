@@ -867,62 +867,6 @@ setvart.clisp: setvart.boot
 	@ echo '(old-boot::boot "setvart.boot")' | ${DEPSYS}
 @
 
-\subsection{br-con.boot}
-
-<<br-con.clisp>>=
-br-con.clisp: br-con.boot
-	@ echo 467 making $@ from $<
-	@ echo '(old-boot::boot "br-con.boot")' | ${DEPSYS} 
-@
-
-\subsection{br-search.boot}
-
-<<br-search.clisp>>=
-br-search.clisp: br-search.boot
-	@ echo 471 making $@ from $<
-	@ echo '(old-boot::boot "br-search.boot")' | ${DEPSYS} 
-@
-
-\subsection{br-op1.boot}
-
-<<br-op1.clisp>>=
-br-op1.clisp: br-op1.boot
-	@ echo 475 making $@ from $<
-	@ echo '(old-boot::boot "br-op1.boot")' | ${DEPSYS}
-@
-
-\subsection{br-op2.boot}
-
-<<br-op2.clisp>>=
-br-op2.clisp: br-op2.boot
-	@ echo 479 making $@ from $<
-	@ echo '(old-boot::boot "br-op2.boot")' | ${DEPSYS} 
-@
-
-\subsection{br-data.boot}
-
-<<br-data.clisp>>=
-br-data.clisp: br-data.boot
-	@ echo 483 making $@ from $<
-	@ echo '(old-boot::boot "br-data.boot")' | ${DEPSYS} 
-@
-
-\subsection{br-util.boot}
-
-<<br-util.clisp>>=
-br-util.clisp: br-util.boot
-	@ echo 487 making $@ from $<
-	@ echo '(old-boot::boot "br-util.boot")' | ${DEPSYS}
-@
-
-\subsection{br-saturn.boot}
-
-<<br-saturn.clisp>>=
-br-saturn.clisp: br-saturn.boot
-	@ echo 491 making $@ from $<
-	@ echo '(old-boot::boot "br-saturn.boot")' | ${DEPSYS}
-@
-
 \section{The databases}
 
 \begin{verbatim}
@@ -1027,6 +971,27 @@ fortcall.$(FASLEXT): fortcall.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## HyperDoc
+br-search.$(FASLEXT): br-search.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+br-saturn.$(FASLEXT): br-saturn.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+br-op2.$(FASLEXT): br-op2.boot br-op1.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+br-op1.$(FASLEXT): br-op1.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+br-con.$(FASLEXT): br-con.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+br-data.$(FASLEXT): br-data.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+br-util.$(FASLEXT): br-util.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 bc-solve.$(FASLEXT): bc-solve.boot bc-matrix.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1353,20 +1318,6 @@ vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
 
 boot-pkg.$(FASLEXT): boot-pkg.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
-
-<<br-con.clisp>>
-
-<<br-data.clisp>>
-
-<<br-op1.clisp>>
-
-<<br-op2.clisp>>
-
-<<br-saturn.clisp>>
-
-<<br-search.clisp>>
-
-<<br-util.clisp>>
 
 <<clammed.clisp>>
 

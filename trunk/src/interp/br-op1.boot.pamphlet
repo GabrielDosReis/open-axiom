@@ -50,6 +50,9 @@
 <<*>>=
 <<license>>
 
+import '"bc-util"
+)package "BOOT"
+
 --====================> WAS b-op1.boot <================================
 
 --=======================================================================
@@ -154,7 +157,7 @@ dbPresentOps(htPage,which,:exclusions) ==
 htTab s == htSay('"\tab{",s,'"}")
 
 dbDoesOneOpHaveParameters? opAlist ==
-  or/[(or/[fn for x in items]) for [op,:items] in opAlist] where fn ==
+  or/[(or/[fn for x in items]) for [op,:items] in opAlist] where fn() ==
     STRINGP x => dbPart(x,2,1) ^= '"0"
     KAR x
 --============================================================================
@@ -204,7 +207,7 @@ reduceByGroup(htPage,opAlist) ==
   dbExpandOpAlistIfNecessary(htPage,opAlist,'"operation",true,false)
   bitNumber := HGET($topicHash,$groupChoice)
   res := [[op,:newItems] for [op,:items] in opAlist | newItems] where
-    newItems ==
+    newItems() ==
       null bitNumber => items
       [x for x in items | FIXP (code := myLastAtom x) and LOGBITP(bitNumber,code)]
   res
@@ -229,7 +232,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
   if $exposedOnlyIfTrue and not dbFromConstructor?(htPage) then
   --opAlist is expanded to form [[op,[sig,pred,origin,exposed,comments],...],...]
     opAlist:=[item for [op,:items] in opAlist | item] where
-      item ==
+      item() ==
         acc := nil
         for x in items | x.3 repeat acc:= [x,:acc]
         null acc => nil
@@ -278,7 +281,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
   dbPresentOps(page,which,branch)
   htShowPageNoScroll()
 
-opAlistCount(opAlist, which) == +/[foo for [op,:items] in opAlist] where foo ==
+opAlistCount(opAlist, which) == +/[foo for [op,:items] in opAlist] where foo() ==
   null $exposedOnlyIfTrue or which = '"attribute" => #items
   --count if unexpanded---CDDR(w) = nil---or if w.3 = true
   +/[1 for w in items | null (p := CDDR w) or p . 1]
@@ -334,7 +337,7 @@ conform2StringList(form,opFn,argFn,exception) ==
   atypes :=
     special => cosig
     rest CDAR GETDATABASE(op,'CONSTRUCTORMODEMAP)
-  sargl := [fn for x in args for atype in atypes for pred in cosig] where fn ==
+  sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     keyword :=
       x is [":",y,t] =>
         x := t
@@ -378,7 +381,7 @@ dbOuttran form ==
     args := nil
   cosig := rest GETDATABASE(op,'COSIG)
   atypes := rest CDAR GETDATABASE(op,'CONSTRUCTORMODEMAP)
-  argl := [fn for x in args for atype in atypes for pred in cosig] where fn ==
+  argl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pred => x
     typ := sublisFormal(args,atype)
     arg :=
@@ -436,7 +439,7 @@ conname2StringList form == [PNAME unAbbreviateIfNecessary opOf form]
 dbGatherData(htPage,opAlist,which,key) ==
   key = 'implementation => dbGatherDataImplementation(htPage,opAlist)
   dataFunction := LASSOC(key,table) where
-    table ==
+    table() ==
       $dbDataFunctionAlist or
         ($dbDataFunctionAlist := [
           ['signatures,:function dbMakeSignature],
@@ -566,7 +569,7 @@ dbReduceByOpSignature(opAlist,datalist) ==
   ops := [CAAR x for x in datalist] --x is [[op,sig,:implementor],:.]
   acc := nil
   for [op,:alist] in opAlist | MEMQ(op,ops) repeat
-    entryList := [entry for (entry := [sig,:.]) in alist | test] where test ==
+    entryList := [entry for (entry := [sig,:.]) in alist | test] where test() ==
       or/[x for x in datalist | x is [[=op,=sig,:.],:.]]
     entryList => acc := [[op,:NREVERSE entryList],:acc]
   NREVERSE acc
@@ -888,7 +891,7 @@ reduceOpAlistForDomain(opAlist,domform,conform) ==
   form1 := [domform,:rest domform]
   form2 := ['$,:rest conform]
   for pair in opAlist repeat
-    RPLACD(pair,[test for item in rest pair | test]) where test ==
+    RPLACD(pair,[test for item in rest pair | test]) where test() ==
       [head,:tail] := item
       CAR tail = true => item
       pred := simpHasPred SUBLISLIS(form1,form2,QCAR tail)
@@ -1047,7 +1050,7 @@ evalableConstructor2HtString domform ==
 --argtypes:= sublisFormal(arglist,fargtypes)
   form2HtString([conname,:[fn for arg in arglist for x in coSig
                    for ftype in fargtypes]],nil,true) where
-    fn ==
+    fn() ==
       x => arg
       typ := sublisFormal(arglist,ftype)
       mathform2HtString algCoerceInteractive(arg,typ,'(OutputForm))
@@ -1095,7 +1098,7 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
       EQ(op,'One)  => MEMQ(1,ops) and 1
       EQ(op,'Zero) => MEMQ(0,ops) and 0
       false
-    fn ==
+    fn() ==
       sig1 := sublisFormal(rest domname,sig)
       predValue := evalDomainOpPred(dom,pred)
       info :=

@@ -50,6 +50,9 @@
 <<*>>=
 <<license>>
 
+import '"bc-util"
+)package "BOOT"
+
 --====================> WAS b-search.boot <================================
 
 --=======================================================================
@@ -112,7 +115,7 @@ grepForAbbrev(s,key) ==
   someLowerCaseChar or not someUpperCaseChar => false
   pattern := DOWNCASE s
   ['Abbreviations ,:[GETDATABASE(x,'CONSTRUCTORFORM)
-    for x in allConstructors() | test]] where test ==
+    for x in allConstructors() | test]] where test() ==
          not $includeUnexposed? and not isExposedConstructor x => false
          a := GETDATABASE(x,'ABBREVIATION)
          match?(pattern,PNAME a) and not HGET($defaultPackageNamesHT,x)
@@ -163,9 +166,9 @@ pmTransFilter s ==
 
 checkPmParse parse ==
   STRINGP parse => parse
-  fn parse => parse where fn(u) ==
+  (fn parse => parse) where fn(u) ==
     u is [op,:args] =>
-      MEMQ(op,'(and or not)) and and/[checkPmParse x for x in args]
+      MEMQ(op,'(and or not)) and "and"/[checkPmParse x for x in args]
     STRINGP u => true
     false
   nil
@@ -329,7 +332,7 @@ conform2OutputForm(form) ==
   null args => form
   cosig := rest GETDATABASE(op,'COSIG)
   atypes := rest CDAR GETDATABASE(op,'CONSTRUCTORMODEMAP)
-  sargl := [fn for x in args for atype in atypes for pred in cosig] where fn ==
+  sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pp [x,atype,pred]
     pred => conform2OutputForm x
     typ := sublisFormal(args,atype)
@@ -377,7 +380,7 @@ looksLikeDomainForm x ==
   atom x => k = 1
   k ^= #x => false
   and/[p for key in rest coSig for arg in rest x] where
-    p ==
+    p() ==
       key => looksLikeDomainForm arg
       not IDENTP arg
 
@@ -455,7 +458,7 @@ genSearch1(filter,reg,doc) ==
   htShowPageStar()
 searchDropUnexposedLines alist ==
   [[op,[pred for line in lines | pred],:lines] for [op,.,:lines] in alist] where
-    pred ==
+    pred() ==
       not $exposedOnlyIfTrue or dbExposed?(line,dbKind line) => line
       nil
 
@@ -891,7 +894,7 @@ htButtonOn?(htPage,key) ==
   LASSOC(key,htpInputAreaAlist htPage) is [a,:.] and a = '" t"
 
 mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
-  main ==
+  main() ==
     nottick := '"[^`]"
     name := replaceGrepStar name
     firstPart :=

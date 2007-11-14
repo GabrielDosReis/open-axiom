@@ -50,6 +50,9 @@
 <<*>>=
 <<license>>
 
+import '"bc-util"
+)package "BOOT"
+
 lefts u ==
    [x for x in HKEYS  _*HASCATEGORY_-HASH_* | CDR x = u]
 
@@ -488,7 +491,7 @@ getImports conname == --called by mkUsersHashTable
   template := infovec.0
   u := [doImport(i,template)
           for i in 5..(MAXINDEX template) | test]  where
-    test == template.i is [op,:.] and IDENTP op
+    test() == template.i is [op,:.] and IDENTP op
               and not MEMQ(op,'(Mapping Union Record Enumeration CONS QUOTE local))
     doImport(x,template) ==
       x is [op,:args] =>
@@ -552,7 +555,7 @@ getParentsForDomain domname  == --called by parentsOf
   NREVERSE acc
 
 explodeIfs x == main where  --called by getParents, getParentsForDomain
-  main ==
+  main() ==
     x is ['IF,p,a,b] => fn(p,a,b)
     [[x,:true]]
   fn(p,a,b) ==
@@ -599,7 +602,7 @@ assocCar(x, al) == or/[pair for pair in al | x = CAAR pair]
 
 childArgCheck(argl, nargl) ==
   and/[fn for x in argl for y in nargl for i in 0..] where
-    fn ==
+    fn() ==
       x = y or constructor? opOf y => true
       isSharpVar y => i = POSN1(y, $FormalMapVariableList)
       false
@@ -621,7 +624,7 @@ ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
   'category = GETDATABASE((conname := opOf conform),'CONSTRUCTORKIND) =>
        alist := GETDATABASE(conname,'ANCESTORS)
        argl := IFCDR domform or IFCDR conform
-       [pair for [a,:b] in alist | pair] where pair ==
+       [pair for [a,:b] in alist | pair] where pair() ==
          left :=  sublisFormal(argl,a)
          right := sublisFormal(argl,b)
          if domform then right := simpHasPred right
@@ -672,7 +675,7 @@ domainsOf(conform,domname,:options) ==
   conname := opOf conform
   u := [key for key in HKEYS _*HASCATEGORY_-HASH_*
     | key is [anc,: =conname]]
-  --u is list of pairs (a . b) where b = conname
+  --u is list of pairs (a . b) where b() = conname
   --we sort u then replace each b by the predicate for which this is true
   s := listSort(function GLESSEQP,COPY u)
   s := [[CAR pair,:GETDATABASE(pair,'HASCATEGORY)] for pair in s]
@@ -692,7 +695,7 @@ catsOf(conform,domname,:options) ==
   transKCatAlist(conform,domname,listSort(function GLESSEQP,alist))
 
 transKCatAlist(conform,domname,s) == main where
-  main ==
+  main() ==
     domname => --accept only exact matches after substitution
       domargs := rest domname
       acc := nil
@@ -744,7 +747,7 @@ mkHasArgsPred subargs ==
   systemError subargs
 
 sublisFormal(args,exp,:options) == main where
-  main ==  --use only on LIST structures; see also sublisFormalAlist
+  main() ==  --use only on LIST structures; see also sublisFormalAlist
     $formals: local := IFCAR options or $FormalMapVariableList
     null args => exp
     sublisFormal1(args,exp,#args - 1)
