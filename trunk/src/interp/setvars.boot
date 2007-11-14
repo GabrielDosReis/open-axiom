@@ -1,50 +1,64 @@
-\documentclass{article}
-\usepackage{axiom}
+-- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007, Gabriel Dos Reis.
+-- All rights reserved.
+--
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are
+-- met:
+--
+--     - Redistributions of source code must retain the above copyright
+--       notice, this list of conditions and the following disclaimer.
+--
+--     - Redistributions in binary form must reproduce the above copyright
+--       notice, this list of conditions and the following disclaimer in
+--       the documentation and/or other materials provided with the
+--       distribution.
+--
+--     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--       names of its contributors may be used to endorse or promote products
+--       derived from this software without specific prior written permission.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+-- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+-- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+-- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+-- OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+-- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+-- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-\title{\$SPAD/src/interp setvars.boot}
-\author{The Axiom Team}
 
-\begin{document}
 
-\maketitle
-\begin{abstract}
-\end{abstract}
-\eject
-\tableofcontents
-\eject
+-- Conventions:
 
-\section{Top level function calling conventions}
-Conventions:
-\begin{list}{}
-\item when called with argument "\%initialize", a function will
-set the appropriate variables to their default states.
-\item when called with argument "\%display\%", a function will return a
-current state information suitable for sayBrightly
-\item when called with argument "\%describe\%", a function will print
-a description of itself and any conditions it imposes.
-\item otherwise, a function may interpret its arguments as it sees
-appropriate.
-\end{list}
-Also by convention each top level function named in the FUNCTION 
-slot (see the data structure in setvart.boot.pamphlet\cite{1}) has an
-associated describe function. Thus, for example,
-setOutputFortran is accompanied by function to describe 
-its arguments, such as describeSetOutputFortran.
-\section{Top level set functions}
-The {\bf set} function in this file handles the top level {\bf )set}
-command line functions.
-<<toplevelsetfunctions>>=
-<<initializeSetVariables>>
-<<resetWorkspaceVariables>>
-<<translateYesNo2TrueFalse>>
-<<translateTrueFalse2YesNo>>
-<<set>>
-<<set1>>
-<<displaySetOptionInformation>>
-<<displaySetVariableSettings>>
-@
-\section{initializeSetVariables}
-<<initializeSetVariables>>=
+--  * when called with argument "%initialize", a function will set the
+--    appropriate variables to their default states. 
+
+--  * when called with argument "%display%", a function will return a
+--    current state information suitable for sayBrightly 
+
+--  * when called with argument "%describe%", a function will print a
+--    description of itself and any conditions it imposes. 
+
+--  * otherwise, a function may interpret its arguments as it sees appropriate.
+
+-- Also by convention each top level function named in the FUNCTION 
+-- slot (see the data structure in setvart.boot) has an
+-- associated describe function. Thus, for example,
+-- setOutputFortran is accompanied by function to describe 
+-- its arguments, such as describeSetOutputFortran.
+
+
+)package "BOOT"
+
+-- The `set' function in this file handles the top level `)set'
+-- command line functions.
+
+
 initializeSetVariables (setTree) ==
   -- this function passes through the table of set variable information
   -- and initializes the variables to their default definitions.
@@ -64,9 +78,6 @@ initializeSetVariables (setTree) ==
     st = 'TREE =>
       initializeSetVariables(setData.setLeaf)
 
-@
-\subsection{resetWorkspaceVariables}
-<<resetWorkspaceVariables>>=
 resetWorkspaceVariables () ==
   -- this replaces def in DEBUG LISP
   -- this function resets many workspace variables to their default
@@ -98,30 +109,22 @@ resetWorkspaceVariables () ==
 
   initializeSetVariables($setOptions)
 
-@
-\subsection{translateYesNo2TrueFalse}
-<<translateYesNo2TrueFalse>>=
+
 translateYesNo2TrueFalse x ==
   x in '(yes on) => true
   x in '(no off)  => false
   x
 
-@
-\subsection{translateTrueFalse2YesNo}
-<<translateTrueFalse2YesNo>>=
+
 translateTrueFalse2YesNo x ==
   x = true  => 'on
   x = false => 'off
   x
 
-@
-\subsection{set}
-<<set>>=
+
 set l ==  set1(l, $setOptions)
 
-@
-\subsection{set1}
-<<set1>>=
+
 set1(l,setTree) ==
   null l => displaySetVariableSettings(setTree,"")
   $setOptionNames : local := [x.0 for x in setTree]
@@ -201,9 +204,7 @@ set1(l,setTree) ==
   sayMessage ['"Cannot handle set tree node type",:bright st,"yet"]
   NIL
 
-@
-\subsection{displaySetOptionInformation}
-<<displaySetOptionInformation>>=
+
 displaySetOptionInformation(arg,setData) ==
   st := setData.setType
   -- if the option is a sub-tree, show the full menu
@@ -248,9 +249,7 @@ displaySetOptionInformation(arg,setData) ==
         '"have the same effect as",:bright '"on",'"and",:bright '"off",
           '"respectively."]
 
-@
-\subsection{displaySetVariableSettings}
-<<displaySetVariableSettings>>=
+
 displaySetVariableSettings(setTree,label) ==
   if label = "" then label := '")set"
     else label := STRCONC('" ",object2String label,'" ")
@@ -296,31 +295,21 @@ displaySetVariableSettings(setTree,label) ==
       '" to see what the options are for",:bright subname,'".",'%l,
         '"For more information, issue",:bright '")help set",'"."]
 
-@
-\section{compiler}
-See the section compiler in setvart.boot.pamphlet\cite{1}.
-\begin{verbatim}
-                  Current Values of  compiler  Variables                   
 
-Variable     Description                           Current Value
------------------------------------------------------------------
-output       library in which to place compiled code     
-input        controls libraries from which to load compiled code  
-args         arguments for compiling AXIOM code         
-             -O -Fasy -Fao -Flsp -laxiom -Mno-AXL_W_WillObsolete 
-             -DAxiom -Y $AXIOM/algebra 
+-- See the section compiler in setvart.boot.
+-- 
+--                   Current Values of  compiler  Variables                   
 
-\end{verbatim}
-<<compilerCode>>=
-<<setAsharpArgs>>
-<<describeAsharpArgs>>
-<<setInputLibrary>>
-<<setOutputLibrary>>
-<<describeOutputLibraryArgs>>
-<<describeInputLibraryArgs>>
-@
-\subsection{setAsharpArgs}
-<<setAsharpArgs>>=
+-- Variable     Description                           Current Value
+-- -----------------------------------------------------------------
+-- output       library in which to place compiled code     
+-- input        controls libraries from which to load compiled code  
+-- args         arguments for compiling AXIOM code         
+--              -O -Fasy -Fao -Flsp -laxiom -Mno-AXL_W_WillObsolete 
+--              -DAxiom -Y $AXIOM/algebra 
+
+
+
 setAsharpArgs arg ==
   arg = "%initialize%" =>
     $asharpCmdlineFlags := '"-O -Fasy -Fao -Flsp -laxiom -Mno-AXL__W__WillObsolete -DAxiom -Y $AXIOM/algebra"
@@ -330,9 +319,7 @@ setAsharpArgs arg ==
     describeAsharpArgs()
   $asharpCmdlineFlags := first(arg)
 
-@
-\subsection{describeAsharpArgs}
-<<describeAsharpArgs>>=
+
 describeAsharpArgs() ==
   sayBrightly LIST (
    '%b,'")set compiler args ",'%d,_
@@ -341,9 +328,7 @@ describeAsharpArgs() ==
    '" The args option is followed by a string enclosed in double quotes.",'%l,'%l,_
    '" The current setting is",'%l,'%b,'"_"",$asharpCmdlineFlags,'"_"",'%d)
 
-@
-\subsection{setInputLibrary}
-<<setInputLibrary>>=
+
 setInputLibrary arg ==
   arg = "%initialize%" =>
    true
@@ -356,9 +341,7 @@ setInputLibrary arg ==
     act = 'drop => dropInputLibrary TRUENAME STRINGIMAGE filename
   setInputLibrary NIL
 
-@
-\subsection{setOutputLibrary}
-<<setOutputLibrary>>=
+
 setOutputLibrary arg ==
   -- Hack to avoid initialising libraries in KCL:
   not $cclSystem => false
@@ -374,9 +357,7 @@ setOutputLibrary arg ==
   if FILEP (fn := STRINGIMAGE first arg) then fn := TRUENAME fn
   openOutputLibrary($outputLibraryName := fn)
 
-@
-\subsection{describeOutputLibraryArgs}
-<<describeOutputLibraryArgs>>=
+
 describeOutputLibraryArgs() ==
   sayBrightly LIST (
    '%b,'")set compiler output library",'%d,_
@@ -385,9 +366,7 @@ describeOutputLibraryArgs() ==
    '"in a file called",'%b, '"user.lib", '%d, '"in the current directory." 
     )
 
-@
-\subsection{describeInputLibraryArgs}
-<<describeInputLibraryArgs>>=
+
 describeInputLibraryArgs() ==
   sayBrightly LIST (
    '%b,'")set compiler input add library",'%d,_
@@ -398,49 +377,37 @@ describeInputLibraryArgs() ==
    '"from this path."
     )
 
-@
-\section{expose}
-See the section expose in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
----------------------- The expose Option ----------------------
 
- Description: control interpreter constructor exposure
+-- See the section expose in setvart.boot
+-- ---------------------- The expose Option ----------------------
 
-   The following groups are explicitly exposed in the current 
-   frame (called initial ):
-                                   basic                                   
-                                categories                                 
-                                  naglink                                  
-                                   anna                                    
+--  Description: control interpreter constructor exposure
+
+--    The following groups are explicitly exposed in the current 
+--    frame (called initial ):
+--                                    basic                                   
+--                                 categories                                 
+--                                   naglink                                  
+--                                    anna                                    
  
-   The following constructors are explicitly exposed in the 
-   current frame:
-               there are no explicitly exposed constructors                
+--    The following constructors are explicitly exposed in the 
+--    current frame:
+--                there are no explicitly exposed constructors                
  
-   The following constructors are explicitly hidden in the 
-   current frame:
-                there are no explicitly hidden constructors                
+--    The following constructors are explicitly hidden in the 
+--    current frame:
+--                 there are no explicitly hidden constructors                
  
-   When )set expose is followed by no arguments, the information
-   you now see is displayed. When followed by the initialize 
-   argument, the exposure group data in the file INTERP.EXPOSED 
-   is read and is then available. The arguments add and drop are 
-   used to add or drop exposure groups or explicit constructors 
-   from the local frame exposure data. Issue
-                  )set expose add    or    )set expose drop 
-   for more information.
-\end{verbatim}
-<<exposeCode>>=
-<<setExpose>>
-<<setExposeAdd>>
-<<setExposeAddGroup>>
-<<setExposeAddConstr>>
-<<setExposeDrop>>
-<<setExposeDropGroup>>
-<<setExposeDropConstr>>
-@
-\subsection{setExpose}
-<<setExpose>>=
+--    When )set expose is followed by no arguments, the information
+--    you now see is displayed. When followed by the initialize 
+--    argument, the exposure group data in the file INTERP.EXPOSED 
+--    is read and is then available. The arguments add and drop are 
+--    used to add or drop exposure groups or explicit constructors 
+--    from the local frame exposure data. Issue
+--                   )set expose add    or    )set expose drop 
+--    for more information.
+
+
 setExpose arg ==
   arg = "%initialize%" => loadExposureGroupData()
   arg = "%display%" => '"..."
@@ -466,9 +433,7 @@ setExpose arg ==
       NIL
   setExpose NIL
 
-@
-\subsection{setExposeAdd}
-<<setExposeAdd>>=
+
 setExposeAdd arg ==
   (null arg) =>
     centerAndHighlight ("The add Option",$LINELENGTH,specialChar 'hbar)
@@ -486,9 +451,7 @@ setExposeAdd arg ==
       NIL
   setExposeAdd NIL
 
-@
-\subsection{setExposeAddGroup}
-<<setExposeAddGroup>>=
+
 setExposeAddGroup arg ==
   (null arg) =>
     centerAndHighlight("The group Option",$LINELENGTH,specialChar 'hbar)
@@ -519,9 +482,7 @@ setExposeAddGroup arg ==
     sayKeyedMsg("S2IZ0049R",[x,$interpreterFrameName])
     clearClams()
 
-@
-\subsection{setExposeAddConstr}
-<<setExposeAddConstr>>=
+
 setExposeAddConstr arg ==
   (null arg) =>
     centerAndHighlight ("The constructor Option",$LINELENGTH,
@@ -543,9 +504,7 @@ setExposeAddConstr arg ==
     clearClams()
     sayKeyedMsg("S2IZ0049P",[x,$interpreterFrameName])
 
-@
-\subsection{setExposeDrop}
-<<setExposeDrop>>=
+
 setExposeDrop arg ==
   (null arg) =>
     centerAndHighlight ("The drop Option",$LINELENGTH,specialChar 'hbar)
@@ -560,9 +519,7 @@ setExposeDrop arg ==
       NIL
   setExposeDrop NIL
 
-@
-\subsection{setExposeDropGroup}
-<<setExposeDropGroup>>=
+
 setExposeDropGroup arg ==
   (null arg) =>
     centerAndHighlight ("The group Option",$LINELENGTH,specialChar 'hbar)
@@ -589,9 +546,7 @@ setExposeDropGroup arg ==
       sayKeyedMsg("S2IZ0049I",[x,$interpreterFrameName])
     sayKeyedMsg("S2IZ0049H",[x])
 
-@
-\subsection{setExposeDropConstr}
-<<setExposeDropConstr>>=
+
 setExposeDropConstr arg ==
   (null arg) =>
     centerAndHighlight ("The constructor Option",$LINELENGTH,
@@ -615,30 +570,17 @@ setExposeDropConstr arg ==
     clearClams()
     sayKeyedMsg("S2IZ0049Q",[x,$interpreterFrameName])
 
-@
-\section{fortran calling}
-See the section calling in servart.boot.pamphlet.
-\begin{verbatim}
-              Current Values of  calling  Variables                   
+-- See the section calling in servart.boot
 
-Variable     Description                           Current Value
------------------------------------------------------------------
-tempfile     set location of temporary data files       /tmp/ 
-directory    set location of generated FORTRAN files    ./ 
-linker       linker arguments (e.g. libraries to search) -lxlf 
+--               Current Values of  calling  Variables                   
 
-\end{verbatim}
-<<fortrancallingCode>>=
-<<setFortTmpDir>>
-<<validateOutputDirectory>>
-<<describeSetFortTmpDir>>
-<<setFortDir>>
-<<describeSetFortDir>>
-<<setLinkerArgs>>
-<<describeSetLinkerArgs>>
-@
-\subsection{setFortTmpDir}
-<<setFortTmpDir>>=
+-- Variable     Description                           Current Value
+-- -----------------------------------------------------------------
+-- tempfile     set location of temporary data files       /tmp/ 
+-- directory    set location of generated FORTRAN files    ./ 
+-- linker       linker arguments (e.g. libraries to search) -lxlf 
+
+
 setFortTmpDir arg ==
 
   arg = "%initialize%" =>
@@ -660,17 +602,13 @@ setFortTmpDir arg ==
     describeSetFortTmpDir()
   $fortranTmpDir := mode
 
-@
-\subsection{validateOutputDirectory}
-<<validateOutputDirectory>>=
+
 validateOutputDirectory x ==
   AND(PATHNAME_-DIRECTORY(PROBE_-FILE(CAR(x))), NOT PATHNAME_-NAME  (PROBE_-FILE(CAR(x)))) =>
     CAR(x)
   NIL
 
-@
-\subsection{describeSetFortTmpDir}
-<<describeSetFortTmpDir>>=
+
 describeSetFortTmpDir() ==
   sayBrightly LIST (
    '%b,'")set fortran calling tempfile",'%d,_
@@ -682,9 +620,7 @@ describeSetFortTmpDir() ==
    '"   )set fortran calling tempfile DIRECTORYNAME",'%l,'%l,_
    '" The current setting is",'%b,$fortranTmpDir,'%d)
 
-@
-\subsection{setFortDir}
-<<setFortDir>>=
+
 setFortDir arg ==
   arg = "%initialize%" =>
     $fortranDirectory := '"./"
@@ -705,9 +641,7 @@ setFortDir arg ==
     describeSetFortDir()
   $fortranDirectory := mode
 
-@
-\subsection{describeSetFortDir}
-<<describeSetFortDir>>=
+
 describeSetFortDir() ==
   sayBrightly LIST (
    '%b,'")set fortran calling directory",'%d,_
@@ -719,9 +653,7 @@ describeSetFortDir() ==
    '"   )set fortran calling directory DIRECTORYNAME",'%l,'%l,_
    '" The current setting is",'%b,$fortranDirectory,'%d)
 
-@
-\subsection{setLinkerArgs}
-<<setLinkerArgs>>=
+
 setLinkerArgs arg ==
 
   arg = "%initialize%" =>
@@ -733,9 +665,7 @@ setLinkerArgs arg ==
     $fortranLibraries := first(arg)
   describeSetLinkerArgs()
 
-@
-\subsection{describeSetLinkerArgs}
-<<describeSetLinkerArgs>>=
+
 describeSetLinkerArgs() ==
   sayBrightly LIST (
    '%b,'")set fortran calling linkerargs",'%d,_
@@ -749,28 +679,17 @@ describeSetLinkerArgs() ==
    '" Example: )set fortran calling linker _"-lxlf_"",'%l,'%l,_
    '" The current setting is",'%b,$fortranLibraries,'%d)
 
-@
-\section{functions}
-See the section functions in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
-             Current Values of  functions  Variables                  
+-- See the section functions in setvart.boot
+--
+--              Current Values of  functions  Variables                  
 
-Variable     Description                           Current Value
------------------------------------------------------------------
-cache        number of function results to cache        0 
-compile      compile, don't just define function bodies off 
-recurrence   specially compile recurrence relations     on 
+-- Variable     Description                           Current Value
+-- -----------------------------------------------------------------
+-- cache        number of function results to cache        0 
+-- compile      compile, don't just define function bodies off 
+-- recurrence   specially compile recurrence relations     on 
 
-\end{verbatim}
-<<functionsCode>>=
-<<setFunctionsCache>>
-<<countCache>>
-<<describeSetFunctionsCache>>
-<<sayAllCacheCounts>>
-<<sayCacheCount>>
-@
-\subsection{setFunctionsCache}
-<<setFunctionsCache>>=
+
 setFunctionsCache arg ==
   $options : local := NIL
   arg = "%initialize%" =>
@@ -791,9 +710,7 @@ setFunctionsCache arg ==
   if (rest arg) then $options := [['vars,:rest arg]]
   countCache n
 
-@
-\subsection{countCache}
-<<countCache>>=
+
 countCache n ==
   $options =>
     $options is [["vars",:l]] =>
@@ -806,9 +723,7 @@ countCache n ==
     optionError(CAAR $options,nil)
   sayCacheCount(nil,$cacheCount:= n)
 
-@
-\subsection{describeSetFunctionsCache}
-<<describeSetFunctionsCache>>=
+
 describeSetFunctionsCache() ==
   sayBrightly LIST(
     '%b,'")set functions cache",'%d,'"is used to tell AXIOM how many",'%l,_
@@ -822,9 +737,7 @@ describeSetFunctionsCache() ==
     '" size is set.",'%l,'" Examples:",_
     '"   )set fun cache all         )set fun cache 10 f g Legendre")
 
-@
-\subsection{sayAllCacheCounts}
-<<sayAllCacheCounts>>=
+
 sayAllCacheCounts () ==
   sayCacheCount(nil,$cacheCount)
   $cacheAlist =>
@@ -832,9 +745,7 @@ sayAllCacheCounts () ==
 --    SAY '" However,"
     for [x,:n] in $cacheAlist | n ^= $cacheCount repeat sayCacheCount(x,n)
 
-@
-\subsection{sayCacheCount}
-<<sayCacheCount>>=
+
 sayCacheCount(fn,n) ==
   prefix:=
     fn => ["function",:bright linearFormatName fn]
@@ -851,28 +762,20 @@ sayCacheCount(fn,n) ==
     [" the last",:bright n,"values."]
   sayBrightly ['"   ",:prefix,'"will cache",:phrase]
 
-@
-\section{history}
-See the section history in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
---------------------- The history Option ----------------------
+-- See the section history in setvart.boot
+-- --------------------- The history Option ----------------------
 
- Description: save workspace values in a history file
+--  Description: save workspace values in a history file
 
- The history option may be followed by any one of the 
- following:
+--  The history option may be followed by any one of the 
+--  following:
 
- -> on 
-    off
+--  -> on 
+--     off
 
- The current setting is indicated within the list.
+--  The current setting is indicated within the list.
 
-\end{verbatim}
-<<historyCode>>=
-<<setHistory>>
-@
-\subsection{setHistory}
-<<setHistory>>=
+
 setHistory arg ==
   -- this is just a front end for the history functions
   arg = "%initialize%" => nil
@@ -906,39 +809,30 @@ setHistory arg ==
     historySpad2Cmd()
   setHistory NIL
 
-@
-\section{kernel}
-See the section kernel in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
-              Current Values of  kernel  Variables                    
+-- 
+-- See the section kernel in setvart.boot
+-- \begin{verbatim}
+--               Current Values of  kernel  Variables                    
 
-Variable     Description                           Current Value
------------------------------------------------------------------
-warn         warn when re-definition is attempted       off 
-protect      prevent re-definition of kernel functions  off 
+-- Variable     Description                           Current Value
+-- -----------------------------------------------------------------
+-- warn         warn when re-definition is attempted       off 
+-- protect      prevent re-definition of kernel functions  off 
 
-\end{verbatim}
-<<kernelCode>>=
-<<describeProtectedSymbolsWarning>>
-<<protectedSymbolsWarning>>
-<<describeProtectSymbols>>
-<<protectSymbols>>
-@
-\subsection{describeProtectedSymbolsWarning}
-<<describeProtectedSymbolsWarning>>=
+-- 
+
+
 describeProtectedSymbolsWarning() ==
  sayBrightly LIST(
   '"Some AXIOM library functions are compiled into the kernel for efficiency",_
   '%l,'"reasons.  To prevent them being re-defined when loaded from a library",_
   '%l,'"they are specially protected.  If a user wishes to know when an attempt",_
   '%l,'"is made to re-define such a function, he or she should issue the command:",_
-  '%l,'"	)set kernel warn on",_
+  '%l,'"        )set kernel warn on",_
   '%l,'"To restore the default behaviour, he or she should issue the command:",_
-  '%l,'"	)set kernel warn off")
+  '%l,'"        )set kernel warn off")
 
-@
-\subsection{protectedSymbolsWarning}
-<<protectedSymbolsWarning>>=
+
 protectedSymbolsWarning arg ==
   arg = "%initialize%" => PROTECTED_-SYMBOL_-WARN(false)
   arg = "%display%" =>
@@ -950,22 +844,18 @@ protectedSymbolsWarning arg ==
     describeProtectedSymbolsWarning()
   PROTECTED_-SYMBOL_-WARN translateYesNo2TrueFalse first arg
 
-@
-\subsection{describeProtectSymbols}
-<<describeProtectSymbols>>=
+
 describeProtectSymbols() ==
  sayBrightly LIST(
   '"Some AXIOM library functions are compiled into the kernel for efficiency",_
   '%l,'"reasons.  To prevent them being re-defined when loaded from a library",_
   '%l,'"they are specially protected.  If a user wishes to re-define these",_
   '%l,'"functions, he or she should issue the command:",_
-  '%l,'"	)set kernel protect off",_
+  '%l,'"        )set kernel protect off",_
   '%l,'"To restore the default behaviour, he or she should issue the command:",_
-  '%l,'"	)set kernel protect on")
+  '%l,'"        )set kernel protect on")
 
-@
-\subsection{protectSymbols}
-<<protectSymbols>>=
+
 protectSymbols arg ==
   arg = "%initialize%" => PROTECT_-SYMBOLS(true)
   arg = "%display%" =>
@@ -977,28 +867,21 @@ protectSymbols arg ==
     describeProtectSymbols()
   PROTECT_-SYMBOLS translateYesNo2TrueFalse first arg
 
-@
-\section{naglink}
-See the section naglink in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
-              Current Values of  naglink  Variables                   
+-- 
+-- See the section naglink in setvart.boot
+-- \begin{verbatim}
+--               Current Values of  naglink  Variables                   
 
-Variable     Description                           Current Value
------------------------------------------------------------------
-host         internet address of host for NAGLink       localhost 
-persistence  number of (fortran) functions to remember  1 
-messages     show NAGLink messages                      on 
-double       enforce DOUBLE PRECISION ASPs              on 
+-- Variable     Description                           Current Value
+-- -----------------------------------------------------------------
+-- host         internet address of host for NAGLink       localhost 
+-- persistence  number of (fortran) functions to remember  1 
+-- messages     show NAGLink messages                      on 
+-- double       enforce DOUBLE PRECISION ASPs              on 
 
-\end{verbatim}
-<<naglinkCode>>=
-<<setNagHost>>
-<<describeSetNagHost>>
-<<setFortPers>>
-<<describeFortPersistence>>
-@
-\subsection{setNagHost}
-<<setNagHost>>=
+-- 
+
+
 setNagHost arg ==
   arg = "%initialize%" =>
     $nagHost := '"localhost"
@@ -1008,9 +891,7 @@ setNagHost arg ==
     describeSetNagHost()
   $nagHost := object2String arg
 
-@
-\subsection{describeSetNagHost}
-<<describeSetNagHost>>=
+
 describeSetNagHost() ==
   sayBrightly LIST (
    '%b,'")set naglink host",'%d,_
@@ -1019,9 +900,7 @@ describeSetNagHost() ==
    '" specified must be running the NAGLink daemon.",'%l,'%l,_
    '" The current setting is",'%b,$nagHost,'%d)
 
-@
-\subsection{setFortPers}
-<<setFortPers>>=
+
 setFortPers arg ==
   arg = "%initialize%" =>
     $fortPersistence := 1
@@ -1036,9 +915,7 @@ setFortPers arg ==
     terminateSystemCommand()
   $fortPersistence := first(arg)
 
-@
-\subsection{describeFortPersistence}
-<<describeFortPersistence>>=
+
 describeFortPersistence() ==
   sayBrightly LIST (
    '%b,'")set naglink persistence",'%d,_
@@ -1048,46 +925,40 @@ describeFortPersistence() ==
    '" non-negative integer.", '%l,'%l,_
    '" The current setting is",'%b,$fortPersistence,'%d)
 
-@
-\section{output algebra}
-See the subsection output algebra in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
---------------------- The algebra Option ----------------------
+-- See the subsection output algebra in setvart.boot
+-- 
+-- --------------------- The algebra Option ----------------------
 
- Description: display output in algebraic form
+--  Description: display output in algebraic form
 
- )set output algebra is used to tell AXIOM to turn algebra-style
-  output printing on and off, and where to place the output.  By
-  default, the destination for the output is the screen but 
-  printing is turned off.
+--  )set output algebra is used to tell AXIOM to turn algebra-style
+--   output printing on and off, and where to place the output.  By
+--   default, the destination for the output is the screen but 
+--   printing is turned off.
 
-Syntax:   )set output algebra <arg>
-    where arg can be one of
-  on          turn algebra printing on (default state)
-  off         turn algebra printing off
-  console     send algebra output to screen (default state)
-  fp<.fe>     send algebra output to file with file prefix fp
-              and file extension .fe. If not given, 
-              .fe defaults to .spout.
+-- Syntax:   )set output algebra <arg>
+--     where arg can be one of
+--   on          turn algebra printing on (default state)
+--   off         turn algebra printing off
+--   console     send algebra output to screen (default state)
+--   fp<.fe>     send algebra output to file with file prefix fp
+--               and file extension .fe. If not given, 
+--               .fe defaults to .spout.
 
-If you wish to send the output to a file, you may need to issue
-this command twice: once with on and once with the file name. 
-For example, to send algebra output to the file polymer.spout,
-issue the two commands
+-- If you wish to send the output to a file, you may need to issue
+-- this command twice: once with on and once with the file name. 
+-- For example, to send algebra output to the file polymer.spout,
+-- issue the two commands
 
-  )set output algebra on
-  )set output algebra polymer
+--   )set output algebra on
+--   )set output algebra polymer
 
-The output is placed in the directory from which you invoked 
-AXIOM or the one you set with the )cd system command.
-The current setting is:  On:CONSOLE 
-\end{verbatim}
-<<outputalgebraCode>>=
-<<setOutputAlgebra>>
-<<describeSetOutputAlgebra>>
-@
-\subsection{setOutputAlgebra}
-<<setOutputAlgebra>>=
+-- The output is placed in the directory from which you invoked 
+-- AXIOM or the one you set with the )cd system command.
+-- The current setting is:  On:CONSOLE 
+-- 
+
+
 setOutputAlgebra arg ==
   arg = "%initialize%" =>
     $algebraOutputStream :=
@@ -1138,9 +1009,7 @@ setOutputAlgebra arg ==
   sayKeyedMsg("S2IV0005",NIL)
   describeSetOutputAlgebra()
 
-@
-\subsection{describeSetOutputAlgebra}
-<<describeSetOutputAlgebra>>=
+
 describeSetOutputAlgebra() ==
   sayBrightly LIST ('%b,'")set output algebra",'%d,_
    '"is used to tell AXIOM to turn algebra-style output",'%l,_
@@ -1167,40 +1036,35 @@ describeSetOutputAlgebra() ==
   '"The current setting is: ",'%b,setOutputAlgebra "%display%",'%d)
 
 
-@
-\section{output characters}
-See the subsection output characters in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
--------------------- The characters Option --------------------
+-- See the subsection output characters in setvart.boot
+-- 
+-- -------------------- The characters Option --------------------
 
- Description: choose special output character set
+--  Description: choose special output character set
 
 
- The characters option may be followed by any one of the 
- following:
+--  The characters option may be followed by any one of the 
+--  following:
 
-    default
- -> plain 
+--     default
+--  -> plain 
 
- The current setting is indicated within the list.  This 
- option  determines the special characters used for algebraic 
- output. This is what the current choice of special characters 
- looks like:
-   ulc is shown as +          urc is shown as +       
-   llc is shown as +          lrc is shown as +       
-   vbar is shown as |         hbar is shown as -      
-   quad is shown as ?         lbrk is shown as [      
-   rbrk is shown as ]         lbrc is shown as {      
-   rbrc is shown as }         ttee is shown as +      
-   btee is shown as +         rtee is shown as +      
-   ltee is shown as +         ctee is shown as +      
-   bslash is shown as \    
-\end{verbatim}
-<<outputcharactersCode>>=
-<<setOutputCharacters>>
-@
-\subsection{setOutputCharacters}
-<<setOutputCharacters>>=
+--  The current setting is indicated within the list.  This 
+--  option  determines the special characters used for algebraic 
+--  output. This is what the current choice of special characters 
+--  looks like:
+--    ulc is shown as +          urc is shown as +       
+--    llc is shown as +          lrc is shown as +       
+--    vbar is shown as |         hbar is shown as -      
+--    quad is shown as ?         lbrk is shown as [      
+--    rbrk is shown as ]         lbrc is shown as {      
+--    rbrc is shown as }         ttee is shown as +      
+--    btee is shown as +         rtee is shown as +      
+--    ltee is shown as +         ctee is shown as +      
+--    bslash is shown as \    
+-- 
+
+
 setOutputCharacters arg ==
   -- this sets the special character set
   arg = "%initialize%" =>
@@ -1236,56 +1100,47 @@ setOutputCharacters arg ==
     setOutputCharacters NIL
   setOutputCharacters NIL
 
-@
-\section{output fortran}
-See the subsection output fortran in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
---------------------- The fortran Option ----------------------
+-- See the subsection output fortran in setvart.boot
+-- 
+-- --------------------- The fortran Option ----------------------
 
- Description: create output in FORTRAN format
+--  Description: create output in FORTRAN format
 
- )set output fortran is used to tell AXIOM to turn FORTRAN-style
-  output printing on and off, and where to place the output.  By
-  default, the destination for the output is the screen but 
-  printing is turned off.
+--  )set output fortran is used to tell AXIOM to turn FORTRAN-style
+--   output printing on and off, and where to place the output.  By
+--   default, the destination for the output is the screen but 
+--   printing is turned off.
 
-Also See: )set fortran
+-- Also See: )set fortran
 
-Syntax:   )set output fortran <arg>
-    where arg can be one of
-  on          turn FORTRAN printing on
-  off         turn FORTRAN printing off (default state)
-  console     send FORTRAN output to screen (default state)
-  fp<.fe>     send FORTRAN output to file with file prefix 
-              fp and file extension .fe. If not given, 
-              .fe defaults to .sfort.
+-- Syntax:   )set output fortran <arg>
+--     where arg can be one of
+--   on          turn FORTRAN printing on
+--   off         turn FORTRAN printing off (default state)
+--   console     send FORTRAN output to screen (default state)
+--   fp<.fe>     send FORTRAN output to file with file prefix 
+--               fp and file extension .fe. If not given, 
+--               .fe defaults to .sfort.
 
-If you wish to send the output to a file, you must issue 
-this command twice: once with on and once with the file name.
-For example, to send FORTRAN output to the file polymer.sfort,
- issue the two commands
+-- If you wish to send the output to a file, you must issue 
+-- this command twice: once with on and once with the file name.
+-- For example, to send FORTRAN output to the file polymer.sfort,
+--  issue the two commands
 
-  )set output fortran on
-  )set output fortran polymer
+--   )set output fortran on
+--   )set output fortran polymer
 
-The output is placed in the directory from which you invoked
-AXIOM or the one you set with the )cd system command.
-The current setting is:  Off:CONSOLE 
-\end{verbatim}
-<<outputfortranCode>>=
-<<makeStream>>
-<<setOutputFortran>>
-<<describeSetOutputFortran>>
-@
-\subsection{makeStream}
-<<makeStream>>=
+-- The output is placed in the directory from which you invoked
+-- AXIOM or the one you set with the )cd system command.
+-- The current setting is:  Off:CONSOLE 
+-- 
+
+
 makeStream(append,filename,i,j) ==
   append => MAKE_-APPENDSTREAM(filename,i,j)
   MAKE_-OUTSTREAM(filename,i,j)
 
-@
-\subsection{setOutputFortran}
-<<setOutputFortran>>=
+
 setOutputFortran arg ==
   arg = "%initialize%" =>
     $fortranOutputStream :=
@@ -1341,9 +1196,7 @@ setOutputFortran arg ==
   if null quiet then sayKeyedMsg("S2IV0005",NIL)
   describeSetOutputFortran()
 
-@
-\subsection{describeSetOutputFortran}
-<<describeSetOutputFortran>>=
+
 describeSetOutputFortran() ==
   sayBrightly LIST ('%b,'")set output fortran",'%d,_
    '"is used to tell AXIOM to turn FORTRAN-style output",'%l,_
@@ -1371,45 +1224,40 @@ describeSetOutputFortran() ==
   '"the one you set with the )cd system command.",'%l,_
   '"The current setting is: ",'%b,setOutputFortran "%display%",'%d)
 
-@
-\section{output openmath}
-See the subsection output openmath in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
------------------- The openmath Option ------------------------
 
- Description: create output in OpenMath style
+-- See the subsection output openmath in setvart.boot
+-- 
+-- ------------------ The openmath Option ------------------------
 
- )set output tex is used to tell AXIOM to turn TeX-style output
-printing on and off, and where to place the output.  By default,
-the destination for the output is the screen but printing is 
-turned off.
+--  Description: create output in OpenMath style
 
-Syntax:   )set output tex <arg>
-    where arg can be one of
-  on          turn TeX printing on
-  off         turn TeX printing off (default state)
-  console     send TeX output to screen (default state)
-  fp<.fe>     send TeX output to file with file prefix fp
-              and file extension .fe. If not given, 
-              .fe defaults to .som.
+--  )set output tex is used to tell AXIOM to turn TeX-style output
+-- printing on and off, and where to place the output.  By default,
+-- the destination for the output is the screen but printing is 
+-- turned off.
 
-If you wish to send the output to a file, you must issue 
-this command twice: once with on and once with the file name. 
-For example, to send TeX output to the file polymer.som, 
-issue the two commands
+-- Syntax:   )set output tex <arg>
+--     where arg can be one of
+--   on          turn TeX printing on
+--   off         turn TeX printing off (default state)
+--   console     send TeX output to screen (default state)
+--   fp<.fe>     send TeX output to file with file prefix fp
+--               and file extension .fe. If not given, 
+--               .fe defaults to .som.
 
-  )set output tex on
-  )set output tex polymer
+-- If you wish to send the output to a file, you must issue 
+-- this command twice: once with on and once with the file name. 
+-- For example, to send TeX output to the file polymer.som, 
+-- issue the two commands
 
-The output is placed in the directory from which you invoked 
-AXIOM or the one you set with the )cd system command.
-The current setting is:  Off:CONSOLE 
-<<outputopenmathCode>>=
-<<setOutputOpenMath>>
-<<describeSetOutputOpenMath>>
-@
-\subsection{setOutputOpenMath}
-<<setOutputOpenMath>>=
+--   )set output tex on
+--   )set output tex polymer
+
+-- The output is placed in the directory from which you invoked 
+-- AXIOM or the one you set with the )cd system command.
+-- The current setting is:  Off:CONSOLE 
+
+
 setOutputOpenMath arg ==
   arg = "%initialize%" =>
     $openMathOutputStream :=
@@ -1460,9 +1308,7 @@ setOutputOpenMath arg ==
   sayKeyedMsg("S2IV0005",NIL)
   describeSetOutputOpenMath()
 
-@
-\subsection{describeSetOutputOpenMath}
-<<describeSetOutputOpenMath>>=
+
 describeSetOutputOpenMath() ==
   sayBrightly LIST ('%b,'")set output openmath",'%d,_
    '"is used to tell AXIOM to turn OpenMath output",'%l,_
@@ -1488,48 +1334,42 @@ describeSetOutputOpenMath() ==
   '"the one you set with the )cd system command.",'%l,_
   '"The current setting is: ",'%b,setOutputOpenMath "%display%",'%d)
 
-@
-\section{output script}
-See the subsection output script in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
----------------------- The script Option ----------------------
+-- See the subsection output script in setvart.boot
+-- 
+-- ---------------------- The script Option ----------------------
 
- Description: display output in SCRIPT formula format
+--  Description: display output in SCRIPT formula format
 
- )set output script is used to tell AXIOM to turn IBM Script
- formula-style output printing on and off, and where to place
- the output.  By default, the destination for the output is the 
- screen but printing is turned off.
+--  )set output script is used to tell AXIOM to turn IBM Script
+--  formula-style output printing on and off, and where to place
+--  the output.  By default, the destination for the output is the 
+--  screen but printing is turned off.
 
-Syntax:   )set output script <arg>
-    where arg can be one of
-  on      turn IBM Script formula printing on
-  off     turn IBM Script formula printing off 
-          (default state)
-  console send IBM Script formula output to screen 
-          (default state)
-  fp<.fe> send IBM Script formula output to file with file 
-          prefix fp and file extension .fe. If not given, 
-          .fe defaults to .sform.
+-- Syntax:   )set output script <arg>
+--     where arg can be one of
+--   on      turn IBM Script formula printing on
+--   off     turn IBM Script formula printing off 
+--           (default state)
+--   console send IBM Script formula output to screen 
+--           (default state)
+--   fp<.fe> send IBM Script formula output to file with file 
+--           prefix fp and file extension .fe. If not given, 
+--           .fe defaults to .sform.
 
-If you wish to send the output to a file, you must issue 
-this command twice: once with on and once with the file 
-name. For example, to send IBM Script formula output to 
-the file polymer.sform, issue the two commands
+-- If you wish to send the output to a file, you must issue 
+-- this command twice: once with on and once with the file 
+-- name. For example, to send IBM Script formula output to 
+-- the file polymer.sform, issue the two commands
 
-  )set output script on
-  )set output script polymer
+--   )set output script on
+--   )set output script polymer
 
-The output is placed in the directory from which you 
-invoked AXIOM or the one you set with the )cd system command.
-The current setting is:  Off:CONSOLE 
-\end{verbatim}
-<<outputscriptCode>>=
-<<setOutputFormula>>
-<<describeSetOutputFormula>>
-@
-\subsection{setOutputFormula}
-<<setOutputFormula>>=
+-- The output is placed in the directory from which you 
+-- invoked AXIOM or the one you set with the )cd system command.
+-- The current setting is:  Off:CONSOLE 
+--
+
+
 setOutputFormula arg ==
   arg = "%initialize%" =>
     $formulaOutputStream :=
@@ -1580,9 +1420,7 @@ setOutputFormula arg ==
   sayKeyedMsg("S2IV0005",NIL)
   describeSetOutputFormula()
 
-@
-\subsection{describeSetOutputFormula}
-<<describeSetOutputFormula>>=
+
 describeSetOutputFormula() ==
   sayBrightly LIST ('%b,'")set output script",'%d,_
    '"is used to tell AXIOM to turn IBM Script formula-style",'%l,_
@@ -1608,46 +1446,41 @@ describeSetOutputFormula() ==
   '"the one you set with the )cd system command.",'%l,_
   '"The current setting is: ",'%b,setOutputFormula "%display%",'%d)
 
-@
-\section{output tex}
-See the section tex in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
------------------------ The tex Option ------------------------
 
- Description: create output in TeX style
+-- See the section tex in setvart.boot
+--
+-- ----------------------- The tex Option ------------------------
 
- )set output tex is used to tell AXIOM to turn TeX-style output
-printing on and off, and where to place the output.  By default,
-the destination for the output is the screen but printing is 
-turned off.
+--  Description: create output in TeX style
 
-Syntax:   )set output tex <arg>
-    where arg can be one of
-  on          turn TeX printing on
-  off         turn TeX printing off (default state)
-  console     send TeX output to screen (default state)
-  fp<.fe>     send TeX output to file with file prefix fp
-              and file extension .fe. If not given, 
-              .fe defaults to .stex.
+--  )set output tex is used to tell AXIOM to turn TeX-style output
+-- printing on and off, and where to place the output.  By default,
+-- the destination for the output is the screen but printing is 
+-- turned off.
 
-If you wish to send the output to a file, you must issue 
-this command twice: once with on and once with the file name. 
-For example, to send TeX output to the file polymer.stex, 
-issue the two commands
+-- Syntax:   )set output tex <arg>
+--     where arg can be one of
+--   on          turn TeX printing on
+--   off         turn TeX printing off (default state)
+--   console     send TeX output to screen (default state)
+--   fp<.fe>     send TeX output to file with file prefix fp
+--               and file extension .fe. If not given, 
+--               .fe defaults to .stex.
 
-  )set output tex on
-  )set output tex polymer
+-- If you wish to send the output to a file, you must issue 
+-- this command twice: once with on and once with the file name. 
+-- For example, to send TeX output to the file polymer.stex, 
+-- issue the two commands
 
-The output is placed in the directory from which you invoked 
-AXIOM or the one you set with the )cd system command.
-The current setting is:  Off:CONSOLE 
-\end{verbatim}
-<<outputtexCode>>=
-<<setOutputTex>>
-<<describeSetOutputTex>>
-@
-\subsection{setOutputTex}
-<<setOutputTex>>=
+--   )set output tex on
+--   )set output tex polymer
+
+-- The output is placed in the directory from which you invoked 
+-- AXIOM or the one you set with the )cd system command.
+-- The current setting is:  Off:CONSOLE 
+--
+
+
 setOutputTex arg ==
   arg = "%initialize%" =>
     $texOutputStream :=
@@ -1698,9 +1531,7 @@ setOutputTex arg ==
   sayKeyedMsg("S2IV0005",NIL)
   describeSetOutputTex()
 
-@
-\subsection{describeSetOutputTex}
-<<describeSetOutputTex>>=
+
 describeSetOutputTex() ==
   sayBrightly LIST ('%b,'")set output tex",'%d,_
    '"is used to tell AXIOM to turn TeX-style output",'%l,_
@@ -1726,24 +1557,16 @@ describeSetOutputTex() ==
   '"the one you set with the )cd system command.",'%l,_
   '"The current setting is: ",'%b,setOutputTex "%display%",'%d)
 
-@
-\section{streams calculate}
-See the section streams in setvart.boot.pamphlet\cite{1}
-\begin{verbatim}
-              Current Values of  streams  Variables                   
+-- See the section streams in setvart.boot
+--               Current Values of  streams  Variables                   
 
-Variable     Description                           Current Value
------------------------------------------------------------------
-calculate    specify number of elements to calculate    10 
-showall      display all stream elements computed       off 
+-- Variable     Description                           Current Value
+-- -----------------------------------------------------------------
+-- calculate    specify number of elements to calculate    10 
+-- showall      display all stream elements computed       off 
 
-\end{verbatim}
-<<streamscalculateCode>>=
-<<setStreamsCalculate>>
-<<describeSetStreamsCalculate>>
-@
-\subsection{setStreamsCalculate}
-<<setStreamsCalculate>>=
+
+
 setStreamsCalculate arg ==
   arg = "%initialize%" =>
     $streamCount := 10
@@ -1758,70 +1581,5 @@ setStreamsCalculate arg ==
     terminateSystemCommand()
   $streamCount := n
 
-@
-\subsection{describeSetStreamsCalculate}
-<<describeSetStreamsCalculate>>=
 describeSetStreamsCalculate() == sayKeyedMsg("S2IV0001",[$streamCount])
 
-@
-\section{License}
-<<license>>=
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
--- All rights reserved.
---
--- Redistribution and use in source and binary forms, with or without
--- modification, are permitted provided that the following conditions are
--- met:
---
---     - Redistributions of source code must retain the above copyright
---       notice, this list of conditions and the following disclaimer.
---
---     - Redistributions in binary form must reproduce the above copyright
---       notice, this list of conditions and the following disclaimer in
---       the documentation and/or other materials provided with the
---       distribution.
---
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
---       names of its contributors may be used to endorse or promote products
---       derived from this software without specific prior written permission.
---
--- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
--- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
--- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
--- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
--- OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
--- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
--- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
--- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
--- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
--- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
--- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@
-<<*>>=
-<<license>>
-
-)package "BOOT"
-
-<<toplevelsetfunctions>>
-<<compilerCode>>
-<<exposeCode>>
-<<fortrancallingCode>>
-<<functionsCode>>
-<<historyCode>>
-<<kernelCode>>
-<<naglinkCode>>
-<<outputalgebraCode>>
-<<outputcharactersCode>>
-<<outputfortranCode>>
-<<outputopenmathCode>>
-<<outputscriptCode>>
-<<outputtexCode>>
-<<streamscalculateCode>>
-@
-
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} setvart.boot.pamphlet
-\end{thebibliography}
-\end{document}
