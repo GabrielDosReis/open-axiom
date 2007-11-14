@@ -499,6 +499,9 @@ match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 record.$(FASLEXT): record.boot nlib.$(FASLEXT) pathname.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+setvart.$(FASLEXT): setvart.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 ## OpenAxiom's compiler
 
 compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
@@ -745,10 +748,6 @@ bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
 nrunopt.clisp: nrunopt.boot
 	@ echo 365 making $@ from $<
 	@ echo '(old-boot::boot "nrunopt.boot")' | ${DEPSYS}
-
-setvart.clisp: setvart.boot
-	@ echo 398 making $@ from $<
-	@ echo '(old-boot::boot "setvart.boot")' | ${DEPSYS}
 
 ../algebra/warm.data: $(srcdir)/Makefile.pamphlet
 	@ echo 2 building warm.data

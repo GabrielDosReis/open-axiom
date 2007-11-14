@@ -859,14 +859,6 @@ if these two things are done then a DEPSYS image can be bootstrapped
 to a new platform.
 \end{verbatim}
 
-\subsection{setvart.boot}
-
-<<setvart.clisp>>=
-setvart.clisp: setvart.boot
-	@ echo 398 making $@ from $<
-	@ echo '(old-boot::boot "setvart.boot")' | ${DEPSYS}
-@
-
 \section{The databases}
 
 \begin{verbatim}
@@ -1082,6 +1074,9 @@ match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 record.$(FASLEXT): record.boot nlib.$(FASLEXT) pathname.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+setvart.$(FASLEXT): setvart.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## OpenAxiom's compiler
@@ -1324,8 +1319,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<bookvol5.lisp>>
 
 <<nrunopt.clisp>>
-
-<<setvart.clisp>>
 
 <<warm.data.stanza>>
 
