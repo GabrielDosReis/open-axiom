@@ -341,7 +341,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	packtran.$(FASLEXT)	pathname.$(FASLEXT)	\
 	pf2sex.$(FASLEXT)	pile.$(FASLEXT)	\
 	posit.$(FASLEXT)	property.$(FASLEXT)	\
-	ptrees.$(FASLEXT)	\
+	ptrees.$(FASLEXT)	spad-parser.$(FASLEXT) \
 	record.$(FASLEXT)				\
 	rulesets.$(FASLEXT)	\
 	scan.$(FASLEXT)	serror.$(FASLEXT)	\
@@ -1156,7 +1156,10 @@ server.$(FASLEXT): server.boot macros.$(FASLEXT)
 ## The old parser component roughtly is:
 ##
 
-parse.$(FASLEXT): parse.boot postpar.$(FASLEXT)
+spad-parser.$(FASLEXT): spad-parser.boot parse.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+parse.$(FASLEXT): parse.boot metalex.$(FASLEXT) postpar.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 postpar.$(FASLEXT): postpar.boot postprop.$(FASLEXT)

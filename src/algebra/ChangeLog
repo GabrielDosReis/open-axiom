@@ -1,3 +1,9 @@
+2007-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (axiom_algebra_layer_19): Include SPADPRSR.o
+	(SPADPRSR.NRLIB/code.$(FASLEXT)): New rule.
+	* spad-parser.spad: New file.
+
 2007-11-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (SYNTAX.NRLIB/code.$(FASLEXT)): New rule.
