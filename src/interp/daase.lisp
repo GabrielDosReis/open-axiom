@@ -772,7 +772,7 @@
      (when (and data (string= (directory-namestring data) "")
              (string= (pathname-type data) "spad"))
       (setq data
-       (concatenate 'string (|systemRootDirectory|) "/../../src/algebra/" data))))
+       (concatenate 'string (|systemRootDirectory|) "src/algebra/" data))))
     (asharp?                               ; is this asharp code?
      (if (consp data)
       (setq data (cdr data))
@@ -781,10 +781,10 @@
      (if (consp data)
        (setq data
              (if (string= (directory-namestring (car data)) "")
-                 (concatenate 'string (|systemRootDirectory|) "/algebra/" (car data) ".o")
+                 (concatenate 'string (|systemRootDirectory|) "algebra/" (car data) ".o")
                (car data)))
       (when (and data (string= (directory-namestring data) ""))
-       (setq data (concatenate 'string (|systemRootDirectory|) "/algebra/" data ".o")))))))
+       (setq data (concatenate 'string (|systemRootDirectory|) "algebra/" data ".o")))))))
   data))
 
 ; )library top level command  -- soon to be obsolete
