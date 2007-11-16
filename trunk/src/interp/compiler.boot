@@ -38,6 +38,12 @@ import '"category"
 import '"modemap"
 )package "BOOT"
 
+++ A list of routines for diagnostic reports.  These functions, in an
+++ abstract sense, have type: forall T: Type . String -> T, so they
+++ can be used in T-returning functions, for any T.  
+$coreDiagnosticFunctions == 
+  '(error userError systemError)
+
 compTopLevel(x,m,e) ==
 --+ signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
@@ -356,7 +362,7 @@ outputComp(x,e) ==
 
 compForm1(form is [op,:argl],m,e) ==
   $NumberOfArgsIfInteger: local:= #argl --see compElt
-  op="error" =>
+  op in $coreDiagnosticFunctions =>
     [[op,:[([.,.,e]:=outputComp(x,e)).expr
       for x in argl]],m,e]
   op is ["elt",domain,op'] =>
