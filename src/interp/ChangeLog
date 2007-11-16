@@ -1,5 +1,10 @@
 2007-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* compiler.boot ($coreDiagnosticFunctions): New.
+	(compForm1): Use it in checking for error functions.
+
+2007-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* daase.lisp (getdatabase): Fix path to source file and object file.
 
 2007-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
