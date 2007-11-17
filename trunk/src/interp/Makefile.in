@@ -677,6 +677,9 @@ info.$(FASLEXT): info.boot g-util.$(FASLEXT)
 slam.$(FASLEXT): slam.boot g-timer.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+clammed.$(FASLEXT): clammed.boot g-timer.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 clam.$(FASLEXT): clam.boot g-timer.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -739,10 +742,6 @@ vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
 
 boot-pkg.$(FASLEXT): boot-pkg.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
-
-clammed.clisp: clammed.boot
-	@ echo 226 making $@ from $<
-	@ echo '(old-boot::boot "clammed.boot")' | ${DEPSYS} 
 
 bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
 	@ echo 298 making $@ from $<
