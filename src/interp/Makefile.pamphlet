@@ -824,14 +824,6 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	$(INSTALL_DATA) $< $@
 @
 
-\subsection{clammed.boot \cite{62}}
-
-<<clammed.clisp>>=
-clammed.clisp: clammed.boot
-	@ echo 226 making $@ from $<
-	@ echo '(old-boot::boot "clammed.boot")' | ${DEPSYS} 
-@
-
 \subsection{bookvol5.lsp}
 
 
@@ -1254,6 +1246,9 @@ info.$(FASLEXT): info.boot g-util.$(FASLEXT)
 slam.$(FASLEXT): slam.boot g-timer.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+clammed.$(FASLEXT): clammed.boot g-timer.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 clam.$(FASLEXT): clam.boot g-timer.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1316,8 +1311,6 @@ vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
 
 boot-pkg.$(FASLEXT): boot-pkg.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
-
-<<clammed.clisp>>
 
 <<bookvol5.lisp>>
 

@@ -1,3 +1,9 @@
+2007-11-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (clammed.$(FASLEXT)): New rule.
+	(<<clammed.clisp>>): Remove.
+	* clammed.boot.pamphlet: Push into package "BOOT".  Fix syntax.
+
 2007-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* compiler.boot ($coreDiagnosticFunctions): New.
