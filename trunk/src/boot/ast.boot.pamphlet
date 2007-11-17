@@ -123,6 +123,12 @@ module '"boot-ast"
 import '"includer"
 
 )package "BOOTTRAN"
+
+++ True means that Boot functions should be translated to use
+++ hash tables to remember values.  By default, functions are
+++ translated with the obvious semantics, e.g. no caching.
+$bfClamming := false
+
 <<abstract syntax tree>>
 
 -- TRUE if we are currently building the syntax tree for an 'is' 
@@ -1109,6 +1115,8 @@ bfDs n== if n=0 then '"" else CONCAT('"D",bfDs(n-1))
 (IMPORT-MODULE "includer")
 
 (IN-PACKAGE "BOOTTRAN")
+
+(DEFPARAMETER |$bfClamming| NIL)
 
 (DEFTYPE |String| () 'STRING)
 
