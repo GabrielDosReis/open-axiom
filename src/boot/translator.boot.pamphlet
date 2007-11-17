@@ -132,19 +132,19 @@ shoeCOMPILE_-FILE lspFileName ==
 -- the common lisp file "filename.clisp"
  
 BOOTTOCL(fn, out) ==
-         $bfClamming:local:=false
-         BOOTTOCLLINES(nil,fn, out)
+  BOOTTOCLLINES(nil,fn, out)
  
 -- (bootclam "filename") translates the file "filename.boot" to
 -- the common lisp file "filename.clisp" , producing, for each function
 -- a hash table to store previously computed values indexed by argument
 -- list.
  
-BOOTCLAM(fn, out) == BOOTCLAMLINES(nil,fn, out)
+BOOTCLAM(fn, out) == 
+  $bfClamming := true
+  BOOTCLAMLINES(nil,fn, out)
  
 BOOTCLAMLINES(lines, fn, out) ==
-         $bfClamming:local:=true
-         BOOTTOCLLINES(lines, fn, out)
+   BOOTTOCLLINES(lines, fn, out)
 
 <<BOOTTOCLLINES>>
 shoeClLines(a,fn,lines,outfn)==
@@ -166,7 +166,6 @@ BOOTTOCLC(fn, out)==BOOTTOCLCLINES(nil, fn, out)
 BOOTTOCLCLINES(lines, fn, outfn)==
   callingPackage := _*PACKAGE_*
   IN_-PACKAGE '"BOOTTRAN"
-  $bfClamming:local:=false
   infn:=shoeAddbootIfNec fn
   result := shoeOpenInputFile(a,infn,
                shoeClCLines(a,fn,lines,outfn))
@@ -191,7 +190,6 @@ shoeClCLines(a,fn,lines,outfn)==
 BOOTTOMC fn==
    callingPackage := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
-   $bfClamming:local:=false
    $GenVarCounter:local := 0
    infn:=shoeAddbootIfNec fn
    result := shoeOpenInputFile(a,infn,shoeMc(a,fn))
@@ -208,7 +206,6 @@ shoeMc(a,fn)==
 EVAL_-BOOT_-FILE fn ==
    b := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
-   $bfClamming:local:=false
    infn:=shoeAddbootIfNec fn
    outfn:=CONCAT(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
    shoeOpenInputFile(a,infn,shoeClLines(a,infn,[],outfn))
@@ -222,7 +219,6 @@ BO fn==
      b := _*PACKAGE_*
      IN_-PACKAGE '"BOOTTRAN"
      $GenVarCounter:local := 0
-     $bfClamming:local := false
      infn:=shoeAddbootIfNec fn
      shoeOpenInputFile(a,infn,shoeToConsole(a,fn))
      setCurrentPackage b
@@ -256,7 +252,6 @@ STEVAL string==
    callingPackage := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
    $GenVarCounter:local := 0
-   $bfClamming:local:=false
    a:=  shoeTransformString [string]
    result := 
       bStreamPackageNull a => nil
@@ -272,7 +267,6 @@ STTOMC string==
    callingPackage := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
    $GenVarCounter:local := 0
-   $bfClamming:local:=false
    a:=  shoeTransformString [string]
    result := 
       bStreamPackageNull a => nil
@@ -722,7 +716,6 @@ shoePCompile  fn==
     EVAL fn
  
 FC(name,fn)==
-   $bfClamming:local:=false
    $GenVarCounter:local := 0
    infn:=shoeAddbootIfNec fn
    shoeOpenInputFile(a,infn,shoeFindName(fn,name, a))
@@ -745,7 +738,6 @@ bStreamPackageNull s==
  
 PSTTOMC string==
    $GenVarCounter:local := 0
-   $bfClamming:local:=false
    shoePCompileTrees shoeTransformString string
  
 BOOTLOOP ()==
@@ -780,7 +772,6 @@ PSTOUT string==
    callingPackage := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
    $GenVarCounter:local := 0
-   $bfClamming:local:=false
    result := shoeConsoleTrees shoeTransformString string
    setCurrentPackage callingPackage
    result
@@ -840,21 +831,16 @@ associateRequestWithFileType(Option '"compile", '"boot",
   (PROG () (RETURN (COMPILE-FILE |lspFileName|))))
 
 (DEFUN BOOTTOCL (|fn| |out|)
-  (PROG (|$bfClamming|)
-    (DECLARE (SPECIAL |$bfClamming|))
-    (RETURN
-      (PROGN (SETQ |$bfClamming| NIL) (BOOTTOCLLINES NIL |fn| |out|)))))
+  (PROG () (RETURN (BOOTTOCLLINES NIL |fn| |out|))))
 
 (DEFUN BOOTCLAM (|fn| |out|)
-  (PROG () (RETURN (BOOTCLAMLINES NIL |fn| |out|))))
-
-(DEFUN BOOTCLAMLINES (|lines| |fn| |out|)
-  (PROG (|$bfClamming|)
+  (PROG ()
     (DECLARE (SPECIAL |$bfClamming|))
     (RETURN
-      (PROGN
-        (SETQ |$bfClamming| T)
-        (BOOTTOCLLINES |lines| |fn| |out|)))))
+      (PROGN (SETQ |$bfClamming| T) (BOOTCLAMLINES NIL |fn| |out|)))))
+
+(DEFUN BOOTCLAMLINES (|lines| |fn| |out|)
+  (PROG () (RETURN (BOOTTOCLLINES |lines| |fn| |out|))))
 
 (DEFUN BOOTTOCLLINES (|lines| |fn| |outfn|)
   (PROG (|result| |infn| |callingPackage|)
@@ -894,13 +880,11 @@ associateRequestWithFileType(Option '"compile", '"boot",
   (PROG () (RETURN (BOOTTOCLCLINES NIL |fn| |out|))))
 
 (DEFUN BOOTTOCLCLINES (|lines| |fn| |outfn|)
-  (PROG (|$bfClamming| |result| |infn| |callingPackage|)
-    (DECLARE (SPECIAL |$bfClamming|))
+  (PROG (|result| |infn| |callingPackage|)
     (RETURN
       (PROGN
         (SETQ |callingPackage| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
-        (SETQ |$bfClamming| NIL)
         (SETQ |infn| (|shoeAddbootIfNec| |fn|))
         (SETQ |result|
               (|shoeOpenInputFile| |a| |infn|
@@ -933,14 +917,12 @@ associateRequestWithFileType(Option '"compile", '"boot",
          |outfn|)))))
 
 (DEFUN BOOTTOMC (|fn|)
-  (PROG (|$GenVarCounter| |$bfClamming| |result| |infn|
-            |callingPackage|)
-    (DECLARE (SPECIAL |$GenVarCounter| |$bfClamming|))
+  (PROG (|$GenVarCounter| |result| |infn| |callingPackage|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
         (SETQ |callingPackage| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
-        (SETQ |$bfClamming| NIL)
         (SETQ |$GenVarCounter| 0)
         (SETQ |infn| (|shoeAddbootIfNec| |fn|))
         (SETQ |result|
@@ -957,13 +939,11 @@ associateRequestWithFileType(Option '"compile", '"boot",
          (|shoeConsole| (CONCAT |fn| " COMPILED AND LOADED")))))))
 
 (DEFUN EVAL-BOOT-FILE (|fn|)
-  (PROG (|$bfClamming| |outfn| |infn| |b|)
-    (DECLARE (SPECIAL |$bfClamming|))
+  (PROG (|outfn| |infn| |b|)
     (RETURN
       (PROGN
         (SETQ |b| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
-        (SETQ |$bfClamming| NIL)
         (SETQ |infn| (|shoeAddbootIfNec| |fn|))
         (SETQ |outfn|
               (CONCAT (|shoeRemovebootIfNec| |fn|) "."
@@ -974,14 +954,13 @@ associateRequestWithFileType(Option '"compile", '"boot",
         (LOAD |outfn|)))))
 
 (DEFUN BO (|fn|)
-  (PROG (|$bfClamming| |$GenVarCounter| |infn| |b|)
-    (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|))
+  (PROG (|$GenVarCounter| |infn| |b|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
         (SETQ |b| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
         (SETQ |$GenVarCounter| 0)
-        (SETQ |$bfClamming| NIL)
         (SETQ |infn| (|shoeAddbootIfNec| |fn|))
         (|shoeOpenInputFile| |a| |infn| (|shoeToConsole| |a| |fn|))
         (|setCurrentPackage| |b|)))))
@@ -1017,15 +996,13 @@ associateRequestWithFileType(Option '"compile", '"boot",
 (DEFUN STOUT (|string|) (PROG () (RETURN (PSTOUT (LIST |string|)))))
 
 (DEFUN STEVAL (|string|)
-  (PROG (|$bfClamming| |$GenVarCounter| |result| |fn| |a|
-            |callingPackage|)
-    (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|))
+  (PROG (|$GenVarCounter| |result| |fn| |a| |callingPackage|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
         (SETQ |callingPackage| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
         (SETQ |$GenVarCounter| 0)
-        (SETQ |$bfClamming| NIL)
         (SETQ |a| (|shoeTransformString| (LIST |string|)))
         (SETQ |result|
               (COND
@@ -1040,14 +1017,13 @@ associateRequestWithFileType(Option '"compile", '"boot",
         |result|))))
 
 (DEFUN STTOMC (|string|)
-  (PROG (|$bfClamming| |$GenVarCounter| |result| |a| |callingPackage|)
-    (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|))
+  (PROG (|$GenVarCounter| |result| |a| |callingPackage|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
         (SETQ |callingPackage| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
         (SETQ |$GenVarCounter| 0)
-        (SETQ |$bfClamming| NIL)
         (SETQ |a| (|shoeTransformString| (LIST |string|)))
         (SETQ |result|
               (COND
@@ -1800,11 +1776,10 @@ associateRequestWithFileType(Option '"compile", '"boot",
           ('T (EVAL |fn|)))))))
 
 (DEFUN FC (|name| |fn|)
-  (PROG (|$GenVarCounter| |$bfClamming| |infn|)
-    (DECLARE (SPECIAL |$GenVarCounter| |$bfClamming|))
+  (PROG (|$GenVarCounter| |infn|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
-        (SETQ |$bfClamming| NIL)
         (SETQ |$GenVarCounter| 0)
         (SETQ |infn| (|shoeAddbootIfNec| |fn|))
         (|shoeOpenInputFile| |a| |infn|
@@ -1839,12 +1814,11 @@ associateRequestWithFileType(Option '"compile", '"boot",
         |b|))))
 
 (DEFUN PSTTOMC (|string|)
-  (PROG (|$bfClamming| |$GenVarCounter|)
-    (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|))
+  (PROG (|$GenVarCounter|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
         (SETQ |$GenVarCounter| 0)
-        (SETQ |$bfClamming| NIL)
         (|shoePCompileTrees| (|shoeTransformString| |string|))))))
 
 (DEFUN BOOTLOOP ()
@@ -1888,14 +1862,13 @@ associateRequestWithFileType(Option '"compile", '"boot",
                (#0# (PROGN (PSTOUT (LIST |a|)) (BOOTPO)))))))))))
 
 (DEFUN PSTOUT (|string|)
-  (PROG (|$bfClamming| |$GenVarCounter| |result| |callingPackage|)
-    (DECLARE (SPECIAL |$bfClamming| |$GenVarCounter|))
+  (PROG (|$GenVarCounter| |result| |callingPackage|)
+    (DECLARE (SPECIAL |$GenVarCounter|))
     (RETURN
       (PROGN
         (SETQ |callingPackage| *PACKAGE*)
         (IN-PACKAGE "BOOTTRAN")
         (SETQ |$GenVarCounter| 0)
-        (SETQ |$bfClamming| NIL)
         (SETQ |result|
               (|shoeConsoleTrees| (|shoeTransformString| |string|)))
         (|setCurrentPackage| |callingPackage|)

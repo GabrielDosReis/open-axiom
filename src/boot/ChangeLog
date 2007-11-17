@@ -1,3 +1,21 @@
+2007-11-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ast.boot.pamphlet ($bfCamming): Define as global.
+	Update cached Lisp translation.
+	* translator.boot.pamphlet (BOOTTOCL): Don't set $bfClamming.
+	(BOOTCLAMLINES): Likewise.
+	(BOOTCLAM): Don't set it.
+	(BOOTTOCLCLINES): Likewise.
+	(BOOTTOMC): Likewise.
+	(EVAL_-BOOT_-FILE): Likewise.
+	(BO): Likewise.
+	(STEVAL): Likewise.
+	(STTOMC): Likewise.
+	(FC): Likewise.
+	(PSTTOMC): Likewise.
+	(BOOTLOOP): Likewise.
+	Update cached Lisp translation.
+
 2007-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* ast.boot.pamphlet (bfLp1): Simplify loop code generation.
