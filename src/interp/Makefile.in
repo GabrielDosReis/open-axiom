@@ -508,6 +508,9 @@ compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
 			modemap.$(FASLEXT) pathname.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+nrunopt.$(FASLEXT): nrunopt.boot c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
 nrunfast.$(FASLEXT): nrunfast.boot c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -746,11 +749,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
 	@ echo 298 making $@ from $<
 	$(axiom_build_document) --tangle=Interpreter --output=$@ $<
-
-nrunopt.clisp: nrunopt.boot
-	@ echo 365 making $@ from $<
-	@ echo '(old-boot::boot "nrunopt.boot")' | ${DEPSYS}
-
 ../algebra/warm.data: $(srcdir)/Makefile.pamphlet
 	@ echo 2 building warm.data
 	$(axiom_build_document) --tangle=warm.data --output=$@ $<

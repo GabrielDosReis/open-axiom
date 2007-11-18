@@ -138,7 +138,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     [.,.,$e]:= compMakeDeclaration([":",'_$,target],m,$e)
     --The following loop sees if we can economise on ADDed operations
     --by using those of Rep, if that is the same. Example: DIRPROD
-    if $insideCategoryPackageIfTrue^= true  then
+    if not $insideCategoryPackageIfTrue  then
       if body is ['add,ab:=[fn,:.],['CAPSULE,:cb]] and MEMQ(fn,'(List Vector))
          and FindRep(cb) = ab
                where FindRep cb ==
