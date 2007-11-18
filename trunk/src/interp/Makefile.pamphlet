@@ -833,14 +833,6 @@ bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
 	$(axiom_build_document) --tangle=Interpreter --output=$@ $<
 @
 
-\subsection{nrunopt.boot}
-
-<<nrunopt.clisp>>=
-nrunopt.clisp: nrunopt.boot
-	@ echo 365 making $@ from $<
-	@ echo '(old-boot::boot "nrunopt.boot")' | ${DEPSYS}
-@
-
 \subsection{postpar.boot}
 
 \begin{verbatim}
@@ -1075,6 +1067,9 @@ setvart.$(FASLEXT): setvart.boot macros.$(FASLEXT)
 
 compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
 			modemap.$(FASLEXT) pathname.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+nrunopt.$(FASLEXT): nrunopt.boot c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 nrunfast.$(FASLEXT): nrunfast.boot c-util.$(FASLEXT)
@@ -1313,9 +1308,6 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
 
 <<bookvol5.lisp>>
-
-<<nrunopt.clisp>>
-
 <<warm.data.stanza>>
 
 buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)

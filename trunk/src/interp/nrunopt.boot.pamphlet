@@ -50,6 +50,9 @@
 <<*>>=
 <<license>>
 
+import '"c-util"
+)package "BOOT"
+
 --=======================================================================
 --            Generate Code to Create Infovec
 --=======================================================================
@@ -145,8 +148,8 @@ orderBySubsumption items ==
   for [a,b,:.] in subacc | b repeat   
   --NOTE: b = nil means that the signature a will appear in acc, that this
   --  entry is be ignored (e.g. init: -> $ in ULS)
-    while (u := ASSOC(b,subacc)) repeat b := CADR u
-    u := ASSOC(b,acc) or systemError nil
+    while (u := assoc(b,subacc)) repeat b := CADR u
+    u := assoc(b,acc) or systemError nil
     if null CADR u then u := [CAR u,1] --mark as missing operation
     y := [[a,'Subsumed],u,:y] --makes subsuming signature follow one subsumed
     z := insert(b,z)  --mark a signature as already present
@@ -154,10 +157,10 @@ orderBySubsumption items ==
  
 makeCompactSigCode(sig,$isOpPackageName) == [fn for x in sig] where 
 --$isOpPackageName = true only for an exported operation of a default package
-  fn == 
+  fn() == 
     x = '_$_$ => 2
     x = '$ => 0
-    NULL INTEGERP x => systemError ['"code vector slot is ",x,"; must be number"]
+    not INTEGERP x => systemError ['"code vector slot is ",x,"; must be number"]
 --  x = 6 and $isOpPackageName => 0  --treat slot 6 as $ for default packages
     x
   
@@ -183,9 +186,9 @@ stuffDomainSlots dollar ==
     bitVector := dollar.3
     predvec := CAR proto4
     packagevec := CADR proto4
-    auxvec := LIST2VEC [fn for i in 0..MAXINDEX predvec] where fn ==
+    auxvec := LIST2VEC [fn for i in 0..MAXINDEX predvec] where fn() ==
       null testBitVector(bitVector,predvec.i) => nil
-      packagevec.i or 'T
+      packagevec.i or true
     [auxvec,:CDDR proto4]
 
 getLookupFun infovec ==
@@ -210,7 +213,7 @@ stuffSlot(dollar,i,item) ==
 NRTgenInitialAttributeAlist attributeList ==
   --alist has form ((item pred)...) where some items are constructor forms
   alist := [x for x in attributeList | -- throw out constructors
-    null MEMQ(opOf first x,allConstructors())]
+    not MEMQ(opOf first x,allConstructors())]
   $lisplibAttributes := simplifyAttributeAlist
     [[a,:b] for [a,b] in SUBLIS($pairlis,alist) | a ^= 'nothing]
 
@@ -228,13 +231,13 @@ NRTgenFinalAttributeAlist() ==
   [[a,:k] for [a,:b] in $NRTattributeAlist | (k := predicateBitIndex(b)) ^= -1]
  
 predicateBitIndex x == 
-  pn(x,nil) where
+  pn(x,false) where
     pn(x,flag) ==
       u := simpBool transHasCode x
       u = 'T  =>  0
       u = nil => -1
       p := POSN1(u,$NRTslot1PredicateList) => p + 1
-      null flag => pn(predicateBitIndexRemop x,true)
+      not flag => pn(predicateBitIndexRemop x,true)
       systemError nil
 
 predicateBitIndexRemop p==
@@ -256,7 +259,7 @@ makePrefixForm(u,op) ==
 --               Generate Slot 3 Predicate Vector
 --=======================================================================
 makePredicateBitVector pl ==   --called by NRTbuildFunctor
-  if $insideCategoryPackageIfTrue = true then
+  if $insideCategoryPackageIfTrue then
     pl := union(pl,$categoryPredicateList)
   $predGensymAlist := nil --bound by NRTbuildFunctor, used by optHas
   for p in removeAttributePredicates pl repeat
@@ -329,10 +332,10 @@ orderByContainment pl ==
   max := first pl
   for x in rest pl repeat
     if (y := CONTAINED(max,x)) then
-      if null ASSOC(max,$predGensymAlist)
+      if null assoc(max,$predGensymAlist)
       then $predGensymAlist := [[max,:GENSYM()],:$predGensymAlist]
     else if CONTAINED(x,max)
-         then if null ASSOC(x,$predGensymAlist) then $predGensymAlist := [[x,:GENSYM()],:$predGensymAlist]
+         then if null assoc(x,$predGensymAlist) then $predGensymAlist := [[x,:GENSYM()],:$predGensymAlist]
     if y then max := x
   [max,:orderByContainment delete(max,pl)]
  
@@ -349,7 +352,7 @@ buildPredVector(init,n,l) == fn(init,2 ** n,l) where fn(acc,n,l) ==
 
 testBitVector(vec,i) ==
 --bit vector indices are always 1 larger than position in vector
-  EQ(i,0) => true
+  i = 0 => true
   LOGBITP(i - 1,vec)
  
 bitsOf n ==
@@ -412,7 +415,7 @@ depthAssoc x ==
   x is ['Join,:u] or (u := getCatAncestors x) =>
     v := depthAssocList u
     HPUT($depthAssocCache,x,[[x,:n],:v])
-      where n == 1 + "MAX"/[rest y for y in v]
+      where n() == 1 + "MAX"/[rest y for y in v]
   HPUT($depthAssocCache,x,[[x,:0]])
  
 getCatAncestors x ==  [CAAR y for y in parentsOf opOf x]
@@ -447,13 +450,13 @@ listOfCategoryEntries l ==
 listOfCategoryEntriesIf(pred,conseq,alternate) ==
   alternate in '(noBranch NIL) =>
     conseq is ['IF,p,c,a] => listOfCategoryEntriesIf(makePrefixForm([pred,p],'AND),c,a)
-    [fn for x in listOfEntries conseq] where fn ==
+    [fn for x in listOfEntries conseq] where fn() ==
       x is ['IF,a,b] => ['IF,makePrefixForm([pred,a],'AND),b]
       ['IF,pred,x]
   notPred := makePrefixForm(pred,'NOT)
   conseq is ['IF,p,c,a] =>
     listOfCategoryEntriesIf(makePrefixForm([notPred,p],'AND),c,a)
-  [gn for x in listOfEntries conseq] where gn ==
+  [gn for x in listOfEntries conseq] where gn() ==
     x is ['IF,a,b] => ['IF,makePrefixForm([notPred,a],'AND),b]
     ['IF,notPred,x]
  
@@ -853,7 +856,7 @@ extendsCategory(dom,u,v) ==
  
 extendsCategoryBasic0(dom,u,v) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
-    uVec := compMakeCategoryObject(u,$EmptyEnvironment).expr
+    uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
     null atom c and isCategoryForm(c,nil) =>
       slot4 := uVec.4
       LASSOC(c,CADR slot4) is [=p,:.]
@@ -864,7 +867,7 @@ extendsCategoryBasic0(dom,u,v) ==
 extendsCategoryBasic(dom,u,v) ==
   u is ["Join",:l] => or/[extendsCategoryBasic(dom,x,v) for x in l]
   u = v => true
-  uVec := compMakeCategoryObject(u,$EmptyEnvironment).expr
+  uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
   isCategoryForm(v,nil) => catExtendsCat?(u,v,uVec)
   v is ['SIGNATURE,op,sig] =>
     or/[uVec.i is [[=op,=sig],:.] for i in 6..MAXINDEX uVec]
@@ -875,12 +878,12 @@ extendsCategoryBasic(dom,u,v) ==
  
 catExtendsCat?(u,v,uvec) ==
   u = v => true
-  uvec := uvec or compMakeCategoryObject(u,$EmptyEnvironment).expr
+  uvec := uvec or (compMakeCategoryObject(u,$EmptyEnvironment)).expr
   slot4 := uvec.4
   prinAncestorList := CAR slot4
   member(v,prinAncestorList) => true
   vOp := KAR v
-  if similarForm := ASSOC(vOp,prinAncestorList) then
+  if similarForm := assoc(vOp,prinAncestorList) then
     PRINT u
     sayBrightlyNT '"   extends "
     PRINT similarForm
@@ -920,7 +923,7 @@ templateVal(template,domform,index) ==
 --returns a domform or a lazy slot
   index = 0 => harhar() --template
   template.index
-   
+
 @
 \eject
 \begin{thebibliography}{99}
