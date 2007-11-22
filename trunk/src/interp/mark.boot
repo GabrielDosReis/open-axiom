@@ -1170,7 +1170,7 @@ markPartOp? op ==
 markWrapPart y ==
 ----------------new definition----------94/10/11
   atom y => 
-    y = 'noBranch => y
+    y = '%noBranch => y
     GETL(y, 'SPECIAL) => y 
     $partNumber := $partNumber + 1
     ['PART,$partNumber, y] 
@@ -1465,7 +1465,7 @@ buildNewDefinition(op,theSig,formPredAlist) ==
      outerPred
   def := ['DEF, theForm, theSig, theNils, ifize theAlist]
   value :=
-    thePred => ['IF, thePred, def, 'noBranch]
+    thePred => ['IF, thePred, def, '%noBranch]
     def
   stop value 
   value

@@ -902,8 +902,8 @@ nonRecursivePart1(opName, funBody) ==
     nra = 'noMapVal => 'noMapVal
     nrb:=nonRecursivePart1(opName,b)
     nrc:=nonRecursivePart1(opName,c)
-    not (nrb in '(noMapVal noBranch)) => ['IF,nra,nrb,nrc]
-    not (nrc in '(noMapVal noBranch)) => ['IF,['not,nra],nrc,nrb]
+    not (nrb in '(noMapVal %noBranch)) => ['IF,nra,nrb,nrc]
+    not (nrc in '(noMapVal %noBranch)) => ['IF,['not,nra],nrc,nrb]
     'noMapVal
   not containsOp(funBody,'IF) =>
     notCalled(opName,funBody) => funBody
@@ -945,7 +945,7 @@ numArgs args ==
 
 combineMapParts(mapTail) ==
   -- transforms a piece-wise function definition into an if-then-else
-  --  statement.  Uses noBranch to indicate undefined branch
+  --  statement.  Uses %noBranch to indicate undefined branch
   null mapTail => 'noMapVal
   mapTail is [[cond,:part],:restMap] =>
     isSharpVarWithNum cond or (cond is ['Tuple,:args] and

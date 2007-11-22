@@ -207,7 +207,7 @@ compileIF(op,cond,a,b,t) ==
   --  IF are resolved.
   ms1 := bottomUp a
   [m1] := ms1
-  b = "noBranch" =>
+  b = "%noBranch" =>
     evalIF(op,rest t,$Void)
     putModeSet(op,[$Void])
   b = "noMapVal" =>
@@ -242,7 +242,7 @@ evalIF(op,[cond,a,b],m) ==
     b="noMapVal" =>
       [[MKQ true, ["throwKeyedMsg",MKQ "S2IM0018",
         ["CONS",MKQ object2Identifier $mapName,NIL]]]]
-    b='noBranch =>
+    b='%noBranch =>
       $lastLineInSEQ => [[MKQ true,["voidValue"]]]
       NIL
     [[MKQ true,genIFvalCode(b,m)]]
@@ -279,7 +279,7 @@ interpIF(op,cond,a,b) ==
   val:= getValue cond
   val:= coerceInteractive(val,$Boolean) =>
     objValUnwrap(val) => upIFgenValue(op,a)
-    EQ(b,"noBranch") =>
+    EQ(b,"%noBranch") =>
       putValue(op,objNew(voidValue(), $Void))
       putModeSet(op,[$Void])
     upIFgenValue(op,b)

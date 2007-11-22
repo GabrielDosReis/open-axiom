@@ -1073,7 +1073,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   olde:= $e
   [p',.,$e]:= qt(19,comp(p,$Boolean,$e)) or userError ['"not a Boolean:",p]
   oldFLP:=$functorLocalParameters
-  if x^="noBranch" then
+  if x^="%noBranch" then
 --> new <-----------------------
     qe(20,compSingleCapsuleItem(x,[p,:$predl],getSuccessEnvironment(markKillAll p,$e)))
 ---> new                                                 -----------
@@ -1104,7 +1104,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
             $functorLocalParameters:=[:oldFLP,:REVERSE nils]
             REVERSE ans
   oldFLP:=$functorLocalParameters
-  if y^="noBranch" then
+  if y^="%noBranch" then
 --> new <-----------------------
     qe(21,compSingleCapsuleItem(y,[['not, p],:$predl],getInverseEnvironment(markKillAll p,olde)))
 -->                                                      ----------- 

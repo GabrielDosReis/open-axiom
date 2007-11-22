@@ -94,8 +94,8 @@ formatInfo u ==
     isCategoryForm(v,$e) => ["has","$",v]
     ["ATTRIBUTE","$",v]
   u is ["IF",a,b,c] =>
-    c="noBranch" => ["COND",:liftCond [formatPred a,formatInfo b]]
-    b="noBranch" => ["COND",:liftCond [["not",formatPred a],formatInfo c]]
+    c="%noBranch" => ["COND",:liftCond [formatPred a,formatInfo b]]
+    b="%noBranch" => ["COND",:liftCond [["not",formatPred a],formatInfo c]]
     ["COND",:liftCond [formatPred a,formatInfo b],:
       liftCond [["not",formatPred a],formatInfo c]]
   systemError '"formatInfo"

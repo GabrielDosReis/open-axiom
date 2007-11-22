@@ -640,7 +640,7 @@ except that elements are separated by commas."
              (b (third COND-EXPR))
              (c (fourth COND-EXPR)))
          (setq a (|new2OldTran| a) b (|new2OldTran| b) c (|new2OldTran| c))
-         (cond ((EQ c '|noBranch|) `(if ,a ,b))
+         (cond ((EQ c '|%noBranch|) `(if ,a ,b))
                (t  `(if ,a ,b ,c)))))
 
 (defun |newConstruct| (l)

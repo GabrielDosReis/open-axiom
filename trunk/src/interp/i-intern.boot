@@ -97,7 +97,7 @@ mkAtree1 x ==
   null x => throwKeyedMsg("S2IP0005",['"NIL"])
   VECP x => x
   atom x =>
-    x in '(noBranch noMapVal) => x
+    x in '(%noBranch noMapVal) => x
     x in '(nil true false) => mkAtree2([x],x,NIL)
     x = '_/throwAway =>
       -- don't want to actually compute this
@@ -202,7 +202,7 @@ mkAtree3(x,op,argl) ==
       ul => ['and,lowTest,upTest]
       lowTest
     mkAtree1 z
-  x is ["IF",p,"noBranch",a] => mkAtree1 ["IF",["not",p],a,"noBranch"]
+  x is ["IF",p,"%noBranch",a] => mkAtree1 ["IF",["not",p],a,"%noBranch"]
   x is ["RULEDEF",:.] => [mkAtreeNode "RULEDEF",:CDR x]
   x is ["MDEF",sym,junk1,junk2,val] =>
     -- new macros look like  macro f ==  or macro f(x) ===

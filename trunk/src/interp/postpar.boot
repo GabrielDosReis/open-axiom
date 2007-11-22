@@ -238,7 +238,7 @@ postElt (u is [.,a,b]) ==
   b is ["Sequence",:.] => [["elt",a,"makeRecord"],:postTranList rest b]
   ["elt",a,postTran b]
 
-postExit ["=>",a,b] == ["IF",postTran a,["exit",postTran b],"noBranch"]
+postExit ["=>",a,b] == ["IF",postTran a,["exit",postTran b],"%noBranch"]
 
 
 postFlatten(x,op) ==
@@ -299,7 +299,7 @@ decodeScripts a ==
 
 postIf t ==
   t isnt ["if",:l] => t
-  ["IF",:[(null (x:= postTran x) and null $BOOT => "noBranch"; x)
+  ["IF",:[(null (x:= postTran x) and null $BOOT => "%noBranch"; x)
     for x in l]]
 
 postJoin ["Join",a,:l] ==

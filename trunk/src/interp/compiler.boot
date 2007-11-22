@@ -978,7 +978,7 @@ isUnionMode(m,e) ==
   nil
 
 compFromIf(a,m,E) ==
-  a="noBranch" => ["noBranch",m,E]
+  a="%noBranch" => ["%noBranch",m,E]
   true => comp(a,m,E)
 
 quotify x == x

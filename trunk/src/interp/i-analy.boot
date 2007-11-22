@@ -290,9 +290,9 @@ bottomUpCompilePredicate(pred, name) ==
 bottomUpIdentifier(t,id) ==
   m := isType t => bottomUpType(t, m)
   EQ(id,'noMapVal) => throwKeyedMsg('"S2IB0002",NIL)
-  EQ(id,'noBranch) =>
+  EQ(id,'%noBranch) =>
     keyedSystemError("S2GE0016",
-      ['"bottomUpIdentifier",'"trying to evaluate noBranch"])
+      ['"bottomUpIdentifier",'"trying to evaluate %noBranch"])
   transferPropsToNode(id,t)
   defaultType := ['Variable,id]
   -- This was meant to stop building silly symbols but had some unfortunate

@@ -647,7 +647,7 @@ asytranCategoryItem(x,levels,predlist,local?) ==
 --        (CATEGORY domain
 --          (SIGNATURE diagonalMatrix ($ (Vector #1)))
 --          (IF (has #1 (Field))
---            (SIGNATURE inverse ((Union $ "failed") $)) noBranch)))
+--            (SIGNATURE inverse ((Union $ "failed") $)) %noBranch)))
 --      (Ring))
 --    (T Matrix))   )
 extendConstructorDataTable() ==
@@ -1006,7 +1006,7 @@ asyCattranOp1(op, item, predlist) ==
 --  This line used to call asyCattranOp1 with too few arguments.  Following
 --  fix suggested by RDJ.
     x is ['IF,:.] => "append"/[asyCattranOp1(op,y,[pred,:predlist]) for y in x]
-    [['IF, asySimpPred(pred,predlist), asyCattranSig(op,x), 'noBranch]]
+    [['IF, asySimpPred(pred,predlist), asyCattranSig(op,x), '%noBranch]]
   [asyCattranSig(op,item)]
 
 asyPredTran p == asyPredTran1 asyJoinPart p
@@ -1025,7 +1025,7 @@ asyCattranConstructors(item, predlist) ==
       p
     x is ['IF,:.] => "append"/[asyCattranConstructors(x, [pred,:predlist])]
     form := ['ATTRIBUTE, asyJoinPart x]
-    [['IF, asySimpPred(pred,predlist), form, 'noBranch]]
+    [['IF, asySimpPred(pred,predlist), form, '%noBranch]]
   systemError()
 
 asySimpPred(p, predlist) ==
@@ -1137,7 +1137,7 @@ asCategoryParts(kind,conform,category,:options) == main where
         build(s1,quickAnd(pred,pred1))
         s2 => build(s2,quickAnd(pred,['NOT,pred1]))
       item is ['PROGN,:r] => for x in r repeat build(x,pred)
-      item in '(noBranch) => 'ok
+      item in '(%noBranch) => 'ok
       null item => 'ok
       systemError '"build error"
     exportsOf(target) ==

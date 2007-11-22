@@ -585,7 +585,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
   -- flag = true if we are walking down code always executed;
   -- otherwise set to conditions in which
   code=nil => nil
-  code='noBranch => nil
+  code='%noBranch => nil
   isMacro(code,$e) => nil --RDJ: added 3/16/83
   code is ['add,base,:codelist] =>
     codelist:=
@@ -790,7 +790,7 @@ InvestigateConditions catvecListMaker ==
               --Rather like eval, but quotes parameters first
     for u in CADR principal'.4 repeat
       if not TruthP(cond:=CADR u) then
-        new:=['CATEGORY,'domain,['IF,cond,['ATTRIBUTE,CAR u], 'noBranch]]
+        new:=['CATEGORY,'domain,['IF,cond,['ATTRIBUTE,CAR u], '%noBranch]]
         $principal is ['Join,:l] =>
           not member(new,l) =>
             $principal:=['Join,:l,new]

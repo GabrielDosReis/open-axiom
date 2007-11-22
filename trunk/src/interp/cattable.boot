@@ -360,7 +360,7 @@ makeCatPred(zz, cats, thePred) ==
     for at in ats repeat
       if at is ['ATTRIBUTE,z3] and not atom z3 and
         constructor? CAR z3 then
-          cats:= CONS(['IF,quickAnd(['has,z1,z2], thePred),z3,'noBranch],cats)
+          cats:= CONS(['IF,quickAnd(['has,z1,z2], thePred),z3,'%noBranch],cats)
       at is ['IF, pred, :.] =>
         cats := makeCatPred(at, cats, curPred)
   cats
@@ -399,7 +399,7 @@ categoryParts(conform,category,:options) == main where
       build(s1,quickAnd(pred,pred1))
       s2 => build(s2,quickAnd(pred,['NOT,pred1]))
     item is ['PROGN,:r] => for x in r repeat build(x,pred)
-    item in '(noBranch) => 'ok
+    item in '(%noBranch) => 'ok
     null item => 'ok
     systemError '"build error"
   exportsOf(target) ==

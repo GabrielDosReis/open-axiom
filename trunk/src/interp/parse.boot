@@ -281,7 +281,7 @@ parseTranCheckForRecord(x,op) ==
 parseCases [expr,ifClause] ==
   casefn(expr,ifClause) where
     casefn(x,ifExpr) ==
-      ifExpr="noBranch" => ["ifClauseError",x]
+      ifExpr="%noBranch" => ["ifClauseError",x]
       ifExpr is ["IF",a,b,c] => ["IF",parseTran a,parseTran b,casefn(x,c)]
       postError ['"   CASES format error: cases ",x," of ",ifExpr]
  
@@ -438,13 +438,13 @@ transSeq l ==
   null l => nil
   null rest l => decExitLevel first l
   [item,:tail]:= l
-  item is ["SEQ",:l,["exit",1,["IF",p,["exit", =2,q],"noBranch"]]] and
+  item is ["SEQ",:l,["exit",1,["IF",p,["exit", =2,q],"%noBranch"]]] and
     (and/[x is ["LET",:.] for x in l]) =>
       ["SEQ",:[decExitLevel x for x in l],["exit",1,["IF",decExitLevel p,
         decExitLevel q,transSeq tail]]]
-  item is ["IF",a,["exit",1,b],"noBranch"] =>
+  item is ["IF",a,["exit",1,b],"%noBranch"] =>
     ["IF",decExitLevel a,decExitLevel b,transSeq tail]
-  item is ["IF",a,"noBranch",["exit",1,b]] =>
+  item is ["IF",a,"%noBranch",["exit",1,b]] =>
     ["IF",decExitLevel a,transSeq tail,decExitLevel b]
   (y:= transSeq tail) is ["SEQ",:s] => ["SEQ",item,:s]
   ["SEQ",item,["exit",1,incExitLevel y]]

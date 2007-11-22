@@ -270,8 +270,8 @@ EqualBarGensym(x,y) ==
 --Called early, to change IF to COND
  
 optIF2COND ["IF",a,b,c] ==
-  b is "noBranch" => ["COND",[["NULL",a],c]]
-  c is "noBranch" => ["COND",[a,b]]
+  b is "%noBranch" => ["COND",[["NULL",a],c]]
+  c is "%noBranch" => ["COND",[a,b]]
   c is ["IF",:.] => ["COND",[a,b],:rest optIF2COND c]
   c is ["COND",:p] => ["COND",[a,b],:p]
   ["COND",[a,b],[$true,c]]

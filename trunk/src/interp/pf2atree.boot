@@ -87,7 +87,7 @@ pf2Atree1 pf ==
         thenPart    := pf2Atree1 (pfIfThen)(pf)
         elsePart    := pf2Atree1 (pfIfElse)(pf)
         ifPart      := mkAtreeNodeWithSrcPos("IF", pf)
-        thenPart = "noBranch" =>
+        thenPart = "%noBranch" =>
             [ifPart, [mkAtreeNodeWithSrcPos("not", condPf), condPart],
                 elsePart, thenPart]
         [ifPart, condPart, thenPart, elsePart]
@@ -147,7 +147,7 @@ pf2Atree1 pf ==
                     pf2Atree1 (pfExitExpr)(pf)]
         [mkAtreeNodeWithSrcPos("IF",pf),
              pf2Atree1 (pfExitCond)(pf),
-                pf2Atree1 (pfExitExpr)(pf), "noBranch"]
+                pf2Atree1 (pfExitExpr)(pf), "%noBranch"]
 
     (pfLoop?)(pf) =>
         [mkAtreeNodeWithSrcPos("REPEAT",pf),
@@ -399,7 +399,7 @@ pfSequence2Atree pf ==
     seq
 
 pfSequence2Atree0(seqList, pf) ==
-    null seqList => "noBranch"
+    null seqList => "%noBranch"
     seqTranList := []
     while seqList ^= nil repeat
         item := first seqList

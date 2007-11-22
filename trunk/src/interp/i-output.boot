@@ -456,9 +456,9 @@ outputTranSEQ ['SEQ,:l,exitform] ==
   ['SC,:[outputTran x for x in l],outputTran exitform]
 
 outputTranIf ['IF,x,y,z] ==
-  y = 'noBranch =>
+  y = '%noBranch =>
     ['CONCATB,'if,['CONCATB,'not,outputTran x],'then,outputTran z]
-  z = 'noBranch =>
+  z = '%noBranch =>
     ['CONCATB,'if,outputTran x,'then,outputTran y]
   y' := outputTran y
   z' := outputTran z

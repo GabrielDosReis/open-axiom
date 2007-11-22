@@ -1,3 +1,30 @@
+2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* as.boot: Globally substitute %noBranch for noBranch.
+	* ax.boot: Likewise.
+	* cattable.boot: Likewise.
+	* compiler.boot: Likewise.
+	* def.lisp: Likewise.
+	* define.boot: Likewise.
+	* functor.boot: Likewise.
+	* g-opt.boot: Likewise.
+	* i-analy.boot: Likewise.
+	* i-intern.boot: Likewise.
+	* i-map.boot: Likewise.
+	* i-object.boot: Likewise.
+	* i-output.boot: Likewise.
+	* i-spec2.boot: Likewise.
+	* info.boot: Likewise.
+	* mark.boot: Likewise.
+	* nrunopt.boot: Likewise.
+	* package.boot: Likewise.
+	* parse.boot: Likewise.
+	* pf2atree.boot: Likewise.
+	* pf2sex.boot: Likewise.
+	* postpar.boot: Likewise.
+	* pspad2.boot: Likewise.
+	* wi2.boot: Likewise.
+
 2007-11-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (nrunopt.$(FASLEXT)): New rule.

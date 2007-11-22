@@ -134,7 +134,7 @@ PackageDescendCode(code,flag,viewAssoc) ==
                --flag is true if we are walking down code always executed
                --nil if we are in conditional code
   code=nil => nil
-  code="noBranch" => nil
+  code="%noBranch" => nil
   code is ["add",base,:codelist] =>
     systemError '"packages may not have add clauses"
   code is ["PROGN",:codelist] =>
