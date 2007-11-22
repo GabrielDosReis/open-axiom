@@ -873,7 +873,7 @@ nonRecursivePart(opName, funBody) ==
   --  a function, and returns a list of the parts
   --  of the function which are not recursive in the name opName
   body:= expandRecursiveBody([opName], funBody)
-  ((nrp:=nonRecursivePart1(opName, body)) ^= 'noMapVal) => nrp
+  ((nrp:=nonRecursivePart1(opName, body)) ^= '%noMapVal) => nrp
   throwKeyedMsg("S2IM0012",[opName])
 
 expandRecursiveBody(alreadyExpanded, body) ==
@@ -899,19 +899,19 @@ nonRecursivePart1(opName, funBody) ==
   --  which do not call the function opName
   funBody is ['IF,a,b,c] =>
     nra:=nonRecursivePart1(opName,a)
-    nra = 'noMapVal => 'noMapVal
+    nra = '%noMapVal => '%noMapVal
     nrb:=nonRecursivePart1(opName,b)
     nrc:=nonRecursivePart1(opName,c)
-    not (nrb in '(noMapVal %noBranch)) => ['IF,nra,nrb,nrc]
-    not (nrc in '(noMapVal %noBranch)) => ['IF,['not,nra],nrc,nrb]
-    'noMapVal
+    not (nrb in '(%noMapVal %noBranch)) => ['IF,nra,nrb,nrc]
+    not (nrc in '(%noMapVal %noBranch)) => ['IF,['not,nra],nrc,nrb]
+    '%noMapVal
   not containsOp(funBody,'IF) =>
     notCalled(opName,funBody) => funBody
-    'noMapVal
+    '%noMapVal
   funBody is [op,:argl] =>
-    op=opName => 'noMapVal
+    op=opName => '%noMapVal
     args:= [nonRecursivePart1(opName,arg) for arg in argl]
-    MEMQ('noMapVal,args) => 'noMapVal
+    MEMQ('%noMapVal,args) => '%noMapVal
     [op,:args]
   funBody
 
@@ -946,7 +946,7 @@ numArgs args ==
 combineMapParts(mapTail) ==
   -- transforms a piece-wise function definition into an if-then-else
   --  statement.  Uses %noBranch to indicate undefined branch
-  null mapTail => 'noMapVal
+  null mapTail => '%noMapVal
   mapTail is [[cond,:part],:restMap] =>
     isSharpVarWithNum cond or (cond is ['Tuple,:args] and
       and/[isSharpVarWithNum arg for arg in args]) or (null cond) => part

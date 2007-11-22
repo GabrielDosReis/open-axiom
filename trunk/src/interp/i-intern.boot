@@ -97,7 +97,7 @@ mkAtree1 x ==
   null x => throwKeyedMsg("S2IP0005",['"NIL"])
   VECP x => x
   atom x =>
-    x in '(%noBranch noMapVal) => x
+    x in '(%noBranch %noMapVal) => x
     x in '(nil true false) => mkAtree2([x],x,NIL)
     x = '_/throwAway =>
       -- don't want to actually compute this

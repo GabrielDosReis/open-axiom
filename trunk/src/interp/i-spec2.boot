@@ -210,7 +210,7 @@ compileIF(op,cond,a,b,t) ==
   b = "%noBranch" =>
     evalIF(op,rest t,$Void)
     putModeSet(op,[$Void])
-  b = "noMapVal" =>
+  b = "%noMapVal" =>
     -- if this was a return statement, we take the mode to be that
     -- of what is being returned.
     if getUnname a = 'return then
@@ -239,7 +239,7 @@ compileIF(op,cond,a,b,t) ==
 evalIF(op,[cond,a,b],m) ==
   -- generate code form compiled IF
   elseCode:=
-    b="noMapVal" =>
+    b="%noMapVal" =>
       [[MKQ true, ["throwKeyedMsg",MKQ "S2IM0018",
         ["CONS",MKQ object2Identifier $mapName,NIL]]]]
     b='%noBranch =>

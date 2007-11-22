@@ -1,5 +1,13 @@
 2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* i-analy.boot: Globally substtitue %noMapVal for noMapVal.
+	* i-intern.boot: Likewise.
+	* i-map.boot: Likewise.
+	* i-spec2.boot: Likewise.
+	* i-spec1.boot: Likewise.
+
+2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* as.boot: Globally substitute %noBranch for noBranch.
 	* ax.boot: Likewise.
 	* cattable.boot: Likewise.
