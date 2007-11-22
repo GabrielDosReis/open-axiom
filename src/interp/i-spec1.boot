@@ -79,7 +79,7 @@ upADEF t ==
   $compilingMap : local := true
 
   -- if there is a predicate, merge it in with the body
-  if pred ^= true then body := ['IF,pred,body,'noMapVal]
+  if pred ^= true then body := ['IF,pred,body,'%noMapVal]
 
   tar := getTarget t
   null m and tar is ['Mapping,.,:argTypes] and (#vars = #argTypes) =>
