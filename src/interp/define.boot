@@ -1315,11 +1315,11 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   olde:= $e
   [p',.,$e]:= comp(p,$Boolean,$e) or userError ['"not a Boolean:",p]
   oldFLP:=$functorLocalParameters
-  if x^="noBranch" then
+  if x^="%noBranch" then
     compSingleCapsuleItem(x,$predl,getSuccessEnvironment(p,$e))
     x':=localExtras(oldFLP)
   oldFLP:=$functorLocalParameters
-  if y^="noBranch" then
+  if y^="%noBranch" then
     compSingleCapsuleItem(y,$predl,getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
   RPLACA(item,"COND")
@@ -1473,10 +1473,10 @@ compCategoryItem(x,predl) ==
     compCategoryItem(e,predl')
   x is ["IF",a,b,c] =>
     predl':= [a,:predl]
-    if b^="noBranch" then
+    if b^="%noBranch" then
       b is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl')
       compCategoryItem(b,predl')
-    c="noBranch" => nil
+    c="%noBranch" => nil
     predl':= [["not",a],:predl]
     c is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl')
     compCategoryItem(c,predl')

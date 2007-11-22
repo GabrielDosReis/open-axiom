@@ -287,7 +287,7 @@ axFormatCondOp op ==
 
 axFormatOp op ==
    op is ['IF, pred, trueops, falseops] =>
-      NULL(trueops) or trueops='noBranch =>
+      NULL(trueops) or trueops='%noBranch =>
          ['If, ['Test,['Not, axFormatPred pred]],
               axFormatCondOp falseops,
                 axFormatCondOp trueops]
@@ -303,7 +303,7 @@ axFormatOp op ==
            axFormatType attributeOrCategory
        ['RestrictTo, axFormatAttrib attributeOrCategory, 'Category]
    op is ['PROGN, :ops] => axFormatOpList ops
-   op is 'noBranch => []
+   op is '%noBranch => []
    axFormatType op
 
 addDefaults(catname, withform) ==

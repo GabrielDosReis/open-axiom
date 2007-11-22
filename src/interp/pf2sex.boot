@@ -50,7 +50,7 @@ pf2Sex pf ==
 
 pf2Sex1 pf ==
   pfNothing? pf =>
-    "noBranch"
+    "%noBranch"
   pfSymbol? pf =>
     $insideRule = 'left =>
       s := pfSymbolSymbol pf
@@ -90,7 +90,7 @@ pf2Sex1 pf ==
     pfSequence2Sex pf
   pfExit? pf =>
     $insideSEQ => ["exit", pf2Sex1 pfExitCond pf, pf2Sex1 pfExitExpr pf]
-    ["IF", pf2Sex1 pfExitCond pf, pf2Sex1 pfExitExpr pf, "noBranch"]
+    ["IF", pf2Sex1 pfExitCond pf, pf2Sex1 pfExitExpr pf, "%noBranch"]
   pfLoop? pf =>
     ["REPEAT", :loopIters2Sex  pf0LoopIterators pf]
   pfCollect? pf =>
@@ -327,7 +327,7 @@ pfSequence2Sex pf ==
   seq
 
 pfSequence2Sex0 seqList ==
-  null seqList => "noBranch"
+  null seqList => "%noBranch"
   seqTranList := []
   while seqList ^= nil repeat
     item := first seqList

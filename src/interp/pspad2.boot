@@ -167,7 +167,7 @@ formatDeftranREPEAT(itl,body) ==
   u := [x for x in itl | x is ["UNTIL",p]] or return nil
   nitl := SETDIFFERENCE(itl,u)
   pred := MKPF([p for ['UNTIL,p] in u],'or)
-  cond := ['IF,pred,['leave,n,nil],'noBranch]
+  cond := ['IF,pred,['leave,n,nil],'%noBranch]
   nbody :=
     body is ['SEQ,:l,[.,n,x]] => ['SEQ,:l,x,['exit,n,cond]]
     ['SEQ,body,['exit,n,cond]]
@@ -179,7 +179,7 @@ formatDeftranSEQ(x,flag) ==
   [u]
 
 formatDeftranIf(a,b,c) ==
-  b = 'noBranch =>
+  b = '%noBranch =>
     a is [op,:r] and (al := '((_= . _~_=) (_< . _>_=) (_> . _<_=));
                       iop := LASSOC(op, al) or rassoc(op, al)) =>
       [["=>",[iop, :r],c]]
@@ -187,7 +187,7 @@ formatDeftranIf(a,b,c) ==
       [["=>", r, c]]
     [["=>", ['not, a], c]]
   post := 
-    c = 'noBranch => nil
+    c = '%noBranch => nil
     c is ['SEQ,:.] => CDR c
     [c]
   [["=>",a,b],:post]
@@ -229,8 +229,8 @@ formatDefault ["default",a] ==
 formatUNCOERCE ['UNCOERCE,x] == format x
  
 formatIF ['IF,a,b,c] == 
-  c = 'noBranch => formatIF2(a,b,"if ")
-  b = 'noBranch => formatIF ['IF,['not,a],c,'noBranch]
+  c = '%noBranch => formatIF2(a,b,"if ")
+  b = '%noBranch => formatIF ['IF,['not,a],c,'%noBranch]
   formatIF2(a,b,"if ") and newLine() and formatIF3 c
 
 formatIF2(a,b,prefix) ==  
@@ -238,7 +238,7 @@ formatIF2(a,b,prefix) ==
 
 formatIF3 x == 
   x is ['IF,a,b,c] => 
-    c = 'noBranch => tryBreak(format "else if " 
+    c = '%noBranch => tryBreak(format "else if " 
       and format a and format " then ",b,"then","Nud")
     formatIF2(a,b,"else if ") and newLine() and formatIF3 c
   tryBreak(format "else ",x,"else","Nud")

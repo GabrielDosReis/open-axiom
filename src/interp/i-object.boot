@@ -125,7 +125,7 @@ getBasicMode0(x,useIntegerSubdomain) ==
       $Integer
     $Integer
   FLOATP x => $DoubleFloat
-  (x='noBranch) or (x='noValue) => $NoValueMode
+  (x='%noBranch) or (x='noValue) => $NoValueMode
   nil
 
 ++ If x is a literal of the basic types then returns

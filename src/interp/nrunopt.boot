@@ -430,7 +430,7 @@ listOfCategoryEntries l ==
   pp l
  
 listOfCategoryEntriesIf(pred,conseq,alternate) ==
-  alternate in '(noBranch NIL) =>
+  alternate in '(%noBranch NIL) =>
     conseq is ['IF,p,c,a] => listOfCategoryEntriesIf(makePrefixForm([pred,p],'AND),c,a)
     [fn for x in listOfEntries conseq] where fn() ==
       x is ['IF,a,b] => ['IF,makePrefixForm([pred,a],'AND),b]
