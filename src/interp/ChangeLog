@@ -1,3 +1,14 @@
+2007-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (topics.$(FASLEXT)): New rule.
+	(alql.$(FASLEXT)): Likewise.
+	(br-prof.$(FASLEXT)): Likewise.
+	(packtran.$(FASLEXT)): Likewise.
+	(macex.$(FASLEXT)): Likewise.
+	(intfile.$(FASLEXT)): Likewise.
+	(compress.$(FASLEXT)): Likewise.
+	(msg.$(FASLEXT)): Likewise
+
 2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (nag-s.$(FASLEXT)): New rule.

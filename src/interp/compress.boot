@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"sys-macros"
 )package "BOOT"
 
 -- This one is not currently in general use, but can be applied

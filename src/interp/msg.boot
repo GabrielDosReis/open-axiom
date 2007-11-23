@@ -32,6 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"sys-macros"
+import '"astr"
 )package "BOOT"
 
 ListMember?(ob, l) ==

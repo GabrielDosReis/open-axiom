@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"sys-macros"
 )package "BOOT"
 
 -- The $useNewParser flag controls which parser will be used in the interpreter

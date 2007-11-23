@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"bc-util"
 )package "BOOT"
 
 --====================> WAS b-prof.boot <================================

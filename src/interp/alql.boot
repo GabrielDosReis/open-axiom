@@ -30,6 +30,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"br-search"
 )package "BOOT"
 
 getBrowseDatabase(kind) ==
