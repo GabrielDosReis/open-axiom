@@ -1,5 +1,23 @@
 2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (nag-s.$(FASLEXT)): New rule.
+	(nag-f07.$(FASLEXT)): Likewise.
+	(nag-f04.$(FASLEXT)): Likewise.
+	(nag-f02.$(FASLEXT)): Likewise.
+	(nag-f01.$(FASLEXT)): Likewise.
+	(nag-e04.$(FASLEXT)): Likewise.
+	(nag-e02.$(FASLEXT)): Likewise.
+	(nag-e02b.$(FASLEXT)): Likewise.
+	(nag-e01.$(FASLEXT)): Likewise.
+	(nag-d03.$(FASLEXT)): Likewise.
+	(nag-d02.$(FASLEXT)): Likewise.
+	(nag-d01.$(FASLEXT)): Likewise.
+	(nag-c06.$(FASLEXT)): Likewise.
+	(nag-c05.$(FASLEXT)): Likewise.
+	(nag-c02.$(FASLEXT)): Likewise.
+
+2007-11-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* i-analy.boot: Globally substtitue %noMapVal for noMapVal.
 	* i-intern.boot: Likewise.
 	* i-map.boot: Likewise.
