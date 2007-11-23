@@ -995,6 +995,12 @@ fortcall.$(FASLEXT): fortcall.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## HyperDoc
+topics.$(FASLEXT): topics.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+alql.$(FASLEXT): alql.boot br-search.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 br-search.$(FASLEXT): br-search.boot bc-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1009,6 +1015,9 @@ br-op1.$(FASLEXT): br-op1.boot bc-util.$(FASLEXT)
 
 br-con.$(FASLEXT): br-con.boot bc-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+br-prof.$(FASLEXT): br-prof.boot bc-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 br-data.$(FASLEXT): br-data.boot bc-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -1197,6 +1206,9 @@ spad-parser.$(FASLEXT): spad-parser.boot parse.$(FASLEXT)
 parse.$(FASLEXT): parse.boot metalex.$(FASLEXT) postpar.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
+packtran.$(FASLEXT): packtran.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 postpar.$(FASLEXT): postpar.boot postprop.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
@@ -1239,7 +1251,13 @@ macros.$(FASLEXT): macros.lisp sys-macros.$(FASLEXT)
 ##   posit.boot cparse.boot format.boot cstream.boot
 ##
 
+pf2sex.$(FASLEXT): pf2sex.boot ptrees.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 cparse.$(FASLEXT): cparse.boot ptrees.$(FASLEXT)
+	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+macex.$(FASLEXT): macex.boot ptrees.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ptrees.$(FASLEXT): ptrees.boot posit.$(FASLEXT) serror.$(FASLEXT)
@@ -1265,6 +1283,9 @@ unlisp.$(FASLEXT): unlisp.lisp sys-macros.$(FASLEXT)
 
 posit.$(FASLEXT): posit.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+intfile.$(FASLEXT): intfile.boot cstream.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 cstream.$(FASLEXT): cstream.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -1321,6 +1342,12 @@ g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT)
 
 g-cndata.$(FASLEXT): g-cndata.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+compress.$(FASLEXT): compress.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+msg.$(FASLEXT): msg.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 sys-macros.$(FASLEXT): sys-macros.lisp diagnostics.$(FASLEXT) \
 			union.$(FASLEXT)
