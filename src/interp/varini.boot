@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"sys-macros"
 )package "BOOT"
 
 -- Variables to control whether old software calls the new compiler.

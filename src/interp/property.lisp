@@ -46,7 +46,7 @@
 ;;    properties on some special handlers.
 
 
-
+(import-module "sys-macros")
 (in-package "BOOT")
 
 ;; following was in NEWSPAD LISP

@@ -32,6 +32,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+(import-module "sys-macros")
 (in-package "BOOT")
 
 (defvar |$DEFdepth| 0)

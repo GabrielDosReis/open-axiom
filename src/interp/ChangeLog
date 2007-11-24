@@ -1,5 +1,22 @@
 2007-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (cfuns.$(FASLEXT)): New rule.
+	(obey.$(FASLEXT)): Likewise.
+	(setq.$(FASLEXT)): Likewise.
+	(spaderror.$(FASLEXT)): Likewise.
+	(debug.$(FASLEXT)): Likewise.
+	(property.$(FASLEXT)): Likewise.
+	(nspadaux.$(FASLEXT)): Likewise.
+	(sockio.$(FASLEXT)): Likewise.
+	(sfsfun-l.$(FASLEXT)): Likewise.
+	(varini.$(FASLEXT)): Likewise.
+	(trace.$(FASLEXT)): Likewise.
+	(termrw.$(FASLEXT)): Likewise.
+	(showimp.$(FASLEXT)): Likewise.
+	(sfsfun.$(FASLEXT)): Likewise.
+
+2007-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (topics.$(FASLEXT)): New rule.
 	(alql.$(FASLEXT)): Likewise.
 	(br-prof.$(FASLEXT)): Likewise.

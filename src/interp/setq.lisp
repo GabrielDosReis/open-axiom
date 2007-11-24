@@ -39,6 +39,7 @@
  "Portions (c) Copyright Taiichi Yuasa and Masami Hagiya, 1984."
  "All rights reserved"))
 
+(import-module "macros")
 (in-package "BOOT")
 
 (SETQ |/MAJOR-VERSION| 7)

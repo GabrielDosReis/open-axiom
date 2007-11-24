@@ -42,9 +42,9 @@
  
 ; NAME:    Debugging Package
 ; PURPOSE: Debugging hooks for Boot code
- 
+
+(import-module "macros") 
 (in-package "BOOT")
-(use-package '("LISP" ))
  
 (DEFPARAMETER /COUNTLIST NIL)
 (DEFPARAMETER /TIMERLIST NIL)
