@@ -1,3 +1,8 @@
+2007-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nrungo.boot (lazyCompareSigEqual): If template slot is "$" then
+	compare with reified dollar.
+
 2007-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (cfuns.$(FASLEXT)): New rule.
