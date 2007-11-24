@@ -32,8 +32,8 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-;; load C socket functions
 
+(import-module "sys-macros")
 (in-package "BOOT")
 
 #+(and :Lucid (not :ibm/370))

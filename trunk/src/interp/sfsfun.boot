@@ -67,7 +67,7 @@
 
 
 
--- Used to be SPECFNSF
+import '"macros"
 )package "BOOT" 
 
 FloatError(formatstring,arg) ==

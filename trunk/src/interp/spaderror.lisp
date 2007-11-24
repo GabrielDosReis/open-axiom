@@ -33,6 +33,7 @@
 
 
 ;; this files contains basic routines for error handling
+(import-module "macros")
 (in-package "BOOT")
 
 (defun error-format (message args)

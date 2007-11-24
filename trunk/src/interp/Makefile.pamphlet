@@ -1300,6 +1300,47 @@ dq.$(FASLEXT): dq.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## General support and utilities.
+cfuns.$(FASLEXT): cfuns.lisp boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+obey.$(FASLEXT): obey.lisp macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+setq.$(FASLEXT): setq.lisp macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+spaderror.$(FASLEXT): spaderror.lisp macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+debug.$(FASLEXT): debug.lisp macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+property.$(FASLEXT): property.lisp sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+nspadaux.$(FASLEXT): nspadaux.lisp sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sockio.$(FASLEXT): sockio.lisp sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sfsfun-l.$(FASLEXT): sfsfun-l.lisp sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+varini.$(FASLEXT): varini.boot sys-macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+trace.$(FASLEXT): trace.boot debug.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+termrw.$(FASLEXT): termrw.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+showimp.$(FASLEXT): showimp.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sfsfun.$(FASLEXT): sfsfun.boot macros.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 modemap.$(FASLEXT): modemap.boot c-util.$(FASLEXT) info.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<

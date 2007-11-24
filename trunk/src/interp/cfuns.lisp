@@ -32,6 +32,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+(import-module "boot-pkg")
 (in-package "BOOT")
 
 #+(and :Lucid (not :ibm/370))
