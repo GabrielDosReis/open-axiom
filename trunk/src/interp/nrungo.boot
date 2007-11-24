@@ -245,7 +245,7 @@ compareSig(sig,tableSig,dollar,domain) ==
               for s in rest sig for t in rest tableSig]
 
 lazyCompareSigEqual(s,tslot,dollar,domain) ==
-  tslot = '$ => s = tslot -- devaluate dollar  --needed for browser
+  tslot = '$ => s = "$" or s = devaluate dollar
   INTEGERP tslot and PAIRP(lazyt:=domain.tslot) and PAIRP s =>
       lazyt is [.,.,.,[.,item,.]] and
         item is [.,[functorName,:.]] and functorName = CAR s =>
