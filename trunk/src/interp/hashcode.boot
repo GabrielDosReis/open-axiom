@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"g-util"
 )package "BOOT"
 
 -- Type hasher for old compiler style type names which produces a hash code

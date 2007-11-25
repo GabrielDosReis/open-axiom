@@ -267,10 +267,6 @@
 
 (FLAG JUNKTOKLIST 'KEY)
 
-(defmacro |report| (L)
-  (SUBST (SECOND L) 'x
-         '(COND ($reportFlag (sayBrightly x)) ((QUOTE T) NIL))))
-
 (defmacro |DomainSubstitutionMacro| (&rest L)
   (|DomainSubstitutionFunction| (first L) (second L)))
 
@@ -564,8 +560,5 @@
   ;; following line prevents rdefiostream from adding a default filetype
   (if (null (rest fn)) (setq fn (list (pathname (car fn)))))
   (rdefiostream (list (cons 'FILE fn) '(mode . OUTPUT))))
-
-(defmacro |spadConstant| (dollar n)
- `(spadcall (svref ,dollar (the fixnum ,n))))
 
 

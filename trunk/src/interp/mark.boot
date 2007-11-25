@@ -41,6 +41,7 @@
 -- Entire constructor is then assembled and prettyprinted
 
 
+import '"macros"
 )package "BOOT"
 
 REMPROP("and",'parseTran)

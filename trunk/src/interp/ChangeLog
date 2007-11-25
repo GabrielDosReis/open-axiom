@@ -1,5 +1,27 @@
 2007-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (patches.$(FASLEXT)): New rule.
+	(setvars.$(FASLEXT)): Likewise.
+	(osyscmd.$(FASLEXT)): Likewise.
+	(intint.$(FASLEXT)): Likewise.
+	(int-top.$(FASLEXT)): Likewise.
+	(wi2.$(FASLEXT)): Likewise.
+	(wi1.$(FASLEXT)): Likewise.
+	(template.$(FASLEXT)): Likewise.
+	(package.$(FASLEXT)): Likewise.
+	(xruncomp.$(FASLEXT)): Likewise.
+	(interop.$(FASLEXT)): Likewise.
+	(mark.$(FASLEXT)): Likewise.
+	(daase.$(FASLEXT)): Likewise.
+	(monitor.$(FASLEXT)): Likewise.
+	(hashcode.$(FASLEXT)): Likewise.
+	(pspad2.$(FASLEXT)): Likewise.
+	(pspad1.$(FASLEXT)): Likewise.
+	(nocompil.$(FASLEXT)): Likewise.
+	(fname.$(FASLEXT)): Likewise.
+
+2007-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* nrungo.boot (lazyCompareSigEqual): If template slot is "$" then
 	compare with reified dollar.
 
