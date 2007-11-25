@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"c-util"
 )package "BOOT"
 
 ------- from info.boot -----------

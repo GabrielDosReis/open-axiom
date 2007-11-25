@@ -32,6 +32,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"i-toplev"
 (in-package "BOOT")
 
 (defun |intSayKeyedMsg| (key args)

@@ -1248,3 +1248,10 @@
 (defmacro |shoeread-line| (st)
  `(read-line ,st nil nil))
 
+(defmacro |report| (L)
+  (SUBST (SECOND L) 'x
+         '(COND ($reportFlag (sayBrightly x)) ((QUOTE T) NIL))))
+
+
+(defmacro |spadConstant| (dollar n)
+ `(spadcall (svref ,dollar (the fixnum ,n))))

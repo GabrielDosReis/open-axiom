@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"macros"
 )package "BOOT"
 
 compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==

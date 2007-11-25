@@ -32,6 +32,9 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"incl"
+import '"i-toplev"
+import '"unlisp"
 )package "BOOT"
 
 ncParseAndInterpretString s ==

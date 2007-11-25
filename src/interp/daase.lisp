@@ -200,6 +200,8 @@
 
 ; -- tim daly
 
+(import-module "macros")
+(import-module "foam_l")
 (in-package "BOOT")
 
 (defstruct database

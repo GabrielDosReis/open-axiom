@@ -53,6 +53,8 @@
 -- its arguments, such as describeSetOutputFortran.
 
 
+import '"macros"
+import '"debug"
 )package "BOOT"
 
 -- The `set' function in this file handles the top level `)set'
