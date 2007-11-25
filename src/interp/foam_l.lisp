@@ -72,6 +72,10 @@
   #-:common-lisp (:use "LISP")
   (:use "FOAM"))
 
+#+:gcl (in-package "BOOT")
+#+:gcl (in-package "AxiomCore")
+(import-module "vmlisp")
+
 (in-package "FOAM")
 
 (export '(

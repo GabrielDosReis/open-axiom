@@ -192,11 +192,11 @@ remove-stamp:
 .PHONY: build-images
 build-images: remove-stamp all-interpsys
 
-all-interpsys: all-depsys 
+all-interpsys: makeint.lisp
 	$(mkinstalldirs) $(AUTO)
 	$(MAKE) $(SAVESYS)
 
-all-axiomsys: all-depsys 
+all-axiomsys: all-interpsys
 	$(MAKE) $(AXIOMSYS)
 
 all-depsys: $(DEPSYS)
@@ -227,7 +227,7 @@ clean-local: mostlyclean-local
 
 distclean-local: clean-local
 
-makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
+makeint.lisp:	${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
                 nocompil.$(FASLEXT) \
 		sys-driver.$(FASLEXT) \
 	        ${OUTINTERP} obey.$(FASLEXT) \
@@ -269,87 +269,6 @@ ${SAVESYS}: makeint.lisp
 		--load-directory=. makeint.lisp
 	@ echo 6 ${SAVESYS} created
 	$(mkinstalldirs) $(axiom_target_bindir)
-${DEPSYS}:	vmlisp.$(FASLEXT) \
-		hash.$(FASLEXT) \
-		bits.$(FASLEXT) \
-		ggreater.$(FASLEXT) \
-		union.$(FASLEXT) \
-		boot-pkg.$(FASLEXT) \
-		sys-constants.$(FASLEXT) \
-		sys-globals.$(FASLEXT) \
-		sys-driver.$(FASLEXT) \
-		diagnostics.$(FASLEXT) \
-		sys-macros.$(FASLEXT) \
-		macros.$(FASLEXT) \
-		nlib.$(FASLEXT) \
-		comp.$(FASLEXT) \
-		${DEP} \
-		nocompil.$(FASLEXT) \
-	        bookvol5.$(FASLEXT)\
-		util.$(FASLEXT) \
-	        postpar.$(FASLEXT) \
-		parse.$(FASLEXT) \
-	        parsing.$(FASLEXT) \
-		metalex.$(FASLEXT) \
-	        bootlex.$(FASLEXT) \
-		newaux.$(FASLEXT) \
-	        preparse.$(FASLEXT) \
-	        postprop.$(FASLEXT)\
-		def.$(FASLEXT) \
-	        fnewmeta.$(FASLEXT) \
-		g-error.$(FASLEXT) \
-	        g-boot.$(FASLEXT) \
-		c-util.$(FASLEXT) \
-	        g-util.$(FASLEXT) \
-	        clam.$(FASLEXT) \
-	        slam.$(FASLEXT)
-	@ echo 3 making ${DEPSYS} 
-	@ rm -f makedep.lisp
-	@ $(mkinstalldirs) $(axiom_build_bindir)
-	@ echo '(|importModule| "sys-driver")' >> makedep.lisp
-	@ echo '(|importModule| "vmlisp")' >> makedep.lisp
-	@ echo '(|importModule| "bits")' >> makedep.lisp
-	@ echo '(|importModule| "hash")' >> makedep.lisp
-	@ echo '(|importModule| "ggreater")' >> makedep.lisp
-	@ echo '(|importModule| "union")' >> makedep.lisp
-	@ echo '(|importModule| "nocompil")' >> makedep.lisp
-	@ echo '(|importModule| "macros")' >> makedep.lisp
-	@ echo '(|importModule| "nlib")' >> makedep.lisp
-	@ echo '(|importModule| "bookvol5")' >> makedep.lisp
-	@ echo '(|importModule| "util")' >> makedep.lisp
-	@ echo '(in-package "BOOT")' >> makedep.lisp
-	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))))' >> makedep.lisp
-	@ echo '(in-package "AxiomCore")' >> makedep.lisp
-	@ echo '(|importModule| "newaux")' >> makedep.lisp
-	@ echo '(|importModule| "parse")' >> makedep.lisp
-	@ echo '(|importModule| "metalex")' >> makedep.lisp
-	@ echo '(|importModule| "parsing")' >> makedep.lisp
-	@ echo '(|importModule| "fnewmeta")' >> makedep.lisp
-	@ echo '(|importModule| "preparse")' >> makedep.lisp
-	@ echo '(|importModule| "comp")' >> makedep.lisp
-	@ echo '(|importModule| "def")' >> makedep.lisp
-	@ echo '(|importModule| "bootlex")' >> makedep.lisp
-	@ echo '(|importModule| "postprop")' >> makedep.lisp
-	@ echo '(|importModule| "postpar")' >> makedep.lisp
-	@ echo '(|importModule| "clam")' >> makedep.lisp
-	@ echo '(|importModule| "slam")' >> makedep.lisp
-	@ echo '(|importModule| "g-error")' >> makedep.lisp
-	@ echo '(|importModule| "g-boot")' >> makedep.lisp
-	@ echo '(|importModule| "c-util")' >> makedep.lisp
-	@ echo '(|importModule| "g-util")' >> makedep.lisp
-	../lisp/base-lisp$(EXEEXT) -- --make --output=$@ \
-		--load-directory=. makedep.lisp
-	@ echo 4 ${DEPSYS} created
-
-
-util.$(FASLEXT): util.lisp parsing.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 .PHONY: all-axiomsys
 
 all-axiomsys: ${AXIOMSYS}
@@ -582,6 +501,9 @@ wi2.$(FASLEXT): wi2.boot macros.$(FASLEXT)
 wi1.$(FASLEXT): wi1.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+apply.$(FASLEXT): apply.boot compiler.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
 			modemap.$(FASLEXT) pathname.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -635,6 +557,9 @@ simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
 
 newfort.$(FASLEXT): newfort.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+lisplib.$(FASLEXT): lisplib.boot nlib.$(FASLEXT) c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 xruncomp.$(FASLEXT): xruncomp.boot c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
@@ -793,6 +718,9 @@ spaderror.$(FASLEXT): spaderror.lisp macros.$(FASLEXT)
 debug.$(FASLEXT): debug.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+spad.$(FASLEXT): spad.lisp bootlex.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 monitor.$(FASLEXT): monitor.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
@@ -883,6 +811,12 @@ msg.$(FASLEXT): msg.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
 nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+util.$(FASLEXT): util.lisp parsing.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 fname.$(FASLEXT): fname.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
@@ -911,6 +845,12 @@ union.$(FASLEXT): union.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 ggreater.$(FASLEXT): ggreater.lisp vmlisp.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+axext_l.$(FASLEXT): axext_l.lisp foam_l.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+foam_l.$(FASLEXT): foam_l.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)

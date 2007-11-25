@@ -35,6 +35,7 @@
 ;; File containing primitives needed by exextend in order to interop with axiom
 ;; This file could do with some declares
 
+(import-module "foam_l")
 (in-package "FOAM-USER")
 
 ;; tacky but means we can run programs

@@ -30,6 +30,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import '"nlib"
+import '"c-util"
 )package "BOOT"
 
 --% Standard Library Creation Functions

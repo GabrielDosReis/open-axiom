@@ -725,15 +725,6 @@ ${DEPSYS}:	vmlisp.$(FASLEXT) \
 <<save depsys image>>
 	@ echo 4 ${DEPSYS} created
 
-
-util.$(FASLEXT): util.lisp parsing.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 @
 
 \section{Building SAVESYS and AXIOMSYS}
@@ -750,7 +741,7 @@ should not be set here just because we happen to save an GCL-based image.
 Doing otherwise causes havoc.
 
 <<savesys>>=
-makeint.lisp:	${DEPSYS} ${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
+makeint.lisp:	${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
                 nocompil.$(FASLEXT) \
 		sys-driver.$(FASLEXT) \
 	        ${OUTINTERP} obey.$(FASLEXT) \
@@ -912,11 +903,11 @@ remove-stamp:
 .PHONY: build-images
 build-images: remove-stamp all-interpsys
 
-all-interpsys: all-depsys 
+all-interpsys: makeint.lisp
 	$(mkinstalldirs) $(AUTO)
 	$(MAKE) $(SAVESYS)
 
-all-axiomsys: all-depsys 
+all-axiomsys: all-interpsys
 	$(MAKE) $(AXIOMSYS)
 
 all-depsys: $(DEPSYS)
@@ -932,7 +923,6 @@ clean-local: mostlyclean-local
 distclean-local: clean-local
 
 <<savesys>>
-<<depsys>>
 <<axiomsys>>
 <<databases>>
 
@@ -1143,6 +1133,9 @@ wi2.$(FASLEXT): wi2.boot macros.$(FASLEXT)
 wi1.$(FASLEXT): wi1.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+apply.$(FASLEXT): apply.boot compiler.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
 			modemap.$(FASLEXT) pathname.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
@@ -1196,6 +1189,9 @@ simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
 
 newfort.$(FASLEXT): newfort.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
+
+lisplib.$(FASLEXT): lisplib.boot nlib.$(FASLEXT) c-util.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 xruncomp.$(FASLEXT): xruncomp.boot c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
@@ -1354,6 +1350,9 @@ spaderror.$(FASLEXT): spaderror.lisp macros.$(FASLEXT)
 debug.$(FASLEXT): debug.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+spad.$(FASLEXT): spad.lisp bootlex.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 monitor.$(FASLEXT): monitor.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
@@ -1444,6 +1443,12 @@ msg.$(FASLEXT): msg.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
 nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
+util.$(FASLEXT): util.lisp parsing.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
 fname.$(FASLEXT): fname.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
@@ -1472,6 +1477,12 @@ union.$(FASLEXT): union.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 ggreater.$(FASLEXT): ggreater.lisp vmlisp.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+axext_l.$(FASLEXT): axext_l.lisp foam_l.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+foam_l.$(FASLEXT): foam_l.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)

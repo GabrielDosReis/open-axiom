@@ -1,3 +1,17 @@
+2007-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (util.$(FASLEXT)): Move down.
+	(bookvol5.$(FASLEXT)): Likewise.
+	(<<depsys>>): Don't extract.
+	(makeint.lisp): Don't depend on $(DEPSYS).
+	(all-interpsys): Don't dependen on all-depsys.
+	(all-axiomsys): Likewise.  Now depend on all-interpsys.
+	(apply.$(FASLEXT)): New rule.
+	(lisplib.$(FASLEXT)): Likewise.
+	(spad.$(FASLEXT)): Likewise.
+	(axext_l.$(FASLEXT)): Likewise.
+	(foam_l.$(FASLEXT)): Likewise.
+
 2007-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (patches.$(FASLEXT)): New rule.
