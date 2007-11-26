@@ -4,28 +4,16 @@ subdir = src/interp/
 IN=$(srcdir)
 DOC=$(axiom_target_docdir)/src/interp
 BOOK=$(axiom_target_docdir)
-
-# Command to translate Boot to Common Lisp
-BOOT_TO_LISP = $(BOOTSYS) -- --translate --output=$@ $< 
-
-# Command to translate Common Lisp to native object code
-COMPILE_LISP = $(DEPSYS) -- --compile --output=$@ $<
 AUTO=$(axiom_targetdir)/autoload
 
 autoload_objects =
 
 # Build platform-dependent Lisp image, at the base of other
-# derived Lisp images (depsys, interpsys, AXIOMsys)
+# derived Lisp images (interpsys, AXIOMsys)
 LISPSYS= $(axiom_build_bindir)/lisp
 
 BOOTSYS= $(axiom_build_bindir)/bootsys    
 
-DEPSYS = ./depsys
-DEP=	$(srcdir)/spaderror.lisp	$(srcdir)/debug.lisp	\
-	$(srcdir)/spad.lisp	\
-	$(srcdir)/setq.lisp	$(srcdir)/property.lisp	\
-	$(srcdir)/unlisp.lisp     $(srcdir)/foam_l.lisp      \
-	$(srcdir)/axext_l.lisp
 LOADSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
 SAVESYS= interpsys$(EXEEXT)
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
@@ -161,7 +149,6 @@ YEARWEEK=(progn (setq boot::timestamp "${TIMESTAMP}") \
                 (boot::yearweek))
 
 
-.PRECIOUS:	${DEPSYS}
 .PRECIOUS:	${SAVESYS}
 .PRECIOUS:	${AXIOMSYS}
 
@@ -175,7 +162,7 @@ UNUSED= ${DOC}/anna.boot.dvi ${DOC}/construc.lisp.dvi \
 .SUFFIXES:
 .SUFFIXES: .boot .clisp .lisp .pamphlet
 
-.PHONY: all all-ax all-depsys all-interpsys all-axiomsys
+.PHONY: all all-ax all-interpsys all-axiomsys
 
 all: all-ax
 
@@ -192,29 +179,19 @@ remove-stamp:
 .PHONY: build-images
 build-images: remove-stamp all-interpsys
 
-all-interpsys: makeint.lisp
+all-interpsys:
 	$(mkinstalldirs) $(AUTO)
 	$(MAKE) $(SAVESYS)
 
 all-axiomsys: all-interpsys
 	$(MAKE) $(AXIOMSYS)
 
-all-depsys: $(DEPSYS)
-
 .PRECIOUS: %.boot
 %.boot: $(srcdir)/%.boot.pamphlet
 	$(axiom_build_document) --tangle --output=$@ $<
-.PRECIOUS: %.clisp
-%.clisp: %.boot
-	$(BOOT_TO_LISP)
-.PRECIOUS: %.$(FASLEXT)
-%.$(FASLEXT): %.clisp
-	$(COMPILE_LISP)
 # Extract and compile the part of the interpreter written
 # in Common Lisp
 .PRECIOUS: %.lisp
-%.$(FASLEXT): %.lisp
-	$(COMPILE_LISP)
 
 %.lisp: $(srcdir)/%.lisp.pamphlet
 	$(axiom_build_document) --tangle --output=$@ $<

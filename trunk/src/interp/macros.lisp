@@ -578,12 +578,6 @@
  
 ;; the following are redefined in MSGDB BOOT
  
-;; --------------------> NEW DEFINITION (override in msgdb.boot.pamphlet)
-(DEFUN BRIGHTPRINT (X) (MESSAGEPRINT X))
- 
-;; --------------------> NEW DEFINITION (override in msgdb.boot.pamphlet)
-(DEFUN BRIGHTPRINT-0 (x) (MESSAGEPRINT-1 X))
- 
 (DEFUN BLANKS (N &optional (stream *standard-output*)) "Print N blanks."
     (do ((i 1 (the fixnum(1+ i))))
         ((> i N))(declare (fixnum i n)) (princ " " stream)))
