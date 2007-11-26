@@ -1,3 +1,6 @@
+  × OpenAxiom developers: depsys is no longer built.  All files in
+    src/interp/ are now compiled with bootsys.
+
   × OpenAxiom now has a domain domain for representing the abstract
     syntax tree of Spad and Boot programs.
 
