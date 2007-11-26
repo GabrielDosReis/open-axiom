@@ -34,10 +34,6 @@
 
 * Improve Boot documentation
 
-* Have OpenAxiom use bootsys compile all Boot codes in src/interp. This
-  requires auditing the code for uses of special functions which
-  act differently in boot and shoe (like MEMBER). 
-
 * Reduce the number of bar Lisp codes to the minimum residual.
 
 * Fix codes in src/interp, src/hyper, and src/hyper/pages/util.ht that 
@@ -103,6 +99,10 @@
 * Use Libtool to build the C part of the OpenAxiom system.  In particular,
   this facilitates support for Lisps that rely on dynamic loading
   (e.g. SBCL, ECL).
+
+* Have OpenAxiom use bootsys compile all Boot codes in src/interp. This
+  requires auditing the code for uses of special functions which
+  act differently in boot and shoe (like MEMBER). 
 
 ================================================
 === New Boot vs. Old Boot compatibility notes ==
