@@ -16,7 +16,7 @@ build_srcdir = $(builddir)/src
 
 AXIOM_SRC_TARGETS = all-algebra all-asq all-axiomsys all-book all-boot \
 	all-clef all-doc all-graph all-hyper all-input all-interpsys \
-	all-lib all-lisp all-sman all-src all-depsys
+	all-lib all-lisp all-sman all-src
 
 .PHONY: all $(AXIOM_SRC_TARGETS)
 all: all-ax
@@ -27,7 +27,7 @@ all-ax: all-src
 all-src: stamp-rootdirs @axiom_all_prerequisites@
 
 ifeq ($(strip $(axiom_include_gcl)),yes)
-all-boot all-lisp all-depsys all-interpsys all-axiomsys \
+all-boot all-lisp all-interpsys all-axiomsys \
   all-algebra all-input: all-gcl
 endif
 

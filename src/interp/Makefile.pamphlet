@@ -14,25 +14,6 @@
 \tableofcontents
 \eject
 
-\begin{verbatim}
-notes for understanding this makefile:
-re: postpar.clisp and parse.clisp stanzas: 
-NOTE: the .clisp file is copies back into the src directory so that
-it is possible to create a new obootsys system from scratch for a 
-new platform. parse.clisp needs to be compiled in a depsys.
-one thing need to be done to create an obootsys by hand:
-  parse and postpar must be loaded along with the depsys files
-     into a bare lisp system.
-if these two things are done then a obootsys image can be bootstrapped
-to a new platform.
-
-IMPORTANT: all source file names in this Makefile must be lowercase
-  This is for cross-platform compatibility and also makes getting
-  them into Lisp much easier at the Makefile level.
-
-\end{verbatim}
-
-
 \section{The Environment}
 
 We define 3 directories for this build. The first two are
@@ -54,12 +35,6 @@ in the [[\$(axiom_target_docdir)/src/interp/]] directory.
 IN=$(srcdir)
 DOC=$(axiom_target_docdir)/src/interp
 BOOK=$(axiom_target_docdir)
-
-# Command to translate Boot to Common Lisp
-BOOT_TO_LISP = $(BOOTSYS) -- --translate --output=$@ $< 
-
-# Command to translate Common Lisp to native object code
-COMPILE_LISP = $(DEPSYS) -- --compile --output=$@ $<
 @
 
 
@@ -86,7 +61,7 @@ the other images. This is called {\bf LISPSYS} and is located in the
 build platform sub-directory.
 <<environment>>=
 # Build platform-dependent Lisp image, at the base of other
-# derived Lisp images (depsys, interpsys, AXIOMsys)
+# derived Lisp images (interpsys, AXIOMsys)
 LISPSYS= $(axiom_build_bindir)/lisp
 
 @
@@ -105,162 +80,6 @@ BOOTSYS= $(axiom_build_bindir)/bootsys
 
 @
 
-Note also that another translator (built into [[depsys]]) translates
-a variant og Boot (called ``old Boot'') to Common Lisp.
-
-
-\subsection{The old Boot translator}
-
-<<environment>>=
-DEPSYS = ./depsys
-@
-
-Some of the Common Lisp code we compile uses macros which
-are assumed to be available at compile time. The [[DEPSYS]]
-image is created to contain the compile time environment
-and saved.  Furthermore, it is also used to translate codes written
-in ``old Boot'' to Common Lisp.  That translator is in the process of
-being phased out in favor of the ``new Boot'' translator found in
-\File{src/boot/}.
-
-\subsubsection{Structure of [[depsys]]}
-
-The [[depsys]] image is made of the following Lisp source files
-
-\begin{description}
-\item[Interpreted Lisp source files]
-  The following files are currently part of [[depsys]] in interpreted
-  form.  The exact reasons for that are not well articulated.
-
-  \begin{description}
-    \item[\File{nocompil.lisp}]  This file defines obscure functions
-    that seem to be there only for obscure reasons.  Most of them are not
-    really needed for translating Boot codes.
-  
-    \item[\File{bookvol5.lisp}]  This file defines functions for
-    the Spad interpreter.  None of which seems relevant for translating
-    Boot codes to Common Lisp.
-
-    \item[\File{util.lisp}] This file defines various ``system-level''
-    helper functions, for building [[depsys]], [[interpsys]], etc.
-
-    \item[\File{vmlisp.lisp}]  This is a collection of various utility
-    functions, encapsulations of variabilities of Lisp implementations.
-    All those symbols are defined in the package [[VMLISP]].
-    It needs some strip down, and possibly have its contents moved
-    to the package [[BOOT]].
-
-    \item[\File{ggreater.lisp}]  This file defines various orderings 
-    on collections and other aggregates.  Its content is defined in the
-    package [[VMLISP]].
-
-    \item[\File{hash.lisp}]  This file defines a ``hash table'' module.
-    Its content is defined in package [[VMLISP]].
-
-    \item[\File{union.lisp}]  This file defines functions that
-    compute set-theoretic operations (union, difference, intersection, etc.).
-    Its content is in package [[VMLISP]].
-
-    \item[\File{nlib.lisp}]  This file defines to work around problems
-    with GCL when compiling Spad files.  It is not necessary for
-    translating Boot codes to Common Lisp.  Its content is in package
-    [[VMLISP]].
-
-    \item[\File{macros.lisp}]  This file collects various helper macros
-    and functions for Boot and Spad codes.
-
-    \item[\File{comp.lisp}]  This file defines several functions that
-    desugar Boot and Spad codes; in particular, they infer local
-    variables from their position in assignment expressions.  Its
-    content is defined in package [[BOOT]].
-
-    \item[\File{spaderror.lisp}]  This file defines error handling functions
-    that are useful only for Spad codes -- not for translating Boot codes.
-    Its content is defined in package [[BOOT]].
-
-    \item[\File{debug.lisp}] This file defines debug utilities for
-    essentially Spad codes.  Its content is defined in package [[BOOT]].
-
-    \item[\File{spad.lisp}]  This files defines the entry points for
-    processing Spad and Boot codes.  Its content is defined in package
-    [[BOOT]].
-
-    \item[\File{bits.lisp}]  This file implements a ``bit vector''
-    data type.  Its content is in package [[BOOT]].
-
-    \item[\File{setq.lisp}]  This file defines several global
-    variables.  Its content is defined in package [[BOOT]].
-
-    \item[\File{property.lisp}]  This file defines properties of
-     Spad and Boot tokens, as well as several constructors.  Its
-    content is defined in package [[BOOT]].
- 
-    \item[\File{unlisp.lisp}]  This file attempts to define interfaces
-    to the Operating System, that are not found in strict ANSI 
-    Common Lisp (though they may be present as extensions with
-    varying spellings.).  Its content is defined in package [[BOOT]].
-
-    \item[\File{foam\_l.lisp}]  This file defines the FOAM functions.
-    The packages [[FOAM]] and [[FOAM-USER]] are defined here.
-    It is not needed for translating Boot codes to Common Lisp.
-
-    \item[\File{axext\_l.lisp}]  This file defines various macros and
-    functions for interoperability between Aldor and OpenAxiom.  Not needed
-    for translating Boot codes to Common Lisp.
-  \end{description}
-
-\item[Compiled Lisp source files]
-  \begin{description}
-    \item[\File{parsing.lisp}]
-   
-    \item[\File{metalex.lisp}]
-
-    \item[\File{bootlex.lisp}]
-
-    \item[\File{newaux.lisp}]
-
-    \item[\File{preparse.lisp}]
-
-    \item[\File{postprop.lisp}]
-
-    \item[\File{def.lisp}]
-
-    \item[\File{fnewmeta.lisp}]
-  \end{description}
-
-\item[Compiled Boot source files]
-  \begin{description}
-    \item[\File{postpar.boot}]
-
-    \item[\File{parse.boot}]
-
-    \item[\File{clam.boot}]
-
-    \item[\File{slam.boot}]
-
-    \item[\File{g-boot.boot}]
-
-    \item[\File{c-util.boot}]
-
-    \item[\File{g-util.boot}]
-  \end{description}
-
-\end{description}
-
-The {\bf DEP} variable contains the list of files that
-will be loaded into {\bf DEPSYS}. Notice that these files
-are loaded in interpreted form. We are not concerned about
-the compile time performance so we can use interpreted code.
-We do, however, care about the macros as these will be
-expanded in later compiles. All macros are assumed to be
-in this list of files.
-<<environment>>=
-DEP=	$(srcdir)/spaderror.lisp	$(srcdir)/debug.lisp	\
-	$(srcdir)/spad.lisp	\
-	$(srcdir)/setq.lisp	$(srcdir)/property.lisp	\
-	$(srcdir)/unlisp.lisp     $(srcdir)/foam_l.lisp      \
-	$(srcdir)/axext_l.lisp
-@
 
 Once we've compile all of the Common Lisp files we fire up
 a clean lisp image called {\bf LOADSYS} (from the build platform), load all 
@@ -290,13 +109,6 @@ file contains constant initialization code which gains nothing
 by being compiled.
 
 \subsection{The Spad interpreter and compiler}
-
-The value of the variable [[AXIOMsys_boot_sources]] is the (currently
-partial) list of Boot source files that make up the interpreter.
-Similarly, the value of the variable [[AXIOMsys_compiled_lisp_sources]]
-is the list of Common Lisp source files that are compiled into
-the interpreter.  Notice that some of these files are loaded (\eg{},
-interpreted) in [[depsys]].
 
 <<environment>>=
 OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
@@ -530,7 +342,6 @@ are likely to be useable we don't need to redo the work if they
 exist.
 <<environment>>=
 
-.PRECIOUS:	${DEPSYS}
 .PRECIOUS:	${SAVESYS}
 .PRECIOUS:	${AXIOMSYS}
 
@@ -546,22 +357,6 @@ files:
 	$(axiom_build_document) --tangle --output=$@ $<
 @
 
-The extracted Boot codes are then fed into \Tool{bootsys} which translates
-them into Common Lisp codes:
-<<extract source codes>>=
-.PRECIOUS: %.clisp
-%.clisp: %.boot
-	$(BOOT_TO_LISP)
-@
-
-The resulting Common Lips codes are, in turn, compiled to object codes
-using the \Tool{depsys} image.
-<<extract source codes>>=
-.PRECIOUS: %.$(FASLEXT)
-%.$(FASLEXT): %.clisp
-	$(COMPILE_LISP)
-@
-
 Part of the interpreter is written directly in Common Lisp (instead of the 
 sugared dialect Boot).  That part is extracted from the pamphlet files
 and compiled to native object code, as usual.
@@ -569,8 +364,6 @@ and compiled to native object code, as usual.
 # Extract and compile the part of the interpreter written
 # in Common Lisp
 .PRECIOUS: %.lisp
-%.$(FASLEXT): %.lisp
-	$(COMPILE_LISP)
 
 %.lisp: $(srcdir)/%.lisp.pamphlet
 	$(axiom_build_document) --tangle --output=$@ $<
@@ -625,107 +418,6 @@ UNUSED= ${DOC}/anna.boot.dvi ${DOC}/construc.lisp.dvi \
 
 @
 
-\section{Building DEPSYS}
-
-\begin{verbatim}
-NOTES: depsys proceeds all else. it is the compile-time environment
-for all interpreter code. 
-[[OLD-BOOT::BOOT]] emulates the new boot parser command [[BOOTTOCL]]. since
-we eventually plan to move to the new boot parser this function
-should disappear.
-the load of postpar and parse (without extensions) allows the .${LISP} form
-to be loaded in a virgin system. however, if depsys is recreated then
-the compiled form will get loaded.
-\end{verbatim}
-
-\subsection{save depsys image}
-
-Once the appropriate commands are in the [[makedep.lisp]] file
-we can load the file into an initial Lisp image and save it.
-In freebsd we cannot do this so we have to use
-a much more complicated procedure.
-This code used to read:
-\begin{verbatim}
-<<save depsys image>>=
-	../lisp/base-lisp$(EXEEXT) -- --make --output=$@ \
-		--load-directory=. makedep.lisp
-@
-\end{verbatim}
-
-
-<<depsys>>=
-${DEPSYS}:	vmlisp.$(FASLEXT) \
-		hash.$(FASLEXT) \
-		bits.$(FASLEXT) \
-		ggreater.$(FASLEXT) \
-		union.$(FASLEXT) \
-		boot-pkg.$(FASLEXT) \
-		sys-constants.$(FASLEXT) \
-		sys-globals.$(FASLEXT) \
-		sys-driver.$(FASLEXT) \
-		diagnostics.$(FASLEXT) \
-		sys-macros.$(FASLEXT) \
-		macros.$(FASLEXT) \
-		nlib.$(FASLEXT) \
-		comp.$(FASLEXT) \
-		${DEP} \
-		nocompil.$(FASLEXT) \
-	        bookvol5.$(FASLEXT)\
-		util.$(FASLEXT) \
-	        postpar.$(FASLEXT) \
-		parse.$(FASLEXT) \
-	        parsing.$(FASLEXT) \
-		metalex.$(FASLEXT) \
-	        bootlex.$(FASLEXT) \
-		newaux.$(FASLEXT) \
-	        preparse.$(FASLEXT) \
-	        postprop.$(FASLEXT)\
-		def.$(FASLEXT) \
-	        fnewmeta.$(FASLEXT) \
-		g-error.$(FASLEXT) \
-	        g-boot.$(FASLEXT) \
-		c-util.$(FASLEXT) \
-	        g-util.$(FASLEXT) \
-	        clam.$(FASLEXT) \
-	        slam.$(FASLEXT)
-	@ echo 3 making ${DEPSYS} 
-	@ rm -f makedep.lisp
-	@ $(mkinstalldirs) $(axiom_build_bindir)
-	@ echo '(|importModule| "sys-driver")' >> makedep.lisp
-	@ echo '(|importModule| "vmlisp")' >> makedep.lisp
-	@ echo '(|importModule| "bits")' >> makedep.lisp
-	@ echo '(|importModule| "hash")' >> makedep.lisp
-	@ echo '(|importModule| "ggreater")' >> makedep.lisp
-	@ echo '(|importModule| "union")' >> makedep.lisp
-	@ echo '(|importModule| "nocompil")' >> makedep.lisp
-	@ echo '(|importModule| "macros")' >> makedep.lisp
-	@ echo '(|importModule| "nlib")' >> makedep.lisp
-	@ echo '(|importModule| "bookvol5")' >> makedep.lisp
-	@ echo '(|importModule| "util")' >> makedep.lisp
-	@ echo '(in-package "BOOT")' >> makedep.lisp
-	@ echo '(build-depsys (quote ($(patsubst %, "%", ${DEP}))))' >> makedep.lisp
-	@ echo '(in-package "AxiomCore")' >> makedep.lisp
-	@ echo '(|importModule| "newaux")' >> makedep.lisp
-	@ echo '(|importModule| "parse")' >> makedep.lisp
-	@ echo '(|importModule| "metalex")' >> makedep.lisp
-	@ echo '(|importModule| "parsing")' >> makedep.lisp
-	@ echo '(|importModule| "fnewmeta")' >> makedep.lisp
-	@ echo '(|importModule| "preparse")' >> makedep.lisp
-	@ echo '(|importModule| "comp")' >> makedep.lisp
-	@ echo '(|importModule| "def")' >> makedep.lisp
-	@ echo '(|importModule| "bootlex")' >> makedep.lisp
-	@ echo '(|importModule| "postprop")' >> makedep.lisp
-	@ echo '(|importModule| "postpar")' >> makedep.lisp
-	@ echo '(|importModule| "clam")' >> makedep.lisp
-	@ echo '(|importModule| "slam")' >> makedep.lisp
-	@ echo '(|importModule| "g-error")' >> makedep.lisp
-	@ echo '(|importModule| "g-boot")' >> makedep.lisp
-	@ echo '(|importModule| "c-util")' >> makedep.lisp
-	@ echo '(|importModule| "g-util")' >> makedep.lisp
-<<save depsys image>>
-	@ echo 4 ${DEPSYS} created
-
-@
 
 \section{Building SAVESYS and AXIOMSYS}
 
@@ -824,16 +516,6 @@ bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
 	$(axiom_build_document) --tangle=Interpreter --output=$@ $<
 @
 
-\subsection{postpar.boot}
-
-\begin{verbatim}
-NOTE: One thing need to be done to create an DEPSYS by hand:
-  parse and postpar must be loaded along with the depsys files
-     into a bare lisp system.
-if these two things are done then a DEPSYS image can be bootstrapped
-to a new platform.
-\end{verbatim}
-
 \section{The databases}
 
 \begin{verbatim}
@@ -886,7 +568,7 @@ subdir = src/interp/
 .SUFFIXES:
 .SUFFIXES: .boot .clisp .lisp .pamphlet
 
-.PHONY: all all-ax all-depsys all-interpsys all-axiomsys
+.PHONY: all all-ax all-interpsys all-axiomsys
 
 all: all-ax
 
@@ -903,14 +585,12 @@ remove-stamp:
 .PHONY: build-images
 build-images: remove-stamp all-interpsys
 
-all-interpsys: makeint.lisp
+all-interpsys:
 	$(mkinstalldirs) $(AUTO)
 	$(MAKE) $(SAVESYS)
 
 all-axiomsys: all-interpsys
 	$(MAKE) $(AXIOMSYS)
-
-all-depsys: $(DEPSYS)
 
 <<extract source codes>>
 

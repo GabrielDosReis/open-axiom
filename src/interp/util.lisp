@@ -32,8 +32,8 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ;; This file is a collection of utility functions that are useful
-;; for system level work. A couple of the functions, `build-depsys'
-;; and `build-interpsys' interface to the src/interp/Makefile.
+;; for system level work. A couple of the functions, 
+;; `build-interpsys' interface to the src/interp/Makefile.
 
 ;; A second group of related functions allows us to rebuild portions
 ;; of the system from the command prompt. This varies from rebuilding
@@ -706,30 +706,6 @@
 )
 
 
-;; The `depsys' image is one of the two images we build from
-;; the src/interp subdirectory (the other is `interpsys'). We
-;; use `depsys' as a compile-time image as it contains all of
-;; the necessary functions and macros to compile any file. The 
-;; `depsys' image is almost the same as an `interpsys'
-;; image but it does not have any autoload triggers or databases
-;; loaded.
-
-(defun build-depsys (load-files)
-#+:CCL
-  (setq *package* (find-package "BOOT"))
-#+:AKCL
-  (in-package "BOOT")
-  (mapcar #'load load-files)
-  (reroot)
-  #+:AKCL
-  (init-memory-config :cons 1000 :fixnum 400 :symbol 1000 :package 16
-                      :array 800 :string 1000 :cfun 200 :cpages 2000
-                      :rpages 2000 :hole 4000) )
-;;  (init-memory-config :cons 500 :fixnum 200 :symbol 500 :package 8
-;;                    :array 400 :string 500 :cfun 100 :cpages 1000
-;;                    :rpages 1000 :hole 2000) )
-
-
 (DEFUN |string2BootTree| (S)
   (init-boot/spad-reader)
   (LET* ((BOOT-LINE-STACK (LIST (CONS 1 S)))
@@ -754,10 +730,6 @@
      (PARSEOUT (PROG2 (|PARSE-NewExpr|) (POP-STACK-1))))
     (DECLARE (SPECIAL BOOT-LINE-STACK $BOOT $SPAD XTOKENREADER LINE-HANDLER))
     PARSEOUT))
-
-
-;;--------------------> NEW DEFINITION (see i-syscmd.boot.pamphlet)
-(defun |processSynonyms| () nil) ;;dummy def for depsys, redefined later
 
 
 ;; the following are for conditional reading

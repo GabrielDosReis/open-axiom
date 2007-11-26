@@ -133,18 +133,13 @@ all-boot: all-lisp
 
 \subsection{The \File{interp/} directory}
 
-Once \Tool{bootsys} exists we need to build \Tool{depsys}
-and \Tool{interpsys}. Since these two images share a lot of
-files they are built in the interp subdirectory using the
-same Makefile.
+Once \Tool{bootsys} exists we need to build 
+\Tool{interpsys}. 
 <<interpdir>>=
-all-depsys: all-boot
-	cd interp && $(MAKE) all-depsys
-
 ifeq (@axiom_use_x@,yes)
-all-interpsys: all-depsys all-hyper
+all-interpsys: all-boot all-hyper
 else
-all-interpsys: all-depsys
+all-interpsys: all-boot
 endif
 	cd interp && ${MAKE} all-interpsys
 

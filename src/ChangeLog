@@ -1,3 +1,8 @@
+2007-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove all-depsys rule.
+	(all-interpsys): Now depend on all-boot.
+
 2007-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (all-interpsys): Now depend on all-depsys.

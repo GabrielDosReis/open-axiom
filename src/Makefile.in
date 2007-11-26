@@ -40,13 +40,10 @@ all-lisp: all-lib
 	cd lisp && $(MAKE) all-lisp
 all-boot: all-lisp
 	@cd boot && $(MAKE) $@
-all-depsys: all-boot
-	cd interp && $(MAKE) all-depsys
-
 ifeq (@axiom_use_x@,yes)
-all-interpsys: all-depsys all-hyper
+all-interpsys: all-boot all-hyper
 else
-all-interpsys: all-depsys
+all-interpsys: all-boot
 endif
 	cd interp && ${MAKE} all-interpsys
 
