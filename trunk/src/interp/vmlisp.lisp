@@ -111,8 +111,6 @@
 (defmacro |copyList| (x) 
  `(copy-list ,x))
 
-(defmacro create-sbc (x) x)  ;a no-op for common lisp
-
 (defmacro cvecp (x)
  `(stringp ,x))
 

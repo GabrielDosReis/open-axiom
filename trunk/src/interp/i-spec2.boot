@@ -1146,5 +1146,4 @@ copyHack(env) ==
 for name in $specialOps repeat
    functionName:=INTERNL('up,name)
    MAKEPROP(name,'up,functionName)
-   CREATE_-SBC functionName
 
