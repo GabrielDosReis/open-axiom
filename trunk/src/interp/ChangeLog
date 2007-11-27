@@ -1,3 +1,11 @@
+2007-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* compiler.boot (compileNot): New.
+	* nspadaux.lisp: Don't register special parser for `not'-form.
+	* postprop.lisp: Likewise.
+	* property.lisp: Likewise.
+	* parse.boot (parseNot): Remove.
+
 2007-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Remove depsys from OpenAxiom.
