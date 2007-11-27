@@ -590,6 +590,7 @@
   (VECTOR |compVector|)
   (|VectorCategory| |compConstructorCategory|)
   (|where| |compWhere|)
+  (|not| |compileNot|)
 )) (MAKEPROP (CAR X) 'SPECIAL (CREATE-SBC (CADR X))))
 
 (REPEAT (IN X '(

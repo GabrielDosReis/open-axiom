@@ -3,7 +3,8 @@
 	* compiler.boot (compileNot): New.
 	* nspadaux.lisp: Don't register special parser for `not'-form.
 	* postprop.lisp: Likewise.
-	* property.lisp: Likewise.
+	* property.lisp: Likewise.  
+	Register compileNot as special handler for `not'-forms.
 	* parse.boot (parseNot): Remove.
 
 2007-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
