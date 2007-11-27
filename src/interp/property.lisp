@@ -298,19 +298,19 @@
   (SEQ DEF-SEQ)
   (|isnt| DEF-ISNT)
   (|where| DEF-WHERE)
-)) (PROGN (MAKEPROP (CAR X) '|DEF-TRAN| (CADR X)) (CREATE-SBC (CADR X))))
+)) (PROGN (MAKEPROP (CAR X) '|DEF-TRAN| (CADR X)) (CADR X)))
 
 ;; following was in INIT LISP
 
 (REPEAT (IN X '(
   |Polynomial| |UnivariatePoly| |SquareMatrix| |QuotientField|
   )) (MAKEPROP X '|status|
-     (CREATE-SBC (INTERNL (STRCONC "status" (STRINGIMAGE X))) )))
+     (INTERNL (STRCONC "status" (STRINGIMAGE X))) ))
 
 (REPEAT (IN X '(
   |UnivariatePoly| |Matrix| |QuotientField| |Gaussian|
   )) (MAKEPROP X '|dataCoerce|
-     (CREATE-SBC (INTERNL (STRCONC "coerce" (STRINGIMAGE X))) )))
+     (INTERNL (STRCONC "coerce" (STRINGIMAGE X))) ))
 
 (REPEAT (IN X '(
   (|Integer| . (INTEGERP |#1|))
@@ -348,7 +348,7 @@
   (|Union| |mkUnionFunList|)
   (|Mapping| |mkMappingFunList|)
   (|Enumeration| |mkEnumerationFunList|)
-)) (MAKEPROP (CAR X) '|makeFunctionList| (CREATE-SBC (CADR X))))
+)) (MAKEPROP (CAR X) '|makeFunctionList| (CADR X)))
 
 (REPEAT (IN X '(
   (|<=| |parseLessEqual|)
@@ -591,12 +591,12 @@
   (|VectorCategory| |compConstructorCategory|)
   (|where| |compWhere|)
   (|not| |compileNot|)
-)) (MAKEPROP (CAR X) 'SPECIAL (CREATE-SBC (CADR X))))
+)) (MAKEPROP (CAR X) 'SPECIAL (CADR X)))
 
 (REPEAT (IN X '(
   (\: |compColonInteractive|)
   (DEF |compDefineInteractive|)
   (|construct| |compConstructInteractive|)
   (LET |compSetqInteractive|)
-)) (MAKEPROP (CAR X) 'INTERACTIVE (CREATE-SBC (CADR X))))
+)) (MAKEPROP (CAR X) 'INTERACTIVE (CADR X)))
 
