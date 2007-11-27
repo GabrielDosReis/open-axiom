@@ -993,7 +993,7 @@ compImport(["import",:doms],m,e) ==
 
 ++ compile a logical negation form `(not ...)'.
 compileNot(x,m,e) ==
-  x isn't ["not", y] => nil
+  x isnt ["not", y] => nil
   -- If there is a modemap available that can make this work, just use it.
   T := compForm(x,m,e) => T
   
