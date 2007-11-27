@@ -987,6 +987,25 @@ compImport(["import",:doms],m,e) ==
   for dom in doms repeat e:=addDomain(dom,e)
   ["/throwAway",$NoValueMode,e]
 
+--% Compilation of logical operators that may have a pre-defined
+--% meaning, or may need special handling because or short-circuiting
+--% etc.
+
+++ compile a logical negation form `(not ...)'.
+compileNot(x,m,e) ==
+  x isn't ["not", y] => nil
+  -- If there is a modemap available that can make this work, just use it.
+  T := compForm(x,m,e) => T
+  
+  -- Otherwise, we may be in a case where we might want to apply
+  -- built-in Boolean meaning.  Eventually, we should not need to
+  -- do this special case here.
+  [xcode, xmode, xtrueEnv, xfalseEnv] := compBoolean(y, $Boolean, e)
+     or return nil
+  convert([["NOT", xcode], $Boolean, xfalseEnv], m)
+ 
+
+
 --Will the jerk who commented out these two functions please NOT do so
 --again.  These functions ARE needed, and case can NOT be done by
 --modemap alone.  The reason is that A case B requires to take A

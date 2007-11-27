@@ -333,10 +333,6 @@ parseOr u ==
   (x:= parseTran first u) is ["not",y] => parseIf [y,parseOr rest u,"true"]
   true => parseIf [x,"true",parseOr rest u]
  
-parseNot u ==
-  $InteractiveMode => ["not",parseTran first u]
-  parseTran ["IF",first u,:'(false true)]
- 
 parseEquivalence [a,b] == parseIf [a,b,parseIf [b,:'(false true)]]
  
 parseImplies [a,b] == parseIf [a,b,"true"]
