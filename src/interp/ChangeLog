@@ -1,5 +1,11 @@
 2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (INOBJS): Don't include intint.$(FASLEXT).
+	(intint.$(FASLEXT)): Remove rule.
+	* intint.lisp: Move essential content to i-toplev.boot.  Remove.
+
+2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* postprop.$(FASLEXT): Remove rule.
 	* Makefile.pamphlet (OPOBJS): Don't include it anymore.
 	(postpar.$(FASLEXT)): Update requirement.

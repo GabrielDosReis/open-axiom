@@ -35,6 +35,18 @@ import '"i-analy"
 
 --% Top Level Interpreter Code
 
+$intCoerceFailure ==
+  "coerceFailure"
+
+$intTopLevel ==
+  "top__level"
+
+$intSpadReader ==
+  "SPAD__READER"
+
+$intRestart ==
+  "restart"
+
 -- When $QuiteCommand is true Spad will not produce any output from
 --  a top level command
 $QuietCommand := NIL
@@ -333,3 +345,44 @@ interpret2(object,m1,posnForm) ==
     if (ans := coerceInteractive(object,m1)) then ans
     else throwKeyedMsgCannotCoerceWithValue(x,m,m1)
   object
+
+--%
+intSayKeyedMsg(key, args) ==
+  sayKeyedMsg(packageTran key, packageTran args)
+
+intProcessSynonyms str ==
+  LINE: fluid := str
+  processSynonyms
+  LINE
+
+intInterpretPform pf ==
+  processInteractive(zeroOneTran packageTran pf2Sex pf, pf)
+
+SpadInterpretFile fn ==
+  SpadInterpretStream(1, fn, nil)
+
+intNewFloat() ==
+  ["Float"]
+
+intSetNeedToSignalSessionManager() ==
+  $NeedToSignalSessionManager := true
+
+setCurrentLine s ==
+  $currentLine := 
+     null $currentLine => s
+     STRINGP $currentLine =>
+       [$currentLine, :(STRINGP s => [s]; s)]
+     RPLACD(lastNode $currentLine, (STRINGP s => [s]; s))
+     $currentLine
+
+
+intnplisp s ==
+  $currentLine := s
+  nplisp $currentLine
+
+intSetQuiet() ==
+ $QuietCommand := true
+
+intUnsetQuiet() ==
+  $QuietCommand := false
+
