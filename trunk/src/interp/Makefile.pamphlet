@@ -218,7 +218,7 @@ OPOBJS=	parsing.$(FASLEXT)	bootlex.$(FASLEXT)	\
         def.$(FASLEXT)	\
 	fnewmeta.$(FASLEXT)	metalex.$(FASLEXT)	\
 	parse.$(FASLEXT)	postpar.$(FASLEXT)	\
-	postprop.$(FASLEXT)	preparse.$(FASLEXT)
+	preparse.$(FASLEXT)
 
 autoload_objects += $(OPBJS)
 @
@@ -921,11 +921,8 @@ parse.$(FASLEXT): parse.boot metalex.$(FASLEXT) postpar.$(FASLEXT)
 packtran.$(FASLEXT): packtran.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-postpar.$(FASLEXT): postpar.boot postprop.$(FASLEXT)
+postpar.$(FASLEXT): postpar.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-postprop.$(FASLEXT): postprop.lisp macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 bootlex.$(FASLEXT): bootlex.lisp preparse.$(FASLEXT) def.$(FASLEXT) \
 			nlib.$(FASLEXT)

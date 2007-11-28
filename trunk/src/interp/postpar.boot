@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"postprop"
+import '"macros"
 )package "BOOT"
 
 $postStack := []

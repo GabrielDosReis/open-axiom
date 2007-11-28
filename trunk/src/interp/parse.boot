@@ -524,5 +524,6 @@ for x in [["<=", :function parseLessEqual],_
 	  ["SEGMENT", :function parseSegment],_
 	  ["SEQ", :function parseSeq],_
 	  ["VCONS", :function parseVCONS],_
-	  ["where", :function parseWhere]] repeat
+	  ["where", :function parseWhere],_
+          ["xor", :function parseExclusiveOr]] repeat
   MAKEPROP(car x, "parseTran", cdr x)
