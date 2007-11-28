@@ -1495,3 +1495,43 @@ ppf x ==
   _*PRETTYPRINT_* : local := true
   PRINT_-FULL x
 
+
+--%
+for x in [["LET", :"compSetq"],_
+          ["Join", :"compJoin"],_
+          ["Record", :"compCat"],_
+          ["Union", :"compCat"],_
+          ["_:", :"compColon"],_
+          ["_:_:", :"compCoerce"],_
+          ["CAPSULE", :"compCapsule"],_
+          ["has", :"compHas"],_
+          ["is", :"compIs"],_
+          ["add", :"compAdd"],_
+          ["CONS", :"compCons"],_
+          ["IF", :"compIf"],_
+          ["exit", :"compExit"],_
+          ["return", :"compReturn"],_
+          ["return", :"compLeave"],_
+          ["elt", :"compElt"],_
+          ["DEF", :"compDefine"],_
+          ["MDEF", :"compMacro"],_
+          ["SubsetCategory", :"compSubsetCategory"],_
+          ["SubDomain", :"compSubDomain"],_
+          ["case", :"compCase"],_
+          ["String", :"compString"],_
+          ["RecordCategory", :"compConstructorCategory"],_
+          ["ListCategory", :"compConstructorCategory"],_
+          ["VectorCategory", :"compConstructorCategory"],_
+          ["UnionCategory", :"compConstructorCategory"],_
+          ["CATEGORY", :"compCategory"],_
+          ["COLLECT", :"compRepeatOrCollect"],_
+          ["COLLECTV", :"compCollectV"],_
+          ["REPEAT", :"compRepeatOrCollect"],_
+          ["REDUCE", :"compReduce"],_
+          ["where", :"compWhere"],_
+          ["_|", :"compSuchthat"],_
+          ["construct", "compConstruct"],_
+          ["SEQ", :"compSeq"],_
+          ["SETQ", :"compSetq"],_
+          ["VECTOR", :"compVector"]] repeat
+  MAKEPROP(car x, "special", cdr x)

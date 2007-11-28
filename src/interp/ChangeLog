@@ -1,5 +1,15 @@
 2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* postprop.$(FASLEXT): Remove rule.
+	* Makefile.pamphlet (OPOBJS): Don't include it anymore.
+	(postpar.$(FASLEXT)): Update requirement.
+	* mark.boot: Move setting of special compiler functions from
+	postprop.lisp to here.
+	* postprop.lisp: Remove.
+	* parse.boot: Register special parser for "xor".
+
+2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (compiler.$(FASLEXT)): Update requirement.
 	* compiler.boot: Import "define" and "iterator".
 	Move setting of special compiler functions from property.lisp to
