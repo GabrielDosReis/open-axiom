@@ -80,7 +80,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 INOBJS=	varini.$(FASLEXT)	\
-	setvart.$(FASLEXT)	intint.$(FASLEXT)	\
+	setvart.$(FASLEXT)\
         interop.$(FASLEXT)     \
         patches.$(FASLEXT)
 
@@ -402,9 +402,6 @@ rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 osyscmd.$(FASLEXT): osyscmd.boot int-top.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-intint.$(FASLEXT): intint.lisp i-toplev.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 int-top.$(FASLEXT): int-top.boot incl.$(FASLEXT) i-toplev.$(FASLEXT) \
