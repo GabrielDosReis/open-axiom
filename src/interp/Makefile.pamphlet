@@ -816,8 +816,8 @@ wi1.$(FASLEXT): wi1.boot macros.$(FASLEXT)
 apply.$(FASLEXT): apply.boot compiler.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-compiler.$(FASLEXT): compiler.boot category.$(FASLEXT) c-util.$(FASLEXT) \
-			modemap.$(FASLEXT) pathname.$(FASLEXT)
+compiler.$(FASLEXT): compiler.boot c-util.$(FASLEXT) modemap.$(FASLEXT) \
+		pathname.$(FASLEXT) define.$(FASLEXT) iterator.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 nrunopt.$(FASLEXT): nrunopt.boot c-util.$(FASLEXT)

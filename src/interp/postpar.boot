@@ -529,3 +529,38 @@ hasAplExtension argl ==
 deepestExpression x ==
   x is ["_!",y] => deepestExpression y
   x
+
+--% Register special parse tree tranformers.
+
+for x in [["with", :function postWith],_
+	  ["Scripts", :function postScripts],_
+	  ["/", :function postSlash],_
+	  ["construct", :function postConstruct],_
+	  ["Block", :function postBlock],_
+	  ["QUOTE", :function postQUOTE],_
+	  ["COLLECT", :function postCollect],_
+	  ["_:BF_:", :function postBigFloat],_
+	  ["in", :function postin],_
+	  ["IN", :function postIn],_
+	  ["REPEAT", :function postRepeat],_
+	  ["TupleCollect", :function postTupleCollect],_
+	  ["add", :function postAdd],_
+	  ["Reduce", :function postReduce],_
+	  ["_,", :function postComma],_
+	  ["_;", :function postSemiColon],_
+	  ["where", :function postWhere],_
+	  ["_:_:", :function postColonColon],_
+	  ["_:", :function postColon],_
+	  ["@", :function postAtSign],_
+	  ["pretend", :function postPretend],_
+	  ["if", :function postIf],_
+	  ["Join", :function postJoin],_
+	  ["Signature", :function postSignature],_
+	  ["CATEGORY", :function postCategory],_
+	  ["==", :function postDef],_
+	  ["==>", :function postMDef],_
+	  ["->", :function postMapping],_
+	  ["=>", :function postExit],_
+	  ["Tuple", :function postTuple]] repeat
+  MAKEPROP(car x, "postTran", cdr x)
+
