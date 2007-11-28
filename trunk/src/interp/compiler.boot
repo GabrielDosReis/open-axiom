@@ -34,8 +34,9 @@
 
 import '"c-util"
 import '"pathname"
-import '"category"
 import '"modemap"
+import '"define"
+import '"iterator"
 )package "BOOT"
 
 ++ A list of routines for diagnostic reports.  These functions, in an
@@ -1427,3 +1428,50 @@ compilerDoitWithScreenedLisplib(constructor, fun) ==
                    SEQ(UNEMBED 'RWRITE))
 
 
+--% Register compilers for special forms.
+-- Those compilers are on the `SPECIAL' property of the corresponding
+-- special form operator symbol.
+for x in [["_|", :function compSuchthat],_
+	  ["_@", :function compAtSign],_
+	  ["_:", :function compColon],_
+	  ["_:_:", :function compCoerce],_
+	  ["QUOTE", :function compQuote],_
+	  ["add", :function compAdd],_
+	  ["CAPSULE", :function compCapsule],_
+	  ["case", :function compCase],_
+	  ["CATEGORY", :function compCategory],_
+	  ["COLLECT", :function compRepeatOrCollect],_
+	  ["COLLECTV", :function compCollectV],_
+	  ["CONS", :function compCons],_
+	  ["construct", :function compConstruct],_
+	  ["DEF", :function compDefine],_
+	  ["elt", :function compElt],_
+	  ["exit", :function compExit],_
+	  ["has", :function compHas],_
+	  ["IF", :function compIf],_
+	  ["import", :function compImport],_
+	  ["is", :function compIs],_
+	  ["Join", :function compJoin],_
+	  ["leave", :function compLeave],_
+	  ["LET", :function compSetq],_
+	  ["ListCategory", :function compConstructorCategory],_
+	  ["MDEF", :function compMacro],_
+          ["not", :function compileNot],_
+	  ["pretend", :function compPretend],_
+	  ["Record", :function compCat],_
+	  ["RecordCategory", :function compConstructorCategory],_
+	  ["REDUCE", :function compReduce],_
+	  ["REPEAT", :function compRepeatOrCollect],_
+	  ["return", :function compReturn],_
+	  ["SEQ", :function compSeq],_
+	  ["SETQ", :function compSetq],_
+	  ["String", :function compString],_
+	  ["SubDomain", :function compSubDomain],_
+	  ["SubsetCategory", :function compSubsetCategory],_
+	  ["Union", :function compCat],_
+	  ["Mapping", :function compCat],_
+	  ["UnionCategory", :function compConstructorCategory],_
+	  ["VECTOR", :function compVector],_
+	  ["VectorCategory", :function compConstructorCategory],_
+	  ["where", :function compWhere]] repeat
+  MAKEPROP(car x, 'SPECIAL, cdr x)

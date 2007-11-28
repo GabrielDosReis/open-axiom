@@ -1,3 +1,20 @@
+2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (compiler.$(FASLEXT)): Update requirement.
+	* compiler.boot: Import "define" and "iterator".
+	Move setting of special compiler functions from property.lisp to
+	here. 
+	* iterator.boot (compCollectV): Uncomment.
+	(compIteratorV): Likewise.
+	(computeMaxIndex): Likewise.
+	(exprDifference): Likewise.
+	* parse.boot: Move setting of special parsing functions from
+	property.lisp to here.
+	* postpar.boot: Move setting of special parsing transformers from
+	property.lisp to here.
+	* property.lisp: Move setting of special compiler functions and
+	parsers to appropriate files.
+
 2007-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* vmlisp.lisp (create-sbc): Remove.
