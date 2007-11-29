@@ -483,76 +483,6 @@
         |showFrom|
         |showImp|))
 
-;; The {\bf ANNA} subsystem, invoked thru {\bf hypertex}, is an
-;; expert system that understands the Numerical Algorithms Group (NAG)
-;; fortran library. 
-(setq anna-functions '(
-        |annaInt|
-        |annaMInt|
-        |annaOde|
-        |annaOpt|
-        |annaOpt2|
-        |annaPDESolve|
-        |annaOptDefaultSolve1|
-        |annaOptDefaultSolve2|
-        |annaOptDefaultSolve3|
-        |annaOptDefaultSolve4|
-        |annaOptDefaultSolve5|
-        |annaOpt2DefaultSolve|
-        |annaFoo|
-        |annaBar|
-        |annaJoe|
-        |annaSue|
-        |annaAnn|
-        |annaBab|
-        |annaFnar|
-        |annaDan|
-        |annaBlah|
-        |annaTub|
-        |annaRats|
-        |annaMInt|
-        |annaOdeDefaultSolve1|
-        |annaOdeDefaultSolve2|))
-
-;; The Numerical Algorithms Group (NAG) fortran library has a set
-;; of cover functions. These functions need to be loaded if you use
-;; the NAG library.
-(setq nagbr-functions '(
-       loadnag
-       |c02aff| |c02agf|
-       |c05adf| |c05nbf| |c05pbf|
-       |c06eaf| |c06ebf| |c06ecf| |c06ekf| |c06fpf| |c06fqf| |c06frf|
-                |c06fuf| |c06gbf| |c06gcf| |c06gqf| |c06gsf|
-       |d01ajf| |d01akf| |d01alf| |d01amf| |d01anf| |d01apf| |d01aqf|
-                |d01asf| |d01bbf| |d01fcf| |d01gaf| |d01gbf|
-       |d02bbf| |d02bhf| |d02cjf| |d02ejf| |d02gaf| |d02gbf| |d02kef|
-                |d02raf|
-       |d03edf| |d03eef| |d03faf|
-       |e01baf| |e01bef| |e01bff| |e01bgf| |e01bhf| |e01daf| |e01saf|
-                |e01sbf| |e01sef|
-       |e02adf| |e02aef| |e02agf| |e02ahf| |e02ajf| |e02akf| |e02baf|
-                |e02bbf| |e02bcf| |e02bdf| |e02bef| |e02daf| |e02dcf|
-                |e02ddf| |e02def| |e02dff| |e02gaf| |e02zaf|
-       |e04dgf| |e04fdf| |e04gcf| |e04jaf| |e04mbf| |e04naf| |e04ucf|
-                |e04ycf|
-       |f01brf| |f01bsf| |f01maf| |f01mcf| |f01qcf| |f01qdf| |f01qef|
-                |f01rcf| |f01rdf| |f01ref|
-       |f02aaf| |f02abf| |f02adf| |f02aef| |f02aff| |f02agf| |f02ajf|
-                |f02akf| |f02awf| |f02axf| |f02bbf| |f02bjf| |f02fjf|
-                |f02wef| |f02xef|
-       |f04adf| |f04arf| |f04asf| |f04atf| |f04axf| |f04faf| |f04jgf|
-                |f04maf| |f04mbf| |f04mcf| |f04qaf|
-       |f07adf| |f07aef| |f07fdf| |f07fef|
-       |s01eaf| |s13aaf| |s13acf| |s13adf| |s14aaf| |s14abf| |s14baf|
-                |s15adf| |s15aef| |s17acf| |s17adf| |s17aef| |s17aff|
-                |s17agf| |s17ahf| |s17ajf| |s17akf| |s17dcf| |s17def|
-                |s17dgf| |s17dhf| |s17dlf| |s18acf| |s18adf| |s18aef|
-                |s18aff| |s18dcf| |s18def| |s19aaf| |s19abf| |s19acf|
-                |s19adf| |s20acf| |s20adf| |s21baf| |s21bbf| |s21bcf|
-                |s21bdf|
-      ))
-
-
 ;; This function is called by {\bf build-interpsys}. It takes two lists.
 ;; The first is a list of functions that need to be used as 
 ;; ``autoload triggers''. The second is a list of files to load if one
@@ -632,8 +562,7 @@
 ;; loads the databases, sets up autoload triggers and clears out hash tables.
 ;; After this function is called the image is clean and can be saved.
 
-(defun build-interpsys (load-files
-             translate-files nagbr-files asauto-files)
+(defun build-interpsys (load-files translate-files asauto-files)
   (reroot)
   #+:AKCL
   (init-memory-config :cons 500 :fixnum 200 :symbol 500 :package 8
@@ -653,57 +582,10 @@
   (resethashtables)
   (setq *load-verbose* nil)
   (|setBootAutloadProperties| translate-functions translate-files)
-  (|setNAGBootAutloadProperties| nagbr-functions nagbr-files)
   (|setBootAutloadProperties| asauto-functions asauto-files)
   (setf (symbol-function 'boot::|addConsDB|) #'identity)
   (resethashtables) ; the databases into core, then close the streams
  )
-
-
-;; This is a further refinement of the autoload scheme. Since the
-;; Numerical Algorithms Group (NAG) fortran library contains many
-;; functions we subdivide the NAG library subsystem into chapters.
-;; We use a different helper function {\bf get-NAG-chapter} to decide
-;; which files to load.
-(defun |setNAGBootAutloadProperties| (function-list file-list)
-  (mapcar
-    #'(lambda (f)
-        (|setBootAutloadProperties|
-          (get-NAG-chapter (chapter-name f) function-list)
-          (nag-files f file-list)))
-    file-list))
-
-;; This function is used to find the names of the files to load.
-;; On solaris 9 under GCL the original implementation will fail because
-;; the max number of arguments is 63. We rewrite it to get around this
-;; problem.
-(defun get-NAG-chapter (chapter function-list)
- (let ((l (length chapter)) r)
-  (dolist (f function-list)
-   (when (equalp chapter (subseq (string f) 0 l))
-    (push f r)))
-  (nreverse r)))
-
-
-;; We analyze the function names to decide which chapter we are in.
-;; We load files based on the chapter.
-(defun nag-files (filename filelist)
-  (apply 'append (mapcar
-     #'(lambda (f)
-         (cond ((equalp (chapter-name filename) (chapter-name f)) (list f))) )
-     filelist)))
-
-;; The library names follow a convention that allows us to extract
-;; the chapter name. 
-(defun chapter-name (f)
-#+:AKCL
-  (apply
-    #'(lambda (s)
-        (cond ((equalp (aref s 0) #\s) "s") (T (reverse (subseq s 0 3)))))
-    (list (string-left-trim "a.o" (reverse f) )) )
-#+:CCL
-  (subseq (string-downcase (string f)) 4 (length (string f)))
-)
 
 
 (DEFUN |string2BootTree| (S)
@@ -773,13 +655,11 @@
 
 (defun sourcepath (f)
  "find the sourcefile in the system directories"
- (let (axiom algebra naglink)
+ (let (axiom algebra)
   (setq axiom (|systemRootDirectory|))
   (setq algebra (concatenate 'string axiom "/../../src/algebra/" f ".spad"))
-  (setq naglink (concatenate 'string axiom "/../../src/naglink/" f ".spad"))
   (cond
    ((probe-file algebra) algebra)
-   ((probe-file naglink) naglink)
    ('else nil))))
 
 (defun srcabbrevs (sourcefile)

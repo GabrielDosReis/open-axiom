@@ -280,24 +280,6 @@ autoload_objects += $(TRANOBJS)
 
 @
 
-The {\bf NAGBROBJS} list contains files used to access the 
-Numerical Algorithms Group (NAG) fortran libraries. 
-These files should probably be autoloaded.
-Note that [[${AUTO}/nag-e02a.$(FASLEXT)]] is not included in this
-list as it is a subset of [[${AUTO}/nag-e02.$(FASLEXT)]].
-<<environment>>=
-NAGBROBJS= ${AUTO}/nag-c02.$(FASLEXT)   ${AUTO}/nag-c05.$(FASLEXT) \
-           ${AUTO}/nag-c06.$(FASLEXT)   ${AUTO}/nag-d01.$(FASLEXT) \
-           ${AUTO}/nag-d02.$(FASLEXT)   ${AUTO}/nag-d03.$(FASLEXT) \
-           ${AUTO}/nag-e01.$(FASLEXT)   ${AUTO}/nag-e02.$(FASLEXT) \
-           ${AUTO}/nag-e04.$(FASLEXT)   ${AUTO}/nag-f01.$(FASLEXT) \
-           ${AUTO}/nag-f02.$(FASLEXT)   ${AUTO}/nag-f04.$(FASLEXT) \
-           ${AUTO}/nag-f07.$(FASLEXT)   ${AUTO}/nag-s.$(FASLEXT) 
-
-autoload_objects += $(NAGBROBJS)
-
-@
-
 The {\bf ASCOMP} list contains files used by the {\bf Aldor}
 \cite{5} compiler. These files should probably be autoloaded.
 <<environment>>=
@@ -406,11 +388,9 @@ be in the lisp image thus minimizing their startup time.
 These files were in the interp distribution from NAG but have
 no purpose at the moment. This belief is no doubt due to my
 lack of understanding. Rather than erase them they are documented
-here for future reference. [[${DOC}/nag-e02a.boot.dvi]] and
-[[${DOC}/nag-e02b.boot.dvi]] appear to be two halfs of the file
-[[${DOC}/nag-e02.boot.dvi]] and have been removed.
+here for future reference. 
 <<environment>>=
-UNUSED= ${DOC}/anna.boot.dvi ${DOC}/construc.lisp.dvi \
+UNUSED= ${DOC}/construc.lisp.dvi \
 	${DOC}/domain.lisp.dvi 	${DOC}/guess.boot.dvi \
 	${DOC}/interp-fix.boot.dvi \
 	${DOC}/nhyper.boot.dvi ${DOC}/pf2atree.boot.dvi \
@@ -438,7 +418,7 @@ makeint.lisp:	${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 		sys-driver.$(FASLEXT) \
 	        ${OUTINTERP} obey.$(FASLEXT) \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
-		${NAGBROBJS} ${TRANOBJS} \
+		${TRANOBJS} \
 	        ${LOADSYS} \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_src_docdir)/msgs/s2-us.msgs \
@@ -458,7 +438,7 @@ makeint.lisp:	${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${NAGBROBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
+	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
 	@ echo '(boot::set-restart-hook)' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ echo '(load "../algebra/warm.data")' >> makeint.lisp
@@ -611,54 +591,6 @@ distclean-local: clean-local
 
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
-
-## NAG Links and Friends
-
-nag-s.$(FASLEXT): nag-s.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-f07.$(FASLEXT): nag-f07.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-f04.$(FASLEXT): nag-f04.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-f02.$(FASLEXT): nag-f02.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-f01.$(FASLEXT): nag-f01.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-e04.$(FASLEXT): nag-e04.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-e02.$(FASLEXT): nag-e02.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-e02b.$(FASLEXT): nag-e02b.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-e01.$(FASLEXT): nag-e01.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-d03.$(FASLEXT): nag-d03.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-d02.$(FASLEXT): nag-d02.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-d01.$(FASLEXT): nag-d01.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-c06.$(FASLEXT): nag-c06.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-c05.$(FASLEXT): nag-c05.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-c02.$(FASLEXT): nag-c02.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
 
 ## Translation to Fortran
 fortcall.$(FASLEXT): fortcall.boot sys-macros.$(FASLEXT)

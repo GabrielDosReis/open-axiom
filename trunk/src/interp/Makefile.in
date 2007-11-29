@@ -125,16 +125,6 @@ TRANOBJS= ${AUTO}/wi1.$(FASLEXT) ${AUTO}/wi2.$(FASLEXT) ${AUTO}/pspad1.$(FASLEXT
 
 autoload_objects += $(TRANOBJS)
 
-NAGBROBJS= ${AUTO}/nag-c02.$(FASLEXT)   ${AUTO}/nag-c05.$(FASLEXT) \
-           ${AUTO}/nag-c06.$(FASLEXT)   ${AUTO}/nag-d01.$(FASLEXT) \
-           ${AUTO}/nag-d02.$(FASLEXT)   ${AUTO}/nag-d03.$(FASLEXT) \
-           ${AUTO}/nag-e01.$(FASLEXT)   ${AUTO}/nag-e02.$(FASLEXT) \
-           ${AUTO}/nag-e04.$(FASLEXT)   ${AUTO}/nag-f01.$(FASLEXT) \
-           ${AUTO}/nag-f02.$(FASLEXT)   ${AUTO}/nag-f04.$(FASLEXT) \
-           ${AUTO}/nag-f07.$(FASLEXT)   ${AUTO}/nag-s.$(FASLEXT) 
-
-autoload_objects += $(NAGBROBJS)
-
 ASCOMP= hashcode.$(FASLEXT) as.$(FASLEXT) \
 	foam_l.$(FASLEXT) axext_l.$(FASLEXT)
 
@@ -152,7 +142,7 @@ YEARWEEK=(progn (setq boot::timestamp "${TIMESTAMP}") \
 .PRECIOUS:	${SAVESYS}
 .PRECIOUS:	${AXIOMSYS}
 
-UNUSED= ${DOC}/anna.boot.dvi ${DOC}/construc.lisp.dvi \
+UNUSED= ${DOC}/construc.lisp.dvi \
 	${DOC}/domain.lisp.dvi 	${DOC}/guess.boot.dvi \
 	${DOC}/interp-fix.boot.dvi \
 	${DOC}/nhyper.boot.dvi ${DOC}/pf2atree.boot.dvi \
@@ -209,7 +199,7 @@ makeint.lisp:	${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 		sys-driver.$(FASLEXT) \
 	        ${OUTINTERP} obey.$(FASLEXT) \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
-		${NAGBROBJS} ${TRANOBJS} \
+		${TRANOBJS} \
 	        ${LOADSYS} \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_src_docdir)/msgs/s2-us.msgs \
@@ -229,7 +219,7 @@ makeint.lisp:	${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${NAGBROBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
+	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
 	@ echo '(boot::set-restart-hook)' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ echo '(load "../algebra/warm.data")' >> makeint.lisp
@@ -276,54 +266,6 @@ database.date:
 
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
-
-## NAG Links and Friends
-
-nag-s.$(FASLEXT): nag-s.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-f07.$(FASLEXT): nag-f07.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-f04.$(FASLEXT): nag-f04.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-f02.$(FASLEXT): nag-f02.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-f01.$(FASLEXT): nag-f01.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-e04.$(FASLEXT): nag-e04.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-e02.$(FASLEXT): nag-e02.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-e02b.$(FASLEXT): nag-e02b.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-e01.$(FASLEXT): nag-e01.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-d03.$(FASLEXT): nag-d03.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-d02.$(FASLEXT): nag-d02.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-d01.$(FASLEXT): nag-d01.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-c06.$(FASLEXT): nag-c06.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-c05.$(FASLEXT): nag-c05.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
-nag-c02.$(FASLEXT): nag-c02.boot macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
-
 
 ## Translation to Fortran
 fortcall.$(FASLEXT): fortcall.boot sys-macros.$(FASLEXT)
