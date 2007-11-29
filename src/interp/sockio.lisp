@@ -168,7 +168,6 @@
 (defconstant InterpWindow       6)
 (defconstant KillSpad           7)
 (defconstant DebugWindow        8)
-(defconstant NAGLinkServer      8)
 (defconstant Forker             9)
 
 ;; same constants for use in BOOT
@@ -180,7 +179,6 @@
 (defconstant |$InterpWindow|    InterpWindow)
 (defconstant |$KillSpad|        KillSpad)
 (defconstant |$DebugWindow|     DebugWindow)
-(defconstant |$NAGLinkServer|   NAGLinkServer)
 (defconstant |$Forker|          Forker)
 
 ;; Session Manager action requests

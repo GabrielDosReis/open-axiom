@@ -157,7 +157,6 @@
 
 ;; non-interactive restarts...
 (defun restart0 ()
-#+(and :NAG :ccl) (lisp::init-lm 0)
   (compressopen);; set up the compression tables
   (interpopen);; open up the interpreter database
   (operationopen);; all of the operations known to the system

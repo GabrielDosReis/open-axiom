@@ -134,8 +134,6 @@ $setOptions := '(
 --    frame (called initial ):
 --                                    basic                                   
 --                                 categories                                 
---                                   naglink                                  
---                                    anna                                    
 -- 
 --    The following constructors are explicitly exposed in the 
 --    current frame:
@@ -714,7 +712,6 @@ $setOptions := '(
 -- type         print type after computation               on 
 -- void         print Void value when it occurs            off 
 -- any          print the internal type of objects of domain Any on 
--- naglink      show NAGLink messages                      on 
   (messages
    "show messages for various system features"
    interpreter
@@ -938,25 +935,6 @@ $setOptions := '(
      (on off)
      on)
 
--- --------------------- The naglink Option ----------------------
---
---  Description: show NAGLink messages
---
---  The naglink option may be followed by any one of the 
---  following:
---
---  -> on 
---     off
---
---  The current setting is indicated within the list.
-    (naglink
-     "show NAGLink messages"
-     interpreter
-     LITERALS
-     $nagMessages
-     (on off)
-     on)
-
 -- ---------------------- The number Option ----------------------
 --
 --  Description: display message number with message
@@ -1145,100 +1123,6 @@ $setOptions := '(
      $printVoidIfTrue
      (on off)
      off)
-   ))
-
---               Current Values of  naglink  Variables                   
---
--- Variable     Description                           Current Value
--- -----------------------------------------------------------------
--- host         internet address of host for NAGLink       localhost 
--- persistence  number of (fortran) functions to remember  1 
--- messages     show NAGLink messages                      on 
--- double       enforce DOUBLE PRECISION ASPs              on 
-  (naglink
-   "options for NAGLink"
-   interpreter
-   TREE
-   novar
-
--- ----------------------- The host Option -----------------------
---
---  Description: internet address of host for NAGLink
---
---  )set naglink host is used to tell  AXIOM which  host to contact
---  for a NAGLink request. An Internet address should be supplied. 
---  The host specified must be running the NAGLink daemon.
---
---  The current setting is localhost 
-   ((host
-     "internet address of host for NAGLink"
-     interpreter
-     FUNCTION
-     setNagHost
-     (("enter host name"
-       DIRECTORY
-       $nagHost
-       chkDirectory
-       "localhost"))
-     NIL)
--- ------------------- The persistence Option --------------------
---
---  Description: number of (fortran) functions to remember
---
---  )set naglink persistence is used to tell  the  nagd  daemon how
---   many ASP source and object files to keep around in case you 
---   reuse them. This helps to avoid needless recompilations. The 
---   number specified should be a non-negative integer.
---
---  The current setting is 1 
-    (persistence
-     "number of (fortran) functions to remember"
-     interpreter
-     FUNCTION
-     setFortPers
-     (("Requested remote storage (for asps):"
-      INTEGER
-      $fortPersistence
-      (0 NIL)
-      10))
-     NIL)
-
--- --------------------- The messages Option ---------------------
---
---  Description: show NAGLink messages
---
---  The messages option may be followed by any one of the 
---  following:
---
---  -> on 
---     off
---
---  The current setting is indicated within the list.
-    (messages
-     "show NAGLink messages"
-     interpreter
-     LITERALS
-     $nagMessages
-     (on off)
-      on)
-
--- ---------------------- The double Option ----------------------
---
---  Description: enforce DOUBLE PRECISION ASPs
---
---  The double option may be followed by any one of the following:
---
---  -> on 
---     off
---
---  The current setting is indicated within the list.
-    (double
-     "enforce DOUBLE PRECISION ASPs"
-     interpreter
-     LITERALS
-     $nagEnforceDouble
-     (on off)
-     on)
    ))
 
 -- Variable     Description                           Current Value

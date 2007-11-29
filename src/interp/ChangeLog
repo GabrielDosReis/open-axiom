@@ -1,3 +1,57 @@
+2007-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (NAGBROBJS): Remove.
+	(makeint.lisp): Don't depend on it, don't use it.
+	(UNUSED): Remove reference to anna.boot.
+	(nag-s.$(FASLEXT)): Remove.
+	(nag-f07.$(FASLEXT)): Likewise.
+	(nag-f04.$(FASLEXT)): Likewise.
+	(nag-f02.$(FASLEXT)): Likewise.
+	(nag-f01.$(FASLEXT)): Likewise.
+	(nag-e04.$(FASLEXT)): Likewise.
+	(nag-e02.$(FASLEXT)): Likewise.
+	(nag-e02b.$(FASLEXT)): Likewise.
+	(nag-e01.$(FASLEXT)): Likewise.
+	(nag-d03.$(FASLEXT)): Likewise.
+	(nag-d02.$(FASLEXT)): Likewise.
+	(nag-d01.$(FASLEXT)): Likewise.
+	(nag-c06.$(FASLEXT)): Likewise.
+	(nag-c05.$(FASLEXT)): Likewise.
+	(nag-c02.$(FASLEXT)): Likewise.
+	anna.boot: Remove.
+	nag-s.boot: Likewise.
+	nag-f07.boot: Likewise.
+	nag-f04.boot: Likewise.
+	nag-f02.boot: Likewise.
+	nag-f01.boot: Likewise.
+	nag-e04.boot: Likewise.
+	nag-e02.boot: Likewise.
+	nag-e02b.boot: Likewise.
+	nag-e01.boot: Likewise.
+	nag-d03.boot: Likewise.
+	nag-d02.boot: Likewise.
+	nag-d01.boot: Likewise.
+	nag-c06.boot: Likewise.
+	nag-c05.boot: Likewise.
+	nag-c02.boot: Likewise.
+	* setq.lisp (|$localExposureDataDefault|): Remove reference to naglink.
+	(|$localExposureData|): Likewise.
+	(|$InitialCommandSynonymAlist|): Remove startNAGLink and stopNAGLink.
+	* setvars.boot (setNagHost): Remove.
+	(describeSetNagHost): Likewise.
+	(setFortPers): Likewise.
+	(describeSetFortPers): Likewise.
+	* setvart.boot: Remove naglink option.
+	* sockio.lisp (NAGLinkServer): Remove.
+	* util.lisp (anna-functions): Likewise.
+	(nagbr-functions): Likewise.
+	(build-interpsys): Lose nagbr-files parameter.
+	(setNAGBootAutoloadProperties): Remove.
+	(get-NAG-chapter): Likewise.
+	(nag-files): Likewise.
+	(chapter-name): Likewise.
+	(sourcepath): Don't set naglink.
+
 2007-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (INOBJS): Don't include intint.$(FASLEXT).
