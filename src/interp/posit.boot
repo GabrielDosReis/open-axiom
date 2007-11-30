@@ -36,6 +36,9 @@ import '"astr"
 
 )package "BOOT"
 
+$nopos ==
+  ['noposition]
+
 poNoPosition()    == $nopos
 pfNoPosition() == poNoPosition()
  

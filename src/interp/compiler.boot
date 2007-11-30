@@ -53,12 +53,10 @@ compTopLevel(x,m,e) ==
   $compTimeSum: local := 0
   $resolveTimeSum: local := 0
   $packagesUsed: local := []
-  -- The next line allows the new compiler to be tested interactively.
-  compFun := if $newCompAtTopLevel=true then 'newComp else 'compOrCroak
   x is ["DEF",:.] or x is ["where",["DEF",:.],:.] =>
-    ([val,mode,.]:= FUNCALL(compFun,x,m,e); [val,mode,e])
+    ([val,mode,.]:= compOrCroak(x,m,e); [val,mode,e])
         --keep old environment after top level function defs
-  FUNCALL(compFun,x,m,e)
+  compOrCroak(x,m,e)
 
 compUniquely(x,m,e) ==
   $compUniquelyIfTrue: local:= true
@@ -1302,13 +1300,6 @@ compileSpad2Cmd args ==
       quiet _
       translate _
         )
-
-    -- next three are for the OLD NEW compiler
-    -- should be unhooked
-
-    $newcompMode             : local := nil
-    $ncConverse              : local := nil
-    $newComp                 : local := nil
 
     translateOldToNew        := nil
 

@@ -49,7 +49,6 @@
 (defvar |$compForModeIfTrue| nil "checked in compSymbol")
 (defvar |$functorForm| nil "checked in addModemap0")
 (defvar |$formalArgList| nil "checked in compSymbol")
-(defvar |$newComp| nil "use new compiler")
 (defvar |$newCompCompare| nil "compare new compiler with old")
 (defvar |$compileOnlyCertainItems| nil "list of functions to compile")
 (defvar |$newCompAtTopLevel| nil "if t uses new compiler")
@@ -465,7 +464,6 @@
 
 (defvar MATBORCH "*")
 (defvar $MARGIN 3)
-(defvar $LINELENGTH 71)
 (defvar TEMPGENSYMLIST '(|s| |r| |q| |p|))
 (defvar ALPHLIST '(|a| |b| |c| |d| |e| |f| |g|))
 (defvar LITTLEIN " in ")

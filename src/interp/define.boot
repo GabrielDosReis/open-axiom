@@ -804,26 +804,13 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
  
-    if $newComp = true then
-      wholeBody := ['DEF, form, signature', specialCases, body]
-      T := CATCH('compCapsuleBody, newComp(wholeBody,$NoValueMode,e))
-           or ["",rettype,e]
-      T := [T.expr.2.2, rettype, T.env]
-      if $newCompCompare=true then
-         oldT := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
-              or ["",rettype,e]
-         SAY '"The old compiler generates:"
-         prTriple oldT
-         SAY '"The new compiler generates:"
-         prTriple T
-    else
-      T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
-           or ["",rettype,e]
+    T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
+	 or ["",rettype,e]
 --+
-      NRTassignCapsuleFunctionSlot($op,signature')
-      if $newCompCompare=true then
-         SAY '"The old compiler generates:"
-         prTriple T
+    NRTassignCapsuleFunctionSlot($op,signature')
+    if $newCompCompare=true then
+       SAY '"The old compiler generates:"
+       prTriple T
 --  A THROW to the above CATCH occurs if too many semantic errors occur
 --  see stackSemanticError
     catchTag:= MKQ GENSYM()

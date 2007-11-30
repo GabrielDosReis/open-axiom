@@ -36,6 +36,29 @@ import '"sys-macros"
 import '"astr"
 )package "BOOT"
 
+$erLocMsgDatabaseName     := pathname '(co_-eng msgs a)
+$erGlbMsgDatabaseName     := pathname '(co_-eng msgs i)
+$newcompErrorCount :=           0
+
+$imPrTagGuys == ['unimple, 'bug, 'debug, 'say, 'warn]
+$toWhereGuys == ['fileOnly, 'screenOnly ]
+$imPrGuys    == ['imPr]
+$repGuys     == ['noRep, 'rep]
+$attrCats    == ['$imPrGuys, '$toWhereGuys, '$repGuys]
+
+$LINELENGTH := 80
+$preLength := 11
+$LOGLENGTH := $LINELENGTH - 6
+$specificMsgTags := []
+$showKeyNum   :=        NIL
+
+$compErrorPrefix :=    '"Error"
+$compBugPrefix :=      '"Bug!"
+
+$ncMsgList := []
+
+--%
+
 ListMember?(ob, l) ==
   MEMBER(ob, l, KEYWORD::TEST, function EQUAL)
 

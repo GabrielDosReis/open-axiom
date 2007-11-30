@@ -79,8 +79,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	$(BROBJS)
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
-INOBJS=	varini.$(FASLEXT)	\
-	setvart.$(FASLEXT)\
+INOBJS=	setvart.$(FASLEXT)\
         interop.$(FASLEXT)     \
         patches.$(FASLEXT)
 
@@ -647,9 +646,6 @@ sockio.$(FASLEXT): sockio.lisp sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 sfsfun-l.$(FASLEXT): sfsfun-l.lisp sys-macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-varini.$(FASLEXT): varini.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 trace.$(FASLEXT): trace.boot debug.$(FASLEXT)
