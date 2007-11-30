@@ -512,7 +512,6 @@ formal2Pattern x ==
 updateDatabase(fname,cname,systemdir?) ==
  -- for now in NRUNTIME do database update only if forced
   not $forceDatabaseUpdate => nil
-  $newcompMode = 'true => nil
   -- these modemaps are never needed in the old scheme
   if oldFname := constructor? cname then
     clearClams()

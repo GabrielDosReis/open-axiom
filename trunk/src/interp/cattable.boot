@@ -453,7 +453,6 @@ squeeze1(l) ==
   RPLACD(l,y)
 
 updateCategoryTable(cname,kind) ==
-  $newcompMode = true => nil
   $updateCatTableIfTrue =>
     kind = 'package => nil
     kind = 'category => updateCategoryTableForCategory(cname)

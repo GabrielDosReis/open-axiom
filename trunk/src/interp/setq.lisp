@@ -67,8 +67,6 @@
 (setq |$interpOnly| nil)
 (SETQ |$testingSystem| NIL)
 (SETQ |$publicSystem| NIL)
-(SETQ |$newcompMode| NIL)
-(SETQ |$newComp| NIL)
 (SETQ |$newCompCompare| NIL)
 (SETQ |$permitWhere| NIL)
 (SETQ |$newSystem| T)
@@ -172,7 +170,6 @@
 
 ;; These are for the output routines in OUT BOOT
 
-(SETQ $LINELENGTH 77)
 (SETQ $MARGIN 3)
 (SETQ *TALLPAR NIL)
 (SETQ ALLSTAR NIL)

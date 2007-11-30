@@ -223,7 +223,6 @@ curoutstream                 & ncIntLoop           & \\
 \$msgDatabaseName            & reroot              * \\
 \$ncMsgList                  & SpadInterpretStream & \\
 \$newcompErrorCount          & SpadInterpretStream & \\
-\$newcompMode                & SpadInterpretStream & \\
 \$newspad                    & ncTopLevel          & \\
 \$nopos                      &                     & SpadInterpretStream \\
 \$okToExecuteMachineCode     & SpadInterpretStream & \\
@@ -475,9 +474,6 @@ The [[$ncMsgList]] is set to [[NIL]] in [[SpadInterpretStream]].
 
 \subsection{\$newcompErrorCount}
 The [[$newcompErrorCount]] is set to [[0]] in [[SpadInterpretStream]].
-
-\subsection{\$newcompMode}
-The [[$newcompMode]] is set to [[NIL]] in [[SpadInterpretStream]].
 
 \subsection{\$newspad}
 The [[$newspad]] is set to [[T]] in [[ncTopLevel]].

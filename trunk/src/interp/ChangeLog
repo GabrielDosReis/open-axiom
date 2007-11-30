@@ -1,5 +1,28 @@
 2007-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (INOBJS): Lose varini.$(FASLEXT).
+	(varini.$(FASLEXT)): Remove rule.
+	* compiler.boot (compileSpad2Cmd): Don't set $ncConverse; it is
+	unused.  Don't set $newcomMode and $newComp.
+	(compTopLevel): There is no function newComp.  So simplify.
+	* cattable.boot (updateCategoryTable): Remove test for $newcompMode.
+	* database.boot (updateDatabase): Likewise.
+	* int-top.boot (SpadInterpretStream): Don't set $newcompMode.
+	($ncmParse): Move from varini.boot.
+	($ncmMacro): Likewise.
+	* bookvol5.pamphlet: Remove reference to $newcompMode.
+	* define.boot (compDefineCapsuleFunction): Simplify.
+	* msg.boot: Move diagnostic related variables from varini.boot to here.
+	* posit.boot ($nopos): Move from varini.boot to here.
+	* setq.lisp ($newcompMode): Don't set here
+	($newComp): Likewise.
+	($LINELENGTH): Likewise.
+	* spad.lisp ($newComp): Likewise.
+	($LINELENGTH): Likewise.
+	* varinit.boot: Remove.
+
+2007-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet (NAGBROBJS): Remove.
 	(makeint.lisp): Don't depend on it, don't use it.
 	(UNUSED): Remove reference to anna.boot.

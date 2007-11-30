@@ -119,9 +119,6 @@ SpadInterpretStream(str, source, interactive?) ==
     $fn              : local := source
     pile?                    := not interactive?
     $libQuiet        : local := not interactive?
-    $newcompMode     : local := false
---  following seems useless and causes ccl package problems
---    $InteractiveMode : local := false
  
     $newcompErrorCount: local := 0 -- SMW Feb 2/90.
                                    -- Used in highComplete, ncHardError etc.
@@ -364,6 +361,8 @@ ncError() ==
 --% phParse: carrier[tokens,...] -> carrier[ptree, tokens,...]
 --)line (defun pretty (x) (boottran::reallyprettyprint x))
 --)line (defun packagetran (x) (boot::|packageTran|))
+$ncmParse :=      NIL
+
 phParse(carrier,ptree) ==
     phBegin 'Parsing
     if $ncmParse then
@@ -373,7 +372,10 @@ phParse(carrier,ptree) ==
     'OK
  
 
+
 --% phMacro: carrier[ptree,...] -> carrier[ptree, ptreePremacro,...]
+$ncmMacro := false
+
 phMacro carrier ==
     phBegin 'Macroing
     ptree  := ncEltQ(carrier, 'ptree)
@@ -415,6 +417,8 @@ ncloopPrefix?(prefix,whole) ==
      for i in 0..#prefix-1 for j in 0.. while good repeat
                 good:= prefix.i = whole.j
      if good then SUBSTRING(whole,#prefix,nil) else good
+
+$ncmPhase :=      NIL
  
 phBegin id ==
     $convPhase := id
