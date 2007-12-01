@@ -100,7 +100,7 @@ esac
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 
 AC_PATH_PROG([LATEX], [latex])
-AC_CHECK_PROG([MAKEINDEX], [makeindex])
+AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 if test -n "$LATEX"; then \
     axiom_src_all="$axiom_src_all all-book"
     axiom_src_subdirs="$axiom_src_subdirs booklets"
