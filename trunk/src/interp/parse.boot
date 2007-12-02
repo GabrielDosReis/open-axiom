@@ -486,7 +486,6 @@ scriptTranRow1 x ==
  
 parseVCONS l == ["VECTOR",:parseTranList l]
 
-
 --% Register special parsers.
 
 for x in [["<=", :function parseLessEqual],_

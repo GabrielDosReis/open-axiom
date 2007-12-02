@@ -4,6 +4,14 @@ PROCLAIMS=(load "$(srcdir)/boot-proclaims.lisp")
 
 boot_objects = initial-env.$(FASLEXT) $(boot_sources:.boot=.$(FASLEXT))
 
+## ECL's program construction model is not based on image-dumping.  It is
+## closer to `traditional C' application building.  Therefore, since
+## bootsys is an augmentation of base-lisp, we need to have the objects
+## that made up base-lisp too.
+ifeq (@axiom_lisp_flavor@,ecl)
+boot_objects_extra = ../lisp/core.$(FASLEXT)
+endif
+
 boot_SOURCES = \
 	initial-env.lisp.pamphlet \
 	$(addsuffix .pamphlet, $(boot_sources))
@@ -53,7 +61,7 @@ stage0/stamp: stage0/bootsys$(EXEEXT)
 stage0/bootsys$(EXEEXT): $(stage0_boot_objects)
 	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|"\
 		 --output=$@ --load-directory=stage0 \
-		$(stage0_boot_objects)
+		$(boot_objects_extra) $(stage0_boot_objects)
 
 
 .PRECIOUS: %/.started
@@ -79,7 +87,7 @@ stage1/stamp: stage1/bootsys$(EXEEXT)
 stage1/bootsys$(EXEEXT): $(addprefix stage1/, $(boot_objects))
 	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|" \
 		 --output=$@ --load-directory=stage1 \
-		$(addprefix stage1/, $(boot_objects))
+		$(boot_objects_extra) $(addprefix stage1/, $(boot_objects))
 
 stage1/%.clisp: %.boot stage0/stamp stage1/.started
 	stage0/bootsys -- --translate --output=$@ $<
@@ -94,7 +102,7 @@ stage2/stamp: stage2/bootsys$(EXEEXT)
 stage2/bootsys$(EXEEXT): $(addprefix stage2/, $(boot_objects))
 	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|" \
 		--output=$@ --load-directory=stage2 \
-		$(addprefix stage2/, $(boot_objects))
+		$(boot_objects_extra) $(addprefix stage2/, $(boot_objects))
 
 stage2/%.clisp: %.boot stage1/stamp stage2/.started
 	stage1/bootsys -- --translate --output=$@ $<
