@@ -14,7 +14,7 @@
 )abbrev domain STACK Stack
 ++ Author: Michael Monagan and Stephen Watt
 ++ Date Created:June 86 and July 87
-++ Date Last Updated:Feb 92
+++ Date Last Updated: December 02, 2007
 ++ Basic Operations:
 ++ Related Domains:
 ++ Also See:
@@ -27,14 +27,21 @@
 ++ Linked List implementation of a Stack
 --% Dequeue and Heap data types
  
-Stack(S:SetCategory): StackAggregate S with
+Stack(S: Type): StackAggregate S with
     stack: List S -> %
       ++ stack([x,y,...,z]) creates a stack with first (top)
       ++ element x, second element y,...,and last element z.
   == add
     Rep := Reference List S
-    s = t == deref s = deref t
-    coerce(d:%): OutputForm == bracket [e::OutputForm for e in deref d]
+
+    if S has CoercibleTo OutputForm then
+      coerce(d:%): OutputForm == 
+        bracket [e::OutputForm for e in deref d]
+
+    if S has SetCategory then
+      s = t == 
+        deref s = deref t
+
     copy s == ref copy deref s
     depth s == # deref s
     # s == depth s
