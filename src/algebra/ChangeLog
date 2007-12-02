@@ -1,3 +1,7 @@
+2007-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (buildSyntax): Overload on first argument type.
+
 2007-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (axiom_algebra_layer_19): Include SPADPRSR.o
