@@ -66,6 +66,9 @@ Syntax(): Public == Private where
     buildSyntax: (Symbol, List %) -> %
       ++ buildSyntax(op, [a1, ..., an]) builds a syntax object for op(a1,...,an).
   
+    buildSyntax: (%, List %) -> %
+      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object for op(a1,...,an).
+
     getOperator: % -> Union(Integer, DoubleFloat, Symbol, String, %)
       ++ getOperator(x) returns the operator, or tag, of the syntax `x'.
       ++ The return value is itself a syntax if `x' really is an 
@@ -104,8 +107,11 @@ Syntax(): Public == Private where
     buildSyntax(s: Symbol, l: List %): % ==
       -- ??? ideally we should have overloaded operator `per' that convert
       -- from list of syntax to syntax.  But the compiler is at the 
-      -- moment defective for non-exported operations.
+      -- moment defective for non-exported overloaded operations.
       cons(convert(s)$%, l) pretend %
+
+    buildSyntax(op: %, l: List %): % ==
+      cons(op, l) pretend %
 
     getOperator x ==
       s := rep x
