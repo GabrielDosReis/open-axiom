@@ -238,9 +238,9 @@
 ;; current image and dumping the result on disk as an executable.
 
 
-(defun |getOutputPathname| (options &optional (default-output "a.out"))
+(defun |getOutputPathname| (options)
   (let ((output-option (assoc (|Option| "output") options)))
-    (if output-option
+    (when output-option
         ;; If an output file name was specified on the command line, it
         ;; is so relative to the current workding directory.  In 
         ;; particular we want to prevent overly zelous SBCL to mess
@@ -249,8 +249,7 @@
         ;; most cases, it is OK.
         #+:sbcl (merge-pathnames (cdr output-option)
                                  *default-pathname-defaults*)
-        #-:sbcl (cdr output-option)
-        default-output)))
+        #-:sbcl (cdr output-option))))
 
 
 (defun |getMainEntryPoint| (options)
@@ -434,6 +433,9 @@
 ;; ENTRY-POINT is the entry point of the program.  If not supplied, or
 ;; if null, then the entry entry is supposed to be the top level
 ;; read-eval-print loop of original Lisp system.
+;; Note, despite the name LISP-FILEs, we do not expect bare Lisp source
+;; files here.  We do insist on FASLs.  There is no check for that at
+;; this point.  You have been warned.
 (defun |link| (core-image lisp-files &optional (entry-point nil))
   (if (and entry-point (stringp entry-point))
       (setq entry-point `(read-from-string ,entry-point)))
@@ -444,8 +446,8 @@
            (unless entry-point
              (setq entry-point si::top-level))
            (c:build-program core-image 
-                            :lisp-files lisp-files
-                            :epilogue-code `(funcall ,entry-point))
+                            :lisp-files (mapcar #'|compileFilePathname| lisp-files)
+                            :epilogue-code `(,entry-point))
            (|coreQuit|)))
 
 
@@ -534,7 +536,9 @@
   (unless (> (length args) 0)
     (|fatalError| "--make requires at least one file"))
 
-  (|link| (|getOutputPathname| options) args (|getMainEntryPoint| options))
+  (|link| (or (|getOutputPathname| options) "a.out") 
+          args 
+          (|getMainEntryPoint| options))
   (|coreQuit|))
 
 (|installDriver| (|Option| "make") #'|makeHandler|)
@@ -589,9 +593,10 @@
 ;; standalone programs.  Consequently we must convince ECL to produce
 ;; object files.  Notice that when program components require that
 ;; previously compiled files be loaded in the startup environment, 
-;; the system will load the FASL file.  So, we end up compiling
-;; twice: once as object code, once as FASL.  That is surely wrong.  There
-;; me be ways to build one from the one with less work.
+;; the system will load the FASL file.  So, we end up with a 2-step
+;; compilation process for ECL:
+;;   (1) compile as object code;
+;;   (2) build a FASL from the result of (1).
 (defun |compileLispFile| (file out-file)
   ;; When OUT-FILE does not have a specified parent directory, it is
   ;; implied that the compiled file is placed in the current directory.
@@ -631,8 +636,8 @@
 
 (defun |compileLispHandler| (prog-name options in-file)
   (declare (ignore prog-name))
-  (let ((out-file (|getOutputPathname| options 
-                                       (|compileFilePathname| in-file))))
+  (let ((out-file (|compileFilePathname| (or (|getOutputPathname| options)
+					     in-file))))
     (|compileLispFile| in-file out-file)))
 
 (|associateRequestWithFileType| (|Option| "compile") |$LispFileType|
@@ -743,7 +748,6 @@
            #+:common-lisp (:compile-toplevel :load-toplevel :execute)
            #-:common-lisp (compile load eval)
                      (|importModule| ,module))))
-
 
 ;; 
 ;; -*- Feature Tests in Boot -*-

@@ -60,11 +60,17 @@ ifeq (@axiom_lisp_flavor@,gcl)
 	$(INSTALL_PROGRAM) lisp$(EXEEXT) $(OUT)
 endif
 
+ifeq (@axiom_lisp_flavor@,ecl)
+base_lisp_objects = ("core.$(OBJEXT)")
+else
+base_lisp_objects = nil
+endif
+
 
 base-lisp$(EXEEXT): core.$(FASLEXT)
 	$(AXIOM_LISP) \
 		$(eval_flags) '(load "core")' \
-		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote nil) (function |AxiomCore|::|topLevel|))'
+		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote $(base_lisp_objects)) (quote |AxiomCore|::|topLevel|))'
 
 
 axiom_optimize_options = @axiom_optimize_options@
@@ -81,10 +87,16 @@ core.lisp: $(srcdir)/core.lisp.in
 	$(top_srcdir)/config/move-if-change $@.tmp $@
 
 core.$(FASLEXT): core.lisp
+ifeq (@axiom_lisp_flavor@,ecl)
 	$(AXIOM_LISP) $(quiet_flags) \
-		$(eval_flags) '(progn #-:ecl (compile-file "$<"))' \
-		$(eval_flags) '(progn #+:ecl (progn (require (quote cmp)) (compile-file "$<" :system-p t) (c::build-fasl "$@" :lisp-files (quote ("core.$(OBJEXT)")))))' \
+		$(eval_flags) '(require (quote cmp))' \
+		$(eval_flags) '(compile-file "$<" :system-p t)' \
+		$(eval_flags) '(c::build-fasl "$@" :lisp-files (quote ("core.$(OBJEXT)")))' \
 		$(eval_flags) '(quit)'
+else
+	$(AXIOM_LISP) $(quiet_flags) \
+		$(eval_flags) '(progn (compile-file "$<") (quit))'
+endif
 
 @
 
