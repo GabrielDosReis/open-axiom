@@ -1,3 +1,9 @@
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* i-parser.boot: New.
+	* Makefile.pamphlet (i-parser.$(FASLEXT)): New rule.
+	(OBJS): Include i-parser.$(FASLEXT).
+
 2007-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (INOBJS): Lose varini.$(FASLEXT).

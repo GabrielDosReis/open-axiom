@@ -731,7 +731,8 @@ axiom_algebra_layer_19 = \
   RPOLCAT-.o RULECOLD.o SAOS.o     SEGBIND.o \
   SET.o      SPECOUT.o  SQMATRIX.o SWITCH.o  \
   SYMS.o     SYMTAB.o   SYSSOLP.o  UTSCAT.o  \
-  UTSCAT-.o  VARIABLE.o WFFINTBS.o SPADPRSR.o
+  UTSCAT-.o  VARIABLE.o WFFINTBS.o SPADPRSR.o \
+  PARSER.o
 
 axiom_algebra_layer_19_nrlibs = \
 	$(axiom_algebra_layer_19:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -901,15 +902,19 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	$(INSTALL_DATA) $< $@
 
 SYNTAX.NRLIB/code.$(FASLEXT): syntax.spad
-	@ rm -rf $*.NRLIB
+	@ rm -rf SYNTAX.NRLIB
 	echo ")co $(srcdir)/syntax.spad" | ${INTERPSYS}
 
 SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
-	@ rm -rf $*.NRLIB
+	@ rm -rf SPADPRSR.NRLIB
 	echo ")co $(srcdir)/spad-parser.spad" | ${INTERPSYS}
 
+PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
+	@ rm -rf PARSER.NRLIB
+	echo ")co $(srcdir)/script-parser.spad" | ${INTERPSYS}
+
 DOMAIN.NRLIB/code.$(FASLEXT): domain.spad
-	@ rm -rf $*.NRLIB
+	@ rm -rf DOMAIN.NRLIB
 	echo ")co $(srcdir)/domain.spad" | ${INTERPSYS}
 
 

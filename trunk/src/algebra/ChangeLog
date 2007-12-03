@@ -1,5 +1,12 @@
 2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* script-parser.spad: New.
+	* Makefile.pamphlet (axiom_algebra_layer_19): Include PARSER.o
+	(PARSER.NRLIB/code.$(FASLEXT)): New rule.
+	* exposed.lsp.pamphlet: Expose Parser constructor.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* aggcat.spad.pamphlet: Update cached Lisp translations.
 
 2007-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>

@@ -263,6 +263,7 @@
   (|ParametricPlaneCurveFunctions2| . PARPC2)
   (|ParametricSpaceCurveFunctions2| . PARSC2)
   (|ParametricSurfaceFunctions2| . PARSU2)
+  (|Parser| . PARSER)
   (|PartitionsAndPermutations| . PARTPERM)
   (|PatternMatch| . PATMATCH)
   (|PatternMatchAssertions| . PMASS)
