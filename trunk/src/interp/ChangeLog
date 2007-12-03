@@ -1,5 +1,9 @@
 2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* pf2sex.boot (pf2Sex1): Be talkative about why a parse form is Wrong.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* i-parser.boot: New.
 	* Makefile.pamphlet (i-parser.$(FASLEXT)): New rule.
 	(OBJS): Include i-parser.$(FASLEXT).
