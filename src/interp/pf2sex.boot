@@ -128,7 +128,7 @@ pf2Sex1 pf ==
   pfLocal? pf =>
     ['local, :[pf2Sex1 item for item in pf0LocalItems pf]]
   pfWrong? pf =>
-   spadThrow()
+   spadThrowBrightly pfDocumentText pfWrongWhy pf
   pfAnd? pf =>
     ["and", pf2Sex1 pfAndLeft pf, pf2Sex1 pfAndRight pf]
   pfOr? pf =>
