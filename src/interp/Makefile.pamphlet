@@ -169,7 +169,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	fortcall.$(FASLEXT) \
 	$(OPOBJS) \
 	$(OCOBJS) \
-	$(BROBJS)
+	$(BROBJS) i-parser.$(FASLEXT)
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 @
@@ -887,6 +887,9 @@ macros.$(FASLEXT): macros.lisp sys-macros.$(FASLEXT)
 ##   astr.boot dq.boot incl.boot pile.boot ptrees.boot
 ##   posit.boot cparse.boot format.boot cstream.boot
 ##
+
+i-parser.$(FASLEXT): i-parser.boot cparse.$(FASLEXT) pf2sex.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 pf2sex.$(FASLEXT): pf2sex.boot ptrees.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
