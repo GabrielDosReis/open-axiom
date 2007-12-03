@@ -1,3 +1,7 @@
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* aggcat.spad.pamphlet: Update cached Lisp translations.
+
 2007-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* bags.spad.pamphlet (Stack): Relax requirement element type S.
