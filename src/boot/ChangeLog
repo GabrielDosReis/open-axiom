@@ -1,3 +1,8 @@
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* translator.boot.pamphlet (translateBootFile): Adjust call to 
+	getOutputPathname.
+
 2007-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (boot_objects_extra): New.
