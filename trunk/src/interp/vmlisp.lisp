@@ -1039,7 +1039,13 @@
 
 (defun CHAR2NUM (c) (char-code (character c)))
 
-(defun CGREATERP (s1 s2) (string> (string s1) (string s2)))
+;; Returns truthvalue (nil or t) if s1 compares lexicographically 
+;; greater than s2.  Note: It is essential that this function returns
+;; a canonical Boolean value because parts of the system use it in 
+;; contexts where generalized Boolean values are confusing.
+(defun CGREATERP (s1 s2) 
+  (cond ((string> (string s1) (string s2)) t)))
+
 
 (define-function 'STRGREATERP #'CGREATERP)
 

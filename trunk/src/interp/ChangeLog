@@ -1,5 +1,9 @@
 2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* vmlisp.lisp (CGREATERP): Return canonical truthvalue.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* pf2sex.boot (pf2Sex1): Be talkative about why a parse form is Wrong.
 
 2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
