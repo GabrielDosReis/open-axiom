@@ -71,7 +71,7 @@
     #- (or :SBCL :GCL) (error "don't know how to chdir in this Lisp")
     ;; FIXME: some Lisps may not properly end the name with slash
     ;;        investigate.
-    (setf *default-pathname-defaults* dir)
+    (setf *default-pathname-defaults* (|ensureTrailingSlash| dir))
     (|sayKeyedMsg| 'S2IZ0070 
                    (list (namestring *default-pathname-defaults*)))))
 
