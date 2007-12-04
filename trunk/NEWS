@@ -1,11 +1,18 @@
+  × The interpreter now allows library `case' functions.
+    Consequently, `case' no longer requires values of Union types, as
+    long as the arguments are of appropriate types, e.g. ones for
+    which a `case' operator has been defined.
+
   × OpenAxiom developers: depsys is no longer built.  All files in
     src/interp/ are now compiled with bootsys.
 
   × OpenAxiom now has a domain domain for representing the abstract
-    syntax tree of Spad and Boot programs.
+    syntax tree of Spad libraries, Spad scripts, and Boot programs.
+    Furthermore, parsers for Spad libraries and Spad scripts are
+    now part of the standard algebra.
 
-  × OpenAxiom now supports collections of domains.  More generally,
-    it is now possible define and call functions with arguments
+  × OpenAxiom now supports aggregates/collections of domains.  More
+    generally, it is now possible define and call functions with arguments
     that are of domain type.
 
   × OpenAxiom no longer uses global setting of the environment
