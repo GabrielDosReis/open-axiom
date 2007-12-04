@@ -1,5 +1,11 @@
 2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Support library function case.
+	* i-spec1.boot (userDefinedCase): New.
+	(upcase): Use it.
+
+2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* vmlisp.lisp (CGREATERP): Return canonical truthvalue.
 
 2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
