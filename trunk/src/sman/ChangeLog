@@ -1,3 +1,16 @@
+2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove rules for extracting files from
+	pamphlets. 
+	(%.lo): Adjust include directory.
+	(mostlyclean-local): Don't remove source files and headers.
+	* nagman.c.pamphlet: Remove.
+	* session.c.pamphlet: Likewise.
+	* sman.c.pamphlet: Likewise.
+	* sessions.c: New.
+	* sman.h: Likewise.
+	* sman.c: Likewise.
+
 2007-09-13  Alfredo Portes  <alfredo.portes@gmail.com>
 	    Waldek Hebisch <hebisch@math.uni.wroc.pl>
 

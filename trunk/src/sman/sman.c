@@ -1,43 +1,41 @@
-\documentclass{article}
-\usepackage{axiom}
+/*
+  Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+  All rights reserved.
 
-\title{\$SPAD/src/sman sman}
-\author{The Axiom Team}
+  Copyright (C) 2007, Gabriel Dos Reis.
+  All rights reserved.
 
-\begin{document}
-\maketitle
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are
+  met:
 
-\begin{abstract}
-\end{abstract}
-\eject
+    - Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
 
-\tableofcontents
-\eject
+    - Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in
+      the documentation and/or other materials provided with the
+      distribution.
 
-\section{sman.h}
-<<sman.h>>=
-/* Process control definitions.  Used by fork_you and spawn_of_hell */
+    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
 
-/* When a process dies it kills off everything else */
-#define Die 1
-/* When a process dies, do nothing */
-#define NadaDelShitsky  2
-/* When a process dies start it up again */
-#define DoItAgain       3
-/* When hypertex dies, clean its socket */
-#define CleanHypertexSocket 4
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+  IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+  TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+  OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
-typedef struct spad_proc {
-  int	proc_id;	/* process id of child */
-  int	death_action;	/* one of the above constants */
-  char	*command;	/* sh command line to restart the process */
-  struct spad_proc *next;
-} SpadProcess;
+#define _SMAN_C
 
-@
-\section{sman}
-\subsection{includes}
-<<includes>>=
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -65,63 +63,29 @@ typedef struct spad_proc {
 #include "openpty.H1"
 #include "sman.H1"
 
-@
-\subsection{variables}
-We add a debug flag so we can print information about what \Tool{sman}
-is trying to do. This change is pervasive as it touches nearly every
-routine.
-<<debugflag>>=
-int tpd=0;                      /* to-print-debug information */
-@
-This line is no longer used. We would completely elide it except that
-it would raise spurious issues about deleting credit and/or copyright
-information.
-\begin{verbatim}
-char *start_line =
-"AKCL (Austin Kyoto Common Lisp)  Version(1.568) Thu Aug 22 16:49:01 EDT 1991\
-\r\nContains Enhancements by W. Schelter\r\n";
-\end{verbatim}
-We modified the place where the command list lives. 
-The command list used to live in
-\begin{verbatim}
-$AXIOM/../../share/algebra/command.list
-\end{verbatim}
-but the open source version of the system no longer has a share
-subdirectory so we move this to the lib subdirectory.
-<<clefprogram>>=
-char	*ClefProgram            = 
-           "$AXIOM/bin/clef -f $AXIOM/lib/command.list -e ";
-@
-and we change the command line arguments
-<<clefprogram1>>=
-      ClefProgram = 
-        strcat(ClefCommandLine, " -f $AXIOM/lib/command.list -e ");
-@
-<<variables>>=
 char *ws_path;                  /* location of the AXIOM executable */
-int start_clef;			/* start clef under spad */
-int start_graphics;		/* start the viewman */
-int start_nagman;               /* start the nagman */
-int start_ht;			/* start hypertex */
-int start_spadclient;		/* Start the client spad buffer */
-int start_local_spadclient;	/* Start the client spad buffer */
-int use_X;			/* Use the X windows environment */
-int server_num;			/* AXIOM server number */
-<<debugflag>>
+int start_clef;                 /* start clef under spad */
+int start_graphics;             /* start the viewman */
+int start_ht;                   /* start hypertex */
+int start_spadclient;           /* Start the client spad buffer */
+int start_local_spadclient;     /* Start the client spad buffer */
+int use_X;                      /* Use the X windows environment */
+int server_num;                 /* AXIOM server number */
+int tpd=0;                      /* to-print-debug information */
 
 /************************************************/
 /* definitions of programs which sman can start */
 /************************************************/
 
-char	*GraphicsProgram        = "$AXIOM/lib/viewman";
-char    *NagManagerProgram      = "$AXIOM/lib/nagman";
-char	*HypertexProgram        = "$AXIOM/lib/hypertex -s";
-<<clefprogram>>
-char	*SessionManagerProgram  = "$AXIOM/lib/session";
-char	*SpadClientProgram      = "$AXIOM/lib/spadclient";
-char	*PasteFile		= NULL;
-char	*MakeRecordFile		= NULL;
-char	*VerifyRecordFile	= NULL;
+char    *GraphicsProgram        = "$AXIOM/lib/viewman";
+char    *HypertexProgram        = "$AXIOM/lib/hypertex -s";
+char    *ClefProgram            = 
+           "$AXIOM/bin/clef -f $AXIOM/lib/command.list -e ";
+char    *SessionManagerProgram  = "$AXIOM/lib/session";
+char    *SpadClientProgram      = "$AXIOM/lib/spadclient";
+char    *PasteFile              = NULL;
+char    *MakeRecordFile         = NULL;
+char    *VerifyRecordFile       = NULL;
 
 SpadProcess *spad_process_list = NULL;
 /***************************/
@@ -132,7 +96,7 @@ SpadProcess *spad_process_list = NULL;
 
 char ClefCommandLine[256];
 
-#define BufSize      4096 	/* size of communication buffer */
+#define BufSize      4096       /* size of communication buffer */
 char big_bad_buf[BufSize];      /* big I/O buffer */
 
 Sock *session_io = NULL;        /* socket connecting to session manager */
@@ -156,12 +120,8 @@ struct termios oldbuf;           /* the original settings */
 struct termios childbuf;         /* terminal structure for user i/o */
 
 
-int nagman_signal=0;
 int death_signal = 0;
 
-@
-\subsection{process\_arguments}
-<<processarguments>>=
 static void
 process_arguments(int argc,char ** argv)
 {
@@ -178,10 +138,6 @@ process_arguments(int argc,char ** argv)
       start_graphics = 1;
     else if (strcmp(argv[arg], "-nogr")        == 0)
       start_graphics = 0;
-    else if (strcmp(argv[arg], "-nag")          == 0)
-      start_nagman = 1;
-    else if (strcmp(argv[arg], "-nonag")        == 0)
-      start_nagman = 0;
     else if (strcmp(argv[arg], "-ht")          == 0)
       start_ht = 1;
     else if (strcmp(argv[arg], "-noht")        == 0)
@@ -200,21 +156,20 @@ process_arguments(int argc,char ** argv)
       ws_path = "$AXIOM/etc/images/comp";
     else if (strcmp(argv[arg], "-nox")         == 0)
       {
-	use_X = 0;
-	start_local_spadclient = 1;
-	start_spadclient = 0;
-	start_ht = 0;
-	start_graphics = 0;
+        use_X = 0;
+        start_local_spadclient = 1;
+        start_spadclient = 0;
+        start_ht = 0;
+        start_graphics = 0;
       }
     else if (strcmp(argv[arg], "-grprog")      == 0)
       GraphicsProgram = argv[++arg];
-    else if (strcmp(argv[arg], "-nagprog")      == 0)
-      NagManagerProgram = argv[++arg];
     else if (strcmp(argv[arg], "-htprog")      == 0)
       HypertexProgram = argv[++arg];
     else if (strcmp(argv[arg], "-clefprog")    == 0) {
       strcpy(ClefCommandLine,argv[++arg]);
-<<clefprogram1>>
+      ClefProgram = 
+        strcat(ClefCommandLine, " -f $AXIOM/lib/command.list -e ");
     }
     else if (strcmp(argv[arg], "-sessionprog") == 0)
       SessionManagerProgram = argv[++arg];
@@ -228,8 +183,8 @@ process_arguments(int argc,char ** argv)
       PasteFile = argv[++arg];
     else {
       fprintf(stderr, "Usage: sman <-clef|-noclef> \
-<-gr|-nogr> <-ht|-noht> <-iw|-noiw> <-nag|-nonag> <-nox> <-comp> <-ws spad_workspace> \
-<-grprog path> <-htprog path> <-clefprog path> <-sessionprog path> <-nagprog path> \
+<-gr|-nogr> <-ht|-noht> <-iw|-noiw> <-nox> <-comp> <-ws spad_workspace> \
+<-grprog path> <-htprog path> <-clefprog path> <-sessionprog path> \
 <-clientprog path>\n");
       exit(-1);
     }
@@ -244,10 +199,6 @@ process_arguments(int argc,char ** argv)
       fprintf(stderr,"-nogr ");
     else
       fprintf(stderr,"-gr ");
-    if (start_nagman == 0)
-      fprintf(stderr,"-nonag ");
-    else
-      fprintf(stderr,"-nag ");
     if (start_ht == 0)
       fprintf(stderr,"-noht ");
     else
@@ -270,8 +221,6 @@ process_arguments(int argc,char ** argv)
     fprintf(stderr,"'%s' ",ws_path);
     fprintf(stderr,"-grprog ");
     fprintf(stderr,"'%s' ",GraphicsProgram);
-    fprintf(stderr,"-nagprog ");
-    fprintf(stderr,"'%s' ",NagManagerProgram);
     fprintf(stderr,"-htprog ");
     fprintf(stderr,"'%s' ",HypertexProgram);
     fprintf(stderr,"-clefprog ");
@@ -291,18 +240,12 @@ process_arguments(int argc,char ** argv)
   if (tpd == 1) fprintf(stderr,"sman:process_arguments exit\n");
 }
 
-@
-\subsection{should\_I\_clef}
-<<shouldIclef>>=
 static int
 should_I_clef(void)
 {
   return(1);
 }
 
-@
-\subsection{in\_X}
-<<inX>>=
 static int 
 in_X(void)
 {
@@ -310,24 +253,12 @@ in_X(void)
   return 0;
 }
 
-@
-\subsection{set\_up\_defaults}
-These are the default values for sman. A '1' value means that
-sman will try to start the given process, a '0' value means not
-starting the process.
-
-We do not have replacement code for the [[nagman]] process nor
-do we have a copy of the [[nag fortran library]] to test the process.
-Until this changes we set [[start_nagman = 0]] in order to disable
-starting this process by default.
-<<setupdefaults>>=
 static  void
 set_up_defaults(void)
 {
   if (tpd == 1) fprintf(stderr,"sman:set_up_defaults entered\n");
   start_clef = should_I_clef();
   start_graphics = 1;
-  start_nagman = 0;
   start_ht = 1;
   start_spadclient = 0;
   start_local_spadclient = 1;
@@ -336,9 +267,6 @@ set_up_defaults(void)
   if (tpd == 1) fprintf(stderr,"sman:set_up_defaults exit\n");
 }
 
-@
-\subsection{process\_options}
-<<processoptions>>=
 static void
 process_options(int argc, char **argv)
 {
@@ -348,27 +276,12 @@ process_options(int argc, char **argv)
   if (tpd == 1) fprintf(stderr,"sman:process_options exit\n");
 }
 
-@
-\subsection{death\_handler}
-<<deathhandler>>=
 static void
 death_handler(int sig)
 {
   death_signal = 1;
 }
 
-@
-\subsection{nagman\_handler}
-<<nagmanhandler>>=
-static void 
-nagman_handler(int sig)
-{
-  nagman_signal=1;
-}
-
-@
-\subsection{sman\_catch\_signals}
-<<smancatchsignals>>=
 static void
 sman_catch_signals(void)
 {
@@ -383,27 +296,9 @@ sman_catch_signals(void)
   bsdSignal(SIGIOT,  death_handler,RestartSystemCalls);
   bsdSignal(SIGBUS,  death_handler,RestartSystemCalls);
   bsdSignal(SIGSEGV, death_handler,RestartSystemCalls);
-  /* don't restart wait call on SIGUSR1  */
-  bsdSignal(SIGUSR1, nagman_handler,DontRestartSystemCalls); 
-  /* ONLY nagman should send this.
-     If an error (such as C-c) interrupts a NAGLINK call, nagman
-     gets a signal to clean up. We need to start another nagman 
-     almost immediately to process the next NAGLINK request.
-     Since nagman takes a while to clean up, we treat it specially.
-     nagman should send a signal (USR1) to sman.
-     sman should respond by spawning a new nagman.
-     
-     so nagman is NOT a DoItAgain but a NadaDelShitsky.
-     
-     The USR1 mechanism does not work for HPUX 9 - use DoItAgain 
-     */
 
 }
 
-@
-\subsection{fix\_env}
-insert SPADSERVER and SPADNUM variables into the environemnt
-<<fixenv>>=
 static void
 fix_env(char **envp, int spadnum)
 {
@@ -419,20 +314,17 @@ fix_env(char **envp, int spadnum)
     new_envp[i+2] = envp[i];
 }
 
-@
-\subsection{init\_term\_io}
-<<inittermio>>=
 static void
 init_term_io(void)
 {
   if(!isatty(0)) return;
   if( tcgetattr(0, &oldbuf) == -1) {
     perror("getting termios");
-    return ; 			/*  exit(-1); */
+    return ;                    /*  exit(-1); */
   }
   if( tcgetattr(0, &childbuf) == -1) {
     perror("getting termios");
-    return ; 			/*   exit(-1); */
+    return ;                    /*   exit(-1); */
   }
   _INTR = oldbuf.c_cc[VINTR];
   _QUIT = oldbuf.c_cc[VQUIT];
@@ -442,9 +334,6 @@ init_term_io(void)
   _EOL = oldbuf.c_cc[VEOL];
 }
 
-@
-\subsection{strPrefix}
-<<strPrefix>>=
 static char *
 strPrefix(char *prefix,char * s)
 {
@@ -456,9 +345,6 @@ strPrefix(char *prefix,char * s)
   return NULL;
 }
 
-@
-\subsection{check\_spad\_proc}
-<<checkspadproc>>=
 static void
 check_spad_proc(char *file, char *prefix)
 {
@@ -469,15 +355,12 @@ check_spad_proc(char *file, char *prefix)
     if (pid > 2) {
       kill(pid, 0);
       if (kill(pid, 0) == -1 && errno == ESRCH) {
-	unlink(file);
+        unlink(file);
       }
     }
   }
 }
 
-@
-\subsection{clean\_up\_old\_sockets}
-<<cleanupoldsockets>>=
 static void
 clean_up_old_sockets(void)
 {
@@ -486,7 +369,7 @@ clean_up_old_sockets(void)
   int len;
   sprintf(tmp_file, "/tmp/socks.%d", server_num);
   sprintf(com, "ls /tmp/.d* /tmp/.s* /tmp/.i* /tmp/.h* 2> %s > %s",
-	  tmp_file, tmp_file);
+          tmp_file, tmp_file);
   system(com);
   file = fopen(tmp_file, "r");
   if (file == NULL) {
@@ -506,9 +389,6 @@ clean_up_old_sockets(void)
   unlink(tmp_file);
 }
 
-@
-\subsection{fork\_you}
-<<forkyou>>=
 static SpadProcess *
 fork_you(int death_action)
 {
@@ -526,9 +406,6 @@ fork_you(int death_action)
   return proc;
 }
 
-@
-\subsection{exec\_command\_env}
-<<execcommandenv>>=
 static void
 exec_command_env(char *command,char ** env)
 {
@@ -537,9 +414,6 @@ exec_command_env(char *command,char ** env)
   execle("/bin/sh","/bin/sh", "-c", new_command, 0, env);
 }
 
-@
-\subsection{spawn\_of\_hell}
-<<spawnofhell>>=
 static SpadProcess *
 spawn_of_hell(char *command, int death_action)
 {
@@ -552,10 +426,6 @@ spawn_of_hell(char *command, int death_action)
   return NULL;
 }
 
-@
-\subsection{start\_the\_spadclient}
-run a AXIOM client in the main process
-<<startthespadclient>>=
 static void
 start_the_spadclient(void)
 {
@@ -563,31 +433,28 @@ start_the_spadclient(void)
   if (start_clef)
 #ifdef RIOSplatform
     sprintf(command, 
-	    "aixterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s %s",
-	    ClefProgram, SpadClientProgram);
+            "aixterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s %s",
+            ClefProgram, SpadClientProgram);
 #else
   sprintf(command, 
-	  "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s %s",
-	  ClefProgram, SpadClientProgram);
+          "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s %s",
+          ClefProgram, SpadClientProgram);
 #endif
   else
 #ifdef RIOSplatform
     sprintf(command, 
-	    "aixterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s", 
-	    SpadClientProgram);
+            "aixterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s", 
+            SpadClientProgram);
 #else
   sprintf(command, 
-	  "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s", 
-	  SpadClientProgram);
+          "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s", 
+          SpadClientProgram);
 #endif
   if (tpd == 1) 
     fprintf(stderr,"sman:start_the_spadclient: %s\n",command);
   spawn_of_hell(command, NadaDelShitsky);
 }
 
-@
-\subsection{start\_the\_local\_spadclient}
-<<startthelocalspadclient>>=
 static void
 start_the_local_spadclient(void)
 {
@@ -601,31 +468,12 @@ start_the_local_spadclient(void)
   spawn_of_hell(command, NadaDelShitsky);
 }
 
-@
-\subsection{start\_the\_nagman}
-<<startthenagman>>=
-static void
-start_the_nagman(void)
-{
-#if defined(HP9platform)
-  spawn_of_hell(NagManagerProgram,DoItAgain);
-#else
-  spawn_of_hell(NagManagerProgram,NadaDelShitsky );
-#endif
-}
-
-@
-\subsection{start\_the\_session\_manager}
-<<startthesessionmanager>>=
 static void
 start_the_session_manager(void)
 {
   spawn_of_hell(SessionManagerProgram, Die);
 }
 
-@
-\subsection{start\_the\_hypertex}
-<<startthehypertex>>=
 static void
 start_the_hypertex(void)
 {
@@ -643,21 +491,15 @@ start_the_hypertex(void)
     sprintf(prog, "%s -k -rv %s", HypertexProgram, VerifyRecordFile);
     spawn_of_hell(prog, NadaDelShitsky);
   }
-  else	spawn_of_hell(HypertexProgram, CleanHypertexSocket);
+  else  spawn_of_hell(HypertexProgram, CleanHypertexSocket);
 }
 
-@
-\subsection{start\_the\_graphics}
-<<startthegraphics>>=
 static void
 start_the_graphics(void)
 {
   spawn_of_hell(GraphicsProgram, DoItAgain);
 }
 
-@
-\subsection{fork\_Axiom}
-<<forkAxiom>>=
 /* Start the AXIOM session in a separate process, */
 /* using a pseudo-terminal to catch all input and output */
 static void 
@@ -730,9 +572,6 @@ fork_Axiom(void)
   }
 }
 
-@
-\subsection{start\_the\_Axiom}
-<<starttheAxiom>>=
 static void
 start_the_Axiom(char **envp)
 {
@@ -751,9 +590,6 @@ start_the_Axiom(char **envp)
   close(ptsNum);
 }
 
-@
-\subsection{clean\_up\_sockets}
-<<cleanupsockets>>=
 static void
 clean_hypertex_socket(void)
 {
@@ -775,9 +611,6 @@ clean_up_sockets(void)
   clean_hypertex_socket();
 }
 
-@
-\subsection{read\_from\_spad\_io}
-<<readfromspadio>>=
 static void
 read_from_spad_io(int ptcNum)
 {
@@ -793,17 +626,17 @@ read_from_spad_io(int ptcNum)
       mes_len -= ret_code;
     else {
       if (mes_len > 0) {
-	i = mes_len;
-	mes_len = 0;
+        i = mes_len;
+        mes_len = 0;
       }
       else
-	i = 0;
+        i = 0;
       ret_code = write(1, big_bad_buf+i, ret_code-i);
     }
   }
   else
     ret_code = swrite(session_io, big_bad_buf, ret_code,
-		      "writing to session man");
+                      "writing to session man");
   if (ret_code == -1) {
     perror("writing output to session manager");
     clean_up_sockets();
@@ -811,9 +644,6 @@ read_from_spad_io(int ptcNum)
   }
 }
 
-@
-\subsection{read\_from\_manager}
-<<readfrommanager>>=
 static void
 read_from_manager(int ptcNum)
 {
@@ -828,9 +658,6 @@ read_from_manager(int ptcNum)
   }
 }
 
-@
-\subsection{manage\_spad\_io}
-<<managespadio>>=
 static void
 manage_spad_io(int ptcNum)
 {
@@ -852,17 +679,17 @@ manage_spad_io(int ptcNum)
     }
     for(i=0; i<2; i++) {
       if (server[i].socket > 0 && FD_ISSET(server[i].socket, &rd)) {
-	p = accept_connection(server+i);
-	switch(p) {
-	case SessionIO:
-	  session_io = purpose_table[SessionIO];
-	  /*  printf("connected session manager\n\r");*/
-	  printf("\n");
-	  break;
-	default:
-	  printf("sman: Unkown connection request type: %d\n", p);
-	  break;
-	}
+        p = accept_connection(server+i);
+        switch(p) {
+        case SessionIO:
+          session_io = purpose_table[SessionIO];
+          /*  printf("connected session manager\n\r");*/
+          printf("\n");
+          break;
+        default:
+          printf("sman: Unkown connection request type: %d\n", p);
+          break;
+        }
       }
     }
     if (session_io != NULL && FD_ISSET(session_io->socket, &rd)) {
@@ -871,18 +698,12 @@ manage_spad_io(int ptcNum)
   }
 }
 
-@
-\subsection{init\_spad\_process\_list}
-<<initspadprocesslist>>=
 static void
 init_spad_process_list(void)
 {
   spad_process_list = NULL;
 }
 
-@
-\subsection{print\_spad\_process\_list}
-<<printspadprocesslist>>=
 #if 0
 static void
 print_spad_process_list()
@@ -890,13 +711,10 @@ print_spad_process_list()
   SpadProcess *proc;
   for(proc = spad_process_list; proc != NULL; proc = proc->next)
     fprintf(stderr, "proc_id = %d, death_action = %d\n", proc->proc_id,
-	    proc->death_action);
+            proc->death_action);
 }
 #endif
 
-@
-\subsection{find\_child}
-<<findchild>>=
 static SpadProcess *
 find_child(int proc_id)
 {
@@ -906,9 +724,6 @@ find_child(int proc_id)
   return NULL;
 }
 
-@
-\subsection{kill\_all\_children}
-<<killallchildren>>=
 static void
 kill_all_children(void)
 {
@@ -924,18 +739,12 @@ kill_all_children(void)
 
 }
 
-@
-\subsection{clean\_up\_terminal}
-<<cleanupterminal>>=
 static void
 clean_up_terminal(void)
 {
   tcsetattr(0, TCSAFLUSH, &oldbuf);
 }
 
-@
-\subsection{monitor\_children}
-<<monitorchildren>>=
 static void
 monitor_children(void)
 {
@@ -952,13 +761,6 @@ monitor_children(void)
       sleep(2);
       exit(0);
     }
-    /* Check the value of dead_baby, since wait may have returned
-       a pid but subsequently we have received a signal.  Yeuch! */
-    if(dead_baby == -1 && nagman_signal) {
-      nagman_signal=0;
-      spawn_of_hell(NagManagerProgram,NadaDelShitsky);
-      continue;
-    }
 
     if (dead_baby == -1) {
       fprintf(stderr, "sman: wait returned -1\n");
@@ -967,8 +769,8 @@ monitor_children(void)
     proc = find_child(dead_baby);
     if (proc == NULL) {
       /*      fprintf(stderr, "sman: %d is not known to be a child process\n",
-	      dead_baby);
-	      */
+              dead_baby);
+              */
       continue;
     }
     switch(proc->death_action) {
@@ -989,14 +791,6 @@ monitor_children(void)
   }
 }
 
-@
-\subsection{main}
-The main procedure should return an [[int]]. We change the return value
-here and in [[src/include/sman.H1]].
-<<result>>=
-  return(0);
-@
-<<main>>=
 int
 main(int argc, char *argv[],char *envp[])
 {
@@ -1015,7 +809,6 @@ main(int argc, char *argv[],char *envp[])
   start_the_session_manager();
   if (start_spadclient)       start_the_spadclient();
   if (start_local_spadclient) start_the_local_spadclient();
-  if (start_nagman)           start_the_nagman();
   if (start_ht)               start_the_hypertex();
   if (start_graphics)         start_the_graphics();
   sleep(1);
@@ -1027,95 +820,7 @@ main(int argc, char *argv[],char *envp[])
   }
   manage_spad_io(ptcNum);
   if (tpd == 1) fprintf(stderr,"sman:main exit\n");
-<<result>>
+  return(0);
 }
 
-@
-\subsection{sman}
-<<sman>>=
-#define _SMAN_C
 
-<<includes>>
-<<variables>>
-<<processarguments>>
-<<shouldIclef>>
-<<inX>>
-<<setupdefaults>>
-<<processoptions>>
-<<deathhandler>>
-<<nagmanhandler>>
-<<smancatchsignals>>
-<<fixenv>>
-<<inittermio>>
-<<strPrefix>>
-<<checkspadproc>>
-<<cleanupoldsockets>>
-<<forkyou>>
-<<execcommandenv>>
-<<spawnofhell>>
-<<startthespadclient>>
-<<startthelocalspadclient>>
-<<startthenagman>>
-<<startthesessionmanager>>
-<<startthehypertex>>
-<<startthegraphics>>
-<<forkAxiom>>
-<<starttheAxiom>>
-<<cleanupsockets>>
-<<readfromspadio>>
-<<readfrommanager>>
-<<managespadio>>
-<<initspadprocesslist>>
-<<printspadprocesslist>>
-<<findchild>>
-<<killallchildren>>
-<<cleanupterminal>>
-<<monitorchildren>>
-<<main>>
-
-@
-\section{License}
-<<license>>=
-/*
-Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-    - Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-
-    - Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the
-      distribution.
-
-    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
-OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-
-@
-<<*>>=
-<<license>>
-<<sman>>
-@ 
-\eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
-\end{document}
