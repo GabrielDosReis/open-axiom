@@ -1,5 +1,8 @@
 /*
-    Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+    Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+    All rights reserved.
+
+    Copyright (C) 2007, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -61,7 +64,7 @@
 #elif HAVE_AF_UNIX
 #  define AXIOM_AF_LOCAL AF_UNIX
 #else
-#  error needs one of AF_LOCAL or AF_UNIX
+#  error "needs one of AF_LOCAL or AF_UNIX"
 #endif
 
 
@@ -81,8 +84,8 @@ int still_reading  = 0;
 #include "bsdsignal.H1"
 #include "sockio-c.H1"
 
-/* The function sleep is not available under Windows.  Instead they
-   have Sleep(), with capital S, please.  Furthermore, it does not
+/* The function sleep() is not available under Windows.  Instead, they
+   have Sleep(); with capital S, please.  Furthermore, it does not
    take argument in second, but in milliseconds, three order
    of magnitude of difference when compared to the Unix world.
    We abstract over that difference here.  */
@@ -158,7 +161,7 @@ is_valid_socket(const Sock* s)
 
 /* Because a socket on Windows platform is a not just a simple file
    descriptor as it is in the Unix world, it is invalid to use
-   a socket identifier as argument for read(), or close, and
+   a socket identifier as argument for read(), or close, or
    any other file descriptor function.  Furthermore, Windows
    requires cleanup.  */
 
@@ -1146,46 +1149,23 @@ print_line(char *s)
 }
 
 
-typedef union {
-  double        f;
-  long          l[2];
-        } DoubleFloat;
+/* The next three functions use GCC extensions.  At the moment, that
+   is not a problem because GCC is a requirement.  */
 
 double 
 plus_infinity(void )
 {
-  static int init = 0;
-  static DoubleFloat pinf;
-  if (! init) {
-    pinf.l[0] = 0x7ff00000;
-    pinf.l[1] = 0;
-    init = 1;
-  }
-  return pinf.f;
+   return __builtin_huge_val();
 }
 
 double 
 minus_infinity(void)
 {
-  static int init = 0;
-  static DoubleFloat minf;
-  if (! init) {
-    minf.l[0] = 0xfff00000L;
-    minf.l[1] = 0;
-    init = 1;
-  }
-  return minf.f;
+   return -__builtin_huge_val();
 }
 
 double 
 NANQ(void)
 {
-  static int init = 0;
-  static DoubleFloat nanq;
-  if (! init) {
-    nanq.l[0] = 0x7ff80000L;
-    nanq.l[1] = 0;
-    init = 1;
-  }
-  return nanq.f;
+   return __builtin_nan("");
 }

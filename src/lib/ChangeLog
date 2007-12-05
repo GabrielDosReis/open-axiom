@@ -1,3 +1,9 @@
+2007-12-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sockio-c.c (plus_infinity): Use GCC builtin.
+	(minus_infinity): Likewise.
+	(NANQ): Likewise.
+
 2007-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* emupty.c: New.  Replace corresponding pamphlet.
