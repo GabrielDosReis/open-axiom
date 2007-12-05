@@ -571,11 +571,6 @@
 (defun |sayFORMULA| (X) "Prints on formula output stream."
   (if (NULL X) NIL (sayBrightly1 X |$formulaOutputStream|)))
  
-(defvar |$highlightAllowed| nil "Used in BRIGHTPRINT and is a )set variable.")
- 
-(defvar |$highlightFontOn| |$boldString| "switch to highlight font")
-(defvar |$highlightFontOff| |$normalString| "return to normal font")
- 
 ;; the following are redefined in MSGDB BOOT
  
 (DEFUN BLANKS (N &optional (stream *standard-output*)) "Print N blanks."

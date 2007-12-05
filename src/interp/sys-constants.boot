@@ -71,7 +71,7 @@ $escapeString ==
 
 ++ Marker to swicth to bold font
 $boldString ==
-  CONCATENATE('STRING, $escapeString, '"[12m")
+  CONCATENATE('STRING, $escapeString, '"[1m")
 
 ++ Marker to switch to normal font
 $normalString ==
@@ -85,6 +85,13 @@ $reverseVideoString ==
 $underlineString ==
   CONCATENATE('STRING, $escapeString, '"[4m")
 
+++
+$highlightFontOn ==
+  CONCATENATE("STRING", '" ", $boldString)
+
+++
+$highlightFontOff ==
+  CONCATENATE("STRING", $normalString, '" ")
 
 -- 
 -- User Interface

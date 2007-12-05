@@ -1,3 +1,13 @@
+2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* macros.lisp (|$highlightAllowed|): Remove.
+	(|$lightlightFontOn|): Likewise.
+	(|$highlightFontOff|): Likewise.
+	* patches.lisp (|$highlightAllowed|): Move to sys-globals.boot.
+	(|$lightlightFontOn|): Move to sys-constants.boot
+	(|$lightlightFontOff|): Likewise.
+	* setvart.boot ($setOptions): Make highlighting default.
+
 2007-12-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* patches.lisp (|cd|): Make sure *default-pathname-defaults*
