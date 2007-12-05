@@ -67,7 +67,7 @@ ${OUT}/sman$(EXEEXT): $(sman_objects) $(sman_DEPENDENCIES)
 $(sman_objects): sman.h $(axiom_c_macros_h)
 
 mostlyclean-local:
-	@rm -f $(session_objects) sman.h
+	@rm -f $(session_objects)
 	@rm -f $(session_objects)
 	@rm -f $(sman_objects)
 
