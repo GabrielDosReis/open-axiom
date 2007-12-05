@@ -198,8 +198,6 @@
 
 (setq |$localVars| ())  ;checked by isType
 
-(setq |$highlightFontOn| (concat " " |$boldString|))
-(setq |$highlightFontOff| (concat |$normalString| " "))
 (define-function 'SUBSTQ #'SUBSTEQ) ;; needed for substNames (always copy)
 #+(and :lucid (not :ibm/370))
  (define-function 'RUN-AIX-PROGRAM #'SYS:RUN-AIX-PROGRAM)

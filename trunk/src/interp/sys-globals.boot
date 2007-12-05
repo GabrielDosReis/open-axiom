@@ -422,3 +422,6 @@ _*YEARWEEK_* := nil
 
 ++
 _/TRACENAMES := nil
+
+++
+$highlightAllowed := true

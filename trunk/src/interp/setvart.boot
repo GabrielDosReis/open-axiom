@@ -866,8 +866,8 @@ $setOptions := '(
 --  The highlighting option may be followed by any one of the 
 --  following:
 --
---     on
---  -> off 
+--  -> on
+--     off 
 --
 --  The current setting is indicated within the list.
     (highlighting
@@ -876,7 +876,7 @@ $setOptions := '(
      LITERALS
      $highlightAllowed
      (on off)
-     off)
+     on)
 
 -- --------------------- The instant Option ----------------------
 --

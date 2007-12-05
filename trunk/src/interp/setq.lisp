@@ -275,8 +275,6 @@
   CAPSULE |Union| |Record| |SubDomain| |Mapping| |Enumeration| |Domain| |Mode|))
 
 (SETQ |$tracedMapSignatures| ())
-(SETQ |$highlightAllowed| 'T)
-         ;" used in BRIGHTPRINT and is a )set variable"
 
 (SETQ |$printStorageIfTrue| NIL) ;; storage info disabled in common lisp
 
