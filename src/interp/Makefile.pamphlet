@@ -231,8 +231,7 @@ OCOBJS=	apply.$(FASLEXT)	c-doc.$(FASLEXT)	\
 	define.$(FASLEXT)	functor.$(FASLEXT)	\
 	info.$(FASLEXT)	iterator.$(FASLEXT)	\
 	modemap.$(FASLEXT)	nruncomp.$(FASLEXT)	\
-	package.$(FASLEXT)	htcheck.$(FASLEXT)	\
-        xruncomp.$(FASLEXT)   
+	package.$(FASLEXT)	htcheck.$(FASLEXT)
 
 autoload_objects += $(OCOBJS)
 
@@ -799,9 +798,6 @@ newfort.$(FASLEXT): newfort.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 lisplib.$(FASLEXT): lisplib.boot nlib.$(FASLEXT) c-util.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-xruncomp.$(FASLEXT): xruncomp.boot c-util.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 interop.$(FASLEXT): interop.boot c-util.$(FASLEXT)

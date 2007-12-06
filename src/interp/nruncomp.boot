@@ -87,9 +87,8 @@ NRTreplaceAllLocalReferences(form) ==
   $devaluateList :local := []
   NRTputInLocalReferences form
 
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
-  --converts a domain form to a lazy domain form; everything other than
+  --converts a domain form to a lazy domain form; everything other than 
   --the operation name should be assigned a slot
   null firstTime and (k:= NRTassocIndex x) => k
   VECP x => systemErrorHere '"NRTencode"
@@ -102,9 +101,10 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     ['NRTEVAL,NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]
   MEMQ(x,$formalArgList) =>
     v := $FormalMapVariableList.(POSN1(x,$formalArgList))
-    firstTime => ['local,v]
+    firstTime => ["local",v]
     v
   x = '$ => x
+  x = "$$" => x
   ['QUOTE,x]
 
 --------------FUNCTIONS CALLED DURING CAPSULE FUNCTION COMPILATION-------------
@@ -154,34 +154,37 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
   eltOrConst="CONST" => ['XLAM,'ignore,MKQ SPADCALL fn]
   GETL(compileTimeBindingOf first fn,'SPADreplace)
 
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 genDeltaEntry opMmPair ==
 --called from compApplyModemap
 --$NRTdeltaLength=0.. always equals length of $NRTdeltaList
   [.,[odc,:.],.] := opMmPair
   --opModemapPair := SUBLIS($LocalDomainAlist,opMmPair)
-  [op,[dc,:sig],[.,cform:=[eltOrConst,:.]]] := opMmPair
+  [op,[dc,:sig],[.,cform:=[eltOrConst,.,nsig]]] := opMmPair
   if $profileCompiler = true then profileRecord(dc,op,sig)
   eltOrConst = 'XLAM => cform
   if eltOrConst = 'Subsumed then eltOrConst := 'ELT
+  if atom dc then
+    dc = "$" => nsig := sig
+    if NUMBERP nsig then nsig := substitute('$,dc,substitute("$$","$",sig))
     -- following hack needed to invert Rep to $ substitution
-  if odc = 'Rep and cform is [.,.,osig] then sig:=osig
-  newimp := optDeltaEntry(op,sig,dc,eltOrConst) => newimp
+--  if odc = 'Rep and cform is [.,.,osig] then sig:=osig
+  newimp := optDeltaEntry(op,nsig,dc,eltOrConst) => newimp
   setDifference(listOfBoundVars dc,$functorLocalParameters) ^= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,
-         mkList consSig(sig,dc),consDomainForm(dc,nil)]]
- --if null atom dc then
+         mkList consSig(nsig,dc),consDomainForm(dc,nil)]]
+  odc := dc
+  if null atom dc then dc := substitute("$$",'$,dc)
  --   sig := substitute('$,dc,sig)
  --   cform := substitute('$,dc,cform)
   opModemapPair :=
-    [op,[dc,:[genDeltaSig x for x in sig]],['T,cform]] -- force pred to T
+    [op,[dc,:[genDeltaSig x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and dc ^= $NRTaddForm and
     (member(dc,$functorLocalParameters) or null atom dc) then
     --create "domain" entry to $NRTdeltaList
       $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
-      compEntry:= (compOrCroak(dc,$EmptyMode,$e)).expr
+      compEntry:= (compOrCroak(odc,$EmptyMode,$e)).expr
 --      dc
       RPLACA(saveNRTdeltaListComp,compEntry)
   u :=
@@ -245,14 +248,15 @@ NRTgetAddForm domain ==
     EQSUBSTLIST(rest domain,$FormalMapVariableList,first u)
   systemErrorHere '"NRTgetAddForm"
 
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 NRTassignCapsuleFunctionSlot(op,sig) ==
 --called from compDefineCapsuleFunction
   opSig := [op,sig]
   [.,.,implementation] := NRTisExported? opSig or return nil
     --if opSig is not exported, it is local and need not be assigned
+  if $insideCategoryPackageIfTrue then
+      sig := substitute('$,CADR($functorForm),sig)
   sig := [genDeltaSig x for x in sig]
-  opModemapPair := [op,['_$,:sig],['T,implementation]]
+  opModemapPair := [op,['_$,:sig],["T",implementation]]
   POSN1(opModemapPair,$NRTdeltaList) => nil   --already there
   $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
   $NRTdeltaListComp := [nil,:$NRTdeltaListComp]
@@ -268,10 +272,10 @@ consOpSig(op,sig,dc) ==
 
 consSig(sig,dc) == [consDomainName(sigpart,dc) for sigpart in sig]
 
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 consDomainName(x,dc) ==
   x = dc => ''$
-  x = '$ => ['devaluate,'$]
+  x = '$ => ''$
+  x = "$$" => ['devaluate,'$]
   x is [op,:argl] =>
     (op = 'Record) or (op = 'Union and argl is [[":",:.],:.])  =>
        mkList [MKQ op,
@@ -280,12 +284,12 @@ consDomainName(x,dc) ==
     isFunctor op or op = 'Mapping or constructor? op =>
          -- call to constructor? needed if op was compiled in $bootStrapMode
         mkList [MKQ op,:[consDomainName(y,dc) for y in argl]]
-    x
+    substitute('$,"$$",x)
   x = [] => x
   (y := LASSOC(x,$devaluateList)) => y
   k:=NRTassocIndex x =>
     ['devaluate,['ELT,'$,k]]
-  get(x,'value,$e) or get(x,'mode,$e) =>
+  get(x,'value,$e) =>
     isDomainForm(x,$e) => ['devaluate,x]
     x
   MKQ x
@@ -622,7 +626,6 @@ NRTaddToSlam([name,:argnames],shell) ==
   args:= ['LIST,:ASSOCRIGHT $devaluateList]
   addToConstructorCache(name,args,shell)
 
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 changeDirectoryInSlot1() ==  --called by NRTbuildFunctor
   --3 cases:
   --  if called inside NRTbuildFunctor, $NRTdeltaLength gives different locs
@@ -634,6 +637,8 @@ changeDirectoryInSlot1() ==  --called by NRTbuildFunctor
           pred := simpBool pred
           $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
         fnsel is [op,a,:.] and (op = 'ELT or op = 'CONST) =>
+          if $insideCategoryPackageIfTrue then
+              opsig := substitute('$,CADR($functorForm),opsig)
           [opsig,pred,[op,a,vectorLocation(first opsig,CADR opsig)]]
         [opsig,pred,fnsel]
   sortedOplist := listSort(function GLESSEQP,
@@ -647,7 +652,7 @@ changeDirectoryInSlot1() ==  --called by NRTbuildFunctor
             $lastPred := pred
        newfnsel :=
          fnsel is ['Subsumed,op1,sig1] =>
-           ['Subsumed,op1,genSlotSig(sig1,'T,$newEnv)]
+           ['Subsumed,op1,genSlotSig(sig1,"T",$newEnv)]
          fnsel
        [[op, genSlotSig(sig,pred,$newEnv)] ,pred,newfnsel]
 

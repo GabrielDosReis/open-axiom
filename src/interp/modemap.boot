@@ -155,13 +155,12 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
     addModemap1(op,mc,sig,pred,fn,e)
   systemErrorHere '"addEltModemap"
  
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 addModemap1(op,mc,sig,pred,fn,e) ==
    --mc is the "mode of computation"; fn the "implementation"
   if mc='Rep then
-     if fn is [kind,'Rep,.] and
+--     if fn is [kind,'Rep,.] and
                -- save old sig for NRUNTIME
-       (kind = 'ELT or kind = 'CONST) then fn:=[kind,'Rep,sig]
+--       (kind = 'ELT or kind = 'CONST) then fn:=[kind,'Rep,sig]
      sig:= substitute("$",'Rep,sig)
   currentProplist:= getProplist(op,e) or nil
   newModemapList:=
@@ -308,7 +307,6 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
 --    get(op,'modemap,e) is [[[mc,:.],:.]] => SUBLIS(PAIR(rest mc,l),catForm)
 --  catForm
  
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 evalAndSub(domainName,viewName,functorForm,form,$e) ==
   $lhsOfColon: local:= domainName
   isCategory form => [substNames(domainName,viewName,functorForm,form.(1)),$e]
@@ -316,7 +314,7 @@ evalAndSub(domainName,viewName,functorForm,form,$e) ==
   if CONTAINED("$$",form) then $e:= put("$$","mode",get("$","mode",$e),$e)
   opAlist:= getOperationAlist(domainName,functorForm,form)
   substAlist:= substNames(domainName,viewName,functorForm,opAlist)
-  [substitute("$","$$",substAlist),$e]
+  [substAlist,$e]
  
 getOperationAlist(name,functorForm,form) ==
   if atom name and GETDATABASE(name,'NILADIC) then functorForm:= [functorForm]
@@ -328,15 +326,19 @@ getOperationAlist(name,functorForm,form) ==
   T:= compMakeCategoryObject(form,$e) => ([.,.,$e]:= T; T.expr.(1))
   stackMessage ["not a category form: ",form]
  
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
-substNames(domainName,viewName,functorForm,catForm) ==
-  EQSUBSTLIST(KDR functorForm,$FormalMapVariableList,
- -- [[[op,if KAR fnsel="PAC" then sig else SUBSTQ(domainName,"$",sig),:x],pred,
- --   SUBSTQ(viewName,"$",fnsel)] for [[op,sig,:x],pred,fnsel] in catForm])
+substNames(domainName,viewName,functorForm,opalist) ==
+  functorForm := SUBSTQ("$$","$", functorForm)
+  nameForDollar :=
+    isCategoryPackageName functorForm => CADR functorForm
+    domainName
+    
        -- following calls to SUBSTQ must copy to save RPLAC's in
        -- putInLocalDomainReferences
-    [[:SUBSTQ(domainName,"$",modemapform),SUBSTQ(viewName,"$",fnsel)]
-      for [:modemapform,fnsel] in catForm])
+  [[:SUBSTQ("$","$$",SUBSTQ(nameForDollar,"$",modemapform)),
+       [sel, viewName,if domainName = "$" then pos else
+                                         CADAR modemapform]]
+     for [:modemapform,[sel,"$",pos]] in
+          EQSUBSTLIST(KDR functorForm,$FormalMapVariableList, opalist)]
  
 compCat(form is [functorName,:argl],m,e) ==
   fn:= GETL(functorName,"makeFunctionList") or return nil
@@ -348,13 +350,16 @@ compCat(form is [functorName,:argl],m,e) ==
   --sure if it uses any of the other signatures(see extendsCategoryForm)
   [form,catForm,e]
  
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 addConstructorModemaps(name,form is [functorName,:.],e) ==
   $InteractiveMode: local:= nil
   e:= putDomainsInScope(name,e) --frame
   fn := GETL(functorName,"makeFunctionList")
   [funList,e]:= FUNCALL(fn,name,form,e)
   for [op,sig,opcode] in funList repeat
+    if opcode is [sel,dc,n] and sel='ELT then
+          nsig := substitute("$$$",name,sig)
+          nsig := substitute('$,"$$$",substitute("$$",'$,nsig))
+          opcode := [sel,dc,nsig]
     e:= addModemap(op,name,sig,true,opcode,e)
   e
  
