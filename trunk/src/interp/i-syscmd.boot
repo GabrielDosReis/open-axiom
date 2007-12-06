@@ -906,10 +906,9 @@ displayMacros names ==
 getParserMacroNames() ==
   REMDUP [CAR mac for mac in getParserMacros()]
 
---------------------> NEW DEFINITION (override in patches.lisp.pamphlet)
 clearParserMacro(macro) ==
   -- first see if it is one
-  not IFCDR assoc(macro, ($pfMacros)) => NIL
+  not IFCDR assoc(macro, $pfMacros) => NIL
   $pfMacros := REMALIST($pfMacros, macro)
 
 displayMacro name ==
@@ -2888,7 +2887,6 @@ zsystemdevelopment1(l,im) ==
 
 --% Synonym File Reader
 
---------------------> NEW DEFINITION (override in util.lisp.pamphlet)
 processSynonyms() ==
   p := STRPOS('")",LINE,0,NIL)
   fill := '""
@@ -3091,15 +3089,11 @@ parseSystemCmd opt ==
     [command, pform]
   [tokTran tok for tok in dumbTokenize opt]
 
---------------------> NEW DEFINITION (override in osyscmd.boot.pamphlet)
 parseFromString(s) ==
-  $useNewParser =>
-     ncParseFromString s
-  $InteractiveMode :local := true
-  $BOOT: local := NIL
-  $SPAD: local := true
-  $e:local := $InteractiveFrame
-  string2SpadTree s
+   s := next(function ncloopParse,
+        next(function lineoftoks,incString s))
+   StreamNull s => nil
+   pf2Sex macroExpanded first rest first s
 
 handleTokensizeSystemCommands(unabr, optionList) ==
   optionList := [dumbTokenize opt for opt in optionList]
@@ -3113,7 +3107,6 @@ getFirstWord string ==
 
 ltrace l == trace l
 
---------------------> NEW DEFINITION (see intint.lisp.pamphlet)
 stripSpaces str ==
   STRING_-TRIM([char '" "], str)
 

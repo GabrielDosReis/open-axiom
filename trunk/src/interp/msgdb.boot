@@ -841,9 +841,9 @@ brightPrintRightJustify x ==
 
 -- some hooks for older functions
 
---------------------> NEW DEFINITION (see macros.lisp.pamphlet)
+
 BRIGHTPRINT x == brightPrint x
---------------------> NEW DEFINITION (see macros.lisp.pamphlet)
+
 BRIGHTPRINT_-0 x == brightPrint0 x
 
 --% Message Formatting Utilities
