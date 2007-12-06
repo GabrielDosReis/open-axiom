@@ -47,10 +47,3 @@ ExecuteInterpSystemCommand string ==
    string = '"" => nil
    doSystemCommand string
 
---------------------> NEW DEFINITION (see i-syscmd.boot.pamphlet)
-parseFromString(s) ==
-   s := next(function ncloopParse,
-        next(function lineoftoks,incString s))
-   StreamNull s => nil
-   pf2Sex macroExpanded first rest first s
- 
