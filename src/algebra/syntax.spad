@@ -33,7 +33,7 @@
 )abbrev domain SYNTAX Syntax
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Updated: November 12, 2007
+++ Date Last Updated: December 05, 2007
 ++ Description:  This domain provides a simple, general, and arguably 
 ++ complete representation of Spad programs as objects of a term algebra
 ++ built from ground terms of type boolean, integers, foats, symbols, 
@@ -49,18 +49,20 @@ Syntax(): Public == Private where
       ++ convert(s) returns the s-expression representation of a syntax.
 
     convert: SExpression -> %
-      ++ convert(s) converts an s-expression to syntax.
+      ++ convert(s) converts an s-expression to syntax.  Note, when `s'
+      ++ is not an atom, it is expected that it designates a proper list,
+      ++ e.g. a sequence of cons cell ending with nil.
 
-    convert: Integer -> %
+    coerce: Integer -> %
       ++ convert(i) injects the integer value `i' into the syntax domain
 
-    convert: DoubleFloat -> %
+    coerce: DoubleFloat -> %
       ++ convert(f) injects the float value `f' into the syntax domain
 
-    convert: Symbol -> %
+    coerce: Symbol -> %
       ++ convert(s) injects the symbol `s' into the syntax domain.
 
-    convert: String -> %
+    coerce: String -> %
       ++ convert(s) injects the string value `s' into the syntax domain
 
     buildSyntax: (Symbol, List %) -> %
@@ -79,6 +81,10 @@ Syntax(): Public == Private where
     getOperands: % -> List %
       ++ getOperands(x) returns the list of operands to the operator in `x'.
 
+    _case: (%, Domain) -> Boolean
+      ++ x case t returns true if x really is of type t, e.g.
+      ++ Integer, DoubleFloat, Symbol, String, or %.
+
   Private ==> SExpression add
     rep(x: %): SExpression ==
       x pretend SExpression
@@ -92,36 +98,45 @@ Syntax(): Public == Private where
     convert(x: SExpression): % ==
       per x
 
-    convert(i: Integer): % ==
-      per convert(i)$SExpression
+    coerce(i: Integer): % ==
+      i pretend %
 
-    convert(f: DoubleFloat): % ==
-      per convert(f)$SExpression
+    coerce(f: DoubleFloat): % ==
+      f pretend %
 
-    convert(s: Symbol): % ==
-      per convert(s)$SExpression
+    coerce(s: Symbol): % ==
+      s pretend %
 
-    convert(s: String): % ==
-      per convert(s)$SExpression
+    coerce(s: String): % ==
+      s pretend %
 
     buildSyntax(s: Symbol, l: List %): % ==
       -- ??? ideally we should have overloaded operator `per' that convert
       -- from list of syntax to syntax.  But the compiler is at the 
       -- moment defective for non-exported overloaded operations.
-      cons(convert(s)$%, l) pretend %
+      cons(s::%, l) pretend %
 
     buildSyntax(op: %, l: List %): % ==
       cons(op, l) pretend %
 
     getOperator x ==
-      s := rep x
+      atom? rep x => userError "atom as operand to getOperator"
+      s := car rep x
       symbol? s => symbol s
       integer? s => integer s
       float? s => float s
       string? s => string s
-      convert(car s)
+      convert s
 
     getOperands x ==
       s := rep x
       atom? s => []
       [per t for t in destruct cdr s]
+
+    s case t ==
+      symbol? rep s => t is Symbol
+      integer? rep s => t is Integer
+      float? rep s => t is DoubleFloat
+      string? rep s => t is String
+      pair? rep s => t is %
+      false
