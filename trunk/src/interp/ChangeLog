@@ -1,5 +1,23 @@
 2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet (xruncomp.$(FASLEXT)): Remove rule.
+	(OCOBJS): Don't include xruncomp.$(FASLEXT) anymore.
+	* xruncomp.boot: Remove.
+	* compiler.boot (getFormModemaps): Merge from xruncomp.boot.
+	* functor.boot (LookUpSigSlots): Likewise.
+	* info.boot (actOnInfo): Likewise.
+	* modemap.boot (addModemap1): Likewise.
+	(evalAndSub): Likewise.
+	(substNames): Likewise.
+	(addConstructorModemaps): Likewise.
+	* nruncomp.boot (NRTencode): Likewise.
+	(genDeltaEntry): Likewise.
+	(NRTassignCapsuleFunctionSlot): Likewise.
+	(consDomainName): Likewise.
+	(changeDirectoryInSlot1): Likewise.
+
+2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* macros.lisp (|$highlightAllowed|): Remove.
 	(|$lightlightFontOn|): Likewise.
 	(|$highlightFontOff|): Likewise.

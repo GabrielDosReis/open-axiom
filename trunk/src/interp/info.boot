@@ -209,7 +209,6 @@ knownInfo pred ==
         --error '"knownInfo"
   false
  
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 actOnInfo(u,$e) ==
   null u => $e
   u is ["PROGN",:l] => (for v in l repeat $e:= actOnInfo(v,$e); $e)
@@ -231,9 +230,10 @@ actOnInfo(u,$e) ==
       --there is nowhere %else that this sort of thing exists
   u is ["SIGNATURE",name,operator,modemap] =>
     implem:=
-      (implem:=assoc([name,:modemap],get(operator,'modemap,$e))) =>
+      (implem:=ASSOC([name,:modemap],get(operator,'modemap,$e))) =>
           CADADR implem
-      ['ELT,name,nil]
+      name = "$" => ['ELT,name,-1]
+      ['ELT,name,substitute('$,name,modemap)]
     $e:= addModemap(operator,name,modemap,true,implem,$e)
     [vval,vmode,venv]:= GetValue name
     SAY("augmenting ",name,": ",u)
@@ -257,7 +257,7 @@ actOnInfo(u,$e) ==
       --    SAY("augmenting ",name,": ",cat)
       --    put(name, "value", (vval, cat, venv), $e)
       member(cat,first ocatvec.4) or
-         assoc(cat,CADR ocatvec.4) is [.,'T,.] => $e
+         ASSOC(cat,CADR ocatvec.4) is [.,"T",.] => $e
         --SAY("Category extension error:
         --cat shouldn't be a join
                       --what was being asserted is an ancestor of what was known

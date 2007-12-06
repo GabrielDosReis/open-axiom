@@ -441,12 +441,13 @@ compForm3(form is [op,:argl],m,e,modemapList) ==
     T
   T
 
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 getFormModemaps(form is [op,:argl],e) ==
   op is ["elt",domain,op1] =>
     [x for x in getFormModemaps([op1,:argl],e) | x is [[ =domain,:.],:.]]
   null atom op => nil
   modemapList:= get(op,"modemap",e)
+  if $insideCategoryPackageIfTrue then
+    modemapList := [x for x in modemapList | x is [[dom,:.],:.] and dom ^= '$]
   if op="elt"
      then modemapList:= eltModemapFilter(LAST argl,modemapList,e) or return nil
      else

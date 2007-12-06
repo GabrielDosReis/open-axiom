@@ -718,9 +718,10 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
   body is ['QSETREFV,:.] => body
   nil
  
---------------------> NEW DEFINITION (override in xruncomp.boot.pamphlet)
 LookUpSigSlots(sig,siglist) ==
 --+ must kill any implementations below of the form (ELT $ NIL)
+  if $insideCategoryPackageIfTrue then
+           sig := substitute('$,CADR($functorForm),sig)
   siglist := $lisplibOperationAlist
   REMDUP [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=CADDR u)
               and KADDR implem]
