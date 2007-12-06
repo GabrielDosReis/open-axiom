@@ -1,3 +1,10 @@
+2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (Syntax): Conversions to Integer, DoubleFloat,
+	Symbol, and String are not implicit.
+	(case$Syntax): New function.
+	(getOperator$Syntax): Adjust.
+
 2007-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* script-parser.spad: New.
