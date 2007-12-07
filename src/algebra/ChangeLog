@@ -1,3 +1,8 @@
+2007-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (Syntax): Add explicit conversion functions from 
+	Syntax to Integer, DoubleFloat, Symbol, and String.
+
 2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* syntax.spad (Syntax): Conversions to Integer, DoubleFloat,
