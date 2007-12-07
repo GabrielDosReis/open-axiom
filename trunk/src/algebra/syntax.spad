@@ -54,16 +54,28 @@ Syntax(): Public == Private where
       ++ e.g. a sequence of cons cell ending with nil.
 
     coerce: Integer -> %
-      ++ convert(i) injects the integer value `i' into the syntax domain
+      ++ coerce(i) injects the integer value `i' into the Syntax domain
+
+    convert: % -> Integer
+      ++ coerce(i) extracts the integer value `i' from the Syntax domain
 
     coerce: DoubleFloat -> %
-      ++ convert(f) injects the float value `f' into the syntax domain
+      ++ coerce(f) injects the float value `f' into the Syntax domain
+
+    convert: % -> DoubleFloat
+      ++ convert(f) extracts the float value `f' from the Syntax domain
 
     coerce: Symbol -> %
-      ++ convert(s) injects the symbol `s' into the syntax domain.
+      ++ coerce(s) injects the symbol `s' into the Syntax domain.
+
+    convert: % -> Symbol
+      ++ convert(s) extracts the symbol `s' from the Syntax domain.
 
     coerce: String -> %
-      ++ convert(s) injects the string value `s' into the syntax domain
+      ++ coerce(s) injects the string value `s' into the syntax domain
+
+    convert: % -> String
+      ++ convert(s) extract the string value `s' from the syntax domain
 
     buildSyntax: (Symbol, List %) -> %
       ++ buildSyntax(op, [a1, ..., an]) builds a syntax object for op(a1,...,an).
@@ -101,14 +113,30 @@ Syntax(): Public == Private where
     coerce(i: Integer): % ==
       i pretend %
 
+    convert(i: %): Integer ==
+      not integer? rep i => userError "invalid conversion target type"
+      i pretend Integer
+
     coerce(f: DoubleFloat): % ==
       f pretend %
+
+    convert(f: %): DoubleFloat ==
+      not float? rep f => userError "invalid conversion target type"
+      f pretend DoubleFloat
 
     coerce(s: Symbol): % ==
       s pretend %
 
+    convert(s: %): Symbol ==
+      not symbol? rep s => userError "invalid conversion target type"
+      s pretend Symbol
+
     coerce(s: String): % ==
       s pretend %
+
+    convert(s: %): String ==
+      not string? rep s => userError "invalid conversion target type"
+      s pretend String
 
     buildSyntax(s: Symbol, l: List %): % ==
       -- ??? ideally we should have overloaded operator `per' that convert
