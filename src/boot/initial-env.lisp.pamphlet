@@ -65,7 +65,7 @@ by \code{BOOTTRAN}:
 (defpackage "BOOTTRAN"
   (:use "AxiomCore")
   #+:common-lisp  (:use "COMMON-LISP")
-  #-:common-lisp  (:use "LISP" "SYSTEM"))
+  #-:common-lisp  (:use "LISP"))
 
 @
 

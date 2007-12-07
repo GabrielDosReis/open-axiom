@@ -550,7 +550,7 @@ getSlotFromDomain(dom,op,oldSig) ==
   isPackageForm dom => getSlotFromPackage(dom,op,oldSig)
   domain:= evalDomain dom
   n:= findConstructorSlotNumber(dom,domain,op,sig) =>
-    (slot:= domain.n).0 = Undef =>
+    (slot:= domain.n).0 = function Undef =>
       throwKeyedMsg("S2IL0023A",[op,formatSignature sig,dom])
     slot
   throwKeyedMsg("S2IL0024A",[op,formatSignature sig,dom])

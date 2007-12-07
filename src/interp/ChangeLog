@@ -1,3 +1,17 @@
+2007-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisplib.boot (getSlotFromDomain): Use pointer to function Undef
+	directly, instead of variable Undef.
+	* i-syscmd.boot (cd): Move from patches.lisp to here.
+	* g-timer.boot (printTimeIfTrue): Move from patches.lisp to here.
+	* patches.lisp (Undef): Remove.
+	($printTimeIfTrue): Move to g-timer.boot.
+	(cd): Move to i-syscmd.boot.
+	(nullstream): Remove.
+	(nononullstream): Likewise.
+	(/MAJOR-VERSION): Move to sys-constants.boot.
+	* setq.lisp (/MAJOR-VERSION): Remove.
+
 2007-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (xruncomp.$(FASLEXT)): Remove rule.

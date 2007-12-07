@@ -40,6 +40,8 @@ import '"g-util"
 --  These functions can be used with arbitrary lists of
 --  named stats (listofnames) grouped in classes (listofclasses)
 --  and with measurement types (property, classproperty).
+
+printTimeIfTrue := false
  
 printNamedStatsByProperty(listofnames, property) ==
   total := +/[GETL(name,property) for [name,:.] in listofnames]
