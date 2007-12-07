@@ -239,6 +239,21 @@ listConstructorAbbreviations() ==
     whatSpad2Cmd '(packages)
   sayKeyedMsg("S2IZ0057",NIL)
 
+--% )cd
+
+cd args ==
+  dir := TRUENAME STRING(car args or '"")
+)if %hasFeature KEYWORD::SBCL
+  SB_-POSIX::CHDIR NAMESTRING dir
+)elseif %hasFeature KEYWORD::GCL
+  SYSTEM::CHDIR NAMESTRING dir
+)else
+  internalError '"don't know how to chdir in this Lisp"
+)endif
+  SETF(_*DEFAULT_-PATHNAME_-DEFAULTS_*, ensureTrailingSlash NAMESTRING dir)
+  sayKeyedMsg("S2IZ0070", [NAMESTRING _*DEFAULT_-PATHNAME_-DEFAULTS_*]) 
+
+
 --% )clear
 
 clear l == clearSpad2Cmd l

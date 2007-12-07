@@ -425,3 +425,7 @@ _/TRACENAMES := nil
 
 ++
 $highlightAllowed := true
+
+++
+_*PRINT_-CIRCLE_* := true
+_*PRINT_-ARRAY_* := false

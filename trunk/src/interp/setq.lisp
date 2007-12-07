@@ -42,7 +42,6 @@
 (import-module "macros")
 (in-package "BOOT")
 
-(SETQ |/MAJOR-VERSION| 7)
 (SETQ /RELEASE 0)
 
 (defconstant |$cclSystem|

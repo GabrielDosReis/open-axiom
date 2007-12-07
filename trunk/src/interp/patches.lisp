@@ -49,7 +49,6 @@
 (define-function '|construct| #'list) ;; NEEDED , SPAD-COMPILER generated Lisp code
 (define-function '|COMP,TRAN| #'comp-tran) ;called by |compWithMappingMode|
 
-(defvar |Undef| (function |Undef|)) ;needed in NewbFVectorCopy
 (define-function '|spadHash| #'sxhash)
 
 (defun |mkAutoLoad| (fn cname)
@@ -57,23 +56,9 @@
                  (|autoLoad| fn cname)
                  (apply cname args))))
 
-(setq |$printTimeIfTrue| nil)
-
-
 (defmacro dribinit (streamvar)
   `(if (is-console ,streamvar)
        (setq ,streamvar *terminal-io*)))
-
-(defun |cd| (args)
-  (let ((dir (truename (string (or (car args) "")))))
-    #+ :SBCL (sb-posix::chdir (namestring dir))
-    #+ :GCL (system::chdir (namestring dir))
-    #- (or :SBCL :GCL) (error "don't know how to chdir in this Lisp")
-    ;; FIXME: some Lisps may not properly end the name with slash
-    ;;        investigate.
-    (setf *default-pathname-defaults* (|ensureTrailingSlash| dir))
-    (|sayKeyedMsg| 'S2IZ0070 
-                   (list (namestring *default-pathname-defaults*)))))
 
 ;; The function top-level is the very root of the normal invocation
 ;; history stack. Control will pass to the restart function which is 
@@ -96,8 +81,6 @@
 
 (setq |$useInternalHistoryTable| T)
 (defvar |$internalHistoryTable| ())
-(setq |nullstream| '|nullstream|)
-(setq |nonnullstream| '|nonnullstream|)
 (defun |cpCms| (prefix &optional (string (|getSystemCommandLine|)))
   (setq string (concat prefix string))
   (if (equal string "") (obey "sh")
@@ -371,7 +354,6 @@
 ;; (|xdrRead| xfoo (make-array 10 :element-type 'long-float ))
 ;; (setq *print-array* NIL)
 
-(setq /MAJOR-VERSION 2)
 (setq echo-meta nil)
 (defun /versioncheck (n) (unless (= n /MAJOR-VERSION) (throw 'versioncheck -1)))
 
