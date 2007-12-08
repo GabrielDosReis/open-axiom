@@ -34,6 +34,9 @@ import '"i-coerfn"
 )package "BOOT"
 
 $constructorExposureList := '(Boolean Integer String)
+$domPvar := nil
+
+
 
 sayFunctionSelection(op,args,target,dc,func) ==
   $abbreviateTypes : local := true

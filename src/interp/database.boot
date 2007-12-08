@@ -40,6 +40,7 @@ import '"compat"
 )package "BOOT"
 
 $getUnexposedOperations := true
+$globalExposureGroupAlist := []
 
 --% Functions for manipulating MODEMAP DATABASE
 

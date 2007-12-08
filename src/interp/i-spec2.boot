@@ -33,6 +33,17 @@
 import '"i-spec1"
 )package "BOOT"
 
+++ Interpreter macros
+$InterpreterMacroAlist ==
+  '((%i . (complex 0 1))
+    (%e . (exp 1))
+    (%pi . (pi))
+    (SF . (DoubleFloat))
+    (%infinity . (infinity))
+    (%plusInfinity . (plusInfinity))
+    (%minusInfinity . (minusInfinity)))
+
+
 -- Functions which require special handlers (also see end of file)
 
 --% Handlers for map definitions

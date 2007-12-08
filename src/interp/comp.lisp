@@ -56,6 +56,8 @@
 
 (export '(Comp FluidVars LocVars OptionList SLAM SPADSLAM ILAM FLUID))
 
+(defparameter |$compileDontDefineFunctions| 'T)
+
 ;;; Common Block section
 
 (defparameter FluidVars nil)

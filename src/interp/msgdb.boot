@@ -86,6 +86,8 @@ $cacheMessages := 'T  -- for debugging purposes
 $msgAlist := NIL
 $msgDatabaseName := NIL
 $testingErrorPrefix :=  '"Daly Bug"
+$testingSystem := false
+
 
 $texFormatting := false
 

@@ -110,6 +110,10 @@ asTupleAsList(at) == VEC2LIST asTupleAsVector at
 
 --% Basic Object Type Identification
 
+++ The VAT class for literals values.
+$immediateDataSymbol ==
+  "--immediateData--"
+
 ++ If x is a literal of the basic types (Integer String DoubleFloat) then
 ++ this function returns its type, and nil otherwise.
 getBasicMode x ==  getBasicMode0(x,$useIntegerSubdomain)

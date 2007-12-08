@@ -39,6 +39,8 @@ import '"macros"
 
 -- some of these are redundant and should be compacted
 $formatSigAsTeX := 1
+$permitWhere := false
+
 
 --% Formatting modemaps
 

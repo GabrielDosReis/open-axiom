@@ -45,6 +45,10 @@ import '"iterator"
 $coreDiagnosticFunctions == 
   '(error userError systemError)
 
+++ list of functions to compile
+$compileOnlyCertainItems := []
+
+
 compTopLevel(x,m,e) ==
 --+ signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false

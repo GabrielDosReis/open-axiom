@@ -427,5 +427,19 @@ _/TRACENAMES := nil
 $highlightAllowed := true
 
 ++
-_*PRINT_-CIRCLE_* := true
-_*PRINT_-ARRAY_* := false
+SETQ(_*PRINT_-CIRCLE_*, true)
+SETQ(_*PRINT_-ARRAY_*, false)
+SETQ(_*PRINT_-PRETTY_*, true)
+
+++
+INPUT_-LIBRARIES := nil
+OUTPUT_-LIBRARY := nil
+
+++
+$newConlist := nil
+
+++
+$compilingInputFile := false
+
+++
+$minivectorNames := []

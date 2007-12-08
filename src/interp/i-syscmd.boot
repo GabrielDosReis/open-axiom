@@ -44,6 +44,11 @@ $SYSCOMMANDS := [CAR x for x in $systemCommands]
 
 UNDERBAR == '"__"
 
+$NonNullStream ==
+  '"NonNullStream"
+
+$NullStream ==
+  '"NullStream"
 
 $whatOptions := '( _
     operations _
@@ -76,6 +81,13 @@ $displayOptions := '( _
   )
 
 $countAssoc := '( (cache countCache) )
+
+$localExposureDataDefault :=
+  VECTOR(["basic", "categories"], [], [])
+
+$localExposureData := 
+  COPY_-SEQ $localExposureDataDefault
+
 
 --% Top level system command
 
