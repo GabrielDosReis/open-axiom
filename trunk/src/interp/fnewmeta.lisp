@@ -813,7 +813,16 @@
                                      NIL))))
                      (AND (MATCH-ADVANCE-STRING "}")
                           (PUSH-REDUCTION '|PARSE-Enclosure|
-                              (CONS '|brace| NIL)))))))) 
+                              (CONS '|brace| NIL))))))
+      (AND (MATCH-ADVANCE-STRING "[|")
+	   (MUST (AND (|PARSE-Statement|)
+		      (MUST (MATCH-ADVANCE-STRING "|]"))
+		      (PUSH-REDUCTION '|PARSE-Enclosure|
+				      (CONS '|[\|\|]|
+					    (CONS (POP-STACK-1) NIL))))))
+
+
+      )) 
 
 
 (DEFUN |PARSE-IntegerTok| () (PARSE-NUMBER)) 

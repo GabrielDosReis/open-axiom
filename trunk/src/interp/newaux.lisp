@@ -172,7 +172,7 @@
 
 (mapcar #'(lambda (x) (makeprop (car x) 'gliph (cdr x)))
         `(
-          ( \| (\))        )
+          ( \| (\))  (])   )
           ( *  (*)         )
           ( \( (<) (\|)    )
           ( +  (- (>))     )
@@ -185,6 +185,7 @@
           ( \. (\.)        )
           ( ^  (=)         )
           ( \~ (=)         )
+          ( [  (\|)        )
           ( \: (=) (-) (\:))))
 
 ;; RENAMETOK defines alternate token strings which can be used for different

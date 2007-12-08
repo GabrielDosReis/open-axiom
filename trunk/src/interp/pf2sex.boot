@@ -38,6 +38,12 @@ import '"ptrees"
 $dotdot := INTERN('"..", '"BOOT")
 $specificMsgTags := nil
 
+++ nonzero means we are processing an Application parse form
+$insideApplication := 0
+
+++ nonzero means we are processing a quasiquotation parse form
+$insideQuasiquotation := 0
+
 -- Pftree to s-expression translation.  Used to interface the new parser
 -- technology to the interpreter.  The input is a parseTree and the
 -- output is an old-parser-style s-expression
@@ -45,8 +51,9 @@ $specificMsgTags := nil
 pf2Sex pf ==
   intUnsetQuiet()
   $insideRule:local := false
-  $insideApplication: local := false
+  $insideApplication := 0
   $insideSEQ: local := false
+  $insideQuasiquotation := 0
   pf2Sex1 pf
 
 pf2Sex1 pf ==
@@ -202,11 +209,19 @@ pfOp2Sex pf ==
     op
   op
 
+pfFinishApplication pf ==
+  $insideApplication := $insideApplication - 1
+  pf
+
 pfApplication2Sex pf ==
-  $insideApplication: local := true
+  -- Assume we are parsing an application, so that we can translate
+  -- (DEF ...) as optional argument specification.  That is a weird
+  -- syntax used for example with the drawing package for specifying
+  -- argument to the draw() commands.  
+  $insideApplication := $insideApplication + 1
   op := pfOp2Sex pfApplicationOp pf
   op := opTran op
-  op = "->" =>
+  op = "->" => pfFinishApplication
     args := pf0TupleParts pfApplicationArg pf
     if pfTuple? CAR args then
       typeList := [pf2Sex1 arg for arg in pf0TupleParts CAR args]
@@ -215,11 +230,11 @@ pfApplication2Sex pf ==
     args := [pf2Sex1 CADR args, :typeList]
     ["Mapping", :args]
   symEqual(op, ":") and $insideRule = 'left =>
-    ["multiple", pf2Sex pfApplicationArg pf]
+    pfFinishApplication ["multiple", pf2Sex pfApplicationArg pf]
   symEqual(op, "?") and $insideRule = 'left =>
-    ["optional", pf2Sex pfApplicationArg pf]
+    pfFinishApplication ["optional", pf2Sex pfApplicationArg pf]
   args := pfApplicationArg pf
-  pfTuple? args =>
+  pfTuple? args => pfFinishApplication
     symEqual(op, "|") and $insideRule = 'left =>
       pfSuchThat2Sex args
     argSex := rest pf2Sex1 args
@@ -248,15 +263,23 @@ pfApplication2Sex pf ==
     val := hasOptArgs? argSex => [op, :val]
     [op, :argSex]
   op is [qt, realOp] and symEqual(qt, "QUOTE") =>
-     ["applyQuote", op, pf2Sex1 args]
-  symEqual(op, "braceFromCurly") =>
+    pfFinishApplication ["applyQuote", op, pf2Sex1 args]
+  symEqual(op, "braceFromCurly") => pfFinishApplication
 --  ["brace", ["construct", pf2Sex1 args]]
     x := pf2Sex1 args
     x is ["SEQ", :.] => x
     ["SEQ", x]
   symEqual(op, "by") =>
-      ["BY", pf2Sex1 args]
-  [op, pf2Sex1 args]
+    pfFinishApplication ["BY", pf2Sex1 args]
+  symEqual(op, "[||]") => 
+    pfFinishApplication pfQuasiquotation2Sex(op, args)
+  pfFinishApplication [op, pf2Sex1 args]
+
+pfQuasiquotation2Sex(op, form) ==
+  $insideQuasiquotation := $insideQuasiquotation + 1
+  form := pf2Sex1 form
+  $insideQuasiquotation := $insideQuasiquotation - 1
+  [op, form]
 
 hasOptArgs? argSex ==
   nonOpt := nil
@@ -269,7 +292,7 @@ hasOptArgs? argSex ==
   NCONC (nreverse nonOpt, [["construct", :nreverse opt]])
 
 pfDefinition2Sex pf ==
-  $insideApplication =>
+  $insideApplication > $insideQuasiquotation =>
     ["OPTARG", pf2Sex1 CAR pf0DefinitionLhsItems pf,
      pf2Sex1 pfDefinitionRhs pf]
   idList := [pf2Sex1 x for x in pf0DefinitionLhsItems pf]

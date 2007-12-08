@@ -291,6 +291,10 @@ $Void ==
 $Any ==
   '(Any)
 
+++ The Syntax domain constructor form
+$Syntax ==
+  '(Syntax)
+
 ++ Boolean domain constructor form
 $Boolean ==
   '(Boolean)

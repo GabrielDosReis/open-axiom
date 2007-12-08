@@ -43,7 +43,8 @@ $anonymousMapCounter := 0
 $specialOps := '(
   ADEF AlgExtension _and _case COERCE COLLECT construct Declare DEF Dollar
    equation error free has IF _is _isnt iterate _break LET _local MDEF _or
-    pretend QUOTE REDUCE REPEAT _return SEQ TARGET Tuple typeOf _where )
+    pretend QUOTE REDUCE REPEAT _return SEQ TARGET Tuple typeOf _where 
+     _[_|_|_] )
 
 --% Void stuff
 
