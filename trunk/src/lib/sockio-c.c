@@ -48,6 +48,9 @@
 #include <string.h>
 #include <signal.h>
 
+#define _ISOC99_SOURCE
+#include <math.h>
+
 #include "com.h"
 #include "bsdsignal.h"
 
@@ -1149,23 +1152,30 @@ print_line(char *s)
 }
 
 
-/* The next three functions use GCC extensions.  At the moment, that
-   is not a problem because GCC is a requirement.  */
-
 double 
 plus_infinity(void )
 {
-   return __builtin_huge_val();
+#ifdef INFINITY   
+   return INFINITY;
+#else
+   /* This must be a curious platform.  */
+   volatile double zero = 0.0;
+   return 1.0 / zero;           /* If it traps, well, it traps.  */
+#endif   
 }
 
 double 
 minus_infinity(void)
 {
-   return -__builtin_huge_val();
+   return -plus_infinity();
 }
 
 double 
 NANQ(void)
 {
-   return __builtin_nan("");
+#ifdef NAN
+   return NAN;
+#else
+   return sqrt(-1.0);            /* Juts pick one.  */
+#endif
 }
