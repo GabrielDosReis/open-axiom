@@ -223,8 +223,6 @@ computeElapsedTime() ==
   currentGCTime:= elapsedGcTime()
   gcDelta := currentGCTime - $oldElapsedGCTime
   elapsedSeconds:=
-     -- In CCL total time does not include GC time.
-     $cclSystem => 1.*(currentTime-$oldElapsedTime)/$timerTicksPerSecond
      1.*(currentTime-$oldElapsedTime-gcDelta)/$timerTicksPerSecond
   PUT('gc, 'TimeTotal,GETL('gc,'TimeTotal) +
                    1.*gcDelta/$timerTicksPerSecond)

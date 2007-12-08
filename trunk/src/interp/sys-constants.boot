@@ -51,7 +51,6 @@ $timerTicksPerSecond ==
 _/MAJOR_-VERSION ==
   2
 
-
 --
 -- Text formatting
 --
@@ -239,11 +238,17 @@ $DomainVariableList ==
   '(_$1 _$2 _$3 _$4 _$5 _$6 _$7 _$8 _$9 _$10 _$11 _
     _$12 _$13 _$14 _$15 _$16 _$17 _$18 _$19 _$20)
 
+$TriangleVariableList ==
+  '(t_#1 t_#2 t_#3 t_#4 t_#5 t_#6 t_#7 t_#8 t_#9 t_#10
+    t_#11 t_#12 t_#13 t_#14 t_#15 t_#16 t_#17 t_#18 t_#19 t_#20
+    t_#21 t_#22 t_#23 t_#24 t_#25 t_#26 t_#27 t_#28 t_#29 t_#30
+    t_#31 t_#32 t_#33 t_#34 t_#35 t_#36 t_#37 t_#38 t_#39 t_#40
+    t_#41 t_#42 t_#43 t_#44 t_#45 t_#46 t_#47 t_#48 t_#49 t_#50)
 
 ++ List of basic predicates the system has a built-in optimization
 ++ support for.
 $BasicPredicates ==
-  '(INTEGERP STRINGP FLOATP)
+  '(INTEGERP STRINGP FLOATP SYMBOLP)
 
 
 
@@ -282,12 +287,19 @@ $SideEffectFreeFunctionList ==
 $Void ==
   '(Void)
 
+++ The Any domain constructor form
+$Any ==
+  '(Any)
+
 ++ Boolean domain constructor form
 $Boolean ==
   '(Boolean)
 
 ++ The SmallInteger domain constructor form
 $SmallInteger ==
+  '(SingleInteger)
+
+$SingleInteger ==
   '(SingleInteger)
 
 ++ The Integer domain constructor form.
@@ -311,9 +323,17 @@ $NonPositiveInteger ==
 $PositiveInteger ==
   '(PositiveInteger)
 
+++ The fraction field constructor
+$QuotientField ==
+  'Fraction
+
 ++ The RationalNumber domain constructor form
 $RationalNumber ==
   '(Fraction (Integer))
+
+++ The domain constructor for Gaussian integers
+$ComplexInteger ==
+  ["Complex", $Integer]
 
 
 ++ SingleFloat domain constructor form
@@ -349,9 +369,21 @@ $Symbol ==
 $EmptyMode ==
   "$EmptyMode"
 
+++ The OutputForm domain constructor form
+$OutputForm ==
+  '(OutputForm)
+
+++ The domain constructor for functional expression
+$FunctionalExpression ==
+  'Expression
+
 ++ Expression domain constructor form
 $Expression ==
   '(OutputForm)
+
+++ The constructor form for unnamed functions.
+$AnonymousFunction ==
+  '(AnonymousFunction)
 
 ++ Exit domain constructor form
 $Exit ==

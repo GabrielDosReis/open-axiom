@@ -49,8 +49,6 @@
 (defvar |$compForModeIfTrue| nil "checked in compSymbol")
 (defvar |$functorForm| nil "checked in addModemap0")
 (defvar |$formalArgList| nil "checked in compSymbol")
-(defvar |$newCompCompare| nil "compare new compiler with old")
-(defvar |$compileOnlyCertainItems| nil "list of functions to compile")
 (defvar |$newCompAtTopLevel| nil "if t uses new compiler")
 (defvar |$doNotCompileJustPrint| nil "switch for compile")
 (defvar |$PrintCompilerMessageIfTrue| t)

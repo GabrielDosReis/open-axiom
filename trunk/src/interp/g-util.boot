@@ -35,6 +35,10 @@
 import '"macros"
 )package "BOOT"
 
+++
+$interpOnly := false
+
+
 --% Utility Functions of General Use
 
 ELEMN(x, n, d) ==

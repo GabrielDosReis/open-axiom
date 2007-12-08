@@ -1,3 +1,62 @@
+2007-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bc-util.boot ($newConstructorList): Move from setq.lisp to here.
+	($createLocalLibDb): Likewise.
+	* clam.boot ($hashNode): Likewise.
+	* comp.lisp (|$compileDontDefineFunctions|): Likewise.
+	* compiler.boot ($compileOnlyCertainItems): Likewise.
+	* database.boot ($globalExposureGroupAlist): Likewise.
+	* define.boot ($newCompCompare): Likewise.
+	* format.boot ($permitWhere): Likewise.
+	* g-boot.boot ($inDefLET): Likewise.
+	($inDefIS): Likewise.
+	($letGenVarCounter): Likewise.
+	($isGenVarCounter): Likewise.
+	* g-error.boot ($ReadingFile): Likewise.
+	(handleLispBreakLoop): Remove special case on $cclSystem.
+	* g-timer.boot (computeElapsedTime): Likewise.
+	* g-util.boot ($interpOnly): Move from setq.lisp to here.
+	* i-funsel.boot ($domPvar): Likewise.
+	* i-object.boot ($immediateDataSymbol): Likewise.
+	* i-output.boot ($algebraOutputStream): Likewise.
+	(ERROROUTSTREAM): Likewise.
+	(ERRORINSTREAM): Likewise.
+	* i-spec2.boot ($InterpreterMacroAlist): Likewise.
+	* i-syscmd.boot ($NonNullStream): Likewise.
+	($NullStream): Likewise.
+	($localExposureDataDefault): Likewise.
+	($localExposureData): Likewise.
+	* lisplib.boot ($functionLocations): Likewise.
+	* msgdb.boot ($testingSystem): Likewise.
+	* nlib.lisp (get-directory-list): Tidy.
+	* nruncomp.boot ($devaluateList): Move from setq.lisp to here.
+	($functorLocalParameters): Likewise.
+	($insideCategoryPackageIfTrue): Likewise.
+	($profileCompiler): Likewise.
+	* nrunfast.boot ($doNotCompressHashTableIfTrue): Likewise.
+	* nrungo.boot ($insideCompileBodyIfTrue): Likewise.
+	* setvars.boot ($InitialCommandSynonymAlist): Likewise.
+	($CommandSynonymAlist): Likewise.
+	(setOutputLibrary): Simplify.
+	* spad.lisp (|$newCompCompare|): Don't set here.
+	(|$compileOnlyCertainItems|): Likewise.
+	* sys-constants.boot ($BasicPredicates): Include SYMBOLP.
+	($TriangleVariableList): Move from setq.lisp to here.
+	($Any): Likewise.
+	($Boolean): Likewise.
+	($SingleInteger): Likewise.
+	($QuotientField): Likewise.
+	($ComplexInteger): Likewise.
+	($OutputForm): Likewise.
+	($FunctionalExpression): Likewise.
+	($Expression): Likewise.
+	($AnonymousFunction): Likewise.
+	* sys-globals.boot (INPUT_-LIBRARIES): Likewise.
+	(OUTPUT_-LIBRARY): Likewise.
+	($newConlist): Likewise.
+	($compilingInputFile): Likewise.
+	($minivectorNames): Likewise.
+
 2007-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisplib.boot (getSlotFromDomain): Use pointer to function Undef

@@ -57,6 +57,60 @@ import '"macros"
 import '"debug"
 )package "BOOT"
 
+
+$InitialCommandSynonymAlist == '(
+   (?          . "what commands")
+   (ap         . "what things")
+   (apr        . "what things")
+   (apropos    . "what things")
+   (cache      . "set functions cache")
+   (cl         . "clear")
+   (cls        . "zsystemdevelopment )cls")
+   (cms        . "system")
+   (co         . "compiler")
+   (d          . "display")
+   (dep        . "display dependents")
+   (dependents . "display dependents")
+   (e          . "edit")
+   (expose     . "set expose add constructor")
+   (fc         . "zsystemdevelopment )c")
+   (fd         . "zsystemdevelopment )d")
+   (fdt        . "zsystemdevelopment )dt")
+   (fct        . "zsystemdevelopment )ct")
+   (fctl       . "zsystemdevelopment )ctl")
+   (fe         . "zsystemdevelopment )e")
+   (fec        . "zsystemdevelopment )ec")
+   (fect       . "zsystemdevelopment )ect")
+   (fns        . "exec spadfn")
+   (fortran    . "set output fortran")
+   (h          . "help")
+   (hd         . "system hypertex &")
+   (kclam      . "boot clearClams ( )")
+   (killcaches . "boot clearConstructorAndLisplibCaches ( )")
+   (patch      . "zsystemdevelopment )patch")
+   (pause      . "zsystemdevelopment )pause")
+   (prompt     . "set message prompt")
+   (recurrence . "set functions recurrence")
+   (restore    . "history )restore")
+   (save       . "history )save")
+   (startGraphics    .  "system $AXIOM/lib/viewman &")
+   (stopGraphics     .  "lisp (|sockSendSignal| 2 15)")
+   (time       . "set message time")
+   (type       . "set message type")
+   (unexpose   . "set expose drop constructor")
+   (up         . "zsystemdevelopment )update")
+   (version    . "lisp *yearweek*")
+   (w          . "what")
+   (wc         . "what categories")
+   (wd         . "what domains")
+   (who        . "lisp (pprint credits)")
+   (wp         . "what packages")
+   (ws         . "what synonyms")
+ )
+
+$CommandSynonymAlist := 
+  COPY $InitialCommandSynonymAlist
+
 -- The `set' function in this file handles the top level `)set'
 -- command line functions.
 
@@ -346,7 +400,7 @@ setInputLibrary arg ==
 
 setOutputLibrary arg ==
   -- Hack to avoid initialising libraries in KCL:
-  not $cclSystem => false
+  true => false
   arg = "%initialize%" =>
     $outputLibraryName := nil
   arg = "%display%" =>

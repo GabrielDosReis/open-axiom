@@ -38,6 +38,8 @@ import '"category"
 )package "BOOT"
 
 NRTPARSE := false
+$newCompCompare := false
+
 
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
  

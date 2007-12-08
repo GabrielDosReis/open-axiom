@@ -369,15 +369,17 @@
 (defun probe-name (file)
   (if (probe-file file) (namestring file) nil))
 
-(defun get-directory-list (ft &aux (cd (namestring (get-current-directory))))
-  (cond ((member ft '("NRLIB" "DAASE" "EXPOSED") :test #'string=)
+(defun get-directory-list (ft)
+  (let ((cd (namestring (truename "./"))))
+    (cond ((member ft '("NRLIB" "DAASE" "EXPOSED") :test #'string=)
            (if (eq |$UserLevel| '|development|)
                (cons cd $library-directory-list)
-               $library-directory-list))
-        (t (adjoin cd 
-              (adjoin (namestring (user-homedir-pathname)) $directory-list 
-                      :test #'string=) 
-              :test #'string=))))
+	     $library-directory-list))
+	  (t (adjoin cd 
+		     (adjoin (namestring (user-homedir-pathname)) 
+			     $directory-list 
+			     :test #'string=) 
+		     :test #'string=)))))
 
 (defun make-input-filename (filearg &optional (filetype nil))
    (let*

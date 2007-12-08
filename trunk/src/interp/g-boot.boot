@@ -43,7 +43,11 @@ import '"g-util"
 -- these supplement those in DEF and MACRO LISP
  
 --% Utilities
- 
+
+$inDefLET := false
+$inDefIS := false
+$letGenVarCounter := 1
+$isGenVarCounter := 1 
  
 $LET := 'SPADLET    -- LET is a standard macro in Common Lisp
  

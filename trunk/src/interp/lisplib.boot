@@ -34,6 +34,9 @@ import '"nlib"
 import '"c-util"
 )package "BOOT"
 
+++
+$functionLocations := []
+
 --% Standard Library Creation Functions
  
 readLib(fn,ft) == readLib1(fn,ft,"*")

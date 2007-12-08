@@ -44,53 +44,12 @@
 
 (SETQ /RELEASE 0)
 
-(defconstant |$cclSystem|
-#+:CCL 't
-#-:CCL nil
-)
-
-;; These two variables are referred to in setvars.boot.
-#+:kcl (setq input-libraries nil)
-#+:kcl (setq output-library nil)
-
-;; For the browser, used for building local databases when a user compiles
-;; their own code.
-(SETQ |$newConstructorList| nil)
-(SETQ |$newConlist| nil)
-(SETQ |$createLocalLibDb| 't)
-
-
 ;; These were originally in SPAD LISP
 
-(SETQ $BOOT NIL)
-(setq |$interpOnly| nil)
-(SETQ |$testingSystem| NIL)
-(SETQ |$publicSystem| NIL)
-(SETQ |$newCompCompare| NIL)
-(SETQ |$permitWhere| NIL)
-(SETQ |$newSystem| T)
-(SETQ |$compileDontDefineFunctions| 'T)
-(SETQ |$compileOnlyCertainItems| NIL)
-(SETQ |$devaluateList| NIL)
-(SETQ |$doNotCompressHashTableIfTrue| NIL)
 (SETQ |$mutableChecking| NIL)    ; used in DEFINE BOOT
 (SETQ |$mutableDomains| NIL)     ; checked in DEFINE BOOT
-(SETQ |$functionLocations| NIL)
-(SETQ |$functorLocalParameters| NIL) ; used in compSymbol
-(SETQ /RELEASE '"UNKNOWN")
-(SETQ |$insideCategoryPackageIfTrue| NIL)
-(SETQ |$insideCompileBodyIfTrue| NIL)
-(SETQ |$globalExposureGroupAlist| NIL)
-(SETQ |$localExposureDataDefault|
-  (VECTOR (LIST '|basic| '|categories|) NIL NIL))
-(SETQ |$localExposureData|
-  (VECTOR (LIST '|basic| '|categories|) NIL NIL))
-(SETQ |$compilingInputFile| NIL)
-(SETQ |$minivectorNames| NIL)
-(setq |$ReadingFile| NIL)
-(setq |$NonNullStream| "NonNullStream")
-(setq |$NullStream| "NullStream")
-(setq |$domPvar| nil)
+
+
 (defvar $dalymode nil "if true then leading paren implies lisp cmd")
 (setq |$Newline| #\Newline)
 
@@ -136,33 +95,16 @@
 
 (SETQ |$abbreviateJoin| NIL)
 
-(SETQ |$InterpreterMacroAlist|
-      '((|%i| . (|complex| 0 1))
-        (|%e| . (|exp| 1))
-        (|%pi| . (|pi|))
-        (|SF| . (|DoubleFloat|))
-        (|%infinity| . (|infinity|))
-        (|%plusInfinity| . (|plusInfinity|))
-        (|%minusInfinity| . (|minusInfinity|))))
-
 ;; variables controlling companion pages (see copage.boot)
 (SETQ |$HTCompanionWindowID| nil)
 (SETQ |$HTPreviousDomain| nil)
 (SETQ |$HTOperationError| nil)
-
-;; Common lisp control variables
-;;(setq *load-verbose* nil)
-(setq *print-array* nil)
-(setq *print-pretty* nil)
-(setq *print-circle* nil)
 
 (SETQ |S:SPADTOK| 'SPADSYSTOK)
 (SETQ APLMODE NIL)
 (SETQ RLGENSYMFG NIL)
 (SETQ RLGENSYMLST NIL)
 (SETQ XTOKENREADER 'SPADTOK)
-(SETQ |$delimiterTokenList|
-  '(| |  |)| |(| |{| |}| |[| |]| ENDOFLINECHR EOI EOL |END_LINE|))
 (SETQ |$generalTokenIfTrue| NIL)
 (SETQ OPASSOC NIL)
 (SETQ SPADSYSKEY '(EOI EOL))
@@ -192,62 +134,9 @@
 (SETQ |$userModemaps| NIL)
 (SETQ |$functorForm| NIL)
 
-(SETQ |$InitialCommandSynonymAlist| '(
-       (|?|          . "what commands")
-       (|ap|         . "what things")
-       (|apr|        . "what things")
-       (|apropos|    . "what things")
-       (|cache|      . "set functions cache")
-       (|cl|         . "clear")
-       (|cls|        . "zsystemdevelopment )cls")
-       (|cms|        . "system")
-       (|co|         . "compiler")
-       (|d|          . "display")
-       (|dep|        . "display dependents")
-       (|dependents| . "display dependents")
-       (|e|          . "edit")
-       (|expose|     . "set expose add constructor")
-       (|fc|         . "zsystemdevelopment )c")
-       (|fd|         . "zsystemdevelopment )d")
-       (|fdt|        . "zsystemdevelopment )dt")
-       (|fct|        . "zsystemdevelopment )ct")
-       (|fctl|       . "zsystemdevelopment )ctl")
-       (|fe|         . "zsystemdevelopment )e")
-       (|fec|        . "zsystemdevelopment )ec")
-       (|fect|       . "zsystemdevelopment )ect")
-       (|fns|        . "exec spadfn")
-       (|fortran|    . "set output fortran")
-       (|h|          . "help")
-       (|hd|         . "system hypertex &")
-       (|kclam|      . "boot clearClams ( )")
-       (|killcaches| . "boot clearConstructorAndLisplibCaches ( )")
-       (|patch|      . "zsystemdevelopment )patch")
-       (|pause|      . "zsystemdevelopment )pause")
-       (|prompt|     . "set message prompt")
-       (|recurrence| . "set functions recurrence")
-       (|restore|    . "history )restore")
-       (|save|       . "history )save")
-       (|startGraphics|    .  "system $AXIOM/lib/viewman &")
-       (|stopGraphics|     .  "lisp (|sockSendSignal| 2 15)")
-       (|time|       . "set message time")
-       (|type|       . "set message type")
-       (|unexpose|   . "set expose drop constructor")
-       (|up|         . "zsystemdevelopment )update")
-       (|version|    . "lisp *yearweek*")
-       (|w|          . "what")
-       (|wc|         . "what categories")
-       (|wd|         . "what domains")
-       (|who|        . "lisp (pprint credits)")
-       (|wp|         . "what packages")
-       (|ws|         . "what synonyms")
-))
-
-(SETQ |$CommandSynonymAlist| (COPY |$InitialCommandSynonymAlist|))
-
 (SETQ |$existingFiles| (MAKE-HASHTABLE 'UEQUAL))
 
 (SETQ |$instantRecord| (MAKE-HASHTABLE 'ID))
-(SETQ |$immediateDataSymbol| '|--immediateData--|)
 
 (SETQ |$useIntegerSubdomain| 'T)
 (SETQ |$useNewFloat| 'T)
@@ -277,30 +166,13 @@
 
 (SETQ |$printStorageIfTrue| NIL) ;; storage info disabled in common lisp
 
-(SETQ |$AnonymousFunction| '(|AnonymousFunction|))
-(SETQ |$Any|   '(|Any|))
-
-(SETQ |$OutputForm| '(|OutputForm|))
-
-(SETQ |$ComplexInteger| (LIST '|Complex| |$Integer|))
-(SETQ |$QuotientField| '|Fraction|)
-(SETQ |$FunctionalExpression| '|Expression|)
 (SETQ |$defaultFunctionTargets| '(()))
-
-;; New Names
-(SETQ |$SingleInteger| '(|SingleInteger|))
 
 (SETQ $NE (LIST (LIST NIL)))
 (SETQ |$suffix| NIL)
 (SETQ |$coerceIntByMapCounter| 0)
 (SETQ |$prefix| NIL)
 (SETQ |$formalArgList| ())
-(SETQ |$TriangleVariableList|
-   '(|t#1| |t#2| |t#3| |t#4| |t#5| |t#6| |t#7| |t#8| |t#9| |t#10|
-     |t#11| |t#12| |t#13| |t#14| |t#15| |t#16| |t#17| |t#18| |t#19| |t#20|
-     |t#21| |t#22| |t#23| |t#24| |t#25| |t#26| |t#27| |t#28| |t#29| |t#30|
-     |t#31| |t#32| |t#33| |t#34| |t#35| |t#36| |t#37| |t#38| |t#39| |t#40|
-     |t#41| |t#42| |t#43| |t#44| |t#45| |t#46| |t#47| |t#48| |t#49| |t#50|))
 
 (SETQ |$NRTflag| T)
 (SETQ |$NRTaddForm| NIL)
@@ -333,10 +205,6 @@
 (SETQ |$focus|  NIL)
 (SETQ |$focusAccessPath|  NIL)
 (SETQ |$minimumSeparation|  3)
-(SETQ |$origMaxColumn|  80)
-(SETQ |$origMaxRow|  20)
-(SETQ |$origMinColumn|  1)
-(SETQ |$origMinRow|  1)
 
 ;; ---- start of initial settings for variables used in test.boot
 
@@ -358,30 +226,3 @@
                                    ;; (see maPrin)
 
 ;; ---- end of initial settings for variables used in test.boot
-
-
-;; Next are initial values for fluid variables in G-BOOT BOOT
-
-(SETQ |$inDefLET| NIL)
-(SETQ |$inDefIS|  NIL)
-(SETQ |$letGenVarCounter| 1)
-(SETQ |$isGenVarCounter|  1)
-
-;; Next 2 lines originally from CLAM BOOT
-
-;; this node is used in looking up values
-(SETQ |$hashNode| (LIST NIL))
-
-(SETQ ERRORINSTREAM (DEFIOSTREAM
-    '((DEVICE . CONSOLE) (MODE . INPUT) (QUAL . T)) 133 1))
-
-(SETQ ERROROUTSTREAM
-  (DEFIOSTREAM '((DEVICE . CONSOLE)(MODE . OUTPUT)) 80 0) )
-
-(SETQ |$algebraOutputStream|
-  (DEFIOSTREAM '((DEVICE . CONSOLE)(MODE . OUTPUT)) 255 0) )
-
-;; By default, don't generate info files with old compiler.
-(setq |$profileCompiler| nil)
-
-

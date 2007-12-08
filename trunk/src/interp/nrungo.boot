@@ -35,6 +35,9 @@
 import '"c-util"
 )package "BOOT"
 
+++
+$insideCompileBodyIfTrue := false
+
 --=======================================================
 --             Lookup From Interpreter
 --=======================================================

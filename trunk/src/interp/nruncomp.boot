@@ -36,6 +36,16 @@ import '"c-util"
 import '"simpbool"
 )package "BOOT"
 
+++
+$devaluateList := []
+$functorLocalParameters := []
+$insideCategoryPackageIfTrue := false
+
+++ By default, don't generate info files
+$profileCompiler := false
+
+
+
 -----------------------------NEW buildFunctor CODE-----------------------------
 NRTaddDeltaCode() ==
 --NOTES: This function is called from NRTbuildFunctor to initially

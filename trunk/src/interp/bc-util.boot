@@ -35,6 +35,14 @@
 import '"ht-util"
 )package "BOOT"
 
+++
+$newConstructorList := nil
+
+++ true if we should rebuild local databases.
+$createLocalLibDb := true
+
+
+
 bcFinish(name,arg,:args) == bcGen bcMkFunction(name,arg,args)
 
 bcMkFunction(name,arg,args) ==
