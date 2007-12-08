@@ -2757,7 +2757,7 @@ apropos l ==
 
 printSynonyms(patterns) ==
   centerAndHighlight("System Command Synonyms",$LINELENGTH,specialChar 'hbar)
-  ls := filterListOfStringsWithFn(patterns, [[STRINGIMAGE a,:b]
+  ls := filterListOfStringsWithFn(patterns, [[STRINGIMAGE a,:eval b]
     for [a,:b] in synonymsForUserLevel $CommandSynonymAlist],
       function CAR)
   printLabelledList(ls,'"user",'"synonyms",'")",patterns)
@@ -2929,6 +2929,7 @@ processSynonyms() ==
   synstr := SUBSTRING (line, 1, to)
   syn := STRING2ID_-N (synstr, 1)
   null (fun := LASSOC (syn, $CommandSynonymAlist)) => NIL
+  fun := eval fun              -- fun may have been a suspension
   to := STRPOS('")",fun,1,NIL)
   if to and to ^= SIZE(fun)-1 then
     opt := STRCONC('" ",SUBSTRING(fun,to,NIL))

@@ -58,55 +58,55 @@ import '"debug"
 )package "BOOT"
 
 
-$InitialCommandSynonymAlist == '(
-   (?          . "what commands")
-   (ap         . "what things")
-   (apr        . "what things")
-   (apropos    . "what things")
-   (cache      . "set functions cache")
-   (cl         . "clear")
-   (cls        . "zsystemdevelopment )cls")
-   (cms        . "system")
-   (co         . "compiler")
-   (d          . "display")
-   (dep        . "display dependents")
-   (dependents . "display dependents")
-   (e          . "edit")
-   (expose     . "set expose add constructor")
-   (fc         . "zsystemdevelopment )c")
-   (fd         . "zsystemdevelopment )d")
-   (fdt        . "zsystemdevelopment )dt")
-   (fct        . "zsystemdevelopment )ct")
-   (fctl       . "zsystemdevelopment )ctl")
-   (fe         . "zsystemdevelopment )e")
-   (fec        . "zsystemdevelopment )ec")
-   (fect       . "zsystemdevelopment )ect")
-   (fns        . "exec spadfn")
-   (fortran    . "set output fortran")
-   (h          . "help")
-   (hd         . "system hypertex &")
-   (kclam      . "boot clearClams ( )")
-   (killcaches . "boot clearConstructorAndLisplibCaches ( )")
-   (patch      . "zsystemdevelopment )patch")
-   (pause      . "zsystemdevelopment )pause")
-   (prompt     . "set message prompt")
-   (recurrence . "set functions recurrence")
-   (restore    . "history )restore")
-   (save       . "history )save")
-   (startGraphics    .  "system $AXIOM/lib/viewman &")
-   (stopGraphics     .  "lisp (|sockSendSignal| 2 15)")
-   (time       . "set message time")
-   (type       . "set message type")
-   (unexpose   . "set expose drop constructor")
-   (up         . "zsystemdevelopment )update")
-   (version    . "lisp *yearweek*")
-   (w          . "what")
-   (wc         . "what categories")
-   (wd         . "what domains")
-   (who        . "lisp (pprint credits)")
-   (wp         . "what packages")
-   (ws         . "what synonyms")
- )
+$InitialCommandSynonymAlist == [
+   ["?"          , :'"what commands"],_
+   ["ap"         , :'"what things"],_
+   ["apr"        , :'"what things"],_
+   ["apropos"    , :'"what things"],_
+   ["cache"      , :'"set functions cache"],_
+   ["cl"         , :'"clear"],_
+   ["cls"        , :'"zsystemdevelopment )cls"],_
+   ["cms"        , :'"system"],_
+   ["co"         , :'"compiler"],_
+   ["d"          , :'"display"],_
+   ["dep"        , :'"display dependents"],_
+   ["dependents" , :'"display dependents"],_
+   ["e"          , :'"edit"],_
+   ["expose"     , :'"set expose add constructor"],_
+   ["fc"         , :'"zsystemdevelopment )c"],_
+   ["fd"         , :'"zsystemdevelopment )d"],_
+   ["fdt"        , :'"zsystemdevelopment )dt"],_
+   ["fct"        , :'"zsystemdevelopment )ct"],_
+   ["fctl"       , :'"zsystemdevelopment )ctl"],_
+   ["fe"         , :'"zsystemdevelopment )e"],_
+   ["fec"        , :'"zsystemdevelopment )ec"],_
+   ["fect"       , :'"zsystemdevelopment )ect"],_
+   ["fns"        , :'"exec spadfn"],_
+   ["fortran"    , :'"set output fortran"],_
+   ["h"          , :'"help"],_
+   ["hd", :["CONCAT",'"system ",["systemRootDirectory"],'"lib/hypertex &"]],_
+   ["kclam"      , :'"boot clearClams ( )"],_
+   ["killcaches" , :'"boot clearConstructorAndLisplibCaches ( )"],_
+   ["patch"      , :'"zsystemdevelopment )patch"],_
+   ["pause"      , :'"zsystemdevelopment )pause"],_
+   ["prompt"     , :'"set message prompt"],_
+   ["recurrence" , :'"set functions recurrence"],_
+   ["restore"    , :'"history )restore"],_
+   ["save"       , :'"history )save"],_
+   ["startGraphics",:["CONCAT",'"system ",["systemRootDirectory"],'"lib/viewman &"]],_
+   ["stopGraphics", :'"lisp (|sockSendSignal| 2 15)"],_
+   ["time"       , :'"set message time"],_
+   ["type"       , :'"set message type"],_
+   ["unexpose"   , :'"set expose drop constructor"],_
+   ["up"         , :'"zsystemdevelopment )update"],_
+   ["version"    , :'"lisp *yearweek*"],_
+   ["w"          , :'"what"],_
+   ["wc"         , :'"what categories"],_
+   ["wd"         , :'"what domains"],_
+   ["who"        , :'"lisp (pprint credits)"],_
+   ["wp"         , :'"what packages"],_
+   ["ws"         , :'"what synonyms"]_
+ ]
 
 $CommandSynonymAlist := 
   COPY $InitialCommandSynonymAlist
