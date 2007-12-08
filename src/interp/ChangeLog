@@ -1,3 +1,12 @@
+2007-12-08  Alfredo Portes  <alfredo.portes@gmail.com>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1846477
+	* i-syscmd.boot (printSynonyms): Eval commands in suspension
+	before printing.
+	(processSynonyms): Fully eval commands in suspension.
+	* setvars.boot ($InitialCommandSynonymAlist): Tidy.
+
 2007-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* bc-util.boot ($newConstructorList): Move from setq.lisp to here.
