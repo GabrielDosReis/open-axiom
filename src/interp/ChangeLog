@@ -1,3 +1,23 @@
+2007-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for quasiquotation.
+	* compiler.boot (compileQuasiquote): New function.
+	* fnewmeta.lisp (|PARSE-Enclosure|): Parse quasiquotes too.
+	* i-intern.boot (mkAtree3): Don't evaluate arguments to
+	quasiquote. 
+	* i-spec1.boot ($specialOps): Register [||].
+	(up[||]): Handle quasiquotes.
+	* newaux.lisp: Register `[|' and `|]' as new glyphs.
+	* pf2sex.boot ($insideApplication): Now count the nesting level of
+	application forms.
+	($insideQuasiquote): New.  Count nesting level of quasiquotes.
+	(pfFinishApplication): Ensure application form nesting level is
+	properly decreased.
+	(pfApplication2Sex): Use it.
+	(pfQuasiquotation2Sex): Transform quasiquote forms.
+	(pf2Sex1): Use it.
+	* sys-constants.boot ($Syntax): New.
+
 2007-12-08  Alfredo Portes  <alfredo.portes@gmail.com>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

@@ -667,6 +667,21 @@ setqMultipleExplicit(nameList,valList,m,e) ==
   [["PROGN",:[T.expr for T in assignList],:[T.expr for T in reAssignList]],
     $NoValueMode, (LAST reAssignList).env]
 
+--% Quasiquotation
+
+++ Compile a quotation `[| form |]'.  form is not type-checked, and
+++ is returned as is.  Note:  when get to support splicing, we would
+++ need to scan `form' to see whether there is any computation that
+++ must be done.
+++ ??? Another strategy would be to infer a more accurate domain
+++ ??? based on the meta operator, e.g. (DEF ...) would be a
+++ DefinitionAst, etc.  That however requires that we have a full
+++ fledged AST algebra -- which we don't have yet in mainstream.
+compileQuasiquote(["[||]",:form],m,e) ==
+  null form => nil
+  [["QUOTE", :form],$Syntax,e]
+
+
 --% WHERE
 compWhere([.,form,:exprList],m,eInit) ==
   $insideExpressionIfTrue: local:= false
@@ -1469,5 +1484,6 @@ for x in [["_|", :function compSuchthat],_
 	  ["UnionCategory", :function compConstructorCategory],_
 	  ["VECTOR", :function compVector],_
 	  ["VectorCategory", :function compConstructorCategory],_
-	  ["where", :function compWhere]] repeat
+	  ["where", :function compWhere],_
+          ["[||]", :function compileQuasiquote]] repeat
   MAKEPROP(car x, 'SPECIAL, cdr x)

@@ -796,6 +796,12 @@ evalQUOTE(op,[expr],[m]) ==
     objNew(['QUOTE,expr],m)
   putValue(op,triple)
 
+--% Quasiquotation
+up_[_|_|_] t ==
+  t isnt [op, x] => nil
+  putValue(op, objNewWrap(x, $Syntax))
+  putModeSet(op, [$Syntax])
+
 --% Handler for pretend
 
 uppretend t ==
