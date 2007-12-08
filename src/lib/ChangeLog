@@ -1,3 +1,10 @@
+2007-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sockio-c.c: Include <math.h>
+	(plus_infinity): Use INFINITY if available.  
+	(minus_infinity): Use plus_infinity().
+	(NANQ): Use NAN if available.
+
 2007-12-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sockio-c.c (plus_infinity): Use GCC builtin.
