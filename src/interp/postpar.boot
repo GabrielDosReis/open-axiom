@@ -401,7 +401,6 @@ postSemiColon u == postBlock ["Block",:postFlattenLeft(u,";")]
 
 postSequence ["Sequence",:l] == ['(elt $ makeRecord),:postTranList l]
 
---------------------> NEW DEFINITION (see br-saturn.boot.pamphlet)
 postSignature ["Signature",op,sig] ==
   sig is ["->",:.] =>
     sig1:= postType sig

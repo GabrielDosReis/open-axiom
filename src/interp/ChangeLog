@@ -1,3 +1,9 @@
+2007-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* br-saturn.boot (compDefineCapsuleFunction): Remove.
+	(postSignature): Likewise.
+	(postDoubleSharp): Likewise.
+
 2007-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add support for quasiquotation.
