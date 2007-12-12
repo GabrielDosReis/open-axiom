@@ -83,6 +83,9 @@ Syntax(): Public == Private where
     buildSyntax: (%, List %) -> %
       ++ buildSyntax(op, [a1, ..., an]) builds a syntax object for op(a1,...,an).
 
+    nil?: % -> Boolean
+      ++ nil?(s) is true when `s' is a syntax for the constant nil.
+
     getOperator: % -> Union(Integer, DoubleFloat, Symbol, String, %)
       ++ getOperator(x) returns the operator, or tag, of the syntax `x'.
       ++ The return value is itself a syntax if `x' really is an 
@@ -146,6 +149,9 @@ Syntax(): Public == Private where
 
     buildSyntax(op: %, l: List %): % ==
       cons(op, l) pretend %
+
+    nil? x ==
+      null? rep x
 
     getOperator x ==
       atom? rep x => userError "atom as operand to getOperator"
