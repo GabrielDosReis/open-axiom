@@ -1,3 +1,7 @@
+2007-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (nil?$Syntax): New predicate.
+
 2007-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* syntax.spad (Syntax): Add explicit conversion functions from 
