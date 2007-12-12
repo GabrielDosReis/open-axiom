@@ -177,7 +177,6 @@
 (SETQ |$NRTflag| T)
 (SETQ |$NRTaddForm| NIL)
 (SETQ |$NRTdeltaList| NIL)
-(SETQ |$NRTbase| 0)
 (SETQ |$NRTdeltaLength| 0)
 (SETQ |$NRTopt| NIL) ;; turns off buggy code
 (SETQ |$Slot1DataBase| NIL)

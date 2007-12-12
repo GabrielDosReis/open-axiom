@@ -1,5 +1,11 @@
 2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* define.boot (compDefineFunctor1): Don't set $NRTbase here.
+	* nruncomp.boot ($NRTbase):  Define as a constant.
+	* setq.lisp: Don't set it.
+	
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* buildom.boot: Use $OutputForm instead of $Expression
 	throughout. 
 	* compiler.boot (compAtom): Use $OutputForm instead of $Expression.
