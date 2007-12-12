@@ -529,7 +529,7 @@ $ConstructorNames ==
 
 ++ A list of functors that do not really have modemaps
 $DummyFunctorNames ==
-  '(Mapping)
+  '(Mapping _[_|_|_])
 
 --% 
 

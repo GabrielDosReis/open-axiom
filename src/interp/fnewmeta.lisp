@@ -819,9 +819,8 @@
 		      (MUST (MATCH-ADVANCE-STRING "|]"))
 		      (PUSH-REDUCTION '|PARSE-Enclosure|
 				      (CONS '|[\|\|]|
-					    (CONS (POP-STACK-1) NIL))))))
-
-
+					    (CONS (POP-STACK-1) NIL)))
+		      )))
       )) 
 
 

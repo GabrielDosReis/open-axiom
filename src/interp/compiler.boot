@@ -134,6 +134,10 @@ comp3(x,m,$e) ==
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
   m is ["QUOTE",a] => (x=a => [x,m,$e]; nil)
   STRINGP m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
+  -- In quasiquote mode, x should match exactly
+  (y := isQuasiquote m) =>
+     y = x => [["QUOTE",x], m, $e]
+     nil
   ^x or atom x => compAtom(x,m,e)
   op:= first x
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
@@ -298,11 +302,20 @@ compSymbol(s,m,e) ==
   s="true" => ['(QUOTE T),$Boolean,e]
   s="false" => [false,$Boolean,e]
   s=m or get(s,"isLiteral",e) => [["QUOTE",s],s,e]
-  v:= get(s,"value",e) =>
+  v := get(s,"value",e) =>
 --+
     MEMQ(s,$functorLocalParameters) =>
         NRTgetLocalIndex s
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
+
+    -- If the symbol s has a type given by a condition as the result of
+    -- a `case' form or a `suchthat' form, then we want to take 
+    -- advantage of that mode knowledge.  However, we must ensure that
+    -- we are not messing with members of Union objects which need
+    -- extra indirections to get to the actual object representation.
+    not isUnionMode(v.mode,e) and (t := getUniqueCaseView(s,e)) => 
+      coerce([s,t,e],m)
+
     [s,v.mode,e] --s has been SETQd
   m':= getmode(s,e) =>
     if not member(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
@@ -311,6 +324,16 @@ compSymbol(s,m,e) ==
   MEMQ(s,$FormalMapVariableList) => stackMessage ["no mode found for",s]
   m = $Expression or m = $Symbol => [['QUOTE,s],m,e]
   not isFunction(s,e) => errorRef s
+
+++ Return the more recent unique type case assumption on `x' (if any) 
+++ that predates its declaration in environment `e'.  Note, this cannot 
+++ be the same thing as just asking for the 'condition' property of `x'.
+getUniqueCaseView(s,e) ==
+  props := getProplist(s,e)
+  for [p,:v] in props repeat
+    p = "condition" and v is [["case",.,t],:.] => return t
+    p = "value" => return nil
+
 
 convertOrCroak(T,m) ==
   u:= convert(T,m) => u
@@ -415,8 +438,12 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
   -- its important that subsumed ops (newList) be considered last
   if newList then modemapList := append(modemapList,newList)
   Tl:=
-    [[.,.,e]:= T
-      for x in argl while (isSimple x and (T:= compUniquely(x,$EmptyMode,e)))]
+    [[.,.,e]:= T for x in argl for z in first modemapList
+       while (T := inferMode(x,z,e))] where
+      inferMode(x,z,e) ==
+        isQuasiquote z => [x,quasiquote x,e]
+        isSimple x and compUniquely(x,$EmptyMode,e)
+
   or/[x for x in Tl] =>
     partialModeList:= [(x => x.mode; nil) for x in Tl]
     compFormPartiallyBottomUp(form,m,e,modemapList,partialModeList) or
@@ -462,6 +489,28 @@ getFormModemaps(form is [op,:argl],e) ==
   modemapList and null finalModemapList =>
     stackMessage ["no modemap for","%b",op,"%d","with ",nargs," arguments"]
   finalModemapList
+
+++ We are either compiling a function call, or trying to determine
+++ whether we know something about a function being defined with
+++ parameters are not declared in the definition.  `sigs' is the list of
+++ candidate signatures for `nargs' arguments or parameters.  We need
+++ to detemine whether any of the arguments are flags.  If any
+++ operation takes a flag argument, then all other overloads must have
+++ the same arity and must take flag argument in the same position.
+++ Returns a vector of length `nargs' with positive entries indicating
+++ flag arguments, and negative entries for normal argument passing.
+checkCallingConvention(sigs,nargs) ==
+  v := GETZEROVEC nargs
+  for sig in sigs repeat
+    for t in rest sig 
+      for i in 0.. repeat
+         isQuasiquote t => 
+           v.i < 0 => userError '"flag argument restriction violation"
+           v.i := v.i + 1
+         v.i > 0 => userError '"flag argument restriction violation"
+         v.i := v.i - 1
+  v
+
 
 getConstructorFormOfMode(m,e) ==
   isConstructorForm m => m
@@ -679,7 +728,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
 ++ fledged AST algebra -- which we don't have yet in mainstream.
 compileQuasiquote(["[||]",:form],m,e) ==
   null form => nil
-  [["QUOTE", :form],$Syntax,e]
+  coerce([["QUOTE", :form],$Syntax,e], m)
 
 
 --% WHERE
@@ -1041,12 +1090,24 @@ compCase(["case",x,m'],m,e) ==
 
 compCase1(x,m,e) ==
   [x',m',e']:= comp(x,$EmptyMode,e) or return nil
+  -- `case' operations for non-Union types are function calls
+  not isUnionMode(m',e') => compForm(["case",x',m],$Boolean,e')
   u:=
     [cexpr
-      for (modemap:= [map,cexpr]) in getModemapList("case",2,e') | map is [.,.,s,
-        t] and modeEqual(t,m) and modeEqual(s,m')] or return nil
+      for (modemap:= [map,cexpr]) in getModemapList("case",2,e') 
+        | map is [.,.,s,t] and modeEqual(maybeSpliceMode t,m) 
+            and modeEqual(s,m')] or return nil
   fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
   [["call",fn,x'],$Boolean,e']
+
+
+++ For `case' operation implemented in library, the second operand
+++ (target type) is taken unevaluated. The corresponding parameter 
+++ type in the modemap was specified as quasiquotation.  We
+++ want to look at the actual type when comparing with modeEqual.
+maybeSpliceMode m ==
+  (m' := isQuasiquote m) => m'
+  m
 
 compColon([":",f,t],m,e) ==
   $insideExpressionIfTrue=true => compColonInside(f,m,e,t)
@@ -1442,48 +1503,48 @@ compilerDoitWithScreenedLisplib(constructor, fun) ==
 --% Register compilers for special forms.
 -- Those compilers are on the `SPECIAL' property of the corresponding
 -- special form operator symbol.
-for x in [["_|", :function compSuchthat],_
-	  ["_@", :function compAtSign],_
-	  ["_:", :function compColon],_
-	  ["_:_:", :function compCoerce],_
-	  ["QUOTE", :function compQuote],_
-	  ["add", :function compAdd],_
-	  ["CAPSULE", :function compCapsule],_
-	  ["case", :function compCase],_
-	  ["CATEGORY", :function compCategory],_
-	  ["COLLECT", :function compRepeatOrCollect],_
-	  ["COLLECTV", :function compCollectV],_
-	  ["CONS", :function compCons],_
-	  ["construct", :function compConstruct],_
-	  ["DEF", :function compDefine],_
-	  ["elt", :function compElt],_
-	  ["exit", :function compExit],_
-	  ["has", :function compHas],_
-	  ["IF", :function compIf],_
-	  ["import", :function compImport],_
-	  ["is", :function compIs],_
-	  ["Join", :function compJoin],_
-	  ["leave", :function compLeave],_
-	  ["LET", :function compSetq],_
-	  ["ListCategory", :function compConstructorCategory],_
-	  ["MDEF", :function compMacro],_
-          ["not", :function compileNot],_
-	  ["pretend", :function compPretend],_
-	  ["Record", :function compCat],_
-	  ["RecordCategory", :function compConstructorCategory],_
-	  ["REDUCE", :function compReduce],_
-	  ["REPEAT", :function compRepeatOrCollect],_
-	  ["return", :function compReturn],_
-	  ["SEQ", :function compSeq],_
-	  ["SETQ", :function compSetq],_
-	  ["String", :function compString],_
-	  ["SubDomain", :function compSubDomain],_
-	  ["SubsetCategory", :function compSubsetCategory],_
-	  ["Union", :function compCat],_
-	  ["Mapping", :function compCat],_
-	  ["UnionCategory", :function compConstructorCategory],_
-	  ["VECTOR", :function compVector],_
-	  ["VectorCategory", :function compConstructorCategory],_
-	  ["where", :function compWhere],_
-          ["[||]", :function compileQuasiquote]] repeat
+for x in [["_|", :"compSuchthat"],_
+	  ["_@", :"compAtSign"],_
+	  ["_:", :"compColon"],_
+	  ["_:_:", :"compCoerce"],_
+	  ["QUOTE", :"compQuote"],_
+	  ["add", :"compAdd"],_
+	  ["CAPSULE", :"compCapsule"],_
+	  ["case", :"compCase"],_
+	  ["CATEGORY", :"compCategory"],_
+	  ["COLLECT", :"compRepeatOrCollect"],_
+	  ["COLLECTV", :"compCollectV"],_
+	  ["CONS", :"compCons"],_
+	  ["construct", :"compConstruct"],_
+	  ["DEF", :"compDefine"],_
+	  ["elt", :"compElt"],_
+	  ["exit", :"compExit"],_
+	  ["has", :"compHas"],_
+	  ["IF", : "compIf"],_
+	  ["import", :"compImport"],_
+	  ["is", :"compIs"],_
+	  ["Join", :"compJoin"],_
+	  ["leave", :"compLeave"],_
+	  ["LET", :"compSetq"],_
+	  ["ListCategory", :"compConstructorCategory"],_
+	  ["MDEF", :"compMacro"],_
+          ["not", :"compileNot"],_
+	  ["pretend", :"compPretend"],_
+	  ["Record", :"compCat"],_
+	  ["RecordCategory", :"compConstructorCategory"],_
+	  ["REDUCE", :"compReduce"],_
+	  ["REPEAT", :"compRepeatOrCollect"],_
+	  ["return", :"compReturn"],_
+	  ["SEQ", :"compSeq"],_
+	  ["SETQ", :"compSetq"],_
+	  ["String", :"compString"],_
+	  ["SubDomain", :"compSubDomain"],_
+	  ["SubsetCategory", :"compSubsetCategory"],_
+	  ["Union", :"compCat"],_
+	  ["Mapping", :"compCat"],_
+	  ["UnionCategory", :"compConstructorCategory"],_
+	  ["VECTOR", :"compVector"],_
+	  ["VectorCategory", :"compConstructorCategory"],_
+	  ["where", :"compWhere"],_
+          ["[||]", :"compileQuasiquote"]] repeat
   MAKEPROP(car x, 'SPECIAL, cdr x)

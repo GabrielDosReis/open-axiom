@@ -106,6 +106,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     QCAR x='Record or x is ['Union,['_:,a,b],:.] =>
       [QCAR x,:[['_:,a,encode(b,c,false)]
         for [.,a,b] in QCDR x for [.,=a,c] in CDR compForm]]
+    isQuasiquote x => x
     constructor? QCAR x or MEMQ(QCAR x,'(Union Mapping)) =>
       [QCAR x,:[encode(y,z,false) for y in QCDR x for z in CDR compForm]]
     ['NRTEVAL,NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]
@@ -244,11 +245,20 @@ NRTgetLocalIndex1(item,killBindingIfTrue) ==
     $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
     $NRTdeltaLength := $NRTdeltaLength+1
     $NRTbase + $NRTdeltaLength - 1
-  $NRTdeltaList:= [['domain,NRTaddInner item,:value],:$NRTdeltaList]
+  -- when assigning slot to flag values, we don't really want to
+  -- compile them.  Rather, we want to record them as if they were atoms.
+  flag := isQuasiquote item
+  $NRTdeltaList:= [['domain,(flag => item; NRTaddInner item),:value],
+                    :$NRTdeltaList]
   saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
   saveIndex := $NRTbase + $NRTdeltaLength
   $NRTdeltaLength := $NRTdeltaLength+1
-  compEntry:= (compOrCroak(item,$EmptyMode,$e)).expr
+  compEntry:= 
+    -- we don't need to compile the flag again.
+    -- ??? In fact we should not be compiling again at this phase.
+    -- ??? That we do is likely a bug.
+    flag => item  
+    (compOrCroak(item,$EmptyMode,$e)).expr
 --    item
   RPLACA(saveNRTdeltaListComp,compEntry)
   saveIndex

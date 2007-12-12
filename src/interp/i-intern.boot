@@ -264,9 +264,26 @@ mkAtree3(x,op,argl) ==
       v := mkAtreeNode $immediateDataSymbol
       putValue(v,getBasicObject op)
       v
-    atom op => mkAtreeNode op
+    atom op => 
+      t := mkAtreeNode op
+      putAtree(t, 'flagArgsPos, flagArguments(op,#argl))
+      t
     mkAtree1 op
-  [z,:[mkAtree1 y for y in argl]]
+  -- this is a general form handled by modemap selection.  Be
+  -- careful not to evaluate arguments that are not meant to.
+  flagArgPos := getFlagArgsPos z
+  [z,:[buildTreeForOperand for y in argl for i in 0..]] where
+           buildTreeForOperand() ==
+             flagArgPos and flagArgPos.i > 0 =>
+               y' := parseTransform postTransform y
+               a := mkAtreeNode $immediateDataSymbol
+               m := quasiquote y'
+               putMode(a, m)
+               putValue(a, objNewWrap(MKQ y',m))
+               putModeSet(a, [m])
+               a
+             mkAtree1 y
+
  where
   fn(a,b) ==
     a and b =>
@@ -274,6 +291,22 @@ mkAtree3(x,op,argl) ==
       else throwMessage '"   double declaration of parameter"
     a or b
 
+++ Check if op accepts flag arguments.  If so, returns a vector whose
+++ positive entry indicates that modemaps for `op' takes flag arguments
+++ in that position.
+flagArguments(op, nargs) ==
+  v := GETZEROVEC nargs
+  sigs := [signatureFromModemap m for m in getModemapsFromDatabase(op, nargs)]
+  checkCallingConvention(sigs, nargs)
+
+++ Extract the signature of modemap `m'.
+signatureFromModemap m ==
+  [sig,pred,:.]  := m
+  pred = true => rest sig
+  car pred = "AND" =>
+    sl := [[a,:b] for [.,a,b] in cdr pred]
+    rest SUBLIS(sl,sig)
+  
 collectDefTypesAndPreds args ==
   -- given an arglist to a DEF-like form, this function returns
   -- a vector of three things:

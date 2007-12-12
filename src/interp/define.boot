@@ -231,7 +231,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
  
 --  2. obtain signature
     signature':=
-      [first signature,:[getArgumentModeOrMoan(a,$definition,e) for a in argl]]
+      [first signature,
+        :[getArgumentModeOrMoan(a,$definition,e) for a in argl]]
     e:= giveFormalParametersValues(argl,e)
  
 --   3. replace arguments by $1,..., substitute into body,
@@ -832,17 +833,26 @@ getSignatureFromMode(form,e) ==
   getmode(opOf form,e) is ['Mapping,:signature] =>
     #form^=#signature => stackAndThrow ["Wrong number of arguments: ",form]
     EQSUBSTLIST(rest form,take(#rest form,$FormalMapVariableList),signature)
- 
+
+candidateSignatures(op,nmodes,slot1) ==
+  [sig for [[=op,sig,:.],:.] in slot1 | #sig = nmodes]
+
+++ We are compiling a capsule function definition with head given by `form'.
+++ Determine whether the function with possibly partial signature `opsig'
+++ is exported.  Return the complete signature if yes; otherwise
+++ return nil, with diagnostic in ambiguity case.
 hasSigInTargetCategory(argl,form,opsig,e) ==
-  mList:= [getArgumentMode(x,e) for x in argl]
+  sigs := candidateSignatures($op,#form,$domainShell.1)
+  cc := checkCallingConvention(sigs,#argl)
+  mList:= [(cc.i > 0 => quasiquote x; getArgumentMode(x,e))
+            for x in argl for i in 0..]
     --each element is a declared mode for the variable or nil if none exists
   potentialSigList:=
     REMDUP
-      [sig
-        for [[opName,sig,:.],:.] in $domainShell.(1) |
-          fn(opName,sig,opsig,mList,form)] where
-            fn(opName,sig,opsig,mList,form) ==
-              opName=$op and #sig=#form and (null opsig or opsig=first sig) and
+      [sig for sig in sigs |
+          fn(sig,opsig,mList)] where
+            fn(sig,opsig,mList) ==
+              (null opsig or opsig=first sig) and
                 (and/[compareMode2Arg(x,m) for x in mList for m in rest sig])
   c:= #potentialSigList
   1=c => first potentialSigList
@@ -866,10 +876,10 @@ getArgumentMode(x,e) ==
   m:= get(x,'mode,e) => m
  
 checkAndDeclare(argl,form,sig,e) ==
- 
 -- arguments with declared types must agree with those in sig;
 -- those that don't get declarations put into e
   for a in argl for m in rest sig repeat
+    isQuasiquote m => nil	  -- we just built m from a.
     m1:= getArgumentMode(a,e) =>
       ^modeEqual(m1,m) =>
         stack:= ["   ",:bright a,'"must have type ",m,
@@ -1063,6 +1073,17 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
         --bizarre hack to take account of the existence of "known" functions
         --good for performance (LISPLLIB size, BPI size, NILSEC)
   CONTAINED("",body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
+
+  -- flag parameters needs to be made atomic, otherwise Lisp is confused.
+  -- We try our best to preserve
+  -- Note that we don't need substitution in the body because flag
+  -- parameters are never used in the body.
+  vl := [ renameParameter for v in vl] where
+    renameParameter() ==
+      NUMBERP v or IDENTP v or STRINGP v => v
+      GENSYM '"flag"
+  form := [nam,[lam,vl,body]]
+
   if vl is [:vl',E] and body is [nam',: =vl'] then
       LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']

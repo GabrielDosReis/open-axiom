@@ -1,3 +1,40 @@
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* compiler.boot (comp3): Use isQuasiquote.
+	(compSymbol): Use condition type view for non Union objects.
+	(getUniqueCaseView): New. Subroutine of compSymbol.
+	(compForm2): Don't infer type for flag parameter through
+	unique compilcation. 
+	(checkCallingConvention): New.
+	(compileQuasiquote): coerce, don't convert.
+	(compCase1): Handle non Union type object through modemap
+	selection.
+	(maybeSpliceMode): New.  Subroutine of compCase1.
+	Register special form compiler with their names, not pointers.
+	* define.boot (candidateSignatures): New.
+	(hasSigInTargetCategory): Use it.  Tidy.
+	(checkAndDeclare): Use isQuasiquote.
+	(spadCompileorSetq): Rename non atomic parameters before calling
+	LISP compiler.
+	* g-util.boot (quasiquote): New.
+	(isQuasiquote): Likewise.
+	* i-intern.boot (flagArguments): New.
+	(signatureFromModemap): Likewise.
+	(mkAtree3): Use them.  Handle functions taking flag arguments.
+	* i-object.boot (getFlagArgsPos): New.
+	* i-spec1.boot (userDefinedCase): Now prepare form and hands back
+	to bottomUp.
+	(upcase): Adjust call to userDefinedCase.
+	* modemap.boot (addDomain): Don't add flag domains to the
+	environment. 
+	* nruncomp.boot (NRTencode): Handle flag values.
+	(NRTgetLocalIndex1): Likewise.
+	* nrunfast.boot (lazyMatch): Likewise.
+	(newExpandLocalTypeForm): Likewise.
+	* sys-constants.boot ($DummyFunctorNames): Include quasiquote
+	constructor. 
+	* template.boot (NRTaddInner): Handle flag values.
+	
 2007-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* br-saturn.boot (compDefineCapsuleFunction): Remove.

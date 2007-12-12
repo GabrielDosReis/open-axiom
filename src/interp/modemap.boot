@@ -56,6 +56,9 @@ addDomain(domain,e) ==
       addNewDomain(domain,e)
     -- constructor? test needed for domains compiled with $bootStrapMode=true
   isFunctor name or constructor? name => addNewDomain(domain,e)
+  -- ??? we should probably augment $DummyFunctorNames with CATEGORY
+  -- ??? so that we don't have to do this special check here.  Investigate.
+  isQuasiquote domain => e 
   if not isCategoryForm(domain,e) and
     not member(name,'(Mapping CATEGORY)) then
       unknownTypeError name
