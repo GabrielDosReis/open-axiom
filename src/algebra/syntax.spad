@@ -29,7 +29,6 @@
 --NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 )abbrev domain SYNTAX Syntax
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
@@ -96,9 +95,17 @@ Syntax(): Public == Private where
     getOperands: % -> List %
       ++ getOperands(x) returns the list of operands to the operator in `x'.
 
-    _case: (%, Domain) -> Boolean
-      ++ x case t returns true if x really is of type t, e.g.
-      ++ Integer, DoubleFloat, Symbol, String, or %.
+    _case: (%, [|Integer|]) -> Boolean
+      ++ x case Integer is true is x really is an Integer 
+
+    _case: (%, [|DoubleFloat|]) -> Boolean
+      ++ x case DoubleFloat is true is x really is a DoubleFloat
+
+    _case: (%, [|Symbol|]) -> Boolean
+      ++ x case Symbol is true is x really is a Symbol
+
+    _case: (%, [|String|]) -> Boolean
+      ++ x case String is true is x really is a String
 
   Private ==> SExpression add
     rep(x: %): SExpression ==
@@ -106,6 +113,18 @@ Syntax(): Public == Private where
 
     per(x: SExpression): % ==
       x pretend %
+
+    s case Integer ==
+      integer? rep s
+
+    s case DoubleFloat ==
+      float? rep s
+
+    s case String ==
+      string? rep s
+
+    s case Symbol ==
+      symbol? rep s
 
     convert(x: %): SExpression ==
       rep x
@@ -117,29 +136,29 @@ Syntax(): Public == Private where
       i pretend %
 
     convert(i: %): Integer ==
-      not integer? rep i => userError "invalid conversion target type"
-      i pretend Integer
+      i case Integer => i
+      userError "invalid conversion target type"
 
     coerce(f: DoubleFloat): % ==
       f pretend %
 
     convert(f: %): DoubleFloat ==
-      not float? rep f => userError "invalid conversion target type"
-      f pretend DoubleFloat
+      f case DoubleFloat => f
+      userError "invalid conversion target type"
 
     coerce(s: Symbol): % ==
       s pretend %
 
     convert(s: %): Symbol ==
-      not symbol? rep s => userError "invalid conversion target type"
-      s pretend Symbol
+      s case Symbol => s
+      userError "invalid conversion target type"
 
     coerce(s: String): % ==
       s pretend %
 
     convert(s: %): String ==
-      not string? rep s => userError "invalid conversion target type"
-      s pretend String
+      s case String => s
+      userError "invalid conversion target type"
 
     buildSyntax(s: Symbol, l: List %): % ==
       -- ??? ideally we should have overloaded operator `per' that convert
@@ -155,22 +174,9 @@ Syntax(): Public == Private where
 
     getOperator x ==
       atom? rep x => userError "atom as operand to getOperator"
-      s := car rep x
-      symbol? s => symbol s
-      integer? s => integer s
-      float? s => float s
-      string? s => string s
-      convert s
+      convert car rep x
 
     getOperands x ==
       s := rep x
       atom? s => []
       [per t for t in destruct cdr s]
-
-    s case t ==
-      symbol? rep s => t is Symbol
-      integer? rep s => t is Integer
-      float? rep s => t is DoubleFloat
-      string? rep s => t is String
-      pair? rep s => t is %
-      false
