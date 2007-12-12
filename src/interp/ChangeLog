@@ -1,5 +1,13 @@
 2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* buildom.boot: Use $OutputForm instead of $Expression
+	throughout. 
+	* compiler.boot (compAtom): Use $OutputForm instead of $Expression.
+	(compSymbol): Likewise.
+	(outputComp): Likewise.
+
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* compiler.boot (comp3): Use isQuasiquote.
 	(compSymbol): Use condition type view for non Union objects.
 	(getUniqueCaseView): New. Subroutine of compSymbol.
