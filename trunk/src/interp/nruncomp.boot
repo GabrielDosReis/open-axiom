@@ -36,6 +36,13 @@ import '"c-util"
 import '"simpbool"
 )package "BOOT"
 
+
+++ The base index for encoding items into a functor template 
+++ (e.g. domainShell).  This is also the minimum length that a
+++ template could possibly have.
+$NRTbase ==
+  6
+
 ++
 $devaluateList := []
 $functorLocalParameters := []

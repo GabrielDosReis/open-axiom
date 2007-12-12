@@ -392,7 +392,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
     $NRTslot1Info: local  --set in NRTmakeSlot1 called by NRTbuildFunctor
        --this is used below to set $lisplibSlot1 global
-    $NRTbase: local := 6 -- equals length of $domainShell
     $NRTaddForm: local := nil   -- see compAdd; NRTmakeSlot1
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of COMP-ed forms for $NRTdeltaList
