@@ -1,5 +1,9 @@
 2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* domain.spad (showSummary$Domain): New.
+
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* syntax.spad (case$Syntax): Add four overloads with flag
 	parameters. Remove previous declaration.
 	(conver$Syntax): Use cases to filter out erroneous input.

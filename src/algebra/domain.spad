@@ -33,7 +33,7 @@
 )abbrev domain DOMAIN Domain
 ++ Author: Gabriel Dos Reis
 ++ Date Create: October 18, 2007.
-++ Date Last Updated: November 13, 2007.
+++ Date Last Updated: December 12, 2007.
 ++ Basic Operations: coerce, reify
 ++ Related Constructors: Type, Syntax, OutputForm
 ++ Also See: Type
@@ -41,10 +41,19 @@ Domain(): Public == Private where
   Public ==> CoercibleTo(OutputForm) with
     reify: % -> Syntax
       ++ reify(d) returns the abstract syntax for the domain `x'.
+   
+    showSummary: % -> Void
+      ++ showSummary(d) prints out implementation detail information
+      ++ of domain `d'.
+
   Private ==> add
     coerce x ==
       outputDomainConstructor(x)$Lisp
 
     reify x ==
       convert(devaluate(x)$Lisp)$Syntax
+
+    showSummary x ==
+      showSummary(x)$Lisp
+
 
