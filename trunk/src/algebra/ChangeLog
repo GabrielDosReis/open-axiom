@@ -1,3 +1,10 @@
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* syntax.spad (case$Syntax): Add four overloads with flag
+	parameters. Remove previous declaration.
+	(conver$Syntax): Use cases to filter out erroneous input.
+	(getOperator$Syntax): Remove dead code.	
+
 2007-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* syntax.spad (nil?$Syntax): New predicate.
