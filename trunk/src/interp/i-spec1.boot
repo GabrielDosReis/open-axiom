@@ -303,27 +303,27 @@ upor x ==
 
 ++ subroutine of upcase. Handles the situation where `case' may
 ++ have been defined as a library function.  
-++ `op', `lhs' are VATs; `rhs' is a parse form.
-++ Note: Some of the code here needs to be refactored with code
-++ in bottomUp and elsewhere to avoid logic duplication.
-userDefinedCase(op, lhs, rhs) ==
-  -- At this point, op and lhs have already been bottomUp'd.
-  rhs := mkAtree rhs
-  bottomUp rhs
-  -- Prepare for evaluating call to a library function.
-  for x in [lhs, rhs] for i in 1.. repeat
-    putAtree(x, "callingFunction", "case")
-    putAtree(x, "argumentNumber", i)
-    putAtree(x, "totalArgs", 2)
-  bottomUpForm([op, lhs, rhs], op, "case", [lhs, rhs], 
-    [bottomUp lhs, bottomUp rhs])
-
+++ `op', `lhs' are VATs; `rhs' is unevaluated.
+userDefinedCase(t is [op, lhs, rhs]) ==
+  -- We want to resolve the situation by general modemap selection.
+  -- So, we want to let bottomUp (which called us through upcase)
+  -- to continue the work.  The way we do that is to return `nil'.
+  -- Therefore we need a VAT for `rhs' with sufficient information
+  -- to prevent bottomUp from trying to evaluate `rhs'.
+  putAtree(op, 'flagArgsPos, flagArguments("case",2))
+  r := mkAtreeNode $immediateDataSymbol
+  m := quasiquote rhs
+  putMode(r, m)
+  putValue(r, objNewWrap(MKQ rhs,m))
+  putModeSet(r, [m])
+  RPLACD(cdr t, [r])                   -- fix up contained for rhs.
+  nil                                  -- tell bottomUp to continue.
 
 upcase t ==
   t isnt [op,lhs,rhs] => nil
   bottomUp lhs
   triple := getValue lhs
-  objMode(triple) isnt ['Union,:unionDoms] => userDefinedCase(op,lhs,rhs)
+  objMode(triple) isnt ['Union,:unionDoms] => userDefinedCase t
   if (rhs' := isDomainValuedVariable(rhs)) then rhs := rhs'
   if first unionDoms is [":",.,.] then
      for i in 0.. for d in unionDoms repeat

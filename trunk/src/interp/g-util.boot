@@ -93,6 +93,14 @@ put(x,prop,val,e) ==
   addBinding(x,newProplist,e)
 
 
+++ Build a quasiquotation form for `x'.
+quasiquote x ==
+  ["[||]",x]
+
+++ Extract the quoted form, otherwise return nil
+isQuasiquote m ==
+  m is ["[||]",y] => y
+
 
 -- Convert an arbitrary lisp object to canonical boolean.
 bool x ==

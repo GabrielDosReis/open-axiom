@@ -286,6 +286,7 @@ NRTaddInner x ==
     getConstructorSignature x is [.,:ml] =>
       for y in rest x for m in ml | not (y = '$) repeat
         isCategoryForm(m,$CategoryFrame) => NRTinnerGetLocalIndex y
+    isQuasiquote x => NRTinnerGetLocalIndex x
     keyedSystemError("S2NR0003",[x])
   x
 
@@ -294,7 +295,7 @@ NRTaddInner x ==
 NRTinnerGetLocalIndex x ==
   atom x => x
   -- following test should skip Unions, Records, Mapping
-  MEMQ(opOf x,'(Union Record Mapping)) => NRTgetLocalIndex x
+  MEMQ(opOf x,'(Union Record Mapping _[_|_|_])) => NRTgetLocalIndex x
   constructor?(x) => NRTgetLocalIndex x
   NRTaddInner x
 

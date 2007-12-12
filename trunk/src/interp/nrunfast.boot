@@ -430,6 +430,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
               for [.,stag,s] in sargl for [.,atag,a] in argl]
       MEMQ(op,'(Union Mapping QUOTE)) =>
          and/[lazyMatchArg(s,a,dollar,domain) for s in sargl for a in argl]
+      op="[||]" => source = lazyt
       coSig := GETDATABASE(op,'COSIG)
       NULL coSig => error ["bad Constructor op", op]
       and/[lazyMatchArg2(s,a,dollar,domain,flag)
@@ -439,8 +440,9 @@ lazyMatch(source,lazyt,dollar,domain) ==
       lazyt is ['_#, slotNum] => source = #(domain.slotNum)
       lazyt is ['call,'LENGTH, slotNum] => source = #(domain.slotNum)
       nil
-  source is ['construct,:l] => l = lazyt
+
   -- A hideous hack on the same lines as the previous four lines JHD/MCD
+  source is ['construct,:l] => l = lazyt
   nil
 
  
@@ -511,7 +513,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
                                  for [.,tag,dom] in argl]]
   MEMQ(functorName, '(Union Mapping)) =>
           [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
-  functorName = 'QUOTE => [functorName,:argl]
+  functorName in '(QUOTE _[_|_|_]) => [functorName,:argl]
   coSig := GETDATABASE(functorName,'COSIG)
   NULL coSig => error ["bad functorName", functorName]
   [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,flag)

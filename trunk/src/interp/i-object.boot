@@ -393,6 +393,13 @@ srcPosDisplay(sp) ==
   true
 
 
+++ Returns the calling convention vector for an operation
+++ represented by the VAT `t'.
+getFlagArgsPos t ==
+  VECP t => getAtree(t, 'flagArgsPos)
+  atom t => keyedSystemError("S2II0001",[t])
+  getFlagArgsPos car t
+
 --% Transfer of VAT properties.
 
 
