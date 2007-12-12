@@ -281,7 +281,7 @@ compAtom(x,m,e) ==
   t:=
     isSymbol x =>
       compSymbol(x,m,e) or return nil
-    m = $Expression and primitiveType x => [x,m,e]
+    m = $OutputForm and primitiveType x => [x,m,e]
     STRINGP x => [x,x,e]
     [x,primitiveType x or return nil,e]
   convert(t,m)
@@ -322,7 +322,7 @@ compSymbol(s,m,e) ==
       not isFunction(s,e) and null ($compForModeIfTrue=true) then errorRef s
     [s,m',e] --s is a declared argument
   MEMQ(s,$FormalMapVariableList) => stackMessage ["no mode found for",s]
-  m = $Expression or m = $Symbol => [['QUOTE,s],m,e]
+  m = $OutputForm or m = $Symbol => [['QUOTE,s],m,e]
   not isFunction(s,e) => errorRef s
 
 ++ Return the more recent unique type case assumption on `x' (if any) 
@@ -379,12 +379,12 @@ compArgumentsAndTryAgain(form is [.,:argl],m,e) ==
   compForm1(form,m,e)
 
 outputComp(x,e) ==
-  u:=comp(['_:_:,x,$Expression],$Expression,e) => u
+  u:=comp(['_:_:,x,$OutputForm],$OutputForm,e) => u
   x is ['construct,:argl] =>
-    [['LIST,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],$Expression,e]
+    [['LIST,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],$OutputForm,e]
   (v:= get(x,"value",e)) and (v.mode is ['Union,:l]) =>
-    [['coerceUn2E,x,v.mode],$Expression,e]
-  [x,$Expression,e]
+    [['coerceUn2E,x,v.mode],$OutputForm,e]
+  [x,$OutputForm,e]
 
 compForm1(form is [op,:argl],m,e) ==
   $NumberOfArgsIfInteger: local:= #argl --see compElt
