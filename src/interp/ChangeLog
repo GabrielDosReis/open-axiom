@@ -1,5 +1,9 @@
 2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* parse.boot: Register parsers by name, not by pointers.
+
+2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* define.boot (compDefineFunctor1): Don't set $NRTbase here.
 	* nruncomp.boot ($NRTbase):  Define as a constant.
 	* setq.lisp: Don't set it.

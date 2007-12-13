@@ -488,41 +488,41 @@ parseVCONS l == ["VECTOR",:parseTranList l]
 
 --% Register special parsers.
 
-for x in [["<=", :function parseLessEqual],_
-	  [">", :function parseGreaterThan],_
-	  [">=", :function parseGreaterEqual],_
-	  ["$<=", :function parseDollarLessEqual],_
-	  ["$>", :function parseDollarGreaterThan],_
-	  ["$>=", :function parseDollarGreaterEqual],_
-	  ["$^=", :function parseDollarNotEqual],_
-	  ["^=", :function parseNotEqual],_
-	  ["_:", :function parseColon],_
-	  ["_:_:", :function parseCoerce],_
-	  ["@", :function parseAtSign],_
-	  ["and", :function parseAnd],_
-	  ["CATEGORY", :function parseCategory],_
-	  ["construct", :function parseConstruct],_
-	  ["DEF", :function parseDEF],_
-	  ["eqv", :function parseEquivalence],_
-	  ["exit", :function parseExit],_
-	  ["has", :function parseHas],_
-	  ["IF", :function parseIf],_
-	  ["implies", :function parseImplies],_ 
-	  ["IN", :function parseIn],_
-	  ["INBY", :function parseInBy],_
-	  ["is", :function parseIs],_
-	  ["isnt", :function parseIsnt],_
-	  ["Join", :function parseJoin],_
-	  ["leave", :function parseLeave],_
-	  ["LET", :function parseLET],_
-	  ["LETD", :function parseLETD],_
-	  ["MDEF", :function parseMDEF],_
-	  ["or", :function parseOr],_
-	  ["pretend", :function parsePretend],_
-	  ["return", :function parseReturn],_
-	  ["SEGMENT", :function parseSegment],_
-	  ["SEQ", :function parseSeq],_
-	  ["VCONS", :function parseVCONS],_
-	  ["where", :function parseWhere],_
-          ["xor", :function parseExclusiveOr]] repeat
+for x in [["<=", :"parseLessEqual"],_
+	  [">", :"parseGreaterThan"],_
+	  [">=", :"parseGreaterEqual"],_
+	  ["$<=", :"parseDollarLessEqual"],_
+	  ["$>", :"parseDollarGreaterThan"],_
+	  ["$>=", :"parseDollarGreaterEqual"],_
+	  ["$^=", :"parseDollarNotEqual"],_
+	  ["^=", :"parseNotEqual"],_
+	  ["_:", :"parseColon"],_
+	  ["_:_:", :"parseCoerce"],_
+	  ["@", :"parseAtSign"],_
+	  ["and", :"parseAnd"],_
+	  ["CATEGORY", :"parseCategory"],_
+	  ["construct", :"parseConstruct"],_
+	  ["DEF", :"parseDEF"],_
+	  ["eqv", :"parseEquivalence"],_
+	  ["exit", :"parseExit"],_
+	  ["has", :"parseHas"],_
+	  ["IF", :"parseIf"],_
+	  ["implies", :"parseImplies"],_ 
+	  ["IN", :"parseIn"],_
+	  ["INBY", :"parseInBy"],_
+	  ["is", :"parseIs"],_
+	  ["isnt", :"parseIsnt"],_
+	  ["Join", :"parseJoin"],_
+	  ["leave", :"parseLeave"],_
+	  ["LET", :"parseLET"],_
+	  ["LETD", :"parseLETD"],_
+	  ["MDEF", :"parseMDEF"],_
+	  ["or", :"parseOr"],_
+	  ["pretend", :"parsePretend"],_
+	  ["return", :"parseReturn"],_
+	  ["SEGMENT", :"parseSegment"],_
+	  ["SEQ", :"parseSeq"],_
+	  ["VCONS", :"parseVCONS"],_
+	  ["where", :"parseWhere"],_
+          ["xor", :"parseExclusiveOr"]] repeat
   MAKEPROP(car x, "parseTran", cdr x)
