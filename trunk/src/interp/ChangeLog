@@ -1,3 +1,8 @@
+2007-12-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* c-util.boot (isAlmostSimple): A `case' expresion with a simple
+	identified as first operand is a simple-expression.
+
 2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* parse.boot: Register parsers by name, not by pointers.
