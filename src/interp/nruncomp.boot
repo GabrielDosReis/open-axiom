@@ -92,7 +92,7 @@ deltaTran(item,compItem) ==
     dc = '$ =>
       --$NRTaddForm => -5
       0
-    NRTassocIndexAdd dc or keyedSystemError("S2NR0004",[dc])
+    NRTassocIndex dc or keyedSystemError("S2NR0004",[dc])
   formalSig:= SUBLISLIS($FormalMapVariableList,$formalArgList,sig)
   kindFlag:= (kind = 'CONST => 'CONST; nil)
   newSig := [NRTassocIndex x or x for x in formalSig]
@@ -195,7 +195,7 @@ genDeltaEntry opMmPair ==
  --   sig := substitute('$,dc,sig)
  --   cform := substitute('$,dc,cform)
   opModemapPair :=
-    [op,[dc,:[genDeltaSig x for x in nsig]],["T",cform]] -- force pred to T
+    [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and dc ^= $NRTaddForm and
     (member(dc,$functorLocalParameters) or null atom dc) then
     --create "domain" entry to $NRTdeltaList
@@ -215,16 +215,9 @@ genDeltaEntry opMmPair ==
       0
   u
 
-genDeltaSig x ==
-  NRTgetLocalIndex x
-
 genDeltaSpecialSig x ==
-  x is [":",y,z] => [":",y,genDeltaSig z]
-  genDeltaSig x
-
-NRTassocIndexAdd x ==
-  x = $NRTaddForm => 5
-  NRTassocIndex x
+  x is [":",y,z] => [":",y,NRTgetLocalIndex z]
+  NRTgetLocalIndex x
 
 NRTassocIndex x == --returns index of "domain" entry x in al
   NULL x => x
@@ -282,7 +275,7 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
     --if opSig is not exported, it is local and need not be assigned
   if $insideCategoryPackageIfTrue then
       sig := substitute('$,CADR($functorForm),sig)
-  sig := [genDeltaSig x for x in sig]
+  sig := [NRTgetLocalIndex x for x in sig]
   opModemapPair := [op,['_$,:sig],["T",implementation]]
   POSN1(opModemapPair,$NRTdeltaList) => nil   --already there
   $NRTdeltaList:= [opModemapPair,:$NRTdeltaList]
@@ -684,7 +677,7 @@ changeDirectoryInSlot1() ==  --called by NRTbuildFunctor
        [[op, genSlotSig(sig,pred,$newEnv)] ,pred,newfnsel]
 
 genSlotSig(sig,pred,$e) ==
-   [genDeltaSig t for t in sig]
+   [NRTgetLocalIndex t for t in sig]
 
 deepChaseInferences(pred,$e) ==
     pred is ['AND,:preds] or pred is ['and,:preds] =>
