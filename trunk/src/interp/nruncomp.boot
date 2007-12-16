@@ -388,11 +388,11 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 --      [['domain,NRTaddInner $NRTaddForm,:$NRTaddForm],:$NRTdeltaList]
 --    $NRTdeltaLength := $NRTdeltaLength+1
 --NRTgetLocalIndex $NRTaddForm
-  domainShell := GETREFV (6 + $NRTdeltaLength)
+  domainShell := GETREFV ($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
   $template :=
-    $NRTvec = true => GETREFV (6 + $NRTdeltaLength)
+    $NRTvec = true => GETREFV ($NRTbase + $NRTdeltaLength)
     nil
   $catvecList:= [domainShell,:[emptyVector for u in CADR domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
@@ -417,7 +417,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   codePart2:=
     $NRTvec = true =>
       argStuffCode :=
-        [[$setelt,'$,i,v] for i in 6.. for v in $FormalMapVariableList
+        [[$setelt,'$,i,v] for i in $NRTbase.. for v in $FormalMapVariableList
           for arg in rest $definition]
       if MEMQ($NRTaddForm,$locals) then
          addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
@@ -435,7 +435,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       --$NRTdomainFormList is unused now
     createDomainCode:=
       ['LET,domname,['LIST,MKQ CAR $definition,:ASSOCRIGHT $devaluateList]]
-    createViewCode:= ['LET,'$,['GETREFV, 6+$NRTdeltaLength]]
+    createViewCode:= ['LET,'$,['GETREFV, $NRTbase + $NRTdeltaLength]]
     setVector0Code:=[$setelt,'$,0,'dv_$]
     slot3Code := ['QSETREFV,'$,3,['LET,'pv_$,predBitVectorCode1]]
     slamCode:=
@@ -476,7 +476,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 NRTcheckVector domainShell ==
 --RETURNS: an alist (((op,sig),:pred) ...) of missing functions
   alist := nil
-  for i in 6..MAXINDEX domainShell repeat
+  for i in $NRTbase..MAXINDEX domainShell repeat
 --Vector elements can be one of
 -- (a) T           -- item was marked
 -- (b) NIL         -- item is a domain; will be filled in by setVector4part3
@@ -493,7 +493,7 @@ NRTcheckVector domainShell ==
   alist
 
 -- Obsolete once we have moved to JHD's world
-NRTvectorCopy(cacheName,domName,deltaLength) == GETREFV (6 + deltaLength)
+NRTvectorCopy(cacheName,domName,deltaLength) == GETREFV ($NRTbase + deltaLength)
 
 mkDomainCatName id == INTERN STRCONC(id,";CAT")
 
@@ -691,7 +691,7 @@ deepChaseInferences(pred,$e) ==
 vectorLocation(op,sig) ==
   u := or/[i for i in 1.. for u in $NRTdeltaList
         | u is [=op,[='$,: xsig],:.] and sig=NRTsubstDelta(xsig) ]
-  u => $NRTdeltaLength - u + 6
+  u => $NRTdeltaLength - u + $NRTbase 
   nil    -- this signals that calls should be forwarded
 
 NRTsubstDelta(initSig) ==

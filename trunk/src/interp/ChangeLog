@@ -1,3 +1,10 @@
+2007-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nruncomp.boot (buildFunctor): Use $NRTbase instead of hardcoded
+	constant 6.
+	(NRTcheckVector): Likewise.
+	(deepChaseInferences): Likewise.
+
 2007-12-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* nruncomp.boot (deltaTran): Use NRTaddIndex.
