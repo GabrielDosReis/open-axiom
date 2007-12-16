@@ -1,3 +1,10 @@
+2007-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	SF/1850100
+	* bags.spad.pamphlet (parts$Stack): Implement.
+	(map$Stack): Likewise.
+	(map!$Stack): Likewise.
+
 2007-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* domain.spad (showSummary$Domain): New.
