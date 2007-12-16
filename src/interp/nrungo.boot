@@ -57,10 +57,8 @@ compiledLookup(op,sig,dollar) ==
 basicLookup(op,sig,domain,dollar) ==
   domain.1 is ['lookupInDomain,:.] => lookupInDomainVector(op,sig,domain,dollar)
   ----------new world code follows------------
-  $lookupDefaults : local := nil -- new world
-  u := lookupInDomainVector(op,sig,domain,dollar) => u
-  $lookupDefaults := true
-  lookupInDomainVector(op,sig,domain,dollar)
+  u := lookupInDomainAndDefaults(op,sig,domain,dollar,false) => u
+  lookupInDomainAndDefaults(op,sig,domain,dollar,true)
 
 compiledLookupCheck(op,sig,dollar) ==
   fn := compiledLookup(op,sig,dollar)
@@ -193,6 +191,17 @@ lookupInDomain(op,sig,addFormDomain,dollar,index) ==
 lookupInDomainVector(op,sig,domain,dollar) ==
   slot1 := domain.1
   SPADCALL(op,sig,dollar,slot1)
+
+
+++ same as lookupInDomainVector except that the use of defaults
+++ (either in category packages or add-chains) is controlled
+++ by `useDefaults'.
+lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
+  savedLookupDefaults := $lookupDefaults
+  $lookupDefaults := useDefaults
+  fun := lookupInDomainVector(op,sig,domain,dollar)
+  $lookupDefaults := savedLookupDefaults
+  fun
 
 --=======================================================
 --       Category Default Lookup (from goGet or lookupInAddChain)
