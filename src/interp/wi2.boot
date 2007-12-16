@@ -131,7 +131,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $NRTloadTimeAlist: local := nil --used for things in slot4 (NRTsetVector4)
     $NRTdomainFormList: local := nil -- of form ((gensym . (Repe...)) ...
     -- the above optimizes the calls to local domains
-    $template: local:= nil --stored in the lisplib (if $NRTvec = true)
+    $template: local:= nil --stored in the lisplib
     $functionLocations: local := nil --locations of defined functions in source
     -- generate slots for arguments first, then for $NRTaddForm in compAdd
     for x in argl repeat NRTgetLocalIndex x
@@ -651,7 +651,6 @@ compApplyModemap(form,modemap,$e,sl) ==
 --+ information which is no longer valid; thus ignore this index and
 --+ store the signature instead.
  
---$NRTflag=true and f is [op1,d,.] and NE(d,'$) and member(op1,'(ELT CONST)) =>
   f is [op1,d,.] and member(op1,'(ELT CONST Subsumed)) =>
     [genDeltaEntry [op,:modemap],lt',$bindings]
   markImport mc

@@ -74,7 +74,6 @@
 (SETQ |$displayParserOutput| 'T)
 
 (SETQ |$insideReadRulesIfTrue| NIL)
-(SETQ |$consistencyCheck| 'T)
 (SETQ |$useUndo| NIL)
 (SETQ |$ruleSetsInitialized| NIL)
 
@@ -83,10 +82,7 @@
 
 (SETQ |$htPrecedenceTable| NIL)
 
-(SETQ |$NRTmakeCompactDirect| NIL)
 (SETQ |$NRTquick| NIL)
-(SETQ |$NRTmakeShortDirect| NIL)
-(SETQ |$newWorld| NIL)
 (SETQ |$returnNowhereFromGoGet| NIL)
 
 (SETQ |$insideCanCoerceFrom| NIL)
@@ -174,7 +170,6 @@
 (SETQ |$prefix| NIL)
 (SETQ |$formalArgList| ())
 
-(SETQ |$NRTflag| T)
 (SETQ |$NRTaddForm| NIL)
 (SETQ |$NRTdeltaList| NIL)
 (SETQ |$NRTdeltaLength| 0)
