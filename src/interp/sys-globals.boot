@@ -82,6 +82,9 @@ $compCount := 0
 $compUniquelyIfTrue := false
 
 ++
+$consistencyCheck := true
+
+++
 $ConstructorCache := MAKE_-HASHTABLE "ID"
 
 ++

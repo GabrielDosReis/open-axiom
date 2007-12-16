@@ -459,7 +459,7 @@ updateCategoryTable(cname,kind) ==
     updateCategoryTableForDomain(cname,getConstrCat(
       GETDATABASE(cname,'CONSTRUCTORCATEGORY)))
 --+
-  kind = 'domain =>
+  kind = 'domain and $NRTflag = true =>
     updateCategoryTableForDomain(cname,getConstrCat(
       GETDATABASE(cname,'CONSTRUCTORCATEGORY)))
 

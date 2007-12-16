@@ -391,7 +391,9 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   domainShell := GETREFV ($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
-  $template := GETREFV ($NRTbase + $NRTdeltaLength)
+  $template :=
+    $NRTvec = true => GETREFV ($NRTbase + $NRTdeltaLength)
+    nil
   $catvecList:= [domainShell,:[emptyVector for u in CADR domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
   $maximalViews:= nil
@@ -410,16 +412,19 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   storeOperationCode:= DescendCode(code,true,nil,first $catNames)
   outsideFunctionCode:= NRTaddDeltaCode()
   storeOperationCode:= NRTputInLocalReferences storeOperationCode
-  NRTdescendCodeTran(storeOperationCode,nil) --side effects storeOperationCode
+  if $NRTvec = true then
+    NRTdescendCodeTran(storeOperationCode,nil) --side effects storeOperationCode
   codePart2:=
-    argStuffCode :=
-      [[$setelt,'$,i,v] for i in $NRTbase.. for v in $FormalMapVariableList
-	for arg in rest $definition]
-    if MEMQ($NRTaddForm,$locals) then
-       addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
-       argStuffCode := [[$setelt,'$,5,addargname],:argStuffCode]
-    [['stuffDomainSlots,'$],:argStuffCode,
-       :predBitVectorCode2,storeOperationCode]
+    $NRTvec = true =>
+      argStuffCode :=
+        [[$setelt,'$,i,v] for i in $NRTbase.. for v in $FormalMapVariableList
+          for arg in rest $definition]
+      if MEMQ($NRTaddForm,$locals) then
+         addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
+         argStuffCode := [[$setelt,'$,5,addargname],:argStuffCode]
+      [['stuffDomainSlots,'$],:argStuffCode,
+         :predBitVectorCode2,storeOperationCode]
+    [:outsideFunctionCode,storeOperationCode]
 
   $CheckVectorList := NRTcheckVector domainShell
 --CODE: part 1
@@ -589,7 +594,9 @@ NRTsetVector4a(sig,form,cond) ==
 
 NRTmakeSlot1 domainShell ==
   opDirectName := INTERN STRCONC(PNAME first $definition,'";opDirect")
-  fun := '(function lookupInCompactTable)
+  fun :=
+    $NRTmakeCompactDirect => '(function lookupInCompactTable)
+    '(function lookupInTable)
   [($QuickCode=>'QSETREFV;'SETELT), '$,1, ['LIST,fun,'$,opDirectName]]
 
 NRTmakeSlot1Info() ==
