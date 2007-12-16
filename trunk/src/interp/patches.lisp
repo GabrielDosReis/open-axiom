@@ -221,6 +221,8 @@
 (define-function '|isLowerCaseLetter| #'LOWER-CASE-P)
 (define-function '|isUpperCaseLetter| #'UPPER-CASE-P)
 (define-function '|isLetter| #'ALPHA-CHAR-P)
+;; reset from /spad/lisp/setq.lisp
+(setq |$consistencyCheck| ()) ;; prevents wasting time checking consistency
 
 
 #+(or :CCL (and :lucid :ibm/370))

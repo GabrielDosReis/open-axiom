@@ -220,6 +220,7 @@ compApplyModemap(form,modemap,$e,sl) ==
 --+ information which is no longer valid; thus ignore this index and
 --+ store the signature instead.
 
+--$NRTflag=true and f is [op1,d,.] and NE(d,'$) and member(op1,'(ELT CONST)) =>
   f is [op1,d,.] and member(op1,'(ELT CONST Subsumed)) =>
     [genDeltaEntry [op,:modemap],lt',$bindings]
   [f,lt',$bindings]

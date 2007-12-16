@@ -451,6 +451,7 @@ JoinInner(l,$e) ==
           if ancindex
              then ($NewCatVec.ancindex:= bname; reallynew:= nil)
              else
+               -- check for $NRTflag until massive algebra recompilation
               if originalVector and (condition=true) then
                 $NewCatVec:= CatEval bname
                 copied:= nil
