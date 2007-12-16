@@ -42,6 +42,16 @@ Stack(S: Type): StackAggregate S with
       s = t == 
         deref s = deref t
 
+    parts s ==                             -- from HOAGG
+      deref s
+   
+    map(f: S -> S, s: %) ==                -- from HOAGG
+      ref map(f, deref s)$List(S)
+
+    map!(f: S -> S, s: %) ==               -- from HOAGG
+      map!(f, deref s)$List(S)
+      s
+
     copy s == ref copy deref s
     depth s == # deref s
     # s == depth s
