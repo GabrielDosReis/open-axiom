@@ -36,20 +36,14 @@ import '"c-util"
 )package "BOOT"
 
 ++
-$doNotCompressHashTableIfTrue := false
+$doNotCompressHashTableIfTrue := true
 
 --=======================================================================
 --                     Basic Functions
 --=======================================================================
 initNewWorld() ==
-  $NRTflag := true
-  $NRTvec := true
-  $NRTmakeCompactDirect := true
   $NRTquick := true
-  $NRTmakeShortDirect := true
-  $newWorld := true
   $monitorNewWorld := false
-  $consistencyCheck := false
   $spadLibFT := 'NRLIB
   $NRTmonitorIfTrue := false
   $updateCatTableIfTrue := false
