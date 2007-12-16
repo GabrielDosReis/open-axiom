@@ -113,7 +113,8 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     QCAR x='Record or x is ['Union,['_:,a,b],:.] =>
       [QCAR x,:[['_:,a,encode(b,c,false)]
         for [.,a,b] in QCDR x for [.,=a,c] in CDR compForm]]
-    isQuasiquote x => x
+    (x' := isQuasiquote x) =>
+      quasiquote encode(x',isQuasiquote compForm,false)
     constructor? QCAR x or MEMQ(QCAR x,'(Union Mapping)) =>
       [QCAR x,:[encode(y,z,false) for y in QCDR x for z in CDR compForm]]
     ['NRTEVAL,NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]

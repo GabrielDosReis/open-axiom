@@ -38,6 +38,9 @@ import '"c-util"
 ++
 $doNotCompressHashTableIfTrue := false
 
+++
+$lookupDefaults := false
+
 --=======================================================================
 --                     Basic Functions
 --=======================================================================
@@ -222,7 +225,7 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
     INTEGERP KAR addFormCell =>
       or/[newLookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
     if null VECP addFormCell then lazyDomainSet(addFormCell,addFormDomain,index)
-    lookupInDomainVector(op,sig,addFormDomain.index,dollar)
+    lookupInDomainAndDefaults(op,sig,addFormDomain.index,dollar,false)
   nil
  
 --=======================================================
@@ -368,7 +371,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
     null package => nil
     if $monitorNewWorld then
       sayLooking1('"Looking at instantiated package ",package)
-    res := lookupInDomainVector(op,sig,package,dollar) =>
+    res := lookupInDomainAndDefaults(op,sig,package,dollar,false) =>
       if $monitorNewWorld = true then
         sayBrightly '"candidate default package succeeds"
       return res
@@ -428,9 +431,8 @@ lazyMatch(source,lazyt,dollar,domain) ==
       MEMQ(op,'(Record Union)) and first argl is [":",:.] =>
         and/[stag = atag and lazyMatchArg(s,a,dollar,domain)
               for [.,stag,s] in sargl for [.,atag,a] in argl]
-      MEMQ(op,'(Union Mapping QUOTE)) =>
+      MEMQ(op,'(Union Mapping _[_|_|_] QUOTE)) =>
          and/[lazyMatchArg(s,a,dollar,domain) for s in sargl for a in argl]
-      op="[||]" => source = lazyt
       coSig := GETDATABASE(op,'COSIG)
       NULL coSig => error ["bad Constructor op", op]
       and/[lazyMatchArg2(s,a,dollar,domain,flag)
@@ -513,7 +515,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
                                  for [.,tag,dom] in argl]]
   MEMQ(functorName, '(Union Mapping)) =>
           [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
-  functorName in '(QUOTE _[_|_|_]) => [functorName,:argl]
+  functorName = "QUOTE"  => [functorName,:argl]
   coSig := GETDATABASE(functorName,'COSIG)
   NULL coSig => error ["bad functorName", functorName]
   [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,flag)
