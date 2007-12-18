@@ -1,3 +1,7 @@
+2007-12-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nruncomp.boot: Remove dead code.
+
 2007-12-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* nruncomp.boot (NOTES): Encode quasiquoted values too.

@@ -89,16 +89,12 @@ deltaTran(item,compItem) ==
   [dc,:sig] := dcSig
   sig := substitute('$,dc,substitute("$$",'$,sig))
   dcCode :=
-    dc = '$ =>
-      --$NRTaddForm => -5
-      0
+    dc = '$ => 0
     NRTassocIndex dc or keyedSystemError("S2NR0004",[dc])
   formalSig:= SUBLISLIS($FormalMapVariableList,$formalArgList,sig)
   kindFlag:= (kind = 'CONST => 'CONST; nil)
   newSig := [NRTassocIndex x or x for x in formalSig]
   [newSig,dcCode,op,:kindFlag]
-
---NRTencodeSig x == [NRTencode y for y in x]
 
 NRTreplaceAllLocalReferences(form) ==
   $devaluateList :local := []
@@ -146,9 +142,6 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
     dc = '$ => $functorForm
     atom dc and (dcval := get(dc,'value,$e)) => dcval.expr
     dc
---if (atom dc) and (dcval := get(dc,'value,$e))
---   then ndc := dcval.expr
---   else ndc := dc
   sig := SUBST(ndc,dc,sig)
   not MEMQ(KAR ndc,$optimizableConstructorNames) => nil
   dcval := optCallEval ndc
@@ -177,7 +170,6 @@ genDeltaEntry opMmPair ==
 --called from compApplyModemap
 --$NRTdeltaLength=0.. always equals length of $NRTdeltaList
   [.,[odc,:.],.] := opMmPair
-  --opModemapPair := SUBLIS($LocalDomainAlist,opMmPair)
   [op,[dc,:sig],[.,cform:=[eltOrConst,.,nsig]]] := opMmPair
   if $profileCompiler = true then profileRecord(dc,op,sig)
   eltOrConst = 'XLAM => cform
@@ -185,16 +177,12 @@ genDeltaEntry opMmPair ==
   if atom dc then
     dc = "$" => nsig := sig
     if NUMBERP nsig then nsig := substitute('$,dc,substitute("$$","$",sig))
-    -- following hack needed to invert Rep to $ substitution
---  if odc = 'Rep and cform is [.,.,osig] then sig:=osig
   newimp := optDeltaEntry(op,nsig,dc,eltOrConst) => newimp
   setDifference(listOfBoundVars dc,$functorLocalParameters) ^= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(nsig,dc),consDomainForm(dc,nil)]]
   odc := dc
   if null atom dc then dc := substitute("$$",'$,dc)
- --   sig := substitute('$,dc,sig)
- --   cform := substitute('$,dc,cform)
   opModemapPair :=
     [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and dc ^= $NRTaddForm and
@@ -204,7 +192,6 @@ genDeltaEntry opMmPair ==
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
       compEntry:= (compOrCroak(odc,$EmptyMode,$e)).expr
---      dc
       RPLACA(saveNRTdeltaListComp,compEntry)
   u :=
     [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
@@ -352,7 +339,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 
 --LOCAL BOUND FLUID VARIABLES:
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
---$frontier: local      --index of first local slot=#(cat part of princ view)
   $catvecList: local    --list of vectors v1..vn for each view
   $hasCategoryAlist: local  --list of GENSYMs bound to (HasCategory ..) items
   $catNames: local      --list of names n1..nn for each view
@@ -383,12 +369,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   -- category should be present.  true => always
   makeCatvecCode:= first catvecListMaker
   emptyVector := VECTOR()
---if $NRTaddForm and null NRTassocIndex $NRTaddForm then
---  --create "domain" entry to $NRTdeltaList
---    $NRTdeltaList:=
---      [['domain,NRTaddInner $NRTaddForm,:$NRTaddForm],:$NRTdeltaList]
---    $NRTdeltaLength := $NRTdeltaLength+1
---NRTgetLocalIndex $NRTaddForm
   domainShell := GETREFV ($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
@@ -470,8 +450,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
     --if we didn't kill this, DEFINE would insert it in the wrong place
   ans:= minimalise ans
   SAY ['"time taken in buildFunctor: ",TEMPUS_-FUGIT()-oldtime]
-  --sayBrightly '"------------------functor code: -------------------"
-  --pp ans
   ans
 
 NRTcheckVector domainShell ==
@@ -505,7 +483,6 @@ NRTsetVector4(siglist,formlist,condlist) ==
   for sig in reverse siglist for form in reverse formlist
          for cond in reverse condlist repeat
                   NRTsetVector4a(sig,form,cond)
-  --NRTsetVector4a(first siglist,first formlist,first condlist)
 
   $lisplibCategoriesExtended:= [$uncondList,:$condList]
   code := ['mapConsDB,MKQ REVERSE REMDUP $uncondList]
@@ -535,7 +512,6 @@ NRTsetVector4Part1(siglist,formlist,condlist) ==
   revCondlist := reverseCondlist reducedConlist
   orCondlist := [[x,:MKPF(y,'OR)] for [x,:y] in revCondlist]
   [reducedUncondlist,:orCondlist]
-  --NRTsetVector4a(first siglist,first formlist,first condlist)
 
 reverseCondlist cl ==
   alist := nil
@@ -567,13 +543,6 @@ mergeAppend(l1,l2) ==
   ATOM l1 => l2
   member(QCAR l1,l2) => mergeAppend(QCDR l1, l2)
   CONS(QCAR l1, mergeAppend(QCDR l1, l2))
-
---genLoadTimeValue u ==
---  name :=
---    INTERN STRCONC(PNAME first $definition,'";",STRINGIZE($count:=$count+1))
---  $NRTloadTimeAlist := [[name,:['addConsDB,MKQ u]],:$NRTloadTimeAlist]
---  --see compDefineFunctor1
---  name
 
 catList2catPackageList u ==
 --converts ((Set) (Module R) ...) to ((Set& $) (Module& $ R)...)
@@ -719,25 +688,11 @@ NRTputInLocalReferences bod ==
 
 NRTputInHead bod ==
   atom bod => bod
---  LASSOC(bod,$devaluateList) => nil
---  k:= NRTassocIndex bod => [$elt,'_$,k]
---  systemError '"unexpected position of domain reference"
---  bod
---bod is ['LET,var,val,:extra] and IDENTP var =>
---  NRTputInTail extra
---  k:= NRTassocIndex var => RPLAC(CADDR bod,[$elt,'$,k])
---  NRTputInHead val
---  bod
   bod is ['SPADCALL,:args,fn] =>
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
     fn is [elt,dom,ind] and not (dom='$) and MEMQ(elt,'(ELT QREFELT CONST)) =>
       k:= NRTassocIndex dom => RPLACA(LASTNODE bod,[$elt,'_$,k])
---    sayBrightlyNT '"unexpected SPADCALL:"
---    pp fn
---    nil
---    keyedSystemError("S2GE0016",['"NRTputInHead",
---       '"unexpected SPADCALL form"])
       nil
     NRTputInHead fn
     bod
