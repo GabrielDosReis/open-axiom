@@ -90,6 +90,7 @@ deltaTran(item,compItem) ==
   sig := substitute('$,dc,substitute("$$",'$,sig))
   dcCode :=
     dc = '$ => 0
+    dc = $NRTaddForm => 5
     NRTassocIndex dc or keyedSystemError("S2NR0004",[dc])
   formalSig:= SUBLISLIS($FormalMapVariableList,$formalArgList,sig)
   kindFlag:= (kind = 'CONST => 'CONST; nil)
