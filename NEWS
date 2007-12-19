@@ -1,3 +1,5 @@
+* December 19, 2007
+
   × The interpreter now allows library `case' functions.
     Consequently, `case' no longer requires values of Union types, as
     long as the arguments are of appropriate types, e.g. ones for
