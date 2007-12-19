@@ -1,3 +1,8 @@
+2007-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* nruncomp.boot (deltaTran): Fix thinko; handle the case where the
+	domain of computation is the add form.
+
 2007-12-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* nruncomp.boot: Remove dead code.
