@@ -1,6 +1,7 @@
 2007-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* build-setup.sh (SUBDIRS): Don't extract Makefile.in for src/lisp.
+	Same for src/graph, src/etc, src/sman, src/hyper, src/doc.
 
 2007-11-30  Ralf Hemmecke  <ralf@hemmecke.de>
 

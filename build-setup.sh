@@ -22,17 +22,6 @@ SUBDIRS="     .   \
 		  src/interp             \
 		  src/share              \
 		  src/algebra            \
-		  src/etc                \
-		  src/clef               \
-		  src/doc                \
-		  src/graph              \
-                     src/graph/Gdraws    \
-                     src/graph/view2D    \
-                     src/graph/view3D    \
-                     src/graph/viewAlone \
-                     src/graph/viewman   \
-		  src/sman               \
-		  src/hyper              \
 		  src/input              \
                   src/booklets           \
 "
