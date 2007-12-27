@@ -1,3 +1,7 @@
+2007-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* booklets: Remove.
+
 2007-11-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet: Remove all-depsys rule.
