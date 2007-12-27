@@ -1,3 +1,7 @@
+2007-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* build-setup.sh (SUBDIRS): Don't extract Makefile.in for src/lisp.
+
 2007-11-30  Ralf Hemmecke  <ralf@hemmecke.de>
 
 	* configure.ac.pamphlet: Fix a thinko in checking for makeindex.

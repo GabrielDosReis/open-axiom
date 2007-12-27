@@ -39,7 +39,7 @@
 ;; -*- Abstract -*-
 ;; 
 ;;  This pamphlet defines the core of the system utilities for building
-;;  Boot and Axiom executable.  It essentially etablishes a namespace
+;;  Boot and OpenAxiom executable.  It essentially etablishes a namespace
 ;;  (package AxiomCore) and defines some macros and functions
 ;;  that need to be present during during compilation and executable
 ;;  image construction.
@@ -257,7 +257,7 @@
 
 ;; Save current image on disk as executable and quit.
 (defun |saveCore| (core-image &optional (entry-point nil))
-  ;; When building the Axiom system, and in many other cases I suspect,
+  ;; When building the OpenAxiom system, and in many other cases I suspect,
   ;; the main entry point is some function in a package not known to
   ;; the Lisp system at compile time, so we have delayed the 
   ;; evaluation of the entry point in a form of a suspension.  At this
