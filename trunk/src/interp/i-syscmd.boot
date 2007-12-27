@@ -903,7 +903,7 @@ displayMacros names ==
      names
   macros := REMDUP macros
 
-  null macros => sayBrightly '"   There are no Axiom macros."
+  null macros => sayBrightly '"   There are no OpenAxiom macros."
 
   -- first do user defined ones
 
@@ -915,7 +915,7 @@ displayMacros names ==
             first := NIL
         displayParserMacro macro
     macro in imacs => 'iterate
-    sayBrightly (["   ",'%b, macro, '%d, " is not a known Axiom macro."])
+    sayBrightly (["   ",'%b, macro, '%d, " is not a known OpenAxiom macro."])
 
   -- now system ones
 

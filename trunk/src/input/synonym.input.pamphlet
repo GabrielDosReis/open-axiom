@@ -17,7 +17,7 @@
 <<license>>
 
 -- This file contains the standard system defined system command
--- synonyms for the Axiom system. It is normally read into
+-- synonyms for the OpenAxiom system. It is normally read into
 -- the system by adding the line
 --         )read synonym input )ifthere )quiet
 -- to the start-up profile axiom.input.

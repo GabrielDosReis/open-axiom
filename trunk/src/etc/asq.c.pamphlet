@@ -10,7 +10,7 @@
 \tableofcontents
 \eject
 The asq (ask) function is a command line utility for extracting information
-from the Axiom databases. It understands how the data is stored and can
+from the OpenAxiom databases. It understands how the data is stored and can
 retrieve all data associated with Categories, Domains, and Packages.
 
 It used to look for the databases in [[$AXIOM/../../share/algebra]]
@@ -19,7 +19,7 @@ but has been changed to search [[$AXIOM/algebra]] as originally designed.
 
 \section{Database structure}
 In order to understand this program you need to understand some details
-of the structure of the databases it reads. Axiom has 5 databases,
+of the structure of the databases it reads. OpenAxiom has 5 databases,
 the interp.daase, operation.daase, category.daase, compress.daase, and
 browse.daase. The compress.daase is special and does not follow the
 normal database format.

@@ -100,7 +100,7 @@ u(1)& =\frac{-5\sqrt{2}}{12}.
 \end{array}
 $$
 
-As implemented within Axiom the {\tt asec} function is
+As implemented within OpenAxiom the {\tt asec} function is
 $$sec^{-1}(z) == cos^{-1}\left(\frac{1}{z}\right)$$
 <<*>>=
 )spool asec.output

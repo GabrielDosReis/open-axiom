@@ -997,7 +997,7 @@ information:
 \item the \emph{name} of the system --- ``OpenAxiom 1.0.0''
 \item its \emph{version}.  I choose to use the date of last checkin.
   It should probably include the revision number so as to 
-  unambiguously identify which \Tool{OpnAxiom} flavour du jour is being
+  unambiguously identify which \Tool{OpenAxiom} flavour du jour is being
   built;
 \item and where to send feedback, \emph{e.g.} bug reports.  At the moment, 
   we use

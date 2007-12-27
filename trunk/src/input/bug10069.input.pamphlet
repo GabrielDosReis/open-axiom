@@ -14,7 +14,7 @@ These functions were missing a case statement that handled the 'failed'
 branch. This has been fixed.
 
 Since these functions are designed to fail during testing we
-have to set the breakmode to resume so Axiom will continue reading
+have to set the breakmode to resume so OpenAxiom will continue reading
 the input file.
 <<*>>=
 )cl all

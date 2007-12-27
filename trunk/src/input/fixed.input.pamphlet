@@ -756,7 +756,7 @@ complexNumeric(log(sqrt(-3)))
 -- answer (barry):
 --
 --Your problem in TEST about specifying target types which are Mapping's
---was a bug in the compiler and has been fixed for Axiom release 2.0.
+--was a bug in the compiler and has been fixed for OpenAxiom release 2.0.
 --
 
 -------------------------------------------------------------------
@@ -1191,7 +1191,7 @@ ll 3
 --   4893,4653,4475,4005,3893,3669,3459,3143,2967,
 --   2807,2529,1827,1695,975,875,629,569
 
---It was gotten from Axiom by issuing the commands
+--It was gotten from OpenAxiom by issuing the commands
 qrimes : Stream Integer := generate(nextPrime,2**512-5000)
 rrimes := [ 2**512-p for p in qrimes while p < 2**512 ]
 srimes := complete rrimes
@@ -1285,7 +1285,7 @@ L
 --   (5)  ["There is","a real bug","here"]
 --
 --Is there a way to fix this bug quickly ?? (I am ready to modify the source
---Axiom aggcat.spad).
+--OpenAxiom aggcat.spad).
 --The problem with ! functions lies in the documentation not in the code. We
 --need to explain more clearly that ! functions are ALLOWED to update their
 --arguments, not REQUIRED to do so. 
@@ -1327,7 +1327,7 @@ minimalPolynomial(y)$E
 --
 tr := rule cos(x)**(n | integer? n and even? n)==(1-sin(x)**2)**(n/2)
 --
---Axiom returns
+--OpenAxiom returns
 --
 --   Cannot find a definition or library operation named even? with argument
 --   types
@@ -1362,7 +1362,7 @@ tr := rule cos(x)**(n | integer? n and even? n)==(1-sin(x)**2)**(n/2)
 -- copper@yktvmv.vnet.ibm.com/02/22/94 don coppersmith
 -------------------------------------------------------------------
 )clear all
---Questions that came up using Axiom on Aixproj:
+--Questions that came up using OpenAxiom on Aixproj:
 --
 --How does one find a Pade approximation?  I tried  pade(2,2,y)
 --pade(y,2,2)  Pade(2,2,y)  PadeApproximation(2,2,y)
