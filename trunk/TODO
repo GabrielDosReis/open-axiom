@@ -2,6 +2,11 @@
 === TODO ===
 ============
 
+* Eliminate the shell script driver in favor of a native executable.
+* Have an option to build OpenAxiom as a Firefox-based standalone
+  application (or as a Firefox extension)
+* Make highlighting more configurable
+* Build domains for theorem proving and proof checking facilities.
 * Support more Lisp systems
 * Better support on Windows platform (MinGW/MSYS)
 * Modernize algebras
