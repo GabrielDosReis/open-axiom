@@ -1,3 +1,7 @@
+2007-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove.
+
 2007-11-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* msgs/s2-us.msgs: Consistently use OpenAxiom.
