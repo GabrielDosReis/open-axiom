@@ -103,8 +103,6 @@ AC_PATH_PROG([LATEX], [latex])
 AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 if test -n "$LATEX"; then \
     axiom_src_all="$axiom_src_all all-book"
-    axiom_src_subdirs="$axiom_src_subdirs booklets"
-    AXIOM_MAKEFILE([src/booklets/Makefile])
 else
     AC_MSG_NOTICE([Documentation is disabled.])
 fi

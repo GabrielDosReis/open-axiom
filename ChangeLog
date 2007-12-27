@@ -3,6 +3,10 @@
 	* build-setup.sh (SUBDIRS): Don't extract Makefile.in for src/lisp.
 	Same for src/graph, src/etc, src/sman, src/hyper, src/doc.
 
+	(SUBDIRS): src/booklets no longer exists.
+	* configure.ac.pamphlet: Don't instantiate Makefile for
+	src/booklets. 
+
 2007-11-30  Ralf Hemmecke  <ralf@hemmecke.de>
 
 	* configure.ac.pamphlet: Fix a thinko in checking for makeindex.
