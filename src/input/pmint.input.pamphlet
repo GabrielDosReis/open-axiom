@@ -288,7 +288,7 @@ integrate(f,x)
 -- Airy Functions
 
 -- f:=(x-airyAi(x)*airyAi(1,x))/(x^2-airyAi(x)^2)
--- Axiom does not have a 2 argument form of the airyAi function
+-- OpenAxiom does not have a 2 argument form of the airyAi function
  
 -- integrate(f,x)
 -- should be:
@@ -305,7 +305,7 @@ f:=x^2*airyAi(x)
 g:=integrate(f,x)
 -- should be:
 --  -airyAi(x) + airyAi(1,x) x
--- but Axiom cannot integrate this and gives:
+-- but OpenAxiom cannot integrate this and gives:
 --
 --           x
 --         ++    2
@@ -329,7 +329,7 @@ f:=besselJ(y+1,x)/besselJ(y,x)
 g:=integrate(f,x)
 -- should be:
 --  y log(x) - log(besselJ(y,x))
--- but Axiom cannot integrate it and gives:
+-- but OpenAxiom cannot integrate it and gives:
 --
 --           x
 --         ++  besselJ(y + 1,%H)
@@ -338,7 +338,7 @@ g:=integrate(f,x)
 --                                          Type: Union(Expression Integer,...)
 
 -- f:=normal(y*besselJ(y,x)/x = besselJ(y+1,x))
--- Axiom does not have Maple's normal function
+-- OpenAxiom does not have Maple's normal function
 -- should be:
 --   besselJ(y+1,x) x - y besselJ(y,x)
 -- - ---------------------------------
@@ -352,7 +352,7 @@ g:=integrate(f,x)
 -- Whittaker functions
 
 -- f:=WhittakerW(u+1,n,x)/(WhittakerW(u,n,x)*x)
--- Axiom does not implement WhittakerW
+-- OpenAxiom does not implement WhittakerW
 -- should be:
 --  Whittaker(u+1,n,x)
 --  ------------------
@@ -371,7 +371,7 @@ g:=integrate(f,x)
 -- The Lambert W function
 
 -- f:=LambertW(x)
--- Axiom does not implement LambertW
+-- OpenAxiom does not implement LambertW
 
 -- g:=integrate(f,x)
 -- should be:

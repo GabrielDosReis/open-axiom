@@ -7,9 +7,9 @@
 \begin{abstract}
 A set of test results that fail for Maple was published as a database
 on the web by Vladimir Bondarenko. We looked at these equations in
-detail, redesigned and rewrote them for Axiom where the equations
-could be applied, and ran them thru the Axiom system. These are the
-set of results that give answers in Axiom along with a summary of
+detail, redesigned and rewrote them for OpenAxiom where the equations
+could be applied, and ran them thru the OpenAxiom system. These are the
+set of results that give answers in OpenAxiom along with a summary of
 the tests.
 \end{abstract}
 \eject
@@ -24,7 +24,7 @@ We should have available a range of problems with associated
 math theory and verified results that every computer algebra
 system can use for testing purposes. To this end I've been 
 collecting test suites from various computer algebra systems and
-running them thru Axiom. The lastest collection is the Maple bug
+running them thru OpenAxiom. The lastest collection is the Maple bug
 list posted by Vladimir. 
 
 Of course there is no common syntax and so one of the problems
@@ -32,12 +32,12 @@ is that every integral has to be hand-written to match the likely
 semantics of the original. This is a time consuming effort.
 pFurthermore there is no general mechanism for collecting results
 (although I have been looking at automating regression testing
-in Axiom) so result collection and summary are also hand operations.
+in OpenAxiom) so result collection and summary are also hand operations.
 Nevertheless, the process has completed the first phase of testing
 and I've attached some summary statistics. Detailed results will
-be included with the next release of Axiom.
+be included with the next release of OpenAxiom.
 
-For the next phase I've built a special purpose version of Axiom
+For the next phase I've built a special purpose version of OpenAxiom
 with instrumentation in all of the integration routines. I plan to
 classify each integral and associate it with the code as part of
 the literate documentation. This will give us a basis for finding
@@ -54,7 +54,7 @@ There were 4865 integrals tested. Of these
 \item (1206 24.78\%) Undefined Special Functions or untranslated functions
 \item (84    1.72\%) Mismatched signatures of existing functions
 \item (158   3.25\%) Badly Behaved Integrals
-\item (7     0.14\%) Axiom Internal Errors
+\item (7     0.14\%) OpenAxiom Internal Errors
 \item (279   5.73\%) Risch Algorithm Boundary Cases
 \item (2331 47.91\%) Failed results
 \item (490  10.07\%) Successful Results
@@ -68,7 +68,7 @@ rather more difficult to compute.
 
 We further break down the results. The number in parentheses is
 the number of integrals of this class. One observation is that a
-large number of these integrals involve the signum function. Axiom
+large number of these integrals involve the signum function. OpenAxiom
 does not have an integrable form of this function. Frankly, I'm not
 sure how to integrate functions involving signum. It is hardly a
 surprise that Maple gets these wrong.
@@ -76,7 +76,7 @@ surprise that Maple gets these wrong.
 On some of the functions I've given example integrals that exhibit
 the behavior of their category.
 
-Axiom has a robust implementation of the Risch algorithm done by
+OpenAxiom has a robust implementation of the Risch algorithm done by
 Barry Trager and Manuel Bronstein. Still, there are some corner
 cases that are not implemented. We collected these under a
 separate category so they will be useful for people who want to
@@ -104,9 +104,9 @@ These are apparently bogus function names.
 
 \subsection{Undefined Special Functions or Untranslated Functions}
 
-Maple has these functios in different forms than Axiom. Some of the special
-functions have equivalent Axiom representations but Maple is much stronger
-in special functions. Axiom has single-argument forms of some of these
+Maple has these functios in different forms than OpenAxiom. Some of the special
+functions have equivalent OpenAxiom representations but Maple is much stronger
+in special functions. OpenAxiom has single-argument forms of some of these
 functions but the translations were not clear.
 
 \begin{itemize}
@@ -162,7 +162,7 @@ functions but the translations were not clear.
 
 \subsection{Mismatched Signatures Of Existing Functions}
 
-Axiom's integration routines return a Union of several types. 
+OpenAxiom's integration routines return a Union of several types. 
 In order to use the result in various other operations one branch
 of the Union needs to be chosen. I have not done that here so these
 are listed as though they were special functions with a missing
@@ -189,7 +189,7 @@ integrate(legendreP(0, z)/(z^2+3*z), z= 0..3,"noPole")
 \end{verbatim}
 
 
-\subsection{Axiom Internal Errors}
+\subsection{OpenAxiom Internal Errors}
 
 \begin{itemize}
 \item (1) internal error
@@ -330,7 +330,7 @@ integrate(sin(1/z)+(1-1/z^4)^(1/2), z= 0..%pi,"noPole")
 
 \subsection{(305) Indeterminate Results}
 
-There were some integrals that Axiom failed to complete given
+There were some integrals that OpenAxiom failed to complete given
 the bounds on the allowed CPU time (about 10 minutes of execution).
 Further effort will be applied to try to resolve these cases.
 

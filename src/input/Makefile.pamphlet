@@ -20,7 +20,7 @@
 Each of the files in this subdirectory is intended to achieve a 
 three goals. First, the file shows examples of how to use Axiom
 algebra. Second, the file is used as a regression test to show
-that Axiom properly executes the algebra. Third, the file contains
+that OpenAxiom properly executes the algebra. Third, the file contains
 documentation on known bugs or missing algebra.
 
 It is important to collect as many examples as we can of working

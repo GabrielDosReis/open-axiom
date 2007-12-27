@@ -485,7 +485,7 @@ mergeDatabases(void)
   XrmDatabase homeDB,serverDB,applicationDB;
   char filenamebuf[1024];
   char *filename = &filenamebuf[0];
-  char *classname = "Axiom";
+  char *classname = "OpenAxiom";
   char name[255];
   
   (void) XrmInitialize();

@@ -10,7 +10,7 @@
 \tableofcontents
 \eject
 The [[otherwise]] clause is not recognized either in the NAG version
-or the Axiom version.
+or the OpenAxiom version.
 <<fib>>=
 )clear all
 
@@ -23,7 +23,7 @@ fib(100)
 
 @
 The [[when]] clause is not recognized either in the NAG version or
-the Axiom version.
+the OpenAxiom version.
 <<chebyshev>>=
 chebyshev1: Integer -> UnivariatePolynomial(x,Fraction Integer)
 chebyshev1(0) == 1

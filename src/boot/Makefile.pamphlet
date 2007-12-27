@@ -9,7 +9,7 @@
 \maketitle
 
 \begin{abstract}
-  \Tool{Axiom} is built in layers. The first layer is contructed into
+  \Tool{OpenAxiom} is built in layers. The first layer is contructed into
   an image called {\bf bootsys}. The \Tool{bootsys} image is used
   to translate Boot code to Common Lisp code.  Since a Boot coded
   interpreter is needed to translate the code for the Boot coded
@@ -1271,11 +1271,11 @@ the second set of source files (written in Boot) is first translated
 to Lisp, and the result of that translation is subsequently compiled to
 native object files.
 
-Partly for bootstrapping reasons, and partly because Axiom (therefore
+Partly for bootstrapping reasons, and partly because OpenAxiom (therefore
 Boot) is not yet widespread, the pamphlets for the source files written 
 in Boot currently keep a cache of their translated versions.  Hopefully
 the maintainance of that cache will be unnecessary as the build machinery
-becomes more and more improved, and Axiom gets in widespread use.
+becomes more and more improved, and OpenAxiom gets in widespread use.
 <<environment>>=
 boot_cached_clisp = $(boot_sources:.boot=.clisp)
 @
@@ -1368,7 +1368,7 @@ The bootstrapping phase is carried out in three stages:
 
 \item[Stage 2] Finally, we build another (and final) \Tool{bootsys} image 
   using the \Tool{bootsys} from Stage 1.  This is the \Tool{bootsys}
-  image that is used to build the rest of the Axiom system.
+  image that is used to build the rest of the OpenAxiom system.
 \end{itemize}
 
 Stage 1 and Stage 2 are structurally identical.  Ideally, we should be
@@ -1384,7 +1384,7 @@ will contain objects already present in the compiler and being
 used.  Consequently, we must use a fresh image to guarantee
 clean and reproductible build and semantics.  Notice that only
 the compilation of \Tool{bootsys} itself needs that care.
-The rest of the Axiom system should use \Tool{bootsys} to 
+The rest of the OpenAxiom system should use \Tool{bootsys} to 
 compile Boot codes, instead of manually going through the
 Lisp translation phase.
 
