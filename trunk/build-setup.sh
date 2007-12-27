@@ -23,7 +23,6 @@ SUBDIRS="     .   \
 		  src/share              \
 		  src/algebra            \
 		  src/input              \
-                  src/booklets           \
 "
 
 

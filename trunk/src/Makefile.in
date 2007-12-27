@@ -32,8 +32,6 @@ all-share:
 	cd share && ${MAKE}
 all-doc:
 	cd doc && ${MAKE}
-all-book:
-	cd booklets && ${MAKE}
 all-lib:
 	@cd lib && $(MAKE) $@
 all-lisp: all-lib
