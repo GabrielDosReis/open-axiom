@@ -20421,7 +20421,7 @@ fi
 done
 
 if test -n "$LATEX"; then \
-    axiom_src_all="$axiom_src_all all-book"
+   :
 else
     { echo "$as_me:$LINENO: Documentation is disabled." >&5
 echo "$as_me: Documentation is disabled." >&6;}
