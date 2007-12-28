@@ -122,12 +122,12 @@ $(top_builddir)/libtool: $(LIBTOOL_DEPS)
 	cd $(top_builddir) && $(SHELL) ./config.status --recheck
 
 
-## Rules for regenerating Makefile.in from pamphlets.
-$(srcdir)/Makefile.in: $(srcdir)/Makefile.pamphlet 
-	notangle -t8 $(srcdir)/Makefile.pamphlet > \
-		$(srcdir)/Makefile.in-tmp && \
-	$(top_srcdir)/config/move-if-change $(srcdir)/Makefile.in-tmp \
-		$(srcdir)/Makefile.in
+# ## Rules for regenerating Makefile.in from pamphlets.
+# $(srcdir)/Makefile.in: $(srcdir)/Makefile.pamphlet 
+# 	notangle -t8 $(srcdir)/Makefile.pamphlet > \
+# 		$(srcdir)/Makefile.in-tmp && \
+# 	$(top_srcdir)/config/move-if-change $(srcdir)/Makefile.in-tmp \
+# 		$(srcdir)/Makefile.in
 
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_srcdir)/config/var-def.mk \
