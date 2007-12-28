@@ -1,5 +1,8 @@
 2007-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* config/setup-dep.mk ($(srcdir)/Makefile.in): No longer generate
+	automatically. 
+
 	* build-setup.sh (SUBDIRS): Don't extract Makefile.in for src/lisp.
 	Same for src/graph, src/etc, src/sman, src/hyper, src/doc.
 
