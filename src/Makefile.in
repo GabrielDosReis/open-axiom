@@ -5,16 +5,19 @@ subdir = src/
 
 SUBDIRS = @axiom_src_subdirs@
 
-.PHONY: all all-ax all-src all-clef all-sman 
+.PHONY: all all-ax all-src all-clef all-sman all-driver
 
 all: all-ax
 
 all-ax all-src: stamp
 	@echo finished $(builddir)
 
-stamp: @axiom_src_all@
+stamp: @axiom_src_all@ all-driver
 	-rm -f stamp
 	$(STAMP) stamp
+
+all-driver:
+	@cd driver && $(MAKE) $@
 
 all-clef: all-lib
 	@$(mkinstalldirs) $(axiom_target_bindir)

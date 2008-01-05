@@ -92,6 +92,12 @@
 /* MS */
 #undef MSYSplatform
 
+/* Extension of executable file. */
+#undef OPENAXIOM_EXEEXT
+
+/* Whether to use the session manager as driver. */
+#undef OPENAXIOM_USE_SMAN
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
