@@ -241,7 +241,8 @@ FIXME: To be written
 \section{The Build Flow}
 \label{sec:build-flow}
 
-The build flow of \Tool{OpenAxiom} seems, first, a bit intricate to describe.
+The build flow of \Tool{OpenAxiom} seems, at first sight, a bit 
+intricate to describe.
 This description is STILL IN WORK IN PROGRESS.  Therefore it is
 incorrekt, incomplet, and iNconSiStenT.
 
@@ -251,11 +252,11 @@ being possible build of \Tool{GCL}.
 
 Second, we need a Lisp runtime system.  If one is available from
 the build environment, we are done.  In fact, currently we do insist that
-the Lisp runtime system is \Tool{GCL}.  Otherwise, we have to build one.
+the Lisp runtime system is \Tool{GCL}.
 
-Third, we have to make the subdirectory \File{src/} where all the
+Third, we have to `make' the subdirectory \File{src/} where all the
 work actually happens.  Part of \Tool{OpenAxiom} is written in Boot, part
-in Common Lisp, part in C, and the rest in SPAD.  The SPAD compiler
+in Common Lisp, part in C, and the rest in Spad.  The Spad compiler
 is written partly in Boot, thefore \File{src/algebra/}, 
 \File{src/input/}, \File{src/interp/} depend on \File{src/boot/}.  The rest
 is mostly written in C and depends only on \File{src/lib/}.  The 
@@ -273,6 +274,7 @@ The \File{src/} directory looks like this:
       boot/
       clef/
       doc/
+      driver/
       etc/
       graph/
       hyper/
@@ -287,7 +289,7 @@ The \File{src/} directory looks like this:
 \end{verbatim}
 
 \File{src/algebra/}, \File{src/input/} depend on \File{src/interp},
-\File{src/interp/} depend on \File{src/boot}.
+\File{src/interp/} depends on \File{src/boot}.
 
 Hue. This discussion is better done in src/Makefile.  Move it there.
 
@@ -299,7 +301,7 @@ the previous section.  They can be built individually by invoking
 [[make all-xxx]] where [[xxx]] is one of
 \begin{verbatim}
    algebra asq axiomsys book boot clef doc graph hyper
-   input interpsys lib lisp sman src
+   input interpsys lib lisp sman driver src
 \end{verbatim}
 
 The \Tool{OpenAxiom} source files reside in \File{src/}.  The directory
@@ -320,13 +322,13 @@ build_srcdir = $(builddir)/src
 
 AXIOM_SRC_TARGETS = all-algebra all-asq all-axiomsys all-boot \
 	all-clef all-doc all-graph all-hyper all-input all-interpsys \
-	all-lib all-lisp all-sman all-src
+	all-lib all-lisp all-sman all-driver all-src
 
 .PHONY: all $(AXIOM_SRC_TARGETS)
 all: all-ax
 
 all-ax: all-src
-	@echo finished system build on `date` | tee >lastBuildDate
+	@echo finished system build on `date` | tee > lastBuildDate
 
 all-src: stamp-rootdirs @axiom_all_prerequisites@
 
@@ -336,7 +338,7 @@ all-boot all-lisp all-interpsys all-axiomsys \
 endif
 
 $(AXIOM_SRC_TARGETS):
-	cd $(build_srcdir) && $(MAKE) $@
+	cd "$(build_srcdir)" && $(MAKE) $@
 
 <<rootdirs>>
 
@@ -353,13 +355,13 @@ mostlyclean-local:
 	@-rm -f lastBuildDate
 
 clean-local: mostlyclean-local
-	@rm -fr $(axiom_build_nowebdir)
+	@rm -fr "$(axiom_build_nowebdir)"
 	@ rm -f stamp-*
 	@ rm -rf int
 
 distclean-local: clean-local
 	@-rm -rf build
-	@-rm -rf $(axiom_targetdir)
+	@-rm -rf "$(axiom_targetdir)"
 	@-rm -f config.status config.log
 	@-rm -f Makefile
 
@@ -453,7 +455,7 @@ directories as well if they don't exist.
 
 <<rootdirs>>=
 stamp-rootdirs: $(axiom_build_document)
-	@mkdir -p ${TMP}
+	@mkdir -p "${TMP}"
 	@$(STAMP) stamp-rootdirs
 
 @
@@ -492,9 +494,9 @@ all-gcl: $(axiom_build_bindir)/gcl$(EXEEXT)
 
 $(axiom_build_bindir)/gcl$(EXEEXT):
 	if test "$(srcdir)" != "$(builddir)" -a ! -d gcl; then \
-	   cp -r $(srcdir)/gcl $(builddir); \
+	   cp -r "$(srcdir)"/gcl "$(builddir)"; \
 	fi; cd gcl; \
-	./configure --prefix=$(axiom_abs_builddir) ${GCLOPTS} && \
+	./configure --prefix="$(axiom_abs_builddir)" ${GCLOPTS} && \
 		$(MAKE) && $(MAKE) install
 @
 
@@ -518,20 +520,20 @@ maybe-cp-noweb-srcdir: $(srcdir)/noweb
 	## We try to be nice to those who chose otherwise
 	## to build directly from the OpenAxiom source dir.
 	if test "$(srcdir)" != "$(builddir)" -a ! -d noweb; then \
-		cp -r $(srcdir)/noweb $(builddir); \
+		cp -r "$(srcdir)"/noweb "$(builddir)"; \
 	fi
 
 $(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
 	## Noweb would like to install many things even if we
 	## are not interested in those.  Prepare the ground.
-	$(mkinstalldirs) $(axiom_build_bindir)
-	$(mkinstalldirs) $(axiom_build_libdir)
-	$(mkinstalldirs) $(axiom_build_texdir)
-	$(mkinstalldirs) $(axiom_build_mandir)
+	$(mkinstalldirs) "$(axiom_build_bindir)"
+	$(mkinstalldirs) "$(axiom_build_libdir)"
+	$(mkinstalldirs) "$(axiom_build_texdir)"
+	$(mkinstalldirs) "$(axiom_build_mandir)"
 	$(TOUCH) $(addprefix noweb/src/shell/, \
 			noweave notangle noweb noroff toroff) \
-		 $(wildcard $(builddir)/noweb/src/c/*.h) \
-		 $(wildcard $(builddir)/noweb/src/c/*.c)
+		 $(wildcard "$(builddir)"/noweb/src/c/*.h) \
+		 $(wildcard "$(builddir)"/noweb/src/c/*.c)
 	## noweb's Makefile needs editing before we can build to suit
 	## our needs.  In particular, we must say when helper programs go,
 	## where the noweb style file goes, where the man pages go (even though
@@ -561,11 +563,11 @@ $(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
 <<install>>=
 install:
 	@echo Installing OpenAxiom in $(prefix)
-	@$(mkinstalldirs) $(DESTDIR)$(open_axiom_installdir)
-	cp -pr $(builddir)/$(target)/* $(DESTDIR)$(open_axiom_installdir)
-	rm -f $(bindir)/axiom
-	@$(mkinstalldirs) $(bindir)
-	$(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
+	@$(mkinstalldirs) "$(DESTDIR)$(open_axiom_installdir)"
+	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(open_axiom_installdir)"
+	rm -f "$(bindir)"/axiom
+	@$(mkinstalldirs) "$(bindir)"
+	$(INSTALL_PROGRAM) src/driver/axiom$(EXEEXT) "$(bindir)"
 	@echo OpenAxiom installation finished.
 @
 

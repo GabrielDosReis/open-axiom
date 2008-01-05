@@ -1,0 +1,7 @@
+2008-01-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* scripts/axiom.in: Remove.
+	* driver: New directory.
+	* driver/main.c: New.  Now implement driver as native
+	application. 
+

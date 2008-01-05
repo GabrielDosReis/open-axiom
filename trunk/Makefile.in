@@ -16,13 +16,13 @@ build_srcdir = $(builddir)/src
 
 AXIOM_SRC_TARGETS = all-algebra all-asq all-axiomsys all-boot \
 	all-clef all-doc all-graph all-hyper all-input all-interpsys \
-	all-lib all-lisp all-sman all-src
+	all-lib all-lisp all-sman all-driver all-src
 
 .PHONY: all $(AXIOM_SRC_TARGETS)
 all: all-ax
 
 all-ax: all-src
-	@echo finished system build on `date` | tee >lastBuildDate
+	@echo finished system build on `date` | tee > lastBuildDate
 
 all-src: stamp-rootdirs @axiom_all_prerequisites@
 
@@ -32,10 +32,10 @@ all-boot all-lisp all-interpsys all-axiomsys \
 endif
 
 $(AXIOM_SRC_TARGETS):
-	cd $(build_srcdir) && $(MAKE) $@
+	cd "$(build_srcdir)" && $(MAKE) $@
 
 stamp-rootdirs: $(axiom_build_document)
-	@mkdir -p ${TMP}
+	@mkdir -p "${TMP}"
 	@$(STAMP) stamp-rootdirs
 
 
@@ -50,20 +50,20 @@ maybe-cp-noweb-srcdir: $(srcdir)/noweb
 	## We try to be nice to those who chose otherwise
 	## to build directly from the OpenAxiom source dir.
 	if test "$(srcdir)" != "$(builddir)" -a ! -d noweb; then \
-		cp -r $(srcdir)/noweb $(builddir); \
+		cp -r "$(srcdir)"/noweb "$(builddir)"; \
 	fi
 
 $(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
 	## Noweb would like to install many things even if we
 	## are not interested in those.  Prepare the ground.
-	$(mkinstalldirs) $(axiom_build_bindir)
-	$(mkinstalldirs) $(axiom_build_libdir)
-	$(mkinstalldirs) $(axiom_build_texdir)
-	$(mkinstalldirs) $(axiom_build_mandir)
+	$(mkinstalldirs) "$(axiom_build_bindir)"
+	$(mkinstalldirs) "$(axiom_build_libdir)"
+	$(mkinstalldirs) "$(axiom_build_texdir)"
+	$(mkinstalldirs) "$(axiom_build_mandir)"
 	$(TOUCH) $(addprefix noweb/src/shell/, \
 			noweave notangle noweb noroff toroff) \
-		 $(wildcard $(builddir)/noweb/src/c/*.h) \
-		 $(wildcard $(builddir)/noweb/src/c/*.c)
+		 $(wildcard "$(builddir)"/noweb/src/c/*.h) \
+		 $(wildcard "$(builddir)"/noweb/src/c/*.c)
 	## noweb's Makefile needs editing before we can build to suit
 	## our needs.  In particular, we must say when helper programs go,
 	## where the noweb style file goes, where the man pages go (even though
@@ -91,17 +91,17 @@ all-gcl: $(axiom_build_bindir)/gcl$(EXEEXT)
 
 $(axiom_build_bindir)/gcl$(EXEEXT):
 	if test "$(srcdir)" != "$(builddir)" -a ! -d gcl; then \
-	   cp -r $(srcdir)/gcl $(builddir); \
+	   cp -r "$(srcdir)"/gcl "$(builddir)"; \
 	fi; cd gcl; \
-	./configure --prefix=$(axiom_abs_builddir) ${GCLOPTS} && \
+	./configure --prefix="$(axiom_abs_builddir)" ${GCLOPTS} && \
 		$(MAKE) && $(MAKE) install
 install:
 	@echo Installing OpenAxiom in $(prefix)
-	@$(mkinstalldirs) $(DESTDIR)$(open_axiom_installdir)
-	cp -pr $(builddir)/$(target)/* $(DESTDIR)$(open_axiom_installdir)
-	rm -f $(bindir)/axiom
-	@$(mkinstalldirs) $(bindir)
-	$(INSTALL_PROGRAM) src/scripts/axiom $(bindir)
+	@$(mkinstalldirs) "$(DESTDIR)$(open_axiom_installdir)"
+	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(open_axiom_installdir)"
+	rm -f "$(bindir)"/axiom
+	@$(mkinstalldirs) "$(bindir)"
+	$(INSTALL_PROGRAM) src/driver/axiom$(EXEEXT) "$(bindir)"
 	@echo OpenAxiom installation finished.
 
 .PHONY: check
@@ -113,13 +113,13 @@ mostlyclean-local:
 	@-rm -f lastBuildDate
 
 clean-local: mostlyclean-local
-	@rm -fr $(axiom_build_nowebdir)
+	@rm -fr "$(axiom_build_nowebdir)"
 	@ rm -f stamp-*
 	@ rm -rf int
 
 distclean-local: clean-local
 	@-rm -rf build
-	@-rm -rf $(axiom_targetdir)
+	@-rm -rf "$(axiom_targetdir)"
 	@-rm -f config.status config.log
 	@-rm -f Makefile
 

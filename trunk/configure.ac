@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.1.0-2007-12-27], 
+AC_INIT([OpenAxiom], [1.1.0-2008-01-05], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -33,6 +33,10 @@ axiom_src_subdirs="lib lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
 AC_CANONICAL_SYSTEM
+
+open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
+AC_SUBST(open_axiom_installdir)
+
 if test $build != $target; then
    AC_MSG_WARN([Cross build is not supported.])
    AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
@@ -40,8 +44,17 @@ fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
 
-open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
-AC_SUBST(open_axiom_installdir)
+## On Windows system, we prefer the default installation
+## location to be 'C:/Program Files/OpenAxiom', following Windows 
+## convention.  We cannot use AC_PREFIX_DEFAULT directly as it seems 
+## to operate unconditionally.  Therefore, we resort to this dirty
+## trick stepping over Autoconf's internals.
+case $host in
+    *mingw*)
+        ac_default_prefix="C:/Program Files/OpenAxiom"
+        ;;
+    *)  ;;
+esac
 
 ## Accumulate list of utils needed for the build platform
 ## It is vital that noweb is present in the build environement.
@@ -73,6 +86,10 @@ AC_SUBST(axiom_cflags)
 
 ## What is the extension of object files on this platform?
 AC_OBJEXT
+
+AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
+                   [Extension of executable file.])
+
 
 AC_PROG_INSTALL
 # AC_PROG_LN_S
@@ -368,7 +385,7 @@ AC_CHECK_DECLS([fork],
                [],
                [#include <unistd.h>])
 
-axiom_use_sman=yes
+axiom_use_sman=1
 if test x"$ac_cv_have_decl_fork" = xyes \
      -a x"$ac_cv_have_decl_wait" = xyes; then \
     axiom_c_runtime="$axiom_c_runtime terminal_io"
@@ -377,12 +394,15 @@ if test x"$ac_cv_have_decl_fork" = xyes \
     AXIOM_MAKEFILE([src/clef/Makefile])
     AXIOM_MAKEFILE([src/sman/Makefile])
 else
-    axiom_use_sman=no
+    axiom_use_sman=0
     AC_MSG_NOTICE([Superman component is disabled.])
 fi
 
+AC_DEFINE_UNQUOTED([OPENAXIOM_USE_SMAN], [$axiom_use_sman],
+                   [Whether to use the session manager as driver.])
+
 axiom_src_all="all-input $axiom_src_all"
-AC_SUBST(axiom_use_sman)
+
 AC_PATH_XTRA
 ## Output directives for the C compiler
 AC_SUBST(X_CLFAGS)
@@ -488,6 +508,7 @@ AC_SUBST(GCLOPTS)
 AXIOM_MAKEFILE([Makefile])
 AXIOM_MAKEFILE([src/Makefile])
 AXIOM_MAKEFILE([src/lib/Makefile])
+AXIOM_MAKEFILE([src/driver/Makefile])
 AXIOM_MAKEFILE([src/lisp/Makefile])
 AXIOM_MAKEFILE([src/boot/Makefile])
 AXIOM_MAKEFILE([src/interp/Makefile])
@@ -496,7 +517,6 @@ AXIOM_MAKEFILE([src/algebra/Makefile])
 AXIOM_MAKEFILE([src/input/Makefile])
 AXIOM_MAKEFILE([src/etc/Makefile])
 AXIOM_MAKEFILE([src/doc/Makefile])
-AC_CONFIG_FILES([src/scripts/axiom], [chmod +x src/scripts/axiom])
 
 
 ## We now generate the "document" script and support files at configure time.

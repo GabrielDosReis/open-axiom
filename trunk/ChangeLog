@@ -1,0 +1,9 @@
+2008-01-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: For mingw host, default $prefix to 
+	C:/Program Files/OpenAxiom.
+	Don't instantiate src/script/axiom.
+	Instantiate src/driver/Makefile.  Tidy.
+	* Makefile.pamphlet: Tidy.
+	* config/axiom-c-macros.h.in: Update.
+
