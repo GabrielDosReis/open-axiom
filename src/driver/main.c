@@ -155,16 +155,16 @@ main(int argc, char* argv[])
    command_line = (char*) malloc(command_line_length + 1);
 
    strcpy(command_line, argv[0]);
-   command_line[++cur] = ' ';
+   command_line[cur++] = ' ';
 
    /* Now start arguments to the core executable.  */
-   command_line[++cur] = '-';
-   command_line[++cur] = '-';
+   command_line[cur++] = '-';
+   command_line[cur++] = '-';
 
    /* Concatenate the arguments into a single string.  */
    for (i = 1; i < argc; ++i) {
       const int arg_length = strlen(argv[i]);
-      command_line[++cur] = ' ';
+      command_line[cur++] = ' ';
       /* Note that strcpy will terminate `command_line' with a NUL
          character, and since the next iteration will write the
          blank precisely where the NUL character is, the whole command

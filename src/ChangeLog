@@ -1,3 +1,7 @@
+2008-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/main.c (main) [__WIN32__]: Fix off-by-one thinko.
+
 2008-01-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* scripts/axiom.in: Remove.
