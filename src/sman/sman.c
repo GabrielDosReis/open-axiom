@@ -2,7 +2,7 @@
   Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
 
-  Copyright (C) 2007, Gabriel Dos Reis.
+  Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -50,10 +50,6 @@
 
 #include "axiom-c-macros.h"
 
-#if defined(SUN4OS5platform) || defined(HP10platform)
-#include <sys/stropts.h>
-#endif
-
 #include "com.h"
 #include "bsdsignal.h"
 #include "sman.h"
@@ -63,15 +59,14 @@
 #include "openpty.H1"
 #include "sman.H1"
 
-char *ws_path;                  /* location of the AXIOM executable */
+char *ws_path;                  /* location of the core executable */
 int start_clef;                 /* start clef under spad */
 int start_graphics;             /* start the viewman */
 int start_ht;                   /* start hypertex */
 int start_spadclient;           /* Start the client spad buffer */
 int start_local_spadclient;     /* Start the client spad buffer */
 int use_X;                      /* Use the X windows environment */
-int server_num;                 /* AXIOM server number */
-int tpd=0;                      /* to-print-debug information */
+int server_num;                 /* OpenAxiom server number */
 
 /************************************************/
 /* definitions of programs which sman can start */
@@ -114,7 +109,7 @@ unsigned char  _INTR, _QUIT, _ERASE, _KILL, _EOF, _EOL, _RES1, _RES2;
 int ptsNum, ptcNum;
 char ptsPath[20], ptcPath[20];
 
-char **new_envp;                /* new environment for AXIOM */
+char **new_envp;                /* new environment for the core executable */
 int child_pid;                  /* child's process id */
 struct termios oldbuf;           /* the original settings */
 struct termios childbuf;         /* terminal structure for user i/o */
@@ -126,11 +121,8 @@ static void
 process_arguments(int argc,char ** argv)
 {
   int arg;
-  if (tpd == 1) fprintf(stderr,"sman:process_arguments entered\n");
   for (arg = 1; arg < argc; arg++) {
-    if      (strcmp(argv[arg], "-debug")      == 0)
-      tpd = 1;
-    else if (strcmp(argv[arg], "-noclef")      == 0)
+    if (strcmp(argv[arg], "-noclef")      == 0)
       start_clef = 0;
     else if (strcmp(argv[arg], "-clef")        == 0)
       start_clef = 1;
@@ -189,55 +181,6 @@ process_arguments(int argc,char ** argv)
       exit(-1);
     }
   }
-  if (tpd == 1)
-  { fprintf(stderr,"  sman ");
-    if (start_clef == 0)
-      fprintf(stderr,"-noclef ");
-    else
-      fprintf(stderr,"-clef ");
-    if (start_graphics == 0)
-      fprintf(stderr,"-nogr ");
-    else
-      fprintf(stderr,"-gr ");
-    if (start_ht == 0)
-      fprintf(stderr,"-noht ");
-    else
-      fprintf(stderr,"-ht ");
-    if (start_spadclient == 0)
-      fprintf(stderr,"-noiw ");
-    else
-      fprintf(stderr,"-iw ");
-    if (start_local_spadclient == 0)
-      fprintf(stderr,"-noihere ");
-    else
-      fprintf(stderr,"-ihere ");
-    if (start_local_spadclient == 0)
-      fprintf(stderr,"-noihere ");
-    else
-      fprintf(stderr,"-ihere ");
-    if (use_X == 0)
-      fprintf(stderr,"-nox ");
-    fprintf(stderr,"-ws ");
-    fprintf(stderr,"'%s' ",ws_path);
-    fprintf(stderr,"-grprog ");
-    fprintf(stderr,"'%s' ",GraphicsProgram);
-    fprintf(stderr,"-htprog ");
-    fprintf(stderr,"'%s' ",HypertexProgram);
-    fprintf(stderr,"-clefprog ");
-    fprintf(stderr,"'%s' ",ClefCommandLine);
-    fprintf(stderr,"-sessionprog ");
-    fprintf(stderr,"'%s' ",SessionManagerProgram);
-    fprintf(stderr,"-clientprog ");
-    fprintf(stderr,"'%s' ",SpadClientProgram);
-    fprintf(stderr,"-rm ");
-    fprintf(stderr,"'%s' ",MakeRecordFile);
-    fprintf(stderr,"-rv ");
-    fprintf(stderr,"'%s' ",VerifyRecordFile);
-    fprintf(stderr,"-paste ");
-    fprintf(stderr,"'%s' ",PasteFile);
-    fprintf(stderr,"\n");
-  }
-  if (tpd == 1) fprintf(stderr,"sman:process_arguments exit\n");
 }
 
 static int
@@ -256,7 +199,6 @@ in_X(void)
 static  void
 set_up_defaults(void)
 {
-  if (tpd == 1) fprintf(stderr,"sman:set_up_defaults entered\n");
   start_clef = should_I_clef();
   start_graphics = 1;
   start_ht = 1;
@@ -264,16 +206,13 @@ set_up_defaults(void)
   start_local_spadclient = 1;
   use_X = isatty(0) && in_X();
   ws_path = "$AXIOM/bin/AXIOMsys";
-  if (tpd == 1) fprintf(stderr,"sman:set_up_defaults exit\n");
 }
 
 static void
 process_options(int argc, char **argv)
 {
-  if (tpd == 1) fprintf(stderr,"sman:process_options entered\n");
   set_up_defaults();
   process_arguments(argc, argv);
-  if (tpd == 1) fprintf(stderr,"sman:process_options exit\n");
 }
 
 static void
@@ -431,27 +370,13 @@ start_the_spadclient(void)
 {
   char command[256];
   if (start_clef)
-#ifdef RIOSplatform
-    sprintf(command, 
-            "aixterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s %s",
-            ClefProgram, SpadClientProgram);
-#else
-  sprintf(command, 
-          "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s %s",
-          ClefProgram, SpadClientProgram);
-#endif
+     sprintf(command, 
+             "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s %s",
+             ClefProgram, SpadClientProgram);
   else
-#ifdef RIOSplatform
-    sprintf(command, 
-            "aixterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s", 
-            SpadClientProgram);
-#else
-  sprintf(command, 
-          "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s", 
-          SpadClientProgram);
-#endif
-  if (tpd == 1) 
-    fprintf(stderr,"sman:start_the_spadclient: %s\n",command);
+     sprintf(command, 
+             "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s", 
+             SpadClientProgram);
   spawn_of_hell(command, NadaDelShitsky);
 }
 
@@ -463,8 +388,6 @@ start_the_local_spadclient(void)
     sprintf(command, "%s  %s", ClefProgram, SpadClientProgram);
   else
     sprintf(command, "%s", SpadClientProgram);
-  if (tpd == 1) 
-    fprintf(stderr,"sman:start_the_local_spadclient: %s\n",command);
   spawn_of_hell(command, NadaDelShitsky);
 }
 
@@ -500,7 +423,7 @@ start_the_graphics(void)
   spawn_of_hell(GraphicsProgram, DoItAgain);
 }
 
-/* Start the AXIOM session in a separate process, */
+/* Start the core executable session in a separate process, */
 /* using a pseudo-terminal to catch all input and output */
 static void 
 fork_Axiom(void)
@@ -578,7 +501,7 @@ start_the_Axiom(char **envp)
   server_num = make_server_number();
   clean_up_old_sockets();
   if (server_num == -1) {
-    fprintf(stderr, "could not get an AXIOM server number\n");
+    fprintf(stderr, "could not get an OpenAxiom server number\n");
     exit(-1);
   }
   if (ptyopen(&ptcNum, &ptsNum, ptcPath, ptsPath) == -1) {
@@ -794,7 +717,6 @@ monitor_children(void)
 int
 main(int argc, char *argv[],char *envp[])
 {
-  if (tpd == 1) fprintf(stderr,"sman:main entered\n");
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   process_options(argc, argv);
 
@@ -819,7 +741,6 @@ main(int argc, char *argv[],char *envp[])
     exit(0);
   }
   manage_spad_io(ptcNum);
-  if (tpd == 1) fprintf(stderr,"sman:main exit\n");
   return(0);
 }
 
