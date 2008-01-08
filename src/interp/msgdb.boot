@@ -654,13 +654,15 @@ brightPrint0 x ==
   x = '"%%" =>
     sayString  '"%"
   x = '"%b" =>
-    NULL IS_-CONSOLE CUROUTSTREAM 
+    -- FIXME: this kludge is GCL-specific.  Find way to support
+    -- highlighting on all supported Lisp.
+    NULL IS_-CONSOLE CUROUTSTREAM or %hasFeature KEYWORD::WIN32
       or stdStreamIsTerminal(1) = 0 => sayString '" "
     NULL $highlightAllowed        => sayString '" "
     sayString $highlightFontOn
   k := blankIndicator x => BLANKS k
   x = '"%d" =>
-    NULL IS_-CONSOLE CUROUTSTREAM 
+    NULL IS_-CONSOLE CUROUTSTREAM or %hasFeature KEYWORD::WIN32
       or stdStreamIsTerminal(1) = 0 => sayString '" "
     NULL $highlightAllowed        => sayString '" "
     sayString $highlightFontOff

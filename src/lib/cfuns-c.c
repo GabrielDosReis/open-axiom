@@ -277,18 +277,25 @@ std_stream_is_terminal(int fd)
 {
    assert(fd > -1 && fd < 3);
 #ifdef __WIN32__
-   HANDLE handle;
+   DWORD handle;
    switch (fd) {
    case 0: handle = STD_INPUT_HANDLE; break;
    case 1: handle = STD_OUTPUT_HANDLE; break;
    case 2: handle = STD_ERROR_HANDLE; break;
       
    }
-   /* VerifyConsoleIoHandle appears to be an undocumented function.
-      MS documentation suggests `GetFileType', but then the return
-      value is still insufficient for determining whether the
-      output stream is attached to a terminal or not.  */
-   return VerifyConsoleIoHandle(GetStdHandle(handle));
+   /* The MS documentation suggests `GetFileType' for determining
+      the nature of the file handle.  The return value, in our case,
+      is an over approximation of what we are interested int:  Are we
+      dealing with a stream connected to a terminal?  The constant
+      FILE_TYPE_CHAR characterises character files; in particular
+      a console terminal, or a printer.  There is an undocumented
+      function `VerifyConsoleIoHandle' to deal precisely with the case
+      we are interested in.  However, while availale in Wine, it is
+      not available in the MinGW headers.  Consequently, we cannot
+      rely on it for the moment.  
+      So, we may still get garbage out of this function on MS platforms.  */
+   return GetFileType(GetStdHandle(handle)) == FILE_TYPE_CHAR;
 #else
    return isatty(fd);
 #endif
