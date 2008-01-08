@@ -512,6 +512,9 @@ bpMoveTo n==
 
 <<Constant>>
 
+++ Parse a module definitoin
+++   Module:
+++     MODULE QUOTE String
 bpModule() ==
   bpEqKey "MODULE" =>
     -- we really want to check that the next token is indeed
@@ -521,15 +524,21 @@ bpModule() ==
     bpConstTok() and bpPush Module bpPop1()
   false
 
+++ Parse a module import, or a import declaration for a foreign entity.
+++ Import:
+++    IMPORT Name for Signature
+++    IMPORT QUOTE String
 bpImport() ==
   bpEqKey "IMPORT" =>
-    -- we really want to check that the next token is indeed
-    -- a string.  For the moment, we delay the type checking
-    -- to the Lisp compiler/interpreter.  That is likely to 
-    -- cause cryptic diagnostics.  To be fixed.
-    bpConstTok() and bpPush Import bpPop1()
+    (bpName() and (bpEqKey "FOR" or bpTrap()) and bpSignature()
+       and bpPush ImportSignature(bpPop2(), bpPop1()))
+         or 
+	  -- we really want to check that the next token is indeed
+	  -- a string.  For the moment, we delay the type checking
+	  -- to the Lisp compiler/interpreter.  That is likely to 
+	  -- cause cryptic diagnostics.  To be fixed.
+	   (bpConstTok() and bpPush Import bpPop1())
   false
-
 
 -- Parse a type alias defnition:
 --    type-alias-definition: 
@@ -538,7 +547,21 @@ bpTypeAliasDefition() ==
   (bpName() or bpTrap()) and 
     bpEqKey "TDEF" and bpLogical() and
       bpPush TypeAlias(bpPop2(), nil, bpPop1())
- 
+
+++ Parse a signature declaration
+++  Signature:
+++    Name COLON Mapping
+bpSignature() ==
+  bpName() and bpEqKey "COLON" and bpMapping()
+    and bpPush Signature(bpPop2(), bpPop1())
+
+++ Parse a mapping expression
+++   Mapping:
+++      (Name | IdList) -> Name
+bpMapping() ==
+  (bpName() or bpIdList()) and bpEqKey "ARROW" and bpName()
+    and bpPush Mapping(bpPop1(), bpPop1())
+
 bpCancel()==
     a:=bpState()
     if bpEqKeyNextTok  "SETTAB"

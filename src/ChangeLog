@@ -1,3 +1,15 @@
+2008-01-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot.pamphlet (Ast): Add ImportSignature, Signature,
+	and Mapping.
+	* boot/parser.boot.pamphlet (bpImport): Parse import declaration.
+	(bpSignature): New.
+	(bpMapping): Likewise.
+	* boot/tokens.boot.pamphlet (shoeKeyWords): Add new keyword.
+	* boot/translator.boot.pamphlet (genImportDeclaration): Translate 
+	import declaration.
+	(shoeOutItem):  Handle import declarations.
+
 2008-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sman/sman.c: Remove debug and dead codes.
