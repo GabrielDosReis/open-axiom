@@ -1,3 +1,12 @@
+2008-01-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/Makefile.pamphlet (AXIOM_LOCAL_LISP): Use Lisp image with C
+	bindings. 
+	* interp/msgdb.boot (brightPrint0): Don't highlight if the
+	standard output is not attached to a terminal.
+	* interp/sys-driver.boot (stdStreamIsTerminal): New.
+	* lib/cfuns-c.c (std_stream_is_terminal): New.
+
 2008-01-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot.pamphlet (Ast): Add ImportSignature, Signature,
