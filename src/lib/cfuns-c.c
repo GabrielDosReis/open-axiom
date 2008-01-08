@@ -2,6 +2,9 @@
    Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
    All rights reserved.
 
+   Copyright (C) 2007, 2008, Gabriel Dos Reis
+   All rights reserved.
+
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are
    met:
@@ -29,9 +32,9 @@
    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-   Copyright (C) 2007, Gabriel Dos Reis
 */
+
+#include "axiom-c-macros.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -39,7 +42,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "axiom-c-macros.h"
+#include <assert.h>
+
+#ifdef __WIN32__
+#  include <windows.h>
+#endif
 
 #include "cfuns-c.H1"
 
@@ -263,3 +270,26 @@ copyEnvValue(char *varName, char *buffer)
     return strlen(s);
 }
 
+/* Return 1 if the file descriptor FD, as viewed by the Core Executable,
+   is attached to a terminal.  */
+int
+std_stream_is_terminal(int fd)
+{
+   assert(fd > -1 && fd < 3);
+#ifdef __WIN32__
+   HANDLE handle;
+   switch (fd) {
+   case 0: handle = STD_INPUT_HANDLE; break;
+   case 1: handle = STD_OUTPUT_HANDLE; break;
+   case 2: handle = STD_ERROR_HANDLE; break;
+      
+   }
+   /* VerifyConsoleIoHandle appears to be an undocumented function.
+      MS documentation suggests `GetFileType', but then the return
+      value is still insufficient for determining whether the
+      output stream is attached to a terminal or not.  */
+   return VerifyConsoleIoHandle(GetStdHandle(handle));
+#else
+   return isatty(fd);
+#endif
+}

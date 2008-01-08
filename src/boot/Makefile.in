@@ -1,5 +1,5 @@
 AXIOM_LOCAL_LISP_sources = initial-env.lisp
-AXIOM_LOCAL_LISP = ../lisp/base-lisp$(EXEEXT)
+AXIOM_LOCAL_LISP = ../lisp/lisp$(EXEEXT)
 PROCLAIMS=(load "$(srcdir)/boot-proclaims.lisp")
 
 boot_objects = initial-env.$(FASLEXT) $(boot_sources:.boot=.$(FASLEXT))

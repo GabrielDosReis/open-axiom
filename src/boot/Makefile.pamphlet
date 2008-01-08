@@ -1128,14 +1128,12 @@ workspace (\verb$|shoeOpenInputFile| |shoeOpenOutputFile| memq$).
 We will use create and use several lisp images during the build
 process. We name them here for convenience. 
 
-\paragraph{[[AXIOM_LOCAL_LISP]].}  First we create a Lisp image
-that contains at least three macros  for translating
-Boot source files.  We do this by loading \File{initial-env.lisp}
-in [[AXIOM_LISP]], and saving the resulting image.  That image is then
-used to build the bootstrapping Boot translator.
+\paragraph{[[AXIOM_LOCAL_LISP]].}  We start with a Lisp image
+created in a previous build step (src/lisp).   That image is used
+to build Boot translator executable through the entire bootstrap process.
 <<environment>>=
 AXIOM_LOCAL_LISP_sources = initial-env.lisp
-AXIOM_LOCAL_LISP = ../lisp/base-lisp$(EXEEXT)
+AXIOM_LOCAL_LISP = ../lisp/lisp$(EXEEXT)
 @
 
 
