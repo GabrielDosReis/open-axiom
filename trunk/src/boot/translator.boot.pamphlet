@@ -375,7 +375,18 @@ shoeConsoleTrees s ==
           s:=CDR s
  
 shoeAddComment l==  CONCAT('"; ",CAR l)
- 
+
+++ Generate an import declaration for `op' as equivalent of the
+++ foreign signature `sig'.  Here, `foreign' operationally means that
+++ the entity is from the C language world. 
+genImportDeclaration(op, sig) ==
+  sig isnt ["Signature", op', m] => coreError '"invalid signature"
+  m isnt ["Mapping", t, s] => coreError '"invalid function type"
+  %hasFeature KEYWORD::GCL => 
+    if SYMBOLP s then s := [s]
+    ["DEFENTRY", op, s, [t, SYMBOL_-NAME op']]
+  fatalError '"import declaration not implemented for this Lisp"
+
 shoeOutParse stream ==
     $inputStream :local:= stream
     $stack:local       :=nil
@@ -414,6 +425,9 @@ bpOutItem()==
 
       Import(m) => 
         bpPush [["IMPORT-MODULE", m]]
+
+      ImportSignature(x, sig) =>
+        bpPush [genImportDeclaration(x, sig)]
 
       TypeAlias(t, args, rhs) => 
         bpPush [["DEFTYPE", t, args, ["QUOTE", rhs]]]
