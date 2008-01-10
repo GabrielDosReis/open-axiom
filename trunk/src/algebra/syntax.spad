@@ -174,7 +174,12 @@ Syntax(): Public == Private where
 
     getOperator x ==
       atom? rep x => userError "atom as operand to getOperator"
-      convert car rep x
+      op := car rep x
+      symbol? op => symbol op
+      integer? op => integer op
+      float? op => float op
+      string? op => string op
+      convert op
 
     getOperands x ==
       s := rep x
