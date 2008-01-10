@@ -1,3 +1,8 @@
+2008-01-10  Gabriel Dos Reis <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad (getOperator): Inject into the right
+	Union branhc.
+
 2008-01-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/msgdb.boot (brightPrint0): Disable highlightinh on Win32.
