@@ -352,7 +352,7 @@ getStFromMsg msg ==
     setOptKeyBlanks()
     preStL := getPreStL getMsgPrefix? msg
     getMsgTag  msg = 'line =>
-          [$optKeyBlanks, '"%x1" , :preStL,_
+          [$optKeyBlanks, '"%1" , :preStL,_
            getMsgText msg]
     posStL := getPosStL msg
     optKey :=
