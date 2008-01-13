@@ -49,7 +49,7 @@ Stack(S: Type): StackAggregate S with
       ref map(f, deref s)$List(S)
 
     map!(f: S -> S, s: %) ==               -- from HOAGG
-      map!(f, deref s)$List(S)
+      setref(s, map!(f, deref s)$List(S))
       s
 
     copy s == ref copy deref s
