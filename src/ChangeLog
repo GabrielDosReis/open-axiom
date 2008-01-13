@@ -1,3 +1,9 @@
+2008-01-13  Ralf Hemmecke <ralf@hemmecke.de>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/bags.spad.pamphlet (Stack$map!): Cache the result in the
+	underlying reference.
+
 2008-01-11  Gabriel Dos Reis <gdr@cs.tamu.edu>
 
 	* interp/msg.boot (getStFromMsg): Fix typo.
