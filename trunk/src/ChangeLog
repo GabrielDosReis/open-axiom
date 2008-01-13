@@ -1,3 +1,10 @@
+2008-01-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1867459
+	* interp/postpar.boot (postError): Fix thinko.
+	* interp/parse.boot ($defOp): Define.
+	* testsuite/compiler/1867459.spad: New.
+
 2008-01-13  Ralf Hemmecke <ralf@hemmecke.de>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

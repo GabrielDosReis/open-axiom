@@ -135,7 +135,7 @@ postConstruct u ==
 postError msg ==
   BUMPERRORCOUNT 'precompilation
   xmsg:=
-    $defOp ^= '$defOp and not $InteractiveMode => [$defOp,'": ",:msg]
+    not null $defOp and not $InteractiveMode => [$defOp,'": ",:msg]
     msg
   $postStack:= [xmsg,:$postStack]
   nil
