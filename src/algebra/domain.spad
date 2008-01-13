@@ -51,7 +51,7 @@ Domain(): Public == Private where
       outputDomainConstructor(x)$Lisp
 
     reify x ==
-      convert(devaluate(x)$Lisp)$Syntax
+      convert(devaluate(x)$Lisp@SExpression)$Syntax
 
     showSummary x ==
       showSummary(x)$Lisp

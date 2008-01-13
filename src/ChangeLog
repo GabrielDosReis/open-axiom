@@ -1,5 +1,14 @@
 2008-01-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/1852076
+	* algebra/domain.spad (reify$Domain): Specify target type of
+	conversion. 
+	* interp/nrunfast.boot (newLookupInDomain): Tidy.
+	(newLookupInCategories): Likewise.
+	* testsuite/interpreter/1852076.input: New.
+
+2008-01-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/1867459
 	* interp/postpar.boot (postError): Fix thinko.
 	* interp/parse.boot ($defOp): Define.
@@ -8,7 +17,7 @@
 2008-01-13  Ralf Hemmecke <ralf@hemmecke.de>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* algebra/bags.spad.pamphlet (Stack$map!): Cache the result in the
+	* algebra/bags.spad.pamphlet (map!$Stack): Cache the result in the
 	underlying reference.
 
 2008-01-11  Gabriel Dos Reis <gdr@cs.tamu.edu>
@@ -18,7 +27,7 @@
 2008-01-10  Gabriel Dos Reis <gdr@cs.tamu.edu>
 
 	* algebra/syntax.spad (getOperator): Inject into the right
-	Union branhc.
+	Union branch.
 
 2008-01-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
