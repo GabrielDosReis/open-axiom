@@ -36,6 +36,9 @@ import '"postpar"
 )package "BOOT"
 
 --% Transformation of Parser Output
+
+++ If non nil, holds the operator being being defined.
+$defOp := nil
  
 parseTransform x ==
   $defOp: local:= nil
