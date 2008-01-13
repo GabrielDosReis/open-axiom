@@ -1,0 +1,4 @@
+This directory is for community-contributed libraries that are
+not part of the main OpenAxiom distribution, nor are they required
+for building or using OpenAxiom.  These libraries come with their
+own licenses.
