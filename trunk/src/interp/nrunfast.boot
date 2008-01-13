@@ -225,7 +225,7 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
     INTEGERP KAR addFormCell =>
       or/[newLookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
     if null VECP addFormCell then lazyDomainSet(addFormCell,addFormDomain,index)
-    lookupInDomainAndDefaults(op,sig,addFormDomain.index,dollar,false)
+    lookupInDomainVector(op,sig,addFormDomain.index,dollar)
   nil
  
 --=======================================================
@@ -371,7 +371,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
     null package => nil
     if $monitorNewWorld then
       sayLooking1('"Looking at instantiated package ",package)
-    res := lookupInDomainAndDefaults(op,sig,package,dollar,false) =>
+    res := lookupInDomainVector(op,sig,package,dollar) =>
       if $monitorNewWorld = true then
         sayBrightly '"candidate default package succeeds"
       return res
