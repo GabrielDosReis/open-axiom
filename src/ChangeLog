@@ -1,3 +1,22 @@
+2008-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compSymbol): Don't handle possible
+	case views here.
+	(hasUniqueCaseView): Rename from getUniqueCaseView.  Take the
+	target mode as second argument.
+	(compForm2): Use calling convention vector to determine infer flag
+	parameter types.
+	(compCase1): Uniformly handle `case-expressions'.  Call
+	genDeltaEntry for selected operator.
+	(coerceExtraHard): Handle coercions from UnionType domains.
+	(autoCoerceByModemap): Tidy.
+	* interp/g-opt.boot (optCall): Be more verbose in diagnostics.
+	* algebra/syntax.spad (Syntax): Rework.
+	* algebra/coerce.spad.pamphlet (UnionType): New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): 
+	Include UTYPE.o
+	* share/algebra: Update databases.
+
 2008-01-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/1852076

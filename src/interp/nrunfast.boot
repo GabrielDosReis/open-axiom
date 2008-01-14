@@ -513,7 +513,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
   MEMQ(functorName, '(Record Union)) and first argl is [":",:.] =>
     [functorName,:[['_:,tag,newExpandLocalTypeArgs(dom,dollar,domain,true)]
                                  for [.,tag,dom] in argl]]
-  MEMQ(functorName, '(Union Mapping)) =>
+  MEMQ(functorName, '(Union Mapping _[_|_|_])) =>
           [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
   functorName = "QUOTE"  => [functorName,:argl]
   coSig := GETDATABASE(functorName,'COSIG)

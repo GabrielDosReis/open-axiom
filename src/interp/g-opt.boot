@@ -158,7 +158,7 @@ optCall (x is ["call",:u]) ==
     if $QuickCode then RPLACA(fn,"QREFELT")
     RPLAC(rest x,[:a,fn])
     x
-  systemErrorHere '"optCall"
+  systemErrorHere ['"optCall with", :bright x]
  
 optCallSpecially(q,x,n,R) ==
     y:= LASSOC(R,$specialCaseKeyList) => optSpecialCall(x,y,n)

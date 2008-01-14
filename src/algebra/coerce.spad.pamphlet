@@ -2,7 +2,7 @@
 \usepackage{axiom}
 \begin{document}
 \title{\$SPAD/src/algebra coerce.spad}
-\author{Richard Jenks, Manuel Bronstein}
+\author{Richard Jenks, Manuel Bronstein, Gabriel Dos Reis}
 \maketitle
 \begin{abstract}
 \end{abstract}
@@ -20,6 +20,24 @@
 Type(): Category == with nil
 
 @
+
+
+\section{Category UnionType}
+
+<<category UTYPE UnionType>>=
+)abbrev category UTYPE UnionType
+++ Author: Gabriel Dos Reis
+++ Date Created: December 17, 2007
+++ Date Last Modified: December 17, 2007
+++ Description: The category of domains that act like unions.
+++ UnionType, like Type or Category, acts mostly as a take that
+++ communicates `union-like' intended semantics to the compiler.
+++ A domain D that satifies UnionType should provide definitions
+++ for `case' operators, with corresponding `autoCoerce' operators.
+UnionType(): Category == with nil
+@
+
+
 \section{category KOERCE CoercibleTo}
 <<category KOERCE CoercibleTo>>=
 )abbrev category KOERCE CoercibleTo
@@ -114,6 +132,7 @@ RetractableTo(S: Type): Category == with
 <<license>>
 
 <<category TYPE Type>>
+<<category UTYPE UnionType>>
 <<category KOERCE CoercibleTo>>
 <<category KONVERT ConvertibleTo>>
 <<category RETRACT RetractableTo>>
