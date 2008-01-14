@@ -308,14 +308,6 @@ compSymbol(s,m,e) ==
         NRTgetLocalIndex s
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
 
-    -- If the symbol s has a type given by a condition as the result of
-    -- a `case' form or a `suchthat' form, then we want to take 
-    -- advantage of that mode knowledge.  However, we must ensure that
-    -- we are not messing with members of Union objects which need
-    -- extra indirections to get to the actual object representation.
-    not isUnionMode(v.mode,e) and (t := getUniqueCaseView(s,e)) => 
-      coerce([s,t,e],m)
-
     [s,v.mode,e] --s has been SETQd
   m':= getmode(s,e) =>
     if not member(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
@@ -325,14 +317,13 @@ compSymbol(s,m,e) ==
   m = $OutputForm or m = $Symbol => [['QUOTE,s],m,e]
   not isFunction(s,e) => errorRef s
 
-++ Return the more recent unique type case assumption on `x' (if any) 
-++ that predates its declaration in environment `e'.  Note, this cannot 
-++ be the same thing as just asking for the 'condition' property of `x'.
-getUniqueCaseView(s,e) ==
-  props := getProplist(s,e)
+++ Return true if `m' is the most recent unique type case assumption 
+++ on `x' that predates its declaration in environment `e'.
+hasUniqueCaseView(x,m,e) ==
+  props := getProplist(x,e)
   for [p,:v] in props repeat
-    p = "condition" and v is [["case",.,t],:.] => return t
-    p = "value" => return nil
+    p = "condition" and v is [["case",.,t],:.] => return modeEqual(t,m)
+    p = "value" => return false
 
 
 convertOrCroak(T,m) ==
@@ -437,11 +428,16 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
   -- We can use MEMQ since deleteList was built out of members of modemapList
   -- its important that subsumed ops (newList) be considered last
   if newList then modemapList := append(modemapList,newList)
+
+  -- The calling convention vector is used to determine when it is
+  -- appropriate to infer type by compiling the argument vs. just
+  -- looking up the parameter type for flag arguments.
+  cc := checkCallingConvention([sig for [[.,:sig],:.] in modemapList], #argl)
   Tl:=
-    [[.,.,e]:= T for x in argl for z in first modemapList
-       while (T := inferMode(x,z,e))] where
-      inferMode(x,z,e) ==
-        isQuasiquote z => [x,quasiquote x,e]
+    [[.,.,e]:= T for x in argl for i in 0..
+       while (T := inferMode(x,cc.i > 0,e))] where
+      inferMode(x,flag,e) ==
+        flag => [x,quasiquote x,e]
         isSimple x and compUniquely(x,$EmptyMode,e)
 
   or/[x for x in Tl] =>
@@ -1090,14 +1086,16 @@ compCase(["case",x,m'],m,e) ==
 
 compCase1(x,m,e) ==
   [x',m',e']:= comp(x,$EmptyMode,e) or return nil
-  -- `case' operations for non-Union types are function calls
-  not isUnionMode(m',e') => compForm(["case",x',m],$Boolean,e')
   u:=
-    [cexpr
-      for (modemap:= [map,cexpr]) in getModemapList("case",2,e') 
-        | map is [.,.,s,t] and modeEqual(maybeSpliceMode t,m) 
+    [modemap
+      for (modemap := [map,cexpr]) in getModemapList("case",2,e') 
+        | map is [.,=$Boolean,s,t] and modeEqual(maybeSpliceMode t,m) 
             and modeEqual(s,m')] or return nil
-  fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
+  fn:= (or/[mm for (mm := [.,[cond,selfn]]) in u | cond=true]) or return nil
+  fn := genDeltaEntry ["case",:fn]
+  -- user-defined `case' functions really are binary, as opposed to
+  -- the compiler-synthetized versions for Union instances.  
+  not isUnionMode(m',e') => [["call",fn,x',MKQ m],$Boolean,e']
   [["call",fn,x'],$Boolean,e']
 
 
@@ -1244,7 +1242,18 @@ coerceExtraHard(T is [x,m',e],m) ==
       (T'':= coerce(T',m)) => T''
   m' is ['Record,:.] and m = $Expression =>
       [['coerceRe2E,x,['ELT,COPY m',0]],m,e]
+  belongsTo?(m',["UnionType"],e) and hasUniqueCaseView(x,m,e) =>
+    coerceByModemap(T,m)
   nil
+
+++ returns true if mode `m' is known to belong to category `cat' in
+++ the environment `e'.  This function is different from its cousines
+++ `ofCategory', or `has'.  The latter perform runtime checks.  Here,
+++ we are interested in a static approximation.  So, use with care.
+belongsTo?(m,cat,e) ==
+  c := get(m,"mode",e)
+  c isnt ["Join",:cats] => nil
+  cat in cats
 
 coerceable(m,m',e) ==
   m=m' => m
@@ -1301,17 +1310,19 @@ coerceByModemap([x,m,e],m') ==
 
 autoCoerceByModemap([x,source,e],target) ==
   u:=
-    [cexpr
-      for (modemap:= [map,cexpr]) in getModemapList("autoCoerce",1,e) | map is [
-        .,t,s] and modeEqual(t,target) and modeEqual(s,source)] or return nil
-  fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
+    [modemap
+      for (modemap:= [map,cexpr]) in getModemapList("autoCoerce",1,e)
+        | map is [.,t,s] and modeEqual(t,target) 
+            and modeEqual(s,source)] or return nil
+  fn:= (or/[mm for (mm := [.,[cond,selfn]]) in u | cond=true]) or return nil
+
   source is ["Union",:l] and member(target,l) =>
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])
-       => [["call",fn,x],target,e]
+       => [["call",genDeltaEntry ["autoCoerce", :fn],x],target,e]
     x="$fromCoerceable$" => nil
     stackMessage ["cannot coerce: ",x,"%l","      of mode: ",source,"%l",
       "      to: ",target," without a case statement"]
-  [["call",fn,x],target,e]
+  [["call",genDeltaEntry ["autoCoerce", :fn],x],target,e]
 
 --% Very old resolve
 -- should only be used in the old (preWATT) compiler

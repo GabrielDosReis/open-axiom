@@ -43,7 +43,7 @@
 ++ Fixme: Provide direct support for boolean values, arbritrary 
 ++        precision float point values.
 Syntax(): Public == Private where
-  Public ==> CoercibleTo(OutputForm) with
+  Public ==> Join(UnionType, CoercibleTo(OutputForm)) with
     convert: % -> SExpression
       ++ convert(s) returns the s-expression representation of a syntax.
 
@@ -55,26 +55,26 @@ Syntax(): Public == Private where
     coerce: Integer -> %
       ++ coerce(i) injects the integer value `i' into the Syntax domain
 
-    convert: % -> Integer
+    coerce: % -> Integer
       ++ coerce(i) extracts the integer value `i' from the Syntax domain
 
     coerce: DoubleFloat -> %
       ++ coerce(f) injects the float value `f' into the Syntax domain
 
-    convert: % -> DoubleFloat
-      ++ convert(f) extracts the float value `f' from the Syntax domain
+    coerce: % -> DoubleFloat
+      ++ coerce(f) extracts the float value `f' from the Syntax domain
 
     coerce: Symbol -> %
       ++ coerce(s) injects the symbol `s' into the Syntax domain.
 
-    convert: % -> Symbol
-      ++ convert(s) extracts the symbol `s' from the Syntax domain.
+    coerce: % -> Symbol
+      ++ coerce(s) extracts the symbol `s' from the Syntax domain.
 
     coerce: String -> %
       ++ coerce(s) injects the string value `s' into the syntax domain
 
-    convert: % -> String
-      ++ convert(s) extract the string value `s' from the syntax domain
+    coerce: % -> String
+      ++ coerce(s) extract the string value `s' from the syntax domain
 
     buildSyntax: (Symbol, List %) -> %
       ++ buildSyntax(op, [a1, ..., an]) builds a syntax object for op(a1,...,an).
@@ -135,28 +135,28 @@ Syntax(): Public == Private where
     coerce(i: Integer): % ==
       i pretend %
 
-    convert(i: %): Integer ==
+    ccoerce(i: %): Integer ==
       i case Integer => i
       userError "invalid conversion target type"
 
     coerce(f: DoubleFloat): % ==
       f pretend %
 
-    convert(f: %): DoubleFloat ==
+    coerce(f: %): DoubleFloat ==
       f case DoubleFloat => f
       userError "invalid conversion target type"
 
     coerce(s: Symbol): % ==
       s pretend %
 
-    convert(s: %): Symbol ==
+    coerce(s: %): Symbol ==
       s case Symbol => s
       userError "invalid conversion target type"
 
     coerce(s: String): % ==
       s pretend %
 
-    convert(s: %): String ==
+    coerce(s: %): String ==
       s case String => s
       userError "invalid conversion target type"
 
