@@ -1,3 +1,11 @@
+2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad (autoCoerce$Syntax): Add overloads.
+	* interp/compiler.boot (coerceExtraHard): Always coerce by
+	autoCoerce. 
+	* testsuite/interpreter/case.spad: Likewise.
+	* testsuite/interpreter/case.input: New.
+
 2008-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compSymbol): Don't handle possible

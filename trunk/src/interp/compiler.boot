@@ -1243,7 +1243,7 @@ coerceExtraHard(T is [x,m',e],m) ==
   m' is ['Record,:.] and m = $Expression =>
       [['coerceRe2E,x,['ELT,COPY m',0]],m,e]
   belongsTo?(m',["UnionType"],e) and hasUniqueCaseView(x,m,e) =>
-    coerceByModemap(T,m)
+    autoCoerceByModemap(T,m)
   nil
 
 ++ returns true if mode `m' is known to belong to category `cat' in

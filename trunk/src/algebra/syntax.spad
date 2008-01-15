@@ -56,25 +56,41 @@ Syntax(): Public == Private where
       ++ coerce(i) injects the integer value `i' into the Syntax domain
 
     coerce: % -> Integer
-      ++ coerce(i) extracts the integer value `i' from the Syntax domain
+      ++ coerce(s) extracts and integer value from the syntax `s'
+    autoCoerce: % -> Integer
+      ++ autoCoerce(s) forcibly extracts an integer value from
+      ++ the syntax `s'; no check performed.  To be called only
+      ++ at the discretion of the compiler.
 
     coerce: DoubleFloat -> %
       ++ coerce(f) injects the float value `f' into the Syntax domain
 
     coerce: % -> DoubleFloat
-      ++ coerce(f) extracts the float value `f' from the Syntax domain
+      ++ coerce(s) extracts a float value from the syntax `s'.
+    autoCoerce: % -> DoubleFloat
+      ++ autoCoerce(s) forcibly extracts a float value from the syntax `s';
+      ++ no check performed.  To be called only at the discretion of
+      ++ the compiler
 
     coerce: Symbol -> %
       ++ coerce(s) injects the symbol `s' into the Syntax domain.
 
     coerce: % -> Symbol
-      ++ coerce(s) extracts the symbol `s' from the Syntax domain.
+      ++ coerce(s) extracts a symbol from the syntax `s'.
+    autoCoerce: % -> Symbol
+      ++ autoCoerce(s) forcibly extracts a symbo from the Syntax
+      ++ domain `s'; no check performed.  To be called only at
+      ++ at the discretion of the compiler.
 
     coerce: String -> %
       ++ coerce(s) injects the string value `s' into the syntax domain
 
     coerce: % -> String
-      ++ coerce(s) extract the string value `s' from the syntax domain
+      ++ coerce(s) extracts a string value from the syntax `s'.
+    autoCoerce: % -> String
+      ++ autoCoerce(s) forcibly extracts a string value from
+      ++ the syntax `s'; no check performed.  To be called only at
+      ++ the discretion of the compiler.
 
     buildSyntax: (Symbol, List %) -> %
       ++ buildSyntax(op, [a1, ..., an]) builds a syntax object for op(a1,...,an).
@@ -135,12 +151,18 @@ Syntax(): Public == Private where
     coerce(i: Integer): % ==
       i pretend %
 
-    ccoerce(i: %): Integer ==
+    autoCoerce(i: %): Integer ==                -- used for hard coercion
+      i : Integer
+
+    coerce(i: %): Integer ==
       i case Integer => i
       userError "invalid conversion target type"
 
     coerce(f: DoubleFloat): % ==
       f pretend %
+
+    autoCoerce(f: %): DoubleFloat ==		-- used for hard coercion
+      f : DoubleFloat
 
     coerce(f: %): DoubleFloat ==
       f case DoubleFloat => f
@@ -149,12 +171,18 @@ Syntax(): Public == Private where
     coerce(s: Symbol): % ==
       s pretend %
 
+    autoCoerce(s: %): Symbol ==                 -- used for hard coercion
+      s : Symbol
+
     coerce(s: %): Symbol ==
       s case Symbol => s
       userError "invalid conversion target type"
 
     coerce(s: String): % ==
       s pretend %
+
+    autoCoerce(s: %): String ==                 -- used for hard coercion
+      s : String
 
     coerce(s: %): String ==
       s case String => s
