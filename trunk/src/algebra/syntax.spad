@@ -111,6 +111,9 @@ Syntax(): Public == Private where
     getOperands: % -> List %
       ++ getOperands(x) returns the list of operands to the operator in `x'.
 
+    compound?: % -> Boolean
+      ++ compound? x is true when not an atomic syntax.
+
     _case: (%, [|Integer|]) -> Boolean
       ++ x case Integer is true is x really is an Integer 
 
@@ -208,6 +211,9 @@ Syntax(): Public == Private where
       float? op => float op
       string? op => string op
       convert op
+   
+    compound? x ==
+      pair? rep x
 
     getOperands x ==
       s := rep x
