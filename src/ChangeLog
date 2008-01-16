@@ -1,3 +1,11 @@
+2008-01-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1872564
+	* interp/compiler.boot (compPretend): Don't check for `new'
+	compiler semantics.
+	(compColonInside): Likewise.
+	* testsuite/compiler/1872564.spad: New.
+
 2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/1850071
