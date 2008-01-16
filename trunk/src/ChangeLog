@@ -1,5 +1,16 @@
 2008-01-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/1848975
+	* interp/buildom.boot ($commonCategoryAncestors): New.
+	($commonCategoryDefaults): Likewise.
+	(Record0): Use it.
+	(Union): Likewise.
+	(Mapping): Likewise.
+	(Enumeration): Likewise.
+	* testsuite/algebra/1848975.input: New.
+
+2008-01-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/1872564
 	* interp/compiler.boot (compPretend): Don't check for `new'
 	compiler semantics.
