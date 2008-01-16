@@ -1,5 +1,10 @@
 2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/1850071
+	* algebra/syntax.spad (compound?$Syntax): New.
+
+2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (PropositionalLogic): New category.
 	(Boolean): Assert as belonging to PropositionalLogic.
 	Update cached Lisp translation.
