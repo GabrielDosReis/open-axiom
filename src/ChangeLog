@@ -1,5 +1,14 @@
 2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/boolean.spad.pamphlet (PropositionalLogic): New category.
+	(Boolean): Assert as belonging to PropositionalLogic.
+	Update cached Lisp translation.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Add
+	PROPLOG.o
+	* src/algebra: Update databases.
+
+2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/syntax.spad (autoCoerce$Syntax): Add overloads.
 	* interp/compiler.boot (coerceExtraHard): Always coerce by
 	autoCoerce. 

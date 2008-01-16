@@ -205,7 +205,7 @@ axiom_algebra_layer_0 = \
   KOERCE.o  KONVERT.o MSYSCMD.o ODEIFTBL.o \
   OM.o      OMCONN.o  OMDEV.o   OUT.o      \
   PRIMCAT.o PRINT.o   PTRANFN.o SPFCAT.o   \
-  TYPE.o    UTYPE.o
+  TYPE.o    UTYPE.o   PROPLOG.o
 
 axiom_algebra_layer_0_nrlibs = \
 	$(axiom_algebra_layer_0:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
