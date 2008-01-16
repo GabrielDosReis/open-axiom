@@ -2,7 +2,8 @@
 === TODO ===
 ============
 
-* Eliminate the shell script driver in favor of a native executable.
+* Fix compilation of domain where withon is empty.
+* Improve overload resolution routines.
 * Have an option to build OpenAxiom as a Firefox-based standalone
   application (or as a Firefox extension)
 * Make highlighting more configurable
@@ -108,6 +109,8 @@
 * Have OpenAxiom use bootsys compile all Boot codes in src/interp. This
   requires auditing the code for uses of special functions which
   act differently in boot and shoe (like MEMBER). 
+
+* Eliminate the shell script driver in favor of a native executable.
 
 ================================================
 === New Boot vs. Old Boot compatibility notes ==
