@@ -43,6 +43,15 @@ import '"sys-macros"
 $noCategoryDomains == '(Domain Mode SubDomain)
 $nonLisplibDomains == APPEND($Primitives,$noCategoryDomains)
 
+++ Category ancestors for Record, Union, Mapping, and Enumeration domains.
+$commonCategoryAncestors ==
+  ['(SetCategory), '(BasicType), '(CoercibleTo (OutputForm))]
+
+++ Default category packages for Record, Union, Mapping and 
+++ Enumeration domains.
+$commonCategoryDefaults ==
+  ['(SetCategory_&), '(BasicType_&), NIL]
+
 --% Record
 --  Want to eventually have the elts and setelts.
 --  Record is a macro in BUILDOM LISP. It takes out the colons.
@@ -66,7 +75,7 @@ Record0 args ==
     dom.2 := NIL
     dom.3 := ["RecordCategory",:QCDR dom.0]
     dom.4 :=
-          [[ '(SetCategory) ],[ '(SetCategory) ]]
+          [$commonCategoryDefaults, $commonCategoryAncestors]
     dom.5 := [CDR a for a in args]
     dom.6 := [function RecordEqual, :dom]
     dom.7 := [function RecordPrint, :dom]
@@ -131,7 +140,7 @@ Union(:args) ==
     dom.3 :=
       '(SetCategory)
     dom.4 :=
-          [[ '(SetCategory) ],[ '(SetCategory) ]]
+          [$commonCategoryDefaults, $commonCategoryAncestors]
     dom.5 := args
     dom.6 := [function UnionEqual, :dom]
     dom.7 := [function UnionPrint, :dom]
@@ -183,7 +192,7 @@ Mapping(:args) ==
     dom.3 :=
       '(SetCategory)
     dom.4 :=
-          [[ '(SetCategory) ],[ '(SetCategory) ]]
+          [$commonCategoryDefaults, $commonCategoryAncestors]
     dom.5 := args
     dom.6 := [function MappingEqual, :dom]
     dom.7 := [function MappingPrint, :dom]
@@ -214,7 +223,7 @@ Enumeration(:"args") ==
     dom.2 := NIL
     dom.3 := ["EnumerationCategory",:QCDR dom.0]
     dom.4 :=
-          [[ '(SetCategory) ],[ '(SetCategory) ]]
+          [$commonCategoryDefaults, $commonCategoryAncestors]
     dom.5 := args
     dom.6 := [function EnumEqual, :dom]
     dom.7 := [function EnumPrint, :dom]
