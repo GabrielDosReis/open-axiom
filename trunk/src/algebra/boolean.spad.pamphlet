@@ -48,30 +48,49 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
       ++ coerce(t) turns the term `t' into a propositional formula
     coerce: Symbol -> %
       ++ coerce(t) turns the term `t' into a propositional variable.
---    variables: % -> Set Symbol
+    variables: % -> Set Symbol
       ++ variables(p) returns the set of propositional variables
       ++ appearing in the proposition `p'.
 
     term?: % -> Boolean
+      ++ term? p returns true when `p' really is a term
     term: % -> T
+      ++ term p extracts the term value from `p'; otherwise errors.
    
     variable?: % -> Boolean
+      ++ variables? p returns true when `p' really is a variable.
     variable: % -> Symbol
+      ++ variable p extracts the varible name from `p'; otherwise errors.
 
     not?: % -> Boolean
+      ++ not? p is true when `p' is a logical negation
     notOperand: % -> %
+      ++ notOperand returns the operand to the logical `not' operator; 
+      ++ otherwise errors.
 
     and?: % -> Boolean
+      ++ and? p is true when `p' is a logical conjunction.
     andOperands: % -> Pair(%, %)
+      ++ andOperands p extracts the operands of the logical conjunction;
+      ++ otherwise errors.
 
     or?: % -> Boolean
+      ++ or? p is true when `p' is a logical disjunction.
     orOperands: % -> Pair(%,%)
+      ++ orOperands p extracts the operands to the logical disjunction;
+      ++ otherwise errors.
 
     implies?: % -> Boolean
+      ++ implies? p is true when `p' is a logical implication.
     impliesOperands: % -> Pair(%,%)
+      ++ impliesOperands p extracts the operands to the logical
+      ++ implication; otherwise errors.
 
     equiv?: % -> Boolean
+      ++ equiv? p is true when `p' is a logical equivalence.
     equivOperands: % -> Pair(%,%)
+      ++ equivOperands p extracts the operands to the logical equivalence;
+      ++ otherwise errors.
 
   == add
     FORMULA ==> Union(base: T, var: Symbol, unForm: %,
@@ -107,13 +126,13 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
     equiv(p,q) ==
       binaryForm('equiv, p, q)
 
---     variables p ==
---       p' := rep p
---       p' case base => empty()$Set(Symbol)
---       p' case var => { p'.var }
---       p' case unForm => variables(p'.unForm)
---       p'' := p'.binForm
---       union(variables(p''.lhs), variables(p''.rhs))$Set(Symbol)
+    variables p ==
+      p' := rep p
+      p' case base => empty()$Set(Symbol)
+      p' case var => { p'.var }
+      p' case unForm => variables(p'.unForm)
+      p'' := p'.binForm
+      union(variables(p''.lhs), variables(p''.rhs))$Set(Symbol)
 
     -- returns true if the proposition `p' is a formula of kind
     -- indicated by `o'.
