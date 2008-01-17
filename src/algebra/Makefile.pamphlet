@@ -233,7 +233,7 @@ axiom_algebra_layer_1 = \
   PATAB.o    PLOT1.o    PPCURVE.o  PSCURVE.o  \
   REAL.o     RESLATC.o  RETRACT.o  RETRACT-.o \
   SEGBIND2.o SEGCAT.o   STREAM1.o  STREAM2.o  \
-  STREAM3.o
+  STREAM3.o  
 
 axiom_algebra_layer_1_nrlibs = \
 	$(axiom_algebra_layer_1:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -308,7 +308,7 @@ axiom_algebra_layer_4 = \
   REPDB.o    RFDIST.o   RIDIST.o   RMODULE.o  \
   SEXCAT.o   SGROUP.o   SGROUP-.o  SPACEC.o   \
   SPLNODE.o  STEP.o     SUCH.o     TEX1.o     \
-  UDVO.o     YSTREAM.o
+  UDVO.o     YSTREAM.o  PAIR.o
 
 axiom_algebra_layer_4_nrlibs = \
 	$(axiom_algebra_layer_4:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -339,7 +339,7 @@ axiom_algebra_layer_5 = \
   ODVAR.o    OPQUERY.o  ORDFIN.o   ORDMON.o   \
   PATMATCH.o PERMCAT.o  PDRING.o   PDRING-.o  \
   SDVAR.o    SUP2.o     TRIGCAT.o  TRIGCAT-.o \
-  ULS2.o     UP2.o
+  ULS2.o     UP2.o      
 
 axiom_algebra_layer_5_nrlibs = \
 	$(axiom_algebra_layer_5:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -997,7 +997,7 @@ axiom_algebra_layer_19 = \
   SET.o      SPECOUT.o  SQMATRIX.o SWITCH.o  \
   SYMS.o     SYMTAB.o   SYSSOLP.o  UTSCAT.o  \
   UTSCAT-.o  VARIABLE.o WFFINTBS.o SPADPRSR.o \
-  PARSER.o
+  PARSER.o   PROPFRML.o
 
 axiom_algebra_layer_19_nrlibs = \
 	$(axiom_algebra_layer_19:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
