@@ -25,10 +25,64 @@ MakeRecord(S: Type, T: Type): public == private where
       [s,t]$Record(part1: S, part2: T)
 
 @
+
+\section{domain PAIR Pair}
+<<domain PAIR Pair>>=
+)abbrev domain PAIR Pair
+++ Author: Gabriel Dos Reis
+++ Date Created: January 16, 2008
+++ Date Last Modified: January 16, 2008
+++ Description:  This domain provides a very simple representation
+++ of the notion of `pair of objects'.  It does not try to achieve
+++ all possible imaginable things.
+Pair(S: Type, T: Type): Public == Private where
+  Public ==> Type with
+
+    if S has CoercibleTo OutputForm and T has CoercibleTo OutputForm then
+      CoercibleTo OutputForm
+
+    if S has SetCategory and T has SetCategory then SetCategory
+
+    pair: (S,T) -> %
+      ++ pair(s,t) returns a pair object composed of `s' and `t'.
+    construct: (S,T) -> %
+      ++ construct(s,t) is same as pair(s,t), with syntactic sugar.
+    first: % -> S
+      ++ first(p) extracts the first component of `p'.
+    second: % -> T
+      ++ second(p) extracts the second components of `p'.
+
+  Private ==> add
+    Rep := Record(fst: S, snd: T)
+
+    pair(s,t) ==
+      [s,t]$Rep
+
+    construct(s,t) ==
+      pair(s,t)
+
+    first x ==
+      x.fst
+
+    second x ==
+      x.snd
+
+    if S has CoercibleTo OutputForm and T has CoercibleTo OutputForm then
+      coerce x ==
+        paren([first(x)::OutputForm, second(x)::OutputForm])$OutputForm
+
+    if S has SetCategory and T has SetCategory then
+      x = y ==
+        first(x) = first(y) and second(x) = second(y)
+@
+
+
 \section{License}
 <<license>>=
---Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 --All rights reserved.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are
@@ -62,6 +116,7 @@ MakeRecord(S: Type, T: Type): public == private where
 <<license>>
 
 <<package MKRECORD MakeRecord>>
+<<domain PAIR Pair>>
 @
 \eject
 \begin{thebibliography}{99}

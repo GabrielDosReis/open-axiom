@@ -246,7 +246,7 @@ upand x ==
   putTarget(term1,$Boolean)
   putTarget(term2,$Boolean)
   ms := bottomUp term1
-  ms isnt [=$Boolean] => throwKeyedMsgSP("S2IS0054",[1,'"_"and_""],term1)
+  ms isnt [=$Boolean] => nil
   $genValue =>
     BooleanEquality(objValUnwrap(getValue term1),
       getConstantFromDomain('(false),$Boolean)) =>
@@ -254,12 +254,12 @@ upand x ==
         putModeSet(x,ms)
     -- first term is true, so look at the second one
     ms := bottomUp term2
-    ms isnt [=$Boolean] => throwKeyedMsgSP("S2IS0054",[2,'"_"and_""],term2)
+    ms isnt [=$Boolean] => nil
     putValue(x,getValue term2)
     putModeSet(x,ms)
 
   ms := bottomUp term2
-  ms isnt [=$Boolean] => throwKeyedMsgSP("S2IS0054",[2,'"_"and_""],term2)
+  ms isnt [=$Boolean] => nil
   -- generate an IF expression and let the rest of the code handle it
   cond := [mkAtreeNode "=",mkAtree "false",term1]
   putTarget(cond,$Boolean)
@@ -276,7 +276,7 @@ upor x ==
   putTarget(term1,$Boolean)
   putTarget(term2,$Boolean)
   ms := bottomUp term1
-  ms isnt [=$Boolean] => throwKeyedMsgSP("S2IS0054",[1,'"_"or_""],term1)
+  ms isnt [=$Boolean] => nil
   $genValue =>
     BooleanEquality(objValUnwrap(getValue term1),
       getConstantFromDomain('(true),$Boolean)) =>
@@ -284,12 +284,12 @@ upor x ==
         putModeSet(x,ms)
     -- first term is false, so look at the second one
     ms := bottomUp term2
-    ms isnt [=$Boolean] => throwKeyedMsgSP("S2IS0054",[2,'"_"or_""],term2)
+    ms isnt [=$Boolean] => nil
     putValue(x,getValue term2)
     putModeSet(x,ms)
 
   ms := bottomUp term2
-  ms isnt [=$Boolean] => throwKeyedMsgSP("S2IS0054",[2,'"_"or_""],term2)
+  ms isnt [=$Boolean] => nil
   -- generate an IF expression and let the rest of the code handle it
   cond := [mkAtreeNode "=",mkAtree "true",term1]
   putTarget(cond,$Boolean)

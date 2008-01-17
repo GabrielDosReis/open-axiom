@@ -1,4 +1,4 @@
-\documentclass{article}
+documentclass{article}
 \usepackage{axiom}
 
 \title{src/algebra boolean.spad}
@@ -33,6 +33,233 @@ PropositionalLogic(): Category == with
     ++ equiv(p,q) returns the logical equivalence of `p', `q'.
 @
 
+\section{domain PROPFRML PropositionalFormula}
+<<domain PROPFRML PropositionalFormula>>=
+)set mess autoload on
+)abbrev domain PROPFRML PropositionalFormula
+++ Author: Gabriel Dos Reis
+++ Date Created: Januray 14, 2008
+++ Date Last Modified: January 16, 2008
+++ Description: This domain implements propositional formula build
+++ over a term domain, that itself belongs to PropositionalLogic
+PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
+    if T has CoercibleTo OutputForm then CoercibleTo OutputForm
+    coerce: T -> %
+      ++ coerce(t) turns the term `t' into a propositional formula
+    coerce: Symbol -> %
+      ++ coerce(t) turns the term `t' into a propositional variable.
+--    variables: % -> Set Symbol
+      ++ variables(p) returns the set of propositional variables
+      ++ appearing in the proposition `p'.
+
+    term?: % -> Boolean
+    term: % -> T
+   
+    variable?: % -> Boolean
+    variable: % -> Symbol
+
+    not?: % -> Boolean
+    notOperand: % -> %
+
+    and?: % -> Boolean
+    andOperands: % -> Pair(%, %)
+
+    or?: % -> Boolean
+    orOperands: % -> Pair(%,%)
+
+    implies?: % -> Boolean
+    impliesOperands: % -> Pair(%,%)
+
+    equiv?: % -> Boolean
+    equivOperands: % -> Pair(%,%)
+
+  == add
+    FORMULA ==> Union(base: T, var: Symbol, unForm: %,
+                  binForm: Record(op: Symbol, lhs: %, rhs: %))
+
+    per(f: FORMULA): % ==
+      f pretend %
+
+    rep(p: %): FORMULA ==
+      p pretend FORMULA
+
+    coerce(t: T): % ==
+      per [t]$FORMULA
+
+    coerce(s: Symbol): % ==
+      per [s]$FORMULA
+
+    not p ==
+      per [p]$FORMULA
+
+    binaryForm(o: Symbol, l: %, r: %): % ==
+      per [[o, l, r]$Record(op: Symbol, lhs: %, rhs: %)]$FORMULA
+
+    p and q ==
+      binaryForm('_and, p, q)
+
+    p or q ==
+      binaryForm('_or, p, q)
+
+    implies(p,q) ==
+      binaryForm('implies, p, q)
+
+    equiv(p,q) ==
+      binaryForm('equiv, p, q)
+
+--     variables p ==
+--       p' := rep p
+--       p' case base => empty()$Set(Symbol)
+--       p' case var => { p'.var }
+--       p' case unForm => variables(p'.unForm)
+--       p'' := p'.binForm
+--       union(variables(p''.lhs), variables(p''.rhs))$Set(Symbol)
+
+    -- returns true if the proposition `p' is a formula of kind
+    -- indicated by `o'.
+    isBinaryNode?(p: %, o: Symbol): Boolean ==
+      p' := rep p
+      p' case binForm and p'.binForm.op = o
+
+    -- returns the operands of a binary formula node
+    binaryOperands(p: %): Pair(%,%) ==
+      p' := (rep p).binForm
+      pair(p'.lhs,p'.rhs)$Pair(%,%)
+
+    term? p ==
+      rep p case base
+
+    term p ==
+      term? p => (rep p).base
+      userError "formula is not a term"
+
+    variable? p ==
+      rep p case var
+
+    variable p ==
+      variable? p => (rep p).var
+      userError "formula is not a variable"
+
+    not? p ==
+      rep p case unForm
+
+    notOperand p ==
+      not? p => (rep p).unForm
+      userError "formula is not a logical negation"
+
+    and? p ==
+      isBinaryNode?(p,'_and)
+
+    andOperands p ==
+      and? p => binaryOperands p
+      userError "formula is not a conjunction formula"
+
+    or? p ==
+      isBinaryNode?(p,'_or)
+
+    orOperands p ==
+      or? p => binaryOperands p
+      userError "formula is not a disjunction formula"
+
+    implies? p ==
+      isBinaryNode?(p, 'implies)
+
+    impliesOperands p ==
+      implies? p => binaryOperands p
+      userError "formula is not an implication formula"
+
+    equiv? p ==
+      isBinaryNode?(p,'equiv)
+
+    equivOperands p ==
+      equiv? p =>  binaryOperands p
+      userError "formula is not an equivalence equivalence"
+
+    -- Unparsing grammar.
+    --
+    -- Ideally, the following syntax would the external form
+    -- Formula:
+    --   EquivFormula
+    --
+    -- EquivFormula:
+    --   ImpliesFormula
+    --   ImpliesFormula <=> EquivFormula
+    --
+    -- ImpliesFormula:
+    --   OrFormula
+    --   OrFormula => ImpliesFormula
+    --
+    -- OrFormula:
+    --   AndFormula
+    --   AndFormula or OrFormula 
+    -- 
+    -- AndFormula
+    --   NotFormula
+    --   NotFormula and AndFormula
+    --
+    -- NotFormula:
+    --   PrimaryFormula
+    --   not NotFormula
+    --
+    -- PrimaryFormula:
+    --   Term
+    --   ( Formula )
+    --
+    -- Note: Since the token '=>' already means a construct different
+    --       from what we would like to have as a notation for
+    --       propositional logic, we will output the formula `p => q'
+    --       as implies(p,q), which looks like a function call.
+    --       Similarly, we do not have the token `<=>' for logical
+    --       equivalence; so we unparser `p <=> q' as equiv(p,q).
+    --
+    --       So, we modify the nonterminal PrimaryFormula to read
+    --       PrimaryFormula:
+    --         Term
+    --         implies(Formula, Formula)
+    --         equiv(Formula, Formula)
+    if T has CoercibleTo OutputForm then
+      formula: % -> OutputForm
+      coerce(p: %): OutputForm ==
+	formula p
+
+      primaryFormula(p: %): OutputForm ==
+        term? p => term(p)::OutputForm
+        variable? p => variable(p)::OutputForm
+        if rep p case binForm then
+           p' := (rep p).binForm
+           p'.op = 'implies or p'.op = 'equiv =>
+             return elt(outputForm p'.op, 
+                      [formula p'.lhs, formula p'.rhs])$OutputForm
+        paren(formula p)$OutputForm
+
+      notFormula(p: %): OutputForm ==
+        not? p =>
+          elt(outputForm '_not, [notFormula((rep p).'unForm)])$OutputForm
+        primaryFormula p
+      
+      andFormula(p: %): OutputForm ==
+        and? p =>
+          p' := (rep p).binForm
+	  -- ??? idealy, we should be using `and$OutputForm' but
+	  -- ??? a bug in the compiler currently prevents that.
+	  infix(outputForm '_and, notFormula p'.lhs, 
+	    andFormula p'.rhs)$OutputForm
+        notFormula p
+      
+      orFormula(p: %): OutputForm ==
+        or? p =>
+          p' := (rep p).binForm
+	  -- ??? idealy, we should be using `or$OutputForm' but
+	  -- ??? a bug in the compiler currently prevents that.
+	  infix(outputForm '_or, andFormula p'.lhs, 
+	    orFormula p'.rhs)$OutputForm
+        andFormula p
+
+      formula p ==
+        -- Note: this should be equivFormula, but see the explanation above.
+        orFormula p
+
+@
 
 \section{domain REF Reference}
 <<domain REF Reference>>=
@@ -503,6 +730,7 @@ Bits(): Exports == Implementation where
 <<domain IBITS IndexedBits>>
 <<domain BITS Bits>>
 <<category PROPLOG PropositionalLogic>>
+<<domain PROPFRML PropositionalFormula>>
 @
 \eject
 \begin{thebibliography}{99}
