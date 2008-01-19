@@ -1,5 +1,12 @@
 2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Now include
+	SYNTAX.o 
+	* algebra/syntax.spad (buildSyntax$Syntax): Use CONS$Lisp to
+	permit early bootstrap.
+
+2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/any.spad.pamphlet (getProperty$Environment): New.
 	(setProperty!$Environment): Likewise.
 	(getProperties$Environment): Likewise.

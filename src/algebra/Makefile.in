@@ -377,7 +377,8 @@ axiom_algebra_layer_0 = \
   KOERCE.o  KONVERT.o MSYSCMD.o ODEIFTBL.o \
   OM.o      OMCONN.o  OMDEV.o   OUT.o      \
   PRIMCAT.o PRINT.o   PTRANFN.o SPFCAT.o   \
-  TYPE.o    UTYPE.o   PROPLOG.o OBJPROP.o
+  TYPE.o    UTYPE.o   PROPLOG.o OBJPROP.o  \
+  SYNTAX.o
 
 axiom_algebra_layer_0_nrlibs = \
 	$(axiom_algebra_layer_0:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -648,7 +649,7 @@ axiom_algebra_layer_14 = \
   TWOFACT.o  UNIFACT.o  UP.o       UPCDEN.o   \
   UPDECOMP.o UPDIVP.o   UPMP.o     UPOLYC2.o  \
   UPXSCAT.o  UPSQFREE.o VIEWDEF.o  VIEW2D.o   \
-  VOID.o     WEIER.o    WP.o       SYNTAX.o
+  VOID.o     WEIER.o    WP.o       
 
 axiom_algebra_layer_14_nrlibs = \
 	$(axiom_algebra_layer_14:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))

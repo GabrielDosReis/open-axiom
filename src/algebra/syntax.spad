@@ -195,10 +195,14 @@ Syntax(): Public == Private where
       -- ??? ideally we should have overloaded operator `per' that convert
       -- from list of syntax to syntax.  But the compiler is at the 
       -- moment defective for non-exported overloaded operations.
-      cons(s::%, l) pretend %
+      -- Furthermore, this direct call to `CONS' is currently necessary
+      -- in order to have the Syntax domain compiled as early as possible
+      -- in algebra boostrapping process.  It should be removed once
+      -- the bootstrap process is improved.
+      CONS(s,l)$Lisp @ %
 
     buildSyntax(op: %, l: List %): % ==
-      cons(op, l) pretend %
+      CONS(op,l)$Lisp @ %
 
     nil? x ==
       null? rep x
