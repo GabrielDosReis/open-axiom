@@ -1,5 +1,12 @@
 2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/any.spad.pamphlet (getProperty$Environment): New.
+	(setProperty!$Environment): Likewise.
+	(getProperties$Environment): Likewise.
+	(setProperties!$Environment): Likewise.
+
+2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/construc.lisp (|loadLibNoUpdate|): Fix thinko in initial
 	value for empty environments.
 	* interp/database.boot (rebuildCDT): Likewise.
