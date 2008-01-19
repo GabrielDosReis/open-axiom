@@ -76,7 +76,7 @@ upADEF t ==
 
 --  $localVars: local := nil
 --  $freeVars:  local := nil
---  $env:       local := [[NIL]]
+--  $env:       local := [$EmptyEnvironment]
   $compilingMap : local := true
 
   -- if there is a predicate, merge it in with the body

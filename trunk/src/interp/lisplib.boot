@@ -160,7 +160,7 @@ loadLib cname ==
     else
       REMPROP(cname,'NILADIC)
   MAKEPROP(cname,'LOADED,fullLibName)
-  if $InteractiveMode then $CategoryFrame := [[nil]]
+  if $InteractiveMode then $CategoryFrame := [$EmptyEnvironment]
   stopTimingProcess 'load
   'T
 
@@ -178,7 +178,7 @@ loadLibNoUpdate(cname, libName, fullLibName) ==
      clearConstructorCache cname
      installConstructor(cname,kind)
      MAKEPROP(cname,'LOADED,fullLibName)
-     if $InteractiveMode then $CategoryFrame := [[nil]]
+     if $InteractiveMode then $CategoryFrame := [$EmptyEnvironment]
      stopTimingProcess 'load
   'T
  

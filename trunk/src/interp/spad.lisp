@@ -60,8 +60,6 @@
 (defvar |$Representation| nil "checked in compNoStacking")
 (defvar |$definition| nil "checked in DomainSubstitutionFunction")
 (defvar |$Attributes| nil "global attribute list used in JoinInner")
-(defvar |$env| nil "checked in isDomainValuedVariable")
-(defvar |$e| nil "checked in isDomainValuedVariable")
 (defvar |$getPutTrace| nil)
 (defvar |$specialCaseKeyList| nil "checked in optCall")
 (defvar |$formulaFormat| nil "if true produce script formula output")

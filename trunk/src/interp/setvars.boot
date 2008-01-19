@@ -134,7 +134,7 @@ initializeSetVariables (setTree) ==
     st = 'TREE =>
       initializeSetVariables(setData.setLeaf)
 
-resetWorkspaceVariables () ==
+resetWorkspaceVariables() ==
   -- this replaces def in DEBUG LISP
   -- this function resets many workspace variables to their default
   -- values. Some things are reset by start and not reset by restart.
@@ -158,8 +158,8 @@ resetWorkspaceVariables () ==
   SETQ($dependeeClosureAlist        , NIL)
   SETQ($IOindex                     , 1  )
   SETQ($coerceIntByMapCounter       , 0  )
-  SETQ($e                           , [[NIL]])
-  SETQ($env                         , [[NIL]])
+  SETQ($e                           , [$EmptyEnvironment])
+  SETQ($env                         , [$EmptyEnvironment])
 
   -- many variables set by the following
 

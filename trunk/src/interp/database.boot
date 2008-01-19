@@ -101,10 +101,10 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
 rebuildCDT(filemode) ==
   clearConstructorAndLisplibCaches()
   $databaseQueue:local :=nil
-  $e: local := [[NIL]]    -- We may need to evaluate Categories
+  $e: local := [$EmptyEnvironment]    -- We may need to evaluate Categories
   buildDatabase(filemode,false)
   $IOindex:= 1
-  $InteractiveFrame:= [[NIL]]
+  $InteractiveFrame:= [$EmptyEnvironment]
   0
 
 buildDatabase(filemode,expensive) ==

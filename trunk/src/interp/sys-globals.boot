@@ -160,7 +160,9 @@ $insideWhereIfTrue := false
 $instantRecord := MAKE_-HASHTABLE "ID"
 
 ++
-$InteractiveFrame := [[nil]]
+$InteractiveFrame := [$EmptyEnvironment]
+$e := [$EmptyEnvironment]
+$env := [$EmptyEnvironment]
 
 ++
 $InteractiveMode := false
