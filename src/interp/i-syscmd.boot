@@ -2259,7 +2259,7 @@ showSpad2Cmd l ==
 
 reportOperations(oldArg,u) ==
   -- u might be an uppercased version of oldArg
-  $env:local := [[NIL]]
+  $env:local := [$EmptyEnvironment]
   $eval:local := true           --generate code-- don't just type analyze
   $genValue:local := true       --evaluate all generated code
   null u => nil

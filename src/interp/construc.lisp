@@ -283,7 +283,7 @@
           (|dependentClosure| (list cname))))))
     (|installConstructor| cname kind) 
     (makeprop libName 'loaded fullLibName) 
-    (when |$InteractiveMode| (setq |$CategoryFrame| (list (list nil))))
+    (when |$InteractiveMode| (setq |$CategoryFrame| (list (list (list nil)))))
     (|stopTimingProcess| '|load|)
     t))
 

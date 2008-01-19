@@ -305,7 +305,7 @@ interpretTopLevel(x, posnForm) ==
 interpret(x, :restargs) ==
   posnForm := if PAIRP restargs then CAR restargs else restargs
   --type analyzes and evaluates expression x, returns object
-  $env:local := [[NIL]]
+  $env:local := [$EmptyEnvironment]
   $eval:local := true           --generate code-- don't just type analyze
   $genValue:local := true       --evaluate all generated code
   interpret1(x,nil,posnForm)

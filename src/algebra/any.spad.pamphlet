@@ -188,9 +188,222 @@ AnyFunctions1(S:Type): with
             error "Cannot retract value."
 
 @
+
+\section{domain OBJPROP ObjectProperty}
+<<domain OBJPROP ObjectProperty>>=
+)abbrev domain OBJPROP ObjectProperty
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ An `ObjectProperty' is a pair of name and value.  
+ObjectProperty(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    name: % -> Symbol         
+      ++ name(p) returns the name of property p
+    value: % -> SExpression   
+      ++ value(p) returns value of property p
+    property: (Symbol, SExpression) -> %
+      ++ property(n,val) constructs a property with name `n' and
+      ++ value `val'.
+  
+  Private ==> add
+    rep(x: %): SExpression ==
+      x pretend SExpression
+
+    per(x: SExpression): % ==
+      x pretend %
+
+    name x == 
+      -- Note: It is always well defined to take the `car' here
+      -- because there is no way we could have type safely 
+      -- constructed a null property.
+      symbol car rep x
+
+    value x ==
+      cdr rep x
+
+    property(n,val) ==
+      per CONS(n,val)$Lisp
+ 
+    coerce x ==
+      v := value x
+      val: OutputForm
+      if null? v then val := false::OutputForm
+      else if EQ(v, true)$Lisp : Boolean
+           then val := true::OutputForm
+           else val := v::OutputForm
+      
+      bracket(infix(outputForm '_=_>, outputForm name x, 
+                val)$OutputForm)$OutputForm
+
+@
+
+\section{domain BINDING Binding}
+<<domain BINDING Binding>>=
+)abbrev domain BINDING Binding
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Binding' is a name asosciated with a collection of properties.
+Binding(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    name: % -> Symbol               
+      ++ name(b) returns the name of binding b
+    properties: % -> List ObjectProperty  
+      ++ properties(b) returns the properties associated with binding b.
+    binding: (Symbol, List ObjectProperty) -> %
+      ++ binding(n,props) constructs a binding with name `n' and 
+      ++ property list `props'.
+
+  Private ==> add
+    rep(x: %): SExpression ==
+      x pretend SExpression
+
+    per(x: SExpression): % ==
+      x pretend %
+
+    name b ==
+      -- this is well defined because there is no way one could
+      -- type safely ask the name of an inexisting binding.
+      symbol car rep b
+
+    properties b ==
+      (cdr rep b) pretend List(ObjectProperty)
+
+    binding(n,props) ==
+      per CONS(n,props)$Lisp
+
+    coerce b ==
+      null? rep b => empty()$OutputForm
+      rarrow(outputForm name b, (properties b)::OutputForm)$OutputForm
+@
+
+\section{domain CONTOUR Contour}
+<<domain CONTOUR Contour>>=
+)abbrev domain CONTOUR Contour
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Contour' a list of bindings making up a `virtual scope'.
+Contour(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    bindings: % -> List Binding     
+      ++ bindings(c) returns the list of bindings in countour c.
+    push: (Binding,%) -> %
+      ++ push(c,b) augments the contour with binding `b'.
+    findBinding: (Symbol,%) -> Union(Binding, "failed")
+      ++ findBinding(c,n) returns the first binding associated with `n'.
+      ++ Otherwise `failed'.
+
+  Private ==> add
+    bindings c ==
+      c pretend List(Binding)
+
+    findBinding(n,c) ==
+      for b in bindings c repeat
+        EQ(n, name b)$Lisp => return b
+      "failed"
+
+    push(b,c) ==
+      CONS(b,c)$Lisp pretend %
+
+    coerce c ==
+      (bindings c)::OutputForm
+@
+
+\section{domain SCOPE Scope}
+<<domain SCOPE Scope>>=
+)abbrev domain SCOPE Scope
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Scope' is a sequence of contours.
+Scope(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    empty: () -> %
+      ++ empty() returns an empty scope.
+    contours: % -> List Contour     
+      ++ contours(s) returns the list of contours in scope s.
+    findBinding: (Symbol,%) -> Union(Binding, "failed")
+      ++ findBinding(n,s) returns the first binding of `n' in `s'; 
+      ++ otherwise `failed'.
+    pushNewContour: (Binding,%) -> %
+      ++ pushNewContour(b,s) pushs a new contour with sole binding `b'.
+    currentScope: () -> %
+      ++ currentScope() returns the scope currently in effect
+    currentCategoryFrame: () -> %
+      ++ currentCategoryFrame() returns the category frame currently
+      ++ in effect.
+
+  Private ==> add
+    import Contour
+    empty() ==
+      _$EmptyEnvironment$Lisp @ %
+
+    contours s ==
+      s pretend List(Contour)
+
+    findBinding(n,s) ==
+      for c in contours s repeat
+        b := findBinding(n,c)$Contour
+        not b case "failed" => b
+      "failed"
+
+    pushNewContour(b,s) ==
+      c := LIST(b)$Lisp
+      CONS(c,s)$Lisp @ %
+
+    currentScope() ==
+      CAR(_$e$Lisp)$Lisp @ %
+
+    currentCategoryFrame() ==
+      CAR(_$CategoryFrame$Lisp)$Lisp @ %
+
+    coerce s ==
+      (contours s)::OutputForm
+@
+
+\section{domain ENV Environment}
+<<domain ENV Environment>>=
+)abbrev domain ENV Environment
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ An `Environment' is a stack of scope.
+Environment(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    empty: () -> %
+      ++ empty() constructs an empty environment
+    scopes: % -> List Scope     
+      ++ scopes(e) returns the stack of scopes in environment e.
+    currentEnv: () -> %        
+      ++ the current normal environment in effect.
+    categoryFrame: () -> %  
+       ++ the current category environment in the interpreter.
+
+  Private ==> add
+    empty() ==
+     LIST(_$EmptyEnvironment$Lisp)$Lisp @ %
+
+    scopes e ==
+      e pretend List(Scope)
+
+    currentEnv() ==
+      _$e$Lisp @ %
+
+    categoryFrame() ==
+      _$CategoryFrame$Lisp @ %
+
+    coerce e ==
+      (scopes e)::OutputForm
+@
+
+
 \section{License}
 <<license>>=
---Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2008, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -233,6 +446,12 @@ AnyFunctions1(S:Type): with
 <<package NONE1 NoneFunctions1>>
 <<domain ANY Any>>
 <<package ANY1 AnyFunctions1>>
+
+<<domain OBJPROP ObjectProperty>>
+<<domain BINDING Binding>>
+<<domain CONTOUR Contour>>
+<<domain SCOPE Scope>>
+<<domain ENV Environment>>
 @
 \eject
 \begin{thebibliography}{99}
