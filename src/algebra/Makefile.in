@@ -377,7 +377,7 @@ axiom_algebra_layer_0 = \
   KOERCE.o  KONVERT.o MSYSCMD.o ODEIFTBL.o \
   OM.o      OMCONN.o  OMDEV.o   OUT.o      \
   PRIMCAT.o PRINT.o   PTRANFN.o SPFCAT.o   \
-  TYPE.o    UTYPE.o   PROPLOG.o OBJPROP.o  \
+  TYPE.o    UTYPE.o   PROPLOG.o PROPERTY.o  \
   SYNTAX.o
 
 axiom_algebra_layer_0_nrlibs = \
@@ -434,7 +434,7 @@ axiom_algebra_layer_4 = \
   REPDB.o    RFDIST.o   RIDIST.o   RMODULE.o  \
   SEXCAT.o   SGROUP.o   SGROUP-.o  SPACEC.o   \
   SPLNODE.o  STEP.o     SUCH.o     TEX1.o     \
-  UDVO.o     YSTREAM.o  PAIR.o     ENV.o
+  UDVO.o     YSTREAM.o  PAIR.o     ENV.o 
 
 axiom_algebra_layer_4_nrlibs = \
 	$(axiom_algebra_layer_4:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -454,7 +454,7 @@ axiom_algebra_layer_5 = \
   ODVAR.o    OPQUERY.o  ORDFIN.o   ORDMON.o   \
   PATMATCH.o PERMCAT.o  PDRING.o   PDRING-.o  \
   SDVAR.o    SUP2.o     TRIGCAT.o  TRIGCAT-.o \
-  ULS2.o     UP2.o      
+  ULS2.o     UP2.o      ELABEXPR.o
 
 axiom_algebra_layer_5_nrlibs = \
 	$(axiom_algebra_layer_5:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))

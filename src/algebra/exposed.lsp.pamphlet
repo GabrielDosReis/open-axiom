@@ -236,7 +236,7 @@
   (|NumericComplexEigenPackage| . NCEP)
   (|NumericRealEigenPackage| . NREP)
   (|NumericContinuedFraction| . NCNTFRAC)
-  (|ObjectProperty| . OBJPROP)
+  (|Property| . PROPERTY)
   (|Octonion| . OCT)
   (|OctonionCategoryFunctions2| . OCTCT2)
   (|OneDimensionalArray| . ARRAY1)

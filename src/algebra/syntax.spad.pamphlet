@@ -241,6 +241,69 @@ ConstructorCall(): Public == Private where
       outputDomainConstructor(x)$Lisp
 @
 
+\section{domain ElaboratedExpression}
+<<domain ELABEXPR ElaboratedExpression>>=
+)abbrev domain ELABEXPR ElaboratedExpression
+++ Author: Gabriel Dos Reis
+++ Date Created: January 19, 2008
+++ Date Last Updated: January 20, 2008
+++ Description: This domains an expresion as elaborated by the interpreter.
+++ See Also: 
+ElaboratedExpression(): Public == Private where
+  Public ==> CoercibleTo OutputForm with
+    type: % -> ConstructorCall
+      ++ type(e) returns the type of the expression as computed by
+      ++ the interpreter.
+    constant?: % -> Boolean
+      ++ constant?(e) returns true if `e' is a constant.
+    getConstant: % -> Union(SExpression,"failed")
+      ++ getConstant(e) retrieves the constant value of `e'e.
+    variable?: % -> Boolean
+      ++ variable?(e) returns true if `e' is a variable.
+    getVariable: % -> Union(Symbol,"failed")
+      ++ getVariable(e) retrieves the name of the variable `e'.
+    callForm?: % -> Boolean
+      ++ callForm?(e) is true when `e' is a call expression.
+    getOperator: % -> Union(Symbol, "failed")
+      ++ getOperator(e) retrieves the operator being invoked in `e',
+      ++ when `e' is an expression.  
+    getOperands: % -> Union(List %, "failed")
+      ++ getOperands(e) returns the of operands in `e'e, assuming it
+      ++ is a call form.
+
+  Private ==> add
+    immediateDataTag := INTERN("--immediateData--")$Lisp
+ 
+    isAtomic(x: %): Boolean ==
+      ATOM(x)$Lisp @ Boolean
+
+    type x ==
+      getMode(x)$Lisp @ ConstructorCall
+
+    callForm? x ==
+      CONSP(x)$Lisp @ Boolean
+
+    getOperator x ==
+      op: SExpression := getUnnameIfCan(x)$Lisp
+      null? op => "failed"
+      op pretend Symbol
+
+    constant? x ==
+      isAtomic x and 
+        EQ(getUnnameIfCan(x)$Lisp, immediateDataTag)$Lisp : Boolean
+
+    getConstant x ==
+      constant? x => getValue(x)$Lisp @ SExpression
+      "failed"
+
+    variable? x ==
+      isAtomic x and not constant? x
+   
+    getVariable x ==
+      variable? x => symbol (getUnname(x)$Lisp@SExpression)
+      "failed"
+@
+
 
 \section{License}
 <<license>>=
@@ -280,6 +343,7 @@ ConstructorCall(): Public == Private where
 <<license>>
 <<domain SYNTAX Syntax>>
 <<domain CTORCALL ConstructorCall>>
+<<domain ELABEXPR ElaboratedExpression>>
 @
 
 \end{document}

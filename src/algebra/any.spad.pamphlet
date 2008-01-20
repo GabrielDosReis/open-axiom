@@ -189,14 +189,14 @@ AnyFunctions1(S:Type): with
 
 @
 
-\section{domain OBJPROP ObjectProperty}
-<<domain OBJPROP ObjectProperty>>=
-)abbrev domain OBJPROP ObjectProperty
+\section{domain PROPERTY Property}
+<<domain PROPERTY Property>>=
+)abbrev domain PROPERTY Property
 ++ Author: Gabriel Dos Reis
 ++ Date Created: October 24, 2007
 ++ Date Last Modified: January 18, 2008.
-++ An `ObjectProperty' is a pair of name and value.  
-ObjectProperty(): Public == Private where
+++ An `Property' is a pair of name and value.  
+Property(): Public == Private where
   Public ==> CoercibleTo(OutputForm) with
     name: % -> Symbol         
       ++ name(p) returns the name of property p
@@ -249,9 +249,9 @@ Binding(): Public == Private where
   Public ==> CoercibleTo(OutputForm) with
     name: % -> Symbol               
       ++ name(b) returns the name of binding b
-    properties: % -> List ObjectProperty  
+    properties: % -> List Property  
       ++ properties(b) returns the properties associated with binding b.
-    binding: (Symbol, List ObjectProperty) -> %
+    binding: (Symbol, List Property) -> %
       ++ binding(n,props) constructs a binding with name `n' and 
       ++ property list `props'.
 
@@ -268,7 +268,7 @@ Binding(): Public == Private where
       symbol car rep b
 
     properties b ==
-      (cdr rep b) pretend List(ObjectProperty)
+      (cdr rep b) pretend List(Property)
 
     binding(n,props) ==
       per CONS(n,props)$Lisp
@@ -382,10 +382,10 @@ Environment(): Public == Private where
     setProperty!: (Symbol, Symbol, SExpression, %) -> %
       ++ setProperty!(n,p,v,e) binds the property `(p,v)' to `n'
       ++ in the topmost scope of `e'.
-    getProperties: (Symbol, %) -> Union(List ObjectProperty, "failed")
+    getProperties: (Symbol, %) -> Union(List Property, "failed")
       ++ getBinding(n,e) returns the list of properties of `n' in
       ++ e; otherwise `failed'.
-    setProperties!: (Symbol, List ObjectProperty, %) -> %
+    setProperties!: (Symbol, List Property, %) -> %
       ++ setBinding!(n,props,e) set the list of properties of `n' 
       ++ to `props' in `e'.
     currentEnv: () -> %        
@@ -411,7 +411,7 @@ Environment(): Public == Private where
     getProperties(n,e) ==
       b: SExpression := getProplist(n,e)$Lisp
       null? b => "failed"
-      b pretend List(ObjectProperty)
+      b pretend List(Property)
 
     setProperties!(n,b,e) ==
       addBinding(n,b,e)$Lisp @ %
@@ -475,7 +475,7 @@ Environment(): Public == Private where
 <<domain ANY Any>>
 <<package ANY1 AnyFunctions1>>
 
-<<domain OBJPROP ObjectProperty>>
+<<domain PROPERTY Property>>
 <<domain BINDING Binding>>
 <<domain CONTOUR Contour>>
 <<domain SCOPE Scope>>
