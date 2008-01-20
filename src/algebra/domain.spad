@@ -33,14 +33,19 @@
 )abbrev domain DOMAIN Domain
 ++ Author: Gabriel Dos Reis
 ++ Date Create: October 18, 2007.
-++ Date Last Updated: December 12, 2007.
+++ Date Last Updated: January 19, 2008.
 ++ Basic Operations: coerce, reify
 ++ Related Constructors: Type, Syntax, OutputForm
-++ Also See: Type
+++ Also See: Type, ConstructorCall
 Domain(): Public == Private where
   Public ==> CoercibleTo(OutputForm) with
-    reify: % -> Syntax
+    reify: % -> ConstructorCall
       ++ reify(d) returns the abstract syntax for the domain `x'.
+
+    reflect: ConstructorCall -> %
+      ++ reflect cc returns the domain object designated by the
+      ++ ConstructorCall syntax `cc'.  The constructor implied 
+      ++ by `cc' must be known to the system since it is instantiated.
    
     showSummary: % -> Void
       ++ showSummary(d) prints out implementation detail information
@@ -51,7 +56,10 @@ Domain(): Public == Private where
       outputDomainConstructor(x)$Lisp
 
     reify x ==
-      convert(devaluate(x)$Lisp@SExpression)$Syntax
+      devaluate(x)$Lisp @ ConstructorCall
+
+    reflect cc ==
+      evalDomain(cc)$Lisp @ %
 
     showSummary x ==
       showSummary(x)$Lisp

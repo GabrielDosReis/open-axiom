@@ -1,5 +1,14 @@
 2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/syntax.spad.pamphlet: Rename from algebra/syntax.spad.
+	Add a new domain for constructor instantiation form.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include
+	CTORCALL.o 
+	(SYNTAX.NRLIB/code.$(FASLEXT)): Remove rule.  Now implicit.
+	* share/algebra: Update databases.
+
+2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Now include
 	SYNTAX.o 
 	* algebra/syntax.spad (buildSyntax$Syntax): Use CONS$Lisp to
