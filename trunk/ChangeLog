@@ -1,3 +1,7 @@
+2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (LDF): Include -lm.
+
 2008-01-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: For mingw host, default $prefix to 

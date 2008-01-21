@@ -179,7 +179,7 @@ open_axiom_installdir = @open_axiom_installdir@
 INC=$(top_srcdir)/src/include
 PLF=@PLF@
 CCF=@CCF@
-LDF=@LDF@
+LDF=@LDF@ -lm
 LISP=@LISP@
 
 axiom_use_x = @axiom_use_x@
