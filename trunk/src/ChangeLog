@@ -1,3 +1,12 @@
+2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad.pamphlet (Syntax): Assert a member of
+	SetCategory.  Implement equality.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Move
+	BASTYPE.o from layer 3 to here.  Move SYNTAX.o from here to layer 1.
+	(axiom_algebra_layer_1): Move CTROCALL.o to layer 2.
+	* share/algebra: Update database.
+
 2008-01-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/syntax.spad.pamphlet (ElaboratedExpression): New.

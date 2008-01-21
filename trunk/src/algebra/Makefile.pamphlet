@@ -206,7 +206,7 @@ axiom_algebra_layer_0 = \
   OM.o      OMCONN.o  OMDEV.o   OUT.o      \
   PRIMCAT.o PRINT.o   PTRANFN.o SPFCAT.o   \
   TYPE.o    UTYPE.o   PROPLOG.o PROPERTY.o  \
-  SYNTAX.o
+  BASTYPE.o BASTYPE-.o
 
 axiom_algebra_layer_0_nrlibs = \
 	$(axiom_algebra_layer_0:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -234,7 +234,7 @@ axiom_algebra_layer_1 = \
   PATAB.o    PLOT1.o    PPCURVE.o  PSCURVE.o  \
   REAL.o     RESLATC.o  RETRACT.o  RETRACT-.o \
   SEGBIND2.o SEGCAT.o   STREAM1.o  STREAM2.o  \
-  STREAM3.o  BINDING.o  CTORCALL.o
+  STREAM3.o  BINDING.o  SYNTAX.o   
 
 axiom_algebra_layer_1_nrlibs = \
 	$(axiom_algebra_layer_1:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -249,7 +249,7 @@ axiom_algebra_layer_1_objects = \
 
 <<layer2>>=
 axiom_algebra_layer_2 = \
-  FMC.o   FMFUN.o   FORTFN.o  FVC.o  \
+  FMC.o   FMFUN.o   FORTFN.o  FVC.o  CTORCALL.o \
   FVFUN.o INTRET.o  SEGXCAT.o CONTOUR.o
 
 axiom_algebra_layer_2_nrlibs = \
@@ -269,7 +269,7 @@ grdef.spad.pamphlet (GRDEF)
 
 <<layer3>>=
 axiom_algebra_layer_3 = \
-  AGG.o   AGG-.o  BASTYPE.o BASTYPE-.o \
+  AGG.o   AGG-.o \
   GRDEF.o LIST3.o MKFUNC.o SCOPE.o
 
 axiom_algebra_layer_3_nrlibs = \
