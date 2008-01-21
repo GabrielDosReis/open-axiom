@@ -23,11 +23,12 @@
 ++ and strings.  This domain differs from InputForm in that it represents
 ++ any entity from a Spad program, not just expressions.
 ++ Related Constructors: Boolean, Integer, Float, symbol, String, SExpression.
-++ See Also: SExpression.
+++ See Also: SExpression, SetCategory
+++ The equality supported by this domain is structural.
 ++ Fixme: Provide direct support for boolean values, arbritrary 
 ++        precision float point values.
 Syntax(): Public == Private where
-  Public ==> Join(UnionType, CoercibleTo(OutputForm)) with
+  Public ==> Join(UnionType, SetCategory) with
     convert: % -> SExpression
       ++ convert(s) returns the s-expression representation of a syntax.
 
@@ -116,6 +117,9 @@ Syntax(): Public == Private where
 
     per(x: SExpression): % ==
       x pretend %
+
+    x = y ==
+      EQUAL(x,y)$Lisp @ Boolean
 
     s case Integer ==
       integer? rep s
