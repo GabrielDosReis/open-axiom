@@ -74,9 +74,13 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
     [untilCode,.,e]:= comp($until,$Boolean,e)
     finalCode:= substitute(["UNTIL",untilCode],'$until,finalCode)
   [finalCode,m,e]
- 
+
+++ returns the identity element of the `reduction' operation `x'
+++ over a list -- a monoid homomorphism.   
 getIdentity(x,e) ==
-  GETL(x,"THETA") is [y] => y
+  -- The empty list should be indicated by name, not  by its
+  -- object representation.
+  GETL(x,"THETA") is [y] => (y => y; "nil")
  
 numberize x ==
   x=$Zero => 0
