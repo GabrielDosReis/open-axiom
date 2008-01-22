@@ -261,6 +261,10 @@ upand x ==
   ms := bottomUp term2
   ms isnt [=$Boolean] => nil
   -- generate an IF expression and let the rest of the code handle it
+  -- ??? In full generality, this is still incorrect.  We should be
+  -- ??? looking up modemaps to see whether the interpretation is
+  -- ??? unique and the target type is Boolean before going on
+  -- ??? generating LISP IF-expression. -- gdr 2008/01/14
   cond := [mkAtreeNode "=",mkAtree "false",term1]
   putTarget(cond,$Boolean)
   code := [mkAtreeNode "IF",cond,mkAtree "false",term2]
@@ -293,6 +297,7 @@ upor x ==
   -- generate an IF expression and let the rest of the code handle it
   cond := [mkAtreeNode "=",mkAtree "true",term1]
   putTarget(cond,$Boolean)
+  -- ??? the following code generation is incorrect.  -- gdr
   code := [mkAtreeNode "IF",cond,mkAtree "true",term2]
   putTarget(code,$Boolean)
   bottomUp code
