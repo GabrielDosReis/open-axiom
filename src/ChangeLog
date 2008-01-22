@@ -1,5 +1,13 @@
 2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Apply patch byStephen Wilson <<wilsons@multiboard.com>
+	Fix AW/370
+	* interp/compiler.boot (compWithMappingMode): Consult current
+	environment to decide which variabes are free.
+	* testsuite/compiler/cwmm-test.spad: New.
+
+2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/syntax.spad.pamphlet (Syntax): Assert a member of
 	SetCategory.  Implement equality.
 	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Move
