@@ -1,3 +1,8 @@
+2008-01-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/any.spad.pamphlet (empty$Scope): Use literal empty list.
+	(empty$Environment): Likewise.
+
 2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
             Waldek Hebisch <hebisch@math.uni.wroc.pl>
 

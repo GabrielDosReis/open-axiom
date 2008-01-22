@@ -338,7 +338,7 @@ Scope(): Public == Private where
   Private ==> add
     import Contour
     empty() ==
-      _$EmptyEnvironment$Lisp @ %
+      '(())
 
     contours s ==
       s pretend List(Contour)
@@ -395,7 +395,7 @@ Environment(): Public == Private where
 
   Private ==> add
     empty() ==
-     LIST(_$EmptyEnvironment$Lisp)$Lisp @ %
+      '((()))
 
     scopes e ==
       e pretend List(Scope)
