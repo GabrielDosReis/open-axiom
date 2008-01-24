@@ -34,6 +34,16 @@
 import '"g-util"
 )package "BOOT"
 
+
+++ true if we are about to generate a function definition
+$definingMap := false
+
+++ List variables locat to the current function.
+$localVars := []
+
+++ declared mode of the current entity being processed.
+$declaredMode := nil
+
 --% Functions on interpreter objects
 
 -- Interpreter objects used to be called triples because they had the

@@ -35,6 +35,9 @@
 import '"g-timer"
 )package "BOOT"
 
+++ List of compiled function names.
+$compiledOpNameList
+
 reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   -- for an alternate definition of this function which does not allow
   -- dynamic caching, see SLAMOLD BOOT
