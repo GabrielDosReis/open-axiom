@@ -179,8 +179,6 @@
 
 (setq |$sourceFiles| ()) ;; set in readSpad2Cmd
 
-(setq |$localVars| ())  ;checked by isType
-
 (define-function 'SUBSTQ #'SUBSTEQ) ;; needed for substNames (always copy)
 #+(and :lucid (not :ibm/370))
  (define-function 'RUN-AIX-PROGRAM #'SYS:RUN-AIX-PROGRAM)

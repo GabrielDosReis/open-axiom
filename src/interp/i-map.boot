@@ -39,8 +39,6 @@ $mapTarget := nil
 $mapReturnTypes := nil
 $mapName := 'noMapName
 $mapThrowCount := 0 -- times a "return" occurs in map
-$compilingMap := NIL
-$definingMap := NIL
 
 --% Generating internal names for functions
 

@@ -341,11 +341,8 @@ $CategoryFrame :=
 ++
 $spadLibFT := "NRLIB"
 
-++
+++ true if we are compiling a function.
 $compilingMap := false
-
-++
-$definingMap := false
 
 ++
 $TRACELETFLAG := false
