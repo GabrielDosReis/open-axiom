@@ -1,3 +1,9 @@
+2008-01-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/311
+	* interp/i-syscmd.boot (displayOperationsFromLisplib): Say no
+	exported operations when there is nothing to display.
+
 2008-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix AW/272
