@@ -1,3 +1,10 @@
+2008-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/272
+	* interp/i-spec1.boot (compileADEFBody): Don't evaluate unnamed
+	functions.  Compile them instead.
+	* testsuite/interpreter/aw-272.input: New.
+
 2008-01-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/any.spad.pamphlet (empty$Scope): Use literal empty list.
