@@ -2424,7 +2424,8 @@ displayOperationsFromLisplib form ==
   kind := GETDATABASE(name,'CONSTRUCTORKIND)
   centerAndHighlight('"Operations",$LINELENGTH,specialChar 'hbar)
   opList:= GETDATABASE(name,'OPERATIONALIST)
-  null opList => reportOpsFromUnitDirectly form
+  null opList => 
+    centerAndHighlight('"No exported operations",$LINELENGTH)
   opl:=REMDUP MSORT EQSUBSTLIST(argl,$FormalMapVariableList,opList)
   ops:= nil
   for x in opl repeat
