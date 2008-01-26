@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -158,8 +158,8 @@ resetWorkspaceVariables() ==
   SETQ($dependeeClosureAlist        , NIL)
   SETQ($IOindex                     , 1  )
   SETQ($coerceIntByMapCounter       , 0  )
-  SETQ($e                           , [$EmptyEnvironment])
-  SETQ($env                         , [$EmptyEnvironment])
+  SETQ($e                           , $EmptyEnvironment)
+  SETQ($env                         , [[nil]])
 
   -- many variables set by the following
 

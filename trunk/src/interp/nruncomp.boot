@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -237,7 +237,7 @@ NRTgetLocalIndex1(item,killBindingIfTrue) ==
   -- when assigning slot to flag values, we don't really want to
   -- compile them.  Rather, we want to record them as if they were atoms.
   flag := isQuasiquote item
-  $NRTdeltaList:= [['domain,(flag => item; NRTaddInner item),:value],
+  $NRTdeltaList:= [['domain, NRTaddInner item,:value],
                     :$NRTdeltaList]
   saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
   saveIndex := $NRTbase + $NRTdeltaLength

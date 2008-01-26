@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -115,7 +117,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   someDecs := nil
   allDecs := true
   mapmode := ['Mapping]
-  $env:local := [$EmptyEnvironment]
+  $env:local := [[nil]]
   $eval:local := true           --generate code-- don't just type analyze
   $genValue:local := true       --evaluate all generated code
   for d in mapsig repeat
@@ -578,7 +580,7 @@ rewriteMap0(op,opName,argl) ==
     tar:= nil
     argTypes:= nil
   get(opName,'mode,$e) is ['Mapping,tar,:argTypes]
-  $env: local := [$EmptyEnvironment]
+  $env: local := [[nil]]
   for arg in argl
     for var in $FormalMapVariableList repeat
       if argTypes then
@@ -611,7 +613,7 @@ rewriteMap1(opName,argl,sig) ==
   for arg in reverse argl repeat
     v := getValue arg
     evArgl := [objNew(objVal v, objMode v),:evArgl]
-  $env : local := [$EmptyEnvironment]
+  $env : local := [[nil]]
   for arg in argl for evArg in evArgl
     for var in $FormalMapVariableList repeat
       if argTypes then
@@ -669,7 +671,7 @@ compileDeclaredMap(op,sig,mapDef) ==
   -- creates a local modemap and puts it into the environment
   $localVars: local := nil
   $freeVars: local := nil
-  $env:local:= [$EmptyEnvironment]
+  $env:local:= [[nil]]
   parms:=[var for var in $FormalMapVariableList for m in CDR sig]
   for m in CDR sig for var in parms repeat
     $env:= put(var,'mode,m,$env)
@@ -785,7 +787,7 @@ analyzeUndeclaredMap(op,argTypes,mapDef,$mapList) ==
   -- Computes the signature of the map named op, and compiles the body
   $freeVars:local := NIL
   $localVars: local := NIL
-  $env:local:= [$EmptyEnvironment]
+  $env:local:= [[nil]]
   $mapList := [op,:$mapList]
   parms:=[var for var in $FormalMapVariableList for m in argTypes]
   for m in argTypes for var in parms repeat
