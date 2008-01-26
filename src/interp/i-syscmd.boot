@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -2259,7 +2261,7 @@ showSpad2Cmd l ==
 
 reportOperations(oldArg,u) ==
   -- u might be an uppercased version of oldArg
-  $env:local := [$EmptyEnvironment]
+  $env:local := [[nil]]
   $eval:local := true           --generate code-- don't just type analyze
   $genValue:local := true       --evaluate all generated code
   null u => nil

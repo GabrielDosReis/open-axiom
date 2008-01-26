@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -278,7 +278,7 @@ NRTaddInner x ==
     atom x => nil
     x is ['Record,:l] =>
       for [.,.,y] in l repeat NRTinnerGetLocalIndex y
-    first x in '(Union Mapping) =>
+    first x in '(Union Mapping _[_|_|_]) =>
       for y in rest x repeat
          y is [":",.,z] => NRTinnerGetLocalIndex z
          NRTinnerGetLocalIndex y
@@ -286,7 +286,6 @@ NRTaddInner x ==
     getConstructorSignature x is [.,:ml] =>
       for y in rest x for m in ml | not (y = '$) repeat
         isCategoryForm(m,$CategoryFrame) => NRTinnerGetLocalIndex y
-    isQuasiquote x => NRTinnerGetLocalIndex x
     keyedSystemError("S2NR0003",[x])
   x
 

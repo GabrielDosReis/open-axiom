@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -101,10 +101,10 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
 rebuildCDT(filemode) ==
   clearConstructorAndLisplibCaches()
   $databaseQueue:local :=nil
-  $e: local := [$EmptyEnvironment]    -- We may need to evaluate Categories
+  $e: local := $EmptyEnvironment    -- We may need to evaluate Categories
   buildDatabase(filemode,false)
   $IOindex:= 1
-  $InteractiveFrame:= [$EmptyEnvironment]
+  $InteractiveFrame:= $EmptyEnvironment
   0
 
 buildDatabase(filemode,expensive) ==
