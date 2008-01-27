@@ -1,3 +1,28 @@
+2008-01-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1872551
+	* interp/c-util.boot (dollarIfRepHack): New.
+	(RepIfRepHack): Likewise.
+	(substituteDollarIfRepHack): Likewise.
+	(isSubset): Dollar is subset of Rep only in old semantics.
+	* interp/buildom.boot (mkMappingFunList): Substitute dollar for
+	Rep only when appropriate.
+	(mkRecordFunList): Likewise.
+	(mkNewUnionFunList): Likewise.
+	(mkUnionFunList): Likewise.
+	* interp/compiler.boot (compNoStacking): Likewise.
+	(compNoStacking1): Likewise.
+	(getConstructorFormOfMode): Likewise.
+	(isUnionMode): Likewise.
+	(coerce): Likewise.
+	(coerceSubset): Likewise.
+	* interp/modemap.boot (addModemap1): Likewise.
+	(isSuperDomain): Likewise.
+	* interp/define.boot (maybeInsertViewMorphisms): New.
+	(compCapsule): Use it.
+	(compCategoryItem): Don't allow exports of rep and per.
+	* interp/sys-globals.boot ($useRepresentationHack): New.
+
 2008-01-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/database.boot: Tidy uses of $EmptyEnvironment.

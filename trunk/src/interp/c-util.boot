@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,23 @@
 
 import '"g-util"
 )package "BOOT"
+
+++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
+++ Otherwise, return `m'.
+dollarIfRepHack m ==
+  m = "Rep" and $useRepresentationHack => "$"
+  m
+
+++ The inverse of the above.
+RepIfRepHack m ==
+  m = "$" and $useRepresentationHack => "Rep"
+  m
+
+++ If using old `Rep' definition semantics, return `$' is m is `Rep'.
+-- ??? Eventually this and the above should be merged and/or removed.
+substituteDollarIfRepHack m ==
+  $useRepresentationHack => substitute("$","Rep",m)
+  m
 
 --% Debugging Functions
  
@@ -340,7 +357,7 @@ isSomeDomainVariable s ==
   IDENTP s and #(x:= PNAME s)>2 and x.(0)="#" and x.(1)="#"
  
 isSubset(x,y,e) ==
-  x="$" and y="Rep" or x=y or
+  ($useRepresentationHack and x="$" and y="Rep") or x=y or
     LASSOC(opOf x,get(opOf y,"Subsets",e) or GETL(opOf y,"Subsets")) or
       LASSOC(opOf x,get(opOf y,"SubDomain",e)) or
         opOf(y)='Type or opOf(y)='Object

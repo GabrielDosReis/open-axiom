@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -270,7 +270,7 @@ mkMappingFunList(nam,mapForm,e) ==
   sigFunAlist:=
     [["_=",[["Boolean"],nam ,nam],["ELT",dc,6]],
        ["coerce",[$OutputForm,nam],["ELT",dc,7]]]
-  [substitute(nam,dc,substitute("$",'Rep,sigFunAlist)),e]
+  [substitute(nam,dc,substituteDollarIfRepHack sigFunAlist),e]
 
 mkRecordFunList(nam,["Record",:Alist],e) ==
   len:= #Alist
@@ -294,11 +294,11 @@ mkRecordFunList(nam,["Record",:Alist],e) ==
               for i in 0.. for [.,a,A] in Alist],:
                 [["copy",[nam,nam],["XLAM",["$1"],["RECORDCOPY",
                   "$1",len]]]]]
-  [substitute(nam,dc,substitute("$","Rep",sigFunAlist)),e]
+  [substitute(nam,dc,substituteDollarIfRepHack sigFunAlist),e]
 
 mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
   dc := name
-  if name = "Rep" then name := "$"
+  m := dollarIfRepHack name
   --2. create coercions from subtypes to subUnion
   cList:=
     [["_=",[["Boolean"],name ,name],["ELT",dc,6]],
@@ -367,9 +367,6 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
                 p is ["EQCAR",x,n] =>
                   ["XLAM",["#1"],["QEQCAR",x,n]]
                 ["XLAM",["#1"],p]
-  op:=
-    op="Rep" => "$"
-    op
-  cList:= substitute(op,g,cList)
+  cList:= substitute(dollarIfRepHack op,g,cList)
   [cList,e]
 
