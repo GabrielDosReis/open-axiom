@@ -111,7 +111,7 @@ formatDeftranRepper([op,a],SEQflag) ==
       b := formatDeftran(b,SEQflag)
       t := formatDeftran(t,SEQflag)
       a := ["::",b,t]
-      op = 'per and t = "$" or op = 'rep and t = 'Rep => a
+      op = "per" and t = "$" or op = "rep" and t = "Rep" => a
       [op,a]
     a is ['SEQ,:r] => ['SEQ,:[formatSeqRepper(op,x) for x in r]]
     a is ['IF,p,b,c] => 

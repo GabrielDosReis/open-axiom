@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,46 @@ compDefine(form,m,e) ==
   $packagesUsed: local
   result:= compDefine1(form,m,e)
   result
+
+++ We are about to process the body of a capsule.  If the capsule defines
+++ `Rep' as a constant, then implicitly insert the view morphisms
+++     per: Rep -> %
+++     rep: % -> Rep
+++ as local functions.  Note that we do not declare them as macros.
+maybeInsertViewMorphisms body ==
+  domainRep := nil
+  before := nil
+  
+  while null domainRep for [stmt,:after] in tails body repeat
+    stmt isnt ["DEF",["Rep",:args],sig,nils,domainRep] => 
+      before := [stmt,:before]
+    if args then
+      userError [:bright '"Rep",'"cannot take arguments"]
+    if first sig then
+      userError [:bright '"Rep", "cannot have type sepcification"]
+
+  null domainRep => body
+  -- Make sure we don't implicitly convert from `Rep' to `%'.
+  $useRepresentationHack := false
+  -- Reject user-defined view morphisms 
+  for stmt in after repeat
+    stmt is ["DEF",["rep",:.],:.] 
+      or stmt is ["DEF",["per",:.],:.] =>
+        -- ??? We may actually want to stop processing now.
+        stackSemanticError(['"Cannot define",:bright per],nil)
+
+  -- OK, insert synthetized view morphisms
+  g := GENSYM()
+  repMorphism := ["DEF",["rep",g],[domainRep,"$"],[nil,nil],
+                    ["pretend",g,domainRep]]
+  perMorphism := ["DEF",["per",g],["$",domainRep],[nil,nil],
+                    ["pretend",g,"$"]]
+  
+  -- Trick the rest of the compiler into believing that
+  -- that `Rep' was defined the old way, for the purpose of lookup.
+  [:reverse before, ["LET","Rep",domainRep], 
+     :[repMorphism,perMorphism],:after]
+
  
 compDefine1(form,m,e) ==
   $insideExpressionIfTrue: local:= false
@@ -1180,7 +1220,8 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   $bootStrapMode = true =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
   $insideExpressionIfTrue: local:= false
-  compCapsuleInner(itemList,m,addDomain('_$,e))
+  $useRepresentationHack := true
+  compCapsuleInner(maybeInsertViewMorphisms itemList,m,addDomain('_$,e))
  
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm
@@ -1503,6 +1544,9 @@ compCategoryItem(x,predl) ==
   ["SIGNATURE",op,:sig]:= x
   null atom op =>
     for y in op repeat compCategoryItem(["SIGNATURE",y,:sig],predl)
+  op in '(per rep) =>
+    stackSemanticError(['"cannot export signature for", :bright op],nil)
+    nil
  
   --4. branch on a single type or a signature %with source and target
   PUSH(MKQ [rest x,pred],$sigList)

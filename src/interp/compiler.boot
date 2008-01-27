@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -104,14 +104,18 @@ comp(x,m,e) ==
 
 compNoStacking(x,m,e) ==
   T:= comp2(x,m,e) =>
-    (m=$EmptyMode and T.mode=$Representation => [T.expr,"$",T.env]; T)
-         --$Representation is bound in compDefineFunctor, set by doIt
-         --this hack says that when something is undeclared, $ is
-         --preferred to the underlying representation -- RDJ 9/12/83
+    $useRepresentationHack and m=$EmptyMode and T.mode=$Representation => 
+      [T.expr,"$",T.env]
+    T
+    --$Representation is bound in compDefineFunctor, set by doIt
+    --this hack says that when something is undeclared, $ is
+    --preferred to the underlying representation -- RDJ 9/12/83
+    --Now that `per' and `rep' are built in, we do the above
+    --hack only when `Rep' is defined the old way. -- gdr 2008/01/26
   compNoStacking1(x,m,e,$compStack)
 
 compNoStacking1(x,m,e,$compStack) ==
-  u:= get(if m="$" then "Rep" else m,"value",e) =>
+  u:= get(RepIfRepHack m,"value",e) =>
     (T:= comp2(x,u.expr,e) => [T.expr,m,T.env]; nil)
   nil
 
@@ -511,7 +515,7 @@ checkCallingConvention(sigs,nargs) ==
 
 getConstructorFormOfMode(m,e) ==
   isConstructorForm m => m
-  if m="$" then m:= "Rep"
+  m := RepIfRepHack m
   atom m and get(m,"value",e) is [v,:.] =>
     isConstructorForm v => v
 
@@ -1038,7 +1042,7 @@ getUnionMode(x,e) ==
 isUnionMode(m,e) ==
   m is ["Union",:.] => m
   (m':= getmode(m,e)) is ["Mapping",["UnionCategory",:.]] => CADR m'
-  v:= get(if m="$" then "Rep" else m,"value",e) =>
+  v:= get(RepIfRepHack m,"value",e) =>
     (v.expr is ["Union",:.] => v.expr; nil)
   nil
 
@@ -1180,7 +1184,8 @@ coerce(T,m) ==
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
-  rplac(CADR T,substitute("$",$Rep,CADR T))
+  if $useRepresentationHack then
+    rplac(CADR T,substitute("$",$Rep,CADR T))
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => T'
   T':= coerceHard(T,m) => T'
@@ -1204,7 +1209,7 @@ coerceEasy(T,m) ==
     [T.expr,m,T.env]
 
 coerceSubset([x,m,e],m') ==
-  isSubset(m,m',e) or m="Rep" and m'="$" => [x,m',e]
+  isSubset(m,m',e) => [x,m',e]
   m is ['SubDomain,=m',:.] => [x,m',e]
   (pred:= LASSOC(opOf m',get(opOf m,'SubDomain,e))) and INTEGERP x and
      -- obviously this is temporary

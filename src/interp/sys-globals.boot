@@ -440,3 +440,9 @@ $compilingInputFile := false
 
 ++
 $minivectorNames := []
+
+++ True if the input file uses old semantics of `Rep',
+++ e.g. implicit equivalent Rep <-> % with capsules.  
+++ This semenatics is in effect only when `Rep' is defined
+++ through assignment.
+$useRepresentationHack := true

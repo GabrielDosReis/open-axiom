@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -160,11 +160,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
  
 addModemap1(op,mc,sig,pred,fn,e) ==
    --mc is the "mode of computation"; fn the "implementation"
-  if mc='Rep then
---     if fn is [kind,'Rep,.] and
-               -- save old sig for NRUNTIME
---       (kind = 'ELT or kind = 'CONST) then fn:=[kind,'Rep,sig]
-     sig:= substitute("$",'Rep,sig)
+  if mc="Rep" then sig := substituteDollarIfRepHack sig
   currentProplist:= getProplist(op,e) or nil
   newModemapList:=
     mkNewModemapList(mc,sig,pred,fn,LASSOC('modemap,currentProplist),e,nil)
@@ -220,7 +216,8 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
  
 isSuperDomain(domainForm,domainForm',e) ==
   isSubset(domainForm',domainForm,e) => true
-  domainForm='Rep and domainForm'="$" => true --regard $ as a subdomain of Rep
+  --regard $ as a subdomain of Rep, only if using old style Rep
+  domainForm='Rep and domainForm'="$" => $useRepresentationHack
   LASSOC(opOf domainForm',get(domainForm,"SubDomain",e))
  
 --substituteForRep(entry is [[mc,:sig],:.],curModemapList) ==
@@ -255,13 +252,13 @@ substituteCategoryArguments(argl,catform) ==
          --operations are not being redefined.
 augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainName,domainName,categoryForm,e)
-  [repFnAlist,e]:= evalAndSub('Rep,'Rep,repDefn,getmode(repDefn,e),e)
+  [repFnAlist,e]:= evalAndSub("Rep","Rep",repDefn,getmode(repDefn,e),e)
   catform:= (isCategory categoryForm => categoryForm.(0); categoryForm)
   compilerMessage ["Adding ",domainName," modemaps"]
   e:= putDomainsInScope(domainName,e)
   $base:= 4
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
-    u:=assoc(SUBST('Rep,domainName,lhs),repFnAlist)
+    u:=assoc(SUBST("Rep",domainName,lhs),repFnAlist)
     u and not AMFCR_,redefinedList(op,functorBody) =>
       fnsel':=CADDR u
       e:= addModemap(op,domainName,sig,cond,fnsel',e)
