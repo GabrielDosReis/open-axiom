@@ -667,12 +667,23 @@
                     (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|))))
                T)))))
 
+(DEFUN |bpTyping| ()
+  (PROG ()
+    (RETURN
+      (OR (AND (|bpApplication|)
+               (OR (AND (|bpEqKey| 'ARROW)
+                        (OR (|bpApplication|) (|bpTrap|))
+                        (|bpPush|
+                            (|Mapping| (|bpPop1|)
+                                (|bfUntuple| (|bpPop1|)))))
+                   T))
+          (|bpMapping|)))))
+
 (DEFUN |bpTagged| ()
   (PROG ()
     (RETURN
       (AND (|bpApplication|)
-           (OR (AND (|bpEqKey| 'COLON)
-                    (OR (|bpApplication|) (|bpTrap|))
+           (OR (AND (|bpEqKey| 'COLON) (OR (|bpTyping|) (|bpTrap|))
                     (|bpPush| (|bfTagged| (|bpPop2|) (|bpPop1|))))
                T)))))
 

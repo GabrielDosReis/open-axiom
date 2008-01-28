@@ -48,32 +48,35 @@ import '"includer"
 ++ translated with the obvious semantics, e.g. no caching.
 $bfClamming := false
 
-++ A Boot string is no different from a Lisp string.  Same holds 
-++ for symbols and sequences.  In an ideal world, these would be
-++ built-in/library data types.
-String <=> STRING
-Symbol <=> SYMBOL
-Sequence <=> SEQUENCE
+++ Basic types used in Boot codes.
+%Thing <=> true
+%Boolean <=> BOOLEAN
+%String <=> STRING
+%Symbol <=> SYMBOL
+%Short <=> FIXNUM
+%List <=> LIST
+%Vector <=> VECTOR
+%Sequence <=> SEQUENCE
 
 ++ Ideally, we would like to say that a List T if either nil or a 
 ++ cons of a T and List of T.  However, we don't support parameterized
 ++ alias definitions yet.
-List <=> nil or cons
+%List <=> LIST
 
 ++ Currently, the Boot processor uses Lisp symbol datatype for names.
 ++ That causes the BOOTTRAN package to contain more symbols than we would
 ++ like.  In the future, we want want to intern `on demand'.  How that
 ++ interacts with renaming is to be worked out.
-structure Name == Name(Symbol)
+structure Name == Name(%Symbol)
 
 structure Ast ==
-  Command(String)                       -- includer command
-  Module(String)                        -- module declaration
-  Import(String)                        -- import module
+  Command(%String)                      -- includer command
+  Module(%String)                       -- module declaration
+  Import(%String)                       -- import module
   ImportSignature(Name, Signature)      -- import function declaration
-  TypeAlias(Name, List, List)           -- type alias definition
+  TypeAlias(Name, %List, %List)         -- type alias definition
   Signature(Name, Mapping)              -- op: S -> T
-  Mapping(Ast, List)                    -- (S1, S2) -> T
+  Mapping(Ast, %List)                   -- (S1, S2) -> T
   SuffixDot(Ast)                        -- x . 
   Quote(Ast)                            -- 'x
   EqualName(Name)                       -- =x        -- patterns
@@ -88,7 +91,7 @@ structure Ast ==
   Isnt(Ast, Ast)                        -- e isnt p  -- patterns
   Reduce(Ast, Ast)                      -- +/[...]
   PrefixExpr(Name, Ast)                 -- #v
-  Call(Ast, Sequence)                   -- f(x, y , z)
+  Call(Ast,%Sequence)                   -- f(x, y , z)
   InfixExpr(Name, Ast, Ast)             -- x + y
   ConstantDefinition(Name, Ast)         -- x == y
   Definition(Name, List, Ast, Ast)      -- f x == y
@@ -101,59 +104,81 @@ structure Ast ==
   Exit(Ast, Ast)                        -- p => x
   Iterators(List)                       -- list of iterators
   Cross(List)                           -- iterator cross product
-  Repeat(Sequence, Ast)                 -- while p repeat s
-  Pile(Sequence)                        -- pile of expression sequence
-  Append(Sequence)                      -- concatenate lists
-  Case(Ast, Sequence)                   -- case x of ...
+  Repeat(%Sequence,Ast)                 -- while p repeat s
+  Pile(%Sequence)                       -- pile of expression sequence
+  Append(%Sequence)                     -- concatenate lists
+  Case(Ast,%Sequence)                   -- case x of ...
   Return(Ast)                           -- return x
-  Where(Ast, Sequence)                  -- e where f x == y
-  Structure(Ast, Sequence)              -- structure Foo == ...
+  Where(Ast,%Sequence)                  -- e where f x == y
+  Structure(Ast,%Sequence)              -- structure Foo == ...
 
 -- TRUE if we are currently building the syntax tree for an 'is' 
 -- expression.
 $inDefIS := false
- 
+
+bfGenSymbol: () -> %Symbol 
 bfGenSymbol()==
     $GenVarCounter:=$GenVarCounter+1
     INTERN(CONCAT ('"bfVar#",STRINGIMAGE $GenVarCounter))
- 
+
+bfListOf: %List -> %list 
 bfListOf x==x
  
+bfListOf: %Thing -> %List
 bfColon x== ["COLON",x]
 
+bfColonColon: (%Thing,%Symbol) -> %Symbol
 bfColonColon(package, name) == 
   INTERN(SYMBOL_-NAME name, package)
- 
+
+bfSymbol: %Thing -> %Thing 
 bfSymbol x==
    STRINGP x=> x
    ['QUOTE,x]
+
  
-bfDot()== "DOT"
+bfDot: () -> %Symbol
+bfDot() == 
+  "DOT"
  
-bfSuffixDot x==[x,"DOT"]
+bfSuffixDot: %Thing -> %List
+bfSuffixDot x ==
+  [x,"DOT"]
+
+bfEqual: %Thing -> %List 
+bfEqual(name) == 
+  ["EQUAL",name]
+
+bfBracket: %Thing -> %Thing 
+bfBracket(part) == 
+  part
  
-bfEqual(name)== ["EQUAL",name]
+bfPile: %List -> %List
+bfPile(part) == 
+  part
  
-bfBracket(part) == part
+bfAppend: %List -> %List
+bfAppend x== 
+  APPLY(function APPEND,x)
  
-bfPile(part)    == part
- 
-bfAppend x== APPLY(function APPEND,x)
- 
-bfColonAppend (x,y) ==
+bfColonAppend: (%List,%Thing) -> %List
+bfColonAppend(x,y) ==
      if null x
      then
       if y is ["BVQUOTE",:a]
       then ["&REST",["QUOTE",:a]]
       else ["&REST",y]
      else cons(CAR x,bfColonAppend(CDR x,y))
- 
+
+bfDefinition: (%Thing,%Thing,%Thing) -> %List 
 bfDefinition(bflhsitems, bfrhs,body) ==
        ['DEF,bflhsitems,bfrhs,body]
  
+bfMDefinition: (%Thing,%Thing,%Thing) -> %List 
 bfMDefinition(bflhsitems, bfrhs,body) ==
        bfMDef('MDEF,bflhsitems,bfrhs,body)
- 
+
+bfCompDef: %Thing -> %List 
 bfCompDef x ==
   case x of
     ConstantDefinition(n, e) => x
@@ -161,10 +186,13 @@ bfCompDef x ==
       x is [def, op, args, body] =>
         bfDef(def,op,args,body)
       coreError '"invalid AST"
+
+bfBeginsDollar: %Thing -> %Boolean 
+bfBeginsDollar x ==  
+  EQL('"$".0,(PNAME x).0)
  
-bfBeginsDollar x==  EQL('"$".0,(PNAME x).0)
- 
-compFluid id== ["FLUID",id]
+compFluid id == 
+  ["FLUID",id]
  
 compFluidize x==
   IDENTP x and bfBeginsDollar x=>compFluid x
@@ -1045,19 +1073,23 @@ bfMain(auxfn,op)==
       ["SETF",["GET",
            ["QUOTE", op],["QUOTE",'cacheInfo]],["QUOTE", cacheVector]],
             shoeEVALANDFILEACTQ  cacheResetCode ]
- 
+
+bfNameOnly: %Thing -> %List 
 bfNameOnly x==
       if x="t"
       then ["T"]
       else  [x]
- 
+
+bfNameArgs: (%Thing,%Thing) -> %List 
 bfNameArgs (x,y)==
     y:=if EQCAR(y,"TUPLE") then CDR y else [y]
     cons(x,y)
  
+bfStruct: (%Thing,%List) -> %List
 bfStruct(name,arglist)==
   bfTuple [bfCreateDef i for i in arglist]
- 
+
+bfCreateDef: %Thing -> %List
 bfCreateDef x==
      if null cdr x
      then
@@ -1066,9 +1098,12 @@ bfCreateDef x==
      else
        a:=[bfGenSymbol() for i in cdr x]
        ["DEFUN",car x,a,["CONS",["QUOTE",car x],["LIST",:a]]]
- 
-bfCaseItem(x,y)==[x,y]
- 
+
+bfCaseItem: (%Thing,%Thing) -> %List 
+bfCaseItem(x,y) ==
+  [x,y]
+
+bfCase: (%Thing,%Thing) -> %List
 bfCase(x,y)==
          g:=bfGenSymbol()
          g1:=bfGenSymbol()
@@ -1076,9 +1111,12 @@ bfCase(x,y)==
          b:=bfLET(g1,["CDR",g])
          c:=bfCaseItems (g1,y)
          bfMKPROGN [a,b,["CASE",["CAR", g],:c]]
- 
-bfCaseItems(g,x)==  [bfCI(g,i,j) for [i,j] in x]
- 
+
+bfCaseItem: (%thing,%List) -> %List 
+bfCaseItems(g,x) ==  
+  [bfCI(g,i,j) for [i,j] in x]
+
+bfCI: (%Thing,%Thing,%Thing) -> %List 
 bfCI(g,x,y)==
     a:=cdr x
     if null a
@@ -1086,8 +1124,12 @@ bfCI(g,x,y)==
     else
        b:=[[i,bfCARCDR(j,g)] for i in a for j in 0..]
        [car x,["LET",b,y]]
- 
-bfCARCDR (n,g)==[INTERN CONCAT ('"CA",bfDs n,'"R"),g]
- 
-bfDs n== if n=0 then '"" else CONCAT('"D",bfDs(n-1))
+
+bfCARCDR: (%Short,%Thing) -> %List 
+bfCARCDR(n,g) ==
+  [INTERN CONCAT ('"CA",bfDs n,'"R"),g]
+
+bfDs: %Short -> %Symbol 
+bfDs n== 
+  if n=0 then '"" else CONCAT('"D",bfDs(n-1))
 
