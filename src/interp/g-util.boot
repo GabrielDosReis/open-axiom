@@ -38,6 +38,15 @@ import '"macros"
 ++
 $interpOnly := false
 
+++ Basic types used throughout Boot codes.
+%Boolean <=> BOOLEAN
+%Short <=> FIXNUM
+%Integer <=> BIGNUM
+%Symbol <=> SYMBOL
+%String <=> STRING
+%List <=> LIST
+%Vector <=> VECTOR
+%Thing <=> true
 
 --% Utility Functions of General Use
 
@@ -52,6 +61,12 @@ PPtoFile(x, fname) ==
     SHUT stream
     x
 
+
+++ Query properties for an entity in a given environment.
+get: (%Thing,%Symbol,%List) -> %List
+get0: (%Thing,%Symbol,%List) -> %List
+get1: (%Thing,%Symbol,%List) -> %List
+get2: (%Thing,%Symbol,%List) -> %List
 
 get(x,prop,e) ==
   $InteractiveMode => get0(x,prop,e)
@@ -78,6 +93,12 @@ get2(x,prop,e) ==
     nil
   nil
 
+++ Update properties of an entity in an environment.
+put: (%Thing,%Symbol,%Thing,%List) -> %List
+addBinding: (%Thing,%List,%List) -> %List
+augProplistOf: (%Thing,%List,%Thing,%List) -> %List
+augProplist: (%List,%Thing,%Thing) -> %List
+
 put(x,prop,val,e) ==
   $InteractiveMode and not EQ(e,$CategoryFrame) =>
     putIntSymTab(x,prop,val,e)
@@ -103,6 +124,7 @@ isQuasiquote m ==
 
 
 -- Convert an arbitrary lisp object to canonical boolean.
+bool: %Thing -> %Boolean
 bool x ==
     NULL NULL x
  
@@ -494,6 +516,12 @@ str2Tex s ==
 opOf x ==
   atom x => x
   first x
+
+
+getProplist: (%Thing,%List) -> %List
+search: (%Thing,%List) -> %List
+searchCurrentEnv: (%Thing,%List) -> %List
+searchTailEnv: (%Thing,%List) -> %List
 
 getProplist(x,E) ==
   not atom x => getProplist(first x,E)

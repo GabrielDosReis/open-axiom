@@ -93,8 +93,7 @@ ifeq (@axiom_lisp_flavor@,gcl)
 	     '                                   sys-ld)))       ' \
              '(compiler::link (quote ($(FASLS))) "lisp$(EXEEXT)" ' \
              ' (format nil "(progn (let ((*load-path* (cons ~S *load-path*))'\
-                                        ' (si::*load-types* ~S))' \
-                                       ' (compiler::emit-fn t))' \
+                                        ' (si::*load-types* ~S)))' \
                                   ' (when (fboundp (quote si::sgc-on))' \
                                         ' (si::sgc-on nil))' \
 				  ' (setq si::*top-level-hook* (read-from-string \"|AxiomCore|::|topLevel|\")))"' \

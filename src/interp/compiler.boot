@@ -48,7 +48,7 @@ $coreDiagnosticFunctions ==
 ++ list of functions to compile
 $compileOnlyCertainItems := []
 
-
+compTopLevel: (%Thing,%Thing,%List) -> %List
 compTopLevel(x,m,e) ==
 --+ signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
@@ -62,12 +62,15 @@ compTopLevel(x,m,e) ==
         --keep old environment after top level function defs
   compOrCroak(x,m,e)
 
+compUniquely: (%Thing,%Thing,%List) -> %List
 compUniquely(x,m,e) ==
   $compUniquelyIfTrue: local:= true
   CATCH("compUniquely",comp(x,m,e))
 
+compOrCroak: (%Thing,%Thing,%List) -> %List
 compOrCroak(x,m,e) == compOrCroak1(x,m,e,'comp)
 
+compOrCroak1: (%Thing,%Thing,%List,%Thing) -> %List
 compOrCroak1(x,m,e,compFn) ==
   fn(x,m,e,nil,nil,compFn) where
     fn(x,m,e,$compStack,$compErrorMessageStack,compFn) ==
@@ -97,11 +100,13 @@ tc() ==
   comp($x,$m,$f)
 
 
+comp: (%Thing,%Thing,%List) -> %List
 comp(x,m,e) ==
   T:= compNoStacking(x,m,e) => ($compStack:= nil; T)
   $compStack:= [[x,m,e,$exitModeStack],:$compStack]
   nil
 
+compNoStacking: (%Thing,%Thing,%List) -> %List
 compNoStacking(x,m,e) ==
   T:= comp2(x,m,e) =>
     $useRepresentationHack and m=$EmptyMode and T.mode=$Representation => 
@@ -114,11 +119,13 @@ compNoStacking(x,m,e) ==
     --hack only when `Rep' is defined the old way. -- gdr 2008/01/26
   compNoStacking1(x,m,e,$compStack)
 
+compNoStacking1: (%Thing,%Thing,%List,%List) -> %List
 compNoStacking1(x,m,e,$compStack) ==
   u:= get(RepIfRepHack m,"value",e) =>
     (T:= comp2(x,u.expr,e) => [T.expr,m,T.env]; nil)
   nil
 
+comp2: (%Thing,%Thing,%List) -> %List
 comp2(x,m,e) ==
   [y,m',e]:= comp3(x,m,e) or return nil
   if $LISPLIB and isDomainForm(x,e) then
@@ -131,6 +138,7 @@ comp2(x,m,e) ==
         --$bootStrapMode-test necessary for compiling Ring in $bootStrapMode
   [y,m',e]
 
+comp3: (%Thing,%Thing,%List) -> %List
 comp3(x,m,$e) ==
   --returns a Triple or %else nil to signalcan't do'
   $e:= addDomain(m,$e)
@@ -155,6 +163,7 @@ comp3(x,m,$e) ==
     [x',m',addDomain(m',e')]
   t
 
+compTypeOf: (%List,%Thing,%List) -> %List
 compTypeOf(x:=[op,:argl],m,e) ==
   $insideCompTypeOf: local := true
   newModemap:= EQSUBSTLIST(argl,$FormalMapVariableList,get(op,'modemap,e))
@@ -167,6 +176,7 @@ hasFormalMapVariable(x, vl) ==
   ScanOrPairVec(function hasone?,x) where
      hasone? x == MEMQ(x,$formalMapVariables)
 
+compWithMappingMode: (%Thing,%List,%List) -> %List
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   $killOptimizeIfTrue: local:= true
   e:= oldE
@@ -270,12 +280,14 @@ extractCodeAndConstructTriple(u, m, oldE) ==
   [op,:.,env] := u
   [["CONS",["function",op],env],m,oldE]
 
+compExpression: (%Thing,%Thing,%List) -> %List
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
   atom first x and (fn:= GETL(first x,"SPECIAL")) =>
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
+compAtom: (%Thing,%Thing,%List) -> %List
 compAtom(x,m,e) ==
   T:= compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   x="nil" =>
@@ -291,6 +303,7 @@ compAtom(x,m,e) ==
     [x,primitiveType x or return nil,e]
   convert(t,m)
 
+primitiveType: %Thing -> %List
 primitiveType x ==
   x is nil => $EmptyMode
   STRINGP x => $String
@@ -301,6 +314,7 @@ primitiveType x ==
   FLOATP x => $DoubleFloat
   nil
 
+compSymbol: (%Thing,%Thing,%List) -> %List
 compSymbol(s,m,e) ==
   s="$NoValue" => ["$NoValue",$NoValueMode,e]
   isFluid s => [s,getmode(s,e) or return nil,e]
@@ -324,6 +338,7 @@ compSymbol(s,m,e) ==
 
 ++ Return true if `m' is the most recent unique type case assumption 
 ++ on `x' that predates its declaration in environment `e'.
+hasUniqueCaseView: (%Thing,%Thing,%List) -> %Boolean
 hasUniqueCaseView(x,m,e) ==
   props := getProplist(x,e)
   for [p,:v] in props repeat
@@ -331,11 +346,13 @@ hasUniqueCaseView(x,m,e) ==
     p = "value" => return false
 
 
+convertOrCroak: (%List,%Thing) -> %List
 convertOrCroak(T,m) ==
   u:= convert(T,m) => u
   userError ["CANNOT CONVERT: ",T.expr,"%l"," OF MODE: ",T.mode,"%l",
     " TO MODE: ",m,"%l"]
 
+convert: (%List,%Thing) -> %List
 convert(T,m) ==
   coerce(T,resolve(T.mode,m) or return nil)
 
@@ -357,6 +374,15 @@ hasType(x,e) ==
       null x => nil
       x is [["case",.,y],:.] => y
       fn rest x
+
+--% General Forms
+
+compForm: (%List,%Thing,%List) -> %List
+compForm1: (%List,%Thing,%List) -> %List
+compForm2: (%List,%Thing,%List,%List) -> %List
+compForm3: (%Thing,%Thing,%List,%List) -> %List
+compArgumentsAndTryAgain: (%List,%Thing,%List) -> %List
+compExpressionList: (%List,%Thing,%List) -> %List
 
 compForm(form,m,e) ==
   T:=
@@ -473,6 +499,7 @@ compForm3(form is [op,:argl],m,e,modemapList) ==
     T
   T
 
+getFormModemaps: (%List,%List) -> %List
 getFormModemaps(form is [op,:argl],e) ==
   op is ["elt",domain,op1] =>
     [x for x in getFormModemaps([op1,:argl],e) | x is [[ =domain,:.],:.]]
@@ -500,6 +527,7 @@ getFormModemaps(form is [op,:argl],e) ==
 ++ the same arity and must take flag argument in the same position.
 ++ Returns a vector of length `nargs' with positive entries indicating
 ++ flag arguments, and negative entries for normal argument passing.
+checkCallingConvention: (%List,%Short) -> %Vector
 checkCallingConvention(sigs,nargs) ==
   v := GETZEROVEC nargs
   for sig in sigs repeat
@@ -563,10 +591,12 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
 
 compConstructorCategory(x,m,e) == [x,resolve($Category,m),e]
 
+compString: (%String,%Thing,%List) -> %List
 compString(x,m,e) == [x,resolve($StringCategory,m),e]
 
 --% SUBSET CATEGORY
 
+compSubsetCategory: (%List,%Thing,%List) -> %List
 compSubsetCategory(["SubsetCategory",cat,R],m,e) ==
   --1. put "Subsets" property on R to allow directly coercion to subset;
   --   allow automatic coercion from subset to R but not vice versa
@@ -580,6 +610,9 @@ compSubsetCategory(["SubsetCategory",cat,R],m,e) ==
             "lift",[R,"$"]],["SIGNATURE","reduce",["$",R]]]
 
 --% CONS
+
+compCons: (%List,%Thing,%List) -> %List
+compCons1: (%List,%Thing,%List) -> %List
 
 compCons(form,m,e) == compCons1(form,m,e) or compForm(form,m,e)
 
@@ -599,6 +632,9 @@ compCons1(["CONS",x,y],m,e) ==
 
 --% SETQ
 
+compSetq: (%List,%Thing,%List) -> %List
+compSetq1: (%List,%Thing,%List) -> %List
+
 compSetq(["LET",form,val],m,E) == compSetq1(form,val,m,E)
 
 compSetq1(form,val,m,E) ==
@@ -611,6 +647,7 @@ compSetq1(form,val,m,E) ==
     op="Tuple" => setqMultiple(l,val,m,E)
     setqSetelt(form,val,m,E)
 
+compMakeDeclaration: (%Thing,%Thing,%List) -> %List
 compMakeDeclaration(x,m,e) ==
   $insideExpressionIfTrue: local
   compColon(x,m,e)
@@ -727,12 +764,14 @@ setqMultipleExplicit(nameList,valList,m,e) ==
 ++ ??? based on the meta operator, e.g. (DEF ...) would be a
 ++ DefinitionAst, etc.  That however requires that we have a full
 ++ fledged AST algebra -- which we don't have yet in mainstream.
+compileQuasiquote: (%List,%Thing,%List) -> %List
 compileQuasiquote(["[||]",:form],m,e) ==
   null form => nil
   coerce([["QUOTE", :form],$Syntax,e], m)
 
 
 --% WHERE
+compWhere: (%List,%Thing,%List) -> %List
 compWhere([.,form,:exprList],m,eInit) ==
   $insideExpressionIfTrue: local:= false
   $insideWhereIfTrue: local:= true
@@ -748,6 +787,7 @@ compWhere([.,form,:exprList],m,eInit) ==
     eInit
   [x,m,eFinal]
 
+compConstruct: (%List,%Thing,%List) -> %List
 compConstruct(form is ["construct",:l],m,e) ==
   y:= modeIsAggregateOf("List",m,e) =>
     T:= compList(l,["List",CADR y],e) => convert(T,m)
@@ -766,12 +806,14 @@ compConstruct(form is ["construct",:l],m,e) ==
 
 compQuote(expr,m,e) == [expr,m,e]
 
+compList: (%Thing,%List,%List) -> %List
 compList(l,m is ["List",mUnder],e) ==
   null l => [NIL,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl="failed" => nil
   T:= [["LIST",:[T.expr for T in Tl]],["List",mUnder],e]
 
+compVector: (%Thing,%List,%List) -> %List
 compVector(l,m is ["Vector",mUnder],e) ==
   null l => [$EmptyVector,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
@@ -794,6 +836,10 @@ compMacro(form,m,e) ==
     ["/throwAway",$NoValueMode,put(first lhs,"macro",macroExpand(rhs,e),e)]
 
 --% SEQ
+
+compSeq: (%List,%Thing,%List) -> %List
+compSeq1: (%List,%List,%List) -> %List
+compSeqItem: (%Thing,%Thing,%List) -> %List
 
 compSeq(["SEQ",:l],m,e) == compSeq1(l,[m,:$exitModeStack],e)
 
@@ -838,6 +884,7 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
       replaceExitEtc(rest x,tag,opFlag,opMode)
 
 --% SUCHTHAT
+compSuchthat: (%List,%Thing,%List) -> %List
 compSuchthat([.,x,p],m,e) ==
   [x',m',e]:= comp(x,m,e) or return nil
   [p',.,e]:= comp(p,$Boolean,e) or return nil
@@ -846,6 +893,7 @@ compSuchthat([.,x,p],m,e) ==
 
 --% exit
 
+compExit: (%List,%Thing,%List) -> %List
 compExit(["exit",level,x],m,e) ==
   index:= level-1
   $exitModeStack = [] => comp(x,m,e)
@@ -863,6 +911,7 @@ modifyModeStack(m,index) ==
       ($exitModeStack.index:= resolve(m,$exitModeStack.index); $exitModeStack))
   $exitModeStack.index:= resolve(m,$exitModeStack.index)
 
+compLeave: (%List,%Thing,%List) -> %List
 compLeave(["leave",level,x],m,e) ==
   index:= #$exitModeStack-1-$leaveLevelStack.(level-1)
   [x',m',e']:= u:= comp(x,$exitModeStack.index,e) or return nil
@@ -871,6 +920,7 @@ compLeave(["leave",level,x],m,e) ==
 
 --% return
 
+compReturn: (%List,%Thing,%List) -> %List
 compReturn(["return",level,x],m,e) ==
   null $exitModeStack =>
     stackSemanticError(["the return before","%b",x,"%d","is unneccessary"],nil)
@@ -886,6 +936,7 @@ compReturn(["return",level,x],m,e) ==
 
 --% ELT
 
+compElt: (%List,%Thing,%List) -> %List
 compElt(form,m,E) ==
   form isnt ["elt",aDomain,anOp] => compForm(form,m,E)
   aDomain="Lisp" =>
@@ -913,6 +964,7 @@ compElt(form,m,E) ==
 
 --% HAS
 
+compHas: (%List,%Thing,%List) -> %List
 compHas(pred is ["has",a,b],m,$e) ==
   --b is (":",:.) => (.,.,E):= comp(b,$EmptyMode,E)
   $e:= chaseInferences(pred,$e)
@@ -936,6 +988,10 @@ compHasFormat (pred is ["has",olda,b]) ==
   ["HasCategory",a,mkDomainConstructor b]
 
 --% IF
+
+compIf: (%List,%Thing,%List) -> %List
+compBoolean: (%List,%Thing,%List) -> %List
+compFromIf: (%List,%Thing,%List) -> %List
 
 compIf(["IF",a,b,c],m,E) ==
   [xa,ma,Ea,Einv]:= compBoolean(a,$Boolean,E) or return nil
@@ -1052,6 +1108,7 @@ compFromIf(a,m,E) ==
 
 quotify x == x
 
+compImport: (%List,%Thing,%List) -> %List
 compImport(["import",:doms],m,e) ==
   for dom in doms repeat e:=addDomain(dom,e)
   ["/throwAway",$NoValueMode,e]
@@ -1061,6 +1118,7 @@ compImport(["import",:doms],m,e) ==
 --% etc.
 
 ++ compile a logical negation form `(not ...)'.
+compileNot: (%List,%Thing,%List) -> %List
 compileNot(x,m,e) ==
   x isnt ["not", y] => nil
   -- If there is a modemap available that can make this work, just use it.
@@ -1074,6 +1132,9 @@ compileNot(x,m,e) ==
   convert([["NOT", xcode], $Boolean, xfalseEnv], m)
  
 
+--% Case
+compCase: (%List,%Thing,%List) -> %List
+compCase1: (%List,%Thing,%List) -> %List
 
 --Will the jerk who commented out these two functions please NOT do so
 --again.  These functions ARE needed, and case can NOT be done by
@@ -1108,10 +1169,12 @@ compCase1(x,m,e) ==
 ++ (target type) is taken unevaluated. The corresponding parameter 
 ++ type in the modemap was specified as quasiquotation.  We
 ++ want to look at the actual type when comparing with modeEqual.
+maybeSpliceMode: %Thing -> %Thing
 maybeSpliceMode m ==
   (m' := isQuasiquote m) => m'
   m
 
+compColon: (%List,%Thing,%List) -> %List
 compColon([":",f,t],m,e) ==
   $insideExpressionIfTrue=true => compColonInside(f,m,e,t)
     --if inside an expression, ":" means to convert to m "on faith"
@@ -1148,6 +1211,7 @@ unknownTypeError name ==
     name
   stackSemanticError(["%b",name,"%d","is not a known type"],nil)
 
+compPretend: (%List,%Thing,%List) -> %List
 compPretend(["pretend",x,t],m,e) ==
   e:= addDomain(t,e)
   T:= comp(x,t,e) or comp(x,$EmptyMode,e) or return nil
@@ -1167,6 +1231,7 @@ compColonInside(x,m,e,m') ==
          stackWarning [":",m'," -- should replace by pretend"]
     T'
 
+compIs: (%List,%Thing,%List) -> %List
 compIs(["is",a,b],m,e) ==
   [aval,am,e] := comp(a,$EmptyMode,e) or return nil
   [bval,bm,e] := comp(b,$EmptyMode,e) or return nil
@@ -1180,6 +1245,7 @@ compIs(["is",a,b],m,e) ==
 --  One should always call the correct function, since the represent-
 --  ation of basic objects may not be the same.
 
+coerce: (%List,%Thing) -> %List
 coerce(T,m) ==
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
@@ -1197,6 +1263,8 @@ coerce(T,m) ==
       ["Cannot coerce","%b",x,"%d","%l","      of mode","%b",m1,"%d","%l",
         "      to mode","%b",m2,"%d"]
 
+
+coerceEasy: (%List,%Thing) -> %List
 coerceEasy(T,m) ==
   m=$EmptyMode => T
   m=$NoValueMode or m=$Void => [T.expr,m,T.env]
@@ -1208,6 +1276,8 @@ coerceEasy(T,m) ==
   T.mode=$EmptyMode or modeEqualSubst(T.mode,m,T.env) =>
     [T.expr,m,T.env]
 
+
+coerceSubset: (%List,%Thing) -> %List
 coerceSubset([x,m,e],m') ==
   isSubset(m,m',e) => [x,m',e]
   m is ['SubDomain,=m',:.] => [x,m',e]
@@ -1219,6 +1289,7 @@ coerceSubset([x,m,e],m') ==
       [x,m',e]
   nil
 
+coerceHard: (%List,%Thing) -> %List
 coerceHard(T,m) ==
   $e: local:= T.env
   m':= T.mode
@@ -1235,6 +1306,7 @@ coerceHard(T,m) ==
       coerceExtraHard(T,m)
   coerceExtraHard(T,m)
 
+coerceExtraHard: (%List,%Thing) -> %List
 coerceExtraHard(T is [x,m',e],m) ==
   T':= autoCoerceByModemap(T,m) => T'
   isUnionMode(m',e) is ["Union",:l] and (t:= hasType(x,e)) and
@@ -1262,15 +1334,22 @@ coerceable(m,m',e) ==
   coerce(["$fromCoerceable$",m,e],m') => m'
   nil
 
+coerceExit: (%List,%Thing) -> %List
 coerceExit([x,m,e],m') ==
   m':= resolve(m,m')
   x':= replaceExitEtc(x,catchTag:= MKQ GENSYM(),"TAGGEDexit",$exitMode)
   coerce([["CATCH",catchTag,x'],m,e],m')
 
+compAtSign: (%List,%Thing,%List) -> %List
 compAtSign(["@",x,m'],m,e) ==
   e:= addDomain(m',e)
   T:= comp(x,m',e) or return nil
   coerce(T,m)
+
+compCoerce: (%List,%Thing,%List) -> %List
+compCoerce1: (%List,%Thing,%List) -> %List
+coerceByModemap: (%List,%Thing) -> %List
+autoCoerceByModemap: (%List,%Thing) -> %List
 
 compCoerce(["::",x,m'],m,e) ==
   e:= addDomain(m',e)

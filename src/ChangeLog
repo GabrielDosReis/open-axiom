@@ -1,3 +1,15 @@
+2008-01-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Support signature declaration in Boot.
+	* boot/ast.boot (bfUntuple): New.
+	(bfTagged): Toplevel tags are signatures.
+	* boot/parser.boot (bpTyping): New. 
+	(bpTagged): Use it.
+	* boot/translator.boot (genDeclaration): New.
+	(bpOutItem): Use it.	
+	* interp/compiler.boot: Add type annotations for compiler routines.
+	* lisp/Makefile.in ($(OUT)/lisp$(EXEEXT)): Don't turn on emit-fn.
+
 2008-01-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/Makefile.pamphlet: Remove.

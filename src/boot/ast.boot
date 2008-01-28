@@ -175,6 +175,11 @@ compFluidize x==
 bfTuple x== ["TUPLE",:x]
  
 bfTupleP x==EQCAR(x,"TUPLE")
+
+++ If `bf' is a tuple return its elements; otherwise `bf'.
+bfUntuple bf ==
+  bfTupleP bf => cdr bf
+  bf
  
 bfTupleIf x==
   if bfTupleP x
@@ -914,13 +919,14 @@ shoeCompTran1 x==
     shoeCompTran1 cdr x
  
 bfTagged(a,b)==
-    IDENTP a =>
-         EQ(b,"FLUID") =>  bfLET(compFluid a,NIL)
-         EQ(b,"fluid") =>  bfLET(compFluid a,NIL)
-         EQ(b,"local") =>  bfLET(compFluid a,NIL)
-         $typings:=cons(["TYPE",b,a],$typings)
-         a
-    ["THE",b,a]
+  null $op => Signature(a,b)        -- surely a toplevel decl
+  IDENTP a =>
+    EQ(b,"FLUID") =>  bfLET(compFluid a,NIL)
+    EQ(b,"fluid") =>  bfLET(compFluid a,NIL)
+    EQ(b,"local") =>  bfLET(compFluid a,NIL)
+    $typings:=cons(["TYPE",b,a],$typings)
+    a
+  ["THE",b,a]
  
 bfAssign(l,r)==
    if bfTupleP l then bfSetelt(CADR l,CDDR l ,r) else bfLET(l,r)
