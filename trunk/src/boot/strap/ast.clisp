@@ -6,13 +6,23 @@
 
 (DEFPARAMETER |$bfClamming| NIL)
 
-(DEFTYPE |String| () 'STRING)
+(DEFTYPE |%Thing| () 'T)
 
-(DEFTYPE |Symbol| () 'SYMBOL)
+(DEFTYPE |%Boolean| () 'BOOLEAN)
 
-(DEFTYPE |Sequence| () 'SEQUENCE)
+(DEFTYPE |%String| () 'STRING)
 
-(DEFTYPE |List| () '(OR NIL CONS))
+(DEFTYPE |%Symbol| () 'SYMBOL)
+
+(DEFTYPE |%Short| () 'FIXNUM)
+
+(DEFTYPE |%List| () 'LIST)
+
+(DEFTYPE |%Vector| () 'VECTOR)
+
+(DEFTYPE |%Sequence| () 'SEQUENCE)
+
+(DEFTYPE |%List| () 'LIST)
 
 (DEFUN |Name| #0=(|bfVar#1|) (CONS '|Name| (LIST . #0#)))
 
@@ -119,6 +129,8 @@
 
 (DEFPARAMETER |$inDefIS| NIL)
 
+(DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfGenSymbol|))
+
 (DEFUN |bfGenSymbol| ()
   (PROG ()
     (DECLARE (SPECIAL |$GenVarCounter|))
@@ -127,27 +139,50 @@
         (SETQ |$GenVarCounter| (+ |$GenVarCounter| 1))
         (INTERN (CONCAT "bfVar#" (STRINGIMAGE |$GenVarCounter|)))))))
 
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%list|) |bfListOf|))
+
 (DEFUN |bfListOf| (|x|) (PROG () (RETURN |x|)))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfListOf|))
+
 (DEFUN |bfColon| (|x|) (PROG () (RETURN (LIST 'COLON |x|))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Symbol|) |%Symbol|)
+                |bfColonColon|))
 
 (DEFUN |bfColonColon| (|package| |name|)
   (PROG () (RETURN (INTERN (SYMBOL-NAME |name|) |package|))))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfSymbol|))
+
 (DEFUN |bfSymbol| (|x|)
   (PROG () (RETURN (COND ((STRINGP |x|) |x|) ('T (LIST 'QUOTE |x|))))))
 
+(DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfDot|))
+
 (DEFUN |bfDot| () (PROG () (RETURN 'DOT)))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfSuffixDot|))
 
 (DEFUN |bfSuffixDot| (|x|) (PROG () (RETURN (LIST |x| 'DOT))))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfEqual|))
+
 (DEFUN |bfEqual| (|name|) (PROG () (RETURN (LIST 'EQUAL |name|))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfBracket|))
 
 (DEFUN |bfBracket| (|part|) (PROG () (RETURN |part|)))
 
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfPile|))
+
 (DEFUN |bfPile| (|part|) (PROG () (RETURN |part|)))
 
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfAppend|))
+
 (DEFUN |bfAppend| (|x|) (PROG () (RETURN (APPLY #'APPEND |x|))))
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing|) |%List|) |bfColonAppend|))
 
 (DEFUN |bfColonAppend| (|x| |y|)
   (PROG (|a|)
@@ -161,11 +196,19 @@
            (#0='T (LIST '&REST |y|))))
         (#0# (CONS (CAR |x|) (|bfColonAppend| (CDR |x|) |y|)))))))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
+                |bfDefinition|))
+
 (DEFUN |bfDefinition| (|bflhsitems| |bfrhs| |body|)
   (PROG () (RETURN (LIST 'DEF |bflhsitems| |bfrhs| |body|))))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
+                |bfMDefinition|))
+
 (DEFUN |bfMDefinition| (|bflhsitems| |bfrhs| |body|)
   (PROG () (RETURN (|bfMDef| 'MDEF |bflhsitems| |bfrhs| |body|))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfCompDef|))
 
 (DEFUN |bfCompDef| (|x|)
   (PROG (|body| |ISTMP#3| |args| |ISTMP#2| |op| |ISTMP#1| |def|
@@ -199,6 +242,8 @@
                 (|bfDef| |def| |op| |args| |body|))
                ('T (|coreError| "invalid AST")))))))))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |bfBeginsDollar|))
+
 (DEFUN |bfBeginsDollar| (|x|)
   (PROG () (RETURN (EQL (ELT "$" 0) (ELT (PNAME |x|) 0)))))
 
@@ -217,6 +262,9 @@
 (DEFUN |bfTuple| (|x|) (PROG () (RETURN (CONS 'TUPLE |x|))))
 
 (DEFUN |bfTupleP| (|x|) (PROG () (RETURN (EQCAR |x| 'TUPLE))))
+
+(DEFUN |bfUntuple| (|bf|)
+  (PROG () (RETURN (COND ((|bfTupleP| |bf|) (CDR |bf|)) ('T |bf|)))))
 
 (DEFUN |bfTupleIf| (|x|)
   (PROG ()
@@ -1669,9 +1717,10 @@
 
 (DEFUN |bfTagged| (|a| |b|)
   (PROG ()
-    (DECLARE (SPECIAL |$typings|))
+    (DECLARE (SPECIAL |$typings| |$op|))
     (RETURN
       (COND
+        ((NULL |$op|) (|Signature| |a| |b|))
         ((IDENTP |a|)
          (COND
            ((EQ |b| 'FLUID) (|bfLET| (|compFluid| |a|) NIL))
@@ -1969,8 +2018,12 @@
                         (LIST 'QUOTE |cacheVector|)))
               (|shoeEVALANDFILEACTQ| |cacheResetCode|))))))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfNameOnly|))
+
 (DEFUN |bfNameOnly| (|x|)
   (PROG () (RETURN (COND ((EQ |x| '|t|) (LIST 'T)) ('T (LIST |x|))))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfNameArgs|))
 
 (DEFUN |bfNameArgs| (|x| |y|)
   (PROG ()
@@ -1979,6 +2032,8 @@
         (SETQ |y|
               (COND ((EQCAR |y| 'TUPLE) (CDR |y|)) ('T (LIST |y|))))
         (CONS |x| |y|)))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%List|) |bfStruct|))
 
 (DEFUN |bfStruct| (|name| |arglist|)
   (PROG ()
@@ -1994,6 +2049,8 @@
                  (SETQ |bfVar#110|
                        (CONS (|bfCreateDef| |i|) |bfVar#110|))))
               (SETQ |bfVar#109| (CDR |bfVar#109|))))))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfCreateDef|))
 
 (DEFUN |bfCreateDef| (|x|)
   (PROG (|a| |f|)
@@ -2017,7 +2074,11 @@
          (LIST 'DEFUN (CAR |x|) |a|
                (LIST 'CONS (LIST 'QUOTE (CAR |x|)) (CONS 'LIST |a|))))))))
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfCaseItem|))
+
 (DEFUN |bfCaseItem| (|x| |y|) (PROG () (RETURN (LIST |x| |y|))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfCase|))
 
 (DEFUN |bfCase| (|x| |y|)
   (PROG (|c| |b| |a| |g1| |g|)
@@ -2030,6 +2091,8 @@
         (SETQ |c| (|bfCaseItems| |g1| |y|))
         (|bfMKPROGN|
             (LIST |a| |b| (CONS 'CASE (CONS (LIST 'CAR |g|) |c|))))))))
+
+(DECLAIM (FTYPE (FUNCTION (|%thing| |%List|) |%List|) |bfCaseItem|))
 
 (DEFUN |bfCaseItems| (|g| |x|)
   (PROG (|j| |ISTMP#1| |i|)
@@ -2050,6 +2113,8 @@
                   (SETQ |bfVar#115|
                         (CONS (|bfCI| |g| |i| |j|) |bfVar#115|)))))
           (SETQ |bfVar#114| (CDR |bfVar#114|)))))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|) |bfCI|))
 
 (DEFUN |bfCI| (|g| |x| |y|)
   (PROG (|b| |a|)
@@ -2075,9 +2140,13 @@
                      (SETQ |j| (+ |j| 1)))))
            (LIST (CAR |x|) (LIST 'LET |b| |y|))))))))
 
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Thing|) |%List|) |bfCARCDR|))
+
 (DEFUN |bfCARCDR| (|n| |g|)
   (PROG ()
     (RETURN (LIST (INTERN (CONCAT "CA" (|bfDs| |n|) "R")) |g|))))
+
+(DECLAIM (FTYPE (FUNCTION (|%Short|) |%Symbol|) |bfDs|))
 
 (DEFUN |bfDs| (|n|)
   (PROG ()
