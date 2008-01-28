@@ -1,5 +1,25 @@
 2008-01-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/Makefile.pamphlet: Remove.
+	* boot/translator.boot: New.
+	* boot/translator.boot: Remove.
+	* boot/tokens.boot: New.
+	* boot/tokens.boot.pamphlet: Remove.
+	* boot/scanner.boot: New.
+	* boot/scanner.boot.pamphlet: Remove.
+	* boot/pile.boot: New.
+	* boot/pile.boot.pamphlet: Remove.
+	* boot/parser.boot: New.
+	* boot/parser.boot.pamphlet: New.
+	* boot/initial-env.lisp: New.
+	* boot/initial-env.lisp.pamphlet: Remove.
+	* boot/includer.boot: New.
+	* boot/includer.boot.pamphlet: Remove.
+	* boot/ast.boot: New.
+	* boot/ast.boot.pamphlet: Remove.
+
+2008-01-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/1872551
 	* interp/c-util.boot (dollarIfRepHack): New.
 	(RepIfRepHack): Likewise.

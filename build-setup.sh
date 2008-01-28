@@ -17,7 +17,6 @@ autoconf || error "could not re-generate configure"
 ## subdirectories that contain Makefile pamphlets of interest
 SUBDIRS="     .   \
                   src                    \
-		  src/boot               \
 		  src/interp             \
 		  src/algebra            \
 		  src/input              \

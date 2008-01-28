@@ -1,28 +1,6 @@
-%% Oh Emacs, this is a -*- Lisp -*- file despite apperance.
-\documentclass{article}
-\usepackage{axiom}
-
-\title{\File{src/boot/initial-env.lisp} Pamphlet}
-\author{Gabriel Dos~Reis \and Timothy Daly}
-
-\begin{document}
-\maketitle
-
-\begin{abstract}
-  This pamphlet defines the base initial environment for building
-  a Boot translator image.  It essentially etablishes a namespace
-  (package \Code{Boot}) for the Boot translator, and defines 
-  some macros that need to be present during translation of Boot
-  source files.
-\end{abstract}
-
-\tableofcontents
-\eject
-
-\section{License}
-
-<<license>>=
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; All rights reserved.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -52,60 +30,23 @@
 ;; LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+;;
 
-@
 
-\section{The \code{BOOTTRAN} package}
+;;
+;; Abstract:
+;;  This file defines the base initial environment for building
+;;  a Boot translator image.  It essentially etablishes a namespace
+;;  (package BOOTTRAN) for the Boot translator, and defines 
+;;  some macros that need to be present during translation of Boot
+;;  source files.
+;; 
 
-All Boot translator functions are defined in the package
-\code{BOOTTRAN}.  It is expected that the translator interfaces
-with the rest of the system only through the functions explicitly exported
-by \code{BOOTTRAN}:
-<<boot-translator>>=
 (defpackage "BOOTTRAN"
   (:use "AxiomCore")
   #+:common-lisp  (:use "COMMON-LISP")
   #-:common-lisp  (:use "LISP"))
 
-@
-
-\section{I/O macros}
-
-The Boot translator source codes make uses of some 
-higher order functions.  For various reasons, including efficiency,
-they are defined as Lisp macros and must therefore be available in each
-source file that uses them.
-
-\subsection{[[shoeInputFile]]}
-
-<<with-input-file>>=
-(defmacro |shoeOpenInputFile|
-     (stream fn prog)
-    `(with-open-file (,stream ,fn :direction :input
-       :if-does-not-exist nil) ,prog))
-@
-
-This macro creates a input stream object from a file name [[fn]], and 
-processes it with [[prog]].  If the file name designates a non-existent 
-file, the standard input is used instead.
-
-\subsection{[[shoeOpenOutputFile]]}
-<<with-output-file>>=
-(defmacro |shoeOpenOutputFile|
-     (stream fn prog)
-    `(with-open-file (,stream ,fn :direction :output
-       :if-exists :supersede) ,prog))
-@
-
-This macro creates an output stream object from a file name [[fn]], and 
-processes it with [[prog]].  The output file is overwritten if it exists.
-
-\section{Putting it together}
-
-<<*>>=
-<<license>>
-
-<<boot-translator>>
 
 (in-package "BOOTTRAN")
 
@@ -113,12 +54,22 @@ processes it with [[prog]].  The output file is overwritten if it exists.
 #+:ieee-floating-point (defparameter $ieee t)
 #-:ieee-floating-point (defparameter $ieee nil)
 
-(defmacro memq (a b) `(member ,a ,b :test #'eq))
+(defmacro memq (a b) 
+  `(member ,a ,b :test #'eq))
+
 (defvar *lisp-bin-filetype* "o")
+
 (defvar *lisp-source-filetype* "lisp")
-(defun setdifference (x y) (set-difference x y))
-(defun make-cvec (sint) (make-string sint))
-(defun MAKE-VEC (n) (make-array n))
+
+(defun setdifference (x y)
+  (set-difference x y))
+
+(defun make-cvec (sint)
+  (make-string sint))
+
+(defun MAKE-VEC (n) 
+  (make-array n))
+
 (defun concat (&rest l)
   (progn
     (setq l (mapcar #'string l))
@@ -127,16 +78,22 @@ processes it with [[prog]].  The output file is overwritten if it exists.
 (defun |shoeInputFile| (filespec )
   (open filespec :direction :input :if-does-not-exist nil))
 
-<<with-input-file>>
+(defmacro |shoeOpenInputFile|
+  (stream fn prog)
+    `(with-open-file (,stream ,fn :direction :input
+       :if-does-not-exist nil) ,prog))
 
-<<with-output-file>>
+(defmacro |shoeOpenOutputFile|
+  (stream fn prog)
+    `(with-open-file (,stream ,fn :direction :output
+       :if-exists :supersede) ,prog))
 
 (defun shoeprettyprin1 (x &optional (stream *standard-output*))
   (let ((*print-pretty* t)
-	(*print-array* t)
-	(*print-circle* t)
-	(*print-level* nil)
-	(*print-length* nil))
+        (*print-array* t)
+        (*print-circle* t)
+        (*print-level* nil)
+        (*print-length* nil))
     (prin1 x stream)))
  
 (defun reallyprettyprint (x &optional (stream *terminal-io*))
@@ -144,14 +101,15 @@ processes it with [[prog]].  The output file is overwritten if it exists.
  
 (defun shoeprettyprin0 (x &optional (stream *standard-output*))
   (let ((*print-pretty* nil)
-	(*print-array* t)
-	(*print-circle* t)
-	(*print-level* nil)
-	(*print-length* nil))
+        (*print-array* t)
+        (*print-circle* t)
+        (*print-level* nil)
+        (*print-length* nil))
     (prin1 x stream)))
  
 (defun shoenotprettyprint (x &optional (stream *terminal-io*))
-  (shoeprettyprin0 x stream) (terpri stream))
+  (shoeprettyprin0 x stream) 
+  (terpri stream))
 
 (defun make-full-cvec (sint &optional (char #\space))
   (make-string sint :initial-element (character char)))
@@ -160,22 +118,23 @@ processes it with [[prog]].  The output file is overwritten if it exists.
   (eq item nil))
 
 (defun substring (cvec start length)
-  (if length (subseq cvec start (+ start length))
+  (if length 
+      (subseq cvec start (+ start length))
     (subseq cvec start)))
 
 (defun MAKE-HASHTABLE (id1)
   (let ((test (case id1
-		    ((EQ ID) #'eq)
-		    (CVEC #'equal)
-		    ((UEQUAL EQUAL) #'equal)
-		    (otherwise (error "bad arg to make-hashtable")))))
+                    ((EQ ID) #'eq)
+                    (CVEC #'equal)
+                    ((UEQUAL EQUAL) #'equal)
+                    (otherwise (error "bad arg to make-hashtable")))))
     (make-hash-table :test test)))
 
 (defun HKEYS (table)
   (let (keys)
     (maphash #'(lambda (key val) 
-		 (declare (ignore val))
-		 (push key keys)) table)
+                 (declare (ignore val))
+                 (push key keys)) table)
     keys))
 
 
@@ -198,25 +157,32 @@ processes it with [[prog]].  The output file is overwritten if it exists.
  
 (defun strpos (what in start dontcare)
   (setq what (string what) in (string in))
-  (if dontcare (progn (setq dontcare (character dontcare))
-		      (search what in :start2 start
-			      :test #'(lambda (x y) (or (eql x dontcare)
-							(eql x y)))))
+  (if dontcare
+      (progn 
+	(setq dontcare (character dontcare))
+	(search what in :start2 start
+		:test #'(lambda (x y) (or (eql x dontcare)
+					  (eql x y)))))
     (search what in :start2 start)))
  
 
 (defun strposl (table cvec sint item)
   (setq cvec (string cvec))
   (if (not item)
-      (position table cvec :test #'(lambda (x y) (position y x)) :start sint)
-    (position table cvec :test-not #'(lambda (x y) (position y x))
-	      :start sint  )))
+      (position table cvec 
+		:test #'(lambda (x y) (position y x))
+		:start sint)
+    (position table cvec 
+	      :test-not #'(lambda (x y) (position y x))
+              :start sint)))
 
 (defun VEC-SETELT (vec ind val) 
   (setf (elt vec ind) val))
 
 (defun  bvec-make-full (n x)
-  (make-array (list n) :element-type 'bit :initial-element x))
+  (make-array (list n) 
+	      :element-type 'bit
+	      :initial-element x))
 
 (defun make-bvec (n)
   (bvec-make-full n 0))
@@ -226,8 +192,8 @@ processes it with [[prog]].  The output file is overwritten if it exists.
 
 (defun size (l)
   (cond ((vectorp l) (length l))
-	((consp l) (list-length l))
-	(t 0)))
+        ((consp l) (list-length l))
+        (t 0)))
 
 (defun identp (a) 
   (and (symbolp a) a))
@@ -237,7 +203,3 @@ processes it with [[prog]].  The output file is overwritten if it exists.
 
 (defun |last| (x)
   (car (last x)))
-@
-
-
-\end{document}
