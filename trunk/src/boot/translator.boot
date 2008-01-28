@@ -351,7 +351,17 @@ shoeOutParse stream ==
                 nil
               else CAR $stack
  
+++ Generate a global signature declaration for symbol `n'.
+genDeclaration(n,t) ==
+  t is ["Mapping",valType,argTypes] =>
+    if bfTupleP argTypes then argTypes := cdr argTypes
+    if not null argTypes and SYMBOLP argTypes 
+    then argTypes := [argTypes]
+    ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
+  ["DECLAIM",["TYPE",t,n]]
+
 bpOutItem()==
+    $op := nil
     bpComma() or bpTrap()
     b:=bpPop1()
     EQCAR(b,"TUPLE")=> bpPush cdr b
@@ -359,6 +369,9 @@ bpOutItem()==
     b is ["L%T",l,r] and IDENTP l =>
                  bpPush [["DEFPARAMETER",l,r]]
     case b of
+      Signature(op,t) =>
+        bpPush [genDeclaration(op,t)]
+
       Module(m) => 
         bpPush [shoeCompileTimeEvaluation ["PROVIDE", m]]
 

@@ -553,9 +553,19 @@ bpApplication()==
       (bpApplication() and
             bpPush(bfApplication(bpPop2(),bpPop1())) or true)
  
+++ Typing:
+++   SimpleType
+++   Mapping
+bpTyping() ==
+  bpApplication() and
+    (bpEqKey "ARROW" and (bpApplication() or bpTrap()) and
+      bpPush Mapping(bpPop1(), bfUntuple bpPop1()) or true) or bpMapping()
+
+++ Tagged:
+++   Name : Typing
 bpTagged()==
       bpApplication() and
-         (bpEqKey "COLON" and (bpApplication() or bpTrap()) and
+         (bpEqKey "COLON" and (bpTyping() or bpTrap()) and
            bpPush bfTagged(bpPop2(),bpPop1()) or true)
  
 bpExpt()== bpRightAssoc('(POWER),function bpTagged)
