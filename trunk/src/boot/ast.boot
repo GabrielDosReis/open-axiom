@@ -121,10 +121,10 @@ bfGenSymbol()==
     $GenVarCounter:=$GenVarCounter+1
     INTERN(CONCAT ('"bfVar#",STRINGIMAGE $GenVarCounter))
 
-bfListOf: %List -> %list 
+bfListOf: %List -> %List 
 bfListOf x==x
  
-bfListOf: %Thing -> %List
+bfColon: %Thing -> %List
 bfColon x== ["COLON",x]
 
 bfColonColon: (%Thing,%Symbol) -> %Symbol
@@ -1112,7 +1112,7 @@ bfCase(x,y)==
          c:=bfCaseItems (g1,y)
          bfMKPROGN [a,b,["CASE",["CAR", g],:c]]
 
-bfCaseItem: (%thing,%List) -> %List 
+bfCaseItems: (%Thing,%List) -> %List 
 bfCaseItems(g,x) ==  
   [bfCI(g,i,j) for [i,j] in x]
 
@@ -1129,7 +1129,7 @@ bfCARCDR: (%Short,%Thing) -> %List
 bfCARCDR(n,g) ==
   [INTERN CONCAT ('"CA",bfDs n,'"R"),g]
 
-bfDs: %Short -> %Symbol 
+bfDs: %Short -> %String 
 bfDs n== 
   if n=0 then '"" else CONCAT('"D",bfDs(n-1))
 

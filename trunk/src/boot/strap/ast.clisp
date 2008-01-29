@@ -139,11 +139,11 @@
         (SETQ |$GenVarCounter| (+ |$GenVarCounter| 1))
         (INTERN (CONCAT "bfVar#" (STRINGIMAGE |$GenVarCounter|)))))))
 
-(DECLAIM (FTYPE (FUNCTION (|%List|) |%list|) |bfListOf|))
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfListOf|))
 
 (DEFUN |bfListOf| (|x|) (PROG () (RETURN |x|)))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfListOf|))
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfColon|))
 
 (DEFUN |bfColon| (|x|) (PROG () (RETURN (LIST 'COLON |x|))))
 
@@ -2092,7 +2092,7 @@
         (|bfMKPROGN|
             (LIST |a| |b| (CONS 'CASE (CONS (LIST 'CAR |g|) |c|))))))))
 
-(DECLAIM (FTYPE (FUNCTION (|%thing| |%List|) |%List|) |bfCaseItem|))
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%List|) |bfCaseItems|))
 
 (DEFUN |bfCaseItems| (|g| |x|)
   (PROG (|j| |ISTMP#1| |i|)
@@ -2146,7 +2146,7 @@
   (PROG ()
     (RETURN (LIST (INTERN (CONCAT "CA" (|bfDs| |n|) "R")) |g|))))
 
-(DECLAIM (FTYPE (FUNCTION (|%Short|) |%Symbol|) |bfDs|))
+(DECLAIM (FTYPE (FUNCTION (|%Short|) |%String|) |bfDs|))
 
 (DEFUN |bfDs| (|n|)
   (PROG ()
