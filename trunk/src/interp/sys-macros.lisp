@@ -1137,6 +1137,23 @@
 (defmacro SPADREDUCE (OP AXIS BOD)
   (REDUCE-1 OP AXIS BOD))
 
+;;
+;; -*- Control -*-
+;;
+
+           
+(defmacro |funcall| (&rest args)
+  (cons 'funcall args) )
+
+(defmacro |Catch| (tag expr) 
+  `(catch ,tag ,expr) )
+
+(defmacro |Throw| (tag expr) 
+  `(Throw ,tag ,expr) )
+
+(defmacro |UnwindProtect| (a b)
+  `(unwind-protect ,a ,b) )
+
 ;; 
 ;; -*- List Comprehension -*-
 ;; 

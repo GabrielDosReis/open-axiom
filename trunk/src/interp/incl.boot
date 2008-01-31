@@ -38,15 +38,21 @@ import '"cformat"
 
 )package "BOOT"
  
-Top            := 01
-IfSkipToEnd    := 10
-IfKeepPart     := 11
-IfSkipPart     := 12
-ElseifSkipToEnd:= 20
-ElseifKeepPart := 21
-ElseifSkipPart := 22
-ElseSkipToEnd  := 30
-ElseKeepPart   := 31
+++ The following symbol constants tag input source program parts, for
+++ conditional inclusion purposes.
+-- Outside an conditional inclusion group.
+Top             == 01
+-- `)if' group
+IfSkipToEnd     == 10
+IfKeepPart      == 11
+IfSkipPart      == 12
+-- `)elseif' group
+ElseifSkipToEnd == 20
+ElseifKeepPart  == 21
+ElseifSkipPart  == 22
+-- `)else' group
+ElseSkipToEnd   == 30
+ElseKeepPart    == 31
  
 Top?     (st) == QUOTIENT(st,10) = 0
 If?      (st) == QUOTIENT(st,10) = 1
@@ -151,11 +157,11 @@ incFileName x == first incBiteOff x
 fileNameStrings fn==[PNAME(fn.0),PNAME(fn.1),PNAME(fn.2)]
  
 ifCond(s, info) ==
-    word := MakeSymbol StringTrim(incCommandTail(s, info), WhiteSpaceCset)
+    word := INTERN StringTrim(incCommandTail(s, info), WhiteSpaceCset)
     ListMemberQ?(word, $inclAssertions)
  
 assertCond(s, info) ==
-    word := MakeSymbol StringTrim(incCommandTail(s, info), WhiteSpaceCset)
+    word := INTERN StringTrim(incCommandTail(s, info), WhiteSpaceCset)
     if not ListMemberQ?(word, $inclAssertions) then
         $inclAssertions := [word, :$inclAssertions]
  
