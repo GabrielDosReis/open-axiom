@@ -85,7 +85,6 @@
 (defvar ind)
 (defvar INITCOLUMN 0)
 (defvar JUNKTOKLIST '(FOR IN AS INTO OF TO))
-(defvar LCTRUE '|true|)
 (defvar m-chrbuffer)
 (defvar m-chrindex)
 (defvar MARG 0 "Margin for testing by ?OP")

@@ -1,5 +1,30 @@
 2008-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/setq.lisp (COPYRIGHTS): Remove.
+	(LCTRUE): Likewise.
+	($HTPreviousDomain): Likewise.
+	($HTOperationError): Likewise.
+	($xdatabase): Likewise.
+	($CatOfCaDatabase): Likewise.
+	($DomOfCatDatabase): Likewise.
+	($JoinOfDomDatabase): Likewise.
+	($JoinOfCatDatabase): Likewise.
+	($attributeDb): Likewise.
+	($abbreviateIfTrue): Likewise.
+	($deltax): Likewise.
+	($deltay): Likewise.
+	($displayDomains): Likewise.
+	($displayTowardAncestors): Likewise.
+	($minimumSeparation): Likewise.
+	($testOutputLineFlag): Likewise.
+	($testOutputLineStack): Likewise.
+	($runTestFlag): Likewise.
+	($mkTestFlag): Likewise.
+	($mkTestInputStack): Likewise.
+	($mkTestOutputStack): Likewise.
+
+2008-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/unlisp.lisp (|OsRunProgram|): Remove.
 	(|OsRunProgramToStream|): Likewise.
 	(|PathnameWithinDirectory|): Likewise.
