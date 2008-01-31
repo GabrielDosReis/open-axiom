@@ -53,7 +53,7 @@ porigin x ==
 %fname x ==
     [function pfname, x]
 pfname x ==
-    PathnameString x
+    NAMESTRING x
  
 
 %pos p == [function ppos, p]
