@@ -32,13 +32,6 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-(setq copyrights '(
- "Copyright The Numerical Algorithms Group Limited 1991-94."
- "All rights reserved"
- "Certain derivative-work portions Copyright (C) 1998 by Leslie Lamport."
- "Portions (c) Copyright Taiichi Yuasa and Masami Hagiya, 1984."
- "All rights reserved"))
-
 (import-module "macros")
 (in-package "BOOT")
 
@@ -70,7 +63,6 @@
 (SETQ |$pfKeysForBrowse|  NIL)
 (SETQ MARG 0)
   ;" Margin for testing by ?OP"
-(SETQ LCTRUE '|true|)
 (SETQ |$displayParserOutput| 'T)
 
 (SETQ |$insideReadRulesIfTrue| NIL)
@@ -97,15 +89,12 @@
 
 ;; variables controlling companion pages (see copage.boot)
 (SETQ |$HTCompanionWindowID| nil)
-(SETQ |$HTPreviousDomain| nil)
-(SETQ |$HTOperationError| nil)
 
 (SETQ |S:SPADTOK| 'SPADSYSTOK)
 (SETQ APLMODE NIL)
 (SETQ RLGENSYMFG NIL)
 (SETQ RLGENSYMLST NIL)
 (SETQ XTOKENREADER 'SPADTOK)
-(SETQ |$generalTokenIfTrue| NIL)
 (SETQ OPASSOC NIL)
 (SETQ SPADSYSKEY '(EOI EOL))
 
@@ -187,41 +176,3 @@
 (MAKEPROP '|One| '|defaultType| |$Integer|)
 (MAKEPROP '|Zero| '|defaultType| |$Integer|)
 
-;; Following were originally in EXPLORE BOOT
-
-(SETQ |$xdatabase|         NIL)
-(SETQ |$CatOfCatDatabase|  NIL)
-(SETQ |$DomOfCatDatabase|  NIL)
-(SETQ |$JoinOfDomDatabase| NIL)
-(SETQ |$JoinOfCatDatabase| NIL)
-(SETQ |$attributeDb|       NIL)
-
-(SETQ |$abbreviateIfTrue|  NIL)
-(SETQ |$deltax|  0)
-(SETQ |$deltay|  0)
-(SETQ |$displayDomains|  'T)
-(SETQ |$displayTowardAncestors|  NIL)
-(SETQ |$focus|  NIL)
-(SETQ |$focusAccessPath|  NIL)
-(SETQ |$minimumSeparation|  3)
-
-;; ---- start of initial settings for variables used in test.boot
-
-(SETQ |$testOutputLineFlag| NIL)   ;; referenced by charyTop, prnd
-                                   ;; to stash lines
-(SETQ |$testOutputLineStack| NIL)  ;; saves lines to be printed
-                                   ;; (needed to convert lines for use
-                                   ;; in hypertex)
-(SETQ |$runTestFlag| NIL)          ;; referenced by maPrin to stash
-                                   ;; output by recordAndPrint to not
-                                   ;; print type/time
-(SETQ |$mkTestFlag| NIL)           ;; referenced by READLN to stash input
-                                   ;; by maPrin to stash output
-                                   ;; by recordAndPrint to write i/o
-                                   ;; onto $testStream
-(SETQ |$mkTestInputStack| NIL)     ;; saves input for $testStream
-                                   ;; (see READLN)
-(SETQ |$mkTestOutputStack| NIL)    ;; saves output for $testStream
-                                   ;; (see maPrin)
-
-;; ---- end of initial settings for variables used in test.boot

@@ -298,12 +298,6 @@ clearCmdSortedCaches() ==
 clearCmdCompletely() ==
   clearCmdAll()
   $localExposureData := COPY_-SEQ $localExposureDataDefault
-  $xdatabase := NIL
-  $CatOfCatDatabase  := NIL
-  $DomOfCatDatabase  := NIL
-  $JoinOfCatDatabase := NIL
-  $JoinOfDomDatabase := NIL
-  $attributeDb := NIL
   $functionTable := NIL
   sayKeyedMsg("S2IZ0013",NIL)
   clearClams()
