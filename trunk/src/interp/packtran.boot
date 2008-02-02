@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -34,10 +34,6 @@
 
 import '"sys-macros"
 )package "BOOT"
-
--- The $useNewParser flag controls which parser will be used in the interpreter
--- If nil then the old parser is used, otherwise Bill Burge's parser is used
-$useNewParser := true
 
 rePackageTran(sex, package) ==
   _*PACKAGE_* : fluid := FIND_-PACKAGE STRING package

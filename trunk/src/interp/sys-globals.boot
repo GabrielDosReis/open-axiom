@@ -80,9 +80,6 @@ $compCount := 0
 $compUniquelyIfTrue := false
 
 ++
-$consistencyCheck := true
-
-++
 $ConstructorCache := MAKE_-HASHTABLE "ID"
 
 ++
@@ -446,3 +443,6 @@ $minivectorNames := []
 ++ This semenatics is in effect only when `Rep' is defined
 ++ through assignment.
 $useRepresentationHack := true
+
+++
+$insideCanCoerceFrom := nil
