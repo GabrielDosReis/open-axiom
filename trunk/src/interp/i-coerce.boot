@@ -37,6 +37,7 @@ import '"i-resolv"
 )package "BOOT"
 
 $useCoerceOrCroak := true
+$useConvertForCoercions := false
 
 --%  Algebraic coercions using interactive code
 

@@ -73,7 +73,7 @@ objSetMode(obj,mode) == RPLACA(obj,mode)
 objVal obj == CDR obj
 objValUnwrap obj == unwrap CDR obj
 objMode obj == CAR obj
-objEnv obj == $NE
+objEnv obj == $EmptyEnvironment
 
 objCodeVal obj == CADDR obj
 objCodeMode obj == CADR obj

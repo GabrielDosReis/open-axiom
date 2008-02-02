@@ -1,5 +1,17 @@
 2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad.lisp (APLMODE): Don't define.
+	(XTOKENREADER): Don't set; define.
+	* interp/setvars.boot (resetWorkspaceVariables): Don't reset
+	$coerceIntByMapCounter. 
+	* interp/setq.lisp: Stop redundant assignments.
+	* interp/nrunfast.boot ($NRTmonitorIfTrue): Define here.
+	* interp/i-object.boot (objEnv): Use $EmptyEnvironment.
+	* interp/i-coerce.boot ($useConvertForCoercions): Likewise.
+	* interp/format.boot ($abbreviateJoin): Define here.
+
+2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-globals.boot ($consistencyCheck): Remove.
 	($insideCanCoerceFrom): Define.
 	
