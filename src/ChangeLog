@@ -2,6 +2,10 @@
 
 	* interp/sys-globals.boot ($consistencyCheck): Remove.
 	($insideCanCoerceFrom): Define.
+	
+2008-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/apply.boot (oldCompilerAutoloadOnceTrigger): Remove.
 	* interp/setq.lisp: Remove more unused variables.
 	* interp/patches.lisp (/RF-1): Tidy.
 	* interp/server.boot (parseAndInterpret): Likewise.

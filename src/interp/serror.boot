@@ -37,16 +37,20 @@ import '"posit"
  
 )package "BOOT"
 
+syGeneralErrorHere: () -> %Thing
 syGeneralErrorHere() ==
    sySpecificErrorHere('S2CY0002, [])
  
-sySpecificErrorHere(key, args) ==
+sySpecificErrorHere: (%Symbol,%List) -> %Thing
+sySpecificErrorHere(key,args) ==
    sySpecificErrorAtToken($stok, key, args)
  
-sySpecificErrorAtToken(tok, key, args) ==
+sySpecificErrorAtToken: (%Thing,%Symbol,%List) -> %Thing
+sySpecificErrorAtToken(tok,key,args) ==
    pos := tokPosn tok
    ncSoftError(pos, key, args)
  
+syIgnoredFromTo: (%List,%List) -> %Thing
 syIgnoredFromTo(pos1, pos2) ==
   if pfGlobalLinePosn pos1 = pfGlobalLinePosn pos2 then
       ncSoftError(FromTo(pos1,pos2), 'S2CY0005, [])
@@ -54,6 +58,7 @@ syIgnoredFromTo(pos1, pos2) ==
       ncSoftError(From pos1, 'S2CY0003, [])
       ncSoftError(To   pos2, 'S2CY0004, [])
  
+npTrapForm: %Thing -> %Thing
 npTrapForm(x)==
    a:=pfSourceStok x
    EQ(a,'NoToken)=>
@@ -62,6 +67,7 @@ npTrapForm(x)==
    ncSoftError(tokPosn a, 'S2CY0002, [])
    THROW("TRAPPOINT","TRAPPED")
  
+npTrap: () -> %Thing
 npTrap()==
    ncSoftError(tokPosn $stok,'S2CY0002,[])
    THROW("TRAPPOINT","TRAPPED")
