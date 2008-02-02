@@ -298,7 +298,7 @@ clearCmdSortedCaches() ==
 clearCmdCompletely() ==
   clearCmdAll()
   $localExposureData := COPY_-SEQ $localExposureDataDefault
-  $functionTable := NIL
+  -- $functionTable := NIL
   sayKeyedMsg("S2IZ0013",NIL)
   clearClams()
   clearConstructorCaches()

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -35,39 +35,18 @@
 (import-module "macros")
 (in-package "BOOT")
 
-(SETQ /RELEASE 0)
-
 ;; These were originally in SPAD LISP
 
-(SETQ |$mutableChecking| NIL)    ; used in DEFINE BOOT
-(SETQ |$mutableDomains| NIL)     ; checked in DEFINE BOOT
-
-
 (defvar $dalymode nil "if true then leading paren implies lisp cmd")
-(setq |$Newline| #\Newline)
+(defconstant |$Newline| #\Newline)
 
 
-(SETQ STAKCOLUMN -1)
-(SETQ ECHOMETA NIL)
-(SETQ |$checkParseIfTrue| 'NIL)
-(SETQ |$oldParserExpandAbbrs| NIL)
-(SETQ |S:SPADKEY| NIL) ;" this is augmented by MAKESPADOP"
-(SETQ |/EDIT,FT| 'SPAD)
-(SETQ |/EDIT,FM| 'A)
-(SETQ INITCOLUMN 0)
-(SETQ |$functionTable| NIL)
-(SETQ |$spaddefs| NIL)
-(SETQ |$xeditIsConsole|  NIL)
-(SETQ |$echoInputLines|  NIL)       ;; This is in SETVART also
-(SETQ |$Slot1DataBase| (MAKE-HASHTABLE 'ID))  ;; See NRUNTIME BOOT
-(SETQ |$pfKeysForBrowse|  NIL)
-(SETQ MARG 0)
+(defvar ECHOMETA NIL)
+(defvar S-SPADKEY NIL) ;" this is augmented by MAKESPADOP"
+(defvar MARG 0)
   ;" Margin for testing by ?OP"
-(SETQ |$displayParserOutput| 'T)
 
-(SETQ |$insideReadRulesIfTrue| NIL)
 (SETQ |$consistencyCheck| 'T)
-(SETQ |$useUndo| NIL)
 (SETQ |$ruleSetsInitialized| NIL)
 
 ;; tell the system not to use the new parser
@@ -168,7 +147,6 @@
 (SETQ |$NRTdeltaList| NIL)
 (SETQ |$NRTdeltaLength| 0)
 (SETQ |$NRTopt| NIL) ;; turns off buggy code
-(SETQ |$Slot1DataBase| NIL)
 (SETQ |$NRTmonitorIfTrue| NIL)
 
 (SETQ |$useConvertForCoercions| NIL)

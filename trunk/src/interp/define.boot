@@ -40,6 +40,8 @@ import '"category"
 NRTPARSE := false
 $newCompCompare := false
 
+++ List of mutable domains.
+$mutableDomains := nil
 
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
  
@@ -401,9 +403,8 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $pairlis := [[a,:v] for a in argl for v in $FormalMapVariableList]
     $mutableDomain: local :=
       -- all defaulting packages should have caching turned off
-       isCategoryPackageName $op or   
-         (if BOUNDP '$mutableDomains then MEMQ($op,$mutableDomains)
-            else false )   --true if domain has mutable state
+       isCategoryPackageName $op or MEMQ($op,$mutableDomains)
+                                    --true if domain has mutable state
     signature':=
       [first signature,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
     $functorForm:= $form:= [$op,:argl]
