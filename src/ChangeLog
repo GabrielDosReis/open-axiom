@@ -1,3 +1,12 @@
+2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/setq.lisp: Remove more unused variables.
+	* interp/nruncomp.boot ($Slot1DataBase): Define here.
+	* interp/parse.boot ($oldParserExpandAbbrs): Likewise.
+	* interp/define.boot ($mutableDomains): Define here.
+	(compDefineFunctor1): Tidy.
+	(clearCmdCompletely): Don't set $functionTable.
+
 2008-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/setq.lisp (COPYRIGHTS): Remove.

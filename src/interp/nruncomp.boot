@@ -51,6 +51,8 @@ $insideCategoryPackageIfTrue := false
 ++ By default, don't generate info files
 $profileCompiler := false
 
+++
+$Slot1DataBase := MAKE_-HASHTABLE "ID"
 
 
 -----------------------------NEW buildFunctor CODE-----------------------------
