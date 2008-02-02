@@ -46,10 +46,6 @@
 (defvar MARG 0)
   ;" Margin for testing by ?OP"
 
-(SETQ |$NRTmakeCompactDirect| NIL)
-(SETQ |$NRTquick| NIL)
-(SETQ |$NRTmakeShortDirect| NIL)
-(SETQ |$newWorld| NIL)
 (SETQ |$returnNowhereFromGoGet| NIL)
 
 (SETQ |$abbreviateJoin| NIL)
@@ -90,10 +86,6 @@
 (SETQ |$prefix| NIL)
 (SETQ |$formalArgList| ())
 
-(SETQ |$NRTflag| T)
-(SETQ |$NRTaddForm| NIL)
-(SETQ |$NRTdeltaList| NIL)
-(SETQ |$NRTdeltaLength| 0)
 (SETQ |$NRTopt| NIL) ;; turns off buggy code
 (SETQ |$NRTmonitorIfTrue| NIL)
 

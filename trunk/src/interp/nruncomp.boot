@@ -54,6 +54,13 @@ $profileCompiler := false
 ++
 $Slot1DataBase := MAKE_-HASHTABLE "ID"
 
+++
+$NRTdeltaList := []
+$NRTdeltaLength := 0
+
+++
+$NRTaddForm := nil
+
 
 -----------------------------NEW buildFunctor CODE-----------------------------
 NRTaddDeltaCode() ==
@@ -567,9 +574,7 @@ NRTsetVector4a(sig,form,cond) ==
 
 NRTmakeSlot1 domainShell ==
   opDirectName := INTERN STRCONC(PNAME first $definition,'";opDirect")
-  fun :=
-    $NRTmakeCompactDirect => '(function lookupInCompactTable)
-    '(function lookupInTable)
+  fun := '(function lookupInCompactTable)
   [($QuickCode=>'QSETREFV;'SETELT), '$,1, ['LIST,fun,'$,opDirectName]]
 
 NRTmakeSlot1Info() ==
