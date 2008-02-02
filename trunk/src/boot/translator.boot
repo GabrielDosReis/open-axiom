@@ -747,7 +747,7 @@ defaultBootToLispFile file ==
   CONCAT(shoeRemovebootIfNec file,'".clisp")
 
 translateBootFile(progname, options, file) ==
-  outFile := getOutputPathname(options)
+  outFile := getOutputPathname options or defaultBootToLispFile file
   BOOTTOCL(file, ENOUGH_-NAMESTRING outFile)
 
 compileBootHandler(progname, options, file) ==
