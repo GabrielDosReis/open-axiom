@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -120,8 +120,7 @@
       (load lfile))
      ((string= type "lisp") (load input-file))
      ((string= type "bbin") (load input-file))
-     ((and (string= type "input")
-           |$useNewParser|)
+     ((string= type "input")
       (|ncINTERPFILE| input-file Echo-Meta))
      (t (spad input-file)))))
 
@@ -219,9 +218,6 @@
 (define-function '|isLowerCaseLetter| #'LOWER-CASE-P)
 (define-function '|isUpperCaseLetter| #'UPPER-CASE-P)
 (define-function '|isLetter| #'ALPHA-CHAR-P)
-;; reset from /spad/lisp/setq.lisp
-(setq |$consistencyCheck| ()) ;; prevents wasting time checking consistency
-
 
 #+(or :CCL (and :lucid :ibm/370))
 (setq $current-directory (truename "."))

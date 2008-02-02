@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ import '"g-util"
 --  and with measurement types (property, classproperty).
 
 printTimeIfTrue := false
+$printStorageIfTrue := false
  
 printNamedStatsByProperty(listofnames, property) ==
   total := +/[GETL(name,property) for [name,:.] in listofnames]

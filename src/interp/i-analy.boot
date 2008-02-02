@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -32,6 +34,19 @@
 
 import '"i-object"
 )package "BOOT"
+
+$univariateDomains ==
+  '(UnivariatePolynomial
+    UnivariateTaylorSeries
+    UnivariateLaurentSeries
+    UnivariatePuiseuxSeries)
+
+$multivariateDomains ==
+  '(MultivariatePolynomial
+    DistributedMultivariatePolynomial
+    HomogeneousDistributedMultivariatePolynomial
+    GeneralDistributedMultivariatePolynomial)
+
 
 --% Interpreter Analysis Functions
 

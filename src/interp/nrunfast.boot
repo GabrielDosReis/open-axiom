@@ -52,7 +52,6 @@ initNewWorld() ==
   $NRTmakeShortDirect := true
   $newWorld := true
   $monitorNewWorld := false
-  $consistencyCheck := false
   $spadLibFT := 'NRLIB
   $NRTmonitorIfTrue := false
   $updateCatTableIfTrue := false

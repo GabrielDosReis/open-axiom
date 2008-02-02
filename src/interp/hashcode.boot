@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,10 @@
 
 import '"g-util"
 )package "BOOT"
+
+$DomainsWithoutLisplibs ==
+  '(CAPSULE Union Record SubDomain Mapping Enumeration Mode)
+
 
 -- Type hasher for old compiler style type names which produces a hash code
 -- compatible with the asharp compiler.  Takes a hard error if the type

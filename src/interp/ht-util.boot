@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -668,12 +668,10 @@ parseAndEval string ==
 parseAndEval1 string ==
   syntaxError := false
   pform :=
-    $useNewParser =>
-      v := applyWithOutputToString('ncParseFromString, [string])
-      CAR v => CAR v
-      syntaxError := true
-      CDR v
-    oldParseString string
+    v := applyWithOutputToString('ncParseFromString, [string])
+    CAR v => CAR v
+    syntaxError := true
+    CDR v
   syntaxError =>
      '"Syntax Error "
   pform =>

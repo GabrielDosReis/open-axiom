@@ -42,6 +42,8 @@ $compileRecurrence := true
 $errorReportLevel := 'warning
 $sourceFileTypes := '(INPUT SPAD BOOT LISP LISP370 META)
 
+$existingFiles := MAKE_-HASHTABLE "UEQUAL"
+
 $SYSCOMMANDS := [CAR x for x in $systemCommands]
 
 UNDERBAR == '"__"

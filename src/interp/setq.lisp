@@ -46,28 +46,13 @@
 (defvar MARG 0)
   ;" Margin for testing by ?OP"
 
-(SETQ |$consistencyCheck| 'T)
-(SETQ |$ruleSetsInitialized| NIL)
-
-;; tell the system not to use the new parser
-(SETQ |$useNewParser| NIL)
-
-(SETQ |$htPrecedenceTable| NIL)
-
 (SETQ |$NRTmakeCompactDirect| NIL)
 (SETQ |$NRTquick| NIL)
 (SETQ |$NRTmakeShortDirect| NIL)
 (SETQ |$newWorld| NIL)
 (SETQ |$returnNowhereFromGoGet| NIL)
 
-(SETQ |$insideCanCoerceFrom| NIL)
-
-(SETQ |$useCoerceOrCroak| T)
-
 (SETQ |$abbreviateJoin| NIL)
-
-;; variables controlling companion pages (see copage.boot)
-(SETQ |$HTCompanionWindowID| nil)
 
 (SETQ |S:SPADTOK| 'SPADSYSTOK)
 (SETQ APLMODE NIL)
@@ -94,47 +79,10 @@
 (SETQ RPAR ")")
 (SETQ SLASH "/")
 (SETQ STAR "*")
-(SETQ |$fortranArrayStartingIndex| 0)
 
 ;; These were originally in INIT LISP
 
-(SETQ |$dependeeClosureAlist|       NIL)
-(SETQ |$userModemaps| NIL)
 (SETQ |$functorForm| NIL)
-
-(SETQ |$existingFiles| (MAKE-HASHTABLE 'UEQUAL))
-
-(SETQ |$instantRecord| (MAKE-HASHTABLE 'ID))
-
-(SETQ |$useIntegerSubdomain| 'T)
-(SETQ |$useNewFloat| 'T)
-
-;; the following symbol holds the canonical "failed" value
-(SETQ |$failed| "failed")
-
-(SETQ |$constructorDataTable| NIL)
-
-(SETQ |$univariateDomains| '(
-    |UnivariatePolynomial|
-    |UnivariateTaylorSeries|
-    |UnivariateLaurentSeries|
-    |UnivariatePuiseuxSeries|
-    ))
-(SETQ |$multivariateDomains| '(
-    |MultivariatePolynomial|
-    |DistributedMultivariatePolynomial|
-    |HomogeneousDistributedMultivariatePolynomial|
-    |GeneralDistributedMultivariatePolynomial|
-    ))
-
-(SETQ |$DomainsWithoutLisplibs| '(
-  CAPSULE |Union| |Record| |SubDomain| |Mapping| |Enumeration| |Domain| |Mode|))
-
-(SETQ |$tracedMapSignatures| ())
-
-(SETQ |$printStorageIfTrue| NIL) ;; storage info disabled in common lisp
-
-(SETQ |$defaultFunctionTargets| '(()))
 
 (SETQ $NE (LIST (LIST NIL)))
 (SETQ |$suffix| NIL)

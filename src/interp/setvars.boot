@@ -155,7 +155,6 @@ resetWorkspaceVariables() ==
   SETQ($msgAlist                    , NIL)
   SETQ($msgDatabase                 , NIL)
   SETQ($msgDatabaseName             , NIL)
-  SETQ($dependeeClosureAlist        , NIL)
   SETQ($IOindex                     , 1  )
   SETQ($coerceIntByMapCounter       , 0  )
   SETQ($e                           , $EmptyEnvironment)
