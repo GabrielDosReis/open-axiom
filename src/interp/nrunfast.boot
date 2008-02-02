@@ -41,6 +41,9 @@ $doNotCompressHashTableIfTrue := false
 ++
 $lookupDefaults := false
 
+++
+$NRTmonitorIfTrue := false
+
 --=======================================================================
 --                     Basic Functions
 --=======================================================================

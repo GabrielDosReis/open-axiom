@@ -48,10 +48,7 @@
 
 (SETQ |$returnNowhereFromGoGet| NIL)
 
-(SETQ |$abbreviateJoin| NIL)
-
 (SETQ |S:SPADTOK| 'SPADSYSTOK)
-(SETQ APLMODE NIL)
 (SETQ RLGENSYMFG NIL)
 (SETQ RLGENSYMLST NIL)
 (SETQ XTOKENREADER 'SPADTOK)
@@ -80,14 +77,11 @@
 
 (SETQ |$functorForm| NIL)
 
-(SETQ $NE (LIST (LIST NIL)))
 (SETQ |$suffix| NIL)
-(SETQ |$coerceIntByMapCounter| 0)
 (SETQ |$prefix| NIL)
 (SETQ |$formalArgList| ())
 
 (SETQ |$NRTopt| NIL) ;; turns off buggy code
-(SETQ |$NRTmonitorIfTrue| NIL)
 
 (SETQ |$useConvertForCoercions| NIL)
 

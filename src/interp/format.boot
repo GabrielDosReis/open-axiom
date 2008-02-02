@@ -41,6 +41,8 @@ import '"macros"
 $formatSigAsTeX := 1
 $permitWhere := false
 
+++
+$abbreviateJoin := false
 
 --% Formatting modemaps
 
