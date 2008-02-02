@@ -45,12 +45,7 @@ $lookupDefaults := false
 --                     Basic Functions
 --=======================================================================
 initNewWorld() ==
-  $NRTflag := true
   $NRTvec := true
-  $NRTmakeCompactDirect := true
-  $NRTquick := true
-  $NRTmakeShortDirect := true
-  $newWorld := true
   $monitorNewWorld := false
   $spadLibFT := 'NRLIB
   $NRTmonitorIfTrue := false

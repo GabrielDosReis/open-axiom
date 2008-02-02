@@ -1,5 +1,26 @@
 2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-globals.boot ($consistencyCheck): Remove.
+	($insideCanCoerceFrom): Define.
+	* interp/setq.lisp: Remove more unused variables.
+	* interp/patches.lisp (/RF-1): Tidy.
+	* interp/server.boot (parseAndInterpret): Likewise.
+	* interp/packtran.boot ($useNewParser): Remove.
+	* interp/ht-util.boot (parseAndEval): Tidy.
+	* interp/clam.boot ($failed): Define.
+	* interp/g-timer.boot ($printStorageIfTrue): Likewise.
+	* interp/hashcode.boot ($DomainsWithoutLisplibs): Likewise.
+	* interp/i-coerce.boot ($useCoerceOrCroak): Likewise.
+	* interp/i-analy.boot ($univariateDomains): Likewise.
+	($multivariateDomains): Likewise.
+	* interp/i-object.boot ($useIntegerSubdomain): Likewise.
+	* interp/i-syscmd.boot ($existingFiles): Likewise.
+	* interp/newfort.boot ($fortranArrayStartingIndex): Likewise.
+	* interp/setvars.boot (resetWorkspaceVariables): Don't reset
+	$dependeeClosureAlist. 
+
+2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/setq.lisp: Remove more unused variables.
 	* interp/nruncomp.boot ($Slot1DataBase): Define here.
 	* interp/parse.boot ($oldParserExpandAbbrs): Likewise.

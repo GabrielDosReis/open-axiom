@@ -35,6 +35,8 @@
 import '"vmlisp"
 )package "BOOT"
 
+$ruleSetsInitialized := false
+
 --% Mode and Type Resolution Rule Data and Ruleset Creation
 
 --% resolveTT Rules
