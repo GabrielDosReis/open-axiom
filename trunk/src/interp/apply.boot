@@ -35,8 +35,7 @@
 import '"compiler"
 )package "BOOT"
 
-oldCompilerAutoloadOnceTrigger() == nil
-
+compAtomWithModemap: (%Thing,%Thing,%List,%Thing) -> %List
 compAtomWithModemap(x,m,e,v) ==
   Tl :=
     [[transImplementation(x,map,fn),target,e]
@@ -47,12 +46,13 @@ compAtomWithModemap(x,m,e,v) ==
         0<#Tl and m=$NoValueMode => first Tl
         nil
 
+transImplementation: (%Thing,%Thing,%Thing) -> %List
 transImplementation(op,map,fn) ==
---+
   fn := genDeltaEntry [op,:map]
   fn is ["XLAM",:.] => [fn]
   ["call",fn]
 
+compApply: (%List,%List,%Thing,%List,%Thing,%List) -> %List
 compApply(sig,varl,body,argl,m,e) ==
   argTl:= [[.,.,e]:= comp(x,$EmptyMode,e) for x in argl]
   contour:=
@@ -63,12 +63,14 @@ compApply(sig,varl,body,argl,m,e) ==
   body':= (comp(body,m',addContour(contour,e))).expr
   [code,m',e]
 
+compToApply: (%Thing,%List,%Thing,%List) -> %List
 compToApply(op,argl,m,e) ==
   T:= compNoStacking(op,$EmptyMode,e) or return nil
   m1:= T.mode
   T.expr is ["QUOTE", =m1] => nil
   compApplication(op,argl,m,T.env,T)
 
+compApplication: (%Thing,%List,%Thing,%List,%List) -> %List
 compApplication(op,argl,m,e,T) ==
   T.mode is ['Mapping, retm, :argml] =>
     #argl ^= #argml => nil
@@ -90,6 +92,7 @@ compApplication(op,argl,m,e,T) ==
   eltForm := ['elt, op, :argl]
   comp(eltForm, m, e)
 
+compFormWithModemap: (%List,%Thing,%List,%List) -> %List
 compFormWithModemap(form is [op,:argl],m,e,modemap) ==
   [map:= [.,target,:.],[pred,impl]]:= modemap
   -- this fails if the subsuming modemap is conditional
@@ -153,6 +156,7 @@ compFormWithModemap(form is [op,:argl],m,e,modemap) ==
 --   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
 --   convert([form,SUBLIS(pairlis,first ml),e],m)
 
+applyMapping: (%List,%Thing,%List,%List) -> %List
 applyMapping([op,:argl],m,e,ml) ==
   #argl^=#ml-1 => nil
   isCategoryForm(first ml,e) =>
@@ -182,6 +186,7 @@ applyMapping([op,:argl],m,e,ml) ==
 
 --% APPLY MODEMAPS
 
+compApplyModemap: (%List,%List,%List,%List) -> %List
 compApplyModemap(form,modemap,$e,sl) ==
   [op,:argl] := form                   --form to be compiled
   [[mc,mr,:margl],:fnsel] := modemap   --modemap we are testing
@@ -224,13 +229,16 @@ compApplyModemap(form,modemap,$e,sl) ==
     [genDeltaEntry [op,:modemap],lt',$bindings]
   [f,lt',$bindings]
 
+compMapCond: (%List,%Thing,%List,%List) -> %List
 compMapCond(op,mc,$bindings,fnsel) ==
   or/[compMapCond'(u,op,mc,$bindings) for u in fnsel]
 
+compMapCond': (%List,%Thing,%Thing,%Thing) -> %List
 compMapCond'([cexpr,fnexpr],op,dc,bindings) ==
   compMapCond''(cexpr,dc) => compMapCondFun(fnexpr,op,dc,bindings)
   stackMessage ["not known that",'%b,dc,'%d,"has",'%b,cexpr,'%d]
 
+compMapCond'': (%Thing,%Thing) -> %Boolean
 compMapCond''(cexpr,dc) ==
   cexpr=true => true
   --cexpr = "true" => true
@@ -248,5 +256,6 @@ compMapCond''(cexpr,dc) ==
   stackMessage ["not known that",'%b,dc,'%d,"has",'%b,cexpr,'%d]
   false
 
-compMapCondFun(fnexpr,op,dc,bindings) == [fnexpr,bindings]
+compMapCondFun(fnexpr,op,dc,bindings) == 
+  [fnexpr,bindings]
 
