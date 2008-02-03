@@ -64,7 +64,6 @@ $docTable := nil             --cache for documentation table
 $conArgstrings := nil        --bound by conPage so that kPage
                              --will display arguments if given
 $conformsAreDomains  := false     --are all arguments of a constructor given?
-$returnNowhereFromGoGet := false  --special branch out for goget for browser
 $dbDataFunctionAlist := nil       --set by dbGatherData
 $domain   := nil             --bound in koOps
 $infovec  := nil             --bound in koOps

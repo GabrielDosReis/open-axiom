@@ -46,33 +46,6 @@
 (defvar MARG 0)
   ;" Margin for testing by ?OP"
 
-(SETQ |$returnNowhereFromGoGet| NIL)
-
-(SETQ |S:SPADTOK| 'SPADSYSTOK)
-(SETQ RLGENSYMFG NIL)
-(SETQ RLGENSYMLST NIL)
-(SETQ XTOKENREADER 'SPADTOK)
-(SETQ OPASSOC NIL)
-(SETQ SPADSYSKEY '(EOI EOL))
-
-;; These are for the output routines in OUT BOOT
-
-(SETQ $MARGIN 3)
-(SETQ *TALLPAR NIL)
-(SETQ ALLSTAR NIL)
-(SETQ COLON ":")
-(SETQ COMMA ",")
-(SETQ DASH "-")
-(SETQ DOLLAR "$")
-(SETQ EQSIGN "=")
-(SETQ LPAR "(")
-(SETQ MATBORCH "*")
-(SETQ PERIOD ".")
-(SETQ PLUSS "+")
-(SETQ RPAR ")")
-(SETQ SLASH "/")
-(SETQ STAR "*")
-
 ;; These were originally in INIT LISP
 
 (SETQ |$functorForm| NIL)
