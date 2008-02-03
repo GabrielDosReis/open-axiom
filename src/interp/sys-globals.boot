@@ -221,10 +221,6 @@ $previousTime := 0
 $VariableCount := 0
 
 ++
-++ FIXME: Eventually move to define.boot.pamphlet.
-$suffix := 0
-
-++
 $useBFasDefault := true
 
 ++

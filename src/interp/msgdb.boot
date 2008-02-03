@@ -87,6 +87,7 @@ $msgAlist := NIL
 $msgDatabaseName := NIL
 $testingErrorPrefix :=  '"Daly Bug"
 $testingSystem := false
+$MARG := 0
 
 
 $texFormatting := false

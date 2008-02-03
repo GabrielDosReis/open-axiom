@@ -104,9 +104,7 @@ loaded into a clean lisp image ({\bf LOADSYS}) and saved as
 a runnable \Tool{OpenAxiom} interpreter ({\bf SAVESYS}) usually named
 \Tool{interpsys}. Most of these files
 are translated from Boot to Common Lisp and then 
-compiled.  The \File{setq.lisp}
-file contains constant initialization code which gains nothing
-by being compiled.
+compiled.  
 
 \subsection{The Spad interpreter and compiler}
 
@@ -114,7 +112,7 @@ by being compiled.
 OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	diagnostics.$(FASLEXT)	sys-driver.$(FASLEXT) \
 	macros.$(FASLEXT)	\
-	unlisp.$(FASLEXT)	setq.$(FASLEXT)	\
+	unlisp.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
 	alql.$(FASLEXT)	buildom.$(FASLEXT)	\
 	cattable.$(FASLEXT)				\
@@ -943,9 +941,6 @@ obey.$(FASLEXT): obey.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 daase.$(FASLEXT): daase.lisp macros.$(FASLEXT) foam_l.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-setq.$(FASLEXT): setq.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 spaderror.$(FASLEXT): spaderror.lisp macros.$(FASLEXT)

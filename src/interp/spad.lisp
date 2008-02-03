@@ -40,6 +40,7 @@
 
 ;;; Common  Block
 
+(defconstant |$Newline| #\Newline)
 (defvar |$preserveSystemLisplib| t "if nil finalizeLisplib does MA REP")
 (defvar |$incrementalLisplibFlag| nil "checked in compDefineLisplib")
 (defvar |$reportInstantiations| nil)
