@@ -1,5 +1,17 @@
 2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/msgdb.boot ($MARG): Define.
+	* interp/int-top.boot (intloopReadConsole): Remove code for
+	$DALYMODE.
+	* interp/define.boot ($NRTopt): Define.
+	($suffix): Likewise.
+	* interp/debug.lisp (S-SPADKEY): Define.
+	* interp/Makefile.pamphlet (OBJS): Don't include setq.$(FASLEXT).
+	(setq.$(FASLEXT)): Remove rule.
+	* interp/setq.lisp: Remove.
+
+2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/spad.lisp (APLMODE): Don't define.
 	(XTOKENREADER): Don't set; define.
 	* interp/setvars.boot (resetWorkspaceVariables): Don't reset

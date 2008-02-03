@@ -150,10 +150,6 @@ intloopReadConsole(b, n)==
     #a=0 =>
              PRINC(MKPROMPT())
              intloopReadConsole('"", n)
-    $DALYMODE and intloopPrefix?('"(",a) =>
-            intnplisp(a)
-            PRINC(MKPROMPT())
-            intloopReadConsole('"",n)
     pfx := stripSpaces intloopPrefix?('")fi",a)
     pfx and ((pfx = '")fi") or (pfx = '")fin")) => []
     b = '"" and (d := intloopPrefix?('")", a)) =>

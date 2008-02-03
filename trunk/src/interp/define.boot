@@ -43,6 +43,12 @@ $newCompCompare := false
 ++ List of mutable domains.
 $mutableDomains := nil
 
+++ when non nil, holds the declaration number of a function in a capsule.
+$suffix := nil
+
+-- ??? turns off buggy code
+$NRTopt := false
+
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
  
 compDefine(form,m,e) ==
