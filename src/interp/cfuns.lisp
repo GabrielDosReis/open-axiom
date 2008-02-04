@@ -64,6 +64,7 @@
 ;     (|findString| (namestring p) str) )
 
 
+#+:GCL
 (defun |getEnv| (var-name)  (system::getenv var-name))
 
 ;;stolen from AXIOM-XL src/strops.c

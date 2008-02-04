@@ -130,13 +130,13 @@
          ISID NBLNK COMMENTCHR $TOKSTACK (/SOURCEFILES |$sourceFiles|)
          METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
          ($FUNCTION FN) $BOOT $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
-         TRAPFLAG |$InteractiveMode| TOK COUNT ERRCOL COLUMN *QUERY CHR LINE
+         TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE
          (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
         (declare (special ECHO-META SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM
                      SPADERRORSTREAM ISID NBLNK COMMENTCHR $TOKSTACK /SOURCEFILES
                      METAKEYLST DEFINITION_NAME |$sourceFileTypes|
                      $FUNCTION $BOOT $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
-                     TRAPFLAG |$InteractiveMode| TOK COUNT ERRCOL COLUMN *QUERY CHR LINE))
+                     TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE))
         (if (PAIRP FN) (SETQ FN (QCAR FN)))
         (SETQ INFILE (OR INFILE (|getFunctionSourceFile| FN)))
           ;; $FUNCTION is freely set in getFunctionSourceFile
@@ -388,7 +388,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 ;;;If A disk is not read-write, then issue msg and return.
 ;;;If /UPDATESTREAM not set or current /UPDATES file doesnt exist, initialize.
  
-   (PROG (IFT KEY RECNO ORECNO COUNT DATE TIME)
+   (PROG (IFT KEY RECNO ORECNO DATE TIME)
 ;         (if (EQ 0 /VERSION) (RETURN NIL))
          (if (EQ 'INPUT FT) (RETURN NIL))
          (if (NOT |$createUpdateFiles|) (RETURN NIL))
@@ -741,7 +741,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 (DEFUN IS_SHARP_VAR (X)
   (AND (IDENTP X)
        (EQL (ELT (PNAME X) 0) #\#)
-       (INTEGERP (lisp:parse-integer (symbol-name X) :start 1))))
+       (INTEGERP (parse-integer (symbol-name X) :start 1))))
  
 (DEFUN MONITOR-GETVALUE (N FG)
   (COND ((= N 0)
@@ -1120,47 +1120,6 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
       (PRINT (LIST "CONTOUR LEVEL" CLEV))
       (PRINT (mapcar #'car (car W))))))
  
-#+:CCL
-(defun break (&rest ignore) (lisp-break ignore) (lisp::unwind))
-
-
-#+:CCL
-(defun lisp-break (&rest ignore)
-  (prog (prompt ifile ofile u v)
-    (setq ifile (rds *debug-io*))
-    (setq ofile (wrs *debug-io*))
-    (setq prompt (setpchar "Break loop (:? for help)> "))
-top (setq u (read))
-    (cond
-      ((equal u ':x) (go exit))
-      ((equal u ':q)
-        (progn (lisp::enable-backtrace nil) 
-               (princ "Backtrace now disabled")
-               (terpri)))
-      ((equal u ':v)
-        (progn (lisp::enable-backtrace t)
-               (princ "Backtrace now enabled")
-               (terpri)))
-      ((equal u ':?)
-        (progn
-           (princ ":Q   disables backtrace")
-           (terpri)
-           (princ ":V   enables backtrace")
-           (terpri)
-           (princ ":X   exits from break loop")
-           (terpri)
-           (princ "else enter LISP expressions for evaluation")
-           (terpri)))
-      ((equal u #\eof)
-       (go exit))
-     (t (progn
-           (setq v (errorset u nil nil))
-           (if (listp v) (progn (princ "=> ") (prinl (car v)) (terpri))))) )
-     (go top)
-exit (rds ifile)
-     (wrs ofile)
-     (setpchar prompt)
-     (return nil)))
 
 (defun lisp-break-from-axiom (&rest ignore) 
     (boot::|handleLispBreakLoop| boot::|$BreakMode|))
@@ -1168,50 +1127,4 @@ exit (rds ifile)
 
 #-:CCL
 (defun interrupt (&rest ignore))
-
-#+:CCL
-(defun interrupt (&rest ignore)
-  (prog (prompt ifile ofile u v)
-    (setq ifile (rds *debug-io*))
-    (setq ofile (wrs *debug-io*))
-    (setq prompt (setpchar "Break loop (:? for help)> "))
-top (setq u (read))
-    (cond
-      ((equal u ':x) (go exit))
-      ((equal u ':r) (go resume))
-      ((equal u ':q)
-        (progn (lisp::enable-backtrace nil) 
-               (princ "Backtrace now disabled")
-               (terpri)))
-      ((equal u ':v)
-        (progn (lisp::enable-backtrace t)
-               (princ "Backtrace now enabled")
-               (terpri)))
-      ((equal u ':?)
-        (progn
-           (princ ":Q   disables backtrace")
-           (terpri)
-           (princ ":V   enables backtrace")
-           (terpri)
-           (princ ":R   resumes from break")
-           (terpri)
-           (princ ":X   exits from break loop")
-           (terpri)
-           (princ "else enter LISP expressions for evaluation")
-           (terpri)))
-      ((equal u #\eof)
-       (go exit))
-     (t (progn
-           (setq v (errorset u nil nil))
-           (if (listp v) (progn (princ "=> ") (prinl (car v)) (terpri))))) )
-     (go top)
-resume (rds ifile)
-     (wrs ofile)
-     (setpchar prompt)
-     (return nil)
-exit (rds ifile)
-     (wrs ofile)
-     (setpchar prompt)
-     (lisp::unwind)))
-
 
