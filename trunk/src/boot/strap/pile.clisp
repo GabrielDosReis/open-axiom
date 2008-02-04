@@ -6,14 +6,11 @@
 
 (IN-PACKAGE "BOOTTRAN")
 
-(DEFUN |shoeFirstTokPosn| (|t|)
-  (PROG () (RETURN (|shoeTokPosn| (CAAR |t|)))))
+(DEFUN |shoeFirstTokPosn| (|t|) (|shoeTokPosn| (CAAR |t|)))
 
-(DEFUN |shoeLastTokPosn| (|t|)
-  (PROG () (RETURN (|shoeTokPosn| (CADR |t|)))))
+(DEFUN |shoeLastTokPosn| (|t|) (|shoeTokPosn| (CADR |t|)))
 
-(DEFUN |shoePileColumn| (|t|)
-  (PROG () (RETURN (CDR (|shoeTokPosn| (CAAR |t|))))))
+(DEFUN |shoePileColumn| (|t|) (CDR (|shoeTokPosn| (CAAR |t|))))
 
 (DEFUN |shoePileInsert| (|s|)
   (PROG (|a| |toktype|)
@@ -95,7 +92,7 @@
           ('T (|shoePileForests| (|shoePileCtree| |h| |h1|) |n| |t1|)))))))
 
 (DEFUN |shoePileCtree| (|x| |y|)
-  (PROG () (RETURN (|dqAppend| |x| (|shoePileCforest| |y|)))))
+  (|dqAppend| |x| (|shoePileCforest| |y|)))
 
 (DEFUN |shoePileCforest| (|x|)
   (PROG (|b| |a|)
@@ -142,13 +139,12 @@
              (LIST |a| |semicolon| (|shoeSeparatePiles| (CDR |x|)))))))))
 
 (DEFUN |shoeEnPile| (|x|)
-  (PROG ()
-    (RETURN
-      (|dqConcat| (LIST (|dqUnit|
-                            (|shoeTokConstruct| 'KEY 'SETTAB
-                                (|shoeFirstTokPosn| |x|)))
-                        |x|
-                        (|dqUnit|
-                            (|shoeTokConstruct| 'KEY 'BACKTAB
-                                (|shoeLastTokPosn| |x|))))))))
+  (|dqConcat|
+      (LIST (|dqUnit|
+                (|shoeTokConstruct| 'KEY 'SETTAB
+                    (|shoeFirstTokPosn| |x|)))
+            |x|
+            (|dqUnit|
+                (|shoeTokConstruct| 'KEY 'BACKTAB
+                    (|shoeLastTokPosn| |x|))))))
 

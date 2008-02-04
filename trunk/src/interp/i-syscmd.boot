@@ -1399,14 +1399,14 @@ importFromFrame args ==
 --% )history
 
 ++ vm/370 filename type component
-SETANDFILEQ($historyFileType,'axh)
+$historyFileType := 'axh
 
 ++ vm/370 filename name component
-SETANDFILEQ($oldHistoryFileName,'last)
-SETANDFILEQ($internalHistoryTable,NIL)
+$oldHistoryFileName := 'last
+$internalHistoryTable := NIL
 
 ++ t means keep history in core
-SETANDFILEQ($useInternalHistoryTable, true)
+$useInternalHistoryTable := true
 
 history l ==
   l or null $options => sayKeyedMsg("S2IH0006",NIL) 
