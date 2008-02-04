@@ -111,7 +111,7 @@ compiled.
 <<environment>>=
 OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	diagnostics.$(FASLEXT)	sys-driver.$(FASLEXT) \
-	macros.$(FASLEXT)	\
+	sys-utility.$(FASLEXT)  macros.$(FASLEXT)	\
 	unlisp.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
 	alql.$(FASLEXT)	buildom.$(FASLEXT)	\
@@ -874,7 +874,7 @@ metalex.$(FASLEXT): metalex.lisp macros.$(FASLEXT)
 nlib.$(FASLEXT): nlib.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-macros.$(FASLEXT): macros.lisp sys-macros.$(FASLEXT)
+macros.$(FASLEXT): macros.lisp sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 ## The new parser component roughtly is:
@@ -1024,7 +1024,7 @@ pspad2.$(FASLEXT): pspad2.boot pspad1.$(FASLEXT)
 pspad1.$(FASLEXT): pspad1.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT)
+g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT) sys-utility.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-cndata.$(FASLEXT): g-cndata.boot sys-macros.$(FASLEXT)
@@ -1079,6 +1079,9 @@ axext_l.$(FASLEXT): axext_l.lisp foam_l.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 foam_l.$(FASLEXT): foam_l.lisp vmlisp.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)

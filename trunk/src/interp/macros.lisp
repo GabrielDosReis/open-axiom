@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,7 @@
 
 
 (import-module "sys-macros") 
+(import-module "sys-utility")
 (in-package "BOOT")
 
 ; 5 PROGRAM STRUCTURE
@@ -62,15 +63,7 @@
  
 (defun SETANDFILE (x y) (LAM\,EVALANDFILEACTQ `(defparameter ,x ',y)))
  
-; 5.3.2 Declaring Global Variables and Named Constants
- 
-(defun |functionp| (fn)
-   (if (identp fn) (and (fboundp fn) (not (macro-function fn))) (functionp fn)))
-(defun |macrop| (fn) (and (identp fn) (macro-function fn)))
- 
 ; 6 PREDICATES
- 
-; 6.2 Data Type Predicates
  
 ; 6.3 Equality Predicates
  
@@ -106,14 +99,6 @@
  
 ; 7 CONTROL STRUCTURE
  
-; 7.1 Constants and Variables
- 
-; 7.1.1 Reference
- 
-; 7.2 Generalized Variables
- 
-; 7.3 Function Invocation
- 
 ; 7.8 Iteration
  
 ; 7.8.2 General Iteration
@@ -126,12 +111,6 @@
  (declare (ignore l))
  "Needed by spadCompileOrSetq" 1)
  
- 
-; 7.8.4 Mapping
- 
- 
- 
-; 7.10 Dynamic Non-local Exits
  
 ; 10.1 The Property List
  
@@ -161,15 +140,7 @@
 ; 10.7 CATCH and THROW
  
 ; 12 NUMBERS
- 
-; 12.3 Comparisons on Numbers
- 
-; 12.4 Arithmetic Operations
- 
-; 12.5 Irrational and Transcendental Functions
- 
-; 12.5.1 Exponential and Logarithmic Functions
- 
+
 ; 12.6 Small Finite Field ops with vector trimming
  
 (defun TRIMLZ (vec)
@@ -208,27 +179,10 @@
  
 (define-function '|append| #'APPEND)
  
-;;(defun |delete| (item list)    ; renaming from DELETE is done in DEF
-;;   (cond ((atom list) list)
-;;         ((equalp item (qcar list)) (|delete| item (qcdr list)))
-;;         ('t (cons (qcar list) (|delete| item (qcdr list))))))
- 
-(defun |delete| (item sequence)
-   (cond ((symbolp item) (remove item sequence :test #'eq))
-         ((and (atom item) (not (arrayp item))) (remove item sequence))
-         (T (remove item sequence :test #'equalp))))
- 
- 
- 
- 
- 
  
 (defun THETACHECK (VAL VAR OP) (if (EQL VAL VAR) (THETA_ERROR OP) val))
  
 ; 15 LISTS
- 
-; 15.1 Conses
- 
  
 ; 15.2 Lists
  
@@ -314,22 +268,6 @@
 
 ; 15.5 Using Lists as Sets
 
-#-:CCL
-(DEFUN CONTAINED (X Y)
-  (if (symbolp x)
-      (contained\,eq X Y)
-      (contained\,equal X Y)))
- 
-(defun contained\,eq (x y)
-       (if (atom y) (eq x y)
-           (or (contained\,eq x (car y)) (contained\,eq x (cdr y)))))
- 
-(defun contained\,equal (x y)
-   (cond ((atom y) (equal x y))
-         ((equal x y) 't)
-         ('t (or (contained\,equal x (car y)) (contained\,equal x (cdr y))))))
-  
- 
 (DEFUN PREDECESSOR (TL L)
   "Returns the sublist of L whose CDR is EQ to TL."
   (COND ((ATOM L) NIL)
@@ -342,63 +280,6 @@
  
 ; 15.6 Association Lists
  
-
-;; FIXME: Should not this be named `alistAllKeys'?
-(DEFUN ASSOCLEFT (X)
-  "Returns all the keys of association list X."
-  (if (ATOM X) 
-      X 
-    (mapcar #'car x)))
-
-;; FIXME: Should not this be named `alistAllValues'?
-(DEFUN ASSOCRIGHT (X)
-  "Returns all the datums of association list X."
-  (if (ATOM X) 
-      X 
-    (mapcar #'cdr x)))
-
- 
-(DEFUN ADDASSOC (X Y L)
-  "Put the association list pair (X . Y) into L, erasing any previous association for X"
-  (COND ((ATOM L) 
-         (CONS (CONS X Y) L))
-        ((EQUAL X (CAAR L)) 
-         (CONS (CONS X Y) (CDR L)))
-        ((CONS (CAR L) (ADDASSOC X Y (CDR L))))))
- 
-(DEFUN DELLASOS (U V)
-  "Remove any assocation pair (U . X) from list V."
-  (COND ((ATOM V) NIL)
-        ((EQUAL U (CAAR V))
-         (CDR V))
-        ((CONS (CAR V) (DELLASOS U (CDR V))))))
-
- 
-;; FIXME: Should not this be named `alistValue'?
-(DEFUN LASSOC (X Y)
-  "Return the datum associated with key X in association list Y."
-  (PROG NIL
-        A  
-        (COND ((ATOM Y) 
-               (RETURN NIL))
-              ((EQUAL (CAAR Y) X) 
-               (RETURN (CDAR Y))) )
-        (SETQ Y (CDR Y))
-        (GO A)))
-
-;; FIXME: Should not this be named `alistKey'?
-(DEFUN |rassoc| (X Y)
-  "Return the key associated with datum X in association list Y."
-  (PROG NIL
-        A  
-        (COND ((ATOM Y) 
-               (RETURN NIL))
-              ((EQUAL (CDAR Y) X) 
-               (RETURN (CAAR Y))) )
-        (SETQ Y (CDR Y))
-        (GO A)))
-
-; (defun QLASSQ (p a-list) (let ((y (assoc p a-list :test #'eq))) (if y (cdr y))))
 (defun QLASSQ (p a-list) (cdr (assq p a-list)))
 
 (define-function 'LASSQ #'QLASSQ)
