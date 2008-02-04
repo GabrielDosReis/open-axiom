@@ -1,3 +1,19 @@
+2008-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/Makefile.pamphlet (OBJS): Include sys-utility.$(FASLEXT).
+	(sys-utility.$(FASLEXT)): New rule.
+	* interp/sys-utility.boot: New.
+	* interp/macros.lisp (|functionp|): Move to sys-utility.boot.
+	(|macrop|): Likewise.
+	(|delete|): Likewise.
+	(CONTAINED, contained\,eq, contained\,equal): Likewise.
+	(ASSOCLEFT): Likewise.
+	(ASSOCRIGHT): Likewise.
+	(ADDASSOC): Likewise.
+	(DELLASOS): Likewise.
+	(LASSOC): Likewise.
+	(|rassoc|): Likewise.
+
 2008-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/foam_l.lisp (|G-stdoutVar|): Define; don't just assign.
