@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -40,15 +40,15 @@ import '"debug"
 -- This code supports the )trace system command and allows the
 -- tracing of LISP, BOOT and SPAD functions and interpreter maps.
 
-SETANDFILEQ($traceNoisely,NIL)  -- give trace and untrace messages
+$traceNoisely := NIL  -- give trace and untrace messages
 
-SETANDFILEQ($reportSpadTrace,NIL)  -- reports traced funs
+$reportSpadTrace := NIL  -- reports traced funs
 
-SETANDFILEQ($optionAlist,NIL)
+$optionAlist := NIL
 
-SETANDFILEQ($tracedMapSignatures, NIL)
+$tracedMapSignatures := NIL
 
-SETANDFILEQ($traceOptionList,'(
+$traceOptionList == '(
     after _
     before _
     break_
@@ -67,10 +67,10 @@ SETANDFILEQ($traceOptionList,'(
     varbreak _
     vars_
     within _
-    ))
+    )
 
 
-SETANDFILEQ($lastUntraced,NIL)
+$lastUntraced := NIL
 
 trace l == traceSpad2Cmd l
 

@@ -6,42 +6,35 @@
 
 (IN-PACKAGE "BOOTTRAN")
 
-(DEFUN |double| (|x|) (PROG () (RETURN (FLOAT |x| 1.0))))
+(DEFUN |double| (|x|) (FLOAT |x| 1.0))
 
 (DEFUN |dqUnit| (|s|)
   (PROG (|a|) (RETURN (PROGN (SETQ |a| (LIST |s|)) (CONS |a| |a|)))))
 
 (DEFUN |dqAppend| (|x| |y|)
-  (PROG ()
-    (RETURN
-      (COND
-        ((NULL |x|) |y|)
-        ((NULL |y|) |x|)
-        ('T (RPLACD (CDR |x|) (CAR |y|)) (RPLACD |x| (CDR |y|)) |x|)))))
+  (COND
+    ((NULL |x|) |y|)
+    ((NULL |y|) |x|)
+    ('T (RPLACD (CDR |x|) (CAR |y|)) (RPLACD |x| (CDR |y|)) |x|)))
 
 (DEFUN |dqConcat| (|ld|)
-  (PROG ()
-    (RETURN
-      (COND
-        ((NULL |ld|) NIL)
-        ((NULL (CDR |ld|)) (CAR |ld|))
-        ('T (|dqAppend| (CAR |ld|) (|dqConcat| (CDR |ld|))))))))
+  (COND
+    ((NULL |ld|) NIL)
+    ((NULL (CDR |ld|)) (CAR |ld|))
+    ('T (|dqAppend| (CAR |ld|) (|dqConcat| (CDR |ld|))))))
 
-(DEFUN |dqToList| (|s|)
-  (PROG () (RETURN (COND ((NULL |s|) NIL) ('T (CAR |s|))))))
+(DEFUN |dqToList| (|s|) (COND ((NULL |s|) NIL) ('T (CAR |s|))))
 
 (DEFUN |shoeConstructToken| (|ln| |lp| |b| |n|)
-  (PROG ()
-    (RETURN (CONS (ELT |b| 0) (CONS (ELT |b| 1) (CONS |lp| |n|))))))
+  (CONS (ELT |b| 0) (CONS (ELT |b| 1) (CONS |lp| |n|))))
 
-(DEFUN |shoeTokType| (|x|) (PROG () (RETURN (CAR |x|))))
+(DEFUN |shoeTokType| (|x|) (CAR |x|))
 
-(DEFUN |shoeTokPart| (|x|) (PROG () (RETURN (CADR |x|))))
+(DEFUN |shoeTokPart| (|x|) (CADR |x|))
 
-(DEFUN |shoeTokPosn| (|x|) (PROG () (RETURN (CDDR |x|))))
+(DEFUN |shoeTokPosn| (|x|) (CDDR |x|))
 
-(DEFUN |shoeTokConstruct| (|x| |y| |z|)
-  (PROG () (RETURN (CONS |x| (CONS |y| |z|)))))
+(DEFUN |shoeTokConstruct| (|x| |y| |z|) (CONS |x| (CONS |y| |z|)))
 
 (DEFUN |shoeNextLine| (|s|)
   (PROG (|s1| |a|)
@@ -171,8 +164,7 @@
                   (#0# (|shoeAccumulateLines| |$r| |string|)))))
              (#0# (CONS |s| |string|)))))))))
 
-(DEFUN |shoeCloser| (|t|)
-  (PROG () (RETURN (MEMQ (|shoeKeyWord| |t|) '(CPAREN CBRACK)))))
+(DEFUN |shoeCloser| (|t|) (MEMQ (|shoeKeyWord| |t|) '(CPAREN CBRACK)))
 
 (DEFUN |shoeToken| ()
   (PROG (|b| |ch| |n| |linepos| |c| |ln|)
@@ -204,13 +196,11 @@
           (#0#
            (|dqUnit| (|shoeConstructToken| |ln| |linepos| |b| |n|))))))))
 
-(DEFUN |shoeLeafId| (|x|) (PROG () (RETURN (LIST 'ID (INTERN |x|)))))
+(DEFUN |shoeLeafId| (|x|) (LIST 'ID (INTERN |x|)))
 
-(DEFUN |shoeLeafKey| (|x|)
-  (PROG () (RETURN (LIST 'KEY (|shoeKeyWord| |x|)))))
+(DEFUN |shoeLeafKey| (|x|) (LIST 'KEY (|shoeKeyWord| |x|)))
 
-(DEFUN |shoeLeafInteger| (|x|)
-  (PROG () (RETURN (LIST 'INTEGER (|shoeIntValue| |x|)))))
+(DEFUN |shoeLeafInteger| (|x|) (LIST 'INTEGER (|shoeIntValue| |x|)))
 
 (DEFUN |shoeLeafFloat| (|a| |w| |e|)
   (PROG (|c| |b|)
@@ -222,22 +212,21 @@
                  (EXPT (|double| 10) (- |e| (LENGTH |w|)))))
         (LIST 'FLOAT |c|)))))
 
-(DEFUN |shoeLeafString| (|x|) (PROG () (RETURN (LIST 'STRING |x|))))
+(DEFUN |shoeLeafString| (|x|) (LIST 'STRING |x|))
 
-(DEFUN |shoeLeafLisp| (|x|) (PROG () (RETURN (LIST 'LISP |x|))))
+(DEFUN |shoeLeafLisp| (|x|) (LIST 'LISP |x|))
 
-(DEFUN |shoeLeafLispExp| (|x|) (PROG () (RETURN (LIST 'LISPEXP |x|))))
+(DEFUN |shoeLeafLispExp| (|x|) (LIST 'LISPEXP |x|))
 
-(DEFUN |shoeLeafLine| (|x|) (PROG () (RETURN (LIST 'LINE |x|))))
+(DEFUN |shoeLeafLine| (|x|) (LIST 'LINE |x|))
 
-(DEFUN |shoeLeafComment| (|x|) (PROG () (RETURN (LIST 'COMMENT |x|))))
+(DEFUN |shoeLeafComment| (|x|) (LIST 'COMMENT |x|))
 
-(DEFUN |shoeLeafNegComment| (|x|)
-  (PROG () (RETURN (LIST 'NEGCOMMENT |x|))))
+(DEFUN |shoeLeafNegComment| (|x|) (LIST 'NEGCOMMENT |x|))
 
-(DEFUN |shoeLeafError| (|x|) (PROG () (RETURN (LIST 'ERROR |x|))))
+(DEFUN |shoeLeafError| (|x|) (LIST 'ERROR |x|))
 
-(DEFUN |shoeLeafSpaces| (|x|) (PROG () (RETURN (LIST 'SPACES |x|))))
+(DEFUN |shoeLeafSpaces| (|x|) (LIST 'SPACES |x|))
 
 (DEFUN |shoeLispEscape| ()
   (PROG (|n| |exp| |a|)
@@ -353,26 +342,21 @@
         (|shoeKeyTr| |sss|)))))
 
 (DEFUN |shoeKeyTr| (|w|)
-  (PROG ()
-    (DECLARE (SPECIAL |$floatok|))
-    (RETURN
-      (COND
-        ((EQ (|shoeKeyWord| |w|) 'DOT)
-         (COND
-           (|$floatok| (|shoePossFloat| |w|))
-           (#0='T (|shoeLeafKey| |w|))))
-        (#0# (SETQ |$floatok| (NULL (|shoeCloser| |w|)))
-         (|shoeLeafKey| |w|))))))
+  (DECLARE (SPECIAL |$floatok|))
+  (COND
+    ((EQ (|shoeKeyWord| |w|) 'DOT)
+     (COND
+       (|$floatok| (|shoePossFloat| |w|))
+       (#0='T (|shoeLeafKey| |w|))))
+    (#0# (SETQ |$floatok| (NULL (|shoeCloser| |w|)))
+     (|shoeLeafKey| |w|))))
 
 (DEFUN |shoePossFloat| (|w|)
-  (PROG ()
-    (DECLARE (SPECIAL |$ln| |$sz| |$n|))
-    (RETURN
-      (COND
-        ((OR (NOT (< |$n| |$sz|))
-             (NULL (|shoeDigit| (ELT |$ln| |$n|))))
-         (|shoeLeafKey| |w|))
-        ('T (SETQ |w| (|shoeInteger|)) (|shoeExponent| "0" |w|))))))
+  (DECLARE (SPECIAL |$ln| |$sz| |$n|))
+  (COND
+    ((OR (NOT (< |$n| |$sz|)) (NULL (|shoeDigit| (ELT |$ln| |$n|))))
+     (|shoeLeafKey| |w|))
+    ('T (SETQ |w| (|shoeInteger|)) (|shoeExponent| "0" |w|))))
 
 (DEFUN |shoeSpace| ()
   (PROG (|n|)
@@ -387,13 +371,11 @@
           ('T (|shoeLeafSpaces| (- |$n| |n|))))))))
 
 (DEFUN |shoeString| ()
-  (PROG ()
-    (DECLARE (SPECIAL |$floatok| |$n|))
-    (RETURN
-      (PROGN
-        (SETQ |$n| (+ |$n| 1))
-        (SETQ |$floatok| NIL)
-        (|shoeLeafString| (|shoeS|))))))
+  (DECLARE (SPECIAL |$floatok| |$n|))
+  (PROGN
+    (SETQ |$n| (+ |$n| 1))
+    (SETQ |$floatok| NIL)
+    (|shoeLeafString| (|shoeS|))))
 
 (DEFUN |shoeS| ()
   (PROG (|b| |a| |str| |mn| |escsym| |strsym| |n|)
@@ -422,18 +404,16 @@
             (CONCAT |str| |b|))))))))
 
 (DEFUN |shoeIdEnd| (|line| |n|)
-  (PROG ()
-    (RETURN
-      (PROGN
-        (LOOP
-          (COND
-            ((NOT (AND (< |n| (LENGTH |line|))
-                       (|shoeIdChar| (ELT |line| |n|))))
-             (RETURN NIL))
-            ('T (SETQ |n| (+ |n| 1)))))
-        |n|))))
+  (PROGN
+    (LOOP
+      (COND
+        ((NOT (AND (< |n| (LENGTH |line|))
+                   (|shoeIdChar| (ELT |line| |n|))))
+         (RETURN NIL))
+        ('T (SETQ |n| (+ |n| 1)))))
+    |n|))
 
-(DEFUN |shoeDigit| (|x|) (PROG () (RETURN (DIGIT-CHAR-P |x|))))
+(DEFUN |shoeDigit| (|x|) (DIGIT-CHAR-P |x|))
 
 (DEFUN |shoeW| (|b|)
   (PROG (|bb| |a| |str| |endid| |l| |n1|)
@@ -468,7 +448,7 @@
            (|shoeLeafKey| |w|))
           ('T (|shoeLeafId| |w|)))))))
 
-(DEFUN |shoeInteger| () (PROG () (RETURN (|shoeInteger1| NIL))))
+(DEFUN |shoeInteger| () (|shoeInteger1| NIL))
 
 (DEFUN |shoeInteger1| (|zro|)
   (PROG (|bb| |a| |str| |l| |n|)
@@ -575,16 +555,15 @@
                     " is not a Boot character"))
         (|shoeLeafError| (ELT |$ln| |n|))))))
 
-(DEFUN |shoeOrdToNum| (|x|) (PROG () (RETURN (DIGIT-CHAR-P |x|))))
+(DEFUN |shoeOrdToNum| (|x|) (DIGIT-CHAR-P |x|))
 
-(DEFUN |shoeKeyWord| (|st|)
-  (PROG () (RETURN (GETHASH |st| |shoeKeyTable|))))
+(DEFUN |shoeKeyWord| (|st|) (GETHASH |st| |shoeKeyTable|))
 
 (DEFUN |shoeKeyWordP| (|st|)
-  (PROG () (RETURN (NULL (NULL (GETHASH |st| |shoeKeyTable|))))))
+  (NULL (NULL (GETHASH |st| |shoeKeyTable|))))
 
 (DEFUN |shoeMatch| (|l| |i|)
-  (PROG () (RETURN (|shoeSubStringMatch| |l| |shoeDict| |i|))))
+  (|shoeSubStringMatch| |l| |shoeDict| |i|))
 
 (DEFUN |shoeSubStringMatch| (|l| |d| |i|)
   (PROG (|eql| |ls| |s| |s1| |done| |ll| |u| |h|)
@@ -621,6 +600,5 @@
             (SETQ |j| (+ |j| 1))))
         |s1|))))
 
-(DEFUN |shoePunctuation| (|c|)
-  (PROG () (RETURN (EQL (ELT |shoePun| |c|) 1))))
+(DEFUN |shoePunctuation| (|c|) (EQL (ELT |shoePun| |c|) 1))
 

@@ -1,3 +1,17 @@
+2008-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (translateToplevelExpression): New.
+	(bpOutItem): Use it.
+	* boot/ast.boot (needsPROG): New.
+	(shoeCompTran): Use it. Tidy.
+	(bfMain): Define cache variables before functions manipulating them.
+	* boot/strap/: Update cached Lisp translations.
+	* interp/g-timer.boot: Use assignment instead of SETANDFILEQ at
+	toplevel.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/trace.boot: Likewise.
+
 2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/msgdb.boot ($MARG): Define.

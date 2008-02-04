@@ -360,6 +360,20 @@ genDeclaration(n,t) ==
     ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
   ["DECLAIM",["TYPE",t,n]]
 
+
+++ A non declarative expression `expr' appears at toplevel and its
+++ translation needs embeddeding in an `EVAL-WHEN'.
+translateToplevelExpression expr ==
+  expr' := rest rest shoeCompTran ["LAMBDA",["x"],expr]
+  -- replace "DECLARE"s with "DECLAIM"s, as the former can't appear
+  -- at toplevel.
+  for t in expr' repeat
+    t is ["DECLARE",:.] =>
+      RPLACA(t,"DECLAIM")
+  shoeEVALANDFILEACTQ
+    #expr' > 1 => ["PROGN",:expr']
+    first expr'
+
 bpOutItem()==
     $op := nil
     bpComma() or bpTrap()
@@ -388,8 +402,7 @@ bpOutItem()==
         bpPush [["DEFCONSTANT", n, e]]
 
       otherwise =>
-        b:=shoeCompTran ["LAMBDA",["x"],b]
-        bpPush [shoeEVALANDFILEACTQ CADDR b]
+        bpPush [translateToplevelExpression b]
  
 --shoeStartsAt (sz,name,stream)==
 --   bStreamNull stream => ['nullstream]

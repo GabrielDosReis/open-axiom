@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,8 +39,8 @@
 -- technology to the interpreter.  The input is a parseTree and the
 -- output is an interpreter attributed tree.
 
-SETANDFILEQ($useParserSrcPos, true)
-SETANDFILEQ($transferParserSrcPos, true)
+$useParserSrcPos := true
+$transferParserSrcPos := true
 
 pf2Sexpr pf == packageTran (pf2Sex1)(pf)
 

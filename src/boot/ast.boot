@@ -865,19 +865,14 @@ shoeCompTran x==
    $locVars:=SETDIFFERENCE(SETDIFFERENCE($locVars,
                                   $fluidVars),shoeATOMs args)
    body:=
-       if $fluidVars or $locVars or $dollarVars or $typings
-       then
-         lvars:=append($fluidVars,$locVars)
-         $fluidVars:=UNION($fluidVars,$dollarVars)
-         if null $fluidVars
-         then
-            null $typings=> shoePROG(lvars,body)
-            shoePROG(lvars,[["DECLARE",:$typings],:body])
-         else
-           fvars:=["DECLARE",["SPECIAL",:$fluidVars]]
-           null $typings => shoePROG(lvars,[fvars,:body])
-           shoePROG(lvars,[fvars,["DECLARE",:$typings],:body])
-       else shoePROG([], body)
+     lvars:=append($fluidVars,$locVars)
+     $fluidVars:=UNION($fluidVars,$dollarVars)
+     body' := body
+     if $typings then body' := [["DECLARE",:$typings],:body']
+     if $fluidVars then
+       fvars:=["DECLARE",["SPECIAL",:$fluidVars]]
+       body' := [fvars,:body']
+     if lvars or needsPROG body then shoePROG(lvars,body') else body'
    fl:=shoeFluids args
    body:=if fl
          then
@@ -885,6 +880,14 @@ shoeCompTran x==
            cons(fvs,body)
          else body
    [lamtype,args, :body]
+
+needsPROG body ==
+  atom body => false
+  [op,:args] := body
+  op in '(RETURN RETURN_-FROM) => true
+  op in '(LET PROG LOOP BLOCK DECLARE LAMBDA) => false
+  or/[needsPROG t for t in body] => true
+  false
 
 shoePROG(v,b)==
     null b => [["PROG", v]]
@@ -1068,11 +1071,13 @@ bfMain(auxfn,op)==
   cacheCountCode:= ['hashCount,cacheName]
   cacheVector:=
       [op,cacheName,cacheType,cacheResetCode,cacheCountCode]
-  [mainFunction,
+  defCode := ["DEFPARAMETER",cacheName,
+                ['MAKE_-HASHTABLE,["QUOTE","UEQUAL"]]]
+  [defCode,mainFunction,
     shoeEVALANDFILEACTQ
       ["SETF",["GET",
-           ["QUOTE", op],["QUOTE",'cacheInfo]],["QUOTE", cacheVector]],
-            shoeEVALANDFILEACTQ  cacheResetCode ]
+           ["QUOTE", op],["QUOTE",'cacheInfo]],["QUOTE", cacheVector]]]
+
 
 bfNameOnly: %Thing -> %List 
 bfNameOnly x==

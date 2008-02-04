@@ -146,17 +146,17 @@ stopTimingProcess name ==
   popTimedName()
  
 --% Instrumentation specific to the interpreter
-SETANDFILEQ($oldElapsedSpace, 0)
-SETANDFILEQ($oldElapsedGCTime,0.0)
-SETANDFILEQ($oldElapsedTime,0.0)
-SETANDFILEQ($gcTimeTotal,0.0)
+$oldElapsedSpace := 0
+$oldElapsedGCTime := 0.0
+$oldElapsedTime := 0.0
+$gcTimeTotal := 0.0
  
 -- $timedNameStack is used to hold the names of sections of the
 -- code being timed.
  
-SETANDFILEQ($timedNameStack,'(other))
+$timedNameStack := '(other)
  
-SETANDFILEQ($interpreterTimedNames,'(
+$interpreterTimedNames == '(
 -- name         class abbrev
   (algebra        2 .   B) _
   (analysis       1 .   A) _
@@ -175,15 +175,15 @@ SETANDFILEQ($interpreterTimedNames,'(
   (diskread       3 .   K) _
   (print          3 .   P) _
   (resolve        1 .   R) _
-  ))
+  )
  
-SETANDFILEQ($interpreterTimedClasses, '(
+$interpreterTimedClasses == '(
 -- number class name    short name
   ( 1    interpreter     .  IN) _
   ( 2    evaluation      .  EV) _
   ( 3    other           .  OT) _
   ( 4    reclaim         .  GC) _
-  ))
+  )
  
 initializeTimedNames(listofnames,listofclasses) ==
   for [name,:.] in listofnames repeat
