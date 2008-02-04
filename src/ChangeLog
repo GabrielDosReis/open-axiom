@@ -1,5 +1,19 @@
 2008-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/foam_l.lisp (|G-stdoutVar|): Define; don't just assign.
+	(|G-stdinVar|): Likewise.
+	(|G-stderrVar|): Likewise.
+	(|FormatNumber|): Bind local variable; don't just assign to it.
+	(|magicEq1|): Tidy.
+	* interp/debug.lisp: Don't declare `COUNT as SPECIAL.
+	Remove reference to LISP package.  Remove CCL special-cased
+	definitions.
+	* interp/comp.lisp ($closedfns): Define.
+	* interp/cfuns.lisp (|getEnv|): Define only for GCL, for the time
+	being. 
+
+2008-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/translator.boot (translateToplevelExpression): New.
 	(bpOutItem): Use it.
 	* boot/ast.boot (needsPROG): New.
