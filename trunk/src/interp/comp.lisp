@@ -65,6 +65,8 @@
 ; (defparameter OptionList nil) defined in nlib.lisp
 (defparameter SpecialVars nil)
 
+(defvar $closedfns nil)
+
 (defun |compAndDefine| (L)
   (let ((*comp370-apply* (function print-and-eval-defun)))
     (declare (special *comp370-apply*))

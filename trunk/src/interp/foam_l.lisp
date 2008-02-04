@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -467,12 +467,12 @@
 ;;(defvar |FoamOutputString|
 ;;  (make-array 80 :element-type 'string-char :adjustable t :fill-pointer 0))
 (defun |FormatNumber| (c arr i)
-  (setq str (format nil "~a" c))
-  (replace arr str :start1 i)
+  (let ((str (format nil "~a" c)))
+    (replace arr str :start1 i)
 ;;  (incf i (fill-pointer |FoamOutputString|))
 ;;  (if (> i (length arr)) (error "not enough space"))
 ;;  (setf (fill-pointer |FoamOutputString|) 0)
-  (+ i (length str)))
+    (+ i (length str))))
 
 (defmacro |FormatSFlo| (c arr i) `(|FormatNumber| ,c ,arr ,i))
 (defmacro |FormatDFlo| (c arr i) `(|FormatNumber| ,c ,arr ,i))
@@ -882,12 +882,14 @@
 (defun |fiGetDebugger| (x) ())
 
 ;; Output ports
-(setq |G-stdoutVar| t)
-(setq |G-stdinVar| t)
-(setq |G-stderrVar| t)
+(defvar |G-stdoutVar| t)
+(defvar |G-stdinVar| t)
+(defvar |G-stderrVar| t)
 
 ;; !! Not portable !!
-(defun foam::|fiStrHash| (x) (boot::|hashString| (subseq x 0 (- (length x) 1))))
+;; ??? find a better way to get this work correctly and portably.
+#+:GCL
+(defun |fiStrHash| (x) (boot::|hashString| (subseq x 0 (- (length x) 1))))
 
 ;; These three functions check that two cons's contain identical entries.
 ;; We use EQL to test numbers and EQ everywhere else.  If the structure 
@@ -906,8 +908,11 @@
        (t (eq u v) )))
 
 (defun |magicEq1| (u v)
- (cond ( (and (atom u) (atom v)) (|politicallySound| u v))
-       ( (or (atom u) (atom v)) nil)
-       ( (|politicallySound| (car u) (car v)) (|magicEq1| (cdr u) (cdr v)))
-       nil ))
+ (cond ((and (atom u) (atom v))
+	(|politicallySound| u v))
+       ((or (atom u) (atom v))
+	nil)
+       ((|politicallySound| (car u) (car v))
+	(|magicEq1| (cdr u) (cdr v)))))
+
 
