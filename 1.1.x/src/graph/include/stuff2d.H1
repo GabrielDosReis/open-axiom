@@ -1,0 +1,7 @@
+#ifdef _NO_PROTO
+extern float absolute();
+extern void goodbye();
+#else
+extern float absolute(float);
+extern void goodbye(int);
+#endif

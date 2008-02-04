@@ -1,0 +1,15 @@
+#ifdef _NO_PROTO
+extern void writeTitle();
+extern void drawPreViewport();
+extern void drawTheViewport();
+extern int keepDrawingViewport();
+extern viewPoints * makeViewport();
+extern void postMakeViewport();
+#else
+extern void writeTitle(void);
+extern void drawPreViewport(int );
+extern void drawTheViewport(int );
+extern int keepDrawingViewport(void);
+extern viewPoints * makeViewport(void);
+extern void postMakeViewport(void);
+#endif

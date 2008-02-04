@@ -1,0 +1,758 @@
+\documentclass{article}
+\usepackage{axiom}
+
+\title{src/algebra boolean.spad}
+\author{Stephen M. Watt, Michael Monagan, Gabriel Dos~Reis}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+\section{category PROPLOG PropositionalLogic}
+<<category PROPLOG PropositionalLogic>>=
+)abbrev category PROPLOG PropositionalLogic
+++ Author: Gabriel Dos Reis
+++ Date Created: Januray 14, 2008
+++ Date Last Modified: January 14, 2008
+++ Description: This category declares the connectives of
+++ Propositional Logic.
+PropositionalLogic(): Category == with
+  "not": % -> %
+    ++ not p returns the logical negation of `p'.
+  "and": (%, %) -> %
+    ++ p and q returns the logical conjunction of `p', `q'.
+  "or": (%, %) -> %
+    ++ p or q returns the logical disjunction of `p', `q'.
+  implies: (%,%) -> %
+    ++ implies(p,q) returns the logical implication of `q' by `p'.
+  equiv: (%,%) -> %
+    ++ equiv(p,q) returns the logical equivalence of `p', `q'.
+@
+
+\section{domain PROPFRML PropositionalFormula}
+<<domain PROPFRML PropositionalFormula>>=
+)set mess autoload on
+)abbrev domain PROPFRML PropositionalFormula
+++ Author: Gabriel Dos Reis
+++ Date Created: Januray 14, 2008
+++ Date Last Modified: January 16, 2008
+++ Description: This domain implements propositional formula build
+++ over a term domain, that itself belongs to PropositionalLogic
+PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
+    if T has CoercibleTo OutputForm then CoercibleTo OutputForm
+    coerce: T -> %
+      ++ coerce(t) turns the term `t' into a propositional formula
+    coerce: Symbol -> %
+      ++ coerce(t) turns the term `t' into a propositional variable.
+    variables: % -> Set Symbol
+      ++ variables(p) returns the set of propositional variables
+      ++ appearing in the proposition `p'.
+
+    term?: % -> Boolean
+      ++ term? p returns true when `p' really is a term
+    term: % -> T
+      ++ term p extracts the term value from `p'; otherwise errors.
+   
+    variable?: % -> Boolean
+      ++ variables? p returns true when `p' really is a variable.
+    variable: % -> Symbol
+      ++ variable p extracts the varible name from `p'; otherwise errors.
+
+    not?: % -> Boolean
+      ++ not? p is true when `p' is a logical negation
+    notOperand: % -> %
+      ++ notOperand returns the operand to the logical `not' operator; 
+      ++ otherwise errors.
+
+    and?: % -> Boolean
+      ++ and? p is true when `p' is a logical conjunction.
+    andOperands: % -> Pair(%, %)
+      ++ andOperands p extracts the operands of the logical conjunction;
+      ++ otherwise errors.
+
+    or?: % -> Boolean
+      ++ or? p is true when `p' is a logical disjunction.
+    orOperands: % -> Pair(%,%)
+      ++ orOperands p extracts the operands to the logical disjunction;
+      ++ otherwise errors.
+
+    implies?: % -> Boolean
+      ++ implies? p is true when `p' is a logical implication.
+    impliesOperands: % -> Pair(%,%)
+      ++ impliesOperands p extracts the operands to the logical
+      ++ implication; otherwise errors.
+
+    equiv?: % -> Boolean
+      ++ equiv? p is true when `p' is a logical equivalence.
+    equivOperands: % -> Pair(%,%)
+      ++ equivOperands p extracts the operands to the logical equivalence;
+      ++ otherwise errors.
+
+  == add
+    FORMULA ==> Union(base: T, var: Symbol, unForm: %,
+                  binForm: Record(op: Symbol, lhs: %, rhs: %))
+
+    per(f: FORMULA): % ==
+      f pretend %
+
+    rep(p: %): FORMULA ==
+      p pretend FORMULA
+
+    coerce(t: T): % ==
+      per [t]$FORMULA
+
+    coerce(s: Symbol): % ==
+      per [s]$FORMULA
+
+    not p ==
+      per [p]$FORMULA
+
+    binaryForm(o: Symbol, l: %, r: %): % ==
+      per [[o, l, r]$Record(op: Symbol, lhs: %, rhs: %)]$FORMULA
+
+    p and q ==
+      binaryForm('_and, p, q)
+
+    p or q ==
+      binaryForm('_or, p, q)
+
+    implies(p,q) ==
+      binaryForm('implies, p, q)
+
+    equiv(p,q) ==
+      binaryForm('equiv, p, q)
+
+    variables p ==
+      p' := rep p
+      p' case base => empty()$Set(Symbol)
+      p' case var => { p'.var }
+      p' case unForm => variables(p'.unForm)
+      p'' := p'.binForm
+      union(variables(p''.lhs), variables(p''.rhs))$Set(Symbol)
+
+    -- returns true if the proposition `p' is a formula of kind
+    -- indicated by `o'.
+    isBinaryNode?(p: %, o: Symbol): Boolean ==
+      p' := rep p
+      p' case binForm and p'.binForm.op = o
+
+    -- returns the operands of a binary formula node
+    binaryOperands(p: %): Pair(%,%) ==
+      p' := (rep p).binForm
+      pair(p'.lhs,p'.rhs)$Pair(%,%)
+
+    term? p ==
+      rep p case base
+
+    term p ==
+      term? p => (rep p).base
+      userError "formula is not a term"
+
+    variable? p ==
+      rep p case var
+
+    variable p ==
+      variable? p => (rep p).var
+      userError "formula is not a variable"
+
+    not? p ==
+      rep p case unForm
+
+    notOperand p ==
+      not? p => (rep p).unForm
+      userError "formula is not a logical negation"
+
+    and? p ==
+      isBinaryNode?(p,'_and)
+
+    andOperands p ==
+      and? p => binaryOperands p
+      userError "formula is not a conjunction formula"
+
+    or? p ==
+      isBinaryNode?(p,'_or)
+
+    orOperands p ==
+      or? p => binaryOperands p
+      userError "formula is not a disjunction formula"
+
+    implies? p ==
+      isBinaryNode?(p, 'implies)
+
+    impliesOperands p ==
+      implies? p => binaryOperands p
+      userError "formula is not an implication formula"
+
+    equiv? p ==
+      isBinaryNode?(p,'equiv)
+
+    equivOperands p ==
+      equiv? p =>  binaryOperands p
+      userError "formula is not an equivalence equivalence"
+
+    -- Unparsing grammar.
+    --
+    -- Ideally, the following syntax would the external form
+    -- Formula:
+    --   EquivFormula
+    --
+    -- EquivFormula:
+    --   ImpliesFormula
+    --   ImpliesFormula <=> EquivFormula
+    --
+    -- ImpliesFormula:
+    --   OrFormula
+    --   OrFormula => ImpliesFormula
+    --
+    -- OrFormula:
+    --   AndFormula
+    --   AndFormula or OrFormula 
+    -- 
+    -- AndFormula
+    --   NotFormula
+    --   NotFormula and AndFormula
+    --
+    -- NotFormula:
+    --   PrimaryFormula
+    --   not NotFormula
+    --
+    -- PrimaryFormula:
+    --   Term
+    --   ( Formula )
+    --
+    -- Note: Since the token '=>' already means a construct different
+    --       from what we would like to have as a notation for
+    --       propositional logic, we will output the formula `p => q'
+    --       as implies(p,q), which looks like a function call.
+    --       Similarly, we do not have the token `<=>' for logical
+    --       equivalence; so we unparser `p <=> q' as equiv(p,q).
+    --
+    --       So, we modify the nonterminal PrimaryFormula to read
+    --       PrimaryFormula:
+    --         Term
+    --         implies(Formula, Formula)
+    --         equiv(Formula, Formula)
+    if T has CoercibleTo OutputForm then
+      formula: % -> OutputForm
+      coerce(p: %): OutputForm ==
+	formula p
+
+      primaryFormula(p: %): OutputForm ==
+        term? p => term(p)::OutputForm
+        variable? p => variable(p)::OutputForm
+        if rep p case binForm then
+           p' := (rep p).binForm
+           p'.op = 'implies or p'.op = 'equiv =>
+             return elt(outputForm p'.op, 
+                      [formula p'.lhs, formula p'.rhs])$OutputForm
+        paren(formula p)$OutputForm
+
+      notFormula(p: %): OutputForm ==
+        not? p =>
+          elt(outputForm '_not, [notFormula((rep p).'unForm)])$OutputForm
+        primaryFormula p
+      
+      andFormula(p: %): OutputForm ==
+        and? p =>
+          p' := (rep p).binForm
+	  -- ??? idealy, we should be using `and$OutputForm' but
+	  -- ??? a bug in the compiler currently prevents that.
+	  infix(outputForm '_and, notFormula p'.lhs, 
+	    andFormula p'.rhs)$OutputForm
+        notFormula p
+      
+      orFormula(p: %): OutputForm ==
+        or? p =>
+          p' := (rep p).binForm
+	  -- ??? idealy, we should be using `or$OutputForm' but
+	  -- ??? a bug in the compiler currently prevents that.
+	  infix(outputForm '_or, andFormula p'.lhs, 
+	    orFormula p'.rhs)$OutputForm
+        andFormula p
+
+      formula p ==
+        -- Note: this should be equivFormula, but see the explanation above.
+        orFormula p
+
+@
+
+\section{domain REF Reference}
+<<domain REF Reference>>=
+)abbrev domain REF Reference
+++ Author: Stephen M. Watt
+++ Date Created:
+++ Change History:
+++ Basic Operations: deref, elt, ref, setelt, setref, =
+++ Related Constructors:
+++ Keywords:  reference
+++ Description:  \spadtype{Reference} is for making a changeable instance
+++ of something.
+
+Reference(S:Type): Type with
+        ref   : S -> %
+          ++  ref(n) creates a pointer (reference) to the object n.
+        elt   : % -> S
+          ++ elt(n) returns the object n.
+        setelt: (%, S) -> S
+          ++ setelt(n,m) changes the value of the object n to m.
+        -- alternates for when bugs don't allow the above
+        deref : % -> S
+          ++ deref(n) is equivalent to \spad{elt(n)}.
+        setref: (%, S) -> S
+          ++ setref(n,m) same as \spad{setelt(n,m)}.
+        _=   : (%, %) -> Boolean
+          ++ a=b tests if \spad{a} and b are equal.
+        if S has SetCategory then SetCategory
+
+    == add
+        Rep := Record(value: S)
+
+        p = q        == EQ(p, q)$Lisp
+        ref v        == [v]
+        elt p        == p.value
+        setelt(p, v) == p.value := v
+        deref p      == p.value
+        setref(p, v) == p.value := v
+
+        if S has SetCategory then
+          coerce p ==
+            prefix(message("ref"@String), [p.value::OutputForm])
+
+@
+\section{REF.lsp BOOTSTRAP} 
+{\bf REF} depends on a chain of
+files. We need to break this cycle to build the algebra. So we keep a
+cached copy of the translated {\bf REF} category which we can write
+into the {\bf MID} directory. We compile the lisp code and copy the
+{\bf REF.o} file to the {\bf OUT} directory.  This is eventually
+forcibly replaced by a recompiled version.
+
+Note that this code is not included in the generated catdef.spad file.
+
+<<REF.lsp BOOTSTRAP>>=
+
+(|/VERSIONCHECK| 2) 
+
+(PUT (QUOTE |REF;=;2$B;1|) (QUOTE |SPADreplace|) (QUOTE EQ)) 
+
+(DEFUN |REF;=;2$B;1| (|p| |q| |$|) (EQ |p| |q|)) 
+
+(PUT (QUOTE |REF;ref;S$;2|) (QUOTE |SPADreplace|) (QUOTE LIST)) 
+
+(DEFUN |REF;ref;S$;2| (|v| |$|) (LIST |v|)) 
+
+(PUT (QUOTE |REF;elt;$S;3|) (QUOTE |SPADreplace|) (QUOTE QCAR)) 
+
+(DEFUN |REF;elt;$S;3| (|p| |$|) (QCAR |p|)) 
+
+(DEFUN |REF;setelt;$2S;4| (|p| |v| |$|) (PROGN (RPLACA |p| |v|) (QCAR |p|))) 
+
+(PUT (QUOTE |REF;deref;$S;5|) (QUOTE |SPADreplace|) (QUOTE QCAR)) 
+
+(DEFUN |REF;deref;$S;5| (|p| |$|) (QCAR |p|)) 
+
+(DEFUN |REF;setref;$2S;6| (|p| |v| |$|) (PROGN (RPLACA |p| |v|) (QCAR |p|))) 
+
+(DEFUN |REF;coerce;$Of;7| (|p| |$|) (SPADCALL (SPADCALL "ref" (QREFELT |$| 17)) (LIST (SPADCALL (QCAR |p|) (QREFELT |$| 18))) (QREFELT |$| 20))) 
+
+(DEFUN |Reference| (#1=#:G82336) (PROG NIL (RETURN (PROG (#2=#:G82337) (RETURN (COND ((LETT #2# (|lassocShiftWithFunction| (LIST (|devaluate| #1#)) (HGET |$ConstructorCache| (QUOTE |Reference|)) (QUOTE |domainEqualList|)) |Reference|) (|CDRwithIncrement| #2#)) ((QUOTE T) (|UNWIND-PROTECT| (PROG1 (|Reference;| #1#) (LETT #2# T |Reference|)) (COND ((NOT #2#) (HREM |$ConstructorCache| (QUOTE |Reference|)))))))))))) 
+
+(DEFUN |Reference;| (|#1|) (PROG (|DV$1| |dv$| |$| |pv$|) (RETURN (PROGN (LETT |DV$1| (|devaluate| |#1|) . #1=(|Reference|)) (LETT |dv$| (LIST (QUOTE |Reference|) |DV$1|) . #1#) (LETT |$| (GETREFV 23) . #1#) (QSETREFV |$| 0 |dv$|) (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 (LIST (|HasCategory| |#1| (QUOTE (|SetCategory|))))) . #1#)) (|haddProp| |$ConstructorCache| (QUOTE |Reference|) (LIST |DV$1|) (CONS 1 |$|)) (|stuffDomainSlots| |$|) (QSETREFV |$| 6 |#1|) (QSETREFV |$| 7 (|Record| (|:| |value| |#1|))) (COND ((|testBitVector| |pv$| 1) (QSETREFV |$| 21 (CONS (|dispatchFunction| |REF;coerce;$Of;7|) |$|)))) |$|)))) 
+
+(MAKEPROP (QUOTE |Reference|) (QUOTE |infovec|) (LIST (QUOTE #(NIL NIL NIL NIL NIL NIL (|local| |#1|) (QUOTE |Rep|) (|Boolean|) |REF;=;2$B;1| |REF;ref;S$;2| |REF;elt;$S;3| |REF;setelt;$2S;4| |REF;deref;$S;5| |REF;setref;$2S;6| (|String|) (|OutputForm|) (0 . |message|) (5 . |coerce|) (|List| |$|) (10 . |prefix|) (16 . |coerce|) (|SingleInteger|))) (QUOTE #(|~=| 21 |setref| 27 |setelt| 33 |ref| 39 |latex| 44 |hash| 49 |elt| 54 |deref| 59 |coerce| 64 |=| 69)) (QUOTE NIL) (CONS (|makeByteWordVec2| 1 (QUOTE (1 0 1 1))) (CONS (QUOTE #(|SetCategory&| NIL |BasicType&| NIL)) (CONS (QUOTE #((|SetCategory|) (|Type|) (|BasicType|) (|CoercibleTo| 16))) (|makeByteWordVec2| 22 (QUOTE (1 16 0 15 17 1 6 16 0 18 2 16 0 0 19 20 1 0 16 0 21 2 1 8 0 0 1 2 0 6 0 6 14 2 0 6 0 6 12 1 0 0 6 10 1 1 15 0 1 1 1 22 0 1 1 0 6 0 11 1 0 6 0 13 1 1 16 0 21 2 0 8 0 0 9)))))) (QUOTE |lookupComplete|))) 
+@
+\section{category LOGIC Logic}
+<<category LOGIC Logic>>=
+)abbrev category LOGIC Logic
+++ Author: 
+++ Date Created:
+++ Change History:
+++ Basic Operations: ~, /\, \/
+++ Related Constructors:
+++ Keywords: boolean
+++ Description:  
+++ `Logic' provides the basic operations for lattices,
+++ e.g., boolean algebra.
+
+
+Logic: Category == BasicType with
+       _~:        % -> %
+	++ ~(x) returns the logical complement of x.
+       _/_\:       (%, %) -> %
+	++ \spadignore { /\ }returns the logical `meet', e.g. `and'.
+       _\_/:       (%, %) -> %
+	++ \spadignore{ \/ } returns the logical `join', e.g. `or'.
+  add
+    _\_/(x: %,y: %) == _~( _/_\(_~(x), _~(y)))
+
+@
+\section{domain BOOLEAN Boolean}
+<<domain BOOLEAN Boolean>>=
+)abbrev domain BOOLEAN Boolean
+++ Author: Stephen M. Watt
+++ Date Created:
+++ Change History:
+++ Basic Operations: true, false, not, and, or, xor, nand, nor, implies, ^
+++ Related Constructors:
+++ Keywords: boolean
+++ Description:  \spadtype{Boolean} is the elementary logic with 2 values:
+++ true and false
+
+Boolean(): Join(OrderedSet, Finite, Logic, PropositionalLogic, ConvertibleTo InputForm) with
+    true   : constant -> %
+      ++ true is a logical constant.
+    false  : constant -> %
+      ++ false is a logical constant.
+    _^    : % -> %
+      ++ ^ n returns the negation of n.
+    xor    : (%, %) -> %
+      ++ xor(a,b) returns the logical exclusive {\em or}
+      ++ of Boolean \spad{a} and b.
+    nand   : (%, %) -> %
+      ++ nand(a,b) returns the logical negation of \spad{a} and b.
+    nor    : (%, %) -> %
+      ++ nor(a,b) returns the logical negation of \spad{a} or b.
+    test: % -> Boolean
+      ++ test(b) returns b and is provided for compatibility with the new compiler.
+  == add
+    nt: % -> %
+
+    test a        == a pretend Boolean
+
+    nt b          == (b pretend Boolean => false; true)
+    true          == EQ(2,2)$Lisp   --well, 1 is rather special
+    false         == NIL$Lisp
+    sample()      == true
+    not b         == (test b => false; true)
+    _^ b          == (test b => false; true)
+    _~ b          == (test b => false; true)
+    _and(a, b)    == (test a => b; false)
+    _/_\(a, b)    == (test a => b; false)
+    _or(a, b)     == (test a => true; b)
+    _\_/(a, b)     == (test a => true; b)
+    xor(a, b)     == (test a => nt b; b)
+    nor(a, b)     == (test a => false; nt b)
+    nand(a, b)    == (test a => nt b; true)
+    a = b         == BooleanEquality(a, b)$Lisp
+    implies(a, b) == (test a => b; true)
+    equiv(a,b)    == BooleanEquality(a, b)$Lisp
+    a < b         == (test b => not(test a);false)
+
+    size()        == 2
+    index i       ==
+      even?(i::Integer) => false
+      true
+    lookup a      ==
+      a pretend Boolean => 1
+      2
+    random()      ==
+      even?(random()$Integer) => false
+      true
+
+    convert(x:%):InputForm ==
+      x pretend Boolean => convert("true"::Symbol)
+      convert("false"::Symbol)
+
+    coerce(x:%):OutputForm ==
+      x pretend Boolean => message "true"
+      message "false"
+
+@
+\section{BOOLEAN.lsp}
+{\bf BOOLEAN} depends on 
+{\bf ORDSET} which depends on 
+{\bf SETCAT} which depends on
+{\bf BASTYPE} which depends on 
+{\bf BOOLEAN}. We need to break this cycle to build the algebra.
+So we keep a cached copy of the translated BOOLEAN domain which
+we can write into the {\bf MID} directory. We compile the lisp
+code and copy the {\bf BOOLEAN.o} file to the {\bf OUT} directory.
+This is eventually forcibly replaced by a recompiled version. 
+<<BOOLEAN.lsp BOOTSTRAP>>=
+
+(/VERSIONCHECK 2) 
+
+(PUT '|BOOLEAN;test;$B;1| '|SPADreplace| '(XLAM (|a|) |a|)) 
+
+(DEFUN |BOOLEAN;test;$B;1| (|a| $) |a|) 
+
+(DEFUN |BOOLEAN;nt| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
+
+(PUT '|BOOLEAN;true;$;3| '|SPADreplace| '(XLAM NIL 'T)) 
+
+(DEFUN |BOOLEAN;true;$;3| ($) 'T) 
+
+(PUT '|BOOLEAN;false;$;4| '|SPADreplace| '(XLAM NIL NIL)) 
+
+(DEFUN |BOOLEAN;false;$;4| ($) NIL) 
+
+(DEFUN |BOOLEAN;not;2$;5| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
+
+(DEFUN |BOOLEAN;^;2$;6| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
+
+(DEFUN |BOOLEAN;~;2$;7| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
+
+(DEFUN |BOOLEAN;and;3$;8| (|a| |b| $) (COND (|a| |b|) ('T 'NIL))) 
+
+(DEFUN |BOOLEAN;/\\;3$;9| (|a| |b| $) (COND (|a| |b|) ('T 'NIL))) 
+
+(DEFUN |BOOLEAN;or;3$;10| (|a| |b| $) (COND (|a| 'T) ('T |b|))) 
+
+(DEFUN |BOOLEAN;\\/;3$;11| (|a| |b| $) (COND (|a| 'T) ('T |b|))) 
+
+(DEFUN |BOOLEAN;xor;3$;12| (|a| |b| $)
+  (COND (|a| (|BOOLEAN;nt| |b| $)) ('T |b|))) 
+
+(DEFUN |BOOLEAN;nor;3$;13| (|a| |b| $)
+  (COND (|a| 'NIL) ('T (|BOOLEAN;nt| |b| $)))) 
+
+(DEFUN |BOOLEAN;nand;3$;14| (|a| |b| $)
+  (COND (|a| (|BOOLEAN;nt| |b| $)) ('T 'T))) 
+
+(PUT '|BOOLEAN;=;2$B;15| '|SPADreplace| '|BooleanEquality|) 
+
+(DEFUN |BOOLEAN;=;2$B;15| (|a| |b| $) (|BooleanEquality| |a| |b|)) 
+
+(DEFUN |BOOLEAN;implies;3$;16| (|a| |b| $) (COND (|a| |b|) ('T 'T))) 
+
+(PUT '|BOOLEAN;equiv;3$;17| '|SPADreplace| '|BooleanEquality|) 
+
+(DEFUN |BOOLEAN;equiv;3$;17| (|a| |b| $) (|BooleanEquality| |a| |b|)) 
+
+(DEFUN |BOOLEAN;<;2$B;18| (|a| |b| $)
+  (COND (|b| (SPADCALL |a| (QREFELT $ 23))) ('T 'NIL))) 
+
+(PUT '|BOOLEAN;size;Nni;19| '|SPADreplace| '(XLAM NIL 2)) 
+
+(DEFUN |BOOLEAN;size;Nni;19| ($) 2) 
+
+(DEFUN |BOOLEAN;index;Pi$;20| (|i| $)
+  (COND ((SPADCALL |i| (QREFELT $ 28)) 'NIL) ('T 'T))) 
+
+(DEFUN |BOOLEAN;lookup;$Pi;21| (|a| $) (COND (|a| 1) ('T 2))) 
+
+(DEFUN |BOOLEAN;random;$;22| ($)
+  (COND ((SPADCALL (|random|) (QREFELT $ 28)) 'NIL) ('T 'T))) 
+
+(DEFUN |BOOLEAN;convert;$If;23| (|x| $)
+  (COND
+    (|x| (SPADCALL (SPADCALL "true" (QREFELT $ 35)) (QREFELT $ 37)))
+    ('T (SPADCALL (SPADCALL "false" (QREFELT $ 35)) (QREFELT $ 37))))) 
+
+(DEFUN |BOOLEAN;coerce;$Of;24| (|x| $)
+  (COND
+    (|x| (SPADCALL "true" (QREFELT $ 40)))
+    ('T (SPADCALL "false" (QREFELT $ 40))))) 
+
+(DEFUN |Boolean| ()
+  (PROG ()
+    (RETURN
+      (PROG (#0=#:G1458)
+        (RETURN
+          (COND
+            ((LETT #0# (HGET |$ConstructorCache| '|Boolean|) |Boolean|)
+             (|CDRwithIncrement| (CDAR #0#)))
+            ('T
+             (UNWIND-PROTECT
+               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
+                                   (LIST
+                                    (CONS NIL (CONS 1 (|Boolean;|))))))
+                 (LETT #0# T |Boolean|))
+               (COND
+                 ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))))) 
+
+(DEFUN |Boolean;| ()
+  (PROG (|dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$| '(|Boolean|) . #0=(|Boolean|))
+        (LETT $ (GETREFV 43) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|haddProp| |$ConstructorCache| '|Boolean| NIL (CONS 1 $))
+        (|stuffDomainSlots| $)
+        $)))) 
+
+(MAKEPROP '|Boolean| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|Boolean|) |BOOLEAN;test;$B;1|
+             (CONS IDENTITY
+                   (FUNCALL (|dispatchFunction| |BOOLEAN;true;$;3|) $))
+             (CONS IDENTITY
+                   (FUNCALL (|dispatchFunction| |BOOLEAN;false;$;4|) $))
+             |BOOLEAN;not;2$;5| |BOOLEAN;^;2$;6| |BOOLEAN;~;2$;7|
+             |BOOLEAN;and;3$;8| |BOOLEAN;/\\;3$;9| |BOOLEAN;or;3$;10|
+             |BOOLEAN;\\/;3$;11| |BOOLEAN;xor;3$;12|
+             |BOOLEAN;nor;3$;13| |BOOLEAN;nand;3$;14|
+             |BOOLEAN;=;2$B;15| |BOOLEAN;implies;3$;16|
+             |BOOLEAN;equiv;3$;17| (0 . |not|) |BOOLEAN;<;2$B;18|
+             (|NonNegativeInteger|) |BOOLEAN;size;Nni;19| (|Integer|)
+             (5 . |even?|) (|PositiveInteger|) |BOOLEAN;index;Pi$;20|
+             |BOOLEAN;lookup;$Pi;21| |BOOLEAN;random;$;22| (|String|)
+             (|Symbol|) (10 . |coerce|) (|InputForm|) (15 . |convert|)
+             |BOOLEAN;convert;$If;23| (|OutputForm|) (20 . |message|)
+             |BOOLEAN;coerce;$Of;24| (|SingleInteger|))
+          '#(~= 25 ~ 31 |xor| 36 |true| 42 |test| 46 |size| 51 |random|
+             55 |or| 59 |not| 65 |nor| 70 |nand| 76 |min| 82 |max| 88
+             |lookup| 94 |latex| 99 |index| 104 |implies| 109 |hash|
+             115 |false| 120 |equiv| 124 |convert| 130 |coerce| 135
+             |and| 140 ^ 146 |\\/| 151 >= 157 > 163 = 169 <= 175 < 181
+             |/\\| 187)
+          'NIL
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
+                (CONS '#(|OrderedSet&| NIL |Logic&| |SetCategory&| NIL
+                         NIL |BasicType&| NIL)
+                      (CONS '#((|OrderedSet|) (|Finite|) (|Logic|)
+                               (|SetCategory|) (|ConvertibleTo| 36)
+                               (|PropositionalLogic|) (|BasicType|)
+                               (|CoercibleTo| 39))
+                            (|makeByteWordVec2| 42
+                                '(1 6 0 0 23 1 27 6 0 28 1 34 0 33 35 1
+                                  36 0 34 37 1 39 0 33 40 2 0 6 0 0 1 1
+                                  0 0 0 12 2 0 0 0 0 17 0 0 0 8 1 0 6 0
+                                  7 0 0 25 26 0 0 0 32 2 0 0 0 0 15 1 0
+                                  0 0 10 2 0 0 0 0 18 2 0 0 0 0 19 2 0
+                                  0 0 0 1 2 0 0 0 0 1 1 0 29 0 31 1 0
+                                  33 0 1 1 0 0 29 30 2 0 0 0 0 21 1 0
+                                  42 0 1 0 0 0 9 2 0 0 0 0 22 1 0 36 0
+                                  38 1 0 39 0 41 2 0 0 0 0 13 1 0 0 0
+                                  11 2 0 0 0 0 16 2 0 6 0 0 1 2 0 6 0 0
+                                  1 2 0 6 0 0 20 2 0 6 0 0 1 2 0 6 0 0
+                                  24 2 0 0 0 0 14)))))
+          '|lookupComplete|)) 
+
+(MAKEPROP '|Boolean| 'NILADIC T) 
+@
+\section{domain IBITS IndexedBits}
+<<domain IBITS IndexedBits>>=
+)abbrev domain IBITS IndexedBits
+++ Author: Stephen Watt and Michael Monagan
+++ Date Created:
+++   July 86
+++ Change History:
+++   Oct 87
+++ Basic Operations: range
+++ Related Constructors:
+++ Keywords: indexed bits
+++ Description: \spadtype{IndexedBits} is a domain to compactly represent
+++ large quantities of Boolean data.
+
+IndexedBits(mn:Integer): BitAggregate() with
+        -- temporaries until parser gets better
+        Not: % -> %
+            ++ Not(n) returns the bit-by-bit logical {\em Not} of n.
+        Or : (%, %) -> %
+            ++ Or(n,m)  returns the bit-by-bit logical {\em Or} of
+            ++ n and m.
+        And: (%, %) -> %
+            ++ And(n,m)  returns the bit-by-bit logical {\em And} of
+            ++ n and m.
+    == add
+
+        range: (%, Integer) -> Integer
+          --++ range(j,i) returnes the range i of the boolean j.
+
+        minIndex u  == mn
+
+        range(v, i) ==
+          i >= 0 and i < #v => i
+          error "Index out of range"
+
+        coerce(v):OutputForm ==
+            t:Character := char "1"
+            f:Character := char "0"
+            s := new(#v, space()$Character)$String
+            for i in minIndex(s)..maxIndex(s) for j in mn.. repeat
+              s.i := if v.j then t else f
+            s::OutputForm
+
+        new(n, b)       == BVEC_-MAKE_-FULL(n,TRUTH_-TO_-BIT(b)$Lisp)$Lisp
+        empty()         == BVEC_-MAKE_-FULL(0,0)$Lisp
+        copy v          == BVEC_-COPY(v)$Lisp
+        #v              == BVEC_-SIZE(v)$Lisp
+        v = u           == BVEC_-EQUAL(v, u)$Lisp
+        v < u           == BVEC_-GREATER(u, v)$Lisp
+        _and(u, v)      == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
+        _or(u, v)       == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
+        xor(v,u)        == (#v=#u => BVEC_-XOR(v,u)$Lisp; map("xor",v,u))
+        setelt(v:%, i:Integer, f:Boolean) ==
+          BVEC_-SETELT(v, range(v, i-mn), TRUTH_-TO_-BIT(f)$Lisp)$Lisp
+        elt(v:%, i:Integer) ==
+          BIT_-TO_-TRUTH(BVEC_-ELT(v, range(v, i-mn))$Lisp)$Lisp
+
+        Not v           == BVEC_-NOT(v)$Lisp
+        And(u, v)       == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
+        Or(u, v)        == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
+
+@
+\section{domain BITS Bits}
+<<domain BITS Bits>>=
+)abbrev domain BITS Bits
+++ Author: Stephen M. Watt
+++ Date Created:
+++ Change History:
+++ Basic Operations: And, Not, Or
+++ Related Constructors:
+++ Keywords: bits
+++ Description:  \spadtype{Bits} provides logical functions for Indexed Bits.
+
+Bits(): Exports == Implementation where
+  Exports == BitAggregate() with
+    bits: (NonNegativeInteger, Boolean) -> %
+	++ bits(n,b) creates bits with n values of b
+  Implementation == IndexedBits(1) add
+    bits(n,b)    == new(n,b)
+
+@
+\section{License}
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+
+<<domain REF Reference>>
+<<category LOGIC Logic>>
+<<domain BOOLEAN Boolean>>
+<<domain IBITS IndexedBits>>
+<<domain BITS Bits>>
+<<category PROPLOG PropositionalLogic>>
+<<domain PROPFRML PropositionalFormula>>
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}
