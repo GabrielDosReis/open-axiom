@@ -204,13 +204,13 @@ openaxiom_execute_core(const openaxiom_command* command,
 
    /* How long is the final command line for the MS system? */
    command_line_length += cur;
-   for (i = 0; i < comand->rt_argc; ++i)
+   for (i = 0; i < command->rt_argc; ++i)
       command_line_length += 1  /* blank char as separator */
          + strlen(command->rt_argv[i]); /* room for each argument */
    /* Don't forget room for the doubledash string.  */
    command_line_length += sizeof("--") - 1;
    /* And arguments to the actual command.  */
-   for (i = 1; i < comand->core_argc; ++i)
+   for (i = 1; i < command->core_argc; ++i)
       command_line_length += 1 + strlen(command->core_argv[i]);
 
    /* Now, build the actual command line.  This is done by
@@ -248,7 +248,7 @@ openaxiom_execute_core(const openaxiom_command* command,
                     /* lpCurrentDirectory */ NULL,
                     /* lpstartupInfo */ &startupInfo,
                     /* lpProcessInformation */ &procInfo) == 0) {
-      fprintf(stderr, GetLastError());
+      fprintf(stderr, "error %d\n", GetLastError());
       abort();
    }
    WaitForSingleObject(procInfo.hProcess, INFINITE);
