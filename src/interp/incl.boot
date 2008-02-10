@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis
+-- Copyright (C) 2007-2008, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -112,8 +112,13 @@ incCommands :=
              '"elseif" , _
              '"else"   , _
              '"endif" ]
- 
+
+++ when non-nil, an integer that indicates the current line number.
+$inputLineNumber := nil 
+
 incClassify(s) ==
+            $inputLineNumber = 0 and incPrefix?('"#_!",0,s) =>
+              [true,0,'"magicNumber"]
             not incCommand? s => [false,0, '""]
             i := 1; n := #s
             while i < n and s.i = char " " repeat i := i + 1
@@ -267,6 +272,7 @@ Rest s==>incLude (eb,CDR ss,lno,ufos,states)
  
 incLude1 (:z) ==
             [eb, ss, ln, ufos, states]:=z
+            $inputLineNumber := ln
             lno       := ln+1
             state     := states.0
  
@@ -385,7 +391,10 @@ incLude1 (:z) ==
                         StreamNil)
                 cons(xlOK(eb,str,lno,ufos.0),
                          incLude(eb,CDR ss,lno,ufos,rest states))
- 
+
+            info.2 = '"magicNumber" =>
+              Rest s
+
             cons(xlCmdBug(eb, str, lno,ufos), StreamNil)
  
 --% Message handling for the source includer

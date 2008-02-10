@@ -872,6 +872,9 @@ case $axiom_include_gcl,$axiom_lisp in
 esac
 AC_SUBST(axiom_include_gcl)
 AC_SUBST(axiom_lisp_flavor)
+AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
+                   [openaxiom_${axiom_lisp_flavor}_runtime],
+                   [The kind of base runtime system for this build.])
 
 ## The following is a horrible to arrange for GCL to successfully
 ## rebuild symbol tables with "rsym" on Windows platform.  It should
@@ -1019,7 +1022,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-02-04], 
+AC_INIT([OpenAxiom], [1.2.0-2008-02-09], 
         [open-axiom-bugs@lists.sf.net])
 
 @

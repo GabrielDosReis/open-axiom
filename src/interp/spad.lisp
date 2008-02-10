@@ -52,7 +52,6 @@
 (defvar |$formalArgList| nil "checked in compSymbol")
 (defvar |$newCompAtTopLevel| nil "if t uses new compiler")
 (defvar |$doNotCompileJustPrint| nil "switch for compile")
-(defvar |$PrintCompilerMessageIfTrue| t)
 (defvar |$Rep| '|$Rep| "should be bound to gensym? checked in coerce")
 ;; the following initialization of $ must not be a defvar
 ;; since that make $ special

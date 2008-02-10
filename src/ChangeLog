@@ -1,3 +1,65 @@
+2008-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for batch processing.
+	* sman/sman.c (process_arguments): Now take an argument for
+	openaxiom_command.  Don't support '-ws', '-comp', '-grprog',
+	'-clefprog', '-clientprog' anymore.
+	(process_options): Take one more arguments.
+	(main): Excute the Core if in batch mode.
+	* sman/Makefile.in (sman_objects): Add driver/utils.lo.
+	(%.lo): Look up headers in src/driver too.
+	* interp/sys-utility.boot (RECLAIM): Define here.
+	(makeAbsoluteFilename): Likewise.
+	* interp/sys-driver.boot ($openServerIfTrue): Define here.
+	($SpadServer): Likewise.
+	(AxiomCore::%sysInit): Tidy.
+	(loadExposureGroupData): Define here.
+	(REROOT): Likewise.
+	(initMemoryConfig): Likewise.
+	(RESTART): Likewise.
+	(SPAD-SAVE): Likewise.
+	(SET-RESTART-HOOK): Likewise.
+	(executeSpadScript): New.  Install as driver.
+	* interp/obey.lisp (OBEY): Use makeAbsoluteFilename.
+	* interp/patches.lisp (save-system): Likewise.
+	* interp/util.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+	* interp/msgdb.boot: Have mssage throwers countError.
+	* interp/incl.boot ($inputLineNumber):  New.
+	(incClassify): Use it.  Recognize the magic number.
+	(incLude1): Ignore line with magic number.
+	* interp/i-toplev.boot (statisticsInitialization): Define here.
+	* interp/i-syscmd.boot ($options): Define.
+	($historyDirectory): Likewise.
+	($HiFiAccess): Likewise.
+	(history): Tidy.
+	(initHist): Likewise.
+	(initHistList): Likewise.
+	(historySpad2Cmd): Likewise.
+	(setHistoryCore): Likewise.
+	(restoreHistory): Likewise.
+	($reportUndo): Define.
+	(diffAlist): Tidy.
+	* interp/diagnostics.boot (BUMPERRORCOUNT): Use countError.
+	* interp/debug.lisp (/D-2): Use makeAbsoluteFilename.
+	* interp/Makefile.pamphlet (OBJS): Remove bookvol5.$(FASLEXT).
+	(makeint.lisp): Don't require bookvol5.$(FASLEXT).  Don't load it.
+	(bookvol5.$(FASLEXT)): Remove rule.
+	(bookvol5.pamphlet): Remove.
+	* include/sman.H1: Fold content into sman/sman.c.  Remove.
+	* driver/main.c (OPENAXIOM_CORE_EXECUTABLE): Move to utils.c
+	(OPENAXIOM_SMAN_EXECUTABLE): Likewise.
+	(OPENAXIOM_CORE_PATH): Likewise.
+	(OPENAXIOM_SMAN_PATH): Likewise.
+	(get_systemdir): Rename to openaxiom_get_systemdir; move to
+	utils.c.
+	(make_path_for): Rename openaxiom_make_path_for; move to utils.c
+	(main): Simplify.
+	* driver/utils.c: New.
+	* driver/utils.h: Likewise.
+	* driver/Makefile.in: Rename axiom to open-axiom.
+	* Makefile.pamphlet (all-sman): Now require all-driver.
+
 2008-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet (OBJS): Include sys-utility.$(FASLEXT).

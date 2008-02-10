@@ -37,57 +37,11 @@
    as the seesion manager.  */
 
 
-#include "axiom-c-macros.h"
+#include "utils.h"
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#if HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
-#ifdef __WIN32__
-#  include <windows.h>
-#endif
-
-/* The basename of the file holding the OpenAxiom core executable.  */
-#define OPENAXIOM_CORE_EXECUTABLE \
-   "AXIOMsys" OPENAXIOM_EXEEXT
-
-/* The basename of the file holding the session manager executable.  */
-#define OPENAXIOM_SMAN_EXECUTABLE \
-   "sman" OPENAXIOM_EXEEXT
-
-/* Path to the OpenAxiom executable core, relative to
-   OPENAXIOM_ROOT_DIRECTORY, or to the system root directory as specified
-   on command line.  */
-#define OPENAXIOM_CORE_PATH \
-   "/bin/" OPENAXIOM_CORE_EXECUTABLE
-
-/* Path to the session manager, relative to OPENAXIOM_ROOT_DIRECTORY,
-   or to the system root directory as specified on command line.  */
-#define OPENAXIOM_SMAN_PATH \
-   "/bin/" OPENAXIOM_SMAN_EXECUTABLE
-
-/* Return a path to the running system, either as specified on command
-   line through --system=, or as specified at configuration time.  */
-static const char*
-get_systemdir(int argc, char* argv[])
-{
-   int i;
-
-   /* Root directory specified on command line takes precedence
-      over location specified at configuration time.  */
-   for (i = 1; i < argc; ++i)
-      if (strcmp("--", argv[i]) == 0)
-         break;
-      else if (strncmp("--system=", argv[i], sizeof("--system=") - 1) == 0) {
-         return argv[i] + sizeof ("--system=") - 1;
-      }
-
-   /* Command line did not change the system location to use.
-      Return what was computed at configuration time.  */
-   return OPENAXIOM_ROOT_DIRECTORY;
-}
 
 
 #define OPENAXIOM_GLOBAL_ENV   "AXIOM"
@@ -114,106 +68,33 @@ publish_systemdir(const char* dir)
 }
 
 
-/* Return a path for PROG specified as a relative path to PREFIX.  */
-static const char*
-make_path_for(const char* prefix, const char* prog)
-{
-   const int prefix_length = strlen(prefix);
-   char* execpath = (char*) malloc(prefix_length + strlen(prog) + 1);
-   strcpy(execpath, prefix);
-   strcpy(execpath + prefix_length, prog);
-   return execpath;
-}
-
-
 int
 main(int argc, char* argv[])
 {
-   const char* root_dir = get_systemdir(argc, argv);
-   const char* execpath =
-      make_path_for(root_dir,
-                    OPENAXIOM_USE_SMAN ?
-         OPENAXIOM_SMAN_PATH : OPENAXIOM_CORE_PATH);
-#ifdef __WIN32__
-   char* command_line;
-   int cur = strlen(argv[0]);
-   int command_line_length = 0;
-   int i;
-   PROCESS_INFORMATION procInfo;
-   STARTUPINFO startupInfo = { 0 };
-   DWORD status;                /* Exit code for this program masqueraded as
-                                   the child created below.  */
+   openaxiom_command command = { };
+   openaxiom_driver driver =
+      openaxiom_preprocess_arguments(&command, argc, argv);
 
-   command_line_length += cur;
-   for (i = 1; i < argc; ++i)
-      command_line_length += 1  /* blank char as separator */
-         + strlen(argv[i]);     /* room for each argument */
+   switch (driver) {
+   case openaxiom_core_driver:
+   case openaxiom_script_driver:
+   case openaxiom_compiler_driver:
+      return openaxiom_execute_core(&command, driver);
 
-   /* Don't forget room for the doubledash string.  */
-   command_line_length += sizeof("--") - 1;
+   case openaxiom_sman_driver:
+      break;
 
-   command_line = (char*) malloc(command_line_length + 1);
-
-   strcpy(command_line, argv[0]);
-   command_line[cur++] = ' ';
-
-   /* Now start arguments to the core executable.  */
-   command_line[cur++] = '-';
-   command_line[cur++] = '-';
-
-   /* Concatenate the arguments into a single string.  */
-   for (i = 1; i < argc; ++i) {
-      const int arg_length = strlen(argv[i]);
-      command_line[cur++] = ' ';
-      /* Note that strcpy will terminate `command_line' with a NUL
-         character, and since the next iteration will write the
-         blank precisely where the NUL character is, the whole command
-         line string will be a proper C-style string when the loop
-         normally exits.  */
-      strcpy(command_line + cur, argv[i]);
-      cur += arg_length;
-   }
-         
-   publish_systemdir(root_dir);
-   if(CreateProcess(/* lpApplicationName */ execpath,
-                    /* lpCommandLine */ command_line,
-                    /* lpProcessAttributes */ NULL,
-                    /* lpThreadAttributes */ NULL,
-                    /* bInheritHandles */ TRUE,
-                    /* dwCreationFlags */ 0,
-                    /* lpEnvironment */ NULL,
-                    /* lpCurrentDirectory */ NULL,
-                    /* lpstartupInfo */ &startupInfo,
-                    /* lpProcessInformation */ &procInfo) == 0) {
-      fprintf(stderr, GetLastError());
+   default:
       abort();
    }
-   WaitForSingleObject(procInfo.hProcess, INFINITE);
-   GetExitCodeProcess(procInfo.hProcess, &status);
-   CloseHandle(procInfo.hThread);
-   CloseHandle(procInfo.hProcess);
-   return status;
-                        
+
+#ifdef __WIN32__
+   /* Should not happen on MS platforms.  */
+   abort();
 #else  /* __WIN32__ */
-   int i;
-   char** args = (char**) malloc(sizeof (char*) * (argc + 2));
-   publish_systemdir(root_dir);
-
-   /* Pretend that we are still running the OpenAxiom driver, even if
-      it is actually the session manager or the core executable running.
-      We don't want to expose implementation details to users.  */
-   args[0] = argv[0];
-   /* If we are running the core executable, we need to insert a
-      doubledash to indicate beginning of arguments.  The session manager
-      does not need that temporary necessary obfuscation, and will
-      be confused.  */
-   if (!OPENAXIOM_USE_SMAN)
-      args[1] = "--";
-   for (i = 1; i < argc; ++i)
-      args[i + !OPENAXIOM_USE_SMAN] = argv[i];
-   args[argc + !OPENAXIOM_USE_SMAN] = NULL;
-
-   execv(execpath, args);
+   publish_systemdir(command.root_dir);
+   execv(openaxiom_make_path_for(command.root_dir, openaxiom_sman_driver),
+         argv);
    perror(strerror(errno));
    return -1;
 #endif /* __WIN32__ */

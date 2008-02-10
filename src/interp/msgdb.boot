@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -305,6 +305,7 @@ throwPatternMsg(key,args) ==
   sayMSG '" "
   if $testingSystem then sayMSG $testingErrorPrefix
   sayPatternMsg(key,args)
+  countError()
   spadThrow()
 
 sayKeyedMsgAsTeX(key, args) == 
@@ -354,6 +355,7 @@ throwKeyedMsg1(key,args) ==
   sayMSG '" "
   if $testingSystem then sayMSG $testingErrorPrefix
   sayKeyedMsg(key,args)
+  countError()
   spadThrow()
 
 throwListOfKeyedMsgs(descKey,descArgs,l) ==
@@ -368,6 +370,7 @@ throwListOfKeyedMsgs(descKey,descArgs,l) ==
   for [key,args] in l for i in 1.. repeat
     n := STRCONC(object2String i,'".")
     sayKeyedMsg(key,[n,:args])
+  countError()
   spadThrow()
 
 --  breakKeyedMsg is like throwKeyedMsg except that the user is given
@@ -459,6 +462,7 @@ throwKeyedMsgFromDb(key,args,dbName) ==
   sayMSG '" "
   if $testingSystem then sayMSG $testingErrorPrefix
   sayKeyedMsgFromDb(key,args,dbName)
+  countError()
   spadThrow()
 
 queryUserKeyedMsg(key,args) ==
@@ -558,6 +562,7 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
   null (val' := coerceInteractive(objNew(val,t1),$OutputForm)) =>
     throwKeyedMsg("S2IC0002",[t1,t2])
   val' := objValUnwrap(val')
+  countError()
   throwKeyedMsg("S2IC0003",[t1,t2,val'])
 
 --% Some Standard Message Printing Functions

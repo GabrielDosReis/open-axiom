@@ -95,6 +95,8 @@ $localExposureData :=
 
 --% Top level system command
 
+$options := nil
+
 initializeSystemCommands() ==
   l := $systemCommands
   $SYSCOMMANDS := NIL
@@ -1408,6 +1410,12 @@ $internalHistoryTable := NIL
 ++ t means keep history in core
 $useInternalHistoryTable := true
 
+++ vm/370 filename disk component
+$historyDirectory := "A"
+
+++ true means turn on history mechanism
+$HiFiAccess := true
+
 history l ==
   l or null $options => sayKeyedMsg("S2IH0006",NIL) 
   historySpad2Cmd()
@@ -1436,7 +1444,7 @@ initHist() ==
   -- see if history directory is writable
   histFileErase oldFile
   if MAKE_-INPUT_-FILENAME newFile then $REPLACE(oldFile,newFile)
-  $HiFiAccess:= 'T
+  $HiFiAccess:= true
   initHistList()
 
 initHistList() ==
@@ -1461,13 +1469,13 @@ historySpad2Cmd() ==
     opt in '(on yes) =>
       $HiFiAccess => sayKeyedMsg("S2IH0007",NIL) 
       $IOindex = 1 =>       -- haven't done anything yet
-        $HiFiAccess:= 'T
+        $HiFiAccess:= true
         initHistList()
         sayKeyedMsg("S2IH0008",NIL) 
       x := UPCASE queryUserKeyedMsg("S2IH0009",NIL) 
       MEMQ(STRING2ID_-N(x,1),'(Y YES)) =>
         histFileErase histFileName()
-        $HiFiAccess:= 'T
+        $HiFiAccess:= true
         $options := nil
         clearSpad2Cmd '(all)
         sayKeyedMsg("S2IH0008",NIL)
@@ -1475,7 +1483,7 @@ historySpad2Cmd() ==
       sayKeyedMsg("S2IH0010",NIL)
     opt in '(off no) =>
       null $HiFiAccess => sayKeyedMsg("S2IH0011",NIL)
-      $HiFiAccess:= NIL
+      $HiFiAccess:= false
       disableHist()
       sayKeyedMsg("S2IH0012",NIL)
     opt = 'file    => setHistoryCore NIL
@@ -1507,13 +1515,13 @@ setHistoryCore inCore ==
       histFileErase histFileName()
     $useInternalHistoryTable := true
     sayKeyedMsg("S2IH0032",NIL)
-  $HiFiAccess:= 'NIL
+  $HiFiAccess:= false
   histFileErase histFileName()
   str := RDEFIOSTREAM ['(MODE . OUTPUT),['FILE,:histFileName()]]
   for [n,:rec] in reverse $internalHistoryTable repeat
     SPADRWRITE(object2Identifier n,rec,str)
   RSHUT str
-  $HiFiAccess:= 'T
+  $HiFiAccess:= true
   $internalHistoryTable := NIL
   $useInternalHistoryTable := NIL
   sayKeyedMsg("S2IH0031",NIL)
@@ -1722,7 +1730,7 @@ restoreHistory(fn) ==
   _$FCOPY(restfile,curfile)
  
   l:= LENGTH RKEYIDS curfile
-  $HiFiAccess:= 'T
+  $HiFiAccess:= true
   oldInternal := $useInternalHistoryTable
   $useInternalHistoryTable := NIL
   if oldInternal then $internalHistoryTable := NIL
@@ -2487,6 +2495,9 @@ processSynonymLine line ==
 
 $undoFlag := true     --Default setting for undo is "on"
 
+++ true means means we report the steps undo takes
+$reportUndo := false
+
 
 undo(l) ==
 --undo takes one option ")redo" which simply reads "redo.input",
@@ -2552,7 +2563,7 @@ diffAlist(new,old) ==
     -- (2) if the new world has a proplist for that variable, it has
     --     been handled by the first loop.
   res := NREVERSE acc
-  if BOUNDP '$reportUndo and $reportUndo then reportUndo res
+  if $reportUndo then reportUndo res
   res
 
 reportUndo acc ==

@@ -115,3 +115,20 @@ rassoc(x,y) ==
   x = rest first y => first first y
   rassoc(x,rest y)
 
+++ Reclaim unreachable objects.
+RECLAIM() ==
+)if %hasFeature KEYWORD::GCL
+  SI::GBC true
+)elseif %hasFeature KEYWORD::SBCL
+  SB_-EXT::GC()
+)elseif %hasFeature KEYWORD::CLISP
+  EXT::GC()
+)else
+  fatalError '"don't know how to collect"
+)endif
+
+++
+makeAbsoluteFilename: %String -> %String
+makeAbsoluteFilename name ==
+  CONCATENATE("STRING",systemRootDirectory(),name)
+

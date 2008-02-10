@@ -203,7 +203,7 @@
         (|resetWorkspaceVariables|))
       (setq |$specialCharacters| |$plainRTspecialCharacters|)
 
-          (load (make-absolute-filename "lib/interp/obey"))
+          (load (|makeAbsoluteFilename| "lib/interp/obey"))
       (system:disksave filename :restart-function restart-hook :full-gc t))
 #+:Lucid (define-function 'user::save-system  #'boot::save-system)
 (defun |undoINITIALIZE| () ())

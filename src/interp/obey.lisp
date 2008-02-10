@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 
 #+ (and :lucid :unix)
 (defun OBEY (S)
-   (system:run-aix-program (make-absolute-filename "/lib/obey")
+   (system:run-aix-program (|makeAbsoluteFilename| "/lib/obey")
              :arguments (list "-c" S)))
 
 #+ (and :lucid :unix)
