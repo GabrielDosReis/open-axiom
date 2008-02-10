@@ -1,3 +1,8 @@
+2008-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-driver.boot (executeSpadScript): By default make
+	script execution quiet.  Support --verbose for verbose processing.
+
 2008-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add support for batch processing.

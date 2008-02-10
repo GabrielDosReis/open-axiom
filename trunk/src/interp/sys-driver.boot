@@ -53,6 +53,8 @@ $verboseInterprerter := true
 
 $PrintCompilerMessageIfTrue := true
 
+++
+$options := []
 
 +++ Initialization routine run by the core system before handing off
 +++ to the interpreter or compiler.  
@@ -191,10 +193,14 @@ executeSpadScript(progname,options,file) ==
   $BOOT := NIL
   $NEWSPAD := true
   $SPAD := true
-  -- $EchoLines := false
-  -- ECHO_-META : fluid := false
-  -- $verboseInterprerter := false
-  -- $ProcessInteractiveValue := true
+  if getOption(Option '"verbose",%systemOptions()) then
+    $verboseInterprerter := true
+    $options := []
+    $ProcessInteractiveValue := false
+  else
+    $verboseInterprerter := false
+    $options := [["quiet"]]
+    $ProcessInteractiveValue := true
   CATCH($intCoerceFailure,
    CATCH($intSpadReader,read [file]))
   coreQuit (errorCount()> 0 => 1; 0)
