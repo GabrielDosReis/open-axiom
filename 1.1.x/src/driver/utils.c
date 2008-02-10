@@ -217,7 +217,6 @@ openaxiom_execute_core(const openaxiom_command* command,
       concatenating the arguments into a single string. */
    command_line = (char*) malloc(command_line_length + 1);
    strcpy(command_line, command->core_argv[0]);
-   command_line[cur++] = ' ';
    for (i = 0; i < command->rt_argc; ++i) {
       const int arg_length = strlen(command->rt_argv[i]);
       command_line[cur++] = ' ';
@@ -229,6 +228,7 @@ openaxiom_execute_core(const openaxiom_command* command,
       strcpy(command_line + cur, command->rt_argv[i]);
       cur += arg_length;
    }
+   command_line[cur++] = ' ';
    command_line[cur++] = '-'; /*  start arguments to the core executable.  */
    command_line[cur++] = '-';
    for (i = 1; i < command->core_argc; ++i) {
