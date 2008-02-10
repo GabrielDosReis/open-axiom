@@ -65,7 +65,7 @@ all-clef: all-lib
 Superman (\Tool{sman}) is the master process that runs all of the other
 processes including \Tool{axiom}, \Tool{clef}, nagman, graphics, and hyperdoc
 <<smandir>>=
-all-sman: all-lib
+all-sman: all-lib all-driver
 	$(mkinstalldirs) $(axiom_target_bindir)
 	$(mkinstalldirs) $(axiom_target_libdir)
 	cd sman && ${MAKE}

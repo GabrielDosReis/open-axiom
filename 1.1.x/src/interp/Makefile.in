@@ -41,7 +41,7 @@ OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	i-object.$(FASLEXT)				\
 	i-code.$(FASLEXT)	i-coerce.$(FASLEXT)	\
 	i-coerfn.$(FASLEXT)	i-eval.$(FASLEXT)	\
-	i-funsel.$(FASLEXT)	bookvol5.$(FASLEXT)	\
+	i-funsel.$(FASLEXT)	\
 	i-intern.$(FASLEXT)	i-map.$(FASLEXT)	\
 	i-output.$(FASLEXT)	i-resolv.$(FASLEXT)	\
 	i-spec1.$(FASLEXT)				\
@@ -192,7 +192,7 @@ clean-local: mostlyclean-local
 
 distclean-local: clean-local
 
-makeint.lisp:	${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
+makeint.lisp:	${OBJS} util.$(FASLEXT) \
                 nocompil.$(FASLEXT) \
 		sys-driver.$(FASLEXT) \
 	        ${OUTINTERP} obey.$(FASLEXT) \
@@ -212,7 +212,6 @@ makeint.lisp:	${OBJS} bookvol5.$(FASLEXT) util.$(FASLEXT) \
 	@ echo '(|importModule| "hash")' >> makeint.lisp
 	@ echo '(gbc t)' >> makeint.lisp
 	@ echo '(|importModule| "nocompil")' >> makeint.lisp
-	@ echo '(|importModule| "bookvol5")' >> makeint.lisp
 	@ echo '(|importModule| "util")' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
@@ -719,9 +718,6 @@ nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
 util.$(FASLEXT): util.lisp parsing.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-bookvol5.$(FASLEXT): bookvol5.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
 fname.$(FASLEXT): fname.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
@@ -767,9 +763,6 @@ vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
 boot-pkg.$(FASLEXT): boot-pkg.lisp
 	$(BOOTSYS) -- --compile --output=$@ $<
 
-bookvol5.lisp: $(srcdir)/bookvol5.pamphlet
-	@ echo 298 making $@ from $<
-	$(axiom_build_document) --tangle=Interpreter --output=$@ $<
 ../algebra/warm.data: $(srcdir)/Makefile.pamphlet
 	@ echo 2 building warm.data
 	$(axiom_build_document) --tangle=warm.data --output=$@ $<

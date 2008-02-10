@@ -47,6 +47,7 @@ import '"sys-globals"
 ++ precompilation, or semantics analysis errors.
 
 BUMPERRORCOUNT kind ==
+  countError()
   $InteractiveMode =>
     index := 
       kind = "syntax" => 0

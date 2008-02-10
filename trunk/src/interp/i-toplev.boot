@@ -57,6 +57,14 @@ $QuietCommand := NIL
 $ProcessInteractiveValue := NIL
 $HTCompanionWindowID := NIL
 
+++ initialize the garbage collection timer
+statisticsInitialization() ==
+)if %hasFeature KEYWORD::GCL
+  SYSTEM::GBC_-TIME 0
+)else
+  nil
+)endif
+
 --% Starting the interpreter from LISP
 
 spadpo() ==

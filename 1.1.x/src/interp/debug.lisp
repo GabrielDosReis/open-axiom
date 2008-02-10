@@ -191,7 +191,7 @@
             (LIST  "   editing file" '|%b| (|namestring| EDINFILE) '|%d|))
           (OBEY
             (STRCONC
-              (make-absolute-filename "/lib/SPADEDFN ")
+              (|makeAbsoluteFilename| "/lib/SPADEDFN ")
               (|namestring| EDINFILE)
               " "
               (STRINGIMAGE $LINENUMBER)))

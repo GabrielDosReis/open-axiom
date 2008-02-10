@@ -710,9 +710,10 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
   op0 :=
     ( n := isSharpVarWithNum op ) => STRCONC('"<argument ",object2String n,'">")
     op
-  if get(op,'isInterpreterRule,$e) then
-    sayKeyedMsg("S2IM0014",[op0,(PAIRP sig =>prefix2String CAR sig;'"?")])
-  else sayKeyedMsg("S2IM0015",[op0,formatSignature sig])
+  if $verboseInterprerter then
+    if $verboseInterprerter and get(op,'isInterpreterRule,$e) then
+      sayKeyedMsg("S2IM0014",[op0,(PAIRP sig =>prefix2String CAR sig;'"?")])
+    else sayKeyedMsg("S2IM0015",[op0,formatSignature sig])
   $whereCacheList := [op,:$whereCacheList]
 
   -- RSS: 6-21-94

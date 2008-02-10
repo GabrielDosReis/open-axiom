@@ -565,9 +565,9 @@ install:
 	@echo Installing OpenAxiom in $(prefix)
 	@$(mkinstalldirs) "$(DESTDIR)$(open_axiom_installdir)"
 	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(open_axiom_installdir)"
-	rm -f "$(bindir)"/axiom
+	rm -f "$(bindir)"/open-axiom
 	@$(mkinstalldirs) "$(bindir)"
-	$(INSTALL_PROGRAM) src/driver/axiom$(EXEEXT) "$(bindir)"
+	$(INSTALL_PROGRAM) src/driver/open-axiom$(EXEEXT) "$(bindir)"
 	@echo OpenAxiom installation finished.
 @
 

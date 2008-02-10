@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@
 
 (in-package "BOOT")
 (export '($directory-list $current-directory reroot
-          make-absolute-filename |$msgDatabaseName| |$defaultMsgDatabaseName|))
+          |makeAbsoluteFilename| |$msgDatabaseName| |$defaultMsgDatabaseName|))
 
 (defun our-write-date (file) (and #+kcl (probe-file file)
                                   (file-write-date file)))
@@ -254,7 +254,7 @@
 (defun make-tags-file ()
 #+:gcl (system:chdir "/tmp")
 #-:gcl (obey (concatenate 'string "cd " "/tmp"))
-  (obey (concat "etags " (make-absolute-filename "../../src/interp/*.lisp")))
+  (obey (concat "etags " (|makeAbsoluteFilename| "../../src/interp/*.lisp")))
   (spadtags-from-directory "../../src/interp" "boot")
   (obey "cat /tmp/boot.TAGS >> /tmp/TAGS"))
 
@@ -564,12 +564,6 @@
 
 (defun build-interpsys (load-files translate-files asauto-files)
   (reroot)
-  #+:AKCL
-  (init-memory-config :cons 500 :fixnum 200 :symbol 500 :package 8
-                      :array 400 :string 500 :cfun 100 :cpages 1000
-                      :rpages 1000 :hole 2000)
-    #+:AKCL
-    (setq compiler::*suppress-compiler-notes* t)
   (mapcar #'|AxiomCore|::|importModule| load-files)
   (|resetWorkspaceVariables|)
   (|initHist|)
@@ -578,12 +572,10 @@
   (interpopen)
   (create-initializers)
   (|start| :fin)
-#+:CCL
-  (resethashtables)
   (setq *load-verbose* nil)
   (|setBootAutloadProperties| translate-functions translate-files)
   (|setBootAutloadProperties| asauto-functions asauto-files)
-  (setf (symbol-function 'boot::|addConsDB|) #'identity)
+  (setf (symbol-function '|addConsDB|) #'identity)
   (resethashtables) ; the databases into core, then close the streams
  )
 

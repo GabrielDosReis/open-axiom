@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,11 +30,11 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-bin_PROGRAMS = axiom$(EXEEXT)
+bin_PROGRAMS = open-axiom$(EXEEXT)
 
-axiom_SOURCES = main.c
+open_axiom_SOURCES = main.c utils.c
 
-axiom_objects = $(axiom_SOURCES:.c=.lo)
+open_axiom_objects = $(open_axiom_SOURCES:.c=.lo)
 
 .PHONY: all all-ax all-driver
 
@@ -55,8 +55,11 @@ stamp: $(bin_PROGRAMS)
 		-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
 		$(axiom_includes) $<
 
-axiom$(EXEEXT): $(axiom_objects)
-	$(LINK) -o $@ $<
+utils.lo: utils.h
+main.lo: utils.h
+
+open-axiom$(EXEEXT): $(open_axiom_objects)
+	$(LINK) -o $@ $(open_axiom_objects)
 
 mostlyclean-local:
 	@rm -f $(axiom_objects)

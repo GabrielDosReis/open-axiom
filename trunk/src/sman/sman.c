@@ -34,7 +34,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _SMAN_C
+#include "axiom-c-macros.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -48,7 +48,6 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#include "axiom-c-macros.h"
 
 #include "com.h"
 #include "bsdsignal.h"
@@ -57,7 +56,40 @@
 #include "bsdsignal.H1"
 #include "sockio-c.H1"
 #include "openpty.H1"
-#include "sman.H1"
+#include "utils.h"
+
+static void process_arguments(openaxiom_command*, int, char**);
+static int should_I_clef(void);
+static int in_X(void);
+static void set_up_defaults(void);
+static void process_options(openaxiom_command*, int, char**);
+static void death_handler(int);
+static void sman_catch_signals(void);
+static void fix_env(char** , int);
+static void init_term_io(void);
+static char* strPrefix(char* , char*);
+static void check_spad_proc(char* , char*);
+static void clean_up_old_sockets(void);
+static SpadProcess* fork_you(int);
+static void exec_command_env(char* , char**);
+static SpadProcess* spawn_of_hell(char* , int);
+static void start_the_spadclient(void);
+static void start_the_local_spadclient(void);
+static void start_the_session_manager(void);
+static void start_the_hypertex(void);
+static void start_the_graphics(void);
+static void fork_Axiom(void);
+static void start_the_Axiom(char**);
+static void clean_up_sockets(void);
+static void clean_hypertex_socket(void);
+static void read_from_spad_io(int);
+static void read_from_manager(int);
+static void manage_spad_io(int);
+static void init_spad_process_list(void);
+static SpadProcess* find_child(int);
+static void kill_all_children(void);
+static void clean_up_terminal(void);
+static void monitor_children(void);
 
 char *ws_path;                  /* location of the core executable */
 int start_clef;                 /* start clef under spad */
@@ -118,9 +150,10 @@ struct termios childbuf;         /* terminal structure for user i/o */
 int death_signal = 0;
 
 static void
-process_arguments(int argc,char ** argv)
+process_arguments(openaxiom_command* command, int argc,char ** argv)
 {
   int arg;
+  int other = 0;
   for (arg = 1; arg < argc; arg++) {
     if (strcmp(argv[arg], "-noclef")      == 0)
       start_clef = 0;
@@ -142,8 +175,6 @@ process_arguments(int argc,char ** argv)
       start_local_spadclient = 0;
     else if (strcmp(argv[arg], "-noiw")        == 0)
       start_spadclient = 0;
-    else if (strcmp(argv[arg], "-ws")          == 0)
-      ws_path = argv[++arg];
     else if (strcmp(argv[arg], "-comp")        == 0)
       ws_path = "$AXIOM/etc/images/comp";
     else if (strcmp(argv[arg], "-nox")         == 0)
@@ -154,33 +185,27 @@ process_arguments(int argc,char ** argv)
         start_ht = 0;
         start_graphics = 0;
       }
-    else if (strcmp(argv[arg], "-grprog")      == 0)
-      GraphicsProgram = argv[++arg];
-    else if (strcmp(argv[arg], "-htprog")      == 0)
-      HypertexProgram = argv[++arg];
     else if (strcmp(argv[arg], "-clefprog")    == 0) {
       strcpy(ClefCommandLine,argv[++arg]);
       ClefProgram = 
         strcat(ClefCommandLine, " -f $AXIOM/lib/command.list -e ");
     }
-    else if (strcmp(argv[arg], "-sessionprog") == 0)
-      SessionManagerProgram = argv[++arg];
-    else if (strcmp(argv[arg], "-clientprog")  == 0)
-      SpadClientProgram = argv[++arg];
     else if (strcmp(argv[arg], "-rm")  == 0)
       MakeRecordFile = argv[++arg];
     else if (strcmp(argv[arg], "-rv")  == 0)
       VerifyRecordFile = argv[++arg];
     else if (strcmp(argv[arg], "-paste")  == 0)
       PasteFile = argv[++arg];
-    else {
-      fprintf(stderr, "Usage: sman <-clef|-noclef> \
-<-gr|-nogr> <-ht|-noht> <-iw|-noiw> <-nox> <-comp> <-ws spad_workspace> \
-<-grprog path> <-htprog path> <-clefprog path> <-sessionprog path> \
-<-clientprog path>\n");
-      exit(-1);
-    }
+    else
+       argv[++other] = argv[arg];
   }
+
+  if (other > 0)
+     ++other;
+
+  command->core_argv = argv;
+  command->core_argc = other;
+  argv[++other] = NULL;
 }
 
 static int
@@ -209,10 +234,10 @@ set_up_defaults(void)
 }
 
 static void
-process_options(int argc, char **argv)
+process_options(openaxiom_command* command, int argc, char **argv)
 {
   set_up_defaults();
-  process_arguments(argc, argv);
+  process_arguments(command, argc, argv);
 }
 
 static void
@@ -717,9 +742,11 @@ monitor_children(void)
 int
 main(int argc, char *argv[],char *envp[])
 {
-  bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
-  process_options(argc, argv);
+   openaxiom_command command = { };
+   command.root_dir = openaxiom_get_systemdir(argc, argv);
+   process_options(&command, argc, argv);
 
+  bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   init_term_io();
   init_spad_process_list();
   start_the_Axiom(envp);
