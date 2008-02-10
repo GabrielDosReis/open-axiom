@@ -10,40 +10,35 @@ To report problems in OpenAxiom, please visit:
          http://www.open-axiom.org/bugs.html
 
 
+Each sub-item in the list below is sorted in (lastname) alpabetical order.
 
 
             Release Manager
-
 Gabriel Dos Reis                     gdr at integrable-solutions.net
 
 	    Blanket Write Privilege
-
 Gabriel Dos Reis                     gdr at integrable-solutions.net
 
 
 	    Interpreter and Compiler Maintainers
-
 Gabriel Dos Reis                     gdr at integrable-solutions.net
 
 
 	    Algebra Maintainers
-
 Gabriel Dos Reis                     gdr at integrable-solutions.net
 Bill Page                            bill.page at newsynthesis.org
 
             Interface Maintainer
-
 Bill Page                            bill.page at newsynthesis.org
 
 
-            Port Maintainer (Windows)
-
+            Port Maintainers (Windows)
+Gabriel Dos Reis                     gdr at integrable-solutions.net
 Bill Page                            bill.page at newsynthesis.org
 Alfredo Portes                       alfredo.portes at gmail.com
 
 	    Write After Approval
-
-Alfredo Portes                       alfredo.portes at gmail.com
 Yixin Cao                            comp.unix.solaris at gmail.com
 Ralf Hemmecke                        ralf at hemmecke.de
+Alfredo Portes                       alfredo.portes at gmail.com
 

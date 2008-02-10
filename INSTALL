@@ -130,7 +130,7 @@ make sure that you've gained the adequate privileges.  Then, type:
 
 3.c. The system is ready for use
 
-After step 3.b., your should have a script called `axiom', in
+After step 3.b., your should have a script called `open-axiom', in
 /usr/local/bin or /banana/space/bin or /whichever/prefix/you/used/bin,
 ready for use.  
 
