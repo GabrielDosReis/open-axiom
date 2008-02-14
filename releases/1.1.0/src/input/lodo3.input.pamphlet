@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input LODO.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from LinearOrdinaryDifferentialOperatorXmpPage
+)clear all
+
+
+-- Input generated from ugxLinearOrdinaryDifferentialOperatorSeriesPage
+)clear all
+
+Dx: LODO(EXPR INT, f +-> D(f, x))
+Dx := D()
+Dop:= Dx**3 + G/x**2*Dx + H/x**3 - 1
+n == 3
+phi == reduce(+,[subscript(s,[i])*exp(x)/x**i for i in 0..n])
+phi1 ==  Dop(phi) / exp x
+phi2 == phi1 *x**(n+3)
+phi3 == retract(phi2)@(POLY INT)
+pans == phi3 ::UP(x,POLY INT)
+pans1 == [coefficient(pans, (n+3-i) :: NNI) for i in 2..n+1]
+leq == solve(pans1,[subscript(s,[i]) for i in 1..n])
+leq
+n==4
+leq
+n==7
+leq
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

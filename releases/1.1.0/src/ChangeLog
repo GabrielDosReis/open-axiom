@@ -1,0 +1,728 @@
+2008-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* OpenAxiom-1.1.0 has been released.
+
+2008-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-driver.boot (executeSpadScript): By default make
+	script execution quiet.  Support --verbose for verbose processing.
+
+2008-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for batch processing.
+	* sman/sman.c (process_arguments): Now take an argument for
+	openaxiom_command.  Don't support '-ws', '-comp', '-grprog',
+	'-clefprog', '-clientprog' anymore.
+	(process_options): Take one more arguments.
+	(main): Excute the Core if in batch mode.
+	* sman/Makefile.in (sman_objects): Add driver/utils.lo.
+	(%.lo): Look up headers in src/driver too.
+	* interp/sys-utility.boot (RECLAIM): Define here.
+	(makeAbsoluteFilename): Likewise.
+	* interp/sys-driver.boot ($openServerIfTrue): Define here.
+	($SpadServer): Likewise.
+	(AxiomCore::%sysInit): Tidy.
+	(loadExposureGroupData): Define here.
+	(REROOT): Likewise.
+	(initMemoryConfig): Likewise.
+	(RESTART): Likewise.
+	(SPAD-SAVE): Likewise.
+	(SET-RESTART-HOOK): Likewise.
+	(executeSpadScript): New.  Install as driver.
+	* interp/obey.lisp (OBEY): Use makeAbsoluteFilename.
+	* interp/patches.lisp (save-system): Likewise.
+	* interp/util.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+	* interp/msgdb.boot: Have mssage throwers countError.
+	* interp/incl.boot ($inputLineNumber):  New.
+	(incClassify): Use it.  Recognize the magic number.
+	(incLude1): Ignore line with magic number.
+	* interp/i-toplev.boot (statisticsInitialization): Define here.
+	* interp/i-syscmd.boot ($options): Define.
+	($historyDirectory): Likewise.
+	($HiFiAccess): Likewise.
+	(history): Tidy.
+	(initHist): Likewise.
+	(initHistList): Likewise.
+	(historySpad2Cmd): Likewise.
+	(setHistoryCore): Likewise.
+	(restoreHistory): Likewise.
+	($reportUndo): Define.
+	(diffAlist): Tidy.
+	* interp/diagnostics.boot (BUMPERRORCOUNT): Use countError.
+	* interp/debug.lisp (/D-2): Use makeAbsoluteFilename.
+	* interp/Makefile.pamphlet (OBJS): Remove bookvol5.$(FASLEXT).
+	(makeint.lisp): Don't require bookvol5.$(FASLEXT).  Don't load it.
+	(bookvol5.$(FASLEXT)): Remove rule.
+	(bookvol5.pamphlet): Remove.
+	* include/sman.H1: Fold content into sman/sman.c.  Remove.
+	* driver/main.c (OPENAXIOM_CORE_EXECUTABLE): Move to utils.c
+	(OPENAXIOM_SMAN_EXECUTABLE): Likewise.
+	(OPENAXIOM_CORE_PATH): Likewise.
+	(OPENAXIOM_SMAN_PATH): Likewise.
+	(get_systemdir): Rename to openaxiom_get_systemdir; move to
+	utils.c.
+	(make_path_for): Rename openaxiom_make_path_for; move to utils.c
+	(main): Simplify.
+	* driver/utils.c: New.
+	* driver/utils.h: Likewise.
+	* driver/Makefile.in: Rename axiom to open-axiom.
+	* Makefile.pamphlet (all-sman): Now require all-driver.
+
+2008-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/Makefile.pamphlet (OBJS): Include sys-utility.$(FASLEXT).
+	(sys-utility.$(FASLEXT)): New rule.
+	* interp/sys-utility.boot: New.
+	* interp/macros.lisp (|functionp|): Move to sys-utility.boot.
+	(|macrop|): Likewise.
+	(|delete|): Likewise.
+	(CONTAINED, contained\,eq, contained\,equal): Likewise.
+	(ASSOCLEFT): Likewise.
+	(ASSOCRIGHT): Likewise.
+	(ADDASSOC): Likewise.
+	(DELLASOS): Likewise.
+	(LASSOC): Likewise.
+	(|rassoc|): Likewise.
+
+2008-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/foam_l.lisp (|G-stdoutVar|): Define; don't just assign.
+	(|G-stdinVar|): Likewise.
+	(|G-stderrVar|): Likewise.
+	(|FormatNumber|): Bind local variable; don't just assign to it.
+	(|magicEq1|): Tidy.
+	* interp/debug.lisp: Don't declare `COUNT as SPECIAL.
+	Remove reference to LISP package.  Remove CCL special-cased
+	definitions.
+	* interp/comp.lisp ($closedfns): Define.
+	* interp/cfuns.lisp (|getEnv|): Define only for GCL, for the time
+	being. 
+
+2008-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (translateToplevelExpression): New.
+	(bpOutItem): Use it.
+	* boot/ast.boot (needsPROG): New.
+	(shoeCompTran): Use it. Tidy.
+	(bfMain): Define cache variables before functions manipulating them.
+	* boot/strap/: Update cached Lisp translations.
+	* interp/g-timer.boot: Use assignment instead of SETANDFILEQ at
+	toplevel.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/trace.boot: Likewise.
+
+2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/msgdb.boot ($MARG): Define.
+	* interp/int-top.boot (intloopReadConsole): Remove code for
+	$DALYMODE.
+	* interp/define.boot ($NRTopt): Define.
+	($suffix): Likewise.
+	* interp/debug.lisp (S-SPADKEY): Define.
+	* interp/Makefile.pamphlet (OBJS): Don't include setq.$(FASLEXT).
+	(setq.$(FASLEXT)): Remove rule.
+	* interp/setq.lisp: Remove.
+
+2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/spad.lisp (APLMODE): Don't define.
+	(XTOKENREADER): Don't set; define.
+	* interp/setvars.boot (resetWorkspaceVariables): Don't reset
+	$coerceIntByMapCounter. 
+	* interp/setq.lisp: Stop redundant assignments.
+	* interp/nrunfast.boot ($NRTmonitorIfTrue): Define here.
+	* interp/i-object.boot (objEnv): Use $EmptyEnvironment.
+	* interp/i-coerce.boot ($useConvertForCoercions): Likewise.
+	* interp/format.boot ($abbreviateJoin): Define here.
+
+2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-globals.boot ($consistencyCheck): Remove.
+	($insideCanCoerceFrom): Define.
+	
+2008-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/apply.boot (oldCompilerAutoloadOnceTrigger): Remove.
+	* interp/setq.lisp: Remove more unused variables.
+	* interp/patches.lisp (/RF-1): Tidy.
+	* interp/server.boot (parseAndInterpret): Likewise.
+	* interp/packtran.boot ($useNewParser): Remove.
+	* interp/ht-util.boot (parseAndEval): Tidy.
+	* interp/clam.boot ($failed): Define.
+	* interp/g-timer.boot ($printStorageIfTrue): Likewise.
+	* interp/hashcode.boot ($DomainsWithoutLisplibs): Likewise.
+	* interp/i-coerce.boot ($useCoerceOrCroak): Likewise.
+	* interp/i-analy.boot ($univariateDomains): Likewise.
+	($multivariateDomains): Likewise.
+	* interp/i-object.boot ($useIntegerSubdomain): Likewise.
+	* interp/i-syscmd.boot ($existingFiles): Likewise.
+	* interp/newfort.boot ($fortranArrayStartingIndex): Likewise.
+	* interp/setvars.boot (resetWorkspaceVariables): Don't reset
+	$dependeeClosureAlist. 
+
+2008-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/setq.lisp: Remove more unused variables.
+	* interp/nruncomp.boot ($Slot1DataBase): Define here.
+	* interp/parse.boot ($oldParserExpandAbbrs): Likewise.
+	* interp/define.boot ($mutableDomains): Define here.
+	(compDefineFunctor1): Tidy.
+	(clearCmdCompletely): Don't set $functionTable.
+
+2008-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/setq.lisp (COPYRIGHTS): Remove.
+	(LCTRUE): Likewise.
+	($HTPreviousDomain): Likewise.
+	($HTOperationError): Likewise.
+	($xdatabase): Likewise.
+	($CatOfCaDatabase): Likewise.
+	($DomOfCatDatabase): Likewise.
+	($JoinOfDomDatabase): Likewise.
+	($JoinOfCatDatabase): Likewise.
+	($attributeDb): Likewise.
+	($abbreviateIfTrue): Likewise.
+	($deltax): Likewise.
+	($deltay): Likewise.
+	($displayDomains): Likewise.
+	($displayTowardAncestors): Likewise.
+	($minimumSeparation): Likewise.
+	($testOutputLineFlag): Likewise.
+	($testOutputLineStack): Likewise.
+	($runTestFlag): Likewise.
+	($mkTestFlag): Likewise.
+	($mkTestInputStack): Likewise.
+	($mkTestOutputStack): Likewise.
+
+2008-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/unlisp.lisp (|OsRunProgram|): Remove.
+	(|OsRunProgramToStream|): Likewise.
+	(|PathnameWithinDirectory|): Likewise.
+	(|PathnameWithinOsEnvVar|): Likewise.
+	(|OsEnvGet|): Likewise.
+	(|OsEnvVarCharacter|): Likewise.
+	(|NewPathname|): Likewise.
+	(|SessionPathname|): Likewise.
+	(|PathnameDirectory|): Likewise.
+	(|PathnameDirectoryOfDirectoryPathname|): Likewise.
+	(|ToPathname|): Likewise.
+	(|PathnameName|): Likewise.
+	(|PathnameWithType|): Likewise.
+	(|PathnameWithoutType|): Likewise.
+	(|PathnameWithDirectory|): Likewise.
+	(|PathnameWithoutDirectory|): Likewise.
+	(|PathnameType|): Likewise.
+	(|PathnameToUsualCase|): Likewise.
+	(|PathnameAbsolute?|): Likewise.
+	(|TempFileDirectory|): Likewise.
+	(|OsProcessNumber|): Likewise.
+	(|LispReadFromString|): Likewise.
+	(|LispEval|): Likewise.
+	(|LispCompile|): Likewise.
+	(|LispCompileFile|): Likewise.
+	(|LispLoadFileQuietly|): Likewise.
+	(|LispLoadFile|): Likewise.
+	(|LispKeyword|): Likewise.
+	(|DeepCopy|): Remove.
+	(|SortInPlace|): Likewise.
+	(|PlainError|): Likewise.
+	(|PlainPrint|): Likewise.
+	(|PlainPrintOn|): Likewise.
+	(|WriteByte|): Likewise.
+	(|WriteChar|): Likewise.
+	(|WriteString|): Likewise.
+	(|WriteLine|): Likewise.
+	(|ByteFileWriteLine|): Likewise.
+	(|ReadByte|): Likewise.
+	(|ByteFileReadLine|): Likewise.
+	(|ReadChar|): Likewise.
+	(|ReadLine|): Likewise.
+	(|ReadLineIntoString|): Likewise.
+	(|ByteFileReadLineIntoString|): Likewise.
+	(|ReadBytesIntoVector|): Likewise.
+	(|InputStream?|): Likewise.
+	(|OutputStream?|): Likewise.
+	(|StreamGetPosition|): Likewise.
+	(|StreamSetPosition|): Likewise.
+	(|StreamSize|): Likewise.
+	(|WithOpenStream|): Likewise.
+	(|StreamCopyChars|): Likewise.
+	(|StreamCopyBytes|): Likewise.
+	(|StreamEnd?|): Likewise.
+	(|StreamFlush|): Likewise.
+	(|StreamClose|): Likewise.
+	(|LispFileType|): Likewise.
+	(|FaslFileType|): Likewise.
+	(|MakeSymbol|): Likewise.
+	(|Symbol?|): Likewise.
+	(|SymbolString|): Likewise.
+	(|TrueBit|): Likewise.
+	(|FalseBit|): Likewise.
+	(|Bit?|): Likewise.
+	(|BitOn?|): Likewise.
+	(|BitOr|): Likewise.
+	(|Bit|): Likewise.
+	(|FullVector|): Likewise.
+	(|Vector?|): Likewise.
+	(|FullBvec|): Likewise.
+	(|CharGreater?|): Likewise.
+	(|CharDigit?|): Likewise.
+	(|NewlineChar|): Likewise.
+	(|SpaceChar|): Likewise.
+	(|TimeStampString|): Likewise.
+	(|CsetString|): Likewise.
+	(|CsetComplement|): Likewise.
+	(|AlphaCset|): Likewise.
+	(|AlphaCset|): Likewise.
+	(|LowerCaseCset|): Likewise.
+	(|UpperCaseCset|): Likewise.
+	(|NumericCset|): Likewise.
+	(|CsetUnion|): Likewise.
+	(|CsetMember?|): Likewise.
+	(|FullString|): Likewise.
+	(|ToString|): Likewise.
+	(|StringImage|): Likewise.
+	(|String?|): Likewise.
+	(|StringGetCode|): Likewise.
+	(|StringConcat|): Likewise.
+	(|StringFromTo|): Likewise.
+	(|StringFromToEnd|): Likewise.
+	(|StringFromLong|): Likewise.
+	(|StringPrefix?|): Likewise.
+	(|StringUpperCase|): Likewise.
+	(|StringLowerCase|): Likewise.
+	(|StringGreater?|): Likewise.
+	(|StringToInteger|): Likewise.
+	(|StringToFloat|): Likewise.
+	(|StringLength|): Likewise.
+	(|Number?|): Likewise.
+	(|Integer?|): Likewise.
+	(|Float?|): Likewise.
+	(|Odd?|): Likewise.
+	(|Pair?|): Likewise.
+	(|car|): Likewise.
+	(|cdr|): Likewise.
+	(|caar|): Likewise.
+	(|cadr|): Likewise.
+	(|cdar|): Likewise.
+	(|cddr|): Likewise.
+	(|caaar|): Likewise.
+	(|caadr|): Likewise.
+	(|cadar|): Likewise.
+	(|caddr|): Likewise.
+	(|cdaar|): Likewise.
+	(|cdadr|): Likewise.
+	(|cddar|): Likewise.
+	(|cdddr|): Likewise.
+	(|FastCar|): Likewise.
+	(|FastCdr|): Likewise.
+	(|FastCaar|): Likewise.
+	(|FastCadr|): Likewise.
+	(|FastCdar|): Likewise.
+	(|FastCddr|): Likewise.
+	(|FastCaaar|): Likewise.
+	(|FastCaadr|): Likewise.
+	(|FastCadar|): Likeiwse.
+	(|FastCaddr|): Likewise.
+	(|FastCdaar|): Likewise.
+	(|FastCdadr|): Likewise.
+	(|FastCddar|): Likewise.
+	(|FastCdddr|): Likewise.
+	(|IfCar|): Likewise.
+	(|IfCdr|): Likewise.
+	(|EqCar|): Likewise.
+	(|EqCdr|): Likewise.
+	(|ListNReverse|): Likewise.
+	(|ListIsLength?|): Likewise.
+	(|ListNRemoveQ|): Likewise.
+	(|ListRemoveDuplicatesQ|): Likewise.
+	(|ListUnion|): Likewise.
+	(|ListUnionQ|): Likewise.
+	(|ListIntersection|): Likewise.
+	(|ListIntersectionQ|): Likewise.
+	(|ListAdjoin|): Likewise.
+	(|ListAdjoinQ|): Likewise.
+	(|AlistAssoc|): Likewise.
+	(|AlistRemove|): Likewise.
+	(|AlistAdjoinQ|): Likewise.
+	(|AlistUnionQ|): Likewise.
+	(|Table?|): Likewise.
+	(|TableCount|): Likewise.
+	(|TableGet|): Likewise.
+	(|TableSet|): Likewise.
+	(|TableUnset|): Likewise.
+	(|TableKeys|): Likewise.
+	(lucid-os-run-program): Likewise.
+	(lucid-os-run-program-to-stream): Likewise.
+	(lucid-os-env-get): Likewise.
+	(lucid-os-process-number): Likewise.
+	(c-to-lisp-string): Likewise.
+	(cmulisp-os-run-program): Likewise.
+	(cmulisp-os-run-program-to-stream): Likewise.
+	(cmulisp-os-env-get): Likewise.
+	(cmulisp-os-process-number): Likewise.
+	(kcl-os-run-program): Likewise.
+	(kcl-os-run-program-to-stream): Likewise.
+	(kcl-os-env-get): Likewise.
+	(kcl-os-process-number): Likewise.
+	(|PathnameString|): Likewise.
+	(|Remainder|): Likewise.
+	(|DoublePrecision|): Likewise.
+	(|Abs|): Likewise.
+	(|Min|): Likewise.
+	(|Max|): Likewise.
+	(|Exp|): Likewise.
+	(|Ln|): Likewise.
+	(|Log10|): Likewise.
+	(|Sin|): Likewise.
+	(|Cos|): Likewise.
+	(|Tan|): Likewise.
+	(|Cotan|): Likewise.
+	(|Arctan|): Likewise.
+	(|CharCode|): Likewise.
+	(|Pathname|): Likewise.
+	(|Char|): Likewise.
+	(|Char?|): Likewise.
+	(*new-pathname-counter*): Likewise.
+	(|funcall|): Move sys-macros.lisp.
+	(|Catch|): Likewise.
+	(|Throw|): Likewise.
+	(|UnwindProtect|): Likewise.
+	* interp/pathname.boot (pathnameDirectory): Use KEYWORD package.
+	* interp/incl.boot (ifCond): Use INTERN.
+	(assertCond): Likewise.
+	* interp/cformat.boot (pfname): Use NAMESTRING.
+
+2008-01-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Support signature declaration in Boot.
+	* boot/ast.boot (bfUntuple): New.
+	(bfTagged): Toplevel tags are signatures.
+	* boot/parser.boot (bpTyping): New. 
+	(bpTagged): Use it.
+	* boot/translator.boot (genDeclaration): New.
+	(bpOutItem): Use it.	
+	* interp/compiler.boot: Add type annotations for compiler routines.
+	* lisp/Makefile.in ($(OUT)/lisp$(EXEEXT)): Don't turn on emit-fn.
+
+2008-01-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/Makefile.pamphlet: Remove.
+	* boot/translator.boot: New.
+	* boot/translator.boot: Remove.
+	* boot/tokens.boot: New.
+	* boot/tokens.boot.pamphlet: Remove.
+	* boot/scanner.boot: New.
+	* boot/scanner.boot.pamphlet: Remove.
+	* boot/pile.boot: New.
+	* boot/pile.boot.pamphlet: Remove.
+	* boot/parser.boot: New.
+	* boot/parser.boot.pamphlet: New.
+	* boot/initial-env.lisp: New.
+	* boot/initial-env.lisp.pamphlet: Remove.
+	* boot/includer.boot: New.
+	* boot/includer.boot.pamphlet: Remove.
+	* boot/ast.boot: New.
+	* boot/ast.boot.pamphlet: Remove.
+
+2008-01-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1872551
+	* interp/c-util.boot (dollarIfRepHack): New.
+	(RepIfRepHack): Likewise.
+	(substituteDollarIfRepHack): Likewise.
+	(isSubset): Dollar is subset of Rep only in old semantics.
+	* interp/buildom.boot (mkMappingFunList): Substitute dollar for
+	Rep only when appropriate.
+	(mkRecordFunList): Likewise.
+	(mkNewUnionFunList): Likewise.
+	(mkUnionFunList): Likewise.
+	* interp/compiler.boot (compNoStacking): Likewise.
+	(compNoStacking1): Likewise.
+	(getConstructorFormOfMode): Likewise.
+	(isUnionMode): Likewise.
+	(coerce): Likewise.
+	(coerceSubset): Likewise.
+	* interp/modemap.boot (addModemap1): Likewise.
+	(isSuperDomain): Likewise.
+	* interp/define.boot (maybeInsertViewMorphisms): New.
+	(compCapsule): Use it.
+	(compCategoryItem): Don't allow exports of rep and per.
+	* interp/sys-globals.boot ($useRepresentationHack): New.
+
+2008-01-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/database.boot: Tidy uses of $EmptyEnvironment.
+	* interp/i-map.boot: Likewise.  Allocate fresh cell for $env.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/sys-globals.boot: Likewise.
+
+	* interp/nruncomp.boot: Encode flag types too.
+	* interp/template.boot: Likewise.
+	* share/algebra: Update databases.
+	
+2008-01-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/311
+	* interp/i-syscmd.boot (displayOperationsFromLisplib): Say no
+	exported operations when there is nothing to display.
+
+2008-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/272
+	* interp/i-spec1.boot (compileADEFBody): Don't evaluate unnamed
+	functions.  Compile them instead.
+	* testsuite/interpreter/aw-272.input: New.
+
+2008-01-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/any.spad.pamphlet (empty$Scope): Use literal empty list.
+	(empty$Environment): Likewise.
+
+2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+            Waldek Hebisch <hebisch@math.uni.wroc.pl>
+
+	Fix AW/102
+	* interp/iterator.boot (getIdentity): Properly identify the
+	algebra empty list.
+
+2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Apply patch by Stephen Wilson <<wilsons@multiboard.com>
+	Fix AW/370
+	* interp/compiler.boot (compWithMappingMode): Consult current
+	environment to decide which variabes are free.
+	* testsuite/compiler/cwmm-test.spad: New.
+
+2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad.pamphlet (Syntax): Assert a member of
+	SetCategory.  Implement equality.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Move
+	BASTYPE.o from layer 3 to here.  Move SYNTAX.o from here to layer 1.
+	(axiom_algebra_layer_1): Move CTROCALL.o to layer 2.
+	* share/algebra: Update database.
+
+2008-01-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad.pamphlet (ElaboratedExpression): New.
+	* algebra/any.spad.pamphlet: Rename ObjectProperty to Property.
+	* algebra/exposed.lsp.pamphlet: Likewise.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_5): Include
+	ELABEXPR.o 
+	* share/algebra: Update databases.
+
+2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad.pamphlet: Rename from algebra/syntax.spad.
+	Add a new domain for constructor instantiation form.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include
+	CTORCALL.o 
+	(SYNTAX.NRLIB/code.$(FASLEXT)): Remove rule.  Now implicit.
+	* share/algebra: Update databases.
+
+2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Now include
+	SYNTAX.o 
+	* algebra/syntax.spad (buildSyntax$Syntax): Use CONS$Lisp to
+	permit early bootstrap.
+
+2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/any.spad.pamphlet (getProperty$Environment): New.
+	(setProperty!$Environment): Likewise.
+	(getProperties$Environment): Likewise.
+	(setProperties!$Environment): Likewise.
+
+2008-01-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/construc.lisp (|loadLibNoUpdate|): Fix thinko in initial
+	value for empty environments.
+	* interp/database.boot (rebuildCDT): Likewise.
+	* interp/i-map.boot (addDefMap): Likewise.
+	(rewriteMap0): Likewise.
+	(rewriteMap1): Likewise.
+	(compileDeclaredMap): Likewise.
+	(analyzeUndeclaredMap): Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-syscmd.boot (reportOperations): Likewise.
+	* interp/i-toplev.boot (interpret): Likewise.
+	* interp/lisplib.boot (loadLib): Likewise.
+	(loadLibNoUpdate): Likewise.
+	* interp/setvars.boot (resetWorkspaceVariables): Likewise.
+	* interp/spad.lisp ($e): Move definition to sys-globals.boot.
+	($env): Likewise.
+	* interp/sys-globals.boot ($e): Define here.
+	($env): Likewise.
+	* algebra/any.spad.pamphlet (ObjectProperty): New.
+	(Binding): Likewise.
+	(Contour): Likewise.
+	(Scope): Likewise.
+	(Environment): Likewise.
+	* algebra/exposed.lsp.pamphlet: Expose ObjectProperty, Binding,
+	Contour, Scope, and Environment.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include
+	OBJPROP.o. 
+	(axiom_algebra_layer_1): Include BINDING.o
+	(axiom_algebra_layer_2): Include CONTOUR.o
+	(axiom_algebra_layer_3): Include SCOPE.o
+	(axiom_algebra_layer_4): Include ENV.o
+	* share/algebra: Update database.
+
+2008-01-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1849734
+	* interp/i-spec1.boot (upand): Don't insist on having operands of
+	type Boolean.
+	(upor): Likewise.
+	* algebra/mkrecord.spad.pamphlet (Pair): New domain constructor.
+	* algebra/exposed.lsp.pamphlet: Expose Pair, PropositionalLogic,
+	PropositionalFormula. 
+	* algebra/boolean.spad.pamphlet (PropositionalFormula): New domain
+	constructor. 
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_4): Include
+	PAIR.o. 
+	(axiom_algebra_layer_19): Include PROPFRML.o
+	* share/algebra: Update databases.
+	* testsuite/interpreter/1849734.input: New.
+
+2008-01-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1848975
+	* interp/buildom.boot ($commonCategoryAncestors): New.
+	($commonCategoryDefaults): Likewise.
+	(Record0): Use it.
+	(Union): Likewise.
+	(Mapping): Likewise.
+	(Enumeration): Likewise.
+	* testsuite/algebra/1848975.input: New.
+
+2008-01-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1872564
+	* interp/compiler.boot (compPretend): Don't check for `new'
+	compiler semantics.
+	(compColonInside): Likewise.
+	* testsuite/compiler/1872564.spad: New.
+
+2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1850071
+	* algebra/syntax.spad (compound?$Syntax): New.
+
+2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (PropositionalLogic): New category.
+	(Boolean): Assert as belonging to PropositionalLogic.
+	Update cached Lisp translation.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Add
+	PROPLOG.o
+	* src/algebra: Update databases.
+
+2008-01-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad (autoCoerce$Syntax): Add overloads.
+	* interp/compiler.boot (coerceExtraHard): Always coerce by
+	autoCoerce. 
+	* testsuite/interpreter/case.spad: Likewise.
+	* testsuite/interpreter/case.input: New.
+
+2008-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compSymbol): Don't handle possible
+	case views here.
+	(hasUniqueCaseView): Rename from getUniqueCaseView.  Take the
+	target mode as second argument.
+	(compForm2): Use calling convention vector to determine infer flag
+	parameter types.
+	(compCase1): Uniformly handle `case-expressions'.  Call
+	genDeltaEntry for selected operator.
+	(coerceExtraHard): Handle coercions from UnionType domains.
+	(autoCoerceByModemap): Tidy.
+	* interp/g-opt.boot (optCall): Be more verbose in diagnostics.
+	* algebra/syntax.spad (Syntax): Rework.
+	* algebra/coerce.spad.pamphlet (UnionType): New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): 
+	Include UTYPE.o
+	* share/algebra: Update databases.
+
+2008-01-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1852076
+	* algebra/domain.spad (reify$Domain): Specify target type of
+	conversion. 
+	* interp/nrunfast.boot (newLookupInDomain): Tidy.
+	(newLookupInCategories): Likewise.
+	* testsuite/interpreter/1852076.input: New.
+
+2008-01-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1867459
+	* interp/postpar.boot (postError): Fix thinko.
+	* interp/parse.boot ($defOp): Define.
+	* testsuite/compiler/1867459.spad: New.
+
+2008-01-13  Ralf Hemmecke <ralf@hemmecke.de>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/bags.spad.pamphlet (map!$Stack): Cache the result in the
+	underlying reference.
+
+2008-01-11  Gabriel Dos Reis <gdr@cs.tamu.edu>
+
+	* interp/msg.boot (getStFromMsg): Fix typo.
+
+2008-01-10  Gabriel Dos Reis <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad (getOperator): Inject into the right
+	Union branch.
+
+2008-01-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/msgdb.boot (brightPrint0): Disable highlightinh on Win32.
+	* lib/cfuns-c.c (std_stream_is_terminal): Tidy.
+
+2008-01-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/Makefile.pamphlet (AXIOM_LOCAL_LISP): Use Lisp image with C
+	bindings. 
+	* interp/msgdb.boot (brightPrint0): Don't highlight if the
+	standard output is not attached to a terminal.
+	* interp/sys-driver.boot (stdStreamIsTerminal): New.
+	* lib/cfuns-c.c (std_stream_is_terminal): New.
+
+2008-01-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot.pamphlet (Ast): Add ImportSignature, Signature,
+	and Mapping.
+	* boot/parser.boot.pamphlet (bpImport): Parse import declaration.
+	(bpSignature): New.
+	(bpMapping): Likewise.
+	* boot/tokens.boot.pamphlet (shoeKeyWords): Add new keyword.
+	* boot/translator.boot.pamphlet (genImportDeclaration): Translate 
+	import declaration.
+	(shoeOutItem):  Handle import declarations.
+
+2008-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman/sman.c: Remove debug and dead codes.
+
+2008-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/main.c (main) [__WIN32__]: Fix off-by-one thinko.
+
+2008-01-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* scripts/axiom.in: Remove.
+	* driver: New directory.
+	* driver/main.c: New.  Now implement driver as native
+	application. 
+

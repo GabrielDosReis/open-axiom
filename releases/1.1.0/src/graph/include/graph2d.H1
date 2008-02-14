@@ -1,0 +1,7 @@
+#ifdef _NO_PROTO
+extern void getGraphFromViewman();
+extern void freeGraph();
+#else
+extern void getGraphFromViewman(int );
+extern void freeGraph(int );
+#endif

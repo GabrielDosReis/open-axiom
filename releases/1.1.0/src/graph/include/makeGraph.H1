@@ -1,0 +1,7 @@
+#ifdef _NO_PROTO
+extern graphStruct * makeGraphFromSpadData();
+extern void discardGraph();
+#else
+extern graphStruct * makeGraphFromSpadData(void);
+extern void discardGraph(graphStruct * theGraph);
+#endif

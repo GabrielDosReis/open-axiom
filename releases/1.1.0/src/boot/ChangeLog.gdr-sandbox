@@ -1,0 +1,142 @@
+2007-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* initial-env.lisp.pamphlet (|$originalLispTopLevel|): New
+	variable. 
+	(handle-command-line): Use it.  Now call into the base system
+	top level if the command line is empty.
+	(save-core): Now take an optional argument, the executable entry
+	point. Tidy.
+	(make-program): Likewise.
+	(|getMainEntryPoint|): New function.
+	(|makeHandler|): Use it.
+	(parse-option-value): Rename from get-option-value.
+	(process-command-line): Adjust call.
+	(|getOptionValue|): New.
+	(main): Rename from main-entry-point.
+	(|error|): Tidy.
+
+	* Makefile.pamphlet (stage0/bootsys$(EXEEXT)): Explicitly specify
+	entry point of the resulting executable.
+	($(AXIOM_LOCAL_LISP)): Likewise.
+	(stage1/bootsys$(EXEEXT)): Likewise.
+	(stage2/bootsys$(EXEEXT)): Likewise.
+	(initial-env.$(FASLEXT)): If compiling with ECL, build both the
+	FASL and the object file.
+	* Makefile.in: Regenerate.
+
+2007-06-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (boot_objects_extra): New variable.
+	(<<build bootsys>>): Remove.
+	(stage0/bootsys$(EXEEXT)): Tidy.
+	(axiom_o): New variable.  Use to pre-load "initial-env" when
+	building with ECL.
+	* Makefile.in: Regenerate.
+	* scanner.boot.pamphlet (double): Rename from DOUBLE.
+	* includer.boot.pamphlet ($bStreamNil): Rename from bStreamNil.
+	* initial-env.lisp.pamphlet (exit-repl): Add support for ECL.
+	(make-program): Likewise.
+	(get-command-line-arguments): Likewise.  Tidy.
+	(|$LispFileType|): Define as constant.
+	(|doCompileLispFile|): New. 
+	(|compileLispFile|): Use it.  Add support for ECL.
+	(main-entry-point): Unconditionally set current package to BOOTTRAN.
+	(|ensureTrailingSlash|): New.
+	(make-load-path): Use it.
+	(do-import-module): Make nested function of import-module.
+	(import-module): Restructure.
+	* translator.boot.pamphlet (BOOT): Remove.
+	(COMPILE-BOOT-FILE): Likewise.
+
+2007-06-19  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* ast.boot.pamphlet (bfDefinition1): Remove.
+	(bfDefinition): Rename from bfDefinition2.
+	(bfMDefinition): Rename from bfMDefinition2.
+	* parser.boot.pamphlet: Update.
+
+2007-06-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* bootload.lisp.pamphlet: Remove.
+	* ccl-bootsys.lsp.pamphlet: Likewise.
+	* boot-proclaims.lisp: Likewise.
+
+2007-06-18  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* ast.boot.pamphlet (bfModule, bfImport, bfTypeAliasDefinition):
+	Remove. 
+	* parser.boot.pamphlet (bpModule): Update.  Call Module instead of
+	bfModule. 
+	(bpImport): Call Import instead of bfImport.
+	(bpTypeAliasDefinition): Call TypeAlias instead of
+	bfTypeAliasDefinition. 
+	* translator.boot.pamphlet (bpOutItem): Update.  Use
+	case-statements. 
+
+2007-06-18  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* ast.boot.pamphlet (<<abstract syntax tree>>): New chunk.  Define
+	the core of the Boot syntax tree as Boot data type.  Update cached
+	Lisp translation.
+
+2007-06-15  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* initial-env.lisp.pamphlet:  Add more documentation.
+	("BOOTTRAN"): Remove export section.
+	(exit-repl): Tidy. 
+
+2007-05-21  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	Add experimental support for modules.
+	* translator.boot.pamphlet: Import "includer", "scanner", "pile",
+	"parser", "ast".
+	(shoeEVALANDFILEACTQ): Move to ast.boot.pamphlet.
+	(SoftShoeError, shoeSpaces, bpIgnoredFromTo, lineNo, lineString,
+	lineCharacter, bStreamNull, bDelay, bDelay1, bMap, bMap1, bNext,
+	bNext1, bRgen, bRgen1, bIgen, bIgen1, bAddLineNumber,
+	bAddLineNumber1, shoeFindLines, shoePackageStartsAt): Move to
+	includer.boot.pamphlet. 
+	(shoeOutParse): Handle import and module declarations.
+	Update Lisp translation.
+
+	* tokens.boot.pamphlet: Document key words.
+	(shoeInserts, shoeKeyTableCons, shoDictCons, shoePunCons): Move
+	from scanner.boot.pamphlet.
+	(shoeKeyWords): Add new keywords "module" and "import".
+	Update Lisp translation.
+
+	* scanner.boot.pamphlet: Import "tokens", "includer".
+	(shoeInserts, shoeKeyTableCons, shoDictCons, shoePunCons): Move to
+	tokens.boot.pamphlet. 
+	Update Lisp translation.
+
+	* pile.boot.pamphlet: Import "includer", "scanner".
+
+	* parser.boot.pamphlet: Import "includer", "scanner", "ast".
+	(PNAME, bpSpecificErrorAtToken, bpSpecificErrorHere,
+	bpGeneralErrorHere): Move to includer.boot.pamphlet. 
+	(bpModule, bpImport): New.
+	(bpComma): Use them.
+	Update Lisp translation.
+
+	* includer.boot.pamphlet: Import "tokens".
+	(PNAME, bpSpecificErrorAtToken, bpSpecificErrorHere,
+	bpGeneralErrorHere): Move from parser.boot.pamphlet.
+	(EQCAR, shoeNotFound, shoeSpaces, SoftShoeError):
+	(bpIgnoredFromTo, lineNo, lineString, lineCharacter,
+	shoeFindLines, bStreamNil, bStreamNull, bMap, bMap1, bDelay,
+	bDelay1, bAppend, bAppend1, bNext, bNext1, bRgen, bRgen1, bIgen,
+	bIgen1, bAddLineNumber, bAddLineNumber1): Move from
+	translator.boot.oamphlet.
+	(shoeReadLispString): Move to ast.boot.pamphlet.
+	Update Lisp translation.
+
+	* ast.boot.pamphlet: Import "includer".
+	(bfModule, bfImport): New.
+	(shoeReadLispString): Move to includer.boot.pamphlet.
+	(shoeCompileTimeEvaluation, shoeEVALANDFILEACTQ): Move from
+	translator.boot.pamphlet.
+	Update Lisp translation.
+	* Makefile.pamphlet (boot_sources): Reorder list.
+	* Makefile.in: Regenerate.
+

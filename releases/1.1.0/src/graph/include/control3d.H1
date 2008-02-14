@@ -1,0 +1,19 @@
+#ifdef _NO_PROTO
+extern void drawColorMap();
+extern void writeControlTitle();
+extern void clearControlMessage();
+extern void writeControlMessage();
+extern void drawControlPanel();
+extern controlXY getControlXY();
+extern controlPanelStruct * makeControlPanel();
+extern void putControlPanelSomewhere();
+#else
+extern void drawColorMap(void);
+extern void writeControlTitle(Window );
+extern void clearControlMessage(void);
+extern void writeControlMessage(void);
+extern void drawControlPanel(void);
+extern controlXY getControlXY(int );
+extern controlPanelStruct * makeControlPanel(void);
+extern void putControlPanelSomewhere(int );
+#endif

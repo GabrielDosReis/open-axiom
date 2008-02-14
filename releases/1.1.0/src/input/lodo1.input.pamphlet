@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input LODO1.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+
+-- Input generated from LinearOrdinaryDifferentialOperatorOneXmpPage
+)clear all
+
+
+-- Input generated from ugxLinearOrdinaryDifferentialOperatorOneRatPage
+)clear all
+
+RFZ := Fraction UnivariatePolynomial('x, Integer)
+x : RFZ := 'x
+Dx : LODO1 RFZ := D()
+b : LODO1 RFZ := 3*x**2*Dx**2 + 2*Dx + 1/x
+a : LODO1 RFZ := b*(5*x*Dx + 7)
+p := x**2 + 1/x**2
+(a*b - b*a) p
+ld := leftDivide(a,b)
+a = b * ld.quotient + ld.remainder
+rd := rightDivide(a,b)
+a = rd.quotient * b + rd.remainder
+rightQuotient(a,b)
+rightRemainder(a,b)
+leftExactQuotient(a,b)
+e := leftGcd(a,b)
+leftRemainder(a, e)
+rightRemainder(a, e)
+f := rightLcm(a,b)
+rightRemainder(f, b)
+leftRemainder(f, b)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}
