@@ -123,7 +123,8 @@ asTupleAsList(at) == VEC2LIST asTupleAsVector at
 
 --% Basic Object Type Identification
 
-++ The VAT class for literals values.
+++ The VAT class for literal values.  Also used in the
+++ algebra interface to the interpreter.
 $immediateDataSymbol ==
   "--immediateData--"
 
@@ -205,6 +206,7 @@ isLeaf x ==
   atom x     --may be a number or a vector
 
 ++ returns the mode of the VAT node x.
+++ Also used by the algebra interface to the interpreter.
 getMode x ==
   x is [op,:.] => getMode op
   VECP x => x.1
@@ -219,6 +221,7 @@ putMode(x,y) ==
 
 ++ returns an interpreter object that represents the value of node x.
 ++ Note that an interpreter object is a pair of mode and value.
+++ Also used by the algebra interface to the interperter.
 getValue x ==
   VECP x => x.2
   atom x =>
@@ -238,6 +241,7 @@ putValueValue(vec,val) ==
   vec
 
 ++ Returns the node class of x, if possible; otherwise nil.
+++ Also used by the algebra interface to the interpreter.
 getUnnameIfCan x ==
   VECP x => x.0
   x is [op,:.] => getUnnameIfCan op

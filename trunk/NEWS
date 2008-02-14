@@ -1,7 +1,11 @@
-* February 10, 2008
+* February 14, 2008
+  OpenAxiom-1.1.0 has been released.
+  Changes from previous release:
   
   × OpenAxiom now supports batch processing, either for scripting
     or for compiling Spad libraries.
+
+  × Many bugs fixes in both algebra and interpreter/compiler components.
 
   × The interpreter now allows `case' functions defined in libraries.
     Consequently, `case' no longer requires values of Union types, as
@@ -11,8 +15,8 @@
   × OpenAxiom developers: depsys is no longer built.  All files in
     src/interp/ are now compiled with bootsys.
 
-  × OpenAxiom now has a domain domain for representing the abstract
-    syntax tree of Spad libraries, Spad scripts, and Boot programs.
+  × OpenAxiom has a new abstract syntax tree domain for representing Spad
+    libraries, Spad scripts, and Boot programs.
     Furthermore, parsers for Spad libraries and Spad scripts are
     now part of the standard algebra.
 
@@ -25,7 +29,7 @@
     optional command line argument specifying the system root
     directory and the system alegbra directory.
 
-  × OpenAxiom now support versioning, meaning that installing newer
+  × OpenAxiom now supports versioning, meaning that installing newer
     versions will not overwrite previous OpenAxiom version runtimes.
 
 * September 21, 2007

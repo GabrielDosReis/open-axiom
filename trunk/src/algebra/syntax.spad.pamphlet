@@ -17,13 +17,14 @@
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Updated: December 05, 2007
-++ Description:  This domain provides a simple, general, and arguably 
-++ complete representation of Spad programs as objects of a term algebra
-++ built from ground terms of type boolean, integers, foats, symbols, 
-++ and strings.  This domain differs from InputForm in that it represents
-++ any entity from a Spad program, not just expressions.
-++ Related Constructors: Boolean, Integer, Float, symbol, String, SExpression.
-++ See Also: SExpression, SetCategory
+++ Description:  This domain provides a simple domain, general enough for
+++ building complete representation of Spad programs as objects 
+++ of a term algebra built from ground terms of type integers, foats, 
+++ symbols, and strings.  
+++ This domain differs from InputForm in that it represents
+++ any entity in a Spad program, not just expressions.
+++ Related Constructors: Boolean, Integer, Float, Symbol, String, SExpression.
+++ See Also: SExpression, SetCategory.
 ++ The equality supported by this domain is structural.
 ++ Fixme: Provide direct support for boolean values, arbritrary 
 ++        precision float point values.
@@ -33,13 +34,12 @@ Syntax(): Public == Private where
       ++ convert(s) returns the s-expression representation of a syntax.
 
     convert: SExpression -> %
-      ++ convert(s) converts an s-expression to syntax.  Note, when `s'
+      ++ convert(s) converts an s-expression to Syntax.  Note, when `s'
       ++ is not an atom, it is expected that it designates a proper list,
-      ++ e.g. a sequence of cons cell ending with nil.
+      ++ e.g. a sequence of cons cells ending with nil.
 
     coerce: Integer -> %
-      ++ coerce(i) injects the integer value `i' into the Syntax domain
-
+      ++ coerce(i) injects the integer value `i' into the Syntax domain.
     coerce: % -> Integer
       ++ coerce(s) extracts and integer value from the syntax `s'
     autoCoerce: % -> Integer
@@ -49,7 +49,6 @@ Syntax(): Public == Private where
 
     coerce: DoubleFloat -> %
       ++ coerce(f) injects the float value `f' into the Syntax domain
-
     coerce: % -> DoubleFloat
       ++ coerce(s) extracts a float value from the syntax `s'.
     autoCoerce: % -> DoubleFloat
@@ -59,7 +58,6 @@ Syntax(): Public == Private where
 
     coerce: Symbol -> %
       ++ coerce(s) injects the symbol `s' into the Syntax domain.
-
     coerce: % -> Symbol
       ++ coerce(s) extracts a symbol from the syntax `s'.
     autoCoerce: % -> Symbol
@@ -69,7 +67,6 @@ Syntax(): Public == Private where
 
     coerce: String -> %
       ++ coerce(s) injects the string value `s' into the syntax domain
-
     coerce: % -> String
       ++ coerce(s) extracts a string value from the syntax `s'.
     autoCoerce: % -> String
@@ -78,38 +75,39 @@ Syntax(): Public == Private where
       ++ the discretion of the compiler.
 
     buildSyntax: (Symbol, List %) -> %
-      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object for op(a1,...,an).
+      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object 
+      ++ for op(a1,...,an).
   
     buildSyntax: (%, List %) -> %
-      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object for op(a1,...,an).
+      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object 
+      ++ for op(a1,...,an).
 
     nil?: % -> Boolean
       ++ nil?(s) is true when `s' is a syntax for the constant nil.
 
     getOperator: % -> Union(Integer, DoubleFloat, Symbol, String, %)
       ++ getOperator(x) returns the operator, or tag, of the syntax `x'.
-      ++ The return value is itself a syntax if `x' really is an 
+      ++ The value returned is itself a syntax if `x' really is an 
       ++ application of a function symbol as opposed to being an
       ++ atomic ground term.
  
-
     getOperands: % -> List %
       ++ getOperands(x) returns the list of operands to the operator in `x'.
 
     compound?: % -> Boolean
-      ++ compound? x is true when not an atomic syntax.
+      ++ compound? x is true when `x' is not an atomic syntax.
 
     _case: (%, [|Integer|]) -> Boolean
-      ++ x case Integer is true is x really is an Integer 
+      ++ x case Integer is true if `x' really is an Integer 
 
     _case: (%, [|DoubleFloat|]) -> Boolean
-      ++ x case DoubleFloat is true is x really is a DoubleFloat
+      ++ x case DoubleFloat is true if `x' really is a DoubleFloat
 
     _case: (%, [|Symbol|]) -> Boolean
-      ++ x case Symbol is true is x really is a Symbol
+      ++ x case Symbol is true if `x' really is a Symbol
 
     _case: (%, [|String|]) -> Boolean
-      ++ x case String is true is x really is a String
+      ++ x case String is true if `x' really is a String
 
   Private ==> SExpression add
     rep(x: %): SExpression ==
@@ -264,20 +262,18 @@ ElaboratedExpression(): Public == Private where
       ++ getConstant(e) retrieves the constant value of `e'e.
     variable?: % -> Boolean
       ++ variable?(e) returns true if `e' is a variable.
-    getVariable: % -> Union(Symbol,"failed")
-      ++ getVariable(e) retrieves the name of the variable `e'.
+    getIdentifier: % -> Union(Symbol,"failed")
+      ++ getIdentifier(e) retrieves the name of the variable `e'.
     callForm?: % -> Boolean
       ++ callForm?(e) is true when `e' is a call expression.
     getOperator: % -> Union(Symbol, "failed")
       ++ getOperator(e) retrieves the operator being invoked in `e',
       ++ when `e' is an expression.  
     getOperands: % -> Union(List %, "failed")
-      ++ getOperands(e) returns the of operands in `e'e, assuming it
+      ++ getOperands(e) returns the list of operands in `e', assuming it
       ++ is a call form.
 
   Private ==> add
-    immediateDataTag := INTERN("--immediateData--")$Lisp
- 
     isAtomic(x: %): Boolean ==
       ATOM(x)$Lisp @ Boolean
 
@@ -294,7 +290,7 @@ ElaboratedExpression(): Public == Private where
 
     constant? x ==
       isAtomic x and 
-        EQ(getUnnameIfCan(x)$Lisp, immediateDataTag)$Lisp : Boolean
+        EQ(getUnnameIfCan(x)$Lisp, _$immediateDataSymbol$Lisp)$Lisp : Boolean
 
     getConstant x ==
       constant? x => getValue(x)$Lisp @ SExpression
@@ -303,7 +299,7 @@ ElaboratedExpression(): Public == Private where
     variable? x ==
       isAtomic x and not constant? x
    
-    getVariable x ==
+    getIdentifier x ==
       variable? x => symbol (getUnname(x)$Lisp@SExpression)
       "failed"
 @
@@ -311,7 +307,7 @@ ElaboratedExpression(): Public == Private where
 
 \section{License}
 <<license>>=
---Copyright (C) 2007, Gabriel Dos Reis.
+--Copyright (C) 2007-2008, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
