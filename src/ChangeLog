@@ -24,6 +24,11 @@
 
 	* OpenAxiom-1.1.0 has been released.
 
+2008-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/utils.c (openaxiom_execute_core) [__WIN32__]: Enclose 
+	every argument in quotes.
+
 2008-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-driver.boot (executeSpadScript): By default make
