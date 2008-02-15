@@ -109,6 +109,9 @@ structure Ast ==
   Append(%Sequence)                     -- concatenate lists
   Case(Ast,%Sequence)                   -- case x of ...
   Return(Ast)                           -- return x
+  %Throw(Ast)                           -- throw OutOfRange 3
+  %Catch(Ast)                           -- catch OutOfRange
+  %Try(Ast,%Sequence)                   -- try x / y catch DivisionByZero
   Where(Ast,%Sequence)                  -- e where f x == y
   Structure(Ast,%Sequence)              -- structure Foo == ...
 
@@ -1138,3 +1141,19 @@ bfDs: %Short -> %String
 bfDs n== 
   if n=0 then '"" else CONCAT('"D",bfDs(n-1))
 
+
+++ Generate code for try-catch expressions.
+bfTry: (%Thing,%List) -> %Thing
+bfTry(e,cs) ==
+  null cs => e
+  case first cs of
+    %Catch(tag) => 
+      atom tag => bfTry(["CATCH",["QUOTE",tag],e],rest cs)
+      bpTrap()  -- sorry
+    otherwise => bpTrap()
+
+++ Generate code for `throw'-expressions
+bfThrow e ==
+  atom e => ["THROW",["QUOTE",e],nil]
+  not atom first e => bpTrap()
+  ["THROW",["QUOTE",first e],:rest e]

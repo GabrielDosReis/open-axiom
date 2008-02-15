@@ -1,5 +1,27 @@
 2008-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Add try/catch to Boot.
+	* boot/tokens.boot (shoeKeyWords): Add new keywords.
+	* boot/ast.boot (Ast): Include three new nodes.
+	(bfTry): New.
+	(bfThrow): Likewise.
+	* boot/parser.boot ($bodyHasReturn): Remove.
+	(bpNoteReturnStmt): Likewise.
+	(bpThrow): New.
+	(bpTry): Likewise.
+	(bpPiledCatchItems): Likewise.
+	(bpCatchItemList): Likewise.
+	(bpExceptionHead): Likewise.
+	(bpExceptionTail): Likewise.
+	(bpException): Likewise.
+	(bpCatchItem): Likewise.
+	(bpReturn): Include `throw' expressions.
+	(bpStatement): Include `try' expressions.
+	* interp/macros.lisp (|tryLine|): Rename from |try|.
+	* interp/pspad1.boot: Replace `try' with `tryLine' throughout.
+
+2008-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* OpenAxiom-1.1.0 has been released.
 
 2008-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>

@@ -42,6 +42,7 @@ shoeKeyWords := [  _
             ['"and","AND"] , _
             ['"by", "BY" ], _
             ['"case","CASE"] , _
+            ['"catch","CATCH"], _
             ['"cross","CROSS"] , _
             ['"else", "ELSE"] , _
             ['"for",  "FOR"] , _
@@ -57,6 +58,8 @@ shoeKeyWords := [  _
             ['"return", "RETURN"], _
             ['"structure", "STRUCTURE"], _
             ['"then",  "THEN"], _
+            ['"throw", "THROW"], _
+            ['"try",   "TRY"], _
             ['"until",  "UNTIL"], _
             ['"where",  "WHERE"], _
             ['"while",  "WHILE"], _

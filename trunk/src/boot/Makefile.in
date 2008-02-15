@@ -216,7 +216,6 @@ mostlyclean-local:
 	@rm -f stamp
 
 clean-local: mostlyclean-local
-	@rm -f $(boot_sources)
 	@rm -f *.clisp
 
 distclean-local: clean-local
