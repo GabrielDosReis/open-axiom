@@ -206,12 +206,13 @@ openaxiom_execute_core(const openaxiom_command* command,
    command_line_length += cur;
    for (i = 0; i < command->rt_argc; ++i)
       command_line_length += 1  /* blank char as separator */
+	 + 2			/* quotes around every argument.  */
          + strlen(command->rt_argv[i]); /* room for each argument */
    /* Don't forget room for the doubledash string.  */
    command_line_length += sizeof("--") - 1;
    /* And arguments to the actual command.  */
    for (i = 1; i < command->core_argc; ++i)
-      command_line_length += 1 + strlen(command->core_argv[i]);
+      command_line_length += 1 + 2 + strlen(command->core_argv[i]);
 
    /* Now, build the actual command line.  This is done by
       concatenating the arguments into a single string. */
@@ -220,13 +221,10 @@ openaxiom_execute_core(const openaxiom_command* command,
    for (i = 0; i < command->rt_argc; ++i) {
       const int arg_length = strlen(command->rt_argv[i]);
       command_line[cur++] = ' ';
-      /* Note that strcpy will terminate `command_line' with a NUL
-         character, and since the next iteration will write the
-         blank precisely where the NUL character is, the whole command
-         line string will be a proper C-style string when the loop
-         normally exits.  */
+      command_line[cur++] = '"';
       strcpy(command_line + cur, command->rt_argv[i]);
       cur += arg_length;
+      command_line[cur++] = '"';
    }
    command_line[cur++] = ' ';
    command_line[cur++] = '-'; /*  start arguments to the core executable.  */
@@ -234,9 +232,12 @@ openaxiom_execute_core(const openaxiom_command* command,
    for (i = 1; i < command->core_argc; ++i) {
       const int arg_length = strlen(command->core_argv[i]);
       command_line[cur++] = ' ';
+      command_line[cur++] = '"';
       strcpy(command_line + cur, command->core_argv[i]);
       cur += arg_length;
+      command_line[cur++] = '"';
    }
+   command_line[cur] = '\0';	/* The command line is done.  */
          
    if(CreateProcess(/* lpApplicationName */ execpath,
                     /* lpCommandLine */ command_line,
