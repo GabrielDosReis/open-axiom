@@ -338,7 +338,7 @@ shoeOutParse stream ==
     $bpCount:local:=0
     $bpParenCount:local:=0
     bpFirstTok()
-    found:=CATCH("TRAPPOINT",bpOutItem())
+    found:=try bpOutItem() catch TRAPPOINT
     if found="TRAPPED"
     then  nil
     else if not bStreamNull $inputStream
