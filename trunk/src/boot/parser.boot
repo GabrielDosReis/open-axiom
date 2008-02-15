@@ -286,13 +286,13 @@ bpMissingMate(close,open)==
  
 bpMissing s==
    bpSpecificErrorHere(CONCAT(PNAME s,'" possibly missing"))
-   THROW("TRAPPOINT","TRAPPED")
+   throw TRAPPOINT "TRAPPED"
  
 bpCompMissing s == bpEqKey s or bpMissing s
  
 bpTrap()==
    bpGeneralErrorHere()
-   THROW("TRAPPOINT","TRAPPED")
+   throw TRAPPOINT "TRAPPED"
  
 bpRecoverTrap()==
   bpFirstToken()
@@ -310,7 +310,7 @@ bpListAndRecover(f)==
    c:=$inputStream
    while not done repeat
 --   $trapped:local:=false
-     found:=CATCH("TRAPPOINT",APPLY(f,nil))
+     found:=try APPLY(f,nil) catch TRAPPOINT
      if found="TRAPPED"
      then
         $inputStream:=c
