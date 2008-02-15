@@ -717,7 +717,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 (defmacro wi (a b) b)
 
-(defmacro |try| (X)
+(defmacro |tryLine| (X)
   `(LET ((|$autoLine|))
         (declare (special |$autoLine|))
         (|tryToFit| (|saveState|) ,X)))

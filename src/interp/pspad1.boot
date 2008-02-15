@@ -235,17 +235,17 @@ undent() ==
   0
 
 spill(fn,a) == 
-  u := try FUNCALL(fn,a) => u
+  u := tryLine FUNCALL(fn,a) => u
   (nearMargin() or spillLine()) and FUNCALL(fn,a)
  
 formatSpill(fn,a) ==
-  u := try FUNCALL(fn,a) => u
+  u := tryLine FUNCALL(fn,a) => u
   v := (stay:= nearMargin() or indent() and newLine()) and FUNCALL(fn,a) 
   w := stay or undent()
   v and w
  
 formatSpill2(fn,f,a) ==
-  u := try FUNCALL(fn,f,a) => u
+  u := tryLine FUNCALL(fn,f,a) => u
   v := (stay:= nearMargin() or indent() and newLine()) and FUNCALL(fn,f,a) 
   w := stay or undent()
   v and w
@@ -293,7 +293,7 @@ formatDollar(name,p,argl) ==
   kind := (n=1 => "Nud"; "Led")
   IDENTP name and GETL(p,kind) => format([p,:argl],name)
   formatForcePren [p,:argl] and 
-    (try (format "$$" and formatForcePren name) 
+    (tryLine (format "$$" and formatForcePren name) 
       or (indent() and format "$__" and formatForcePren name and undent()))
  
 formatMacroCheck name ==
@@ -412,8 +412,8 @@ formatApplication1 u ==
   [op,x] := u
   formatHasDollarOp x or $formatForcePren or 
     pspadBindingPowerOf("left",x) < 1000  => formatOpPren(op,x)
-  try (formatOp op and format " ") and 
-    (try formatApplication2 x or
+  tryLine (formatOp op and format " ") and 
+    (tryLine formatApplication2 x or
       format "(" and formatApplication2 x and format ")")
 
 formatHasDollarOp x ==
@@ -433,7 +433,7 @@ formatApplication2 x ==
   format x
 
 formatDot ["dot",a,x] ==
-  try (formatOp a and format ".") and
+  tryLine (formatOp a and format ".") and
     ATOM x => format x
     formatPren x
  

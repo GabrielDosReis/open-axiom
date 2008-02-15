@@ -355,7 +355,7 @@ formatIf1 x ==
     isTrue a => format b
     format "if " and format a and format " then " and format b
   format "if " and format a and
-    (try
+    (tryLine
       (format " then " and format b and format " else "
         and formatIfThenElse c) or spillLine()
           and format " then " and format b and
@@ -381,7 +381,7 @@ formatConstruct(['construct,:u]) ==
     "and"/[format "," and formatCut x for x in rest u]) and format "]"
  
 formatNextConstructItem x ==
-  try format x or ($m := $m + 2) and newLine() and format x
+  tryLine format x or ($m := $m + 2) and newLine() and format x
  
 formatREPEAT ["REPEAT",:iteratorList,body] ==
   tryBreakNB(null iteratorList or (formatIterator first iteratorList and
@@ -463,12 +463,12 @@ formatNonAtom x ==
  
 formatCAPSULE ['CAPSULE,:l,x] == 
   $insideCAPSULE: local := true
-  try formatBlock(l,x) or formatPiles(l,x) or spillLine() and formatBlock(l,x)
+  tryLine formatBlock(l,x) or formatPiles(l,x) or spillLine() and formatBlock(l,x)
 
 formatPAREN [.,:argl] == formatFunctionCallTail argl
  
 formatSEQ ["SEQ",:l,[.,.,x]] == 
-  try formatBlock(l,x) or formatPiles(l,x) or spillLine() and formatBlock(l,x)
+  tryLine formatBlock(l,x) or formatPiles(l,x) or spillLine() and formatBlock(l,x)
  
 --======================================================================
 --              Comment Handlers
@@ -593,7 +593,7 @@ isGensym x ==
 --                       Macro Helpers
 --======================================================================
 tryToFit(s,x) ==
---% try to format on current line; see macro try in file PSPADAUX LISP
+--% try to format on current line; see macro tryLine in file PSPADAUX LISP
   --returns nil if unable to format stuff in x on a single line
   x => ($back:= rest $back; $c)
   restoreState()

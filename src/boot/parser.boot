@@ -51,10 +51,6 @@ import '"ast"
 ++ written round parenthesis.
 $sawParenthesizedHead := false
 
-++ true if the current function definition has a return statement.
-$bodyHasReturn := false
-
-
 bpFirstToken()==
       $stok:=
           if null $inputStream
@@ -649,18 +645,53 @@ bpCompare()==
                or true)
  
 bpAnd()== bpLeftAssoc('(AND),function bpCompare)
- 
 
-++ Note the fact that a return statement is used in the body
-++ of current function definition.
-bpNoteReturnStmt() ==
-  $bodyHasReturn := true
-  true
+bpThrow() ==
+  bpEqKey "THROW" and bpApplication() and 
+    bpPush bfThrow bpPop1()
+
+bpTry() ==
+  bpEqKey "TRY" and bpAssign() and 
+    (bpEqKey "BACKSET" or true) and 
+      (bpEqKey "CATCH" or bpMissing "CATCH") and
+        (bpPiledCatchItems() or bpName() or bpTrap()) and
+           bpPush bfTry(bpPop2(), bpPop1())
+
+bpPiledCatchItems() ==
+  bpPileBracketed function bpCatchItemList
+
+
+bpCatchItemList() ==
+  bpListAndRecover function bpCatchItem
+
+bpExceptionHead() ==
+  (bpName() or bpTrap()) and
+    ((bpParenthesized function bpIdList and
+      bpPush bfNameArgs (bpPop2(),bpPop1()))
+	or bpName() and bpPush bfNameArgs(bpPop2(),bpPop1()))
+          or true
+
+bpExceptionTail() ==
+  bpEqKey "EXIT" and (bpAssign() or bpTrap()) and
+    bpPush Exit(bpPop2(),bpPop1())
+
+++ Exception:
+++   ExpcetionHead
+++   ExceptionHead => Assign
+bpException() ==
+  bpExceptionHead() and (bpExceptionTail() or true)
+
+++ Catch:
+++   catch Exception
+bpCatchItem() ==
+  (bpException() or bpTrap()) and 
+    bpPush %Catch bpPop1()
 
 bpReturn()==
-         (bpEqKey "RETURN" and bpNoteReturnStmt() and
-           (bpAnd() or bpTrap()) and
-                bpPush bfReturnNoName bpPop1()) or bpAnd()
+  (bpEqKey "RETURN" and  (bpAnd() or bpTrap()) and
+	 bpPush bfReturnNoName bpPop1()) 
+    or bpThrow()
+      or bpAnd()
  
  
 bpLogical()== bpLeftAssoc('(OR),function bpReturn)
@@ -671,7 +702,9 @@ bpExpression()==
                     or bpTrap()) or bpLogical()
  
 bpStatement()==
-  bpConditional function bpWhere or bpLoop()  or bpExpression()
+  bpConditional function bpWhere or bpLoop()  
+    or bpExpression()
+      or bpTry()
  
 bpLoop()==
      bpIterators() and
@@ -727,10 +760,10 @@ bpAssign()==
                  false
  
 bpAssignment()==
-       bpAssignVariable() and
-         bpEqKey "BEC" and
-           (bpAssign() or bpTrap()) and
-              bpPush bfAssign (bpPop2(),bpPop1())
+  bpAssignVariable() and
+    bpEqKey "BEC" and
+      (bpAssign() or bpTrap()) and
+	 bpPush bfAssign (bpPop2(),bpPop1())
  
 -- should only be allowed in sequences
 bpExit()==
@@ -765,7 +798,6 @@ bpStoreName()==
   $wheredefs := nil
   $typings := nil
   $returnType := true           -- assume we may return anything
-  $bodyHasReturn := false
   true
 
 bpReturnType() ==
