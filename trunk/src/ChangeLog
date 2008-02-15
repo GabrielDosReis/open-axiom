@@ -1,3 +1,9 @@
+2008-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpSimpleCatch): New.
+	(bTry): Use it.
+	* boot/strap: Update.
+
 2008-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add try/catch to Boot.
