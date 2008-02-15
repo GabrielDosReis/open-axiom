@@ -650,16 +650,22 @@ bpThrow() ==
   bpEqKey "THROW" and bpApplication() and 
     bpPush bfThrow bpPop1()
 
+++  Try:
+++    try Assign CatchItems
 bpTry() ==
   bpEqKey "TRY" and bpAssign() and 
     (bpEqKey "BACKSET" or true) and 
       (bpEqKey "CATCH" or bpMissing "CATCH") and
-        (bpPiledCatchItems() or bpName() or bpTrap()) and
+        (bpPiledCatchItems() or bpSimpleCatch() or bpTrap()) and
            bpPush bfTry(bpPop2(), bpPop1())
+
+++ SimpleCatch:
+++   catch Name
+bpSimpleCatch() ==
+  bpCatchItem() and bpPush [bpPop1()]
 
 bpPiledCatchItems() ==
   bpPileBracketed function bpCatchItemList
-
 
 bpCatchItemList() ==
   bpListAndRecover function bpCatchItem

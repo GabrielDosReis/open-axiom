@@ -10,8 +10,6 @@
 
 (DEFPARAMETER |$sawParenthesizedHead| NIL)
 
-(DEFPARAMETER |$bodyHasReturn| NIL)
-
 (DEFUN |bpFirstToken| ()
   (DECLARE (SPECIAL |$ttok| |$stok| |$inputStream|))
   (PROGN
@@ -692,15 +690,46 @@
 
 (DEFUN |bpAnd| () (|bpLeftAssoc| '(AND) #'|bpCompare|))
 
-(DEFUN |bpNoteReturnStmt| ()
-  (DECLARE (SPECIAL |$bodyHasReturn|))
-  (PROGN (SETQ |$bodyHasReturn| T) T))
+(DEFUN |bpThrow| ()
+  (AND (|bpEqKey| 'THROW) (|bpApplication|)
+       (|bpPush| (|bfThrow| (|bpPop1|)))))
+
+(DEFUN |bpTry| ()
+  (AND (|bpEqKey| 'TRY) (|bpAssign|) (OR (|bpEqKey| 'BACKSET) T)
+       (OR (|bpEqKey| 'CATCH) (|bpMissing| 'CATCH))
+       (OR (|bpPiledCatchItems|) (|bpSimpleCatch|) (|bpTrap|))
+       (|bpPush| (|bfTry| (|bpPop2|) (|bpPop1|)))))
+
+(DEFUN |bpSimpleCatch| ()
+  (AND (|bpCatchItem|) (|bpPush| (LIST (|bpPop1|)))))
+
+(DEFUN |bpPiledCatchItems| () (|bpPileBracketed| #'|bpCatchItemList|))
+
+(DEFUN |bpCatchItemList| () (|bpListAndRecover| #'|bpCatchItem|))
+
+(DEFUN |bpExceptionHead| ()
+  (OR (AND (OR (|bpName|) (|bpTrap|))
+           (OR (AND (|bpParenthesized| #'|bpIdList|)
+                    (|bpPush| (|bfNameArgs| (|bpPop2|) (|bpPop1|))))
+               (AND (|bpName|)
+                    (|bpPush| (|bfNameArgs| (|bpPop2|) (|bpPop1|))))))
+      T))
+
+(DEFUN |bpExceptionTail| ()
+  (AND (|bpEqKey| 'EXIT) (OR (|bpAssign|) (|bpTrap|))
+       (|bpPush| (|Exit| (|bpPop2|) (|bpPop1|)))))
+
+(DEFUN |bpException| ()
+  (AND (|bpExceptionHead|) (OR (|bpExceptionTail|) T)))
+
+(DEFUN |bpCatchItem| ()
+  (AND (OR (|bpException|) (|bpTrap|))
+       (|bpPush| (|%Catch| (|bpPop1|)))))
 
 (DEFUN |bpReturn| ()
-  (OR (AND (|bpEqKey| 'RETURN) (|bpNoteReturnStmt|)
-           (OR (|bpAnd|) (|bpTrap|))
+  (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAnd|) (|bpTrap|))
            (|bpPush| (|bfReturnNoName| (|bpPop1|))))
-      (|bpAnd|)))
+      (|bpThrow|) (|bpAnd|)))
 
 (DEFUN |bpLogical| () (|bpLeftAssoc| '(OR) #'|bpReturn|))
 
@@ -712,7 +741,8 @@
       (|bpLogical|)))
 
 (DEFUN |bpStatement| ()
-  (OR (|bpConditional| #'|bpWhere|) (|bpLoop|) (|bpExpression|)))
+  (OR (|bpConditional| #'|bpWhere|) (|bpLoop|) (|bpExpression|)
+      (|bpTry|)))
 
 (DEFUN |bpLoop| ()
   (OR (AND (|bpIterators|) (|bpCompMissing| 'REPEAT)
@@ -804,14 +834,13 @@
           (#0# (PROGN (|bpRestore| |a|) NIL)))))))
 
 (DEFUN |bpStoreName| ()
-  (DECLARE (SPECIAL |$bodyHasReturn| |$returnType| |$typings|
-                    |$wheredefs| |$op| |$stack|))
+  (DECLARE (SPECIAL |$returnType| |$typings| |$wheredefs| |$op|
+                    |$stack|))
   (PROGN
     (SETQ |$op| (CAR |$stack|))
     (SETQ |$wheredefs| NIL)
     (SETQ |$typings| NIL)
     (SETQ |$returnType| T)
-    (SETQ |$bodyHasReturn| NIL)
     T))
 
 (DEFUN |bpReturnType| ()
