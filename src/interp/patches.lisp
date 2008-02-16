@@ -176,8 +176,6 @@
        (READSPADEXPR))
       (t (|parseTransform| (|postTransform| (|string2SpadTree| line)))))))
 
-(setq |$sourceFiles| ()) ;; set in readSpad2Cmd
-
 (define-function 'SUBSTQ #'SUBSTEQ) ;; needed for substNames (always copy)
 #+(and :lucid (not :ibm/370))
  (define-function 'RUN-AIX-PROGRAM #'SYS:RUN-AIX-PROGRAM)

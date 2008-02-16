@@ -44,6 +44,7 @@
 ; PURPOSE: Debugging hooks for Boot code
 
 (import-module "macros") 
+(import-module "parsing")
 (in-package "BOOT")
 
 (defvar S-SPADKEY NIL) ;" this is augmented by MAKESPADOP"
@@ -54,7 +55,7 @@
 (DEFVAR CURSTRM *TERMINAL-IO*)
 (DEFVAR /TRACELETNAMES ())
 (DEFVAR /PRETTY () "controls pretty printing of trace output")
-(SETANDFILEQ /ECHO NIL) ;;"prevents echo of SPAD or BOOT code with /c"
+(defparameter /ECHO NIL) ;;"prevents echo of SPAD or BOOT code with /c"
 (MAKEPROP 'LISP '/TERMCHR '(#\  #\())
 (MAKEPROP 'LSP '/TERMCHR '(#\  #\())
 (MAKEPROP 'META '/TERMCHR '(#\:  #\())
@@ -99,6 +100,8 @@
  
 (defun /COMP () (if (fboundp 'COMP) 'COMP 'COMP370))
  
+(defvar /fn nil)
+
 (DEFUN /D-1 (L OP EFLG TFLG)
   (CATCH 'FILENAM
     (PROG (TO OPTIONL OPTIONS FNL INFILE OUTSTREAM FN )
@@ -280,7 +283,7 @@
         (OR (KAR (KAR (KDR DEF))) NIL)
         OP)
       (COND
-        ( (OR /ECHO $PRETTYPRINT)
+        ( (OR /ECHO $|PrettyPrint|)
           (PRETTYPRINT DEF OUTPUTSTREAM) ) )
       (COND
         ( (EQ oft 'LISP)
@@ -333,11 +336,15 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
                             (or (get type '/termchr) '(#\space ))))))))
  
 (define-function '|/D,1| #'/D-1)
+
+(defvar /UPDATESTREAM nil)
+
  
 (DEFUN /INITUPDATES (/VERSION)
-   (SETQ FILENAME (STRINGIMAGE /VERSION))
-   (SETQ /UPDATESTREAM (open (strconc "/tmp/update." FILENAME) :direction :output
-                             :if-exists :append :if-does-not-exist :create))
+  (LET ((FILENAME (STRINGIMAGE /VERSION)))
+       (SETQ /UPDATESTREAM (open (strconc "/tmp/update." FILENAME) 
+			      :direction :output
+			      :if-exists :append :if-does-not-exist :create)))
    (PRINTEXP
  "       Function Name                    Filename             Date   Time"
       /UPDATESTREAM)
@@ -388,7 +395,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 ;;;If A disk is not read-write, then issue msg and return.
 ;;;If /UPDATESTREAM not set or current /UPDATES file doesnt exist, initialize.
  
-   (PROG (IFT KEY RECNO ORECNO DATE TIME)
+   (PROG (IFT KEY RECNO ORECNO DATE TIME DATETIME)
 ;         (if (EQ 0 /VERSION) (RETURN NIL))
          (if (EQ 'INPUT FT) (RETURN NIL))
          (if (NOT |$createUpdateFiles|) (RETURN NIL))
@@ -468,7 +475,8 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
   (PROG (U FNVAL COUNTNAM TRACECODE BEFORE AFTER CONDITION
          TRACENAME CALLER VARS BREAK FROM_CONDITION VARBREAK TIMERNAM
          ONLYS G WITHIN_CONDITION  DEPTH_CONDITION COUNT_CONDITION
-         LETFUNCODE MATHTRACE )
+         LETFUNCODE MATHTRACE |$traceNoisely|)
+	(declare (special |$traceNoisely|))
         (if (member FN /TRACENAMES :test #'eq) (/UNTRACE-2 FN NIL))
         (SETQ OPTIONS (OPTIONS2UC OPTIONS))
         (if (AND |$traceDomains| (|isFunctor| FN) (ATOM FN))
@@ -655,7 +663,8 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
 (DEFUN /UNTRACE-REDUCE (X) (if (ATOM X) X (first X))) ; (CAR X) is now a domain
  
 (DEFUN /UNTRACE-2 (X OPTIONS)
- (let (u y)
+ (let (u y |$traceNoisely|)
+   (declare (special |$traceNoisely|))
   (COND ((AND (|isFunctor| X) (ATOM X))
          (|untraceDomainConstructor| X))
         ((OR (|isDomainOrPackage| (SETQ U X))
@@ -744,6 +753,8 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
        (INTEGERP (parse-integer (symbol-name X) :start 1))))
  
 (DEFUN MONITOR-GETVALUE (N FG)
+  (PROG (/VALUE /caller /args /name)
+	(declare (special /value /caller /args /name))
   (COND ((= N 0)
          (if FG
              (MKQ /VALUE)
@@ -751,7 +762,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
         ((= N 9) (MKQ /CALLER))
         ((<= N (SIZE /ARGS)) (MKQ (ELT /ARGS (1- N))))
         ((|spadThrowBrightly| (LIST 'function '|%b| /NAME '|%d|
-                              "does not have" '|%b| N '|%d| "arguments")))))
+                              "does not have" '|%b| N '|%d| "arguments"))))))
  
 (DEFUN MONITOR-PRINARGS (L CODE /TRANSFORM)
   (let (N)
@@ -953,6 +964,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
         (RETURN G1)))
 
 (defvar |$TraceFlag| t)
+(defvar |depthAlist| nil)
  
 (defun /MONITORX (/ARGS FUNCT OPTS &AUX NAME TYPE TRACECODE COUNTNAM TIMERNAM
                         BEFORE AFTER CONDITION BREAK TRACEDMODEMAP
@@ -1072,12 +1084,12 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
    (RPLACA PAIR (BPITRACE (CAR PAIR) ALIAS )) NIL)
  
 (defun BPITRACE (BPI ALIAS &optional OPTIONS)
-  (SETQ NEWNAME (GENSYM))
-  (IF (identp bpi) (setq bpi (symbol-function bpi)))
-  (SET NEWNAME BPI)
-  (SETF (symbol-function NEWNAME) BPI)
-  (/TRACE-0 (APPEND (LIST NEWNAME (LIST 'ALIAS ALIAS)) OPTIONS))
-  NEWNAME)
+  (let ((NEWNAME (GENSYM)))
+    (IF (identp bpi) (setq bpi (symbol-function bpi)))
+    (SET NEWNAME BPI)
+    (SETF (symbol-function NEWNAME) BPI)
+    (/TRACE-0 (APPEND (LIST NEWNAME (LIST 'ALIAS ALIAS)) OPTIONS))
+    NEWNAME))
  
 (defun BPIUNTRACE (X ALIAS) (/UNTRACE-0 (LIST X (LIST 'ALIAS ALIAS))))
  

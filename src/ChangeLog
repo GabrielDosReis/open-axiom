@@ -1,5 +1,26 @@
 2008-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/unlisp.lisp (|CatchAsCan|): Tidy.
+	* interp/sys-utility.boot (delete): Fix thinko.
+	* interp/sys-globals.boot ($sourceFiles): Define here.
+	(INPUTSTREAM): Likewise.
+	* interp/i-syscmd.boot (UNDERBAR): Move to sys-globals.boot.
+	* interp/fname.lisp: Import "macros".
+	* interp/debug.lisp: Import "parsing".
+	Replace $PRETTYPRINT with $PrettyPrint.
+	(/FN): Define.
+	(depthAlist): Likewise.
+	* interp/br-search.boot (docSearch1): Fix thinko.
+	* interp/Makefile.pamphlet (debug.$(FASLEXT)): Depend on
+	parsing.$(FASLEXT). 
+	* interp/i-output.boot (starstarcond): Remove used function.
+	(transcomparg): Likewise.
+	(MATBORCH): Define here.
+	(*TALLPAR): Likewise.
+	* interp/vmlisp.lisp (|char|): Remove duplicate definition.
+
+2008-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (bpSimpleCatch): New.
 	(bTry): Use it.
 	* boot/strap: Update.

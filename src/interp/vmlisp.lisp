@@ -101,10 +101,6 @@
 #+:CCL
 (defun bintp (n) (and (integerp n) (not (fixp n))))
 
-(defmacro |char| (x)
-  (if (and (consp x) (eq (car x) 'quote)) (character (cadr x))
-    `(character ,x)))
-
 (defmacro closedfn (form)
  `(function ,form))
 

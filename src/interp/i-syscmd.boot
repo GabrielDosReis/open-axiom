@@ -46,8 +46,6 @@ $existingFiles := MAKE_-HASHTABLE "UEQUAL"
 
 $SYSCOMMANDS := [CAR x for x in $systemCommands]
 
-UNDERBAR == '"__"
-
 $NonNullStream ==
   '"NonNullStream"
 

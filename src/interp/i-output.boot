@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -207,6 +207,11 @@ $specialCharacterAlist == '(
   (ctee . 15)_
   (bslash . 16)_
   )
+
+
+MATBORCH == '"*"
+
+_*TALLPAR := false
 
 $collectOutput := nil
 
@@ -1850,20 +1855,6 @@ appsub(u, x, y, d) ==
   temparg3 := APP(CADR u, x, y, d)
   appagg(CDDR u, temparg1, temparg2, temparg3)
 
-starstarcond(l, iforwhen) ==
-    null l => l
-    EQ((a := CAAR l), 1) =>
-       LIST('CONCAT, CADR first l, '" OTHERWISE")
-    EQCAR(a, 'COMPARG) =>
-      starstarcond(CONS(transcomparg(CADR a),  rest l), iforwhen)
-    null rest l =>
-      LIST('CONCAT, CADR first l,
-           LIST('CONCAT, iforwhen, CAAR l))
-    true => LIST('VCONCAT,
-                 starstarcond(CONS(first l, nil), iforwhen),
-                 LIST('VCONCAT, '"  ",
-                      starstarcond(rest l, iforwhen)))
-
 eq0(u) == 0
 
 height(u) ==
@@ -1992,7 +1983,6 @@ boxLApp(u, x, y, d) ==
   a := superspan u.1+1
   b := subspan u.1+1
   w := MAX(lw, 2 + WIDTH u.1)
-  -- next line used to have h instead of lh
   top := y + a + lh
   d := appvertline(MATBORCH, x, y - b, top, d)
   d := appHorizLine(x + 1, x + w, top, d)
@@ -2001,7 +1991,7 @@ boxLApp(u, x, y, d) ==
   nil or
      lw < w => d := appvertline(MATBORCH, x + lw + 1, y + a, top - 1, d)
   d := APP(u.1, 2 + x, y, d)
-  d := appHorizLine(x + 1, x + w, y - b, top, d)
+  d := appHorizLine(x + 1, x + w, y - b, d)
   d := appvertline(MATBORCH, x + w + 1, y - b, top, d)
 
 boxSub(x) ==
@@ -2356,26 +2346,6 @@ superSubSuper u ==
 
 suScWidth u ==
   WIDTH u.1 + aggwidth CDDR u
-
-transcomparg(x) ==
-  y := first x
-  args := first _*NTH(STANDARGLIST, 1 + LENGTH y)
-  repeat
-    if true then
-       null y => return(nil)
-       (atom first y) and member(first y, FRLIS_*) =>
-            conds := CONS(LIST('EQUAL1, first args, first y), conds)
-            y := SUBST(first args, first y, y)
-            x := SUBST(first args, first y, x)
-       (first y = first args) => nil
-       true => conds := CONS(LIST('EQUAL1, first args, first y), conds)
-    y := rest y
-    args := rest args
-  conds :=
-       null conds => rest CADR x
-       ANDSIMP(CONS('AND, APPEND(REVERSEWOC conds,
-                                         LIST(rest CADR x) ) ) )
-  LIST((conds => conds; true => 1), CADR rest x)
 
 vconcatapp(u, x, y, d) ==
   w := vConcatWidth u

@@ -53,7 +53,7 @@ delete(item,sequence) ==
   SYMBOLP item => 
     REMOVE(item,sequence,KEYWORD::TEST,function EQ)
   atom item and not ARRAYP item =>
-    REMOVE(item,SEQUENCE)
+    REMOVE(item,sequence)
   REMOVE(item,sequence,KEYWORD::TEST,function EQUALP)
 
 ++ returns true if `x' is contained in `y'.
