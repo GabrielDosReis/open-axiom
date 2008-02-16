@@ -442,3 +442,10 @@ $useRepresentationHack := true
 
 ++
 $insideCanCoerceFrom := nil
+
+++
+$sourceFiles := []
+
+++ ??? bogus initialization for now
+INPUTSTREAM := "T"
+

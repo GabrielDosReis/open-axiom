@@ -71,8 +71,6 @@
 (defvar |$HiFiAccess| nil "if true maintain history file")
 (defvar |$mapReturnTypes| nil)
 
-(defvar INPUTSTREAM t "bogus initialization for now")
-
 (defvar |boot-NewKEY| NIL)
 
 (DEFVAR _ '&)
@@ -386,7 +384,9 @@
       (REMFLAG |boot-NewKEY| 'KEY)
       INPUTSTREAM))
 
-(defun INITIALIZE () (init-boot/spad-reader) (initialize-preparse INPUTSTREAM))
+(defun INITIALIZE () 
+  (init-boot/spad-reader)
+  (initialize-preparse INPUTSTREAM))
 
 (setq *prompt* 'new)
 
@@ -456,7 +456,6 @@
     (return TERMTOK)))
 ; **** X. Random tables
 
-(defvar MATBORCH "*")
 (defvar $MARGIN 3)
 (defvar TEMPGENSYMLIST '(|s| |r| |q| |p|))
 (defvar ALPHLIST '(|a| |b| |c| |d| |e| |f| |g|))
@@ -467,7 +466,6 @@
 (defvar INITPARLST '(|x| |y| |z| |u| |v| |w| |r| |s| |t|))
 (defvar LITTLEA '|a|)
 (defvar LITTLEI '|i|)
-(defvar *TALLPAR NIL)
 (defvar ALLSTAR NIL)
 (defvar PLUSS "+")
 (defvar PERIOD ".")

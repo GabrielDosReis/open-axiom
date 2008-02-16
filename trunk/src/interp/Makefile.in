@@ -622,7 +622,7 @@ daase.$(FASLEXT): daase.lisp macros.$(FASLEXT) foam_l.$(FASLEXT)
 spaderror.$(FASLEXT): spaderror.lisp macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-debug.$(FASLEXT): debug.lisp macros.$(FASLEXT)
+debug.$(FASLEXT): debug.lisp macros.$(FASLEXT) parsing.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 spad.$(FASLEXT): spad.lisp bootlex.$(FASLEXT)

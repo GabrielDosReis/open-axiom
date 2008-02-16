@@ -66,8 +66,7 @@
 
 #-:Lucid 
 (defmacro |CatchAsCan| (tagvar expr)
-  `(progn 
-      (setq ,tagvar nil) 
+  `(let ((,tagvar nil))
       ,expr ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

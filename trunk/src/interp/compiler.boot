@@ -1129,7 +1129,7 @@ compileNot(x,m,e) ==
   -- do this special case here.
   [xcode, xmode, xtrueEnv, xfalseEnv] := compBoolean(y, $Boolean, e)
      or return nil
-  convert([["NOT", xcode], $Boolean, xfalseEnv], m)
+  convert([["NOT", xcode], xmode, xfalseEnv], m)
  
 
 --% Case

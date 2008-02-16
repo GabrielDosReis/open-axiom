@@ -277,7 +277,7 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
   res
  
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
-  $PRETTYPRINT: local := 'T
+  $PrettyPrint: local := 'T
   $LISPLIB: local := 'T
   $lisplibAttributes: local := NIL
   $lisplibPredicates: local := NIL
