@@ -50,13 +50,64 @@
   <h2>OpenAxiom Documentation</h2>
 
   <p>
-  Coming soon.
+  OpenAxiom is a descendent of the AXIOM computer algebra system
+  as described by Richard Jenks and Robert Sutor in
+  <a href="http://portal.acm.org/citation.cfm?id=131846&dl=">AXIOM: The
+  Scientific Computation System.</a>  That book is the base reference
+  document for OpenAxiom.
   </p>
+
+  <h3>Interactive Session</h3>
+
+  <p>Most uses of OpenAxiom is done through an interactive session.
+   Just start it with the command <code>open-axiom</code> at the
+   shell prompt.
+  </p>
+
+  
+  <h3>Interpretation in batch mode</h3>
+
+  <p>
+  The interpreter can be invoked in batch mode in two ways
+   <ul>
+     <li>on command line as 
+       <pre>open-axiom --script myfile.input
+       </pre>
+       where <code>myfile.input</code> contains the script to be executed.
+       This method works on all platforms supported by OpenAxiom.
+     </li>
+
+     <li>or from a <code>.input</code> script where the very first line
+         reads
+         <pre>
+     #!/usr/bin/open-axiom --script
+         </pre>
+      just like for most scripting languages such as Python, Perl, or Ruby.
+      If your system does not support this way of invoking scripts then
+      you would have to resort to the first method.
+     </li>
+   </ul>
+  </p>
+
+  
+  <h3>The OpenAxiom compiler</h3>
+
+  <p>
+  OpenAxiom comes with a compiler that can be invoked either in an
+  interactive session, or in batch mode.  In batch mode, the compiler
+  is invoked as
+  <pre>
+     open-axiom --compiler myfile.spad
+  </pre>
+  where <code>myfile.spad</code> contains library codes.
+  </p>
+
+
 
 </div>
 
 <div id="footer">
-  Copyright &copy; 2007 Gabriel Dos Reis
+  Copyright &copy; 2007-2008 Gabriel Dos Reis
 </div>
 
 

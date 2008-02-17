@@ -1,6 +1,6 @@
 body {
   font-family: Times, "Times New Roman", serif;
-  font-size: 80%;
+  font-size: 110%;
 
   color: navy;
   width: 800px;
@@ -10,31 +10,26 @@ body {
 }
 
 h1 {
-   font-size: 3em;
+   font-size: 140%;
 }
 
 h2 {
-   font-size: 2.5em;
+   font-size: 130%;
 }
 
 h3 {
-   font-size: 2em;
+   font-size: 120%;
 }
 
 h4 {
-   font-size: 1.7em;
-}
-
-p {
-   font-size: 1.5em;
-}
-
-pre {
-   font-size: medium;
+   font-size: 110%;
 }
 
 #header {
-   border-bottom: 0.5em solid navy;
+   border-bottom: 4px solid navy;
+   text-align: center;
+   font-size: 170%;
+   font-weight: bold;
    text-align: center;
    width: 100%;
 }
@@ -43,7 +38,7 @@ pre {
 #navigation {
    float: left;
    left: 0;
-   font-size: 1.2em;
+   font-size: 90%;
    font-weight: bold;
    /* The following width has been chosen
       so that it boxes correctly the SF logo.  */
@@ -87,6 +82,12 @@ pre {
    background-color: navy;
 }
 
+#navigation img {
+   border: 0;
+   width: 125px;
+   height: 37px;
+}
+
 
 #main {
    margin-top: 0;
@@ -110,7 +111,7 @@ pre {
 }
 
 .description {
-   font-size: 1.5em;
+   font-size: 110%;
 }
 
 .description dt {
@@ -122,5 +123,17 @@ pre {
 }
 
 .description ul {
-   font-size: 1.5em;
+   font-size: 110%;
+}
+
+#openaxiom {
+   font-family: monospace;
+   font-size: 110%;
+}
+
+#openaxiom pre {
+   border-width: 1px;
+   border-color: navy;
+   border-style: solid;
+   font-size: 100%;
 }
