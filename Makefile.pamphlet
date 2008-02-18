@@ -562,12 +562,12 @@ $(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
 \subsection{install}
 <<install>>=
 install:
-	@echo Installing OpenAxiom in $(prefix)
+	@echo Installing OpenAxiom in $(DESTDIR)$(prefix)
 	@$(mkinstalldirs) "$(DESTDIR)$(open_axiom_installdir)"
 	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(open_axiom_installdir)"
-	rm -f "$(bindir)"/open-axiom
-	@$(mkinstalldirs) "$(bindir)"
-	$(INSTALL_PROGRAM) src/driver/open-axiom$(EXEEXT) "$(bindir)"
+	rm -f "$(DESTDIR)$(bindir)"/open-axiom
+	@$(mkinstalldirs) "$(DESTDIR)$(bindir)"
+	$(INSTALL_PROGRAM) src/driver/open-axiom$(EXEEXT) "$(DESTDIR)$(bindir)"
 	@echo OpenAxiom installation finished.
 @
 
