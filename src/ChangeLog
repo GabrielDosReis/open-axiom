@@ -1,3 +1,41 @@
+2008-02-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/variable.spad.pamphlet (AnonymousFunction): Add new
+	functions `parameters' and `body'.
+	* algebra/domain.spad.pamphlet: Rename from algebra/domain.spad.
+	(Category): New category.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include
+	CATEGORY.o. 
+	(DOMAIN.NRLIB/code.$(FASLEXT)): Remove rule.
+	* interp/trace.boot (transTraceItem): Use $LangSupportTypes.
+	* interp/sys-constants.boot ($None): New.
+	($Type): Likewise.
+	($LangSupportTypes): Likewise.
+	* interp/parse.boot (parseHas): Use $LangSupportTypes.
+	(parseHasRhs): Likewise.
+	* interp/i-spec2.boot (upLETtype): Use conceptualType.
+	(uptypeOf): Likewise.
+	(upwhere): Likewise.
+	(typeOfType): Remove.
+	* interp/i-spec1.boot (isDomainValuedVariable): Variables with
+	type Category and Type are domain valued too.
+	* interp/i-output.boot (output): Special case only Mode and Type.
+	* interp/i-funsel.boot (selectMms): Don't ignore modemaps with
+	category parameters.
+	* interp/i-coerce.boot (canCoerce1): Test for Category instead of
+	SubDomain Domain.
+	(canCoerceFrom0): Use $None and $Any.
+	(absolutelyCannotCoerce): Use $None.
+	(coerceInteractive): Use $LangSupportTypes.
+	(coerceInt1): Use $Any.
+	* interp/i-analy.boot (conceptualType): New.
+	(bottomUpType): Use it.
+	* interp/clammed.boot (isValidType): Use $LangSupportTypes.
+	* interp/g-cndata.boot (isNameOfType): Likewise.
+	* interp/category.boot (Category): Remove hacky definition.
+	* interp/buildom.boot ($noCategoryDomains): Domain now has a
+	Lisplib. 
+
 2008-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/unlisp.lisp (|CatchAsCan|): Tidy.

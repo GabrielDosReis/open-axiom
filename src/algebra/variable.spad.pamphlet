@@ -93,13 +93,30 @@ FunctionCalled(f:Symbol): SetCategory with
 )abbrev domain ANON AnonymousFunction
 ++ Description:
 ++ This domain implements anonymous functions
-AnonymousFunction():SetCategory == add
-  coerce(x:%):OutputForm == x pretend OutputForm
+AnonymousFunction():SetCategory with
+    parameters: % -> List Symbol
+      ++ parameters(f) returns the list of parameters bound by `f'.
+    body: % -> Syntax
+      ++ body(f) returns the body of the unnamed function `f'.
+  == add
+    import Syntax
+    coerce(x:%):OutputForm == 
+      x pretend OutputForm
+
+    parameters f ==
+      ps := CADR(f)$Lisp : Syntax
+      ps case Symbol => [ps]$List(Symbol)
+      getOperands(ps) pretend List(Symbol)
+
+    body f ==
+      CADDR(f)$Lisp : Syntax
 
 @
 \section{License}
 <<license>>=
---Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2008, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

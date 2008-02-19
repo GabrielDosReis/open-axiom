@@ -77,7 +77,7 @@ isValidType form ==
   -- are not valid.
   STRINGP form => true
   IDENTP  form => false
-  form in '((Mode) (Domain) (SubDomain (Domain))) => true
+  form in $LangSupportTypes => true
   form is ['Record,:selectors] =>
     and/[isValidType type for [:.,type] in selectors]
   form is ['Enumeration,:args] =>

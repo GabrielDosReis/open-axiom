@@ -415,8 +415,8 @@ canCoerce1(t1,t2) ==
   -- general test for coercion
   -- the result is NIL if it fails
   t1 = t2 => true
-  absolutelyCanCoerceByCheating(t1,t2) or t1 = '(None) or t2 = '(Any) or
-    t1 in '((Mode)  (Domain) (SubDomain (Domain))) =>
+  absolutelyCanCoerceByCheating(t1,t2) or t1 = $None or t2 = $Any or
+    t1 in '((Mode) (Category)) =>
       t2 = $OutputForm => true
       NIL
     -- next is for tagged union selectors for the time being
@@ -468,7 +468,7 @@ canCoerceFrom0(t1,t2) ==
 -- equivalent types
   startTimingProcess 'querycoerce
   q :=
-    isEqualOrSubDomain(t1,t2) or t1 = '(None) or t2 = '(Any) or
+    isEqualOrSubDomain(t1,t2) or t1 = $None or t2 = $Any or
       if t2 = $OutputForm then (s1 := t1; s2 := t2)
       else (s1:= equiType(t1); s2:= equiType(t2))
 
@@ -691,7 +691,7 @@ absolutelyCannotCoerce(t1,t2) ==
   -- response of true means "definitely cannot coerce"
   -- this is largely an efficiency hack
   ATOM(t1) or ATOM(t2) => NIL
-  t2 = '(None) => true
+  t2 = $None => true
   n1   := CAR t1
   n2   := CAR t2
   QFI  := [$QuotientField, $Integer]
@@ -751,7 +751,7 @@ coerceInteractive(triple,t2) ==
   t2 = '$NoValueMode => objNew(val,t2)
   if t2 is ['SubDomain,x,.] then t2:= x
   -- JHD added category Aug 1996 for BasicMath
-  t1 in '((Category) (Mode) (Domain) (SubDomain (Domain))) =>
+  t1 in $LangSupportTypes =>
     t2 = $OutputForm => objNew(val,t2)
     NIL
   t1 = '$NoValueMode =>
@@ -832,7 +832,7 @@ coerceInt1(triple,t2) ==
     NIL
 
   t2 = $Void => objNew(voidValue(),$Void)
-  t2 = $Any => objNewWrap([t1,:unwrap val],'(Any))
+  t2 = $Any => objNewWrap([t1,:unwrap val],$Any)
 
   t1 = $Any and t2 ^= $OutputForm and ([t1',:val'] := unwrap val) and
     (ans := coerceInt(objNewWrap(val',t1'),t2)) => ans

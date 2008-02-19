@@ -1212,7 +1212,8 @@ isDomainValuedVariable form ==
     get(form,'value,$InteractiveFrame) or _
     (PAIRP($env) and get(form,'value,$env)) or _
     (PAIRP($e) and get(form,'value,$e)))) and
-      objMode(val) in '((Domain) (SubDomain (Domain))) =>
+      objMode(val) in '((Domain) (Category) (Type)) =>
+        -- ??? shall we accept all of $LangSupportTypes?
         objValUnwrap(val)
   nil
 
