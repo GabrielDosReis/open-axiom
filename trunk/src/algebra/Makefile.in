@@ -378,7 +378,7 @@ axiom_algebra_layer_0 = \
   OM.o      OMCONN.o  OMDEV.o   OUT.o      \
   PRIMCAT.o PRINT.o   PTRANFN.o SPFCAT.o   \
   TYPE.o    UTYPE.o   PROPLOG.o PROPERTY.o  \
-  BASTYPE.o BASTYPE-.o
+  BASTYPE.o BASTYPE-.o CATEGORY.o
 
 axiom_algebra_layer_0_nrlibs = \
 	$(axiom_algebra_layer_0:.$(OBJEXT)=.NRLIB/code.$(OBJEXT))
@@ -909,10 +909,6 @@ SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
 PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
 	@ rm -rf PARSER.NRLIB
 	echo ")co $(srcdir)/script-parser.spad" | ${INTERPSYS}
-
-DOMAIN.NRLIB/code.$(FASLEXT): domain.spad
-	@ rm -rf DOMAIN.NRLIB
-	echo ")co $(srcdir)/domain.spad" | ${INTERPSYS}
 
 
 

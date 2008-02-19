@@ -615,11 +615,20 @@ sayIntelligentMessageAboutOpAvailability(opName, nArgs) ==
     sayKeyedMsg("S2IB0008f", [opName, nArgs, nAllExposedMmsWithNameAndArgs, nAllMmsWithNameAndArgs - nAllExposedMmsWithNameAndArgs])
   nil
 
+
+++ Returns the `conceptual' type of `type', e.g., the type type in
+++ the abstract semantics, not necessarily the one from implementation
+++ point of view.
+conceptualType: %Thing -> %List
+conceptualType type ==
+  isPartialMode type => $Mode
+  type in $LangSupportTypes => $Type
+  categoryForm?(type) => $Category
+  $Domain
+
+
 bottomUpType(t, type) ==
-  mode :=
-    if isPartialMode type then '(Mode)
-    else if categoryForm?(type) then '(SubDomain (Domain))
-         else '(Domain)
+  mode := conceptualType type
   val:= objNew(type,mode)
   putValue(t,val)
   -- have to fix the following

@@ -40,7 +40,7 @@
 import '"sys-macros"
 )package "BOOT"
 
-$noCategoryDomains == '(Domain Mode SubDomain)
+$noCategoryDomains == '(Mode SubDomain)
 $nonLisplibDomains == APPEND($Primitives,$noCategoryDomains)
 
 ++ Category ancestors for Record, Union, Mapping, and Enumeration domains.

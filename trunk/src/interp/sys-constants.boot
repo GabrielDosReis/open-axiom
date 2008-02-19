@@ -291,6 +291,10 @@ $Void ==
 $Any ==
   '(Any)
 
+++ The None domain constructor form.
+$None ==
+  '(None)
+
 ++ The Syntax domain constructor form
 $Syntax ==
   '(Syntax)
@@ -417,6 +421,10 @@ $Primitives ==
 $Category ==
   '(Category)
 
+++ The Type category constructor form.
+$Type ==
+  '(Type)
+
 ++ Domain constructor form
 ++ FIXME: Find where this is used in the system.
 $Domain ==
@@ -463,6 +471,9 @@ $DomainNames ==
     Vector _
     Enumeration)
 
+++ List of language support constructor forms.
+$LangSupportTypes ==
+  '((Mode) (Domain) (Type) (Category))
 
 ++
 $NonMentionableDomainNames ==
