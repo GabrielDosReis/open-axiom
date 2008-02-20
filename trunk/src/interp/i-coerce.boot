@@ -753,7 +753,10 @@ coerceInteractive(triple,t2) ==
   -- JHD added category Aug 1996 for BasicMath
   t1 in $LangSupportTypes =>
     t2 = $OutputForm => objNew(val,t2)
-    NIL
+    t1 = $Domain and conceptualType t2 = $Category 
+      and ofCategory(val,t2)=> objNew(val,t2)
+    conceptualType t1 = t2 => objNew(val,t2)
+    nil
   t1 = '$NoValueMode =>
     if $compilingMap then clearDependentMaps($mapName,nil)
     throwKeyedMsg("S2IC0009",[t2,$mapName])

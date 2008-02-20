@@ -1,3 +1,28 @@
+2008-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in [SBCL]: Require "sb-posix".
+	(|resetErrorCount|): New export function.
+	* interp/vmlisp.lisp (opOf): Remove macro definition.
+	* interp/msg.boot (setMsgCatlessAttr): Fix thinko.
+	* interp/monitor.lisp (monitor-add): Remove extra right parenthesis.
+	* interp/lisplib.boot: Import "debug".
+	(initializeLisplib): Don't use ERRORS variable.
+	* interp/i-spec1.boot (isDomainValuedVariable): Tidy.
+	* interp/i-output.boot (outputTran): Use SIZE instead of #.
+	(output): Remove misguided conversion from Tuple to List.
+	* interp/i-coerce.boot (coerceInteractive): Allow domain object
+	convesions.
+	* interp/g-util.boot (opOf): Declare.
+	* interp/Makefile.pamphlet (lisplib.$(FASLEXT)): Depend on
+	debug.$(FASLEXT). 
+	* algebra/Makefile.pamphlet: Use .$(FASLEXT) instead of hardcoded
+	.o extension.
+
+2008-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (|opOf|): Remove duplicate.
+	* lisp/core.lisp.in (|resetErrorCount|): New function.  Export.
+
 2008-02-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/variable.spad.pamphlet (AnonymousFunction): Add new

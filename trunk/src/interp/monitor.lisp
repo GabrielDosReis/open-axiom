@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -186,7 +186,7 @@
  (eval `(trace (,name :cond (progn (monitor-incr ',name) nil))))
  (setf (gethash name *monitor-table*)
   (make-monitor-data 
-     :name name :count 0 :monitorp t :sourcefile sourcefile)))))
+     :name name :count 0 :monitorp t :sourcefile sourcefile)))
 
 (defun monitor-delete (fn)
  "delete a function from the monitor table"
