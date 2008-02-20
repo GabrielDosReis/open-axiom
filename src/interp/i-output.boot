@@ -383,11 +383,11 @@ outputTran x ==
   op is ["$elt",targ,fun] or not $InteractiveMode and op is ["elt",targ,fun] =>
     -- l has the args
     targ' := obj2String prefix2String targ
-    if 2 = #targ then targ' := ['PAREN,targ']
+    if 2 = SIZE targ then targ' := ['PAREN,targ']
     ['CONCAT,outputTran [fun,:l],'"$",targ']
   x is ["$elt",targ,c] or not $InteractiveMode and x is ["elt",targ,c] =>
     targ' := obj2String prefix2String targ
-    if 2 = #targ then targ' := ['PAREN,targ']
+    if 2 = SIZE targ then targ' := ['PAREN,targ']
     ['CONCAT,outputTran c,'"$",targ']
   x is ["-",a,b] =>
     a := outputTran a
@@ -1404,9 +1404,6 @@ output(expr,domain) ==
      sayMSGNT [:bright '"AXIOM-XL",'"output:   "]
      SPADCALL(SPADCALL textwrit, expr, printfun)
      sayMSGNT '%l
-
-  -- big hack for tuples for new compiler
-  domain is ['Tuple, S] => output(asTupleAsList expr, ['List, S])
 
   sayALGEBRA [:bright '"LISP",'"output:",'%l,expr or '"NIL"]
 

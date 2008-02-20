@@ -514,6 +514,7 @@ str2Tex s ==
   val := objValUnwrap val
   CAR val.1
 
+opOf: %Thing -> %Thing
 opOf x ==
   atom x => x
   first x

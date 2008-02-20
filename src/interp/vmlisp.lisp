@@ -265,13 +265,6 @@
 (defmacro nump (n)
  `(numberp ,n))
 
-(defmacro |opOf| (x) ;(if (atom x) x (qcar x))
-  (if (atom x)
-      `(if (consp ,x) (qcar ,x) ,x)
-    (let ((xx (gensym)))
-      `(let ((,xx ,x))
-         (if (consp ,xx) (qcar ,xx) ,xx)))))
-
 (defmacro oraddtempdefs (filearg)
  `(eval-when 
    #+:common-lisp (:compile-toplevel)

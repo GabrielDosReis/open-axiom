@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -494,7 +494,7 @@ setMsgUnforcedAttr(msg,cat,attr) ==
     not QASSQ(cat, ncAlist msg) => ncPutQ(msg,cat,attr)
  
 setMsgCatlessAttr(msg,attr) ==
-    ncPutQ(msg,'catless,CONS (attr, IFCDR QASSQ(catless, ncAlist msg)))
+    ncPutQ(msg,'catless,CONS (attr, IFCDR QASSQ("catless", ncAlist msg)))
  
 whichCat attr ==
     found := 'catless

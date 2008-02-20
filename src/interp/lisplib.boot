@@ -34,6 +34,7 @@
 
 import '"nlib"
 import '"c-util"
+import '"debug"
 )package "BOOT"
 
 ++
@@ -384,7 +385,7 @@ getLisplibVersion libName ==
  
 initializeLisplib libName ==
   _$ERASE(libName,'ERRORLIB,$libraryDirectory)
-  SETQ(ERRORS,0) -- ERRORS is a fluid variable for the compiler
+  resetErrorCount()
   $libFile:= writeLib1(libName,'ERRORLIB,$libraryDirectory)
   ADDOPTIONS('FILE,$libFile)
   $lisplibForm := nil             --defining form for lisplib
@@ -436,7 +437,7 @@ finalizeLisplib libName ==
   if $profileCompiler then profileWrite()
   if $lisplibForm and null CDR $lisplibForm then
     MAKEPROP(CAR $lisplibForm,'NILADIC,'T)
-  ERRORS ^=0 =>    -- ERRORS is a fluid variable for the compiler
+  errorCount() ^=0 =>
     sayMSG ['"   Errors in processing ",kind,'" ",:bright libName,'":"]
     sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
 

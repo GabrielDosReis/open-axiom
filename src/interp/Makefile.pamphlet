@@ -785,7 +785,8 @@ simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
 newfort.$(FASLEXT): newfort.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-lisplib.$(FASLEXT): lisplib.boot nlib.$(FASLEXT) c-util.$(FASLEXT)
+lisplib.$(FASLEXT): lisplib.boot nlib.$(FASLEXT) c-util.$(FASLEXT) \
+		debug.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 interop.$(FASLEXT): interop.boot c-util.$(FASLEXT)

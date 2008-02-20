@@ -1,9 +1,9 @@
 ;; Ô Emacs, this is a -*- Lisp -*- file, despite apperance
 ;; 
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; 
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -18,7 +18,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -59,6 +59,7 @@
            "coreError"
            "errorCount"
            "countError"
+	   "resetErrorCount"
            "warn"
            
            "%hasFeature"
@@ -330,6 +331,9 @@
 
 (defun |countError| nil
   (setq |$errorCount| (1+ |$errorCount|)))
+
+(defun |resetErrorCount| nil
+  (setq |$errorCount| 0))
 
 (defun |fatalError| (msg)
   (|countError|)
@@ -756,7 +760,10 @@
 (defun |%hasFeature| (f)
   (member f *features* :test #'eq))
 
-;; -*- Lisp Implementatiom-dependen Supports -*-
+;; -*- Lisp Implementatiom-dependent Supports -*-
+
+#+ :sbcl
+(require "sb-posix")
 
 #+ :sbcl
 (defun shoe-provide-module(name)
