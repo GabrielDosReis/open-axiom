@@ -857,7 +857,7 @@ axiom_algebra_layer_user_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_user)))
 
 # The algebra build is not yet ready for parallel build.
-.NOTPARALLEL:
+#.NOTPARALLEL:
 
 .PHONY: all all-algebra mkdir-output-directory
 all: all-ax

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1399,9 +1399,6 @@ output(expr,domain) ==
      sayMSGNT [:bright '"AXIOM-XL",'"output:   "]
      SPADCALL(SPADCALL textwrit, expr, printfun)
      sayMSGNT '%l
-
-  -- big hack for tuples for new compiler
-  domain is ['Tuple, S] => output(asTupleAsList expr, ['List, S])
 
   sayALGEBRA [:bright '"LISP",'"output:",'%l,expr or '"NIL"]
 

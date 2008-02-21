@@ -601,7 +601,7 @@ intfile.$(FASLEXT): intfile.boot cstream.$(FASLEXT)
 cstream.$(FASLEXT): cstream.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
-astr.$(FASLEXT): astr.boot boot-pkg.$(FASLEXT)
+astr.$(FASLEXT): astr.boot vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 bits.$(FASLEXT): bits.lisp boot-pkg.$(FASLEXT)

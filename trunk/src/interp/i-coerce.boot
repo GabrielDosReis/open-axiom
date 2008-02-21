@@ -848,9 +848,6 @@ coerceInt1(triple,t2) ==
     val' := unwrap val
     (t2 = val') and ((val' = t1) or (t1 = $String)) => objNew(val,t2)
     NIL
-  --  t1 is ['Tuple,S] and t2 ^= '(OutputForm) =>
-  t1 is ['Tuple,S]  =>
-    coerceInt1(objNewWrap(asTupleAsList unwrap val, ['List, S]), t2)
   t1 is ['Union,:.] => coerceIntFromUnion(triple,t2)
   t2 is ['Union,:.] => coerceInt2Union(triple,t2)
   (STRINGP t1) and (t2 = $String) => objNew(val,$String)
