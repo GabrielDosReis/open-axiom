@@ -2283,9 +2283,6 @@ subdir = src/algebra/
 <<layer23>>
 <<USERLAYER>>
 
-# The algebra build is not yet ready for parallel build.
-.NOTPARALLEL:
-
 .PHONY: all all-algebra mkdir-output-directory
 all: all-ax
 

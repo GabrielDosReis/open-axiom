@@ -1,5 +1,14 @@
 2008-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-coerce.boot (coerceInt1): Avoid misguided
+	Tuple coercion behind the scene.
+	* interp/Makefile.pamphlet (astr.$(FASLEXT)): Depend on
+	vmlisp.$(FASLEXT) instead.
+
+	* algebra/Makefile.pamphlet (.NOTPARALLEL): Remove rectriction.
+
+2008-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in [SBCL]: Require "sb-posix".
 	(|resetErrorCount|): New export function.
 	* interp/vmlisp.lisp (opOf): Remove macro definition.
