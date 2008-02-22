@@ -1,4 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
+-- All rights reserved.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -13,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -223,7 +225,7 @@ mkAtree3(x,op,argl) ==
     v :=
       null arg => VECTOR(NIL,NIL,NIL)
       PAIRP arg and rest arg and first arg^= "|" =>
-        collectDefTypesAndPreds ['Tuple,:arg]
+        collectDefTypesAndPreds ["tuple",:arg]
       null rest arg => collectDefTypesAndPreds first arg
       collectDefTypesAndPreds arg
     [types,:r'] := r
@@ -240,7 +242,7 @@ mkAtree3(x,op,argl) ==
       v :=
         null arg => VECTOR(NIL,NIL,NIL)
         PAIRP arg and rest arg and first arg^= "|" =>
-          collectDefTypesAndPreds ['Tuple,:arg]
+          collectDefTypesAndPreds ["tuple",:arg]
         null rest arg => collectDefTypesAndPreds first arg
         collectDefTypesAndPreds arg
       [types,:r'] := r
@@ -255,7 +257,7 @@ mkAtree3(x,op,argl) ==
 --    keyedSystemError("S2II0003",['"when",y,'"improper argument form"])
 --  a is [op,p1,:pr] =>
 --    null pr => mkAtree1 ['DEF,[op,["|",p1,pred]],:r]
---    mkAtree1 ['DEF,[op,["|",['Tuple,p1,:pr],pred]],:r]
+--    mkAtree1 ['DEF,[op,["|",["tuple",p1,:pr],pred]],:r]
 --  [mkAtreeNode 'DEF, CDR y,pred,false]
 --x is ['otherwise,u] =>
 --  throwMessage '"   otherwise is no longer supported."
@@ -329,14 +331,14 @@ collectDefTypesAndPreds args ==
       var is [":",var',type] =>
         types := [type]
         vars := [var']
-      var is ['Tuple,:.] or var is ["|",:.] =>
+      var is ["tuple",:.] or var is ["|",:.] =>
         v := collectDefTypesAndPreds var
         vars  := [:vars,:v.0]
         types := [:types,:v.1]
         pred  := addPred(pred,v.2)
       vars := [var]
       types := [NIL]
-    args is ['Tuple,:args'] =>
+    args is ["tuple",:args'] =>
       for a in args' repeat
         v := collectDefTypesAndPreds a
         vars  := [:vars,first v.0]

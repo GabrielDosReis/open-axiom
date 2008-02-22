@@ -1,3 +1,37 @@
+2008-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-analy.boot (bottomUpFormTuple): Use "tuple" for
+	parse form that are not type instantiations.
+	* interp/i-coerce.boot (coerceInt1): Likewise.
+	* interp/i-intern.boot (mkAtree3): Likewise.
+	(collectDefTypesAndPreds): Likewise.
+	* interp/i-map.boot (args2Tuple): Likewise.
+	(makePattern): Likewise.
+	(canMakeTuple): Likewise.
+	(makeRuleForm): Likewise.
+	(numArgs): Likewise.
+	(combineMapParts): Likewise.
+	(mkMapPred): Likewise.
+	(findLocalVars1): Likewise.
+	* interp/i-output.boot (outputTran): Likewise.
+	* interp/i-spec1.boot ($specialOps): Likewise.
+	(evalUntargetedADEF): Likewise.
+	(upDeclare): Likewise.
+	(declare): Likewise.
+	* interp/i-spec2.boot (upDollarTuple): Likewise.
+	(upLET): Likewise.
+	(isTupleForm): Remove.
+	(uptuple): Rename from upTuple.
+	(upLETWithFormOnLhs): Use "tuple" for parse forms that are not
+	type instantiations.
+	* interp/i-syscmd.boot (displayMacro): Likewise.
+	* interp/pf2atree.boot (pf2Atree1): Likewise.
+	* interp/pf2sex.boot (pf2Sex1): Likewise.
+	(pfApplication2Sex): Likewise.
+	(pfCollectArgTran): Likewise.
+	* interp/ptrees.boot (pfTuple): Likewise.
+	(pfTuple?): Likewise.
+
 2008-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-coerce.boot (coerceInt1): Avoid misguided

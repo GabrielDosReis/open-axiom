@@ -946,7 +946,7 @@ displayMacro name ==
   args :=
     null args => nil
     null rest args => first args
-    ['Tuple,:args]
+    ["tuple",:args]
   mathprint ['MAP,[args,:body]]
 
 displayWorkspaceNames() ==

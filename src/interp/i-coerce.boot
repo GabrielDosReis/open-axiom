@@ -864,7 +864,7 @@ coerceInt1(triple,t2) ==
     [.,vars,:body] := unwrap val
     vars :=
       atom vars => [vars]
-      vars is ['Tuple,:.] => rest vars
+      vars is ["tuple",:.] => rest vars
       vars
     #margl ^= #vars => 'continue
     tree := mkAtree ['ADEF,vars,[target,:margl],[NIL for x in rest t2],:body]

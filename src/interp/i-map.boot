@@ -274,7 +274,7 @@ mkAliasList l == fn(l,nil) where fn(l,acc) ==
 args2Tuple args ==
   args is [first,:rest] =>
     null rest => first
-    ["Tuple",:args]
+    ["tuple",:args]
   nil
 
 makePattern(args,pred) ==
@@ -283,7 +283,7 @@ makePattern(args,pred) ==
     pred is ["=","#1",n] => n
     addPatternPred("#1",pred)
   u:= canMakeTuple(nargs,pred) => u
-  addPatternPred(["Tuple",:TAKE(nargs,$FormalMapVariableList)],pred)
+  addPatternPred(["tuple",:TAKE(nargs,$FormalMapVariableList)],pred)
 
 addPatternPred(arg,pred) ==
   pred=true => arg
@@ -293,7 +293,7 @@ canMakeTuple(nargs,pred) ==
   pred is ["and",:l] and nargs=#l and
     (u:= [(x is ["=",=y,a] => a; return nil)
       for y in $FormalMapVariableList for x in orderList l]) =>
-        ["Tuple",:u]
+        ["tuple",:u]
 
 sayRemoveFunctionOrValue x ==
   (obj := getValue x) and (md := objMode obj) =>
@@ -310,7 +310,7 @@ sayDroppingFunctions(op,l) ==
   nil
 
 makeRuleForm(op,pattern)==
-  pattern is ["Tuple",:l] => [op,:l]
+  pattern is ["tuple",:l] => [op,:l]
   [op,:pattern]
 
 mkFormalArg(x,s) ==
@@ -940,7 +940,7 @@ numMapArgs(mapDef is [[args,:.],:.]) ==
 
 numArgs args ==
   args is ['_|,a,:.] => numArgs a
-  args is ['Tuple,:argl] => #argl
+  args is ["tuple",:argl] => #argl
   null args => 0
   1
 
@@ -949,7 +949,7 @@ combineMapParts(mapTail) ==
   --  statement.  Uses %noBranch to indicate undefined branch
   null mapTail => '%noMapVal
   mapTail is [[cond,:part],:restMap] =>
-    isSharpVarWithNum cond or (cond is ['Tuple,:args] and
+    isSharpVarWithNum cond or (cond is ["tuple",:args] and
       and/[isSharpVarWithNum arg for arg in args]) or (null cond) => part
     ['IF,mkMapPred cond,part,combineMapParts restMap]
   keyedSystemError("S2GE0016",['"combineMapParts",
@@ -958,7 +958,7 @@ combineMapParts(mapTail) ==
 mkMapPred cond ==
   -- create the predicate on map arguments, derived from "when" clauses
   cond is ['_|,args,pred] => mapPredTran pred
-  cond is ['Tuple,:vals] =>
+  cond is ["tuple",:vals] =>
     mkValueCheck(vals,1)
   mkValCheck(cond,1)
 
@@ -1003,7 +1003,7 @@ findLocalVars1(op,form) ==
     for x in vars repeat
       ATOM x => mkFreeVar(op, x)
   form is ['LET,a,b] =>
-    (a is ['Tuple,:vars]) and (b is ['Tuple,:vals]) =>
+    (a is ["tuple",:vars]) and (b is ["tuple",:vals]) =>
       for var in vars for val in vals repeat
         findLocalVars1(op,['LET,var,val])
     a is ['construct,:pat] =>
@@ -1130,7 +1130,7 @@ getLocalVars(op,body) ==
 --  The structure of maps:
 --   (MAP (pattern . rewrite) ...)   where
 --     pattern has forms:  arg-pattern
---                         (Tuple arg-pattern ...)
+--                         (tuple arg-pattern ...)
 --     rewrite has forms:  (WRAPPED . value)      --don't re-evaluate
 --                         computational object   --don't (bother to)
 --                                                  re-evaluate

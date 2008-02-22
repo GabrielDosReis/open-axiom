@@ -111,15 +111,15 @@ upDollar t ==
 
 upDollarTuple(op, f, t, t2, args, nargs) ==
   -- this function tries to find a tuple function to use
-  nargs = 1 and getUnname first args = "Tuple" => NIL
-  nargs = 1 and (ms := bottomUp first args) and ms is [["Tuple",.]] => NIL
+  -- nargs = 1 and getUnname first args = "Tuple" => NIL
+  -- nargs = 1 and (ms := bottomUp first args) and ms is [["Tuple",.]] => NIL
   null (singles := isOpInDomain(f,t,1)) => NIL
   tuple := NIL
   for [[.,arg], :.] in singles while null tuple repeat
     if arg is ['Tuple,.] then tuple := arg
   null tuple => NIL
   [.,D,form] := t2
-  newArg := [mkAtreeNode "Tuple",:args]
+  newArg := [mkAtreeNode "tuple",:args]
   putTarget(newArg, tuple)
   ms := bottomUp newArg
   first ms ^= tuple => NIL
@@ -485,7 +485,7 @@ upLET t ==
     else if get(var,'isInterpreterRule,$e) then
       putHist(var,'isInterpreterRule,false,$e)
       sayKeyedMsg("S2IS0049",['"Rule",var])
-    not isTupleForm(rhs) and (m := isType rhs) => upLETtype(op,lhs,m)
+    (m := isType rhs) => upLETtype(op,lhs,m)
     transferPropsToNode(var,lhs)
     if ( m:= getMode(lhs) ) then
       $declaredMode := m
@@ -498,16 +498,6 @@ upLET t ==
     putValue(op,val)
     putModeSet(op,[objMode(val)])
   throwKeyedMsg("S2IS0027",[var])
-
-isTupleForm f ==
-    -- have to do following since "Tuple" is an internal form name
-    getUnname f ^= "Tuple" => false
-    f is [op,:args] and VECP(op) and getUnname(op) = "Tuple" =>
-        #args ^= 1 => true
-        isTupleForm first args => true
-        isType first args => false
-        true
-    false
 
 evalLET(lhs,rhs) ==
   -- lhs is a vector for a variable, and rhs is the evaluated atree
@@ -609,8 +599,8 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
   -- bottomUp for assignment to forms (setelt, table or tuple)
   lhs' := getUnnameIfCan lhs
   rhs' := getUnnameIfCan rhs
-  lhs' = 'Tuple =>
-    rhs' ^= 'Tuple => throwKeyedMsg("S2IS0039",NIL)
+  lhs' = "tuple" =>
+    rhs' ^= "tuple" => throwKeyedMsg("S2IS0039",NIL)
     #(lhs) ^= #(rhs) => throwKeyedMsg("S2IS0038",NIL)
     -- generate a sequence of assignments, using local variables
     -- to first hold the assignments so that things like
@@ -634,7 +624,7 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
     ms := bottomUp seq
     putValue(op,getValue seq)
     putModeSet(op,ms)
-  rhs' = 'Tuple => throwKeyedMsg("S2IS0039",NIL)
+  rhs' = "tuple" => throwKeyedMsg("S2IS0039",NIL)
   tree:= seteltable(lhs,rhs) => upSetelt(op,lhs,tree)
   throwKeyedMsg("S2IS0060", NIL)
 --  upTableSetelt(op,lhs,rhs)
@@ -1035,9 +1025,9 @@ evalSEQ(op,args,m) ==
     objNew(code,m)
   putValue(op,val)
 
---% Handlers for Tuple
+--% Handlers for tuple
 
-upTuple t ==
+uptuple t ==
   --Computes the common mode set of the construct by resolving across
   --the argument list, and evaluating
   t isnt [op,:l] => nil

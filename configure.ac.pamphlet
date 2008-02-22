@@ -1008,7 +1008,7 @@ At the moment, we honor the following options:
 The \Tool{Autoconf} machinery needs to be initialized with several pieces of
 information:
 \begin{itemize}
-\item the \emph{name} of the system --- ``OpenAxiom 1.0.0''
+\item the \emph{name} of the system --- ``OpenAxiom 1.2.0''
 \item its \emph{version}.  I choose to use the date of last checkin.
   It should probably include the revision number so as to 
   unambiguously identify which \Tool{OpenAxiom} flavour du jour is being
@@ -1022,7 +1022,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-02-20], 
+AC_INIT([OpenAxiom], [1.2.0-2008-02-22], 
         [open-axiom-bugs@lists.sf.net])
 
 @

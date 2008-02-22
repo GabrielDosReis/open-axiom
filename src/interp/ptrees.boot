@@ -342,8 +342,8 @@ pfApplicationArg pf == CADDR pf       -- was ==>
 -- Tuple       := (Parts: [Expr])
 
 pfTupleListOf(pfparts) == pfTuple pfListOf pfparts
-pfTuple(pfparts) == pfTree('Tuple, [pfparts])
-pfTuple?(pf) == pfAbSynOp? (pf, 'Tuple)
+pfTuple(pfparts) == pfTree("tuple", [pfparts])
+pfTuple?(pf) == pfAbSynOp? (pf, "tuple")
 pfTupleParts pf == CADR pf       -- was ==>
 pf0TupleParts pf == pfParts pfTupleParts pf
 

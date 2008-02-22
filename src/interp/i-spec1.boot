@@ -41,7 +41,7 @@ import '"i-analy"
 $specialOps := '(
   ADEF AlgExtension _and _case COERCE COLLECT construct Declare DEF Dollar
    equation error free has IF _is _isnt iterate _break LET _local MDEF _or
-    pretend QUOTE REDUCE REPEAT _return SEQ TARGET Tuple typeOf _where 
+    pretend QUOTE REDUCE REPEAT _return SEQ TARGET tuple typeOf _where 
      _[_|_|_] )
 
 $repeatLabel := NIL
@@ -101,7 +101,7 @@ evalUntargetedADEF(t,vars,types,body) ==
   -- recreate a parse form
   if vars is [var]
     then vars := var
-    else vars := ['Tuple,:vars]
+    else vars := ["tuple",:vars]
   val := objNewWrap(["+->",vars,body],$AnonymousFunction)
   putValue(t,val)
   putModeSet(t,[objMode val])
@@ -1129,13 +1129,13 @@ upDeclare t ==
   categoryForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'category],op)
   packageForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'package],op)
   junk :=
-    lhs is ["free",['Tuple,:vars]] or lhs is ['free,['LISTOF,:vars]] or
+    lhs is ["free",["tuple",:vars]] or lhs is ['free,['LISTOF,:vars]] or
       lhs is ["free",:vars] =>
-        for var in vars repeat declare(['free,var],mode)
-    lhs is ["local",['Tuple,:vars]] or lhs is ['local,['LISTOF,:vars]] or
+        for var in vars repeat declare(["free",var],mode)
+    lhs is ["local",["tuple",:vars]] or lhs is ["local",['LISTOF,:vars]] or
       lhs is ["local",:vars] =>
         for var in vars repeat declare(["local",var],mode)
-    lhs is ["Tuple",:vars] or lhs is ["LISTOF",:vars] =>
+    lhs is ["tuple",:vars] or lhs is ["LISTOF",:vars] =>
       for var in vars repeat declare(var,mode)
     declare(lhs,mode)
   putValue(op,objNewWrap(voidValue(), $Void))
@@ -1161,7 +1161,7 @@ declare(var,mode) ==
     -- mapval looks like '(MAP (args . defn))
     margs := CAADR mapval
     -- if one args, margs is not a pair, just #1 or NIL
-    -- otherwise it looks like (Tuple #1 #2 ...)
+    -- otherwise it looks like (tuple #1 #2 ...)
     nargs :=
       null margs => 0
       PAIRP margs => -1 + #margs

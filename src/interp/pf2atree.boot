@@ -78,7 +78,7 @@ pf2Atree1 pf ==
         pfApplication2Atree pf
 
     (pfTuple?)(pf) =>
-        [mkAtreeNodeWithSrcPos("Tuple",pf),
+        [mkAtreeNodeWithSrcPos("tuple",pf),
             :[pf2Atree1 x for x in (pf0TupleParts)(pf)]]
 
     (pfIf?)(pf) =>
@@ -96,7 +96,7 @@ pf2Atree1 pf ==
         tag := (pfTaggedTag)(pf)
         tagPart :=
             (pfTuple?) tag =>
-                ["Tuple", :[pf2Sexpr(arg) for arg in (pf0TupleParts)(tag)]]
+                ["tuple", :[pf2Sexpr(arg) for arg in (pf0TupleParts)(tag)]]
             pf2Sexpr(tag)
         [mkAtreeNodeWithSrcPos("Declare",pf), tagPart,
             pf2Sexpr((pfTaggedExpr)(pf))]
@@ -191,7 +191,7 @@ pf2Atree1 pf ==
             ids   := [x, :ids]
         idList := [pf2Atree1 x for x in reverse ids]
         if #idList ^= 1 then idList :=
-            [mkAtreeNodeWithSrcPos("Tuple",pf), :idList]
+            [mkAtreeNodeWithSrcPos("tuple",pf), :idList]
         else idList := first idList
         x := [mkAtreeNodeWithSrcPos("LET",pf),
             idList, pf2Atree1 (pfAssignRhs)(pf)]
