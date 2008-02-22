@@ -342,7 +342,7 @@ outputTran x ==
   x is ['ADEF,vars,.,.,body] =>
     vars :=
         vars is [x] => x
-        ['Tuple,:vars]
+        ["tuple",:vars]
     outputTran ["+->", vars, body]
   x is ['MATRIX,:m] => outputTranMatrix m
   x is ['matrix,['construct,c]] and
@@ -434,9 +434,9 @@ outputTran x ==
     else op := 'OVER
     l is [["-",a],:b] => outputTran ["-",[op,a,:b]]
     [outputTran op,:l]
-  op="|" and l is [["Tuple",:u],pred] =>
+  op="|" and l is [["tuple",:u],pred] =>
     ['PAREN,["|",['AGGLST,:l],pred]]
-  op='Tuple  => ['PAREN,['AGGLST,:l]]
+  op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
   IDENTP op and ^(op in '(_* _*_*) ) and char("*") = (PNAME op).0 =>
     mkSuperSub(op,l)

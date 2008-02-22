@@ -75,14 +75,14 @@ pf2Sex1 pf ==
   pfApplication? pf =>
     pfApplication2Sex pf
   pfTuple? pf =>
-    ["Tuple", :[pf2Sex1 x for x in pf0TupleParts pf]]
+    ["tuple", :[pf2Sex1 x for x in pf0TupleParts pf]]
   pfIf? pf =>
     ['IF, pf2Sex1 pfIfCond pf, pf2Sex1 pfIfThen pf, pf2Sex1 pfIfElse pf]
   pfTagged? pf =>
     tag := pfTaggedTag pf
     tagPart :=
       pfTuple? tag =>
-        ['Tuple, :[pf2Sex1 arg for arg in pf0TupleParts tag]]
+        ["tuple", :[pf2Sex1 arg for arg in pf0TupleParts tag]]
       pf2Sex1 tag
     [":", tagPart, pf2Sex1 pfTaggedExpr pf]
   pfCoerceto? pf =>
@@ -91,8 +91,7 @@ pf2Sex1 pf ==
     ["pretend", pf2Sex1 pfPretendExpr pf, pf2Sex1 pfPretendType pf]
   pfFromdom? pf =>
     op := opTran  pf2Sex1 pfFromdomWhat pf
---  if op = "braceFromCurly" then op := "brace"
-    if op = "braceFromCurly" then op := "SEQ"
+    if op = "%braceFromCurly" then op := "brace"
     ["$elt", pf2Sex1 pfFromdomDomain pf, op]
   pfSequence? pf =>
     pfSequence2Sex pf
@@ -119,7 +118,7 @@ pf2Sex1 pf ==
     [":", pf2Sex1 pfTypedId pf, pf2Sex1 pfTypedType pf]
   pfAssign? pf =>
     idList := [pf2Sex1 x for x in pf0AssignLhsItems pf]
-    if #idList ^= 1 then idList := ['Tuple, :idList]
+    if #idList ^= 1 then idList := ["tuple", :idList]
     else idList := first idList
     ["LET", idList, pf2Sex1 pfAssignRhs pf]
   pfDefinition? pf =>
@@ -254,21 +253,19 @@ pfApplication2Sex pf ==
       ["iterate"]
     symEqual(op, "by") =>
       ["BY", :argSex]
-    symEqual(op, "braceFromCurly") =>
---    ["brace", ["construct", :argSex]]
+    symEqual(op, "%braceFromCurly") =>
       argSex is ["SEQ",:.] => argSex
-      ["SEQ", :argSex]
+      ["brace", ["construct", :argSex]]
     op is [qt, realOp] and symEqual(qt, "QUOTE") =>
        ["applyQuote", op, :argSex]
     val := hasOptArgs? argSex => [op, :val]
     [op, :argSex]
   op is [qt, realOp] and symEqual(qt, "QUOTE") =>
     pfFinishApplication ["applyQuote", op, pf2Sex1 args]
-  symEqual(op, "braceFromCurly") => pfFinishApplication
---  ["brace", ["construct", pf2Sex1 args]]
+  symEqual(op, "%braceFromCurly") => pfFinishApplication
     x := pf2Sex1 args
     x is ["SEQ", :.] => x
-    ["SEQ", x]
+    ["brace", ["construct", x]]
   symEqual(op, "by") =>
     pfFinishApplication ["BY", pf2Sex1 args]
   symEqual(op, "[||]") => 
@@ -339,7 +336,7 @@ pfCollectArgTran pf ==
 opTran op ==
   op = $dotdot => "SEGMENT"
   op = "[]" => "construct"
-  op = "{}" => "braceFromCurly"
+  op = "{}" => "%braceFromCurly"
   op = "IS" => "is"
   op
 

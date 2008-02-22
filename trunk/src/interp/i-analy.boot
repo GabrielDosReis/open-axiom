@@ -480,7 +480,7 @@ bottomUpFormTuple(t, op, opName, args, argModeSetList) ==
 
   -- now make the args into a tuple
 
-  newArg := [mkAtreeNode "Tuple",:args]
+  newArg := [mkAtreeNode "tuple",:args]
   bottomUp [op, newArg]
 
 removeUnionsAtStart(argl,modeSets) ==
