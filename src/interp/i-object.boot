@@ -34,6 +34,9 @@
 import '"g-util"
 )package "BOOT"
 
+++ true when the interpreter should evaluate forms to values, as
+++ opposed to just generating code to compute values.
+$genValue := true
 
 ++ true if we are about to generate a function definition
 $definingMap := false

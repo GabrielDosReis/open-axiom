@@ -241,7 +241,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
         ["ELT",["LIST",:initCode],["QSDIFFERENCE",n,sharpArg]]]
       phrase5:= ['(QUOTE T),['recurrenceError,MKQ op,sharpArg]]
       ['PROGN,:preset,['COND,phrase1,phrase2,phrase3,phrase4,phrase5]]
-  if $verboseInterprerter then
+  if $verbose then
     sayKeyedMsg("S2IX0001",[op])
   compileInteractive computeFunction
   compileInteractive mainFunction

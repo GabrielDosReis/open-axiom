@@ -48,10 +48,11 @@ $SpadServerName == '"/tmp/.d"
 ++ true means that the core executable acts as remote server.
 $SpadServer := false
 
-++ if true, then the interpreter informs about code generation, etc.
-$verboseInterprerter := true
+++ if true, then the interpreter or compiler should inform about 
+++ code generation, etc.
+$verbose := true
 
-$PrintCompilerMessageIfTrue := true
+$PrintCompilerMessageIfTrue := $verbose
 
 ++
 $options := []
@@ -194,11 +195,11 @@ executeSpadScript(progname,options,file) ==
   $NEWSPAD := true
   $SPAD := true
   if getOption(Option '"verbose",%systemOptions()) then
-    $verboseInterprerter := true
+    $verbose := true
     $options := []
     $ProcessInteractiveValue := false
   else
-    $verboseInterprerter := false
+    $verbose := false
     $options := [["quiet"]]
     $ProcessInteractiveValue := true
   CATCH($intCoerceFailure,
@@ -223,7 +224,7 @@ compileSpadLibrary(progname,options,file) ==
   $SPAD := true
   $EchoLines := false
   ECHO_-META : fluid := false
-  $verboseInterprerter := false
+  $verbose := false
   $ProcessInteractiveValue := true
   CATCH($intTopLevel,
     CATCH("SpadCompileItem",

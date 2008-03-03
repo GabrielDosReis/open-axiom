@@ -1,3 +1,17 @@
+2008-03-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-analy.boot (bottomUp): Don't record constructor
+	instantiations representations in interactive environments.
+	* interp/i-eval.boot (evaluateFormAsType): New.
+	(evaluateType): Use it.
+	(evaluateType1): Tidy.
+	* interp/i-output.boot (output): Tidy.
+	* interp/i-object.boot ($genValue): Define here.
+	* interp/sys-dirver.boot ($verbose): Rename from
+	$verboseInterpreter. 
+	* interp/i-map.boot (genMapCode): Propagate $verbose renaming.
+	* interp/slam.boot (compileRecurrenceRelation): Likewise.
+
 2008-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-analy.boot (bottomUpFormTuple): Use "tuple" for
