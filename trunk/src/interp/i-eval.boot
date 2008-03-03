@@ -149,37 +149,47 @@ evaluateType form ==
     op='Record =>
       [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
     op='Enumeration => form
-    evaluateType1 form
+    evaluateFormAsType form
   constructor? form =>
     ATOM form => evaluateType [form]
     throwEvalTypeMsg("S2IE0003",[form,form])
+  evaluateFormAsType form
+
+++ `form' used in a context where a type (domain or category) is
+++ expected.  Attempt to fully evaluate it.  Error if the resulting
+++ value is not a type.  When successful, the result is the reified
+++ canonical form of the type.
+evaluateFormAsType form ==
+  form is [op,:args] and constructor? op => evaluateType1 form
+  t := mkAtree form
+  -- ??? Maybe we should be more careful about generalized types.
+  bottomUp t is [m] and (m in $LangSupportTypes or isCategoryForm(m,$e)) =>
+    objVal getValue t
   throwEvalTypeMsg("S2IE0004",[form])
 
-evaluateType1 form ==
-  --evaluates the arguments passed to a constructor
-  [op,:argl]:= form
-  constructor? op =>
-    null (sig := getConstructorSignature form) =>
-       throwEvalTypeMsg("S2IE0005",[form])
-    [.,:ml] := sig
-    ml := replaceSharps(ml,form)
-    # argl ^= #ml => throwEvalTypeMsg("S2IE0003",[form,form])
-    for x in argl for m in ml for argnum in 1.. repeat
-      typeList := [v,:typeList] where v() ==
-        categoryForm?(m) =>
-          m := evaluateType MSUBSTQ(x,'_$,m)
-          evalCategory(x' := (evaluateType x), m) => x'
-          throwEvalTypeMsg("S2IE0004",[form])
-        m := evaluateType m
-        GETDATABASE(opOf m,'CONSTRUCTORKIND) = 'domain and 
-            (tree := mkAtree x) and  putTarget(tree,m) and ((bottomUp tree) is [m1]) =>
-                [zt,:zv]:= z1:= getAndEvalConstructorArgument tree
-                (v' := coerceOrRetract(z1,m)) => objValUnwrap v'
-                throwKeyedMsgCannotCoerceWithValue(zv,zt,m)
-        if x = $EmptyMode then x := $quadSymbol
-        throwEvalTypeMsg("S2IE0006",[makeOrdinal argnum,m,form])
-    [op,:NREVERSE typeList]
-  throwEvalTypeMsg("S2IE0007",[op])
+++ evaluates the arguments passed to the constructor `op'.
+++ Note: only constructor instantiations go here.
+evaluateType1 (form is [op,:argl]) ==
+  null (sig := getConstructorSignature form) =>
+     throwEvalTypeMsg("S2IE0005",[form])
+  [.,:ml] := sig
+  ml := replaceSharps(ml,form)
+  # argl ^= #ml => throwEvalTypeMsg("S2IE0003",[form,form])
+  for x in argl for m in ml for argnum in 1.. repeat
+    typeList := [v,:typeList] where v() ==
+      categoryForm?(m) =>
+	m := evaluateType MSUBSTQ(x,'_$,m)
+	evalCategory(x' := (evaluateType x), m) => x'
+	throwEvalTypeMsg("S2IE0004",[form])
+      m := evaluateType m
+      GETDATABASE(opOf m,'CONSTRUCTORKIND) = 'domain and 
+	  (tree := mkAtree x) and  putTarget(tree,m) and ((bottomUp tree) is [m1]) =>
+	      [zt,:zv]:= z1:= getAndEvalConstructorArgument tree
+	      (v' := coerceOrRetract(z1,m)) => objValUnwrap v'
+	      throwKeyedMsgCannotCoerceWithValue(zv,zt,m)
+      if x = $EmptyMode then x := $quadSymbol
+      throwEvalTypeMsg("S2IE0006",[makeOrdinal argnum,m,form])
+  [op,:nreverse typeList]
 
 throwEvalTypeMsg(msg, args) ==
   $noEvalTypeMsg => spadThrow()

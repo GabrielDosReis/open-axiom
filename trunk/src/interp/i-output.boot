@@ -1383,7 +1383,7 @@ output(expr,domain) ==
     if $formulaFormat then formulaFormat expr
     if $texFormat     then texFormat expr
     if $algebraFormat then mathprintWithNumber expr
-  categoryForm? domain or domain in '((Mode) (Type)) =>
+  categoryForm? domain or domain in '((Mode) (Domain) (Type)) =>
     if $algebraFormat then
       mathprintWithNumber outputDomainConstructor expr
     if $texFormat     then
