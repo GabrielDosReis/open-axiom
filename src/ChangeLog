@@ -1,3 +1,14 @@
+2008-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_strap): Derive
+	value from $(axiom_algebra_bootstrap).
+	(axiom_algebra_layer_0): Include more categories.
+	(axiom_algebra_layer_1): Likewise.
+	(axiom_algebra_layer_2): Likewise.
+	(axiom_algebra_layer_3): Likewise.
+	(axiom_algebra_layer_4): Remove some constructors.
+	(axiom_algebra_layer_5): Likewise.
+
 2008-03-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-analy.boot (bottomUp): Don't record constructor
