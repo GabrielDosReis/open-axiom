@@ -1185,6 +1185,7 @@ compColon([":",f,t],m,e) ==
       (if not member(t,getDomainsInScope e) then e:= addDomain(t,e); t)
     isDomainForm(t,e) or isCategoryForm(t,e) => t
     t is ["Mapping",m',:r] => t
+    STRINGP t => t              -- literal flag types are OK
     unknownTypeError t
     t
   f is ["LISTOF",:l] =>
