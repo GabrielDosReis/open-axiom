@@ -318,28 +318,7 @@ subdir = src/algebra/
 
 # The list of objects necessary to bootstrap the whole algebra library.
 axiom_algebra_layer_strap = \
-  strap/ABELGRP  strap/ABELGRP- strap/ABELMON  strap/ABELMON- \
-  strap/ABELSG   strap/ABELSG-  strap/ALAGG    strap/BOOLEAN  \
-  strap/CABMON   strap/CHAR     strap/CLAGG    strap/CLAGG-   \
-  strap/COMRING  strap/DFLOAT   strap/DIFRING  strap/DIFRING- \
-  strap/DIVRING  strap/DIVRING- strap/ENTIRER  strap/ES       \
-  strap/ES-      strap/EUCDOM   strap/EUCDOM-  strap/FFIELDC  \
-  strap/FFIELDC- strap/FPS      strap/FPS-     strap/GCDDOM   \
-  strap/GCDDOM-  strap/HOAGG    strap/HOAGG-   strap/ILIST    \
-  strap/INS      strap/INS-     strap/INT      strap/INTDOM   \
-  strap/INTDOM-  strap/ISTRING  strap/LIST     strap/LNAGG    \
-  strap/LNAGG-   strap/LSAGG    strap/LSAGG-   strap/MONOID   \
-  strap/MONOID-  strap/MTSCAT   strap/NNI      strap/OINTDOM  \
-  strap/ORDRING  strap/ORDRING- strap/OUTFORM  strap/PI       \
-  strap/PRIMARR  strap/POLYCAT  strap/POLYCAT- strap/PSETCAT  \
-  strap/PSETCAT- strap/QFCAT    strap/QFCAT-   strap/RCAGG    \
-  strap/RCAGG-   strap/REF      strap/RING     strap/RING-    \
-  strap/RNG      strap/RNS      strap/RNS-     strap/SETAGG   \
-  strap/SETAGG-  strap/SETCAT   strap/SETCAT-  strap/SINT     \
-  strap/STAGG    strap/STAGG-   strap/SYMBOL   strap/TSETCAT  \
-  strap/TSETCAT- strap/UFD      strap/UFD-     strap/ULSCAT   \
-  strap/UPOLYC   strap/UPOLYC-  strap/URAGG    strap/URAGG-   \
-  strap/VECTOR
+	$(addprefix strap/,$(axiom_algebra_bootstrap))
 
 axiom_algebra_layer_strap_objects = \
 	$(addsuffix .$(FASLEXT),$(axiom_algebra_layer_strap))
@@ -377,12 +356,12 @@ axiom_algebra_bootstrap_objects = \
 	   $(addsuffix .$(FASLEXT), $(axiom_algebra_bootstrap)))
 
 axiom_algebra_layer_0 = \
-  AHYP    ATTREG   CFCAT    ELTAB    \
-  KOERCE  KONVERT  MSYSCMD  ODEIFTBL \
-  OM      OMCONN   OMDEV    OUT      \
-  PRIMCAT PRINT    PTRANFN  SPFCAT   \
-  TYPE    UTYPE    PROPLOG  PROPERTY  \
-  BASTYPE BASTYPE- CATEGORY
+  AHYP    ATTREG   CFCAT   ELTAB    KOERCE   KONVERT  \
+  MSYSCMD ODEIFTBL OM      OMCONN   OMDEV    OUT      \
+  PRIMCAT PRINT    PTRANFN SPFCAT   TYPE     UTYPE    \
+  PROPLOG PROPERTY BASTYPE BASTYPE- CATEGORY LMODULE  \
+  RMODULE FINITE   STEP    SGROUP   SGROUP-  ABELSG   \
+  ABELSG- ORDSET   ORDSET- FNCAT    FILECAT  SEXCAT 
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -397,7 +376,8 @@ axiom_algebra_layer_1 = \
   PATAB    PLOT1    PPCURVE  PSCURVE  \
   REAL     RESLATC  RETRACT  RETRACT- \
   SEGBIND2 SEGCAT   STREAM1  STREAM2  \
-  STREAM3  BINDING  SYNTAX   
+  STREAM3  BINDING  SYNTAX   BMODULE  \
+  LOGIC    LOGIC-
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -406,8 +386,9 @@ axiom_algebra_layer_1_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_1)))
 axiom_algebra_layer_2 = \
-  FMC   FMFUN   FORTFN  FVC     CTORCALL \
-  FVFUN INTRET  SEGXCAT CONTOUR
+  AGG     AGG-     FMC     FMFUN   FORTFN  \
+  FVC     CTORCALL FVFUN   INTRET  SEGXCAT \
+  CONTOUR
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))
@@ -416,7 +397,8 @@ axiom_algebra_layer_2_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_2)))
 axiom_algebra_layer_3 = \
-  AGG   AGG- GRDEF LIST3 MKFUNC SCOPE
+  ELTAGG   ELTAGG-  GRDEF   IEVALAB  IEVALAB-  \
+  LIST3    MKFUNC   SCOPE
 
 axiom_algebra_layer_3_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_3))
@@ -426,21 +408,21 @@ axiom_algebra_layer_3_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_3)))
 axiom_algebra_layer_4 = \
   ANON     COLOR    COMM     COMPPROP \
-  ELTAGG   ELTAGG-  ESCONT1  EXIT     \
-  FAMONC   FILECAT  FINITE   FNCAT    \
-  FORMULA1 IDPC     IEVALAB  IEVALAB- \
-  INTBIT   LMODULE  LOGIC    LOGIC-   \
+                    ESCONT1  EXIT     \
+  FAMONC                              \
+  FORMULA1 IDPC                       \
+  INTBIT                              \
   MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1  \
   MAPPKG2  MAPPKG3  MONAD    MONAD-   \
   NIPROB   NONE     NUMINT   ODECAT   \
   ODEPROB  OMENC    ONECOMP2 OPTCAT   \
-  OPTPROB  ORDSET   ORDSET-  PALETTE  \
+  OPTPROB                    PALETTE  \
   PARPCURV PARPC2   PARSCURV PARSC2   \
   PARSURF  PARSU2   PATMAB   PATRES2  \
   PATTERN1 PDECAT   PDEPROB  REPSQ    \
-  REPDB    RFDIST   RIDIST   RMODULE  \
-  SEXCAT   SGROUP   SGROUP-  SPACEC   \
-  SPLNODE  STEP     SUCH     TEX1     \
+  REPDB    RFDIST   RIDIST            \
+                             SPACEC   \
+  SPLNODE           SUCH     TEX1     \
   UDVO     YSTREAM  PAIR     ENV 
 
 axiom_algebra_layer_4_nrlibs = \
@@ -450,7 +432,7 @@ axiom_algebra_layer_4_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_4)))
 axiom_algebra_layer_5 = \
-  ATRIG    ATRIG-   BMODULE  CACHSET  \
+  ATRIG    ATRIG-            CACHSET  \
   CHARNZ   CHARZ    DVARCAT  DVARCAT- \
   ELEMFUN  ELEMFUN- ESTOOLS2 EVALAB   \
   EVALAB-  FCOMP    FEVALAB  FEVALAB- \
