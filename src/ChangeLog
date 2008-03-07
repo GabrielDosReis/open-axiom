@@ -1,3 +1,7 @@
+2008-03-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* hyper/: De-pamphletize.
+
 2008-03-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compColon): Literal flag types are valid
