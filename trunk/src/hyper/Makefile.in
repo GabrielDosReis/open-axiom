@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -53,15 +53,15 @@ SCRIPTS=${OUTLIB}/htsearch ${OUTLIB}/presea
 
 BINFILES= $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
 
-HEADERS = addfile.h cond.h dialog.h display.h event.h extent.h \
-	group.h hterror.h hyper.h initx.h keyin.h lex.h mem.h \
-	parse.h parse-aux.h parse-paste.h parse-types.h scrollbar.h \
-	show-types.h titlebar.h token.h $(axiom_c_macros_h)
+HEADERS = addfile.h display.h event.h extent.h \
+	group.h hterror.h hyper.h initx.h keyin.h lex.h \
+	parse.h parse-paste.h parse-types.h scrollbar.h \
+	titlebar.h token.h $(axiom_c_macros_h)
 
 
 build_libdir = $(abs_top_builddir)/src/lib
 
-hypertex_sources = addfile.c cond.c dialog.c display.c event.c extent1.c \
+hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
 		extent2.c form-ext.c group.c halloc.c hash.c hterror.c \
 		htinp.c hyper.c initx.c input.c item.c keyin.c lex.c \
 		macro.c mem.c parse.c parse-aux.c parse-input.c \
@@ -70,40 +70,29 @@ hypertex_sources = addfile.c cond.c dialog.c display.c event.c extent1.c \
 
 libspad_la = $(axiom_target_libdir)/libspad.la
 
-hypertex_SOURCES = $(hypertex_sources:.c=.pamphlet)
-hypertex_objects = $(hypertex_sources:.c=.lo)
+hypertex_objects = $(hypertex_SOURCES:.c=.lo)
 hypertex_LDADD = $(libspad_la)
 hypertex_DEPENDENCIES =
 
-htadd_sources = addfile.c halloc.c hash.c htadd.c hterror.c lex.c
-htadd_SOURCES = $(htadd_sources:.c=.pamphlet)
-htadd_objects = $(htadd_sources:.c=.lo)
+htadd_SOURCES = addfile.c halloc.c hash.c htadd.c hterror.c lex.c
+htadd_objects = $(htadd_SOURCES:.c=.lo)
 htadd_LDADD = $(libspad_la)
 htadd_DEPENDENCIES =
 
-htsearch_SOURCES = search.pamphlet
-
-spadbuf_sources = spadbuf.c
-spadbuf_SOURCES = $(spadbuf_sources:.c=.pamphlet)
-spadbuf_objects = $(spadbuf_sources:.c=.lo)
+spadbuf_SOURCES = spadbuf.c
+spadbuf_objects = $(spadbuf_SOURCES:.c=.lo)
 spadbuf_LDADD = $(libspad_la)
 spadbuf_DEPENDENCIES =
 
-hthits_sources = hthits.c
-hthits_SOURCES = $(hthits_sources:.c=.pamphlet)
-hthits_objects = $(hthits_sources:.c=.lo)
+hthits_SOURCES = hthits.c
+hthits_objects = $(hthits_SOURCES:.c=.lo)
 hthits_LDADD = $(libspad_la)
 hthits_DEPENDENCIES =
 
-ex2ht_sources = ex2ht.c
-ex2ht_SOURCES = $(ex2ht_sources:.c=.pamphlet)
-ex2ht_objects = $(ex2ht_sources:.c=.lo)
+ex2ht_SOURCES = ex2ht.c
+ex2ht_objects = $(ex2ht_SOURCES:.c=.lo)
 ex2ht_LDADD = $(libspad_la)
 ex2ht_DEPENDENCIES =
-
-pamphlets = Makefile.pamphlet $(hypertex_SOURCES) $(htadd_SOURCES) \
-		$(htsearch_SOURCES) $(spadbuf_SOURCES) $(hthits_SOURCES) \
-		$(ex2ht_SOURCES)
 
 subdir = src/hyper/
 
@@ -124,57 +113,14 @@ mostclean-local:
 
 clean-local: mostclean-local
 	-rm -f $(objects)
-	-rm -f $(hypertex_sources)
-	-rm -f $(htadd_sources)
-	-rm -f $(htsearch_sources)
-	-rm -f $(spadbuf_sources)
-	-rm -f $(hthits_sources)
-	-rm -f $(ex2ht_sources)
 	-rm -f $(BINFILES)
 
 distclean-local: clean-local
 
-.PRECIOUS: %.h
-
-$(HEADERS): %.h: $(srcdir)/%.pamphlet
-	$(axiom_build_document) --tangle=$*.h --output=$@ $<
-
 .PRECIOUS: %.lo %.$(OBJEXT)
-.PRECIOUS: %.c
 
 %.lo: %.c $(HEADERS)
 	$(COMPILE) -o $@ $(CFLAGS) ${CCF} $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
-
-%.c: $(srcdir)/%.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
-
-
-mouse11.bitmap: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=mouse11.bitmap --output=$@ $< 
-
-mouse11.mask: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=mouse11.mask --output=$@ $< 
-
-sdown3d.bitmap: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=sdown3d.bitmap --output=$@ $< 
-
-sdown3dpr.bitmap: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=sdown3dpr.bitmap --output=$@ $< 
-
-sdown.bitmap: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=sdown.bitmap --output=$@ $< 
-
-sup3d.bitmap: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=sup3d.bitmap --output=$@ $< 
-
-sup3dpr.bitmap: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=sup3dpr.bitmap --output=$@ $< 
-
-sup.bitmap: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=sup.bitmap --output=$@ $< 
-
-ht_icon: $(srcdir)/bitmaps.pamphlet
-	$(axiom_build_document) --tangle=hticon --output=$@ $< 
 
 ${HYPER}/pages/ht.db: $(HTADD) $(srcdir)/pages/*.ht $(srcdir)/pages/*.pht
 	@echo making ${HYPER}/pages from $(axiom_src_srcdir)/pages directory
@@ -191,13 +137,11 @@ ${HYPER}/pages/ht.db: $(HTADD) $(srcdir)/pages/*.ht $(srcdir)/pages/*.pht
 	@ cp -pr $(srcdir)/viewports $(axiom_target_datadir)
 
 
-${OUTLIB}/htsearch: $(srcdir)/search.pamphlet
-	$(axiom_build_document) --tangle=htsearch --output=$@ $<
-	chmod a+x ${OUTLIB}/htsearch
+${OUTLIB}/htsearch: htsearch
+	$(INSTALL_PROGRAM) $< $@
 
-${OUTLIB}/presea: $(srcdir)/search.pamphlet
-	$(axiom_build_document) --tangle=presea --output=$@ $<
-	chmod a+x ${OUTLIB}/presea
+${OUTLIB}/presea: presea
+	$(INSTALL_PROGRAM) $< $@
 
 ${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
 	${LINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD) $(AXIOM_X11_LDFLAGS) -lm
