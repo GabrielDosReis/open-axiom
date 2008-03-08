@@ -40,11 +40,12 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
+
 #define _GROUP_C
-#include "useproto.h"
+
 #include "debug.h"
 
-
+#include "sockio.h"
 #include "group.h"
 #include "initx.h"
 

@@ -37,9 +37,10 @@
 #define HTERROR
 
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
+#include "sockio.h"
 #include "lex.h"
 #include "parse.h"
 

@@ -50,11 +50,12 @@
  *      use the value of page->y_off as an offset into the scrolling
  *      region to compute what is actually to be displayed on the page.
  */
+
 #define _DISPLAY_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 
 #include "extent.h"
 #include "hyper.h"

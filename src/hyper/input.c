@@ -35,9 +35,9 @@
 
 #define _INPUT_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 #include "hyper.h"
 
 #include "all_hyper_proto.H1"

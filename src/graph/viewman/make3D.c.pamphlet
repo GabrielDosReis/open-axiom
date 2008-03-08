@@ -49,14 +49,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define _MAKE3D_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
 
 #include <stdlib.h>
 
 #include "viewman.h"
 #include "mode.h"
 
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "make3D.H1"
 
 void 

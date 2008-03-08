@@ -62,7 +62,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "actions.h"
 
 #include "util.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "fun2D.H1"
 #include "readView.H1"
 #include "make2D.H1"

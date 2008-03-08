@@ -49,14 +49,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define _MAKEGRAPH_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
 #include "viewman.h"
 
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "makeGraph.H1"
 
 graphStruct *

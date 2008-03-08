@@ -34,9 +34,9 @@
 */
 
 #define _PARSE_C
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 #include "parse.h"
 #include "parse-paste.h"
 #include "parse-types.h"

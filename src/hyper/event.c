@@ -35,10 +35,10 @@
 
 #define _EVENT_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
-
+#include "sockio.h"
 #include "hyper.h"
 
 #include <X11/X.h>
@@ -64,7 +64,7 @@
 #include "group.h"
 
 #include "all_hyper_proto.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 
 jmp_buf env;
 Window gActiveWindow;

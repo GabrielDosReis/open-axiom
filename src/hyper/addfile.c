@@ -34,9 +34,10 @@
 */
 
 #define _ADDFILE_C
-#include "useproto.h"
+
 #include "debug.h"
 
+#include "sockio.h"
 #include "hyper.h"
 #include "addfile.h"
 

@@ -35,9 +35,9 @@
 
 #define _MACRO_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 #include "parse.h"
 #include "hyper.h"
 

@@ -38,17 +38,17 @@
 /* Communication interface for external AXIOM buffers */
 #define _SPADINT_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
 #include <signal.h>
-
+#include "sockio.h"
 #include "hyper.h"
 #include "parse.h"
 #include "bsdsignal.h"
 
 #include "all_hyper_proto.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "bsdsignal.H1"
 
 

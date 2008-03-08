@@ -35,9 +35,9 @@
 
 #include "axiom-c-macros.h"
 #define _PARSE_AUX_C
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 #include "parse.h"
 #include "addfile.h"
 #include "lex.h"

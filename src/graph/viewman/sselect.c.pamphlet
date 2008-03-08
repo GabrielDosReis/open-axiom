@@ -49,7 +49,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define _SSELECT_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -60,7 +59,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "viewman.h"
 #include "bsdsignal.h"
 
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "bsdsignal.H1"
 #include "cleanup.H1"
 #include "sselect.H1"

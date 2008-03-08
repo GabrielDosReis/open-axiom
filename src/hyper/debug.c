@@ -35,7 +35,7 @@
 
 #define  _DEBUG_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
 #ifdef free

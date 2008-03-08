@@ -42,11 +42,12 @@
 /* #define DEBUG         1 */
 
 /* Include all the needed include files  */
+
 #define _HYPER_C
-#include "useproto.h"
+
 #include "debug.h"
 
-
+#include "sockio.h"
 #include "hyper.h"
 
 #include <sys/signal.h>
@@ -62,7 +63,7 @@
 #include "bsdsignal.h"
 
 #include "all_hyper_proto.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "bsdsignal.H1"
 /*
  * Here is a flag used to tell me whether I made a good connection to the

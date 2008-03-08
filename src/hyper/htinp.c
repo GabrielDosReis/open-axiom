@@ -35,20 +35,21 @@
 
 #define _HTINP_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
 #include <sys/stat.h>
 #include <sys/signal.h>
 #include <setjmp.h>
 
+#include "sockio.h"
 #include "hyper.h"
 #include "group.h"
 #include "parse.h"
 #include "bsdsignal.h"
 
 #include "all_hyper_proto.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "bsdsignal.H1"
 
 extern char **input_file_list;

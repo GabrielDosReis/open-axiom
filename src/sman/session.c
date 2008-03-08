@@ -46,9 +46,11 @@
 #ifdef SGIplatform
 #include <bstring.h>
 #endif
+
+#include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "bsdsignal.H1"
 #include "session.H1"
 

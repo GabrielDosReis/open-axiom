@@ -40,12 +40,13 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
+
 #define _EXTENT2_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
-
+#include "sockio.h"
 #include "extent.h"
 #include "group.h"
 #include "titlebar.h"

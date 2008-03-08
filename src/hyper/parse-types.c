@@ -42,9 +42,9 @@
  ****************************************************************************/
 #define _PARSE_TYPES_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 #include "parse.h"
 #include "parse-types.h"
 #include "hyper.h"
