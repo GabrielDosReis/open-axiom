@@ -33,9 +33,16 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _ADDFILE_H_
-#define _ADDFILE_H_ 1
+#ifndef OPENAXIOM_ADDFILE_included
+#define OPENAXIOM_ADDFILE_included
 
-extern char *gDatabasePath;
+#include <stdio.h>
 
-#endif
+extern FILE* db_file_open(char*);
+extern void extend_ht(char*);
+extern FILE* ht_file_open(char*, char*, char*);
+extern FILE* temp_file_open(char*);
+
+extern char* gDatabasePath;
+
+#endif /* OPENAXIOM_ADDFILE_included */

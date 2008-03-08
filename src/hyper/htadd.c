@@ -48,7 +48,7 @@
 #include "lex.h"
 
 #include "htadd.H1"
-#include "addfile.H1"
+#include "addfile.h"
 #include "halloc.H1"
 #include "hash.H1"
 #include "hterror.H1"
