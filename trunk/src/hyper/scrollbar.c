@@ -42,9 +42,9 @@
  ****************************************************************************/
 #define _SCROLLBAR_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 #include "extent.h"
 #include "display.h"
 #include "group.h"

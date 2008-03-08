@@ -35,9 +35,10 @@
 
 #define _FORM_EXT_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
+#include "sockio.h"
 #include "extent.h"
 #include "group.h"
 #include "scrollbar.h"

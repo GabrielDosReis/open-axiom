@@ -38,7 +38,8 @@
 
 #define _HTADD_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
+#include "sockio.h"
 #include "hyper.h"
 #include <sys/stat.h>
 #include <errno.h>

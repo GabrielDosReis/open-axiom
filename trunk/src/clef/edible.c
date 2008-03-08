@@ -1,5 +1,7 @@
 /*
-    Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+    Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+    All rights reserved.
+    Copyright (C) 2007-2008, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -32,7 +34,7 @@
 */
 
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -51,6 +53,7 @@
 
 
 #include "axiom-c-macros.h"
+#include "sockio.h"
 #include "edible.h"
 #include "com.h"
 #include "bsdsignal.h"

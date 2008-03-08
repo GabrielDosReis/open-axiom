@@ -1,7 +1,6 @@
 /*
   Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
-
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
 
@@ -49,12 +48,13 @@
 #include <signal.h>
 
 
+#include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
 #include "sman.h"
 
 #include "bsdsignal.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "openpty.H1"
 #include "utils.h"
 

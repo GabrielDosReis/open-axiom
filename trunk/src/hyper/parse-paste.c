@@ -42,10 +42,10 @@
  ****************************************************************************/
 #define _PARSE_PASTE_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
-
+#include "sockio.h"
 #include "parse.h"
 #include "hyper.h"
 #include "display.h"

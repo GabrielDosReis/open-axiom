@@ -42,9 +42,9 @@
   RadioBox.
   ****/
 
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 #include "parse.h"
 #include "lex.h"
 #include "hyper.h"

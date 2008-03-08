@@ -53,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "viewman.h"
 
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "make2D.H1"
 
 void 

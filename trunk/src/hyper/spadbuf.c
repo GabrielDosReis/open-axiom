@@ -35,7 +35,7 @@
 
 #define _SPADBUF_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
 #include <termios.h>
@@ -52,12 +52,13 @@
 #endif
 
 #include "bsdsignal.h"
+#include "sockio.h"
 #include "edible.h"
 #include "com.h"
 
 #include "spadbuf.H1"
 #include "bsdsignal.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "edin.H1"
 #include "wct.H1"
 #include "prt.H1"

@@ -58,8 +58,9 @@
  */
 #define _LEX_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
+#include "sockio.h"
 
 int useAscii;
 
@@ -70,7 +71,7 @@ int useAscii;
 #include "lex.h"
 
 #include "all_hyper_proto.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 
 
 #include <ctype.h>

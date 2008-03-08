@@ -41,10 +41,10 @@
  *
  ****************************************************************************/
 #define _MEM_C
-#include "useproto.h"
+
 #include "debug.h"
 
-
+#include "sockio.h"
 #include "hyper.h"
 #include "group.h"
 #include "event.h"

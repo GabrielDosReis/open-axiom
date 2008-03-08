@@ -49,7 +49,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define _VIEWMAN_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
 
 #include <unistd.h>
 #include <sys/time.h>
@@ -70,7 +69,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "bsdsignal.H1"
 #include "util.H1"
-#include "sockio-c.H1"
+#include "sockio.h"
 #include "fun2D.H1"
 #include "fun3D.H1"
 #include "makeGraph.H1"

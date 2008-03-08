@@ -1,3 +1,56 @@
+2008-03-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* include/sockio.h: Rename from sockio-c.H1.
+	* clef/edible.c: Don't include useproto.h.  Include sockio.h
+	* graph/view3D/surface3d.c.pamphlet: Likewise.
+	* graph/viewman/fun2D.c.pamphlet: Likewise.
+	* graph/viewman/fun3D.c.pamphlet: Likewise.
+	* graph/viewman/make2D.c.pamphlet: Likewise.
+	* graph/viewman/make3D.c.pamphlet: Likewise.
+	* graph/viewman/makeGraph.c.pamphlet: Likewise.
+	* graph/viewman/sselect.c.pamphlet: Likewise.
+	* graph/viewman/viewman.c.pamphlet: Likewise.
+	* graph/viewman/viewman.h: Likewise.
+	* hyper/ReadBitmap.c: Likewise.
+	* hyper/addfile.c: Likewise.
+	* hyper/cond.c: Likewise.
+	* hyper/debug.c: Likewise.
+	* hyper/dialog.c: Likewise.
+	* hyper/display.c: Likewise.
+	* hyper/event.c: Likewise.
+	* hyper/ex2ht.c: Likewise.
+	* hyper/extent1.c: Likewise.
+	* hyper/extent2.c: Likewise.
+	* hyper/form-ext.c: Likewise.
+	* hyper/group.c: Likewise.
+	* hyper/halloc.c: Likewise.
+	* hyper/hash.c: Likewise.
+	* hyper/htadd.c: Likewise.
+	* hyper/hterror.c: Likewise.
+	* hyper/htinp.c: Likewise.
+	* hyper/hyper.c: Likewise.
+	* hyper/initx.c: Likewise.
+	* hyper/input.c: Likewise.
+	* hyper/item.c: Likewise.
+	* hyper/keyin.c: Likewise.
+	* hyper/lex.c: Likewise.
+	* hyper/macro.c: Likewise.
+	* hyper/mem.c: Likewise.
+	* hyper/parse-aux.c: Likewise.
+	* hyper/parse-input.c: Likewise.
+	* hyper/parse-paste.c: Likewise.
+	* hyper/parse-types.c: Likewise.
+	* hyper/parse.c: Likewise.
+	* hyper/scrollbar.c: Likewise.
+	* hyper/show-types.c: Likewise.
+	* hyper/spadbuf.c: Likewise.
+	* hyper/spadint.c: Likewise.
+	* hyper/titlebar.c: Likewise.
+	* lib/sockio-c.c: Likewise.
+	* sman/session.c: Likewise.
+	* sman/sman.c: Likewise.
+	* include/useproto.h: Remove.
+
 2008-03-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* hyper/: De-pamphletize.

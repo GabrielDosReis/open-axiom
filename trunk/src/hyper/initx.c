@@ -45,9 +45,9 @@
 
 #define _INITX_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
-#include "debug.h"
 
+#include "debug.h"
+#include "sockio.h"
 #include "initx.h"
 
 #include <unistd.h>

@@ -38,7 +38,7 @@
 
 #define _EX2HT_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>

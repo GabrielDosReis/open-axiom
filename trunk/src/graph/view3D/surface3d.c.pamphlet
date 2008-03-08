@@ -49,7 +49,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define _SURFACE3D_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
 
 #include <string.h>
 #include <math.h>
@@ -58,6 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "header.h"
 #include "draw.h"
 #include "mode.h"   /* for #define components */
+#include "sockio.h"
 #include "com.h"
 
 #include "XSpadFill.H1"

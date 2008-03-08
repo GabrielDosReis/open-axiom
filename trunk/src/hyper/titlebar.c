@@ -42,11 +42,11 @@
  ****************************************************************************/
 #define _TITLEBAR_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
 #include <stdlib.h>
-
+#include "sockio.h"
 #include "titlebar.h"
 #include "display.h"
 #include "group.h"

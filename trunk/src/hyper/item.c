@@ -34,7 +34,7 @@
 */
 
 #include "axiom-c-macros.h"
-#include "useproto.h"
+#include "sockio.h"
 #define _ITEM_C
 #include "debug.h"
 #include "extent.h"

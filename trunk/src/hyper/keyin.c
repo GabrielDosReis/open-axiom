@@ -42,10 +42,10 @@
  ****************************************************************************/
 #define _KEYIN_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
-
+#include "sockio.h"
 #include "hyper.h"
 #include "keyin.h"
 #include "event.h"

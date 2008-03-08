@@ -42,10 +42,11 @@
  ****************************************************************************/
 #define _EXTENT1_C
 #include "axiom-c-macros.h"
-#include "useproto.h"
+
 #include "debug.h"
 
 
+#include "sockio.h"
 #include "extent.h"
 #include "hyper.h"
 #include "group.h"
