@@ -1,4 +1,3 @@
-#include "addfile.H1"
 #include "ReadBitmap.H1"
 #include "dialog.H1"
 #include "cond.H1"

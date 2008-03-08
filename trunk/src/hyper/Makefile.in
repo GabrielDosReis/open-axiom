@@ -53,7 +53,7 @@ SCRIPTS=${OUTLIB}/htsearch ${OUTLIB}/presea
 
 BINFILES= $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
 
-HEADERS = addfile.h display.h event.h extent.h \
+HEADERS = display.h event.h extent.h \
 	group.h hterror.h hyper.h initx.h keyin.h lex.h \
 	parse.h parse-paste.h parse-types.h scrollbar.h \
 	titlebar.h token.h $(axiom_c_macros_h)

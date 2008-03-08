@@ -1,5 +1,11 @@
 2008-03-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/addfile.h: Move from hyper.
+	* include/addfile.H1: Move external declarations into
+	addfile.h. Remove. 
+
+2008-03-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/sockio.h: Rename from sockio-c.H1.
 	* clef/edible.c: Don't include useproto.h.  Include sockio.h
 	* graph/view3D/surface3d.c.pamphlet: Likewise.

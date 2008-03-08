@@ -38,6 +38,7 @@
 #include "debug.h"
 
 #include "sockio.h"
+#include "addfile.h"
 #include "hyper.h"
 #include "addfile.h"
 
@@ -45,6 +46,10 @@
 #include <errno.h>
 
 #include "all_hyper_proto.H1"
+
+static int build_ht_filename(char*, char*, char*);
+static int pathname(char*);
+static int strpostfix(char*, char*);
 
 
 char *gDatabasePath = NULL;
