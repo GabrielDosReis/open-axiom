@@ -1,5 +1,6 @@
 2008-03-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* graph/: Depamphletize.
 	* include/addfile.h: Move from hyper.
 	* include/addfile.H1: Move external declarations into
 	addfile.h. Remove. 

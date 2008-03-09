@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,10 @@ build_libdir = $(abs_top_builddir)/src/lib
 
 bin_PROGRAMS = viewman$(EXEEXT)
 
-viewman_sources = cleanup.c fun2D.c fun3D.c make2D.c make3D.c \
+viewman_SOURCES = cleanup.c fun2D.c fun3D.c make2D.c make3D.c \
 		makeGraph.c readView.c sselect.c viewman.c
 
-viewman_SOURCES = $(addsuffix .pamphlet, $(viewman_sources))
-
-viewman_objects = $(viewman_sources:.c=.lo)
+viewman_objects = $(viewman_SOURCES:.c=.lo)
 
 viewman_headers = $(srcdir)/viewman.h \
 		$(addprefix $(axiom_src_srcdir)/graph/include/,\
@@ -56,8 +54,6 @@ viewman_headers = $(srcdir)/viewman.h \
 
 viewman_DEPENDENCIES =
 viewman_LDFLAGS = $(axiom_target_libdir)/libspad.la
-
-pamphlets = Makefile.pamphlet $(viewman_SOURCES)
 
 subdir = src/graph/viewman/
 
@@ -75,16 +71,12 @@ stamp: $(axiom_target_libdir)/viewman$(EXEEXT)
 	$(STAMP) stamp
 
 
-.PRECIOUS: %.c
 .PRECIOUS: %.lo
 
 %.lo: $(viewman_HEADERS)
 
 %.lo: %.c $(axiom_c_macros_h)
 	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
-
-%.c: $(srcdir)/%.c.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
 
 $(axiom_target_libdir)/viewman$(EXEEXT): $(viewman_objects) $(viewman_DEPENDENCIES)
 	$(LINK) -o $@ $(viewman_objects) $(viewman_LDFLAGS) \
@@ -93,7 +85,7 @@ $(axiom_target_libdir)/viewman$(EXEEXT): $(viewman_objects) $(viewman_DEPENDENCI
 mostlyclean-local:
 
 clean-local: mostlyclean-local
-	@rm -f $(viewman_sources) $(viewman_objects)
+	@rm -f $(viewman_objects)
 	@rm -f $(axiom_target_libdir)/viewman$(EXEEXT)
 
 distclean-local: clean-local

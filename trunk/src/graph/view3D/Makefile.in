@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -45,24 +45,20 @@ build_libdir = $(abs_top_builddir)/src/lib
 
 bin_PROGRAMS = view3D$(EXEEXT)
 
-view3D_sources = buttons3d.c closeView3d.c component3d.c control3d.c \
+view3D_SOURCES = buttons3d.c closeView3d.c component3d.c control3d.c \
 		illuminate3d.c lightbut3d.c lighting3d.c main3d.c \
 		mesh3d.c msort3d.c pot3d.c process3d.c project3d.c \
 		quitbut3d.c quit3d.c save3d.c savebut3d.c smoothShade3d.c \
 		spadAction3d.c	stuff3d.c surface3d.c transform3d.c \
 		viewport3d.c volume3d.c write3d.c
 
-view3D_SOURCES = $(addsuffix .pamphlet, $(view3D_sources))
-
-view3D_objects = $(addprefix $(builddir)/, $(view3D_sources:.c=.lo))
+view3D_objects = $(addprefix $(builddir)/, $(view3D_SOURCES:.c=.lo))
 
 Gfun_objects = ../Gdraws/Gfun.lo
 
 
 view3D_LDADD = $(axiom_target_libdir)/libspad.la
 view3D_DEPENDENCIES = $(Gfun_objects)
-
-pamphlets = Makefile.pamphlet $(view3D_SOURCES)
 
 subdir = src/graph/view3D/
 
@@ -88,15 +84,11 @@ $(axiom_target_libdir)/view3D$(EXEEXT): $(view3D_objects) $(view3D_DEPENDENCIES)
 		$(view3D_LDADD) $(AXIOM_X11_LDFLAGS) -lm
 
 .PRECIOUS: %.lo
-.PRECIOUS: %.c
 
 %.lo: $(HEADERS)
 
 %.lo: %.c
 	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
-
-%.c: $(srcdir)/%.c.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
 
 mostly-clean:
 
