@@ -1,3 +1,10 @@
+2008-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/parse.boot (parseDollarGreaterThan): Remove.
+	(parseDollarGreaterEqual): Likewise.
+	(parseDollarLessEqual): Likewise.
+	(parseDolloarNotEqual): Likewise.
+
 2008-03-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* graph/: Depamphletize.

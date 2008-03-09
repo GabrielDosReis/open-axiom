@@ -313,18 +313,6 @@ parseLessEqual u == parseTran ["not",[substitute(">","<=",$op),:u]]
  
 parseNotEqual u == parseTran ["not",[substitute("=","^=",$op),:u]]
  
-parseDollarGreaterThan [x,y] ==
-  [substitute("$<","$>",$op),parseTran y,parseTran x]
- 
-parseDollarGreaterEqual u ==
-  parseTran ["not",[substitute("$<","$>=",$op),:u]]
- 
-parseDollarLessEqual u ==
-  parseTran ["not",[substitute("$>","$<=",$op),:u]]
- 
-parseDollarNotEqual u ==
-  parseTran ["not",[substitute("$=","$^=",$op),:u]]
- 
 parseAnd u ==
   $InteractiveMode => ["and",:parseTranList u]
   null u => "true"
@@ -496,10 +484,6 @@ parseVCONS l == ["VECTOR",:parseTranList l]
 for x in [["<=", :"parseLessEqual"],_
 	  [">", :"parseGreaterThan"],_
 	  [">=", :"parseGreaterEqual"],_
-	  ["$<=", :"parseDollarLessEqual"],_
-	  ["$>", :"parseDollarGreaterThan"],_
-	  ["$>=", :"parseDollarGreaterEqual"],_
-	  ["$^=", :"parseDollarNotEqual"],_
 	  ["^=", :"parseNotEqual"],_
 	  ["_:", :"parseColon"],_
 	  ["_:_:", :"parseCoerce"],_
