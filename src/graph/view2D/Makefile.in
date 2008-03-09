@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,10 @@ build_libdir = $(abs_top_builddir)/src/lib
 
 bin_PROGRAMS = view2D$(EXEEXT)
 
-view2D_sources = buttons2d.c control2d.c graph2d.c main2d.c pot2d.c \
+view2D_SOURCES = buttons2d.c control2d.c graph2d.c main2d.c pot2d.c \
 		process2d.c spadAction2d.c stuff2d.c viewport2D.c write2d.c
 
-view2D_SOURCES = $(addsuffix .pamphlet, $(view2D_sources))
-
-view2D_objects = $(view2D_sources:.c=.lo)
+view2D_objects = $(view2D_SOURCES:.c=.lo)
 
 Gfun_objects = ../Gdraws/Gfun.lo
 
@@ -55,8 +53,6 @@ view2D_LDADD = $(axiom_target_libdir)/libspad.la
 view2D_DEPENDENCIES = $(Gfun_objects)
 
 subdir = src/graph/view2D/
-
-pamphlets = Makefile.pamphlet $(view2D_SOURCES)
 
 AXIOM_CFLAGS  = ${CCF} ${AXIOM_X11_CFLAGS} -I${LINC} -I${GINC} -I$(srcdir) \
 			$(axiom_includes)
@@ -81,7 +77,6 @@ $(axiom_target_libdir)/view2D$(EXEEXT): $(view2D_objects) $(view2D_DEPENDENCIES)
 	$(LINK) -o $@ $(view2D_objects) $(Gfun_objects) \
 	    $(view2D_LDADD) $(AXIOM_X11_LDFLAGS) -lm 
 
-.PRECIOUS: %.c
 .PRECIOUS: %.lo
 
 %.$(OBJEXT): $(HEADERS)
@@ -89,13 +84,10 @@ $(axiom_target_libdir)/view2D$(EXEEXT): $(view2D_objects) $(view2D_DEPENDENCIES)
 %.lo: $(builddir)/%.c $(axiom_c_macros.h)
 	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
-%.c: $(srcdir)/%.c.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
-
 mostlyclean-local:
 
 clean-local: mostlyclean-local
-	@rm -f $(view2D_sources) $(view2D_objects)
+	@rm -f $(view2D_objects)
 	@rm -f $(axiom_target_libdir)/view2D$(EXEEXT)
 
 distclean-local: clean-local

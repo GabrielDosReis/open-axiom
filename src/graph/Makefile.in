@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,6 @@ SUBDIRS = Gdraws viewman view2D view3D viewAlone
 pamphlets = fileformats.pamphlet Makefile.pamphlet
 
 subdir = src/graph/
-
-pamphlets = Makefile.pamphlet
 
 .PHONY: all all-ax all-graph
 all: all-ax

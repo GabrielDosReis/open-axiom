@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,16 +40,12 @@ build_libdir = $(abs_top_builddir)/src/lib
 
 bin_PROGRAMS = viewAlone$(EXEEXT)
 
-viewAlone_sources = viewAlone.c spoonComp.c spoon2D.c
+viewAlone_SOURCES = viewAlone.c spoonComp.c spoon2D.c
 
-viewAlone_SOURCES = $(addsuffix .pamphlet, $(viewAlone_sources))
-
-viewAlone_objects = $(viewAlone_sources:.c=.lo)
+viewAlone_objects = $(viewAlone_SOURCES:.c=.lo)
 
 viewAlone_LDADD = $(axiom_target_libdir)/libspad.la
 viewAlone_DEPENDENCIES =
-
-pamphlets = Makefile.pamphlet $(viewAlone_SOURCES)
 
 subdir = src/graph/viewAlone/
 
@@ -76,20 +72,16 @@ $(axiom_target_bindir)/viewAlone$(EXEEXT): $(viewAlone_objects) \
 		$(AXIOM_X11_LDFLAGS)
 
 .PRECIOUS: %.lo
-.PRECIOUS: %.c
 
 %.lo: $(HEADERS)
 
 %.lo: %.c $(axiom_c_macros_h)
 	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
-%.c: $(srcdir)/%.c.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
-
 mostlyclean-local:
 
 clean-local: mostlyclean-local
-	@rm -f $(viewAlone_sources) $(viewAlone_objects)
+	@rm -f $(viewAlone_objects)
 	@rm -f $(axiom_target_bindir)/viewAlone$(EXEEXT)
 
 distclean-local: clean-local
