@@ -1,5 +1,9 @@
 2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* doc/msgs/s2-us.msgs: Say Spad, not old compiler.
+
+2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nocompil.lisp: Remove.
 	* interp/Makefile.pamphlet: Adjust.
 

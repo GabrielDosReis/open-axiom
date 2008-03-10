@@ -1,3 +1,7 @@
+2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* doc/msgs/s2-us.msgs: Say Spad, not old compiler.
+
 2008-03-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compColon): Literal flag types are valid
