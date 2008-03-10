@@ -760,7 +760,7 @@ S2IZ0036
 S2IZ0037
  %1b requires and argument and you do not give one.
 S2IZ0038
- Compiling OpenAxiom source code from file %1b using old system compiler.
+ Compiling OpenAxiom source code from file %1b using Spad compiler.
 S2IZ0038A
  Compiling OpenAxiom source code from file %1b using AXIOM-XL compiler and
  options %b %ceon %2 %ceoff %d
