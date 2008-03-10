@@ -85,9 +85,6 @@ ncBug (erMsgKey, erArgL,:optAttr) ==
   $newcompErrorCount := $newcompErrorCount + 1
   erMsg := processKeyedError _
         msgCreate('bug,$nopos, erMsgKey, erArgL,$compBugPrefix,optAttr)
-  -- The next line is to try to deal with some reported cases of unwanted
-  -- backtraces appearing, MCD.
-  ENABLE_-BACKTRACE(nil)
   BREAK()
   ncAbort()
  

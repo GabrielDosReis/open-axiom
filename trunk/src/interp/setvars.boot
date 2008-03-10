@@ -179,6 +179,15 @@ translateTrueFalse2YesNo x ==
 set l ==  set1(l, $setOptions)
 
 
+++ turn on/off GCL optimized function call.
+useFastLinks flag ==
+)if %hasFeature KEYWORD::GCL
+  SI::USE_-FAST_-LINKS flag
+)else
+  flag
+)endif
+
+
 set1(l,setTree) ==
   null l => displaySetVariableSettings(setTree,"")
   $setOptionNames : local := [x.0 for x in setTree]
@@ -239,9 +248,9 @@ set1(l,setTree) ==
         then SET(setData.setVar, translateYesNo2TrueFalse setData.setDef)
         else
           if arg2 = 'nobreak then
-             USE_-FAST_-LINKS 'T
+             useFastLinks true
           if arg2 = 'fastlinks then
-             USE_-FAST_-LINKS 'NIL
+             useFastLinks false
              arg2 := 'break
           SET(setData.setVar, translateYesNo2TrueFalse arg2)
     -- if so set or not a valid choice, then show option information
@@ -896,6 +905,10 @@ protectedSymbolsWarning arg ==
     describeProtectedSymbolsWarning()
   PROTECTED_-SYMBOL_-WARN translateYesNo2TrueFalse first arg
 
+PROTECTED_-SYMBOL_-WARN flag ==
+  -- ??? Nobody seems to know what this function is supposed to do.
+  -- ??? It is rumored to have been builtin to CCL.
+  flag
 
 describeProtectSymbols() ==
  sayBrightly LIST(
@@ -919,6 +932,11 @@ protectSymbols arg ==
     describeProtectSymbols()
   PROTECT_-SYMBOLS translateYesNo2TrueFalse first arg
 
+
+PROTECT_-SYMBOLS flag ==
+  -- ??? nobody seems to know what this function is supposed to do.
+  -- ??? It has been rumored to be native to CCL.
+  flag
 
 -- See the subsection output algebra in setvart.boot
 -- 

@@ -410,7 +410,6 @@ Doing otherwise causes havoc.
 
 <<savesys>>=
 makeint.lisp:	${OBJS} util.$(FASLEXT) \
-                nocompil.$(FASLEXT) \
 		sys-driver.$(FASLEXT) \
 	        ${OUTINTERP} obey.$(FASLEXT) \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
@@ -428,7 +427,6 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
 	@ echo '(|importModule| "hash")' >> makeint.lisp
 	@ echo '(gbc t)' >> makeint.lisp
-	@ echo '(|importModule| "nocompil")' >> makeint.lisp
 	@ echo '(|importModule| "util")' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
@@ -1025,9 +1023,6 @@ compress.$(FASLEXT): compress.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 msg.$(FASLEXT): msg.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
-nocompil.$(FASLEXT): nocompil.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 util.$(FASLEXT): util.lisp parsing.$(FASLEXT)

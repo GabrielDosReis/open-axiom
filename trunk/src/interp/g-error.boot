@@ -101,9 +101,6 @@ errorSupervisor1(errorType,errorMsg,$BreakMode) ==
 
 handleLispBreakLoop($BreakMode) ==
   TERPRI()
-  -- The next line is to try to deal with some reported cases of unwanted
-  -- backtraces appearing, MCD.
-  ENABLE_-BACKTRACE(nil)
   $BreakMode = 'break =>
     sayBrightly '" "
     BREAK()

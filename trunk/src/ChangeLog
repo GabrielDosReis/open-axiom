@@ -1,5 +1,10 @@
 2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nocompil.lisp: Remove.
+	* interp/Makefile.pamphlet: Adjust.
+
+2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.pamphlet (strap/%.$(FASLEXT)): Don't copy
 	bootstrapping objects to final algebra directory.
 	(%.NRLIB/code.$(FASLEXT)): Specify bootstrapping objects location
