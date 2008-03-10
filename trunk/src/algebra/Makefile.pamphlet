@@ -1810,14 +1810,14 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
 	@ rm -rf $*.NRLIB
-	echo ")co $*.spad" | ${INTERPSYS}
+	echo ")co $*.spad" | ${INTERPSYS} --strap=strap
 @
 
 <<genericBOOTSTRAPfiles>>=
 # Compile bootstrap file to machine object code, and the result
 # immediately available for AXIOMsys consumption.
 strap/%.$(FASLEXT): %.lsp
-	$(COMPILE_LISP) && $(INSTALL) $@ $(OUT)
+	$(COMPILE_LISP)
 @
 
 <<genericSPADfiles>>=

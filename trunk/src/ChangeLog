@@ -1,5 +1,12 @@
 2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/Makefile.pamphlet (strap/%.$(FASLEXT)): Don't copy
+	bootstrapping objects to final algebra directory.
+	(%.NRLIB/code.$(FASLEXT)): Specify bootstrapping objects location
+	as option.
+
+2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in ("$faslType"): Export.
 	* interp/sys-driver.boot (algebraBootstrapDir): New.
 	* interp/lisplib.boot (findModule): New.
