@@ -70,6 +70,7 @@
 	   "$buildPlatform"
 	   "$targetPlatform"
 
+	   "$faslType"
 	   "$systemInstallationDirectory"
 
            "getCommandLineArguments"

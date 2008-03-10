@@ -127,6 +127,18 @@ isNestedInstantiation(form,deps) ==
   false
  
 --% Loading
+
+++ Return a path to the loadable module that contains the
+++ definition of the constructor indicated by `cname'.  
+++ Error if the file container of the module does not exist.
+findModule cname ==
+  m := GETDATABASE(cname,'OBJECT) or return nil
+  existingFile? m => m
+  strap := algebraBootstrapDir() =>
+    m := CONCAT(strap,PATHNAME_-NAME m,'".",$faslType)
+    existingFile? m => m
+    systemError ['"missing module for ",:bright cname]
+  systemError ['"missing module for ",:bright cname]
  
 loadLibIfNotLoaded libName ==
   -- replaces old SpadCondLoad
@@ -137,7 +149,7 @@ loadLibIfNotLoaded libName ==
  
 loadLib cname ==
   startTimingProcess 'load
-  fullLibName := GETDATABASE(cname,'OBJECT) or return nil
+  fullLibName := findModule cname or return nil
   systemdir? := isSystemDirectory(pathnameDirectory fullLibName)
   update? := $forceDatabaseUpdate or not systemdir? 
   not update? =>
@@ -691,6 +703,3 @@ isFunctor x ==
       else updateCategoryFrameForConstructor op
     get(op,'isFunctor,$CategoryFrame)
   nil
- 
- 
- 

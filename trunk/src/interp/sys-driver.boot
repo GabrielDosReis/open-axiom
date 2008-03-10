@@ -78,12 +78,17 @@ systemRootDirectory() ==
     ensureTrailingSlash cdr dir
   $systemInstallationDirectory
 
-
 +++ Returns the system algebra directory, as specified on command
 +++ line.  nil, otherwise.
 systemAlgebraDirectory() ==
   dir := ASSOC(Option '"sysalg", %systemOptions()) =>
     ensureTrailingSlash cdr dir
+  nil
+
++++ Returns a path to the directory containing algebra bootstsrap files.
+algebraBootstrapDir() ==
+  dir := ASSOC(Option '"strap",%systemOptions()) =>
+    ensureTrailingSlash rest dir
   nil
 
 ++ stdStreamIsTerminal:

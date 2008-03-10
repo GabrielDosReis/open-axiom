@@ -1,3 +1,13 @@
+2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in ("$faslType"): Export.
+	* interp/sys-driver.boot (algebraBootstrapDir): New.
+	* interp/lisplib.boot (findModule): New.
+	(loadLib): Use it.
+	* interp/daase.lisp (localdatabase): Make sure loadable modules
+	have proper extensions.
+	* interp/sys-utility.boot (existingFile?): New.
+
 2008-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/parse.boot (parseDollarGreaterThan): Remove.
