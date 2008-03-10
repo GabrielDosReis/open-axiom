@@ -132,3 +132,7 @@ makeAbsoluteFilename: %String -> %String
 makeAbsoluteFilename name ==
   CONCATENATE("STRING",systemRootDirectory(),name)
 
+++ returns true if `file' exists as a pathname.
+existingFile? file ==
+  PROBE_-FILE file
+
