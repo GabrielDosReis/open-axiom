@@ -60,37 +60,29 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ABELGRP.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |AbelianGroup;AL| (QUOTE NIL)) 
+(DEFPARAMETER |AbelianGroup;AL| 'NIL) 
 
-(DEFUN |AbelianGroup| NIL 
-  (LET (#:G82664) 
-    (COND 
-      (|AbelianGroup;AL|) 
+(DEFUN |AbelianGroup| ()
+  (LET (#:G1388)
+    (COND
+      (|AbelianGroup;AL|)
       (T (SETQ |AbelianGroup;AL| (|AbelianGroup;|)))))) 
 
-(DEFUN |AbelianGroup;| NIL 
-  (PROG (#1=#:G82662) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|CancellationAbelianMonoid|)
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE (
-                ((|-| (|$| |$|)) T)
-                ((|-| (|$| |$| |$|)) T)
-                ((|*| (|$| (|Integer|) |$|)) T)))
-              NIL
-              (QUOTE ((|Integer|)))
-              NIL))
-          |AbelianGroup|)
-        (SETELT #1# 0 (QUOTE (|AbelianGroup|))))))) 
+(DEFUN |AbelianGroup;| ()
+  (PROG (#0=#:G1386)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|CancellationAbelianMonoid|)
+                           (|mkCategory| '|domain|
+                               '(((- ($ $)) T) ((- ($ $ $)) T)
+                                 ((* ($ (|Integer|) $)) T))
+                               NIL '((|Integer|)) NIL))
+                   |AbelianGroup|)
+        (SETELT #0# 0 '(|AbelianGroup|)))))) 
 
-(MAKEPROP (QUOTE |AbelianGroup|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|AbelianGroup| 'NILADIC T) 
 @
 \section{ABELGRP-.lsp BOOTSTRAP}
 {\bf ABELGRP-} depends on a chain of files. 
@@ -104,78 +96,58 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ABELGRP-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |ABELGRP-;-;3S;1| (|x| |y| |$|) 
-  (SPADCALL |x| (SPADCALL |y| (QREFELT |$| 7)) (QREFELT |$| 8))) 
+(DEFUN |ABELGRP-;-;3S;1| (|x| |y| $)
+  (SPADCALL |x| (SPADCALL |y| (QREFELT $ 7)) (QREFELT $ 8))) 
 
-(DEFUN |ABELGRP-;subtractIfCan;2SU;2| (|x| |y| |$|) 
-  (CONS 0 (SPADCALL |x| |y| (QREFELT |$| 10)))) 
+(DEFUN |ABELGRP-;subtractIfCan;2SU;2| (|x| |y| $)
+  (CONS 0 (SPADCALL |x| |y| (QREFELT $ 10)))) 
 
-(DEFUN |ABELGRP-;*;Nni2S;3| (|n| |x| |$|) 
-  (SPADCALL |n| |x| (QREFELT |$| 14))) 
+(DEFUN |ABELGRP-;*;Nni2S;3| (|n| |x| $)
+  (SPADCALL |n| |x| (QREFELT $ 14))) 
 
-(DEFUN |ABELGRP-;*;I2S;4| (|n| |x| |$|) 
-  (COND 
-    ((ZEROP |n|) (|spadConstant| |$| 17))
-    ((|<| 0 |n|) (SPADCALL |n| |x| (QREFELT |$| 20)))
-    ((QUOTE T) 
-      (SPADCALL (|-| |n|) (SPADCALL |x| (QREFELT |$| 7)) (QREFELT |$| 20))))) 
+(DEFUN |ABELGRP-;*;I2S;4| (|n| |x| $)
+  (COND
+    ((ZEROP |n|) (|spadConstant| $ 17))
+    ((< 0 |n|) (SPADCALL |n| |x| (QREFELT $ 20)))
+    ('T (SPADCALL (- |n|) (SPADCALL |x| (QREFELT $ 7)) (QREFELT $ 20))))) 
 
-(DEFUN |AbelianGroup&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|AbelianGroup&|))
-        (LETT |dv$| (LIST (QUOTE |AbelianGroup&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 22) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        (COND 
-          ((|HasCategory| |#1| (QUOTE (|Ring|))))
-          ((QUOTE T) 
-            (QSETREFV |$| 21 
-              (CONS (|dispatchFunction| |ABELGRP-;*;I2S;4|) |$|))))
-        |$|)))) 
+(DEFUN |AbelianGroup&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|AbelianGroup&|))
+        (LETT |dv$| (LIST '|AbelianGroup&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 22) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        (COND
+          ((|HasCategory| |#1| '(|Ring|)))
+          ('T
+           (QSETREFV $ 21
+               (CONS (|dispatchFunction| |ABELGRP-;*;I2S;4|) $))))
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |AbelianGroup&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (0 . |-|)
-        (5 . |+|)
-        |ABELGRP-;-;3S;1|
-        (11 . |-|)
-        (|Union| |$| (QUOTE "failed"))
-        |ABELGRP-;subtractIfCan;2SU;2|
-        (|Integer|)
-        (17 . |*|)
-        (|NonNegativeInteger|)
-        |ABELGRP-;*;Nni2S;3|
-        (23 . |Zero|)
-        (|PositiveInteger|)
-        (|RepeatedDoubling| 6)
-        (27 . |double|)
-        (33 . |*|))) 
-    (QUOTE #(|subtractIfCan| 39 |-| 45 |*| 51))
-    (QUOTE NIL)
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #())
-        (CONS 
-          (QUOTE #())
-          (|makeByteWordVec2| 21 
-            (QUOTE (1 6 0 0 7 2 6 0 0 0 8 2 6 0 0 0 10 2 6 0 13 0 14 0 6 0 17
-                    2 19 6 18 6 20 2 0 0 13 0 21 2 0 11 0 0 12 2 0 0 0 0 9 2
-                    0 0 13 0 21 2 0 0 15 0 16))))))
-    (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|AbelianGroup&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . -) (5 . +)
+             |ABELGRP-;-;3S;1| (11 . -) (|Union| $ '"failed")
+             |ABELGRP-;subtractIfCan;2SU;2| (|Integer|) (17 . *)
+             (|NonNegativeInteger|) |ABELGRP-;*;Nni2S;3| (23 . |Zero|)
+             (|PositiveInteger|) (|RepeatedDoubling| 6) (27 . |double|)
+             (33 . *))
+          '#(|subtractIfCan| 39 - 45 * 51) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 21
+                                '(1 6 0 0 7 2 6 0 0 0 8 2 6 0 0 0 10 2
+                                  6 0 13 0 14 0 6 0 17 2 19 6 18 6 20 2
+                                  0 0 13 0 21 2 0 11 0 0 12 2 0 0 0 0 9
+                                  2 0 0 13 0 21 2 0 0 15 0 16)))))
+          '|lookupComplete|)) 
 @
 \section{category ABELMON AbelianMonoid}
 <<category ABELMON AbelianMonoid>>=
@@ -243,38 +215,33 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ABELMON.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |AbelianMonoid;AL| (QUOTE NIL)) 
+(DEFPARAMETER |AbelianMonoid;AL| 'NIL) 
 
-(DEFUN |AbelianMonoid| NIL 
-  (LET (#:G82597) 
-    (COND 
-      (|AbelianMonoid;AL|) 
+(DEFUN |AbelianMonoid| ()
+  (LET (#:G1388)
+    (COND
+      (|AbelianMonoid;AL|)
       (T (SETQ |AbelianMonoid;AL| (|AbelianMonoid;|)))))) 
 
-(DEFUN |AbelianMonoid;| NIL 
-  (PROG (#1=#:G82595) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|AbelianSemiGroup|)
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE (
-                ((|Zero| (|$|) |constant|) T)
-                ((|sample| (|$|) |constant|) T)
-                ((|zero?| ((|Boolean|) |$|)) T)
-                ((|*| (|$| (|NonNegativeInteger|) |$|)) T)))
-              NIL
-              (QUOTE ((|NonNegativeInteger|) (|Boolean|)))
-              NIL))
-            |AbelianMonoid|)
-        (SETELT #1# 0 (QUOTE (|AbelianMonoid|))))))) 
+(DEFUN |AbelianMonoid;| ()
+  (PROG (#0=#:G1386)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|AbelianSemiGroup|)
+                           (|mkCategory| '|domain|
+                               '(((|Zero| ($) |constant|) T)
+                                 ((|sample| ($) |constant|) T)
+                                 ((|zero?| ((|Boolean|) $)) T)
+                                 ((* ($ (|NonNegativeInteger|) $)) T))
+                               NIL
+                               '((|NonNegativeInteger|) (|Boolean|))
+                               NIL))
+                   |AbelianMonoid|)
+        (SETELT #0# 0 '(|AbelianMonoid|)))))) 
 
-(MAKEPROP (QUOTE |AbelianMonoid|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|AbelianMonoid| 'NILADIC T) 
 @
 \section{ABELMON-.lsp BOOTSTRAP}
 {\bf ABELMON-} which needs
@@ -300,71 +267,54 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ABELMON-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |ABELMON-;zero?;SB;1| (|x| |$|) 
-  (SPADCALL |x| (|spadConstant| |$| 7) (QREFELT |$| 9))) 
+(DEFUN |ABELMON-;zero?;SB;1| (|x| $)
+  (SPADCALL |x| (|spadConstant| $ 7) (QREFELT $ 9))) 
 
-(DEFUN |ABELMON-;*;Pi2S;2| (|n| |x| |$|) 
-  (SPADCALL |n| |x| (QREFELT |$| 12))) 
+(DEFUN |ABELMON-;*;Pi2S;2| (|n| |x| $)
+  (SPADCALL |n| |x| (QREFELT $ 12))) 
 
-(DEFUN |ABELMON-;sample;S;3| (|$|) 
-  (|spadConstant| |$| 7)) 
+(DEFUN |ABELMON-;sample;S;3| ($) (|spadConstant| $ 7)) 
 
-(DEFUN |ABELMON-;*;Nni2S;4| (|n| |x| |$|) 
-  (COND 
-    ((ZEROP |n|) (|spadConstant| |$| 7))
-    ((QUOTE T) (SPADCALL |n| |x| (QREFELT |$| 17))))) 
+(DEFUN |ABELMON-;*;Nni2S;4| (|n| |x| $)
+  (COND
+    ((ZEROP |n|) (|spadConstant| $ 7))
+    ('T (SPADCALL |n| |x| (QREFELT $ 17))))) 
 
-(DEFUN |AbelianMonoid&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|AbelianMonoid&|))
-        (LETT |dv$| (LIST (QUOTE |AbelianMonoid&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 19) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        (COND 
-          ((|HasCategory| |#1| (QUOTE (|Ring|))))
-          ((QUOTE T) 
-            (QSETREFV |$| 18 
-              (CONS (|dispatchFunction| |ABELMON-;*;Nni2S;4|) |$|)))) |$|)))) 
+(DEFUN |AbelianMonoid&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|AbelianMonoid&|))
+        (LETT |dv$| (LIST '|AbelianMonoid&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 19) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        (COND
+          ((|HasCategory| |#1| '(|Ring|)))
+          ('T
+           (QSETREFV $ 18
+               (CONS (|dispatchFunction| |ABELMON-;*;Nni2S;4|) $))))
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |AbelianMonoid&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (0 . |Zero|)
-        (|Boolean|)
-        (4 . |=|)
-        |ABELMON-;zero?;SB;1|
-        (|NonNegativeInteger|)
-        (10 . |*|)
-        (|PositiveInteger|)
-        |ABELMON-;*;Pi2S;2|
-        |ABELMON-;sample;S;3|
-        (|RepeatedDoubling| 6)
-        (16 . |double|)
-        (22 . |*|))) 
-    (QUOTE #(|zero?| 28 |sample| 33 |*| 37))
-    (QUOTE NIL)
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #())
-        (CONS 
-          (QUOTE #())
-          (|makeByteWordVec2| 18 
-            (QUOTE (0 6 0 7 2 6 8 0 0 9 2 6 0 11 0 12 2 16 6 13 6 17 2 0 0 11
-                    0 18 1 0 8 0 10 0 0 0 15 2 0 0 11 0 18 2 0 0 13 0 14))))))
-   (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|AbelianMonoid&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |Zero|)
+             (|Boolean|) (4 . =) |ABELMON-;zero?;SB;1|
+             (|NonNegativeInteger|) (10 . *) (|PositiveInteger|)
+             |ABELMON-;*;Pi2S;2| |ABELMON-;sample;S;3|
+             (|RepeatedDoubling| 6) (16 . |double|) (22 . *))
+          '#(|zero?| 28 |sample| 33 * 37) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 18
+                                '(0 6 0 7 2 6 8 0 0 9 2 6 0 11 0 12 2
+                                  16 6 13 6 17 2 0 0 11 0 18 1 0 8 0 10
+                                  0 0 0 15 2 0 0 11 0 18 2 0 0 13 0 14)))))
+          '|lookupComplete|)) 
 @
 \section{category ABELSG AbelianSemiGroup}
 <<category ABELSG AbelianSemiGroup>>=
@@ -421,35 +371,29 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ABELSG.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |AbelianSemiGroup;AL| (QUOTE NIL)) 
+(DEFPARAMETER |AbelianSemiGroup;AL| 'NIL) 
 
-(DEFUN |AbelianSemiGroup| NIL 
-  (LET (#:G82568) 
-    (COND 
+(DEFUN |AbelianSemiGroup| ()
+  (LET (#:G1387)
+    (COND
       (|AbelianSemiGroup;AL|)
       (T (SETQ |AbelianSemiGroup;AL| (|AbelianSemiGroup;|)))))) 
 
-(DEFUN |AbelianSemiGroup;| NIL 
-  (PROG (#1=#:G82566) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|SetCategory|)
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE (
-                ((|+| (|$| |$| |$|)) T)
-                ((|*| (|$| (|PositiveInteger|) |$|)) T)))
-              NIL
-              (QUOTE ((|PositiveInteger|)))
-              NIL))
-            |AbelianSemiGroup|)
-        (SETELT #1# 0 (QUOTE (|AbelianSemiGroup|))))))) 
+(DEFUN |AbelianSemiGroup;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|SetCategory|)
+                           (|mkCategory| '|domain|
+                               '(((+ ($ $ $)) T)
+                                 ((* ($ (|PositiveInteger|) $)) T))
+                               NIL '((|PositiveInteger|)) NIL))
+                   |AbelianSemiGroup|)
+        (SETELT #0# 0 '(|AbelianSemiGroup|)))))) 
 
-(MAKEPROP (QUOTE |AbelianSemiGroup|) (QUOTE NILADIC) T) 
+(MAKEPROP '|AbelianSemiGroup| 'NILADIC T) 
 @
 \section{ABELSG-.lsp BOOTSTRAP}
 {\bf ABELSG-} needs
@@ -475,50 +419,40 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ABELSG-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |ABELSG-;*;Pi2S;1| (|n| |x| |$|) (SPADCALL |n| |x| (QREFELT |$| 9))) 
+(DEFUN |ABELSG-;*;Pi2S;1| (|n| |x| $)
+  (SPADCALL |n| |x| (QREFELT $ 9))) 
 
-(DEFUN |AbelianSemiGroup&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|AbelianSemiGroup&|))
-        (LETT |dv$| (LIST (QUOTE |AbelianSemiGroup&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 11) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        (COND 
-          ((|HasCategory| |#1| (QUOTE (|Ring|))))
-          ((QUOTE T) 
-            (QSETREFV |$| 10 
-              (CONS (|dispatchFunction| |ABELSG-;*;Pi2S;1|) |$|))))
-        |$|)))) 
+(DEFUN |AbelianSemiGroup&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|AbelianSemiGroup&|))
+        (LETT |dv$| (LIST '|AbelianSemiGroup&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 11) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        (COND
+          ((|HasCategory| |#1| '(|Ring|)))
+          ('T
+           (QSETREFV $ 10
+               (CONS (|dispatchFunction| |ABELSG-;*;Pi2S;1|) $))))
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |AbelianSemiGroup&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL
-        (|local| |#1|)
-        (|PositiveInteger|)
-        (|RepeatedDoubling| 6)
-        (0 . |double|)
-        (6 . |*|)))
-    (QUOTE #(|*| 12))
-    (QUOTE NIL)
-    (CONS
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #()) 
-        (CONS 
-          (QUOTE #())
-          (|makeByteWordVec2| 10 
-            (QUOTE (2 8 6 7 6 9 2 0 0 7 0 10 2 0 0 7 0 10))))))
-    (QUOTE |lookupComplete|))) 
+(MAKEPROP '|AbelianSemiGroup&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|PositiveInteger|)
+             (|RepeatedDoubling| 6) (0 . |double|) (6 . *))
+          '#(* 12) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 10
+                                '(2 8 6 7 6 9 2 0 0 7 0 10 2 0 0 7 0
+                                  10)))))
+          '|lookupComplete|)) 
 @
 \section{category ALGEBRA Algebra}
 <<category ALGEBRA Algebra>>=
@@ -648,37 +582,31 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<CABMON.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |CancellationAbelianMonoid;AL| (QUOTE NIL)) 
+(DEFPARAMETER |CancellationAbelianMonoid;AL| 'NIL) 
 
-(DEFUN |CancellationAbelianMonoid| NIL 
-  (LET (#:G82646) 
-    (COND 
-      (|CancellationAbelianMonoid;AL|) 
-      (T 
-        (SETQ 
-          |CancellationAbelianMonoid;AL| 
-          (|CancellationAbelianMonoid;|)))))) 
+(DEFUN |CancellationAbelianMonoid| ()
+  (LET (#:G1387)
+    (COND
+      (|CancellationAbelianMonoid;AL|)
+      (T (SETQ |CancellationAbelianMonoid;AL|
+               (|CancellationAbelianMonoid;|)))))) 
 
-(DEFUN |CancellationAbelianMonoid;| NIL 
-  (PROG (#1=#:G82644) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|AbelianMonoid|)
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE (((|subtractIfCan| ((|Union| |$| "failed") |$| |$|)) T)))
-              NIL
-             (QUOTE NIL)
-             NIL))
-           |CancellationAbelianMonoid|)
-        (SETELT #1# 0 (QUOTE (|CancellationAbelianMonoid|))))))) 
+(DEFUN |CancellationAbelianMonoid;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|AbelianMonoid|)
+                           (|mkCategory| '|domain|
+                               '(((|subtractIfCan|
+                                      ((|Union| $ "failed") $ $))
+                                  T))
+                               NIL 'NIL NIL))
+                   |CancellationAbelianMonoid|)
+        (SETELT #0# 0 '(|CancellationAbelianMonoid|)))))) 
 
-(MAKEPROP (QUOTE |CancellationAbelianMonoid|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|CancellationAbelianMonoid| 'NILADIC T) 
 @
 \section{category CHARNZ CharacteristicNonZero}
 <<category CHARNZ CharacteristicNonZero>>=
@@ -749,35 +677,27 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<COMRING.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |CommutativeRing;AL| (QUOTE NIL)) 
+(DEFPARAMETER |CommutativeRing;AL| 'NIL) 
 
-(DEFUN |CommutativeRing| NIL 
-  (LET (#:G82892) 
-    (COND 
+(DEFUN |CommutativeRing| ()
+  (LET (#:G1387)
+    (COND
       (|CommutativeRing;AL|)
       (T (SETQ |CommutativeRing;AL| (|CommutativeRing;|)))))) 
 
-(DEFUN |CommutativeRing;| NIL 
-  (PROG (#1=#:G82890) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|Ring|)
-            (|BiModule| (QUOTE |$|) (QUOTE |$|))
-            (|mkCategory| 
-              (QUOTE |package|)
-              NIL
-              (QUOTE (((|commutative| "*") T)))
-              (QUOTE NIL)
-              NIL)) 
-           |CommutativeRing|)
-        (SETELT #1# 0 (QUOTE (|CommutativeRing|))))))) 
+(DEFUN |CommutativeRing;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|Ring|) (|BiModule| '$ '$)
+                           (|mkCategory| '|package| NIL
+                               '(((|commutative| "*") T)) 'NIL NIL))
+                   |CommutativeRing|)
+        (SETELT #0# 0 '(|CommutativeRing|)))))) 
 
-(MAKEPROP (QUOTE |CommutativeRing|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|CommutativeRing| 'NILADIC T) 
 @
 \section{category DIFRING DifferentialRing}
 <<category DIFRING DifferentialRing>>=
@@ -832,38 +752,33 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<DIFRING.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |DifferentialRing;AL| (QUOTE NIL)) 
+(DEFPARAMETER |DifferentialRing;AL| 'NIL) 
 
-(DEFUN |DifferentialRing| NIL 
-  (LET (#:G84565) 
-    (COND 
-      (|DifferentialRing;AL|) 
+(DEFUN |DifferentialRing| ()
+  (LET (#:G1387)
+    (COND
+      (|DifferentialRing;AL|)
       (T (SETQ |DifferentialRing;AL| (|DifferentialRing;|)))))) 
 
-(DEFUN |DifferentialRing;| NIL 
-  (PROG (#1=#:G84563) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|Ring|)
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE 
-                (((|differentiate| (|$| |$|)) T)
-                 ((D (|$| |$|)) T)
-                 ((|differentiate| (|$| |$| (|NonNegativeInteger|))) T)
-                 ((D (|$| |$| (|NonNegativeInteger|))) T)))
-              NIL
-              (QUOTE ((|NonNegativeInteger|)))
-              NIL))
-          |DifferentialRing|)
-        (SETELT #1# 0 (QUOTE (|DifferentialRing|))))))) 
+(DEFUN |DifferentialRing;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|Ring|)
+                           (|mkCategory| '|domain|
+                               '(((|differentiate| ($ $)) T)
+                                 ((D ($ $)) T)
+                                 ((|differentiate|
+                                      ($ $ (|NonNegativeInteger|)))
+                                  T)
+                                 ((D ($ $ (|NonNegativeInteger|))) T))
+                               NIL '((|NonNegativeInteger|)) NIL))
+                   |DifferentialRing|)
+        (SETELT #0# 0 '(|DifferentialRing|)))))) 
 
-(MAKEPROP (QUOTE |DifferentialRing|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|DifferentialRing| 'NILADIC T) 
 @
 \section{DIFRING-.lsp BOOTSTRAP} 
 {\bf DIFRING-} needs {\bf DIFRING}.
@@ -877,72 +792,51 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<DIFRING-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |DIFRING-;D;2S;1| (|r| |$|) 
-  (SPADCALL |r| (QREFELT |$| 7))) 
+(DEFUN |DIFRING-;D;2S;1| (|r| $) (SPADCALL |r| (QREFELT $ 7))) 
 
-(DEFUN |DIFRING-;differentiate;SNniS;2| (|r| |n| |$|) 
-  (PROG (|i|) 
-    (RETURN 
-      (SEQ 
-        (SEQ 
-          (LETT |i| 1 |DIFRING-;differentiate;SNniS;2|)
-          G190
-          (COND ((QSGREATERP |i| |n|) (GO G191)))
-          (SEQ 
-            (EXIT 
-              (LETT |r| 
-                (SPADCALL |r| (QREFELT |$| 7))
-                |DIFRING-;differentiate;SNniS;2|)))
-          (LETT |i| (QSADD1 |i|) |DIFRING-;differentiate;SNniS;2|)
-          (GO G190)
-          G191
-          (EXIT NIL)) 
-        (EXIT |r|))))) 
+(DEFUN |DIFRING-;differentiate;SNniS;2| (|r| |n| $)
+  (PROG (|i|)
+    (RETURN
+      (SEQ (SEQ (LETT |i| 1 |DIFRING-;differentiate;SNniS;2|) G190
+                (COND ((QSGREATERP |i| |n|) (GO G191)))
+                (SEQ (EXIT (LETT |r| (SPADCALL |r| (QREFELT $ 7))
+                                 |DIFRING-;differentiate;SNniS;2|)))
+                (LETT |i| (QSADD1 |i|)
+                      |DIFRING-;differentiate;SNniS;2|)
+                (GO G190) G191 (EXIT NIL))
+           (EXIT |r|))))) 
 
-(DEFUN |DIFRING-;D;SNniS;3| (|r| |n| |$|) 
-  (SPADCALL |r| |n| (QREFELT |$| 11))) 
+(DEFUN |DIFRING-;D;SNniS;3| (|r| |n| $)
+  (SPADCALL |r| |n| (QREFELT $ 11))) 
 
-(DEFUN |DifferentialRing&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|DifferentialRing&|))
-        (LETT |dv$| (LIST (QUOTE |DifferentialRing&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 13) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        |$|)))) 
+(DEFUN |DifferentialRing&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|DifferentialRing&|))
+        (LETT |dv$| (LIST '|DifferentialRing&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 13) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |DifferentialRing&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (0 . |differentiate|)
-        |DIFRING-;D;2S;1| 
-        (|NonNegativeInteger|)
-        |DIFRING-;differentiate;SNniS;2| 
-        (5 . |differentiate|)
-        |DIFRING-;D;SNniS;3|)) 
-    (QUOTE #(|differentiate| 11 D 17))
-    (QUOTE NIL) 
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #())
-        (CONS 
-          (QUOTE #())
-          (|makeByteWordVec2| 12 
-            (QUOTE 
-             (1 6 0 0 7 2 6 0 0 9 11 2 0 0 0 9 10 2 0 0 0 9 12 1 0 0 0 8))))))
-    (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|DifferentialRing&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|)
+             (0 . |differentiate|) |DIFRING-;D;2S;1|
+             (|NonNegativeInteger|) |DIFRING-;differentiate;SNniS;2|
+             (5 . |differentiate|) |DIFRING-;D;SNniS;3|)
+          '#(|differentiate| 11 D 17) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 12
+                                '(1 6 0 0 7 2 6 0 0 9 11 2 0 0 0 9 10 2
+                                  0 0 0 9 12 1 0 0 0 8)))))
+          '|lookupComplete|)) 
 @
 \section{category DIFEXT DifferentialExtension}
 <<category DIFEXT DifferentialExtension>>=
@@ -1051,42 +945,33 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<DIVRING.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |DivisionRing;AL| (QUOTE NIL)) 
+(DEFPARAMETER |DivisionRing;AL| 'NIL) 
 
-(DEFUN |DivisionRing| NIL 
-  (LET (#:G84035) 
-    (COND 
+(DEFUN |DivisionRing| ()
+  (LET (#:G1390)
+    (COND
       (|DivisionRing;AL|)
       (T (SETQ |DivisionRing;AL| (|DivisionRing;|)))))) 
 
-(DEFUN |DivisionRing;| NIL 
-  (PROG (#1=#:G84033) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|sublisV| 
-            (PAIR 
-              (QUOTE (#2=#:G84032))
-              (LIST (QUOTE (|Fraction| (|Integer|)))))
-            (|Join| 
-              (|EntireRing|)
-              (|Algebra| (QUOTE #2#))
-              (|mkCategory| 
-                (QUOTE |domain|)
-                (QUOTE (
-                  ((|**| (|$| |$| (|Integer|))) T)
-                  ((|^| (|$| |$| (|Integer|))) T)
-                  ((|inv| (|$| |$|)) T)))
-                NIL
-                (QUOTE ((|Integer|)))
-                NIL)))
-          |DivisionRing|)
-        (SETELT #1# 0 (QUOTE (|DivisionRing|))))))) 
+(DEFUN |DivisionRing;| ()
+  (PROG (#0=#:G1388)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|sublisV|
+                       (PAIR '(#1=#:G1387)
+                             (LIST '(|Fraction| (|Integer|))))
+                       (|Join| (|EntireRing|) (|Algebra| '#1#)
+                               (|mkCategory| '|domain|
+                                   '(((** ($ $ (|Integer|))) T)
+                                     ((^ ($ $ (|Integer|))) T)
+                                     ((|inv| ($ $)) T))
+                                   NIL '((|Integer|)) NIL)))
+                   |DivisionRing|)
+        (SETELT #0# 0 '(|DivisionRing|)))))) 
 
-(MAKEPROP (QUOTE |DivisionRing|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|DivisionRing| 'NILADIC T) 
 @
 \section{DIVRING-.lsp BOOTSTRAP}
 {\bf DIVRING-} depends on {\bf DIVRING}. We need to break this cycle to build
@@ -1099,88 +984,61 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<DIVRING-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |DIVRING-;^;SIS;1| (|x| |n| |$|) 
-  (SPADCALL |x| |n| (QREFELT |$| 8))) 
+(DEFUN |DIVRING-;^;SIS;1| (|x| |n| $)
+  (SPADCALL |x| |n| (QREFELT $ 8))) 
 
-(DEFUN |DIVRING-;**;SIS;2| (|x| |n| |$|) 
-  (COND 
-    ((ZEROP |n|) (|spadConstant| |$| 10))
-    ((SPADCALL |x| (QREFELT |$| 12))
-      (COND 
-        ((|<| |n| 0) (|error| "division by zero"))
-        ((QUOTE T) |x|)))
-    ((|<| |n| 0) 
-      (SPADCALL (SPADCALL |x| (QREFELT |$| 14)) (|-| |n|) (QREFELT |$| 17)))
-    ((QUOTE T) (SPADCALL |x| |n| (QREFELT |$| 17))))) 
+(DEFUN |DIVRING-;**;SIS;2| (|x| |n| $)
+  (COND
+    ((ZEROP |n|) (|spadConstant| $ 10))
+    ((SPADCALL |x| (QREFELT $ 12))
+     (COND ((< |n| 0) (|error| "division by zero")) ('T |x|)))
+    ((< |n| 0)
+     (SPADCALL (SPADCALL |x| (QREFELT $ 14)) (- |n|) (QREFELT $ 17)))
+    ('T (SPADCALL |x| |n| (QREFELT $ 17))))) 
 
-(DEFUN |DIVRING-;*;F2S;3| (|q| |x| |$|) 
-  (SPADCALL 
-    (SPADCALL 
-      (SPADCALL |q| (QREFELT |$| 20))
-      (SPADCALL 
-        (SPADCALL (SPADCALL |q| (QREFELT |$| 21)) (QREFELT |$| 22))
-        (QREFELT |$| 14))
-      (QREFELT |$| 23))
-    |x|
-    (QREFELT |$| 24))) 
+(DEFUN |DIVRING-;*;F2S;3| (|q| |x| $)
+  (SPADCALL
+      (SPADCALL (SPADCALL |q| (QREFELT $ 20))
+          (SPADCALL
+              (SPADCALL (SPADCALL |q| (QREFELT $ 21)) (QREFELT $ 22))
+              (QREFELT $ 14))
+          (QREFELT $ 23))
+      |x| (QREFELT $ 24))) 
 
-(DEFUN |DivisionRing&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|DivisionRing&|))
-        (LETT |dv$| (LIST (QUOTE |DivisionRing&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 27) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        |$|)))) 
+(DEFUN |DivisionRing&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|DivisionRing&|))
+        (LETT |dv$| (LIST '|DivisionRing&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 27) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |DivisionRing&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (|Integer|)
-        (0 . |**|)
-        |DIVRING-;^;SIS;1| 
-        (6 . |One|)
-        (|Boolean|)
-        (10 . |zero?|)
-        (15 . |Zero|)
-        (19 . |inv|)
-        (|PositiveInteger|)
-        (|RepeatedSquaring| 6)
-        (24 . |expt|)
-        |DIVRING-;**;SIS;2| 
-        (|Fraction| 7)
-        (30 . |numer|)
-        (35 . |denom|)
-        (40 . |coerce|)
-        (45 . |*|)
-        (51 . |*|)
-        |DIVRING-;*;F2S;3| 
-        (|NonNegativeInteger|))) 
-    (QUOTE #(|^| 57 |**| 63 |*| 69))
-    (QUOTE NIL)
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #()) 
-        (CONS 
-          (QUOTE #()) 
-            (|makeByteWordVec2| 25 
-              (QUOTE 
-                (2 6 0 0 7 8 0 6 0 10 1 6 11 0 12 0 6 0 13 1 6 0 0 14 2 16 6
-                 6 15 17 1 19 7 0 20 1 19 7 0 21 1 6 0 7 22 2 6 0 7 0 23 2 6
-                 0 0 0 24 2 0 0 0 7 9 2 0 0 0 7 18 2 0 0 19 0 25)))))) 
-    (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|DivisionRing&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|Integer|)
+             (0 . **) |DIVRING-;^;SIS;1| (6 . |One|) (|Boolean|)
+             (10 . |zero?|) (15 . |Zero|) (19 . |inv|)
+             (|PositiveInteger|) (|RepeatedSquaring| 6) (24 . |expt|)
+             |DIVRING-;**;SIS;2| (|Fraction| 7) (30 . |numer|)
+             (35 . |denom|) (40 . |coerce|) (45 . *) (51 . *)
+             |DIVRING-;*;F2S;3| (|NonNegativeInteger|))
+          '#(^ 57 ** 63 * 69) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 25
+                                '(2 6 0 0 7 8 0 6 0 10 1 6 11 0 12 0 6
+                                  0 13 1 6 0 0 14 2 16 6 6 15 17 1 19 7
+                                  0 20 1 19 7 0 21 1 6 0 7 22 2 6 0 7 0
+                                  23 2 6 0 0 0 24 2 0 0 0 7 9 2 0 0 0 7
+                                  18 2 0 0 19 0 25)))))
+          '|lookupComplete|)) 
 @
 \section{category ENTIRER EntireRing}
 <<category ENTIRER EntireRing>>=
@@ -1218,35 +1076,27 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ENTIRER.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |EntireRing;AL| (QUOTE NIL)) 
+(DEFPARAMETER |EntireRing;AL| 'NIL) 
 
-(DEFUN |EntireRing| NIL 
-  (LET (#:G82841) 
-    (COND 
-      (|EntireRing;AL|) 
+(DEFUN |EntireRing| ()
+  (LET (#:G1387)
+    (COND
+      (|EntireRing;AL|)
       (T (SETQ |EntireRing;AL| (|EntireRing;|)))))) 
 
-(DEFUN |EntireRing;| NIL 
-  (PROG (#1=#:G82839) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|Ring|) 
-            (|BiModule| (QUOTE |$|) (QUOTE |$|))
-            (|mkCategory| 
-              (QUOTE |package|)
-              NIL
-              (QUOTE ((|noZeroDivisors| T)))
-              (QUOTE NIL)
-              NIL))
-          |EntireRing|)
-        (SETELT #1# 0 (QUOTE (|EntireRing|))))))) 
+(DEFUN |EntireRing;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|Ring|) (|BiModule| '$ '$)
+                           (|mkCategory| '|package| NIL
+                               '((|noZeroDivisors| T)) 'NIL NIL))
+                   |EntireRing|)
+        (SETELT #0# 0 '(|EntireRing|)))))) 
 
-(MAKEPROP (QUOTE |EntireRing|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|EntireRing| 'NILADIC T) 
 @
 \section{category EUCDOM EuclideanDomain}
 <<category EUCDOM EuclideanDomain>>=
@@ -1430,7 +1280,7 @@ a data structure that will be modified to hold an executable
 function. This function is created the first time the domain is
 used which it replaces the {\bf NIL}.
 <<EuclideanDomain;AL>>=
-(SETQ |EuclideanDomain;AL| (QUOTE NIL)) 
+(DEFPARAMETER |EuclideanDomain;AL| (QUOTE NIL)) 
 
 @
 \subsubsection{The Domain Function}
@@ -2367,43 +2217,37 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<GCDDOM.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |GcdDomain;AL| (QUOTE NIL)) 
+(DEFPARAMETER |GcdDomain;AL| 'NIL) 
 
-(DEFUN |GcdDomain| NIL 
-  (LET (#:G83171) 
-    (COND 
-      (|GcdDomain;AL|) 
-      (T (SETQ |GcdDomain;AL| (|GcdDomain;|)))))) 
+(DEFUN |GcdDomain| ()
+  (LET (#:G1393)
+    (COND (|GcdDomain;AL|) (T (SETQ |GcdDomain;AL| (|GcdDomain;|)))))) 
 
-(DEFUN |GcdDomain;| NIL 
-  (PROG (#1=#:G83169) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|IntegralDomain|)
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE (
-                ((|gcd| (|$| |$| |$|)) T)
-                ((|gcd| (|$| (|List| |$|))) T)
-                ((|lcm| (|$| |$| |$|)) T)
-                ((|lcm| (|$| (|List| |$|))) T)
-                ((|gcdPolynomial| 
-                  ((|SparseUnivariatePolynomial| |$|)
-                   (|SparseUnivariatePolynomial| |$|)
-                   (|SparseUnivariatePolynomial| |$|)))
-                  T)))
-              NIL 
-              (QUOTE ((|SparseUnivariatePolynomial| |$|) (|List| |$|)))
-              NIL)) 
-            |GcdDomain|)
-        (SETELT #1# 0 (QUOTE (|GcdDomain|))))))) 
+(DEFUN |GcdDomain;| ()
+  (PROG (#0=#:G1391)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|IntegralDomain|)
+                           (|mkCategory| '|domain|
+                               '(((|gcd| ($ $ $)) T)
+                                 ((|gcd| ($ (|List| $))) T)
+                                 ((|lcm| ($ $ $)) T)
+                                 ((|lcm| ($ (|List| $))) T)
+                                 ((|gcdPolynomial|
+                                      ((|SparseUnivariatePolynomial| $)
+                                       (|SparseUnivariatePolynomial| $)
+                                       (|SparseUnivariatePolynomial| $)))
+                                  T))
+                               NIL
+                               '((|SparseUnivariatePolynomial| $)
+                                 (|List| $))
+                               NIL))
+                   |GcdDomain|)
+        (SETELT #0# 0 '(|GcdDomain|)))))) 
 
-(MAKEPROP (QUOTE |GcdDomain|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|GcdDomain| 'NILADIC T) 
 @
 \section{GCDDOM-.lsp BOOTSTRAP}
 {\bf GCDDOM-} depends on {\bf GCDDOM}.
@@ -2418,254 +2262,213 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<GCDDOM-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |GCDDOM-;lcm;3S;1| (|x| |y| |$|) 
-  (PROG (LCM) 
-    (RETURN 
-      (SEQ 
-        (COND 
-          ((OR 
-              (SPADCALL |y| (|spadConstant| |$| 7) (QREFELT |$| 9))
-              (SPADCALL |x| (|spadConstant| |$| 7) (QREFELT |$| 9))) 
-            (|spadConstant| |$| 7))
-          ((QUOTE T) 
-            (SEQ 
-              (LETT LCM 
-                (SPADCALL |y| 
-                  (SPADCALL |x| |y| (QREFELT |$| 10))
-                  (QREFELT |$| 12))
-                |GCDDOM-;lcm;3S;1|)
-              (EXIT 
-                (COND 
-                  ((QEQCAR LCM 0) (SPADCALL |x| (QCDR LCM) (QREFELT |$| 13)))
-                  ((QUOTE T) (|error| "bad gcd in lcm computation"))))))))))) 
+(DEFUN |GCDDOM-;lcm;3S;1| (|x| |y| $)
+  (PROG (LCM)
+    (RETURN
+      (SEQ (COND
+             ((OR (SPADCALL |y| (|spadConstant| $ 7) (QREFELT $ 9))
+                  (SPADCALL |x| (|spadConstant| $ 7) (QREFELT $ 9)))
+              (|spadConstant| $ 7))
+             ('T
+              (SEQ (LETT LCM
+                         (SPADCALL |y|
+                             (SPADCALL |x| |y| (QREFELT $ 10))
+                             (QREFELT $ 12))
+                         |GCDDOM-;lcm;3S;1|)
+                   (EXIT (COND
+                           ((QEQCAR LCM 0)
+                            (SPADCALL |x| (QCDR LCM) (QREFELT $ 13)))
+                           ('T (|error| "bad gcd in lcm computation"))))))))))) 
 
-(DEFUN |GCDDOM-;lcm;LS;2| (|l| |$|) 
-  (SPADCALL 
-    (ELT |$| 15)
-    |l|
-    (|spadConstant| |$| 16)
-    (|spadConstant| |$| 7)
-    (QREFELT |$| 19))) 
+(DEFUN |GCDDOM-;lcm;LS;2| (|l| $)
+  (SPADCALL (ELT $ 15) |l| (|spadConstant| $ 16) (|spadConstant| $ 7)
+      (QREFELT $ 19))) 
 
-(DEFUN |GCDDOM-;gcd;LS;3| (|l| |$|) 
-  (SPADCALL 
-    (ELT |$| 10)
-    |l|
-    (|spadConstant| |$| 7)
-    (|spadConstant| |$| 16)
-    (QREFELT |$| 19))) 
+(DEFUN |GCDDOM-;gcd;LS;3| (|l| $)
+  (SPADCALL (ELT $ 10) |l| (|spadConstant| $ 7) (|spadConstant| $ 16)
+      (QREFELT $ 19))) 
 
-(DEFUN |GCDDOM-;gcdPolynomial;3Sup;4| (|p1| |p2| |$|) 
-  (PROG (|e2| |e1| |c1| |p| |c2| #1=#:G83191) 
-    (RETURN 
-      (SEQ 
-        (COND 
-          ((SPADCALL |p1| (QREFELT |$| 24)) (SPADCALL |p2| (QREFELT |$| 25)))
-          ((SPADCALL |p2| (QREFELT |$| 24)) (SPADCALL |p1| (QREFELT |$| 25)))
-          ((QUOTE T) 
-            (SEQ 
-              (LETT |c1| 
-                (SPADCALL |p1| (QREFELT |$| 26))
-                |GCDDOM-;gcdPolynomial;3Sup;4|)
-              (LETT |c2| 
-                (SPADCALL |p2| (QREFELT |$| 26))
-                |GCDDOM-;gcdPolynomial;3Sup;4|)
-              (LETT |p1| 
-                (PROG2 
-                  (LETT #1# 
-                    (SPADCALL |p1| |c1| (QREFELT |$| 27))
-                    |GCDDOM-;gcdPolynomial;3Sup;4|)
-                  (QCDR #1#)
-                  (|check-union| 
-                    (QEQCAR #1# 0)
-                    (|SparseUnivariatePolynomial| (QREFELT |$| 6))
-                    #1#))
-                |GCDDOM-;gcdPolynomial;3Sup;4|)
-              (LETT |p2| 
-                (PROG2 
-                  (LETT #1# 
-                    (SPADCALL |p2| |c2| (QREFELT |$| 27))
-                    |GCDDOM-;gcdPolynomial;3Sup;4|)
-                  (QCDR #1#)
-                  (|check-union| 
-                    (QEQCAR #1# 0)
-                    (|SparseUnivariatePolynomial| (QREFELT |$| 6))
-                    #1#))
-                |GCDDOM-;gcdPolynomial;3Sup;4|)
-              (SEQ 
-                (LETT |e1| 
-                  (SPADCALL |p1| (QREFELT |$| 29))
-                  |GCDDOM-;gcdPolynomial;3Sup;4|)
-                (EXIT 
-                  (COND 
-                    ((|<| 0 |e1|)
-                      (LETT |p1| 
-                        (PROG2 
-                          (LETT #1# 
-                            (SPADCALL |p1| 
-                              (SPADCALL 
-                                (|spadConstant| |$| 16) |e1| (QREFELT |$| 32))
-                              (QREFELT |$| 33))
-                            |GCDDOM-;gcdPolynomial;3Sup;4|)
-                          (QCDR #1#)
-                          (|check-union| 
-                            (QEQCAR #1# 0)
-                            (|SparseUnivariatePolynomial| (QREFELT |$| 6))
-                            #1#))
-                        |GCDDOM-;gcdPolynomial;3Sup;4|)))))
-              (SEQ 
-                (LETT |e2| 
-                  (SPADCALL |p2| (QREFELT |$| 29))
-                  |GCDDOM-;gcdPolynomial;3Sup;4|)
-                (EXIT 
-                  (COND 
-                    ((|<| 0 |e2|)
-                      (LETT |p2| 
-                        (PROG2 
-                          (LETT #1# 
-                            (SPADCALL |p2| 
-                              (SPADCALL 
-                                (|spadConstant| |$| 16)
-                                |e2|
-                                (QREFELT |$| 32)) 
-                              (QREFELT |$| 33)) 
-                            |GCDDOM-;gcdPolynomial;3Sup;4|)
-                          (QCDR #1#)
-                          (|check-union| 
-                            (QEQCAR #1# 0)
-                            (|SparseUnivariatePolynomial| (QREFELT |$| 6))
-                            #1#))
-                        |GCDDOM-;gcdPolynomial;3Sup;4|)))))
-              (LETT |e1| 
-                (MIN |e1| |e2|)
-                |GCDDOM-;gcdPolynomial;3Sup;4|)
-              (LETT |c1| 
-                (SPADCALL |c1| |c2| (QREFELT |$| 10))
-                |GCDDOM-;gcdPolynomial;3Sup;4|)
-              (LETT |p1| 
-                (COND 
-                  ((OR 
-                       (EQL (SPADCALL |p1| (QREFELT |$| 34)) 0)
-                       (EQL (SPADCALL |p2| (QREFELT |$| 34)) 0))
-                     (SPADCALL |c1| 0 (QREFELT |$| 32))) 
-                  ((QUOTE T) 
-                    (SEQ 
-                      (LETT |p| 
-                        (SPADCALL |p1| |p2| (QREFELT |$| 35))
-                        |GCDDOM-;gcdPolynomial;3Sup;4|)
-                      (EXIT 
-                        (COND 
-                          ((EQL (SPADCALL |p| (QREFELT |$| 34)) 0)
-                            (SPADCALL |c1| 0 (QREFELT |$| 32)))
-                          ((QUOTE T) 
-                            (SEQ 
-                              (LETT |c2| 
-                                (SPADCALL 
-                                  (SPADCALL |p1| (QREFELT |$| 36))
-                                  (SPADCALL |p2| (QREFELT |$| 36))
-                                  (QREFELT |$| 10))
-                                |GCDDOM-;gcdPolynomial;3Sup;4|)
-                              (EXIT 
-                                (SPADCALL 
-                                  (SPADCALL |c1| 
-                                    (SPADCALL 
-                                      (PROG2 
-                                        (LETT #1# 
-                                          (SPADCALL 
-                                            (SPADCALL 
-                                              |c2| 
-                                              |p| 
-                                              (QREFELT |$| 37)) 
-                                            (SPADCALL |p| (QREFELT |$| 36))
-                                            (QREFELT |$| 27))
-                                          |GCDDOM-;gcdPolynomial;3Sup;4|) 
-                                       (QCDR #1#)
-                                       (|check-union| 
-                                         (QEQCAR #1# 0)
-                                         (|SparseUnivariatePolynomial| 
-                                           (QREFELT |$| 6))
-                                         #1#)) 
-                                      (QREFELT |$| 38))
-                                    (QREFELT |$| 37))
-                                  (QREFELT |$| 25))))))))))
-                |GCDDOM-;gcdPolynomial;3Sup;4|)
-              (EXIT (COND ((ZEROP |e1|) |p1|) ((QUOTE T) (SPADCALL (SPADCALL (|spadConstant| |$| 16) |e1| (QREFELT |$| 32)) |p1| (QREFELT |$| 39)))))))))))) 
+(DEFUN |GCDDOM-;gcdPolynomial;3Sup;4| (|p1| |p2| $)
+  (PROG (|e2| |e1| |c1| |p| |c2| #0=#:G1406)
+    (RETURN
+      (SEQ (COND
+             ((SPADCALL |p1| (QREFELT $ 24))
+              (SPADCALL |p2| (QREFELT $ 25)))
+             ((SPADCALL |p2| (QREFELT $ 24))
+              (SPADCALL |p1| (QREFELT $ 25)))
+             ('T
+              (SEQ (LETT |c1| (SPADCALL |p1| (QREFELT $ 26))
+                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                   (LETT |c2| (SPADCALL |p2| (QREFELT $ 26))
+                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                   (LETT |p1|
+                         (PROG2 (LETT #0#
+                                      (SPADCALL |p1| |c1|
+                                       (QREFELT $ 27))
+                                      |GCDDOM-;gcdPolynomial;3Sup;4|)
+                                (QCDR #0#)
+                           (|check-union| (QEQCAR #0# 0)
+                               (|SparseUnivariatePolynomial|
+                                   (QREFELT $ 6))
+                               #0#))
+                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                   (LETT |p2|
+                         (PROG2 (LETT #0#
+                                      (SPADCALL |p2| |c2|
+                                       (QREFELT $ 27))
+                                      |GCDDOM-;gcdPolynomial;3Sup;4|)
+                                (QCDR #0#)
+                           (|check-union| (QEQCAR #0# 0)
+                               (|SparseUnivariatePolynomial|
+                                   (QREFELT $ 6))
+                               #0#))
+                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                   (SEQ (LETT |e1| (SPADCALL |p1| (QREFELT $ 29))
+                              |GCDDOM-;gcdPolynomial;3Sup;4|)
+                        (EXIT (COND
+                                ((< 0 |e1|)
+                                 (LETT |p1|
+                                       (PROG2
+                                        (LETT #0#
+                                         (SPADCALL |p1|
+                                          (SPADCALL
+                                           (|spadConstant| $ 16) |e1|
+                                           (QREFELT $ 32))
+                                          (QREFELT $ 33))
+                                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                                        (QCDR #0#)
+                                         (|check-union| (QEQCAR #0# 0)
+                                          (|SparseUnivariatePolynomial|
+                                           (QREFELT $ 6))
+                                          #0#))
+                                       |GCDDOM-;gcdPolynomial;3Sup;4|)))))
+                   (SEQ (LETT |e2| (SPADCALL |p2| (QREFELT $ 29))
+                              |GCDDOM-;gcdPolynomial;3Sup;4|)
+                        (EXIT (COND
+                                ((< 0 |e2|)
+                                 (LETT |p2|
+                                       (PROG2
+                                        (LETT #0#
+                                         (SPADCALL |p2|
+                                          (SPADCALL
+                                           (|spadConstant| $ 16) |e2|
+                                           (QREFELT $ 32))
+                                          (QREFELT $ 33))
+                                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                                        (QCDR #0#)
+                                         (|check-union| (QEQCAR #0# 0)
+                                          (|SparseUnivariatePolynomial|
+                                           (QREFELT $ 6))
+                                          #0#))
+                                       |GCDDOM-;gcdPolynomial;3Sup;4|)))))
+                   (LETT |e1| (MIN |e1| |e2|)
+                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                   (LETT |c1| (SPADCALL |c1| |c2| (QREFELT $ 10))
+                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                   (LETT |p1|
+                         (COND
+                           ((OR (EQL (SPADCALL |p1| (QREFELT $ 34)) 0)
+                                (EQL (SPADCALL |p2| (QREFELT $ 34)) 0))
+                            (SPADCALL |c1| 0 (QREFELT $ 32)))
+                           ('T
+                            (SEQ (LETT |p|
+                                       (SPADCALL |p1| |p2|
+                                        (QREFELT $ 35))
+                                       |GCDDOM-;gcdPolynomial;3Sup;4|)
+                                 (EXIT (COND
+                                         ((EQL
+                                           (SPADCALL |p|
+                                            (QREFELT $ 34))
+                                           0)
+                                          (SPADCALL |c1| 0
+                                           (QREFELT $ 32)))
+                                         ('T
+                                          (SEQ
+                                           (LETT |c2|
+                                            (SPADCALL
+                                             (SPADCALL |p1|
+                                              (QREFELT $ 36))
+                                             (SPADCALL |p2|
+                                              (QREFELT $ 36))
+                                             (QREFELT $ 10))
+                                            |GCDDOM-;gcdPolynomial;3Sup;4|)
+                                           (EXIT
+                                            (SPADCALL
+                                             (SPADCALL |c1|
+                                              (SPADCALL
+                                               (PROG2
+                                                (LETT #0#
+                                                 (SPADCALL
+                                                  (SPADCALL |c2| |p|
+                                                   (QREFELT $ 37))
+                                                  (SPADCALL |p|
+                                                   (QREFELT $ 36))
+                                                  (QREFELT $ 27))
+                                                 |GCDDOM-;gcdPolynomial;3Sup;4|)
+                                                (QCDR #0#)
+                                                 (|check-union|
+                                                  (QEQCAR #0# 0)
+                                                  (|SparseUnivariatePolynomial|
+                                                   (QREFELT $ 6))
+                                                  #0#))
+                                               (QREFELT $ 38))
+                                              (QREFELT $ 37))
+                                             (QREFELT $ 25))))))))))
+                         |GCDDOM-;gcdPolynomial;3Sup;4|)
+                   (EXIT (COND
+                           ((ZEROP |e1|) |p1|)
+                           ('T
+                            (SPADCALL
+                                (SPADCALL (|spadConstant| $ 16) |e1|
+                                    (QREFELT $ 32))
+                                |p1| (QREFELT $ 39)))))))))))) 
 
-(DEFUN |GcdDomain&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|GcdDomain&|))
-        (LETT |dv$| (LIST (QUOTE |GcdDomain&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 42) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        |$|)))) 
+(DEFUN |GcdDomain&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|GcdDomain&|))
+        (LETT |dv$| (LIST '|GcdDomain&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 42) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |GcdDomain&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (0 . |Zero|)
-        (|Boolean|)
-        (4 . |=|)
-        (10 . |gcd|)
-        (|Union| |$| (QUOTE "failed"))
-        (16 . |exquo|)
-        (22 . |*|)
-        |GCDDOM-;lcm;3S;1| 
-        (28 . |lcm|)
-        (34 . |One|)
-        (|Mapping| 6 6 6)
-        (|List| 6)
-        (38 . |reduce|)
-        (|List| |$|)
-        |GCDDOM-;lcm;LS;2| 
-        |GCDDOM-;gcd;LS;3| 
-        (|SparseUnivariatePolynomial| 6)
-        (46 . |zero?|)
-        (51 . |unitCanonical|)
-        (56 . |content|)
-        (61 . |exquo|)
-        (|NonNegativeInteger|)
-        (67 . |minimumDegree|)
-        (72 . |Zero|)
-        (76 . |One|)
-        (80 . |monomial|)
-        (86 . |exquo|)
-        (92 . |degree|)
-        (97 . |subResultantGcd|)
-        (103 . |leadingCoefficient|)
-        (108 . |*|)
-        (114 . |primitivePart|)
-        (119 . |*|)
-        (|SparseUnivariatePolynomial| |$|)
-        |GCDDOM-;gcdPolynomial;3Sup;4|)) 
-    (QUOTE #(|lcm| 125 |gcdPolynomial| 136 |gcd| 142))
-    (QUOTE NIL)
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #())
-        (CONS 
-          (QUOTE #()) 
-            (|makeByteWordVec2| 41 
-              (QUOTE (0 6 0 7 2 6 8 0 0 9 2 6 0 0 0 10 2 6 11 0 0 12 2 6 0 0 0
-                      13 2 6 0 0 0 15 0 6 0 16 4 18 6 17 0 6 6 19 1 23 8 0 24
-                      1 23 0 0 25 1 23 6 0 26 2 23 11 0 6 27 1 23 28 0 29 0 23
-                      0 30 0 23 0 31 2 23 0 6 28 32 2 23 11 0 0 33 1 23 28 0
-                      34 2 23 0 0 0 35 1 23 6 0 36 2 23 0 6 0 37 1 23 0 0 38 2
-                      23 0 0 0 39 1 0 0 20 21 2 0 0 0 0 14 2 0 40 40 40 41 1 0
-                      0 20 22)))))) 
-   (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|GcdDomain&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |Zero|)
+             (|Boolean|) (4 . =) (10 . |gcd|) (|Union| $ '"failed")
+             (16 . |exquo|) (22 . *) |GCDDOM-;lcm;3S;1| (28 . |lcm|)
+             (34 . |One|) (|Mapping| 6 6 6) (|List| 6) (38 . |reduce|)
+             (|List| $) |GCDDOM-;lcm;LS;2| |GCDDOM-;gcd;LS;3|
+             (|SparseUnivariatePolynomial| 6) (46 . |zero?|)
+             (51 . |unitCanonical|) (56 . |content|) (61 . |exquo|)
+             (|NonNegativeInteger|) (67 . |minimumDegree|)
+             (72 . |Zero|) (76 . |One|) (80 . |monomial|)
+             (86 . |exquo|) (92 . |degree|) (97 . |subResultantGcd|)
+             (103 . |leadingCoefficient|) (108 . *)
+             (114 . |primitivePart|) (119 . *)
+             (|SparseUnivariatePolynomial| $)
+             |GCDDOM-;gcdPolynomial;3Sup;4|)
+          '#(|lcm| 125 |gcdPolynomial| 136 |gcd| 142) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 41
+                                '(0 6 0 7 2 6 8 0 0 9 2 6 0 0 0 10 2 6
+                                  11 0 0 12 2 6 0 0 0 13 2 6 0 0 0 15 0
+                                  6 0 16 4 18 6 17 0 6 6 19 1 23 8 0 24
+                                  1 23 0 0 25 1 23 6 0 26 2 23 11 0 6
+                                  27 1 23 28 0 29 0 23 0 30 0 23 0 31 2
+                                  23 0 6 28 32 2 23 11 0 0 33 1 23 28 0
+                                  34 2 23 0 0 0 35 1 23 6 0 36 2 23 0 6
+                                  0 37 1 23 0 0 38 2 23 0 0 0 39 1 0 0
+                                  20 21 2 0 0 0 0 14 2 0 40 40 40 41 1
+                                  0 0 20 22)))))
+          '|lookupComplete|)) 
 @
 \section{category GROUP Group}
 <<category GROUP Group>>=
@@ -2786,45 +2589,39 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<INTDOM.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |IntegralDomain;AL| (QUOTE NIL)) 
+(DEFPARAMETER |IntegralDomain;AL| 'NIL) 
 
-(DEFUN |IntegralDomain| NIL 
-  (LET (#:G83060) 
-    (COND 
-      (|IntegralDomain;AL|) 
+(DEFUN |IntegralDomain| ()
+  (LET (#:G1393)
+    (COND
+      (|IntegralDomain;AL|)
       (T (SETQ |IntegralDomain;AL| (|IntegralDomain;|)))))) 
 
-(DEFUN |IntegralDomain;| NIL 
-  (PROG (#1=#:G83058) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|CommutativeRing|)
-            (|Algebra| (QUOTE |$|))
-            (|EntireRing|)
-            (|mkCategory| 
-              (QUOTE |domain|) 
-              (QUOTE (
-                ((|exquo| ((|Union| |$| "failed") |$| |$|)) T)
-                ((|unitNormal| 
-                  ((|Record| 
-                     (|:| |unit| |$|) 
-                     (|:| |canonical| |$|)
-                     (|:| |associate| |$|)) |$|)) T)
-                ((|unitCanonical| (|$| |$|)) T)
-                ((|associates?| ((|Boolean|) |$| |$|)) T)
-                ((|unit?| ((|Boolean|) |$|)) T)))
-               NIL
-               (QUOTE ((|Boolean|)))
-               NIL))
-           |IntegralDomain|)
-        (SETELT #1# 0 (QUOTE (|IntegralDomain|))))))) 
+(DEFUN |IntegralDomain;| ()
+  (PROG (#0=#:G1391)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|CommutativeRing|) (|Algebra| '$)
+                           (|EntireRing|)
+                           (|mkCategory| '|domain|
+                               '(((|exquo| ((|Union| $ "failed") $ $))
+                                  T)
+                                 ((|unitNormal|
+                                      ((|Record| (|:| |unit| $)
+                                        (|:| |canonical| $)
+                                        (|:| |associate| $))
+                                       $))
+                                  T)
+                                 ((|unitCanonical| ($ $)) T)
+                                 ((|associates?| ((|Boolean|) $ $)) T)
+                                 ((|unit?| ((|Boolean|) $)) T))
+                               NIL '((|Boolean|)) NIL))
+                   |IntegralDomain|)
+        (SETELT #0# 0 '(|IntegralDomain|)))))) 
 
-(MAKEPROP (QUOTE |IntegralDomain|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|IntegralDomain| 'NILADIC T) 
 @
 \section{INTDOM-.lsp BOOTSTRAP}
 {\bf INTDOM-} depends on {\bf INTDOM}. We need to break this cycle to build
@@ -2837,104 +2634,84 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<INTDOM-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |INTDOM-;unitNormal;SR;1| (|x| |$|) 
-  (VECTOR (|spadConstant| |$| 7) |x| (|spadConstant| |$| 7))) 
+(DEFUN |INTDOM-;unitNormal;SR;1| (|x| $)
+  (VECTOR (|spadConstant| $ 7) |x| (|spadConstant| $ 7))) 
 
-(DEFUN |INTDOM-;unitCanonical;2S;2| (|x| |$|) 
-  (QVELT (SPADCALL |x| (QREFELT |$| 10)) 1)) 
+(DEFUN |INTDOM-;unitCanonical;2S;2| (|x| $)
+  (QVELT (SPADCALL |x| (QREFELT $ 10)) 1)) 
 
-(DEFUN |INTDOM-;recip;SU;3| (|x| |$|) 
-  (COND 
-    ((SPADCALL |x| (QREFELT |$| 13)) (CONS 1 "failed"))
-    ((QUOTE T) (SPADCALL (|spadConstant| |$| 7) |x| (QREFELT |$| 15))))) 
+(DEFUN |INTDOM-;recip;SU;3| (|x| $)
+  (COND
+    ((SPADCALL |x| (QREFELT $ 13)) (CONS 1 "failed"))
+    ('T (SPADCALL (|spadConstant| $ 7) |x| (QREFELT $ 15))))) 
 
-(DEFUN |INTDOM-;unit?;SB;4| (|x| |$|) 
-  (COND 
-    ((QEQCAR (SPADCALL |x| (QREFELT |$| 17)) 1) (QUOTE NIL))
-    ((QUOTE T) (QUOTE T)))) 
+(DEFUN |INTDOM-;unit?;SB;4| (|x| $)
+  (COND ((QEQCAR (SPADCALL |x| (QREFELT $ 17)) 1) 'NIL) ('T 'T))) 
 
-(DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| |$|) 
-  (SPADCALL 
-    (QVELT (SPADCALL |x| (QREFELT |$| 10)) 1)
-    (QVELT (SPADCALL |y| (QREFELT |$| 10)) 1)
-    (QREFELT |$| 19))) 
+(DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
+  (SPADCALL (QVELT (SPADCALL |x| (QREFELT $ 10)) 1)
+      (QVELT (SPADCALL |y| (QREFELT $ 10)) 1) (QREFELT $ 19))) 
 
-(DEFUN |INTDOM-;associates?;2SB;6| (|x| |y| |$|) 
-  (COND 
-    ((SPADCALL |x| (QREFELT |$| 13)) (SPADCALL |y| (QREFELT |$| 13)))
-    ((OR 
-        (SPADCALL |y| (QREFELT |$| 13))
-        (OR 
-          (QEQCAR (SPADCALL |x| |y| (QREFELT |$| 15)) 1)
-          (QEQCAR (SPADCALL |y| |x| (QREFELT |$| 15)) 1)))
-      (QUOTE NIL))
-    ((QUOTE T) (QUOTE T)))) 
+(DEFUN |INTDOM-;associates?;2SB;6| (|x| |y| $)
+  (COND
+    ((SPADCALL |x| (QREFELT $ 13)) (SPADCALL |y| (QREFELT $ 13)))
+    ((OR (SPADCALL |y| (QREFELT $ 13))
+         (OR (QEQCAR (SPADCALL |x| |y| (QREFELT $ 15)) 1)
+             (QEQCAR (SPADCALL |y| |x| (QREFELT $ 15)) 1)))
+     'NIL)
+    ('T 'T))) 
 
-(DEFUN |IntegralDomain&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|IntegralDomain&|))
-        (LETT |dv$| (LIST (QUOTE |IntegralDomain&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 21) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        (COND 
-          ((|HasCategory| |#1| (QUOTE (|Field|))))
-          ((QUOTE T) 
-            (QSETREFV |$| 9 
-              (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) |$|))))
-        (COND 
-          ((|HasAttribute| |#1| (QUOTE |canonicalUnitNormal|))
-            (QSETREFV |$| 20 
-              (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|) |$|)))
-          ((QUOTE T) 
-            (QSETREFV |$| 20 
-              (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|) |$|))))
-        |$|)))) 
+(DEFUN |IntegralDomain&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|IntegralDomain&|))
+        (LETT |dv$| (LIST '|IntegralDomain&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 21) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        (COND
+          ((|HasCategory| |#1| '(|Field|)))
+          ('T
+           (QSETREFV $ 9
+               (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
+        (COND
+          ((|HasAttribute| |#1| '|canonicalUnitNormal|)
+           (QSETREFV $ 20
+               (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|)
+                     $)))
+          ('T
+           (QSETREFV $ 20
+               (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|)
+                     $))))
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |IntegralDomain&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (0 . |One|)
-        (|Record| (|:| |unit| |$|) (|:| |canonical| |$|) (|:| |associate| |$|))
-        (4 . |unitNormal|)
-        (9 . |unitNormal|)
-        |INTDOM-;unitCanonical;2S;2| 
-        (|Boolean|)
-        (14 . |zero?|)
-        (|Union| |$| (QUOTE "failed"))
-        (19 . |exquo|)
-        |INTDOM-;recip;SU;3|
-        (25 . |recip|)
-        |INTDOM-;unit?;SB;4|
-        (30 . |=|)
-        (36 . |associates?|))) 
-    (QUOTE 
-      #(|unitNormal| 42 |unitCanonical| 47 |unit?| 52 |recip| 57 
-        |associates?| 62)) 
-    (QUOTE NIL)
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #())
-        (CONS 
-          (QUOTE #())
-          (|makeByteWordVec2| 20 
-            (QUOTE 
-              (0 6 0 7 1 0 8 0 9 1 6 8 0 10 1 6 12 0 13 2 6 14 0 0 15 1 6 14
-               0 17 2 6 12 0 0 19 2 0 12 0 0 20 1 0 8 0 9 1 0 0 0 11 1 0 12 0
-               18 1 0 14 0 16 2 0 12 0 0 20)))))) 
-   (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|IntegralDomain&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |One|)
+             (|Record| (|:| |unit| $) (|:| |canonical| $)
+                 (|:| |associate| $))
+             (4 . |unitNormal|) (9 . |unitNormal|)
+             |INTDOM-;unitCanonical;2S;2| (|Boolean|) (14 . |zero?|)
+             (|Union| $ '"failed") (19 . |exquo|) |INTDOM-;recip;SU;3|
+             (25 . |recip|) |INTDOM-;unit?;SB;4| (30 . =)
+             (36 . |associates?|))
+          '#(|unitNormal| 42 |unitCanonical| 47 |unit?| 52 |recip| 57
+             |associates?| 62)
+          'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 20
+                                '(0 6 0 7 1 0 8 0 9 1 6 8 0 10 1 6 12 0
+                                  13 2 6 14 0 0 15 1 6 14 0 17 2 6 12 0
+                                  0 19 2 0 12 0 0 20 1 0 8 0 9 1 0 0 0
+                                  11 1 0 12 0 18 1 0 14 0 16 2 0 12 0 0
+                                  20)))))
+          '|lookupComplete|)) 
 @
 \section{category LMODULE LeftModule}
 <<category LMODULE LeftModule>>=
@@ -3070,40 +2847,33 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<MONOID.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |Monoid;AL| (QUOTE NIL)) 
+(DEFPARAMETER |Monoid;AL| 'NIL) 
 
-(DEFUN |Monoid| NIL 
-  (LET (#:G82434) 
-    (COND 
-      (|Monoid;AL|)
-      (T (SETQ |Monoid;AL| (|Monoid;|)))))) 
+(DEFUN |Monoid| ()
+  (LET (#:G1388)
+    (COND (|Monoid;AL|) (T (SETQ |Monoid;AL| (|Monoid;|)))))) 
 
-(DEFUN |Monoid;| NIL 
-  (PROG (#1=#:G82432) 
-    (RETURN 
-      (PROG1
-        (LETT #1# 
-          (|Join|
-            (|SemiGroup|)
-            (|mkCategory|
-              (QUOTE |domain|)
-              (QUOTE (
-                ((|One| (|$|) |constant|) T)
-                ((|sample| (|$|) |constant|) T)
-                ((|one?| ((|Boolean|) |$|)) T)
-                ((|**| (|$| |$| (|NonNegativeInteger|))) T)
-                ((|^| (|$| |$| (|NonNegativeInteger|))) T)
-                ((|recip| ((|Union| |$| "failed") |$|)) T)))
-              NIL
-              (QUOTE ((|NonNegativeInteger|) (|Boolean|)))
-              NIL))
-            |Monoid|)
-         (SETELT #1# 0 (QUOTE (|Monoid|))))))) 
+(DEFUN |Monoid;| ()
+  (PROG (#0=#:G1386)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|SemiGroup|)
+                           (|mkCategory| '|domain|
+                               '(((|One| ($) |constant|) T)
+                                 ((|sample| ($) |constant|) T)
+                                 ((|one?| ((|Boolean|) $)) T)
+                                 ((** ($ $ (|NonNegativeInteger|))) T)
+                                 ((^ ($ $ (|NonNegativeInteger|))) T)
+                                 ((|recip| ((|Union| $ "failed") $)) T))
+                               NIL
+                               '((|NonNegativeInteger|) (|Boolean|))
+                               NIL))
+                   |Monoid|)
+        (SETELT #0# 0 '(|Monoid|)))))) 
 
-(MAKEPROP (QUOTE |Monoid|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|Monoid| 'NILADIC T) 
 @
 \section{MONOID-.lsp BOOTSTRAP}
 {\bf MONOID-} depends on {\bf MONOID}. We need to break this cycle to build
@@ -3116,76 +2886,55 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<MONOID-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |MONOID-;^;SNniS;1| (|x| |n| |$|) 
-  (SPADCALL |x| |n| (QREFELT |$| 8))) 
+(DEFUN |MONOID-;^;SNniS;1| (|x| |n| $)
+  (SPADCALL |x| |n| (QREFELT $ 8))) 
 
-(DEFUN |MONOID-;one?;SB;2| (|x| |$|) 
-  (SPADCALL |x| (|spadConstant| |$| 10) (QREFELT |$| 12))) 
+(DEFUN |MONOID-;one?;SB;2| (|x| $)
+  (SPADCALL |x| (|spadConstant| $ 10) (QREFELT $ 12))) 
 
-(DEFUN |MONOID-;sample;S;3| (|$|) 
-  (|spadConstant| |$| 10)) 
+(DEFUN |MONOID-;sample;S;3| ($) (|spadConstant| $ 10)) 
 
-(DEFUN |MONOID-;recip;SU;4| (|x| |$|) 
-  (COND 
-    ((SPADCALL |x| (QREFELT |$| 15)) (CONS 0 |x|))
-    ((QUOTE T) (CONS 1 "failed")))) 
+(DEFUN |MONOID-;recip;SU;4| (|x| $)
+  (COND
+    ((SPADCALL |x| (|spadConstant| $ 10) (QREFELT $ 12)) (CONS 0 |x|))
+    ('T (CONS 1 "failed")))) 
 
-(DEFUN |MONOID-;**;SNniS;5| (|x| |n| |$|) 
-  (COND 
-    ((ZEROP |n|) (|spadConstant| |$| 10))
-    ((QUOTE T) (SPADCALL |x| |n| (QREFELT |$| 20))))) 
+(DEFUN |MONOID-;**;SNniS;5| (|x| |n| $)
+  (COND
+    ((ZEROP |n|) (|spadConstant| $ 10))
+    ('T (SPADCALL |x| |n| (QREFELT $ 19))))) 
 
-(DEFUN |Monoid&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|Monoid&|))
-        (LETT |dv$| (LIST (QUOTE |Monoid&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 22) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        |$|)))) 
+(DEFUN |Monoid&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|Monoid&|))
+        (LETT |dv$| (LIST '|Monoid&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 21) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |Monoid&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (|NonNegativeInteger|)
-        (0 . |**|)
-        |MONOID-;^;SNniS;1|
-        (6 . |One|)
-        (|Boolean|)
-        (10 . |=|)
-        |MONOID-;one?;SB;2|
-        |MONOID-;sample;S;3|
-        (16 . |one?|)
-        (|Union| |$| (QUOTE "failed"))
-        |MONOID-;recip;SU;4|
-        (|PositiveInteger|)
-        (|RepeatedSquaring| 6)
-        (21 . |expt|)
-        |MONOID-;**;SNniS;5|)) 
-    (QUOTE #(|sample| 27 |recip| 31 |one?| 36 |^| 41 |**| 47))
-    (QUOTE NIL)
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #())
-        (CONS 
-          (QUOTE #())
-          (|makeByteWordVec2| 21 
-            (QUOTE 
-              (2 6 0 0 7 8 0 6 0 10 2 6 11 0 0 12 1 6 11 0 15 2 19 6 6 18 20
-               0 0 0 14 1 0 16 0 17 1 0 11 0 13 2 0 0 0 7 9 2 0 0 0 7 21))))))
-  (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|Monoid&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|)
+             (|NonNegativeInteger|) (0 . **) |MONOID-;^;SNniS;1|
+             (6 . |One|) (|Boolean|) (10 . =) |MONOID-;one?;SB;2|
+             |MONOID-;sample;S;3| (|Union| $ '"failed")
+             |MONOID-;recip;SU;4| (|PositiveInteger|)
+             (|RepeatedSquaring| 6) (16 . |expt|) |MONOID-;**;SNniS;5|)
+          '#(|sample| 22 |recip| 26 |one?| 31 ^ 36 ** 42) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 20
+                                '(2 6 0 0 7 8 0 6 0 10 2 6 11 0 0 12 2
+                                  18 6 6 17 19 0 0 0 14 1 0 15 0 16 1 0
+                                  11 0 13 2 0 0 0 7 9 2 0 0 0 7 20)))))
+          '|lookupComplete|)) 
 @
 \section{category OAGROUP OrderedAbelianGroup}
 <<category OAGROUP OrderedAbelianGroup>>=
@@ -3346,26 +3095,24 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<OINTDOM.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |OrderedIntegralDomain;AL| (QUOTE NIL)) 
+(DEFPARAMETER |OrderedIntegralDomain;AL| 'NIL) 
 
-(DEFUN |OrderedIntegralDomain| NIL 
-  (LET (#:G84531) 
-    (COND 
+(DEFUN |OrderedIntegralDomain| ()
+  (LET (#:G1387)
+    (COND
       (|OrderedIntegralDomain;AL|)
       (T (SETQ |OrderedIntegralDomain;AL| (|OrderedIntegralDomain;|)))))) 
 
-(DEFUN |OrderedIntegralDomain;| NIL 
-  (PROG (#1=#:G84529) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| (|IntegralDomain|) (|OrderedRing|)) |OrderedIntegralDomain|)
-        (SETELT #1# 0 (QUOTE (|OrderedIntegralDomain|))))))) 
+(DEFUN |OrderedIntegralDomain;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0# (|Join| (|IntegralDomain|) (|OrderedRing|))
+                   |OrderedIntegralDomain|)
+        (SETELT #0# 0 '(|OrderedIntegralDomain|)))))) 
 
-(MAKEPROP (QUOTE |OrderedIntegralDomain|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|OrderedIntegralDomain| 'NILADIC T) 
 @
 \section{category ORDMON OrderedMonoid}
 <<category ORDMON OrderedMonoid>>=
@@ -3449,40 +3196,31 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ORDRING.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |OrderedRing;AL| (QUOTE NIL)) 
+(DEFPARAMETER |OrderedRing;AL| 'NIL) 
 
-(DEFUN |OrderedRing| NIL 
-  (LET (#:G84457)  
-    (COND 
-      (|OrderedRing;AL|) 
+(DEFUN |OrderedRing| ()
+  (LET (#:G1393)
+    (COND
+      (|OrderedRing;AL|)
       (T (SETQ |OrderedRing;AL| (|OrderedRing;|)))))) 
 
-(DEFUN |OrderedRing;| NIL 
-  (PROG (#1=#:G84455) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|OrderedAbelianGroup|)
-            (|Ring|)
-            (|Monoid|)
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE (
-                ((|positive?| ((|Boolean|) |$|)) T)
-                ((|negative?| ((|Boolean|) |$|)) T)
-                ((|sign| ((|Integer|) |$|)) T)
-                ((|abs| (|$| |$|)) T)))
-              NIL 
-              (QUOTE ((|Integer|) (|Boolean|)))
-              NIL)) 
-           |OrderedRing|)
-        (SETELT #1# 0 (QUOTE (|OrderedRing|))))))) 
+(DEFUN |OrderedRing;| ()
+  (PROG (#0=#:G1391)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|OrderedAbelianGroup|) (|Ring|) (|Monoid|)
+                           (|mkCategory| '|domain|
+                               '(((|positive?| ((|Boolean|) $)) T)
+                                 ((|negative?| ((|Boolean|) $)) T)
+                                 ((|sign| ((|Integer|) $)) T)
+                                 ((|abs| ($ $)) T))
+                               NIL '((|Integer|) (|Boolean|)) NIL))
+                   |OrderedRing|)
+        (SETELT #0# 0 '(|OrderedRing|)))))) 
 
-(MAKEPROP (QUOTE |OrderedRing|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|OrderedRing| 'NILADIC T) 
 @
 \section{ORDRING-.lsp BOOTSTRAP}
 {\bf ORDRING-} depends on {\bf ORDRING}. We need to break this cycle to build
@@ -3495,76 +3233,57 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ORDRING-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |ORDRING-;positive?;SB;1| (|x| |$|) 
-  (SPADCALL (|spadConstant| |$| 7) |x| (QREFELT |$| 9))) 
+(DEFUN |ORDRING-;positive?;SB;1| (|x| $)
+  (SPADCALL (|spadConstant| $ 7) |x| (QREFELT $ 9))) 
 
-(DEFUN |ORDRING-;negative?;SB;2| (|x| |$|) 
-  (SPADCALL |x| (|spadConstant| |$| 7) (QREFELT |$| 9))) 
+(DEFUN |ORDRING-;negative?;SB;2| (|x| $)
+  (SPADCALL |x| (|spadConstant| $ 7) (QREFELT $ 9))) 
 
-(DEFUN |ORDRING-;sign;SI;3| (|x| |$|) 
-  (COND 
-    ((SPADCALL |x| (QREFELT |$| 12)) 1)
-    ((SPADCALL |x| (QREFELT |$| 13)) -1)
-    ((SPADCALL |x| (QREFELT |$| 15)) 0)
-    ((QUOTE T) 
-      (|error| "x satisfies neither positive?, negative? or zero?")))) 
+(DEFUN |ORDRING-;sign;SI;3| (|x| $)
+  (COND
+    ((SPADCALL |x| (QREFELT $ 12)) 1)
+    ((SPADCALL |x| (QREFELT $ 13)) -1)
+    ((SPADCALL |x| (QREFELT $ 15)) 0)
+    ('T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
-(DEFUN |ORDRING-;abs;2S;4| (|x| |$|) 
-  (COND 
-    ((SPADCALL |x| (QREFELT |$| 12)) |x|)
-    ((SPADCALL |x| (QREFELT |$| 13)) (SPADCALL |x| (QREFELT |$| 18)))
-    ((SPADCALL |x| (QREFELT |$| 15)) (|spadConstant| |$| 7))
-    ((QUOTE T) 
-      (|error| "x satisfies neither positive?, negative? or zero?")))) 
+(DEFUN |ORDRING-;abs;2S;4| (|x| $)
+  (COND
+    ((SPADCALL |x| (QREFELT $ 12)) |x|)
+    ((SPADCALL |x| (QREFELT $ 13)) (SPADCALL |x| (QREFELT $ 18)))
+    ((SPADCALL |x| (QREFELT $ 15)) (|spadConstant| $ 7))
+    ('T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
-(DEFUN |OrderedRing&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|OrderedRing&|))
-        (LETT |dv$| (LIST (QUOTE |OrderedRing&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 20) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        |$|)))) 
+(DEFUN |OrderedRing&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|OrderedRing&|))
+        (LETT |dv$| (LIST '|OrderedRing&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 20) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |OrderedRing&|)
-  (QUOTE |infovec|)
-  (LIST
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (0 . |Zero|)
-        (|Boolean|)
-        (4 . |<|)
-        |ORDRING-;positive?;SB;1|
-        |ORDRING-;negative?;SB;2|
-        (10 . |positive?|)
-        (15 . |negative?|)
-        (20 . |One|)
-        (24 . |zero?|)
-        (|Integer|)
-        |ORDRING-;sign;SI;3|
-        (29 . |-|)
-        |ORDRING-;abs;2S;4|)) 
-    (QUOTE #(|sign| 34 |positive?| 39 |negative?| 44 |abs| 49))
-    (QUOTE NIL)
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #())
-        (CONS 
-          (QUOTE #())
-          (|makeByteWordVec2| 19 
-            (QUOTE 
-              (0 6 0 7 2 6 8 0 0 9 1 6 8 0 12 1 6 8 0 13 0 6 0 14 1 6 8 0 15
-               1 6 0 0 18 1 0 16 0 17 1 0 8 0 10 1 0 8 0 11 1 0 0 0 19))))))
-   (QUOTE |lookupComplete|))) 
+(MAKEPROP '|OrderedRing&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |Zero|)
+             (|Boolean|) (4 . <) |ORDRING-;positive?;SB;1|
+             |ORDRING-;negative?;SB;2| (10 . |positive?|)
+             (15 . |negative?|) (20 . |One|) (24 . |zero?|) (|Integer|)
+             |ORDRING-;sign;SI;3| (29 . -) |ORDRING-;abs;2S;4|)
+          '#(|sign| 34 |positive?| 39 |negative?| 44 |abs| 49) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 19
+                                '(0 6 0 7 2 6 8 0 0 9 1 6 8 0 12 1 6 8
+                                  0 13 0 6 0 14 1 6 8 0 15 1 6 0 0 18 1
+                                  0 16 0 17 1 0 8 0 10 1 0 8 0 11 1 0 0
+                                  0 19)))))
+          '|lookupComplete|)) 
 @
 \section{category ORDSET OrderedSet}
 <<category ORDSET OrderedSet>>=
@@ -3871,38 +3590,30 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<RING.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |Ring;AL| (QUOTE NIL)) 
+(DEFPARAMETER |Ring;AL| 'NIL) 
 
-(DEFUN |Ring| NIL 
-  (LET (#:G82789) 
-    (COND 
-      (|Ring;AL|) 
-      (T (SETQ |Ring;AL| (|Ring;|)))))) 
+(DEFUN |Ring| ()
+  (LET (#:G1387) (COND (|Ring;AL|) (T (SETQ |Ring;AL| (|Ring;|)))))) 
 
-(DEFUN |Ring;| NIL 
-  (PROG (#1=#:G82787) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|Rng|) 
-            (|Monoid|) 
-            (|LeftModule| (QUOTE |$|))
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE (
-                ((|characteristic| ((|NonNegativeInteger|))) T)
-                ((|coerce| (|$| (|Integer|))) T)))
-              (QUOTE ((|unitsKnown| T)))
-              (QUOTE ((|Integer|) (|NonNegativeInteger|)))
-              NIL))
-           |Ring|)
-        (SETELT #1# 0 (QUOTE (|Ring|))))))) 
+(DEFUN |Ring;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|Rng|) (|Monoid|) (|LeftModule| '$)
+                           (|mkCategory| '|domain|
+                               '(((|characteristic|
+                                      ((|NonNegativeInteger|)))
+                                  T)
+                                 ((|coerce| ($ (|Integer|))) T))
+                               '((|unitsKnown| T))
+                               '((|Integer|) (|NonNegativeInteger|))
+                               NIL))
+                   |Ring|)
+        (SETELT #0# 0 '(|Ring|)))))) 
 
-(MAKEPROP (QUOTE |Ring|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|Ring| 'NILADIC T) 
 @
 \section{RING-.lsp BOOTSTRAP}
 {\bf RING-} depends on {\bf RING}. We need to break this cycle to build
@@ -3915,47 +3626,34 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<RING-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |RING-;coerce;IS;1| (|n| |$|) 
-  (SPADCALL |n| (|spadConstant| |$| 7) (QREFELT |$| 9))) 
+(DEFUN |RING-;coerce;IS;1| (|n| $)
+  (SPADCALL |n| (|spadConstant| $ 7) (QREFELT $ 9))) 
 
-(DEFUN |Ring&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|Ring&|))
-        (LETT |dv$| (LIST (QUOTE |Ring&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 12) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        |$|)))) 
+(DEFUN |Ring&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|Ring&|))
+        (LETT |dv$| (LIST '|Ring&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 12) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |Ring&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (0 . |One|)
-        (|Integer|)
-        (4 . |*|)
-        |RING-;coerce;IS;1| 
-        (|OutputForm|))) 
-  (QUOTE #(|coerce| 10)) 
-  (QUOTE NIL) 
-  (CONS 
-    (|makeByteWordVec2| 1 (QUOTE NIL))
-    (CONS 
-      (QUOTE #())
-      (CONS 
-        (QUOTE #())
-        (|makeByteWordVec2| 10 (QUOTE (0 6 0 7 2 6 0 8 0 9 1 0 0 8 10))))))
-   (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|Ring&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |One|)
+             (|Integer|) (4 . *) |RING-;coerce;IS;1| (|OutputForm|))
+          '#(|coerce| 10) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 10
+                                '(0 6 0 7 2 6 0 8 0 9 1 0 0 8 10)))))
+          '|lookupComplete|)) 
 @
 \section{category RNG Rng}
 <<category RNG Rng>>=
@@ -3995,25 +3693,20 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<RNG.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |Rng;AL| (QUOTE NIL)) 
+(DEFPARAMETER |Rng;AL| 'NIL) 
 
-(DEFUN |Rng| NIL 
-  (LET (#:G82722) 
-    (COND 
-      (|Rng;AL|) 
-      (T (SETQ |Rng;AL| (|Rng;|)))))) 
+(DEFUN |Rng| ()
+  (LET (#:G1387) (COND (|Rng;AL|) (T (SETQ |Rng;AL| (|Rng;|)))))) 
 
-(DEFUN |Rng;| NIL 
-  (PROG (#1=#:G82720) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# (|Join| (|AbelianGroup|) (|SemiGroup|)) |Rng|)
-        (SETELT #1# 0 (QUOTE (|Rng|))))))) 
+(DEFUN |Rng;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0# (|Join| (|AbelianGroup|) (|SemiGroup|)) |Rng|)
+        (SETELT #0# 0 '(|Rng|)))))) 
 
-(MAKEPROP (QUOTE |Rng|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|Rng| 'NILADIC T) 
 @
 \section{category SGROUP SemiGroup}
 <<category SGROUP SemiGroup>>=
@@ -4101,41 +3794,32 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<SETCAT.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |SetCategory;AL| (QUOTE NIL)) 
+(DEFPARAMETER |SetCategory;AL| 'NIL) 
 
-(DEFUN |SetCategory| NIL 
-  (LET (#:G82359) 
-    (COND 
-      (|SetCategory;AL|) 
+(DEFUN |SetCategory| ()
+  (LET (#:G1388)
+    (COND
+      (|SetCategory;AL|)
       (T (SETQ |SetCategory;AL| (|SetCategory;|)))))) 
 
-(DEFUN |SetCategory;| NIL 
-  (PROG (#1=#:G82357) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|sublisV| 
-            (PAIR 
-              (QUOTE (#2=#:G82356))
-              (LIST (QUOTE (|OutputForm|))))
-            (|Join| 
-              (|BasicType|)
-              (|CoercibleTo| (QUOTE #2#))
-              (|mkCategory| 
-                (QUOTE |domain|)
-                (QUOTE (
-                  ((|hash| ((|SingleInteger|) |$|)) T)
-                  ((|latex| ((|String|) |$|)) T)))
-                NIL
-                (QUOTE ((|String|) (|SingleInteger|)))
-                NIL)))
-          |SetCategory|)
-        (SETELT #1# 0 (QUOTE (|SetCategory|))))))) 
+(DEFUN |SetCategory;| ()
+  (PROG (#0=#:G1386)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|sublisV|
+                       (PAIR '(#1=#:G1385) (LIST '(|OutputForm|)))
+                       (|Join| (|BasicType|) (|CoercibleTo| '#1#)
+                               (|mkCategory| '|domain|
+                                   '(((|hash| ((|SingleInteger|) $)) T)
+                                     ((|latex| ((|String|) $)) T))
+                                   NIL '((|String|) (|SingleInteger|))
+                                   NIL)))
+                   |SetCategory|)
+        (SETELT #0# 0 '(|SetCategory|)))))) 
 
-(MAKEPROP (QUOTE |SetCategory|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|SetCategory| 'NILADIC T) 
 @
 \section{SETCAT-.lsp BOOTSTRAP}
 {\bf SETCAT-} is the implementation of the operations exported
@@ -4148,61 +3832,40 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<SETCAT-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(PUT 
-  (QUOTE |SETCAT-;hash;SSi;1|)
-  (QUOTE |SPADreplace|)
-  (QUOTE (XLAM (|s|) 0))) 
+(PUT '|SETCAT-;hash;SSi;1| '|SPADreplace| '(XLAM (|s|) 0)) 
 
-(DEFUN |SETCAT-;hash;SSi;1| (|s| |$|) 0) 
+(DEFUN |SETCAT-;hash;SSi;1| (|s| $) 0) 
 
-(PUT 
-  (QUOTE |SETCAT-;latex;SS;2|)
-  (QUOTE |SPADreplace|)
-  (QUOTE (XLAM (|s|) "\\mbox{\\bf Unimplemented}"))) 
+(PUT '|SETCAT-;latex;SS;2| '|SPADreplace|
+     '(XLAM (|s|) "\\mbox{\\bf Unimplemented}")) 
 
-(DEFUN |SETCAT-;latex;SS;2| (|s| |$|) 
-  "\\mbox{\\bf Unimplemented}") 
+(DEFUN |SETCAT-;latex;SS;2| (|s| $) "\\mbox{\\bf Unimplemented}") 
 
-(DEFUN |SetCategory&| (|#1|) 
- (PROG (|DV$1| |dv$| |$| |pv$|)
-   (RETURN 
-     (PROGN 
-       (LETT |DV$1| (|devaluate| |#1|) . #1=(|SetCategory&|))
-       (LETT |dv$| (LIST (QUOTE |SetCategory&|) |DV$1|) . #1#)
-       (LETT |$| (GETREFV 11) . #1#)
-       (QSETREFV |$| 0 |dv$|)
-       (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-       (|stuffDomainSlots| |$|)
-       (QSETREFV |$| 6 |#1|)
-       |$|)))) 
+(DEFUN |SetCategory&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|) . #0=(|SetCategory&|))
+        (LETT |dv$| (LIST '|SetCategory&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 11) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        $)))) 
 
-(MAKEPROP
-  (QUOTE |SetCategory&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (|SingleInteger|)
-        |SETCAT-;hash;SSi;1| 
-        (|String|)
-        |SETCAT-;latex;SS;2|))
-    (QUOTE 
-      #(|latex| 0 |hash| 5))
-    (QUOTE NIL) 
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE NIL))
-      (CONS 
-        (QUOTE #())
-        (CONS 
-          (QUOTE #())
-          (|makeByteWordVec2| 
-            10 
-            (QUOTE (1 0 9 0 10 1 0 7 0 8))))))
-    (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|SetCategory&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|SingleInteger|)
+             |SETCAT-;hash;SSi;1| (|String|) |SETCAT-;latex;SS;2|)
+          '#(|latex| 0 |hash| 5) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 10
+                                '(1 0 9 0 10 1 0 7 0 8)))))
+          '|lookupComplete|)) 
 @
 \section{category STEP StepThrough}
 <<category STEP StepThrough>>=
@@ -4298,41 +3961,32 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<UFD.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |UniqueFactorizationDomain;AL| (QUOTE NIL)) 
+(DEFPARAMETER |UniqueFactorizationDomain;AL| 'NIL) 
 
-(DEFUN |UniqueFactorizationDomain| NIL 
-  (LET (#:G83334) 
-    (COND 
-      (|UniqueFactorizationDomain;AL|) 
-      (T 
-        (SETQ 
-          |UniqueFactorizationDomain;AL| 
-          (|UniqueFactorizationDomain;|)))))) 
+(DEFUN |UniqueFactorizationDomain| ()
+  (LET (#:G1387)
+    (COND
+      (|UniqueFactorizationDomain;AL|)
+      (T (SETQ |UniqueFactorizationDomain;AL|
+               (|UniqueFactorizationDomain;|)))))) 
 
-(DEFUN |UniqueFactorizationDomain;| NIL 
-  (PROG (#1=#:G83332) 
-    (RETURN 
-      (PROG1 
-        (LETT #1# 
-          (|Join| 
-            (|GcdDomain|)
-            (|mkCategory| 
-              (QUOTE |domain|)
-              (QUOTE (
-                ((|prime?| ((|Boolean|) |$|)) T)
-                ((|squareFree| ((|Factored| |$|) |$|)) T)
-                ((|squareFreePart| (|$| |$|)) T)
-                ((|factor| ((|Factored| |$|) |$|)) T)))
-              NIL
-              (QUOTE ((|Factored| |$|) (|Boolean|)))
-              NIL))
-          |UniqueFactorizationDomain|)
-        (SETELT #1# 0 (QUOTE (|UniqueFactorizationDomain|))))))) 
+(DEFUN |UniqueFactorizationDomain;| ()
+  (PROG (#0=#:G1385)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|Join| (|GcdDomain|)
+                           (|mkCategory| '|domain|
+                               '(((|prime?| ((|Boolean|) $)) T)
+                                 ((|squareFree| ((|Factored| $) $)) T)
+                                 ((|squareFreePart| ($ $)) T)
+                                 ((|factor| ((|Factored| $) $)) T))
+                               NIL '((|Factored| $) (|Boolean|)) NIL))
+                   |UniqueFactorizationDomain|)
+        (SETELT #0# 0 '(|UniqueFactorizationDomain|)))))) 
 
-(MAKEPROP (QUOTE |UniqueFactorizationDomain|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|UniqueFactorizationDomain| 'NILADIC T) 
 @
 \section{UFD-.lsp BOOTSTRAP} 
 {\bf UFD-} needs {\bf UFD}.
@@ -4346,110 +4000,87 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<UFD-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |UFD-;squareFreePart;2S;1| (|x| |$|) 
-  (PROG (|s| |f| #1=#:G83349 #2=#:G83347 #3=#:G83345 #4=#:G83346) 
-    (RETURN 
-      (SEQ 
-        (SPADCALL 
-          (SPADCALL 
-            (LETT |s| 
-              (SPADCALL |x| (QREFELT |$| 8))
-              |UFD-;squareFreePart;2S;1|)
-            (QREFELT |$| 10)) 
-          (PROGN 
-            (LETT #4# NIL |UFD-;squareFreePart;2S;1|)
-            (SEQ 
-              (LETT |f| NIL |UFD-;squareFreePart;2S;1|)
-              (LETT #1# 
-                (SPADCALL |s| (QREFELT |$| 13))
-                |UFD-;squareFreePart;2S;1|)
-              G190
-              (COND 
-                ((OR 
-                   (ATOM #1#)
-                   (PROGN 
-                     (LETT |f| (CAR #1#) |UFD-;squareFreePart;2S;1|)
-                     NIL))
-                 (GO G191)))
-              (SEQ 
-                (EXIT 
-                  (PROGN 
-                    (LETT #2# (QCAR |f|) |UFD-;squareFreePart;2S;1|)
-                    (COND 
-                      (#4# 
-                        (LETT #3# 
-                          (SPADCALL #3# #2# (QREFELT |$| 14))
-                          |UFD-;squareFreePart;2S;1|))
-                      ((QUOTE T) 
-                        (PROGN 
-                          (LETT #3# #2# |UFD-;squareFreePart;2S;1|)
-                          (LETT #4# (QUOTE T) |UFD-;squareFreePart;2S;1|)))))))
-              (LETT #1# (CDR #1#) |UFD-;squareFreePart;2S;1|)
-              (GO G190)
-              G191
-              (EXIT NIL))
-            (COND 
-              (#4# #3#) 
-              ((QUOTE T) (|spadConstant| |$| 15))))
-       (QREFELT |$| 14)))))) 
+(DEFUN |UFD-;squareFreePart;2S;1| (|x| $)
+  (PROG (|s| |f| #0=#:G1396 #1=#:G1394 #2=#:G1392 #3=#:G1393)
+    (RETURN
+      (SEQ (SPADCALL
+               (SPADCALL
+                   (LETT |s| (SPADCALL |x| (QREFELT $ 8))
+                         |UFD-;squareFreePart;2S;1|)
+                   (QREFELT $ 10))
+               (PROGN
+                 (LETT #3# NIL |UFD-;squareFreePart;2S;1|)
+                 (SEQ (LETT |f| NIL |UFD-;squareFreePart;2S;1|)
+                      (LETT #0# (SPADCALL |s| (QREFELT $ 13))
+                            |UFD-;squareFreePart;2S;1|)
+                      G190
+                      (COND
+                        ((OR (ATOM #0#)
+                             (PROGN
+                               (LETT |f| (CAR #0#)
+                                     |UFD-;squareFreePart;2S;1|)
+                               NIL))
+                         (GO G191)))
+                      (SEQ (EXIT (PROGN
+                                   (LETT #1# (QCAR |f|)
+                                    |UFD-;squareFreePart;2S;1|)
+                                   (COND
+                                     (#3#
+                                      (LETT #2#
+                                       (SPADCALL #2# #1#
+                                        (QREFELT $ 14))
+                                       |UFD-;squareFreePart;2S;1|))
+                                     ('T
+                                      (PROGN
+                                        (LETT #2# #1#
+                                         |UFD-;squareFreePart;2S;1|)
+                                        (LETT #3# 'T
+                                         |UFD-;squareFreePart;2S;1|)))))))
+                      (LETT #0# (CDR #0#) |UFD-;squareFreePart;2S;1|)
+                      (GO G190) G191 (EXIT NIL))
+                 (COND (#3# #2#) ('T (|spadConstant| $ 15))))
+               (QREFELT $ 14)))))) 
 
-(DEFUN |UFD-;prime?;SB;2| (|x| |$|) 
-  (EQL 
-    (LENGTH (SPADCALL (SPADCALL |x| (QREFELT |$| 17)) (QREFELT |$| 21))) 1)) 
+(DEFUN |UFD-;prime?;SB;2| (|x| $)
+  (EQL (LENGTH (SPADCALL (SPADCALL |x| (QREFELT $ 17)) (QREFELT $ 21)))
+       1)) 
 
-(DEFUN |UniqueFactorizationDomain&| (|#1|) 
-  (PROG (|DV$1| |dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |DV$1| (|devaluate| |#1|) . #1=(|UniqueFactorizationDomain&|))
-        (LETT |dv$| (LIST (QUOTE |UniqueFactorizationDomain&|) |DV$1|) . #1#)
-        (LETT |$| (GETREFV 24) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|stuffDomainSlots| |$|)
-        (QSETREFV |$| 6 |#1|)
-        |$|)))) 
+(DEFUN |UniqueFactorizationDomain&| (|#1|)
+  (PROG (|dv$1| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|)
+              . #0=(|UniqueFactorizationDomain&|))
+        (LETT |dv$| (LIST '|UniqueFactorizationDomain&| |dv$1|) . #0#)
+        (LETT $ (GETREFV 24) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |UniqueFactorizationDomain&|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL NIL 
-        (|local| |#1|)
-        (|Factored| |$|)
-        (0 . |squareFree|)
-        (|Factored| 6)
-        (5 . |unit|)
-        (|Record| (|:| |factor| 6) (|:| |exponent| (|Integer|)))
-        (|List| 11)
-        (10 . |factors|)
-        (15 . |*|)
-        (21 . |One|)
-        |UFD-;squareFreePart;2S;1| 
-        (25 . |factor|)
-        (|Union| (QUOTE "nil") (QUOTE "sqfr") (QUOTE "irred") (QUOTE "prime"))
-        (|Record| (|:| |flg| 18) (|:| |fctr| 6) (|:| |xpnt| (|Integer|)))
-        (|List| 19)
-        (30 . |factorList|)
-        (|Boolean|)
-        |UFD-;prime?;SB;2|)) 
-     (QUOTE #(|squareFreePart| 35 |prime?| 40))
-     (QUOTE NIL)
-     (CONS 
-       (|makeByteWordVec2| 1 (QUOTE NIL))
-       (CONS 
-         (QUOTE #())
-         (CONS 
-           (QUOTE #())
-           (|makeByteWordVec2| 23 
-             (QUOTE 
-               (1 6 7 0 8 1 9 6 0 10 1 9 12 0 13 2 6 0 0 0 14 0 6 0 15 1 6 7
-                0 17 1 9 20 0 21 1 0 0 0 16 1 0 22 0 23)))))) 
-      (QUOTE |lookupComplete|))) 
-
+(MAKEPROP '|UniqueFactorizationDomain&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|Factored| $)
+             (0 . |squareFree|) (|Factored| 6) (5 . |unit|)
+             (|Record| (|:| |factor| 6) (|:| |exponent| (|Integer|)))
+             (|List| 11) (10 . |factors|) (15 . *) (21 . |One|)
+             |UFD-;squareFreePart;2S;1| (25 . |factor|)
+             (|Union| '"nil" '"sqfr" '"irred" '"prime")
+             (|Record| (|:| |flg| 18) (|:| |fctr| 6)
+                 (|:| |xpnt| (|Integer|)))
+             (|List| 19) (30 . |factorList|) (|Boolean|)
+             |UFD-;prime?;SB;2|)
+          '#(|squareFreePart| 35 |prime?| 40) 'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 23
+                                '(1 6 7 0 8 1 9 6 0 10 1 9 12 0 13 2 6
+                                  0 0 0 14 0 6 0 15 1 6 7 0 17 1 9 20 0
+                                  21 1 0 0 0 16 1 0 22 0 23)))))
+          '|lookupComplete|)) 
 @
 \section{category VSPACE VectorSpace}
 <<category VSPACE VectorSpace>>=
