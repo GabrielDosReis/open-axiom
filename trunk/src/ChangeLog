@@ -4,6 +4,11 @@
 	* algebra/sf.spad.pamphlet: Likewise.
 	* algebra/si.spad.pamphlet: Likewise.
 	* algebra/fspace.spad.pamphlet: Likewise.
+	* algebra/ffcat.spad.pamphlet: Likewise.
+	* algebra/polset.spad.pamphlet: Likewise.
+	* algebra/fraction.spad.pamphlet: Likewise.
+	* algebra/triset.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
 
 2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

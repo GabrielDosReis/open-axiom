@@ -273,15 +273,110 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<QFCAT.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |QuotientFieldCategory;CAT| (QUOTE NIL)) 
+(DEFPARAMETER |QuotientFieldCategory;CAT| 'NIL) 
 
-(SETQ |QuotientFieldCategory;AL| (QUOTE NIL)) 
+(DEFPARAMETER |QuotientFieldCategory;AL| 'NIL) 
 
-(DEFUN |QuotientFieldCategory| (#1=#:G103631) (LET (#2=#:G103632) (COND ((SETQ #2# (|assoc| (|devaluate| #1#) |QuotientFieldCategory;AL|)) (CDR #2#)) (T (SETQ |QuotientFieldCategory;AL| (|cons5| (CONS (|devaluate| #1#) (SETQ #2# (|QuotientFieldCategory;| #1#))) |QuotientFieldCategory;AL|)) #2#)))) 
+(DEFUN |QuotientFieldCategory| (#0=#:G1388)
+  (LET (#1=#:G1389)
+    (COND
+      ((SETQ #1#
+             (|assoc| (|devaluate| #0#) |QuotientFieldCategory;AL|))
+       (CDR #1#))
+      (T (SETQ |QuotientFieldCategory;AL|
+               (|cons5| (CONS (|devaluate| #0#)
+                              (SETQ #1# (|QuotientFieldCategory;| #0#)))
+                        |QuotientFieldCategory;AL|))
+         #1#)))) 
 
-(DEFUN |QuotientFieldCategory;| (|t#1|) (PROG (#1=#:G103630) (RETURN (PROG1 (LETT #1# (|sublisV| (PAIR (QUOTE (|t#1|)) (LIST (|devaluate| |t#1|))) (COND (|QuotientFieldCategory;CAT|) ((QUOTE T) (LETT |QuotientFieldCategory;CAT| (|Join| (|Field|) (|Algebra| (QUOTE |t#1|)) (|RetractableTo| (QUOTE |t#1|)) (|FullyEvalableOver| (QUOTE |t#1|)) (|DifferentialExtension| (QUOTE |t#1|)) (|FullyLinearlyExplicitRingOver| (QUOTE |t#1|)) (|Patternable| (QUOTE |t#1|)) (|FullyPatternMatchable| (QUOTE |t#1|)) (|mkCategory| (QUOTE |domain|) (QUOTE (((|/| (|$| |t#1| |t#1|)) T) ((|numer| (|t#1| |$|)) T) ((|denom| (|t#1| |$|)) T) ((|numerator| (|$| |$|)) T) ((|denominator| (|$| |$|)) T) ((|wholePart| (|t#1| |$|)) (|has| |t#1| (|EuclideanDomain|))) ((|fractionPart| (|$| |$|)) (|has| |t#1| (|EuclideanDomain|))) ((|random| (|$|)) (|has| |t#1| (|IntegerNumberSystem|))) ((|ceiling| (|t#1| |$|)) (|has| |t#1| (|IntegerNumberSystem|))) ((|floor| (|t#1| |$|)) (|has| |t#1| (|IntegerNumberSystem|))))) (QUOTE (((|StepThrough|) (|has| |t#1| (|StepThrough|))) ((|RetractableTo| (|Integer|)) (|has| |t#1| (|RetractableTo| (|Integer|)))) ((|RetractableTo| (|Fraction| (|Integer|))) (|has| |t#1| (|RetractableTo| (|Integer|)))) ((|OrderedSet|) (|has| |t#1| (|OrderedSet|))) ((|OrderedIntegralDomain|) (|has| |t#1| (|OrderedIntegralDomain|))) ((|RealConstant|) (|has| |t#1| (|RealConstant|))) ((|ConvertibleTo| (|InputForm|)) (|has| |t#1| (|ConvertibleTo| (|InputForm|)))) ((|CharacteristicZero|) (|has| |t#1| (|CharacteristicZero|))) ((|CharacteristicNonZero|) (|has| |t#1| (|CharacteristicNonZero|))) ((|RetractableTo| (|Symbol|)) (|has| |t#1| (|RetractableTo| (|Symbol|)))) ((|PolynomialFactorizationExplicit|) (|has| |t#1| (|PolynomialFactorizationExplicit|))))) (QUOTE NIL) NIL)) . #2=(|QuotientFieldCategory|))))) . #2#) (SETELT #1# 0 (LIST (QUOTE |QuotientFieldCategory|) (|devaluate| |t#1|))))))) 
+(DEFUN |QuotientFieldCategory;| (|t#1|)
+  (PROG (#0=#:G1387)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|sublisV|
+                       (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
+                       (COND
+                         (|QuotientFieldCategory;CAT|)
+                         ('T
+                          (LETT |QuotientFieldCategory;CAT|
+                                (|Join| (|Field|) (|Algebra| '|t#1|)
+                                        (|RetractableTo| '|t#1|)
+                                        (|FullyEvalableOver| '|t#1|)
+                                        (|DifferentialExtension|
+                                         '|t#1|)
+                                        (|FullyLinearlyExplicitRingOver|
+                                         '|t#1|)
+                                        (|Patternable| '|t#1|)
+                                        (|FullyPatternMatchable|
+                                         '|t#1|)
+                                        (|mkCategory| '|domain|
+                                         '(((/ ($ |t#1| |t#1|)) T)
+                                           ((|numer| (|t#1| $)) T)
+                                           ((|denom| (|t#1| $)) T)
+                                           ((|numerator| ($ $)) T)
+                                           ((|denominator| ($ $)) T)
+                                           ((|wholePart| (|t#1| $))
+                                            (|has| |t#1|
+                                             (|EuclideanDomain|)))
+                                           ((|fractionPart| ($ $))
+                                            (|has| |t#1|
+                                             (|EuclideanDomain|)))
+                                           ((|random| ($))
+                                            (|has| |t#1|
+                                             (|IntegerNumberSystem|)))
+                                           ((|ceiling| (|t#1| $))
+                                            (|has| |t#1|
+                                             (|IntegerNumberSystem|)))
+                                           ((|floor| (|t#1| $))
+                                            (|has| |t#1|
+                                             (|IntegerNumberSystem|))))
+                                         '(((|StepThrough|)
+                                            (|has| |t#1|
+                                             (|StepThrough|)))
+                                           ((|RetractableTo|
+                                             (|Integer|))
+                                            (|has| |t#1|
+                                             (|RetractableTo|
+                                              (|Integer|))))
+                                           ((|RetractableTo|
+                                             (|Fraction| (|Integer|)))
+                                            (|has| |t#1|
+                                             (|RetractableTo|
+                                              (|Integer|))))
+                                           ((|OrderedSet|)
+                                            (|has| |t#1|
+                                             (|OrderedSet|)))
+                                           ((|OrderedIntegralDomain|)
+                                            (|has| |t#1|
+                                             (|OrderedIntegralDomain|)))
+                                           ((|RealConstant|)
+                                            (|has| |t#1|
+                                             (|RealConstant|)))
+                                           ((|ConvertibleTo|
+                                             (|InputForm|))
+                                            (|has| |t#1|
+                                             (|ConvertibleTo|
+                                              (|InputForm|))))
+                                           ((|CharacteristicZero|)
+                                            (|has| |t#1|
+                                             (|CharacteristicZero|)))
+                                           ((|CharacteristicNonZero|)
+                                            (|has| |t#1|
+                                             (|CharacteristicNonZero|)))
+                                           ((|RetractableTo|
+                                             (|Symbol|))
+                                            (|has| |t#1|
+                                             (|RetractableTo|
+                                              (|Symbol|))))
+                                           ((|PolynomialFactorizationExplicit|)
+                                            (|has| |t#1|
+                                             (|PolynomialFactorizationExplicit|))))
+                                         'NIL NIL))
+                                . #1=(|QuotientFieldCategory|))))) . #1#)
+        (SETELT #0# 0
+                (LIST '|QuotientFieldCategory| (|devaluate| |t#1|))))))) 
 @
 \section{QFCAT-.lsp BOOTSTRAP}
 {\bf QFCAT-} depends on {\bf QFCAT}. We need to break this cycle to build
@@ -294,65 +389,410 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<QFCAT-.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(DEFUN |QFCAT-;numerator;2A;1| (|x| |$|) (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (QREFELT |$| 9))) 
+(DEFUN |QFCAT-;numerator;2A;1| (|x| $)
+  (SPADCALL (SPADCALL |x| (QREFELT $ 8)) (QREFELT $ 9))) 
 
-(DEFUN |QFCAT-;denominator;2A;2| (|x| |$|) (SPADCALL (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 9))) 
+(DEFUN |QFCAT-;denominator;2A;2| (|x| $)
+  (SPADCALL (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 9))) 
 
-(DEFUN |QFCAT-;init;A;3| (|$|) (SPADCALL (|spadConstant| |$| 13) (|spadConstant| |$| 14) (QREFELT |$| 15))) 
+(DEFUN |QFCAT-;init;A;3| ($)
+  (SPADCALL (|spadConstant| $ 13) (|spadConstant| $ 14) (QREFELT $ 15))) 
 
-(DEFUN |QFCAT-;nextItem;AU;4| (|n| |$|) (PROG (|m|) (RETURN (SEQ (LETT |m| (SPADCALL (SPADCALL |n| (QREFELT |$| 8)) (QREFELT |$| 18)) |QFCAT-;nextItem;AU;4|) (EXIT (COND ((QEQCAR |m| 1) (|error| "We seem to have a Fraction of a finite object")) ((QUOTE T) (CONS 0 (SPADCALL (QCDR |m|) (|spadConstant| |$| 14) (QREFELT |$| 15)))))))))) 
+(DEFUN |QFCAT-;nextItem;AU;4| (|n| $)
+  (PROG (|m|)
+    (RETURN
+      (SEQ (LETT |m|
+                 (SPADCALL (SPADCALL |n| (QREFELT $ 8)) (QREFELT $ 18))
+                 |QFCAT-;nextItem;AU;4|)
+           (EXIT (COND
+                   ((QEQCAR |m| 1)
+                    (|error| "We seem to have a Fraction of a finite object"))
+                   ('T
+                    (CONS 0
+                          (SPADCALL (QCDR |m|) (|spadConstant| $ 14)
+                              (QREFELT $ 15)))))))))) 
 
-(DEFUN |QFCAT-;map;M2A;5| (|fn| |x| |$|) (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) |fn|) (SPADCALL (SPADCALL |x| (QREFELT |$| 11)) |fn|) (QREFELT |$| 15))) 
+(DEFUN |QFCAT-;map;M2A;5| (|fn| |x| $)
+  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 8)) |fn|)
+      (SPADCALL (SPADCALL |x| (QREFELT $ 11)) |fn|) (QREFELT $ 15))) 
 
-(DEFUN |QFCAT-;reducedSystem;MM;6| (|m| |$|) (SPADCALL |m| (QREFELT |$| 26))) 
+(DEFUN |QFCAT-;reducedSystem;MM;6| (|m| $)
+  (SPADCALL |m| (QREFELT $ 26))) 
 
-(DEFUN |QFCAT-;characteristic;Nni;7| (|$|) (SPADCALL (QREFELT |$| 30))) 
+(DEFUN |QFCAT-;characteristic;Nni;7| ($) (SPADCALL (QREFELT $ 30))) 
 
-(DEFUN |QFCAT-;differentiate;AMA;8| (|x| |deriv| |$|) (PROG (|n| |d|) (RETURN (SEQ (LETT |n| (SPADCALL |x| (QREFELT |$| 8)) |QFCAT-;differentiate;AMA;8|) (LETT |d| (SPADCALL |x| (QREFELT |$| 11)) |QFCAT-;differentiate;AMA;8|) (EXIT (SPADCALL (SPADCALL (SPADCALL (SPADCALL |n| |deriv|) |d| (QREFELT |$| 32)) (SPADCALL |n| (SPADCALL |d| |deriv|) (QREFELT |$| 32)) (QREFELT |$| 33)) (SPADCALL |d| 2 (QREFELT |$| 35)) (QREFELT |$| 15))))))) 
+(DEFUN |QFCAT-;differentiate;AMA;8| (|x| |deriv| $)
+  (PROG (|n| |d|)
+    (RETURN
+      (SEQ (LETT |n| (SPADCALL |x| (QREFELT $ 8))
+                 |QFCAT-;differentiate;AMA;8|)
+           (LETT |d| (SPADCALL |x| (QREFELT $ 11))
+                 |QFCAT-;differentiate;AMA;8|)
+           (EXIT (SPADCALL
+                     (SPADCALL
+                         (SPADCALL (SPADCALL |n| |deriv|) |d|
+                             (QREFELT $ 32))
+                         (SPADCALL |n| (SPADCALL |d| |deriv|)
+                             (QREFELT $ 32))
+                         (QREFELT $ 33))
+                     (SPADCALL |d| 2 (QREFELT $ 35)) (QREFELT $ 15))))))) 
 
-(DEFUN |QFCAT-;convert;AIf;9| (|x| |$|) (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (QREFELT |$| 38)) (SPADCALL (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 38)) (QREFELT |$| 39))) 
+(DEFUN |QFCAT-;convert;AIf;9| (|x| $)
+  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 8)) (QREFELT $ 38))
+      (SPADCALL (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 38))
+      (QREFELT $ 39))) 
 
-(DEFUN |QFCAT-;convert;AF;10| (|x| |$|) (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (QREFELT |$| 42)) (SPADCALL (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 42)) (QREFELT |$| 43))) 
+(DEFUN |QFCAT-;convert;AF;10| (|x| $)
+  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 8)) (QREFELT $ 42))
+      (SPADCALL (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 42))
+      (QREFELT $ 43))) 
 
-(DEFUN |QFCAT-;convert;ADf;11| (|x| |$|) (|/| (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (QREFELT |$| 46)) (SPADCALL (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 46)))) 
+(DEFUN |QFCAT-;convert;ADf;11| (|x| $)
+  (/ (SPADCALL (SPADCALL |x| (QREFELT $ 8)) (QREFELT $ 46))
+     (SPADCALL (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 46)))) 
 
-(DEFUN |QFCAT-;<;2AB;12| (|x| |y| |$|) (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (SPADCALL |y| (QREFELT |$| 11)) (QREFELT |$| 32)) (SPADCALL (SPADCALL |y| (QREFELT |$| 8)) (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 32)) (QREFELT |$| 49))) 
+(DEFUN |QFCAT-;<;2AB;12| (|x| |y| $)
+  (SPADCALL
+      (SPADCALL (SPADCALL |x| (QREFELT $ 8))
+          (SPADCALL |y| (QREFELT $ 11)) (QREFELT $ 32))
+      (SPADCALL (SPADCALL |y| (QREFELT $ 8))
+          (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 32))
+      (QREFELT $ 49))) 
 
-(DEFUN |QFCAT-;<;2AB;13| (|x| |y| |$|) (PROG (|#G19| |#G20| |#G21| |#G22|) (RETURN (SEQ (COND ((SPADCALL (SPADCALL |x| (QREFELT |$| 11)) (|spadConstant| |$| 51) (QREFELT |$| 49)) (PROGN (LETT |#G19| |y| |QFCAT-;<;2AB;13|) (LETT |#G20| |x| |QFCAT-;<;2AB;13|) (LETT |x| |#G19| |QFCAT-;<;2AB;13|) (LETT |y| |#G20| |QFCAT-;<;2AB;13|)))) (COND ((SPADCALL (SPADCALL |y| (QREFELT |$| 11)) (|spadConstant| |$| 51) (QREFELT |$| 49)) (PROGN (LETT |#G21| |y| |QFCAT-;<;2AB;13|) (LETT |#G22| |x| |QFCAT-;<;2AB;13|) (LETT |x| |#G21| |QFCAT-;<;2AB;13|) (LETT |y| |#G22| |QFCAT-;<;2AB;13|)))) (EXIT (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (SPADCALL |y| (QREFELT |$| 11)) (QREFELT |$| 32)) (SPADCALL (SPADCALL |y| (QREFELT |$| 8)) (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 32)) (QREFELT |$| 49))))))) 
+(DEFUN |QFCAT-;<;2AB;13| (|x| |y| $)
+  (PROG (|#G19| |#G20| |#G21| |#G22|)
+    (RETURN
+      (SEQ (COND
+             ((SPADCALL (SPADCALL |x| (QREFELT $ 11))
+                  (|spadConstant| $ 51) (QREFELT $ 49))
+              (PROGN
+                (LETT |#G19| |y| |QFCAT-;<;2AB;13|)
+                (LETT |#G20| |x| |QFCAT-;<;2AB;13|)
+                (LETT |x| |#G19| |QFCAT-;<;2AB;13|)
+                (LETT |y| |#G20| |QFCAT-;<;2AB;13|))))
+           (COND
+             ((SPADCALL (SPADCALL |y| (QREFELT $ 11))
+                  (|spadConstant| $ 51) (QREFELT $ 49))
+              (PROGN
+                (LETT |#G21| |y| |QFCAT-;<;2AB;13|)
+                (LETT |#G22| |x| |QFCAT-;<;2AB;13|)
+                (LETT |x| |#G21| |QFCAT-;<;2AB;13|)
+                (LETT |y| |#G22| |QFCAT-;<;2AB;13|))))
+           (EXIT (SPADCALL
+                     (SPADCALL (SPADCALL |x| (QREFELT $ 8))
+                         (SPADCALL |y| (QREFELT $ 11)) (QREFELT $ 32))
+                     (SPADCALL (SPADCALL |y| (QREFELT $ 8))
+                         (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 32))
+                     (QREFELT $ 49))))))) 
 
-(DEFUN |QFCAT-;<;2AB;14| (|x| |y| |$|) (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (SPADCALL |y| (QREFELT |$| 11)) (QREFELT |$| 32)) (SPADCALL (SPADCALL |y| (QREFELT |$| 8)) (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 32)) (QREFELT |$| 49))) 
+(DEFUN |QFCAT-;<;2AB;14| (|x| |y| $)
+  (SPADCALL
+      (SPADCALL (SPADCALL |x| (QREFELT $ 8))
+          (SPADCALL |y| (QREFELT $ 11)) (QREFELT $ 32))
+      (SPADCALL (SPADCALL |y| (QREFELT $ 8))
+          (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 32))
+      (QREFELT $ 49))) 
 
-(DEFUN |QFCAT-;fractionPart;2A;15| (|x| |$|) (SPADCALL |x| (SPADCALL (SPADCALL |x| (QREFELT |$| 52)) (QREFELT |$| 9)) (QREFELT |$| 53))) 
+(DEFUN |QFCAT-;fractionPart;2A;15| (|x| $)
+  (SPADCALL |x| (SPADCALL (SPADCALL |x| (QREFELT $ 52)) (QREFELT $ 9))
+      (QREFELT $ 53))) 
 
-(DEFUN |QFCAT-;coerce;SA;16| (|s| |$|) (SPADCALL (SPADCALL |s| (QREFELT |$| 56)) (QREFELT |$| 9))) 
+(DEFUN |QFCAT-;coerce;SA;16| (|s| $)
+  (SPADCALL (SPADCALL |s| (QREFELT $ 56)) (QREFELT $ 9))) 
 
-(DEFUN |QFCAT-;retract;AS;17| (|x| |$|) (SPADCALL (SPADCALL |x| (QREFELT |$| 58)) (QREFELT |$| 59))) 
+(DEFUN |QFCAT-;retract;AS;17| (|x| $)
+  (SPADCALL (SPADCALL |x| (QREFELT $ 58)) (QREFELT $ 59))) 
 
-(DEFUN |QFCAT-;retractIfCan;AU;18| (|x| |$|) (PROG (|r|) (RETURN (SEQ (LETT |r| (SPADCALL |x| (QREFELT |$| 62)) |QFCAT-;retractIfCan;AU;18|) (EXIT (COND ((QEQCAR |r| 1) (CONS 1 "failed")) ((QUOTE T) (SPADCALL (QCDR |r|) (QREFELT |$| 64))))))))) 
+(DEFUN |QFCAT-;retractIfCan;AU;18| (|x| $)
+  (PROG (|r|)
+    (RETURN
+      (SEQ (LETT |r| (SPADCALL |x| (QREFELT $ 62))
+                 |QFCAT-;retractIfCan;AU;18|)
+           (EXIT (COND
+                   ((QEQCAR |r| 1) (CONS 1 "failed"))
+                   ('T (SPADCALL (QCDR |r|) (QREFELT $ 64))))))))) 
 
-(DEFUN |QFCAT-;convert;AP;19| (|x| |$|) (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (QREFELT |$| 67)) (SPADCALL (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 67)) (QREFELT |$| 68))) 
+(DEFUN |QFCAT-;convert;AP;19| (|x| $)
+  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 8)) (QREFELT $ 67))
+      (SPADCALL (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 67))
+      (QREFELT $ 68))) 
 
-(DEFUN |QFCAT-;patternMatch;AP2Pmr;20| (|x| |p| |l| |$|) (SPADCALL |x| |p| |l| (QREFELT |$| 72))) 
+(DEFUN |QFCAT-;patternMatch;AP2Pmr;20| (|x| |p| |l| $)
+  (SPADCALL |x| |p| |l| (QREFELT $ 72))) 
 
-(DEFUN |QFCAT-;convert;AP;21| (|x| |$|) (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 8)) (QREFELT |$| 76)) (SPADCALL (SPADCALL |x| (QREFELT |$| 11)) (QREFELT |$| 76)) (QREFELT |$| 77))) 
+(DEFUN |QFCAT-;convert;AP;21| (|x| $)
+  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 8)) (QREFELT $ 76))
+      (SPADCALL (SPADCALL |x| (QREFELT $ 11)) (QREFELT $ 76))
+      (QREFELT $ 77))) 
 
-(DEFUN |QFCAT-;patternMatch;AP2Pmr;22| (|x| |p| |l| |$|) (SPADCALL |x| |p| |l| (QREFELT |$| 81))) 
+(DEFUN |QFCAT-;patternMatch;AP2Pmr;22| (|x| |p| |l| $)
+  (SPADCALL |x| |p| |l| (QREFELT $ 81))) 
 
-(DEFUN |QFCAT-;coerce;FA;23| (|x| |$|) (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT |$| 86)) (QREFELT |$| 87)) (SPADCALL (SPADCALL |x| (QREFELT |$| 88)) (QREFELT |$| 87)) (QREFELT |$| 89))) 
+(DEFUN |QFCAT-;coerce;FA;23| (|x| $)
+  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 86)) (QREFELT $ 87))
+            (SPADCALL (SPADCALL |x| (QREFELT $ 88)) (QREFELT $ 87))
+            (QREFELT $ 89))) 
 
-(DEFUN |QFCAT-;retract;AI;24| (|x| |$|) (SPADCALL (SPADCALL |x| (QREFELT |$| 58)) (QREFELT |$| 91))) 
+(DEFUN |QFCAT-;retract;AI;24| (|x| $)
+  (SPADCALL (SPADCALL |x| (QREFELT $ 58)) (QREFELT $ 91))) 
 
-(DEFUN |QFCAT-;retractIfCan;AU;25| (|x| |$|) (PROG (|u|) (RETURN (SEQ (LETT |u| (SPADCALL |x| (QREFELT |$| 62)) |QFCAT-;retractIfCan;AU;25|) (EXIT (COND ((QEQCAR |u| 1) (CONS 1 "failed")) ((QUOTE T) (SPADCALL (QCDR |u|) (QREFELT |$| 94))))))))) 
+(DEFUN |QFCAT-;retractIfCan;AU;25| (|x| $)
+  (PROG (|u|)
+    (RETURN
+      (SEQ (LETT |u| (SPADCALL |x| (QREFELT $ 62))
+                 |QFCAT-;retractIfCan;AU;25|)
+           (EXIT (COND
+                   ((QEQCAR |u| 1) (CONS 1 "failed"))
+                   ('T (SPADCALL (QCDR |u|) (QREFELT $ 94))))))))) 
 
-(DEFUN |QFCAT-;random;A;26| (|$|) (PROG (|d|) (RETURN (SEQ (SEQ G190 (COND ((NULL (SPADCALL (LETT |d| (SPADCALL (QREFELT |$| 96)) |QFCAT-;random;A;26|) (QREFELT |$| 97))) (GO G191))) (SEQ (EXIT |d|)) NIL (GO G190) G191 (EXIT NIL)) (EXIT (SPADCALL (SPADCALL (QREFELT |$| 96)) |d| (QREFELT |$| 15))))))) 
+(DEFUN |QFCAT-;random;A;26| ($)
+  (PROG (|d|)
+    (RETURN
+      (SEQ (SEQ G190
+                (COND
+                  ((NULL (SPADCALL
+                             (LETT |d| (SPADCALL (QREFELT $ 96))
+                                   |QFCAT-;random;A;26|)
+                             (QREFELT $ 97)))
+                   (GO G191)))
+                (SEQ (EXIT |d|)) NIL (GO G190) G191 (EXIT NIL))
+           (EXIT (SPADCALL (SPADCALL (QREFELT $ 96)) |d|
+                     (QREFELT $ 15))))))) 
 
-(DEFUN |QFCAT-;reducedSystem;MVR;27| (|m| |v| |$|) (PROG (|n|) (RETURN (SEQ (LETT |n| (SPADCALL (SPADCALL (SPADCALL |v| (QREFELT |$| 100)) |m| (QREFELT |$| 101)) (QREFELT |$| 102)) |QFCAT-;reducedSystem;MVR;27|) (EXIT (CONS (SPADCALL |n| (SPADCALL |n| (QREFELT |$| 103)) (SPADCALL |n| (QREFELT |$| 104)) (|+| 1 (SPADCALL |n| (QREFELT |$| 105))) (SPADCALL |n| (QREFELT |$| 106)) (QREFELT |$| 107)) (SPADCALL |n| (SPADCALL |n| (QREFELT |$| 105)) (QREFELT |$| 109)))))))) 
+(DEFUN |QFCAT-;reducedSystem;MVR;27| (|m| |v| $)
+  (PROG (|n|)
+    (RETURN
+      (SEQ (LETT |n|
+                 (SPADCALL
+                     (SPADCALL (SPADCALL |v| (QREFELT $ 100)) |m|
+                         (QREFELT $ 101))
+                     (QREFELT $ 102))
+                 |QFCAT-;reducedSystem;MVR;27|)
+           (EXIT (CONS (SPADCALL |n| (SPADCALL |n| (QREFELT $ 103))
+                           (SPADCALL |n| (QREFELT $ 104))
+                           (+ 1 (SPADCALL |n| (QREFELT $ 105)))
+                           (SPADCALL |n| (QREFELT $ 106))
+                           (QREFELT $ 107))
+                       (SPADCALL |n| (SPADCALL |n| (QREFELT $ 105))
+                           (QREFELT $ 109)))))))) 
 
-(DEFUN |QuotientFieldCategory&| (|#1| |#2|) (PROG (|DV$1| |DV$2| |dv$| |$| |pv$|) (RETURN (PROGN (LETT |DV$1| (|devaluate| |#1|) . #1=(|QuotientFieldCategory&|)) (LETT |DV$2| (|devaluate| |#2|) . #1#) (LETT |dv$| (LIST (QUOTE |QuotientFieldCategory&|) |DV$1| |DV$2|) . #1#) (LETT |$| (GETREFV 119) . #1#) (QSETREFV |$| 0 |dv$|) (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 (LIST (|HasCategory| |#2| (QUOTE (|PolynomialFactorizationExplicit|))) (|HasCategory| |#2| (QUOTE (|IntegerNumberSystem|))) (|HasCategory| |#2| (QUOTE (|EuclideanDomain|))) (|HasCategory| |#2| (QUOTE (|RetractableTo| (|Symbol|)))) (|HasCategory| |#2| (QUOTE (|CharacteristicNonZero|))) (|HasCategory| |#2| (QUOTE (|CharacteristicZero|))) (|HasCategory| |#2| (QUOTE (|ConvertibleTo| (|InputForm|)))) (|HasCategory| |#2| (QUOTE (|RealConstant|))) (|HasCategory| |#2| (QUOTE (|OrderedIntegralDomain|))) (|HasCategory| |#2| (QUOTE (|OrderedSet|))) (|HasCategory| |#2| (QUOTE (|RetractableTo| (|Integer|)))) (|HasCategory| |#2| (QUOTE (|StepThrough|))))) . #1#)) (|stuffDomainSlots| |$|) (QSETREFV |$| 6 |#1|) (QSETREFV |$| 7 |#2|) (COND ((|testBitVector| |pv$| 12) (PROGN (QSETREFV |$| 16 (CONS (|dispatchFunction| |QFCAT-;init;A;3|) |$|)) (QSETREFV |$| 20 (CONS (|dispatchFunction| |QFCAT-;nextItem;AU;4|) |$|))))) (COND ((|testBitVector| |pv$| 7) (QSETREFV |$| 40 (CONS (|dispatchFunction| |QFCAT-;convert;AIf;9|) |$|)))) (COND ((|testBitVector| |pv$| 8) (PROGN (QSETREFV |$| 44 (CONS (|dispatchFunction| |QFCAT-;convert;AF;10|) |$|)) (QSETREFV |$| 47 (CONS (|dispatchFunction| |QFCAT-;convert;ADf;11|) |$|))))) (COND ((|testBitVector| |pv$| 9) (COND ((|HasAttribute| |#2| (QUOTE |canonicalUnitNormal|)) (QSETREFV |$| 50 (CONS (|dispatchFunction| |QFCAT-;<;2AB;12|) |$|))) ((QUOTE T) (QSETREFV |$| 50 (CONS (|dispatchFunction| |QFCAT-;<;2AB;13|) |$|))))) ((|testBitVector| |pv$| 10) (QSETREFV |$| 50 (CONS (|dispatchFunction| |QFCAT-;<;2AB;14|) |$|)))) (COND ((|testBitVector| |pv$| 3) (QSETREFV |$| 54 (CONS (|dispatchFunction| |QFCAT-;fractionPart;2A;15|) |$|)))) (COND ((|testBitVector| |pv$| 4) (PROGN (QSETREFV |$| 57 (CONS (|dispatchFunction| |QFCAT-;coerce;SA;16|) |$|)) (QSETREFV |$| 60 (CONS (|dispatchFunction| |QFCAT-;retract;AS;17|) |$|)) (QSETREFV |$| 65 (CONS (|dispatchFunction| |QFCAT-;retractIfCan;AU;18|) |$|))))) (COND ((|HasCategory| |#2| (QUOTE (|ConvertibleTo| (|Pattern| (|Integer|))))) (PROGN (QSETREFV |$| 69 (CONS (|dispatchFunction| |QFCAT-;convert;AP;19|) |$|)) (COND ((|HasCategory| |#2| (QUOTE (|PatternMatchable| (|Integer|)))) (QSETREFV |$| 74 (CONS (|dispatchFunction| |QFCAT-;patternMatch;AP2Pmr;20|) |$|))))))) (COND ((|HasCategory| |#2| (QUOTE (|ConvertibleTo| (|Pattern| (|Float|))))) (PROGN (QSETREFV |$| 78 (CONS (|dispatchFunction| |QFCAT-;convert;AP;21|) |$|)) (COND ((|HasCategory| |#2| (QUOTE (|PatternMatchable| (|Float|)))) (QSETREFV |$| 83 (CONS (|dispatchFunction| |QFCAT-;patternMatch;AP2Pmr;22|) |$|))))))) (COND ((|testBitVector| |pv$| 11) (PROGN (QSETREFV |$| 90 (CONS (|dispatchFunction| |QFCAT-;coerce;FA;23|) |$|)) (COND ((|domainEqual| |#2| (|Integer|))) ((QUOTE T) (PROGN (QSETREFV |$| 92 (CONS (|dispatchFunction| |QFCAT-;retract;AI;24|) |$|)) (QSETREFV |$| 95 (CONS (|dispatchFunction| |QFCAT-;retractIfCan;AU;25|) |$|)))))))) (COND ((|testBitVector| |pv$| 2) (QSETREFV |$| 98 (CONS (|dispatchFunction| |QFCAT-;random;A;26|) |$|)))) |$|)))) 
+(DEFUN |QuotientFieldCategory&| (|#1| |#2|)
+  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$1| (|devaluate| |#1|)
+              . #0=(|QuotientFieldCategory&|))
+        (LETT |dv$2| (|devaluate| |#2|) . #0#)
+        (LETT |dv$|
+              (LIST '|QuotientFieldCategory&| |dv$1| |dv$2|) . #0#)
+        (LETT $ (GETREFV 119) . #0#)
+        (QSETREFV $ 0 |dv$|)
+        (QSETREFV $ 3
+            (LETT |pv$|
+                  (|buildPredVector| 0 0
+                      (LIST (|HasCategory| |#2|
+                                '(|PolynomialFactorizationExplicit|))
+                            (|HasCategory| |#2|
+                                '(|IntegerNumberSystem|))
+                            (|HasCategory| |#2| '(|EuclideanDomain|))
+                            (|HasCategory| |#2|
+                                '(|RetractableTo| (|Symbol|)))
+                            (|HasCategory| |#2|
+                                '(|CharacteristicNonZero|))
+                            (|HasCategory| |#2|
+                                '(|CharacteristicZero|))
+                            (|HasCategory| |#2|
+                                '(|ConvertibleTo| (|InputForm|)))
+                            (|HasCategory| |#2| '(|RealConstant|))
+                            (|HasCategory| |#2|
+                                '(|OrderedIntegralDomain|))
+                            (|HasCategory| |#2| '(|OrderedSet|))
+                            (|HasCategory| |#2|
+                                '(|RetractableTo| (|Integer|)))
+                            (|HasCategory| |#2| '(|StepThrough|)))) . #0#))
+        (|stuffDomainSlots| $)
+        (QSETREFV $ 6 |#1|)
+        (QSETREFV $ 7 |#2|)
+        (COND
+          ((|testBitVector| |pv$| 12)
+           (PROGN
+             (QSETREFV $ 16
+                 (CONS (|dispatchFunction| |QFCAT-;init;A;3|) $))
+             (QSETREFV $ 20
+                 (CONS (|dispatchFunction| |QFCAT-;nextItem;AU;4|) $)))))
+        (COND
+          ((|testBitVector| |pv$| 7)
+           (QSETREFV $ 40
+               (CONS (|dispatchFunction| |QFCAT-;convert;AIf;9|) $))))
+        (COND
+          ((|testBitVector| |pv$| 8)
+           (PROGN
+             (QSETREFV $ 44
+                 (CONS (|dispatchFunction| |QFCAT-;convert;AF;10|) $))
+             (QSETREFV $ 47
+                 (CONS (|dispatchFunction| |QFCAT-;convert;ADf;11|) $)))))
+        (COND
+          ((|testBitVector| |pv$| 9)
+           (COND
+             ((|HasAttribute| |#2| '|canonicalUnitNormal|)
+              (QSETREFV $ 50
+                  (CONS (|dispatchFunction| |QFCAT-;<;2AB;12|) $)))
+             ('T
+              (QSETREFV $ 50
+                  (CONS (|dispatchFunction| |QFCAT-;<;2AB;13|) $)))))
+          ((|testBitVector| |pv$| 10)
+           (QSETREFV $ 50
+               (CONS (|dispatchFunction| |QFCAT-;<;2AB;14|) $))))
+        (COND
+          ((|testBitVector| |pv$| 3)
+           (QSETREFV $ 54
+               (CONS (|dispatchFunction| |QFCAT-;fractionPart;2A;15|)
+                     $))))
+        (COND
+          ((|testBitVector| |pv$| 4)
+           (PROGN
+             (QSETREFV $ 57
+                 (CONS (|dispatchFunction| |QFCAT-;coerce;SA;16|) $))
+             (QSETREFV $ 60
+                 (CONS (|dispatchFunction| |QFCAT-;retract;AS;17|) $))
+             (QSETREFV $ 65
+                 (CONS (|dispatchFunction| |QFCAT-;retractIfCan;AU;18|)
+                       $)))))
+        (COND
+          ((|HasCategory| |#2|
+               '(|ConvertibleTo| (|Pattern| (|Integer|))))
+           (PROGN
+             (QSETREFV $ 69
+                 (CONS (|dispatchFunction| |QFCAT-;convert;AP;19|) $))
+             (COND
+               ((|HasCategory| |#2| '(|PatternMatchable| (|Integer|)))
+                (QSETREFV $ 74
+                    (CONS (|dispatchFunction|
+                              |QFCAT-;patternMatch;AP2Pmr;20|)
+                          $)))))))
+        (COND
+          ((|HasCategory| |#2|
+               '(|ConvertibleTo| (|Pattern| (|Float|))))
+           (PROGN
+             (QSETREFV $ 78
+                 (CONS (|dispatchFunction| |QFCAT-;convert;AP;21|) $))
+             (COND
+               ((|HasCategory| |#2| '(|PatternMatchable| (|Float|)))
+                (QSETREFV $ 83
+                    (CONS (|dispatchFunction|
+                              |QFCAT-;patternMatch;AP2Pmr;22|)
+                          $)))))))
+        (COND
+          ((|testBitVector| |pv$| 11)
+           (PROGN
+             (QSETREFV $ 90
+                 (CONS (|dispatchFunction| |QFCAT-;coerce;FA;23|) $))
+             (COND
+               ((|domainEqual| |#2| (|Integer|)))
+               ('T
+                (PROGN
+                  (QSETREFV $ 92
+                      (CONS (|dispatchFunction| |QFCAT-;retract;AI;24|)
+                            $))
+                  (QSETREFV $ 95
+                      (CONS (|dispatchFunction|
+                                |QFCAT-;retractIfCan;AU;25|)
+                            $))))))))
+        (COND
+          ((|testBitVector| |pv$| 2)
+           (QSETREFV $ 98
+               (CONS (|dispatchFunction| |QFCAT-;random;A;26|) $))))
+        $)))) 
 
-(MAKEPROP (QUOTE |QuotientFieldCategory&|) (QUOTE |infovec|) (LIST (QUOTE #(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|) (0 . |numer|) (5 . |coerce|) |QFCAT-;numerator;2A;1| (10 . |denom|) |QFCAT-;denominator;2A;2| (15 . |init|) (19 . |One|) (23 . |/|) (29 . |init|) (|Union| |$| (QUOTE "failed")) (33 . |nextItem|) (38 . |One|) (42 . |nextItem|) (|Mapping| 7 7) |QFCAT-;map;M2A;5| (|Matrix| 7) (|Matrix| 6) (|MatrixCommonDenominator| 7 6) (47 . |clearDenominator|) (|Matrix| |$|) |QFCAT-;reducedSystem;MM;6| (|NonNegativeInteger|) (52 . |characteristic|) |QFCAT-;characteristic;Nni;7| (56 . |*|) (62 . |-|) (|PositiveInteger|) (68 . |**|) |QFCAT-;differentiate;AMA;8| (|InputForm|) (74 . |convert|) (79 . |/|) (85 . |convert|) (|Float|) (90 . |convert|) (95 . |/|) (101 . |convert|) (|DoubleFloat|) (106 . |convert|) (111 . |convert|) (|Boolean|) (116 . |<|) (122 . |<|) (128 . |Zero|) (132 . |wholePart|) (137 . |-|) (143 . |fractionPart|) (|Symbol|) (148 . |coerce|) (153 . |coerce|) (158 . |retract|) (163 . |retract|) (168 . |retract|) (|Union| 7 (QUOTE "failed")) (173 . |retractIfCan|) (|Union| 55 (QUOTE "failed")) (178 . |retractIfCan|) (183 . |retractIfCan|) (|Pattern| 84) (188 . |convert|) (193 . |/|) (199 . |convert|) (|PatternMatchResult| 84 6) (|PatternMatchQuotientFieldCategory| 84 7 6) (204 . |patternMatch|) (|PatternMatchResult| 84 |$|) (211 . |patternMatch|) (|Pattern| 41) (218 . |convert|) (223 . |/|) (229 . |convert|) (|PatternMatchResult| 41 6) (|PatternMatchQuotientFieldCategory| 41 7 6) (234 . |patternMatch|) (|PatternMatchResult| 41 |$|) (241 . |patternMatch|) (|Integer|) (|Fraction| 84) (248 . |numer|) (253 . |coerce|) (258 . |denom|) (263 . |/|) (269 . |coerce|) (274 . |retract|) (279 . |retract|) (|Union| 84 (QUOTE "failed")) (284 . |retractIfCan|) (289 . |retractIfCan|) (294 . |random|) (298 . |zero?|) (303 . |random|) (|Vector| 6) (307 . |coerce|) (312 . |horizConcat|) (318 . |reducedSystem|) (323 . |minRowIndex|) (328 . |maxRowIndex|) (333 . |minColIndex|) (338 . |maxColIndex|) (343 . |subMatrix|) (|Vector| 7) (352 . |column|) (|Record| (|:| |mat| 23) (|:| |vec| 108)) (|Vector| |$|) |QFCAT-;reducedSystem;MVR;27| (|Union| 85 (QUOTE "failed")) (|Record| (|:| |mat| 115) (|:| |vec| (|Vector| 84))) (|Matrix| 84) (|List| 55) (|List| 29) (|OutputForm|))) (QUOTE #(|retractIfCan| 358 |retract| 368 |reducedSystem| 378 |random| 389 |patternMatch| 393 |numerator| 407 |nextItem| 412 |map| 417 |init| 423 |fractionPart| 427 |differentiate| 432 |denominator| 438 |convert| 443 |coerce| 468 |characteristic| 478 |<| 482)) (QUOTE NIL) (CONS (|makeByteWordVec2| 1 (QUOTE NIL)) (CONS (QUOTE #()) (CONS (QUOTE #()) (|makeByteWordVec2| 112 (QUOTE (1 6 7 0 8 1 6 0 7 9 1 6 7 0 11 0 7 0 13 0 7 0 14 2 6 0 7 7 15 0 0 0 16 1 7 17 0 18 0 6 0 19 1 0 17 0 20 1 25 23 24 26 0 7 29 30 2 7 0 0 0 32 2 7 0 0 0 33 2 7 0 0 34 35 1 7 37 0 38 2 37 0 0 0 39 1 0 37 0 40 1 7 41 0 42 2 41 0 0 0 43 1 0 41 0 44 1 7 45 0 46 1 0 45 0 47 2 7 48 0 0 49 2 0 48 0 0 50 0 7 0 51 1 6 7 0 52 2 6 0 0 0 53 1 0 0 0 54 1 7 0 55 56 1 0 0 55 57 1 6 7 0 58 1 7 55 0 59 1 0 55 0 60 1 6 61 0 62 1 7 63 0 64 1 0 63 0 65 1 7 66 0 67 2 66 0 0 0 68 1 0 66 0 69 3 71 70 6 66 70 72 3 0 73 0 66 73 74 1 7 75 0 76 2 75 0 0 0 77 1 0 75 0 78 3 80 79 6 75 79 81 3 0 82 0 75 82 83 1 85 84 0 86 1 6 0 84 87 1 85 84 0 88 2 6 0 0 0 89 1 0 0 85 90 1 7 84 0 91 1 0 84 0 92 1 7 93 0 94 1 0 93 0 95 0 7 0 96 1 7 48 0 97 0 0 0 98 1 24 0 99 100 2 24 0 0 0 101 1 6 23 27 102 1 23 84 0 103 1 23 84 0 104 1 23 84 0 105 1 23 84 0 106 5 23 0 0 84 84 84 84 107 2 23 108 0 84 109 1 0 93 0 95 1 0 63 0 65 1 0 84 0 92 1 0 55 0 60 2 0 110 27 111 112 1 0 23 27 28 0 0 0 98 3 0 82 0 75 82 83 3 0 73 0 66 73 74 1 0 0 0 10 1 0 17 0 20 2 0 0 21 0 22 0 0 0 16 1 0 0 0 54 2 0 0 0 21 36 1 0 0 0 12 1 0 45 0 47 1 0 37 0 40 1 0 41 0 44 1 0 66 0 69 1 0 75 0 78 1 0 0 55 57 1 0 0 85 90 0 0 29 31 2 0 48 0 0 50)))))) (QUOTE |lookupComplete|))) 
+(MAKEPROP '|QuotientFieldCategory&| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)
+             (0 . |numer|) (5 . |coerce|) |QFCAT-;numerator;2A;1|
+             (10 . |denom|) |QFCAT-;denominator;2A;2| (15 . |init|)
+             (19 . |One|) (23 . /) (29 . |init|) (|Union| $ '"failed")
+             (33 . |nextItem|) (38 . |One|) (42 . |nextItem|)
+             (|Mapping| 7 7) |QFCAT-;map;M2A;5| (|Matrix| 7)
+             (|Matrix| 6) (|MatrixCommonDenominator| 7 6)
+             (47 . |clearDenominator|) (|Matrix| $)
+             |QFCAT-;reducedSystem;MM;6| (|NonNegativeInteger|)
+             (52 . |characteristic|) |QFCAT-;characteristic;Nni;7|
+             (56 . *) (62 . -) (|PositiveInteger|) (68 . **)
+             |QFCAT-;differentiate;AMA;8| (|InputForm|)
+             (74 . |convert|) (79 . /) (85 . |convert|) (|Float|)
+             (90 . |convert|) (95 . /) (101 . |convert|)
+             (|DoubleFloat|) (106 . |convert|) (111 . |convert|)
+             (|Boolean|) (116 . <) (122 . <) (128 . |Zero|)
+             (132 . |wholePart|) (137 . -) (143 . |fractionPart|)
+             (|Symbol|) (148 . |coerce|) (153 . |coerce|)
+             (158 . |retract|) (163 . |retract|) (168 . |retract|)
+             (|Union| 7 '"failed") (173 . |retractIfCan|)
+             (|Union| 55 '"failed") (178 . |retractIfCan|)
+             (183 . |retractIfCan|) (|Pattern| 84) (188 . |convert|)
+             (193 . /) (199 . |convert|) (|PatternMatchResult| 84 6)
+             (|PatternMatchQuotientFieldCategory| 84 7 6)
+             (204 . |patternMatch|) (|PatternMatchResult| 84 $)
+             (211 . |patternMatch|) (|Pattern| 41) (218 . |convert|)
+             (223 . /) (229 . |convert|) (|PatternMatchResult| 41 6)
+             (|PatternMatchQuotientFieldCategory| 41 7 6)
+             (234 . |patternMatch|) (|PatternMatchResult| 41 $)
+             (241 . |patternMatch|) (|Integer|) (|Fraction| 84)
+             (248 . |numer|) (253 . |coerce|) (258 . |denom|) (263 . /)
+             (269 . |coerce|) (274 . |retract|) (279 . |retract|)
+             (|Union| 84 '"failed") (284 . |retractIfCan|)
+             (289 . |retractIfCan|) (294 . |random|) (298 . |zero?|)
+             (303 . |random|) (|Vector| 6) (307 . |coerce|)
+             (312 . |horizConcat|) (318 . |reducedSystem|)
+             (323 . |minRowIndex|) (328 . |maxRowIndex|)
+             (333 . |minColIndex|) (338 . |maxColIndex|)
+             (343 . |subMatrix|) (|Vector| 7) (352 . |column|)
+             (|Record| (|:| |mat| 23) (|:| |vec| 108)) (|Vector| $)
+             |QFCAT-;reducedSystem;MVR;27| (|Union| 85 '"failed")
+             (|Record| (|:| |mat| 115) (|:| |vec| (|Vector| 84)))
+             (|Matrix| 84) (|List| 55) (|List| 29) (|OutputForm|))
+          '#(|retractIfCan| 358 |retract| 368 |reducedSystem| 378
+             |random| 389 |patternMatch| 393 |numerator| 407 |nextItem|
+             412 |map| 417 |init| 423 |fractionPart| 427
+             |differentiate| 432 |denominator| 438 |convert| 443
+             |coerce| 468 |characteristic| 478 < 482)
+          'NIL
+          (CONS (|makeByteWordVec2| 1 'NIL)
+                (CONS '#()
+                      (CONS '#()
+                            (|makeByteWordVec2| 112
+                                '(1 6 7 0 8 1 6 0 7 9 1 6 7 0 11 0 7 0
+                                  13 0 7 0 14 2 6 0 7 7 15 0 0 0 16 1 7
+                                  17 0 18 0 6 0 19 1 0 17 0 20 1 25 23
+                                  24 26 0 7 29 30 2 7 0 0 0 32 2 7 0 0
+                                  0 33 2 7 0 0 34 35 1 7 37 0 38 2 37 0
+                                  0 0 39 1 0 37 0 40 1 7 41 0 42 2 41 0
+                                  0 0 43 1 0 41 0 44 1 7 45 0 46 1 0 45
+                                  0 47 2 7 48 0 0 49 2 0 48 0 0 50 0 7
+                                  0 51 1 6 7 0 52 2 6 0 0 0 53 1 0 0 0
+                                  54 1 7 0 55 56 1 0 0 55 57 1 6 7 0 58
+                                  1 7 55 0 59 1 0 55 0 60 1 6 61 0 62 1
+                                  7 63 0 64 1 0 63 0 65 1 7 66 0 67 2
+                                  66 0 0 0 68 1 0 66 0 69 3 71 70 6 66
+                                  70 72 3 0 73 0 66 73 74 1 7 75 0 76 2
+                                  75 0 0 0 77 1 0 75 0 78 3 80 79 6 75
+                                  79 81 3 0 82 0 75 82 83 1 85 84 0 86
+                                  1 6 0 84 87 1 85 84 0 88 2 6 0 0 0 89
+                                  1 0 0 85 90 1 7 84 0 91 1 0 84 0 92 1
+                                  7 93 0 94 1 0 93 0 95 0 7 0 96 1 7 48
+                                  0 97 0 0 0 98 1 24 0 99 100 2 24 0 0
+                                  0 101 1 6 23 27 102 1 23 84 0 103 1
+                                  23 84 0 104 1 23 84 0 105 1 23 84 0
+                                  106 5 23 0 0 84 84 84 84 107 2 23 108
+                                  0 84 109 1 0 93 0 95 1 0 63 0 65 1 0
+                                  84 0 92 1 0 55 0 60 2 0 110 27 111
+                                  112 1 0 23 27 28 0 0 0 98 3 0 82 0 75
+                                  82 83 3 0 73 0 66 73 74 1 0 0 0 10 1
+                                  0 17 0 20 2 0 0 21 0 22 0 0 0 16 1 0
+                                  0 0 54 2 0 0 0 21 36 1 0 0 0 12 1 0
+                                  45 0 47 1 0 37 0 40 1 0 41 0 44 1 0
+                                  66 0 69 1 0 75 0 78 1 0 0 55 57 1 0 0
+                                  85 90 0 0 29 31 2 0 48 0 0 50)))))
+          '|lookupComplete|)) 
 @
 \section{package QFCAT2 QuotientFieldCategoryFunctions2}
 <<package QFCAT2 QuotientFieldCategoryFunctions2>>=
