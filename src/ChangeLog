@@ -9,6 +9,7 @@
 	* algebra/fraction.spad.pamphlet: Likewise.
 	* algebra/triset.spad.pamphlet: Likewise.
 	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/pscat.spad.pamphlet: Likewise.
 
 2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
