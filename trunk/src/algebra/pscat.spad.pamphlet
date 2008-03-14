@@ -485,15 +485,118 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<ULSCAT.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |UnivariateLaurentSeriesCategory;CAT| (QUOTE NIL)) 
+(DEFPARAMETER |UnivariateLaurentSeriesCategory;CAT| 'NIL) 
 
-(SETQ |UnivariateLaurentSeriesCategory;AL| (QUOTE NIL)) 
+(DEFPARAMETER |UnivariateLaurentSeriesCategory;AL| 'NIL) 
 
-(DEFUN |UnivariateLaurentSeriesCategory| (#1=#:G83278) (LET (#2=#:G83279) (COND ((SETQ #2# (|assoc| (|devaluate| #1#) |UnivariateLaurentSeriesCategory;AL|)) (CDR #2#)) (T (SETQ |UnivariateLaurentSeriesCategory;AL| (|cons5| (CONS (|devaluate| #1#) (SETQ #2# (|UnivariateLaurentSeriesCategory;| #1#))) |UnivariateLaurentSeriesCategory;AL|)) #2#)))) 
+(DEFUN |UnivariateLaurentSeriesCategory| (#0=#:G1388)
+  (LET (#1=#:G1389)
+    (COND
+      ((SETQ #1#
+             (|assoc| (|devaluate| #0#)
+                      |UnivariateLaurentSeriesCategory;AL|))
+       (CDR #1#))
+      (T (SETQ |UnivariateLaurentSeriesCategory;AL|
+               (|cons5| (CONS (|devaluate| #0#)
+                              (SETQ #1#
+                                    (|UnivariateLaurentSeriesCategory;|
+                                     #0#)))
+                        |UnivariateLaurentSeriesCategory;AL|))
+         #1#)))) 
 
-(DEFUN |UnivariateLaurentSeriesCategory;| (|t#1|) (PROG (#1=#:G83277) (RETURN (PROG1 (LETT #1# (|sublisV| (PAIR (QUOTE (|t#1|)) (LIST (|devaluate| |t#1|))) (|sublisV| (PAIR (QUOTE (#2=#:G83276)) (LIST (QUOTE (|Integer|)))) (COND (|UnivariateLaurentSeriesCategory;CAT|) ((QUOTE T) (LETT |UnivariateLaurentSeriesCategory;CAT| (|Join| (|UnivariatePowerSeriesCategory| (QUOTE |t#1|) (QUOTE #2#)) (|mkCategory| (QUOTE |domain|) (QUOTE (((|series| (|$| (|Stream| (|Record| (|:| |k| (|Integer|)) (|:| |c| |t#1|))))) T) ((|multiplyCoefficients| (|$| (|Mapping| |t#1| (|Integer|)) |$|)) T) ((|rationalFunction| ((|Fraction| (|Polynomial| |t#1|)) |$| (|Integer|))) (|has| |t#1| (|IntegralDomain|))) ((|rationalFunction| ((|Fraction| (|Polynomial| |t#1|)) |$| (|Integer|) (|Integer|))) (|has| |t#1| (|IntegralDomain|))) ((|integrate| (|$| |$|)) (|has| |t#1| (|Algebra| (|Fraction| (|Integer|))))) ((|integrate| (|$| |$| (|Symbol|))) (AND (|has| |t#1| (SIGNATURE |variables| ((|List| (|Symbol|)) |t#1|))) (|has| |t#1| (SIGNATURE |integrate| (|t#1| |t#1| (|Symbol|)))) (|has| |t#1| (|Algebra| (|Fraction| (|Integer|)))))) ((|integrate| (|$| |$| (|Symbol|))) (AND (|has| |t#1| (|AlgebraicallyClosedFunctionSpace| (|Integer|))) (|has| |t#1| (|PrimitiveFunctionCategory|)) (|has| |t#1| (|TranscendentalFunctionCategory|)) (|has| |t#1| (|Algebra| (|Fraction| (|Integer|)))))))) (QUOTE (((|RadicalCategory|) (|has| |t#1| (|Algebra| (|Fraction| (|Integer|))))) ((|TranscendentalFunctionCategory|) (|has| |t#1| (|Algebra| (|Fraction| (|Integer|))))) ((|Field|) (|has| |t#1| (|Field|))))) (QUOTE ((|Symbol|) (|Fraction| (|Polynomial| |t#1|)) (|Integer|) (|Stream| (|Record| (|:| |k| (|Integer|)) (|:| |c| |t#1|))))) NIL)) . #3=(|UnivariateLaurentSeriesCategory|)))))) . #3#) (SETELT #1# 0 (LIST (QUOTE |UnivariateLaurentSeriesCategory|) (|devaluate| |t#1|))))))) 
+(DEFUN |UnivariateLaurentSeriesCategory;| (|t#1|)
+  (PROG (#0=#:G1387)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|sublisV|
+                       (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
+                       (|sublisV|
+                           (PAIR '(#1=#:G1386) (LIST '(|Integer|)))
+                           (COND
+                             (|UnivariateLaurentSeriesCategory;CAT|)
+                             ('T
+                              (LETT |UnivariateLaurentSeriesCategory;CAT|
+                                    (|Join|
+                                     (|UnivariatePowerSeriesCategory|
+                                      '|t#1| '#1#)
+                                     (|mkCategory| '|domain|
+                                      '(((|series|
+                                          ($
+                                           (|Stream|
+                                            (|Record|
+                                             (|:| |k| (|Integer|))
+                                             (|:| |c| |t#1|)))))
+                                         T)
+                                        ((|multiplyCoefficients|
+                                          ($
+                                           (|Mapping| |t#1|
+                                            (|Integer|))
+                                           $))
+                                         T)
+                                        ((|rationalFunction|
+                                          ((|Fraction|
+                                            (|Polynomial| |t#1|))
+                                           $ (|Integer|)))
+                                         (|has| |t#1|
+                                          (|IntegralDomain|)))
+                                        ((|rationalFunction|
+                                          ((|Fraction|
+                                            (|Polynomial| |t#1|))
+                                           $ (|Integer|) (|Integer|)))
+                                         (|has| |t#1|
+                                          (|IntegralDomain|)))
+                                        ((|integrate| ($ $))
+                                         (|has| |t#1|
+                                          (|Algebra|
+                                           (|Fraction| (|Integer|)))))
+                                        ((|integrate| ($ $ (|Symbol|)))
+                                         (AND
+                                          (|has| |t#1|
+                                           (SIGNATURE |variables|
+                                            ((|List| (|Symbol|)) |t#1|)))
+                                          (|has| |t#1|
+                                           (SIGNATURE |integrate|
+                                            (|t#1| |t#1| (|Symbol|))))
+                                          (|has| |t#1|
+                                           (|Algebra|
+                                            (|Fraction| (|Integer|))))))
+                                        ((|integrate| ($ $ (|Symbol|)))
+                                         (AND
+                                          (|has| |t#1|
+                                           (|AlgebraicallyClosedFunctionSpace|
+                                            (|Integer|)))
+                                          (|has| |t#1|
+                                           (|PrimitiveFunctionCategory|))
+                                          (|has| |t#1|
+                                           (|TranscendentalFunctionCategory|))
+                                          (|has| |t#1|
+                                           (|Algebra|
+                                            (|Fraction| (|Integer|)))))))
+                                      '(((|RadicalCategory|)
+                                         (|has| |t#1|
+                                          (|Algebra|
+                                           (|Fraction| (|Integer|)))))
+                                        ((|TranscendentalFunctionCategory|)
+                                         (|has| |t#1|
+                                          (|Algebra|
+                                           (|Fraction| (|Integer|)))))
+                                        ((|Field|)
+                                         (|has| |t#1| (|Field|))))
+                                      '((|Symbol|)
+                                        (|Fraction|
+                                         (|Polynomial| |t#1|))
+                                        (|Integer|)
+                                        (|Stream|
+                                         (|Record|
+                                          (|:| |k| (|Integer|))
+                                          (|:| |c| |t#1|))))
+                                      NIL))
+                                    . #2=(|UnivariateLaurentSeriesCategory|)))))) . #2#)
+        (SETELT #0# 0
+                (LIST '|UnivariateLaurentSeriesCategory|
+                      (|devaluate| |t#1|))))))) 
 @
 \section{category UPXSCAT UnivariatePuiseuxSeriesCategory}
 <<category UPXSCAT UnivariatePuiseuxSeriesCategory>>=
@@ -631,15 +734,112 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<MTSCAT.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |MultivariateTaylorSeriesCategory;CAT| (QUOTE NIL)) 
+(DEFPARAMETER |MultivariateTaylorSeriesCategory;CAT| 'NIL) 
 
-(SETQ |MultivariateTaylorSeriesCategory;AL| (QUOTE NIL)) 
+(DEFPARAMETER |MultivariateTaylorSeriesCategory;AL| 'NIL) 
 
-(DEFUN |MultivariateTaylorSeriesCategory| (|&REST| #1=#:G83334 |&AUX| #2=#:G83332) (DSETQ #2# #1#) (LET (#3=#:G83333) (COND ((SETQ #3# (|assoc| (|devaluateList| #2#) |MultivariateTaylorSeriesCategory;AL|)) (CDR #3#)) (T (SETQ |MultivariateTaylorSeriesCategory;AL| (|cons5| (CONS (|devaluateList| #2#) (SETQ #3# (APPLY (FUNCTION |MultivariateTaylorSeriesCategory;|) #2#))) |MultivariateTaylorSeriesCategory;AL|)) #3#)))) 
+(DEFUN |MultivariateTaylorSeriesCategory|
+       (&REST #0=#:G1390 &AUX #1=#:G1388)
+  (DSETQ #1# #0#)
+  (LET (#2=#:G1389)
+    (COND
+      ((SETQ #2#
+             (|assoc| (|devaluateList| #1#)
+                      |MultivariateTaylorSeriesCategory;AL|))
+       (CDR #2#))
+      (T (SETQ |MultivariateTaylorSeriesCategory;AL|
+               (|cons5| (CONS (|devaluateList| #1#)
+                              (SETQ #2#
+                                    (APPLY
+                                     #'|MultivariateTaylorSeriesCategory;|
+                                     #1#)))
+                        |MultivariateTaylorSeriesCategory;AL|))
+         #2#)))) 
 
-(DEFUN |MultivariateTaylorSeriesCategory;| (|t#1| |t#2|) (PROG (#1=#:G83331) (RETURN (PROG1 (LETT #1# (|sublisV| (PAIR (QUOTE (|t#1| |t#2|)) (LIST (|devaluate| |t#1|) (|devaluate| |t#2|))) (|sublisV| (PAIR (QUOTE (#2=#:G83330)) (LIST (QUOTE (|IndexedExponents| |t#2|)))) (COND (|MultivariateTaylorSeriesCategory;CAT|) ((QUOTE T) (LETT |MultivariateTaylorSeriesCategory;CAT| (|Join| (|PartialDifferentialRing| (QUOTE |t#2|)) (|PowerSeriesCategory| (QUOTE |t#1|) (QUOTE #2#) (QUOTE |t#2|)) (|InnerEvalable| (QUOTE |t#2|) (QUOTE |$|)) (|Evalable| (QUOTE |$|)) (|mkCategory| (QUOTE |domain|) (QUOTE (((|coefficient| (|$| |$| |t#2| (|NonNegativeInteger|))) T) ((|coefficient| (|$| |$| (|List| |t#2|) (|List| (|NonNegativeInteger|)))) T) ((|extend| (|$| |$| (|NonNegativeInteger|))) T) ((|monomial| (|$| |$| |t#2| (|NonNegativeInteger|))) T) ((|monomial| (|$| |$| (|List| |t#2|) (|List| (|NonNegativeInteger|)))) T) ((|order| ((|NonNegativeInteger|) |$| |t#2|)) T) ((|order| ((|NonNegativeInteger|) |$| |t#2| (|NonNegativeInteger|))) T) ((|polynomial| ((|Polynomial| |t#1|) |$| (|NonNegativeInteger|))) T) ((|polynomial| ((|Polynomial| |t#1|) |$| (|NonNegativeInteger|) (|NonNegativeInteger|))) T) ((|integrate| (|$| |$| |t#2|)) (|has| |t#1| (|Algebra| (|Fraction| (|Integer|))))))) (QUOTE (((|RadicalCategory|) (|has| |t#1| (|Algebra| (|Fraction| (|Integer|))))) ((|TranscendentalFunctionCategory|) (|has| |t#1| (|Algebra| (|Fraction| (|Integer|))))))) (QUOTE ((|Polynomial| |t#1|) (|NonNegativeInteger|) (|List| |t#2|) (|List| (|NonNegativeInteger|)))) NIL)) . #3=(|MultivariateTaylorSeriesCategory|)))))) . #3#) (SETELT #1# 0 (LIST (QUOTE |MultivariateTaylorSeriesCategory|) (|devaluate| |t#1|) (|devaluate| |t#2|))))))) 
+(DEFUN |MultivariateTaylorSeriesCategory;| (|t#1| |t#2|)
+  (PROG (#0=#:G1387)
+    (RETURN
+      (PROG1 (LETT #0#
+                   (|sublisV|
+                       (PAIR '(|t#1| |t#2|)
+                             (LIST (|devaluate| |t#1|)
+                                   (|devaluate| |t#2|)))
+                       (|sublisV|
+                           (PAIR '(#1=#:G1386)
+                                 (LIST '(|IndexedExponents| |t#2|)))
+                           (COND
+                             (|MultivariateTaylorSeriesCategory;CAT|)
+                             ('T
+                              (LETT |MultivariateTaylorSeriesCategory;CAT|
+                                    (|Join|
+                                     (|PartialDifferentialRing| '|t#2|)
+                                     (|PowerSeriesCategory| '|t#1| '#1#
+                                      '|t#2|)
+                                     (|InnerEvalable| '|t#2| '$)
+                                     (|Evalable| '$)
+                                     (|mkCategory| '|domain|
+                                      '(((|coefficient|
+                                          ($ $ |t#2|
+                                           (|NonNegativeInteger|)))
+                                         T)
+                                        ((|coefficient|
+                                          ($ $ (|List| |t#2|)
+                                           (|List|
+                                            (|NonNegativeInteger|))))
+                                         T)
+                                        ((|extend|
+                                          ($ $ (|NonNegativeInteger|)))
+                                         T)
+                                        ((|monomial|
+                                          ($ $ |t#2|
+                                           (|NonNegativeInteger|)))
+                                         T)
+                                        ((|monomial|
+                                          ($ $ (|List| |t#2|)
+                                           (|List|
+                                            (|NonNegativeInteger|))))
+                                         T)
+                                        ((|order|
+                                          ((|NonNegativeInteger|) $
+                                           |t#2|))
+                                         T)
+                                        ((|order|
+                                          ((|NonNegativeInteger|) $
+                                           |t#2|
+                                           (|NonNegativeInteger|)))
+                                         T)
+                                        ((|polynomial|
+                                          ((|Polynomial| |t#1|) $
+                                           (|NonNegativeInteger|)))
+                                         T)
+                                        ((|polynomial|
+                                          ((|Polynomial| |t#1|) $
+                                           (|NonNegativeInteger|)
+                                           (|NonNegativeInteger|)))
+                                         T)
+                                        ((|integrate| ($ $ |t#2|))
+                                         (|has| |t#1|
+                                          (|Algebra|
+                                           (|Fraction| (|Integer|))))))
+                                      '(((|RadicalCategory|)
+                                         (|has| |t#1|
+                                          (|Algebra|
+                                           (|Fraction| (|Integer|)))))
+                                        ((|TranscendentalFunctionCategory|)
+                                         (|has| |t#1|
+                                          (|Algebra|
+                                           (|Fraction| (|Integer|))))))
+                                      '((|Polynomial| |t#1|)
+                                        (|NonNegativeInteger|)
+                                        (|List| |t#2|)
+                                        (|List| (|NonNegativeInteger|)))
+                                      NIL))
+                                    . #2=(|MultivariateTaylorSeriesCategory|)))))) . #2#)
+        (SETELT #0# 0
+                (LIST '|MultivariateTaylorSeriesCategory|
+                      (|devaluate| |t#1|) (|devaluate| |t#2|))))))) 
 @
 \section{License}
 <<license>>=
