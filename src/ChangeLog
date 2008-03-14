@@ -1,6 +1,9 @@
 2008-03-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet: Update cached Lisp translation.
+	* algebra/sf.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+	* algebra/fspace.spad.pamphlet: Likewise.
 
 2008-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
