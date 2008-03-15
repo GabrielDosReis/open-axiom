@@ -45,7 +45,6 @@
 #include "header2.h"
 #include "bsdsignal.h"
 #include "globals2.h"
-#include "bsdsignal.H1"
 #include "all_2d.H1"
 #include "Gfun.H1"
 #include "util.H1"

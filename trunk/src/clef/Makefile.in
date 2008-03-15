@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,12 +39,12 @@ clef_SOURCES = edible.c
 
 clef_objects = $(clef_SOURCES:.c=.lo)
 
-clef_LDADD = $(axiom_target_libdir)/libspad.la
+clef_LDADD = $(axiom_target_libdir)/libspad.la \
+	$(axiom_target_libdir)/libopen-axiom-core.la
+
 clef_DEPENDENCIES =
 
 subdir = src/clef/
-
-pamphlets = Makefile.pamphlet
 
 .PHONY: all all-clef
 all: all-ax

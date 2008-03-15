@@ -20780,8 +20780,7 @@ fi
 
 
 # FIXME: Move this out of here.
-# The core runtime is always built.
-axiom_c_runtime=core
+axiom_c_runtime=
 
 
 

@@ -1,5 +1,37 @@
 2008-03-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/cfuns.h (findString): Rename from include/cfuns-c.H1.
+	Make DLL-aware.
+	* include/open-axiom.h: New.
+	* include/sockio.h: Make DLL-aware.
+	* include/bsdsignal.H1: Fold content into include/bsdsignal.h.
+	Remove.
+	* lib/bsdsignal.c: Don't include bsdsignal.H1
+	* lib/fnct_key.c: Likewise.
+	* lib/sockio-c.c: Likewise.
+	* lib/Makefile.in (other_SOURCES): Remove.
+	(other_objects): Likewise.
+	(pamphlets): Likewise.
+	(clean-local): Don't remove source files.
+	(libopen_axiom_core_la_SOURCES): New.
+	(libopen_axiom_core_la_objects): Likewise.
+	(stamp): Require $(axiom_target_libdir)/libopen-axiom-core.la too.
+	* graph/view2D/main2d.c: Likewise.
+	* clef/edible.c: Likewise.
+	* graph/view3D/main3d.c: Likewise.
+	* graph/view3D/testcol.c: Likewise.
+	* graph/viewman/sselect.c: Likewise.
+	* graph/viewman/viewman.c: Likewise.
+	* hyper/htinp.c: Likewise.
+	* hyper/hyper.c: Likewise.
+	* hyper/spadbuf.c: Likewise.
+	* hyper/spadint.c: Likewise.
+	* sman/session.c: Likewise.
+	* sman/sman.c: Likewise.
+	* sman/spadclient.c: Likewise.
+
+2008-03-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/polset.spad.pamphlet (exactQuo$PSETCAT-): Don't
 	conditionally define as local function.  Update cached Lisp
 	translation. 

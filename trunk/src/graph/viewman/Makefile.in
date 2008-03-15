@@ -53,7 +53,8 @@ viewman_headers = $(srcdir)/viewman.h \
 
 
 viewman_DEPENDENCIES =
-viewman_LDFLAGS = $(axiom_target_libdir)/libspad.la
+viewman_LDFLAGS = $(axiom_target_libdir)/libspad.la \
+		$(axiom_target_libdir)/libopen-axiom-core.la
 
 subdir = src/graph/viewman/
 

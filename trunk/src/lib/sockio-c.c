@@ -2,7 +2,7 @@
     Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
     All rights reserved.
 
-    Copyright (C) 2007, Gabriel Dos Reis.
+    Copyright (C) 2007-2008, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -72,20 +72,31 @@
 #endif
 
 
+/* socket description of spad clients */
+OPENAXIOM_EXPORT Sock clients[MaxClients];       
 
-Sock clients[MaxClients];       /* socket description of spad clients */
-Sock server[2];                 /* AF_LOCAL and AF_INET sockets for server */
-Sock *purpose_table[TotalMaxPurposes]; /* table of dedicated socket types */
-fd_set socket_mask;             /* bit mask of active sockets */
-fd_set server_mask;             /* bit mask of server sockets */
-int socket_closed;              /* used to identify closed socket on SIGPIPE */
-int spad_server_number = -1;    /* spad server number used in sman */
+/* AF_LOCAL and AF_INET sockets for server */
+OPENAXIOM_EXPORT Sock server[2];                 
+
+/* table of dedicated socket types */
+OPENAXIOM_EXPORT Sock *purpose_table[TotalMaxPurposes]; 
+
+/* bit mask of active sockets */
+OPENAXIOM_EXPORT fd_set socket_mask;             
+
+/* bit mask of server sockets */
+OPENAXIOM_EXPORT fd_set server_mask;             
+
+/* used to identify closed socket on SIGPIPE */
+int socket_closed;              
+
+/* spad server number used in sman */
+int spad_server_number = -1;    
 int str_len = 0;
 int still_reading  = 0;
 
 
 
-#include "bsdsignal.H1"
 #include "sockio.h"
 
 /* The function sleep() is not available under Windows.  Instead, they
@@ -206,13 +217,13 @@ axiom_connection_refused(void)
 }
 
 
-void  
+OPENAXIOM_EXPORT void  
 sigpipe_handler(int sig)
 {
   socket_closed = 1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 wait_for_client_read(Sock *sock, char *buf, int buf_size, char *msg)
 {
   int ret_val;
@@ -229,7 +240,7 @@ wait_for_client_read(Sock *sock, char *buf, int buf_size, char *msg)
   }
 }
 
-int 
+OPENAXIOM_EXPORT int 
 wait_for_client_write(Sock *sock,char *buf,int buf_size,char *msg)
 {
   int ret_val;
@@ -246,7 +257,7 @@ wait_for_client_write(Sock *sock,char *buf,int buf_size,char *msg)
   }
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sread(Sock *sock, char *buf, int buf_size, char *msg)
 {
   int ret_val;
@@ -271,7 +282,7 @@ sread(Sock *sock, char *buf, int buf_size, char *msg)
   return ret_val;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 swrite(Sock *sock,char *buf,int buf_size,char *msg)
 {
   int ret_val;
@@ -297,7 +308,7 @@ swrite(Sock *sock,char *buf,int buf_size,char *msg)
   return ret_val;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sselect(int n,fd_set  *rd, fd_set  *wr, fd_set *ex, void *timeout)
 {
   int ret_val;
@@ -307,7 +318,7 @@ sselect(int n,fd_set  *rd, fd_set  *wr, fd_set *ex, void *timeout)
   return ret_val;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 fill_buf(Sock *sock,char *buf, int len, char *msg)
 {
   int bytes =  0, ret_val;
@@ -319,7 +330,7 @@ fill_buf(Sock *sock,char *buf, int len, char *msg)
   return bytes;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 get_int(Sock *sock)
 {
   int val = -1, len;
@@ -336,7 +347,7 @@ get_int(Sock *sock)
   return val;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_get_int(int purpose)
 {
   if (accept_if_needed(purpose) != -1)
@@ -344,7 +355,7 @@ sock_get_int(int purpose)
   else return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 get_ints(Sock *sock, int *vals, int num)
 {
   int i;
@@ -353,7 +364,7 @@ get_ints(Sock *sock, int *vals, int num)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_get_ints(int purpose, int *vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -361,7 +372,7 @@ sock_get_ints(int purpose, int *vals, int num)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_int(Sock *sock,int val)
 {
   int ret_val;
@@ -372,7 +383,7 @@ send_int(Sock *sock,int val)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_int(int purpose,int  val)
 {
   if (accept_if_needed(purpose) != -1)
@@ -380,7 +391,7 @@ sock_send_int(int purpose,int  val)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_ints(Sock *sock, int *vals, int num)
 {
   int i;
@@ -390,7 +401,7 @@ send_ints(Sock *sock, int *vals, int num)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_ints(int purpose, int *vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -398,7 +409,7 @@ sock_send_ints(int purpose, int *vals, int num)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_string_len(Sock *sock,char *str,int len)
 {
   int val;
@@ -423,7 +434,7 @@ send_string_len(Sock *sock,char *str,int len)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_string(Sock *sock, char *str)
 {
   int val, len = strlen(str);
@@ -436,7 +447,7 @@ send_string(Sock *sock, char *str)
 }
 
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_string(int purpose, char *str)
 {
   if (accept_if_needed(purpose) != -1)
@@ -444,7 +455,7 @@ sock_send_string(int purpose, char *str)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_string_len(int purpose, char * str, int len)
 {
   if (accept_if_needed(purpose) != -1)
@@ -452,7 +463,7 @@ sock_send_string_len(int purpose, char * str, int len)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_strings(Sock *sock, char ** vals, int num)
 {
   int i;
@@ -462,7 +473,7 @@ send_strings(Sock *sock, char ** vals, int num)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_strings(int purpose, char **vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -470,7 +481,7 @@ sock_send_strings(int purpose, char **vals, int num)
   return -1;
 }
 
-char *
+OPENAXIOM_EXPORT char *
 get_string(Sock *sock)
 {
   int val, len;
@@ -489,7 +500,7 @@ get_string(Sock *sock)
   return buf;
 }
 
-char *
+OPENAXIOM_EXPORT char *
 sock_get_string(int purpose)
 {
   if (accept_if_needed(purpose) != -1)
@@ -498,7 +509,7 @@ sock_get_string(int purpose)
 }
 
 
-char *
+OPENAXIOM_EXPORT char *
 get_string_buf(Sock *sock, char *buf, int buf_len)
 {
   int val;
@@ -519,7 +530,7 @@ get_string_buf(Sock *sock, char *buf, int buf_len)
     }
 }
 
-char *
+OPENAXIOM_EXPORT char *
 sock_get_string_buf(int purpose, char * buf, int buf_len)
 {
   if (accept_if_needed(purpose) != -1)
@@ -527,7 +538,7 @@ sock_get_string_buf(int purpose, char * buf, int buf_len)
   return NULL;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 get_strings(Sock *sock,char **vals,int num)
 {
   int i;
@@ -536,7 +547,7 @@ get_strings(Sock *sock,char **vals,int num)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_get_strings(int purpose, char ** vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -544,7 +555,7 @@ sock_get_strings(int purpose, char ** vals, int num)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_float(Sock *sock, double num)
 {
   int val;
@@ -555,7 +566,7 @@ send_float(Sock *sock, double num)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_float(int purpose, double num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -563,7 +574,7 @@ sock_send_float(int purpose, double num)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_sfloats(Sock *sock, float *vals,int  num)
 {
   int i;
@@ -573,7 +584,7 @@ send_sfloats(Sock *sock, float *vals,int  num)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_sfloats(int purpose, float * vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -581,7 +592,7 @@ sock_send_sfloats(int purpose, float * vals, int num)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_floats(Sock *sock, double *vals, int num)
 {
   int i;
@@ -591,7 +602,7 @@ send_floats(Sock *sock, double *vals, int num)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_floats(int purpose, double  *vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -599,7 +610,7 @@ sock_send_floats(int purpose, double  *vals, int num)
   return -1;
 }
 
-double 
+OPENAXIOM_EXPORT double 
 get_float(Sock *sock)
 {
   int val;
@@ -611,7 +622,7 @@ get_float(Sock *sock)
   return num;
 }
 
-double 
+OPENAXIOM_EXPORT double 
 sock_get_float(int purpose)
 {
   if (accept_if_needed(purpose) != -1)
@@ -619,7 +630,7 @@ sock_get_float(int purpose)
   else return 0.0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 get_sfloats(Sock *sock, float *vals, int num)
 {
   int i;
@@ -629,7 +640,7 @@ get_sfloats(Sock *sock, float *vals, int num)
 }
 
 
-int 
+OPENAXIOM_EXPORT int 
 sock_get_sfloats(int purpose,float * vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -637,7 +648,7 @@ sock_get_sfloats(int purpose,float * vals, int num)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 get_floats(Sock *sock,double *vals,int num)
 {
   int i;
@@ -647,7 +658,7 @@ get_floats(Sock *sock,double *vals,int num)
 }
 
 
-int 
+OPENAXIOM_EXPORT int 
 sock_get_floats(int purpose, double *vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
@@ -655,7 +666,7 @@ sock_get_floats(int purpose, double *vals, int num)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 wait_for_client_kill(Sock *sock, int sig)
 {
   int ret_val;
@@ -673,7 +684,7 @@ wait_for_client_kill(Sock *sock, int sig)
 }
 
 
-int 
+OPENAXIOM_EXPORT int 
 sock_get_remote_fd(int purpose)
 {
   if (accept_if_needed(purpose) != -1)
@@ -681,7 +692,7 @@ sock_get_remote_fd(int purpose)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_signal(Sock *sock, int sig)
 {
   int ret_val;
@@ -700,7 +711,7 @@ send_signal(Sock *sock, int sig)
   return ret_val;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_signal(int purpose,int  sig)
 {
   if (accept_if_needed(purpose) != -1)
@@ -708,7 +719,7 @@ sock_send_signal(int purpose,int  sig)
   return -1;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 send_wakeup(Sock *sock)
 {
 #ifdef SIGUSR1   
@@ -718,7 +729,7 @@ send_wakeup(Sock *sock)
 #endif  
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_send_wakeup(int purpose)
 {
   if (accept_if_needed(purpose) != -1)
@@ -726,7 +737,7 @@ sock_send_wakeup(int purpose)
   return -1;
 }
 
-Sock *
+OPENAXIOM_EXPORT Sock *
 connect_to_local_server_new(char *server_name, int purpose, int time_out)
 {
   int max_con=(time_out == 0 ? 1000000 : time_out), i, code=-1;
@@ -778,7 +789,7 @@ connect_to_local_server_new(char *server_name, int purpose, int time_out)
   return sock;
 }
 
-Sock *
+OPENAXIOM_EXPORT Sock *
 connect_to_local_server(char *server_name, int purpose, int time_out)
 {
   int max_con=(time_out == 0 ? 1000000 : time_out), i, code=-1;
@@ -833,7 +844,7 @@ connect_to_local_server(char *server_name, int purpose, int time_out)
 
 /* act as terminal session for sock connected to stdin and stdout of another
    process */
-void 
+OPENAXIOM_EXPORT void 
 remote_stdio(Sock *sock)
 {
   char buf[1024];
@@ -873,7 +884,7 @@ remote_stdio(Sock *sock)
 }
 
 /* initialize the table of dedicated sockets */
-void 
+OPENAXIOM_EXPORT void 
 init_purpose_table(void)
 {
   int i;
@@ -883,14 +894,14 @@ init_purpose_table(void)
 }
 
 
-int 
+OPENAXIOM_EXPORT int 
 make_server_number(void)
 {
   spad_server_number = getpid();
   return spad_server_number;
 }
 
-void 
+OPENAXIOM_EXPORT void 
 close_socket(axiom_socket socket_num, char *name)
 {
   axiom_close_socket(socket_num);
@@ -899,7 +910,7 @@ close_socket(axiom_socket socket_num, char *name)
 #endif
 }
 
-int 
+OPENAXIOM_EXPORT int 
 make_server_name(char *name,char * base)
 {
   char *num;
@@ -920,7 +931,7 @@ make_server_name(char *name,char * base)
 
 /* client Spad server sockets.  Two sockets are created: server[0]
    is the internet server socket, and server[1] is a local domain socket. */
-int 
+OPENAXIOM_EXPORT int 
 open_server(char *server_name)
 {
   char *s, name[256];
@@ -986,7 +997,7 @@ open_server(char *server_name)
   return 0;
 }
 
-int 
+OPENAXIOM_EXPORT int 
 accept_connection(Sock *sock)
 {
   int client;
@@ -1007,7 +1018,7 @@ accept_connection(Sock *sock)
 }
 
 /* reads a the socket purpose declaration for classification */
-void 
+OPENAXIOM_EXPORT void 
 get_socket_type(Sock *sock)
 {
   sock->pid = get_int(sock);
@@ -1029,7 +1040,7 @@ get_socket_type(Sock *sock)
   }
 }
 
-int 
+OPENAXIOM_EXPORT int 
 sock_accept_connection(int purpose)
 {
   fd_set rd;
@@ -1053,7 +1064,7 @@ sock_accept_connection(int purpose)
 }
 
 /* direct stdin and stdout from the given socket */
-void 
+OPENAXIOM_EXPORT void 
 redirect_stdio(Sock *sock)
 {
   int fd;
@@ -1072,7 +1083,7 @@ redirect_stdio(Sock *sock)
   FD_CLR(sock->socket, &socket_mask);
 }
 
-void
+OPENAXIOM_EXPORT void
 init_socks(void)
 {
   int i;
@@ -1085,7 +1096,7 @@ init_socks(void)
 
 /* Socket I/O selection called from the BOOT serverLoop function */
 
-int 
+OPENAXIOM_EXPORT int 
 server_switch(void)
 {
   int ret_val, i, cmd = 0;
@@ -1132,7 +1143,7 @@ server_switch(void)
   }
 }
 
-void 
+OPENAXIOM_EXPORT void 
 flush_stdout(void)
 {
   static FILE *fp = NULL;
@@ -1146,14 +1157,14 @@ flush_stdout(void)
   fflush(fp);
 }
 
-void 
+OPENAXIOM_EXPORT void 
 print_line(char *s)
 {
   printf("%s\n", s);
 }
 
 
-double 
+OPENAXIOM_EXPORT double 
 plus_infinity(void )
 {
 #ifdef INFINITY   
@@ -1165,13 +1176,13 @@ plus_infinity(void )
 #endif   
 }
 
-double 
+OPENAXIOM_EXPORT double 
 minus_infinity(void)
 {
    return -plus_infinity();
 }
 
-double 
+OPENAXIOM_EXPORT double 
 NANQ(void)
 {
 #ifdef NAN

@@ -51,7 +51,6 @@
 #include "com.h"
 #include "bsdsignal.h"
 #include "sockio.h"
-#include "bsdsignal.H1"
 #include "session.H1"
 
 #define BufSize         4096    /* size of communication buffer */

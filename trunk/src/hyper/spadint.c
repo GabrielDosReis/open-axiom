@@ -49,7 +49,6 @@
 
 #include "all_hyper_proto.H1"
 #include "sockio.h"
-#include "bsdsignal.H1"
 
 
 typedef struct sock_list {      /* linked list of Sock */

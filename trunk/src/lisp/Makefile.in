@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,11 +37,6 @@ subdir = src/lisp/
 pamphlets = Makefile.pamphlet
 
 build_libdir = ./$(top_builddir)/src/lib
-
-lisp_DEPENDENCIES = $(build_libdir)/cfuns-c.lo \
-		    $(build_libdir)/sockio-c.lo \
-		    $(build_libdir)/libspad.la
-
 
 ## Ideally, we would like to use Libtool for producing, and linking with,
 ## object files from C codes.  That means any C source code

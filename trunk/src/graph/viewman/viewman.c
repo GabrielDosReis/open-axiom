@@ -53,7 +53,6 @@
 #include "bsdsignal.h"
 
 
-#include "bsdsignal.H1"
 #include "util.H1"
 #include "sockio.h"
 #include "fun2D.H1"

@@ -32,7 +32,6 @@
 */
 
 #include "axiom-c-macros.h"
-#include "bsdsignal.h"
 
 #if defined(MACOSXplatform)
 #include "/usr/include/signal.h"
@@ -40,10 +39,9 @@
 #include <signal.h> 
 #endif
 
-#include "bsdsignal.H1"
+#include "bsdsignal.h"
 
-
-SignalHandlerFunc
+OPENAXIOM_EXPORT SignalHandlerFunc
 bsdSignal(int sig, SignalHandlerFunc action, int restartSystemCall)
 {
 #if HAVE_DECL_SIGACTION

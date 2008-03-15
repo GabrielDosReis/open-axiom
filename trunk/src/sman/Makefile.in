@@ -45,7 +45,8 @@ bin_PROGRAMS = session$(EXEEXT) \
 		spadclient$(EXEEXT) \
 		sman$(EXEEXT)
 
-libspad_la = $(axiom_target_libdir)/libspad.la
+libspad_la = $(axiom_target_libdir)/libspad.la \
+		$(axiom_target_libdir)/libopen-axiom-core.la
 
 session_SOURCES = session.c
 session_objects = $(session_SOURCES:.c=.lo)
