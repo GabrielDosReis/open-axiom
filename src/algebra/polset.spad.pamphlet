@@ -198,8 +198,6 @@ PolynomialSetCategory(R:Ring, E:OrderedAbelianMonoidSup,_
      ps1 = ps2 ==
        {p for p in elements(ps1)} =$(Set P) {p for p in elements(ps2)}
 
-     exactQuo : (R,R) -> R
-
      localInf? (p:P,q:P):B ==
        degree(p) <$E degree(q)
 
@@ -260,13 +258,9 @@ PolynomialSetCategory(R:Ring, E:OrderedAbelianMonoidSup,_
        LPR ==> List Polynomial R
        LS ==> List Symbol
 
-       if R has EuclideanDomain
-         then
-           exactQuo(r:R,s:R):R ==
-             r quo$R s
-         else
-           exactQuo(r:R,s:R):R ==
-             (r exquo$R s)::R
+       exactQuo(r:R,s:R):R ==
+	 if R has EuclideanDomain then r quo$R s
+         else (r exquo$R s)::R
 
        headRemainder (a,ps) ==
          lp1 : List(P) := remove(zero?, elements(ps))$(List(P))
@@ -884,23 +878,24 @@ Note that this code is not included in the generated catdef.spad file.
     ('T 'NIL))) 
 
 (DEFUN |PSETCAT-;exactQuo| (|r| |s| $)
-  (SPADCALL |r| |s| (QREFELT $ 59))) 
-
-(DEFUN |PSETCAT-;exactQuo| (|r| |s| $)
-  (PROG (#0=#:G1504)
+  (PROG (#0=#:G1503)
     (RETURN
-      (PROG2 (LETT #0# (SPADCALL |r| |s| (QREFELT $ 61))
-                   |PSETCAT-;exactQuo|)
-             (QCDR #0#)
-        (|check-union| (QEQCAR #0# 0) (QREFELT $ 7) #0#))))) 
+      (COND
+        ((|HasCategory| (QREFELT $ 7) '(|EuclideanDomain|))
+         (SPADCALL |r| |s| (QREFELT $ 59)))
+        ('T
+         (PROG2 (LETT #0# (SPADCALL |r| |s| (QREFELT $ 61))
+                      |PSETCAT-;exactQuo|)
+                (QCDR #0#)
+           (|check-union| (QEQCAR #0# 0) (QREFELT $ 7) #0#))))))) 
 
-(DEFUN |PSETCAT-;headRemainder;PSR;23| (|a| |ps| $)
-  (PROG (|lp1| |p| |e| |g| |#G47| |#G48| |lca| |lcp| |r| |lp2|)
+(DEFUN |PSETCAT-;headRemainder;PSR;22| (|a| |ps| $)
+  (PROG (|lp1| |p| |e| |g| |#G45| |#G46| |lca| |lcp| |r| |lp2|)
     (RETURN
       (SEQ (LETT |lp1|
                  (SPADCALL (ELT $ 43) (|PSETCAT-;elements| |ps| $)
                      (QREFELT $ 26))
-                 |PSETCAT-;headRemainder;PSR;23|)
+                 |PSETCAT-;headRemainder;PSR;22|)
            (EXIT (COND
                    ((NULL |lp1|) (CONS |a| (|spadConstant| $ 62)))
                    ((SPADCALL (ELT $ 24) |lp1| (QREFELT $ 44))
@@ -908,7 +903,7 @@ Note that this code is not included in the generated catdef.spad file.
                           (|spadConstant| $ 62)))
                    ('T
                     (SEQ (LETT |r| (|spadConstant| $ 62)
-                               |PSETCAT-;headRemainder;PSR;23|)
+                               |PSETCAT-;headRemainder;PSR;22|)
                          (LETT |lp1|
                                (SPADCALL
                                    (CONS
@@ -917,9 +912,9 @@ Note that this code is not included in the generated catdef.spad file.
                                    (REVERSE
                                     (|PSETCAT-;elements| |ps| $))
                                    (QREFELT $ 46))
-                               |PSETCAT-;headRemainder;PSR;23|)
+                               |PSETCAT-;headRemainder;PSR;22|)
                          (LETT |lp2| |lp1|
-                               |PSETCAT-;headRemainder;PSR;23|)
+                               |PSETCAT-;headRemainder;PSR;22|)
                          (SEQ G190
                               (COND
                                 ((NULL (COND
@@ -930,13 +925,13 @@ Note that this code is not included in the generated catdef.spad file.
                                            (QREFELT $ 29)))))
                                  (GO G191)))
                               (SEQ (LETT |p| (|SPADfirst| |lp2|)
-                                    |PSETCAT-;headRemainder;PSR;23|)
+                                    |PSETCAT-;headRemainder;PSR;22|)
                                    (LETT |e|
                                     (SPADCALL
                                      (SPADCALL |a| (QREFELT $ 41))
                                      (SPADCALL |p| (QREFELT $ 41))
                                      (QREFELT $ 64))
-                                    |PSETCAT-;headRemainder;PSR;23|)
+                                    |PSETCAT-;headRemainder;PSR;22|)
                                    (EXIT
                                     (COND
                                       ((QEQCAR |e| 0)
@@ -946,26 +941,26 @@ Note that this code is not included in the generated catdef.spad file.
                                           (LETT |lca|
                                            (SPADCALL |a|
                                             (QREFELT $ 65))
-                                           |PSETCAT-;headRemainder;PSR;23|)
+                                           |PSETCAT-;headRemainder;PSR;22|)
                                           (LETT |lcp|
                                            (SPADCALL |p|
                                             (QREFELT $ 65))
-                                           |PSETCAT-;headRemainder;PSR;23|)
+                                           |PSETCAT-;headRemainder;PSR;22|)
                                           (QREFELT $ 66))
-                                         |PSETCAT-;headRemainder;PSR;23|)
+                                         |PSETCAT-;headRemainder;PSR;22|)
                                         (PROGN
-                                          (LETT |#G47|
+                                          (LETT |#G45|
                                            (|PSETCAT-;exactQuo| |lca|
                                             |g| $)
-                                           |PSETCAT-;headRemainder;PSR;23|)
-                                          (LETT |#G48|
+                                           |PSETCAT-;headRemainder;PSR;22|)
+                                          (LETT |#G46|
                                            (|PSETCAT-;exactQuo| |lcp|
                                             |g| $)
-                                           |PSETCAT-;headRemainder;PSR;23|)
-                                          (LETT |lca| |#G47|
-                                           |PSETCAT-;headRemainder;PSR;23|)
-                                          (LETT |lcp| |#G48|
-                                           |PSETCAT-;headRemainder;PSR;23|))
+                                           |PSETCAT-;headRemainder;PSR;22|)
+                                          (LETT |lca| |#G45|
+                                           |PSETCAT-;headRemainder;PSR;22|)
+                                          (LETT |lcp| |#G46|
+                                           |PSETCAT-;headRemainder;PSR;22|))
                                         (LETT |a|
                                          (SPADCALL
                                           (SPADCALL |lcp|
@@ -979,17 +974,17 @@ Note that this code is not included in the generated catdef.spad file.
                                             (QREFELT $ 63))
                                            (QREFELT $ 69))
                                           (QREFELT $ 70))
-                                         |PSETCAT-;headRemainder;PSR;23|)
+                                         |PSETCAT-;headRemainder;PSR;22|)
                                         (LETT |r|
                                          (SPADCALL |r| |lcp|
                                           (QREFELT $ 71))
-                                         |PSETCAT-;headRemainder;PSR;23|)
+                                         |PSETCAT-;headRemainder;PSR;22|)
                                         (EXIT
                                          (LETT |lp2| |lp1|
-                                          |PSETCAT-;headRemainder;PSR;23|))))
+                                          |PSETCAT-;headRemainder;PSR;22|))))
                                       ('T
                                        (LETT |lp2| (CDR |lp2|)
-                                        |PSETCAT-;headRemainder;PSR;23|)))))
+                                        |PSETCAT-;headRemainder;PSR;22|)))))
                               NIL (GO G190) G191 (EXIT NIL))
                          (EXIT (CONS |a| |r|)))))))))) 
 
@@ -1015,15 +1010,15 @@ Note that this code is not included in the generated catdef.spad file.
                            (QCDR |frac|))
                          (EXIT |frac|))))))))) 
 
-(DEFUN |PSETCAT-;remainder;PSR;25| (|a| |ps| $)
+(DEFUN |PSETCAT-;remainder;PSR;24| (|a| |ps| $)
   (PROG (|hRa| |r| |lca| |g| |b| |c|)
     (RETURN
       (SEQ (LETT |hRa|
                  (|PSETCAT-;makeIrreducible!|
                      (SPADCALL |a| |ps| (QREFELT $ 78)) $)
-                 |PSETCAT-;remainder;PSR;25|)
-           (LETT |a| (QCAR |hRa|) |PSETCAT-;remainder;PSR;25|)
-           (LETT |r| (QCDR |hRa|) |PSETCAT-;remainder;PSR;25|)
+                 |PSETCAT-;remainder;PSR;24|)
+           (LETT |a| (QCAR |hRa|) |PSETCAT-;remainder;PSR;24|)
+           (LETT |r| (QCDR |hRa|) |PSETCAT-;remainder;PSR;24|)
            (EXIT (COND
                    ((SPADCALL |a| (QREFELT $ 43))
                     (VECTOR (|spadConstant| $ 62) |a| |r|))
@@ -1032,16 +1027,16 @@ Note that this code is not included in the generated catdef.spad file.
                                (SPADCALL (|spadConstant| $ 62)
                                    (SPADCALL |a| (QREFELT $ 41))
                                    (QREFELT $ 68))
-                               |PSETCAT-;remainder;PSR;25|)
+                               |PSETCAT-;remainder;PSR;24|)
                          (LETT |c| (SPADCALL |a| (QREFELT $ 65))
-                               |PSETCAT-;remainder;PSR;25|)
+                               |PSETCAT-;remainder;PSR;24|)
                          (SEQ G190
                               (COND
                                 ((NULL (SPADCALL
                                         (SPADCALL
                                          (LETT |a|
                                           (SPADCALL |a| (QREFELT $ 63))
-                                          |PSETCAT-;remainder;PSR;25|)
+                                          |PSETCAT-;remainder;PSR;24|)
                                          (QREFELT $ 43))
                                         (QREFELT $ 29)))
                                  (GO G191)))
@@ -1049,20 +1044,20 @@ Note that this code is not included in the generated catdef.spad file.
                                     (|PSETCAT-;makeIrreducible!|
                                      (SPADCALL |a| |ps| (QREFELT $ 78))
                                      $)
-                                    |PSETCAT-;remainder;PSR;25|)
+                                    |PSETCAT-;remainder;PSR;24|)
                                    (LETT |a| (QCAR |hRa|)
-                                    |PSETCAT-;remainder;PSR;25|)
+                                    |PSETCAT-;remainder;PSR;24|)
                                    (LETT |r|
                                     (SPADCALL |r| (QCDR |hRa|)
                                      (QREFELT $ 71))
-                                    |PSETCAT-;remainder;PSR;25|)
+                                    |PSETCAT-;remainder;PSR;24|)
                                    (LETT |g|
                                     (SPADCALL |c|
                                      (LETT |lca|
                                       (SPADCALL |a| (QREFELT $ 65))
-                                      |PSETCAT-;remainder;PSR;25|)
+                                      |PSETCAT-;remainder;PSR;24|)
                                      (QREFELT $ 66))
-                                    |PSETCAT-;remainder;PSR;25|)
+                                    |PSETCAT-;remainder;PSR;24|)
                                    (LETT |b|
                                     (SPADCALL
                                      (SPADCALL
@@ -1075,14 +1070,14 @@ Note that this code is not included in the generated catdef.spad file.
                                       (SPADCALL |a| (QREFELT $ 41))
                                       (QREFELT $ 68))
                                      (QREFELT $ 79))
-                                    |PSETCAT-;remainder;PSR;25|)
+                                    |PSETCAT-;remainder;PSR;24|)
                                    (EXIT
                                     (LETT |c| |g|
-                                     |PSETCAT-;remainder;PSR;25|)))
+                                     |PSETCAT-;remainder;PSR;24|)))
                               NIL (GO G190) G191 (EXIT NIL))
                          (EXIT (VECTOR |c| |b| |r|)))))))))) 
 
-(DEFUN |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26| (|ps| |cs| $)
+(DEFUN |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25| (|ps| |cs| $)
   (PROG (|p| |rs|)
     (RETURN
       (SEQ (COND
@@ -1091,14 +1086,14 @@ Note that this code is not included in the generated catdef.spad file.
               (LIST (|spadConstant| $ 84)))
              ('T
               (SEQ (LETT |ps| (SPADCALL (ELT $ 43) |ps| (QREFELT $ 26))
-                         |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|)
+                         |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                    (EXIT (COND
                            ((NULL |ps|) |ps|)
                            ((SPADCALL (ELT $ 24) |ps| (QREFELT $ 44))
                             (LIST (|spadConstant| $ 75)))
                            ('T
                             (SEQ (LETT |rs| NIL
-                                       |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|)
+                                       |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                                  (SEQ G190
                                       (COND
                                         ((NULL
@@ -1107,14 +1102,14 @@ Note that this code is not included in the generated catdef.spad file.
                                          (GO G191)))
                                       (SEQ
                                        (LETT |p| (|SPADfirst| |ps|)
-                                        |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|)
+                                        |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                                        (LETT |ps| (CDR |ps|)
-                                        |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|)
+                                        |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                                        (LETT |p|
                                         (QCAR
                                          (SPADCALL |p| |cs|
                                           (QREFELT $ 78)))
-                                        |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|)
+                                        |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                                        (EXIT
                                         (COND
                                           ((NULL
@@ -1125,12 +1120,12 @@ Note that this code is not included in the generated catdef.spad file.
                                                (QREFELT $ 24))
                                               (SEQ
                                                (LETT |ps| NIL
-                                                |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|)
+                                                |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                                                (EXIT
                                                 (LETT |rs|
                                                  (LIST
                                                   (|spadConstant| $ 75))
-                                                 |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|))))
+                                                 |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|))))
                                              ('T
                                               (SEQ
                                                (SPADCALL |p|
@@ -1138,11 +1133,11 @@ Note that this code is not included in the generated catdef.spad file.
                                                (EXIT
                                                 (LETT |rs|
                                                  (CONS |p| |rs|)
-                                                 |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|)))))))))
+                                                 |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)))))))))
                                       NIL (GO G190) G191 (EXIT NIL))
                                  (EXIT (SPADCALL |rs| (QREFELT $ 86)))))))))))))) 
 
-(DEFUN |PSETCAT-;rewriteIdealWithRemainder;LSL;27| (|ps| |cs| $)
+(DEFUN |PSETCAT-;rewriteIdealWithRemainder;LSL;26| (|ps| |cs| $)
   (PROG (|p| |rs|)
     (RETURN
       (SEQ (COND
@@ -1151,14 +1146,14 @@ Note that this code is not included in the generated catdef.spad file.
               (LIST (|spadConstant| $ 84)))
              ('T
               (SEQ (LETT |ps| (SPADCALL (ELT $ 43) |ps| (QREFELT $ 26))
-                         |PSETCAT-;rewriteIdealWithRemainder;LSL;27|)
+                         |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                    (EXIT (COND
                            ((NULL |ps|) |ps|)
                            ((SPADCALL (ELT $ 24) |ps| (QREFELT $ 44))
                             (LIST (|spadConstant| $ 75)))
                            ('T
                             (SEQ (LETT |rs| NIL
-                                       |PSETCAT-;rewriteIdealWithRemainder;LSL;27|)
+                                       |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                                  (SEQ G190
                                       (COND
                                         ((NULL
@@ -1167,15 +1162,15 @@ Note that this code is not included in the generated catdef.spad file.
                                          (GO G191)))
                                       (SEQ
                                        (LETT |p| (|SPADfirst| |ps|)
-                                        |PSETCAT-;rewriteIdealWithRemainder;LSL;27|)
+                                        |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                                        (LETT |ps| (CDR |ps|)
-                                        |PSETCAT-;rewriteIdealWithRemainder;LSL;27|)
+                                        |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                                        (LETT |p|
                                         (QVELT
                                          (SPADCALL |p| |cs|
                                           (QREFELT $ 88))
                                          1)
-                                        |PSETCAT-;rewriteIdealWithRemainder;LSL;27|)
+                                        |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                                        (EXIT
                                         (COND
                                           ((NULL
@@ -1186,19 +1181,19 @@ Note that this code is not included in the generated catdef.spad file.
                                                (QREFELT $ 24))
                                               (SEQ
                                                (LETT |ps| NIL
-                                                |PSETCAT-;rewriteIdealWithRemainder;LSL;27|)
+                                                |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                                                (EXIT
                                                 (LETT |rs|
                                                  (LIST
                                                   (|spadConstant| $ 75))
-                                                 |PSETCAT-;rewriteIdealWithRemainder;LSL;27|))))
+                                                 |PSETCAT-;rewriteIdealWithRemainder;LSL;26|))))
                                              ('T
                                               (LETT |rs|
                                                (CONS
                                                 (SPADCALL |p|
                                                  (QREFELT $ 89))
                                                 |rs|)
-                                               |PSETCAT-;rewriteIdealWithRemainder;LSL;27|)))))))
+                                               |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)))))))
                                       NIL (GO G190) G191 (EXIT NIL))
                                  (EXIT (SPADCALL |rs| (QREFELT $ 86)))))))))))))) 
 
@@ -1252,19 +1247,19 @@ Note that this code is not included in the generated catdef.spad file.
               (PROGN
                 (QSETREFV $ 73
                     (CONS (|dispatchFunction|
-                              |PSETCAT-;headRemainder;PSR;23|)
+                              |PSETCAT-;headRemainder;PSR;22|)
                           $))
                 (QSETREFV $ 81
                     (CONS (|dispatchFunction|
-                              |PSETCAT-;remainder;PSR;25|)
+                              |PSETCAT-;remainder;PSR;24|)
                           $))
                 (QSETREFV $ 87
                     (CONS (|dispatchFunction|
-                              |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;26|)
+                              |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                           $))
                 (QSETREFV $ 90
                     (CONS (|dispatchFunction|
-                              |PSETCAT-;rewriteIdealWithRemainder;LSL;27|)
+                              |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                           $)))))))
         $)))) 
 

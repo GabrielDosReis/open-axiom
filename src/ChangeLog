@@ -1,3 +1,9 @@
+2008-03-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/polset.spad.pamphlet (exactQuo$PSETCAT-): Don't
+	conditionally define as local function.  Update cached Lisp
+	translation. 
+
 2008-03-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet: Update cached Lisp translation.
