@@ -46,6 +46,7 @@
 #endif
 
 #include "axiom-c-macros.h"
+#include "open-axiom.h"
 
 /* On Windows, a socket identifier is not a file descriptor.  It is
    represented by an integer type, but that integer type is not just
@@ -78,70 +79,70 @@ typedef struct {
 } Sock;
 
 
-extern int get_int(Sock*);
-extern char* get_string(Sock*);
-extern double get_float(Sock*);
-extern Sock* connect_to_local_server(char*, int, int);
-extern int sread(Sock*, char*, int, char*);
-extern double plus_infinity(void);
-extern double minus_infinity(void);
-extern double NANQ(void);
-extern void sigpipe_handler(int);
-extern int wait_for_client_read(Sock*, char*, int, char*);
-extern int wait_for_client_write(Sock*, char*, int, char*);
-extern int swrite(Sock*, char*, int, char*);
-extern int sselect(int, fd_set*, fd_set*, fd_set*, void*);
-extern int fill_buf(Sock*, char*, int, char*);
-extern int sock_get_int(int);
-extern int get_ints(Sock*, int*, int);
-extern int sock_get_ints(int, int*, int);
-extern int send_int(Sock*, int);
-extern int sock_send_int(int, int);
-extern int send_ints(Sock*, int*, int);
-extern int sock_send_ints(int, int*, int);
-extern int send_string(Sock*, char*);
-extern int send_string_len(Sock*, char*, int);
-extern int sock_send_string(int, char*);
-extern int sock_send_string_len(int, char*, int);
-extern int send_strings(Sock*, char**, int);
-extern int sock_send_strings(int, char**, int);
-extern char* sock_get_string(int);
-extern char* get_string_buf(Sock*, char*, int);
-extern char* sock_get_string_buf(int, char*, int);
-extern int get_strings(Sock*, char**, int);
-extern int sock_get_strings(int, char**, int);
-extern int send_float(Sock*, double);
-extern int sock_send_float(int, double);
-extern int send_sfloats(Sock*, float*, int);
-extern int sock_send_sfloats(int, float*, int);
-extern int send_floats(Sock*, double*, int);
-extern int sock_send_floats(int, double*, int);
-extern double sock_get_float(int);
-extern int get_sfloats(Sock*, float*, int);
-extern int sock_get_sfloats(int, float*, int);
-extern int get_floats(Sock*, double*, int);
-extern int sock_get_floats(int, double*, int);
-extern int wait_for_client_kill(Sock*, int);
-extern int sock_get_remote_fd(int);
-extern int send_signal(Sock*, int);
-extern int sock_send_signal(int, int);
-extern int send_wakeup(Sock*);
-extern int sock_send_wakeup(int);
-extern Sock* connect_to_local_server_new(char*, int, int);
-extern void remote_stdio(Sock*);
-extern void init_purpose_table(void);
-extern int make_server_number(void);
-extern void close_socket(axiom_socket, char*);
-extern int make_server_name(char*, char*);
-extern int open_server(char*);
-extern int accept_connection(Sock*);
-extern void get_socket_type(Sock*);
-extern int sock_accept_connection(int);
-extern void redirect_stdio(Sock*);
-extern void init_socks(void);
-extern int server_switch(void);
-extern void flush_stdout(void);
-extern void print_line(char*);
+OPENAXIOM_EXPORT int get_int(Sock*);
+OPENAXIOM_EXPORT char* get_string(Sock*);
+OPENAXIOM_EXPORT double get_float(Sock*);
+OPENAXIOM_EXPORT Sock* connect_to_local_server(char*, int, int);
+OPENAXIOM_EXPORT int sread(Sock*, char*, int, char*);
+OPENAXIOM_EXPORT double plus_infinity(void);
+OPENAXIOM_EXPORT double minus_infinity(void);
+OPENAXIOM_EXPORT double NANQ(void);
+OPENAXIOM_EXPORT void sigpipe_handler(int);
+OPENAXIOM_EXPORT int wait_for_client_read(Sock*, char*, int, char*);
+OPENAXIOM_EXPORT int wait_for_client_write(Sock*, char*, int, char*);
+OPENAXIOM_EXPORT int swrite(Sock*, char*, int, char*);
+OPENAXIOM_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
+OPENAXIOM_EXPORT int fill_buf(Sock*, char*, int, char*);
+OPENAXIOM_EXPORT int sock_get_int(int);
+OPENAXIOM_EXPORT int get_ints(Sock*, int*, int);
+OPENAXIOM_EXPORT int sock_get_ints(int, int*, int);
+OPENAXIOM_EXPORT int send_int(Sock*, int);
+OPENAXIOM_EXPORT int sock_send_int(int, int);
+OPENAXIOM_EXPORT int send_ints(Sock*, int*, int);
+OPENAXIOM_EXPORT int sock_send_ints(int, int*, int);
+OPENAXIOM_EXPORT int send_string(Sock*, char*);
+OPENAXIOM_EXPORT int send_string_len(Sock*, char*, int);
+OPENAXIOM_EXPORT int sock_send_string(int, char*);
+OPENAXIOM_EXPORT int sock_send_string_len(int, char*, int);
+OPENAXIOM_EXPORT int send_strings(Sock*, char**, int);
+OPENAXIOM_EXPORT int sock_send_strings(int, char**, int);
+OPENAXIOM_EXPORT char* sock_get_string(int);
+OPENAXIOM_EXPORT char* get_string_buf(Sock*, char*, int);
+OPENAXIOM_EXPORT char* sock_get_string_buf(int, char*, int);
+OPENAXIOM_EXPORT int get_strings(Sock*, char**, int);
+OPENAXIOM_EXPORT int sock_get_strings(int, char**, int);
+OPENAXIOM_EXPORT int send_float(Sock*, double);
+OPENAXIOM_EXPORT int sock_send_float(int, double);
+OPENAXIOM_EXPORT int send_sfloats(Sock*, float*, int);
+OPENAXIOM_EXPORT int sock_send_sfloats(int, float*, int);
+OPENAXIOM_EXPORT int send_floats(Sock*, double*, int);
+OPENAXIOM_EXPORT int sock_send_floats(int, double*, int);
+OPENAXIOM_EXPORT double sock_get_float(int);
+OPENAXIOM_EXPORT int get_sfloats(Sock*, float*, int);
+OPENAXIOM_EXPORT int sock_get_sfloats(int, float*, int);
+OPENAXIOM_EXPORT int get_floats(Sock*, double*, int);
+OPENAXIOM_EXPORT int sock_get_floats(int, double*, int);
+OPENAXIOM_EXPORT int wait_for_client_kill(Sock*, int);
+OPENAXIOM_EXPORT int sock_get_remote_fd(int);
+OPENAXIOM_EXPORT int send_signal(Sock*, int);
+OPENAXIOM_EXPORT int sock_send_signal(int, int);
+OPENAXIOM_EXPORT int send_wakeup(Sock*);
+OPENAXIOM_EXPORT int sock_send_wakeup(int);
+OPENAXIOM_EXPORT Sock* connect_to_local_server_new(char*, int, int);
+OPENAXIOM_EXPORT void remote_stdio(Sock*);
+OPENAXIOM_EXPORT void init_purpose_table(void);
+OPENAXIOM_EXPORT int make_server_number(void);
+OPENAXIOM_EXPORT void close_socket(axiom_socket, char*);
+OPENAXIOM_EXPORT int make_server_name(char*, char*);
+OPENAXIOM_EXPORT int open_server(char*);
+OPENAXIOM_EXPORT int accept_connection(Sock*);
+OPENAXIOM_EXPORT void get_socket_type(Sock*);
+OPENAXIOM_EXPORT int sock_accept_connection(int);
+OPENAXIOM_EXPORT void redirect_stdio(Sock*);
+OPENAXIOM_EXPORT void init_socks(void);
+OPENAXIOM_EXPORT int server_switch(void);
+OPENAXIOM_EXPORT void flush_stdout(void);
+OPENAXIOM_EXPORT void print_line(char*);
 
 
 #define MaxClients      150
@@ -179,11 +180,11 @@ extern void print_line(char*);
 
 /* table of dedicated socket types */
 
-extern Sock *purpose_table[];
-extern Sock server[];
-extern Sock clients[];
-extern fd_set socket_mask;
-extern fd_set server_mask;
+OPENAXIOM_EXPORT extern Sock *purpose_table[];
+OPENAXIOM_EXPORT extern Sock server[];
+OPENAXIOM_EXPORT extern Sock clients[];
+OPENAXIOM_EXPORT extern fd_set socket_mask;
+OPENAXIOM_EXPORT extern fd_set server_mask;
 
 
 #endif /* OPENAXIOM_SOCKIO_included */

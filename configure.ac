@@ -304,8 +304,7 @@ AC_SUBST(axiom_fasl_type)
 AC_SUBST(axiom_all_prerequisites)
 
 # FIXME: Move this out of here.  
-# The core runtime is always built.
-axiom_c_runtime=core
+axiom_c_runtime=
 AC_SUBST(axiom_c_runtime)
 
 AC_CHECK_HEADERS([signal.h],

@@ -1,8 +1,11 @@
+#ifndef OPENAXIOM_CFUNS_included
+#define OPENAXIOM_CFUNS_included
+
 /*
-  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
-  All rights reserved.
+  All rights resrved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are
@@ -12,11 +15,11 @@
         notice, this list of conditions and the following disclaimer.
 
       - Redistributions in binary form must reproduce the above copyright
-        notice, this list of conditions and the following disclaimer in
+       notice, this list of conditions and the following disclaimer in
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical Algorithms Group Ltd. nor the
+      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -33,36 +36,14 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "open-axiom.h"
 
-#define _SPADCLIENT_C
+OPENAXIOM_EXPORT int addtopath(char*);
+OPENAXIOM_EXPORT int directoryp(char*);
+OPENAXIOM_EXPORT int make_path_from_file(char*, char*);
+OPENAXIOM_EXPORT int writeablep(char*);
+OPENAXIOM_EXPORT int readablep(char*);
+OPENAXIOM_EXPORT long findString(char*, char*);
+OPENAXIOM_EXPORT int copyEnvValue(char*, char*);
 
-#include <stdio.h>
-#include <signal.h>
-
-#include "axiom-c-macros.h"
-#include "sockio.h"
-#include "com.h"
-#include "bsdsignal.h"
-
-#include "sockio.h"
-#include "spadclient.H1"
-
-Sock *sock;
-
-static void 
-inter_handler(int sig)
-{
-  send_signal(sock, SIGUSR2);
-  fflush(stderr);
-}
-
-
-int 
-main(void)
-{
-  sock = connect_to_local_server(SessionServer, InterpWindow, Forever);
-  bsdSignal(SIGINT, inter_handler,RestartSystemCalls); 
-  remote_stdio(sock);
-  return(0);
-}
-
+#endif /* OPENAXIOM_CFUNS_included */

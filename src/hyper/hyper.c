@@ -64,7 +64,7 @@
 
 #include "all_hyper_proto.H1"
 #include "sockio.h"
-#include "bsdsignal.H1"
+
 /*
  * Here is a flag used to tell me whether I made a good connection to the
  * menu server. Needed so I don't send spad commands when I should not

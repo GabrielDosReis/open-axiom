@@ -50,7 +50,6 @@
 
 #include "all_hyper_proto.H1"
 #include "sockio.h"
-#include "bsdsignal.H1"
 
 extern char **input_file_list;
 extern int input_file_count;

@@ -58,7 +58,6 @@
 #include "com.h"
 #include "bsdsignal.h"
 
-#include "bsdsignal.H1"
 #include "openpty.H1"
 #include "prt.H1"
 #include "edin.H1"

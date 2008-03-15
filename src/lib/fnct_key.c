@@ -51,7 +51,6 @@
 #include "bsdsignal.h"
 
 
-#include "bsdsignal.H1"
 #include "fnct_key.H1"
 #include "prt.H1"
 #include "edin.H1"

@@ -48,7 +48,7 @@
 #  include <windows.h>
 #endif
 
-#include "cfuns-c.H1"
+#include "cfuns.h"
 
 /* Most versions of Windows don't have the POSIX functions getuid(),
    geteuid(), getgid(), and getegid().  The following definitions are
@@ -71,7 +71,7 @@
 #  define getegid() getgid()
 #endif
 
-int
+OPENAXIOM_EXPORT int
 addtopath(char *dir)
 {
     char *path, *newpath;
@@ -95,7 +95,7 @@ addtopath(char *dir)
  */
 
 
-int
+OPENAXIOM_EXPORT int
 directoryp(char *path)
 {
     struct stat buf;
@@ -104,7 +104,7 @@ directoryp(char *path)
     return code == -1 ? -1 : S_ISDIR(buf.st_mode);
 }
 
-int 
+OPENAXIOM_EXPORT int 
 make_path_from_file(char *s, char *t)
 {
     char *pos = "";
@@ -184,7 +184,7 @@ axiom_has_write_access(const struct stat* file_info)
       2 if the file does not exists but process has write
         has write access to the dirname of path.  */
 
-int
+OPENAXIOM_EXPORT int
 writeablep(char *path)
 {
     struct stat buf;
@@ -211,7 +211,7 @@ writeablep(char *path)
       0 if the file exists but process has no read access.
       1 if the file exists and read access is granted.  */
 
-int
+OPENAXIOM_EXPORT int
 readablep(char *path)
 {
     struct stat buf;
@@ -238,7 +238,7 @@ readablep(char *path)
 
 
 
-long
+OPENAXIOM_EXPORT long
 findString(char *file, char *string)
 {
     int nstring, charpos;
@@ -258,7 +258,7 @@ findString(char *file, char *string)
 
 }
 
-int
+OPENAXIOM_EXPORT int
 copyEnvValue(char *varName, char *buffer)
 {
     char *s;
@@ -272,7 +272,7 @@ copyEnvValue(char *varName, char *buffer)
 
 /* Return 1 if the file descriptor FD, as viewed by the Core Executable,
    is attached to a terminal.  */
-int
+OPENAXIOM_EXPORT int
 std_stream_is_terminal(int fd)
 {
    assert(fd > -1 && fd < 3);

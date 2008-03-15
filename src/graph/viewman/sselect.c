@@ -46,7 +46,6 @@
 #include "bsdsignal.h"
 
 #include "sockio.h"
-#include "bsdsignal.H1"
 #include "cleanup.H1"
 #include "sselect.H1"
 

@@ -53,7 +53,6 @@
 #include "bsdsignal.h"
 #include "sman.h"
 
-#include "bsdsignal.H1"
 #include "sockio.h"
 #include "openpty.H1"
 #include "utils.h"

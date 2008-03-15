@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,15 +47,11 @@ libspad_la_SOURCES = $(foreach comp, \
 			 $(addsuffix _SOURCES, @axiom_c_runtime@), \
 			 $($(comp)))
 
-other_SOURCES = cfuns-c.c
-
 unused_SOURCES = emupty.c
 
+libopen_axiom_core_la_SOURCES = $(core_SOURCES)
+libopen_axiom_core_la_objects = $(libopen_axiom_core_la_SOURCES:.c=.lo)
 libspad_la_objects = $(libspad_la_SOURCES:.c=.lo)
-
-other_objects = $(other_SOURCES:.c=.$(OBJEXT))
-
-pamphlets = Makefile.pamphlet
 
 subdir = src/lib/
 
@@ -66,9 +62,16 @@ subdir = src/lib/
 all: all-ax
 
 all-ax all-lib: stamp
-stamp: $(axiom_target_libdir)/libspad.la
+stamp: $(axiom_target_libdir)/libopen-axiom-core.la \
+	$(axiom_target_libdir)/libspad.la
 	rm -f stamp
 	$(STAMP) stamp
+
+$(axiom_target_libdir)/libopen-axiom-core.la: \
+	$(libopen_axiom_core_la_objects)
+	$(mkinstalldirs) $(axiom_target_libdir)
+	$(LIBTOOL) --mode=link $(CC) -module -o $@ \
+		$(libopen_axiom_core_la_objects)
 
 $(axiom_target_libdir)/libspad.la: $(libspad_la_objects)
 	$(mkinstalldirs) $(axiom_target_libdir)
@@ -78,7 +81,8 @@ $(axiom_target_libdir)/libspad.la: $(libspad_la_objects)
 .PRECIOUS: %.$(OBJEXT) %.lo
 
 %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) -o $@ $(CCF) $(axiom_includes) $(AXIOM_X11_CFLAGS) $<
+	$(COMPILE) -o $@ $(CCF) -DOPENAXIOM_BUILD_DLL \
+		$(axiom_includes) $(AXIOM_X11_CFLAGS) $<
 
 # This is a support library, so it does not change often and
 # we don't need to remove the produced objects in mostlyclean.
@@ -87,9 +91,9 @@ mostlyclean-local:
 	@rm -f *.lo *.$(OBJEXT)
 
 clean-local: mostlyclean-local
+	@$(LIBTOOL) --mode=clean $(axiom_target_libdir)/libopen-axiom-core.la
 	@$(LIBTOOL) --mode=clean $(axiom_target_libdir)/libspad.la
 	@rm -f $(other_objects)
-	@rm -f $(libspad_la_SOURCES) $(other_SOURCES)
 	@rm -fr .libs _libs
 	@rm -f stamp
 

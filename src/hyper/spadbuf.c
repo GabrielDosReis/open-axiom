@@ -57,7 +57,6 @@
 #include "com.h"
 
 #include "spadbuf.H1"
-#include "bsdsignal.H1"
 #include "sockio.h"
 #include "edin.H1"
 #include "wct.H1"

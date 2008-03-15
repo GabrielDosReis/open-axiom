@@ -47,7 +47,6 @@
 #include "process.h"
 #include "bsdsignal.h"
 
-#include "bsdsignal.H1"
 #include "util.H1"
 #include "Gfun.H1"
 #include "XSpadFill.H1"
