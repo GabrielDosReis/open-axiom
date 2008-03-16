@@ -1136,7 +1136,8 @@ $setOptions := '(
 -- length      line length of output displays           77 
 -- scripts     show subscripts,... linearly             off 
 -- showeditor  view output of )show in editor           off 
--- tex         create output in TeX style               Off:CONSOLE 
+-- tex         create output in TeX style               Off:CONSOLE
+-- mathml      create output in MathML style            Off:CONSOLE 
   (output
    "view and set some output options"
    interpreter
@@ -1501,6 +1502,54 @@ $setOptions := '(
         "console"))
       NIL)
    ))
+
+-- ----------------------- The mathml Option ------------------------
+--
+-- Description: create output in MathML style
+--
+-- )set output mathml is used to tell OpenAxiom to turn MathML-style output
+-- printing on and off, and where to place the output. By default,
+-- the destination for the output is the screen but printing is
+-- turned off.
+--
+-- Syntax: )set output mathml <arg>
+-- where arg can be one of
+-- on turn MathML printing on
+-- off turn MathML printing off (default state)
+-- console send MathML output to screen (default state)
+-- fp<.fe> send MathML output to file with file prefix fp
+-- and file extension .fe. If not given,
+-- .fe defaults to .smml.
+--
+-- If you wish to send the output to a file, you must issue
+-- this command twice: once with on and once with the file name.
+-- For example, to send MathML output to the file polymer.smml,
+-- issue the two commands
+--
+-- )set output mathml on
+-- )set output mathml polymer
+--
+-- The output is placed in the directory from which you invoked
+-- OpenAxiom or the one you set with the )cd system command.
+-- The current setting is: Off:CONSOLE
+
+  (mathml
+  "create output in MathML style"
+  interpreter
+  FUNCTION
+  setOutputMathml
+  (("create output in MathML format"
+  LITERALS
+  $mathmlFormat
+  (off on)
+  off)
+  (break $mathmlFormat)
+  ("where MathML output goes (enter {\em console} or a pathname)"
+  FILENAME
+  $mathmlOutputFile
+  chkOutputFileName
+  "console"))
+  NIL)
 
 -- ----------------------- The quit Option -----------------------
 --

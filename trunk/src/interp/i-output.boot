@@ -1377,11 +1377,22 @@ texFormat1 expr ==
   FORCE_-OUTPUT $texOutputStream
   NIL
 
+mathmlFormat expr ==
+  mml := '(MathMLFormat)
+  mmlrep := '(String)
+  formatFn := getFunctionFromDomain("coerce",mml,[$OutputForm])
+  displayFn := getFunctionFromDomain("display",mml,[mmlrep])
+  SPADCALL(SPADCALL(expr,formatFn),displayFn)
+  TERPRI $mathmlOutputStream
+  FORCE_-OUTPUT $mathmlOutputStream
+  NIL
+
 output(expr,domain) ==
   if isWrapped expr then expr := unwrap expr
   isMapExpr expr =>
     if $formulaFormat then formulaFormat expr
     if $texFormat     then texFormat expr
+    if $mathmlFormat  then mathmlFormat expr
     if $algebraFormat then mathprintWithNumber expr
   categoryForm? domain or domain in '((Mode) (Domain) (Type)) =>
     if $algebraFormat then
@@ -1398,6 +1409,7 @@ output(expr,domain) ==
     if $algebraFormat then
       mathprintWithNumber x
     if $texFormat     then texFormat x
+    if $mathmlFormat  then mathmlFormat x
   (FUNCTIONP(opOf domain)) and
     (printfun := compiledLookup("<<",'(TextWriter TextWriter $), evalDomain domain))
        and (textwrit := compiledLookup("print", '($), TextWriter())) =>

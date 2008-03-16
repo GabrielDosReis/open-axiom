@@ -851,6 +851,7 @@ aggcat.spad.pamphlet (AGG HOAGG CLAGG BGAGG SKAGG QUAGG DQAGG PRQAGG DIOPS
 aggcat2.spad.pamphlet (FLAGG2 FSAGG2)
 galfact.spad.pamphlet (GALFACT)
 intfact.spad.pamphlet (PRIMES IROOT INTFACT)
+mathml.spad.pamphlet (MMLFORM)
 padiclib.spad.pamphlet (IBPTOOLS IBACHIN PWFFINTB)
 perm.spad.pamphlet (PERMCAT PERM)
 permgrps.spad.pamphlet (PERMGRP PGE)
@@ -863,7 +864,7 @@ view3D.spad.pamphlet (VIEW3D)
 <<layer17>>=
 axiom_algebra_layer_17 = \
   CCLASS  FSAGG2  GALFACT IALGFACT \
-  IBACHIN NORMMA  ODERED  OMSAGG   \
+  IBACHIN MMLFORM NORMMA  ODERED  OMSAGG   \
   PERM    PERMGRP PRIMES  PWFFINTB \
   RDIST   SAE     SAEFACT SAERFFC  \
   SGCF    TBAGG   TBAGG-  VIEW3D 
@@ -1418,7 +1419,8 @@ SPADFILES= \
  ${OUTSRC}/list.spad ${OUTSRC}/lmdict.spad ${OUTSRC}/lodof.spad \
  ${OUTSRC}/lodop.spad ${OUTSRC}/lodo.spad \
  ${OUTSRC}/manip.spad ${OUTSRC}/mappkg.spad ${OUTSRC}/matcat.spad \
- ${OUTSRC}/matfuns.spad ${OUTSRC}/matrix.spad ${OUTSRC}/matstor.spad \
+ ${OUTSRC}/matfuns.spad ${OUTSRC}/mathml.spad \
+ ${OUTSRC}/matrix.spad ${OUTSRC}/matstor.spad \
  ${OUTSRC}/mesh.spad ${OUTSRC}/mfinfact.spad ${OUTSRC}/misc.spad \
  ${OUTSRC}/mkfunc.spad ${OUTSRC}/mkrecord.spad \
  ${OUTSRC}/mlift.spad ${OUTSRC}/moddfact.spad ${OUTSRC}/modgcd.spad \
@@ -1582,7 +1584,8 @@ DOCFILES= \
  ${DOC}/list.spad.dvi ${DOC}/lmdict.spad.dvi ${DOC}/lodof.spad.dvi \
  ${DOC}/lodop.spad.dvi ${DOC}/lodo.spad.dvi \
  ${DOC}/manip.spad.dvi ${DOC}/mappkg.spad.dvi ${DOC}/matcat.spad.dvi \
- ${DOC}/matfuns.spad.dvi ${DOC}/matrix.spad.dvi ${DOC}/matstor.spad.dvi \
+ ${DOC}/matfuns.spad.dvi ${DOC}/mathml.spad.dvi \
+ ${DOC}/matrix.spad.dvi ${DOC}/matstor.spad.dvi \
  ${DOC}/mesh.spad.dvi ${DOC}/mfinfact.spad.dvi ${DOC}/misc.spad.dvi \
  ${DOC}/mkfunc.spad.dvi ${DOC}/mkrecord.spad.dvi ${DOC}/mlift.spad.jhd.dvi \
  ${DOC}/mlift.spad.dvi ${DOC}/moddfact.spad.dvi ${DOC}/modgcd.spad.dvi \
