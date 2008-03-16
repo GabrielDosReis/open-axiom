@@ -55,6 +55,8 @@ CC = @CC@
 CFLAGS = @CFLAGS@
 OBJEXT = @OBJEXT@
 EXEEXT = @EXEEXT@
+DLLEXT = $(if $(findstring mingw, $(target)),dll,so)
+
 
 PACKAGE_STRING = @PACKAGE_STRING@
 

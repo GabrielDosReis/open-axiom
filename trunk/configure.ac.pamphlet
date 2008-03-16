@@ -1022,7 +1022,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-03-15], 
+AC_INIT([OpenAxiom], [1.2.0-2008-03-16], 
         [open-axiom-bugs@lists.sf.net])
 
 @
@@ -1157,6 +1157,9 @@ of traps.  Consequently, dedicated tools have been developed to
 abstract away from those details.  In particular, we rely on
 GNU \Tool{libtool} to take care of that for us.
 <<initialize shared libraries tool>>=
+# Tell Libtool to assume `dlopen' so that it does not have to
+# emulate it.
+AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 @

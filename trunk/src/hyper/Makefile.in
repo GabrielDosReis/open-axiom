@@ -69,7 +69,7 @@ hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
 		show-types.c spadint.c titlebar.c
 
 libspad_la = $(axiom_target_libdir)/libspad.la \
-		$(axiom_target_libdir)/libopen-axiom-core.la
+		$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
 
 hypertex_objects = $(hypertex_SOURCES:.c=.lo)
 hypertex_LDADD = $(libspad_la)

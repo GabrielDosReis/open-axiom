@@ -58,7 +58,7 @@ Gfun_objects = ../Gdraws/Gfun.lo
 
 
 view3D_LDADD = $(axiom_target_libdir)/libspad.la \
-		$(axiom_target_libdir)/libopen-axiom-core.la
+		$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
 view3D_DEPENDENCIES = $(Gfun_objects)
 
 subdir = src/graph/view3D/
