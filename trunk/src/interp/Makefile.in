@@ -209,7 +209,7 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	@ echo '(|importModule| "sys-driver")' >> makeint.lisp
 	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
 	@ echo '(|importModule| "hash")' >> makeint.lisp
-	@ echo '(gbc t)' >> makeint.lisp
+	@ echo '#+:GCL (gbc t)' >> makeint.lisp
 	@ echo '(|importModule| "util")' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
@@ -222,7 +222,7 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	@ echo '(load "obey")' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
-	@ echo '(gbc t)' >> makeint.lisp
+	@ echo '#+:GCL (gbc t)' >> makeint.lisp
 
 ${SAVESYS}: makeint.lisp
 	$(LOADSYS) -- --system="$(AXIOM)/" \
@@ -249,7 +249,7 @@ exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
 $(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp ${LISPSYS}
 	@ echo 616 making $@ from exposed.lsp
 	$(mkinstalldirs) $(axiom_targetdir)/algebra
-	@ echo '(progn  (compile-file "exposed.lsp" :output-file "$(axiom_targetdir)/algebra/exposed.$(FASLEXT)"))' | ${LISPSYS} 
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 database.date:
 	@ echo 617 the database was updated...remaking interpsys
@@ -326,7 +326,8 @@ hypertex.$(FASLEXT): hypertex.boot boot-pkg.$(FASLEXT)
 
 ## OpenAxiom's interpreter.
 
-patches.$(FASLEXT): patches.lisp macros.$(FASLEXT)
+patches.$(FASLEXT): patches.lisp macros.$(FASLEXT) sockio.$(FASLEXT) \
+		g-timer.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 setvars.$(FASLEXT): setvars.boot macros.$(FASLEXT) debug.$(FASLEXT)
@@ -406,7 +407,7 @@ setvart.$(FASLEXT): setvart.boot macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## OpenAxiom's compiler
-wi2.$(FASLEXT): wi2.boot macros.$(FASLEXT)
+wi2.$(FASLEXT): wi2.boot macros.$(FASLEXT) define.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 wi1.$(FASLEXT): wi1.boot macros.$(FASLEXT)
@@ -624,7 +625,8 @@ spaderror.$(FASLEXT): spaderror.lisp macros.$(FASLEXT)
 debug.$(FASLEXT): debug.lisp macros.$(FASLEXT) parsing.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-spad.$(FASLEXT): spad.lisp bootlex.$(FASLEXT)
+spad.$(FASLEXT): spad.lisp bootlex.$(FASLEXT) postpar.$(FASLEXT) \
+		debug.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 monitor.$(FASLEXT): monitor.lisp macros.$(FASLEXT)

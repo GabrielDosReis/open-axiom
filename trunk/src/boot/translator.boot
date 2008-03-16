@@ -321,9 +321,15 @@ shoeAddComment l==  CONCAT('"; ",CAR l)
 genImportDeclaration(op, sig) ==
   sig isnt ["Signature", op', m] => coreError '"invalid signature"
   m isnt ["Mapping", t, s] => coreError '"invalid function type"
+  if not null s and SYMBOLP s then s := [s]
   %hasFeature KEYWORD::GCL => 
-    if SYMBOLP s then s := [s]
     ["DEFENTRY", op, s, [t, SYMBOL_-NAME op']]
+  %hasFeature KEYWORD::SBCL =>
+    args := [GENSYM() for x in s]
+    ["DEFUN",op,args,
+      [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
+        [INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
+          ["FUNCTION",nativeType t,:[nativeType x for x in s]]], :args]]
   fatalError '"import declaration not implemented for this Lisp"
 
 shoeOutParse stream ==

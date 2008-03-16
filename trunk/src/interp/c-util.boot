@@ -108,7 +108,6 @@ displayComp level ==
   pp removeZeroOne mkErrorExpr level
   sayBrightly ['"****** level",'%b,level,'%d,'" ******"]
   [$x,$m,$f,$exitModeStack]:= ELEM($s,level)
-  ($X:=$x;$M:=$m;$F:=$f)
   SAY("$x:= ",$x)
   SAY("$m:= ",$m)
   SAY "$f:="

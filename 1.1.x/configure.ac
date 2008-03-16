@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.1.1-2008-03-15], 
+AC_INIT([OpenAxiom], [1.1.1-2008-03-16], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -508,6 +508,32 @@ AC_SUBST(CCF)
 AC_SUBST(LDF)
 AC_SUBST(LISP)
 AC_SUBST(GCLOPTS)
+void_type='void'
+char_type='char'
+int_type='int'
+float_type='float'
+double_type='double'
+string_type='string'
+pointer_type='object'
+case $axiom_lisp_flavor in
+   gcl)
+      ;;
+   sbcl)
+      string_type='c-string'
+      pointer_type='system-area-pointer'
+      ;;
+   *)
+      AC_MSG_ERROR([We do not know how to translate native types for this Lisp])
+      ;;
+esac
+AC_SUBST(void_type)
+AC_SUBST(char_type)
+AC_SUBST(int_type)
+AC_SUBST(float_type)
+AC_SUBST(double_type)
+AC_SUBST(string_type)
+AC_SUBST(pointer_type)
+
 AXIOM_MAKEFILE([Makefile])
 AXIOM_MAKEFILE([src/Makefile])
 AXIOM_MAKEFILE([src/lib/Makefile])

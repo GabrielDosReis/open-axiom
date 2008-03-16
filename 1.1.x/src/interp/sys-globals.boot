@@ -442,3 +442,8 @@ $useRepresentationHack := true
 
 ++
 $insideCanCoerceFrom := nil
+
+++ ???
+$x := nil
+$f := nil
+$m := nil

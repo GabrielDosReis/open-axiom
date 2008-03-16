@@ -458,8 +458,9 @@ bpSignature() ==
 ++   Mapping:
 ++      (Name | IdList) -> Name
 bpMapping() ==
-  (bpName() or bpIdList()) and bpEqKey "ARROW" and bpName()
-    and bpPush Mapping(bpPop1(), bpPop1())
+  (bpName() or bpParenthesized function bpIdList) and 
+     bpEqKey "ARROW" and bpName() and 
+       bpPush Mapping(bpPop1(), bfUntuple bpPop1())
 
 bpCancel()==
     a:=bpState()

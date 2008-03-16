@@ -10,7 +10,7 @@ EXTRACT_BOOTSTRAP_FILE = \
 
 ## We use interpsys, built from previous stage, to bootstrap the algebra
 ## files.  In fact, we use interpsys to build everything.
-COMPILE_LISP = ../interp/interpsys$(EXEEXT) -- --compile --output=$@ $<
+COMPILE_LISP = $(INTERPSYS) --compile --output=$@ $<
 
 
 INTERPSYS = ../interp/interpsys$(EXEEXT) -- --system="$(AXIOM)" \

@@ -39,16 +39,6 @@ import '"sys-utility"
 ++
 $interpOnly := false
 
-++ Basic types used throughout Boot codes.
-%Boolean <=> BOOLEAN
-%Short <=> FIXNUM
-%Integer <=> BIGNUM
-%Symbol <=> SYMBOL
-%String <=> STRING
-%List <=> LIST
-%Vector <=> VECTOR
-%Thing <=> true
-
 --% Utility Functions of General Use
 
 ELEMN(x, n, d) ==
@@ -97,7 +87,7 @@ get2(x,prop,e) ==
 ++ Update properties of an entity in an environment.
 put: (%Thing,%Symbol,%Thing,%List) -> %List
 addBinding: (%Thing,%List,%List) -> %List
-augProplistOf: (%Thing,%List,%Thing,%List) -> %List
+augProplistOf: (%Thing,%Symbol,%Thing,%List) -> %List
 augProplist: (%List,%Thing,%Thing) -> %List
 
 put(x,prop,val,e) ==

@@ -45,8 +45,9 @@
 <<*>>=
 <<license>>
 
-(in-package 'BOOT)
-(setq |$globalExposureGroupAlist|
+(import-module "boot-pkg")
+(in-package "BOOT")
+(defparameter |$globalExposureGroupAlist|
 '(
 ;;define the groups |basic| |naglink| |anna| |categories| |Hidden| |defaults|
 (|basic| 
@@ -1246,7 +1247,7 @@
   (|VectorCategory&| . VECTCAT-)
   (|VectorSpace&| . VSPACE-)))
 )
-(setq |$localExposureDataDefault| (VECTOR 
+(defparameter |$localExposureDataDefault| (VECTOR 
 (LIST 
 ;;These groups will be exposed 
 '|basic| 
@@ -1261,7 +1262,7 @@
 ;;These constructors will be explicitly hidden
 )
 ))
-(setq |$localExposureData|  (copy-seq |$localExposureDataDefault|))
+(defparameter |$localExposureData|  (copy-seq |$localExposureDataDefault|))
 @
 \eject
 \begin{thebibliography}{99}

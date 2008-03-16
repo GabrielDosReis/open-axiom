@@ -1138,3 +1138,16 @@ bfDs: %Short -> %String
 bfDs n== 
   if n=0 then '"" else CONCAT('"D",bfDs(n-1))
 
+--% Native datatype translation
+coreSymbol: %Symbol -> %Symbol
+coreSymbol s ==
+  INTERN(SYMBOL_-NAME s, "AxiomCore")
+
+bootSymbol: %Symbol -> %Symbol
+bootSymbol s ==
+  INTERN SYMBOL_-NAME s
+
+nativeType t ==
+  null t => t
+  t' := ASSOC(coreSymbol t,$NativeTypeTable) => bootSymbol rest t'
+  fatalError CONCAT('"unsupported native type: ", SYMBOL_-NAME t)

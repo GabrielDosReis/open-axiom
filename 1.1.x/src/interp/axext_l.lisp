@@ -1,6 +1,6 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -38,25 +38,12 @@
 (import-module "foam_l")
 (in-package "FOAM-USER")
 
-;; tacky but means we can run programs
-
-(defun H-integer (l e)
-  (|AXL-LiteralToInteger| l))
-        
-(defun  H-string (l e)
-  (|AXL-LiteralToString| l))
-
-(defun  H-error (l e)
-  (|AXL-error| l))
-
-(eval-when (load eval)
-           (defconstant |G-axclique_string_305639517| (cons #'H-String nil))
-           (defconstant |G-axclique_integer_685864888| (cons #'H-integer nil))
-           (defconstant |G-axclique_error_011667951| (cons #'H-error nil)))
-
 ;; Literals should be null-terminated strings
 
 ;; SingleInteger
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (progn
 
 (defmacro |AXL-LiteralToSingleInteger| (l)
   `(parse-integer ,l :junk-allowed t))
@@ -196,6 +183,23 @@
 
 ;; Vectors
 
+;; tacky but means we can run programs
+
+(defun H-integer (l e)
+  (|AXL-LiteralToInteger| l))
+        
+(defun  H-string (l e)
+  (|AXL-LiteralToString| l))
+
+(defun  H-error (l e)
+  (|AXL-error| l))
+
+))
+
+(eval-when (load eval)
+           (defconstant |G-axclique_string_305639517| (cons #'H-String nil))
+           (defconstant |G-axclique_integer_685864888| (cons #'H-integer nil))
+           (defconstant |G-axclique_error_011667951| (cons #'H-error nil)))
 
 ;; Testing
 

@@ -32,6 +32,8 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (import-module "macros")
+(import-module "debug")
+(import-module "g-timer")
 (in-package "BOOT")
 ;;patches for now
 

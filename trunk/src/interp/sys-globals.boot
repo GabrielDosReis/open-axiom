@@ -449,3 +449,7 @@ $sourceFiles := []
 ++ ??? bogus initialization for now
 INPUTSTREAM := "T"
 
+++ ???
+$x := nil
+$f := nil
+$m := nil

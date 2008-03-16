@@ -72,6 +72,7 @@
 
 	   "$faslType"
 	   "$systemInstallationDirectory"
+	   "$NativeTypeTable"
 
            "getCommandLineArguments"
            "processCommandLine"
@@ -774,3 +775,13 @@
 #+ :sbcl
 (eval-when (:load-toplevel :execute)
    (pushnew #'shoe-provide-module sb-ext:*module-provider-functions*))
+
+;; native data type translation table
+(defconstant |$NativeTypeTable|
+  '((|void|    . @void_type@)
+    (|char|    . @char_type@)
+    (|int|     . @int_type@)
+    (|float|   . @float_type@)
+    (|double|  . @double_type@)
+    (|string|  . @string_type@)
+    (|pointer| . @pointer_type@)))

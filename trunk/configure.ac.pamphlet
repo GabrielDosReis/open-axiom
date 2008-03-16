@@ -950,6 +950,43 @@ fi
 AC_SUBST(axiom_fasl_type)
 @
 
+\paragraph{Native data types}
+OpenAxiom needs to communicate to the hosting operation systems
+through a set of C interface.  Consequently we need an automated
+translation mechanism that shields Boot code from the variability
+of Lisp systems for so-called `foreign function interface'.  Here,
+we compute a translation table for supported Lisp systems. This table
+is used by the Boot translator for generating codes for import of
+native routines.
+<<nativeTypeTable>>=
+void_type='void'
+char_type='char'
+int_type='int'
+float_type='float'
+double_type='double'
+string_type='string'
+pointer_type='object'
+case $axiom_lisp_flavor in
+   gcl)
+      ;;
+   sbcl)
+      string_type='c-string'
+      pointer_type='system-area-pointer'
+      ;;
+   *)
+      AC_MSG_ERROR([We do not know how to translate native types for this Lisp])
+      ;;
+esac
+AC_SUBST(void_type)
+AC_SUBST(char_type)
+AC_SUBST(int_type)
+AC_SUBST(float_type)
+AC_SUBST(double_type)
+AC_SUBST(string_type)
+AC_SUBST(pointer_type)
+
+@
+
 
 \section{Configuration options}
 \label{sec:config-options}
@@ -1201,6 +1238,7 @@ AC_SUBST(axiom_c_runtime)
 <<C headers and libraries>>
 
 <<platform specific bits>>
+<<nativeTypeTable>>
 <<instantiate config files>>
 echo "Type '${MAKE}' (without quotes) to build OpenAxiom"
 @
