@@ -88,13 +88,7 @@ systemAlgebraDirectory() ==
 ++ stdStreamIsTerminal:
 ++   returns 1 if the standard stream is attached to a terminal;
 ++   otherwise 0.
-)if %hasFeature KEYWORD::GCL
-import stdStreamIsTerminal for std__stream__is__terminal: INT -> INT
-)else
-stdStreamIsTerminal fd ==
-  0
-)endif
-
+import stdStreamIsTerminal for std__stream__is__terminal: int -> int
 
 ++ Load list of exposed categories, domains, and packages.
 ++ User-specified list takes precedence over system wide list.

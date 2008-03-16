@@ -1,5 +1,10 @@
 2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/translator.boot: Switch to new native type translation.
+	* interp/sys-driver.boot (stdStreamIsTerminal): Simplify.
+
+2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/Makefile.in (void_type): New.
 	(char_type): Likewise.
 	(int_type): Likewise.

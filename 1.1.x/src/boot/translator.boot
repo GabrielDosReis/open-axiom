@@ -323,7 +323,8 @@ genImportDeclaration(op, sig) ==
   m isnt ["Mapping", t, s] => coreError '"invalid function type"
   if not null s and SYMBOLP s then s := [s]
   %hasFeature KEYWORD::GCL => 
-    ["DEFENTRY", op, s, [t, SYMBOL_-NAME op']]
+    ["DEFENTRY", op, [nativeType x for x in s], 
+       [nativeType t, SYMBOL_-NAME op']]
   %hasFeature KEYWORD::SBCL =>
     args := [GENSYM() for x in s]
     ["DEFUN",op,args,
