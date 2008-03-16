@@ -49,7 +49,7 @@ view2D_objects = $(view2D_SOURCES:.c=.lo)
 Gfun_objects = ../Gdraws/Gfun.lo
 
 view2D_LDADD = $(axiom_target_libdir)/libspad.la \
-		$(axiom_target_libdir)/libopen-axiom-core.la
+		$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
 
 view2D_DEPENDENCIES = $(Gfun_objects)
 

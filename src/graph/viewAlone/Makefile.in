@@ -45,7 +45,7 @@ viewAlone_SOURCES = viewAlone.c spoonComp.c spoon2D.c
 viewAlone_objects = $(viewAlone_SOURCES:.c=.lo)
 
 viewAlone_LDADD = $(axiom_target_libdir)/libspad.la \
-		$(axiom_target_libdir)/libopen-axiom-core.la
+		$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
 viewAlone_DEPENDENCIES =
 
 subdir = src/graph/viewAlone/

@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-03-15], 
+AC_INIT([OpenAxiom], [1.2.0-2008-03-16], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -11,6 +11,9 @@ AC_PREREQ([2.60])
 
 AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 
+# Tell Libtool to assume `dlopen' so that it does not have to
+# emulate it.
+AC_LIBTOOL_DLOPEN
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 
