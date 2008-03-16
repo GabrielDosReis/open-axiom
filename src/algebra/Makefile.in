@@ -86,7 +86,8 @@ SPADFILES= \
  ${OUTSRC}/list.spad ${OUTSRC}/lmdict.spad ${OUTSRC}/lodof.spad \
  ${OUTSRC}/lodop.spad ${OUTSRC}/lodo.spad \
  ${OUTSRC}/manip.spad ${OUTSRC}/mappkg.spad ${OUTSRC}/matcat.spad \
- ${OUTSRC}/matfuns.spad ${OUTSRC}/matrix.spad ${OUTSRC}/matstor.spad \
+ ${OUTSRC}/matfuns.spad ${OUTSRC}/mathml.spad \
+ ${OUTSRC}/matrix.spad ${OUTSRC}/matstor.spad \
  ${OUTSRC}/mesh.spad ${OUTSRC}/mfinfact.spad ${OUTSRC}/misc.spad \
  ${OUTSRC}/mkfunc.spad ${OUTSRC}/mkrecord.spad \
  ${OUTSRC}/mlift.spad ${OUTSRC}/moddfact.spad ${OUTSRC}/modgcd.spad \
@@ -242,7 +243,8 @@ DOCFILES= \
  ${DOC}/list.spad.dvi ${DOC}/lmdict.spad.dvi ${DOC}/lodof.spad.dvi \
  ${DOC}/lodop.spad.dvi ${DOC}/lodo.spad.dvi \
  ${DOC}/manip.spad.dvi ${DOC}/mappkg.spad.dvi ${DOC}/matcat.spad.dvi \
- ${DOC}/matfuns.spad.dvi ${DOC}/matrix.spad.dvi ${DOC}/matstor.spad.dvi \
+ ${DOC}/matfuns.spad.dvi ${DOC}/mathml.spad.dvi \
+ ${DOC}/matrix.spad.dvi ${DOC}/matstor.spad.dvi \
  ${DOC}/mesh.spad.dvi ${DOC}/mfinfact.spad.dvi ${DOC}/misc.spad.dvi \
  ${DOC}/mkfunc.spad.dvi ${DOC}/mkrecord.spad.dvi ${DOC}/mlift.spad.jhd.dvi \
  ${DOC}/mlift.spad.dvi ${DOC}/moddfact.spad.dvi ${DOC}/modgcd.spad.dvi \
@@ -684,7 +686,7 @@ axiom_algebra_layer_16_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_16)))
 axiom_algebra_layer_17 = \
   CCLASS  FSAGG2  GALFACT IALGFACT \
-  IBACHIN NORMMA  ODERED  OMSAGG   \
+  IBACHIN MMLFORM NORMMA  ODERED  OMSAGG   \
   PERM    PERMGRP PRIMES  PWFFINTB \
   RDIST   SAE     SAEFACT SAERFFC  \
   SGCF    TBAGG   TBAGG-  VIEW3D 

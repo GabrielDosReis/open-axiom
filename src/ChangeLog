@@ -1,3 +1,16 @@
+2008-03-16 Alfredo Portes <doyenatccny@gmail.com>
+	   Arthur Ralfs <acralfs@shaw.ca>
+
+	* algebra/mathml.spad.pamphlet: Add Arthur Ralfs's MathML package.
+	* algebra/Makefile.in: Add MathML to the build process.
+	* algebra/Makefile.pamphlet: Likewise.
+	* algebra/exposed.lsp.pamphlet: Likewise.
+	* interp/setvart.boot: Create an output MathML section in
+	patterned after the tex section.
+	* interp/setvars.boot: Likewise.
+	* interp/i-output.boot: Add the coerce and display functions
+	from MathMLFormat actually gets called.
+
 2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/translator.boot: Switch to new native type translation.
