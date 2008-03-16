@@ -1157,3 +1157,17 @@ bfThrow e ==
   atom e => ["THROW",["QUOTE",e],nil]
   not atom first e => bpTrap()
   ["THROW",["QUOTE",first e],:rest e]
+
+--% Native datatype translation
+coreSymbol: %Symbol -> %Symbol
+coreSymbol s ==
+  INTERN(SYMBOL_-NAME s, "AxiomCore")
+
+bootSymbol: %Symbol -> %Symbol
+bootSymbol s ==
+  INTERN SYMBOL_-NAME s
+
+nativeType t ==
+  null t => t
+  t' := ASSOC(coreSymbol t,$NativeTypeTable) => bootSymbol rest t'
+  fatalError CONCAT('"unsupported native type: ", SYMBOL_-NAME t)

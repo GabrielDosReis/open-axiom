@@ -1,5 +1,41 @@
 2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/Makefile.in (void_type): New.
+	(char_type): Likewise.
+	(int_type): Likewise.
+	(float_type): Likewise.
+	(double_type): Likewise.
+	(string_type): Likewise.
+	(pointer_type): Likewise.
+	(edit): Use them.
+	* interp/wi1.boot (ppFull): Tidy.  Don't set *PRINT-DEPTH*.
+	* interp/vmlisp.lisp (gcmsg): Define when SBCL.
+	* interp/template.boot (measureCommon): Fix thinko.
+	* interp/sys-utility.boot: Move basic type definition from
+	g-util.boot to here.
+	* interp/g-util.boot (augProplistOf): Fix signature declaration.
+	* interp/daase.lisp: Tidy.
+	* interp/c-util.boot (displayComp): Remove assignment to
+	$X,$M,$F. 
+	* interp/boot-pkg.lisp: Tidy.
+	* interp/axext_l.lisp: Likewise.
+	* interp/Makefile.pamphlet (makeint.lisp): Call GBC only when GCL.
+	($(axiom_targetdir)/algebra/exposed.$(FASLEXT)): Tidy.
+	(patches.$(FASLEXT)): Require debug.$(FASLEXT), g-timer.$(FASLEXT).
+	(wi2.$(FASLEXT)): Require define.$(FASLEXT).
+	(spad.$(FASLEXT)): Require postpar.$(FASLEXT), debug.$(FASLEXT).
+	* boot/translator.boot (genImportDeclaration): Include translation
+	for SBCL.
+	* boot/parser.boot (bpMapping): Tidy.
+	* boot/ast.boot (coreSymbol): New.
+	(bootSymbol): Likewise.
+	(bootSymbol): Likewise.
+	* lisp/core.lisp.in (|$NativeTypeTable|): New. Export.
+	* algebra/Makefile.pamphlet (COMPILE_LISP): Use $(INTERPSYS).
+	* algebra/exposed.lsp.pamphlet: Tidy.
+
+2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/Makefile.in ($(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)): Tidy.
 	($(axiom_target_libdir)/libspad.la): Likewise.
 

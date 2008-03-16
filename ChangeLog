@@ -1,5 +1,9 @@
 2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet: Compute native type translation table.
+
+2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* configure.ac.pamphlet: Tell Libtool to assume `dlopen'.
 	* config/var-def.mk (DLLEXT): New.
 

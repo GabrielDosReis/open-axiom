@@ -1829,7 +1829,7 @@
 #+:cmulisp
 (defun gcmsg (x)
    (prog1 ext:*gc-verbose* (setq ext:*gc-verbose* x)))
-#+:allegro
+#+ (or :allegro :sbcl)
 (defun gcmsg (x))
 
 #+Lucid

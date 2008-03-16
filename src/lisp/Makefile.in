@@ -117,12 +117,27 @@ base-lisp$(EXEEXT): core.$(FASLEXT)
 
 axiom_optimize_options = @axiom_optimize_options@
 
+void_type = @void_type@
+char_type = @char_type@
+int_type = @int_type@
+float_type = @float_type@
+double_type = @double_type@
+string_type = @string_type@
+pointer_type = @pointer_type@
+
 edit = sed \
 	-e 's|@open_axiom_installdir[@]|$(open_axiom_installdir)|g' \
 	-e 's|@axiom_optimize_options[@]|$(axiom_optimize_options)|g' \
 	-e 's|@host[@]|$(host)|g' \
 	-e 's|@build[@]|$(build)|g' \
-	-e 's|@target[@]|$(target)|g'
+	-e 's|@target[@]|$(target)|g' \
+	-e 's|@void_type[@]|$(void_type)|g' \
+	-e 's|@char_type[@]|$(char_type)|g' \
+	-e 's|@int_type[@]|$(int_type)|g' \
+	-e 's|@float_type[@]|$(float_type)|g' \
+	-e 's|@double_type[@]|$(double_type)|g' \
+	-e 's|@string_type[@]|$(string_type)|g' \
+	-e 's|@pointer_type[@]|$(pointer_type)|g'
 
 core.lisp: $(srcdir)/core.lisp.in
 	$(edit) $< > $@.tmp

@@ -318,7 +318,7 @@ measureCommon u ==
   $table: local := MAKE_-HASHTABLE 'UEQUAL
   fn(u,0) where fn(u,n) == n +
     VECP u => +/[fn(u.i,0) for i in 0..MAXINDEX u]
-    HASH-TABLE-P u =>
+    HASH_-TABLE_-P u =>
       +/[fn(key,0) + fn(HGET(u,key),0) for key in HKEYS u]
     PAIRP u =>
       HGET($table,u) => 0

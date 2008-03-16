@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -62,9 +62,8 @@ stackMessage msg ==
   nil
 
 ppFull x ==
-  _*PRINT_-LEVEL_* : local := nil
-  _*PRINT_-DEPTH_*  : local := nil
-  _*PRINT_-LENGTH_* : local := nil
+  SETQ(_*PRINT_-LEVEL_*,nil)
+  SETQ(_*PRINT_-LENGTH_*,nil)
   pp x
 
 put(x,prop,val,e) ==

@@ -36,6 +36,16 @@
 import '"vmlisp"
 )package "BOOT"
 
+++ Basic types used throughout Boot codes.
+%Boolean <=> BOOLEAN
+%Short <=> FIXNUM
+%Integer <=> BIGNUM
+%Symbol <=> SYMBOL
+%String <=> STRING
+%List <=> LIST
+%Vector <=> VECTOR
+%Thing <=> true
+
 ++ returns true if `f' is bound to a macro.
 macrop: %Thing -> %Boolean
 macrop f ==
