@@ -445,7 +445,7 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 ${SAVESYS}: makeint.lisp
 	$(LOADSYS) -- --system="$(AXIOM)/" \
 		--sysalg="$(axiom_src_datadir)/algebra/" \
-		--make --output=$@ --main="BOOT::RESTART" \
+		--make --output=$@ --main="BOOT::|restart|" \
 		--load-directory=. makeint.lisp
 	@ echo 6 ${SAVESYS} created
 	$(mkinstalldirs) $(axiom_target_bindir)
@@ -467,7 +467,7 @@ ${AXIOMSYS}: makeint.lisp
 	$(LOADSYS) -- \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
-		--make --output=$@ --main="BOOT::RESTART" \
+		--make --output=$@ --main="BOOT::|restart|" \
 		--load-directory=. makeint.lisp
 	@ echo 6a ${AXIOMSYS} created
 @

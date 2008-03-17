@@ -1,5 +1,12 @@
 2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-driver.boot (restart): Rename from RESTART.
+	(SET-RESTART-HOOK): Use restart.
+	* interp/Makefile.pamphlet (${SAVESYS}): Refer restart, not RESTART.
+	(${AXIOMSYS}): Likewise.
+
+2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/cfuns-c.c (oa_chdir): Add missing `return'.
 
 2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>

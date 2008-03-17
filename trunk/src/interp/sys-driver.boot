@@ -134,7 +134,7 @@ initMemoryConfig() ==
 )endif
 
 ++
-RESTART() ==
+restart() ==
   IN_-PACKAGE '"BOOT"      -- ??? is this still necessary?
   -- ??? Ideally, we should not be calling AxiomCore::topLevel.
   -- ??? Rather, we should be called by that function.  Therefore
@@ -176,9 +176,9 @@ SPAD_-SAVE(file) ==
 
 SET_-RESTART_-HOOK() ==
 )if %hasFeature KEYWORD::GCL
-  SETQ(SYSTEM::_*TOP_-LEVEL_-HOOK_*,"RESTART")
+  SETQ(SYSTEM::_*TOP_-LEVEL_-HOOK_*,"restart")
 )endif
-  "RESTART"
+  "restart"
 
 ++ execute Spad script
 executeSpadScript(progname,options,file) ==
