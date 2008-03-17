@@ -2,7 +2,7 @@
    Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
    All rights reserved.
 
-   Copyright (C) 2007, 2008, Gabriel Dos Reis
+   Copyright (C) 2007-2008, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
 
 #include "axiom-c-macros.h"
 
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -46,6 +47,8 @@
 
 #ifdef __WIN32__
 #  include <windows.h>
+#else
+#  include <dirent.h>
 #endif
 
 #include "cfuns.h"
@@ -299,4 +302,132 @@ std_stream_is_terminal(int fd)
 #else
    return isatty(fd);
 #endif
+}
+
+/* Change the process' curretnt directory.  Return zero on success,
+   and -1 on failure.  */
+OPENAXIOM_EXPORT int
+oa_chdir(const char* path)
+{
+#ifdef __MINGW32__
+   SetCurrentDirectory(path) ? 0 : -1;
+#else
+   return chdir(path);
+#endif /* __MINGW32__ */
+}
+
+
+/* return true if path is `.' or `..'.  */
+static inline int
+is_dot_or_dotdot(const char* path)
+{
+   return strcmp(path, ".") == 0 || strcmp(path, "..") == 0;
+}
+
+/* Remove a directory entry.  Files are removed, directories are
+   recursively walked and there removed.
+   Return 0 on success, and -1 on falure.
+   In practice, OpenAxiom does not remove directories with
+   non-trivial recursive structues.  */
+OPENAXIOM_EXPORT int
+oa_unlink(const char* path)
+{
+#ifdef __MINGW32__
+   WIN32_FIND_DATA findData;
+   HANDLE walkHandle;
+   DWORD pathAttributes;
+
+   if (is_dot_or_dotdot(path))
+      return -1;
+
+   if ((pathAttributes = GetFileAttributes(path)) == 0xFFFFFFFF)
+      return -1;
+
+   if (pathAttributes & ~FILE_ATTRIBUTE_DIRECTORY)
+      return DeleteFile(path) ? 0 : -1;
+   
+   if ((walkHandle = FindFirstFile(path, &findData)) == INVALID_HANDLE_VALUE
+       || oa_chdir(path) < 0)
+      return -1;
+   do {
+      if (is_dot_or_dotdot(findData.cFileName))
+         continue;
+      if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+         if (oa_chdir(findData.cFileName) < 0)
+            return -1;
+      }
+      else if (!DeleteFile(findData.cFileName))
+         return -1;
+   } while (FindNextFile(walkHandle, &findData));
+   if (!FindClose(walkHandle))
+      return -1;
+   if (oa_chdir("..") < 0)
+      return -1;
+   return RemoveDirectory(path) ? 0 : -1;
+#else
+   struct stat pathstat;
+   DIR* dir;
+   struct dirent* entry;
+
+   /* Don't ever try to remove `.' or `..'.  */
+   if (is_dot_or_dotdot(path))
+      return -1;
+
+   if (stat(path, &pathstat) < 0)
+      return -1;
+
+   /* handle non dictories first.  */
+   if (!S_ISDIR(pathstat.st_mode))
+      return unlink(path);
+
+   /* change into the path so that we don't have to form full
+      pathnames. */
+   if ((dir = opendir(path)) == NULL || oa_chdir(path) < 0)
+      return -1;
+
+   while (errno = 0, (entry = readdir(dir)) != NULL) {
+      struct stat s;
+      if (is_dot_or_dotdot(entry->d_name))
+         continue;
+      if (stat(entry->d_name, &s) < 0)
+         return -1;
+      if (S_ISDIR(s.st_mode) && oa_unlink(entry->d_name) < 0)
+         return -1;
+      else if (unlink(entry->d_name) < 0)
+         return -1;
+   }
+   if (errno != 0)
+      return -1;
+
+   /* Now, get one level up, and remove the empty directory.  */
+   if (oa_chdir("..") < 0 || closedir(dir) < 0 || rmdir(path) < 0)
+      return -1;
+
+   return 0;
+#endif /* __MINGW32__ */
+}
+
+/* Rename a file or directory.  */
+OPENAXIOM_EXPORT int
+oa_rename(const char* old_path, const char* new_path)
+{
+#ifdef __MINGW32__
+   return MoveFile(old_path, new_path) ? 0 : -1;
+#else
+   return rename(old_path, new_path);
+#endif
+}
+
+/* Create a new directory named `path'.  Return 0 on success,
+   and -1 on failure.  */
+OPENAXIOM_EXPORT int
+oa_mkdir(const char* path)
+{
+#ifdef __MINGW32__
+   return CreateDirectory(path, NULL) ? 0 : -1;
+#else
+#  define DIRECTORY_PERM ((S_IRWXU|S_IRWXG|S_IRWXO) & ~(S_IWGRP|S_IWOTH))
+   return mkdir (path, DIRECTORY_PERM);
+#  undef DIRECTORY_PERM   
+#endif   
 }

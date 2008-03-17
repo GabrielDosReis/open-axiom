@@ -1,3 +1,50 @@
+2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/cfuns-c.c (oa_chdir): Define.
+	(is_dot_or_dotdot): New.
+	(oa_unlink): Define.
+	(oa_rename): Likewise.
+	(oa_mkdir): Likewise.
+	* interp/sys-os.boot: New file.
+	* interp/util.lisp (MAKE-TAGS-FILE): Use changeDirectory.
+	(MAKELIB): Likewise.
+	(MAKESPAD): Likewise.
+	(LIBCHECK): Likewise.
+	* interp/sys-utility.boot ($ERASE): Define here.  Use removeFile.
+	($REPLACE): Likewise.
+	(checkMkdir): Define.
+	* interp/obey.lisp (MAKEDIR): Remove definition.
+	* interp/nlib.lisp (RDEFIOSTREAM): Use checkMkdir.
+	(MAKEDIR): Remove.
+	(RPACKFILE): Use removeFile.
+	($ERASE): Remove Lisp definition.
+	($REPLACE): Likewise.
+	* interp/i-syscmd.boot (cd): Use changeDirectory.
+	(compileAsharpArchiveCmd): Use mkdir.
+	(histFileErase): Likewise.
+	* interp/fortcall.boot (fortCall): Use removeFile.
+	(invokeNagman): Likewise.
+	* interp/daase.lisp (|library|): Use changeDirectory.
+	(LOCALDATABASE): Likewise.
+	(DaaseName): Use removeFile.
+	* interp/construc.lisp (mergelibs): Use removeFile.
+	(mergeall): Use changeDirectory.
+	* interp/c-doc.boot (docreport): Use removeFile.
+	* interp/br-search.boot (getTempPath): Likewise.
+	* interp/br-saturn.boot (dbSort): Likewise.
+	* interp/br-data.boot (buildLibdb): Likewise
+	(dbSplitLibdb): Likewise.
+	(buildGloss): Likewise.
+	(purgeLocalLibdb): Likewise.
+	* interp/as.boot (asList): Likewise.
+	* interp/Makefile.pamphlet (OBJS): Include sys-os.$(FASLEXT).
+	(sys-os.$(FASLEXT)): New rule.
+	(sys-utility.$(FASLEXT)): Require sys-os.$(FASLEXT).
+	* include/cfuns.h (oa_chdir): Declare.
+	(oa_unlink): Likewise.
+	(oa_rename): Likewise.
+	(oad_mkdir): Likewise.
+
 2008-03-16 Alfredo Portes <doyenatccny@gmail.com>
 	   Arthur Ralfs <acralfs@shaw.ca>
 

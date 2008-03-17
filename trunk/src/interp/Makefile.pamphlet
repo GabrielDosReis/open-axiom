@@ -109,7 +109,8 @@ compiled.
 \subsection{The Spad interpreter and compiler}
 
 <<environment>>=
-OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
+OBJS=	sys-os.$(FASLEXT) \
+	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	diagnostics.$(FASLEXT)	sys-driver.$(FASLEXT) \
 	sys-utility.$(FASLEXT)  macros.$(FASLEXT)	\
 	unlisp.$(FASLEXT)	\
@@ -1066,10 +1067,13 @@ axext_l.$(FASLEXT): axext_l.lisp foam_l.$(FASLEXT)
 foam_l.$(FASLEXT): foam_l.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT)
+sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sys-os.$(FASLEXT): sys-os.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 boot-pkg.$(FASLEXT): boot-pkg.lisp

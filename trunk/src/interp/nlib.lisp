@@ -1,6 +1,6 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -79,7 +79,7 @@
                ;;(setq fullname (make-full-namestring (cdr file) 'LISPLIB))
                (setq fullname (make-full-namestring (cdr file) 'NIL))
                (case (|directoryp| fullname)
-                     (-1 (makedir fullname))
+                     (-1 (|checkMkdir| fullname))
                      (0 (error (format nil "~s is an existing file, not a library" fullname)))
                      (otherwise))
                (multiple-value-setq (stream indextable) (get-io-index-stream fullname))
@@ -149,12 +149,6 @@
              :if-does-not-exist :create)
     (file-position stream :end)
     (write-indextable indextable stream)))
-
-;; makedir (fname) fname is a directory name.
-(defun makedir (fname)
-  #+ (and (not :GCL) :COMMON-LISP) (ensure-directories-exist fname)
-  #+ :GCL (system (concat "mkdir " fname))
-  )
 
 ;; (RREAD key rstream)
 (defun rread (key rstream &optional (error-val nil error-val-p))
@@ -249,9 +243,9 @@
              (o (make-pathname :type "o")))
         (si::system (format nil "cp ~S ~S" code temp))
         (recompile-lib-file-if-necessary temp)
-        (si::system (format nil "mv ~S ~S~%" 
+        (|renameFile|
            (namestring (merge-pathnames o temp))
-           (namestring (merge-pathnames o code)))))
+           (namestring (merge-pathnames o code))))
   ;; only pack non libraries to avoid lucid file handling problems    
     (let* ((rstream (rdefiostream (list (cons 'file filespec) (cons 'mode 'input))))
            (nstream nil)
@@ -406,16 +400,6 @@
     (some #'(lambda (ft) (make-input-filename file-name ft))
           filetypelist)))
 
-;; ($ERASE filearg) -> 0 if succeeds else 1
-(defun $erase (&rest filearg)
-  (system (concat "rm -rf "(make-full-namestring filearg))))
-
-(defun $REPLACE (filespec1 filespec2)
-    ($erase (setq filespec1 (make-full-namestring filespec1)))
-    (rename-file (make-full-namestring filespec2) filespec1))
-
-
-
 ;;(defun move-file (namestring1 namestring2)
 ;;  (rename-file namestring1 namestring2))
 
@@ -429,7 +413,7 @@
 
 #+(OR :AKCL (AND :CCL :UNIX))
 (defun copy-lib-directory (name1 name2)
-   (makedir name2)
+   (|checkMkdir| name2)
    (system (concat "sh -c 'cp " name1 "/* " name2 "'")))
 
 #+(OR :AKCL (AND :CCL :UNIX))

@@ -45,5 +45,9 @@ OPENAXIOM_EXPORT int writeablep(char*);
 OPENAXIOM_EXPORT int readablep(char*);
 OPENAXIOM_EXPORT long findString(char*, char*);
 OPENAXIOM_EXPORT int copyEnvValue(char*, char*);
+OPENAXIOM_EXPORT int oa_chdir(const char*);
+OPENAXIOM_EXPORT int oa_unlink(const char*);
+OPENAXIOM_EXPORT int oa_rename(const char*, const char*);
+OPENAXIOM_EXPORT int oa_mkdir(const char*);
 
 #endif /* OPENAXIOM_CFUNS_included */

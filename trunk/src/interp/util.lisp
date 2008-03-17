@@ -252,8 +252,7 @@
 ;; TAGS are useful for finding functions if you run Emacs. We have a
 ;; set of functions that construct TAGS files for Axiom.
 (defun make-tags-file ()
-#+:gcl (system:chdir "/tmp")
-#-:gcl (obey (concatenate 'string "cd " "/tmp"))
+  (|changeDirectory| "/tmp")
   (obey (concat "etags " (|makeAbsoluteFilename| "../../src/interp/*.lisp")))
   (spadtags-from-directory "../../src/interp" "boot")
   (obey "cat /tmp/boot.TAGS >> /tmp/TAGS"))
@@ -710,8 +709,7 @@
    (format t "doing directory on ~s...~%" (concatenate 'string mid "/*"))
    (error "makelib:MID=~a OUT=~a~% these are not set properly~%" mid out))
 #+:akcl (compiler::emit-fn nil)
-#+:akcl (si::chdir mid)
-#-:akcl (obey (concatenate 'string "cd " mid))
+  (|changeDirectory| mid)
   (setq libs (directory "*.NRLIB"))
   (unless libs
    (format t "makelib:directory of ~a returned NIL~%" mid)
@@ -792,8 +790,7 @@
   (if (and src mid)
    (format t "doing directory on ~s...~%" (concatenate 'string src "/*"))
    (error "makespad:SRC=~a MID=~a not set properly~%" src mid))
-#+:akcl (si::chdir mid)
-#-:akcl (obey (concatenate 'string "cd " mid))
+  (|changeDirectory| mid)
   (setq mntlibs (directory "*.NRLIB"))
   (unless mntlibs
    (format t "makespad:directory of ~a returned NIL~%" src)
@@ -887,8 +884,7 @@
   (READLIBS (algebra)
    "read the NRLIB directory and return a sorted abbreviation list"
    (let (libs nrlibs)
-#+:akcl (si::chdir algebra)
-#-:akcl (obey (concatenate 'string "cd " algebra))
+      (|changeDirectory| algebra)
     (setq nrlibs (directory "*.NRLIB"))
     (unless nrlibs
      (error "libcheck: (directory ~s) returned NIL~%" 
@@ -929,8 +925,7 @@
     (values names longnames)))
   (SRCSCAN ()
    (let (longnames names)
-#+:gcl (system::chdir int)
-#-:gcl (obey (concatenate 'string "cd " int))
+     (|changeDirectory| int)
     (setq spads (directory "*.spad"))
     (dolist (spad spads)
      (multiple-value-setq (short long) (srcabbrevs spad))

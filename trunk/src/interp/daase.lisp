@@ -817,7 +817,7 @@
 #+:CCL
  (dolist (a args) (check-module-exists a))
  (|extendLocalLibdb| |$newConlist|)
- (system::chdir original-directory)
+ (|changeDirectory| original-directory)
  (tersyscommand))
 
 ;; check-module-exists looks to see if a module exists in one of the current
@@ -870,9 +870,9 @@
     (values only dir noexpose)))
   (processDir (dirarg thisdir)
    (let (allfiles skipasos)
-    (system:chdir (string dirarg))
+    (|changeDirectory| (string dirarg))
     (setq allfiles (directory "*"))
-    (system:chdir thisdir)
+    (|changeDirectory| thisdir)
     (values
      (mapcan #'(lambda (f)
       (when (string-equal (pathname-type f) "NRLIB")
@@ -1237,7 +1237,7 @@
                                (|systemRootDirectory|)
                                "/algebra/"
                                name)))
-  (when erase? (system::system (concatenate 'string "rm -f " filename)))
+  (when erase? (|removeFile| filename))
   filename))
 
 ;; rewrite this so it works in mnt
@@ -1249,7 +1249,7 @@
 ;;    (setq filename  (concatenate 'string daase "/algebra/" name))
 ;;    (format t "   Using local database ~a.." filename))
 ;;   (setq filename (concatenate 'string $spadroot "/algebra/" name)))
-;;  (when erase? (system::system (concatenate 'string "rm -f " filename)))
+;;  (when erase? (|removeFile| filename))
 ;;  filename))
 
 

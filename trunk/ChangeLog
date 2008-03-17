@@ -1,3 +1,8 @@
+2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Check for <dirent.h>
+	* config/axiom-c-macros.h.in: Update.
+
 2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Compute native type translation table.

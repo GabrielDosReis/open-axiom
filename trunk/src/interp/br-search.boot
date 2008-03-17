@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -930,7 +930,7 @@ obey x ==
 
 getTempPath kind ==
   pathname := mkGrepFile kind
-  obey STRCONC('"rm -f ", pathname)
+  removeFile pathname
   pathname
 
 dbWriteLines(s, :options) ==

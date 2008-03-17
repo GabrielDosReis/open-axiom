@@ -33,6 +33,7 @@
 -- This file defines some utility functions common to both the compiler
 -- and interpreter.
 
+import '"sys-os"
 import '"vmlisp"
 )package "BOOT"
 
@@ -146,3 +147,17 @@ makeAbsoluteFilename name ==
 existingFile? file ==
   PROBE_-FILE file
 
+++ original version returned 0 on success, and 1 on failure
+++ ??? fix that to return -1 on failure.
+$ERASE(:filearg) ==
+  -removeFile MAKE_-FULL_-NAMESTRING filearg
+
+++
+$REPLACE(filespec1,filespec2) ==
+  $ERASE(filespec1 := MAKE_-FULL_-NAMESTRING filespec1)
+  renameFile(MAKE_-FULL_-NAMESTRING filespec2, filespec1)
+
+++
+checkMkdir path ==
+  mkdir path = 0 => true
+  systemError ['"cannot create directory",:bright path]

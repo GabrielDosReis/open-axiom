@@ -133,8 +133,8 @@
    (concatenate 'string (|systemRootDirectory|) "/../../int/algebra/" (string name) ".NRLIB/code.lsp")))
  (let (masterindex blanks index newindex (space (* 22 (length innames))))
  (setq newindex space)
- (system::system (concatenate 'string "rm -r " (libname outname)))
- (system::system (concatenate 'string "mkdir " (libname outname)))
+ (|removeFile| (libname outname))
+ (|checkMkdir| (libname outname))
  (with-open-file (out (indexname outname) :direction :output)
   (setq blanks (make-string space :initial-element #\ ))
   (write  blanks :stream out)       ; reserve space for the masterindex
@@ -239,7 +239,7 @@
               ((equal (elt (string mode) 0) #\O)
                (setq fullname (make-full-namestring (cdr file) 'LISPLIB))
                (case (directory? fullname)
-                     (-1 (makedir fullname))
+                     (-1 (|checkMkdir| fullname))
                      (0 (error (format nil "~s is an existing file, not a library" fullname)))
                      (otherwise))
                (multiple-value-setq (stream indextable) (get-io-index-stream fullname))
@@ -336,7 +336,7 @@
  (labels (
   (SRCSCAN ()
    (let (spads)
-    (system:chdir src)
+    (|changeDirectory| src)
     (setq spads (directory "*.spad"))
     (dolist (spad spads) (srcabbrevs spad))
     nil))

@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -259,13 +259,7 @@ listConstructorAbbreviations() ==
 
 cd args ==
   dir := TRUENAME STRING(car args or '"")
-)if %hasFeature KEYWORD::SBCL
-  SB_-POSIX::CHDIR NAMESTRING dir
-)elseif %hasFeature KEYWORD::GCL
-  SYSTEM::CHDIR NAMESTRING dir
-)else
-  internalError '"don't know how to chdir in this Lisp"
-)endif
+  changeDirectory NAMESTRING dir
   SETF(_*DEFAULT_-PATHNAME_-DEFAULTS_*, ensureTrailingSlash NAMESTRING dir)
   sayKeyedMsg("S2IZ0070", [NAMESTRING _*DEFAULT_-PATHNAME_-DEFAULTS_*]) 
 
@@ -639,8 +633,7 @@ compileAsharpArchiveCmd args ==
         throwKeyedMsg("S2IL0027",[namestring dir, namestring args])
 
     if isDir ^= 1 then
-        cmd  := STRCONC('"mkdir ", namestring dir)
-        rc   := OBEY cmd
+        rc   := mkdir namestring dir
         rc ^= 0 => throwKeyedMsg("S2IL0027",[namestring dir, namestring args])
 
     curDir := $CURRENT_-DIRECTORY
@@ -1610,8 +1603,7 @@ putHist(x,prop,val,e) ==
   putIntSymTab(x,prop,val,e)
 
 histFileErase file ==
-  --OBEY STRCONC('"rm -rf ", file)
-  PROBE_-FILE(file) and DELETE_-FILE(file)
+  removeFile file
 
 
 

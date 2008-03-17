@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ $opHash   := MAKE_-HASH_-TABLE()
 $asyPrint := false
 
 asList() ==
-  OBEY '"rm -f temp.text"
+  removeFile '"temp.text"
   OBEY '"ls as/*.asy > temp.text"
   instream := OPEN '"temp.text"
   lines := [READLINE instream while not EOFP instream]

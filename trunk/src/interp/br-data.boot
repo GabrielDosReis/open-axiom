@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -94,8 +94,7 @@ buildLibdb(:options) ==  --called by buildDatabase (database.boot)
     $machineType = 'RIOS => '"sort -f -T /tmp -y200 _"temp.text_"  > _"libdb.text_""
     $machineType = 'SPARC => '"sort -f  _"temp.text_"  > _"libdb.text_""
     '"sort  _"temp.text_"  > _"libdb.text_""
-  --OBEY '"mv libdb.text olibdb.text"
-  RENAME_-FILE('"libdb.text", '"olibdb.text")
+  renameFile('"libdb.text", '"olibdb.text")
   deleteFile '"temp.text"
 
 buildLibdbConEntry conname ==
@@ -303,7 +302,7 @@ dbSplitLibdb() ==
   SHUT instream
   SHUT outstream
   SHUT comstream
-  OBEY '"rm olibdb.text"
+  removeFile '"olibdb.text"
 
 dbSplit(line,n,k) ==
   k := charPosition($tick,line,k + 1)
@@ -332,10 +331,10 @@ buildGloss() ==  --called by buildDatabase (database.boot)
   pathname := STRCONC(systemRootDirectory(),'"/algebra/gloss.text")
   instream := MAKE_-INSTREAM pathname
   keypath  := '"glosskey.text"
-  OBEY STRCONC('"rm -f ",keypath)
+  removeFile keypath
   outstream:= MAKE_-OUTSTREAM keypath
   htpath   := '"gloss.ht"
-  OBEY STRCONC('"rm -f ",htpath)
+  removeFile htpath
   htstream:= MAKE_-OUTSTREAM htpath
   defpath  := '"glossdef.text"
   defstream:= MAKE_-OUTSTREAM defpath
@@ -783,6 +782,6 @@ extendLocalLibdb conlist ==   --  called by astran
 
 purgeLocalLibdb() ==   --used for debugging purposes only
   $newConstructorList := nil
-  obey '"rm libdb.text"
+  removeFile '"libdb.text"
 
 

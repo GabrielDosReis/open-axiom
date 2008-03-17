@@ -18,7 +18,8 @@ LOADSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
 SAVESYS= interpsys$(EXEEXT)
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
 
-OBJS=	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
+OBJS=	sys-os.$(FASLEXT) \
+	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
 	diagnostics.$(FASLEXT)	sys-driver.$(FASLEXT) \
 	sys-utility.$(FASLEXT)  macros.$(FASLEXT)	\
 	unlisp.$(FASLEXT)	\
@@ -756,6 +757,9 @@ sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sys-os.$(FASLEXT): sys-os.boot boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 boot-pkg.$(FASLEXT): boot-pkg.lisp
