@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -1215,14 +1215,14 @@ checkAlphabetic c ==
 --=======================================================================
 docreport(nam) ==
 --creates a report for person "nam" using file "whofiles"
-  OBEY '"rm docreport.input"
+  removeFile '"docreport.input"
   OBEY STRCONC('"echo _")bo setOutStream('",STRINGIMAGE nam,'")_" > temp.input")
   OBEY '"cat docreport.header temp.input > docreport.input"
   OBEY STRCONC('"awk '/",STRINGIMAGE nam,'"/ {printf(_")co %s.spad\n_",$2)}' whofiles > temp.input")
   OBEY '"cat docreport.input temp.input > temp1.input"
   OBEY '"cat temp1.input docreport.trailer > docreport.input"
-  OBEY '"rm temp.input"
-  OBEY '"rm temp1.input"
+  removeFile '"temp.input"
+  removeFile '"temp1.input"
   SETQ(_/EDITFILE,'"docreport.input")
   _/RQ()
 

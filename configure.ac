@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-03-16], 
+AC_INIT([OpenAxiom], [1.2.0-2008-03-17], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -317,7 +317,17 @@ AC_CHECK_DECLS([sigaction], [], [],
                [#include <signal.h>])
 AC_CHECK_HEADERS([sys/stat.h],
                  [],
-                 [AC_MSG_ERROR([OpenAxiom needs <sys/stat.h>.])])
+                 [AC_MSG_ERROR([OpenAxiom needs <sys/stat.h>])])
+case $host in
+    *mingw*)
+        ;;
+    *)
+        AC_CHECK_HEADERS([dirent.h],
+                         [],
+                         [AC_MSG_ERROR([OpenAxiom needs <dirent.h>])])
+        ;;
+esac
+
 AC_CHECK_HEADERS([unistd.h], [],
                  [AC_MSG_ERROR([OpenAxiom needs <unistd.h>])])
 AC_CHECK_DECLS([getuid, geteuid, getgid, getegid], [], [],

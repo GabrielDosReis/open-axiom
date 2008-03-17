@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1629,13 +1629,13 @@ mkButtonBox n == STRCONC('"\buttonbox{", STRINGIMAGE n, '"}")
 --  SHUT instream
 --  SHUT outstream
 --  SHUT comstream
---OBEY '"rm libdb.text"
+--removeFile '"libdb.text"
 
 dbSort(x,y) ==
   sin := STRINGIMAGE x
   sout:= STRINGIMAGE y
   OBEY STRCONC('"sort -f _"",sin,'".text_" > _"", sout, '".text_"")
-  OBEY STRCONC('"rm ", sin, '".text")
+  removeFile STRCONC(sin, '".text")
 
 
 -- override in  br-util.boot.pamphlet

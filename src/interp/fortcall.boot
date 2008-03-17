@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -680,9 +680,8 @@ fortCall(objFile,data,results) ==
   tmpFile2 := generateResultsName()
   SYSTEM STRCONC(objFile," < ",tmpFile1," > ",tmpFile2)
   results := readData(tmpFile2,results)
-  -- SYSTEM STRCONC("rm -f ",tmpFile1," ",tmpFile2)
-  PROBE_-FILE(tmpFile1) and DELETE_-FILE(tmpFile1)
-  PROBE_-FILE(tmpFile2) and DELETE_-FILE(tmpFile2)
+  removeFile tmpFile1
+  removeFile tmpFile2
   results
 
 invokeNagman(objFiles,nfile,args,dummies,decls,results,actual) ==
@@ -693,7 +692,7 @@ invokeNagman(objFiles,nfile,args,dummies,decls,results,actual) ==
                  results,decls,inFirstNotSecond(args,dummies),actual)
   -- Tidy up asps
   -- if objFiles then SYSTEM STRCONC("rm -f ",addSpaces objFiles)
-  for fn in objFiles repeat PROBE_-FILE(fn) and DELETE_-FILE(fn)
+  for fn in objFiles repeat removeFile fn
   result
 
 
