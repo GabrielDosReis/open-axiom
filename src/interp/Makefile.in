@@ -228,7 +228,7 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 ${SAVESYS}: makeint.lisp
 	$(LOADSYS) -- --system="$(AXIOM)/" \
 		--sysalg="$(axiom_src_datadir)/algebra/" \
-		--make --output=$@ --main="BOOT::RESTART" \
+		--make --output=$@ --main="BOOT::|restart|" \
 		--load-directory=. makeint.lisp
 	@ echo 6 ${SAVESYS} created
 	$(mkinstalldirs) $(axiom_target_bindir)
@@ -240,7 +240,7 @@ ${AXIOMSYS}: makeint.lisp
 	$(LOADSYS) -- \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
-		--make --output=$@ --main="BOOT::RESTART" \
+		--make --output=$@ --main="BOOT::|restart|" \
 		--load-directory=. makeint.lisp
 	@ echo 6a ${AXIOMSYS} created
 exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
@@ -753,7 +753,7 @@ axext_l.$(FASLEXT): axext_l.lisp foam_l.$(FASLEXT)
 foam_l.$(FASLEXT): foam_l.lisp vmlisp.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT)
+sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
