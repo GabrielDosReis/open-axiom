@@ -310,7 +310,7 @@ OPENAXIOM_EXPORT int
 oa_chdir(const char* path)
 {
 #ifdef __MINGW32__
-   SetCurrentDirectory(path) ? 0 : -1;
+   return SetCurrentDirectory(path) ? 0 : -1;
 #else
    return chdir(path);
 #endif /* __MINGW32__ */

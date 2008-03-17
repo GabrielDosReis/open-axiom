@@ -1,5 +1,9 @@
 2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lib/cfuns-c.c (oa_chdir): Add missing `return'.
+
+2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/cfuns-c.c (oa_chdir): Define.
 	(is_dot_or_dotdot): New.
 	(oa_unlink): Define.
