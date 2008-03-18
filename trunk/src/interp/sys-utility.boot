@@ -46,6 +46,16 @@ import '"vmlisp"
 %List <=> LIST
 %Vector <=> VECTOR
 %Thing <=> true
+%Sequence <=> SEQUENCE
+
+--% Data structures for the compiler
+%Form <=> NUMBER or %Symbol or %String or CONS -- input syntax form
+%Env <=> %List                                 -- compiling env
+%Mode <=> %Symbol or %String or %List          -- type of forms
+%Code <=> %Form                                -- generated code
+%Triple <=> %List                              -- form + type + env
+
+%Modemap <=> %List                             -- modemap
 
 ++ returns true if `f' is bound to a macro.
 macrop: %Thing -> %Boolean

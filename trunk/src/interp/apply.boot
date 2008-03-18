@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 import '"compiler"
 )package "BOOT"
 
-compAtomWithModemap: (%Thing,%Thing,%List,%Thing) -> %List
+compAtomWithModemap: (%Form,%Mode,%Env,%Thing) -> %Triple
 compAtomWithModemap(x,m,e,v) ==
   Tl :=
     [[transImplementation(x,map,fn),target,e]
@@ -46,13 +46,13 @@ compAtomWithModemap(x,m,e,v) ==
         0<#Tl and m=$NoValueMode => first Tl
         nil
 
-transImplementation: (%Thing,%Thing,%Thing) -> %List
+transImplementation: (%Form,%Modemap,%Thing) -> %Code
 transImplementation(op,map,fn) ==
   fn := genDeltaEntry [op,:map]
   fn is ["XLAM",:.] => [fn]
   ["call",fn]
 
-compApply: (%List,%List,%Thing,%List,%Thing,%List) -> %List
+compApply: (%List,%List,%Thing,%List,%Mode,%Env) -> %Triple
 compApply(sig,varl,body,argl,m,e) ==
   argTl:= [[.,.,e]:= comp(x,$EmptyMode,e) for x in argl]
   contour:=
@@ -63,14 +63,14 @@ compApply(sig,varl,body,argl,m,e) ==
   body':= (comp(body,m',addContour(contour,e))).expr
   [code,m',e]
 
-compToApply: (%Thing,%List,%Thing,%List) -> %List
+compToApply: (%Form,%List,%Mode,%Env) -> %Triple
 compToApply(op,argl,m,e) ==
   T:= compNoStacking(op,$EmptyMode,e) or return nil
   m1:= T.mode
   T.expr is ["QUOTE", =m1] => nil
   compApplication(op,argl,m,T.env,T)
 
-compApplication: (%Thing,%List,%Thing,%List,%List) -> %List
+compApplication: (%Form,%List,%Mode,%Env,%Triple) -> %Triple
 compApplication(op,argl,m,e,T) ==
   T.mode is ['Mapping, retm, :argml] =>
     #argl ^= #argml => nil
@@ -92,7 +92,7 @@ compApplication(op,argl,m,e,T) ==
   eltForm := ['elt, op, :argl]
   comp(eltForm, m, e)
 
-compFormWithModemap: (%List,%Thing,%List,%List) -> %List
+compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Triple
 compFormWithModemap(form is [op,:argl],m,e,modemap) ==
   [map:= [.,target,:.],[pred,impl]]:= modemap
   -- this fails if the subsuming modemap is conditional
@@ -156,7 +156,7 @@ compFormWithModemap(form is [op,:argl],m,e,modemap) ==
 --   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
 --   convert([form,SUBLIS(pairlis,first ml),e],m)
 
-applyMapping: (%List,%Thing,%List,%List) -> %List
+applyMapping: (%Form,%Mode,%Env,%List) -> %Triple
 applyMapping([op,:argl],m,e,ml) ==
   #argl^=#ml-1 => nil
   isCategoryForm(first ml,e) =>
@@ -186,7 +186,7 @@ applyMapping([op,:argl],m,e,ml) ==
 
 --% APPLY MODEMAPS
 
-compApplyModemap: (%List,%List,%List,%List) -> %List
+compApplyModemap: (%Form,%Modemap,%Env,%List) -> %Triple
 compApplyModemap(form,modemap,$e,sl) ==
   [op,:argl] := form                   --form to be compiled
   [[mc,mr,:margl],:fnsel] := modemap   --modemap we are testing
@@ -229,16 +229,16 @@ compApplyModemap(form,modemap,$e,sl) ==
     [genDeltaEntry [op,:modemap],lt',$bindings]
   [f,lt',$bindings]
 
-compMapCond: (%List,%Thing,%List,%List) -> %List
+compMapCond: (%Symbol,%Mode,%Env,%List) -> %Code
 compMapCond(op,mc,$bindings,fnsel) ==
   or/[compMapCond'(u,op,mc,$bindings) for u in fnsel]
 
-compMapCond': (%List,%Thing,%Thing,%Thing) -> %List
+compMapCond': (%List,%Symbol,%Mode,%Env) -> %Code
 compMapCond'([cexpr,fnexpr],op,dc,bindings) ==
   compMapCond''(cexpr,dc) => compMapCondFun(fnexpr,op,dc,bindings)
   stackMessage ["not known that",'%b,dc,'%d,"has",'%b,cexpr,'%d]
 
-compMapCond'': (%Thing,%Thing) -> %Boolean
+compMapCond'': (%Thing,%Mode) -> %Boolean
 compMapCond''(cexpr,dc) ==
   cexpr=true => true
   --cexpr = "true" => true
@@ -256,6 +256,7 @@ compMapCond''(cexpr,dc) ==
   stackMessage ["not known that",'%b,dc,'%d,"has",'%b,cexpr,'%d]
   false
 
+compMapCondFun: (%Thing,%Symbol,%Mode,%Env) -> %Code
 compMapCondFun(fnexpr,op,dc,bindings) == 
   [fnexpr,bindings]
 

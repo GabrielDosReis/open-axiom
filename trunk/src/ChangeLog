@@ -1,3 +1,9 @@
+2008-03-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot: Define more type abbreviations.
+	* interp/apply.boot: Adjust signature declarations.
+	* interp/compiler.boot: Likewise.
+
 2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-driver.boot (restart): Rename from RESTART.
