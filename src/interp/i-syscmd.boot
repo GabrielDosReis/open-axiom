@@ -2154,6 +2154,15 @@ reportCount () ==
   SAY " "
   sayBrightly [:bright " stream",fillerSpaces(29,'".")," ",$streamCount]
 
+--% )library
+library args ==
+  origDir := GET_-CURRENT_-DIRECTORY()
+  $newConlist := []
+  LOCALDATABASE(args,$options)
+  extendLocalLibdb $newConlist
+  changeDirectory origDir
+  TERSYSCOMMAND()
+
 --% )quit
 
 pquit() == pquitSpad2Cmd()

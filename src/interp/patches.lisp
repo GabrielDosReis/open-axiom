@@ -32,7 +32,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (import-module "macros")
-(import-module "debug")
+(import-module "sockio")
 (import-module "g-timer")
 (in-package "BOOT")
 ;;patches for now
@@ -81,7 +81,6 @@
 (define-function '|isBpiOrLambda| #'FBOUNDP)
 ;;(defun |isSharpVar| (x) (and (identp x) (char= (elt (pname x) 0) #\#)))
 
-(setq |$useInternalHistoryTable| T)
 (defvar |$internalHistoryTable| ())
 (defun |cpCms| (prefix &optional (string (|getSystemCommandLine|)))
   (setq string (concat prefix string))
@@ -106,6 +105,7 @@
 
 (defun /RF-1 (ignore)
  (declare (ignore ignore))
+ (declare (special echo-meta))
   (let* ((input-file (make-input-filename /EDITFILE))
      (lfile ())
      (type (pathname-type input-file)))
@@ -128,10 +128,6 @@
 
 (defun /EF (&rest foo)
   (obey (concat "vi " (namestring (make-input-filename /EDITFILE)))))
-#-:CCL
-  (defun user::start () (in-package "BOOT") (boot::|start|))
-#+:CCL
-  (defun user::start () (setq *package* (find-package "BOOT")) (boot::|start|))
 
 (setq |$algebraOutputStream|
    (setq |$fortranOutputStream|
@@ -172,6 +168,7 @@
 (defun |normalizeArgFileName| (l) l)
 
 (defun READSPADEXPR ()
+  (declare (special in-stream))
   (let* ((line (cdar (preparse in-stream))))
     (cond ((or (not (stringp line)) (zerop (SIZE line)))
        (SAY "   Scratchpad -- input")
@@ -283,6 +280,7 @@
 (defun boot::|printCopyright| ()
  (format t "there is no such thing as a simple job -- ((iHy))~%"))
 
+(defvar |$ViewportProcessToWatch| nil)
 (defun |setViewportProcess| ()
   (setq |$ViewportProcessToWatch|
      (stringimage (CDR
@@ -348,6 +346,5 @@
 ;; (|xdrRead| xfoo (make-array 10 :element-type 'long-float ))
 ;; (setq *print-array* NIL)
 
-(setq echo-meta nil)
 (defun /versioncheck (n) (unless (= n /MAJOR-VERSION) (throw 'versioncheck -1)))
 

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -44,16 +44,16 @@
 ;;(defmacro |trappedSpadEval| (form) form) ;;nop for now
 
 #+:akcl
-(setq |$quitTag| system::*quit-tag*)
+(defconstant |$quitTag| system::*quit-tag*)
 #+:akcl
 (defun |resetStackLimits| () (system:reset-stack-limits))
 #-:akcl
-(setq |$quitTag| (gensym))
+(defconstant |$quitTag| (gensym))
 #-:akcl
 (defun |resetStackLimits| () nil)
 
 ;; failed union branch --  value returned for numeric failure
-(setq |$numericFailure| (cons 1 "failed")) 
+(defconstant |$numericFailure| (cons 1 "failed")) 
 
 (defvar |$oldBreakMode|)
 

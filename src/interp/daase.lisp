@@ -407,9 +407,7 @@
   |OneDimensionalArrayAggregate&| |FiniteLinearAggregate&| |PrimitiveArray|
   |Integer| |List| |OutputForm|))
  (dolist (con constr)
-  (let ((c (concatenate 'string
-             (|systemRootDirectory|) "/algebra/"
-             (string (getdatabase con 'abbreviation)) ".o")))
+  (let ((c (|getSystemModulePath| (string (getdatabase con 'abbreviation)))))
     (format t "   preloading ~a.." c)
     (if (probe-file c)
      (progn
@@ -559,7 +557,7 @@
   (let (oldop op)
    (setq op (car map))
    (setq oldop (getdatabase op 'operation))
-   (setq oldop (lisp::delete (cdr map) oldop :test #'equal))
+   (setq oldop (delete (cdr map) oldop :test #'equal))
    (setf (gethash op *operation-hash*) oldop)))
  (dolist (map (getdatabase constructor 'modemaps)) ; in with the new
   (let (op newmap)
@@ -784,16 +782,13 @@
      (if (consp data)
        (setq data
              (if (string= (directory-namestring (car data)) "")
-                 (concatenate 'string (|systemRootDirectory|) "algebra/" (car data) ".o")
+                 (|getSystemModulePath| (car data))
                (car data)))
       (when (and data (string= (directory-namestring data) ""))
-       (setq data (concatenate 'string (|systemRootDirectory|) "algebra/" data ".o")))))))
+       (setq data (|getSystemModulePath| data)))))))
   data))
 
 ; )library top level command  -- soon to be obsolete
-
-(defun |with| (args)
- (|library| args))
 
 ;; Current directory
 ;; Contributed by Juergen Weiss.
@@ -805,44 +800,6 @@
 (defun get-current-directory ()
   (namestring (truename "")))
 
-
-; )library top level command
-
-(defun |library| (args)
- (declare (special |$options|))
- (declare (special |$newConlist|))
- (setq original-directory (get-current-directory))
- (setq |$newConlist| nil)
- (localdatabase args |$options|)
-#+:CCL
- (dolist (a args) (check-module-exists a))
- (|extendLocalLibdb| |$newConlist|)
- (|changeDirectory| original-directory)
- (tersyscommand))
-
-;; check-module-exists looks to see if a module exists in one of the current
-;; libraries and, if not, compiles it.  If the output-library exists but has not
-;; been opened then it opens it first.
-#+:CCL
-(defun check-module-exists (module)
-  (prog (|$options| mdate) 
-    (if (and (not output-library) (filep (or |$outputLibraryName| "user.lib")))
-        (seq (setq |$outputLibraryName| 
-               (if |$outputLibraryName| (truename |$outputLibraryName|)
-                   (make-pathname :directory (get-current-directory) 
-                                  :name "user.lib")))
-             (|openOutputLibrary| |$outputLibraryName|)))
-    (setq mdate (modulep module)) 
-    (setq |$options| '((|nolibrary| nil) (|quiet| nil)))
-    (|sayMSG| (format nil "   Checking for module ~s." (namestring module)))
-    (let* ((fn (concatenate 'string (namestring module) ".lsp"))
-           (fdate (filedate fn)) )
-          (if (and fdate (or (null mdate) (datelessp mdate fdate)))
-             (|compileAsharpLispCmd| (list fn))
-             (let* ((fn (concatenate 'string (namestring module) ".NRLIB"))
-                    (fdate (filedate fn)) )
-                   (if (and fdate (or (null mdate) (datelessp mdate fdate)))
-                       (|compileSpadLispCmd| (list fn))))))))
   
 ; localdatabase tries to find files in the order of:
 ;  NRLIB/index.KAF
@@ -855,15 +812,15 @@
   (processOptions (options)
    (let (only dir noexpose)
     (when (setq only (assoc '|only| options))
-     (setq options (lisp::delete only options :test #'equal))
+     (setq options (delete only options :test #'equal))
      (setq only (cdr only)))
     (when (setq dir (assoc '|dir| options))
-     (setq options (lisp::delete dir options :test #'equal))
+     (setq options (delete dir options :test #'equal))
      (setq dir (second dir))
      (when (null dir)
       (|sayKeyedMsg| 'S2IU0002 nil) ))
     (when (setq noexpose (assoc '|noexpose| options))
-     (setq options (lisp::delete noexpose options :test #'equal))
+     (setq options (delete noexpose options :test #'equal))
      (setq noexpose 't) )
     (when options
      (format t "   Ignoring unknown )library option: ~a~%" options))
@@ -876,8 +833,8 @@
     (values
      (mapcan #'(lambda (f)
       (when (string-equal (pathname-type f) "NRLIB")
-       (list (concatenate 'string (namestring f) "/"
-                          *index-filename*)))) allfiles)
+       (list (concatenate 'string  (namestring f) "/" *index-filename*))))
+	     allfiles)
      (mapcan #'(lambda (f)
       (when (string= (pathname-type f) "asy")
        (push (pathname-name f) skipasos)
@@ -889,12 +846,7 @@
      allfiles)
      ;; At the moment we will only look for user.lib: others are taken care
      ;; of by localasy and localnrlib.
-#+:CCL
-     (mapcan #'(lambda (f)
-      (when (and (string= (pathname-type f) "lib") (string= (pathname-name f) "user"))
-       (list (namestring f))))
-     allfiles)
-#-:CCL nil
+     nil
     ))))
  (let (thisdir nrlibs asos asys libs object only dir key 
       (|$forceDatabaseUpdate| t) noexpose)
@@ -921,8 +873,6 @@
        (concatenate 'string namedir filename ".ao")))
       (push (namestring file) asos))
      ('else (format t "   )library cannot find the file ~a.~%" filename)))))
-#+:CCL
-  (dolist (file libs) (|addInputLibrary| (truename file)))
   (dolist (file (nreverse nrlibs))
    (setq key (pathname-name (first (last (pathname-directory file)))))
    (setq object (concatenate 'string (directory-namestring file) 
@@ -1311,7 +1261,6 @@
  (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
         concategory categorypos kind niladic cosig abbrev defaultdomain
         ancestors ancestorspos out)
-  (declare (special *print-pretty*))
   (print "building interp.daase")
   (setq out (open "interp.build" :direction :output))
   (princ "                              " out)
@@ -1369,7 +1318,6 @@
 (defun write-browsedb ()
  "make browse.daase from hash tables"
  (let (master masterpos src formpos docpos attpos predpos *print-pretty* out)
-  (declare (special *print-pretty*))
   (print "building browse.daase")
   (setq out (open "browse.build" :direction :output))
   (princ "                              " out)
@@ -1404,7 +1352,6 @@
 (defun write-categorydb ()
  "make category.daase from scratch. contains the *hasCategory-hash* table"
  (let (out master pos *print-pretty*)
-  (declare (special *print-pretty*))
   (print "building category.daase")
   (|genCategoryTable|)
   (setq out (open "category.build" :direction :output))

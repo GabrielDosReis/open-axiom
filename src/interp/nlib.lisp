@@ -35,8 +35,6 @@
 (IMPORT-MODULE "macros")
 (in-package "BOOT")
 
-#+:AKCL (defvar *lisp-bin-filetype* "o")
-
 #+:AKCL (defvar *lisp-source-filetype* "lsp")
 
 ;; definition of our stream structure
@@ -268,9 +266,8 @@
       (rshut nrstream)))
   filespec)
 
-#+:AKCL
 (defun recompile-lib-file-if-necessary (lfile)
-   (let* ((bfile (make-pathname :type *lisp-bin-filetype* :defaults lfile))
+   (let* ((bfile (make-pathname :type |$faslType| :defaults lfile))
           (bdate (and (probe-file bfile) (file-write-date bfile)))
           (ldate (and (probe-file lfile) (file-write-date lfile))))
      (if ldate
@@ -318,7 +315,7 @@
                 :entrycond (spad-fixed-arg (caar system::arglist))))
         (apply #'compile-file fn opts))
     (untrace compiler::fast-link-proclaimed-type-p compiler::t1defun)))
-#+:CCL
+#-:GCL
 (define-function 'compile-lib-file #'compile-file)
 
 ;; (RDROPITEMS filearg keys) don't delete, used in files.spad

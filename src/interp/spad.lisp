@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@
 ; PURPOSE: This is an initialization and system-building file for Scratchpad.
 
 (IMPORT-MODULE "bootlex")
+(import-module "postpar")
+(import-module "debug")
 (in-package "BOOT")
 
 ;;; Common  Block
@@ -53,9 +55,6 @@
 (defvar |$newCompAtTopLevel| nil "if t uses new compiler")
 (defvar |$doNotCompileJustPrint| nil "switch for compile")
 (defvar |$Rep| '|$Rep| "should be bound to gensym? checked in coerce")
-;; the following initialization of $ must not be a defvar
-;; since that make $ special
-(setq $ '$) ;; used in def of Ring which is Algebra($)
 (defvar |$scanIfTrue| nil "if t continue compiling after errors")
 (defvar |$Representation| nil "checked in compNoStacking")
 (defvar |$definition| nil "checked in DomainSubstitutionFunction")
@@ -128,7 +127,7 @@
                                     (LIST X " --> " Y '|%b| |yesOrNo| '|%d|)))
                (SETQ |$compCount| (1- |$compCount|))
                (RETURN U)  )))
-  (|comp| $x $m $f)
+  (|comp| |$x| |$m| |$f|)
   (UNEMBED '|comp|))
 
 (defun READ-SPAD (FN FM TO)
@@ -222,11 +221,6 @@
   (|spadPrompt|))
 
 (defun CPSAY (X) (let (n) (if (EQ 0 (setq N (OBEY X))) NIL (PRINT N))))
-
-(defun /FLAG (L)
-  (MAKEPROP (FIRST L) 'FLAGS (LET ((X (UNION (CDR L)))) (GET (FIRST L) 'FLAGS)))
-  (SAY (FIRST L) " has flags: " X)
-  (TERSYSCOMMAND))
 
 (defun |fin| ()
   (SETQ *EOF* 'T)
@@ -351,10 +345,8 @@
 
 (defun |evalSharpOne| (x \#1) (declare (special \#1)) (EVAL x))
 
-(setq *PROMPT* 'LISP)
-
 (defun |New,ENTRY,1| ()
-    (let (ZZ str N RLGENSYMFG RLGENSYMLST |NewFLAG| XCAPE *PROMPT*
+    (let (ZZ str N RLGENSYMFG RLGENSYMLST |NewFLAG| XCAPE
           SINGLELINEMODE OK ISID NBLNK COUNT CHR ULCASEFG ($LINESTACK 'BEGIN_UNIT)
           $TOKSTACK COMMENTCHR TOK LINE BACK INPUTSTREAM XTRANS
           XTOKENREADER STACK STACKX TRAPFLAG)
@@ -362,12 +354,11 @@
             XTOKENREADER 'NewSYSTOK
             SYNTAX_ERROR 'SPAD_SYNTAX_ERROR)
       (FLAG |boot-NewKEY| 'KEY)
-      (SETQ *PROMPT* 'Scratchpad-II)
       (PROMPT)
       (SETQ XCAPE '_)
       (SETQ COMMENTCHR 'IGNORE)
-      (SETQ COLUMN 0)
-      (SETQ SINGLINEMODE T)   ; SEE NewSYSTOK
+      (SETQ INITCOLUMN 0)
+      (SETQ SINGLELINEMODE T)   ; SEE NewSYSTOK
       (SETQ NewFLAG T)
       (SETQ ULCASEFG T)
       (setq STR (|New,ENTRY,2| '|PARSE-NewEXPR| '|process| curinstream))
@@ -379,7 +370,7 @@
 (defun |New,ENTRY,2| (RULE FN INPUTSTREAM) (declare (special INPUTSTREAM))
   (let (zz)
       (INITIALIZE)
-      (SETQ $previousTime (TEMPUS-FUGIT))
+      (SETQ |$previousTime| (TEMPUS-FUGIT))
       (setq ZZ (CONVERSATION '|PARSE-NewExpr| '|process|))
       (REMFLAG |boot-NewKEY| 'KEY)
       INPUTSTREAM))
@@ -387,8 +378,6 @@
 (defun INITIALIZE () 
   (init-boot/spad-reader)
   (initialize-preparse INPUTSTREAM))
-
-(setq *prompt* 'new)
 
 (defmacro try (X)
   `(LET ((|$autoLine|))

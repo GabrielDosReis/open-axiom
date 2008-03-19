@@ -370,7 +370,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   FRESH_-LINE $algebraOutputStream
   sayMSG fillerSpaces(72,'"-")
   unloadOneConstructor(op,libName)
-  LOCALDATABASE(LIST GETDATABASE(op,'ABBREVIATION),NIL)
+  LOCALDATABASE(LIST SYMBOL_-NAME GETDATABASE(op,'ABBREVIATION),NIL)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   if $lisplibKind = 'category
     then updateCategoryFrameForCategory op

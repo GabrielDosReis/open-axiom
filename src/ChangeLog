@@ -1,4 +1,65 @@
 2008-03-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	
+	* interp/trace.boot (untraceDomainLocalOps): Tidy.
+	* interp/spaderror.lisp (|$quitTag|): Define as constant.
+	(|$numericFailure|): Likewise.
+	* interp/spad.lisp: Import "postpar" and "debug".
+	($): Remove toplevel assignment.
+	(|traceComp|): Tidy.
+	(/FLAG): Remove.
+	(*PROMPT*): Remove.
+	(|New,ENTRY,1|): Don't declare it.  Tidy.
+	(|New,ENTRY,2|): Fix typo.
+	* interp/sfsfun-l.lisp (rbesselj): Remove extraneous right
+	parenthesis. 
+	(rbesseli): Likewise.
+	* interp/patches.lisp: Import "sockio" instead of "debug"
+	(|$useInternalHistoryTable|): Don't define here.
+	(user::start): Remove.
+	(/RF-1): Declare ECHO-META special.
+	(READSPADEXPR): Declare IN-STREAM special.
+	(|$ViewportProcessToWatch|): Declare.
+	(echo-meta): Don't set here.
+	* interp/packtran.boot (rePackageTran): Tidy.
+	* interp/nspadaux.lisp (|$underscoreChar|): Define.
+	(|$markChoices|): Likewise.
+	(|$convert2NewCompiler|): Likewise.
+	(|$AnalyzeOnly|): Likewise.
+	(|$categoryPart|): Likewise.
+	(|$insideCAPSULE|): Likewise.
+	(|$insideEXPORTS|): Likewise.
+	(|$originalSignature|): Likewise.
+	(|$insideDEF|): Likewise.
+	(|$insideTypeExpression|): Likewise.
+	(|$spadTightList|): Likewise.
+	(|$PerCentVariableList|): Likewise.
+	* interp/nrunopt.boot (augmentPredCode): Fix typo.
+	* interp/nlib.lisp (*LISP-BIN-FILETYPE*): Remove.
+	(recompile-lib-file-if-necessary): Use $faslType.  Unconditionally
+	define.
+	* interp/lisplib.boot (compDefineLisplib): Tidy.
+	* interp/interop.boot (SExprToDName): Tidy.
+	(oldAxiomPreCategoryDevaluate): Likewise.
+	(hashNewLookupInCategories): Likewise.
+	* interp/g-util.boot (get): Adjust return type.
+	(get0): Likewise.
+	(get1): Likewise.
+	(get2): Likewise.
+	* interp/foam_l.lisp: Tidy.
+	* interp/define.boot (maybeInsertViewMorphisms): Fix typo.
+	* interp/debug.lisp (/breakcondition): Declare.
+	* interp/sys-utility.boot (getSystemModulePath): New.
+	* interp/daase.lisp (|with|): Remove
+	(|library|): Move i-syscmd.boot
+	(initial-getdatabase): Use getSystemModulePath.
+	(getdatabase): Likewise.
+	(addoperations): Don't reference package LISP.
+	(localdatabase): Likewise.
+	(write-interpdb): Don't declare *print-prett* special.
+	(write-browsedb): Likewise.
+	(write-categorydb): Likewise.
+
+2008-03-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot: Define more type abbreviations.
 	* interp/apply.boot: Adjust signature declarations.

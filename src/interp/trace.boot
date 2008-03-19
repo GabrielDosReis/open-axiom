@@ -504,6 +504,7 @@ traceDomainLocalOps(dom,lops,options) ==
 --  nil
 
 untraceDomainLocalOps(dom,lops) ==
+ abb := abbreviate dom
  sayMSG ['"  ",:bright abb,'"has no local functions to untrace."]
  NIL
 --  lops = "all" => untraceAllDomainLocalOps(dom)

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -63,10 +63,10 @@
 (defun rpsi      (n x)         (|rPsi|     n x) )
 (defun cpsi      (n z) (c-to-s (|cPsi|     n (s-to-c z)) ))
 
-(defun rbesselj  (n x) (c-to-r (|BesselJ| n x)) ))
+(defun rbesselj  (n x) (c-to-r (|BesselJ| n x)) )
 (defun cbesselj  (v z) (c-to-s (|BesselJ| (s-to-c v) (s-to-c z)) ))
  
-(defun rbesseli  (n x) (c-to-r (|BesselI| n x)) ))
+(defun rbesseli  (n x) (c-to-r (|BesselI| n x)) )
 (defun cbesseli  (v z) (c-to-s (|BesselI| (s-to-c v) (s-to-c z)) ))
 
 (defun chyper0f1 (a z) (c-to-s (|chebf01| (s-to-c a) (s-to-c z)) ))

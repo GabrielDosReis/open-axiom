@@ -171,3 +171,7 @@ $REPLACE(filespec1,filespec2) ==
 checkMkdir path ==
   mkdir path = 0 => true
   systemError ['"cannot create directory",:bright path]
+
+++ return the pathname to the system module designated by `m'.
+getSystemModulePath m ==
+  CONCAT(systemRootDirectory(),'"algebra/",m,'".",$faslType)

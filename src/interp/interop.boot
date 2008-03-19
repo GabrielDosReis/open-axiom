@@ -92,7 +92,7 @@ SExprToDName(sexpr, cosigVal) ==
   NOT cosigVal => [DNameOtherID, :sexpr]
   if CAR sexpr = '_: then sexpr := CAR CDR CDR sexpr
   CAR sexpr = 'Mapping =>
-    args := [ SExprToDName(sx, 'T) for sx in CDR sexpr]
+    args := [ SExprToDName(sx,true) for sx in CDR sexpr]
     [DNameApplyID,
          [DNameStringID,: StringToCompStr '"->"],
               [DNameTupleID, : CDR args],
@@ -100,7 +100,7 @@ SExprToDName(sexpr, cosigVal) ==
   name0 :=   [DNameStringID, : StringToCompStr SYMBOL_-NAME CAR sexpr]
   CAR sexpr = 'Union or CAR sexpr = 'Record =>
     [DNameApplyID, name0, 
-        [DNameTupleID,: [ SExprToDName(sx, 'T) for sx in CDR sexpr]]]
+        [DNameTupleID,: [ SExprToDName(sx,true) for sx in CDR sexpr]]]
   newCosig := CDR GETDATABASE(CAR sexpr, QUOTE COSIG)
   [DNameApplyID, name0,
    : MAPCAR(function SExprToDName, CDR sexpr, newCosig)]
@@ -169,7 +169,7 @@ oldAxiomCategoryDefaultPackage(catform, dom) ==
     hasDefaultPackage opOf catform 
 
 oldAxiomPreCategoryDevaluate([op,:args], env) ==
-   SExprToDName([op,:devaluateList args], T)
+   SExprToDName([op,:devaluateList args], true)
 
 $oldAxiomPreCategoryDispatch :=
    VECTOR('oldAxiomPreCategory,
@@ -476,7 +476,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
   for i in 0..MAXINDEX packageVec |
-       (entry := packageVec.i) and entry ^= 'T repeat
+       (entry := packageVec.i) and entry ^= true repeat
     package :=
       VECP entry =>
          if $monitorNewWorld then

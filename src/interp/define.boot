@@ -83,7 +83,7 @@ maybeInsertViewMorphisms body ==
     stmt is ["DEF",["rep",:.],:.] 
       or stmt is ["DEF",["per",:.],:.] =>
         -- ??? We may actually want to stop processing now.
-        stackSemanticError(['"Cannot define",:bright per],nil)
+        stackSemanticError(['"Cannot define",:bright "per"],nil)
 
   -- OK, insert synthetized view morphisms
   g := GENSYM()
