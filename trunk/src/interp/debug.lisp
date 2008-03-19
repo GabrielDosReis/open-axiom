@@ -936,7 +936,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
        (|sayBrightly| (LIST '|%b| (PNAME X) '|%d| "unembeded" '|%l|))
        (UNEMBED X)))  ))
  
- 
+(defvar /breakcondition nil)
  
 (defun /MONITOR (&rest G5)
   (PROG (G1 G4 TRACECODE BEFORE AFTER CONDITION

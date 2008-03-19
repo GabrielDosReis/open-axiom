@@ -73,7 +73,7 @@
   (:use "FOAM"))
 
 #+:gcl (in-package "BOOT")
-#+:gcl (in-package "AxiomCore")
+(in-package "AxiomCore")
 (import-module "vmlisp")
 
 (in-package "FOAM")

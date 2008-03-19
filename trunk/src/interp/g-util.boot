@@ -54,10 +54,10 @@ PPtoFile(x, fname) ==
 
 
 ++ Query properties for an entity in a given environment.
-get: (%Thing,%Symbol,%List) -> %List
-get0: (%Thing,%Symbol,%List) -> %List
-get1: (%Thing,%Symbol,%List) -> %List
-get2: (%Thing,%Symbol,%List) -> %List
+get: (%Thing,%Symbol,%List) -> %Thing
+get0: (%Thing,%Symbol,%List) -> %Thing
+get1: (%Thing,%Symbol,%List) -> %Thing
+get2: (%Thing,%Symbol,%List) -> %Thing
 
 get(x,prop,e) ==
   $InteractiveMode => get0(x,prop,e)

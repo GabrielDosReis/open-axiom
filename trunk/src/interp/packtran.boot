@@ -36,7 +36,7 @@ import '"sys-macros"
 )package "BOOT"
 
 rePackageTran(sex, package) ==
-  _*PACKAGE_* : fluid := FIND_-PACKAGE STRING package
+  SETQ(_*PACKAGE_*,FIND_-PACKAGE STRING package)
   packageTran sex
 
 packageTran sex ==
