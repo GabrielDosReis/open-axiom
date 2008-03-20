@@ -334,10 +334,10 @@
      (monitor-file name))))
 
 (defun monitor-autoload ()
- "traces autoload of algebra to monitor corresponding source files"
- (trace (loadvol 
-          :entrycond nil
-          :exitcond (progn (monitor-dirname system::arglist) nil))))
+  "traces autoload of algebra to monitor corresponding source files"
+  #+:GCL(trace (loadvol 
+		:entrycond nil
+		:exitcond (progn (monitor-dirname system::arglist) nil))))
 
 (defun monitor-nrlib (nrlib)
  "takes an nrlib name as a string (eg POLY) and returns a list of 

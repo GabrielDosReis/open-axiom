@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -130,7 +130,7 @@ makeTemplate vec ==
 --called at instantiation time by setLoadTime
 --the form ['makeTemplate,MKQ $template] is recorded by compDefineFunctor1
 --  $template is set below in NRTdescendCodeTran and NRTaddDeltaOpt
-  newVec := GETREFV SIZE vec
+  newVec := newDomainShell SIZE vec
   for index in 0..MAXINDEX vec repeat
     item := vec.index
     null item => nil
@@ -192,7 +192,7 @@ putPredHash pred == --pred MUST have had addConsDB applied to it
 extendVectorSize v ==
   n:= MAXINDEX v
   m:= (7*n)/5   -- make 40% longer
-  newVec := GETREFV m
+  newVec := newDomainShell m
   for i in 0..n repeat newVec.i := v.i
   newVec
 
@@ -200,7 +200,7 @@ mkSigPredVectors() ==
   $predHash:= MAKE_-HASHTABLE 'UEQUAL
   $consDB:= MAKE_-HASHTABLE 'UEQUAL
   $predVectorFrontier:= 1   --slot 0 in vector will be vacant
-  $predVector:= GETREFV 100
+  $predVector:= newDomainShell 100
   for nam in allConstructors() |
           null (GETDATABASE(nam, 'CONSTRUCTORKIND) = 'package) repeat
     for [op,:sigList] in GETDATABASE(nam,'OPERATIONALIST) repeat
@@ -210,7 +210,7 @@ mkSigPredVectors() ==
   'done
 
 list2LongerVec(u,n) ==
-  vec := GETREFV ((7*n)/5) -- make 40% longer
+  vec := newDomainShell ((7*n)/5) -- make 40% longer
   for i in 0.. for x in u repeat vec.i := x
   vec
 
@@ -304,29 +304,6 @@ assignSlotToPred cond ==
   cond is ['OR,:u] => ['OR,:[assignSlotToPred x for x in u]]
   cond is ['NOT,u] => ['NOT,assignSlotToPred u]
   thisNeedsTOBeFilledIn()
-
-
-measure() ==
-  pp MEASURE (f := SparseUnivariatePolynomial_;)
-  pp MEASURE (o := SparseUnivariatePolynomial_;opDirect)
-  pp MEASURE (t := SparseUnivariatePolynomial_;template)
-  pp measureCommon [o,t]
-  MEASURE [f,o,t]
-
-measureCommon u ==
---measures bytes which ARE on $consDB
-  $table: local := MAKE_-HASHTABLE 'UEQUAL
-  fn(u,0) where fn(u,n) == n +
-    VECP u => +/[fn(u.i,0) for i in 0..MAXINDEX u]
-    HASH_-TABLE_-P u =>
-      +/[fn(key,0) + fn(HGET(u,key),0) for key in HKEYS u]
-    PAIRP u =>
-      HGET($table,u) => 0
-      m := fn(first u,0) + fn(rest u,0)
-      HGET($consDB,u) => 8 + m
-      HPUT($table,u,'T)
-      m
-    0
 
 makeSpadConstant [fn,dollar,slot] ==
   val := FUNCALL(fn,dollar)

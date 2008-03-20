@@ -175,3 +175,11 @@ checkMkdir path ==
 ++ return the pathname to the system module designated by `m'.
 getSystemModulePath m ==
   CONCAT(systemRootDirectory(),'"algebra/",m,'".",$faslType)
+
+++ Load native dynamically linked module
+loadNativeModule m ==
+)if %hasFeature KEYWORD::SBCL
+  SB_-ALIEN::LOAD_-SHARED_-OBJECT m
+)else
+  systemError '"don't know how to load a dynamically link module"
+)endif

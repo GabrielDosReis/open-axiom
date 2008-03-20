@@ -25,12 +25,12 @@
 ++ (to be displayed on TwoDimensionalViewports).
 GraphImage (): Exports == Implementation where
 
-  VIEW    ==> VIEWPORTSERVER$Lisp
-  sendI   ==> SOCK_-SEND_-INT
-  sendSF  ==> SOCK_-SEND_-FLOAT
-  sendSTR ==> SOCK_-SEND_-STRING
-  getI    ==> SOCK_-GET_-INT
-  getSF   ==> SOCK_-GET_-FLOAT
+  VIEW    ==> _$ViewportServer$Lisp
+  sendI   ==> sockSendInt
+  sendSF  ==> sockSendFloat
+  sendSTR ==> sockSendString
+  getI    ==> sockGetInt
+  getSF   ==> sockGetFloat
 
   typeGRAPH  ==> 2
   typeVIEW2D ==> 3
@@ -490,12 +490,12 @@ vp:=makeViewport2D(y1)
 ++ Description: TwoDimensionalViewport creates viewports to display graphs.
 TwoDimensionalViewport ():Exports == Implementation where
 
-  VIEW    ==> VIEWPORTSERVER$Lisp
-  sendI   ==> SOCK_-SEND_-INT
-  sendSF  ==> SOCK_-SEND_-FLOAT
-  sendSTR ==> SOCK_-SEND_-STRING
-  getI    ==> SOCK_-GET_-INT
-  getSF   ==> SOCK_-GET_-FLOAT
+  VIEW    ==> _$ViewportServer$Lisp
+  sendI   ==> sockSendInt
+  sendSF  ==> sockSendFloat
+  sendSTR ==> sockSendString
+  getI    ==> sockGetInt
+  getSF   ==> sockGetFloat
 
   typeGRAPH  ==> 2
   typeVIEW2D ==> 3

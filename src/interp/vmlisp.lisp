@@ -1,4 +1,4 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -990,7 +990,8 @@
 
 (defun MAKE-VEC (n) (make-array n))
 
-(define-function 'GETREFV #'make-array)
+(defun GETREFV (n)
+  (make-array n :initial-element nil))
 
 (defun LIST2VEC (list)
  (if (consp list)
@@ -1559,7 +1560,8 @@
  (declare (ignore width) (ignore recnum))
    (cond ((numberp filespec) (make-synonym-stream '*terminal-io*))
          ((null filespec) (error "not handled yet"))
-         (t (open (make-filename filespec) :direction :output))))
+         (t (open (make-filename filespec) :direction :output
+		  :if-exists :supersede))))
 
 (defun MAKE-APPENDSTREAM (filespec &optional (width nil) (recnum 0))
  "fortran support"

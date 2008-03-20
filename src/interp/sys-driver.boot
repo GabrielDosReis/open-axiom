@@ -57,12 +57,18 @@ $PrintCompilerMessageIfTrue := $verbose
 ++
 $options := []
 
+$OpenAxiomCoreModuleLoaded := false
+
 +++ Initialization routine run by the core system before handing off
 +++ to the interpreter or compiler.  
 +++ ??? This part is still in flux.
 AxiomCore::%sysInit() ==
   SETQ(_*PACKAGE_*, FIND_-PACKAGE '"BOOT")
   initMemoryConfig()
+  if not (%hasFeature KEYWORD::GCL or $OpenAxiomCoreModuleLoaded) then
+    loadNativeModule CONCAT(systemRootDirectory(),
+      '"lib/libopen-axiom-core.so")
+    $OpenAxiomCoreModuleLoaded := true
 )if %hasFeature KEYWORD::GCL
   SETQ(COMPILER::_*COMPILE_-VERBOSE_*,false)
   SETQ(COMPILER::_*SUPPRESS_-COMPILER_-WARNINGS_*,true)
@@ -104,6 +110,9 @@ loadExposureGroupData() ==
   LOAD(CONCAT(systemRootDirectory(),'"algebra/exposed"),
     KEYWORD::VERBOSE,false,KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
   "failed"
+
+++ 
+$defaultMsgDatabaseName := nil
 
 ++
 REROOT: () -> %Thing

@@ -80,6 +80,9 @@
                      (-1 (|checkMkdir| fullname))
                      (0 (error (format nil "~s is an existing file, not a library" fullname)))
                      (otherwise))
+	       ;; Make sure parent directory exists.
+	       #-:GCL (ensure-directories-exist 
+		       (|ensureTrailingSlash| fullname))
                (multiple-value-setq (stream indextable) (get-io-index-stream fullname))
                (make-libstream :mode 'output  :dirname fullname
                                :indextable indextable

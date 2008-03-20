@@ -93,7 +93,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
      repeat NewLocals:= delete(first u,NewLocals)
   for u in NewLocals repeat
     (OldLocals:= [[u,:count],:OldLocals]; count:= count+1)
-  v:= GETREFV count
+  v:= newDomainShell count
   v.(0):= nil
   v.(1):= sigList
   v.2:= attList

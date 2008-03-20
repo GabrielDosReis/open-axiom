@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -227,7 +227,7 @@ compCategories1(u,v) ==
   error 'compCategories1
  
 NewbFVectorCopy(u,domName) ==
-  v:= GETREFV SIZE u
+  v:= newDomainShell SIZE u
   for i in 0..5 repeat v.i:= u.i
   for i in 6..MAXINDEX v | PAIRP u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
   v
@@ -550,7 +550,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
               'adding))^=nil]
      --The code from here to the end is designed to replace repeated LOAD/STORE
      --combinations (SETELT ...(ELT ..)) by MVCs where this is practicable
-  copyvec:=GETREFV (1+n)
+  copyvec := newDomainShell (1+n)
   for u in code repeat
       if update(u,copyvec,[]) then code:=delete(u,code)
     where update(code,copyvec,sofar) ==
