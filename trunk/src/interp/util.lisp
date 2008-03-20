@@ -1,4 +1,4 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -57,8 +57,6 @@
 (import-module "parsing")
 
 (in-package "BOOT")
-(export '($directory-list $current-directory reroot
-          |makeAbsoluteFilename| |$msgDatabaseName| |$defaultMsgDatabaseName|))
 
 (defun our-write-date (file) (and #+kcl (probe-file file)
                                   (file-write-date file)))
@@ -85,30 +83,12 @@
       direc))))
 
 (defun interp-make-directory (direc)
-  (setq direc (namestring direc))
-  (if (string= direc "")  $current-directory
-   (if (or (memq :unix *features*)
-           (memq 'unix *features*))
-    (progn
-      (if (char/= (char $current-directory (1-(length $current-directory))) #\/)
-          (setq $current-directory (concat $current-directory "/")))
-      (if (char/= (char direc 0) #\/)
-          (setq direc (concat $current-directory direc)))
-      (if (char/= (char direc (1- (length direc))) #\/)
-          (setq direc (concat direc "/")))
-      direc)
-    (progn ;; Assume Windows conventions
-      (if (not (or (char= (char $current-directory (1- (length $current-directory))) #\/)
-                   (char= (char $current-directory (1- (length $current-directory))) #\\ )))
-          (setq $current-directory (concat $current-directory "\\")))
-      (if (not (or (char= (char direc 0) #\/)
-                   (char= (char direc 0) #\\)
-                   (find #\: direc)))
-          (setq direc (concat $current-directory direc)))
-      (if (not (or (char= (char direc (1- (length direc))) #\/)
-                   (char= (char direc (1- (length direc))) #\\ )))
-          (setq direc (concat direc "\\")))
-      direc))))
+  (let ((current-dir (get-current-directory)))
+    (setq direc (namestring direc))
+    (|ensureTrailingSlash|
+     (if (string= direc "")  
+	 current-dir
+       (concat (|ensureTrailingSlash| current-dir direc))))))
 
 ;; Various lisps use different ``extensions'' on the filename to indicate
 ;; that a file has been compiled. We set this variable correctly depending
@@ -147,22 +127,6 @@
      (mapcar
        #'(lambda (fname) (spad fname (concat (pathname-name fname) ".out")))
        files)))
-
-(defun fe (function file &optional (compflag nil) &aux (fn (pathname-name file)))
-  (let ((tbootfile (concat "/tmp/" fn ".boot"))
-        (tlispfile (concat "/tmp/" fn ".lisp")))
-    (system::run-aix-program "fc"
-         :arguments (list (string function)
-                          (namestring
-                           (merge-pathnames file 
-                                            (concat (|systemRootDirectory|) 
-                                                    "nboot/.boot"))))
-         :if-output-exists :supersede :output tbootfile)
-    (boot tbootfile tlispfile)
-    (if compflag (progn (compile-file tlispfile)
-                        (load (make-pathname :type *bin-path* :defaults tlispfile)))
-      (load tlispfile))))
-(defun fc (function file) (fe function file t))
 
 ;; This function will compile any lisp code that has changed in a directory.
 (defun recompile-directory (dir)
@@ -402,7 +366,6 @@
   (in-package "BOOT")
   (let (*print-level* *print-length* (fn (pathname-name file))
         (bootfile  (merge-pathnames file (concat (|systemRootDirectory|) "nboot/.boot"))))
-    (declare (special *print-level* *print-length*))
     (boot bootfile (make-pathname :type "lisp" :defaults bootfile))))
 
 
@@ -427,28 +390,29 @@
 ;; directory from the current {\bf AXIOM} shell variable.
 (defvar $relative-library-directory-list '("/algebra/"))
 
-(in-package "OLD-BOOT") 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  #-:GCL (defpackage "OLD-BOOT")
+  #+:GCL (in-package "OLD-BOOT"))
 
-(defun boot (file) ;; translates a single boot file
-#+:CCL
-  (setq *package* (find-package "BOOT"))
+(defun 
+#-:GCL old-boot::boot  ;; translates a single boot file
+#+:GCL boot
+   (file)
 #+:AKCL
   (in-package "BOOT")
   (let (*print-level* 
         *print-length* 
         (fn (pathname-name file))
         (*print-pretty* t))
-    (declare (special *print-level* *print-length*))
     (boot::boot
       file
       (merge-pathnames (make-pathname :type "clisp") file))))
 
-
-(in-package "BOOT")
+#+:GCL (in-package "BOOT")
 
 ;; This is a little used subsystem to generate {\bf ALDOR} code
 ;; from {\bf Spad} code. Frankly, I'd be amazed if it worked.
-(setq translate-functions '(
+(defparameter translate-functions '(
 ;; .spad to .as translator, in particular
 ;;      loadtranslate
         |spad2AsTranslatorAutoloadOnceTrigger|
@@ -458,7 +422,7 @@
 ;; if you compile a {\bf .as} file rather than a {\bf .spad} file.
 ;; {\bf ALDOR} is an external compiler that gets automatically called
 ;; if the file extension is {\bf .as}.
-(setq asauto-functions '(
+(defparameter asauto-functions '(
         loadas
 ;;      |as|                         ;; now in as.boot
 ;;      |astran|                     ;; now in as.boot
@@ -474,7 +438,7 @@
 ;; These are some {\bf debugging} functions that I use. I can't imagine
 ;; why you might autoload them but they don't need to be in a running
 ;; system.
-(setq debug-functions '(
+(defparameter debug-functions '(
         loaddebug
         |showSummary|
         |showPredicates|
@@ -606,11 +570,11 @@
 
 
 ;; the following are for conditional reading
-#+:ieee-floating-point (setq $ieee t)
-#-:ieee-floating-point (setq $ieee nil)
-(setq |$opSysName| '"shell")
-#+:CCL (defun machine-type () "unknown")
-(setq |$machineType| (machine-type))
+#+:ieee-floating-point (defparameter $ieee t)
+#-:ieee-floating-point (defparameter $ieee nil)
+(defparameter |$opSysName| '"shell")
+
+(defconstant |$machineType| (machine-type))
 ; spad-clear-input patches around fact that akcl clear-input leaves newlines chars
 (defun spad-clear-input (st) (clear-input st) (if (listen st) (read-char st)))
 
@@ -831,7 +795,7 @@
 ;; of the exposed constructors, is consistent with the actual libraries.
 (defun libcheck (int)
  "check that INTERP.EXPOSED and NRLIBs are consistent"
- (let (interp nrlibs)
+ (let (interp nrlibs abbrevs srcabbrevs srcconstructors constructors)
  (labels (
   (CONSTRUCTORNAME (nrlib)
    "find the long name of a constructor given an abbreviation string"
@@ -907,7 +871,7 @@
                 (setq start (position #\space expr :from-end t :test #'char=)))
         (throw 'done (string-trim '(#\space) (subseq expr start)))))))))
   (SRCABBREVS (sourcefile)
-   (let (in expr start end names longnames)
+   (let (in expr start end names longnames point mark)
     (catch 'done
      (with-open-file (in sourcefile)
       (loop
@@ -924,7 +888,7 @@
         (push (string-trim '(#\space) (subseq expr mark point)) names)))))
     (values names longnames)))
   (SRCSCAN ()
-   (let (longnames names)
+   (let (longnames names spads long short)
      (|changeDirectory| int)
     (setq spads (directory "*.spad"))
     (dolist (spad spads)

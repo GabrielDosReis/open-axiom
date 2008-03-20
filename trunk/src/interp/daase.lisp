@@ -303,9 +303,9 @@
 
 (defun asharp (file &optional (flags *asharpflags*))
  "call the asharp compiler"
- (system::system
-   (concatenate 'string (|systemRootDirectory|) "/compiler/bin/axiomxl "
-    flags " " file)))
+ (|runProgram|
+   (concatenate 'string (|systemRootDirectory|) "/compiler/bin/axiomxl"
+    (list flags file))))
 
 (defun resethashtables ()
  "set all -hash* to clean values. used to clean up core before saving system"

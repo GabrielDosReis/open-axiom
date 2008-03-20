@@ -642,7 +642,7 @@ hypertex.$(FASLEXT): hypertex.boot boot-pkg.$(FASLEXT)
 ## OpenAxiom's interpreter.
 
 patches.$(FASLEXT): patches.lisp macros.$(FASLEXT) sockio.$(FASLEXT) \
-		g-timer.$(FASLEXT)
+		g-timer.$(FASLEXT) sys-driver.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 setvars.$(FASLEXT): setvars.boot macros.$(FASLEXT) debug.$(FASLEXT)
@@ -953,9 +953,6 @@ property.$(FASLEXT): property.lisp sys-macros.$(FASLEXT)
 nspadaux.$(FASLEXT): nspadaux.lisp sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-sockio.$(FASLEXT): sockio.lisp sys-macros.$(FASLEXT)
-	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
-
 sfsfun-l.$(FASLEXT): sfsfun-l.lisp sys-macros.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
@@ -1073,7 +1070,11 @@ sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
 vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
-sys-os.$(FASLEXT): sys-os.boot boot-pkg.$(FASLEXT)
+sys-os.$(FASLEXT): sys-os.boot boot-pkg.$(FASLEXT) \
+		cfuns.$(FASLEXT) sockio.$(FASLEXT)
+	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
+
+sockio.$(FASLEXT): sockio.lisp boot-pkg.$(FASLEXT)
 	$(BOOTSYS) -- --compile --output=$@ --load-directory=. $<
 
 boot-pkg.$(FASLEXT): boot-pkg.lisp

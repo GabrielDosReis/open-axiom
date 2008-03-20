@@ -405,7 +405,7 @@ close args ==
     closeInterpreterFrame(NIL)
   x := UPCASE queryUserKeyedMsg('"S2IZ0072", nil)
   MEMQ(STRING2ID_-N(x,1), '(YES Y)) =>
-    BYE()
+    coreQuit()  -- ??? should be coreQuit errorCount()
   nil
 
 --% )constructor
@@ -636,7 +636,7 @@ compileAsharpArchiveCmd args ==
         rc   := mkdir namestring dir
         rc ^= 0 => throwKeyedMsg("S2IL0027",[namestring dir, namestring args])
 
-    curDir := $CURRENT_-DIRECTORY
+    curDir := GET_-CURRENT_-DIRECTORY()
 
     -- cd to that directory and try to unarchive the .al file
 
@@ -2188,7 +2188,8 @@ quitSpad2Cmd() ==
   sayKeyedMsg("S2IZ0032",NIL)
   TERSYSCOMMAND ()
 
-leaveScratchpad () == BYE()
+leaveScratchpad () ==
+  coreQuit() -- ??? should be coreQuit errorCount()
 
 --% )read
 

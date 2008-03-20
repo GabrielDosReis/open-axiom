@@ -65,7 +65,7 @@ RecordInner args ==
   Record0 VEC2LIST args
 
 Record0 args ==
-    dom := GETREFV 10
+    dom := newDomainShell 10
     -- JHD added an extra slot to cache EQUAL methods
     dom.0 := ["Record", :[["_:", CAR a, devaluate CDR a] for a in args]]
     dom.1 :=
@@ -83,7 +83,7 @@ Record0 args ==
   -- following is cache for equality functions
     dom.9 := if (n:= LENGTH args) <= 2
               then [NIL,:NIL]
-              else GETREFV n
+              else newDomainShell n
     dom
 
 RecordEqual(x,y,dom) ==
@@ -129,7 +129,7 @@ coerceRe2E(x,source) ==
 --  Want to eventually have the coerce to and from branch types.
 
 Union(:args) ==
-    dom := GETREFV 9
+    dom := newDomainShell 9
     dom.0 := ["Union", :[(if a is ["_:",tag,domval] then ["_:",tag,devaluate domval]
                           else devaluate a) for a in args]]
     dom.1 :=
@@ -182,7 +182,7 @@ coerceUn2E(x,source) ==
 --  Want to eventually have elt: ($, args) -> target
 
 Mapping(:args) ==
-    dom := GETREFV 9
+    dom := newDomainShell 9
     dom.0 := ["Mapping", :[devaluate a for a in args]]
     dom.1 :=
             [function lookupInTable,dom,
@@ -212,7 +212,7 @@ coerceMap2E(x) ==
 --% Enumeration
 
 Enumeration(:"args") ==
-    dom := GETREFV 9
+    dom := newDomainShell 9
     -- JHD added an extra slot to cache EQUAL methods
     dom.0 := ["Enumeration", :args]
     dom.1 :=

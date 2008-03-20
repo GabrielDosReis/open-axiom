@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -97,7 +97,6 @@ start(:l) ==
   if $displayStartMsgs then sayKeyedMsg("S2IZ0053",['"history"])
   initHist()
   if functionp 'addtopath then addtopath CONCAT(systemRootDirectory(),'"bin")
-  SETQ($CURRENT_-DIRECTORY,_*DEFAULT_-PATHNAME_-DEFAULTS_*)
   if null(l) then
     if $displayStartMsgs then
       sayKeyedMsg("S2IZ0053",[namestring ['_.axiom,'input]])

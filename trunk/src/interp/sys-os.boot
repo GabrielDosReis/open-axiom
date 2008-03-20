@@ -39,6 +39,8 @@
 --
 
 import '"boot-pkg"
+import '"cfuns"
+import '"sockio"
 )package "BOOT"
 
 ++ change current working directory.
@@ -57,3 +59,97 @@ import renameFile for
 import mkdir for
   oa__mkdir: string -> int  -- 0: sucess, -1: failure.
 
+++ socket interface
+import openServer for
+  open__server: string -> int
+
+import sockGetInt for
+  sock__get__int: int -> int
+
+import sockSendInt for
+  sock__send__int: (int,int) -> int
+
+)if not %hasFeature KEYWORD::GCL
+import sockGetString for
+  sock__get__string__buf: (int,pointer,int) -> int
+)endif
+
+import doSendString for
+  sock__send__string__len: (int, string, int) -> int
+
+sockSendString(type,str) ==
+  doSendString(type, str, LENGTH str)
+
+import sockGetFloat for
+  sock__get__float: int -> double
+
+import sockSendFloat for
+  sock__send__float: (int,double) -> int
+
+import sockSendWakeup for
+  sock__send__wakeup: (int,int) -> int
+
+import serverSwitch for
+  server__switch: () -> int
+
+import flushStdout for
+  flush__stdout: () -> int
+
+import sockSendSignal for
+  sock__send__signal: (int,int) -> int
+
+import printLine for
+  print__line: string -> int
+
+--%
+import directoryp for
+  directoryp: string -> int
+
+import writeablep for
+  writeablep: string -> int
+
+++ run a program with specified arguments
+runProgram(prog,args) ==
+)if %hasFeature KEYWORD::GCL
+  SYSTEM::SYSTEM CONCAT/[prog,:[:['" ",a] for a in args]]
+)elseif %hasFeature KEYWORD::CLISP
+  EXT::RUN_-PROGRAM(prog,KEYWORD::ARGUMENTS,args)
+)elseif %hasFeature KEYWORD::SBCL
+  SB_-EXT::RUN_-PROGRAM(prog,args)
+)else
+  systemError '"don't how to execute external program with this Lisp"
+)endif
+
+  
+++ numeric limits
+)if %hasFeature KEYWORD::GCL
+import plusInfinity for
+  plus__infinity: () -> double
+
+import minusInfinity for
+  minus__infinity: () -> double
+
+import NaNQ for
+  NANQ: () -> double
+
+$plusInfinity := plusInfinity()
+$minusInfinity := minusInfinity()
+$NaNValue := NaNQ()
+
+)elseif %hasFeature KEYWORD::SBCL
+$plusInfinity == SB_-EXT::DOUBLE_-FLOAT_-POSITIVE_-INFINITY
+
+$minusInfinity == SB_-EXT::DOUBLE_-FLOAT_-NEGATIVE_-INFINITY
+)else
+$plusInfinity == 1.1 * MOST_-POSITIVE_-LONG_-FLOAT()
+
+$minusInfinity == -$plusInfinity
+)endif
+
+)if not %hasFeature KEYWORD::GCL
+plusInfinity() ==
+  $plusInfinity
+
+minusInfinity() ==
+  $minusInfinity
+)endif

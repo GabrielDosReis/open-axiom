@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -379,17 +379,17 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   -- category should be present.  true => always
   makeCatvecCode:= first catvecListMaker
   emptyVector := VECTOR()
-  domainShell := GETREFV ($NRTbase + $NRTdeltaLength)
+  domainShell := newDomainShell ($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
   $template :=
-    $NRTvec = true => GETREFV ($NRTbase + $NRTdeltaLength)
+    $NRTvec = true => newDomainShell ($NRTbase + $NRTdeltaLength)
     nil
   $catvecList:= [domainShell,:[emptyVector for u in CADR domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
   $maximalViews:= nil
-  $SetFunctions:= GETREFV SIZE domainShell
-  $MissingFunctionInfo:= GETREFV SIZE domainShell
+  $SetFunctions:= newDomainShell SIZE domainShell
+  $MissingFunctionInfo:= newDomainShell SIZE domainShell
   $catNames:= ['$,:[GENVAR() for u in rest catvecListMaker]]
   domname:='dv_$
 
@@ -426,7 +426,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       --$NRTdomainFormList is unused now
     createDomainCode:=
       ['LET,domname,['LIST,MKQ CAR $definition,:ASSOCRIGHT $devaluateList]]
-    createViewCode:= ['LET,'$,['GETREFV, $NRTbase + $NRTdeltaLength]]
+    createViewCode:= ['LET,'$,["newDomainShell", $NRTbase + $NRTdeltaLength]]
     setVector0Code:=[$setelt,'$,0,'dv_$]
     slot3Code := ['QSETREFV,'$,3,['LET,'pv_$,predBitVectorCode1]]
     slamCode:=

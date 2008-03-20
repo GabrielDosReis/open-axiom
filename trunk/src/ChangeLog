@@ -1,3 +1,70 @@
+2008-03-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (GETREFV): Set initial elements to NIL.
+	(MAKE-OUTSTREAM): Supersede existing files.
+	* interp/template.boot (makeTemplate): Use newDomainShell instead
+	of GETREFV.
+	(extendVectorSize): Likewise.
+	(mkSigPredVectors): Likewise.
+	(list2LongerVec): Likewise.
+	(measure): Remove.
+	(measureCommon): Likewise.
+	* interp/sys-utility.boot (loadNativeModule): New.
+	* interp/sys-os.boot: Import "cfuns" and "sockio".  
+	(runProgram): New.
+	* interp/sys-globals.boot (/SOURCEFILES): Define here.
+	(/SPACELIST): Likewise.
+	* interp/sys-driver.boot ($OpenAxiomCoreModuleLoaded): New global
+	variable.
+	(AxiomCore::%sysInit): Load libopen-axiom-core if necessary.
+	($defaultMsgDatabaseName): Define here.
+	* interp/spad.lisp (|New,ENTRY,1|): Tidy.
+	* interp/sockio.lisp: Move import declarations to sys-os.boot.
+	Remove unused codes.
+	* interp/server.boot (serverReadLine): Use coreQuit instead of BYE.
+	* interp/pspad1.boot (formatMDEF): Tidy.
+	* interp/pspad2.boot (formatIf1): Tidy.
+	* interp/patches.lisp: Import "sys-driver".  Remove
+	$CURRENT-DIRECTORY. 
+	* interp/nruncomp.boot (buildFunctor): Use newDomainShell instead
+	of GETREFV.
+	* interp/nrunopt.boot (makeDomainTemplate): Likewise.
+	* interp/package.boot (processFunctorOrPackage): Likewise.
+	* interp/nlib.lisp (rdefiostream): Tidy.
+	* interp/monitor.lisp (monitor-autoload): Define when GCL.
+	* interp/interop.boot (oldAxiomCategoryDevaluate): Tidy.
+	* interp/i-toplev.boot (start): Don't set $CURRENT-DIRECTORY.
+	* interp/i-syscmd.boot (close): Use newDomainShell.
+	(leaveScratchpad): Use coreQuit instead of BYE.
+	(compileAsharpArchiveCmd): Use GET-CURRENT-DIRECTORY.
+	* interp/g-util.boot (newDomainShell): Define.
+	* interp/functor.boot (NewbFVectorCopy): Use newDomainShell.
+	* interp/daase.lisp (asharp): Use runProgram.
+	* interp/cfuns.lisp: Remove unused codes.
+	(directoryp): Move import declaration to sys-os.bot.
+	(writeablep): Likewise.
+	* interp/buildom.boot (Record0): Use newDomainShell instead of
+	GETREFV.
+	(coerceRe2E): Likewise.
+	(Union): Likewise.
+	(Mapping): Likewise.
+	(Enumeration): Likewise.
+	* interp/category.boot (mkCategory): Likewise.
+	* interp/Makefile.pamphlet (patches.$(FASLEXT)): Require
+	sys-driver.$(FASLEXT). 
+	(sys-os.$(FASLEXT)): Require cfuns.$(FASLEXT), sockio.$(FASLEXT).
+	* algebra/view2D.spad.pamphlet: Use $ViewportServer instead of
+	VIEWPORTSERVER.  Use sockSendInt instead of SOCK-SEND-INT.
+	Use sockSendFloat instead of SEND-SEND-FLOAT.  Use sockSendString
+	instead of SOCK-SEND-STRING.  Use sockGetInt instead of
+	SOCK-GET-INT. Use sockGetFloat instead of SOCK-SEND-FLOAT.
+	* algebra/view3D.spad.pamphlet: Likewise.
+	* interp/util.lisp (fe): Remove.
+	(fc): Likewise.
+	(interp-make-directory): Simplify.
+	(OLD-BOOT::BOOT): Don't declare *PRINT-PRETTY* and *PRINT-LENGTH*
+	special. 
+
 2008-03-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	
 	* interp/trace.boot (untraceDomainLocalOps): Tidy.

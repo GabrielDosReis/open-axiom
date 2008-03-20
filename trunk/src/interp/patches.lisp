@@ -1,4 +1,4 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -34,6 +34,7 @@
 (import-module "macros")
 (import-module "sockio")
 (import-module "g-timer")
+(import-module "sys-driver")
 (in-package "BOOT")
 ;;patches for now
 
@@ -216,11 +217,6 @@
 (define-function '|isUpperCaseLetter| #'UPPER-CASE-P)
 (define-function '|isLetter| #'ALPHA-CHAR-P)
 
-#+(or :CCL (and :lucid :ibm/370))
-(setq $current-directory (truename "."))
-#-(or :CCL (and :lucid :ibm/370))
-(setq $current-directory (make-directory *default-pathname-defaults*))
-
 (defvar *msghash* nil "hash table keyed by msg number")
 
 (defun cacheKeyedMsg (file)
@@ -271,8 +267,6 @@
     (setq returncode 0))
    (unless (zerop returncode) (bye returncode)))))
 
-#+:dos
-(setq $current-directory (truename "."))
 #+:dos
 (defun user-homedir-pathname ()
  (truename "."))

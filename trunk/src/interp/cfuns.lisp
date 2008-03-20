@@ -35,35 +35,6 @@
 (import-module "boot-pkg")
 (in-package "BOOT")
 
-#+(and :Lucid (not :ibm/370))
-(progn
-;  (system:define-foreign-function :c '|findString| :fixnum)
-  (system:define-foreign-function :c '|addtopath|  :fixnum)
-  (system:define-foreign-function :c '|chdir|      :fixnum)
-  (system:define-foreign-function :c '|writeablep| :fixnum)
-  (system:define-foreign-function :c '|directoryp| :fixnum)
-  (system:define-foreign-function :c '|copyEnvValue| :fixnum)
-  )
-
-#+KCL
-(progn
-  (defentry |directoryp| (string)        (int "directoryp"))
-  (defentry |writeablep| (string)        (int "writeablep"))
-;  (defentry |findString| (string string) (int "findString"))
-  )
-
-#+:CCL
-(defun |directoryp| (fn)
-  (cond ((not (probe-file fn)) -1)
-        ((directoryp fn) 1)
-        (t 0)))
-
-
-
-; (defun |findStringInFile| (str p) 
-;     (|findString| (namestring p) str) )
-
-
 #+:GCL
 (defun |getEnv| (var-name)  (system::getenv var-name))
 
@@ -101,5 +72,3 @@
 (defentry |hashCombine| (int int) (int "MYCOMBINE"))
 #+(AND KCL  ELF)
 (defun |hashCombine| (x y) (system:|hashCombine| x y))
-
-
