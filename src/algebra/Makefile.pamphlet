@@ -184,12 +184,15 @@ system.spad.pamphlet  (MSYSCMD)
 <<layer0>>=
 
 axiom_algebra_layer_0 = \
-  AHYP    ATTREG   CFCAT   ELTAB    KOERCE   KONVERT  \
-  MSYSCMD ODEIFTBL OM      OMCONN   OMDEV    OUT      \
-  PRIMCAT PRINT    PTRANFN SPFCAT   TYPE     UTYPE    \
-  PROPLOG PROPERTY BASTYPE BASTYPE- CATEGORY LMODULE  \
-  RMODULE FINITE   STEP    SGROUP   SGROUP-  ABELSG   \
-  ABELSG- ORDSET   ORDSET- FNCAT    FILECAT  SEXCAT 
+  AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
+  MSYSCMD  ODEIFTBL OM       OMCONN   OMDEV    OUT      \
+  PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
+  PROPLOG  PROPERTY BASTYPE  BASTYPE- CATEGORY LMODULE  \
+  RMODULE  FINITE   STEP     SGROUP   SGROUP-  ABELSG   \
+  ABELSG-  ORDSET   ORDSET-  FNCAT    FILECAT  SEXCAT   \
+  MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
+  ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
+  COMBOPC  EQ2      NONE1
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -212,14 +215,10 @@ coerce.spad.pamphlet   (TYPE KOERCE KONVERT RETRACT)
 
 <<layer1>>=
 axiom_algebra_layer_1 = \
-  ANY1     COMBOPC  DROPT1   EQ2      \
-  FORTCAT  ITFUN2   ITFUN3   ITUPLE   \
-  MKBCFUNC MKRECORD MKUCFUNC NONE1    \
-  PATAB    PLOT1    PPCURVE  PSCURVE  \
-  REAL     RESLATC  RETRACT  RETRACT- \
-  SEGBIND2 SEGCAT   STREAM1  STREAM2  \
-  STREAM3  BINDING  SYNTAX   BMODULE  \
-  LOGIC    LOGIC-
+  AGG      AGG-     IEVALAB  IEVALAB- FORTCAT   ITUPLE   \
+  PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
+  RETRACT- SEGCAT   BINDING  SYNTAX   BMODULE   LOGIC    \
+  LOGIC-   EVALAB   EVALAB-      FEVALAB  FEVALAB- 
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -235,9 +234,9 @@ axiom_algebra_layer_1_objects = \
 
 <<layer2>>=
 axiom_algebra_layer_2 = \
-  AGG     AGG-     FMC     FMFUN   FORTFN  \
-  FVC     CTORCALL FVFUN   INTRET  SEGXCAT \
-  CONTOUR
+  ELTAGG   ELTAGG- FMC      FMFUN   FORTFN   FVC     \
+  CTORCALL FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
+  CONTOUR  LIST3   MKFUNC   OASGP
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))
@@ -257,8 +256,10 @@ grdef.spad.pamphlet (GRDEF)
 
 <<layer3>>=
 axiom_algebra_layer_3 = \
-  ELTAGG   ELTAGG-  GRDEF   IEVALAB  IEVALAB-  \
-  LIST3    MKFUNC   SCOPE
+   GRDEF     SCOPE    MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1  \
+   MAPPKG2   MAPPKG3  INTBIT   MONAD    MONAD-   
+
+
 
 axiom_algebra_layer_3_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_3))
@@ -282,23 +283,17 @@ ystream.spad.pamphlet (YSTREAM)
 
 <<layer4>>=
 axiom_algebra_layer_4 = \
-  ANON     COLOR    COMM     COMPPROP \
-                    ESCONT1  EXIT     \
-  FAMONC                              \
-  FORMULA1 IDPC                       \
-  INTBIT                              \
-  MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1  \
-  MAPPKG2  MAPPKG3  MONAD    MONAD-   \
-  NIPROB   NONE     NUMINT   ODECAT   \
-  ODEPROB  OMENC    ONECOMP2 OPTCAT   \
-  OPTPROB                    PALETTE  \
-  PARPCURV PARPC2   PARSCURV PARSC2   \
-  PARSURF  PARSU2   PATMAB   PATRES2  \
-  PATTERN1 PDECAT   PDEPROB  REPSQ    \
-  REPDB    RFDIST   RIDIST            \
-                             SPACEC   \
-  SPLNODE           SUCH     TEX1     \
-  UDVO     YSTREAM  PAIR     ENV 
+  ANON     COLOR    COMM     COMPPROP ESCONT1  EXIT     \
+  FAMONC   FORMULA1 IDPC     NIPROB   NONE     NUMINT   \
+  ODECAT   ODEPROB  OMENC    ONECOMP2 OPTCAT   OPTPROB  \
+  PALETTE  PARPCURV PARPC2   PARSCURV PARSC2   PARSURF  \
+  PARSU2   PATMAB   PATRES2  PATTERN1 PDECAT   PDEPROB  \
+  REPSQ    REPDB    RFDIST   RIDIST   SPACEC   SPLNODE  \
+  SUCH     TEX1     UDVO     YSTREAM  PAIR     ENV      \
+  ATRIG    ATRIG-   GROUP    GROUP-   LALG     LALG-    \
+  OAMON    BGAGG    BGAGG-   BRAGG    BRAGG-   ELAGG    \
+  ELAGG-  DLAGG     MODULE  MODULE-  
+
 
 axiom_algebra_layer_4_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_4))
@@ -310,27 +305,15 @@ axiom_algebra_layer_4_objects = \
 
 \subsection{Layer 5}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-equation1.spad.pamphlet (EVALAB IEVALAB)
-\end{verbatim}
-
 <<layer5>>=
 axiom_algebra_layer_5 = \
-  ATRIG    ATRIG-            CACHSET  \
-  CHARNZ   CHARZ    DVARCAT  DVARCAT- \
-  ELEMFUN  ELEMFUN- ESTOOLS2 EVALAB   \
-  EVALAB-  FCOMP    FEVALAB  FEVALAB- \
-  FPATMAB  GROUP    GROUP-   IDPAM    \
-  IDPO     INCRMAPS IXAGG    IXAGG-   \
-  KERNEL2  LALG     LALG-    LINEXP   \
-  MODMONOM MONADWU  MONADWU- MRF2     \
-  NARNG    NARNG-   NSUP2    OASGP    \
-  ODVAR    OPQUERY  ORDFIN   ORDMON   \
-  PATMATCH PERMCAT  PDRING   PDRING-  \
-  SDVAR    SUP2     TRIGCAT  TRIGCAT- \
-  ULS2     UP2      ELABEXPR
+  CACHSET  CHARNZ   CHARZ    DVARCAT  DVARCAT- ELEMFUN  \
+  ELEMFUN- ESTOOLS2 FCOMP    FPATMAB  IDPAM    IDPO     \
+  INCRMAPS KERNEL2  LINEXP   MODMONOM MONADWU  MONADWU- \
+  MRF2     NARNG    NARNG-   NSUP2    ODVAR    OPQUERY  \
+  ORDFIN   ORDMON   PATMATCH PERMCAT  PDRING   PDRING-  \
+  SDVAR    SUP2     TRIGCAT  TRIGCAT- ULS2     UP2      \
+  ELABEXPR OCAMON
 
 axiom_algebra_layer_5_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_5))
@@ -351,17 +334,14 @@ sortpak.spad.pamphlet (SORTPAK)
 
 <<layer6>>=
 axiom_algebra_layer_6 = \
-  AUTOMOR  BGAGG   BGAGG-   BRAGG    \
-  BRAGG-   CARTEN2 CHARPOL  COMPLEX2 \
-  DIFEXT   DIFEXT- DLAGG    ELAGG    \
-  ELAGG-   ES1     ES2      GRMOD    \
-  GRMOD-   HYPCAT  HYPCAT-  MKCHSET  \
-  MODRING  MODULE  MODULE-  NASRING  \
-  NASRING- OAMON   SORTPAK  ZMOD 
+  ALGEBRA ALGEBRA- AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
+  DIFEXT  DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
+  HYPCAT  HYPCAT-  MKCHSET  MODRING NASRING  NASRING- \
+  SORTPAK ZMOD     PRQAGG   QUAGG   SKAGG    DQAGG    \
+  PID     OAGROUP  OAMONS
 
 axiom_algebra_layer_6_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_6))
-
 axiom_algebra_layer_6_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_6)))
@@ -376,10 +356,8 @@ axiom_algebra_layer_6_objects = \
 
 <<layer7>>=
 axiom_algebra_layer_7 = \
-  ALGEBRA ALGEBRA- BTCAT  BTCAT- \
-  FMCAT   IDPOAM   IFAMON GRALG  \
-  GRALG-  OCAMON   PRQAGG QUAGG  \
-  SKAGG 
+  BTCAT  BTCAT-  LNAGG    LNAGG-   FMCAT   IDPOAM   \
+  IFAMON GRALG   GRALG-   FLAGG    FLAGG-             
 
 axiom_algebra_layer_7_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_7))
@@ -400,12 +378,10 @@ fortcat.spad.pamphlet (FORTFN FMC FORTCAT FVC FMTC FMFUN FVFUN)
 
 <<layer8>>=
 axiom_algebra_layer_8 = \
-  BSTREE  BTOURN   CARD    DRAWHACK \
-  DQAGG   FACTFUNC FMTC    FR2      \
-  FRAC2   FRUTIL   ITAYLOR MLO      \
-  NAALG   NAALG-   OAGROUP OAMONS   \
-  OP      ORDCOMP2 PID     RANDSRC  \
-  UNISEG2 XALG 
+  BSTREE  BTOURN   CARD     DRAWHACK  FACTFUNC FMTC  \
+  FR2     FRAC2    FRUTIL   ITAYLOR   MLO      NAALG \
+  NAALG-  OP       ORDCOMP2 RANDSRC   UNISEG2  XALG  \
+  FIELD   FIELD-   A1AGG    A1AGG-    ARR2CAT  ARR2CAT-
 
 axiom_algebra_layer_8_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_8))
@@ -429,15 +405,13 @@ sf.spad.pamphlet (REAL RADCAT RNS FPS DFLOAT)
 
 <<layer9>>=
 axiom_algebra_layer_9 = \
-  AMR      AMR-     DEGRED  DLP      \
-  EAB      ESTOOLS1 FAGROUP FAMONOID \
-  FIELD    FIELD-   FLAGG   FLAGG-   \
-  FLINEXP  FLINEXP- FRETRCT FRETRCT- \
-  FSERIES  FT       IDPAG   IDPOAMS  \
-  INFINITY LA       OMLO    ORTHPOL  \
-  PRODUCT  PADICCT  PMPRED  PMASS    \
-  PTFUNC2  RADCAT   RADCAT- RATRET   \
-  RADUTIL  UPXS2    XFALG   ZLINDEP 
+  AMR      AMR-     DEGRED  DLP      EAB      ESTOOLS1 \
+  FAGROUP  FAMONOID FLINEXP FLINEXP- FRETRCT  FRETRCT- \
+  FSERIES  FT       IDPAG   IDPOAMS  INFINITY LA       \
+  OMLO     ORTHPOL  PRODUCT PADICCT  PMPRED   PMASS    \
+  PTFUNC2  RADCAT   RADCAT- RATRET   RADUTIL  UPXS2    \
+  XFALG    ZLINDEP  BBTREE  LSAGG    LSAGG-   SRAGG    SRAGG-    STRICAT    
+
 
 axiom_algebra_layer_9_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_9))
@@ -474,8 +448,7 @@ viewpack.spad.pamphlet (VIEW)
 
 <<layer10>>=
 axiom_algebra_layer_10 = \
-  A1AGG    A1AGG-   ARR2CAT  ARR2CAT- \
-  ASP34    BBTREE   BFUNCT   BPADIC   \
+  ASP34    BFUNCT   BPADIC   \
   BTREE    CRAPACK  DEQUEUE  DLIST    \
   DRAWCX   D01GBFA  D02EJFA  D03FAFA  \
   DRAWPT   FAMR     FAMR-    FLASORT  \
@@ -497,7 +470,8 @@ axiom_algebra_layer_10 = \
   STACK    STTAYLOR TABLBUMP TABLEAU  \
   TOPSP    TRANFUN  TRANFUN- TUBE     \
   UDPO     UNISEG   VIEW     VSPACE   \
-  VSPACE-  XPOLYC   XPR
+  VSPACE-  XPOLYC   XPR    BTAGG    BTAGG-  
+
 
 axiom_algebra_layer_10_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_10))
@@ -533,8 +507,9 @@ xpoly.spad.pamphlet (OFMONOID FMCAT FM1 XALG XFALG XPOLYC XPR XDPOLY XRPOLY
 
 <<layer11>>=
 axiom_algebra_layer_11 = \
+  STRING   \
   APPLYORE ARRAY1   ARRAY12  ARRAY2   \
-  ASTACK   BTAGG    BTAGG-   COMBINAT \
+  ASTACK   COMBINAT \
   CSTTOOLS D01FCFA  E04MBFA  FARRAY   \
   FLALG    GALUTIL  HEAP     IARRAY1  \
   IARRAY2  IFARRAY  INTCAT   INTHEORY \
@@ -542,11 +517,11 @@ axiom_algebra_layer_11 = \
   LWORD    MATCAT   MATCAT-  MATSTOR  \
   ORESUP   OREPCTO  OREUP    PLOT3D   \
   PR       PREASSOC PRIMARR2 REDORDER \
-  SRAGG    SRAGG-   STREAM   SYMPOLY  \
+  STREAM   SYMPOLY  \
   TS       TUPLE    UPSCAT   UPSCAT-  \
   VECTCAT  VECTCAT- XDPOLY   XEXPPKG  \
   XF       XF-      XPBWPOLY XPOLY    \
-  XRPOLY
+  XRPOLY  
 
 axiom_algebra_layer_11_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_11))
@@ -565,9 +540,10 @@ axiom_algebra_layer_11_objects = \
 
 <<layer12>>=
 axiom_algebra_layer_12 = \
- BITS    DIRPROD2 IMATRIX  IVECTOR \
+  DIOPS    DIOPS-      \
+  DIAGG   DIAGG-  BITS    DIRPROD2 IMATRIX  IVECTOR \
  LPOLY   LSMP     LSMP1    MATCAT2 \
- PTCAT   STRICAT  TRIMAT 
+ PTCAT   TRIMAT FSAGG    FSAGG-    
 
 axiom_algebra_layer_12_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_12))
@@ -607,6 +583,7 @@ solvedio.spad.pamphlet (DIOSP)
 
 <<layer13>>=
 axiom_algebra_layer_13 = \
+  KDAGG    KDAGG-   \
   ASSOCEQ  CARTEN   CLIF     CLIP     \
   COORDSYS DBASE    DHMATRIX DIOSP    \
   DIRPCAT  DIRPCAT- D02BBFA  D02BHFA  \
@@ -616,7 +593,7 @@ axiom_algebra_layer_13 = \
   ODESYS   ODETOOLS ORDFUNS  PERMAN   \
   PFECAT   PFECAT-  POINT    PSEUDLIN \
   PTPACK   REP2     SETMN    SEX      \
-  STRING   SYMFUNC  VECTOR2
+  SYMFUNC  VECTOR2     CHAR
 
 axiom_algebra_layer_13_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_13))
@@ -722,13 +699,14 @@ wtpol.spad.pamphlet (WP OWP)
 
 <<layer14>>=
 axiom_algebra_layer_14 = \
+  TBAGG   TBAGG-   ALIST    FS       FS-      ACF      ACF-     \
+  ACFS     ACFS-    \
   ASP1     ASP10    ASP24    ASP4     \
   ASP50    ASP6     ASP73    BALFACT  \
   BEZOUT   BINARY   BINFILE  BOUNDZRO \
   BPADICRT BRILL    CDEN     CHVAR    \
   COMMUPC  CONTFRAC CVMP     CYCLOTOM \
-  CYCLES   DDFACT   DECIMAL  DIOPS    \
-  DIOPS-   DIRPROD  DISPLAY  DMP      \
+  CYCLES   DDFACT   DECIMAL  DIRPROD  DISPLAY  DMP      \
   DPMO     DPOLCAT  DPOLCAT- D01AJFA  \
   D01AKFA  D01ALFA  D01AMFA  D01APFA  \
   D01AQFA  EMR      EQ       ERROR    \
@@ -776,7 +754,11 @@ axiom_algebra_layer_14 = \
   TWOFACT  UNIFACT  UP       UPCDEN   \
   UPDECOMP UPDIVP   UPMP     UPOLYC2  \
   UPXSCAT  UPSQFREE VIEWDEF  VIEW2D   \
-  VOID     WEIER    WP       
+  VOID     WEIER    WP       \
+ EQTBL  GSTBL   HASHTBL \
+  INTABL  INTFTBL  STBL    STRTBL\
+  TABLE     
+
 
 axiom_algebra_layer_14_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_14))
@@ -798,7 +780,7 @@ plot.spad.pamphlet (PLOT PLOT1)
 
 <<layer15>>=
 axiom_algebra_layer_15 = \
-  DIAGG   DIAGG-   DSMP     EXPUPXS \
+   DSMP     EXPUPXS \
   FRAMALG FRAMALG- MDAGG    ODPOL   \
   PLOT    RMCAT2   ROIRC    SDPOL   \
   SMATCAT SMATCAT- TUBETOOL UPXSCCA \
@@ -825,8 +807,8 @@ space.spad.pamphlet (SPACEC SPACE3 TOPSP)
 <<layer16>>=
 axiom_algebra_layer_16 = \
   DPMM     EFUPXS  FFINTBAS FRIDEAL  \
-  FRIDEAL2 FRMOD   FSAGG    FSAGG-   \
-  IBATOOL  INTFACT KDAGG    KDAGG-   \
+  FRIDEAL2 FRMOD   \
+  IBATOOL  INTFACT \
   MSETAGG  MONOGEN MONOGEN- NFINTBAS \
   SPACE3 
 
@@ -867,7 +849,7 @@ axiom_algebra_layer_17 = \
   IBACHIN MMLFORM NORMMA  ODERED  OMSAGG   \
   PERM    PERMGRP PRIMES  PWFFINTB \
   RDIST   SAE     SAEFACT SAERFFC  \
-  SGCF    TBAGG   TBAGG-  VIEW3D 
+  SGCF VIEW3D 
 
 axiom_algebra_layer_17_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_17))
@@ -890,10 +872,8 @@ table.spad.pamphlet (HASHTBL INTABL TABLE EQTBL STRTBL GSTBL STBL)
 
 <<layer18>>=
 axiom_algebra_layer_18 = \
-  ALIST   EQTBL   GSTBL   HASHTBL \
-  INTABL  INTFTBL INTPACK IPF     \
-  KAFILE  PATRES  STBL    STRTBL  \
-  TABLE   TBCMPPK 
+INTPACK IPF     \
+  KAFILE  PATRES TBCMPPK 
 
 axiom_algebra_layer_18_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_18))
@@ -974,7 +954,7 @@ variable.spad.pamphlet (OVAR VARIABLE RULECOLD FUNCTION ANON)
 
 <<layer19>>=
 axiom_algebra_layer_19 = \
-  ACF      ACF-     ACPLOT   ANTISYM \
+  ACPLOT   ANTISYM \
   ANY      ASP12    ASP27    ASP28   \
   ASP33    ASP49    ASP55    ASP7    \
   ASP78    ASP8     ASP9     ATTRBUT \
@@ -984,7 +964,7 @@ axiom_algebra_layer_19 = \
   EP       E04AGNT  FCPAK1   FEXPR   \
   FFCAT    FFCAT-   FFCGP    FFNBP   \
   FFP      FLOAT    FPARFRAC FR      \
-  FRNAALG  FRNAALG- FS       FS-     \
+  FRNAALG  FRNAALG- \
   FST      FUNCTION GDMP     HACKPI  \
   IDEAL    INFORM   INFORM1  IPRNTPK \
   IR       ISUPS    KERNEL   LIB     \
@@ -1092,7 +1072,7 @@ utsode.spad.pamphlet (UTSODE)
 
 <<layer20>>=
 axiom_algebra_layer_20 = \
-  ACFS     ACFS-    AF       ALGFACT  \
+  AF       ALGFACT  \
   ALGFF    ALGMANIP ALGMFACT ALGPKG   \
   ALGSC    AN       APPRULE  ASP19    \
   ASP20    ASP30    ASP31    ASP35    \
@@ -2298,13 +2278,13 @@ check:
 <<stages>>
 
 mostlyclean-local:
-	@ -rm -f $(OUT)/*.$(FASLEXT)
-	@ -rm -rf *.NRLIB
-	rm -rf strap
-	rm -f *stamp
+	@rm -f $(OUT)/*.$(FASLEXT) $(OUT)/*.daase
+	@rm -rf *.NRLIB
+	@rm -rf *.DAASE *.daase libdb.text
+	@rm -rf strap
+	@rm -f *stamp
 
 clean-local: mostlyclean-local
-	rm -rf *.DAASE
 
 distclean-local: clean-local
 

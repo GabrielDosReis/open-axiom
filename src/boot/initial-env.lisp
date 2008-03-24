@@ -1,4 +1,4 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -45,8 +45,11 @@
 (defpackage "BOOTTRAN"
   (:use "AxiomCore")
   #+:common-lisp  (:use "COMMON-LISP")
-  #-:common-lisp  (:use "LISP"))
-
+  #-:common-lisp  (:use "LISP")
+  (:export "systemRootDirectory" 
+	   "systemLibraryDirectory"
+	   "loadNativeModule"
+	   "loadSystemRuntimeCore"))
 
 (in-package "BOOTTRAN")
 
@@ -69,11 +72,6 @@
 
 (defun MAKE-VEC (n) 
   (make-array n))
-
-(defun concat (&rest l)
-  (progn
-    (setq l (mapcar #'string l))
-    (apply #'concatenate 'string l)))
 
 (defun |shoeInputFile| (filespec )
   (open filespec :direction :input :if-does-not-exist nil))

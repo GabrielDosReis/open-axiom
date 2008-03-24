@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -130,8 +130,10 @@ bfListOf x==x
 bfColon: %Thing -> %List
 bfColon x== ["COLON",x]
 
-bfColonColon: (%Thing,%Symbol) -> %Symbol
+bfColonColon: (%Symbol,%Symbol) -> %Symbol
 bfColonColon(package, name) == 
+  %hasFeature KEYWORD::CLISP and package in '(EXT FFI) =>
+    FIND_-SYMBOL(SYMBOL_-NAME name,package)
   INTERN(SYMBOL_-NAME name, package)
 
 bfSymbol: %Thing -> %Thing 

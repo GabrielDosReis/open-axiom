@@ -33,6 +33,7 @@
 
 
 (import-module "macros")
+(import-module "sys-os")
 (in-package "BOOT")
 
 #+ (and :lucid :unix)
@@ -58,6 +59,6 @@
 (defun copy-file (namestring1 namestring2)
   (system:run-aix-program "cp" :arguments (list namestring1 namestring2)))
 
-(setq |$algebraOutputStream| *terminal-io*)
 
-
+#+(or :sbcl :clisp)
+(defun obey(s) (|runCommand| s))

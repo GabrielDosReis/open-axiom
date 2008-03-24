@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -133,7 +133,7 @@ htSetLiterals(htPage,name,message,variable,values,functionToCall) ==
 
 htSetLiteral(htPage, val) ==
   htInitPage('"Set Command", nil)
-  SET(htpProperty(htPage, 'variable), translateYesNo2TrueFalse val)
+  setDynamicBinding(htpProperty(htPage, 'variable), translateYesNo2TrueFalse val)
   htKill(htPage,val)
 
 htShowIntegerPage(htPage, setData) ==
@@ -172,7 +172,7 @@ htSetInteger(htPage) ==
   val := chkRange htpLabelInputString(htPage,'value)
   not INTEGERP val =>
     errorPage(htPage,['"Value Error",nil,'"\vspace{3}\centerline{{\em ",val,'"}}\vspace{2}\newline\centerline{Click on \UpBitmap{} to re-enter value}"])
-  SET(htpProperty(htPage, 'variable), val)
+  setDynamicBinding(htpProperty(htPage, 'variable), val)
   htKill(htPage,val)
 
 htShowFunctionPage(htPage,setData) ==
@@ -215,14 +215,14 @@ htSetvarDoneButton(message, func) ==
 
 htFunctionSetLiteral(htPage, val) ==
   htInitPage('"Set Command", nil)
-  SET(htpProperty(htPage, 'variable), translateYesNo2TrueFalse val)
+  setDynamicBinding(htpProperty(htPage, 'variable), translateYesNo2TrueFalse val)
   htSetFunCommandContinue(htPage,val)
 
 htSetFunCommand(htPage) ==
   variable := htpProperty(htPage,'variable)
   checker := htpProperty(htPage,'checker)
   value := htCheck(checker,htpLabelInputString(htPage,'value))
-  SET(variable,value) --kill this later
+  setDynamicBinding(variable,value) --kill this later
   htSetFunCommandContinue(htPage,value)
 
 htSetFunCommandContinue(htPage,value) ==

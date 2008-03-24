@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -65,7 +65,7 @@ RecordInner args ==
   Record0 VEC2LIST args
 
 Record0 args ==
-    dom := newDomainShell 10
+    dom := newShell 10
     -- JHD added an extra slot to cache EQUAL methods
     dom.0 := ["Record", :[["_:", CAR a, devaluate CDR a] for a in args]]
     dom.1 :=
@@ -83,7 +83,7 @@ Record0 args ==
   -- following is cache for equality functions
     dom.9 := if (n:= LENGTH args) <= 2
               then [NIL,:NIL]
-              else newDomainShell n
+              else newShell n
     dom
 
 RecordEqual(x,y,dom) ==
@@ -129,7 +129,7 @@ coerceRe2E(x,source) ==
 --  Want to eventually have the coerce to and from branch types.
 
 Union(:args) ==
-    dom := newDomainShell 9
+    dom := newShell 9
     dom.0 := ["Union", :[(if a is ["_:",tag,domval] then ["_:",tag,devaluate domval]
                           else devaluate a) for a in args]]
     dom.1 :=
@@ -137,8 +137,7 @@ Union(:args) ==
                [["_=",[[["Boolean"],"_$","_$"],:12]],
                  ["coerce",[[$OutputForm,"_$"],:14]]]]
     dom.2 := NIL
-    dom.3 :=
-      '(SetCategory)
+    dom.3 := ["UnionCategory",:QCDR dom.0]
     dom.4 :=
           [$commonCategoryDefaults, $commonCategoryAncestors]
     dom.5 := args
@@ -153,7 +152,7 @@ UnionEqual(x, y, dom) ==
   predlist := mkPredList branches
   same := false
   for b in stripUnionTags branches for p in predlist while not same repeat
-    typeFun := ["LAMBDA", '(_#1), p]
+    typeFun := eval ["LAMBDA", '(_#1), p]
     FUNCALL(typeFun,x) and FUNCALL(typeFun,y) =>
       STRINGP b => same := (x = y)
       if p is ["EQCAR", :.] then (x := rest x; y := rest y)
@@ -168,7 +167,7 @@ coerceUn2E(x,source) ==
   predlist := mkPredList branches
   byGeorge := byJane := GENSYM()
   for b in stripUnionTags branches for p in predlist  repeat
-    typeFun := ["LAMBDA", '(_#1), p]
+    typeFun := eval ["LAMBDA", '(_#1), p]
     if FUNCALL(typeFun,x) then return
       if p is ["EQCAR", :.] then x := rest x
 --    STRINGP b => return x  -- to catch "failed" etc.
@@ -182,7 +181,7 @@ coerceUn2E(x,source) ==
 --  Want to eventually have elt: ($, args) -> target
 
 Mapping(:args) ==
-    dom := newDomainShell 9
+    dom := newShell 9
     dom.0 := ["Mapping", :[devaluate a for a in args]]
     dom.1 :=
             [function lookupInTable,dom,
@@ -212,7 +211,7 @@ coerceMap2E(x) ==
 --% Enumeration
 
 Enumeration(:"args") ==
-    dom := newDomainShell 9
+    dom := newShell 9
     -- JHD added an extra slot to cache EQUAL methods
     dom.0 := ["Enumeration", :args]
     dom.1 :=
@@ -248,18 +247,13 @@ EnumerationCategory(:"x") == constructorCategory ["Enumeration",:x]
 
 UnionCategory(:"x") == constructorCategory ["Union",:x]
 
---ListCategory(:"x") == constructorCategory ("List",:x)
-
---VectorCategory(:"x") == constructorCategory ("Vector",:x)
-          --above two now defined in SPAD code.
-
 constructorCategory (title is [op,:.]) ==
   constructorFunction:= GETL(op,"makeFunctionList") or
               systemErrorHere '"constructorCategory"
   [funlist,.]:= FUNCALL(constructorFunction,"$",title,$CategoryFrame)
   oplist:= [[[a,b],true,c] for [a,b,c] in funlist]
   cat:=
-    JoinInner([SetCategory(),mkCategory("domain",oplist,nil,nil,nil)],
+    JoinInner([eval ["SetCategory"],mkCategory("domain",oplist,nil,nil,nil)],
       $EmptyEnvironment)
   cat.(0):= title
   cat

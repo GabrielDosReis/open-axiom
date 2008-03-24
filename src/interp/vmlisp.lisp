@@ -58,9 +58,9 @@
 
 (defvar *embedded-functions* nil)
 
-(defvar errorinstream (make-synonym-stream '*terminal-io*))
+(defvar errorinstream (make-synonym-stream '*query-io*))
 
-(defvar erroroutstream (make-synonym-stream '*terminal-io*))
+(defvar erroroutstream (make-synonym-stream '*query-io*))
 
 (defvar *fileactq-apply* nil "function to apply in fileactq")
 
@@ -1042,22 +1042,6 @@
 ; 17.1 Creation
 
 
-#-AKCL
-(defun concat (a b &rest l)
-   (let ((type (cond ((bit-vector-p a) 'bit-vector) (t 'string))))
-      (cond ((eq type 'string)
-             (setq a (string a) b (string b))
-             (if l (setq l (mapcar #'string l)))))
-      (if l (apply #'concatenate type a b l)
-        (concatenate type a b))) )
-#+AKCL
-(defun concat (a b &rest l)
-  (if (bit-vector-p a)
-      (if l (apply #'concatenate 'bit-vector a b l)
-        (concatenate 'bit-vector a b))
-    (if l (apply #'system:string-concatenate a b l)
-      (system:string-concatenate a b))))
-
 (define-function 'strconc #'concat)
 
 (defun make-cvec (sint) (make-array sint :fill-pointer 0 :element-type 'character))
@@ -1075,8 +1059,8 @@
 
 (defun QENUM (cvec ind) (char-code (char cvec ind)))
 
-(defun QESET (cvec ind charnum)
-  (setf (char cvec ind) (code-char charnum)))
+(defun QESET (cvec ind c)
+  (setf (char cvec ind) c))
 
 (defun string2id-n (cvec sint)
   (if (< sint 1)
@@ -1551,14 +1535,14 @@
 
 (defun MAKE-INSTREAM (filespec &optional (recnum 0))
  (declare (ignore recnum))
-   (cond ((numberp filespec) (make-synonym-stream '*terminal-io*))
+   (cond ((numberp filespec) (make-synonym-stream '*standard-input*))
          ((null filespec) (error "not handled yet"))
          (t (open (make-input-filename filespec)
                   :direction :input :if-does-not-exist nil))))
 
 (defun MAKE-OUTSTREAM (filespec &optional (width nil) (recnum 0))
  (declare (ignore width) (ignore recnum))
-   (cond ((numberp filespec) (make-synonym-stream '*terminal-io*))
+   (cond ((numberp filespec) (make-synonym-stream '*standard-output*))
          ((null filespec) (error "not handled yet"))
          (t (open (make-filename filespec) :direction :output
 		  :if-exists :supersede))))
@@ -1567,7 +1551,7 @@
  "fortran support"
  (declare (ignore width) (ignore recnum))
  (cond 
-  ((numberp filespec) (make-synonym-stream '*terminal-io*))
+  ((numberp filespec) (make-synonym-stream '*standard-output*))
   ((null filespec) (error "make-appendstream: not handled yet"))
   ('else (open (make-filename filespec) :direction :output
           :if-exists :append :if-does-not-exist :create))))
@@ -1831,7 +1815,7 @@
 #+:cmulisp
 (defun gcmsg (x)
    (prog1 ext:*gc-verbose* (setq ext:*gc-verbose* x)))
-#+ (or :allegro :sbcl)
+#+ (or :allegro :sbcl :clisp)
 (defun gcmsg (x))
 
 #+Lucid
@@ -1881,7 +1865,7 @@
      (intern (symbol-name (symbol-function x)) "BOOT")
     nil))
 
-#+:SBCL
+#+(or :SBCL :clisp)
 (defun BPINAME (x)
   (multiple-value-bind (l c n)
    (function-lambda-expression x)

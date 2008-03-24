@@ -379,17 +379,17 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   -- category should be present.  true => always
   makeCatvecCode:= first catvecListMaker
   emptyVector := VECTOR()
-  domainShell := newDomainShell ($NRTbase + $NRTdeltaLength)
+  domainShell := newShell ($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
   $template :=
-    $NRTvec = true => newDomainShell ($NRTbase + $NRTdeltaLength)
+    $NRTvec = true => newShell ($NRTbase + $NRTdeltaLength)
     nil
   $catvecList:= [domainShell,:[emptyVector for u in CADR domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
   $maximalViews:= nil
-  $SetFunctions:= newDomainShell SIZE domainShell
-  $MissingFunctionInfo:= newDomainShell SIZE domainShell
+  $SetFunctions:= newShell SIZE domainShell
+  $MissingFunctionInfo:= newShell SIZE domainShell
   $catNames:= ['$,:[GENVAR() for u in rest catvecListMaker]]
   domname:='dv_$
 
@@ -426,7 +426,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       --$NRTdomainFormList is unused now
     createDomainCode:=
       ['LET,domname,['LIST,MKQ CAR $definition,:ASSOCRIGHT $devaluateList]]
-    createViewCode:= ['LET,'$,["newDomainShell", $NRTbase + $NRTdeltaLength]]
+    createViewCode:= ['LET,'$,["newShell", $NRTbase + $NRTdeltaLength]]
     setVector0Code:=[$setelt,'$,0,'dv_$]
     slot3Code := ['QSETREFV,'$,3,['LET,'pv_$,predBitVectorCode1]]
     slamCode:=

@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -159,7 +159,7 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   body := SUBST(minivectorName,"$$$",body)
   if $compilingInputFile then
     $minivectorCode := [:$minivectorCode,minivectorName]
-  SET(minivectorName,LIST2REFVEC $minivector)
+  setDynamicBinding(minivectorName,LIST2REFVEC $minivector)
 
   -- The use of the three variables $definingMap, $genValue and $compilingMap
   -- is to cover the following cases:

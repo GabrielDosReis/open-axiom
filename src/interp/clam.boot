@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -107,8 +107,8 @@ compClam(op,argl,body,$clamList) ==
   if $reportCounts=true then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
-    SET(hitCounter,0)
-    SET(callCounter,0)
+    setDynamicBinding(hitCounter,0)
+    setDynamicBinding(callCounter,0)
     callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
     hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
   g2:= GENSYM()  --length of cache or arg-value pair
@@ -207,8 +207,8 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if $reportCounts=true then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
-    SET(hitCounter,0)
-    SET(callCounter,0)
+    setDynamicBinding(hitCounter,0)
+    setDynamicBinding(callCounter,0)
     callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
     hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
   g2:= GENSYM()  --value computed by calling function
@@ -356,13 +356,13 @@ clearCategoryCaches() ==
   for name in allConstructors() repeat
     if GETDATABASE(name,'CONSTRUCTORKIND) = 'category then
       if BOUNDP(cacheName:= INTERNL STRCONC(PNAME name,'";AL"))
-            then SET(cacheName,nil)
+            then setDynamicBinding(cacheName,nil)
     if BOUNDP(cacheName:= INTERNL STRCONC(PNAME name,'";CAT"))
-          then SET(cacheName,nil)
+          then setDynamicBinding(cacheName,nil)
  
 clearCategoryCache catName ==
   cacheName:= INTERNL STRCONC(PNAME catName,'";AL")
-  SET(cacheName,nil)
+  setDynamicBinding(cacheName,nil)
  
 displayHashtable x ==
   l:= NREVERSE SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
@@ -443,7 +443,7 @@ assocCache(x,cacheName,fn) ==
     backPointer:= forwardPointer
     forwardPointer:= CDR forwardPointer
   val => val
-  SET(cacheName,backPointer)
+  setDynamicBinding(cacheName,backPointer)
   nil
  
 assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
@@ -460,7 +460,7 @@ assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
     backPointer := forwardPointer      --CAR is slot replaced on failure
     forwardPointer:= CDR forwardPointer
   val => val
-  SET(cacheName,backPointer)
+  setDynamicBinding(cacheName,backPointer)
   nil
  
 assocCacheShiftCount(x,al,fn) ==
@@ -494,8 +494,8 @@ clamStats() ==
       hitCounter:= INTERNL(op,'";hit")
       callCounter:= INTERNL(op,'";calls")
       res:= ["%b",eval hitCounter,"/",eval callCounter,"%d","calls to "]
-      SET(hitCounter,0)
-      SET(callCounter,0)
+      setDynamicBinding(hitCounter,0)
+      setDynamicBinding(callCounter,0)
       res
     postString:=
       cacheValue:= eval cacheVec.cacheName
@@ -708,4 +708,4 @@ domainEqualList(argl1,argl2) ==
 removeAllClams() ==
   for [fun,:.] in $clamList repeat
     sayBrightly ['"Un-clamming function",'%b,fun,'%d]
-    SET(fun,eval INTERN STRCONC(STRINGIMAGE fun,'";"))
+    setDynamicBinding(fun,eval INTERN STRCONC(STRINGIMAGE fun,'";"))

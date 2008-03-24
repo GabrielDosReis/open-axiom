@@ -96,7 +96,7 @@ processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
             code:=[[($QuickCode=>'QSETREFV;'SETELT),"$",i,u'],:code]
           nreverse code
   code:=
-    ["PROGN",:$getDomainCode,["LET","$",["newDomainShell",#locals]],
+    ["PROGN",:$getDomainCode,["LET","$",["newShell",#locals]],
                            --It is important to place this code here,
                            --after $ is set up
                    --slam functor with shell

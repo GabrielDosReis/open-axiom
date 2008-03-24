@@ -1,3 +1,165 @@
+2008-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for SBCL and CLisp.
+	* src/share/algebra: Updata databases.
+	* lisp/core.lisp.in ("AxiomCore"): Export CONCAT.
+	(|Option|): Tidy.
+	(CONCAT): Define here.
+	* lib/cfuns-c.c (oa_system): Define.
+	* interp/types.boot: New.
+	* interp/wi1.boot (doItLet1): Tidy.
+	* interp/vmlisp.lisp: Use *STANDARD-OUTPUT* and *STANDARD-INPUT*
+	instead of *TERMINAL-IO*.
+	(CONCAT): Don't define here.
+	(QESET): Don't convert last argument to a character; it is already
+	a character.
+	(GCMSG): Define for CLisp too.
+	(BPINAME): Likewise.
+	* interp/util.lisp (interp-make-directory): Fix thinko.
+	* interp/unlisp.lisp (LOG10): Don't define here.
+	* interp/trace.boot: Substitute setDynamicBinding for SET.
+	* interp/template.boot: Substitute setDynamicBinding for SET.
+	Substitute newShell for newDomainShell. 
+	* interp/sys-utility.boot: Move type definitions to types.boot.
+	(macrop): Tidy.
+	(functionp): Likewise.
+	(setDynamicBinding): New.
+	($ERASE): Add signature.
+	(loadNativeModule): Don't define here.
+	* interp/sys-os.boot: Tidy definitions.
+	(runCommand): New.
+	* interp/sys-macros.lisp (shoeConcole): Output to
+	*STANDARD-OUTPUT*. 
+	* interp/sys-globals.boot ($texOutputStream): Make synonym to
+	*STANDARD-OUTPUT*. 
+	* interp/sys-driver.boot: Import "types" instead of "boot-pkg".
+	($OpenAxiomCoreModuleLoaded): Don't define here.
+	(AxiomCore::%sysInit): Tidy.
+	(systemRootDirectory): Don't define here.
+	(stdStreamIsTerminal): Move to sys-os.boot.
+	* interp/sys-constants.boot ($CategoryNames): Don't include
+	StringCategory. 
+	($DomainNames): Don't include Integer, Float, Symbol, Boolean,
+	String, Expression, List, and Vector.
+	($BuiltinConstructorNames): New.
+	($SpecialDomainNames): Don't include List, Union, Record, Vector.
+	($ConstructorNames): Remove.
+	($IndexFilename): Rename from *INDEX-FILENAME*.
+	* interp/setvars.boot: Substitute setDynamicBinding for SET.
+	* interp/slam.boot: Likewise.
+	* interp/pspad2.boot (formatDeftranRepper): Tidy.
+	* interp/preparse.lisp (/RP): Use *STANDARD-INPUT* and
+	*STANDARD-OUTPUT* instead of *TERMINAL-IO*. 
+	* interp/pathname.boot: Make functions cope with nil paths.
+	* interp/patches.lisp (|$algebraOutputStream|): Set value to
+	*STANDARD-OUTPUT*. 
+	* interp/package.boot (processPackage): Substitute newShell for
+	newDomainShell. 
+	* interp/obey.lisp (|algebraOutputStream|): Don't set here.
+	(OBEY): Define for CLisp too.
+	* interp/nruncomp.boot: Substitute newShell for newDomainShell.
+	* interp/nrunopt.boot: Likewise.
+	* interp/nlib.lisp (rdefiostream): Tidy.
+	(GETINDEXTABLE): Remove.
+	(GET-INPUT-INDEX-STREAM): Likewise.
+	(GET-IO-INDEX-STREAM): Tidy.
+	(PUTINDEXTABLE): Likewise.
+	* interp/macros.lisp: Use *standard-output* and *standard-input*
+	instead of *terminal-io* throughout.  
+	* interp/lisplib.boot (makeConstructorsAutoLoad): Fix thinko.
+	(setAutoLoadProperty): Likewise.
+	(autoLoad): Builtin constructors are always loaded.
+	(getIndexPathname): New.
+	(getAllIndexPathnames): Likewise.
+	(getAllAldorObjectFiles): Likewise.
+	(openIndexFileIfPresent): Likewise.
+	(getIndexTable): Likewise.
+	* interp/i-syscmd.boot (library): Tidy.
+	* interp/i-spec1.boot (compileADEFBody): Substitute
+	setDynamicBinding for SET. 
+	* interp/i-object.boot (getBasicObject): Substitute newShell for
+	newDomainShell. 
+	* interp/i-map.boot (compileCoerceMap): Substitute
+	setDynamicBinding for SET. 
+	* interp/hypertex.boot: Import "types" instead of "boot-pkg".
+	* interp/ht-root.boot: Substitute setDynamicBinding for SET.
+	* interp/ht-util.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/g-util.boot (newShell): Rename from newDomainShell.
+	* interp/functor.boot: Substitute newShell for newDomainShell.
+	* interp/dq.boot: Import "types" instead of "boot-pkg".
+	* interp/define.boot (compDefine1): Replace $ConstructorNames with
+	$BuiltinConstructorNames. 
+	* interp/database.boot (squeezeAll): New.
+	* interp/daase.lisp (asharp): Fix thinko.
+	(get-current-directory): Define for CLisp too.
+	(localdatabase): Tidy.
+	(make-databases): Loose first argument.  Don't step over Category's
+	database. Tidy.
+	(write-interpdb): Tidy.
+	(write-browsedb): Likewise.
+	(write-operationdb): Likewise.
+	* interp/compiler.boot (coerceHard): Treat "$" and $functorForm as
+	synonymous in implicit conversions.
+	* interp/clam.boot: Substitute setDynamicBinding for SET throughout.
+	* interp/category.boot (mkCategory): Replace newDomainShell with
+	newShell. 
+	* interp/buildom.boot: Use nwShell instead of newDomainShell
+	throughout. 
+	(coerceUn2E): Tidy.
+	(constructorCategory): Don't call SetCategory directly.
+	* interp/br-saturn.boot (htpMakeEmptyPage): Use setDynamicBinding
+	instead of SET.
+	* interp/bootlex.lisp (BOOT): Use *STANDARD-OUTPUT* instead of
+	*TERMINAL-IO*. 
+	* interp/boot-pkg.lisp: Import systemRootDirectory,
+	systemLibraryDirectory, loadNativeModule, loadSystemRuntimeCore
+	from BOOTTRAN.
+	(COT): Define unconditionally.
+	(ACOT): Likewise.
+	(MAXEXP): Likewise.
+	* interp/bc-misc.boot (bcSeriesByFormulaGen): Fix thinko.
+	* interp/Makefile.pamphlet (LOADSYS): Remove.
+	(BOOTSYS): Add --syslib option.  Update use through the file.
+	(OBJS): Add types.$(FASLEXT).
+	(makeint.lisp): Don't depend on $(LOADSYS).
+	(${SAVESYS}): Use $(BOOTSYS).
+	($AXIOMSYS): Likewise.
+	($(axiom_targetdir)/algebra/exposed.$(FASLEXT)): Likewise.
+	* input/Makefile.pamphlet (%.output): Use coreQuit, not BYE.
+	* include/cfuns.h (oa_system): Declare.
+	* etc/Makefile.in ($(axiom_targetdir)/algebra/*.daase): Fix
+	thinko.  Update call to MAKE-DATABASES.
+	* boot/translator.boot (genImportDeclaration): Support CLisp's FFI.
+	(bpOutItem): Tidy.
+	(systemRootDirectory): Define here.
+	(systemLibraryDirectory): Likewise.
+	(loadNativeModule): Likewise.
+	($OpenAxiomCoreModuleLoaded): Likewise.
+	(loadSystemRuntimeCore): Likewise.
+	* boot/initial-env.lisp: Export systemRootDirectory,
+	systemLibraryDirectory, loadNativeModule, loadSystemRuntimeCore.
+	(concat): Move definition to lisp/core.lisp.in.
+	* boot/ast.boot (bfColonColon): Special case CLisp's locked
+	packages. 
+	* algebra/symbol.spad.pamphlet: Update cached Lisp translation.
+	* algebra/string.spad.pamphlet: Update cached Lisp translations.
+	(Character): Simplify definition.
+	Now, use base Lisp system character type as representation.
+	(ord$Character): Now return a NonNegativeInteger.
+	(char$Character): Now take a NonNegativeInteger.
+	(Rep$Character): Remove.
+	(IndexedSring): Remove unused macros.
+	(Qelt): Define as CHAR$Lisp.
+	* algebra/outform.spad.pamphlet (OUTFORM): Update cached Lisp
+	translation.
+	* algebra/Makefile.pamphlet: Rearrange algebra build order.
+
+2008-03-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nlib.lisp (get-input-index-stream): Remove.
+	(getindextable): Likewise.
+
 2008-03-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp (GETREFV): Set initial elements to NIL.

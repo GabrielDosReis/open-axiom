@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -323,14 +323,30 @@ genImportDeclaration(op, sig) ==
   m isnt ["Mapping", t, s] => coreError '"invalid function type"
   if not null s and SYMBOLP s then s := [s]
   %hasFeature KEYWORD::GCL => 
-    ["DEFENTRY", op, [nativeType x for x in s], 
-       [nativeType t, SYMBOL_-NAME op']]
+    [["DEFENTRY", op, [nativeType x for x in s], 
+       [nativeType t, SYMBOL_-NAME op']]]
+  args := [GENSYM() for x in s]
   %hasFeature KEYWORD::SBCL =>
-    args := [GENSYM() for x in s]
-    ["DEFUN",op,args,
+    [["DEFUN",op,args,
       [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
         [INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
-          ["FUNCTION",nativeType t,:[nativeType x for x in s]]], :args]]
+          ["FUNCTION",nativeType t,:[nativeType x for x in s]]], :args]]]
+  %hasFeature KEYWORD::CLISP =>
+    -- there is a curious bug in the CLisp's FFI support whereby
+    -- foreign declarations compiled separately will have the wrong
+    -- types when used in other modules.  We work around that problem
+    -- by defining forwarding functions to the foreign declarations
+    -- in the same module the latter are declared.
+    foreignDecl := 
+      n := INTERN strconc(SYMBOL_-NAME op, '"%clisp-hack")
+      [bfColonColon("FFI","DEF-CALL-OUT"),n,
+	[KEYWORD::NAME,SYMBOL_-NAME op'],
+	  [KEYWORD::ARGUMENTS,:[[a, 
+	    bfColonColon("FFI", nativeType x)] for x in s for a in args]],
+	      [KEYWORD::RETURN_-TYPE,bfColonColon("FFI",nativeType t)],
+		[KEYWORD::LANGUAGE,KEYWORD::STDC]]
+    forwardingFun := ["DEFUN",op,args,[n,:args]]
+    [foreignDecl,forwardingFun]
   fatalError '"import declaration not implemented for this Lisp"
 
 shoeOutParse stream ==
@@ -400,7 +416,7 @@ bpOutItem()==
         bpPush [["IMPORT-MODULE", m]]
 
       ImportSignature(x, sig) =>
-        bpPush [genImportDeclaration(x, sig)]
+        bpPush genImportDeclaration(x, sig)
 
       TypeAlias(t, args, rhs) => 
         bpPush [["DEFTYPE", t, args, ["QUOTE", rhs]]]
@@ -782,3 +798,42 @@ associateRequestWithFileType(Option '"translate", '"boot",
                              function translateBootFile)
 associateRequestWithFileType(Option '"compile", '"boot", 
                              function compileBootHandler)
+
+--% System wide properties
+
+++ Returns the root directory of the running system.
+++ A directory specified on command line takes precedence
+++ over directory specified at configuration time.
+systemRootDirectory() ==
+  dir := ASSOC(Option '"system", %systemOptions()) =>
+    ensureTrailingSlash cdr dir
+  $systemInstallationDirectory
+
+++ Returns the directory containing the core runtime support
+++ libraries, either as specified on command line, or as inferred
+++ from the system root directory.
+
+systemLibraryDirectory() ==
+  dir := ASSOC(Option "syslib",%systemOptions()) =>
+    ensureTrailingSlash rest dir
+  strconc(systemRootDirectory(),'"lib/")
+
+
+--% Runtime support
+
+++ Load native dynamically linked module
+loadNativeModule m ==
+  %hasFeature KEYWORD::SBCL =>
+    FUNCALL(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),m)
+  %hasFeature KEYWORD::CLISP =>
+    EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
+  systemError '"don't know how to load a dynamically linked module"
+
+
+$OpenAxiomCoreModuleLoaded := false
+
+loadSystemRuntimeCore() ==
+  $OpenAxiomCoreModuleLoaded => nil
+  loadNativeModule strconc(systemLibraryDirectory(),
+    '"libopen-axiom-core.so")
+  $OpenAxiomCoreModuleLoaded := true

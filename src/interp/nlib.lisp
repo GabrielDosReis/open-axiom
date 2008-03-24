@@ -35,8 +35,6 @@
 (IMPORT-MODULE "macros")
 (in-package "BOOT")
 
-#+:AKCL (defvar *lisp-source-filetype* "lsp")
-
 ;; definition of our stream structure
 (defstruct libstream  mode dirname (indextable nil)  (indexstream nil))
 ;indextable is a list of entries (key class <location or filename>)
@@ -63,7 +61,7 @@
         (cond ((equal (elt (string mode) 0) #\I)
                ;;(setq fullname (make-input-filename (cdr file) 'LISPLIB))
                (setq fullname (make-input-filename (cdr file) 'NIL))
-               (setq stream (get-input-index-stream fullname))
+               (setq stream (|openIndexFileIfPresent| fullname))
                (if (null stream)
                    (if missing-file-error-flag
                        (ERROR (format nil "Library ~s doesn't exist"
@@ -90,19 +88,6 @@
               ('t  (ERROR "Unknown MODE")))))
 
 
-;get the index table of the lisplib in dirname
-(defun getindextable (dirname)
-  (let ((index-file (concat dirname "/" *index-filename*)))
-     (if (probe-file index-file)
-         (with-open-file (stream index-file) (get-index-table-from-stream stream))
-            ;; create empty index file to mark directory as lisplib
-         (with-open-file (stream index-file :direction :output) nil))))
-
-;get the index stream of the lisplib in dirname
-(defun get-input-index-stream (dirname)
-  (let ((index-file (concat dirname "/" *index-filename*)))
-    (open index-file :direction :input :if-does-not-exist nil)))
-
 (defun get-index-table-from-stream (stream)
   (let ((pos (read  stream)))
     (cond ((numberp pos)
@@ -111,7 +96,7 @@
           (t pos))))
 
 (defun get-io-index-stream (dirname)
-  (let* ((index-file (concat dirname "/" *index-filename*))
+  (let* ((index-file (concat dirname "/" |$IndexFilename|))
          (stream (open index-file :direction :io :if-exists :overwrite
                        :if-does-not-exist :create))
          (indextable ())
@@ -138,14 +123,14 @@
 ;;#+:ccl
 ;;(defun putindextable (indextable dirname)
 ;;  (with-open-file
-;;    (stream (concat dirname "/" *index-filename*)
+;;    (stream (concat dirname "/" |$IndexFilename|)
 ;;             :direction :io :if-does-not-exist :create)
 ;;    (file-position stream :end)
 ;;    (write-indextable indextable stream)))
 ;;#-:ccl
 (defun putindextable (indextable dirname)
   (with-open-file
-    (stream (concat dirname "/" *index-filename*)
+    (stream (concat dirname "/" |$IndexFilename|)
              :direction :io :if-exists :overwrite
              :if-does-not-exist :create)
     (file-position stream :end)
@@ -173,10 +158,10 @@
 
 ;; (RKEYIDS filearg) -- interned version of keys
 (defun rkeyids (&rest filearg)
-  (mapcar #'intern (mapcar #'car (getindextable
+  (mapcar #'intern (mapcar #'car (|getIndexTable|
                                   (make-input-filename filearg 'NIL)))))
 ;;(defun rkeyids (&rest filearg)
-;;  (mapcar #'intern (mapcar #'car (getindextable
+;;  (mapcar #'intern (mapcar #'car (|getIndexTable|
 ;;                                (make-input-filename filearg 'LISPLIB)))))
 
 ;; (RWRITE cvec item rstream)
@@ -252,7 +237,7 @@
            (nstream nil)
            (nindextable nil)
            (nrstream nil)
-           (index-file-name (concat (truename filespec) "/" *index-filename*))
+           (index-file-name (concat (truename filespec) "/" |$IndexFilename|))
            (temp-index-file-name (make-pathname :name "oldindex"
                                                 :defaults index-file-name)))
       (rename-file index-file-name temp-index-file-name ) ;; stays until closed
@@ -322,7 +307,7 @@
 (define-function 'compile-lib-file #'compile-file)
 
 ;; (RDROPITEMS filearg keys) don't delete, used in files.spad
-(defun rdropitems (filearg keys &aux (ctable (getindextable filearg)))
+(defun rdropitems (filearg keys &aux (ctable (|getIndexTable| filearg)))
   (mapc #'(lambda(x)
            (setq ctable (delete x ctable :key #'car :test #'equal)) )
            (mapcar #'string keys))
@@ -364,7 +349,7 @@
   (if (probe-file file) (namestring file) nil))
 
 (defun get-directory-list (ft)
-  (let ((cd (namestring (truename "./"))))
+  (let ((cd (get-current-directory)))
     (cond ((member ft '("NRLIB" "DAASE" "EXPOSED") :test #'string=)
            (if (eq |$UserLevel| '|development|)
                (cons cd $library-directory-list)

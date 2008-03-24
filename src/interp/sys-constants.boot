@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -37,8 +37,7 @@
 -- the interpreter or the compiler or both.
 --
 
-import '"boot-pkg"
-
+import '"types"
 )package "BOOT"
 
 
@@ -449,7 +448,6 @@ $CategoryNames ==
     RecordCategory _
     Join _
     EnumerationCategory _
-    StringCategory _
     SubsetCategory _
     UnionCategory)
 
@@ -457,19 +455,15 @@ $CategoryNames ==
 ++ database. So, they are mostly recognized by their names.
 ++ See also $CategoryNames.
 $DomainNames ==
-  '(Integer _
-    Float _
-    Symbol _
-    Boolean _
-    String _
-    Expression _
-    Mapping _
+  '(Mapping _
     SubDomain _
-    List _
     Union _
     Record _
-    Vector _
     Enumeration)
+
+++ The union of the above two lists.
+$BuiltinConstructorNames ==
+  [:$CategoryNames,:$DomainNames]
 
 ++ List of language support constructor forms.
 $LangSupportTypes ==
@@ -490,15 +484,11 @@ $PrimitiveDomainNames ==
     String _
     Boolean)
 
-++ FIXME
+++ These symbols are not constructor names, but they define domains.
 $SpecialDomainNames ==
   '(add _
     CAPSULE _
-    SubDomain _
-    List _
-    Union _
-    Record _
-    Vector)
+    SubDomain)
 
 
 $optimizableConstructorNames ==
@@ -528,15 +518,6 @@ $InitialDomainsInScope ==
 $underDomainAlist ==
   nil
 
-
-++ List of constructors that do not have entries in the databases.
-++ See also $CategoryNames and $DomainNames.
-$ConstructorNames ==
-  '(SubDomain _
-    List _
-    Union _
-    Record _
-    Vector)
 
 ++ A list of functors that do not really have modemaps
 $DummyFunctorNames ==
@@ -605,7 +586,7 @@ IDENTITY ==
   function IDENTITY
 
 +++
-_*INDEX_-FILENAME_* ==
+$IndexFilename ==
   '"index.KAF"
 
 ++

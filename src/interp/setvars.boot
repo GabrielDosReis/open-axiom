@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -126,11 +126,11 @@ initializeSetVariables (setTree) ==
         then FUNCALL( setData.setVar,"%initialize%")
         else sayMSG '"   Function not implemented."
     st = 'INTEGER  =>
-      SET(setData.setVar, setData.setDef)
+      setDynamicBinding(setData.setVar, setData.setDef)
     st = 'STRING  =>
-      SET(setData.setVar, setData.setDef)
+      setDynamicBinding(setData.setVar, setData.setDef)
     st = 'LITERALS =>
-      SET(setData.setVar, translateYesNo2TrueFalse setData.setDef)
+      setDynamicBinding(setData.setVar, translateYesNo2TrueFalse setData.setDef)
     st = 'TREE =>
       initializeSetVariables(setData.setLeaf)
 
@@ -217,8 +217,8 @@ set1(l,setTree) ==
   st = 'STRING   =>
     arg2 := l.1
     if arg2 = 'DEFAULT
-      then SET(setData.setVar, setData.setDef)
-      else if arg2 then SET(setData.setVar, arg2)
+      then setDynamicBinding(setData.setVar, setData.setDef)
+      else if arg2 then setDynamicBinding(setData.setVar, arg2)
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
@@ -232,8 +232,8 @@ set1(l,setTree) ==
         (null (upperlimit := setData.setLeaf.1) or num <= upperlimit) => num
       selectOption(l.1,['default,:setData.setLeaf],nil)
     if arg2 = 'DEFAULT
-      then SET(setData.setVar, setData.setDef)
-      else if arg2 then SET(setData.setVar, arg2)
+      then setDynamicBinding(setData.setVar, setData.setDef)
+      else if arg2 then setDynamicBinding(setData.setVar, arg2)
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
@@ -245,14 +245,14 @@ set1(l,setTree) ==
     -- validate the option, allowing the user to set the default
     if (arg2 := selectOption(l.1,['default,:setData.setLeaf],nil)) then
       if arg2 = 'DEFAULT
-        then SET(setData.setVar, translateYesNo2TrueFalse setData.setDef)
+        then setDynamicBinding(setData.setVar, translateYesNo2TrueFalse setData.setDef)
         else
           if arg2 = 'nobreak then
              useFastLinks true
           if arg2 = 'fastlinks then
              useFastLinks false
              arg2 := 'break
-          SET(setData.setVar, translateYesNo2TrueFalse arg2)
+          setDynamicBinding(setData.setVar, translateYesNo2TrueFalse arg2)
     -- if so set or not a valid choice, then show option information
     if $displaySetValue or (null arg2) then
       displaySetOptionInformation(arg,setData)
@@ -779,7 +779,7 @@ countCache n ==
         NULL IDENTP x => sayKeyedMsg("S2IF0007",[x])
         $cacheAlist:= insertAlist(x,n,$cacheAlist)
         cacheCountName:= INTERNL(x,'";COUNT")
-        SET(cacheCountName,n)
+        setDynamicBinding(cacheCountName,n)
         sayCacheCount(x,n)
     optionError(CAAR $options,nil)
   sayCacheCount(nil,$cacheCount:= n)

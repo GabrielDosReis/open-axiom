@@ -36,7 +36,7 @@
 -- both the OpenAxiom compiler and interpreter.
 --
 
-import '"boot-pkg"
+import '"types"
 )package "BOOT"
 
 ++ true means try starting an open server
@@ -57,18 +57,14 @@ $PrintCompilerMessageIfTrue := $verbose
 ++
 $options := []
 
-$OpenAxiomCoreModuleLoaded := false
-
 +++ Initialization routine run by the core system before handing off
 +++ to the interpreter or compiler.  
 +++ ??? This part is still in flux.
 AxiomCore::%sysInit() ==
   SETQ(_*PACKAGE_*, FIND_-PACKAGE '"BOOT")
   initMemoryConfig()
-  if not (%hasFeature KEYWORD::GCL or $OpenAxiomCoreModuleLoaded) then
-    loadNativeModule CONCAT(systemRootDirectory(),
-      '"lib/libopen-axiom-core.so")
-    $OpenAxiomCoreModuleLoaded := true
+  if not (%hasFeature KEYWORD::GCL) then
+    loadSystemRuntimeCore()
 )if %hasFeature KEYWORD::GCL
   SETQ(COMPILER::_*COMPILE_-VERBOSE_*,false)
   SETQ(COMPILER::_*SUPPRESS_-COMPILER_-WARNINGS_*,true)
@@ -76,31 +72,18 @@ AxiomCore::%sysInit() ==
 )endif
 
 
-+++ Returns the root directory of the running system.
-+++ A directory specified on command line takes precedence
-+++ over directory specified at configuration time.
-systemRootDirectory() ==
-  dir := ASSOC(Option '"system", %systemOptions()) =>
-    ensureTrailingSlash cdr dir
-  $systemInstallationDirectory
-
-+++ Returns the system algebra directory, as specified on command
-+++ line.  nil, otherwise.
+++ Returns the system algebra directory, as specified on command
+++ line.  nil, otherwise.
 systemAlgebraDirectory() ==
   dir := ASSOC(Option '"sysalg", %systemOptions()) =>
-    ensureTrailingSlash cdr dir
+    ensureTrailingSlash rest dir
   nil
 
-+++ Returns a path to the directory containing algebra bootstsrap files.
+++ Returns a path to the directory containing algebra bootstsrap files.
 algebraBootstrapDir() ==
   dir := ASSOC(Option '"strap",%systemOptions()) =>
     ensureTrailingSlash rest dir
   nil
-
-++ stdStreamIsTerminal:
-++   returns 1 if the standard stream is attached to a terminal;
-++   otherwise 0.
-import stdStreamIsTerminal for std__stream__is__terminal: int -> int
 
 ++ Load list of exposed categories, domains, and packages.
 ++ User-specified list takes precedence over system wide list.

@@ -126,7 +126,7 @@ htSetSystemVariableKind(htPage,[variable,name,fun]) ==
   value := htpLabelInputString(htPage,name)
   if STRINGP value and fun then value := FUNCALL(fun,value)
 --SCM::what to do???  if not FIXP value then userError ???
-  SET(variable,value)
+  setDynamicBinding(variable,value)
   htSystemVariables ()
 
 htSetSystemVariable(htPage,[name,value]) ==
@@ -134,7 +134,7 @@ htSetSystemVariable(htPage,[name,value]) ==
     value = 'on => true
     value = 'off => nil
     value
-  SET(name,value)
+  setDynamicBinding(name,value)
   htSystemVariables ()
 
 htGloss(pattern) == htGlossPage(nil,dbNonEmptyPattern pattern or '"*",true)

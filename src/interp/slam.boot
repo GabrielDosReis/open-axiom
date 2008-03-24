@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -48,7 +48,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   body := SUBST(minivectorName,"$$$",body)
   if $compilingInputFile then
     $minivectorCode := [:$minivectorCode,minivectorName]
-  SET(minivectorName,LIST2REFVEC $minivector)
+  setDynamicBinding(minivectorName,LIST2REFVEC $minivector)
   argl := COPY argl     -- play it safe for optimization
   init :=
     not(isRecursive and $compileRecurrence and #argl = 1) => nil
@@ -306,7 +306,7 @@ clearLocalModemaps x ==
       if def:= get(fn,'definition,$e) then
         $e:= putHist(x,'value,objNew(def,$EmptyMode),$e)
       if cacheVec:= get(fn,'cacheInfo,$e) then
-        SET(cacheVec.cacheName,NIL)
+        setDynamicBinding(cacheVec.cacheName,NIL)
       -- now clear the property list of the identifier
       $e := addIntSymTabBinding(x,nil,$e)
     sayKeyedMsg("S2IX0007",[x])
@@ -330,7 +330,7 @@ clearAllSlams x ==
     fn(thoseToClear,thoseCleared) ==
       for x in thoseToClear | not MEMQ(x,thoseCleared) repeat
         slamListName:= mkCacheName x
-        SET(slamListName,nil)
+        setDynamicBinding(slamListName,nil)
         thoseCleared:= ADJOIN(x,thoseCleared)
         someMoreToClear:=
           setDifference(LASSOC(x,$functorDependencyAlist),[:thoseToClear,:
@@ -339,4 +339,4 @@ clearAllSlams x ==
  
 clearSlam("functor")==
   id:= mkCacheName functor
-  SET(id,nil)
+  setDynamicBinding(id,nil)

@@ -1,6 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
--- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -30,52 +28,29 @@
 -- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+--
+--
 
-
-import '"types"
+import '"boot-pkg"
 )package "BOOT"
 
--- Dequeue functions
- 
--- dqUnit makes a unit dq i.e. a dq with one item, from the item
- 
--- dqUnitCopy copies a unit dq
- 
--- dqAppend appends 2 dq's, destroying the first
- 
--- dqConcat concatenates a list of dq's, destroying all but the last
- 
--- dqToList transforms a dq to a list
- 
-dqUnit s==(a:=[s];CONS(a,a))
- 
-dqUnitCopy s== dqUnit(CAAR s)
- 
-dqAppend(x,y)==
-    if null x
-    then y
-    else if null y
-         then x
-         else
-              RPLACD (CDR x,CAR y)
-              RPLACD (x,    CDR y)
-              x
- 
-dqConcat ld==
-    if null ld
-    then nil
-    else if null rest ld
-         then first ld
-         else dqAppend(first ld,dqConcat rest ld)
- 
-dqToList s==if null s then nil else CAR s
- 
-dqAddAppend(x,y)==
-    if null x
-    then nil
-    else if null y
-         then nil
-         else
-              RPLACD (CDR x,CAR y)
-              RPLACD (x,    CDR y)
-              x
+++ Basic types used throughout Boot codes.
+%Boolean <=> BOOLEAN
+%Short <=> FIXNUM
+%Integer <=> BIGNUM
+%Symbol <=> SYMBOL
+%String <=> STRING
+%List <=> LIST
+%Vector <=> VECTOR
+%Thing <=> true
+%Sequence <=> SEQUENCE
+
+--% Data structures for the compiler
+%Form <=> NUMBER or %Symbol or %String or CONS -- input syntax form
+%Env <=> %List                                 -- compiling env
+%Mode <=> %Symbol or %String or %List          -- type of forms
+%Code <=> %Form                                -- generated code
+%Triple <=> %List                              -- form + type + env
+
+%Modemap <=> %List                             -- modemap
+

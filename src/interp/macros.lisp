@@ -1,4 +1,4 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -329,7 +329,7 @@
  
 ; 22.2.1 Input from Character Streams
  
-(DEFUN STREAM-EOF (&optional (STRM *terminal-io*))
+(DEFUN STREAM-EOF (&optional (STRM *standard-input*))
   "T if input stream STRM is at the end or saw a ~."
   (not (peek-char nil STRM nil nil nil))     )
  
@@ -386,7 +386,7 @@
         ((stringp x) x)
         ((write-to-string x))))
  
-(defvar |conOutStream| *terminal-io* "console output stream")
+(defvar |conOutStream| *standard-output* "console output stream")
  
 (defun |sayTeX| (x) (if (null x) nil (sayBrightly1 x |$texOutputStream|)))
  
@@ -398,7 +398,7 @@
   (COND ((NULL X) NIL)
         (|$sayBrightlyStream| (sayBrightly1 X |$sayBrightlyStream|))
         ((IS-CONSOLE out-stream) (sayBrightly1 X out-stream))
-        ((sayBrightly1 X out-stream) (sayBrightly1 X *terminal-io*))))
+        ((sayBrightly1 X out-stream) (sayBrightly1 X *standard-output*))))
  
 (defun |sayBrightlyI| (x &optional (s *terminal-io*))
     "Prints at console or output stream."

@@ -1,4 +1,4 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -304,8 +304,8 @@
 (defun asharp (file &optional (flags *asharpflags*))
  "call the asharp compiler"
  (|runProgram|
-   (concatenate 'string (|systemRootDirectory|) "/compiler/bin/axiomxl"
-    (list flags file))))
+   (concatenate 'string (|systemRootDirectory|) "/compiler/bin/axiomxl")
+    (list flags file)))
 
 (defun resethashtables ()
  "set all -hash* to clean values. used to clean up core before saving system"
@@ -796,7 +796,7 @@
 (defun get-current-directory ()
   (namestring (extensions::default-directory)))
 
-#+(or :akcl :gcl)
+#+(or :akcl :gcl :clisp :sbcl)
 (defun get-current-directory ()
   (namestring (truename "")))
 
@@ -807,88 +807,99 @@
 ;  .ao, then asharp to .asy
 
 (defun localdatabase (filelist options &optional (make-database? nil))
- "read a local filename and update the hash tables"
- (labels (
-  (processOptions (options)
-   (let (only dir noexpose)
-    (when (setq only (assoc '|only| options))
-     (setq options (delete only options :test #'equal))
-     (setq only (cdr only)))
-    (when (setq dir (assoc '|dir| options))
-     (setq options (delete dir options :test #'equal))
-     (setq dir (second dir))
-     (when (null dir)
-      (|sayKeyedMsg| 'S2IU0002 nil) ))
-    (when (setq noexpose (assoc '|noexpose| options))
-     (setq options (delete noexpose options :test #'equal))
-     (setq noexpose 't) )
-    (when options
-     (format t "   Ignoring unknown )library option: ~a~%" options))
-    (values only dir noexpose)))
-  (processDir (dirarg thisdir)
-   (let (allfiles skipasos)
-    (|changeDirectory| (string dirarg))
-    (setq allfiles (directory "*"))
-    (|changeDirectory| thisdir)
-    (values
-     (mapcan #'(lambda (f)
-      (when (string-equal (pathname-type f) "NRLIB")
-       (list (concatenate 'string  (namestring f) "/" *index-filename*))))
-	     allfiles)
-     (mapcan #'(lambda (f)
-      (when (string= (pathname-type f) "asy")
-       (push (pathname-name f) skipasos)
-       (list (namestring f)))) allfiles)
-     (mapcan #'(lambda (f)
-      (when (and (string= (pathname-type f) "ao")
-             (not (member (pathname-name f) skipasos :test #'string=)))
-       (list (namestring f))))
-     allfiles)
-     ;; At the moment we will only look for user.lib: others are taken care
-     ;; of by localasy and localnrlib.
-     nil
-    ))))
- (let (thisdir nrlibs asos asys libs object only dir key 
-      (|$forceDatabaseUpdate| t) noexpose)
-  (declare (special |$forceDatabaseUpdate|))
-  (setq thisdir (namestring (truename ".")))
-  (setq noexpose nil)
-  (multiple-value-setq (only dir noexpose) (processOptions options))
+  "read a local filename and update the hash tables"
+  (labels 
+   ((processOptions (options)
+		    (let (only dir noexpose)
+		      (when (setq only (assoc '|only| options))
+			(setq options (delete only options :test #'equal))
+			(setq only (cdr only)))
+		      (when (setq dir (assoc '|dir| options))
+			(setq options (delete dir options :test #'equal))
+			(setq dir (second dir))
+			(when (null dir)
+			  (|sayKeyedMsg| 'S2IU0002 nil) ))
+		      (when (setq noexpose (assoc '|noexpose| options))
+			(setq options (delete noexpose options :test #'equal))
+			(setq noexpose 't) )
+		      (when options
+			(format t "   Ignoring unknown )library option: ~a~%" options))
+		      (values only dir noexpose)))
+    (processDir (dirarg thisdir)
+		(|changeDirectory| (string dirarg))
+		(let ((indexFiles (|getAllIndexPathnames|))
+		      (aldorFiles (|getAllAldorObjectFiles|)))
+		  (|changeDirectory| thisdir)
+		  (values
+		   indexFiles
+		   (first aldorFiles)
+		   (second aldorFiles)
+		   ;; At the moment we will only look for user.lib: others 
+		   ;; are taken care of by localasy and localnrlib.
+		   nil
+		   ))))
+   (let (thisdir nrlibs asos asys libs object only dir key 
+		 (|$forceDatabaseUpdate| t) noexpose)
+     (declare (special |$forceDatabaseUpdate|))
+     (setq thisdir (get-current-directory))
+     (setq noexpose nil)
+     (multiple-value-setq (only dir noexpose) (processOptions options))
      ;don't force exposure during database build
-  (if make-database? (setq noexpose t))
-  (when dir (multiple-value-setq (nrlibs asys asos libs) (processDir dir thisdir)))
-  (dolist (file filelist)
-   (let ((filename (pathname-name file))
-         (namedir (directory-namestring file)))
-    (unless namedir (setq thisdir (concatenate 'string thisdir "/")))
-    (cond
-     ((setq file (probe-file
-       (concatenate 'string namedir filename ".NRLIB/"
-                    *index-filename*)))
-      (push (namestring file) nrlibs))
-     ((setq file (probe-file
-       (concatenate 'string namedir filename ".asy")))
-      (push (namestring file) asys))
-     ((setq file (probe-file
-       (concatenate 'string namedir filename ".ao")))
-      (push (namestring file) asos))
-     ('else (format t "   )library cannot find the file ~a.~%" filename)))))
-  (dolist (file (nreverse nrlibs))
-   (setq key (pathname-name (first (last (pathname-directory file)))))
-   (setq object (concatenate 'string (directory-namestring file) 
-			     "code." |$faslType|))
-   (localnrlib key file object make-database? noexpose))
-  (dolist (file (nreverse asys))
-   (setq object
-    (concatenate 'string (directory-namestring file) (pathname-name file)))
-   (localasy (|astran| file) object only make-database? noexpose))
-  (dolist (file (nreverse asos))
-   (setq object
-    (concatenate 'string (directory-namestring file) (pathname-name file)))
-   (asharp file)
-   (setq file (|astran| (concatenate 'string (pathname-name file) ".asy")))
-   (localasy file object only make-database? noexpose))
-  (HCLEAR |$ConstructorCache|))))
+     (if make-database? 
+	 (setq noexpose t))
+     (if dir 
+       (multiple-value-setq (nrlibs asys asos libs)
+			    (processDir dir thisdir)))
+     (dolist (file filelist)
+       (let ((filename (pathname-name file))
+	     (namedir (directory-namestring file)))
+	 (unless namedir 
+	   (setq thisdir (concatenate 'string thisdir "/")))
+	 (cond
+	  ((setq file (probe-file
+		       (concatenate 'string 
+				    namedir 
+				    filename
+				    ".NRLIB/"
+				    |$IndexFilename|)))
+	   (push (namestring file) nrlibs))
+	  ((setq file (probe-file
+		       (concatenate 'string 
+				    namedir 
+				    filename
+				    ".asy")))
+	   (push (namestring file) asys))
+	  ((setq file (probe-file
+		       (concatenate 'string 
+				    namedir 
+				    filename
+				    ".ao")))
+	   (push (namestring file) asos))
+	  ('else (format t "   )library cannot find the file ~a.~%" filename)))))
+     (dolist (file (nreverse nrlibs))
+       (setq key (pathname-name (first (last (pathname-directory file)))))
+       (setq object (concatenate 'string 
+				 (directory-namestring file) 
+				 "code." |$faslType|))
+       (localnrlib key file object make-database? noexpose))
+     (dolist (file (nreverse asys))
+       (setq object
+	     (concatenate 'string 
+			  (directory-namestring file)
+			  (pathname-name file)))
+       (localasy (|astran| file) object only make-database? noexpose))
+     (dolist (file (nreverse asos))
+       (setq object
+	     (concatenate 'string 
+			  (directory-namestring file)
+			  (pathname-name file)))
+       (asharp file)
+       (setq file (|astran| (concatenate 'string 
+					 (pathname-name file) 
+					 ".asy")))
+       (localasy file object only make-database? noexpose))
+     (HCLEAR |$ConstructorCache|))))
+
 
 (defun localasy (asy object only make-database? noexpose)
  "given an alist from the asyfile and the objectfile update the database"
@@ -1054,7 +1065,6 @@
     (|unloadOneConstructor| (get abbrev 'abbreviationfor) abbrev) )
   (|sayKeyedMsg| 'S2IU0001 (list key object))))))
 
-
 ; making new databases consists of:
 ;  1) reset all of the system hash tables
 ;  *) set up Union, Record and Mapping
@@ -1074,17 +1084,13 @@
 ; critical. interp.daase depends on prior computations and has
 ; to be written out last.
 
-(defun make-databases (ext dirlist)
+(defun make-databases (dirlist)
  (labels (
     ;; these are types which have no library object associated with them.
     ;; we store some constructed data to make them perform like library
     ;; objects, the *operationalist-hash* key entry is used by allConstructors
   (withSpecialConstructors ()
    ; note: if item is not in *operationalist-hash* it will not be written
-   ; Category
-   (setf (get '|Category| 'database)
-     (make-database :operationalist nil :niladic t))
-   (push '|Category| *allconstructors*)
    ; UNION
    (setf (get '|Union| 'database)
      (make-database :operationalist nil :constructorkind '|domain|))
@@ -1103,7 +1109,7 @@
    (push '|Enumeration| *allconstructors*)
    )
   (final-name (root) 
-    (format nil "~a.daase~a" root ext))
+	      (concat root ".daase"))
   )
  (let (d)
   (declare (special |$constructorList|))
@@ -1116,13 +1122,13 @@
   (setq *compressvector* nil)
   (withSpecialConstructors)
   (localdatabase nil
-     (list (list '|dir| (namestring (truename "./")) ))
+     (list (list '|dir| (get-current-directory) ))
      'make-database)
   (dolist (dir dirlist)
           (localdatabase nil 
                          (list (list '|dir| 
                                      (namestring (probe-file 
-                                                  (format nil "./~a" 
+                                                  (concat "./" 
                                                           dir)))))
                          'make-database))
 #+:AKCL    (|mkTopicHashTable|)
@@ -1277,20 +1283,21 @@
     (setq modemapspos (file-position out))
     (print (squeeze (database-modemaps struct)) out)
     (finish-output out)
-    (if (consp (database-object struct)) ; if asharp code ...
-     (setq obj
-      (cons (pathname-name (car (database-object struct)))
-            (cdr (database-object struct))))
-     (setq obj
-      (pathname-name
-        (first (last (pathname-directory (database-object struct)))))))
+    (let ((entry (database-object struct)))
+      (cond ((consp entry)
+	     (setq obj (cons (pathname-name (car entry))
+			     (cdr entry))))
+	    (entry
+	     (setq obj (pathname-name
+			(first (last (pathname-directory entry))))))
+	    (t (setq obj nil))))
     (setq concategory (squeeze (database-constructorcategory struct)))
     (if concategory  ; if category then write data else write nil
-     (progn
-      (setq categorypos (file-position out))
-      (print concategory out)
-      (finish-output out))
-     (setq categorypos nil))
+	(progn
+	  (setq categorypos (file-position out))
+	  (print concategory out)
+	  (finish-output out))
+      (setq categorypos nil))
     (setq niladic (database-niladic struct))
     (setq abbrev (database-abbreviation struct))
     (setq cosig (database-cosig struct))
@@ -1298,17 +1305,17 @@
     (setq defaultdomain (database-defaultdomain struct))
     (setq ancestors (squeeze (gethash constructor *ancestors-hash*))) ;cattable.boot
     (if ancestors
-     (progn
-      (setq ancestorspos (file-position out))
-      (print ancestors out)
-      (finish-output out))
-     (setq ancestorspos nil))
+	(progn
+	  (setq ancestorspos (file-position out))
+	  (print ancestors out)
+	  (finish-output out))
+      (setq ancestorspos nil))
     (push (list constructor opalistpos cmodemappos modemapspos
-      obj categorypos niladic abbrev cosig kind defaultdomain
-      ancestorspos) master)))
+		obj categorypos niladic abbrev cosig kind defaultdomain
+		ancestorspos) master)))
   (finish-output out)
   (setq masterpos (file-position out))
-  (print (mapcar #'squeeze master) out)
+  (print (|squeezeAll| master) out)
   (finish-output out)
   (file-position out 0)
   (print (cons masterpos (get-universal-time)) out)
@@ -1342,7 +1349,7 @@
     (push (list constructor src formpos docpos attpos predpos) master)))
   (finish-output out)
   (setq masterpos (file-position out))
-  (print (mapcar #'squeeze master) out)
+  (print (|squeezeAll| master) out)
   (finish-output out)
   (file-position out 0)
   (print (cons masterpos (get-universal-time)) out)
@@ -1367,7 +1374,7 @@
      (push (list key pos) master))
      *hasCategory-hash*)
   (setq pos (file-position out))
-  (print (mapcar #'squeeze master) out)
+  (print (|squeezeAll| master) out)
   (finish-output out)
   (file-position out 0)
   (print (cons pos (get-universal-time)) out)
@@ -1418,7 +1425,7 @@
    *operation-hash*)
   (finish-output out)
   (setq pos (file-position out))
-  (print (mapcar #'squeeze master) out)
+  (print (|squeezeAll| master) out)
   (file-position out 0)
   (print (cons pos (get-universal-time)) out)
   (finish-output out)

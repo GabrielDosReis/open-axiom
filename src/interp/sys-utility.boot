@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2008 Gabriel Dos Reis
+-- Copyright (C) 2007-2008 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -37,35 +37,19 @@ import '"sys-os"
 import '"vmlisp"
 )package "BOOT"
 
-++ Basic types used throughout Boot codes.
-%Boolean <=> BOOLEAN
-%Short <=> FIXNUM
-%Integer <=> BIGNUM
-%Symbol <=> SYMBOL
-%String <=> STRING
-%List <=> LIST
-%Vector <=> VECTOR
-%Thing <=> true
-%Sequence <=> SEQUENCE
-
---% Data structures for the compiler
-%Form <=> NUMBER or %Symbol or %String or CONS -- input syntax form
-%Env <=> %List                                 -- compiling env
-%Mode <=> %Symbol or %String or %List          -- type of forms
-%Code <=> %Form                                -- generated code
-%Triple <=> %List                              -- form + type + env
-
-%Modemap <=> %List                             -- modemap
+setDynamicBinding: (%Symbol,%Thing) -> %Thing
+setDynamicBinding(s,v) ==
+  SETF(SYMBOL_-VALUE s,v)
 
 ++ returns true if `f' is bound to a macro.
 macrop: %Thing -> %Boolean
 macrop f ==
-  IDENTP f and MACRO_-FUNCTION f
+  IDENTP f and not null MACRO_-FUNCTION f
 
 ++ returns true if `f' is bound to a function
 functionp: %Thing -> %Boolean
 functionp f ==
-  IDENTP f => FBOUNDP f and not MACRO_-FUNCTION f
+  IDENTP f => FBOUNDP f and null MACRO_-FUNCTION f
   FUNCTIONP f
 
 ++ remove `item' from `sequence'.
@@ -159,6 +143,7 @@ existingFile? file ==
 
 ++ original version returned 0 on success, and 1 on failure
 ++ ??? fix that to return -1 on failure.
+$ERASE: %Thing -> %Short
 $ERASE(:filearg) ==
   -removeFile MAKE_-FULL_-NAMESTRING filearg
 
@@ -176,10 +161,6 @@ checkMkdir path ==
 getSystemModulePath m ==
   CONCAT(systemRootDirectory(),'"algebra/",m,'".",$faslType)
 
-++ Load native dynamically linked module
-loadNativeModule m ==
-)if %hasFeature KEYWORD::SBCL
-  SB_-ALIEN::LOAD_-SHARED_-OBJECT m
-)else
-  systemError '"don't know how to load a dynamically link module"
-)endif
+--% numericis
+log10 x ==
+  LOG(x,10)
