@@ -640,7 +640,7 @@ sublisV(p,e) ==
       v:= suba(p,QCDR e)
       EQ(QCAR e,u) and EQ(QCDR e,v) => e
       [u,:v]
- 
+
 --% DEBUGGING PRINT ROUTINES used in breaks
  
 _?MODEMAPS x == _?modemaps x

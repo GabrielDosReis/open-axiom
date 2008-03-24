@@ -88,7 +88,7 @@
     (|ensureTrailingSlash|
      (if (string= direc "")  
 	 current-dir
-       (concat (|ensureTrailingSlash| current-dir direc))))))
+       (concat (|ensureTrailingSlash| current-dir) direc)))))
 
 ;; Various lisps use different ``extensions'' on the filename to indicate
 ;; that a file has been compiled. We set this variable correctly depending

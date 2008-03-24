@@ -729,8 +729,8 @@ gensymInt g ==
   n
 
 ++
-newDomainShell: %Short -> SIMPLE_-ARRAY
-newDomainShell n ==
+newShell: %Short -> SIMPLE_-ARRAY
+newShell n ==
   MAKE_-ARRAY(n,KEYWORD::INITIAL_-ELEMENT,nil)
 
 

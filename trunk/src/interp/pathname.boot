@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -44,24 +44,34 @@ import '"nlib"
  
 --% Common Lisp Pathname Functions
  
-pathname? p == p=[] or PATHNAMEP p
+pathname? p == 
+  null p or PATHNAMEP p
  
 pathname p ==
-  p = [] => p
+  null p => p
   PATHNAMEP p => p
   not PAIRP p => PATHNAME p
   if #p>2 then p:=[p.0,p.1]
   PATHNAME APPLY(FUNCTION MAKE_-FILENAME, p)
  
-namestring p == NAMESTRING pathname p
+namestring p == 
+  null p => nil
+  NAMESTRING pathname p
  
-pathnameName p == PATHNAME_-NAME pathname p
+pathnameName p == 
+  null p => nil
+  PATHNAME_-NAME pathname p
  
-pathnameType p == PATHNAME_-TYPE pathname p
+pathnameType p == 
+  null p => nil
+  PATHNAME_-TYPE pathname p
  
-pathnameTypeId p == UPCASE object2Identifier pathnameType p
+pathnameTypeId p == 
+  null p => nil
+  UPCASE object2Identifier pathnameType p
  
 pathnameDirectory p ==
+   null p => nil
    NAMESTRING MAKE_-PATHNAME(KEYWORD::DIRECTORY,PATHNAME_-DIRECTORY pathname p)
  
 deleteFile f == _$ERASE pathname f

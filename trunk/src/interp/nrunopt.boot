@@ -53,7 +53,7 @@ getInfovecCode() ==
 makeDomainTemplate vec ==   
 --NOTES: This function is called at compile time to create the template
 --  (slot 0 of the infovec); called by getInfovecCode from compDefineFunctor1
-  newVec := newDomainShell SIZE vec
+  newVec := newShell SIZE vec
   for index in 0..MAXINDEX vec repeat
     item := vec.index
     null item => nil

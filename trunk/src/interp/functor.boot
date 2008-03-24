@@ -227,7 +227,7 @@ compCategories1(u,v) ==
   error 'compCategories1
  
 NewbFVectorCopy(u,domName) ==
-  v:= newDomainShell SIZE u
+  v:= newShell SIZE u
   for i in 0..5 repeat v.i:= u.i
   for i in 6..MAXINDEX v | PAIRP u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
   v
@@ -550,9 +550,9 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
               'adding))^=nil]
      --The code from here to the end is designed to replace repeated LOAD/STORE
      --combinations (SETELT ...(ELT ..)) by MVCs where this is practicable
-  copyvec := newDomainShell (1+n)
-  for u in code repeat
-      if update(u,copyvec,[]) then code:=delete(u,code)
+  copyvec := newShell (1+n)
+  (for u in code repeat
+      if update(u,copyvec,[]) then code:=delete(u,code))
     where update(code,copyvec,sofar) ==
       ATOM code =>nil
       MEMQ(QCAR code,'(ELT QREFELT)) =>

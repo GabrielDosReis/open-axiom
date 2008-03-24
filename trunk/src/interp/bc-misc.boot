@@ -672,7 +672,8 @@ bcTaylorSeries(a,b) ==
     (doneButton "Continue" bcTaylorSeriesGen))
   htShowPage()
 
-bcSeriesByFormulaGen htPage == bcNotReady()
+bcSeriesByFormulaGen htPage == 
+  bcNotReady htPage
 
 bcLaurentSeries(a,b) ==
   htInitPage('"Laurent Series Basic Command",nil)

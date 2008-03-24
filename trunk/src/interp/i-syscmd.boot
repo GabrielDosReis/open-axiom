@@ -2158,7 +2158,8 @@ reportCount () ==
 library args ==
   origDir := GET_-CURRENT_-DIRECTORY()
   $newConlist := []
-  LOCALDATABASE(args,$options)
+  -- Users typically specify abbreviations without quotes.  
+  LOCALDATABASE([STRING a for a in args],$options)
   extendLocalLibdb $newConlist
   changeDirectory origDir
   TERSYSCOMMAND()

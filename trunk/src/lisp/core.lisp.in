@@ -1,4 +1,4 @@
-;; Ô Emacs, this is a -*- Lisp -*- file, despite apperance
+;; O Emacs, this is a -*- Lisp -*- file, despite appearance
 ;; 
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
@@ -89,6 +89,7 @@
            "Option"
 
            "IMPORT-MODULE"
+	   "CONCAT"
            ))
 
 (in-package "AxiomCore")
@@ -193,7 +194,7 @@
 ;; Return a symbol object represensing option named OPT, without leading
 ;; double dash (--).
 (defun |Option| (opt)
-  (intern opt (find-package "AxiomCore")))
+  (intern (string opt) (find-package "AxiomCore")))
 
 ;; Returns a pair (name . value) if OPTION if of the form "--name=value",
 ;; where name is a symbol and value is a string.  Otherwise, if
@@ -336,6 +337,15 @@
 
 (defun |resetErrorCount| nil
   (setq |$errorCount| 0))
+
+;; utils
+(defun concat (a b &rest l)
+  (let ((type (cond ((bit-vector-p a) 'bit-vector) (t 'string))))
+    (cond ((eq type 'string)
+	   (setq a (string a) b (string b))
+	   (if l (setq l (mapcar #'string l)))))
+    (if l (apply #'concatenate type a b l)
+      (concatenate type a b))) )
 
 (defun |fatalError| (msg)
   (|countError|)

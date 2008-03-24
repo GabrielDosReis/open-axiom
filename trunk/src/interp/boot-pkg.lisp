@@ -1,4 +1,4 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -36,7 +36,12 @@
   #+:common-lisp (:use "COMMON-LISP")
   #-:common-lisp (:use "LISP")
   #+:SBCL (:use "SB-ALIEN")
-  (:use "AxiomCore"))
+  (:use "AxiomCore")
+  (:import-from "BOOTTRAN" 
+		"systemRootDirectory"
+		"systemLibraryDirectory"
+		"loadNativeModule"
+		"loadSystemRuntimeCore"))
 
 (in-package "BOOT")
 
@@ -59,13 +64,11 @@
 (defun acoth (x) (atanh (/ 1 x)))
 (defun asech (x) (acosh (/ 1 x)))
 
-#+(or :cmu :akcl :gcl)
 (defun cot (a)
   (if (or (> a 1000.0) (< a -1000.0))
     (/ (cos a) (sin a))
     (/ 1.0 (tan a))))
 
-#+(or :cmu :akcl :gcl)
 (defun acot (a)
   (if (> a 0.0)
     (if (> a 1.0)
@@ -76,7 +79,6 @@
        (+ (/ pi 2.0) (atan (- a))))))
 
 ; This is a Mantissa and Exponent function. 
-#+(or :cmu :akcl :gcl)
 (defun manexp (u)
   (multiple-value-bind (f e s) 
     (decode-float u)

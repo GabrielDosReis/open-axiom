@@ -75,7 +75,7 @@ FloatError(formatstring,arg) ==
         ERROR FORMAT([],formatstring,arg)
 
 nangenericcomplex () ==
-        1.0/COMPLEX(0.0)
+        COMPLEX NaNQ()
 
 
 

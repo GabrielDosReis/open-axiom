@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
 
    Copyright (C) 2007-2008, Gabriel Dos Reis.
@@ -17,7 +17,7 @@
          the documentation and/or other materials provided with the
          distribution.
 
-       - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+       - Neither the name of The Numerical Algorithms Group Ltd. nor the
          names of its contributors may be used to endorse or promote products
          derived from this software without specific prior written permission.
 
@@ -431,3 +431,11 @@ oa_mkdir(const char* path)
 #  undef DIRECTORY_PERM   
 #endif   
 }
+
+/* Run a shell command.  Effectively forward to C's system().  */
+OPENAXIOM_EXPORT int
+oa_system(const char* cmd)
+{
+   return system(cmd);
+}
+

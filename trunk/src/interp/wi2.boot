@@ -1161,7 +1161,7 @@ doItLet1 item ==
           then NRTgetLocalIndex $Representation
 --+
       $LocalDomainAlist:= --see genDeltaEntry
-        [[lhs,:SUBLIS($LocalDomainAlist,get(lhs,'value,$e).0)],:$LocalDomainAlist]
+        [[lhs,:SUBLIS($LocalDomainAlist,(get(lhs,'value,$e)).0)],:$LocalDomainAlist]
 --+
   qe(6,$e)
   code is ['LET,:.] =>

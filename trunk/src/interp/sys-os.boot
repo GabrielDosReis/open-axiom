@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2008 Gabriel Dos Reis
+-- Copyright (C) 2007-2008 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -38,10 +38,14 @@
 -- supporting C runtime libopen-axiom-core.
 --
 
-import '"boot-pkg"
+import '"types"
 import '"cfuns"
 import '"sockio"
 )package "BOOT"
+
+)if not %hasFeature KEYWORD::GCL
+loadSystemRuntimeCore()
+)endif
 
 ++ change current working directory.
 import changeDirectory for
@@ -108,6 +112,9 @@ import directoryp for
 import writeablep for
   writeablep: string -> int
 
+import runCommand for
+  oa__system: string -> int
+
 ++ run a program with specified arguments
 runProgram(prog,args) ==
 )if %hasFeature KEYWORD::GCL
@@ -141,7 +148,9 @@ $plusInfinity == SB_-EXT::DOUBLE_-FLOAT_-POSITIVE_-INFINITY
 
 $minusInfinity == SB_-EXT::DOUBLE_-FLOAT_-NEGATIVE_-INFINITY
 )else
-$plusInfinity == 1.1 * MOST_-POSITIVE_-LONG_-FLOAT()
+-- In general Common Lisp does not provide support for infinities
+-- and the like.
+$plusInfinity == MOST_-POSITIVE_-DOUBLE_-FLOAT
 
 $minusInfinity == -$plusInfinity
 )endif
@@ -153,3 +162,11 @@ plusInfinity() ==
 minusInfinity() ==
   $minusInfinity
 )endif
+
+++ stdStreamIsTerminal:
+++   returns 1 if the standard stream is attached to a terminal;
+++   otherwise 0.
+import stdStreamIsTerminal for std__stream__is__terminal: int -> int
+
+
+--%

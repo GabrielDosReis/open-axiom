@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-03-18], 
+AC_INIT([OpenAxiom], [1.2.0-2008-03-24], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -533,6 +533,15 @@ case $axiom_lisp_flavor in
    sbcl)
       string_type='c-string'
       pointer_type='system-area-pointer'
+      ;;
+   clisp)
+      void_type='nil'
+      char_type='ffi:character'
+      int_type='ffi:int'
+      float_type='ffi:single-float'
+      double_type='ffi:double-float'
+      string_type='ffi:c-string'
+      pointer_type='ffi:c-pointer'
       ;;
    *)
       AC_MSG_ERROR([We do not know how to translate native types for this Lisp])

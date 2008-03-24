@@ -1,3 +1,8 @@
+2008-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Add native types translation table for
+	CLisp. 
+
 2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Check for <dirent.h>

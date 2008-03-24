@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -246,12 +246,13 @@ loadFunctor u ==
  
 makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
+    cnam in $CategoryNames => nil
     REMPROP(cnam,'LOADED)
 --    fn:=GETDATABASE(cnam,'ABBREVIATION)
     if GETDATABASE(cnam,'NILADIC)
      then PUT(cnam,'NILADIC,'T)
      else REMPROP(cnam,'NILADIC)
-    systemDependentMkAutoload(cnam,cnam)
+    systemDependentMkAutoload(constructor? cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
     FBOUNDP(cnam) => "next"
@@ -264,15 +265,18 @@ systemDependentMkAutoload(fn,cnam) ==
               ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
          ASHARPMKAUTOLOADFUNCTOR(file, cnam, asharpName, cosig)
     SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
- 
+
 autoLoad(abb,cname) ==
+  -- builtin constructors are always loaded.  By definition, there
+  -- is no way to unload them and load them again.
+  cname in $BuiltinConstructorNames => cname
   if not GETL(cname,'LOADED) then loadLib cname
   SYMBOL_-FUNCTION cname
  
 setAutoLoadProperty(name) ==
 --  abb := constructor? name
   REMPROP(name,'LOADED)
-  SETF(SYMBOL_-FUNCTION name,mkAutoLoad(name, name))
+  SETF(SYMBOL_-FUNCTION name,mkAutoLoad(constructor? name, name))
  
 --% Compilation
  
@@ -692,7 +696,7 @@ isFunctor x ==
   op:= opOf x
   not IDENTP op => false
   $InteractiveMode =>
-    MEMQ(op,'(Union SubDomain Mapping Record)) => true
+    MEMQ(op,$DomainNames) => true
     MEMQ(GETDATABASE(op,'CONSTRUCTORKIND),'(domain package))
   u:= get(op,'isFunctor,$CategoryFrame)
     or MEMQ(op,'(SubDomain Union Record)) => u
@@ -703,3 +707,50 @@ isFunctor x ==
       else updateCategoryFrameForConstructor op
     get(op,'isFunctor,$CategoryFrame)
   nil
+
+--%
+
+getIndexPathname: %String -> %String
+getIndexPathname dir ==
+  strconc(ensureTrailingSlash dir, $IndexFilename)
+
+getAllIndexPathnames() ==
+  -- GCL's semantics of Common Lisp's `DIRECTORY *' differs from the
+  -- rest of everybody else' semantics.  Namely, GCL would return a
+  -- a list of drirectories AND files.  Pretty much like `ls *'.
+  -- Everybody else strips out directories.
+)if %hasFeature KEYWORD::GCL
+  [getIndexPathname NAMESTRING d for d in DIRECTORY '"*.NRLIB"]
+)else
+  DIRECTORY strconc('"*.NRLIB/",$IndexFilename)
+)endif
+  
+
+getAllAldorObjectFiles() ==
+  asys := DIRECTORY '"*.asy"
+  asos := DIRECTORY '"*.ao"
+  -- don't include both a `x.asy' and `x.ao', and retain
+  -- only sensical .asy files.
+  dupAOs := MAPCAN(function PATHNAME_-NAME,asys)
+  [asys,[f for f in asos 
+          | PATHNAME_-NAME f='"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
+    
+
+
+++ returns an open stream for the index file, if present, 
+++ in directory designated by 'dir'.
+openIndexFileIfPresent: %String -> %Thing
+openIndexFileIfPresent dir ==
+  OPEN(getIndexPathname dir,KEYWORD::DIRECTION,KEYWORD::INPUT,
+    KEYWORD::IF_-DOES_-NOT_-EXIST,nil)
+
+++
+getIndexTable: %String -> %Thing
+getIndexTable dir ==
+  indexFile := getIndexPathname dir
+  existingFile? indexFile =>
+    WITH_-OPEN_-FILE(stream indexFile, 
+      GET_-INDEX_-TABLE_-FROM_-STREAM stream)
+  -- index file doesn't exist but mark this directory as a Lisplib.
+  WITH_-OPEN_-FILE(stream(indexFile,KEYWORD::DIRECTION,KEYWORD::OUTPUT),
+    nil)

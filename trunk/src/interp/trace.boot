@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -229,15 +229,15 @@ traceOptionError(opt,keys) ==
 
 resetTimers () ==
   for timer in _/TIMERLIST repeat
-    SET(INTERN STRCONC(timer,'"_,TIMER"),0)
+    setDynamicBinding(INTERN STRCONC(timer,'"_,TIMER"),0)
 
 resetSpacers () ==
   for spacer in _/SPACELIST repeat
-    SET(INTERN STRCONC(spacer,'"_,SPACE"),0)
+    setDynamicBinding(INTERN STRCONC(spacer,'"_,SPACE"),0)
 
 resetCounters () ==
   for k in _/COUNTLIST repeat
-    SET(INTERN STRCONC(k,'"_,COUNT"),0)
+    setDynamicBinding(INTERN STRCONC(k,'"_,COUNT"),0)
 
 ptimers() ==
   null _/TIMERLIST => sayBrightly '"   no functions are timed"
@@ -276,7 +276,7 @@ domainToGenvar x ==
   $doNotAddEmptyModeIfTrue: local:= true
   (y:= unabbrevAndLoad x) and GETDATABASE(opOf y,'CONSTRUCTORKIND) = 'domain =>
     g:= genDomainTraceName y
-    SET(g,evalDomain y)
+    setDynamicBinding(g,evalDomain y)
     g
 
 genDomainTraceName y ==

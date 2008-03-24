@@ -357,7 +357,7 @@ $libraryDirectory := "A"
 $listingDirectory := "A"
 
 ++
-$texOutputStream := MAKE_-SYNONYM_-STREAM '_*TERMINAL_-IO_*
+$texOutputStream := MAKE_-SYNONYM_-STREAM '_*STANDARD_-OUTPUT_*
 
 ++
 $UserLevel := "development"

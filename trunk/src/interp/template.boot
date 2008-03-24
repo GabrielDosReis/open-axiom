@@ -121,16 +121,16 @@ evalSlotDomain(u,dollar) ==
 --                       Loadtime Operations
 --=======================================================================
 setLoadTime alist ==
-  for [nam,:val] in alist repeat SET(nam,eval val)
+  for [nam,:val] in alist repeat setDynamicBinding(nam,eval val)
 
 setLoadTimeQ alist ==
-  for [nam,:val] in alist repeat SET(nam,val)
+  for [nam,:val] in alist repeat setDynamicBinding(nam,val)
 
 makeTemplate vec ==
 --called at instantiation time by setLoadTime
 --the form ['makeTemplate,MKQ $template] is recorded by compDefineFunctor1
 --  $template is set below in NRTdescendCodeTran and NRTaddDeltaOpt
-  newVec := newDomainShell SIZE vec
+  newVec := newShell SIZE vec
   for index in 0..MAXINDEX vec repeat
     item := vec.index
     null item => nil
@@ -192,7 +192,7 @@ putPredHash pred == --pred MUST have had addConsDB applied to it
 extendVectorSize v ==
   n:= MAXINDEX v
   m:= (7*n)/5   -- make 40% longer
-  newVec := newDomainShell m
+  newVec := newShell m
   for i in 0..n repeat newVec.i := v.i
   newVec
 
@@ -200,7 +200,7 @@ mkSigPredVectors() ==
   $predHash:= MAKE_-HASHTABLE 'UEQUAL
   $consDB:= MAKE_-HASHTABLE 'UEQUAL
   $predVectorFrontier:= 1   --slot 0 in vector will be vacant
-  $predVector:= newDomainShell 100
+  $predVector:= newShell 100
   for nam in allConstructors() |
           null (GETDATABASE(nam, 'CONSTRUCTORKIND) = 'package) repeat
     for [op,:sigList] in GETDATABASE(nam,'OPERATIONALIST) repeat
@@ -210,7 +210,7 @@ mkSigPredVectors() ==
   'done
 
 list2LongerVec(u,n) ==
-  vec := newDomainShell ((7*n)/5) -- make 40% longer
+  vec := newShell ((7*n)/5) -- make 40% longer
   for i in 0.. for x in u repeat vec.i := x
   vec
 
