@@ -83,7 +83,7 @@ start(:l) ==
   $InteractiveFrame := makeInitialModemapFrame()
   initializeSystemCommands()
   initializeInterpreterFrameRing()
-  SETQ(ERROROUTSTREAM,
+  SETQ($ErrorStream,
     DEFIOSTREAM('((DEVICE . CONSOLE)(MODE . OUTPUT)),80,0))
   setOutputAlgebra "%initialize%"
   loadExposureGroupData()

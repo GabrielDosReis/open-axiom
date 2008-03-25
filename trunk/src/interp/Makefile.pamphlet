@@ -824,7 +824,7 @@ postpar.$(FASLEXT): postpar.boot macros.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 bootlex.$(FASLEXT): bootlex.lisp preparse.$(FASLEXT) def.$(FASLEXT) \
-			nlib.$(FASLEXT)
+			nlib.$(FASLEXT) sys-globals.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 newaux.$(FASLEXT): newaux.lisp macros.$(FASLEXT)
@@ -1053,7 +1053,7 @@ foam_l.$(FASLEXT): foam_l.lisp vmlisp.$(FASLEXT)
 sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-vmlisp.$(FASLEXT): vmlisp.lisp types.$(FASLEXT)
+vmlisp.$(FASLEXT): vmlisp.lisp types.$(FASLEXT) sys-globals.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 sys-os.$(FASLEXT): sys-os.boot types.$(FASLEXT) \

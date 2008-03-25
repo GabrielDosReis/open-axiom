@@ -81,12 +81,12 @@
   (with-open-stream
     (in-stream (or (and *boot-input-file* 
 			(open *boot-input-file* :direction :input))
-                   *standard-input*))
+                   |$InputStream|))
     (declare (special in-stream))
     (with-open-stream
       (out-stream (if *boot-output-file*
                       (open *boot-output-file* :direction :output)
-                      *standard-output*))
+                      |$OutputStream|))
       (declare (special out-stream))
       (initialize-preparse in-stream)
       (do ((lines (PREPARSE in-stream) (PREPARSE in-stream))) ((null lines)))))

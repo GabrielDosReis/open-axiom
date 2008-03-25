@@ -443,9 +443,6 @@ $insideCanCoerceFrom := nil
 ++
 $sourceFiles := []
 
-++ ??? bogus initialization for now
-INPUTSTREAM := "T"
-
 ++ ???
 $x := nil
 $f := nil
@@ -459,13 +456,6 @@ _/SPACELIST := []
 
 $algebraOutputStream :=
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-ERROROUTSTREAM :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-
-ERRORINSTREAM := 
-  MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"
 
 ++
 $texOutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
@@ -482,3 +472,11 @@ conOutStream :=
 
 
 
+$InputStream :=
+  MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"
+
+$OutputStream :=
+  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
+$ErrorStream :=
+  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"

@@ -329,7 +329,7 @@
  
 ; 22.2.1 Input from Character Streams
  
-(DEFUN STREAM-EOF (&optional (STRM *standard-input*))
+(DEFUN STREAM-EOF (&optional (STRM |$InputStream|))
   "T if input stream STRM is at the end or saw a ~."
   (not (peek-char nil STRM nil nil nil))     )
  
@@ -372,9 +372,9 @@
         ((PROGN (NEXTSTRMLINE STRM) (STRMBLANKLINE STRM)) STRM)
         ((STRMSKIPTOBLANK STRM))))
  
-(DEFUN CURINPUTLINE () (CURSTRMLINE *standard-input*))
+(DEFUN CURINPUTLINE () (CURSTRMLINE |$InputStream|))
  
-(DEFUN NEXTINPUTLINE () (NEXTSTRMLINE *standard-input*))
+(DEFUN NEXTINPUTLINE () (NEXTSTRMLINE |$InputStream|))
  
 ; 22.3 Output Functions
  
@@ -386,34 +386,38 @@
         ((stringp x) x)
         ((write-to-string x))))
  
-(defvar |conOutStream| *standard-output* "console output stream")
- 
 (defun |sayTeX| (x) (if (null x) nil (sayBrightly1 x |$texOutputStream|)))
  
 (defun |sayNewLine| () (TERPRI))
 
 (defvar |$sayBrightlyStream| nil "if not nil, gives stream for sayBrightly output")
  
-(defun |sayBrightly| (x &optional (out-stream *standard-output*))
+(defun |sayBrightly| (x &optional (out-stream |$OutputStream|))
   (COND ((NULL X) NIL)
-        (|$sayBrightlyStream| (sayBrightly1 X |$sayBrightlyStream|))
-        ((IS-CONSOLE out-stream) (sayBrightly1 X out-stream))
-        ((sayBrightly1 X out-stream) (sayBrightly1 X *standard-output*))))
+        (|$sayBrightlyStream| 
+	 (sayBrightly1 X |$sayBrightlyStream|))
+        ((IS-CONSOLE out-stream) 
+	 (sayBrightly1 X out-stream))
+        ((sayBrightly1 X out-stream) 
+	 (sayBrightly1 X |$OutputStream|))))
  
-(defun |sayBrightlyI| (x &optional (s *terminal-io*))
+(defun |sayBrightlyI| (x &optional (s |$OutputStream|))
     "Prints at console or output stream."
   (if (NULL X) NIL (sayBrightly1 X S)))
  
-(defun |sayBrightlyNT| (x &optional (S *standard-output*))
+(defun |sayBrightlyNT| (x &optional (S |$OutputStream|))
   (COND ((NULL X) NIL)
-        (|$sayBrightlyStream| (sayBrightlyNT1 X |$sayBrightlyStream|))
-        ((IS-CONSOLE S) (sayBrightlyNT1 X S))
-        ((sayBrightly1 X S) (sayBrightlyNT1 X *terminal-io*))))
+        (|$sayBrightlyStream| 
+	 (sayBrightlyNT1 X |$sayBrightlyStream|))
+        ((IS-CONSOLE S)
+	 (sayBrightlyNT1 X S))
+        ((sayBrightly1 X S)
+	 (sayBrightlyNT1 X |$OutputStream|))))
  
-(defun sayBrightlyNT1 (X *standard-output*)
+(defun sayBrightlyNT1 (X |$OutputStream|)
   (if (ATOM X) (BRIGHTPRINT-0 X) (BRIGHTPRINT X)))
  
-(defun sayBrightly1 (X *standard-output*)
+(defun sayBrightly1 (X |$OutputStream|)
     (if (ATOM X)
         (progn (BRIGHTPRINT-0 X) (TERPRI) (force-output))
       (progn (BRIGHTPRINT X) (TERPRI) (force-output))))
@@ -452,7 +456,8 @@
  
 ;; the following are redefined in MSGDB BOOT
  
-(DEFUN BLANKS (N &optional (stream *standard-output*)) "Print N blanks."
+(DEFUN BLANKS (N &optional (stream |$OutputStream|))
+  "Print N blanks."
     (do ((i 1 (the fixnum(1+ i))))
         ((> i N))(declare (fixnum i n)) (princ " " stream)))
  
@@ -637,7 +642,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
                                    ('T NIL)))))))
                  (COND ((> N |n|) NIL) ('T |word|))))))))))
 
-(defun print-full (expr &optional (stream *standard-output*))
+(defun print-full (expr &optional (stream |$OutputStream|))
    (let ((*print-circle* t) (*print-array* t) *print-level* *print-length*)
      (print expr stream)
      (terpri stream)
@@ -689,15 +694,13 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
   (let* ((out-stream (make-string-output-stream))
          (curoutstream out-stream)
          (|$algebraOutputStream| out-stream)
-         (erroroutstream out-stream)
+         (|$OutputStream| out-stream)
         val)
     (declare (special curoutstream |$algebraOutputStream|))
-    (setq *standard-output* out-stream)
-    (setq *terminal-io* out-stream)
     (setq val (catch 'spad_reader
                 (catch 'TOP_LEVEL
                   (apply (symbol-function func) args))))
-    (cons val (get-output-stream-string *standard-output*))))
+    (cons val (get-output-stream-string |$OutputStream|))))
 
 (defun |breakIntoLines| (str)
   (let ((bol 0) (eol) (line-list nil))

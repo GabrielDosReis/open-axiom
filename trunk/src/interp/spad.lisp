@@ -311,8 +311,8 @@
         (|$genSDVar| 0)
         (|$VariableCount| 0)
         (|$previousTime| (TEMPUS-FUGIT)))
-    (prog ((CURSTRM CUROUTSTREAM) |$s| |$x| |$m| u)
-          (declare (special CURSTRM |$s| |$x| |$m| CUROUTSTREAM))
+    (prog ((CURSTRM |$OutputStream|) |$s| |$x| |$m| u)
+          (declare (special CURSTRM |$s| |$x| |$m|))
           (SETQ |$exitModeStack| ())
           (SETQ |$postStack| nil)
           (SETQ |$TraceFlag| T)
@@ -361,9 +361,9 @@
       (SETQ SINGLELINEMODE T)   ; SEE NewSYSTOK
       (SETQ NewFLAG T)
       (SETQ ULCASEFG T)
-      (setq STR (|New,ENTRY,2| '|PARSE-NewEXPR| '|process| curinstream))
+      (setq STR (|New,ENTRY,2| '|PARSE-NewEXPR| '|process| |$InputStream|))
       (if (/= 0 (setq N (NOTE STR)))
-          (progn  (SETQ CURINSTREAM (POINTW N CURINSTREAM)))
+          (progn  (SETQ |$InputStream| (POINTW N |$InputStream|)))
           )
       '|END_OF_New|))
 
@@ -377,7 +377,7 @@
 
 (defun INITIALIZE () 
   (init-boot/spad-reader)
-  (initialize-preparse INPUTSTREAM))
+  (initialize-preparse |$InputStream|))
 
 (defmacro try (X)
   `(LET ((|$autoLine|))

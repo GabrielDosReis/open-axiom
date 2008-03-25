@@ -191,7 +191,7 @@
       (|untrace| NIL)
       (|clearClams|)
         ;; bind output to nulloutstream
-      (let ((*standard-output* (make-broadcast-stream)))
+      (let ((|$OutputStream| (make-broadcast-stream)))
         (|resetWorkspaceVariables|))
       (setq |$specialCharacters| |$plainRTspecialCharacters|)
 

@@ -1,3 +1,34 @@
+2008-03-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/bootlex.lisp: Import "sys-globals".  
+	Consistently use $InputStream and $OutputStream for I/O.
+	* interp/c-util.boot: Likewise.
+	* interp/comp.lisp: Likewise.
+	* interp/compat.boot: Likewise.
+	* interp/debug.lisp: Likewise.
+	* interp/def.lisp: Likewise.
+	* interp/g-error.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/intfile.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/macros.lisp: Likewise.
+	* interp/metalex.lisp: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/patches.lisp: Likewise.
+	* interp/preparse.lisp: Likewise.
+	* interp/server.boot: Likewise.
+	* interp/spad-parser.boot: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/sys-globals.boot: Likewise.
+	* interp/sys-macros.lisp: Likewise.
+	* interp/sys-os.boot: Likewise.
+	* interp/unlisp.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+	* interp/Makefile.pamphlet (bootlex.$(FASLEXT)): Require
+	sys-globals.$(FASLEXT) too.
+	(vmlisp.$(FASLEXT)): Likewise.
+
 2008-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp (DEFINE-FUNCTION): Move boot-pkg.lisp.

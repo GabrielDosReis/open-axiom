@@ -123,7 +123,7 @@ executeQuietCommand() ==
 
 -- Includued for compatability with old-parser systems
 serverLoop() ==
-  IN_-STREAM: fluid := CURINSTREAM
+  IN_-STREAM: fluid := $InputStream
   _*EOF_*: fluid := NIL
   while not $EndServerSession and not _*EOF_* repeat
     if $Prompt then (PRINC MKPROMPT(); FINISH_-OUTPUT())
@@ -131,7 +131,7 @@ serverLoop() ==
     action := serverSwitch()
     action = $CallInterp =>
       CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
-        parseAndInterpret read_-line(CURINSTREAM) )))
+        parseAndInterpret read_-line($InputStream) )))
       PRINC MKPROMPT()
       FINISH_-OUTPUT()
       sockSendInt($SessionManager, $EndOfOutput)

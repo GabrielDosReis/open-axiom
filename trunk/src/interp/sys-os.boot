@@ -13,7 +13,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -167,6 +167,5 @@ minusInfinity() ==
 ++   returns 1 if the standard stream is attached to a terminal;
 ++   otherwise 0.
 import stdStreamIsTerminal for std__stream__is__terminal: int -> int
-
 
 --%

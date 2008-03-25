@@ -1257,7 +1257,7 @@
 ;; 
 
 (defmacro |shoeConsole| (line)
- `(write-line ,line *standard-output*))
+ `(write-line ,line |$OutputStream|))
 
 (defmacro |shoeInputFile| (filespec)
  `(open ,filespec :direction :input :if-does-not-exist nil))

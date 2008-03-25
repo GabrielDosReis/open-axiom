@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -342,7 +342,7 @@ throwKeyedMsg(key,args) ==
   throwKeyedMsg1(key, args)
 
 saturnThrowKeyedMsg(key,args) ==
-  SETQ(_*STANDARD_-OUTPUT_*, $texOutputStream)
+  SETQ($OutputStream, $texOutputStream)
   last := pushSatOutput("line")
   sayString '"\bgroup\color{red}\begin{list}\item{} "
   sayKeyedMsgAsTeX(key,args)
@@ -351,7 +351,7 @@ saturnThrowKeyedMsg(key,args) ==
   spadThrow()
 
 throwKeyedMsg1(key,args) ==
-  SETQ(_*STANDARD_-OUTPUT_*, $texOutputStream)
+  SETQ($OutputStream, $texOutputStream)
   sayMSG '" "
   if $testingSystem then sayMSG $testingErrorPrefix
   sayKeyedMsg(key,args)
@@ -386,7 +386,7 @@ keyedSystemError(key,args) ==
   keyedSystemError1(key, args)
 
 saturnKeyedSystemError(key, args) ==
-  SETQ(_*STANDARD_-OUTPUT_*, $texOutputStream)
+  SETQ($OutputStream, $texOutputStream)
   sayString '"\bgroup\color{red}"
   sayString '"\begin{verbatim}"
   sayKeyedMsg("S2GE0000",NIL)
@@ -662,13 +662,13 @@ brightPrint0 x ==
   x = '"%b" =>
     -- FIXME: this kludge is GCL-specific.  Find way to support
     -- highlighting on all supported Lisp.
-    NULL IS_-CONSOLE CUROUTSTREAM or %hasFeature KEYWORD::WIN32
+    NULL IS_-CONSOLE $OutputStream or %hasFeature KEYWORD::WIN32
       or stdStreamIsTerminal(1) = 0 => sayString '" "
     NULL $highlightAllowed        => sayString '" "
     sayString $highlightFontOn
   k := blankIndicator x => BLANKS k
   x = '"%d" =>
-    NULL IS_-CONSOLE CUROUTSTREAM or %hasFeature KEYWORD::WIN32
+    NULL IS_-CONSOLE $OutputStream or %hasFeature KEYWORD::WIN32
       or stdStreamIsTerminal(1) = 0 => sayString '" "
     NULL $highlightAllowed        => sayString '" "
     sayString $highlightFontOff
