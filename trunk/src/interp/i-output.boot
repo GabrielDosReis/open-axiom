@@ -213,19 +213,7 @@ MATBORCH == '"*"
 
 _*TALLPAR := false
 
-$collectOutput := nil
-
-$algebraOutputStream :=
-  DEFIOSTREAM([["DEVICE", :"CONSOLE"], ["MODE", :"OUTPUT"]], 255, 0)
-
-ERROROUTSTREAM :=
-  DEFIOSTREAM([["DEVICE", :"CONSOLE"], ["MODE", :"OUTPUT"]], 80, 0)
-
-ERRORINSTREAM := 
-  DEFIOSTREAM([["DEVICE", :"CONSOLE"], ["MODE", :"INPUT"], 
-    ["QUAL", :"T"]], 133, 1)
-
-
+$collectOutput := false
 
 specialChar(symbol) ==
   -- looks up symbol in $specialCharacterAlist, gets the index

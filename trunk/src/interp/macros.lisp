@@ -418,8 +418,6 @@
         (progn (BRIGHTPRINT-0 X) (TERPRI) (force-output))
       (progn (BRIGHTPRINT X) (TERPRI) (force-output))))
  
-(defvar |$algebraOutputStream| *standard-output*)
- 
 (defun |saySpadMsg| (X)
   (if (NULL X) NIL (sayBrightly1 X |$algebraOutputStream|)))
  

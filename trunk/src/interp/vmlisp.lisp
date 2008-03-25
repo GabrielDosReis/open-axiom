@@ -31,7 +31,7 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-(IMPORT-MODULE "boot-pkg")
+(IMPORT-MODULE "types")
 
 ;      VM LISP EMULATION PACKAGE
 ;      Lars Ericson, Barry Trager, Martial Schor, tim daly, LVMCL, et al
@@ -551,12 +551,6 @@
 (defmacro zero? (x) `(zerop ,x))
 
 ;; defuns
-
-(eval-when 
- #+:common-lisp (:compile-toplevel :load-toplevel :execute)
- #-:common-lisp (compile load eval)
- (defun define-function (f v)
-   (setf (symbol-function f) v)))
 
 (define-function 'tempus-fugit #'get-internal-run-time)
 
@@ -1867,10 +1861,12 @@
 
 #+(or :SBCL :clisp)
 (defun BPINAME (x)
-  (multiple-value-bind (l c n)
-   (function-lambda-expression x)
-   (declare (ignore l c))
-   n))
+  (if (symbolp x)
+      x
+    (multiple-value-bind (l c n)
+      (function-lambda-expression x)
+      (declare (ignore l c))
+      n)))
 
 (defun LISTOFQUOTES (bpi)
  (declare (ignore bpi))

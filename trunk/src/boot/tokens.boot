@@ -227,6 +227,7 @@ for i in [ _
                          ]
  
        repeat SETF (GET(CAR i,'SHOETHETA),CDR i)
+
 for i in [ _
   ["and",          "AND"]  , _
   ["append",    "APPEND"]  , _

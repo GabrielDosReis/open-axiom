@@ -130,12 +130,6 @@
 (defun /EF (&rest foo)
   (obey (concat "vi " (namestring (make-input-filename /EDITFILE)))))
 
-(setq |$algebraOutputStream|
-   (setq |$fortranOutputStream|
-      (setq |$texOutputStream|
-          (setq |$formulaOutputStream|
-             (setq |conOutStream|'*standard-output*)))))
-
 ;; non-interactive restarts...
 (defun restart0 ()
   (compressopen);; set up the compression tables

@@ -152,7 +152,7 @@ UnionEqual(x, y, dom) ==
   predlist := mkPredList branches
   same := false
   for b in stripUnionTags branches for p in predlist while not same repeat
-    typeFun := eval ["LAMBDA", '(_#1), p]
+    typeFun := COERCE(["LAMBDA", '(_#1), p],"FUNCTION")
     FUNCALL(typeFun,x) and FUNCALL(typeFun,y) =>
       STRINGP b => same := (x = y)
       if p is ["EQCAR", :.] then (x := rest x; y := rest y)
@@ -167,7 +167,7 @@ coerceUn2E(x,source) ==
   predlist := mkPredList branches
   byGeorge := byJane := GENSYM()
   for b in stripUnionTags branches for p in predlist  repeat
-    typeFun := eval ["LAMBDA", '(_#1), p]
+    typeFun := COERCE(["LAMBDA", '(_#1), p],"FUNCTION")
     if FUNCALL(typeFun,x) then return
       if p is ["EQCAR", :.] then x := rest x
 --    STRINGP b => return x  -- to catch "failed" etc.

@@ -64,7 +64,7 @@ serverReadLine(stream) ==
       $NeedToSignalSessionManager := true
       return l
     action = $CreateFrame =>
-      frameName := GENTEMP('"frame")
+      frameName := GENSYM('"frame")
       addNewInterpreterFrame(frameName)
       $frameAlist := [[$frameNumber,:frameName], :$frameAlist]
       $currentFrameNum := $frameNumber
@@ -136,7 +136,7 @@ serverLoop() ==
       FINISH_-OUTPUT()
       sockSendInt($SessionManager, $EndOfOutput)
     action = $CreateFrame =>
-      frameName := GENTEMP('"frame")
+      frameName := GENSYM('"frame")
       addNewInterpreterFrame(frameName)
       $frameAlist := [[$frameNumber,:frameName], :$frameAlist]
       $currentFrameNum := $frameNumber

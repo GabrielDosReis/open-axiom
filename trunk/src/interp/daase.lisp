@@ -1462,10 +1462,10 @@
 ;;     (if sourcefile
 ;;       (set (foam::axiomxl-file-init-name (pathname-name sourcefile))
 ;;             NOPfuncall))))
- (set (foam::axiomxl-file-init-name "axiom") NOPfuncall)
+ (setf (symbol-value (foam::axiomxl-file-init-name "axiom")) NOPfuncall)
 ;; (set (foam::axiomxl-file-init-name "axclique") NOPfuncall)
- (set (foam::axiomxl-file-init-name "filecliq") NOPfuncall)
- (set (foam::axiomxl-file-init-name "attrib") NOPfuncall)
+ (setf (symbol-value (foam::axiomxl-file-init-name "filecliq")) NOPfuncall)
+ (setf (symbol-value (foam::axiomxl-file-init-name "attrib")) NOPfuncall)
 ;; following needs to happen inside restart since $AXIOM may change
  (let ((asharprootlib (strconc (|systemRootDirectory|) "/aldor/lib/")))
    (set-file-getter (strconc asharprootlib "runtime"))
@@ -1622,7 +1622,7 @@
 
 #+:CCL
 (defun asharpMkAutoLoadFunction (file asharpname)
- (set asharpname
+ (setf (symbol-value asharpname)
   (cons
    `(lambda (&rest l)
      (let ((args (butlast l))
@@ -1632,7 +1632,7 @@
 
 #-:CCL
 (defun asharpMkAutoLoadFunction (file asharpname)
-  (set asharpname
+  (setf (symbol-value asharpname)
    (cons
     #'(lambda (&rest l)
         (let ((args (butlast l))
@@ -1650,7 +1650,7 @@
 
 (defun set-file-getter (filename)
   (let ((getter-name (file-getter-name filename)))
-    (set getter-name
+    (setf (symbol-value getter-name)
          (cons #'init-file-getter  (cons getter-name filename)))))
 
 (defun init-file-getter (env)
@@ -1664,7 +1664,7 @@
 
 (defun set-lib-file-getter (filename cname)
   (let ((getter-name (file-getter-name filename)))
-    (set getter-name
+    (setf (symbol-value getter-name)
          (cons #'init-lib-file-getter  (cons getter-name cname)))))
 
 (defun init-lib-file-getter (env)
@@ -1689,12 +1689,13 @@
         (error (format nil "AxiomXL file ~s is missing!" stringname)))
     (unless (or (not (numberp hcode)) (zerop hcode) (boundp asharpname))
           (when (|constructor?| bootname)
-                (set asharpname
+                (setf (symbol-value asharpname)
                      (if (getdatabase bootname 'niladic)
                          (|makeLazyOldAxiomDispatchDomain| (list bootname))
                        (cons '|runOldAxiomFunctor|  bootname))))
           (when (|attribute?| bootname)
-                (set asharpname (|makeLazyOldAxiomDispatchDomain| bootname))))))
+                (setf (symbol-value asharpname)
+		      (|makeLazyOldAxiomDispatchDomain| bootname))))))
           
                  
 

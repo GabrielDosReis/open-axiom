@@ -44,6 +44,13 @@
 		"loadSystemRuntimeCore"))
 
 (in-package "BOOT")
+  
+(eval-when 
+ #+:common-lisp (:compile-toplevel :load-toplevel :execute)
+ #-:common-lisp (compile load eval)
+ (defun define-function (f v)
+   (setf (symbol-function f) v)))
+ 
 
 ;; Below are some missing functions.  There here for lack of better
 ;; place (sys-funs.lisp?)
