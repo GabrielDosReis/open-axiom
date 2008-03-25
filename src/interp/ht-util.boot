@@ -400,7 +400,7 @@ htBcLispLinks links ==
 beforeAfter(x,u) == [[y for [y,:r] in tails u while x ^= y],r]
 
 mkCurryFun(fun, val) ==
-  name := GENTEMP()
+  name := GENSYM()
   code :=
     ['DEFUN, name, '(arg), ['APPLY, MKQ fun, ['CONS, 'arg, MKQ val]]]
   EVAL code
@@ -409,7 +409,7 @@ mkCurryFun(fun, val) ==
 htRadioButtons [groupName, :buttons] ==
   htpSetRadioButtonAlist($curPage, [[groupName, :buttonNames buttons],
                                     : htpRadioButtonAlist $curPage])
-  boxesName := GENTEMP()
+  boxesName := GENSYM()
   iht ['"\newline\indent{5}\radioboxes{", boxesName,
      '"}{\htbmfile{pick}}{\htbmfile{unpick}}\beginitems "]
   defaultValue := '"1"
@@ -427,7 +427,7 @@ htRadioButtons [groupName, :buttons] ==
 htBcRadioButtons [groupName, :buttons] ==
   htpSetRadioButtonAlist($curPage, [[groupName, :buttonNames buttons],
                                     : htpRadioButtonAlist $curPage])
-  boxesName := GENTEMP()
+  boxesName := GENSYM()
   iht ['"\radioboxes{", boxesName,
      '"}{\htbmfile{pick}}{\htbmfile{unpick}} "]
   defaultValue := '"1"

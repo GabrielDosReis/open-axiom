@@ -40,6 +40,7 @@
 
 import '"sys-constants"
 import '"sys-globals"
+import '"vmlisp"
 )package "BOOT"
 
 

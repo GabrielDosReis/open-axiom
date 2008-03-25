@@ -1,5 +1,35 @@
 2008-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (DEFINE-FUNCTION): Move boot-pkg.lisp.
+	(BPINAME): Tidy.
+	* interp/slam.boot (reportFunctionCompilation): Tidy.
+	* interp/daase.lisp: Don't use anachronistic SET.
+	* interp/debug.lisp: Likewise.
+	* interp/br-saturn.boot: Substitute GENSYM for GENTEMP.
+	* interp/fortcall.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/server.boot: Likewise.
+	* interp/buildom.boot (UnionEqual): Tidy.
+	(coerceUn2E): Likewise.
+	* interp/boot-pkg.lisp (define-function): Define here.
+	* interp/Makefile.pamphlet (diagnostics.$(FASLEXT)): Tidy.
+	(hash.$(FASLEXT)): Likewise.
+	(vmlisp.$(FASLEXT)): Likewise.
+	* interp/diagnostics.boot: Import "types".
+	* interp/hash.lisp: Import "types" instead of "vmlisp".
+	* interp/i-output.boot ($algebraOutput): Move to sys-globals.boot.
+	(ERROROUTSTREAM): Likewise.
+	(ERRORINSTREAM): Likewise.
+	* interp/macros.lisp ($algebraOutputStream): Don't set here.
+	* interp/patches.lisp ($algebraOutputStream): Don't set here.
+	($texOutputStream): Likewise.
+	($fortranOutputStream): Likewise.
+	($texOutputStream): Likewise.
+	($formulaOutputStream): Likewise.
+
+2008-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Add support for SBCL and CLisp.
 	* src/share/algebra: Updata databases.
 	* lisp/core.lisp.in ("AxiomCore"): Export CONCAT.

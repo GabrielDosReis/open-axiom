@@ -357,9 +357,6 @@ $libraryDirectory := "A"
 $listingDirectory := "A"
 
 ++
-$texOutputStream := MAKE_-SYNONYM_-STREAM '_*STANDARD_-OUTPUT_*
-
-++
 $UserLevel := "development"
 
 ++
@@ -457,3 +454,31 @@ $m := nil
 ++ ???
 _/SOURCEFILES := []
 _/SPACELIST := []
+
+--%
+
+$algebraOutputStream :=
+  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
+ERROROUTSTREAM :=
+  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
+
+ERRORINSTREAM := 
+  MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"
+
+++
+$texOutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
+$fortranOutputStream :=
+  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
+$formulaOutputStream :=
+  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
+conOutStream := 
+  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
+
+
+

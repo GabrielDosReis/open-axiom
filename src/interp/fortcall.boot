@@ -318,7 +318,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
            [["$elt","Lisp","construct"],:mkQuote results],resPar]
   if asps then
     -- Make a unique(ish) id for asp files
-    aspId := STRCONC(getEnv('"SPADNUM"), GENTEMP('"NAG"))
+    aspId := STRCONC(getEnv('"SPADNUM"), GENSYM('"NAG"))
     body := ["SEQ",:makeAspGenerators(asps,aspTypes,aspId),_
              makeCompilation(asps,file,aspId),_
              ["pretend",call,fType] ]
@@ -670,9 +670,9 @@ readData(tmpFile,results) ==
   results
 
 generateDataName()==STRCONC($fortranTmpDir,getEnv('"HOST"),
-    getEnv('"SPADNUM"), GENTEMP('"NAG"),'"data")
+    getEnv('"SPADNUM"), GENSYM('"NAG"),'"data")
 generateResultsName()==STRCONC($fortranTmpDir,getEnv('"HOST"),
-    getEnv('"SPADNUM"), GENTEMP('"NAG"),'"results")
+    getEnv('"SPADNUM"), GENSYM('"NAG"),'"results")
 
 
 fortCall(objFile,data,results) ==

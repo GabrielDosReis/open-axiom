@@ -631,7 +631,7 @@ htInitPageNoHeading(propList) ==
 
 --------------------> NEW DEFINITION <--------------------------
 htpMakeEmptyPage(propList,:options) ==
-  name := IFCAR options or  GENTEMP()
+  name := IFCAR options or  GENSYM()
   if not $saturn then
     $activePageList := [name, :$activePageList]
   setDynamicBinding(name, val := VECTOR(name, nil, nil, nil, nil, nil, propList, nil))

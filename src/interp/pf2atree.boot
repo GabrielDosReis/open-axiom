@@ -547,7 +547,7 @@ pfCollect2Atree pf ==
 --
 
 --  pfSuchThat2Atree args ==
---    name := GENTEMP()
+--    name := GENSYM()
 --    argList := pf0TupleParts args
 --    lhsSex := pf2Atree1 CAR argList
 --    rhsSex := pf2Atree CADR argList

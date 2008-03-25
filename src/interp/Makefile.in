@@ -719,8 +719,8 @@ sys-macros.$(FASLEXT): sys-macros.lisp diagnostics.$(FASLEXT) \
 			union.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-diagnostics.$(FASLEXT): diagnostics.boot sys-constants.$(FASLEXT) \
-				sys-globals.$(FASLEXT)
+diagnostics.$(FASLEXT): diagnostics.boot sys-globals.$(FASLEXT) \
+				vmlisp.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 sys-driver.$(FASLEXT): sys-driver.boot types.$(FASLEXT)
@@ -733,7 +733,7 @@ sys-globals.$(FASLEXT): sys-globals.boot sys-constants.$(FASLEXT) \
 sys-constants.$(FASLEXT): sys-constants.boot types.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-hash.$(FASLEXT): hash.lisp vmlisp.$(FASLEXT)
+hash.$(FASLEXT): hash.lisp types.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 union.$(FASLEXT): union.lisp vmlisp.$(FASLEXT)
@@ -751,7 +751,7 @@ foam_l.$(FASLEXT): foam_l.lisp vmlisp.$(FASLEXT)
 sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-vmlisp.$(FASLEXT): vmlisp.lisp boot-pkg.$(FASLEXT)
+vmlisp.$(FASLEXT): vmlisp.lisp types.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 sys-os.$(FASLEXT): sys-os.boot types.$(FASLEXT) \
