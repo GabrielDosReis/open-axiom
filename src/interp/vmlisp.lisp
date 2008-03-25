@@ -32,6 +32,7 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (IMPORT-MODULE "types")
+(import-module "sys-globals")
 
 ;      VM LISP EMULATION PACKAGE
 ;      Lars Ericson, Barry Trager, Martial Schor, tim daly, LVMCL, et al
@@ -52,15 +53,7 @@
 
 (defvar *comp370-apply* nil "function (name def) for comp370 to apply")
 
-(defvar curinstream (make-synonym-stream '*standard-input*))
-
-(defvar curoutstream (make-synonym-stream '*standard-output*))
-
 (defvar *embedded-functions* nil)
-
-(defvar errorinstream (make-synonym-stream '*query-io*))
-
-(defvar erroroutstream (make-synonym-stream '*query-io*))
 
 (defvar *fileactq-apply* nil "function to apply in fileactq")
 
@@ -760,7 +753,15 @@
            (system:fp-output-stream *terminal-io*))))
 
 #-(OR Lucid KCL :CCL)
-(defun IS-CONSOLE (stream) (EQ stream *terminal-io*))
+(defun IS-CONSOLE (stream)
+  (cond ((not (streamp stream))
+	 nil)
+	((not (typep stream 'synonym-stream))
+	 nil)
+	((eq (synonym-stream-symbol stream) '*standard-input*)
+	 (|stdStreamIsTerminal| 0))
+	((eq (synonym-stream-symbol stream) '*standard-output*)
+	 (|stdStreamIsTerminal| 1))))
 
 ; 10.0 Control Structures
 
@@ -1504,19 +1505,19 @@
 (define-function 'printexp #'princ)
 (define-function 'prin0  #'prin1)
 
-(defun |F,PRINT-ONE| (form &optional (stream *standard-output*))
+(defun |F,PRINT-ONE| (form &optional (stream |$OutputStream|))
  (declare (ignore stream))
     (let ((*print-level* 4) (*print-length* 4))
        (prin1 form) (terpri)))
 
-(defun prettyprint (x &optional (stream *standard-output*))
+(defun prettyprint (x &optional (stream |$OutputStream|))
   (prettyprin0 x stream) (terpri stream))
 
-(defun prettyprin0 (x &optional (stream *standard-output*))
+(defun prettyprin0 (x &optional (stream |$OutputStream|))
   (let ((*print-pretty* t) (*print-array* t))
     (prin1 x stream)))
 
-(defun vmprint (x &optional (stream *standard-output*))
+(defun vmprint (x &optional (stream |$OutputStream|))
   (prin1 x stream) (terpri stream))
 
 (defun tab (sint &optional (stream t))
@@ -1555,7 +1556,10 @@
    (let ((mode (or (cdr (assoc 'MODE stream-alist)) 'INPUT))
          (filename (cdr (assoc 'FILE stream-alist)))
          (dev (cdr (assoc 'DEVICE stream-alist))))
-      (if (EQ dev 'CONSOLE) (make-synonym-stream '*terminal-io*)
+      (if (EQ dev 'CONSOLE)
+	  (case mode
+		((OUTPUT O) (make-synonym-stream '*standard-output*))
+		((INPUT I) (make-synonym-stream '*standard-input*)))
         (let ((strm (case mode
                           ((OUTPUT O) (open (make-filename filename)
                                             :direction :output))
@@ -1785,7 +1789,7 @@
 (define-function 'EVA1FUN #'EVALFUN)
 
 (defun PLACEP (item) (eq item *read-place-holder*))
-(defun VMREAD (&optional (st *standard-input*) (eofval *read-place-holder*))
+(defun VMREAD (&optional (st |$InputStream|) (eofval *read-place-holder*))
   (read st nil eofval))
 (defun |read-line| (st &optional (eofval *read-place-holder*))
   (read-line st nil eofval))

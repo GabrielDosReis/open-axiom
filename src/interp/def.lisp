@@ -1,6 +1,6 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -107,7 +107,7 @@ foo defined inside of fum gets renamed as fum,foo.")
                               (car (setq Y (cdr Y)))
                               (car (setq Y (cdr Y)))
                               (CONS 'WHERE (cons (car (setq Y (cdr Y))) (cddr X)))))))
-        ((IS-CONSOLE *STANDARD-OUTPUT*)
+        ((IS-CONSOLE |$OutputStream|)
          (SAY "  VALUE = " (EVAL (DEFTRAN X))))
         ((print-full (DEFTRAN X)))))
 

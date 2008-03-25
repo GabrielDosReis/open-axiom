@@ -290,7 +290,7 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
   outfile:= _/MKINFILENAM _/GETOPTION(options,'TO_=)
   res:= [compConLib1(fn,infile,outfile,op,editFlag,traceFlag)
                for fn in funList]
-  SHUT INPUTSTREAM
+  SHUT $InputStream
   res
  
 compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==

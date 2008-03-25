@@ -43,6 +43,7 @@
 ;               4. BOOT Token Parsing Actions
 ;               5. BOOT Error Handling
 
+(import-module "sys-globals")
 (IMPORT-MODULE "preparse")
 (IMPORT-MODULE "def")
 (IMPORT-MODULE "nlib")
@@ -67,12 +68,12 @@
   `(progn
      (setq spaderrorstream t)
      (in-boot)
-     (initialize-preparse *terminal-io*)
+     (initialize-preparse |$InputStream|)
      (,(intern (strconc "PARSE-" x)) . ,y)))
 
 (defun print-defun (name body)
    (let* ((sp (assoc 'compiler-output-stream optionlist))
-          (st (if sp (cdr sp) *standard-output*)))
+          (st (if sp (cdr sp) |$OutputStream|)))
      (if (and (is-console st) (symbolp name) (fboundp name)
               (not (compiled-function-p (symbol-function name))))
          (compile name))
@@ -118,14 +119,12 @@
   (with-open-stream
     (in-stream (if *boot-input-file* 
 		   (open *boot-input-file* :direction :input)
-		 *standard-input*))
+		 |$InputStream|))
     (initialize-preparse in-stream)
     (with-open-stream
       (out-stream (if *boot-output-file*
                       (open *boot-output-file* :direction :output)
-                      #-:cmulisp (make-broadcast-stream *standard-output*)
-                      #+:cmulisp *standard-output*
-                      ))
+		    (make-broadcast-stream |$OutputStream|)))
       (when *boot-output-file*
          (format out-stream "~&;;; -*- Mode:Lisp; Package:Boot  -*-~%~%")
          (print-package "BOOT"))
@@ -136,7 +135,7 @@
                        (let ((parseout (pop-stack-1)) )
                          (setq parseout (|new2OldLisp| parseout))
                          (setq parseout (DEF-RENAME parseout))
-                         (let ((*standard-output* out-stream))
+                         (let ((|$OutputStream| out-stream))
                            (DEF-PROCESS parseout))
                          (format out-stream "~&")
                          (if (null parseout) (ioclear)) ))
@@ -180,15 +179,15 @@
     (progn
       (setq in-stream (if *spad-input-file*
                          (open *spad-input-file* :direction :input)
-                         *standard-input*))
+			|$InputStream|))
       (initialize-preparse in-stream)
       (setq out-stream (if *spad-output-file*
                            (open *spad-output-file* :direction :output)
-                         *standard-output*))
+                         |$OutputStream|))
       (when *spad-output-file*
          (format out-stream "~&;;; -*- Mode:Lisp; Package:Boot  -*-~%~%")
          (print-package "BOOT"))
-      (setq curoutstream out-stream)
+      (setq |$OutputStream| out-stream)
       (loop
        (if (or *eof* file-closed) (return nil))
        (catch 'SPAD_READER
@@ -198,7 +197,7 @@
                (|PARSE-NewExpr|)
                (let ((parseout (pop-stack-1)) )
                  (when parseout
-                       (let ((*standard-output* out-stream))
+                       (let ((|$OutputStream| out-stream))
                          (S-PROCESS parseout))
                        (format out-stream "~&")))
                ;(IOClear in-stream out-stream)

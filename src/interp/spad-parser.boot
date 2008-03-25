@@ -1,4 +1,4 @@
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -13,7 +13,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -58,7 +58,7 @@ parseSpadFile sourceFile ==
   SETQ(_*EOF_*, false)                   -- end of current input?
   FILE_-CLOSED : local := false          -- current stream closed?
 
-  OUT_-STREAM : local := _*STANDARD_-OUTPUT_*    -- noise to standard output
+  $OutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"    -- noise to standard output
   -- we need tell the post-parsing transformers that we're compiling
   -- because few parse forms have slightly different representations
   -- depending on whether we are interpreter mode or compiler mode.

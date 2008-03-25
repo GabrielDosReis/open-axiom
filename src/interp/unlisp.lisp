@@ -94,7 +94,7 @@
   (format *query-io* "~a" line)
   (when readfn (apply readfn (list *query-io*))) )
 
-(defun |PrettyPrint| (expr &optional (outstream *standard-output*))
+(defun |PrettyPrint| (expr &optional (outstream |$OutputStream|))
   (write expr :stream outstream :level nil :length nil :pretty 't :escape 't) 
   (finish-output outstream) )
 

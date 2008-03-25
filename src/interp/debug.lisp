@@ -1,4 +1,4 @@
-;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; Copyright (C) 2007-2008, Gabriel Dos Reis.
 ;; All rights reserved.
@@ -15,7 +15,7 @@
 ;;       the documentation and/or other materials provided with the
 ;;       distribution.
 ;;
-;;     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+;;     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 ;;       names of its contributors may be used to endorse or promote products
 ;;       derived from this software without specific prior written permission.
 ;;
@@ -114,7 +114,7 @@
           (SETQ INFILE (/MKINFILENAM (/GETOPTION OPTIONS 'FROM)))
           (SETQ TO (/GETOPTION OPTIONS 'TO))
           (if TO (SETQ TO (/MKOUTFILENAM (/GETOPTION OPTIONS 'TO) INFILE)))
-          (SETQ OUTSTREAM (if TO (DEFSTREAM TO 'OUTPUT) CUROUTSTREAM))
+          (SETQ OUTSTREAM (if TO (DEFSTREAM TO 'OUTPUT) |$OutputStream|))
           (RETURN (mapcar #'(lambda (fn)
                               (/D-2 FN INFILE OUTSTREAM OP EFLG TFLG))
                           (or fnl (list /fn)))))))
@@ -200,7 +200,7 @@
               (STRINGIMAGE $LINENUMBER)))
           (SHUT INPUTSTREAM)
           ;(COND
-          ;  ( (EQ (READ ERRORINSTREAM) 'ABORTPROCESS)
+          ;  ( (EQ (READ |$InputStream|) 'ABORTPROCESS)
           ;    (RETURN 'ABORT) ) )
           ;;%% next is done in case the diskmode changed
           ;;(SETQ INFILE (|pathname| (IFCAR
@@ -313,14 +313,14 @@
         (SETQ FT (UPCASE (|object2Identifier| (|pathnameType| INFILE))))
         (SETQ KEYLENGTH (STRINGLENGTH KEY))
         (WHEN (> INITRECNO 1)  ;; we think we know where it is
-              (POINT INITRECNO INPUTSTREAM)
-              (SETQ LN (READ-LINE INPUTSTREAM NIL NIL))
+              (POINT INITRECNO |$InputStream|)
+              (SETQ LN (READ-LINE |$InputStream| NIL NIL))
               (IF (AND LN (MATCH-FUNCTION-DEF FN KEY KEYLENGTH LN FT))
                   (RETURN INITRECNO)))
         (SETQ $LINENUMBER 0)
-        (POINT 0 INPUTSTREAM)
-EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
-        (SETQ LN (READ-LINE INPUTSTREAM NIL NIL))
+        (POINT 0 |$InputStream|)
+EXAMINE (SETQ RECNO (NOTE |$InputStream|))
+        (SETQ LN (READ-LINE |$InputStream| NIL NIL))
         (INCF $LINENUMBER)
         (if (NULL LN) (RETURN NIL))
         (IF (MATCH-FUNCTION-DEF FN KEY KEYLENGTH LN FT)
@@ -386,7 +386,7 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
    (if (member (cons fun file) funfiles :test #'equal) (go loop))
    (push (cons fun file) funfiles)
    (COND ((EQUAL FUN 'QUAD) (/RF-1 FILE))
-         ((/D-2 FUN FILE CUROUTSTREAM OP NIL NIL)))
+         ((/D-2 FUN FILE |$OutputStream| OP NIL NIL)))
    (GO LOOP)))
  
 (DEFUN /WRITEUPDATE (FUN FN FT FM FTYPE OP)
@@ -881,8 +881,8 @@ EXAMINE (SETQ RECNO (NOTE INPUTSTREAM))
                      (if (ATOM A) (LIST A) A))))
  
 (defun /TRACELET-PRINT (X Y &AUX (/PRETTY 'T))
-  (PRINC (STRCONC (PNAME X) ": ") *terminal-io*)
-  (MONITOR-PRINT Y *terminal-io*))
+  (PRINC (STRCONC (PNAME X) ": ") |$OutputStream|)
+  (MONITOR-PRINT Y |$OutputStream|))
  
 (defmacro /UNTRACELET (&rest L) `',
   (COND

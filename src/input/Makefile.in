@@ -744,7 +744,7 @@ all-check: ${OUTS}
 	echo ')set message test on' > tmp.input; \
 	echo ')set message auto off' >> tmp.input ; \
 	echo ')read $*' >> tmp.input ; \
-	echo ')lisp (|coreQuit|)' >> tmp.input ; \
+	echo ')boot coreQuit()' >> tmp.input ; \
 	echo 'systemCommand "read tmp.input"' | ${TESTSYS} | tee $*.output; \
 	rm tmp.input )
 
