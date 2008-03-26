@@ -62,22 +62,23 @@ subdir = src/lib/
 all: all-ax
 
 all-ax all-lib: stamp
-stamp: $(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT) \
-	$(axiom_target_libdir)/libspad.la
+stamp: $(axiom_target_libdir)/libopen-axiom-core$(SHREXT) \
+	libopen-axiom-core.$(LIBEXT) libspad.la
 	rm -f stamp
 	$(STAMP) stamp
 
-$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT): \
+$(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
 	$(libopen_axiom_core_la_objects)
 	$(mkinstalldirs) $(axiom_target_libdir)
-	$(LIBTOOL) --mode=link $(CC) -shared -o $@ \
-		$(libopen_axiom_core_la_objects) @axiom_c_runtime_extra@ \
-		-rpath "$(libdir)"/axiom/target/$(target)/lib
+	$(LIBTOOL) --mode=link $(CC) -shared -module -o $@ \
+		$(libopen_axiom_core_la_objects) @axiom_c_runtime_extra@ -lm
 
-$(axiom_target_libdir)/libspad.la: $(libspad_la_objects)
-	$(mkinstalldirs) $(axiom_target_libdir)
-	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_la_objects) \
-		-rpath "$(libdir)"/axiom/target/$(target)/lib
+libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_la_objects)
+	$(LIBTOOL) --mode=link $(CC) -static -o $@ \
+		$(libopen_axiom_core_la_objects) @axiom_c_runtime_extra@ -lm
+
+libspad.la: $(libspad_la_objects)
+	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_la_objects)
 
 .PRECIOUS: %.$(OBJEXT) %.lo
 
@@ -92,9 +93,9 @@ mostlyclean-local:
 	@rm -f *.lo *.$(OBJEXT)
 
 clean-local: mostlyclean-local
-	@$(LIBTOOL) --mode=clean $(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
-	@$(LIBTOOL) --mode=clean $(axiom_target_libdir)/libspad.la
-	@rm -f $(other_objects)
+	@$(LIBTOOL) --mode=clean $(axiom_target_libdir)/libopen-axiom-core$(SHREXT)
+	@$(LIBTOOL) --mode=clean libopen-axiom-core$(LIBEXT)
+	@$(LIBTOOL) --mode=clean libspad.la
 	@rm -fr .libs _libs
 	@rm -f stamp
 

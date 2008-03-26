@@ -1,3 +1,10 @@
+2008-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (shrext_cmds): Autconf-substitute.
+	(libext): Likewise.
+	* config/var-def.mk (SHREXT): Rename from DLLEXT.
+	(LIBEXT): New.
+
 2008-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Add native types translation table for

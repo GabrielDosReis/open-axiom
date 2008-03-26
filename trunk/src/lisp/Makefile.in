@@ -131,6 +131,7 @@ edit = sed \
 	-e 's|@host[@]|$(host)|g' \
 	-e 's|@build[@]|$(build)|g' \
 	-e 's|@target[@]|$(target)|g' \
+	-e 's|@SHREXT[@]|$(SHREXT)|g' \
 	-e 's|@void_type[@]|$(void_type)|g' \
 	-e 's|@char_type[@]|$(char_type)|g' \
 	-e 's|@int_type[@]|$(int_type)|g' \

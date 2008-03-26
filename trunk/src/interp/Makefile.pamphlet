@@ -76,7 +76,7 @@ itself to bootstrap the system).  This image is assumed to
 have been built (on the build platform) by a previous step in the
 make process.
 <<environment>>=
-BOOTSYS= $(axiom_build_bindir)/bootsys -- --syslib=$(axiom_target_libdir)
+BOOTSYS= $(axiom_target_bindir)/bootsys -- --syslib=$(axiom_target_libdir)
 
 @
 

@@ -14,8 +14,12 @@ AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 # Tell Libtool to assume `dlopen' so that it does not have to
 # emulate it.
 AC_LIBTOOL_DLOPEN
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
+# Give me extension of libraries
+AC_SUBST(shrext_cmds)
+AC_SUBST(libext)
 
 axiom_optimize_options=speed
 ## Shall we proclaim safety?

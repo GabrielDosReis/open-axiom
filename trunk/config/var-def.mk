@@ -55,8 +55,10 @@ CC = @CC@
 CFLAGS = @CFLAGS@
 OBJEXT = @OBJEXT@
 EXEEXT = @EXEEXT@
-DLLEXT = $(if $(findstring mingw, $(target)),dll,so)
-
+# this includes leading period
+SHREXT = @shrext_cmds@
+# this does not include period
+LIBEXT = @libext@
 
 PACKAGE_STRING = @PACKAGE_STRING@
 
@@ -68,8 +70,8 @@ COMPILE = $(LIBTOOL) --mode=compile $(CC) -c
 
 ## Sadly, at the moment, the C parts of the OpenAxiom system is not
 ## well structured enough to allow for clean dynamic libraries
-## and dynamic linking.  So, we build static libraries and programs.
-## This situation is to be fixed soon.
+## and dynamic linking.  So, we build static programs.
+## This situation is to be fixed when I have time.
 LINK = $(LIBTOOL) --mode=link $(CC) -static
 
 

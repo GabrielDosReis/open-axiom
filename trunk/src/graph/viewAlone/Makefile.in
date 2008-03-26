@@ -36,7 +36,7 @@ LINC=	$(axiom_src_srcdir)/graph/include
 # global include files shared by everyone
 GINC=	$(axiom_src_srcdir)/include
 
-build_libdir = $(abs_top_builddir)/src/lib
+build_libdir = $(top_builddir)/src/lib
 
 bin_PROGRAMS = viewAlone$(EXEEXT)
 
@@ -44,8 +44,8 @@ viewAlone_SOURCES = viewAlone.c spoonComp.c spoon2D.c
 
 viewAlone_objects = $(viewAlone_SOURCES:.c=.lo)
 
-viewAlone_LDADD = $(axiom_target_libdir)/libspad.la \
-		$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
+viewAlone_LDADD = $(build_libdir)/libspad.la \
+		-L$(build_libdir) -lopen-axiom-core
 viewAlone_DEPENDENCIES =
 
 subdir = src/graph/viewAlone/

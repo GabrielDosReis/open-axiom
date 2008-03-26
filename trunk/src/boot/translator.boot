@@ -835,5 +835,5 @@ $OpenAxiomCoreModuleLoaded := false
 loadSystemRuntimeCore() ==
   $OpenAxiomCoreModuleLoaded => nil
   loadNativeModule strconc(systemLibraryDirectory(),
-    '"libopen-axiom-core.so")
+    '"libopen-axiom-core",$NativeModuleExt)
   $OpenAxiomCoreModuleLoaded := true

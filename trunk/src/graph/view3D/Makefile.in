@@ -41,7 +41,7 @@ GINC=	$(axiom_src_srcdir)/include
 # bitmaps for cursors
 BIT=	$(axiom_src_srcdir)/graph/include/purty
 
-build_libdir = $(abs_top_builddir)/src/lib
+build_libdir = $(top_builddir)/src/lib
 
 bin_PROGRAMS = view3D$(EXEEXT)
 
@@ -57,8 +57,8 @@ view3D_objects = $(addprefix $(builddir)/, $(view3D_SOURCES:.c=.lo))
 Gfun_objects = ../Gdraws/Gfun.lo
 
 
-view3D_LDADD = $(axiom_target_libdir)/libspad.la \
-		$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
+view3D_LDADD = $(build_libdir)/libspad.la \
+		-L$(build_libdir) -lopen-axiom-core
 view3D_DEPENDENCIES = $(Gfun_objects)
 
 subdir = src/graph/view3D/
