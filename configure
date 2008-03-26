@@ -21070,7 +21070,7 @@ echo $ECHO_N "checking compiled Lisp file extension... $ECHO_C" >&6; }
     ## replacement of <newline> by <space>.
     axiom_save_IFS=$IFS
     IFS=' '
-    axiom_fasl_type=`$axiom_lisp $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp #+:ecl :type #+:ecl :object"))) (quit))'`
+    axiom_fasl_type=`$axiom_lisp $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp" #+:ecl :type #+:ecl :object))) (quit))'`
 
     ## Now pull out the fasl type.  ECL has the habit of spitting noise
     ## about internal loading.  Therefore, we must look only for a line that
