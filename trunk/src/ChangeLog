@@ -1,3 +1,8 @@
+2008-03-26 Gregory Vanuxem  <g.vanuxem@wanadoo.fr>
+	   Alfredo Portes   <doyenatccny@gmail.com>
+
+	* src/graph/view2D/Makefile.in: Add $(EXEEXT) to view2D.
+
 2008-03-26 Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	   Alfredo Portes  <doyenatccny@gmail.com>
 
