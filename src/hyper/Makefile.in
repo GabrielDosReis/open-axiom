@@ -59,7 +59,7 @@ HEADERS = display.h event.h extent.h \
 	titlebar.h token.h $(axiom_c_macros_h)
 
 
-build_libdir = $(abs_top_builddir)/src/lib
+build_libdir = $(top_builddir)/src/lib
 
 hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
 		extent2.c form-ext.c group.c halloc.c hash.c hterror.c \
@@ -68,31 +68,30 @@ hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
 		parse-paste.c parse-types.c ReadBitmap.c scrollbar.c \
 		show-types.c spadint.c titlebar.c
 
-libspad_la = $(axiom_target_libdir)/libspad.la \
-		$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
+libspad_la = $(build_libdir)/libspad.la
 
 hypertex_objects = $(hypertex_SOURCES:.c=.lo)
-hypertex_LDADD = $(libspad_la)
+hypertex_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 hypertex_DEPENDENCIES =
 
 htadd_SOURCES = addfile.c halloc.c hash.c htadd.c hterror.c lex.c
 htadd_objects = $(htadd_SOURCES:.c=.lo)
-htadd_LDADD = $(libspad_la)
+htadd_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 htadd_DEPENDENCIES =
 
 spadbuf_SOURCES = spadbuf.c
 spadbuf_objects = $(spadbuf_SOURCES:.c=.lo)
-spadbuf_LDADD = $(libspad_la)
+spadbuf_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 spadbuf_DEPENDENCIES =
 
 hthits_SOURCES = hthits.c
 hthits_objects = $(hthits_SOURCES:.c=.lo)
-hthits_LDADD = $(libspad_la)
+hthits_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 hthits_DEPENDENCIES =
 
 ex2ht_SOURCES = ex2ht.c
 ex2ht_objects = $(ex2ht_SOURCES:.c=.lo)
-ex2ht_LDADD = $(libspad_la)
+ex2ht_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 ex2ht_DEPENDENCIES =
 
 subdir = src/hyper/

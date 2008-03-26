@@ -71,6 +71,7 @@
 	   "$targetPlatform"
 
 	   "$faslType"
+	   "$NativeModuleExt"
 	   "$systemInstallationDirectory"
 	   "$NativeTypeTable"
 
@@ -132,6 +133,10 @@
 ;; Extenstion of FASL files.
 (defconstant |$faslType|
   (pathname-type (compile-file-pathname "foo.lisp")))
+
+;; Extension of file containers for native shared libraries.
+(defconstant |$NativeModuleExt|
+  "@SHREXT@")
 
 ;; 
 ;; -*- OpenAxiom source file extensions -*-

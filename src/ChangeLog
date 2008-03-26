@@ -1,3 +1,20 @@
+2008-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/Makefile.in: Explicitly build both static and shared version
+	of libopen-axiom-core.
+	* lisp/Makefile.in: Tidy.
+	* lisp/core.lisp.in: Export $NativeModuleExt.
+	* clef/Makefile.in: Use only static archive.
+	* graph/view2D/Makefile.in: Likewise.
+	* graph/view3D/Makefile.in: Likewise.
+	* graph/viewAlone/Makefile.in: Likewise.
+	* graph/viewman/Makefile.in: Likewise.
+	* hyper/Makefile.in: Likewise.
+	* sman/Makefile.in: Likewise.
+	* boot/Makefile.in: Place bootsys binary in staged starget directory.
+	* boot/translator.boot (loadSystemRuntimeCore): Tidy.
+	* interp/Makefile.pamphlet: Use bootsys from staged target dir.
+
 2008-03-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/bootlex.lisp: Import "sys-globals".  

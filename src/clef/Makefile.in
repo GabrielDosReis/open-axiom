@@ -39,8 +39,9 @@ clef_SOURCES = edible.c
 
 clef_objects = $(clef_SOURCES:.c=.lo)
 
-clef_LDADD = $(axiom_target_libdir)/libspad.la \
-	$(axiom_target_libdir)/libopen-axiom-core.$(DLLEXT)
+build_libdir = $(top_builddir)/src/lib
+
+clef_LDADD = $(build_libdir)/libspad.la -L$(build_libdir) -lopen-axiom-core
 
 clef_DEPENDENCIES =
 
