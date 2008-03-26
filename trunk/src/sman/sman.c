@@ -256,7 +256,15 @@ sman_catch_signals(void)
   bsdSignal(SIGHUP,  death_handler,RestartSystemCalls);
   bsdSignal(SIGILL,  death_handler,RestartSystemCalls);
   bsdSignal(SIGTRAP, death_handler,RestartSystemCalls);
+
+#ifdef SIGABRT
+  bsdSignal(SIGABRT, death_handler,RestartSystemCalls);
+#else
+ #ifdef SIGIOT
   bsdSignal(SIGIOT,  death_handler,RestartSystemCalls);
+ #endif
+#endif
+
   bsdSignal(SIGBUS,  death_handler,RestartSystemCalls);
   bsdSignal(SIGSEGV, death_handler,RestartSystemCalls);
 
