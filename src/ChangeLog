@@ -1,3 +1,8 @@
+2008-03-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/Makefile.in: Fix DLL build on Cygwin.
+	* lisp/Makefile.in: Adjust.
+
 2008-03-26 Gregory Vanuxem  <g.vanuxem@wanadoo.fr>
 	   Alfredo Portes   <doyenatccny@gmail.com>
 
