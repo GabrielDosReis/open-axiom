@@ -48,7 +48,7 @@ view2D_objects = $(view2D_SOURCES:.c=.lo)
 
 Gfun_objects = ../Gdraws/Gfun.lo
 
-view2D_LDADD = $(build_libdir)/libspad.la -L$(build_libdir) -lopen-axiom-core
+view2D_LDADD = -L$(build_libdir) -lspad -lopen-axiom-core
 
 view2D_DEPENDENCIES = $(Gfun_objects)
 
