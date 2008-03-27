@@ -51,7 +51,7 @@ unused_SOURCES = emupty.c
 
 libopen_axiom_core_SOURCES = $(core_SOURCES)
 libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.$(OBJEXT))
-libspad_objects = $(libspad_SOURCES:.c=.$(OBJEXT))
+libspad_objects = $(libspad_SOURCES:.c=.lo)
 
 subdir = src/lib/
 
@@ -70,19 +70,20 @@ stamp: $(axiom_target_libdir)/libopen-axiom-core$(SHREXT) \
 $(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
 	$(libopen_axiom_core_objects)
 	$(mkinstalldirs) $(axiom_target_libdir)
-	$(CC) -shared -o $@ $(libopen_axiom_core_objects) \
+	$(CC) -shared --export-all-symbols -o \
+		$@ $(libopen_axiom_core_objects) \
 		@axiom_c_runtime_extra@ -lm
 
-libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_objects)
-	$(LIBTOOL) --mode=link $(CC) -static -o $@ \
-		$(libopen_axiom_core_objects) @axiom_c_runtime_extra@ -lm
+libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
+	$(LIBTOOL) --mode=link $(CC) -o $@ \
+		$(libopen_axiom_core_SOURCES:.c=.lo)
 
 libspad.$(LIBEXT): $(libspad_objects)
 	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_objects)
 
 .PRECIOUS: %.$(OBJEXT)
 
-%.$(OBJEXT): %.c $(axiom_c_macros_h)
+%.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
 	$(COMPILE) -prefer-pic -o $@ $(CCF) -DOPENAXIOM_BUILD_DLL \
 		$(axiom_includes) $(AXIOM_X11_CFLAGS) $<
 

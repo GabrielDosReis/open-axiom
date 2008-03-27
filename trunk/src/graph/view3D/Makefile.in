@@ -57,8 +57,7 @@ view3D_objects = $(addprefix $(builddir)/, $(view3D_SOURCES:.c=.lo))
 Gfun_objects = ../Gdraws/Gfun.lo
 
 
-view3D_LDADD = $(build_libdir)/libspad.la \
-		-L$(build_libdir) -lopen-axiom-core
+view3D_LDADD = -L$(build_libdir) -lspad -lopen-axiom-core
 view3D_DEPENDENCIES = $(Gfun_objects)
 
 subdir = src/graph/view3D/
