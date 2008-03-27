@@ -43,59 +43,59 @@ graphics_SOURCES = \
 		XShade.c \
 		XSpadFill.c
 
-libspad_la_SOURCES = $(foreach comp, \
+libspad_SOURCES = $(foreach comp, \
 			 $(addsuffix _SOURCES, @axiom_c_runtime@), \
 			 $($(comp)))
 
 unused_SOURCES = emupty.c
 
-libopen_axiom_core_la_SOURCES = $(core_SOURCES)
-libopen_axiom_core_la_objects = $(libopen_axiom_core_la_SOURCES:.c=.lo)
-libspad_la_objects = $(libspad_la_SOURCES:.c=.lo)
+libopen_axiom_core_SOURCES = $(core_SOURCES)
+libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.$(OBJEXT))
+libspad_objects = $(libspad_SOURCES:.c=.$(OBJEXT))
 
 subdir = src/lib/
 
 .PHONY: all all-lib
 .SUFFIXES:
-.SUFFIXES: .o .lo .obj .c .h
+.SUFFIXES: .o .lib .obj .c .h
 
 all: all-ax
 
 all-ax all-lib: stamp
 stamp: $(axiom_target_libdir)/libopen-axiom-core$(SHREXT) \
-	libopen-axiom-core.$(LIBEXT) libspad.la
+	libopen-axiom-core.$(LIBEXT) libspad.$(LIBEXT)
 	rm -f stamp
 	$(STAMP) stamp
 
 $(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
-	$(libopen_axiom_core_la_objects)
+	$(libopen_axiom_core_objects)
 	$(mkinstalldirs) $(axiom_target_libdir)
-	$(LIBTOOL) --mode=link $(CC) -shared -module -o $@ \
-		$(libopen_axiom_core_la_objects) @axiom_c_runtime_extra@ -lm
+	$(CC) -shared -o $@ $(libopen_axiom_core_objects) \
+		@axiom_c_runtime_extra@ -lm
 
-libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_la_objects)
+libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_objects)
 	$(LIBTOOL) --mode=link $(CC) -static -o $@ \
-		$(libopen_axiom_core_la_objects) @axiom_c_runtime_extra@ -lm
+		$(libopen_axiom_core_objects) @axiom_c_runtime_extra@ -lm
 
-libspad.la: $(libspad_la_objects)
-	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_la_objects)
+libspad.$(LIBEXT): $(libspad_objects)
+	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_objects)
 
-.PRECIOUS: %.$(OBJEXT) %.lo
+.PRECIOUS: %.$(OBJEXT)
 
-%.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) -o $@ $(CCF) -DOPENAXIOM_BUILD_DLL \
+%.$(OBJEXT): %.c $(axiom_c_macros_h)
+	$(COMPILE) -prefer-pic -o $@ $(CCF) -DOPENAXIOM_BUILD_DLL \
 		$(axiom_includes) $(AXIOM_X11_CFLAGS) $<
 
 # This is a support library, so it does not change often and
 # we don't need to remove the produced objects in mostlyclean.
 # The remoal is done by clean.
 mostlyclean-local:
-	@rm -f *.lo *.$(OBJEXT)
+	@rm -f *.$(OBJEXT)
 
 clean-local: mostlyclean-local
-	@$(LIBTOOL) --mode=clean $(axiom_target_libdir)/libopen-axiom-core$(SHREXT)
-	@$(LIBTOOL) --mode=clean libopen-axiom-core$(LIBEXT)
-	@$(LIBTOOL) --mode=clean libspad.la
+	@rm -f $(axiom_target_libdir)/libopen-axiom-core$(SHREXT)
+	@rm -f libopen-axiom-core$(LIBEXT)
+	@rm -f libspad.$(LIBEXT)
 	@rm -fr .libs _libs
 	@rm -f stamp
 
