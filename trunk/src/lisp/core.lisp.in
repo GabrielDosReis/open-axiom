@@ -479,7 +479,7 @@
 (defun |handleRequest| (prog-name request options args)
   (let ((driver (|getDriver| request)))
     (when (null driver) 
-      (|fatalError| (format nil "invalid option ~S" request)))
+      (|fatalError| (format nil "invalid option `--~a'" (string request))))
     (funcall driver prog-name options args)))
   
 (defun |hasHandler?| (request)
