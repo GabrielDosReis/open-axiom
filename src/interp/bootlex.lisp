@@ -55,7 +55,7 @@
 
 (defun init-boot/spad-reader ()
   (setq $SPAD_ERRORS (VECTOR 0 0 0))
-  (setq SPADERRORSTREAM *standard-output*)
+  (setq SPADERRORSTREAM |$OutputStream|)
   (setq XTokenReader 'get-BOOT-token)
   (setq Line-Handler 'next-BOOT-line)
   (setq Meta_Error_Handler 'spad_syntax_error)

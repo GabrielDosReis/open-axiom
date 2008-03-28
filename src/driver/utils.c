@@ -14,7 +14,7 @@
          the documentation and/or other materials provided with the
          distribution.
 
-       - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+       - Neither the name of The Numerical Algorithms Group Ltd. nor the
          names of its contributors may be used to endorse or promote products
          derived from this software without specific prior written permission.
 
@@ -139,6 +139,15 @@ openaxiom_build_rts_options(openaxiom_command* command,
          command->rt_argv[1] = "-eval";
          command->rt_argv[2] = "(" OPENAXIOM_LISP_CORE_ENTRY_POINT ")";
          break;
+
+      case openaxiom_sbcl_runtime:
+         command->rt_argc = 3;
+         command->rt_argv = (char **)
+            malloc(command->rt_argc * sizeof (char*));
+         command->rt_argv[0] = "--noprint";
+         command->rt_argv[1] = "--noinform";
+         command->rt_argv[2] = "--end-runtime-options";
+         break;
          
       default:
          abort();
@@ -175,6 +184,11 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
          driver = openaxiom_script_driver;
       else if(strcmp(argv[i], "--compile") == 0)
          driver = openaxiom_compiler_driver;
+      else if(strcmp(argv[i], "--no-server") == 0)
+         driver = openaxiom_core_driver;
+      else if (strcmp(argv[i], "--server") == 0)
+         driver = openaxiom_sman_driver;
+   
 
    openaxiom_build_rts_options(command, driver);
    return driver;

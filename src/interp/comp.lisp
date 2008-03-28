@@ -86,12 +86,15 @@
 (defun |compQuietly| (fn)
   (let ((*comp370-apply*
          (if |$InteractiveMode|
-             (if |$compileDontDefineFunctions| #'compile-defun #'eval-defun)
+             (if |$compileDontDefineFunctions|
+		 #'compile-defun
+	       #'eval-defun)
            #'print-defun))
      ;; following creates a null outputstream if $InteractiveMode
         (|$OutputStream|
-         (if |$InteractiveMode| (make-broadcast-stream)
-           *standard-output*)))
+         (if |$InteractiveMode|
+	     (make-broadcast-stream)
+           (make-synonym-stream *standard-output*))))
     (COMP fn)))
 
 #-:CCL
@@ -100,7 +103,7 @@
      ;; following creates a null outputstream if $InteractiveMode
         (|$OutputStream|
          (if |$InteractiveMode| (make-broadcast-stream)
-           *standard-output*)))
+           (make-synonym-stream *standard-output*))))
     (COMPILE-FILE fn)))
 
 #+:CCL
@@ -154,12 +157,15 @@
 (defun |compileQuietly| (fn)
   (let ((*comp370-apply*
          (if |$InteractiveMode|
-             (if |$compileDontDefineFunctions| #'compile-defun #'eval-defun)
+             (if |$compileDontDefineFunctions| 
+		 #'compile-defun
+	       #'eval-defun)
            #'print-defun))
-     ;; following creates a null outputstream if $InteractiveMode
+	;; following creates a null outputstream if $InteractiveMode
         (|$OutputStream|
-         (if |$InteractiveMode| (make-broadcast-stream)
-           *standard-output*)))
+         (if |$InteractiveMode| 
+	     (make-broadcast-stream)
+           (make-synonym-stream *standard-output*))))
     (COMP370 fn)))
 
 (defun COMP-1 (X)

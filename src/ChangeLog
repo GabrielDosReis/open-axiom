@@ -1,5 +1,15 @@
 2008-03-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/int-top.boot (intloopReadConsole): Use $InputStream.
+	* interp/bootlex.lisp (init-boot/spad-reader): Use $OutputStream.
+	* interp/comp.lisp (|compQuietly|): Likewise.
+	(|compileFileQuietly|): Likewise.
+	(|compileQuietly|): Likewise.
+	* interp/unlisp.lisp (|Prompt|): Likewise.
+	* interp/server.boot (serverReadLine): Indent while body.
+
+2008-03-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/Makefile.in: Fix DLL build on Cygwin.
 	* lisp/Makefile.in: Adjust.
 

@@ -145,7 +145,7 @@ SpadInterpretStream(str, source, interactive?) ==
     -----------------------------------------------------------------
 
 intloopReadConsole(b, n)==
-    a:= serverReadLine(_*STANDARD_-INPUT_*)
+    a:= serverReadLine $InputStream
     not STRINGP a => leaveScratchpad()
     #a=0 =>
              PRINC(MKPROMPT())

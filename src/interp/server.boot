@@ -55,50 +55,50 @@ serverReadLine(stream) ==
   _*EOF_*: fluid := NIL
   line :=
    while not $EndServerSession and not _*EOF_* repeat
-    if $NeedToSignalSessionManager then
-      sockSendInt($SessionManager, $EndOfOutput)
-    $NeedToSignalSessionManager := false
-    action := serverSwitch()
-    action = $CallInterp =>
-      l := read_-line(stream)
-      $NeedToSignalSessionManager := true
-      return l
-    action = $CreateFrame =>
-      frameName := GENSYM('"frame")
-      addNewInterpreterFrame(frameName)
-      $frameAlist := [[$frameNumber,:frameName], :$frameAlist]
-      $currentFrameNum := $frameNumber
-      sockSendInt($SessionManager, $frameNumber)
-      $frameNumber := $frameNumber + 1
-      sockSendString($SessionManager, MKPROMPT())
-    action = $SwitchFrames =>
-      $currentFrameNum := sockGetInt($SessionManager)
-      currentFrame := LASSOC($currentFrameNum, $frameAlist)
-      changeToNamedInterpreterFrame currentFrame
-    action = $EndSession =>
-      $EndServerSession := true
-    action = $LispCommand =>
-      $NeedToSignalSessionManager := true
-      stringBuf := MAKE_-STRING $sockBufferLength
-      sockGetString($MenuServer, stringBuf, $sockBufferLength)
-      form := unescapeStringsInForm READ_-FROM_-STRING stringBuf
-      protectedEVAL form
-    action = $QuietSpadCommand =>
-      $NeedToSignalSessionManager := true
-      executeQuietCommand()
-    action = $SpadCommand =>
-      $NeedToSignalSessionManager := true
-      stringBuf := MAKE_-STRING 512
-      sockGetString($MenuServer, stringBuf, 512)
-      CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
-        parseAndInterpret stringBuf)))
-      PRINC MKPROMPT()
-      FINISH_-OUTPUT()
-    action = $NonSmanSession =>
-      $SpadServer := nil
-    action = $KillLispSystem => 
-      coreQuit() -- ??? should be coreQuit errorCount()
-    NIL
+     if $NeedToSignalSessionManager then
+       sockSendInt($SessionManager, $EndOfOutput)
+     $NeedToSignalSessionManager := false
+     action := serverSwitch()
+     action = $CallInterp =>
+       l := read_-line(stream)
+       $NeedToSignalSessionManager := true
+       return l
+     action = $CreateFrame =>
+       frameName := GENSYM('"frame")
+       addNewInterpreterFrame(frameName)
+       $frameAlist := [[$frameNumber,:frameName], :$frameAlist]
+       $currentFrameNum := $frameNumber
+       sockSendInt($SessionManager, $frameNumber)
+       $frameNumber := $frameNumber + 1
+       sockSendString($SessionManager, MKPROMPT())
+     action = $SwitchFrames =>
+       $currentFrameNum := sockGetInt($SessionManager)
+       currentFrame := LASSOC($currentFrameNum, $frameAlist)
+       changeToNamedInterpreterFrame currentFrame
+     action = $EndSession =>
+       $EndServerSession := true
+     action = $LispCommand =>
+       $NeedToSignalSessionManager := true
+       stringBuf := MAKE_-STRING $sockBufferLength
+       sockGetString($MenuServer, stringBuf, $sockBufferLength)
+       form := unescapeStringsInForm READ_-FROM_-STRING stringBuf
+       protectedEVAL form
+     action = $QuietSpadCommand =>
+       $NeedToSignalSessionManager := true
+       executeQuietCommand()
+     action = $SpadCommand =>
+       $NeedToSignalSessionManager := true
+       stringBuf := MAKE_-STRING 512
+       sockGetString($MenuServer, stringBuf, 512)
+       CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
+	 parseAndInterpret stringBuf)))
+       PRINC MKPROMPT()
+       FINISH_-OUTPUT()
+     action = $NonSmanSession =>
+       $SpadServer := nil
+     action = $KillLispSystem => 
+       coreQuit()
+     nil
   line => line
   ""
 

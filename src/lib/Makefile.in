@@ -32,7 +32,9 @@
 
 
 core_SOURCES = bsdsignal.c cfuns-c.c sockio-c.c
+
 terminal_io_SOURCES = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
+
 graphics_SOURCES = \
 		halloc.c \
 		hash.c \
