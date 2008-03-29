@@ -94,7 +94,7 @@
         (|$OutputStream|
          (if |$InteractiveMode|
 	     (make-broadcast-stream)
-           (make-synonym-stream *standard-output*))))
+           (make-synonym-stream '*standard-output*))))
     (COMP fn)))
 
 #-:CCL
@@ -103,7 +103,7 @@
      ;; following creates a null outputstream if $InteractiveMode
         (|$OutputStream|
          (if |$InteractiveMode| (make-broadcast-stream)
-           (make-synonym-stream *standard-output*))))
+           (make-synonym-stream '*standard-output*))))
     (COMPILE-FILE fn)))
 
 #+:CCL
@@ -165,7 +165,7 @@
         (|$OutputStream|
          (if |$InteractiveMode| 
 	     (make-broadcast-stream)
-           (make-synonym-stream *standard-output*))))
+           (make-synonym-stream '*standard-output*))))
     (COMP370 fn)))
 
 (defun COMP-1 (X)
