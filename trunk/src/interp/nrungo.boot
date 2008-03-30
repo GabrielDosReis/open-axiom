@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -55,7 +55,9 @@ compiledLookup(op,sig,dollar) ==
 
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
 basicLookup(op,sig,domain,dollar) ==
-  domain.1 is ['lookupInDomain,:.] => lookupInDomainVector(op,sig,domain,dollar)
+  item := domain.1
+  CONSP item and first item in '(lookupInDomain lookupInTable) => 
+    lookupInDomainVector(op,sig,domain,dollar)
   ----------new world code follows------------
   u := lookupInDomainAndDefaults(op,sig,domain,dollar,false) => u
   lookupInDomainAndDefaults(op,sig,domain,dollar,true)
@@ -183,7 +185,7 @@ lookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := addFormDomain.index =>
     INTEGERP KAR addFormCell =>
       or/[lookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
-    if null VECP addFormCell then addFormCell := eval addFormCell
+    if not VECP addFormCell then addFormCell := eval addFormCell
     lookupInDomainVector(op,sig,addFormCell,dollar)
   nil
 
@@ -208,19 +210,16 @@ lookupInDomainAndDefaults(op,sig,domain,dollar,useDefaults) ==
 --=======================================================
 lookupInCategories(op,sig,dom,dollar) ==
   catformList := dom.4.0
-  varList := ['$,:$FormalMapVariableList]
-  valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
-  valueList := [MKQ val for val in valueList]
+  varList := ["$",:$FormalMapVariableList]
   nsig := MSUBST(dom.0,dollar.0,sig)
+  -- the following lines don't need to check for predicates because
+  -- this code (the old runtime scheme) is used only for
+  -- builtin constructors -- their predicates are always true.
   r := or/[lookupInDomainVector(op,nsig,
-                   eval EQSUBSTLIST(valueList,varList,catform),dollar)
-        for catform in catformList | pred] where pred() ==
-   (table := HGET($Slot1DataBase,first catform)) and
-      (u := LASSQ(op,table))  --compare without checking predicates
-         and (v := or/[rest x for x in u | #sig = #x.0])
-        -- following lines commented out because compareSig needs domain
-        -- and (v := or/[rest x for x in u |
-        --             compareSig(sig,x.0,dollar.0, catform)])
+              eval EQSUBSTLIST(valueList,varList,catform),dollar)
+        for catform in catformList | not null catform] where
+           valueList() ==
+              [MKQ dom,:[MKQ dom.(5+i) for i in 1..(#rest catform)]]
   r or lookupDisplay(op,sig,'"category defaults",'"-- not found")
 
 --=======================================================

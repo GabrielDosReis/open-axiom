@@ -113,7 +113,7 @@ NRTreplaceAllLocalReferences(form) ==
 NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
   --converts a domain form to a lazy domain form; everything other than 
   --the operation name should be assigned a slot
-  null firstTime and (k:= NRTassocIndex x) => k
+  not firstTime and (k:= NRTassocIndex x) => k
   VECP x => systemErrorHere '"NRTencode"
   PAIRP x =>
     QCAR x='Record or x is ['Union,['_:,a,b],:.] =>
