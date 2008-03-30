@@ -1,5 +1,10 @@
 2008-03-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-intern.boot (mkAtree3): Don't apply syntactic
+	transformation on `~=' expressions.
+
+2008-03-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot: Cache constructor instantiations.
 	* interp/clam.boot (haddProp): Update comment.
 
