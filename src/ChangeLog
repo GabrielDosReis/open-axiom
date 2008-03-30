@@ -1,3 +1,14 @@
+2008-03-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/1849435.
+	* interp/buildom.boot: Rewrite builtin domains to work with old
+	runtime scheme.
+	* interp/nruncomp.boot (NRTencode): Tidy.
+	* interp/nrungo.boot (basicLookup): lookupInTable is part of the
+	old runtime scheme too.
+	(lookupInDomain): Tidy.
+	(lookupInCategories): Simplify.
+
 2008-03-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/comp.lisp: Fix thinko.
