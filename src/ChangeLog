@@ -1,3 +1,8 @@
+2008-03-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot: Cache constructor instantiations.
+	* interp/clam.boot (haddProp): Update comment.
+
 2008-03-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/1849435.
