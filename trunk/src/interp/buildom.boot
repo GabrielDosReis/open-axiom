@@ -81,11 +81,17 @@ oldSlotCode: %Short -> %Short
 oldSlotCode n ==
   2 * ($FirstParamSlot + n)
 
+
 Record0 args ==
+  srcArgs := [[":",first a, devaluate rest a] for a in args]
+  -- if we already have this instantiation in store, just hand it back.
+  t := lassocShiftWithFunction(srcArgs,
+         HGET($ConstructorCache,"Record"), "domainEqualList") =>
+    CDRwithIncrement t
   nargs := #args
   dom := newShell(nargs + 10)
   -- JHD added an extra slot to cache EQUAL methods
-  dom.0 := ["Record", :[[":", first a, devaluate rest a] for a in args]]
+  dom.0 := ["Record", :srcArgs]
   dom.1 :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
@@ -103,6 +109,8 @@ Record0 args ==
   dom.($FirstParamSlot + nargs + 3) := if nargs <= 2
 	    then [NIL,:NIL]
 	    else newShell nargs
+  -- remember this instantiation for future re-use.
+  haddProp($ConstructorCache,"Record",srcArgs,[1,:dom])
   dom
 
 RecordEqual(x,y,dom) ==
@@ -151,10 +159,13 @@ coerceRe2E(x,source) ==
 --  Want to eventually have the coerce to and from branch types.
 
 Union(:args) ==
+  srcArgs := [(a is [":",tag,d] => [":",tag,devaluate d]; devaluate a)
+                 for a in args]
+  t := lassocShiftWithFunction(srcArgs,HGET($ConstructorCache,"Union"),
+          "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell (nargs + 9)
-  dom.0 := ["Union", :[(if a is [":",tag,domval] then [":",tag,devaluate domval]
-			else devaluate a) for a in args]]
+  dom.0 := ["Union", :srcArgs]
   dom.1 :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
@@ -168,6 +179,7 @@ Union(:args) ==
   dom.($FirstParamSlot + nargs) := [function UnionEqual, :dom]
   dom.($FirstParamSlot + nargs + 1) := [function UnionPrint, :dom]
   dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
+  haddProp($ConstructorCache,"Union",srcArgs,[1,:dom])
   dom
 
 UnionEqual(x, y, dom) ==
@@ -205,9 +217,12 @@ coerceUn2E(x,source) ==
 --  Want to eventually have elt: ($, args) -> target
 
 Mapping(:args) ==
+  srcArgs := [devaluate a for a in args]
+  t := lassocShiftWithFunction(srcArgs,HGET($ConstructorCache,"Mapping"),
+          "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell(nargs + 9)
-  dom.0 := ["Mapping", :[devaluate a for a in args]]
+  dom.0 := ["Mapping", :srcArgs]
   dom.1 :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
@@ -221,6 +236,7 @@ Mapping(:args) ==
   dom.($FirstParamSlot + nargs) := [function MappingEqual, :dom]
   dom.($FirstParamSlot + nargs + 1) := [function MappingPrint, :dom]
   dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
+  haddProp($ConstructorCache,"Mapping",srcArgs,[1,:dom])
   dom
 
 MappingEqual(x, y, dom) == EQ(x,y)
@@ -236,7 +252,9 @@ coerceMap2E(x) ==
 --% Enumeration
 
 Enumeration(:"args") ==
-  nargs := #nargs
+  t := lassocShiftWithFunction(args,HGET($ConstructorCache,"Enumeration"),
+          "domainEqualList") => CDRwithIncrement t
+  nargs := #args
   dom := newShell(nargs + 9)
   -- JHD added an extra slot to cache EQUAL methods
   dom.0 := ["Enumeration", :args]
@@ -255,6 +273,7 @@ Enumeration(:"args") ==
   dom.($FirstParamSlot + nargs) := [function EnumEqual, :dom]
   dom.($FirstParamSlot + nargs + 1) := [function createEnum, :dom]
   dom.($FirstParamSlot + nargs + 2) := [function EnumPrint, :dom]
+  haddProp($ConstructorCache,"Enumeration",args,[1,:dom])
   dom
 
 EnumEqual(e1,e2,dom) == 
