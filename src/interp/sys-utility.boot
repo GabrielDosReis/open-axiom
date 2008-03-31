@@ -13,7 +13,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -160,6 +160,13 @@ checkMkdir path ==
 ++ return the pathname to the system module designated by `m'.
 getSystemModulePath m ==
   CONCAT(systemRootDirectory(),'"algebra/",m,'".",$faslType)
+
+++ load module in `path' that supposedly will define the function 
+++ indicated by `name'.
+loadModule: (%String,%Symbol) -> %Thing
+loadModule(path,name) ==
+  FMAKUNBOUND name
+  LOAD path
 
 --% numericis
 log10 x ==

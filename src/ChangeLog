@@ -1,3 +1,11 @@
+2008-03-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (loadModule): New.
+	* interp/daase.lisp (initial-getdatabase): Use it instead of
+	Lisp's LOAD. 
+	* interp/lisplib.boot (loadLib): Likewise.
+	(loadLibNoUpdate): Likewise.
+
 2008-03-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-intern.boot (mkAtree3): Don't apply syntactic

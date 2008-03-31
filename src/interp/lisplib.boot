@@ -157,7 +157,7 @@ loadLib cname ==
   kind := GETDATABASE(cname,'CONSTRUCTORKIND)
   if $printLoadMsgs then
     sayKeyedMsg("S2IL0002",[namestring fullLibName,kind,cname])
-  LOAD(fullLibName)
+  loadModule(fullLibName,cname)
   clearConstructorCache cname
   updateDatabase(cname,cname,systemdir?)
   installConstructor(cname,kind)
@@ -183,7 +183,7 @@ loadLibNoUpdate(cname, libName, fullLibName) ==
   kind := GETDATABASE(cname,'CONSTRUCTORKIND)
   if $printLoadMsgs then
     sayKeyedMsg("S2IL0002",[namestring fullLibName,kind,cname])
-  if CATCH('VERSIONCHECK,LOAD(fullLibName)) = -1
+  if CATCH('VERSIONCHECK,loadModule(fullLibName,cname)) = -1
     then 
       PRINC('"   wrong library version...recompile ")
       PRINC(fullLibName)
