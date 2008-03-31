@@ -412,7 +412,7 @@
     (if (probe-file c)
      (progn
       (put con 'loaded c)
-      (load c)
+      (|loadModule| c con)
       (format t "loaded.~%"))
      (format t "skipped.~%"))))
  (format t "~%")))
