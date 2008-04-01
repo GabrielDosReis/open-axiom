@@ -1,5 +1,17 @@
 2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/nagman.H1: Remove.
+	* include/session.H1: Move content to sman/session.c.  Remove.
+	* sman/session.c: Don't include "session.H1" anymore.
+	* sman/spadclient.c: Don't include "spadclient.H1" anymore.
+	* include/spadclient.H1: Remove.
+	* include/spadbuf.H1: Move content to hyper/spadbuf.c.  Remove.
+	* hyper/spadbuf.c: Don't include "spadbuf.H1" anymore.
+	* hyper/htadd.c: Don't include "htadd.H1" anymore.
+	* include/htadd.H1: Move content to hyper/htadd.c.  Remove.
+
+2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/openpty.c: Remove conditional inclusion of <stropts.h>
 	* hyper/spadbuf.c: Remove conditional inclusion of <bstring.h>
 	* sman/session.c: Likewise.

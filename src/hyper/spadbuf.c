@@ -52,7 +52,6 @@
 #include "edible.h"
 #include "com.h"
 
-#include "spadbuf.H1"
 #include "sockio.h"
 #include "edin.H1"
 #include "wct.H1"
@@ -60,6 +59,10 @@
 #include "cursor.H1"
 #include "fnct_key.H1"
 
+static void spadbuf_inter_handler(int);
+static void spadbuf_function_chars(void);
+static void interp_io(void);
+static void init_parent(void);
 
 
 unsigned char _INTR, _QUIT, _ERASE, _KILL, _EOF, _EOL, _RES1, _RES2;
