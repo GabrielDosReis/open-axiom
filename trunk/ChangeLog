@@ -1,3 +1,8 @@
+2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Automatically detect SBCL or Clisp.
+	check for BFD only if we're building custom GCL.
+
 2008-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet (shrext_cmds): Autconf-substitute.

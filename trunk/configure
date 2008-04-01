@@ -20890,26 +20890,26 @@ fi
 ## We need to build our own GCL if none is avalaible, or the existing
 ## one is too old.
 if test -z $axiom_lisp; then
-    # Extract the first word of "gcl", so it can be a program name with args.
-set dummy gcl; ac_word=$2
+    for ac_prog in gcl sbcl clisp
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_path_AXIOM_LISP+set}" = set; then
+if test "${ac_cv_prog_AXIOM_LISP+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  case $AXIOM_LISP in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_AXIOM_LISP="$AXIOM_LISP" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+  if test -n "$AXIOM_LISP"; then
+  ac_cv_prog_AXIOM_LISP="$AXIOM_LISP" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_path_AXIOM_LISP="$as_dir/$ac_word$ac_exec_ext"
+    ac_cv_prog_AXIOM_LISP="$ac_prog"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -20917,10 +20917,9 @@ done
 done
 IFS=$as_save_IFS
 
-  ;;
-esac
 fi
-AXIOM_LISP=$ac_cv_path_AXIOM_LISP
+fi
+AXIOM_LISP=$ac_cv_prog_AXIOM_LISP
 if test -n "$AXIOM_LISP"; then
   { echo "$as_me:$LINENO: result: $AXIOM_LISP" >&5
 echo "${ECHO_T}$AXIOM_LISP" >&6; }
@@ -20930,10 +20929,13 @@ echo "${ECHO_T}no" >&6; }
 fi
 
 
+  test -n "$AXIOM_LISP" && break
+done
+
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
-    if test -n "$AXIOM_LISP"; then
+    if test x$AXIOM_LISP = xgcl; then
        { echo "$as_me:$LINENO: checking $AXIOM_LISP version" >&5
 echo $ECHO_N "checking $AXIOM_LISP version... $ECHO_C" >&6; }
        v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
@@ -20949,11 +20951,10 @@ echo "$as_me: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM
        esac
     fi
     if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       { { echo "$as_me:$LINENO: error: OpenAxiom requires GCL-2.6.7 or GCL-2.6.8.  Either separately build one, or get the dependency tarball from OpenAxiom download website." >&5
-echo "$as_me: error: OpenAxiom requires GCL-2.6.7 or GCL-2.6.8.  Either separately build one, or get the dependency tarball from OpenAxiom download website." >&2;}
+       { { echo "$as_me:$LINENO: error: OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website." >&5
+echo "$as_me: error: OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website." >&2;}
    { (exit 1); exit 1; }; }
     fi
-
     axiom_lisp=$AXIOM_LISP
 else
     ## Honor use of Lisp image specified on command line
@@ -20993,7 +20994,7 @@ echo "$as_me: error: --with-lisp=$axiom_lisp conflicts with --enable-gcl" >&2;}
    { (exit 1); exit 1; }; }
        ;;
     *)
-       ## As of this writting, the Lisp systems ECL, GCL, and SBCL all
+       ## As of this writting, the Lisp systems ECL, GCL, SBCL, and CLisp all
        ## understands the command line option --help, though they do
        ## behave very differently.  Some of them just print out the
        ## help information and exits.  Others, such as GCL, think they
@@ -21026,7 +21027,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-## The following is a horrible to arrange for GCL to successfully
+## The following is a horrible hack to arrange for GCL to successfully
 ## rebuild symbol tables with "rsym" on Windows platform.  It should
 ## go away as soon as GCL upstream is fixed.
 case $axiom_lisp_flavor,$target in
@@ -21034,6 +21035,7 @@ case $axiom_lisp_flavor,$target in
         axiom_gcl_rsym_hack='d=`echo "(format nil \"~a\" si::*system-directory*)" | $(AXIOM_LISP) | grep "/gcl.*/" | sed -e "s,\",,g"`; cp $$d/rsym$(EXEEXT) .'
         ;;
     *)
+        ## Breath.
         axiom_gcl_rsym_hack=':'
         ;;
 esac
@@ -25003,7 +25005,10 @@ fi
 fi
 
 axiom_host_has_libbfd=
-if test "${ac_cv_header_bfd_h+set}" = set; then
+## Check for these only if we are going to build GCL from source.
+case $axiom_all_prerequisites in
+    *all-gcl*)
+        if test "${ac_cv_header_bfd_h+set}" = set; then
   { echo "$as_me:$LINENO: checking for bfd.h" >&5
 echo $ECHO_N "checking for bfd.h... $ECHO_C" >&6; }
 if test "${ac_cv_header_bfd_h+set}" = set; then
@@ -25159,7 +25164,7 @@ echo "${ECHO_T}$ac_cv_header_bfd_h" >&6; }
 fi
 
 
-{ echo "$as_me:$LINENO: checking for main in -lbfd" >&5
+        { echo "$as_me:$LINENO: checking for main in -lbfd" >&5
 echo $ECHO_N "checking for main in -lbfd... $ECHO_C" >&6; }
 if test "${ac_cv_lib_bfd_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -25236,13 +25241,18 @@ fi
 ac_cv_lib_bfd=ac_cv_lib_bfd_main
 
 
-axiom_gcl_bfd_option=
-if test x"$ac_cv_header_bfd_h" = xyes \
-    && test x"$axiom_host_has_libbfd" = xyes; then
-    axiom_gcl_bfd_option="--disable-dynsysbfd"
-else
-    axiom_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
-fi
+        axiom_gcl_bfd_option=
+        if test x"$ac_cv_header_bfd_h" = xyes \
+            && test x"$axiom_host_has_libbfd" = xyes; then
+            axiom_gcl_bfd_option="--disable-dynsysbfd"
+        else
+            axiom_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
+        fi
+        ;;
+    *)
+        # Nothing to worry about
+        ;;
+esac
 # axiom_gcl_mm_option="--enable-maxpage=256*1024"
 axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
 axiom_gcl_emacs="--enable-emacs=correct"
