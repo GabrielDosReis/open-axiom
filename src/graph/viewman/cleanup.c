@@ -39,9 +39,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-#if !defined(BSDplatform)
-#include <malloc.h>
-#endif
 #include <assert.h>
 #include <signal.h>
 #include <sys/wait.h>

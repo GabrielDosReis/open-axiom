@@ -47,11 +47,6 @@
 #include <signal.h>
 
 
-#if defined (SGIplatform)
-#include <bstring.h>
-#endif
-
-
 #include "axiom-c-macros.h"
 #include "sockio.h"
 #include "edible.h"

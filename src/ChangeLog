@@ -1,3 +1,10 @@
+2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/openpty.c: Remove conditional inclusion of <stropts.h>
+	* hyper/spadbuf.c: Remove conditional inclusion of <bstring.h>
+	* sman/session.c: Likewise.
+	* hyper/halloc.c: Remove conditional inclusion of <malloc.h>
+
 2008-03-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot (loadModule): New.
