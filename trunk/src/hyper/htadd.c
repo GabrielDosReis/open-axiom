@@ -47,13 +47,23 @@
 
 #include "lex.h"
 
-#include "htadd.H1"
 #include "addfile.h"
 #include "halloc.H1"
 #include "hash.H1"
 #include "hterror.H1"
 #include "lex.H1"
 
+
+static void add_file(char*, char*, int);
+static void add_new_pages(FILE*, FILE*, char*, char*);
+static int build_db_filename(short, char*, char*);
+static void copy_file(char*, char*);
+static void delete_db(FILE*, FILE*, char*);
+static int delete_file(char*, char*);
+static void get_filename(void);
+static void parse_args(char**, char*, char**, short*);
+static void update_db(FILE*, FILE*, FILE*, char*, char*, int);
+static int writable(struct stat);
 
 
 

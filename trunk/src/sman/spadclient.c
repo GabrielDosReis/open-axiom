@@ -45,7 +45,6 @@
 #include "bsdsignal.h"
 
 #include "sockio.h"
-#include "spadclient.H1"
 
 Sock *sock;
 

@@ -47,7 +47,20 @@
 #include "com.h"
 #include "bsdsignal.h"
 #include "sockio.h"
-#include "session.H1"
+
+static void usr1_handler(int);
+static void usr2_handler(int);
+static void term_handler(int);
+static void close_client(int);
+static void read_SpadServer_command(void);
+static int test_sock_for_process(Sock*);
+static void read_menu_client_command(void);
+static void read_from_spad_io(void);
+static void kill_spad(void);
+static int accept_session_connection(Sock*);
+static void read_from_session(Sock*);
+static void manage_sessions(void);
+
 
 #define BufSize         4096    /* size of communication buffer */
 
