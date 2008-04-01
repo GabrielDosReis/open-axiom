@@ -470,16 +470,24 @@ use its own copy of \Tool{BFD} accordingly.   FIXME: This must
 be taken care of by \Tool{GCL} itself.
 <<gcl options>>=
 axiom_host_has_libbfd=
-AC_CHECK_HEADER([bfd.h])
-AC_HAVE_LIBRARY([bfd], [axiom_host_has_libbfd=yes])
+## Check for these only if we are going to build GCL from source.
+case $axiom_all_prerequisites in
+    *all-gcl*)
+	AC_CHECK_HEADER([bfd.h])
+	AC_HAVE_LIBRARY([bfd], [axiom_host_has_libbfd=yes])
 
-axiom_gcl_bfd_option=
-if test x"$ac_cv_header_bfd_h" = xyes \
-    && test x"$axiom_host_has_libbfd" = xyes; then
-    axiom_gcl_bfd_option="--disable-dynsysbfd"
-else
-    axiom_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
-fi
+	axiom_gcl_bfd_option=
+	if test x"$ac_cv_header_bfd_h" = xyes \
+	    && test x"$axiom_host_has_libbfd" = xyes; then
+	    axiom_gcl_bfd_option="--disable-dynsysbfd"
+	else
+	    axiom_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
+	fi
+        ;;
+    *)    
+        # Nothing to worry about
+        ;;
+esac
 @
 
 \Tool{GCL} has an elaborate memory management system and 
@@ -788,7 +796,7 @@ fi
 Do we need to build our own version of \Tool{GCL}?  The answer is yes, if
 \begin{itemize}
 \item the option \verb!--with-lisp! is not specified, and
-   no \Tool{GCL} image is available in the build environment; or
+   no Lisp image is available in the build environment; or
 \item we found a \Tool{GCL} image, but it is too old for OpenAxiom.
 \end{itemize}
 Consequently, we need to check for \Tool{GCL} and its version:
@@ -796,11 +804,11 @@ Consequently, we need to check for \Tool{GCL} and its version:
 ## We need to build our own GCL if none is avalaible, or the existing
 ## one is too old.
 if test -z $axiom_lisp; then
-    AC_PATH_PROG([AXIOM_LISP], [gcl])
+    AC_CHECK_PROGS([AXIOM_LISP], [gcl sbcl clisp])
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
-    if test -n "$AXIOM_LISP"; then
+    if test x$AXIOM_LISP = xgcl; then
        AC_MSG_CHECKING([$AXIOM_LISP version])
        v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
        AC_MSG_RESULT([$v])
@@ -813,9 +821,8 @@ if test -z $axiom_lisp; then
        esac
     fi
     if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       AC_MSG_ERROR([OpenAxiom requires GCL-2.6.7 or GCL-2.6.8.  Either separately build one, or get the dependency tarball from OpenAxiom download website.])
+       AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website.])
     fi
-
     axiom_lisp=$AXIOM_LISP
 else
     ## Honor use of Lisp image specified on command line
@@ -857,7 +864,7 @@ case $axiom_include_gcl,$axiom_lisp in
        AC_MSG_ERROR([--with-lisp=$axiom_lisp conflicts with --enable-gcl])
        ;;
     *)
-       ## As of this writting, the Lisp systems ECL, GCL, and SBCL all
+       ## As of this writting, the Lisp systems ECL, GCL, SBCL, and CLisp all
        ## understands the command line option --help, though they do
        ## behave very differently.  Some of them just print out the
        ## help information and exits.  Others, such as GCL, think they
@@ -886,7 +893,7 @@ AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
                    [openaxiom_${axiom_lisp_flavor}_runtime],
                    [The kind of base runtime system for this build.])
 
-## The following is a horrible to arrange for GCL to successfully
+## The following is a horrible hack to arrange for GCL to successfully
 ## rebuild symbol tables with "rsym" on Windows platform.  It should
 ## go away as soon as GCL upstream is fixed.
 case $axiom_lisp_flavor,$target in
@@ -894,6 +901,7 @@ case $axiom_lisp_flavor,$target in
         axiom_gcl_rsym_hack='d=`echo "(format nil \"~a\" si::*system-directory*)" | $(AXIOM_LISP) | grep "/gcl.*/" | sed -e "s,\",,g"`; cp $$d/rsym$(EXEEXT) .'
 	;;
     *) 
+        ## Breath.
         axiom_gcl_rsym_hack=':'
 	;;
 esac
@@ -1133,13 +1141,6 @@ subdirectory.
 AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 @
 
-
-\subsubsection{The [[AXIOM]] variable}
-
-The OpenAxiom source files (especially the source files for the
-interpreter) use the environment variable [[AXIOM]] in a very
-pervasive way.   That variable needs to be set before the
-build start --- or else, it will fail.
 
 \subsubsection{Instantiating configuration files}
 

@@ -170,11 +170,11 @@ fi
 ## We need to build our own GCL if none is avalaible, or the existing
 ## one is too old.
 if test -z $axiom_lisp; then
-    AC_PATH_PROG([AXIOM_LISP], [gcl])
+    AC_CHECK_PROGS([AXIOM_LISP], [gcl sbcl clisp])
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
-    if test -n "$AXIOM_LISP"; then
+    if test x$AXIOM_LISP = xgcl; then
        AC_MSG_CHECKING([$AXIOM_LISP version])
        v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
        AC_MSG_RESULT([$v])
@@ -187,9 +187,8 @@ if test -z $axiom_lisp; then
        esac
     fi
     if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       AC_MSG_ERROR([OpenAxiom requires GCL-2.6.7 or GCL-2.6.8.  Either separately build one, or get the dependency tarball from OpenAxiom download website.])
+       AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website.])
     fi
-
     axiom_lisp=$AXIOM_LISP
 else
     ## Honor use of Lisp image specified on command line
@@ -223,7 +222,7 @@ case $axiom_include_gcl,$axiom_lisp in
        AC_MSG_ERROR([--with-lisp=$axiom_lisp conflicts with --enable-gcl])
        ;;
     *)
-       ## As of this writting, the Lisp systems ECL, GCL, and SBCL all
+       ## As of this writting, the Lisp systems ECL, GCL, SBCL, and CLisp all
        ## understands the command line option --help, though they do
        ## behave very differently.  Some of them just print out the
        ## help information and exits.  Others, such as GCL, think they
@@ -252,7 +251,7 @@ AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
                    [openaxiom_${axiom_lisp_flavor}_runtime],
                    [The kind of base runtime system for this build.])
 
-## The following is a horrible to arrange for GCL to successfully
+## The following is a horrible hack to arrange for GCL to successfully
 ## rebuild symbol tables with "rsym" on Windows platform.  It should
 ## go away as soon as GCL upstream is fixed.
 case $axiom_lisp_flavor,$target in
@@ -260,6 +259,7 @@ case $axiom_lisp_flavor,$target in
         axiom_gcl_rsym_hack='d=`echo "(format nil \"~a\" si::*system-directory*)" | $(AXIOM_LISP) | grep "/gcl.*/" | sed -e "s,\",,g"`; cp $$d/rsym$(EXEEXT) .'
         ;;
     *) 
+        ## Breath.
         axiom_gcl_rsym_hack=':'
         ;;
 esac
@@ -472,16 +472,24 @@ else
 fi
 
 axiom_host_has_libbfd=
-AC_CHECK_HEADER([bfd.h])
-AC_HAVE_LIBRARY([bfd], [axiom_host_has_libbfd=yes])
+## Check for these only if we are going to build GCL from source.
+case $axiom_all_prerequisites in
+    *all-gcl*)
+        AC_CHECK_HEADER([bfd.h])
+        AC_HAVE_LIBRARY([bfd], [axiom_host_has_libbfd=yes])
 
-axiom_gcl_bfd_option=
-if test x"$ac_cv_header_bfd_h" = xyes \
-    && test x"$axiom_host_has_libbfd" = xyes; then
-    axiom_gcl_bfd_option="--disable-dynsysbfd"
-else
-    axiom_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
-fi
+        axiom_gcl_bfd_option=
+        if test x"$ac_cv_header_bfd_h" = xyes \
+            && test x"$axiom_host_has_libbfd" = xyes; then
+            axiom_gcl_bfd_option="--disable-dynsysbfd"
+        else
+            axiom_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
+        fi
+        ;;
+    *)    
+        # Nothing to worry about
+        ;;
+esac
 # axiom_gcl_mm_option="--enable-maxpage=256*1024"
 axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
 axiom_gcl_emacs="--enable-emacs=correct"
