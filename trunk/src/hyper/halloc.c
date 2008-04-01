@@ -39,9 +39,6 @@
 #include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
-#if !defined(BSDplatform)
-#include <malloc.h>
-#endif
 
 FILE *fp;
 

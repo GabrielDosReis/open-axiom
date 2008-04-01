@@ -42,10 +42,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
-#ifdef SGIplatform
-#include <bstring.h>
-#endif
-
 #include "viewman.h"
 #include "mode.h"
 #include "actions.h"

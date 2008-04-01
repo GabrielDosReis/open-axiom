@@ -49,10 +49,6 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-#ifdef SGIplatform
-#include <bstring.h>
-#endif
-
 #include "event.h"
 #include "keyin.h"
 #include "hyper.h"

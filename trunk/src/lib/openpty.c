@@ -38,11 +38,6 @@
 #include <fcntl.h>
 #include <string.h>
 
-#if defined(SUN4OS5platform) || defined(HP10platform)
-#include <stropts.h>
-#endif
-
-
 #include "openpty.H1"
 
 

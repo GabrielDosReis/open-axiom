@@ -47,10 +47,6 @@
 #include <sys/time.h>
 #include <signal.h>
 
-#ifdef SGIplatform
-#include <bstring.h>
-#endif
-
 #include "bsdsignal.h"
 #include "sockio.h"
 #include "edible.h"
