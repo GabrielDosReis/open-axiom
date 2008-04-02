@@ -1,5 +1,15 @@
 2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot (second): Now candidate for renaming in
+	generated Lisp code.
+	(third): Likewise.
+
+2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* input/mapleok.input.pamphlet: Fix typo.
+
+2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix AW/386.
 	* interp/i-spec1.boot (transformCollect): Move to i-intern.boot.
 	(upLoopIters): Don't silently return nil for unknown iterators.
