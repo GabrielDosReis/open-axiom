@@ -1,5 +1,14 @@
 2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix AW/386.
+	* interp/i-spec1.boot (transformCollect): Move to i-intern.boot.
+	(upLoopIters): Don't silently return nil for unknown iterators.
+	* interp/i-intern.boot (transformCollect): Tidy.  Reject invalid
+	iterator forms.
+	* doc/msgs/s2-us.msgs (S2SIS0061): New.
+
+2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/nagman.H1: Remove.
 	* include/session.H1: Move content to sman/session.c.  Remove.
 	* sman/session.c: Don't include "session.H1" anymore.

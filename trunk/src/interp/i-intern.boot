@@ -488,3 +488,31 @@ addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
   e
 
 
+transformCollect [:itrl,body] ==
+  -- syntactic transformation for COLLECT form, called from mkAtree1
+  iterList:=[:iterTran1 for it in itrl] where iterTran1() ==
+    it is ["STEP",index,lower,step,:upperList] =>
+      [["STEP",index,mkAtree1 lower,mkAtree1 step,:[mkAtree1 upper
+        for upper in upperList]]]
+    it is ["IN",index,s] =>
+      [["IN",index,mkAtree1 s]]
+    it is ["ON",index,s] =>
+      [['IN,index,mkAtree1 ['tails,s]]]
+    it is ["WHILE",b] =>
+      [["WHILE",mkAtree1 b]]
+    it is ["|",pred] =>
+      [["SUCHTHAT",mkAtree1 pred]]
+    it is ["UNTIL",:.] => nil
+    throwKeyedMsg("S2IS0061",nil)
+  bodyTree:=mkAtree1 body
+  iterList:=nconc(iterList,[:iterTran2 for it in itrl]) where
+    iterTran2() ==
+      it is ["STEP",:.] => nil
+      it is ["IN",:.] => nil
+      it is ["ON",:.] => nil
+      it is ["WHILE",:.] => nil
+      it is ["UNTIL",b] =>
+        [["UNTIL",mkAtree1 b]]
+      it is ["|",pred] => nil
+  [:iterList,bodyTree]
+
