@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -264,6 +264,7 @@ for i in [ _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
   ["reverse",  "REVERSE"]  , _
+  ["second",      "CADR"] , _
   ["setDifference", "SETDIFFERENCE"]  , _
   ["setIntersection", "INTERSECTION"]  , _
   ["setPart",   "SETELT"]  , _
@@ -271,7 +272,8 @@ for i in [ _
   ["size",        "SIZE"]  , _
   ["strconc",  "CONCAT"]  , _
   ["substitute", "SUBST"]  , _
-  ["take",        "TAKE"]  , _
+  ["take",        "TAKE"]  , 
+  ["third",      "CADDR"] , _
   ["true",           "T"]  , _
   ["PLUS",           "+"]  , _
   ["MINUS",     "-"]  , _
