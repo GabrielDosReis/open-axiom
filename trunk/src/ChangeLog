@@ -1,3 +1,8 @@
+2008-04-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/postpar.boot (postBootNotEqual): New.  Disallow `^=' in
+	Spad codes.
+
 2008-04-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/acplot.spad.pamphlet: Replace `^=' with `~='.

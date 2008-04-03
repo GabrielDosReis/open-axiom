@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -529,6 +529,14 @@ deepestExpression x ==
   x is ["_!",y] => deepestExpression y
   x
 
+--% `^='
+++ check that `^=' is not used in Spad code to mean `not equal'.
+postBootNotEqual u ==
+  $BOOT => [first u, :postTran rest u]
+  checkWarning ['"Operator ", :bright '"^=", 
+   '"is not valid Spad.  Please use",:bright '"~=",'"instead."]
+  ["~=",:postTran rest u]
+
 --% Register special parse tree tranformers.
 
 for x in [["with", :function postWith],_
@@ -538,18 +546,18 @@ for x in [["with", :function postWith],_
 	  ["Block", :function postBlock],_
 	  ["QUOTE", :function postQUOTE],_
 	  ["COLLECT", :function postCollect],_
-	  ["_:BF_:", :function postBigFloat],_
+	  [":BF:", :function postBigFloat],_
 	  ["in", :function postin],_
 	  ["IN", :function postIn],_
 	  ["REPEAT", :function postRepeat],_
 	  ["TupleCollect", :function postTupleCollect],_
 	  ["add", :function postAdd],_
 	  ["Reduce", :function postReduce],_
-	  ["_,", :function postComma],_
-	  ["_;", :function postSemiColon],_
+	  [",", :function postComma],_
+	  [";", :function postSemiColon],_
 	  ["where", :function postWhere],_
-	  ["_:_:", :function postColonColon],_
-	  ["_:", :function postColon],_
+	  ["::", :function postColonColon],_
+	  [":", :function postColon],_
 	  ["@", :function postAtSign],_
 	  ["pretend", :function postPretend],_
 	  ["if", :function postIf],_
@@ -560,6 +568,7 @@ for x in [["with", :function postWith],_
 	  ["==>", :function postMDef],_
 	  ["->", :function postMapping],_
 	  ["=>", :function postExit],_
+          ["^=", :function postBootNotEqual],_
 	  ["Tuple", :function postTuple]] repeat
   MAKEPROP(car x, "postTran", cdr x)
 
