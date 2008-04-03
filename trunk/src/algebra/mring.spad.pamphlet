@@ -109,7 +109,7 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
             for j in 0.. while i > 0 repeat
               h := i rem p
               -- we use index(p) = 0$R
-              if h ^= 0 then
+              if h ~= 0 then
                 c : R := index(h :: PositiveInteger)$R
                 m : M := index((j+n) :: PositiveInteger)$M
                 --ans := ans + c *$% m
@@ -161,7 +161,7 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
            else
             (r:R) * (a:%) ==
               r = 0 => 0
-              [[rt, t.Mn] for t in a | (rt:=r*t.Cf) ^= 0]
+              [[rt, t.Mn] for t in a | (rt:=r*t.Cf) ~= 0]
         if R has noZeroDivisors
            then
             (n:Integer) * (a:%) ==
@@ -170,8 +170,8 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
            else
             (n:Integer) * (a:%) ==
               n = 0 => 0
-              [[nt, t.Mn] for t in a | (nt:=n*t.Cf) ^= 0]
-        map(f, a)           == [[ft, t.Mn] for t in a | (ft:=f(t.Cf)) ^= 0]
+              [[nt, t.Mn] for t in a | (nt:=n*t.Cf) ~= 0]
+        map(f, a)           == [[ft, t.Mn] for t in a | (ft:=f(t.Cf)) ~= 0]
         numberOfMonomials a == #a
 
         retractIfCan(a:%):Union(M, "failed") ==
@@ -188,13 +188,13 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
           if M has Group then
             recip a ==
               lt := terms a
-              #lt ^= 1 => "failed"
+              #lt ~= 1 => "failed"
               (u := recip lt.first.Cf) case "failed" => "failed"
               --(u::R) * inv lt.first.Mn
               monomial((u::R), inv lt.first.Mn)$%
           else
             recip a ==
-              #a ^= 1 or a.first.Mn ^= 1 => "failed"
+              #a ~= 1 or a.first.Mn ~= 1 => "failed"
               (u := recip a.first.Cf) case "failed" => "failed"
               u::R::%
 
@@ -215,9 +215,9 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
             reductum a           == (empty? a => a; rest a)
 
             a = b ==
-                #a ^= #b => false
+                #a ~= #b => false
                 for ta in a for tb in b repeat
-                    ta.Cf ^= tb.Cf or ta.Mn ^= tb.Mn => return false
+                    ta.Cf ~= tb.Cf or ta.Mn ~= tb.Mn => return false
                 true
 
             a + b ==
@@ -298,7 +298,7 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
         else -- M hasn't OrderedSet
             -- Terms are stored in random order.
           a = b ==
-            #a ^= #b => false
+            #a ~= #b => false
             brace(a pretend List(Term)) =$Set(Term) brace(b pretend List(Term))
 
           coefficient(a, m) ==

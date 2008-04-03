@@ -109,7 +109,7 @@ CardinalNumber: Join(OrderedSet, AbelianMonoid, Monoid,
  
         -- Manipulation
         x = y ==
-            x.order ^= y.order => false
+            x.order ~= y.order => false
             finite? x          => x.ival = y.ival
             true     -- equal transfinites
         x < y ==
@@ -135,7 +135,7 @@ CardinalNumber: Join(OrderedSet, AbelianMonoid, Monoid,
             x
         x**y ==
             y = 0 =>
-                x ^= 0 => 1
+                x ~= 0 => 1
                 error "0**0 not defined for cardinal numbers."
             finite? y =>
                 not finite? x => x

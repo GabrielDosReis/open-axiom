@@ -59,7 +59,7 @@ LinearOrdinaryDifferentialOperatorCategory(A:Ring): Category ==
 
         adjoint a ==
           ans:% := 0
-          while a ^= 0 repeat
+          while a ~= 0 repeat
             ans := ans + m1monom(degree a) * leadingCoefficient(a)::%
             a   := reductum a
           ans
@@ -118,7 +118,7 @@ LinearOrdinaryDifferentialOperatorsOps(A, L): Exports == Implementation where
           killer     : (P, N, List V, List P, A -> A) -> L
           vec2LODO   : Vector A -> L
 
-          nonTrivial? v == any?(#1 ^= 0, v)$Vector(A)
+          nonTrivial? v == any?(#1 ~= 0, v)$Vector(A)
           vec2LODO v    == +/[monomial(v.i, (i-1)::N) for i in 1..#v]
 
           symmetricPower(l, m, diff) ==
@@ -164,7 +164,7 @@ LinearOrdinaryDifferentialOperatorsOps(A, L): Exports == Implementation where
 
           applyLODO(l, v) ==
             p:P := 0
-            while l ^= 0 repeat
+            while l ~= 0 repeat
               p := p + monomial(leadingCoefficient(l)::P,
                                   differentiate(v, degree l), 1)
               l := reductum l

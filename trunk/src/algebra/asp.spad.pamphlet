@@ -3279,7 +3279,7 @@ Asp73(name): Exports == Implementation where
       assign(u,(v::EXPR MachineFloat)$FEXPR)$FortranCode
 
     coerce(u:VEC FEXPR):$ ==
-      maxIndex(u) ^= 7 => error "Vector is not of dimension 7"
+      maxIndex(u) ~= 7 => error "Vector is not of dimension 7"
       [localAssign(ALPHA@Symbol,elt(u,1)),_
        localAssign(BETA@Symbol,elt(u,2)),_
        localAssign(GAMMA@Symbol,elt(u,3)),_
@@ -3447,7 +3447,7 @@ Asp74(name): Exports == Implementation where
     localAssign(u:Symbol,v:FEXPR):FC == assign(u,(v::EXPR MFLOAT)$FEXPR)$FC
 
     coerce(u:MAT FEXPR):$ == 
-      (nrows(u) ^= 4 or ncols(u) ^= 3) => error "Not a 4X3 matrix"
+      (nrows(u) ~= 4 or ncols(u) ~= 3) => error "Not a 4X3 matrix"
       flag:U := [IBND@Symbol::EXPR INT]$U
       pt0:U  := [0::EXPR INT]$U
       pt1:U  := [1::EXPR INT]$U
