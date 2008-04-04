@@ -1,5 +1,9 @@
 2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* hyper/hyper.h: Simplify font definitions.
+
+2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* hyper/event.c (mainEventLoop): Fix thinko.
 
 2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
