@@ -1,3 +1,7 @@
+2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/Makefile.in (libopen_axiom_core_objects): Tidy.
+
 2008-04-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/postpar.boot (postBootNotEqual): New.  Disallow `^=' in
