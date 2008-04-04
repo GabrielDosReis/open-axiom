@@ -61,7 +61,6 @@
 
 #ifdef FOR_MSW
 # define SYSV			/* uses memcpy string.h etc. */
-# include <malloc.h>
 # include "simx.h"		/* defines some X stuff using MSW types */
 #define NEED_STRCASECMP		/* at least for MSVC++ */
 #else /* FOR_MSW */
