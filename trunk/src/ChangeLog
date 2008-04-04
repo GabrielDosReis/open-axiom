@@ -1,5 +1,15 @@
 2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/bsdsignal.h: Include <signal.h>.  
+	(OPENAXIOM_SIGCHLD): New macro.
+	* hyper/hyper.c (main): Use OPENAXIOM_SIGCHLD.
+	* graph/viewman/viewman.c: Don't include <signal.h> directly.
+	(main): Use OPENAXIOM_SIGCHLD.
+	* graph/viewman/sselect.c: Don't include <signal.h> directly.
+	(superSelect): Tidy.  Use OPENAXIOM_SIGCHLD.
+
+2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/Makefile.in (libopen_axiom_core_objects): Tidy.
 
 2008-04-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>

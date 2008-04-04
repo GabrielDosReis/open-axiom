@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <signal.h>
 #include "viewman.h"
 #include "mode.h"
 #include "actions.h"
@@ -86,22 +85,14 @@ char        *s1,
 
 
 int
-#ifdef _NO_PROTO
-main ()
-#else
 main (void)
-#endif
 {
 
   graphStruct *aGraph;
   int keepLooking,code;
   
   bsdSignal(SIGPIPE,brokenPipe,DontRestartSystemCalls);
-#if defined(BSDplatform) || defined (MACOSXplatform)
-  bsdSignal(SIGCHLD,endChild,RestartSystemCalls);
-#else
-  bsdSignal(SIGCLD,endChild,RestartSystemCalls);
-#endif
+  bsdSignal(OPENAXIOM_SIGCHLD,endChild,RestartSystemCalls);
   bsdSignal(SIGTERM,goodbye,DontRestartSystemCalls);
   
   /* Connect up to AXIOM server */

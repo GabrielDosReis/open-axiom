@@ -44,8 +44,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <signal.h>
-
 
 #include "edible.h"
 #include "bsdsignal.h"
@@ -309,11 +307,7 @@ handle_function_key(int key,int  chann)
                 close(fd);
             }
         }
-#if defined(MACOSXplatform) || defined(BSDplatform)
-        bsdSignal(SIGCHLD, null_fnct,RestartSystemCalls);
-#else
-        bsdSignal(SIGCLD, null_fnct,RestartSystemCalls);
-#endif
+        bsdSignal(OPENAXIOM_SIGCHLD, null_fnct,RestartSystemCalls);
         switch (id = fork()) {
           case -1:
             perror("Special key");

@@ -258,11 +258,7 @@ main(int argc, char **argv)
          */
         bsdSignal(SIGUSR2, sigusr2_handler,RestartSystemCalls);
         bsdSignal(SIGUSR1, SIG_IGN,RestartSystemCalls);
-#if defined(BSDplatform) || defined(MACOSXplatform)
-        bsdSignal(SIGCHLD, sigcld_handler,RestartSystemCalls);
-#else
-        bsdSignal(SIGCLD, sigcld_handler,RestartSystemCalls);
-#endif
+        bsdSignal(OPENAXIOM_SIGCHLD, sigcld_handler,RestartSystemCalls);
         bsdSignal(SIGINT, SIG_IGN,RestartSystemCalls);
 
         /*

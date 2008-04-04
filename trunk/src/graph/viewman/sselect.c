@@ -40,7 +40,6 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/wait.h>
-#include <signal.h>
 
 #include "viewman.h"
 #include "bsdsignal.h"
@@ -61,14 +60,7 @@
  *******************************************/
  
 int 
-#ifdef _NO_PROTO
-superSelect(n, rd, wr, ex, timeout)
-     int n;
-     int *rd, *wr, *ex;
-     char *timeout;
-#else
 superSelect(int n, int *rd, int *wr, int *ex, char *timeout)
-#endif
 {
   
   int waiting;
@@ -89,11 +81,7 @@ superSelect(int n, int *rd, int *wr, int *ex, char *timeout)
         /* flush(spadSock); */
         /* send_int(spadSock,1);   acknowledge to spad */
         checkClosedChild = no;
-#if defined(BSDplatform) || defined(MACOSXplatform)
-        bsdSignal(SIGCHLD,endChild,DontRestartSystemCalls);
-#else
-        bsdSignal(SIGCLD,endChild,DontRestartSystemCalls);
-#endif
+        bsdSignal(OPENAXIOM_SIGCHLD,endChild,DontRestartSystemCalls);
       }
     }
     ret_val = select(n, (void *)rd, (void *)wr, (void *)ex, (void *)timeout);
