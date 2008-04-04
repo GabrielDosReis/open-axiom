@@ -38,6 +38,14 @@
 
 #include "open-axiom.h"
 
+#include <signal.h>
+
+#ifdef SIGCHLD
+#  define OPENAXIOM_SIGCHLD SIGCHLD
+#elif defined (SIGCLD)
+#  define OPENAXIOM_SIGCHLD SIGCLD
+#endif
+
 #define RestartSystemCalls 1
 #define DontRestartSystemCalls 0
 
