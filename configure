@@ -19320,7 +19320,8 @@ case $host in
        ;;
     *darwin*)
        oa_shrobj_flags='-dynamic'
-       oa_shrlib_flags='-dylib'
+       oa_shrlib_flags='-dynamic'
+       ;;
     *)
        ;;
 esac
