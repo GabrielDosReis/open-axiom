@@ -1,5 +1,11 @@
 2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/xpm.h: Don't include <malloc.h>
+	* lib/XDither.c: Likewise.
+	* lib/XShade.c: Likewise.
+
+2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/bsdsignal.h: Include <signal.h>.  
 	(OPENAXIOM_SIGCHLD): New macro.
 	* hyper/hyper.c (main): Use OPENAXIOM_SIGCHLD.

@@ -36,9 +36,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#if !defined(BSDplatform)
-#include <malloc.h>
-#endif
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

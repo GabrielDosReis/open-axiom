@@ -35,9 +35,6 @@
 #ifndef MSYSplatform
 
 #include <stdio.h>
-#if !defined(BSDplatform)
-#include <malloc.h>
-#endif
 #include <stdlib.h>
 
 #include <X11/Xlib.h>
