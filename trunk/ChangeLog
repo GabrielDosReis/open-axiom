@@ -1,3 +1,10 @@
+2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Disable Libtool for building shared
+	libraries on MinGW and Cygwin.
+	* config/var-def.mk (SHREXT): Tidy.
+	(LINK_SHRLIB): New.
+
 2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Automatically detect SBCL or Clisp.

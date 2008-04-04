@@ -52,7 +52,11 @@ libspad_SOURCES = $(foreach comp, \
 unused_SOURCES = emupty.c
 
 libopen_axiom_core_SOURCES = $(core_SOURCES)
+ifeq (@oa_use_libtool_for_shared_lib@,no)
 libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.$(OBJEXT))
+else
+libopen_axiom_core_objects = $(libopen_axiom_core_SOURCES:.c=.lo)
+endif
 libspad_objects = $(libspad_SOURCES:.c=.lo)
 
 subdir = src/lib/
@@ -72,8 +76,7 @@ stamp: $(axiom_target_libdir)/libopen-axiom-core$(SHREXT) \
 $(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
 	$(libopen_axiom_core_objects)
 	$(mkinstalldirs) $(axiom_target_libdir)
-	$(CC) -shared --export-all-symbols -o \
-		$@ $(libopen_axiom_core_objects) \
+	$(LINK_SHRLIB) -o $@ $(libopen_axiom_core_objects) \
 		@axiom_c_runtime_extra@ -lm
 
 libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
@@ -93,11 +96,11 @@ libspad.$(LIBEXT): $(libspad_objects)
 # we don't need to remove the produced objects in mostlyclean.
 # The remoal is done by clean.
 mostlyclean-local:
-	@rm -f *.$(OBJEXT)
+	@rm -f *.$(OBJEXT) *.lo
 
 clean-local: mostlyclean-local
 	@rm -f $(axiom_target_libdir)/libopen-axiom-core$(SHREXT)
-	@rm -f libopen-axiom-core$(LIBEXT)
+	@rm -f libopen-axiom-core.$(LIBEXT)
 	@rm -f libspad.$(LIBEXT)
 	@rm -fr .libs _libs
 	@rm -f stamp

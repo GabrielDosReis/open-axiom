@@ -56,7 +56,7 @@ CFLAGS = @CFLAGS@
 OBJEXT = @OBJEXT@
 EXEEXT = @EXEEXT@
 # this includes leading period
-SHREXT = @shrext_cmds@
+SHREXT = @shared_ext@
 # this does not include period
 LIBEXT = @libext@
 
@@ -73,6 +73,16 @@ COMPILE = $(LIBTOOL) --mode=compile $(CC) -c
 ## and dynamic linking.  So, we build static programs.
 ## This situation is to be fixed when I have time.
 LINK = $(LIBTOOL) --mode=link $(CC) -static
+
+## Libtool is a disaster for building DLLs on Cygwin, and insists
+## on adding silly extensions where it should not on MinGW, so we have
+## to be very selective about when and where to use.  Sadly, that ends
+## up negating the whole point of having Libtool in the first place.
+ifeq (@oa_use_libtool_for_shared_lib@,no)
+LINK_SHRLIB = $(CC) -shared
+else
+LINK_SHRLIB = $(LIBTOOL) --mode=link $(CC) -shared -module
+endif
 
 
 AUTOCONF = autoconf

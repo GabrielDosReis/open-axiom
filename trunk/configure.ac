@@ -11,6 +11,7 @@ AC_PREREQ([2.60])
 
 AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 
+oa_use_libtool_for_shared_lib=yes
 # Tell Libtool to assume `dlopen' so that it does not have to
 # emulate it.
 AC_LIBTOOL_DLOPEN
@@ -18,8 +19,18 @@ AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 # Give me extension of libraries
-AC_SUBST(shrext_cmds)
+eval shared_ext=\"$shrext_cmds\"
+AC_SUBST(shared_ext)
 AC_SUBST(libext)
+# Don't use Libtool for building actual DLLs on MinGW and Cygwin
+case $host in
+    *mingw*|*cygwin*)
+       oa_use_libtool_for_shared_lib=no
+       ;;
+    *)
+       ;;
+esac
+AC_SUBST(oa_use_libtool_for_shared_lib)
 
 axiom_optimize_options=speed
 ## Shall we proclaim safety?
