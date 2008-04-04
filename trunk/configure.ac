@@ -12,6 +12,8 @@ AC_PREREQ([2.60])
 AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 
 oa_use_libtool_for_shared_lib=yes
+oa_shrobj_flags='-prefer-pic'
+oa_shrlib_flags='-shared'
 # Tell Libtool to assume `dlopen' so that it does not have to
 # emulate it.
 AC_LIBTOOL_DLOPEN
@@ -26,11 +28,17 @@ AC_SUBST(libext)
 case $host in
     *mingw*|*cygwin*)
        oa_use_libtool_for_shared_lib=no
+       oa_shrlib_flags="$oa_shrlib_flags --export-all-symbols"
        ;;
+    *darwin*)
+       oa_shrobj_flags='-dynamic'
+       oa_shrlib_flags='-dylib'
     *)
        ;;
 esac
 AC_SUBST(oa_use_libtool_for_shared_lib)
+AC_SUBST(oa_shrobj_flags)
+AC_SUBST(oa_shrlib_flags)
 
 axiom_optimize_options=speed
 ## Shall we proclaim safety?
