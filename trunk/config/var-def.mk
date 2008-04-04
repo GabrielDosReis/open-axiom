@@ -81,7 +81,7 @@ LINK = $(LIBTOOL) --mode=link $(CC) -static
 ifeq (@oa_use_libtool_for_shared_lib@,no)
 LINK_SHRLIB = $(CC) -shared
 else
-LINK_SHRLIB = $(LIBTOOL) --mode=link $(CC) -shared -module
+LINK_SHRLIB = $(LIBTOOL) --mode=link $(CC) -module
 endif
 
 
