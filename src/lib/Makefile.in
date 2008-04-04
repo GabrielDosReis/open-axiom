@@ -76,7 +76,8 @@ stamp: $(axiom_target_libdir)/libopen-axiom-core$(SHREXT) \
 $(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
 	$(libopen_axiom_core_objects)
 	$(mkinstalldirs) $(axiom_target_libdir)
-	$(LINK_SHRLIB) -o $@ $(libopen_axiom_core_objects) \
+	$(LINK_SHRLIB) $(oa_shrlib_flags) -o $@ \
+		$(libopen_axiom_core_objects) \
 		@axiom_c_runtime_extra@ -lm
 
 libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
@@ -89,7 +90,7 @@ libspad.$(LIBEXT): $(libspad_objects)
 .PRECIOUS: %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) -prefer-pic -o $@ $(CCF) -DOPENAXIOM_BUILD_DLL \
+	$(COMPILE) $(oa_shrobj_flags) -o $@ $(CCF) -DOPENAXIOM_BUILD_DLL \
 		$(axiom_includes) $(AXIOM_X11_CFLAGS) $<
 
 # This is a support library, so it does not change often and

@@ -85,6 +85,9 @@ LINK_SHRLIB = $(LIBTOOL) --mode=link $(CC) -shared -module
 endif
 
 
+oa_shrobj_flags = @oa_shrobj_flags@
+oa_shrlib_flags = @oa_shrlib_flags@
+
 AUTOCONF = autoconf
 AWK = @AWK@
 INSTALL = @INSTALL@
