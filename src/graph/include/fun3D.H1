@@ -1,7 +1,3 @@
-#ifdef _NO_PROTO
-extern void funView3D();
-extern void forkView3D();
-#else
 extern void funView3D(int viewCommand);
 extern void forkView3D(int typeOfViewport);
-#endif
+

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -55,11 +55,7 @@
 
 
 void 
-#ifdef _NO_PROTO
-scaleComponents ()
-#else
 scaleComponents (void)
-#endif
 {
   
   double xRange,yRange,zRange;
@@ -149,12 +145,7 @@ scaleComponents (void)
  */
 
 void
-#ifdef _NO_PROTO
-makeTriangle (a, b, c)
-     int a,b,c;
-#else
 makeTriangle (int a, int b, int c)
-#endif
 {
   poly *aPoly;
   
@@ -195,11 +186,7 @@ makeTriangle (int a, int b, int c)
   */
 
 void
-#ifdef _NO_PROTO
-triangulate ()
-#else
 triangulate (void)
-#endif
 {
   
   int u,l;
@@ -292,11 +279,7 @@ triangulate (void)
 
 
 void
-#ifdef _NO_PROTO
-readComponentsFromViewman ()
-#else
 readComponentsFromViewman (void)
-#endif
 {
   int i,j,k;
   LLPoint *anLLPoint;
@@ -369,11 +352,7 @@ readComponentsFromViewman (void)
   */
 
 void
-#ifdef _NO_PROTO
-calcNormData ()
-#else
 calcNormData (void)
-#endif
 {
   
   poly *aPoly;
@@ -436,11 +415,7 @@ calcNormData (void)
   */
 
 viewPoints *
-#ifdef _NO_PROTO
-make3DComponents ()
-#else
 make3DComponents (void)
-#endif
 {
   viewPoints *graphData;
 
@@ -494,12 +469,7 @@ make3DComponents (void)
 
 
 void
-#ifdef _NO_PROTO
-draw3DComponents (dFlag)
-     int dFlag;
-#else
 draw3DComponents (int dFlag)
-#endif
 {
   
   int        i, j, k, hue, x1, y1, x2, y2;

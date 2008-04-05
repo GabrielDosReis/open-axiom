@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -80,11 +80,7 @@ static XPoint translateArrow[translateArrowN] = {
  ****************************/
 
 void 
-#ifdef _NO_PROTO
-writeControlTitle()
-#else
 writeControlTitle(void)
-#endif
 {
 
   int strlength;
@@ -100,12 +96,7 @@ writeControlTitle(void)
 } /* writeControlTitle() */
 
 void 
-#ifdef _NO_PROTO
-makeMessageFromData(whichGraph)
-int whichGraph;
-#else
 makeMessageFromData(int whichGraph)
-#endif
 {
   if (viewport->haveControl) {
     if ((graphStateArray[whichGraph].scaleX) > 99.0) {
@@ -144,11 +135,7 @@ makeMessageFromData(int whichGraph)
 
 
 void 
-#ifdef _NO_PROTO
-writeControlMessage()
-#else
 writeControlMessage(void)
-#endif
 {
   int                strlength;
   controlPanelStruct *cp;
@@ -171,11 +158,7 @@ writeControlMessage(void)
 /*********************************/
 
 void 
-#ifdef _NO_PROTO
-drawControlPanel()
-#else
 drawControlPanel(void)
-#endif
 {
 
   controlPanelStruct *cp;
@@ -381,12 +364,7 @@ drawControlPanel(void)
 }    /*** drawControlPanel ***/
 
 controlXY 
-#ifdef _NO_PROTO
-getControlXY(whereDoYouWantPanel)
-int whereDoYouWantPanel;
-#else
 getControlXY(int whereDoYouWantPanel)
-#endif
 {
   XWindowAttributes wAttr, wAttrib;
   controlXY         cXY;
@@ -450,11 +428,7 @@ getControlXY(int whereDoYouWantPanel)
 /************************************************/
 
 controlPanelStruct *
-#ifdef _NO_PROTO
-makeControlPanel()
-#else
 makeControlPanel(void)
-#endif
 {
 
   Window cw;
@@ -569,12 +543,7 @@ makeControlPanel(void)
    right hand corner of the viewport window. */
 
 void 
-#ifdef _NO_PROTO
-putControlPanelSomewhere(whereDoesPanelGo)
-int whereDoesPanelGo;
-#else
 putControlPanelSomewhere(int whereDoesPanelGo)
-#endif
 {
   controlPanelStruct *control;
   controlXY          whereControl;
@@ -605,11 +574,7 @@ putControlPanelSomewhere(int whereDoesPanelGo)
 /************************************/
 
 void 
-#ifdef _NO_PROTO
-clearControlMessage()
-#else
 clearControlMessage(void)
-#endif
 {
 
   strcpy(viewport->controlPanel->message,"");

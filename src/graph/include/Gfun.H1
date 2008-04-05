@@ -1,43 +1,3 @@
-#ifdef _NO_PROTO
-extern int PSCreateFile();
-extern int Gdraws_drawFrame();
-extern int Gdraws_setDimension();
-extern int GDrawImageString();
-extern int GDrawArc();
-extern int GDrawLine();
-extern int GDrawLines();
-extern int GDrawPoint();
-extern int GDrawString();
-extern int GFillArc();
-extern int PSGlobalInit();
-extern int PSInit();
-extern int PSCreateContext();
-extern char * PSfindGC();
-extern int GSetForeground();
-extern int GSetBackground();
-extern int GSetLineAttributes();
-extern int PSClose();
-extern int centerX();
-extern int centerY();
-extern int PSColorPolygon();
-extern int PSColorwOutline();
-extern int PSDrawColor();
-extern int PSFillPolygon();
-extern int PSFillwOutline();
-extern HashTable * XCreateAssocTable();
-extern void XMakeAssoc();
-extern int * XLookUpAssoc();
-extern void XDeleteAssoc();
-extern int GDrawRectangle();
-extern int GDraw3DButtonOut();
-extern int GDraw3DButtonIn();
-extern int GDrawPushButton();
-#ifdef _GFUN_C
-static void filecopy();
-static int TrivEqual();
-static int TrivHash_code();
-#endif
-#else
 extern int PSCreateFile(int , Window , Window , char * );
 extern int Gdraws_drawFrame(int , Window , Window , char * );
 extern int Gdraws_setDimension(Window , Window );
@@ -76,4 +36,4 @@ static void filecopy(FILE * , FILE * );
 static int TrivEqual(Window , Window );
 static int TrivHash_code(Window , int );
 #endif
-#endif
+

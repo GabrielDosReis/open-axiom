@@ -1,5 +1,2 @@
-#ifdef _NO_PROTO
-extern int main();
-#else
 extern int main(int  , char * []);
-#endif
+

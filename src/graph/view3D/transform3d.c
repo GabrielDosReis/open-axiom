@@ -42,12 +42,7 @@
 #include "all_3d.H1"
 
 void 
-#ifdef _NO_PROTO
-matrixMultiply4x4(xxA,xxB,array)   
-     float xxA[4][4], xxB[4][4], array[4][4];
-#else
 matrixMultiply4x4(float xxA[4][4],float xxB[4][4],float array[4][4])   
-#endif
 {
   array[0][0] = xxA[0][0]*xxB[0][0] + xxA[0][1]*xxB[1][0] + 
                 xxA[0][2]*xxB[2][0] + xxA[0][3]*xxB[3][0]; 
@@ -85,12 +80,7 @@ matrixMultiply4x4(float xxA[4][4],float xxB[4][4],float array[4][4])
 
 
 void 
-#ifdef _NO_PROTO
-vectorMatrix4(xxD,xxE,xxF)   
-     float xxD[4], xxE[4][4], xxF[4];
-#else
 vectorMatrix4(float xxD[4],float xxE[4][4],float xxF[4])   
-#endif
 {
   xxF[0]= xxD[0]*xxE[0][0] + xxD[1]*xxE[1][0] + xxD[2]*xxE[2][0] + xxD[3]*xxE[3][0]; 
   xxF[1]= xxD[0]*xxE[0][1] + xxD[1]*xxE[1][1] + xxD[2]*xxE[2][1] + xxD[3]*xxE[3][1]; 
@@ -100,12 +90,7 @@ vectorMatrix4(float xxD[4],float xxE[4][4],float xxF[4])
 
 
 void 
-#ifdef _NO_PROTO
-ROTATE(xxR)  
-     float xxR[4][4];
-#else
 ROTATE(float xxR[4][4])  
-#endif
 {
   xxR[0][0]= -(cosTheta); xxR[0][1]= -(-sinTheta*cosPhi); xxR[0][2]= -(sinTheta*sinPhi);  xxR[0][3]= 0.0; 
   xxR[1][0]= -(sinTheta); xxR[1][1]= -(cosTheta*cosPhi);  xxR[1][2]= -(-cosTheta*sinPhi); xxR[1][3]= 0.0; 
@@ -114,12 +99,7 @@ ROTATE(float xxR[4][4])
 }
 
 void 
-#ifdef _NO_PROTO
-ROTATE1(xxR)  
-     float xxR[4][4];
-#else
 ROTATE1(float xxR[4][4])  
-#endif
 {
   xxR[0][0]= (cosTheta); xxR[0][1]= (-sinTheta*cosPhi); xxR[0][2]= (sinTheta*sinPhi);  xxR[0][3]= 0.0; 
   xxR[1][0]= (sinTheta); xxR[1][1]= (cosTheta*cosPhi);  xxR[1][2]= (-cosTheta*sinPhi); xxR[1][3]= 0.0; 
@@ -129,12 +109,7 @@ ROTATE1(float xxR[4][4])
 
 
 void 
-#ifdef _NO_PROTO
-SCALE(x,y,z,xxS)  
-     float x, y, z, xxS[4][4];
-#else
 SCALE(float x,float y,float z,float xxS[4][4])  
-#endif
 {
   xxS[0][0] = x;   xxS[0][1] = 0.0; xxS[0][2] = 0.0; xxS[0][3] = 0.0; 
   xxS[1][0] = 0.0; xxS[1][1] = y;   xxS[1][2] = 0.0; xxS[1][3] = 0.0; 
@@ -144,12 +119,7 @@ SCALE(float x,float y,float z,float xxS[4][4])
 
 
 void 
-#ifdef _NO_PROTO
-TRANSLATE(x,y,z,xxT)   
-     float x, y, z, xxT[4][4];
-#else
 TRANSLATE(float x,float y,float z,float xxT[4][4])   
-#endif
 {
   xxT[0][0] = 1.0; xxT[0][1] = 0.0; xxT[0][2] = 0.0;  xxT[0][3] = 0.0; 
   xxT[1][0] = 0.0; xxT[1][1] = 1.0; xxT[1][2] = 0.0;  xxT[1][3] = 0.0; 

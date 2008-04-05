@@ -1,9 +1,4 @@
-#ifdef _NO_PROTO
-extern void funView2D();
-extern void sendGraphToView2D();
-extern void forkView2D();
-#else
 extern void funView2D(int viewCommand);
 extern void sendGraphToView2D(int i ,int there,viewManager * viewType,graphStateStruct * doGraphStateArray);
 extern void forkView2D(void);
-#endif
+

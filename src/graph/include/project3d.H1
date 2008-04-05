@@ -1,15 +1,7 @@
-#ifdef _NO_PROTO
-extern void project();
-extern void projectAPoint();
-extern void projectAllPoints();
-extern void projectAllPolys();
-extern void projectAPoly();
-extern void projectStuff();
-#else
 extern void project(viewTriple *  , XPoint *  , int );
 extern void projectAPoint(viewTriple * );
 extern void projectAllPoints(void);
 extern void projectAllPolys(poly * );
 extern void projectAPoly(poly * );
 extern void projectStuff(float  , float  , float  , int *  , int *  , float * );
-#endif
+

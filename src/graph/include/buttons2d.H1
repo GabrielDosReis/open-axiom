@@ -1,5 +1,2 @@
-#ifdef _NO_PROTO
-extern int initButtons();
-#else
 extern int initButtons(buttonStruct * );
-#endif
+

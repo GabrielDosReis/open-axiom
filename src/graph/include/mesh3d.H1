@@ -1,9 +1,4 @@
-#ifdef _NO_PROTO
-extern void getMeshNormal();
-extern void normalizeVector();
-extern float dotProduct();
-#else
 extern void getMeshNormal(float  , float  , float  , float  , float  , float  , float  , float  , float  , float  , float  , float [3]);
 extern void normalizeVector(float * );
 extern float dotProduct(float *  , float *  , int );
-#endif
+

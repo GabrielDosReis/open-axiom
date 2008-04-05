@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -53,12 +53,7 @@
    changes there may require similar changes here. */
 
 void 
-#ifdef _NO_PROTO
-spoonView3D(type)
-     int type;
-#else
 spoonView3D(int type)
-#endif
 {
   
   int  i,j,k,code,pipe0[2],pipe1[2];
@@ -169,12 +164,7 @@ spoonView3D(int type)
 
 
 void
-#ifdef _NO_PROTO
-makeView3DFromFileData(type)
-     int type;
-#else
 makeView3DFromFileData(int type)
-#endif
 {
   
   int i,j,k;

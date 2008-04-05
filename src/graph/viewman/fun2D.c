@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -55,12 +55,7 @@
 #define writeEach
 
 void 
-#ifdef _NO_PROTO
-funView2D(viewCommand)
-  int viewCommand;
-#else
 funView2D(int viewCommand)
-#endif
 {
 
   int code;
@@ -176,11 +171,7 @@ funView2D(int viewCommand)
 }
 
 void 
-#ifdef _NO_PROTO
-forkView2D()
-#else
 forkView2D(void)
-#endif
 {
 
   viewManager      *viewport;
@@ -301,14 +292,7 @@ forkView2D(void)
 
 
 void
-#ifdef _NO_PROTO
-sendGraphToView2D(i,there,viewport,doGraphStateArray)
-  int i,there;
-  viewManager *viewport;
-  graphStateStruct *doGraphStateArray;
-#else
 sendGraphToView2D(int i,int there,viewManager *viewport,graphStateStruct *doGraphStateArray)
-#endif
 {
 
   graphStruct      *gPtr;

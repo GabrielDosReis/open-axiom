@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -118,12 +118,7 @@ int flatClipBoxX[8], flatClipBoxY[8];
 /******************* volume buttons **********************/
 
 int
-#ifdef _NO_PROTO
-initVolumeButtons (volumeButtons)
-     buttonStruct *volumeButtons;
-#else
 initVolumeButtons (buttonStruct *volumeButtons)
-#endif
 {
   int ii, num = 0;
 
@@ -262,11 +257,7 @@ initVolumeButtons (buttonStruct *volumeButtons)
  *************************/
 
 void
-#ifdef _NO_PROTO
-makeVolumePanel ()
-#else
 makeVolumePanel (void)
-#endif
 {
 
   int i;
@@ -330,11 +321,7 @@ makeVolumePanel (void)
 
 
 void
-#ifdef _NO_PROTO
-drawClipXBut ()
-#else
 drawClipXBut (void)
-#endif
 {
 
   XClearArea(dsply,volumeWindow,clipXButX,clipXButY,
@@ -397,11 +384,7 @@ drawClipXBut (void)
 }
 
 void
-#ifdef _NO_PROTO
-drawClipYBut ()
-#else
 drawClipYBut (void)
-#endif
 {
 
   XClearArea(dsply,volumeWindow,clipYButX,clipYButY,
@@ -467,11 +450,7 @@ drawClipYBut (void)
 
 
 void
-#ifdef _NO_PROTO
-drawClipZBut ()
-#else
 drawClipZBut (void)
-#endif
 {
 
   XClearArea(dsply,volumeWindow,clipZButX,clipZButY,
@@ -509,11 +488,7 @@ drawClipZBut (void)
 
 
 void
-#ifdef _NO_PROTO
-drawClipVolume ()
-#else
 drawClipVolume (void)
-#endif
 {
 
   float xminL,xmaxL,yminL,ymaxL,zminL,zmaxL;
@@ -573,11 +548,7 @@ drawClipVolume (void)
 
 
 void
-#ifdef _NO_PROTO
-drawHitherControl ()
-#else
 drawHitherControl (void)
-#endif
 {
 
   float xx,b,slope;
@@ -632,11 +603,7 @@ drawHitherControl (void)
 }
 
 void
-#ifdef _NO_PROTO
-drawEyeControl ()
-#else
 drawEyeControl (void)
-#endif
 {
 
   float here;
@@ -687,11 +654,7 @@ drawEyeControl (void)
  **************************/
 
 void
-#ifdef _NO_PROTO
-drawFrustrum ()
-#else
 drawFrustrum (void)
-#endif
 {
 
   float normalizedEyeDistance;
@@ -730,11 +693,7 @@ drawFrustrum (void)
  **************************/
 
 void
-#ifdef _NO_PROTO
-drawVolumePanel ()
-#else
 drawVolumePanel (void)
-#endif
 {
 
   int i,strlength;

@@ -1,12 +1,3 @@
-#ifdef _NO_PROTO
-extern void scaleComponents();
-extern void makeTriangle();
-extern void triangulate();
-extern void readComponentsFromViewman();
-extern void calcNormData();
-extern viewPoints * make3DComponents();
-extern void draw3DComponents();
-#else
 extern void scaleComponents(void);
 extern void makeTriangle(int  , int  , int );
 extern void triangulate(void);
@@ -14,4 +5,4 @@ extern void readComponentsFromViewman(void);
 extern void calcNormData(void);
 extern viewPoints * make3DComponents(void);
 extern void draw3DComponents(int );
-#endif
+

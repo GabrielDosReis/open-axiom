@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -52,12 +52,7 @@
 #include "readView.H1"
 
 void
-#ifdef _NO_PROTO
-brokenPipe(sig)
-int sig;
-#else
 brokenPipe(int sig)
-#endif
 {
   fprintf(stderr,
           "The viewport manager tried to write to a non-existing pipe.\n");
@@ -65,12 +60,7 @@ brokenPipe(int sig)
 
 
 void
-#ifdef _NO_PROTO
-endChild(sig)
-int sig;
-#else
 endChild(int sig)
-#endif
 {
 
   checkClosedChild = yes;
@@ -87,12 +77,7 @@ endChild(int sig)
 *****************************/
 
 void 
-#ifdef _NO_PROTO
-rmViewMgr(slotPtr)
-     viewManager *slotPtr;
-#else
 rmViewMgr(viewManager *slotPtr)
-#endif
 {
   
   int i,throwAway,code;
@@ -182,12 +167,7 @@ rmViewMgr(viewManager *slotPtr)
  ***********************************/
 
 void  
-#ifdef _NO_PROTO
-closeChildViewport(slotPtr)
-     viewManager *slotPtr;
-#else
 closeChildViewport(viewManager *slotPtr)
-#endif
 {
   
   int status;
@@ -206,12 +186,7 @@ closeChildViewport(viewManager *slotPtr)
  *********************/
 
 void 
-#ifdef _NO_PROTO
-goodbye(sig)
-int sig;
-#else
 goodbye(int sig)
-#endif
 {
 
   viewManager *v;

@@ -1,13 +1,6 @@
-#ifdef _NO_PROTO
-extern viewTriple * traverse();
-extern float absolute();
-extern float get_random();
-extern triple norm_dist();
-extern void goodbye();
-#else
 extern viewTriple * traverse(int );
 extern float absolute(float );
 extern float get_random(void );
 extern triple norm_dist(void );
 extern void goodbye(int);
-#endif
+

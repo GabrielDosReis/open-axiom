@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -73,11 +73,7 @@ Atom wm_delete_window;
  ***************************/
 
 void
-#ifdef _NO_PROTO
-writeTitle ()
-#else
 writeTitle (void)
-#endif
 {
 
   int                   strlength;
@@ -112,12 +108,7 @@ writeTitle (void)
  ****************************/
 
 void
-#ifdef _NO_PROTO
-drawPreViewport (dFlag)
-        int dFlag;              /* display flag: PS, X, etc. */
-#else
 drawPreViewport (int dFlag)
-#endif
 {
 
   int i, j, vPx0, vPy0, vPx1, vPy1;
@@ -417,12 +408,7 @@ drawPreViewport (int dFlag)
 /********************************/
 
 void
-#ifdef _NO_PROTO
-drawTheViewport (dFlag)
-        int dFlag;              /* display flag: PS, X,... */
-#else
 drawTheViewport (int dFlag)
-#endif
 {
 
   int    i,j;
@@ -524,11 +510,7 @@ drawTheViewport (int dFlag)
  ************************************/
 
 viewPoints *
-#ifdef _NO_PROTO
-makeViewport ()
-#else
 makeViewport (void)
-#endif
 {
 
   Pixmap               spadbits,spadmask;
@@ -778,11 +760,7 @@ makeViewport (void)
  *****************************/
 
 void
-#ifdef _NO_PROTO
-postMakeViewport ()
-#else
 postMakeViewport (void)
-#endif
 {
 
   corners[0].x = viewData.xmin; corners[0].y = viewData.ymin;
@@ -876,11 +854,7 @@ postMakeViewport (void)
 
 
 int
-#ifdef _NO_PROTO
-keepDrawingViewport()
-#else
 keepDrawingViewport(void)
-#endif
 {
 
   XEvent peekEvent;
