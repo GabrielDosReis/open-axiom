@@ -540,10 +540,9 @@ axiom_algebra_layer_11_objects = \
 
 <<layer12>>=
 axiom_algebra_layer_12 = \
-  DIOPS    DIOPS-      \
-  DIAGG   DIAGG-  BITS    DIRPROD2 IMATRIX  IVECTOR \
- LPOLY   LSMP     LSMP1    MATCAT2 \
- PTCAT   TRIMAT FSAGG    FSAGG-    
+  DIOPS    DIOPS-  DIAGG   DIAGG-   BITS    DIRPROD2 IMATRIX \
+  IVECTOR  LPOLY   LSMP    LSMP1    MATCAT2 PTCAT    TRIMAT  \
+  FSAGG    FSAGG-  SYSTEM
 
 axiom_algebra_layer_12_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_12))
