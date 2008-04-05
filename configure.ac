@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-04-04], 
+AC_INIT([OpenAxiom], [1.2.0-2008-04-05], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -28,7 +28,8 @@ AC_SUBST(libext)
 case $host in
     *mingw*|*cygwin*)
        oa_use_libtool_for_shared_lib=no
-       oa_shrlib_flags="$oa_shrlib_flags --export-all-symbols"
+       oa_shrobj_flags='-prefer-pic'
+       oa_shrlib_flags="-shared --export-all-symbols"
        ;;
     *darwin*)
        oa_shrobj_flags='-dynamic'
