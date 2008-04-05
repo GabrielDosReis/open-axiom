@@ -8,7 +8,6 @@
   application (or as a Firefox extension)
 * Make highlighting more configurable
 * Build domains for theorem proving and proof checking facilities.
-* Support more Lisp systems
 * Better support on Windows platform (MinGW/MSYS)
 * Modernize algebras
 * Better documentations
@@ -19,7 +18,7 @@
 * Integrate to development environments
 
 * Revisit the underlying definition of the types DFlo in foam
-  interface, and Float in OpenAxiom.
+  interface, and DoubleFloat in OpenAxiom.
 
 * Audit all codes that manipulate sockets.
 
@@ -36,16 +35,9 @@
 
 * Document src/scripts/document.in
 
-* cleanup the Makefile pamphlets
-
 * Improve Boot documentation
 
 * Reduce the number of bar Lisp codes to the minimum residual.
-
-* Fix codes in src/interp, src/hyper, and src/hyper/pages/util.ht that 
-  hardcode pathnames.
-  In general, the OpenAxiom system should be able to work properly with
-  relative paths to that it can be "moved" around seamlessly. 
 
 * Audit cleanup rules
 
@@ -56,6 +48,15 @@
 ============
 === DONE ===
 ============
+
+* Support more Lisp systems (GCL, SBCL, CLisp)
+
+* cleanup the Makefile pamphlets
+
+* Fix codes in src/interp, src/hyper, and src/hyper/pages/util.ht that 
+  hardcode pathnames.
+  In general, the OpenAxiom system should be able to work properly with
+  relative paths to that it can be "moved" around seamlessly. 
 
 * Support out-of-source build.
 

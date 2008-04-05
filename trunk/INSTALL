@@ -1,18 +1,21 @@
 Requirements
 ============
 
-OpenAxiom uses GCL (the GNU Common Lisp) for its runtime support.  So,
-if you already have a running GCL (2.6.7 or 2.6.8), that is good.
-Otherwise, you would need to download a dependency tarball from
-OpenAxiom's download web site.  See instructions below.
+OpenAxiom currenly requires a Lisp system for its runtime support.
+OpenAxiom is known to build with the GNU Common Lisp (GCL versions 2.6.7
+or 2.6.8), Steel Bank Common Lisp (SBCL version 1.0.x or higher), and
+CLisp (version 2.44.x or higher).  So, if you already have any of the
+above mentioned Lisp system, your are good to go.  Otherwise, you
+would need to download a dependency tarball from OpenAxiom's download
+web site.  See instructions below. 
 
 OpenAxiom needs `noweb' for extracting its source codes.  If you don't
 have running `noweb' utilities, you would need to either download the
 dependency tarball from OpenAxiom's download web site, or separately
 install them, and then proceed with configuration as detailed below.
 
-Note that GCL and `noweb' are needed only to build OpenAxiom.  They are
-not needed to run it.
+Note that GCL or SBCL or CLisp, and `noweb' are needed only to build
+OpenAxiom.  They are not needed once the system is installed.
 
 Finally, you would need a working GNU C compiler.  It is also recommended
 that you install X11 development headers and libraries, especially
@@ -21,8 +24,8 @@ still need a working GNU C compiler though.
 
 Ah, one more note:  OpenAxiom requires GNU Make.
 
-1. GCL and noweb prerequisites
-   ---------------------------
+1. Lisp and noweb prerequisites
+   ----------------------------
 
 If any of GCL or noweb is missing from the environment environment
 where you're building, then you need to either separately install

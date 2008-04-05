@@ -66,12 +66,7 @@
 
 
 void
-#ifdef _NO_PROTO
-buttonAction (bKey)
-int bKey;
-#else
 buttonAction (int bKey)
-#endif
 {
 
   char *s1, *s2;
@@ -855,11 +850,7 @@ buttonAction (int bKey)
 
 /************************** X Event Processing *****************************/
 void 
-#ifdef _NO_PROTO
-processEvents()
-#else
 processEvents(void)
-#endif
 {
 
   XEvent                *event, tempEvent;
@@ -1594,7 +1585,7 @@ processEvents(void)
         }  /* else - not closing */
       }   /* if checkButton */
     } /* if FD_ISSET(Xcon,.. */
-    else if FD_ISSET(0,&rd) {
+    else if (FD_ISSET(0,&rd)) {
       externalControl = spadAction();
       if (spadDraw && (externalControl==0)) drawViewport(Xoption);
     }
