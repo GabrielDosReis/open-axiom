@@ -59,12 +59,7 @@ static int doit=0;  /* globish variable for picking/dropping/clearing - all sort
 
 
 void 
-#ifdef _NO_PROTO
-doPick (i,bKey)
-     int i,bKey;
-#else
 doPick (int i,int bKey)
-#endif
 {
   int vCommand=pick2D;
   
@@ -86,12 +81,7 @@ doPick (int i,int bKey)
 
 
 void 
-#ifdef _NO_PROTO
-doDrop (i,bKey)
-     int i,bKey;
-#else
 doDrop (int i,int bKey)
-#endif
 {
   int vCommand=drop2D;
   int viewGoAhead;
@@ -121,12 +111,7 @@ doDrop (int i,int bKey)
 }
 
 void 
-#ifdef _NO_PROTO
-clickedOnGraphSelect (i,bKey)
-     int i,bKey;
-#else
 clickedOnGraphSelect (int i,int bKey)
-#endif
 {
   int strlength;
   
@@ -182,13 +167,7 @@ clickedOnGraphSelect (int i,int bKey)
 
 
 static void
-#ifndef _NO_PROTO
 drawControlPushButton(int isOn, int index)
-#else
-     drawControlPushButton(isOn,index)
-     int isOn;
-     int index;
-#endif
 {
   GDrawPushButton(dsply, processGC, processGC, processGC,
                   control->controlWindow,
@@ -206,12 +185,7 @@ drawControlPushButton(int isOn, int index)
 
 
 void 
-#ifdef _NO_PROTO
-buttonAction (bKey)
-     int bKey;
-#else
 buttonAction (int bKey)
-#endif
 {
   int i;
   
@@ -509,11 +483,7 @@ buttonAction (int bKey)
 
 /*********************** X Event Processing ***************************/
 void 
-#ifdef _NO_PROTO
-processEvents()
-#else
 processEvents(void)
-#endif
 {
   
   XEvent                  *event,
@@ -851,7 +821,7 @@ processEvents(void)
         } /* else - not closing */
       } /* if checkButton */
     } /* if FD_ISSET(Xcon.... */
-    else if FD_ISSET(0,&rd) {
+    else if (FD_ISSET(0,&rd)) {
       externalControl=spadAction(); /* returns (-1) if broken ,0 if success */
       if (spadDraw && (externalControl==0)) drawViewport(Xoption);
     }
@@ -864,12 +834,7 @@ processEvents(void)
 
 
 void 
-#ifdef _NO_PROTO
-clickedOnGraph (i,bKey)
-   int i,bKey;
-#else
 clickedOnGraph (int i,int bKey)
-#endif
 {
   
   switch (doit) {

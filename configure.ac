@@ -12,8 +12,8 @@ AC_PREREQ([2.60])
 AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 
 oa_use_libtool_for_shared_lib=yes
-oa_shrobj_flags='-prefer-pic'
-oa_shrlib_flags='-shared'
+oa_shrobj_flags=
+oa_shrlib_flags=
 # Tell Libtool to assume `dlopen' so that it does not have to
 # emulate it.
 AC_LIBTOOL_DLOPEN
@@ -32,9 +32,11 @@ case $host in
        ;;
     *darwin*)
        oa_shrobj_flags='-dynamic'
-       oa_shrlib_flags='-dynamic'
+       oa_shrlib_flags='-dynamiclib -undefined suppress -flat_namespace'
        ;;
     *)
+       oa_shrobj_flags='-prefer-pic'
+       oa_shrlib_flags='-shared -module'
        ;;
 esac
 AC_SUBST(oa_use_libtool_for_shared_lib)

@@ -1,3 +1,11 @@
+2008-04-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (oa_shrlib_flags): Tidy.
+	(oa_shrobj_flags): Likewise.
+	* config/var-def.mk (LINK_SHRLIB): Tidy.
+	* INSTALL: Update.
+	* TODO: Likewise.
+
 2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: When using CLisp, ensure FFI is supported.

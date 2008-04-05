@@ -1,3 +1,8 @@
+2008-04-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* graph/view2D/process2d.c (processEvents): Tidy.
+	* graph/view3D/process3d.c (processEvents): Likewise.
+
 2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* hyper/hyper.h: Simplify font definitions.

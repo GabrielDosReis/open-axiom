@@ -79,9 +79,9 @@ LINK = $(LIBTOOL) --mode=link $(CC) -static
 ## to be very selective about when and where to use.  Sadly, that ends
 ## up negating the whole point of having Libtool in the first place.
 ifeq (@oa_use_libtool_for_shared_lib@,no)
-LINK_SHRLIB = $(CC) -shared
+LINK_SHRLIB = $(CC)
 else
-LINK_SHRLIB = $(LIBTOOL) --mode=link $(CC) -module
+LINK_SHRLIB = $(LIBTOOL) --mode=link $(CC)
 endif
 
 
