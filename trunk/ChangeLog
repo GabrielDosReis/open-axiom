@@ -1,5 +1,9 @@
 2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet: When using CLisp, ensure FFI is supported.
+
+2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* configure.ac.pamphlet: Disable Libtool for building shared
 	libraries on MinGW and Cygwin.
 	* config/var-def.mk (SHREXT): Tidy.

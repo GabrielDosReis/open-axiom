@@ -882,6 +882,12 @@ case $axiom_include_gcl,$axiom_lisp in
 	       axiom_lisp_flavor=sbcl 
 	       ;;
 	   *CLISP*)
+               ## Not all variants of CLisp have FFI support.  FFI is used
+               ## internally used by OpenAxiom in essential way.
+               if ! $axiom_lisp -q -x '*features*' | grep ':FFI' 2>/dev/null
+               then
+                 AC_MSG_ERROR([$axiom_lisp does not support Foreign Function Interface.  Please upgrade to a better version of CLisp or install SBCL.])
+               fi
 	       axiom_lisp_flavor=clisp
 	       ;;
        esac
@@ -1086,7 +1092,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-04-03], 
+AC_INIT([OpenAxiom], [1.2.0-2008-04-04], 
         [open-axiom-bugs@lists.sf.net])
 
 @
