@@ -1,5 +1,2 @@
-#ifdef _NO_PROTO
-extern int readViewport();
-#else
 extern int readViewport(viewManager * viewPort , void * info , int size);
-#endif
+

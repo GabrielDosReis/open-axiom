@@ -45,13 +45,7 @@
 #include "make3D.H1"
 
 void 
-#ifdef _NO_PROTO
-makeView3DFromSpadData(viewdata,typeOfViewport)
-  view3DStruct *viewdata;
-  int typeOfViewport;
-#else
 makeView3DFromSpadData(view3DStruct *viewdata,int typeOfViewport)
-#endif
 {
 
   int i,j,k;

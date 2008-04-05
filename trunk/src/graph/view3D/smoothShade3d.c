@@ -59,84 +59,45 @@
 
 
 char 
-#ifdef _NO_PROTO
-get_cBuffer_axes(ix)
-     int ix;
-#else
 get_cBuffer_axes(int ix)
-#endif
 {
         if( ix >=0 && ix <ARRAY_WIDTH) return (cBuffer[ix].axes);
         return ('0');
 }
 
 void 
-#ifdef _NO_PROTO
-put_cBuffer_axes(ix,val)
-     int ix;
-     char val;
-#else
 put_cBuffer_axes(int ix,char val)
-#endif
 {
         if( ix >=0 && ix <ARRAY_WIDTH) cBuffer[ix].axes = val;
 }
 
 int 
-#ifdef _NO_PROTO
-get_cBuffer_indx(ix)
-     int ix;
-#else
 get_cBuffer_indx(int ix)
-#endif
 {
         if( ix >=0 && ix <ARRAY_WIDTH) return (cBuffer[ix].indx);
         return (-1);
 }
 
 void 
-#ifdef _NO_PROTO
-put_cBuffer_indx(ix,val)
-     int ix;
-     int val;
-#else
 put_cBuffer_indx(int ix,int val)
-#endif
 {
         if( ix >=0 && ix <ARRAY_WIDTH) cBuffer[ix].indx = val;
 }
 
 void 
-#ifdef _NO_PROTO
-put_zBuffer(ix,val)
-     int ix;
-     float val;
-#else
 put_zBuffer(int ix,float val)
-#endif
 {
         if (ix >=0 && ix <ARRAY_WIDTH) zBuffer[ix] = val;
 }
 
 float 
-#ifdef _NO_PROTO
-get_zBuffer(ix)
-     int ix;
-#else
 get_zBuffer(int ix)
-#endif
 {
         return (zBuffer[ix]);
 }
 
 void 
-#ifdef _NO_PROTO
-put_imageX(ix,val)
-     int ix;
-     char val;
-#else
 put_imageX(int ix,char val)
-#endif
 {
   if (ix <=0 && ix <vwInfo.width) imageX->data[ix] = val;
 }
@@ -154,14 +115,7 @@ put_imageX(int ix,char val)
  * scanline.               *
  ***************************/
 void 
-#ifdef _NO_PROTO
-drawPhongSpan(pt,N,dFlag)
-   triple pt;
-   float   N[3];
-   int    dFlag;
-#else
 drawPhongSpan(triple pt,float N[3],int dFlag)
-#endif
 {
   int                xpixel,hue,shade;
   float              colorindx, col;
@@ -251,12 +205,7 @@ drawPhongSpan(triple pt,float N[3],int dFlag)
  ***************************/
 
 void 
-#ifdef _NO_PROTO
-scanPhong(dFlag)
-     int  dFlag;
-#else
 scanPhong(int dFlag)
-#endif
 {
   viewTriple *p1, *p2;
   polyList   *polygon;
@@ -377,11 +326,7 @@ scanPhong(int dFlag)
  ********************************************/
 
 void 
-#ifdef _NO_PROTO
-boxTObuffer()
-#else
 boxTObuffer(void)
-#endif
 {
   int    xpix,i,j,k,count,decision;
   int    xA,xB,yA,yB;
@@ -457,11 +402,7 @@ boxTObuffer(void)
  ********************************************/
 
 void 
-#ifdef _NO_PROTO
-clipboxTObuffer()
-#else
 clipboxTObuffer(void)
-#endif
 {
   int    xpix,i,j,k,count,decision;
   int    xA,xB,yA,yB;
@@ -537,11 +478,7 @@ clipboxTObuffer(void)
  ********************************************/
 
 void 
-#ifdef _NO_PROTO
-axesTObuffer()
-#else
 axesTObuffer(void)
-#endif
 {
   int    xpix,i,count,decision;
   int    xA,xB,yA,yB;
@@ -610,12 +547,7 @@ axesTObuffer(void)
  ********************************************/
 
 void 
-#ifdef _NO_PROTO
-scanLines(dFlag)
-  int dFlag;
-#else
 scanLines(int dFlag)
-#endif
 {
   unsigned long pixColor;
   int           i;
@@ -786,11 +718,7 @@ scanLines(int dFlag)
  *************************************/
 
 void
-#ifdef _NO_PROTO
-freePolyList ()
-#else
 freePolyList (void)
-#endif
 {
   polyList *P, *nextP;
   int  i;
@@ -813,12 +741,7 @@ freePolyList (void)
  ********************************************/
 
 void 
-#ifdef _NO_PROTO
-showAxesLabels(dFlag)
-     int  dFlag;
-#else
 showAxesLabels(int dFlag)
-#endif
 {
   int  xcoord2,ycoord2;
 
@@ -880,11 +803,7 @@ showAxesLabels(int dFlag)
  ********************************************/
 
 void 
-#ifdef _NO_PROTO
-changeColorMap()
-#else
 changeColorMap(void)
-#endif
 {
   int         okay, i, hue, *index;
   poly        *cp;
@@ -963,12 +882,7 @@ changeColorMap(void)
  ***********************/
 
 void
-#ifdef _NO_PROTO
-drawPhong(dFlag)
-     int dFlag;
-#else
 drawPhong(int dFlag)
-#endif
 {
 
     poly          *p, *head;

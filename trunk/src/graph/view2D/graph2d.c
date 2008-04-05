@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All right reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -47,12 +47,7 @@
 
 
 void 
-#ifdef _NO_PROTO
-getGraphFromViewman(i)
-int i;
-#else
 getGraphFromViewman(int i)
-#endif
 {
  /** This routine should be called right after a read of the graph key 
      was made from the viewport manager (or defined in some other way). **/
@@ -145,12 +140,7 @@ getGraphFromViewman(int i)
 
 
 void 
-#ifdef _NO_PROTO
-freeGraph(i)
-int i;
-#else
 freeGraph(int i)
-#endif
 {
   int j;
   pointListStruct *llPtr;

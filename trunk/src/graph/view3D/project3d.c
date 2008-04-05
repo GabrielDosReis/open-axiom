@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -51,14 +51,7 @@
  *******************************************/
 
 void 
-#ifdef _NO_PROTO
-project(aViewTriple,someXpoints,i)
-viewTriple *aViewTriple;
-XPoint     *someXpoints;
-int        i;
-#else
 project(viewTriple * aViewTriple,XPoint *someXpoints,int i)
-#endif
 {
   float Vtmp[4], V[4], V1[4];
 
@@ -107,12 +100,7 @@ project(viewTriple * aViewTriple,XPoint *someXpoints,int i)
  ***************************************************/
 
 void 
-#ifdef _NO_PROTO
-projectAPoint(aViewTriple)
-        viewTriple *aViewTriple;
-#else
 projectAPoint(viewTriple *aViewTriple)
-#endif
 {
   float Vtmp[4], V[4], V1[4];
  
@@ -158,11 +146,7 @@ projectAPoint(viewTriple *aViewTriple)
  ***************************/
 
 void 
-#ifdef _NO_PROTO
-projectAllPoints()
-#else
 projectAllPoints(void)
-#endif
 {
 
   int i,j,k;
@@ -199,12 +183,7 @@ projectAllPoints(void)
  *******************************/
 
 void 
-#ifdef _NO_PROTO
-projectAllPolys (pList)
-        poly *pList;
-#else
 projectAllPolys (poly *pList)
-#endif
 {
 
   int i,clipped,clippedPz;
@@ -279,12 +258,7 @@ projectAllPolys (poly *pList)
 
 
 void 
-#ifdef _NO_PROTO
-projectAPoly (p)
-        poly *p;
-#else
 projectAPoly (poly *p)
-#endif
 {
 
   int i,clipped,clippedPz;
@@ -372,14 +346,7 @@ projectAPoly (poly *p)
  **********************************/
 
 void 
-#ifdef _NO_PROTO
-projectStuff(x,y,z,px,py,Pz)
-     float x,y,z;
-     int *px,*py;
-     float *Pz;
-#else
 projectStuff(float x,float y,float z,int *px,int *py,float *Pz)
-#endif
 {
   float tempx,tempy,tempz,temps,V[4],V1[4],stuffScale=100.0;
 

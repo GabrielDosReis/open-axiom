@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -71,13 +71,7 @@ pointInfo ptIA, ptIB, ptIC; /* global to this file */
  ************************************/
 
 void
-#ifdef _NO_PROTO
-drawLineComponent (p, dFlag)
-     poly *p;
-     int  dFlag;
-#else
 drawLineComponent (poly * p, int dFlag)
-#endif 
 {
   int i, hue;
   int *anIndex;
@@ -127,14 +121,7 @@ drawLineComponent (poly * p, int dFlag)
  **************************************************/
 
 void
-#ifdef _NO_PROTO
-drawOpaquePolygon (p,aGC,anotherGC,dFlag)
-     poly *p;
-     GC aGC,anotherGC;
-     int dFlag;
-#else
 drawOpaquePolygon (poly *p,GC aGC,GC anotherGC,int dFlag)
-#endif 
 {
 
   int *anIndex, i, hue, isNaN = 0;
@@ -211,12 +198,7 @@ drawOpaquePolygon (poly *p,GC aGC,GC anotherGC,int dFlag)
  *************************************/
 
 poly *
-#ifdef _NO_PROTO
-copyPolygons (polygonList)
-     poly *polygonList;
-#else
 copyPolygons (poly *polygonList)
-#endif 
 {
 
   int i;
@@ -300,12 +282,7 @@ copyPolygons (poly *polygonList)
  ******************************/
 
 void
-#ifdef _NO_PROTO
-minMaxPolygons (aPoly)
-     poly *aPoly;
-#else
 minMaxPolygons (poly *aPoly)
-#endif 
 {
 
   int *anIndex;
@@ -364,12 +341,7 @@ minMaxPolygons (poly *aPoly)
  ***********************************/
 
 int
-#ifdef _NO_PROTO
-polyCompare (p1,p2)
-     poly *p1,*p2;
-#else
 polyCompare (poly *p1,poly *p2)
-#endif 
 {
 
   if (p1->pzmax > p2->pzmax) return(-1);
@@ -387,11 +359,7 @@ polyCompare (poly *p1,poly *p2)
  ***********************/
 
 void
-#ifdef _NO_PROTO
-calcEyePoint ()
-#else
 calcEyePoint (void)
-#endif 
 {
 
   eyePoint[0] = sinPhi * (sinTheta);
@@ -419,13 +387,7 @@ calcEyePoint (void)
  **************************************/
 
 void
-#ifdef _NO_PROTO
-drawRenderedPolygon (p,dFlag)
-     poly *p;
-     int dFlag;
-#else
 drawRenderedPolygon (poly *p,int dFlag)
-#endif 
 {
 
   int        i,hue,shade, isNaN = 0;
@@ -573,11 +535,7 @@ drawRenderedPolygon (poly *p,int dFlag)
 
 
 void 
-#ifdef _NO_PROTO
-freePointResevoir()
-#else
 freePointResevoir(void)
-#endif
 {
 
   viewTriple *v;
@@ -597,12 +555,7 @@ freePointResevoir(void)
  ***********************************/
 
 void
-#ifdef _NO_PROTO
-freeListOfPolygons (pList)
-poly *pList;
-#else
 freeListOfPolygons (poly *pList)
-#endif 
 {
 
   poly *nextP;
@@ -617,12 +570,7 @@ freeListOfPolygons (poly *pList)
 
 
 void
-#ifdef _NO_PROTO
-drawPolygons(dFlag)
-     int dFlag;
-#else
 drawPolygons(int dFlag)
-#endif 
 {
 
   poly *p,*head;
@@ -781,12 +729,7 @@ drawPolygons(int dFlag)
  **************************/
 
 int
-#ifdef _NO_PROTO
-lessThan (x,y)
-     float x,y;
-#else
 lessThan (float x,float y)
-#endif 
 {
   int xI,yI;
 
@@ -796,12 +739,7 @@ lessThan (float x,float y)
 }
 
 int
-#ifdef _NO_PROTO
-greaterThan (x,y)
-     float x,y;
-#else
 greaterThan (float x,float y)
-#endif 
 {
   int xI,yI;
 
@@ -811,35 +749,20 @@ greaterThan (float x,float y)
 }
 
 int
-#ifdef _NO_PROTO
-isNaN (v)
-     float v;
-#else
 isNaN (float v)
-#endif 
 {
   return (v != v);
 }
 
 
 int
-#ifdef _NO_PROTO
-isNaNPoint (x,y,z)
-     float x,y,z;
-#else
 isNaNPoint (float x,float y,float z)
-#endif 
 {
   return (isNaN(x) || isNaN(y) || isNaN(z));
 }
 
 int
-#ifdef _NO_PROTO
-equal (x,y)
-     float x,y;
-#else
 equal (float x,float y)
-#endif 
 {
   int xI,yI;
 

@@ -1,22 +1,3 @@
-#ifdef _NO_PROTO
-extern char get_cBuffer_axes();
-extern void put_cBuffer_axes();
-extern int get_cBuffer_indx();
-extern void put_cBuffer_indx();
-extern void put_zBuffer();
-extern float get_zBuffer();
-extern void put_imageX();
-extern void drawPhongSpan();
-extern void scanPhong();
-extern void boxTObuffer();
-extern void clipboxTObuffer();
-extern void axesTObuffer();
-extern void scanLines();
-extern void freePolyList();
-extern void showAxesLabels();
-extern void changeColorMap();
-extern void drawPhong();
-#else
 extern char get_cBuffer_axes(int );
 extern void put_cBuffer_axes(int  , char );
 extern int get_cBuffer_indx(int );
@@ -34,4 +15,4 @@ extern void freePolyList(void );
 extern void showAxesLabels(int );
 extern void changeColorMap(void );
 extern void drawPhong(int );
-#endif
+

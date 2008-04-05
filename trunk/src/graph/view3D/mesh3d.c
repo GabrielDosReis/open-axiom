@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -46,13 +46,8 @@
  ***************************************************************************/
 
 void 
-#ifdef _NO_PROTO
-getMeshNormal(x0,y0,z0,x1,y1,z1,x2,y2,z2,zMin,zRange,Normal)
-  float x0,y0,z0,x1,y1,z1,x2,y2,z2,zMin,zRange,Normal[3]; 
-#else
 getMeshNormal(float x0,float y0,float z0,float x1,float y1,float z1,
               float x2,float y2,float z2,float zMin,float zRange,float Normal[3])
-#endif
 {
   float Ax,Ay,Az,Bx,By,Bz,
         UnitFactor;
@@ -89,12 +84,7 @@ getMeshNormal(float x0,float y0,float z0,float x1,float y1,float z1,
  ***********************************/
 
 void 
-#ifdef _NO_PROTO
-normalizeVector(v)
-  float *v;
-#else
 normalizeVector(float *v)
-#endif
 {
    /* v should be a triple (ignoring the rest of the array if necessary) */
 
@@ -117,13 +107,7 @@ normalizeVector(float *v)
  ************************************/
 
 float 
-#ifdef _NO_PROTO
-dotProduct(a,b,size)
-  float *a,*b;
-  int size;
-#else
 dotProduct(float * a,float *b,int size)
-#endif
 {
   int i;
   float f=0;

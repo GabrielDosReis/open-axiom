@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -44,12 +44,7 @@
 /****************************/
 
 mouseCoord 
-#ifdef _NO_PROTO
-getPotValue(eX,eY,xH,yH)
-     short eX,eY,xH,yH;
-#else
 getPotValue(short eX,short eY,short xH,short yH)
-#endif
 {
 
   mouseCoord whereMouse;
@@ -77,12 +72,7 @@ getPotValue(short eX,short eY,short xH,short yH)
 /**********************************/
 
 mouseCoord 
-#ifdef _NO_PROTO
-getLinearPotValue(eX,eY,xH,yH)
-     short eX,eY,xH,yH;
-#else
 getLinearPotValue(short eX,short eY,short xH,short yH)
-#endif
 {
 
   mouseCoord whereMouse;

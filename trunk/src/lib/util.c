@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+    Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
           the documentation and/or other materials provided with the
           distribution.
 
-        - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+        - Neither the name of The Numerical Algorithms Group Ltd. nor the
           names of its contributors may be used to endorse or promote products
           derived from this software without specific prior written permission.
 
@@ -93,13 +93,7 @@ saymemWithLine(char *str, int num, int size, int lineNum)
 
 
 void
-#ifdef _NO_PROTO
-myfree(p, size)
-    void *p;
-    int size;
-#else
 myfree(void *p, int size)
-#endif
 {
     free(p);
 }

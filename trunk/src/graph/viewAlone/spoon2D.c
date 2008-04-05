@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -51,11 +51,7 @@
 /* #define spoonDEBUG  */
 
 void 
-#ifdef _NO_PROTO
-spoonView2D()
-#else
 spoonView2D(void)
-#endif
 {
 
   int  i,code,pipe0[2],pipe1[2],there;
@@ -148,13 +144,7 @@ spoonView2D(void)
 
 /*void sendGraphToView2D(i,there,viewP) */
 void 
-#ifdef _NO_PROTO
-sendGraphToView2D(i,there,viewP)
-  int i,there;
-  viewManager *viewP;
-#else
 sendGraphToView2D(int i,int there,viewManager *viewP)
-#endif
 {
   graphStruct      *gPtr;
   pointListStruct  *llPtr;
@@ -216,12 +206,7 @@ sendGraphToView2D(int i,int there,viewManager *viewP)
 
 
 void  
-#ifdef _NO_PROTO
-makeView2DFromFileData(doView2D)
-  view2DStruct *doView2D;
-#else
 makeView2DFromFileData(view2DStruct *doView2D)
-#endif
 {
   
   int i,j,k;

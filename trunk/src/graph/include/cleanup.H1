@@ -1,13 +1,6 @@
-#ifdef _NO_PROTO
-extern void brokenPipe();
-extern void endChild();
-extern void rmViewMgr();
-extern void closeChildViewport();
-extern void goodbye();
-#else
 extern void brokenPipe(int sig);
 extern void endChild(int sig);
 extern void rmViewMgr(viewManager * slotPtr);
 extern void closeChildViewport(viewManager * slotPtr);
 extern void goodbye(int sig);
-#endif
+

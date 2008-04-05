@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -51,12 +51,7 @@
 /**************************/
 
 float 
-#ifdef _NO_PROTO
-absolute(x)
-  float x;
-#else
 absolute(float x)
-#endif
 {
   if (x<0.0) {
     return(-x);
@@ -72,12 +67,7 @@ absolute(float x)
 /************************/
 
 void 
-#ifdef _NO_PROTO
-goodbye(sig)
-int sig;
-#else
 goodbye(int sig)
-#endif
 {
   int Command,i;
 

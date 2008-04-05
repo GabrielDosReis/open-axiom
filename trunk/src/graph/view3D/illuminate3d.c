@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -57,13 +57,7 @@
  ***********************/
 
 float 
-#ifdef _NO_PROTO
-phong(pt,N)
-  triple      pt;
-  float       N[3];
-#else
 phong(triple pt,float N[3])
-#endif
 {
   float     dotLN, dotHN, H[3], E[3], P[3], NM[3], L[3];
   float     color, diffuse, specular;
@@ -116,12 +110,7 @@ phong(triple pt,float N[3])
 }
 
 int 
-#ifdef _NO_PROTO
-hueValue(val)
-  float val;
-#else
 hueValue(float val)
-#endif
 {
   int hue;
         
@@ -132,12 +121,7 @@ hueValue(float val)
 }
 
 int 
-#ifdef _NO_PROTO
-getHue(val)
-  float val;
-#else
 getHue(float val)
-#endif
 {
   int hue;
         
@@ -156,12 +140,7 @@ getHue(float val)
 /**** Conversion functions for different color models ****/
 
 float 
-#ifdef _NO_PROTO
-Value(n1, n2, hue)
-  float n1, n2, hue;
-#else
 Value(float n1, float n2, float hue)
-#endif
 {
   float v;
 
@@ -185,12 +164,7 @@ Value(float n1, float n2, float hue)
 
 
 RGB
-#ifdef _NO_PROTO
-hlsTOrgb(h,l,s)
-  float  h, l, s;
-#else
 hlsTOrgb(float h,float l,float s)
-#endif
 {
   RGB rgb;
   float m1, m2;

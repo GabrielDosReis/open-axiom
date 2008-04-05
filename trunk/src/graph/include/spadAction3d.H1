@@ -1,9 +1,4 @@
-#ifdef _NO_PROTO
-extern int readViewman();
-extern void scalePoint();
-extern int spadAction();
-#else
 extern int readViewman(void *  , int );
 extern void scalePoint(viewTriple * );
 extern int spadAction(void);
-#endif
+

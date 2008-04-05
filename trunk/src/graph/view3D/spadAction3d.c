@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -48,13 +48,7 @@
 #include "all_3d.H1"
 
 int 
-#ifdef _NO_PROTO
-readViewman (info,size)
-  void *info;
-  int size;
-#else
 readViewman (void *info,int size)
-#endif
 {
   int m = 0;
 
@@ -65,12 +59,7 @@ readViewman (void *info,int size)
 
 }
 void 
-#ifdef _NO_PROTO
-scalePoint (p)
-        viewTriple *p;
-#else
 scalePoint (viewTriple *p)
-#endif
 {
 
   p->x *= viewData.scaleToView;
@@ -90,11 +79,7 @@ scalePoint (viewTriple *p)
  ********************/
 
 int 
-#ifdef _NO_PROTO
-spadAction ()
-#else
 spadAction (void)
-#endif
 {
   int code, viewCommand;
   float f1, f2, f3;

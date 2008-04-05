@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -78,11 +78,7 @@ static int rotateX, rotateY, rotateR;
   */
 
 void
-#ifdef _NO_PROTO
-drawColorMap ()
-#else
 drawColorMap (void)
-#endif
 {
   
   controlPanelStruct *cp;
@@ -162,12 +158,7 @@ drawColorMap (void)
  *******************************/
 
 void
-#ifdef _NO_PROTO
-writeControlTitle (w)
-        Window w;
-#else
 writeControlTitle (Window w)
-#endif
 {
   int strlength;
 
@@ -187,11 +178,7 @@ writeControlTitle (Window w)
 /************************************/
 
 void
-#ifdef _NO_PROTO
-clearControlMessage ()
-#else
 clearControlMessage (void)
-#endif
 {
   int strlength;
 
@@ -210,11 +197,7 @@ clearControlMessage (void)
 /************************************/
 
 void
-#ifdef _NO_PROTO
-writeControlMessage ()
-#else
 writeControlMessage (void)
-#endif
 {
 
   int strlength;
@@ -240,11 +223,7 @@ writeControlMessage (void)
 /*********************************/
 
 void
-#ifdef _NO_PROTO
-drawControlPanel()
-#else
 drawControlPanel(void )
-#endif
 {
 
   int                   offShade=14;
@@ -816,12 +795,7 @@ drawControlPanel(void )
  *****************************/
 
 controlXY
-#ifdef _NO_PROTO
-getControlXY (whereDoYouWantPanel)
-  int whereDoYouWantPanel;
-#else
 getControlXY (int whereDoYouWantPanel)
-#endif
 {
 
   XWindowAttributes wAttrib;
@@ -896,11 +870,7 @@ getControlXY (int whereDoYouWantPanel)
 /************************************************/
 
 controlPanelStruct *
-#ifdef _NO_PROTO
-makeControlPanel ()
-#else
 makeControlPanel (void)
-#endif
 {
 
   Window                cw;
@@ -1022,12 +992,7 @@ makeControlPanel (void)
  *****************************************/
 
 void
-#ifdef _NO_PROTO
-putControlPanelSomewhere (whereDoesPanelGo)
-  int whereDoesPanelGo;
-#else
 putControlPanelSomewhere (int whereDoesPanelGo)
-#endif
 {
   controlPanelStruct *control;
   controlXY          whereControl;
