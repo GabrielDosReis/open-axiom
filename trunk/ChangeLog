@@ -1,5 +1,10 @@
 2008-04-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet [mingw] (oa_shrlib_flags): Ensure
+	the compiler appreciates we want dynamic link.
+
+2008-04-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* configure.ac.pamphlet (oa_shrlib_flags): Tidy.
 	(oa_shrobj_flags): Likewise.
 	* config/var-def.mk (LINK_SHRLIB): Tidy.
