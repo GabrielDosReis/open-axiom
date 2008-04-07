@@ -35,6 +35,7 @@ import '"boot-pkg"
 )package "BOOT"
 
 ++ Basic types used throughout Boot codes.
+%Void <=> nil
 %Boolean <=> BOOLEAN
 %Short <=> FIXNUM
 %Integer <=> BIGNUM
@@ -54,3 +55,4 @@ import '"boot-pkg"
 
 %Modemap <=> %List                             -- modemap
 
+%Shell <=> SIMPLE_-VECTOR                      -- constructor instantiation

@@ -1,3 +1,38 @@
+2008-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compWithMappingMode): Use getShellEntry.
+	* interp/define.boot (compDefineFunctor1): Use setShellEntry.
+	(canCacheLocalDomain): Likewise.
+	(compilerCases): Likewise.
+	(doIt): Likewise.
+	* interp/functor.boot (setVector0): Likewise.
+	(setVector3): Likewise.
+	(setVector4part4): Likewise.
+	(setVector5): Likewise.
+	(mkVectorWithDeferral): Likewise.
+	(DescendCodeAdd1): Likewise.
+	(DescendCode): Likewise.
+	(ConsantCreator): Likewise.
+	(SetFunctionSlots): Likewise.
+	(CheckVector): Likewise.
+	* interp/g-opt.boot (optCall): Use getShellEntry.
+	(optSpecialCall): Likewise.
+	* interp/i-util.boot (devaluate): Likewise.
+	* interp/nruncomp.boot (buildFunctor): Use setShellEntry.
+	(NRTsetVector4a): Likewise.
+	(NRTputInLocalReferences): Use getShellEntry.
+	(NRTputInHead): Likewise.
+	* interp/nrunopt.boot (augmentPredVector): Use setShellEntry.
+	* interp/nruntime.boot (getShellEntry): New.
+	(setShellEntry): Likewise.
+	* interp/package.boot (processPackage): Use getShellEntry.
+	(PackageDescendCode): Use setShellEntry.
+	* interp/sys-globals.boot ($QuickCode): Remove.
+	* interp/template.boot (NRTdescendCodeTran): Use setShellEntry.
+	* interp/types.boot (%Void): New.
+	(%Shell): New.
+	* interp/wi2.boot (compDefineFunctor1): Use setShellEntry.
+
 2008-04-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-constants.boot ($quitTag): Define here.

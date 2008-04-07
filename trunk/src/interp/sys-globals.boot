@@ -288,9 +288,6 @@ $SPAD := false
 $PrintOnly := false
 
 ++
-$QuickCode := true
-
-++
 $QuickLet := true
 
 ++

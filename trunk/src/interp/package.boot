@@ -83,7 +83,7 @@ processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
                     for v in u repeat
                       if (a:=ASSOC(v,alist)) then
                         [.,:i]:=a
-                        u:=replace(v,[($QuickCode=>'QREFELT;'ELT),"$",i],u) where
+                        u:=replace(v,["getShellEntry","$",i],u) where
                            replace(old,new,l) ==
                              l isnt [h,:t] => l
                              h = old => [new,:t]
@@ -93,7 +93,7 @@ processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
                       u:=replace(v,v',u)
                     u
               precomp:=[elem,:precomp]
-            code:=[[($QuickCode=>'QSETREFV;'SETELT),"$",i,u'],:code]
+            code:=[["setShellEntry","$",i,u'],:code]
           nreverse code
   code:=
     ["PROGN",:$getDomainCode,["LET","$",["newShell",#locals]],
@@ -175,6 +175,7 @@ PackageDescendCode(code,flag,viewAssoc) ==
   code is ["call",:.] => code
   code is ["SETELT",:.] => code
   code is ["QSETREFV",:.] => code
+  code is ["setShellEntry",:.] => code
   stackWarning ["unknown Package code ",code]
   code
  

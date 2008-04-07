@@ -254,8 +254,8 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
       vec:=[first v,:vec]
       rest v = 1 =>
                 --Only used once
-        slist:=[[first v,($QuickCode => 'QREFELT;'ELT),"$$",i],:slist]
-      scode:=[['SETQ,first v,[($QuickCode => 'QREFELT;'ELT),"$$",i]],:scode]
+        slist:=[[first v,"getShellEntry","$$",i],:slist]
+      scode:=[['SETQ,first v,["getShellEntry","$$",i]],:scode]
       locals:=[first v,:locals]
     body:=
       slist => SUBLISNQ(slist,CDDR expandedFunction)
@@ -1484,7 +1484,6 @@ compileSpad2Cmd args ==
 
     -- following are for )quick option for code generation
     $QuickLet   : local := true
-    $QuickCode  : local := true
 
     fun         := ['rq, 'lib]
     constructor := nil

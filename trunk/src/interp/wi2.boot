@@ -79,9 +79,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $getDomainCode: local -- code for getting views
     $insideFunctorIfTrue: local:= true
     $functorsUsed: local --not currently used, finds dependent functors
-    $setelt: local :=
-      $QuickCode = true => 'QSETREFV
-      'SETELT
+    $setelt: local := "setShellEntry"
     $TOP__LEVEL: local
     $genSDVar: local:= 0
     originale:= $e
@@ -1166,7 +1164,7 @@ doItLet1 item ==
   qe(6,$e)
   code is ['LET,:.] =>
       rhsCode:= rhs'
-      op := ($QuickCode => 'QSETREFV;'SETELT)
+      op := "setShellEntry"
       wiReplaceNode(item,[op,'$,NRTgetLocalIndexClear lhs,rhsCode], 16)
   wiReplaceNode(item, code, 18)
 

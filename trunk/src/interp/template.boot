@@ -255,7 +255,7 @@ NRTdescendCodeTran(u,condList) ==
 --NRTbuildFunctor calls to fill $template slots with names of compiled functions
   null u => nil
   u is ['LIST] => nil
-  u is [op,.,i,a] and MEMQ(op,'(SETELT QSETREFV)) =>
+  u is [op,.,i,a] and MEMQ(op,'(setShellEntry SETELT QSETREFV)) =>
     null condList and a is ['CONS,fn,:.] =>
       RPLACA(u,'LIST)
       RPLACD(u,nil)

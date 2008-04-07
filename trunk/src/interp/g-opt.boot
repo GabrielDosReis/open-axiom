@@ -148,14 +148,14 @@ optCall (x is ["call",:u]) ==
   fn is ["PAC",:.] => optPackageCall(x,fn,a)
   fn is ["applyFun",name] =>
     (RPLAC(first x,"SPADCALL"); RPLAC(rest x,[:a,name]); x)
-  fn is [q,R,n] and MEMQ(q,'(ELT QREFELT CONST)) =>
+  fn is [q,R,n] and MEMQ(q,'(getShellEntry ELT QREFELT CONST)) =>
     not $bootStrapMode and (w:= optCallSpecially(q,x,n,R)) => w
     q="CONST" =>
 --+
       ["spadConstant",R,n]
     --putInLocalDomainReferences will change this to ELT or QREFELT
     RPLAC(first x,"SPADCALL")
-    if $QuickCode then RPLACA(fn,"QREFELT")
+    RPLACA(fn,"getShellEntry")
     RPLAC(rest x,[:a,fn])
     x
   systemErrorHere ['"optCall with", :bright x]
@@ -212,7 +212,7 @@ optSpecialCall(x,y,n) ==
     x
   [fn,:a]:= first x
   RPLAC(first x,"SPADCALL")
-  if $QuickCode then RPLACA(fn,"QREFELT")
+  RPLACA(fn,"getShellEntry")
   RPLAC(rest x,[:a,fn])
   x
  
