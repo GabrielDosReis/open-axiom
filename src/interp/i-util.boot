@@ -132,9 +132,10 @@ Undef(:u) ==
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
 devaluate d ==
   not REFVECP d => d
-  QSGREATERP(QVSIZE d,5) and QREFELT(d,3) is ['Category] => QREFELT(d,0)
+  QSGREATERP(QVSIZE d,5) and getShellEntry(d,3) is ['Category] => 
+    getShellEntry(d,0)
   QSGREATERP(QVSIZE d,0) =>
-    d':=QREFELT(d,0)
+    d':=getShellEntry(d,0)
     isFunctor d' => d'
     d
   d

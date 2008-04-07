@@ -398,9 +398,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $getDomainCode: local -- code for getting views
     $insideFunctorIfTrue: local:= true
     $functorsUsed: local --not currently used, finds dependent functors
-    $setelt: local :=
-      $QuickCode = true => 'QSETREFV
-      'SETELT
+    $setelt: local := "setShellEntry"
     $TOP__LEVEL: local
     $genSDVar: local:= 0
     originale:= $e
@@ -1007,14 +1005,14 @@ addArgumentConditions($body,$functionName) ==
   $body
  
 putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
-  $elt: local := ($QuickCode => 'QREFELT; 'ELT)
+  $elt: local := "getShellEntry"
 --+
   NRTputInTail CDDADR def
   def
  
  
 canCacheLocalDomain(dom,elt)==
-   dom is [op,'_$,n] and MEMQ(op,'(ELT QREFELT)) => nil
+   dom is [op,'_$,n] and MEMQ(op,'(getShellEntry ELT QREFELT)) => nil
    domargsglobal(dom) =>
         $functorLocalParameters:= [:$functorLocalParameters,dom]
         PUSH([dom,GENVAR(),[elt,$selector,$funcLocLen]],$usedDomList)
@@ -1042,8 +1040,8 @@ compileCases(x,$e) == -- $e is referenced in compile
                 eval substitute(R',R,u)]]
         isEltArgumentIn(Rlist,x) ==
           atom x => nil
-          x is ['ELT,R,.] => MEMQ(R,Rlist) or isEltArgumentIn(Rlist,rest x)
-          x is ["QREFELT",R,.] => MEMQ(R,Rlist) or isEltArgumentIn(Rlist,rest x)
+          x is [op,R,.] and op in '(getShellEntry ELT QREFELT) => 
+            MEMQ(R,Rlist) or isEltArgumentIn(Rlist,rest x)
           isEltArgumentIn(Rlist,first x) or isEltArgumentIn(Rlist,rest x)
   null specialCaseAssoc => compile x
   listOfDomains:= ASSOCLEFT specialCaseAssoc
@@ -1332,7 +1330,7 @@ doIt(item,$predl) ==
         [[lhs,:SUBLIS($LocalDomainAlist,(get(lhs,'value,$e)).0)],:$LocalDomainAlist]
 --+
     code is ['LET,:.] =>
-      RPLACA(item,($QuickCode => 'QSETREFV;'SETELT))
+      RPLACA(item,"setShellEntry")
       rhsCode:=
        rhs'
       RPLACD(item,['$,NRTgetLocalIndexClear lhs,rhsCode])

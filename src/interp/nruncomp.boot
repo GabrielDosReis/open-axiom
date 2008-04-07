@@ -428,7 +428,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       ['LET,domname,['LIST,MKQ CAR $definition,:ASSOCRIGHT $devaluateList]]
     createViewCode:= ['LET,'$,["newShell", $NRTbase + $NRTdeltaLength]]
     setVector0Code:=[$setelt,'$,0,'dv_$]
-    slot3Code := ['QSETREFV,'$,3,['LET,'pv_$,predBitVectorCode1]]
+    slot3Code := ["setShellEntry",'$,3,['LET,'pv_$,predBitVectorCode1]]
     slamCode:=
       isCategoryPackageName opOf $definition => nil
       [NRTaddToSlam($definition,'$)]
@@ -575,7 +575,7 @@ NRTsetVector4a(sig,form,cond) ==
 NRTmakeSlot1 domainShell ==
   opDirectName := INTERN STRCONC(PNAME first $definition,'";opDirect")
   fun := '(function lookupInCompactTable)
-  [($QuickCode=>'QSETREFV;'SETELT), '$,1, ['LIST,fun,'$,opDirectName]]
+  ["setShellEntry", '$,1, ['LIST,fun,'$,opDirectName]]
 
 NRTmakeSlot1Info() ==
 -- 4 cases:
@@ -691,7 +691,7 @@ NRTsubstDelta(initSig) ==
 updateSlot1DataBase [name,info] == HPUT($Slot1DataBase,name,info)
 
 NRTputInLocalReferences bod ==
-  $elt: local := ($QuickCode => 'QREFELT; 'ELT)
+  $elt: local := "getShellEntry"
   NRTputInHead bod
 
 NRTputInHead bod ==
@@ -699,7 +699,7 @@ NRTputInHead bod ==
   bod is ['SPADCALL,:args,fn] =>
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
-    fn is [elt,dom,ind] and not (dom='$) and MEMQ(elt,'(ELT QREFELT CONST)) =>
+    fn is [elt,dom,ind] and not (dom='$) and MEMQ(elt,'(getShellEntry ELT QREFELT CONST)) =>
       k:= NRTassocIndex dom => RPLACA(LASTNODE bod,[$elt,'_$,k])
       nil
     NRTputInHead fn
