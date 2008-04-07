@@ -1,3 +1,8 @@
+2008-04-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-constants.boot ($quitTag): Define here.
+	* interp/spaderror.lisp ($quitTag): Don't define here.
+
 2008-04-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* graph/include/Gfun.H1: Remove K&R prototypes.
