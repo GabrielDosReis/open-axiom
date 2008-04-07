@@ -105,7 +105,7 @@ goGet(:l) ==
   fn:= basicLookup(op,sig,lookupDomain,dollar)
   fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
   val:= APPLY(first fn,[:arglist,rest fn])
-  SETELT(thisDomain,index,fn)
+  setShellEntry(thisDomain,index,fn)
   val
 
 NRTreplaceLocalTypes(t,dom) ==

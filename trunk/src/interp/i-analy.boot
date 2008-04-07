@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -186,7 +186,7 @@ pushDownOp?(op,n) ==
   numMms := LENGTH ops
   for [.,targ,:argl] in ops repeat
     for arg in argl for i in 0.. repeat
-      targ = arg => SETELT(sameAsTarg,i,1 + sameAsTarg.i)
+      targ = arg => setShellEntry(sameAsTarg,i,1 + sameAsTarg.i)
   -- now see which args have their count = numMms
   ok := NIL
   for i in 0..(n-1) repeat
