@@ -44,11 +44,7 @@
 ;;(defmacro |trappedSpadEval| (form) form) ;;nop for now
 
 #+:akcl
-(defconstant |$quitTag| system::*quit-tag*)
-#+:akcl
 (defun |resetStackLimits| () (system:reset-stack-limits))
-#-:akcl
-(defconstant |$quitTag| (gensym))
 #-:akcl
 (defun |resetStackLimits| () nil)
 

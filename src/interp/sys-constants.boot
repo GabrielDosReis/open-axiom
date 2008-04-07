@@ -624,3 +624,13 @@ BLANK == '" "
 
 ++
 UNDERBAR == '"__"
+
+++ Lisp catch tag used by some Lisp systems to exit the debugger loop.
+$quitTag ==
+)if %hasFeature KEYWORD::GCL
+  SYSTEM::_*QUIT_-TAG_*
+)elseif %hasFeature KEYWORD::SBCL
+  QUOTE SB_-INT::TOPLEVEL_-CATCHER
+)else
+  GENSYM()
+)endif
