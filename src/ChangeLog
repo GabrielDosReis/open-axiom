@@ -1,5 +1,12 @@
 2008-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-analy.boot (pushDownOp?): Use setShellEntry.
+	* interp/nrunfast.boot (replaceGoGetSlot): Likewise.
+	(lazyDomainSet): Likewise.
+	* interp/nrungo.boot (goGet): Likewise.
+
+2008-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compWithMappingMode): Use getShellEntry.
 	* interp/define.boot (compDefineFunctor1): Use setShellEntry.
 	(canCacheLocalDomain): Likewise.
