@@ -985,6 +985,11 @@ coerceIntAlgebraicConstant(object,t2) ==
       objNewWrap(getConstantFromDomain('(Zero),t2),t2)
   NIL
 
+++ returns true if `val' belongs to the Union branch guarded by `pred'.
+thisUnionBranch?: (%Code,%Thing) -> %Boolean
+thisUnionBranch?(pred,val) ==
+  eval ["LET",[["#1",MKQ val]],pred]
+
 coerceUnion2Branch(object) ==
   [.,:unionDoms] := objMode object
   doms := orderUnionEntries unionDoms
@@ -994,7 +999,7 @@ coerceUnion2Branch(object) ==
   predicate := NIL
   targetType:= NIL
   for typ in doms for pred in predList while ^targetType repeat
-    evalSharpOne(pred,val') =>
+    thisUnionBranch?(pred,val') =>
       predicate := pred
       targetType := typ
   null targetType => keyedSystemError("S2IC0013",NIL)

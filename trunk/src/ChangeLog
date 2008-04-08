@@ -1,5 +1,11 @@
 2008-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad.lisp (|evalSharpOne|): Remove.
+	* interp/i-coerce.boot: New.
+	(coerceUnion2Branch): Use it instead of evalSharpOne.
+
+2008-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-analy.boot (pushDownOp?): Use setShellEntry.
 	* interp/nrunfast.boot (replaceGoGetSlot): Likewise.
 	(lazyDomainSet): Likewise.
