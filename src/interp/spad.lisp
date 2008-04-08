@@ -343,8 +343,6 @@
          (if |$InteractiveMode| (|spadThrow|))
          (S-PROCESS x))))
 
-(defun |evalSharpOne| (x \#1) (declare (special \#1)) (EVAL x))
-
 (defun |New,ENTRY,1| ()
     (let (ZZ str N RLGENSYMFG RLGENSYMLST |NewFLAG| XCAPE
           SINGLELINEMODE OK ISID NBLNK COUNT CHR ULCASEFG ($LINESTACK 'BEGIN_UNIT)
