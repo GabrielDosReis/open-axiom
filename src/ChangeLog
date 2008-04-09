@@ -1,5 +1,10 @@
 2008-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nlib.lisp (recompile-lib-file-if-necessary): Remove.
+	* interp/comp.lisp (|compileFileQuietly|): Move to compiler.boot.
+
+2008-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Lattice.pamphlet: Remove.
 
 2008-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
