@@ -1,3 +1,7 @@
+2008-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/Lattice.pamphlet: Remove.
+
 2008-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/spad.lisp (|evalSharpOne|): Remove.
