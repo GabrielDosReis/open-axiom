@@ -418,8 +418,8 @@ bpOutItem()==
       ImportSignature(x, sig) =>
         bpPush genImportDeclaration(x, sig)
 
-      TypeAlias(t, args, rhs) => 
-        bpPush [["DEFTYPE", t, args, ["QUOTE", rhs]]]
+      TypeAlias(lhs, rhs) => 
+        bpPush [genTypeAlias(lhs,rhs)]
 
       ConstantDefinition(n, e) =>
         bpPush [["DEFCONSTANT", n, e]]
