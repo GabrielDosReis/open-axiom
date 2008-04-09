@@ -74,7 +74,7 @@ structure Ast ==
   Module(%String)                       -- module declaration
   Import(%String)                       -- import module
   ImportSignature(Name, Signature)      -- import function declaration
-  TypeAlias(Name, %List, %List)         -- type alias definition
+  TypeAlias(%Head, %List)               -- type alias definition
   Signature(Name, Mapping)              -- op: S -> T
   Mapping(Ast, %List)                   -- (S1, S2) -> T
   SuffixDot(Ast)                        -- x . 
@@ -118,6 +118,12 @@ structure Ast ==
 -- TRUE if we are currently building the syntax tree for an 'is' 
 -- expression.
 $inDefIS := false
+
+
+quote x ==
+  ["QUOTE",x]
+
+--%
 
 bfGenSymbol: () -> %Symbol 
 bfGenSymbol()==
@@ -1159,6 +1165,19 @@ bfThrow e ==
   atom e => ["THROW",["QUOTE",e],nil]
   not atom first e => bpTrap()
   ["THROW",["QUOTE",first e],:rest e]
+
+--% Type alias definition
+
+backquote(form,params) ==
+  null params => quote  form
+  atom form =>
+    form in params => form
+    quote form
+  ["LIST",:[backquote(t,params) for t in form]]
+
+genTypeAlias(head,body) ==
+  [op,:args] := head
+  ["DEFTYPE",op,args,backquote(body,args)]
 
 --% Native datatype translation
 coreSymbol: %Symbol -> %Symbol

@@ -1,3 +1,11 @@
+2008-04-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (bpOutItem): Tidy.
+	* boot/parser.boot (bpTypeAliasDefition): Support parameterized alias.
+	* boot/ast.boot (quote): New.
+	(backquote): Likewise.
+	(genTypeAlias): Likewise.
+
 2008-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nlib.lisp (recompile-lib-file-if-necessary): Remove.
