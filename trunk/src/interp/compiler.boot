@@ -1592,6 +1592,15 @@ compilerDoitWithScreenedLisplib(constructor, fun) ==
                    SEQ(UNEMBED 'RWRITE))
 
 
+--% Interface to the backend
+
+compileFileQuietly path ==
+  $OutputStream :=
+    $InteractiveMode => MAKE_-BROADCAST_-STREAM()
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+  COMPILE_-FILE path
+
+
 --% Register compilers for special forms.
 -- Those compilers are on the `SPECIAL' property of the corresponding
 -- special form operator symbol.

@@ -54,8 +54,6 @@
 (IMPORT-MODULE "macros")
 (in-package "BOOT")
 
-(export '(Comp FluidVars LocVars OptionList SLAM SPADSLAM ILAM FLUID))
-
 (defparameter |$compileDontDefineFunctions| 'T)
 
 ;;; Common Block section
@@ -96,32 +94,6 @@
 	     (make-broadcast-stream)
            (make-synonym-stream '*standard-output*))))
     (COMP fn)))
-
-#-:CCL
-(defun |compileFileQuietly| (fn) 
-  (let (
-     ;; following creates a null outputstream if $InteractiveMode
-        (|$OutputStream|
-         (if |$InteractiveMode| (make-broadcast-stream)
-           (make-synonym-stream '*standard-output*))))
-    (COMPILE-FILE fn)))
-
-#+:CCL
-(defun |compileFileQuietly| (fn)
-  (let (
-     ;; following creates a null outputstream if $InteractiveMode
-     (|$OutputStream|
-       (if |$InteractiveMode| (make-broadcast-stream) *standard-output*)))
-     ;; The output-library is not opened before use unless set explicitly
-     (if (null output-library)
-         (|openOutputLibrary| 
-           (setq |$outputLibraryName|
-            (if (null |$outputLibraryName|)
-                (make-pathname :directory (get-current-directory)
-                               :name "user.lib")
-                (if (filep |$outputLibraryName|) (truename |$outputLibraryName|)
-                                                 |$outputLibraryName|)))))
-     (compile-lib-file fn)))
 
 ;; The following are used mainly in setvars.boot
 (defun notEqualLibs (u v)
