@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -98,7 +98,7 @@ buildLibdb(:options) ==  --called by buildDatabase (database.boot)
   deleteFile '"temp.text"
 
 buildLibdbConEntry conname ==
-    NULL GETDATABASE(conname, 'CONSTRUCTORMODEMAP) => nil
+    null getConstructorModemap conname => nil
     abb:=GETDATABASE(conname,'ABBREVIATION)
     $conname := conname
     conform := GETDATABASE(conname,'CONSTRUCTORFORM) or [conname] --hack for Category,..
@@ -109,7 +109,7 @@ buildLibdbConEntry conname ==
     pname := PNAME conname
     kind  := GETDATABASE(conname,'CONSTRUCTORKIND)
     if kind = 'domain
-      and GETDATABASE(conname,'CONSTRUCTORMODEMAP) is [[.,t,:.],:.]
+      and getConstructorModemap conname is [[.,t,:.],:.]
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
       pname.(MAXINDEX pname) = char '_& => 'x
@@ -129,7 +129,7 @@ buildLibdbString [x,:u] ==
   STRCONC(STRINGIMAGE x,"STRCONC"/[STRCONC('"`",STRINGIMAGE y) for y in u])
 
 libConstructorSig [conname,:argl] ==
-  [[.,:sig],:.] := GETDATABASE(conname,'CONSTRUCTORMODEMAP)
+  [[.,:sig],:.] := getConstructorModemap conname
   formals := TAKE(#argl,$FormalMapVariableList)
   sig := SUBLISLIS(formals,$TriangleVariableList,sig)
   keys := [g(f,sig,i) for f in formals for i in 1..] where

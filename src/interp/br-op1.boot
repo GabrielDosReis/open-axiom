@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -318,7 +318,7 @@ conform2StringList(form,opFn,argFn,exception) ==
     rest GETDATABASE(op,'COSIG)
   atypes :=
     special => cosig
-    rest CDAR GETDATABASE(op,'CONSTRUCTORMODEMAP)
+    rest CDAR getConstructorModemap op
   sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     keyword :=
       x is [":",y,t] =>
@@ -362,7 +362,7 @@ dbOuttran form ==
     op := form
     args := nil
   cosig := rest GETDATABASE(op,'COSIG)
-  atypes := rest CDAR GETDATABASE(op,'CONSTRUCTORMODEMAP)
+  atypes := rest CDAR getConstructorModemap op
   argl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pred => x
     typ := sublisFormal(args,atype)
@@ -1028,7 +1028,7 @@ evalableConstructor2HtString domform ==
         f = 'QUOTE => first args
         [f,:[unquote x for x in args]]
       arg
-  fargtypes:=CDDAR GETDATABASE(conname,'CONSTRUCTORMODEMAP)
+  fargtypes:=CDDAR getConstructorModemap conname
 --argtypes:= sublisFormal(arglist,fargtypes)
   form2HtString([conname,:[fn for arg in arglist for x in coSig
                    for ftype in fargtypes]],nil,true) where

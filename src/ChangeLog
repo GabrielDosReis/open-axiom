@@ -1,3 +1,17 @@
+2008-04-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/ax.boot: Use getConstructorModemap throughout.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/daase.lisp: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+
 2008-04-12  Juergen Weiss  <weiss@uni-mainz.de>
 
 	* interp/define.boot (compCapsuleItems): Fix thinko.

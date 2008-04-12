@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -313,7 +313,7 @@ conform2OutputForm(form) ==
   [op,:args] := form
   null args => form
   cosig := rest GETDATABASE(op,'COSIG)
-  atypes := rest CDAR GETDATABASE(op,'CONSTRUCTORMODEMAP)
+  atypes := rest CDAR getConstructorModemap op
   sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pp [x,atype,pred]
     pred => conform2OutputForm x

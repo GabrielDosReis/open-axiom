@@ -810,7 +810,7 @@ getExportCategory form ==
   [op,:argl] := form
   op = 'Record => ['RecordCategory,:argl]
   op = 'Union => ['UnionCategory,:argl]
-  functorModemap := GETDATABASE(op,'CONSTRUCTORMODEMAP)
+  functorModemap := getConstructorModemap op
   [[.,target,:tl],:.] := functorModemap
   EQSUBSTLIST(argl,$FormalMapVariableList,target)
  
