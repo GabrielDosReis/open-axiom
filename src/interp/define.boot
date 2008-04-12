@@ -1275,11 +1275,7 @@ processFunctor(form,signature,data,localParList,e) ==
  
 compCapsuleItems(itemlist,$predl,$e) ==
   $TOP__LEVEL: local
-  $myFunctorBody :local         -- := data    ---needed for translator
-  -- ??? the following line needs more investigation.  Why is data
-  -- ??? expected to be a dynamic variable? Looks more like a bug.
-  if (BOUNDP 'data) then 
-    $myFunctorBody:= SYMBOL_-VALUE 'data -- unbound at runtime?
+  $myFunctorBody :local    ---needed for translator
   $signatureOfForm: local
   $suffix: local:= 0
   for item in itemlist repeat $e:= compSingleCapsuleItem(item,$predl,$e)
