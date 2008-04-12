@@ -340,16 +340,6 @@ substNames(domainName,viewName,functorForm,opalist) ==
      for [:modemapform,[sel,"$",pos]] in
           EQSUBSTLIST(KDR functorForm,$FormalMapVariableList, opalist)]
  
-compCat(form is [functorName,:argl],m,e) ==
-  fn:= GETL(functorName,"makeFunctionList") or return nil
-  [funList,e]:= FUNCALL(fn,form,form,e)
-  catForm:=
-    ["Join",'(SetCategory),["CATEGORY","domain",:
-      [["SIGNATURE",op,sig] for [op,sig,.] in funList | op^="="]]]
-  --RDJ: for coercion purposes, it necessary to know it's a Set; I'm not
-  --sure if it uses any of the other signatures(see extendsCategoryForm)
-  [form,catForm,e]
- 
 addConstructorModemaps(name,form is [functorName,:.],e) ==
   $InteractiveMode: local:= nil
   e:= putDomainsInScope(name,e) --frame

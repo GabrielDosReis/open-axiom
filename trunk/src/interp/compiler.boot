@@ -1592,6 +1592,20 @@ compilerDoitWithScreenedLisplib(constructor, fun) ==
                    SEQ(UNEMBED 'RWRITE))
 
 
+--% Categories
+
+compCat(form is [functorName,:argl],m,e) ==
+  fn:= GETL(functorName,"makeFunctionList") or return nil
+  [funList,e]:= FUNCALL(fn,form,form,e)
+  catForm:=
+    ["Join",'(SetCategory),["CATEGORY","domain",:
+      [["SIGNATURE",op,sig] for [op,sig,.] in funList | op^="="]]]
+  --RDJ: for coercion purposes, it necessary to know it's a Set; I'm not
+  --sure if it uses any of the other signatures(see extendsCategoryForm)
+  [form,catForm,e]
+ 
+
+
 --% Interface to the backend
 
 compileFileQuietly path ==
@@ -1604,10 +1618,10 @@ compileFileQuietly path ==
 --% Register compilers for special forms.
 -- Those compilers are on the `SPECIAL' property of the corresponding
 -- special form operator symbol.
-for x in [["_|", :"compSuchthat"],_
-	  ["_@", :"compAtSign"],_
-	  ["_:", :"compColon"],_
-	  ["_:_:", :"compCoerce"],_
+for x in [["|", :"compSuchthat"],_
+	  ["@", :"compAtSign"],_
+	  [":", :"compColon"],_
+	  ["::", :"compCoerce"],_
 	  ["QUOTE", :"compQuote"],_
 	  ["add", :"compAdd"],_
 	  ["CAPSULE", :"compCapsule"],_
@@ -1619,6 +1633,7 @@ for x in [["_|", :"compSuchthat"],_
 	  ["construct", :"compConstruct"],_
 	  ["DEF", :"compDefine"],_
 	  ["elt", :"compElt"],_
+	  ["Enumeration", :"compCat"],_
 	  ["exit", :"compExit"],_
 	  ["has", :"compHas"],_
 	  ["IF", : "compIf"],_

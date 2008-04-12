@@ -1,3 +1,9 @@
+2008-04-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot: Register compiler for Enumeration
+	instantiations. 
+	* interp/modemap.boot (compCat): Move to compiler.boot.
+
 2008-04-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/translator.boot (bpOutItem): Tidy.
