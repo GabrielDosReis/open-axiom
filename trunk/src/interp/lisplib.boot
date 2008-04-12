@@ -161,7 +161,7 @@ loadLib cname ==
   clearConstructorCache cname
   updateDatabase(cname,cname,systemdir?)
   installConstructor(cname,kind)
-  u := GETDATABASE(cname, 'CONSTRUCTORMODEMAP)
+  u := getConstructorModemap cname
   updateCategoryTable(cname,kind)
   coSig :=
       u =>
@@ -227,14 +227,14 @@ convertOpAlist2compilerInfo(opalist) ==
    
 updateCategoryFrameForConstructor(constructor) ==
    opAlist := GETDATABASE(constructor, 'OPERATIONALIST)
-   [[dc,:sig],[pred,impl]] := GETDATABASE(constructor, 'CONSTRUCTORMODEMAP) 
+   [[dc,:sig],[pred,impl]] := getConstructorModemap constructor
    $CategoryFrame := put(constructor,'isFunctor,
        convertOpAlist2compilerInfo(opAlist),
        addModemap(constructor, dc, sig, pred, impl,
            put(constructor, 'mode, ['Mapping,:sig], $CategoryFrame)))
 
 updateCategoryFrameForCategory(category) ==
-   [[dc,:sig],[pred,impl]] := GETDATABASE(category, 'CONSTRUCTORMODEMAP) 
+   [[dc,:sig],[pred,impl]] := getConstructorModemap category
    $CategoryFrame :=
      put(category, 'isCategory, 'T,
          addModemap(category, dc, sig, pred, impl, $CategoryFrame))
@@ -626,12 +626,14 @@ findDomainSlotNumber(domain,op,sig) == --using slot 1 of the domain
   tail is [.,["ELT",.,n]] => n
   systemErrorHere '"findDomainSlotNumber"
  
- 
+
+++ return the modemap of the constructor or the instantiation
+++ of the constructor `form'. 
 getConstructorModemap form ==
   GETDATABASE(opOf form, 'CONSTRUCTORMODEMAP)
  
 getConstructorSignature form ==
-  (mm := GETDATABASE(opOf(form),'CONSTRUCTORMODEMAP)) =>
+  (mm := getConstructorModemap form) =>
     [[.,:sig],:.] := mm
     sig
   NIL

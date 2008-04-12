@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -60,7 +60,7 @@ makeAxFile(filename, constructors) ==
   $literals := []
   axForms :=
      [modemapToAx(modemap) for cname in constructors |
-            (modemap:=GETDATABASE(cname,'CONSTRUCTORMODEMAP)) and
+            (modemap:=getConstructorModemap cname) and
               (not cname in '(Tuple Exit Type)) and
                 not isDefaultPackageName cname]
   if $baseForms then
@@ -80,7 +80,7 @@ makeAxExportForm(filename, constructors) ==
   $literals := []
   axForms :=
      [modemapToAx(modemap) for cname in constructors |
-            (modemap:=GETDATABASE(cname,'CONSTRUCTORMODEMAP)) and
+            (modemap:=getConstructorModemap cname) and
               (not cname in '(Tuple Exit Type)) and
                 not isDefaultPackageName cname]
   if $baseForms then
@@ -226,13 +226,13 @@ axFormatType(typeform) ==
           ['PretendTo, axFormatType CADDR typeform, 'SetCategory]]
   typeform is [op,:args] =>
       $pretendFlag and constructor? op and
-        GETDATABASE(op,'CONSTRUCTORMODEMAP) is [[.,target,:argtypes],.] =>
+        getConstructorModemap op is [[.,target,:argtypes],.] =>
           ['Apply, op,
                :[['PretendTo, axFormatType a, axFormatType t]
                      for a in args for t in argtypes]]
       MEMQ(op, '(SquareMatrix SquareMatrixCategory DirectProduct
          DirectProductCategory RadixExpansion)) and
-            GETDATABASE(op,'CONSTRUCTORMODEMAP) is [[.,target,arg1type,:restargs],.] =>
+            getConstructorModemap op is [[.,target,arg1type,:restargs],.] =>
                ['Apply, op,
                   ['PretendTo, axFormatType first args, axFormatType arg1type],
                      :[axFormatType a for a in rest args]]
