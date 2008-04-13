@@ -154,7 +154,7 @@ loadLib cname ==
   update? := $forceDatabaseUpdate or not systemdir? 
   not update? =>
      loadLibNoUpdate(cname, cname, fullLibName)
-  kind := GETDATABASE(cname,'CONSTRUCTORKIND)
+  kind := getConstructorKindFromDB cname
   if $printLoadMsgs then
     sayKeyedMsg("S2IL0002",[namestring fullLibName,kind,cname])
   loadModule(fullLibName,cname)
@@ -180,7 +180,7 @@ loadLib cname ==
   'T
 
 loadLibNoUpdate(cname, libName, fullLibName) ==
-  kind := GETDATABASE(cname,'CONSTRUCTORKIND)
+  kind := getConstructorKindFromDB cname
   if $printLoadMsgs then
     sayKeyedMsg("S2IL0002",[namestring fullLibName,kind,cname])
   if CATCH('VERSIONCHECK,loadModule(fullLibName,cname)) = -1
@@ -210,8 +210,8 @@ loadLibIfNecessary(u,mustExist) ==
     loadLib u => u
   null $InteractiveMode and ((null (y:= getProplist(u,$CategoryFrame)))
     or (null LASSOC('isFunctor,y)) and (null LASSOC('isCategory,y))) =>
-      y:= GETDATABASE(u,'CONSTRUCTORKIND) =>
-         y = 'category =>
+      y:= getConstructorKindFromDB u =>
+         y = "category" =>
             updateCategoryFrameForCategory u
          updateCategoryFrameForConstructor u
       throwKeyedMsg("S2IL0005",[u])
@@ -257,7 +257,7 @@ makeConstructorsAutoLoad() ==
 systemDependentMkAutoload(fn,cnam) ==
     FBOUNDP(cnam) => "next"
     asharpName := GETDATABASE(cnam, 'ASHARP?) =>
-         kind := GETDATABASE(cnam, 'CONSTRUCTORKIND)
+         kind := getConstructorKindFromDB cnam
          cosig := GETDATABASE(cnam, 'COSIG)
          file := GETDATABASE(cnam, 'OBJECT)
          SET_-LIB_-FILE_-GETTER(file, cnam)
@@ -675,7 +675,7 @@ mkEvalableCategoryForm c ==       --from DEFINE
     MEMQ(op,$CategoryNames) =>
       ([x,m,$e]:= compOrCroak(c,$EmptyMode,$e); m=$Category => x)
     --loadIfNecessary op
-    GETDATABASE(op,'CONSTRUCTORKIND) = 'category or
+    getConstructorKindFromDB op = 'category or
       get(op,"isCategory",$CategoryFrame) =>
         [op,:[quotifyCategoryArgument x for x in argl]]
     [x,m,$e]:= compOrCroak(c,$EmptyMode,$e)
@@ -699,12 +699,12 @@ isFunctor x ==
   not IDENTP op => false
   $InteractiveMode =>
     MEMQ(op,$DomainNames) => true
-    MEMQ(GETDATABASE(op,'CONSTRUCTORKIND),'(domain package))
+    MEMQ(getConstructorKindFromDB op,'(domain package))
   u:= get(op,'isFunctor,$CategoryFrame)
     or MEMQ(op,'(SubDomain Union Record)) => u
   constructor? op =>
     prop := get(op,'isFunctor,$CategoryFrame) => prop
-    if GETDATABASE(op,'CONSTRUCTORKIND) = 'category
+    if getConstructorKindFromDB op = "category"
       then updateCategoryFrameForCategory op
       else updateCategoryFrameForConstructor op
     get(op,'isFunctor,$CategoryFrame)

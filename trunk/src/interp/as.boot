@@ -297,7 +297,7 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
   NREVERSE acc
 
 asIsCategoryForm m ==
-  m = 'BasicType or GETDATABASE(opOf m,'CONSTRUCTORKIND) = 'category
+  m = "BasicType" or getConstructorKindFromDB opOf m = "category"
 
 asyDocumentation con ==
   docHash := HGET($docHash,con)
@@ -454,8 +454,8 @@ asytranDeclaration(dform,levels,predlist,local?) ==
       asyLooksLikeCatForm? form => 'category
       form is ['Apply, '_-_>,.,u] =>
         if u is ['Apply, construc,:.] then u:= construc
-        GETDATABASE(opOf u,'CONSTRUCTORKIND) = 'domain  => 'function
-        asyLooksLikeCatForm? u => 'category
+        getConstructorKindFromDB opOf u = "domain"  => "function"
+        asyLooksLikeCatForm? u => "category"
         'domain
       'domain
     first levels

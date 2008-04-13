@@ -254,9 +254,11 @@
 ; have category y?". this is answered by constructing a pair of
 ; (x . y) and doing an equal hash into this table.
 
-(defvar *operation-hash* nil "given an operation name, what are its modemaps?")
+(defvar *operation-hash* nil
+  "given an operation name, what are its modemaps?")
 
-(defvar *miss* nil "print out cache misses on getdatabase calls")
+(defvar *miss* nil
+  "if true print out cache misses on getdatabase calls")
 
    ; note that constructorcategory information need only be kept for
    ; items of type category. this will be fixed in the next iteration
@@ -277,29 +279,52 @@
 ; position information in the database then the database is NOT
 ; read in and is assumed to match the in-core version
 
-(defvar *compressvector* nil "a vector of things to compress in the databases")
-(defvar *compressVectorLength* 0 "length of the compress vector")
-(defvar *compress-stream* nil "an stream containing the compress vector")
-(defvar *compress-stream-stamp* 0 "*compress-stream* (position . time)")
+(defvar *compressvector* nil
+  "a vector of things to compress in the databases")
 
-(defvar *interp-stream* nil "an open stream to the interpreter database")
-(defvar *interp-stream-stamp* 0 "*interp-stream* (position . time)")
+(defvar *compressVectorLength* 0
+  "length of the compress vector")
+
+(defvar *compress-stream* nil 
+  "an stream containing the compress vector")
+
+(defvar *compress-stream-stamp* 0 
+  "*compress-stream* (position . time)")
+
+(defvar *interp-stream* nil
+  "an open stream to the interpreter database")
+
+(defvar *interp-stream-stamp* 0
+  "*interp-stream* (position . time)")
 
 ; this is indexed by operation, not constructor
-(defvar *operation-stream* nil "the stream to operation.daase")
-(defvar *operation-stream-stamp* 0 "*operation-stream* (position . time)")
+(defvar *operation-stream*
+  nil "the stream to operation.daase")
 
-(defvar *browse-stream* nil "an open stream to the browser database")
-(defvar *browse-stream-stamp* 0 "*browse-stream* (position . time)")
+(defvar *operation-stream-stamp* 0
+  "*operation-stream* (position . time)")
+
+(defvar *browse-stream* nil
+  "an open stream to the browser database")
+
+(defvar *browse-stream-stamp* 0
+  "*browse-stream* (position . time)")
 
 ; this is indexed by (domain . category)
-(defvar *category-stream* nil "an open stream to the category table")
-(defvar *category-stream-stamp* 0 "*category-stream* (position . time)")
+(defvar *category-stream* nil
+  "an open stream to the category table")
 
-(defvar *allconstructors* nil "a list of all the constructors in the system")
-(defvar *allOperations* nil "a list of all the operations in the system")
+(defvar *category-stream-stamp* 0 
+  "*category-stream* (position . time)")
 
-(defvar *asharpflags* "-O -laxiom -Fasy -Flsp" "library compiler flags")
+(defvar *allconstructors* nil
+  "a list of all the constructors in the system")
+
+(defvar *allOperations* nil
+  "a list of all the operations in the system")
+
+(defvar *asharpflags*
+  "-O -laxiom -Fasy -Flsp" "library compiler flags")
 
 (defun asharp (file &optional (flags *asharpflags*))
  "call the asharp compiler"
@@ -332,90 +357,184 @@
 )
 
 (defun initial-getdatabase ()
- "fetch data we want in the saved system"
- (let (hascategory constructormodemapAndoperationalist operation constr)
- (format t "Initial getdatabase~%")
- (setq hascategory '(
-  (|Equation| . |Ring|)
-  (|Expression| . |CoercibleTo|) (|Expression| . |CommutativeRing|)
-  (|Expression| . |IntegralDomain|) (|Expression| . |Ring|)
-  (|Float| . |RetractableTo|)
-  (|Fraction| . |Algebra|) (|Fraction| . |CoercibleTo|)
-  (|Fraction| . |OrderedSet|) (|Fraction| . |RetractableTo|)
-  (|Integer| . |Algebra|) (|Integer| . |CoercibleTo|)
-  (|Integer| . |ConvertibleTo|) (|Integer| . |LinearlyExplicitRingOver|)
-  (|Integer| . |RetractableTo|)
-  (|List| . |CoercibleTo|) (|List| . |FiniteLinearAggregate|)
-  (|List| . |OrderedSet|)
-  (|Polynomial| . |CoercibleTo|) (|Polynomial| . |CommutativeRing|)
-  (|Polynomial| . |ConvertibleTo|) (|Polynomial| . |OrderedSet|)
-  (|Polynomial| . |RetractableTo|)
-  (|Symbol| . |CoercibleTo|) (|Symbol| . |ConvertibleTo|)
-  (|Variable| . |CoercibleTo|)))
- (dolist (pair hascategory) (getdatabase pair 'hascategory))
- (setq constructormodemapAndoperationalist '(
-  |BasicOperator|  |Boolean|
-  |CardinalNumber| |Color|  |Complex|
-  |Database|
-  |Equation| |EquationFunctions2| |Expression|
-  |Float| |Fraction| |FractionFunctions2|
-  |Integer| |IntegralDomain|
-  |Kernel|
-  |List|
-  |Matrix| |MappingPackage1|
-  |Operator| |OutputForm|
-  |NonNegativeInteger|
-  |ParametricPlaneCurve| |ParametricSpaceCurve| |Point| |Polynomial|
-  |PolynomialFunctions2| |PositiveInteger|
-  |Ring|
-  |SetCategory| |SegmentBinding| |SegmentBindingFunctions2| |DoubleFloat|
-  |SparseMultivariatePolynomial| |SparseUnivariatePolynomial| |Segment|
-  |String| |Symbol|
-  |UniversalSegment|
-  |Variable|  |Vector|))
- (dolist (con constructormodemapAndoperationalist)
-  (|getConstructorModemap| con)
-  (getdatabase con 'operationalist))
- (setq operation '(
-  |+| |-| |*| |/| |**| |coerce| |convert| |elt| |equation|
-  |float| |sin| |cos| |map| |SEGMENT|))
- (dolist (op operation) (getdatabase op 'operation))
- (setq constr '( ;these are sorted least-to-most freq. delete early ones first
-  |Factored| |SparseUnivariatePolynomialFunctions2| |TableAggregate&|
-  |RetractableTo&| |RecursiveAggregate&| |UserDefinedPartialOrdering|
-  |None| |UnivariatePolynomialCategoryFunctions2| |IntegerPrimesPackage|
-  |SetCategory&| |IndexedExponents| |QuotientFieldCategory&| |Polynomial|
-  |EltableAggregate&| |PartialDifferentialRing&| |Set|
-  |UnivariatePolynomialCategory&| |FlexibleArray|
-  |SparseMultivariatePolynomial| |PolynomialCategory&|
-  |DifferentialExtension&| |IndexedFlexibleArray| |AbelianMonoidRing&|
-  |FiniteAbelianMonoidRing&| |DivisionRing&| |FullyLinearlyExplicitRingOver&|
-  |IndexedVector| |IndexedOneDimensionalArray| |LocalAlgebra| |Localize|
-  |Boolean| |Field&| |Vector| |IndexedDirectProductObject| |Aggregate&|
-  |PolynomialRing| |FreeModule| |IndexedDirectProductAbelianGroup|
-  |IndexedDirectProductAbelianMonoid| |SingletonAsOrderedSet|
-  |SparseUnivariatePolynomial| |Fraction| |Collection&| |HomogeneousAggregate&|
-  |RepeatedSquaring| |IntegerNumberSystem&| |AbelianSemiGroup&|
-  |AssociationList| |OrderedRing&| |SemiGroup&| |Symbol|
-  |UniqueFactorizationDomain&| |EuclideanDomain&| |IndexedAggregate&|
-  |GcdDomain&| |IntegralDomain&| |DifferentialRing&| |Monoid&| |Reference|
-  |UnaryRecursiveAggregate&| |OrderedSet&| |AbelianGroup&| |Algebra&|
-  |Module&| |Ring&| |StringAggregate&| |AbelianMonoid&|
-  |ExtensibleLinearAggregate&| |PositiveInteger| |StreamAggregate&|
-  |IndexedString| |IndexedList| |ListAggregate&| |LinearAggregate&|
-  |Character| |String| |NonNegativeInteger| |SingleInteger|
-  |OneDimensionalArrayAggregate&| |FiniteLinearAggregate&| |PrimitiveArray|
-  |Integer| |List| |OutputForm|))
- (dolist (con constr)
-  (let ((c (|getSystemModulePath| (string (getdatabase con 'abbreviation)))))
-    (format t "   preloading ~a.." c)
-    (if (probe-file c)
-     (progn
-      (put con 'loaded c)
-      (|loadModule| c con)
-      (format t "loaded.~%"))
-     (format t "skipped.~%"))))
- (format t "~%")))
+  "fetch data we want in the saved system"
+  (let (hascategory constructormodemapAndoperationalist operation constr)
+    (format t "Initial getdatabase~%")
+    (setq hascategory '(
+			(|Equation| . |Ring|)
+			(|Expression| . |CoercibleTo|)
+			(|Expression| . |CommutativeRing|)
+			(|Expression| . |IntegralDomain|)
+			(|Expression| . |Ring|)
+			(|Float| . |RetractableTo|)
+			(|Fraction| . |Algebra|) 
+			(|Fraction| . |CoercibleTo|)
+			(|Fraction| . |OrderedSet|)
+			(|Fraction| . |RetractableTo|)
+			(|Integer| . |Algebra|) 
+			(|Integer| . |CoercibleTo|)
+			(|Integer| . |ConvertibleTo|)
+			(|Integer| . |LinearlyExplicitRingOver|)
+			(|Integer| . |RetractableTo|)
+			(|List| . |CoercibleTo|)
+			(|List| . |FiniteLinearAggregate|)
+			(|List| . |OrderedSet|)
+			(|Polynomial| . |CoercibleTo|) 
+			(|Polynomial| . |CommutativeRing|)
+			(|Polynomial| . |ConvertibleTo|)
+			(|Polynomial| . |OrderedSet|)
+			(|Polynomial| . |RetractableTo|)
+			(|Symbol| . |CoercibleTo|) 
+			(|Symbol| . |ConvertibleTo|)
+			(|Variable| . |CoercibleTo|)))
+    (dolist (pair hascategory)
+      (getdatabase pair 'hascategory))
+    (setq constructormodemapAndoperationalist 
+	  '(|BasicOperator| 
+	    |Boolean|
+	    |CardinalNumber|
+	    |Color|
+	    |Complex|
+	    |Database|
+	    |Equation| 
+	    |EquationFunctions2|
+	    |Expression|
+	    |Float| 
+	    |Fraction|
+	    |FractionFunctions2|
+	    |Integer| 
+	    |IntegralDomain|
+	    |Kernel|
+	    |List|
+	    |Matrix|
+	    |MappingPackage1|
+	    |Operator|
+	    |OutputForm|
+	    |NonNegativeInteger|
+	    |ParametricPlaneCurve|
+	    |ParametricSpaceCurve|
+	    |Point| 
+	    |Polynomial|
+	    |PolynomialFunctions2|
+	    |PositiveInteger|
+	    |Ring|
+	    |SetCategory| 
+	    |SegmentBinding|
+	    |SegmentBindingFunctions2|
+	    |DoubleFloat|
+	    |SparseMultivariatePolynomial|
+	    |SparseUnivariatePolynomial|
+	    |Segment|
+	    |String|
+	    |Symbol|
+	    |UniversalSegment|
+	    |Variable|
+	    |Vector|))
+    (dolist (con constructormodemapAndoperationalist)
+      (|getConstructorModemap| con)
+      (getdatabase con 'operationalist))
+    (setq operation 
+	  '(|+| |-| |*| |/| |**| 
+	    |coerce| |convert| |elt| |equation|
+	    |float| |sin| |cos| |map| |SEGMENT|))
+    (dolist (op operation)
+      (getdatabase op 'operation))
+    (setq constr
+	  '( ;these are sorted least-to-most freq. delete early ones first
+	    |Factored| 
+	    |SparseUnivariatePolynomialFunctions2|
+	    |TableAggregate&|
+	    |RetractableTo&|
+	    |RecursiveAggregate&|
+	    |UserDefinedPartialOrdering|
+	    |None|
+	    |UnivariatePolynomialCategoryFunctions2|
+	    |IntegerPrimesPackage|
+	    |SetCategory&|
+	    |IndexedExponents| 
+	    |QuotientFieldCategory&|
+	    |Polynomial|
+	    |EltableAggregate&|
+	    |PartialDifferentialRing&| 
+	    |Set|
+	    |UnivariatePolynomialCategory&|
+	    |FlexibleArray|
+	    |SparseMultivariatePolynomial|
+	    |PolynomialCategory&|
+	    |DifferentialExtension&|
+	    |IndexedFlexibleArray|
+	    |AbelianMonoidRing&|
+	    |FiniteAbelianMonoidRing&|
+	    |DivisionRing&| 
+	    |FullyLinearlyExplicitRingOver&|
+	    |IndexedVector|
+	    |IndexedOneDimensionalArray| 
+	    |LocalAlgebra|
+	    |Localize|
+	    |Boolean|
+	    |Field&|
+	    |Vector|
+	    |IndexedDirectProductObject|
+	    |Aggregate&|
+	    |PolynomialRing|
+	    |FreeModule|
+	    |IndexedDirectProductAbelianGroup|
+	    |IndexedDirectProductAbelianMonoid|
+	    |SingletonAsOrderedSet|
+	    |SparseUnivariatePolynomial|
+	    |Fraction| 
+	    |Collection&|
+	    |HomogeneousAggregate&|
+	    |RepeatedSquaring|
+	    |IntegerNumberSystem&|
+	    |AbelianSemiGroup&|
+	    |AssociationList|
+	    |OrderedRing&| 
+	    |SemiGroup&|
+	    |Symbol|
+	    |UniqueFactorizationDomain&|
+	    |EuclideanDomain&|
+	    |IndexedAggregate&|
+	    |GcdDomain&|
+	    |IntegralDomain&|
+	    |DifferentialRing&|
+	    |Monoid&|
+	    |Reference|
+	    |UnaryRecursiveAggregate&| 
+	    |OrderedSet&|
+	    |AbelianGroup&|
+	    |Algebra&|
+	    |Module&| 
+	    |Ring&| 
+	    |StringAggregate&|
+	    |AbelianMonoid&|
+	    |ExtensibleLinearAggregate&|
+	    |PositiveInteger| 
+	    |StreamAggregate&|
+	    |IndexedString|
+	    |IndexedList|
+	    |ListAggregate&|
+	    |LinearAggregate&|
+	    |Character| 
+	    |String|
+	    |NonNegativeInteger|
+	    |SingleInteger|
+	    |OneDimensionalArrayAggregate&|
+	    |FiniteLinearAggregate&|
+	    |PrimitiveArray|
+	    |Integer| 
+	    |List|
+	    |OutputForm|))
+    (dolist (con constr)
+      (let ((c (|getSystemModulePath| (string (getdatabase con 'abbreviation)))))
+	(format t "   preloading ~a.." c)
+	(if (probe-file c)
+	    (progn
+	      (put con 'loaded c)
+	      (|loadModule| c con)
+	      (format t "loaded.~%"))
+	  (format t "skipped.~%"))))
+    (format t "~%")))
 
 ; format of an entry in interp.daase:
 ;  (constructor-name
@@ -434,33 +553,33 @@
 ;    ancestors           -- used to compute new category updates
 ;  )
 (defun interpOpen ()
- "open the interpreter database and hash the keys"
- (let (constructors pos stamp dbstruct)
-  (setq *interp-stream* (open (DaaseName "interp.daase" nil)))
-  (setq stamp (read *interp-stream*))
-  (unless (equal stamp *interp-stream-stamp*)
-   (format t "   Re-reading interp.daase")
-   (setq *interp-stream-stamp* stamp)
-   (setq pos (car stamp))
-   (file-position *interp-stream* pos)
-   (setq constructors (read *interp-stream*))
-   (dolist (item constructors)
-    (setq item (unsqueeze item))
-    (setq *allconstructors* (adjoin (first item) *allconstructors*))
-    (setq dbstruct (make-database))
-    (setf (get (car item) 'database) dbstruct)
-    (setf (database-operationalist dbstruct) (second item))
-    (setf (database-constructormodemap dbstruct) (third item))
-    (setf (database-modemaps dbstruct) (fourth item))
-    (setf (database-object dbstruct) (fifth item))
-    (setf (database-constructorcategory dbstruct) (sixth item))
-    (setf (database-niladic dbstruct) (seventh item))
-    (setf (database-abbreviation dbstruct) (eighth item))
-    (setf (get (eighth item) 'abbreviationfor) (first item)) ;invert
-    (setf (database-cosig dbstruct) (ninth item))
-    (setf (database-constructorkind dbstruct) (tenth item))
-    (setf (database-ancestors dbstruct) (nth 11 item))))
-  (format t "~&")))
+  "open the interpreter database and hash the keys"
+  (let (constructors pos stamp dbstruct)
+    (setq *interp-stream* (open (DaaseName "interp.daase" nil)))
+    (setq stamp (read *interp-stream*))
+    (unless (equal stamp *interp-stream-stamp*)
+      (format t "   Re-reading interp.daase")
+      (setq *interp-stream-stamp* stamp)
+      (setq pos (car stamp))
+      (file-position *interp-stream* pos)
+      (setq constructors (read *interp-stream*))
+      (dolist (item constructors)
+	(setq item (unsqueeze item))
+	(setq *allconstructors* (adjoin (first item) *allconstructors*))
+	(setq dbstruct (make-database))
+	(setf (get (car item) 'database) dbstruct)
+	(setf (database-operationalist dbstruct) (second item))
+	(setf (database-constructormodemap dbstruct) (third item))
+	(setf (database-modemaps dbstruct) (fourth item))
+	(setf (database-object dbstruct) (fifth item))
+	(setf (database-constructorcategory dbstruct) (sixth item))
+	(setf (database-niladic dbstruct) (seventh item))
+	(setf (database-abbreviation dbstruct) (eighth item))
+	(setf (get (eighth item) 'abbreviationfor) (first item)) ;invert
+	(setf (database-cosig dbstruct) (ninth item))
+	(setf (database-constructorkind dbstruct) (tenth item))
+	(setf (database-ancestors dbstruct) (nth 11 item))))
+    (format t "~&")))
 
 ; this is an initialization function for the constructor database
 ; it sets up 2 hash tables, opens the database and hashes the index values
@@ -489,306 +608,330 @@
 ; )
 
 (defun browseOpen ()
- "open the constructor database and hash the keys"
- (let (constructors pos stamp dbstruct)
-  (setq *browse-stream* (open (DaaseName "browse.daase" nil)))
-  (setq stamp (read *browse-stream*))
-  (unless (equal stamp *browse-stream-stamp*)
-   (format t "   Re-reading browse.daase")
-   (setq *browse-stream-stamp* stamp)
-   (setq pos (car stamp))
-   (file-position *browse-stream* pos)
-   (setq constructors (read *browse-stream*))
-   (dolist (item constructors)
-    (setq item (unsqueeze item))
-    (unless (setq dbstruct (get (car item) 'database))
-     (format t "browseOpen:~%")
-     (format t "the browse database contains a contructor ~a~%" item)
-     (format t "that is not in the interp.daase file. we cannot~%")
-     (format t "get the database structure for this constructor and~%")
-     (warn "will create a new one~%")
-     (setf (get (car item) 'database) (setq dbstruct (make-database)))
-     (setq *allconstructors* (adjoin item *allconstructors*)))
-    (setf (database-sourcefile dbstruct) (second item))
-    (setf (database-constructorform dbstruct) (third item))
-    (setf (database-documentation dbstruct) (fourth item))
-    (setf (database-attributes dbstruct) (fifth item))
-    (setf (database-predicates dbstruct) (sixth item))
-    (setf (database-parents dbstruct) (seventh item))))
-  (format t "~&")))
+  "open the constructor database and hash the keys"
+  (let (constructors pos stamp dbstruct)
+    (setq *browse-stream* (open (DaaseName "browse.daase" nil)))
+    (setq stamp (read *browse-stream*))
+    (unless (equal stamp *browse-stream-stamp*)
+      (format t "   Re-reading browse.daase")
+      (setq *browse-stream-stamp* stamp)
+      (setq pos (car stamp))
+      (file-position *browse-stream* pos)
+      (setq constructors (read *browse-stream*))
+      (dolist (item constructors)
+	(setq item (unsqueeze item))
+	(unless (setq dbstruct (get (car item) 'database))
+	  (format t "browseOpen:~%")
+	  (format t "the browse database contains a contructor ~a~%" item)
+	  (format t "that is not in the interp.daase file. we cannot~%")
+	  (format t "get the database structure for this constructor and~%")
+	  (warn "will create a new one~%")
+	  (setf (get (car item) 'database) (setq dbstruct (make-database)))
+	  (setq *allconstructors* (adjoin item *allconstructors*)))
+	(setf (database-sourcefile dbstruct) (second item))
+	(setf (database-constructorform dbstruct) (third item))
+	(setf (database-documentation dbstruct) (fourth item))
+	(setf (database-attributes dbstruct) (fifth item))
+	(setf (database-predicates dbstruct) (sixth item))
+	(setf (database-parents dbstruct) (seventh item))))
+    (format t "~&")))
 
 (defun categoryOpen ()
- "open category.daase and hash the keys"
- (let (pos keys stamp)
-  (setq *category-stream* (open (DaaseName "category.daase" nil)))
-  (setq stamp (read *category-stream*))
-  (unless (equal stamp *category-stream-stamp*)
-   (format t "   Re-reading category.daase")
-   (setq *category-stream-stamp* stamp)
-   (setq pos (car stamp))
-   (file-position *category-stream* pos)
-   (setq keys (read *category-stream*))
-   (setq *hasCategory-hash* (make-hash-table :test #'equal))
-   (dolist (item keys)
-    (setq item (unsqueeze item))
-    (setf (gethash (first item) *hasCategory-hash*) (second item))))
-  (format t "~&")))
+  "open category.daase and hash the keys"
+  (let (pos keys stamp)
+    (setq *category-stream* (open (DaaseName "category.daase" nil)))
+    (setq stamp (read *category-stream*))
+    (unless (equal stamp *category-stream-stamp*)
+      (format t "   Re-reading category.daase")
+      (setq *category-stream-stamp* stamp)
+      (setq pos (car stamp))
+      (file-position *category-stream* pos)
+      (setq keys (read *category-stream*))
+      (setq *hasCategory-hash* (make-hash-table :test #'equal))
+      (dolist (item keys)
+	(setq item (unsqueeze item))
+	(setf (gethash (first item) *hasCategory-hash*) (second item))))
+    (format t "~&")))
 
 (defun operationOpen ()
- "read operation database and hash the keys"
- (let (operations pos stamp)
-  (setq *operation-stream* (open (DaaseName "operation.daase" nil)))
-  (setq stamp (read *operation-stream*))
-  (unless (equal stamp *operation-stream-stamp*)
-   (format t "   Re-reading operation.daase")
-   (setq *operation-stream-stamp* stamp)
-   (setq pos (car stamp))
-   (file-position *operation-stream* pos)
-   (setq operations (read *operation-stream*))
-   (dolist (item operations)
-    (setq item (unsqueeze item))
-    (setf (gethash (car item) *operation-hash*) (cdr item))))
-  (format t "~&")))
+  "read operation database and hash the keys"
+  (let (operations pos stamp)
+    (setq *operation-stream* (open (DaaseName "operation.daase" nil)))
+    (setq stamp (read *operation-stream*))
+    (unless (equal stamp *operation-stream-stamp*)
+      (format t "   Re-reading operation.daase")
+      (setq *operation-stream-stamp* stamp)
+      (setq pos (car stamp))
+      (file-position *operation-stream* pos)
+      (setq operations (read *operation-stream*))
+      (dolist (item operations)
+	(setq item (unsqueeze item))
+	(setf (gethash (car item) *operation-hash*) (cdr item))))
+    (format t "~&")))
 
 (defun addoperations (constructor oldmaps)
- "add ops from a )library domain to *operation-hash*"
- (declare (special *operation-hash*))
- (dolist (map oldmaps) ; out with the old
-  (let (oldop op)
-   (setq op (car map))
-   (setq oldop (getdatabase op 'operation))
-   (setq oldop (delete (cdr map) oldop :test #'equal))
-   (setf (gethash op *operation-hash*) oldop)))
- (dolist (map (getdatabase constructor 'modemaps)) ; in with the new
-  (let (op newmap)
-   (setq op (car map))
-   (setq newmap (getdatabase op 'operation))
-   (setf (gethash op *operation-hash*) (cons (cdr map) newmap)))))
+  "add ops from a )library domain to *operation-hash*"
+  (declare (special *operation-hash*))
+  (dolist (map oldmaps) ; out with the old
+    (let (oldop op)
+      (setq op (car map))
+      (setq oldop (getdatabase op 'operation))
+      (setq oldop (delete (cdr map) oldop :test #'equal))
+      (setf (gethash op *operation-hash*) oldop)))
+  (dolist (map (getdatabase constructor 'modemaps)) ; in with the new
+    (let (op newmap)
+      (setq op (car map))
+      (setq newmap (getdatabase op 'operation))
+      (setf (gethash op *operation-hash*) (cons (cdr map) newmap)))))
 
 (defun showdatabase (constructor)
- (format t "~&~a: ~a~%" 'constructorkind
-  (getdatabase constructor 'constructorkind))
- (format t "~a: ~a~%" 'cosig
-  (getdatabase constructor 'cosig))
- (format t "~a: ~a~%" 'operation
-  (getdatabase constructor 'operation))
- (format t "~a: ~%" 'constructormodemap)
+  (format t "~&~a: ~a~%" 'constructorkind
+	  (getdatabase constructor 'constructorkind))
+  (format t "~a: ~a~%" 'cosig
+	  (getdatabase constructor 'cosig))
+  (format t "~a: ~a~%" 'operation
+	  (getdatabase constructor 'operation))
+  (format t "~a: ~%" 'constructormodemap)
   (pprint (|getConstructorModemap| constructor))
- (format t "~&~a: ~%" 'constructorcategory)
+  (format t "~&~a: ~%" 'constructorcategory)
   (pprint (getdatabase constructor 'constructorcategory))
- (format t "~&~a: ~%" 'operationalist)
+  (format t "~&~a: ~%" 'operationalist)
   (pprint (getdatabase constructor 'operationalist))
- (format t "~&~a: ~%" 'modemaps)
+  (format t "~&~a: ~%" 'modemaps)
   (pprint (getdatabase constructor 'modemaps))
- (format t "~a: ~a~%" 'hascategory
-  (getdatabase constructor 'hascategory))
- (format t "~a: ~a~%" 'object
-  (getdatabase constructor 'object))
- (format t "~a: ~a~%" 'niladic
-  (getdatabase constructor 'niladic))
- (format t "~a: ~a~%" 'abbreviation
-  (getdatabase constructor 'abbreviation))
- (format t "~a: ~a~%" 'constructor?
-  (getdatabase constructor 'constructor?))
- (format t "~a: ~a~%" 'constructor
-  (getdatabase constructor 'constructor))
- (format t "~a: ~a~%" 'defaultdomain
-  (getdatabase constructor 'defaultdomain))
- (format t "~a: ~a~%" 'ancestors
-  (getdatabase constructor 'ancestors))
- (format t "~a: ~a~%" 'sourcefile
-  (getdatabase constructor 'sourcefile))
- (format t "~a: ~a~%" 'constructorform
-  (getdatabase constructor 'constructorform))
- (format t "~a: ~a~%" 'constructorargs
-  (getdatabase constructor 'constructorargs))
- (format t "~a: ~a~%" 'attributes
-  (getdatabase constructor 'attributes))
- (format t "~a: ~%" 'predicates)
+  (format t "~a: ~a~%" 'hascategory
+	  (getdatabase constructor 'hascategory))
+  (format t "~a: ~a~%" 'object
+	  (getdatabase constructor 'object))
+  (format t "~a: ~a~%" 'niladic
+	  (getdatabase constructor 'niladic))
+  (format t "~a: ~a~%" 'abbreviation
+	  (getdatabase constructor 'abbreviation))
+  (format t "~a: ~a~%" 'constructor?
+	  (getdatabase constructor 'constructor?))
+  (format t "~a: ~a~%" 'constructor
+	  (getdatabase constructor 'constructor))
+  (format t "~a: ~a~%" 'defaultdomain
+	  (getdatabase constructor 'defaultdomain))
+  (format t "~a: ~a~%" 'ancestors
+	  (getdatabase constructor 'ancestors))
+  (format t "~a: ~a~%" 'sourcefile
+	  (getdatabase constructor 'sourcefile))
+  (format t "~a: ~a~%" 'constructorform
+	  (getdatabase constructor 'constructorform))
+  (format t "~a: ~a~%" 'constructorargs
+	  (getdatabase constructor 'constructorargs))
+  (format t "~a: ~a~%" 'attributes
+	  (getdatabase constructor 'attributes))
+  (format t "~a: ~%" 'predicates)
   (pprint (getdatabase constructor 'predicates))
- (format t "~a: ~a~%" 'documentation
-  (getdatabase constructor 'documentation))
- (format t "~a: ~a~%" 'parents
-  (getdatabase constructor 'parents)))
+  (format t "~a: ~a~%" 'documentation
+	  (getdatabase constructor 'documentation))
+  (format t "~a: ~a~%" 'parents
+	  (getdatabase constructor 'parents)))
 
 (defun setdatabase (constructor key value)
- (let (struct)
-  (when (symbolp constructor)
-   (unless (setq struct (get constructor 'database))
-    (setq struct (make-database))
-    (setf (get constructor 'database) struct))
-   (case key
-    (abbreviation
-     (setf (database-abbreviation struct) value)
-     (when (symbolp value)
-      (setf (get value 'abbreviationfor) constructor)))
-    (constructorkind
-     (setf (database-constructorkind struct) value))))))
+  (let (struct)
+    (when (symbolp constructor)
+      (unless (setq struct (get constructor 'database))
+	(setq struct (make-database))
+	(setf (get constructor 'database) struct))
+      (case key
+	    (abbreviation
+	     (setf (database-abbreviation struct) value)
+	     (when (symbolp value)
+	       (setf (get value 'abbreviationfor) constructor)))
+	    (constructorkind
+	     (setf (database-constructorkind struct) value))))))
 
 (defun deldatabase (constructor key)
   (when (symbolp constructor)
-   (case key
-    (abbreviation
-     (setf (get constructor 'abbreviationfor) nil)))))
+    (case key
+	  (abbreviation
+	   (setf (get constructor 'abbreviationfor) nil)))))
 
 (defun getdatabase (constructor key)
- (declare (special *miss*))
- (when (eq *miss* t) (format t "getdatabase call: ~20a ~a~%" constructor key))
- (let (data table stream ignore struct)
-  (declare (ignore ignore))
-  (when (or (symbolp constructor)
-          (and (eq key 'hascategory) (pairp constructor)))
-  (case key
+  (declare (special *miss*))
+  (when (eq *miss* t)
+    (format t "getdatabase call: ~20a ~a~%" constructor key))
+  (let (data table stream ignore struct)
+    (declare (ignore ignore))
+    (when (or (symbolp constructor)
+	      (and (eq key 'hascategory) (pairp constructor)))
+      (case key
 ; note that abbreviation, constructorkind and cosig are heavy hitters
 ; thus they occur first in the list of things to check
-   (abbreviation
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-      (setq data (database-abbreviation struct))))
-   (constructorkind
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-constructorkind struct))))
-   (cosig
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-cosig struct))))
-   (operation
-    (setq stream *operation-stream*)
-    (setq data (gethash constructor *operation-hash*)))
-   (constructormodemap
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-constructormodemap struct))))
-   (constructorcategory
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-constructorcategory struct))
-     (when (null data) ;domain or package then subfield of constructormodemap
-      (setq data (cadar (|getConstructorModemap| constructor))))))
-   (operationalist
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-operationalist struct))))
-   (modemaps
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-modemaps struct))))
-   (hascategory
-    (setq table  *hasCategory-hash*)
-    (setq stream *category-stream*)
-    (setq data (gethash constructor table)))
-   (object
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-object struct))))
-   (asharp?
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-object struct))))
-   (niladic
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-niladic struct))))
-   (constructor?
-    (when (setq struct (get constructor 'database))
-      (setq data (when (database-operationalist struct) t))))
-   (superdomain ; only 2 superdomains in the world
-    (case constructor
-     (|NonNegativeInteger|
-      (setq data '((|Integer|) (IF (< |#1| 0) |false| |true|))))
-     (|PositiveInteger|
-      (setq data '((|NonNegativeInteger|) (< 0 |#1|))))))
-   (constructor
-    (when (setq data (get constructor 'abbreviationfor))))
-   (defaultdomain
-    (setq data (cadr (assoc constructor *defaultdomain-list*))))
-   (ancestors
-    (setq stream *interp-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-ancestors struct))))
-   (sourcefile
-    (setq stream *browse-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-sourcefile struct))))
-   (constructorform
-    (setq stream *browse-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-constructorform struct))))
-   (constructorargs
-    (setq data (cdr (getdatabase constructor 'constructorform))))
-   (attributes
-    (setq stream *browse-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-attributes struct))))
-   (predicates
-    (setq stream *browse-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-predicates struct))))
-   (documentation
-    (setq stream *browse-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-documentation struct))))
-   (parents
-    (setq stream *browse-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-parents struct))))
-   (users
-    (setq stream *browse-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-users struct))))
-   (dependents
-    (setq stream *browse-stream*)
-    (when (setq struct (get constructor 'database))
-     (setq data (database-dependents struct))))
-   (otherwise  (warn "~%(GETDATABASE ~a ~a) failed~%" constructor key)))
-  (when (numberp data)                 ;fetch the real data
-   (when *miss* (format t "getdatabase miss: ~20a ~a~%" key constructor))
-   (file-position stream data)
-   (setq data (unsqueeze (read stream)))
-   (case key ; cache the result of the database read
-    (operation           (setf (gethash constructor *operation-hash*) data))
-    (hascategory         (setf (gethash constructor *hascategory-hash*) data))
-    (constructorkind     (setf (database-constructorkind struct) data))
-    (cosig               (setf (database-cosig struct) data))
-    (constructormodemap  (setf (database-constructormodemap struct) data))
-    (constructorcategory (setf (database-constructorcategory struct) data))
-    (operationalist      (setf (database-operationalist struct) data))
-    (modemaps            (setf (database-modemaps struct) data))
-    (object              (setf (database-object struct) data))
-    (niladic             (setf (database-niladic struct) data))
-    (abbreviation        (setf (database-abbreviation struct) data))
-    (constructor         (setf (database-constructor struct) data))
-    (ancestors           (setf (database-ancestors struct) data))
-    (constructorform     (setf (database-constructorform struct) data))
-    (attributes          (setf (database-attributes struct) data))
-    (predicates          (setf (database-predicates struct) data))
-    (documentation       (setf (database-documentation struct) data))
-    (parents             (setf (database-parents struct) data))
-    (users               (setf (database-users struct) data))
-    (dependents          (setf (database-dependents struct) data))
-    (sourcefile          (setf (database-sourcefile struct) data))))
-   (case key ; fixup the special cases
-    (sourcefile
-     (when (and data (string= (directory-namestring data) "")
-             (string= (pathname-type data) "spad"))
-      (setq data
-       (concatenate 'string (|systemRootDirectory|) "src/algebra/" data))))
-    (asharp?                               ; is this asharp code?
-     (if (consp data)
-      (setq data (cdr data))
-      (setq data nil)))
-    (object                                ; fix up system object pathname
-     (if (consp data)
-       (setq data
-             (if (string= (directory-namestring (car data)) "")
-                 (|getSystemModulePath| (car data))
-               (car data)))
-      (when (and data (string= (directory-namestring data) ""))
-       (setq data (|getSystemModulePath| data)))))))
-  data))
-
-; )library top level command  -- soon to be obsolete
+	    (abbreviation
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-abbreviation struct))))
+	    (constructorkind
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-constructorkind struct))))
+	    (cosig
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-cosig struct))))
+	    (operation
+	     (setq stream *operation-stream*)
+	     (setq data (gethash constructor *operation-hash*)))
+	    (constructormodemap
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-constructormodemap struct))))
+	    (constructorcategory
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-constructorcategory struct))
+	       (when (null data) ;domain or package then subfield of constructormodemap
+		 (setq data (cadar (|getConstructorModemap| constructor))))))
+	    (operationalist
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-operationalist struct))))
+	    (modemaps
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-modemaps struct))))
+	    (hascategory
+	     (setq table  *hasCategory-hash*)
+	     (setq stream *category-stream*)
+	     (setq data (gethash constructor table)))
+	    (object
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-object struct))))
+	    (asharp?
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-object struct))))
+	    (niladic
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-niladic struct))))
+	    (constructor?
+	     (when (setq struct (get constructor 'database))
+	       (setq data (when (database-operationalist struct) t))))
+	    (superdomain ; only 2 superdomains in the world
+	     (case constructor
+		   (|NonNegativeInteger|
+		    (setq data '((|Integer|) (IF (< |#1| 0) |false| |true|))))
+		   (|PositiveInteger|
+		    (setq data '((|NonNegativeInteger|) (< 0 |#1|))))))
+	    (constructor
+	     (when (setq data (get constructor 'abbreviationfor))))
+	    (defaultdomain
+	      (setq data (cadr (assoc constructor *defaultdomain-list*))))
+	    (ancestors
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-ancestors struct))))
+	    (sourcefile
+	     (setq stream *browse-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-sourcefile struct))))
+	    (constructorform
+	     (setq stream *browse-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-constructorform struct))))
+	    (constructorargs
+	     (setq data (cdr (getdatabase constructor 'constructorform))))
+	    (attributes
+	     (setq stream *browse-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-attributes struct))))
+	    (predicates
+	     (setq stream *browse-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-predicates struct))))
+	    (documentation
+	     (setq stream *browse-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-documentation struct))))
+	    (parents
+	     (setq stream *browse-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-parents struct))))
+	    (users
+	     (setq stream *browse-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-users struct))))
+	    (dependents
+	     (setq stream *browse-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-dependents struct))))
+	    (otherwise  
+	     (warn "~%(GETDATABASE ~a ~a) failed~%" constructor key)))
+      (when (numberp data)                 ;fetch the real data
+	(when *miss*
+	  (format t "getdatabase miss: ~20a ~a~%" key constructor))
+	(file-position stream data)
+	(setq data (unsqueeze (read stream)))
+	(case key ; cache the result of the database read
+	      (operation           
+	       (setf (gethash constructor *operation-hash*) data))
+	      (hascategory 
+	       (setf (gethash constructor *hascategory-hash*) data))
+	      (constructorkind 
+	       (setf (database-constructorkind struct) data))
+	      (cosig     
+	       (setf (database-cosig struct) data))
+	      (constructormodemap 
+	       (setf (database-constructormodemap struct) data))
+	      (constructorcategory 
+	       (setf (database-constructorcategory struct) data))
+	      (operationalist
+	       (setf (database-operationalist struct) data))
+	      (modemaps  
+	       (setf (database-modemaps struct) data))
+	      (object    
+	       (setf (database-object struct) data))
+	      (niladic   
+	       (setf (database-niladic struct) data))
+	      (abbreviation 
+	       (setf (database-abbreviation struct) data))
+	      (constructor 
+	       (setf (database-constructor struct) data))
+	      (ancestors 
+	       (setf (database-ancestors struct) data))
+	      (constructorform     
+	       (setf (database-constructorform struct) data))
+	      (attributes
+	       (setf (database-attributes struct) data))
+	      (predicates 
+	       (setf (database-predicates struct) data))
+	      (documentation 
+	       (setf (database-documentation struct) data))
+	      (parents   
+	       (setf (database-parents struct) data))
+	      (users     
+	       (setf (database-users struct) data))
+	      (dependents
+	       (setf (database-dependents struct) data))
+	      (sourcefile
+	       (setf (database-sourcefile struct) data))))
+      (case key ; fixup the special cases
+	    (sourcefile
+	     (when (and data (string= (directory-namestring data) "")
+			(string= (pathname-type data) "spad"))
+	       (setq data
+		     (concatenate 'string 
+				  (|systemRootDirectory|)
+				  "src/algebra/" data))))
+	    (asharp?			; is this asharp code?
+	     (if (consp data)
+		 (setq data (cdr data))
+	       (setq data nil)))
+	    (object		       ; fix up system object pathname
+	     (if (consp data)
+		 (setq data
+		       (if (string= (directory-namestring (car data)) "")
+			   (|getSystemModulePath| (car data))
+			 (car data)))
+	       (when (and data (string= (directory-namestring data) ""))
+		 (setq data (|getSystemModulePath| data)))))))
+    data))
 
 ;; Current directory
 ;; Contributed by Juergen Weiss.
@@ -902,11 +1045,12 @@
 
 
 (defun localasy (asy object only make-database? noexpose)
- "given an alist from the asyfile and the objectfile update the database"
- (labels (
-  (fetchdata (alist index)
-     (cdr (assoc index alist :test #'string=))))
-  (let (cname kind key alist (systemdir? nil) oldmaps asharp-name dbstruct abbrev)
+  "given an alist from the asyfile and the objectfile update the database"
+  (labels (
+	   (fetchdata (alist index)
+		      (cdr (assoc index alist :test #'string=))))
+	  (let (cname kind key alist (systemdir? nil) 
+		      oldmaps asharp-name dbstruct abbrev)
 #+:CCL
   ;; Open the library
   (let (lib)
@@ -928,142 +1072,153 @@
                          oldmaps :test #'equal))
            (asharpMkAutoloadFunction object asharp-name))
        (when (if (null only) (not (eq key '%%)) (member key only))
-        (setq *allOperations* nil)        ; force this to recompute
-        (setq oldmaps (getdatabase key 'modemaps))
-        (setq dbstruct (make-database))
-        (setf (get key 'database) dbstruct)
-        (setq *allconstructors* (adjoin key *allconstructors*))
-        (setf (database-constructorform dbstruct)
-         (fetchdata alist "constructorForm"))
-        (setf (database-constructorkind dbstruct)
-         (fetchdata alist "constructorKind"))
-        (setf (database-constructormodemap dbstruct)
-         (fetchdata alist "constructorModemap"))
-        (unless (setf (database-abbreviation dbstruct)
-                      (fetchdata alist "abbreviation"))
-                (setf (database-abbreviation dbstruct) key)) ; default
-        (setq abbrev (database-abbreviation dbstruct))
-        (setf (get abbrev 'abbreviationfor) key)
-        (setf (database-constructorcategory dbstruct)
-         (fetchdata alist "constructorCategory"))
-        (setf (database-attributes dbstruct)
-         (fetchdata alist "attributes"))
-        (setf (database-sourcefile dbstruct)
-         (fetchdata alist "sourceFile"))
-        (setf (database-operationalist dbstruct)
-         (fetchdata alist "operationAlist"))
-        (setf (database-modemaps dbstruct)
-         (fetchdata alist "modemaps"))
-        (setf (database-documentation dbstruct)
-         (fetchdata alist "documentation"))
-        (setf (database-predicates dbstruct)
-         (fetchdata alist "predicates"))
-        (setf (database-niladic dbstruct)
-         (fetchdata alist "NILADIC"))
-        (addoperations key oldmaps)
-        (setq cname  (|opOf| (database-constructorform dbstruct)))
-        (setq kind (database-constructorkind dbstruct))
-        (if (null noexpose) (|setExposeAddConstr| (cons cname nil)))
-        (unless make-database?
-         (|updateDatabase| key cname systemdir?) ;makes many hashtables???
-         (|installConstructor| cname kind)
-          ;; following can break category database build
-         (if (eq kind '|category|)
-             (setf (database-ancestors dbstruct)
-                   (fetchdata alist "ancestors")))
-         (if (eq kind '|domain|)
-             (dolist (pair (cdr (assoc "ancestors" alist :test #'string=)))
-                     (setf (gethash (cons cname (caar pair)) *hascategory-hash*)
-                           (cdr pair))))
-         (if |$InteractiveMode| (setq |$CategoryFrame| |$EmptyEnvironment|)))
-        (setf (database-cosig dbstruct)
-         (cons nil (mapcar #'|categoryForm?|
-          (cddar (database-constructormodemap dbstruct)))))
-        (setf (database-object dbstruct) (cons object asharp-name))
-        (if (eq kind '|category|)
-         (asharpMkAutoLoadCategory object cname asharp-name
-          (database-cosig dbstruct))
-         (asharpMkAutoLoadFunctor object cname asharp-name
-          (database-cosig dbstruct)))
-        (|sayKeyedMsg| 'S2IU0001 (list cname object))))))))
+	 (setq *allOperations* nil)        ; force this to recompute
+	 (setq oldmaps (getdatabase key 'modemaps))
+	 (setq dbstruct (make-database))
+	 (setf (get key 'database) dbstruct)
+	 (setq *allconstructors* (adjoin key *allconstructors*))
+	 (setf (database-constructorform dbstruct)
+	       (fetchdata alist "constructorForm"))
+	 (setf (database-constructorkind dbstruct)
+	       (fetchdata alist "constructorKind"))
+	 (setf (database-constructormodemap dbstruct)
+	       (fetchdata alist "constructorModemap"))
+	 (unless (setf (database-abbreviation dbstruct)
+		       (fetchdata alist "abbreviation"))
+	   (setf (database-abbreviation dbstruct) key)) ; default
+	 (setq abbrev (database-abbreviation dbstruct))
+	 (setf (get abbrev 'abbreviationfor) key)
+	 (setf (database-constructorcategory dbstruct)
+	       (fetchdata alist "constructorCategory"))
+	 (setf (database-attributes dbstruct)
+	       (fetchdata alist "attributes"))
+	 (setf (database-sourcefile dbstruct)
+	       (fetchdata alist "sourceFile"))
+	 (setf (database-operationalist dbstruct)
+	       (fetchdata alist "operationAlist"))
+	 (setf (database-modemaps dbstruct)
+	       (fetchdata alist "modemaps"))
+	 (setf (database-documentation dbstruct)
+	       (fetchdata alist "documentation"))
+	 (setf (database-predicates dbstruct)
+	       (fetchdata alist "predicates"))
+	 (setf (database-niladic dbstruct)
+	       (fetchdata alist "NILADIC"))
+	 (addoperations key oldmaps)
+	 (setq cname  (|opOf| (database-constructorform dbstruct)))
+	 (setq kind (database-constructorkind dbstruct))
+	 (if (null noexpose) (|setExposeAddConstr| (cons cname nil)))
+	 (unless make-database?
+	   (|updateDatabase| key cname systemdir?) ;makes many hashtables???
+	   (|installConstructor| cname kind)
+	   ;; following can break category database build
+	   (if (eq kind '|category|)
+	       (setf (database-ancestors dbstruct)
+		     (fetchdata alist "ancestors")))
+	   (if (eq kind '|domain|)
+	       (dolist (pair (cdr (assoc "ancestors" alist :test #'string=)))
+		 (setf (gethash (cons cname (caar pair)) *hascategory-hash*)
+		       (cdr pair))))
+	   (if |$InteractiveMode| 
+	       (setq |$CategoryFrame| |$EmptyEnvironment|)))
+	 (setf (database-cosig dbstruct)
+	       (cons nil (mapcar #'|categoryForm?|
+				 (cddar (database-constructormodemap dbstruct)))))
+	 (setf (database-object dbstruct) (cons object asharp-name))
+	 (if (eq kind '|category|)
+	     (asharpMkAutoLoadCategory object cname asharp-name
+				       (database-cosig dbstruct))
+	   (asharpMkAutoLoadFunctor object cname asharp-name
+				    (database-cosig dbstruct)))
+	 (|sayKeyedMsg| 'S2IU0001 (list cname object))))))))
 
 (defun localnrlib (key nrlib object make-database? noexpose)
- "given a string pathname of an index.KAF and the object update the database"
- (labels (
-  (fetchdata (alist in index)
-   (let (pos)
-    (setq pos (third (assoc index alist :test #'string=)))
-    (when pos
-     (file-position in pos)
-     (read in)))))
- (let (alist kind (systemdir? nil) pos constructorform oldmaps abbrev dbstruct)
-  (with-open-file (in nrlib)
-   (file-position in (read in))
-   (setq alist (read in))
-   (setq pos (third (assoc "constructorForm" alist :test #'string=)))
-   (file-position in pos)
-   (setq constructorform (read in))
-   (setq key (car constructorform))
-   (setq oldmaps (getdatabase key 'modemaps))
-   (setq dbstruct (make-database))
-   (setq *allconstructors* (adjoin key *allconstructors*))
-   (setf (get key 'database) dbstruct) ; store the struct, side-effect it...
-   (setf (database-constructorform dbstruct) constructorform)
-   (setq *allOperations* nil)   ; force this to recompute
-   (setf (database-object dbstruct) object)
-   (setq abbrev
-     (intern (pathname-name (first (last (pathname-directory object))))))
-   (setf (database-abbreviation dbstruct) abbrev)
-   (setf (get abbrev 'abbreviationfor) key)
-   (setf (database-operationalist dbstruct) nil)
-   (setf (database-operationalist dbstruct)
-    (fetchdata alist in "operationAlist"))
-   (setf (database-constructormodemap dbstruct)
-    (fetchdata alist in "constructorModemap"))
-   (setf (database-modemaps dbstruct) (fetchdata alist in "modemaps"))
-   (setf (database-sourcefile dbstruct) (fetchdata alist in "sourceFile"))
-   (when make-database?
-    (setf (database-sourcefile dbstruct)
-     (file-namestring  (database-sourcefile dbstruct))))
-   (setf (database-constructorkind dbstruct)
-    (setq kind (fetchdata alist in "constructorKind")))
-   (setf (database-constructorcategory dbstruct)
-    (fetchdata alist in "constructorCategory"))
-   (setf (database-documentation dbstruct)
-    (fetchdata alist in "documentation"))
-   (setf (database-attributes dbstruct)
-    (fetchdata alist in "attributes"))
-   (setf (database-predicates dbstruct)
-    (fetchdata alist in "predicates"))
-   (setf (database-niladic dbstruct)
-    (when (fetchdata alist in "NILADIC") t))
-  (addoperations key oldmaps)
-  (unless make-database?
-   (if (eq kind '|category|)
-       (setf (database-ancestors dbstruct)
-             (SUBLISLIS |$FormalMapVariableList| (cdr constructorform) (fetchdata alist in "ancestors"))))
-   (|updateDatabase| key key systemdir?) ;makes many hashtables???
-   (|installConstructor| key kind) ;used to be key cname ...
-   (|updateCategoryTable| key kind)
-   (if |$InteractiveMode| (setq |$CategoryFrame| |$EmptyEnvironment|)))
-  (setf (database-cosig dbstruct)
-    (cons nil (mapcar #'|categoryForm?|
-     (cddar (database-constructormodemap dbstruct)))))
-  (remprop key 'loaded)
-  (if (null noexpose) (|setExposeAddConstr| (cons key nil)))
- #-:CCL
-  (setf (symbol-function key) ; sets the autoload property for cname
-    #'(lambda (&rest args)
-     (unless (get key 'loaded)
-      (|startTimingProcess| '|load|)
-      (|loadLibNoUpdate| key key object)) ; used to be cname key
-     (apply key args)))
- #+:CCL
-  (let (lib)
-    (if (filep (setq lib (make-pathname :name object :type "lib")) )
-        (setq input-libraries (cons (open-library (truename lib)) input-libraries)))
-    (|unloadOneConstructor| (get abbrev 'abbreviationfor) abbrev) )
-  (|sayKeyedMsg| 'S2IU0001 (list key object))))))
+  "given a string pathname of an index.KAF and the object update the database"
+  (labels 
+   ((fetchdata (alist in index)
+	       (let (pos)
+		 (setq pos (third (assoc index alist :test #'string=)))
+		 (when pos
+		   (file-position in pos)
+		   (read in)))))
+   (let (alist kind (systemdir? nil) pos
+	       constructorform oldmaps abbrev dbstruct)
+     (with-open-file (in nrlib)
+		     (file-position in (read in))
+		     (setq alist (read in))
+		     (setq pos (third (assoc "constructorForm" alist :test #'string=)))
+		     (file-position in pos)
+		     (setq constructorform (read in))
+		     (setq key (car constructorform))
+		     (setq oldmaps (getdatabase key 'modemaps))
+		     (setq dbstruct (make-database))
+		     (setq *allconstructors* (adjoin key *allconstructors*))
+		     (setf (get key 'database) dbstruct) ; store the struct, side-effect it...
+		     (setf (database-constructorform dbstruct) constructorform)
+		     (setq *allOperations* nil)   ; force this to recompute
+		     (setf (database-object dbstruct) object)
+		     (setq abbrev
+			   (intern (pathname-name (first (last (pathname-directory object))))))
+		     (setf (database-abbreviation dbstruct) abbrev)
+		     (setf (get abbrev 'abbreviationfor) key)
+		     (setf (database-operationalist dbstruct) nil)
+		     (setf (database-operationalist dbstruct)
+			   (fetchdata alist in "operationAlist"))
+		     (setf (database-constructormodemap dbstruct)
+			   (fetchdata alist in "constructorModemap"))
+		     (setf (database-modemaps dbstruct) 
+			   (fetchdata alist in "modemaps"))
+		     (setf (database-sourcefile dbstruct) 
+			   (fetchdata alist in "sourceFile"))
+		     (when make-database?
+		       (setf (database-sourcefile dbstruct)
+			     (file-namestring  (database-sourcefile dbstruct))))
+		     (setf (database-constructorkind dbstruct)
+			   (setq kind (fetchdata alist in "constructorKind")))
+		     (setf (database-constructorcategory dbstruct)
+			   (fetchdata alist in "constructorCategory"))
+		     (setf (database-documentation dbstruct)
+			   (fetchdata alist in "documentation"))
+		     (setf (database-attributes dbstruct)
+			   (fetchdata alist in "attributes"))
+		     (setf (database-predicates dbstruct)
+			   (fetchdata alist in "predicates"))
+		     (setf (database-niladic dbstruct)
+			   (when (fetchdata alist in "NILADIC") t))
+		     (addoperations key oldmaps)
+		     (unless make-database?
+		       (if (eq kind '|category|)
+			   (setf (database-ancestors dbstruct)
+				 (SUBLISLIS |$FormalMapVariableList| 
+					    (cdr constructorform)
+					    (fetchdata alist in "ancestors"))))
+		       (|updateDatabase| key key systemdir?) ;makes many hashtables???
+		       (|installConstructor| key kind) ;used to be key cname ...
+		       (|updateCategoryTable| key kind)
+		       (if |$InteractiveMode| 
+			   (setq |$CategoryFrame| |$EmptyEnvironment|)))
+		     (setf (database-cosig dbstruct)
+			   (cons nil (mapcar #'|categoryForm?|
+					     (cddar (database-constructormodemap dbstruct)))))
+		     (remprop key 'loaded)
+		     (if (null noexpose) 
+			 (|setExposeAddConstr| (cons key nil)))
+		     #-:CCL
+		     (setf (symbol-function key) ; sets the autoload property for cname
+			   #'(lambda (&rest args)
+			       (unless (get key 'loaded)
+				 (|startTimingProcess| '|load|)
+				 (|loadLibNoUpdate| key key object)) ; used to be cname key
+			       (apply key args)))
+		     #+:CCL
+		     (let (lib)
+		       (if (filep 
+			    (setq lib (make-pathname :name object :type "lib")) )
+			   (setq input-libraries 
+				 (cons (open-library (truename lib)) 
+				       input-libraries)))
+		       (|unloadOneConstructor| (get abbrev 'abbreviationfor) abbrev) )
+		     (|sayKeyedMsg| 'S2IU0001 (list key object))))))
 
 ; making new databases consists of:
 ;  1) reset all of the system hash tables
@@ -1085,7 +1240,7 @@
 ; to be written out last.
 
 (defun make-databases (dirlist)
- (labels (
+  (labels (
     ;; these are types which have no library object associated with them.
     ;; we store some constructed data to make them perform like library
     ;; objects, the *operationalist-hash* key entry is used by allConstructors
@@ -1432,24 +1587,24 @@
   (close out)))
 
 (defun write-warmdata ()
- "write out information to be loaded into the image at build time"
- (declare (special |$topicHash|))
- (with-open-file (out "warm.data" :direction :output)
-  (format out "(in-package \"BOOT\")~%")
-  (format out "(setq |$topicHash| (make-hash-table))~%")
-  (maphash #'(lambda (k v)
-   (format out "(setf (gethash '|~a| |$topicHash|) ~a)~%" k v)) |$topicHash|)))
+  "write out information to be loaded into the image at build time"
+  (declare (special |$topicHash|))
+  (with-open-file (out "warm.data" :direction :output)
+		  (format out "(in-package \"BOOT\")~%")
+		  (format out "(setq |$topicHash| (make-hash-table))~%")
+		  (maphash #'(lambda (k v)
+			       (format out "(setf (gethash '|~a| |$topicHash|) ~a)~%" k v)) |$topicHash|)))
 
 (defun |allConstructors| ()
- (declare (special *allconstructors*))
- *allconstructors*)
+  (declare (special *allconstructors*))
+  *allconstructors*)
 
 (defun |allOperations| ()
- (declare (special *allOperations*))
- (unless *allOperations*
-  (maphash #'(lambda (k v) (declare (ignore v)) (push k *allOperations*))
-    *operation-hash*))
- *allOperations*)
+  (declare (special *allOperations*))
+  (unless *allOperations*
+    (maphash #'(lambda (k v) (declare (ignore v)) (push k *allOperations*))
+	     *operation-hash*))
+  *allOperations*)
 
 ; the variable NOPfuncall is a funcall-able object that is a dummy
 ; initializer for libaxiom asharp domains.

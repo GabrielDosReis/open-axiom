@@ -247,7 +247,7 @@ parseHas [x,y] ==
          [["SIGNATURE",op,map]]
       y is ["Join",:u] => "append"/[fn z for z in u]
       y is ["CATEGORY",:u] => "append"/[fn z for z in u]
-      kk:= GETDATABASE(opOf y,'CONSTRUCTORKIND)
+      kk:= getConstructorKindFromDB opOf y
       kk = "domain" or kk = "category" => [makeNonAtomic y]
       y is ["ATTRIBUTE",:.] => [y]
       y is ["SIGNATURE",:.] => [y]

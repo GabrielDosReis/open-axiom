@@ -79,17 +79,20 @@ constructor? name ==
   -- if it is a constructor name, return the abbreviation
   GETDATABASE(name,'ABBREVIATION)
  
+domainForm?: %Form -> %Boolean
 domainForm? d ==
-  GETDATABASE(opOf d,'CONSTRUCTORKIND) = 'domain
+  getConstructorKindFromDB opOf d = "domain"
 
+packageForm?: %Form -> %Boolean
 packageForm? d ==
-  GETDATABASE(opOf d,'CONSTRUCTORKIND) = 'package
+  getConstructorKindFromDB opOf d = "package"
 
+categoryFrom?: %Form -> %Boolean
 categoryForm? c ==
   op := opOf c
   MEMQ(op, $CategoryNames) => true
-  GETDATABASE(op,'CONSTRUCTORKIND) = 'category => true
-  nil
+  getConstructorKindFromDB op = "category" => true
+  false
 
 getImmediateSuperDomain(d) ==
   IFCAR GETDATABASE(opOf d, 'SUPERDOMAIN)
@@ -117,7 +120,7 @@ mkUserConstructorAbbreviation(c,a,type) ==
  
 abbQuery(x) ==
   abb := GETDATABASE(x,'ABBREVIATION) =>
-   sayKeyedMsg("S2IZ0001",[abb,GETDATABASE(x,'CONSTRUCTORKIND),x])
+   sayKeyedMsg("S2IZ0001",[abb,getConstructorKindFromDB x,x])
   sayKeyedMsg("S2IZ0003",[x])
  
 installConstructor(cname,type) ==
@@ -140,7 +143,7 @@ constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
   if s ^= UPCASE s then throwKeyedMsg("S2IL0006",NIL)
   abb := GETDATABASE(c,'ABBREVIATION)
   name:= GETDATABASE(a,'CONSTRUCTOR)
-  type := GETDATABASE(c,'CONSTRUCTORKIND)
+  type := getConstructorKindFromDB c
   a=abb and c^=name => lisplibError(c,a,typ,abb,name,type,'duplicateAbb)
   a=name and c^=name => lisplibError(c,a,typ,abb,name,type,'abbIsName)
   c=name and typ^=type => lisplibError(c,a,typ,abb,name,type,'wrongType)

@@ -344,8 +344,8 @@ clearConstructorCaches() ==
   CLRHASH $ConstructorCache
  
 clearConstructorCache(cname) ==
-  (kind := GETDATABASE(cname,'CONSTRUCTORKIND)) =>
-    kind = 'category => clearCategoryCache cname
+  (kind := getConstructorKindFromDB cname) =>
+    kind = "category" => clearCategoryCache cname
     HREM($ConstructorCache,cname)
  
 clearConstructorAndLisplibCaches() ==
@@ -354,7 +354,7 @@ clearConstructorAndLisplibCaches() ==
  
 clearCategoryCaches() ==
   for name in allConstructors() repeat
-    if GETDATABASE(name,'CONSTRUCTORKIND) = 'category then
+    if getConstructorKindFromDB name = "category" then
       if BOUNDP(cacheName:= INTERNL STRCONC(PNAME name,'";AL"))
             then setDynamicBinding(cacheName,nil)
     if BOUNDP(cacheName:= INTERNL STRCONC(PNAME name,'";CAT"))

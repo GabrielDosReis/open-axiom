@@ -120,7 +120,11 @@ isValidType form ==
     and/[isValid for x in argl for c in cl] where isValid() ==
       categoryForm?(c) =>
         evalCategory(x,MSUBSTQ(x,'_$,c)) and isValidType x
-      GETDATABASE(opOf x,'CONSTRUCTORKIND) ^= 'domain
+      -- Arguments to constructors are general expressions.  Below
+      -- domain constructors are not considered valid arguments (yet).
+      x' := opOf x
+      not atom x' or not IDENTP x' => true   -- surely not constructors
+      getConstructorKindFromDB x' ^= "domain"
 
 selectMms1(op,tar,args1,args2,$Coerce) ==
     -- for new compiler/old world compatibility, sometimes have to look

@@ -37,7 +37,7 @@ sum(3*k**2/(c**2 + 1) + 12*k/d,k = (3*a)..(4*b))
 )clear all
 
 [1..15]
-reduce(+,[1..15])
+reduce(+,expand [1..15])
 
 -- Input for page ExSumApproximateE
 )clear all

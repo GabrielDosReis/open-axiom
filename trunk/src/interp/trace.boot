@@ -274,7 +274,7 @@ removeOption(op,options) ==
 
 domainToGenvar x ==
   $doNotAddEmptyModeIfTrue: local:= true
-  (y:= unabbrevAndLoad x) and GETDATABASE(opOf y,'CONSTRUCTORKIND) = 'domain =>
+  (y:= unabbrevAndLoad x) and getConstructorKindFromDB opOf y = "domain" =>
     g:= genDomainTraceName y
     setDynamicBinding(g,evalDomain y)
     g

@@ -328,7 +328,7 @@ oPage(a,:b) == --called by \spadfun{opname}
 oPageFrom(opname,conname) == --called by \spadfunFrom{opname}{conname}
   htPage := htInitPage(nil,nil) --create empty page and fill in needed properties
   htpSetProperty(htPage,'conform,conform := getConstructorForm conname)
-  htpSetProperty(htPage,'kind,STRINGIMAGE GETDATABASE(conname,'CONSTRUCTORKIND))
+  htpSetProperty(htPage,'kind,STRINGIMAGE getConstructorKindFromDB conname)
   itemlist := ASSOC(opname,koOps(conform,nil)) --all operations name "opname"
   null itemlist => systemError [conform,'" has no operation named ",opname]
   opAlist := [itemlist]

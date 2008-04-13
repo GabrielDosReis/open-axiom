@@ -554,7 +554,7 @@ setExposeAddConstr arg ==
     x := unabbrev x
     if PAIRP x then x := QCAR x
     -- if the constructor is known, we know what type it is
-    null GETDATABASE(x,'CONSTRUCTORKIND) =>
+    null getConstructorKindFromDB x =>
       sayKeyedMsg("S2IZ0049J",[x])
     member(x,$localExposureData.1) =>
       sayKeyedMsg("S2IZ0049K",[x,$interpreterFrameName])
@@ -621,7 +621,7 @@ setExposeDropConstr arg ==
     x := unabbrev x
     if PAIRP x then x := QCAR x
     -- if the constructor is known, we know what type it is
-    null GETDATABASE(x,'CONSTRUCTORKIND) =>
+    null getConstructorKindFromDB x =>
       sayKeyedMsg("S2IZ0049J",[x])
     member(x,$localExposureData.2) =>
       sayKeyedMsg("S2IZ0049O",[x,$interpreterFrameName])

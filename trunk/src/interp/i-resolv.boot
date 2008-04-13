@@ -426,7 +426,7 @@ getConditionalCategoryOfType1(cat,conditions,match,seen) ==
       RPLACD(conditions,CONS(cat,CDR conditions))
       conditions
     conditions
-  cat is [catName,:.] and (GETDATABASE(catName,'CONSTRUCTORKIND) = 'category) =>
+  cat is [catName,:.] and (getConstructorKindFromDB catName = "category") =>
     cat in CDR seen => conditions
     RPLACD(seen,[cat,:CDR seen])
     subCat := GETDATABASE(catName,'CONSTRUCTORCATEGORY)

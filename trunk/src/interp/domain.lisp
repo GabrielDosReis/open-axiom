@@ -168,7 +168,7 @@
 
 (defun |mkAutoLoad| (fn cname)
   (cond ((or (memq cname |$CategoryNames|)
-          (eq (GETDATABSE cname 'CONSTRUCTORKIND) '|category|))
+          (eq (|getConstructorKindFromDB| cname) '|category|))
          (function (lambda (&rest args)
                      (|autoLoad| fn cname)
                      (apply cname args))))

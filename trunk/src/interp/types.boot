@@ -46,13 +46,19 @@ import '"boot-pkg"
 %Thing <=> true
 %Sequence <=> SEQUENCE
 
+%Maybe a <=> null or a
+
 --% Data structures for the compiler
 %Form <=> NUMBER or %Symbol or %String or CONS -- input syntax form
 %Env <=> %List                                 -- compiling env
 %Mode <=> %Symbol or %String or %List          -- type of forms
 %Code <=> %Form                                -- generated code
-%Triple <=> %List                              -- form + type + env
+%Triple <=>                                    -- form + type + env
+  cons(%Code,cons(%Mode,cons(%Env,null))) 
 
 %Modemap <=> %List                             -- modemap
+
+%ConstructorKind <=>                           -- kind of ctor instances
+  MEMBER("category","domain","package")
 
 %Shell <=> SIMPLE_-VECTOR                      -- constructor instantiation

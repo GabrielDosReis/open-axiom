@@ -107,7 +107,7 @@ buildLibdbConEntry conname ==
     $exposed? := (isExposedConstructor conname => '"x"; '"n")
     $doc      := GETDATABASE(conname, 'DOCUMENTATION)
     pname := PNAME conname
-    kind  := GETDATABASE(conname,'CONSTRUCTORKIND)
+    kind  := getConstructorKindFromDB conname
     if kind = 'domain
       and getConstructorModemap conname is [[.,t,:.],:.]
        and t is ['CATEGORY,'package,:.] then kind := 'package
@@ -529,7 +529,7 @@ getParentsForDomain domname  == --called by parentsOf
   acc := nil
   for x in folks GETDATABASE(domname,'CONSTRUCTORCATEGORY) repeat
     x :=
-      GETDATABASE(domname,'CONSTRUCTORKIND) = 'category =>
+      getConstructorKindFromDB domname = "category" =>
         sublisFormal(IFCDR getConstructorForm domname,x,$TriangleVariableList)
       sublisFormal(IFCDR getConstructorForm domname,x)
     acc := [:explodeIfs x,:acc]
@@ -562,7 +562,7 @@ folks u == --called by getParents and getParentsForDomain
   [u]
 
 descendantsOf(conform,domform) ==  --called by kcdPage
-  'category = GETDATABASE((conname := opOf conform),'CONSTRUCTORKIND) =>
+  "category" = getConstructorKindFromDB(conname := opOf conform) =>
     cats := catsOf(conform,domform)
     [op,:argl] := conform
     null argl or argl = (newArgl := rest (GETDATABASE(op,'CONSTRUCTORFORM)))
@@ -602,8 +602,8 @@ childArgCheck(argl, nargl) ==
 --  mySort [[key,:HGET(hash,key)] for key in HKEYS hash]
 
 ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
-  'category = GETDATABASE((conname := opOf conform),'CONSTRUCTORKIND) =>
-       alist := GETDATABASE(conname,'ANCESTORS)
+  "category" = getConstructorKindFromDB(conname := opOf conform) =>
+       alist := getConstructorAncestorsFromDB conname
        argl := IFCDR domform or IFCDR conform
        [pair for [a,:b] in alist | pair] where pair() ==
          left :=  sublisFormal(argl,a)
@@ -667,7 +667,7 @@ catsOf(conform,domname,:options) ==
   conname := opOf conform
   alist := nil
   for key in allConstructors() repeat
-    for item in GETDATABASE(key,'ANCESTORS) | conname = CAAR item repeat
+    for item in getConstructorAncestorsFromDB key | conname = CAAR item repeat
       [[op,:args],:pred] := item
       newItem :=
         args => [[args,:pred],:LASSOC(key,alist)]

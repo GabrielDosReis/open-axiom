@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -35,7 +35,7 @@
 import '"compiler"
 )package "BOOT"
 
-compAtomWithModemap: (%Form,%Mode,%Env,%Thing) -> %Triple
+compAtomWithModemap: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
 compAtomWithModemap(x,m,e,v) ==
   Tl :=
     [[transImplementation(x,map,fn),target,e]
@@ -52,7 +52,7 @@ transImplementation(op,map,fn) ==
   fn is ["XLAM",:.] => [fn]
   ["call",fn]
 
-compApply: (%List,%List,%Thing,%List,%Mode,%Env) -> %Triple
+compApply: (%List,%List,%Thing,%List,%Mode,%Env) -> %Maybe %Triple
 compApply(sig,varl,body,argl,m,e) ==
   argTl:= [[.,.,e]:= comp(x,$EmptyMode,e) for x in argl]
   contour:=
@@ -63,14 +63,14 @@ compApply(sig,varl,body,argl,m,e) ==
   body':= (comp(body,m',addContour(contour,e))).expr
   [code,m',e]
 
-compToApply: (%Form,%List,%Mode,%Env) -> %Triple
+compToApply: (%Form,%List,%Mode,%Env) -> %Maybe %Triple
 compToApply(op,argl,m,e) ==
   T:= compNoStacking(op,$EmptyMode,e) or return nil
   m1:= T.mode
   T.expr is ["QUOTE", =m1] => nil
   compApplication(op,argl,m,T.env,T)
 
-compApplication: (%Form,%List,%Mode,%Env,%Triple) -> %Triple
+compApplication: (%Form,%List,%Mode,%Env,%Triple) -> %Maybe %Triple
 compApplication(op,argl,m,e,T) ==
   T.mode is ['Mapping, retm, :argml] =>
     #argl ^= #argml => nil
@@ -92,7 +92,7 @@ compApplication(op,argl,m,e,T) ==
   eltForm := ['elt, op, :argl]
   comp(eltForm, m, e)
 
-compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Triple
+compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
 compFormWithModemap(form is [op,:argl],m,e,modemap) ==
   [map:= [.,target,:.],[pred,impl]]:= modemap
   -- this fails if the subsuming modemap is conditional
@@ -156,7 +156,7 @@ compFormWithModemap(form is [op,:argl],m,e,modemap) ==
 --   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
 --   convert([form,SUBLIS(pairlis,first ml),e],m)
 
-applyMapping: (%Form,%Mode,%Env,%List) -> %Triple
+applyMapping: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
 applyMapping([op,:argl],m,e,ml) ==
   #argl^=#ml-1 => nil
   isCategoryForm(first ml,e) =>
@@ -186,7 +186,7 @@ applyMapping([op,:argl],m,e,ml) ==
 
 --% APPLY MODEMAPS
 
-compApplyModemap: (%Form,%Modemap,%Env,%List) -> %Triple
+compApplyModemap: (%Form,%Modemap,%Env,%List) -> %Maybe %Triple
 compApplyModemap(form,modemap,$e,sl) ==
   [op,:argl] := form                   --form to be compiled
   [[mc,mr,:margl],:fnsel] := modemap   --modemap we are testing

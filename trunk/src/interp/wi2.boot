@@ -96,7 +96,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $functorForm:= $form:= [$op,:argl]
     $globalImportStack := 
        [markKillAll x for x in rest $functorForm for typ in rest signature' 
-           | GETDATABASE(opOf typ,'CONSTRUCTORKIND) = 'category]
+           | getConstructorKindFromDB opOf typ = "category"]
     if null first signature' then signature':=
       modemap2Signature getModemap($form,$e)
     target:= first signature'

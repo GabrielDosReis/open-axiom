@@ -90,7 +90,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   constring := form2HtString conform
   conname   := first conform
   $conkind   : local := htpProperty(htPage,'kind) -- a string e.g. "category"
-                          or STRINGIMAGE GETDATABASE(conname,'CONSTRUCTORKIND)
+                          or STRINGIMAGE getConstructorKindFromDB conname
   $conlength : local := #constring
   $conform   : local := conform
   $conargs   : local := rest conform
@@ -195,8 +195,8 @@ htSayConstructor(key,u) ==
     bcConform(u,true)
   htSay
     key = 'is => '"the domain "
-    kind := GETDATABASE(opOf u,'CONSTRUCTORKIND)
-    kind = 'domain => '"an element of "
+    kind := getConstructorKindFromDB opOf u
+    kind = "domain" => '"an element of "
     '"a domain of "
   u is ['Join,:middle,r] =>
     rest middle =>
@@ -319,7 +319,7 @@ dbChooseOperandName(typ) ==
   name := opOf typ
   kind :=
     name = "$" => 'domain
-    GETDATABASE(name,'CONSTRUCTORKIND)
+    getConstructorKindFromDB name
   s := PNAME opOf typ
   kind ^= 'category =>
     anySubstring?('"Integer",s,0) or anySubstring?('"Number",s,0) =>
@@ -490,7 +490,7 @@ whoUsesMatch1?(signumList,sig,al) ==
 koAttrs(conform,domname) ==
   [conname,:args] := conform
 --asharpConstructorName? conname => nil  --assumed
-  'category = GETDATABASE(conname,'CONSTRUCTORKIND) =>
+  "category" = getConstructorKindFromDB conname =>
       koCatAttrs(conform,domname)
   $infovec: local := dbInfovec conname or return nil
   $predvec: local :=
@@ -534,7 +534,7 @@ koOps(conform,domname,:options) == main where
     subargs: local := args
     ----------> new <------------------
     u := koCatOps(conform,domname) => u
---    'category = GETDATABASE(conname,'CONSTRUCTORKIND) =>
+--    "category" = getConstructorKindFromDB conname =>
 --        koCatOps(conform,domname)
     asharpConstructorName? opOf conform => nil
     ----------> new <------------------

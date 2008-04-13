@@ -589,9 +589,9 @@ newHasTest(domform,catOrAtt) ==
   null isAtom and op = 'Join =>
     and/[newHasTest(domform,x) for x in rest catOrAtt]
 -- we will refuse to say yes for 'Cat has Cat'
---GETDATABASE(opOf domform,'CONSTRUCTORKIND) = 'category => throwKeyedMsg("S2IS0025",NIL)
+--getConstructorKindFromDB opOf domform = "category" => throwKeyedMsg("S2IS0025",NIL)
 -- on second thoughts we won't!
-  GETDATABASE(opOf domform,'CONSTRUCTORKIND) = 'category =>
+  getConstructorKindFromDB opOf domform = "category" =>
       domform = catOrAtt => 'T
       for [aCat,:cond] in [:ancestorsOf(domform,NIL),:SUBLISLIS (rest domform,$FormalMapVariableList,GETDATABASE(opOf domform,'ATTRIBUTES))] |  aCat = catOrAtt  repeat
          return evalCond cond where
