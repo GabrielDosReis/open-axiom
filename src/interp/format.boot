@@ -455,7 +455,7 @@ formArguments2String(argl,ml) == [fn(x,m) for x in argl for m in ml] where
     STRINGP(x) or IDENTP(x) => x
     x is [ ='_:,:.] => form2String1 x
     isValidType(m) and PAIRP(m) and
-      (GETDATABASE(first(m),'CONSTRUCTORKIND) = 'domain) =>
+      (getConstructorKindFromDB first(m) = "domain") =>
         (x' := coerceInteractive(objNewWrap(x,m),$OutputForm)) =>
           form2String1 objValUnwrap x'
         form2String1 x
@@ -763,7 +763,7 @@ string2Float s ==
 form2Fence form == 
   -- body of dbMkEvalable
   [op, :.] := form
-  kind := GETDATABASE(op,'CONSTRUCTORKIND)
+  kind := getConstructorKindFromDB op
   kind = 'category => form2Fence1 form
   form2Fence1 mkEvalable form
 

@@ -56,7 +56,7 @@ dbPresentOps(htPage,which,:exclusions) ==
   asharp? := htpProperty(htPage,'isAsharpConstructor)
   fromConPage? := (conname := opOf htpProperty(htPage,'conform))
   usage? := $UserLevel = 'development and fromConPage? and which = '"operation"
-    and not (GETDATABASE(conname,'CONSTRUCTORKIND) = 'category)
+    and getConstructorKindFromDB conname ^= "category"
       and not asharp?
   star? := not fromConPage? or which = '"package operation"
   implementation? := not asharp? and
@@ -114,7 +114,7 @@ dbPresentOps(htPage,which,:exclusions) ==
 --       then htMakePage [['bcLispLinks,[updown,'"",'dbShowUpDown,updown]]]
   htTab tabs.0
   if usage? then
-      if empty? or member('usage,exclusions) or GETDATABASE(conname,'CONSTRUCTORKIND) = 'category or HGET($defaultPackageNamesHT,conname) or htpProperty(htPage,'noUsage)
+      if empty? or member('usage,exclusions) or getConstructorKindFromDB conname = "category" or HGET($defaultPackageNamesHT,conname) or htpProperty(htPage,'noUsage)
       then htSay '"{\em usage}"
       else htMakePage [['bcLispLinks,['"usage",'"",'whoUsesOperation,which,nil]]]
   htTab tabs.1
@@ -124,7 +124,7 @@ dbPresentOps(htPage,which,:exclusions) ==
   htTab tabs.2
   if implementation? then
     if member('implementation,exclusions) or which = '"attribute" or
-      ((conname := opOf htpProperty(htPage,'conform)) and GETDATABASE(conname,'CONSTRUCTORKIND) = 'category)
+      ((conname := opOf htpProperty(htPage,'conform)) and getConstructorKindFromDB conname = "category")
     then htSay '"{\em implementation}"
     else htMakePage [['bcLispLinks,['"implementation",'"",'dbShowOps,which,'implementation]]]
   else if empty? or member('conditions,exclusions) or (htpProperty(htPage,'condition?) = 'no)
@@ -629,7 +629,7 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
   for [op,:items] in opAlist repeat
     for [.,predicate,origin,:.] in items repeat
       conname := CAR origin
-      GETDATABASE(conname,'CONSTRUCTORKIND) = 'category =>
+      getConstructorKindFromDB conname = "category" =>
         pred := simpOrDumb(predicate,LASSQ(conname,catOriginAlist) or true)
         catOriginAlist := insertAlist(conname,pred,catOriginAlist)
       pred := simpOrDumb(predicate,LASSQ(conname,domOriginAlist) or true)
@@ -698,8 +698,8 @@ dbGatherThenShow(htPage,opAlist,which,data,constructorIfTrue,word,fn) ==
 
 dbShowKind conform ==
   conname := CAR conform
-  kind := GETDATABASE(conname,'CONSTRUCTORKIND)
-  kind = 'domain =>
+  kind := getConstructorKindFromDB conname
+  kind = "domain" =>
     (s := PNAME conname).(MAXINDEX s) = '_& => '"default package"
     '"domain"
   PNAME kind

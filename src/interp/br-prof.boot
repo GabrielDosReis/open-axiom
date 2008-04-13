@@ -75,7 +75,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   conform := htpProperty(htPage,'conform)
   opAlist := htpProperty(htPage,'opAlist)
   conname := opOf conform
-  kind     := GETDATABASE(conname,'CONSTRUCTORKIND)
+  kind     := getConstructorKindFromDB conname
   honestConform :=
     kind = 'category =>
       [INTERN STRCONC(PNAME conname,'"&"),"$",:CDR conform]
@@ -213,7 +213,7 @@ dbInfoChoose1(htPage,con,alist) ==
   opAlist := [pair for x in koOps(con,nil) | pair:=dbInfoSigMatch(x,alist)]
   page := htInitPage(nil,nil)
   htpSetProperty(page,'conform,con)
-  htpSetProperty(page,'kind,PNAME GETDATABASE(opOf con,'CONSTRUCTORKIND))
+  htpSetProperty(page,'kind,PNAME getConstructorKindFromDB opOf con)
   dbShowOperationsFromConform(page,'"operation",opAlist)
 
 dbInfoSigMatch(x,alist) ==
@@ -251,7 +251,7 @@ hasNewInfoText u ==
     null sig or null atom sig and null atom alist for item in items] for [op,:items] in u]
 
 getInfoAlist conname ==
-  cat? := GETDATABASE(conname,'CONSTRUCTORKIND) = 'category
+  cat? := getConstructorKindFromDB conname = "category"
   if cat? then conname := INTERN STRCONC(STRINGIMAGE conname,'"&")
   abb := constructor? conname or return '"not a constructor"
   fs  := STRCONC(PNAME abb,'".NRLIB/info")

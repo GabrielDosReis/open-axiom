@@ -538,7 +538,7 @@ $EmptyString ==
   '""
 ++ The empty vector constant
 $EmptyVector ==
-  VECTOR()
+  ["VECTOR"]
 
 ++ A symbol denoting failure
 $failure ==

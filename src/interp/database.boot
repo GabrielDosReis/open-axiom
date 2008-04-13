@@ -42,6 +42,28 @@ import '"compat"
 $getUnexposedOperations := true
 $globalExposureGroupAlist := []
 
+--%
+
+getConstructorAbbreviationFromDB: %Symbol -> %Maybe %Symbol
+getConstructorAbbreviationFromDB ctor ==
+  GETDATABASE(ctor,"ABBREVIATION")
+
+getConstructorCategoryFromDB: %Symbol -> %Form
+getConstructorCategoryFromDB ctor ==
+  GETDATABASE(ctor,"CONSTRCTORCATEGORY")
+
+getConstructorKindFromDB: %Symbol -> %Maybe %ConstructorKind
+getConstructorKindFromDB ctor ==
+  GETDATABASE(ctor,"CONSTRUCTORKIND")
+
+getConstructorAncestorsFromDB: %Symbol -> %List
+getConstructorAncestorsFromDB ctor ==
+  GETDATABASE(ctor,"ANCESTORS")
+
+getConstructorSourceFile: %Symbol -> %Maybe %String
+getConstructorSourceFile ctor ==
+  GETDATABASE(ctor,"SOURCEFILE")
+
 --% Functions for manipulating MODEMAP DATABASE
 
 augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==

@@ -1111,7 +1111,7 @@ displayValue($op,u,omitVariableNameIfTrue) ==
     STRCONC('"Value of ", PNAME $op,'": ")
   labmode := prefix2String objMode(u)
   if ATOM labmode then labmode := [labmode]
-  GETDATABASE(expr,'CONSTRUCTORKIND) = 'domain =>
+  getConstructorKindDB expr = "domain" =>
     sayMSG concat('"   ",label,labmode,rhs,form2String expr)
   mathprint ['CONCAT,label,:labmode,rhs,
     outputFormat(expr,objMode(u))]
@@ -2334,7 +2334,7 @@ reportOpsFromUnitDirectly unitForm ==
   isRecordOrUnion := unitForm is [a,:.] and a in '(Record Union)
   unit:= evalDomain unitForm
   top:= CAR unitForm
-  kind:= GETDATABASE(top,'CONSTRUCTORKIND)
+  kind:= getConstructorKindFromDB top
 
   sayBrightly concat('%b,formatOpType unitForm,
     '%d,'"is a",'%b,kind,'%d, '"constructor.")
@@ -2389,7 +2389,7 @@ reportOpsFromLisplib(op,u) ==
   argml :=
     (s := getConstructorSignature op) => KDR s
     NIL
-  typ:= GETDATABASE(op,'CONSTRUCTORKIND)
+  typ:= getConstructorKindFromDB op
   nArgs:= #argml
   argList:= KDR GETDATABASE(op,'CONSTRUCTORFORM)
   functorForm:= [op,:argList]
@@ -2428,7 +2428,7 @@ reportOpsFromLisplib(op,u) ==
 
 displayOperationsFromLisplib form ==
   [name,:argl] := form
-  kind := GETDATABASE(name,'CONSTRUCTORKIND)
+  kind := getConstructorKindFromDB name
   centerAndHighlight('"Operations",$LINELENGTH,specialChar 'hbar)
   opList:= GETDATABASE(name,'OPERATIONALIST)
   null opList => 
@@ -2750,7 +2750,7 @@ whatConstructors constrType ==
   -- here constrType should be one of 'category, 'domain, 'package
   MSORT [CONS(GETDATABASE(con,'ABBREVIATION), STRING(con))
     for con in allConstructors()
-      | GETDATABASE(con,'CONSTRUCTORKIND) = constrType]
+      | getConstructorKindFromDB con = constrType]
 
 apropos l ==
   -- l is a list of operation name fragments

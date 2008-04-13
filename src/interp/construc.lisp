@@ -271,7 +271,7 @@
  (let (fullLibName libDir kind)
     (setq fullLibName (make-input-filename (mergelib libName) |$spadLibFT|))
     (setq libDir (directory-namestring fullLibName)) 
-    (setq kind (GETDATABASE cname 'CONSTRUCTORKIND)) 
+    (setq kind (|getConstuctorKindFromDB| cname)) 
     (when |$printLoadMsgs| 
      (|sayKeyedMsg| 'S2IL0002 (list (|namestring| fullLibName) kind cname)))
     (load (concatenate 'string libDir (mergelib libName)))

@@ -583,7 +583,7 @@ nothingFoundPage(:options) ==
 htCopyProplist htPage == [[x,:y] for [x,:y] in htpPropertyList htPage]
 
 dbInfovec name ==
-  'category = GETDATABASE(name,'CONSTRUCTORKIND) => nil
+  "category" = getConstructorKindFromDB name => nil
   GETDATABASE(name, 'ASHARP?) => nil
   loadLibIfNotLoaded(name)
   u := GETL(name,'infovec) => u

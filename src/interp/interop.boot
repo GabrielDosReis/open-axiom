@@ -115,7 +115,7 @@ CompStrToString(str) ==
 
 runOldAxiomFunctor(:allArgs) ==
   [:args,env] := allArgs
-  GETDATABASE(env, 'CONSTRUCTORKIND) = 'category =>
+  getConstructorKindFromDB env = "category" =>
       [$oldAxiomPreCategoryDispatch,: [env, :args]]
   dom:=APPLY(env, args)
   makeOldAxiomDispatchDomain dom
@@ -123,7 +123,7 @@ runOldAxiomFunctor(:allArgs) ==
 makeLazyOldAxiomDispatchDomain domform ==
   attribute? domform =>
       [$attributeDispatch, domform, hashString(SYMBOL_-NAME domform)]
-  GETDATABASE(opOf domform, 'CONSTRUCTORKIND) = 'category =>
+  getConstructorKindFromDB opOf domform = "category" =>
       [$oldAxiomPreCategoryDispatch,: domform]
   dd := [$lazyOldAxiomDomainDispatch, hashTypeForm(domform,0), domform]
   NCONC(dd,dd) -- installs back pointer to head of domain.

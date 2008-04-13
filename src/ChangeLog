@@ -1,3 +1,46 @@
+2008-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/apply.boot: Tidy signature declarations.
+	* interp/as.boot: Use getConstructorKindFromDB throughout.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/compiler.boot: Tidy signature declarations.
+	* interp/construct.lisp: Use getConstructorKindFromDB throughout.
+	* interp/daase.lisp: Likewise.
+	* interp/database.boot (getConstructorAbbreviationFromDB): New.
+	(getConstructorCategoryFromDB): Likewise.
+	(getConsructorKindFromDB): Likewise.
+	(getConstructorAncestorsFromDB): Likewise.
+	(getConstructorSourceFileFromDB): Likewise.
+	* interp/define.boot: Use getConstructorKindFromDB throughout.
+	* interp/domain.lisp: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/sys-constant.boot ($EmptyVector): Fix thinko
+	* interp/types.boot (%Maybe): New.
+	(%ConstructorKind): Likewise.
+	* input/exsum.input.pamphlet: Fix thinko.
+	* input/mapleok.input.pamphlet: Fix typos.
+
 2008-04-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/ax.boot: Use getConstructorModemap throughout.

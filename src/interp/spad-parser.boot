@@ -59,8 +59,8 @@ parseSpadFile sourceFile ==
   FILE_-CLOSED : local := false          -- current stream closed?
 
   $OutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"    -- noise to standard output
-  -- we need tell the post-parsing transformers that we're compiling
-  -- because few parse forms have slightly different representations
+  -- we need to tell the post-parsing transformers that we're compiling
+  -- Spad because few parse forms have slightly different representations
   -- depending on whether we are interpreter mode or compiler mode.
   savedInteractiveMode := $InteractiveMode
   $InteractiveMode := false

@@ -1089,7 +1089,7 @@ dbPresentOps(htPage,which,:exclusions) ==
     htSay '"}{"
     if not implementation? or member('implementation,exclusions) or which = '"attribute" or
       ((conname := opOf htpProperty(htPage,'conform))
-        and GETDATABASE(conname,'CONSTRUCTORKIND) = 'category)
+        and getConstructorKindFromDB conname = "category")
     then htSay '"{\em Implementations}"
     else htMakePage
       [['bcLispLinks,['"Implementations",'"",'dbShowOps,which,'implementation]]]
@@ -1150,7 +1150,7 @@ dbPresentOpsSaturn(htPage,which,exclusions) ==
     else htMakeSaturnFilterPage ['dbShowOps, which, 'filter]
   if not implementation? or member('implementation,exclusions) or which = '"attribute" or
       ((conname := opOf htpProperty(htPage,'conform))
-        and GETDATABASE(conname,'CONSTRUCTORKIND) = 'category)
+        and getConstructorKindFromDB conname = "category")
     then htSayCold '"\&Implementations"
     else htMakePage
       [['bcLispLinks,['"\&Implementations",'"",'dbShowOps,which,'implementation]]]
@@ -1254,7 +1254,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   constring := form2HtString conform
   conname   := first conform
   $conkind   : local := htpProperty(htPage,'kind) -- a string e.g. "category"
-                          or STRINGIMAGE GETDATABASE(conname,'CONSTRUCTORKIND)
+                          or STRINGIMAGE getConstructorKindFromDB conname
   $conlength : local := #constring
   $conform   : local := conform
   $conargs   : local := rest conform

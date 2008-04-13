@@ -985,7 +985,7 @@ filterModemapsFromPackages(mms, names, op) ==
     type := getDomainFromMm mm
     null type => bad := cons(mm,bad)
     if PAIRP type then type := first type
-    GETDATABASE(type,'CONSTRUCTORKIND) = 'category => bad := cons(mm,bad)
+    getConstructorKindFromDB type = "category" => bad := cons(mm,bad)
     name := object2String type
     found := nil
     for n in names while not found repeat

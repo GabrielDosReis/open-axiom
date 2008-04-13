@@ -55,7 +55,7 @@ mkEvalable form ==
     op="Mapping"=> mkEvalableMapping form
     op="Enumeration" => form
     loadIfNecessary op
-    kind:= GETDATABASE(op,'CONSTRUCTORKIND)
+    kind:= getConstructorKindFromDB op
     cosig := GETDATABASE(op, 'COSIG) =>
       [op,:[val for x in argl for typeFlag in rest cosig]] where val() ==
         typeFlag =>
@@ -182,7 +182,7 @@ evaluateType1 (form is [op,:argl]) ==
 	evalCategory(x' := (evaluateType x), m) => x'
 	throwEvalTypeMsg("S2IE0004",[form])
       m := evaluateType m
-      GETDATABASE(opOf m,'CONSTRUCTORKIND) = 'domain and 
+      getConstructorKindFromDB opOf m = "domain" and 
 	  (tree := mkAtree x) and  putTarget(tree,m) and ((bottomUp tree) is [m1]) =>
 	      [zt,:zv]:= z1:= getAndEvalConstructorArgument tree
 	      (v' := coerceOrRetract(z1,m)) => objValUnwrap v'

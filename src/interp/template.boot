@@ -202,7 +202,7 @@ mkSigPredVectors() ==
   $predVectorFrontier:= 1   --slot 0 in vector will be vacant
   $predVector:= newShell 100
   for nam in allConstructors() |
-          null (GETDATABASE(nam, 'CONSTRUCTORKIND) = 'package) repeat
+          getConstuctorKindFromDB nam ^= "package" repeat
     for [op,:sigList] in GETDATABASE(nam,'OPERATIONALIST) repeat
       for [sig,:r] in sigList repeat
         addConsDB sig

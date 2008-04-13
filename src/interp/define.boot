@@ -518,7 +518,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     if $LISPLIB then
       $lisplibKind:=
 ------->This next line prohibits changing the KIND once given
---------kk:=GETDATABASE($op,'CONSTRUCTORKIND) => kk
+--------kk:=getConstructorKindFromDB $op => kk
         $functorTarget is ["CATEGORY",key,:.] and key^="domain" => 'package
         'domain
       $lisplibForm:= form
@@ -1150,13 +1150,13 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
 -- counts
   $clamList: local
   lambdaOrSlam :=
-    GETDATABASE(fn,'CONSTRUCTORKIND) = 'category => 'SPADSLAM
+    getConstructorKindFromDB fn = "category" => 'SPADSLAM
     $mutableDomain => 'LAMBDA
     $clamList:=
       [[fn,"$ConstructorCache",'domainEqualList,'count],:$clamList]
     'LAMBDA
   compForm:= LIST [fn,[lambdaOrSlam,vl,:bodyl]]
-  if GETDATABASE(fn,'CONSTRUCTORKIND) = 'category
+  if getConstructorKindFromDB fn = "category"
       then u:= compAndDefine compForm
       else u:=COMP compForm
   clearConstructorCache fn      --clear cache for constructor

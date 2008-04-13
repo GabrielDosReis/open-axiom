@@ -48,7 +48,7 @@ $coreDiagnosticFunctions ==
 ++ list of functions to compile
 $compileOnlyCertainItems := []
 
-compTopLevel: (%Form,%Mode,%Env) -> %Triple
+compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
 --+ signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
@@ -62,15 +62,15 @@ compTopLevel(x,m,e) ==
         --keep old environment after top level function defs
   compOrCroak(x,m,e)
 
-compUniquely: (%Form,%Mode,%Env) -> %Triple
+compUniquely: (%Form,%Mode,%Env) -> %Maybe %Triple
 compUniquely(x,m,e) ==
   $compUniquelyIfTrue: local:= true
   CATCH("compUniquely",comp(x,m,e))
 
-compOrCroak: (%Form,%Mode,%Env) -> %Triple
+compOrCroak: (%Form,%Mode,%Env) -> %Maybe %Triple
 compOrCroak(x,m,e) == compOrCroak1(x,m,e,'comp)
 
-compOrCroak1: (%Form,%Mode,%Env,%Thing) -> %Triple
+compOrCroak1: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
 compOrCroak1(x,m,e,compFn) ==
   fn(x,m,e,nil,nil,compFn) where
     fn(x,m,e,$compStack,$compErrorMessageStack,compFn) ==
@@ -100,13 +100,13 @@ tc() ==
   comp($x,$m,$f)
 
 
-comp: (%Form,%Mode,%Env) -> %Triple
+comp: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp(x,m,e) ==
   T:= compNoStacking(x,m,e) => ($compStack:= nil; T)
   $compStack:= [[x,m,e,$exitModeStack],:$compStack]
   nil
 
-compNoStacking: (%Form,%Mode,%Env) -> %Triple
+compNoStacking: (%Form,%Mode,%Env) -> %Maybe %Triple
 compNoStacking(x,m,e) ==
   T:= comp2(x,m,e) =>
     $useRepresentationHack and m=$EmptyMode and T.mode=$Representation => 
@@ -119,13 +119,13 @@ compNoStacking(x,m,e) ==
     --hack only when `Rep' is defined the old way. -- gdr 2008/01/26
   compNoStacking1(x,m,e,$compStack)
 
-compNoStacking1: (%Form,%Mode,%Env,%List) -> %Triple
+compNoStacking1: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
 compNoStacking1(x,m,e,$compStack) ==
   u:= get(RepIfRepHack m,"value",e) =>
     (T:= comp2(x,u.expr,e) => [T.expr,m,T.env]; nil)
   nil
 
-comp2: (%Form,%Mode,%Env) -> %Triple
+comp2: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp2(x,m,e) ==
   [y,m',e]:= comp3(x,m,e) or return nil
   if $LISPLIB and isDomainForm(x,e) then
@@ -138,7 +138,7 @@ comp2(x,m,e) ==
         --$bootStrapMode-test necessary for compiling Ring in $bootStrapMode
   [y,m',e]
 
-comp3: (%Form,%Mode,%Env) -> %Triple
+comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp3(x,m,$e) ==
   --returns a Triple or %else nil to signalcan't do'
   $e:= addDomain(m,$e)
@@ -163,7 +163,7 @@ comp3(x,m,$e) ==
     [x',m',addDomain(m',e')]
   t
 
-compTypeOf: (%Form,%Mode,%Env) -> %Triple
+compTypeOf: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTypeOf(x:=[op,:argl],m,e) ==
   $insideCompTypeOf: local := true
   newModemap:= EQSUBSTLIST(argl,$FormalMapVariableList,get(op,'modemap,e))
@@ -280,14 +280,14 @@ extractCodeAndConstructTriple(u, m, oldE) ==
   [op,:.,env] := u
   [["CONS",["function",op],env],m,oldE]
 
-compExpression: (%Form,%Mode,%Env) -> %Triple
+compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
   atom first x and (fn:= GETL(first x,"SPECIAL")) =>
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
-compAtom: (%Form,%Mode,%Env) -> %Triple
+compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtom(x,m,e) ==
   T:= compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   x="nil" =>
@@ -314,7 +314,7 @@ primitiveType x ==
   FLOATP x => $DoubleFloat
   nil
 
-compSymbol: (%Form,%Mode,%Env) -> %Triple
+compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol(s,m,e) ==
   s="$NoValue" => ["$NoValue",$NoValueMode,e]
   isFluid s => [s,getmode(s,e) or return nil,e]
@@ -346,13 +346,13 @@ hasUniqueCaseView(x,m,e) ==
     p = "value" => return false
 
 
-convertOrCroak: (%Triple,%Mode) -> %Triple
+convertOrCroak: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 convertOrCroak(T,m) ==
   u:= convert(T,m) => u
   userError ["CANNOT CONVERT: ",T.expr,"%l"," OF MODE: ",T.mode,"%l",
     " TO MODE: ",m,"%l"]
 
-convert: (%Triple,%Mode) -> %Triple
+convert: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 convert(T,m) ==
   coerce(T,resolve(T.mode,m) or return nil)
 
@@ -377,12 +377,12 @@ hasType(x,e) ==
 
 --% General Forms
 
-compForm: (%Form,%Mode,%Env) -> %Triple
-compForm1: (%Form,%Mode,%Env) -> %Triple
-compForm2: (%Form,%Mode,%Env,%List) -> %Triple
-compForm3: (%Form,%Mode,%Env,%List) -> %Triple
-compArgumentsAndTryAgain: (%Form,%Mode,%Env) -> %Triple
-compExpressionList: (%List,%Mode,%Env) -> %Triple
+compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
+compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
+compForm2: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+compForm3: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+compArgumentsAndTryAgain: (%Form,%Mode,%Env) -> %Maybe %Triple
+compExpressionList: (%List,%Mode,%Env) -> %Maybe %Triple
 
 compForm(form,m,e) ==
   T:=
@@ -591,12 +591,12 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
 
 compConstructorCategory(x,m,e) == [x,resolve($Category,m),e]
 
-compString: (%Form,%Mode,%Env) -> %Triple
+compString: (%Form,%Mode,%Env) -> %Maybe %Triple
 compString(x,m,e) == [x,resolve($StringCategory,m),e]
 
 --% SUBSET CATEGORY
 
-compSubsetCategory: (%Form,%Mode,%Env) -> %Triple
+compSubsetCategory: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSubsetCategory(["SubsetCategory",cat,R],m,e) ==
   --1. put "Subsets" property on R to allow directly coercion to subset;
   --   allow automatic coercion from subset to R but not vice versa
@@ -611,8 +611,8 @@ compSubsetCategory(["SubsetCategory",cat,R],m,e) ==
 
 --% CONS
 
-compCons: (%Form,%Mode,%Env) -> %Triple
-compCons1: (%Form,%Mode,%Env) -> %Triple
+compCons: (%Form,%Mode,%Env) -> %Maybe %Triple
+compCons1: (%Form,%Mode,%Env) -> %Maybe %Triple
 
 compCons(form,m,e) == compCons1(form,m,e) or compForm(form,m,e)
 
@@ -647,7 +647,7 @@ compSetq1(form,val,m,E) ==
     op="Tuple" => setqMultiple(l,val,m,E)
     setqSetelt(form,val,m,E)
 
-compMakeDeclaration: (%Form,%Mode,%Env) -> %Triple
+compMakeDeclaration: (%Form,%Mode,%Env) -> %Maybe %Triple
 compMakeDeclaration(x,m,e) ==
   $insideExpressionIfTrue: local
   compColon(x,m,e)
@@ -771,7 +771,7 @@ compileQuasiquote(["[||]",:form],m,e) ==
 
 
 --% WHERE
-compWhere: (%Form,%Mode,%Env) -> %Triple
+compWhere: (%Form,%Mode,%Env) -> %Maybe %Triple
 compWhere([.,form,:exprList],m,eInit) ==
   $insideExpressionIfTrue: local:= false
   $insideWhereIfTrue: local:= true
@@ -787,7 +787,7 @@ compWhere([.,form,:exprList],m,eInit) ==
     eInit
   [x,m,eFinal]
 
-compConstruct: (%Form,%Mode,%Env) -> %Triple
+compConstruct: (%Form,%Mode,%Env) -> %Maybe %Triple
 compConstruct(form is ["construct",:l],m,e) ==
   y:= modeIsAggregateOf("List",m,e) =>
     T:= compList(l,["List",CADR y],e) => convert(T,m)
@@ -806,14 +806,14 @@ compConstruct(form is ["construct",:l],m,e) ==
 
 compQuote(expr,m,e) == [expr,m,e]
 
-compList: (%Form,%Mode,%Env) -> %Triple
+compList: (%Form,%Mode,%Env) -> %Maybe %Triple
 compList(l,m is ["List",mUnder],e) ==
   null l => [NIL,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl="failed" => nil
   T:= [["LIST",:[T.expr for T in Tl]],["List",mUnder],e]
 
-compVector: (%Form,%Mode,%Env) -> %Triple
+compVector: (%Form,%Mode,%Env) -> %Maybe %Triple
 compVector(l,m is ["Vector",mUnder],e) ==
   null l => [$EmptyVector,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
@@ -837,8 +837,8 @@ compMacro(form,m,e) ==
 
 --% SEQ
 
-compSeq: (%Form,%Mode,%Env) -> %Triple
-compSeq1: (%Form,%List,%Env) -> %Triple
+compSeq: (%Form,%Mode,%Env) -> %Maybe %Triple
+compSeq1: (%Form,%List,%Env) -> %Maybe %Triple
 compSeqItem: (%Thing,%Thing,%List) -> %List
 
 compSeq(["SEQ",:l],m,e) == compSeq1(l,[m,:$exitModeStack],e)
@@ -884,7 +884,7 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
       replaceExitEtc(rest x,tag,opFlag,opMode)
 
 --% SUCHTHAT
-compSuchthat: (%Form,%Mode,%Env) -> %Triple
+compSuchthat: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSuchthat([.,x,p],m,e) ==
   [x',m',e]:= comp(x,m,e) or return nil
   [p',.,e]:= comp(p,$Boolean,e) or return nil
@@ -893,7 +893,7 @@ compSuchthat([.,x,p],m,e) ==
 
 --% exit
 
-compExit: (%Form,%Mode,%Env) -> %Triple
+compExit: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExit(["exit",level,x],m,e) ==
   index:= level-1
   $exitModeStack = [] => comp(x,m,e)
@@ -911,7 +911,7 @@ modifyModeStack(m,index) ==
       ($exitModeStack.index:= resolve(m,$exitModeStack.index); $exitModeStack))
   $exitModeStack.index:= resolve(m,$exitModeStack.index)
 
-compLeave: (%Form,%Mode,%Env) -> %Triple
+compLeave: (%Form,%Mode,%Env) -> %Maybe %Triple
 compLeave(["leave",level,x],m,e) ==
   index:= #$exitModeStack-1-$leaveLevelStack.(level-1)
   [x',m',e']:= u:= comp(x,$exitModeStack.index,e) or return nil
@@ -920,7 +920,7 @@ compLeave(["leave",level,x],m,e) ==
 
 --% return
 
-compReturn: (%Form,%Mode,%Env) -> %Triple
+compReturn: (%Form,%Mode,%Env) -> %Maybe %Triple
 compReturn(["return",level,x],m,e) ==
   null $exitModeStack =>
     stackSemanticError(["the return before","%b",x,"%d","is unneccessary"],nil)
@@ -936,7 +936,7 @@ compReturn(["return",level,x],m,e) ==
 
 --% ELT
 
-compElt: (%Form,%Mode,%Env) -> %Triple
+compElt: (%Form,%Mode,%Env) -> %Maybe %Triple
 compElt(form,m,E) ==
   form isnt ["elt",aDomain,anOp] => compForm(form,m,E)
   aDomain="Lisp" =>
@@ -964,7 +964,7 @@ compElt(form,m,E) ==
 
 --% HAS
 
-compHas: (%Form,%Mode,%Env) -> %Triple
+compHas: (%Form,%Mode,%Env) -> %Maybe %Triple
 compHas(pred is ["has",a,b],m,$e) ==
   --b is (":",:.) => (.,.,E):= comp(b,$EmptyMode,E)
   $e:= chaseInferences(pred,$e)
@@ -989,9 +989,9 @@ compHasFormat (pred is ["has",olda,b]) ==
 
 --% IF
 
-compIf: (%Form,%Mode,%Env) -> %Triple
+compIf: (%Form,%Mode,%Env) -> %Maybe %Triple
 compBoolean: (%Form,%Mode,%Env) -> %List
-compFromIf: (%Form,%Mode,%Env) -> %Triple
+compFromIf: (%Form,%Mode,%Env) -> %Maybe %Triple
 
 compIf(["IF",a,b,c],m,E) ==
   [xa,ma,Ea,Einv]:= compBoolean(a,$Boolean,E) or return nil
@@ -1108,7 +1108,7 @@ compFromIf(a,m,E) ==
 
 quotify x == x
 
-compImport: (%Form,%Mode,%Env) -> %Triple
+compImport: (%Form,%Mode,%Env) -> %Maybe %Triple
 compImport(["import",:doms],m,e) ==
   for dom in doms repeat e:=addDomain(dom,e)
   ["/throwAway",$NoValueMode,e]
@@ -1118,7 +1118,7 @@ compImport(["import",:doms],m,e) ==
 --% etc.
 
 ++ compile a logical negation form `(not ...)'.
-compileNot: (%Form,%Mode,%Env) -> %Triple
+compileNot: (%Form,%Mode,%Env) -> %Maybe %Triple
 compileNot(x,m,e) ==
   x isnt ["not", y] => nil
   -- If there is a modemap available that can make this work, just use it.
@@ -1133,8 +1133,8 @@ compileNot(x,m,e) ==
  
 
 --% Case
-compCase: (%Form,%Mode,%Env) -> %Triple
-compCase1: (%Form,%Mode,%Env) -> %Triple
+compCase: (%Form,%Mode,%Env) -> %Maybe %Triple
+compCase1: (%Form,%Mode,%Env) -> %Maybe %Triple
 
 --Will the jerk who commented out these two functions please NOT do so
 --again.  These functions ARE needed, and case can NOT be done by
@@ -1174,7 +1174,7 @@ maybeSpliceMode m ==
   (m' := isQuasiquote m) => m'
   m
 
-compColon: (%Form,%Mode,%Env) -> %Triple
+compColon: (%Form,%Mode,%Env) -> %Maybe %Triple
 compColon([":",f,t],m,e) ==
   $insideExpressionIfTrue=true => compColonInside(f,m,e,t)
     --if inside an expression, ":" means to convert to m "on faith"
@@ -1212,7 +1212,7 @@ unknownTypeError name ==
     name
   stackSemanticError(["%b",name,"%d","is not a known type"],nil)
 
-compPretend: (%Form,%Mode,%Env) -> %Triple
+compPretend: (%Form,%Mode,%Env) -> %Maybe %Triple
 compPretend(["pretend",x,t],m,e) ==
   e:= addDomain(t,e)
   T:= comp(x,t,e) or comp(x,$EmptyMode,e) or return nil
@@ -1232,7 +1232,7 @@ compColonInside(x,m,e,m') ==
          stackWarning [":",m'," -- should replace by pretend"]
     T'
 
-compIs: (%Form,%Mode,%Env) -> %Triple
+compIs: (%Form,%Mode,%Env) -> %Maybe %Triple
 compIs(["is",a,b],m,e) ==
   [aval,am,e] := comp(a,$EmptyMode,e) or return nil
   [bval,bm,e] := comp(b,$EmptyMode,e) or return nil
@@ -1246,7 +1246,7 @@ compIs(["is",a,b],m,e) ==
 --  One should always call the correct function, since the represent-
 --  ation of basic objects may not be the same.
 
-coerce: (%Triple,%Mode) -> %Triple
+coerce: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 coerce(T,m) ==
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
@@ -1265,7 +1265,7 @@ coerce(T,m) ==
         "      to mode","%b",m2,"%d"]
 
 
-coerceEasy: (%Triple,%Mode) -> %Triple
+coerceEasy: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 coerceEasy(T,m) ==
   m=$EmptyMode => T
   m=$NoValueMode or m=$Void => [T.expr,m,T.env]
@@ -1278,7 +1278,7 @@ coerceEasy(T,m) ==
     [T.expr,m,T.env]
 
 
-coerceSubset: (%Triple,%Mode) -> %Triple
+coerceSubset: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 coerceSubset([x,m,e],m') ==
   isSubset(m,m',e) => [x,m',e]
   m is ['SubDomain,=m',:.] => [x,m',e]
@@ -1290,7 +1290,7 @@ coerceSubset([x,m,e],m') ==
       [x,m',e]
   nil
 
-coerceHard: (%Triple,%Mode) -> %Triple
+coerceHard: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 coerceHard(T,m) ==
   $e: local:= T.env
   m':= T.mode
@@ -1309,7 +1309,7 @@ coerceHard(T,m) ==
     [T.expr,m,$e]
   coerceExtraHard(T,m)
 
-coerceExtraHard: (%Triple,%Mode) -> %Triple
+coerceExtraHard: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 coerceExtraHard(T is [x,m',e],m) ==
   T':= autoCoerceByModemap(T,m) => T'
   isUnionMode(m',e) is ["Union",:l] and (t:= hasType(x,e)) and
@@ -1337,22 +1337,22 @@ coerceable(m,m',e) ==
   coerce(["$fromCoerceable$",m,e],m') => m'
   nil
 
-coerceExit: (%Triple,%Mode) -> %Triple
+coerceExit: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 coerceExit([x,m,e],m') ==
   m':= resolve(m,m')
   x':= replaceExitEtc(x,catchTag:= MKQ GENSYM(),"TAGGEDexit",$exitMode)
   coerce([["CATCH",catchTag,x'],m,e],m')
 
-compAtSign: (%Form,%Mode,%Env) -> %Triple
+compAtSign: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtSign(["@",x,m'],m,e) ==
   e:= addDomain(m',e)
   T:= comp(x,m',e) or return nil
   coerce(T,m)
 
-compCoerce: (%Form,%Mode,%Env) -> %Triple
-compCoerce1: (%Form,%Mode,%Env) -> %Triple
-coerceByModemap: (%Triple,%Mode) -> %Triple
-autoCoerceByModemap: (%Triple,%Mode) -> %Triple
+compCoerce: (%Form,%Mode,%Env) -> %Maybe %Triple
+compCoerce1: (%Form,%Mode,%Env) -> %Maybe %Triple
+coerceByModemap: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+autoCoerceByModemap: (%Maybe %Triple,%Mode) -> %Maybe %Triple
 
 compCoerce(["::",x,m'],m,e) ==
   e:= addDomain(m',e)

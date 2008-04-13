@@ -518,7 +518,7 @@ in1120a:=integrate((z^2)^(1/2), z= 1..2,"noPole")
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
 ------------------------------------------------------
-in1130a:=integrate(3^log(z), z= -I..I,"noPole")
+in1130a:=integrate(3^log(z), z= -%i..%i,"noPole")
 --
 --
 --             log(3)log(I)       log(3)log(- I)
@@ -529,7 +529,7 @@ in1130a:=integrate(3^log(z), z= -I..I,"noPole")
 --
 
 ------------------------------------------------------
-in1149:=integrate(imag(z)*z^(1/6), z= -I..I)
+in1149:=integrate(imag(z)*z^(1/6), z= -%i..%i)
 --
 --   (49)  0
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
@@ -539,7 +539,7 @@ in1149:=integrate(imag(z)*z^(1/6), z= -%i..%i)
 --   (64)  0
 --            Type: Union(f1: OrderedCompletion Expression Complex Integer,...)
 
-in1150a:=integrate(1/z^(1/2), z= -I..I,"noPole")
+in1150a:=integrate(1/z^(1/2), z= -%i..%i,"noPole")
 --
 --           +-+     +---+
 --   (51)  2\|I  - 2\|- I
@@ -551,7 +551,7 @@ in1150c:=integrate(1/z^(1/2), z= -%i..%i,"noPole")
 --   (66)  2\|%i  - 2\|- %i
 --            Type: Union(f1: OrderedCompletion Expression Complex Integer,...)
 
-in1161:=integrate(hermiteH(1, z), z= -I..I)
+in1161:=integrate(hermiteH(1, z), z= -%i..%i)
 --
 --   (76)  0
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
@@ -569,7 +569,7 @@ in1160:=integrate(HermiteH(2, z), z= -%i..%i)
 --       3
 --         Type: Union(f1: OrderedCompletion Expression Complex Integer,...)
 
-in1162:=integrate(laguerreL(1, z), z= -I..I)
+in1162:=integrate(laguerreL(1, z), z= -%i..%i)
 --
 --   (78)  2I
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
@@ -579,7 +579,7 @@ in1162:=integrate(laguerreL(1, z), z= -%i..%i)
 --   (79)  2%i
 --            Type: Union(f1: OrderedCompletion Expression Complex Integer,...)
 
-in1163:=integrate(legendreP(3, z), z= -I..I)
+in1163:=integrate(legendreP(3, z), z= -%i..%i)
 --
 --   (80)  0
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
@@ -590,7 +590,7 @@ in1163:=integrate(legendreP(3, z), z= -%i..%i)
 --            Type: Union(f1: OrderedCompletion Expression Complex Integer,...)
 
 
-in1164:=integrate(legendreP(2, z), z= -I..I)
+in1164:=integrate(legendreP(2, z), z= -%i..%i)
 --
 --          3
 --   (82)  I  - I
@@ -842,7 +842,7 @@ in1180:=integrate(z^(1/3)/(z^2+1), z= 0..100000000000000000000000000000000000000
 --     24
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
-in1183a:=integrate(csc(z), z= 1-I..1+I,"noPole")
+in1183a:=integrate(csc(z), z= 1-%i..1+%i,"noPole")
 --
 --                          2                                    2
 --                sin(I + 1)                           sin(I - 1)
@@ -2468,7 +2468,7 @@ in128a:=integrate(atan(sqrt(1-cos(z)^2)/(1+cos(z))), z= 0..1,"noPole")
 --         4
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
-in134:=integrate(log(exp(z)), z= -I..I)
+in134:=integrate(log(exp(z)), z= -%i..%i)
 --
 --         0
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
@@ -2844,7 +2844,7 @@ in144:=integrate(1, z= I*infinity..%plusInfinity)
 --   + infinity
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
-in146a:=integrate(csc(z), z= 1-I..1+I,"noPole")
+in146a:=integrate(csc(z), z= 1-%i..1+%i,"noPole")
 --
 --                          2                                    2
 --                sin(I + 1)                           sin(I - 1)
@@ -2868,7 +2868,7 @@ in156a:=integrate(z^(2/3), z= 1..10,"noPole")
 --               5
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
-in159a:=integrate(log(z)/z^2, z= -I..-1,"noPole")
+in159a:=integrate(log(z)/z^2, z= -%i..-1,"noPole")
 --
 --                2
 --         - log(I ) + 2I - 2
@@ -3269,7 +3269,7 @@ in1796a:=integrate((1+(1-z)^(1/2))^(1/2), z= 0..1,"noPole")
 --             15
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
-in183:=integrate(1/z, z= I..2*I)
+in183:=integrate(1/z, z= %i..2*%i)
 --
 --               2         2
 --         log(4I ) - log(I )
@@ -3278,7 +3278,7 @@ in183:=integrate(1/z, z= I..2*I)
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
 
-in184:=integrate(exp(I*z), z= I..2*I)
+in184:=integrate(exp(I*z), z= %i..2*%i)
 --
 --             2      2
 --           2I      I
@@ -3296,7 +3296,7 @@ in184a:=integrate(exp(%i*z), z= %i..2*%i)
 --             %e %e
 --            Type: Union(f1: OrderedCompletion Expression Complex Integer,...)
 
-in187a:=integrate(2^log(z), z= -I..I,"noPole")
+in187a:=integrate(2^log(z), z= -%i..%i,"noPole")
 --
 --             log(2)log(I)       log(2)log(- I)
 --         I %e             + I %e
@@ -4441,7 +4441,7 @@ in2124a:=integrate(-1/z-1/(I/(z+I))^(1/2), z= -1..0,"noPole")
 --   + infinity
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
-in25:=integrate(cos(z), z= I..a)
+in25:=integrate(cos(z), z= %i..a)
 --
 --  sin(a) - sin(I)
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
@@ -4451,7 +4451,7 @@ in25a:=integrate(cos(z), z= %i..a)
 --  sin(a) - sin(%i)
 --            Type: Union(f1: OrderedCompletion Expression Complex Integer,...)
 
-in25b:=integrate(exp(I*z), z= I..I*infinity)
+in25b:=integrate(exp(I*z), z= %i..%i*infinity)
 --
 --            2              2
 --           I infinity     I
@@ -5399,7 +5399,7 @@ in271a:=integrate(1/sqrt((z^2-1)*(z^2-1)), z= 2..%plusInfinity,"noPole")
 --           4
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
-in275c:=integrate(sqrt(z), z= -I..I,"noPole")
+in275c:=integrate(sqrt(z), z= -%i..%i,"noPole")
 --
 --            +-+      +---+
 --         2I\|I  + 2I\|- I
@@ -5407,7 +5407,7 @@ in275c:=integrate(sqrt(z), z= -I..I,"noPole")
 --                 3
 --                    Type: Union(f1: OrderedCompletion Expression Integer,...)
 
-in275a:=integrate(1/(1+z), z= -I..I,"noPole")
+in275a:=integrate(1/(1+z), z= -%i..%i,"noPole")
 --
 --              2                  2
 --         log(I  + 2I + 1) - log(I  - 2I + 1)

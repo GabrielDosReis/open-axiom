@@ -683,7 +683,7 @@ dbMkEvalable form ==
 --like mkEvalable except that it does NOT quote domains
 --does not do "loadIfNecessary"
   [op,:.] := form
-  kind := GETDATABASE(op,'CONSTRUCTORKIND)
+  kind := getConstructorKindFromDB op
   kind = 'category => form
   mkEvalable form
 
@@ -865,7 +865,7 @@ dbDocTable conform ==
 originsInOrder conform ==  --domain = nil or set to live domain
 --from dcCats
   [con,:argl] := conform
-  GETDATABASE(con,'CONSTRUCTORKIND) = 'category =>
+  getConstructorKindFromDB con = "category" =>
       ASSOCLEFT ancestorsOf(conform,nil)
   acc := ASSOCLEFT parentsOf con
   for x in acc repeat
@@ -1130,7 +1130,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
   doc := [getConstructorDocumentation conname]
   signature := getConstructorSignature conname
   sig :=
-    GETDATABASE(conname,'CONSTRUCTORKIND) = 'category =>
+    getConstructorKindFromDB conname = "category" =>
       SUBLISLIS(conargs,$TriangleVariableList,signature)
     sublisFormal(conargs,signature)
   htSaySaturn '"\begin{description}"
