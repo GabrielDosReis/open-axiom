@@ -1029,7 +1029,8 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |DFLOAT;doubleFloatFormat;2S;1| (|s| $)
   (PROG (|ss|)
     (RETURN
-      (SEQ (LETT |ss| (QREFELT $ 6) |DFLOAT;doubleFloatFormat;2S;1|)
+      (SEQ (LETT |ss| (|getShellEntry| $ 6)
+                 |DFLOAT;doubleFloatFormat;2S;1|)
            (SETELT $ 6 |s|) (EXIT |ss|))))) 
 
 (DEFUN |DFLOAT;OMwrite;$S;2| (|x| $)
@@ -1038,13 +1039,13 @@ Note that this code is not included in the generated catdef.spad file.
       (SEQ (LETT |s| "" |DFLOAT;OMwrite;$S;2|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |DFLOAT;OMwrite;$S;2|)
            (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (QREFELT $ 10))
-                     (QREFELT $ 12))
+                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 10))
+                     (|getShellEntry| $ 12))
                  |DFLOAT;OMwrite;$S;2|)
-           (SPADCALL |dev| (QREFELT $ 14))
-           (SPADCALL |dev| |x| (QREFELT $ 16))
-           (SPADCALL |dev| (QREFELT $ 17))
-           (SPADCALL |dev| (QREFELT $ 18))
+           (SPADCALL |dev| (|getShellEntry| $ 14))
+           (SPADCALL |dev| |x| (|getShellEntry| $ 16))
+           (SPADCALL |dev| (|getShellEntry| $ 17))
+           (SPADCALL |dev| (|getShellEntry| $ 18))
            (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |DFLOAT;OMwrite;$S;2|)
            (EXIT |s|))))) 
 
@@ -1055,26 +1056,27 @@ Note that this code is not included in the generated catdef.spad file.
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|)
                  |DFLOAT;OMwrite;$BS;3|)
            (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (QREFELT $ 10))
-                     (QREFELT $ 12))
+                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 10))
+                     (|getShellEntry| $ 12))
                  |DFLOAT;OMwrite;$BS;3|)
-           (COND (|wholeObj| (SPADCALL |dev| (QREFELT $ 14))))
-           (SPADCALL |dev| |x| (QREFELT $ 16))
-           (COND (|wholeObj| (SPADCALL |dev| (QREFELT $ 17))))
-           (SPADCALL |dev| (QREFELT $ 18))
+           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 14))))
+           (SPADCALL |dev| |x| (|getShellEntry| $ 16))
+           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 17))))
+           (SPADCALL |dev| (|getShellEntry| $ 18))
            (LETT |s| (OM-STRINGPTRTOSTRING |sp|)
                  |DFLOAT;OMwrite;$BS;3|)
            (EXIT |s|))))) 
 
 (DEFUN |DFLOAT;OMwrite;Omd$V;4| (|dev| |x| $)
-  (SEQ (SPADCALL |dev| (QREFELT $ 14))
-       (SPADCALL |dev| |x| (QREFELT $ 16))
-       (EXIT (SPADCALL |dev| (QREFELT $ 17))))) 
+  (SEQ (SPADCALL |dev| (|getShellEntry| $ 14))
+       (SPADCALL |dev| |x| (|getShellEntry| $ 16))
+       (EXIT (SPADCALL |dev| (|getShellEntry| $ 17))))) 
 
 (DEFUN |DFLOAT;OMwrite;Omd$BV;5| (|dev| |x| |wholeObj| $)
-  (SEQ (COND (|wholeObj| (SPADCALL |dev| (QREFELT $ 14))))
-       (SPADCALL |dev| |x| (QREFELT $ 16))
-       (EXIT (COND (|wholeObj| (SPADCALL |dev| (QREFELT $ 17))))))) 
+  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 14))))
+       (SPADCALL |dev| |x| (|getShellEntry| $ 16))
+       (EXIT (COND
+               (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 17))))))) 
 
 (PUT '|DFLOAT;checkComplex| '|SPADreplace| 'C-TO-R) 
 
@@ -1094,7 +1096,7 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |DFLOAT;precision;Pi;10| ($) (FLOAT-DIGITS 0.0)) 
 
 (DEFUN |DFLOAT;bits;Pi;11| ($)
-  (PROG (#0=#:G1412)
+  (PROG (#0=#:G1419)
     (RETURN
       (COND
         ((EQL (FLOAT-RADIX 0.0) 2) (FLOAT-DIGITS 0.0))
@@ -1105,8 +1107,8 @@ Note that this code is not included in the generated catdef.spad file.
                                (SPADCALL
                                    (FLOAT (FLOAT-RADIX 0.0)
                                     MOST-POSITIVE-LONG-FLOAT)
-                                   (QREFELT $ 30))
-                               (QREFELT $ 31)))
+                                   (|getShellEntry| $ 30))
+                               (|getShellEntry| $ 31)))
                       |DFLOAT;bits;Pi;11|)
            (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))))) 
 
@@ -1121,7 +1123,7 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |DFLOAT;min;$;13| ($) MOST-NEGATIVE-LONG-FLOAT) 
 
 (DEFUN |DFLOAT;order;$I;14| (|a| $)
-  (- (+ (FLOAT-DIGITS 0.0) (SPADCALL |a| (QREFELT $ 28))) 1)) 
+  (- (+ (FLOAT-DIGITS 0.0) (SPADCALL |a| (|getShellEntry| $ 28))) 1)) 
 
 (PUT '|DFLOAT;Zero;$;15| '|SPADreplace|
      '(XLAM NIL (FLOAT 0 MOST-POSITIVE-LONG-FLOAT))) 
@@ -1142,9 +1144,11 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |DFLOAT;pi;$;18| ($) PI) 
 
 (DEFUN |DFLOAT;coerce;$Of;19| (|x| $)
-  (SPADCALL (FORMAT NIL (QREFELT $ 6) |x|) (QREFELT $ 41))) 
+  (SPADCALL (FORMAT NIL (|getShellEntry| $ 6) |x|)
+      (|getShellEntry| $ 41))) 
 
-(DEFUN |DFLOAT;convert;$If;20| (|x| $) (SPADCALL |x| (QREFELT $ 44))) 
+(DEFUN |DFLOAT;convert;$If;20| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 44))) 
 
 (PUT '|DFLOAT;<;2$B;21| '|SPADreplace| '<) 
 
@@ -1325,10 +1329,11 @@ Note that this code is not included in the generated catdef.spad file.
 
 (DEFUN |DFLOAT;differentiate;2$;68| (|x| $) 0.0) 
 
-(DEFUN |DFLOAT;Gamma;2$;69| (|x| $) (SPADCALL |x| (QREFELT $ 95))) 
+(DEFUN |DFLOAT;Gamma;2$;69| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 95))) 
 
 (DEFUN |DFLOAT;Beta;3$;70| (|x| |y| $)
-  (SPADCALL |x| |y| (QREFELT $ 97))) 
+  (SPADCALL |x| |y| (|getShellEntry| $ 97))) 
 
 (PUT '|DFLOAT;wholePart;$I;71| '|SPADreplace| 'FIX) 
 
@@ -1341,10 +1346,11 @@ Note that this code is not included in the generated catdef.spad file.
 
 (DEFUN |DFLOAT;convert;$Df;73| (|x| $) |x|) 
 
-(DEFUN |DFLOAT;convert;$F;74| (|x| $) (SPADCALL |x| (QREFELT $ 103))) 
+(DEFUN |DFLOAT;convert;$F;74| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 103))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$NniF;75| (|x| |d| $)
-  (SPADCALL |x| |d| 10 (QREFELT $ 107))) 
+  (SPADCALL |x| |d| 10 (|getShellEntry| $ 107))) 
 
 (DEFUN |DFLOAT;atan;3$;76| (|x| |y| $)
   (PROG (|theta|)
@@ -1367,16 +1373,16 @@ Note that this code is not included in the generated catdef.spad file.
                    (EXIT |theta|)))))))) 
 
 (DEFUN |DFLOAT;retract;$F;77| (|x| $)
-  (PROG (#0=#:G1487)
+  (PROG (#0=#:G1494)
     (RETURN
       (SPADCALL |x|
           (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
                        |DFLOAT;retract;$F;77|)
             (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#))
-          (FLOAT-RADIX 0.0) (QREFELT $ 107))))) 
+          (FLOAT-RADIX 0.0) (|getShellEntry| $ 107))))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;78| (|x| $)
-  (PROG (#0=#:G1492)
+  (PROG (#0=#:G1499)
     (RETURN
       (CONS 0
             (SPADCALL |x|
@@ -1384,7 +1390,7 @@ Note that this code is not included in the generated catdef.spad file.
                              |DFLOAT;retractIfCan;$U;78|)
                   (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|)
                       #0#))
-                (FLOAT-RADIX 0.0) (QREFELT $ 107)))))) 
+                (FLOAT-RADIX 0.0) (|getShellEntry| $ 107)))))) 
 
 (DEFUN |DFLOAT;retract;$I;79| (|x| $)
   (PROG (|n|)
@@ -1404,7 +1410,7 @@ Note that this code is not included in the generated catdef.spad file.
                    ('T (CONS 1 "failed")))))))) 
 
 (DEFUN |DFLOAT;sign;$I;81| (|x| $)
-  (SPADCALL (FLOAT-SIGN |x| 1.0) (QREFELT $ 113))) 
+  (SPADCALL (FLOAT-SIGN |x| 1.0) (|getShellEntry| $ 113))) 
 
 (PUT '|DFLOAT;abs;2$;82| '|SPADreplace|
      '(XLAM (|x|) (FLOAT-SIGN 1.0 |x|))) 
@@ -1412,12 +1418,13 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |DFLOAT;abs;2$;82| (|x| $) (FLOAT-SIGN 1.0 |x|)) 
 
 (DEFUN |DFLOAT;manexp| (|x| $)
-  (PROG (|s| #0=#:G1513 |me| |two53|)
+  (PROG (|s| #0=#:G1520 |me| |two53|)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|) (CONS 0 0))
                    ('T
-                    (SEQ (LETT |s| (SPADCALL |x| (QREFELT $ 116))
+                    (SEQ (LETT |s|
+                               (SPADCALL |x| (|getShellEntry| $ 116))
                                |DFLOAT;manexp|)
                          (LETT |x| (FLOAT-SIGN 1.0 |x|)
                                |DFLOAT;manexp|)
@@ -1430,10 +1437,10 @@ Note that this code is not included in the generated catdef.spad file.
                                       (* |s|
                                        (SPADCALL
                                         MOST-POSITIVE-LONG-FLOAT
-                                        (QREFELT $ 27)))
+                                        (|getShellEntry| $ 27)))
                                       1)
                                      (SPADCALL MOST-POSITIVE-LONG-FLOAT
-                                      (QREFELT $ 28)))
+                                      (|getShellEntry| $ 28)))
                                     |DFLOAT;manexp|)
                               (GO #0#))))
                          (LETT |me| (MANEXP |x|) |DFLOAT;manexp|)
@@ -1447,9 +1454,9 @@ Note that this code is not included in the generated catdef.spad file.
            #0# (EXIT #0#))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;84| (|f| |d| |b| $)
-  (PROG (|#G103| |nu| |ex| BASE #0=#:G1516 |de| |tol| |#G104| |q| |r|
-                 |p2| |q2| #1=#:G1534 |#G105| |#G106| |p0| |p1| |#G107|
-                 |#G108| |q0| |q1| |#G109| |#G110| |s| |t| #2=#:G1532)
+  (PROG (|#G103| |nu| |ex| BASE #0=#:G1523 |de| |tol| |#G104| |q| |r|
+                 |p2| |q2| #1=#:G1541 |#G105| |#G106| |p0| |p1| |#G107|
+                 |#G108| |q0| |q1| |#G109| |#G110| |s| |t| #2=#:G1539)
     (RETURN
       (SEQ (EXIT (SEQ (PROGN
                         (LETT |#G103| (|DFLOAT;manexp| |f| $)
@@ -1516,13 +1523,15 @@ Note that this code is not included in the generated catdef.spad file.
                                                   (ABS
                                                    (- (* |nu| |q2|)
                                                     (* |de| |p2|)))
-                                                  (QREFELT $ 120))
+                                                  (|getShellEntry| $
+                                                   120))
                                                  (* |de| (ABS |p2|))))
                                                (EXIT
                                                 (PROGN
                                                   (LETT #1#
                                                    (SPADCALL |p2| |q2|
-                                                    (QREFELT $ 119))
+                                                    (|getShellEntry| $
+                                                     119))
                                                    |DFLOAT;rationalApproximation;$2NniF;84|)
                                                   (GO #1#)))))
                                             (PROGN
@@ -1564,31 +1573,36 @@ Note that this code is not included in the generated catdef.spad file.
                                        |DFLOAT;rationalApproximation;$2NniF;84|)
                                        (|check-subtype| (>= #2# 0)
                                         '(|NonNegativeInteger|) #2#))))
-                                   (QREFELT $ 121)))))))
+                                   (|getShellEntry| $ 121)))))))
            #1# (EXIT #1#))))) 
 
 (DEFUN |DFLOAT;**;$F$;85| (|x| |r| $)
-  (PROG (|n| |d| #0=#:G1543)
+  (PROG (|n| |d| #0=#:G1550)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|)
                     (COND
-                      ((SPADCALL |r| (QREFELT $ 122))
+                      ((SPADCALL |r| (|getShellEntry| $ 122))
                        (|error| "0**0 is undefined"))
-                      ((SPADCALL |r| (QREFELT $ 123))
+                      ((SPADCALL |r| (|getShellEntry| $ 123))
                        (|error| "division by 0"))
                       ('T 0.0)))
-                   ((OR (SPADCALL |r| (QREFELT $ 122)) (= |x| 1.0))
+                   ((OR (SPADCALL |r| (|getShellEntry| $ 122))
+                        (= |x| 1.0))
                     1.0)
                    ('T
                     (COND
                       ((SPADCALL |r| (|spadConstant| $ 124)
-                           (QREFELT $ 125))
+                           (|getShellEntry| $ 125))
                        |x|)
                       ('T
-                       (SEQ (LETT |n| (SPADCALL |r| (QREFELT $ 126))
+                       (SEQ (LETT |n|
+                                  (SPADCALL |r|
+                                      (|getShellEntry| $ 126))
                                   |DFLOAT;**;$F$;85|)
-                            (LETT |d| (SPADCALL |r| (QREFELT $ 127))
+                            (LETT |d|
+                                  (SPADCALL |r|
+                                      (|getShellEntry| $ 127))
                                   |DFLOAT;**;$F$;85|)
                             (EXIT (COND
                                     ((MINUSP |x|)
@@ -1600,20 +1614,21 @@ Note that this code is not included in the generated catdef.spad file.
                                              (LETT #0#
                                               (-
                                                (SPADCALL (- |x|) |r|
-                                                (QREFELT $ 128)))
+                                                (|getShellEntry| $ 128)))
                                               |DFLOAT;**;$F$;85|)
                                              (GO #0#)))
                                           ('T
                                            (PROGN
                                              (LETT #0#
                                               (SPADCALL (- |x|) |r|
-                                               (QREFELT $ 128))
+                                               (|getShellEntry| $ 128))
                                               |DFLOAT;**;$F$;85|)
                                              (GO #0#)))))
                                        ('T (|error| "negative root"))))
                                     ((EQL |d| 2)
                                      (EXPT
-                                      (SPADCALL |x| (QREFELT $ 56))
+                                      (SPADCALL |x|
+                                       (|getShellEntry| $ 56))
                                       |n|))
                                     ('T
                                      (SPADCALL |x|
@@ -1622,13 +1637,13 @@ Note that this code is not included in the generated catdef.spad file.
                                         MOST-POSITIVE-LONG-FLOAT)
                                        (FLOAT |d|
                                         MOST-POSITIVE-LONG-FLOAT))
-                                      (QREFELT $ 59)))))))))))
+                                      (|getShellEntry| $ 59)))))))))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |DoubleFloat| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1556)
+      (PROG (#0=#:G1563)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|DoubleFloat|)
@@ -1649,12 +1664,13 @@ Note that this code is not included in the generated catdef.spad file.
     (RETURN
       (PROGN
         (LETT |dv$| '(|DoubleFloat|) . #0=(|DoubleFloat|))
-        (LETT $ (GETREFV 142) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 142) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|haddProp| |$ConstructorCache| '|DoubleFloat| NIL (CONS 1 $))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 "~G")
+        (|setShellEntry| $ 6 "~G")
         $)))) 
 
 (MAKEPROP '|DoubleFloat| '|infovec|
@@ -1714,14 +1730,14 @@ Note that this code is not included in the generated catdef.spad file.
              (79 . |coerce|) (84 . |zero?|) (89 . |negative?|)
              (94 . |One|) (98 . =) (104 . |numer|) (109 . |denom|)
              |DFLOAT;**;$F$;85| (|PatternMatchResult| 102 $)
-             (|Pattern| 102) (|Factored| $) (|Union| 133 '"failed")
-             (|List| $)
+             (|Pattern| 102) (|Factored| $) (|List| $)
+             (|Union| 132 '"failed")
              (|Record| (|:| |coef1| $) (|:| |coef2| $)
                  (|:| |generator| $))
              (|Record| (|:| |coef1| $) (|:| |coef2| $))
              (|Union| 135 '"failed")
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
-             (|Record| (|:| |coef| 133) (|:| |generator| $))
+             (|Record| (|:| |coef| 132) (|:| |generator| $))
              (|SparseUnivariatePolynomial| $)
              (|Record| (|:| |unit| $) (|:| |canonical| $)
                  (|:| |associate| $))
@@ -1837,19 +1853,19 @@ Note that this code is not included in the generated catdef.spad file.
                                   111 0 112 1 0 114 0 115 1 0 105 0 110
                                   1 0 26 0 113 2 0 0 0 0 1 1 0 91 0 92
                                   2 0 105 0 106 108 3 0 105 0 106 106
-                                  107 2 0 0 0 0 1 1 0 138 133 1 1 0 20
+                                  107 2 0 0 0 0 1 1 0 138 132 1 1 0 20
                                   0 1 0 0 24 29 1 0 20 0 1 0 0 0 39 3 0
                                   129 0 130 129 1 1 0 26 0 35 1 0 20 0
                                   1 2 0 0 0 26 1 1 0 0 0 1 1 0 20 0 88
-                                  2 0 132 133 0 1 0 0 0 34 2 0 0 0 0 53
+                                  2 0 133 132 0 1 0 0 0 34 2 0 0 0 0 53
                                   0 0 0 33 2 0 0 0 0 52 1 0 26 0 27 1 0
                                   0 0 30 1 0 0 0 57 1 0 0 0 62 1 0 0
-                                  133 1 2 0 0 0 0 1 1 0 7 0 1 1 0 0 0 1
+                                  132 1 2 0 0 0 0 1 1 0 7 0 1 1 0 0 0 1
                                   1 0 26 0 90 1 0 141 0 1 2 0 139 139
-                                  139 1 1 0 0 133 1 2 0 0 0 0 1 1 0 0 0
+                                  139 1 1 0 0 132 1 2 0 0 0 0 1 1 0 0 0
                                   1 1 0 0 0 1 3 0 0 26 26 24 100 2 0 0
                                   26 26 1 1 0 131 0 1 2 0 134 0 0 1 3 0
-                                  136 0 0 0 1 2 0 91 0 0 1 2 0 132 133
+                                  136 0 0 0 1 2 0 91 0 0 1 2 0 133 132
                                   0 1 1 0 26 0 28 0 0 0 38 1 0 0 0 61 1
                                   0 106 0 1 1 0 7 7 8 2 0 137 0 0 1 0 0
                                   24 1 1 0 0 0 93 2 0 0 0 106 1 1 0 0 0

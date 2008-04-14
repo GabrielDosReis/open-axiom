@@ -335,9 +335,9 @@ Note that this code is not included in the generated catdef.spad file.
 
 (DEFUN |SYMBOL;writeOMSym| (|dev| |x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 21))
+    ((SPADCALL |x| (|getShellEntry| $ 22))
      (|error| "Cannot convert a scripted symbol to OpenMath"))
-    ('T (SPADCALL |dev| |x| (QREFELT $ 25))))) 
+    ('T (SPADCALL |dev| |x| (|getShellEntry| $ 26))))) 
 
 (DEFUN |SYMBOL;OMwrite;$S;2| (|x| $)
   (PROG (|sp| |dev| |s|)
@@ -345,13 +345,13 @@ Note that this code is not included in the generated catdef.spad file.
       (SEQ (LETT |s| "" |SYMBOL;OMwrite;$S;2|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |SYMBOL;OMwrite;$S;2|)
            (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (QREFELT $ 27))
-                     (QREFELT $ 29))
+                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 28))
+                     (|getShellEntry| $ 29))
                  |SYMBOL;OMwrite;$S;2|)
-           (SPADCALL |dev| (QREFELT $ 30))
+           (SPADCALL |dev| (|getShellEntry| $ 30))
            (|SYMBOL;writeOMSym| |dev| |x| $)
-           (SPADCALL |dev| (QREFELT $ 31))
-           (SPADCALL |dev| (QREFELT $ 32))
+           (SPADCALL |dev| (|getShellEntry| $ 31))
+           (SPADCALL |dev| (|getShellEntry| $ 32))
            (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |SYMBOL;OMwrite;$S;2|)
            (EXIT |s|))))) 
 
@@ -362,28 +362,30 @@ Note that this code is not included in the generated catdef.spad file.
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|)
                  |SYMBOL;OMwrite;$BS;3|)
            (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (QREFELT $ 27))
-                     (QREFELT $ 29))
+                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 28))
+                     (|getShellEntry| $ 29))
                  |SYMBOL;OMwrite;$BS;3|)
-           (COND (|wholeObj| (SPADCALL |dev| (QREFELT $ 30))))
+           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 30))))
            (|SYMBOL;writeOMSym| |dev| |x| $)
-           (COND (|wholeObj| (SPADCALL |dev| (QREFELT $ 31))))
-           (SPADCALL |dev| (QREFELT $ 32))
+           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 31))))
+           (SPADCALL |dev| (|getShellEntry| $ 32))
            (LETT |s| (OM-STRINGPTRTOSTRING |sp|)
                  |SYMBOL;OMwrite;$BS;3|)
            (EXIT |s|))))) 
 
 (DEFUN |SYMBOL;OMwrite;Omd$V;4| (|dev| |x| $)
-  (SEQ (SPADCALL |dev| (QREFELT $ 30))
+  (SEQ (SPADCALL |dev| (|getShellEntry| $ 30))
        (|SYMBOL;writeOMSym| |dev| |x| $)
-       (EXIT (SPADCALL |dev| (QREFELT $ 31))))) 
+       (EXIT (SPADCALL |dev| (|getShellEntry| $ 31))))) 
 
 (DEFUN |SYMBOL;OMwrite;Omd$BV;5| (|dev| |x| |wholeObj| $)
-  (SEQ (COND (|wholeObj| (SPADCALL |dev| (QREFELT $ 30))))
+  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 30))))
        (|SYMBOL;writeOMSym| |dev| |x| $)
-       (EXIT (COND (|wholeObj| (SPADCALL |dev| (QREFELT $ 31))))))) 
+       (EXIT (COND
+               (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 31))))))) 
 
-(DEFUN |SYMBOL;convert;$If;6| (|s| $) (SPADCALL |s| (QREFELT $ 45))) 
+(DEFUN |SYMBOL;convert;$If;6| (|s| $)
+  (SPADCALL |s| (|getShellEntry| $ 45))) 
 
 (PUT '|SYMBOL;convert;$S;7| '|SPADreplace| '(XLAM (|s|) |s|)) 
 
@@ -400,32 +402,35 @@ Note that this code is not included in the generated catdef.spad file.
 
 (DEFUN |SYMBOL;<;2$B;10| (|x| |y| $) (GGREATERP |y| |x|)) 
 
-(DEFUN |SYMBOL;coerce;$Of;11| (|x| $) (SPADCALL |x| (QREFELT $ 52))) 
+(DEFUN |SYMBOL;coerce;$Of;11| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 52))) 
 
 (DEFUN |SYMBOL;subscript;$L$;12| (|sy| |lx| $)
-  (SPADCALL |sy| (LIST |lx| NIL NIL NIL NIL) (QREFELT $ 55))) 
+  (SPADCALL |sy| (LIST |lx| NIL NIL NIL NIL) (|getShellEntry| $ 56))) 
 
 (DEFUN |SYMBOL;elt;$L$;13| (|sy| |lx| $)
-  (SPADCALL |sy| |lx| (QREFELT $ 57))) 
+  (SPADCALL |sy| |lx| (|getShellEntry| $ 57))) 
 
 (DEFUN |SYMBOL;superscript;$L$;14| (|sy| |lx| $)
-  (SPADCALL |sy| (LIST NIL |lx| NIL NIL NIL) (QREFELT $ 55))) 
+  (SPADCALL |sy| (LIST NIL |lx| NIL NIL NIL) (|getShellEntry| $ 56))) 
 
 (DEFUN |SYMBOL;argscript;$L$;15| (|sy| |lx| $)
-  (SPADCALL |sy| (LIST NIL NIL NIL NIL |lx|) (QREFELT $ 55))) 
+  (SPADCALL |sy| (LIST NIL NIL NIL NIL |lx|) (|getShellEntry| $ 56))) 
 
 (DEFUN |SYMBOL;patternMatch;$P2Pmr;16| (|x| |p| |l| $)
-  (SPADCALL |x| |p| |l| (QREFELT $ 64))) 
+  (SPADCALL |x| |p| |l| (|getShellEntry| $ 64))) 
 
 (DEFUN |SYMBOL;patternMatch;$P2Pmr;17| (|x| |p| |l| $)
-  (SPADCALL |x| |p| |l| (QREFELT $ 70))) 
+  (SPADCALL |x| |p| |l| (|getShellEntry| $ 71))) 
 
-(DEFUN |SYMBOL;convert;$P;18| (|x| $) (SPADCALL |x| (QREFELT $ 73))) 
+(DEFUN |SYMBOL;convert;$P;18| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 74))) 
 
-(DEFUN |SYMBOL;convert;$P;19| (|x| $) (SPADCALL |x| (QREFELT $ 75))) 
+(DEFUN |SYMBOL;convert;$P;19| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 76))) 
 
 (DEFUN |SYMBOL;syprefix| (|sc| $)
-  (PROG (|ns| #0=#:G3018 |n| #1=#:G3019)
+  (PROG (|ns| #0=#:G1449 |n| #1=#:G1450)
     (RETURN
       (SEQ (LETT |ns|
                  (LIST (LENGTH (QVELT |sc| 3)) (LENGTH (QVELT |sc| 2))
@@ -440,7 +445,7 @@ Note that this code is not included in the generated catdef.spad file.
                 (SEQ (EXIT (LETT |ns| (CDR |ns|) |SYMBOL;syprefix|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (SPADCALL
-                     (CONS (STRCONC (QREFELT $ 37)
+                     (CONS (STRCONC (|getShellEntry| $ 37)
                                     (|SYMBOL;istring|
                                      (LENGTH (QVELT |sc| 4)) $))
                            (PROGN
@@ -465,19 +470,22 @@ Note that this code is not included in the generated catdef.spad file.
                                         |SYMBOL;syprefix|)
                                   (GO G190) G191
                                   (EXIT (NREVERSE0 #0#)))))
-                     (QREFELT $ 78))))))) 
+                     (|getShellEntry| $ 79))))))) 
 
 (DEFUN |SYMBOL;syscripts| (|sc| $)
   (PROG (|all|)
     (RETURN
       (SEQ (LETT |all| (QVELT |sc| 3) |SYMBOL;syscripts|)
-           (LETT |all| (SPADCALL (QVELT |sc| 2) |all| (QREFELT $ 79))
+           (LETT |all|
+                 (SPADCALL (QVELT |sc| 2) |all| (|getShellEntry| $ 80))
                  |SYMBOL;syscripts|)
-           (LETT |all| (SPADCALL (QVELT |sc| 1) |all| (QREFELT $ 79))
+           (LETT |all|
+                 (SPADCALL (QVELT |sc| 1) |all| (|getShellEntry| $ 80))
                  |SYMBOL;syscripts|)
-           (LETT |all| (SPADCALL (QVELT |sc| 0) |all| (QREFELT $ 79))
+           (LETT |all|
+                 (SPADCALL (QVELT |sc| 0) |all| (|getShellEntry| $ 80))
                  |SYMBOL;syscripts|)
-           (EXIT (SPADCALL |all| (QVELT |sc| 4) (QREFELT $ 79))))))) 
+           (EXIT (SPADCALL |all| (QVELT |sc| 4) (|getShellEntry| $ 80))))))) 
 
 (DEFUN |SYMBOL;script;$L$;22| (|sy| |ls| $)
   (PROG (|sc|)
@@ -504,42 +512,44 @@ Note that this code is not included in the generated catdef.spad file.
              ((NULL (NULL |ls|))
               (SEQ (QSETVELT |sc| 4 (|SPADfirst| |ls|))
                    (EXIT (LETT |ls| (CDR |ls|) |SYMBOL;script;$L$;22|)))))
-           (EXIT (SPADCALL |sy| |sc| (QREFELT $ 81))))))) 
+           (EXIT (SPADCALL |sy| |sc| (|getShellEntry| $ 82))))))) 
 
 (DEFUN |SYMBOL;script;$R$;23| (|sy| |sc| $)
   (COND
-    ((SPADCALL |sy| (QREFELT $ 21))
+    ((SPADCALL |sy| (|getShellEntry| $ 22))
      (|error| "Cannot add scripts to a scripted symbol"))
     ('T
      (CONS (SPADCALL
                (SPADCALL
                    (STRCONC (|SYMBOL;syprefix| |sc| $)
-                            (SPADCALL (SPADCALL |sy| (QREFELT $ 82))
-                                (QREFELT $ 83)))
-                   (QREFELT $ 48))
-               (QREFELT $ 53))
+                            (SPADCALL
+                                (SPADCALL |sy| (|getShellEntry| $ 83))
+                                (|getShellEntry| $ 84)))
+                   (|getShellEntry| $ 48))
+               (|getShellEntry| $ 53))
            (|SYMBOL;syscripts| |sc| $))))) 
 
 (DEFUN |SYMBOL;string;$S;24| (|e| $)
   (COND
-    ((NULL (SPADCALL |e| (QREFELT $ 21))) (PNAME |e|))
+    ((NULL (SPADCALL |e| (|getShellEntry| $ 22))) (PNAME |e|))
     ('T (|error| "Cannot form string from non-atomic symbols.")))) 
 
 (DEFUN |SYMBOL;latex;$S;25| (|e| $)
   (PROG (|ss| |lo| |sc| |s|)
     (RETURN
-      (SEQ (LETT |s| (PNAME (SPADCALL |e| (QREFELT $ 82)))
+      (SEQ (LETT |s| (PNAME (SPADCALL |e| (|getShellEntry| $ 83)))
                  |SYMBOL;latex;$S;25|)
            (COND
              ((< 1 (QCSIZE |s|))
               (COND
-                ((NULL (SPADCALL (SPADCALL |s| 1 (QREFELT $ 84))
-                           (SPADCALL "\\" (QREFELT $ 40))
-                           (QREFELT $ 85)))
+                ((SPADCALL (SPADCALL |s| 1 (|getShellEntry| $ 85))
+                     (SPADCALL "\\" (|getShellEntry| $ 40))
+                     (|getShellEntry| $ 86))
                  (LETT |s| (STRCONC "\\mbox{\\it " (STRCONC |s| "}"))
                        |SYMBOL;latex;$S;25|)))))
-           (COND ((NULL (SPADCALL |e| (QREFELT $ 21))) (EXIT |s|)))
-           (LETT |ss| (SPADCALL |e| (QREFELT $ 86))
+           (COND
+             ((NULL (SPADCALL |e| (|getShellEntry| $ 22))) (EXIT |s|)))
+           (LETT |ss| (SPADCALL |e| (|getShellEntry| $ 87))
                  |SYMBOL;latex;$S;25|)
            (LETT |lo| (QVELT |ss| 0) |SYMBOL;latex;$S;25|)
            (COND
@@ -547,12 +557,13 @@ Note that this code is not included in the generated catdef.spad file.
               (SEQ (LETT |sc| "_{" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL (NULL |lo|) (QREFELT $ 87)))
+                          ((NULL (SPADCALL (NULL |lo|)
+                                     (|getShellEntry| $ 88)))
                            (GO G191)))
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (QREFELT $ 88)))
+                                     (|getShellEntry| $ 89)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -570,12 +581,13 @@ Note that this code is not included in the generated catdef.spad file.
               (SEQ (LETT |sc| "^{" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL (NULL |lo|) (QREFELT $ 87)))
+                          ((NULL (SPADCALL (NULL |lo|)
+                                     (|getShellEntry| $ 88)))
                            (GO G191)))
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (QREFELT $ 88)))
+                                     (|getShellEntry| $ 89)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -593,12 +605,13 @@ Note that this code is not included in the generated catdef.spad file.
               (SEQ (LETT |sc| "{}^{" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL (NULL |lo|) (QREFELT $ 87)))
+                          ((NULL (SPADCALL (NULL |lo|)
+                                     (|getShellEntry| $ 88)))
                            (GO G191)))
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (QREFELT $ 88)))
+                                     (|getShellEntry| $ 89)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -616,12 +629,13 @@ Note that this code is not included in the generated catdef.spad file.
               (SEQ (LETT |sc| "{}_{" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL (NULL |lo|) (QREFELT $ 87)))
+                          ((NULL (SPADCALL (NULL |lo|)
+                                     (|getShellEntry| $ 88)))
                            (GO G191)))
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (QREFELT $ 88)))
+                                     (|getShellEntry| $ 89)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -639,12 +653,13 @@ Note that this code is not included in the generated catdef.spad file.
               (SEQ (LETT |sc| "\\left( {" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL (NULL |lo|) (QREFELT $ 87)))
+                          ((NULL (SPADCALL (NULL |lo|)
+                                     (|getShellEntry| $ 88)))
                            (GO G191)))
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (QREFELT $ 88)))
+                                     (|getShellEntry| $ 89)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -660,7 +675,7 @@ Note that this code is not included in the generated catdef.spad file.
            (EXIT |s|))))) 
 
 (DEFUN |SYMBOL;anyRadix| (|n| |s| $)
-  (PROG (|qr| |ns| #0=#:G3069)
+  (PROG (|qr| |ns| #0=#:G1500)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |ns| "" |SYMBOL;anyRadix|)
                       (EXIT (SEQ G190 NIL
@@ -673,9 +688,10 @@ Note that this code is not included in the generated catdef.spad file.
                                        (SPADCALL
                                         (SPADCALL |s|
                                          (+ (QCDR |qr|)
-                                          (SPADCALL |s| (QREFELT $ 90)))
-                                         (QREFELT $ 84))
-                                        |ns| (QREFELT $ 91))
+                                          (SPADCALL |s|
+                                           (|getShellEntry| $ 91)))
+                                         (|getShellEntry| $ 85))
+                                        |ns| (|getShellEntry| $ 92))
                                        |SYMBOL;anyRadix|)
                                       (EXIT
                                        (COND
@@ -692,62 +708,74 @@ Note that this code is not included in the generated catdef.spad file.
     (RETURN
       (SEQ (LETT |sym|
                  (|SYMBOL;anyRadix|
-                     (SPADCALL (QREFELT $ 9) (QREFELT $ 92))
-                     (QREFELT $ 18) $)
+                     (SPADCALL (|getShellEntry| $ 9)
+                         (|getShellEntry| $ 93))
+                     (|getShellEntry| $ 19) $)
                  |SYMBOL;new;$;27|)
-           (SPADCALL (QREFELT $ 9)
-               (+ (SPADCALL (QREFELT $ 9) (QREFELT $ 92)) 1)
-               (QREFELT $ 93))
-           (EXIT (SPADCALL (STRCONC "%" |sym|) (QREFELT $ 48))))))) 
+           (SPADCALL (|getShellEntry| $ 9)
+               (+ (SPADCALL (|getShellEntry| $ 9)
+                      (|getShellEntry| $ 93))
+                  1)
+               (|getShellEntry| $ 94))
+           (EXIT (SPADCALL (STRCONC "%" |sym|) (|getShellEntry| $ 48))))))) 
 
 (DEFUN |SYMBOL;new;2$;28| (|x| $)
   (PROG (|u| |n| |xx|)
     (RETURN
       (SEQ (LETT |n|
                  (SEQ (LETT |u|
-                            (SPADCALL |x| (QREFELT $ 12)
-                                (QREFELT $ 96))
+                            (SPADCALL |x| (|getShellEntry| $ 12)
+                                (|getShellEntry| $ 97))
                             |SYMBOL;new;2$;28|)
                       (EXIT (COND
                               ((QEQCAR |u| 1) 0)
                               ('T (+ (QCDR |u|) 1)))))
                  |SYMBOL;new;2$;28|)
-           (SPADCALL (QREFELT $ 12) |x| |n| (QREFELT $ 97))
+           (SPADCALL (|getShellEntry| $ 12) |x| |n|
+               (|getShellEntry| $ 98))
            (LETT |xx|
                  (COND
-                   ((NULL (SPADCALL |x| (QREFELT $ 21)))
-                    (SPADCALL |x| (QREFELT $ 83)))
+                   ((NULL (SPADCALL |x| (|getShellEntry| $ 22)))
+                    (SPADCALL |x| (|getShellEntry| $ 84)))
                    ('T
-                    (SPADCALL (SPADCALL |x| (QREFELT $ 82))
-                        (QREFELT $ 83))))
+                    (SPADCALL (SPADCALL |x| (|getShellEntry| $ 83))
+                        (|getShellEntry| $ 84))))
                  |SYMBOL;new;2$;28|)
            (LETT |xx| (STRCONC "%" |xx|) |SYMBOL;new;2$;28|)
            (LETT |xx|
                  (COND
                    ((NULL (< (SPADCALL
                                  (SPADCALL |xx|
-                                     (SPADCALL |xx| (QREFELT $ 98))
-                                     (QREFELT $ 84))
-                                 (QREFELT $ 17) (QREFELT $ 99))
-                             (SPADCALL (QREFELT $ 17) (QREFELT $ 90))))
+                                     (SPADCALL |xx|
+                                      (|getShellEntry| $ 99))
+                                     (|getShellEntry| $ 85))
+                                 (|getShellEntry| $ 18)
+                                 (|getShellEntry| $ 100))
+                             (SPADCALL (|getShellEntry| $ 18)
+                                 (|getShellEntry| $ 91))))
                     (STRCONC |xx|
-                             (|SYMBOL;anyRadix| |n| (QREFELT $ 19) $)))
+                             (|SYMBOL;anyRadix| |n|
+                                 (|getShellEntry| $ 20) $)))
                    ('T
                     (STRCONC |xx|
-                             (|SYMBOL;anyRadix| |n| (QREFELT $ 17) $))))
+                             (|SYMBOL;anyRadix| |n|
+                                 (|getShellEntry| $ 18) $))))
                  |SYMBOL;new;2$;28|)
            (COND
-             ((NULL (SPADCALL |x| (QREFELT $ 21)))
-              (EXIT (SPADCALL |xx| (QREFELT $ 48)))))
-           (EXIT (SPADCALL (SPADCALL |xx| (QREFELT $ 48))
-                     (SPADCALL |x| (QREFELT $ 86)) (QREFELT $ 81))))))) 
+             ((NULL (SPADCALL |x| (|getShellEntry| $ 22)))
+              (EXIT (SPADCALL |xx| (|getShellEntry| $ 48)))))
+           (EXIT (SPADCALL (SPADCALL |xx| (|getShellEntry| $ 48))
+                     (SPADCALL |x| (|getShellEntry| $ 87))
+                     (|getShellEntry| $ 82))))))) 
 
 (DEFUN |SYMBOL;resetNew;V;29| ($)
-  (PROG (|k| #0=#:G3092)
+  (PROG (|k| #0=#:G1523)
     (RETURN
-      (SEQ (SPADCALL (QREFELT $ 9) 0 (QREFELT $ 93))
+      (SEQ (SPADCALL (|getShellEntry| $ 9) 0 (|getShellEntry| $ 94))
            (SEQ (LETT |k| NIL |SYMBOL;resetNew;V;29|)
-                (LETT #0# (SPADCALL (QREFELT $ 12) (QREFELT $ 102))
+                (LETT #0#
+                      (SPADCALL (|getShellEntry| $ 12)
+                          (|getShellEntry| $ 103))
                       |SYMBOL;resetNew;V;29|)
                 G190
                 (COND
@@ -756,30 +784,32 @@ Note that this code is not included in the generated catdef.spad file.
                          (LETT |k| (CAR #0#) |SYMBOL;resetNew;V;29|)
                          NIL))
                    (GO G191)))
-                (SEQ (EXIT (SPADCALL |k| (QREFELT $ 12)
-                               (QREFELT $ 103))))
+                (SEQ (EXIT (SPADCALL |k| (|getShellEntry| $ 12)
+                               (|getShellEntry| $ 104))))
                 (LETT #0# (CDR #0#) |SYMBOL;resetNew;V;29|) (GO G190)
                 G191 (EXIT NIL))
-           (EXIT (SPADCALL (QREFELT $ 104))))))) 
+           (EXIT (SPADCALL (|getShellEntry| $ 105))))))) 
 
 (DEFUN |SYMBOL;scripted?;$B;30| (|sy| $)
-  (SPADCALL (ATOM |sy|) (QREFELT $ 87))) 
+  (SPADCALL (ATOM |sy|) (|getShellEntry| $ 88))) 
 
 (DEFUN |SYMBOL;name;2$;31| (|sy| $)
-  (PROG (|str| |i| #0=#:G3099 #1=#:G3098 #2=#:G3096)
+  (PROG (|str| |i| #0=#:G1530 #1=#:G1529 #2=#:G1527)
     (RETURN
       (SEQ (EXIT (COND
-                   ((NULL (SPADCALL |sy| (QREFELT $ 21))) |sy|)
+                   ((NULL (SPADCALL |sy| (|getShellEntry| $ 22))) |sy|)
                    ('T
                     (SEQ (LETT |str|
                                (SPADCALL
                                    (SPADCALL
-                                    (SPADCALL |sy| (QREFELT $ 106))
-                                    (QREFELT $ 107))
-                                   (QREFELT $ 83))
+                                    (SPADCALL |sy|
+                                     (|getShellEntry| $ 107))
+                                    (|getShellEntry| $ 108))
+                                   (|getShellEntry| $ 84))
                                |SYMBOL;name;2$;31|)
                          (SEQ (EXIT (SEQ
-                                     (LETT |i| (+ (QREFELT $ 38) 1)
+                                     (LETT |i|
+                                      (+ (|getShellEntry| $ 38) 1)
                                       |SYMBOL;name;2$;31|)
                                      (LETT #0# (QCSIZE |str|)
                                       |SYMBOL;name;2$;31|)
@@ -791,8 +821,8 @@ Note that this code is not included in the generated catdef.spad file.
                                          ((NULL
                                            (SPADCALL
                                             (SPADCALL |str| |i|
-                                             (QREFELT $ 84))
-                                            (QREFELT $ 108)))
+                                             (|getShellEntry| $ 85))
+                                            (|getShellEntry| $ 109)))
                                           (PROGN
                                             (LETT #2#
                                              (PROGN
@@ -801,9 +831,11 @@ Note that this code is not included in the generated catdef.spad file.
                                                  (SPADCALL |str|
                                                   (SPADCALL |i|
                                                    (QCSIZE |str|)
-                                                   (QREFELT $ 110))
-                                                  (QREFELT $ 111))
-                                                 (QREFELT $ 48))
+                                                   (|getShellEntry| $
+                                                    111))
+                                                  (|getShellEntry| $
+                                                   112))
+                                                 (|getShellEntry| $ 48))
                                                 |SYMBOL;name;2$;31|)
                                                (GO #1#))
                                              |SYMBOL;name;2$;31|)
@@ -816,11 +848,11 @@ Note that this code is not included in the generated catdef.spad file.
            #1# (EXIT #1#))))) 
 
 (DEFUN |SYMBOL;scripts;$R;32| (|sy| $)
-  (PROG (|lscripts| |str| |nstr| |j| #0=#:G3102 |nscripts| |m| |n|
-            #1=#:G3111 |i| #2=#:G3112 |a| #3=#:G3113 |allscripts|)
+  (PROG (|lscripts| |str| |nstr| |j| #0=#:G1533 |nscripts| |m| |n|
+            #1=#:G1542 |i| #2=#:G1543 |a| #3=#:G1544 |allscripts|)
     (RETURN
       (SEQ (COND
-             ((NULL (SPADCALL |sy| (QREFELT $ 21)))
+             ((NULL (SPADCALL |sy| (|getShellEntry| $ 22)))
               (VECTOR NIL NIL NIL NIL NIL))
              ('T
               (SEQ (LETT |nscripts| (LIST 0 0 0 0 0)
@@ -829,22 +861,25 @@ Note that this code is not included in the generated catdef.spad file.
                          |SYMBOL;scripts;$R;32|)
                    (LETT |str|
                          (SPADCALL
-                             (SPADCALL (SPADCALL |sy| (QREFELT $ 106))
-                                 (QREFELT $ 107))
-                             (QREFELT $ 83))
+                             (SPADCALL
+                                 (SPADCALL |sy|
+                                     (|getShellEntry| $ 107))
+                                 (|getShellEntry| $ 108))
+                             (|getShellEntry| $ 84))
                          |SYMBOL;scripts;$R;32|)
                    (LETT |nstr| (QCSIZE |str|) |SYMBOL;scripts;$R;32|)
-                   (LETT |m| (SPADCALL |nscripts| (QREFELT $ 113))
+                   (LETT |m|
+                         (SPADCALL |nscripts| (|getShellEntry| $ 114))
                          |SYMBOL;scripts;$R;32|)
-                   (SEQ (LETT |j| (+ (QREFELT $ 38) 1)
+                   (SEQ (LETT |j| (+ (|getShellEntry| $ 38) 1)
                               |SYMBOL;scripts;$R;32|)
                         (LETT |i| |m| |SYMBOL;scripts;$R;32|) G190
                         (COND
                           ((OR (> |j| |nstr|)
                                (NULL (SPADCALL
                                       (SPADCALL |str| |j|
-                                       (QREFELT $ 84))
-                                      (QREFELT $ 108))))
+                                       (|getShellEntry| $ 85))
+                                      (|getShellEntry| $ 109))))
                            (GO G191)))
                         (SEQ (EXIT (SPADCALL |nscripts| |i|
                                     (PROG1
@@ -852,13 +887,13 @@ Note that this code is not included in the generated catdef.spad file.
                                       (-
                                        (SPADCALL
                                         (SPADCALL |str| |j|
-                                         (QREFELT $ 84))
-                                        (QREFELT $ 42))
-                                       (QREFELT $ 43))
+                                         (|getShellEntry| $ 85))
+                                        (|getShellEntry| $ 42))
+                                       (|getShellEntry| $ 43))
                                       |SYMBOL;scripts;$R;32|)
                                       (|check-subtype| (>= #0# 0)
                                        '(|NonNegativeInteger|) #0#))
-                                    (QREFELT $ 114))))
+                                    (|getShellEntry| $ 115))))
                         (LETT |i|
                               (PROG1 (+ |i| 1)
                                 (LETT |j| (+ |j| 1)
@@ -867,13 +902,16 @@ Note that this code is not included in the generated catdef.spad file.
                         (GO G190) G191 (EXIT NIL))
                    (LETT |nscripts|
                          (SPADCALL (CDR |nscripts|)
-                             (|SPADfirst| |nscripts|) (QREFELT $ 115))
+                             (|SPADfirst| |nscripts|)
+                             (|getShellEntry| $ 116))
                          |SYMBOL;scripts;$R;32|)
                    (LETT |allscripts|
-                         (SPADCALL (SPADCALL |sy| (QREFELT $ 106))
-                             (QREFELT $ 116))
+                         (SPADCALL
+                             (SPADCALL |sy| (|getShellEntry| $ 107))
+                             (|getShellEntry| $ 117))
                          |SYMBOL;scripts;$R;32|)
-                   (LETT |m| (SPADCALL |lscripts| (QREFELT $ 117))
+                   (LETT |m|
+                         (SPADCALL |lscripts| (|getShellEntry| $ 118))
                          |SYMBOL;scripts;$R;32|)
                    (SEQ (LETT |n| NIL |SYMBOL;scripts;$R;32|)
                         (LETT #1# |nscripts| |SYMBOL;scripts;$R;32|)
@@ -888,7 +926,7 @@ Note that this code is not included in the generated catdef.spad file.
                         (SEQ (EXIT (COND
                                      ((<
                                        (SPADCALL |allscripts|
-                                        (QREFELT $ 118))
+                                        (|getShellEntry| $ 119))
                                        |n|)
                                       (|error|
                                        "Improper script count in symbol"))
@@ -903,7 +941,7 @@ Note that this code is not included in the generated catdef.spad file.
                                             |SYMBOL;scripts;$R;32|)
                                            (LETT #3#
                                             (SPADCALL |allscripts| |n|
-                                             (QREFELT $ 119))
+                                             (|getShellEntry| $ 120))
                                             |SYMBOL;scripts;$R;32|)
                                            G190
                                            (COND
@@ -918,18 +956,18 @@ Note that this code is not included in the generated catdef.spad file.
                                              (LETT #2#
                                               (CONS
                                                (SPADCALL |a|
-                                                (QREFELT $ 53))
+                                                (|getShellEntry| $ 53))
                                                #2#)
                                               |SYMBOL;scripts;$R;32|)))
                                            (LETT #3# (CDR #3#)
                                             |SYMBOL;scripts;$R;32|)
                                            (GO G190) G191
                                            (EXIT (NREVERSE0 #2#))))
-                                        (QREFELT $ 120))
+                                        (|getShellEntry| $ 121))
                                        (EXIT
                                         (LETT |allscripts|
                                          (SPADCALL |allscripts| |n|
-                                          (QREFELT $ 121))
+                                          (|getShellEntry| $ 122))
                                          |SYMBOL;scripts;$R;32|)))))))
                         (LETT |i|
                               (PROG1 (+ |i| 1)
@@ -938,33 +976,34 @@ Note that this code is not included in the generated catdef.spad file.
                               |SYMBOL;scripts;$R;32|)
                         (GO G190) G191 (EXIT NIL))
                    (EXIT (VECTOR (SPADCALL |lscripts| |m|
-                                     (QREFELT $ 122))
+                                     (|getShellEntry| $ 123))
                                  (SPADCALL |lscripts| (+ |m| 1)
-                                     (QREFELT $ 122))
+                                     (|getShellEntry| $ 123))
                                  (SPADCALL |lscripts| (+ |m| 2)
-                                     (QREFELT $ 122))
+                                     (|getShellEntry| $ 123))
                                  (SPADCALL |lscripts| (+ |m| 3)
-                                     (QREFELT $ 122))
+                                     (|getShellEntry| $ 123))
                                  (SPADCALL |lscripts| (+ |m| 4)
-                                     (QREFELT $ 122))))))))))) 
+                                     (|getShellEntry| $ 123))))))))))) 
 
 (DEFUN |SYMBOL;istring| (|n| $)
   (COND
     ((< 9 |n|) (|error| "Can have at most 9 scripts of each kind"))
-    ('T (ELT (QREFELT $ 16) (+ |n| 0))))) 
+    ('T (ELT (|getShellEntry| $ 17) (+ |n| 0))))) 
 
 (DEFUN |SYMBOL;list;$L;34| (|sy| $)
   (COND
-    ((NULL (SPADCALL |sy| (QREFELT $ 21)))
+    ((NULL (SPADCALL |sy| (|getShellEntry| $ 22)))
      (|error| "Cannot convert a symbol to a list if it is not subscripted"))
     ('T |sy|))) 
 
-(DEFUN |SYMBOL;sample;$;35| ($) (SPADCALL "aSymbol" (QREFELT $ 48))) 
+(DEFUN |SYMBOL;sample;$;35| ($)
+  (SPADCALL "aSymbol" (|getShellEntry| $ 48))) 
 
 (DEFUN |Symbol| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G3120)
+      (PROG (#0=#:G1551)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Symbol|) |Symbol|)
@@ -982,33 +1021,36 @@ Note that this code is not included in the generated catdef.spad file.
     (RETURN
       (PROGN
         (LETT |dv$| '(|Symbol|) . #0=(|Symbol|))
-        (LETT $ (|newShell| 125) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 126) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|haddProp| |$ConstructorCache| '|Symbol| NIL (CONS 1 $))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 9 (SPADCALL 0 (QREFELT $ 8)))
-        (QSETREFV $ 12 (SPADCALL (QREFELT $ 11)))
-        (QSETREFV $ 16
+        (|setShellEntry| $ 9 (SPADCALL 0 (|getShellEntry| $ 8)))
+        (|setShellEntry| $ 12 (SPADCALL (|getShellEntry| $ 11)))
+        (|setShellEntry| $ 17
             (SPADCALL (LIST "0" "1" "2" "3" "4" "5" "6" "7" "8" "9")
-                (QREFELT $ 15)))
-        (QSETREFV $ 17 "0123456789")
-        (QSETREFV $ 18 "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        (QSETREFV $ 19 "abcdefghijklmnopqrstuvwxyz")
-        (QSETREFV $ 37 "*")
-        (QSETREFV $ 38 (QCSIZE (QREFELT $ 37)))
-        (QSETREFV $ 43
-            (SPADCALL (SPADCALL "0" (QREFELT $ 40)) (QREFELT $ 42)))
+                (|getShellEntry| $ 16)))
+        (|setShellEntry| $ 18 "0123456789")
+        (|setShellEntry| $ 19 "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        (|setShellEntry| $ 20 "abcdefghijklmnopqrstuvwxyz")
+        (|setShellEntry| $ 37 "*")
+        (|setShellEntry| $ 38 (QCSIZE (|getShellEntry| $ 37)))
+        (|setShellEntry| $ 43
+            (SPADCALL (SPADCALL "0" (|getShellEntry| $ 40))
+                (|getShellEntry| $ 42)))
         $)))) 
 
 (MAKEPROP '|Symbol| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|Integer|) (|Reference| 6)
              (0 . |ref|) '|count| (|AssociationList| $$ 6)
-             (5 . |empty|) '|xcount| (|List| 28) (|PrimitiveArray| 28)
-             (9 . |construct|) '|istrings| '|nums| 'ALPHAS '|alphas|
-             (|Boolean|) |SYMBOL;scripted?;$B;30| (|Void|) (|Symbol|)
+             (5 . |empty|) '|xcount| (|String|) (|List| 13)
+             (|PrimitiveArray| 13) (9 . |construct|) '|istrings|
+             '|nums| 'ALPHAS '|alphas| (|Boolean|)
+             |SYMBOL;scripted?;$B;30| (|Void|) (|Symbol|)
              (|OpenMathDevice|) (14 . |OMputVariable|)
-             (|OpenMathEncoding|) (20 . |OMencodingXML|) (|String|)
+             (|OpenMathEncoding|) (20 . |OMencodingXML|)
              (24 . |OMopenString|) (30 . |OMputObject|)
              (35 . |OMputEndObject|) (40 . |OMclose|)
              |SYMBOL;OMwrite;$S;2| |SYMBOL;OMwrite;$BS;3|
@@ -1018,23 +1060,23 @@ Note that this code is not included in the generated catdef.spad file.
              |SYMBOL;convert;$If;6| |SYMBOL;convert;$S;7|
              |SYMBOL;coerce;S$;8| |SYMBOL;=;2$B;9| |SYMBOL;<;2$B;10|
              (|OutputForm|) (60 . |outputForm|) |SYMBOL;coerce;$Of;11|
-             (|List| 56) |SYMBOL;script;$L$;22| (|List| 51)
+             (|List| 51) (|List| 54) |SYMBOL;script;$L$;22|
              |SYMBOL;subscript;$L$;12| |SYMBOL;elt;$L$;13|
              |SYMBOL;superscript;$L$;14| |SYMBOL;argscript;$L$;15|
-             (|PatternMatchResult| 6 23) (|Pattern| 6)
+             (|PatternMatchResult| 6 24) (|Pattern| 6)
              (|PatternMatchSymbol| 6) (65 . |patternMatch|)
              (|PatternMatchResult| 6 $) |SYMBOL;patternMatch;$P2Pmr;16|
-             (|PatternMatchResult| (|Float|) 23) (|Pattern| (|Float|))
-             (|PatternMatchSymbol| (|Float|)) (72 . |patternMatch|)
-             (|PatternMatchResult| (|Float|) $)
+             (|Float|) (|PatternMatchResult| 67 24) (|Pattern| 67)
+             (|PatternMatchSymbol| 67) (72 . |patternMatch|)
+             (|PatternMatchResult| 67 $)
              |SYMBOL;patternMatch;$P2Pmr;17| (79 . |coerce|)
              |SYMBOL;convert;$P;18| (84 . |coerce|)
              |SYMBOL;convert;$P;19| (|List| $) (89 . |concat|)
              (94 . |concat|)
-             (|Record| (|:| |sub| 56) (|:| |sup| 56) (|:| |presup| 56)
-                 (|:| |presub| 56) (|:| |args| 56))
+             (|Record| (|:| |sub| 54) (|:| |sup| 54) (|:| |presup| 54)
+                 (|:| |presub| 54) (|:| |args| 54))
              |SYMBOL;script;$R$;23| |SYMBOL;name;2$;31|
-             |SYMBOL;string;$S;24| (100 . |elt|) (106 . =)
+             |SYMBOL;string;$S;24| (100 . |elt|) (106 . ~=)
              |SYMBOL;scripts;$R;32| (112 . |not|) (117 . |latex|)
              |SYMBOL;latex;$S;25| (122 . |minIndex|) (127 . |concat|)
              (133 . |elt|) (138 . |setelt|) |SYMBOL;new;$;27|
@@ -1062,51 +1104,52 @@ Note that this code is not included in the generated catdef.spad file.
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|OrderedSet&| NIL NIL |SetCategory&|
                          |BasicType&| NIL NIL NIL NIL NIL NIL)
-                      (CONS '#((|OrderedSet|)
-                               (|PatternMatchable| (|Float|))
+                      (CONS '#((|OrderedSet|) (|PatternMatchable| 67)
                                (|PatternMatchable| 6) (|SetCategory|)
-                               (|BasicType|) (|ConvertibleTo| 68)
+                               (|BasicType|) (|ConvertibleTo| 69)
                                (|ConvertibleTo| 62)
-                               (|ConvertibleTo| 23) (|OpenMath|)
+                               (|ConvertibleTo| 24) (|OpenMath|)
                                (|ConvertibleTo| 44) (|CoercibleTo| 51))
-                            (|makeByteWordVec2| 124
-                                '(1 7 0 6 8 0 10 0 11 1 14 0 13 15 2 24
-                                  22 0 23 25 0 26 0 27 2 24 0 28 26 29
-                                  1 24 22 0 30 1 24 22 0 31 1 24 22 0
-                                  32 1 39 0 28 40 1 39 41 0 42 1 44 0
-                                  23 45 1 51 0 23 52 3 63 61 23 62 61
-                                  64 3 69 67 23 68 67 70 1 68 0 23 73 1
-                                  62 0 23 75 1 28 0 77 78 2 56 0 0 0 79
-                                  2 28 39 0 6 84 2 39 20 0 0 85 1 20 0
-                                  0 87 1 51 28 0 88 1 28 6 0 90 2 28 0
-                                  39 0 91 1 7 6 0 92 2 7 6 0 6 93 2 10
-                                  95 2 0 96 3 10 6 0 2 6 97 1 28 6 0 98
-                                  2 28 6 39 0 99 1 10 101 0 102 2 10 95
-                                  2 0 103 0 22 0 104 1 101 2 0 107 1 39
-                                  20 0 108 2 109 0 6 6 110 2 28 0 0 109
-                                  111 1 112 6 0 113 3 112 41 0 6 41 114
-                                  2 112 0 0 41 115 1 101 0 0 116 1 54 6
-                                  0 117 1 101 41 0 118 2 101 0 0 41 119
-                                  3 54 56 0 6 56 120 2 101 0 0 41 121 2
-                                  54 56 0 6 122 2 0 20 0 0 1 2 0 0 0 56
-                                  59 2 0 0 0 56 57 1 0 28 0 83 1 0 80 0
-                                  86 1 0 20 0 21 2 0 0 0 54 55 2 0 0 0
-                                  80 81 0 0 0 123 0 0 22 105 3 0 65 0
-                                  62 65 66 3 0 71 0 68 71 72 1 0 0 0
-                                  100 0 0 0 94 1 0 0 0 82 2 0 0 0 0 1 2
-                                  0 0 0 0 1 1 0 77 0 106 1 0 28 0 89 1
-                                  0 124 0 1 2 0 0 0 56 58 1 0 62 0 76 1
-                                  0 68 0 74 1 0 23 0 47 1 0 44 0 46 1 0
-                                  0 28 48 1 0 51 0 53 2 0 0 0 56 60 3 0
-                                  22 24 0 20 36 2 0 28 0 20 34 2 0 22
-                                  24 0 35 1 0 28 0 33 2 0 20 0 0 1 2 0
-                                  20 0 0 1 2 0 20 0 0 49 2 0 20 0 0 1 2
-                                  0 20 0 0 50)))))
+                            (|makeByteWordVec2| 125
+                                '(1 7 0 6 8 0 10 0 11 1 15 0 14 16 2 25
+                                  23 0 24 26 0 27 0 28 2 25 0 13 27 29
+                                  1 25 23 0 30 1 25 23 0 31 1 25 23 0
+                                  32 1 39 0 13 40 1 39 41 0 42 1 44 0
+                                  24 45 1 51 0 24 52 3 63 61 24 62 61
+                                  64 3 70 68 24 69 68 71 1 69 0 24 74 1
+                                  62 0 24 76 1 13 0 78 79 2 54 0 0 0 80
+                                  2 13 39 0 6 85 2 39 21 0 0 86 1 21 0
+                                  0 88 1 51 13 0 89 1 13 6 0 91 2 13 0
+                                  39 0 92 1 7 6 0 93 2 7 6 0 6 94 2 10
+                                  96 2 0 97 3 10 6 0 2 6 98 1 13 6 0 99
+                                  2 13 6 39 0 100 1 10 102 0 103 2 10
+                                  96 2 0 104 0 23 0 105 1 102 2 0 108 1
+                                  39 21 0 109 2 110 0 6 6 111 2 13 0 0
+                                  110 112 1 113 6 0 114 3 113 41 0 6 41
+                                  115 2 113 0 0 41 116 1 102 0 0 117 1
+                                  55 6 0 118 1 102 41 0 119 2 102 0 0
+                                  41 120 3 55 54 0 6 54 121 2 102 0 0
+                                  41 122 2 55 54 0 6 123 2 0 21 0 0 1 2
+                                  0 0 0 54 59 2 0 0 0 54 57 1 0 13 0 84
+                                  1 0 81 0 87 1 0 21 0 22 2 0 0 0 55 56
+                                  2 0 0 0 81 82 0 0 0 124 0 0 23 106 3
+                                  0 65 0 62 65 66 3 0 72 0 69 72 73 1 0
+                                  0 0 101 0 0 0 95 1 0 0 0 83 2 0 0 0 0
+                                  1 2 0 0 0 0 1 1 0 78 0 107 1 0 13 0
+                                  90 1 0 125 0 1 2 0 0 0 54 58 1 0 62 0
+                                  77 1 0 69 0 75 1 0 24 0 47 1 0 44 0
+                                  46 1 0 0 13 48 1 0 51 0 53 2 0 0 0 54
+                                  60 3 0 23 25 0 21 36 2 0 13 0 21 34 2
+                                  0 23 25 0 35 1 0 13 0 33 2 0 21 0 0 1
+                                  2 0 21 0 0 1 2 0 21 0 0 49 2 0 21 0 0
+                                  1 2 0 21 0 0 50)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Symbol| 'NILADIC T) 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

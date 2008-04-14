@@ -869,8 +869,8 @@ Note that this code is not included in the generated catdef.spad file.
 (/VERSIONCHECK 2) 
 
 (DEFUN |POLYCAT-;eval;SLS;1| (|p| |l| $)
-  (PROG (#0=#:G1420 #1=#:G1414 #2=#:G1421 #3=#:G1422 |lvar| #4=#:G1423
-            |e| #5=#:G1424)
+  (PROG (#0=#:G1427 #1=#:G1421 #2=#:G1428 #3=#:G1429 |lvar| #4=#:G1430
+            |e| #5=#:G1431)
     (RETURN
       (SEQ (COND
              ((NULL |l|) |p|)
@@ -890,8 +890,9 @@ Note that this code is not included in the generated catdef.spad file.
                                      (COND
                                        ((QEQCAR
                                          (SPADCALL
-                                          (SPADCALL |e| (QREFELT $ 11))
-                                          (QREFELT $ 13))
+                                          (SPADCALL |e|
+                                           (|getShellEntry| $ 11))
+                                          (|getShellEntry| $ 13))
                                          1)
                                         (PROGN
                                           (LETT #1#
@@ -920,8 +921,9 @@ Note that this code is not included in the generated catdef.spad file.
                                       (LETT #2#
                                        (CONS
                                         (SPADCALL
-                                         (SPADCALL |e| (QREFELT $ 11))
-                                         (QREFELT $ 14))
+                                         (SPADCALL |e|
+                                          (|getShellEntry| $ 11))
+                                         (|getShellEntry| $ 14))
                                         #2#)
                                        |POLYCAT-;eval;SLS;1|)))
                                 (LETT #3# (CDR #3#)
@@ -947,14 +949,15 @@ Note that this code is not included in the generated catdef.spad file.
                                      (EXIT
                                       (LETT #4#
                                        (CONS
-                                        (SPADCALL |e| (QREFELT $ 15))
+                                        (SPADCALL |e|
+                                         (|getShellEntry| $ 15))
                                         #4#)
                                        |POLYCAT-;eval;SLS;1|)))
                                     (LETT #5# (CDR #5#)
                                      |POLYCAT-;eval;SLS;1|)
                                     (GO G190) G191
                                     (EXIT (NREVERSE0 #4#))))
-                             (QREFELT $ 18)))))))))) 
+                             (|getShellEntry| $ 18)))))))))) 
 
 (DEFUN |POLYCAT-;monomials;SL;2| (|p| $)
   (PROG (|ml|)
@@ -962,15 +965,15 @@ Note that this code is not included in the generated catdef.spad file.
       (SEQ (LETT |ml| NIL |POLYCAT-;monomials;SL;2|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL
-                             (SPADCALL |p| (|spadConstant| $ 21)
-                                 (QREFELT $ 24))
-                             (QREFELT $ 25)))
+                  ((NULL (SPADCALL |p| (|spadConstant| $ 22)
+                             (|getShellEntry| $ 25)))
                    (GO G191)))
                 (SEQ (LETT |ml|
-                           (CONS (SPADCALL |p| (QREFELT $ 26)) |ml|)
+                           (CONS (SPADCALL |p| (|getShellEntry| $ 26))
+                                 |ml|)
                            |POLYCAT-;monomials;SL;2|)
-                     (EXIT (LETT |p| (SPADCALL |p| (QREFELT $ 27))
+                     (EXIT (LETT |p|
+                                 (SPADCALL |p| (|getShellEntry| $ 27))
                                  |POLYCAT-;monomials;SL;2|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (REVERSE |ml|)))))) 
@@ -979,18 +982,19 @@ Note that this code is not included in the generated catdef.spad file.
   (PROG (|l|)
     (RETURN
       (COND
-        ((NULL (CDR (LETT |l| (SPADCALL |p| (QREFELT $ 29))
+        ((NULL (CDR (LETT |l| (SPADCALL |p| (|getShellEntry| $ 29))
                           |POLYCAT-;isPlus;SU;3|)))
          (CONS 1 "failed"))
         ('T (CONS 0 |l|)))))) 
 
 (DEFUN |POLYCAT-;isTimes;SU;4| (|p| $)
-  (PROG (|lv| #0=#:G1446 |v| #1=#:G1447 |l| |r|)
+  (PROG (|lv| #0=#:G1453 |v| #1=#:G1454 |l| |r|)
     (RETURN
       (SEQ (COND
-             ((OR (NULL (LETT |lv| (SPADCALL |p| (QREFELT $ 32))
+             ((OR (NULL (LETT |lv|
+                              (SPADCALL |p| (|getShellEntry| $ 32))
                               |POLYCAT-;isTimes;SU;4|))
-                  (NULL (SPADCALL |p| (QREFELT $ 33))))
+                  (NULL (SPADCALL |p| (|getShellEntry| $ 33))))
               (CONS 1 "failed"))
              ('T
               (SEQ (LETT |l|
@@ -1012,31 +1016,32 @@ Note that this code is not included in the generated catdef.spad file.
                                         (SPADCALL (|spadConstant| $ 34)
                                          |v|
                                          (SPADCALL |p| |v|
-                                          (QREFELT $ 37))
-                                         (QREFELT $ 38))
+                                          (|getShellEntry| $ 37))
+                                         (|getShellEntry| $ 38))
                                         #0#)
                                        |POLYCAT-;isTimes;SU;4|)))
                                 (LETT #1# (CDR #1#)
                                       |POLYCAT-;isTimes;SU;4|)
                                 (GO G190) G191 (EXIT (NREVERSE0 #0#))))
                          |POLYCAT-;isTimes;SU;4|)
-                   (LETT |r| (SPADCALL |p| (QREFELT $ 39))
+                   (LETT |r| (SPADCALL |p| (|getShellEntry| $ 39))
                          |POLYCAT-;isTimes;SU;4|)
                    (EXIT (COND
                            ((SPADCALL |r| (|spadConstant| $ 35)
-                                (QREFELT $ 40))
+                                (|getShellEntry| $ 40))
                             (COND
                               ((NULL (CDR |lv|)) (CONS 1 "failed"))
                               ('T (CONS 0 |l|))))
                            ('T
                             (CONS 0
-                                  (CONS (SPADCALL |r| (QREFELT $ 41))
+                                  (CONS (SPADCALL |r|
+                                         (|getShellEntry| $ 41))
                                         |l|)))))))))))) 
 
 (DEFUN |POLYCAT-;isExpt;SU;5| (|p| $)
   (PROG (|u| |d|)
     (RETURN
-      (SEQ (LETT |u| (SPADCALL |p| (QREFELT $ 43))
+      (SEQ (LETT |u| (SPADCALL |p| (|getShellEntry| $ 43))
                  |POLYCAT-;isExpt;SU;5|)
            (EXIT (COND
                    ((OR (QEQCAR |u| 1)
@@ -1045,15 +1050,16 @@ Note that this code is not included in the generated catdef.spad file.
                                       (QCDR |u|)
                                       (LETT |d|
                                        (SPADCALL |p| (QCDR |u|)
-                                        (QREFELT $ 37))
+                                        (|getShellEntry| $ 37))
                                        |POLYCAT-;isExpt;SU;5|)
-                                      (QREFELT $ 38))
-                                  (QREFELT $ 24))))
+                                      (|getShellEntry| $ 38))
+                                  (|getShellEntry| $ 44))))
                     (CONS 1 "failed"))
                    ('T (CONS 0 (CONS (QCDR |u|) |d|))))))))) 
 
 (DEFUN |POLYCAT-;coefficient;SVarSetNniS;6| (|p| |v| |n| $)
-  (SPADCALL (SPADCALL |p| |v| (QREFELT $ 48)) |n| (QREFELT $ 50))) 
+  (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 49)) |n|
+      (|getShellEntry| $ 51))) 
 
 (DEFUN |POLYCAT-;coefficient;SLLS;7| (|p| |lv| |ln| $)
   (COND
@@ -1064,9 +1070,10 @@ Note that this code is not included in the generated catdef.spad file.
     ((NULL |ln|) (|error| "mismatched lists in coefficient"))
     ('T
      (SPADCALL
-         (SPADCALL (SPADCALL |p| (|SPADfirst| |lv|) (QREFELT $ 48))
-             (|SPADfirst| |ln|) (QREFELT $ 50))
-         (CDR |lv|) (CDR |ln|) (QREFELT $ 53))))) 
+         (SPADCALL
+             (SPADCALL |p| (|SPADfirst| |lv|) (|getShellEntry| $ 49))
+             (|SPADfirst| |ln|) (|getShellEntry| $ 51))
+         (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 54))))) 
 
 (DEFUN |POLYCAT-;monomial;SLLS;8| (|p| |lv| |ln| $)
   (COND
@@ -1078,36 +1085,38 @@ Note that this code is not included in the generated catdef.spad file.
     ('T
      (SPADCALL
          (SPADCALL |p| (|SPADfirst| |lv|) (|SPADfirst| |ln|)
-             (QREFELT $ 38))
-         (CDR |lv|) (CDR |ln|) (QREFELT $ 55))))) 
+             (|getShellEntry| $ 38))
+         (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 56))))) 
 
 (DEFUN |POLYCAT-;retract;SVarSet;9| (|p| $)
-  (PROG (#0=#:G1472 |q|)
+  (PROG (#0=#:G1479 |q|)
     (RETURN
       (SEQ (LETT |q|
-                 (PROG2 (LETT #0# (SPADCALL |p| (QREFELT $ 43))
+                 (PROG2 (LETT #0# (SPADCALL |p| (|getShellEntry| $ 43))
                               |POLYCAT-;retract;SVarSet;9|)
                         (QCDR #0#)
-                   (|check-union| (QEQCAR #0# 0) (QREFELT $ 9) #0#))
+                   (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 9)
+                       #0#))
                  |POLYCAT-;retract;SVarSet;9|)
            (EXIT (COND
-                   ((SPADCALL (SPADCALL |q| (QREFELT $ 57)) |p|
-                        (QREFELT $ 24))
+                   ((SPADCALL (SPADCALL |q| (|getShellEntry| $ 58)) |p|
+                        (|getShellEntry| $ 44))
                     |q|)
                    ('T (|error| "Polynomial is not a single variable")))))))) 
 
 (DEFUN |POLYCAT-;retractIfCan;SU;10| (|p| $)
-  (PROG (|q| #0=#:G1480)
+  (PROG (|q| #0=#:G1487)
     (RETURN
-      (SEQ (EXIT (SEQ (SEQ (LETT |q| (SPADCALL |p| (QREFELT $ 43))
+      (SEQ (EXIT (SEQ (SEQ (LETT |q|
+                                 (SPADCALL |p| (|getShellEntry| $ 43))
                                  |POLYCAT-;retractIfCan;SU;10|)
                            (EXIT (COND
                                    ((QEQCAR |q| 0)
                                     (COND
                                       ((SPADCALL
                                         (SPADCALL (QCDR |q|)
-                                         (QREFELT $ 57))
-                                        |p| (QREFELT $ 24))
+                                         (|getShellEntry| $ 58))
+                                        |p| (|getShellEntry| $ 44))
                                        (PROGN
                                          (LETT #0# |q|
                                           |POLYCAT-;retractIfCan;SU;10|)
@@ -1116,16 +1125,16 @@ Note that this code is not included in the generated catdef.spad file.
            #0# (EXIT #0#))))) 
 
 (DEFUN |POLYCAT-;mkPrim| (|p| $)
-  (SPADCALL (|spadConstant| $ 35) (SPADCALL |p| (QREFELT $ 60))
-      (QREFELT $ 61))) 
+  (SPADCALL (|spadConstant| $ 35) (SPADCALL |p| (|getShellEntry| $ 61))
+      (|getShellEntry| $ 62))) 
 
 (DEFUN |POLYCAT-;primitiveMonomials;SL;12| (|p| $)
-  (PROG (#0=#:G1485 |q| #1=#:G1486)
+  (PROG (#0=#:G1492 |q| #1=#:G1493)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |POLYCAT-;primitiveMonomials;SL;12|)
              (SEQ (LETT |q| NIL |POLYCAT-;primitiveMonomials;SL;12|)
-                  (LETT #1# (SPADCALL |p| (QREFELT $ 29))
+                  (LETT #1# (SPADCALL |p| (|getShellEntry| $ 29))
                         |POLYCAT-;primitiveMonomials;SL;12|)
                   G190
                   (COND
@@ -1143,99 +1152,104 @@ Note that this code is not included in the generated catdef.spad file.
                   (GO G190) G191 (EXIT (NREVERSE0 #0#)))))))) 
 
 (DEFUN |POLYCAT-;totalDegree;SNni;13| (|p| $)
-  (PROG (#0=#:G1488 |d| |u|)
+  (PROG (#0=#:G1495 |d| |u|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |p| (QREFELT $ 63)) 0)
+             ((SPADCALL |p| (|getShellEntry| $ 64)) 0)
              ('T
               (SEQ (LETT |u|
                          (SPADCALL |p|
                              (PROG2 (LETT #0#
-                                     (SPADCALL |p| (QREFELT $ 43))
+                                     (SPADCALL |p|
+                                      (|getShellEntry| $ 43))
                                      |POLYCAT-;totalDegree;SNni;13|)
                                     (QCDR #0#)
                                (|check-union| (QEQCAR #0# 0)
-                                   (QREFELT $ 9) #0#))
-                             (QREFELT $ 48))
+                                   (|getShellEntry| $ 9) #0#))
+                             (|getShellEntry| $ 49))
                          |POLYCAT-;totalDegree;SNni;13|)
                    (LETT |d| 0 |POLYCAT-;totalDegree;SNni;13|)
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL
-                                     (SPADCALL |u|
-                                      (|spadConstant| $ 64)
-                                      (QREFELT $ 65))
-                                     (QREFELT $ 25)))
+                          ((NULL (SPADCALL |u| (|spadConstant| $ 65)
+                                     (|getShellEntry| $ 66)))
                            (GO G191)))
                         (SEQ (LETT |d|
                                    (MAX |d|
-                                    (+ (SPADCALL |u| (QREFELT $ 66))
+                                    (+
+                                     (SPADCALL |u|
+                                      (|getShellEntry| $ 67))
                                      (SPADCALL
-                                      (SPADCALL |u| (QREFELT $ 67))
-                                      (QREFELT $ 68))))
+                                      (SPADCALL |u|
+                                       (|getShellEntry| $ 68))
+                                      (|getShellEntry| $ 69))))
                                    |POLYCAT-;totalDegree;SNni;13|)
                              (EXIT (LETT |u|
-                                    (SPADCALL |u| (QREFELT $ 69))
+                                    (SPADCALL |u|
+                                     (|getShellEntry| $ 70))
                                     |POLYCAT-;totalDegree;SNni;13|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT |d|)))))))) 
 
 (DEFUN |POLYCAT-;totalDegree;SLNni;14| (|p| |lv| $)
-  (PROG (#0=#:G1496 |v| |w| |d| |u|)
+  (PROG (#0=#:G1503 |v| |w| |d| |u|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |p| (QREFELT $ 63)) 0)
+             ((SPADCALL |p| (|getShellEntry| $ 64)) 0)
              ('T
               (SEQ (LETT |u|
                          (SPADCALL |p|
                              (LETT |v|
                                    (PROG2
                                     (LETT #0#
-                                     (SPADCALL |p| (QREFELT $ 43))
+                                     (SPADCALL |p|
+                                      (|getShellEntry| $ 43))
                                      |POLYCAT-;totalDegree;SLNni;14|)
                                     (QCDR #0#)
                                      (|check-union| (QEQCAR #0# 0)
-                                      (QREFELT $ 9) #0#))
+                                      (|getShellEntry| $ 9) #0#))
                                    |POLYCAT-;totalDegree;SLNni;14|)
-                             (QREFELT $ 48))
+                             (|getShellEntry| $ 49))
                          |POLYCAT-;totalDegree;SLNni;14|)
                    (LETT |d| 0 |POLYCAT-;totalDegree;SLNni;14|)
                    (LETT |w| 0 |POLYCAT-;totalDegree;SLNni;14|)
                    (COND
-                     ((SPADCALL |v| |lv| (QREFELT $ 71))
+                     ((SPADCALL |v| |lv| (|getShellEntry| $ 72))
                       (LETT |w| 1 |POLYCAT-;totalDegree;SLNni;14|)))
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL
-                                     (SPADCALL |u|
-                                      (|spadConstant| $ 64)
-                                      (QREFELT $ 65))
-                                     (QREFELT $ 25)))
+                          ((NULL (SPADCALL |u| (|spadConstant| $ 65)
+                                     (|getShellEntry| $ 66)))
                            (GO G191)))
                         (SEQ (LETT |d|
                                    (MAX |d|
                                     (+
                                      (* |w|
-                                      (SPADCALL |u| (QREFELT $ 66)))
+                                      (SPADCALL |u|
+                                       (|getShellEntry| $ 67)))
                                      (SPADCALL
-                                      (SPADCALL |u| (QREFELT $ 67))
-                                      |lv| (QREFELT $ 72))))
+                                      (SPADCALL |u|
+                                       (|getShellEntry| $ 68))
+                                      |lv| (|getShellEntry| $ 73))))
                                    |POLYCAT-;totalDegree;SLNni;14|)
                              (EXIT (LETT |u|
-                                    (SPADCALL |u| (QREFELT $ 69))
+                                    (SPADCALL |u|
+                                     (|getShellEntry| $ 70))
                                     |POLYCAT-;totalDegree;SLNni;14|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT |d|)))))))) 
 
 (DEFUN |POLYCAT-;resultant;2SVarSetS;15| (|p1| |p2| |mvar| $)
-  (SPADCALL (SPADCALL |p1| |mvar| (QREFELT $ 48))
-      (SPADCALL |p2| |mvar| (QREFELT $ 48)) (QREFELT $ 74))) 
+  (SPADCALL (SPADCALL |p1| |mvar| (|getShellEntry| $ 49))
+      (SPADCALL |p2| |mvar| (|getShellEntry| $ 49))
+      (|getShellEntry| $ 75))) 
 
 (DEFUN |POLYCAT-;discriminant;SVarSetS;16| (|p| |var| $)
-  (SPADCALL (SPADCALL |p| |var| (QREFELT $ 48)) (QREFELT $ 76))) 
+  (SPADCALL (SPADCALL |p| |var| (|getShellEntry| $ 49))
+      (|getShellEntry| $ 77))) 
 
 (DEFUN |POLYCAT-;allMonoms| (|l| $)
-  (PROG (#0=#:G1508 |p| #1=#:G1509)
+  (PROG (#0=#:G1515 |p| #1=#:G1516)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
@@ -1252,23 +1266,26 @@ Note that this code is not included in the generated catdef.spad file.
                              (GO G191)))
                           (SEQ (EXIT (LETT #0#
                                       (CONS
-                                       (SPADCALL |p| (QREFELT $ 78))
+                                       (SPADCALL |p|
+                                        (|getShellEntry| $ 79))
                                        #0#)
                                       |POLYCAT-;allMonoms|)))
                           (LETT #1# (CDR #1#) |POLYCAT-;allMonoms|)
                           (GO G190) G191 (EXIT (NREVERSE0 #0#))))
-                   (QREFELT $ 80))
-               (QREFELT $ 81)))))) 
+                   (|getShellEntry| $ 81))
+               (|getShellEntry| $ 82)))))) 
 
 (DEFUN |POLYCAT-;P2R| (|p| |b| |n| $)
-  (PROG (|w| |bj| #0=#:G1514 |i| #1=#:G1513)
+  (PROG (|w| |bj| #0=#:G1521 |i| #1=#:G1520)
     (RETURN
       (SEQ (LETT |w|
-                 (SPADCALL |n| (|spadConstant| $ 22) (QREFELT $ 83))
+                 (SPADCALL |n| (|spadConstant| $ 23)
+                     (|getShellEntry| $ 84))
                  |POLYCAT-;P2R|)
            (SEQ (LETT |bj| NIL |POLYCAT-;P2R|)
                 (LETT #0# |b| |POLYCAT-;P2R|)
-                (LETT |i| (SPADCALL |w| (QREFELT $ 85)) |POLYCAT-;P2R|)
+                (LETT |i| (SPADCALL |w| (|getShellEntry| $ 86))
+                      |POLYCAT-;P2R|)
                 (LETT #1# (QVSIZE |w|) |POLYCAT-;P2R|) G190
                 (COND
                   ((OR (> |i| #1#) (ATOM #0#)
@@ -1277,8 +1294,9 @@ Note that this code is not included in the generated catdef.spad file.
                          NIL))
                    (GO G191)))
                 (SEQ (EXIT (SPADCALL |w| |i|
-                               (SPADCALL |p| |bj| (QREFELT $ 86))
-                               (QREFELT $ 87))))
+                               (SPADCALL |p| |bj|
+                                   (|getShellEntry| $ 87))
+                               (|getShellEntry| $ 88))))
                 (LETT |i|
                       (PROG1 (+ |i| 1)
                         (LETT #0# (CDR #0#) |POLYCAT-;P2R|))
@@ -1287,7 +1305,7 @@ Note that this code is not included in the generated catdef.spad file.
            (EXIT |w|))))) 
 
 (DEFUN |POLYCAT-;eq2R| (|l| |b| $)
-  (PROG (#0=#:G1518 |bj| #1=#:G1519 #2=#:G1520 |p| #3=#:G1521)
+  (PROG (#0=#:G1525 |bj| #1=#:G1526 #2=#:G1527 |p| #3=#:G1528)
     (RETURN
       (SEQ (SPADCALL
                (PROGN
@@ -1323,7 +1341,7 @@ Note that this code is not included in the generated catdef.spad file.
                                              (LETT #2#
                                               (CONS
                                                (SPADCALL |p| |bj|
-                                                (QREFELT $ 86))
+                                                (|getShellEntry| $ 87))
                                                #2#)
                                               |POLYCAT-;eq2R|)))
                                            (LETT #3# (CDR #3#)
@@ -1334,13 +1352,13 @@ Note that this code is not included in the generated catdef.spad file.
                                        |POLYCAT-;eq2R|)))
                       (LETT #1# (CDR #1#) |POLYCAT-;eq2R|) (GO G190)
                       G191 (EXIT (NREVERSE0 #0#))))
-               (QREFELT $ 90)))))) 
+               (|getShellEntry| $ 92)))))) 
 
 (DEFUN |POLYCAT-;reducedSystem;MM;20| (|m| $)
-  (PROG (#0=#:G1530 |r| #1=#:G1531 |b| #2=#:G1532 |bj| #3=#:G1533 |d|
+  (PROG (#0=#:G1537 |r| #1=#:G1538 |b| #2=#:G1539 |bj| #3=#:G1540 |d|
             |mm| |l|)
     (RETURN
-      (SEQ (LETT |l| (SPADCALL |m| (QREFELT $ 93))
+      (SEQ (LETT |l| (SPADCALL |m| (|getShellEntry| $ 95))
                  |POLYCAT-;reducedSystem;MM;20|)
            (LETT |b|
                  (SPADCALL
@@ -1369,8 +1387,8 @@ Note that this code is not included in the generated catdef.spad file.
                                 (LETT #1# (CDR #1#)
                                       |POLYCAT-;reducedSystem;MM;20|)
                                 (GO G190) G191 (EXIT (NREVERSE0 #0#))))
-                         (QREFELT $ 80))
-                     (QREFELT $ 81))
+                         (|getShellEntry| $ 81))
+                     (|getShellEntry| $ 82))
                  |POLYCAT-;reducedSystem;MM;20|)
            (LETT |d|
                  (PROGN
@@ -1387,7 +1405,8 @@ Note that this code is not included in the generated catdef.spad file.
                            (GO G191)))
                         (SEQ (EXIT (LETT #2#
                                     (CONS
-                                     (SPADCALL |bj| (QREFELT $ 60))
+                                     (SPADCALL |bj|
+                                      (|getShellEntry| $ 61))
                                      #2#)
                                     |POLYCAT-;reducedSystem;MM;20|)))
                         (LETT #3# (CDR #3#)
@@ -1399,13 +1418,13 @@ Note that this code is not included in the generated catdef.spad file.
            (LETT |l| (CDR |l|) |POLYCAT-;reducedSystem;MM;20|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL (NULL |l|) (QREFELT $ 25)))
+                  ((NULL (SPADCALL (NULL |l|) (|getShellEntry| $ 96)))
                    (GO G191)))
                 (SEQ (LETT |mm|
                            (SPADCALL |mm|
                                (|POLYCAT-;eq2R| (|SPADfirst| |l|) |d|
                                    $)
-                               (QREFELT $ 94))
+                               (|getShellEntry| $ 97))
                            |POLYCAT-;reducedSystem;MM;20|)
                      (EXIT (LETT |l| (CDR |l|)
                                  |POLYCAT-;reducedSystem;MM;20|)))
@@ -1413,12 +1432,12 @@ Note that this code is not included in the generated catdef.spad file.
            (EXIT |mm|))))) 
 
 (DEFUN |POLYCAT-;reducedSystem;MVR;21| (|m| |v| $)
-  (PROG (#0=#:G1544 |s| #1=#:G1545 |b| #2=#:G1546 |bj| #3=#:G1547 |d|
+  (PROG (#0=#:G1551 |s| #1=#:G1552 |b| #2=#:G1553 |bj| #3=#:G1554 |d|
             |n| |mm| |w| |l| |r|)
     (RETURN
-      (SEQ (LETT |l| (SPADCALL |m| (QREFELT $ 93))
+      (SEQ (LETT |l| (SPADCALL |m| (|getShellEntry| $ 95))
                  |POLYCAT-;reducedSystem;MVR;21|)
-           (LETT |r| (SPADCALL |v| (QREFELT $ 98))
+           (LETT |r| (SPADCALL |v| (|getShellEntry| $ 101))
                  |POLYCAT-;reducedSystem;MVR;21|)
            (LETT |b|
                  (SPADCALL
@@ -1450,9 +1469,9 @@ Note that this code is not included in the generated catdef.spad file.
                                      |POLYCAT-;reducedSystem;MVR;21|)
                                     (GO G190) G191
                                     (EXIT (NREVERSE0 #0#))))
-                             (QREFELT $ 80))
-                         (QREFELT $ 99))
-                     (QREFELT $ 81))
+                             (|getShellEntry| $ 81))
+                         (|getShellEntry| $ 102))
+                     (|getShellEntry| $ 82))
                  |POLYCAT-;reducedSystem;MVR;21|)
            (LETT |d|
                  (PROGN
@@ -1469,7 +1488,8 @@ Note that this code is not included in the generated catdef.spad file.
                            (GO G191)))
                         (SEQ (EXIT (LETT #2#
                                     (CONS
-                                     (SPADCALL |bj| (QREFELT $ 60))
+                                     (SPADCALL |bj|
+                                      (|getShellEntry| $ 61))
                                      #2#)
                                     |POLYCAT-;reducedSystem;MVR;21|)))
                         (LETT #3# (CDR #3#)
@@ -1485,19 +1505,19 @@ Note that this code is not included in the generated catdef.spad file.
            (LETT |r| (CDR |r|) |POLYCAT-;reducedSystem;MVR;21|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL (NULL |l|) (QREFELT $ 25)))
+                  ((NULL (SPADCALL (NULL |l|) (|getShellEntry| $ 96)))
                    (GO G191)))
                 (SEQ (LETT |mm|
                            (SPADCALL |mm|
                                (|POLYCAT-;eq2R| (|SPADfirst| |l|) |d|
                                    $)
-                               (QREFELT $ 94))
+                               (|getShellEntry| $ 97))
                            |POLYCAT-;reducedSystem;MVR;21|)
                      (LETT |w|
                            (SPADCALL |w|
                                (|POLYCAT-;P2R| (|SPADfirst| |r|) |d|
                                    |n| $)
-                               (QREFELT $ 100))
+                               (|getShellEntry| $ 103))
                            |POLYCAT-;reducedSystem;MVR;21|)
                      (LETT |l| (CDR |l|)
                            |POLYCAT-;reducedSystem;MVR;21|)
@@ -1507,33 +1527,36 @@ Note that this code is not included in the generated catdef.spad file.
            (EXIT (CONS |mm| |w|)))))) 
 
 (DEFUN |POLYCAT-;gcdPolynomial;3Sup;22| (|pp| |qq| $)
-  (SPADCALL |pp| |qq| (QREFELT $ 105))) 
+  (SPADCALL |pp| |qq| (|getShellEntry| $ 108))) 
 
 (DEFUN |POLYCAT-;solveLinearPolynomialEquation;LSupU;23| (|lpp| |pp| $)
-  (SPADCALL |lpp| |pp| (QREFELT $ 110))) 
+  (SPADCALL |lpp| |pp| (|getShellEntry| $ 113))) 
 
 (DEFUN |POLYCAT-;factorPolynomial;SupF;24| (|pp| $)
-  (SPADCALL |pp| (QREFELT $ 115))) 
+  (SPADCALL |pp| (|getShellEntry| $ 118))) 
 
 (DEFUN |POLYCAT-;factorSquareFreePolynomial;SupF;25| (|pp| $)
-  (SPADCALL |pp| (QREFELT $ 118))) 
+  (SPADCALL |pp| (|getShellEntry| $ 121))) 
 
 (DEFUN |POLYCAT-;factor;SF;26| (|p| $)
-  (PROG (|v| |ansR| #0=#:G1589 |w| #1=#:G1590 |up| |ansSUP| #2=#:G1591
-             |ww| #3=#:G1592)
+  (PROG (|v| |ansR| #0=#:G1596 |w| #1=#:G1597 |up| |ansSUP| #2=#:G1598
+             |ww| #3=#:G1599)
     (RETURN
-      (SEQ (LETT |v| (SPADCALL |p| (QREFELT $ 43))
+      (SEQ (LETT |v| (SPADCALL |p| (|getShellEntry| $ 43))
                  |POLYCAT-;factor;SF;26|)
            (EXIT (COND
                    ((QEQCAR |v| 1)
                     (SEQ (LETT |ansR|
-                               (SPADCALL (SPADCALL |p| (QREFELT $ 39))
-                                   (QREFELT $ 121))
+                               (SPADCALL
+                                   (SPADCALL |p|
+                                    (|getShellEntry| $ 39))
+                                   (|getShellEntry| $ 124))
                                |POLYCAT-;factor;SF;26|)
                          (EXIT (SPADCALL
                                    (SPADCALL
-                                    (SPADCALL |ansR| (QREFELT $ 123))
-                                    (QREFELT $ 41))
+                                    (SPADCALL |ansR|
+                                     (|getShellEntry| $ 126))
+                                    (|getShellEntry| $ 41))
                                    (PROGN
                                      (LETT #0# NIL
                                       |POLYCAT-;factor;SF;26|)
@@ -1542,7 +1565,7 @@ Note that this code is not included in the generated catdef.spad file.
                                        |POLYCAT-;factor;SF;26|)
                                       (LETT #1#
                                        (SPADCALL |ansR|
-                                        (QREFELT $ 127))
+                                        (|getShellEntry| $ 130))
                                        |POLYCAT-;factor;SF;26|)
                                       G190
                                       (COND
@@ -1558,7 +1581,7 @@ Note that this code is not included in the generated catdef.spad file.
                                          (CONS
                                           (VECTOR (QVELT |w| 0)
                                            (SPADCALL (QVELT |w| 1)
-                                            (QREFELT $ 41))
+                                            (|getShellEntry| $ 41))
                                            (QVELT |w| 2))
                                           #0#)
                                          |POLYCAT-;factor;SF;26|)))
@@ -1566,17 +1589,20 @@ Note that this code is not included in the generated catdef.spad file.
                                        |POLYCAT-;factor;SF;26|)
                                       (GO G190) G191
                                       (EXIT (NREVERSE0 #0#))))
-                                   (QREFELT $ 131)))))
+                                   (|getShellEntry| $ 134)))))
                    ('T
                     (SEQ (LETT |up|
-                               (SPADCALL |p| (QCDR |v|) (QREFELT $ 48))
+                               (SPADCALL |p| (QCDR |v|)
+                                   (|getShellEntry| $ 49))
                                |POLYCAT-;factor;SF;26|)
-                         (LETT |ansSUP| (SPADCALL |up| (QREFELT $ 115))
+                         (LETT |ansSUP|
+                               (SPADCALL |up| (|getShellEntry| $ 118))
                                |POLYCAT-;factor;SF;26|)
                          (EXIT (SPADCALL
                                    (SPADCALL
-                                    (SPADCALL |ansSUP| (QREFELT $ 132))
-                                    (QCDR |v|) (QREFELT $ 133))
+                                    (SPADCALL |ansSUP|
+                                     (|getShellEntry| $ 135))
+                                    (QCDR |v|) (|getShellEntry| $ 136))
                                    (PROGN
                                      (LETT #2# NIL
                                       |POLYCAT-;factor;SF;26|)
@@ -1585,7 +1611,7 @@ Note that this code is not included in the generated catdef.spad file.
                                        |POLYCAT-;factor;SF;26|)
                                       (LETT #3#
                                        (SPADCALL |ansSUP|
-                                        (QREFELT $ 136))
+                                        (|getShellEntry| $ 139))
                                        |POLYCAT-;factor;SF;26|)
                                       G190
                                       (COND
@@ -1601,7 +1627,8 @@ Note that this code is not included in the generated catdef.spad file.
                                          (CONS
                                           (VECTOR (QVELT |ww| 0)
                                            (SPADCALL (QVELT |ww| 1)
-                                            (QCDR |v|) (QREFELT $ 133))
+                                            (QCDR |v|)
+                                            (|getShellEntry| $ 136))
                                            (QVELT |ww| 2))
                                           #2#)
                                          |POLYCAT-;factor;SF;26|)))
@@ -1609,20 +1636,22 @@ Note that this code is not included in the generated catdef.spad file.
                                        |POLYCAT-;factor;SF;26|)
                                       (GO G190) G191
                                       (EXIT (NREVERSE0 #2#))))
-                                   (QREFELT $ 131))))))))))) 
+                                   (|getShellEntry| $ 134))))))))))) 
 
 (DEFUN |POLYCAT-;conditionP;MU;27| (|mat| $)
-  (PROG (|ll| #0=#:G1627 |z| #1=#:G1628 |ch| |l| #2=#:G1629 #3=#:G1630
-              #4=#:G1599 #5=#:G1597 #6=#:G1598 #7=#:G1631 |vars| |degs|
-              #8=#:G1632 |d| #9=#:G1633 |nd| #10=#:G1626 #11=#:G1606
-              |deg1| |redmons| #12=#:G1634 |v| #13=#:G1636 |u|
-              #14=#:G1635 |llR| |monslist| |ans| #15=#:G1637
-              #16=#:G1638 |mons| #17=#:G1639 |m| #18=#:G1640 |i|
-              #19=#:G1622 #20=#:G1620 #21=#:G1621)
+  (PROG (|ll| #0=#:G1634 |z| #1=#:G1635 |ch| |l| #2=#:G1636 #3=#:G1637
+              #4=#:G1606 #5=#:G1604 #6=#:G1605 #7=#:G1638 |vars| |degs|
+              #8=#:G1639 |d| #9=#:G1640 |nd| #10=#:G1633 #11=#:G1613
+              |deg1| |redmons| #12=#:G1641 |v| #13=#:G1643 |u|
+              #14=#:G1642 |llR| |monslist| |ans| #15=#:G1644
+              #16=#:G1645 |mons| #17=#:G1646 |m| #18=#:G1647 |i|
+              #19=#:G1629 #20=#:G1627 #21=#:G1628)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |ll|
-                            (SPADCALL (SPADCALL |mat| (QREFELT $ 138))
-                                (QREFELT $ 93))
+                            (SPADCALL
+                                (SPADCALL |mat|
+                                    (|getShellEntry| $ 141))
+                                (|getShellEntry| $ 95))
                             |POLYCAT-;conditionP;MU;27|)
                       (LETT |llR|
                             (PROGN
@@ -1650,7 +1679,7 @@ Note that this code is not included in the generated catdef.spad file.
                                    (EXIT (NREVERSE0 #0#))))
                             |POLYCAT-;conditionP;MU;27|)
                       (LETT |monslist| NIL |POLYCAT-;conditionP;MU;27|)
-                      (LETT |ch| (SPADCALL (QREFELT $ 139))
+                      (LETT |ch| (SPADCALL (|getShellEntry| $ 142))
                             |POLYCAT-;conditionP;MU;27|)
                       (SEQ (LETT |l| NIL |POLYCAT-;conditionP;MU;27|)
                            (LETT #2# |ll| |POLYCAT-;conditionP;MU;27|)
@@ -1684,13 +1713,14 @@ Note that this code is not included in the generated catdef.spad file.
                                            (PROGN
                                              (LETT #4#
                                               (SPADCALL |u|
-                                               (QREFELT $ 78))
+                                               (|getShellEntry| $ 79))
                                               |POLYCAT-;conditionP;MU;27|)
                                              (COND
                                                (#6#
                                                 (LETT #5#
                                                  (SPADCALL #5# #4#
-                                                  (QREFELT $ 140))
+                                                  (|getShellEntry| $
+                                                   143))
                                                  |POLYCAT-;conditionP;MU;27|))
                                                ('T
                                                 (PROGN
@@ -1723,11 +1753,12 @@ Note that this code is not included in the generated catdef.spad file.
                                         (GO G191)))
                                      (SEQ
                                       (LETT |vars|
-                                       (SPADCALL |m| (QREFELT $ 32))
+                                       (SPADCALL |m|
+                                        (|getShellEntry| $ 32))
                                        |POLYCAT-;conditionP;MU;27|)
                                       (LETT |degs|
                                        (SPADCALL |m| |vars|
-                                        (QREFELT $ 141))
+                                        (|getShellEntry| $ 144))
                                        |POLYCAT-;conditionP;MU;27|)
                                       (LETT |deg1|
                                        (PROGN
@@ -1753,7 +1784,8 @@ Note that this code is not included in the generated catdef.spad file.
                                               (SEQ
                                                (LETT |nd|
                                                 (SPADCALL |d| |ch|
-                                                 (QREFELT $ 143))
+                                                 (|getShellEntry| $
+                                                  146))
                                                 |POLYCAT-;conditionP;MU;27|)
                                                (EXIT
                                                 (COND
@@ -1782,7 +1814,8 @@ Note that this code is not included in the generated catdef.spad file.
                                       (LETT |redmons|
                                        (CONS
                                         (SPADCALL (|spadConstant| $ 34)
-                                         |vars| |deg1| (QREFELT $ 55))
+                                         |vars| |deg1|
+                                         (|getShellEntry| $ 56))
                                         |redmons|)
                                        |POLYCAT-;conditionP;MU;27|)
                                       (EXIT
@@ -1820,8 +1853,10 @@ Note that this code is not included in the generated catdef.spad file.
                                                 (SPADCALL
                                                  (SPADCALL |u| |vars|
                                                   |degs|
-                                                  (QREFELT $ 53))
-                                                 (QREFELT $ 144))
+                                                  (|getShellEntry| $
+                                                   54))
+                                                 (|getShellEntry| $
+                                                  147))
                                                 |v|)
                                                #12#)
                                               |POLYCAT-;conditionP;MU;27|)))
@@ -1845,9 +1880,10 @@ Note that this code is not included in the generated catdef.spad file.
                       (LETT |ans|
                             (SPADCALL
                                 (SPADCALL
-                                    (SPADCALL |llR| (QREFELT $ 90))
-                                    (QREFELT $ 145))
-                                (QREFELT $ 147))
+                                    (SPADCALL |llR|
+                                     (|getShellEntry| $ 92))
+                                    (|getShellEntry| $ 148))
+                                (|getShellEntry| $ 150))
                             |POLYCAT-;conditionP;MU;27|)
                       (EXIT (COND
                               ((QEQCAR |ans| 1) (CONS 1 "failed"))
@@ -1907,17 +1943,20 @@ Note that this code is not included in the generated catdef.spad file.
                                                         (LETT |i|
                                                          (+ |i| 1)
                                                          |POLYCAT-;conditionP;MU;27|)
-                                                        (QREFELT $ 148))
-                                                       (QREFELT $ 41))
-                                                      (QREFELT $ 149))
+                                                        (|getShellEntry|
+                                                         $ 151))
+                                                       (|getShellEntry|
+                                                        $ 41))
+                                                      (|getShellEntry|
+                                                       $ 152))
                                                      |POLYCAT-;conditionP;MU;27|)
                                                     (COND
                                                       (#21#
                                                        (LETT #20#
                                                         (SPADCALL #20#
                                                          #19#
-                                                         (QREFELT $
-                                                          150))
+                                                         (|getShellEntry|
+                                                          $ 153))
                                                         |POLYCAT-;conditionP;MU;27|))
                                                       ('T
                                                        (PROGN
@@ -1933,7 +1972,7 @@ Note that this code is not included in the generated catdef.spad file.
                                                (COND
                                                  (#21# #20#)
                                                  ('T
-                                                  (|spadConstant| $ 21)))))))
+                                                  (|spadConstant| $ 22)))))))
                                           (LETT #17#
                                            (PROG1 (CDR #17#)
                                              (LETT #16# (QSADD1 #16#)
@@ -1946,53 +1985,60 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |POLYCAT-;charthRoot;SU;28| (|p| $)
   (PROG (|vars| |ans| |ch|)
     (RETURN
-      (SEQ (LETT |vars| (SPADCALL |p| (QREFELT $ 32))
+      (SEQ (LETT |vars| (SPADCALL |p| (|getShellEntry| $ 32))
                  |POLYCAT-;charthRoot;SU;28|)
            (EXIT (COND
                    ((NULL |vars|)
                     (SEQ (LETT |ans|
-                               (SPADCALL (SPADCALL |p| (QREFELT $ 144))
-                                   (QREFELT $ 152))
+                               (SPADCALL
+                                   (SPADCALL |p|
+                                    (|getShellEntry| $ 147))
+                                   (|getShellEntry| $ 155))
                                |POLYCAT-;charthRoot;SU;28|)
                          (EXIT (COND
                                  ((QEQCAR |ans| 1) (CONS 1 "failed"))
                                  ('T
                                   (CONS 0
                                         (SPADCALL (QCDR |ans|)
-                                         (QREFELT $ 41))))))))
+                                         (|getShellEntry| $ 41))))))))
                    ('T
-                    (SEQ (LETT |ch| (SPADCALL (QREFELT $ 139))
+                    (SEQ (LETT |ch| (SPADCALL (|getShellEntry| $ 142))
                                |POLYCAT-;charthRoot;SU;28|)
                          (EXIT (|POLYCAT-;charthRootlv| |p| |vars| |ch|
                                    $)))))))))) 
 
 (DEFUN |POLYCAT-;charthRootlv| (|p| |vars| |ch| $)
-  (PROG (|v| |dd| |cp| |d| #0=#:G1661 |ans| |ansx| #1=#:G1668)
+  (PROG (|v| |dd| |cp| |d| #0=#:G1668 |ans| |ansx| #1=#:G1675)
     (RETURN
       (SEQ (EXIT (COND
                    ((NULL |vars|)
                     (SEQ (LETT |ans|
-                               (SPADCALL (SPADCALL |p| (QREFELT $ 144))
-                                   (QREFELT $ 152))
+                               (SPADCALL
+                                   (SPADCALL |p|
+                                    (|getShellEntry| $ 147))
+                                   (|getShellEntry| $ 155))
                                |POLYCAT-;charthRootlv|)
                          (EXIT (COND
                                  ((QEQCAR |ans| 1) (CONS 1 "failed"))
                                  ('T
                                   (CONS 0
                                         (SPADCALL (QCDR |ans|)
-                                         (QREFELT $ 41))))))))
+                                         (|getShellEntry| $ 41))))))))
                    ('T
                     (SEQ (LETT |v| (|SPADfirst| |vars|)
                                |POLYCAT-;charthRootlv|)
                          (LETT |vars| (CDR |vars|)
                                |POLYCAT-;charthRootlv|)
-                         (LETT |d| (SPADCALL |p| |v| (QREFELT $ 37))
+                         (LETT |d|
+                               (SPADCALL |p| |v|
+                                   (|getShellEntry| $ 37))
                                |POLYCAT-;charthRootlv|)
-                         (LETT |ans| (|spadConstant| $ 21)
+                         (LETT |ans| (|spadConstant| $ 22)
                                |POLYCAT-;charthRootlv|)
                          (SEQ G190 (COND ((NULL (< 0 |d|)) (GO G191)))
                               (SEQ (LETT |dd|
-                                    (SPADCALL |d| |ch| (QREFELT $ 143))
+                                    (SPADCALL |d| |ch|
+                                     (|getShellEntry| $ 146))
                                     |POLYCAT-;charthRootlv|)
                                    (EXIT
                                     (COND
@@ -2005,13 +2051,13 @@ Note that this code is not included in the generated catdef.spad file.
                                        (SEQ
                                         (LETT |cp|
                                          (SPADCALL |p| |v| |d|
-                                          (QREFELT $ 155))
+                                          (|getShellEntry| $ 158))
                                          |POLYCAT-;charthRootlv|)
                                         (LETT |p|
                                          (SPADCALL |p|
                                           (SPADCALL |cp| |v| |d|
-                                           (QREFELT $ 38))
-                                          (QREFELT $ 156))
+                                           (|getShellEntry| $ 38))
+                                          (|getShellEntry| $ 159))
                                          |POLYCAT-;charthRootlv|)
                                         (LETT |ansx|
                                          (|POLYCAT-;charthRootlv| |cp|
@@ -2029,7 +2075,7 @@ Note that this code is not included in the generated catdef.spad file.
                                             (SEQ
                                              (LETT |d|
                                               (SPADCALL |p| |v|
-                                               (QREFELT $ 37))
+                                               (|getShellEntry| $ 37))
                                               |POLYCAT-;charthRootlv|)
                                              (EXIT
                                               (LETT |ans|
@@ -2043,8 +2089,8 @@ Note that this code is not included in the generated catdef.spad file.
                                                     (>= #0# 0)
                                                     '(|NonNegativeInteger|)
                                                     #0#))
-                                                 (QREFELT $ 38))
-                                                (QREFELT $ 150))
+                                                 (|getShellEntry| $ 38))
+                                                (|getShellEntry| $ 153))
                                                |POLYCAT-;charthRootlv|)))))))))))
                               NIL (GO G190) G191 (EXIT NIL))
                          (LETT |ansx|
@@ -2062,7 +2108,7 @@ Note that this code is not included in the generated catdef.spad file.
                                     (LETT #1#
                                      (CONS 0
                                       (SPADCALL |ans| (QCDR |ansx|)
-                                       (QREFELT $ 150)))
+                                       (|getShellEntry| $ 153)))
                                      |POLYCAT-;charthRootlv|)
                                     (GO #1#)))))))))
            #1# (EXIT #1#))))) 
@@ -2071,36 +2117,37 @@ Note that this code is not included in the generated catdef.spad file.
   (PROG (|result|)
     (RETURN
       (SEQ (LETT |result|
-                 (SPADCALL (SPADCALL |p1| |mvar| (QREFELT $ 48))
-                     (SPADCALL |p2| |mvar| (QREFELT $ 48))
-                     (QREFELT $ 158))
+                 (SPADCALL
+                     (SPADCALL |p1| |mvar| (|getShellEntry| $ 49))
+                     (SPADCALL |p2| |mvar| (|getShellEntry| $ 49))
+                     (|getShellEntry| $ 161))
                  |POLYCAT-;monicDivide;2SVarSetR;30|)
            (EXIT (CONS (SPADCALL (QCAR |result|) |mvar|
-                           (QREFELT $ 133))
+                           (|getShellEntry| $ 136))
                        (SPADCALL (QCDR |result|) |mvar|
-                           (QREFELT $ 133)))))))) 
+                           (|getShellEntry| $ 136)))))))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;31| (|p| $)
-  (SPADCALL |p| (QREFELT $ 161))) 
+  (SPADCALL |p| (|getShellEntry| $ 164))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;32| (|p| $)
-  (SPADCALL |p| (QREFELT $ 164))) 
+  (SPADCALL |p| (|getShellEntry| $ 167))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;33| (|p| $)
-  (SPADCALL |p| (QREFELT $ 164))) 
+  (SPADCALL |p| (|getShellEntry| $ 167))) 
 
 (DEFUN |POLYCAT-;squareFreePart;2S;34| (|p| $)
-  (PROG (|s| |f| #0=#:G1684 #1=#:G1682 #2=#:G1680 #3=#:G1681)
+  (PROG (|s| |f| #0=#:G1691 #1=#:G1689 #2=#:G1687 #3=#:G1688)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
-                   (LETT |s| (SPADCALL |p| (QREFELT $ 165))
+                   (LETT |s| (SPADCALL |p| (|getShellEntry| $ 168))
                          |POLYCAT-;squareFreePart;2S;34|)
-                   (QREFELT $ 166))
+                   (|getShellEntry| $ 169))
                (PROGN
                  (LETT #3# NIL |POLYCAT-;squareFreePart;2S;34|)
                  (SEQ (LETT |f| NIL |POLYCAT-;squareFreePart;2S;34|)
-                      (LETT #0# (SPADCALL |s| (QREFELT $ 169))
+                      (LETT #0# (SPADCALL |s| (|getShellEntry| $ 172))
                             |POLYCAT-;squareFreePart;2S;34|)
                       G190
                       (COND
@@ -2117,7 +2164,7 @@ Note that this code is not included in the generated catdef.spad file.
                                      (#3#
                                       (LETT #2#
                                        (SPADCALL #2# #1#
-                                        (QREFELT $ 149))
+                                        (|getShellEntry| $ 152))
                                        |POLYCAT-;squareFreePart;2S;34|))
                                      ('T
                                       (PROGN
@@ -2129,73 +2176,80 @@ Note that this code is not included in the generated catdef.spad file.
                             |POLYCAT-;squareFreePart;2S;34|)
                       (GO G190) G191 (EXIT NIL))
                  (COND (#3# #2#) ('T (|spadConstant| $ 34))))
-               (QREFELT $ 149)))))) 
+               (|getShellEntry| $ 152)))))) 
 
 (DEFUN |POLYCAT-;content;SVarSetS;35| (|p| |v| $)
-  (SPADCALL (SPADCALL |p| |v| (QREFELT $ 48)) (QREFELT $ 171))) 
+  (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 49))
+      (|getShellEntry| $ 174))) 
 
 (DEFUN |POLYCAT-;primitivePart;2S;36| (|p| $)
-  (PROG (#0=#:G1687)
+  (PROG (#0=#:G1694)
     (RETURN
       (QVELT (SPADCALL
                  (PROG2 (LETT #0#
                               (SPADCALL |p|
-                                  (SPADCALL |p| (QREFELT $ 173))
-                                  (QREFELT $ 174))
+                                  (SPADCALL |p|
+                                      (|getShellEntry| $ 176))
+                                  (|getShellEntry| $ 177))
                               |POLYCAT-;primitivePart;2S;36|)
                         (QCDR #0#)
-                   (|check-union| (QEQCAR #0# 0) (QREFELT $ 6) #0#))
-                 (QREFELT $ 176))
+                   (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 6)
+                       #0#))
+                 (|getShellEntry| $ 179))
              1)))) 
 
 (DEFUN |POLYCAT-;primitivePart;SVarSetS;37| (|p| |v| $)
-  (PROG (#0=#:G1693)
+  (PROG (#0=#:G1700)
     (RETURN
       (QVELT (SPADCALL
                  (PROG2 (LETT #0#
                               (SPADCALL |p|
-                                  (SPADCALL |p| |v| (QREFELT $ 178))
-                                  (QREFELT $ 179))
+                                  (SPADCALL |p| |v|
+                                      (|getShellEntry| $ 181))
+                                  (|getShellEntry| $ 182))
                               |POLYCAT-;primitivePart;SVarSetS;37|)
                         (QCDR #0#)
-                   (|check-union| (QEQCAR #0# 0) (QREFELT $ 6) #0#))
-                 (QREFELT $ 176))
+                   (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 6)
+                       #0#))
+                 (|getShellEntry| $ 179))
              1)))) 
 
 (DEFUN |POLYCAT-;<;2SB;38| (|p| |q| $)
   (PROG (|dp| |dq|)
     (RETURN
-      (SEQ (LETT |dp| (SPADCALL |p| (QREFELT $ 60))
+      (SEQ (LETT |dp| (SPADCALL |p| (|getShellEntry| $ 61))
                  |POLYCAT-;<;2SB;38|)
-           (LETT |dq| (SPADCALL |q| (QREFELT $ 60))
+           (LETT |dq| (SPADCALL |q| (|getShellEntry| $ 61))
                  |POLYCAT-;<;2SB;38|)
            (EXIT (COND
-                   ((SPADCALL |dp| |dq| (QREFELT $ 181))
-                    (SPADCALL (|spadConstant| $ 22)
-                        (SPADCALL |q| (QREFELT $ 39)) (QREFELT $ 182)))
-                   ((SPADCALL |dq| |dp| (QREFELT $ 181))
-                    (SPADCALL (SPADCALL |p| (QREFELT $ 39))
-                        (|spadConstant| $ 22) (QREFELT $ 182)))
+                   ((SPADCALL |dp| |dq| (|getShellEntry| $ 184))
+                    (SPADCALL (|spadConstant| $ 23)
+                        (SPADCALL |q| (|getShellEntry| $ 39))
+                        (|getShellEntry| $ 185)))
+                   ((SPADCALL |dq| |dp| (|getShellEntry| $ 184))
+                    (SPADCALL (SPADCALL |p| (|getShellEntry| $ 39))
+                        (|spadConstant| $ 23) (|getShellEntry| $ 185)))
                    ('T
                     (SPADCALL
-                        (SPADCALL (SPADCALL |p| |q| (QREFELT $ 156))
-                            (QREFELT $ 39))
-                        (|spadConstant| $ 22) (QREFELT $ 182))))))))) 
+                        (SPADCALL (SPADCALL |p| |q|
+                                      (|getShellEntry| $ 159))
+                                  (|getShellEntry| $ 39))
+                        (|spadConstant| $ 23) (|getShellEntry| $ 185))))))))) 
 
 (DEFUN |POLYCAT-;patternMatch;SP2Pmr;39| (|p| |pat| |l| $)
-  (SPADCALL |p| |pat| |l| (QREFELT $ 187))) 
+  (SPADCALL |p| |pat| |l| (|getShellEntry| $ 190))) 
 
 (DEFUN |POLYCAT-;patternMatch;SP2Pmr;40| (|p| |pat| |l| $)
-  (SPADCALL |p| |pat| |l| (QREFELT $ 193))) 
+  (SPADCALL |p| |pat| |l| (|getShellEntry| $ 197))) 
 
 (DEFUN |POLYCAT-;convert;SP;41| (|x| $)
-  (SPADCALL (ELT $ 196) (ELT $ 197) |x| (QREFELT $ 201))) 
+  (SPADCALL (ELT $ 200) (ELT $ 201) |x| (|getShellEntry| $ 205))) 
 
 (DEFUN |POLYCAT-;convert;SP;42| (|x| $)
-  (SPADCALL (ELT $ 203) (ELT $ 204) |x| (QREFELT $ 208))) 
+  (SPADCALL (ELT $ 207) (ELT $ 208) |x| (|getShellEntry| $ 212))) 
 
 (DEFUN |POLYCAT-;convert;SIf;43| (|p| $)
-  (SPADCALL (ELT $ 211) (ELT $ 212) |p| (QREFELT $ 216))) 
+  (SPADCALL (ELT $ 215) (ELT $ 216) |p| (|getShellEntry| $ 220))) 
 
 (DEFUN |PolynomialCategory&| (|#1| |#2| |#3| |#4|)
   (PROG (|dv$1| |dv$2| |dv$3| |dv$4| |dv$| $ |pv$|)
@@ -2207,9 +2261,9 @@ Note that this code is not included in the generated catdef.spad file.
         (LETT |dv$4| (|devaluate| |#4|) . #0#)
         (LETT |dv$|
               (LIST '|PolynomialCategory&| |dv$1| |dv$2| |dv$3| |dv$4|) . #0#)
-        (LETT $ (GETREFV 226) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3
+        (LETT $ (|newShell| 229) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
             (LETT |pv$|
                   (|buildPredVector| 0 0
                       (LIST (|HasCategory| |#2|
@@ -2244,64 +2298,64 @@ Note that this code is not included in the generated catdef.spad file.
                                 '(|ConvertibleTo| (|InputForm|)))
                             (|HasCategory| |#2| '(|OrderedSet|)))) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
-        (QSETREFV $ 7 |#2|)
-        (QSETREFV $ 8 |#3|)
-        (QSETREFV $ 9 |#4|)
+        (|setShellEntry| $ 6 |#1|)
+        (|setShellEntry| $ 7 |#2|)
+        (|setShellEntry| $ 8 |#3|)
+        (|setShellEntry| $ 9 |#4|)
         (COND
           ((|testBitVector| |pv$| 4)
            (PROGN
-             (QSETREFV $ 75
+             (|setShellEntry| $ 76
                  (CONS (|dispatchFunction|
                            |POLYCAT-;resultant;2SVarSetS;15|)
                        $))
-             (QSETREFV $ 77
+             (|setShellEntry| $ 78
                  (CONS (|dispatchFunction|
                            |POLYCAT-;discriminant;SVarSetS;16|)
                        $)))))
         (COND
           ((|HasCategory| |#2| '(|IntegralDomain|))
            (PROGN
-             (QSETREFV $ 96
+             (|setShellEntry| $ 99
                  (CONS (|dispatchFunction|
                            |POLYCAT-;reducedSystem;MM;20|)
                        $))
-             (QSETREFV $ 103
+             (|setShellEntry| $ 106
                  (CONS (|dispatchFunction|
                            |POLYCAT-;reducedSystem;MVR;21|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 1)
            (PROGN
-             (QSETREFV $ 106
+             (|setShellEntry| $ 109
                  (CONS (|dispatchFunction|
                            |POLYCAT-;gcdPolynomial;3Sup;22|)
                        $))
-             (QSETREFV $ 113
+             (|setShellEntry| $ 116
                  (CONS (|dispatchFunction|
                            |POLYCAT-;solveLinearPolynomialEquation;LSupU;23|)
                        $))
-             (QSETREFV $ 117
+             (|setShellEntry| $ 120
                  (CONS (|dispatchFunction|
                            |POLYCAT-;factorPolynomial;SupF;24|)
                        $))
-             (QSETREFV $ 119
+             (|setShellEntry| $ 122
                  (CONS (|dispatchFunction|
                            |POLYCAT-;factorSquareFreePolynomial;SupF;25|)
                        $))
-             (QSETREFV $ 137
+             (|setShellEntry| $ 140
                  (CONS (|dispatchFunction| |POLYCAT-;factor;SF;26|) $))
              (COND
                ((|HasCategory| |#2| '(|CharacteristicNonZero|))
                 (PROGN
-                  (QSETREFV $ 151
+                  (|setShellEntry| $ 154
                       (CONS (|dispatchFunction|
                                 |POLYCAT-;conditionP;MU;27|)
                             $))))))))
         (COND
           ((|HasCategory| |#2| '(|CharacteristicNonZero|))
            (PROGN
-             (QSETREFV $ 153
+             (|setShellEntry| $ 156
                  (CONS (|dispatchFunction| |POLYCAT-;charthRoot;SU;28|)
                        $)))))
         (COND
@@ -2311,46 +2365,46 @@ Note that this code is not included in the generated catdef.spad file.
                ((|HasCategory| |#2| '(|EuclideanDomain|))
                 (COND
                   ((|HasCategory| |#2| '(|CharacteristicZero|))
-                   (QSETREFV $ 162
+                   (|setShellEntry| $ 165
                        (CONS (|dispatchFunction|
                                  |POLYCAT-;squareFree;SF;31|)
                              $)))
                   ('T
-                   (QSETREFV $ 162
+                   (|setShellEntry| $ 165
                        (CONS (|dispatchFunction|
                                  |POLYCAT-;squareFree;SF;32|)
                              $)))))
                ('T
-                (QSETREFV $ 162
+                (|setShellEntry| $ 165
                     (CONS (|dispatchFunction|
                               |POLYCAT-;squareFree;SF;33|)
                           $))))
-             (QSETREFV $ 170
+             (|setShellEntry| $ 173
                  (CONS (|dispatchFunction|
                            |POLYCAT-;squareFreePart;2S;34|)
                        $))
-             (QSETREFV $ 172
+             (|setShellEntry| $ 175
                  (CONS (|dispatchFunction|
                            |POLYCAT-;content;SVarSetS;35|)
                        $))
-             (QSETREFV $ 177
+             (|setShellEntry| $ 180
                  (CONS (|dispatchFunction|
                            |POLYCAT-;primitivePart;2S;36|)
                        $))
-             (QSETREFV $ 180
+             (|setShellEntry| $ 183
                  (CONS (|dispatchFunction|
                            |POLYCAT-;primitivePart;SVarSetS;37|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 15)
            (PROGN
-             (QSETREFV $ 183
+             (|setShellEntry| $ 186
                  (CONS (|dispatchFunction| |POLYCAT-;<;2SB;38|) $))
              (COND
                ((|testBitVector| |pv$| 8)
                 (COND
                   ((|testBitVector| |pv$| 7)
-                   (QSETREFV $ 189
+                   (|setShellEntry| $ 192
                        (CONS (|dispatchFunction|
                                  |POLYCAT-;patternMatch;SP2Pmr;39|)
                              $))))))
@@ -2358,7 +2412,7 @@ Note that this code is not included in the generated catdef.spad file.
                ((|testBitVector| |pv$| 6)
                 (COND
                   ((|testBitVector| |pv$| 5)
-                   (QSETREFV $ 195
+                   (|setShellEntry| $ 199
                        (CONS (|dispatchFunction|
                                  |POLYCAT-;patternMatch;SP2Pmr;40|)
                              $)))))))))
@@ -2366,21 +2420,21 @@ Note that this code is not included in the generated catdef.spad file.
           ((|testBitVector| |pv$| 12)
            (COND
              ((|testBitVector| |pv$| 11)
-              (QSETREFV $ 202
+              (|setShellEntry| $ 206
                   (CONS (|dispatchFunction| |POLYCAT-;convert;SP;41|)
                         $))))))
         (COND
           ((|testBitVector| |pv$| 10)
            (COND
              ((|testBitVector| |pv$| 9)
-              (QSETREFV $ 209
+              (|setShellEntry| $ 213
                   (CONS (|dispatchFunction| |POLYCAT-;convert;SP;42|)
                         $))))))
         (COND
           ((|testBitVector| |pv$| 14)
            (COND
              ((|testBitVector| |pv$| 13)
-              (QSETREFV $ 217
+              (|setShellEntry| $ 221
                   (CONS (|dispatchFunction| |POLYCAT-;convert;SIf;43|)
                         $))))))
         $)))) 
@@ -2390,187 +2444,188 @@ Note that this code is not included in the generated catdef.spad file.
              (|local| |#3|) (|local| |#4|) (|Equation| 6) (0 . |lhs|)
              (|Union| 9 '"failed") (5 . |retractIfCan|)
              (10 . |retract|) (15 . |rhs|) (|List| 9) (|List| $)
-             (20 . |eval|) (|List| 221) |POLYCAT-;eval;SLS;1|
-             (27 . |Zero|) (31 . |Zero|) (|Boolean|) (35 . =)
-             (41 . |not|) (46 . |leadingMonomial|) (51 . |reductum|)
-             |POLYCAT-;monomials;SL;2| (56 . |monomials|)
-             (|Union| 17 '"failed") |POLYCAT-;isPlus;SU;3|
-             (61 . |variables|) (66 . |monomial?|) (71 . |One|)
-             (75 . |One|) (|NonNegativeInteger|) (79 . |degree|)
-             (85 . |monomial|) (92 . |leadingCoefficient|) (97 . =)
-             (103 . |coerce|) |POLYCAT-;isTimes;SU;4|
-             (108 . |mainVariable|)
+             (20 . |eval|) (|Equation| $) (|List| 19)
+             |POLYCAT-;eval;SLS;1| (27 . |Zero|) (31 . |Zero|)
+             (|Boolean|) (35 . ~=) (41 . |leadingMonomial|)
+             (46 . |reductum|) |POLYCAT-;monomials;SL;2|
+             (51 . |monomials|) (|Union| 17 '"failed")
+             |POLYCAT-;isPlus;SU;3| (56 . |variables|)
+             (61 . |monomial?|) (66 . |One|) (70 . |One|)
+             (|NonNegativeInteger|) (74 . |degree|) (80 . |monomial|)
+             (87 . |leadingCoefficient|) (92 . =) (98 . |coerce|)
+             |POLYCAT-;isTimes;SU;4| (103 . |mainVariable|) (108 . =)
              (|Record| (|:| |var| 9) (|:| |exponent| 36))
-             (|Union| 44 '"failed") |POLYCAT-;isExpt;SU;5|
-             (|SparseUnivariatePolynomial| $) (113 . |univariate|)
-             (|SparseUnivariatePolynomial| 6) (119 . |coefficient|)
+             (|Union| 45 '"failed") |POLYCAT-;isExpt;SU;5|
+             (|SparseUnivariatePolynomial| $) (114 . |univariate|)
+             (|SparseUnivariatePolynomial| 6) (120 . |coefficient|)
              |POLYCAT-;coefficient;SVarSetNniS;6| (|List| 36)
-             (125 . |coefficient|) |POLYCAT-;coefficient;SLLS;7|
-             (132 . |monomial|) |POLYCAT-;monomial;SLLS;8|
-             (139 . |coerce|) |POLYCAT-;retract;SVarSet;9|
-             |POLYCAT-;retractIfCan;SU;10| (144 . |degree|)
-             (149 . |monomial|) |POLYCAT-;primitiveMonomials;SL;12|
-             (155 . |ground?|) (160 . |Zero|) (164 . =)
-             (170 . |degree|) (175 . |leadingCoefficient|)
-             (180 . |totalDegree|) (185 . |reductum|)
-             |POLYCAT-;totalDegree;SNni;13| (190 . |member?|)
-             (196 . |totalDegree|) |POLYCAT-;totalDegree;SLNni;14|
-             (202 . |resultant|) (208 . |resultant|)
-             (215 . |discriminant|) (220 . |discriminant|)
-             (226 . |primitiveMonomials|) (|List| 6) (231 . |concat|)
-             (236 . |removeDuplicates!|) (|Vector| 7) (241 . |new|)
-             (|Integer|) (247 . |minIndex|) (252 . |coefficient|)
-             (258 . |qsetelt!|) (|List| 220) (|Matrix| 7)
-             (265 . |matrix|) (|List| 79) (|Matrix| 6)
-             (270 . |listOfLists|) (275 . |vertConcat|) (|Matrix| $)
-             (281 . |reducedSystem|) (|Vector| 6) (286 . |entries|)
-             (291 . |concat|) (297 . |concat|)
-             (|Record| (|:| |mat| 89) (|:| |vec| 82)) (|Vector| $)
-             (303 . |reducedSystem|)
+             (126 . |coefficient|) |POLYCAT-;coefficient;SLLS;7|
+             (133 . |monomial|) |POLYCAT-;monomial;SLLS;8|
+             (140 . |coerce|) |POLYCAT-;retract;SVarSet;9|
+             |POLYCAT-;retractIfCan;SU;10| (145 . |degree|)
+             (150 . |monomial|) |POLYCAT-;primitiveMonomials;SL;12|
+             (156 . |ground?|) (161 . |Zero|) (165 . ~=)
+             (171 . |degree|) (176 . |leadingCoefficient|)
+             (181 . |totalDegree|) (186 . |reductum|)
+             |POLYCAT-;totalDegree;SNni;13| (191 . |member?|)
+             (197 . |totalDegree|) |POLYCAT-;totalDegree;SLNni;14|
+             (203 . |resultant|) (209 . |resultant|)
+             (216 . |discriminant|) (221 . |discriminant|)
+             (227 . |primitiveMonomials|) (|List| 6) (232 . |concat|)
+             (237 . |removeDuplicates!|) (|Vector| 7) (242 . |new|)
+             (|Integer|) (248 . |minIndex|) (253 . |coefficient|)
+             (259 . |qsetelt!|) (|List| 7) (|List| 89) (|Matrix| 7)
+             (266 . |matrix|) (|List| 80) (|Matrix| 6)
+             (271 . |listOfLists|) (276 . |not|) (281 . |vertConcat|)
+             (|Matrix| $) (287 . |reducedSystem|) (|Vector| 6)
+             (292 . |entries|) (297 . |concat|) (303 . |concat|)
+             (|Record| (|:| |mat| 91) (|:| |vec| 83)) (|Vector| $)
+             (309 . |reducedSystem|)
              (|GeneralPolynomialGcdPackage| 8 9 7 6)
-             (309 . |gcdPolynomial|) (315 . |gcdPolynomial|)
-             (|Union| 108 '"failed") (|List| 49)
+             (315 . |gcdPolynomial|) (321 . |gcdPolynomial|)
+             (|List| 50) (|Union| 110 '"failed")
              (|PolynomialFactorizationByRecursion| 7 8 9 6)
-             (321 . |solveLinearPolynomialEquationByRecursion|)
-             (|Union| 112 '"failed") (|List| 47)
-             (327 . |solveLinearPolynomialEquation|) (|Factored| 49)
-             (333 . |factorByRecursion|) (|Factored| 47)
-             (338 . |factorPolynomial|)
-             (343 . |factorSquareFreeByRecursion|)
-             (348 . |factorSquareFreePolynomial|) (|Factored| $)
-             (353 . |factor|) (|Factored| 7) (358 . |unit|)
+             (327 . |solveLinearPolynomialEquationByRecursion|)
+             (|List| 48) (|Union| 114 '"failed")
+             (333 . |solveLinearPolynomialEquation|) (|Factored| 50)
+             (339 . |factorByRecursion|) (|Factored| 48)
+             (344 . |factorPolynomial|)
+             (349 . |factorSquareFreeByRecursion|)
+             (354 . |factorSquareFreePolynomial|) (|Factored| $)
+             (359 . |factor|) (|Factored| 7) (364 . |unit|)
              (|Union| '"nil" '"sqfr" '"irred" '"prime")
-             (|Record| (|:| |flg| 124) (|:| |fctr| 7) (|:| |xpnt| 84))
-             (|List| 125) (363 . |factorList|)
-             (|Record| (|:| |flg| 124) (|:| |fctr| 6) (|:| |xpnt| 84))
-             (|List| 128) (|Factored| 6) (368 . |makeFR|)
-             (374 . |unit|) (379 . |multivariate|)
-             (|Record| (|:| |flg| 124) (|:| |fctr| 49) (|:| |xpnt| 84))
-             (|List| 134) (385 . |factorList|) (390 . |factor|)
-             (395 . |transpose|) (400 . |characteristic|)
-             (404 . |setUnion|) (410 . |degree|) (|Union| $ '"failed")
-             (416 . |exquo|) (422 . |ground|) (427 . |transpose|)
-             (|Union| 102 '"failed") (432 . |conditionP|) (437 . |elt|)
-             (443 . *) (449 . +) (455 . |conditionP|)
-             (460 . |charthRoot|) (465 . |charthRoot|) (470 . |Zero|)
-             (474 . |coefficient|) (481 . -)
+             (|Record| (|:| |flg| 127) (|:| |fctr| 7) (|:| |xpnt| 85))
+             (|List| 128) (369 . |factorList|)
+             (|Record| (|:| |flg| 127) (|:| |fctr| 6) (|:| |xpnt| 85))
+             (|List| 131) (|Factored| 6) (374 . |makeFR|)
+             (380 . |unit|) (385 . |multivariate|)
+             (|Record| (|:| |flg| 127) (|:| |fctr| 50) (|:| |xpnt| 85))
+             (|List| 137) (391 . |factorList|) (396 . |factor|)
+             (401 . |transpose|) (406 . |characteristic|)
+             (410 . |setUnion|) (416 . |degree|) (|Union| $ '"failed")
+             (422 . |exquo|) (428 . |ground|) (433 . |transpose|)
+             (|Union| 105 '"failed") (438 . |conditionP|) (443 . |elt|)
+             (449 . *) (455 . +) (461 . |conditionP|)
+             (466 . |charthRoot|) (471 . |charthRoot|) (476 . |Zero|)
+             (480 . |coefficient|) (487 . -)
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
-             (487 . |monicDivide|) |POLYCAT-;monicDivide;2SVarSetR;30|
-             (|MultivariateSquareFree| 8 9 7 6) (493 . |squareFree|)
-             (498 . |squareFree|) (|PolynomialSquareFree| 9 8 7 6)
-             (503 . |squareFree|) (508 . |squareFree|) (513 . |unit|)
-             (|Record| (|:| |factor| 6) (|:| |exponent| 84))
-             (|List| 167) (518 . |factors|) (523 . |squareFreePart|)
-             (528 . |content|) (533 . |content|) (539 . |content|)
-             (544 . |exquo|)
+             (493 . |monicDivide|) |POLYCAT-;monicDivide;2SVarSetR;30|
+             (|MultivariateSquareFree| 8 9 7 6) (499 . |squareFree|)
+             (504 . |squareFree|) (|PolynomialSquareFree| 9 8 7 6)
+             (509 . |squareFree|) (514 . |squareFree|) (519 . |unit|)
+             (|Record| (|:| |factor| 6) (|:| |exponent| 85))
+             (|List| 170) (524 . |factors|) (529 . |squareFreePart|)
+             (534 . |content|) (539 . |content|) (545 . |content|)
+             (550 . |exquo|)
              (|Record| (|:| |unit| $) (|:| |canonical| $)
                  (|:| |associate| $))
-             (550 . |unitNormal|) (555 . |primitivePart|)
-             (560 . |content|) (566 . |exquo|) (572 . |primitivePart|)
-             (578 . <) (584 . <) (590 . <) (|PatternMatchResult| 84 6)
-             (|Pattern| 84)
-             (|PatternMatchPolynomialCategory| 84 8 9 7 6)
-             (596 . |patternMatch|) (|PatternMatchResult| 84 $)
-             (603 . |patternMatch|) (|PatternMatchResult| (|Float|) 6)
-             (|Pattern| (|Float|))
-             (|PatternMatchPolynomialCategory| (|Float|) 8 9 7 6)
-             (610 . |patternMatch|) (|PatternMatchResult| (|Float|) $)
-             (617 . |patternMatch|) (624 . |convert|) (629 . |convert|)
-             (|Mapping| 185 9) (|Mapping| 185 7)
-             (|PolynomialCategoryLifting| 8 9 7 6 185) (634 . |map|)
-             (641 . |convert|) (646 . |convert|) (651 . |convert|)
-             (|Mapping| 191 9) (|Mapping| 191 7)
-             (|PolynomialCategoryLifting| 8 9 7 6 191) (656 . |map|)
-             (663 . |convert|) (|InputForm|) (668 . |convert|)
-             (673 . |convert|) (|Mapping| 210 9) (|Mapping| 210 7)
-             (|PolynomialCategoryLifting| 8 9 7 6 210) (678 . |map|)
-             (685 . |convert|)
-             (|Record| (|:| |mat| 219) (|:| |vec| (|Vector| 84)))
-             (|Matrix| 84) (|List| 7) (|Equation| $)
-             (|Union| 84 '"failed") (|Union| 224 '"failed")
-             (|Fraction| 84) (|Union| 7 '"failed"))
-          '#(|totalDegree| 690 |squareFreePart| 701 |squareFree| 706
-             |solveLinearPolynomialEquation| 711 |retractIfCan| 717
-             |retract| 722 |resultant| 727 |reducedSystem| 734
-             |primitivePart| 745 |primitiveMonomials| 756
-             |patternMatch| 761 |monomials| 775 |monomial| 780
-             |monicDivide| 787 |isTimes| 794 |isPlus| 799 |isExpt| 804
-             |gcdPolynomial| 809 |factorSquareFreePolynomial| 815
-             |factorPolynomial| 820 |factor| 825 |eval| 830
-             |discriminant| 836 |convert| 842 |content| 857
-             |conditionP| 863 |coefficient| 868 |charthRoot| 882 < 887)
+             (556 . |unitNormal|) (561 . |primitivePart|)
+             (566 . |content|) (572 . |exquo|) (578 . |primitivePart|)
+             (584 . <) (590 . <) (596 . <) (|PatternMatchResult| 85 6)
+             (|Pattern| 85)
+             (|PatternMatchPolynomialCategory| 85 8 9 7 6)
+             (602 . |patternMatch|) (|PatternMatchResult| 85 $)
+             (609 . |patternMatch|) (|Float|)
+             (|PatternMatchResult| 193 6) (|Pattern| 193)
+             (|PatternMatchPolynomialCategory| 193 8 9 7 6)
+             (616 . |patternMatch|) (|PatternMatchResult| 193 $)
+             (623 . |patternMatch|) (630 . |convert|) (635 . |convert|)
+             (|Mapping| 188 9) (|Mapping| 188 7)
+             (|PolynomialCategoryLifting| 8 9 7 6 188) (640 . |map|)
+             (647 . |convert|) (652 . |convert|) (657 . |convert|)
+             (|Mapping| 195 9) (|Mapping| 195 7)
+             (|PolynomialCategoryLifting| 8 9 7 6 195) (662 . |map|)
+             (669 . |convert|) (|InputForm|) (674 . |convert|)
+             (679 . |convert|) (|Mapping| 214 9) (|Mapping| 214 7)
+             (|PolynomialCategoryLifting| 8 9 7 6 214) (684 . |map|)
+             (691 . |convert|) (|Matrix| 85) (|Vector| 85)
+             (|Record| (|:| |mat| 222) (|:| |vec| 223))
+             (|Union| 85 '"failed") (|Fraction| 85)
+             (|Union| 226 '"failed") (|Union| 7 '"failed"))
+          '#(|totalDegree| 696 |squareFreePart| 707 |squareFree| 712
+             |solveLinearPolynomialEquation| 717 |retractIfCan| 723
+             |retract| 728 |resultant| 733 |reducedSystem| 740
+             |primitivePart| 751 |primitiveMonomials| 762
+             |patternMatch| 767 |monomials| 781 |monomial| 786
+             |monicDivide| 793 |isTimes| 800 |isPlus| 805 |isExpt| 810
+             |gcdPolynomial| 815 |factorSquareFreePolynomial| 821
+             |factorPolynomial| 826 |factor| 831 |eval| 836
+             |discriminant| 842 |convert| 848 |content| 863
+             |conditionP| 869 |coefficient| 874 |charthRoot| 888 < 893)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 217
+                            (|makeByteWordVec2| 221
                                 '(1 10 6 0 11 1 6 12 0 13 1 6 9 0 14 1
-                                  10 6 0 15 3 6 0 0 16 17 18 0 6 0 21 0
-                                  7 0 22 2 6 23 0 0 24 1 23 0 0 25 1 6
-                                  0 0 26 1 6 0 0 27 1 6 17 0 29 1 6 16
-                                  0 32 1 6 23 0 33 0 6 0 34 0 7 0 35 2
-                                  6 36 0 9 37 3 6 0 0 9 36 38 1 6 7 0
-                                  39 2 7 23 0 0 40 1 6 0 7 41 1 6 12 0
-                                  43 2 6 47 0 9 48 2 49 6 0 36 50 3 6 0
-                                  0 16 52 53 3 6 0 0 16 52 55 1 6 0 9
-                                  57 1 6 8 0 60 2 6 0 7 8 61 1 6 23 0
-                                  63 0 49 0 64 2 49 23 0 0 65 1 49 36 0
-                                  66 1 49 6 0 67 1 6 36 0 68 1 49 0 0
-                                  69 2 16 23 9 0 71 2 6 36 0 16 72 2 49
-                                  6 0 0 74 3 0 0 0 0 9 75 1 49 6 0 76 2
-                                  0 0 0 9 77 1 6 17 0 78 1 79 0 17 80 1
-                                  79 0 0 81 2 82 0 36 7 83 1 82 84 0 85
-                                  2 6 7 0 8 86 3 82 7 0 84 7 87 1 89 0
-                                  88 90 1 92 91 0 93 2 89 0 0 0 94 1 0
-                                  89 95 96 1 97 79 0 98 2 79 0 0 0 99 2
-                                  82 0 0 0 100 2 0 101 95 102 103 2 104
-                                  49 49 49 105 2 0 47 47 47 106 2 109
-                                  107 108 49 110 2 0 111 112 47 113 1
-                                  109 114 49 115 1 0 116 47 117 1 109
-                                  114 49 118 1 0 116 47 119 1 7 120 0
-                                  121 1 122 7 0 123 1 122 126 0 127 2
-                                  130 0 6 129 131 1 114 49 0 132 2 6 0
-                                  47 9 133 1 114 135 0 136 1 0 120 0
-                                  137 1 92 0 0 138 0 6 36 139 2 79 0 0
-                                  0 140 2 6 52 0 16 141 2 84 142 0 0
-                                  143 1 6 7 0 144 1 89 0 0 145 1 7 146
-                                  95 147 2 82 7 0 84 148 2 6 0 0 0 149
-                                  2 6 0 0 0 150 1 0 146 95 151 1 7 142
-                                  0 152 1 0 142 0 153 0 8 0 154 3 6 0 0
-                                  9 36 155 2 6 0 0 0 156 2 49 157 0 0
-                                  158 1 160 130 6 161 1 0 120 0 162 1
-                                  163 130 6 164 1 6 120 0 165 1 130 6 0
-                                  166 1 130 168 0 169 1 0 0 0 170 1 49
-                                  6 0 171 2 0 0 0 9 172 1 6 7 0 173 2 6
-                                  142 0 7 174 1 6 175 0 176 1 0 0 0 177
-                                  2 6 0 0 9 178 2 6 142 0 0 179 2 0 0 0
-                                  9 180 2 8 23 0 0 181 2 7 23 0 0 182 2
-                                  0 23 0 0 183 3 186 184 6 185 184 187
-                                  3 0 188 0 185 188 189 3 192 190 6 191
-                                  190 193 3 0 194 0 191 194 195 1 9 185
-                                  0 196 1 7 185 0 197 3 200 185 198 199
-                                  6 201 1 0 185 0 202 1 9 191 0 203 1 7
-                                  191 0 204 3 207 191 205 206 6 208 1 0
-                                  191 0 209 1 9 210 0 211 1 7 210 0 212
-                                  3 215 210 213 214 6 216 1 0 210 0 217
-                                  2 0 36 0 16 73 1 0 36 0 70 1 0 0 0
-                                  170 1 0 120 0 162 2 0 111 112 47 113
-                                  1 0 12 0 59 1 0 9 0 58 3 0 0 0 0 9 75
-                                  1 0 89 95 96 2 0 101 95 102 103 2 0 0
-                                  0 9 180 1 0 0 0 177 1 0 17 0 62 3 0
-                                  188 0 185 188 189 3 0 194 0 191 194
-                                  195 1 0 17 0 28 3 0 0 0 16 52 56 3 0
-                                  157 0 0 9 159 1 0 30 0 42 1 0 30 0 31
-                                  1 0 45 0 46 2 0 47 47 47 106 1 0 116
-                                  47 119 1 0 116 47 117 1 0 120 0 137 2
-                                  0 0 0 19 20 2 0 0 0 9 77 1 0 210 0
-                                  217 1 0 185 0 202 1 0 191 0 209 2 0 0
-                                  0 9 172 1 0 146 95 151 3 0 0 0 16 52
-                                  54 3 0 0 0 9 36 51 1 0 142 0 153 2 0
-                                  23 0 0 183)))))
+                                  10 6 0 15 3 6 0 0 16 17 18 0 6 0 22 0
+                                  7 0 23 2 6 24 0 0 25 1 6 0 0 26 1 6 0
+                                  0 27 1 6 17 0 29 1 6 16 0 32 1 6 24 0
+                                  33 0 6 0 34 0 7 0 35 2 6 36 0 9 37 3
+                                  6 0 0 9 36 38 1 6 7 0 39 2 7 24 0 0
+                                  40 1 6 0 7 41 1 6 12 0 43 2 6 24 0 0
+                                  44 2 6 48 0 9 49 2 50 6 0 36 51 3 6 0
+                                  0 16 53 54 3 6 0 0 16 53 56 1 6 0 9
+                                  58 1 6 8 0 61 2 6 0 7 8 62 1 6 24 0
+                                  64 0 50 0 65 2 50 24 0 0 66 1 50 36 0
+                                  67 1 50 6 0 68 1 6 36 0 69 1 50 0 0
+                                  70 2 16 24 9 0 72 2 6 36 0 16 73 2 50
+                                  6 0 0 75 3 0 0 0 0 9 76 1 50 6 0 77 2
+                                  0 0 0 9 78 1 6 17 0 79 1 80 0 17 81 1
+                                  80 0 0 82 2 83 0 36 7 84 1 83 85 0 86
+                                  2 6 7 0 8 87 3 83 7 0 85 7 88 1 91 0
+                                  90 92 1 94 93 0 95 1 24 0 0 96 2 91 0
+                                  0 0 97 1 0 91 98 99 1 100 80 0 101 2
+                                  80 0 0 0 102 2 83 0 0 0 103 2 0 104
+                                  98 105 106 2 107 50 50 50 108 2 0 48
+                                  48 48 109 2 112 111 110 50 113 2 0
+                                  115 114 48 116 1 112 117 50 118 1 0
+                                  119 48 120 1 112 117 50 121 1 0 119
+                                  48 122 1 7 123 0 124 1 125 7 0 126 1
+                                  125 129 0 130 2 133 0 6 132 134 1 117
+                                  50 0 135 2 6 0 48 9 136 1 117 138 0
+                                  139 1 0 123 0 140 1 94 0 0 141 0 6 36
+                                  142 2 80 0 0 0 143 2 6 53 0 16 144 2
+                                  85 145 0 0 146 1 6 7 0 147 1 91 0 0
+                                  148 1 7 149 98 150 2 83 7 0 85 151 2
+                                  6 0 0 0 152 2 6 0 0 0 153 1 0 149 98
+                                  154 1 7 145 0 155 1 0 145 0 156 0 8 0
+                                  157 3 6 0 0 9 36 158 2 6 0 0 0 159 2
+                                  50 160 0 0 161 1 163 133 6 164 1 0
+                                  123 0 165 1 166 133 6 167 1 6 123 0
+                                  168 1 133 6 0 169 1 133 171 0 172 1 0
+                                  0 0 173 1 50 6 0 174 2 0 0 0 9 175 1
+                                  6 7 0 176 2 6 145 0 7 177 1 6 178 0
+                                  179 1 0 0 0 180 2 6 0 0 9 181 2 6 145
+                                  0 0 182 2 0 0 0 9 183 2 8 24 0 0 184
+                                  2 7 24 0 0 185 2 0 24 0 0 186 3 189
+                                  187 6 188 187 190 3 0 191 0 188 191
+                                  192 3 196 194 6 195 194 197 3 0 198 0
+                                  195 198 199 1 9 188 0 200 1 7 188 0
+                                  201 3 204 188 202 203 6 205 1 0 188 0
+                                  206 1 9 195 0 207 1 7 195 0 208 3 211
+                                  195 209 210 6 212 1 0 195 0 213 1 9
+                                  214 0 215 1 7 214 0 216 3 219 214 217
+                                  218 6 220 1 0 214 0 221 2 0 36 0 16
+                                  74 1 0 36 0 71 1 0 0 0 173 1 0 123 0
+                                  165 2 0 115 114 48 116 1 0 12 0 60 1
+                                  0 9 0 59 3 0 0 0 0 9 76 1 0 91 98 99
+                                  2 0 104 98 105 106 2 0 0 0 9 183 1 0
+                                  0 0 180 1 0 17 0 63 3 0 191 0 188 191
+                                  192 3 0 198 0 195 198 199 1 0 17 0 28
+                                  3 0 0 0 16 53 57 3 0 160 0 0 9 162 1
+                                  0 30 0 42 1 0 30 0 31 1 0 46 0 47 2 0
+                                  48 48 48 109 1 0 119 48 122 1 0 119
+                                  48 120 1 0 123 0 140 2 0 0 0 20 21 2
+                                  0 0 0 9 78 1 0 214 0 221 1 0 188 0
+                                  206 1 0 195 0 213 2 0 0 0 9 175 1 0
+                                  149 98 154 3 0 0 0 16 53 55 3 0 0 0 9
+                                  36 52 1 0 145 0 156 2 0 24 0 0 186)))))
           '|lookupComplete|)) 
 @
+
 \section{package POLYLIFT PolynomialCategoryLifting}
+
 <<package POLYLIFT PolynomialCategoryLifting>>=
 )abbrev package POLYLIFT PolynomialCategoryLifting
 ++ Author: Manuel Bronstein
@@ -3152,19 +3207,21 @@ Note that this code is not included in the generated catdef.spad file.
 
 (DEFUN |UPOLYC-;variables;SL;1| (|p| $)
   (COND
-    ((OR (SPADCALL |p| (QREFELT $ 9))
-         (ZEROP (SPADCALL |p| (QREFELT $ 11))))
+    ((OR (SPADCALL |p| (|getShellEntry| $ 9))
+         (ZEROP (SPADCALL |p| (|getShellEntry| $ 11))))
      NIL)
-    ('T (LIST (SPADCALL (QREFELT $ 13)))))) 
+    ('T (LIST (SPADCALL (|getShellEntry| $ 13)))))) 
 
 (DEFUN |UPOLYC-;degree;SSaosNni;2| (|p| |v| $)
-  (SPADCALL |p| (QREFELT $ 11))) 
+  (SPADCALL |p| (|getShellEntry| $ 11))) 
 
 (DEFUN |UPOLYC-;totalDegree;SLNni;3| (|p| |lv| $)
-  (COND ((NULL |lv|) 0) ('T (SPADCALL |p| (QREFELT $ 17))))) 
+  (COND ((NULL |lv|) 0) ('T (SPADCALL |p| (|getShellEntry| $ 17))))) 
 
 (DEFUN |UPOLYC-;degree;SLL;4| (|p| |lv| $)
-  (COND ((NULL |lv|) NIL) ('T (LIST (SPADCALL |p| (QREFELT $ 11)))))) 
+  (COND
+    ((NULL |lv|) NIL)
+    ('T (LIST (SPADCALL |p| (|getShellEntry| $ 11)))))) 
 
 (DEFUN |UPOLYC-;eval;SLLS;5| (|p| |lv| |lq| $)
   (COND
@@ -3173,10 +3230,10 @@ Note that this code is not included in the generated catdef.spad file.
      (|error| "can only eval a univariate polynomial once"))
     ('T
      (SPADCALL |p| (|SPADfirst| |lv|) (|SPADfirst| |lq|)
-         (QREFELT $ 21))))) 
+         (|getShellEntry| $ 21))))) 
 
 (DEFUN |UPOLYC-;eval;SSaos2S;6| (|p| |v| |q| $)
-  (SPADCALL |p| |q| (QREFELT $ 24))) 
+  (SPADCALL |p| |q| (|getShellEntry| $ 24))) 
 
 (DEFUN |UPOLYC-;eval;SLLS;7| (|p| |lv| |lr| $)
   (COND
@@ -3185,10 +3242,11 @@ Note that this code is not included in the generated catdef.spad file.
      (|error| "can only eval a univariate polynomial once"))
     ('T
      (SPADCALL |p| (|SPADfirst| |lv|) (|SPADfirst| |lr|)
-         (QREFELT $ 26))))) 
+         (|getShellEntry| $ 26))))) 
 
 (DEFUN |UPOLYC-;eval;SSaosRS;8| (|p| |v| |r| $)
-  (SPADCALL (SPADCALL |p| |r| (QREFELT $ 29)) (QREFELT $ 30))) 
+  (SPADCALL (SPADCALL |p| |r| (|getShellEntry| $ 29))
+      (|getShellEntry| $ 30))) 
 
 (DEFUN |UPOLYC-;eval;SLS;9| (|p| |le| $)
   (COND
@@ -3197,95 +3255,111 @@ Note that this code is not included in the generated catdef.spad file.
      (|error| "can only eval a univariate polynomial once"))
     ('T
      (COND
-       ((QEQCAR (SPADCALL (SPADCALL (|SPADfirst| |le|) (QREFELT $ 33))
-                    (QREFELT $ 35))
+       ((QEQCAR (SPADCALL
+                    (SPADCALL (|SPADfirst| |le|)
+                        (|getShellEntry| $ 33))
+                    (|getShellEntry| $ 35))
                 1)
         |p|)
        ('T
-        (SPADCALL |p| (SPADCALL (|SPADfirst| |le|) (QREFELT $ 36))
-            (QREFELT $ 24))))))) 
+        (SPADCALL |p|
+            (SPADCALL (|SPADfirst| |le|) (|getShellEntry| $ 36))
+            (|getShellEntry| $ 24))))))) 
 
 (DEFUN |UPOLYC-;mainVariable;SU;10| (|p| $)
   (COND
-    ((ZEROP (SPADCALL |p| (QREFELT $ 11))) (CONS 1 "failed"))
-    ('T (CONS 0 (SPADCALL (QREFELT $ 13)))))) 
+    ((ZEROP (SPADCALL |p| (|getShellEntry| $ 11))) (CONS 1 "failed"))
+    ('T (CONS 0 (SPADCALL (|getShellEntry| $ 13)))))) 
 
 (DEFUN |UPOLYC-;minimumDegree;SSaosNni;11| (|p| |v| $)
-  (SPADCALL |p| (QREFELT $ 40))) 
+  (SPADCALL |p| (|getShellEntry| $ 41))) 
 
 (DEFUN |UPOLYC-;minimumDegree;SLL;12| (|p| |lv| $)
-  (COND ((NULL |lv|) NIL) ('T (LIST (SPADCALL |p| (QREFELT $ 40)))))) 
+  (COND
+    ((NULL |lv|) NIL)
+    ('T (LIST (SPADCALL |p| (|getShellEntry| $ 41)))))) 
 
 (DEFUN |UPOLYC-;monomial;SSaosNniS;13| (|p| |v| |n| $)
   (SPADCALL (CONS #'|UPOLYC-;monomial;SSaosNniS;13!0| (VECTOR $ |n|))
-      |p| (QREFELT $ 45))) 
+      |p| (|getShellEntry| $ 46))) 
 
 (DEFUN |UPOLYC-;monomial;SSaosNniS;13!0| (|#1| $$)
-  (SPADCALL |#1| (QREFELT $$ 1) (QREFELT (QREFELT $$ 0) 43))) 
+  (SPADCALL |#1| (|getShellEntry| $$ 1)
+      (|getShellEntry| (|getShellEntry| $$ 0) 44))) 
 
 (DEFUN |UPOLYC-;coerce;SaosS;14| (|v| $)
-  (SPADCALL (|spadConstant| $ 48) 1 (QREFELT $ 49))) 
+  (SPADCALL (|spadConstant| $ 49) 1 (|getShellEntry| $ 50))) 
 
 (DEFUN |UPOLYC-;makeSUP;SSup;15| (|p| $)
   (COND
-    ((SPADCALL |p| (QREFELT $ 9)) (|spadConstant| $ 52))
+    ((SPADCALL |p| (|getShellEntry| $ 9)) (|spadConstant| $ 53))
     ('T
      (SPADCALL
-         (SPADCALL (SPADCALL |p| (QREFELT $ 53))
-             (SPADCALL |p| (QREFELT $ 11)) (QREFELT $ 54))
-         (SPADCALL (SPADCALL |p| (QREFELT $ 55)) (QREFELT $ 56))
-         (QREFELT $ 57))))) 
+         (SPADCALL (SPADCALL |p| (|getShellEntry| $ 54))
+             (SPADCALL |p| (|getShellEntry| $ 11))
+             (|getShellEntry| $ 55))
+         (SPADCALL (SPADCALL |p| (|getShellEntry| $ 56))
+             (|getShellEntry| $ 57))
+         (|getShellEntry| $ 58))))) 
 
 (DEFUN |UPOLYC-;unmakeSUP;SupS;16| (|sp| $)
   (COND
-    ((SPADCALL |sp| (QREFELT $ 59)) (|spadConstant| $ 60))
+    ((SPADCALL |sp| (|getShellEntry| $ 60)) (|spadConstant| $ 61))
     ('T
      (SPADCALL
-         (SPADCALL (SPADCALL |sp| (QREFELT $ 61))
-             (SPADCALL |sp| (QREFELT $ 62)) (QREFELT $ 49))
-         (SPADCALL (SPADCALL |sp| (QREFELT $ 63)) (QREFELT $ 64))
-         (QREFELT $ 65))))) 
+         (SPADCALL (SPADCALL |sp| (|getShellEntry| $ 62))
+             (SPADCALL |sp| (|getShellEntry| $ 63))
+             (|getShellEntry| $ 50))
+         (SPADCALL (SPADCALL |sp| (|getShellEntry| $ 64))
+             (|getShellEntry| $ 65))
+         (|getShellEntry| $ 66))))) 
 
 (DEFUN |UPOLYC-;karatsubaDivide;SNniR;17| (|p| |n| $)
-  (SPADCALL |p| (SPADCALL (|spadConstant| $ 48) |n| (QREFELT $ 49))
-      (QREFELT $ 68))) 
+  (SPADCALL |p|
+      (SPADCALL (|spadConstant| $ 49) |n| (|getShellEntry| $ 50))
+      (|getShellEntry| $ 69))) 
 
 (DEFUN |UPOLYC-;shiftRight;SNniS;18| (|p| |n| $)
   (QCAR (SPADCALL |p|
-            (SPADCALL (|spadConstant| $ 48) |n| (QREFELT $ 49))
-            (QREFELT $ 68)))) 
+            (SPADCALL (|spadConstant| $ 49) |n| (|getShellEntry| $ 50))
+            (|getShellEntry| $ 69)))) 
 
 (DEFUN |UPOLYC-;shiftLeft;SNniS;19| (|p| |n| $)
-  (SPADCALL |p| (SPADCALL (|spadConstant| $ 48) |n| (QREFELT $ 49))
-      (QREFELT $ 71))) 
+  (SPADCALL |p|
+      (SPADCALL (|spadConstant| $ 49) |n| (|getShellEntry| $ 50))
+      (|getShellEntry| $ 72))) 
 
 (DEFUN |UPOLYC-;solveLinearPolynomialEquation;LSupU;20| (|lpp| |pp| $)
-  (SPADCALL |lpp| |pp| (QREFELT $ 77))) 
+  (SPADCALL |lpp| |pp| (|getShellEntry| $ 78))) 
 
 (DEFUN |UPOLYC-;factorPolynomial;SupF;21| (|pp| $)
-  (SPADCALL |pp| (QREFELT $ 83))) 
+  (SPADCALL |pp| (|getShellEntry| $ 84))) 
 
 (DEFUN |UPOLYC-;factorSquareFreePolynomial;SupF;22| (|pp| $)
-  (SPADCALL |pp| (QREFELT $ 86))) 
+  (SPADCALL |pp| (|getShellEntry| $ 87))) 
 
 (DEFUN |UPOLYC-;factor;SF;23| (|p| $)
-  (PROG (|ansR| #0=#:G1509 |w| #1=#:G1510)
+  (PROG (|ansR| #0=#:G1516 |w| #1=#:G1517)
     (RETURN
       (SEQ (COND
-             ((ZEROP (SPADCALL |p| (QREFELT $ 11)))
+             ((ZEROP (SPADCALL |p| (|getShellEntry| $ 11)))
               (SEQ (LETT |ansR|
-                         (SPADCALL (SPADCALL |p| (QREFELT $ 53))
-                             (QREFELT $ 89))
+                         (SPADCALL
+                             (SPADCALL |p| (|getShellEntry| $ 54))
+                             (|getShellEntry| $ 90))
                          |UPOLYC-;factor;SF;23|)
                    (EXIT (SPADCALL
-                             (SPADCALL (SPADCALL |ansR| (QREFELT $ 91))
-                                 (QREFELT $ 30))
+                             (SPADCALL
+                                 (SPADCALL |ansR|
+                                     (|getShellEntry| $ 92))
+                                 (|getShellEntry| $ 30))
                              (PROGN
                                (LETT #0# NIL |UPOLYC-;factor;SF;23|)
                                (SEQ (LETT |w| NIL
                                      |UPOLYC-;factor;SF;23|)
                                     (LETT #1#
-                                     (SPADCALL |ansR| (QREFELT $ 95))
+                                     (SPADCALL |ansR|
+                                      (|getShellEntry| $ 97))
                                      |UPOLYC-;factor;SF;23|)
                                     G190
                                     (COND
@@ -3301,7 +3375,7 @@ Note that this code is not included in the generated catdef.spad file.
                                        (CONS
                                         (VECTOR (QVELT |w| 0)
                                          (SPADCALL (QVELT |w| 1)
-                                          (QREFELT $ 30))
+                                          (|getShellEntry| $ 30))
                                          (QVELT |w| 2))
                                         #0#)
                                        |UPOLYC-;factor;SF;23|)))
@@ -3309,25 +3383,25 @@ Note that this code is not included in the generated catdef.spad file.
                                      |UPOLYC-;factor;SF;23|)
                                     (GO G190) G191
                                     (EXIT (NREVERSE0 #0#))))
-                             (QREFELT $ 99)))))
+                             (|getShellEntry| $ 101)))))
              ('T
-              (SPADCALL (ELT $ 64)
-                  (SPADCALL (SPADCALL |p| (QREFELT $ 56))
-                      (QREFELT $ 100))
-                  (QREFELT $ 104)))))))) 
+              (SPADCALL (ELT $ 65)
+                  (SPADCALL (SPADCALL |p| (|getShellEntry| $ 57))
+                      (|getShellEntry| $ 102))
+                  (|getShellEntry| $ 106)))))))) 
 
 (DEFUN |UPOLYC-;vectorise;SNniV;24| (|p| |n| $)
-  (PROG (|v| |m| |i| #0=#:G1515 #1=#:G1511)
+  (PROG (|v| |m| |i| #0=#:G1522 #1=#:G1518)
     (RETURN
       (SEQ (LETT |m|
                  (SPADCALL
                      (LETT |v|
-                           (SPADCALL |n| (|spadConstant| $ 106)
-                               (QREFELT $ 108))
+                           (SPADCALL |n| (|spadConstant| $ 108)
+                               (|getShellEntry| $ 110))
                            |UPOLYC-;vectorise;SNniV;24|)
-                     (QREFELT $ 110))
+                     (|getShellEntry| $ 111))
                  |UPOLYC-;vectorise;SNniV;24|)
-           (SEQ (LETT |i| (SPADCALL |v| (QREFELT $ 110))
+           (SEQ (LETT |i| (SPADCALL |v| (|getShellEntry| $ 111))
                       |UPOLYC-;vectorise;SNniV;24|)
                 (LETT #0# (QVSIZE |v|) |UPOLYC-;vectorise;SNniV;24|)
                 G190 (COND ((> |i| #0#) (GO G191)))
@@ -3339,56 +3413,59 @@ Note that this code is not included in the generated catdef.spad file.
                                            (|check-subtype| (>= #1# 0)
                                             '(|NonNegativeInteger|)
                                             #1#))
-                                         (QREFELT $ 111))
-                               (QREFELT $ 112))))
+                                         (|getShellEntry| $ 112))
+                               (|getShellEntry| $ 113))))
                 (LETT |i| (+ |i| 1) |UPOLYC-;vectorise;SNniV;24|)
                 (GO G190) G191 (EXIT NIL))
            (EXIT |v|))))) 
 
 (DEFUN |UPOLYC-;retract;SR;25| (|p| $)
   (COND
-    ((SPADCALL |p| (QREFELT $ 9)) (|spadConstant| $ 106))
-    ((ZEROP (SPADCALL |p| (QREFELT $ 11)))
-     (SPADCALL |p| (QREFELT $ 53)))
+    ((SPADCALL |p| (|getShellEntry| $ 9)) (|spadConstant| $ 108))
+    ((ZEROP (SPADCALL |p| (|getShellEntry| $ 11)))
+     (SPADCALL |p| (|getShellEntry| $ 54)))
     ('T (|error| "Polynomial is not of degree 0")))) 
 
 (DEFUN |UPOLYC-;retractIfCan;SU;26| (|p| $)
   (COND
-    ((SPADCALL |p| (QREFELT $ 9)) (CONS 0 (|spadConstant| $ 106)))
-    ((ZEROP (SPADCALL |p| (QREFELT $ 11)))
-     (CONS 0 (SPADCALL |p| (QREFELT $ 53))))
+    ((SPADCALL |p| (|getShellEntry| $ 9))
+     (CONS 0 (|spadConstant| $ 108)))
+    ((ZEROP (SPADCALL |p| (|getShellEntry| $ 11)))
+     (CONS 0 (SPADCALL |p| (|getShellEntry| $ 54))))
     ('T (CONS 1 "failed")))) 
 
 (DEFUN |UPOLYC-;init;S;27| ($)
-  (SPADCALL (|spadConstant| $ 117) (QREFELT $ 30))) 
+  (SPADCALL (|spadConstant| $ 118) (|getShellEntry| $ 30))) 
 
 (DEFUN |UPOLYC-;nextItemInner| (|n| $)
-  (PROG (|nn| |n1| |n2| #0=#:G1536 |n3|)
+  (PROG (|nn| |n1| |n2| #0=#:G1543 |n3|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |n| (QREFELT $ 9))
+             ((SPADCALL |n| (|getShellEntry| $ 9))
               (CONS 0
                     (SPADCALL
                         (PROG2 (LETT #0#
-                                     (SPADCALL (|spadConstant| $ 106)
-                                      (QREFELT $ 120))
+                                     (SPADCALL (|spadConstant| $ 108)
+                                      (|getShellEntry| $ 121))
                                      |UPOLYC-;nextItemInner|)
                                (QCDR #0#)
-                          (|check-union| (QEQCAR #0# 0) (QREFELT $ 7)
-                              #0#))
-                        (QREFELT $ 30))))
-             ((ZEROP (SPADCALL |n| (QREFELT $ 11)))
+                          (|check-union| (QEQCAR #0# 0)
+                              (|getShellEntry| $ 7) #0#))
+                        (|getShellEntry| $ 30))))
+             ((ZEROP (SPADCALL |n| (|getShellEntry| $ 11)))
               (SEQ (LETT |nn|
-                         (SPADCALL (SPADCALL |n| (QREFELT $ 53))
-                             (QREFELT $ 120))
+                         (SPADCALL
+                             (SPADCALL |n| (|getShellEntry| $ 54))
+                             (|getShellEntry| $ 121))
                          |UPOLYC-;nextItemInner|)
                    (EXIT (COND
                            ((QEQCAR |nn| 1) (CONS 1 "failed"))
                            ('T
                             (CONS 0
-                                  (SPADCALL (QCDR |nn|) (QREFELT $ 30))))))))
+                                  (SPADCALL (QCDR |nn|)
+                                      (|getShellEntry| $ 30))))))))
              ('T
-              (SEQ (LETT |n1| (SPADCALL |n| (QREFELT $ 55))
+              (SEQ (LETT |n1| (SPADCALL |n| (|getShellEntry| $ 56))
                          |UPOLYC-;nextItemInner|)
                    (LETT |n2| (|UPOLYC-;nextItemInner| |n1| $)
                          |UPOLYC-;nextItemInner|)
@@ -3397,37 +3474,46 @@ Note that this code is not included in the generated catdef.spad file.
                             (CONS 0
                                   (SPADCALL
                                       (SPADCALL
-                                       (SPADCALL |n| (QREFELT $ 53))
-                                       (SPADCALL |n| (QREFELT $ 11))
-                                       (QREFELT $ 49))
-                                      (QCDR |n2|) (QREFELT $ 65))))
-                           ((< (+ 1 (SPADCALL |n1| (QREFELT $ 11)))
-                               (SPADCALL |n| (QREFELT $ 11)))
+                                       (SPADCALL |n|
+                                        (|getShellEntry| $ 54))
+                                       (SPADCALL |n|
+                                        (|getShellEntry| $ 11))
+                                       (|getShellEntry| $ 50))
+                                      (QCDR |n2|)
+                                      (|getShellEntry| $ 66))))
+                           ((< (+ 1
+                                  (SPADCALL |n1|
+                                      (|getShellEntry| $ 11)))
+                               (SPADCALL |n| (|getShellEntry| $ 11)))
                             (CONS 0
                                   (SPADCALL
                                       (SPADCALL
-                                       (SPADCALL |n| (QREFELT $ 53))
-                                       (SPADCALL |n| (QREFELT $ 11))
-                                       (QREFELT $ 49))
+                                       (SPADCALL |n|
+                                        (|getShellEntry| $ 54))
+                                       (SPADCALL |n|
+                                        (|getShellEntry| $ 11))
+                                       (|getShellEntry| $ 50))
                                       (SPADCALL
                                        (PROG2
                                         (LETT #0#
                                          (SPADCALL
-                                          (|spadConstant| $ 117)
-                                          (QREFELT $ 120))
+                                          (|spadConstant| $ 118)
+                                          (|getShellEntry| $ 121))
                                          |UPOLYC-;nextItemInner|)
                                         (QCDR #0#)
                                          (|check-union| (QEQCAR #0# 0)
-                                          (QREFELT $ 7) #0#))
+                                          (|getShellEntry| $ 7) #0#))
                                        (+ 1
-                                        (SPADCALL |n1| (QREFELT $ 11)))
-                                       (QREFELT $ 49))
-                                      (QREFELT $ 65))))
+                                        (SPADCALL |n1|
+                                         (|getShellEntry| $ 11)))
+                                       (|getShellEntry| $ 50))
+                                      (|getShellEntry| $ 66))))
                            ('T
                             (SEQ (LETT |n3|
                                        (SPADCALL
-                                        (SPADCALL |n| (QREFELT $ 53))
-                                        (QREFELT $ 120))
+                                        (SPADCALL |n|
+                                         (|getShellEntry| $ 54))
+                                        (|getShellEntry| $ 121))
                                        |UPOLYC-;nextItemInner|)
                                  (EXIT (COND
                                          ((QEQCAR |n3| 1)
@@ -3436,11 +3522,11 @@ Note that this code is not included in the generated catdef.spad file.
                                           (CONS 0
                                            (SPADCALL (QCDR |n3|)
                                             (SPADCALL |n|
-                                             (QREFELT $ 11))
-                                            (QREFELT $ 49))))))))))))))))) 
+                                             (|getShellEntry| $ 11))
+                                            (|getShellEntry| $ 50))))))))))))))))) 
 
 (DEFUN |UPOLYC-;nextItem;SU;29| (|n| $)
-  (PROG (|n1| #0=#:G1549)
+  (PROG (|n1| #0=#:G1556)
     (RETURN
       (SEQ (LETT |n1| (|UPOLYC-;nextItemInner| |n| $)
                  |UPOLYC-;nextItem;SU;29|)
@@ -3449,61 +3535,66 @@ Note that this code is not included in the generated catdef.spad file.
                     (CONS 0
                           (SPADCALL
                               (PROG2 (LETT #0#
-                                      (SPADCALL (|spadConstant| $ 117)
-                                       (QREFELT $ 120))
+                                      (SPADCALL (|spadConstant| $ 118)
+                                       (|getShellEntry| $ 121))
                                       |UPOLYC-;nextItem;SU;29|)
                                      (QCDR #0#)
                                 (|check-union| (QEQCAR #0# 0)
-                                    (QREFELT $ 7) #0#))
-                              (+ 1 (SPADCALL |n| (QREFELT $ 11)))
-                              (QREFELT $ 49))))
+                                    (|getShellEntry| $ 7) #0#))
+                              (+ 1
+                                 (SPADCALL |n| (|getShellEntry| $ 11)))
+                              (|getShellEntry| $ 50))))
                    ('T |n1|))))))) 
 
 (DEFUN |UPOLYC-;content;SSaosS;30| (|p| |v| $)
-  (SPADCALL (SPADCALL |p| (QREFELT $ 123)) (QREFELT $ 30))) 
+  (SPADCALL (SPADCALL |p| (|getShellEntry| $ 124))
+      (|getShellEntry| $ 30))) 
 
 (DEFUN |UPOLYC-;primeFactor| (|p| |q| $)
-  (PROG (#0=#:G1555 |p1|)
+  (PROG (#0=#:G1562 |p1|)
     (RETURN
       (SEQ (LETT |p1|
                  (PROG2 (LETT #0#
                               (SPADCALL |p|
                                         (SPADCALL |p| |q|
-                                         (QREFELT $ 125))
-                                        (QREFELT $ 126))
+                                         (|getShellEntry| $ 126))
+                                        (|getShellEntry| $ 127))
                               |UPOLYC-;primeFactor|)
                         (QCDR #0#)
-                   (|check-union| (QEQCAR #0# 0) (QREFELT $ 6) #0#))
+                   (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 6)
+                       #0#))
                  |UPOLYC-;primeFactor|)
            (EXIT (COND
-                   ((SPADCALL |p1| |p| (QREFELT $ 127)) |p|)
+                   ((SPADCALL |p1| |p| (|getShellEntry| $ 128)) |p|)
                    ('T (|UPOLYC-;primeFactor| |p1| |q| $)))))))) 
 
 (DEFUN |UPOLYC-;separate;2SR;32| (|p| |q| $)
-  (PROG (|a| #0=#:G1561)
+  (PROG (|a| #0=#:G1568)
     (RETURN
       (SEQ (LETT |a| (|UPOLYC-;primeFactor| |p| |q| $)
                  |UPOLYC-;separate;2SR;32|)
            (EXIT (CONS |a|
                        (PROG2 (LETT #0#
-                                    (SPADCALL |p| |a| (QREFELT $ 126))
+                                    (SPADCALL |p| |a|
+                                     (|getShellEntry| $ 127))
                                     |UPOLYC-;separate;2SR;32|)
                               (QCDR #0#)
-                         (|check-union| (QEQCAR #0# 0) (QREFELT $ 6)
-                             #0#)))))))) 
+                         (|check-union| (QEQCAR #0# 0)
+                             (|getShellEntry| $ 6) #0#)))))))) 
 
 (DEFUN |UPOLYC-;differentiate;SM2S;33| (|x| |deriv| |x'| $)
-  (PROG (|dg| |lc| #0=#:G1566 |d|)
+  (PROG (|dg| |lc| #0=#:G1573 |d|)
     (RETURN
-      (SEQ (LETT |d| (|spadConstant| $ 60)
+      (SEQ (LETT |d| (|spadConstant| $ 61)
                  |UPOLYC-;differentiate;SM2S;33|)
            (SEQ G190
                 (COND
                   ((NULL (< 0
-                            (LETT |dg| (SPADCALL |x| (QREFELT $ 11))
+                            (LETT |dg|
+                                  (SPADCALL |x| (|getShellEntry| $ 11))
                                   |UPOLYC-;differentiate;SM2S;33|)))
                    (GO G191)))
-                (SEQ (LETT |lc| (SPADCALL |x| (QREFELT $ 53))
+                (SEQ (LETT |lc| (SPADCALL |x| (|getShellEntry| $ 54))
                            |UPOLYC-;differentiate;SM2S;33|)
                      (LETT |d|
                            (SPADCALL
@@ -3511,34 +3602,36 @@ Note that this code is not included in the generated catdef.spad file.
                                    (SPADCALL |x'|
                                     (SPADCALL
                                      (SPADCALL |dg| |lc|
-                                      (QREFELT $ 131))
+                                      (|getShellEntry| $ 132))
                                      (PROG1
                                       (LETT #0# (- |dg| 1)
                                        |UPOLYC-;differentiate;SM2S;33|)
                                        (|check-subtype| (>= #0# 0)
                                         '(|NonNegativeInteger|) #0#))
-                                     (QREFELT $ 49))
-                                    (QREFELT $ 71))
-                                   (QREFELT $ 65))
+                                     (|getShellEntry| $ 50))
+                                    (|getShellEntry| $ 72))
+                                   (|getShellEntry| $ 66))
                                (SPADCALL (SPADCALL |lc| |deriv|) |dg|
-                                   (QREFELT $ 49))
-                               (QREFELT $ 65))
+                                   (|getShellEntry| $ 50))
+                               (|getShellEntry| $ 66))
                            |UPOLYC-;differentiate;SM2S;33|)
-                     (EXIT (LETT |x| (SPADCALL |x| (QREFELT $ 55))
+                     (EXIT (LETT |x|
+                                 (SPADCALL |x| (|getShellEntry| $ 56))
                                  |UPOLYC-;differentiate;SM2S;33|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (SPADCALL |d|
                      (SPADCALL
-                         (SPADCALL (SPADCALL |x| (QREFELT $ 53))
+                         (SPADCALL
+                             (SPADCALL |x| (|getShellEntry| $ 54))
                              |deriv|)
-                         (QREFELT $ 30))
-                     (QREFELT $ 65))))))) 
+                         (|getShellEntry| $ 30))
+                     (|getShellEntry| $ 66))))))) 
 
 (DEFUN |UPOLYC-;ncdiff| (|n| |x'| $)
-  (PROG (#0=#:G1584 |n1|)
+  (PROG (#0=#:G1591 |n1|)
     (RETURN
       (COND
-        ((ZEROP |n|) (|spadConstant| $ 60))
+        ((ZEROP |n|) (|spadConstant| $ 61))
         ((ZEROP (LETT |n1|
                       (PROG1 (LETT #0# (- |n| 1) |UPOLYC-;ncdiff|)
                         (|check-subtype| (>= #0# 0)
@@ -3548,145 +3641,160 @@ Note that this code is not included in the generated catdef.spad file.
         ('T
          (SPADCALL
              (SPADCALL |x'|
-                 (SPADCALL (|spadConstant| $ 48) |n1| (QREFELT $ 49))
-                 (QREFELT $ 71))
+                 (SPADCALL (|spadConstant| $ 49) |n1|
+                     (|getShellEntry| $ 50))
+                 (|getShellEntry| $ 72))
              (SPADCALL
-                 (SPADCALL (|spadConstant| $ 48) 1 (QREFELT $ 49))
-                 (|UPOLYC-;ncdiff| |n1| |x'| $) (QREFELT $ 71))
-             (QREFELT $ 65))))))) 
+                 (SPADCALL (|spadConstant| $ 49) 1
+                     (|getShellEntry| $ 50))
+                 (|UPOLYC-;ncdiff| |n1| |x'| $) (|getShellEntry| $ 72))
+             (|getShellEntry| $ 66))))))) 
 
 (DEFUN |UPOLYC-;differentiate;SM2S;35| (|x| |deriv| |x'| $)
   (PROG (|dg| |lc| |d|)
     (RETURN
-      (SEQ (LETT |d| (|spadConstant| $ 60)
+      (SEQ (LETT |d| (|spadConstant| $ 61)
                  |UPOLYC-;differentiate;SM2S;35|)
            (SEQ G190
                 (COND
                   ((NULL (< 0
-                            (LETT |dg| (SPADCALL |x| (QREFELT $ 11))
+                            (LETT |dg|
+                                  (SPADCALL |x| (|getShellEntry| $ 11))
                                   |UPOLYC-;differentiate;SM2S;35|)))
                    (GO G191)))
-                (SEQ (LETT |lc| (SPADCALL |x| (QREFELT $ 53))
+                (SEQ (LETT |lc| (SPADCALL |x| (|getShellEntry| $ 54))
                            |UPOLYC-;differentiate;SM2S;35|)
                      (LETT |d|
                            (SPADCALL
                                (SPADCALL |d|
                                    (SPADCALL (SPADCALL |lc| |deriv|)
-                                    |dg| (QREFELT $ 49))
-                                   (QREFELT $ 65))
+                                    |dg| (|getShellEntry| $ 50))
+                                   (|getShellEntry| $ 66))
                                (SPADCALL |lc|
                                    (|UPOLYC-;ncdiff| |dg| |x'| $)
-                                   (QREFELT $ 134))
-                               (QREFELT $ 65))
+                                   (|getShellEntry| $ 135))
+                               (|getShellEntry| $ 66))
                            |UPOLYC-;differentiate;SM2S;35|)
-                     (EXIT (LETT |x| (SPADCALL |x| (QREFELT $ 55))
+                     (EXIT (LETT |x|
+                                 (SPADCALL |x| (|getShellEntry| $ 56))
                                  |UPOLYC-;differentiate;SM2S;35|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (SPADCALL |d|
                      (SPADCALL
-                         (SPADCALL (SPADCALL |x| (QREFELT $ 53))
+                         (SPADCALL
+                             (SPADCALL |x| (|getShellEntry| $ 54))
                              |deriv|)
-                         (QREFELT $ 30))
-                     (QREFELT $ 65))))))) 
+                         (|getShellEntry| $ 30))
+                     (|getShellEntry| $ 66))))))) 
 
 (DEFUN |UPOLYC-;differentiate;SMS;36| (|x| |deriv| $)
-  (SPADCALL |x| |deriv| (|spadConstant| $ 47) (QREFELT $ 135))) 
+  (SPADCALL |x| |deriv| (|spadConstant| $ 48) (|getShellEntry| $ 136))) 
 
 (DEFUN |UPOLYC-;differentiate;2S;37| (|x| $)
-  (PROG (|dg| #0=#:G1593 |d|)
+  (PROG (|dg| #0=#:G1600 |d|)
     (RETURN
-      (SEQ (LETT |d| (|spadConstant| $ 60)
+      (SEQ (LETT |d| (|spadConstant| $ 61)
                  |UPOLYC-;differentiate;2S;37|)
            (SEQ G190
                 (COND
                   ((NULL (< 0
-                            (LETT |dg| (SPADCALL |x| (QREFELT $ 11))
+                            (LETT |dg|
+                                  (SPADCALL |x| (|getShellEntry| $ 11))
                                   |UPOLYC-;differentiate;2S;37|)))
                    (GO G191)))
                 (SEQ (LETT |d|
                            (SPADCALL |d|
                                (SPADCALL
                                    (SPADCALL |dg|
-                                    (SPADCALL |x| (QREFELT $ 53))
-                                    (QREFELT $ 131))
+                                    (SPADCALL |x|
+                                     (|getShellEntry| $ 54))
+                                    (|getShellEntry| $ 132))
                                    (PROG1
                                     (LETT #0# (- |dg| 1)
                                      |UPOLYC-;differentiate;2S;37|)
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
-                                   (QREFELT $ 49))
-                               (QREFELT $ 65))
+                                   (|getShellEntry| $ 50))
+                               (|getShellEntry| $ 66))
                            |UPOLYC-;differentiate;2S;37|)
-                     (EXIT (LETT |x| (SPADCALL |x| (QREFELT $ 55))
+                     (EXIT (LETT |x|
+                                 (SPADCALL |x| (|getShellEntry| $ 56))
                                  |UPOLYC-;differentiate;2S;37|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT |d|))))) 
 
 (DEFUN |UPOLYC-;differentiate;SSaosS;38| (|x| |v| $)
-  (SPADCALL |x| (QREFELT $ 138))) 
+  (SPADCALL |x| (|getShellEntry| $ 139))) 
 
 (DEFUN |UPOLYC-;elt;3F;39| (|g| |f| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |g| (QREFELT $ 141)) |f| (QREFELT $ 143))
-      (SPADCALL (SPADCALL |g| (QREFELT $ 144)) |f| (QREFELT $ 143))
-      (QREFELT $ 145))) 
+      (SPADCALL (SPADCALL |g| (|getShellEntry| $ 142)) |f|
+          (|getShellEntry| $ 144))
+      (SPADCALL (SPADCALL |g| (|getShellEntry| $ 145)) |f|
+          (|getShellEntry| $ 144))
+      (|getShellEntry| $ 146))) 
 
 (DEFUN |UPOLYC-;pseudoQuotient;3S;40| (|p| |q| $)
-  (PROG (|n| #0=#:G1639 #1=#:G1641)
+  (PROG (|n| #0=#:G1646 #1=#:G1648)
     (RETURN
       (SEQ (LETT |n|
-                 (+ (- (SPADCALL |p| (QREFELT $ 11))
-                       (SPADCALL |q| (QREFELT $ 11)))
+                 (+ (- (SPADCALL |p| (|getShellEntry| $ 11))
+                       (SPADCALL |q| (|getShellEntry| $ 11)))
                     1)
                  |UPOLYC-;pseudoQuotient;3S;40|)
            (EXIT (COND
-                   ((< |n| 1) (|spadConstant| $ 60))
+                   ((< |n| 1) (|spadConstant| $ 61))
                    ('T
                     (PROG2 (LETT #1#
                                  (SPADCALL
                                      (SPADCALL
                                       (SPADCALL
                                        (SPADCALL
-                                        (SPADCALL |q| (QREFELT $ 53))
+                                        (SPADCALL |q|
+                                         (|getShellEntry| $ 54))
                                         (PROG1
                                          (LETT #0# |n|
                                           |UPOLYC-;pseudoQuotient;3S;40|)
                                           (|check-subtype| (>= #0# 0)
                                            '(|NonNegativeInteger|) #0#))
-                                        (QREFELT $ 147))
-                                       |p| (QREFELT $ 134))
+                                        (|getShellEntry| $ 148))
+                                       |p| (|getShellEntry| $ 135))
                                       (SPADCALL |p| |q|
-                                       (QREFELT $ 148))
-                                      (QREFELT $ 149))
-                                     |q| (QREFELT $ 126))
+                                       (|getShellEntry| $ 149))
+                                      (|getShellEntry| $ 150))
+                                     |q| (|getShellEntry| $ 127))
                                  |UPOLYC-;pseudoQuotient;3S;40|)
                            (QCDR #1#)
-                      (|check-union| (QEQCAR #1# 0) (QREFELT $ 6) #1#))))))))) 
+                      (|check-union| (QEQCAR #1# 0)
+                          (|getShellEntry| $ 6) #1#))))))))) 
 
 (DEFUN |UPOLYC-;pseudoDivide;2SR;41| (|p| |q| $)
-  (PROG (|n| |prem| #0=#:G1647 |lc| #1=#:G1649)
+  (PROG (|n| |prem| #0=#:G1654 |lc| #1=#:G1656)
     (RETURN
       (SEQ (LETT |n|
-                 (+ (- (SPADCALL |p| (QREFELT $ 11))
-                       (SPADCALL |q| (QREFELT $ 11)))
+                 (+ (- (SPADCALL |p| (|getShellEntry| $ 11))
+                       (SPADCALL |q| (|getShellEntry| $ 11)))
                     1)
                  |UPOLYC-;pseudoDivide;2SR;41|)
            (EXIT (COND
                    ((< |n| 1)
-                    (VECTOR (|spadConstant| $ 48) (|spadConstant| $ 60)
+                    (VECTOR (|spadConstant| $ 49) (|spadConstant| $ 61)
                             |p|))
                    ('T
                     (SEQ (LETT |prem|
-                               (SPADCALL |p| |q| (QREFELT $ 148))
+                               (SPADCALL |p| |q|
+                                   (|getShellEntry| $ 149))
                                |UPOLYC-;pseudoDivide;2SR;41|)
                          (LETT |lc|
-                               (SPADCALL (SPADCALL |q| (QREFELT $ 53))
+                               (SPADCALL
+                                   (SPADCALL |q|
+                                    (|getShellEntry| $ 54))
                                    (PROG1
                                     (LETT #0# |n|
                                      |UPOLYC-;pseudoDivide;2SR;41|)
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
-                                   (QREFELT $ 147))
+                                   (|getShellEntry| $ 148))
                                |UPOLYC-;pseudoDivide;2SR;41|)
                          (EXIT (VECTOR |lc|
                                        (PROG2
@@ -3694,52 +3802,56 @@ Note that this code is not included in the generated catdef.spad file.
                                          (SPADCALL
                                           (SPADCALL
                                            (SPADCALL |lc| |p|
-                                            (QREFELT $ 134))
-                                           |prem| (QREFELT $ 149))
-                                          |q| (QREFELT $ 126))
+                                            (|getShellEntry| $ 135))
+                                           |prem|
+                                           (|getShellEntry| $ 150))
+                                          |q| (|getShellEntry| $ 127))
                                          |UPOLYC-;pseudoDivide;2SR;41|)
                                         (QCDR #1#)
                                          (|check-union| (QEQCAR #1# 0)
-                                          (QREFELT $ 6) #1#))
+                                          (|getShellEntry| $ 6) #1#))
                                        |prem|)))))))))) 
 
 (DEFUN |UPOLYC-;composite;FSU;42| (|f| |q| $)
   (PROG (|n| |d|)
     (RETURN
       (SEQ (LETT |n|
-                 (SPADCALL (SPADCALL |f| (QREFELT $ 141)) |q|
-                     (QREFELT $ 153))
+                 (SPADCALL (SPADCALL |f| (|getShellEntry| $ 142)) |q|
+                     (|getShellEntry| $ 154))
                  |UPOLYC-;composite;FSU;42|)
            (EXIT (COND
                    ((QEQCAR |n| 1) (CONS 1 "failed"))
                    ('T
                     (SEQ (LETT |d|
-                               (SPADCALL (SPADCALL |f| (QREFELT $ 144))
-                                   |q| (QREFELT $ 153))
+                               (SPADCALL
+                                   (SPADCALL |f|
+                                    (|getShellEntry| $ 145))
+                                   |q| (|getShellEntry| $ 154))
                                |UPOLYC-;composite;FSU;42|)
                          (EXIT (COND
                                  ((QEQCAR |d| 1) (CONS 1 "failed"))
                                  ('T
                                   (CONS 0
                                         (SPADCALL (QCDR |n|) (QCDR |d|)
-                                         (QREFELT $ 154)))))))))))))) 
+                                         (|getShellEntry| $ 155)))))))))))))) 
 
 (DEFUN |UPOLYC-;composite;2SU;43| (|p| |q| $)
-  (PROG (|cqr| |v| |u| |w| #0=#:G1675)
+  (PROG (|cqr| |v| |u| |w| #0=#:G1682)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |p| (QREFELT $ 157)) (CONS 0 |p|))
+             ((SPADCALL |p| (|getShellEntry| $ 158)) (CONS 0 |p|))
              ('T
               (SEQ (EXIT (SEQ (LETT |cqr|
-                                    (SPADCALL |p| |q| (QREFELT $ 158))
+                                    (SPADCALL |p| |q|
+                                     (|getShellEntry| $ 159))
                                     |UPOLYC-;composite;2SU;43|)
                               (COND
                                 ((SPADCALL (QVELT |cqr| 2)
-                                     (QREFELT $ 157))
+                                     (|getShellEntry| $ 158))
                                  (SEQ (LETT |v|
                                        (SPADCALL (QVELT |cqr| 2)
                                         (QVELT |cqr| 0)
-                                        (QREFELT $ 159))
+                                        (|getShellEntry| $ 160))
                                        |UPOLYC-;composite;2SU;43|)
                                       (EXIT
                                        (COND
@@ -3747,7 +3859,8 @@ Note that this code is not included in the generated catdef.spad file.
                                           (SEQ
                                            (LETT |u|
                                             (SPADCALL (QVELT |cqr| 1)
-                                             |q| (QREFELT $ 153))
+                                             |q|
+                                             (|getShellEntry| $ 154))
                                             |UPOLYC-;composite;2SU;43|)
                                            (EXIT
                                             (COND
@@ -3756,7 +3869,8 @@ Note that this code is not included in the generated catdef.spad file.
                                                 (LETT |w|
                                                  (SPADCALL (QCDR |u|)
                                                   (QVELT |cqr| 0)
-                                                  (QREFELT $ 159))
+                                                  (|getShellEntry| $
+                                                   160))
                                                  |UPOLYC-;composite;2SU;43|)
                                                 (EXIT
                                                  (COND
@@ -3769,42 +3883,46 @@ Note that this code is not included in the generated catdef.spad file.
                                                          (SPADCALL
                                                           (SPADCALL
                                                            (|spadConstant|
-                                                            $ 48)
+                                                            $ 49)
                                                            1
-                                                           (QREFELT $
-                                                            49))
+                                                           (|getShellEntry|
+                                                            $ 50))
                                                           (QCDR |w|)
-                                                          (QREFELT $
-                                                           71))
-                                                         (QREFELT $ 65)))
+                                                          (|getShellEntry|
+                                                           $ 72))
+                                                         (|getShellEntry|
+                                                          $ 66)))
                                                        |UPOLYC-;composite;2SU;43|)
                                                       (GO #0#))))))))))))))))
                               (EXIT (CONS 1 "failed"))))
                    #0# (EXIT #0#)))))))) 
 
 (DEFUN |UPOLYC-;elt;S2F;44| (|p| |f| $)
-  (PROG (|n| #0=#:G1681 |ans|)
+  (PROG (|n| #0=#:G1688 |ans|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |p| (QREFELT $ 9)) (|spadConstant| $ 161))
+             ((SPADCALL |p| (|getShellEntry| $ 9))
+              (|spadConstant| $ 162))
              ('T
               (SEQ (LETT |ans|
                          (SPADCALL
-                             (SPADCALL (SPADCALL |p| (QREFELT $ 53))
-                                 (QREFELT $ 30))
-                             (QREFELT $ 162))
+                             (SPADCALL
+                                 (SPADCALL |p| (|getShellEntry| $ 54))
+                                 (|getShellEntry| $ 30))
+                             (|getShellEntry| $ 163))
                          |UPOLYC-;elt;S2F;44|)
-                   (LETT |n| (SPADCALL |p| (QREFELT $ 11))
+                   (LETT |n| (SPADCALL |p| (|getShellEntry| $ 11))
                          |UPOLYC-;elt;S2F;44|)
                    (SEQ G190
                         (COND
                           ((NULL (SPADCALL
                                      (SPADCALL
                                       (LETT |p|
-                                       (SPADCALL |p| (QREFELT $ 55))
+                                       (SPADCALL |p|
+                                        (|getShellEntry| $ 56))
                                        |UPOLYC-;elt;S2F;44|)
-                                      (QREFELT $ 9))
-                                     (QREFELT $ 163)))
+                                      (|getShellEntry| $ 9))
+                                     (|getShellEntry| $ 164)))
                            (GO G191)))
                         (SEQ (EXIT (LETT |ans|
                                     (SPADCALL
@@ -3815,35 +3933,37 @@ Note that this code is not included in the generated catdef.spad file.
                                          (- |n|
                                           (LETT |n|
                                            (SPADCALL |p|
-                                            (QREFELT $ 11))
+                                            (|getShellEntry| $ 11))
                                            |UPOLYC-;elt;S2F;44|))
                                          |UPOLYC-;elt;S2F;44|)
                                          (|check-subtype| (>= #0# 0)
                                           '(|NonNegativeInteger|) #0#))
-                                       (QREFELT $ 164))
-                                      (QREFELT $ 165))
+                                       (|getShellEntry| $ 165))
+                                      (|getShellEntry| $ 166))
                                      (SPADCALL
                                       (SPADCALL
-                                       (SPADCALL |p| (QREFELT $ 53))
-                                       (QREFELT $ 30))
-                                      (QREFELT $ 162))
-                                     (QREFELT $ 166))
+                                       (SPADCALL |p|
+                                        (|getShellEntry| $ 54))
+                                       (|getShellEntry| $ 30))
+                                      (|getShellEntry| $ 163))
+                                     (|getShellEntry| $ 167))
                                     |UPOLYC-;elt;S2F;44|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT (COND
                            ((ZEROP |n|) |ans|)
                            ('T
                             (SPADCALL |ans|
-                                (SPADCALL |f| |n| (QREFELT $ 167))
-                                (QREFELT $ 165)))))))))))) 
+                                (SPADCALL |f| |n|
+                                    (|getShellEntry| $ 168))
+                                (|getShellEntry| $ 166)))))))))))) 
 
 (DEFUN |UPOLYC-;order;2SNni;45| (|p| |q| $)
-  (PROG (|u| #0=#:G1695 |ans|)
+  (PROG (|u| #0=#:G1702 |ans|)
     (RETURN
       (SEQ (EXIT (COND
-                   ((SPADCALL |p| (QREFELT $ 9))
+                   ((SPADCALL |p| (|getShellEntry| $ 9))
                     (|error| "order: arguments must be nonzero"))
-                   ((< (SPADCALL |q| (QREFELT $ 11)) 1)
+                   ((< (SPADCALL |q| (|getShellEntry| $ 11)) 1)
                     (|error| "order: place must be non-trivial"))
                    ('T
                     (SEQ (LETT |ans| 0 |UPOLYC-;order;2SNni;45|)
@@ -3851,7 +3971,7 @@ Note that this code is not included in the generated catdef.spad file.
                                     (SEQ
                                      (LETT |u|
                                       (SPADCALL |p| |q|
-                                       (QREFELT $ 126))
+                                       (|getShellEntry| $ 127))
                                       |UPOLYC-;order;2SNni;45|)
                                      (EXIT
                                       (COND
@@ -3871,91 +3991,108 @@ Note that this code is not included in the generated catdef.spad file.
            #0# (EXIT #0#))))) 
 
 (DEFUN |UPOLYC-;squareFree;SF;46| (|p| $)
-  (SPADCALL |p| (QREFELT $ 171))) 
+  (SPADCALL |p| (|getShellEntry| $ 172))) 
 
 (DEFUN |UPOLYC-;squareFreePart;2S;47| (|p| $)
-  (SPADCALL |p| (QREFELT $ 173))) 
+  (SPADCALL |p| (|getShellEntry| $ 174))) 
 
 (DEFUN |UPOLYC-;gcdPolynomial;3Sup;48| (|pp| |qq| $)
   (COND
-    ((SPADCALL |pp| (QREFELT $ 175)) (SPADCALL |qq| (QREFELT $ 176)))
-    ((SPADCALL |qq| (QREFELT $ 175)) (SPADCALL |pp| (QREFELT $ 176)))
+    ((SPADCALL |pp| (|getShellEntry| $ 176))
+     (SPADCALL |qq| (|getShellEntry| $ 177)))
+    ((SPADCALL |qq| (|getShellEntry| $ 176))
+     (SPADCALL |pp| (|getShellEntry| $ 177)))
     ('T
      (SPADCALL
          (SPADCALL
-             (SPADCALL (SPADCALL |pp| (QREFELT $ 177))
-                 (SPADCALL |qq| (QREFELT $ 177)) (QREFELT $ 125))
+             (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 178))
+                 (SPADCALL |qq| (|getShellEntry| $ 178))
+                 (|getShellEntry| $ 126))
              (SPADCALL
-                 (SPADCALL (SPADCALL |pp| (QREFELT $ 178))
-                     (SPADCALL |qq| (QREFELT $ 178)) (QREFELT $ 179))
-                 (QREFELT $ 178))
-             (QREFELT $ 180))
-         (QREFELT $ 176))))) 
+                 (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 179))
+                     (SPADCALL |qq| (|getShellEntry| $ 179))
+                     (|getShellEntry| $ 180))
+                 (|getShellEntry| $ 179))
+             (|getShellEntry| $ 181))
+         (|getShellEntry| $ 177))))) 
 
 (DEFUN |UPOLYC-;squareFreePolynomial;SupF;49| (|pp| $)
-  (SPADCALL |pp| (QREFELT $ 183))) 
+  (SPADCALL |pp| (|getShellEntry| $ 184))) 
 
 (DEFUN |UPOLYC-;elt;F2R;50| (|f| |r| $)
-  (SPADCALL (SPADCALL (SPADCALL |f| (QREFELT $ 141)) |r|
-                (QREFELT $ 29))
-            (SPADCALL (SPADCALL |f| (QREFELT $ 144)) |r|
-                (QREFELT $ 29))
-            (QREFELT $ 185))) 
+  (SPADCALL
+      (SPADCALL (SPADCALL |f| (|getShellEntry| $ 142)) |r|
+          (|getShellEntry| $ 29))
+      (SPADCALL (SPADCALL |f| (|getShellEntry| $ 145)) |r|
+          (|getShellEntry| $ 29))
+      (|getShellEntry| $ 186))) 
 
 (DEFUN |UPOLYC-;euclideanSize;SNni;51| (|x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 9))
+    ((SPADCALL |x| (|getShellEntry| $ 9))
      (|error| "euclideanSize called on 0 in Univariate Polynomial"))
-    ('T (SPADCALL |x| (QREFELT $ 11))))) 
+    ('T (SPADCALL |x| (|getShellEntry| $ 11))))) 
 
 (DEFUN |UPOLYC-;divide;2SR;52| (|x| |y| $)
-  (PROG (|lc| |f| #0=#:G1707 |n| |quot|)
+  (PROG (|lc| |f| #0=#:G1714 |n| |quot|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |y| (QREFELT $ 9))
+             ((SPADCALL |y| (|getShellEntry| $ 9))
               (|error| "division by 0 in Univariate Polynomials"))
              ('T
-              (SEQ (LETT |quot| (|spadConstant| $ 60)
+              (SEQ (LETT |quot| (|spadConstant| $ 61)
                          |UPOLYC-;divide;2SR;52|)
                    (LETT |lc|
-                         (SPADCALL (SPADCALL |y| (QREFELT $ 53))
-                             (QREFELT $ 188))
+                         (SPADCALL
+                             (SPADCALL |y| (|getShellEntry| $ 54))
+                             (|getShellEntry| $ 189))
                          |UPOLYC-;divide;2SR;52|)
                    (SEQ G190
                         (COND
                           ((NULL (COND
-                                   ((SPADCALL |x| (QREFELT $ 9)) 'NIL)
+                                   ((SPADCALL |x|
+                                     (|getShellEntry| $ 9))
+                                    'NIL)
                                    ('T
                                     (SPADCALL
-                                     (< (SPADCALL |x| (QREFELT $ 11))
-                                      (SPADCALL |y| (QREFELT $ 11)))
-                                     (QREFELT $ 163)))))
+                                     (<
+                                      (SPADCALL |x|
+                                       (|getShellEntry| $ 11))
+                                      (SPADCALL |y|
+                                       (|getShellEntry| $ 11)))
+                                     (|getShellEntry| $ 164)))))
                            (GO G191)))
                         (SEQ (LETT |f|
                                    (SPADCALL |lc|
-                                    (SPADCALL |x| (QREFELT $ 53))
-                                    (QREFELT $ 189))
+                                    (SPADCALL |x|
+                                     (|getShellEntry| $ 54))
+                                    (|getShellEntry| $ 190))
                                    |UPOLYC-;divide;2SR;52|)
                              (LETT |n|
                                    (PROG1
                                     (LETT #0#
-                                     (- (SPADCALL |x| (QREFELT $ 11))
-                                      (SPADCALL |y| (QREFELT $ 11)))
+                                     (-
+                                      (SPADCALL |x|
+                                       (|getShellEntry| $ 11))
+                                      (SPADCALL |y|
+                                       (|getShellEntry| $ 11)))
                                      |UPOLYC-;divide;2SR;52|)
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    |UPOLYC-;divide;2SR;52|)
                              (LETT |quot|
                                    (SPADCALL |quot|
-                                    (SPADCALL |f| |n| (QREFELT $ 49))
-                                    (QREFELT $ 65))
+                                    (SPADCALL |f| |n|
+                                     (|getShellEntry| $ 50))
+                                    (|getShellEntry| $ 66))
                                    |UPOLYC-;divide;2SR;52|)
                              (EXIT (LETT |x|
                                     (SPADCALL |x|
                                      (SPADCALL
-                                      (SPADCALL |f| |n| (QREFELT $ 49))
-                                      |y| (QREFELT $ 71))
-                                     (QREFELT $ 149))
+                                      (SPADCALL |f| |n|
+                                       (|getShellEntry| $ 50))
+                                      |y| (|getShellEntry| $ 72))
+                                     (|getShellEntry| $ 150))
                                     |UPOLYC-;divide;2SR;52|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT (CONS |quot| |x|))))))))) 
@@ -3963,29 +4100,31 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |UPOLYC-;integrate;2S;53| (|p| $)
   (PROG (|l| |d| |ans|)
     (RETURN
-      (SEQ (LETT |ans| (|spadConstant| $ 60) |UPOLYC-;integrate;2S;53|)
+      (SEQ (LETT |ans| (|spadConstant| $ 61) |UPOLYC-;integrate;2S;53|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL
-                             (SPADCALL |p| (|spadConstant| $ 60)
-                                 (QREFELT $ 127))
-                             (QREFELT $ 163)))
+                  ((NULL (SPADCALL |p| (|spadConstant| $ 61)
+                             (|getShellEntry| $ 192)))
                    (GO G191)))
-                (SEQ (LETT |l| (SPADCALL |p| (QREFELT $ 53))
+                (SEQ (LETT |l| (SPADCALL |p| (|getShellEntry| $ 54))
                            |UPOLYC-;integrate;2S;53|)
-                     (LETT |d| (+ 1 (SPADCALL |p| (QREFELT $ 11)))
+                     (LETT |d|
+                           (+ 1 (SPADCALL |p| (|getShellEntry| $ 11)))
                            |UPOLYC-;integrate;2S;53|)
                      (LETT |ans|
                            (SPADCALL |ans|
                                (SPADCALL
                                    (SPADCALL
-                                    (SPADCALL |d| (QREFELT $ 192))
-                                    (QREFELT $ 193))
-                                   (SPADCALL |l| |d| (QREFELT $ 49))
-                                   (QREFELT $ 194))
-                               (QREFELT $ 65))
+                                    (SPADCALL |d|
+                                     (|getShellEntry| $ 194))
+                                    (|getShellEntry| $ 195))
+                                   (SPADCALL |l| |d|
+                                    (|getShellEntry| $ 50))
+                                   (|getShellEntry| $ 196))
+                               (|getShellEntry| $ 66))
                            |UPOLYC-;integrate;2S;53|)
-                     (EXIT (LETT |p| (SPADCALL |p| (QREFELT $ 55))
+                     (EXIT (LETT |p|
+                                 (SPADCALL |p| (|getShellEntry| $ 56))
                                  |UPOLYC-;integrate;2S;53|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT |ans|))))) 
@@ -3999,9 +4138,9 @@ Note that this code is not included in the generated catdef.spad file.
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$|
               (LIST '|UnivariatePolynomialCategory&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (GETREFV 202) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3
+        (LETT $ (|newShell| 203) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
             (LETT |pv$|
                   (|buildPredVector| 0 0
                       (LIST (|HasCategory| |#2|
@@ -4012,113 +4151,113 @@ Note that this code is not included in the generated catdef.spad file.
                             (|HasCategory| |#2| '(|CommutativeRing|))
                             (|HasCategory| |#2| '(|StepThrough|)))) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
-        (QSETREFV $ 7 |#2|)
+        (|setShellEntry| $ 6 |#1|)
+        (|setShellEntry| $ 7 |#2|)
         (COND
           ((|HasCategory| |#2| '(|PolynomialFactorizationExplicit|))
            (PROGN
-             (QSETREFV $ 81
+             (|setShellEntry| $ 82
                  (CONS (|dispatchFunction|
                            |UPOLYC-;solveLinearPolynomialEquation;LSupU;20|)
                        $))
-             (QSETREFV $ 85
+             (|setShellEntry| $ 86
                  (CONS (|dispatchFunction|
                            |UPOLYC-;factorPolynomial;SupF;21|)
                        $))
-             (QSETREFV $ 87
+             (|setShellEntry| $ 88
                  (CONS (|dispatchFunction|
                            |UPOLYC-;factorSquareFreePolynomial;SupF;22|)
                        $))
-             (QSETREFV $ 105
+             (|setShellEntry| $ 107
                  (CONS (|dispatchFunction| |UPOLYC-;factor;SF;23|) $)))))
         (COND
           ((|testBitVector| |pv$| 6)
            (PROGN
-             (QSETREFV $ 118
+             (|setShellEntry| $ 119
                  (CONS (|dispatchFunction| |UPOLYC-;init;S;27|) $))
              NIL
-             (QSETREFV $ 122
+             (|setShellEntry| $ 123
                  (CONS (|dispatchFunction| |UPOLYC-;nextItem;SU;29|) $)))))
         (COND
           ((|testBitVector| |pv$| 3)
            (PROGN
-             (QSETREFV $ 124
+             (|setShellEntry| $ 125
                  (CONS (|dispatchFunction| |UPOLYC-;content;SSaosS;30|)
                        $))
              NIL
-             (QSETREFV $ 129
+             (|setShellEntry| $ 130
                  (CONS (|dispatchFunction| |UPOLYC-;separate;2SR;32|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 5)
-           (QSETREFV $ 133
+           (|setShellEntry| $ 134
                (CONS (|dispatchFunction|
                          |UPOLYC-;differentiate;SM2S;33|)
                      $)))
           ('T
            (PROGN
-             (QSETREFV $ 133
+             (|setShellEntry| $ 134
                  (CONS (|dispatchFunction|
                            |UPOLYC-;differentiate;SM2S;35|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 4)
            (PROGN
-             (QSETREFV $ 146
+             (|setShellEntry| $ 147
                  (CONS (|dispatchFunction| |UPOLYC-;elt;3F;39|) $))
-             (QSETREFV $ 150
+             (|setShellEntry| $ 151
                  (CONS (|dispatchFunction|
                            |UPOLYC-;pseudoQuotient;3S;40|)
                        $))
-             (QSETREFV $ 152
+             (|setShellEntry| $ 153
                  (CONS (|dispatchFunction|
                            |UPOLYC-;pseudoDivide;2SR;41|)
                        $))
-             (QSETREFV $ 156
+             (|setShellEntry| $ 157
                  (CONS (|dispatchFunction| |UPOLYC-;composite;FSU;42|)
                        $))
-             (QSETREFV $ 160
+             (|setShellEntry| $ 161
                  (CONS (|dispatchFunction| |UPOLYC-;composite;2SU;43|)
                        $))
-             (QSETREFV $ 168
+             (|setShellEntry| $ 169
                  (CONS (|dispatchFunction| |UPOLYC-;elt;S2F;44|) $))
-             (QSETREFV $ 169
+             (|setShellEntry| $ 170
                  (CONS (|dispatchFunction| |UPOLYC-;order;2SNni;45|) $)))))
         (COND
           ((|testBitVector| |pv$| 3)
            (PROGN
-             (QSETREFV $ 172
+             (|setShellEntry| $ 173
                  (CONS (|dispatchFunction| |UPOLYC-;squareFree;SF;46|)
                        $))
-             (QSETREFV $ 174
+             (|setShellEntry| $ 175
                  (CONS (|dispatchFunction|
                            |UPOLYC-;squareFreePart;2S;47|)
                        $)))))
         (COND
           ((|HasCategory| |#2| '(|PolynomialFactorizationExplicit|))
            (PROGN
-             (QSETREFV $ 181
+             (|setShellEntry| $ 182
                  (CONS (|dispatchFunction|
                            |UPOLYC-;gcdPolynomial;3Sup;48|)
                        $))
-             (QSETREFV $ 184
+             (|setShellEntry| $ 185
                  (CONS (|dispatchFunction|
                            |UPOLYC-;squareFreePolynomial;SupF;49|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 2)
            (PROGN
-             (QSETREFV $ 186
+             (|setShellEntry| $ 187
                  (CONS (|dispatchFunction| |UPOLYC-;elt;F2R;50|) $))
-             (QSETREFV $ 187
+             (|setShellEntry| $ 188
                  (CONS (|dispatchFunction|
                            |UPOLYC-;euclideanSize;SNni;51|)
                        $))
-             (QSETREFV $ 190
+             (|setShellEntry| $ 191
                  (CONS (|dispatchFunction| |UPOLYC-;divide;2SR;52|) $)))))
         (COND
           ((|testBitVector| |pv$| 1)
-           (QSETREFV $ 195
+           (|setShellEntry| $ 197
                (CONS (|dispatchFunction| |UPOLYC-;integrate;2S;53|) $))))
         $)))) 
 
@@ -4135,7 +4274,7 @@ Note that this code is not included in the generated catdef.spad file.
              |UPOLYC-;eval;SLLS;7| (39 . |elt|) (45 . |coerce|)
              |UPOLYC-;eval;SSaosRS;8| (|Equation| 6) (50 . |lhs|)
              (|Union| 12 '"failed") (55 . |mainVariable|) (60 . |rhs|)
-             (|List| 198) |UPOLYC-;eval;SLS;9|
+             (|Equation| $) (|List| 37) |UPOLYC-;eval;SLS;9|
              |UPOLYC-;mainVariable;SU;10| (65 . |minimumDegree|)
              |UPOLYC-;minimumDegree;SSaosNni;11|
              |UPOLYC-;minimumDegree;SLL;12| (70 . +) (|Mapping| 10 10)
@@ -4151,27 +4290,28 @@ Note that this code is not included in the generated catdef.spad file.
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
              (162 . |monicDivide|) |UPOLYC-;karatsubaDivide;SNniR;17|
              |UPOLYC-;shiftRight;SNniS;18| (168 . *)
-             |UPOLYC-;shiftLeft;SNniS;19| (|Union| 74 '"failed")
-             (|List| 75) (|SparseUnivariatePolynomial| 6)
+             |UPOLYC-;shiftLeft;SNniS;19|
+             (|SparseUnivariatePolynomial| 6) (|List| 74)
+             (|Union| 75 '"failed")
              (|PolynomialFactorizationByRecursionUnivariate| 7 6)
              (174 . |solveLinearPolynomialEquationByRecursion|)
-             (|Union| 79 '"failed") (|List| 80)
-             (|SparseUnivariatePolynomial| $)
-             (180 . |solveLinearPolynomialEquation|) (|Factored| 75)
-             (186 . |factorByRecursion|) (|Factored| 80)
+             (|SparseUnivariatePolynomial| $) (|List| 79)
+             (|Union| 80 '"failed")
+             (180 . |solveLinearPolynomialEquation|) (|Factored| 74)
+             (186 . |factorByRecursion|) (|Factored| 79)
              (191 . |factorPolynomial|)
              (196 . |factorSquareFreeByRecursion|)
              (201 . |factorSquareFreePolynomial|) (|Factored| $)
              (206 . |factor|) (|Factored| 7) (211 . |unit|)
-             (|Union| '"nil" '"sqfr" '"irred" '"prime")
-             (|Record| (|:| |flg| 92) (|:| |fctr| 7) (|:| |xpnt| 109))
-             (|List| 93) (216 . |factorList|)
-             (|Record| (|:| |flg| 92) (|:| |fctr| 6) (|:| |xpnt| 109))
-             (|List| 96) (|Factored| 6) (221 . |makeFR|)
-             (227 . |factorPolynomial|) (|Mapping| 6 51)
-             (|Factored| 51) (|FactoredFunctions2| 51 6) (232 . |map|)
+             (|Union| '"nil" '"sqfr" '"irred" '"prime") (|Integer|)
+             (|Record| (|:| |flg| 93) (|:| |fctr| 7) (|:| |xpnt| 94))
+             (|List| 95) (216 . |factorList|)
+             (|Record| (|:| |flg| 93) (|:| |fctr| 6) (|:| |xpnt| 94))
+             (|List| 98) (|Factored| 6) (221 . |makeFR|)
+             (227 . |factorPolynomial|) (|Mapping| 6 52)
+             (|Factored| 52) (|FactoredFunctions2| 52 6) (232 . |map|)
              (238 . |factor|) (243 . |Zero|) (|Vector| 7) (247 . |new|)
-             (|Integer|) (253 . |minIndex|) (258 . |coefficient|)
+             (253 . |minIndex|) (258 . |coefficient|)
              (264 . |qsetelt!|) |UPOLYC-;vectorise;SNniV;24|
              |UPOLYC-;retract;SR;25| (|Union| 7 '"failed")
              |UPOLYC-;retractIfCan;SU;26| (271 . |init|) (275 . |init|)
@@ -4191,7 +4331,7 @@ Note that this code is not included in the generated catdef.spad file.
              (|Record| (|:| |coef| 7) (|:| |quotient| $)
                  (|:| |remainder| $))
              (415 . |pseudoDivide|) (421 . |composite|) (427 . /)
-             (|Union| 142 '"failed") (433 . |composite|)
+             (|Union| 143 '"failed") (433 . |composite|)
              (439 . |ground?|) (444 . |pseudoDivide|) (450 . |exquo|)
              (456 . |composite|) (462 . |Zero|) (466 . |coerce|)
              (471 . |not|) (476 . **) (482 . *) (488 . +) (494 . **)
@@ -4202,99 +4342,101 @@ Note that this code is not included in the generated catdef.spad file.
              (532 . |zero?|) (537 . |unitCanonical|) (542 . |content|)
              (547 . |primitivePart|) (552 . |subResultantGcd|)
              (558 . *) (564 . |gcdPolynomial|)
-             (|UnivariatePolynomialSquareFree| 6 75)
+             (|UnivariatePolynomialSquareFree| 6 74)
              (570 . |squareFree|) (575 . |squareFreePolynomial|)
              (580 . /) (586 . |elt|) (592 . |euclideanSize|)
-             (597 . |inv|) (602 . *) (608 . |divide|) (|Fraction| 109)
-             (614 . |coerce|) (619 . |inv|) (624 . *)
-             (630 . |integrate|) (|Symbol|) (|List| 196) (|Equation| $)
-             (|Union| 109 '"failed") (|Union| 191 '"failed")
+             (597 . |inv|) (602 . *) (608 . |divide|) (614 . ~=)
+             (|Fraction| 94) (620 . |coerce|) (625 . |inv|) (630 . *)
+             (636 . |integrate|) (|Symbol|) (|List| 198)
+             (|Union| 94 '"failed") (|Union| 193 '"failed")
              (|OutputForm|))
-          '#(|vectorise| 635 |variables| 641 |unmakeSUP| 646
-             |totalDegree| 651 |squareFreePolynomial| 657
-             |squareFreePart| 662 |squareFree| 667
-             |solveLinearPolynomialEquation| 672 |shiftRight| 678
-             |shiftLeft| 684 |separate| 690 |retractIfCan| 696
-             |retract| 701 |pseudoQuotient| 706 |pseudoDivide| 712
-             |order| 718 |nextItem| 724 |monomial| 729 |minimumDegree|
-             736 |makeSUP| 748 |mainVariable| 753 |karatsubaDivide| 758
-             |integrate| 764 |init| 769 |gcdPolynomial| 773
-             |factorSquareFreePolynomial| 779 |factorPolynomial| 784
-             |factor| 789 |eval| 794 |euclideanSize| 828 |elt| 833
-             |divide| 851 |differentiate| 857 |degree| 881 |content|
-             893 |composite| 899 |coerce| 911)
+          '#(|vectorise| 641 |variables| 647 |unmakeSUP| 652
+             |totalDegree| 657 |squareFreePolynomial| 663
+             |squareFreePart| 668 |squareFree| 673
+             |solveLinearPolynomialEquation| 678 |shiftRight| 684
+             |shiftLeft| 690 |separate| 696 |retractIfCan| 702
+             |retract| 707 |pseudoQuotient| 712 |pseudoDivide| 718
+             |order| 724 |nextItem| 730 |monomial| 735 |minimumDegree|
+             742 |makeSUP| 754 |mainVariable| 759 |karatsubaDivide| 764
+             |integrate| 770 |init| 775 |gcdPolynomial| 779
+             |factorSquareFreePolynomial| 785 |factorPolynomial| 790
+             |factor| 795 |eval| 800 |euclideanSize| 834 |elt| 839
+             |divide| 857 |differentiate| 863 |degree| 887 |content|
+             899 |composite| 905 |coerce| 917)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 195
+                            (|makeByteWordVec2| 197
                                 '(1 6 8 0 9 1 6 10 0 11 0 12 0 13 1 6
                                   10 0 17 3 6 0 0 12 0 21 2 6 0 0 0 24
                                   3 6 0 0 12 7 26 2 6 7 0 7 29 1 6 0 7
                                   30 1 32 6 0 33 1 6 34 0 35 1 32 6 0
-                                  36 1 6 10 0 40 2 10 0 0 0 43 2 6 0 44
-                                  0 45 0 6 0 47 0 7 0 48 2 6 0 7 10 49
-                                  0 51 0 52 1 6 7 0 53 2 51 0 7 10 54 1
-                                  6 0 0 55 1 6 51 0 56 2 51 0 0 0 57 1
-                                  51 8 0 59 0 6 0 60 1 51 7 0 61 1 51
-                                  10 0 62 1 51 0 0 63 1 6 0 51 64 2 6 0
-                                  0 0 65 2 6 67 0 0 68 2 6 0 0 0 71 2
-                                  76 73 74 75 77 2 0 78 79 80 81 1 76
-                                  82 75 83 1 0 84 80 85 1 76 82 75 86 1
-                                  0 84 80 87 1 7 88 0 89 1 90 7 0 91 1
-                                  90 94 0 95 2 98 0 6 97 99 1 7 84 80
-                                  100 2 103 98 101 102 104 1 0 88 0 105
-                                  0 7 0 106 2 107 0 10 7 108 1 107 109
-                                  0 110 2 6 7 0 10 111 3 107 7 0 109 7
-                                  112 0 7 0 117 0 0 0 118 1 7 119 0 120
-                                  0 75 0 121 1 0 119 0 122 1 6 7 0 123
-                                  2 0 0 0 12 124 2 6 0 0 0 125 2 6 119
-                                  0 0 126 2 6 8 0 0 127 2 0 128 0 0 129
-                                  0 75 0 130 2 7 0 10 0 131 3 0 0 0 132
-                                  0 133 2 6 0 7 0 134 3 6 0 0 132 0 135
-                                  1 6 0 0 138 1 140 6 0 141 2 6 142 0
-                                  142 143 1 140 6 0 144 2 140 0 0 0 145
-                                  2 0 142 142 142 146 2 7 0 0 10 147 2
-                                  6 0 0 0 148 2 6 0 0 0 149 2 0 0 0 0
-                                  150 2 0 151 0 0 152 2 6 119 0 0 153 2
-                                  140 0 6 6 154 2 0 155 142 0 156 1 6 8
-                                  0 157 2 6 151 0 0 158 2 6 119 0 7 159
-                                  2 0 119 0 0 160 0 140 0 161 1 140 0 6
-                                  162 1 8 0 0 163 2 140 0 0 109 164 2
-                                  140 0 0 0 165 2 140 0 0 0 166 2 140 0
-                                  0 10 167 2 0 142 0 142 168 2 0 10 0 0
-                                  169 1 170 98 6 171 1 0 88 0 172 1 170
-                                  6 6 173 1 0 0 0 174 1 75 8 0 175 1 75
-                                  0 0 176 1 75 6 0 177 1 75 0 0 178 2
-                                  75 0 0 0 179 2 75 0 6 0 180 2 0 80 80
-                                  80 181 1 182 82 75 183 1 0 84 80 184
-                                  2 7 0 0 0 185 2 0 7 142 7 186 1 0 10
-                                  0 187 1 7 0 0 188 2 7 0 0 0 189 2 0
-                                  67 0 0 190 1 191 0 109 192 1 191 0 0
-                                  193 2 6 0 191 0 194 1 0 0 0 195 2 0
-                                  107 0 10 113 1 0 14 0 15 1 0 0 51 66
-                                  2 0 10 0 14 18 1 0 84 80 184 1 0 0 0
-                                  174 1 0 88 0 172 2 0 78 79 80 81 2 0
-                                  0 0 10 70 2 0 0 0 10 72 2 0 128 0 0
-                                  129 1 0 115 0 116 1 0 7 0 114 2 0 0 0
-                                  0 150 2 0 151 0 0 152 2 0 10 0 0 169
-                                  1 0 119 0 122 3 0 0 0 12 10 46 2 0 19
-                                  0 14 42 2 0 10 0 12 41 1 0 51 0 58 1
-                                  0 34 0 39 2 0 67 0 10 69 1 0 0 0 195
-                                  0 0 0 118 2 0 80 80 80 181 1 0 84 80
-                                  87 1 0 84 80 85 1 0 88 0 105 3 0 0 0
-                                  12 0 25 3 0 0 0 14 22 23 3 0 0 0 14
-                                  27 28 3 0 0 0 12 7 31 2 0 0 0 37 38 1
-                                  0 10 0 187 2 0 142 0 142 168 2 0 7
-                                  142 7 186 2 0 142 142 142 146 2 0 67
-                                  0 0 190 3 0 0 0 132 0 133 2 0 0 0 132
-                                  136 1 0 0 0 137 2 0 0 0 12 139 2 0 10
-                                  0 12 16 2 0 19 0 14 20 2 0 0 0 12 124
-                                  2 0 119 0 0 160 2 0 155 142 0 156 1 0
-                                  0 12 50)))))
+                                  36 1 6 10 0 41 2 10 0 0 0 44 2 6 0 45
+                                  0 46 0 6 0 48 0 7 0 49 2 6 0 7 10 50
+                                  0 52 0 53 1 6 7 0 54 2 52 0 7 10 55 1
+                                  6 0 0 56 1 6 52 0 57 2 52 0 0 0 58 1
+                                  52 8 0 60 0 6 0 61 1 52 7 0 62 1 52
+                                  10 0 63 1 52 0 0 64 1 6 0 52 65 2 6 0
+                                  0 0 66 2 6 68 0 0 69 2 6 0 0 0 72 2
+                                  77 76 75 74 78 2 0 81 80 79 82 1 77
+                                  83 74 84 1 0 85 79 86 1 77 83 74 87 1
+                                  0 85 79 88 1 7 89 0 90 1 91 7 0 92 1
+                                  91 96 0 97 2 100 0 6 99 101 1 7 85 79
+                                  102 2 105 100 103 104 106 1 0 89 0
+                                  107 0 7 0 108 2 109 0 10 7 110 1 109
+                                  94 0 111 2 6 7 0 10 112 3 109 7 0 94
+                                  7 113 0 7 0 118 0 0 0 119 1 7 120 0
+                                  121 0 74 0 122 1 0 120 0 123 1 6 7 0
+                                  124 2 0 0 0 12 125 2 6 0 0 0 126 2 6
+                                  120 0 0 127 2 6 8 0 0 128 2 0 129 0 0
+                                  130 0 74 0 131 2 7 0 10 0 132 3 0 0 0
+                                  133 0 134 2 6 0 7 0 135 3 6 0 0 133 0
+                                  136 1 6 0 0 139 1 141 6 0 142 2 6 143
+                                  0 143 144 1 141 6 0 145 2 141 0 0 0
+                                  146 2 0 143 143 143 147 2 7 0 0 10
+                                  148 2 6 0 0 0 149 2 6 0 0 0 150 2 0 0
+                                  0 0 151 2 0 152 0 0 153 2 6 120 0 0
+                                  154 2 141 0 6 6 155 2 0 156 143 0 157
+                                  1 6 8 0 158 2 6 152 0 0 159 2 6 120 0
+                                  7 160 2 0 120 0 0 161 0 141 0 162 1
+                                  141 0 6 163 1 8 0 0 164 2 141 0 0 94
+                                  165 2 141 0 0 0 166 2 141 0 0 0 167 2
+                                  141 0 0 10 168 2 0 143 0 143 169 2 0
+                                  10 0 0 170 1 171 100 6 172 1 0 89 0
+                                  173 1 171 6 6 174 1 0 0 0 175 1 74 8
+                                  0 176 1 74 0 0 177 1 74 6 0 178 1 74
+                                  0 0 179 2 74 0 0 0 180 2 74 0 6 0 181
+                                  2 0 79 79 79 182 1 183 83 74 184 1 0
+                                  85 79 185 2 7 0 0 0 186 2 0 7 143 7
+                                  187 1 0 10 0 188 1 7 0 0 189 2 7 0 0
+                                  0 190 2 0 68 0 0 191 2 6 8 0 0 192 1
+                                  193 0 94 194 1 193 0 0 195 2 6 0 193
+                                  0 196 1 0 0 0 197 2 0 109 0 10 114 1
+                                  0 14 0 15 1 0 0 52 67 2 0 10 0 14 18
+                                  1 0 85 79 185 1 0 0 0 175 1 0 89 0
+                                  173 2 0 81 80 79 82 2 0 0 0 10 71 2 0
+                                  0 0 10 73 2 0 129 0 0 130 1 0 116 0
+                                  117 1 0 7 0 115 2 0 0 0 0 151 2 0 152
+                                  0 0 153 2 0 10 0 0 170 1 0 120 0 123
+                                  3 0 0 0 12 10 47 2 0 19 0 14 43 2 0
+                                  10 0 12 42 1 0 52 0 59 1 0 34 0 40 2
+                                  0 68 0 10 70 1 0 0 0 197 0 0 0 119 2
+                                  0 79 79 79 182 1 0 85 79 88 1 0 85 79
+                                  86 1 0 89 0 107 3 0 0 0 12 0 25 3 0 0
+                                  0 14 22 23 3 0 0 0 14 27 28 3 0 0 0
+                                  12 7 31 2 0 0 0 38 39 1 0 10 0 188 2
+                                  0 143 0 143 169 2 0 7 143 7 187 2 0
+                                  143 143 143 147 2 0 68 0 0 191 3 0 0
+                                  0 133 0 134 2 0 0 0 133 137 1 0 0 0
+                                  138 2 0 0 0 12 140 2 0 10 0 12 16 2 0
+                                  19 0 14 20 2 0 0 0 12 125 2 0 120 0 0
+                                  161 2 0 156 143 0 157 1 0 0 12 51)))))
           '|lookupComplete|)) 
 @
+
 \section{package UPOLYC2 UnivariatePolynomialCategoryFunctions2}
+
 <<package UPOLYC2 UnivariatePolynomialCategoryFunctions2>>=
 )abbrev package UPOLYC2 UnivariatePolynomialCategoryFunctions2
 ++ Author:
