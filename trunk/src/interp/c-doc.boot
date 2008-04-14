@@ -74,7 +74,7 @@ getDocForDomain(name,op,sig) ==
 ++ `op' and given signature `sigPart'.  The operator `op' is assumed
 ++ to have been defined in the domain or catagory `abb'.
 getOpDoc(abb,op,:sigPart) ==
-  u := LASSOC(op,GETDATABASE(abb,'DOCUMENTATION))
+  u := LASSOC(op,getConstructorDocumentationFromDB abb)
   $argList : local := $FormalMapVariableList
   _$: local := '_$
   sigPart is [sig] => or/[d for [s,:d] in u | sig = s]
@@ -417,7 +417,7 @@ removeBackslashes s ==
 checkNumOfArgs conform ==
   conname := opOf conform
   constructor? conname or (conname := abbreviation? conname) =>
-    #GETDATABASE(conname,'CONSTRUCTORARGS)
+    #getConstructorArgsFromDB conname
   nil  --signals error
 
 ++ returns ok if correct, form if wrong number of arguments, nil if unknown
@@ -428,7 +428,7 @@ checkIsValidType form == main where
     [op,:args] := form
     conname := (constructor? op => op; abbreviation? op)
     null conname => nil
-    fn(form,GETDATABASE(conname,'COSIG))
+    fn(form,getDualSignatureFromDB conname)
   fn(form,coSig) ==
     #form ^= #coSig => form
     or/[null checkIsValidType x for x in rest form for flag in rest coSig | flag]
@@ -1233,7 +1233,7 @@ setOutStream nam ==
 whoOwns(con) ==
   null $exposeFlag => nil
 --con=constructor name (id beginning with a capital), returns owner as a string
-  filename := GETDATABASE(con,'SOURCEFILE)
+  filename := getConstructorSourceFileFromDB con
   quoteChar := char '_"
   OBEY STRCONC('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
   instream := MAKE_-INSTREAM '"/tmp/temp"
@@ -1270,7 +1270,7 @@ checkDocError u ==
 ++ Augment `u' with information about the owner of the source file
 ++ containing the current functor definition being processed.
 checkDocMessage u ==
-  sourcefile := GETDATABASE($constructorName,'SOURCEFILE)
+  sourcefile := getConstructorSourceFileFromDB $constructorName
   person := whoOwns $constructorName or '"---"
   middle :=
     BOUNDP '$x => ['"(",$x,'"): "]

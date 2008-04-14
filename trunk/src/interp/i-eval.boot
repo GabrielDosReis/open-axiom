@@ -56,10 +56,10 @@ mkEvalable form ==
     op="Enumeration" => form
     loadIfNecessary op
     kind:= getConstructorKindFromDB op
-    cosig := GETDATABASE(op, 'COSIG) =>
+    cosig := getDualSignatureFromDB op =>
       [op,:[val for x in argl for typeFlag in rest cosig]] where val() ==
         typeFlag =>
-          kind = 'category => MKQ x
+          kind = "category" => MKQ x
           VECP x => MKQ x
           loadIfNecessary x
           mkEvalable x
@@ -170,7 +170,7 @@ evaluateFormAsType form ==
 ++ evaluates the arguments passed to the constructor `op'.
 ++ Note: only constructor instantiations go here.
 evaluateType1 (form is [op,:argl]) ==
-  null (sig := getConstructorSignature form) =>
+  null (sig := getConstructorSignature op) =>
      throwEvalTypeMsg("S2IE0005",[form])
   [.,:ml] := sig
   ml := replaceSharps(ml,form)

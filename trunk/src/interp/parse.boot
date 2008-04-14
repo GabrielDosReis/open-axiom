@@ -165,7 +165,7 @@ parseTypeEvaluate form ==
     cmm :=
       fn := constructor? op =>
         p := pathname [fn,$spadLibFT,'"*"] =>
-          isExistingFile p => getConstructorModemap(abbreviation? fn)
+          isExistingFile p => getConstructorModemapFromDB abbreviation? fn
           nil
       nil
     cmm is [[.,.,:argml],:.] => [op,:parseTypeEvaluateArgs(argl,argml)]

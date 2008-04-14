@@ -209,7 +209,7 @@ formatCategory ['Category] == format " " and format "Category"
   
 formatCATEGORY cat == 
   con := opOf $form
-  $comments: local := SUBST('_$,'_%,GETDATABASE(con,'DOCUMENTATION))
+  $comments: local := SUBST('_$,'_%,getConstructorDocumentationFromDB con)
   $insideEXPORTS : local := true
   format ["with",formatDeftranCategory cat]
  
@@ -290,7 +290,7 @@ formatColon [":",a,b] ==
 
 formatColonWith(form,a,b) ==
   con := opOf $form
-  $comments: local := SUBST('_$,'_%,GETDATABASE(con,'DOCUMENTATION))
+  $comments: local := SUBST('_$,'_%,getConstructorDocumentationFromDB con)
   $insideEXPORTS : local := true
   $pilesAreOkHere: local := true
   $insideTypeExpression : local := false

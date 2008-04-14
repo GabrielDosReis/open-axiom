@@ -50,7 +50,7 @@ getConstructorAbbreviationFromDB ctor ==
 
 getConstructorCategoryFromDB: %Symbol -> %Form
 getConstructorCategoryFromDB ctor ==
-  GETDATABASE(ctor,"CONSTRCTORCATEGORY")
+  GETDATABASE(ctor,"CONSTRUCTORCATEGORY")
 
 getConstructorKindFromDB: %Symbol -> %Maybe %ConstructorKind
 getConstructorKindFromDB ctor ==
@@ -60,9 +60,85 @@ getConstructorAncestorsFromDB: %Symbol -> %List
 getConstructorAncestorsFromDB ctor ==
   GETDATABASE(ctor,"ANCESTORS")
 
-getConstructorSourceFile: %Symbol -> %Maybe %String
-getConstructorSourceFile ctor ==
+++ return the modemap of the constructor or the instantiation
+++ of the constructor `form'. 
+getConstructorModemapFromDB: %Symbol -> %Maybe %Symbol
+getConstructorModemapFromDB form ==
+  GETDATABASE(opOf form, 'CONSTRUCTORMODEMAP)
+ 
+getConstructorFormFromDB: %Symbol -> %Form
+getConstructorFormFromDB ctor ==
+  GETDATABASE(ctor,"CONSTRUCTORFORM")
+
+getConstructorSourceFileFromDB: %Symbol -> %Maybe %String
+getConstructorSourceFileFromDB ctor ==
   GETDATABASE(ctor,"SOURCEFILE")
+
+getConstructorModuleFromDB: %Symbol -> %Maybe %String
+getConstructorModuleFromDB ctor ==
+  GETDATABASE(ctor,"OBJECT")
+
+getConstructorDocumentationFromDB: %Symbol -> %List
+getConstructorDocumentationFromDB ctor ==
+  GETDATABASE(ctor,"DOCUMENTATION")
+
+getConstructorOperationsFromDB: %Symbol -> %List
+getConstructorOperationsFromDB ctor ==
+  GETDATABASE(ctor,"OPERATIONALIST")
+
+getConstructorFullNameFromDB: %Symbol -> %Symbol
+getConstructorFullNameFromDB ctor ==
+  GETDATABASE(ctor,"CONSTRUCTOR")
+
+getConstructorArgsFromDB: %Symbol -> %List
+getConstructorArgsFromDB ctor ==
+  GETDATABASE(ctor,"CONSTRUCTORARGS")
+
+++ returns a list of Boolean values indicating whether the 
+++ parameter type at the corresponding position is a category.
+getDualSignatureFromDB: %Symbol -> %Form
+getDualSignatureFromDB ctor ==
+  GETDATABASE(ctor,"COSIG")
+
+getConstructorPredicatesFromDB: %Symbol -> %Thing
+getConstructorPredicatesFromDB ctor ==
+  GETDATABASE(ctor,"PREDICATES")
+
+getConstructorParentsFromDB: %Symbol -> %List
+getConstructorParentsFromDB ctor ==
+  GETDATABASE(ctor,"PARENTS")
+
+getSuperDomainFromDB: %Symbol -> %Form
+getSuperDomainFromDB ctor ==
+  GETDATABASE(ctor,"SUPERDOMAIN")
+
+getConstructorAttributesFromDB: %Symbol -> %Form
+getConstructorAttributesFromDB ctor ==
+  GETDATABASE(ctor,"ATTRIBUTES")
+
+niladicConstructorFromDB: %Symbol -> %Boolean
+niladicConstructorFromDB ctor ==
+  GETDATABASE(ctor,"NILADIC")
+
+asharpConstructorFromDB: %Symbol -> %Maybe %Symbol
+asharpConstructorFromDB ctor ==
+  GETDATABASE(ctor,"ASHARP?")
+
+constructorHasCategoryFromDB: %Pair -> %Thing
+constructorHasCategoryFromDB p ==
+  GETDATABASE(p,"HASCATEGORY")
+
+getConstructorDefaultFromDB: %Symbol -> %Maybe %Symbol
+getConstructorDefaultFromDB ctor ==
+  GETDATABASE(ctor,"DEFAULTDOMAIN")
+
+getOperationFromDB: %Symbol -> %List
+getOperationFromDB op ==
+  GETDATABASE(op,"OPERATION")
+
+getOperationModemapsFromDB: %Symbol -> %List
+getOperationModemapsFromDB op ==
+  GETDATABASE(op,"MODEMAPS")
 
 --% Functions for manipulating MODEMAP DATABASE
 
@@ -470,7 +546,7 @@ getModemapsFromDatabase(op,nargs) ==
   ans
 
 getSystemModemaps(op,nargs) ==
-  mml:= GETDATABASE(op,'OPERATION) =>
+  mml:= getOperationFromDB op =>
     mms := NIL
     for (x := [[.,:sig],.]) in mml repeat
       (NUMBERP nargs) and (nargs ^= #QCDR sig) => 'iterate

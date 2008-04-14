@@ -264,7 +264,7 @@ args2LispString x ==
       STRCONC('",",form2LispString first x,fnTailTail rest x)
 
 dbConstructorKind x ==
-  target := CADAR getConstructorModemap x
+  target := CADAR getConstructorModemapFromDB x
   target = '(Category) => 'category
   target is ['CATEGORY,'package,:.] => 'package
   HGET($defaultPackageNamesHT,x) => 'default_ package
@@ -276,7 +276,7 @@ getConstructorForm name ==
   name = 'Record  => '(Record (_: a A) (_: b B))
   name = 'Mapping => '(Mapping T S)
   name = 'Enumeration => '(Enumeration a b)
-  GETDATABASE(name,'CONSTRUCTORFORM)
+  getConstructorFormFromDB name
 
 getConstructorArgs conname == CDR getConstructorForm conname
 
@@ -425,14 +425,14 @@ bcStarConform form ==
   bcConform form
 
 dbSourceFile name ==
-  u:= GETDATABASE(name,'SOURCEFILE)
+  u:= getConstructorSourceFileFromDB name
   null u => '""
   n := PATHNAME_-NAME u
   t := PATHNAME_-TYPE u
   STRCONC(n,'".",t)
 
 asharpConstructorName? name ==
-  u:= GETDATABASE(name,'SOURCEFILE)
+  u:= getConstructorSourceFileFromDB name
   u and PATHNAME_-TYPE u = '"as"
 
 asharpConstructors() ==
@@ -584,7 +584,7 @@ htCopyProplist htPage == [[x,:y] for [x,:y] in htpPropertyList htPage]
 
 dbInfovec name ==
   "category" = getConstructorKindFromDB name => nil
-  GETDATABASE(name, 'ASHARP?) => nil
+  asharpConstructorFromDB name => nil
   loadLibIfNotLoaded(name)
   u := GETL(name,'infovec) => u
 

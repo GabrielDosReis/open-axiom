@@ -2131,8 +2131,8 @@ loadSpad2Cmd args ==
 --    justWondering =>
 --      GETL(lib,'LOADED) => sayKeyedMsg("S2IZ0028",[lib])
 --      sayKeyedMsg("S2IZ0029",[lib])
---    null GETDATABASE(lib,'OBJECT) and
---     null (lib := GETDATABASE(lib,'CONSTRUCTOR)) =>
+--    null getConstructorModuleFromDB lib and
+--     null (lib := getConstructorFullNameFromDB lib) =>
 --      sayKeyedMsg("S2IL0020", [namestring [lib,$spadLibFT,"*"]])
 --    null FUNCALL(loadfun,lib) =>
 --      sayKeyedMsg("S2IZ0029",[lib])
@@ -2339,8 +2339,8 @@ reportOpsFromUnitDirectly unitForm ==
   sayBrightly concat('%b,formatOpType unitForm,
     '%d,'"is a",'%b,kind,'%d, '"constructor.")
   if not isRecordOrUnion then
-    abb := GETDATABASE(top,'ABBREVIATION)
-    sourceFile := GETDATABASE(top,'SOURCEFILE)
+    abb := getConstructorAbbreviatiomFronDB top
+    sourceFile := getConstructorSourceFileFromDB top
     sayBrightly ['" Abbreviation for",:bright top,'"is",:bright abb]
     verb :=
       isExposedConstructor top => '"is"
@@ -2391,7 +2391,7 @@ reportOpsFromLisplib(op,u) ==
     NIL
   typ:= getConstructorKindFromDB op
   nArgs:= #argml
-  argList:= KDR GETDATABASE(op,'CONSTRUCTORFORM)
+  argList:= KDR getConstructorFormFromDB op
   functorForm:= [op,:argList]
   argml:= EQSUBSTLIST(argList,$FormalMapVariableList,argml)
   functorFormWithDecl:= [op,:[[":",a,m] for a in argList for m in argml]]
@@ -2403,7 +2403,7 @@ reportOpsFromLisplib(op,u) ==
     '"is not"
   sayBrightly ['" This constructor",:bright verb,
     '"exposed in this frame."]
-  sourceFile := GETDATABASE(op,'SOURCEFILE)
+  sourceFile := getConstructorSourceFileFromDB op
   sayBrightly ['" Issue",:bright STRCONC('")edit ",
     namestring sourceFile),
       '"to see algebra source code for",:bright fn,'%l]
@@ -2418,7 +2418,7 @@ reportOpsFromLisplib(op,u) ==
       centerAndHighlight('"Attributes",$LINELENGTH,specialChar 'hbar)
       sayBrightly '""
       attList:= REMDUP MSORT [x for [x,:.] in
-        GETDATABASE(op,'ATTRIBUTES)]
+        getConstructorAttributesFromDB op]
       null attList => sayBrightly
         concat('%b,form2String functorForm,'%d,"has no attributes.",'%l)
       say2PerLine [formatAttribute x for x in attList]
@@ -2430,7 +2430,7 @@ displayOperationsFromLisplib form ==
   [name,:argl] := form
   kind := getConstructorKindFromDB name
   centerAndHighlight('"Operations",$LINELENGTH,specialChar 'hbar)
-  opList:= GETDATABASE(name,'OPERATIONALIST)
+  opList:= getConstructorOperationsFromDB name
   null opList => 
     centerAndHighlight('"No exported operations",$LINELENGTH)
   opl:=REMDUP MSORT EQSUBSTLIST(argl,$FormalMapVariableList,opList)
@@ -2748,7 +2748,7 @@ filterAndFormatConstructors(constrType,label,patterns) ==
 
 whatConstructors constrType ==
   -- here constrType should be one of 'category, 'domain, 'package
-  MSORT [CONS(GETDATABASE(con,'ABBREVIATION), STRING(con))
+  MSORT [CONS(getConstructorAbbreviatiomFronDB con, STRING(con))
     for con in allConstructors()
       | getConstructorKindFromDB con = constrType]
 

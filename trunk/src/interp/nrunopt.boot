@@ -489,7 +489,7 @@ dcOpLatchPrint(op,index) ==
 getInfovec name ==
   u := GETL(name,'infovec) => u
   GETL(name,'LOADED) => nil
-  fullLibName := GETDATABASE(name,'OBJECT) or return nil
+  fullLibName := getConstructorModuleFromDB name or return nil
   startTimingProcess 'load
   loadLibNoUpdate(name, name, fullLibName)
   GETL(name,'infovec)
@@ -522,7 +522,7 @@ dcOpTable con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
   template := $infovec.0
-  $predvec: local := GETDATABASE(con,'PREDICATES)
+  $predvec: local := getConstructorPredicatesFromDB con
   opTable := $infovec.1
   for i in 0..MAXINDEX opTable repeat
     op := opTable.i
@@ -563,7 +563,7 @@ dcSig(numvec,index,numOfArgs) ==
 dcPreds con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
-  $predvec:= GETDATABASE(con,'PREDICATES)
+  $predvec:= getConstructorPredicatesFromDB con
   for i in 0..MAXINDEX $predvec repeat
     sayBrightlyNT bright (i + 1)
     sayBrightly pred2English $predvec.i
@@ -571,7 +571,7 @@ dcPreds con ==
 dcAtts con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
-  $predvec:= GETDATABASE(con,'PREDICATES)
+  $predvec:= getConstructorPredicatesFromDB con
   attList := $infovec.2
   for [a,:predNumber] in attList for i in 0.. repeat
     sayBrightlyNT bright i
@@ -585,7 +585,7 @@ dcCats con ==
   $infovec: local := getInfovec name
   u := $infovec.3
   VECP CDDR u => dcCats1 con    --old style slot4
-  $predvec:= GETDATABASE(con,'PREDICATES)
+  $predvec:= getConstructorPredicatesFromDB con
   catpredvec := CAR u
   catinfo := CADR u
   catvec := CADDR u
@@ -603,7 +603,7 @@ dcCats con ==
     sayBrightly concat(form2String formatSlotDomain form,suffix,extra)
  
 dcCats1 con ==
-  $predvec:= GETDATABASE(con,'PREDICATES)
+  $predvec:= getConstructorPredicatesFromDB con
   u := $infovec.3
   catvec := CADR u
   catinfo := CAR u
@@ -810,7 +810,7 @@ getExportCategory form ==
   [op,:argl] := form
   op = 'Record => ['RecordCategory,:argl]
   op = 'Union => ['UnionCategory,:argl]
-  functorModemap := getConstructorModemap op
+  functorModemap := getConstructorModemapFromDB op
   [[.,target,:tl],:.] := functorModemap
   EQSUBSTLIST(argl,$FormalMapVariableList,target)
  

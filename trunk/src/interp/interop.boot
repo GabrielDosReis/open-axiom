@@ -101,7 +101,7 @@ SExprToDName(sexpr, cosigVal) ==
   CAR sexpr = 'Union or CAR sexpr = 'Record =>
     [DNameApplyID, name0, 
         [DNameTupleID,: [ SExprToDName(sx,true) for sx in CDR sexpr]]]
-  newCosig := CDR GETDATABASE(CAR sexpr, QUOTE COSIG)
+  newCosig := rest getDualSignatureFromDB first sexpr
   [DNameApplyID, name0,
    : MAPCAR(function SExprToDName, CDR sexpr, newCosig)]
 
@@ -184,9 +184,9 @@ oldAxiomCategoryDevaluate([[op,:args],:.], env) ==
    SExprToDName([op,:devaluateList args], true)
 
 oldAxiomPreCategoryParents(catform,dom) ==
-  vars := ["$",:rest GETDATABASE(opOf catform, 'CONSTRUCTORFORM)]
+  vars := ["$",:rest getConstructorFormFromDB opOf catform]
   vals := [dom,:rest catform]
-  -- parents :=  GETDATABASE(opOf catform, 'PARENTS)
+  -- parents :=  getConstructorParentsFromDB opOf catform
   parents := parentsOf opOf catform
   PROGV(vars, vals,
     LIST2VEC

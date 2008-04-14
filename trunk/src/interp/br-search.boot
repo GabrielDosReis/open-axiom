@@ -96,10 +96,10 @@ grepForAbbrev(s,key) ==
     UPPER_-CASE_-P c => someUpperCaseChar := true
   someLowerCaseChar or not someUpperCaseChar => false
   pattern := DOWNCASE s
-  ['Abbreviations ,:[GETDATABASE(x,'CONSTRUCTORFORM)
+  ['Abbreviations ,:[getConstructorFormFromDB x
     for x in allConstructors() | test]] where test() ==
          not $includeUnexposed? and not isExposedConstructor x => false
-         a := GETDATABASE(x,'ABBREVIATION)
+         a := getConstructorAbbreviationFromDB x
          match?(pattern,PNAME a) and not HGET($defaultPackageNamesHT,x)
 
 applyGrep(x,filename) ==   --OBSELETE with $saturn--> see applyGrepSaturn
@@ -312,8 +312,8 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
 conform2OutputForm(form) ==
   [op,:args] := form
   null args => form
-  cosig := rest GETDATABASE(op,'COSIG)
-  atypes := rest CDAR getConstructorModemap op
+  cosig := rest getDualSignatureFromDB op
+  atypes := rest CDAR getConstructorModemapFromDB op
   sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pp [x,atype,pred]
     pred => conform2OutputForm x

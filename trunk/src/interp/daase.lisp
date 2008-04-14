@@ -388,7 +388,7 @@
 			(|Symbol| . |ConvertibleTo|)
 			(|Variable| . |CoercibleTo|)))
     (dolist (pair hascategory)
-      (getdatabase pair 'hascategory))
+      (|constructorHasCategoryFromDB| pair))
     (setq constructormodemapAndoperationalist 
 	  '(|BasicOperator| 
 	    |Boolean|
@@ -431,14 +431,14 @@
 	    |Variable|
 	    |Vector|))
     (dolist (con constructormodemapAndoperationalist)
-      (|getConstructorModemap| con)
-      (getdatabase con 'operationalist))
+      (|getConstructorModemapFromDB| con)
+      (|getConstructorOperationsFromDB| con))
     (setq operation 
 	  '(|+| |-| |*| |/| |**| 
 	    |coerce| |convert| |elt| |equation|
 	    |float| |sin| |cos| |map| |SEGMENT|))
     (dolist (op operation)
-      (getdatabase op 'operation))
+      (|getOperationFromDB| op))
     (setq constr
 	  '( ;these are sorted least-to-most freq. delete early ones first
 	    |Factored| 
@@ -526,7 +526,8 @@
 	    |List|
 	    |OutputForm|))
     (dolist (con constr)
-      (let ((c (|getSystemModulePath| (string (getdatabase con 'abbreviation)))))
+      (let ((c (|getSystemModulePath| 
+		(string (|getConstructorAbbreviationFromDB| con)))))
 	(format t "   preloading ~a.." c)
 	(if (probe-file c)
 	    (progn
@@ -675,60 +676,60 @@
   (dolist (map oldmaps) ; out with the old
     (let (oldop op)
       (setq op (car map))
-      (setq oldop (getdatabase op 'operation))
+      (setq oldop (|getOperationFromDB| op))
       (setq oldop (delete (cdr map) oldop :test #'equal))
       (setf (gethash op *operation-hash*) oldop)))
-  (dolist (map (getdatabase constructor 'modemaps)) ; in with the new
+  (dolist (map (|getOperationModemapsFromDB| constructor)) ; in with the new
     (let (op newmap)
       (setq op (car map))
-      (setq newmap (getdatabase op 'operation))
+      (setq newmap (|getOperationFromDB| op))
       (setf (gethash op *operation-hash*) (cons (cdr map) newmap)))))
 
 (defun showdatabase (constructor)
   (format t "~&~a: ~a~%" 'constructorkind
-	  (getdatabase constructor 'constructorkind))
+	  (|getConstructorKindFromDB| constructor))
   (format t "~a: ~a~%" 'cosig
-	  (getdatabase constructor 'cosig))
+	  (|getDualSignatureFromDB| constructor))
   (format t "~a: ~a~%" 'operation
-	  (getdatabase constructor 'operation))
+	  (|getOperationFromDB| constructor))
   (format t "~a: ~%" 'constructormodemap)
-  (pprint (|getConstructorModemap| constructor))
+  (pprint (|getConstructorModemapFromDB| constructor))
   (format t "~&~a: ~%" 'constructorcategory)
-  (pprint (getdatabase constructor 'constructorcategory))
+  (pprint (|getConstructorCategoryFromDB| constructor))
   (format t "~&~a: ~%" 'operationalist)
-  (pprint (getdatabase constructor 'operationalist))
+  (pprint (|getConstructorOperationsFromDB| constructor))
   (format t "~&~a: ~%" 'modemaps)
-  (pprint (getdatabase constructor 'modemaps))
+  (pprint (|getOperationModemapsFromDB| constructor))
   (format t "~a: ~a~%" 'hascategory
-	  (getdatabase constructor 'hascategory))
+	  (|constructorHasCategoryFromDB| constructor))
   (format t "~a: ~a~%" 'object
-	  (getdatabase constructor 'object))
+	  (|getConstructorModuleFromDB| constructor))
   (format t "~a: ~a~%" 'niladic
-	  (getdatabase constructor 'niladic))
+	  (|niladicConstructorFromDB| constructor))
   (format t "~a: ~a~%" 'abbreviation
-	  (getdatabase constructor 'abbreviation))
+	  (|getConstructorAbbreviationFromDB| constructor))
   (format t "~a: ~a~%" 'constructor?
-	  (getdatabase constructor 'constructor?))
+	  (|getConstructorOperationsFromDB| constructor))
   (format t "~a: ~a~%" 'constructor
-	  (getdatabase constructor 'constructor))
+	  (|getConstructorFullNameFromDB| constructor))
   (format t "~a: ~a~%" 'defaultdomain
-	  (getdatabase constructor 'defaultdomain))
+	  (|getConstructorDefaultFromDB| constructor))
   (format t "~a: ~a~%" 'ancestors
-	  (getdatabase constructor 'ancestors))
+	  (|getConstructorAncestorsFromDB| constructor))
   (format t "~a: ~a~%" 'sourcefile
-	  (getdatabase constructor 'sourcefile))
+	  (|getConstructorSourceFileFromDB| constructor))
   (format t "~a: ~a~%" 'constructorform
-	  (getdatabase constructor 'constructorform))
+	  (|getConstructorFormFromDB| constructor))
   (format t "~a: ~a~%" 'constructorargs
-	  (getdatabase constructor 'constructorargs))
+	  (|getConstructorArgsFromDB| constructor))
   (format t "~a: ~a~%" 'attributes
-	  (getdatabase constructor 'attributes))
+	  (|getConstructorAttributesFromDB| constructor))
   (format t "~a: ~%" 'predicates)
-  (pprint (getdatabase constructor 'predicates))
+  (pprint (|getConstructorPredicatesFromDB| constructor))
   (format t "~a: ~a~%" 'documentation
-	  (getdatabase constructor 'documentation))
+	  (|getConstructorDocumentationFromDB| constructor))
   (format t "~a: ~a~%" 'parents
-	  (getdatabase constructor 'parents)))
+	  (|getConstructorParentsFromDB| constructor)))
 
 (defun setdatabase (constructor key value)
   (let (struct)
@@ -785,7 +786,7 @@
 	     (when (setq struct (get constructor 'database))
 	       (setq data (database-constructorcategory struct))
 	       (when (null data) ;domain or package then subfield of constructormodemap
-		 (setq data (cadar (|getConstructorModemap| constructor))))))
+		 (setq data (cadar (|getConstructorModemapFromDB| constructor))))))
 	    (operationalist
 	     (setq stream *interp-stream*)
 	     (when (setq struct (get constructor 'database))
@@ -811,8 +812,7 @@
 	     (when (setq struct (get constructor 'database))
 	       (setq data (database-niladic struct))))
 	    (constructor?
-	     (when (setq struct (get constructor 'database))
-	       (setq data (when (database-operationalist struct) t))))
+	     (|fatalError| "GETDATABASE called with CONSTRUCTOR?"))
 	    (superdomain ; only 2 superdomains in the world
 	     (case constructor
 		   (|NonNegativeInteger|
@@ -836,7 +836,7 @@
 	     (when (setq struct (get constructor 'database))
 	       (setq data (database-constructorform struct))))
 	    (constructorargs
-	     (setq data (cdr (getdatabase constructor 'constructorform))))
+	     (setq data (cdr (|getConstructorFormFromDB| constructor))))
 	    (attributes
 	     (setq stream *browse-stream*)
 	     (when (setq struct (get constructor 'database))
@@ -1066,14 +1066,14 @@
      (if (< (length alist) 4) ;we have a naked function object
          (let ((opname key)
                (modemap (car (LASSOC '|modemaps| alist))) )
-           (setq oldmaps (getdatabase opname 'operation))
+           (setq oldmaps (|getOperationFromDB| opname))
            (setf (gethash opname *operation-hash*)
                  (adjoin (subst asharp-name opname (cdr modemap))
                          oldmaps :test #'equal))
            (asharpMkAutoloadFunction object asharp-name))
        (when (if (null only) (not (eq key '%%)) (member key only))
 	 (setq *allOperations* nil)        ; force this to recompute
-	 (setq oldmaps (getdatabase key 'modemaps))
+	 (setq oldmaps (|getOperationModemapsFromDB| key))
 	 (setq dbstruct (make-database))
 	 (setf (get key 'database) dbstruct)
 	 (setq *allconstructors* (adjoin key *allconstructors*))
@@ -1150,7 +1150,7 @@
 		     (file-position in pos)
 		     (setq constructorform (read in))
 		     (setq key (car constructorform))
-		     (setq oldmaps (getdatabase key 'modemaps))
+		     (setq oldmaps (|getOperationModemapsFromDB| key))
 		     (setq dbstruct (make-database))
 		     (setq *allconstructors* (adjoin key *allconstructors*))
 		     (setf (get key 'database) dbstruct) ; store the struct, side-effect it...
@@ -1613,7 +1613,7 @@
 (defun create-initializers ()
 ;; since libaxiom is now built with -name=axiom following unnecessary
 ;; (dolist (con (|allConstructors|))
-;;   (let ((sourcefile (getdatabase con 'sourcefile)))
+;;   (let ((sourcefile (|getConstructorSourceFileFromDB| con)))
 ;;     (if sourcefile
 ;;       (set (foam::axiomxl-file-init-name (pathname-name sourcefile))
 ;;             NOPfuncall))))
@@ -1825,7 +1825,7 @@
 (defun init-lib-file-getter (env)
   (let* ((getter-name (car env))
          (cname (cdr env))
-         (filename (getdatabase cname 'object)))
+         (filename (|getConstructorModuleFromDB| cname)))
 #-:CCL
     (load filename)
 #+:CCL
@@ -1845,7 +1845,7 @@
     (unless (or (not (numberp hcode)) (zerop hcode) (boundp asharpname))
           (when (|constructor?| bootname)
                 (setf (symbol-value asharpname)
-                     (if (getdatabase bootname 'niladic)
+                     (if (|niladicConstructorFromDB| bootname)
                          (|makeLazyOldAxiomDispatchDomain| (list bootname))
                        (cons '|runOldAxiomFunctor|  bootname))))
           (when (|attribute?| bootname)

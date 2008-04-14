@@ -392,11 +392,11 @@ form2String1 u ==
   op := CAR u
   argl := CDR u
   op='Join or op= 'mkCategory => formJoin1(op,argl)
-  $InteractiveMode and (u:= constructor? op) =>
+  $InteractiveMode and IDENTP op and (u:= constructor? op) =>
     null argl => app2StringWrap(formWrapId constructorName op, u1)
     op = "NTuple"  => [ form2String1 first argl, "*"]
     op = "Map"     => ["(",:formatSignature0 [argl.1,argl.0],")"]
-    op = 'Record => record2String(argl)
+    op = "Record" => record2String(argl)
     null (conSig := getConstructorSignature op) =>
       application2String(constructorName op,[form2String1(a) for a in argl], u1)
     ml := rest conSig
@@ -409,7 +409,7 @@ form2String1 u ==
     application2String(constructorName op,argl, u1)
   op = "Mapping" => ["(",:formatSignature argl,")"]
   op = "Record" => record2String(argl)
-  op = 'Union  =>
+  op = "Union"  =>
     application2String(op,[form2String1 x for x in argl], u1)
   op = ":" =>
       null argl => [ '":" ]

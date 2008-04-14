@@ -41,10 +41,13 @@ import '"boot-pkg"
 %Integer <=> BIGNUM
 %Symbol <=> SYMBOL
 %String <=> STRING
+%Atom <=> atom
 %List <=> LIST
 %Vector <=> VECTOR
 %Thing <=> true
 %Sequence <=> SEQUENCE
+
+%Pair <=> cons
 
 %Maybe a <=> null or a
 

@@ -60,7 +60,7 @@ makeAxFile(filename, constructors) ==
   $literals := []
   axForms :=
      [modemapToAx(modemap) for cname in constructors |
-            (modemap:=getConstructorModemap cname) and
+            (modemap:=getConstructorModemapFromDB cname) and
               (not cname in '(Tuple Exit Type)) and
                 not isDefaultPackageName cname]
   if $baseForms then
@@ -80,7 +80,7 @@ makeAxExportForm(filename, constructors) ==
   $literals := []
   axForms :=
      [modemapToAx(modemap) for cname in constructors |
-            (modemap:=getConstructorModemap cname) and
+            (modemap:=getConstructorModemapFromDB cname) and
               (not cname in '(Tuple Exit Type)) and
                 not isDefaultPackageName cname]
   if $baseForms then
@@ -106,7 +106,7 @@ modemapToAx(modemap) ==
   argdecls:=['Comma, : [axFormatDecl(a,stripType t) for a in args for t in argtypes]]
   resultType :=  axFormatType stripType target
   categoryForm? constructor =>
-      categoryInfo := GETDATABASE(constructor,'CONSTRUCTORCATEGORY)
+      categoryInfo := getConstructorCategoryFromDB constructor
       categoryInfo := SUBLISLIS($FormalMapVariableList, $TriangleVariableList,
                        categoryInfo)
       NULL args =>
@@ -125,7 +125,7 @@ modemapToAx(modemap) ==
      rtype := ['Apply, conscat, :args]
 --     if resultType is ['With,a,b] then
 --        if not(b is ['Sequence,:withseq]) then withseq := [b]
---        cosigs := rest GETDATABASE(constructor, 'COSIG)
+--        cosigs := rest getDualSignatureFromDB constructor
 --        exportargs := [['Export, [], arg, []] for arg in args for p in cosigs | p]
 --        resultType := ['With,a,['Sequence,:APPEND(exportargs, withseq)]]
      consdef := ['Define,
@@ -141,7 +141,7 @@ modemapToAx(modemap) ==
      ['Export, ['Declare, constructor, resultType],[],[]]
 --  if resultType is ['With,a,b] then
 --     if not(b is ['Sequence,:withseq]) then withseq := [b]
---     cosigs := rest GETDATABASE(constructor, 'COSIG)
+--     cosigs := rest getDualSignatureFromDB constructor
 --     exportargs := [['Export, [], arg, []] for arg in args for p in cosigs | p]
 --     resultType := ['With,a,['Sequence,:APPEND(exportargs, withseq)]]
   ['Export, ['Declare, constructor, ['Apply, "->", optcomma argdecls, resultType]],[],[]]
@@ -226,13 +226,13 @@ axFormatType(typeform) ==
           ['PretendTo, axFormatType CADDR typeform, 'SetCategory]]
   typeform is [op,:args] =>
       $pretendFlag and constructor? op and
-        getConstructorModemap op is [[.,target,:argtypes],.] =>
+        getConstructorModemapFromDB op is [[.,target,:argtypes],.] =>
           ['Apply, op,
                :[['PretendTo, axFormatType a, axFormatType t]
                      for a in args for t in argtypes]]
       MEMQ(op, '(SquareMatrix SquareMatrixCategory DirectProduct
          DirectProductCategory RadixExpansion)) and
-            getConstructorModemap op is [[.,target,arg1type,:restargs],.] =>
+            getConstructorModemapFromDB op is [[.,target,arg1type,:restargs],.] =>
                ['Apply, op,
                   ['PretendTo, axFormatType first args, axFormatType arg1type],
                      :[axFormatType a for a in rest args]]
@@ -343,7 +343,7 @@ getDefaultingOps catname ==
     while curIndex < stopIndex repeat
       curIndex := get1defaultOp(op,curIndex)
   $pretendFlag : local := true
-  catops := GETDATABASE(catname, 'OPERATIONALIST)
+  catops := getConstructorOperationsFromDB catname
   [axFormatDefaultOpSig(op,sig,catops) for opsig in $opList | opsig is [op,sig]]
 
 axFormatDefaultOpSig(op, sig, catops) ==

@@ -38,7 +38,7 @@ import '"g-util"
 
 hasCat(domainOrCatName,catName) ==
   catName='Object or catName='Type  -- every domain is a Type (Object)
-   or GETDATABASE([domainOrCatName,:catName],'HASCATEGORY)
+   or constructorHasCategoryFromDB [domainOrCatName,:catName]
 
 showCategoryTable con ==
   [[b,:val] for (key :=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_*
@@ -61,7 +61,7 @@ genCategoryTable() ==
     [con for con in allConstructors()
       | getConstructorKindFromDB con = "domain"]
   domainTable:= [addDomainToTable(con,getConstrCat catl) for con
-    in domainList | catl := GETDATABASE(con,'CONSTRUCTORCATEGORY)]
+    in domainList | catl := getConstructorCategoryFromDB con]
   -- $nonLisplibDomains, $noCategoryDomains are set in BUILDOM BOOT
   specialDs := SETDIFFERENCE($nonLisplibDomains,$noCategoryDomains)
   domainTable:= [:[addDomainToTable(id, getConstrCat (eval [id]).3)
@@ -135,7 +135,7 @@ simpHasSignature(pred,conform,op,sig) == --eval w/o loading
   IDENTP conform => pred
   [conname,:args] := conform
   n := #sig
-  u := LASSOC(op,GETDATABASE(conname,'OPERATIONALIST))
+  u := LASSOC(op,getConstructorOperationsFromDB conname)
   candidates := [x for (x := [sig1,:.]) in u | #sig1 = #sig]  or return false
   match := or/[x for (x := [sig1,:.]) in candidates
                 | sig = sublisFormal(args,sig1)] or return false
@@ -147,14 +147,14 @@ simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
   getConstructorKindFromDB conname = "category" =>
       simpCatHasAttribute(conform,attr)
   asharpConstructorName? conname =>
-    p := LASSOC(attr,GETDATABASE(conname,'attributes)) =>
+    p := LASSOC(attr,getConstructorAttributesFromDB conname) =>
       simpHasPred sublisFormal(rest conform,p)
   infovec := dbInfovec conname
   k := LASSOC(attr,infovec.2) or return nil --if not listed then false
   k = 0 => true
   $domain => kTestPred k    --from koOps
   predvec := $predvec or sublisFormal(rest conform,
-      GETDATABASE(conname,'PREDICATES))
+      getConstructorPredicatesFromDB conname)
   simpHasPred predvec.(k - 1)
 
 simpCatHasAttribute(domform,attr) ==
@@ -205,7 +205,7 @@ genTempCategoryTable() ==
 
 addToCategoryTable con ==
   -- adds an entry to $tempCategoryTable with key=con and alist entries
-  u := CAAR getConstructorModemap con --domain
+  u := CAAR getConstructorModemapFromDB con --domain
   alist := getCategoryExtensionAlist u
   HPUT(_*ANCESTORS_-HASH_*,first u,alist)
   alist
@@ -368,7 +368,7 @@ makeCatPred(zz, cats, thePred) ==
   cats
 
 getConstructorExports(conform,:options) == categoryParts(conform,
-  GETDATABASE(opOf conform,'CONSTRUCTORCATEGORY),IFCAR options)
+  getConstructorCategoryFromDB opOf conform,IFCAR options)
 
 categoryParts(conform,category,:options) == main where
   main() ==
@@ -459,11 +459,11 @@ updateCategoryTable(cname,kind) ==
     kind = 'package => nil
     kind = 'category => updateCategoryTableForCategory(cname)
     updateCategoryTableForDomain(cname,getConstrCat(
-      GETDATABASE(cname,'CONSTRUCTORCATEGORY)))
+      getConstructorCategoryFromDB cname))
 --+
   kind = 'domain =>
     updateCategoryTableForDomain(cname,getConstrCat(
-      GETDATABASE(cname,'CONSTRUCTORCATEGORY)))
+      getConstructorCategoryFromDB cname))
 
 updateCategoryTableForCategory(cname) ==
   clearTempCategoryTable([[cname,'category]])

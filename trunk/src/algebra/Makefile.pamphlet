@@ -185,7 +185,7 @@ system.spad.pamphlet  (MSYSCMD)
 
 axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
-  MSYSCMD  ODEIFTBL OM       OMCONN   OMDEV    OUT      \
+  MSYSCMD           OM       OMCONN   OMDEV    OUT      \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
   PROPLOG  PROPERTY BASTYPE  BASTYPE- CATEGORY LMODULE  \
   RMODULE  FINITE   STEP     SGROUP   SGROUP-  ABELSG   \
@@ -284,10 +284,10 @@ ystream.spad.pamphlet (YSTREAM)
 <<layer4>>=
 axiom_algebra_layer_4 = \
   ANON     COLOR    COMM     COMPPROP ESCONT1  EXIT     \
-  FAMONC   FORMULA1 IDPC     NIPROB   NONE     NUMINT   \
-  ODECAT   ODEPROB  OMENC    ONECOMP2 OPTCAT   OPTPROB  \
+  FAMONC   FORMULA1 IDPC              NONE     NUMINT   \
+  ODECAT            OMENC    ONECOMP2 OPTCAT            \
   PALETTE  PARPCURV PARPC2   PARSCURV PARSC2   PARSURF  \
-  PARSU2   PATMAB   PATRES2  PATTERN1 PDECAT   PDEPROB  \
+  PARSU2   PATMAB   PATRES2  PATTERN1 PDECAT            \
   REPSQ    REPDB    RFDIST   RIDIST   SPACEC   SPLNODE  \
   SUCH     TEX1     UDVO     YSTREAM  PAIR     ENV      \
   ATRIG    ATRIG-   GROUP    GROUP-   LALG     LALG-    \
@@ -405,12 +405,14 @@ sf.spad.pamphlet (REAL RADCAT RNS FPS DFLOAT)
 
 <<layer9>>=
 axiom_algebra_layer_9 = \
-  AMR      AMR-     DEGRED  DLP      EAB      ESTOOLS1 \
-  FAGROUP  FAMONOID FLINEXP FLINEXP- FRETRCT  FRETRCT- \
-  FSERIES  FT       IDPAG   IDPOAMS  INFINITY LA       \
-  OMLO     ORTHPOL  PRODUCT PADICCT  PMPRED   PMASS    \
-  PTFUNC2  RADCAT   RADCAT- RATRET   RADUTIL  UPXS2    \
-  XFALG    ZLINDEP  BBTREE  LSAGG    LSAGG-   SRAGG    SRAGG-    STRICAT    
+  AMR      AMR-     DEGRED   DLP      EAB      ESTOOLS1 \
+  FAGROUP  FAMONOID FLINEXP  FLINEXP- FRETRCT  FRETRCT- \
+  FSERIES  FT       IDPAG    IDPOAMS  INFINITY LA       \
+  OMLO     ORTHPOL  PRODUCT  PADICCT  PMPRED   PMASS    \
+  PTFUNC2  RADCAT   RADCAT-  RATRET   RADUTIL  UPXS2    \
+  XFALG    ZLINDEP  BBTREE   LSAGG    LSAGG-   SRAGG    \
+  SRAGG-   STRICAT  ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
+  PDEPROB
 
 
 axiom_algebra_layer_9_nrlibs = \
@@ -954,9 +956,9 @@ variable.spad.pamphlet (OVAR VARIABLE RULECOLD FUNCTION ANON)
 <<layer19>>=
 axiom_algebra_layer_19 = \
   ACPLOT   ANTISYM \
-  ANY      ASP12    ASP27    ASP28   \
-  ASP33    ASP49    ASP55    ASP7    \
-  ASP78    ASP8     ASP9     ATTRBUT \
+  ANY               ASP27    ASP28   \
+  ASP33    ASP49             ASP7    \
+  ASP78             ASP9     ATTRBUT \
   BOP      BOP1     COMMONOP COMPCAT \
   COMPCAT- DRAW     DRAWCFUN DROPT   \
   DROPT0   D01ANFA  D01ASFA  D03AGNT \
@@ -1071,7 +1073,7 @@ utsode.spad.pamphlet (UTSODE)
 
 <<layer20>>=
 axiom_algebra_layer_20 = \
-  AF       ALGFACT  \
+  AF       ALGFACT  ASP12    ASP55    ASP8 \
   ALGFF    ALGMANIP ALGMFACT ALGPKG   \
   ALGSC    AN       APPRULE  ASP19    \
   ASP20    ASP30    ASP31    ASP35    \

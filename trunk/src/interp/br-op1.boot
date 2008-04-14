@@ -292,7 +292,7 @@ fromHeading htPage ==
     upOp    := PNAME opOf  updomain
     ['" {\em from} ",:dbConformGen dnForm,'" {\em under} \ops{",upOp,'"}{",:$pn,:upFence,'"}"]
   domname  := htpProperty(htPage,'domname)
-  numberOfUnderlyingDomains := #[x for x in rest GETDATABASE(opOf domname,'COSIG) | x]
+  numberOfUnderlyingDomains := #[x for x in rest getDualSignatureFromDB(opOf domname) | x]
 --  numberOfUnderlyingDomains = 1 and
 --    KDR domname and (dn := dbExtractUnderlyingDomain domname) =>
 --      ['" {\em from} ",:pickitForm(domname,dn)]
@@ -315,10 +315,10 @@ conform2StringList(form,opFn,argFn,exception) ==
   special := MEMQ(op,'(Union Record Mapping))
   cosig :=
     special => ['T for x in args]
-    rest GETDATABASE(op,'COSIG)
+    rest getDualSignatureFromDB op
   atypes :=
     special => cosig
-    rest CDAR getConstructorModemap op
+    rest CDAR getConstructorModemapFromDB op
   sargl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     keyword :=
       x is [":",y,t] =>
@@ -361,8 +361,8 @@ dbOuttran form ==
   else
     op := form
     args := nil
-  cosig := rest GETDATABASE(op,'COSIG)
-  atypes := rest CDAR getConstructorModemap op
+  cosig := rest getDualSignatureFromDB op
+  atypes := rest CDAR getConstructorModemapFromDB op
   argl := [fn for x in args for atype in atypes for pred in cosig] where fn() ==
     pred => x
     typ := sublisFormal(args,atype)
@@ -497,7 +497,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
   dom     := EVAL domainForm
   which   := '"operation"
   [nam,:$domainArgs] := domainForm
-  $predicateList: local := GETDATABASE(nam,'PREDICATES)
+  $predicateList: local := getConstructorPredicatesFromDB nam
   predVector := dom.3
   u := getDomainOpTable(dom,true,ASSOCLEFT opAlist)
   --u has form ((op,sig,:implementor)...)
@@ -640,7 +640,7 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
   for pair in u repeat
     [dom,:cat] := pair
     LASSQ(cat,catOriginAlist) = 'etc => RPLACD(pair,'etc)
-    RPLACD(pair,simpOrDumb(GETDATABASE(pair,'HASCATEGORY),true))
+    RPLACD(pair,simpOrDumb(constructorHasCategoryFromDB pair,true))
   --now add all of the domains
   for [dom,:pred] in domOriginAlist repeat
     u := insertAlist(dom,simpOrDumb(pred,LASSQ(dom,u) or true),u)
@@ -1011,7 +1011,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
     'done
 
 getRegistry(op,sig) ==
-  u := GETDATABASE('AttributeRegistry,'DOCUMENTATION)
+  u := getConstructorDocumentationFromDB "AttributeRegistry"
   v := LASSOC(op,u)
   match := or/[y for y in v | y is [['attribute,: =sig],:.]] => CADR match
   '""
@@ -1019,7 +1019,7 @@ getRegistry(op,sig) ==
 evalableConstructor2HtString domform ==
   if VECP domform then domform := devaluate domform
   conname := first domform
-  coSig   := rest GETDATABASE(conname,'COSIG)
+  coSig   := rest getDualSignatureFromDB conname
   --entries are T for arguments which are domains; NIL for computational objects
   and/[x for x in coSig] => form2HtString(domform,nil,true)
   arglist := [unquote x for x in rest domform] where
@@ -1028,7 +1028,7 @@ evalableConstructor2HtString domform ==
         f = 'QUOTE => first args
         [f,:[unquote x for x in args]]
       arg
-  fargtypes:=CDDAR getConstructorModemap conname
+  fargtypes:=CDDAR getConstructorModemapFromDB conname
 --argtypes:= sublisFormal(arglist,fargtypes)
   form2HtString([conname,:[fn for arg in arglist for x in coSig
                    for ftype in fargtypes]],nil,true) where

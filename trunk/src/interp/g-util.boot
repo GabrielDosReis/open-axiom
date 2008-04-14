@@ -64,7 +64,7 @@ get(x,prop,e) ==
   get1(x,prop,e)
 
 get0(x,prop,e) ==
-  null atom x => get(QCAR x,prop,e)
+  not atom x => get(QCAR x,prop,e)
   u:= QLASSQ(x,CAR QCAR e) => QLASSQ(prop,u)
   (tail:= CDR QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
     QLASSQ(prop,u)
@@ -72,15 +72,15 @@ get0(x,prop,e) ==
 
 get1(x,prop,e) ==
     --this is the old get
-  null atom x => get(QCAR x,prop,e)
+  not atom x => get(QCAR x,prop,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     LASSOC("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop,e)
   LASSOC(prop,getProplist(x,e)) or get2(x,prop,e)
 
 get2(x,prop,e) ==
-  prop="modemap" and constructor? x =>
-    (u := getConstructorModemap(x)) => [u]
+  prop="modemap" and IDENTP x and constructor? x =>
+    (u := getConstructorModemapFromDB x) => [u]
     nil
   nil
 
