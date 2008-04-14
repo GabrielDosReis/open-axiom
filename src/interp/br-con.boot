@@ -177,7 +177,7 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
   htSayStandard '"\indentrel{-2}"
   if name.(#name-1) = char "&" then name := SUBSEQ(name, 0, #name-1)
 --sourceFileName := dbSourceFile INTERN name
-  sourceFileName := GETDATABASE(INTERN name,'SOURCEFILE)
+  sourceFileName := getConstructorSourceFileFromDB INTERN name
   filename := extractFileNameFromPath sourceFileName
   if filename ^= '"" then
     htSayStandard '"\newline{}"
@@ -190,7 +190,7 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
 kPageArgs([op,:args],[.,.,:source]) ==
 ------------------> OBSELETE
   firstTime := true
-  coSig := rest GETDATABASE(op,'COSIG)
+  coSig := rest getDualSignatureFromDB op
   for x in args for t in source for pred in coSig repeat
     if not firstTime then htSay '", and"
     htSay('"\newline ")
@@ -208,7 +208,7 @@ kArgPage(htPage,arg) ==
   [op,:args] := conform := htpProperty(htPage,'conform)
   domname := htpProperty(htPage,'domname)
   heading := htpProperty(htPage,'heading)
-  source := CDDAR getConstructorModemap op
+  source := CDDAR getConstructorModemapFromDB op
   n := position(arg,args)
   typeForm := sublisFormal(args,source . n)
   domTypeForm := mkDomTypeForm(typeForm,conform,domname)
@@ -405,7 +405,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
   u := $infovec.3
   $predvec:=
     $domain => $domain . 3
-    GETDATABASE(name,'PREDICATES)
+    getConstructorPredicatesFromDB name
   catpredvec := CAR u
   catinfo    := CADR u
   catvec     := CADDR u
@@ -656,7 +656,7 @@ kDomainName(htPage,kind,name,nargs) ==
   htpSetProperty(htPage,'inputAreaList,inputAreaList)
   conname := INTERN name
   args := [kArgumentCheck(domain?,x) or nil for x in inputAreaList
-              for domain? in rest GETDATABASE(conname,'COSIG)]
+              for domain? in rest getDualSignatureFromDB conname]
   or/[null x for x in args] =>
     (n := +/[1 for x in args | x]) > 0 =>
       ['error,nil,'"\centerline{You gave values for only {\em ",n,'" } of the {\em ",#args,'"}}",'"\centerline{parameters of {\sf ",name,'"}}\vspace{1}\centerline{Please enter either {\em all} or {\em none} of the type parameters}"]
@@ -702,7 +702,7 @@ kisValidType typeForm ==
 
 kCheckArgumentNumbers t ==
   [conname,:args] := t
-  cosig := KDR GETDATABASE(conname,'COSIG)
+  cosig := KDR getDualSignatureFromDB conname
   #cosig ^= #args => false
   and/[foo for domain? in cosig for x in args] where foo() ==
     domain? => kCheckArgumentNumbers x
@@ -846,7 +846,7 @@ koaPageFilterByName(htPage,functionToCall) ==
 
 dbConstructorDoc(conform,$op,$sig) == fn conform where
   fn (conform := [conname,:$args]) ==
-    or/[gn y for y in GETDATABASE(conname,'DOCUMENTATION)]
+    or/[gn y for y in getConstructorDocumentationFromDB conname]
   gn([op,:alist]) ==
     op = $op and "or"/[doc or '("") for [sig,:doc] in alist | hn sig]
   hn sig ==
@@ -876,7 +876,7 @@ dbAddDocTable conform ==
   conname := opOf conform
   storedArgs := rest getConstructorForm conname
   for [op,:alist] in SUBLISLIS(["$",:rest conform],
-    ["%",:storedArgs],GETDATABASE(opOf conform,'DOCUMENTATION))
+    ["%",:storedArgs],getConstructorDocumentationFromDB opOf conform)
       repeat
        op1 :=
          op = '(Zero) => 0
@@ -1054,7 +1054,7 @@ dbShowCons1(htPage,cAlist,key) ==
     key = 'files =>
       flist :=
         [y for con in conlist |
-          y := (fn := GETDATABASE(con,'SOURCEFILE))]
+          y := (fn := getConstructorSourceFileFromDB con)]
       bcUnixTable(listSort(function GLESSEQP,REMDUP flist))
     key = 'documentation   => dbShowConsDoc(page,conlist)
     if $exposedOnlyIfTrue then
@@ -1139,7 +1139,7 @@ dbShowConsDoc1(htPage,conform,indexOrNil) ==
   --NOTE that we pass conform is as "origin"
 
 getConstructorDocumentation conname ==
-  LASSOC('constructor,GETDATABASE(conname,'DOCUMENTATION))
+  LASSOC('constructor,getConstructorDocumentationFromDB conname)
     is [[nil,line,:.],:.] and line or '""
 
 dbSelectCon(htPage,which,index) ==

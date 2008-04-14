@@ -1,5 +1,49 @@
 2008-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/as.boot: Remove explicit use GETDATABASE.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/daase.lisp: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/hashcode.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/template.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/types.boot (%Atom): New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Tidy.
+	(axiom_algebra_layer_4): Likewise.
+	(axiom_algebra_layer_19): Likewise.
+
+2008-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/apply.boot: Tidy signature declarations.
 	* interp/as.boot: Use getConstructorKindFromDB throughout.
 	* interp/br-con.boot: Likewise.

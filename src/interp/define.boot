@@ -191,7 +191,7 @@ macroExpand(x,e) ==   --not worked out yet
  
 macroExpandList(l,e) ==
   -- macros should override niladic props
-  (l is [name]) and IDENTP name and GETDATABASE(name, 'NILADIC) and
+  (l is [name]) and IDENTP name and niladicConstructorFromDB name and
         (u := get(name, 'macro, e)) => macroExpand(u,e)
   [macroExpand(x,e) for x in l]
  
@@ -229,7 +229,7 @@ makeCategoryPredicates(form,u) ==
 --+ the following function
 mkCategoryPackage(form is [op,:argl],cat,def) ==
   packageName:= INTERN(STRCONC(PNAME op,'"&"))
-  packageAbb := INTERN(STRCONC(GETDATABASE(op,'ABBREVIATION),'"-"))
+  packageAbb := INTERN(STRCONC(getConstructorAbbreviationFromDB op,'"-"))
   $options:local := []
   -- This stops the next line from becoming confused
   abbreviationsSpad2Cmd ['domain,packageAbb,packageName]
@@ -530,7 +530,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
         $lisplibFunctionLocations := SUBLIS($pairlis,$functionLocations)
         $lisplibCategoriesExtended := SUBLIS($pairlis,$lisplibCategoriesExtended)
         -- see NRTsetVector4 for initial setting of $lisplibCategoriesExtended
-        libFn := GETDATABASE(op','ABBREVIATION)
+        libFn := getConstructorAbbreviationFromDB op'
         $lookupFunction: local :=
             NRTgetLookupFunction($functorForm,CADAR $lisplibModemap,$NRTaddForm)
             --either lookupComplete (for forgetful guys) or lookupIncomplete

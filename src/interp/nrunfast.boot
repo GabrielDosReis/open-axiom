@@ -430,8 +430,8 @@ lazyMatch(source,lazyt,dollar,domain) ==
               for [.,stag,s] in sargl for [.,atag,a] in argl]
       MEMQ(op,'(Union Mapping _[_|_|_] QUOTE)) =>
          and/[lazyMatchArg(s,a,dollar,domain) for s in sargl for a in argl]
-      coSig := GETDATABASE(op,'COSIG)
-      NULL coSig => error ["bad Constructor op", op]
+      coSig := getDualSignatureFromDB op
+      null coSig => error ["bad Constructor op", op]
       and/[lazyMatchArg2(s,a,dollar,domain,flag)
            for s in sargl for a in argl for flag in rest coSig]
   STRINGP source and lazyt is ['QUOTE,=source] => true
@@ -447,7 +447,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
  
 lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
   #s ^= #d => nil
-  scoSig := GETDATABASE(opOf s,'COSIG) or return nil
+  scoSig := getDualSignatureFromDB opOf s or return nil
   if MEMQ(opOf s, '(Union Mapping Record)) then 
      scoSig := [true for x in s]
   and/[fn for x in rest s for arg in rest d for xt in rest scoSig] where
@@ -513,8 +513,8 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
   MEMQ(functorName, '(Union Mapping _[_|_|_])) =>
           [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
   functorName = "QUOTE"  => [functorName,:argl]
-  coSig := GETDATABASE(functorName,'COSIG)
-  NULL coSig => error ["bad functorName", functorName]
+  coSig := getDualSignatureFromDB functorName
+  null coSig => error ["bad functorName", functorName]
   [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,flag)
         for a in argl for flag in rest coSig]]
  
@@ -574,7 +574,7 @@ newHasTest(domform,catOrAtt) ==
   domform is [dom,:.] and dom in '(Union Record Mapping Enumeration) =>
     ofCategory(domform, catOrAtt)
   catOrAtt = '(Type) => true
-  GETDATABASE(opOf domform, 'ASHARP?) => fn(domform,catOrAtt) where
+  asharpConstructorFromDB opOf domform => fn(domform,catOrAtt) where
   -- atom (infovec := getInfovec opOf domform) => fn(domform,catOrAtt) where
     fn(a,b) ==
       categoryForm?(a) => assoc(b, ancestorsOf(a, nil))
@@ -593,7 +593,7 @@ newHasTest(domform,catOrAtt) ==
 -- on second thoughts we won't!
   getConstructorKindFromDB opOf domform = "category" =>
       domform = catOrAtt => 'T
-      for [aCat,:cond] in [:ancestorsOf(domform,NIL),:SUBLISLIS (rest domform,$FormalMapVariableList,GETDATABASE(opOf domform,'ATTRIBUTES))] |  aCat = catOrAtt  repeat
+      for [aCat,:cond] in [:ancestorsOf(domform,NIL),:SUBLISLIS (rest domform,$FormalMapVariableList,getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
          return evalCond cond where
            evalCond x ==
              ATOM x => x

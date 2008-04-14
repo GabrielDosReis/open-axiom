@@ -80,7 +80,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSaySaturn ops
       htSaySaturn '"}"
     htSayStandard(ops)
-    predicate='ASCONST or GETDATABASE(op,'NILADIC) or member(op,'(0 1)) => 'skip
+    predicate='ASCONST or niladicConstructorFromDB op or member(op,'(0 1)) => 'skip
     which = '"attribute" and null args => 'skip
     htSay('"(")
     if IFCAR args then htSay('"{\em ",quickForm2HtString IFCAR args,'"}")
@@ -97,7 +97,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   if which = '"operation" then
     $signature : local :=
       MEMQ(conname,$Primitives) => nil
-      CDAR getConstructorModemap conname
+      CDAR getConstructorModemapFromDB conname
     --RDJ: this next line is necessary until compiler bug is fixed
     --that forgets to substitute #variables for t#variables;
     --check the signature for SegmentExpansionCategory, e.g.
@@ -495,7 +495,7 @@ koAttrs(conform,domname) ==
   $infovec: local := dbInfovec conname or return nil
   $predvec: local :=
     $domain => $domain . 3
-    GETDATABASE(conname,'PREDICATES)
+    getConstructorPredicatesFromDB conname
   u := [[a,:pred] for [a,:i] in $infovec . 2 | a ^= 'nil and (pred := sublisFormal(args,kTestPred i))]
                                                ---------  CHECK for a = nil
   listSort(function GLESSEQP,fn u) where fn u ==
@@ -576,7 +576,7 @@ kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
 
 koCatOps(conform,domname) ==
   conname := opOf conform
-  oplist := REVERSE GETDATABASE(conname,'OPERATIONALIST)
+  oplist := REVERSE getConstructorOperationsFromDB conname
   oplist := sublisFormal(IFCDR domname or IFCDR conform ,oplist)
   --check below for INTEGERP key to avoid subsumed signatures
   [[zeroOneConvert op,:nalist] for [op,:alist] in oplist | nalist := koCatOps1(alist)]

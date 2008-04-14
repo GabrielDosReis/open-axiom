@@ -979,7 +979,7 @@ addParameterTemplates(page, conform) ==
 kPageArgs([op,:args],[.,.,:source]) ==
   htSaySaturn '"\begin{tabular}{p{.25in}lp{0in}}"
   firstTime := true
-  coSig := rest GETDATABASE(op,'COSIG)
+  coSig := rest getDualSignatureFromDB op
   for x in args for t in source for pred in coSig repeat
     if firstTime then firstTime := false
                  else
@@ -1243,7 +1243,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     if unexposed? and $includeUnexposed? then
       htSayUnexposed()
     htSay(ops)
-    predicate='ASCONST or GETDATABASE(op,'NILADIC) or member(op,'(0 1)) => 'skip
+    predicate='ASCONST or niladicConstructorFromDB op or member(op,'(0 1)) => 'skip
     which = '"attribute" and null args => 'skip
     htSay('"(")
     if IFCAR args then htSay('"{\em ",quickForm2HtString IFCAR args,'"}")
@@ -1261,7 +1261,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   if which = '"operation" then
     $signature : local :=
       MEMQ(conname,$Primitives) => nil
-      CDAR getConstructorModemap conname
+      CDAR getConstructorModemapFromDB conname
     --RDJ: this next line is necessary until compiler bug is fixed
     --that forgets to substitute #variables for t#variables;
     --check the signature for SegmentExpansionCategory, e.g.
@@ -1283,7 +1283,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSaySaturn '"{\em Arguments:}"
       htSaySaturnAmpersand()
       firstTime := true
-      coSig := KDR GETDATABASE(op,'COSIG)  --check if op is constructor
+      coSig := KDR getDualSignatureFromDB op  --check if op is constructor
       for a in args for t in rest $sig repeat
             if not firstTime then
               htSaySaturn '"\\ "
@@ -1380,7 +1380,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     htSayIndentRel(-15)
   --------> print abbr and source file for constructors <---------
   if which = '"constructor" then
-    if (abbr := GETDATABASE(conname,'ABBREVIATION)) then
+    if (abbr := getConstructorAbbreviationFromDB conname) then
       htSaySaturn '"\\"
       htSaySaturn '"{\em Abbreviation:}"
       htSaySaturnAmpersand()
@@ -1414,7 +1414,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   htSaySaturn '"\end{tabular}"
 
 htSaySourceFile conname ==
-  sourceFileName := (GETDATABASE(conname,'SOURCEFILE) or '"none")
+  sourceFileName := (getConstructorSourceFileFromDB conname or '"none")
   filename :=  extractFileNameFromPath sourceFileName
   htMakePage [['text,'"\unixcommand{",filename,'"}{_\$AXIOM/lib/SPADEDIT ",
               sourceFileName, '" ", conname, '"}"]]

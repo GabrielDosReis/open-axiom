@@ -80,7 +80,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
     kind = 'category =>
       [INTERN STRCONC(PNAME conname,'"&"),"$",:CDR conform]
     conform
-  faTypes  := CDDAR getConstructorModemap conname
+  faTypes  := CDDAR getConstructorModemapFromDB conname
 
   conArgTypes :=
     SUBLISLIS(IFCDR conform,TAKE(#faTypes,$FormalMapVariableList),faTypes)
@@ -262,7 +262,7 @@ getInfoAlist conname ==
     return nil
   alist := mySort READ inStream
   if cat? then
-    [.,dollarName,:.] := GETDATABASE(conname,'CONSTRUCTORFORM)
+    [.,dollarName,:.] := getConstructorFormFromDB conname
     alist := SUBST("$",dollarName,alist)
   alist
 

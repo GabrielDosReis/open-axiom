@@ -926,7 +926,7 @@ coerceInt1(triple,t2) ==
 coerceSubDomain(val, tSuper, tSub) ==
   -- Try to coerce from a sub domain to a super domain
   val = '_$fromCoerceable_$ => nil
-  super := GETDATABASE(first tSub, 'SUPERDOMAIN)
+  super := getSuperDomainFromDB first tSub
   superDomain := first super
   superDomain = tSuper =>
     coerceImmediateSubDomain(val, tSuper, tSub, CADR super)
@@ -1091,20 +1091,20 @@ coerceIntByMapInner(arg,[u1,:u2]) == coerceOrThrowFailure(arg,u1,u2)
 valueArgsEqual?(t1, t2) ==
   -- returns true if the object-valued arguments to t1 and t2 are the same
   -- under coercion
-  coSig := CDR GETDATABASE(CAR t1, 'COSIG)
-  constrSig := CDR getConstructorSignature CAR t1
+  coSig := rest getDualSignatureFromDB first t1
+  constrSig := rest getConstructorSignature first t1
   tl1 := replaceSharps(constrSig, t1)
   tl2 := replaceSharps(constrSig, t2)
   not MEMQ(NIL, coSig) => true
   done := false
   value := true
-  for a1 in CDR t1 for a2 in CDR t2 for cs in coSig
+  for a1 in rest t1 for a2 in rest t2 for cs in coSig
     for m1 in tl1 for m2 in tl2 while not done repeat
-          ^cs =>
+          not cs =>
             trip := objNewWrap(a1, m1)
             newVal := coerceInt(trip, m2)
             null newVal => (done := true; value := false)
-            ^algEqual(a2, objValUnwrap newVal, m2) =>
+            not algEqual(a2, objValUnwrap newVal, m2) =>
               (done := true; value := false)
   value
 

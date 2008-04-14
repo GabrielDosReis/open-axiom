@@ -131,8 +131,9 @@ isNestedInstantiation(form,deps) ==
 ++ Return a path to the loadable module that contains the
 ++ definition of the constructor indicated by `cname'.  
 ++ Error if the file container of the module does not exist.
+findModule: %Symbol -> %Maybe %String
 findModule cname ==
-  m := GETDATABASE(cname,'OBJECT) or return nil
+  m := getConstructorModuleFromDB cname or return nil
   existingFile? m => m
   strap := algebraBootstrapDir() =>
     m := CONCAT(strap,PATHNAME_-NAME m,'".",$faslType)
@@ -161,7 +162,7 @@ loadLib cname ==
   clearConstructorCache cname
   updateDatabase(cname,cname,systemdir?)
   installConstructor(cname,kind)
-  u := getConstructorModemap cname
+  u := getConstructorModemapFromDB cname
   updateCategoryTable(cname,kind)
   coSig :=
       u =>
@@ -170,7 +171,7 @@ loadLib cname ==
       NIL
   -- in following, add property value false or NIL to possibly clear
   -- old value
-  if null CDR GETDATABASE(cname,'CONSTRUCTORFORM) then
+  if null rest getConstructorFormFromDB cname then
       MAKEPROP(cname,'NILADIC,'T)
     else
       REMPROP(cname,'NILADIC)
@@ -226,15 +227,15 @@ convertOpAlist2compilerInfo(opalist) ==
           [[op, typelist], pred, [impl, '$, slot]]
    
 updateCategoryFrameForConstructor(constructor) ==
-   opAlist := GETDATABASE(constructor, 'OPERATIONALIST)
-   [[dc,:sig],[pred,impl]] := getConstructorModemap constructor
+   opAlist := getConstructorOperationsFromDB constructor
+   [[dc,:sig],[pred,impl]] := getConstructorModemapFromDB constructor
    $CategoryFrame := put(constructor,'isFunctor,
        convertOpAlist2compilerInfo(opAlist),
        addModemap(constructor, dc, sig, pred, impl,
            put(constructor, 'mode, ['Mapping,:sig], $CategoryFrame)))
 
 updateCategoryFrameForCategory(category) ==
-   [[dc,:sig],[pred,impl]] := getConstructorModemap category
+   [[dc,:sig],[pred,impl]] := getConstructorModemapFromDB category
    $CategoryFrame :=
      put(category, 'isCategory, 'T,
          addModemap(category, dc, sig, pred, impl, $CategoryFrame))
@@ -248,18 +249,18 @@ makeConstructorsAutoLoad() ==
   for cnam in allConstructors() repeat
     cnam in $CategoryNames => nil
     REMPROP(cnam,'LOADED)
---    fn:=GETDATABASE(cnam,'ABBREVIATION)
-    if GETDATABASE(cnam,'NILADIC)
+--    fn:=getConstructorAbbreviationFromDB cnam
+    if niladicConstructorFromDB cnam
      then PUT(cnam,'NILADIC,'T)
      else REMPROP(cnam,'NILADIC)
     systemDependentMkAutoload(constructor? cnam,cnam)
  
 systemDependentMkAutoload(fn,cnam) ==
     FBOUNDP(cnam) => "next"
-    asharpName := GETDATABASE(cnam, 'ASHARP?) =>
+    asharpName := asharpConstructorFromDB cnam =>
          kind := getConstructorKindFromDB cnam
-         cosig := GETDATABASE(cnam, 'COSIG)
-         file := GETDATABASE(cnam, 'OBJECT)
+         cosig := getDualSignatureFromDB cnam
+         file := getConstructorModuleFromDB cnam
          SET_-LIB_-FILE_-GETTER(file, cnam)
          kind = 'category =>
               ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
@@ -374,7 +375,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   FRESH_-LINE $algebraOutputStream
   sayMSG fillerSpaces(72,'"-")
   unloadOneConstructor(op,libName)
-  LOCALDATABASE(LIST SYMBOL_-NAME GETDATABASE(op,'ABBREVIATION),NIL)
+  LOCALDATABASE(LIST SYMBOL_-NAME getConstructorAbbreviationFromDB op,NIL)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   if $lisplibKind = 'category
     then updateCategoryFrameForCategory op
@@ -598,7 +599,7 @@ getSlotNumberFromOperationAlist(domainForm,op,sig) ==
   constructorName:= CAR domainForm
   constructorArglist:= CDR domainForm
   operationAlist:=
-    GETDATABASE(constructorName, 'OPERATIONALIST) or
+    getConstructorOperationsFromDB constructorName or
       keyedSystemError("S2IL0026",[constructorName])
   entryList:= QLASSQ(op,operationAlist) or return nil
   tail:= or/[r for [sig1,:r] in entryList | sigsMatch(sig,sig1,domainForm)] =>
@@ -627,16 +628,12 @@ findDomainSlotNumber(domain,op,sig) == --using slot 1 of the domain
   systemErrorHere '"findDomainSlotNumber"
  
 
-++ return the modemap of the constructor or the instantiation
-++ of the constructor `form'. 
-getConstructorModemap form ==
-  GETDATABASE(opOf form, 'CONSTRUCTORMODEMAP)
- 
-getConstructorSignature form ==
-  (mm := getConstructorModemap form) =>
+getConstructorSignature: %Symbol -> %Form
+getConstructorSignature ctor ==
+  (mm := getConstructorModemapFromDB ctor) =>
     [[.,:sig],:.] := mm
     sig
-  NIL
+  nil
  
 --% from MODEMAP BOOT
  

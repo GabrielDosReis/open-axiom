@@ -216,22 +216,22 @@ getAttributesFromCATEGORY catform ==
 displayDatabase x == main where
   main() ==
     for y in
-     '(CONSTRUCTORFORM CONSTRUCTORKIND _
-       CONSTRUCTORMODEMAP _
-       ABBREVIATION _
-       CONSTRUCTORCATEGORY _
-       PARENTS _
-       ATTRIBUTES _
-       ANCESTORS _
-       SOURCEFILE _
-       OPERATIONALIST _
-       MODEMAPS _
-       SOURCEFILE _
-       DOCUMENTATION) repeat fn(x,y)
+     '(("form" . getConstructorFormFromDB) _
+       ("kind" . getConstructorKindFromDB) _
+       ("modemap" . getConstructorModemapFromDB) _
+       ("abbreviation" . getConstructorAbbreviationFromDB) _
+       ("category" . getConstructorCategoryFromDB) _
+       ("parents" . getConstructorParentsFromDB) _
+       ("attributes" . getConstructorAttributesFromDB)  _
+       ("ancestors" . getConstructorAncestorsFromDB) _
+       ("source file" . getConstructorSourceFileFromDB) _
+       ("all operations" . getConstructorOperationsFromDB) _
+       ("operation modemap" . getOperationModemapsFromDB)  _
+       ("documentation" . getConstructorDocumentationFromDB)) repeat fn(x,y)
    where
     fn(x,y) ==
-      sayBrightly ['"----------------- ",y,'" --------------------"]
-      pp GETDATABASE(x,y)
+      sayBrightly ['"----------------- ",first y,'" --------------------"]
+      pp FUNCALL(rest y, x)
 
 -- For some reason Dick has modified as.boot to convert the
 -- identifier |0| or |1| to an integer in the list of operations.
@@ -392,7 +392,7 @@ asyAncestors x ==
   atom x =>
     x = '_% => '_$
     MEMQ(x, $niladics)       => [x]
-    GETDATABASE(x ,'NILADIC) => [x]
+    niladicConstructorFromDB x => [x]
     x
   asyAncestorList x
 
@@ -759,9 +759,9 @@ createAbbreviation s ==
   nil
 
 --============================================================================
---       extending getConstructorModemap Property
+--       extending getConstructorModemapFromDB Property
 --============================================================================
---Note: modemap property is built when getConstructorModemap is called
+--Note: modemap property is built when getConstructorModemapFromDB is called
 
 asyConstructorModemap con ==
   HGET($conHash,con) isnt [record,:.] => nil   --not there

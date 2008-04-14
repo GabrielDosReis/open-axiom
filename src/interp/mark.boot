@@ -1248,7 +1248,7 @@ changeToEqualEqual lines ==
     word := INTERN SUBSTRING(x, n + 4, m - n - 4)
     expandedWord := macroExpand(word,$e)
     not (MEMQ(word, '(Record Union Mapping)) 
-      or GETDATABASE(opOf expandedWord,'CONSTRUCTORFORM)) => nil
+      or getConstructorFormFromDB opOf expandedWord) => nil
     sayMessage '"Converting input line:"
     sayMessage ['"WAS: ", x]
     x . (n + 1) := char '_= ;
@@ -1339,7 +1339,7 @@ markConstructorForm name ==  --------> same as getConstructorForm
   name = 'UntaggedUnion => '(Union A B)
   name = 'Record  => '(Record (_: a A) (_: b B))
   name = 'Mapping => '(Mapping T S)
-  GETDATABASE(name,'CONSTRUCTORFORM)
+  getConstructorFromDB name
 
 --======================================================================
 --                new path functions

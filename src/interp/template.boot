@@ -37,11 +37,11 @@ import '"c-util"
 getOperationAlistFromLisplib x ==
   -- used to be in clammed.boot. Moved on 1/24/94
 --+
---  newType? x => GETDATABASE(x, 'OPERATIONALIST)
+--  newType? x => getConstructorOperationsFromDB x
   NRTgetOperationAlistFromLisplib x
 
 NRTgetOperationAlistFromLisplib x ==
-  u := GETDATABASE(x, 'OPERATIONALIST)
+  u := getConstructorOperationsFromDB x
 --  u := removeZeroOneDestructively u
   null u => u          -- this can happen for Object
   CAAR u = '_$unique => rest u
@@ -101,7 +101,7 @@ evalSlotDomain(u,dollar) ==
     y is ['SETELT,:.] => eval y--lazy domains need to marked; this is dangerous?
     y is [v,:.] =>
       VECP v => lazyDomainSet(y,dollar,u)               --old style has [$,code,:lazyt]
-      constructor? v or MEMQ(v,'(Record Union Mapping)) =>
+      IDENTP v and constructor? v or MEMQ(v,'(Record Union Mapping)) =>
         lazyDomainSet(y,dollar,u)                       --new style has lazyt
       y
     y
@@ -203,7 +203,7 @@ mkSigPredVectors() ==
   $predVector:= newShell 100
   for nam in allConstructors() |
           getConstuctorKindFromDB nam ^= "package" repeat
-    for [op,:sigList] in GETDATABASE(nam,'OPERATIONALIST) repeat
+    for [op,:sigList] in getConstructorOperationsFromDB nam repeat
       for [sig,:r] in sigList repeat
         addConsDB sig
         r is [.,pred,:.] => putPredHash addConsDB pred
@@ -283,7 +283,7 @@ NRTaddInner x ==
          y is [":",.,z] => NRTinnerGetLocalIndex z
          NRTinnerGetLocalIndex y
     x is ['SubDomain,y,:.] => NRTinnerGetLocalIndex y
-    getConstructorSignature x is [.,:ml] =>
+    getConstructorSignature first x is [.,:ml] =>
       for y in rest x for m in ml | not (y = '$) repeat
         isCategoryForm(m,$CategoryFrame) => NRTinnerGetLocalIndex y
     keyedSystemError("S2NR0003",[x])
@@ -294,8 +294,9 @@ NRTaddInner x ==
 NRTinnerGetLocalIndex x ==
   atom x => x
   -- following test should skip Unions, Records, Mapping
-  MEMQ(opOf x,'(Union Record Mapping _[_|_|_])) => NRTgetLocalIndex x
-  constructor?(x) => NRTgetLocalIndex x
+  op := first x
+  MEMQ(op,'(Union Record Mapping _[_|_|_])) => NRTgetLocalIndex x
+  constructor? op => NRTgetLocalIndex x
   NRTaddInner x
 
 assignSlotToPred cond ==

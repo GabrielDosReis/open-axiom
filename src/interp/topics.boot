@@ -181,7 +181,7 @@ td con ==
 tdAdd(con,hash) ==
   v := HGET($conTopicHash,con)
   u := addTopic2Documentation(con,v)
---u := GETDATABASE(con,'DOCUMENTATION) 
+--u := getConstructorDocumentationFromDB con
   for pair in u | FIXP (code := myLastAtom pair) and (op := CAR pair) ^= 'construct repeat
     for x in (names := code2Classes code) repeat HPUT(hash,x,insert(op,HGET(hash,x)))
 
@@ -221,7 +221,7 @@ transferClassCodes(conform,opAlist) ==
     transferCodeCon(CAAR x,opAlist)
 
 transferCodeCon(con,opAlist) ==
-  for pair in GETDATABASE(con,'DOCUMENTATION) 
+  for pair in getConstructorDocumentationFromDB con
     | FIXP (code := myLastAtom pair) repeat
       u := ASSOC(QCAR pair,opAlist) => RPLACD(LASTNODE u,code)
 
@@ -235,7 +235,7 @@ filterByTopic(opAlist,topic) ==
     | FIXP (code := myLastAtom x) and LOGBITP(bitNumber,code)]
 
 listOfTopics(conname) ==
-  doc := GETDATABASE(conname,'DOCUMENTATION)
+  doc := getConstructorDocumentationFromDB conname
   u := ASSOC('constructor,doc) or return nil
   code := myLastAtom u
 --null FIXP code => nil

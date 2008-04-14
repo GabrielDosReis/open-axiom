@@ -51,7 +51,7 @@ showImp(dom,:options) ==
   missingOnlyFlag := KAR options
   domainForm := devaluate dom
   [nam,:$domainArgs] := domainForm
-  $predicateList: local := GETDATABASE(nam,'PREDICATES)
+  $predicateList: local := getConstructorPredicatesFromDB nam
   predVector := dom.3
   u := getDomainOpTable(dom,true)
   --sort into 4 groups: domain exports, unexports, default exports, others
@@ -99,7 +99,7 @@ showFrom(D,:option) ==
   alist := nil
   domainForm := devaluate D
   [nam,:.] := domainForm
-  $predicateList: local := GETDATABASE(nam,'PREDICATES)
+  $predicateList: local := getConstructorPredicatesFromDB nam
   for (opSig := [op,sig]) in getDomainSigs1(D,ops) repeat
     u := from?(D,op,sig)
     x := ASSOC(u,alist) => RPLACD(x,[opSig,:rest x])
@@ -114,13 +114,13 @@ showFrom(D,:option) ==
 getDomainOps D ==
   domname := D.0
   conname := CAR domname
-  $predicateList: local := GETDATABASE(conname,'PREDICATES)
+  $predicateList: local := getConstructorPredicatesFromDB conname
   REMDUP listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
  
 getDomainSigs(D,:option) ==
   domname := D.0
   conname := CAR domname
-  $predicateList: local := GETDATABASE(conname,'PREDICATES)
+  $predicateList: local := getConstructorPredicatesFromDB conname
   getDomainSigs1(D,first option)
   
 getDomainSigs1(D,ops) == listSort(function GLESSEQP,u) where
@@ -129,7 +129,7 @@ getDomainSigs1(D,ops) == listSort(function GLESSEQP,u) where
 getDomainDocs(D,:option) ==
   domname := D.0
   conname := CAR domname
-  $predicateList: local := GETDATABASE(conname,'PREDICATES)
+  $predicateList: local := getConstructorPredicatesFromDB conname
   ops := KAR option
   [[op,sig,:getInheritanceByDoc(D,op,sig)] for [op,sig] in getDomainSigs1(D,ops)]
  
@@ -180,7 +180,7 @@ getInheritanceByDoc(D,op,sig,:options) ==
       where fn() == getDocDomainForOpSig(op,sig,substDomainArgs(D,x),D)
  
 getDocDomainForOpSig(op,sig,dollar,D) ==
-  (u := LASSOC(op,GETDATABASE(CAR dollar,'DOCUMENTATION)))
+  (u := LASSOC(op,getConstructorDocumentationFromDB CAR dollar))
     and (doc := or/[[d,dollar] for [s,:d] in u | compareSig(sig,s,D,dollar)])
  
 --=======================================================================
@@ -209,7 +209,7 @@ showPredicates dom ==
   sayBrightly '"--------------------Predicate summary-------------------"
   conname := CAR dom.0
   predvector := dom.3
-  predicateList := GETDATABASE(conname,'PREDICATES)
+  predicateList := getConstructorPredicateFromDB conname
   for i in 1.. for p in predicateList repeat
     prefix := 
       testBitVector(predvector,i) => '"true : "

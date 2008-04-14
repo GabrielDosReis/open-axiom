@@ -107,11 +107,11 @@ isValidType form ==
   form is ['Expression, ['Kernel, . ]] => NIL
   form is [op,:argl] =>
     null constructor? op => nil
-    cosig := GETDATABASE(op, 'COSIG)
+    cosig := getDualSignatureFromDB op
     cosig and null rest cosig => -- niladic constructor
         null argl => true
         false
-    null (sig := getConstructorSignature form) => nil
+    null (sig := getConstructorSignature op) => nil
     [.,:cl] := sig
     -- following line is needed to deal with mutable domains
     if # cl ^= # argl and GENSYMP last argl then argl:= DROP(-1,argl)
@@ -167,11 +167,11 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   ATOM t => false
 
   badDoubles := CONS($QuotientField, '(Gaussian Complex Polynomial Expression))
-  t is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => NIL
+  t is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => false
 
   t is [=$QuotientField,D] and not isPartialMode(D) and
-    ofCategory(D,'(Field)) => NIL
-  t = '(Complex (AlgebraicNumber)) => NIL
+    ofCategory(D,'(Field)) => false
+  t = '(Complex (AlgebraicNumber)) => false
 
   t := equiType t
   vl := isPolynomialMode t =>
@@ -184,23 +184,23 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
     poly? := (con = 'Polynomial or con = 'Expression)
     isLegitimateMode(underDomainOf t,poly?,polyVarList)
 
-  constructor? first t =>
+  IDENTP(op := first t) and constructor? op =>
     isLegitimateMode(underDomainOf t,hasPolyMode,polyVarList) => t
   t is ['Mapping,:ml] =>
-    null ml => NIL
+    null ml => false
     -- first arg is target, which can be Void
-    null isLegitimateMode(first ml,nil,nil) => NIL
+    null isLegitimateMode(first ml,nil,nil) => false
     for m in rest ml repeat
       m = $Void =>
-        return NIL
-      null isLegitimateMode(m,nil,nil) => return NIL
+        return false
+      null isLegitimateMode(m,nil,nil) => return false
     true
   t is ['Union,:ml] =>
     -- check for tagged union
     ml and first ml is [":",:.] => isLegitimateRecordOrTaggedUnion ml
-    null (and/[isLegitimateMode(m,nil,nil) for m in ml]) => NIL
+    null (and/[isLegitimateMode(m,nil,nil) for m in ml]) => false
     ((# ml) = (# REMDUP ml)) => true
-    NIL
+    false
   t is ['Record,:r] => isLegitimateRecordOrTaggedUnion r
   t is ['Enumeration,:r] =>
     null (and/[IDENTP x for x in r]) => false

@@ -587,7 +587,7 @@ formatDEF0(["DEF",form,tlist,sclist,body],$DEFdepth) ==
       form is [":",a,:.] => a
       form
   con := opOf $form
-  $comments: local := SUBST('_$,'_%,GETDATABASE(con,'DOCUMENTATION))
+  $comments: local := SUBST('_$,'_%,getConstructorDocumentationFromDB con)
   $abb :local := constructor? opOf $form
   if $DEFdepth < 2 then
     condoc := (u := LASSOC('constructor,$comments)) and KDR KAR u or ['""]

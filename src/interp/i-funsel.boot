@@ -1248,12 +1248,12 @@ coerceTypeArgs(t1, t2, SL) ==
   -- if needed.
   t1 isnt [con1, :args1] or t2 isnt [con2, :args2] => t2
   con1 ^= con2 => t2
-  coSig := CDR GETDATABASE(CAR t1, 'COSIG)
+  coSig := rest getDualSignatureFromDB first t1
   and/coSig => t2
   csub1 := constructSubst t1
   csub2 := constructSubst t2
-  cs1 := CDR getConstructorSignature con1
-  cs2 := CDR getConstructorSignature con2
+  cs1 := rest getConstructorSignature con1
+  cs2 := rest getConstructorSignature con2
   [con1, :
     [makeConstrArg(arg1, arg2, constrArg(c1,csub1,SL),
       constrArg(c2,csub2,SL), cs)
@@ -1601,7 +1601,7 @@ hasAtt(dom,att,SL) ==
   -- needs S0 similar to hasSig above ??
   $domPvar: local := nil
   fun:= CAR dom =>
-    atts:= subCopy(GETDATABASE(fun,'ATTRIBUTES),constructSubst dom) =>
+    atts:= subCopy(getConstructorAttributesFromDB fun,constructSubst dom) =>
       PAIRP (u := getInfovec CAR dom) =>
         --UGH! New world has attributes stored as pairs not as lists!!
         for [x,:cond] in atts until not (S='failed) repeat
@@ -1746,7 +1746,7 @@ defaultTypeForCategory(cat, SL) ==
   -- calls this and should possibly fail in some cases.
   cat := subCopy(cat, SL)
   c := CAR cat
-  d := GETDATABASE(c, 'DEFAULTDOMAIN)
+  d := getConstructorDefaultFromDB c
   d => [d, :CDR cat]
   cat is [c] =>
     c = 'Field => $RationalNumber

@@ -116,19 +116,20 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
   not firstTime and (k:= NRTassocIndex x) => k
   VECP x => systemErrorHere '"NRTencode"
   PAIRP x =>
-    QCAR x='Record or x is ['Union,['_:,a,b],:.] =>
-      [QCAR x,:[['_:,a,encode(b,c,false)]
-        for [.,a,b] in QCDR x for [.,=a,c] in CDR compForm]]
+    op := first x
+    op = "Record" or x is ['Union,['_:,a,b],:.] =>
+      [op,:[['_:,a,encode(b,c,false)]
+        for [.,a,b] in rest x for [.,=a,c] in rest compForm]]
     (x' := isQuasiquote x) =>
       quasiquote encode(x',isQuasiquote compForm,false)
-    constructor? QCAR x or MEMQ(QCAR x,'(Union Mapping)) =>
-      [QCAR x,:[encode(y,z,false) for y in QCDR x for z in CDR compForm]]
-    ['NRTEVAL,NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]
+    IDENTP op and (constructor? op or MEMQ(op,'(Union Mapping))) =>
+      [op,:[encode(y,z,false) for y in rest x for z in rest compForm]]
+    ["NRTEVAL",NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]
   MEMQ(x,$formalArgList) =>
     v := $FormalMapVariableList.(POSN1(x,$formalArgList))
     firstTime => ["local",v]
     v
-  x = '$ => x
+  x = "$" => x
   x = "$$" => x
   ['QUOTE,x]
 
@@ -232,13 +233,13 @@ NRTgetLocalIndex item == NRTgetLocalIndex1(item,false)
 NRTgetLocalIndex1(item,killBindingIfTrue) ==
   k := NRTassocIndex item => k
   item = $NRTaddForm => 5
-  item = '$ => 0
-  item = '_$_$ => 2
+  item = "$" => 0
+  item = "$$" => 2
   value:=
-    MEMQ(item,$formalArgList) => item
+    atom item =>
+      MEMQ(item,$formalArgList) => item
     nil
-  atom item and null MEMQ(item,'($ _$_$))
-   and null value =>  --give slots to atoms
+  atom item and null value =>  --give slots to atoms
     $NRTdeltaList:= [['domain,NRTaddInner item,:value],:$NRTdeltaList]
     $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
     $NRTdeltaLength := $NRTdeltaLength+1
@@ -246,8 +247,7 @@ NRTgetLocalIndex1(item,killBindingIfTrue) ==
   -- when assigning slot to flag values, we don't really want to
   -- compile them.  Rather, we want to record them as if they were atoms.
   flag := isQuasiquote item
-  $NRTdeltaList:= [['domain, NRTaddInner item,:value],
-                    :$NRTdeltaList]
+  $NRTdeltaList:= [['domain, NRTaddInner item,:value], :$NRTdeltaList]
   saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
   saveIndex := $NRTbase + $NRTdeltaLength
   $NRTdeltaLength := $NRTdeltaLength+1

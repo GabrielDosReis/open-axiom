@@ -340,7 +340,7 @@ resolveTTRed3(t) ==
     (and/[member(x,a) for x in b] and "and"/[member(x,b) for x in a]) and a
   [( atom x and x ) or ((not cs and x and not interpOp? x and x)
     or resolveTTRed3 x) or return NIL
-      for x in t for cs in GETDATABASE(CAR t, 'COSIG) ]
+      for x in t for cs in getDualSignatureFromDB first t ]
 
 interpOp?(op) ==
   PAIRP(op) and
@@ -412,7 +412,7 @@ getConditionsForCategoryOnType(t,cat) ==
 getConditionalCategoryOfType(t,conditions,match) ==
   if PAIRP t then t := first t
   t in '(Union Mapping Record) => NIL
-  conCat := GETDATABASE(t,'CONSTRUCTORCATEGORY)
+  conCat := getConstructorCategoryFromDB t
   REMDUP CDR getConditionalCategoryOfType1(conCat,conditions,match,[NIL])
 
 getConditionalCategoryOfType1(cat,conditions,match,seen) ==
@@ -429,7 +429,7 @@ getConditionalCategoryOfType1(cat,conditions,match,seen) ==
   cat is [catName,:.] and (getConstructorKindFromDB catName = "category") =>
     cat in CDR seen => conditions
     RPLACD(seen,[cat,:CDR seen])
-    subCat := GETDATABASE(catName,'CONSTRUCTORCATEGORY)
+    subCat := getConstructorCategoryFromDB catName
     -- substitute vars of cat into category
     for v in rest cat for vv in $TriangleVariableList repeat
       subCat := SUBST(v,vv,subCat)
@@ -729,8 +729,8 @@ getUnderModeOf d ==
 deconstructT(t) ==
   -- M is a type, which may contain type variables
   -- results in a pair (type constructor . mode arguments)
-  KDR t and constructor? CAR t =>
-    dt := destructT CAR t
+  KDR t and (op := first t) and IDENTP op and constructor? op =>
+    dt := destructT op
     args := [ x for d in dt for y in t | ( x := d and y ) ]
     c := [ x for d in dt for y in t | ( x := not d and y ) ]
     CONS(c,args)
@@ -755,7 +755,7 @@ replaceLast(A,t) ==
 destructT(functor)==
   -- provides a list of booleans, which indicate whether the arguments
   -- to the functor are category forms or not
-  GETDATABASE(opOf functor,'COSIG)
+  getDualSignatureFromDB opOf functor
 
 constructTowerT(t,TL) ==
   -- t is a type, TL a list of constructors and argument lists

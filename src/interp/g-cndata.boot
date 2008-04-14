@@ -48,7 +48,7 @@ mkLowerCaseConTable() ==
   $lowerCaseConTb
 
 augmentLowerCaseConTable x ==
-  y:=GETDATABASE(x,'ABBREVIATION)
+  y:=getConstructorAbbreviationFromDB x
   item:=[x,y,nil]
   HPUT($lowerCaseConTb,x,item)
   HPUT($lowerCaseConTb,DOWNCASE x,item)
@@ -73,11 +73,11 @@ attribute? name ==
  
 abbreviation? abb ==
   -- if it is an abbreviation, return the corresponding name
-  GETDATABASE(abb,'CONSTRUCTOR)
+  getConstructorFullNameFromDB abb
  
 constructor? name ==
   -- if it is a constructor name, return the abbreviation
-  GETDATABASE(name,'ABBREVIATION)
+  getConstructorAbbreviationFromDB name
  
 domainForm?: %Form -> %Boolean
 domainForm? d ==
@@ -95,17 +95,18 @@ categoryForm? c ==
   false
 
 getImmediateSuperDomain(d) ==
-  IFCAR GETDATABASE(opOf d, 'SUPERDOMAIN)
+  IFCAR getSuperDomainFromDB opOf d
 
 maximalSuperType d ==
-  d' := GETDATABASE(opOf d, 'SUPERDOMAIN) => maximalSuperType first d'
+  d' := getSuperDomainFromDB opOf d => maximalSuperType first d'
   d
 
 -- probably will switch over to 'libName soon
 getLisplibName(c) == getConstructorAbbreviation(c)
  
+getConstructorAbbreviation: %Symbol -> %Symbol
 getConstructorAbbreviation op ==
-  constructor?(op) or throwKeyedMsg("S2IL0015",[op])
+  getConstructorAbbreviationFromDB op or throwKeyedMsg("S2IL0015",[op])
  
 getConstructorUnabbreviation op ==
   abbreviation?(op) or throwKeyedMsg("S2IL0019",[op])
@@ -119,13 +120,13 @@ mkUserConstructorAbbreviation(c,a,type) ==
   setAutoLoadProperty(c)
  
 abbQuery(x) ==
-  abb := GETDATABASE(x,'ABBREVIATION) =>
+  abb := getConstructorAbbreviation x =>
    sayKeyedMsg("S2IZ0001",[abb,getConstructorKindFromDB x,x])
   sayKeyedMsg("S2IZ0003",[x])
  
 installConstructor(cname,type) ==
   (entry := getCDTEntry(cname,true)) => entry
-  item := [cname,GETDATABASE(cname,'ABBREVIATION),nil]
+  item := [cname,getConstructorAbbreviationFromDB cname,nil]
   if BOUNDP '$lowerCaseConTb and $lowerCaseConTb then
     HPUT($lowerCaseConTb,cname,item)
     HPUT($lowerCaseConTb,DOWNCASE cname,item)
@@ -141,8 +142,8 @@ constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
     then throwKeyedErrorMsg('precompilation,"S2IL0021",NIL)
   if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",NIL)
   if s ^= UPCASE s then throwKeyedMsg("S2IL0006",NIL)
-  abb := GETDATABASE(c,'ABBREVIATION)
-  name:= GETDATABASE(a,'CONSTRUCTOR)
+  abb := getConstructorAbbreviationFromDB c
+  name:= getConstructorFullNameFromDB a
   type := getConstructorKindFromDB c
   a=abb and c^=name => lisplibError(c,a,typ,abb,name,type,'duplicateAbb)
   a=name and c^=name => lisplibError(c,a,typ,abb,name,type,'abbIsName)
@@ -181,16 +182,17 @@ isNameOfType x ==
  
 unabbrev1(u,modeIfTrue) ==
   atom u =>
+    not IDENTP u => u                    -- surely not constructor abbrev
     modeIfTrue =>
       d:= isDomainValuedVariable u => u
       a := abbreviation? u =>
-        GETDATABASE(a,'NILADIC) => [a]
+        niladicConstructorFromDB a => [a]
         largs := ['_$EmptyMode for arg in
           getPartialConstructorModemapSig(a)]
         unabbrev1([u,:largs],modeIfTrue)
       u
     a:= abbreviation?(u) or u
-    GETDATABASE(a,'NILADIC) => [a]
+    niladicConstructorFromDB a => [a]
     a
   [op,:arglist] := u
   op = 'Join => ['Join, :[unabbrev1(x, modeIfTrue) for x in arglist]]
