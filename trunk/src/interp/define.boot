@@ -50,7 +50,8 @@ $suffix := nil
 $NRTopt := false
 
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
- 
+
+compDefine: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compDefine(form,m,e) ==
   $tripleHits: local:= 0
   $macroIfTrue: local
@@ -63,6 +64,7 @@ compDefine(form,m,e) ==
 ++     per: Rep -> %
 ++     rep: % -> Rep
 ++ as local functions.  Note that we do not declare them as macros.
+maybeInsertViewMorphisms: %Form -> %Form
 maybeInsertViewMorphisms body ==
   domainRep := nil
   before := nil
@@ -97,7 +99,8 @@ maybeInsertViewMorphisms body ==
   [:reverse before, ["LET","Rep",domainRep], 
      :[repMorphism,perMorphism],:after]
 
- 
+
+compDefine1: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compDefine1(form,m,e) ==
   $insideExpressionIfTrue: local:= false
   --1. decompose after macro-expanding form
@@ -137,7 +140,8 @@ compDefine1(form,m,e) ==
     $prefix => INTERN STRCONC(encodeItem $prefix,'",",encodeItem $op)
     getAbbreviation($op,#rest $form)
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
- 
+
+compDefineAddSignature: (%Form,%Signature,%Env) -> %Env
 compDefineAddSignature([op,:argl],signature,e) ==
   (sig:= hasFullSignature(argl,signature,e)) and
    not assoc(['$,:sig],LASSOC('modemap,getProplist(op,e))) =>
@@ -152,10 +156,12 @@ hasFullSignature(argl,[target,:ml],e) ==
     u:= [m or get(x,"mode",e) or return 'failed for x in argl for m in ml]
     u^='failed => [target,:u]
  
+addEmptyCapsuleIfNecessary: (%Form,%Form) -> %Form
 addEmptyCapsuleIfNecessary(target,rhs) ==
   MEMQ(KAR rhs,$SpecialDomainNames) => rhs
   ['add,rhs,['CAPSULE]]
- 
+
+getTargetFromRhs: (%Form, %Form, %Env) -> %Form 
 getTargetFromRhs(lhs,rhs,e) ==
   --undeclared target mode obtained from rhs expression
   rhs is ['CAPSULE,:.] =>
@@ -174,14 +180,17 @@ giveFormalParametersValues(argl,e) ==
   for x in argl repeat
     e:= put(x,'value,[genSomeVariable(),get(x,'mode,e),nil],e)
   e
- 
+
+
+macroExpandInPlace: (%Form,%Env) -> %Form 
 macroExpandInPlace(x,e) ==
   y:= macroExpand(x,e)
   atom x or atom y => y
   RPLACA(x,first y)
   RPLACD(x,rest y)
   x
- 
+
+macroExpand: (%Form,%Env) -> %Form 
 macroExpand(x,e) ==   --not worked out yet
   atom x => (u:= get(x,'macro,e) => macroExpand(u,e); x)
   x is ['DEF,lhs,sig,spCases,rhs] =>
@@ -347,8 +356,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       $lisplibAbbreviation := constructor? $op
       form':=[op',:sargl]
       augLisplibModemapsFromCategory(form',formalBody,signature')
-    [fun,'(Category),e]
- 
+    [fun,$Category,e]
+
+mkConstructor: %Form -> %Form
 mkConstructor form ==
   atom form => ['devaluate,form]
   null rest form => ['QUOTE,[first form]]
@@ -360,6 +370,16 @@ compDefineCategory(df,m,e,prefix,fal) ==
   not $insideFunctorIfTrue and $LISPLIB =>
     compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
   compDefineCategory1(df,m,e,prefix,fal)
+
+
+%CatObjRes                   -- result of compiling a category
+  <=> cons(%Shell,cons(%Mode,cons(%Env,null)))
+ 
+compMakeCategoryObject: (%Form,%Env) -> %Maybe %CatObjRes
+compMakeCategoryObject(c,$e) ==
+  not isCategoryForm(c,$e) => nil
+  u:= mkEvalableCategoryForm c => [eval u,$Category,$e]
+  nil
  
 compDefineFunctor(df,m,e,prefix,fal) ==
   $domainShell: local -- holds the category of the object being compiled
@@ -911,10 +931,12 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
  
 compareMode2Arg(x,m) == null x or modeEqual(x,m)
  
+getArgumentModeOrMoan: (%Form, %Form, %Env) -> %Mode
 getArgumentModeOrMoan(x,form,e) ==
   getArgumentMode(x,e) or
     stackSemanticError(["argument ",x," of ",form," is not declared"],nil)
- 
+
+getArgumentMode: (%Form,%Env) -> %Mode 
 getArgumentMode(x,e) ==
   STRINGP x => x
   m:= get(x,'mode,e) => m
@@ -982,6 +1004,7 @@ stripOffSubdomainConditions(margl,argl) ==
         marg
       x
  
+compArgumentConditions: %Env -> %Env
 compArgumentConditions e ==
   $argumentConditionList:=
     [f for [n,a,x] in $argumentConditionList] where
@@ -1162,6 +1185,7 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
   clearConstructorCache fn      --clear cache for constructor
   first u
  
+constructMacro: %Form -> %Form
 constructMacro (form is [nam,[lam,vl,body]]) ==
   ^(and/[atom x for x in vl]) =>
     stackSemanticError(["illegal parameters for macro: ",vl],nil)
@@ -1174,7 +1198,8 @@ listInitialSegment(u,v) ==
   --returns true iff u.i=v.i for i in 1..(#u)-1
  
 modemap2Signature [[.,:sig],:.] == sig
- 
+
+uncons: %Form -> %Form 
 uncons x ==
   atom x => x
   x is ["CONS",a,b] => [a,:uncons b]
@@ -1187,7 +1212,8 @@ bootStrapError(functorForm,sourceFile) ==
         ['VECTOR,mkDomainConstructor functorForm,nil,nil,nil,nil,nil]],
     [''T, ['systemError,['LIST,''%b,MKQ CAR functorForm,''%d,'"from", _
       ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
- 
+
+compAdd: (%Form, %Mode, %Env) -> %Maybe %Triple 
 compAdd(['add,$addForm,capsule],m,e) ==
   $bootStrapMode = true =>
     if $addForm is ['Tuple,:.] then code := nil
@@ -1220,7 +1246,8 @@ compAdd(['add,$addForm,capsule],m,e) ==
   compCapsule(capsule,m,e)
  
 compTuple2Record u == ['Record,:[[":",i,x] for i in 1.. for x in rest u]]
- 
+
+compCapsule: (%Form, %Mode, %Env) -> %Maybe %Triple
 compCapsule(['CAPSULE,:itemList],m,e) ==
   $bootStrapMode = true =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
@@ -1228,6 +1255,7 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   $useRepresentationHack := true
   compCapsuleInner(maybeInsertViewMorphisms itemList,m,addDomain('_$,e))
  
+compSubDomain: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm
   $addForm: local
@@ -1404,13 +1432,16 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
 --  compSingleCapsuleItem(x,predl,e)
  
 --% CATEGORY AND DOMAIN FUNCTIONS
+
+compContained: (%Form, %Mode, %Env) -> %Maybe %Triple
 compContained(["CONTAINED",a,b],m,e) ==
   [a,ma,e]:= comp(a,$EmptyMode,e) or return nil
   [b,mb,e]:= comp(b,$EmptyMode,e) or return nil
   isCategoryForm(ma,e) and isCategoryForm(mb,e) =>
     (T:= [["CONTAINED",a,b],$Boolean,e]; convert(T,m))
   nil
- 
+
+compJoin: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compJoin(["Join",:argl],m,e) ==
   catList:= [(compForMode(x,$Category,e) or return 'failed).expr for x in argl]
   catList='failed => stackSemanticError(["cannot form Join of: ",argl],nil)
@@ -1435,26 +1466,27 @@ compJoin(["Join",:argl],m,e) ==
         x
   T:= [wrapDomainSub(parameters,["Join",:catList']),$Category,e]
   convert(T,m)
- 
+
+compForMode: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compForMode(x,m,e) ==
   $compForModeIfTrue: local:= true
   comp(x,m,e)
+
  
-compMakeCategoryObject(c,$e) ==
-  not isCategoryForm(c,$e) => nil
-  u:= mkEvalableCategoryForm c => [eval u,$Category,$e]
-  nil
- 
-quotifyCategoryArgument x == MKQ x
- 
+quotifyCategoryArgument: %Form -> %Form
+quotifyCategoryArgument x == 
+  MKQ x
+
 makeCategoryForm(c,e) ==
   not isCategoryForm(c,e) => nil
   [x,m,e]:= compOrCroak(c,$EmptyMode,e)
   [x,e]
- 
+
+
+compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compCategory(x,m,e) ==
   $TOP__LEVEL: local:= true
-  (m:= resolve(m,["Category"]))=["Category"] and x is ['CATEGORY,
+  (m:= resolve(m,$Category))=$Category and x is ['CATEGORY,
     domainOrPackage,:l] =>
       $sigList: local
       $atList: local
@@ -1478,13 +1510,16 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
         [[x for x in sig | IDENTP x and x^='_$]
           for ["QUOTE",[[.,sig,:.],:.]] in sigList])
   wrapDomainSub(parameters,body)
- 
+
+wrapDomainSub: (%List, %Form) -> %Form 
 wrapDomainSub(parameters,x) ==
    ["DomainSubstitutionMacro",parameters,x]
  
 mustInstantiate D ==
-  D is [fn,:.] and ^(MEMQ(fn,$DummyFunctorNames) or GETL(fn,"makeFunctionList"))
- 
+  D is [fn,:.] and not (MEMQ(fn,$DummyFunctorNames) 
+    or GETL(fn,"makeFunctionList"))
+
+DomainSubstitutionFunction: (%List,%Form) -> %Form 
 DomainSubstitutionFunction(parameters,body) ==
   --see definition of DomainSubstitutionMacro in SPAD LISP
   if parameters then
@@ -1551,11 +1586,3 @@ compCategoryItem(x,predl) ==
  
   --4. branch on a single type or a signature %with source and target
   PUSH(MKQ [rest x,pred],$sigList)
- 
-
-
-
-
-
-
-

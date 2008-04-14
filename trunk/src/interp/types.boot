@@ -59,6 +59,9 @@ import '"boot-pkg"
 %Triple <=>                                    -- form + type + env
   cons(%Code,cons(%Mode,cons(%Env,null))) 
 
+%Signature                      -- signature
+  <=> cons
+
 %Modemap <=> %List                             -- modemap
 
 %ConstructorKind <=>                           -- kind of ctor instances
