@@ -710,78 +710,89 @@ Note that this code is not included in the generated catdef.spad file.
 (/VERSIONCHECK 2) 
 
 (DEFUN |TSETCAT-;=;2SB;1| (|ts| |us| $)
-  (PROG (#0=#:G1444 #1=#:G1450)
+  (PROG (#0=#:G1451 #1=#:G1457)
     (RETURN
       (COND
-        ((SPADCALL |ts| (QREFELT $ 12)) (SPADCALL |us| (QREFELT $ 12)))
-        ((OR (SPADCALL |us| (QREFELT $ 12))
+        ((SPADCALL |ts| (|getShellEntry| $ 12))
+         (SPADCALL |us| (|getShellEntry| $ 12)))
+        ((OR (SPADCALL |us| (|getShellEntry| $ 12))
              (NULL (SPADCALL
-                       (PROG2 (LETT #0# (SPADCALL |ts| (QREFELT $ 14))
+                       (PROG2 (LETT #0#
+                                    (SPADCALL |ts|
+                                     (|getShellEntry| $ 14))
                                     |TSETCAT-;=;2SB;1|)
                               (QCDR #0#)
-                         (|check-union| (QEQCAR #0# 0) (QREFELT $ 10)
-                             #0#))
-                       (PROG2 (LETT #0# (SPADCALL |us| (QREFELT $ 14))
+                         (|check-union| (QEQCAR #0# 0)
+                             (|getShellEntry| $ 10) #0#))
+                       (PROG2 (LETT #0#
+                                    (SPADCALL |us|
+                                     (|getShellEntry| $ 14))
                                     |TSETCAT-;=;2SB;1|)
                               (QCDR #0#)
-                         (|check-union| (QEQCAR #0# 0) (QREFELT $ 10)
-                             #0#))
-                       (QREFELT $ 15))))
+                         (|check-union| (QEQCAR #0# 0)
+                             (|getShellEntry| $ 10) #0#))
+                       (|getShellEntry| $ 15))))
          'NIL)
         ('T
          (SPADCALL
-             (PROG2 (LETT #1# (SPADCALL |ts| (QREFELT $ 17))
+             (PROG2 (LETT #1# (SPADCALL |ts| (|getShellEntry| $ 17))
                           |TSETCAT-;=;2SB;1|)
                     (QCDR #1#)
-               (|check-union| (QEQCAR #1# 0) (QREFELT $ 6) #1#))
-             (PROG2 (LETT #1# (SPADCALL |us| (QREFELT $ 17))
+               (|check-union| (QEQCAR #1# 0) (|getShellEntry| $ 6) #1#))
+             (PROG2 (LETT #1# (SPADCALL |us| (|getShellEntry| $ 17))
                           |TSETCAT-;=;2SB;1|)
                     (QCDR #1#)
-               (|check-union| (QEQCAR #1# 0) (QREFELT $ 6) #1#))
-             (QREFELT $ 18))))))) 
+               (|check-union| (QEQCAR #1# 0) (|getShellEntry| $ 6) #1#))
+             (|getShellEntry| $ 18))))))) 
 
 (DEFUN |TSETCAT-;infRittWu?;2SB;2| (|ts| |us| $)
-  (PROG (|p| #0=#:G1457 |q| |v|)
+  (PROG (|p| #0=#:G1464 |q| |v|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |us| (QREFELT $ 12))
-              (SPADCALL (SPADCALL |ts| (QREFELT $ 12)) (QREFELT $ 20)))
-             ((SPADCALL |ts| (QREFELT $ 12)) 'NIL)
+             ((SPADCALL |us| (|getShellEntry| $ 12))
+              (SPADCALL (SPADCALL |ts| (|getShellEntry| $ 12))
+                  (|getShellEntry| $ 20)))
+             ((SPADCALL |ts| (|getShellEntry| $ 12)) 'NIL)
              ('T
               (SEQ (LETT |p|
                          (PROG2 (LETT #0#
-                                      (SPADCALL |ts| (QREFELT $ 21))
+                                      (SPADCALL |ts|
+                                       (|getShellEntry| $ 21))
                                       |TSETCAT-;infRittWu?;2SB;2|)
                                 (QCDR #0#)
-                           (|check-union| (QEQCAR #0# 0) (QREFELT $ 10)
-                               #0#))
+                           (|check-union| (QEQCAR #0# 0)
+                               (|getShellEntry| $ 10) #0#))
                          |TSETCAT-;infRittWu?;2SB;2|)
                    (LETT |q|
                          (PROG2 (LETT #0#
-                                      (SPADCALL |us| (QREFELT $ 21))
+                                      (SPADCALL |us|
+                                       (|getShellEntry| $ 21))
                                       |TSETCAT-;infRittWu?;2SB;2|)
                                 (QCDR #0#)
-                           (|check-union| (QEQCAR #0# 0) (QREFELT $ 10)
-                               #0#))
+                           (|check-union| (QEQCAR #0# 0)
+                               (|getShellEntry| $ 10) #0#))
                          |TSETCAT-;infRittWu?;2SB;2|)
                    (EXIT (COND
-                           ((SPADCALL |p| |q| (QREFELT $ 22)) 'T)
-                           ((SPADCALL |p| |q| (QREFELT $ 23)) 'NIL)
+                           ((SPADCALL |p| |q| (|getShellEntry| $ 22))
+                            'T)
+                           ((SPADCALL |p| |q| (|getShellEntry| $ 23))
+                            'NIL)
                            ('T
                             (SEQ (LETT |v|
-                                       (SPADCALL |p| (QREFELT $ 24))
+                                       (SPADCALL |p|
+                                        (|getShellEntry| $ 24))
                                        |TSETCAT-;infRittWu?;2SB;2|)
                                  (EXIT (SPADCALL
                                         (SPADCALL |ts| |v|
-                                         (QREFELT $ 25))
+                                         (|getShellEntry| $ 25))
                                         (SPADCALL |us| |v|
-                                         (QREFELT $ 25))
-                                        (QREFELT $ 26)))))))))))))) 
+                                         (|getShellEntry| $ 25))
+                                        (|getShellEntry| $ 26)))))))))))))) 
 
 (DEFUN |TSETCAT-;reduced?;PSMB;3| (|p| |ts| |redOp?| $)
   (PROG (|lp|)
     (RETURN
-      (SEQ (LETT |lp| (SPADCALL |ts| (QREFELT $ 29))
+      (SEQ (LETT |lp| (SPADCALL |ts| (|getShellEntry| $ 29))
                  |TSETCAT-;reduced?;PSMB;3|)
            (SEQ G190
                 (COND
@@ -798,28 +809,29 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |TSETCAT-;basicSet;LMU;4| (|ps| |redOp?| $)
   (PROG (|b| |bs| |p| |ts|)
     (RETURN
-      (SEQ (LETT |ps| (SPADCALL (ELT $ 32) |ps| (QREFELT $ 34))
+      (SEQ (LETT |ps| (SPADCALL (ELT $ 32) |ps| (|getShellEntry| $ 34))
                  |TSETCAT-;basicSet;LMU;4|)
            (EXIT (COND
-                   ((SPADCALL (ELT $ 35) |ps| (QREFELT $ 36))
+                   ((SPADCALL (ELT $ 35) |ps| (|getShellEntry| $ 36))
                     (CONS 1 "failed"))
                    ('T
                     (SEQ (LETT |ps|
                                (SPADCALL (ELT $ 22) |ps|
-                                   (QREFELT $ 37))
+                                   (|getShellEntry| $ 37))
                                |TSETCAT-;basicSet;LMU;4|)
-                         (LETT |bs| (SPADCALL (QREFELT $ 38))
+                         (LETT |bs| (SPADCALL (|getShellEntry| $ 38))
                                |TSETCAT-;basicSet;LMU;4|)
                          (LETT |ts| NIL |TSETCAT-;basicSet;LMU;4|)
                          (SEQ G190
                               (COND
                                 ((NULL (SPADCALL (NULL |ps|)
-                                        (QREFELT $ 20)))
+                                        (|getShellEntry| $ 20)))
                                  (GO G191)))
                               (SEQ (LETT |b| (|SPADfirst| |ps|)
                                     |TSETCAT-;basicSet;LMU;4|)
                                    (LETT |bs|
-                                    (SPADCALL |bs| |b| (QREFELT $ 39))
+                                    (SPADCALL |bs| |b|
+                                     (|getShellEntry| $ 39))
                                     |TSETCAT-;basicSet;LMU;4|)
                                    (LETT |ps| (CDR |ps|)
                                     |TSETCAT-;basicSet;LMU;4|)
@@ -836,8 +848,8 @@ Note that this code is not included in the generated catdef.spad file.
                                                (|SPADfirst| |ps|)
                                                |TSETCAT-;basicSet;LMU;4|)
                                               |bs| |redOp?|
-                                              (QREFELT $ 40))
-                                             (QREFELT $ 20)))))
+                                              (|getShellEntry| $ 40))
+                                             (|getShellEntry| $ 20)))))
                                         (GO G191)))
                                      (SEQ
                                       (LETT |ts| (CONS |p| |ts|)
@@ -852,10 +864,10 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |TSETCAT-;basicSet;LMMU;5| (|ps| |pred?| |redOp?| $)
   (PROG (|bps| |b| |bs| |p| |gps| |ts|)
     (RETURN
-      (SEQ (LETT |ps| (SPADCALL (ELT $ 32) |ps| (QREFELT $ 34))
+      (SEQ (LETT |ps| (SPADCALL (ELT $ 32) |ps| (|getShellEntry| $ 34))
                  |TSETCAT-;basicSet;LMMU;5|)
            (EXIT (COND
-                   ((SPADCALL (ELT $ 35) |ps| (QREFELT $ 36))
+                   ((SPADCALL (ELT $ 35) |ps| (|getShellEntry| $ 36))
                     (CONS 1 "failed"))
                    ('T
                     (SEQ (LETT |gps| NIL |TSETCAT-;basicSet;LMMU;5|)
@@ -863,7 +875,7 @@ Note that this code is not included in the generated catdef.spad file.
                          (SEQ G190
                               (COND
                                 ((NULL (SPADCALL (NULL |ps|)
-                                        (QREFELT $ 20)))
+                                        (|getShellEntry| $ 20)))
                                  (GO G191)))
                               (SEQ (LETT |p| (|SPADfirst| |ps|)
                                     |TSETCAT-;basicSet;LMMU;5|)
@@ -880,20 +892,21 @@ Note that this code is not included in the generated catdef.spad file.
                               NIL (GO G190) G191 (EXIT NIL))
                          (LETT |gps|
                                (SPADCALL (ELT $ 22) |gps|
-                                   (QREFELT $ 37))
+                                   (|getShellEntry| $ 37))
                                |TSETCAT-;basicSet;LMMU;5|)
-                         (LETT |bs| (SPADCALL (QREFELT $ 38))
+                         (LETT |bs| (SPADCALL (|getShellEntry| $ 38))
                                |TSETCAT-;basicSet;LMMU;5|)
                          (LETT |ts| NIL |TSETCAT-;basicSet;LMMU;5|)
                          (SEQ G190
                               (COND
                                 ((NULL (SPADCALL (NULL |gps|)
-                                        (QREFELT $ 20)))
+                                        (|getShellEntry| $ 20)))
                                  (GO G191)))
                               (SEQ (LETT |b| (|SPADfirst| |gps|)
                                     |TSETCAT-;basicSet;LMMU;5|)
                                    (LETT |bs|
-                                    (SPADCALL |bs| |b| (QREFELT $ 39))
+                                    (SPADCALL |bs| |b|
+                                     (|getShellEntry| $ 39))
                                     |TSETCAT-;basicSet;LMMU;5|)
                                    (LETT |gps| (CDR |gps|)
                                     |TSETCAT-;basicSet;LMMU;5|)
@@ -910,8 +923,8 @@ Note that this code is not included in the generated catdef.spad file.
                                                (|SPADfirst| |gps|)
                                                |TSETCAT-;basicSet;LMMU;5|)
                                               |bs| |redOp?|
-                                              (QREFELT $ 40))
-                                             (QREFELT $ 20)))))
+                                              (|getShellEntry| $ 40))
+                                             (|getShellEntry| $ 20)))))
                                         (GO G191)))
                                      (SEQ
                                       (LETT |ts| (CONS |p| |ts|)
@@ -923,8 +936,9 @@ Note that this code is not included in the generated catdef.spad file.
                               NIL (GO G190) G191 (EXIT NIL))
                          (LETT |ts|
                                (SPADCALL (ELT $ 22)
-                                   (SPADCALL |ts| |bps| (QREFELT $ 44))
-                                   (QREFELT $ 37))
+                                   (SPADCALL |ts| |bps|
+                                    (|getShellEntry| $ 44))
+                                   (|getShellEntry| $ 37))
                                |TSETCAT-;basicSet;LMMU;5|)
                          (EXIT (CONS 0 (CONS |bs| |ts|))))))))))) 
 
@@ -933,14 +947,15 @@ Note that this code is not included in the generated catdef.spad file.
     (RETURN
       (SEQ (LETT |lip| NIL |TSETCAT-;initials;SL;6|)
            (EXIT (COND
-                   ((SPADCALL |ts| (QREFELT $ 12)) |lip|)
+                   ((SPADCALL |ts| (|getShellEntry| $ 12)) |lip|)
                    ('T
-                    (SEQ (LETT |lp| (SPADCALL |ts| (QREFELT $ 29))
+                    (SEQ (LETT |lp|
+                               (SPADCALL |ts| (|getShellEntry| $ 29))
                                |TSETCAT-;initials;SL;6|)
                          (SEQ G190
                               (COND
                                 ((NULL (SPADCALL (NULL |lp|)
-                                        (QREFELT $ 20)))
+                                        (|getShellEntry| $ 20)))
                                  (GO G191)))
                               (SEQ (LETT |p| (|SPADfirst| |lp|)
                                     |TSETCAT-;initials;SL;6|)
@@ -948,30 +963,33 @@ Note that this code is not included in the generated catdef.spad file.
                                      ((NULL
                                        (SPADCALL
                                         (LETT |ip|
-                                         (SPADCALL |p| (QREFELT $ 46))
+                                         (SPADCALL |p|
+                                          (|getShellEntry| $ 46))
                                          |TSETCAT-;initials;SL;6|)
-                                        (QREFELT $ 35)))
+                                        (|getShellEntry| $ 35)))
                                       (LETT |lip|
                                        (CONS
-                                        (SPADCALL |ip| (QREFELT $ 47))
+                                        (SPADCALL |ip|
+                                         (|getShellEntry| $ 47))
                                         |lip|)
                                        |TSETCAT-;initials;SL;6|)))
                                    (EXIT
                                     (LETT |lp| (CDR |lp|)
                                      |TSETCAT-;initials;SL;6|)))
                               NIL (GO G190) G191 (EXIT NIL))
-                         (EXIT (SPADCALL |lip| (QREFELT $ 48))))))))))) 
+                         (EXIT (SPADCALL |lip| (|getShellEntry| $ 48))))))))))) 
 
 (DEFUN |TSETCAT-;degree;SNni;7| (|ts| $)
   (PROG (|lp| |d|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |ts| (QREFELT $ 12)) 0)
+             ((SPADCALL |ts| (|getShellEntry| $ 12)) 0)
              ('T
-              (SEQ (LETT |lp| (SPADCALL |ts| (QREFELT $ 29))
+              (SEQ (LETT |lp| (SPADCALL |ts| (|getShellEntry| $ 29))
                          |TSETCAT-;degree;SNni;7|)
                    (LETT |d|
-                         (SPADCALL (|SPADfirst| |lp|) (QREFELT $ 51))
+                         (SPADCALL (|SPADfirst| |lp|)
+                             (|getShellEntry| $ 51))
                          |TSETCAT-;degree;SNni;7|)
                    (SEQ G190
                         (COND
@@ -979,39 +997,43 @@ Note that this code is not included in the generated catdef.spad file.
                                      (NULL
                                       (LETT |lp| (CDR |lp|)
                                        |TSETCAT-;degree;SNni;7|))
-                                     (QREFELT $ 20)))
+                                     (|getShellEntry| $ 20)))
                            (GO G191)))
                         (SEQ (EXIT (LETT |d|
                                     (* |d|
                                      (SPADCALL (|SPADfirst| |lp|)
-                                      (QREFELT $ 51)))
+                                      (|getShellEntry| $ 51)))
                                     |TSETCAT-;degree;SNni;7|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT |d|)))))))) 
 
 (DEFUN |TSETCAT-;quasiComponent;SR;8| (|ts| $)
-  (CONS (SPADCALL |ts| (QREFELT $ 29)) (SPADCALL |ts| (QREFELT $ 53)))) 
+  (CONS (SPADCALL |ts| (|getShellEntry| $ 29))
+        (SPADCALL |ts| (|getShellEntry| $ 53)))) 
 
 (DEFUN |TSETCAT-;normalized?;PSB;9| (|p| |ts| $)
-  (SPADCALL |p| (SPADCALL |ts| (QREFELT $ 29)) (QREFELT $ 57))) 
+  (SPADCALL |p| (SPADCALL |ts| (|getShellEntry| $ 29))
+      (|getShellEntry| $ 57))) 
 
 (DEFUN |TSETCAT-;stronglyReduced?;PSB;10| (|p| |ts| $)
-  (SPADCALL |p| (SPADCALL |ts| (QREFELT $ 29)) (QREFELT $ 59))) 
+  (SPADCALL |p| (SPADCALL |ts| (|getShellEntry| $ 29))
+      (|getShellEntry| $ 59))) 
 
 (DEFUN |TSETCAT-;headReduced?;PSB;11| (|p| |ts| $)
-  (SPADCALL (SPADCALL |p| (QREFELT $ 61)) |ts| (QREFELT $ 62))) 
+  (SPADCALL (SPADCALL |p| (|getShellEntry| $ 61)) |ts|
+      (|getShellEntry| $ 62))) 
 
 (DEFUN |TSETCAT-;initiallyReduced?;PSB;12| (|p| |ts| $)
   (PROG (|lp| |red|)
     (RETURN
-      (SEQ (LETT |lp| (SPADCALL |ts| (QREFELT $ 29))
+      (SEQ (LETT |lp| (SPADCALL |ts| (|getShellEntry| $ 29))
                  |TSETCAT-;initiallyReduced?;PSB;12|)
            (LETT |red| 'T |TSETCAT-;initiallyReduced?;PSB;12|)
            (SEQ G190
                 (COND
                   ((NULL (COND
                            ((OR (NULL |lp|)
-                                (SPADCALL |p| (QREFELT $ 35)))
+                                (SPADCALL |p| (|getShellEntry| $ 35)))
                             'NIL)
                            ('T |red|)))
                    (GO G191)))
@@ -1021,10 +1043,11 @@ Note that this code is not included in the generated catdef.spad file.
                                      ((NULL |lp|) 'NIL)
                                      ('T
                                       (SPADCALL
-                                       (SPADCALL |p| (QREFELT $ 24))
+                                       (SPADCALL |p|
+                                        (|getShellEntry| $ 24))
                                        (SPADCALL (|SPADfirst| |lp|)
-                                        (QREFELT $ 24))
-                                       (QREFELT $ 64)))))
+                                        (|getShellEntry| $ 24))
+                                       (|getShellEntry| $ 64)))))
                              (GO G191)))
                           (SEQ (EXIT (LETT |lp| (CDR |lp|)
                                       |TSETCAT-;initiallyReduced?;PSB;12|)))
@@ -1034,65 +1057,72 @@ Note that this code is not included in the generated catdef.spad file.
                               (COND
                                 ((SPADCALL
                                      (SPADCALL (|SPADfirst| |lp|)
-                                      (QREFELT $ 24))
-                                     (SPADCALL |p| (QREFELT $ 24))
-                                     (QREFELT $ 65))
+                                      (|getShellEntry| $ 24))
+                                     (SPADCALL |p|
+                                      (|getShellEntry| $ 24))
+                                     (|getShellEntry| $ 65))
                                  (COND
                                    ((SPADCALL |p| (|SPADfirst| |lp|)
-                                     (QREFELT $ 66))
+                                     (|getShellEntry| $ 66))
                                     (SEQ
                                      (LETT |lp| (CDR |lp|)
                                       |TSETCAT-;initiallyReduced?;PSB;12|)
                                      (EXIT
                                       (LETT |p|
-                                       (SPADCALL |p| (QREFELT $ 46))
+                                       (SPADCALL |p|
+                                        (|getShellEntry| $ 46))
                                        |TSETCAT-;initiallyReduced?;PSB;12|))))
                                    ('T
                                     (LETT |red| 'NIL
                                      |TSETCAT-;initiallyReduced?;PSB;12|))))
                                 ('T
                                  (LETT |p|
-                                       (SPADCALL |p| (QREFELT $ 46))
+                                       (SPADCALL |p|
+                                        (|getShellEntry| $ 46))
                                        |TSETCAT-;initiallyReduced?;PSB;12|)))))))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT |red|))))) 
 
 (DEFUN |TSETCAT-;reduce;PSMMP;13| (|p| |ts| |redOp| |redOp?| $)
-  (PROG (|ts0| #0=#:G1532 |reductor| #1=#:G1535)
+  (PROG (|ts0| #0=#:G1539 |reductor| #1=#:G1542)
     (RETURN
       (SEQ (COND
-             ((OR (SPADCALL |ts| (QREFELT $ 12))
-                  (SPADCALL |p| (QREFELT $ 35)))
+             ((OR (SPADCALL |ts| (|getShellEntry| $ 12))
+                  (SPADCALL |p| (|getShellEntry| $ 35)))
               |p|)
              ('T
               (SEQ (LETT |ts0| |ts| |TSETCAT-;reduce;PSMMP;13|)
                    (SEQ G190
                         (COND
                           ((NULL (COND
-                                   ((SPADCALL |ts| (QREFELT $ 12))
+                                   ((SPADCALL |ts|
+                                     (|getShellEntry| $ 12))
                                     'NIL)
                                    ('T
                                     (SPADCALL
-                                     (SPADCALL |p| (QREFELT $ 35))
-                                     (QREFELT $ 20)))))
+                                     (SPADCALL |p|
+                                      (|getShellEntry| $ 35))
+                                     (|getShellEntry| $ 20)))))
                            (GO G191)))
                         (SEQ (LETT |reductor|
                                    (PROG2
                                     (LETT #0#
-                                     (SPADCALL |ts| (QREFELT $ 14))
+                                     (SPADCALL |ts|
+                                      (|getShellEntry| $ 14))
                                      |TSETCAT-;reduce;PSMMP;13|)
                                     (QCDR #0#)
                                      (|check-union| (QEQCAR #0# 0)
-                                      (QREFELT $ 10) #0#))
+                                      (|getShellEntry| $ 10) #0#))
                                    |TSETCAT-;reduce;PSMMP;13|)
                              (LETT |ts|
                                    (PROG2
                                     (LETT #1#
-                                     (SPADCALL |ts| (QREFELT $ 17))
+                                     (SPADCALL |ts|
+                                      (|getShellEntry| $ 17))
                                      |TSETCAT-;reduce;PSMMP;13|)
                                     (QCDR #1#)
                                      (|check-union| (QEQCAR #1# 0)
-                                      (QREFELT $ 6) #1#))
+                                      (|getShellEntry| $ 6) #1#))
                                    |TSETCAT-;reduce;PSMMP;13|)
                              (EXIT (COND
                                      ((NULL
@@ -1114,13 +1144,16 @@ Note that this code is not included in the generated catdef.spad file.
   (PROG (|p| |rs|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |ts| (QREFELT $ 70)) |lp|)
+             ((SPADCALL |ts| (|getShellEntry| $ 70)) |lp|)
              ('T
-              (SEQ (LETT |lp| (SPADCALL (ELT $ 32) |lp| (QREFELT $ 34))
+              (SEQ (LETT |lp|
+                         (SPADCALL (ELT $ 32) |lp|
+                             (|getShellEntry| $ 34))
                          |TSETCAT-;rewriteSetWithReduction;LSMML;14|)
                    (EXIT (COND
                            ((NULL |lp|) |lp|)
-                           ((SPADCALL (ELT $ 35) |lp| (QREFELT $ 36))
+                           ((SPADCALL (ELT $ 35) |lp|
+                                (|getShellEntry| $ 36))
                             (LIST (|spadConstant| $ 71)))
                            ('T
                             (SEQ (LETT |rs| NIL
@@ -1129,7 +1162,7 @@ Note that this code is not included in the generated catdef.spad file.
                                       (COND
                                         ((NULL
                                           (SPADCALL (NULL |lp|)
-                                           (QREFELT $ 20)))
+                                           (|getShellEntry| $ 20)))
                                          (GO G191)))
                                       (SEQ
                                        (LETT |p| (|SPADfirst| |lp|)
@@ -1139,17 +1172,18 @@ Note that this code is not included in the generated catdef.spad file.
                                        (LETT |p|
                                         (SPADCALL
                                          (SPADCALL |p| |ts| |redOp|
-                                          |redOp?| (QREFELT $ 72))
-                                         (QREFELT $ 47))
+                                          |redOp?|
+                                          (|getShellEntry| $ 72))
+                                         (|getShellEntry| $ 47))
                                         |TSETCAT-;rewriteSetWithReduction;LSMML;14|)
                                        (EXIT
                                         (COND
                                           ((NULL
                                             (SPADCALL |p|
-                                             (QREFELT $ 32)))
+                                             (|getShellEntry| $ 32)))
                                            (COND
                                              ((SPADCALL |p|
-                                               (QREFELT $ 35))
+                                               (|getShellEntry| $ 35))
                                               (SEQ
                                                (LETT |lp| NIL
                                                 |TSETCAT-;rewriteSetWithReduction;LSMML;14|)
@@ -1163,61 +1197,67 @@ Note that this code is not included in the generated catdef.spad file.
                                                (CONS |p| |rs|)
                                                |TSETCAT-;rewriteSetWithReduction;LSMML;14|)))))))
                                       NIL (GO G190) G191 (EXIT NIL))
-                                 (EXIT (SPADCALL |rs| (QREFELT $ 48)))))))))))))) 
+                                 (EXIT (SPADCALL |rs|
+                                        (|getShellEntry| $ 48)))))))))))))) 
 
 (DEFUN |TSETCAT-;stronglyReduce;PSP;15| (|p| |ts| $)
-  (SPADCALL |p| |ts| (ELT $ 74) (ELT $ 66) (QREFELT $ 72))) 
+  (SPADCALL |p| |ts| (ELT $ 74) (ELT $ 66) (|getShellEntry| $ 72))) 
 
 (DEFUN |TSETCAT-;headReduce;PSP;16| (|p| |ts| $)
-  (SPADCALL |p| |ts| (ELT $ 76) (ELT $ 77) (QREFELT $ 72))) 
+  (SPADCALL |p| |ts| (ELT $ 76) (ELT $ 77) (|getShellEntry| $ 72))) 
 
 (DEFUN |TSETCAT-;initiallyReduce;PSP;17| (|p| |ts| $)
-  (SPADCALL |p| |ts| (ELT $ 79) (ELT $ 80) (QREFELT $ 72))) 
+  (SPADCALL |p| |ts| (ELT $ 79) (ELT $ 80) (|getShellEntry| $ 72))) 
 
 (DEFUN |TSETCAT-;removeZero;PSP;18| (|p| |ts| $)
-  (PROG (|v| |tsv-| #0=#:G1558 #1=#:G1567 |q|)
+  (PROG (|v| |tsv-| #0=#:G1565 #1=#:G1574 |q|)
     (RETURN
       (SEQ (EXIT (COND
-                   ((OR (SPADCALL |p| (QREFELT $ 35))
-                        (SPADCALL |ts| (QREFELT $ 12)))
+                   ((OR (SPADCALL |p| (|getShellEntry| $ 35))
+                        (SPADCALL |ts| (|getShellEntry| $ 12)))
                     |p|)
                    ('T
-                    (SEQ (LETT |v| (SPADCALL |p| (QREFELT $ 24))
+                    (SEQ (LETT |v|
+                               (SPADCALL |p| (|getShellEntry| $ 24))
                                |TSETCAT-;removeZero;PSP;18|)
                          (LETT |tsv-|
-                               (SPADCALL |ts| |v| (QREFELT $ 82))
+                               (SPADCALL |ts| |v|
+                                   (|getShellEntry| $ 82))
                                |TSETCAT-;removeZero;PSP;18|)
                          (COND
-                           ((SPADCALL |v| |ts| (QREFELT $ 83))
+                           ((SPADCALL |v| |ts| (|getShellEntry| $ 83))
                             (SEQ (LETT |q|
                                        (SPADCALL |p|
                                         (PROG2
                                          (LETT #0#
                                           (SPADCALL |ts| |v|
-                                           (QREFELT $ 84))
+                                           (|getShellEntry| $ 84))
                                           |TSETCAT-;removeZero;PSP;18|)
                                          (QCDR #0#)
                                           (|check-union| (QEQCAR #0# 0)
-                                           (QREFELT $ 10) #0#))
-                                        (QREFELT $ 74))
+                                           (|getShellEntry| $ 10) #0#))
+                                        (|getShellEntry| $ 74))
                                        |TSETCAT-;removeZero;PSP;18|)
                                  (EXIT (COND
-                                         ((SPADCALL |q| (QREFELT $ 32))
+                                         ((SPADCALL |q|
+                                           (|getShellEntry| $ 32))
                                           (PROGN
                                             (LETT #1# |q|
                                              |TSETCAT-;removeZero;PSP;18|)
                                             (GO #1#)))
                                          ((SPADCALL
                                            (SPADCALL |q| |tsv-|
-                                            (QREFELT $ 85))
-                                           (QREFELT $ 32))
+                                            (|getShellEntry| $ 85))
+                                           (|getShellEntry| $ 32))
                                           (PROGN
                                             (LETT #1#
                                              (|spadConstant| $ 86)
                                              |TSETCAT-;removeZero;PSP;18|)
                                             (GO #1#))))))))
                          (EXIT (COND
-                                 ((SPADCALL |tsv-| (QREFELT $ 12)) |p|)
+                                 ((SPADCALL |tsv-|
+                                      (|getShellEntry| $ 12))
+                                  |p|)
                                  ('T
                                   (SEQ (LETT |q| (|spadConstant| $ 86)
                                         |TSETCAT-;removeZero;PSP;18|)
@@ -1226,8 +1266,8 @@ Note that this code is not included in the generated catdef.spad file.
                                           ((NULL
                                             (SPADCALL
                                              (SPADCALL |p| |v|
-                                              (QREFELT $ 87))
-                                             (QREFELT $ 89)))
+                                              (|getShellEntry| $ 87))
+                                             (|getShellEntry| $ 89)))
                                            (GO G191)))
                                         (SEQ
                                          (LETT |q|
@@ -1235,42 +1275,44 @@ Note that this code is not included in the generated catdef.spad file.
                                            (SPADCALL
                                             (SPADCALL
                                              (SPADCALL |p|
-                                              (QREFELT $ 46))
-                                             |tsv-| (QREFELT $ 85))
+                                              (|getShellEntry| $ 46))
+                                             |tsv-|
+                                             (|getShellEntry| $ 85))
                                             (SPADCALL |p|
-                                             (QREFELT $ 90))
-                                            (QREFELT $ 91))
-                                           |q| (QREFELT $ 92))
+                                             (|getShellEntry| $ 90))
+                                            (|getShellEntry| $ 91))
+                                           |q| (|getShellEntry| $ 92))
                                           |TSETCAT-;removeZero;PSP;18|)
                                          (EXIT
                                           (LETT |p|
                                            (SPADCALL |p|
-                                            (QREFELT $ 93))
+                                            (|getShellEntry| $ 93))
                                            |TSETCAT-;removeZero;PSP;18|)))
                                         NIL (GO G190) G191 (EXIT NIL))
                                        (EXIT
                                         (SPADCALL |q|
                                          (SPADCALL |p| |tsv-|
-                                          (QREFELT $ 85))
-                                         (QREFELT $ 92)))))))))))
+                                          (|getShellEntry| $ 85))
+                                         (|getShellEntry| $ 92)))))))))))
            #1# (EXIT #1#))))) 
 
 (DEFUN |TSETCAT-;reduceByQuasiMonic;PSP;19| (|p| |ts| $)
   (COND
-    ((OR (SPADCALL |p| (QREFELT $ 35)) (SPADCALL |ts| (QREFELT $ 12)))
+    ((OR (SPADCALL |p| (|getShellEntry| $ 35))
+         (SPADCALL |ts| (|getShellEntry| $ 12)))
      |p|)
     ('T
-     (QVELT (SPADCALL |p| (SPADCALL |ts| (QREFELT $ 95))
-                (QREFELT $ 97))
+     (QVELT (SPADCALL |p| (SPADCALL |ts| (|getShellEntry| $ 95))
+                (|getShellEntry| $ 97))
             1)))) 
 
 (DEFUN |TSETCAT-;autoReduced?;SMB;20| (|ts| |redOp?| $)
   (PROG (|p| |lp|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |ts| (QREFELT $ 12)) 'T)
+             ((SPADCALL |ts| (|getShellEntry| $ 12)) 'T)
              ('T
-              (SEQ (LETT |lp| (SPADCALL |ts| (QREFELT $ 29))
+              (SEQ (LETT |lp| (SPADCALL |ts| (|getShellEntry| $ 29))
                          |TSETCAT-;autoReduced?;SMB;20|)
                    (LETT |p| (|SPADfirst| |lp|)
                          |TSETCAT-;autoReduced?;SMB;20|)
@@ -1290,41 +1332,42 @@ Note that this code is not included in the generated catdef.spad file.
                    (EXIT (NULL |lp|))))))))) 
 
 (DEFUN |TSETCAT-;stronglyReduced?;SB;21| (|ts| $)
-  (SPADCALL |ts| (ELT $ 59) (QREFELT $ 101))) 
+  (SPADCALL |ts| (ELT $ 59) (|getShellEntry| $ 101))) 
 
 (DEFUN |TSETCAT-;normalized?;SB;22| (|ts| $)
-  (SPADCALL |ts| (ELT $ 57) (QREFELT $ 101))) 
+  (SPADCALL |ts| (ELT $ 57) (|getShellEntry| $ 101))) 
 
 (DEFUN |TSETCAT-;headReduced?;SB;23| (|ts| $)
-  (SPADCALL |ts| (ELT $ 104) (QREFELT $ 101))) 
+  (SPADCALL |ts| (ELT $ 104) (|getShellEntry| $ 101))) 
 
 (DEFUN |TSETCAT-;initiallyReduced?;SB;24| (|ts| $)
-  (SPADCALL |ts| (ELT $ 106) (QREFELT $ 101))) 
+  (SPADCALL |ts| (ELT $ 106) (|getShellEntry| $ 101))) 
 
 (DEFUN |TSETCAT-;mvar;SV;25| (|ts| $)
-  (PROG (#0=#:G1586)
+  (PROG (#0=#:G1593)
     (RETURN
       (COND
-        ((SPADCALL |ts| (QREFELT $ 12))
+        ((SPADCALL |ts| (|getShellEntry| $ 12))
          (|error| "Error from TSETCAT in mvar : #1 is empty"))
         ('T
          (SPADCALL
-             (PROG2 (LETT #0# (SPADCALL |ts| (QREFELT $ 14))
+             (PROG2 (LETT #0# (SPADCALL |ts| (|getShellEntry| $ 14))
                           |TSETCAT-;mvar;SV;25|)
                     (QCDR #0#)
-               (|check-union| (QEQCAR #0# 0) (QREFELT $ 10) #0#))
-             (QREFELT $ 24))))))) 
+               (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 10)
+                   #0#))
+             (|getShellEntry| $ 24))))))) 
 
 (DEFUN |TSETCAT-;first;SU;26| (|ts| $)
   (PROG (|lp|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |ts| (QREFELT $ 12)) (CONS 1 "failed"))
+             ((SPADCALL |ts| (|getShellEntry| $ 12)) (CONS 1 "failed"))
              ('T
               (SEQ (LETT |lp|
                          (SPADCALL (ELT $ 23)
-                             (SPADCALL |ts| (QREFELT $ 29))
-                             (QREFELT $ 37))
+                             (SPADCALL |ts| (|getShellEntry| $ 29))
+                             (|getShellEntry| $ 37))
                          |TSETCAT-;first;SU;26|)
                    (EXIT (CONS 0 (|SPADfirst| |lp|)))))))))) 
 
@@ -1332,12 +1375,12 @@ Note that this code is not included in the generated catdef.spad file.
   (PROG (|lp|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |ts| (QREFELT $ 12)) (CONS 1 "failed"))
+             ((SPADCALL |ts| (|getShellEntry| $ 12)) (CONS 1 "failed"))
              ('T
               (SEQ (LETT |lp|
                          (SPADCALL (ELT $ 22)
-                             (SPADCALL |ts| (QREFELT $ 29))
-                             (QREFELT $ 37))
+                             (SPADCALL |ts| (|getShellEntry| $ 29))
+                             (|getShellEntry| $ 37))
                          |TSETCAT-;last;SU;27|)
                    (EXIT (CONS 0 (|SPADfirst| |lp|)))))))))) 
 
@@ -1345,25 +1388,28 @@ Note that this code is not included in the generated catdef.spad file.
   (PROG (|lp|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |ts| (QREFELT $ 12)) (CONS 1 "failed"))
+             ((SPADCALL |ts| (|getShellEntry| $ 12)) (CONS 1 "failed"))
              ('T
               (SEQ (LETT |lp|
                          (SPADCALL (ELT $ 23)
-                             (SPADCALL |ts| (QREFELT $ 29))
-                             (QREFELT $ 37))
+                             (SPADCALL |ts| (|getShellEntry| $ 29))
+                             (|getShellEntry| $ 37))
                          |TSETCAT-;rest;SU;28|)
-                   (EXIT (CONS 0 (SPADCALL (CDR |lp|) (QREFELT $ 111))))))))))) 
+                   (EXIT (CONS 0
+                               (SPADCALL (CDR |lp|)
+                                   (|getShellEntry| $ 111))))))))))) 
 
 (DEFUN |TSETCAT-;coerce;SL;29| (|ts| $)
-  (SPADCALL (ELT $ 23) (SPADCALL |ts| (QREFELT $ 29)) (QREFELT $ 37))) 
+  (SPADCALL (ELT $ 23) (SPADCALL |ts| (|getShellEntry| $ 29))
+            (|getShellEntry| $ 37))) 
 
 (DEFUN |TSETCAT-;algebraicVariables;SL;30| (|ts| $)
-  (PROG (#0=#:G1611 |p| #1=#:G1612)
+  (PROG (#0=#:G1618 |p| #1=#:G1619)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |TSETCAT-;algebraicVariables;SL;30|)
              (SEQ (LETT |p| NIL |TSETCAT-;algebraicVariables;SL;30|)
-                  (LETT #1# (SPADCALL |ts| (QREFELT $ 29))
+                  (LETT #1# (SPADCALL |ts| (|getShellEntry| $ 29))
                         |TSETCAT-;algebraicVariables;SL;30|)
                   G190
                   (COND
@@ -1374,7 +1420,9 @@ Note that this code is not included in the generated catdef.spad file.
                            NIL))
                      (GO G191)))
                   (SEQ (EXIT (LETT #0#
-                                   (CONS (SPADCALL |p| (QREFELT $ 24))
+                                   (CONS
+                                    (SPADCALL |p|
+                                     (|getShellEntry| $ 24))
                                     #0#)
                                    |TSETCAT-;algebraicVariables;SL;30|)))
                   (LETT #1# (CDR #1#)
@@ -1382,14 +1430,16 @@ Note that this code is not included in the generated catdef.spad file.
                   (GO G190) G191 (EXIT (NREVERSE0 #0#)))))))) 
 
 (DEFUN |TSETCAT-;algebraic?;VSB;31| (|v| |ts| $)
-  (SPADCALL |v| (SPADCALL |ts| (QREFELT $ 116)) (QREFELT $ 117))) 
+  (SPADCALL |v| (SPADCALL |ts| (|getShellEntry| $ 116))
+      (|getShellEntry| $ 117))) 
 
 (DEFUN |TSETCAT-;select;SVU;32| (|ts| |v| $)
   (PROG (|lp|)
     (RETURN
       (SEQ (LETT |lp|
-                 (SPADCALL (ELT $ 23) (SPADCALL |ts| (QREFELT $ 29))
-                     (QREFELT $ 37))
+                 (SPADCALL (ELT $ 23)
+                     (SPADCALL |ts| (|getShellEntry| $ 29))
+                     (|getShellEntry| $ 37))
                  |TSETCAT-;select;SVU;32|)
            (SEQ G190
                 (COND
@@ -1399,9 +1449,9 @@ Note that this code is not included in the generated catdef.spad file.
                             (SPADCALL
                                 (SPADCALL |v|
                                     (SPADCALL (|SPADfirst| |lp|)
-                                     (QREFELT $ 24))
-                                    (QREFELT $ 65))
-                                (QREFELT $ 20)))))
+                                     (|getShellEntry| $ 24))
+                                    (|getShellEntry| $ 65))
+                                (|getShellEntry| $ 20)))))
                    (GO G191)))
                 (SEQ (EXIT (LETT |lp| (CDR |lp|)
                                  |TSETCAT-;select;SVU;32|)))
@@ -1413,31 +1463,32 @@ Note that this code is not included in the generated catdef.spad file.
 (DEFUN |TSETCAT-;collectQuasiMonic;2S;33| (|ts| $)
   (PROG (|newlp| |lp|)
     (RETURN
-      (SEQ (LETT |lp| (SPADCALL |ts| (QREFELT $ 29))
+      (SEQ (LETT |lp| (SPADCALL |ts| (|getShellEntry| $ 29))
                  |TSETCAT-;collectQuasiMonic;2S;33|)
            (LETT |newlp| NIL |TSETCAT-;collectQuasiMonic;2S;33|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL (NULL |lp|) (QREFELT $ 20)))
+                  ((NULL (SPADCALL (NULL |lp|) (|getShellEntry| $ 20)))
                    (GO G191)))
                 (SEQ (COND
                        ((SPADCALL
                             (SPADCALL (|SPADfirst| |lp|)
-                                (QREFELT $ 46))
-                            (QREFELT $ 35))
+                                (|getShellEntry| $ 46))
+                            (|getShellEntry| $ 35))
                         (LETT |newlp| (CONS (|SPADfirst| |lp|) |newlp|)
                               |TSETCAT-;collectQuasiMonic;2S;33|)))
                      (EXIT (LETT |lp| (CDR |lp|)
                                  |TSETCAT-;collectQuasiMonic;2S;33|)))
                 NIL (GO G190) G191 (EXIT NIL))
-           (EXIT (SPADCALL |newlp| (QREFELT $ 111))))))) 
+           (EXIT (SPADCALL |newlp| (|getShellEntry| $ 111))))))) 
 
 (DEFUN |TSETCAT-;collectUnder;SVS;34| (|ts| |v| $)
   (PROG (|lp|)
     (RETURN
       (SEQ (LETT |lp|
-                 (SPADCALL (ELT $ 23) (SPADCALL |ts| (QREFELT $ 29))
-                     (QREFELT $ 37))
+                 (SPADCALL (ELT $ 23)
+                     (SPADCALL |ts| (|getShellEntry| $ 29))
+                     (|getShellEntry| $ 37))
                  |TSETCAT-;collectUnder;SVS;34|)
            (SEQ G190
                 (COND
@@ -1447,21 +1498,22 @@ Note that this code is not included in the generated catdef.spad file.
                             (SPADCALL
                                 (SPADCALL
                                     (SPADCALL (|SPADfirst| |lp|)
-                                     (QREFELT $ 24))
-                                    |v| (QREFELT $ 64))
-                                (QREFELT $ 20)))))
+                                     (|getShellEntry| $ 24))
+                                    |v| (|getShellEntry| $ 64))
+                                (|getShellEntry| $ 20)))))
                    (GO G191)))
                 (SEQ (EXIT (LETT |lp| (CDR |lp|)
                                  |TSETCAT-;collectUnder;SVS;34|)))
                 NIL (GO G190) G191 (EXIT NIL))
-           (EXIT (SPADCALL |lp| (QREFELT $ 111))))))) 
+           (EXIT (SPADCALL |lp| (|getShellEntry| $ 111))))))) 
 
 (DEFUN |TSETCAT-;collectUpper;SVS;35| (|ts| |v| $)
   (PROG (|lp2| |lp1|)
     (RETURN
       (SEQ (LETT |lp1|
-                 (SPADCALL (ELT $ 23) (SPADCALL |ts| (QREFELT $ 29))
-                     (QREFELT $ 37))
+                 (SPADCALL (ELT $ 23)
+                     (SPADCALL |ts| (|getShellEntry| $ 29))
+                     (|getShellEntry| $ 37))
                  |TSETCAT-;collectUpper;SVS;35|)
            (LETT |lp2| NIL |TSETCAT-;collectUpper;SVS;35|)
            (SEQ G190
@@ -1471,20 +1523,20 @@ Note that this code is not included in the generated catdef.spad file.
                            ('T
                             (SPADCALL |v|
                                 (SPADCALL (|SPADfirst| |lp1|)
-                                    (QREFELT $ 24))
-                                (QREFELT $ 64)))))
+                                    (|getShellEntry| $ 24))
+                                (|getShellEntry| $ 64)))))
                    (GO G191)))
                 (SEQ (LETT |lp2| (CONS (|SPADfirst| |lp1|) |lp2|)
                            |TSETCAT-;collectUpper;SVS;35|)
                      (EXIT (LETT |lp1| (CDR |lp1|)
                                  |TSETCAT-;collectUpper;SVS;35|)))
                 NIL (GO G190) G191 (EXIT NIL))
-           (EXIT (SPADCALL (REVERSE |lp2|) (QREFELT $ 111))))))) 
+           (EXIT (SPADCALL (REVERSE |lp2|) (|getShellEntry| $ 111))))))) 
 
 (DEFUN |TSETCAT-;construct;LS;36| (|lp| $)
   (PROG (|rif|)
     (RETURN
-      (SEQ (LETT |rif| (SPADCALL |lp| (QREFELT $ 123))
+      (SEQ (LETT |rif| (SPADCALL |lp| (|getShellEntry| $ 123))
                  |TSETCAT-;construct;LS;36|)
            (EXIT (COND
                    ((QEQCAR |rif| 0) (QCDR |rif|))
@@ -1495,23 +1547,26 @@ Note that this code is not included in the generated catdef.spad file.
   (PROG (|rif|)
     (RETURN
       (SEQ (COND
-             ((NULL |lp|) (CONS 0 (SPADCALL (QREFELT $ 38))))
+             ((NULL |lp|) (CONS 0 (SPADCALL (|getShellEntry| $ 38))))
              ('T
-              (SEQ (LETT |lp| (SPADCALL (ELT $ 23) |lp| (QREFELT $ 37))
+              (SEQ (LETT |lp|
+                         (SPADCALL (ELT $ 23) |lp|
+                             (|getShellEntry| $ 37))
                          |TSETCAT-;retractIfCan;LU;37|)
-                   (LETT |rif| (SPADCALL (CDR |lp|) (QREFELT $ 123))
+                   (LETT |rif|
+                         (SPADCALL (CDR |lp|) (|getShellEntry| $ 123))
                          |TSETCAT-;retractIfCan;LU;37|)
                    (EXIT (COND
                            ((QEQCAR |rif| 0)
                             (SPADCALL (QCDR |rif|) (|SPADfirst| |lp|)
-                                (QREFELT $ 125)))
+                                (|getShellEntry| $ 125)))
                            ('T
                             (|error| "in retractIfCan : LP -> ... from TSETCAT : bad arg"))))))))))) 
 
 (DEFUN |TSETCAT-;extend;SPS;38| (|ts| |p| $)
   (PROG (|eif|)
     (RETURN
-      (SEQ (LETT |eif| (SPADCALL |ts| |p| (QREFELT $ 125))
+      (SEQ (LETT |eif| (SPADCALL |ts| |p| (|getShellEntry| $ 125))
                  |TSETCAT-;extend;SPS;38|)
            (EXIT (COND
                    ((QEQCAR |eif| 0) (QCDR |eif|))
@@ -1519,13 +1574,15 @@ Note that this code is not included in the generated catdef.spad file.
                     (|error| "in extend : ($,P) -> $ from TSETCAT : bad ars")))))))) 
 
 (DEFUN |TSETCAT-;coHeight;SNni;39| (|ts| $)
-  (PROG (|n| |m| #0=#:G1652)
+  (PROG (|n| |m| #0=#:G1659)
     (RETURN
-      (SEQ (LETT |n| (SPADCALL (QREFELT $ 128))
+      (SEQ (LETT |n| (SPADCALL (|getShellEntry| $ 128))
                  |TSETCAT-;coHeight;SNni;39|)
-           (LETT |m| (LENGTH (SPADCALL |ts| (QREFELT $ 29)))
+           (LETT |m| (LENGTH (SPADCALL |ts| (|getShellEntry| $ 29)))
                  |TSETCAT-;coHeight;SNni;39|)
-           (EXIT (PROG2 (LETT #0# (SPADCALL |n| |m| (QREFELT $ 129))
+           (EXIT (PROG2 (LETT #0#
+                              (SPADCALL |n| |m|
+                                  (|getShellEntry| $ 129))
                               |TSETCAT-;coHeight;SNni;39|)
                         (QCDR #0#)
                    (|check-union| (QEQCAR #0# 0) (|NonNegativeInteger|)
@@ -1544,21 +1601,21 @@ Note that this code is not included in the generated catdef.spad file.
         (LETT |dv$|
               (LIST '|TriangularSetCategory&| |dv$1| |dv$2| |dv$3|
                     |dv$4| |dv$5|) . #0#)
-        (LETT $ (GETREFV 132) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3
+        (LETT $ (|newShell| 132) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
             (LETT |pv$|
                   (|buildPredVector| 0 0
                       (LIST (|HasCategory| |#4| '(|Finite|)))) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
-        (QSETREFV $ 7 |#2|)
-        (QSETREFV $ 8 |#3|)
-        (QSETREFV $ 9 |#4|)
-        (QSETREFV $ 10 |#5|)
+        (|setShellEntry| $ 6 |#1|)
+        (|setShellEntry| $ 7 |#2|)
+        (|setShellEntry| $ 8 |#3|)
+        (|setShellEntry| $ 9 |#4|)
+        (|setShellEntry| $ 10 |#5|)
         (COND
           ((|testBitVector| |pv$| 1)
-           (QSETREFV $ 130
+           (|setShellEntry| $ 130
                (CONS (|dispatchFunction| |TSETCAT-;coHeight;SNni;39|)
                      $))))
         $)))) 
@@ -1681,7 +1738,9 @@ Note that this code is not included in the generated catdef.spad file.
                                   11 9 0 118 2 0 11 0 0 19)))))
           '|lookupComplete|)) 
 @
+
 \section{domain GTSET GeneralTriangularSet}
+
 <<domain GTSET GeneralTriangularSet>>=
 )abbrev domain GTSET GeneralTriangularSet
 ++ Author: Marc Moreno Maza (marc@nag.co.uk)
