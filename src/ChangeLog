@@ -1,3 +1,9 @@
+2008-04-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Don't rename NOT.
+	* interp/define.boot: Add declarations.
+	* interp/types.boot (%Signature): New.
+
 2008-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/as.boot: Remove explicit use GETDATABASE.

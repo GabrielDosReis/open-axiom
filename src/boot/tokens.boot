@@ -254,8 +254,7 @@ for i in [ _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
   ["nil"           ,NIL ]  , _
-  ["not",         "NULL"]  , _
-  ["NOT",         "NULL"]  , _
+  ["not",         "NOT"]  , _
   ["nreverse", "NREVERSE"]  , _
   ["null",        "NULL"]  , _
   ["or",            "OR"]  , _
@@ -316,8 +315,7 @@ for i in [ _
   ["mkpf", "MKPF"], _
   ["nconc", "NCONC"], _
   ["nil", "NIL"], _
-  ["not", "NULL"], _
-  ["NOT", "NULL"], _
+  ["not", "NOT"], _
   ["nreverse", "NREVERSE"], _
   ["null", "NULL"], _
   ["or", "OR"], _
