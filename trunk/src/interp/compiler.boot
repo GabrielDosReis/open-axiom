@@ -1642,7 +1642,6 @@ for x in [["|", :"compSuchthat"],_
 	  ["Join", :"compJoin"],_
 	  ["leave", :"compLeave"],_
 	  ["LET", :"compSetq"],_
-	  ["ListCategory", :"compConstructorCategory"],_
 	  ["MDEF", :"compMacro"],_
           ["not", :"compileNot"],_
 	  ["pretend", :"compPretend"],_
@@ -1653,14 +1652,11 @@ for x in [["|", :"compSuchthat"],_
 	  ["return", :"compReturn"],_
 	  ["SEQ", :"compSeq"],_
 	  ["SETQ", :"compSetq"],_
-	  ["String", :"compString"],_
 	  ["SubDomain", :"compSubDomain"],_
 	  ["SubsetCategory", :"compSubsetCategory"],_
 	  ["Union", :"compCat"],_
 	  ["Mapping", :"compCat"],_
 	  ["UnionCategory", :"compConstructorCategory"],_
-	  ["VECTOR", :"compVector"],_
-	  ["VectorCategory", :"compConstructorCategory"],_
 	  ["where", :"compWhere"],_
           ["[||]", :"compileQuasiquote"]] repeat
   MAKEPROP(car x, 'SPECIAL, cdr x)
