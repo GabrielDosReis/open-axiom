@@ -1,3 +1,8 @@
+2008-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot ($mutableDomain): Define.
+	(compDefineFunctor): Initialize it before compiling a functor.
+
 2008-04-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot: Don't special case ListCategory, String,

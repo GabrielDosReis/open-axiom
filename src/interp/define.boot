@@ -43,6 +43,10 @@ $newCompCompare := false
 ++ List of mutable domains.
 $mutableDomains := nil
 
+++ True if the current constructor being compiled instantiates
+++ mutable domains or packages.  Default is `false'.
+$mutableDomain := false
+
 ++ when non nil, holds the declaration number of a function in a capsule.
 $suffix := nil
 
@@ -385,6 +389,7 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $domainShell: local -- holds the category of the object being compiled
   $profileCompiler: local := true
   $profileAlist:    local := nil
+  $mutableDomain: fluid := false
   $LISPLIB => compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
   compDefineFunctor1(df,m,e,prefix,fal)
  
