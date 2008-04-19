@@ -1,3 +1,7 @@
+2008-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot: Cleanup.
+
 2008-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (%DefaultValue): New %Ast node.
