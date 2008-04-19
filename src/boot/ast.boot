@@ -48,28 +48,34 @@ import '"includer"
 ++ translated with the obvious semantics, e.g. no caching.
 $bfClamming := false
 
-++ Basic types used in Boot codes.
+--% Basic types used in Boot codes.
+
 %Thing <=> true
+
 %Boolean <=> BOOLEAN
+
 %String <=> STRING
+
 %Symbol <=> SYMBOL
+
 %Short <=> FIXNUM
-%List <=> LIST
-%Vector <=> VECTOR
-%Sequence <=> SEQUENCE
 
 ++ Ideally, we would like to say that a List T if either nil or a 
-++ cons of a T and List of T.  However, we don't support parameterized
-++ alias definitions yet.
+++ cons of a T and List of T. 
 %List <=> LIST
+
+%Vector <=> VECTOR
+
+%Sequence <=> SEQUENCE
 
 ++ Currently, the Boot processor uses Lisp symbol datatype for names.
 ++ That causes the BOOTTRAN package to contain more symbols than we would
-++ like.  In the future, we want want to intern `on demand'.  How that
+++ like.  In the future, we want to intern `on demand'.  How that
 ++ interacts with renaming is to be worked out.
-structure Name == Name(%Symbol)
+structure %Name == 
+  %Name(%Symbol)
 
-structure Ast ==
+structure %Ast ==
   Command(%String)                      -- includer command
   Module(%String)                       -- module declaration
   Import(%String)                       -- import module
@@ -121,6 +127,7 @@ structure Ast ==
 $inDefIS := false
 
 
+++ returns a `quote' ast for x.
 quote x ==
   ["QUOTE",x]
 
