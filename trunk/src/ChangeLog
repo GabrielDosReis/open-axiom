@@ -1,5 +1,15 @@
 2008-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (%DefaultValue): New %Ast node.
+	(bfParameterList): New.
+	(bfInsertLet): Use it.
+	(bfInsertLet1): Handle parameter with default values.
+	* boot/parser.boot (bpRegularBVItemTail): Split from bpRegularBVItem.
+	(bpRegularBVItem): Tidy.	
+
+2008-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: 
 	* interp/define.boot ($mutableDomain): Define.
 	(compDefineFunctor): Initialize it before compiling a functor.
 

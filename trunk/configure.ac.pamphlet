@@ -1092,7 +1092,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-04-13], 
+AC_INIT([OpenAxiom], [1.2.0-2008-04-18], 
         [open-axiom-bugs@lists.sf.net])
 
 @

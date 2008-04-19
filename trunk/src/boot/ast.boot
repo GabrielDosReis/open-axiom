@@ -82,6 +82,7 @@ structure Ast ==
   EqualName(Name)                       -- =x        -- patterns
   Colon(Name)                           -- :x
   QualifiedName(Name, Name)             -- m::x
+  %DefaultValue(%Name,%Ast)             -- opt. value for function param.
   Bracket(Ast)                          -- [x, y]
   UnboundedSegment(Ast)                 -- 3..
   BoundedSgement(Ast, Ast)              -- 2..4
@@ -838,6 +839,22 @@ shoeComp x==
      if EQCAR(a,"LAMBDA")
      then ["DEFUN",CAR x,CADR a,:CDDR a]
      else ["DEFMACRO",CAR x,CADR a,:CDDR a]
+
+
+++ Translate function parameter list to Lisp.
+++ We are processing a function definition.  `p2' is the list of
+++ parameters we have seen so far, and we are about to add a 
+++ parameter `p1'.  Check that the new specification is coherent
+++ with the previous one.  In particular, check that restrictions
+++ on parameters with default values are satisfied.  Return the
+++ new augmented parameter list.
+bfParameterList(p1,p2) ==
+  p2=nil and not atom p1 => p1
+  p1 is ["&OPTIONAL",:.] =>
+    p2 isnt ["&OPTIONAL",:.] => bpSpecificErrorHere '"default value required"
+    [first p1,:rest p1,:rest p2]
+  p2 is ["&OPTIONAL",:.] =>   [p1,first p2,:rest p2]
+  [p1,:p2]
  
 bfInsertLet(x,body)==
    if null x
@@ -850,20 +867,17 @@ bfInsertLet(x,body)==
       else
        [b,norq,name1,body1]:=  bfInsertLet1 (car x,body)
        [b1,norq1,name2,body2]:=  bfInsertLet (cdr x,body1)
-       [b or b1,cons(norq,norq1),cons(name1,name2),body2]
+       [b or b1,cons(norq,norq1),bfParameterList(name1,name2),body2]
  
 bfInsertLet1(y,body)==
-   if y is ["L%T",l,r]
-   then  [false,nil,l,bfMKPROGN [bfLET(r,l),body]]
-   else if IDENTP y
-        then [false,nil,y,body]
-        else
-          if y is ["BVQUOTE",b]
-          then [true,"QUOTE",b,body]
-          else
-            g:=bfGenSymbol()
-            ATOM y => [false,nil,g,body]
-            [false,nil,g,bfMKPROGN [bfLET(compFluidize y,g),body]]
+   y is ["L%T",l,r] => [false,nil,l,bfMKPROGN [bfLET(r,l),body]]
+   IDENTP y => [false,nil,y,body]
+   y is ["BVQUOTE",b] => [true,"QUOTE",b,body]
+   g:=bfGenSymbol()
+   ATOM y => [false,nil,g,body]
+   case y of
+     %DefaultValue(p,v) => [false,nil,["&OPTIONAL",[p,v]],body]
+     otherwise => [false,nil,g,bfMKPROGN [bfLET(compFluidize y,g),body]]
  
 shoeCompTran x==
    lamtype:=CAR x

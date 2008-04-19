@@ -981,17 +981,28 @@ bpPatternTail()==
               and bpPush append (bpPop2(),bpPop1()) or true)
  
 -- BOUND VARIABLE
+
+++ We are parsing parameters in a function definition.  We have
+++ just seen a parameter name; we are attempting to see whether
+++ it might be followed by a type annotation, or whether it actually
+++ a form with a specific pattern structure, or whether it has
+++ a default value.
+bpRegularBVItemTail() ==
+  bpEqKey "COLON" and (bpApplication() or bpTrap()) and 
+    bpPush bfTagged(bpPop2(), bpPop1())
+      or bpEqKey "BEC" and (bpPattern() or bpTrap()) and
+	 bpPush bfAssign(bpPop2(),bpPop1())
+	   or bpEqKey "IS" and (bpPattern() or bpTrap()) and
+	      bpPush bfAssign(bpPop2(),bpPop1())
+             or bpEqKey "DEF" and (bpApplication() or bpTrap()) and
+                bpPush %DefaultValue(bpPop2(), bpPop1())
+
+
 bpRegularBVItem() ==
-  bpBVString() or
-     bpConstTok() or
-      (bpName() and
-         (bpEqKey "COLON" and (bpApplication() or bpTrap())
-            and bpPush bfTagged(bpPop2(), bpPop1()) or
-              bpEqKey "BEC" and (bpPattern() or bpTrap())
-                and bpPush bfAssign(bpPop2(),bpPop1()) or
-                  (bpEqKey "IS" and (bpPattern() or bpTrap())
-                     and bpPush bfAssign(bpPop2(),bpPop1())) or true))
-                       or bpBracketConstruct function bpPatternL
+  bpBVString() 
+    or bpConstTok() 
+      or (bpName() and (bpRegularBVItemTail() or true))
+        or bpBracketConstruct function bpPatternL
  
 bpBVString()==
      EQ(shoeTokType $stok,"STRING") and
