@@ -144,9 +144,10 @@ openaxiom_build_rts_options(openaxiom_command* command,
          command->rt_argc = 3;
          command->rt_argv = (char **)
             malloc(command->rt_argc * sizeof (char*));
-         command->rt_argv[0] = "--noprint";
-         command->rt_argv[1] = "--noinform";
-         command->rt_argv[2] = "--end-runtime-options";
+         command->rt_argv[0] = "--noinform";
+         command->rt_argv[1] = "--end-runtime-options";
+         command->rt_argv[2] = "--noprint";
+         command->rt_argv[3] = "--end-toplevel-options";
          break;
          
       default:
