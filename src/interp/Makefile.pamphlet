@@ -821,7 +821,7 @@ packtran.$(FASLEXT): packtran.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 postpar.$(FASLEXT): postpar.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 bootlex.$(FASLEXT): bootlex.lisp preparse.$(FASLEXT) def.$(FASLEXT) \
 			nlib.$(FASLEXT) sys-globals.$(FASLEXT)

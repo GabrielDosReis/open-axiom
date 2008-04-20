@@ -35,19 +35,28 @@
 import '"macros"
 )package "BOOT"
 
+++ The type of parse trees.
+%ParseTree <=> 
+  %Number or %Symbol or %String or cons
+
+++ The result of processing a parse tree.
+%ParseForm <=>
+  %Number or %Symbol or %String or cons
+
 $postStack := []
 
 --% Yet Another Parser Transformation File
 --These functions are used by for BOOT and SPAD code
 --(see new2OldLisp, e.g.)
 
+postTransform: %ParseTree -> %ParseForm
 postTransform y ==
   x:= y
   u:= postTran x
   if u is ["Tuple",:l,[":",y,t]] and (and/[IDENTP x for x in l]) then u:=
     [":",["LISTOF",:l,y],t]
   postTransformCheck u
-  aplTran u
+  u
 
 displayPreCompilationErrors() ==
   n:= #($postStack:= REMDUP NREVERSE $postStack)
@@ -67,6 +76,7 @@ displayPreCompilationErrors() ==
     else sayMath ['"    ",:first $postStack]
   TERPRI()
 
+postTran: %ParseTree -> %ParseForm
 postTran x ==
   atom x =>
     postAtom x
@@ -80,23 +90,32 @@ postTran x ==
   op^=(y:= postOp op) => [y,:postTranList rest x]
   postForm x
 
-postTranList x == [postTran y for y in x]
+postTranList: %List -> %List
+postTranList x == 
+  [postTran y for y in x]
 
+postBigFloat: %ParseTree -> %ParseTree
 postBigFloat x ==
   [.,mant,:expon] := x
   $BOOT => INT2RNUM(mant) * INT2RNUM(10) ** expon
   eltword := if $InteractiveMode then "$elt" else "elt"
   postTran [[eltword,'(Float),"float"],[",",[",",mant,expon],10]]
 
-postAdd ["add",a,:b] ==
-  null b => postCapsule a
+postAdd: %ParseTree -> %ParseForm
+postAdd x ==
+  x isnt ["add",a,:b] => systemErrorHere "postAdd"
+  b=nil => postCapsule a
   ["add",postTran a,postCapsule first b]
 
-checkWarning msg == postError concat('"Parsing error: ",msg)
+checkWarning: %Thing -> %Thing
+checkWarning msg == 
+  postError concat('"Parsing error: ",msg)
  
+checkWarningIndentation: () -> %Thing
 checkWarningIndentation() ==
   checkWarning ['"Apparent indentation error following",:bright "add"]
 
+postCapsule: %ParseTree -> %ParseForm
 postCapsule x ==
   x isnt [op,:.] => checkWarningIndentation()
   INTEGERP op or op = "==" => ["CAPSULE",postBlockItem x]
@@ -104,12 +123,16 @@ postCapsule x ==
   op = "if" => ["CAPSULE",postBlockItem x]
   checkWarningIndentation()
 
-postQUOTE x == x
+postQUOTE: %ParseTree -> %ParseForm
+postQUOTE x == 
+  x
 
+postColon: %ParseTree -> %ParseForm
 postColon u ==
   u is [":",x] => [":",postTran x]
   u is [":",x,y] => [":",postTran x,:postType y]
 
+postColonColon: %ParseTree -> %ParseForm
 postColonColon u ==
   -- for Lisp package calling
   -- boot syntax is package::fun but probably need to parenthesize it
@@ -117,10 +140,17 @@ postColonColon u ==
     INTERN(STRINGIMAGE fun, package)
   postForm u
 
-postAtSign ["@",x,y] == ["@",postTran x,:postType y]
+postAtSign: %ParseTree -> %ParseForm
+postAtSign t == 
+  t isnt ["@",x,y] => systemErrorHere "postAtSign"
+  ["@",postTran x,:postType y]
 
-postPretend ["pretend",x,y] == ["pretend",postTran x,:postType y]
+postPretend: %ParseTree -> %ParseForm
+postPretend t == 
+  t isnt ["pretend",x,y] => systemErrorHere "postPretend"
+  ["pretend",postTran x,:postType y]
 
+postConstruct: %ParseTree -> %ParseForm
 postConstruct u ==
   u is ["construct",b] =>
     a:= (b is [",",:.] => comma2Tuple b; b)
@@ -132,14 +162,16 @@ postConstruct u ==
     ["construct",postTran a]
   u
 
+postError: %Thing -> %Thing
 postError msg ==
   BUMPERRORCOUNT 'precompilation
   xmsg:=
-    not null $defOp and not $InteractiveMode => [$defOp,'": ",:msg]
+    $defOp ^= nil and not $InteractiveMode => [$defOp,'": ",:msg]
     msg
   $postStack:= [xmsg,:$postStack]
   nil
 
+postMakeCons: %ParseTree -> %ParseForm
 postMakeCons l ==
   null l => "nil"
   l is [[":",a],:l'] =>
@@ -147,26 +179,34 @@ postMakeCons l ==
     postTran a
   ["cons",postTran first l,postMakeCons rest l]
 
+postAtom: %Atom -> %ParseForm
 postAtom x ==
   $BOOT => x
   x=0 => '(Zero)
   x=1 => '(One)
-  EQ(x,'T) => 'T_$ -- rename T in spad code to T$
-  IDENTP x and niladicConstructorFromDB x => LIST x
+  EQ(x,'T) => "T$" -- rename T in spad code to T$
+  IDENTP x and niladicConstructorFromDB x => [x]
   x
 
-postBlock ["Block",:l,x] ==
+postBlock: %ParseTree -> %ParseForm
+postBlock t ==
+  t isnt ["%Block",:l,x] => systemErrorHere "postBlock"
   ["SEQ",:postBlockItemList l,["exit",postTran x]]
 
-postBlockItemList l == [postBlockItem x for x in l]
+postBlockItemList: %List -> %List
+postBlockItemList l == 
+  [postBlockItem x for x in l]
 
+postBlockItem: %ParseTree -> %ParseForm
 postBlockItem x ==
   x:= postTran x
   x is ["Tuple",:l,[":",y,t]] and (and/[IDENTP x for x in l]) =>
     [":",["LISTOF",:l,y],t]
   x
 
-postCategory (u is ["CATEGORY",:l]) ==
+postCategory: %ParseTree -> %ParseForm
+postCategory u ==
+  u isnt ["CATEGORY",:l] => systemErrorHere "postCategory"
   --RDJ: ugh_ please -- someone take away need for PROGN as soon as possible
   null l => u
   op :=
@@ -176,11 +216,17 @@ postCategory (u is ["CATEGORY",:l]) ==
     $insidePostCategoryIfTrue: local := true
     postTran x
 
-postComma u == postTuple comma2Tuple u
+postComma: %ParseTree -> %ParseForm
+postComma u == 
+  postTuple comma2Tuple u
 
-comma2Tuple u == ["Tuple",:postFlatten(u,",")]
+comma2Tuple: %ParseTree -> %ParseForm
+comma2Tuple u == 
+  ["Tuple",:postFlatten(u,",")]
 
-postDef [defOp,lhs,rhs] ==
+postDef: %ParseTree -> %ParseForm
+postDef t ==
+  t isnt [defOp,lhs,rhs] => systemErrorHere "postDef"
 --+
   lhs is ["macro",name] => postMDef ["==>",name,rhs]
 
@@ -193,7 +239,7 @@ postDef [defOp,lhs,rhs] ==
   [form,targetType]:=
     lhs is [":",:.] => rest lhs
     [lhs,nil]
-  if null $InteractiveMode and atom form then form := LIST form
+  if not $InteractiveMode and atom form then form := [form]
   newLhs:=
     atom form => form
     [op,:argl]:= [(x is [":",a,.] => a; x) for x in form]
@@ -206,46 +252,57 @@ postDef [defOp,lhs,rhs] ==
   specialCaseForm := [nil for x in form]
   ["DEF",newLhs,typeList,specialCaseForm,postTran rhs]
 
+postDefArgs: %List -> %List
 postDefArgs argl ==
   null argl => argl
   argl is [[":",a],:b] =>
-    b => postError
+    b ^= nil => postError
       ['"   Argument",:bright a,'"of indefinite length must be last"]
     atom a or a is ["QUOTE",:.] => a
     postError
       ['"   Argument",:bright a,'"of indefinite length must be a name"]
   [first argl,:postDefArgs rest argl]
 
+postMDef: %ParseTree -> %ParseForm
 postMDef(t) ==
   [.,lhs,rhs] := t
   $InteractiveMode and not $BOOT =>
     lhs := postTran lhs
-    null IDENTP lhs => throwKeyedMsg("S2IP0001",NIL)
-    ["MDEF",lhs,NIL,NIL,postTran rhs]
+    not IDENTP lhs => throwKeyedMsg("S2IP0001",NIL)
+    ["MDEF",lhs,nil,nil,postTran rhs]
   lhs:= postTran lhs
   [form,targetType]:=
     lhs is [":",:.] => rest lhs
     [lhs,nil]
   form:=
-    atom form => LIST form
+    atom form => [form]
     form
   newLhs:= [(x is [":",a,:.] => a; x) for x in form]
   typeList:= [targetType,:[(x is [":",.,t] => t; nil) for x in rest form]]
   ["MDEF",newLhs,typeList,[nil for x in form],postTran rhs]
 
-postElt (u is [.,a,b]) ==
+postElt: %ParseTree -> %ParseForm
+postElt u ==
+  u isnt [.,a,b] => systemErrorHere "postElt"
   a:= postTran a
   b is ["Sequence",:.] => [["elt",a,"makeRecord"],:postTranList rest b]
   ["elt",a,postTran b]
 
-postExit ["=>",a,b] == ["IF",postTran a,["exit",postTran b],"%noBranch"]
+
+postExit: %ParseTree -> %ParseForm
+postExit t == 
+  t isnt ["=>",a,b] => systemErrorHere "postExit"
+  ["IF",postTran a,["exit",postTran b],"%noBranch"]
 
 
+postFlatten: (%ParseTree, %Symbol) -> %ParseForm
 postFlatten(x,op) ==
   x is [ =op,a,b] => [:postFlatten(a,op),:postFlatten(b,op)]
-  LIST x
+  [x]
 
-postForm (u is [op,:argl]) ==
+postForm: %ParseTree -> %ParseForm
+postForm u ==
+  u isnt [op,:argl] => systemErrorHere "postForm"
   x:=
     atom op =>
       argl':= postTranList argl
@@ -266,20 +323,29 @@ postForm (u is [op,:argl]) ==
   x is [.,["Tuple",:y]] => [first x,:y]
   x
 
-postQuote [.,a] == ["QUOTE",a]
+postQuote: %ParseTree -> %ParseForm
+postQuote [.,a] == 
+  ["QUOTE",a]
 
-postScriptsForm(["Scripts",op,a],argl) ==
+
+postScriptsForm: (%ParseTree,%List) -> %ParseForm
+postScriptsForm(t,argl) ==
+  t isnt ["Scripts",op,a] => systemErrorHere "postScriptsForm"
   [getScriptName(op,a,#argl),:postTranScripts a,:argl]
 
-postScripts ["Scripts",op,a] ==
+postScripts: %ParseTree -> %ParseForm
+postScripts t ==
+  t isnt ["Scripts",op,a] => systemErrorHere "postScripts"
   [getScriptName(op,a,0),:postTranScripts a]
 
+getScriptName: (%Symbol,%ParseTree, %Short) -> %ParseForm
 getScriptName(op,a,numberOfFunctionalArgs) ==
-  if null IDENTP op then
+  if not IDENTP op then
     postError ['"   ",op,'" cannot have scripts"]
   INTERNL("*",STRINGIMAGE numberOfFunctionalArgs,
     decodeScripts a,PNAME op)
 
+postTranScripts: %ParseTree -> %ParseForm
 postTranScripts a ==
   a is ["PrefixSC",b] => postTranScripts b
   a is [";",:b] => "append"/[postTranScripts y for y in b]
@@ -287,9 +353,10 @@ postTranScripts a ==
     ("append"/[fn postTran y for y in b]) where
       fn x ==
         x is ["Tuple",:y] => y
-        LIST x
-  LIST postTran a
+        [x]
+  [postTran a]
 
+decodeScripts: %ParseTree -> %ParseForm
 decodeScripts a ==
   a is ["PrefixSC",b] => STRCONC(STRINGIMAGE 0,decodeScripts b)
   a is [";",:b] => APPLX('STRCONC,[decodeScripts x for x in b])
@@ -297,25 +364,29 @@ decodeScripts a ==
     STRINGIMAGE fn a where fn a == (a is [",",:b] => +/[fn x for x in b]; 1)
   STRINGIMAGE 1
 
+postIf: %ParseTree -> %ParseForm
 postIf t ==
   t isnt ["if",:l] => t
-  ["IF",:[(null (x:= postTran x) and null $BOOT => "%noBranch"; x)
+  ["IF",:[(null (x:= postTran x) and not $BOOT => "%noBranch"; x)
     for x in l]]
 
+postJoin: %ParseTree -> %ParseForm
 postJoin ["Join",a,:l] ==
   a:= postTran a
   l:= postTranList l
   if l is [b] and b is [name,:.] and MEMQ(name,'(ATTRIBUTE SIGNATURE)) then l
-    := LIST ["CATEGORY",b]
+    := [["CATEGORY",b]]
   al:=
     a is ["Tuple",:c] => c
-    LIST a
+    [a]
   ["Join",:al,:l]
 
+postMapping: %ParseTree -> %ParseForm
 postMapping u  ==
   u isnt ["->",source,target] => u
   ["Mapping",postTran target,:unTuple postTran source]
 
+postOp: %ParseTree -> %ParseForm
 postOp x ==
   x=":=" =>
     $BOOT => "SPADLET"
@@ -324,13 +395,20 @@ postOp x ==
   x="Attribute" => "ATTRIBUTE"
   x
 
-postRepeat ["REPEAT",:m,x] == ["REPEAT",:postIteratorList m,postTran x]
+postRepeat: %ParseTree -> %ParseForm
+postRepeat t == 
+  t isnt ["REPEAT",:m,x] => systemErrorHere "postRepeat"
+  ["REPEAT",:postIteratorList m,postTran x]
 
-postSEGMENT ["SEGMENT",a,b] ==
+postSEGMENT: %ParseTree -> %ParseForm
+postSEGMENT t ==
+  t isnt ["SEGMENT",a,b] => systemErrorHere "postSEGMENT"
   key:= [a,'"..",:(b => [b]; nil)]
   postError ['"   Improper placement of segment",:bright key]
 
-postCollect [constructOp,:m,x] ==
+postCollect: %ParseTree -> %ParseForm
+postCollect t ==
+  t isnt [constructOp,:m,x] => systemErrorHere "postCollect"
   x is [["elt",D,"construct"],:y] =>
     postCollect [["elt",D,"COLLECT"],:m,["construct",:y]]
   itl:= postIteratorList m
@@ -347,9 +425,12 @@ postCollect [constructOp,:m,x] ==
         ["REDUCE","append",0,[op,:itl,newBody]]
       [op,:itl,y]
 
-postTupleCollect [constructOp,:m,x] ==
+postTupleCollect: %ParseTree -> %ParseForm
+postTupleCollect t ==
+  t isnt [constructOp,:m,x] => systemErrorHere "postTupleCollect"
   postCollect [constructOp,:m,["construct",x]]
 
+postIteratorList: %List -> %List
 postIteratorList x ==
   x is [p,:l] =>
     (p:= postTran p) is ["IN",y,u] =>
@@ -358,55 +439,74 @@ postIteratorList x ==
     [p,:postIteratorList l]
   x
 
+postin: %ParseTree -> %ParseForm
 postin arg ==
   arg isnt ["in",i,seq] => systemErrorHere '"postin"
   ["in",postTran i, postInSeq seq]
 
+postIn: %ParseTree -> %ParseForm
 postIn arg ==
   arg isnt ["IN",i,seq] => systemErrorHere '"postIn"
   ["IN",postTran i,postInSeq seq]
 
+postInSeq: %ParseTree -> %ParseForm
 postInSeq seq ==
   seq is ["SEGMENT",p,q] => postTranSegment(p,q)
   seq is ["Tuple",:l] => tuple2List l
   postTran seq
 
-postTranSegment(p,q) == ["SEGMENT",postTran p,(q => postTran q; nil)]
+postTranSegment: (%ParseTree, %ParseTree) -> %ParseForm
+postTranSegment(p,q) == 
+  ["SEGMENT",postTran p,(q => postTran q; nil)]
 
+tuple2List: %ParseTree -> %ParseForm
 tuple2List l ==
   l is [a,:l'] =>
     u:= tuple2List l'
     a is ["SEGMENT",p,q] =>
       null u => ["construct",postTranSegment(p,q)]
-      $InteractiveMode and null $BOOT =>
+      $InteractiveMode and not $BOOT =>
         ["append",["construct",postTranSegment(p,q)],tuple2List l']
       ["nconc",["construct",postTranSegment(p,q)],tuple2List l']
     null u => ["construct",postTran a]
     ["cons",postTran a,tuple2List l']
   nil
 
-SEGMENT(a,b) == [i for i in a..b]
+SEGMENT: %ParseTree -> %ParseForm
+SEGMENT(a,b) == 
+  [i for i in a..b]
 
-postReduce ["Reduce",op,expr] ==
+postReduce: %ParseTree -> %ParseForm
+postReduce t ==
+  t isnt ["Reduce",op,expr] => systemErrorHere "postReduce"
   $InteractiveMode or expr is ["COLLECT",:.] =>
     ["REDUCE",op,0,postTran expr]
   postReduce ["Reduce",op,["COLLECT",["IN",g:= GENSYM(),expr],
     ["construct",  g]]]
 
+postFlattenLeft: (%ParseTree, %Symbol) -> %ParseForm
 postFlattenLeft(x,op) ==--
   x is [ =op,a,b] => [:postFlattenLeft(a,op),b]
   [x]
 
-postSemiColon u == postBlock ["Block",:postFlattenLeft(u,";")]
+postSemiColon: %ParseTree -> %ParseForm
+postSemiColon u == 
+  postBlock ["%Block",:postFlattenLeft(u,";")]
 
-postSequence ["Sequence",:l] == ['(elt $ makeRecord),:postTranList l]
+postSequence: %ParseTree -> %ParseForm
+postSequence t == 
+  t isnt ["Sequence",:l] => systemErrorHere "postSequence"
+  ['(elt $ makeRecord),:postTranList l]
 
-postSignature ["Signature",op,sig] ==
+postSignature: %ParseTree -> %ParseForm
+postSignature t ==
+  t isnt ["Signature",op,sig] => systemErrorHere "postSignature"
   sig is ["->",:.] =>
     sig1:= postType sig
     op:= postAtom (STRINGP op => INTERN op; op)
     ["SIGNATURE",op,:removeSuperfluousMapping killColons sig1]
 
+killColons: %ParseTree -> %ParseForm
 killColons x ==
   atom x => x
   x is ["Record",:.] => x
@@ -414,45 +514,56 @@ killColons x ==
   x is [":",.,y] => killColons y
   [killColons first x,:killColons rest x]
 
-postSlash ['_/,a,b] ==
+postSlash: %ParseTree -> %ParseForm
+postSlash t ==
+  t isnt ['_/,a,b] => systemErrorHere "postSlash"
   STRINGP a => postTran ["Reduce",INTERN a,b]
   ['_/,postTran a,postTran b]
 
+removeSuperfluousMapping: %ParseTree -> %ParseForm
 removeSuperfluousMapping sig1 ==
   --get rid of this asap
   sig1 is [x,:y] and x is ["Mapping",:.] => [rest x,:y]
   sig1
 
+postType: %ParseTree -> %ParseForm
 postType typ ==
   typ is ["->",source,target] =>
-    source="constant" => [LIST postTran target,"constant"]
-    LIST ["Mapping",postTran target,:unTuple postTran source]
-  typ is ["->",target] => LIST ["Mapping",postTran target]
-  LIST postTran typ
+    source="constant" => [[postTran target],"constant"]
+    [["Mapping",postTran target,:unTuple postTran source]]
+  typ is ["->",target] => [["Mapping",postTran target]]
+  [postTran typ]
 
+postTuple: %ParseTree -> %ParseForm
 postTuple u ==
   u is ["Tuple"] => u
   u is ["Tuple",:l,a] => (["Tuple",:postTranList rest u])
 --u is ["Tuple",:l,a] => (--a:= postTran a; ["Tuple",:postTranList rest u])
     --RDJ: don't understand need for above statement that is commented out
 
-postWhere ["where",a,b] ==
+postWhere: %ParseTree -> %ParseForm
+postWhere t ==
+  t isnt ["where",a,b] => systemErrorHere "postWhere"
   x:=
-    b is ["Block",:c] => c
-    LIST b
+    b is ["%Block",:c] => c
+    [b]
   ["where",postTran a,:postTranList x]
 
-postWith ["with",a] ==
+postWith: %ParseTree -> %ParseForm
+postWith t ==
+  t isnt ["with",a] => systemErrorHere "postWidth"
   $insidePostCategoryIfTrue: local := true
   a:= postTran a
   a is [op,:.] and MEMQ(op,'(SIGNATURE ATTRIBUTE IF)) => ["CATEGORY",a]
   a is ["PROGN",:b] => ["CATEGORY",:b]
   a
 
+postTransformCheck: %ParseTree -> %ParseForm
 postTransformCheck x ==
   $defOp: local:= nil
   postcheck x
 
+postcheck: %ParseTree -> %ParseForm
 postcheck x ==
   atom x => nil
   x is ["DEF",form,[target,:.],:.] =>
@@ -461,76 +572,31 @@ postcheck x ==
   postcheck first x
   postcheck rest x
 
+setDefOp: %ParseForm -> %Thing
 setDefOp f ==
   if f is [":",g,:.] then f := g
   f := (atom f => f; first f)
   if $topOp then $defOp:= f else $topOp:= f
 
+postcheckTarget: %ParseForm -> %Thing
 postcheckTarget x ==
   -- doesn't seem that useful!
   isPackageType x => nil
   x is ["Join",:.] => nil
   NIL
 
-isPackageType x == not CONTAINED("$",x)
+isPackageType: %ParseForm -> %Boolean
+isPackageType x == 
+  not CONTAINED("$",x)
 
+unTuple: %ParseForm -> %ParseForm
 unTuple x ==
   x is ["Tuple",:y] => y
-  LIST x
-
---% APL TRANSFORMATION OF INPUT
-
-aplTran x ==
-  $BOOT => x
-  $GENNO: local := 0
-  u:= aplTran1 x
-  containsBang u => throwKeyedMsg("S2IP0002",NIL)
-  u
-
-containsBang u ==
-  atom u => EQ(u,"_!")
-  u is [="QUOTE",.] => false
-  or/[containsBang x for x in u]
-
-aplTran1 x ==
-  atom x => x
-  [op,:argl1] := x
-  argl := aplTranList argl1
-  -- unary case f ! y
-  op = "_!" =>
-    argl is [f,y] =>
-      y is [op',:y'] and op' = "_!" => aplTran1 [op,op,f,:y']
-      $BOOT => ["COLLECT",["IN",g:=GENVAR(),aplTran1 y],[f,g]]
-      ["map",f,aplTran1 y]
-    x    --do not handle yet
-  -- multiple argument case
-  hasAplExtension argl is [arglAssoc,:futureArgl] =>
-    -- choose the last aggregate type to be result of reshape
-    ["reshape",["COLLECT",:[["IN",g,["ravel",a]] for [g,:a] in arglAssoc],
-      aplTran1 [op,:futureArgl]],CDAR arglAssoc]
-  [op,:argl]
-
-aplTranList x ==
-  atom x => x
-  [aplTran1 first x,:aplTranList rest x]
-
-hasAplExtension argl ==
-  or/[x is ["_!",:.] for x in argl] =>
-    u:= [futureArg for x in argl] where futureArg() ==
-      x is ["_!",y] =>
-        z:= deepestExpression y
-        arglAssoc := [[g := GENVAR(),:aplTran1 z],:arglAssoc]
-        substitute(g,z,y)
-      x
-    [arglAssoc,:u]
-  nil
-
-deepestExpression x ==
-  x is ["_!",y] => deepestExpression y
-  x
+  [x]
 
 --% `^='
 ++ check that `^=' is not used in Spad code to mean `not equal'.
+postBootNotEqual: %ParseTree -> %ParseForm
 postBootNotEqual u ==
   $BOOT => [first u, :postTran rest u]
   checkWarning ['"Operator ", :bright '"^=", 
@@ -543,7 +609,7 @@ for x in [["with", :function postWith],_
 	  ["Scripts", :function postScripts],_
 	  ["/", :function postSlash],_
 	  ["construct", :function postConstruct],_
-	  ["Block", :function postBlock],_
+	  ["%Block", :function postBlock],_
 	  ["QUOTE", :function postQUOTE],_
 	  ["COLLECT", :function postCollect],_
 	  [":BF:", :function postBigFloat],_
@@ -570,5 +636,5 @@ for x in [["with", :function postWith],_
 	  ["=>", :function postExit],_
           ["^=", :function postBootNotEqual],_
 	  ["Tuple", :function postTuple]] repeat
-  MAKEPROP(car x, "postTran", cdr x)
+  MAKEPROP(first x, "postTran", rest x)
 

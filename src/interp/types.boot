@@ -39,6 +39,7 @@ import '"boot-pkg"
 %Boolean <=> BOOLEAN
 %Short <=> FIXNUM
 %Integer <=> BIGNUM
+%Number <=> NUMBER
 %Symbol <=> SYMBOL
 %String <=> STRING
 %Atom <=> atom
@@ -52,7 +53,7 @@ import '"boot-pkg"
 %Maybe a <=> null or a
 
 --% Data structures for the compiler
-%Form <=> NUMBER or %Symbol or %String or CONS -- input syntax form
+%Form <=> %Number or %Symbol or %String or cons -- input syntax form
 %Env <=> %List                                 -- compiling env
 %Mode <=> %Symbol or %String or %List          -- type of forms
 %Code <=> %Form                                -- generated code

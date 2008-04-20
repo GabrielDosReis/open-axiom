@@ -1,5 +1,16 @@
 2008-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.pamphlet (postpar.$(FASLEXT)): Dont' compile as
+	Old Boot code.
+	* interp/postpar.boot: Adjust function declarations.
+	(aplTran): Remove.
+	(containsBang): Likewise.
+	(containsBang): Likewise.
+	(aplTranList): Likewise.
+	(hasAplExtension): Likewise.
+	(deepestExpression): Likewise.
+	(postTransform): Adjust.
+
 	* driver/utils.c (openaxiom_build_rts_options): Fix thinko.
 
 2008-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
