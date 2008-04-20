@@ -815,7 +815,7 @@ mark.$(FASLEXT): mark.boot macros.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 parse.$(FASLEXT): parse.boot metalex.$(FASLEXT) postpar.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 packtran.$(FASLEXT): packtran.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
