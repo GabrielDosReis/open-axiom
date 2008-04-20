@@ -40,13 +40,13 @@ import '"postpar"
 ++ If non nil, holds the operator being being defined.
 $defOp := nil
 
-$oldParserExpandAbbrs := false
- 
+parseTransform: %ParseForm -> %Form 
 parseTransform x ==
   $defOp: local:= nil
   x := substitute('$,'%,x) -- for new compiler compatibility
   parseTran x
 
+parseTran: %ParseForm -> %Form
 parseTran x ==
   $op: local
   atom x => parseAtom x
@@ -56,38 +56,58 @@ parseTran x ==
     r:= parseConstruct argl
     $op is ["elt",:.] => [parseTran $op,:rest r]
     r
-  SYMBOLP u and (fn:= GETL(u,'parseTran)) => FUNCALL(fn,argl)
+  SYMBOLP u and (fn:= GET(u,'parseTran)) => FUNCALL(fn,argl)
   [parseTran $op,:parseTranList argl]
  
 
+parseAtom: %Atom -> %Form
 parseAtom x ==
  -- next line for compatibility with new compiler
   x = "break" => parseLeave ["$NoValue"]
   x
  
+parseTranList: %List -> %List
 parseTranList l ==
   atom l => parseTran l
   [parseTran first l,:parseTranList rest l]
  
+parseConstruct: %ParseForm -> %Form
 parseConstruct u ==
   $insideConstructIfTrue: local:= true
   l:= parseTranList u
   ["construct",:l]
  
-parseUpArrow u ==  parseTran ["**",:u]
+
+parseUpArrow: %ParseForm -> %Form
+parseUpArrow u ==  
+  parseTran ["**",:u]
+
  
-parseLeftArrow u == parseTran ["LET",:u]
+parseLeftArrow: %ParseForm -> %Form
+parseLeftArrow u == 
+  parseTran ["LET",:u]
+
+parseIs: %ParseForm -> %Form 
+parseIs t == 
+  t isnt [a,b] => systemErrorHere "parseIs"
+  ["is",parseTran a,transIs parseTran b]
  
-parseIs [a,b] == ["is",parseTran a,transIs parseTran b]
+parseIsnt: %ParseForm -> %Form
+parseIsnt t == 
+  t isnt [a,b] => systemErrorHere "parseIsnt"
+  ["isnt",parseTran a,transIs parseTran b]
  
-parseIsnt [a,b] == ["isnt",parseTran a,transIs parseTran b]
- 
+
+transIs: %ParseForm -> %Form
 transIs u ==
   isListConstructor u => ["construct",:transIs1 u]
   u
- 
-isListConstructor u == u is [op,:.] and op in '(construct append cons)
- 
+
+isListConstructor: %ParseForm -> %Boolean 
+isListConstructor u == 
+  u is [op,:.] and (not null (op in '(construct append cons)))
+
+transIs1: %ParseForm -> %Form 
 transIs1 u ==
   u is ["construct",:l] => [transIs x for x in l]
   u is ["append",x,y] =>
@@ -104,13 +124,20 @@ transIs1 u ==
     [h,:v]
   u
  
-parseLET [x,y] ==
+parseLET: %ParseForm -> %Form
+parseLET t ==
+  t isnt [x,y] => systemErrorHere "parseLET"
   p := ["LET",parseTran x,parseTranCheckForRecord(y,opOf x)]
   opOf x = "cons" => ["LET",transIs p.1,p.2]
   p
  
-parseLETD [x,y] == ["LETD",parseTran x,parseTran parseType y]
- 
+
+parseLETD: %ParseForm -> %Form
+parseLETD t == 
+  t isnt [x,y] => systemErrorHere "parseLETD"
+  ["LETD",parseTran x,parseTran parseType y]
+
+parseColon: %ParseForm -> %Form 
 parseColon u ==
   u is [x] => [":",parseTran x]
   u is [x,typ] =>
@@ -119,9 +146,13 @@ parseColon u ==
       [":",parseTran x,parseTran parseType typ]
     [":",parseTran x,parseTran typ]
  
-parseBigelt [typ,consForm] ==
+
+parseBigelt: %ParseForm -> %Form
+parseBigelt t ==
+  t isnt [typ,consForm] => systemErrorHere "parseBigelt"
   [["elt",typ,"makeRecord"],:transUnCons consForm]
- 
+
+transUnCons: %ParseForm -> %Form 
 transUnCons u ==
   atom u => systemErrorHere '"transUnCons"
   u is ["APPEND",x,y] =>
@@ -130,111 +161,40 @@ transUnCons u ==
   u is ["CONS",x,y] =>
     atom y => [x,:y]
     [x,:transUnCons y]
- 
-parseCoerce [x,typ] ==
+
+parseCoerce: %ParseForm -> %Form 
+parseCoerce t ==
+  t isnt [x,typ] => systemErrorHere "parseCoerce"
   $InteractiveMode => ["::",parseTran x,parseTran parseType typ]
   ["::",parseTran x,parseTran typ]
- 
-parseAtSign [x,typ] ==
+
+parseAtSign: %ParseForm -> %Form 
+parseAtSign t ==
+  t isnt [x,typ] => systemErrorHere "parseAtSign"
   $InteractiveMode => ["@",parseTran x,parseTran parseType typ]
   ["@",parseTran x,parseTran typ]
  
-parsePretend [x,typ] ==
+
+parsePretend: %ParseForm -> %Form
+parsePretend t ==
+  t isnt [x,typ] => systemErrorHere "parsePretend"
   $InteractiveMode => ["pretend",parseTran x,parseTran parseType typ]
   ["pretend",parseTran x,parseTran typ]
  
+
+parseType: %ParseForm -> %Form
 parseType x ==
   x := substitute($EmptyMode,$quadSymbol,x)
   x is ["typeOf",val] => ["typeOf",parseTran val]
-  $oldParserExpandAbbrs => parseTypeEvaluate unabbrevAndLoad x
   x
  
-parseTypeEvaluate form ==
-  form is [op,:argl] =>
-    newType? op => form
-    $op: local:= op
-    op = "Mapping" =>
-      [op,:[parseTypeEvaluate a for a in argl]]
-    op = "Union" =>
-      isTaggedUnion form =>
-        [op,:[['_:,sel,parseTypeEvaluate type] for
-          ['_:,sel,type] in argl]]
-      [op,:[parseTypeEvaluate a for a in argl]]
-    op = 'Record =>
-      [op,:[['_:,sel,parseTypeEvaluate type] for ['_:,sel,type] in argl]]
-    cmm :=
-      fn := constructor? op =>
-        p := pathname [fn,$spadLibFT,'"*"] =>
-          isExistingFile p => getConstructorModemapFromDB abbreviation? fn
-          nil
-      nil
-    cmm is [[.,.,:argml],:.] => [op,:parseTypeEvaluateArgs(argl,argml)]
-    throwKeyedMsg("S2IL0015",[op])
-  form
- 
-parseTypeEvaluateArgs(argl,argml) ==
-  [argVal for arg in argl for md in argml for i in 1..] where argVal() ==
-      isCategoryForm(md,$CategoryFrame) => parseTypeEvaluate arg
-      arg
- 
- 
-parseTypeError(x,md,i) == throwKeyedMsg("S2IP0003",[i,$op,md])
- 
-specialModeTran form ==
-  form is [op,:argl] =>
-    not ATOM op => form --added 10/5/84 by SCM
-    (s0:= (sop:= PNAME op).0) = "*" =>
-      n:= #sop
-      n=1=> form
-      argKey:= sop.1
-      numArgs:= #argl - (argKey="1" => 1; 0)
-      zeroOrOne:= argKey="0" or argKey="1"
-      isDmp :=
-        numArgs < 10 =>
-          n=6 and ('"DMP"=SUBSTRING(sop,3,3)) and zeroOrOne
-        true =>
-          n=7 and ('"DMP"=SUBSTRING(sop,4,3)) and zeroOrOne
-      isDmp =>
-        if argKey="0" then
-          extraDomain:= $EmptyMode
-          vl:= argl
-         else
-          [:vl,extraDomain] := argl
-        ["DistributedMultivariatePolynomial",["construct",:vl],
-            specialModeTran extraDomain]
-      n=4 and (s3:= sop.3) = "M" and zeroOrOne =>
-        specialModeTran
-          extraDomain:= (argKey="0" => [$EmptyMode]; nil)
-          (n:= PARSE_-INTEGER PNAME sop.2)=1 =>
-            ["SquareMatrix",:argl,:extraDomain]
-          n=2 => ["RectangularMatrix",:argl,:extraDomain]
-          form
-      isUpOrMp :=
-        numArgs < 10 =>
-          n=4 and (s3:= sop.3) = "P" and zeroOrOne or
-            n=5 and (s3:= sop.3)="R" and sop.4="F" and zeroOrOne
-        true =>
-          n=5 and (s3:= sop.4) = "P" and zeroOrOne or
-            n=6 and (s3:= sop.4)="R" and sop.5="F" and zeroOrOne
-      isUpOrMp =>
-        polyForm:=
-          domainPart:= (argKey="0" => $EmptyMode; last argl)
-          argPart:= (argKey="0" => argl; drop(-1,argl))
-          numArgs < 10 and (n:= PARSE_-INTEGER PNAME sop.2)=1
-            => ["UP",:argPart,domainPart]
-          ["MP",["construct",:argPart],domainPart]
-        specialModeTran
-          s3 = "R" => [$QuotientField,polyForm]
-          polyForm
-      [first form,:[specialModeTran x for x in rest form]]
-    [first form,:[specialModeTran x for x in rest form]]
-  form
- 
-parseHas [x,y] ==
+parseHas: %ParseForm -> %Form 
+parseHas t ==
+  t isnt [x,y] => systemErrorHere "parseHas"
   if $InteractiveMode then
     x:=
       get(x,'value,$CategoryFrame) is [D,m,.]
-        and m in $LangSupportTypes => D
+        and member(m,$LangSupportTypes) => D
       parseType x
   mkand [["has",x,u] for u in fn y] where
     mkand x ==
@@ -254,28 +214,37 @@ parseHas [x,y] ==
       $InteractiveMode => parseHasRhs y
       [["ATTRIBUTE",y]]
  
+parseHasRhs: %ParseForm -> %Form
 parseHasRhs u ==   --$InteractiveMode = true
   get(u,'value,$CategoryFrame) is [D,m,.]
-    and m in $LangSupportTypes => m
+    and member(m,$LangSupportTypes) => m
   y := abbreviation? u =>
     loadIfNecessary y => [unabbrevAndLoad y]
     [["ATTRIBUTE",u]]
   [["ATTRIBUTE",u]]
  
-parseDEF [$lhs,tList,specialList,body] ==
+
+parseDEF: %ParseForm -> %Form
+parseDEF t ==
+  t isnt [$lhs,tList,specialList,body] => systemErrorHere "parseDEF"
   setDefOp $lhs
   ["DEF",parseLhs $lhs,parseTranList tList,parseTranList specialList,
     parseTranCheckForRecord(body,opOf $lhs)]
  
+parseLhs: %ParseForm -> %Form
 parseLhs x ==
   atom x => parseTran x
   atom first x => [parseTran first x,:[transIs parseTran y for y in rest x]]
   parseTran x
  
-parseMDEF [$lhs,tList,specialList,body] ==
+
+parseMDEF: %ParseForm -> %Form
+parseMDEF t ==
+  t isnt [$lhs,tList,specialList,body] => systemErrorHere "parseMDEF"
   ["MDEF",parseTran $lhs,parseTranList tList,parseTranList specialList,
     parseTranCheckForRecord(body,opOf $lhs)]
  
+parseTranCheckForRecord: (%ParseForm,%ParseForm) -> %Form
 parseTranCheckForRecord(x,op) ==
   (x:= parseTran x) is ["Record",:l] =>
     or/[y for y in l | y isnt [":",.,.]] =>
@@ -283,13 +252,17 @@ parseTranCheckForRecord(x,op) ==
     x
   x
  
-parseCases [expr,ifClause] ==
+parseCases: %ParseForm -> %Form
+parseCases t ==
+  t isnt [expr,ifClause] => systemErrorHere "parseCases"
   casefn(expr,ifClause) where
     casefn(x,ifExpr) ==
       ifExpr="%noBranch" => ["ifClauseError",x]
       ifExpr is ["IF",a,b,c] => ["IF",parseTran a,parseTran b,casefn(x,c)]
       postError ['"   CASES format error: cases ",x," of ",ifExpr]
  
+
+parseCategory: %ParseForm -> %Form
 parseCategory x ==
   l:= parseTranList parseDropAssertions x
   key:=
@@ -297,6 +270,8 @@ parseCategory x ==
     "package"
   ["CATEGORY",key,:l]
  
+
+parseDropAssertions: %ParseForm -> %Form
 parseDropAssertions x ==
 --note: the COPY of this list is necessary-- do not replace by RPLACing version
   x is [y,:r] =>
@@ -304,21 +279,34 @@ parseDropAssertions x ==
     [y,:parseDropAssertions r]
   x
  
-parseGreaterThan [x,y] ==
+parseGreaterThan: %ParseForm -> %Form
+parseGreaterThan t ==
+  t isnt [x,y] => systemErrorHere "parseGreaterThan"
   [substitute("<",">",$op),parseTran y,parseTran x]
  
-parseGreaterEqual u == parseTran ["not",[substitute("<",">=",$op),:u]]
+
+parseGreaterEqual: %ParseForm -> %Form
+parseGreaterEqual u == 
+  parseTran ["not",[substitute("<",">=",$op),:u]]
  
-parseLessEqual u == parseTran ["not",[substitute(">","<=",$op),:u]]
- 
-parseNotEqual u == parseTran ["not",[substitute("=","^=",$op),:u]]
- 
+
+parseLessEqual: %ParseForm -> %Form
+parseLessEqual u == 
+  parseTran ["not",[substitute(">","<=",$op),:u]]
+
+parseNotEqual: %ParseForm -> %Form 
+parseNotEqual u == 
+  parseTran ["not",[substitute("=","^=",$op),:u]]
+
+parseAnd: %ParseForm -> %Form 
 parseAnd u ==
   $InteractiveMode => ["and",:parseTranList u]
   null u => "true"
   null rest u => first u
   parseIf [parseTran first u,parseAnd rest u,"false"]
  
+
+parseOr: %ParseForm -> %Form
 parseOr u ==
   $InteractiveMode => ["or",:parseTranList u]
   null u => "false"
@@ -326,13 +314,27 @@ parseOr u ==
   (x:= parseTran first u) is ["not",y] => parseIf [y,parseOr rest u,"true"]
   true => parseIf [x,"true",parseOr rest u]
  
-parseEquivalence [a,b] == parseIf [a,b,parseIf [b,:'(false true)]]
+
+parseEquivalence: %ParseForm -> %Form
+parseEquivalence t == 
+  t isnt [a,b] => systemErrorHere "parseEquivalence"
+  parseIf [a,b,parseIf [b,:'(false true)]]
  
-parseImplies [a,b] == parseIf [a,b,"true"]
+
+parseImplies: %ParseForm -> %Form
+parseImplies t == 
+  t isnt [a,b] => systemErrorHere "parseImplies"
+  parseIf [a,b,"true"]
  
-parseExclusiveOr [a,b] == parseIf [a,parseIf [b,:'(false true)],b]
+parseExclusiveOr: %ParseForm -> %Form
+parseExclusiveOr t == 
+  t isnt [a,b] => systemErrorHere "parseExclusiveOr"
+  parseIf [a,parseIf [b,:'(false true)],b]
  
-parseExit [a,:b] ==
+
+parseExit: %ParseForm -> %Form
+parseExit t ==
+  t isnt [a,:b] => systemErrorHere "parseExit"
   --  note: I wanted to convert 1s to 0s here to facilitate indexing in
   --   comp code; unfortunately, parseTran-ning is sometimes done more
   --   than once so that the count can be decremented more than once
@@ -344,7 +346,10 @@ parseExit [a,:b] ==
     ["exit",a,:b]
   ["exit",1,a]
  
-parseLeave [a,:b] ==
+
+parseLeave: %ParseForm -> %Form
+parseLeave t ==
+  t isnt [a,:b] => systemErrorHere "parseLeave"
   a:= parseTran a
   b:= parseTran b
   b =>
@@ -353,13 +358,17 @@ parseLeave [a,:b] ==
     ["leave",a,:b]
   ["leave",1,a]
  
-parseReturn [a,:b] ==
+
+parseReturn: %ParseForm -> %Form
+parseReturn t ==
+  t isnt [a,:b] => systemErrorHere "parseReturn"
   a:= parseTran a
   b:= parseTran b
   b =>
     (if a^=1 then MOAN '"multiple-level 'return' not allowed"; ["return",1,:b])
   ["return",1,a]
  
+parseJoin: %List -> %Form
 parseJoin l ==
   ["Join",:fn parseTranList l] where
     fn l ==
@@ -367,20 +376,26 @@ parseJoin l ==
       l is [["Join",:x],:y] => [:x,:fn y]
       [first l,:fn rest l]
  
-parseInBy [i,n,inc] ==
+
+parseInBy: %ParseForm -> %Form
+parseInBy t ==
+  t isnt [i,n,inc] => systemErrorHere "parseInBy"
   (u:= parseIn [i,n]) isnt ["STEP",i,a,j,:r] =>
     postError ["   You cannot use",:bright '"by",
       '"except for an explicitly indexed sequence."]
   inc:= parseTran inc
   ["STEP",i,a,parseTran inc,:r]
- 
+
+parseSegment: %ParseForm -> %Form 
 parseSegment p ==
   p is [a,b] =>
     b => ["SEGMENT",parseTran a, parseTran b]
     ["SEGMENT",parseTran a]
   ["SEGMENT",:p]
  
-parseIn [i,n] ==
+parseIn: %ParseForm -> %Form
+parseIn t ==
+  t isnt [i,n] => systemErrorHere "parseIn"
   i:= parseTran i
   n:= parseTran n
   n is ["SEGMENT",a] => ["STEP",i,a,1]
@@ -393,6 +408,7 @@ parseIn [i,n] ==
   n is ["tails",s] => ["ON",i,s]
   ["IN",i,n]
  
+parseIf: %ParseForm -> %Form
 parseIf t ==
   t isnt [p,a,b] => t
   ifTran(parseTran p,parseTran a,parseTran b) where
@@ -410,19 +426,26 @@ parseIf t ==
         parseTran ["SEQ",:s,["exit",1,incExitLevel ["IF",val,a,b]]]
       ["IF",p,a,b]
  
+makeSimplePredicateOrNil: %ParseForm -> %Form
 makeSimplePredicateOrNil p ==
   isSimple p => nil
   u:= isAlmostSimple p => u
   true => wrapSEQExit [["LET",g:= GENSYM(),p],g]
  
-parseWhere l == ["where",:mapInto(l, function parseTran)]
+
+parseWhere: %List -> %Form
+parseWhere l == 
+  ["where",:mapInto(l, function parseTran)]
  
  
+parseSeq: %List -> %Form
 parseSeq l ==
   not l is [:.,["exit",:.]] =>
     postError ['"   Invalid ending to block: ",last l]
   transSeq mapInto(l,function parseTran)
  
+
+transSeq: %List -> %Form
 transSeq l ==
   null l => nil
   null rest l => decExitLevel first l
@@ -438,6 +461,7 @@ transSeq l ==
   (y:= transSeq tail) is ["SEQ",:s] => ["SEQ",item,:s]
   ["SEQ",item,["exit",1,incExitLevel y]]
  
+transCategoryItem: %ParseForm -> %Form
 transCategoryItem x ==
   x is ["SIGNATURE",lhs,rhs] =>
     lhs is ["LISTOF",:y] =>
@@ -445,39 +469,46 @@ transCategoryItem x ==
     atom lhs =>
       if STRINGP lhs then lhs:= INTERN lhs
       rhs is ["Mapping",:m] =>
-        m is [.,"constant"] => LIST ["SIGNATURE",lhs,[first m],"constant"]
-        LIST ["SIGNATURE",lhs,m]
+        m is [.,"constant"] => [["SIGNATURE",lhs,[first m],"constant"]]
+        [["SIGNATURE",lhs,m]]
       $transCategoryAssoc:= [[lhs,:rhs],:$transCategoryAssoc]
-      NIL
+      postError ['"  Invalid signature: ",x]
     [op,:argl]:= lhs
     extra:= nil
     if rhs is ["Mapping",:m] then
       if rest m then extra:= rest m
                  --should only be 'constant' or 'variable'
       rhs:= first m
-    LIST ["SIGNATURE",op,[rhs,:SUBLIS($transCategoryAssoc,argl)],:extra]
-  LIST x
+    [["SIGNATURE",op,[rhs,:SUBLIS($transCategoryAssoc,argl)],:extra]]
+  [x]
  
+
+superSub: (%Symbol, %List) -> %Form
 superSub(name,x) ==
   for u in x repeat y:= [:y,:u]
   code:=
     x is [[u]] => $quadSymbol
-    STRCONC("_(",scriptTranRow first x,scriptTran rest x,"_)")
+    STRCONC('"_(",scriptTranRow first x,scriptTran rest x,'"_)")
   [INTERNL(PNAME name,"$",code),:y]
  
+scriptTran: %List -> %String
 scriptTran x ==
-  null x => ""
-  STRCONC(";",scriptTranRow first x,scriptTran rest x)
+  null x => '""
+  STRCONC('";",scriptTranRow first x,scriptTran rest x)
  
+scriptTranRow: %List -> %String
 scriptTranRow x ==
-  null x => ""
+  null x => '""
   STRCONC($quadSymbol,scriptTranRow1 rest x)
- 
+
+scriptTranRow1: %List -> %String 
 scriptTranRow1 x ==
-  null x => ""
-  STRCONC(",",$quadSymbol,scriptTranRow1 rest x)
+  null x => '""
+  STRCONC('",",$quadSymbol,scriptTranRow1 rest x)
  
-parseVCONS l == ["VECTOR",:parseTranList l]
+parseVCONS: %List -> %Form
+parseVCONS l == 
+  ["VECTOR",:parseTranList l]
 
 --% Register special parsers.
 

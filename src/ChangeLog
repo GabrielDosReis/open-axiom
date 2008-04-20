@@ -1,5 +1,14 @@
 2008-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.pamphlet (parse.$(FASLEXT)): Don't compile as
+	Old Boot.
+	* interp/parse.boot (parseTypeEvaluate): Remove.
+	(parseTypeEvaluateArgs): Likewise.
+	(parseType): Don't evaluate type during parsing.
+	($oldParserExpandAbbrs): Remove.
+	(parseTypeError): Likewise.
+	(specialModeTran): Likewise.
+
 	* interp/fnewmeta.lisp: Don't overstep on use namespace with
 	Attribute, Signature, and Reduce.
 	* interp/postpar.boot: Likewise.
