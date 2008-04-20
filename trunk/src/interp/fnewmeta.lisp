@@ -424,13 +424,13 @@
                (MUST (OR (AND (MATCH-ADVANCE-STRING ":")
                               (MUST (|PARSE-Expression|))
                               (PUSH-REDUCTION '|PARSE-Category|
-                                  (CONS '|Signature|
+                                  (CONS '|%Signature|
                                         (CONS (POP-STACK-2)
                                          (CONS (POP-STACK-1) NIL))))
                               (ACTION (|recordSignatureDocumentation|
                                        (NTH-STACK 1) G1)))
                          (AND (PUSH-REDUCTION '|PARSE-Category|
-                                  (CONS '|Attribute|
+                                  (CONS '|%Attribute|
                                         (CONS (POP-STACK-1) NIL)))
                               (ACTION (|recordAttributeDocumentation|
                                        (NTH-STACK 1) G1)))))))))) 
@@ -660,7 +660,7 @@
 (DEFUN |PARSE-Reduction| ()
   (AND (|PARSE-ReductionOp|) (MUST (|PARSE-Expr| 1000))
        (PUSH-REDUCTION '|PARSE-Reduction|
-           (CONS '|Reduce|
+           (CONS '|%Reduce|
                  (CONS (POP-STACK-2) (CONS (POP-STACK-1) NIL)))))) 
 
 

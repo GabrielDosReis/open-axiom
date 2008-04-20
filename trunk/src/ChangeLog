@@ -1,3 +1,12 @@
+2008-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/fnewmeta.lisp: Don't overstep on use namespace with
+	Attribute, Signature, and Reduce.
+	* interp/postpar.boot: Likewise.
+	* interp/ptrees.boot: Likewise.  Tidy.
+	* interp/Makefile.pamphlet (ptrees.$(FASLEXT)): Don't compile as
+	Old Boot.
+
 2008-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet (postpar.$(FASLEXT)): Dont' compile as

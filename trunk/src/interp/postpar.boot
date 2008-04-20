@@ -285,7 +285,7 @@ postElt: %ParseTree -> %ParseForm
 postElt u ==
   u isnt [.,a,b] => systemErrorHere "postElt"
   a:= postTran a
-  b is ["Sequence",:.] => [["elt",a,"makeRecord"],:postTranList rest b]
+  b is ["%Sequence",:.] => [["elt",a,"makeRecord"],:postTranList rest b]
   ["elt",a,postTran b]
 
 
@@ -392,7 +392,7 @@ postOp x ==
     $BOOT => "SPADLET"
     "LET"
   x=":-" => "LETD"
-  x="Attribute" => "ATTRIBUTE"
+  x="%Attribute" => "ATTRIBUTE"
   x
 
 postRepeat: %ParseTree -> %ParseForm
@@ -478,10 +478,10 @@ SEGMENT(a,b) ==
 
 postReduce: %ParseTree -> %ParseForm
 postReduce t ==
-  t isnt ["Reduce",op,expr] => systemErrorHere "postReduce"
+  t isnt ["%Reduce",op,expr] => systemErrorHere "postReduce"
   $InteractiveMode or expr is ["COLLECT",:.] =>
     ["REDUCE",op,0,postTran expr]
-  postReduce ["Reduce",op,["COLLECT",["IN",g:= GENSYM(),expr],
+  postReduce ["%Reduce",op,["COLLECT",["IN",g:= GENSYM(),expr],
     ["construct",  g]]]
 
 postFlattenLeft: (%ParseTree, %Symbol) -> %ParseForm
@@ -495,12 +495,12 @@ postSemiColon u ==
 
 postSequence: %ParseTree -> %ParseForm
 postSequence t == 
-  t isnt ["Sequence",:l] => systemErrorHere "postSequence"
+  t isnt ["%Sequence",:l] => systemErrorHere "postSequence"
   ['(elt $ makeRecord),:postTranList l]
 
 postSignature: %ParseTree -> %ParseForm
 postSignature t ==
-  t isnt ["Signature",op,sig] => systemErrorHere "postSignature"
+  t isnt ["%Signature",op,sig] => systemErrorHere "postSignature"
   sig is ["->",:.] =>
     sig1:= postType sig
     op:= postAtom (STRINGP op => INTERN op; op)
@@ -517,7 +517,7 @@ killColons x ==
 postSlash: %ParseTree -> %ParseForm
 postSlash t ==
   t isnt ['_/,a,b] => systemErrorHere "postSlash"
-  STRINGP a => postTran ["Reduce",INTERN a,b]
+  STRINGP a => postTran ["%Reduce",INTERN a,b]
   ['_/,postTran a,postTran b]
 
 removeSuperfluousMapping: %ParseTree -> %ParseForm
@@ -618,7 +618,7 @@ for x in [["with", :function postWith],_
 	  ["REPEAT", :function postRepeat],_
 	  ["TupleCollect", :function postTupleCollect],_
 	  ["add", :function postAdd],_
-	  ["Reduce", :function postReduce],_
+	  ["%Reduce", :function postReduce],_
 	  [",", :function postComma],_
 	  [";", :function postSemiColon],_
 	  ["where", :function postWhere],_
@@ -628,7 +628,7 @@ for x in [["with", :function postWith],_
 	  ["pretend", :function postPretend],_
 	  ["if", :function postIf],_
 	  ["Join", :function postJoin],_
-	  ["Signature", :function postSignature],_
+	  ["%Signature", :function postSignature],_
 	  ["CATEGORY", :function postCategory],_
 	  ["==", :function postDef],_
 	  ["==>", :function postMDef],_

@@ -64,7 +64,7 @@ pfNothing? form     == pfAbSynOp?(form, 'nothing)
 
 pfSemiColon(pfbody) == pfTree('SemiColon, [pfbody])
 pfSemiColon?(pf)    == pfAbSynOp? (pf, 'SemiColon)
-pfSemiColonBody pf   == CADR pf       -- was ==>
+pfSemiColonBody pf   == second pf       -- was ==>
 
 --% LEAVES
 pfId(expr)               == pfLeaf('id, expr)
@@ -129,17 +129,17 @@ pfCheckInfop form== false
 
 pfAnd(pfleft, pfright) == pfTree('And, [pfleft, pfright])
 pfAnd?(pf) == pfAbSynOp? (pf, 'And)
-pfAndLeft pf == CADR pf       -- was ==>
-pfAndRight pf == CADDR pf       -- was ==>
+pfAndLeft pf == second pf       -- was ==>
+pfAndRight pf == third pf       -- was ==>
 
 pfOr(pfleft, pfright) == pfTree('Or, [pfleft, pfright])
 pfOr?(pf) == pfAbSynOp? (pf, 'Or)
-pfOrLeft pf == CADR pf       -- was ==>
-pfOrRight pf == CADDR pf       -- was ==>
+pfOrLeft pf == second pf       -- was ==>
+pfOrRight pf == third pf       -- was ==>
 
 pfNot(arg) == pfTree('Not, [arg])
 pfNot?(pf) == pfAbSynOp? (pf, 'Not)
-pfNotArg pf == CADR pf       -- was ==>
+pfNotArg pf == second pf       -- was ==>
 
 pfEnSequence a==
            if null a
@@ -188,7 +188,7 @@ pfBraceBar(a,part)==pfApplication(pfIdPos( "{||}",tokPosn a),part)
 pfBracketBar(a,part) ==  pfApplication(pfIdPos( "[||]",tokPosn a),part)
 pfHide(a,part) ==   pfTree("Hide",[part])
 pfHide? x== pfAbSynOp?(x,"Hide")
-pfHidePart x== CADR x
+pfHidePart x== second x
 pfParen(a,part)==part
 
 pfPile(part)==part
@@ -255,8 +255,8 @@ pfDeclPart? pf ==
 
 pfWrong(pfwhy, pfrubble) == pfTree('Wrong, [pfwhy, pfrubble])
 pfWrong?(pf) == pfAbSynOp? (pf, 'Wrong)
-pfWrongWhy pf == CADR pf       -- was ==>
-pfWrongRubble pf == CADDR pf       -- was ==>
+pfWrongWhy pf == second pf       -- was ==>
+pfWrongRubble pf == third pf       -- was ==>
 pf0WrongRubble pf == pfParts pfWrongRubble pf
 
 
@@ -269,8 +269,8 @@ pfAdd(pfbase, pfaddin,:addon) ==
     pfTree('Add, [pfbase, pfaddin,lhs])
 
 pfAdd?(pf) == pfAbSynOp? (pf, 'Add)
-pfAddBase pf == CADR pf       -- was ==>
-pfAddAddin pf == CADDR pf       -- was ==>
+pfAddBase pf == second pf       -- was ==>
+pfAddAddin pf == third pf       -- was ==>
 pfAddAddon pf == CADDDR pf       -- was ==>
 pf0AddBase pf == pfParts pfAddBase pf
 
@@ -280,8 +280,8 @@ pf0AddBase pf == pfParts pfAddBase pf
 
 pfDWhere(pfcontext, pfexpr) == pfTree('DWhere, [pfcontext, pfexpr])
 pfDWhere?(pf) == pfAbSynOp? (pf, 'DWhere)
-pfDWhereContext pf == CADR pf       -- was ==>
-pfDWhereExpr pf == CADDR pf       -- was ==>
+pfDWhereContext pf == second pf       -- was ==>
+pfDWhereExpr pf == third pf       -- was ==>
 
 
 
@@ -290,8 +290,8 @@ pfDWhereExpr pf == CADDR pf       -- was ==>
 pfWith(pfbase, pfwithin,pfwithon) ==
          pfTree('With, [pfbase, pfwithin,pfwithon])
 pfWith?(pf) == pfAbSynOp? (pf, 'With)
-pfWithBase pf == CADR pf       -- was ==>
-pfWithWithin pf == CADDR pf       -- was ==>
+pfWithBase pf == second pf       -- was ==>
+pfWithWithin pf == third pf       -- was ==>
 pfWithWithon pf == CADDDR pf       -- was ==>
 pf0WithBase pf == pfParts pfWithBase pf
 pf0WithWithin pf == pfParts pfWithWithin pf
@@ -301,8 +301,8 @@ pf0WithWithin pf == pfParts pfWithWithin pf
 
 pfWIf(pfcond, pfthen, pfelse) == pfTree('WIf, [pfcond, pfthen, pfelse])
 pfWIf?(pf) == pfAbSynOp? (pf, 'WIf)
-pfWIfCond pf == CADR pf       -- was ==>
-pfWIfThen pf == CADDR pf       -- was ==>
+pfWIfCond pf == second pf       -- was ==>
+pfWIfThen pf == third pf       -- was ==>
 pfWIfElse pf == CADDDR pf       -- was ==>
 
 -- WDeclare    := (Signature: Typed, Doc: ? Document)
@@ -310,23 +310,23 @@ pfWIfElse pf == CADDDR pf       -- was ==>
 pfWDeclare(pfsignature, pfdoc) == pfTree('WDeclare, [pfsignature, _
 pfdoc])
 pfWDeclare?(pf) == pfAbSynOp? (pf, 'WDeclare)
-pfWDeclareSignature pf == CADR pf       -- was ==>
-pfWDeclareDoc pf == CADDR pf       -- was ==>
+pfWDeclareSignature pf == second pf       -- was ==>
+pfWDeclareDoc pf == third pf       -- was ==>
 
 
 -- Attribute   := (Expr: Primary)
 
-pfAttribute(pfexpr) == pfTree('Attribute, [pfexpr])
-pfAttribute?(pf) == pfAbSynOp? (pf, 'Attribute)
-pfAttributeExpr pf == CADR pf       -- was ==>
+pfAttribute(pfexpr) == pfTree('%Attribute, [pfexpr])
+pfAttribute?(pf) == pfAbSynOp? (pf, '%Attribute)
+pfAttributeExpr pf == second pf       -- was ==>
 
 
 -- Typed       := (Id: Id,    Type: ? Type)
 
 pfTyped(pfid, pftype) == pfTree('Typed, [pfid, pftype])
 pfTyped?(pf) == pfAbSynOp? (pf, 'Typed)
-pfTypedId pf == CADR pf       -- was ==>
-pfTypedType pf == CADDR pf       -- was ==>
+pfTypedId pf == second pf       -- was ==>
+pfTypedType pf == third pf       -- was ==>
 
 
 -- Application := (Op:   Expr, Arg:    Expr)
@@ -335,8 +335,8 @@ pfApplication(pfop, pfarg) ==
         pfTree('Application, [pfop, pfarg])
 
 pfApplication?(pf) == pfAbSynOp? (pf, 'Application)
-pfApplicationOp pf == CADR pf       -- was ==>
-pfApplicationArg pf == CADDR pf       -- was ==>
+pfApplicationOp pf == second pf       -- was ==>
+pfApplicationArg pf == third pf       -- was ==>
 
 
 -- Tuple       := (Parts: [Expr])
@@ -344,7 +344,7 @@ pfApplicationArg pf == CADDR pf       -- was ==>
 pfTupleListOf(pfparts) == pfTuple pfListOf pfparts
 pfTuple(pfparts) == pfTree("tuple", [pfparts])
 pfTuple?(pf) == pfAbSynOp? (pf, "tuple")
-pfTupleParts pf == CADR pf       -- was ==>
+pfTupleParts pf == second pf       -- was ==>
 pf0TupleParts pf == pfParts pfTupleParts pf
 
 
@@ -352,45 +352,45 @@ pf0TupleParts pf == pfParts pfTupleParts pf
 
 pfTagged(pftag, pfexpr) == pfTree('Tagged, [pftag, pfexpr])
 pfTagged?(pf) == pfAbSynOp? (pf, 'Tagged)
-pfTaggedTag pf == CADR pf       -- was ==>
-pfTaggedExpr pf == CADDR pf       -- was ==>
+pfTaggedTag pf == second pf       -- was ==>
+pfTaggedExpr pf == third pf       -- was ==>
 
 
 -- Pretend     := (Expr: Expr, Type:   Type)
 
 pfPretend(pfexpr, pftype) == pfTree('Pretend, [pfexpr, pftype])
 pfPretend?(pf) == pfAbSynOp? (pf, 'Pretend)
-pfPretendExpr pf == CADR pf       -- was ==>
-pfPretendType pf == CADDR pf       -- was ==>
+pfPretendExpr pf == second pf       -- was ==>
+pfPretendType pf == third pf       -- was ==>
 
 
 -- Restrict    := (Expr: Expr, Type:   Type)
 
 pfRestrict(pfexpr, pftype) == pfTree('Restrict, [pfexpr, pftype])
 pfRestrict?(pf) == pfAbSynOp? (pf, 'Restrict)
-pfRestrictExpr pf == CADR pf       -- was ==>
-pfRestrictType pf == CADDR pf       -- was ==>
+pfRestrictExpr pf == second pf       -- was ==>
+pfRestrictType pf == third pf       -- was ==>
 
 pfRetractTo(pfexpr, pftype) == pfTree('RetractTo, [pfexpr, pftype])
 pfRetractTo?(pf) == pfAbSynOp? (pf, 'RetractTo)
-pfRetractToExpr pf == CADR pf       -- was ==>
-pfRetractToType pf == CADDR pf       -- was ==>
+pfRetractToExpr pf == second pf       -- was ==>
+pfRetractToType pf == third pf       -- was ==>
 
 
 -- Coerceto    := (Expr: Expr, Type:   Type)
 
 pfCoerceto(pfexpr, pftype) == pfTree('Coerceto, [pfexpr, pftype])
 pfCoerceto?(pf) == pfAbSynOp? (pf, 'Coerceto)
-pfCoercetoExpr pf == CADR pf       -- was ==>
-pfCoercetoType pf == CADDR pf       -- was ==>
+pfCoercetoExpr pf == second pf       -- was ==>
+pfCoercetoType pf == third pf       -- was ==>
 
 
 -- Fromdom     := (What: Id,   Domain: Type)
 
 pfFromdom(pfwhat, pfdomain) == pfTree('Fromdom, [pfwhat, pfdomain])
 pfFromdom?(pf) == pfAbSynOp? (pf, 'Fromdom)
-pfFromdomWhat pf == CADR pf       -- was ==>
-pfFromdomDomain pf == CADDR pf       -- was ==>
+pfFromdomWhat pf == second pf       -- was ==>
+pfFromdomDomain pf == third pf       -- was ==>
 
 
 -- Lambda     := (Args: [Typed], Rets: ? Type, Body: Expr)
@@ -398,8 +398,8 @@ pfFromdomDomain pf == CADDR pf       -- was ==>
 pfLambda(pfargs, pfrets, pfbody) == pfTree('Lambda, [pfargs, pfrets, _
 pfbody])
 pfLambda?(pf) == pfAbSynOp? (pf, 'Lambda)
-pfLambdaArgs pf == CADR pf       -- was ==>
-pfLambdaRets pf == CADDR pf       -- was ==>
+pfLambdaArgs pf == second pf       -- was ==>
+pfLambdaRets pf == third pf       -- was ==>
 pfLambdaBody pf == CADDDR pf       -- was ==>
 pf0LambdaArgs pf == pfParts pfLambdaArgs pf
 pfFix pf== pfApplication(pfId "Y",pf)
@@ -409,8 +409,8 @@ pfFix pf== pfApplication(pfId "Y",pf)
 
 pfTLambda(pfargs, pfrets, pfbody) == pfTree('TLambda, [pfargs, pfrets, pfbody])
 pfTLambda?(pf) == pfAbSynOp? (pf, 'TLambda)
-pfTLambdaArgs pf == CADR pf       -- was ==>
-pfTLambdaRets pf == CADDR pf       -- was ==>
+pfTLambdaArgs pf == second pf       -- was ==>
+pfTLambdaRets pf == third pf       -- was ==>
 pfTLambdaBody pf == CADDDR pf       -- was ==>
 pf0TLambdaArgs pf == pfParts pfTLambdaArgs pf
 
@@ -419,8 +419,8 @@ pf0TLambdaArgs pf == pfParts pfTLambdaArgs pf
 
 pfMLambda(pfargs, pfbody) == pfTree('MLambda, [pfargs, pfbody])
 pfMLambda?(pf) == pfAbSynOp? (pf, 'MLambda)
-pfMLambdaArgs pf == CADR pf       -- was ==>
-pfMLambdaBody pf == CADDR pf       -- was ==>
+pfMLambdaArgs pf == second pf       -- was ==>
+pfMLambdaBody pf == third pf       -- was ==>
 pf0MLambdaArgs pf == pfParts pfMLambdaArgs pf
 
 
@@ -428,8 +428,8 @@ pf0MLambdaArgs pf == pfParts pfMLambdaArgs pf
 
 pfWhere(pfcontext, pfexpr) == pfTree('Where, [pfcontext, pfexpr])
 pfWhere?(pf) == pfAbSynOp? (pf, 'Where)
-pfWhereContext pf == CADR pf       -- was ==>
-pfWhereExpr pf == CADDR pf       -- was ==>
+pfWhereContext pf == second pf       -- was ==>
+pfWhereExpr pf == third pf       -- was ==>
 pf0WhereContext pf == pfParts pfWhereContext pf
 
 
@@ -437,16 +437,16 @@ pf0WhereContext pf == pfParts pfWhereContext pf
 
 pfIf(pfcond, pfthen, pfelse) == pfTree('If, [pfcond, pfthen, pfelse])
 pfIf?(pf) == pfAbSynOp? (pf, 'If)
-pfIfCond pf == CADR pf       -- was ==>
-pfIfThen pf == CADDR pf       -- was ==>
+pfIfCond pf == second pf       -- was ==>
+pfIfThen pf == third pf       -- was ==>
 pfIfElse pf == CADDDR pf       -- was ==>
 
 
 -- Sequence    := (Args: [Expr])
 
-pfSequence(pfargs) == pfTree('Sequence, [pfargs])
-pfSequence?(pf) == pfAbSynOp? (pf, 'Sequence)
-pfSequenceArgs pf == CADR pf       -- was ==>
+pfSequence(pfargs) == pfTree('%Sequence, [pfargs])
+pfSequence?(pf) == pfAbSynOp? (pf, '%Sequence)
+pfSequenceArgs pf == second pf       -- was ==>
 pf0SequenceArgs pf == pfParts pfSequenceArgs pf
 
 
@@ -454,14 +454,14 @@ pf0SequenceArgs pf == pfParts pfSequenceArgs pf
 
 pfNovalue(pfexpr) == pfTree('Novalue, [pfexpr])
 pfNovalue?(pf) == pfAbSynOp? (pf, 'Novalue)
-pfNovalueExpr pf == CADR pf       -- was ==>
+pfNovalueExpr pf == second pf       -- was ==>
 
 
 -- Loop        := (Iterators: [Iterator])
 
 pfLoop(pfiterators) == pfTree('Loop, [pfiterators])
 pfLoop?(pf) == pfAbSynOp? (pf, 'Loop)
-pfLoopIterators pf == CADR pf       -- was ==>
+pfLoopIterators pf == second pf       -- was ==>
 pf0LoopIterators pf == pfParts pfLoopIterators pf
 
 
@@ -470,8 +470,8 @@ pf0LoopIterators pf == pfParts pfLoopIterators pf
 pfCollect(pfbody, pfiterators) == pfTree('Collect, [pfbody, _
 pfiterators])
 pfCollect?(pf) == pfAbSynOp? (pf, 'Collect)
-pfCollectBody pf == CADR pf       -- was ==>
-pfCollectIterators pf == CADDR pf       -- was ==>
+pfCollectBody pf == second pf       -- was ==>
+pfCollectIterators pf == third pf       -- was ==>
 pf0CollectIterators pf == pfParts pfCollectIterators pf
 
 
@@ -479,8 +479,8 @@ pf0CollectIterators pf == pfParts pfCollectIterators pf
 
 pfForin(pflhs, pfwhole) == pfTree('Forin, [pflhs, pfwhole])
 pfForin?(pf) == pfAbSynOp? (pf, 'Forin)
-pfForinLhs pf == CADR pf       -- was ==>
-pfForinWhole pf == CADDR pf       -- was ==>
+pfForinLhs pf == second pf       -- was ==>
+pfForinWhole pf == third pf       -- was ==>
 pf0ForinLhs pf == pfParts pfForinLhs pf
 
 
@@ -488,104 +488,104 @@ pf0ForinLhs pf == pfParts pfForinLhs pf
 
 pfWhile(pfcond) == pfTree('While, [pfcond])
 pfWhile?(pf) == pfAbSynOp? (pf, 'While)
-pfWhileCond pf == CADR pf       -- was ==>
+pfWhileCond pf == second pf       -- was ==>
 
 
 -- Until       := (Cond: Expr)
 
 --pfUntil(pfcond) == pfTree('Until, [pfcond])
 --pfUntil?(pf) == pfAbSynOp? (pf, 'Until)
---pfUntilCond pf == CADR pf       -- was ==>
+--pfUntilCond pf == second pf       -- was ==>
 
 
 -- Suchthat    := (Cond: Expr)
 
 pfSuchthat(pfcond) == pfTree('Suchthat, [pfcond])
 pfSuchthat?(pf) == pfAbSynOp? (pf, 'Suchthat)
-pfSuchthatCond pf == CADR pf       -- was ==>
+pfSuchthatCond pf == second pf       -- was ==>
 
 
 -- Do          := (Body: Expr)
 
 pfDo(pfbody) == pfTree('Do, [pfbody])
 pfDo?(pf) == pfAbSynOp? (pf, 'Do)
-pfDoBody pf == CADR pf       -- was ==>
+pfDoBody pf == second pf       -- was ==>
 
 
 -- Iterate     := (From: ? Id)
 
 pfIterate(pffrom) == pfTree('Iterate, [pffrom])
 pfIterate?(pf) == pfAbSynOp? (pf, 'Iterate)
-pfIterateFrom pf == CADR pf       -- was ==>
+pfIterateFrom pf == second pf       -- was ==>
 
 
 -- Break       := (From: ? Id)
 
 pfBreak(pffrom) == pfTree('Break, [pffrom])
 pfBreak?(pf) == pfAbSynOp? (pf, 'Break)
-pfBreakFrom pf == CADR pf       -- was ==>
+pfBreakFrom pf == second pf       -- was ==>
 
 
 -- Return      := (Expr: ? Expr, From: ? Id)
 
 pfReturn(pfexpr, pffrom) == pfTree('Return, [pfexpr, pffrom])
 pfReturn?(pf) == pfAbSynOp? (pf, 'Return)
-pfReturnExpr pf == CADR pf       -- was ==>
-pfReturnFrom pf == CADDR pf       -- was ==>
+pfReturnExpr pf == second pf       -- was ==>
+pfReturnFrom pf == third pf       -- was ==>
 
 
 -- Exit        := (Cond: ? Expr, Expr: ? Expr)
 
 pfExit(pfcond, pfexpr) == pfTree('Exit, [pfcond, pfexpr])
 pfExit?(pf) == pfAbSynOp? (pf, 'Exit)
-pfExitCond pf == CADR pf       -- was ==>
-pfExitExpr pf == CADDR pf       -- was ==>
+pfExitCond pf == second pf       -- was ==>
+pfExitExpr pf == third pf       -- was ==>
 
 
 -- Macro       := (Lhs:  Id,     Rhs: ExprorNot)
 
 pfMacro(pflhs, pfrhs) == pfTree('Macro, [pflhs, pfrhs])
 pfMacro?(pf) == pfAbSynOp? (pf, 'Macro)
-pfMacroLhs pf == CADR pf       -- was ==>
-pfMacroRhs pf == CADDR pf       -- was ==>
+pfMacroLhs pf == second pf       -- was ==>
+pfMacroRhs pf == third pf       -- was ==>
 
 
 -- Definition  := (LhsItems:  [Typed], Rhs:  Expr)
 
 pfDefinition(pflhsitems, pfrhs) == pfTree('Definition, [pflhsitems, pfrhs])
 pfDefinition?(pf) == pfAbSynOp? (pf, 'Definition)
-pfDefinitionLhsItems pf == CADR pf       -- was ==>
-pfDefinitionRhs pf == CADDR pf       -- was ==>
+pfDefinitionLhsItems pf == second pf       -- was ==>
+pfDefinitionRhs pf == third pf       -- was ==>
 pf0DefinitionLhsItems pf == pfParts pfDefinitionLhsItems pf
 
 pfRule(pflhsitems, pfrhs) == pfTree('Rule, [pflhsitems, _
 pfrhs])
 pfRule?(pf) == pfAbSynOp? (pf, 'Rule)
-pfRuleLhsItems pf == CADR pf       -- was ==>
-pfRuleRhs pf == CADDR pf       -- was ==>
+pfRuleLhsItems pf == second pf       -- was ==>
+pfRuleRhs pf == third pf       -- was ==>
 
 -- ComDefinition := (Doc:Document,Def:Definition)
 
 pfComDefinition(pfdoc, pfdef) == pfTree('ComDefinition, [pfdoc, pfdef] )
 pfComDefinition?(pf) == pfAbSynOp? (pf, 'ComDefinition)
-pfComDefinitionDoc pf == CADR pf       -- was ==>
-pfComDefinitionDef pf == CADDR pf       -- was ==>
+pfComDefinitionDoc pf == second pf       -- was ==>
+pfComDefinitionDef pf == third pf       -- was ==>
 
 
 -- DefinitionSequence    := (Args: [DeclPart])
 
-pfDefinitionSequenceArgs pf == CADR pf       -- was ==>
+pfDefinitionSequenceArgs pf == second pf       -- was ==>
 
 -- Export      := (Def:   Definition)
 
-pfExportDef pf == CADR pf       -- was ==>
+pfExportDef pf == second pf       -- was ==>
 
 -- Assign      := (LhsItems:  [AssLhs], Rhs:  Expr)
 
 pfAssign(pflhsitems, pfrhs) == pfTree('Assign, [pflhsitems, pfrhs])
 pfAssign?(pf) == pfAbSynOp? (pf, 'Assign)
-pfAssignLhsItems pf == CADR pf       -- was ==>
-pfAssignRhs pf == CADDR pf       -- was ==>
+pfAssignLhsItems pf == second pf       -- was ==>
+pfAssignRhs pf == third pf       -- was ==>
 pf0AssignLhsItems pf == pfParts pfAssignLhsItems pf
 
 
@@ -593,7 +593,7 @@ pf0AssignLhsItems pf == pfParts pfAssignLhsItems pf
 
 pfTyping(pfitems) == pfTree('Typing, [pfitems])
 pfTyping?(pf) == pfAbSynOp? (pf, 'Typing)
-pfTypingItems pf == CADR pf       -- was ==>
+pfTypingItems pf == second pf       -- was ==>
 pf0TypingItems pf == pfParts pfTypingItems pf
 
 
@@ -601,7 +601,7 @@ pf0TypingItems pf == pfParts pfTypingItems pf
 
 pfExport(pfitems) == pfTree('Export, [pfitems])
 pfExport?(pf) == pfAbSynOp? (pf, 'Export)
-pfExportItems pf == CADR pf       -- was ==>
+pfExportItems pf == second pf       -- was ==>
 pf0ExportItems pf == pfParts pfExportItems pf
 
 
@@ -609,14 +609,14 @@ pf0ExportItems pf == pfParts pfExportItems pf
 
 pfLocal(pfitems) == pfTree('Local, [pfitems])
 pfLocal?(pf) == pfAbSynOp? (pf, 'Local)
-pfLocalItems pf == CADR pf       -- was ==>
+pfLocalItems pf == second pf       -- was ==>
 pf0LocalItems pf == pfParts pfLocalItems pf
 
 -- Free        := (Items: [Typed])
 
 pfFree(pfitems) == pfTree('Free, [pfitems])
 pfFree?(pf) == pfAbSynOp? (pf, 'Free)
-pfFreeItems pf == CADR pf       -- was ==>
+pfFreeItems pf == second pf       -- was ==>
 pf0FreeItems pf == pfParts pfFreeItems pf
 
 
@@ -624,7 +624,7 @@ pf0FreeItems pf == pfParts pfFreeItems pf
 
 pfImport(pfitems) == pfTree('Import, [pfitems])
 pfImport?(pf) == pfAbSynOp? (pf, 'Import)
-pfImportItems pf == CADR pf       -- was ==>
+pfImportItems pf == second pf       -- was ==>
 pf0ImportItems pf == pfParts pfImportItems pf
 
 
@@ -632,14 +632,14 @@ pf0ImportItems pf == pfParts pfImportItems pf
 
 pfInline(pfitems) == pfTree('Inline, [pfitems])
 pfInline?(pf) == pfAbSynOp? (pf, 'Inline)
-pfInlineItems pf == CADR pf       -- was ==>
+pfInlineItems pf == second pf       -- was ==>
 
 -- QualType    := (Type: Type, Qual: ? Type)
 
 pfQualType(pftype, pfqual) == pfTree('QualType, [pftype, pfqual])
 pfQualType?(pf) == pfAbSynOp? (pf, 'QualType)
-pfQualTypeType pf == CADR pf       -- was ==>
-pfQualTypeQual pf == CADDR pf       -- was ==>
+pfQualTypeType pf == second pf       -- was ==>
+pfQualTypeQual pf == third pf       -- was ==>
 
 pfSuch(x,y)== pfInfApplication(pfId "|",x,y)
 
@@ -661,7 +661,7 @@ pfCollectVariable1 x==
       a := pfApplicationArg x
       var:=first pf0TupleParts a
       id:=pfTaggedToTyped var
-      pfTyped(pfSuch(pfTypedId id,CADR pf0TupleParts a),
+      pfTyped(pfSuch(pfTypedId id,second pf0TupleParts a),
               pfTypedType id)
 
 pfPushBody(t,args,body)==
