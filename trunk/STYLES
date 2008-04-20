@@ -21,7 +21,7 @@ guidelines) for writing `good Boot codes'.
   function body.
 
 * Always precede your functions definitions with type declarations.
-  Exception to this ruke should be rare and documented.
+  Exception to this rule should be rare and documented.
 
 
 * Don't use Lisp functions directly in Boot codes, except where
