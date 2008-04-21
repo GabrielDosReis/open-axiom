@@ -34,18 +34,39 @@
 import '"boot-pkg"
 )package "BOOT"
 
-++ Basic types used throughout Boot codes.
+--% Basic types used throughout Boot codes.
+
 %Void <=> nil
+
 %Boolean <=> BOOLEAN
+
+%Byte <=>
+  UNSIGNED_-BYTE 8
+
+%Char <=>
+  CHARACTER
+
 %Short <=> FIXNUM
+
 %Integer <=> BIGNUM
+
 %Number <=> NUMBER
+
 %Symbol <=> SYMBOL
+
 %String <=> STRING
+
 %Atom <=> atom
+
 %List <=> LIST
-%Vector <=> VECTOR
+
+%SimpleArray a <=> 
+  SIMPLE_-ARRAY a
+
+%Vector a <=> VECTOR a
+
 %Thing <=> true
+
 %Sequence <=> SEQUENCE
 
 %Pair <=> cons

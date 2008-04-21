@@ -218,7 +218,7 @@ axiom_algebra_layer_1 = \
   AGG      AGG-     IEVALAB  IEVALAB- FORTCAT   ITUPLE   \
   PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
   RETRACT- SEGCAT   BINDING  SYNTAX   BMODULE   LOGIC    \
-  LOGIC-   EVALAB   EVALAB-      FEVALAB  FEVALAB- 
+  LOGIC-   EVALAB   EVALAB-  FEVALAB  FEVALAB-  BYTE
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -236,7 +236,7 @@ axiom_algebra_layer_1_objects = \
 axiom_algebra_layer_2 = \
   ELTAGG   ELTAGG- FMC      FMFUN   FORTFN   FVC     \
   CTORCALL FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
-  CONTOUR  LIST3   MKFUNC   OASGP
+  CONTOUR  LIST3   MKFUNC   OASGP   
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))
@@ -544,7 +544,7 @@ axiom_algebra_layer_11_objects = \
 axiom_algebra_layer_12 = \
   DIOPS    DIOPS-  DIAGG   DIAGG-   BITS    DIRPROD2 IMATRIX \
   IVECTOR  LPOLY   LSMP    LSMP1    MATCAT2 PTCAT    TRIMAT  \
-  FSAGG    FSAGG-  SYSTEM
+  FSAGG    FSAGG-  SYSTEM  BYTEARY
 
 axiom_algebra_layer_12_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_12))

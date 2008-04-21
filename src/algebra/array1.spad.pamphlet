@@ -2,7 +2,7 @@
 \usepackage{axiom}
 \begin{document}
 \title{\$SPAD/src/algebra array1.spad}
-\author{Michael Monagan, Stephen Watt}
+\author{Gabriel Dos Reis, Michael Monagan, Stephen Watt}
 \maketitle
 \begin{abstract}
 \end{abstract}
@@ -15,25 +15,37 @@
 ++ This provides a fast array type with no bound checking on elt's.
 ++ Minimum index is 0 in this type, cannot be changed
 PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
-   Qmax ==> QVMAXINDEX$Lisp
-   Qsize ==> QVSIZE$Lisp
---   Qelt ==> QVELT$Lisp
---   Qsetelt ==> QSETVELT$Lisp
-   Qelt ==> ELT$Lisp
-   Qsetelt ==> SETELT$Lisp
-   Qnew ==> GETREFV$Lisp
+   #x == 
+     sizeOfSimpleArray(x)$Lisp
 
-   #x                          == Qsize x
-   minIndex x                  == 0
-   empty()                     == Qnew(0$Lisp)
-   new(n, x)                   == fill_!(Qnew n, x)
-   qelt(x, i)                  == Qelt(x, i)
-   elt(x:%, i:Integer)         == Qelt(x, i)
-   qsetelt_!(x, i, s)          == Qsetelt(x, i, s)
-   setelt(x:%, i:Integer, s:S) == Qsetelt(x, i, s)
-   fill_!(x, s)       == (for i in 0..Qmax x repeat Qsetelt(x, i, s); x)
+   minIndex x == 
+     0
+
+   empty() == 
+     makeSimpleArray(getVMType(S)$Lisp,0$Lisp)$Lisp
+
+   new(n, x) == 
+     makeFilledSimpleArray(getVMType(S)$Lisp,n,x)$Lisp
+
+   qelt(x, i) == 
+     getSimpleArrayEntry(x,i)$Lisp
+
+   elt(x:%, i:Integer) == 
+     getSimpleArrayEntry(x,i)$Lisp
+
+   qsetelt!(x, i, s) == 
+     setSimpleArrayEntry(x,i,s)$Lisp
+
+   setelt(x:%, i:Integer, s:S) == 
+     setSimpleArrayEntry(x,i,s)$Lisp
+     
+   fill!(x, s) == 
+     for i in 0..maxIndexOfSimpleArray(x)$Lisp repeat 
+       setSimpleArrayEntry(x, i, s)$Lisp
+     x
 
 @
+
 \section{PRIMARR.lsp BOOTSTRAP} 
 {\bf PRIMARR} depends on itself.
 We need to break this cycle to build the algebra. So we keep a
@@ -48,44 +60,48 @@ Note that this code is not included in the generated catdef.spad file.
 
 (/VERSIONCHECK 2) 
 
-(PUT '|PRIMARR;#;$Nni;1| '|SPADreplace| 'QVSIZE) 
+(PUT '|PRIMARR;#;$Nni;1| '|SPADreplace| '|sizeOfSimpleArray|) 
 
-(DEFUN |PRIMARR;#;$Nni;1| (|x| $) (QVSIZE |x|)) 
+(DEFUN |PRIMARR;#;$Nni;1| (|x| $) (|sizeOfSimpleArray| |x|)) 
 
 (PUT '|PRIMARR;minIndex;$I;2| '|SPADreplace| '(XLAM (|x|) 0)) 
 
 (DEFUN |PRIMARR;minIndex;$I;2| (|x| $) 0) 
 
-(PUT '|PRIMARR;empty;$;3| '|SPADreplace| '(XLAM NIL (GETREFV 0))) 
-
-(DEFUN |PRIMARR;empty;$;3| ($) (GETREFV 0)) 
+(DEFUN |PRIMARR;empty;$;3| ($)
+  (|makeSimpleArray| (|getVMType| (|getShellEntry| $ 6)) 0)) 
 
 (DEFUN |PRIMARR;new;NniS$;4| (|n| |x| $)
-  (SPADCALL (GETREFV |n|) |x| (|getShellEntry| $ 12))) 
+  (|makeFilledSimpleArray| (|getVMType| (|getShellEntry| $ 6)) |n| |x|)) 
 
-(PUT '|PRIMARR;qelt;$IS;5| '|SPADreplace| 'ELT) 
+(PUT '|PRIMARR;qelt;$IS;5| '|SPADreplace| '|getSimpleArrayEntry|) 
 
-(DEFUN |PRIMARR;qelt;$IS;5| (|x| |i| $) (ELT |x| |i|)) 
+(DEFUN |PRIMARR;qelt;$IS;5| (|x| |i| $)
+  (|getSimpleArrayEntry| |x| |i|)) 
 
-(PUT '|PRIMARR;elt;$IS;6| '|SPADreplace| 'ELT) 
+(PUT '|PRIMARR;elt;$IS;6| '|SPADreplace| '|getSimpleArrayEntry|) 
 
-(DEFUN |PRIMARR;elt;$IS;6| (|x| |i| $) (ELT |x| |i|)) 
+(DEFUN |PRIMARR;elt;$IS;6| (|x| |i| $)
+  (|getSimpleArrayEntry| |x| |i|)) 
 
-(PUT '|PRIMARR;qsetelt!;$I2S;7| '|SPADreplace| 'SETELT) 
+(PUT '|PRIMARR;qsetelt!;$I2S;7| '|SPADreplace| '|setSimpleArrayEntry|) 
 
-(DEFUN |PRIMARR;qsetelt!;$I2S;7| (|x| |i| |s| $) (SETELT |x| |i| |s|)) 
+(DEFUN |PRIMARR;qsetelt!;$I2S;7| (|x| |i| |s| $)
+  (|setSimpleArrayEntry| |x| |i| |s|)) 
 
-(PUT '|PRIMARR;setelt;$I2S;8| '|SPADreplace| 'SETELT) 
+(PUT '|PRIMARR;setelt;$I2S;8| '|SPADreplace| '|setSimpleArrayEntry|) 
 
-(DEFUN |PRIMARR;setelt;$I2S;8| (|x| |i| |s| $) (SETELT |x| |i| |s|)) 
+(DEFUN |PRIMARR;setelt;$I2S;8| (|x| |i| |s| $)
+  (|setSimpleArrayEntry| |x| |i| |s|)) 
 
 (DEFUN |PRIMARR;fill!;$S$;9| (|x| |s| $)
   (PROG (|i| #0=#:G1403)
     (RETURN
       (SEQ (SEQ (LETT |i| 0 |PRIMARR;fill!;$S$;9|)
-                (LETT #0# (QVMAXINDEX |x|) |PRIMARR;fill!;$S$;9|) G190
-                (COND ((QSGREATERP |i| #0#) (GO G191)))
-                (SEQ (EXIT (SETELT |x| |i| |s|)))
+                (LETT #0# (|maxIndexOfSimpleArray| |x|)
+                      |PRIMARR;fill!;$S$;9|)
+                G190 (COND ((QSGREATERP |i| #0#) (GO G191)))
+                (SEQ (EXIT (|setSimpleArrayEntry| |x| |i| |s|)))
                 (LETT |i| (QSADD1 |i|) |PRIMARR;fill!;$S$;9|) (GO G190)
                 G191 (EXIT NIL))
            (EXIT |x|))))) 
@@ -161,9 +177,9 @@ Note that this code is not included in the generated catdef.spad file.
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|)
              (|NonNegativeInteger|) |PRIMARR;#;$Nni;1| (|Integer|)
              |PRIMARR;minIndex;$I;2| |PRIMARR;empty;$;3|
-             |PRIMARR;fill!;$S$;9| |PRIMARR;new;NniS$;4|
-             |PRIMARR;qelt;$IS;5| |PRIMARR;elt;$IS;6|
-             |PRIMARR;qsetelt!;$I2S;7| |PRIMARR;setelt;$I2S;8|
+             |PRIMARR;new;NniS$;4| |PRIMARR;qelt;$IS;5|
+             |PRIMARR;elt;$IS;6| |PRIMARR;qsetelt!;$I2S;7|
+             |PRIMARR;setelt;$I2S;8| |PRIMARR;fill!;$S$;9|
              (|Mapping| 6 6 6) (|Boolean|) (|List| 6) (|Equation| 6)
              (|List| 21) (|Mapping| 19 6) (|Mapping| 19 6 6)
              (|UniversalSegment| 9) (|Void|) (|Mapping| 6 6)
@@ -207,25 +223,25 @@ Note that this code is not included in the generated catdef.spad file.
                                 '(2 7 19 0 0 1 3 0 26 0 9 9 1 1 5 19 0
                                   1 2 0 19 24 0 1 1 5 0 0 1 2 0 0 24 0
                                   1 1 5 0 0 1 2 0 0 24 0 1 2 0 19 0 7 1
-                                  3 0 6 0 25 6 1 3 0 6 0 9 6 17 2 0 0
+                                  3 0 6 0 25 6 1 3 0 6 0 9 6 16 2 0 0
                                   23 0 1 0 0 0 1 1 0 0 0 1 1 0 0 0 1 1
                                   7 0 0 1 2 7 0 6 0 1 2 0 0 23 0 1 4 7
                                   6 18 0 6 6 1 3 0 6 18 0 6 1 2 0 6 18
-                                  0 1 3 0 6 0 9 6 16 2 0 6 0 9 14 2 7 9
+                                  0 1 3 0 6 0 9 6 15 2 0 6 0 9 13 2 7 9
                                   6 0 1 3 7 9 6 0 9 1 2 0 9 23 0 1 1 0
-                                  20 0 1 2 0 0 7 6 13 2 0 19 0 7 1 1 6
+                                  20 0 1 2 0 0 7 6 12 2 0 19 0 7 1 1 6
                                   9 0 10 2 5 0 0 0 1 2 5 0 0 0 1 3 0 0
                                   24 0 0 1 1 0 20 0 1 2 7 19 6 0 1 1 6
                                   9 0 1 2 5 0 0 0 1 2 0 0 27 0 1 3 0 0
                                   18 0 0 1 2 0 0 27 0 1 2 0 19 0 7 1 1
                                   7 30 0 1 3 0 0 0 0 9 1 3 0 0 6 0 9 1
                                   1 0 34 0 1 2 0 19 9 0 1 1 7 31 0 1 1
-                                  6 6 0 1 2 0 33 23 0 1 2 0 0 0 6 12 2
+                                  6 6 0 1 2 0 33 23 0 1 2 0 0 0 6 17 2
                                   0 19 23 0 1 3 8 0 0 20 20 1 2 8 0 0
                                   21 1 3 8 0 0 6 6 1 2 8 0 0 22 1 2 0
                                   19 0 0 1 2 7 19 6 0 1 1 0 20 0 1 1 0
                                   19 0 1 0 0 0 11 2 0 0 0 25 1 2 0 6 0
-                                  9 15 3 0 6 0 9 6 1 2 0 0 0 9 1 2 0 0
+                                  9 14 3 0 6 0 9 6 1 2 0 0 0 9 1 2 0 0
                                   0 25 1 2 7 7 6 0 1 2 0 7 23 0 1 3 0 0
                                   0 0 9 1 1 0 0 0 1 1 3 29 0 1 1 0 0 20
                                   1 1 0 0 32 1 2 0 0 6 0 1 2 0 0 0 0 1

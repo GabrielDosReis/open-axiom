@@ -1,3 +1,23 @@
+2008-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (getVMType): New.
+	* interp/sys-macros.lisp (|byteLessThan|): New.
+	(|byteGreaterEqual|): Likewise.
+	(|makeSimpleArray|): Likewise.
+	(|makeFilledSimpleArray|): Likewise.
+	(|getSimpleArrayEntry|): Likewise.
+	(|setSimpleArrayEntry|): Likewise.
+	(|sizeOfSimpleArray|): Likewise.
+	(|maxIndexOfSimpleArray|): Likewise.
+	* interp/compiler.boot (checkCallingConvention): Tidy return type.
+	* algebra/exposed.lsp.pamphlet: Expose Byte and ByteArray.
+	* algebra/data.spad.pamphlet: New.
+	* algebra/array1.spad.pamphlet (PrimitiveArray): Rewrite.
+	Update cached Lisp translation.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include BYTE.
+	(axiom_algebra_layer_12): Include BYTEARY.
+	* share/algebra: Update databases.
+
 2008-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/template.boot (evalSlotDomain): Tidy.
