@@ -37,6 +37,30 @@ import '"sys-os"
 import '"vmlisp"
 )package "BOOT"
 
+
+--%
+
+++ getVMType returns an approximation of the underlying object type
+++ representation of a domain, as a Lisp type specifier as seen by
+++ the runtime system.
+getVMType d ==
+  case devaluate d of
+    Void => "%Void"
+    Boolean => "%Boolean"
+    Byte => "%Byte"
+    Character => "%Char"
+    SingleInteger => "%Short"
+    Integer => "%Integer"
+    String => "%String"
+    List => "%List"
+    Vector => "%Vector"
+    PrimitiveArray => "SIMPLE-ARRAY"
+    Pair => "%Pair"
+    otherwise => "%Thing"                 -- good enough, for now.
+
+
+--%
+
 setDynamicBinding: (%Symbol,%Thing) -> %Thing
 setDynamicBinding(s,v) ==
   SETF(SYMBOL_-VALUE s,v)

@@ -527,9 +527,9 @@ getFormModemaps(form is [op,:argl],e) ==
 ++ the same arity and must take flag argument in the same position.
 ++ Returns a vector of length `nargs' with positive entries indicating
 ++ flag arguments, and negative entries for normal argument passing.
-checkCallingConvention: (%List,%Short) -> %Vector
+checkCallingConvention: (%List,%Short) -> %SimpleArray %Short
 checkCallingConvention(sigs,nargs) ==
-  v := GETZEROVEC nargs
+  v := makeFilledSimpleArray(%Short,nargs,0)
   for sig in sigs repeat
     for t in rest sig 
       for i in 0.. repeat

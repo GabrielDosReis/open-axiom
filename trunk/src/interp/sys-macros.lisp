@@ -57,6 +57,17 @@
  `(or (alpha-char-p ,x)
       (member ,x '(#\? #\% #\!) :test #'char=)))
 
+
+;; 
+;; -*- Byte -*-
+;; 
+
+(defmacro |byteLessThan| (|x| |y|)
+  `(< (the fixnum x) (the fixnum y)))
+
+(defmacro |byteGreaterEqual| (|x| |y|)
+  `(>= (the fixnum x) (the fixnum y)))
+
 ;; 
 ;; -*- BigFloat Constructors -*-
 ;; 
@@ -309,6 +320,31 @@
 ;; 
 ;; -*- Association Lists -*-
 ;; 
+
+
+;; 
+;; -*- Simple Arrays -*-
+;; 
+
+;; Note: these macros should probably be just ordinary functions.
+
+(defmacro |makeSimpleArray| (|t| |n|)
+  `(make-array ,|n| :element-type ,|t|))
+
+(defmacro |makeFilledSimpleArray| (|t| |n| |v|)
+  `(make-array ,|n| :element-type ,|t| :initial-element ,|v|))
+
+(defmacro |getSimpleArrayEntry| (|a| |i|)
+  `(aref (the simple-array ,|a|) (the fixnum ,|i|)))
+
+(defmacro |setSimpleArrayEntry| (|a| |i| |v|)
+  `(setf (aref (the simple-array ,|a|) (the fixnum ,|i|)) ,|v|))
+
+(defmacro |sizeOfSimpleArray| (|a|)
+  `(the fixnum (length (the simple-array ,|a|))))
+
+(defmacro |maxIndexOfSimpleArray| (|a|)
+  `(the fixnum (1- (the fixnum (length (the simple-array ,|a|))))))
 
 ;; 
 ;; -*- Functions -*-

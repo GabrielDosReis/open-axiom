@@ -74,6 +74,8 @@
   (|Binding| . BINDING)
   (|Bits| . BITS)
   (|Boolean| . BOOLEAN)
+  (|Byte| . BYTE)
+  (|ByteArray| . BYTEARY)
   (|CardinalNumber| . CARD)
   (|CartesianTensor| . CARTEN)
   (|CartesianTensorFunctions2| . CARTEN2)
