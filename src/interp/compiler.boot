@@ -529,7 +529,7 @@ getFormModemaps(form is [op,:argl],e) ==
 ++ flag arguments, and negative entries for normal argument passing.
 checkCallingConvention: (%List,%Short) -> %SimpleArray %Short
 checkCallingConvention(sigs,nargs) ==
-  v := makeFilledSimpleArray(%Short,nargs,0)
+  v := makeFilledSimpleArray("%Short",nargs,0)
   for sig in sigs repeat
     for t in rest sig 
       for i in 0.. repeat
