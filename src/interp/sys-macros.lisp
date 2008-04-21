@@ -63,10 +63,10 @@
 ;; 
 
 (defmacro |byteLessThan| (|x| |y|)
-  `(< (the fixnum x) (the fixnum y)))
+  `(< (the fixnum ,|x|) (the fixnum ,|y|)))
 
 (defmacro |byteGreaterEqual| (|x| |y|)
-  `(>= (the fixnum x) (the fixnum y)))
+  `(>= (the fixnum ,|x|) (the fixnum ,|y|)))
 
 ;; 
 ;; -*- BigFloat Constructors -*-
