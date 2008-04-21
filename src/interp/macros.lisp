@@ -787,10 +787,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 ;; -*- Record Structures -*-
 ;; 
 
-(defmacro |Record| (&rest x)
-  `(|Record0| (LIST ,@(COLLECT (IN Y X)
-                               (list 'CONS (MKQ (CADR Y)) (CADDR Y))))))
-
 (defmacro |:| (tag expr)
   `(LIST '|:| ,(MKQ tag) ,expr))
 

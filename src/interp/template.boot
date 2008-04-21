@@ -108,7 +108,7 @@ evalSlotDomain(u,dollar) ==
   u is ['NRTEVAL,y] => eval  y
   u is ['QUOTE,y] => y
   u is ['Record,:argl] =>
-     FUNCALL('Record0,[[tag,:evalSlotDomain(dom,dollar)]
+     apply('Record,[[":",tag,evalSlotDomain(dom,dollar)]
                                  for [.,tag,dom] in argl])
   u is ['Union,:argl] and first argl is ['_:,.,.] =>
      APPLY('Union,[['_:,tag,evalSlotDomain(dom,dollar)]

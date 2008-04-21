@@ -67,12 +67,6 @@ $FirstParamSlot ==
 isRecord type == 
   type is ["Record",:.]
 
-RecordInner args ==
-  -- this is old and should be removed wherever it occurs
-  if $evalDomain then
-    sayBrightly '"-->> Whoops! RecordInner called from this code."
-  Record0 VEC2LIST args
-
 ++ returns the code for the `n'th item recorded in a domain shell,
 ++ according to the old runtime system.  Note that the old runtime
 ++ scheme is used only for the handful of constructors created 
@@ -82,8 +76,8 @@ oldSlotCode n ==
   2 * ($FirstParamSlot + n)
 
 
-Record0 args ==
-  srcArgs := [[":",first a, devaluate rest a] for a in args]
+Record(:args) ==
+  srcArgs := [[":", second a, devaluate third a] for a in args]
   -- if we already have this instantiation in store, just hand it back.
   t := lassocShiftWithFunction(srcArgs,
          HGET($ConstructorCache,"Record"), "domainEqualList") =>
@@ -101,7 +95,7 @@ Record0 args ==
   dom.3 := ["RecordCategory",:QCDR dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := rest a
+  for i in $FirstParamSlot.. for a in args repeat dom.i := third a
   dom.($FirstParamSlot + nargs) := [function RecordEqual, :dom]
   dom.($FirstParamSlot + nargs + 1) := [function RecordPrint, :dom]
   dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
