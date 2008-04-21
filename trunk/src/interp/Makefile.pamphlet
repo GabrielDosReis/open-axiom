@@ -1072,7 +1072,7 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 <<warm.data.stanza>>
 
 buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 
 <<DVI from pamphlet>>
