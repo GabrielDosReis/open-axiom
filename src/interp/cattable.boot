@@ -77,7 +77,7 @@ genCategoryTable() ==
 simpTempCategoryTable() ==
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
     for (u:=[a,:b]) in getConstructorAncestorsFromDB id repeat
-      RPLACA(u,SUBST('Type,'Object,a))
+      RPLACA(u,substitute('Type,'Object,a))
       RPLACD(u,simpHasPred b)
 
 simpCategoryTable() == main where
@@ -116,7 +116,7 @@ simpHasPred(pred,:options) == main where
     pred in '(T etc) => pred
     null pred => nil
     pred
-  simpDevaluate a == EVAL SUBST('QUOTE,'devaluate,a)
+  simpDevaluate a == EVAL substitute('QUOTE,'devaluate,a)
   simpHas(pred,a,b) ==
     b is ['ATTRIBUTE,attr] => simpHasAttribute(pred,a,attr)
     b is ['SIGNATURE,op,sig] => simpHasSignature(pred,a,op,sig)
@@ -400,9 +400,9 @@ categoryParts(conform,category,:options) == main where
     item is ['IF,pred1,s1,s2] =>
       build(s1,quickAnd(pred,pred1))
       s2 => build(s2,quickAnd(pred,['NOT,pred1]))
-    item is ['PROGN,:r] => for x in r repeat build(x,pred)
-    item in '(%noBranch) => 'ok
     null item => 'ok
+    item = "%noBranch" => 'ok
+    item is ['PROGN,:r] => for x in r repeat build(x,pred)
     systemError '"build error"
   exportsOf(target) ==
     target is ['CATEGORY,.,:r] => r

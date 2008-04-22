@@ -755,7 +755,7 @@ compileCoerceMap(op,argTypes,mm) ==
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
   minivectorName := makeInternalMapMinivectorName(name)
   $minivectorNames := [[op,:minivectorName],:$minivectorNames]
-  body := SUBST(minivectorName,"$$$",body)
+  body := substitute(minivectorName,"$$$",body)
   if $compilingInputFile then
     $minivectorCode := [:$minivectorCode,minivectorName]
   setDynamicBinding(minivectorName,LIST2REFVEC $minivector)

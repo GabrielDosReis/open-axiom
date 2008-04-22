@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -258,7 +258,7 @@ augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   e:= putDomainsInScope(domainName,e)
   $base:= 4
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
-    u:=assoc(SUBST("Rep",domainName,lhs),repFnAlist)
+    u:=assoc(substitute("Rep",domainName,lhs),repFnAlist)
     u and not AMFCR_,redefinedList(op,functorBody) =>
       fnsel':=CADDR u
       e:= addModemap(op,domainName,sig,cond,fnsel',e)

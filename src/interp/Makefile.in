@@ -294,10 +294,10 @@ br-data.$(FASLEXT): br-data.boot bc-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 br-util.$(FASLEXT): br-util.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 bc-solve.$(FASLEXT): bc-solve.boot bc-matrix.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 bc-matrix.$(FASLEXT): bc-matrix.boot bc-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
@@ -315,7 +315,7 @@ htcheck.$(FASLEXT): htcheck.boot sys-driver.$(FASLEXT) macros.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 ht-util.$(FASLEXT): ht-util.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 htsetvar.$(FASLEXT): htsetvar.boot macros.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
@@ -336,7 +336,7 @@ profile.$(FASLEXT): profile.boot macros.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 osyscmd.$(FASLEXT): osyscmd.boot int-top.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
@@ -388,10 +388,10 @@ i-code.$(FASLEXT): i-code.boot i-object.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 i-object.$(FASLEXT): i-object.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 i-util.$(FASLEXT): i-util.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 format.$(FASLEXT): format.boot macros.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
@@ -423,13 +423,13 @@ nrunopt.$(FASLEXT): nrunopt.boot c-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 nrunfast.$(FASLEXT): nrunfast.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 nruncomp.$(FASLEXT): nruncomp.boot c-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 nrungo.$(FASLEXT): nrungo.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 nruntime.$(FASLEXT): nruntime.boot c-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
@@ -438,7 +438,7 @@ template.$(FASLEXT): template.boot c-util.$(FASLEXT)
 	$(BOOTSYS) --compile  --output=$@ --load-directory=. $<
 
 iterator.$(FASLEXT): iterator.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
 			c-util.$(FASLEXT)
@@ -458,7 +458,7 @@ category.$(FASLEXT): category.boot g-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 cattable.$(FASLEXT): cattable.boot simpbool.$(FASLEXT) g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 compat.$(FASLEXT): compat.boot pathname.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
@@ -477,7 +477,7 @@ interop.$(FASLEXT): interop.boot c-util.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 c-doc.$(FASLEXT): c-doc.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 ## Interface with the Aldor compiler.
 ax.$(FASLEXT): ax.boot as.$(FASLEXT)
@@ -591,7 +591,7 @@ unlisp.$(FASLEXT): unlisp.lisp sys-macros.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 posit.$(FASLEXT): posit.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 intfile.$(FASLEXT): intfile.boot cstream.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
@@ -653,22 +653,22 @@ sfsfun.$(FASLEXT): sfsfun.boot macros.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 modemap.$(FASLEXT): modemap.boot c-util.$(FASLEXT) info.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 info.$(FASLEXT): info.boot g-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 slam.$(FASLEXT): slam.boot g-timer.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 clammed.$(FASLEXT): clammed.boot g-timer.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 clam.$(FASLEXT): clam.boot g-timer.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 g-opt.$(FASLEXT): g-opt.boot def.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 g-timer.$(FASLEXT): g-timer.boot macros.$(FASLEXT) g-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
@@ -680,13 +680,13 @@ g-boot.$(FASLEXT): g-boot.boot def.$(FASLEXT) g-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 g-error.$(FASLEXT): g-error.boot diagnostics.$(FASLEXT) g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 c-util.$(FASLEXT): c-util.boot g-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 pathname.$(FASLEXT): pathname.boot nlib.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 hashcode.$(FASLEXT): hashcode.boot g-util.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
@@ -698,10 +698,10 @@ pspad1.$(FASLEXT): pspad1.boot macros.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT) sys-utility.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 g-cndata.$(FASLEXT): g-cndata.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 compress.$(FASLEXT): compress.boot sys-macros.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<

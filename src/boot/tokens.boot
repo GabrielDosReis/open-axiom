@@ -337,7 +337,6 @@ for i in [ _
   ["where", "WHERE"], _
   ["TIMES", "TIMES"], _
   ["POWER", "EXPT"], _
-  ["NOT", "NULL"], _
   ["SHOENE", "NEQUAL"], _
   ["MINUS", "SPADDIFFERENCE"], _
   ["SLASH", "QUOTIENT"], _

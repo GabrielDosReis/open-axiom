@@ -102,7 +102,7 @@ buildLibdbConEntry conname ==
     abb:= getConstructorAbbreviationFromDB conname
     $conname := conname
     conform := getConstructorFormFromDB conname or [conname] --hack for Category,..
-    $conform := dbMkForm SUBST('T,"T$",conform)
+    $conform := dbMkForm substitute('T,"T$",conform)
     null $conform => nil
     $exposed? := (isExposedConstructor conname => '"x"; '"n")
     $doc      := getConstructorDocumentationFromDB conname
@@ -171,8 +171,8 @@ buildLibOp(op,sig,pred) ==
 --operations      OKop  \#\sig \conname\pred\comments (K is U or C)
   nsig := SUBLISLIS(rest $conform,$FormalMapVariableList,sig)
   pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
-  nsig := SUBST('T,"T$",nsig)   --this ancient artifact causes troubles!
-  pred := SUBST('T,"T$",pred)
+  nsig := substitute('T,"T$",nsig)   --this ancient artifact causes troubles!
+  pred := substitute('T,"T$",pred)
   sigpart:= form2LispString ['Mapping,:nsig]
   predString := (pred = 'T => '""; form2LispString pred)
   sop :=
