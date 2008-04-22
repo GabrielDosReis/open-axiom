@@ -362,7 +362,7 @@
                (COND
                  ((EQ |found| 'TRAPPED) (SETQ |$inputStream| |c|)
                   (|bpRecoverTrap|))
-                 ((NULL |found|) (SETQ |$inputStream| |c|)
+                 ((NOT |found|) (SETQ |$inputStream| |c|)
                   (|bpGeneralErrorHere|) (|bpRecoverTrap|)))
                (COND
                  ((|bpEqKey| 'BACKSET) (SETQ |c| |$inputStream|))
@@ -458,16 +458,17 @@
     ('T NIL)))
 
 (DEFUN |bpTypeAliasDefition| ()
-  (AND (OR (|bpName|) (|bpTrap|)) (|bpEqKey| 'TDEF) (|bpLogical|)
-       (|bpPush| (|TypeAlias| (|bpPop2|) NIL (|bpPop1|)))))
+  (AND (OR (|bpTerm|) (|bpTrap|)) (|bpEqKey| 'TDEF) (|bpLogical|)
+       (|bpPush| (|TypeAlias| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpSignature| ()
   (AND (|bpName|) (|bpEqKey| 'COLON) (|bpMapping|)
        (|bpPush| (|Signature| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpMapping| ()
-  (AND (OR (|bpName|) (|bpIdList|)) (|bpEqKey| 'ARROW) (|bpName|)
-       (|bpPush| (|Mapping| (|bpPop1|) (|bpPop1|)))))
+  (AND (OR (|bpName|) (|bpParenthesized| #'|bpIdList|))
+       (|bpEqKey| 'ARROW) (|bpName|)
+       (|bpPush| (|Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|))))))
 
 (DEFUN |bpCancel| ()
   (PROG (|a|)
@@ -506,7 +507,7 @@
     (DECLARE (SPECIAL |$ttok| |$stok|))
     (RETURN
       (COND
-        ((AND (EQCAR |$stok| 'KEY) (NULL (|bpExceptions|)))
+        ((AND (EQCAR |$stok| 'KEY) (NOT (|bpExceptions|)))
          (PROGN
            (SETQ |a| (GET |$ttok| 'SHOEINF))
            (COND
@@ -1009,17 +1010,19 @@
                 (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))
            T)))
 
+(DEFUN |bpRegularBVItemTail| ()
+  (OR (AND (|bpEqKey| 'COLON) (OR (|bpApplication|) (|bpTrap|))
+           (|bpPush| (|bfTagged| (|bpPop2|) (|bpPop1|))))
+      (AND (|bpEqKey| 'BEC) (OR (|bpPattern|) (|bpTrap|))
+           (|bpPush| (|bfAssign| (|bpPop2|) (|bpPop1|))))
+      (AND (|bpEqKey| 'IS) (OR (|bpPattern|) (|bpTrap|))
+           (|bpPush| (|bfAssign| (|bpPop2|) (|bpPop1|))))
+      (AND (|bpEqKey| 'DEF) (OR (|bpApplication|) (|bpTrap|))
+           (|bpPush| (|%DefaultValue| (|bpPop2|) (|bpPop1|))))))
+
 (DEFUN |bpRegularBVItem| ()
   (OR (|bpBVString|) (|bpConstTok|)
-      (AND (|bpName|)
-           (OR (AND (|bpEqKey| 'COLON)
-                    (OR (|bpApplication|) (|bpTrap|))
-                    (|bpPush| (|bfTagged| (|bpPop2|) (|bpPop1|))))
-               (AND (|bpEqKey| 'BEC) (OR (|bpPattern|) (|bpTrap|))
-                    (|bpPush| (|bfAssign| (|bpPop2|) (|bpPop1|))))
-               (AND (|bpEqKey| 'IS) (OR (|bpPattern|) (|bpTrap|))
-                    (|bpPush| (|bfAssign| (|bpPop2|) (|bpPop1|))))
-               T))
+      (AND (|bpName|) (OR (|bpRegularBVItemTail|) T))
       (|bpBracketConstruct| #'|bpPatternL|)))
 
 (DEFUN |bpBVString| ()

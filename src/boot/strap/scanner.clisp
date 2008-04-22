@@ -71,7 +71,7 @@
         (SETQ |$floatok| T)
         (SETQ |$linepos| |s|)
         (COND
-          ((NULL (|shoeNextLine| |s|)) (CONS NIL NIL))
+          ((NOT (|shoeNextLine| |s|)) (CONS NIL NIL))
           ((NULL |$n|) (|shoeLineToks| |$r|))
           (#0='T
            (PROGN
@@ -136,7 +136,7 @@
     (DECLARE (SPECIAL |$ln| |$r| |$n|))
     (RETURN
       (COND
-        ((NULL (|shoeNextLine| |s|)) (CONS |s| |string|))
+        ((NOT (|shoeNextLine| |s|)) (CONS |s| |string|))
         ((NULL |$n|) (|shoeAccumulateLines| |$r| |string|))
         ((EQL (LENGTH |$ln|) 0) (|shoeAccumulateLines| |$r| |string|))
         (#0='T
@@ -348,13 +348,13 @@
      (COND
        (|$floatok| (|shoePossFloat| |w|))
        (#0='T (|shoeLeafKey| |w|))))
-    (#0# (SETQ |$floatok| (NULL (|shoeCloser| |w|)))
+    (#0# (SETQ |$floatok| (NOT (|shoeCloser| |w|)))
      (|shoeLeafKey| |w|))))
 
 (DEFUN |shoePossFloat| (|w|)
   (DECLARE (SPECIAL |$ln| |$sz| |$n|))
   (COND
-    ((OR (NOT (< |$n| |$sz|)) (NULL (|shoeDigit| (ELT |$ln| |$n|))))
+    ((OR (NOT (< |$n| |$sz|)) (NOT (|shoeDigit| (ELT |$ln| |$n|))))
      (|shoeLeafKey| |w|))
     ('T (SETQ |w| (|shoeInteger|)) (|shoeExponent| "0" |w|))))
 
@@ -560,7 +560,7 @@
 (DEFUN |shoeKeyWord| (|st|) (GETHASH |st| |shoeKeyTable|))
 
 (DEFUN |shoeKeyWordP| (|st|)
-  (NULL (NULL (GETHASH |st| |shoeKeyTable|))))
+  (NOT (NULL (GETHASH |st| |shoeKeyTable|))))
 
 (DEFUN |shoeMatch| (|l| |i|)
   (|shoeSubStringMatch| |l| |shoeDict| |i|))
