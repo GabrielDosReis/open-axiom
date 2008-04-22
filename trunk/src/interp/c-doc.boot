@@ -45,12 +45,12 @@ getDoc(conName,op,modemap) ==
   [dc,target,sl,pred,D] := simplifyModemap modemap
   sig := [target,:sl]
   null atom dc =>
-    sig := SUBST('$,dc,sig)
+    sig := substitute('$,dc,sig)
     sig := SUBLISLIS($FormalMapVariableList,rest dc,sig)
     getDocForDomain(conName,op,sig)
   if argList := IFCDR getOfCategoryArgument pred then
      SUBLISLIS($FormalMapArgumentList,argList,sig)
-  sig := SUBST('$,dc,sig)
+  sig := substitute('$,dc,sig)
   getDocForCategory(conName,op,sig)
 
 ++ Given a preidcate `pred' for a modemap, returns the first
@@ -132,7 +132,7 @@ collectAndDeleteAssoc x ==
 
 finalizeDocumentation() ==
   unusedCommentLineNumbers := [x for (x := [n,:r]) in $COMBLOCKLIST | r]
-  docList := SUBST("$","%",transDocList($op,$docList))
+  docList := substitute("$","%",transDocList($op,$docList))
   if u := [sig for [sig,:doc] in docList | null doc] then
     for y in u repeat
       y = 'constructor => noHeading := true

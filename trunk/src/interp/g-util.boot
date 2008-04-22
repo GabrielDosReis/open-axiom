@@ -455,7 +455,7 @@ formatUnabbreviated t ==
     [t]
   null t =>
     ['"()"]
-  t is [p,sel,arg] and p in '(_: ":") =>
+  t is [p,sel,arg] and p = ":" =>
     [sel,'": ",:formatUnabbreviated arg]
   t is ['Union,:args] =>
     ['Union,'"(",:formatUnabbreviatedTuple args,'")"]

@@ -1,5 +1,46 @@
 2008-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-data.boot: Tidy.
+	* interp/br-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/rulesets.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/Makefile.pamphlet (br-util.$(FASLEXT)): Don't compile as
+	Old Boot.
+	(bc-solve.$(FASLEXT)): Likewise.
+	(ht-util.$(FASLEXT)): Likewise.
+	(rulesets.$(FASLEXT)): Likewise.
+	(i-object.$(FASLEXT)): Likewise.
+	(i-util.$(FASLEXT)): Likewise.
+	(nrunfast.$(FASLEXT)): Likewise.
+	(nrungo.$(FASLEXT)): Likewise.
+	(iterator.$(FASLEXT)): Likewise.
+	(cattable.$(FASLEXT)): Likewise.
+	(c-doc.$(FASLEXT)): Likewise.
+	(posit.$(FASLEXT)): Likewise.
+	(modemap.$(FASLEXT)): Likewise.
+	(slam.$(FASLEXT)): Likewise.
+	(clammed.$(FASLEXT)): Likewise.
+	(g-opt.$(FASLEXT)): Likewise.
+	(g-error.$(FASLEXT)): Likewise.
+	(pathname.$(FASLEXT)): Likewise.
+	(g-util.$(FASLEXT)): Likewise.
+	(g-cndata.$(FASLEXT)): Likewise.
+	* boot/tokens.boot: Remove renaming of NOT to NULL, when compiling
+	Old Boot.
+
+2008-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-utility.boot (getVMType): New.
 	* interp/sys-macros.lisp (|byteLessThan|): New.
 	(|byteGreaterEqual|): Likewise.

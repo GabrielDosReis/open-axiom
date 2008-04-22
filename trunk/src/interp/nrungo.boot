@@ -384,7 +384,7 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
   sharpPosition := PARSE_-INTEGER SUBSTRING(sharpArg,1,nil)
   al:= mkDiffAssoc(op,generalTerm,k,sharpPosition,sharpArg,diffSlot,minivectorName)
   null al => false
-  '$failed in al => false
+  "$failed" in al => false
   body:= generalTerm
   for [a,:b] in al repeat
     body:= substitute(b,a,body)
