@@ -97,7 +97,7 @@
                   (CDR |stream|)))
              ((AND (EQUAL (SUBSTRING |a| 0 |sz|) |name|)
                    (< |sz| (LENGTH |a|))
-                   (NULL (|shoeIdChar| (ELT |a| |sz|))))
+                   (NOT (|shoeIdChar| (ELT |a| |sz|))))
               (LIST |lines| |stream|))
              ('T
               (|shoePackageStartsAt| |lines| |sz| |name|
@@ -425,7 +425,7 @@
                       (|shoeThen| (CONS NIL |keep|) (CONS NIL |b|) |t|))))
                   ((SETQ |command| (|shoeElseIf?| |string|))
                    (COND
-                     ((AND |keep1| (NULL |b1|))
+                     ((AND |keep1| (NOT |b1|))
                       (|shoeThen| (CONS T (CDR |keep|))
                           (CONS (STTOMC |command|) (CDR |b|)) |t|))
                      (#0#
@@ -433,7 +433,7 @@
                           (CONS NIL (CDR |b|)) |t|))))
                   ((SETQ |command| (|shoeElse?| |string|))
                    (COND
-                     ((AND |keep1| (NULL |b1|))
+                     ((AND |keep1| (NOT |b1|))
                       (|shoeElse| (CONS T (CDR |keep|))
                           (CONS T (CDR |b|)) |t|))
                      (#0#
