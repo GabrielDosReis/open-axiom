@@ -32,9 +32,9 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"c-util"
-import '"cattable"
-import '"category"
+import c_-util
+import cattable
+import category
 )package "BOOT"
 
 NRTPARSE := false

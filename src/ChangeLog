@@ -1,3 +1,15 @@
+2008-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: Tidy.
+	* boot/includer.boot: Likewise.
+	* boot/parser.boot: Likewise.
+	* boot/pile.boot: Likewise.
+	* boot/scanner.boot: Likewise.
+	* boot/tokens.boot: Likewise.
+	* boot/translator.boot: Likewise.
+	* boot/strap: Update Lisp translation.
+	* lisp/core.lisp.in: Tidy.
+
 2008-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/br-data.boot: Tidy.

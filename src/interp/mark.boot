@@ -41,7 +41,7 @@
 -- Entire constructor is then assembled and prettyprinted
 
 
-import '"macros"
+import macros
 )package "BOOT"
 
 REMPROP("and",'parseTran)

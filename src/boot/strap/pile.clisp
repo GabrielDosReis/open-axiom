@@ -1,4 +1,4 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "boot-pile"))
+(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "pile"))
 
 (IMPORT-MODULE "includer")
 

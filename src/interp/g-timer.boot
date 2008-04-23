@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"macros"
-import '"g-util"
+import macros
+import g_-util
 )package "BOOT"
 
 --% Code instrumentation facilities

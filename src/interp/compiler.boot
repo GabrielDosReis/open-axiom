@@ -32,11 +32,11 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"c-util"
-import '"pathname"
-import '"modemap"
-import '"define"
-import '"iterator"
+import c_-util
+import pathname
+import modemap
+import define
+import iterator
 )package "BOOT"
 
 ++ A list of routines for diagnostic reports.  These functions, in an

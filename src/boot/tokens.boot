@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 
-module '"boot-tokens"
-import '"initial-env"
+module tokens
+import initial_-env
 
 )package "BOOTTRAN"
 

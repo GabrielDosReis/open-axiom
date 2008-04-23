@@ -53,8 +53,8 @@
 -- its arguments, such as describeSetOutputFortran.
 
 
-import '"macros"
-import '"debug"
+import macros
+import debug
 )package "BOOT"
 
 

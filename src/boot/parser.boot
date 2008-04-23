@@ -39,10 +39,10 @@
 --
 
 
-module '"boot-parser"
-import '"includer"
-import '"scanner"
-import '"ast"
+module parser
+import includer
+import scanner
+import ast
  
 )package "BOOTTRAN"
  
@@ -415,13 +415,8 @@ bpConstTok() ==
 ++   Module:
 ++     MODULE QUOTE String
 bpModule() ==
-  bpEqKey "MODULE" =>
-    -- we really want to check that the next token is indeed
-    -- a string.  For the moment, we delay the type checking
-    -- to the Lisp compiler/interpreter.  That is likely to 
-    -- cause cryptic diagnostics.  To be fixed.
-    bpConstTok() and bpPush Module bpPop1()
-  false
+  bpEqKey "MODULE" and (bpName() or bpTrap()) and 
+     bpPush %Module bpPop1()
 
 ++ Parse a module import, or a import declaration for a foreign entity.
 ++ Import:
@@ -429,14 +424,11 @@ bpModule() ==
 ++    IMPORT QUOTE String
 bpImport() ==
   bpEqKey "IMPORT" =>
-    (bpName() and (bpEqKey "FOR" or bpTrap()) and bpSignature()
-       and bpPush ImportSignature(bpPop2(), bpPop1()))
-         or 
-          -- we really want to check that the next token is indeed
-          -- a string.  For the moment, we delay the type checking
-          -- to the Lisp compiler/interpreter.  That is likely to 
-          -- cause cryptic diagnostics.  To be fixed.
-           (bpConstTok() and bpPush Import bpPop1())
+    bpName() or bpTrap()
+    bpEqKey "FOR" =>
+      (bpSignature() or bpTrap()) and 
+         bpPush ImportSignature(bpPop2(), bpPop1())
+    bpPush Import bpPop1()
   false
 
 -- Parse a type alias defnition:

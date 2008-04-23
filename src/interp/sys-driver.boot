@@ -36,7 +36,7 @@
 -- both the OpenAxiom compiler and interpreter.
 --
 
-import '"types"
+import types
 )package "BOOT"
 
 ++ true means try starting an open server

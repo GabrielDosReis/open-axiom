@@ -35,8 +35,8 @@
 --% to these low level facilities exists in the algrebra as domain Parser.
 --%
 
-import '"cparse"
-import '"pf2sex"
+import cparse
+import pf2sex
 )package "BOOT"
 
 ++ returns the list of tokens making up a line in the stream `s'

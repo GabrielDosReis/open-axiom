@@ -32,9 +32,9 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"unlisp"
-import '"cstream"
-import '"cformat"
+import unlisp
+import cstream
+import cformat
 
 )package "BOOT"
  

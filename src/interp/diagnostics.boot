@@ -38,9 +38,9 @@
 -- These routines are bused by both the interprerter and the compiler.
 --
 
-import '"sys-constants"
-import '"sys-globals"
-import '"vmlisp"
+import sys_-constants
+import sys_-globals
+import vmlisp
 )package "BOOT"
 
 

@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-object"
+import i_-object
 )package "BOOT"
 
 --% Utility Variable Initializations
@@ -2339,7 +2339,7 @@ reportOpsFromUnitDirectly unitForm ==
   sayBrightly concat('%b,formatOpType unitForm,
     '%d,'"is a",'%b,kind,'%d, '"constructor.")
   if not isRecordOrUnion then
-    abb := getConstructorAbbreviatiomFronDB top
+    abb := getConstructorAbbreviationFromDB top
     sourceFile := getConstructorSourceFileFromDB top
     sayBrightly ['" Abbreviation for",:bright top,'"is",:bright abb]
     verb :=
@@ -2748,7 +2748,7 @@ filterAndFormatConstructors(constrType,label,patterns) ==
 
 whatConstructors constrType ==
   -- here constrType should be one of 'category, 'domain, 'package
-  MSORT [CONS(getConstructorAbbreviatiomFronDB con, STRING(con))
+  MSORT [CONS(getConstructorAbbreviationFromDB con, STRING(con))
     for con in allConstructors()
       | getConstructorKindFromDB con = constrType]
 

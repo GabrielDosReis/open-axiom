@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"c-util"
-import '"category"
+import c_-util
+import category
 )package "BOOT"
 
 --%  Domain printing

@@ -56,7 +56,7 @@
 --% The use of two representations is admitted to be clumsy
 
 
-import '"g-util"
+import g_-util
 )package "BOOT"
 
 printInfo $e ==

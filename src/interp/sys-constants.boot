@@ -37,7 +37,7 @@
 -- the interpreter or the compiler or both.
 --
 
-import '"types"
+import types
 )package "BOOT"
 
 

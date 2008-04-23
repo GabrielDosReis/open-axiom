@@ -1,4 +1,4 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "boot-translator"))
+(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "translator"))
 
 (IMPORT-MODULE "includer")
 
@@ -644,14 +644,15 @@
                    (LET ((|op| (CAR |bfVar#16|))
                          (|t| (CADR |bfVar#16|)))
                      (|bpPush| (LIST (|genDeclaration| |op| |t|)))))
-               (|Module|
+               (|%Module|
                    (LET ((|m| (CAR |bfVar#16|)))
                      (|bpPush|
                          (LIST (|shoeCompileTimeEvaluation|
-                                   (LIST 'PROVIDE |m|))))))
+                                   (LIST 'PROVIDE (STRING |m|)))))))
                (|Import|
                    (LET ((|m| (CAR |bfVar#16|)))
-                     (|bpPush| (LIST (LIST 'IMPORT-MODULE |m|)))))
+                     (|bpPush|
+                         (LIST (LIST 'IMPORT-MODULE (STRING |m|))))))
                (|ImportSignature|
                    (LET ((|x| (CAR |bfVar#16|))
                          (|sig| (CADR |bfVar#16|)))

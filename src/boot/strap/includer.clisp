@@ -1,4 +1,4 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "boot-includer"))
+(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "includer"))
 
 (IMPORT-MODULE "tokens")
 

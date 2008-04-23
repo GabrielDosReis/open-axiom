@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"vmlisp"
+import vmlisp
 )package "BOOT"
 
 $ruleSetsInitialized := false

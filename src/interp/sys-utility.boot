@@ -33,8 +33,8 @@
 -- This file defines some utility functions common to both the compiler
 -- and interpreter.
 
-import '"sys-os"
-import '"vmlisp"
+import sys_-os
+import vmlisp
 )package "BOOT"
 
 

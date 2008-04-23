@@ -1,4 +1,4 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "boot-parser"))
+(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "parser"))
 
 (IMPORT-MODULE "includer")
 
@@ -443,19 +443,20 @@
     ('T (|bpString|))))
 
 (DEFUN |bpModule| ()
-  (COND
-    ((|bpEqKey| 'MODULE)
-     (AND (|bpConstTok|) (|bpPush| (|Module| (|bpPop1|)))))
-    ('T NIL)))
+  (AND (|bpEqKey| 'MODULE) (OR (|bpName|) (|bpTrap|))
+       (|bpPush| (|%Module| (|bpPop1|)))))
 
 (DEFUN |bpImport| ()
   (COND
     ((|bpEqKey| 'IMPORT)
-     (OR (AND (|bpName|) (OR (|bpEqKey| 'FOR) (|bpTrap|))
-              (|bpSignature|)
-              (|bpPush| (|ImportSignature| (|bpPop2|) (|bpPop1|))))
-         (AND (|bpConstTok|) (|bpPush| (|Import| (|bpPop1|))))))
-    ('T NIL)))
+     (PROGN
+       (OR (|bpName|) (|bpTrap|))
+       (COND
+         ((|bpEqKey| 'FOR)
+          (AND (OR (|bpSignature|) (|bpTrap|))
+               (|bpPush| (|ImportSignature| (|bpPop2|) (|bpPop1|)))))
+         (#0='T (|bpPush| (|Import| (|bpPop1|)))))))
+    (#0# NIL)))
 
 (DEFUN |bpTypeAliasDefition| ()
   (AND (OR (|bpTerm|) (|bpTrap|)) (|bpEqKey| 'TDEF) (|bpLogical|)

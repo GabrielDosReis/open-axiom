@@ -37,8 +37,8 @@
 -- the interpreter or the compiler or both.
 --
 
-import '"hash"
-import '"sys-constants"
+import hash
+import sys_-constants
 )package "BOOT"
 
 ++ FIXME

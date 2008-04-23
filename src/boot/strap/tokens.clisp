@@ -1,4 +1,4 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "boot-tokens"))
+(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "tokens"))
 
 (IMPORT-MODULE "initial-env")
 

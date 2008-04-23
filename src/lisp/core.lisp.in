@@ -192,6 +192,9 @@
     (|installDriver| key driver)))
 
 
+;; true if in main program booted
+(defvar |$mainBooted| nil)
+
 ;; 
 ;; -*- OpenAxiom Command Line Parsing -*-
 ;; 
@@ -465,10 +468,13 @@
            (|saveCore| core-image entry-point))
   #+:ecl (progn
            (unless entry-point
-             (setq entry-point si::top-level))
+             (setq entry-point #'si::top-level))
            (c:build-program core-image 
-                            :lisp-files (mapcar #'|compileFilePathname| lisp-files)
-                            :epilogue-code `(,entry-point))
+                            :lisp-files (mapcar #'|compileFilePathname| 
+						lisp-files)
+                            :epilogue-code `(progn 
+					      (setq |$mainBooted| t)
+					      (,entry-point)))
            (|coreQuit|)))
 
 
@@ -721,12 +727,17 @@
 (defparameter |$ImportedModules| nil)
 ;; Return true if MODULE is known to have been imported or loaded.
 
-(defun |alreadyLoaded?| (module)
-  (member (namestring module) |$ImportedModules| :test #'equal))
+(defun |getModuleInternalSymbol| (module)
+  (intern module (find-package "AxiomCore")))
 
-;; Remember that MODULE is imported or loaded.
-(defun |noteLoadUnit| (module)
-  (pushnew (namestring module) |$ImportedModules|))
+(defun |alreadyLoaded?| (module)
+  (get (|getModuleInternalSymbol| (namestring module))
+       '|AxiomCore.loaded|))
+
+;; Remember that MODULE was imported or loaded.
+(defun |noteUnitLoaded| (module)
+  (setf (get (|getModuleInternalSymbol| (namestring module))
+	     '|AxiomCore.loaded|) t))
 
 ;; We are searching for MODULE (currently a FASL) in DIRECTORY.  So, this
 ;; function returns a (tentative) pathname designating that module.
@@ -740,26 +751,28 @@
   (if (|alreadyLoaded?| module)
       module
     (when (load module :if-does-not-exist nil)
-      (|noteLoadUnit| module)
+      (|noteUnitLoaded| module)
       module)))
 
 (defun |loadOrElse| (module)
   (if (|alreadyLoaded?| module)
       module
     (when (load module :if-does-not-exist :error)
-      (|noteLoadUnit| module)
+      (|noteUnitLoaded| module)
       module)))
 
 (defun do-import-module (module directories)
-  (unless directories
-    (|fatalError| 
-     (format nil 
-             "module ~S not found in search path ~S"
-             module 
-             |$LoadDirectories|)))
-  (let ((p (|loadPathname| module (car directories))))
-    (unless (|loadIfPresent| p)
-      (do-import-module module (cdr directories)))))
+  (cond ((null directories)
+	 (unless (and (member :ecl *features* :test #'eq) |$mainBooted|)
+	   (|fatalError| 
+	    (format nil 
+		    "module ~S not found in search path ~S"
+		    module 
+		    |$LoadDirectories|))))
+	(t
+	 (let ((p (|loadPathname| module (car directories))))
+	   (unless (|loadIfPresent| p)
+	     (do-import-module module (cdr directories)))))))
 
 (defun |importModule| (module)
   (do-import-module module |$LoadDirectories|))

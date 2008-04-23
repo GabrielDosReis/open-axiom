@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"compiler"
+import compiler
 )package "BOOT"
 
 compAtomWithModemap: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple

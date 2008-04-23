@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"pathname"
+import pathname
 )package "BOOT"
 
 -- some functions that may need to be changed on different lisp

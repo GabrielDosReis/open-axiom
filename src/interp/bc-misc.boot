@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"bc-util"
+import bc_-util
 )package "BOOT"
 
 --Hypertex commands other than solve and matrix

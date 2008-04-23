@@ -33,12 +33,12 @@
 --
 
 
-module '"boot-translator"
-import '"includer"
-import '"scanner"
-import '"pile"
-import '"parser"
-import '"ast"
+module translator
+import includer
+import scanner
+import pile
+import parser
+import ast
 
 )package "BOOTTRAN"
 
@@ -401,11 +401,11 @@ bpOutItem()==
     Signature(op,t) =>
       bpPush [genDeclaration(op,t)]
 
-    Module(m) => 
-      bpPush [shoeCompileTimeEvaluation ["PROVIDE", m]]
+    %Module(m) => 
+      bpPush [shoeCompileTimeEvaluation ["PROVIDE", STRING m]]
 
     Import(m) => 
-      bpPush [["IMPORT-MODULE", m]]
+      bpPush [["IMPORT-MODULE", STRING m]]
 
     ImportSignature(x, sig) =>
       bpPush genImportDeclaration(x, sig)

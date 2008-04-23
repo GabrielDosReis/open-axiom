@@ -76,7 +76,7 @@
 --% above for examples.
 
 
-import '"g-util"
+import g_-util
 )package "BOOT"
 
 --% Message Database Code and Message Utility Functions

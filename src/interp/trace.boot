@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"debug"
+import debug
 )package "BOOT"
 
 --% Code for tracing functions

@@ -32,9 +32,9 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"nlib"
-import '"c-util"
-import '"debug"
+import nlib
+import c_-util
+import debug
 )package "BOOT"
 
 ++

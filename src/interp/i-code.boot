@@ -30,7 +30,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-object"
+import i_-object
 )package "BOOT"
 
 --% Interpreter Code Generation Routines

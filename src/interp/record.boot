@@ -50,8 +50,8 @@
 --    results from running original fn.input file
 
 
-import '"nlib"
-import '"pathname"
+import nlib
+import pathname
 )package "BOOT"
 
 --=======================================================================
