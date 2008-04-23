@@ -40,7 +40,7 @@
 -- runtime system. 
 -- GDR, March 2008.
 
-import '"sys-macros"
+import sys_-macros
 )package "BOOT"
 
 $noCategoryDomains == '(Mode SubDomain)

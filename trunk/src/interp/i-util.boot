@@ -30,7 +30,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"g-util"
+import g_-util
 )package "BOOT"
 
 --% The function for making prompts

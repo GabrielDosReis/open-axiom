@@ -30,7 +30,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-coerce"
+import i_-coerce
 )package "BOOT"
 
 $coerceFailure := GENSYM()

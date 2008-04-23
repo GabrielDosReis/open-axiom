@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"macros"
-import '"sys-utility"
+import macros
+import sys_-utility
 )package "BOOT"
 
 ++

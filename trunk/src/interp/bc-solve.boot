@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"bc-matrix"
-import '"bc-misc"
+import bc_-matrix
+import bc_-misc
 )package "BOOT"
 
   -- HyperTeX basic Solve Command

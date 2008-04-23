@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"types"
+import types
 )package "BOOT"
 
 -- HyperTex Spad interface

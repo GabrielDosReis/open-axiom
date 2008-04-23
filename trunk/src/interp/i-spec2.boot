@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-spec1"
+import i_-spec1
 )package "BOOT"
 
 ++ Interpreter macros

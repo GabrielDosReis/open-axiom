@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"cstream"
+import cstream
 )package "BOOT"
 
 shoeInternFile(fn)==

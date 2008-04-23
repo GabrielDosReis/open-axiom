@@ -38,9 +38,9 @@
 -- supporting C runtime libopen-axiom-core.
 --
 
-import '"types"
-import '"cfuns"
-import '"sockio"
+import types
+import cfuns
+import sockio
 )package "BOOT"
 
 )if not %hasFeature KEYWORD::GCL

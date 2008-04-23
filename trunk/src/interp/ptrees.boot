@@ -47,8 +47,8 @@
 
 
 
-import '"posit"
-import '"serror"
+import posit
+import serror
 
 )package "BOOT"
 

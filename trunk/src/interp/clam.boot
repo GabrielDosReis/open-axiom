@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"g-timer"
+import g_-timer
 )package "BOOT"
 
 --% Cache Lambda Facility

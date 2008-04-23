@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"c-util"
+import c_-util
 )package "BOOT"
 
 ++ fetchs the item in the nth entry of a domain shell.

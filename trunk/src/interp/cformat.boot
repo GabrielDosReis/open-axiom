@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"unlisp"
-import '"posit"
+import unlisp
+import posit
 
 )package "BOOT"
 

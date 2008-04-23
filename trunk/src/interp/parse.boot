@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"postpar"
+import postpar
 )package "BOOT"
 
 --% Transformation of Parser Output

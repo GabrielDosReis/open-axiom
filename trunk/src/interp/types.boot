@@ -31,35 +31,67 @@
 --
 --
 
-import '"boot-pkg"
+import boot_-pkg
 )package "BOOT"
 
 --% Basic types used throughout Boot codes.
 
-%Void <=> nil
+++ Type of nothing.  Bottom of the latting.
+%Void <=> 
+  nil
 
-%Boolean <=> BOOLEAN
+++ Type of truth values.
+%Boolean <=> 
+  BOOLEAN
 
+++ Type of 8-bit sized unsigned integer values.
 %Byte <=>
   UNSIGNED_-BYTE 8
 
+++ Type of characters -- no distinction yet.
 %Char <=>
   CHARACTER
 
-%Short <=> FIXNUM
+++ Type of fixnums.
+%Short <=> 
+  FIXNUM
 
-%Integer <=> BIGNUM
+++ Type of unlimited precision integers.
+%Bignum <=> 
+  BIGNUM
 
-%Number <=> NUMBER
+++ Type of single precision floating point numbers.  Most of the
+++ time, this is a 32-bit datatype.
+%SingleFloat <=>
+  SINGLE_-FLOAT
 
-%Symbol <=> SYMBOL
+++ Type of double precision floating point numbers.  Most of the time,
+++ this is a 64-bit sized datatype.
+%DoubleFloat <=>
+  DOUBLE_-FLOAT
 
-%String <=> STRING
+++ General type for numbers.
+%Number <=> 
+  NUMBER
 
+++ Type of identifiers.  Ideally, we want actually want to exclude
+++ Lisp oddities such as NIL and T.
+%Symbol <=> 
+  SYMBOL
+
+++ The type of literal strings
+%String <=> 
+  STRING
+
+++ Anything that is not a cons cell.
 %Atom <=> atom
 
-%List <=> LIST
+++ nil or a cons cell.  Ideally, this should be parameterized, but
+++ we cannot afford that luxury with Lisp.
+%List <=> 
+  LIST
 
+++ The type of a linear homogeneous non-extensible array.
 %SimpleArray a <=> 
   SIMPLE_-ARRAY a
 

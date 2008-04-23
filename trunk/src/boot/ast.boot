@@ -38,8 +38,8 @@
 --   for representing Boot programs.
 --
 
-module '"boot-ast"
-import '"includer"
+module ast
+import includer
 
 )package "BOOTTRAN"
 
@@ -77,7 +77,7 @@ structure %Name ==
 
 structure %Ast ==
   Command(%String)                      -- includer command
-  Module(%String)                       -- module declaration
+  %Module(%String)                      -- module declaration
   Import(%String)                       -- import module
   ImportSignature(Name, Signature)      -- import function declaration
   TypeAlias(%Head, %List)               -- type alias definition

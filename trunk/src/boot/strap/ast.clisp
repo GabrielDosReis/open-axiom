@@ -1,4 +1,4 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "boot-ast"))
+(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "ast"))
 
 (IMPORT-MODULE "includer")
 
@@ -26,7 +26,7 @@
 
 (DEFUN |Command| #0=(|bfVar#2|) (CONS '|Command| (LIST . #0#)))
 
-(DEFUN |Module| #0=(|bfVar#3|) (CONS '|Module| (LIST . #0#)))
+(DEFUN |%Module| #0=(|bfVar#3|) (CONS '|%Module| (LIST . #0#)))
 
 (DEFUN |Import| #0=(|bfVar#4|) (CONS '|Import| (LIST . #0#)))
 

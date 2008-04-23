@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"br-op1"
+import br_-op1
 )package "BOOT"
 
 --====================> WAS br-op2.boot <================================

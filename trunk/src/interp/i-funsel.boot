@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-coerfn"
+import i_-coerfn
 )package "BOOT"
 
 $constructorExposureList := '(Boolean Integer String)

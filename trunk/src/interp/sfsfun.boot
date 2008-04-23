@@ -67,7 +67,7 @@
 
 
 
-import '"macros"
+import macros
 )package "BOOT" 
 
 FloatError(formatstring,arg) ==

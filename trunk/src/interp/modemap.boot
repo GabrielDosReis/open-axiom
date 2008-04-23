@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"c-util"
-import '"info"
+import c_-util
+import info
 )package "BOOT"
 
 --% EXTERNAL ROUTINES

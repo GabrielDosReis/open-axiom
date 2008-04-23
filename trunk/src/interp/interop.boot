@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"c-util"
+import c_-util
 )package "BOOT"
 
 -- note domainObjects are now (dispatchVector hashCode . domainVector)

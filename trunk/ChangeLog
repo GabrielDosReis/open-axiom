@@ -1,3 +1,8 @@
+2008-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Add native type translation table
+	for ECL.
+
 2008-04-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet [mingw] (oa_shrlib_flags): Ensure

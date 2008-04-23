@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"simpbool"
-import '"g-util"
+import simpbool
+import g_-util
 )package "BOOT"
 
 hasCat(domainOrCatName,catName) ==

@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"c-util"
-import '"simpbool"
+import c_-util
+import simpbool
 )package "BOOT"
 
 

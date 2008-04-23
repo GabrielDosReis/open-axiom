@@ -32,11 +32,11 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"nlib"
-import '"g-cndata"
-import '"clam"
-import '"cattable"
-import '"compat"
+import nlib
+import g_-cndata
+import clam
+import cattable
+import compat
 )package "BOOT"
 
 $getUnexposedOperations := true

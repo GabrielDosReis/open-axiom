@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-object"
+import i_-object
 )package "BOOT"
 
 --% User Function Creation and Analysis Code

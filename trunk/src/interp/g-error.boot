@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"diagnostics"
-import '"g-util"
+import diagnostics
+import g_-util
 )package "BOOT"
 
 -- This file contains the error printing code used in BOOT and SPAD.

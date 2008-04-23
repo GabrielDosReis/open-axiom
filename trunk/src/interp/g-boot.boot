@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"def"
-import '"g-util"
+import def
+import g_-util
 )package "BOOT"
 
 -- @(#)g-boot.boot      2.2      89/11/02  14:44:09

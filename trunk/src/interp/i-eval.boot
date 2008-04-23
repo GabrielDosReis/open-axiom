@@ -30,7 +30,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-analy"
+import i_-analy
 )package "BOOT"
 
 --% Constructor Evaluation

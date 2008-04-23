@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-object"
-import '"ptrees"
+import i_-object
+import ptrees
 )package "BOOT"
 
 $useParserSrcPos :=  NIL

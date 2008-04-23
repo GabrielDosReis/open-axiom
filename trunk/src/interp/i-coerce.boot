@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"i-analy"
-import '"i-resolv"
+import i_-analy
+import i_-resolv
 )package "BOOT"
 
 $useCoerceOrCroak := true

@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"ptrees"
+import ptrees
 )package "BOOT"
 
 $dotdot := INTERN('"..", '"BOOT")

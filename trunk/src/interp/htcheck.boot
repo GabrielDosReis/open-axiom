@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import '"sys-driver"
-import '"macros"
+import sys_-driver
+import macros
 )package "BOOT"
 
 $primitiveHtCommands := '(

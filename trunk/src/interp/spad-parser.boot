@@ -42,8 +42,8 @@
 -- -- gdr/2007-11-02
 --
 
-import '"metalex"
-import '"parse"
+import metalex
+import parse
 )package "BOOT"
 
 ++ Given a pathname to a source file containing Spad code, returns
