@@ -52,9 +52,6 @@ issueHT line ==
   sockSendInt($MenuServer, $SendLine)
   sockSendString($MenuServer, line)
 
-endHTPage() ==
-  sockSendInt($MenuServer, $EndOfPage)
-
 testPage() ==
   startHTPage(50)
   issueHT '"\page{TestPage}{Test Page generated from Lisp} "

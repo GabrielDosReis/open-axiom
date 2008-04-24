@@ -388,8 +388,6 @@
  
 (defun |sayTeX| (x) (if (null x) nil (sayBrightly1 x |$texOutputStream|)))
  
-(defun |sayNewLine| () (TERPRI))
-
 (defvar |$sayBrightlyStream| nil "if not nil, gives stream for sayBrightly output")
  
 (defun |sayBrightly| (x &optional (out-stream |$OutputStream|))

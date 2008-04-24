@@ -132,7 +132,7 @@ ASAUTO= ${AUTO}/ax.$(FASLEXT)
 
 autoload_objects += $(ASAUTO)
 TIMESTAMP=$(axiom_targetdir)/timestamp
-YEARWEEK=(progn (setq boot::timestamp "${TIMESTAMP}") \
+YEARWEEK=(progn (defconstant boot::timestamp "${TIMESTAMP}") \
                 (setq boot::*build-version* "$(PACKAGE_STRING)") \
                 (boot::yearweek))
 

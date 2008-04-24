@@ -89,6 +89,8 @@
            "compileLispHandler"
            "Option"
 
+	   "pathBasename"
+
            "IMPORT-MODULE"
 	   "CONCAT"
            ))
@@ -716,6 +718,10 @@
       (concatenate 'string dir "/"))))
 
 
+;; Return the basename (without extension) of a file.
+(defun |pathBasename| (file)
+  (pathname-name file))
+
 ;; 
 ;; -*- Modules in OpenAxiom -*-
 ;; 
@@ -803,6 +809,10 @@
 #+ :sbcl
 (eval-when (:load-toplevel :execute)
    (pushnew #'shoe-provide-module sb-ext:*module-provider-functions*))
+
+;; 
+;; -*- Native Datatype correspondance -*-
+;; 
 
 ;; native data type translation table
 (defconstant |$NativeTypeTable|
