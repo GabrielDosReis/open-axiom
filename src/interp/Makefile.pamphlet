@@ -296,7 +296,7 @@ A new variable [[boot::*build-version*]] is set here and used by the
 This information is set by hand in the top level Makefile.
 <<environment>>=
 TIMESTAMP=$(axiom_targetdir)/timestamp
-YEARWEEK=(progn (setq boot::timestamp "${TIMESTAMP}") \
+YEARWEEK=(progn (defconstant boot::timestamp "${TIMESTAMP}") \
                 (setq boot::*build-version* "$(PACKAGE_STRING)") \
                 (boot::yearweek))
 

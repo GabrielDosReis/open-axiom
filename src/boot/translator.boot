@@ -693,14 +693,19 @@ PSTOUT string==
 
 
 defaultBootToLispFile file ==
-  CONCAT(shoeRemovebootIfNec file,'".clisp")
+  strconc(pathBasename file, '".clisp")
+
+getIntermediateLispFile(file,options) ==
+  out := NAMESTRING getOutputPathname(options)
+  out ^= nil => strconc(shoeRemoveStringIfNec($faslType,out),'".clisp")
+  defaultBootToLispFile file
 
 translateBootFile(progname, options, file) ==
   outFile := getOutputPathname options or defaultBootToLispFile file
   BOOTTOCL(file, ENOUGH_-NAMESTRING outFile)
 
 compileBootHandler(progname, options, file) ==
-  intFile := BOOTTOCL(file, defaultBootToLispFile file)
+  intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
   intFile => 
     objFile := compileLispHandler(progname, options, intFile)
     DELETE_-FILE intFile

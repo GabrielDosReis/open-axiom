@@ -730,7 +730,7 @@ object2Identifier x ==
   INTERN WRITE_-TO_-STRING x
 
 blankList x == "append"/[[BLANK,y] for y in x]
---------------------> NEW DEFINITION (see cformat.boot.pamphlet)
+
 pkey keyStuff ==
     if not PAIRP keyStuff then keyStuff := [keyStuff]
     allMsgs := ['" "]

@@ -1,3 +1,46 @@
+2008-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (|pathBasename|): New.
+	* interp/br-con.boot (kPageArgs): Remove.
+	(dbPresentCons): Likewise.
+	* interp/br-data.boot (purgeLocalLibdb): Likewise.
+	* interp/br-op1.boot (dbPresentOps): Likewise.
+	(dbConform): Likewise.
+	(dbGatherThenShow): Likewise.
+	(displayDomainOp): Likewise.
+	(htSayIndentRel): Likewise.
+	* interp/br-saturn.boot (htpAddInputAreaString): Likewise.
+	(htpSetLabelInputStringArea): Likewise.
+	(htTab): Likewise
+	* interp/br-search.boot (htShowPageStar): Likewise.
+	(htSay): Likewise.
+	(bcConform1): Likewise.
+	* interp/cformat.boot (pkey): Likewise.
+	* interp/ht-util.boot (htpAddToPageDescrption):
+	Likewise. 
+	(bcHt): Likewise.
+	(htInitPage): Likewise.
+	(htAddHeading): Likewise.
+	(htShowPage): Likewise.
+	(htShowPageNoScroll): Likewise.
+	(htMakePage): Likewise.
+	(htMakePage1): Likewise.
+	(htMakeErrorPage): Likewise.
+	(htProcessBcStrings): Likewise.
+	(btBcLinks): Likewise.
+	(btBcLispLinks): Likewise.
+	(setUpDefault): Likewise.
+	(htMakeButton): Likewise.
+	(htDoneButton): Likewise.
+	* interp/hypertex.boot (endHTPage): Likewise.
+	* interp/i-syscmd.boot (makeInitialModemapFrame): Likewise.
+	* interp/macro.lisp (sayNewLine): Likewise.
+	* interp/nhyper.boot (endHTPage): Likewise.
+	* interp/pathname.boot (deleteFile): Likewise.
+	* interp/Makefile.pamphlet (YEARWEEK): Make TIMESTAMPT constant.
+	* boot/translator.boot (getIntermediateLispFile): New.
+	(compileBootHandler): Use it.
+
 2008-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot: Tidy.

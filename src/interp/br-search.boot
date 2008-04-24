@@ -444,16 +444,6 @@ searchDropUnexposedLines alist ==
       not $exposedOnlyIfTrue or dbExposed?(line,dbKind line) => line
       nil
 
-htShowPageStar() ==
-------------> OBSELETE
-  htSayStandard '"\endscroll "
-  if $exposedOnlyIfTrue then
-    htMakePage [['bcLinks,['"Exposed",'" {\em only}",'repeatSearch,NIL]]]
-  else
-    htSay('"*{\em =}")
-    htMakePage [['bcLinks,['"unexposed",'"",'repeatSearch,'T]]]
-  htShowPageNoScroll()
-
 repeatSearch(htPage,newValue) ==
   $exposedOnlyIfTrue := newValue
   filter := htpProperty(htPage,'filter)

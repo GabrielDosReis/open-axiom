@@ -74,8 +74,6 @@ pathnameDirectory p ==
    null p => nil
    NAMESTRING MAKE_-PATHNAME(KEYWORD::DIRECTORY,PATHNAME_-DIRECTORY pathname p)
  
-deleteFile f == _$ERASE pathname f
- 
 isExistingFile f ==
 --  p := pathname f
   --member(p,$existingFiles) => true

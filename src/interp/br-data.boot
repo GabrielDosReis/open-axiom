@@ -58,7 +58,7 @@ buildLibdb(:options) ==  --called by buildDatabase (database.boot)
   $CatLst : local := nil
   $PakLst : local := nil
   $DefLst : local := nil
-  deleteFile '"temp.text"
+  removeFile '"temp.text"
   $outStream: local := MAKE_-OUTSTREAM '"temp.text"
   if null domainList then
     comments :=
@@ -95,7 +95,7 @@ buildLibdb(:options) ==  --called by buildDatabase (database.boot)
     $machineType = 'SPARC => '"sort -f  _"temp.text_"  > _"libdb.text_""
     '"sort  _"temp.text_"  > _"libdb.text_""
   renameFile('"libdb.text", '"olibdb.text")
-  deleteFile '"temp.text"
+  removeFile '"temp.text"
 
 buildLibdbConEntry conname ==
     null getConstructorModemapFromDB conname => nil
@@ -778,10 +778,5 @@ extendLocalLibdb conlist ==   --  called by astran
   oldlines := purgeNewConstructorLines(dbReadLines localLibdb, conlist)
   newlines := dbReadLines '"temp.text"
   dbWriteLines(MSORT union(oldlines,newlines), '"libdb.text")
-  deleteFile '"temp.text"
-
-purgeLocalLibdb() ==   --used for debugging purposes only
-  $newConstructorList := nil
-  removeFile '"libdb.text"
-
+  removeFile '"temp.text"
 

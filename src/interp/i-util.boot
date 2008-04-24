@@ -163,7 +163,8 @@ HasSignature(domain,[op,sig]) ==
 --   MEMQ(opOf(catform),'(Object Type)) or  --temporary hack
 --    or/[compareSigEqual(catform,cat,domain0,domain) for cat in catlist]
  
-makeInitialModemapFrame() == COPY $InitialModemapFrame
+makeInitialModemapFrame() == 
+  COPY $InitialModemapFrame
  
 isCapitalWord x ==
   (y := PNAME x) and and/[UPPER_-CASE_-P y.i for i in 0..MAXINDEX y]

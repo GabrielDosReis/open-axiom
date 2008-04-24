@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -186,23 +186,6 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
               sourceFileName, '" ", name, '"}"]]
   if nargs ^= 0 then htSay '"."
   htSaturnBreak()
-
-kPageArgs([op,:args],[.,.,:source]) ==
-------------------> OBSELETE
-  firstTime := true
-  coSig := rest getDualSignatureFromDB op
-  for x in args for t in source for pred in coSig repeat
-    if not firstTime then htSay '", and"
-    htSay('"\newline ")
-    typeForm := (t is [":",.,t1] => t1; t)
-    if pred = true
-      then htMakePage [['bcLinks,[x,'"",'kArgPage,x]]]
-      else htSay('"{\em ",x,'"}")
-    htSay( '"\tab{",STRINGIMAGE( # PNAME x),'"}, ")
-    htSay
-      pred => '"a domain of category "
-      '"an element of the domain "
-    bcConform(typeForm,true)
 
 kArgPage(htPage,arg) ==
   [op,:args] := conform := htpProperty(htPage,'conform)
@@ -946,55 +929,6 @@ dbAddChain conform ==
 --=======================================================================
 --                Constructor Page Menu
 --=======================================================================
----------> !OBSELETE! <-------------
-dbPresentCons(htPage,kind,:exclusions) ==  -- calist is ((catform . pred)...)
-  $saturn => dbPresentConsSaturn(htPage,kind,exclusions)
-  htSay('"{\em Views:}")
-  htpSetProperty(htPage,'exclusion,first exclusions)
-  cAlist := htpProperty(htPage,'cAlist)
-  empty? := null cAlist
-  exposedUnexposedFlag := $includeUnexposed? --used to be star?       4/92
-  star?  := true     --always include information on exposed/unexposed   4/92
-  htSayStandard(if star? then '"\tab{13}" else '"\tab{9}")
-  if empty? or member('names,exclusions)
-    then htSay '"{\em names}"
-    else htMakePage [['bcLispLinks,['"names",'"",'dbShowCons,'names]]]
-  htSayStandard(if star? then '"\tab{21}" else '"\tab{17}")
-  if empty? or member('kinds,exclusions) or kind ^= 'constructor
-    then htSay '"{\em kinds}"
-    else htMakePage [['bcLispLinks,['"kinds",'"",'dbShowCons,'kinds]]]
-  htSayStandard(if star? then '"\tab{29}" else '"\tab{25}")
-  if empty? or member('parameters,exclusions) or not "or"/[CDAR x for x in cAlist]
-    then htSay '"{\em parameters}"
-    else htMakePage [['bcLispLinks,['"parameters",'"",'dbShowCons,'parameters]]]
-  if star? then htSayStandard('"\tab{42}") else htSayStandard('"\tab{38}")
-  if empty? or null CDR cAlist
-    then htSay '"{\em filter}"
-    else htMakePage [['bcLinks,['"filter",'"",'dbShowCons,'filter]]]
-  htMakePage [['bcStrings, [11,'"",'filter,'EM]]]
-  htSay('"\newline")
-  if exposedUnexposedFlag then
-    if $exposedOnlyIfTrue then
-      htMakePage [['bcLinks,['"exposed",'" {\em only}",'dbShowCons,'exposureOff]]]
-    else
-      htSay('"*{\em =}")
-      htMakePage [['bcLinks,['"unexposed",'"",'dbShowCons,'exposureOn]]]
-  htSayStandard(if star? then '"\tab{13}" else '"\tab{9}")
-  if empty? or member('abbrs,exclusions)
-    then htSay '"{\em abbrs}"
-    else htMakePage [['bcLispLinks,['"abbrs",'"",'dbShowCons,'abbrs]]]
-  htSayStandard(if star? then '"\tab{21}" else '"\tab{17}")
-  if empty? or member('files,exclusions)
-    then htSay '"{\em files}"
-    else htMakePage [['bcLispLinks,['"files",'"",'dbShowCons,'files]]]
-  htSayStandard(if star? then '"\tab{29}" else '"\tab{25}")
-  if empty? or member('conditions,exclusions) or "and"/[CDR x = true for x in cAlist]
-    then htSay '"{\em conditions}"
-    else htMakePage [['bcLispLinks,['"conditions",'"",'dbShowCons,'conditions]]]
-  if star? then htSayStandard('"\tab{42}") else htSayStandard('"\tab{38}")
-  if empty? or member('documentation,exclusions)
-    then htSay '"{\em descriptions}"
-    else htMakePage [['bcLispLinks,['"descriptions",'"",'dbShowCons,'documentation]]]
 
 dbShowCons(htPage,key,:options) ==
   cAlist  := htpProperty(htPage,'cAlist)

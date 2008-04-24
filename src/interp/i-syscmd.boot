@@ -315,7 +315,7 @@ clearCmdAll() ==
   resetInCoreHist()
   if $useInternalHistoryTable
     then $internalHistoryTable := NIL
-    else deleteFile histFileName()
+    else removeFile histFileName()
   $IOindex := 1
   updateCurrentInterpreterFrame()
   $currentLine := '")clear all"    --restored 3/94; needed for undo (RDJ)
@@ -1339,8 +1339,6 @@ changeToNamedInterpreterFrame(name) ==
   null frame => NIL
   $interpreterFrameRing := [frame,:NREMOVE($interpreterFrameRing, frame)]
   updateFromCurrentInterpreterFrame()
-
-makeInitialModemapFrame() == COPY $InitialModemapFrame
 
 findFrameInRing(name) ==
   val := NIL
