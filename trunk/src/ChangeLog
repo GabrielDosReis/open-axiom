@@ -1,3 +1,34 @@
+2008-04-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman/spadclient.c: Cleanup.
+	* sman/sman.c: Likewise.
+	* sman/session.c: Likewise.
+	* lib/spadcolors.c: Likewise.
+	* lib/sockio-c.c: Likewise.
+	* include/spadint.H1: Likewise.
+	* include/sockio.h: Likewise.
+	* include/hterror.H1: Likewise.
+	* include/com.h: Likewise.
+	* hyper/spadint.c: Likewise.
+	* hyper/spadbuf.c: Likewise.
+	* hyper/parse.c: Likewise.
+	* hyper/lex.c: Likewise.
+	* hyper/hyper.h: Likewise.
+	* hyper/hyper.c: Likewise.
+	* hyper/hterror.c: Likewise.
+	* hyper/htadd.c: Likewise.
+	* graph/viewman/viewman.c: Likewise.
+	* graph/viewman/makeGraph.c: Likewise.
+	* graph/viewman/globalsM.h: Likewise.
+	* graph/view3D/viewport3d.c: Likewise.
+	* graph/view3D/testcol.c: Likewise.
+	* graph/view3D/spadAction3d.c: Likewise.
+	* graph/view3D/main3d.c: Likewise.
+	* graph/view3D/component3d.c: Likewise.
+	* graph/view2D/viewport2D.c: Likewise.
+	* graph/view2D/process2d.c: Likewise.
+	* graph/view2D/main2d.c: Likewise.
+
 2008-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (|pathBasename|): New.

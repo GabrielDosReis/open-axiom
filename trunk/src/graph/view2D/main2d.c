@@ -99,8 +99,8 @@ int           followMouse = no,
   ack = 1,
   someInt,
   drawMore,
-  spadMode=no, /* yes if receiving AXIOM command and calling drawViewport */
-  spadDraw=no, /* yes if drawing viewport because of a AXIOM command */
+  spadMode=no, /* yes if receiving OpenAxiom command and calling drawViewport */
+  spadDraw=no, /* yes if drawing viewport because of a OpenAxiom command */
   pointsON  = yes,  /* these would affect the choices in buttons.c */
   connectON = yes,
   splineON  = no,
@@ -114,7 +114,7 @@ int           followMouse = no,
   queriedGraph = 0,  /* current graph queried */
   picking=0,
   dropping=0,
-  viewAloned,  /** if not connected to AXIOM **/
+  viewAloned,  /** if not connected to OpenAxiom **/
   mono, 
   totalColors, 
   totalSolid, 
@@ -171,7 +171,7 @@ main(void)
   /**** link Xwindows to viewports - X10 feature ****/
   table        = XCreateAssocTable(nbuckets);  
   
-  /**** Create AXIOM color map ****/
+  /**** Create OpenAxiom color map ****/
   totalColors = XInitSpadFill(dsply,scrn,&colorMap,
                               &totalHues,&totalSolidShades,
                               &totalDitheredAndSolids,&totalShades);
@@ -417,7 +417,7 @@ main(void)
   i = 123;
   code=check(write(Socket,&i,intSize));
   
-  /* Check if I am getting stuff from AXIOM or, if I am viewAlone. */
+  /* Check if I am getting stuff from OpenAxiom or, if I am viewAlone. */
   readViewman(&viewAloned,intSize);
   readViewman(&viewData,sizeof(view2DStruct));
   readViewman(&i,intSize);

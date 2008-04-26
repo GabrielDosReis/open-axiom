@@ -116,12 +116,12 @@ int             someInt;
 
 int             drawMore;
 
-int             spadMode=no,            /* yes if receiving AXIOM command and
+int             spadMode=no,            /* yes if receiving OpenAxiom command and
                                            calling drawViewport */
                 spadDraw=no;            /* yes if drawing viewport for 
-                                           an AXIOM command */
+                                           an OpenAxiom command */
 int             spadSignalReceived=0;  /* yes if current state is a result of
-                                           a signal from AXIOM */
+                                           a signal from OpenAxiom */
 int             inNextEvent=no;         /* true just before a call to
                                            XNextEvent */
 jmp_buf         jumpFlag;
@@ -195,7 +195,7 @@ int             finishedList=no, zoomed=yes, translated = yes,
                 gotToggle = no;
 poly            *quickList;
 
-                /** if not connected to AXIOM **/
+                /** if not connected to OpenAxiom **/
 int             viewAloned;
 
                 /** for drawing the box **/
@@ -276,7 +276,7 @@ main(void)
   /**** link Xwindows to viewports - X10 feature ****/
   table = XCreateAssocTable(nbuckets);  
 
-  /**** Create AXIOM color map ****/
+  /**** Create OpenAxiom color map ****/
   totalShades = 0;
   totalColors = XInitSpadFill(dsply,scrn,&colorMap,
                               &totalHues,&totalSolidShades,
@@ -550,10 +550,10 @@ main(void)
 
   XSetNormalHints(dsply,viewTitleWindow,&titleSizeHints);
   if (strlen(viewport->title) < 30)
-    XSetStandardProperties(dsply,viewTitleWindow,"AXIOM 3D",viewport->title,
+    XSetStandardProperties(dsply,viewTitleWindow,"OpenAxiom 3D",viewport->title,
                            None,NULL,0,&titleSizeHints);
   else
-    XSetStandardProperties(dsply,viewTitleWindow,"AXIOM 3D","3D AXIOM Graph",
+    XSetStandardProperties(dsply,viewTitleWindow,"OpenAxiom 3D","3D OpenAxiom Graph",
                            None,NULL,0,&titleSizeHints);
   viewport->titleWindow = viewTitleWindow;
 

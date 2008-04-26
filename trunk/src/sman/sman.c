@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
       the documentation and/or other materials provided with the
       distribution.
 
-    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+    - Neither the name of The Numerical Algorithms Group Ltd. nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
@@ -125,7 +125,7 @@ char ClefCommandLine[256];
 #define BufSize      4096       /* size of communication buffer */
 char big_bad_buf[BufSize];      /* big I/O buffer */
 
-Sock *session_io = NULL;        /* socket connecting to session manager */
+openaxiom_sio* session_io = NULL; /* socket connecting to session manager */
 
 /***********************************************************/
 /* Some characters used and externally defined in edible.h */
@@ -403,11 +403,11 @@ start_the_spadclient(void)
   char command[256];
   if (start_clef)
      sprintf(command, 
-             "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s %s",
+             "xterm -sb -sl 500 -name axiomclient -n OpenAxiom -T OpenAxiom -e %s %s",
              ClefProgram, SpadClientProgram);
   else
      sprintf(command, 
-             "xterm -sb -sl 500 -name axiomclient -n AXIOM -T AXIOM -e %s", 
+             "xterm -sb -sl 500 -name axiomclient -n OpenAxiom -T OpenAxiom -e %s", 
              SpadClientProgram);
   spawn_of_hell(command, NadaDelShitsky);
 }

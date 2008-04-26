@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights resrved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -57,23 +57,5 @@
 #define ReceiveInputLine        100
 #define TestLine                101
 
-
-/* It is idiomatic in the Unix/POSIX world to use the standard
-   read() and write() functions on sockets.  However, in the Windows
-   world, that is invalid.  Consequently, portability suggests that
-   we restrict ourselves to the POSIX standard functions recv() and
-   send().  */
-
-static inline int
-axiom_write(Sock* s, const char* buf, size_t n)
-{
-   return send(s->socket, buf, n, 0);
-}
-
-static inline int
-axiom_read(Sock* s, char* buf, size_t n)
-{
-   return recv(s->socket, buf, n, 0);
-}
 
 #endif

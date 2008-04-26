@@ -89,7 +89,7 @@ char buff[MAXLINE];        /* Buffers for collecting input and */
 int  buff_flag[MAXLINE];   /* flags for whether buff chars
                               are printing or non-printing */
 int (*old_handler) ();
-Sock *session_sock, *menu_sock;
+openaxiom_sio *session_sock, *menu_sock;
 char *buff_name = NULL;    /* name for the aixterm */
 
 /*

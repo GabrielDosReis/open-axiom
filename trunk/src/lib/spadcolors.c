@@ -173,7 +173,7 @@ HLStoRGB(HLS hls)
  * int makeColors(dsply,scrn,colorMap,total_Shades)    *
  *                                                    *
  * This routine tries to allocate an adequate color   *
- * map to be used by all the AXIOM applications       *
+ * map to be used by all the OpenAxiom applications   *
  * that are to be run under X Windows that use        *
  * colors that may be user-definable (e.g. viewports, *
  * HyperTeX, etc). All these application should call  *
@@ -293,7 +293,7 @@ makeColors(Display *dsply, int scrn, Colormap *colorMap,
         free(*colorIndex);
         fprintf(stderr,
                 "    > Warning: cannot allocate all the necessary colors - switching to monochrome mode\n");
-        *colorIndex = (unsigned long *) saymem("while allocating the colormap for AXIOM ", 2, sizeof(unsigned long));
+        *colorIndex = (unsigned long *) saymem("while allocating the colormap for OpenAxiom ", 2, sizeof(unsigned long));
         (*colorIndex)[0] = BlackPixel(dsply, scrn);
         (*colorIndex)[1] = WhitePixel(dsply, scrn);
         return (-1);
@@ -362,7 +362,7 @@ makePermVector(Display *dsply, int scrn, unsigned long **permIndex)
  * int makeNewColorMap(dsply,colorMap,smoothHue)      *
  *                                                    *
  * This routine tries to allocate an adequate color   *
- * map to be used by the AXIOM smooth shading         *
+ * map to be used by the OpenAxiom smooth shading     *
  * application that is to be run under X Windows.     *
  * The colors are allocated from available space in   *
  * the colorMap and returned in the array pixels.     *
@@ -471,7 +471,7 @@ FreePixels(Display *dsply, Colormap colorMap, int num)
  *                                                    *
  * Use either makeNewColormap() OR AllocCells().      *
  * This routine tries to allocate an adequate color   *
- * map to be used by the AXIOM smooth shading         *
+ * map to be used by the OpenAxiom smooth shading     *
  * application that is to be run under X Windows.     *
  * The colors are allocated from available space in   *
  * the colorMap and returned in the array pixels.     *
