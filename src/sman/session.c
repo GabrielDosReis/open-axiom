@@ -53,26 +53,26 @@ static void usr2_handler(int);
 static void term_handler(int);
 static void close_client(int);
 static void read_SpadServer_command(void);
-static int test_sock_for_process(Sock*);
+static int test_sock_for_process(openaxiom_sio*);
 static void read_menu_client_command(void);
 static void read_from_spad_io(void);
 static void kill_spad(void);
-static int accept_session_connection(Sock*);
-static void read_from_session(Sock*);
+static int accept_session_connection(openaxiom_sio*);
+static void read_from_session(openaxiom_sio*);
 static void manage_sessions(void);
 
 
 #define BufSize         4096    /* size of communication buffer */
 
 typedef struct sock_list {      /* linked list of Sock */
-  Sock Socket;
+  openaxiom_sio Socket;
   struct sock_list *next;
 } Sock_List;
 
-Sock *spad_io = (Sock *) 0;        /* to_server socket for SessionIO */
-Sock *spad_server = (Sock *) 0;    /* to_server socket for SpadServer    */
-Sock *menu_client = (Sock *) 0;    /* to_client socket for MenuServerName  */
-Sock *active_session = (Sock *) 0; /* pointer to currently active session */
+openaxiom_sio* spad_io =  0;    /* to_server socket for SessionIO */
+openaxiom_sio* spad_server = 0; /* to_server socket for SpadServer  */
+openaxiom_sio* menu_client = 0; /* to_client socket for MenuServerName  */
+openaxiom_sio* active_session = 0; /* pointer to currently active session */
 
 Sock_List *plSock = (Sock_List *) 0;
 
@@ -134,8 +134,8 @@ fprintf(stderr,"close_client(%d)\n",frame);
   
   if ( (plSock) && (plSock->Socket.frame == frame) ){
     socket_fd = plSock->Socket.socket;
-    send_signal((Sock *)plSock, SIGTERM);
-    if ( menu_client != (Sock *) 0){
+    send_signal((openaxiom_sio *)plSock, SIGTERM);
+    if ( menu_client != (openaxiom_sio *) 0){
       send_int(menu_client,CloseClient);
       send_int(menu_client,(*plSock).Socket.pid);
     } 
@@ -148,7 +148,7 @@ fprintf(stderr,"trying to clear %u\n",socket_fd);
       {plSock = (Sock_List *) 0;}
     else
       {plSock = plSock->next;}
-    active_session = (Sock *) 0;
+    active_session = (openaxiom_sio *) 0;
     num_active_clients--;
     free(locSock);
   }
@@ -159,8 +159,8 @@ fprintf(stderr,"trying to clear %u\n",socket_fd);
     for (pSock=plSock; pSock->next != (Sock_List *) 0 ; pSock=pSock->next)
       if (pSock->next->Socket.frame == frame){
         socket_fd = pSock->next->Socket.socket;
-        send_signal((Sock *)pSock->next, SIGTERM);
-        if ( menu_client != (Sock *) 0){
+        send_signal((openaxiom_sio *)pSock->next, SIGTERM);
+        if ( menu_client != (openaxiom_sio *) 0){
           send_int(menu_client,CloseClient);
           send_int(menu_client,(*plSock).Socket.pid);
         }
@@ -174,7 +174,7 @@ fprintf(stderr,"trying to clear %u\n",socket_fd);
         else
           { pSock->next = pSock->next->next;}
         num_active_clients--;
-        active_session = (Sock *) 0;
+        active_session = (openaxiom_sio *) 0;
         free(locSock);
         break;
       }
@@ -191,7 +191,7 @@ read_SpadServer_command(void)
   cmd  = get_int(spad_server);
   switch (cmd) {
   case EndOfOutput:
-    if (menu_client != (Sock *) 0) send_signal(menu_client, SIGUSR2); 
+    if (menu_client != (openaxiom_sio *) 0) send_signal(menu_client, SIGUSR2); 
     if (reading_output != 0) reading_output = 0;
     break;
   case QueryClients:
@@ -212,9 +212,9 @@ read_SpadServer_command(void)
 }
 
 static int
-test_sock_for_process(Sock *sock)
+test_sock_for_process(openaxiom_sio *sock)
 {
-  if (sock == (Sock *)0 ) return -1;
+  if (sock == (openaxiom_sio *)0 ) return -1;
   return kill(sock->pid, 0);
 }
 
@@ -229,7 +229,7 @@ read_menu_client_command(void)
 
   if (test_sock_for_process(menu_client) == -1) {
     FD_CLR(socket_fd,&session_socket_mask);
-    menu_client = (Sock *) 0; 
+    menu_client = (openaxiom_sio *) 0; 
     reading_output = 0;
     return;
   }
@@ -237,7 +237,7 @@ read_menu_client_command(void)
   switch(cmd) {
   case -1:              /* socket closed */
     FD_CLR(socket_fd,&session_socket_mask);
-    menu_client = (Sock *) 0;
+    menu_client = (openaxiom_sio *) 0;
     reading_output = 0;
     break;
   case SwitchFrames:
@@ -249,7 +249,7 @@ fprintf(stderr,"menu:SwitchFrames\n");
     send_int(spad_server, frame);
     for(i=0,pSock=plSock; pSock != (Sock_List *) 0 ; i++,pSock=pSock->next)
       if ((pSock->Socket.frame == frame)) {
-        active_session = (Sock *)pSock;
+        active_session = (openaxiom_sio *)pSock;
         reading_output = 1;
         break;
       }
@@ -265,7 +265,7 @@ fprintf(stderr,"menu:QuerySpad\n");
     break;
   default:
     fprintf(stderr, "session : unknown command from MenuServer: %d\n", cmd);
-    menu_client = (Sock *) 0;
+    menu_client = (openaxiom_sio *) 0;
     break;
   }
 }
@@ -276,7 +276,7 @@ read_from_spad_io(void)
   int ret_code;
   ret_code = sread(spad_io, big_bad_buf, BufSize, "session: stdout socket");
   if (ret_code == -1) return;
-  if(active_session != (Sock *) 0) {
+  if(active_session != (openaxiom_sio *) 0) {
     ret_code = swrite(active_session, big_bad_buf, ret_code,
                       NULL);
   }
@@ -293,14 +293,14 @@ kill_spad(void)
         (i<num_active_clients) && (pSock != (Sock_List *) 0); 
         i++,pSock=pSock->next) {
     if ((pSock->Socket).socket != 0)
-      send_signal((Sock *)pSock, SIGTERM);
+      send_signal((openaxiom_sio *)pSock, SIGTERM);
   }
-  if (menu_client != (Sock *) 0) send_signal(menu_client, SIGTERM);
+  if (menu_client != (openaxiom_sio *) 0) send_signal(menu_client, SIGTERM);
   exit(0);
 }
 
 static int
-accept_session_connection(Sock *server_sock)
+accept_session_connection(openaxiom_sio *server_sock)
 {
   int sock_fd, ret_code;
   Sock_List *pls;
@@ -314,7 +314,7 @@ accept_session_connection(Sock *server_sock)
     return -1;
   }
   (pls->Socket).socket = sock_fd;
-    get_socket_type((Sock *)pls);
+    get_socket_type((openaxiom_sio *)pls);
     
     switch((pls->Socket).purpose) {
     case KillSpad:
@@ -348,9 +348,10 @@ accept_session_connection(Sock *server_sock)
       FD_SET(plSock->Socket.socket, &session_socket_mask);
       send_int(spad_server, CreateFrame);
       plSock->Socket.frame = get_int(spad_server);
-      active_session = (Sock *)plSock;
+      active_session = (openaxiom_sio *)plSock;
       get_string_buf(spad_server, big_bad_buf, BufSize);
-      ret_code = swrite((Sock *)plSock, big_bad_buf, strlen(big_bad_buf)+1,
+      ret_code = swrite((openaxiom_sio *)plSock, big_bad_buf,
+                        strlen(big_bad_buf)+1,
                         "session: writing to InterpWindow");
       if (ret_code == -1) 
         return -1;
@@ -364,7 +365,7 @@ pr();
 }
 
 static void
-read_from_session(Sock *sock)
+read_from_session(openaxiom_sio *sock)
 {
   int ret_code;
   if (sock != active_session) {
@@ -375,14 +376,14 @@ read_from_session(Sock *sock)
   ret_code = sread(sock, big_bad_buf, BufSize, 
                    "session: reading InterpWindow");
   if (ret_code == -1) {
-    active_session = (Sock *) 0;
+    active_session = (openaxiom_sio *) 0;
     reading_output = 0;
     return;
   }
   ret_code = swrite(spad_io, big_bad_buf, ret_code,
                     "session: writing SessionIO");
   if (ret_code == -1) {
-    active_session = (Sock *)0 ;
+    active_session = (openaxiom_sio *)0 ;
     reading_output = 0;
     return;
   }
@@ -426,7 +427,8 @@ fprintf(stderr,"[rd=%u ",*((long *)rd.fds_bits));
 fprintf(stderr,"rd=%u]\n",*((long *)rd.fds_bits));
 #endif
     
-    if ((menu_client != (Sock *) 0)  && FD_ISSET(menu_client->socket, &rd)) {
+    if ((menu_client != (openaxiom_sio *) 0)
+        && FD_ISSET(menu_client->socket, &rd)) {
       /* MenuServer wants to talk */
       read_menu_client_command(); }
     
@@ -442,10 +444,10 @@ fprintf(stderr,"rd=%u]\n",*((long *)rd.fds_bits));
     
     
     for(pSock=plSock; pSock != (Sock_List *) 0 ; pSock=pSock->next) {
-      if ((active_session == (Sock *)pSock || !reading_output) &&
+      if ((active_session == (openaxiom_sio *)pSock || !reading_output) &&
           (pSock->Socket).socket>0 && FD_ISSET(pSock->Socket.socket, &rd)) {
         /* An InterpWindow */
-        read_from_session((Sock *)pSock); }
+        read_from_session((openaxiom_sio *)pSock); }
     }
     
     
@@ -467,8 +469,8 @@ main(void)
  /* spad_server connects to Lisp server socket         
     read_SpadServer_command handles requests */
   spad_server = connect_to_local_server(SpadServer, SessionManager, Forever);
-  if (spad_server == (Sock *) 0) {
-    fprintf(stderr, "session: Cannot connect to AXIOM server!\n");
+  if (spad_server == (openaxiom_sio *) 0) {
+    fprintf(stderr, "session: Cannot connect to OpenAxiom server!\n");
     exit(0);
   }
   else {
@@ -483,8 +485,8 @@ main(void)
   /* spad_io connects to SessionIOName server socket
     this is Lisp std IO read_from_spad_io handles requests */
   spad_io = connect_to_local_server(SessionIOName, SessionIO, Forever);
-  if (spad_io == (Sock *) 0) {
-    fprintf(stderr, "session: Cannot connect to AXIOM IO!\n");
+  if (spad_io == (openaxiom_sio *) 0) {
+    fprintf(stderr, "session: Cannot connect to OpenAxiom IO!\n");
     exit(0);
   }
   else {

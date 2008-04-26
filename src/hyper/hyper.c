@@ -116,7 +116,7 @@ int gmake_record_file= 0;       /* true when making record files from ht */
 int gverify_record_file = 0;    /* true when verifying record files from ht */
 int gverify_dates = 0;          /* true when we want hypertex to verify ht.db dates */
 
-Sock *session_server;           /* socket connecting to session manager */
+openaxiom_sio *session_server; /* socket connecting to session manager */
 
 int gIsAxiomServer = 0;        /* true iff HyperDoc is acting as a   */
                                 /* an Axiom server */
@@ -402,7 +402,7 @@ make_server_connections(void)
      */
 
     if (open_server(MenuServerName) == -2) {
-        fprintf(stderr, "(HyperDoc) Warning: Not connected to AXIOM Server!\n");
+        fprintf(stderr, "(HyperDoc) Warning: Not connected to OpenAxiom Server!\n");
         MenuServerOpened = 0;
     } else {
         atexit(&clean_socket);
@@ -437,16 +437,16 @@ make_server_connections(void)
             spad_socket = connect_to_local_server(SpadServer,
                                                   MenuServer, wait_time);
             if (gIsAxiomServer && spad_socket == NULL)
-                fprintf(stderr, "(HyperDoc) Error opening AXIOM server. Retrying ...\n");
+                fprintf(stderr, "(HyperDoc) Error opening OpenAxiom server. Retrying ...\n");
             else
                 i = 11;
         }
         if (! spad_socket) {
-            fprintf(stderr, "(HyperDoc) Couldn't connect to AXIOM server!\n");
+            fprintf(stderr, "(HyperDoc) Couldn't connect to OpenAxiom server!\n");
             if (!gIsAxiomServer)
                 MenuServerOpened = 0;
             else {
-                fprintf(stderr, "(HyperDoc) Couldn't connect to AXIOM server!\n");
+                fprintf(stderr, "(HyperDoc) Couldn't connect to OpenAxiom server!\n");
                 exit(-1);
             }
         }

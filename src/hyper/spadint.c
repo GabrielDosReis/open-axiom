@@ -35,7 +35,7 @@
 
 /* Still a problem with close_client */
 
-/* Communication interface for external AXIOM buffers */
+/* Communication interface for external OpenAxiom buffers */
 #define _SPADINT_C
 #include "axiom-c-macros.h"
 
@@ -51,15 +51,15 @@
 #include "sockio.h"
 
 
-typedef struct sock_list {      /* linked list of Sock */
-    Sock Socket;
+typedef struct sock_list {      /* linked list of openaxiom_sio */
+    openaxiom_sio Socket;
     struct sock_list *next;
 }   Sock_List;
 
 Sock_List *plSock = (Sock_List *) 0;
-Sock *spad_socket = (Sock *) 0; /* to_server socket for SpadServer */
+openaxiom_sio *spad_socket = (openaxiom_sio *) 0; /* to_server socket for SpadServer */
 
-/* issue a AXIOM command to the buffer associated with a page */
+/* issue a OpenAxiom command to the buffer associated with a page */
 void
 issue_spadcommand(HyperDocPage *page, TextNode *command, int immediate,
                   int type)
@@ -95,7 +95,7 @@ issue_spadcommand(HyperDocPage *page, TextNode *command, int immediate,
     gIsEndOfOutput = 0;
 }
 static void
-send_pile(Sock *sock,char * str)
+send_pile(openaxiom_sio *sock,char * str)
 {
     FILE *f;
     char name[512], command[512];
@@ -243,12 +243,12 @@ clear_execution_marks(HashTable *depend_hash)
         }
 }
 
-Sock *
-accept_menu_connection(Sock *server_sock)
+openaxiom_sio *
+accept_menu_connection(openaxiom_sio *server_sock)
 {
     int sock_fd /*, session, ret_code*/;
     Sock_List *pls;
-    /*Sock local_sock;*/
+    /*openaxiom_sio local_sock;*/
 
     /* Could only be InterpWindow */
 
@@ -259,7 +259,7 @@ accept_menu_connection(Sock *server_sock)
         return 0;
     }
     (pls->Socket).socket = sock_fd;
-    get_socket_type((Sock *) pls);
+    get_socket_type((openaxiom_sio *) pls);
 
 #ifdef DEBUG
     fprintf(stderr,
@@ -281,7 +281,7 @@ accept_menu_connection(Sock *server_sock)
     /* need to maintain socket_mask since we roll our own accept */
 
     FD_SET(plSock->Socket.socket, &socket_mask);
-    return (Sock *) plSock;
+    return (openaxiom_sio *) plSock;
 }
 
 static void
@@ -289,13 +289,13 @@ accept_menu_server_connection(HyperDocPage *page)
 {
 
     /*
-     * TTT thinks this code should just provide a Sock to the page. The only
-     * client assumed is a spadbuf. Since spadbuf was invoked with the page
-     * name, it just passes it back here as a check (get_string line).
+     * TTT thinks this code should just provide a openaxiom_sio to the page.
+     * The only client assumed is a spadbuf. Since spadbuf was invoked with
+     * the page name, it just passes it back here as a check (get_string line).
      */
     int ret_code/*, i*/;
     fd_set rd;
-    Sock *sock;
+    openaxiom_sio *sock;
     char *buf_name;
     HyperDocPage *npage;
 
@@ -626,7 +626,7 @@ print_to_string1(TextNode *command,int * sizeBuf)
 }
 
 /*
- * Send a lisp or spad command to the AXIOM server for execution , if
+ * Send a lisp or spad command to the OpenAxiom server for execution , if
  * type is link, then we wait for a HyperDoc card to be returned
  */
 
@@ -779,7 +779,7 @@ switch_frames(void)
         return;
     }
     if (gWindow->fAxiomFrame == -1) {
-        fprintf(stderr, "(HyperDoc) No AXIOM frame associated with top level window!\n");
+        fprintf(stderr, "(HyperDoc) No OpenAxiom frame associated with top level window!\n");
         return;
     }
     send_int(session_server, SwitchFrames);

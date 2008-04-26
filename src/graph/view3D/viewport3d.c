@@ -683,10 +683,10 @@ makeViewport (void)
 
   XSetNormalHints(dsply,viewTitleWindow,&titleSizeHints);
   if (strlen(viewport->title) < 30)
-    XSetStandardProperties(dsply,viewTitleWindow,"AXIOM 3D",viewport->title,
+    XSetStandardProperties(dsply,viewTitleWindow,"OpenAxiom 3D",viewport->title,
                            None,NULL,0,&titleSizeHints);
   else
-    XSetStandardProperties(dsply,viewTitleWindow,"AXIOM 3D","3D AXIOM Graph",
+    XSetStandardProperties(dsply,viewTitleWindow,"OpenAxiom 3D","3D OpenAxiom Graph",
                            None,NULL,0,&titleSizeHints);
   viewport->titleWindow = viewTitleWindow;
 

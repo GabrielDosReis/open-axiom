@@ -301,7 +301,7 @@ typedef struct hyperdoc_page {
   TextNode *header;             /* formatted version of page               */
   TextNode *scrolling;          /* Top of scrolling region                 */
   TextNode *footer;             /* top of non-scrolling region at bottom   */
-  Sock *sock;                   /* socket connection for spad buffer       */
+  openaxiom_sio *sock;          /* socket connection for spad buffer       */
   HashTable *fLinkHashTable;         /* active link hash table                  */
   ButtonList *s_button_list;    /* active buttons on page                  */
   ButtonList *button_list;      /* active buttons on page                  */
@@ -411,8 +411,8 @@ extern int gSwitch_to_mono;
 extern unsigned long * spadColors;
 extern int gIsEndOfOutput;
 extern HDWindow *gWindow;
-extern Sock *session_server;
-extern Sock *spad_socket;
+extern openaxiom_sio *session_server;
+extern openaxiom_sio *spad_socket;
 extern HashTable gFileHashTable;
 extern HashTable gImageHashTable;           /* A global hash table for images */
 extern Cursor gNormalCursor;          /* The normal mouse cursor                */

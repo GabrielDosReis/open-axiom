@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+  Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
@@ -16,7 +16,7 @@
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+      - Neither the name of The Numerical Algorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -65,7 +65,7 @@ XEvent  viewmanEvent;
 viewManager *viewports,
   *slot,
   *stepSlot;
-Sock        *spadSock;
+openaxiom_sio* spadSock;
 int         viewType, 
   viewCommand,
   acknow,
@@ -95,15 +95,15 @@ main (void)
   bsdSignal(OPENAXIOM_SIGCHLD,endChild,RestartSystemCalls);
   bsdSignal(SIGTERM,goodbye,DontRestartSystemCalls);
   
-  /* Connect up to AXIOM server */
+  /* Connect up to OpenAxiom server */
   spadSock = connect_to_local_server(SpadServer,ViewportServer,Forever);
   if (spadSock == NULL) {
-    fprintf(stderr,"The viewport manager couldn't connect to AXIOM\n");
+    fprintf(stderr,"The viewport manager couldn't connect to OpenAxiom\n");
     exit(-1);
   }
 #ifdef DEBUG
   else
-    fprintf(stderr,"viewman: Connected to AXIOM\n");
+    fprintf(stderr,"viewman: Connected to OpenAxiom\n");
 #endif
   
   /******** initialize ********/
@@ -112,7 +112,7 @@ main (void)
   
   /******** getting stuff from spad and viewports ********
   *********   the viewports have priority over    ****
-  ***   AXIOM.                              ***/
+  ***   OpenAxiom.                              ***/
   while (1) {
     FD_ZERO(&filedes); /* zero out file descriptor */
     FD_SET(spadSock->socket,&filedes);

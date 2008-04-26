@@ -76,7 +76,7 @@ scaleComponents (void)
   yRange = viewData.ymax - viewData.ymin;
   zRange = viewData.zmax - viewData.zmin;
   
-  /* We scale down, normalize the data, if it is coming from AXIOM
+  /* We scale down, normalize the data, if it is coming from OpenAxiom
      (handled by viewman).  If the data is coming from a file (handled by
      viewAlone) then it should already been scaled down. 
      */
@@ -113,7 +113,7 @@ scaleComponents (void)
   
   /* We now normalize all the points in this program. The information
      needed to link the normalized set of points back to the real object
-     space scale created in AXIOM is held in viewData.scaleToView. */
+     space scale created in OpenAxiom is held in viewData.scaleToView. */
   viewData.xmin *= viewData.scaleToView;
   viewData.xmax *= viewData.scaleToView;
   viewData.ymin *= viewData.scaleToView;
@@ -329,7 +329,7 @@ readComponentsFromViewman (void)
         maxLength = anLPoint->numOfPoints;
       for (k=0; k<anLPoint->numOfPoints; k++,anIndex++) {
         readViewman(anIndex,intSize);
-        /* AXIOM arrays are one based, C arrays are zero based */
+        /* OpenAxiom arrays are one based, C arrays are zero based */
         if (!viewAloned) (*anIndex)--;
       }
     } /* for LPoints in LLPoints (j) */
@@ -410,7 +410,7 @@ calcNormData (void)
   points is. For 3D explicit equations of two variables, the closed 
   boolean for this level is False and the closed boolean for each sublist 
   is False as well. For 3D parameterized curves of one variable, the 
-  closed boolean for this level is defined by the user from AXIOM , 
+  closed boolean for this level is defined by the user from OpenAxiom , 
   (which defaults to False) and the closed boolean for each sublist is True.
   */
 
@@ -544,7 +544,7 @@ draw3DComponents (int dFlag)
             ((anLLPoint->lp+1)->numOfPoints > 2))
           componentType = polygonComponent;
       }
-      /* Check for corrupt data and NaN data is made in AXIOM . */
+      /* Check for corrupt data and NaN data is made in OpenAxiom . */
       if (componentType == stillDontKnow)
         componentType = surfaceComponent;
       

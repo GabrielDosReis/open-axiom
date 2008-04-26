@@ -46,7 +46,7 @@
 
 #include "sockio.h"
 
-Sock *sock;
+openaxiom_sio* sock;
 
 static void 
 inter_handler(int sig)

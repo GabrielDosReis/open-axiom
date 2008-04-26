@@ -204,18 +204,18 @@ token_name(int type)
     }
 }
 void
-htperror(char *msg, int errno)
+htperror(char *msg, int erno)
 {
     char obuff[256];
 
     /* The first thing I do is create the error message */
 
-    if (errno <= Numerrors) {
+    if (erno <= Numerrors) {
         sprintf(obuff, "%s:%s\n", msg, errmess[errno]);
     }
     else {
         sprintf(obuff, "%s:\n", msg);
-        fprintf(stderr, "Unknown error type %d\n", errno);
+        fprintf(stderr, "Unknown error type %d\n", erno);
     }
     fprintf(stderr, "%s", obuff);
 

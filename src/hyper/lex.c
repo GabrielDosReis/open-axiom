@@ -856,19 +856,19 @@ spad_busy(void)
     return get_int(session_server);
 }
 
-/* connect to AXIOM , return 0 if succesful, 1 if not */
+/* connect to OpenAxiom , return 0 if succesful, 1 if not */
 int
 connect_spad(void)
 {
     if (!MenuServerOpened) {
-        fprintf(stderr, "(HyperDoc) Warning: Not connected to AXIOM Server!\n");
+        fprintf(stderr, "(HyperDoc) Warning: Not connected to OpenAxiom Server!\n");
         LoudBeepAtTheUser();
         return NotConnected;
     }
     if (spad_socket == NULL) {
         spad_socket = connect_to_local_server(SpadServer, MenuServer, Forever);
         if (spad_socket == NULL) {
-            fprintf(stderr, "(HyperDoc) Warning: Could not connect to AXIOM Server!\n");
+            fprintf(stderr, "(HyperDoc) Warning: Could not connect to OpenAxiom Server!\n");
             LoudBeepAtTheUser();
             return NotConnected;
         }
