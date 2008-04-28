@@ -92,9 +92,6 @@ int socket_closed;
 
 /* spad server number used in sman */
 int spad_server_number = -1;    
-int str_len = 0;
-int still_reading  = 0;
-
 
 
 #include "sockio.h"
@@ -106,7 +103,7 @@ int still_reading  = 0;
    We abstract over that difference here.  */
 
 static inline void
-axiom_sleep(int n)
+openaxiom_sleep(int n)
 {
 #ifdef __WIN32__
    Sleep(n * 1000);
@@ -119,7 +116,7 @@ axiom_sleep(int n)
    we can even think about talking about sockets. */
 
 static void
-axiom_load_socket_module()
+openaxiom_load_socket_module()
 {
 #ifdef __WIN32__
    WSADATA wsaData;
@@ -142,9 +139,9 @@ axiom_load_socket_module()
 /* Get a socket identifier to a local server.  We take whatever protocol
    is the default for the address family in the SOCK_STREAM type.  */
 static inline openaxiom_socket
-axiom_communication_link(int family)
+openaxiom_communication_link(int family)
 {
-   axiom_load_socket_module();
+   openaxiom_load_socket_module();
    return socket(family, SOCK_STREAM, 0);
 }
 
@@ -181,7 +178,7 @@ is_valid_socket(const openaxiom_sio* s)
    requires cleanup.  */
 
 void
-axiom_close_socket(openaxiom_socket s)
+openaxiom_close_socket(openaxiom_socket s)
 {
 #ifdef __WIN32__
    shutdown(s, SD_BOTH);
@@ -199,13 +196,13 @@ axiom_close_socket(openaxiom_socket s)
    send().  */
 
 static inline int
-axiom_write(openaxiom_sio* s, const char* buf, size_t n)
+openaxiom_write(openaxiom_sio* s, const char* buf, size_t n)
 {
    return send(s->socket, buf, n, 0);
 }
 
 static inline int
-axiom_read(openaxiom_sio* s, char* buf, size_t n)
+openaxiom_read(openaxiom_sio* s, char* buf, size_t n)
 {
    return recv(s->socket, buf, n, 0);
 }
@@ -214,7 +211,7 @@ axiom_read(openaxiom_sio* s, char* buf, size_t n)
 /* Return 1 is the last call was cancelled. */
 
 static inline int
-axiom_call_was_cancelled(void)
+openaxiom_syscall_was_cancelled(void)
 {
 #ifdef __WIN32__
    return WSAGetLastError() == WSAEINTR;
@@ -226,7 +223,7 @@ axiom_call_was_cancelled(void)
 /* Return 1 is last connect() was refused.  */
 
 static inline int
-axiom_connection_refused(void)
+openaxiom_connection_refused(void)
 {
 #ifdef __WIN32__
    return WSAGetLastError() == WSAECONNREFUSED;
@@ -243,7 +240,8 @@ sigpipe_handler(int sig)
 }
 
 OPENAXIOM_EXPORT int 
-wait_for_client_read(openaxiom_sio *sock, char *buf, int buf_size, char *msg)
+wait_for_client_read(openaxiom_sio *sock, char *buf, int buf_size,
+                     const char* msg)
 {
   int ret_val;
   switch(sock->purpose) {
@@ -260,7 +258,8 @@ wait_for_client_read(openaxiom_sio *sock, char *buf, int buf_size, char *msg)
 }
 
 OPENAXIOM_EXPORT int 
-wait_for_client_write(openaxiom_sio *sock,char *buf,int buf_size,char *msg)
+wait_for_client_write(openaxiom_sio *sock, const char *buf,int buf_size,
+                      const char* msg)
 {
   int ret_val;
   switch(sock->purpose) {
@@ -277,18 +276,18 @@ wait_for_client_write(openaxiom_sio *sock,char *buf,int buf_size,char *msg)
 }
 
 OPENAXIOM_EXPORT int 
-sread(openaxiom_sio *sock, char *buf, int buf_size, char *msg)
+sread(openaxiom_sio *sock, char *buf, int buf_size, const char *msg)
 {
   int ret_val;
   char err_msg[256];
   errno = 0;
   do {
-    ret_val = axiom_read(sock, buf, buf_size);
-  } while (ret_val == -1 && axiom_call_was_cancelled());
+    ret_val = openaxiom_read(sock, buf, buf_size);
+  } while (ret_val == -1 && openaxiom_syscall_was_cancelled());
   if (ret_val == 0) {
     FD_CLR(sock->socket, &socket_mask);
     purpose_table[sock->purpose] = NULL;
-    axiom_close_socket(sock->socket);
+    openaxiom_close_socket(sock->socket);
     return wait_for_client_read(sock, buf, buf_size, msg);
   }
   if (ret_val == -1) {
@@ -302,19 +301,19 @@ sread(openaxiom_sio *sock, char *buf, int buf_size, char *msg)
 }
 
 OPENAXIOM_EXPORT int 
-swrite(openaxiom_sio *sock,char *buf,int buf_size,char *msg)
+swrite(openaxiom_sio *sock, const char* buf,int buf_size, const char* msg)
 {
   int ret_val;
   char err_msg[256];
   errno = 0;
   socket_closed = 0;
-  ret_val = axiom_write(sock, buf, buf_size);
+  ret_val = openaxiom_write(sock, buf, buf_size);
   if (ret_val == -1) {
     if (socket_closed) {
       FD_CLR(sock->socket, &socket_mask);
       purpose_table[sock->purpose] = NULL;
       /*      printf("   closing socket %d\n", sock->socket); */
-      axiom_close_socket(sock->socket);
+      openaxiom_close_socket(sock->socket);
       return wait_for_client_write(sock, buf, buf_size, msg);
     } else {
       if (msg) {
@@ -333,7 +332,7 @@ sselect(int n,fd_set  *rd, fd_set  *wr, fd_set *ex, void *timeout)
   int ret_val;
   do {
     ret_val = select(n, (void *)rd, (void *)wr, (void *)ex, (struct timeval *) timeout);
-  } while (ret_val == -1 && axiom_call_was_cancelled());
+  } while (ret_val == -1 && openaxiom_syscall_was_cancelled());
   return ret_val;
 }
 
@@ -411,7 +410,7 @@ sock_send_int(int purpose,int  val)
 }
 
 OPENAXIOM_EXPORT int 
-send_ints(openaxiom_sio *sock, int *vals, int num)
+send_ints(openaxiom_sio *sock, const int *vals, int num)
 {
   int i;
   for(i=0; i<num; i++)
@@ -421,7 +420,7 @@ send_ints(openaxiom_sio *sock, int *vals, int num)
 }
 
 OPENAXIOM_EXPORT int 
-sock_send_ints(int purpose, int *vals, int num)
+sock_send_ints(int purpose, const int *vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
     return send_ints(purpose_table[purpose], vals, num);
@@ -429,7 +428,7 @@ sock_send_ints(int purpose, int *vals, int num)
 }
 
 OPENAXIOM_EXPORT int 
-send_string_len(openaxiom_sio *sock,char *str,int len)
+send_string_len(openaxiom_sio *sock, const char *str,int len)
 {
   int val;
   if (len > 1023) {
@@ -454,7 +453,7 @@ send_string_len(openaxiom_sio *sock,char *str,int len)
 }
 
 OPENAXIOM_EXPORT int 
-send_string(openaxiom_sio *sock, char *str)
+send_string(openaxiom_sio *sock, const char *str)
 {
   int val, len = strlen(str);
   send_int(sock, len+1);
@@ -467,7 +466,7 @@ send_string(openaxiom_sio *sock, char *str)
 
 
 OPENAXIOM_EXPORT int 
-sock_send_string(int purpose, char *str)
+sock_send_string(int purpose, const char *str)
 {
   if (accept_if_needed(purpose) != -1)
     return send_string(purpose_table[purpose], str);
@@ -475,7 +474,7 @@ sock_send_string(int purpose, char *str)
 }
 
 OPENAXIOM_EXPORT int 
-sock_send_string_len(int purpose, char * str, int len)
+sock_send_string_len(int purpose, const char* str, int len)
 {
   if (accept_if_needed(purpose) != -1)
     return send_string_len(purpose_table[purpose], str, len);
@@ -483,7 +482,7 @@ sock_send_string_len(int purpose, char * str, int len)
 }
 
 OPENAXIOM_EXPORT int 
-send_strings(openaxiom_sio *sock, char ** vals, int num)
+send_strings(openaxiom_sio *sock, const char ** vals, int num)
 {
   int i;
   for(i=0; i<num; i++)
@@ -493,7 +492,7 @@ send_strings(openaxiom_sio *sock, char ** vals, int num)
 }
 
 OPENAXIOM_EXPORT int 
-sock_send_strings(int purpose, char **vals, int num)
+sock_send_strings(int purpose, const char **vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
     return send_strings(purpose_table[purpose], vals, num);
@@ -531,22 +530,20 @@ sock_get_string(int purpose)
 OPENAXIOM_EXPORT char *
 get_string_buf(openaxiom_sio *sock, char *buf, int buf_len)
 {
-  int val;
-  if(!str_len) str_len = get_int(sock);
-    if (str_len > buf_len) {
-      val = fill_buf(sock, buf, buf_len, "buffered string");
-      str_len = str_len - buf_len;
-      if (val == -1)
-        return NULL;
-      return buf;
-    }
-    else {
-      val = fill_buf(sock, buf, str_len, "buffered string");
-      str_len = 0;
-      if (val == -1)
-        return NULL;
+   int nbytes_read;
+   int nbytes_to_read;
+   if(sock->nbytes_pending == 0)
+      sock->nbytes_pending = get_int(sock);
+   nbytes_to_read = sock->nbytes_pending > buf_len
+      ? buf_len
+      : sock->nbytes_pending;
+   nbytes_read = fill_buf(sock, buf, nbytes_to_read, "buffered string");
+   if (nbytes_read == -1) {
+      sock->nbytes_pending = 0;
       return NULL;
-    }
+   }
+   sock->nbytes_pending -= nbytes_read;
+   return sock->nbytes_pending == 0 ? NULL : buf;
 }
 
 OPENAXIOM_EXPORT char *
@@ -594,7 +591,7 @@ sock_send_float(int purpose, double num)
 }
 
 OPENAXIOM_EXPORT int 
-send_sfloats(openaxiom_sio *sock, float *vals,int  num)
+send_sfloats(openaxiom_sio *sock, const float *vals,int  num)
 {
   int i;
   for(i=0; i<num; i++)
@@ -604,7 +601,7 @@ send_sfloats(openaxiom_sio *sock, float *vals,int  num)
 }
 
 OPENAXIOM_EXPORT int 
-sock_send_sfloats(int purpose, float * vals, int num)
+sock_send_sfloats(int purpose, const float* vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
     return send_sfloats(purpose_table[purpose], vals, num);
@@ -612,7 +609,7 @@ sock_send_sfloats(int purpose, float * vals, int num)
 }
 
 OPENAXIOM_EXPORT int 
-send_floats(openaxiom_sio *sock, double *vals, int num)
+send_floats(openaxiom_sio *sock, const double *vals, int num)
 {
   int i;
   for(i=0; i<num; i++)
@@ -622,7 +619,7 @@ send_floats(openaxiom_sio *sock, double *vals, int num)
 }
 
 OPENAXIOM_EXPORT int 
-sock_send_floats(int purpose, double  *vals, int num)
+sock_send_floats(int purpose, const double  *vals, int num)
 {
   if (accept_if_needed(purpose) != -1)
     return send_floats(purpose_table[purpose], vals, num);
@@ -724,7 +721,7 @@ send_signal(openaxiom_sio *sock, int sig)
     FD_CLR(sock->socket, &socket_mask);
     purpose_table[sock->purpose] = NULL;
 /*    printf("   closing socket %d\n", sock->socket); */
-    axiom_close_socket(sock->socket);
+    openaxiom_close_socket(sock->socket);
     return wait_for_client_kill(sock, sig);
   }
   return ret_val;
@@ -770,7 +767,7 @@ connect_to_local_server_new(char *server_name, int purpose, int time_out)
     return NULL;
   }
 
-  sock->socket = axiom_communication_link(OPENAXIOM_AF_LOCAL);
+  sock->socket = openaxiom_communication_link(OPENAXIOM_AF_LOCAL);
   if (is_invalid_socket(sock)) {
     perror("opening client socket");
     free(sock);
@@ -785,12 +782,12 @@ connect_to_local_server_new(char *server_name, int purpose, int time_out)
     code = connect(sock->socket, &sock->addr.u_addr,
                    sizeof(sock->addr.u_addr));
     if (code == -1) {
-      if (errno != ENOENT && !axiom_connection_refused()) {
+      if (errno != ENOENT && !openaxiom_connection_refused()) {
         perror("connecting server stream socket");
         return NULL;
       } else {
         if (i != max_con - 1)
-           axiom_sleep(1);
+           openaxiom_sleep(1);
         continue;
       }
     } else break;
@@ -824,7 +821,7 @@ connect_to_local_server(char *server_name, int purpose, int time_out)
 
   sock->purpose = purpose;
   /* create the socket */
-  sock->socket = axiom_communication_link(OPENAXIOM_AF_LOCAL);
+  sock->socket = openaxiom_communication_link(OPENAXIOM_AF_LOCAL);
   if (is_invalid_socket(sock)) {
     perror("opening client socket");
     free(sock);
@@ -839,12 +836,12 @@ connect_to_local_server(char *server_name, int purpose, int time_out)
     code = connect(sock->socket, &sock->addr.u_addr,
                    sizeof(sock->addr.u_addr));
     if (code == -1) {
-      if (errno != ENOENT && !axiom_connection_refused()) {
+      if (errno != ENOENT && !openaxiom_connection_refused()) {
         perror("connecting server stream socket");
         return NULL;
       } else {
         if (i != max_con - 1)
-           axiom_sleep(1);
+           openaxiom_sleep(1);
         continue;
       }
     } else break;
@@ -923,7 +920,7 @@ make_server_number(void)
 OPENAXIOM_EXPORT void 
 close_socket(openaxiom_socket socket_num, char *name)
 {
-  axiom_close_socket(socket_num);
+  openaxiom_close_socket(socket_num);
 #ifndef RTplatform
   unlink(name);
 #endif
@@ -963,7 +960,7 @@ open_server(char *server_name)
     return -2;
   /* create the socket internet socket */
   server[0].socket = 0;
-/*  server[0].socket = axiom_communication_link(AF_INET);
+/*  server[0].socket = openaxiom_communication_link(AF_INET);
   if (is_invalid_socket(&server[0])) {
     server[0].socket = 0;
   } else {
@@ -988,7 +985,7 @@ open_server(char *server_name)
     listen(server[0].socket,5);
   } */
   /* Next create the local domain socket */
-  server[1].socket = axiom_communication_link(OPENAXIOM_AF_LOCAL);
+  server[1].socket = openaxiom_communication_link(OPENAXIOM_AF_LOCAL);
   if (is_invalid_socket(&server[1])) {
     perror("opening local server socket");
     server[1].socket = 0;

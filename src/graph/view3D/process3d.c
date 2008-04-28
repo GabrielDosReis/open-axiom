@@ -34,7 +34,7 @@
 */
 
 #define _PROCESS3D_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include <string.h>
 #include <stdlib.h>

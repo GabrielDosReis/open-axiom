@@ -1,11 +1,11 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-04-24], 
+AC_INIT([OpenAxiom], [1.2.0-2008-04-27], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
-AC_CONFIG_HEADERS([config/axiom-c-macros.h])
+AC_CONFIG_HEADERS([config/openaxiom-c-macros.h])
 # AM_INIT_AUTOMAKE([foreign])
 AC_PREREQ([2.60])
 
@@ -343,6 +343,8 @@ AC_SUBST(axiom_all_prerequisites)
 axiom_c_runtime=
 AC_SUBST(axiom_c_runtime)
 
+AC_CHECK_HEADERS([stdint.h inttypes.h])
+AC_TYPE_UINT8_T
 AC_CHECK_HEADERS([signal.h],
                  [],
                  [AC_MSG_ERROR([OpenAxiom needs signal support.])])

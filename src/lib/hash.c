@@ -32,7 +32,7 @@
 */
 
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #define _HASH_C
 #include "debug.h"
 

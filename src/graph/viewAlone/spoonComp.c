@@ -34,7 +34,7 @@
 */
 
 #define _SPOONCOMP_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include <stdlib.h>
 #include <unistd.h>

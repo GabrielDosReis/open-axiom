@@ -33,7 +33,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #define _PARSE_AUX_C
 
 #include "debug.h"

@@ -36,7 +36,7 @@
 #ifndef _PARSE_H_
 #define _PARSE_H_ 1
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #include "hterror.h"
 
 #ifdef SUNplatform

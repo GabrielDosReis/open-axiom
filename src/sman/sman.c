@@ -33,7 +33,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include <stdlib.h>
 #include <unistd.h>

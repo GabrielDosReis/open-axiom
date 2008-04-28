@@ -34,7 +34,7 @@
 */
 
 #define _FORM_EXT_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include "debug.h"
 

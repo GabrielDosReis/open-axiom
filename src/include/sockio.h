@@ -36,6 +36,7 @@
 #ifndef OPENAXIOM_SOCKIO_included
 #define OPENAXIOM_SOCKIO_included
 
+#include <stddef.h>
 
 #ifdef __MINGW32__
 #  include <winsock2.h>
@@ -45,7 +46,7 @@
 #  include <netinet/in.h>
 #endif
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #include "open-axiom.h"
 
 /* On Windows, a socket identifier is not a file descriptor.  It is
@@ -73,6 +74,7 @@ typedef struct openaxiom_sio {
     struct sockaddr_in i_addr;
   } addr;
   char *host_name;      /* name of foreign host if type == AF_INET */
+   size_t nbytes_pending;       /* pending bytes for read.  */
 } openaxiom_sio;
 
 
@@ -83,14 +85,16 @@ OPENAXIOM_EXPORT int get_int(openaxiom_sio*);
 OPENAXIOM_EXPORT char* get_string(openaxiom_sio*);
 OPENAXIOM_EXPORT double get_float(openaxiom_sio*);
 OPENAXIOM_EXPORT openaxiom_sio* connect_to_local_server(char*, int, int);
-OPENAXIOM_EXPORT int sread(openaxiom_sio*, char*, int, char*);
+OPENAXIOM_EXPORT int sread(openaxiom_sio*, char*, int, const char*);
 OPENAXIOM_EXPORT double plus_infinity(void);
 OPENAXIOM_EXPORT double minus_infinity(void);
 OPENAXIOM_EXPORT double NANQ(void);
 OPENAXIOM_EXPORT void sigpipe_handler(int);
-OPENAXIOM_EXPORT int wait_for_client_read(openaxiom_sio*, char*, int, char*);
-OPENAXIOM_EXPORT int wait_for_client_write(openaxiom_sio*, char*, int, char*);
-OPENAXIOM_EXPORT int swrite(openaxiom_sio*, char*, int, char*);
+OPENAXIOM_EXPORT int wait_for_client_read(openaxiom_sio*, char*,
+                                          int, const char*);
+OPENAXIOM_EXPORT int wait_for_client_write(openaxiom_sio*, const char*,
+                                           int, const char*);
+OPENAXIOM_EXPORT int swrite(openaxiom_sio*, const char*, int, const char*);
 OPENAXIOM_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
 OPENAXIOM_EXPORT int fill_buf(openaxiom_sio*, char*, int, char*);
 OPENAXIOM_EXPORT int sock_get_int(int);
@@ -98,14 +102,14 @@ OPENAXIOM_EXPORT int get_ints(openaxiom_sio*, int*, int);
 OPENAXIOM_EXPORT int sock_get_ints(int, int*, int);
 OPENAXIOM_EXPORT int send_int(openaxiom_sio*, int);
 OPENAXIOM_EXPORT int sock_send_int(int, int);
-OPENAXIOM_EXPORT int send_ints(openaxiom_sio*, int*, int);
-OPENAXIOM_EXPORT int sock_send_ints(int, int*, int);
-OPENAXIOM_EXPORT int send_string(openaxiom_sio*, char*);
-OPENAXIOM_EXPORT int send_string_len(openaxiom_sio*, char*, int);
-OPENAXIOM_EXPORT int sock_send_string(int, char*);
-OPENAXIOM_EXPORT int sock_send_string_len(int, char*, int);
-OPENAXIOM_EXPORT int send_strings(openaxiom_sio*, char**, int);
-OPENAXIOM_EXPORT int sock_send_strings(int, char**, int);
+OPENAXIOM_EXPORT int send_ints(openaxiom_sio*, const int*, int);
+OPENAXIOM_EXPORT int sock_send_ints(int, const int*, int);
+OPENAXIOM_EXPORT int send_string(openaxiom_sio*, const char*);
+OPENAXIOM_EXPORT int send_string_len(openaxiom_sio*, const char*, int);
+OPENAXIOM_EXPORT int sock_send_string(int, const char*);
+OPENAXIOM_EXPORT int sock_send_string_len(int, const char*, int);
+OPENAXIOM_EXPORT int send_strings(openaxiom_sio*, const char**, int);
+OPENAXIOM_EXPORT int sock_send_strings(int, const char**, int);
 OPENAXIOM_EXPORT char* sock_get_string(int);
 OPENAXIOM_EXPORT char* get_string_buf(openaxiom_sio*, char*, int);
 OPENAXIOM_EXPORT char* sock_get_string_buf(int, char*, int);
@@ -113,10 +117,10 @@ OPENAXIOM_EXPORT int get_strings(openaxiom_sio*, char**, int);
 OPENAXIOM_EXPORT int sock_get_strings(int, char**, int);
 OPENAXIOM_EXPORT int send_float(openaxiom_sio*, double);
 OPENAXIOM_EXPORT int sock_send_float(int, double);
-OPENAXIOM_EXPORT int send_sfloats(openaxiom_sio*, float*, int);
-OPENAXIOM_EXPORT int sock_send_sfloats(int, float*, int);
-OPENAXIOM_EXPORT int send_floats(openaxiom_sio*, double*, int);
-OPENAXIOM_EXPORT int sock_send_floats(int, double*, int);
+OPENAXIOM_EXPORT int send_sfloats(openaxiom_sio*, const float*, int);
+OPENAXIOM_EXPORT int sock_send_sfloats(int, const float*, int);
+OPENAXIOM_EXPORT int send_floats(openaxiom_sio*, const double*, int);
+OPENAXIOM_EXPORT int sock_send_floats(int, const double*, int);
 OPENAXIOM_EXPORT double sock_get_float(int);
 OPENAXIOM_EXPORT int get_sfloats(openaxiom_sio*, float*, int);
 OPENAXIOM_EXPORT int sock_get_sfloats(int, float*, int);

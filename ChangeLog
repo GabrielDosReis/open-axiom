@@ -1,3 +1,10 @@
+2008-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Check from uint8_t.
+	* config/openaxiom-c-macros.h.in: Rename from
+	config/axiom-c-macros.h.in.
+	* src: Propagate change.
+
 2008-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Add native type translation table

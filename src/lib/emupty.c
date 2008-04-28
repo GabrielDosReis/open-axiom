@@ -31,7 +31,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 /*
   Here is some code taken from Nick Simicich. It takes an escape sequence

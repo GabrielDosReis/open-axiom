@@ -34,7 +34,7 @@
 /* #define debug 1 */
 
 #include <stdlib.h>
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #if defined(MACOSXplatform)
 #include "/usr/include/unistd.h"
 #else
