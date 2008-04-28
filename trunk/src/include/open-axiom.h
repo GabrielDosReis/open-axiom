@@ -45,4 +45,11 @@
 #  define OPENAXIOM_EXPORT      /* nothing */
 #endif /* __MINGW32__ */
 
+#if defined(HAVE_STDINT_H)
+#  include <stdint.h>
+#elif defined (HAVE_INTTYPES_H)
+#  include <inttypes.h>
+#endif
+typedef uint8_t openaxiom_byte;
+
 #endif /* OPENAXIOM_included */

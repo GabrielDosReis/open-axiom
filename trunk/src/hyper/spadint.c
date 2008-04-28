@@ -37,7 +37,7 @@
 
 /* Communication interface for external OpenAxiom buffers */
 #define _SPADINT_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include "debug.h"
 

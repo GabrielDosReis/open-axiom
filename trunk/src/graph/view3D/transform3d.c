@@ -34,7 +34,7 @@
 */
 
 #define _TRANSFORM3D_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 
 #include "header.h"

@@ -36,8 +36,8 @@
 #ifndef _GDRAWS0_H_
 #define _GDRAWS0_H_ 1
 
+#include "openaxiom-c-macros.h"
 #include <X11/Xlib.h>
-#include "axiom-c-macros.h"
 
 
 #define yes		1

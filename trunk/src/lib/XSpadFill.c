@@ -47,7 +47,7 @@
  */
 
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #ifndef MSYSplatform
 
 #include <stdio.h>

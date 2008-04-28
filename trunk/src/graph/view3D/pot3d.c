@@ -34,7 +34,7 @@
 */
 
 #define _POT3D_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include "header.h"
 #include "all_3d.H1"

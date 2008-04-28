@@ -31,7 +31,7 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

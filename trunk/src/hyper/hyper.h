@@ -36,7 +36,7 @@
 #ifndef _HYPER_H_
 #define _HYPER_H_ 1
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

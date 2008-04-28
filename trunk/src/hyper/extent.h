@@ -36,7 +36,7 @@
 #ifndef _EXTENT_H_
 #define _EXTENT_H_ 1
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #include "hyper.h"
 
 /*

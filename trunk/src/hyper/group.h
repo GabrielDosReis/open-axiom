@@ -36,7 +36,7 @@
 #ifndef _GROUP_H_
 #define _GROUP_H_ 1
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #include "hyper.h"
 
 extern GroupItem   *gTopOfGroupStack;

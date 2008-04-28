@@ -36,7 +36,7 @@
 #define _HTERROR_C
 #define HTERROR
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include "debug.h"
 

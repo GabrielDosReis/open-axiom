@@ -39,7 +39,7 @@
 #include <stdio.h>
 #include <signal.h>
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"

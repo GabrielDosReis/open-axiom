@@ -35,7 +35,7 @@
 
 #define _READBITMAP_C
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include "debug.h"
 #include "sockio.h"

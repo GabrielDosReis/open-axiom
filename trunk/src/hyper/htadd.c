@@ -37,7 +37,7 @@
 
 
 #define _HTADD_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include "sockio.h"
 #include "hyper.h"

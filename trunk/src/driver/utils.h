@@ -34,7 +34,7 @@
 #ifndef OPENAXIOM_UTILS_INCLUDED
 #define OPENAXIOM_UTILS_INCLUDED
 
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 #if HAVE_UNISTD_H
 #  include <unistd.h>
 #endif

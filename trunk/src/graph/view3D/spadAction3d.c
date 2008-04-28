@@ -34,7 +34,7 @@
 */
 
 #define _SPADACTION3D_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include <unistd.h>
 #include <stdio.h>

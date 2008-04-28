@@ -57,7 +57,7 @@
  *
  */
 #define _LEX_C
-#include "axiom-c-macros.h"
+#include "openaxiom-c-macros.h"
 
 #include "debug.h"
 #include "sockio.h"
@@ -269,8 +269,6 @@ get_char(void)
     return c;
 }
 
-char * read_again = 0;
-
 /* return the next character in the input stream */
 static int
 get_char1(void)
@@ -313,7 +311,7 @@ AGAIN:
         }
         if (last_command == EndOfPage)
             return EOF;
-        if (read_again == NULL) {
+        if (spad_socket->nbytes_pending == 0) {
             last_command = cmd = get_int(spad_socket);
             if (cmd == EndOfPage)
                 return EOF;
@@ -322,7 +320,7 @@ AGAIN:
                 spad_error_handler();
 #endif
         }
-        read_again = get_string_buf(spad_socket, sock_buf, 1023);
+        get_string_buf(spad_socket, sock_buf, 1023);
         /* this will be null if this is the last time*/
         input_string = sock_buf;
         goto AGAIN;
@@ -825,7 +823,6 @@ spad_error_handler(void)
     exit(-1);
 }
 
-extern int still_reading, str_len;
 void
 reset_connection(void)
 {
@@ -837,9 +834,7 @@ reset_connection(void)
         spad_socket = NULL;
         if (input_string)
             input_string[0] = '\0';
-        read_again = 0;
-        str_len = 0;
-        still_reading = 0;
+        spad_socket->nbytes_pending = 0;
         connect_spad();
     }
 }
