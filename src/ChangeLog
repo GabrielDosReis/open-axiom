@@ -1,3 +1,24 @@
+2008-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in: Export %ByteArray and makeByteArray.
+	(CONCAT): Tdiy.
+	* lib/sockio-c.c: Tidy.
+	* lib/cfuns-c.c (oa_getenv): Define.
+	* interp/sys-os.boot (getEnv): Import.
+	(sockGetString): Tidy.
+	* interp/sockio.lisp (sockGetString): Remove GCL's defentry.
+	* interp/server.boot (serverReadLine): sockGetString now takes
+	only one argument.
+	* interp/br-saturn.boot (operationIsNiladicConstructor): New.
+	(operationIsConstructor): Likewise.
+	(displayDomainOp): Use them.
+	* include/cfuns.h (oa_getenv): Declare.
+	* include/sockio.h: Tidy.
+	* boot/translator.boot (needsStableReference?): New.
+	(coerceToNativeType): Likewise.
+	(prepareArgumentsForNativeCall): Likewise.
+	(genImportDeclaration): Use them.
+
 2008-04-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sman/spadclient.c: Cleanup.

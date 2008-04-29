@@ -79,17 +79,15 @@ serverReadLine(stream) ==
        $EndServerSession := true
      action = $LispCommand =>
        $NeedToSignalSessionManager := true
-       stringBuf := MAKE_-STRING $sockBufferLength
-       sockGetString($MenuServer, stringBuf, $sockBufferLength)
-       form := unescapeStringsInForm READ_-FROM_-STRING stringBuf
+       buf := sockGetString $MenuServer
+       form := unescapeStringsInForm READ_-FROM_-STRING buf
        protectedEVAL form
      action = $QuietSpadCommand =>
        $NeedToSignalSessionManager := true
        executeQuietCommand()
      action = $SpadCommand =>
        $NeedToSignalSessionManager := true
-       stringBuf := MAKE_-STRING 512
-       sockGetString($MenuServer, stringBuf, 512)
+       stringBuf := sockGetString $MenuServer
        CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
 	 parseAndInterpret stringBuf)))
        PRINC MKPROMPT()
@@ -116,8 +114,7 @@ oldParseAndInterpret str ==
 
 executeQuietCommand() ==
   $QuietCommand: fluid := true
-  stringBuf := MAKE_-STRING 512
-  sockGetString($MenuServer, stringBuf, 512)
+  stringBuf := sockGetString $MenuServer
   CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
     parseAndInterpret stringBuf)))
 
@@ -150,15 +147,13 @@ serverLoop() ==
     action = $EndSession =>
       $EndServerSession := true
     action = $LispCommand =>
-      stringBuf := MAKE_-STRING 512
-      sockGetString($MenuServer, stringBuf, 512)
+      stringBuf := sockGetString $MenuServer
       form := unescapeStringsInForm READ_-FROM_-STRING stringBuf
       EVAL form
     action = $QuietSpadCommand =>
       executeQuietCommand()
     action = $SpadCommand =>
-      stringBuf := MAKE_-STRING 512
-      sockGetString($MenuServer, stringBuf, 512)
+      stringBuf := sockGetString $MenuServer
       CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
         parseAndInterpret stringBuf)))
       PRINC MKPROMPT()

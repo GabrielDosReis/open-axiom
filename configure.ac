@@ -563,19 +563,24 @@ AC_SUBST(CCF)
 AC_SUBST(LDF)
 AC_SUBST(LISP)
 AC_SUBST(GCLOPTS)
-void_type='void'
-char_type='char'
-int_type='int'
-float_type='float'
-double_type='double'
-string_type='string'
-pointer_type='object'
 case $axiom_lisp_flavor in
    gcl)
+      void_type='void'
+      char_type='char'
+      int_type='int'
+      float_type='float'
+      double_type='double'
+      string_type='string'
+      pointer_type='object'
       ;;
    sbcl)
-      string_type='c-string'
-      pointer_type='system-area-pointer'
+      void_type='sb-alien:void'
+      char_type='sb-alien:char'
+      int_type='sb-alien:int'
+      float_type='sb-alien:float'
+      double_type='sb-alien:double'
+      string_type='sb-alien:c-string'
+      pointer_type='sb-alien:system-area-pointer'
       ;;
    clisp)
       void_type='nil'

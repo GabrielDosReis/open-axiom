@@ -62,6 +62,9 @@
 	   "resetErrorCount"
            "warn"
            
+	   "%ByteArray"
+	   "makeByteArray"
+
            "%hasFeature"
 	   "%systemOptions"
 	   "%systemArguments"
@@ -294,6 +297,7 @@
                                    :init-function entry-point
                                    :executable t
                                    :norc t
+				   :quiet t
                                    )
                (ext::saveinitmem core-image 
                                  :executable t
@@ -349,13 +353,22 @@
   (setq |$errorCount| 0))
 
 ;; utils
+
+;; GCL has a hard limit on the number of arguments for concatenate.
+;; However, it has a specialized versions for catenating string
+;; that seems immune to that hard limit.  Specialized accordingly.
+(defun |catenateStrings| (&rest l)
+  #+ :gcl (apply #'si::string-concatenate l)
+  #- :gcl (apply #'concatenate 'string l))
+
 (defun concat (a b &rest l)
-  (let ((type (cond ((bit-vector-p a) 'bit-vector) (t 'string))))
-    (cond ((eq type 'string)
-	   (setq a (string a) b (string b))
-	   (if l (setq l (mapcar #'string l)))))
-    (if l (apply #'concatenate type a b l)
-      (concatenate type a b))) )
+  (cond ((bit-vector-p a)
+	 (apply #'concatenate 'bit-vector a b l))
+	(t 
+	 (apply #'|catenateStrings| 
+		(string a)
+		(string b) 
+		(mapcar #'string l)))))
 
 (defun |fatalError| (msg)
   (|countError|)
@@ -814,6 +827,17 @@
 ;; -*- Native Datatype correspondance -*-
 ;; 
 
+;; Datatype for buffers mostly used for transmitting data between
+;; the Lisp world and Native World.
+(deftype |%ByteArray| ()
+  '(simple-array (unsigned-byte 8)))
+
+(declaim (ftype (function (fixnum) |%ByteArray|) |makeByteArray|))
+(defun |makeByteArray| (n)
+  (make-array n 
+	       :element-type '(unsigned-byte 8)
+	       :initial-element 0))
+
 ;; native data type translation table
 (defconstant |$NativeTypeTable|
   '((|void|    . @void_type@)
@@ -822,4 +846,5 @@
     (|float|   . @float_type@)
     (|double|  . @double_type@)
     (|string|  . @string_type@)
+    (|buffer|  . @pointer_type@)
     (|pointer| . @pointer_type@)))

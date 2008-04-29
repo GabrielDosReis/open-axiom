@@ -36,21 +36,6 @@
 (import-module "boot-pkg")
 (in-package "BOOT")
 
-#+KCL
-(progn
-;; GCL may pass strings by value.  'sock_get_string_buf' should fill
-;; string with data read from connection, therefore needs address of
-;; actual string buffer. We use 'sock_get_string_buf_wrapper' to
-;; resolve the problem
-  (clines "int sock_get_string_buf_wrapper(int i, object x, int j)"
-          "{ if (type_of(x)!=t_string) FEwrong_type_argument(sLstring,x);"
-          "  if (x->st.st_fillp<j)"
-          "    FEerror(\"string too small in sock_get_string_buf_wrapper\",0);"
-          "  return sock_get_string_buf(i, x->st.st_self, j); }")
-  (defentry |sockGetString| (int object int) 
-     (int "sock_get_string_buf_wrapper"))
-  )
-
 ;; Macros for use in Boot
 
 ;; Socket types.  This list must be consistent with the one in com.h
