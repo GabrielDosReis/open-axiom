@@ -78,25 +78,37 @@ typedef struct openaxiom_sio {
 } openaxiom_sio;
 
 
-/* Close a socket communication endpoint.  */
+
+OPENAXIOM_EXPORT int sread(openaxiom_sio*, openaxiom_byte*, int, const char*);
+OPENAXIOM_EXPORT int swrite(openaxiom_sio*, const openaxiom_byte*, int,
+                            const char*);
+
+OPENAXIOM_EXPORT int wait_for_client_read(openaxiom_sio*, openaxiom_byte*,
+                                          int, const char*);
+OPENAXIOM_EXPORT int wait_for_client_write(openaxiom_sio*,
+                                           const openaxiom_byte*, int,
+                                           const char*);
+
+OPENAXIOM_EXPORT int make_server_name(char*, const char*);
+OPENAXIOM_EXPORT int make_server_number(void);
+OPENAXIOM_EXPORT openaxiom_sio* connect_to_local_server(char*, int, int);
+OPENAXIOM_EXPORT int open_server(const char*);
+OPENAXIOM_EXPORT int accept_connection(openaxiom_sio*);
+OPENAXIOM_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
+OPENAXIOM_EXPORT void close_socket(openaxiom_socket, const char*);
 OPENAXIOM_EXPORT void axiom_close_socket(openaxiom_socket);
 
 OPENAXIOM_EXPORT int get_int(openaxiom_sio*);
-OPENAXIOM_EXPORT char* get_string(openaxiom_sio*);
 OPENAXIOM_EXPORT double get_float(openaxiom_sio*);
-OPENAXIOM_EXPORT openaxiom_sio* connect_to_local_server(char*, int, int);
-OPENAXIOM_EXPORT int sread(openaxiom_sio*, char*, int, const char*);
+OPENAXIOM_EXPORT double sock_get_float(int);
+OPENAXIOM_EXPORT int get_sfloats(openaxiom_sio*, float*, int);
+OPENAXIOM_EXPORT char* get_string(openaxiom_sio*);
 OPENAXIOM_EXPORT double plus_infinity(void);
 OPENAXIOM_EXPORT double minus_infinity(void);
 OPENAXIOM_EXPORT double NANQ(void);
 OPENAXIOM_EXPORT void sigpipe_handler(int);
-OPENAXIOM_EXPORT int wait_for_client_read(openaxiom_sio*, char*,
-                                          int, const char*);
-OPENAXIOM_EXPORT int wait_for_client_write(openaxiom_sio*, const char*,
-                                           int, const char*);
-OPENAXIOM_EXPORT int swrite(openaxiom_sio*, const char*, int, const char*);
-OPENAXIOM_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
-OPENAXIOM_EXPORT int fill_buf(openaxiom_sio*, char*, int, char*);
+OPENAXIOM_EXPORT int fill_buf(openaxiom_sio*, openaxiom_byte*, int,
+                              const char*);
 OPENAXIOM_EXPORT int sock_get_int(int);
 OPENAXIOM_EXPORT int get_ints(openaxiom_sio*, int*, int);
 OPENAXIOM_EXPORT int sock_get_ints(int, int*, int);
@@ -121,8 +133,6 @@ OPENAXIOM_EXPORT int send_sfloats(openaxiom_sio*, const float*, int);
 OPENAXIOM_EXPORT int sock_send_sfloats(int, const float*, int);
 OPENAXIOM_EXPORT int send_floats(openaxiom_sio*, const double*, int);
 OPENAXIOM_EXPORT int sock_send_floats(int, const double*, int);
-OPENAXIOM_EXPORT double sock_get_float(int);
-OPENAXIOM_EXPORT int get_sfloats(openaxiom_sio*, float*, int);
 OPENAXIOM_EXPORT int sock_get_sfloats(int, float*, int);
 OPENAXIOM_EXPORT int get_floats(openaxiom_sio*, double*, int);
 OPENAXIOM_EXPORT int sock_get_floats(int, double*, int);
@@ -132,21 +142,15 @@ OPENAXIOM_EXPORT int send_signal(openaxiom_sio*, int);
 OPENAXIOM_EXPORT int sock_send_signal(int, int);
 OPENAXIOM_EXPORT int send_wakeup(openaxiom_sio*);
 OPENAXIOM_EXPORT int sock_send_wakeup(int);
-OPENAXIOM_EXPORT openaxiom_sio* connect_to_local_server_new(char*, int, int);
 OPENAXIOM_EXPORT void remote_stdio(openaxiom_sio*);
 OPENAXIOM_EXPORT void init_purpose_table(void);
-OPENAXIOM_EXPORT int make_server_number(void);
-OPENAXIOM_EXPORT void close_socket(openaxiom_socket, char*);
-OPENAXIOM_EXPORT int make_server_name(char*, char*);
-OPENAXIOM_EXPORT int open_server(char*);
-OPENAXIOM_EXPORT int accept_connection(openaxiom_sio*);
 OPENAXIOM_EXPORT void get_socket_type(openaxiom_sio*);
 OPENAXIOM_EXPORT int sock_accept_connection(int);
 OPENAXIOM_EXPORT void redirect_stdio(openaxiom_sio*);
 OPENAXIOM_EXPORT void init_socks(void);
 OPENAXIOM_EXPORT int server_switch(void);
 OPENAXIOM_EXPORT void flush_stdout(void);
-OPENAXIOM_EXPORT void print_line(char*);
+OPENAXIOM_EXPORT void print_line(const char*);
 
 
 #define MaxClients      150

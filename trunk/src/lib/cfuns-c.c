@@ -439,3 +439,30 @@ oa_system(const char* cmd)
    return system(cmd);
 }
 
+
+
+/* Return the value of an environment variable.  */
+OPENAXIOM_EXPORT char*
+oa_getenv(const char* var)
+{
+#ifdef __MINGW32__   
+#define BUFSIZE 128
+   char* buf = (char*) malloc(BUFSIZE);
+   int len = GetEnvironmentVariable(var, buf, BUFSIZE);
+   if (len == 0) {
+      free(buf);
+      return NULL;
+   }
+   else if (len > BUFSIZE) {
+      buf = (char*) realloc(len);
+      len = GetEnvironmentVariable(var, buf, len);
+      if (len == 0) {
+         free(buf);
+         return NULL;
+      }
+   }
+   return buf;
+#else
+   return getenv(var);
+#endif   
+}

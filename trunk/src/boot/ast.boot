@@ -1131,7 +1131,7 @@ bfCreateDef x==
      if null cdr x
      then
        f:=car x
-       ["SETQ",f,["LIST",["QUOTE",f]]]
+       ["DEFPARAMETER",f,["LIST",["QUOTE",f]]]
      else
        a:=[bfGenSymbol() for i in cdr x]
        ["DEFUN",car x,a,["CONS",["QUOTE",car x],["LIST",:a]]]
@@ -1211,5 +1211,5 @@ bootSymbol s ==
 
 nativeType t ==
   null t => t
-  t' := ASSOC(coreSymbol t,$NativeTypeTable) => bootSymbol rest t'
+  t' := ASSOC(coreSymbol t,$NativeTypeTable) => rest t'
   fatalError CONCAT('"unsupported native type: ", SYMBOL_-NAME t)

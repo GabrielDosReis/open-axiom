@@ -1176,6 +1176,18 @@ htShowPageStarSaturn() ==
 --              Redefinitions from br-op2.boot
 --=======================================================================
 
+++ returns true if op designate a niladic constructor.  Note that
+++ constructors are symbols whereas ordinary operations are strings.
+operationIsNiladicConstructor op ==
+  IDENTP op => niladicConstructorFromDB op
+  false
+
+++ Like operationIsNiladicConstructor() except that we just want
+++ to know whether `op' is a constructor, arity is unimportant.
+operationIsConstructor op ==
+  IDENTP op => getDualSignatureFromDB op
+  nil
+
 --------------> NEW DEFINITION (see br-op2.boot.pamphlet)
 displayDomainOp(htPage,which,origin,op,sig,predicate,
                 doc,index,chooseFn,unexposed?,$generalSearch?) ==
@@ -1209,12 +1221,14 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   ops := escapeSpecialChars STRINGIMAGE op
   n := #sig
   do
-    n = 2 and LASSOC('Nud,PROPLIST op) => htSay(ops,'" {\em ",quickForm2HtString KAR args,'"}")
-    n = 3 and LASSOC('Led,PROPLIST op) => htSay('"{\em ",quickForm2HtString KAR args,'"} ",ops,'" {\em ",quickForm2HtString KAR KDR args,'"}")
+    n = 2 and LASSOC('Nud,PROPLIST op) => 
+      htSay(ops,'" {\em ",quickForm2HtString KAR args,'"}")
+    n = 3 and LASSOC('Led,PROPLIST op) => 
+      htSay('"{\em ",quickForm2HtString KAR args,'"} ",ops,'" {\em ",quickForm2HtString KAR KDR args,'"}")
     if unexposed? and $includeUnexposed? then
       htSayUnexposed()
     htSay(ops)
-    predicate='ASCONST or niladicConstructorFromDB op or member(op,'(0 1)) => 'skip
+    predicate='ASCONST or operationIsNiladicConstructor op or member(op,'(0 1)) => 'skip
     which = '"attribute" and null args => 'skip
     htSay('"(")
     if IFCAR args then htSay('"{\em ",quickForm2HtString IFCAR args,'"}")
@@ -1254,7 +1268,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSaySaturn '"{\em Arguments:}"
       htSaySaturnAmpersand()
       firstTime := true
-      coSig := KDR getDualSignatureFromDB op  --check if op is constructor
+      coSig := KDR operationIsConstructor op  --check if op is constructor
       for a in args for t in rest $sig repeat
             if not firstTime then
               htSaySaturn '"\\ "

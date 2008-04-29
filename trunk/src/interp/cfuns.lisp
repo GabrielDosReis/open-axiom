@@ -35,9 +35,6 @@
 (import-module "boot-pkg")
 (in-package "BOOT")
 
-#+:GCL
-(defun |getEnv| (var-name)  (system::getenv var-name))
-
 ;;stolen from AXIOM-XL src/strops.c
 #+(AND KCL (NOT ELF))
 (Clines 

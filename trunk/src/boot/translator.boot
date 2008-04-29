@@ -310,6 +310,40 @@ shoeConsoleTrees s ==
 shoeAddComment l==  
   strconc('"; ", first l)
 
+++ True if objects of type native type `t' are sensible to GC.
+needsStableReference? t ==
+  %hasFeature KEYWORD::GCL => false    -- 
+  %hasFeature KEYWORD::SBCL or %hasFeature KEYWORD::CLISP =>
+    t = "pointer" or t = "buffer"
+  true          -- don't know; conservatively answer `yes'.
+
+
+++ coerce argument `a' to native type `t', in preparation for
+++ a call to a native functions.
+coerceToNativeType(a,t) ==
+  %hasFeature KEYWORD::GCL => a
+  %hasFeature KEYWORD::SBCL =>
+    t = "buffer" => [bfColonColon("SB-SYS","VECTOR-SAP"),a]
+    t = "string" => a     -- 'string's are automatically converted.
+    needsStableReference? t =>
+      fatalError '"don't know how to coerce argument for native type"
+    a
+  %hasFeature KEYWORD::CLISP =>
+    needsStableReference? t =>
+      fatalError '"don't know how to coerce argument for native type"
+    a   
+  fatalError '"don't know how to coerce argument for native type"
+
+++ filter out arguments that need stable references during call
+++ to native function, and convert all arguments as necessary.
+prepareArgumentsForNativeCall(args,types) ==
+  unstableArgs := [a for a in args for t in types
+                     | needsStableReference? t]
+  preparedArgs := [coerceToNativeType(a,t)
+                     for a in args for t in types]
+  [unstableArgs,preparedArgs]
+
+
 ++ Generate an import declaration for `op' as equivalent of the
 ++ foreign signature `sig'.  Here, `foreign' operationally means that
 ++ the entity is from the C language world. 
@@ -317,15 +351,29 @@ genImportDeclaration(op, sig) ==
   sig isnt ["Signature", op', m] => coreError '"invalid signature"
   m isnt ["Mapping", t, s] => coreError '"invalid function type"
   if not null s and SYMBOLP s then s := [s]
+
+  -- we don't deal with non-trivial return values (yet)
+  needsStableReference? t =>
+    fatalError '"non trivial return type for native function"
+
   %hasFeature KEYWORD::GCL => 
     [["DEFENTRY", op, [nativeType x for x in s], 
        [nativeType t, SYMBOL_-NAME op']]]
+
   args := [GENSYM() for x in s]
   %hasFeature KEYWORD::SBCL =>
+    [unstableArgs,newArgs] := prepareArgumentsForNativeCall(args,s)
+    null unstableArgs =>
+      [["DEFUN",op,args,
+	[INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
+	  [INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
+	    ["FUNCTION",nativeType t,:[nativeType x for x in s]]], :args]]]
     [["DEFUN",op,args,
-      [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
-        [INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
-          ["FUNCTION",nativeType t,:[nativeType x for x in s]]], :args]]]
+      [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"),unstableArgs,       
+	[INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
+	  [INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
+	    ["FUNCTION",nativeType t,:[nativeType x for x in s]]], :newArgs]]]]
+
   %hasFeature KEYWORD::CLISP =>
     -- there is a curious bug in the CLisp's FFI support whereby
     -- foreign declarations compiled separately will have the wrong
@@ -340,7 +388,9 @@ genImportDeclaration(op, sig) ==
 	    bfColonColon("FFI", nativeType x)] for x in s for a in args]],
 	      [KEYWORD::RETURN_-TYPE,bfColonColon("FFI",nativeType t)],
 		[KEYWORD::LANGUAGE,KEYWORD::STDC]]
-    forwardingFun := ["DEFUN",op,args,[n,:args]]
+    forwardingFun := 
+       ["DEFUN",op,args,
+          [n,:[coerceToNativeType(a,t) for a in args for x in s]]
     [foreignDecl,forwardingFun]
   fatalError '"import declaration not implemented for this Lisp"
 
@@ -747,7 +797,6 @@ loadNativeModule m ==
   %hasFeature KEYWORD::CLISP =>
     EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
   systemError '"don't know how to load a dynamically linked module"
-
 
 $OpenAxiomCoreModuleLoaded := false
 

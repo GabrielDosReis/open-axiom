@@ -63,6 +63,9 @@ import renameFile for
 import mkdir for
   oa__mkdir: string -> int  -- 0: sucess, -1: failure.
 
+import getEnv for
+  oa__getenv: string -> string
+
 ++ socket interface
 import openServer for
   open__server: string -> int
@@ -73,9 +76,8 @@ import sockGetInt for
 import sockSendInt for
   sock__send__int: (int,int) -> int
 
-)if not %hasFeature KEYWORD::GCL
 import sockGetString for
-  sock__get__string__buf: (int,pointer,int) -> int
+  sock__get__string: int -> string
 )endif
 
 import doSendString for
