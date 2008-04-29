@@ -2041,7 +2041,7 @@
     (RETURN
       (COND
         ((NULL (CDR |x|)) (SETQ |f| (CAR |x|))
-         (LIST 'SETQ |f| (LIST 'LIST (LIST 'QUOTE |f|))))
+         (LIST 'DEFPARAMETER |f| (LIST 'LIST (LIST 'QUOTE |f|))))
         ('T
          (SETQ |a|
                (LET ((|bfVar#121| NIL) (|bfVar#120| (CDR |x|))
@@ -2202,7 +2202,7 @@
       (COND
         ((NULL |t|) |t|)
         ((SETQ |t'| (ASSOC (|coreSymbol| |t|) |$NativeTypeTable|))
-         (|bootSymbol| (CDR |t'|)))
+         (CDR |t'|))
         ('T
          (|fatalError|
              (CONCAT "unsupported native type: " (SYMBOL-NAME |t|))))))))

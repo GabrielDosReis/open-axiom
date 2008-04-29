@@ -42,6 +42,25 @@ import ast
 
 )package "BOOTTRAN"
 
+++ If non nil, holds the name of the current module being translated.
+$currentModuleName := nil
+
+++ Stack of foreign definitions to cope with CLisp's odd FFI interface.
+$foreignsDefsForCLisp := []
+
+genModuleFinalization(stream) ==
+  %hasFeature KEYWORD::CLISP =>
+    null $foreignsDefsForCLisp => nil
+    $currentModuleName = nil =>
+       coreError '"current module has no name"
+    init := 
+      ["DEFUN", INTERN strconc($currentModuleName,"InitCLispFFI"), nil,
+        ["MAPC",["FUNCTION", "FMAKUNBOUND"],
+          ["QUOTE",[second d for d in $foreignsDefsForCLisp]]],
+          :[["EVAL",["QUOTE",d]] for d in $foreignsDefsForCLisp]]
+    REALLYPRETTYPRINT(init,stream)
+  nil
+
 +++ True if we are translating code written in Old Boot.
 $translatingOldBoot := false
 
@@ -88,9 +107,10 @@ BOOTTOCLLINES(lines, fn, outfn)==
 shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
   $GenVarCounter := 0
-  shoeOpenOutputFile(stream,outfn,
-    (for line in lines repeat shoeFileLine (line,stream);
-      shoeFileTrees(shoeTransformStream a,stream)))
+  shoeOpenOutputFile(stream,outfn,_
+    ((for line in lines repeat shoeFileLine(line,stream);
+       shoeFileTrees(shoeTransformStream a,stream));
+      genModuleFinalization(stream)))
   outfn
  
 ++ (boottoclc "filename") translates the file "filename.boot" to
@@ -115,7 +135,8 @@ shoeClCLines(a,fn,lines,outfn)==
   shoeOpenOutputFile(stream,outfn,
     (for line in lines repeat shoeFileLine (line,stream);
       shoeFileTrees(shoeTransformToFile(stream,
-	  shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream)))
+	  shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream);
+      genModuleFinalization(stream)))
   outfn
  
 ++ (boottomc "filename") translates the file "filename.boot"
@@ -389,9 +410,10 @@ genImportDeclaration(op, sig) ==
 	      [KEYWORD::RETURN_-TYPE,bfColonColon("FFI",nativeType t)],
 		[KEYWORD::LANGUAGE,KEYWORD::STDC]]
     forwardingFun := 
-       ["DEFUN",op,args,
-          [n,:[coerceToNativeType(a,t) for a in args for x in s]]
-    [foreignDecl,forwardingFun]
+      ["DEFUN",op,args,
+         [n,:[coerceToNativeType(a,t) for a in args for x in s]]]
+    $foreignsDefsForCLisp := [foreignDecl,:$foreignsDefsForCLisp]
+    [forwardingFun]
   fatalError '"import declaration not implemented for this Lisp"
 
 shoeOutParse stream ==
@@ -451,7 +473,9 @@ bpOutItem()==
     Signature(op,t) =>
       bpPush [genDeclaration(op,t)]
 
-    %Module(m) => 
+    %Module(m) =>
+      $currentModuleName := m 
+      $foreignsDefsForCLisp := nil
       bpPush [shoeCompileTimeEvaluation ["PROVIDE", STRING m]]
 
     Import(m) => 
@@ -798,10 +822,6 @@ loadNativeModule m ==
     EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
   systemError '"don't know how to load a dynamically linked module"
 
-$OpenAxiomCoreModuleLoaded := false
-
 loadSystemRuntimeCore() ==
-  $OpenAxiomCoreModuleLoaded => nil
   loadNativeModule strconc(systemLibraryDirectory(),
     '"libopen-axiom-core",$NativeModuleExt)
-  $OpenAxiomCoreModuleLoaded := true

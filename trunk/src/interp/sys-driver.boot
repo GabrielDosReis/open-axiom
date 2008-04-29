@@ -65,6 +65,10 @@ AxiomCore::%sysInit() ==
   initMemoryConfig()
   if not (%hasFeature KEYWORD::GCL) then
     loadSystemRuntimeCore()
+)if %hasFeature KEYWORD::CLISP
+    -- a goat for CLisp FFI, please.
+    sys_-osInitCLispFFI()    
+)endif
 )if %hasFeature KEYWORD::GCL
   SETQ(COMPILER::_*COMPILE_-VERBOSE_*,false)
   SETQ(COMPILER::_*SUPPRESS_-COMPILER_-WARNINGS_*,true)

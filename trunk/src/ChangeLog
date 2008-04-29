@@ -1,5 +1,15 @@
 2008-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/util.lisp (build-interpsys): Call %sysInit.
+	* boot/translator.boot (shoeClLines): Output module finalization.
+	(shoeClCLines): Likewise.
+	(genImportDeclaration): Tidy.
+	(bpOutItem): Likewise.
+	($OpenAxiomCoreModuleLoaded): Remove.
+	* interp/sys-driver.boot: Tidy.
+
+2008-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in: Export %ByteArray and makeByteArray.
 	(CONCAT): Tdiy.
 	* lib/sockio-c.c: Tidy.

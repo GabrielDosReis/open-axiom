@@ -529,6 +529,7 @@
   (reroot)
   (mapcar #'|AxiomCore|::|importModule| load-files)
   (|resetWorkspaceVariables|)
+  (|AxiomCore|::|%sysInit|)
   (|initHist|)
   (|initNewWorld|)
   (compressopen)
