@@ -38,6 +38,7 @@
 -- supporting C runtime libopen-axiom-core.
 --
 
+module sys_-os
 import types
 import cfuns
 import sockio
@@ -78,7 +79,6 @@ import sockSendInt for
 
 import sockGetString for
   sock__get__string: int -> string
-)endif
 
 import doSendString for
   sock__send__string__len: (int, string, int) -> int
