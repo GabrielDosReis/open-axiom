@@ -1,4 +1,4 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "parser"))
+(PROVIDE "parser")
 
 (IMPORT-MODULE "includer")
 
@@ -442,9 +442,21 @@
             (|bpPush| (|bfSymbol| (|bpPop1|))))))
     ('T (|bpString|))))
 
+(DEFUN |bpExportItemList| () (|bpListAndRecover| #'|bpSignature|))
+
+(DEFUN |bpExports| () (|bpPileBracketed| #'|bpExportItemList|))
+
 (DEFUN |bpModule| ()
-  (AND (|bpEqKey| 'MODULE) (OR (|bpName|) (|bpTrap|))
-       (|bpPush| (|%Module| (|bpPop1|)))))
+  (COND
+    ((|bpEqKey| 'MODULE)
+     (IDENTITY
+         (PROGN
+           (OR (|bpName|) (|bpTrap|))
+           (COND
+             ((|bpEqKey| 'WHERE)
+              (AND (|bpExports|)
+                   (|bpPush| (|%Module| (|bpPop2|) (|bpPop1|)))))
+             ('T (|bpPush| (|%Module| (|bpPop1|) NIL)))))))))
 
 (DEFUN |bpImport| ()
   (COND

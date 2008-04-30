@@ -411,12 +411,27 @@ bpConstTok() ==
                bpPush bfSymbol bpPop1()
      bpString()
 
+
+++ ExportItemList:
+++    Signature
+++    ExportItemList Signature
+bpExportItemList() ==
+  bpListAndRecover function bpSignature
+
+++ Exports:
+++   pile-bracketed ExporItemList
+bpExports() ==
+  bpPileBracketed function bpExportItemList
+
 ++ Parse a module definitoin
 ++   Module:
 ++     MODULE QUOTE String
 bpModule() ==
-  bpEqKey "MODULE" and (bpName() or bpTrap()) and 
-     bpPush %Module bpPop1()
+  bpEqKey "MODULE" => 
+    bpName() or bpTrap()
+    bpEqKey "WHERE" =>
+      bpExports() and bpPush %Module(bpPop2(), bpPop1())
+    bpPush %Module(bpPop1(),nil)
 
 ++ Parse a module import, or a import declaration for a foreign entity.
 ++ Import:

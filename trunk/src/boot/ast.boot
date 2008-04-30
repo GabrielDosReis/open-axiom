@@ -77,7 +77,7 @@ structure %Name ==
 
 structure %Ast ==
   Command(%String)                      -- includer command
-  %Module(%String)                      -- module declaration
+  %Module(%Name,%List)                  -- module declaration
   Import(%String)                       -- import module
   ImportSignature(Name, Signature)      -- import function declaration
   TypeAlias(%Head, %List)               -- type alias definition
@@ -1131,7 +1131,7 @@ bfCreateDef x==
      if null cdr x
      then
        f:=car x
-       ["DEFPARAMETER",f,["LIST",["QUOTE",f]]]
+       ["DEFCONSTANT",f,["LIST",["QUOTE",f]]]
      else
        a:=[bfGenSymbol() for i in cdr x]
        ["DEFUN",car x,a,["CONS",["QUOTE",car x],["LIST",:a]]]

@@ -1,4 +1,4 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "scanner"))
+(PROVIDE "scanner")
 
 (IMPORT-MODULE "tokens")
 

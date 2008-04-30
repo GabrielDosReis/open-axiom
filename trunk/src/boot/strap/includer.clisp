@@ -1,18 +1,8 @@
-(EVAL-WHEN (:COMPILE-TOPLEVEL) (PROVIDE "includer"))
+(PROVIDE "includer")
 
 (IMPORT-MODULE "tokens")
 
 (IN-PACKAGE "BOOTTRAN")
-
-(DEFPARAMETER |%UnknownMode| (LIST '|%UnknownMode|))
-
-(DEFPARAMETER |%TranslateMode| (LIST '|%TranslateMode|))
-
-(DEFPARAMETER |%CompileMode| (LIST '|%CompileMode|))
-
-(DEFPARAMETER |%MakeMode| (LIST '|%MakeMode|))
-
-(DEFPARAMETER |$driverMode| |%UnknownMode|)
 
 (DEFUN PNAME (|x|)
   (COND
