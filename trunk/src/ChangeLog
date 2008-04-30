@@ -1,5 +1,7 @@
 2008-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: Declare tokens as constants.
+
 	* boot/parser.boot (bpExportItemList): New.
 	(bpExports): Likewise.
 	(bpModule): Use it.  
