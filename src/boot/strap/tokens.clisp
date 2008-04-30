@@ -4,7 +4,7 @@
 
 (IN-PACKAGE "BOOTTRAN")
 
-(DEFPARAMETER |shoeKeyWords|
+(DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
           (LIST "catch" 'CATCH) (LIST "cross" 'CROSS)
           (LIST "else" 'ELSE) (LIST "for" 'FOR) (LIST "if" 'IF)
@@ -44,27 +44,27 @@
 
 (DEFPARAMETER |shoeKeyTable| (|shoeKeyTableCons|))
 
-(DEFPARAMETER |shoeSPACE| (QENUM "    " 0))
+(DEFCONSTANT |shoeSPACE| (QENUM "    " 0))
 
-(DEFPARAMETER |shoeESCAPE| (QENUM "_  " 0))
+(DEFCONSTANT |shoeESCAPE| (QENUM "_  " 0))
 
 (DEFPARAMETER |shoeLispESCAPE| (QENUM "!  " 0))
 
-(DEFPARAMETER |shoeSTRINGCHAR| (QENUM "\"  " 0))
+(DEFCONSTANT |shoeSTRINGCHAR| (QENUM "\"  " 0))
 
-(DEFPARAMETER |shoePLUSCOMMENT| (QENUM "+   " 0))
+(DEFCONSTANT |shoePLUSCOMMENT| (QENUM "+   " 0))
 
-(DEFPARAMETER |shoeMINUSCOMMENT| (QENUM "-   " 0))
+(DEFCONSTANT |shoeMINUSCOMMENT| (QENUM "-   " 0))
 
-(DEFPARAMETER |shoeDOT| (QENUM ".   " 0))
+(DEFCONSTANT |shoeDOT| (QENUM ".   " 0))
 
-(DEFPARAMETER |shoeEXPONENT1| (QENUM "E   " 0))
+(DEFCONSTANT |shoeEXPONENT1| (QENUM "E   " 0))
 
-(DEFPARAMETER |shoeEXPONENT2| (QENUM "e   " 0))
+(DEFCONSTANT |shoeEXPONENT2| (QENUM "e   " 0))
 
-(DEFPARAMETER |shoeCLOSEPAREN| (QENUM ")   " 0))
+(DEFCONSTANT |shoeCLOSEPAREN| (QENUM ")   " 0))
 
-(DEFPARAMETER |shoeTAB| 9)
+(DEFCONSTANT |shoeTAB| 9)
 
 (DEFUN |shoeInsert| (|s| |d|)
   (PROG (|v| |k| |n| |u| |h| |l|)
