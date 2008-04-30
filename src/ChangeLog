@@ -1,5 +1,13 @@
 2008-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot (bpExportItemList): New.
+	(bpExports): Likewise.
+	(bpModule): Use it.  
+	* boot/ast.boot (bfCreateDef): Tidy.
+	* boot/strap: Update cached Lisp translation.
+
+2008-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/util.lisp (build-interpsys): Call %sysInit.
 	* boot/translator.boot (shoeClLines): Output module finalization.
 	(shoeClCLines): Likewise.

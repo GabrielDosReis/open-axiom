@@ -448,6 +448,12 @@ genDeclaration(n,t) ==
   ["DECLAIM",["TYPE",t,n]]
 
 
+++ Translate the signature declaration `d' to its Lisp equivalent.
+translateSignatureDeclaration d ==
+  case d of 
+    Signature(n,t) => genDeclaration(n,t)
+    otherwise => coreError '"signature expected"  
+
 ++ A non declarative expression `expr' appears at toplevel and its
 ++ translation needs embeddeding in an `EVAL-WHEN'.
 translateToplevelExpression expr ==
@@ -473,10 +479,11 @@ bpOutItem()==
     Signature(op,t) =>
       bpPush [genDeclaration(op,t)]
 
-    %Module(m) =>
+    %Module(m,ds) =>
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
-      bpPush [shoeCompileTimeEvaluation ["PROVIDE", STRING m]]
+      bpPush [["PROVIDE", STRING m],
+        :[translateSignatureDeclaration d for d in ds]]
 
     Import(m) => 
       bpPush [["IMPORT-MODULE", STRING m]]
