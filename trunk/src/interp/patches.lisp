@@ -32,7 +32,6 @@
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (import-module "macros")
-(import-module "sockio")
 (import-module "g-timer")
 (import-module "sys-driver")
 (in-package "BOOT")

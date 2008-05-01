@@ -634,3 +634,32 @@ $quitTag ==
 )else
   GENSYM()
 )endif
+
+--% Constants for OpenAxiom IPC
+--??? These constants should ideally be coming from a single
+--??? source used by both the C and the Lisp world.
+$SessionManager == 1
+$ViewportServer == 2
+$MenuServer == 3
+$SessionIO == 4
+$MessageServer == 5
+$InterpWindow == 6
+$KillSpad == 7
+$DebugWindow == 8
+$Forker == 9
+
+$CreateFrame == 1
+$SwitchFrames == 2
+$EndOfOutput == 3
+$CallInterp == 4
+$EndSession == 5
+$LispCommand == 6
+$SpadCommand == 7
+$SendXEventToHyperTeX == 8
+$QuietSpadCommand == 9
+$CloseClient == 10
+$QueryClients == 11
+$QuerySpad == 12
+$NonSmanSession == 13
+$KillLispSystem == 14
+

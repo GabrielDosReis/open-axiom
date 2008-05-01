@@ -147,7 +147,7 @@ OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
 	setvars.$(FASLEXT)	\
 	sfsfun-l.$(FASLEXT)	sfsfun.$(FASLEXT)	\
 	simpbool.$(FASLEXT)	slam.$(FASLEXT)	\
-	sockio.$(FASLEXT)	spad.$(FASLEXT)	\
+	spad.$(FASLEXT)	\
 	spaderror.$(FASLEXT)				\
 	template.$(FASLEXT)	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	\
@@ -627,7 +627,7 @@ hypertex.$(FASLEXT): hypertex.boot types.$(FASLEXT)
 
 ## OpenAxiom's interpreter.
 
-patches.$(FASLEXT): patches.lisp macros.$(FASLEXT) sockio.$(FASLEXT) \
+patches.$(FASLEXT): patches.lisp macros.$(FASLEXT) \
 		g-timer.$(FASLEXT) sys-driver.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
@@ -1056,11 +1056,7 @@ sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
 vmlisp.$(FASLEXT): vmlisp.lisp types.$(FASLEXT) sys-globals.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-sys-os.$(FASLEXT): sys-os.boot types.$(FASLEXT) \
-		cfuns.$(FASLEXT) sockio.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-sockio.$(FASLEXT): sockio.lisp boot-pkg.$(FASLEXT)
+sys-os.$(FASLEXT): sys-os.boot types.$(FASLEXT) cfuns.$(FASLEXT) 
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 types.$(FASLEXT): types.boot boot-pkg.$(FASLEXT)
