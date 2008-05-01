@@ -1,3 +1,7 @@
+2008-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sockio.lisp: Remove.
+
 2008-04-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: Declare tokens as constants.

@@ -41,7 +41,6 @@
 module sys_-os
 import types
 import cfuns
-import sockio
 )package "BOOT"
 
 )if not %hasFeature KEYWORD::GCL
