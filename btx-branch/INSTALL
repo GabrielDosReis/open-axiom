@@ -1,0 +1,160 @@
+Requirements
+============
+
+OpenAxiom currenly requires a Lisp system for its runtime support.
+OpenAxiom is known to build with the GNU Common Lisp (GCL versions 2.6.7
+or 2.6.8), Steel Bank Common Lisp (SBCL version 1.0.x or higher), and
+CLisp (version 2.44.x or higher).  So, if you already have any of the
+above mentioned Lisp system, your are good to go.  Otherwise, you
+would need to download a dependency tarball from OpenAxiom's download
+web site.  See instructions below. 
+
+OpenAxiom needs `noweb' for extracting its source codes.  If you don't
+have running `noweb' utilities, you would need to either download the
+dependency tarball from OpenAxiom's download web site, or separately
+install them, and then proceed with configuration as detailed below.
+
+Note that GCL or SBCL or CLisp, and `noweb' are needed only to build
+OpenAxiom.  They are not needed once the system is installed.
+
+Finally, you would need a working GNU C compiler.  It is also recommended
+that you install X11 development headers and libraries, especially
+Xpm.  Windows (MingW/MSYS) users do not need X11 components.  They
+still need a working GNU C compiler though.
+
+Ah, one more note:  OpenAxiom requires GNU Make.
+
+1. Lisp and noweb prerequisites
+   ----------------------------
+
+If any of GCL or noweb is missing from the environment environment
+where you're building, then you need to either separately install
+them, or download the dependency tarball
+
+    open-axiom-1.1.x-dep.tar.bz2
+
+Please, notice that GCL and noweb are needed only to *build*
+OpenAxiom.  If you plan to build OpenAxiom often, then it probably is
+a good idea to separately build and install those tools once for all.
+
+
+If you already have GCL and noweb installed, please go to step 2.
+
+1.a. Download the dependency tarball open-axiom-1.1.x-dep.tar.bz2
+
+1.b. Decompress the dependency tarball
+
+      tar jxfv open-axiom-1.1.x-dep.tar.bz2
+
+
+    That should decompress the dependency tarball in a directory
+named open-axiom-1.1.x.  Rename it to open-axiom-1.2.0, e.g.:
+
+       mv open-axiom-1.1.x open-axiom-1.2.0
+
+2. Building OpenAxiom
+   ------------------
+
+It is assumed you have already downloaded open-axiom source tarball,
+e.g. open-axiom-1.2.0.tar.bz2.  
+
+Note: If you don't have GCL or noweb in the build environment, please
+make sure that you have either followed the instructions in step 1.,
+or have separately installed them before proceeding.
+
+2.a. Decompress the OpenAxiom source tarball
+
+      tar jfxv open-axiom-1.2.0.tar.bz2
+
+2.b. Configure OpenAxiom
+
+It is highly recommended that you build OpenAxiom in a directory
+different from the one that contains the sources.  For example, you
+may create a directory sibling to open-axiom-1.2.0 and build the
+system from there:
+
+      mkdir build-oa
+      cd build-oa
+      ../open-axiom-1.2.0/configure
+
+It is possible to tell configure where to put the final OpenAxiom
+executables.  By default, when you just type in configure like above,
+it will configure the system with prefix /usr/local.  You can instead
+say where you want it to be installed, let's say /banana/space.  You
+would then have typed
+
+     ../open-axiom-1.2.0/configure --prefix=/banana/space
+
+This is recommended, especially if you already have a different software, 
+not OpenAxiom, the executable filename of which is also called `axiom'.
+That way, you don't confuse OpenAxiom's command `axiom', with any other
+program that you may have on your system.  Most users usually have only
+one software with a given name on their machines.  If you plan to 
+have many software sharing the same executable name, please make sure
+that you install them in distinct directories so that they don't conflict.
+
+2.c. Make the system
+
+Just type
+
+       make
+
+or
+
+       make 2>&1 | tee build.log
+
+if you would like to inspect the build messages later on -- but most
+users probably don't.
+
+2.d.  Have some coffee
+
+2.e.  Have more coffee
+
+It can take from 30min to 2 hours to build, depending on the
+compute power of the build machine.
+
+3. Installing OpenAxiom   
+   --------------------
+
+Once the build (step 2.) has gone successfully, you may optionally try
+to regress-test the system -- it can take hours.
+
+3.a. [optional]
+
+       make check 2>&1 | tee tests.log
+
+3.b. The system is ready to install
+
+If you configured the system to install in a place that needs special
+privilege, e.g. /usr/local that requires administrator write, please
+make sure that you've gained the adequate privileges.  Then, type:
+
+      make install
+
+3.c. The system is ready for use
+
+After step 3.b., your should have a script called `open-axiom', in
+/usr/local/bin or /banana/space/bin or /whichever/prefix/you/used/bin,
+ready for use.  
+
+4.  Enjoy
+    -----
+
+About Make
+==========
+
+OpenAxiom build system requires GNU Make.  It might theoretically be
+possible to cram the Makefiles so that they can work with a large set 
+of Make programs.  However, doing so will not be cost effective.  GNU 
+Make has been ported to virtually any system current OpenAxiom can build
+one.  In particular, OpenAxiom uses GCL, which in turns requires GCC.
+GCC requires GNU Make.  GCL too requires GNU Make.  Consequently,
+the GNU Make requirement is not a stringent requirement.  It just
+reflects reality.
+
+So, if you're using a system where "make" is not GNU Make, then try
+"gmake" instead. 
+
+Send comments and suggestions to open-axiom-devel@lists.sf.net
+
+Gabriel Dos Reis

@@ -1,0 +1,127 @@
+
+## ----------------------------------------
+## -- Old-style OpenAxiom makefile variables --
+## ----------------------------------------
+
+GCLOPTS=@GCLOPTS@
+
+pamphlets = configure.ac.pamphlet Makefile.pamphlet
+
+
+subdir = 
+
+SUBDIRS = src
+
+build_srcdir = $(builddir)/src
+
+AXIOM_SRC_TARGETS = all-algebra all-asq all-axiomsys all-boot \
+	all-clef all-doc all-graph all-hyper all-input all-interpsys \
+	all-lib all-lisp all-sman all-driver all-src
+
+.PHONY: all $(AXIOM_SRC_TARGETS)
+all: all-ax
+
+all-ax: all-src
+	@echo finished system build on `date` | tee > lastBuildDate
+
+all-src: stamp-rootdirs @axiom_all_prerequisites@
+
+ifeq ($(strip $(axiom_include_gcl)),yes)
+all-boot all-lisp all-interpsys all-axiomsys \
+  all-algebra all-input: all-gcl
+endif
+
+$(AXIOM_SRC_TARGETS):
+	cd "$(build_srcdir)" && $(MAKE) $@
+
+stamp-rootdirs: $(axiom_build_document)
+	@mkdir -p "${TMP}"
+	@$(STAMP) stamp-rootdirs
+
+
+.PHONY: all-noweb
+all-noweb: $(axiom_build_bindir)/notangle
+
+.PHONY: maybe-cp-noweb-srcdir
+maybe-cp-noweb-srcdir: $(srcdir)/noweb
+	## Even though out-of-source build is what we recommend,
+	## noweb does not directly support that sort of build.
+	## So we copy the source to the build directory.
+	## We try to be nice to those who chose otherwise
+	## to build directly from the OpenAxiom source dir.
+	if test "$(srcdir)" != "$(builddir)" -a ! -d noweb; then \
+		cp -r "$(srcdir)"/noweb "$(builddir)"; \
+	fi
+
+$(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
+	## Noweb would like to install many things even if we
+	## are not interested in those.  Prepare the ground.
+	$(mkinstalldirs) "$(axiom_build_bindir)"
+	$(mkinstalldirs) "$(axiom_build_libdir)"
+	$(mkinstalldirs) "$(axiom_build_texdir)"
+	$(mkinstalldirs) "$(axiom_build_mandir)"
+	$(TOUCH) $(addprefix noweb/src/shell/, \
+			noweave notangle noweb noroff toroff) \
+		 $(wildcard "$(builddir)"/noweb/src/c/*.h) \
+		 $(wildcard "$(builddir)"/noweb/src/c/*.c)
+	## noweb's Makefile needs editing before we can build to suit
+	## our needs.  In particular, we must say when helper programs go,
+	## where the noweb style file goes, where the man pages go (even though
+	## in this specific context, they are not needed).  Finally,
+	## noweb insists on running `texhash' after installation, which is
+	## of no practical value for us in ths specific context.  We must
+	## convince it not to go there.
+	cd noweb/src && \
+	cat Makefile \
+	   | sed -e "s,^BIN=.*,BIN=$(axiom_abs_build_bindir)," \
+	         -e "s,^LIB=.*,LIB=$(axiom_abs_build_libdir)," \
+	         -e "s,^MAN=.*,MAN=$(axiom_abs_build_mandir)," \
+	         -e "s,^TEXINPUTS=.*,TEXINPUTS=$(axiom_abs_build_texdir)," \
+	         -e "s, make , $$\(MAKE\) ," \
+	         -e "s,c/nt,c/nt$(EXEEXT)," \
+	         -e "s,c/markup,c/markup$(EXEEXT)," \
+	         -e "s,c/mnt,c/mnt$(EXEEXT)," \
+	         -e "s,c/finduses,c/finduses$(EXEEXT)," \
+	         -e "s/-texhash.*/:/" \
+	         -e "s/ install-elisp//" \
+	   > Makefile.tmp && mv Makefile.tmp Makefile && \
+	./awkname $(AWK) && $(MAKE) all install
+.PHONY: all-gcl
+all-gcl: $(axiom_build_bindir)/gcl$(EXEEXT)
+
+$(axiom_build_bindir)/gcl$(EXEEXT):
+	if test "$(srcdir)" != "$(builddir)" -a ! -d gcl; then \
+	   cp -r "$(srcdir)"/gcl "$(builddir)"; \
+	fi; cd gcl; \
+	./configure --prefix="$(axiom_abs_builddir)" ${GCLOPTS} && \
+		$(MAKE) && $(MAKE) install
+install:
+	@echo Installing OpenAxiom in $(DESTDIR)$(prefix)
+	@$(mkinstalldirs) "$(DESTDIR)$(open_axiom_installdir)"
+	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(open_axiom_installdir)"
+	rm -f "$(DESTDIR)$(bindir)"/open-axiom
+	@$(mkinstalldirs) "$(DESTDIR)$(bindir)"
+	$(INSTALL_PROGRAM) src/driver/open-axiom$(EXEEXT) "$(DESTDIR)$(bindir)"
+	@echo OpenAxiom installation finished.
+
+.PHONY: check
+check:
+	cd src && $(MAKE) all-check
+
+
+mostlyclean-local:
+	@-rm -f lastBuildDate
+
+clean-local: mostlyclean-local
+	@rm -fr "$(axiom_build_nowebdir)"
+	@ rm -f stamp-*
+	@ rm -rf int
+
+distclean-local: clean-local
+	@-rm -rf build
+	@-rm -rf "$(axiom_targetdir)"
+	@-rm -f config.status config.log
+	@-rm -f Makefile
+
+$(top_builddir)/config.status: $(top_srcdir)/configure
+	$(SHELL) ./config.status --recheck
