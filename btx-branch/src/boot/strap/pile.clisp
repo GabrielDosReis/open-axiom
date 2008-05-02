@@ -1,10 +1,16 @@
-(PROVIDE "pile")
+(BOOT-IMPORT "includer")
 
-(IMPORT-MODULE "includer")
-
-(IMPORT-MODULE "scanner")
+(BOOT-IMPORT "scanner")
 
 (IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "pile")
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |shoePileInsert|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%Thing|) |shoeFirstTokPosn|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%Thing|) |shoeLastTokPosn|))
 
 (DEFUN |shoeFirstTokPosn| (|t|) (|shoeTokPosn| (CAAR |t|)))
 

@@ -1,8 +1,82 @@
-(PROVIDE "includer")
-
-(IMPORT-MODULE "tokens")
+(BOOT-IMPORT "tokens")
 
 (IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "includer")
+
+(DEFTYPE |%Stream| () 'STREAM)
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%String|) STRINGIMAGE))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%Thing|)
+                |SoftShoeError|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |bStreamNull|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String| |%String|) (|%Maybe| |%String|))
+                |shoePrefix?|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) (|%Maybe| |%String|))
+                |shoeLine?|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) (|%Maybe| |%String|))
+                |shoeLisp?|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) (|%Maybe| |%String|))
+                |shoePackage?|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String| |%Short|) |%List|)
+                |shoeReadLispString|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) (|%Maybe| |%String|)) PNAME))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol|) |%Char|) |char|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%Boolean|) EQCAR))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|)
+                |bAddLineNumber|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%List|) |%List|) |bAppend|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bDelay|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Short|) |%List|) |bIgen|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Stream|) |%List|) |bRgen|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%List|) |bNext|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) |shoeConsole|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String| |%String| |%Thing|) |%List|)
+                |shoeFindLines|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |shoeInclude|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) |%List|) |shoeNotFound|))
+
+(DECLAIM (FTYPE (FUNCTION NIL |%Thing|) |bpGeneralErrorHere|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) |%Thing|) |bpSpecificErrorHere|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%String|) |%Thing|)
+                |bpSpecificErrorAtToken|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%List|) |%Thing|)
+                |bpIgnoredFromTo|))
+
+(DECLAIM (TYPE |%List| |$stok|))
+
+(DECLAIM (TYPE |%Thing| |$ttok|))
+
+(DEFCONSTANT |%TranslateBootMode| (LIST '|%TranslateBootMode|))
+
+(DEFCONSTANT |%CompileBootMode| (LIST '|%CompileBootMode|))
+
+(DEFCONSTANT |%MakeMode| (LIST '|%MakeMode|))
+
+(DEFPARAMETER |$driverMode| NIL)
 
 (DEFUN PNAME (|x|)
   (COND
@@ -54,7 +128,6 @@
         (|SoftShoeError| |a| |key|)))))
 
 (DEFUN |bpSpecificErrorHere| (|key|)
-  (DECLARE (SPECIAL |$stok|))
   (|bpSpecificErrorAtToken| |$stok| |key|))
 
 (DEFUN |bpGeneralErrorHere| () (|bpSpecificErrorHere| "syntax error"))
@@ -146,7 +219,6 @@
 
 (DEFUN |bMap1| (&REST |z|)
   (PROG (|x| |f|)
-    (DECLARE (SPECIAL |$bStreamNil|))
     (RETURN
       (PROGN
         (SETQ |f| (CAR |z|))
@@ -157,7 +229,6 @@
 
 (DEFUN |shoeFileMap| (|f| |fn|)
   (PROG (|a|)
-    (DECLARE (SPECIAL |$bStreamNil|))
     (RETURN
       (PROGN
         (SETQ |a| (|shoeInputFile| |fn|))
@@ -260,7 +331,9 @@
                (SETQ |j| (+ |j| 1))))
            (COND
              (|good| (SUBSTRING |whole| (LENGTH |prefix|) NIL))
-             ('T |good|))))))))
+             ('T NIL))))))))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) |%Boolean|) |shoePlainLine?|))
 
 (DEFUN |shoePlainLine?| (|s|)
   (COND
@@ -296,6 +369,8 @@
 (DEFUN |shoeIncludeFunction?| (|s|)
   (|shoePrefix?| ")includefunction" |s|))
 
+(DECLAIM (FTYPE (FUNCTION (|%String|) |%List|) |shoeBiteOff|))
+
 (DEFUN |shoeBiteOff| (|x|)
   (PROG (|n1| |n|)
     (RETURN
@@ -312,6 +387,8 @@
                 (LIST (SUBSTRING |x| |n| (- |n1| |n|))
                       (SUBSTRING |x| |n1| NIL)))))))))))
 
+(DECLAIM (FTYPE (FUNCTION (|%String|) |%String|) |shoeFileName|))
+
 (DEFUN |shoeFileName| (|x|)
   (PROG (|c| |a|)
     (RETURN
@@ -325,6 +402,8 @@
              (COND
                ((NULL |c|) (CAR |a|))
                (#0# (CONCAT (CAR |a|) "." (CAR |c|)))))))))))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) |%List|) |shoeFnFileName|))
 
 (DEFUN |shoeFnFileName| (|x|)
   (PROG (|c| |a|)
@@ -355,7 +434,6 @@
 
 (DEFUN |shoeInclude1| (|s|)
   (PROG (|command| |string| |t| |h|)
-    (DECLARE (SPECIAL |$bStreamNil|))
     (RETURN
       (COND
         ((|bStreamNull| |s|) |s|)
@@ -494,7 +572,6 @@
     (|shoeConsole| "LINE IGNORED")))
 
 (DEFUN |bPremStreamNil| (|h|)
-  (DECLARE (SPECIAL |$bStreamNil|))
   (PROGN
     (|shoeConsole|
         (CONCAT "UNEXPECTED )fin IN LINE " (STRINGIMAGE (CDR |h|))))

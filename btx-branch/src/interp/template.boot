@@ -32,7 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import c_-util
-)package "BOOT"
+namespace BOOT
+module template
 
 getOperationAlistFromLisplib x ==
   -- used to be in clammed.boot. Moved on 1/24/94

@@ -132,13 +132,13 @@
          ECHO-META SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM SPADERRORSTREAM
          ISID NBLNK COMMENTCHR $TOKSTACK (/SOURCEFILES |$sourceFiles|)
          METAKEYLST DEFINITION_NAME (|$sourceFileTypes| '(|spad| |boot| |lisp| |lsp| |meta|))
-         ($FUNCTION FN) $BOOT $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
+         ($FUNCTION FN) $BOOT $LINESTACK $LINENUMBER STACK STACKX BACK OK
          TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE
          (*COMP370-APPLY* (if (eq op 'define) #'eval-defun #'compile-defun)))
         (declare (special ECHO-META SINGLINEMODE XCAPE XTOKENREADER INPUTSTREAM
                      SPADERRORSTREAM ISID NBLNK COMMENTCHR $TOKSTACK /SOURCEFILES
                      METAKEYLST DEFINITION_NAME |$sourceFileTypes|
-                     $FUNCTION $BOOT $NEWSPAD $LINESTACK $LINENUMBER STACK STACKX BACK OK
+                     $FUNCTION $BOOT $LINESTACK $LINENUMBER STACK STACKX BACK OK
                      TRAPFLAG |$InteractiveMode| TOK ERRCOL COLUMN *QUERY CHR LINE))
         (if (PAIRP FN) (SETQ FN (QCAR FN)))
         (SETQ INFILE (OR INFILE (|getFunctionSourceFile| FN)))
@@ -231,7 +231,6 @@
          (LIST  "   Reading file" '|%b| (|namestring| INFILE) '|%d|))
         (TERPRI)
         (SETQ $BOOT (EQ oft 'BOOT))
-        (SETQ $NEWSPAD (OR $BOOT (EQ oft 'SPAD)))
         (SETQ DEF
               (COND
                ( SFN
@@ -353,6 +352,9 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
  " ---------------------------      -----------------------  -------- -----"
       /UPDATESTREAM)
    (TERPRI /UPDATESTREAM) )
+
+(defparameter |$createUpdateFiles| nil)
+
  
 (defun /UPDATE (&rest ARGS)
   (LET (( FILENAME (OR (KAR ARGS)

@@ -37,7 +37,8 @@ import g_-cndata
 import clam
 import cattable
 import compat
-)package "BOOT"
+namespace BOOT
+module database
 
 $getUnexposedOperations := true
 $globalExposureGroupAlist := []

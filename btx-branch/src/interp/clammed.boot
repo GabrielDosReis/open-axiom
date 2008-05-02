@@ -32,7 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import g_-timer
-)package "BOOT"
+namespace BOOT
+module clammed
 
 ++ All functions defined in this file are `clammed', e.g. they are
 ++ translated in such a way that they cache results they compute.

@@ -55,7 +55,8 @@
 
 import macros
 import debug
-)package "BOOT"
+namespace BOOT
+module setvars
 
 
 $InitialCommandSynonymAlist == [

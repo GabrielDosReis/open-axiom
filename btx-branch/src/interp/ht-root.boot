@@ -33,7 +33,10 @@
 
 
 import ht_-util
-)package "BOOT"
+namespace BOOT
+module ht_-root where
+  $key: %Symbol
+  $fullScreenSysVars: %Boolean
 
 $historyDisplayWidth := 120
 $newline := char 10
@@ -60,12 +63,14 @@ dbNonEmptyPattern pattern ==
   #pattern > 0 => pattern
   '"*"
 
+$heading := nil
+$levels == '(compiler development interpreter)
+
 htSystemVariables() == main where
   main() ==
     not $fullScreenSysVars => htSetVars()
     classlevel := $UserLevel
-    $levels : local := '(compiler development interpreter)
-    $heading  : local := nil
+    $heading := nil
     while classlevel ^= first $levels repeat $levels := rest $levels
     table := NREVERSE fn($setOptions,nil,true)
     htInitPage('"System Variables",nil)

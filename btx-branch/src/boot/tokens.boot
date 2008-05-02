@@ -32,10 +32,89 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 
-module tokens
 import initial_-env
+namespace BOOTTRAN
 
-)package "BOOTTRAN"
+module tokens where
+  --% Basic types
+  %Thing <=> 
+    true
+
+  %Boolean <=> 
+    BOOLEAN
+
+  %Char <=>
+    CHARACTER
+
+  %String <=> 
+    STRING
+
+  %Symbol <=> 
+    SYMBOL
+
+  %Short <=> FIXNUM
+
+  %List <=> 
+    LIST
+
+  %Vector <=> 
+    VECTOR
+
+  %BitVector <=>
+    BIT_-VECTOR
+
+  %SimpleVector <=>
+    SIMPLE_-VECTOR
+
+  %Sequence <=> 
+    SEQUENCE
+
+  %HashTable <=>
+    HASH_-TABLE
+
+  %Maybe a <=>
+    null or a
+
+  --% preprocessing tokens
+  shoeSPACE: %Short  == 
+    QENUM('"    ", 0)
+
+  shoeESCAPE: %Short == 
+    QENUM('"__  ", 0)
+
+  shoeLispESCAPE: %Short == 
+    QENUM('"!  ", 0)
+
+  shoeSTRING_CHAR: %Short == 
+    QENUM('"_"  ", 0)
+
+  shoePLUSCOMMENT: %Short == 
+    QENUM('"+   ", 0)
+
+  shoeMINUSCOMMENT: %Short == 
+    QENUM('"-   ", 0)
+
+  shoeDOT: %Short == 
+    QENUM('".   ", 0)
+
+  shoeEXPONENT1: %Short == 
+    QENUM('"E   ", 0)
+
+  shoeEXPONENT2: %Short == 
+    QENUM('"e   ", 0)
+
+  shoeCLOSEPAREN: %Short == 
+    QENUM('")   ", 0)
+
+  shoeTAB: %Short == 
+    9
+
+  --%
+  shoeKeyTable : %HashTable
+  shoeDict : %SimpleVector
+  shoePun : %BitVector
+
+--%
 
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _
@@ -108,27 +187,6 @@ shoeKeyTableCons()==
  
 shoeKeyTable:=shoeKeyTableCons()
  
-shoeSPACE       == QENUM('"    ", 0)
- 
-shoeESCAPE      == QENUM('"__  ", 0)
-shoeLispESCAPE      := QENUM('"!  ", 0)
- 
-shoeSTRING_CHAR == QENUM('"_"  ", 0)
- 
-shoePLUSCOMMENT == QENUM('"+   ", 0)
- 
-shoeMINUSCOMMENT == QENUM('"-   ", 0)
- 
-shoeDOT          == QENUM('".   ", 0)
- 
-shoeEXPONENT1   == QENUM('"E   ", 0)
- 
-shoeEXPONENT2   == QENUM('"e   ", 0)
- 
-shoeCLOSEPAREN  == QENUM('")   ", 0)
- 
---shoeCLOSEANGLE  == QENUM('">   ", 0)
-shoeTAB == 9
  
 shoeInsert(s,d) ==
       l := #s

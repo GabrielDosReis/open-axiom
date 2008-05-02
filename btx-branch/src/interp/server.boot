@@ -33,7 +33,8 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
+module server
 
 -- Scratchpad-II server
 
@@ -41,7 +42,6 @@ import macros
 
 $frameAlist := nil
 $frameNumber := 0
-$currentFrameNum := 0
 $EndServerSession := false
 $NeedToSignalSessionManager := false
 $sockBufferLength := 9217

@@ -33,13 +33,13 @@
 
 
 import i_-object
-)package "BOOT"
+namespace BOOT
+module i_-map
 
 --% User Function Creation and Analysis Code
 
 $mapTarget := nil
 $mapReturnTypes := nil
-$mapName := 'noMapName
 $mapThrowCount := 0 -- times a "return" occurs in map
 
 --% Generating internal names for functions

@@ -33,7 +33,8 @@
 
 
 import sys_-macros
-)package "BOOT"
+namespace BOOT
+module fortcall
 
 makeVector(elts, t) ==
   MAKE_-ARRAY(#elts, KEYWORD::ELEMENT_-TYPE, t or true,

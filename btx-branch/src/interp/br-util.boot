@@ -33,7 +33,20 @@
 
 
 import bc_-util
-)package "BOOT"
+import br_-data
+namespace BOOT
+module br_-util where
+  $bcMultipleNames: %Boolean
+  $italics?: %Boolean
+  $italicHead?: %Boolean
+  $conformsAreDomains: %Form
+  $exposedOnlyIfTrue: %Boolean
+  $includeUnexposed?: %Boolean
+  $browseCountThreshold: %Short
+  $browseMixedCase: %Boolean
+  $charUnderscore: %Char
+  $wild1: %String
+  $pmFilterDelimiters: %List
 
 --====================> WAS b-util.boot <================================
 
@@ -52,9 +65,8 @@ browserAutoloadOnceTrigger() == nil
 
 ----------------------> Global Variables <-----------------------
 $includeUnexposed? := true   --default setting
-$tick := char '_`            --field separator for database files
-$charUnderscore := ('__)     --needed because of parser bug
-$wild1 := '"[^`]*"           --phrase used to convert keys to grep strings
+$charUnderscore == ('__)     --needed because of parser bug
+$wild1 == '"[^`]*"           --phrase used to convert keys to grep strings
 $browseCountThreshold := 10  --the maximum number of names that will display
                              --on a general search
 $opDescriptionThreshold := 4 --if <= 4 operations with unique name, give desc
@@ -63,31 +75,31 @@ $browseMixedCase := true     --distinquish case in the browser?
 $docTable := nil             --cache for documentation table
 $conArgstrings := nil        --bound by conPage so that kPage
                              --will display arguments if given
-$conformsAreDomains  := false     --are all arguments of a constructor given?
+$conformsAreDomains  := nil     --are all arguments of a constructor given?
 $dbDataFunctionAlist := nil       --set by dbGatherData
 $domain   := nil             --bound in koOps
 $infovec  := nil             --bound in koOps
 $predvec  := nil             --bound in koOps
 $exposedOnlyIfTrue := nil    --see repeatSearch, dbShowOps, dbShowCon
-$bcMultipleNames := nil      --see bcNameConTable
+$bcMultipleNames := false      --see bcNameConTable
 $bcConformBincount := nil    --see bcConform1
 $docTableHash := MAKE_-HASHTABLE 'EQUAL  --see dbExpandOpAlistIfNecessary
 $groupChoice := nil  --see dbShowOperationsFromConform
 
 ------------------> Initial Settings <---------------------
-$pmFilterDelimiters := [char '_(,char '_),char '_ ]
+$pmFilterDelimiters == [char '_(,char '_),char '_ ]
 $dbKindAlist :=
   [[char 'a,:'"attribute"],[char 'o,:'"operation"],
     [char 'd,:'"domain"],[char 'p,:'"package"],
       [char 'c,:'"category"],[char 'x,:'"default_ package"]]
 $OpViewTable := '(
-  (names           "Name"      "Names"           dbShowOpNames)
-  (documentation   "Name"      "Names"           dbShowOpDocumentation)
-  (domains         "Domain"    "Domains"         dbShowOpDomains)
-  (signatures      "Signature" "Signatures"      dbShowOpSignatures)
-  (parameters      "Form"      "Forms"           dbShowOpParameters)
-  (origins         "Origin"    "Origins"         dbShowOpOrigins)
-  (implementation  nil         "Implementation Domains" dbShowOpImplementations)
+  (names           "Name"      "Names"           dbShowOpNames)        _
+  (documentation   "Name"      "Names"           dbShowOpDocumentation)_
+  (domains         "Domain"    "Domains"         dbShowOpDomains)      _
+  (signatures      "Signature" "Signatures"      dbShowOpSignatures)   _
+  (parameters      "Form"      "Forms"           dbShowOpParameters)   _
+  (origins         "Origin"    "Origins"         dbShowOpOrigins)      _
+  (implementation  nil         "Implementation Domains" dbShowOpImplementations)_
   (conditions      "Condition" "Conditions"      dbShowOpConditions))
 
 bcBlankLine() == bcHt '"\vspace{1}\newline "
@@ -100,9 +112,9 @@ pluralize k ==
 
 capitalize s ==
   LASSOC(s,'(
-      ("domain"   . "Domain")
-      ("category" . "Category")
-      ("package"  . "Package")
+      ("domain"   . "Domain")  _
+      ("category" . "Category")_
+      ("package"  . "Package") _
       ("default package" . "Default Package"))) 
    or
     res := COPY_-SEQ s
@@ -132,10 +144,26 @@ escapeString com ==   --this makes changes on single comment lines
       look := look + 2
   com
 
+++
+$emList := nil
+
+++
+$precList == 
+  '((OR 10 . "or")  _
+    (AND 9 . "and") _
+    (_< 5)          _
+    (_<_= 5)        _
+    (_> 5)          _
+    (_>_= 5)        _
+    (_= 5)          _
+    (_^_= 5)        _
+    (or 10)         _
+    (and 9))
+
+
+
 htPred2English(x,:options) ==
   $emList :local := IFCAR options   --list of identifiers to be emphasised
-  $precList: local := '((OR 10 . "or") (AND 9 . "and")
-     (_< 5) (_<_= 5) (_> 5) (_>_= 5) (_= 5) (_^_= 5) (or 10) (and 9))
   fn(x,100) where
     fn(x,prec) ==
       x is [op,:l] =>

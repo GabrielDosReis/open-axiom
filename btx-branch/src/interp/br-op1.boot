@@ -33,7 +33,8 @@
 
 
 import bc_-util
-)package "BOOT"
+namespace BOOT
+module br_-op1
 
 --====================> WAS b-op1.boot <================================
 

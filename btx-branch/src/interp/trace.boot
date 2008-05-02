@@ -33,7 +33,8 @@
 
 
 import debug
-)package "BOOT"
+namespace BOOT
+module trace
 
 --% Code for tracing functions
 
@@ -278,6 +279,9 @@ domainToGenvar x ==
     g:= genDomainTraceName y
     setDynamicBinding(g,evalDomain y)
     g
+
+++
+$domainTraceNameAssoc := []
 
 genDomainTraceName y ==
   u:= LASSOC(y,$domainTraceNameAssoc) => u

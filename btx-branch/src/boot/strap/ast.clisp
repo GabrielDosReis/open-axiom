@@ -1,26 +1,12 @@
-(PROVIDE "ast")
-
-(IMPORT-MODULE "includer")
+(BOOT-IMPORT "includer")
 
 (IN-PACKAGE "BOOTTRAN")
 
+(PROVIDE "ast")
+
+(DECLAIM (TYPE |%Boolean| |$bfClamming|))
+
 (DEFPARAMETER |$bfClamming| NIL)
-
-(DEFTYPE |%Thing| () 'T)
-
-(DEFTYPE |%Boolean| () 'BOOLEAN)
-
-(DEFTYPE |%String| () 'STRING)
-
-(DEFTYPE |%Symbol| () 'SYMBOL)
-
-(DEFTYPE |%Short| () 'FIXNUM)
-
-(DEFTYPE |%List| () 'LIST)
-
-(DEFTYPE |%Vector| () 'VECTOR)
-
-(DEFTYPE |%Sequence| () 'SEQUENCE)
 
 (DEFUN |%Name| #0=(|bfVar#1|) (CONS '|%Name| (LIST . #0#)))
 
@@ -96,8 +82,8 @@
 
 (DEFUN |SuchThat| #0=(|bfVar#51|) (CONS '|SuchThat| (LIST . #0#)))
 
-(DEFUN |Assignment| #0=(|bfVar#52| |bfVar#53|)
-  (CONS '|Assignment| (LIST . #0#)))
+(DEFUN |%Assignment| #0=(|bfVar#52| |bfVar#53|)
+  (CONS '|%Assignment| (LIST . #0#)))
 
 (DEFUN |While| #0=(|bfVar#54|) (CONS '|While| (LIST . #0#)))
 
@@ -135,7 +121,158 @@
 (DEFUN |Structure| #0=(|bfVar#76| |bfVar#77|)
   (CONS '|Structure| (LIST . #0#)))
 
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfAppend|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfApplication|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfAssign|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfBracket|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfCase|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfCaseItem|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%List|) |bfCollect|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfColon|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfConstruct|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol| |%Symbol|) |%Symbol|)
+                |bfColonColon|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing|) |%List|) |bfColonAppend|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
+                |bfDefinition|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfCompDef|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%List|) |bfDCollect|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfDTuple|))
+
+(DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfDot|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%Thing|)
+                |bfInfApplication|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfListOf|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfSymbol|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfSuffixDot|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfEqual|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfPile|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
+                |bfMDefinition|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |bfBeginsDollar|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfNameOnly|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfNameArgs|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfDefSequence|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfElt|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfExit|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
+                |bfForInBy|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfForin|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfIterators|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfCross|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|) |bfIf|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfIfThenOnly|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol| |%Thing| |%Thing|) |%List|)
+                |bfISApplication|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol| |%Symbol|) |%List|) |bfLocal|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing|) |%List|) |bfLp|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfLoop1|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol|) |%Symbol|) |bfReName|))
+
+(DECLAIM (FTYPE (FUNCTION (|%String|) |%List|) |bfReadLisp|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol| |%Thing|) |%List|) |bfReduce|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Symbol| |%Thing|) |%List|)
+                |bfReduceCollect|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfReturnNoName|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfSegment1|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfSegment2|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%Thing|) |bfSequence|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%List|) |bfStruct|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfSuchthat|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfUntil|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfWhile|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%Thing|) |bfTagged|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfThrow|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%Thing|) |bfTry|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfTuple|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfTupleIf|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfTupleConstruct|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfUntuple|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |bfTupleP|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing|) |%List|) |bfWhere|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |genTypeAlias|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |nativeType|))
+
+(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |shoeCompTran|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |shoeEVALANDFILEACTQ|))
+
+(DECLAIM (TYPE (|%Maybe| |%Symbol|) |$op|))
+
+(DECLAIM (TYPE |%Boolean| |$translatingOldBoot|))
+
+(DECLAIM (TYPE |%List| |$typings|))
+
+(DECLAIM (TYPE |%List| |$wheredefs|))
+
 (DEFPARAMETER |$inDefIS| NIL)
+
+(DEFPARAMETER |$op| NIL)
+
+(DEFPARAMETER |$translatingOldBoot| NIL)
+
+(DEFPARAMETER |$typings| NIL)
+
+(DEFPARAMETER |$wheredefs| NIL)
 
 (DEFUN |quote| (|x|) (LIST 'QUOTE |x|))
 
@@ -147,16 +284,9 @@
     (SETQ |$GenVarCounter| (+ |$GenVarCounter| 1))
     (INTERN (CONCAT "bfVar#" (STRINGIMAGE |$GenVarCounter|)))))
 
-(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfListOf|))
-
 (DEFUN |bfListOf| (|x|) |x|)
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfColon|))
-
 (DEFUN |bfColon| (|x|) (LIST 'COLON |x|))
-
-(DECLAIM (FTYPE (FUNCTION (|%Symbol| |%Symbol|) |%Symbol|)
-                |bfColonColon|))
 
 (DEFUN |bfColonColon| (|package| |name|)
   (COND
@@ -164,36 +294,20 @@
      (FIND-SYMBOL (SYMBOL-NAME |name|) |package|))
     ('T (INTERN (SYMBOL-NAME |name|) |package|))))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfSymbol|))
-
 (DEFUN |bfSymbol| (|x|)
   (COND ((STRINGP |x|) |x|) ('T (LIST 'QUOTE |x|))))
 
-(DECLAIM (FTYPE (FUNCTION NIL |%Symbol|) |bfDot|))
-
 (DEFUN |bfDot| () 'DOT)
-
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfSuffixDot|))
 
 (DEFUN |bfSuffixDot| (|x|) (LIST |x| 'DOT))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfEqual|))
-
 (DEFUN |bfEqual| (|name|) (LIST 'EQUAL |name|))
-
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |bfBracket|))
 
 (DEFUN |bfBracket| (|part|) |part|)
 
-(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfPile|))
-
 (DEFUN |bfPile| (|part|) |part|)
 
-(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfAppend|))
-
 (DEFUN |bfAppend| (|x|) (APPLY #'APPEND |x|))
-
-(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing|) |%List|) |bfColonAppend|))
 
 (DEFUN |bfColonAppend| (|x| |y|)
   (PROG (|a|)
@@ -207,19 +321,11 @@
            (#0='T (LIST '&REST |y|))))
         (#0# (CONS (CAR |x|) (|bfColonAppend| (CDR |x|) |y|)))))))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
-                |bfDefinition|))
-
 (DEFUN |bfDefinition| (|bflhsitems| |bfrhs| |body|)
   (LIST 'DEF |bflhsitems| |bfrhs| |body|))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
-                |bfMDefinition|))
-
 (DEFUN |bfMDefinition| (|bflhsitems| |bfrhs| |body|)
   (|bfMDef| 'MDEF |bflhsitems| |bfrhs| |body|))
-
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfCompDef|))
 
 (DEFUN |bfCompDef| (|x|)
   (PROG (|body| |ISTMP#3| |args| |ISTMP#2| |op| |ISTMP#1| |def|
@@ -253,15 +359,12 @@
                 (|bfDef| |def| |op| |args| |body|))
                ('T (|coreError| "invalid AST")))))))))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |bfBeginsDollar|))
-
 (DEFUN |bfBeginsDollar| (|x|) (EQL (ELT "$" 0) (ELT (PNAME |x|) 0)))
 
 (DEFUN |compFluid| (|id|) (LIST 'FLUID |id|))
 
 (DEFUN |compFluidize| (|x|)
   (COND
-    ((AND (IDENTP |x|) (|bfBeginsDollar| |x|)) (|compFluid| |x|))
     ((ATOM |x|) |x|)
     ((EQCAR |x| 'QUOTE) |x|)
     ('T (CONS (|compFluidize| (CAR |x|)) (|compFluidize| (CDR |x|))))))
@@ -706,7 +809,6 @@
 
 (DEFUN |defSheepAndGoats| (|x|)
   (PROG (|defstack| |op1| |opassoc| |argl| |body| |args| |op| |def|)
-    (DECLARE (SPECIAL |$op|))
     (RETURN
       (COND
         ((EQCAR |x| 'DEF)
@@ -815,7 +917,7 @@
 (DEFUN |bfLET2| (|lhs| |rhs|)
   (PROG (|isPred| |val1| |ISTMP#3| |g| |rev| |patrev| |l2| |l1| |var2|
             |var1| |b| |ISTMP#2| |a| |ISTMP#1|)
-    (DECLARE (SPECIAL |$inDefIS| |$letGenVarCounter|))
+    (DECLARE (SPECIAL |$letGenVarCounter|))
     (RETURN
       (COND
         ((IDENTP |lhs|) (|bfLetForm| |lhs| |rhs|))
@@ -1159,7 +1261,6 @@
 
 (DEFUN |bfReName| (|x|)
   (PROG (|oldName| |newName| |a|)
-    (DECLARE (SPECIAL |$translatingOldBoot|))
     (RETURN
       (PROGN
         (SETQ |newName|
@@ -1267,7 +1368,6 @@
 (DEFUN |bfMDef| (|defOp| |op| |args| |body|)
   (PROG (|def| |lamex| |sb2| |sb| |largl| |nargl| |sgargl| |gargl|
                |LETTMP#1| |argl|)
-    (DECLARE (SPECIAL |$wheredefs|))
     (RETURN
       (PROGN
         (SETQ |argl|
@@ -1385,7 +1485,6 @@
 
 (DEFUN |bfDef| (|defOp| |op| |args| |body|)
   (PROG (|body1| |arg1| |op1| |LETTMP#1|)
-    (DECLARE (SPECIAL |$wheredefs| |$bfClamming|))
     (RETURN
       (COND
         (|$bfClamming|
@@ -1525,7 +1624,7 @@
 (DEFUN |shoeCompTran| (|x|)
   (PROG (|$dollarVars| |$locVars| |$fluidVars| |fvs| |fl| |fvars|
             |body'| |lvars| |body| |args| |lamtype|)
-    (DECLARE (SPECIAL |$typings| |$dollarVars| |$fluidVars| |$locVars|))
+    (DECLARE (SPECIAL |$dollarVars| |$fluidVars| |$locVars|))
     (RETURN
       (PROGN
         (SETQ |lamtype| (CAR |x|))
@@ -1622,18 +1721,11 @@
 
 (DEFUN |shoeCompTran1| (|x|)
   (PROG (|res| |newbindings| |r| |ISTMP#2| |l| |ISTMP#1| U)
-    (DECLARE (SPECIAL |$fluidVars| |$locVars| |$dollarVars|))
+    (DECLARE (SPECIAL |$fluidVars| |$dollarVars| |$locVars|))
     (RETURN
       (COND
-        ((ATOM |x|)
-         (COND
-           ((AND (IDENTP |x|) (|bfBeginsDollar| |x|))
-            (SETQ |$dollarVars|
-                  (COND
-                    ((MEMQ |x| |$dollarVars|) |$dollarVars|)
-                    (#0='T (CONS |x| |$dollarVars|)))))
-           (#0# NIL)))
-        (#0#
+        ((ATOM |x|) NIL)
+        (#0='T
          (PROGN
            (SETQ U (CAR |x|))
            (COND
@@ -1712,7 +1804,7 @@
                 (|shoeCompTran1| (CDR |x|)))))))))))
 
 (DEFUN |bfTagged| (|a| |b|)
-  (DECLARE (SPECIAL |$typings| |$op|))
+  (DECLARE (SPECIAL |$typings|))
   (COND
     ((NULL |$op|) (|Signature| |a| |b|))
     ((IDENTP |a|)
@@ -2009,19 +2101,13 @@
                               (LIST 'QUOTE '|cacheInfo|))
                         (LIST 'QUOTE |cacheVector|))))))))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfNameOnly|))
-
 (DEFUN |bfNameOnly| (|x|)
   (COND ((EQ |x| '|t|) (LIST 'T)) ('T (LIST |x|))))
-
-(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfNameArgs|))
 
 (DEFUN |bfNameArgs| (|x| |y|)
   (PROGN
     (SETQ |y| (COND ((EQCAR |y| 'TUPLE) (CDR |y|)) ('T (LIST |y|))))
     (CONS |x| |y|)))
-
-(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%List|) |bfStruct|))
 
 (DEFUN |bfStruct| (|name| |arglist|)
   (|bfTuple| (LET ((|bfVar#120| NIL) (|bfVar#119| |arglist|) (|i| NIL))
@@ -2059,11 +2145,7 @@
          (LIST 'DEFUN (CAR |x|) |a|
                (LIST 'CONS (LIST 'QUOTE (CAR |x|)) (CONS 'LIST |a|))))))))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfCaseItem|))
-
 (DEFUN |bfCaseItem| (|x| |y|) (LIST |x| |y|))
-
-(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%List|) |bfCase|))
 
 (DEFUN |bfCase| (|x| |y|)
   (PROG (|c| |b| |a| |g1| |g|)
@@ -2135,8 +2217,6 @@
 (DEFUN |bfDs| (|n|)
   (COND ((EQL |n| 0) "") ('T (CONCAT "D" (|bfDs| (- |n| 1))))))
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List|) |%Thing|) |bfTry|))
-
 (DEFUN |bfTry| (|e| |cs|)
   (PROG (|bfVar#129| |bfVar#128|)
     (RETURN
@@ -2198,7 +2278,6 @@
 
 (DEFUN |nativeType| (|t|)
   (PROG (|t'|)
-    (DECLARE (SPECIAL |$NativeTypeTable|))
     (RETURN
       (COND
         ((NULL |t|) |t|)

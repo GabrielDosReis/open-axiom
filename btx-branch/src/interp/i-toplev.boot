@@ -33,18 +33,10 @@
 
 
 import i_-analy
-)package "BOOT"
+namespace BOOT
+module i_-toplev
 
 --% Top Level Interpreter Code
-
-$intCoerceFailure ==
-  "coerceFailure"
-
-$intTopLevel ==
-  "top__level"
-
-$intSpadReader ==
-  "SPAD__READER"
 
 $intRestart ==
   "restart"

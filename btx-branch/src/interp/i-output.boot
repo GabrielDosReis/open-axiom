@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -33,7 +33,8 @@
 
 
 import sys_-macros
-)package "BOOT"
+namespace BOOT
+module i_-output
 
 --Modified JHD February 1993: see files miscout.input for some tests of this
 -- General principle is that maprin0 is the top-level routine,

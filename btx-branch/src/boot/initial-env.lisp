@@ -138,7 +138,8 @@
 
 (defun HPUT (table key value)
   (setf (gethash key table) value))
- 
+
+(declaim (ftype (function (simple-string fixnum) fixnum) QENUM)) 
 (defun QENUM (cvec ind)
   (char-code (char cvec ind)))
  

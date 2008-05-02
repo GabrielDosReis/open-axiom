@@ -33,7 +33,8 @@
 
 
 import types
-)package "BOOT"
+namespace BOOT
+module dq
 
 -- Dequeue functions
  

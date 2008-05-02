@@ -35,7 +35,8 @@
 
 import sys_-os
 import vmlisp
-)package "BOOT"
+namespace BOOT
+module sys_-utility
 
 
 --%

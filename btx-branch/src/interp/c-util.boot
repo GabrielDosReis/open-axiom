@@ -33,7 +33,8 @@
 
 
 import g_-util
-)package "BOOT"
+namespace BOOT
+module c_-util
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
 ++ Otherwise, return `m'.

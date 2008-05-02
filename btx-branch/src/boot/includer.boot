@@ -1,4 +1,4 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
 -- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -37,10 +37,54 @@
 --   This file defines the includer (or preprocessor) of Boot programs.
 --
 
-module includer
 import tokens
+namespace BOOTTRAN
 
-)package "BOOTTRAN"
+module includer where
+  --% Type
+  %Stream <=>
+    STREAM
+
+  --%
+  STRINGIMAGE: %Thing -> %String
+  SoftShoeError: (%Thing,%Thing) -> %Thing
+  bStreamNull: %Thing -> %Boolean
+  shoePrefix?: (%String,%String) -> %Maybe %String 
+  shoeLine?: %String -> %Maybe %String
+  shoeLisp?: %String -> %Maybe %String
+  shoePackage?: %String -> %Maybe %String
+  shoeReadLispString: (%String,%Short) -> %List
+  PNAME: %Thing -> %Maybe %String
+  char: %Symbol -> %Char
+  EQCAR: (%Thing,%Thing) -> %Boolean
+
+  --%
+  bAddLineNumber: (%Thing,%Thing) -> %List
+  bAppend: (%List,%List) -> %List
+  bDelay: (%Thing,%Thing) -> %List
+  bIgen: %Short -> %List
+  bRgen: %Stream -> %List
+  bNext: (%Thing,%List) -> %List
+  shoeConsole: %String -> %Thing
+  shoeFindLines: (%String,%String,%Thing) -> %List
+  shoeInclude: %List -> %List
+  shoeNotFound: %String -> %List
+  bpGeneralErrorHere: () -> %Thing
+  bpSpecificErrorHere: %String -> %Thing
+  bpSpecificErrorAtToken: (%List,%String) -> %Thing
+  bpIgnoredFromTo: (%List,%List) -> %Thing
+
+  --%
+  $stok: %List
+  $ttok: %Thing
+
+structure %DriverMode ==
+  %TranslateBootMode
+  %CompileBootMode
+  %MakeMode
+
+$driverMode := nil
+
 -- BOOT INCLUDER
  
 -- Line syntax is
@@ -77,7 +121,8 @@ PNAME x ==
 char x ==
   CHAR(PNAME x, 0)
 
-EQCAR(x,y)== CONSP x and EQ(CAR x,y)
+EQCAR(x,y) == 
+  CONSP x and EQ(CAR x,y)
 
 -- returns the string representation of object X.
 STRINGIMAGE x ==
@@ -96,7 +141,7 @@ shoeNotFound fn ==
 shoeReadLispString(s,n) ==
     l:=# s
     n >= l => nil
-    READ_-FROM_-STRING CONCAT ( "(", SUBSTRING(s,n,l-n) ,")")
+    READ_-FROM_-STRING strconc ( "(", SUBSTRING(s,n,l-n) ,")")
 
 -- read a line from stream
 shoeReadLine stream ==
@@ -106,35 +151,43 @@ shoeReadLine stream ==
 shoeConsole line ==
   WRITE_-LINE(line, _*TERMINAL_-IO_*)
  
-shoeSpaces n  ==  MAKE_-FULL_-CVEC(n, '".")
+shoeSpaces n  ==  
+  MAKE_-FULL_-CVEC(n, '".")
  
 SoftShoeError(posn,key)==
     coreError ['"in line ", STRINGIMAGE lineNo posn]
     shoeConsole lineString posn
-    shoeConsole CONCAT(shoeSpaces lineCharacter posn,'"|")
+    shoeConsole strconc(shoeSpaces lineCharacter posn,'"|")
     shoeConsole key
  
 bpSpecificErrorAtToken(tok, key) ==
-     a:=shoeTokPosn tok
+     a := shoeTokPosn tok
      SoftShoeError(a,key)
  
-bpSpecificErrorHere(key) ==  bpSpecificErrorAtToken($stok, key)
+bpSpecificErrorHere(key) ==
+  bpSpecificErrorAtToken($stok, key)
 
-bpGeneralErrorHere() ==  bpSpecificErrorHere('"syntax error")
+bpGeneralErrorHere() ==
+  bpSpecificErrorHere('"syntax error")
  
 bpIgnoredFromTo(pos1, pos2) ==
-    shoeConsole CONCAT('"ignored from line ", STRINGIMAGE lineNo pos1)
+    shoeConsole strconc('"ignored from line ", STRINGIMAGE lineNo pos1)
     shoeConsole lineString pos1
-    shoeConsole CONCAT(shoeSpaces lineCharacter pos1,'"|")
-    shoeConsole CONCAT('"ignored through line ", STRINGIMAGE lineNo pos2)
+    shoeConsole strconc(shoeSpaces lineCharacter pos1,'"|")
+    shoeConsole strconc('"ignored through line ", STRINGIMAGE lineNo pos2)
     shoeConsole lineString pos2
-    shoeConsole CONCAT(shoeSpaces lineCharacter pos2,'"|")
+    shoeConsole strconc(shoeSpaces lineCharacter pos2,'"|")
 
 -- Line inclusion support.
  
-lineNo p==CDAAR p
-lineString p==CAAAR p
-lineCharacter p==CDR p
+lineNo p == 
+  CDAAR p
+
+lineString p == 
+  CAAAR p
+
+lineCharacter p == 
+  rest p
  
 shoePackageStartsAt (lines,sz,name,stream)==
    bStreamNull stream => [[],['nullstream]]
@@ -159,7 +212,7 @@ shoeFindLines(fn,name,a)==
       b:=shoeTransform2 b
       if bStreamNull b
       then
-           shoeConsole CONCAT (name,'" not found in ",fn)
+           shoeConsole strconc(name,'" not found in ",fn)
            []
       else
          if null lines
@@ -189,47 +242,52 @@ bMap1(:z)==
 shoeFileMap(f, fn)==
      a:=shoeInputFile fn
      null a =>
-        shoeConsole CONCAT(fn,'" NOT FOUND")
+        shoeConsole strconc(fn,'" NOT FOUND")
         $bStreamNil
-     shoeConsole CONCAT('"READING ",fn)
+     shoeConsole strconc('"READING ",fn)
      shoeInclude  bAddLineNumber(bMap(f,bRgen a),bIgen 0)
 
  
-bDelay(f,x)==cons("nonnullstream",[f,:x])
+bDelay(f,x) == 
+  cons("nonnullstream",[f,:x])
  
-bAppend(x,y)==bDelay(function bAppend1,[x,y])
+bAppend(x,y) == 
+  bDelay(function bAppend1,[x,y])
  
 bAppend1(:z)==
-     if bStreamNull car z
-     then if bStreamNull CADR z
+     if bStreamNull first z
+     then if bStreamNull second z
           then ["nullstream"]
-          else CADR z
-     else cons(CAAR z,bAppend(CDAR z,CADR z))
+          else second z
+     else cons(CAAR z,bAppend(CDAR z,second z))
  
-bNext(f,s)==bDelay(function bNext1,[f,s])
+bNext(f,s) == 
+  bDelay(function bNext1,[f,s])
  
 bNext1(f,s)==
       bStreamNull s=> ["nullstream"]
       h:= APPLY(f, [s])
       bAppend(car h,bNext(f,cdr h))
  
-bRgen s==bDelay(function bRgen1,[s])
+bRgen s == 
+  bDelay(function bRgen1,[s])
  
 bRgen1(:s) ==
-        a:=shoeReadLine car s
+        a:=shoeReadLine first s
         if shoePLACEP a
         then
---          shoeCLOSE car s
             ["nullstream"]
-        else cons(a,bRgen car s)
+        else cons(a,bRgen first s)
  
-bIgen n==bDelay(function bIgen1,[n])
+bIgen n == 
+  bDelay(function bIgen1,[n])
  
 bIgen1(:n)==
         n:=car n+1
         cons(n,bIgen n)
  
-bAddLineNumber(f1,f2)==bDelay(function bAddLineNumber1,[f1,f2])
+bAddLineNumber(f1,f2)==
+  bDelay(function bAddLineNumber1,[f1,f2])
  
 bAddLineNumber1(:f)==
      [f1,f2] := f
@@ -241,19 +299,20 @@ bAddLineNumber1(:f)==
  
 shoeFileInput fn==shoeFileMap(function IDENTITY,fn)
  
-shoePrefixLisp x== CONCAT('")lisp",x)
+shoePrefixLisp x== strconc('")lisp",x)
 shoeLispFileInput fn== shoeFileMap(function shoePrefixLisp,fn)
  
-shoePrefixLine x== CONCAT('")line",x)
+shoePrefixLine x== strconc('")line",x)
 shoeLineFileInput fn== shoeFileMap(function shoePrefixLine,fn)
- 
+
 shoePrefix?(prefix,whole) ==
-     #prefix > #whole => false
+     #prefix > #whole => nil
      good:=true
      for i in 0..#prefix-1 for j in 0.. while good repeat
                 good:= prefix.i = whole.j
-     if good then SUBSTRING(whole,#prefix,nil) else good
+     if good then SUBSTRING(whole,#prefix,nil) else nil
  
+shoePlainLine?: %String -> %Boolean
 shoePlainLine?(s) ==
          #s = 0 =>  true
          s.0 ^= char ")"
@@ -273,38 +332,43 @@ shoeLine?         s  == shoePrefix?('")line",        s)
 shoeIncludeLines? s  == shoePrefix?('")includelines",s)
 shoeIncludeFunction? s  == shoePrefix?('")includefunction",s)
  
-shoeBiteOff x==
+shoeBiteOff: %String -> %List
+shoeBiteOff x ==
          n:=STRPOSL('" ",x,0,true)
-         null n =>  false
+         null n =>  nil
          n1:=STRPOSL ('" ",x,n,nil)
          null n1 =>  [SUBSTRING(x,n,nil),'""]
          [SUBSTRING(x,n,n1-n),SUBSTRING(x,n1,nil)]
  
+shoeFileName: %String -> %String
 shoeFileName x==
          a:=shoeBiteOff x
          null a =>  '""
-         c:=shoeBiteOff CADR a
-         null c =>  CAR a
-         CONCAT(CAR a,'".",CAR c)
+         c:=shoeBiteOff second a
+         null c =>  first a
+         strconc(first a,'".",first c)
  
+shoeFnFileName: %String -> %List
 shoeFnFileName x==
          a:=shoeBiteOff x
          null a =>  ['"",'""]
-         c:=shoeFileName CADR a
-         null c =>  [CAR a,'""]
-         [CAR a, c]
+         c:=shoeFileName second a
+         null c =>  [first a,'""]
+         [first a, c]
  
 shoeFunctionFileInput [fun,fn]==
     shoeOpenInputFile (a,fn,
      shoeInclude bAddLineNumber( shoeFindLines(fn,fun,a),bIgen 0))
  
-shoeInclude s== bDelay(function shoeInclude1,[s])
+shoeInclude s== 
+  bDelay(function shoeInclude1,[s])
+
 shoeInclude1 s==
-      bStreamNull s=> s
-      [h,:t]  :=s
-      string  :=CAR h
-      command :=shoeFin? string  => $bStreamNil
-      command :=shoeIf? string   => shoeThen([true],[STTOMC command],t)
+      bStreamNull s => s
+      [h,:t]  := s
+      string  := first h
+      command := shoeFin? string  => $bStreamNil
+      command := shoeIf? string   => shoeThen([true],[STTOMC command],t)
       bAppend(shoeSimpleLine h,shoeInclude t)
  
 shoeSimpleLine(h) ==
@@ -329,7 +393,9 @@ shoeSimpleLine(h) ==
       shoeLineSyntaxError(h)
       nil
  
-shoeThen(keep,b,s)== bDelay(function shoeThen1,[keep,b,s])
+shoeThen(keep,b,s) == 
+  bDelay(function shoeThen1,[keep,b,s])
+
 shoeThen1(keep,b,s)==
     bPremStreamNull s=> s
     [h,:t]  :=s
@@ -353,7 +419,9 @@ shoeThen1(keep,b,s)==
     keep1 and b1 => bAppend(shoeSimpleLine h,shoeThen(keep,b,t))
     shoeThen(keep,b,t)
  
-shoeElse(keep,b,s)== bDelay(function shoeElse1,[keep,b,s])
+shoeElse(keep,b,s) == 
+  bDelay(function shoeElse1,[keep,b,s])
+
 shoeElse1(keep,b,s)==
     bPremStreamNull s=> s
     [h,:t]  :=s
@@ -371,14 +439,14 @@ shoeElse1(keep,b,s)==
     shoeElse(keep,b,t)
  
 shoeLineSyntaxError(h)==
-     shoeConsole CONCAT('"INCLUSION SYNTAX ERROR IN LINE ",
+     shoeConsole strconc('"INCLUSION SYNTAX ERROR IN LINE ",
                                 STRINGIMAGE CDR h)
-     shoeConsole car h
+     shoeConsole first h
      shoeConsole '"LINE IGNORED"
  
 bPremStreamNil(h)==
-       shoeConsole CONCAT('"UNEXPECTED )fin IN LINE ",STRINGIMAGE CDR h)
-       shoeConsole car h
+       shoeConsole strconc('"UNEXPECTED )fin IN LINE ",STRINGIMAGE CDR h)
+       shoeConsole first h
        shoeConsole '"REST OF FILE IGNORED"
        $bStreamNil
  

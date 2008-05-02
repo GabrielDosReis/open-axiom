@@ -33,7 +33,8 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
+module postpar
 
 ++ The type of parse trees.
 %ParseTree <=> 

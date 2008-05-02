@@ -32,14 +32,23 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-module pile
 import includer
 import scanner
- 
-)package "BOOTTRAN"
-shoeFirstTokPosn t== shoeTokPosn CAAR t
-shoeLastTokPosn  t== shoeTokPosn CADR t
-shoePileColumn t==CDR shoeTokPosn CAAR t
+namespace BOOTTRAN
+module pile where
+  shoePileInsert: %List -> %List
+  shoeFirstTokPosn: %List -> %Thing
+  shoeLastTokPosn: %List -> %Thing
+
+
+shoeFirstTokPosn t == 
+  shoeTokPosn CAAR t
+
+shoeLastTokPosn  t == 
+  shoeTokPosn second t
+
+shoePileColumn t ==
+  rest shoeTokPosn CAAR t
  
 -- s is a token-dq-stream
  
@@ -49,7 +58,7 @@ shoePileInsert (s)==
      else
          toktype:=shoeTokType CAAAR s
          if toktype ="LISP"  or toktype = "LINE"
-         then cons([car s],cdr s)
+         then cons([first s], rest s)
          else
             a:=shoePileTree(-1,s)
             cons([a.2],a.3)

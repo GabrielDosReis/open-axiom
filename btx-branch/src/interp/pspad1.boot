@@ -33,7 +33,8 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
+module pspad1
 
 $escapeWords := ["always", "assert", "but", "define", 
   "delay", "do", "except", "export", "extend", "fix", "fluid",

@@ -33,7 +33,8 @@
 
 
 import c_-util
-)package "BOOT"
+namespace BOOT
+module nrungo
 
 ++
 $insideCompileBodyIfTrue := false

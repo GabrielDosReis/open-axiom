@@ -1,4 +1,4 @@
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -13,7 +13,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -37,7 +37,8 @@
 
 import cparse
 import pf2sex
-)package "BOOT"
+namespace BOOT
+module i_-parser
 
 ++ returns the list of tokens making up a line in the stream `s'
 tokenizeLine s ==

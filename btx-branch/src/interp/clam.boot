@@ -33,7 +33,8 @@
 
 
 import g_-timer
-)package "BOOT"
+namespace BOOT
+module clam
 
 --% Cache Lambda Facility
 -- for remembering previous values to functions

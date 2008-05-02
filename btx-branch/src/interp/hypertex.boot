@@ -32,8 +32,22 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import types
-)package "BOOT"
+import sys_-constants
+namespace BOOT
+module hypertex where
+  $LinkToPage: %Short == 96
+  $StartPage: %Short == 97
+  $SendLine: %Short == 98
+  $EndOfPage: %Short == 99
+  $PopUpPage: %Short == 95
+  $PopUpNamedPage: %Short == 94
+  $KillPage: %Short == 93
+  $ReplacePage: %Short == 92
+  $ReplaceNamedPage: %Short == 91
+  $SpadError: %Short == 90
+  $PageStuff: %Short == 100
+  --%
+  $currentFrameNum: %Short
 
 -- HyperTex Spad interface
 
@@ -50,6 +64,8 @@ $ReplaceNamedPage == 91
 $SpadError == 90
 $PageStuff == 100
 
+++
+$currentFrameNum := 0
 
 
 -- Issue a line of HyperTex

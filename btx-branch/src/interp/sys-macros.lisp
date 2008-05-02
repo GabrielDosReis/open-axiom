@@ -996,7 +996,7 @@
 			     ((EQ OP 'OR)
 			      (LIST (LIST 'UNTIL G)))
 			     (NIL) )))
-	   (RETURN (COND ((AND $NEWSPAD (NULL $BOOT))
+	   (RETURN (COND ((NULL $BOOT)
 			  (LIST 'PROGN 
 				PRESET
 				(CONS 'REPEAT 
@@ -1054,7 +1054,7 @@
 
 (defmacro SPADDO (&rest OL)
   (PROG (VARS L VL V U INITS U-VARS U-VALS ENDTEST EXITFORMS BODYFORMS)
-	(if (OR $BOOT (NOT $NEWSPAD))
+	(if $BOOT
 	    (return (CONS 'DO OL)))
 	(SETQ L  (COPY-LIST OL))
 	(if (OR (ATOM L) (ATOM (CDR L)))
@@ -1121,7 +1121,7 @@
 	(SETQ U-VARS VL)
 	XT  
 	(RETURN (COND
-		 ((AND $NEWSPAD (NULL $BOOT))
+		 ((NULL $BOOT)
 		  (CONS 'SEQ
 			(NCONC (DO_LET VARS INITS)
 			       (LIST 'G190 

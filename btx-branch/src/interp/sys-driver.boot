@@ -13,7 +13,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -37,7 +37,46 @@
 --
 
 import types
-)package "BOOT"
+namespace BOOT
+module sys_-driver where
+  $intSpadReader: %Symbol
+  $intCoerceFailure: %Symbol
+  $intTopLevel: %Symbol
+  $displayStartMsgs: %Symbol
+  $RELATIVE_-DIRECTORY_-LIST: %List
+  $RELATIVE_-LIBRARY_-DIRECTORY_-LIST: %List
+  $options: %List
+
+++
+$intSpadReader ==
+  "SPAD__READER"
+
+++
+$intCoerceFailure ==
+  "coerceFailure"
+
+++
+$intTopLevel ==
+  "top__level"
+
+++
+$displayStartMsgs := true
+
+
+++ The relative directory list specifies a search path for files 
+++ for the current directory structure. It has been changed from the
+++ NAG distribution back to the original form. 
+$RELATIVE_-DIRECTORY_-LIST :=
+  '("/../../src/input/"   _
+    "/share/msgs/"        _
+    "/../../src/algebra/" _
+    "/../../src/interp/"  _
+    "/doc/spadhelp/" )
+
+++ The relative directory list specifies how to find the algebra
+++ directory from the current {\bf AXIOM} shell variable.
+$RELATIVE_-LIBRARY_-DIRECTORY_-LIST := 
+  '("/algebra/")
 
 ++ true means try starting an open server
 $openServerIfTrue := true
@@ -187,7 +226,6 @@ executeSpadScript(progname,options,file) ==
   $currentLine := nil
   RESTART0()
   $BOOT := NIL
-  $NEWSPAD := true
   $SPAD := true
   if getOption(Option '"verbose",%systemOptions()) then
     $verbose := true
@@ -215,7 +253,6 @@ compileSpadLibrary(progname,options,file) ==
   $currentLine := nil
   RESTART0()
   $BOOT := NIL
-  $NEWSPAD := true
   $SPAD := true
   $EchoLines := false
   ECHO_-META : fluid := false

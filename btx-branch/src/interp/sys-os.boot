@@ -38,10 +38,11 @@
 -- supporting C runtime libopen-axiom-core.
 --
 
-module sys_-os
+
 import types
 import cfuns
-)package "BOOT"
+module sys_-os
+namespace BOOT
 
 )if not %hasFeature KEYWORD::GCL
 loadSystemRuntimeCore()

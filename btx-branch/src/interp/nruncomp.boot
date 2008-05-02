@@ -34,7 +34,8 @@
 
 import c_-util
 import simpbool
-)package "BOOT"
+namespace BOOT
+module nruncomp
 
 
 ++ The base index for encoding items into a functor template 

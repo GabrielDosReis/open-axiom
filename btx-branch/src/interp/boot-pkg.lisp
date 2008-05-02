@@ -92,3 +92,9 @@
     (cons (* s f) e)))
 
 
+(setq *print-circle* nil)
+(setq *print-array* nil)
+(setq *print-pretty* t)
+
+
+(defconstant |$Newline| #\Newline)

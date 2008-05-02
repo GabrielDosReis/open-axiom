@@ -37,11 +37,6 @@
 (in-package "BOOT")
 ;;patches for now
 
-;; browser stuff:
-;; gdr NOTES: it is WRONG to test for platforms, when in fact
-;; gdr NOTES: one should test for functionalities.
-#+:UNIX (defvar |$standard| 't)
-#-:UNIX (defvar |$standard| 'nil)
 #+(or :UNIX :winnt) (defvar |$saturn| 'nil)
 #-(or :UNIX :winnt) (defvar |$saturn| 't)
 

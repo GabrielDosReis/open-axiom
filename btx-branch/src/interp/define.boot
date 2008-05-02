@@ -35,7 +35,8 @@
 import c_-util
 import cattable
 import category
-)package "BOOT"
+namespace BOOT
+module define
 
 NRTPARSE := false
 $newCompCompare := false

@@ -37,7 +37,8 @@ import pathname
 import modemap
 import define
 import iterator
-)package "BOOT"
+namespace BOOT
+module compiler
 
 ++ A list of routines for diagnostic reports.  These functions, in an
 ++ abstract sense, have type: forall T: Type . String -> T, so they
@@ -905,6 +906,7 @@ compExit(["exit",level,x],m,e) ==
   modifyModeStack(m',index)
   [["TAGGEDexit",index,u],m,e]
 
+$reportExitModeStack := false
 modifyModeStack(m,index) ==
   $reportExitModeStack =>
     SAY("exitModeStack: ",COPY $exitModeStack," ====> ",

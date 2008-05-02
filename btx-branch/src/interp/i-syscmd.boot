@@ -33,7 +33,8 @@
 
 
 import i_-object
-)package "BOOT"
+namespace BOOT
+module i_-syscmd
 
 --% Utility Variable Initializations
 

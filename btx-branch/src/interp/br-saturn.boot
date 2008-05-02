@@ -32,8 +32,20 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import bc_-util
-)package "BOOT"
+import sys_-driver
+import br_-util
+import hypertex
+namespace BOOT
+module br_-saturn where
+  --% Global Variables
+  $aixTestSaturn: %Boolean
+  $saturnPage: %Thing
+  $standard: %Boolean
+
+
+--%
+$standard :=
+  true
 
 --====================> WAS b-saturn.boot <================================
 -- New file as of 6/95
@@ -118,6 +130,8 @@ onDisk() ==
 offDisk() ==
   $saturnFileNumber := false
 
+$saturnPage := nil
+
 page() ==
   $standard => $curPage
   $saturnPage
@@ -193,10 +207,12 @@ htShowPageNoScroll() ==
   endHTPage()
 
 --------------------> NEW DEFINITION <--------------------------
+$marg := 0
+
 issueHTSaturn line == --called by htMakePageNoScroll and htMakeErrorPage
   if $saturn then
-     $marg      : local := 0
-     $linelength: local := 80
+     $marg := 0
+     $linelength := 80
      writeSaturn '"\inputonce{<AXIOM>/doc/browser/browmacs.tex}"
      writeSaturnPrefix()
      writeSaturn(line)
@@ -333,6 +349,9 @@ writeSaturnPrint s ==
   saturnPRINTEXP s
   saturnTERPRI()
 
+++
+$browserOutputStream := nil
+
 saturnPRINTEXP s ==
   $browserOutputStream => PRINTEXP(s,$browserOutputStream)
   PRINTEXP s
@@ -458,9 +477,8 @@ isMenuItemStyle? s ==
   nil
 
 getCallBack callTail ==
-  LASSOC(callTail, $callTailList) or
-    callTail is [fn] => callTail
-    error nil
+  callTail is [fn] => callTail
+  error nil
 
 --=======================================================================
 --              Redefinitions from hypertex.boot
@@ -704,7 +722,7 @@ kPageContextMenu page ==
   if $standard then htEndTable()
 
 kPageContextMenuSaturn page ==
-  $newPage    : local := nil
+  $newPage := false
   [kind,name,nargs,xpart,sig,args,abbrev,comments] := htpProperty(page,'parts)
   $htLineList : local := nil
   conform := htpProperty(page,'conform)
@@ -812,7 +830,7 @@ dbPresentCons(htPage,kind,:exclusions) ==
 
 dbPresentConsSaturn(htPage,kind,exclusions) ==
   $htLineList : local := nil
-  $newPage    : local := nil
+  $newPage := false
   htpSetProperty(htPage,'exclusion,first exclusions)
   cAlist := htpProperty(htPage,'cAlist)
   empty? := null cAlist
@@ -1093,7 +1111,7 @@ dbPresentOps(htPage,which,:exclusions) ==
 
 dbPresentOpsSaturn(htPage,which,exclusions) ==
   $htLineList : local := nil
-  $newPage    : local := nil
+  $newPage := false
   asharp? := htpProperty(htPage,'isAsharpConstructor)
   fromConPage? := (conname := opOf htpProperty(htPage,'conform))
   usage? := nil
@@ -1163,7 +1181,7 @@ htShowPageStar() ==
   htShowPageNoScroll()
 
 htShowPageStarSaturn() ==
-  $newPage    : local := nil
+  $newPage := false
   $htLineList : local := nil
   if $exposedOnlyIfTrue then
     htMakePage [['bcLinks,['"Unexposed Also",'"",'repeatSearch,NIL]]]

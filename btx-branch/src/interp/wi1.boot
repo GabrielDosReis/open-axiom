@@ -33,7 +33,8 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
+module wi1
 
 -- !! do not delete the next function !
 

@@ -34,7 +34,8 @@
 
 import c_-util
 import info
-)package "BOOT"
+namespace BOOT
+module modemap
 
 --% EXTERNAL ROUTINES
  

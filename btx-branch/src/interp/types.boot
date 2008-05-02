@@ -32,93 +32,96 @@
 --
 
 import boot_-pkg
-)package "BOOT"
+namespace BOOT
+module types where
+  --% Basic types used throughout Boot codes.
 
---% Basic types used throughout Boot codes.
+  ++ Type of nothing.  Bottom of the latting.
+  %Void <=> 
+    nil
 
-++ Type of nothing.  Bottom of the latting.
-%Void <=> 
-  nil
+  ++ Type of truth values.
+  %Boolean <=> 
+    BOOLEAN
 
-++ Type of truth values.
-%Boolean <=> 
-  BOOLEAN
+  ++ Type of 8-bit sized unsigned integer values.
+  %Byte <=>
+    UNSIGNED_-BYTE 8
 
-++ Type of 8-bit sized unsigned integer values.
-%Byte <=>
-  UNSIGNED_-BYTE 8
+  ++ Type of characters -- no distinction yet.
+  %Char <=>
+    CHARACTER
 
-++ Type of characters -- no distinction yet.
-%Char <=>
-  CHARACTER
+  ++ Type of fixnums.
+  %Short <=> 
+    FIXNUM
 
-++ Type of fixnums.
-%Short <=> 
-  FIXNUM
+  ++ Type of unlimited precision integers.
+  %Bignum <=> 
+    BIGNUM
 
-++ Type of unlimited precision integers.
-%Bignum <=> 
-  BIGNUM
+  ++ Type of single precision floating point numbers.  Most of the
+  ++ time, this is a 32-bit datatype.
+  %SingleFloat <=>
+    SINGLE_-FLOAT
 
-++ Type of single precision floating point numbers.  Most of the
-++ time, this is a 32-bit datatype.
-%SingleFloat <=>
-  SINGLE_-FLOAT
+  ++ Type of double precision floating point numbers.  Most of the time,
+  ++ this is a 64-bit sized datatype.
+  %DoubleFloat <=>
+    DOUBLE_-FLOAT
 
-++ Type of double precision floating point numbers.  Most of the time,
-++ this is a 64-bit sized datatype.
-%DoubleFloat <=>
-  DOUBLE_-FLOAT
+  ++ General type for numbers.
+  %Number <=> 
+    NUMBER
 
-++ General type for numbers.
-%Number <=> 
-  NUMBER
+  ++ Type of identifiers.  Ideally, we want actually want to exclude
+  ++ Lisp oddities such as NIL and T.
+  %Symbol <=> 
+    SYMBOL
 
-++ Type of identifiers.  Ideally, we want actually want to exclude
-++ Lisp oddities such as NIL and T.
-%Symbol <=> 
-  SYMBOL
+  ++ The type of literal strings
+  %String <=> 
+    STRING
 
-++ The type of literal strings
-%String <=> 
-  STRING
+  ++ Anything that is not a cons cell.
+  %Atom <=> atom
 
-++ Anything that is not a cons cell.
-%Atom <=> atom
+  ++ nil or a cons cell.  Ideally, this should be parameterized, but
+  ++ we cannot afford that luxury with Lisp.
+  %List <=> 
+    LIST
 
-++ nil or a cons cell.  Ideally, this should be parameterized, but
-++ we cannot afford that luxury with Lisp.
-%List <=> 
-  LIST
+  ++ The type of a linear homogeneous non-extensible array.
+  %SimpleArray a <=> 
+    SIMPLE_-ARRAY a
 
-++ The type of a linear homogeneous non-extensible array.
-%SimpleArray a <=> 
-  SIMPLE_-ARRAY a
+  %Vector a <=> VECTOR a
 
-%Vector a <=> VECTOR a
+  %HashTable <=>
+    HASH_-TABLE
 
-%Thing <=> true
+  %Thing <=> true
 
-%Sequence <=> SEQUENCE
+  %Sequence <=> SEQUENCE
 
-%Pair <=> cons
+  %Pair <=> cons
 
-%Maybe a <=> null or a
+  %Maybe a <=> null or a
 
---% Data structures for the compiler
-%Form <=> %Number or %Symbol or %String or cons -- input syntax form
-%Env <=> %List                                 -- compiling env
-%Mode <=> %Symbol or %String or %List          -- type of forms
-%Code <=> %Form                                -- generated code
-%Triple <=>                                    -- form + type + env
-  cons(%Code,cons(%Mode,cons(%Env,null))) 
+  --% Data structures for the compiler
+  %Form <=> %Number or %Symbol or %String or cons -- input syntax form
+  %Env <=> %List                                 -- compiling env
+  %Mode <=> %Symbol or %String or %List          -- type of forms
+  %Code <=> %Form                                -- generated code
+  %Triple <=>                                    -- form + type + env
+    cons(%Code,cons(%Mode,cons(%Env,null))) 
 
-%Signature                      -- signature
-  <=> cons
+  %Signature                      -- signature
+    <=> cons
 
-%Modemap <=> %List                             -- modemap
+  %Modemap <=> %List                             -- modemap
 
-%ConstructorKind <=>                           -- kind of ctor instances
-  MEMBER("category","domain","package")
+  %ConstructorKind <=>                           -- kind of ctor instances
+    MEMBER("category","domain","package")
 
-%Shell <=> SIMPLE_-VECTOR                      -- constructor instantiation
+  %Shell <=> SIMPLE_-VECTOR                      -- constructor instantiation

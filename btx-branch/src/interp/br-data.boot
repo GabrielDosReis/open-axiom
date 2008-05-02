@@ -33,7 +33,33 @@
 
 
 import bc_-util
-)package "BOOT"
+namespace BOOT
+module br_-data where
+  $conform: %List
+  $conname: %Symbol
+  $doc: %List
+  $exposed?: %Maybe %String
+  $if: %HashTable
+  $kind: %Symbol
+  $lisplibParents: %List
+  $tick: %Char
+  $defaultPackageNamesHT: %HashTable
+
+--%
+$conform := nil
+$conname := nil
+$doc := nil
+$done := nil
+$exposed? := false
+$formals := nil
+$kind := nil
+$lisplibParents := nil
+$tick := char '_`            --field separator for database files
+
+++ true if we should rebuild local databases.
+$createLocalLibDb := true
+
+--%
 
 lefts u ==
    [x for x in HKEYS  _*HASCATEGORY_-HASH_* | CDR x = u]
@@ -90,10 +116,7 @@ buildLibdb(:options) ==  --called by buildDatabase (database.boot)
     buildLibAttrs attrlist
   SHUT $outStream
   domainList => 'done         --leave new database in temp.text
-  OBEY
-    $machineType = 'RIOS => '"sort -f -T /tmp -y200 _"temp.text_"  > _"libdb.text_""
-    $machineType = 'SPARC => '"sort -f  _"temp.text_"  > _"libdb.text_""
-    '"sort  _"temp.text_"  > _"libdb.text_""
+  OBEY '"sort  _"temp.text_"  > _"libdb.text_""
   renameFile('"libdb.text", '"olibdb.text")
   removeFile '"temp.text"
 
@@ -512,8 +535,9 @@ getParentsFor(cname,formalParams,constructorCategory) ==
     acc := [:explodeIfs x,:acc]
   NREVERSE acc
 
+$parentsCache := MAKE_-HASHTABLE 'ID
+
 parentsOf con == --called by kcpPage, ancestorsRecur
-  if null BOUNDP '$parentsCache then SETQ($parentsCache,MAKE_-HASHTABLE 'ID)
   HGET($parentsCache,con) or
     parents := getParentsForDomain con
     HPUT($parentsCache,con,parents)

@@ -35,7 +35,8 @@
 import incl
 import i_-toplev
 import unlisp
-)package "BOOT"
+namespace BOOT
+module int_-top
 
 ncParseAndInterpretString s ==
   processInteractive(packageTran parseFromString s, nil)
@@ -95,7 +96,6 @@ ncTopLevel() ==
   _*EOF_*: fluid := NIL
   $InteractiveMode :fluid := true
   $BOOT: fluid := NIL
-  $NEWSPAD: fluid := true
   $SPAD: fluid := true
   $e:fluid := $InteractiveFrame
   ncIntLoop()

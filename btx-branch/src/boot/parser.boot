@@ -39,13 +39,26 @@
 --
 
 
-module parser
 import includer
 import scanner
 import ast
- 
-)package "BOOTTRAN"
- 
+namespace BOOTTRAN
+module parser where
+  bpComma: () -> %Thing
+  bpFirstTok: () -> %Boolean
+  bpPush: %Thing -> %List
+  bpPop1: () -> %Thing
+  bpTrap: () -> %Thing
+  --%
+  $bpCount: %Short
+  $bpParenCount: %Short
+  $inputStream: %List
+  $stack: %List
+
+$bpCount := 0
+$bpParenCount := 0
+$inputStream := nil
+$stack := nil 
 
 ++ true when the current function definition has its parameters 
 ++ written round parenthesis.
@@ -63,16 +76,16 @@ bpFirstTok()==
       $stok:=
           if null $inputStream
           then shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
-          else CAR $inputStream
+          else first $inputStream
       $ttok:=shoeTokPart $stok
       $bpParenCount>0 and EQCAR($stok,"KEY") =>
-             EQ($ttok,"SETTAB")=>
+             $ttok = "SETTAB" =>
                 $bpCount:=$bpCount+1
                 bpNext()
-             EQ($ttok,"BACKTAB")=>
+             $ttok = "BACKTAB" =>
                 $bpCount:=$bpCount-1
                 bpNext()
-             EQ($ttok,"BACKSET")=>
+             $ttok = "BACKSET" =>
                 bpNext()
              true
       true
@@ -96,34 +109,35 @@ bpRestore(x)==
       $bpCount:=CADDDR x
       true
  
-bpPush x==$stack:=CONS(x,$stack)
+bpPush x == 
+  $stack := [x,:$stack]
  
 bpPushId()==
    $stack:=CONS(bfReName $ttok,$stack)
  
 bpPop1()==
-       a:=CAR $stack
-       $stack:=CDR $stack
+       a:= first $stack
+       $stack:= rest $stack
        a
  
 bpPop2()==
-       a:=CADR $stack
+       a:= second $stack
        RPLACD($stack,CDDR $stack)
        a
  
 bpPop3()==
-       a:=CADDR $stack
-       RPLACD(CDR $stack,CDDDR $stack)
+       a:=third $stack
+       RPLACD(rest $stack,CDDDR $stack)
        a
  
 bpIndentParenthesized f==
-    $bpCount:local:=0
+    $bpCount := 0
     a:=$stok
     if bpEqPeek "OPAREN"
     then
       $bpParenCount:=$bpParenCount+1
       bpNext()
-      if APPLY(f,nil) and bpFirstTok() and
+      if apply(f,nil) and bpFirstTok() and
               (bpEqPeek "CPAREN" or bpParenTrap(a))
       then
             $bpParenCount:=$bpParenCount-1
@@ -412,16 +426,34 @@ bpConstTok() ==
      bpString()
 
 
+bpExportItemTail() ==
+  bpEqKey "BEC" and (bpAssign() or bpTrap()) and  
+    bpPush %Assignment(bpPop2(), bpPop1())
+      or bpSimpleDefinitionTail()
+
+bpExportItem() ==
+  bpEqPeek "STRUCTURE" => bpStruct()
+  a := bpState()
+  bpName() =>
+    bpEqPeek "COLON" =>
+      bpRestore a
+      bpSignature() and (bpExportItemTail() or true) or bpTrap()
+    bpRestore a
+    bpTypeAliasDefition() 
+  false
+
 ++ ExportItemList:
 ++    Signature
 ++    ExportItemList Signature
 bpExportItemList() ==
-  bpListAndRecover function bpSignature
+  bpListAndRecover function bpExportItem
+
 
 ++ Exports:
 ++   pile-bracketed ExporItemList
 bpExports() ==
   bpPileBracketed function bpExportItemList
+    or bpExportItem() and bpPush [bpPop1()]
 
 ++ Parse a module definitoin
 ++   Module:
@@ -458,16 +490,25 @@ bpTypeAliasDefition() ==
 ++  Signature:
 ++    Name COLON Mapping
 bpSignature() ==
-  bpName() and bpEqKey "COLON" and bpMapping()
-    and bpPush Signature(bpPop2(), bpPop1())
+  bpName() and bpEqKey "COLON" and bpMapping() and
+    bpPush Signature(bpPop2(), bpPop1())
 
 ++ Parse a mapping expression
 ++   Mapping:
 ++      (Name | IdList) -> Name
+
+bpSimpleMapping() ==
+  bpApplication() =>
+    bpEqKey "ARROW" and (bpApplication() or bpTrap()) and
+      bpPush Mapping(bpPop1(), bfUntuple bpPop1())
+    true
+  false
+
 bpMapping() ==
-  (bpName() or bpParenthesized function bpIdList) and 
-     bpEqKey "ARROW" and bpName() and 
+  bpParenthesized function bpIdList and 
+     bpEqKey "ARROW" and bpApplication() and 
        bpPush Mapping(bpPop1(), bfUntuple bpPop1())
+         or bpSimpleMapping()
 
 bpCancel()==
     a:=bpState()
@@ -485,6 +526,8 @@ bpCancel()==
               bpRestore a
               false
     else false
+
+bpAddTokens: %Short -> %List
 bpAddTokens n==
          n=0 => nil
          n>0=> cons(shoeTokConstruct("KEY","SETTAB",shoeTokPosn $stok),bpAddTokens(n-1))
@@ -563,7 +606,7 @@ bpApplication()==
 bpTyping() ==
   bpApplication() and
     (bpEqKey "ARROW" and (bpApplication() or bpTrap()) and
-      bpPush Mapping(bpPop1(), bfUntuple bpPop1()) or true) or bpMapping()
+      bpPush Mapping(bpPop1(), bfUntuple bpPop1()) or true)
 
 ++ Tagged:
 ++   Name : Typing

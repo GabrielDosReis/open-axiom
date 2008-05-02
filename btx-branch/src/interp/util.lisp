@@ -376,20 +376,6 @@
           fns))
 
 
-;; The relative directory list specifies a search path for files 
-;; for the current directory structure. It has been changed from the
-;; NAG distribution back to the original form. 
-(defvar $relative-directory-list
-  '("/../../src/input/"
-    "/share/msgs/"
-    "/../../src/algebra/"
-    "/../../src/interp/"  ; for boot and lisp  files (helps fd)
-    "/doc/spadhelp/" ))
-
-;; The relative directory list specifies how to find the algebra
-;; directory from the current {\bf AXIOM} shell variable.
-(defvar $relative-library-directory-list '("/algebra/"))
-
 (eval-when (:compile-toplevel :load-toplevel :execute)
   #-:GCL (defpackage "OLD-BOOT")
   #+:GCL (in-package "OLD-BOOT"))

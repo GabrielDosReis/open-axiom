@@ -32,7 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import g_-util
-)package "BOOT"
+namespace BOOT
+module i_-object
 
 ++ true when the interpreter should evaluate forms to values, as
 ++ opposed to just generating code to compute values.

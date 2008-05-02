@@ -33,17 +33,28 @@
 --
 
 
-module scanner
 import tokens
 import includer
+namespace BOOTTRAN
 
-)package "BOOTTRAN"
+module scanner where
+  dqUnit: %Thing -> %List
+  dqAppend: (%List,%List) -> %List
+  dqConcat: %List -> %List
+  shoeTokType: %List -> %Symbol
+  shoeTokPart: %List -> %Thing
+  shoeTokPosn: %List -> %List
+  shoeTokConstruct: (%Thing,%Thing,%Thing) -> %List
+  shoeLineToks: %List -> %List
+  dqToList: %List -> %List
 
 -- converts X to double-float.
 double x ==
   FLOAT(x, 1.0)
  
-dqUnit s==(a:=[s];CONS(a,a))
+dqUnit s == 
+  a := [s]
+  [a,:a]
  
 dqAppend(x,y)==
     if null x
@@ -51,8 +62,8 @@ dqAppend(x,y)==
     else if null y
          then x
          else
-              RPLACD (CDR x,CAR y)
-              RPLACD (x,    CDR y)
+              RPLACD (rest x,first y)
+              RPLACD (x,    rest y)
               x
  
 dqConcat ld==
@@ -62,13 +73,23 @@ dqConcat ld==
          then first ld
          else dqAppend(first ld,dqConcat rest ld)
  
-dqToList s==if null s then nil else CAR s
+dqToList s ==
+  if null s then nil else first s
  
-shoeConstructToken(ln,lp,b,n)==[b.0,b.1,:cons(lp,n)]
-shoeTokType x== CAR x
-shoeTokPart x== CADR x
-shoeTokPosn x== CDDR x
-shoeTokConstruct(x,y,z)==[x,y,:z]
+shoeConstructToken(ln,lp,b,n) ==
+  [b.0,b.1,:cons(lp,n)]
+
+shoeTokType x ==
+  first x
+
+shoeTokPart x == 
+  second x
+
+shoeTokPosn x== 
+  CDDR x
+
+shoeTokConstruct(x,y,z) == 
+  [x,y,:z]
  
 shoeNextLine(s)==
      if bStreamNull s
@@ -85,19 +106,26 @@ shoeNextLine(s)==
                   a:=MAKE_-FULL_-CVEC (7-REM($n,8) ,'" ")
                   $ln.$n:='" ".0
                   $ln:=CONCAT(a,$ln)
-                  s1:=cons(cons($ln,CDR $f),$r)
+                  s1:=cons(cons($ln,rest $f),$r)
                   shoeNextLine s1
        true
+
+$floatok := true
+$linepos := nil
+$ln := nil
+$n := nil
+$r := nil
+$sz := nil
  
 shoeLineToks(s)==
    $f: local:=nil
-   $r:local :=nil
-   $ln:local :=nil
-   $n:local:=nil
-   $sz:local := nil
-   $floatok:local:=true
-   $linepos:local:=s
-   not shoeNextLine s =>  CONS(nil,nil)
+   $r  := nil
+   $ln := nil
+   $n := nil
+   $sz := nil
+   $floatok := true
+   $linepos := s
+   not shoeNextLine s => [nil]
    null $n => shoeLineToks $r
    fst:=QENUM($ln,0)
    EQL(fst,shoeCLOSEPAREN)=>
@@ -135,11 +163,11 @@ shoeAccumulateLines(s,string)==
    fst:=QENUM($ln,0)
    EQL(fst,shoeCLOSEPAREN)=>
             command:=shoeLisp? $ln
-            command and #command>0 =>
+            command ^= nil and #command>0 =>
                 EQL(QENUM(command,0),QENUM('";",0))=>
                             shoeAccumulateLines($r,string)
                 a:=STRPOS('";",command,0,nil)
-                a=>
+                a ^= nil =>
                   shoeAccumulateLines($r,
                      CONCAT(string,SUBSTRING(command,0,a-1)))
                 shoeAccumulateLines($r,CONCAT(string,command))

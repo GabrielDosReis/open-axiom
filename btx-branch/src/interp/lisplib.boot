@@ -35,7 +35,8 @@
 import nlib
 import c_-util
 import debug
-)package "BOOT"
+namespace BOOT
+module lisplib
 
 ++
 $functionLocations := []

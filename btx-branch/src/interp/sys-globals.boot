@@ -39,441 +39,416 @@
 
 import hash
 import sys_-constants
-)package "BOOT"
+namespace BOOT
+module sys_-globals where
+  --% Types
+  %Stream <=>
+    STREAM
 
-++ FIXME
-$saturn := false
+  --
+  $IOindex : %Short := 0
+  $BOOT: %Boolean := false
+  $TRACELETFLAG: %Boolean := false
 
-++ FIXME
-$SPAD__ERRORS := VECTOR(0, 0, 0)
+  ++ FIXME
+  $saturn: %Boolean := false
 
-++
-$abbreviationTable := nil
+  ++ FIXME
+  $SPAD__ERRORS: %Vector %Short := VECTOR(0, 0, 0)
 
-++
-$bootStrapMode := false
+  ++
+  $bootStrapMode: %Boolean := false
 
-++
-$BreakMode := "query"
+  ++
+  $BreakMode: %Symbol := "query"
 
-++
-$cacheAlist := nil
-$cacheCount := 0
+  ++
+  $cacheAlist: %List := nil
+  $cacheCount: %Short := 0
 
 
-++
-$clamList :=
-  '((canCoerce hash UEQUAL count)                 _
-    (canCoerceFrom hash UEQUAL count)             _
-    (coerceConvertMmSelection hash UEQUAL count)  _
-    (hasFileProperty hash UEQUAL count)           _
-    (isLegitimateMode hash UEQUAL count)          _
-    (isValidType hash UEQUAL count)               _
-    (resolveTT hash UEQUAL count)                 _
-    (selectMms1 hash UEQUAL count)                _
-    (underDomainOf hash UEQUAL count))
+  ++
+  $clamList: %List :=
+    '((canCoerce hash UEQUAL count)                 _
+      (canCoerceFrom hash UEQUAL count)             _
+      (coerceConvertMmSelection hash UEQUAL count)  _
+      (hasFileProperty hash UEQUAL count)           _
+      (isLegitimateMode hash UEQUAL count)          _
+      (isValidType hash UEQUAL count)               _
+      (resolveTT hash UEQUAL count)                 _
+      (selectMms1 hash UEQUAL count)                _
+      (underDomainOf hash UEQUAL count))
 
-++
-$compCount := 0
+  ++
+  $compUniquelyIfTrue: %Boolean := false
 
-++
-$compUniquelyIfTrue := false
+  ++
+  $ConstructorCache: %HashTable := MAKE_-HASHTABLE "ID"
 
-++
-$ConstructorCache := MAKE_-HASHTABLE "ID"
+  ++
+  $currentFunction: %Thing := nil
 
-++
-$createUpdateFiles := false
+  ++
+  $currentLine: %Thing := nil
 
-++
-$currentFunction := nil
+  ++
+  $exitModeStack: %List := []
 
-++
-$currentLine := nil
+  ++
+  $inputPromptType: %Symbol := "step"
 
-++
-$domainTraceNameAssoc := []
+  ++
+  $whereList: %List := []
 
-++
-$evalDomain := false
+  ++
+  $warningStack: %List := []
 
-++
-$exitModeStack := []
+  ++
+  $form: %Form := nil
 
-++
-$IOindex := 0
+  ++
+  $fromSpadTrace: %Boolean := false
 
-++
-$inputPromptType := "step"
+  ++
+  $genSDVar: %Short := 0
 
-++
-$whereList := []
+  ++
+  $Index: %Short := 0
 
-++
-$warningStack := []
+  ++
+  $inLispVM: %Boolean := true
 
-++
-$form := nil
+  ++
+  $insideCapsuleFunctionIfTrue: %Boolean := false
 
-++
-$fromSpadTrace := false
+  ++
+  $insideCategoryIfTrue: %Boolean := false
 
-++
-$genSDVar := 0
+  ++
+  $insideCoerceInteractiveHardIfTrue: %Boolean := false
 
-++
-$Index := 0
+  ++
+  $insideCompTypeOf: %Boolean := false
 
-++
-$inLispVM := true
+  ++
+  $insideConstructIfTrue: %Boolean := false
 
-++
-$insideCapsuleFunctionIfTrue := false
+  ++
+  $insideExpressionIfTrue: %Boolean := false
 
-++
-$insideCategoryIfTrue := false
+  ++
+  $insideFunctorIfTrue: %Boolean := false
 
-++
-$insideCoerceInteractiveHardIfTrue := false
+  ++
+  $insideWhereIfTrue: %Boolean := false
 
-++
-$insideCompTypeOf := false
+  ++
+  $instantRecord: %HashTable := MAKE_-HASHTABLE "ID"
 
-++
-$insideConstructIfTrue := false
+  ++
+  $CapsuleModemapFrame: %Env := [[nil]]
+  $InteractiveFrame: %Env := $EmptyEnvironment
+  $e: %Env := $EmptyEnvironment
+  $env: %Env := [[nil]]
 
-++
-$insideExpressionIfTrue := false
+  ++
+  $InteractiveMode: %Boolean := false
 
-++
-$insideFunctorIfTrue := false
+  ++
+  $InteractiveTimingStatsIfTrue: %Boolean := false
 
-++
-$insideWhereIfTrue := false
+  ++
+  $forceDatabaseUpdate: %Boolean := false
 
-++
-$instantRecord := MAKE_-HASHTABLE "ID"
+  ++
+  $leaveLevelStack: %List := []
 
-++
-$InteractiveFrame := $EmptyEnvironment
-$e := $EmptyEnvironment
-$env := [[nil]]
+  ++
+  ++ FIXME: eventually move to trace.boot.
+  $letAssoc: %Boolean := false
 
-++
-$InteractiveMode := false
+  ++
+  $libFile: %Maybe %String := nil
 
-++
-$InteractiveTimingStatsIfTrue := false
+  ++
+  $lisplibForm: %Form := nil
 
-++
-$forceDatabaseUpdate := false
+  ++
+  $lisplibKind: %Maybe %Symbol := nil
 
-++
-$leaveLevelStack := []
+  ++
+  $lisplibModemapAlist: %List := []
 
-++
-++ FIXME: eventually move to trace.boot.
-$letAssoc := false
+  ++
+  $lisplibModemap: %Modemap := nil
 
-++
-$libFile := nil
+  ++
+  $lisplibOperationAlist: %List := []
 
-++
-$lisplibForm := nil
+  ++
+  $lisplibSignatureAlist: %List := []
 
-++
-$lisplibKind := nil
+  ++
+  $lisplibVariableAlist: %List := []
 
-++
-$lisplibModemapAlist := []
+  ++
+  $mapSubNameAlist: %List := []
 
-++
-$lisplibModemap := nil
+  ++
+  $mathTrace: %Boolean := false
 
-++
-$lisplibOperationAlist := []
+  ++
+  $mathTraceList: %List := []
 
-++
-$lisplibSignatureAlist := []
+  ++
+  $prefix: %Maybe %Symbol := nil
 
-++
-$lisplibVariableAlist := []
+  ++ FIXME: Eventually move to comp.lisp.pamphlet
+  $PrettyPrint: %Boolean := false
 
-++
-$mapSubNameAlist := []
+  ++
+  $previousTime: %Short := 0
 
-++
-$mathTrace := false
+  ++
+  $VariableCount: %Short := 0
 
-++
-$mathTraceList := []
+  ++
+  $useBFasDefault: %Boolean := true
 
-++
-$prefix := nil
+  ++
+  $semanticErrorStack: %List := []
 
-++ FIXME: Eventually move to comp.lisp.pamphlet
-$PrettyPrint := false
 
-++
-$previousTime := 0
+  ++
+  $tracedModemap: %Boolean := nil
 
-++
-$VariableCount := 0
+  ++
+  $tracedSpadModemap: %List := nil
 
-++
-$useBFasDefault := true
+  ++
+  $traceletFunctions: %List := []
 
-++
-$semanticErrorStack := []
+  ++
+  $useDCQnotLET: %Boolean := false
 
-++
-++ FIXME: Eventually move to compiler.boot.pamphlet.
-$reportExitModeStack := false
+  ++
+  $updateCatTableIfTrue: %Boolean := true
 
-++
-$tracedModemap := nil
+  ++
+  $TranslateOnly: %Boolean := false
 
-++
-$tracedSpadModemap := nil
+  ++
+  $topOp: %Symbol := nil
 
-++
-$traceletFunctions := []
+  ++
+  $streamCount: %Short := 0
 
-++
-$useDCQnotLET := false
+  ++
+  $TOP__LEVEL: %Boolean := true
 
-++
-$updateCatTableIfTrue := true
+  ++
+  $TOKSTACK: %List := nil
 
-++
-$TranslateOnly := false
+  ++
+  $FUNCTION: %Thing := nil
 
-++
-$topOp := nil
+  ++
+  $FUNNAME: %Symbol := nil
 
-++
-$streamCount := 0
+  ++
+  $FUNNAME__TAIL: %List := '(())
 
-++
-$TOP__LEVEL := true
+  ++
+  $LASTPREFIX: %String := '"S_:"
 
-++
-$TOKSTACK := nil
+  ++
+  $LINESTACK: %Symbol := "BEGIN__UNIT"
 
-++
-$FUNCTION := nil
+  ++
+  $MAXLINENUMBER: %Short := 0
 
-++
-$FUNNAME := nil
+  ++
+  $OLDLINE: %Maybe %String := nil
 
-++
-$FUNNAME__TAIL := '(())
+  ++
+  $SPAD: %Boolean := false
 
-++
-$LASTPREFIX := '"S_:"
+  ++
+  $PrintOnly: %Boolean := false
 
-++
-$LINESTACK := "BEGIN__UNIT"
+  ++
+  $QuickLet: %Boolean := true
 
-++
-$MAXLINENUMBER := 0
+  ++
+  $reportBottomUpFlag: %Boolean := false
 
-++
-$OLDLINE := nil
+  ++
+  $reportFlag: %Boolean := false
 
-++
-$SPAD := false
+  ++
+  $returnMode: %Mode := $EmptyMode
 
-++
-$PrintOnly := false
+  ++
+  $SetFunctions: %Maybe %Shell := nil
 
-++
-$QuickLet := true
+  ++
+  ++ FIXME: Eventually remove.
+  $slamFlag: %Boolean := false
 
-++
-$reportBottomUpFlag := false
+  ++
+  ++ FIXME: Eventually remove.
+  $sourceFileTypes: %List := ["SPAD"]
 
-++
-$reportFlag := false
+  ++
+  ++ If true, make the system verbose about object files being loaded
+  $printLoadMsgs: %Boolean := false
 
-++
-$returnMode := $EmptyMode
+  ++
+  $reportCompilation: %Boolean := false
 
-++
-$SetFunctions := nil
+  ++
+  $LISPLIB: %Thing := false
 
-++
-++ FIXME: Eventually remove.
-$slamFlag := false
+  ++
+  $CategoryFrame: %Env :=
+    '((((Category (modemap (((Category) (Category)) (T *))))_
+	(Join (modemap (((Category) (Category) (Category)) (T *))_
+		       (((Category) (Category) (List Category)) (T *)))))))
 
-++
-++ FIXME: Eventually remove.
-$sourceFileTypes := ["SPAD"]
+  ++
+  $spadLibFT: %Symbol := "NRLIB"
 
-++
-++ If true, make the system verbose about object files being loaded
-$printLoadMsgs := false
+  ++ true if we are compiling a function.
+  $compilingMap: %Boolean := false
 
-++
-$reportCompilation := false
+  ++
+  $insideCoerceInteractive: %Boolean := false
 
-++
-$LISPLIB := false
+  ++
+  $insideEvalMmCondIfTrue: %Boolean := false
 
-++
-$CategoryFrame :=
-  '((((Category (modemap (((Category) (Category)) (T *))))_
-      (Join (modemap (((Category) (Category) (Category)) (T *))_
-                     (((Category) (Category) (List Category)) (T *)))))))
+  ++
+  $libraryDirectory: %Symbol := "A"
 
-++
-$spadLibFT := "NRLIB"
+  ++
+  $listingDirectory: %Symbol := "A"
 
-++ true if we are compiling a function.
-$compilingMap := false
+  ++
+  $UserLevel: %Symbol := "development"
 
-++
-$TRACELETFLAG := false
+  ++
+  $DIRECTORY_-LIST: %List := []
 
-++
-$NEWSPAD := false
+  ++
+  $LIBRARY_-DIRECTORY_-LIST: %List := []
 
-++
-$BOOT := false
+  ++
+  $byConstructors: %List := nil
 
-++
-$insideCoerceInteractive := false
+  ++
+  $constructorsSeen: %List := nil
 
-++
-$insideEvalMmCondIfTrue := false
+  ++
+  $docList: %List := []
 
-++
-$libraryDirectory := "A"
+  ++
+  $headerDocumentation: %Thing := nil
 
-++
-$listingDirectory := "A"
+  ++
+  $constructorLineNumber: %Short := 0
 
-++
-$UserLevel := "development"
+  ++
+  $maxSignatureLineNumber: %Short := 0
 
-++
-$DIRECTORY_-LIST := []
+  ++
+  $noSubsumption: %Boolean :=true
 
-++
-$LIBRARY_-DIRECTORY_-LIST := []
+  SPADERRORSTREAM: %Stream := _*ERROR_-OUTPUT_*
 
-++
-$byConstructors := nil
+  ++
+  _/VERSION: %Short := 0
+  _/WSNAME: %Symbol := "NOBOOT"
+  _/EDITFILE: %Maybe %String := nil
 
-++
-$constructorsSeen := nil
+  ++
+  LINE: %Maybe %String := nil
+  CHR: %Maybe %Char := nil
+  TOK: %Thing := nil
 
-++
-$docList := []
+  ++ answers x has y category questions
+  _*HASCATEGORY_-HASH_*: %HashTable := nil
 
-++
-$headerDocumentation := nil
+  _*ANCESTORS_-HASH_*: %HashTable := nil
 
-++
-$constructorLineNumber := 0
+  ++
+  _*BUILD_-VERSION_*: %Maybe %String := nil
+  _*YEARWEEK_*: %Maybe %String := nil
 
-++
-$maxSignatureLineNumber := 0
+  ++
+  _/TRACENAMES: %List := nil
 
-++
-$noSubsumption :=true
+  ++
+  $highlightAllowed: %Boolean := true
 
-SPADERRORSTREAM := _*ERROR_-OUTPUT_*
+  ++
+  INPUT_-LIBRARIES: %List := nil
+  OUTPUT_-LIBRARY: %Thing := nil
 
-++
-_/VERSION := 0
-_/WSNAME := "NOBOOT"
-_/EDITFILE := nil
+  ++
+  $newConlist: %List := nil
 
-++
-LINE := nil
-CHR := nil
-TOK := nil
+  ++
+  $compilingInputFile: %Boolean := false
 
-++ answers x has y category questions
-_*HASCATEGORY_-HASH_* := nil
+  ++
+  $minivectorNames: %List := []
 
-_*ANCESTORS_-HASH_* := nil
+  ++ True if the input file uses old semantics of `Rep',
+  ++ e.g. implicit equivalent Rep <-> % with capsules.  
+  ++ This semenatics is in effect only when `Rep' is defined
+  ++ through assignment.
+  $useRepresentationHack: %Boolean := true
 
-++
-_*BUILD_-VERSION_* := nil
-_*YEARWEEK_* := nil
+  ++
+  $insideCanCoerceFrom: %Boolean := nil
 
-++
-_/TRACENAMES := nil
+  ++
+  $sourceFiles: %List := []
 
-++
-$highlightAllowed := true
+  ++ ???
+  $x: %Form := nil
+  $f: %Form := nil
+  $m: %Mode := nil
 
-++
-SETQ(_*PRINT_-CIRCLE_*, true)
-SETQ(_*PRINT_-ARRAY_*, false)
-SETQ(_*PRINT_-PRETTY_*, true)
+  ++ ???
+  _/SOURCEFILES: %List := []
+  _/SPACELIST: %List := []
 
-++
-INPUT_-LIBRARIES := nil
-OUTPUT_-LIBRARY := nil
+  --%
+  $algebraOutputStream: %Stream :=
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-++
-$newConlist := nil
+  ++
+  $texOutputStream: %Stream := 
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-++
-$compilingInputFile := false
+  $fortranOutputStream: %Stream :=
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-++
-$minivectorNames := []
+  $formulaOutputStream: %Stream :=
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-++ True if the input file uses old semantics of `Rep',
-++ e.g. implicit equivalent Rep <-> % with capsules.  
-++ This semenatics is in effect only when `Rep' is defined
-++ through assignment.
-$useRepresentationHack := true
+  conOutStream: %Stream := 
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-++
-$insideCanCoerceFrom := nil
 
-++
-$sourceFiles := []
 
-++ ???
-$x := nil
-$f := nil
-$m := nil
 
-++ ???
-_/SOURCEFILES := []
-_/SPACELIST := []
+  $InputStream: %Stream :=
+    MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"
 
---%
+  $OutputStream: %Stream :=
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
-$algebraOutputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-++
-$texOutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-$fortranOutputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-$formulaOutputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-conOutStream := 
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-
-
-
-$InputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"
-
-$OutputStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-$ErrorStream :=
-  MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+  $ErrorStream: %Stream :=
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"

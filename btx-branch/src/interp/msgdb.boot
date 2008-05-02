@@ -77,7 +77,8 @@
 
 
 import g_-util
-)package "BOOT"
+namespace BOOT
+module msgdb
 
 --% Message Database Code and Message Utility Functions
 
@@ -1039,17 +1040,6 @@ splitListSayBrightly u ==
 --=======================================================================
 --                Utility Functions
 --=======================================================================
-
-$htSpecialChars := ['"_#", '"[", '"]", '"%", '"{", '"}", '"_\",
-                    '"$", '"&", '"^", '"__", '"_~"]
-
-$htCharAlist := '(
-  ("$"  . "\%")
-  ("[]" . "\[\]")
-  ("{}" . "\{\}")
-  ("\\" . "\\\\")
-  ("\/" . "\\/" )
-  ("/\" . "/\\" ) )
 
 escapeSpecialChars s ==
   u := LASSOC(s,$htCharAlist) => u

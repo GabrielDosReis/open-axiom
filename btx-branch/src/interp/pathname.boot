@@ -33,7 +33,8 @@
 
 
 import nlib
-)package "BOOT"
+namespace BOOT
+module pathname
 
 -- This file implements the Common Lisp pathname functions for
 -- Lisp/VM.  On VM, a filename is 3-list consisting of the filename,

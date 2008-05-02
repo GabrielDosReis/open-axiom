@@ -33,7 +33,8 @@
 
 
 import clam
-)package "BOOT"
+namesoace BOOT
+module package
 
 isPackageFunction() ==
   -- called by compile/putInLocalDomainReferences
@@ -246,7 +247,9 @@ getCaps x ==
   "STRCONC"/[first clist,:[L_-CASE u for u in rest clist]]
  
 --% abbreviation code
- 
+
+$abbreviationTable := nil
+
 getAbbreviation(name,c) ==
   --returns abbreviation of name with c arguments
   x := constructor? name

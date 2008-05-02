@@ -34,10 +34,34 @@
 
 import macros
 import sys_-utility
-)package "BOOT"
+namespace BOOT
+module g_-util where
+  $charBlank: %Char
+  $mapName: %Symbol
+  $outStream: %Maybe %Stream
+  $htSpecialChars: %List
+  $htCharAlist: %List
+
+  $charNewline: %Char
+  $charFauxNewline: %Char
+  $blank: %Char
 
 ++
 $interpOnly := false
+
+$htSpecialChars :=
+  ['"_#", '"[", '"]", '"%", '"{", '"}", '"_\",
+    '"$", '"&", '"^", '"__", '"_~"]
+
+$htCharAlist := '(
+  ("$"  . "\%")   _
+  ("[]" . "\[\]") _
+  ("{}" . "\{\}") _
+  ("\\" . "\\\\") _
+  ("\/" . "\\/" ) _
+  ("/\" . "/\\" ) )
+
+
 
 --% Utility Functions of General Use
 
@@ -422,6 +446,8 @@ mergeSort(f,g,p,n) ==
 
 --% Throwing with glorious highlighting (maybe)
 
+$mapName := nil
+
 spadThrow() ==
   if $interpOnly and $mapName then
     putHist($mapName,'localModemap, nil, $e)
@@ -585,7 +611,7 @@ after(u,v) ==
   r
 
 
-$blank := char ('_ )
+$blank == char ('_ )
 
 trimString s ==
   leftTrim rightTrim s
@@ -632,6 +658,13 @@ intern x ==
     INTERN x
   x
 
+
+++ ??? from interop.boot
+$domainTypeTokens == 
+  ['lazyOldAxiomDomain, 'oldAxiomDomain, 'oldAxiomPreCategory,
+           'oldAxiomCategory, 0]
+
+
 isDomain a ==
   PAIRP a and VECP(CAR a) and
     member(CAR(a).0, $domainTypeTokens)
@@ -642,10 +675,26 @@ $htHash      := MAKE_-HASH_-TABLE()
 $glossHash   := MAKE_-HASH_-TABLE()
 $lispHash    := MAKE_-HASH_-TABLE()
 $sysHash     := MAKE_-HASH_-TABLE()
+
 $htSystemCommands := '(
- (boot . development) clear display (fin . development) edit help
- frame history load quit read set show synonym system
- trace what )
+  (boot . development) _
+  clear                _
+  display              _
+  (fin . development)  _
+  edit                 _
+  help                 _
+  frame                _
+  history              _
+  load                 _
+  quit                 _
+  read                 _
+  set                  _
+  show                 _
+  synonym              _
+  system               _
+  trace                _
+  what )
+
 $currentSysList := [opOf x for x in $htSystemCommands] --see ht-root
 $outStream   := nil
 $recheckingFlag    := false     --see transformAndRecheckComments
@@ -661,8 +710,8 @@ $charBack := char '_\
 $charDash := char '_-
 
 $charTab            := CODE_-CHAR(9)
-$charNewline        := CODE_-CHAR(10)
-$charFauxNewline    := CODE_-CHAR(25)
+$charNewline        == CODE_-CHAR(10)
+$charFauxNewline    == CODE_-CHAR(25)
 $stringNewline      := PNAME CODE_-CHAR(10)
 $stringFauxNewline  := PNAME CODE_-CHAR(25)
 
@@ -686,26 +735,26 @@ $HTmacs := [
            ['"\endscroll",$charRbrace,'"scroll",$charLbrace,'"\end"]]
 
 $HTlinks := '(
-  "\downlink"
-  "\menulink"
-  "\menudownlink"
-  "\menuwindowlink"
+  "\downlink"         _
+  "\menulink"         _
+  "\menudownlink"     _
+  "\menuwindowlink"   _
   "\menumemolink")
 
 $HTlisplinks := '(
-  "\lispdownlink"
-  "\menulispdownlink"
-  "\menulispwindowlink"
-  "\menulispmemolink"
-  "\lispwindowlink"
+  "\lispdownlink"       _
+  "\menulispdownlink"   _
+  "\menulispwindowlink" _
+  "\menulispmemolink"   _
+  "\lispwindowlink"     _
   "\lispmemolink")
 
 $beginEndList := '(
-  "page"
-  "items"
-  "menu"
-  "scroll"
-  "verbatim"
+  "page"      _
+  "items"     _
+  "menu"      _
+  "scroll"    _
+  "verbatim"  _
   "detail")
 
 isDefaultPackageName x == (s := PNAME x).(MAXINDEX s) = char '_&

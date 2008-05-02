@@ -32,12 +32,18 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import macros
-)package "BOOT"
+import g_-util
+namespace BOOT
+module ht_-util where
+  --% Global Variables
+  $newPage: %Boolean
+  $curPage: %Thing
 
 -- HyperTeX Utilities for generating basic Command pages
 
 $bcParseOnly := true
+
+$newPage := false
 
 -- List of issued hypertex lines
 $htLineList := nil

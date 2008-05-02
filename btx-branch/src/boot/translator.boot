@@ -40,14 +40,45 @@ import pile
 import parser
 import ast
 
-)package "BOOTTRAN"
+namespace BOOTTRAN
+
+
+$currentNamespace := nil
 
 ++ If non nil, holds the name of the current module being translated.
 $currentModuleName := nil
 
+++ List of imported modules
+$importedModules := []
+
+++ List of declarations visibles outside of the current module.
+$exportedDecls := []
+
 ++ Stack of foreign definitions to cope with CLisp's odd FFI interface.
 $foreignsDefsForCLisp := []
 
+
+writeModuleInterface stream ==
+  if $currentModuleName ^= nil then
+    REALLYPRETTYPRINT(["PROVIDE",STRING $currentModuleName],stream)
+  
+  for m in nreverse $importedModules repeat 
+    REALLYPRETTYPRINT(["IMPORT-MODULE",STRING m],stream)
+
+  if $exportedDecls ^= nil then
+    if $currentNamespace ^= nil then
+      REALLYPRETTYPRINT(["IN-PACKAGE",STRING $currentNamespace],stream)
+    REALLYPRETTYPRINT(
+      ["EVAL-WHEN",
+	[KEYWORD::COMPILE_-TOPLEVEL,KEYWORD::LOAD_-TOPLEVEL,KEYWORD::EXECUTE],
+	  ["PROGN",:nreverse $exportedDecls]],stream)
+
+++
+exportDeclaration decl ==
+  $exportedDecls := [decl,:$exportedDecls]
+  decl
+
+++
 genModuleFinalization(stream) ==
   %hasFeature KEYWORD::CLISP =>
     null $foreignsDefsForCLisp => nil
@@ -60,9 +91,6 @@ genModuleFinalization(stream) ==
           :[["EVAL",["QUOTE",d]] for d in $foreignsDefsForCLisp]]
     REALLYPRETTYPRINT(init,stream)
   nil
-
-+++ True if we are translating code written in Old Boot.
-$translatingOldBoot := false
 
 AxiomCore::%sysInit() ==
   if rest ASSOC(Option '"boot", %systemOptions()) = '"old"
@@ -111,6 +139,9 @@ shoeClLines(a,fn,lines,outfn)==
     ((for line in lines repeat shoeFileLine(line,stream);
        shoeFileTrees(shoeTransformStream a,stream));
       genModuleFinalization(stream)))
+
+  btxFile := strconc(shoeRemoveStringIfNec('"clisp",outfn), '"btx")
+  shoeOpenOutputFile(stream,btxFile, writeModuleInterface stream)
   outfn
  
 ++ (boottoclc "filename") translates the file "filename.boot" to
@@ -137,6 +168,9 @@ shoeClCLines(a,fn,lines,outfn)==
       shoeFileTrees(shoeTransformToFile(stream,
 	  shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream);
       genModuleFinalization(stream)))
+
+  btxFile := strconc(shoeRemoveStringIfNec('"clisp",outfn),'"btx")
+  shoeOpenOutputFile(stream,btxFile, genModuleFinalization stream)
   outfn
  
 ++ (boottomc "filename") translates the file "filename.boot"
@@ -454,6 +488,8 @@ translateSignatureDeclaration d ==
     Signature(n,t) => genDeclaration(n,t)
     otherwise => coreError '"signature expected"  
 
+TRACE translateSignatureDeclaration
+
 ++ A non declarative expression `expr' appears at toplevel and its
 ++ translation needs embeddeding in an `EVAL-WHEN'.
 translateToplevelExpression expr ==
@@ -467,38 +503,64 @@ translateToplevelExpression expr ==
     #expr' > 1 => ["PROGN",:expr']
     first expr'
 
-bpOutItem()==
-  $op := nil
-  bpComma() or bpTrap()
-  b:=bpPop1()
-  EQCAR(b,"TUPLE")=> bpPush rest b
-  EQCAR(b,"+LINE")=> bpPush [ b ]
-  b is ["L%T",l,r] and IDENTP l =>
-	       bpPush [["DEFPARAMETER",l,r]]
+
+maybeExport(d,exports?) ==
+  exports? => exportDeclaration d
+  d
+
+translateToplevel(b,export?) ==
+  b is ["TUPLE",:xs] => [maybeExport(x,export?) for x in xs]
   case b of
     Signature(op,t) =>
-      bpPush [genDeclaration(op,t)]
+      [maybeExport(genDeclaration(op,t),export?)]
 
     %Module(m,ds) =>
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
-      bpPush [["PROVIDE", STRING m],
-        :[translateSignatureDeclaration d for d in ds]]
+      [["PROVIDE", STRING m],
+       :[:translateToplevel(d,true) for d in ds]]
 
-    Import(m) => 
-      bpPush [["IMPORT-MODULE", STRING m]]
+    Import(m) =>
+      $importedModules := [m,:$importedModules]
+      [["BOOT-IMPORT", STRING m]]
 
     ImportSignature(x, sig) =>
-      bpPush genImportDeclaration(x, sig)
+      genImportDeclaration(x, sig)
 
     TypeAlias(lhs, rhs) => 
-      bpPush [genTypeAlias(lhs,rhs)]
+      [maybeExport(genTypeAlias(lhs,rhs),export?)]
 
-    ConstantDefinition(n, e) =>
-      bpPush [["DEFCONSTANT", n, e]]
+    ConstantDefinition(lhs,rhs) =>
+      sig := nil
+      if lhs is ["Signature",n,t] then 
+        sig := maybeExport(genDeclaration(n,t),export?)
+        lhs := n
+      -- ??? We should check that lhs is an identifier.
+      [maybeExport(["DEFCONSTANT", lhs, rhs],export?)]
+
+    %Assignment(lhs,rhs) =>
+      sig := nil
+      if lhs is ["Signature",n,t] then 
+        sig := maybeExport(genDeclaration(n,t),export?)
+        lhs := n
+      -- ??? We should check that lhs is an identifier.
+      [sig,maybeExport(["DEFPARAMETER",lhs,rhs],export?)]
+
+    namespace(n) =>
+      $currentNamespace := n
+      [["IN-PACKAGE", STRING n]]
 
     otherwise =>
-      bpPush [translateToplevelExpression b]
+      [translateToplevelExpression b]
+
+bpOutItem()==
+  $op := nil
+  bpComma() or bpTrap()
+  b:=bpPop1()
+  EQCAR(b,"+LINE")=> bpPush [ b ]
+  b is ["L%T",l,r] and IDENTP l =>
+	       bpPush [["DEFPARAMETER",l,r]]
+  bpPush translateToplevel(b,false)
  
 shoeAddbootIfNec s == 
   shoeAddStringIfNec('".boot",s)
@@ -512,9 +574,9 @@ shoeAddStringIfNec(str,s)==
   s
  
 shoeRemoveStringIfNec(str,s)==
-  a := STRPOS(str,s,0,nil)
-  a = nil => s
-  SUBSTRING(s,0,a)
+  n := SEARCH(str,s,KEYWORD::FROM_-END,true)
+  n = nil => s
+  SUBSTRING(s,0,n)
  
 -- DEFUSE prints the definitions not used and the words used and
 -- not defined in the input file and common lisp.
@@ -522,13 +584,19 @@ shoeRemoveStringIfNec(str,s)==
 DEFUSE fn==
   infn := strconc(fn,'".boot")
   shoeOpenInputFile(a,infn,shoeDfu(a,fn))
+
+++
+$bootDefined := nil
+$bootDefinedTwice := nil
+$bootUsed := nil
+$lispWordTable := nil
  
 shoeDfu(a,fn)==
   a=nil => shoeNotFound fn
   $lispWordTable :=MAKE_-HASHTABLE ("EQ")
   DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
-  $bootDefined :=MAKE_-HASHTABLE "EQ"
-  $bootUsed :=MAKE_-HASHTABLE "EQ"
+  $bootDefined := MAKE_-HASHTABLE "EQ"
+  $bootUsed := MAKE_-HASHTABLE "EQ"
   $bootDefinedTwice := nil
   $GenVarCounter := 0
   $bfClamming := false
@@ -778,15 +846,18 @@ defaultBootToLispFile file ==
 
 getIntermediateLispFile(file,options) ==
   out := NAMESTRING getOutputPathname(options)
-  out ^= nil => strconc(shoeRemoveStringIfNec($faslType,out),'".clisp")
+  out ^= nil => strconc(shoeRemoveStringIfNec($faslType,out),'"clisp")
   defaultBootToLispFile file
 
 translateBootFile(progname, options, file) ==
+--  $driveMode := %TranslateBootMode
   outFile := getOutputPathname options or defaultBootToLispFile file
   BOOTTOCL(file, ENOUGH_-NAMESTRING outFile)
 
 compileBootHandler(progname, options, file) ==
+--  $driverMode := %CompileBootMode
   intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
+  (err := errorCount() ^= 0) => nil
   intFile => 
     objFile := compileLispHandler(progname, options, intFile)
     DELETE_-FILE intFile
@@ -827,7 +898,7 @@ loadNativeModule m ==
     FUNCALL(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),m)
   %hasFeature KEYWORD::CLISP =>
     EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
-  systemError '"don't know how to load a dynamically linked module"
+  coreError '"don't know how to load a dynamically linked module"
 
 loadSystemRuntimeCore() ==
   loadNativeModule strconc(systemLibraryDirectory(),

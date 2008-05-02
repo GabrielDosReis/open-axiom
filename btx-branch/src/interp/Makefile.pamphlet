@@ -127,16 +127,16 @@ OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
 	i-spec2.$(FASLEXT)	i-syscmd.$(FASLEXT)	\
 	i-toplev.$(FASLEXT)	i-util.$(FASLEXT)	\
 	incl.$(FASLEXT)	int-top.$(FASLEXT)	\
-	intfile.$(FASLEXT)				\
+	intfile.$(FASLEXT)	pathname.$(FASLEXT)	\
 	lisplib.$(FASLEXT)	macex.$(FASLEXT)	\
-	match.$(FASLEXT)				\
+	match.$(FASLEXT)	nlib.$(FASLEXT)		\
 	monitor.$(FASLEXT)	msg.$(FASLEXT)		\
 	msgdb.$(FASLEXT)	\
 	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
-	nlib.$(FASLEXT)	nrunfast.$(FASLEXT)	\
+		nrunfast.$(FASLEXT)	\
 	nrungo.$(FASLEXT)	nrunopt.$(FASLEXT)	\
 	nruntime.$(FASLEXT)	osyscmd.$(FASLEXT)	\
-	packtran.$(FASLEXT)	pathname.$(FASLEXT)	\
+	packtran.$(FASLEXT)	\
 	pf2sex.$(FASLEXT)	pile.$(FASLEXT)	\
 	posit.$(FASLEXT)	property.$(FASLEXT)	\
 	ptrees.$(FASLEXT)	spad-parser.$(FASLEXT) \
@@ -410,9 +410,12 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	$(mkinstalldirs) $(axiom_target_datadir)/msgs
 	$(INSTALL_DATA) $(axiom_src_docdir)/msgs/s2-us.msgs \
 		 $(axiom_target_datadir)/msgs
+	@ echo '(|importModule| "boot-pkg")' >> makeint.lisp
 	@ echo '(|importModule| "sys-driver")' >> makeint.lisp
-	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
 	@ echo '(|importModule| "hash")' >> makeint.lisp
+	@ echo '(|importModule| "sys-constants")' >> makeint.lisp
+	@ echo '(|importModule| "sys-globals")' >> makeint.lisp
+	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
 	@ echo '#+:GCL (gbc t)' >> makeint.lisp
 	@ echo '(|importModule| "util")' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
@@ -429,6 +432,7 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	@ echo '#+:GCL (gbc t)' >> makeint.lisp
 
 ${SAVESYS}: makeint.lisp
+	rm -f *.btx
 	$(BOOTSYS) -- --system="$(AXIOM)/" \
 		--sysalg="$(axiom_src_datadir)/algebra/" \
 		--make --output=$@ --main="BOOT::|restart|" \
@@ -450,6 +454,7 @@ are re-generated after leaving \File{interp/} directory.
 all-axiomsys: ${AXIOMSYS}
 
 ${AXIOMSYS}: makeint.lisp
+	rm -f *.btx
 	$(BOOTSYS) -- \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
@@ -549,7 +554,7 @@ mostlyclean-local:
 	@rm -f *.fn *.data *.$(FASLEXT) *.lib
 
 clean-local: mostlyclean-local
-	@rm -f *.clisp *.lsp
+	@rm -f *.clisp *.lsp *.btx
 
 distclean-local: clean-local
 
@@ -574,10 +579,12 @@ topics.$(FASLEXT): topics.boot macros.$(FASLEXT)
 alql.$(FASLEXT): alql.boot br-search.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-br-search.$(FASLEXT): br-search.boot bc-util.$(FASLEXT)
+br-search.$(FASLEXT): br-search.boot br-saturn.$(FASLEXT) \
+		g-cndata.$(FASLEXT) ht-root.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
-br-saturn.$(FASLEXT): br-saturn.boot bc-util.$(FASLEXT)
+br-saturn.$(FASLEXT): br-saturn.boot br-util.$(FASLEXT) hypertex.$(FASLEXT) \
+		sys-driver.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 br-op2.$(FASLEXT): br-op2.boot br-op1.$(FASLEXT)
@@ -595,7 +602,7 @@ br-prof.$(FASLEXT): br-prof.boot bc-util.$(FASLEXT)
 br-data.$(FASLEXT): br-data.boot bc-util.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
-br-util.$(FASLEXT): br-util.boot bc-util.$(FASLEXT)
+br-util.$(FASLEXT): br-util.boot br-data.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 bc-solve.$(FASLEXT): bc-solve.boot bc-matrix.$(FASLEXT)
@@ -616,13 +623,13 @@ ht-root.$(FASLEXT): ht-root.boot ht-util.$(FASLEXT)
 htcheck.$(FASLEXT): htcheck.boot sys-driver.$(FASLEXT) macros.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
-ht-util.$(FASLEXT): ht-util.boot macros.$(FASLEXT)
+ht-util.$(FASLEXT): ht-util.boot g-util.$(FASLEXT)
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 htsetvar.$(FASLEXT): htsetvar.boot macros.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
-hypertex.$(FASLEXT): hypertex.boot types.$(FASLEXT)
+hypertex.$(FASLEXT): hypertex.boot sys-constants.$(FASLEXT)
 	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## OpenAxiom's interpreter.

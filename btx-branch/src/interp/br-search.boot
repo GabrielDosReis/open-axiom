@@ -32,8 +32,11 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import bc_-util
-)package "BOOT"
+import g_-cndata
+import ht-root
+import br_-saturn
+namespace BOOT
+module br_-search
 
 --====================> WAS b-search.boot <================================
 
@@ -42,6 +45,9 @@ import bc_-util
 -- Redone 12/95 for Saturn; previous function grep renamed as grepFile
 -- This function now either returns a filename or a list of strings
 --=======================================================================
+
+$localLibdb := nil
+
 grepConstruct(s,key,:options) == --key = a o c d p x k (all) . (aok) w (doc)
 --Called from genSearch with key = "." and "w"
 --key = "." means a o c d p x
@@ -49,7 +55,7 @@ grepConstruct(s,key,:options) == --key = a o c d p x k (all) . (aok) w (doc)
 --All searches of the database call this function to get relevant lines
 --from libdb.text. Returns either a list of lines (usual case) or else
 --an alist of the form ((kind . <list of lines for that kind>) ...)
-  $localLibdb : local := fnameExists? '"libdb.text" and '"libdb.text"
+  $localLibdb := fnameExists? '"libdb.text" and '"libdb.text"
   lines := grepConstruct1(s,key)
   IFCAR options => grepSplit(lines,key = 'w)    --leave now if a constructor
   MEMQ(key,'(o a)) => dbScreenForDefaultFunctions lines --kill default lines if a/o
@@ -777,42 +783,37 @@ detailedSearch(filter) ==
   bcHt '"Select what you want to search for, then click on {\em Search} below"
   bcHt '"\newline{\it Note:} Logical searches using {\em and}, {\em or}, and {\em not} are not permitted here."
   htSayHrule()
-  htMakePage '(
-    (text . "\newline")
-    (bcRadioButtons which
-      (  "\tab{3}{\em Operations}"
-         ((text . "\newline\space{3}")
-          (text . "name")       (bcStrings (14 "*" opname EM))
-          (text . " \#args")    (bcStrings (1  "*" opnargs EM))
-          (text . " signature") (bcStrings (14 "*" opsig EM))
-          (text . "\vspace{1}\newline "))
-         ops)
-      (  "\tab{3}{\em Attributes}"
-         ((text . "\newline\space{3}")
-          (text . "name")       (bcStrings (14 "*" attrname EM))
-          (text . " \#args ")   (bcStrings (1  "*" attrnargs EM))
-          (text . " arguments ")(bcStrings (14 "*" attrargs EM))
-          (text . "\vspace{1}\newline "))
-         attrs)
-      (  "\tab{3}{\em Constructors}"
-         ((text . "\tab{17}")
-          (bcButtons (1 cats)) (text . " {\em categories} ")
-          (bcButtons (1 doms)) (text . " {\em domains} ")
-          (bcButtons (1 paks)) (text . " {\em packages} ")
-          (bcButtons (1 defs)) (text . " {\em defaults} ")
-          (text . "\newline\tab{3}")
-          (text . "name")   (bcStrings (14 "*" conname EM))
-          (text . " \#args") (bcStrings (1  "*" connargs EM))
-          (text . "signature") (bcStrings (14 "*" consig EM))
-          (text . "\vspace{1}\newline "))
-          cons)
---      (   "\tab{3}{\em Documentation}"
---          ((text . "\tab{26}key")
---           (bcStrings (28 "*" docfilter EM)))
---          doc)
-                )
-    (text . "\vspace{1}\newline\center{ ")
-    (bcLinks ("\box{Search}" "" generalSearchDo NIL))
+  htMakePage '(                                                    _
+    (text . "\newline")                                            _
+    (bcRadioButtons which                                          _
+      (  "\tab{3}{\em Operations}"                                 _
+         ((text . "\newline\space{3}")                             _
+          (text . "name")       (bcStrings (14 "*" opname EM))     _
+          (text . " \#args")    (bcStrings (1  "*" opnargs EM))    _
+          (text . " signature") (bcStrings (14 "*" opsig EM))      _
+          (text . "\vspace{1}\newline "))                          _
+         ops)                                                      _
+      (  "\tab{3}{\em Attributes}"                                 _
+         ((text . "\newline\space{3}")                             _
+          (text . "name")       (bcStrings (14 "*" attrname EM))   _
+          (text . " \#args ")   (bcStrings (1  "*" attrnargs EM))  _
+          (text . " arguments ")(bcStrings (14 "*" attrargs EM))   _
+          (text . "\vspace{1}\newline "))                          _
+         attrs)                                                    _
+      (  "\tab{3}{\em Constructors}"                               _
+         ((text . "\tab{17}")                                      _
+          (bcButtons (1 cats)) (text . " {\em categories} ")       _
+          (bcButtons (1 doms)) (text . " {\em domains} ")          _
+          (bcButtons (1 paks)) (text . " {\em packages} ")         _
+          (bcButtons (1 defs)) (text . " {\em defaults} ")         _
+          (text . "\newline\tab{3}")                               _
+          (text . "name")   (bcStrings (14 "*" conname EM))        _
+          (text . " \#args") (bcStrings (1  "*" connargs EM))      _
+          (text . "signature") (bcStrings (14 "*" consig EM))      _
+          (text . "\vspace{1}\newline "))                          _
+          cons))                                                   _
+    (text . "\vspace{1}\newline\center{ ")                         _
+    (bcLinks ("\box{Search}" "" generalSearchDo NIL))              _
     (text . "}"))
   htShowPage()
 

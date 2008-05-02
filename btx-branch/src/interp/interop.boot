@@ -33,7 +33,8 @@
 
 
 import c_-util
-)package "BOOT"
+namespace BOOT
+module interop
 
 -- note domainObjects are now (dispatchVector hashCode . domainVector)
 -- lazy oldAxiomDomainObjects are (dispatchVector hashCode  (Call form) . backptr), 
@@ -41,9 +42,6 @@ import c_-util
 -- oldAxiomCategory objects are (dispatchVector . ( (cat form)  hash defaultpack parentlist))
 
 hashCode? x == INTEGERP x
-
-$domainTypeTokens := ['lazyOldAxiomDomain, 'oldAxiomDomain, 'oldAxiomPreCategory,
-           'oldAxiomCategory, 0]
 
 -- The name game.
 -- The compiler produces names that are of the form:
