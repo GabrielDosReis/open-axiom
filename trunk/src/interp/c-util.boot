@@ -479,8 +479,8 @@ numOfOccurencesOf(x,y) ==
       atom y => n
       fn(x,first y,n)+fn(x,rest y,n)
  
-compilerMessage x ==
-  $PrintCompilerMessageIfTrue => APPLX("SAY",x)
+compilerMessage(msg,args) ==
+  $PrintCompilerMessageIfTrue => sayPatternMsg(msg,args)
  
 printDashedLine() ==
   SAY
