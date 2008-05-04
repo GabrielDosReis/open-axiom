@@ -254,7 +254,7 @@ augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainName,domainName,categoryForm,e)
   [repFnAlist,e]:= evalAndSub("Rep","Rep",repDefn,getmode(repDefn,e),e)
   catform:= (isCategory categoryForm => categoryForm.(0); categoryForm)
-  compilerMessage ["Adding ",domainName," modemaps"]
+  compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
   $base:= 4
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
@@ -278,7 +278,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   --  catform:= (isCategory categoryForm => categoryForm.(0); categoryForm)
   -- catform appears not to be used, so why set it?
   --if ^$InteractiveMode then
-  compilerMessage ["Adding ",domainName," modemaps"]
+  compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
   $base:= 4
   condlist:=[]
