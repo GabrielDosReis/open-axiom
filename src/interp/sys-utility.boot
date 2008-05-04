@@ -43,18 +43,19 @@ import vmlisp
 ++ getVMType returns an approximation of the underlying object type
 ++ representation of a domain, as a Lisp type specifier as seen by
 ++ the runtime system.
+getVMType: %Shell -> %Form
 getVMType d ==
-  case devaluate d of
+  case (d' := devaluate d) of
     Void => "%Void"
     Boolean => "%Boolean"
     Byte => "%Byte"
     Character => "%Char"
     SingleInteger => "%Short"
-    Integer => "%Integer"
+--    Integer => "%Bignum"
     String => "%String"
     List => "%List"
-    Vector => "%Vector"
-    PrimitiveArray => "SIMPLE-ARRAY"
+    Vector => ["%Vector",getVMType second d']
+    PrimitiveArray => ["%SimpleArray", getVMType second d']
     Pair => "%Pair"
     otherwise => "%Thing"                 -- good enough, for now.
 
