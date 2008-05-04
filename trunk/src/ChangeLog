@@ -1,5 +1,7 @@
 2008-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-utility.boot (getVMType): Fix thinko.
+
 	* interp/c-util.boot (compilerMessage): Tidy.
 
 2008-05-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
