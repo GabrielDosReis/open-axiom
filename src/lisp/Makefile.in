@@ -111,7 +111,7 @@ endif
 base-lisp$(EXEEXT): core.$(FASLEXT)
 	$(AXIOM_LISP) \
 		$(eval_flags) '(load "core")' \
-		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote $(base_lisp_objects)) (quote |AxiomCore|::|topLevel|))'
+		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote $(base_lisp_objects)) "|AxiomCore|::|topLevel|")'
 
 
 axiom_optimize_options = @axiom_optimize_options@
