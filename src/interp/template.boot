@@ -69,7 +69,7 @@ markUnique x ==
 --=======================================================================
 
 stuffSlots(dollar,template) ==
-  _$: fluid := dollar
+  _$: fluid := dollar               --??? substitute
   dollarTail := [dollar]
   for i in 5..MAXINDEX template | item := template.i repeat
     dollar.i :=
@@ -92,7 +92,7 @@ stuffSlots(dollar,template) ==
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
 evalSlotDomain(u,dollar) ==
   $returnNowhereFromGoGet: local := false
-  $ : fluid := dollar
+  $ : fluid := dollar                      -- ??? substitute
   $lookupDefaults : local := nil -- new world
   u = '$ => dollar
   u = "$$" => dollar

@@ -1,5 +1,19 @@
 2008-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot: Explicitly initialize fluid variables.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/package.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/record.boot: Likewise.
+	* interp/template.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
 	* lisp/core.lisp.in: Incorporate changes from btx-branch.
 	* lisp/Makefile.in: Likewise.
 

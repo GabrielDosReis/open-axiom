@@ -58,8 +58,8 @@ $NRTopt := false
 compDefine: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compDefine(form,m,e) ==
   $tripleHits: local:= 0
-  $macroIfTrue: local
-  $packagesUsed: local
+  $macroIfTrue: local := false
+  $packagesUsed: local := false
   result:= compDefine1(form,m,e)
   result
 
@@ -282,9 +282,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $TOP__LEVEL: local
     $definition: local
                  --used by DomainSubstitutionFunction
-    $form: local
-    $op: local
-    $extraParms: local
+    $form: local := nil
+    $op: local := nil
+    $extraParms: local := nil
              --Set in DomainSubstitutionFunction, used further down
 --  1.1  augment e to add declaration $: <form>
     [$op,:argl]:= $definition:= form
@@ -370,7 +370,7 @@ mkConstructor form ==
  
 compDefineCategory(df,m,e,prefix,fal) ==
   $domainShell: local -- holds the category of the object being compiled
-  $lisplibCategory: local
+  $lisplibCategory: local := nil
   not $insideFunctorIfTrue and $LISPLIB =>
     compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
   compDefineCategory1(df,m,e,prefix,fal)
@@ -398,7 +398,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     if NRTPARSE = true then
       [lineNumber,:$functorSpecialCases] := $functorSpecialCases
 --  1. bind global variables
-    $addForm: local
+    $addForm: local := nil
     $viewNames: local:= nil
  
             --This list is only used in genDomainViewName, for generating names
@@ -407,24 +407,24 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
             --sublist is alist: category . name of view
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
-    $form: local
-    $op: local
-    $signature: local
-    $functorTarget: local
-    $Representation: local
+    $form: local := nil
+    $op: local := nil
+    $signature: local := nil
+    $functorTarget: local := nil
+    $Representation: local := nil
          --Set in doIt, accessed in the compiler - compNoStacking
-    $LocalDomainAlist: local  --set in doIt, accessed in genDeltaEntry
+    $LocalDomainAlist: local := []  --set in doIt, accessed in genDeltaEntry
     $LocalDomainAlist:= nil
-    $functorForm: local
-    $functorLocalParameters: local
+    $functorForm: local := nil
+    $functorLocalParameters: local := nil
     SETQ($myFunctorBody, body)
-    $CheckVectorList: local
+    $CheckVectorList: local := nil
                   --prevents CheckVector from printing out same message twice
     $getDomainCode: local -- code for getting views
     $insideFunctorIfTrue: local:= true
-    $functorsUsed: local --not currently used, finds dependent functors
+    $functorsUsed: local := nil --not currently used, finds dependent functors
     $setelt: local := "setShellEntry"
-    $TOP__LEVEL: local
+    $TOP__LEVEL: local := nil
     $genSDVar: local:= 0
     originale:= $e
     [$op,:argl]:= form
@@ -460,7 +460,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       REMDUP [CADR x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
-    $NRTslot1Info: local  --set in NRTmakeSlot1 called by NRTbuildFunctor
+    $NRTslot1Info: local := nil  --set in NRTmakeSlot1 called by NRTbuildFunctor
        --this is used below to set $lisplibSlot1 global
     $NRTaddForm: local := nil   -- see compAdd; NRTmakeSlot1
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
@@ -635,7 +635,7 @@ displayMissingFunctions() ==
 makeFunctorArgumentParameters(argl,sigl,target) ==
   $alternateViewList: local:= nil
   $forceAdd: local:= true
-  $ConditionalOperators: local
+  $ConditionalOperators: local := nil
   ("append"/[fn(a,augmentSig(s,findExtras(a,target)))
               for a in argl for s in sigl]) where
     findExtras(a,target) ==
@@ -738,8 +738,8 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
 -- removes declarative and assignment information from form and
 -- signature, placing it in list L, replacing form by ("where",form',:L),
 -- signature by a list of NILs (signifying declarations are in e)
-  $sigAlist: local
-  $predAlist: local
+  $sigAlist: local := nil
+  $predAlist: local := nil
  
 -- 1. create sigList= list of all signatures which have embedded
 --    declarations moved into global variable $sigAlist
@@ -812,11 +812,11 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     [lineNumber,:specialCases] := specialCases
     e := oldE
     --1. bind global variables
-    $form: local
-    $op: local
+    $form: local := nil
+    $op: local := nil
     $functionStats: local:= [0,0]
-    $argumentConditionList: local
-    $finalEnv: local
+    $argumentConditionList: local := nil
+    $finalEnv: local := nil
              --used by ReplaceExitEtc to get a common environment
     $initCapsuleErrorCount: local:= #$semanticErrorStack
     $insideCapsuleFunctionIfTrue: local:= true
@@ -1056,7 +1056,7 @@ canCacheLocalDomain(dom,elt)==
  
  
 compileCases(x,$e) == -- $e is referenced in compile
-  $specialCaseKeyList: local
+  $specialCaseKeyList: local := nil
   not ($insideFunctorIfTrue=true) => compile x
   specialCaseAssoc:=
     [y for y in getSpecialCaseAssoc() | not get(first y,"specialCase",$e) and
@@ -1176,7 +1176,7 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
 -- fn is the name of some category/domain/package constructor;
 -- we will cache all of its values on $ConstructorCache with reference
 -- counts
-  $clamList: local
+  $clamList: local := nil
   lambdaOrSlam :=
     getConstructorKindFromDB fn = "category" => 'SPADSLAM
     $mutableDomain => 'LAMBDA
@@ -1263,7 +1263,7 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
 compSubDomain: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm
-  $addForm: local
+  $addForm: local := nil
   $NRTaddForm := domainForm
   [$addForm,.,e]:= compSubDomain1(domainForm,predicate,m,e)
 --+
@@ -1307,9 +1307,9 @@ processFunctor(form,signature,data,localParList,e) ==
   buildFunctor(form,signature,data,localParList,e)
  
 compCapsuleItems(itemlist,$predl,$e) ==
-  $TOP__LEVEL: local
-  $myFunctorBody :local    ---needed for translator
-  $signatureOfForm: local
+  $TOP__LEVEL: local := nil
+  $myFunctorBody :local := nil   ---needed for translator
+  $signatureOfForm: local := nil
   $suffix: local:= 0
   for item in itemlist repeat $e:= compSingleCapsuleItem(item,$predl,$e)
   $e
@@ -1493,8 +1493,8 @@ compCategory(x,m,e) ==
   $TOP__LEVEL: local:= true
   (m:= resolve(m,$Category))=$Category and x is ['CATEGORY,
     domainOrPackage,:l] =>
-      $sigList: local
-      $atList: local
+      $sigList: local := nil
+      $atList: local := nil
       $sigList:= $atList:= nil
       for x in l repeat compCategoryItem(x,nil)
       rep:= mkExplicitCategoryFunction(domainOrPackage,$sigList,$atList)

@@ -46,11 +46,11 @@ processFunctorOrPackage(form,signature,data,localParList,m,e) ==
  
 processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
   $GENNO: local:= 0 --for GENVAR()
-  $catsig: local
+  $catsig: local := nil
                --used in ProcessCond
-  $maximalViews: local
+  $maximalViews: local := nil
                       --read by ProcessCond
-  $ResetItems: local
+  $ResetItems: local := nil
        --stores those items that get SETQed, and may need re-processing
   $catvecList: local:= [$domainShell]
   $catNames: local:= ["$"]

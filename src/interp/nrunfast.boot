@@ -530,7 +530,7 @@ newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   newExpandLocalTypeForm(u,dollar,domain)
  
 nrtEval(expr,dom) ==
-  $:fluid := dom
+  $:fluid := dom             --??? this should be a substitute
   eval expr
  
 domainVal(dollar,domain,index) ==

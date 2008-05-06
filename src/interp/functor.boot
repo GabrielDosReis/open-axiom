@@ -50,10 +50,9 @@ keyItem a ==
  
 DomainPrint(D,brief) ==
   -- If brief is non-NIL, %then only a summary is printed
-  $WhereList: local
-  $Sublis: local
-  $WhereCounter: local
-  $WhereCounter:= 1
+  $WhereList: local := nil
+  $Sublis: local := nil
+  $WhereCounter: local := 1
   env:=
     not BOUNDP '$e => $EmptyEnvironment
     $e='$e => $EmptyEnvironment
@@ -780,7 +779,7 @@ InvestigateConditions catvecListMaker ==
   -- discover under what conditions the secondary view are
   -- always present.
   $Conditions: local:= nil
-  $principal: local
+  $principal: local := nil
   [$principal,:secondaries]:= catvecListMaker
       --We are not interested in the principal view
       --The next block allows for the possibility that $principal may

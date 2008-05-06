@@ -48,7 +48,7 @@ parseTransform x ==
 
 parseTran: %ParseForm -> %Form
 parseTran x ==
-  $op: local
+  $op: local := nil
   atom x => parseAtom x
   [$op,:argl]:= x
   u := g($op) where g op == (op is ["elt",op,x] => g x; op)

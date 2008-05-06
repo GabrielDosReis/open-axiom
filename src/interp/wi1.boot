@@ -1174,12 +1174,12 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
   $prefix,$formalArgList) ==
     --1. bind global variables
     $insideCategoryIfTrue: local:= true
-    $TOP__LEVEL: local
-    $definition: local
+    $TOP__LEVEL: local := nil
+    $definition: local := nil
                  --used by DomainSubstitutionFunction
-    $form: local
-    $op: local
-    $extraParms: local
+    $form: local := nil
+    $op: local := nil
+    $extraParms: local := nil
              --Set in DomainSubstitutionFunction, used further down
 --  1.1  augment e to add declaration $: <form>
     [$op,:argl]:= $definition:= form

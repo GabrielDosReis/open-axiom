@@ -170,7 +170,7 @@ testInput2Output(lines,n) ==
   $mkTestOutputType: local := nil
   $mkTestFlag: local := nil
   $runTestFlag: local := true
-  $testOutput: local
+  $testOutput: local := nil
   evaluateLines lines
   null n => nil     --return from reading trailing system commands
   typ := $mkTestOutputType
