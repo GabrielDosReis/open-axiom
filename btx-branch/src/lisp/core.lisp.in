@@ -676,9 +676,6 @@
   (declare (ignore prog-name))
   (let ((out-file (|compileFilePathname| (or (|getOutputPathname| options)
 					     in-file))))
-;;     (|loadIfPresent| (make-pathname :directory (pathname-directory in-file)
-;; 				    :name (pathname-name in-file)
-;; 				    :type "btx"))
     (|compileLispFile| in-file out-file)))
 
 (|associateRequestWithFileType| (|Option| "compile") |$LispFileType|
