@@ -42,7 +42,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     if NRTPARSE = true then
       [lineNumber,:$functorSpecialCases] := $functorSpecialCases
 --  1. bind global variables
-    $addForm: local
+    $addForm: local := nil
     $viewNames: local:= nil
  
             --This list is only used in genDomainViewName, for generating names
@@ -64,23 +64,23 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $domainLevelVariableList: local := nil--for conversion to new compiler 3/93
     $localLoopVariables: local := nil
     $pathStack : local := nil
-    $form: local
-    $op: local
-    $signature: local
-    $functorTarget: local
-    $Representation: local
+    $form: local := nil
+    $op: local := nil
+    $signature: local := nil
+    $functorTarget: local := nil
+    $Representation: local := nil
          --Set in doIt, accessed in the compiler - compNoStacking
     $LocalDomainAlist: local  --set in doIt, accessed in genDeltaEntry
     $LocalDomainAlist:= nil
-    $functorForm: local
-    $functorLocalParameters: local
-    $CheckVectorList: local
+    $functorForm: local := nil
+    $functorLocalParameters: local := nil
+    $CheckVectorList: local := nil
                   --prevents CheckVector from printing out same message twice
     $getDomainCode: local -- code for getting views
     $insideFunctorIfTrue: local:= true
-    $functorsUsed: local --not currently used, finds dependent functors
+    $functorsUsed: local := nil --not currently used, finds dependent functors
     $setelt: local := "setShellEntry"
-    $TOP__LEVEL: local
+    $TOP__LEVEL: local := nil
     $genSDVar: local:= 0
     originale:= $e
     [$op,:argl]:= form
@@ -120,7 +120,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
       REMDUP [CADR x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
-    $NRTslot1Info: local  --set in NRTmakeSlot1 called by NRTbuildFunctor
+    $NRTslot1Info: local := nil --set in NRTmakeSlot1 called by NRTbuildFunctor
        --this is used below to set $lisplibSlot1 global
     $NRTaddForm: local := nil   -- see compAdd; NRTmakeSlot1
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
@@ -289,11 +289,11 @@ compDefineCapsuleFunction(df,m,oldE,$prefix,$formalArgList) ==
     [lineNumber,:specialCases] := specialCases
     e := oldE
     --1. bind global variables
-    $form: local
-    $op: local
+    $form: local := nil
+    $op: local := nil
     $functionStats: local:= [0,0]
     $argumentConditionList: local
-    $finalEnv: local
+    $finalEnv: local := nil
              --used by ReplaceExitEtc to get a common environment
     $initCapsuleErrorCount: local:= #$semanticErrorStack
     $insideCapsuleFunctionIfTrue: local:= true

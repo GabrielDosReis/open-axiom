@@ -152,7 +152,7 @@ trace1 l ==
   saveMapSig [funName for funName in argument]
 
 getTraceOptions options ==
-  $traceErrorStack: local
+  $traceErrorStack: local := nil
   optionList:= [getTraceOption x for x in options]
   $traceErrorStack =>
     null rest $traceErrorStack =>
@@ -600,7 +600,7 @@ letPrint(x,val,currentFunction) ==
 -- This is the version for use when we have already
 -- converted the data into type "Expression"
 letPrint2(x,printform,currentFunction) ==
-  $BreakMode:local
+  $BreakMode:local := nil
   if $letAssoc and
     ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
       if (y="all" or MEMQ(x,y)) and
@@ -620,7 +620,7 @@ letPrint2(x,printform,currentFunction) ==
 -- to convert the data into type "Expression"
 
 letPrint3(x,xval,printfn,currentFunction) ==
-  $BreakMode:local
+  $BreakMode:local := nil
   if $letAssoc and
     ((y:= LASSOC(currentFunction,$letAssoc)) or (y:= LASSOC("all",$letAssoc))) then
       if (y="all" or MEMQ(x,y)) and

@@ -349,25 +349,25 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 
 --LOCAL BOUND FLUID VARIABLES:
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
-  $catvecList: local    --list of vectors v1..vn for each view
-  $hasCategoryAlist: local  --list of GENSYMs bound to (HasCategory ..) items
-  $catNames: local      --list of names n1..nn for each view
-  $maximalViews: local  --list of maximal categories for domain (???)
-  $catsig: local        --target category (used in ProcessCond)
-  $SetFunctions: local  --copy of p view with preds telling when fnct defined
-  $MissingFunctionInfo: local --now useless
+  $catvecList: local := nil   --list of vectors v1..vn for each view
+  $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
+  $catNames: local := nil      --list of names n1..nn for each view
+  $maximalViews: local := nil  --list of maximal categories for domain (???)
+  $catsig: local := nil        --target category (used in ProcessCond)
+  $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
+  $MissingFunctionInfo: local := nil --now useless
      --vector marking which functions are assigned
-  $ConstantAssignments: local --code for creation of constants
+  $ConstantAssignments: local := nil --code for creation of constants
   $epilogue: local := nil     --code to set slot 5, things to be done last
-  $HackSlot4: local  --Invention of JHD 13/July/86-set in InvestigateConditions
-  $extraParms:local  --Set in DomainSubstitutionFunction, used in setVector12
-  $devaluateList: local --Bound to ((#1 . dv$1)..) where &1 := devaluate #1 later
+  $HackSlot4: local := nil  --Invention of JHD 13/July/86-set in InvestigateConditions
+  $extraParms:local := nil  --Set in DomainSubstitutionFunction, used in setVector12
+  $devaluateList: local := nil --Bound to ((#1 . dv$1)..) where &1 := devaluate #1 later
   $devaluateList:= [[arg,:b] for arg in args for b in $ModeVariableList]
-  $supplementaries: local
+  $supplementaries: local := nil
    --set in InvestigateConditions to represent any additional
    --category membership tests that may be needed(see buildFunctor for details)
 ------------------------
-  $maximalViews: local
+  $maximalViews: local := nil
   oldtime:= TEMPUS_-FUGIT()
   [$catsig,:argsig]:= sig
   catvecListMaker:=REMDUP

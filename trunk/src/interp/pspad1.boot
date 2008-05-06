@@ -82,7 +82,7 @@ lisp2Boot x ==
   $fieldNames := nil
   $pilesAreOkHere: local:= true
   $commentsToPrint: local:= nil
-  $lineBuffer: local
+  $lineBuffer: local := nil
   $braceStack: local := nil
   $marginStack: local:= [0]
   --$autoLine is true except when inside a try---if true, lines are allowed to break
