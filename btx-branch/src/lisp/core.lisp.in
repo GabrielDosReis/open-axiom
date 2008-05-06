@@ -761,7 +761,7 @@
                  :name module
                  #-:ecl :type #-:ecl |$faslType|))
 
-(defun |ifilePthaname| (module dir)
+(defun |btxPthaname| (module dir)
   (setq dir (|ensureTrailingSlash| dir))
   (make-pathname :directory (pathname-directory dir)
                  :name module
@@ -782,7 +782,7 @@
       module)))
 
 (defun import-module-if-present (module dir)
-  (or (|loadIfPresent| (|ifilePthaname| module dir))
+  (or (|loadIfPresent| (|btxPthaname| module dir))
       (|loadIfPresent| (|loadPathname| module dir))))
 
 (defun do-import-module (module directories)
