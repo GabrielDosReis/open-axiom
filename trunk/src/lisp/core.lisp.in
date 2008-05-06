@@ -95,6 +95,7 @@
 	   "pathBasename"
 
            "IMPORT-MODULE"
+	   "BOOT-IMPORT"
 	   "CONCAT"
            ))
 
@@ -196,9 +197,6 @@
       (setf (get request 'use-file-type) t))
     (|installDriver| key driver)))
 
-
-;; true if in main program booted
-(defvar |$mainBooted| nil)
 
 ;; 
 ;; -*- OpenAxiom Command Line Parsing -*-
@@ -487,9 +485,7 @@
            (c:build-program core-image 
                             :lisp-files (mapcar #'|compileFilePathname| 
 						lisp-files)
-                            :epilogue-code `(progn 
-					      (setq |$mainBooted| t)
-					      (,entry-point)))
+                            :epilogue-code `(funcall ,entry-point))
            (|coreQuit|)))
 
 
@@ -685,7 +681,6 @@
 (|associateRequestWithFileType| (|Option| "compile") |$LispFileType|
  #'|compileLispHandler|)
 
-
 ;; 
 ;; -*- Predefined System Entry Point -*-
 ;; 
@@ -766,6 +761,12 @@
                  :name module
                  #-:ecl :type #-:ecl |$faslType|))
 
+(defun |btxPthaname| (module dir)
+  (setq dir (|ensureTrailingSlash| dir))
+  (make-pathname :directory (pathname-directory dir)
+                 :name module
+		 :type "btx"))
+
 (defun |loadIfPresent| (module)
   (if (|alreadyLoaded?| module)
       module
@@ -780,18 +781,20 @@
       (|noteUnitLoaded| module)
       module)))
 
+(defun import-module-if-present (module dir)
+  (or (|loadIfPresent| (|btxPthaname| module dir))
+      (|loadIfPresent| (|loadPathname| module dir))))
+
 (defun do-import-module (module directories)
   (cond ((null directories)
-	 (unless (and (member :ecl *features* :test #'eq) |$mainBooted|)
-	   (|fatalError| 
-	    (format nil 
-		    "module ~S not found in search path ~S"
-		    module 
-		    |$LoadDirectories|))))
+	 (|fatalError| 
+	  (format nil 
+		  "module ~S not found in search path ~S"
+		  module 
+		  |$LoadDirectories|)))
 	(t
-	 (let ((p (|loadPathname| module (car directories))))
-	   (unless (|loadIfPresent| p)
-	     (do-import-module module (cdr directories)))))))
+	 (unless (import-module-if-present module (car directories))
+	   (do-import-module module (cdr directories))))))
 
 (defun |importModule| (module)
   (do-import-module module |$LoadDirectories|))
@@ -801,6 +804,10 @@
            #+:common-lisp (:compile-toplevel :load-toplevel :execute)
            #-:common-lisp (compile load eval)
                      (|importModule| ,module))))
+
+(defmacro boot-import (module)
+  `(eval-when (:compile-toplevel)
+	      (|importModule| ,module)))
 
 ;; 
 ;; -*- Feature Tests in Boot -*-
