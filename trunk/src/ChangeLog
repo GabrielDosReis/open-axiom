@@ -1,3 +1,11 @@
+2008-05-07  Bill Page <bill.page@newsynthesis.org>
+            Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (true$Boolean): Simplify.
+	(=$Boolean): Likewise.
+	(equiv$Boolean): Likewise.
+	* interp/spad.lisp (|BooleanEquality|): Remove.
+
 2008-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet (Boolean): Don't pretend to
