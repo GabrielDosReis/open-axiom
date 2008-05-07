@@ -505,6 +505,7 @@ postSignature t ==
     sig1:= postType sig
     op:= postAtom (STRINGP op => INTERN op; op)
     ["SIGNATURE",op,:removeSuperfluousMapping killColons sig1]
+  ["SIGNATURE",postAtom op,:postType ["->","constant",sig]]
 
 killColons: %ParseTree -> %ParseForm
 killColons x ==

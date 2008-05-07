@@ -1,3 +1,10 @@
+2008-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/types.boot (%Integer): Alias for Lisp INTEGER class.
+	* interp/sys-utility.boot (getVMType): Integer is represented by
+	%Integer. 
+	* interp/postpar.boot (postSignature): Don't ignore constants.
+
 2008-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot: Explicitly initialize fluid variables.
