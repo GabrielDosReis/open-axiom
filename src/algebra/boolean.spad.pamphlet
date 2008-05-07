@@ -488,7 +488,7 @@ Boolean(): Join(OrderedSet, Finite, Logic, PropositionalLogic, ConvertibleTo Inp
     test a        == a
 
     nt b          == (b => false; true)
-    true          == EQ(2,2)$Lisp   --well, 1 is rather special
+    true          == 'T
     false         == NIL$Lisp
     sample()      == true
     not b         == (b => false; true)
@@ -501,10 +501,10 @@ Boolean(): Join(OrderedSet, Finite, Logic, PropositionalLogic, ConvertibleTo Inp
     xor(a, b)     == (a => nt b; b)
     nor(a, b)     == (a => false; nt b)
     nand(a, b)    == (a => nt b; true)
-    a = b         == BooleanEquality(a, b)$Lisp
+    a = b         == EQ(a, b)$Lisp
     implies(a, b) == (a => b; true)
-    equiv(a,b)    == BooleanEquality(a, b)$Lisp
-    a < b         == (b => not a; false)
+    equiv(a,b)    == EQ(a, b)$Lisp
+    a < b         == (b => nt a; false)
 
     size()        == 2
     index i       ==
@@ -577,18 +577,18 @@ This is eventually forcibly replaced by a recompiled version.
 (DEFUN |BOOLEAN;nand;3$;14| (|a| |b| $)
   (COND (|a| (|BOOLEAN;nt| |b| $)) ('T 'T))) 
 
-(PUT '|BOOLEAN;=;2$B;15| '|SPADreplace| '|BooleanEquality|) 
+(PUT '|BOOLEAN;=;2$B;15| '|SPADreplace| 'EQ) 
 
-(DEFUN |BOOLEAN;=;2$B;15| (|a| |b| $) (|BooleanEquality| |a| |b|)) 
+(DEFUN |BOOLEAN;=;2$B;15| (|a| |b| $) (EQ |a| |b|)) 
 
 (DEFUN |BOOLEAN;implies;3$;16| (|a| |b| $) (COND (|a| |b|) ('T 'T))) 
 
-(PUT '|BOOLEAN;equiv;3$;17| '|SPADreplace| '|BooleanEquality|) 
+(PUT '|BOOLEAN;equiv;3$;17| '|SPADreplace| 'EQ) 
 
-(DEFUN |BOOLEAN;equiv;3$;17| (|a| |b| $) (|BooleanEquality| |a| |b|)) 
+(DEFUN |BOOLEAN;equiv;3$;17| (|a| |b| $) (EQ |a| |b|)) 
 
 (DEFUN |BOOLEAN;<;2$B;18| (|a| |b| $)
-  (COND (|b| (SPADCALL |a| (|getShellEntry| $ 9))) ('T 'NIL))) 
+  (COND (|b| (|BOOLEAN;nt| |a| $)) ('T 'NIL))) 
 
 (PUT '|BOOLEAN;size;Nni;19| '|SPADreplace| '(XLAM NIL 2)) 
 

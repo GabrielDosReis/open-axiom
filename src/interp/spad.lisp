@@ -289,8 +289,6 @@
 (defun \,difference (x y) (- x y))
 (defun \,max (x y) (max x y))
 (defun \,min (x y) (min x y))
-;; This is used in the domain Boolean (BOOLEAN.NRLIB/code.lsp)
-(defun |BooleanEquality| (x y) (if x y (null y)))
 
 (defun S-PROCESS (X)
   (let ((|$Index| 0)
