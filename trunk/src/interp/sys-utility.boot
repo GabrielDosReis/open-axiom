@@ -51,14 +51,13 @@ getVMType d ==
     Byte => "%Byte"
     Character => "%Char"
     SingleInteger => "%Short"
---    Integer => "%Bignum"
+    Integer => "%Integer"
     String => "%String"
     List => "%List"
     Vector => ["%Vector",getVMType second d']
     PrimitiveArray => ["%SimpleArray", getVMType second d']
     Pair => "%Pair"
     otherwise => "%Thing"                 -- good enough, for now.
-
 
 --%
 

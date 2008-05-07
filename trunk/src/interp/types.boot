@@ -60,6 +60,9 @@ import boot_-pkg
 %Bignum <=> 
   BIGNUM
 
+%Integer <=>
+  INTEGER
+
 ++ Type of single precision floating point numbers.  Most of the
 ++ time, this is a 32-bit datatype.
 %SingleFloat <=>
@@ -114,7 +117,7 @@ import boot_-pkg
   cons(%Code,cons(%Mode,cons(%Env,null))) 
 
 %Signature                      -- signature
-  <=> cons
+  <=> %Symbol or cons
 
 %Modemap <=> %List                             -- modemap
 
