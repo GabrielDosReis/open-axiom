@@ -194,3 +194,12 @@ loadModule(path,name) ==
 --% numericis
 log10 x ==
   LOG(x,10)
+
+bitand: (%Short,%Short) -> %Short
+bitand(x,y) ==
+  BOOLE(BOOLE_-AND,x,y)
+
+bitior: (%Short,%Short) -> %Short
+bitior(x,y) ==
+  BOOLE(BOOLE_-IOR,x,y)
+

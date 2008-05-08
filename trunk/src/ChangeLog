@@ -1,5 +1,12 @@
 2008-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/java.spad.pamphlet: New.  Implement JavaBytecode.
+	* algebra/data.spad.pamphlet (bitand$Byte): New.
+	(bitior$Byte): Likewwise.
+	(byte$Byte): Likewise.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_15): Include
+	JAVACODE. 
+
 	* boot/translator.boot (translateToplevel): Split out of bpOutItem.
 	(maybeExportDecl): New.
 	

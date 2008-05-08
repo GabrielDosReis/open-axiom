@@ -195,6 +195,7 @@
   (|InventorRenderPackage| . IVREND)
   (|InverseLaplaceTransform| . INVLAPLA)
   (|IrrRepSymNatPackage| . IRSN)
+  (|JavaBytecode| . JAVACODE)
   (|KernelFunctions2| . KERNEL2)
   (|KeyedAccessFile| . KAFILE)
   (|LaplaceTransform| . LAPLACE)

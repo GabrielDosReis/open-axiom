@@ -485,7 +485,7 @@ axiom_algebra_layer_9 = \
   PTFUNC2  RADCAT   RADCAT-  RATRET   RADUTIL  UPXS2    \
   XFALG    ZLINDEP  BBTREE   LSAGG    LSAGG-   SRAGG    \
   SRAGG-   STRICAT  ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
-  PDEPROB
+  PDEPROB  
 
 
 axiom_algebra_layer_9_nrlibs = \
@@ -541,7 +541,7 @@ axiom_algebra_layer_11 = \
   TS       TUPLE    UPSCAT   UPSCAT-  \
   VECTCAT  VECTCAT- XDPOLY   XEXPPKG  \
   XF       XF-      XPBWPOLY XPOLY    \
-  XRPOLY  
+  XRPOLY   
 
 axiom_algebra_layer_11_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_11))
@@ -648,11 +648,11 @@ axiom_algebra_layer_14_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_14)))
 axiom_algebra_layer_15 = \
-   DSMP     EXPUPXS \
-  FRAMALG FRAMALG- MDAGG    ODPOL   \
-  PLOT    RMCAT2   ROIRC    SDPOL   \
-  SMATCAT SMATCAT- TUBETOOL UPXSCCA \
-  UPXSCCA-
+  DSMP     EXPUPXS \
+  FRAMALG  FRAMALG- MDAGG    ODPOL   \
+  PLOT     RMCAT2   ROIRC    SDPOL   \
+  SMATCAT  SMATCAT- TUBETOOL UPXSCCA \
+  UPXSCCA- JAVACODE
 
 axiom_algebra_layer_15_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_15))
@@ -769,7 +769,7 @@ axiom_algebra_layer_20 = \
   SFORT    SOLVESER SUMFS    SUTS     \
   TOOLSIGN TRIGMNIP TRMANIP  ULSCCAT  \
   ULSCCAT- UPXSSING UTSODE   UTSODETL \
-  UTS2     WUTSET 
+  UTS2     WUTSET   
 
 axiom_algebra_layer_20_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_20))
