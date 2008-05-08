@@ -451,7 +451,7 @@ bpImport() ==
 bpTypeAliasDefition() ==
   (bpTerm() or bpTrap()) and 
     bpEqKey "TDEF" and bpLogical() and
-      bpPush TypeAlias(bpPop2(), bpPop1())
+      bpPush %TypeAlias(bpPop2(), bpPop1())
 
 ++ Parse a signature declaration
 ++  Signature:

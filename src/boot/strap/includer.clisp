@@ -1,6 +1,6 @@
-(PROVIDE "includer")
-
 (IMPORT-MODULE "tokens")
+
+(PROVIDE "includer")
 
 (IN-PACKAGE "BOOTTRAN")
 

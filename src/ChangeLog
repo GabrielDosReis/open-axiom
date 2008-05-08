@@ -1,5 +1,8 @@
 2008-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/translator.boot (translateToplevel): Split out of bpOutItem.
+	(maybeExportDecl): New.
+	
 	* boot/translator.boot (bpOutItem): Handle namespace declaration.
 	Update all boot files to use `namespace' instead of `)package'.
 	* interp/: Likewise.
