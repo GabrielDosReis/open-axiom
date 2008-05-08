@@ -33,8 +33,7 @@
 
 
 import def
-
-)package "BOOT"
+namespace BOOT
 
 --% OPTIMIZER
  

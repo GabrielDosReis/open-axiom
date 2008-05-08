@@ -33,7 +33,7 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
 
 -- HyperTeX Utilities for generating basic Command pages
 

@@ -33,7 +33,7 @@
 
 
 import postpar
-)package "BOOT"
+namespace BOOT
 
 --% Transformation of Parser Output
 

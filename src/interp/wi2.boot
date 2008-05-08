@@ -34,7 +34,7 @@
 
 import macros
 import define
-)package "BOOT"
+namespace BOOT
 
 compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     ['DEF,form,signature,$functorSpecialCases,body] := df

@@ -33,11 +33,10 @@
 --
 
 
-module scanner
 import tokens
 import includer
-
-)package "BOOTTRAN"
+module scanner
+namespace BOOTTRAN
 
 -- converts X to double-float.
 double x ==

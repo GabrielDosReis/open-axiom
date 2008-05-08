@@ -31,7 +31,7 @@
 
 
 import i_-coerce
-)package "BOOT"
+namespace BOOT
 
 $coerceFailure := GENSYM()
 

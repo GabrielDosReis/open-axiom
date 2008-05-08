@@ -33,7 +33,7 @@
 
 
 import types
-)package "BOOT"
+namespace BOOT
 
 -- HyperTex Spad interface
 

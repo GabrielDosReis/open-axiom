@@ -31,7 +31,7 @@
 
 
 import br_-search
-)package "BOOT"
+namespace BOOT
 
 getBrowseDatabase(kind) ==
   $includeUnexposed? : local := true

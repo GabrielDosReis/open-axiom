@@ -33,7 +33,7 @@
 
 
 import ptrees
-)package "BOOT"
+namespace BOOT
 
 $dotdot := INTERN('"..", '"BOOT")
 $specificMsgTags := nil

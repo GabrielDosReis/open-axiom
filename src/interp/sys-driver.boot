@@ -37,7 +37,7 @@
 --
 
 import types
-)package "BOOT"
+namespace BOOT
 
 ++ true means try starting an open server
 $openServerIfTrue := true

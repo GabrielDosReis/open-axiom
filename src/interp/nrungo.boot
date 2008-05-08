@@ -33,7 +33,7 @@
 
 
 import c_-util
-)package "BOOT"
+namespace BOOT
 
 ++
 $insideCompileBodyIfTrue := false

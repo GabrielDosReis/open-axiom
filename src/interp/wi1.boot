@@ -33,7 +33,7 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
 
 -- !! do not delete the next function !
 

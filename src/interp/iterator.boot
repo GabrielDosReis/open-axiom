@@ -33,7 +33,7 @@
 
 
 import g_-util
-)package "BOOT"
+namespace BOOT
 
 --% ITERATORS
  

@@ -35,7 +35,7 @@
 
 import sys_-os
 import vmlisp
-)package "BOOT"
+namespace BOOT
 
 
 --%
@@ -43,7 +43,6 @@ import vmlisp
 ++ getVMType returns an approximation of the underlying object type
 ++ representation of a domain, as a Lisp type specifier as seen by
 ++ the runtime system.
-getVMType: %Shell -> %Form
 getVMType d ==
   case (d' := devaluate d) of
     Void => "%Void"

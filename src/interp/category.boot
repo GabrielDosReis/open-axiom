@@ -33,7 +33,7 @@
 
 
 import g_-util
-)package "BOOT"
+namespace BOOT
  
 -- Functions for building categories
  

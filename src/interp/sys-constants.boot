@@ -38,7 +38,7 @@
 --
 
 import types
-)package "BOOT"
+namespace BOOT
 
 
 ++ Clock time unit per second.

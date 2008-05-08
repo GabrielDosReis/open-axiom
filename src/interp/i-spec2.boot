@@ -33,7 +33,7 @@
 
 
 import i_-spec1
-)package "BOOT"
+namespace BOOT
 
 ++ Interpreter macros
 $InterpreterMacroAlist ==

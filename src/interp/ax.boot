@@ -33,7 +33,7 @@
 
 
 import as
-)package "BOOT"
+namespace BOOT
 
 $stripTypes := false
 $pretendFlag := false

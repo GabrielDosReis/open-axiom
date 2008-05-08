@@ -33,7 +33,7 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
 
 htsv() ==
   startHTPage(50)

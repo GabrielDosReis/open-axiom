@@ -33,7 +33,7 @@
 
 
 import pspad1
-)package "BOOT"
+namespace BOOT
 
 --======================================================================
 --                Constructor Transformation Functions

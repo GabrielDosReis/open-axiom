@@ -33,7 +33,7 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
 
 --global hash tables for new compiler
 $docHash  := MAKE_-HASH_-TABLE()

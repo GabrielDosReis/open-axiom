@@ -41,7 +41,7 @@
 module sys_-os
 import types
 import cfuns
-)package "BOOT"
+namespace BOOT
 
 )if not %hasFeature KEYWORD::GCL
 loadSystemRuntimeCore()

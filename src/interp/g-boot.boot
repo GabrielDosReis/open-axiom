@@ -34,7 +34,7 @@
 
 import def
 import g_-util
-)package "BOOT"
+namespace BOOT
 
 -- @(#)g-boot.boot      2.2      89/11/02  14:44:09
 

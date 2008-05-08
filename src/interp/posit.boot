@@ -33,8 +33,7 @@
 
 import sys_-macros
 import astr
-
-)package "BOOT"
+namespace BOOT
 
 $nopos ==
   ['noposition]

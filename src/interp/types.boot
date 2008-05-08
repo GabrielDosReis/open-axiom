@@ -32,7 +32,7 @@
 --
 
 import boot_-pkg
-)package "BOOT"
+namespace BOOT
 
 --% Basic types used throughout Boot codes.
 

@@ -34,7 +34,7 @@
 
 import diagnostics
 import g_-util
-)package "BOOT"
+namespace BOOT
 
 -- This file contains the error printing code used in BOOT and SPAD.
 -- While SPAD only calls "error" (which is then labeled as an algebra

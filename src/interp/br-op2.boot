@@ -33,7 +33,7 @@
 
 
 import br_-op1
-)package "BOOT"
+namespace BOOT
 
 --====================> WAS br-op2.boot <================================
 

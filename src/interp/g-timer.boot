@@ -34,7 +34,7 @@
 
 import macros
 import g_-util
-)package "BOOT"
+namespace BOOT
 
 --% Code instrumentation facilities
 --  These functions can be used with arbitrary lists of

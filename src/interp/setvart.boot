@@ -33,7 +33,7 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
 
 --% Table of )set options
 $setOptions := '(

@@ -32,10 +32,10 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import posit
+namespace BOOT
 
 --% Functions to handle specific errors (mostly syntax)
  
-)package "BOOT"
 
 syGeneralErrorHere: () -> %Thing
 syGeneralErrorHere() ==

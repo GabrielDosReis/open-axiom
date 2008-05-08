@@ -57,7 +57,7 @@
 
 
 import g_-util
-)package "BOOT"
+namespace BOOT
 
 printInfo $e ==
   for u in get("$Information","special",$e) repeat PRETTYPRINT u

@@ -41,7 +41,7 @@
 -- GDR, March 2008.
 
 import sys_-macros
-)package "BOOT"
+namespace BOOT
 
 $noCategoryDomains == '(Mode SubDomain)
 $nonLisplibDomains == APPEND($Primitives,$noCategoryDomains)

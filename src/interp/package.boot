@@ -33,7 +33,7 @@
 
 
 import clam
-)package "BOOT"
+namespace BOOT
 
 isPackageFunction() ==
   -- called by compile/putInLocalDomainReferences

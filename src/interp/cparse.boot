@@ -32,8 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import ptrees
-
-)package "BOOT"
+namespace BOOT
 
 -- npTerm introduced between npRemainder and npSum
 -- rhs of assignment changed from npStatement to npGives

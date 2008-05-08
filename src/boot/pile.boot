@@ -32,11 +32,11 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-module pile
 import includer
 import scanner
- 
-)package "BOOTTRAN"
+module pile
+namespace BOOTTRAN
+
 shoeFirstTokPosn t== shoeTokPosn CAAR t
 shoeLastTokPosn  t== shoeTokPosn CADR t
 shoePileColumn t==CDR shoeTokPosn CAAR t

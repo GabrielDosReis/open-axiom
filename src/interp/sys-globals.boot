@@ -39,7 +39,7 @@
 
 import hash
 import sys_-constants
-)package "BOOT"
+namespace BOOT
 
 ++ FIXME
 $saturn := false

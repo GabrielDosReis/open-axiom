@@ -31,7 +31,7 @@
 
 
 import i_-analy
-)package "BOOT"
+namespace BOOT
 
 --% Constructor Evaluation
 

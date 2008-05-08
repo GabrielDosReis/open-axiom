@@ -33,7 +33,7 @@
 
 
 import sys_-macros
-)package "BOOT"
+namespace BOOT
 
 --% Manipulation of Constructor Datat
 

@@ -34,7 +34,7 @@
 
 import bc_-matrix
 import bc_-misc
-)package "BOOT"
+namespace BOOT
 
   -- HyperTeX basic Solve Command
 $systemType := nil

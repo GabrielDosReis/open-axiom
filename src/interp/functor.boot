@@ -34,7 +34,7 @@
 
 import c_-util
 import category
-)package "BOOT"
+namespace BOOT
 
 --%  Domain printing
 keyItem a ==

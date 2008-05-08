@@ -33,8 +33,7 @@
 
 
 import sys_-macros
-
-)package "BOOT"
+namespace BOOT
 
 --% Stream Utilities
  

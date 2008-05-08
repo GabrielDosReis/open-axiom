@@ -32,10 +32,9 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --
 
-module tokens
 import initial_-env
-
-)package "BOOTTRAN"
+module tokens
+namespace BOOTTRAN
 
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _

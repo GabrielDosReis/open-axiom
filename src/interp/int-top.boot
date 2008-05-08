@@ -35,7 +35,7 @@
 import incl
 import i_-toplev
 import unlisp
-)package "BOOT"
+namespace BOOT
 
 ncParseAndInterpretString s ==
   processInteractive(packageTran parseFromString s, nil)

@@ -42,7 +42,7 @@
 
 
 import macros
-)package "BOOT"
+namespace BOOT
 
 REMPROP("and",'parseTran)
 REMPROP("or",'parseTran)

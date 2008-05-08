@@ -33,7 +33,7 @@
 
 
 import ptrees
-)package "BOOT"
+namespace BOOT
 
 --% Macro expansion
 --  Functions to transform parse forms.

@@ -33,7 +33,7 @@
 
 
 import bc_-util
-)package "BOOT"
+namespace BOOT
 
 --====================> WAS b-saturn.boot <================================
 -- New file as of 6/95
