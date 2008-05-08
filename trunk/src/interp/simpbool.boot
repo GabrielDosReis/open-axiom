@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import macros
-)package "BOOT"
+namespace BOOT
 
 simpBool x == dnf2pf reduceDnf be x
  

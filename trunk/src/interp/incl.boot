@@ -35,8 +35,7 @@
 import unlisp
 import cstream
 import cformat
-
-)package "BOOT"
+namespace BOOT
  
 ++ The following symbol constants tag input source program parts, for
 ++ conditional inclusion purposes.

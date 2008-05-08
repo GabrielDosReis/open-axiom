@@ -33,7 +33,7 @@
 
 
 import ht_-util
-)package "BOOT"
+namespace BOOT
 
 ++
 $newConstructorList := nil

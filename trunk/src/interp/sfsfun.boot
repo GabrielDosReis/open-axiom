@@ -68,7 +68,7 @@
 
 
 import macros
-)package "BOOT" 
+namespace BOOT
 
 FloatError(formatstring,arg) ==
 --        ERROR(formatstring,arg)

@@ -33,7 +33,7 @@
 
 
 import sys_-macros
-)package "BOOT"
+namespace BOOT
 
 --Modified JHD February 1993: see files miscout.input for some tests of this
 -- General principle is that maprin0 is the top-level routine,

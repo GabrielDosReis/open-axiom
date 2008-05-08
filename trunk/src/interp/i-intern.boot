@@ -34,7 +34,7 @@
 
 import i_-object
 import ptrees
-)package "BOOT"
+namespace BOOT
 
 $useParserSrcPos :=  NIL
 $transferParserSrcPos := NIL

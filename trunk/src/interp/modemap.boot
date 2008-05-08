@@ -34,7 +34,7 @@
 
 import c_-util
 import info
-)package "BOOT"
+namespace BOOT
 
 --% EXTERNAL ROUTINES
  

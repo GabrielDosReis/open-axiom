@@ -34,8 +34,7 @@
 
 import unlisp
 import posit
-
-)package "BOOT"
+namespace BOOT
 
 --% Formatting functions for various compiler data objects.
 --  These are used as [%origin o, %id n] for %1f %2f... style arguments

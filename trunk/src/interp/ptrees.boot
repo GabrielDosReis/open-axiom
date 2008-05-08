@@ -49,8 +49,7 @@
 
 import posit
 import serror
-
-)package "BOOT"
+namespace BOOT
 
 --% SPECIAL NODES
 pfListOf x          == pfTree('listOf,x)

@@ -77,7 +77,7 @@
 
 
 import g_-util
-)package "BOOT"
+namespace BOOT
 
 --% Message Database Code and Message Utility Functions
 

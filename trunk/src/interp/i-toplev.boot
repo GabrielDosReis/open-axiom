@@ -33,7 +33,7 @@
 
 
 import i_-analy
-)package "BOOT"
+namespace BOOT
 
 --% Top Level Interpreter Code
 

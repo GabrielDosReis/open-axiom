@@ -33,14 +33,13 @@
 --
 
 
-module translator
 import includer
 import scanner
 import pile
 import parser
 import ast
-
-)package "BOOTTRAN"
+module translator
+namespace BOOTTRAN
 
 ++ If non nil, holds the name of the current module being translated.
 $currentModuleName := nil
@@ -496,6 +495,9 @@ bpOutItem()==
 
     ConstantDefinition(n, e) =>
       bpPush [["DEFCONSTANT", n, e]]
+
+    namespace(n) =>
+      bpPush [["IN-PACKAGE",STRING n]]
 
     otherwise =>
       bpPush [translateToplevelExpression b]

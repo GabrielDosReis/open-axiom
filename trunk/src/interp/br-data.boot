@@ -33,7 +33,7 @@
 
 
 import bc_-util
-)package "BOOT"
+namespace BOOT
 
 lefts u ==
    [x for x in HKEYS  _*HASCATEGORY_-HASH_* | CDR x = u]

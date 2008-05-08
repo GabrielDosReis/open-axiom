@@ -33,7 +33,7 @@
 
 
 import i_-object
-)package "BOOT"
+namespace BOOT
 
 --% User Function Creation and Analysis Code
 

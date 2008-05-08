@@ -916,6 +916,9 @@
                    (LET ((|n| (CAR |bfVar#35|))
                          (|e| (CADR |bfVar#35|)))
                      (|bpPush| (LIST (LIST 'DEFCONSTANT |n| |e|)))))
+               (|namespace|
+                   (LET ((|n| (CAR |bfVar#35|)))
+                     (|bpPush| (LIST (LIST 'IN-PACKAGE (STRING |n|))))))
                (T (|bpPush| (LIST (|translateToplevelExpression| |b|))))))))))))
 
 (DEFUN |shoeAddbootIfNec| (|s|) (|shoeAddStringIfNec| ".boot" |s|))

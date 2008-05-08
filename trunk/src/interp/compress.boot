@@ -33,7 +33,7 @@
 
 
 import sys_-macros
-)package "BOOT"
+namespace BOOT
 
 -- This one is not currently in general use, but can be applied
 -- to various situations are required

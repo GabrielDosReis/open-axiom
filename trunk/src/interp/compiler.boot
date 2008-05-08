@@ -37,7 +37,7 @@ import pathname
 import modemap
 import define
 import iterator
-)package "BOOT"
+namespace BOOT
 
 ++ A list of routines for diagnostic reports.  These functions, in an
 ++ abstract sense, have type: forall T: Type . String -> T, so they

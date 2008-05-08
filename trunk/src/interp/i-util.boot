@@ -31,7 +31,7 @@
 
 
 import g_-util
-)package "BOOT"
+namespace BOOT
 
 --% The function for making prompts
  

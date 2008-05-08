@@ -39,12 +39,11 @@
 --
 
 
-module parser
 import includer
 import scanner
 import ast
- 
-)package "BOOTTRAN"
+module parser
+namespace BOOTTRAN
  
 
 ++ true when the current function definition has its parameters 

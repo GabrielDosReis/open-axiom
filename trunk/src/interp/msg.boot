@@ -34,7 +34,7 @@
 
 import sys_-macros
 import astr
-)package "BOOT"
+namespace BOOT
 
 $erLocMsgDatabaseName     := pathname '(co_-eng msgs a)
 $erGlbMsgDatabaseName     := pathname '(co_-eng msgs i)

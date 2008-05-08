@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import macros
-)package "BOOT"
+namespace BOOT
  
 termRW(t,R) ==
   -- reduce t by rewrite system R

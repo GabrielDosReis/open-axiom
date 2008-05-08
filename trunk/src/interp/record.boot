@@ -52,7 +52,7 @@
 
 import nlib
 import pathname
-)package "BOOT"
+namespace BOOT
 
 --=======================================================================
 --                      Global Variables

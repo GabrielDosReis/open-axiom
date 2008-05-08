@@ -37,10 +37,10 @@
 --   This file defines the includer (or preprocessor) of Boot programs.
 --
 
-module includer
 import tokens
+module includer
+namespace BOOTTRAN
 
-)package "BOOTTRAN"
 -- BOOT INCLUDER
  
 -- Line syntax is

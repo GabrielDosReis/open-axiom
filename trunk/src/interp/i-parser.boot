@@ -37,7 +37,7 @@
 
 import cparse
 import pf2sex
-)package "BOOT"
+namespace BOOT
 
 ++ returns the list of tokens making up a line in the stream `s'
 tokenizeLine s ==

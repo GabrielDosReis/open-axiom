@@ -32,8 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import vmlisp
-
-)package "BOOT"
+namespace BOOT
 
 --% Attributed Structures (astr)
 -- For objects which are pairs where the CAR field is either just a tag

@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import macros
-)package "BOOT"
+namespace BOOT
 
 $topicsDefaults := '(
   (basic elt setelt qelt qsetelt eval xRange yRange zRange map map_! qsetelt_!)

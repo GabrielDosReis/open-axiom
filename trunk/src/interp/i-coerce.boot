@@ -34,7 +34,7 @@
 
 import i_-analy
 import i_-resolv
-)package "BOOT"
+namespace BOOT
 
 $useCoerceOrCroak := true
 $useConvertForCoercions := false

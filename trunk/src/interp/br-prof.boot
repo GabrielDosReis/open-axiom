@@ -33,7 +33,7 @@
 
 
 import bc_-util
-)package "BOOT"
+namespace BOOT
 
 --====================> WAS b-prof.boot <================================
 

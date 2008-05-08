@@ -34,7 +34,7 @@
 
 import sys_-driver
 import macros
-)package "BOOT"
+namespace BOOT
 
 $primitiveHtCommands := '(
   ("\ContinueButton"     . 1)

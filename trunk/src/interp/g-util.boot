@@ -34,7 +34,7 @@
 
 import macros
 import sys_-utility
-)package "BOOT"
+namespace BOOT
 
 ++
 $interpOnly := false

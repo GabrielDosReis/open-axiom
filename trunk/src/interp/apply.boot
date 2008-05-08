@@ -33,7 +33,7 @@
 
 
 import compiler
-)package "BOOT"
+namespace BOOT
 
 compAtomWithModemap: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
 compAtomWithModemap(x,m,e,v) ==

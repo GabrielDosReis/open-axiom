@@ -33,7 +33,7 @@
 
 
 import i_-analy
-)package "BOOT"
+namespace BOOT
 
 
 -- Functions which require special handlers (also see end of file)

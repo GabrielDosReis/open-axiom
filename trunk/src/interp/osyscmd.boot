@@ -33,7 +33,7 @@
 
 
 import int_-top
-)package "BOOT"
+namespace BOOT
 
 
 InterpExecuteSpadSystemCommand string ==

@@ -33,7 +33,7 @@
 
 
 import debug
-)package "BOOT"
+namespace BOOT
 
 --% Code for tracing functions
 

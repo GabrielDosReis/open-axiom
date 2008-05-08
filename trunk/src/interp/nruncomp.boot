@@ -34,7 +34,7 @@
 
 import c_-util
 import simpbool
-)package "BOOT"
+namespace BOOT
 
 
 ++ The base index for encoding items into a functor template 

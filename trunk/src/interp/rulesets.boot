@@ -33,7 +33,7 @@
 
 
 import vmlisp
-)package "BOOT"
+namespace BOOT
 
 $ruleSetsInitialized := false
 

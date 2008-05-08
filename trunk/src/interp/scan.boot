@@ -35,8 +35,7 @@
 import bits
 import dq
 import incl
-
-)package "BOOT"
+namespace BOOT
 
 --% Separators
 

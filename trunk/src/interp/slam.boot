@@ -33,7 +33,7 @@
 
 
 import g_-timer
-)package "BOOT"
+namespace BOOT
 
 ++ List of compiled function names.
 $compiledOpNameList := []

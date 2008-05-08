@@ -41,7 +41,7 @@
 import sys_-constants
 import sys_-globals
 import vmlisp
-)package "BOOT"
+namespace BOOT
 
 
 ++ This routine is used by the interperter to count syntax, or

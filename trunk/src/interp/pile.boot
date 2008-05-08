@@ -32,8 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import scan
-
-)package "BOOT"
+namespace BOOT
 
 -- insertpiles converts a line-list to a line-forest where
  

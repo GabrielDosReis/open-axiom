@@ -33,7 +33,7 @@
 
 
 import c_-util
-)package "BOOT"
+namespace BOOT
 
 batchExecute() ==
   _/RF_-1 '(GENCON INPUT)

@@ -31,7 +31,7 @@
 
 
 import i_-object
-)package "BOOT"
+namespace BOOT
 
 --% Interpreter Code Generation Routines
 

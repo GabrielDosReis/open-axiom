@@ -33,7 +33,7 @@
 
 
 import pathname
-)package "BOOT"
+namespace BOOT
 
 -- some functions that may need to be changed on different lisp
 -- systems.

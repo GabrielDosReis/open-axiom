@@ -38,10 +38,9 @@
 --   for representing Boot programs.
 --
 
-module ast
 import includer
-
-)package "BOOTTRAN"
+module ast
+namespace BOOTTRAN
 
 ++ True means that Boot functions should be translated to use
 ++ hash tables to remember values.  By default, functions are

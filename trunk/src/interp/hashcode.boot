@@ -33,7 +33,7 @@
 
 
 import g_-util
-)package "BOOT"
+namespace BOOT
 
 $DomainsWithoutLisplibs ==
   '(CAPSULE Union Record SubDomain Mapping Enumeration Mode)

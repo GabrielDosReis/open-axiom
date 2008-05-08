@@ -33,7 +33,7 @@
 
 
 import sys_-macros
-)package "BOOT"
+namespace BOOT
 
 rePackageTran(sex, package) ==
   SETQ(_*PACKAGE_*,FIND_-PACKAGE STRING package)

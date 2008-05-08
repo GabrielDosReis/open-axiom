@@ -33,7 +33,7 @@
 
 
 import i_-coerfn
-)package "BOOT"
+namespace BOOT
 
 $constructorExposureList := '(Boolean Integer String)
 $domPvar := nil

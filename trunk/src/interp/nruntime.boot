@@ -33,7 +33,7 @@
 
 
 import c_-util
-)package "BOOT"
+namespace BOOT
 
 ++ fetchs the item in the nth entry of a domain shell.
 getShellEntry: (%Shell,%Short) -> %Thing
