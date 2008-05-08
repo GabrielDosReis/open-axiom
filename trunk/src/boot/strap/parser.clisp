@@ -1,10 +1,10 @@
-(PROVIDE "parser")
-
 (IMPORT-MODULE "includer")
 
 (IMPORT-MODULE "scanner")
 
 (IMPORT-MODULE "ast")
+
+(PROVIDE "parser")
 
 (IN-PACKAGE "BOOTTRAN")
 
@@ -472,7 +472,7 @@
 
 (DEFUN |bpTypeAliasDefition| ()
   (AND (OR (|bpTerm|) (|bpTrap|)) (|bpEqKey| 'TDEF) (|bpLogical|)
-       (|bpPush| (|TypeAlias| (|bpPop2|) (|bpPop1|)))))
+       (|bpPush| (|%TypeAlias| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpSignature| ()
   (AND (|bpName|) (|bpEqKey| 'COLON) (|bpMapping|)

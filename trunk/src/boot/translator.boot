@@ -466,41 +466,60 @@ translateToplevelExpression expr ==
     #expr' > 1 => ["PROGN",:expr']
     first expr'
 
-bpOutItem()==
-  $op := nil
-  bpComma() or bpTrap()
-  b:=bpPop1()
-  EQCAR(b,"TUPLE")=> bpPush rest b
-  EQCAR(b,"+LINE")=> bpPush [ b ]
-  b is ["L%T",l,r] and IDENTP l =>
-	       bpPush [["DEFPARAMETER",l,r]]
+maybeExportDecl(d,export?) ==
+  export? => d
+  d
+
+translateToplevel(b,export?) ==
+  b is ["TUPLE",:xs] => [maybeExportDecl(x,export?) for x in xs]
   case b of
     Signature(op,t) =>
-      bpPush [genDeclaration(op,t)]
+      [maybeExportDecl(genDeclaration(op,t),export?)]
 
     %Module(m,ds) =>
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
-      bpPush [["PROVIDE", STRING m],
-        :[translateSignatureDeclaration d for d in ds]]
+      [["PROVIDE", STRING m],
+        :[translateToplevel(d,true) for d in ds]]
 
     Import(m) => 
-      bpPush [["IMPORT-MODULE", STRING m]]
+      [["IMPORT-MODULE", STRING m]]
 
     ImportSignature(x, sig) =>
-      bpPush genImportDeclaration(x, sig)
+      genImportDeclaration(x, sig)
 
-    TypeAlias(lhs, rhs) => 
-      bpPush [genTypeAlias(lhs,rhs)]
+    %TypeAlias(lhs, rhs) => 
+      [maybeExportDecl(genTypeAlias(lhs,rhs),export?)]
 
-    ConstantDefinition(n, e) =>
-      bpPush [["DEFCONSTANT", n, e]]
+    ConstantDefinition(lhs,rhs) =>
+      sig := nil
+      if lhs is ["%Signature",n,t] then
+        sig := maybeExportDecl(genDeclaration(n,t),export?)
+        lhs := n
+      [maybeExportDecl(["DEFCONSTANT",lhs,rhs],export?)]
+
+    %Assignment(lhs,rhs) =>
+      sig := nil
+      if lhs is ["%Signature",n,t] then
+        sig := maybeExportDecl(genDeclaration(n,t),export?)
+        lhs := n
+      [maybeExportDecl(["DEFPARAMETER",lhs,rhs],export?)]
 
     namespace(n) =>
-      bpPush [["IN-PACKAGE",STRING n]]
+      [["IN-PACKAGE",STRING n]]
 
     otherwise =>
-      bpPush [translateToplevelExpression b]
+      [translateToplevelExpression b]
+
+
+bpOutItem()==
+  $op := nil
+  bpComma() or bpTrap()
+  b:=bpPop1()
+  EQCAR(b,"+LINE")=> bpPush [ b ]
+  b is ["L%T",l,r] and IDENTP l =>
+	       bpPush [["DEFPARAMETER",l,r]]
+  bpPush translateToplevel(b,false)
  
 shoeAddbootIfNec s == 
   shoeAddStringIfNec('".boot",s)

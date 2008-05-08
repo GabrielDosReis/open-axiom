@@ -1,6 +1,6 @@
-(PROVIDE "tokens")
-
 (IMPORT-MODULE "initial-env")
+
+(PROVIDE "tokens")
 
 (IN-PACKAGE "BOOTTRAN")
 

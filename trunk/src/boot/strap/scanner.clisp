@@ -1,8 +1,8 @@
-(PROVIDE "scanner")
-
 (IMPORT-MODULE "tokens")
 
 (IMPORT-MODULE "includer")
+
+(PROVIDE "scanner")
 
 (IN-PACKAGE "BOOTTRAN")
 

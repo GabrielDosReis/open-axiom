@@ -1,6 +1,6 @@
-(PROVIDE "ast")
-
 (IMPORT-MODULE "includer")
+
+(PROVIDE "ast")
 
 (IN-PACKAGE "BOOTTRAN")
 
@@ -34,8 +34,8 @@
 (DEFUN |ImportSignature| #0=(|bfVar#6| |bfVar#7|)
   (CONS '|ImportSignature| (LIST . #0#)))
 
-(DEFUN |TypeAlias| #0=(|bfVar#8| |bfVar#9|)
-  (CONS '|TypeAlias| (LIST . #0#)))
+(DEFUN |%TypeAlias| #0=(|bfVar#8| |bfVar#9|)
+  (CONS '|%TypeAlias| (LIST . #0#)))
 
 (DEFUN |Signature| #0=(|bfVar#10| |bfVar#11|)
   (CONS '|Signature| (LIST . #0#)))

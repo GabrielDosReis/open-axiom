@@ -1,5 +1,3 @@
-(PROVIDE "translator")
-
 (IMPORT-MODULE "includer")
 
 (IMPORT-MODULE "scanner")
@@ -9,6 +7,8 @@
 (IMPORT-MODULE "parser")
 
 (IMPORT-MODULE "ast")
+
+(PROVIDE "translator")
 
 (IN-PACKAGE "BOOTTRAN")
 
@@ -843,17 +843,136 @@
               ((< 1 (LENGTH |expr'|)) (CONS 'PROGN |expr'|))
               ('T (CAR |expr'|))))))))
 
+(DEFUN |maybeExportDecl| (|d| |export?|)
+  (COND (|export?| |d|) ('T |d|)))
+
+(DEFUN |translateToplevel| (|b| |export?|)
+  (PROG (|lhs| |t| |ISTMP#2| |n| |ISTMP#1| |sig| |bfVar#37| |bfVar#36|
+               |xs|)
+    (DECLARE (SPECIAL |$foreignsDefsForCLisp| |$currentModuleName|))
+    (RETURN
+      (COND
+        ((AND (CONSP |b|) (EQ (CAR |b|) 'TUPLE)
+              (PROGN (SETQ |xs| (CDR |b|)) #0='T))
+         (LET ((|bfVar#33| NIL) (|bfVar#32| |xs|) (|x| NIL))
+           (LOOP
+             (COND
+               ((OR (ATOM |bfVar#32|)
+                    (PROGN (SETQ |x| (CAR |bfVar#32|)) NIL))
+                (RETURN (NREVERSE |bfVar#33|)))
+               (#1='T
+                (SETQ |bfVar#33|
+                      (CONS (|maybeExportDecl| |x| |export?|)
+                            |bfVar#33|))))
+             (SETQ |bfVar#32| (CDR |bfVar#32|)))))
+        ('T
+         (PROGN
+           (SETQ |bfVar#36| |b|)
+           (SETQ |bfVar#37| (CDR |bfVar#36|))
+           (CASE (CAR |bfVar#36|)
+             (|Signature|
+                 (LET ((|op| (CAR |bfVar#37|)) (|t| (CADR |bfVar#37|)))
+                   (LIST (|maybeExportDecl| (|genDeclaration| |op| |t|)
+                             |export?|))))
+             (|%Module|
+                 (LET ((|m| (CAR |bfVar#37|)) (|ds| (CADR |bfVar#37|)))
+                   (PROGN
+                     (SETQ |$currentModuleName| |m|)
+                     (SETQ |$foreignsDefsForCLisp| NIL)
+                     (CONS (LIST 'PROVIDE (STRING |m|))
+                           (LET ((|bfVar#35| NIL) (|bfVar#34| |ds|)
+                                 (|d| NIL))
+                             (LOOP
+                               (COND
+                                 ((OR (ATOM |bfVar#34|)
+                                      (PROGN
+                                        (SETQ |d| (CAR |bfVar#34|))
+                                        NIL))
+                                  (RETURN (NREVERSE |bfVar#35|)))
+                                 (#1#
+                                  (SETQ |bfVar#35|
+                                        (CONS
+                                         (|translateToplevel| |d| T)
+                                         |bfVar#35|))))
+                               (SETQ |bfVar#34| (CDR |bfVar#34|))))))))
+             (|Import|
+                 (LET ((|m| (CAR |bfVar#37|)))
+                   (LIST (LIST 'IMPORT-MODULE (STRING |m|)))))
+             (|ImportSignature|
+                 (LET ((|x| (CAR |bfVar#37|))
+                       (|sig| (CADR |bfVar#37|)))
+                   (|genImportDeclaration| |x| |sig|)))
+             (|%TypeAlias|
+                 (LET ((|lhs| (CAR |bfVar#37|))
+                       (|rhs| (CADR |bfVar#37|)))
+                   (LIST (|maybeExportDecl|
+                             (|genTypeAlias| |lhs| |rhs|) |export?|))))
+             (|ConstantDefinition|
+                 (LET ((|lhs| (CAR |bfVar#37|))
+                       (|rhs| (CADR |bfVar#37|)))
+                   (PROGN
+                     (SETQ |sig| NIL)
+                     (COND
+                       ((AND (CONSP |lhs|)
+                             (EQ (CAR |lhs|) '|%Signature|)
+                             (PROGN
+                               (SETQ |ISTMP#1| (CDR |lhs|))
+                               (AND (CONSP |ISTMP#1|)
+                                    (PROGN
+                                      (SETQ |n| (CAR |ISTMP#1|))
+                                      (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                                      (AND (CONSP |ISTMP#2|)
+                                       (EQ (CDR |ISTMP#2|) NIL)
+                                       (PROGN
+                                         (SETQ |t| (CAR |ISTMP#2|))
+                                         #0#))))))
+                        (SETQ |sig|
+                              (|maybeExportDecl|
+                                  (|genDeclaration| |n| |t|) |export?|))
+                        (SETQ |lhs| |n|)))
+                     (LIST (|maybeExportDecl|
+                               (LIST 'DEFCONSTANT |lhs| |rhs|)
+                               |export?|)))))
+             (|%Assignment|
+                 (LET ((|lhs| (CAR |bfVar#37|))
+                       (|rhs| (CADR |bfVar#37|)))
+                   (PROGN
+                     (SETQ |sig| NIL)
+                     (COND
+                       ((AND (CONSP |lhs|)
+                             (EQ (CAR |lhs|) '|%Signature|)
+                             (PROGN
+                               (SETQ |ISTMP#1| (CDR |lhs|))
+                               (AND (CONSP |ISTMP#1|)
+                                    (PROGN
+                                      (SETQ |n| (CAR |ISTMP#1|))
+                                      (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                                      (AND (CONSP |ISTMP#2|)
+                                       (EQ (CDR |ISTMP#2|) NIL)
+                                       (PROGN
+                                         (SETQ |t| (CAR |ISTMP#2|))
+                                         #0#))))))
+                        (SETQ |sig|
+                              (|maybeExportDecl|
+                                  (|genDeclaration| |n| |t|) |export?|))
+                        (SETQ |lhs| |n|)))
+                     (LIST (|maybeExportDecl|
+                               (LIST 'DEFPARAMETER |lhs| |rhs|)
+                               |export?|)))))
+             (|namespace|
+                 (LET ((|n| (CAR |bfVar#37|)))
+                   (LIST (LIST 'IN-PACKAGE (STRING |n|)))))
+             (T (LIST (|translateToplevelExpression| |b|))))))))))
+
 (DEFUN |bpOutItem| ()
-  (PROG (|bfVar#35| |bfVar#34| |r| |ISTMP#2| |l| |ISTMP#1| |b|)
-    (DECLARE (SPECIAL |$foreignsDefsForCLisp| |$currentModuleName|
-                      |$op|))
+  (PROG (|r| |ISTMP#2| |l| |ISTMP#1| |b|)
+    (DECLARE (SPECIAL |$op|))
     (RETURN
       (PROGN
         (SETQ |$op| NIL)
         (OR (|bpComma|) (|bpTrap|))
         (SETQ |b| (|bpPop1|))
         (COND
-          ((EQCAR |b| 'TUPLE) (|bpPush| (CDR |b|)))
           ((EQCAR |b| '+LINE) (|bpPush| (LIST |b|)))
           ((AND (CONSP |b|) (EQ (CAR |b|) 'L%T)
                 (PROGN
@@ -867,59 +986,7 @@
                               (PROGN (SETQ |r| (CAR |ISTMP#2|)) 'T)))))
                 (IDENTP |l|))
            (|bpPush| (LIST (LIST 'DEFPARAMETER |l| |r|))))
-          ('T
-           (PROGN
-             (SETQ |bfVar#34| |b|)
-             (SETQ |bfVar#35| (CDR |bfVar#34|))
-             (CASE (CAR |bfVar#34|)
-               (|Signature|
-                   (LET ((|op| (CAR |bfVar#35|))
-                         (|t| (CADR |bfVar#35|)))
-                     (|bpPush| (LIST (|genDeclaration| |op| |t|)))))
-               (|%Module|
-                   (LET ((|m| (CAR |bfVar#35|))
-                         (|ds| (CADR |bfVar#35|)))
-                     (PROGN
-                       (SETQ |$currentModuleName| |m|)
-                       (SETQ |$foreignsDefsForCLisp| NIL)
-                       (|bpPush|
-                           (CONS (LIST 'PROVIDE (STRING |m|))
-                                 (LET ((|bfVar#33| NIL)
-                                       (|bfVar#32| |ds|) (|d| NIL))
-                                   (LOOP
-                                     (COND
-                                       ((OR (ATOM |bfVar#32|)
-                                         (PROGN
-                                           (SETQ |d| (CAR |bfVar#32|))
-                                           NIL))
-                                        (RETURN (NREVERSE |bfVar#33|)))
-                                       ('T
-                                        (SETQ |bfVar#33|
-                                         (CONS
-                                          (|translateSignatureDeclaration|
-                                           |d|)
-                                          |bfVar#33|))))
-                                     (SETQ |bfVar#32| (CDR |bfVar#32|)))))))))
-               (|Import|
-                   (LET ((|m| (CAR |bfVar#35|)))
-                     (|bpPush|
-                         (LIST (LIST 'IMPORT-MODULE (STRING |m|))))))
-               (|ImportSignature|
-                   (LET ((|x| (CAR |bfVar#35|))
-                         (|sig| (CADR |bfVar#35|)))
-                     (|bpPush| (|genImportDeclaration| |x| |sig|))))
-               (|TypeAlias|
-                   (LET ((|lhs| (CAR |bfVar#35|))
-                         (|rhs| (CADR |bfVar#35|)))
-                     (|bpPush| (LIST (|genTypeAlias| |lhs| |rhs|)))))
-               (|ConstantDefinition|
-                   (LET ((|n| (CAR |bfVar#35|))
-                         (|e| (CADR |bfVar#35|)))
-                     (|bpPush| (LIST (LIST 'DEFCONSTANT |n| |e|)))))
-               (|namespace|
-                   (LET ((|n| (CAR |bfVar#35|)))
-                     (|bpPush| (LIST (LIST 'IN-PACKAGE (STRING |n|))))))
-               (T (|bpPush| (LIST (|translateToplevelExpression| |b|))))))))))))
+          ('T (|bpPush| (|translateToplevel| |b| NIL))))))))
 
 (DEFUN |shoeAddbootIfNec| (|s|) (|shoeAddStringIfNec| ".boot" |s|))
 
@@ -978,17 +1045,17 @@
       (PROGN
         (|shoeFileLine| "DEFINED and not USED" |stream|)
         (SETQ |a|
-              (LET ((|bfVar#37| NIL)
-                    (|bfVar#36| (HKEYS |$bootDefined|)) (|i| NIL))
+              (LET ((|bfVar#39| NIL)
+                    (|bfVar#38| (HKEYS |$bootDefined|)) (|i| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#36|)
-                         (PROGN (SETQ |i| (CAR |bfVar#36|)) NIL))
-                     (RETURN (NREVERSE |bfVar#37|)))
+                    ((OR (ATOM |bfVar#38|)
+                         (PROGN (SETQ |i| (CAR |bfVar#38|)) NIL))
+                     (RETURN (NREVERSE |bfVar#39|)))
                     (#0='T
                      (AND (NOT (GETHASH |i| |$bootUsed|))
-                          (SETQ |bfVar#37| (CONS |i| |bfVar#37|)))))
-                  (SETQ |bfVar#36| (CDR |bfVar#36|)))))
+                          (SETQ |bfVar#39| (CONS |i| |bfVar#39|)))))
+                  (SETQ |bfVar#38| (CDR |bfVar#38|)))))
         (|bootOut| (SSORT |a|) |stream|)
         (|shoeFileLine| "             " |stream|)
         (|shoeFileLine| "DEFINED TWICE" |stream|)
@@ -996,29 +1063,29 @@
         (|shoeFileLine| "             " |stream|)
         (|shoeFileLine| "USED and not DEFINED" |stream|)
         (SETQ |a|
-              (LET ((|bfVar#39| NIL) (|bfVar#38| (HKEYS |$bootUsed|))
+              (LET ((|bfVar#41| NIL) (|bfVar#40| (HKEYS |$bootUsed|))
                     (|i| NIL))
                 (LOOP
                   (COND
-                    ((OR (ATOM |bfVar#38|)
-                         (PROGN (SETQ |i| (CAR |bfVar#38|)) NIL))
-                     (RETURN (NREVERSE |bfVar#39|)))
+                    ((OR (ATOM |bfVar#40|)
+                         (PROGN (SETQ |i| (CAR |bfVar#40|)) NIL))
+                     (RETURN (NREVERSE |bfVar#41|)))
                     (#0#
                      (AND (NOT (GETHASH |i| |$bootDefined|))
-                          (SETQ |bfVar#39| (CONS |i| |bfVar#39|)))))
-                  (SETQ |bfVar#38| (CDR |bfVar#38|)))))
-        (LET ((|bfVar#40| (SSORT |a|)) (|i| NIL))
+                          (SETQ |bfVar#41| (CONS |i| |bfVar#41|)))))
+                  (SETQ |bfVar#40| (CDR |bfVar#40|)))))
+        (LET ((|bfVar#42| (SSORT |a|)) (|i| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#40|)
-                   (PROGN (SETQ |i| (CAR |bfVar#40|)) NIL))
+              ((OR (ATOM |bfVar#42|)
+                   (PROGN (SETQ |i| (CAR |bfVar#42|)) NIL))
                (RETURN NIL))
               (#0#
                (PROGN
                  (SETQ |b| (CONCAT (PNAME |i|) " is used in "))
                  (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
                      |stream| |b|))))
-            (SETQ |bfVar#40| (CDR |bfVar#40|))))))))
+            (SETQ |bfVar#42| (CDR |bfVar#42|))))))))
 
 (DEFUN |shoeDefUse| (|s|)
   (LOOP
@@ -1114,16 +1181,16 @@
                    (#1# (CONS |nee| |$bootDefinedTwice|)))))
           ('T (HPUT |$bootDefined| |nee| T)))
         (|defuse1| |e| |niens|)
-        (LET ((|bfVar#41| |$used|) (|i| NIL))
+        (LET ((|bfVar#43| |$used|) (|i| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#41|)
-                   (PROGN (SETQ |i| (CAR |bfVar#41|)) NIL))
+              ((OR (ATOM |bfVar#43|)
+                   (PROGN (SETQ |i| (CAR |bfVar#43|)) NIL))
                (RETURN NIL))
               ('T
                (HPUT |$bootUsed| |i|
                      (CONS |nee| (GETHASH |i| |$bootUsed|)))))
-            (SETQ |bfVar#41| (CDR |bfVar#41|))))))))
+            (SETQ |bfVar#43| (CDR |bfVar#43|))))))))
 
 (DEFUN |defuse1| (|e| |y|)
   (PROG (|ndol| |dol| |LETTMP#1| |b| |a| |ISTMP#1|)
@@ -1161,14 +1228,14 @@
            (SETQ |LETTMP#1| (|defSeparate| |a|))
            (SETQ |dol| (CAR |LETTMP#1|))
            (SETQ |ndol| (CADR |LETTMP#1|))
-           (LET ((|bfVar#42| |dol|) (|i| NIL))
+           (LET ((|bfVar#44| |dol|) (|i| NIL))
              (LOOP
                (COND
-                 ((OR (ATOM |bfVar#42|)
-                      (PROGN (SETQ |i| (CAR |bfVar#42|)) NIL))
+                 ((OR (ATOM |bfVar#44|)
+                      (PROGN (SETQ |i| (CAR |bfVar#44|)) NIL))
                   (RETURN NIL))
                  (#2='T (HPUT |$bootDefined| |i| T)))
-               (SETQ |bfVar#42| (CDR |bfVar#42|))))
+               (SETQ |bfVar#44| (CDR |bfVar#44|))))
            (|defuse1| (APPEND |ndol| |e|) |b|)))
         ((AND (CONSP |y|) (EQ (CAR |y|) 'QUOTE)
               (PROGN (SETQ |a| (CDR |y|)) #1#))
@@ -1177,14 +1244,14 @@
               (PROGN (SETQ |a| (CDR |y|)) #1#))
          NIL)
         (#0#
-         (LET ((|bfVar#43| |y|) (|i| NIL))
+         (LET ((|bfVar#45| |y|) (|i| NIL))
            (LOOP
              (COND
-               ((OR (ATOM |bfVar#43|)
-                    (PROGN (SETQ |i| (CAR |bfVar#43|)) NIL))
+               ((OR (ATOM |bfVar#45|)
+                    (PROGN (SETQ |i| (CAR |bfVar#45|)) NIL))
                 (RETURN NIL))
                (#2# (|defuse1| |e| |i|)))
-             (SETQ |bfVar#43| (CDR |bfVar#43|)))))))))
+             (SETQ |bfVar#45| (CDR |bfVar#45|)))))))))
 
 (DEFUN |defSeparate| (|x|)
   (PROG (|x2| |x1| |LETTMP#1| |f|)
@@ -1220,13 +1287,13 @@
   (GETHASH |x| |$lispWordTable|))
 
 (DEFUN |bootOut| (|l| |outfn|)
-  (LET ((|bfVar#44| |l|) (|i| NIL))
+  (LET ((|bfVar#46| |l|) (|i| NIL))
     (LOOP
       (COND
-        ((OR (ATOM |bfVar#44|) (PROGN (SETQ |i| (CAR |bfVar#44|)) NIL))
+        ((OR (ATOM |bfVar#46|) (PROGN (SETQ |i| (CAR |bfVar#46|)) NIL))
          (RETURN NIL))
         ('T (|shoeFileLine| (CONCAT "   " (PNAME |i|)) |outfn|)))
-      (SETQ |bfVar#44| (CDR |bfVar#44|)))))
+      (SETQ |bfVar#46| (CDR |bfVar#46|)))))
 
 (DEFUN CLESSP (|s1| |s2|) (NOT (SHOEGREATERP |s1| |s2|)))
 
@@ -1277,18 +1344,18 @@
       (PROGN
         (|shoeFileLine| "USED and where DEFINED" |stream|)
         (SETQ |c| (SSORT (HKEYS |$bootUsed|)))
-        (LET ((|bfVar#45| |c|) (|i| NIL))
+        (LET ((|bfVar#47| |c|) (|i| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#45|)
-                   (PROGN (SETQ |i| (CAR |bfVar#45|)) NIL))
+              ((OR (ATOM |bfVar#47|)
+                   (PROGN (SETQ |i| (CAR |bfVar#47|)) NIL))
                (RETURN NIL))
               ('T
                (PROGN
                  (SETQ |a| (CONCAT (PNAME |i|) " is used in "))
                  (|bootOutLines| (SSORT (GETHASH |i| |$bootUsed|))
                      |stream| |a|))))
-            (SETQ |bfVar#45| (CDR |bfVar#45|))))))))
+            (SETQ |bfVar#47| (CDR |bfVar#47|))))))))
 
 (DEFUN FBO (|name| |fn|) (|shoeGeneralFC| #'BO |name| |fn|))
 
@@ -1329,16 +1396,16 @@
                      (SETQ |filename|
                            (CONCAT "/tmp/" |filename| ".boot"))
                      (|shoeOpenOutputFile| |stream| |filename|
-                         (LET ((|bfVar#46| |lines|) (|line| NIL))
+                         (LET ((|bfVar#48| |lines|) (|line| NIL))
                            (LOOP
                              (COND
-                               ((OR (ATOM |bfVar#46|)
+                               ((OR (ATOM |bfVar#48|)
                                     (PROGN
-                                      (SETQ |line| (CAR |bfVar#46|))
+                                      (SETQ |line| (CAR |bfVar#48|))
                                       NIL))
                                 (RETURN NIL))
                                ('T (|shoeFileLine| |line| |stream|)))
-                             (SETQ |bfVar#46| (CDR |bfVar#46|)))))
+                             (SETQ |bfVar#48| (CDR |bfVar#48|)))))
                      T))
           ('T NIL))))))
 
@@ -1353,20 +1420,20 @@
     (RETURN
       (PROGN
         (SETQ |dq| (CAR |str|))
-        (CONS (LIST (LET ((|bfVar#48| NIL)
-                          (|bfVar#47| (|shoeDQlines| |dq|))
+        (CONS (LIST (LET ((|bfVar#50| NIL)
+                          (|bfVar#49| (|shoeDQlines| |dq|))
                           (|line| NIL))
                       (LOOP
                         (COND
-                          ((OR (ATOM |bfVar#47|)
+                          ((OR (ATOM |bfVar#49|)
                                (PROGN
-                                 (SETQ |line| (CAR |bfVar#47|))
+                                 (SETQ |line| (CAR |bfVar#49|))
                                  NIL))
-                           (RETURN (NREVERSE |bfVar#48|)))
+                           (RETURN (NREVERSE |bfVar#50|)))
                           ('T
-                           (SETQ |bfVar#48|
-                                 (CONS (CAR |line|) |bfVar#48|))))
-                        (SETQ |bfVar#47| (CDR |bfVar#47|)))))
+                           (SETQ |bfVar#50|
+                                 (CONS (CAR |line|) |bfVar#50|))))
+                        (SETQ |bfVar#49| (CDR |bfVar#49|)))))
               (CDR |str|))))))
 
 (DEFUN |stripm| (|x| |pk| |bt|)

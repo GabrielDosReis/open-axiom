@@ -98,7 +98,26 @@
 
     </ul>
 
-  <h4>2.1.2. Algebra</h4>
+  <h4>2.1.2. Compiler<h4>
+    <ul>
+       <li>The compiler now accepts constant declarations in a more
+           direct style.  For example, the following code is now accepted
+           <pre>
+             MyUnit(T: Type): Public == Private where
+               Public ==> with
+                  1: T
+               Private ==> add
+                  1 == 0$T
+           </pre>
+           Until OpenAxiom-1.2.0, the declaration for <code>1</code> should
+           have been written
+           <pre>
+              1: constant -> T
+           </pre>
+       </li>
+    </ul>
+
+  <h4>2.1.3. Algebra</h4>
  
   The following types have been added to OpenAxiom-1.2.0
   <ul>
@@ -119,7 +138,7 @@
    
   Starting from OpenAxiom-1.2.0, new Lisp systems are supported:
   SBCL, and CLisp.  This means that if GCL is not supported on
-  your machine, btu either of SBCL or CLisp is installed, then you
+  your machine, but either of SBCL or CLisp is installed, then you
   can run OpenAxiom.  OpenAxiom's <code>configure</code> script
   will automatically detected that if you're building from source
   code.
