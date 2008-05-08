@@ -24,15 +24,24 @@ import OutputForm
 ++   Byte is the datatype of 8-bit sized unsigned integer values.
 Byte(): Public == Private where
   Public ==> Join(OrderedSet, CoercibleTo NonNegativeInteger) with
-    coerce: NonNegativeInteger -> %
-      ++ coerce(x) injects the unsigned integer value `v' into
+    byte: NonNegativeInteger -> %
+      ++ byte(x) injects the unsigned integer value `v' into
       ++ the Byte algebra.  `v' must be non-negative and less than 256.
+    coerce: NonNegativeInteger -> %
+      ++ coerce(x) has the same effect as byte(x).
+    bitand: (%,%) -> %
+      ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
+    bitior: (%,%) -> %
+      ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
 
   Private ==> add
-    coerce(x: NonNegativeInteger): % ==
+    byte(x: NonNegativeInteger): % ==
       byteGreaterEqual(x,256$Lisp)$Lisp => 
         userError "integer value cannot be represented by a byte"
       x : %
+
+    coerce(x: NonNegativeInteger): % ==
+      byte x
 
     coerce(x: %): NonNegativeInteger ==
       x : NonNegativeInteger
@@ -42,6 +51,12 @@ Byte(): Public == Private where
 
     x < y ==
       byteLessThan(x,y)$Lisp
+
+    bitand(x,y) ==
+      bitand(x,y)$Lisp
+
+    bitior(x,y) ==
+      bitior(x,y)$Lisp
 @
 
 
@@ -100,3 +115,5 @@ ByteArray() == PrimitiveArray Byte
 <<domain BYTE Byte>>
 <<domain BYTEARY ByteArray>>
 @
+
+\end{document}

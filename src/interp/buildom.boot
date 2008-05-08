@@ -265,8 +265,8 @@ Enumeration(:"args") ==
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
   dom.($FirstParamSlot + nargs) := [function EnumEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function createEnum, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function EnumPrint, :dom]
+  dom.($FirstParamSlot + nargs + 1) := [function EnumPrint, :dom]
+  dom.($FirstParamSlot + nargs + 2) := [function createEnum, :dom]
   haddProp($ConstructorCache,"Enumeration",args,[1,:dom])
   dom
 
@@ -281,7 +281,7 @@ createEnum(sym, dom) ==
   val := -1
   for v in args for i in 0.. repeat
      sym=v => return(val:=i)
-  val<0 => error ["Cannot coerce",sym,"to",["Enumeration",:args]]
+  val<0 => userError ["Cannot coerce",sym,"to",["Enumeration",:args]]
   val
 
 --% INSTANTIATORS
