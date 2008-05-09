@@ -153,7 +153,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
     dc = '$ => $functorForm
     atom dc and (dcval := get(dc,'value,$e)) => dcval.expr
     dc
-  sig := SUBST(ndc,dc,sig)
+  sig := substitute(ndc,dc,sig)
   not MEMQ(KAR ndc,$optimizableConstructorNames) => nil
   dcval := optCallEval ndc
   -- MSUBST guarantees to use EQUAL testing

@@ -754,7 +754,7 @@ getSaturnExampleList() ==
   file := STRCONC(systemRootDirectory(), "/doc/axug/examples.lsp")
   not PROBE_-FILE file => nil
   fp := MAKE_-INSTREAM file
-  lst := READ fp
+  lst := VMREAD fp
   SHUT fp
   lst
   
@@ -794,7 +794,7 @@ dbPresentCons(htPage,kind,:exclusions) ==
     then htSay '"{\em Names}"
     else htMakePage [['bcLispLinks,['"Names",'"",'dbShowCons,'names]]]
   htSay '"}{"
-  if one? or member('parameters,exclusions) or not "or"/[CDAR x for x in cAlist]
+  if one? or member('parameters,exclusions) or not ("or"/[CDAR x for x in cAlist])
     then htSay '"{\em Parameters}"
     else htMakePage [['bcLispLinks,['"Parameters",'"",'dbShowCons,'parameters]]]
   htSay '"}{"
@@ -839,7 +839,7 @@ dbPresentConsSaturn(htPage,kind,exclusions) ==
   if one? or member('names,exclusions)
     then htSayCold '"\&Names"
     else htMakePage [['bcLispLinks,['"\&Names",'"",'dbShowCons,'names]]]
-  if one? or member('parameters,exclusions) or not "or"/[CDAR x for x in cAlist]
+  if one? or member('parameters,exclusions) or not ("or"/[CDAR x for x in cAlist])
     then htSayCold '"\&Parameters"
     else htMakePage [['bcLispLinks,['"\&Parameters",'"",'dbShowCons,'parameters]]]
   htSaySaturn '"\hrule"
@@ -1313,7 +1313,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     htSaySaturn '"{\em Conditions:}"
     htSayStandard('"\newline\tab{2}{\em Conditions:}")
     firstTime := true
-    for p in displayBreakIntoAnds SUBST($conform,"$",pred) repeat
+    for p in displayBreakIntoAnds substitute($conform,"$",pred) repeat
       if not firstTime then htSaySaturn '"\\"
       htSayIndentRel(15,count > 1)
       firstTime := false

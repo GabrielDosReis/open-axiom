@@ -337,7 +337,7 @@ makeUnion aspType ==
   ["Union",[":","fp",aspType],[":","fn","FileName"]]
 
 axiomType(a,decls,asps,aspInfo) ==
-  a in asps =>
+  member(a, asps) =>
     entry := first [u for u in aspInfo | first(u) = a]
     ftc := ["$elt","FortranType","construct"]
     rc  := ["$elt", _
@@ -739,7 +739,7 @@ sendNagmanErrorSignal()==
 -- $fortranCompilerName := '"f90"
 
 inFirstNotSecond(f,s)==
- [i for i in f | not i in s]
+ [i for i in f | not member(i,s)]
 
 -- Code for use in the Windows version of the AXIOM/NAG interface.
 

@@ -129,7 +129,7 @@ exp2Fort2(e,prec,oldOp) ==
     ['")",:exp2Fort2(SECOND args, prec, op),'",",:exp2Fort2(first args,prec,op),'"("]
   member(op,nonUnaryOps) =>
     if nargs > 0 then arg1 := first args
-    nargs = 1 and op in '("+" "*") => exp2Fort2(arg1,prec,op)
+    nargs = 1 and member(op, '("+" "*")) => exp2Fort2(arg1,prec,op)
     if nargs > 1 then arg2 := first rest args
     p := position(op,binaryOps)
     if p = -1
@@ -139,12 +139,12 @@ exp2Fort2(e,prec,oldOp) ==
       else nprec := binaryPrecs.p
     s := nil
     for arg in args repeat
-      op = '"+" and (arg is [m,a]) and m in '(_- "=") =>
+      op = '"+" and (arg is [m,a]) and member(m,'(_- "=")) =>
         if not s then s := ['junk]
         s:= [op,:exp2Fort2(a,nprec,op),'"-",:rest s]
       s := [op,:exp2Fort2(arg,nprec,op),:s]
     s := rest s
-    op = oldOp and op in ['"*",'"+"] => s
+    op = oldOp and member(op,['"*",'"+"]) => s
     nprec <= prec => ['")",:s,'"("]
     s
   exp2FortFn(op,args,nargs)
@@ -448,7 +448,7 @@ exp2FortSpecial(op,args,nargs) ==
       si := $fortranArrayStartingIndex
       hidim := #elts - 1 + si
       if LISTP first elts and #elts=1 and first elts is [sOp,:sArgs] then
-        sOp in ['"SEGMENT","SEGMENT"] =>
+        member(sOp, ['"SEGMENT","SEGMENT"]) =>
           #sArgs=1 => fortError1 first elts
           not(NUMBERP(first sArgs) and NUMBERP(SECOND sArgs)) =>
             fortError("Cannot expand segment: ",first elts)
@@ -462,10 +462,10 @@ exp2FortSpecial(op,args,nargs) ==
   op in ["CONCAT","CONCATB"] =>
     nargs = 0 => NIL
     nargs = 1 => fortPre1 first args
-    nargs = 2 and first rest args in ["!",'"!"] =>
+    nargs = 2 and member(second args, ["!",'"!"]) =>
       mkFortFn("FACTORIAL",[first args],1)
     fortError1 [op,:args]
-  op in ['"MATRIX","MATRIX"] =>
+  member(op, ['"MATRIX","MATRIX"]) =>
     args is [var, =NIL,:rows] =>
       var := object2String var
       nrows := #rows - 1
@@ -787,12 +787,12 @@ fortPre1 e ==
   STRINGP(e) => e
   e = "%e" => fortPre1 ["exp" , 1]
   imags := ['"%i","%i"]
-  e in imags => ['"CMPLX",fortPre1(0),fortPre1(1)]
+  member(e, imags) => ['"CMPLX",fortPre1(0),fortPre1(1)]
   -- other special objects
   ELT(STRINGIMAGE e,0) = "%" => SUBSEQ(STRINGIMAGE e,1)
   atom e => e
   [op, :args] := e
-  op in ["**" , '"**"] =>
+  member(op,["**" , '"**"]) =>
     [rand,exponent] := args
     rand = "%e" => fortPre1 ["exp", exponent]
     (IDENTP rand or STRINGP rand) and exponent=2 => ["*", rand, rand]
@@ -801,12 +801,12 @@ fortPre1 e ==
   op = "ROOT" =>
     #args = 1 => fortPreRoot ["sqrt", first args]
     [ "**" , fortPreRoot first args , [ "/" , fortPreRoot(1), fortPreRoot first rest args] ]
-  if op in ['"OVER", "OVER"] then op := '"/"
+  if member(op,['"OVER", "OVER"]) then op := '"/"
   specialOps  := '(BRACKET BRACE SUB AGGLST SUPERSUB MATRIX SEGMENT ALTSUPERSUB
                    PAREN CONCAT CONCATB QUOTE STRING SIGMA  STEP IN SIGMA2
                    INTSIGN  PI PI2 INDEFINTEGRAL)
   op in specialOps => exp2FortSpecial(op,args,#args)
-  op in ['"*", "*", '"+", "+", '"-", "-"] and (#args > 2) =>
+  member(op,['"*", "*", '"+", "+", '"-", "-"]) and (#args > 2) =>
     binaryExpr := fortPre1 [op,first args, SECOND args]
     for i in 3..#args repeat
       binaryExpr := [op,binaryExpr,fortPre1 NTH(i-1,args)]
@@ -814,15 +814,17 @@ fortPre1 e ==
   -- Now look for any complex objects
   #args = 2 =>
     [arg1,arg2] := args
-    op in ["*",'"*"] and arg2 in imags => ['"CMPLX",fortPre1(0),fortPre1(arg1)]
-    op in ["+",'"+"] and arg2 in imags => ['"CMPLX",fortPre1(arg1),fortPre1(1)]
-    op in ["+",'"+"] and arg2 is [mop,m1,m2] and mop in ["*",'"*"] =>
-      m2 in imags => ['"CMPLX",fortPre1(arg1),fortPre1(m1)]
-      m1 in imags => ['"CMPLX",fortPre1(arg1),fortPre1(m2)]
+    member(op, ["*",'"*"]) and member(arg2, imags) => 
+      ['"CMPLX",fortPre1(0),fortPre1(arg1)]
+    member(op,["+",'"+"]) and member(arg2,imags) => 
+      ['"CMPLX",fortPre1(arg1),fortPre1(1)]
+    member(op,["+",'"+"]) and arg2 is [mop,m1,m2] and member(mop,["*",'"*"]) =>
+      member(m2,imags) => ['"CMPLX",fortPre1(arg1),fortPre1(m1)]
+      member(m1,imags) => ['"CMPLX",fortPre1(arg1),fortPre1(m2)]
       ["+",fortPre1 arg1,fortPre1 arg2]
-    op in ["+",'"+"] and arg1 is [mop,m1,m2] and mop in ["*",'"*"] =>
-      m2 in imags => ['"CMPLX",fortPre1(arg2),fortPre1(m1)]
-      m1 in imags => ['"CMPLX",fortPre1(arg2),fortPre1(m2)]
+    member(op,["+",'"+"]) and arg1 is [mop,m1,m2] and member(mop,["*",'"*"]) =>
+      member(m2,imags) => ['"CMPLX",fortPre1(arg2),fortPre1(m1)]
+      member(m1,imags) => ['"CMPLX",fortPre1(arg2),fortPre1(m2)]
       ["+",fortPre1 arg1,fortPre1 arg2]
     mkFortFn(op,args,2)
   mkFortFn(op,args,#args)
@@ -872,7 +874,7 @@ fortExpSize e ==
   op := STRINGIMAGE op
   op = '"CMPLX" => 3+fortSize [fortExpSize arg1,fortExpSize arg2]
   narys := ['"+",'"*"] -- those nary ops we changed to binary
-  op in narys =>
+  member(op,narys) =>
     LISTP arg1 and not(op=STRINGIMAGE first arg1) =>
       2+fortSize MAPCAR(function fortExpSize, e)
     LISTP arg2 and not(op=STRINGIMAGE first arg2) =>
@@ -892,12 +894,12 @@ segment l ==
   not $fortranSegment => l
   s := nil
   for e in l repeat
-    if LISTP(e) and first e in ["=",'"="] then
+    if LISTP(e) and first member(e,["=",'"="]) then
       var := NTH(1,e)
       exprs := segment1(THIRD e,
                         $maximumFortranExpressionLength-1-fortExpSize var)
       s:= [:[['"=",var,car exprs],:cdr exprs],:s]
-    else if LISTP(e) and first e in ['"RETURN"] then
+    else if LISTP(e) and first e = '"RETURN" then
       exprs := segment1(SECOND e,
                         $maximumFortranExpressionLength-2-fortExpSize first e)
       s := [:[[first e,car exprs],:cdr exprs],:s]

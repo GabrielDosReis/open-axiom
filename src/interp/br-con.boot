@@ -264,7 +264,7 @@ domainDescendantsOf(conform,domform) == main where --called by kargPage
       x is ['CATEGORY,.,:r] => alist := catScreen(r,alist)
       keepList := nil
       for [item,:pred] in domainsOf(x,IFCAR domlist) repeat
-        u := ASSOC(item,alist) =>
+        u := assoc(item,alist) =>
           keepList := [[item,:quickAnd(CDR u,pred)],:keepList]
       alist := keepList
     for pair in alist repeat RPLACD(pair,simpHasPred CDR pair)
@@ -398,7 +398,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
         p:=SUBLISLIS(rest conform,$FormalMapVariableList,kTestPred catpredvec.i)
         $domain => EVAL p
         p
-      if domname and CONTAINED('$,pred) then pred := SUBST(domname,'$,pred)
+      if domname and CONTAINED('$,pred) then pred := substitute(domname,'$,pred)
 --    which = '"attribute" => pred    --all categories
       (pak := catinfo . i) and pred   --only those with default packages
     pakform() ==
@@ -406,7 +406,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
       catform := kFormatSlotDomain catvec . i
 --    which = '"attribute" => dbSubConform(rest conform,catform)
       res := dbSubConform(rest conform,[pak,"$",:rest catform])
-      if domname then res := SUBST(domname,'$,res)
+      if domname then res := substitute(domname,'$,res)
       res
   [:dbAddChain conform,:catforms]
 
@@ -538,7 +538,7 @@ kcaPage1(htPage,kind,article,whichever,fn, isCatDescendants?) ==
   if whichever ^= '"ancestor" then
     ancestors := augmentHasArgs(ancestors,conform)
   ancestors := listSort(function GLESSEQP,ancestors)
---if domname then ancestors := SUBST(domname,'$,ancestors)
+--if domname then ancestors := substitute(domname,'$,ancestors)
   htpSetProperty(htPage,'cAlist,ancestors)
   htpSetProperty(htPage,'thing,whichever)
   choice :=
@@ -805,7 +805,7 @@ koPageAux(htPage,which,domname,heading) == --from koPage, koPageFromKKPage
     which = '"general operation" => koOps(conform,domname,true)
     koOps(conform,domname)
   if selectedOperation := htpProperty(htPage,'selectedOperation) then
-    opAlist := [ASSOC(selectedOperation,opAlist) or systemError()]
+    opAlist := [assoc(selectedOperation,opAlist) or systemError()]
   dbShowOperationsFromConform(htPage,which,opAlist)
 
 koPageAux1(htPage,opAlist) ==
@@ -1199,7 +1199,7 @@ Z := '"{\sf Record} is a primitive domain of \Language{} which cannot be defined
 
 MESSAGE := STRCONC(X,Y,Z)
 
-PUT('Record,'documentation,SUBST(MESSAGE,'MESSAGE,'(
+PUT('Record,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
  (_=  (((Boolean) _$ _$)
    "\spad{r = s} tests for equality of two records \spad{r} and \spad{s}"))
@@ -1223,7 +1223,7 @@ Y := '"For an alternate form of {\sf Union} with _"tags_", see \downlink{Union(a
 
 MESSAGE := STRCONC(X,Y)
 
-PUT('UntaggedUnion,'documentation,SUBST(MESSAGE,'MESSAGE,'(
+PUT('UntaggedUnion,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
   (_=  (((Boolean) $ $)
     "\spad{u = v} tests if two objects of the union are equal, that is, u and v are hold objects of same branch which are equal."))
@@ -1253,7 +1253,7 @@ A := '"{\sf Union} is a primitive domain of \Language{} which cannot be defined 
 
 MESSAGE := STRCONC(X,Y,Z,W,A)
 
-PUT('Union,'documentation,SUBST(MESSAGE,'MESSAGE,'(
+PUT('Union,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
   (_=  (((Boolean) $ $)
     "\spad{u = v} tests if two objects of the union are equal, that is, \spad{u} and \spad{v} are objects of same branch which are equal."))
@@ -1279,7 +1279,7 @@ Z := '"{\sf Mapping} is a primitive domain of \Language{} which cannot be define
 
 MESSAGE := STRCONC(X,Y,Z)
 
-PUT('Mapping,'documentation, SUBST(MESSAGE,'MESSAGE,'(
+PUT('Mapping,'documentation, substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
   (_=  (((Boolean) $ $)
     "\spad{u = v} tests if mapping objects are equal."))
@@ -1291,7 +1291,7 @@ Y := '" The {\em Enumeration} can constructor can take any number of symbols as 
 
 MESSAGE := STRCONC(X, Y)
 
-PUT('Enumeration, 'documentation, SUBST(MESSAGE, 'MESSAGE, '(
+PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
   (constructor (NIL MESSAGE))
   (_= (((Boolean) _$ _$)
     "\spad{e = f} tests for equality of two enumerations \spad{e} and \spad{f}"))

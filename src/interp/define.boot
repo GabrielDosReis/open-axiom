@@ -703,7 +703,7 @@ genDomainOps(viewName,dom,cat) ==
         for [op,sig] in siglist]]]]
   $getDomainCode:= [cd,:$getDomainCode]
   for [opsig,cond,:.] in oplist for i in 0.. repeat
-    if opsig in $ConditionalOperators then cond:=nil
+    if member(opsig,$ConditionalOperators) then cond:=nil
     [op,sig]:=opsig
     $e:= addModemap(op,dom,sig,cond,['ELT,viewName,i],$e)
   viewName
