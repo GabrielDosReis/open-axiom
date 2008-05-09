@@ -983,7 +983,7 @@ interpFunctionDepAlists() ==
 fixObjectForPrinting(v) ==
     v' := object2Identifier v
     EQ(v',"%") => '"\%"
-    v' in $msgdbPrims => STRCONC('"\",PNAME v')
+    member(v',$msgdbPrims) => STRCONC('"\",PNAME v')
     v
 
 displayProperties(option,l) ==

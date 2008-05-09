@@ -548,7 +548,7 @@ pmatchWithSl(s,p,al) ==
  
 elapsedTime() ==
   currentTime:= TEMPUS_-FUGIT()
-  elapsedSeconds:= (currentTime-$previousTime)*1.0/$timerTicksPerSecond
+  elapsedSeconds:= (currentTime-$previousTime)*QUOTIENT(1.0,$timerTicksPerSecond)
   $previousTime:= currentTime
   elapsedSeconds
  

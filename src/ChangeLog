@@ -1,3 +1,23 @@
+2008-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot: Remove Old Boot semantics.
+	* interp/database.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/g-timer.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* boot/includer.boot (diagnosticLocation): New.
+	* boot/ast.boot (bfReName): Use it.
+
 2008-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/java.spad.pamphlet: New.  Implement JavaBytecode.

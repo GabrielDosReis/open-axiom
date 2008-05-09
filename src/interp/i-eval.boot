@@ -163,7 +163,7 @@ evaluateFormAsType form ==
   form is [op,:args] and constructor? op => evaluateType1 form
   t := mkAtree form
   -- ??? Maybe we should be more careful about generalized types.
-  bottomUp t is [m] and (m in $LangSupportTypes or isCategoryForm(m,$e)) =>
+  bottomUp t is [m] and (member(m,$LangSupportTypes) or isCategoryForm(m,$e)) =>
     objVal getValue t
   throwEvalTypeMsg("S2IE0004",[form])
 

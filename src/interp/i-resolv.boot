@@ -363,7 +363,7 @@ resolveTCat(t,c) ==
   rest(t) and (tc := resolveTCat1(t,c)) => tc
 
   -- now check some specific niladic categories
-  c in '((Field) (EuclideanDomain)) and ofCategory(t,'(IntegralDomain))=>
+  member(c,'((Field) (EuclideanDomain))) and ofCategory(t,'(IntegralDomain))=>
     eqType [$QuotientField, t]
 
   c = '(Field) and t = $Symbol => ['RationalFunction,$Integer]
@@ -427,12 +427,12 @@ getConditionalCategoryOfType1(cat,conditions,match,seen) ==
       conditions
     conditions
   cat is [catName,:.] and (getConstructorKindFromDB catName = "category") =>
-    cat in CDR seen => conditions
+    member(cat, CDR seen) => conditions
     RPLACD(seen,[cat,:CDR seen])
     subCat := getConstructorCategoryFromDB catName
     -- substitute vars of cat into category
     for v in rest cat for vv in $TriangleVariableList repeat
-      subCat := SUBST(v,vv,subCat)
+      subCat := substitute(v,vv,subCat)
     getConditionalCategoryOfType1(subCat,conditions,match,seen)
   conditions
 

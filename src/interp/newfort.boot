@@ -121,7 +121,7 @@ exp2Fort2(e,prec,oldOp) ==
       nprec := unaryPrecs.p
       s := [:exp2Fort2(first args,nprec,op),op]
       op = '"-" and atom first args => s
-      op = oldOp and op in ['"*",'"+"] => s
+      op = oldOp and member(op,['"*",'"+"]) => s
       nprec <= prec => ['")",:s,'"("]
       s
     exp2FortFn(op,args,nargs)
