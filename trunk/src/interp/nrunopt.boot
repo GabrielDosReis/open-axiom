@@ -339,7 +339,7 @@ testBitVector(vec,i) ==
  
 bitsOf n ==
   n = 0 => 0
-  1 + bitsOf (n/2)
+  1 + bitsOf QUOTIENT(n,2)
  
 --=======================================================================
 --               Generate Slot 4 Constructor Vectors
@@ -631,7 +631,7 @@ dcData con ==
 
 dcData1 vec ==
   n := MAXINDEX vec
-  tens := n / 10
+  tens := QUOTIENT(n,10)
   for i in 0..tens repeat
     start := 10*i
     sayBrightlyNT rightJustifyString(STRINGIMAGE start,6)
@@ -717,7 +717,7 @@ nodeSize(n) == 12 * n
 vectorSize(n) == 4 * (1 + n)
 
 halfWordSize(n) == 
-  n < 128 => n / 2
+  n < 128 => QUOTIENT(n,2)
   n < 256 => n
   2 * n
 

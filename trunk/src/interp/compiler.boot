@@ -1328,7 +1328,7 @@ coerceExtraHard(T is [x,m',e],m) ==
 belongsTo?(m,cat,e) ==
   c := get(m,"mode",e)
   c isnt ["Join",:cats] => nil
-  cat in cats
+  member(cat,cats)
 
 coerceable(m,m',e) ==
   m=m' => m

@@ -420,7 +420,7 @@ mkDomainConstructor x ==
 setVector4(catNames,catsig,conditions) ==
   if $HackSlot4 then
     for ['LET,name,cond,:.] in $getDomainCode repeat
-      $HackSlot4:=SUBST(name,cond,$HackSlot4)
+      $HackSlot4:=substitute(name,cond,$HackSlot4)
   code:=
 --+
     ['SETELT,'$,4,'TrueDomain]
@@ -965,10 +965,10 @@ getViewsConditions u ==
  
 DescendCodeVarAdd(base,flag) ==
    princview := CAR $catvecList
-   [SetFunctionSlots(sig,SUBST('ELT,'CONST,implem),flag,'adding) repeat
+   [SetFunctionSlots(sig,substitute('ELT,'CONST,implem),flag,'adding) repeat
        for i in 6..MAXINDEX princview |
          princview.i is [sig:=[op,types],:.] and
-           LASSOC([base,:SUBST(base,'$,types)],get(op,'modemap,$e)) is
+           LASSOC([base,:substitute(base,'$,types)],get(op,'modemap,$e)) is
                   [[pred,implem]]]
  
 resolvePatternVars(p,args) ==

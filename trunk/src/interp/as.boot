@@ -282,8 +282,8 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
 --  and generating $TriangleVariableList
   for [op,:itemlist] in SUBLISLIS(rpvl, $FormalMapVariableList,opAlist) repeat
     for [sig0, pred] in itemlist repeat
-      sig := SUBST(dc,"$",sig0)
-      pred:= SUBST(dc,"$",pred)
+      sig := substitute(dc,"$",sig0)
+      pred:= subtitute(dc,"$",pred)
       sig := SUBLISLIS(rpvl,KDR oform,sig)
       pred:= SUBLISLIS(rpvl,KDR oform,pred)
       pred := pred or 'T

@@ -1,5 +1,20 @@
 2008-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/as.boot: Remove Old Boot semantics.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+
 	* interp/c-util.boot: Remove Old Boot semantics.
 	* interp/database.boot: Likewise.
 	* interp/format.boot: Likewise.
