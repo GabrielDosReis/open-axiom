@@ -135,9 +135,9 @@ formatModemap modemap ==
     target:= substInOrder(alist,target)
     sl:= substInOrder(alist,sl)
   else if removeIsDomainD pred is [D,npred] then
-    pred := SUBST(D,'D,npred)
-    target := SUBST(D,'D,target)
-    sl := SUBST(D,'D,sl)
+    pred := substitute(D,'D,npred)
+    target := substitute(D,'D,target)
+    sl := substitute(D,'D,sl)
   predPart:= formatIf pred
   targetPart:= prefix2String target
   argTypeList:=
@@ -167,7 +167,7 @@ formatModemap modemap ==
   concat(firstPart,'%l,predPart)
 
 substInOrder(alist,x) ==
-  alist is [[a,:b],:y] => substInOrder(y,SUBST(b,a,x))
+  alist is [[a,:b],:y] => substInOrder(y,substitute(b,a,x))
   x
 
 reportOpSymbol op1 ==
@@ -246,7 +246,7 @@ formatOpSymbol(op,sig) ==
         [quad,".",sel]
       [quad,".",quad]
     op
-  STRINGP op or GET(op,"Led") or GET(op,"Nud") =>
+  STRINGP op or GETL(op,"Led") or GETL(op,"Nud") =>
     n = 3 =>
       if op = 'SEGMENT then op := '".."
       op = 'in => [quad,'" ",op,'" ",quad]
@@ -255,7 +255,7 @@ formatOpSymbol(op,sig) ==
       op = 'exquo => op
       [quad,op,quad]
     n = 2 =>
-      not GET(op,"Nud") => [quad,op]
+      not GETL(op,"Nud") => [quad,op]
       [op,quad]
     op
   op
@@ -534,13 +534,13 @@ formIterator2String x ==
 tuple2String argl ==
   null argl => nil
   string := first argl
-  if string in '("failed" "nil" "prime" "sqfr" "irred")
+  if member(string, '("failed" "nil" "prime" "sqfr" "irred"))
     then string := STRCONC('"_"",string,'"_"")
     else string :=
       ATOM string => object2String string
       [f x for x in string]
   for x in rest argl repeat
-    if x in '("failed" "nil" "prime" "sqfr" "irred") then
+    if member(x,'("failed" "nil" "prime" "sqfr" "irred")) then
       x := STRCONC('"_"",x,'"_"")
     string:= concat(string,concat(",",f x))
   string
@@ -671,7 +671,7 @@ plural(n,string) ==
 
 formatIf pred ==
   not pred => nil
-  pred in '(T (QUOTE T)) => nil
+  member(pred,'(T (QUOTE T))) => nil
   concat('%b,'"if",'%d,pred2English pred)
 
 formatPredParts s ==
@@ -680,7 +680,7 @@ formatPredParts s ==
   s is ['devaluate,s1] => formatPredParts s1
   s is ['getDomainView,s1,.] => formatPredParts s1
   s is ['SUBST,a,b,c] =>    -- this is a signature
-    s1 := formatPredParts SUBST(formatPredParts a,b,c)
+    s1 := formatPredParts substitute(formatPredParts a,b,c)
     s1 isnt [fun,sig] => s1
     ['SIGNATURE,fun,[formatPredParts(r) for r in sig]]
   s

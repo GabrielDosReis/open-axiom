@@ -254,10 +254,11 @@ upand x ==
   putTarget(term1,$Boolean)
   putTarget(term2,$Boolean)
   ms := bottomUp term1
-  ms isnt [=$Boolean] => nil
+  ms isnt [=$Boolean] => nil   -- use general modemap
   $genValue =>
-    BooleanEquality(objValUnwrap(getValue term1),
-      getConstantFromDomain('(false),$Boolean)) =>
+    -- ??? we should find a way to check whether the
+    -- ??? the type of the second operand matters or not.
+    not objValUnwrap(getValue term1) =>     -- first operand is `false'
         putValue(x,getValue term1)
         putModeSet(x,ms)
     -- first term is true, so look at the second one
@@ -267,7 +268,7 @@ upand x ==
     putModeSet(x,ms)
 
   ms := bottomUp term2
-  ms isnt [=$Boolean] => nil
+  ms isnt [=$Boolean] => nil  -- use general modemap
   -- generate an IF expression and let the rest of the code handle it
   -- ??? In full generality, this is still incorrect.  We should be
   -- ??? looking up modemaps to see whether the interpretation is
@@ -290,8 +291,7 @@ upor x ==
   ms := bottomUp term1
   ms isnt [=$Boolean] => nil
   $genValue =>
-    BooleanEquality(objValUnwrap(getValue term1),
-      getConstantFromDomain('(true),$Boolean)) =>
+    objValUnwrap(getValue term1) =>  -- first operand is true, we are done.
         putValue(x,getValue term1)
         putModeSet(x,ms)
     -- first term is false, so look at the second one
@@ -1041,7 +1041,7 @@ evalconstruct(op,l,m,tar) ==
 replaceSymbols(modeList,l) ==
   -- replaces symbol types with their corresponding polynomial types
   --  if not all type are symbols
-  not ($Symbol in modeList) => modeList
+  not member($Symbol,modeList) => modeList
   modeList is [a,:b] and and/[a=x for x in b] => modeList
   [if m=$Symbol then getMinimalVarMode(objValUnwrap(getValue arg),
     $declaredMode) else m for m in modeList for arg in l]
@@ -1185,7 +1185,7 @@ isDomainValuedVariable form ==
     get(form,'value,$InteractiveFrame) or _
     (PAIRP($env) and get(form,'value,$env)) or _
     (PAIRP($e) and get(form,'value,$e)))) and
-      ((m := objMode(val)) in '((Domain) (Category)) 
+      (member(m := objMode(val),'((Domain) (Category)))
           or conceptualType m = $Category) =>
         objValUnwrap(val)
   nil

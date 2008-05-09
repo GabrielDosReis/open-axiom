@@ -754,7 +754,7 @@ Mp2Expr(u,source is [mp,vars,S], target is [Expr,T]) ==
 Mp2FR(u,S is [.,vl,R],[.,T]) ==
   u = '_$fromCoerceable_$ =>
     S ^= T => nil
-    R in '((Integer) (Fraction (Integer))) => true
+    member(R,'((Integer) (Fraction (Integer)))) => true
     nil
   S ^= T => coercionFailure()
   package :=
@@ -991,7 +991,7 @@ varsInPoly(u) ==
 P2FR(u,S is [.,R],[.,T]) ==
   u = '_$fromCoerceable_$ =>
     S ^= T => nil
-    R in '((Integer) (Fraction (Integer))) => true
+    member(R,'((Integer) (Fraction (Integer)))) => true
     nil
   S ^= T => coercionFailure()
   package :=
@@ -1144,10 +1144,10 @@ Qf2F(u,source is [.,D,:.],target) ==
     coercionFailure()
   [.,:den']:= coerceInt(objNewWrap(den,D),target) or
     coercionFailure()
-  (unwrap num') * 1.0 / (unwrap den')
+  (unwrap num') * QUOTIENT(1.0, unwrap den')
 
 Rn2F(rnum, source, target) ==
-  float(CAR(rnum)/CDR(rnum))
+  float QUOTIENT(CAR rnum, CDR rnum)
 
 -- next function is needed in RN algebra code
 --Rn2F([a,:b],source,target) ==
@@ -1421,7 +1421,7 @@ Up2Expr(u,source is [up,var,S], target is [Expr,T]) ==
 Up2FR(u,S is [.,x,R],target is [.,T]) ==
   u = '_$fromCoerceable_$ =>
     S ^= T => nil
-    R in '((Integer) (Fraction (Integer))) => true
+    member(R,'((Integer) (Fraction (Integer)))) => true
     nil
   S ^= T => coercionFailure()
   package :=

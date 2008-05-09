@@ -736,7 +736,8 @@ bfReName x==
     oldName := bfGetOldBootName x
     if newName ^= oldName then
        warn [PNAME x, '" as `", PNAME newName, _
-             '"_' differs from Old Boot `", PNAME oldName, '"_'"]
+             '"_' differs from Old Boot `", PNAME oldName,_
+             '"_' at ", diagnosticLocation $stok]
     oldName
   newName
 

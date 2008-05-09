@@ -174,7 +174,7 @@ augmentLisplibModemapsFromFunctor(form,opAlist,signature) ==
   nonCategorySigAlist:=
     mkAlistOfExplicitCategoryOps first signature or return nil
   for (entry:= [[op,sig,:.],pred,sel]) in opAlist |
-    or/[(sig in catSig) for catSig in
+    or/[member(sig,catSig) for catSig in
       allLASSOCs(op,nonCategorySigAlist)] repeat
         skip:=
           argl and CONTAINED("$",rest sig) => 'SKIP
