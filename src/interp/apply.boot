@@ -236,7 +236,7 @@ compMapCond(op,mc,$bindings,fnsel) ==
 compMapCond': (%List,%Symbol,%Mode,%Env) -> %Code
 compMapCond'([cexpr,fnexpr],op,dc,bindings) ==
   compMapCond''(cexpr,dc) => compMapCondFun(fnexpr,op,dc,bindings)
-  stackMessage ["not known that",'%b,dc,'%d,"has",'%b,cexpr,'%d]
+  stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
 
 compMapCond'': (%Thing,%Mode) -> %Boolean
 compMapCond''(cexpr,dc) ==
@@ -253,7 +253,7 @@ compMapCond''(cexpr,dc) ==
   --now it must be an attribute
   member(["ATTRIBUTE",dc,cexpr],get("$Information","special",$e)) => true
   --for the time being we'll stop here - shouldn't happen so far
-  stackMessage ["not known that",'%b,dc,'%d,"has",'%b,cexpr,'%d]
+  stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
   false
 
 compMapCondFun: (%Thing,%Symbol,%Mode,%Env) -> %Code

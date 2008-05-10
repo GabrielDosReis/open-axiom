@@ -929,8 +929,7 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
   0=c => (#(sig:= getSignatureFromMode(form,e))=#form => sig; nil)
   1<c =>
     sig:= first potentialSigList
-    stackWarning ["signature of lhs not unique:",
-                  :bright formatSignature sig, "chosen"]
+    stackWarning('"signature of lhs not unique: %1bp chosen",[sig])
     sig
   nil --this branch will force all arguments to be declared
  
@@ -1326,9 +1325,12 @@ doIt(item,$predl) ==
     for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
         --This will RPLAC as appropriate
   isDomainForm(item,$e) =>
-     -- convert naked top level domains to import
+    -- convert naked top level domains to import.
+    -- Note: The apparent useless destructing of `item' below is necessary
+    -- because it is subject to RPLACA/RPLACD, which would create
+    -- a cycle otherwise.
     u:= ["import", [first item,:rest item]]
-    stackWarning ["Use: import ", [first item,:rest item]]
+    stackWarning('"Use: import %1p",[[first item,:rest item]])
     RPLACA(item,first u)
     RPLACD(item,rest u)
     doIt(item,$predl)

@@ -226,7 +226,7 @@ lbrkSch() == PNAME specialChar 'lbrk
 quadSch() == PNAME specialChar 'quad
 
 isBinaryInfix x ==
-    x in '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^")
+  member(x, '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^"))
 
 stringApp([.,u],x,y,d) ==
   appChar(STRCONC($DoubleQuote,atom2String u,$DoubleQuote),x,y,d)

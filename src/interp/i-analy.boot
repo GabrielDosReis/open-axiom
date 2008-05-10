@@ -47,6 +47,8 @@ $multivariateDomains ==
     HomogeneousDistributedMultivariatePolynomial
     GeneralDistributedMultivariatePolynomial)
 
+--%
+$inRetract := false
 
 --% Interpreter Analysis Functions
 

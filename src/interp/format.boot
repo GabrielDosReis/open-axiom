@@ -427,7 +427,7 @@ form2String1 u ==
     ["[",:(atom argl' => [argl']; argl'),"]"]
   op = "SIGNATURE" =>
      [operation,sig] := argl
-     concat(operation,": ",formatSignature sig)
+     concat(operation,'": ",formatSignature sig)
   op = 'COLLECT => formCollect2String argl
   op = 'construct =>
     concat(lbrkSch(),
@@ -438,7 +438,7 @@ form2String1 u ==
     argl := rest argl
     (null argl) or null (first argl) => [lo, '".."]
     [lo, '"..", form2String1 first argl]
-  isBinaryInfix op => fortexp0 [op,:argl]
+  isBinaryInfix op => outputTran [op,:argl]
   -- COMPILED_-FUNCTION_-P(op) => form2String1 coerceMap2E(u1,NIL)
   application2String(op,[form2String1 x for x in argl], u1)
 

@@ -798,11 +798,12 @@ NRTgetLookupFunction(domform,exCategory,addForm) ==
   extends := NRTextendsCategory1(domform,exCategory,getExportCategory addForm)
   if null extends then 
     [u,msg,:v] := $why
-    sayBrightly '"--------------non extending category----------------------"
-    sayBrightlyNT ['"..",:bright form2String domform,"of cat "]
-    PRINT u
-    sayBrightlyNT bright msg
-    if v then PRINT CAR v else TERPRI()
+    SAY '"--------------non extending category----------------------"
+    compilerMessage('"%1p of category %2p", [domform,u])
+    if v ^= nil then
+      compilerMessage('"%1b %2p",[msg,first v])
+    else
+      compilerMessage('"%1b",[msg])
   extends => 'lookupIncomplete
   'lookupComplete
 
