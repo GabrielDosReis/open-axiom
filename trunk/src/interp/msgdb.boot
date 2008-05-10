@@ -296,10 +296,11 @@ operationLink name ==
          escapeSpecialChars STRINGIMAGE name)
 
 ----------------------------------------
+buildMessage(msg, args) ==
+  substituteSegmentedMsg(segmentKeyedMsg msg,args)
+
 sayPatternMsg(msg,args) ==
-  msg := segmentKeyedMsg msg
-  msg := substituteSegmentedMsg(msg,args)
-  sayMSG flowSegmentedMsg(msg,$LINELENGTH,3)
+  sayMSG flowSegmentedMsg(buildMessage(msg, args),$LINELENGTH,3)
 
 throwPatternMsg(key,args) ==
   sayMSG '" "

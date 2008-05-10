@@ -86,8 +86,8 @@ getUniqueSignature(form,e) ==
 getUniqueModemap(op,numOfArgs,e) ==
   1=#(mml:= getModemapList(op,numOfArgs,e)) => first mml
   1<#mml =>
-    stackWarning [numOfArgs,'" argument form of: ",op,
-      '" has more than one modemap"]
+    stackWarning('"%1 argument form of %2b has more than one modemap", 
+      [numOfArgs,op])
     first mml
   nil
  
@@ -324,7 +324,7 @@ getOperationAlist(name,functorForm,form) ==
   $insideFunctorIfTrue and name="$" =>
     ($domainShell => $domainShell.(1); systemError '"$ has no shell now")
   T:= compMakeCategoryObject(form,$e) => ([.,.,$e]:= T; T.expr.(1))
-  stackMessage ["not a category form: ",form]
+  stackMessage('"not a category form: %1bp",[form])
  
 substNames(domainName,viewName,functorForm,opalist) ==
   functorForm := SUBSTQ("$$","$", functorForm)

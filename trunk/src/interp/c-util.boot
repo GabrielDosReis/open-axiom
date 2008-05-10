@@ -139,9 +139,11 @@ compAndTrace [x,m,e] ==
   UNTRACE_,1 "compFormWithModemap"
   T
  
-errorRef s == stackWarning ['%b,s,'%d,'"has no value"]
+errorRef s == 
+  stackWarning('"%1b has no value", [s])
  
-unErrorRef s == unStackWarning ['%b,s,'%d,'"has no value"]
+unErrorRef s == 
+  unStackWarning('"'%1b has no value",[s])
  
 --% ENVIRONMENT FUNCTIONS
  
@@ -246,8 +248,8 @@ addContour(c,E is [cur,:tail]) ==
                      --check for conflicts with earlier mode
                      if vv:=LASSOC("mode",e) then
                         if v ^=vv then
-                          stackWarning ["The conditional modes ",
-                                     v," and ",vv," conflict"]
+                          stackWarning('"The conditional modes %1p and %2p conflict",
+                            [v,vv])
         LIST c
  
 makeCommonEnvironment(e,e') ==
@@ -497,18 +499,20 @@ stackSemanticError(msg,expr) ==
     $initCapsuleErrorCount>3 => THROW("compCapsuleBody",nil)
   nil
  
-stackWarning msg ==
+stackWarning(msg,args == nil) ==
+  msg := buildMessage(msg, args)
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
   if not member(msg,$warningStack) then $warningStack:= [msg,:$warningStack]
   nil
  
-unStackWarning msg ==
+unStackWarning(msg,args) ==
+  msg := buildMessage(msg,args)
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
   $warningStack:= EFFACE(msg,$warningStack)
   nil
  
-stackMessage msg ==
-  $compErrorMessageStack:= [msg,:$compErrorMessageStack]
+stackMessage(msg,args == nil) ==
+  $compErrorMessageStack:= [buildMessage(msg,args),:$compErrorMessageStack]
   nil
  
 stackMessageIfNone msg ==
@@ -576,7 +580,7 @@ extendsCategoryForm(domain,form,form') ==
   form is ["Join",:l] => or/[extendsCategoryForm(domain,x,form') for x in l]
   form is ["CATEGORY",.,:l] =>
     member(form',l) or
-      stackWarning ["not known that ",form'," is of mode ",form] or true
+      stackWarning('"not known that %1 is of mode %2p",[form',form]) or true
   isCategoryForm(form,$EmptyEnvironment) =>
           --Constructs the associated vector
     formVec:=(compMakeCategoryObject(form,$e)).expr

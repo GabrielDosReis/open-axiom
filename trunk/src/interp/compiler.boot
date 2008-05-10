@@ -332,7 +332,8 @@ compSymbol(s,m,e) ==
     if not member(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
       not isFunction(s,e) and null ($compForModeIfTrue=true) then errorRef s
     [s,m',e] --s is a declared argument
-  MEMQ(s,$FormalMapVariableList) => stackMessage ["no mode found for",s]
+  MEMQ(s,$FormalMapVariableList) => 
+    stackMessage('"no mode found for %1",[s])
   m = $OutputForm or m = $Symbol => [['QUOTE,s],m,e]
   not isFunction(s,e) => errorRef s
 
@@ -515,7 +516,7 @@ getFormModemaps(form is [op,:argl],e) ==
   nargs:= #argl
   finalModemapList:= [mm for (mm:= [[.,.,:sig],:.]) in modemapList | #sig=nargs]
   modemapList and null finalModemapList =>
-    stackMessage ["no modemap for","%b",op,"%d","with ",nargs," arguments"]
+    stackMessage('"no modemap for %1b with %2 arguments", [op,nargs])
   finalModemapList
 
 ++ We are either compiling a function call, or trying to determine
@@ -562,7 +563,7 @@ eltModemapFilter(name,mmList,e) ==
   isConstantId(name,e) =>
     l:= [mm for mm in mmList | mm is [[.,.,.,sel,:.],:.] and sel=name] => l
             --there are elts with extra parameters
-    stackMessage ["selector variable: ",name," is undeclared and unbound"]
+    stackMessage('"selector variable: %1 is undeclared and unbound",[name])
     nil
   mmList
 
@@ -570,7 +571,7 @@ seteltModemapFilter(name,mmList,e) ==
   isConstantId(name,e) =>
     l:= [mm for (mm:= [[.,.,.,sel,:.],:.]) in mmList | sel=name] => l
             --there are setelts with extra parameters
-    stackMessage ["selector variable: ",name," is undeclared and unbound"]
+    stackMessage('"selector variable: %1 is undeclared and unbound",[name])
     nil
   mmList
 
@@ -683,8 +684,7 @@ setqSingle(id,val,m,E) ==
   e':= (PAIRP id => e'; addBinding(id,newProplist,e'))
   if isDomainForm(val,e') then
     if isDomainInScope(id,e') then
-      stackWarning ["domain valued variable","%b",id,"%d",
-        "has been reassigned within its scope"]
+      stackWarning("domain valued variable %1b has been reassigned within its scope",[id])
     e':= augModemapsFromDomain1(id,val,e')
       --all we do now is to allocate a slot number for lhs
       --e.g. the LET form below will be changed by putInLocalDomainReferences
@@ -698,12 +698,10 @@ setqSingle(id,val,m,E) ==
   [form,m',e']
 
 assignError(val,m',form,m) ==
-  message:=
-    val =>
-      ["CANNOT ASSIGN: ",val,"%l","   OF MODE: ",m',"%l","   TO: ",form,"%l",
-        "   OF MODE: ",m]
-    ["CANNOT ASSIGN: ",val,"%l","   TO: ",form,"%l","   OF MODE: ",m]
-  stackMessage message
+  val =>
+    stackMessage('"CANNOT ASSIGN: %1b OF MODE: %2pb TO: %3b OF MODE: %4bp",
+      [val,m',form,m])
+  stackMessage('"CANNOT ASSIGN: %1b TO: %2b OF MODE: %3pb",[val,form,m])
 
 setqMultiple(nameList,val,m,e) ==
   val is ["CONS",:.] and m=$NoValueMode =>
@@ -727,9 +725,9 @@ setqMultiple(nameList,val,m,e) ==
         t is ["Record",:l] => [[name,:mode] for [":",name,mode] in l]
         comp(t,$EmptyMode,e) is [.,["RecordCategory",:l],.] =>
           [[name,:mode] for [":",name,mode] in l]
-        stackMessage ["no multiple assigns to mode: ",t]
+        stackMessage('"no multiple assigns to mode: %1p",[t])
   #nameList^=#selectorModePairs =>
-    stackMessage [val," must decompose into ",#nameList," components"]
+    stackMessage('"%1 must decompose into %2 components",[val,#nameList])
   3 --generate code; return
   assignList:=
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
@@ -739,8 +737,7 @@ setqMultiple(nameList,val,m,e) ==
 
 setqMultipleExplicit(nameList,valList,m,e) ==
   #nameList^=#valList =>
-    stackMessage ["Multiple assignment error; # of items in: ",nameList,
-      "must = # in: ",valList]
+    stackMessage('"Multiple assignment error; # of items in: %1 must = # in: %2",[nameList,valList])
   gensymList:= [genVariable() for name in nameList]
   assignList:=
              --should be fixed to declare genVar when possible
@@ -949,11 +946,10 @@ compElt(form,m,E) ==
       1=n => mmList.(0)
       0=n =>
         return
-          stackMessage ['"Operation ","%b",anOp,"%d",
-                         '"missing from domain: ", aDomain]
-      stackWarning ['"more than 1 modemap for: ",anOp,
-                  '" with dc=",aDomain,'" ===>"
-        ,mmList]
+          stackMessage('"Operation %1b missing from domain: %2p",
+            [anOp,aDomain])
+      stackWarning('"more than 1 modemap for: %1 with dc = %2p ===> %3",
+        [anOp,aDomain,mmList])
       mmList.(0)
     [sig,[pred,val]]:= modemap
     #sig^=2 and ^val is ["elt",:.] => nil --what does the second clause do ????
@@ -1216,9 +1212,15 @@ compPretend: (%Form,%Mode,%Env) -> %Maybe %Triple
 compPretend(["pretend",x,t],m,e) ==
   e:= addDomain(t,e)
   T:= comp(x,t,e) or comp(x,$EmptyMode,e) or return nil
-  if T.mode=t then warningMessage:= ["pretend",t," -- should replace by @"]
+  t' := T.mode            -- save this, in case we need to make suggestions
   T:= [T.expr,t,T.env]
-  T':= coerce(T,m) => (if warningMessage then stackWarning warningMessage; T')
+  T':= coerce(T,m) => 
+    -- If the `pretend' wasn't necessary, we should advise user to use
+    -- less crude way of selecting expressions of thr `right type'.
+    if t' = t then 
+      stackWarning('"pretend %1p -- should replace by @",[t])
+    T'
+  nil
 
 compColonInside(x,m,e,m') ==
   e:= addDomain(m',e)
@@ -1226,10 +1228,10 @@ compColonInside(x,m,e,m') ==
   if (m'':=T.mode)=m' then warningMessage:= [":",m'," -- should replace by @"]
   T:= [T.expr,m',T.env]
   T':= coerce(T,m) =>
-    if warningMessage
-       then stackWarning warningMessage
-       else
-         stackWarning [":",m'," -- should replace by pretend"]
+    if m'' = m' then
+       stackWarning('": %1p -- should replace by @",[m'])
+    else
+       stackWarning('" : %1p -- replace by pretend", [m'])
     T'
 
 compIs: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1256,13 +1258,11 @@ coerce(T,m) ==
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => T'
   T':= coerceHard(T,m) => T'
+  -- if from from coerceable, this coerce was just a trial coercion
+  -- from compFormWithModemap to filter through the modemaps
   T.expr = "$fromCoerceable$" or isSomeDomainVariable m => nil
-  stackMessage fn(T.expr,T.mode,m) where
-      -- if from from coerceable, this coerce was just a trial coercion
-      -- from compFormWithModemap to filter through the modemaps
-    fn(x,m1,m2) ==
-      ["Cannot coerce","%b",x,"%d","%l","      of mode","%b",m1,"%d","%l",
-        "      to mode","%b",m2,"%d"]
+  stackMessage('"Cannot coerce %1b of mode %2pb to mode %3pb",
+    [T.expr,T.mode,m])
 
 
 coerceEasy: (%Maybe %Triple,%Mode) -> %Maybe %Triple
@@ -1402,8 +1402,8 @@ autoCoerceByModemap([x,source,e],target) ==
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])
        => [["call",genDeltaEntry ["autoCoerce", :fn],x],target,e]
     x="$fromCoerceable$" => nil
-    stackMessage ["cannot coerce: ",x,"%l","      of mode: ",source,"%l",
-      "      to: ",target," without a case statement"]
+    stackMessage('"cannot coerce %1b of mode %2pb to %3pb without a case statement",
+      [x,source,target])
   [["call",genDeltaEntry ["autoCoerce", :fn],x],target,e]
 
 --% Very old resolve

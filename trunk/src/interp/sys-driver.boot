@@ -52,7 +52,7 @@ $SpadServer := false
 ++ code generation, etc.
 $verbose := true
 
-$PrintCompilerMessageIfTrue := $verbose
+$PrintCompilerMessageIfTrue := true
 
 ++
 $options := []
@@ -197,6 +197,7 @@ executeSpadScript(progname,options,file) ==
     $verbose := false
     $options := [["quiet"]]
     $ProcessInteractiveValue := true
+  $PrintCompilerMessageIfTrue := $verbose
   CATCH($intCoerceFailure,
    CATCH($intSpadReader,read [file]))
   coreQuit (errorCount()> 0 => 1; 0)
@@ -221,6 +222,7 @@ compileSpadLibrary(progname,options,file) ==
   ECHO_-META : fluid := false
   $verbose := false
   $ProcessInteractiveValue := true
+  $PrintCompilerMessageIfTrue := $verbose
   CATCH($intTopLevel,
     CATCH("SpadCompileItem",
      CATCH($intSpadReader,compiler [file])))

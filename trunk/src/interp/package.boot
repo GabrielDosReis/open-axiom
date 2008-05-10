@@ -176,7 +176,7 @@ PackageDescendCode(code,flag,viewAssoc) ==
   code is ["SETELT",:.] => code
   code is ["QSETREFV",:.] => code
   code is ["setShellEntry",:.] => code
-  stackWarning ["unknown Package code ",code]
+  stackWarning('"unknown Package code: %1 ",[code])
   code
  
 mkOperatorEntry(domainOrPackage,opSig is [op,sig,:flag],pred,count) ==

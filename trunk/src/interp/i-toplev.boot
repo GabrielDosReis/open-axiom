@@ -75,7 +75,6 @@ spadpo() ==
 start(:l) ==
   -- The function  start  begins the interpreter process, reading in
   -- the profile and printing start-up messages.
-  $PrintCompilerMessageIfTrue: local
   $inLispVM : local := nil
   if $displayStartMsgs then sayKeyedMsg("S2IZ0053",['"interpreter"])
   initializeTimedNames($interpreterTimedNames,$interpreterTimedClasses)
