@@ -576,6 +576,8 @@ RightOpenIntervalRootCharacterization(TheField,ThePolDom) : PUB == PRIV where
      pval := pval rem dPol
      degree(pval) = 0 => leadingCoefficient(pval)
      dpval := differentiate(pval)
+     a : TheField
+     b : TheField
      degree(dpval) = 0 =>
        l := left(rootCode)
        r := right(rootCode)

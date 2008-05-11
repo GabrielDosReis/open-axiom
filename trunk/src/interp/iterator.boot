@@ -45,10 +45,11 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   if STRINGP op then op:= INTERN op
   ^MEMQ(collectOp,'(COLLECT COLLECTV COLLECTVEC)) =>
         systemError ["illegal reduction form:",form]
-  $sideEffectsList: local
-  $until: local
-  $initList: local
-  $endTestList: local
+  $sideEffectsList: local := nil
+  $until: local := nil
+  $initList: local := nil
+  $endTestList: local := nil
+  oldEnv := e
   $e:= e
   itl:= [([.,$e]:= compIterator(x,$e) or return "failed").(0) for x in itl]
   itl="failed" => return nil
@@ -73,7 +74,7 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   if $until then
     [untilCode,.,e]:= comp($until,$Boolean,e)
     finalCode:= substitute(["UNTIL",untilCode],'$until,finalCode)
-  [finalCode,m,e]
+  [finalCode,m,oldEnv]
 
 ++ returns the identity element of the `reduction' operation `x'
 ++ over a list -- a monoid homomorphism.   
@@ -93,6 +94,7 @@ compRepeatOrCollect(form,m,e) ==
     ,e) where
       fn(form,$exitModeStack,$leaveLevelStack,$formalArgList,e) ==
         $until: local
+        oldEnv := e
         [repeatOrCollect,:itl,body]:= form
         itl':=
           [([x',e]:= compIterator(x,e) or return "failed"; x') for x in itl]
@@ -135,7 +137,7 @@ compRepeatOrCollect(form,m,e) ==
         T := coerceExit([form',m'',e'],targetMode) or return nil
         -- iterator variables and other variables declared in
         -- in a loop are local to the loop.
-        [T.expr,T.mode,e]
+        [T.expr,T.mode,oldEnv]
  
 --constructByModemap([x,source,e],target) ==
 --  u:=
@@ -213,7 +215,7 @@ compIterator(it,e) ==
   it is ["WHILE",p] =>
     [p',m,e]:=
       comp(p,$Boolean,e) or return
-        stackMessage('"WHILE operand: %1 is not Boolean valued",[p])
+        stackMessage('"WHILE operand: %1b is not Boolean valued",[p])
     [["WHILE",p'],e]
   it is ["UNTIL",p] => ($until:= p; ['$until,e])
   it is ["|",x] =>

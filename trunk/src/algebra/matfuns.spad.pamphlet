@@ -147,6 +147,7 @@ InnerMatrixLinearAlgebraFunctions(R,Row,Col,M):_
         -- if the ith row has an initial 1 in the jth column, then
         -- v.j = i; v.j = minR - 1, otherwise
         v : IndexedOneDimensionalArray(I,minC) := new(ncol,minR - 1)
+        j : Integer
         for i in minR..(minR + rk - 1) repeat
           for j in minC.. while qelt(x,i,j) = 0 repeat j
           qsetelt_!(v,j,i)

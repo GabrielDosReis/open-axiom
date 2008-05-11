@@ -344,6 +344,7 @@ PermutationGroup(S:SetCategory): public == private where
       -- try to get a good approximation for the strong generators and base
       ort: REC
       k1: NNI
+      i : NNI
       for i in number1..degree repeat
         ort := orbitWithSvc ( group , i )
         k   := ort.orb
@@ -352,6 +353,7 @@ PermutationGroup(S:SetCategory): public == private where
       gpsgs := nil()$(L V NNI)
       words2 := nil()$(L L NNI)
       gplength : NNI := #group
+      jj: NNI
       for jj in 1..gplength repeat if (group.jj).i ~= i then leave
       for k in 1..gplength repeat
         el2 := group.k
@@ -423,7 +425,7 @@ PermutationGroup(S:SetCategory): public == private where
         if wordProblem then wordlist := append ( wordlist , outword.nnn )
         pt  := baseLength - nnn + 1
         obs := orbitWithSvc ( sgs , baseOfGroup.pt )
-        i   := 1
+        i : NNI  := 1
         while not ( i > # out.nnn ) repeat
           pos  := position ( out.nnn.i , sgs )
           sgs2 := delete(sgs, pos)

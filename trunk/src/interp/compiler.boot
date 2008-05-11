@@ -563,7 +563,7 @@ eltModemapFilter(name,mmList,e) ==
   isConstantId(name,e) =>
     l:= [mm for mm in mmList | mm is [[.,.,.,sel,:.],:.] and sel=name] => l
             --there are elts with extra parameters
-    stackMessage('"selector variable: %1 is undeclared and unbound",[name])
+    stackMessage('"selector variable: %1b is undeclared and unbound",[name])
     nil
   mmList
 
@@ -571,7 +571,7 @@ seteltModemapFilter(name,mmList,e) ==
   isConstantId(name,e) =>
     l:= [mm for (mm:= [[.,.,.,sel,:.],:.]) in mmList | sel=name] => l
             --there are setelts with extra parameters
-    stackMessage('"selector variable: %1 is undeclared and unbound",[name])
+    stackMessage('"selector variable: %1b is undeclared and unbound",[name])
     nil
   mmList
 
@@ -727,7 +727,7 @@ setqMultiple(nameList,val,m,e) ==
           [[name,:mode] for [":",name,mode] in l]
         stackMessage('"no multiple assigns to mode: %1p",[t])
   #nameList^=#selectorModePairs =>
-    stackMessage('"%1 must decompose into %2 components",[val,#nameList])
+    stackMessage('"%1b must decompose into %2 components",[val,#nameList])
   3 --generate code; return
   assignList:=
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
@@ -737,7 +737,7 @@ setqMultiple(nameList,val,m,e) ==
 
 setqMultipleExplicit(nameList,valList,m,e) ==
   #nameList^=#valList =>
-    stackMessage('"Multiple assignment error; # of items in: %1 must = # in: %2",[nameList,valList])
+    stackMessage('"Multiple assignment error; # of items in: %1b must = # in: %2",[nameList,valList])
   gensymList:= [genVariable() for name in nameList]
   assignList:=
              --should be fixed to declare genVar when possible

@@ -322,6 +322,7 @@ DifferentialPolynomialCategory(R:Ring,S:OrderedSet,
       differentiate(p:$, d:R -> R) ==
         ans:$ := 0
         l := variables p
+        u : Union(R, "failed")
         while (u:=retractIfCan(p)@Union(R, "failed")) case "failed" repeat
           t := leadingMonomial p
           lc := leadingCoefficient t

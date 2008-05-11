@@ -1,3 +1,32 @@
+2008-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Restrict loop variable scopes, take 2.
+	* interp/iterator.boot (compReduce1): Maintain proper scope for
+	loop variables.
+	(compRepeatOrCollect): Really maintain proper scope for loop variables.
+	* interp/compiler.boot (eltModemapFilter): Highlight faulty selector.
+	(seteltModemapFilter): Likewise.
+	* interp/c-util.boot (stackMessage): Don't build message if there
+	is no argument for substitution.
+	* algebra/aggcat.spad.pamphlet (#$UnaryRecursiveAggregate):
+	Declare free loop variable.
+	(cycleEntry$UnaryRecursiveAggregate): Likewise.
+	(cycleLength): Likewise.
+	(merge$OneDimensionalArrayAggregate): Likewise.
+	(delete$OneDimensionalArrayAggregate): Likewise.
+	(position$ListAggregate): Likewise.
+	* algebra/array1.spad.pamphlet (merge!$IndexedFlexibleArray): Likewise.
+	* algebra/combfunc.spad.pamphlet (K2fact$CombinatorialFunction):
+	Likewise. 
+	* algebra/curve.spad.pamphlet
+	(nonSingularModel$FunctionFieldCategory):  Likewise.
+	* algebra/dpolcat.spad.pamphlet
+	(differentiate$DifferentialPolynomialCategory): Likewise.
+	* algebra/efstruc.spad.pamphlet
+	(validExponential$ElementaryFunctionStructurePackage):  Likewise.
+	(ker2explogs$InnerTrigonometricManipulations): Likewise.
+	(complexNormalize$TrigonometricManipulations): Likewise.
+
 2008-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/iterator.boot (compRepeatOrCollect): Don't iterator

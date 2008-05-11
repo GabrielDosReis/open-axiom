@@ -528,6 +528,7 @@ PatternMatchTools(S, R, P): Exports == Implementation where
         generic? p => setIntersection(badValues p, ls)
         empty()
       l1:PRS := failed()
+      t : P
       for x in setDifference(ls, bad)
         while (t := x; failed?(l1 := pmatch(x, p, l))) repeat 0
       failed? l1 =>
