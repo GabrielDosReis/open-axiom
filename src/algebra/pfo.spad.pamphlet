@@ -499,15 +499,24 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
 
     selIntegers():RC0 ==
       f := definingPolynomial()$R
-      while zero?(d := doubleDisc(r := polyred pmod f)) repeat newReduc()$q
-      [r, d]
+      repeat
+        r := polyred pmod f
+        d := doubleDisc r
+        if zero? d then
+          newReduc()$q
+        else
+          return [r,d]
 
     selectIntegers(k:K):REC ==
       g := polyred(f := definingPolynomial()$R)
       p := minPoly k
-      while zero?(d := doubleDisc(r := kpmod(g, k))) or (notIrr? fmod p)
-          repeat newReduc()$q
-      [r, d, splitDenominator(fmod p).num]
+      repeat
+        r := kpmod(g, k)
+        d := doubleDisc r
+        if zero? d or notIrr? fmod p then
+          newReduc()$q
+        else
+          return [r, d, splitDenominator(fmod p).num]
 
     toQ1(p, d) ==
       map(Q2F(retract(#1 rem d)@Q),
@@ -528,6 +537,7 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
 
     kgetGoodPrime(rec, res, h, b, d) ==
       p:PI := 3
+      u : Union(UPQ, "failed")
       while (u := goodRed(rec, res, h, b, d, p)) case "failed" repeat
         p := nextPrime(p::Z)::PI
       [p, u::UPQ]

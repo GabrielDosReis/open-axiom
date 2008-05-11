@@ -290,6 +290,7 @@ GaloisGroupFactorizer(UP): Exports == Implementation where
       if (l := length n)<levels then return(n+shift(1,l-1))
       (n=shift(seed(level),levels-level)) => "End of level"
       b: Z := 1
+      lr : Z
       while ((l-b) = (lr := length(n := reductum n)))@Boolean repeat b := b+1
       reductum(n)+shift(seed(b+1),lr)
 

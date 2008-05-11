@@ -211,6 +211,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
       for t in 0..(m-2) repeat
         s : I := 0
         sOld: I
+        y : I
         for y in 0..n repeat
           sOld := s
           s := s + numberOfImproperPartitions(n-y,m-t-1)
@@ -239,6 +240,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
         s : I := 0
         cm := cm - 1
         sOld : I
+        y : I
         for y in n..1 by -1 repeat   --determination of the next son
           sOld := s  -- remember old s
           -- this functions counts the number of elements in a subtree
@@ -267,6 +269,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
       mm : I := k
       s  : I := m
       for t in 0..(m-1) repeat
+         y : Integer
          for y in (s-1)..(n+1) repeat
             if binomial$ICF (y,s) > mm then leave
          l := append (l,list(y-1)$(L I))

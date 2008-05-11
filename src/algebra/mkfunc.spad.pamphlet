@@ -112,7 +112,8 @@ InputForm():
       every?(atom?,destruct s)$List(%) => s
       sy := new()$Symbol
       n:NonNegativeInteger := 0
-      l2 := [flatten0(x, sy, n := n + 1) for x in rest(l := destruct s)]
+      l := destruct s
+      l2 := [flatten0(x, sy, n := n + 1) for x in rest l]
       conv(concat(convert("SEQ"::Symbol)@%,
         concat(concat [u.lst for u in l2], conv(
            [convert("exit"::Symbol)@%, 1$%, conv(concat(first l,
@@ -121,7 +122,8 @@ InputForm():
     flatten0(s, sy, n) ==
       atom? s => [nil(), s]
       a := convert(concat(string sy, convert(n)@String)::Symbol)@%
-      l2 := [flatten0(x, sy, n := n+1) for x in rest(l := destruct s)]
+      l := destruct s
+      l2 := [flatten0(x, sy, n := n+1) for x in rest l]
       [concat(concat [u.lst for u in l2], conv([convert(
         "LET"::Symbol)@%, a, conv(concat(first l,
              [u.symb for u in l2]))@%]$List(%))@%), a]

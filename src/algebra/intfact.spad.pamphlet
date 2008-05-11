@@ -156,6 +156,7 @@ IntegerPrimesPackage(I:IntegerNumberSystem): with
 
       nm1 := n-1
       q := (nm1) quo two
+      k : NonNegativeInteger
       for k in 1.. while not odd? q repeat q := q quo two
       -- q = (n-1) quo 2**k for largest possible k
 
@@ -378,6 +379,8 @@ IntegerFactorizationPackage(I): Exports == Implementation where
        if n<0 then (m := -n; u := -1)
               else (m := n; u := 1)
        (m > 1) and ((v := perfectSqrt m) case I) =>
+          sv : FF
+          l : List FFE
           for rec in (l := factorList(sv := squareFree(v::I))) repeat
             rec.xpnt := 2 * rec.xpnt
           makeFR(u * unit sv, l)
@@ -438,6 +441,7 @@ IntegerFactorizationPackage(I): Exports == Implementation where
           if n<d*d then
              if n>1 then ls := concat_!(ls, ["prime",n,1]$FFE)
              return makeFR(1, ls)
+          m : Integer
           for m in 0.. while zero?(n rem d) repeat n := n quo d
           if m>0 then ls := concat_!(ls, ["prime",d,convert m]$FFE)
           d := d+s
@@ -463,7 +467,9 @@ IntegerFactorizationPackage(I): Exports == Implementation where
        f:LMI := dictionary() -- number which could not be factored
        insert_!(n, a)
        while not empty? a repeat
-          n := inspect a; c := count(n, a); remove_!(n, a)
+          n := inspect a; 
+          c := count(n, a); 
+          remove_!(n, a)
           prime?(n)$IntegerPrimesPackage(I) => insert_!(n, b, c)
           -- test for a perfect power
           (s := perfectNthRoot n).exponent > 1 =>
@@ -475,8 +481,9 @@ IntegerFactorizationPackage(I): Exports == Implementation where
                 insert_!(x+y,a,c)
                 insert_!(x-y,a,c)
           (d := PollardSmallFactor n) case I =>
-             for m in 0.. while zero?(n rem d) repeat n := n quo d
-             insert_!(d, a, m * c)
+             m' : NonNegativeInteger
+             for m' in 0.. while zero?(n rem d) repeat n := n quo d
+             insert_!(d, a, m' * c)
              if n > 1 then insert_!(n, a, c)
           -- an elliptic curve factorization attempt should be made here
           insert_!(n, f, c)

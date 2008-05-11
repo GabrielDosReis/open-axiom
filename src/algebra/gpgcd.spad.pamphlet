@@ -265,6 +265,7 @@ GeneralPolynomialGcdPackage(E,OV,R,P):C == T where
          #lv = 0 => p1
          lr:=[ randomR() for vv in lv]
          dg:=degree p1
+         ans : SUPP
          while dg ~= degree (ans:= map(eval(#1,lv,lr),p1)) repeat
            lr:=[ randomR() for vv in lv]
          ans

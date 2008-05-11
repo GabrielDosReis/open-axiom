@@ -252,6 +252,7 @@ QuotientFieldCategory(S: IntegralDomain): Category ==
 
     if S has IntegerNumberSystem then
       random():% ==
+        d : S
         while zero?(d:=random()$S) repeat d
         random()$S / d
 

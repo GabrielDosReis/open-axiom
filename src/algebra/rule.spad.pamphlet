@@ -242,6 +242,7 @@ ApplyRules(Base, R, F): Exports == Implementation where
 
     isit(subject, pat) ==
       hasTopPredicate? pat =>
+        l : List P
         for v in (l := variables pat) repeat resetBadValues v
         isitwithpred(subject, pat, l, empty())
       patternMatch(subject, pat, new()$PR)

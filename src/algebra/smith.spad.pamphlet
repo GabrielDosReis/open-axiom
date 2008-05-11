@@ -175,7 +175,7 @@ SmithNormalForm(R,Row,Col,M) : Exports == Implementation where
          mmh:=rowEchelon mm
          [subMatrix(mmh,1,m1,1,n1), subMatrix(mmh,1,m1,n1+1,n1+m1)]
       u:M:=zero(m1,m1)
-      j:=1
+      j: Integer :=1
       while t(1,j)=0 repeat j:=j+1  -- there are 0 columns
       t1:=copy t
       mm:=copy m
@@ -187,6 +187,7 @@ SmithNormalForm(R,Row,Col,M) : Exports == Implementation where
         u(i,1) := (mm(i,1) exquo t11) :: R
         for j in 2..m1 repeat
           j0:=j
+          tjj : R
           while zero?(tjj:=t1(j,j0)) repeat j0:=j0+1
           u(i,j) :=((mm(i,j0) - ("+"/[u(i,k) * t1(k,j0) for k in 1..(j-1)])) exquo
                     tjj) :: R

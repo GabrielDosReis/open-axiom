@@ -398,6 +398,7 @@ dummy variable is introduced to make the indexing variable \lq local\rq.
         IndexedExponents K, K, R, SMP, F)
 
     K2fact(k, l) ==
+      kf : F
       empty? [v for v in variables(kf := k::F) | member?(v, l)] => kf
       empty?(args:List F := [facts(a, l) for a in argument k]) => kf
       is?(k, opperm) =>

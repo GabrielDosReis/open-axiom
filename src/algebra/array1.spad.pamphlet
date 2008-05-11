@@ -508,6 +508,7 @@ IndexedFlexibleArray(S:Type, mn: Integer): Exports == Implementation where
        m := #a; n := #b; growAdding(a, n, b)
        for i in m-1..0 by -1 for j in m+n-1.. by -1 repeat a.f.j := a.f.i
        i := n; j := 0
+       k : Integer
        for k in 0.. while i < n+m and j < n repeat
           if g(a.f.i,b.f.j) then (a.f.k := a.f.i; i := i+1)
           else (a.f.k := b.f.j; j := j+1)

@@ -2507,6 +2507,7 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? l and zero? i
 
   #x ==
+    k : NonNegativeInteger
     for k in 0.. while not empty? x repeat
       k = cycleMax and cyclic? x => error "cyclic list"
       x := rest x
@@ -2541,6 +2542,7 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? x => x
     empty?(y := findCycle x) => y
     z := rest y
+    l : NonNegativeInteger
     for l in 1.. while not eq?(y,z) repeat z := rest z
     y := x
     for k in 1..l repeat y := rest y
@@ -2551,6 +2553,7 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? x => 0
     empty?(x := findCycle x) => 0
     y := rest x
+    k : NonNegativeInteger
     for k in 1.. while not eq?(x,y) repeat y := rest y
     k
 
@@ -4286,6 +4289,7 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       m := maxIndex a
       j := minIndex b
       n := maxIndex b
+      k : Integer
       for k in minIndex(r).. while i <= m and j <= n repeat
 	if f(qelt(a, i), qelt(b, j)) then
 	  qsetelt_!(r, k, qelt(a, i))
@@ -4311,6 +4315,7 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       n := maxIndex b
       i < m or i > n => error "index out of range"
       y := stupidnew(#a + #b, a, b)
+      k : Integer
       for k in minIndex y.. for j in m..i-1 repeat
 	qsetelt_!(y, k, qelt(b, j))
       for k in k.. for j in minIndex a .. maxIndex a repeat
@@ -4343,6 +4348,7 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       l < minIndex a or h > maxIndex a => error "index out of range"
       h < l => copy a
       r := stupidnew((#a - h + l - 1)::NonNegativeInteger, a, a)
+      k : Integer
       for k in minIndex(r).. for i in minIndex a..l-1 repeat
 	qsetelt_!(r, k, qelt(a, i))
       for k in k.. for i in h+1 .. maxIndex a repeat
@@ -4352,6 +4358,7 @@ OneDimensionalArrayAggregate(S:Type): Category ==
     delete(x:%, i:Integer) ==
       i < minIndex x or i > maxIndex x => error "index out of range"
       y := stupidnew((#x - 1)::NonNegativeInteger, x, x)
+      i : Integer
       for i in minIndex(y).. for j in minIndex x..i-1 repeat
 	qsetelt_!(y, i, qelt(x, j))
       for i in i .. for j in i+1 .. maxIndex x repeat
@@ -4586,6 +4593,7 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
      first x
 
    position(f:S -> Boolean, x:%) ==
+     k : Integer
      for k in minIndex(x).. while not empty? x and not f first x repeat
        x := rest x
      empty? x => minIndex(x) - 1
@@ -4679,6 +4687,7 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
      position(w, x, s) ==
        s < (m := minIndex x) => error "index out of range"
        x := rest(x, (s - m)::NonNegativeInteger)
+       k : Integer
        for k in s.. while not empty? x and w ~= first x repeat
 	 x := rest x
        empty? x => minIndex x - 1

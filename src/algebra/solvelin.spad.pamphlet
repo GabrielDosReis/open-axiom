@@ -79,6 +79,7 @@ LinearSystemMatrixPackage(F, Row, Col, M): Cat == Capsule where
          -- find leading elements of diagonal
          v := new(nvar, minRowIndex m - 1)$PrimitiveArray(Integer)
          for i in minRowIndex m .. rk repeat
+           j : Integer
            for j in 0.. while zero? qelt(m, i, j+minColIndex m) repeat 0
            v.j := i
          for j in 0..nvar-1 repeat

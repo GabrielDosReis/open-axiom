@@ -303,6 +303,7 @@ PolynomialGcdPackage(E,OV,R,P):C == T where
         d:=listpol.first
         listpol:=listpol.rest
         nolift:Boolean:=true
+        uf: SUP
         for uf in listpol repeat
               --note uf and d not necessarily primitive
           degree gcd(uf,d) =0 => nolift:=false

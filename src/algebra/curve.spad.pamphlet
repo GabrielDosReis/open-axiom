@@ -213,7 +213,8 @@ FunctionFieldCategory(F, UP, UPUP): Category == Definition where
 
       nonSingularModel u ==
         d    := commonDenominator(coordinates(w := integralBasis()))::RF
-        vars := [concat(string u, string i)::SY for i in 1..(n := #w)]
+        n := #w
+        vars := [concat(string u, string i)::SY for i in 1..n]
         x    := "%%dummy1"::SY
         y    := "%%dummy2"::SY
         select_!(zero?(degree(#1, x)) and zero?(degree(#1, y)),

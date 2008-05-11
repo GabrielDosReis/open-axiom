@@ -405,6 +405,7 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
     even? b and positiveRemainder(a,4) > 1 =>
       error "J(a/b) not defined for b even and a = 2 or 3 (mod 4)"
     even? b and even? a => 0
+    k : Integer
     for k in 0.. while even? b repeat b := b quo 2
     j:I := (odd? k and positiveRemainder(a,8) = 5 => -1; 1)
     b = 1 => j

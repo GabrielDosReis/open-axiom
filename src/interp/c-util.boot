@@ -512,7 +512,9 @@ unStackWarning(msg,args) ==
   nil
  
 stackMessage(msg,args == nil) ==
-  $compErrorMessageStack:= [buildMessage(msg,args),:$compErrorMessageStack]
+  if args ^= nil then
+    msg := buildMessage(msg,args)
+  $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   nil
  
 stackMessageIfNone msg ==

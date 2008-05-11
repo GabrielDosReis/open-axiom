@@ -366,8 +366,9 @@ GraphImage (): Exports == Implementation where
     graphImage                == graph []
 
     makeGraphImage(llp) ==
+      l := #llp
       makeGraphImage(llp,
-        [pointColorDefault() for i in 1..(l:=#llp)],
+        [pointColorDefault() for i in 1..l],
 	 [lineColorDefault() for i in 1..l], 
           [pointSizeDefault() for i in 1..l])
 
@@ -406,8 +407,9 @@ GraphImage (): Exports == Implementation where
       component(graf,aPoint,PointColor,lineColorDefault(),pointSizeDefault())
 
     coerce (llp : L L P) : $ ==
+      l := #llp
       makeGraphImage(llp,
-          [pointColorDefault() for i in 1..(l:=#llp)],
+          [pointColorDefault() for i in 1..l],
 		[lineColorDefault() for i in 1..l], 
                      [pointSizeDefault() for i in 1..l])
 
