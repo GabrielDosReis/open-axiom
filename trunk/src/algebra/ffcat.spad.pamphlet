@@ -585,8 +585,9 @@ FiniteFieldCategory() : Category ==_
         representationType = "polynomial" => characteristic()::Integer
         1
       found : Boolean := false
+      e : $
       for i in start..  while not found repeat
-        e : $ := index(i::PositiveInteger)
+        e := index(i::PositiveInteger)
         found := (order(e) = sm1)
       e
     primitive? a ==

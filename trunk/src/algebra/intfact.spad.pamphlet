@@ -304,6 +304,7 @@ IntegerRoots(I:IntegerNumberSystem): Exports == Implementation where
       y := max(two, shift(1, (n::I+l-1) quo (n::I)))
       z:I := 1
       n1:= (n-1)::NNI
+      x: I
       while z > 0 repeat
         x := y
         xn:= x**n1
@@ -401,12 +402,15 @@ IntegerFactorizationPackage(I): Exports == Implementation where
        r:I := 1
        q:I := 1
        G:I := 1
+       ys: I
+       x: I
        until G > 1 repeat
           x := y
+          k: I
           for i in 1..convert(r)@Integer repeat
              y := (y*y+5::I) rem n
              q := (q*abs(x-y)) rem n
-             k:I := 0
+             k := 0
           until (k>=r) or (G>1) repeat
              ys := y
              for i in 1..convert(min(m,r-k))@Integer repeat

@@ -2279,6 +2279,7 @@ PolynomialSetUtilitiesPackage (R,E,V,P) : Exports == Implementation where
        rec := roughBasicSet(lp)
        contradiction := (rec case "failed")@B
        finished : B := false       
+       rs: LP
        while (not finished) and (not contradiction) repeat 
          bs := (rec::RBT).bas        
          rs := (rec::RBT).top

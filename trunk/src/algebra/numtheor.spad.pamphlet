@@ -435,8 +435,9 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
 
   divisors n ==
     oldList : List Integer := concat(1,nil())
+    newList : List Integer
     for f in factors factor n repeat
-      newList : List Integer := nil()
+      newList := nil()
       for k in 0..f.exponent repeat
         pow := f.factor ** k
         for m in oldList repeat

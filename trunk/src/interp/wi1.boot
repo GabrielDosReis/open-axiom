@@ -56,11 +56,6 @@ tr fn ==
   CATCH("SPAD__READER",compiler [INTERN sfn])
   SHUT $outStream
 
-stackMessage msg ==
---if msg isnt ["cannot coerce: ",:.] then foobum msg
-  $compErrorMessageStack:= [msg,:$compErrorMessageStack]
-  nil
-
 ppFull x ==
   SETQ(_*PRINT_-LEVEL_*,nil)
   SETQ(_*PRINT_-LENGTH_*,nil)
