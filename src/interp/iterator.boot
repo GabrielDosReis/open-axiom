@@ -132,7 +132,10 @@ compRepeatOrCollect(form,m,e) ==
             (u:=modeIsAggregateOf('Vector,targetMode,e)) => CAR u
             ["Vector",m']
           m'
-        coerceExit([form',m'',e'],targetMode)
+        T := coerceExit([form',m'',e'],targetMode) or return nil
+        -- iterator variables and other variables declared in
+        -- in a loop are local to the loop.
+        [T.expr,T.mode,e]
  
 --constructByModemap([x,source,e],target) ==
 --  u:=

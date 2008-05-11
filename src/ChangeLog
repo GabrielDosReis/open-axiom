@@ -1,3 +1,44 @@
+2008-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/iterator.boot (compRepeatOrCollect): Don't iterator
+	variables and variables declared in a loop are local to that loop.
+	* interp/g-error.boot (needsToSplitMessage): New.
+	(errorSupervisor): Use it.
+	* interp/compiler.boot (compSymbol): Highlight erron=eous symbol. 
+	* interp/wi1.boot (stackMessage): Remove duplicate.
+	* algebra/ffcat.spad.pamphlet (FiniteFieldCategory): Tidy.
+	* algebra/fff.spad.pamphlet (FiniteFieldFunctions): Likewie.
+	* algebra/groebsol.spad.pamphlet (GroebnerSolve): Likewise.
+	* algebra/intfact.spad.pamphlet (IntegerRoots): Likewise.
+	* algebra/mkfunc.spad.pamphlet (InputForm): Likewise.
+	* algebra/numtheor.spad.pamphlet (IntegerNumberTheoryFunctions):
+	Likewise. 
+	* algebra/permgrps.spad.pamphlet (PermutationGroup): Likewise.
+	* algebra/random.spad.pamphlet (RandomFloatDistributions): Likewise.
+	* algebra/sgcf.spad.pamphlet
+	(SymmetricGroupCombinatoricFunctions): Likewise. 
+	* algebra/triset.spad.pamphlet (PolynomialSetUtilitiesPackage):
+	Likewise. 
+	* algebra/twofact.spad.pamphlet (TwoFactorize): Likewise.
+
+	* interp/apply.boot: Miscellanous cleanup.
+	* interp/compiler.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/info.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/iterator.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/package.boot: Likewise.
+	* interp/sys-driver.boot: Likewise.
+
 2008-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/as.boot: Remove Old Boot semantics.

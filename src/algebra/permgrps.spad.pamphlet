@@ -342,6 +342,8 @@ PermutationGroup(S:SetCategory): public == private where
     bsgs1 (group:L V NNI,number1:NNI,words:L L NNI,maxLoops:I,gp:%,diff:I)_
         : NNI ==
       -- try to get a good approximation for the strong generators and base
+      ort: REC
+      k1: NNI
       for i in number1..degree repeat
         ort := orbitWithSvc ( group , i )
         k   := ort.orb
@@ -484,6 +486,7 @@ PermutationGroup(S:SetCategory): public == private where
       kkk : I := 1
       newGroup := reverse newGroup
       noAnswer : B := true
+      z: V NNI
       while noAnswer repeat
         reduceGenerators kkk
 -- *** Here is former "bsgs2" *** --
@@ -494,6 +497,8 @@ PermutationGroup(S:SetCategory): public == private where
           sgs := append ( sgs , out.i )
           if wordProblem then wordlist := append ( wordlist , outword.i )
         noresult : B := true
+        word3: L NNI
+        word: L NNI
         for i in kkk..#baseOfGroup while noresult repeat
           sgs    := append ( sgs , out.i )
           if wordProblem then wordlist := append ( wordlist , outword.i )

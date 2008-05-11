@@ -107,12 +107,16 @@ GroebnerSolve(lv,F,R) : C == T
            lnp:=[dmpToHdmp(f) for f in lp]
            x := first rlvar;rlvar:=rest rlvar
            testfail:=true
+           ranvals: L I
+           gb: L HDPoly
+           gbt: L DPoly
+           gb1: Union(L DPoly,"failed")
            for count in 1.. while testfail repeat
-             ranvals:L I:=[1+(random()$I rem (count*(# lvar))) for vv in rlvar]
+             ranvals := [1+(random()$I rem (count*(# lvar))) for vv in rlvar]
              val:=+/[rv*(vv::HDPoly)
                         for vv in rlvar for rv in ranvals]
              val:=val+x::HDPoly
-             gb:L HDPoly:= [elt(univariate(p,x),val) for p in lnp]
+             gb := [elt(univariate(p,x),val) for p in lnp]
              gb:=groebner gb
              gbt:=totolex gb
              (gb1:=testGenPos(gbt,lvar)) case "failed"=>"try again"

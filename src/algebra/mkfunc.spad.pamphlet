@@ -129,7 +129,7 @@ InputForm():
     strsym s ==
       string? s => string s
       symbol? s => string symbol s
-      error "strsym: form is neither a string or symbol"
+      error ["strsym: form", s, "is neither a string or symbol"]
 
     unparse x ==
       atom?(s:% := form2String(x)$Lisp) => strsym s
