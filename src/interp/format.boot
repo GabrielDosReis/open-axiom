@@ -389,8 +389,7 @@ form2String1 u ==
     STRINGP u => formWrapId u
     WRITE_-TO_-STRING formWrapId u
   u1 := u
-  op := CAR u
-  argl := CDR u
+  [op,:argl] := u
   op='Join or op= 'mkCategory => formJoin1(op,argl)
   $InteractiveMode and IDENTP op and (u:= constructor? op) =>
     null argl => app2StringWrap(formWrapId constructorName op, u1)
@@ -438,7 +437,7 @@ form2String1 u ==
     argl := rest argl
     (null argl) or null (first argl) => [lo, '".."]
     [lo, '"..", form2String1 first argl]
-  isBinaryInfix op => outputTran [op,:argl]
+  isBinaryInfix op => formatAsFortranExpresion [op,:argl]
   -- COMPILED_-FUNCTION_-P(op) => form2String1 coerceMap2E(u1,NIL)
   application2String(op,[form2String1 x for x in argl], u1)
 

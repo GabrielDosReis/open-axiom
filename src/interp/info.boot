@@ -258,7 +258,7 @@ actOnInfo(u,$e) ==
       --    SAY("augmenting ",name,": ",cat)
       --    put(name, "value", (vval, cat, venv), $e)
       member(cat,first ocatvec.4) or
-         ASSOC(cat,CADR ocatvec.4) is [.,"T",.] => $e
+         assoc(cat,second ocatvec.4) is [.,"T",.] => $e
         --SAY("Category extension error:
         --cat shouldn't be a join
                       --what was being asserted is an ancestor of what was known

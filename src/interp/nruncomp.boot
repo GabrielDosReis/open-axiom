@@ -473,10 +473,10 @@ NRTcheckVector domainShell ==
 -- (d) op-signature-- store missing function info in $CheckVectorList
     v:= domainShell.i
     v=true => nil  --item is marked; ignore
-    null v => nil  --a domain, which setVector4part3 will fill in
-    atom first v => nil  --category form; ignore
+    v=nil => nil  --a domain, which setVector4part3 will fill in
     atom v => systemErrorHere '"CheckVector"
-    ASSOC(first v,alist) => nil
+    atom first v => nil  --category form; ignore
+    assoc(first v,alist) => nil
     alist:=
       [[first v,:$SetFunctions.i],:alist]
   alist
@@ -527,10 +527,10 @@ reverseCondlist cl ==
   alist := nil
   for [x,:y] in cl repeat
     for z in y repeat
-      u := ASSOC(z,alist)
+      u := assoc(z,alist)
       null u => alist := [[z,x],:alist]
-      member(x,CDR u) => nil
-      RPLACD(u,[x,:CDR u])
+      member(x,rest u) => nil
+      RPLACD(u,[x,:rest u])
   alist
 
 NRTsetVector4Part2(uncondList,condList) ==

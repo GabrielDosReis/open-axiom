@@ -548,7 +548,7 @@ formatPileLine($m,x,newLineIfTrue) ==
 --======================================================================
 nBlanks m == "STRCONC"/[char('_  ) for i in 1..m]
  
-isNewspadOperator op == GET(op,"Led") or GET(op,"Nud")
+isNewspadOperator op == GETL(op,"Led") or GETL(op,"Nud")
  
 isTrue x == x="true" or x is '(QUOTE T)
  
