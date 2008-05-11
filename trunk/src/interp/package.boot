@@ -81,7 +81,7 @@ processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
                   opt(u,alist) ==
                     ATOM u => u
                     for v in u repeat
-                      if (a:=ASSOC(v,alist)) then
+                      if (a:=assoc(v,alist)) then
                         [.,:i]:=a
                         u:=replace(v,["getShellEntry","$",i],u) where
                            replace(old,new,l) ==

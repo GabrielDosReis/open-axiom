@@ -363,6 +363,13 @@ fortexp0 x ==
     [t,:f] := f
     l := [t,:l]
   NREVERSE ['"...",:l]
+
+++ This formating routine is essentially used to print
+++ values/expreions used to instantiate constructors.
+formatAsFortranExpresion x ==
+  $fortInts2Floats := false
+  fortranCleanUp exp2Fort1 segment fortPre outputTran x
+
  
 dispfortexp x ==
   if atom(x) or x is [op,:.] and not object2Identifier op in

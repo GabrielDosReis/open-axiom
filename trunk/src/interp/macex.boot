@@ -124,7 +124,7 @@ mac0Define(sy, state, body) ==
  
 -- Returns [state, body] or NIL.
 mac0Get sy ==
-    IFCDR ASSOC(sy, $pfMacros)
+    IFCDR assoc(sy, $pfMacros)
  
 -- Returns [sy, state] or NIL.
 mac0GetName body ==

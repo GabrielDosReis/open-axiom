@@ -284,8 +284,8 @@ format(x,:options) ==
 getOp(op,kind) ==
   kind = 'Led =>
     MEMQ(op,'(_div _exquo)) => nil
-    GET(op,'Led)
-  GET(op,'Nud)
+    GETL(op,'Led)
+  GETL(op,'Nud)
 
 formatDollar(name,p,argl) ==
   name := markMacroTran name
@@ -446,7 +446,7 @@ formatSelection1 [f,x] == formatSelectionOp f and format "." and
     formatPren x
  
 formatSelectionOp op ==
-  op is [f,.] and not GET(f,'Nud) or 
+  op is [f,.] and not GETL(f,'Nud) or 
     1000 < pspadBindingPowerOf("right",op) => formatSelectionOp1 op
   formatPren1("formatSelectionOp1",op)
  
@@ -498,7 +498,7 @@ formatPrefix(op,arg,lbp,rbp,:options) ==
 formatPrefixOp(op,:options) ==
   qualification := IFCAR options
   op=char '" " => format " ="
-  qualification or GET(op,"Nud") and ^MEMQ(op,$spadTightList) => 
+  qualification or GETL(op,"Nud") and ^MEMQ(op,$spadTightList) => 
     formatQual(op,qualification) and format " "
   format op
 

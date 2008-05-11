@@ -309,7 +309,7 @@ postForm u ==
       op':=
         true=> op
         $BOOT => op
-        GET(op,'Led) or GET(op,'Nud) or op = 'IN => op
+        GETL(op,'Led) or GETL(op,'Nud) or op = 'IN => op
         numOfArgs:= (argl' is [["Tuple",:l]] => #l; 1)
         INTERNL("*",STRINGIMAGE numOfArgs,PNAME op)
       [op',:argl']

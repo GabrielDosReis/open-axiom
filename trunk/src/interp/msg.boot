@@ -163,7 +163,7 @@ processChPosesForOneLine msgList ==
     for msg in msgList repeat
         if getMsgFTTag? msg then
             putFTText (msg,chPosList)
-        posLetter := CDR ASSOC(poCharPosn getMsgPos msg,chPosList)
+        posLetter := rest assoc(poCharPosn getMsgPos msg,chPosList)
         oldPre := getMsgPrefix msg
         setMsgPrefix (msg,STRCONC(oldPre,_
                      MAKE_-FULL_-CVEC ($preLength - 4 - SIZE oldPre),posLetter) )
@@ -211,7 +211,7 @@ insertPos(newPos,posList) ==
 putFTText (msg,chPosList) ==
     tag := getMsgFTTag? msg
     pos := poCharPosn getMsgPos msg
-    charMarker := CDR ASSOC(pos,chPosList)
+    charMarker := rest assoc(pos,chPosList)
     tag = 'FROM =>
         markingText := ['"(from ",charMarker,'" and on) "]
         setMsgText(msg,[:markingText,:getMsgText msg])
@@ -220,7 +220,7 @@ putFTText (msg,chPosList) ==
         setMsgText(msg,[:markingText,:getMsgText msg])
     tag = 'FROMTO =>
        pos2 := poCharPosn getMsgPos2 msg
-       charMarker2 := CDR ASSOC(pos2,chPosList)
+       charMarker2 := rest assoc(pos2,chPosList)
        markingText := ['"(from ",charMarker,'" up to ",_
            charMarker2,'") "]
        setMsgText(msg,[:markingText,:getMsgText msg])
@@ -444,7 +444,7 @@ desiredMsg (erMsgKey,:optCatFlag) ==
 isKeyQualityP (key,qual)  ==
     --returns pair if found, else NIL
     found := false
-    while not found and (qualPair := ASSOC(key,$specificMsgTags)) repeat
+    while not found and (qualPair := assoc(key,$specificMsgTags)) repeat
         if CDR qualPair = qual then found := true
     qualPair
  
