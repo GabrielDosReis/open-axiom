@@ -367,7 +367,7 @@ compSymbol(s,m,e) ==
   isFluid s => [s,getmode(s,e) or return nil,e]
   s="true" => ['(QUOTE T),$Boolean,e]
   s="false" => [false,$Boolean,e]
-  s=m or get(s,"isLiteral",e) => [["QUOTE",s],s,e]
+  s=m or isLiteral(s,e) => [["QUOTE",s],s,e]
   v:= get(s,"value",e) =>
 --+
     MEMQ(s,$functorLocalParameters) =>
@@ -802,7 +802,7 @@ resolve(min, mout) ==
 coerce(T,m) ==
   T := [T.expr,markKillAll T.mode,T.env]
   m := markKillAll m
-  if not get(m, 'isLiteral,T.env) then markImport m
+  if not isLiteral(m,T.env) then markImport m
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])

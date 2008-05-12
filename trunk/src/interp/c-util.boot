@@ -350,9 +350,14 @@ isFunction(x,e) ==
   get(x,"modemap",e) or GETL(x,"SPECIAL") or x="case" or getmode(x,e) is [
     "Mapping",:.]
  
-isLiteral(x,e) == get(x,"isLiteral",e)
+isLiteral: (%Symbol,%Env) -> %Boolean
+isLiteral(x,e) == 
+  get(x,"isLiteral",e)
  
-makeLiteral(x,e) == put(x,"isLiteral","true",e)
+
+makeLiteral: (%Symbol,%Env) -> %Thing
+makeLiteral(x,e) == 
+  put(x,"isLiteral","true",e)
  
 isSomeDomainVariable s ==
   IDENTP s and #(x:= PNAME s)>2 and x.(0)="#" and x.(1)="#"

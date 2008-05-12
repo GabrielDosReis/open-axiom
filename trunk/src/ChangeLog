@@ -1,5 +1,10 @@
 2008-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (isLiteral): Declare.
+	(makeLiteral): Likewise.
+	* interp/compiler.boot (compSymbol): Use isLiteral.
+	* interp/wi1.boot (compSymbol): Likewise.
+
 	* algebra/asp.spad.pamphlet (Asp30): Don't name local variable as
 	record field.
 	(Asp31): Likewise.
