@@ -58,14 +58,14 @@ MoebiusTransform(F): Exports == Implementation where
 
   Implementation ==> add
  
-    Rep := Record(a: F,b: F,c: F,d: F)
+    Rep := Record(a': F,b': F,c': F,d': F)
  
     moebius(aa,bb,cc,dd) == [aa,bb,cc,dd]
  
-    a(t:%):F == t.a
-    b(t:%):F == t.b
-    c(t:%):F == t.c
-    d(t:%):F == t.d
+    a(t:%):F == t.a'
+    b(t:%):F == t.b'
+    c(t:%):F == t.c'
+    d(t:%):F == t.d'
  
     1 == moebius(1,0,0,1)
     t * s ==
