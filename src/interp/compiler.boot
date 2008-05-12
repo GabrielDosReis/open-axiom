@@ -320,7 +320,7 @@ compSymbol(s,m,e) ==
   isFluid s => [s,getmode(s,e) or return nil,e]
   s="true" => ['(QUOTE T),$Boolean,e]
   s="false" => [false,$Boolean,e]
-  s=m or get(s,"isLiteral",e) => [["QUOTE",s],s,e]
+  s=m or isLiteral(s,e) => [["QUOTE",s],s,e]
   v := get(s,"value",e) =>
 --+
     MEMQ(s,$functorLocalParameters) =>
