@@ -1359,8 +1359,8 @@ Asp30(name): Exports == Implementation where
       callOne := call("F06PAF('N',M,N,1.0D0,A,M,X,1,1.0D0,Y,1)")
       callTwo := call("F06PAF('T',M,N,1.0D0,A,M,Y,1,1.0D0,X,1)")
       c : FC := cond(sw1,callOne,cond(sw2,callTwo))
-      code : List FC := [assign(A,a),c,returns()]
-      ([locals,code]$RSFC)::$
+      code' : List FC := [assign(A,a),c,returns()]
+      ([locals,code']$RSFC)::$
 
     coerce(c:List FortranCode):$ == coerce(c)$Rep
 
@@ -1466,8 +1466,8 @@ Asp31(name): Exports == Implementation where
       p:List(Symbol) := makeXList(n)
       jac: MAT FEXPR := jacobian(u,p)$MultiVariableCalculusFunctions(_
                                      Symbol,FEXPR ,VEC FEXPR,List(Symbol))
-      code : List FC := [localAssign(PW,jac),returns()$FC]$List(FC)
-      ([locals,code]$RSFC)::$
+      code' : List FC := [localAssign(PW,jac),returns()$FC]$List(FC)
+      ([locals,code']$RSFC)::$
 
     retract(u:VEC FRAC POLY INT):$ ==
       v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY INT,FEXPR)
@@ -1668,8 +1668,8 @@ Asp34(name): Exports == Implementation where
       call : FC := call("F04ASF(MS,N,X,N,Y,W1,W2,IFLAG)")$FC
       assign2 : FC := localAssign(IFLAG::Symbol,-(IFLAG@Symbol::EXI))
       assign3 : FC := assign(MS,u)$FC
-      code : List FC := [assign1,assign3,call,assign2,returns()]$List(FC)
-      ([locals,code]$RSFC)::$
+      code' : List FC := [assign1,assign3,call,assign2,returns()]$List(FC)
+      ([locals,code']$RSFC)::$
 
     coerce(c:List FortranCode):$ == coerce(c)$Rep
 
@@ -3623,8 +3623,8 @@ Asp77(name): Exports == Implementation where
       dimension := nrows(u)::POLY(INT)
       locals : SYMTAB := empty()
       declare!(F,[real,[dimension,dimension]$List(POLY(INT)),false]$FT,locals)
-      code : List FC := [localAssign(F,u),returns()$FC]
-      ([locals,code]$RSFC)::$
+      code' : List FC := [localAssign(F,u),returns()$FC]
+      ([locals,code']$RSFC)::$
 
     coerce(c:List FC):$ == coerce(c)$Rep
 
@@ -3943,8 +3943,8 @@ Asp8(name): Exports == Implementation where
       innerCond : FC := cond("FORWRD"::Symbol::Switch,assign4,assign5)
       mExp : EX := M@S::EX
       endCase : FC := cond(EQ([countExp]$EXU,[mExp]$EXU)$Switch,innerCond,assign3)
-      code := [assign1, assign2, loop, endCase]$List(FC)
-      ([locals,code]$RSFC)::%
+      code' := [assign1, assign2, loop, endCase]$List(FC)
+      ([locals,code']$RSFC)::%
 
 @
 \section{domain ASP80 Asp80}
@@ -4205,8 +4205,8 @@ Asp9(name): Exports == Implementation where
       assign1 := assign(GOPT1,"NOGOPT")$FC
       assign2 := assign(GOPT2,"NOGOPT")$FC
       result  := assign(name,expr)$FC
-      code : List FC := [common1,common2,assign1,assign2,result]
-      ([locals,code]$RSFC)::Rep
+      code' : List FC := [common1,common2,assign1,assign2,result]
+      ([locals,code']$RSFC)::Rep
 
     coerce(c:List FortranCode):% == coerce(c)$Rep
 

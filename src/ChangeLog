@@ -1,3 +1,15 @@
+2008-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/asp.spad.pamphlet (Asp30): Don't name local variable as
+	record field.
+	(Asp31): Likewise.
+	(asp34): Likewise.
+	(Asp77): Likewise.
+	(Asp8): Likewise.
+	(Asp9): Likewise.
+	* algebra/fortran.spad.pamphlet (FortranCode): Likewise.
+	* algebra/moebius.spad.pamphlet (MoebiusTransform): Likewise.
+
 2008-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Restrict loop variable scopes, take 2.
