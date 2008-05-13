@@ -1,3 +1,9 @@
+2008-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (warnLiteral): Just warn, really.
+	* algebra/riccati.spad.pamphlet (RationalRicDE): Don't import
+	inexistent RatODETools.
+
 2008-05-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (isLiteral): Declare.
