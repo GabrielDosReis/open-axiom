@@ -365,9 +365,9 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   ok := false;
   UNWIND_-PROTECT(
       PROGN(res:= FUNCALL(fn,df,m,e,prefix,fal),
+            leaveIfErrors(),
             sayMSG ['"   finalizing ",$spadLibFT,:bright libName],
-            finalizeLisplib libName,
-            ok := true),
+            ok := finalizeLisplib libName),
       RSHUT $libFile)
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
@@ -419,7 +419,16 @@ initializeLisplib libName ==
   $lisplibSignatureAlist := nil
   if pathnameTypeId(_/EDITFILE) = 'SPAD
     then LAM_,FILEACTQ('VERSION,['_/VERSIONCHECK,_/MAJOR_-VERSION])
- 
+
+++ If compilation produces an error, issue inform user and
+++ return to toplevel reader.
+leaveIfErrors() ==
+  errorCount() ^=0 =>
+    sayMSG ['"   Errors in processing ",kind,'" ",:bright libName,'":"]
+    sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
+    spadThrow()
+
+++ Finalize `libName' compilation; returns true if everything is OK.
 finalizeLisplib libName ==
   lisplibWrite('"constructorForm",removeZeroOne $lisplibForm,$libFile)
   lisplibWrite('"constructorKind",kind:=removeZeroOne $lisplibKind,$libFile)
@@ -454,9 +463,8 @@ finalizeLisplib libName ==
   if $profileCompiler then profileWrite()
   if $lisplibForm and null CDR $lisplibForm then
     MAKEPROP(CAR $lisplibForm,'NILADIC,'T)
-  errorCount() ^=0 =>
-    sayMSG ['"   Errors in processing ",kind,'" ",:bright libName,'":"]
-    sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
+  leaveIfErrors()
+  true
 
 lisplibDoRename(libName) ==
   _$REPLACE([libName,$spadLibFT,$libraryDirectory],

@@ -166,7 +166,6 @@ existingFile? file ==
 
 ++ original version returned 0 on success, and 1 on failure
 ++ ??? fix that to return -1 on failure.
-$ERASE: %Thing -> %Short
 $ERASE(:filearg) ==
   -removeFile MAKE_-FULL_-NAMESTRING filearg
 

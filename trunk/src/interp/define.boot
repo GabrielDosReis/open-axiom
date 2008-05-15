@@ -929,7 +929,8 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
   0=c => (#(sig:= getSignatureFromMode(form,e))=#form => sig; nil)
   1<c =>
     sig:= first potentialSigList
-    stackWarning('"signature of lhs not unique: %1bp chosen",[sig])
+    stackWarning('"signature of lhs not unique: %1bp chosen",
+      [["Mapping",:sig]])
     sig
   nil --this branch will force all arguments to be declared
  

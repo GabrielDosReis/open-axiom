@@ -859,7 +859,7 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
 	@ rm -rf $*.NRLIB
-	echo ")co $*.spad" | ${INTERPSYS} --strap=strap
+	${INTERPSYS} --strap=strap --compile $<
 # Compile bootstrap file to machine object code, and the result
 # immediately available for AXIOMsys consumption.
 strap/%.$(FASLEXT): %.lsp
@@ -900,11 +900,11 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 
 SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
 	@ rm -rf SPADPRSR.NRLIB
-	echo ")co $(srcdir)/spad-parser.spad" | ${INTERPSYS}
+	${INTERPSYS} --compile $<
 
 PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
 	@ rm -rf PARSER.NRLIB
-	echo ")co $(srcdir)/script-parser.spad" | ${INTERPSYS}
+	${INTERPSYS} --compile $<
 
 
 
