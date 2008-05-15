@@ -1,3 +1,17 @@
+2008-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (leaveIfErrors): New.
+	(compDefineLisplib): Use it.
+	(finalizeLisplib): Likewise.
+	* algebra/Makefile.pamphlet (%.NRLIB/code.$(FASLEXT)): Invoke the
+	compiler directly.
+	(SPADPRSR.NRLIB/code.$(FASLEXT)): Likewise.
+	(PARSER.NRLIB/code.$(FASLEXT)): Likewise.
+	* interp/compiler.boot (compSetq1): Fix thinko.
+	* interp/define.boot (hasSigInTargetCategory): Give a clue to the
+	pretty printer.
+	* interp/sys-utility.boot ($ERASE): Remove declaration.
+
 2008-05-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/nregset.spad.pamphlet (recip$NormalizationPackage): Fix
