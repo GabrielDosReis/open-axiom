@@ -160,13 +160,17 @@ NormalizationPackage(R,E,V,P,TS): Exports == Implementation where
      -- ASSUME mvar(p) is algebraic w.r.t. ts
        v := mvar(p)
        ts_v := select(ts,v)::P
+       d : P
+       n : P
        if mdeg(p) < mdeg(ts_v)
          then
-           hesrg: Record (gcd : P, coef2 : P)  := halfExtendedSubResultantGcd2(ts_v,p)$P
-           d: P :=  hesrg.gcd; n: P := hesrg.coef2
+           hesrg2 := halfExtendedSubResultantGcd2(ts_v,p)$P
+           d := hesrg2.gcd
+           n := hesrg2.coef2
          else
-           hesrg: Record (gcd : P, coef1 : P) := halfExtendedSubResultantGcd1(p,ts_v)$P
-           d: P :=  hesrg.gcd; n: P := hesrg.coef1
+           hesrg1 := halfExtendedSubResultantGcd1(p,ts_v)$P
+           d :=  hesrg1.gcd
+           n := hesrg1.coef1
        g := gcd(n,d)
        (n, d) := ((n exquo g)::P, (d exquo g)::P)
        remn, remd: Record(rnum:R,polnum:P,den:R)

@@ -1,3 +1,8 @@
+2008-05-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/nregset.spad.pamphlet (recip$NormalizationPackage): Fix
+	thinko. 
+
 2008-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (warnLiteral): Just warn, really.
