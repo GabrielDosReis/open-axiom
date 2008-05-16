@@ -1,5 +1,12 @@
 2008-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (leaveIfErrors): Take constructor name
+	parameter. 
+	(finalizeLisplib): Adjust call.
+	(compDefineLisplib): Likewise.
+
+2008-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (leaveIfErrors): New.
 	(compDefineLisplib): Use it.
 	(finalizeLisplib): Likewise.

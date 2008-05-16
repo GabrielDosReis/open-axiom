@@ -634,7 +634,7 @@ compCons1(["CONS",x,y],m,e) ==
 --% SETQ
 
 compSetq: (%List,%Thing,%List) -> %List
-compSetq1: (%List,%Thing,%Mode,%List) -> %List
+compSetq1: (%Form,%Thing,%Mode,%List) -> %List
 
 compSetq(["LET",form,val],m,E) == compSetq1(form,val,m,E)
 
