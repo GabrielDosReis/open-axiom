@@ -365,7 +365,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   ok := false;
   UNWIND_-PROTECT(
       PROGN(res:= FUNCALL(fn,df,m,e,prefix,fal),
-            leaveIfErrors(),
+            leaveIfErrors(libName),
             sayMSG ['"   finalizing ",$spadLibFT,:bright libName],
             ok := finalizeLisplib libName),
       RSHUT $libFile)
@@ -422,9 +422,9 @@ initializeLisplib libName ==
 
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
-leaveIfErrors() ==
+leaveIfErrors libName ==
   errorCount() ^=0 =>
-    sayMSG ['"   Errors in processing ",kind,'" ",:bright libName,'":"]
+    sayMSG ['"   Errors in processing ",$liplibkind,'" ",:bright libName,'":"]
     sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
     spadThrow()
 
@@ -463,7 +463,7 @@ finalizeLisplib libName ==
   if $profileCompiler then profileWrite()
   if $lisplibForm and null CDR $lisplibForm then
     MAKEPROP(CAR $lisplibForm,'NILADIC,'T)
-  leaveIfErrors()
+  leaveIfErrors libName
   true
 
 lisplibDoRename(libName) ==
