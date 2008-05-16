@@ -313,28 +313,6 @@ exist.
 
 @
 
-\section{Codes from Pamphlets}
-
-As noted earlier, the Boot codes are first extrated from the pamphlet
-files:
-<<extract source codes>>=
-.PRECIOUS: %.boot
-%.boot: $(srcdir)/%.boot.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
-@
-
-Part of the interpreter is written directly in Common Lisp (instead of the 
-sugared dialect Boot).  That part is extracted from the pamphlet files
-and compiled to native object code, as usual.
-<<extract source codes>>=
-# Extract and compile the part of the interpreter written
-# in Common Lisp
-.PRECIOUS: %.lisp
-
-%.lisp: $(srcdir)/%.lisp.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
-@
-
 \section{The warm.data file}
 
 This is a file of commands that will be loaded into interpsys
@@ -543,8 +521,6 @@ all-interpsys:
 all-axiomsys: all-interpsys
 	$(MAKE) $(AXIOMSYS)
 
-<<extract source codes>>
-
 mostlyclean-local:
 	@rm -f *.fn *.data *.$(FASLEXT) *.lib
 
@@ -563,233 +539,95 @@ distclean-local: clean-local
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	$(INSTALL) $< $@
 
-## Translation to Fortran
-fortcall.$(FASLEXT): fortcall.boot sys-macros.$(FASLEXT)
+%.$(FASLEXT): %.boot
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+
+%.$(FASLEXT): %.lisp
+	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+
+## Translation to Fortran
+fortcall.$(FASLEXT): sys-macros.$(FASLEXT)
 
 ## HyperDoc
-topics.$(FASLEXT): topics.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-alql.$(FASLEXT): alql.boot br-search.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-search.$(FASLEXT): br-search.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-saturn.$(FASLEXT): br-saturn.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-op2.$(FASLEXT): br-op2.boot br-op1.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-op1.$(FASLEXT): br-op1.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-con.$(FASLEXT): br-con.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-prof.$(FASLEXT): br-prof.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-data.$(FASLEXT): br-data.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-util.$(FASLEXT): br-util.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-bc-solve.$(FASLEXT): bc-solve.boot bc-matrix.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-bc-matrix.$(FASLEXT): bc-matrix.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-bc-misc.$(FASLEXT): bc-misc.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-bc-util.$(FASLEXT): bc-util.boot ht-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-ht-root.$(FASLEXT): ht-root.boot ht-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-htcheck.$(FASLEXT): htcheck.boot sys-driver.$(FASLEXT) macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-ht-util.$(FASLEXT): ht-util.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-htsetvar.$(FASLEXT): htsetvar.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-hypertex.$(FASLEXT): hypertex.boot types.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+topics.$(FASLEXT): macros.$(FASLEXT)
+alql.$(FASLEXT): br-search.$(FASLEXT)
+br-search.$(FASLEXT): bc-util.$(FASLEXT)
+br-saturn.$(FASLEXT): bc-util.$(FASLEXT)
+br-op2.$(FASLEXT): br-op1.$(FASLEXT)
+br-op1.$(FASLEXT): bc-util.$(FASLEXT)
+br-con.$(FASLEXT): bc-util.$(FASLEXT)
+br-prof.$(FASLEXT): bc-util.$(FASLEXT)
+br-data.$(FASLEXT): bc-util.$(FASLEXT)
+br-util.$(FASLEXT): bc-util.$(FASLEXT)
+bc-solve.$(FASLEXT): bc-matrix.$(FASLEXT)
+bc-matrix.$(FASLEXT): bc-util.$(FASLEXT)
+bc-misc.$(FASLEXT): bc-util.$(FASLEXT)
+bc-util.$(FASLEXT): ht-util.$(FASLEXT)
+ht-root.$(FASLEXT): ht-util.$(FASLEXT)
+htcheck.$(FASLEXT): sys-driver.$(FASLEXT) macros.$(FASLEXT)
+ht-util.$(FASLEXT): macros.$(FASLEXT)
+htsetvar.$(FASLEXT): macros.$(FASLEXT)
+hypertex.$(FASLEXT): types.$(FASLEXT)
 
 ## OpenAxiom's interpreter.
-
-patches.$(FASLEXT): patches.lisp macros.$(FASLEXT) \
-		g-timer.$(FASLEXT) sys-driver.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-setvars.$(FASLEXT): setvars.boot macros.$(FASLEXT) debug.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-profile.$(FASLEXT): profile.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-rulesets.$(FASLEXT): rulesets.boot vmlisp.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-osyscmd.$(FASLEXT): osyscmd.boot int-top.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-int-top.$(FASLEXT): int-top.boot incl.$(FASLEXT) i-toplev.$(FASLEXT) \
-			unlisp.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-toplev.$(FASLEXT): i-toplev.boot i-analy.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-syscmd.$(FASLEXT): i-syscmd.boot i-object.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-output.$(FASLEXT): i-output.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-spec2.$(FASLEXT): i-spec2.boot i-spec1.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-spec1.$(FASLEXT): i-spec1.boot i-analy.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-funsel.$(FASLEXT): i-funsel.boot i-coerfn.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-map.$(FASLEXT): i-map.boot i-object.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-eval.$(FASLEXT): i-eval.boot i-analy.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-coerfn.$(FASLEXT): i-coerfn.boot i-coerce.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-coerce.$(FASLEXT): i-coerce.boot i-analy.$(FASLEXT) i-resolv.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-resolv.$(FASLEXT): i-resolv.boot i-object.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-analy.$(FASLEXT): i-analy.boot i-object.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-intern.$(FASLEXT): i-intern.boot i-object.$(FASLEXT) ptrees.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-code.$(FASLEXT): i-code.boot i-object.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-object.$(FASLEXT): i-object.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-i-util.$(FASLEXT): i-util.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-format.$(FASLEXT): format.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-match.$(FASLEXT): match.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-record.$(FASLEXT): record.boot nlib.$(FASLEXT) pathname.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-setvart.$(FASLEXT): setvart.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+patches.$(FASLEXT): macros.$(FASLEXT) g-timer.$(FASLEXT) sys-driver.$(FASLEXT)
+setvars.$(FASLEXT): macros.$(FASLEXT) debug.$(FASLEXT)
+profile.$(FASLEXT): macros.$(FASLEXT)
+rulesets.$(FASLEXT): vmlisp.$(FASLEXT)
+osyscmd.$(FASLEXT): int-top.$(FASLEXT)
+int-top.$(FASLEXT): incl.$(FASLEXT) i-toplev.$(FASLEXT) unlisp.$(FASLEXT)
+i-toplev.$(FASLEXT): i-analy.$(FASLEXT)
+i-syscmd.$(FASLEXT): i-object.$(FASLEXT)
+i-output.$(FASLEXT): sys-macros.$(FASLEXT)
+i-spec2.$(FASLEXT): i-spec1.$(FASLEXT)
+i-spec1.$(FASLEXT): i-analy.$(FASLEXT)
+i-funsel.$(FASLEXT): i-coerfn.$(FASLEXT)
+i-map.$(FASLEXT): i-object.$(FASLEXT)
+i-eval.$(FASLEXT): i-analy.$(FASLEXT)
+i-coerfn.$(FASLEXT): i-coerce.$(FASLEXT)
+i-coerce.$(FASLEXT): i-analy.$(FASLEXT) i-resolv.$(FASLEXT)
+i-resolv.$(FASLEXT): i-object.$(FASLEXT)
+i-analy.$(FASLEXT): i-object.$(FASLEXT)
+i-intern.$(FASLEXT): i-object.$(FASLEXT) ptrees.$(FASLEXT)
+i-code.$(FASLEXT): i-object.$(FASLEXT)
+i-object.$(FASLEXT): g-util.$(FASLEXT)
+i-util.$(FASLEXT): g-util.$(FASLEXT)
+format.$(FASLEXT): macros.$(FASLEXT)
+match.$(FASLEXT): sys-macros.$(FASLEXT)
+record.$(FASLEXT): nlib.$(FASLEXT) pathname.$(FASLEXT)
+setvart.$(FASLEXT): macros.$(FASLEXT)
 
 ## OpenAxiom's compiler
-wi2.$(FASLEXT): wi2.boot macros.$(FASLEXT) define.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-wi1.$(FASLEXT): wi1.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-apply.$(FASLEXT): apply.boot compiler.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-compiler.$(FASLEXT): compiler.boot c-util.$(FASLEXT) modemap.$(FASLEXT) \
+wi2.$(FASLEXT): macros.$(FASLEXT) define.$(FASLEXT)
+wi1.$(FASLEXT): macros.$(FASLEXT)
+apply.$(FASLEXT): compiler.$(FASLEXT)
+compiler.$(FASLEXT): c-util.$(FASLEXT) modemap.$(FASLEXT) \
 		pathname.$(FASLEXT) define.$(FASLEXT) iterator.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-nrunopt.$(FASLEXT): nrunopt.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-nrunfast.$(FASLEXT): nrunfast.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-nruncomp.$(FASLEXT): nruncomp.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-nrungo.$(FASLEXT): nrungo.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-nruntime.$(FASLEXT): nruntime.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-template.$(FASLEXT): template.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile  --output=$@ --load-directory=. $<
-
-iterator.$(FASLEXT): iterator.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-define.$(FASLEXT): define.boot cattable.$(FASLEXT) category.$(FASLEXT) \
-			c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-package.$(FASLEXT): package.boot clam.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-database.$(FASLEXT): database.boot clam.$(FASLEXT) nlib.$(FASLEXT) \
+nrunopt.$(FASLEXT): c-util.$(FASLEXT)
+nrunfast.$(FASLEXT): c-util.$(FASLEXT)
+nruncomp.$(FASLEXT): c-util.$(FASLEXT)
+nrungo.$(FASLEXT): c-util.$(FASLEXT)
+nruntime.$(FASLEXT): c-util.$(FASLEXT)
+template.$(FASLEXT): c-util.$(FASLEXT)
+iterator.$(FASLEXT): g-util.$(FASLEXT)
+define.$(FASLEXT): cattable.$(FASLEXT) category.$(FASLEXT) c-util.$(FASLEXT)
+package.$(FASLEXT): clam.$(FASLEXT)
+database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-functor.$(FASLEXT): functor.boot category.$(FASLEXT) c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-category.$(FASLEXT): category.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-cattable.$(FASLEXT): cattable.boot simpbool.$(FASLEXT) g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-compat.$(FASLEXT): compat.boot pathname.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-simpbool.$(FASLEXT): simpbool.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-newfort.$(FASLEXT): newfort.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-lisplib.$(FASLEXT): lisplib.boot nlib.$(FASLEXT) c-util.$(FASLEXT) \
-		debug.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
+functor.$(FASLEXT): category.$(FASLEXT) c-util.$(FASLEXT)
+category.$(FASLEXT): g-util.$(FASLEXT)
+cattable.$(FASLEXT): simpbool.$(FASLEXT) g-util.$(FASLEXT)
+compat.$(FASLEXT): pathname.$(FASLEXT)
+simpbool.$(FASLEXT): macros.$(FASLEXT)
+newfort.$(FASLEXT): macros.$(FASLEXT)
+lisplib.$(FASLEXT): nlib.$(FASLEXT) c-util.$(FASLEXT) debug.$(FASLEXT)
 interop.$(FASLEXT): interop.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-c-doc.$(FASLEXT): c-doc.boot c-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+c-doc.$(FASLEXT): c-util.$(FASLEXT)
 
 ## Interface with the Aldor compiler.
-ax.$(FASLEXT): ax.boot as.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-as.$(FASLEXT): as.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-server.$(FASLEXT): server.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+ax.$(FASLEXT): as.$(FASLEXT)
+as.$(FASLEXT): macros.$(FASLEXT)
+server.$(FASLEXT): macros.$(FASLEXT)
 
 ##
 ## OpenAxiom's front-end consists of two parts:
@@ -807,269 +645,99 @@ server.$(FASLEXT): server.boot macros.$(FASLEXT)
 
 ## The old parser component roughtly is:
 ##
-
-spad-parser.$(FASLEXT): spad-parser.boot parse.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-mark.$(FASLEXT): mark.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-parse.$(FASLEXT): parse.boot metalex.$(FASLEXT) postpar.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-packtran.$(FASLEXT): packtran.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-postpar.$(FASLEXT): postpar.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-bootlex.$(FASLEXT): bootlex.lisp preparse.$(FASLEXT) def.$(FASLEXT) \
+spad-parser.$(FASLEXT): parse.$(FASLEXT)
+mark.$(FASLEXT): macros.$(FASLEXT)
+parse.$(FASLEXT): metalex.$(FASLEXT) postpar.$(FASLEXT)
+packtran.$(FASLEXT): sys-macros.$(FASLEXT)
+postpar.$(FASLEXT): macros.$(FASLEXT)
+bootlex.$(FASLEXT): preparse.$(FASLEXT) def.$(FASLEXT) \
 			nlib.$(FASLEXT) sys-globals.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-newaux.$(FASLEXT): newaux.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-def.$(FASLEXT): def.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-comp.$(FASLEXT): comp.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-preparse.$(FASLEXT): preparse.lisp fnewmeta.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-fnewmeta.$(FASLEXT): fnewmeta.lisp parsing.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-parsing.$(FASLEXT): parsing.lisp metalex.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-metalex.$(FASLEXT): metalex.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-nlib.$(FASLEXT): nlib.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-macros.$(FASLEXT): macros.lisp sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+newaux.$(FASLEXT): macros.$(FASLEXT)
+def.$(FASLEXT): macros.$(FASLEXT)
+comp.$(FASLEXT): macros.$(FASLEXT)
+preparse.$(FASLEXT): fnewmeta.$(FASLEXT)
+fnewmeta.$(FASLEXT): parsing.$(FASLEXT)
+parsing.$(FASLEXT): metalex.$(FASLEXT)
+metalex.$(FASLEXT): macros.$(FASLEXT)
+nlib.$(FASLEXT): macros.$(FASLEXT)
+macros.$(FASLEXT): sys-macros.$(FASLEXT) sys-utility.$(FASLEXT)
 
 ## The new parser component roughtly is:
 ##   astr.boot dq.boot incl.boot pile.boot ptrees.boot
 ##   posit.boot cparse.boot format.boot cstream.boot
 ##
-
-i-parser.$(FASLEXT): i-parser.boot cparse.$(FASLEXT) pf2sex.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-pf2sex.$(FASLEXT): pf2sex.boot ptrees.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-cparse.$(FASLEXT): cparse.boot ptrees.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-macex.$(FASLEXT): macex.boot ptrees.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-ptrees.$(FASLEXT): ptrees.boot posit.$(FASLEXT) serror.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-pile.$(FASLEXT): pile.boot scan.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-scan.$(FASLEXT): scan.boot incl.$(FASLEXT) bits.$(FASLEXT) dq.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-incl.$(FASLEXT): incl.boot cstream.$(FASLEXT) cformat.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-cformat.$(FASLEXT): cformat.boot unlisp.$(FASLEXT) posit.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-serror.$(FASLEXT): serror.boot posit.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-unlisp.$(FASLEXT): unlisp.lisp sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-posit.$(FASLEXT): posit.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-intfile.$(FASLEXT): intfile.boot cstream.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-cstream.$(FASLEXT): cstream.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-astr.$(FASLEXT): astr.boot vmlisp.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-bits.$(FASLEXT): bits.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-dq.$(FASLEXT): dq.boot types.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+i-parser.$(FASLEXT): cparse.$(FASLEXT) pf2sex.$(FASLEXT)
+pf2sex.$(FASLEXT): ptrees.$(FASLEXT)
+cparse.$(FASLEXT): ptrees.$(FASLEXT)
+macex.$(FASLEXT): ptrees.$(FASLEXT)
+ptrees.$(FASLEXT): posit.$(FASLEXT) serror.$(FASLEXT)
+pile.$(FASLEXT): scan.$(FASLEXT)
+scan.$(FASLEXT): incl.$(FASLEXT) bits.$(FASLEXT) dq.$(FASLEXT)
+incl.$(FASLEXT): cstream.$(FASLEXT) cformat.$(FASLEXT)
+cformat.$(FASLEXT): unlisp.$(FASLEXT) posit.$(FASLEXT)
+serror.$(FASLEXT): posit.$(FASLEXT)
+unlisp.$(FASLEXT): sys-macros.$(FASLEXT)
+posit.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
+intfile.$(FASLEXT): cstream.$(FASLEXT)
+cstream.$(FASLEXT): sys-macros.$(FASLEXT)
+astr.$(FASLEXT): vmlisp.$(FASLEXT)
+bits.$(FASLEXT): boot-pkg.$(FASLEXT)
+dq.$(FASLEXT): types.$(FASLEXT)
 
 ## General support and utilities.
-cfuns.$(FASLEXT): cfuns.lisp boot-pkg.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-obey.$(FASLEXT): obey.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-daase.$(FASLEXT): daase.lisp macros.$(FASLEXT) foam_l.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-spaderror.$(FASLEXT): spaderror.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-debug.$(FASLEXT): debug.lisp macros.$(FASLEXT) parsing.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-spad.$(FASLEXT): spad.lisp bootlex.$(FASLEXT) postpar.$(FASLEXT) \
-		debug.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-monitor.$(FASLEXT): monitor.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-property.$(FASLEXT): property.lisp sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-nspadaux.$(FASLEXT): nspadaux.lisp sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-sfsfun-l.$(FASLEXT): sfsfun-l.lisp sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-trace.$(FASLEXT): trace.boot debug.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-termrw.$(FASLEXT): termrw.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-showimp.$(FASLEXT): showimp.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-sfsfun.$(FASLEXT): sfsfun.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-modemap.$(FASLEXT): modemap.boot c-util.$(FASLEXT) info.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-info.$(FASLEXT): info.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-slam.$(FASLEXT): slam.boot g-timer.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-clammed.$(FASLEXT): clammed.boot g-timer.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-clam.$(FASLEXT): clam.boot g-timer.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-g-opt.$(FASLEXT): g-opt.boot def.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-g-timer.$(FASLEXT): g-timer.boot macros.$(FASLEXT) g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-msgdb.$(FASLEXT): msgdb.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-g-boot.$(FASLEXT): g-boot.boot def.$(FASLEXT) g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-g-error.$(FASLEXT): g-error.boot diagnostics.$(FASLEXT) g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-c-util.$(FASLEXT): c-util.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-pathname.$(FASLEXT): pathname.boot nlib.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-hashcode.$(FASLEXT): hashcode.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-pspad2.$(FASLEXT): pspad2.boot pspad1.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-pspad1.$(FASLEXT): pspad1.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-g-util.$(FASLEXT): g-util.boot macros.$(FASLEXT) sys-utility.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-g-cndata.$(FASLEXT): g-cndata.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-compress.$(FASLEXT): compress.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-msg.$(FASLEXT): msg.boot sys-macros.$(FASLEXT) astr.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-util.$(FASLEXT): util.lisp parsing.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-fname.$(FASLEXT): fname.lisp macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-sys-macros.$(FASLEXT): sys-macros.lisp diagnostics.$(FASLEXT) \
-			union.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-diagnostics.$(FASLEXT): diagnostics.boot sys-globals.$(FASLEXT) \
-				vmlisp.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
+cfuns.$(FASLEXT): boot-pkg.$(FASLEXT)
+obey.$(FASLEXT): macros.$(FASLEXT)
+daase.$(FASLEXT): macros.$(FASLEXT) foam_l.$(FASLEXT)
+spaderror.$(FASLEXT): macros.$(FASLEXT)
+debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
+spad.$(FASLEXT): bootlex.$(FASLEXT) postpar.$(FASLEXT) debug.$(FASLEXT)
+monitor.$(FASLEXT): macros.$(FASLEXT)
+property.$(FASLEXT): sys-macros.$(FASLEXT)
+nspadaux.$(FASLEXT): sys-macros.$(FASLEXT)
+sfsfun-l.$(FASLEXT): sys-macros.$(FASLEXT)
+trace.$(FASLEXT): debug.$(FASLEXT)
+termrw.$(FASLEXT): macros.$(FASLEXT)
+showimp.$(FASLEXT): macros.$(FASLEXT)
+sfsfun.$(FASLEXT): macros.$(FASLEXT)
+modemap.$(FASLEXT): c-util.$(FASLEXT) info.$(FASLEXT)
+info.$(FASLEXT): g-util.$(FASLEXT)
+slam.$(FASLEXT): g-timer.$(FASLEXT)
+clammed.$(FASLEXT): g-timer.$(FASLEXT)
+clam.$(FASLEXT): g-timer.$(FASLEXT)
+g-opt.$(FASLEXT): def.$(FASLEXT)
+g-timer.$(FASLEXT): macros.$(FASLEXT) g-util.$(FASLEXT)
+msgdb.$(FASLEXT): g-util.$(FASLEXT)
+g-boot.$(FASLEXT): def.$(FASLEXT) g-util.$(FASLEXT)
+g-error.$(FASLEXT): diagnostics.$(FASLEXT) g-util.$(FASLEXT)
+c-util.$(FASLEXT): g-util.$(FASLEXT)
+pathname.$(FASLEXT): nlib.$(FASLEXT)
+hashcode.$(FASLEXT): g-util.$(FASLEXT)
+pspad2.$(FASLEXT): pspad1.$(FASLEXT)
+pspad1.$(FASLEXT): macros.$(FASLEXT)
+g-util.$(FASLEXT): macros.$(FASLEXT) sys-utility.$(FASLEXT)
+g-cndata.$(FASLEXT): sys-macros.$(FASLEXT)
+compress.$(FASLEXT): sys-macros.$(FASLEXT)
+msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
+util.$(FASLEXT): parsing.$(FASLEXT)
+fname.$(FASLEXT): macros.$(FASLEXT)
+sys-macros.$(FASLEXT): diagnostics.$(FASLEXT) union.$(FASLEXT)
+buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
+diagnostics.$(FASLEXT): sys-globals.$(FASLEXT) vmlisp.$(FASLEXT)
 sys-driver.$(FASLEXT): sys-driver.boot types.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-sys-globals.$(FASLEXT): sys-globals.boot sys-constants.$(FASLEXT) \
-				hash.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-sys-constants.$(FASLEXT): sys-constants.boot types.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-hash.$(FASLEXT): hash.lisp types.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-union.$(FASLEXT): union.lisp vmlisp.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-ggreater.$(FASLEXT): ggreater.lisp vmlisp.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-axext_l.$(FASLEXT): axext_l.lisp foam_l.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-foam_l.$(FASLEXT): foam_l.lisp vmlisp.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-sys-utility.$(FASLEXT): sys-utility.boot vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-vmlisp.$(FASLEXT): vmlisp.lisp types.$(FASLEXT) sys-globals.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-sys-os.$(FASLEXT): sys-os.boot types.$(FASLEXT) cfuns.$(FASLEXT) 
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-types.$(FASLEXT): types.boot boot-pkg.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
+sys-globals.$(FASLEXT): sys-constants.$(FASLEXT) hash.$(FASLEXT)
+sys-constants.$(FASLEXT): types.$(FASLEXT)
+hash.$(FASLEXT): types.$(FASLEXT)
+union.$(FASLEXT): vmlisp.$(FASLEXT)
+ggreater.$(FASLEXT): vmlisp.$(FASLEXT)
+axext_l.$(FASLEXT): foam_l.$(FASLEXT)
+foam_l.$(FASLEXT): vmlisp.$(FASLEXT)
+sys-utility.$(FASLEXT): vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
+vmlisp.$(FASLEXT): types.$(FASLEXT) sys-globals.$(FASLEXT)
+sys-os.$(FASLEXT): types.$(FASLEXT) cfuns.$(FASLEXT) 
+types.$(FASLEXT): boot-pkg.$(FASLEXT)
 boot-pkg.$(FASLEXT): boot-pkg.lisp
-	$(BOOTSYS) --compile --output=$@ $<
 
 <<warm.data.stanza>>
-
-buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
 
 <<DVI from pamphlet>>
 
