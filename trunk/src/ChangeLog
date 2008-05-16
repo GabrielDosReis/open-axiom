@@ -1,3 +1,7 @@
+2008-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/Makefile.pamphlet: Simplify.
+
 2008-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisplib.boot (leaveIfErrors): Take constructor name
