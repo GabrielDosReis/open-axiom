@@ -1,3 +1,10 @@
+2008-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/format.boot (form2String1): Handle PAREN.
+	* interp/g-cndata.boot (condUnabbrev): Handle homogeneous varargs
+	for constructors taking tuples.
+	* interp/i-resolv.boot: Revolve domains and categories.
+
 2008-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix AW/420

@@ -244,6 +244,8 @@ resolveTTSpecial(t1,t2) ==
     dom' := resolveTT(dom, t2)
     null dom' => nil
     ['Segment, dom']
+  member(t1,[$Domain,$Category]) and t2 = $Type => t2
+  t1 = $Domain and t2 = $Category => $Type
   nil
 
 resolveTTCC(t1,t2) ==
