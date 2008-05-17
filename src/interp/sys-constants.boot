@@ -610,7 +610,7 @@ $FILETYPE_-TABLE ==
    ["SPADOUT", :"spout"]]
 
 +++
-_*ATTRIBUTES_* ==
+$BuiltinAttributes ==
  '(nil infinite arbitraryExponent approximate complex
    shallowMutable canonical noetherian central
    partiallyOrderedSet arbitraryPrecision canonicalsClosed

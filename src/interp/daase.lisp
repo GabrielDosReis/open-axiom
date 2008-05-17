@@ -1387,7 +1387,7 @@
   (finish-output out)
   (setq masterpos (file-position out))
   (setq compresslist
-        (append (|allConstructors|) (|allOperations|) *attributes*))
+        (append (|allConstructors|) (|allOperations|) |$BuiltinAttributes|))
   (push "algebra" compresslist)
   (push "failed" compresslist)
   (push 'signature compresslist)
