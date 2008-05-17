@@ -801,7 +801,7 @@
                           (MUST (MATCH-ADVANCE-STRING ")")))
                      (AND (MATCH-ADVANCE-STRING ")")
                           (PUSH-REDUCTION '|PARSE-Enclosure|
-                              (CONS '|Tuple| NIL))))))
+                              (CONS '|%Comma| NIL))))))
       (AND (MATCH-ADVANCE-STRING "{")
            (MUST (OR (AND (|PARSE-Expr| 6)
                           (MUST (MATCH-ADVANCE-STRING "}"))

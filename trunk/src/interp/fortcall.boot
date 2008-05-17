@@ -748,7 +748,7 @@ multiToUnivariate f ==
   -- elements of a vector, and compile it.
   (first f) ^= "+->" => error "in multiToUnivariate: not an AnonymousFunction"
   if PAIRP CADR f then
-    vars := CDADR f -- throw away 'Tuple at start of variable list
+    vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]
   body := COPY_-TREE CADDR f
@@ -765,7 +765,7 @@ functionAndJacobian f ==
   -- evaluate function and jacobian values.
   (first f) ^= "+->" => error "in functionAndJacobian: not an AnonymousFunction"
   if PAIRP CADR f then
-    vars := CDADR f -- throw away 'Tuple at start of variable list
+    vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]
   #(vars) ^= #(CDADDR f) => 
@@ -793,7 +793,7 @@ vectorOfFunctions f ==
   -- evaluate function values.
   (first f) ^= "+->" => error "in vectorOfFunctions: not an AnonymousFunction"
   if PAIRP CADR f then
-    vars := CDADR f -- throw away 'Tuple at start of variable list
+    vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]
   funBodies := COPY_-TREE CDADDR f

@@ -53,7 +53,7 @@ postTransform: %ParseTree -> %ParseForm
 postTransform y ==
   x:= y
   u:= postTran x
-  if u is ["Tuple",:l,[":",y,t]] and (and/[IDENTP x for x in l]) then u:=
+  if u is ["%Comma",:l,[":",y,t]] and (and/[IDENTP x for x in l]) then u:=
     [":",["LISTOF",:l,y],t]
   postTransformCheck u
   u
@@ -86,7 +86,7 @@ postTran x ==
     u:= postTran [b,:rest x]
     [postTran op,:rest u]
   op is ["Scripts",:.] =>
-    postScriptsForm(op,"append"/[unTuple postTran y for y in rest x])
+    postScriptsForm(op,"append"/[unComma postTran y for y in rest x])
   op^=(y:= postOp op) => [y,:postTranList rest x]
   postForm x
 
@@ -153,9 +153,9 @@ postPretend t ==
 postConstruct: %ParseTree -> %ParseForm
 postConstruct u ==
   u is ["construct",b] =>
-    a:= (b is [",",:.] => comma2Tuple b; b)
+    a:= (b is [",",:.] => ["%Comma",:postFlatten(b,",")]; b)
     a is ["SEGMENT",p,q] => ["construct",postTranSegment(p,q)]
-    a is ["Tuple",:l] =>
+    a is ["%Comma",:l] =>
       or/[x is [":",y] for x in l] => postMakeCons l
       or/[x is ["SEGMENT",:.] for x in l] => tuple2List l
       ["construct",:postTranList l]
@@ -200,7 +200,7 @@ postBlockItemList l ==
 postBlockItem: %ParseTree -> %ParseForm
 postBlockItem x ==
   x:= postTran x
-  x is ["Tuple",:l,[":",y,t]] and (and/[IDENTP x for x in l]) =>
+  x is ["%Comma",:l,[":",y,t]] and (and/[IDENTP x for x in l]) =>
     [":",["LISTOF",:l,y],t]
   x
 
@@ -218,11 +218,7 @@ postCategory u ==
 
 postComma: %ParseTree -> %ParseForm
 postComma u == 
-  postTuple comma2Tuple u
-
-comma2Tuple: %ParseTree -> %ParseForm
-comma2Tuple u == 
-  ["Tuple",:postFlatten(u,",")]
+  post%Comma ["%Comma",:postFlatten(u,",")]
 
 postDef: %ParseTree -> %ParseForm
 postDef t ==
@@ -310,17 +306,17 @@ postForm u ==
         true=> op
         $BOOT => op
         GETL(op,'Led) or GETL(op,'Nud) or op = 'IN => op
-        numOfArgs:= (argl' is [["Tuple",:l]] => #l; 1)
+        numOfArgs:= (argl' is [["%Comma",:l]] => #l; 1)
         INTERNL("*",STRINGIMAGE numOfArgs,PNAME op)
       [op',:argl']
     op is ["Scripts",:.] => [:postTran op,:postTranList argl]
     u:= postTranList u
-    if u is [["Tuple",:.],:.] then
+    if u is [["%Comma",:.],:.] then
       postError ['"  ",:bright u,
         '"is illegal because tuples cannot be applied_!",'%l,
           '"   Did you misuse infix dot?"]
     u
-  x is [.,["Tuple",:y]] => [first x,:y]
+  x is [.,["%Comma",:y]] => [first x,:y]
   x
 
 postQuote: %ParseTree -> %ParseForm
@@ -352,7 +348,7 @@ postTranScripts a ==
   a is [",",:b] =>
     ("append"/[fn postTran y for y in b]) where
       fn x ==
-        x is ["Tuple",:y] => y
+        x is ["%Comma",:y] => y
         [x]
   [postTran a]
 
@@ -377,14 +373,14 @@ postJoin ["Join",a,:l] ==
   if l is [b] and b is [name,:.] and MEMQ(name,'(ATTRIBUTE SIGNATURE)) then l
     := [["CATEGORY",b]]
   al:=
-    a is ["Tuple",:c] => c
+    a is ["%Comma",:c] => c
     [a]
   ["Join",:al,:l]
 
 postMapping: %ParseTree -> %ParseForm
 postMapping u  ==
   u isnt ["->",source,target] => u
-  ["Mapping",postTran target,:unTuple postTran source]
+  ["Mapping",postTran target,:unComma postTran source]
 
 postOp: %ParseTree -> %ParseForm
 postOp x ==
@@ -417,7 +413,7 @@ postCollect t ==
   finish(constructOp,itl,y) where
     finish(op,itl,y) ==
       y is [":",a] => ["REDUCE","append",0,[op,:itl,a]]
-      y is ["Tuple",:l] =>
+      y is ["%Comma",:l] =>
         newBody:=
           or/[x is [":",y] for x in l] => postMakeCons l
           or/[x is ["SEGMENT",:.] for x in l] => tuple2List l
@@ -452,7 +448,7 @@ postIn arg ==
 postInSeq: %ParseTree -> %ParseForm
 postInSeq seq ==
   seq is ["SEGMENT",p,q] => postTranSegment(p,q)
-  seq is ["Tuple",:l] => tuple2List l
+  seq is ["%Comma",:l] => tuple2List l
   postTran seq
 
 postTranSegment: (%ParseTree, %ParseTree) -> %ParseForm
@@ -531,15 +527,15 @@ postType: %ParseTree -> %ParseForm
 postType typ ==
   typ is ["->",source,target] =>
     source="constant" => [[postTran target],"constant"]
-    [["Mapping",postTran target,:unTuple postTran source]]
+    [["Mapping",postTran target,:unComma postTran source]]
   typ is ["->",target] => [["Mapping",postTran target]]
   [postTran typ]
 
-postTuple: %ParseTree -> %ParseForm
-postTuple u ==
-  u is ["Tuple"] => u
-  u is ["Tuple",:l,a] => (["Tuple",:postTranList rest u])
---u is ["Tuple",:l,a] => (--a:= postTran a; ["Tuple",:postTranList rest u])
+post%Comma: %ParseTree -> %ParseForm
+post%Comma u ==
+  u is ["%Comma"] => u
+  u is ["%Comma",:l,a] => (["%Comma",:postTranList rest u])
+--u is ["%Comma",:l,a] => (--a:= postTran a; ["%Comma",:postTranList rest u])
     --RDJ: don't understand need for above statement that is commented out
 
 postWhere: %ParseTree -> %ParseForm
@@ -590,9 +586,9 @@ isPackageType: %ParseForm -> %Boolean
 isPackageType x == 
   not CONTAINED("$",x)
 
-unTuple: %ParseForm -> %ParseForm
-unTuple x ==
-  x is ["Tuple",:y] => y
+unComma: %ParseForm -> %ParseForm
+unComma x ==
+  x is ["%Comma",:y] => y
   [x]
 
 --% `^='
@@ -636,6 +632,6 @@ for x in [["with", :function postWith],_
 	  ["->", :function postMapping],_
 	  ["=>", :function postExit],_
           ["^=", :function postBootNotEqual],_
-	  ["Tuple", :function postTuple]] repeat
+	  ["%Comma", :function post%Comma]] repeat
   MAKEPROP(first x, "postTran", rest x)
 

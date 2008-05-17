@@ -1221,7 +1221,7 @@ bootStrapError(functorForm,sourceFile) ==
 compAdd: (%Form, %Mode, %Env) -> %Maybe %Triple 
 compAdd(['add,$addForm,capsule],m,e) ==
   $bootStrapMode = true =>
-    if $addForm is ['Tuple,:.] then code := nil
+    if $addForm is ["%Comma",:.] then code := nil
        else [code,m,e]:= comp($addForm,m,e)
     [['COND, _
        ['$bootStrapMode, _
@@ -1239,13 +1239,13 @@ compAdd(['add,$addForm,capsule],m,e) ==
     [$addForm,.,e]:= compSubDomain1(domainForm,predicate,m,e)
   else
     $packagesUsed :=
-      $addForm is ['Tuple,:u] => [:u,:$packagesUsed]
+      $addForm is ["%Comma",:u] => [:u,:$packagesUsed]
       [$addForm,:$packagesUsed]
 --+
     $NRTaddForm := $addForm
     [$addForm,.,e]:=
-      $addForm is ['Tuple,:.] =>
-        $NRTaddForm := ['Tuple,:[NRTgetLocalIndex x for x in rest $addForm]]
+      $addForm is ["%Comma",:.] =>
+        $NRTaddForm := ["%Comma",:[NRTgetLocalIndex x for x in rest $addForm]]
         compOrCroak(compTuple2Record $addForm,$EmptyMode,e)
       compOrCroak($addForm,$EmptyMode,e)
   compCapsule(capsule,m,e)

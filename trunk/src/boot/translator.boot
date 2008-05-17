@@ -808,6 +808,7 @@ translateBootFile(progname, options, file) ==
 
 compileBootHandler(progname, options, file) ==
   intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
+  errorCount() ^= 0 => nil
   intFile => 
     objFile := compileLispHandler(progname, options, intFile)
     DELETE_-FILE intFile

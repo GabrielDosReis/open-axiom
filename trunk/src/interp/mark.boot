@@ -120,7 +120,7 @@ markCoerceChk x ==
 markMultipleExplicit(nameList, valList, T) ==
   tcheck T
   [mkWi('setqMultipleExplicit, 'WI,
-    ['LET, ['Tuple,:nameList], ['Tuple,:valList]],
+    ['LET, ["%Comma",:nameList], ["%Comma",:valList]],
     T.expr), :CDR T]
 
 markRetract(x,T) ==
@@ -1144,8 +1144,8 @@ markInsertBodyParts u ==
     ['SEQ,:[markInsertBodyParts y for y in l],
            ['exit,n,markInsertBodyParts x]]
   u is [op,:l] and MEMQ(op,'(REPEAT COLLECT)) => markInsertRepeat u
-  u is ['LET,['Tuple,:s],b] =>
-    ['LET,['Tuple,:[markWrapPart x for x in s]],markInsertBodyParts b]
+  u is ['LET,["%Comma",:s],b] =>
+    ['LET,["%Comma",:[markWrapPart x for x in s]],markInsertBodyParts b]
 --u is ['LET,a,b] and constructor? opOf b => u
   u is ['LET,a,b] and a is [op,:.] =>
     ['LET,[markWrapPart x for x in a],markInsertBodyParts b]
