@@ -86,7 +86,7 @@ NRTaddDeltaCode() ==
         $template.i:= deltaTran(item,compItem)
   $template.5 :=
     $NRTaddForm =>
-      $NRTaddForm is ['Tuple,:y] => NREVERSE y
+      $NRTaddForm is ["%Comma",:y] => NREVERSE y
       NRTencode($NRTaddForm,$addForm)
     nil
 

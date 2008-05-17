@@ -540,7 +540,7 @@ compSetq1(oform,val,m,E) ==
     compSetq(["LET",x,val],m,E')
   form is [op,:l] =>
     op="CONS"  => setqMultiple(uncons form,val,m,E)
-    op="Tuple" => setqMultiple(l,val,m,E)
+    op="%Comma" => setqMultiple(l,val,m,E)
     setqSetelt(oform,form,val,m,E)
 
 setqSetelt(oform,[v,:s],val,m,E) ==
@@ -596,7 +596,7 @@ setqSingle(id,val,m,E) ==
 setqMultiple(nameList,val,m,e) ==
   val is ["CONS",:.] and m=$NoValueMode =>
     setqMultipleExplicit(nameList,uncons val,m,e)
-  val is ["Tuple",:l] and m=$NoValueMode => setqMultipleExplicit(nameList,l,m,e)
+  val is ["%Comma",:l] and m=$NoValueMode => setqMultipleExplicit(nameList,l,m,e)
   --1. create a gensym, %add to local environment, compile and assign rhs
   g:= genVariable()
   e:= addBinding(g,nil,e)

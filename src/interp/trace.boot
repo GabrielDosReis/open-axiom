@@ -75,7 +75,7 @@ $lastUntraced := NIL
 trace l == traceSpad2Cmd l
 
 traceSpad2Cmd l ==
-  if l is ["Tuple", l1] then l := l1
+  if l is ["%Comma", l1] then l := l1
   $mapSubNameAlist:= getMapSubNames(l)
   trace1 augmentTraceNames(l,$mapSubNameAlist)
   traceReply()

@@ -1,5 +1,41 @@
 2008-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix AW/420
+	* interp/compiler.boot (compSetq1): Use %Comma, not Tuple.
+	(setqMultiple): Likewise.
+	* interp/def.lisp (DEF-IS2): Likewise.
+	* interp/define.boot (compAdd): Likewise.
+	* interp/fnewmeta.lisp (|PARSE-Enclosure|): Likewise.
+	* interp/fortcall.boot (lmultiToUnivariate): Likewise.
+	(functionAndJacobian): Likewise.
+	(vectorOfFunctions): Likewise.
+	* interp/mark.boot (markMultipleExplicit): Likewise.
+	(markInsertBodyParts): Likewise.
+	* interp/nruncomp.boot (NRTaddDeltaCode): Likewise.
+	* interp/nrunopt.boot (NRTextendsCategory1): Likewise.
+	* interp/postpar.boot (postTransform): Likewise.
+	(postTran): Likewise.
+	(postPretend): Likewise.
+	(postConstruct): Likewise.
+	(postBlockItem): Likewise.
+	(postCategory): Likewise.
+	(postForm): Likewise.
+	(postTransScripts): Likewise.
+	(postJoin): Likewise.
+	(postMapping): Likewise.
+	(postCollect): Likewise.
+	(postInSeq): Likewise.
+	(postType): Likewise.
+	(post%Comma): Rename from postTuple.
+	(unComma): Rename from unTuple.
+	(comma2Tuple): Remove.
+	* interp/trace.boot (traceSpad2Cmd): Use %Comma, not Tuple.
+	* interp/wi1.boot (compSetq1): Likewise.
+	(setqMultiple):Likewise.
+	* boot/translator.boot (compileBootHandler): Give up if
+	translation to Lisp contained errors.
+	* testsuite/compiler/aw-420.spad: New.
+
 	* interp/Makefile.pamphlet: Simplify.
 
 2008-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
