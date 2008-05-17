@@ -975,7 +975,7 @@ asyFindAttrs l ==
   for x in l repeat 
     x0 := x
     while CONSP x repeat x := CAR x
-    if MEMQ(x, _*ATTRIBUTES_*) then attrs := [:attrs, x]
+    if MEMQ(x, $BuiltinAttributes) then attrs := [:attrs, x]
     else notattrs := [:notattrs, x0]
   [attrs, notattrs]
 

@@ -69,7 +69,7 @@ putConstructorProperty(name,prop,val) ==
   true
 
 attribute? name == 
-        MEMQ(name, _*ATTRIBUTES_*)
+        MEMQ(name, $BuiltinAttributes)
  
 abbreviation? abb ==
   -- if it is an abbreviation, return the corresponding name
