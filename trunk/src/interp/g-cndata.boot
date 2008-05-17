@@ -232,9 +232,14 @@ condAbbrev(arglist,argtypes) ==
   res
  
 condUnabbrev(op,arglist,argtypes,modeIfTrue) ==
-  #arglist ^= #argtypes =>
+  #arglist ^= #argtypes and argtypes isnt [["Tuple",t]] =>
     throwKeyedMsg("S2IL0014",[op,plural(#argtypes,'"argument"),
       bright(#arglist)])
+  -- fix up argument list for unary constructor taking tuples.
+  t ^= nil =>
+    categoryForm? t => 
+       [["tuple",:[unabbrev1(arg,modeIfTrue) for arg in arglist]]]
+    [["tuple",:arglist]]
   [newArg for arg in arglist for type in argtypes] where newArg() ==
     categoryForm?(type) => unabbrev1(arg,modeIfTrue)
     arg

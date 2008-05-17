@@ -1,6 +1,6 @@
--- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@
 --       the documentation and/or other materials provided with the
 --       distribution.
 --
---     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--     - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --       names of its contributors may be used to endorse or promote products
 --       derived from this software without specific prior written permission.
 --
@@ -424,6 +424,9 @@ form2String1 u ==
   op = 'BRACKET =>
     argl' := form2String1 first argl
     ["[",:(atom argl' => [argl']; argl'),"]"]
+  op = 'PAREN =>
+    argl' := form2String1 first argl
+    ["(",:(atom argl' => [argl']; argl'),")"]
   op = "SIGNATURE" =>
      [operation,sig] := argl
      concat(operation,'": ",formatSignature sig)
@@ -626,8 +629,9 @@ application2String(op,argl, linkInfo) ==
     (op' := isInternalFunctionName(op)) => op'
     app2StringWrap(formWrapId op, linkInfo)
   1=#argl =>
-    first argl is ["<",:.] => concat(op,first argl)
-    concat(app2StringWrap(formWrapId op, linkInfo)," ",first argl)
+    arg := first argl
+    arg is ["<",:.] or arg is ["(",:.] => concat(op,arg)
+    concat(app2StringWrap(formWrapId op, linkInfo)," ",arg)
 --op in '(UP SM) =>
 --  newop:= (op = "UP" => "P";"M")
 --  concat(newop,concat(lbrkSch(),argl.0,rbrkSch(),argl.1))
