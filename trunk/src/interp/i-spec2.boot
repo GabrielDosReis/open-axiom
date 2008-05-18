@@ -280,7 +280,7 @@ IFcodeTran(code,m,m1) ==
   code isnt ["COND",[p1,a1],[''T,a2]] =>
     m = $Void => code
     code' := coerceInteractive(objNew(quote2Wrapped code,m1),m) =>
-      wrapped2Quote objVal code'
+      getValueNormalForm code'
     throwKeyedMsgCannotCoerceWithValue(quote2Wrapped code,m1,m)
   a1:=IFcodeTran(a1,m,m1)
   a2:=IFcodeTran(a2,m,m1)
@@ -508,14 +508,14 @@ evalLET(lhs,rhs) ==
     get(getUnname lhs,'autoDeclare,$env) =>
       v:=
         $genValue => v
-        objNew(wrapped2Quote objVal v,objMode v)
+        objNew(getValueNormalForm v,objMode v)
       evalLETput(lhs,v)
   t1:= objMode v
   t2' := (t2 := getMode lhs)
   value:=
     t1 = t2 =>
       $genValue => v
-      objNew(wrapped2Quote objVal v,objMode v)
+      objNew(getValueNormalForm v,objMode v)
     if isPartialMode t2 then
       if EQCAR(t1,'Symbol) and $declaredMode then
         t1:= getMinimalVarMode(objValUnwrap v,$declaredMode)
@@ -985,7 +985,7 @@ upreturn t ==
       val' := getArgValue(val, $mapTarget)
       m := $mapTarget
     else
-      val' := wrapped2Quote objVal getValue val
+      val' := getValueNormalForm getValue val
       m := computedMode val
   cn := mapCatchName $mapName
   $mapReturnTypes := insert(m, $mapReturnTypes)

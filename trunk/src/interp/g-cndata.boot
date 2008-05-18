@@ -243,6 +243,18 @@ condUnabbrev(op,arglist,argtypes,modeIfTrue) ==
   [newArg for arg in arglist for type in argtypes] where newArg() ==
     categoryForm?(type) => unabbrev1(arg,modeIfTrue)
     arg
+
+++ returns true if `op' is the name of a constructor.  
+++ Note: From this function point of view, a symbol names a
+++ constructor if it is either a builtin constructor, or it is
+++ known to the global database as designating a constructor.  In
+++ particular neither the category frame, nor the normal frame
+++ are consulted.  Consequently, this functions is not appropriate
+++ for use in the compiler.
+isConstructorName op ==
+  op in $BuiltinConstructorNames
+    or getConstructorAbbreviationFromDB op
+
  
 --% Code Being Phased Out
  

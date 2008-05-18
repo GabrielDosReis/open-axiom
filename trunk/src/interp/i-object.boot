@@ -94,10 +94,6 @@ unwrap x ==
   x is ["WRAPPED",:y] => y
   x
  
-wrapped2Quote x ==
-  x is ["WRAPPED",:y] => MKQ y
-  x
- 
 quote2Wrapped x ==
   x is ["QUOTE",y] => wrap y
   x
@@ -106,6 +102,25 @@ removeQuote x ==
   x is ["QUOTE",y] => y
   x
  
+++ returns the normal form of `obj''s value, suitable for use as
+++ argument to a (library) function call.
+getValueNormalForm obj ==
+  val := objVal obj
+  atom val => val
+  [op,:argl] := val
+  op = "WRAPPED" => MKQ argl
+  IDENTP op and isConstructorName op => instantiationNormalForm(op,argl)
+  -- what else can it be?  Don't know; leave it alone.
+  val
+
+instantiationNormalForm(op,argl) ==
+  [op,:[normalVal for arg in argl]] where normalVal() ==
+     atom arg => arg
+     [h,:t] := arg
+     IDENTP h and isConstructorName h => instantiationNormalForm(h,t)
+     MKQ arg
+
+
 -- addQuote x ==
 --   NUMBERP x => x
 --   ['QUOTE,x]
