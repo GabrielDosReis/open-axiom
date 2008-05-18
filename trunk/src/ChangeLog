@@ -1,3 +1,8 @@
+2008-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/313
+	* algebra/reclos.spad.pamphlet (sqrt$RealClosedField): Fix signature.
+
 2008-05-18  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
