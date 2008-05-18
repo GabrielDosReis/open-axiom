@@ -1,5 +1,10 @@
 2008-05-18  Martin Rubey  <martin.rubey@univie.ac.at>
 
+	Fix AW/321
+	* hyper/htsearch (htpagedir): Avoid deprecated switch.
+
+2008-05-18  Martin Rubey  <martin.rubey@univie.ac.at>
+
 	Fix AW/340
 	* algebra/numtheor.spad.pamphlet
 	(divisors$IntegerNumberTheoryFunctions):  Fix thinko.
