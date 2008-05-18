@@ -1,5 +1,12 @@
 2008-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix AW/16
+	* interp/i-analy.boot (isConceptualCategory): New.
+	* interp/i-object.boot (getValueNormalForm): Use it.
+	* testsuite/interpreter/aw-16.input: New.
+
+2008-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-object.boot (wrapped2Quote): Reomve.
 	(getValueNormalForm): New.
 	* interp/i-code.boot (intCodeGenCOERCE): Use it.

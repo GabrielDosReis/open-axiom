@@ -109,7 +109,9 @@ getValueNormalForm obj ==
   atom val => val
   [op,:argl] := val
   op = "WRAPPED" => MKQ argl
-  IDENTP op and isConstructorName op => instantiationNormalForm(op,argl)
+  IDENTP op and isConstructorName op => 
+    isConceptualCategory objMode obj => instantiationNormalForm(op,argl)
+    MKQ val
   -- what else can it be?  Don't know; leave it alone.
   val
 

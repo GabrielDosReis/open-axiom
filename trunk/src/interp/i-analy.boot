@@ -633,6 +633,10 @@ conceptualType type ==
   categoryForm?(type) => $Category
   $Domain
 
+++ Returns true is `t' conceptually describes a domain or package.
+isConceptualCategory: %Mode -> %Boolean
+isConceptualCategory t ==
+  t = $Type or t = $Category or t = $Domain or categoryForm? t
 
 bottomUpType(t, type) ==
   mode := conceptualType type

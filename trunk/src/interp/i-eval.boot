@@ -294,7 +294,7 @@ getArgValue1(a,t) ==
         getMappingArgValue(a,t,m)
     t' := coerceOrRetract(t',t)
     t' and getValueNormalForm t'
-  systemErrorHere '"getArgValue"
+  systemErrorHere '"getArgValue1"
 
 getArgValue2(a,t,se?,opName) ==
   se? and (objMode(getValue a) ^= t) =>
