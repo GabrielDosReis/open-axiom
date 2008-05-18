@@ -1,3 +1,11 @@
+2008-05-18  Bill Page  <bill.page@newsynthesis.org>
+
+	Fix AW/117
+	* algebra/vector.spad.pamphlet (DirectProductCategory): Also a
+	Monoid is base type belongs to Monoid.
+	(DirectProduct): Implement multiplication is base type belongs to
+	Monoid.
+
 2008-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix AW/221
