@@ -435,16 +435,15 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
     numer(n * r)
 
   divisors n ==
-    oldList : List Integer := concat(1,nil())
-    newList : List Integer
+    oldList : List Integer := [1]
     for f in factors factor n repeat
-      newList := nil()
-      for k in 0..f.exponent repeat
+      newList := oldList
+      for k in 1..f.exponent repeat
         pow := f.factor ** k
         for m in oldList repeat
           newList := concat(pow * m,newList)
       oldList := newList
-    sort(#1 < #2,newList)
+    sort(#1 < #2,oldList)
 
   numberOfDivisors n ==
     n = 0 => 0
