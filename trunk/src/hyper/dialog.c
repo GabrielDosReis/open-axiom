@@ -1238,7 +1238,7 @@ dialog(XEvent *event, KeySym keysym, char *buffer)
     {
         /* only handle normal keys */
 
-        if (event->xkey.state & ShiftModMask)
+        if (event->xkey.state & UnsupportedModMask)
             BeepAtTheUser();
         else
             add_buffer_to_sym(buffer, item);
