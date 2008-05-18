@@ -1,19 +1,19 @@
 % Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
 % !! DO NOT MODIFY THIS FILE BY HAND !! Created by ht.awk.
-\newcommand{\MultiSetXmpTitle}{MultiSet}
-\newcommand{\MultiSetXmpNumber}{9.53}
+\newcommand{\MultisetXmpTitle}{Multiset}
+\newcommand{\MultisetXmpNumber}{9.53}
 %
 % =====================================================================
-\begin{page}{MultiSetXmpPage}{9.53 MultiSet}
+\begin{page}{MultisetXmpPage}{9.53 MultiSet}
 % =====================================================================
 \beginscroll
 The domain \spadtype{Multiset(R)} is similar to \spadtype{Set(R)}
 except that multiplicities
 (counts of duplications) are maintained and displayed.
 Use the operation \spadfunFrom{multiset}{Multiset} to create
-%-% \HDindex{set!vs. multiset}{MultiSetXmpPage}{9.53}{MultiSet}
+%-% \HDindex{set!vs. multiset}{MultisetXmpPage}{9.53}{Multiset}
 multisets from lists.
-%-% \HDindex{multiset}{MultiSetXmpPage}{9.53}{MultiSet}
+%-% \HDindex{multiset}{MultisetXmpPage}{9.53}{Multiset}
 All the standard operations from sets are available for
 multisets.
 An element with multiplicity greater than one has the
