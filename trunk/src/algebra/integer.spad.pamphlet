@@ -996,7 +996,7 @@ Note that this code is not included in the generated catdef.spad file.
 ++ Keywords: positive integer
 ++ Description: \spadtype{PositiveInteger} provides functions for
 ++   positive integers.
-PositiveInteger: Join(AbelianSemiGroup,OrderedSet,Monoid) with
+PositiveInteger: Join(OrderedAbelianSemiGroup,Monoid) with
             gcd: (%,%) -> %
               ++ gcd(a,b) computes the greatest common divisor of two
               ++ positive integers \spad{a} and b.
@@ -1018,96 +1018,80 @@ Note that this code is not included in the generated catdef.spad file.
 
 <<PI.lsp BOOTSTRAP>>=
 
-(|/VERSIONCHECK| 2) 
+(/VERSIONCHECK 2) 
 
-(SETQ |$CategoryFrame| 
-  (|put| 
-    #1=(QUOTE |PositiveInteger|)
-    (QUOTE |SuperDomain|)
-    #2=(QUOTE (|NonNegativeInteger|))
-    (|put| 
-      #2# 
-      #3=(QUOTE |SubDomain|) 
-      (CONS 
-        (QUOTE (|PositiveInteger| |<| 0 |#1|))
-        (DELASC #1# (|get| #2# #3# |$CategoryFrame|)))
-      |$CategoryFrame|))) 
+(SETQ |$CategoryFrame|
+      (|put| #0='|PositiveInteger| '|SuperDomain|
+             #1='(|NonNegativeInteger|)
+             (|put| #1# '|SubDomain|
+                    (CONS '(|PositiveInteger| < 0 |#1|)
+                          (DELASC #0#
+                                  (|get| #1# '|SubDomain|
+                                         |$CategoryFrame|)))
+                    |$CategoryFrame|))) 
 
-(DEFUN |PositiveInteger| NIL 
-  (PROG NIL 
-    (RETURN 
-      (PROG (#1=#:G96739) 
-        (RETURN 
-          (COND 
-            ((LETT #1# 
-               (HGET |$ConstructorCache| (QUOTE |PositiveInteger|))
-               |PositiveInteger|)
-                 (|CDRwithIncrement| (CDAR #1#)))
-            ((QUOTE T) 
-              (|UNWIND-PROTECT| 
-                (PROG1 
-                  (CDDAR (HPUT |$ConstructorCache| (QUOTE |PositiveInteger|) (LIST (CONS NIL (CONS 1 (|PositiveInteger;|))))))
-                  (LETT #1# T |PositiveInteger|))
-                (COND 
-                  ((NOT #1#) 
-                     (HREM 
-                       |$ConstructorCache| 
-                       (QUOTE |PositiveInteger|)))))))))))) 
+(DEFUN |PositiveInteger| ()
+  (PROG ()
+    (RETURN
+      (PROG (#0=#:G1396)
+        (RETURN
+          (COND
+            ((LETT #0# (HGET |$ConstructorCache| '|PositiveInteger|)
+                   |PositiveInteger|)
+             (|CDRwithIncrement| (CDAR #0#)))
+            ('T
+             (UNWIND-PROTECT
+               (PROG1 (CDDAR (HPUT |$ConstructorCache|
+                                   '|PositiveInteger|
+                                   (LIST
+                                    (CONS NIL
+                                     (CONS 1 (|PositiveInteger;|))))))
+                 (LETT #0# T |PositiveInteger|))
+               (COND
+                 ((NOT #0#)
+                  (HREM |$ConstructorCache| '|PositiveInteger|))))))))))) 
 
-(DEFUN |PositiveInteger;| NIL 
-  (PROG (|dv$| |$| |pv$|) 
-    (RETURN 
-      (PROGN 
-        (LETT |dv$| (QUOTE (|PositiveInteger|)) . #1=(|PositiveInteger|))
-        (LETT |$| (GETREFV 12) . #1#)
-        (QSETREFV |$| 0 |dv$|)
-        (QSETREFV |$| 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #1#))
-        (|haddProp| 
-           |$ConstructorCache| (QUOTE |PositiveInteger|) NIL (CONS 1 |$|))
-        (|stuffDomainSlots| |$|)
-        |$|)))) 
+(DEFUN |PositiveInteger;| ()
+  (PROG (|dv$| $ |pv$|)
+    (RETURN
+      (PROGN
+        (LETT |dv$| '(|PositiveInteger|) . #0=(|PositiveInteger|))
+        (LETT $ (|newShell| 12) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|haddProp| |$ConstructorCache| '|PositiveInteger| NIL
+            (CONS 1 $))
+        (|stuffDomainSlots| $)
+        $)))) 
 
-(MAKEPROP 
-  (QUOTE |PositiveInteger|)
-  (QUOTE |infovec|)
-  (LIST 
-    (QUOTE 
-      #(NIL NIL NIL NIL NIL 
-        (|NonNegativeInteger|)
-        (|PositiveInteger|)
-        (|Boolean|)
-        (|Union| |$| (QUOTE "failed"))
-        (|SingleInteger|)
-        (|String|)
-        (|OutputForm|))) 
-    (QUOTE #(|~=| 0 |sample| 6 |recip| 10 |one?| 15 |min| 20 |max| 26 
-             |latex| 32 |hash| 37 |gcd| 42 |coerce| 48 |^| 53 |One| 65 
-             |>=| 69 |>| 75 |=| 81 |<=| 87 |<| 93 |+| 99 |**| 105 |*| 117))
-    (QUOTE (((|commutative| "*") . 0)))
-    (CONS 
-      (|makeByteWordVec2| 1 (QUOTE (0 0 0 0 0 0 0)))
-      (CONS 
-        (QUOTE #(|Monoid&| |AbelianSemiGroup&| |SemiGroup&| |OrderedSet&| 
-                 |SetCategory&| |BasicType&| NIL))
-        (CONS 
-          (QUOTE #(
-            (|Monoid|)
-            (|AbelianSemiGroup|)
-            (|SemiGroup|)
-            (|OrderedSet|)
-            (|SetCategory|)
-            (|BasicType|)
-            (|CoercibleTo| 11)))
-          (|makeByteWordVec2| 11 
-           (QUOTE (2 0 7 0 0 1 0 0 0 1 1 0 8 0 1 1 0 7 0 1 2 0 0 0 0 1 2 0 0 0
-                   0 1 1 0 10 0 1 1 0 9 0 1 2 0 0 0 0 1 1 0 11 0 1 2 0 0 0 6 1
-                   2 0 0 0 5 1 0 0 0 1 2 0 7 0 0 1 2 0 7 0 0 1 2 0 7 0 0 1 2 0
-                   7 0 0 1 2 0 7 0 0 1 2 0 0 0 0 1 2 0 0 0 6 1 2 0 0 0 5 1 2 0
-                   0 0 0 1 2 0 0 6 0 1))))))
-     (QUOTE |lookupComplete|))) 
+(MAKEPROP '|PositiveInteger| '|infovec|
+    (LIST '#(NIL NIL NIL NIL NIL (|NonNegativeInteger|)
+             (|PositiveInteger|) (|Boolean|) (|Union| $ '"failed")
+             (|SingleInteger|) (|String|) (|OutputForm|))
+          '#(~= 0 |sample| 6 |recip| 10 |one?| 15 |min| 20 |max| 26
+             |latex| 32 |hash| 37 |gcd| 42 |coerce| 48 ^ 53 |One| 65 >=
+             69 > 75 = 81 <= 87 < 93 + 99 ** 105 * 117)
+          '(((|commutative| "*") . 0))
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
+                (CONS '#(NIL |Monoid&| |OrderedSet&| |SemiGroup&|
+                         |AbelianSemiGroup&| |SetCategory&|
+                         |BasicType&| NIL)
+                      (CONS '#((|OrderedAbelianSemiGroup|) (|Monoid|)
+                               (|OrderedSet|) (|SemiGroup|)
+                               (|AbelianSemiGroup|) (|SetCategory|)
+                               (|BasicType|) (|CoercibleTo| 11))
+                            (|makeByteWordVec2| 11
+                                '(2 0 7 0 0 1 0 0 0 1 1 0 8 0 1 1 0 7 0
+                                  1 2 0 0 0 0 1 2 0 0 0 0 1 1 0 10 0 1
+                                  1 0 9 0 1 2 0 0 0 0 1 1 0 11 0 1 2 0
+                                  0 0 6 1 2 0 0 0 5 1 0 0 0 1 2 0 7 0 0
+                                  1 2 0 7 0 0 1 2 0 7 0 0 1 2 0 7 0 0 1
+                                  2 0 7 0 0 1 2 0 0 0 0 1 2 0 0 0 6 1 2
+                                  0 0 0 5 1 2 0 0 0 0 1 2 0 0 6 0 1)))))
+          '|lookupComplete|)) 
 
-(MAKEPROP (QUOTE |PositiveInteger|) (QUOTE NILADIC) T) 
-
+(MAKEPROP '|PositiveInteger| 'NILADIC T) 
 @
 \section{domain ROMAN RomanNumeral}
 <<domain ROMAN RomanNumeral>>=

@@ -1,5 +1,15 @@
 2008-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix AW/221
+	* algebra/catdef.spad.pamphlet (OrderedAbelianSemiGroup): Now a
+	join of OrderedSet and AbelianSemiGroup.
+	* algebra/integer.spad.pamphlet (PositiveInteger): Now belongs to
+	both OrderedAbelianSemiGroup and Monoid.  Update cached Lisp
+	translation. 
+	* shared/algebra: Update databases.
+
+2008-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix AW/313
 	* algebra/reclos.spad.pamphlet (sqrt$RealClosedField): Fix signature.
 
