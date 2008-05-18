@@ -49,7 +49,7 @@ extern int simple_box_width;
 extern int gInInsertMode;
 
 extern unsigned int ModifiersMask;
-extern unsigned int ShiftModMask;
+extern unsigned int UnsupportedModMask;
 
 
 #endif
