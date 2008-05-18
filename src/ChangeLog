@@ -1,3 +1,8 @@
+2008-05-18  Martin Rubey  <martin.rubey@univie.ac.at>
+
+	Fix AW/412
+	* algebra/aggcat.spad.pamphlet (=$TableAggregate): Fix thinko.
+
 2008-05-18  Gregory Vanuxem  <g.vanuxem@wanadoo.fr>
 
 	Fix AW/149
