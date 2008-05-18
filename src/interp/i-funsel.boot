@@ -75,7 +75,7 @@ selectMms(op,args,$declaredMode) ==
   ((isSharpVarWithNum(n) and opMode) or (val and opMode)) and
       opMode is ['Mapping,:ta] =>
         imp :=
-          val => wrapped2Quote objVal val
+          val => getValueNormalForm val
           n
         [[['local,:ta], imp , NIL]]
 
@@ -101,7 +101,7 @@ selectMms(op,args,$declaredMode) ==
       putTarget(tree,['Mapping,tar,:types1])
       bottomUp tree
       val := getValue tree
-      [[['local,:rest objMode val], wrapped2Quote objVal val, NIL]]
+      [[['local,:rest objMode val], getValueNormalForm val, NIL]]
 
   if (n = 'map) and (first types1 = $AnonymousFunction)
     then

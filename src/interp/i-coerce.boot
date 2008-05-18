@@ -1078,7 +1078,7 @@ coerceIntByMap(triple,t2) ==
   fn = function Undef => NIL
   -- now compile a function to do the coercion
   code := ['SPADCALL,['CONS,["function","coerceIntByMapInner"],MKQ [u1,:u2]],
-    wrapped2Quote objVal triple,MKQ fun]
+    getValueNormalForm triple,MKQ fun]
   -- and apply the function
   val := CATCH('coerceFailure,timedEvaluate code)
   (val = $coerceFailure) => NIL

@@ -278,12 +278,12 @@ sideEffectedArg?(t,sig,opName) ==
 getArgValue(a, t) ==
   atom a and not VECP a =>
     t' := coerceOrRetract(getBasicObject a,t)
-    t' and wrapped2Quote objVal t'
+    t' and getValueNormalForm t'
   v := getArgValue1(a, t) => v
   alt := altTypeOf(objMode getValue a, a, nil) =>
     t' := coerceInt(getValue a, alt)
     t' := coerceOrRetract(t',t)
-    t' and wrapped2Quote objVal t'
+    t' and getValueNormalForm t'
   nil
 
 getArgValue1(a,t) ==
@@ -293,7 +293,7 @@ getArgValue1(a,t) ==
       objValUnwrap(t') is ['MAP,:.] =>
         getMappingArgValue(a,t,m)
     t' := coerceOrRetract(t',t)
-    t' and wrapped2Quote objVal t'
+    t' and getValueNormalForm t'
   systemErrorHere '"getArgValue"
 
 getArgValue2(a,t,se?,opName) ==

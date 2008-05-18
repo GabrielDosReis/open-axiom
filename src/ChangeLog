@@ -1,5 +1,19 @@
 2008-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-object.boot (wrapped2Quote): Reomve.
+	(getValueNormalForm): New.
+	* interp/i-code.boot (intCodeGenCOERCE): Use it.
+	* interp/i-coerce.boot (coerceIntByMap): Likewise.
+	* interp/i-eval.boot (getArgValue): Likewise.
+	(getArgValue2): Likewise.
+	* interp/i-funsel.boot (selectMms): Likewise.
+	* interp/i-map.boot (rewriteMap): Likewise.
+	* interp/i-spec2.boot (IFcodeTran): Likewise.
+	(evalLET): Likewise.
+	(upreturn): Likewise.
+	* interp/g-cndata.boot (isConstructorName): New.
+	* testsuite/interpreter/eval-dep-type.input: New.
+
 	* interp/format.boot (form2String1): Handle PAREN.
 	* interp/g-cndata.boot (condUnabbrev): Handle homogeneous varargs
 	for constructors taking tuples.

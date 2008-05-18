@@ -552,7 +552,7 @@ rewriteMap(op,opName,argl) ==
     arglCode := ['LIST,:[argCode for arg in argl for argName in
       $FormalMapVariableList]] where argCode() ==
         ['putValueValue,['mkAtreeNode,MKQ argName],
-          objNewCode(['wrap,wrapped2Quote(objVal getValue arg)],
+          objNewCode(['wrap,getValueNormalForm getValue arg],
             getMode arg)]
     putValue(op,objNew(['rewriteMap1,MKQ opName,arglCode,MKQ sig],
       CAR sig))
