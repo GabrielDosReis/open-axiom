@@ -59,12 +59,17 @@ IndexCard() : Exports == Implementation where
       ++ \axiom{s} is not of the right format then an error will occur when using
       ++ it.
   Implementation == add
-    x<y==(x pretend String) < (y pretend String)
-    x=y==(x pretend String) = (y pretend String)
+    Rep == String
+
+    x<y == rep x < rep y
+
+    x=y == rep x = rep y
+
     display(x) ==
       name : OutputForm := dbName(x)$Lisp
       type : OutputForm := dbPart(x,4,1$Lisp)$Lisp
       output(hconcat(name,hconcat(" : ",type)))$OutputPackage
+
     fullDisplay(x) ==
       name : OutputForm := dbName(x)$Lisp
       type : OutputForm := dbPart(x,4,1$Lisp)$Lisp
@@ -81,21 +86,23 @@ IndexCard() : Exports == Implementation where
       firstPart := hconcat(name,hconcat(" : ",type))
       secondPart := hconcat(fromPart,hconcat(ifPart,exposedPart))
       output(hconcat(firstPart,secondPart))$OutputPackage
-    coerce(s:String): % == (s pretend %)
-    coerce(x): OutputForm == (x pretend String)::OutputForm
+
+    coerce(s:String): % == per s 
+
+    coerce(x): OutputForm == rep(x)::OutputForm
+
     elt(x,sel) ==
-      s := PNAME(sel)$Lisp pretend String
-      s = "name" => dbName(x)$Lisp
-      s = "nargs" => dbPart(x,2,1$Lisp)$Lisp
-      s = "exposed" => SUBSTRING(dbPart(x,3,1)$Lisp,0,1)$Lisp 
-      s = "type" => dbPart(x,4,1$Lisp)$Lisp
-      s = "abbreviation" => dbPart(x,5,1$Lisp)$Lisp
-      s = "kind" => alqlGetKindString(x)$Lisp
-      s = "origin" => alqlGetOrigin(x)$Lisp
-      s = "params" => alqlGetParams(x)$Lisp
-      s = "condition" => dbPart(x,6,1$Lisp)$Lisp
-      s = "doc" => dbComments(x)$Lisp
-      error "unknown selector"
+      sel = 'name => dbName(x)$Lisp
+      sel = 'nargs => dbPart(x,2,1$Lisp)$Lisp
+      sel = 'exposed => SUBSTRING(dbPart(x,3,1)$Lisp,0,1)$Lisp 
+      sel = 'type => dbPart(x,4,1$Lisp)$Lisp
+      sel = 'abbreviation => dbPart(x,5,1$Lisp)$Lisp
+      sel = 'kind => alqlGetKindString(x)$Lisp
+      sel = 'origin => alqlGetOrigin(x)$Lisp
+      sel = 'params => alqlGetParams(x)$Lisp
+      sel = 'condition => dbPart(x,6,1$Lisp)$Lisp
+      sel = 'doc => dbComments(x)$Lisp
+      userError "unknown selector"
 
 @
 \section{domain DBASE Database}

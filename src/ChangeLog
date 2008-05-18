@@ -1,3 +1,7 @@
+2008-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/alql.spad.pamphlet (IndexCard): Don't use pretend.
+
 2008-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix AW/16
