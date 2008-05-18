@@ -1,3 +1,9 @@
+2008-05-18  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/319
+	* hyper/pages/MSET.ht: Fix typo.
+
 2008-05-18  Martin Rubey  <martin.rubey@univie.ac.at>
 
 	Fix AW/321
