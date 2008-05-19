@@ -42,8 +42,8 @@
 import includer
 import scanner
 import ast
-module parser
 namespace BOOTTRAN
+module parser
  
 
 ++ true when the current function definition has its parameters 
@@ -54,7 +54,7 @@ bpFirstToken()==
       $stok:=
           if null $inputStream
           then shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
-          else CAR $inputStream
+          else first $inputStream
       $ttok:=shoeTokPart $stok
       true
  
@@ -62,7 +62,7 @@ bpFirstTok()==
       $stok:=
           if null $inputStream
           then shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
-          else CAR $inputStream
+          else first $inputStream
       $ttok:=shoeTokPart $stok
       $bpParenCount>0 and EQCAR($stok,"KEY") =>
              EQ($ttok,"SETTAB")=>
@@ -77,42 +77,42 @@ bpFirstTok()==
       true
  
 bpNext() ==
-     $inputStream := CDR($inputStream)
+     $inputStream := rest($inputStream)
      bpFirstTok()
  
 bpNextToken() ==
-     $inputStream := CDR($inputStream)
+     $inputStream := rest($inputStream)
      bpFirstToken()
  
 bpState()== [$inputStream,$stack,$bpParenCount,$bpCount]
 --cons($inputStream,$stack)
  
 bpRestore(x)==
-      $inputStream:=CAR x
+      $inputStream:=first x
       bpFirstToken()
-      $stack:=CADR x
-      $bpParenCount:=CADDR x
+      $stack:=second x
+      $bpParenCount:=third x
       $bpCount:=CADDDR x
       true
  
-bpPush x==$stack:=CONS(x,$stack)
+bpPush x==$stack:=[x,:$stack]
  
 bpPushId()==
-   $stack:=CONS(bfReName $ttok,$stack)
+   $stack:= [bfReName $ttok,:$stack]
  
 bpPop1()==
-       a:=CAR $stack
-       $stack:=CDR $stack
+       a:=first $stack
+       $stack:=rest $stack
        a
  
 bpPop2()==
-       a:=CADR $stack
+       a:=second $stack
        RPLACD($stack,CDDR $stack)
        a
  
 bpPop3()==
-       a:=CADDR $stack
-       RPLACD(CDR $stack,CDDDR $stack)
+       a:=third $stack
+       RPLACD(rest $stack,CDDDR $stack)
        a
  
 bpIndentParenthesized f==
@@ -122,7 +122,7 @@ bpIndentParenthesized f==
     then
       $bpParenCount:=$bpParenCount+1
       bpNext()
-      if APPLY(f,nil) and bpFirstTok() and
+      if apply(f,nil) and bpFirstTok() and
               (bpEqPeek "CPAREN" or bpParenTrap(a))
       then
             $bpParenCount:=$bpParenCount-1
@@ -147,7 +147,7 @@ bpParenthesized f==
     a:=$stok
     if bpEqKey "OPAREN"
     then
-      if APPLY(f,nil) and (bpEqKey "CPAREN" or bpParenTrap(a))
+      if apply(f,nil) and (bpEqKey "CPAREN" or bpParenTrap(a))
       then true
       else if bpEqKey "CPAREN"
            then
@@ -160,7 +160,7 @@ bpBracket f==
     a:=$stok
     if bpEqKey "OBRACK"
     then
-      if APPLY(f,nil) and (bpEqKey "CBRACK" or bpBrackTrap(a))
+      if apply(f,nil) and (bpEqKey "CBRACK" or bpBrackTrap(a))
       then bpPush bfBracket bpPop1 ()
       else if bpEqKey "CBRACK"
            then bpPush  []
@@ -171,21 +171,21 @@ bpPileBracketed f==
               if bpEqKey "SETTAB"
               then if bpEqKey "BACKTAB"
                    then true
-                   else if APPLY(f,nil) and
+                   else if apply(f,nil) and
                             (bpEqKey "BACKTAB" or bpPileTrap())
                         then bpPush bfPile bpPop1()
                         else false
               else false
  
 bpListof(f,str1,g)==
-    if APPLY(f,nil)
+    if apply(f,nil)
     then
-        if bpEqKey str1 and (APPLY(f,nil) or bpTrap())
+        if bpEqKey str1 and (apply(f,nil) or bpTrap())
         then
           a:=$stack
           $stack:=nil
-          while bpEqKey str1 and (APPLY(f,nil) or bpTrap()) repeat 0
-          $stack:=cons(NREVERSE $stack,a)
+          while bpEqKey str1 and (apply(f,nil) or bpTrap()) repeat 0
+          $stack:=[NREVERSE $stack,:a]
           bpPush FUNCALL(g, [bpPop3(),bpPop2(),:bpPop1()])
         else
           true
@@ -194,52 +194,52 @@ bpListof(f,str1,g)==
  
 -- to do ,<backset>
 bpListofFun(f,h,g)==
-    if APPLY(f,nil)
+    if apply(f,nil)
     then
-        if APPLY(h,nil) and (APPLY(f,nil) or bpTrap())
+        if apply(h,nil) and (apply(f,nil) or bpTrap())
         then
           a:=$stack
           $stack:=nil
-          while APPLY(h,nil) and (APPLY(f,nil) or bpTrap()) repeat 0
-          $stack:=cons(NREVERSE $stack,a)
+          while apply(h,nil) and (apply(f,nil) or bpTrap()) repeat 0
+          $stack:=[NREVERSE $stack,:a]
           bpPush FUNCALL(g, bfListOf [bpPop3(),bpPop2(),:bpPop1()])
         else
           true
     else false
  
 bpList(f,str1,g)==
-    if APPLY(f,nil)
+    if apply(f,nil)
     then
-        if bpEqKey str1 and (APPLY(f,nil) or bpTrap())
+        if bpEqKey str1 and (apply(f,nil) or bpTrap())
         then
           a:=$stack
           $stack:=nil
-          while bpEqKey str1 and (APPLY(f,nil) or bpTrap()) repeat 0
-          $stack:=cons(NREVERSE $stack,a)
+          while bpEqKey str1 and (apply(f,nil) or bpTrap()) repeat 0
+          $stack:=[NREVERSE $stack,:a]
           bpPush FUNCALL(g,  [bpPop3(),bpPop2(),:bpPop1()])
         else
           bpPush FUNCALL(g, [bpPop1()])
     else bpPush FUNCALL(g, [])
  
 bpOneOrMore f==
-       APPLY(f,nil)=>
+       apply(f,nil)=>
          a:=$stack
          $stack:=nil
-         while APPLY(f,nil) repeat 0
-         $stack:=cons(NREVERSE $stack,a)
-         bpPush cons(bpPop2(),bpPop1())
+         while apply(f,nil) repeat 0
+         $stack:=[NREVERSE $stack,:a]
+         bpPush [bpPop2(),:bpPop1()]
        false
  
  
 -- s must transform the head of the stack
 bpAnyNo s==
-     while APPLY(s,nil) repeat 0
+     while apply(s,nil) repeat 0
      true
  
  
 -- AndOr(k,p,f)= k p
 bpAndOr(keyword,p,f)==
-   bpEqKey keyword and (APPLY(p,nil) or bpTrap())
+   bpEqKey keyword and (apply(p,nil) or bpTrap())
           and bpPush FUNCALL(f, bpPop1())
  
 bpConditional f==
@@ -248,17 +248,17 @@ bpConditional f==
   then
            if bpEqKey "SETTAB"
            then if bpEqKey "THEN"
-                then  (APPLY(f,nil) or bpTrap()) and bpElse(f) and bpEqKey "BACKTAB"
+                then  (apply(f,nil) or bpTrap()) and bpElse(f) and bpEqKey "BACKTAB"
                 else  bpMissing "THEN"
            else if bpEqKey "THEN"
-                then (APPLY(f,nil) or bpTrap()) and bpElse(f)
+                then (apply(f,nil) or bpTrap()) and bpElse(f)
                 else bpMissing "then"
   else false
  
 bpElse(f)==
            a:=bpState()
            if bpBacksetElse()
-           then  (APPLY(f,nil) or bpTrap()) and
+           then  (apply(f,nil) or bpTrap()) and
                  bpPush bfIf(bpPop3(),bpPop2(),bpPop1())
            else
               bpRestore a
@@ -309,7 +309,7 @@ bpListAndRecover(f)==
    c:=$inputStream
    while not done repeat
 --   $trapped:local:=false
-     found:=try APPLY(f,nil) catch TRAPPOINT
+     found:=try apply(f,nil) catch TRAPPOINT
      if found="TRAPPED"
      then
         $inputStream:=c
@@ -334,7 +334,7 @@ bpListAndRecover(f)==
             else
                 bpNext()
                 c:=$inputStream
-     b:=cons(bpPop1(),b)
+     b:=[bpPop1(),:b]
    $stack:=a
    bpPush NREVERSE b
  
@@ -518,8 +518,8 @@ bpSexp()==
  
 bpSexp1()== bpFirstTok() and
     bpSexp() and
-     (bpEqKey "DOT" and bpSexp() and bpPush CONS (bpPop2(),bpPop1())or
-           bpSexp1() and bpPush CONS (bpPop2(),bpPop1())) or
+     (bpEqKey "DOT" and bpSexp() and bpPush [bpPop2(),:bpPop1()] or
+           bpSexp1() and bpPush [bpPop2(),:bpPop1()]) or
                bpPush nil
  
 bpPrimary1() ==
@@ -581,7 +581,7 @@ bpInfGeneric s== bpInfKey s and  (bpEqKey "BACKSET" or true)
  
 bpRightAssoc(o,p)==
     a:=bpState()
-    if APPLY(p,nil)
+    if apply(p,nil)
     then
        while  bpInfGeneric o and (bpRightAssoc(o,p) or bpTrap()) repeat
              bpPush bfInfApplication(bpPop2(),bpPop2(),bpPop1())
@@ -591,10 +591,10 @@ bpRightAssoc(o,p)==
        false
  
 bpLeftAssoc(operations,parser)==
-    if APPLY(parser,nil)
+    if apply(parser,nil)
     then
        while bpInfGeneric(operations) and
-         (APPLY(parser,nil) or bpTrap())
+         (apply(parser,nil) or bpTrap())
            repeat
              bpPush bfInfApplication(bpPop2(),bpPop2(),bpPop1())
        true
@@ -807,7 +807,7 @@ bpDefinition()==
         false
  
 bpStoreName()==
-  $op := car $stack
+  $op := first $stack
   $wheredefs := nil
   $typings := nil
   $returnType := true           -- assume we may return anything
@@ -1059,7 +1059,7 @@ bpAssignLHS()==
         or bpEqKey "DOT" and bpList(function bpPrimary,"DOT",
               function bfListOf)
           and bpChecknull() and
-            bpPush bfTuple(cons(bpPop2(),bpPop1()))
+            bpPush bfTuple([bpPop2(),:bpPop1()])
                  or true)
 bpChecknull()==
       a:=bpPop1()

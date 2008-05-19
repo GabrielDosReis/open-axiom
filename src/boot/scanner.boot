@@ -42,7 +42,9 @@ namespace BOOTTRAN
 double x ==
   FLOAT(x, 1.0)
  
-dqUnit s==(a:=[s];CONS(a,a))
+dqUnit s==
+  a := [s]
+  [a,:a]
  
 dqAppend(x,y)==
     if null x
@@ -50,8 +52,8 @@ dqAppend(x,y)==
     else if null y
          then x
          else
-              RPLACD (CDR x,CAR y)
-              RPLACD (x,    CDR y)
+              RPLACD (rest x,first y)
+              RPLACD (x,    rest y)
               x
  
 dqConcat ld==
@@ -61,22 +63,32 @@ dqConcat ld==
          then first ld
          else dqAppend(first ld,dqConcat rest ld)
  
-dqToList s==if null s then nil else CAR s
+dqToList s ==
+  if null s then nil else first s
  
-shoeConstructToken(ln,lp,b,n)==[b.0,b.1,:cons(lp,n)]
-shoeTokType x== CAR x
-shoeTokPart x== CADR x
-shoeTokPosn x== CDDR x
-shoeTokConstruct(x,y,z)==[x,y,:z]
+shoeConstructToken(ln,lp,b,n) == 
+  [b.0,b.1,:cons(lp,n)]
+
+shoeTokType x == 
+  first x
+
+shoeTokPart x == 
+  second x
+
+shoeTokPosn x == 
+  CDDR x
+
+shoeTokConstruct(x,y,z) ==
+  [x,y,:z]
  
 shoeNextLine(s)==
      if bStreamNull s
      then false
      else
        $linepos:=s
-       $f:= CAR s
-       $r:= CDR s
-       $ln:=CAR $f
+       $f:= first s
+       $r:= rest s
+       $ln:=first $f
        $n:=STRPOSL('" ",$ln,0,true)
        $sz :=# $ln
        null $n => true
@@ -84,7 +96,7 @@ shoeNextLine(s)==
                   a:=MAKE_-FULL_-CVEC (7-REM($n,8) ,'" ")
                   $ln.$n:='" ".0
                   $ln:=CONCAT(a,$ln)
-                  s1:=cons(cons($ln,CDR $f),$r)
+                  s1:=cons(cons($ln,rest $f),$r)
                   shoeNextLine s1
        true
  
@@ -106,7 +118,7 @@ shoeLineToks(s)==
               cons([dq],$r)
             command:=shoeLisp? $ln=> shoeLispToken($r,command)
             command:=shoePackage? $ln=>
-       --       z:=car shoeBiteOff command
+       --       z:=first shoeBiteOff command
               a:=CONCAT('"(IN-PACKAGE ",command,'")")
               dq:=dqUnit shoeConstructToken
                        ($ln,$linepos,shoeLeafLisp a,0)
@@ -147,7 +159,7 @@ shoeAccumulateLines(s,string)==
 
 -- returns true if token t is closing `parenthesis'.
 shoeCloser t ==
-  MEMQ(shoeKeyWord t, '(CPAREN CBRACK))
+  shoeKeyWord t in '(CPAREN CBRACK)
  
 shoeToken () ==
       ln:=$ln
@@ -180,31 +192,43 @@ shoeToken () ==
       dqUnit shoeConstructToken(ln,linepos,b,n)
  
 -- to pair badge and badgee
-shoeLeafId x==  ["ID",INTERN x]
+shoeLeafId x ==  
+  ["ID",INTERN x]
  
-shoeLeafKey x==["KEY",shoeKeyWord x]
+shoeLeafKey x==
+  ["KEY",shoeKeyWord x]
  
-shoeLeafInteger x==["INTEGER",shoeIntValue x]
+shoeLeafInteger x==
+  ["INTEGER",shoeIntValue x]
  
 shoeLeafFloat(a,w,e)==
     b:=shoeIntValue CONCAT(a,w)
     c:= double b *  EXPT(double 10, e-#w)
     ["FLOAT",c]
  
-shoeLeafString x  == ["STRING",x]
+shoeLeafString x  == 
+  ["STRING",x]
  
-shoeLeafLisp x    == ["LISP",x]
-shoeLeafLispExp x    == ["LISPEXP",x]
+shoeLeafLisp x    == 
+  ["LISP",x]
+
+shoeLeafLispExp x    == 
+  ["LISPEXP",x]
  
-shoeLeafLine x    == ["LINE",x]
+shoeLeafLine x    == 
+  ["LINE",x]
  
-shoeLeafComment x == ["COMMENT", x]
+shoeLeafComment x == 
+  ["COMMENT", x]
  
-shoeLeafNegComment x== ["NEGCOMMENT", x]
+shoeLeafNegComment x== 
+  ["NEGCOMMENT", x]
  
-shoeLeafError x   == ["ERROR",x]
+shoeLeafError x   == 
+  ["ERROR",x]
  
-shoeLeafSpaces x  == ["SPACES",x]
+shoeLeafSpaces x  == 
+  ["SPACES",x]
  
 shoeLispEscape()==
          $n:=$n+1
@@ -357,7 +381,8 @@ shoeIdEnd(line,n)==
      n
  
  
-shoeDigit x== DIGIT_-CHAR_-P x
+shoeDigit x== 
+  DIGIT_-CHAR_-P x
  
 shoeW(b)==
        n1:=$n
@@ -389,7 +414,8 @@ shoeWord(esp) ==
                   shoeLeafKey w
                else shoeLeafId  w
  
-shoeInteger()==shoeInteger1(false)
+shoeInteger() ==
+  shoeInteger1(false)
  
 shoeInteger1(zro) ==
        n:=$n
@@ -479,13 +505,17 @@ shoeError()==
                 STRINGIMAGE QENUM($ln,n),'" is not a Boot character"))
       shoeLeafError ($ln.n)
  
-shoeOrdToNum x== DIGIT_-CHAR_-P x
+shoeOrdToNum x== 
+  DIGIT_-CHAR_-P x
  
-shoeKeyWord st   == GETHASH(st,shoeKeyTable)
+shoeKeyWord st   == 
+  GETHASH(st,shoeKeyTable)
  
-shoeKeyWordP st  ==  not null GETHASH(st,shoeKeyTable)
+shoeKeyWordP st  ==  
+  not null GETHASH(st,shoeKeyTable)
  
-shoeMatch(l,i)==shoeSubStringMatch(l,shoeDict,i)
+shoeMatch(l,i) == 
+  shoeSubStringMatch(l,shoeDict,i)
  
 shoeSubStringMatch (l,d,i)==
        h:= QENUM(l, i)
@@ -509,5 +539,6 @@ shoeSubStringMatch (l,d,i)==
                  else false
        s1
  
-shoePunctuation c== shoePun.c =1
+shoePunctuation c == 
+  shoePun.c =1
  
