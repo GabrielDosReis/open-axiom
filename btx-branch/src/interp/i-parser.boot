@@ -38,7 +38,6 @@
 import cparse
 import pf2sex
 namespace BOOT
-module i_-parser
 
 ++ returns the list of tokens making up a line in the stream `s'
 tokenizeLine s ==

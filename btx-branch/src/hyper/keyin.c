@@ -73,10 +73,42 @@ unsigned int ModifiersMask = ShiftMask | LockMask | ControlMask
     | Mod1Mask | Mod2Mask | Mod3Mask
     | Mod4Mask | Mod5Mask;
 
-unsigned int ShiftModMask = LockMask | ControlMask
+unsigned int UnsupportedModMask = LockMask | ControlMask
     | Mod1Mask | Mod2Mask | Mod3Mask
     | Mod4Mask | Mod5Mask;
 
+/*
+ * This routine returns the modifier mask associated
+ * to a key symbol.
+ */
+
+static unsigned int
+get_modifier_mask(KeySym sym)
+{
+   unsigned int       i, mask;
+   XModifierKeymap    *mod;
+   KeyCode            kcode;
+   const int          masks[8] = {
+      ShiftMask, LockMask, ControlMask,
+      Mod1Mask, Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask
+   };
+   
+   mod = XGetModifierMapping(gXDisplay);
+   kcode = XKeysymToKeycode(gXDisplay,sym);
+   
+   if (mod) {
+      for (i = 0; i < (8 * mod->max_keypermod); i++){
+         if (!mod->modifiermap[i]) continue;
+         else if (kcode == mod->modifiermap[i]){
+            mask = masks[i / mod->max_keypermod];
+            XFreeModifiermap(mod);
+            return mask;
+         }
+      }
+      XFreeModifiermap(mod);
+   }
+   return 0;
+}
 
 /*
  * Since the user can't tell me directly what name to use here, I am going to
@@ -241,6 +273,9 @@ void
 init_keyin(void)
 {
     char *prop;
+    unsigned nlm = get_modifier_mask(XK_Num_Lock);
+    UnsupportedModMask &= ~nlm;
+    ModifiersMask &= ~nlm;
 
     /*
      * First set all the values for when the active cursor is in the window

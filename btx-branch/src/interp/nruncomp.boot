@@ -87,7 +87,7 @@ NRTaddDeltaCode() ==
         $template.i:= deltaTran(item,compItem)
   $template.5 :=
     $NRTaddForm =>
-      $NRTaddForm is ['Tuple,:y] => NREVERSE y
+      $NRTaddForm is ["%Comma",:y] => NREVERSE y
       NRTencode($NRTaddForm,$addForm)
     nil
 
@@ -154,7 +154,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
     dc = '$ => $functorForm
     atom dc and (dcval := get(dc,'value,$e)) => dcval.expr
     dc
-  sig := SUBST(ndc,dc,sig)
+  sig := substitute(ndc,dc,sig)
   not MEMQ(KAR ndc,$optimizableConstructorNames) => nil
   dcval := optCallEval ndc
   -- MSUBST guarantees to use EQUAL testing
@@ -350,25 +350,25 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 
 --LOCAL BOUND FLUID VARIABLES:
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
-  $catvecList: local    --list of vectors v1..vn for each view
-  $hasCategoryAlist: local  --list of GENSYMs bound to (HasCategory ..) items
-  $catNames: local      --list of names n1..nn for each view
-  $maximalViews: local  --list of maximal categories for domain (???)
-  $catsig: local        --target category (used in ProcessCond)
-  $SetFunctions: local  --copy of p view with preds telling when fnct defined
-  $MissingFunctionInfo: local --now useless
+  $catvecList: local := nil   --list of vectors v1..vn for each view
+  $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
+  $catNames: local := nil      --list of names n1..nn for each view
+  $maximalViews: local := nil  --list of maximal categories for domain (???)
+  $catsig: local := nil        --target category (used in ProcessCond)
+  $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
+  $MissingFunctionInfo: local := nil --now useless
      --vector marking which functions are assigned
-  $ConstantAssignments: local --code for creation of constants
+  $ConstantAssignments: local := nil --code for creation of constants
   $epilogue: local := nil     --code to set slot 5, things to be done last
-  $HackSlot4: local  --Invention of JHD 13/July/86-set in InvestigateConditions
-  $extraParms:local  --Set in DomainSubstitutionFunction, used in setVector12
-  $devaluateList: local --Bound to ((#1 . dv$1)..) where &1 := devaluate #1 later
+  $HackSlot4: local := nil  --Invention of JHD 13/July/86-set in InvestigateConditions
+  $extraParms:local := nil  --Set in DomainSubstitutionFunction, used in setVector12
+  $devaluateList: local := nil --Bound to ((#1 . dv$1)..) where &1 := devaluate #1 later
   $devaluateList:= [[arg,:b] for arg in args for b in $ModeVariableList]
-  $supplementaries: local
+  $supplementaries: local := nil
    --set in InvestigateConditions to represent any additional
    --category membership tests that may be needed(see buildFunctor for details)
 ------------------------
-  $maximalViews: local
+  $maximalViews: local := nil
   oldtime:= TEMPUS_-FUGIT()
   [$catsig,:argsig]:= sig
   catvecListMaker:=REMDUP
@@ -474,10 +474,10 @@ NRTcheckVector domainShell ==
 -- (d) op-signature-- store missing function info in $CheckVectorList
     v:= domainShell.i
     v=true => nil  --item is marked; ignore
-    null v => nil  --a domain, which setVector4part3 will fill in
-    atom first v => nil  --category form; ignore
+    v=nil => nil  --a domain, which setVector4part3 will fill in
     atom v => systemErrorHere '"CheckVector"
-    ASSOC(first v,alist) => nil
+    atom first v => nil  --category form; ignore
+    assoc(first v,alist) => nil
     alist:=
       [[first v,:$SetFunctions.i],:alist]
   alist
@@ -528,10 +528,10 @@ reverseCondlist cl ==
   alist := nil
   for [x,:y] in cl repeat
     for z in y repeat
-      u := ASSOC(z,alist)
+      u := assoc(z,alist)
       null u => alist := [[z,x],:alist]
-      member(x,CDR u) => nil
-      RPLACD(u,[x,:CDR u])
+      member(x,rest u) => nil
+      RPLACD(u,[x,:rest u])
   alist
 
 NRTsetVector4Part2(uncondList,condList) ==

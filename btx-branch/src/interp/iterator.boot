@@ -46,10 +46,11 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   if STRINGP op then op:= INTERN op
   ^MEMQ(collectOp,'(COLLECT COLLECTV COLLECTVEC)) =>
         systemError ["illegal reduction form:",form]
-  $sideEffectsList: local
-  $until: local
-  $initList: local
-  $endTestList: local
+  $sideEffectsList: local := nil
+  $until: local := nil
+  $initList: local := nil
+  $endTestList: local := nil
+  oldEnv := e
   $e:= e
   itl:= [([.,$e]:= compIterator(x,$e) or return "failed").(0) for x in itl]
   itl="failed" => return nil
@@ -74,7 +75,7 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   if $until then
     [untilCode,.,e]:= comp($until,$Boolean,e)
     finalCode:= substitute(["UNTIL",untilCode],'$until,finalCode)
-  [finalCode,m,e]
+  [finalCode,m,oldEnv]
 
 ++ returns the identity element of the `reduction' operation `x'
 ++ over a list -- a monoid homomorphism.   
@@ -94,6 +95,7 @@ compRepeatOrCollect(form,m,e) ==
     ,e) where
       fn(form,$exitModeStack,$leaveLevelStack,$formalArgList,e) ==
         $until: local
+        oldEnv := e
         [repeatOrCollect,:itl,body]:= form
         itl':=
           [([x',e]:= compIterator(x,e) or return "failed"; x') for x in itl]
@@ -133,7 +135,10 @@ compRepeatOrCollect(form,m,e) ==
             (u:=modeIsAggregateOf('Vector,targetMode,e)) => CAR u
             ["Vector",m']
           m'
-        coerceExit([form',m'',e'],targetMode)
+        T := coerceExit([form',m'',e'],targetMode) or return nil
+        -- iterator variables and other variables declared in
+        -- in a loop are local to the loop.
+        [T.expr,T.mode,oldEnv]
  
 --constructByModemap([x,source,e],target) ==
 --  u:=
@@ -154,7 +159,7 @@ compIterator(it,e) ==
     $formalArgList:= [x,:$formalArgList]
     [mOver,mUnder]:=
       modeIsAggregateOf("List",m,e) or return
-         stackMessage ["mode: ",m," must be a list of some mode"]
+         stackMessage('"mode: %1pb must be a list of some mode",[m])
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration([":",x,mUnder],$EmptyMode,e) or return nil
     e:= put(x,"value",[genSomeVariable(),mUnder,e],e)
@@ -165,7 +170,7 @@ compIterator(it,e) ==
     [y',m,e]:= comp(y,$EmptyMode,e) or return nil
     [mOver,mUnder]:=
       modeIsAggregateOf("List",m,e) or return
-        stackMessage ["mode: ",m," must be a list of other modes"]
+        stackMessage('"mode: %1pb must be a list of other modes",[m])
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration([":",x,m],$EmptyMode,e) or return nil
     e:= put(x,"value",[genSomeVariable(),m,e],e)
@@ -192,14 +197,14 @@ compIterator(it,e) ==
             [["ISTEP",index,start'.expr,inc'.expr,:optFinal],e]
     [start,.,e]:=
       comp(start,$Integer,e) or return
-        stackMessage ["start value of index: ",start," must be an integer"]
+        stackMessage('"start value of index: %1b must be an integer",[start])
     [inc,.,e]:=
       comp(inc,$Integer,e) or return
-        stackMessage ["index increment:",inc," must be an integer"]
+        stackMessage('"index increment: %1b must be an integer",[inc])
     if optFinal is [final] then
       [final,.,e]:=
         comp(final,$Integer,e) or return
-          stackMessage ["final value of index: ",final," must be an integer"]
+          stackMessage('"final value of index: %1b must be an integer",[final])
       optFinal:= [final]
     indexmode:=
       comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
@@ -211,13 +216,13 @@ compIterator(it,e) ==
   it is ["WHILE",p] =>
     [p',m,e]:=
       comp(p,$Boolean,e) or return
-        stackMessage ["WHILE operand: ",p," is not Boolean valued"]
+        stackMessage('"WHILE operand: %1b is not Boolean valued",[p])
     [["WHILE",p'],e]
   it is ["UNTIL",p] => ($until:= p; ['$until,e])
   it is ["|",x] =>
     u:=
       comp(x,$Boolean,e) or return
-        stackMessage ["SUCHTHAT operand: ",x," is not Boolean value"]
+        stackMessage('"SUCHTHAT operand: %1b is not Boolean value",[x])
     [["|",u.expr],u.env]
   nil
  
@@ -275,13 +280,14 @@ compIteratorV(it,e) ==
 	[["ISTEP",index,start'.expr,inc'.expr,final'.expr],e]
     [start,.,e]:=
       comp(start,$Integer,e) or return
-	stackMessage ["start value of index: ",start," is not an integer"]
+	stackMessage('"start value of index: %1b is not an integer",[start])
     [inc,.,e]:=
       comp(inc,$NonNegativeInteger,e) or return
-	stackMessage ["index increment: ",inc," must be a non-negative integer"]
+	stackMessage('"index increment: %1b must be a non-negative integer",
+          [inc])
     [final,.,e]:=
       comp(final,$Integer,e) or return
-	stackMessage ["final value of index: ",final," is not an integer"]
+	stackMessage('"final value of index: %1b is not an integer",[final])
     indexmode:=
       comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
       $Integer

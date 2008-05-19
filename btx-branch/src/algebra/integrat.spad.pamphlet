@@ -71,6 +71,7 @@ FunctionSpaceComplexIntegration(R, F): Exports == Implementation where
  
     internalIntegrate(f, x) ==
       f := distribute(f, x::F)
+      g : F
       any?(has?(operator #1, "rtrig"),
        [k for k in tower(g := realElementary(f, x))
         | member?(x, variables(k::F))]$List(Kernel F))$List(Kernel F) =>

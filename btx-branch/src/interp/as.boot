@@ -282,8 +282,8 @@ asGetModemaps(opAlist,oform,kind,modemap) ==
 --  and generating $TriangleVariableList
   for [op,:itemlist] in SUBLISLIS(rpvl, $FormalMapVariableList,opAlist) repeat
     for [sig0, pred] in itemlist repeat
-      sig := SUBST(dc,"$",sig0)
-      pred:= SUBST(dc,"$",pred)
+      sig := substitute(dc,"$",sig0)
+      pred:= subtitute(dc,"$",pred)
       sig := SUBLISLIS(rpvl,KDR oform,sig)
       pred:= SUBLISLIS(rpvl,KDR oform,pred)
       pred := pred or 'T
@@ -975,7 +975,7 @@ asyFindAttrs l ==
   for x in l repeat 
     x0 := x
     while CONSP x repeat x := CAR x
-    if MEMQ(x, _*ATTRIBUTES_*) then attrs := [:attrs, x]
+    if MEMQ(x, $BuiltinAttributes) then attrs := [:attrs, x]
     else notattrs := [:notattrs, x0]
   [attrs, notattrs]
 

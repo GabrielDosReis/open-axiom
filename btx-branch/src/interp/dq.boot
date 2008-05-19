@@ -34,7 +34,6 @@
 
 import types
 namespace BOOT
-module dq
 
 -- Dequeue functions
  

@@ -34,7 +34,6 @@
 
 import g_-util
 namespace BOOT
-module hashcode
 
 $DomainsWithoutLisplibs ==
   '(CAPSULE Union Record SubDomain Mapping Enumeration Mode)

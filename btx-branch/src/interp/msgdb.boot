@@ -122,15 +122,15 @@ segmentedMsgPreprocess x ==
   ATOM x => x
   [head,:tail] := x
   center := rightJust := NIL
-  if head in '(%ceon "%ceon") then center := true
-  if head in '(%rjon "%rjon") then rightJust := true
+  if member(head, '(%ceon "%ceon")) then center := true
+  if member(head, '(%rjon "%rjon")) then rightJust := true
   center or rightJust =>
     -- start collecting terms
     y := NIL
     ok := true
     while tail and ok repeat
       [t,:tail] := tail
-      t in '(%ceoff "%ceoff" %rjoff "%rjoff") => ok := NIL
+      member(t, '(%ceoff "%ceoff" %rjoff "%rjoff")) => ok := NIL
       y := CONS(segmentedMsgPreprocess t,y)
     head1 := [(center => '"%ce"; '"%rj"),:NREVERSE y]
     NULL tail => [head1]
@@ -236,8 +236,8 @@ addBlanks msg ==
     msg1 := LIST x
   blank := '" "
   for y in rest msg repeat
-    y in '("%n" %n) => blanksOff := true
-    y in '("%y" %y) => blanksOff  := false
+    member(y,'("%n" %n)) => blanksOff := true
+    member(y,'("%y" %y)) => blanksOff  := false
     if noBlankAfterP x or noBlankBeforeP y or blanksOff then
        msg1 := [y,:msg1]
     else
@@ -254,11 +254,11 @@ SETANDFILEQ($msgdbListPrims,'(%m %s %ce %rj "%m" "%s" "%ce" "%rj"))
 
 noBlankBeforeP word==
     INTP word => false
-    word in $msgdbNoBlanksBeforeGroup => true
+    member(word,$msgdbNoBlanksBeforeGroup) => true
     if CVECP word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
-    (PAIRP word) and (CAR word in $msgdbListPrims) => true
+    (PAIRP word) and member(CAR word,$msgdbListPrims) => true
     false
 
 $msgdbPunct := '(_[ _(  "[" "(" )
@@ -267,11 +267,11 @@ SETANDFILEQ($msgdbNoBlanksAfterGroup,['" ", " ",'"%" ,"%",_
 
 noBlankAfterP word==
     INTP word => false
-    word in $msgdbNoBlanksAfterGroup => true
+    member(word,$msgdbNoBlanksAfterGroup) => true
     if CVECP word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
-    (PAIRP word) and (CAR word in $msgdbListPrims) => true
+    (PAIRP word) and member(CAR word, $msgdbListPrims) => true
     false
 
 cleanUpSegmentedMsg msg ==
@@ -285,10 +285,10 @@ cleanUpSegmentedMsg msg ==
      "%b" "%d" "%l" "%i" "%m" "%u" "%ce" "%rj")
   msg1 := NIL
   for x in msg repeat
-    if haveBlank and ((x in blanks) or (x in prims)) then
+    if haveBlank and (member(x,blanks) or member(x,prims)) then
       msg1 := CDR msg1
     msg1 := cons(x,msg1)
-    haveBlank := (x in blanks => true; NIL)
+    haveBlank := (member(x,blanks) => true; NIL)
   msg1
 
 operationLink name ==
@@ -297,10 +297,11 @@ operationLink name ==
          escapeSpecialChars STRINGIMAGE name)
 
 ----------------------------------------
+buildMessage(msg, args) ==
+  substituteSegmentedMsg(segmentKeyedMsg msg,args)
+
 sayPatternMsg(msg,args) ==
-  msg := segmentKeyedMsg msg
-  msg := substituteSegmentedMsg(msg,args)
-  sayMSG flowSegmentedMsg(msg,$LINELENGTH,3)
+  sayMSG flowSegmentedMsg(buildMessage(msg, args),$LINELENGTH,3)
 
 throwPatternMsg(key,args) ==
   sayMSG '" "
@@ -470,7 +471,7 @@ queryUserKeyedMsg(key,args) ==
   -- display message and return reply
   conStream := DEFIOSTREAM ('((DEVICE . CONSOLE) (MODE . INPUT)),120,0)
   sayKeyedMsg(key,args)
-  ans := READ_-LINE conStream
+  ans := read_-line conStream
   SHUT conStream
   ans
 
@@ -478,7 +479,7 @@ flowSegmentedMsg(msg, len, offset) ==
   -- tries to break a sayBrightly-type input msg into multiple
   -- lines, with offset and given length.
   -- msgs that are entirely centered or right justified are not flowed
-  msg is [[ce,:.]] and ce in '(%ce "%ce" %rj "%rj") => msg
+  msg is [[ce,:.]] and member(ce, '(%ce "%ce" %rj "%rj")) => msg
 
   -- if we are formatting latex, then we assume 
   -- that nothing needs to be done
@@ -495,23 +496,23 @@ flowSegmentedMsg(msg, len, offset) ==
 
   PAIRP msg =>
     lnl := offset
-    if msg is [a,:.] and a in '(%b %d _  "%b" "%d" " ") then
+    if msg is [a,:.] and member(a,'(%b %d _  "%b" "%d" " ")) then
       nl :=  [off1]
       lnl := lnl - 1
     else nl := [off]
     for f in msg repeat
-      f in '("%l" %l) =>
+      member(f,'("%l" %l)) =>
         actualMarg := potentialMarg
         if lnl = 99999 then nl := ['%l,:nl]
         lnl := 99999
-      PAIRP(f) and CAR(f) in '("%m" %m '%ce "%ce" %rj "%rj") =>
+      PAIRP(f) and member(CAR(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
         actualMarg := potentialMarg
         nl := [f,'%l,:nl]
         lnl := 199999
-      f in '("%i" %i ) =>
+      member(f,'("%i" %i )) =>
         potentialMarg := potentialMarg + 3
         nl := [f,:nl]
-      PAIRP(f) and CAR(f) in '("%t" %t) =>
+      PAIRP(f) and member(CAR(f),'("%t" %t)) =>
         potentialMarg := potentialMarg + CDR f
         nl := [f,:nl]
       sbl := sayBrightlyLength f
@@ -525,7 +526,7 @@ flowSegmentedMsg(msg, len, offset) ==
         nl := [f,:nl]
         lnl := lnl + sbl
       else
-        f in '(%b %d _  "%b" "%d" " ") =>
+        member(f,'(%b %d _  "%b" "%d" " ")) =>
           nl := [f,off1,'%l,:nl]
           actualMarg := potentialMarg
           lnl := -1 + offset + sbl
@@ -572,8 +573,8 @@ bright x == ['"%b",:(PAIRP(x) and NULL CDR LASTNODE x => x; [x]),'"%d"]
 --bright x == ['%b,:(ATOM x => [x]; x),'%d]
 
 mkMessage msg ==
-  msg and (PAIRP msg) and ((first msg) in '(%l "%l"))  and
-    ((last msg) in '(%l "%l")) => concat msg
+  msg and (PAIRP msg) and member((first msg),'(%l "%l"))  and
+    member((last msg),'(%l "%l")) => concat msg
   concat('%l,msg,'%l)
 
 sayMessage msg == sayMSG mkMessage msg
@@ -712,7 +713,7 @@ blankIndicator x ==
   nil
 
 brightPrint1 x ==
-  if x in '(%l "%l") then sayNewLine()
+  if member(x,'(%l "%l")) then sayNewLine()
   else if STRINGP x then sayString x
        else brightPrintHighlight x
   NIL
@@ -729,7 +730,7 @@ brightPrintHighlight x ==
   [key,:rst] := x
   if IDENTP key then key:=PNAME key
   key = '"%m" => mathprint rst
-  key in '("%p" "%s") => PRETTYPRIN0 rst
+  member(key,'("%p" "%s")) => PRETTYPRIN0 rst
   key = '"%ce" => brightPrintCenter rst
   key = '"%rj" => brightPrintRightJustify rst
   key = '"%t"  => $MARG := $MARG + tabber rst
@@ -792,7 +793,7 @@ brightPrintCenter x ==
   y := NIL
   ok := true
   while x and ok repeat
-    if CAR(x) in '(%l "%l") then ok := NIL
+    if member(CAR(x),'(%l "%l")) then ok := NIL
     else y := cons(CAR x, y)
     x := CDR x
   y := NREVERSE y
@@ -839,7 +840,7 @@ brightPrintRightJustify x ==
   y := NIL
   ok := true
   while x and ok repeat
-    if CAR(x) in '(%l "%l") then ok := NIL
+    if member(CAR(x),'(%l "%l")) then ok := NIL
     else y := cons(CAR x, y)
     x := CDR x
   y := NREVERSE y
@@ -901,7 +902,7 @@ sayAsManyPerLineAsPossible l ==
   if str ^= '"" then sayMSG str
   NIL
 
-say2PerLine l == say2PerLineWidth(l,$LINELENGTH / 2)
+say2PerLine l == say2PerLineWidth(l, QUOTIENT($LINELENGTH,2))
 
 say2PerLineWidth(l,n) ==
   [short,long] := say2Split(l,nil,nil,n)
@@ -923,7 +924,7 @@ sayLongOperation x ==
   sayBrightly x
 
 splitListOn(x,key) ==
-  key in x =>
+  member(key,x) =>
     while first x ^= key repeat
       y:= [first x,:y]
       x:= rest x
@@ -934,7 +935,7 @@ say2PerLineThatFit l ==
   while l repeat
     sayBrightlyNT first l
     sayBrightlyNT
-      fillerSpaces((($LINELENGTH/2)-sayDisplayWidth first l),'" ")
+      fillerSpaces((QUOTIENT($LINELENGTH,2)-sayDisplayWidth first l),'" ")
     (l:= rest l) =>
       sayBrightlyNT first l
       l:= rest l
@@ -948,7 +949,7 @@ sayDisplayStringWidth x ==
 sayDisplayWidth x ==
   PAIRP x =>
     +/[fn y for y in x] where fn y ==
-      y in '(%b %d "%b" "%d") or y=$quadSymbol => 1
+      member(y,'(%b %d "%b" "%d")) or y=$quadSymbol => 1
       k := blankIndicator y => k
       sayDisplayWidth y
   x = "%%" or x = '"%%" => 1
@@ -965,7 +966,7 @@ pp2Cols(al) ==
     ppPair(abb,name)
     if canFit2ndEntry(name,al) then
       [[abb,:name],:al]:= al
-      TAB ($LINELENGTH / 2)
+      TAB QUOTIENT($LINELENGTH,2)
       ppPair(abb,name)
     sayNewLine()
   nil
@@ -974,7 +975,7 @@ ppPair(abb,name) ==
     sayBrightlyNT [:bright abb,fillerSpaces(8-entryWidth abb," "),name]
 
 canFit2ndEntry(name,al) ==
-  wid := ($LINELENGTH/2) - 10
+  wid := QUOTIENT($LINELENGTH,2) - 10
   null al => nil
   entryWidth name > wid => nil
   entryWidth CDAR al > wid => nil

@@ -45,7 +45,7 @@ module sys_-utility
 ++ representation of a domain, as a Lisp type specifier as seen by
 ++ the runtime system.
 getVMType d ==
-  case devaluate d of
+  case (d' := devaluate d) of
     Void => "%Void"
     Boolean => "%Boolean"
     Byte => "%Byte"
@@ -54,11 +54,10 @@ getVMType d ==
     Integer => "%Integer"
     String => "%String"
     List => "%List"
-    Vector => "%Vector"
-    PrimitiveArray => "SIMPLE-ARRAY"
+    Vector => ["%Vector",getVMType second d']
+    PrimitiveArray => ["%SimpleArray", getVMType second d']
     Pair => "%Pair"
     otherwise => "%Thing"                 -- good enough, for now.
-
 
 --%
 
@@ -168,7 +167,6 @@ existingFile? file ==
 
 ++ original version returned 0 on success, and 1 on failure
 ++ ??? fix that to return -1 on failure.
-$ERASE: %Thing -> %Short
 $ERASE(:filearg) ==
   -removeFile MAKE_-FULL_-NAMESTRING filearg
 
@@ -196,3 +194,12 @@ loadModule(path,name) ==
 --% numericis
 log10 x ==
   LOG(x,10)
+
+bitand: (%Short,%Short) -> %Short
+bitand(x,y) ==
+  BOOLE(BOOLE_-AND,x,y)
+
+bitior: (%Short,%Short) -> %Short
+bitior(x,y) ==
+  BOOLE(BOOLE_-IOR,x,y)
+

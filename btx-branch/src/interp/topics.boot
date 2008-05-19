@@ -33,7 +33,6 @@
 
 import macros
 namespace BOOT
-module topics
 
 $topicsDefaults := '(
   (basic elt setelt qelt qsetelt eval xRange yRange zRange map map_! qsetelt_!)

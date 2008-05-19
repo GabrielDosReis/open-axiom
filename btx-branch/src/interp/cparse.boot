@@ -33,7 +33,6 @@
 
 import ptrees
 namespace BOOT
-module cparse
 
 -- npTerm introduced between npRemainder and npSum
 -- rhs of assignment changed from npStatement to npGives

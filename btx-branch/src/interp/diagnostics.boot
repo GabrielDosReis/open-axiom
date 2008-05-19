@@ -42,7 +42,6 @@ import sys_-constants
 import sys_-globals
 import vmlisp
 namespace BOOT
-module diagnostics
 
 
 ++ This routine is used by the interperter to count syntax, or

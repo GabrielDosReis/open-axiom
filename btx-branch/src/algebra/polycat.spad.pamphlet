@@ -138,6 +138,7 @@ FiniteAbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
                ans,xn,yn: %
                bincoef: Integer
                powl: List(%):= [x]
+               i : Integer
                for i in 2..nn repeat powl:=[x * powl.first, :powl]
                yn:=y; ans:=powl.first; i:=1; bincoef:=nn
                for xn in powl.rest repeat

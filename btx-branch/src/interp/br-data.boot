@@ -531,7 +531,7 @@ getParentsFor(cname,formalParams,constructorCategory) ==
   for x in folks constructorCategory repeat
     x := SUBLISLIS(formalParams,formals,x)
     x := SUBLISLIS(IFCDR constructorForm,formalParams,x)
-    x := SUBST('Type,'Object,x)
+    x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
   NREVERSE acc
 
@@ -599,7 +599,7 @@ childrenOf conform ==
     childAssoc(conform,parentsOfForm first pair)]
 
 childAssoc(form,alist) ==
-  null (argl := CDR form) => ASSOC(form,alist)
+  null (argl := CDR form) => assoc(form,alist)
   u := assocCar(opOf form, alist) => childArgCheck(argl,rest CAR u) and u
   nil
 
@@ -671,7 +671,7 @@ ancestorsAdd(pred,form) == --called by ancestorsRecur
   null pred => nil
   op := IFCAR form or form
   alist := HGET($if,op)
-  existingNode := ASSOC(form,alist) =>
+  existingNode := assoc(form,alist) =>
     RPLACD(existingNode,quickOr(CDR existingNode,pred))
   HPUT($if,op,[[form,:pred],:alist])
 

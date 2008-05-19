@@ -35,7 +35,6 @@
 import diagnostics
 import g_-util
 namespace BOOT
-module g_-error
 
 -- This file contains the error printing code used in BOOT and SPAD.
 -- While SPAD only calls "error" (which is then labeled as an algebra
@@ -79,6 +78,12 @@ queryUser msg ==
 errorSupervisor(errorType,errorMsg) ==
   errorSupervisor1(errorType,errorMsg,$BreakMode)
 
+needsToSplitMessage msg ==
+  member("%b", msg) or member('"%b",msg) => false
+  member("%d",msg) or member('"%d",msg) => false
+  member("%l",msg) or member('"%l",msg) => false
+  true
+
 errorSupervisor1(errorType,errorMsg,$BreakMode) ==
   BUMPERRORCOUNT "semantic"
   errorLabel :=
@@ -91,11 +96,7 @@ errorSupervisor1(errorType,errorMsg,$BreakMode) ==
   msg :=
     errorMsg is ['mathprint, :.] => errorMsg
     not PAIRP errorMsg => ['"   ", errorMsg]
-    splitmsg := true
-    if member('%b,errorMsg) then splitmsg := nil
-      else if member('%d,errorMsg) then splitmsg := nil
-           else if member('%l,errorMsg) then splitmsg := nil
-    splitmsg => CDR [:['%l,'"   ",u] for u in errorMsg]
+    needsToSplitMessage errorMsg => rest [:['%l,'"   ",u] for u in errorMsg]
     ['"   ",:errorMsg]
   sayErrorly(errorLabel, msg)
   handleLispBreakLoop($BreakMode)
@@ -171,14 +172,17 @@ sayErrorly1(errorLabel, msg) ==
   sayBrightly msg
 
 -- systemError is being phased out. Please use keyedSystemError.
-systemError(:x) == errorSupervisor($SystemError,IFCAR x)
+systemError(:x) == 
+  errorSupervisor($SystemError,IFCAR x)
 
 -- unexpectedSystemError() ==
 --  systemError '"Oh, no.  Unexpected internal error."
 
-userError x == errorSupervisor($UserError,x)
+userError x == 
+  errorSupervisor($UserError,x)
 
-error(x) == errorSupervisor($AlgebraError,x)
+error(x) == 
+  errorSupervisor($AlgebraError,x)
 
 IdentityError(op) ==
     error(["No identity element for reduce of empty list using operation",op])

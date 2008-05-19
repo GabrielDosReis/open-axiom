@@ -224,7 +224,7 @@ actOnInfo(u,$e) ==
     $e
   u is ["ATTRIBUTE",name,att] =>
     [vval,vmode,venv]:= GetValue name
-    SAY("augmenting ",name,": ",u)
+    compilerMessage('"augmenting %1: %2p", [name,["ATTRIBUTE",att]])
     key:= if CONTAINED("$",vmode) then "domain" else name
     cat:= ["CATEGORY",key,["ATTRIBUTE",att]]
     $e:= put(name,"value",[vval,mkJoin(cat,vmode),venv],$e)
@@ -237,7 +237,8 @@ actOnInfo(u,$e) ==
       ['ELT,name,substitute('$,name,modemap)]
     $e:= addModemap(operator,name,modemap,true,implem,$e)
     [vval,vmode,venv]:= GetValue name
-    SAY("augmenting ",name,": ",u)
+    compilerMessage('"augmenting %1: %2p", 
+      [name,["SIGNATURE",operator,modemap]])
     key:= if CONTAINED("$",vmode) then "domain" else name
     cat:= ["CATEGORY",key,["SIGNATURE",operator,modemap]]
     $e:= put(name,"value",[vval,mkJoin(cat,vmode),venv],$e)
@@ -258,7 +259,7 @@ actOnInfo(u,$e) ==
       --    SAY("augmenting ",name,": ",cat)
       --    put(name, "value", (vval, cat, venv), $e)
       member(cat,first ocatvec.4) or
-         ASSOC(cat,CADR ocatvec.4) is [.,"T",.] => $e
+         assoc(cat,second ocatvec.4) is [.,"T",.] => $e
         --SAY("Category extension error:
         --cat shouldn't be a join
                       --what was being asserted is an ancestor of what was known
@@ -269,7 +270,7 @@ actOnInfo(u,$e) ==
           genDomainView(viewName,name,cat,"HasCategory")
           if not MEMQ(viewName,$functorLocalParameters) then
              $functorLocalParameters:=[:$functorLocalParameters,viewName]
-      SAY("augmenting ",name,": ",cat)
+      compilerMessage('"augmenting %1: %2p", [name,cat])
       $e:= put(name,"value",[vval,mkJoin(cat,vmode),venv],$e)
     SAY("extension of ",vval," to ",cat," ignored")
     $e

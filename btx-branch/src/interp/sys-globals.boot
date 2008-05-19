@@ -40,10 +40,6 @@
 import hash
 import sys_-constants
 namespace BOOT
-module sys_-globals where
-  --% Types
-  %Stream <=>
-    STREAM
 
   --
   $IOindex : %Short := 0

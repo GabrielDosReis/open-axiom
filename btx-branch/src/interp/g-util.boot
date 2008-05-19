@@ -35,12 +35,6 @@
 import macros
 import sys_-utility
 namespace BOOT
-module g_-util where
-  $charBlank: %Char
-  $mapName: %Symbol
-  $outStream: %Maybe %Stream
-  $htSpecialChars: %List
-  $htCharAlist: %List
 
   $charNewline: %Char
   $charFauxNewline: %Char

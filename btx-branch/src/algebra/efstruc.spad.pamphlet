@@ -439,6 +439,7 @@ ElementaryFunctionStructurePackage(R,F): Exports == Implementation where
       f
 
     validExponential(twr, eta, x) ==
+      fns : List F
       (c := solveLinearlyOverQ(construct([differentiate(g, x)
          for g in (fns := toY twr)]$List(F))@Vector(F),
            differentiate(eta, x))) case "failed" => "failed"
@@ -565,6 +566,7 @@ InnerTrigonometricManipulations(R,F,FG): Exports == Implementation where
 -- This expects the argument to have only tan and atans left.
 -- Does a half-angle correction if k is not in the initial kernel list.
     ker2explogs(k, l, lx) ==
+      kf : FG
       empty?([v for v in variables(kf := k::FG) |
                                          member?(v, lx)]$List(SY)) => kf
       empty?(args := [trigs2explogs(a, l, lx)
@@ -762,6 +764,7 @@ TrigonometricManipulations(R, F): Exports == Implementation where
       F2FG g
 
     complexNormalize(f, x) ==
+      g : F
       any?(has?(operator #1, "rtrig"),
        [k for k in tower(g := realElementary(f, x))
                | member?(x, variables(k::F))]$List(K))$List(K) =>
@@ -778,6 +781,7 @@ TrigonometricManipulations(R, F): Exports == Implementation where
       g
 
     complexElementary(f, x) ==
+      g : F
       any?(has?(operator #1, "rtrig"),
        [k for k in tower(g := realElementary(f, x))
                  | member?(x, variables(k::F))]$List(K))$List(K) =>
@@ -882,6 +886,7 @@ ComplexTrigonometricManipulations(R, F): Exports == Implementation where
       g
 
     complexElementary(f, x) ==
+      g : F
       any?(has?(operator #1, "rtrig"),
        [k for k in tower(g := realElementary(f, x))
                  | member?(x, variables(k::F))]$List(K))$List(K) =>
@@ -889,6 +894,7 @@ ComplexTrigonometricManipulations(R, F): Exports == Implementation where
       g
 
     complexNormalize(f, x) ==
+      g : F
       any?(has?(operator #1, "rtrig"),
        [k for k in tower(g := realElementary(f, x))
                | member?(x, variables(k::F))]$List(K))$List(K) =>

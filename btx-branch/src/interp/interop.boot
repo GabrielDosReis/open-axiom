@@ -34,7 +34,6 @@
 
 import c_-util
 namespace BOOT
-module interop
 
 -- note domainObjects are now (dispatchVector hashCode . domainVector)
 -- lazy oldAxiomDomainObjects are (dispatchVector hashCode  (Call form) . backptr), 

@@ -33,7 +33,6 @@
 
 import scan
 namespace BOOT
-module pile
 
 -- insertpiles converts a line-list to a line-forest where
  

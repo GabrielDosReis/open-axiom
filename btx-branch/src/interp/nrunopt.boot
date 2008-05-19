@@ -340,7 +340,7 @@ testBitVector(vec,i) ==
  
 bitsOf n ==
   n = 0 => 0
-  1 + bitsOf (n/2)
+  1 + bitsOf QUOTIENT(n,2)
  
 --=======================================================================
 --               Generate Slot 4 Constructor Vectors
@@ -632,7 +632,7 @@ dcData con ==
 
 dcData1 vec ==
   n := MAXINDEX vec
-  tens := n / 10
+  tens := QUOTIENT(n,10)
   for i in 0..tens repeat
     start := 10*i
     sayBrightlyNT rightJustifyString(STRINGIMAGE start,6)
@@ -718,7 +718,7 @@ nodeSize(n) == 12 * n
 vectorSize(n) == 4 * (1 + n)
 
 halfWordSize(n) == 
-  n < 128 => n / 2
+  n < 128 => QUOTIENT(n,2)
   n < 256 => n
   2 * n
 
@@ -799,11 +799,12 @@ NRTgetLookupFunction(domform,exCategory,addForm) ==
   extends := NRTextendsCategory1(domform,exCategory,getExportCategory addForm)
   if null extends then 
     [u,msg,:v] := $why
-    sayBrightly '"--------------non extending category----------------------"
-    sayBrightlyNT ['"..",:bright form2String domform,"of cat "]
-    PRINT u
-    sayBrightlyNT bright msg
-    if v then PRINT CAR v else TERPRI()
+    SAY '"--------------non extending category----------------------"
+    compilerMessage('"%1p of category %2p", [domform,u])
+    if v ^= nil then
+      compilerMessage('"%1b %2p",[msg,first v])
+    else
+      compilerMessage('"%1b",[msg])
   extends => 'lookupIncomplete
   'lookupComplete
 
@@ -816,7 +817,7 @@ getExportCategory form ==
   EQSUBSTLIST(argl,$FormalMapVariableList,target)
  
 NRTextendsCategory1(domform,exCategory,addForm) ==
-  addForm is ['Tuple,:r] => 
+  addForm is ["%Comma",:r] => 
     and/[extendsCategory(domform,exCategory,x) for x in r]
   extendsCategory(domform,exCategory,addForm)
 

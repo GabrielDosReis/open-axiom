@@ -34,7 +34,6 @@
 
 import ptrees
 namespace BOOT
-module pf2sex
 
 $dotdot := INTERN('"..", '"BOOT")
 $specificMsgTags := nil

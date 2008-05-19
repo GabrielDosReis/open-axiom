@@ -34,7 +34,6 @@
 
 import g_-util
 namespace BOOT
-module c_-util
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
 ++ Otherwise, return `m'.
@@ -140,9 +139,11 @@ compAndTrace [x,m,e] ==
   UNTRACE_,1 "compFormWithModemap"
   T
  
-errorRef s == stackWarning ['%b,s,'%d,'"has no value"]
+errorRef s == 
+  stackWarning('"%1b has no value", [s])
  
-unErrorRef s == unStackWarning ['%b,s,'%d,'"has no value"]
+unErrorRef s == 
+  unStackWarning('"'%1b has no value",[s])
  
 --% ENVIRONMENT FUNCTIONS
  
@@ -154,8 +155,7 @@ consProplistOf(var,proplist,prop,val) ==
   [[prop,:val],:proplist]
  
 warnLiteral x ==
-  stackSemanticError(['%b,x,'%d,
-    '"is BOTH a variable and a literal"],nil)
+  stackWarning('"%1b is BOTH a variable a literal",[x])
  
 intersectionEnvironment(e,e') ==
   ce:= makeCommonEnvironment(e,e')
@@ -247,8 +247,8 @@ addContour(c,E is [cur,:tail]) ==
                      --check for conflicts with earlier mode
                      if vv:=LASSOC("mode",e) then
                         if v ^=vv then
-                          stackWarning ["The conditional modes ",
-                                     v," and ",vv," conflict"]
+                          stackWarning('"The conditional modes %1p and %2p conflict",
+                            [v,vv])
         LIST c
  
 makeCommonEnvironment(e,e') ==
@@ -349,9 +349,14 @@ isFunction(x,e) ==
   get(x,"modemap",e) or GETL(x,"SPECIAL") or x="case" or getmode(x,e) is [
     "Mapping",:.]
  
-isLiteral(x,e) == get(x,"isLiteral",e)
+isLiteral: (%Symbol,%Env) -> %Boolean
+isLiteral(x,e) == 
+  get(x,"isLiteral",e)
  
-makeLiteral(x,e) == put(x,"isLiteral","true",e)
+
+makeLiteral: (%Symbol,%Env) -> %Thing
+makeLiteral(x,e) == 
+  put(x,"isLiteral","true",e)
  
 isSomeDomainVariable s ==
   IDENTP s and #(x:= PNAME s)>2 and x.(0)="#" and x.(1)="#"
@@ -480,8 +485,8 @@ numOfOccurencesOf(x,y) ==
       atom y => n
       fn(x,first y,n)+fn(x,rest y,n)
  
-compilerMessage x ==
-  $PrintCompilerMessageIfTrue => APPLX("SAY",x)
+compilerMessage(msg,args) ==
+  $PrintCompilerMessageIfTrue => sayPatternMsg(msg,args)
  
 printDashedLine() ==
   SAY
@@ -498,17 +503,21 @@ stackSemanticError(msg,expr) ==
     $initCapsuleErrorCount>3 => THROW("compCapsuleBody",nil)
   nil
  
-stackWarning msg ==
+stackWarning(msg,args == nil) ==
+  msg := buildMessage(msg, args)
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
   if not member(msg,$warningStack) then $warningStack:= [msg,:$warningStack]
   nil
  
-unStackWarning msg ==
+unStackWarning(msg,args) ==
+  msg := buildMessage(msg,args)
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
   $warningStack:= EFFACE(msg,$warningStack)
   nil
  
-stackMessage msg ==
+stackMessage(msg,args == nil) ==
+  if args ^= nil then
+    msg := buildMessage(msg,args)
   $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   nil
  
@@ -549,7 +558,7 @@ pmatchWithSl(s,p,al) ==
  
 elapsedTime() ==
   currentTime:= TEMPUS_-FUGIT()
-  elapsedSeconds:= (currentTime-$previousTime)*1.0/$timerTicksPerSecond
+  elapsedSeconds:= (currentTime-$previousTime)*QUOTIENT(1.0,$timerTicksPerSecond)
   $previousTime:= currentTime
   elapsedSeconds
  
@@ -577,7 +586,7 @@ extendsCategoryForm(domain,form,form') ==
   form is ["Join",:l] => or/[extendsCategoryForm(domain,x,form') for x in l]
   form is ["CATEGORY",.,:l] =>
     member(form',l) or
-      stackWarning ["not known that ",form'," is of mode ",form] or true
+      stackWarning('"not known that %1 is of mode %2p",[form',form]) or true
   isCategoryForm(form,$EmptyEnvironment) =>
           --Constructs the associated vector
     formVec:=(compMakeCategoryObject(form,$e)).expr

@@ -34,7 +34,6 @@
 
 import bc_-util
 namespace BOOT
-module br_-prof
 
 --====================> WAS b-prof.boot <================================
 

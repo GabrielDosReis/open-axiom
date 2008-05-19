@@ -33,8 +33,6 @@
 
 import boot_-pkg
 namespace BOOT
-module types where
-  --% Basic types used throughout Boot codes.
 
   ++ Type of nothing.  Bottom of the latting.
   %Void <=> 
@@ -65,10 +63,13 @@ module types where
   %SingleFloat <=>
     SINGLE_-FLOAT
 
-  ++ Type of double precision floating point numbers.  Most of the time,
-  ++ this is a 64-bit sized datatype.
-  %DoubleFloat <=>
-    DOUBLE_-FLOAT
+%Integer <=>
+  INTEGER
+
+++ Type of single precision floating point numbers.  Most of the
+++ time, this is a 32-bit datatype.
+%SingleFloat <=>
+  SINGLE_-FLOAT
 
   ++ General type for numbers.
   %Number <=> 
@@ -116,8 +117,8 @@ module types where
   %Triple <=>                                    -- form + type + env
     cons(%Code,cons(%Mode,cons(%Env,null))) 
 
-  %Signature                      -- signature
-    <=> cons
+%Signature                      -- signature
+  <=> %Symbol or cons
 
   %Modemap <=> %List                             -- modemap
 

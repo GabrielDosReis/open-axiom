@@ -34,7 +34,6 @@
 
 import sys_-macros
 namespace BOOT
-module match
 
 $wildCard := char "*"
 

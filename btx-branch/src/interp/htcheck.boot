@@ -35,7 +35,6 @@
 import sys_-driver
 import macros
 namespace BOOT
-module htcheck
 
 $primitiveHtCommands := '(
   ("\ContinueButton"     . 1)

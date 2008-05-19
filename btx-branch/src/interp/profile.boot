@@ -34,7 +34,6 @@
 
 import macros
 namespace BOOT
-module profile
 
 --$profileCompiler := true
 $profileAlist := nil

@@ -115,10 +115,12 @@ FiniteFieldFunctions(GF): Exports == Implementation where
       p:=characteristic()$GF
       -- search of a suitable parameter k
       k:NNI:=0
+      a:NNI
+      t1: PF(k*n+1)       -- all that matters is the syntax of the type
       for i in 1..n-1  while (k=0) repeat
         if prime?(i*n+1) and not(p = (i*n+1)) then
           primitive?(q::PF(i*n+1))$PF(i*n+1) =>
-              a:NNI:=1
+              a := 1
               k:=i
               t1:PF(k*n+1):=(q::PF(k*n+1))**n
           gcd(n,a:=discreteLog(q::PF(n*i+1))$PF(n*i+1))$I = 1 =>

@@ -34,7 +34,6 @@
 
 import macros
 namespace BOOT
-module wi1
 
 -- !! do not delete the next function !
 
@@ -56,11 +55,6 @@ tr fn ==
   markTerpri()
   CATCH("SPAD__READER",compiler [INTERN sfn])
   SHUT $outStream
-
-stackMessage msg ==
---if msg isnt ["cannot coerce: ",:.] then foobum msg
-  $compErrorMessageStack:= [msg,:$compErrorMessageStack]
-  nil
 
 ppFull x ==
   SETQ(_*PRINT_-LEVEL_*,nil)
@@ -373,7 +367,7 @@ compSymbol(s,m,e) ==
   isFluid s => [s,getmode(s,e) or return nil,e]
   s="true" => ['(QUOTE T),$Boolean,e]
   s="false" => [false,$Boolean,e]
-  s=m or get(s,"isLiteral",e) => [["QUOTE",s],s,e]
+  s=m or isLiteral(s,e) => [["QUOTE",s],s,e]
   v:= get(s,"value",e) =>
 --+
     MEMQ(s,$functorLocalParameters) =>
@@ -546,7 +540,7 @@ compSetq1(oform,val,m,E) ==
     compSetq(["LET",x,val],m,E')
   form is [op,:l] =>
     op="CONS"  => setqMultiple(uncons form,val,m,E)
-    op="Tuple" => setqMultiple(l,val,m,E)
+    op="%Comma" => setqMultiple(l,val,m,E)
     setqSetelt(oform,form,val,m,E)
 
 setqSetelt(oform,[v,:s],val,m,E) ==
@@ -602,7 +596,7 @@ setqSingle(id,val,m,E) ==
 setqMultiple(nameList,val,m,e) ==
   val is ["CONS",:.] and m=$NoValueMode =>
     setqMultipleExplicit(nameList,uncons val,m,e)
-  val is ["Tuple",:l] and m=$NoValueMode => setqMultipleExplicit(nameList,l,m,e)
+  val is ["%Comma",:l] and m=$NoValueMode => setqMultipleExplicit(nameList,l,m,e)
   --1. create a gensym, %add to local environment, compile and assign rhs
   g:= genVariable()
   e:= addBinding(g,nil,e)
@@ -808,7 +802,7 @@ resolve(min, mout) ==
 coerce(T,m) ==
   T := [T.expr,markKillAll T.mode,T.env]
   m := markKillAll m
-  if not get(m, 'isLiteral,T.env) then markImport m
+  if not isLiteral(m,T.env) then markImport m
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
@@ -1175,12 +1169,12 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
   $prefix,$formalArgList) ==
     --1. bind global variables
     $insideCategoryIfTrue: local:= true
-    $TOP__LEVEL: local
-    $definition: local
+    $TOP__LEVEL: local := nil
+    $definition: local := nil
                  --used by DomainSubstitutionFunction
-    $form: local
-    $op: local
-    $extraParms: local
+    $form: local := nil
+    $op: local := nil
+    $extraParms: local := nil
              --Set in DomainSubstitutionFunction, used further down
 --  1.1  augment e to add declaration $: <form>
     [$op,:argl]:= $definition:= form

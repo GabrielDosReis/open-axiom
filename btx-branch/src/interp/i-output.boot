@@ -34,7 +34,6 @@
 
 import sys_-macros
 namespace BOOT
-module i_-output
 
 --Modified JHD February 1993: see files miscout.input for some tests of this
 -- General principle is that maprin0 is the top-level routine,
@@ -227,7 +226,7 @@ lbrkSch() == PNAME specialChar 'lbrk
 quadSch() == PNAME specialChar 'quad
 
 isBinaryInfix x ==
-    x in '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^")
+  member(x, '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^"))
 
 stringApp([.,u],x,y,d) ==
   appChar(STRCONC($DoubleQuote,atom2String u,$DoubleQuote),x,y,d)
@@ -313,7 +312,7 @@ sayMath u ==
 --% Output transformations
 
 outputTran x ==
-  x in '("failed" "nil" "prime" "sqfr" "irred") =>
+  member(x,'("failed" "nil" "prime" "sqfr" "irred")) =>
     STRCONC('"_"",x,'"_"")
   STRINGP x => x
   VECP x =>
@@ -437,7 +436,7 @@ outputTran x ==
 -- without stack overflow.  MCD.
 flattenOps l ==
   [op, :args ] := l
-  op in ['"+",'"*","+","*"] =>
+  member(op,['"+",'"*","+","*"]) =>
     [op,:checkArgs(op,args)]
   l
 
@@ -1383,7 +1382,7 @@ output(expr,domain) ==
     if $texFormat     then texFormat expr
     if $mathmlFormat  then mathmlFormat expr
     if $algebraFormat then mathprintWithNumber expr
-  categoryForm? domain or domain in '((Mode) (Domain) (Type)) =>
+  categoryForm? domain or member(domain,'((Mode) (Domain) (Type))) =>
     if $algebraFormat then
       mathprintWithNumber outputDomainConstructor expr
     if $texFormat     then
@@ -1617,7 +1616,7 @@ charyMinus(u,v,start,linelength) ==
   '" "
 
 charyBinary(d,u,v,start,linelength) ==
-  d in '(" := " "= ") =>
+  member(d,'(" := " "= ")) =>
     charybdis(['CONCATB,v.1,d],start,linelength)
     charybdis(v.2,start+2,linelength-2)
     '" "

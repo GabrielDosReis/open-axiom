@@ -35,7 +35,6 @@
 import simpbool
 import g_-util
 namespace BOOT
-module cattable
 
 hasCat(domainOrCatName,catName) ==
   catName='Object or catName='Type  -- every domain is a Type (Object)

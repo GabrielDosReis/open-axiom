@@ -224,6 +224,7 @@ TwoFactorize(F) : C == T
        i:Integer:=0
        lcm := leadingCoefficient m
        umv : R
+       vval : F
        while look and i < try repeat
           vval := random()$F
           i:=i+1

@@ -468,6 +468,7 @@ IndexedString(mn:Integer): Export == Implementation where
 	h:I := if hasHi sg then hi(sg) - mn else maxIndex s - mn
 	l < 0 or h >= m or h < l-1 => error "index out of range"
 	r := new((m-(h-l+1)+n)::N, space$C)
+        k : NonNegativeInteger
 	for k in 0.. for i in 0..l-1 repeat Qsetelt(r, k, Qelt(s, i))
 	for k in k.. for i in 0..n-1 repeat Qsetelt(r, k, Qelt(t, i))
 	for k in k.. for i in h+1..m-1 repeat Qsetelt(r, k, Qelt(s, i))
@@ -512,6 +513,7 @@ IndexedString(mn:Integer): Export == Implementation where
 
     split(s, c) ==
 	n := maxIndex s
+        i : NonNegativeInteger
 	for i in mn..n while s.i = c repeat 0
 	l := empty()$List(%)
 	j:Integer -- j is conditionally intialized
@@ -520,8 +522,10 @@ IndexedString(mn:Integer): Export == Implementation where
 	    for i in j..n while s.i = c repeat 0
 	if i <= n then l := concat(s(i..n), l)
 	reverse_! l
+
     split(s, cc) ==
 	n := maxIndex s
+        i : NonNegativeInteger
 	for i in mn..n while member?(s.i,cc) repeat 0
 	l := empty()$List(%)
 	j:Integer -- j is conditionally intialized
@@ -533,17 +537,23 @@ IndexedString(mn:Integer): Export == Implementation where
 
     leftTrim(s, c) ==
 	n := maxIndex s
+        i : NonNegativeInteger
 	for i in mn .. n while s.i = c repeat 0
 	s(i..n)
+
     leftTrim(s, cc) ==
 	n := maxIndex s
+        i : NonNegativeInteger
 	for i in mn .. n while member?(s.i,cc) repeat 0
 	s(i..n)
 
     rightTrim(s, c) ==
+        j : NonNegativeInteger
 	for j in maxIndex s .. mn by -1 while s.j = c repeat 0
 	s(minIndex(s)..j)
+
     rightTrim(s, cc) ==
+        j : NonNegativeInteger
 	for j in maxIndex s .. mn by -1 while member?(s.j, cc) repeat 0
 	s(minIndex(s)..j)
 

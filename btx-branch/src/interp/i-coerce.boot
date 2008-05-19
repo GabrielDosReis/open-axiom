@@ -417,7 +417,7 @@ canCoerce1(t1,t2) ==
   -- the result is NIL if it fails
   t1 = t2 => true
   absolutelyCanCoerceByCheating(t1,t2) or t1 = $None or t2 = $Any or
-    t1 in '((Mode) (Category)) =>
+    member(t1,'((Mode) (Category))) =>
       t2 = $OutputForm => true
       NIL
     -- next is for tagged union selectors for the time being
@@ -461,8 +461,8 @@ canCoerce1(t1,t2) ==
       arg and
         t:= last arg
         canCoerce(t1,t) and canCoerceByFunction(t,t2) and 'T
-    ans or (t1 in '((PositiveInteger) (NonNegativeInteger))
-      and canCoerce($Integer,t2))
+    ans or member(t1,'((PositiveInteger) (NonNegativeInteger)))
+      and canCoerce($Integer,t2)
 
 canCoerceFrom0(t1,t2) ==
 -- top level test for coercion, which transfers all RN, RF and RR into
@@ -635,7 +635,7 @@ newCanCoerceCommute(t1,t2) ==
 canCoercePermute(t1,t2) ==
   -- try to generate a sequence of transpositions that will convert
   -- t1 into t2
-  t2 in '((Integer) (OutputForm)) => NIL
+  member(t2,'((Integer) (OutputForm))) => NIL
   towers := computeTTTranspositions(t1,t2)
   -- at this point, CAR towers = t1 and last towers should be similar
   -- to t2 in the sense that the components of t1 are in the same order
@@ -752,7 +752,7 @@ coerceInteractive(triple,t2) ==
   t2 = '$NoValueMode => objNew(val,t2)
   if t2 is ['SubDomain,x,.] then t2:= x
   -- JHD added category Aug 1996 for BasicMath
-  t1 in $LangSupportTypes =>
+  member(t1,$LangSupportTypes) =>
     t2 = $OutputForm => objNew(val,t2)
     t1 = $Domain and conceptualType t2 = $Category 
       and ofCategory(val,t2)=> objNew(val,t2)
@@ -947,7 +947,7 @@ getSubDomainPredicate(tSuper, tSub, pred) ==
   decl := ['_:, name, ['Mapping, $Boolean, tSuper]]
   interpret(decl, nil)
   arg := GENSYM()
-  pred' := SUBST(arg, "#1", pred)
+  pred' := substitute(arg, "#1", pred)
   defn := ['DEF, [name, arg], '(NIL NIL), '(NIL NIL), removeZeroOne pred']
   interpret(defn, nil)
   op := mkAtree name
@@ -1079,7 +1079,7 @@ coerceIntByMap(triple,t2) ==
   fn = function Undef => NIL
   -- now compile a function to do the coercion
   code := ['SPADCALL,['CONS,["function","coerceIntByMapInner"],MKQ [u1,:u2]],
-    wrapped2Quote objVal triple,MKQ fun]
+    getValueNormalForm triple,MKQ fun]
   -- and apply the function
   val := CATCH('coerceFailure,timedEvaluate code)
   (val = $coerceFailure) => NIL
@@ -1205,7 +1205,7 @@ coerceIntCommute(obj,target) ==
   NIL
 
 coerceIntPermute(object,t2) ==
-  t2 in '((Integer) (OutputForm)) => NIL
+  member(t2,'((Integer) (OutputForm))) => NIL
   t1 := objMode object
   towers := computeTTTranspositions(t1,t2)
   -- at this point, CAR towers = t1 and last towers should be similar

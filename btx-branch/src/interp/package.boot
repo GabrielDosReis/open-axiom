@@ -33,8 +33,7 @@
 
 
 import clam
-namesoace BOOT
-module package
+namespace BOOT
 
 isPackageFunction() ==
   -- called by compile/putInLocalDomainReferences
@@ -47,11 +46,11 @@ processFunctorOrPackage(form,signature,data,localParList,m,e) ==
  
 processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
   $GENNO: local:= 0 --for GENVAR()
-  $catsig: local
+  $catsig: local := nil
                --used in ProcessCond
-  $maximalViews: local
+  $maximalViews: local := nil
                       --read by ProcessCond
-  $ResetItems: local
+  $ResetItems: local := nil
        --stores those items that get SETQed, and may need re-processing
   $catvecList: local:= [$domainShell]
   $catNames: local:= ["$"]
@@ -82,7 +81,7 @@ processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
                   opt(u,alist) ==
                     ATOM u => u
                     for v in u repeat
-                      if (a:=ASSOC(v,alist)) then
+                      if (a:=assoc(v,alist)) then
                         [.,:i]:=a
                         u:=replace(v,["getShellEntry","$",i],u) where
                            replace(old,new,l) ==
@@ -177,7 +176,7 @@ PackageDescendCode(code,flag,viewAssoc) ==
   code is ["SETELT",:.] => code
   code is ["QSETREFV",:.] => code
   code is ["setShellEntry",:.] => code
-  stackWarning ["unknown Package code ",code]
+  stackWarning('"unknown Package code: %1 ",[code])
   code
  
 mkOperatorEntry(domainOrPackage,opSig is [op,sig,:flag],pred,count) ==

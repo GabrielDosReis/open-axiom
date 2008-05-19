@@ -33,7 +33,6 @@
 
 import macros
 namespace BOOT
-module simpbool
 
 simpBool x == dnf2pf reduceDnf be x
  

@@ -48,6 +48,8 @@ $multivariateDomains ==
     HomogeneousDistributedMultivariatePolynomial
     GeneralDistributedMultivariatePolynomial)
 
+--%
+$inRetract := false
 
 --% Interpreter Analysis Functions
 
@@ -252,7 +254,7 @@ bottomUp t ==
     -- If this is a type producing form, then we don't want
     -- to store the representation object in the environment.
     -- Rather, we want to record the reified canonical form.
-    if ms is [m] and (m in $LangSupportTypes or isCategoryForm(m,$e))
+    if ms is [m] and (member(m,$LangSupportTypes) or isCategoryForm(m,$e))
     then putValue(t,objNew(devaluate objValUnwrap getValue t, m))
 
     -- given no target or package calling, force integer constants to
@@ -628,10 +630,14 @@ sayIntelligentMessageAboutOpAvailability(opName, nArgs) ==
 conceptualType: %Thing -> %List
 conceptualType type ==
   isPartialMode type => $Mode
-  type in $LangSupportTypes => $Type
+  member(type,$LangSupportTypes) => $Type
   categoryForm?(type) => $Category
   $Domain
 
+++ Returns true is `t' conceptually describes a domain or package.
+isConceptualCategory: %Mode -> %Boolean
+isConceptualCategory t ==
+  t = $Type or t = $Category or t = $Domain or categoryForm? t
 
 bottomUpType(t, type) ==
   mode := conceptualType type

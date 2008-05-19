@@ -34,7 +34,6 @@
 
 import int_-top
 namespace BOOT
-module osyscmd
 
 
 InterpExecuteSpadSystemCommand string ==

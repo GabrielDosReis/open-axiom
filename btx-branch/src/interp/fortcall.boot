@@ -34,7 +34,6 @@
 
 import sys_-macros
 namespace BOOT
-module fortcall
 
 makeVector(elts, t) ==
   MAKE_-ARRAY(#elts, KEYWORD::ELEMENT_-TYPE, t or true,
@@ -338,7 +337,7 @@ makeUnion aspType ==
   ["Union",[":","fp",aspType],[":","fn","FileName"]]
 
 axiomType(a,decls,asps,aspInfo) ==
-  a in asps =>
+  member(a, asps) =>
     entry := first [u for u in aspInfo | first(u) = a]
     ftc := ["$elt","FortranType","construct"]
     rc  := ["$elt", _
@@ -740,7 +739,7 @@ sendNagmanErrorSignal()==
 -- $fortranCompilerName := '"f90"
 
 inFirstNotSecond(f,s)==
- [i for i in f | not i in s]
+ [i for i in f | not member(i,s)]
 
 -- Code for use in the Windows version of the AXIOM/NAG interface.
 
@@ -749,7 +748,7 @@ multiToUnivariate f ==
   -- elements of a vector, and compile it.
   (first f) ^= "+->" => error "in multiToUnivariate: not an AnonymousFunction"
   if PAIRP CADR f then
-    vars := CDADR f -- throw away 'Tuple at start of variable list
+    vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]
   body := COPY_-TREE CADDR f
@@ -766,7 +765,7 @@ functionAndJacobian f ==
   -- evaluate function and jacobian values.
   (first f) ^= "+->" => error "in functionAndJacobian: not an AnonymousFunction"
   if PAIRP CADR f then
-    vars := CDADR f -- throw away 'Tuple at start of variable list
+    vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]
   #(vars) ^= #(CDADDR f) => 
@@ -794,7 +793,7 @@ vectorOfFunctions f ==
   -- evaluate function values.
   (first f) ^= "+->" => error "in vectorOfFunctions: not an AnonymousFunction"
   if PAIRP CADR f then
-    vars := CDADR f -- throw away 'Tuple at start of variable list
+    vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]
   funBodies := COPY_-TREE CDADDR f

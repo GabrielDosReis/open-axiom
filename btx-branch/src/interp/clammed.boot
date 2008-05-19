@@ -33,7 +33,6 @@
 
 import g_-timer
 namespace BOOT
-module clammed
 
 ++ All functions defined in this file are `clammed', e.g. they are
 ++ translated in such a way that they cache results they compute.

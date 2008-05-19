@@ -33,20 +33,7 @@
 
 
 import bc_-util
-import br_-data
 namespace BOOT
-module br_-util where
-  $bcMultipleNames: %Boolean
-  $italics?: %Boolean
-  $italicHead?: %Boolean
-  $conformsAreDomains: %Form
-  $exposedOnlyIfTrue: %Boolean
-  $includeUnexposed?: %Boolean
-  $browseCountThreshold: %Short
-  $browseMixedCase: %Boolean
-  $charUnderscore: %Char
-  $wild1: %String
-  $pmFilterDelimiters: %List
 
 --====================> WAS b-util.boot <================================
 

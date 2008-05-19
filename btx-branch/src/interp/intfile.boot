@@ -34,7 +34,6 @@
 
 import cstream
 namespace BOOT
-module intfile
 
 shoeInternFile(fn)==
    a:=shoeInputFile fn

@@ -45,7 +45,6 @@
 import metalex
 import parse
 namespace BOOT
-module spad_-parser
 
 ++ Given a pathname to a source file containing Spad code, returns
 ++ a list of (old) AST objects representing the toplevel expressions

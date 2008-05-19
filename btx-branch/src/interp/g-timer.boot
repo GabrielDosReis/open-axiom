@@ -35,7 +35,6 @@
 import macros
 import g_-util
 namespace BOOT
-module g_-timer
 
 --% Code instrumentation facilities
 --  These functions can be used with arbitrary lists of
@@ -103,8 +102,8 @@ normalizeStatAndStringify t ==
   INTP t =>
       K := 1024
       M := K*K
-      t > 9*M => CONCAT(STRINGIMAGE((t + 512*K)/M), '"M")
-      t > 9*K => CONCAT(STRINGIMAGE((t + 512)/K),   '"K")
+      t > 9*M => CONCAT(STRINGIMAGE QUOTIENT(t + 512*K,M), '"M")
+      t > 9*K => CONCAT(STRINGIMAGE QUOTIENT(t + 512,K),   '"K")
       STRINGIMAGE t
   STRINGIMAGE t
  
@@ -115,7 +114,7 @@ significantStat t ==
  
 roundStat t ==
   not RNUMP t => t
-  (FIX (0.5 + t * 1000.0)) / 1000.0
+  QUOTIENT(FIX (0.5 + t * 1000.0), 1000.0)
  
 makeStatString(oldstr,time,abb,flag) ==
   time = '"" => oldstr
@@ -225,9 +224,9 @@ computeElapsedTime() ==
   currentGCTime:= elapsedGcTime()
   gcDelta := currentGCTime - $oldElapsedGCTime
   elapsedSeconds:=
-     1.*(currentTime-$oldElapsedTime-gcDelta)/$timerTicksPerSecond
+     1.* QUOTIENT(currentTime-$oldElapsedTime-gcDelta,$timerTicksPerSecond)
   PUT('gc, 'TimeTotal,GETL('gc,'TimeTotal) +
-                   1.*gcDelta/$timerTicksPerSecond)
+                   1.*QUOTIENT(gcDelta,$timerTicksPerSecond))
   $oldElapsedTime := elapsedUserTime()
   $oldElapsedGCTime := elapsedGcTime()
   elapsedSeconds

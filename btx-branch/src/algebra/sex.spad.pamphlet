@@ -115,6 +115,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
             atom? b => coerce(b)$Rep
             r := b
             while not atom? r repeat r := cdr r
+            l : List %
             l1 := [b1::OutputForm for b1 in (l := destruct b)]
             not null? r =>
               paren blankSeparate concat_!(l1, [dotex, r::OutputForm])

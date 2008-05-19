@@ -36,7 +36,6 @@ import nlib
 import c_-util
 import debug
 namespace BOOT
-module lisplib
 
 ++
 $functionLocations := []
@@ -366,9 +365,9 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   ok := false;
   UNWIND_-PROTECT(
       PROGN(res:= FUNCALL(fn,df,m,e,prefix,fal),
+            leaveIfErrors(libName),
             sayMSG ['"   finalizing ",$spadLibFT,:bright libName],
-            finalizeLisplib libName,
-            ok := true),
+            ok := finalizeLisplib libName),
       RSHUT $libFile)
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
@@ -420,7 +419,16 @@ initializeLisplib libName ==
   $lisplibSignatureAlist := nil
   if pathnameTypeId(_/EDITFILE) = 'SPAD
     then LAM_,FILEACTQ('VERSION,['_/VERSIONCHECK,_/MAJOR_-VERSION])
- 
+
+++ If compilation produces an error, issue inform user and
+++ return to toplevel reader.
+leaveIfErrors libName ==
+  errorCount() ^=0 =>
+    sayMSG ['"   Errors in processing ",$liplibkind,'" ",:bright libName,'":"]
+    sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
+    spadThrow()
+
+++ Finalize `libName' compilation; returns true if everything is OK.
 finalizeLisplib libName ==
   lisplibWrite('"constructorForm",removeZeroOne $lisplibForm,$libFile)
   lisplibWrite('"constructorKind",kind:=removeZeroOne $lisplibKind,$libFile)
@@ -455,9 +463,8 @@ finalizeLisplib libName ==
   if $profileCompiler then profileWrite()
   if $lisplibForm and null CDR $lisplibForm then
     MAKEPROP(CAR $lisplibForm,'NILADIC,'T)
-  errorCount() ^=0 =>
-    sayMSG ['"   Errors in processing ",kind,'" ",:bright libName,'":"]
-    sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
+  leaveIfErrors libName
+  true
 
 lisplibDoRename(libName) ==
   _$REPLACE([libName,$spadLibFT,$libraryDirectory],
@@ -547,7 +554,7 @@ transformOperationAlist operationAlist ==
       implementation = 'mkRecord => 'mkRecord
       keyedSystemError("S2IL0025",[implementation])
     signatureItem:=
-      if u:= ASSOC([op,sig],$functionLocations) then n := [n,:rest u]
+      if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
       kind = 'ELT =>
         condition = 'T => [sig,n]
         [sig,n,condition]
@@ -647,7 +654,7 @@ augModemapsFromDomain1(name,functorForm,e) ==
     ["Mapping",categoryForm,:functArgTypes]:= mappingForm
     catform:= substituteCategoryArguments(rest functorForm,categoryForm)
     augModemapsFromCategory(name,name,functorForm,catform,e)
-  stackMessage [functorForm," is an unknown mode"]
+  stackMessage('"%1pb is an unknown mode",[functorForm])
   e
  
 getSlotFromCategoryForm ([op,:argl],index) ==

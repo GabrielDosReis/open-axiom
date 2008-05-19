@@ -34,7 +34,6 @@
 
 import i_-object
 namespace BOOT
-module i_-code
 
 --% Interpreter Code Generation Routines
 
@@ -66,18 +65,18 @@ intCodeGenCOERCE(triple,t2) ==
   val is ['THROW,label,code] =>
     if label is ['QUOTE, l] then label := l
     null($compilingMap) or (label ^= mapCatchName($mapName)) =>
-      objNew(['THROW,label,wrapped2Quote objVal
+      objNew(['THROW,label,getValueNormalForm
         intCodeGenCOERCE(objNew(code,t1),t2)],t2)
     -- we have a return statement. just send it back as is
     objNew(val,t2)
 
   val is ['PROGN,:code,lastCode] =>
-    objNew(['PROGN,:code,wrapped2Quote objVal
+    objNew(['PROGN,:code,getValueNormalForm
       intCodeGenCOERCE(objNew(lastCode,t1),t2)],t2)
 
   val is ['COND,:conds] =>
     objNew(['COND,
-      :[[p,wrapped2Quote objVal intCodeGenCOERCE(objNew(v,t1),t2)]
+      :[[p,getValueNormalForm intCodeGenCOERCE(objNew(v,t1),t2)]
         for [p,v] in conds]],t2)
 
   -- specially handle subdomain

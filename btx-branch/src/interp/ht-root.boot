@@ -34,9 +34,6 @@
 
 import ht_-util
 namespace BOOT
-module ht_-root where
-  $key: %Symbol
-  $fullScreenSysVars: %Boolean
 
 $historyDisplayWidth := 120
 $newline := char 10

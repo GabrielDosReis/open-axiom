@@ -34,8 +34,6 @@
 
 import ht_-util
 namespace BOOT
-module bc_-util where
-  $newConstructorList: %List
 
 ++
 $newConstructorList := nil

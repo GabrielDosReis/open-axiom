@@ -502,8 +502,8 @@ FortranCode(): public == private where
     operation (f:$):OP ==
       elt(f,op)$Rep
 
-    common(name:Symbol,contents:List Symbol):$ ==
-      [["common"]$OP,[[name,contents]$COMMON]$OPREC]$Rep
+    common(name':Symbol,contents':List Symbol):$ ==
+      [["common"]$OP,[[name',contents']$COMMON]$OPREC]$Rep
 
     stop():$ ==
       [["stop"]$OP,["null"]$OPREC]$Rep
@@ -520,11 +520,11 @@ FortranCode(): public == private where
     comment(s:String):$ ==
       [["comment"]$OP,[list s]$OPREC]$Rep
 
-    forLoop(r:SegmentBinding PIN,body:$):$ ==
-      [["for"]$OP,[[r,(incr segment r)::PIN,body]$FOR]$OPREC]$Rep
+    forLoop(r:SegmentBinding PIN,body':$):$ ==
+      [["for"]$OP,[[r,(incr segment r)::PIN,body']$FOR]$OPREC]$Rep
 
-    forLoop(r:SegmentBinding PIN,increment:PIN,body:$):$ ==
-      [["for"]$OP,[[r,increment,body]$FOR]$OPREC]$Rep
+    forLoop(r:SegmentBinding PIN,increment:PIN,body':$):$ ==
+      [["for"]$OP,[[r,increment,body']$FOR]$OPREC]$Rep
 
     goto(l:SingleInteger):$ ==
       [["goto"]$OP,[l]$OPREC]$Rep

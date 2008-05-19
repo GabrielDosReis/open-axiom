@@ -33,7 +33,6 @@
 
 import macros
 namespace BOOT
-module termrw
  
 termRW(t,R) ==
   -- reduce t by rewrite system R

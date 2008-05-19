@@ -34,8 +34,6 @@
 
 import sys_-macros
 namespace BOOT
-module g_-cndata where
-  $lowerCaseConTb: %HashTable
 
 --% Manipulation of Constructor Datat
 
@@ -71,7 +69,7 @@ putConstructorProperty(name,prop,val) ==
   true
 
 attribute? name == 
-        MEMQ(name, _*ATTRIBUTES_*)
+        MEMQ(name, $BuiltinAttributes)
  
 abbreviation? abb ==
   -- if it is an abbreviation, return the corresponding name
@@ -234,12 +232,29 @@ condAbbrev(arglist,argtypes) ==
   res
  
 condUnabbrev(op,arglist,argtypes,modeIfTrue) ==
-  #arglist ^= #argtypes =>
+  #arglist ^= #argtypes and argtypes isnt [["Tuple",t]] =>
     throwKeyedMsg("S2IL0014",[op,plural(#argtypes,'"argument"),
       bright(#arglist)])
+  -- fix up argument list for unary constructor taking tuples.
+  t ^= nil =>
+    categoryForm? t => 
+       [["tuple",:[unabbrev1(arg,modeIfTrue) for arg in arglist]]]
+    [["tuple",:arglist]]
   [newArg for arg in arglist for type in argtypes] where newArg() ==
     categoryForm?(type) => unabbrev1(arg,modeIfTrue)
     arg
+
+++ returns true if `op' is the name of a constructor.  
+++ Note: From this function point of view, a symbol names a
+++ constructor if it is either a builtin constructor, or it is
+++ known to the global database as designating a constructor.  In
+++ particular neither the category frame, nor the normal frame
+++ are consulted.  Consequently, this functions is not appropriate
+++ for use in the compiler.
+isConstructorName op ==
+  op in $BuiltinConstructorNames
+    or getConstructorAbbreviationFromDB op
+
  
 --% Code Being Phased Out
  

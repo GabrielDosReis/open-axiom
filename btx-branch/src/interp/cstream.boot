@@ -34,7 +34,6 @@
 
 import sys_-macros
 namespace BOOT
-module cstream
 
 --% Stream Utilities
  

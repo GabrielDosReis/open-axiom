@@ -34,7 +34,6 @@
 
 import sys_-macros
 namespace BOOT
-module compress
 
 -- This one is not currently in general use, but can be applied
 -- to various situations are required

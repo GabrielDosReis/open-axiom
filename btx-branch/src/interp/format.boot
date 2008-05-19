@@ -34,7 +34,6 @@
 
 import macros
 namespace BOOT
-module format
 
 --% Functions for display formatting system objects
 
@@ -136,9 +135,9 @@ formatModemap modemap ==
     target:= substInOrder(alist,target)
     sl:= substInOrder(alist,sl)
   else if removeIsDomainD pred is [D,npred] then
-    pred := SUBST(D,'D,npred)
-    target := SUBST(D,'D,target)
-    sl := SUBST(D,'D,sl)
+    pred := substitute(D,'D,npred)
+    target := substitute(D,'D,target)
+    sl := substitute(D,'D,sl)
   predPart:= formatIf pred
   targetPart:= prefix2String target
   argTypeList:=
@@ -168,7 +167,7 @@ formatModemap modemap ==
   concat(firstPart,'%l,predPart)
 
 substInOrder(alist,x) ==
-  alist is [[a,:b],:y] => substInOrder(y,SUBST(b,a,x))
+  alist is [[a,:b],:y] => substInOrder(y,substitute(b,a,x))
   x
 
 reportOpSymbol op1 ==
@@ -247,7 +246,7 @@ formatOpSymbol(op,sig) ==
         [quad,".",sel]
       [quad,".",quad]
     op
-  STRINGP op or GET(op,"Led") or GET(op,"Nud") =>
+  STRINGP op or GETL(op,"Led") or GETL(op,"Nud") =>
     n = 3 =>
       if op = 'SEGMENT then op := '".."
       op = 'in => [quad,'" ",op,'" ",quad]
@@ -256,7 +255,7 @@ formatOpSymbol(op,sig) ==
       op = 'exquo => op
       [quad,op,quad]
     n = 2 =>
-      not GET(op,"Nud") => [quad,op]
+      not GETL(op,"Nud") => [quad,op]
       [op,quad]
     op
   op
@@ -390,8 +389,7 @@ form2String1 u ==
     STRINGP u => formWrapId u
     WRITE_-TO_-STRING formWrapId u
   u1 := u
-  op := CAR u
-  argl := CDR u
+  [op,:argl] := u
   op='Join or op= 'mkCategory => formJoin1(op,argl)
   $InteractiveMode and IDENTP op and (u:= constructor? op) =>
     null argl => app2StringWrap(formWrapId constructorName op, u1)
@@ -426,9 +424,12 @@ form2String1 u ==
   op = 'BRACKET =>
     argl' := form2String1 first argl
     ["[",:(atom argl' => [argl']; argl'),"]"]
+  op = 'PAREN =>
+    argl' := form2String1 first argl
+    ["(",:(atom argl' => [argl']; argl'),")"]
   op = "SIGNATURE" =>
      [operation,sig] := argl
-     concat(operation,": ",formatSignature sig)
+     concat(operation,'": ",formatSignature sig)
   op = 'COLLECT => formCollect2String argl
   op = 'construct =>
     concat(lbrkSch(),
@@ -439,7 +440,7 @@ form2String1 u ==
     argl := rest argl
     (null argl) or null (first argl) => [lo, '".."]
     [lo, '"..", form2String1 first argl]
-  isBinaryInfix op => fortexp0 [op,:argl]
+  isBinaryInfix op => formatAsFortranExpresion [op,:argl]
   -- COMPILED_-FUNCTION_-P(op) => form2String1 coerceMap2E(u1,NIL)
   application2String(op,[form2String1 x for x in argl], u1)
 
@@ -535,13 +536,13 @@ formIterator2String x ==
 tuple2String argl ==
   null argl => nil
   string := first argl
-  if string in '("failed" "nil" "prime" "sqfr" "irred")
+  if member(string, '("failed" "nil" "prime" "sqfr" "irred"))
     then string := STRCONC('"_"",string,'"_"")
     else string :=
       ATOM string => object2String string
       [f x for x in string]
   for x in rest argl repeat
-    if x in '("failed" "nil" "prime" "sqfr" "irred") then
+    if member(x,'("failed" "nil" "prime" "sqfr" "irred")) then
       x := STRCONC('"_"",x,'"_"")
     string:= concat(string,concat(",",f x))
   string
@@ -628,8 +629,9 @@ application2String(op,argl, linkInfo) ==
     (op' := isInternalFunctionName(op)) => op'
     app2StringWrap(formWrapId op, linkInfo)
   1=#argl =>
-    first argl is ["<",:.] => concat(op,first argl)
-    concat(app2StringWrap(formWrapId op, linkInfo)," ",first argl)
+    arg := first argl
+    arg is ["<",:.] or arg is ["(",:.] => concat(op,arg)
+    concat(app2StringWrap(formWrapId op, linkInfo)," ",arg)
 --op in '(UP SM) =>
 --  newop:= (op = "UP" => "P";"M")
 --  concat(newop,concat(lbrkSch(),argl.0,rbrkSch(),argl.1))
@@ -672,7 +674,7 @@ plural(n,string) ==
 
 formatIf pred ==
   not pred => nil
-  pred in '(T (QUOTE T)) => nil
+  member(pred,'(T (QUOTE T))) => nil
   concat('%b,'"if",'%d,pred2English pred)
 
 formatPredParts s ==
@@ -681,7 +683,7 @@ formatPredParts s ==
   s is ['devaluate,s1] => formatPredParts s1
   s is ['getDomainView,s1,.] => formatPredParts s1
   s is ['SUBST,a,b,c] =>    -- this is a signature
-    s1 := formatPredParts SUBST(formatPredParts a,b,c)
+    s1 := formatPredParts substitute(formatPredParts a,b,c)
     s1 isnt [fun,sig] => s1
     ['SIGNATURE,fun,[formatPredParts(r) for r in sig]]
   s

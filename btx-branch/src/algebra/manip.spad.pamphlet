@@ -289,6 +289,7 @@ AlgebraicManipulations(R, F): Exports == Implementation where
       empty?(l := sort_!(#1 > #2, kernels x)$List(K)) or
         empty? setIntersection(ll, tower x) => x
       lk := empty()$List(K)
+      k : K
       while not member?(k := first l, ll) repeat
         lk := concat(k, lk)
         empty?(l := rest l) =>

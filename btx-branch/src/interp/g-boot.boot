@@ -35,7 +35,6 @@
 import def
 import g_-util
 namespace BOOT
-module g_-boot
 
 -- @(#)g-boot.boot      2.2      89/11/02  14:44:09
 
