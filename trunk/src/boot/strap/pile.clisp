@@ -2,9 +2,9 @@
 
 (IMPORT-MODULE "scanner")
 
-(PROVIDE "pile")
-
 (IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "pile")
 
 (DEFUN |shoeFirstTokPosn| (|t|) (|shoeTokPosn| (CAAR |t|)))
 

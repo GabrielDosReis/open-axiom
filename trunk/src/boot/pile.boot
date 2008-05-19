@@ -34,12 +34,17 @@
 
 import includer
 import scanner
-module pile
 namespace BOOTTRAN
+module pile
 
-shoeFirstTokPosn t== shoeTokPosn CAAR t
-shoeLastTokPosn  t== shoeTokPosn CADR t
-shoePileColumn t==CDR shoeTokPosn CAAR t
+shoeFirstTokPosn t == 
+  shoeTokPosn CAAR t
+
+shoeLastTokPosn  t== 
+  shoeTokPosn second t
+
+shoePileColumn t==
+  rest shoeTokPosn CAAR t
  
 -- s is a token-dq-stream
  
@@ -49,7 +54,7 @@ shoePileInsert (s)==
      else
          toktype:=shoeTokType CAAAR s
          if toktype ="LISP"  or toktype = "LINE"
-         then cons([car s],cdr s)
+         then cons([first s],rest s)
          else
             a:=shoePileTree(-1,s)
             cons([a.2],a.3)
@@ -58,7 +63,7 @@ shoePileTree(n,s)==
     if bStreamNull s
     then [false,n,[],s]
     else
-        [h,t]:=[car s,cdr s]
+        [h,t]:=[first s,rest s]
         hh:=shoePileColumn h
         if hh > n
         then shoePileForests(h,hh,t)
@@ -68,7 +73,7 @@ eqshoePileTree(n,s)==
     if bStreamNull s
     then [false,n,[],s]
     else
-        [h,t]:=[car s,cdr s]
+        [h,t]:=[first s,rest s]
         hh:=shoePileColumn h
         if hh = n
         then shoePileForests(h,hh,t)
@@ -96,47 +101,48 @@ shoePileForests(h,n,s)==
       then [true,n,h,s]
       else shoePileForests(shoePileCtree(h,h1),n,t1)
  
-shoePileCtree(x,y)==dqAppend(x,shoePileCforest y)
+shoePileCtree(x,y) ==
+  dqAppend(x,shoePileCforest y)
  
 -- only enshoePiles forests with >=2 trees
  
 shoePileCforest x==
    if null x
    then []
-   else if null cdr x
-        then car x
+   else if null rest x
+        then first x
         else
-           a:=car x
+           a:=first x
            b:=shoePileCoagulate(a,rest x)
-           if null cdr b
-           then car b
+           if null rest b
+           then first b
            else shoeEnPile shoeSeparatePiles b
  
 shoePileCoagulate(a,b)==
     if null b
     then [a]
     else
-      c:=car b
+      c:=first b
       if EQ(shoeTokPart CAAR c,"THEN") or EQ(shoeTokPart CAAR c,"ELSE")
-      then shoePileCoagulate (dqAppend(a,c),cdr b)
+      then shoePileCoagulate (dqAppend(a,c),rest b)
       else
-         d:=CADR a
+         d:=second a
          e:=shoeTokPart d
          if EQCAR(d,"KEY") and
                (GET(e,"SHOEINF") or EQ(e,"COMMA") or EQ(e,"SEMICOLON"))
-         then shoePileCoagulate(dqAppend(a,c),cdr b)
+         then shoePileCoagulate(dqAppend(a,c),rest b)
          else cons(a,shoePileCoagulate(c,rest b))
  
 shoeSeparatePiles x==
   if null x
   then []
-  else if null cdr x
-       then car x
+  else if null rest x
+       then first x
        else
-         a:=car x
+         a:=first x
          semicolon:=dqUnit
                 shoeTokConstruct("KEY", "BACKSET",shoeLastTokPosn a)
-         dqConcat [a,semicolon,shoeSeparatePiles cdr x]
+         dqConcat [a,semicolon,shoeSeparatePiles rest x]
  
 shoeEnPile x==
    dqConcat [dqUnit shoeTokConstruct("KEY","SETTAB",shoeFirstTokPosn x),

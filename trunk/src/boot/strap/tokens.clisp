@@ -1,8 +1,8 @@
 (IMPORT-MODULE "initial-env")
 
-(PROVIDE "tokens")
-
 (IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "tokens")
 
 (DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)

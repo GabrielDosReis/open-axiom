@@ -33,8 +33,8 @@
 --
 
 import initial_-env
-module tokens
 namespace BOOTTRAN
+module tokens
 
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _
@@ -102,7 +102,7 @@ shoeKeyWords == [  _
 shoeKeyTableCons()==
    KeyTable:=MAKE_-HASHTABLE("CVEC")
    for st in shoeKeyWords repeat
-      HPUT(KeyTable,CAR st,CADR st)
+      HPUT(KeyTable,first st,second st)
    KeyTable
  
 shoeKeyTable:=shoeKeyTableCons()
@@ -196,7 +196,7 @@ for i in [      _
         ["GE"   ,">="], _
         ["SHOENE"  ,"^="] _
                    ]_
-       repeat SETF (GET(CAR i,'SHOEINF),CADR i)
+       repeat SETF (GET(first i,'SHOEINF),second i)
  
 
 ++ List of monoid operations and their neutral elements.
@@ -225,7 +225,7 @@ for i in [ _
       ["OR",      NIL]   _
                          ]
  
-       repeat SETF (GET(CAR i,'SHOETHETA),CDR i)
+       repeat SETF (GET(first i,'SHOETHETA),CDR i)
 
 for i in [ _
   ["and",          "AND"]  , _
@@ -286,7 +286,7 @@ for i in [ _
   ["SHOENE",        "/="], _
   ["T",               "T$"]   _
                                 ]
-       repeat SETF (GET(CAR i,'SHOERENAME),CDR i)
+       repeat SETF (GET(first i,'SHOERENAME),CDR i)
 
 -- For code written in `Old Boot', we would like to warn about
 -- the difference in renaming.
@@ -357,7 +357,7 @@ for i in [ _
   ["IN", "member"], _
   ["UNION", "union"]_
                      ]
-  repeat SETF (GET(CAR i,'OLD_-BOOT),CDR i)
+  repeat SETF (GET(first i,'OLD_-BOOT),CDR i)
 
 -- The following difference in renaming are verified to be OK.
 for i in [ _
@@ -410,4 +410,4 @@ for i in [ _
   ["streamName",        "CADR"] , _
   ["target",             "CAR"]  _
                              ] _
-       repeat SETF (GET(CAR i,'SHOESELFUNCTION),CADR i)
+       repeat SETF (GET(first i,'SHOESELFUNCTION),second i)

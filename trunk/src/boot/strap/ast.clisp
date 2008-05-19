@@ -1,8 +1,8 @@
 (IMPORT-MODULE "includer")
 
-(PROVIDE "ast")
-
 (IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "ast")
 
 (DEFPARAMETER |$bfClamming| NIL)
 
@@ -1159,7 +1159,7 @@
 
 (DEFUN |bfReName| (|x|)
   (PROG (|oldName| |newName| |a|)
-    (DECLARE (SPECIAL |$translatingOldBoot|))
+    (DECLARE (SPECIAL |$stok| |$translatingOldBoot|))
     (RETURN
       (PROGN
         (SETQ |newName|
@@ -1174,7 +1174,8 @@
                ((NOT (EQUAL |newName| |oldName|))
                 (|warn| (LIST (PNAME |x|) " as `" (PNAME |newName|)
                               "' differs from Old Boot `"
-                              (PNAME |oldName|) "'"))))
+                              (PNAME |oldName|) "' at "
+                              (|diagnosticLocation| |$stok|)))))
              |oldName|))
           (#0# |newName|))))))
 

@@ -164,7 +164,8 @@
                   (#0# (|shoeAccumulateLines| |$r| |string|)))))
              (#0# (CONS |s| |string|)))))))))
 
-(DEFUN |shoeCloser| (|t|) (MEMQ (|shoeKeyWord| |t|) '(CPAREN CBRACK)))
+(DEFUN |shoeCloser| (|t|)
+  (MEMBER (|shoeKeyWord| |t|) '(CPAREN CBRACK)))
 
 (DEFUN |shoeToken| ()
   (PROG (|b| |ch| |n| |linepos| |c| |ln|)

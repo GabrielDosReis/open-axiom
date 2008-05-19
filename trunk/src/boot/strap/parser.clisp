@@ -4,9 +4,9 @@
 
 (IMPORT-MODULE "ast")
 
-(PROVIDE "parser")
-
 (IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "parser")
 
 (DEFPARAMETER |$sawParenthesizedHead| NIL)
 

@@ -310,7 +310,7 @@ shoeFileTrees(s,st)==
   while not bStreamNull s repeat
     a:= first s
     if EQCAR (a,"+LINE")
-    then shoeFileLine(CADR a,st)
+    then shoeFileLine(second a,st)
     else 
       REALLYPRETTYPRINT(a,st)
       TERPRI st

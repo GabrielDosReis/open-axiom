@@ -38,8 +38,8 @@
 --
 
 import tokens
-module includer
 namespace BOOTTRAN
+module includer
 
 -- BOOT INCLUDER
  
@@ -77,7 +77,8 @@ PNAME x ==
 char x ==
   CHAR(PNAME x, 0)
 
-EQCAR(x,y)== CONSP x and EQ(first x,y)
+EQCAR(x,y)== 
+  CONSP x and EQ(first x,y)
 
 -- returns the string representation of object X.
 STRINGIMAGE x ==
@@ -106,7 +107,8 @@ shoeReadLine stream ==
 shoeConsole line ==
   WRITE_-LINE(line, _*TERMINAL_-IO_*)
  
-shoeSpaces n  ==  MAKE_-FULL_-CVEC(n, '".")
+shoeSpaces n  ==  
+  MAKE_-FULL_-CVEC(n, '".")
  
 
 --%
@@ -140,9 +142,14 @@ bpIgnoredFromTo(pos1, pos2) ==
 
 -- Line inclusion support.
  
-lineNo p==CDAAR p
-lineString p==CAAAR p
-lineCharacter p==rest p
+lineNo p ==
+  CDAAR p
+
+lineString p == 
+  CAAAR p
+
+lineCharacter p == 
+  rest p
  
 shoePackageStartsAt (lines,sz,name,stream)==
    bStreamNull stream => [[],['nullstream]]
@@ -181,12 +188,13 @@ $bStreamNil:=["nullstream"]
 bStreamNull x==
   null x or EQCAR (x,"nullstream") => true
   while EQCAR(x,"nonnullstream") repeat
-          st:=APPLY(CADR x,CDDR x)
+          st:=apply(second x,CDDR x)
           RPLACA(x,first st)
           RPLACD(x,rest st)
   EQCAR(x,"nullstream")
  
-bMap(f,x)==bDelay(function bMap1, [f,x])
+bMap(f,x) == 
+  bDelay(function bMap1, [f,x])
  
 bMap1(:z)==
      [f,x]:=z
@@ -203,25 +211,29 @@ shoeFileMap(f, fn)==
      shoeInclude  bAddLineNumber(bMap(f,bRgen a),bIgen 0)
 
  
-bDelay(f,x)==cons("nonnullstream",[f,:x])
+bDelay(f,x) ==
+  cons("nonnullstream",[f,:x])
  
-bAppend(x,y)==bDelay(function bAppend1,[x,y])
+bAppend(x,y) ==
+  bDelay(function bAppend1,[x,y])
  
 bAppend1(:z)==
      if bStreamNull first z
-     then if bStreamNull CADR z
+     then if bStreamNull second z
           then ["nullstream"]
-          else CADR z
-     else cons(CAAR z,bAppend(CDAR z,CADR z))
+          else second z
+     else cons(CAAR z,bAppend(CDAR z,second z))
  
-bNext(f,s)==bDelay(function bNext1,[f,s])
+bNext(f,s) ==
+  bDelay(function bNext1,[f,s])
  
 bNext1(f,s)==
       bStreamNull s=> ["nullstream"]
-      h:= APPLY(f, [s])
+      h:= apply(f, [s])
       bAppend(first h,bNext(f,rest h))
  
-bRgen s==bDelay(function bRgen1,[s])
+bRgen s ==
+  bDelay(function bRgen1,[s])
  
 bRgen1(:s) ==
         a:=shoeReadLine first s
@@ -231,13 +243,15 @@ bRgen1(:s) ==
             ["nullstream"]
         else cons(a,bRgen first s)
  
-bIgen n==bDelay(function bIgen1,[n])
+bIgen n ==
+  bDelay(function bIgen1,[n])
  
 bIgen1(:n)==
         n:=first n+1
         cons(n,bIgen n)
  
-bAddLineNumber(f1,f2)==bDelay(function bAddLineNumber1,[f1,f2])
+bAddLineNumber(f1,f2) ==
+  bDelay(function bAddLineNumber1,[f1,f2])
  
 bAddLineNumber1(:f)==
      [f1,f2] := f
@@ -247,13 +261,20 @@ bAddLineNumber1(:f)==
 
 
  
-shoeFileInput fn==shoeFileMap(function IDENTITY,fn)
+shoeFileInput fn ==
+  shoeFileMap(function IDENTITY,fn)
  
-shoePrefixLisp x== strconc('")lisp",x)
-shoeLispFileInput fn== shoeFileMap(function shoePrefixLisp,fn)
+shoePrefixLisp x == 
+  strconc('")lisp",x)
+
+shoeLispFileInput fn==
+  shoeFileMap(function shoePrefixLisp,fn)
  
-shoePrefixLine x== strconc('")line",x)
-shoeLineFileInput fn== shoeFileMap(function shoePrefixLine,fn)
+shoePrefixLine x== 
+  strconc('")line",x)
+
+shoeLineFileInput fn== 
+  shoeFileMap(function shoePrefixLine,fn)
  
 shoePrefix?(prefix,whole) ==
      #prefix > #whole => false
@@ -291,14 +312,14 @@ shoeBiteOff x==
 shoeFileName x==
          a:=shoeBiteOff x
          null a =>  '""
-         c:=shoeBiteOff CADR a
+         c:=shoeBiteOff second a
          null c =>  first a
          strconc(first a,'".",first c)
  
 shoeFnFileName x==
          a:=shoeBiteOff x
          null a =>  ['"",'""]
-         c:=shoeFileName CADR a
+         c:=shoeFileName second a
          null c =>  [first a,'""]
          [first a, c]
  
@@ -306,7 +327,9 @@ shoeFunctionFileInput [fun,fn]==
     shoeOpenInputFile (a,fn,
      shoeInclude bAddLineNumber( shoeFindLines(fn,fun,a),bIgen 0))
  
-shoeInclude s== bDelay(function shoeInclude1,[s])
+shoeInclude s == 
+  bDelay(function shoeInclude1,[s])
+
 shoeInclude1 s==
       bStreamNull s=> s
       [h,:t]  :=s
@@ -337,7 +360,9 @@ shoeSimpleLine(h) ==
       shoeLineSyntaxError(h)
       nil
  
-shoeThen(keep,b,s)== bDelay(function shoeThen1,[keep,b,s])
+shoeThen(keep,b,s) == 
+  bDelay(function shoeThen1,[keep,b,s])
+
 shoeThen1(keep,b,s)==
     bPremStreamNull s=> s
     [h,:t]  :=s
@@ -361,7 +386,9 @@ shoeThen1(keep,b,s)==
     keep1 and b1 => bAppend(shoeSimpleLine h,shoeThen(keep,b,t))
     shoeThen(keep,b,t)
  
-shoeElse(keep,b,s)== bDelay(function shoeElse1,[keep,b,s])
+shoeElse(keep,b,s) ==
+  bDelay(function shoeElse1,[keep,b,s])
+
 shoeElse1(keep,b,s)==
     bPremStreamNull s=> s
     [h,:t]  :=s
