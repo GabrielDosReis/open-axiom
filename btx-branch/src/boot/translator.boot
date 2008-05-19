@@ -33,14 +33,13 @@
 --
 
 
-module translator
 import includer
 import scanner
 import pile
 import parser
 import ast
-
 namespace BOOTTRAN
+module translator
 
 
 $currentNamespace := nil
@@ -500,8 +499,6 @@ translateSignatureDeclaration d ==
     Signature(n,t) => genDeclaration(n,t)
     otherwise => coreError '"signature expected"  
 
-TRACE translateSignatureDeclaration
-
 ++ A non declarative expression `expr' appears at toplevel and its
 ++ translation needs embeddeding in an `EVAL-WHEN'.
 translateToplevelExpression expr ==
@@ -868,7 +865,7 @@ translateBootFile(progname, options, file) ==
 compileBootHandler(progname, options, file) ==
 --  $driverMode := %CompileBootMode
   intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
-  (err := errorCount() ^= 0) => nil
+  errorCount() ^= 0 => nil
   intFile => 
     objFile := compileLispHandler(progname, options, intFile)
     DELETE_-FILE intFile
