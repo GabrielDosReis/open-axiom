@@ -32,8 +32,15 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import bc_-util
+import br_-data
 namespace BOOT
+module br_-util where
+  $bcMultipleNames: %Boolean
+  $conformsAreDomains: %Thing
+  $exposedOnlyIfTrue: %Boolean
+  $includeUnexposed?: %Boolean
+  $italicHead?: %Boolean
+  $italics?: %Boolean
 
 --====================> WAS b-util.boot <================================
 

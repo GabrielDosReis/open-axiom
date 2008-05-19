@@ -33,7 +33,7 @@
 
 import boot_-pkg
 namespace BOOT
-module type where
+module types where
   ++ Type of nothing.  Bottom of the latting.
   %Void <=> 
     nil
@@ -63,13 +63,13 @@ module type where
   %SingleFloat <=>
     SINGLE_-FLOAT
 
-%Integer <=>
-  INTEGER
+  %Integer <=>
+    INTEGER
 
-++ Type of single precision floating point numbers.  Most of the
-++ time, this is a 32-bit datatype.
-%SingleFloat <=>
-  SINGLE_-FLOAT
+  ++ Type of single precision floating point numbers.  Most of the
+  ++ time, this is a 32-bit datatype.
+  %SingleFloat <=>
+    SINGLE_-FLOAT
 
   ++ General type for numbers.
   %Number <=> 
@@ -104,6 +104,9 @@ module type where
   %Thing <=> true
 
   %Sequence <=> SEQUENCE
+
+  %Stream <=>
+    STREAM
 
   %Pair <=> cons
 

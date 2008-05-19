@@ -34,6 +34,8 @@
 
 import sys_-macros
 namespace BOOT
+module g_-cndata where
+  $lowerCaseConTb: %HashTable
 
 --% Manipulation of Constructor Datat
 

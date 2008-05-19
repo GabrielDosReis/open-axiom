@@ -33,7 +33,9 @@
 
 
 import ht_-util
+import br_-data
 namespace BOOT
+module ht_-root
 
 $historyDisplayWidth := 120
 $newline := char 10
@@ -284,12 +286,12 @@ htTutorialSearch pattern ==
 
 mkUnixPattern s ==
   u := mkUpDownPattern s
-  starPositions := REVERSE [i for i in 1..(-1 + MAXINDEX u) | u.i = $wild]
+  starPositions := REVERSE [i for i in 1..(-1 + MAXINDEX u) | u.i = $wildChar]
   for i in starPositions repeat
     u := STRCONC(SUBSTRING(u,0,i),'".*",SUBSTRING(u,i + 1,nil))
-  if u.0 ^= $wild then u := STRCONC('"[^a-zA-Z]",u)
+  if u.0 ^= $wildChar then u := STRCONC('"[^a-zA-Z]",u)
                   else u := SUBSTRING(u,1,nil)
-  if u.(k := MAXINDEX u) ^= $wild then u := STRCONC(u,'"[^a-zA-Z]")
+  if u.(k := MAXINDEX u) ^= $wildChar then u := STRCONC(u,'"[^a-zA-Z]")
                                   else u := SUBSTRING(u,0,k)
   u
 

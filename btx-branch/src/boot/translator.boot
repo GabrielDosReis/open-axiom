@@ -370,6 +370,8 @@ needsStableReference? t ==
   %hasFeature KEYWORD::GCL => false    -- 
   %hasFeature KEYWORD::SBCL or %hasFeature KEYWORD::CLISP =>
     t = "pointer" or t = "buffer"
+  %hasFeature KEYWORD::ECL =>
+    t = "pointer" or t = "buffer"
   true          -- don't know; conservatively answer `yes'.
 
 
@@ -383,7 +385,7 @@ coerceToNativeType(a,t) ==
     needsStableReference? t =>
       fatalError '"don't know how to coerce argument for native type"
     a
-  %hasFeature KEYWORD::CLISP =>
+  %hasFeature KEYWORD::CLISP or %hasFeature KEYWORD::ECL =>
     needsStableReference? t =>
       fatalError '"don't know how to coerce argument for native type"
     a   
@@ -448,6 +450,16 @@ genImportDeclaration(op, sig) ==
          [n,:[coerceToNativeType(a,t) for a in args for x in s]]]
     $foreignsDefsForCLisp := [foreignDecl,:$foreignsDefsForCLisp]
     [forwardingFun]
+  %hasFeature KEYWORD::ECL =>
+    [["DEFUN",op, args,
+      [bfColonColon("FFI","C-INLINE"),args,[nativeType x for x in s],
+        nativeType t, "strconc"/callTemplate(op',#args),
+           KEYWORD::ONE_-LINER, true]]] where
+	      callTemplate(op,n) ==
+		[SYMBOL_-NAME op,'"(",:[:sharpArg i for i in 0..(n-1)],'")"]
+	      sharpArg i == 
+		i = 0 => ['"#0"]
+		['",",'"#", STRINGIMAGE i]
   fatalError '"import declaration not implemented for this Lisp"
 
 shoeOutParse stream ==
@@ -840,13 +852,12 @@ PSTOUT string==
   setCurrentPackage callingPackage
   result
 
-
 defaultBootToLispFile file ==
   strconc(pathBasename file, '".clisp")
 
 getIntermediateLispFile(file,options) ==
   out := NAMESTRING getOutputPathname(options)
-  out ^= nil => strconc(shoeRemoveStringIfNec($faslType,out),'"clisp")
+  out ^= nil => strconc(shoeRemoveStringIfNec($effectiveFaslType,out),'"clisp")
   defaultBootToLispFile file
 
 translateBootFile(progname, options, file) ==

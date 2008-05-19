@@ -1,8 +1,62 @@
-(PROVIDE "tokens")
-
-(IMPORT-MODULE "initial-env")
+(BOOT-IMPORT "initial-env")
 
 (IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "tokens")
+
+(DEFTYPE |%Thing| () 'T)
+
+(DEFTYPE |%Boolean| () 'BOOLEAN)
+
+(DEFTYPE |%Char| () 'CHARACTER)
+
+(DEFTYPE |%String| () 'STRING)
+
+(DEFTYPE |%Symbol| () 'SYMBOL)
+
+(DEFTYPE |%Short| () 'FIXNUM)
+
+(DEFTYPE |%List| () 'LIST)
+
+(DEFTYPE |%Vector| () 'VECTOR)
+
+(DEFTYPE |%BitVector| () 'BIT-VECTOR)
+
+(DEFTYPE |%SimpleVector| () 'SIMPLE-VECTOR)
+
+(DEFTYPE |%Sequence| () 'SEQUENCE)
+
+(DEFTYPE |%HashTable| () 'HASH-TABLE)
+
+(DEFTYPE |%Maybe| (|a|) (LIST 'OR 'NULL |a|))
+
+(DEFCONSTANT |shoeSPACE| (QENUM "    " 0))
+
+(DEFCONSTANT |shoeESCAPE| (QENUM "_  " 0))
+
+(DEFCONSTANT |shoeLispESCAPE| (QENUM "!  " 0))
+
+(DEFCONSTANT |shoeSTRINGCHAR| (QENUM "\"  " 0))
+
+(DEFCONSTANT |shoePLUSCOMMENT| (QENUM "+   " 0))
+
+(DEFCONSTANT |shoeMINUSCOMMENT| (QENUM "-   " 0))
+
+(DEFCONSTANT |shoeDOT| (QENUM ".   " 0))
+
+(DEFCONSTANT |shoeEXPONENT1| (QENUM "E   " 0))
+
+(DEFCONSTANT |shoeEXPONENT2| (QENUM "e   " 0))
+
+(DEFCONSTANT |shoeCLOSEPAREN| (QENUM ")   " 0))
+
+(DEFCONSTANT |shoeTAB| 9)
+
+(DECLAIM (TYPE |%HashTable| |shoeKeyTable|))
+
+(DECLAIM (TYPE |%SimpleVector| |shoeDict|))
+
+(DECLAIM (TYPE |%BitVector| |shoePun|))
 
 (DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
@@ -43,28 +97,6 @@
         |KeyTable|))))
 
 (DEFPARAMETER |shoeKeyTable| (|shoeKeyTableCons|))
-
-(DEFCONSTANT |shoeSPACE| (QENUM "    " 0))
-
-(DEFCONSTANT |shoeESCAPE| (QENUM "_  " 0))
-
-(DEFPARAMETER |shoeLispESCAPE| (QENUM "!  " 0))
-
-(DEFCONSTANT |shoeSTRINGCHAR| (QENUM "\"  " 0))
-
-(DEFCONSTANT |shoePLUSCOMMENT| (QENUM "+   " 0))
-
-(DEFCONSTANT |shoeMINUSCOMMENT| (QENUM "-   " 0))
-
-(DEFCONSTANT |shoeDOT| (QENUM ".   " 0))
-
-(DEFCONSTANT |shoeEXPONENT1| (QENUM "E   " 0))
-
-(DEFCONSTANT |shoeEXPONENT2| (QENUM "e   " 0))
-
-(DEFCONSTANT |shoeCLOSEPAREN| (QENUM ")   " 0))
-
-(DEFCONSTANT |shoeTAB| 9)
 
 (DEFUN |shoeInsert| (|s| |d|)
   (PROG (|v| |k| |n| |u| |h| |l|)

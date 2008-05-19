@@ -600,7 +600,7 @@ module sys_-constants where
      ["SPADOUT", :"spout"]]
 
   +++
-  _*ATTRIBUTES_*: %List ==
+  $BuiltinAttributes: %List ==
    '(nil infinite arbitraryExponent approximate complex _
      shallowMutable canonical noetherian central _
      partiallyOrderedSet arbitraryPrecision canonicalsClosed _
