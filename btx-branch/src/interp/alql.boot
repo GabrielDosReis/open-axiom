@@ -34,6 +34,7 @@
 
 import br_-search
 namespace BOOT
+module alql
 
 getBrowseDatabase(kind) ==
   $includeUnexposed? : local := true

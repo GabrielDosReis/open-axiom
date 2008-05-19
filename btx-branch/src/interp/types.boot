@@ -33,7 +33,7 @@
 
 import boot_-pkg
 namespace BOOT
-
+module type where
   ++ Type of nothing.  Bottom of the latting.
   %Void <=> 
     nil
@@ -117,8 +117,8 @@ namespace BOOT
   %Triple <=>                                    -- form + type + env
     cons(%Code,cons(%Mode,cons(%Env,null))) 
 
-%Signature                      -- signature
-  <=> %Symbol or cons
+  %Signature                      -- signature
+     <=> %Symbol or cons
 
   %Modemap <=> %List                             -- modemap
 

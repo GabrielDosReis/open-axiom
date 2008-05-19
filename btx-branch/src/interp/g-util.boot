@@ -35,7 +35,7 @@
 import macros
 import sys_-utility
 namespace BOOT
-
+module g_-util where
   $charNewline: %Char
   $charFauxNewline: %Char
   $blank: %Char

@@ -40,7 +40,7 @@
 import hash
 import sys_-constants
 namespace BOOT
-
+module sys_-globals where
   --
   $IOindex : %Short := 0
   $BOOT: %Boolean := false

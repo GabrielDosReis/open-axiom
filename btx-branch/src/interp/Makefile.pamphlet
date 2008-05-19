@@ -550,58 +550,26 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 %.$(FASLEXT): %.lisp
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-br-search.$(FASLEXT): br-search.boot br-saturn.$(FASLEXT) \
+alql.$(FASLEXT): br-search.$(FASLEXT)
+br-search.$(FASLEXT): br-saturn.$(FASLEXT) \
 		g-cndata.$(FASLEXT) ht-root.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
-br-saturn.$(FASLEXT): br-saturn.boot br-util.$(FASLEXT) hypertex.$(FASLEXT) \
-		sys-driver.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
-br-op2.$(FASLEXT): br-op2.boot br-op1.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
-br-op1.$(FASLEXT): br-op1.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
-br-con.$(FASLEXT): br-con.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
-br-prof.$(FASLEXT): br-prof.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-br-data.$(FASLEXT): br-data.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
-br-util.$(FASLEXT): br-util.boot br-data.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-bc-solve.$(FASLEXT): bc-solve.boot bc-matrix.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
-bc-matrix.$(FASLEXT): bc-matrix.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
+br-saturn.$(FASLEXT): br-util.$(FASLEXT) hypertex.$(FASLEXT) \
+	sys-driver.$(FASLEXT)
+br-op2.$(FASLEXT): br-op1.$(FASLEXT)
+br-op1.$(FASLEXT): bc-util.$(FASLEXT)
+br-con.$(FASLEXT): bc-util.$(FASLEXT)
+br-prof.$(FASLEXT): bc-util.$(FASLEXT)
+br-data.$(FASLEXT): bc-util.$(FASLEXT)
+br-util.$(FASLEXT): br-data.$(FASLEXT)
+bc-solve.$(FASLEXT): bc-matrix.$(FASLEXT)
+bc-matrix.$(FASLEXT): bc-util.$(FASLEXT)
 bc-misc.$(FASLEXT): bc-misc.boot bc-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
 bc-util.$(FASLEXT): bc-util.boot ht-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
 ht-root.$(FASLEXT): ht-root.boot ht-util.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
 htcheck.$(FASLEXT): htcheck.boot sys-driver.$(FASLEXT) macros.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
 ht-util.$(FASLEXT): ht-util.boot g-util.$(FASLEXT)
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
-
 htsetvar.$(FASLEXT): htsetvar.boot macros.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
-
 hypertex.$(FASLEXT): hypertex.boot sys-constants.$(FASLEXT)
-	$(BOOTSYS) --compile --boot="old" --output=$@ --load-directory=. $<
 
 ## OpenAxiom's interpreter.
 patches.$(FASLEXT): macros.$(FASLEXT) g-timer.$(FASLEXT) sys-driver.$(FASLEXT)
