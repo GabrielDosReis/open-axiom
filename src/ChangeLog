@@ -1,3 +1,17 @@
+2008-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Port from btx-branch.
+	* lisp/core.lisp.in ($effectiveFaslType): New.
+	* boot/translator.boot (needsStableReference?): Handle the ECL case.
+	(coerceToNativeType): Likewise.
+	(genImportDeclaration): Likewise.
+	(shoeRemoveStringIfNec): Fix thinko.
+	($bootDefined): Define.
+	($bootDefinedTwice): Likewise.
+	($lispWordTable): Likewise.
+	(getIntermediateLispFile): Use $effectiveFaslType.
+	(loadSystemRuntimeCore): Use coreError, not systemError.
+
 2008-05-18  Martin Rubey  <martin.rubey@univie.ac.at>
 
 	Fix AW/412
