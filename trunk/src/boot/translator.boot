@@ -333,8 +333,8 @@ shoeAddComment l==
 ++ True if objects of type native type `t' are sensible to GC.
 needsStableReference? t ==
   %hasFeature KEYWORD::GCL => false    -- 
-  %hasFeature KEYWORD::SBCL or %hasFeature KEYWORD::CLISP =>
-    t = "pointer" or t = "buffer"
+  %hasFeature KEYWORD::SBCL or %hasFeature KEYWORD::CLISP 
+    or %hasFeature KEYWORD::ECL => t = "pointer" or t = "buffer"
   true          -- don't know; conservatively answer `yes'.
 
 
@@ -348,7 +348,7 @@ coerceToNativeType(a,t) ==
     needsStableReference? t =>
       fatalError '"don't know how to coerce argument for native type"
     a
-  %hasFeature KEYWORD::CLISP =>
+  %hasFeature KEYWORD::CLISP or %hasFeature KEYWORD::ECL =>
     needsStableReference? t =>
       fatalError '"don't know how to coerce argument for native type"
     a   
@@ -413,6 +413,17 @@ genImportDeclaration(op, sig) ==
          [n,:[coerceToNativeType(a,t) for a in args for x in s]]]
     $foreignsDefsForCLisp := [foreignDecl,:$foreignsDefsForCLisp]
     [forwardingFun]
+
+  %hasFeature KEYWORD::ECL =>
+    [["DEFUN",op, args,
+      [bfColonColon("FFI","C-INLINE"),args,[nativeType x for x in s],
+        nativeType t, "strconc"/callTemplate(op',#args),
+           KEYWORD::ONE_-LINER, true]]] where
+	      callTemplate(op,n) ==
+		[SYMBOL_-NAME op,'"(",:[:sharpArg i for i in 0..(n-1)],'")"]
+	      sharpArg i == 
+		i = 0 => ['"#0"]
+		['",",'"#", STRINGIMAGE i]
   fatalError '"import declaration not implemented for this Lisp"
 
 shoeOutParse stream ==
@@ -533,9 +544,9 @@ shoeAddStringIfNec(str,s)==
   s
  
 shoeRemoveStringIfNec(str,s)==
-  a := STRPOS(str,s,0,nil)
-  a = nil => s
-  SUBSTRING(s,0,a)
+  n := SEARCH(str,s,KEYWORD::FROM_-END,true)
+  n = nil => s
+  SUBSTRING(s,0,n)
  
 -- DEFUSE prints the definitions not used and the words used and
 -- not defined in the input file and common lisp.
@@ -544,6 +555,12 @@ DEFUSE fn==
   infn := strconc(fn,'".boot")
   shoeOpenInputFile(a,infn,shoeDfu(a,fn))
  
+--%
+$bootDefined := nil
+$bootDefinedTwice := nil
+$bootUsed := nil
+$lispWordTable := nil
+
 shoeDfu(a,fn)==
   a=nil => shoeNotFound fn
   $lispWordTable :=MAKE_-HASHTABLE ("EQ")
@@ -799,7 +816,8 @@ defaultBootToLispFile file ==
 
 getIntermediateLispFile(file,options) ==
   out := NAMESTRING getOutputPathname(options)
-  out ^= nil => strconc(shoeRemoveStringIfNec($faslType,out),'".clisp")
+  out ^= nil => 
+    strconc(shoeRemoveStringIfNec($effectiveFaslType,out),'".clisp")
   defaultBootToLispFile file
 
 translateBootFile(progname, options, file) ==
@@ -849,7 +867,7 @@ loadNativeModule m ==
     FUNCALL(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),m)
   %hasFeature KEYWORD::CLISP =>
     EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
-  systemError '"don't know how to load a dynamically linked module"
+  coreError '"don't know how to load a dynamically linked module"
 
 loadSystemRuntimeCore() ==
   loadNativeModule strconc(systemLibraryDirectory(),

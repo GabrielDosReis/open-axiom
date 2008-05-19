@@ -74,6 +74,7 @@
 	   "$targetPlatform"
 
 	   "$faslType"
+	   "$effectiveFaslType"
 	   "$NativeModuleExt"
 	   "$systemInstallationDirectory"
 	   "$NativeTypeTable"
@@ -139,6 +140,12 @@
 ;; Extenstion of FASL files.
 (defconstant |$faslType|
   (pathname-type (compile-file-pathname "foo.lisp")))
+
+(defconstant |$effectiveFaslType|
+  ;#+:ecl (pathname-type (compile-file-pathname "foo.lisp" :system-p t))
+  ;; until ECL is fixed, return a hard coded value
+  "o"
+  #-:ecl |$faslType|)
 
 ;; Extension of file containers for native shared libraries.
 (defconstant |$NativeModuleExt|
