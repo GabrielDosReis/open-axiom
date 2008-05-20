@@ -144,7 +144,7 @@
 (defconstant |$effectiveFaslType|
   ;#+:ecl (pathname-type (compile-file-pathname "foo.lisp" :system-p t))
   ;; until ECL is fixed, return a hard coded value
-  "o"
+  #+:ecl "o"
   #-:ecl |$faslType|)
 
 ;; Extension of file containers for native shared libraries.

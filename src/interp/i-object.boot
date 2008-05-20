@@ -112,7 +112,8 @@ getValueNormalForm obj ==
   IDENTP op and isConstructorName op => 
     isConceptualCategory objMode obj => instantiationNormalForm(op,argl)
     MKQ val
-  -- what else can it be?  Don't know; leave it alone.
+  -- This is not the final value of `obj', rather something that needs
+  -- further evaluation, e.g. generated code to compute the value.
   val
 
 instantiationNormalForm(op,argl) ==
