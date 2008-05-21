@@ -36,9 +36,8 @@
 #ifndef _LEX_H_
 #define _LEX_H_ 1
 
-#include "hyper.h"
+#include "token.h"
 
-extern int connect_spad(void);
 extern void get_expected_token(int);
 extern void parser_init(void);
 extern void init_scanner(void);
@@ -55,10 +54,6 @@ extern int be_type(const char*);
 extern int begin_type(void);
 extern int end_type(void);
 extern void reset_connection(void);
-extern int spad_busy(void);
-
-
-extern HyperDocPage *gPageBeingParsed;
 
 extern short int gInSpadsrc;
 extern short int gInVerbatim;

@@ -36,6 +36,7 @@
 #define _PARSE_C
 
 #include "debug.h"
+#include "halloc.h"
 #include "sockio.h"
 #include "parse.h"
 #include "parse-paste.h"
@@ -71,6 +72,23 @@ int ret_val;                    /* The return value from get_token */
 HyperDocPage *cur_page;
 
 char *replace_page;             /* true if dynamic page is link to static one */
+
+
+void
+reset_connection(void)
+{
+    if (spad_socket) {
+        FD_CLR(spad_socket->socket, &socket_mask);
+        purpose_table[spad_socket->purpose] = NULL;
+        close(spad_socket->socket);
+        spad_socket->socket = 0;
+        spad_socket = NULL;
+        if (input_string)
+            input_string[0] = '\0';
+        spad_socket->nbytes_pending = 0;
+        connect_spad();
+    }
+}
 
 /*
  * These routines are used for storing an restoring the parser mode. When

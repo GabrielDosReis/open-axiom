@@ -1,5 +1,19 @@
 2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* hyper/hyper.h (connect_spad): Declare.
+	(gPageBeingParsed): Likewise.
+	* hyper/htadd.c (session_server): Remove.
+	(MenuServerOpened): Likewise.
+	(gXDisplay): Likewise.
+	(gXScreenNumber): Likewise.
+	* hyper/lex.c (reset_connection): Move to hyper/parse.c
+	(connect_spad): Move to hyper/spadint.c
+	(spad_busy): Likewise.
+	(get_char1): Remove conditional code.
+	* hyper/Makefile.in (mostclean-local): Tidy.
+
+2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* graph/Gdraws/Makefile.in (HEADERS): Don't include hash.H1.
 	* include/halloc.h: Rename from include/halloc.H1.
 	* include/lex.H1: Remove.

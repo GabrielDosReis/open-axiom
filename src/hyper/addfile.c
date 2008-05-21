@@ -46,7 +46,6 @@
 #include <errno.h>
 
 #include "halloc.h"
-#include "all_hyper_proto.H1"
 
 static int build_ht_filename(char*, char*, char*);
 static int pathname(char*);

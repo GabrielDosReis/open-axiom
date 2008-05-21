@@ -110,10 +110,13 @@ stamp: $(HEADERS) ${BITMAPS} ${SCRIPTS} ${BINFILES} ${HYPER}/pages/ht.db
 	$(STAMP) stamp
 
 mostclean-local:
+	$(LIBTOOL) --mode=clean rm -f $(hypertex_objects) $(htadd_objects) \
+		$(spadbuf_objects) $(hthits_objects) $(ex2ht_objects)
 
 clean-local: mostclean-local
-	-rm -f $(objects)
 	-rm -f $(BINFILES)
+	-rm -rf $(HYPER)/pages
+	-rm -f $(SCRIPTS)
 
 distclean-local: clean-local
 

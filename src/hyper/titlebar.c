@@ -46,6 +46,7 @@
 #include "debug.h"
 
 #include <stdlib.h>
+#include "halloc.h"
 #include "sockio.h"
 #include "titlebar.h"
 #include "display.h"

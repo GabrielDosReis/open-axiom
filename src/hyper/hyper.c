@@ -49,6 +49,7 @@
 
 #include "sockio.h"
 #include "hyper.h"
+#include "lex.h"
 
 #include <sys/signal.h>
 #include <sys/types.h>

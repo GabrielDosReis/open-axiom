@@ -42,6 +42,7 @@
 #include <sys/signal.h>
 #include <setjmp.h>
 
+#include "halloc.h"
 #include "sockio.h"
 #include "hyper.h"
 #include "group.h"
