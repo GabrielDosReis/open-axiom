@@ -466,3 +466,77 @@ oa_getenv(const char* var)
    return getenv(var);
 #endif   
 }
+
+
+OPENAXIOM_EXPORT char*
+oa_getcwd(void)
+{
+   int bufsz = 256;
+   char* buf = (char*) malloc(bufsz);
+#ifdef __MINGW32__
+   int n = GetCurrentDirectory(bufsz, bufsz);
+   if (n == 0) {
+      perror("oa_getcwd");
+      exit(-1);
+   }
+   else if (n > bufsz) {
+      buf = realloc(buf,n);
+      if (GetCurrentDirectory(n, buf) != n) {
+         perror("oa_getcwd");
+         exit(-1);
+      }
+   }
+   return buf;
+#else /* __MINGW32__ */
+   errno = 0;
+   while (getcwd(buf,bufsz) == 0) {
+      if (errno == ERANGE) {
+         errno = 0;
+         bufsz *= 2;
+         buf = realloc(buf, bufsz);
+      }
+      else {
+         perror("oa_getcwd");
+         exit(-1);
+      }
+   }
+   return buf;
+#endif
+}
+
+OPENAXIOM_EXPORT int
+oa_access_file_for_read(const char* path)
+{
+#ifdef __MINGW32__
+   GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES ? -1 : 1;
+#else
+   return access(path, R_OK);
+#endif   
+}
+
+
+OPENAXIOM_EXPORT const char*
+oa_get_tmpdir(void)
+{
+#ifdef __MINGW32__
+   char* buf;
+   /* First, probe.  */
+   int bufsz = GetTempPath(0, NULL);
+   if (bufsz == 0) {
+      perror("oa_get_tmpdir");
+      exit(-1);
+   }
+   else {
+      buf = (char*) malloc(bufsz + 1);
+      if(GetTempPath(bufsz, buf) != bufsz) {
+         perror("oa_get_tmpdir");
+         free(buf);
+         exit(-1);
+      }
+      buf[bufsz] = '\0';
+   }
+   return buf;
+#else
+   return "/tmp";
+#endif   
+}

@@ -33,19 +33,20 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _ADDFILE_C
-
-#include "debug.h"
-
-#include "sockio.h"
-#include "addfile.h"
-#include "hyper.h"
-#include "addfile.h"
+#include "openaxiom-c-macros.h"
 
 #include <sys/stat.h>
 #include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 
+#include "debug.h"
+#include "cfuns.h"
 #include "halloc.h"
+#include "sockio.h"
+#include "addfile.h"
+
+
 
 static int build_ht_filename(char*, char*, char*);
 static int pathname(char*);
@@ -91,7 +92,6 @@ extend_ht(char *name)
 static int
 build_ht_filename(char *fname, char *aname, char *name)
 {
-    char cdir[256];
     char *c_dir;
     char *HTPATH;
     char *trace;
@@ -100,8 +100,9 @@ build_ht_filename(char *fname, char *aname, char *name)
 
     if (cwd(name)) {
         /* user wants to use the current working directory */
-        c_dir = (char *) getcwd(cdir, 254);
+        c_dir = oa_getcwd();
         strcpy(fname, c_dir);
+        free(c_dir);
 
         /* Now add the rest of the filename */
         strcat(fname, "/");
@@ -123,7 +124,7 @@ build_ht_filename(char *fname, char *aname, char *name)
         extend_ht(fname);
 
         /* Now just try to access the file */
-        return (access(fname, R_OK));
+        return oa_access_file_for_read(fname);
     }
     else if (pathname(name)) {
         /* filename already has the path specified */
@@ -145,7 +146,7 @@ build_ht_filename(char *fname, char *aname, char *name)
         extend_ht(fname);
 
         /* Now just try to access the file */
-        return (access(fname, R_OK));
+        return oa_access_file_for_read(fname);
     }
     else {/** If not I am going to have to append path names to it **/
         HTPATH = (char *) getenv("HTPATH");
@@ -175,13 +176,15 @@ build_ht_filename(char *fname, char *aname, char *name)
             *trace = 0;
             if (!strcmp(fname, "./")) {
                 /** The person wishes me to check the current directory too **/
-                getcwd(fname, 256);
-                strcat(fname, "/");
+               c_dir = oa_getcwd();
+               strcpy(fname,c_dir);
+               free(c_dir);
+               strcat(fname, "/");
             }
             if (*trace2)
                 trace2++;
             strcat(fname, aname);
-            ht_file = access(fname, R_OK);
+            ht_file = oa_access_file_for_read(fname);
         }
         return (ht_file);
     }
@@ -303,8 +306,8 @@ temp_file_open(char *temp_db_file)
 
     /** Just make the name and open it **/
 
-    strcpy(temp_db_file, temp_dir);
-    strcat(temp_db_file, "ht2.db" /* db_file_name */ );
+    strcpy(temp_db_file, oa_get_tmpdir());
+    strcat(temp_db_file, "/ht2.db" /* db_file_name */ );
     temp_db_fp = fopen(temp_db_file, "w");
 
     if (temp_db_fp == NULL) {
