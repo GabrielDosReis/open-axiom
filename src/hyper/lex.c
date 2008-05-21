@@ -71,11 +71,16 @@ int useAscii;
 #include "lex.h"
 
 #include "all_hyper_proto.H1"
+#include "halloc.h"
 #include "sockio.h"
 
 
 #include <ctype.h>
 #include <setjmp.h>
+
+static int get_char1(void );
+static void spad_error_handler(void );
+static int keyword_type(void );
 
 extern int gTtFontIs850;
 
@@ -535,7 +540,7 @@ BeStruct *top_be_stack;
 
 
 void
-push_be_stack(int type,char * id)
+push_be_stack(int type, const char* id)
 {
     BeStruct *be = (BeStruct *) halloc(sizeof(BeStruct), "BeginENd stack");
 
@@ -548,7 +553,7 @@ push_be_stack(int type,char * id)
     return;
 }
 void
-check_and_pop_be_stack(int type,char * id)
+check_and_pop_be_stack(int type, const char* id)
 {
     BeStruct *x;
 
@@ -594,7 +599,7 @@ clear_be_stack(void)
 }
 
 int
-be_type(char *which)
+be_type(const char* which)
 {
     Token store;
 

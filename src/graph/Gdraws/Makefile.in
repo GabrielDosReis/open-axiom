@@ -64,7 +64,7 @@ subdir = src/graph/Gdraws/
 pamphlets = psFiles.pamphlet
 
 HEADERS = ${IN}/Gdraws0.h ${LINC}/G.h     ${LINC}/Gfun.H1    \
-          ${GINC}/hash.h  ${GINC}/hash.H1 $(axiom_c_macros_h)
+          ${GINC}/hash.h  $(axiom_c_macros_h)
 
 PSFiles= ${PS}/colorpoly.ps ${PS}/colorwol.ps  ${PS}/draw.ps      \
          ${PS}/drawIstr.ps  ${PS}/drawarc.ps   ${PS}/drawcolor.ps \

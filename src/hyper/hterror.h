@@ -33,13 +33,18 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef OPENAXIOM_HTERROR
+#define OPENAXIOM_HTERROR
+
 #define HTCONDNODE 1    /* unrecognized condition node */
 #define KEYTYPE    2    /* unrecognized keyword found in lex.c */
 #define Numerrors  2
 
-#ifdef HTERROR
-char *errmess[] =  {
-  "place holder",
-  "parsing condition node",
-  "unrecognized keyword" };
-#endif
+extern void print_page_and_filename(void);
+extern void jump(void);
+extern void print_token(void);
+extern void token_name(int);
+extern void print_next_ten_tokens(void);
+extern void htperror(char* , int);
+
+#endif /* OPENAXIOM_HTERROR */

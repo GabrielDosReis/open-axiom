@@ -38,12 +38,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "halloc.H1"
+#include "halloc.h"
 
 
 /* allocate memory and bomb if none left (hyperTeX alloc) */
 char *
-halloc(int bytes,char * msg)
+halloc(int bytes, const char* msg)
 {
     static char buf[200];
     char *result;

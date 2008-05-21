@@ -36,22 +36,35 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-typedef struct hash_entry {
-  char *key;			/* pointer to key data */
-  char *data;			/* Pointer to entry */
-  struct hash_entry *next;	/* Link to next entry */
+typedef struct HashEntry {
+   const char *key;             /* pointer to key data */
+   char *data;			/* Pointer to entry */
+   struct HashEntry *next;	/* Link to next entry */
 } HashEntry;
 
-typedef int (*EqualFunction)(void *,void *);
-typedef int (*HashcodeFunction)(void *,int);
-typedef void (*MappableFunction) (void *);
+typedef int (*EqualFunction)(const void*, const void*);
+typedef int (*HashcodeFunction)(const void*,int);
+typedef void (*MappableFunction) (const void*);
 typedef void (*FreeFunction) (void *);
-typedef struct {
+typedef struct HashTable {
   HashEntry **table;		/* the actual table */
   int size;			/* size of table */
   int num_entries;		/* number of elements in a hash table */
   EqualFunction equal;		/* equality predicate for keys */
   HashcodeFunction hash_code;	/* create hash code for a key */
 } HashTable;
+
+extern char* alloc_string(const char*);
+extern HashEntry* hash_copy_entry(HashEntry*);
+extern HashTable* hash_copy_table(HashTable*);
+extern void hash_delete(HashTable*, const char*);
+extern char* hash_find(HashTable*, const char*);
+extern void hash_init(HashTable*, int, EqualFunction, HashcodeFunction);
+extern void free_hash(HashTable*, FreeFunction);
+extern void hash_insert(HashTable*, char*, const char*);
+extern void hash_map(HashTable*, MappableFunction func);
+extern char* hash_replace(HashTable*, char*, const char*);
+extern int string_equal(const char*, const char*);
+extern int string_hash(const char*, int size);
 
 #endif

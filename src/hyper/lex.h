@@ -38,6 +38,26 @@
 
 #include "hyper.h"
 
+extern int connect_spad(void);
+extern void get_expected_token(int);
+extern void parser_init(void);
+extern void init_scanner(void);
+extern void save_scanner_state(void);
+extern void restore_scanner_state(void);
+extern void unget_char(int);
+extern int get_char(void);
+extern void unget_token(void);
+extern int get_token(void);
+extern void push_be_stack(int, const char*);
+extern void check_and_pop_be_stack(int, const char*);
+extern int clear_be_stack(void);
+extern int be_type(const char*);
+extern int begin_type(void);
+extern int end_type(void);
+extern void reset_connection(void);
+extern int spad_busy(void);
+
+
 extern HyperDocPage *gPageBeingParsed;
 
 extern short int gInSpadsrc;

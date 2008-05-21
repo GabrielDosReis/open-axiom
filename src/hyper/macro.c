@@ -40,6 +40,7 @@
 #include "sockio.h"
 #include "parse.h"
 #include "hyper.h"
+#include "lex.h"
 
 #include "all_hyper_proto.H1"
 

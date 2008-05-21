@@ -45,13 +45,10 @@
 #include <errno.h>
 #include <setjmp.h>
 
+#include "hash.h"
+#include "hterror.h"
 #include "lex.h"
-
 #include "addfile.h"
-#include "halloc.H1"
-#include "hash.H1"
-#include "hterror.H1"
-#include "lex.H1"
 
 
 static void add_file(char*, char*, int);
