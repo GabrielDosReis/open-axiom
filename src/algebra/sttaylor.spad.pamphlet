@@ -401,6 +401,14 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
        cssa(frst ststa,mapsa((rst x) * #1,comps(rst ststa,x)))
 
     if A has Algebra RN then
+@
+
+The following defines lazy integration on streams interpreted as Taylor series.
+I.e. if [[x]] is $c_0,c_1,c_2,\dots$, then [[integ x]] returns
+$c_0,\frac{1}{2}c_1,\frac{1}{3}c_2,\dots$. [[integrate]] prepends a given
+constant of integration.
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
       integre: (ST A,I) -> ST A
       integre(x,n) == delay
         empty? x => zro()
@@ -412,6 +420,9 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
       integrate(a,x) == concat(a,integ x)
       lazyIntegrate(s,xf) == concat(s,integ(delay xf))
 
+@
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
       nldere:(ST ST A,ST A) -> ST A
       nldere(lslsa,c) == lazyIntegrate(0,addiag(comps(lslsa,c)))
       nlde lslsa == YS(nldere(lslsa,#1))
@@ -420,10 +431,45 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
 
       smult: (RN,ST A) -> ST A
       smult(rn,x) == map(rn * #1,x)
+@
+
+The following helper function computes
+\begin{equation*}
+  1+\int (rn+1) c x' dz - c (x-a_0),
+\end{equation*}
+where $a_0$ is the constant term of [[x]].
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
       powerrn:(RN,ST A,ST A) -> ST A
       powerrn(rn,x,c) == delay
         concat(1,integ(smult(rn + 1,c * deriv x)) - rst x * c)
-      powern(rn,x) ==
+@
+
+The following operation raises the power series [[x]] to a rational power
+[[rn]]. We first outline the general strategy.
+
+Suppose the constant term of [[x]] equals one. In this case, we have
+\begin{equation*}
+  x^{rn+1} = 1 + \int (rn+1) x^{rn} x' dz,  
+\end{equation*}
+since $(x^{rn+1})'= (rn+1)x^{rn} x'$.  Thus, $x^{rn}$ is the fixed point of %
+[[g +-> powerrn(rn, x, g)]]. We use [[Y$ParadoxicalCombinatorsForStreams(A)]]%$
+to compute this fixed point lazily.
+
+If the constant term of [[x]] is neither zero nor one, we use the identity
+\begin{equation*}
+  (c_0 + c_1*z + c_2 z^2\dots)^{rn} = c_0^{rn} (1 + \frac{c_1}{c_0}*z +\dots)^{rn}.
+\end{equation*}
+
+Finally, if the constant term of [[x]] is zero, we use the identity
+\begin{equation*}
+  (c_0*z^o + c_1*z^{o+1} +\dots)^{rn} = z^{o rn} (c_0 + c_1*z +\dots)^{rn}.
+\end{equation*}
+
+This implementation should be compared with [[cRationalPower$ISUPS]].%$
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
+      powern(rn, x) ==
         order : I := 0
         for n in 0.. repeat
           empty? x => return zro()
@@ -431,24 +477,71 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
           x := rst x
           n = 1000 =>
             error "**: series with many leading zero coefficients"
+@
+First we determine the order of [[x]], i.e., the index of the first non-zero
+coefficient.
+
+Remarks:
+\begin{itemize}
+\item Note that usually [[leave]] takes no arguments. I don't know what it does
+      here.
+\item [[empty? x]] tests whether the stream [[x]] has no elements. This is
+      mathematically the same as the corresponding power series being zero.
+\end{itemize}
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
         (ord := (order exquo denom(rn))) case "failed" =>
           error "**: rational power does not exist"
+@
+
+[[ord*numer(rn)]] will be the order of the new power series. If it is not an
+integer, we won't get a Taylor expansion and thus raise an error.
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
+        if ord > 0 and rn < 0 then
+           error "**: negative power does not exist"
+@
+
+If [[order]] was non-zero, we may not raise to a negative power. This test
+should really be done before the previous one.
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
         co := frst x
         (invCo := recip co) case "failed" =>
            error "** rational power of coefficient undefined"
--- This error message is misleading, isn't it? see sups.spad/cRationalPower
+@
+
+We need to be able to invert the leading coefficient. The error message is
+slightly misleading, see [[sups.spad/cRationalPower]].
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
         power :=
---          one? co => YS(powerrn(rn,x,#1))
-          (co = 1) => YS(powerrn(rn,x,#1))
+          one? co => YS(powerrn(rn, x, #1))
           (denom rn) = 1 =>
-            not negative?(num := numer rn) => 
+            not negative?(num := numer rn) =>
 -- It seems that this cannot happen, but I don't know why
-              (co**num::NNI) * YS(powerrn(rn,(invCo :: A) * x,#1))
-            (invCo :: A)**((-num)::NNI) * YS(powerrn(rn,(invCo :: A) * x,#1))
+              (co**num::NNI) * YS(powerrn(rn, (invCo :: A) * x, #1))
+            (invCo::A)**((-num)::NNI) * YS(powerrn(rn, (invCo :: A) * x, #1))
 
-          RATPOWERS => co**rn * YS(powerrn(rn,(invCo :: A) * x,#1))
+          RATPOWERS => co**rn * YS(powerrn(rn,(invCo :: A) * x, #1))
           error "** rational power of coefficient undefined"
+@
 
+We now invoke the fixed point computation as explained above. We can do the
+computation if
+\begin{itemize}
+\item the constant term equals one, or
+\item [[rn]] is an integer, or
+\item we have rational powers in the coefficient ring.
+\end{itemize}
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
+        monom(1, (ord :: I) * numer(rn)) * power
+@
+
+Finally, we return the result with the correct order.
+
+<<package STTAYLOR StreamTaylorSeriesOperations>>=
     if A has Field then
       mapdiv(x,y) == delay
         empty? y => error "stream division by zero"
