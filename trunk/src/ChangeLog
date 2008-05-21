@@ -1,3 +1,8 @@
+2008-05-21  Martin Rubey  <martin.rubey@univie.ac.at>
+
+	Fix AW/343
+	* algebra/free.spad.pamphlet (<$FreeAbelianGroup): Fix ordering.
+
 2008-05-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot: Cleanup.
