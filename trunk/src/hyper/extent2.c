@@ -46,6 +46,7 @@
 
 #include "debug.h"
 
+#include "halloc.h"
 #include "sockio.h"
 #include "extent.h"
 #include "group.h"

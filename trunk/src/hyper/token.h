@@ -36,6 +36,9 @@
 #ifndef _TOKEN_H_
 #define _TOKEN_H_ 1
 
+#include "openaxiom-c-macros.h"
+#include <stdio.h>
+
 /*
  Here are a couple of flags added for whitespace stuff. They tell
       punctuation if there was space in front of it or not

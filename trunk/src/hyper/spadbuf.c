@@ -46,7 +46,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <signal.h>
-
+#include "halloc.h"
 #include "bsdsignal.h"
 #include "sockio.h"
 #include "edible.h"
@@ -136,7 +136,7 @@ interp_io(void)
             return;
         }
         if (FD_ISSET(session_sock->socket, &rd)) {
-            len = sread(session_sock, buf, 1024, "stdio");
+            len = sread(session_sock, (openaxiom_byte*) buf, 1024, "stdio");
             if (len == -1)
                 return;
             else {

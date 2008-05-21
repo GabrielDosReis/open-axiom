@@ -37,6 +37,7 @@
 #include "sockio.h"
 #define _ITEM_C
 #include "debug.h"
+#include "halloc.h"
 #include "extent.h"
 
 #include "all_hyper_proto.H1"

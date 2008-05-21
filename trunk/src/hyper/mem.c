@@ -44,6 +44,7 @@
 
 #include "debug.h"
 
+#include "halloc.h"
 #include "sockio.h"
 #include "hyper.h"
 #include "group.h"

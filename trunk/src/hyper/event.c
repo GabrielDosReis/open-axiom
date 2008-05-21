@@ -58,6 +58,7 @@
 #include "initx.h"
 #include "scrollbar.h"
 #include "group.h"
+#include "lex.h"
 
 #include "all_hyper_proto.H1"
 #include "sockio.h"

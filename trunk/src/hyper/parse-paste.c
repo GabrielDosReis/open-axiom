@@ -45,11 +45,13 @@
 
 #include "debug.h"
 
+#include "halloc.h"
 #include "sockio.h"
 #include "parse.h"
 #include "hyper.h"
 #include "display.h"
 #include "group.h"
+#include "lex.h"
 
 #include "all_hyper_proto.H1"
 

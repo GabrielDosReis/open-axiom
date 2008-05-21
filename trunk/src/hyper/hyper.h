@@ -524,6 +524,8 @@ extern int space_width;
 #define BeepAtTheUser()         /* (XBell(gXDisplay,  5)) */
 #define LoudBeepAtTheUser()     /* (XBell(gXDisplay, 50)) */
 
+extern int connect_spad(void);
+
 
 /***      default fonts      ***/
 #define RmFontDefault         "-adobe-courier-medium-r-normal--18-*-*-*-m-*-iso8859-1"
@@ -544,6 +546,8 @@ typedef struct group_item {
 
 
 extern GroupItem   *gTopOfGroupStack;
+
+extern HyperDocPage *gPageBeingParsed;
 
 
 typedef struct cond_node {

@@ -68,11 +68,9 @@ int useAscii;
 
 #include "hyper.h"
 #include "hterror.h"
-#include "lex.h"
-
-#include "all_hyper_proto.H1"
 #include "halloc.h"
 #include "sockio.h"
+#include "lex.h"
 
 
 #include <ctype.h>
@@ -320,10 +318,8 @@ AGAIN:
             last_command = cmd = get_int(spad_socket);
             if (cmd == EndOfPage)
                 return EOF;
-#ifndef HTADD
             if (cmd == SpadError)
                 spad_error_handler();
-#endif
         }
         get_string_buf(spad_socket, sock_buf, 1023);
         /* this will be null if this is the last time*/
@@ -817,8 +813,6 @@ get_expected_token(int type)
     }
 }
 
-
-#ifndef HTADD
 static void
 spad_error_handler(void)
 {
@@ -828,51 +822,3 @@ spad_error_handler(void)
     exit(-1);
 }
 
-void
-reset_connection(void)
-{
-    if (spad_socket) {
-        FD_CLR(spad_socket->socket, &socket_mask);
-        purpose_table[spad_socket->purpose] = NULL;
-        close(spad_socket->socket);
-        spad_socket->socket = 0;
-        spad_socket = NULL;
-        if (input_string)
-            input_string[0] = '\0';
-        spad_socket->nbytes_pending = 0;
-        connect_spad();
-    }
-}
-#endif
-
-
-/* returns true if spad is currently computing */
-int
-spad_busy(void)
-{
-    if (session_server == NULL)
-        return 1;
-    send_int(session_server, QuerySpad);
-    return get_int(session_server);
-}
-
-/* connect to OpenAxiom , return 0 if succesful, 1 if not */
-int
-connect_spad(void)
-{
-    if (!MenuServerOpened) {
-        fprintf(stderr, "(HyperDoc) Warning: Not connected to OpenAxiom Server!\n");
-        LoudBeepAtTheUser();
-        return NotConnected;
-    }
-    if (spad_socket == NULL) {
-        spad_socket = connect_to_local_server(SpadServer, MenuServer, Forever);
-        if (spad_socket == NULL) {
-            fprintf(stderr, "(HyperDoc) Warning: Could not connect to OpenAxiom Server!\n");
-            LoudBeepAtTheUser();
-            return NotConnected;
-        }
-    }
-    /* if (spad_busy()) return SpadBusy; */
-    return Connected;
-}

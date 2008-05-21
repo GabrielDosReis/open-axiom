@@ -44,6 +44,7 @@
 #include "openaxiom-c-macros.h"
 
 #include "debug.h"
+#include "halloc.h"
 #include "sockio.h"
 #include "parse.h"
 #include "parse-types.h"

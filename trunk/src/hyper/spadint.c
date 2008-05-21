@@ -42,6 +42,7 @@
 #include "debug.h"
 
 #include <signal.h>
+#include "halloc.h"
 #include "sockio.h"
 #include "hyper.h"
 #include "parse.h"
@@ -58,6 +59,39 @@ typedef struct sock_list {      /* linked list of openaxiom_sio */
 
 Sock_List *plSock = (Sock_List *) 0;
 openaxiom_sio *spad_socket = (openaxiom_sio *) 0; /* to_server socket for SpadServer */
+
+
+/* connect to OpenAxiom , return 0 if succesful, 1 if not */
+int
+connect_spad(void)
+{
+    if (!MenuServerOpened) {
+        fprintf(stderr, "(HyperDoc) Warning: Not connected to OpenAxiom Server!\n");
+        LoudBeepAtTheUser();
+        return NotConnected;
+    }
+    if (spad_socket == NULL) {
+        spad_socket = connect_to_local_server(SpadServer, MenuServer, Forever);
+        if (spad_socket == NULL) {
+            fprintf(stderr, "(HyperDoc) Warning: Could not connect to OpenAxiom Server!\n");
+            LoudBeepAtTheUser();
+            return NotConnected;
+        }
+    }
+    /* if (spad_busy()) return SpadBusy; */
+    return Connected;
+}
+
+/* returns true if spad is currently computing */
+int
+spad_busy(void)
+{
+    if (session_server == NULL)
+        return 1;
+    send_int(session_server, QuerySpad);
+    return get_int(session_server);
+}
+
 
 /* issue a OpenAxiom command to the buffer associated with a page */
 void

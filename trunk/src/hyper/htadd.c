@@ -77,10 +77,6 @@ extern int line_number;         /* keeps track of which line a page starts on
                                  * HyperDoc. */
 /* for compatibility with HyperDoc */
 openaxiom_sio *spad_socket = NULL;
-openaxiom_sio *session_server = NULL;
-int MenuServerOpened;
-Display *gXDisplay;
-int      gXScreenNumber;
 int fresh = 0;
 
 #define Delete 1

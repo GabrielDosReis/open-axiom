@@ -37,6 +37,7 @@
 #define _PARSE_AUX_C
 
 #include "debug.h"
+#include "halloc.h"
 #include "sockio.h"
 #include "parse.h"
 #include "addfile.h"
