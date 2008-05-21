@@ -47,8 +47,8 @@
 
 #include "spadcolors.h"
 
+#include "halloc.h"
 #include "pixmap.H1"
-#include "halloc.H1"
 #include "spadcolors.H1"
 
 

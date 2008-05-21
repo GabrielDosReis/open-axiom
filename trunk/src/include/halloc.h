@@ -12,11 +12,11 @@
         notice, this list of conditions and the following disclaimer.
 
       - Redistributions in binary form must reproduce the above copyright
-        notice, this list of conditions and the following disclaimer in
+       notice, this list of conditions and the following disclaimer in
         the documentation and/or other materials provided with the
         distribution.
 
-      - Neither the name of The Numerical Algorithms Group Ltd. nor the
+      - Neither the name of The Numerical ALgorithms Group Ltd. nor the
         names of its contributors may be used to endorse or promote products
         derived from this software without specific prior written permission.
 
@@ -33,41 +33,9 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _HALLOC_C
-#include "openaxiom-c-macros.h"
+#ifndef OPENAXIOM_HALLOC
+#define OPENAXIOM_HALLOC
 
-#include "debug.h"
-#include <stdio.h>
-#include <stdlib.h>
+extern char * halloc(int, const char*);
 
-FILE *fp;
-
-#include "halloc.H1"
-
-/* allocate memory and bomb if none left (HyperDoc alloc) */
-
-char *
-halloc(int bytes, char *msg)
-{
-    static char buf[200];
-    char *result;
-
-#ifdef DEBUG
-    static int first = 1;
-
-    if (first) {
-        fp = fopen("/tmp/hallocs", "w");
-        first = 0;
-    }
-#endif
-    result = (char *) malloc(bytes);
-#ifdef DEBUG
-    fprintf(fp, "%d\tAlocating %d Bytes for %s\n", result,bytes, msg);
-#endif
-    if (result == NULL) {
-        sprintf(buf, "Ran out of memory allocating %s.\b", msg);
-        fprintf(stderr, "%s\n", buf);
-        exit(-1);
-    }
-    return result;
-}
+#endif /* OPENAXIOM_HALLOC */

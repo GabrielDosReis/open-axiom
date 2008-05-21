@@ -49,6 +49,12 @@
 char ebuffer[128];
 jmp_buf jmpbuf;
 
+char *errmess[] =  {
+  "place holder",
+  "parsing condition node",
+  "unrecognized keyword"
+};
+
 /*
  * This file is the error handling routine in AXIOM. The main routine is
  * called htperror(): arguments: msg - like perror it accepts an error

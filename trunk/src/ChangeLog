@@ -1,3 +1,14 @@
+2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* graph/Gdraws/Makefile.in (HEADERS): Don't include hash.H1.
+	* include/halloc.h: Rename from include/halloc.H1.
+	* include/lex.H1: Remove.
+	* include/hterror.H1: Likewise.
+	* hyper/halloc.c: Likewise.
+	* hyper/hash.c: Likewise.
+	* hyper/Makefile.in (hypertex_SOURCES): Don't include hash.c,
+	halloc.c. 
+
 2008-05-21  Igor Kahvkine  <ikhavkin@uwo.ca>
 	    Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 

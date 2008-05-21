@@ -39,10 +39,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hash.h"
 
-#include "hash.H1"
-#include "halloc.H1"
+#include "halloc.h"
+#include "hash.h"
 
 /* initialize a hash table */
 
@@ -63,7 +62,7 @@ hash_init(HashTable *table, int size, EqualFunction equal,
 }
 
 void
-free_hash(HashTable *table, FreeFunction free_fun)
+free_hash(HashTable* table, FreeFunction free_fun)
 {
   if (table) {
     int i;
@@ -73,7 +72,7 @@ free_hash(HashTable *table, FreeFunction free_fun)
 
       for (e = table->table[i]; e != NULL;) {
         next = e->next;
-        (*free_fun) (e->data);
+        (*free_fun) ((char*) e->data);
         (*e).data=0;
         free(e);
         e = next;
@@ -86,7 +85,7 @@ free_hash(HashTable *table, FreeFunction free_fun)
 /* insert an entry into a hash table */
 
 void
-hash_insert(HashTable *table, char *data, char *key)
+hash_insert(HashTable* table, char* data, const char *key)
 {
     HashEntry *entry = (HashEntry *) halloc(sizeof(HashEntry), "HashEntry");
     int code;
@@ -103,7 +102,7 @@ hash_insert(HashTable *table, char *data, char *key)
 }
 
 char *
-hash_find(HashTable *table, char *key)
+hash_find(HashTable* table, const char *key)
 {
     HashEntry *entry;
     int code = table->hash_code(key, table->size) % table->size;
@@ -115,7 +114,7 @@ hash_find(HashTable *table, char *key)
 }
 
 char *
-hash_replace(HashTable *table, char *data, char *key)
+hash_replace(HashTable* table, char* data, const char* key)
 {
     HashEntry *entry;
     int code = table->hash_code(key, table->size) % table->size;
@@ -129,7 +128,7 @@ hash_replace(HashTable *table, char *data, char *key)
 }
 
 void
-hash_delete(HashTable *table, char *key)
+hash_delete(HashTable* table, const char* key)
 {
     HashEntry **entry;
     int code = table->hash_code(key, table->size) % table->size;
@@ -143,7 +142,7 @@ hash_delete(HashTable *table, char *key)
 }
 
 void
-hash_map(HashTable *table, MappableFunction func)
+hash_map(HashTable* table, MappableFunction func)
 {
     int i;
     HashEntry *e;
@@ -171,7 +170,7 @@ hash_copy_entry(HashEntry *e)
 
 /* copy a hash table */
 HashTable *
-hash_copy_table(HashTable *table)
+hash_copy_table(HashTable* table)
 {
     HashTable *nt = (HashTable *) halloc(sizeof(HashTable), "copy hash table");
     int i;
@@ -189,10 +188,10 @@ hash_copy_table(HashTable *table)
 
 /* hash code function for strings */
 int
-string_hash(char *s, int size)
+string_hash(const char* s, int size)
 {
     int c = 0;
-    char *p =s;
+    const char *p =s;
 
 
     while (*p)
@@ -203,17 +202,17 @@ string_hash(char *s, int size)
 /* test strings for equality */
 
 int
-string_equal(char *s1, char *s2)
+string_equal(const char* s1, const char* s2)
 {
     return (strcmp(s1, s2) == 0);
 }
 
 /* make a fresh copy of the given string */
 char *
-alloc_string(char *str)
+alloc_string(const char* str)
 {
     char * result;
-    result = halloc(strlen(str)+1,"String");
+    result = halloc(strlen(str)+1,"alloc_string");
     strcpy(result,str);
     return (result);
 }
