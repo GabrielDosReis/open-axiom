@@ -51,5 +51,8 @@ OPENAXIOM_EXPORT int oa_rename(const char*, const char*);
 OPENAXIOM_EXPORT int oa_mkdir(const char*);
 OPENAXIOM_EXPORT int oa_system(const char*);
 OPENAXIOM_EXPORT char* oa_getenv(const char*);
+OPENAXIOM_EXPORT char* oa_getcwd(void);
+OPENAXIOM_EXPORT int oa_access_file_for_read(const char*);
+OPENAXIOM_EXPORT const char* oa_get_tmpdir(void);
 
 #endif /* OPENAXIOM_CFUNS_included */

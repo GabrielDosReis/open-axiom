@@ -1,5 +1,18 @@
 2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/cfuns.h (oa_get_tmpdir): Declare.
+	(oa_access_file_for_read): Likewise.
+	* lib/cfuns-c.c (oa_getcwd): Define.
+	(oa_access_file_for_read): Likewise.
+	(oa_get_tmpdir): Likewise.
+	* hyper/addfile.c: Don't include hyper.h
+	(build_ht_filename): Use oa_getcwd, oa_access_file_for_read.
+	(temp_file_open): Use oa_get_tmpdir.
+	* hyper/htadd.c (build_db_filename): Don't fall back to bogus
+	filename. 
+	* hyper/hyper.h (temp_dir): Remove.
+	(def_spad): Likewise.
+
 	* hyper/hyper.h (connect_spad): Declare.
 	(gPageBeingParsed): Likewise.
 	* hyper/htadd.c (session_server): Remove.

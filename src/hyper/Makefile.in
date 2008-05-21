@@ -117,6 +117,7 @@ clean-local: mostclean-local
 	-rm -f $(BINFILES)
 	-rm -rf $(HYPER)/pages
 	-rm -f $(SCRIPTS)
+	-rm -f stamp
 
 distclean-local: clean-local
 

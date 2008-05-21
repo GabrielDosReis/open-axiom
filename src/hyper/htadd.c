@@ -211,8 +211,8 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
         SPAD = (char *) getenv("AXIOM");
         if (SPAD == NULL) {
             fprintf(stderr,
-                    "Build_db_filename: Defaulting on $AXIOM\n");
-            SPAD = (char *) def_spad;
+                    "build_db_filename: cannot find system root directory\n");
+            exit(-1);
         }
         sprintf(dbfilename, "%s/share/hypertex/pages/%s", SPAD, db_file_name);
         sprintf(path, "%s/share/hypertex/pages", SPAD);
