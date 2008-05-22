@@ -39,10 +39,12 @@
 #define _HTADD_C
 #include "openaxiom-c-macros.h"
 
-#include <sys/stat.h>
 #include <errno.h>
 #include <setjmp.h>
 #include <stdlib.h>
+#ifndef __MINGW32__
+#  include <sys/stat.h>
+#endif
 
 #include "cfuns.h"
 #include "hash.h"

@@ -59,7 +59,7 @@ fi
 AC_SUBST(axiom_enable_checking)
 AC_SUBST(axiom_optimize_options)
 
-axiom_src_subdirs="lib lisp boot interp share algebra input etc doc"
+axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
 AC_CANONICAL_SYSTEM
@@ -492,11 +492,11 @@ else
 fi
 AC_SUBST(axiom_src_all)
 AC_SUBST(axiom_use_x)
+openaxiom_host_has_regex=
 AC_CHECK_HEADER([regex.h], 
-                [axiom_src_all="$axiom_src_all all-hyper"
-                 axiom_src_subdirs="$axiom_src_subdirs hyper"
-                 AXIOM_MAKEFILE([src/hyper/Makefile])], 
-                [AC_MSG_NOTICE([HyperDoc is disabled.])])
+                [openaxiom_host_has_regex=yes],
+                [openaxiom_host_has_regex=no])
+AC_SUBST(openaxiom_host_has_regex)
 
 axiom_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.
@@ -611,6 +611,7 @@ AC_SUBST(pointer_type)
 AXIOM_MAKEFILE([Makefile])
 AXIOM_MAKEFILE([src/Makefile])
 AXIOM_MAKEFILE([src/lib/Makefile])
+AXIOM_MAKEFILE([src/hyper/Makefile])
 AXIOM_MAKEFILE([src/driver/Makefile])
 AXIOM_MAKEFILE([src/lisp/Makefile])
 AXIOM_MAKEFILE([src/boot/Makefile])

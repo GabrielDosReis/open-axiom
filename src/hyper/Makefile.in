@@ -30,7 +30,10 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-bin_PROGRAMS = htadd$(EXEEXT) hthits$(EXEEXT) ex2ht$(EXEEXT)
+bin_PROGRAMS = htadd$(EXEEXT) ex2ht$(EXEEXT)
+ifeq ($(strip $(openaxiom_host_has_regex)),yes)
+bin_PROGRAMS += hthits$(EXEEXT)
+endif
 ifeq ($(strip $(axiom_use_x)),yes)
 bin_PROGRAMS += hypertex$(EXEEXT) spadbuf$(EXEEXT)
 endif
