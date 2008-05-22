@@ -1,5 +1,9 @@
 2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* hyper/hthits.c (regerr): Remove.
+	* include/ex2ht.H1: Remove.
+	* include/hthits.H1: Remove.
+
 	* lib/cfuns-c.c (oa_getenv): Fix thinko.
 	(oa_getcwd): Likewise.
 	* lib/cfuns-c.c (oa_access_file_for_read): Likewise.

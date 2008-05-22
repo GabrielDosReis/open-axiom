@@ -36,7 +36,6 @@
 /* ex2ht creates a cover page for structured HyperDoc example pages */
 
 
-#define _EX2HT_C
 #include "openaxiom-c-macros.h"
 
 #include "debug.h"
@@ -47,6 +46,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include "cfuns.h"
 
 
 
@@ -59,43 +59,120 @@ extern int utimes(const char *, const struct timeval [2]);
 #define MaxLineLength 512
 #define MaxFiles      100
 
-char *files[MaxFiles];
-int numFiles = 0;
-struct timeval latest_date[2] ={{0,0},{0,0}};
+static char *files[MaxFiles];
+static int numFiles = 0;
+static struct timeval latest_date[2] ={{0,0},{0,0}};
 
-#include "ex2ht.H1"
+static FILE *coverFile;
 
 
-int
-main(int argc, char **argv)
+static void
+addFile(const char* filename)
 {
-    int i;
+    FILE *file = fopen(filename, "r");
+    int c;
 
-    if (argc == 1) {
-        fprintf(stderr, "usage: %s exfile.ht ...\n", argv[0]);
-        return (-1);
+    if (file == NULL) {
+        fprintf(stderr, "Couln't open %s for reading\n", filename);
+        exit(-1);
     }
-    openCoverPage();
-    for (i = 1; i < argc; i++)
-        exToHt(argv[i]);
-    closeCoverPage();
-    for (i = 0; i < numFiles; i++)
-        addFile(files[i]);
-    closeCoverFile();
-    return 0;
+    while ((c = getc(file)) != EOF)
+        putc(c, coverFile);
+    putc('\n', coverFile);
+    fclose(file);
+    oa_unlink(filename);
 }
 
-char *
-allocString(char *s)
+
+static void
+emitCoverLink(const char* name, char *title)
 {
-    char *t = (char *) malloc(strlen(s) + 1);
-
-    strcpy(t, s);
-    return t;
+    fprintf(coverFile, "{\\downlink{%s}{%s}}\n", title, name);
 }
 
-char *
-strPrefix(char *prefix, char *s)
+static void
+closeCoverFile(void)
+{
+    fclose(coverFile);
+#ifdef HP9platform
+    times("coverex.ht",latest_date);
+#else
+    utimes("coverex.ht",latest_date);
+#endif
+}
+
+static void
+closeCoverPage(void)
+{
+    fprintf(coverFile, "}\\endscroll\\end{page}\n\n");
+}
+/* cover page functions */
+
+static void
+openCoverPage(void)
+{
+    coverFile = fopen("coverex.ht", "w");
+    if (coverFile == NULL) {
+        fprintf(stderr, "couldn't open coverex.ht for writing\n");
+        exit(-1);
+    }
+    fprintf(coverFile, "%% DO NOT EDIT! Created by ex2ht.\n\n");
+    fprintf(coverFile, "\\begin{page}{ExampleCoverPage}{Examples Of AXIOM Commands}\n");
+    fprintf(coverFile, "\\beginscroll\\table{\n");
+}
+
+static void
+emitSpadCommand(const char* line, const char* prefix, FILE *outFile)
+{
+    int braceCount = 1;
+    char command[MaxLineLength], *t = command;
+
+    while (1) {
+        if (*line == '}')
+            braceCount--;
+        if (braceCount == 0)
+            break;
+        if (*line == '{')
+            braceCount++;
+        *t++ = *line++;
+    }
+    *t = '\0';
+    fprintf(outFile, "%s%s}\n", prefix, command);
+}
+
+/* s is pageName}{title} */
+static void
+emitMenuEntry(const char* line, FILE *outFile)
+{
+    char pageName[MaxLineLength], title[MaxLineLength];
+    char *p = pageName, *t = title;
+
+    while (*line != '}')
+        *p++ = *line++;
+    *p = '\0';
+    line++;
+    while (*line != '}')
+        *t++ = *line++;
+    *t = '\0';
+    fprintf(outFile, "\\menudownlink%s}{%s}\n", title, pageName);
+}
+
+static void 
+emitHeader(FILE *outFile, char *pageName, char *pageTitle)
+{
+    fprintf(outFile, "\\begin{page}{%s}{%s}\n", pageName, pageTitle);
+    fprintf(outFile, "\\beginscroll\\beginmenu\n");
+}
+
+static void 
+emitFooter(FILE *outFile)
+{
+    fprintf(outFile, "\\endmenu\\endscroll\\end{page}\n");
+}
+
+
+static char *
+strPrefix(char* prefix, char *s)
 {
     while (*prefix != '\0' && *prefix == *s) {
         prefix++;
@@ -106,8 +183,19 @@ strPrefix(char *prefix, char *s)
     return NULL;
 }
 
-char *
-getExTitle(FILE *inFile, char *line)
+
+static char *
+allocString(const char* s)
+{
+    char *t = (char *) malloc(strlen(s) + 1);
+
+    strcpy(t, s);
+    return t;
+}
+
+
+static char *
+getExTitle(FILE *inFile, char* line)
 {
     char *title;
 
@@ -120,10 +208,12 @@ getExTitle(FILE *inFile, char *line)
     return NULL;
 }
 
-void 
-exToHt(char *filename)
+
+static void 
+exToHt(const char* filename)
 {
-    char line[MaxLineLength], *line2;
+    char line[MaxLineLength];
+    const char* line2;
     char *title, *pagename;
     FILE *inFile = fopen(filename, "r");
     FILE *outFile;
@@ -179,108 +269,22 @@ exToHt(char *filename)
         }
 }
 
-void 
-emitHeader(FILE *outFile, char *pageName, char *pageTitle)
+
+int
+main(int argc, char **argv)
 {
-    fprintf(outFile, "\\begin{page}{%s}{%s}\n", pageName, pageTitle);
-    fprintf(outFile, "\\beginscroll\\beginmenu\n");
-}
+    int i;
 
-void 
-emitFooter(FILE *outFile)
-{
-    fprintf(outFile, "\\endmenu\\endscroll\\end{page}\n");
-}
-
-/* s is pageName}{title} */
-void
-emitMenuEntry(char *line, FILE *outFile)
-{
-    char pageName[MaxLineLength], title[MaxLineLength];
-    char *p = pageName, *t = title;
-
-    while (*line != '}')
-        *p++ = *line++;
-    *p = '\0';
-    line++;
-    while (*line != '}')
-        *t++ = *line++;
-    *t = '\0';
-    fprintf(outFile, "\\menudownlink%s}{%s}\n", title, pageName);
-}
-
-void
-emitSpadCommand(char *line, char *prefix, FILE *outFile)
-{
-    int braceCount = 1;
-    char command[MaxLineLength], *t = command;
-
-    while (1) {
-        if (*line == '}')
-            braceCount--;
-        if (braceCount == 0)
-            break;
-        if (*line == '{')
-            braceCount++;
-        *t++ = *line++;
+    if (argc == 1) {
+        fprintf(stderr, "usage: %s exfile.ht ...\n", argv[0]);
+        return (-1);
     }
-    *t = '\0';
-    fprintf(outFile, "%s%s}\n", prefix, command);
-}
-
-/* cover page functions */
-
-FILE *coverFile;
-
-void
-openCoverPage(void)
-{
-    coverFile = fopen("coverex.ht", "w");
-    if (coverFile == NULL) {
-        fprintf(stderr, "couldn't open coverex.ht for writing\n");
-        exit(-1);
-    }
-    fprintf(coverFile, "%% DO NOT EDIT! Created by ex2ht.\n\n");
-    fprintf(coverFile, "\\begin{page}{ExampleCoverPage}{Examples Of AXIOM Commands}\n");
-    fprintf(coverFile, "\\beginscroll\\table{\n");
-}
-
-void
-closeCoverPage(void)
-{
-    fprintf(coverFile, "}\\endscroll\\end{page}\n\n");
-}
-
-void
-closeCoverFile(void)
-{
-    fclose(coverFile);
-#ifdef HP9platform
-    times("coverex.ht",latest_date);
-#else
-    utimes("coverex.ht",latest_date);
-#endif
-}
-
-void
-emitCoverLink(char *name, char *title)
-{
-    fprintf(coverFile, "{\\downlink{%s}{%s}}\n", title, name);
-}
-
-void
-addFile(char *filename)
-{
-    FILE *file = fopen(filename, "r");
-    int c;
-
-    if (file == NULL) {
-        fprintf(stderr, "Couln't open %s for reading\n", filename);
-        exit(-1);
-    }
-    while ((c = getc(file)) != EOF)
-        putc(c, coverFile);
-    putc('\n', coverFile);
-    fclose(file);
-    unlink(filename);
+    openCoverPage();
+    for (i = 1; i < argc; i++)
+        exToHt(argv[i]);
+    closeCoverPage();
+    for (i = 0; i < numFiles; i++)
+        addFile(files[i]);
+    closeCoverFile();
+    return 0;
 }
