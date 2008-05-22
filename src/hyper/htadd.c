@@ -39,16 +39,17 @@
 #define _HTADD_C
 #include "openaxiom-c-macros.h"
 
-#include "sockio.h"
-#include "hyper.h"
 #include <sys/stat.h>
 #include <errno.h>
 #include <setjmp.h>
+#include <stdlib.h>
 
+#include "cfuns.h"
 #include "hash.h"
 #include "lex.h"
+#include "sockio.h"
 #include "addfile.h"
-
+#include "node.h"
 
 static void add_file(char*, char*, int);
 static void add_new_pages(FILE*, FILE*, char*, char*);
@@ -108,7 +109,7 @@ main(int argc, char **argv)
     build_db_filename(flag, db_dir, dbfilename);
 
     if (fresh)
-        unlink(dbfilename);
+        oa_unlink(dbfilename);
 
     if (flag & Delete)
         while (*fnames)

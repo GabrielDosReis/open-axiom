@@ -47,7 +47,6 @@
 #include "all_hyper_proto.H1"
 
 
-extern FILE *cfile;
 extern int make_input_file;
 extern int gverify_dates;
 

@@ -1,3 +1,9 @@
+2008-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* hyper/hyper.h: Move lexing stuff to hyper/lex.h
+	* hyper/htadd.c: Don't include hyper.h.  Include cfuns.h and
+	node.h instead.
+
 2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* hyper/hthits.c (regerr): Remove.
