@@ -51,7 +51,6 @@
 #include "hyper.h"
 #include "lex.h"
 #include "extent.h"
-#include "hterror.h"
 
 #include "all_hyper_proto.H1"
 
@@ -59,6 +58,44 @@ boolean gInButton = FALSE;
 boolean gInIf = FALSE;
 boolean gInItems = FALSE;
 boolean gInOptional = FALSE;
+
+
+static char *errmess[] =  {
+  "place holder",
+  "parsing condition node",
+  "unrecognized keyword"
+};
+
+
+/*
+ * htperror(): arguments: msg - like perror it accepts an error
+ * message to be printed errno - the errno which occurred. This is so an
+ * appropriate error message can be printed.
+ *
+ * The prints out the page name, and then the filename in which the error
+ * occurred. If possible it also tries to print out the next ten tokens.
+ */
+
+static void
+htperror(char *msg, int erno)
+{
+    char obuff[256];
+
+    /* The first thing I do is create the error message */
+
+    if (erno <= Numerrors) {
+        sprintf(obuff, "%s:%s\n", msg, errmess[errno]);
+    }
+    else {
+        sprintf(obuff, "%s:\n", msg);
+        fprintf(stderr, "Unknown error type %d\n", erno);
+    }
+    fprintf(stderr, "%s", obuff);
+
+    print_page_and_filename();
+
+    print_next_ten_tokens();
+}
 
 void
 parse_ifcond(void)

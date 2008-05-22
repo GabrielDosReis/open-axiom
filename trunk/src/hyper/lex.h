@@ -38,6 +38,10 @@
 
 #include "token.h"
 
+#define HTCONDNODE 1    /* unrecognized condition node */
+#define KEYTYPE    2    /* unrecognized keyword found in lex.c */
+#define Numerrors  2
+
 extern void get_expected_token(int);
 extern void parser_init(void);
 extern void init_scanner(void);
@@ -55,7 +59,14 @@ extern int begin_type(void);
 extern int end_type(void);
 extern void reset_connection(void);
 
+extern void print_page_and_filename(void);
+extern void jump(void);
+extern void print_token(void);
+extern void token_name(int);
+extern void print_next_ten_tokens(void);
+
 extern short int gInSpadsrc;
 extern short int gInVerbatim;
+
 
 #endif

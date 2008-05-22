@@ -46,7 +46,6 @@
 #include <setjmp.h>
 
 #include "hash.h"
-#include "hterror.h"
 #include "lex.h"
 #include "addfile.h"
 

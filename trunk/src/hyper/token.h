@@ -49,9 +49,9 @@
 
 /* HyperDoc parser tokens */
 
-typedef struct toke {
-  int type;             /* token type.  One of those listed below */
-  char *id;             /* string value if type == Identifier */
+typedef struct Token {
+   int type;              /* token type.  One of those listed below */
+   char *id;                  /* string value if type == Identifier */
 } Token;
 
 /*
@@ -161,110 +161,6 @@ typedef struct toke {
 
 
 extern char *token_table[];
-
-#ifdef PARSER
-char *token_table[] = {
-  "",           /* Dummy token name */
-  "word",
-  "page",
-  "lispcommandquit",
-  "bf",
-  "link",
-  "downlink",
-  "beginscroll",
-  "spadcommand",
-  "nolines",
-  "env",
-  "par",
-  "centerline",
-  "begin",
-  "beginitems",
-  "item",
-  "table",
-  "fbox",
-  "tab",
-  "space",
-  "indent",
-  "horizontalline",
-  "newline",
-  "enditems",
-  "returnbutton",
-  "memolink",
-  "upbutton",
-  "endscroll",
-  "thispage",
-  "returnto",
-  "free",
-  "bound",
-  "lisplink",
-  "unixlink",
-  "mbox",
-  "inputstring",
-  "stringvalue",
-  "spadlink",
-  "inputbitmap",
-  "inputpixmap",
-  "unixcommand",
-  "em",
-  "lispcommand",
-  "lispmemolink",
-  "lispdownlink",
-  "spadcall",
-  "spadcallquit",
-  "spaddownlink",
-  "spadmemolink",
-  "qspadcall",
-  "qspadcallquit",
-  "inputbox",
-  "radioboxes",
-  "boxvalue",
-  "vspace",
-  "hspace",
-  "newcommand",
-  "windowid",
-  "beep",
-  "quitbutton",
-  "begintitems",
-  "titem",
-  "end",
-  "it",
-  "sl",
-  "tt",
-  "rm",
-  "ifcond",
-  "else",
-  "fi",
-  "newcond",
-  "setcond" ,
-  "button",
-  "windowlink",
-  "haslisp",
-  "hasup",
-  "hasreturn",
-  "hasreturnto",
-  "lastwindow",
-  "endtitems",
-  "lispwindowlink",
-  "beginpile",
-  "endpile",
-  "nextline",
-  "pastebutton",
-  "color",
-  "helppage",
-  "patch",
-  "radiobox",
-  "ifrecond",
-  "math",
-  "mitem",
-  "pagename",
-  "examplenumber",
-  "replacepage",
-  "inputimage",
-  "spadgraph",
-  "indentrel",
-  "controlbitmap"
-  };
-#endif
 
 
 /* places from which input may be read */

@@ -66,29 +66,30 @@ int useAscii;
 
 #define PARSER 1
 
-#include "hyper.h"
-#include "hterror.h"
 #include "halloc.h"
-#include "sockio.h"
 #include "lex.h"
-
+#include "node.h"
 
 #include <ctype.h>
 #include <setjmp.h>
+#include <stdlib.h>
 
 static int get_char1(void );
 static void spad_error_handler(void );
 static int keyword_type(void );
 
 extern int gTtFontIs850;
+extern HDWindow *gWindow;
+
 
 
 StateNode *top_state_node;
 HyperDocPage *gPageBeingParsed;      /* page currently being parsed    */
-extern jmp_buf jmpbuf;
-extern char ebuffer[];
+jmp_buf jmpbuf;
+char ebuffer[128];
 short int gInSpadsrc = 0;
 short int gInVerbatim;
+openaxiom_sio* spad_socket;
 
 /* Parser variables */
 long fpos;                      /* Position of pointer in file in characters */
@@ -111,6 +112,108 @@ char sock_buf[1024];            /* buffer for socket input */
 #define TokenHashSize   100
 
 static HashTable tokenHashTable;           /* hash table of parser tokens */
+
+char* token_table[] = {
+  "",           /* Dummy token name */
+  "word",
+  "page",
+  "lispcommandquit",
+  "bf",
+  "link",
+  "downlink",
+  "beginscroll",
+  "spadcommand",
+  "nolines",
+  "env",
+  "par",
+  "centerline",
+  "begin",
+  "beginitems",
+  "item",
+  "table",
+  "fbox",
+  "tab",
+  "space",
+  "indent",
+  "horizontalline",
+  "newline",
+  "enditems",
+  "returnbutton",
+  "memolink",
+  "upbutton",
+  "endscroll",
+  "thispage",
+  "returnto",
+  "free",
+  "bound",
+  "lisplink",
+  "unixlink",
+  "mbox",
+  "inputstring",
+  "stringvalue",
+  "spadlink",
+  "inputbitmap",
+  "inputpixmap",
+  "unixcommand",
+  "em",
+  "lispcommand",
+  "lispmemolink",
+  "lispdownlink",
+  "spadcall",
+  "spadcallquit",
+  "spaddownlink",
+  "spadmemolink",
+  "qspadcall",
+  "qspadcallquit",
+  "inputbox",
+  "radioboxes",
+  "boxvalue",
+  "vspace",
+  "hspace",
+  "newcommand",
+  "windowid",
+  "beep",
+  "quitbutton",
+  "begintitems",
+  "titem",
+  "end",
+  "it",
+  "sl",
+  "tt",
+  "rm",
+  "ifcond",
+  "else",
+  "fi",
+  "newcond",
+  "setcond" ,
+  "button",
+  "windowlink",
+  "haslisp",
+  "hasup",
+  "hasreturn",
+  "hasreturnto",
+  "lastwindow",
+  "endtitems",
+  "lispwindowlink",
+  "beginpile",
+  "endpile",
+  "nextline",
+  "pastebutton",
+  "color",
+  "helppage",
+  "patch",
+  "radiobox",
+  "ifrecond",
+  "math",
+  "mitem",
+  "pagename",
+  "examplenumber",
+  "replacepage",
+  "inputimage",
+  "spadgraph",
+  "indentrel",
+  "controlbitmap"
+  };
 
 void
 dumpToken(char *caller, Token t)
@@ -534,6 +637,15 @@ typedef struct be_struct {
 
 BeStruct *top_be_stack;
 
+void
+jump(void)
+{
+    if (gWindow == NULL)
+        exit(-1);
+    longjmp(jmpbuf, 1);
+    fprintf(stderr, "(HyperDoc) Long Jump failed, Exiting\n");
+    exit(-1);
+}
 
 void
 push_be_stack(int type, const char* id)
@@ -747,6 +859,140 @@ end_type(void)
     return 1;
 }
 
+
+void
+token_name(int type)
+{
+    if (type <= NumberUserTokens)
+        strcpy(ebuffer, token_table[type]);
+    else {
+        switch (type) {
+          case Lbrace:
+            strcpy(ebuffer, "{");
+            break;
+          case Rbrace:
+            strcpy(ebuffer, "}");
+            break;
+          case Macro:
+            strcpy(ebuffer, token.id);
+            break;
+          case Group:
+            strcpy(ebuffer, "{");
+            break;
+          case Pound:
+            strcpy(ebuffer, "#");
+            break;
+          case Lsquarebrace:
+            strcpy(ebuffer, "[");
+            break;
+          case Rsquarebrace:
+            strcpy(ebuffer, "]");
+            break;
+          case Punctuation:
+            strcpy(ebuffer, token.id);
+            break;
+          case Dash:
+            strcpy(ebuffer, token.id);
+            break;
+          case Verbatim:
+            strcpy(ebuffer, "\\begin{verbatim}");
+            break;
+          case Scroll:
+            strcpy(ebuffer, "\\begin{scroll}");
+            break;
+          case Dollar:
+            strcpy(ebuffer, "$");
+            break;
+          case Percent:
+            strcpy(ebuffer, "%");
+            break;
+          case Carrot:
+            strcpy(ebuffer, "^");
+            break;
+          case Underscore:
+            strcpy(ebuffer, "_");
+            break;
+          case Tilde:
+            strcpy(ebuffer, "~");
+            break;
+          case Cond:
+            sprintf(ebuffer, "\\%s", token.id);
+            break;
+          case Icorrection:
+            strcpy(ebuffer, "\\/");
+            break;
+          case Paste:
+            strcpy(ebuffer, "\\begin{paste}");
+            break;
+          case Patch:
+            strcpy(ebuffer, "\\begin{patch}");
+            break;
+          default:
+            sprintf(ebuffer, " %d ", type);
+        }
+        /*return 1;*/
+    }
+}
+
+
+/* print out a token value */
+void
+print_token(void)
+{
+    if (token.type == Word)
+        printf("%s ", token.id);
+    else {
+        token_name(token.type);
+        printf("\\%s ", ebuffer);
+    }
+    fflush(stdout);
+}
+
+void
+print_next_ten_tokens(void)
+{
+    int i;
+    int v;
+
+    fprintf(stderr, "Trying to print the next ten tokens\n");
+    for (i = 0; i < 10; i++) {
+        v = get_token();
+        if (v == EOF)
+            break;
+        print_token();
+    }
+    fprintf(stderr, "\n");
+}
+
+void
+print_page_and_filename(void)
+{
+    char obuff[128];
+
+    if (gPageBeingParsed->type == Normal) {
+
+        /*
+         * Now try to inform the user as close to possible where the error
+         * occurred
+         */
+        sprintf(obuff, "(HyperDoc) While parsing %s on line %d\n\tin the file %s\n",
+                gPageBeingParsed->name, line_number,
+                gPageBeingParsed->filename);
+    }
+    else if (gPageBeingParsed->type == SpadGen) {
+        sprintf(obuff, "While parsing %s from the Spad socket\n",
+                gPageBeingParsed->name);
+    }
+    else if (gPageBeingParsed->type == Unixfd) {
+        sprintf(obuff, "While parsing %s from a Unixpipe\n",
+                gPageBeingParsed->name);
+    }
+    else {
+        /* Unknown page type */
+        sprintf(obuff, "While parsing %s\n", gPageBeingParsed->name);
+    }
+    fprintf(stderr, "%s", obuff);
+}
 
 
 static int
