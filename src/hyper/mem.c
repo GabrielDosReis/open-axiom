@@ -169,82 +169,82 @@ free_node(TextNode *node, short int des)
     return;
 
   switch (node->type) {
-  case Paste:
+  case openaxiom_Paste_token:
     free_pastearea(node, des);
     free_node(node->next, des);
     break;
-  case Pastebutton:
+  case openaxiom_Pastebutton_token:
     free_pastebutton(node, des);
     free_node(node->next, des);
     break;
-  case Ifcond:
+  case openaxiom_Ifcond_token:
     free_node(node->data.ifnode->cond, des);
     free_node(node->data.ifnode->thennode, des);
     free_node(node->data.ifnode->elsenode, des);
     break;
-  case Dash:
-  case Lsquarebrace:
-  case Word:
-  case WindowId:
-  case Punctuation:
-  case Lbrace:
-  case Rbrace:
-  case SimpleBox:
-  case Verbatim:
-  case Math:
-  case Spadsrctxt:
-  case Spadsrc:
+  case openaxiom_Dash_token:
+  case openaxiom_Lsquarebrace_token:
+  case openaxiom_Word_token:
+  case openaxiom_WindowId_token:
+  case openaxiom_Punctuation_token:
+  case openaxiom_Lbrace_token:
+  case openaxiom_Rbrace_token:
+  case openaxiom_SimpleBox_token:
+  case openaxiom_Verbatim_token:
+  case openaxiom_Math_token:
+  case openaxiom_Spadsrctxt_token:
+  case openaxiom_Spadsrc_token:
     free_if_non_NULL(node->data.text);
     free_node(node->next, des);
     break;
-  case Inputstring:
+  case openaxiom_Inputstring_token:
     if (des)
       delete_item(node->data.text);
     free_if_non_NULL(node->data.text);
     free_node(node->next, des);
     break;
-  case It:
-  case Sl:
-  case Tt:
-  case Rm:
-  case Emphasize:
-  case Beep:
-  case BoldFace:
-  case Par:
-  case Newline:
-  case Horizontalline:
-  case Item:
-  case Beginscroll:
-  case Endscroll:
-  case Group:
-  case Table:
-  case Macro:
-  case Pound:
-  case Center:
-  case Box:
-  case Mbox:
-  case Tableitem:
-  case Scrollingnode:
-  case Headernode:
-  case Titlenode:
-  case Footernode:
-  case Controlbitmap:
-  case Fi:
-  case Description:
-  case Rsquarebrace:
-  case Endpaste:
-  case Endpastebutton:
+  case openaxiom_It_token:
+  case openaxiom_Sl_token:
+  case openaxiom_Tt_token:
+  case openaxiom_Rm_token:
+  case openaxiom_Emphasize_token:
+  case openaxiom_Beep_token:
+  case openaxiom_BoldFace_token:
+  case openaxiom_Par_token:
+  case openaxiom_Newline_token:
+  case openaxiom_Horizontalline_token:
+  case openaxiom_Item_token:
+  case openaxiom_Beginscroll_token:
+  case openaxiom_Endscroll_token:
+  case openaxiom_Group_token:
+  case openaxiom_Table_token:
+  case openaxiom_Macro_token:
+  case openaxiom_Pound_token:
+  case openaxiom_Center_token:
+  case openaxiom_Box_token:
+  case openaxiom_Mbox_token:
+  case openaxiom_Tableitem_token:
+  case openaxiom_Scrollingnode_token:
+  case openaxiom_Headernode_token:
+  case openaxiom_Titlenode_token:
+  case openaxiom_Footernode_token:
+  case openaxiom_Controlbitmap_token:
+  case openaxiom_Fi_token:
+  case openaxiom_Description_token:
+  case openaxiom_Rsquarebrace_token:
+  case openaxiom_Endpaste_token:
+  case openaxiom_Endpastebutton_token:
     free_node(node->next, des);
     break;
-  case Inputbitmap:
-  case Inputpixmap:
+  case openaxiom_Inputbitmap_token:
+  case openaxiom_Inputpixmap_token:
     free_if_non_NULL(node->data.text);
     free_node(node->next, des);
     break;
-  case Quitbutton:
-  case Helpbutton:
-  case Upbutton:
-  case Returnbutton:
+  case openaxiom_Quitbutton_token:
+  case openaxiom_Helpbutton_token:
+  case openaxiom_Upbutton_token:
+  case openaxiom_Returnbutton_token:
     if (des && node->link->win) {
       hash_delete(gWindow->page->fLinkHashTable,(char *) &node->link->win);
       XDestroyWindow(gXDisplay, node->link->win);
@@ -252,25 +252,25 @@ free_node(TextNode *node, short int des)
     free_if_non_NULL(node->link);
     free_node(node->next, des);
     break;
-  case Memolink:
-  case Downlink:
-  case Windowlink:
-  case Link:
-  case Lisplink:
-  case Lispwindowlink:
-  case Spadcall:
-  case Spadcallquit:
-  case LispMemoLink:
-  case Lispcommand:
-  case Lispcommandquit:
-  case LispDownLink:
-  case Unixlink:
-  case Spadlink:
-  case Spadmemolink:
-  case Spaddownlink:
-  case Unixcommand:
-  case Spadcommand:
-  case Spadgraph:
+  case openaxiom_Memolink_token:
+  case openaxiom_Downlink_token:
+  case openaxiom_Windowlink_token:
+  case openaxiom_Link_token:
+  case openaxiom_Lisplink_token:
+  case openaxiom_Lispwindowlink_token:
+  case openaxiom_Spadcall_token:
+  case openaxiom_Spadcallquit_token:
+  case openaxiom_LispMemoLink_token:
+  case openaxiom_Lispcommand_token:
+  case openaxiom_Lispcommandquit_token:
+  case openaxiom_LispDownLink_token:
+  case openaxiom_Unixlink_token:
+  case openaxiom_Spadlink_token:
+  case openaxiom_Spadmemolink_token:
+  case openaxiom_Spaddownlink_token:
+  case openaxiom_Unixcommand_token:
+  case openaxiom_Spadcommand_token:
+  case openaxiom_Spadgraph_token:
     if (des && node->link->win) {
       hash_delete(gWindow->page->fLinkHashTable,(char *) &node->link->win);
       XDestroyWindow(gXDisplay, node->link->win);
@@ -280,49 +280,49 @@ free_node(TextNode *node, short int des)
     free_if_non_NULL(node->link);
     free_node(node->next, des);
     break;
-  case Free:
-  case Indent:
-  case Indentrel:
-  case HSpace:
-  case Space:
-  case VSpace:
-  case Button:
-  case Bound:
-  case Tab:
+  case openaxiom_Free_token:
+  case openaxiom_Indent_token:
+  case openaxiom_Indentrel_token:
+  case openaxiom_HSpace_token:
+  case openaxiom_Space_token:
+  case openaxiom_VSpace_token:
+  case openaxiom_Button_token:
+  case openaxiom_Bound_token:
+  case openaxiom_Tab_token:
     free_node(node->next, des);
     free_node(node->data.node, des);
     break;
-  case End:
-  case Endcenter:
-  case Endlink:
-  case Endgroup:
-  case Endbox:
-  case Endmbox:
-  case Endspadcommand:
-  case Endpix:
-  case Endmacro:
-  case Endparameter:
-  case Endtable:
-  case Endtableitem:
-  case Noop:
-  case Endinputbox:
-  case Enddescription:
-  case Endif:
-  case Endtitems:
-  case Enditems:
-  case Endverbatim:
-  case Endmath:
-  case Endspadsrc:
+  case openaxiom_End_token:
+  case openaxiom_Endcenter_token:
+  case openaxiom_Endlink_token:
+  case openaxiom_Endgroup_token:
+  case openaxiom_Endbox_token:
+  case openaxiom_Endmbox_token:
+  case openaxiom_Endspadcommand_token:
+  case openaxiom_Endpix_token:
+  case openaxiom_Endmacro_token:
+  case openaxiom_Endparameter_token:
+  case openaxiom_Endtable_token:
+  case openaxiom_Endtableitem_token:
+  case openaxiom_Noop_token:
+  case openaxiom_Endinputbox_token:
+  case openaxiom_Enddescription_token:
+  case openaxiom_Endif_token:
+  case openaxiom_Endtitems_token:
+  case openaxiom_Enditems_token:
+  case openaxiom_Endverbatim_token:
+  case openaxiom_Endmath_token:
+  case openaxiom_Endspadsrc_token:
     free_node(node->next, des);
     break;
-  case Endheader:
-  case Endtitle:
-  case Endfooter:
-  case Endscrolling:
-  case Endarg:
+  case openaxiom_Endheader_token:
+  case openaxiom_Endtitle_token:
+  case openaxiom_Endfooter_token:
+  case openaxiom_Endscrolling_token:
+  case openaxiom_Endarg_token:
     break;
-  case Endbutton:
-  case Beginitems:
+  case openaxiom_Endbutton_token:
+  case openaxiom_Beginitems_token:
     free_if_non_NULL(node->data.text);
     free_node(node->next, des);
     break;

@@ -212,8 +212,9 @@ make_input_file_from_page(HyperDocPage *page)
     fprintf(file, ")clear all\n\n");
 
     for (node = page->scrolling; node != NULL; node = node->next)
-      if (node->type == Spadcommand || node->type == Spadgraph
-          || node->type == Spadsrc) {
+      if (node->type == openaxiom_Spadcommand_token
+          || node->type == openaxiom_Spadgraph_token
+          || node->type == openaxiom_Spadsrc_token) {
         if (starting_file) {
           example_number = 1;
           if (make_patch_files) {
@@ -245,7 +246,8 @@ make_input_file_from_page(HyperDocPage *page)
         buf = print_to_string(node->next);
         include_bf = 0;
         if (make_patch_files) {
-          if (node->type == Spadcommand || node->type == Spadsrc)
+          if (node->type == openaxiom_Spadcommand_token
+              || node->type == openaxiom_Spadsrc_token)
             print_paste(pfile, com, buf, page->name, node->type);
           else
             print_graph_paste(pfile, com, buf, page->name, node->type);
@@ -423,7 +425,7 @@ send_command(char *command,int com_type)
 {
     char buf[1024];
 
-    if (com_type != Spadsrc) {
+    if (com_type != openaxiom_Spadsrc_token) {
         escape_string(command);
         sprintf(buf, "(|parseAndEvalToHypertex| '\"%s\")", command);
         send_lisp_command(buf);

@@ -236,7 +236,7 @@ parser_init(void)
               TokenHashSize, 
               (EqualFunction)string_equal, 
               (HashcodeFunction)string_hash);
-    for (i = 2; i <= NumberUserTokens; i++) {
+    for (i = 2; i <= openaxiom_NumberUserTokens_token; i++) {
         toke = (Token *) halloc(sizeof(Token), "Token");
         toke->type = i;
         toke->id = token_table[i];
@@ -259,7 +259,7 @@ init_scanner(void)
     keyword = 0;
     last_ch = NoChar;
     last_token = 0;
-    input_type = FromFile;
+    input_type = openaxiom_FromFile_input;
     fpos = 0;
     keyword_fpos = 0;
     last_command = -1;
@@ -390,23 +390,23 @@ get_char1(void)
         return c;
     }
     switch (input_type) {
-      case FromUnixFD:
+      case openaxiom_FromUnixFD_input:
         c = getc(unixfd);
         if (c == '\n')
             line_number++;
         return c;
-      case FromString:
+      case openaxiom_FromString_input:
         c = (*input_string ? *input_string++ : EOF);
         if (c == '\n')
             line_number++;
         return c;
-      case FromFile:
+      case openaxiom_FromFile_input:
         c = getc(cfile);
         fpos++;
         if (c == '\n')
             line_number++;
         return c;
-      case FromSpadSocket:
+      case openaxiom_FromSpadSocket_input:
 AGAIN:
         if (*input_string) {
             /* this should never happen for the first character */
@@ -490,7 +490,7 @@ get_token(void)
             seen_white++;
         if (c == '\n') {
             if (nls) {
-                token.type = Par;
+                token.type = openaxiom_Par_token;
                 return 0;
             }
             else
@@ -506,15 +506,15 @@ get_token(void)
         *buf++ = 0;
 
     keyword = 0;
-    if (input_type != FromSpadSocket && c == '%') {
+    if (input_type != openaxiom_FromSpadSocket_input && c == '%') {
         while ((c = get_char()) != '\n' && c != EOF);
 /* trying to fix the comment problem: a comment line forces words on either side together*/
 /* try returning the eol */
         unget_char(c);
         return get_token();
     }
-    if (input_type == FromFile && c == '$') {
-        token.type = Dollar;
+    if (input_type == openaxiom_FromFile_input && c == '$') {
+        token.type = openaxiom_Dollar_token;
         return 0;
     }
     switch (c) {
@@ -526,7 +526,7 @@ get_token(void)
         c = get_char();
         if (!isalpha(c)) {
             *buf++ = c;
-            token.type = Word;
+            token.type = openaxiom_Word_token;
             *buf = '\0';
             seen_white = 0;
         }
@@ -543,25 +543,25 @@ get_token(void)
         }
         break;
       case '{':
-        token.type = Lbrace;
+        token.type = openaxiom_Lbrace_token;
         break;
       case '}':
-        token.type = Rbrace;
+        token.type = openaxiom_Rbrace_token;
         break;
       case '[':
-        token.type = Lsquarebrace;
+        token.type = openaxiom_Lsquarebrace_token;
         *buf++ = c;
         *buf = '\0';
         token.id = buffer + 1;
         break;
       case ']':
-        token.type = Rsquarebrace;
+        token.type = openaxiom_Rsquarebrace_token;
         *buf++ = c;
         *buf = '\0';
         token.id = buffer + 1;
         break;
       case '#':
-        token.type = Pound;
+        token.type = openaxiom_Pound_token;
 
         /*
          * if I get a pound then what I do is parse until I get something
@@ -585,7 +585,7 @@ get_token(void)
       case '"':
       case ':':
       case ';':
-        token.type = Punctuation;
+        token.type = openaxiom_Punctuation_token;
         *buf++ = c;
         *buf = '\0';
         /** Now I should set the buffer[0] as my flag for whether I had
@@ -605,7 +605,7 @@ get_token(void)
         } while (((c = get_char()) != EOF) && (c == '-'));
         unget_char(c);
         *buf = '\0';
-        token.type = Dash;
+        token.type = openaxiom_Dash_token;
         token.id = buffer + 1;
         break;
       default:
@@ -614,7 +614,7 @@ get_token(void)
         } while ((c = get_char()) != EOF && !delim(c));
         unget_char(c);
         *buf = '\0';
-        token.type = Word;
+        token.type = openaxiom_Word_token;
         token.id = buffer + 1;
         break;
     }
@@ -711,12 +711,12 @@ be_type(const char* which)
 {
     Token store;
 
-    get_expected_token(Lbrace);
-    get_expected_token(Word);
+    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(openaxiom_Word_token);
     switch (token.id[0]) {
       case 't':
         if (!strcmp(token.id, "titems")) {
-            token.type = Begintitems;
+            token.type = openaxiom_Begintitems_token;
         }
         else {
             return -1;
@@ -724,13 +724,13 @@ be_type(const char* which)
         break;
       case 'p':
         if (!strcmp(token.id, "page")) {
-            token.type = Page;
+            token.type = openaxiom_Page_token;
         }
         else if (!strcmp(token.id, "paste")) {
-            token.type = Paste;
+            token.type = openaxiom_Paste_token;
         }
         else if (!strcmp(token.id, "patch")) {
-            token.type = Patch;
+            token.type = openaxiom_Patch_token;
         }
         else {
             return -1;
@@ -738,7 +738,7 @@ be_type(const char* which)
         break;
       case 'v':         /* possibly a verbatim mode */
         if (!strcmp(token.id, "verbatim")) {
-            token.type = Verbatim;
+            token.type = openaxiom_Verbatim_token;
         }
         else {
             return -1;
@@ -746,10 +746,10 @@ be_type(const char* which)
         break;
       case 's':         /* possibly a scroll mode */
         if (!strcmp("scroll", token.id)) {
-            token.type = Beginscroll;
+            token.type = openaxiom_Beginscroll_token;
         }
         else if (!strcmp(token.id, "spadsrc")) {
-            token.type = Spadsrc;
+            token.type = openaxiom_Spadsrc_token;
         }
         else {
             return -1;
@@ -757,7 +757,7 @@ be_type(const char* which)
         break;
       case 'i':         /* possibly a item */
         if (!strcmp("items", token.id)) {
-            token.type = Beginitems;
+            token.type = openaxiom_Beginitems_token;
         }
         else {
             return -1;
@@ -768,7 +768,7 @@ be_type(const char* which)
     }
     store.type = token.type;
     /* store.id = alloc_string(token.id); */
-    get_expected_token(Rbrace);
+    get_expected_token(openaxiom_Rbrace_token);
     token.type = store.type;
 
     /*
@@ -802,8 +802,9 @@ begin_type(void)
         }
     }
     else {
-        if (gWindow != NULL && !gInVerbatim && token.type != Verbatim
-            && token.type != Spadsrc) {
+        if (gWindow != NULL && !gInVerbatim
+            && token.type != openaxiom_Verbatim_token
+            && token.type != openaxiom_Spadsrc_token) {
             /* Now here I should push the needed info and then get */
             push_be_stack(token.type, token.id);
         }
@@ -844,8 +845,9 @@ end_type(void)
             return 1;
         }
         else {
-            if (gWindow != NULL && ((gInVerbatim && token.type == Verbatim) ||
-                                (gInSpadsrc && token.type == Spadsrc))) {
+            if (gWindow != NULL
+                && ((gInVerbatim && token.type == openaxiom_Verbatim_token)
+                    || (gInSpadsrc && token.type == openaxiom_Spadsrc_token))) {
                 check_and_pop_be_stack(token.type, token.id);
                 token.type += 3000;
                 return 1;
@@ -863,68 +865,68 @@ end_type(void)
 void
 token_name(int type)
 {
-    if (type <= NumberUserTokens)
+    if (type <= openaxiom_NumberUserTokens_token)
         strcpy(ebuffer, token_table[type]);
     else {
         switch (type) {
-          case Lbrace:
+          case openaxiom_Lbrace_token:
             strcpy(ebuffer, "{");
             break;
-          case Rbrace:
+          case openaxiom_Rbrace_token:
             strcpy(ebuffer, "}");
             break;
-          case Macro:
+          case openaxiom_Macro_token:
             strcpy(ebuffer, token.id);
             break;
-          case Group:
+          case openaxiom_Group_token:
             strcpy(ebuffer, "{");
             break;
-          case Pound:
+          case openaxiom_Pound_token:
             strcpy(ebuffer, "#");
             break;
-          case Lsquarebrace:
+          case openaxiom_Lsquarebrace_token:
             strcpy(ebuffer, "[");
             break;
-          case Rsquarebrace:
+          case openaxiom_Rsquarebrace_token:
             strcpy(ebuffer, "]");
             break;
-          case Punctuation:
+          case openaxiom_Punctuation_token:
             strcpy(ebuffer, token.id);
             break;
-          case Dash:
+          case openaxiom_Dash_token:
             strcpy(ebuffer, token.id);
             break;
-          case Verbatim:
+          case openaxiom_Verbatim_token:
             strcpy(ebuffer, "\\begin{verbatim}");
             break;
-          case Scroll:
+          case openaxiom_Scroll_token:
             strcpy(ebuffer, "\\begin{scroll}");
             break;
-          case Dollar:
+          case openaxiom_Dollar_token:
             strcpy(ebuffer, "$");
             break;
-          case Percent:
+          case openaxiom_Percent_token:
             strcpy(ebuffer, "%");
             break;
-          case Carrot:
+          case openaxiom_Carrot_token:
             strcpy(ebuffer, "^");
             break;
-          case Underscore:
+          case openaxiom_Underscore_token:
             strcpy(ebuffer, "_");
             break;
-          case Tilde:
+          case openaxiom_Tilde_token:
             strcpy(ebuffer, "~");
             break;
-          case Cond:
+          case openaxiom_Cond_token:
             sprintf(ebuffer, "\\%s", token.id);
             break;
-          case Icorrection:
+          case openaxiom_Icorrection_token:
             strcpy(ebuffer, "\\/");
             break;
-          case Paste:
+          case openaxiom_Paste_token:
             strcpy(ebuffer, "\\begin{paste}");
             break;
-          case Patch:
+          case openaxiom_Patch_token:
             strcpy(ebuffer, "\\begin{patch}");
             break;
           default:
@@ -939,7 +941,7 @@ token_name(int type)
 void
 print_token(void)
 {
-    if (token.type == Word)
+    if (token.type == openaxiom_Word_token)
         printf("%s ", token.id);
     else {
         token_name(token.type);
@@ -1009,28 +1011,28 @@ keyword_type(void)
          * if I am a keyword I also have to check to see if I am a begin or
          * an end
          */
-        if (token.type == Begin)
+        if (token.type == openaxiom_Begin_token)
             return begin_type();
-        if (token.type == End)
+        if (token.type == openaxiom_End_token)
             return end_type();
         /* next check to see if it is a macro */
     }
     else if (gWindow != NULL) {
         if (hash_find(gWindow->fMacroHashTable, token.id) != NULL)
-            token.type = Macro;
+            token.type = openaxiom_Macro_token;
         else if (gPageBeingParsed->box_hash != NULL &&
                  hash_find(gPageBeingParsed->box_hash, token.id) != NULL)
         {
-            token.type = Boxcond;
+            token.type = openaxiom_Boxcond_token;
         }
         else if (hash_find(gWindow->fCondHashTable, token.id) != NULL)
-            token.type = Cond;
+            token.type = openaxiom_Cond_token;
         else                    /* We have no idea what we've got */
-            token.type = Unkeyword;
+            token.type = openaxiom_Unkeyword_token;
     }
     else {                      /* We am probably in htadd so just return. It
                                  * is only concerned with pages anyway */
-        token.type = Unkeyword;
+        token.type = openaxiom_Unkeyword_token;
     }
     return 0;
 }

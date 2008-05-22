@@ -367,7 +367,10 @@ update_db(FILE *db, FILE *temp_db, FILE *new_file,
     }
 }
 
-#define Special(t) (( t == Page || t == NewCommand || t == Patch )?(1):(0))
+#define Special(t) \
+  (( t == openaxiom_Page_token \
+    || t == openaxiom_NewCommand_token \
+    || t == openaxiom_Patch_token )?(1):(0))
 #define ptype(c, t) (strcpy(c, t));
 
 static void
@@ -389,25 +392,28 @@ add_new_pages(FILE *temp_db, FILE *new_file, char *addname, char *fullname)
             present_type = token.type;
             pos = keyword_fpos;
             get_token();
-            if (token.type != Lbrace) {
+            if (token.type != openaxiom_Lbrace_token) {
                 fprintf(stderr, "missing left brace after a page, macro or patch \
                          declaration\n");
                 fprintf(stderr, "In the file %s on line %d\n", fullname, line_number);
                 exit(-1);
             }
             get_token();
-            if (present_type == Page && token.type != Word) {
+            if (present_type == openaxiom_Page_token
+                && token.type != openaxiom_Word_token) {
                 fprintf(stderr, "missing page name after \\begin{page}\n");
                 fprintf(stderr, "In the file %s on line %d\n", fullname, line_number);
                 exit(-1);
             }
-            else if (present_type == Macro && token.type != Macro) {
+            else if (present_type == openaxiom_Macro_token
+                     && token.type != openaxiom_Macro_token) {
                 fprintf(stderr, "Expected a \\macro name after newcommand, got %s\n",
                         token.id);
                 fprintf(stderr, "In the file %s on line %d\n", fullname, line_number);
                 exit(-1);
             }
-            else if (present_type == Patch && token.type != Word) {
+            else if (present_type == openaxiom_Patch_token
+                     && token.type != openaxiom_Word_token) {
                 fprintf(stderr, "Missing patch name after a \\begin{patch}\n");
                 fprintf(stderr, "In the file %s on line %d\n", fullname, line_number);
                 exit(-1);
@@ -470,7 +476,7 @@ get_filename(void)
         } while ((c = get_char()) != EOF && !delim(c));
         unget_char(c);
         *buf = '\0';
-        token.type = Word;
+        token.type = openaxiom_Word_token;
         token.id = buffer;
         break;
     }

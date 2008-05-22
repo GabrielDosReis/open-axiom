@@ -1,6 +1,25 @@
 2008-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* hyper/token.h: Avoid numeric constants macros.  
+	Prefix enumerations with "openaxiom_".
+	* hyper/cond.c: Adjust.
+	* hyper/display.c: Likewise.
+	* hyper/event.c: Likewise.
+	* hyper/extent1.c: Likewise.
+	* hyper/extent2.c: Likewise.
+	* hyper/htadd.c: Likewise.
+	* hyper/htinp.c: Likewise.
+	* hyper/macro.c: Likewise.
+	* hyper/mem.c: Likewise.
+	* hyper/parse-aux.c: Likewise.
+	* hyper/parse-input.c: Likewise.
+	* hyper/parse-paste.c: Likewise.
+	* hyper/parse-types.c: Likewise.
+	* hyper/parse.c: Likewise.
+	* hyper/scrollbar.c: Likewise.
+	* hyper/show-types.c: Likewise.
+	* hyper/spadint.c: Likewise.
+	* hyper/titlebar.c: Likewise.
 
 	* hyper/hyper.h: Move lexing stuff to hyper/lex.h
 	* hyper/htadd.c: Don't include hyper.h.  Include cfuns.h and

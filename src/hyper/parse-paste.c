@@ -75,14 +75,14 @@ parse_paste(void)
 
     /* now I need to get the name */
     get_token();
-    if (token.type != Lbrace) {
+    if (token.type != openaxiom_Lbrace_token) {
         fprintf(stderr, "(HyperDoc) A paste area needs a name:\n");
         print_next_ten_tokens();
         print_page_and_filename();
         jump();
     }
     pn->data.text = alloc_string(get_input_string());
-    pn->type = Paste;
+    pn->type = openaxiom_Paste_token;
 
     /*
      * now see if there is already an entry in the hash_table for this thing,
@@ -101,7 +101,7 @@ parse_paste(void)
     paste->haspaste = 1;
     paste->paste_item = current_item();
     get_token();
-    if (token.type == Lsquarebrace) {
+    if (token.type == openaxiom_Lsquarebrace_token) {
         /* user wishes to specify a where to send the command */
         where = get_where();
         if (where == -1) {
@@ -116,10 +116,10 @@ parse_paste(void)
         get_token();
     }
     else
-        paste->where = FromFile;
+        paste->where = openaxiom_FromFile_input;
 
     /* now try to get the command argument or page name */
-    if (token.type != Lbrace) {
+    if (token.type != openaxiom_Lbrace_token) {
         paste->where = 0;
         fprintf(stderr, "(HyperDoc) \\begin{paste} was expecting an argument\n");
         print_next_ten_tokens();
@@ -129,7 +129,7 @@ parse_paste(void)
     paste->arg_node = alloc_node();
     curr_node = paste->arg_node;
     parse_HyperDoc();
-    curr_node->type = Endarg;
+    curr_node->type = openaxiom_Endarg_token;
 
     gWindow->fDisplayedWindow = gWindow->fScrollWindow;
 
@@ -137,7 +137,7 @@ parse_paste(void)
     pn->next = alloc_node();
     curr_node = pn->next;
     parse_HyperDoc();
-    curr_node->type = Endpaste;
+    curr_node->type = openaxiom_Endpaste_token;
     paste->end_node = curr_node;
 
     paste->begin_node = pn;
@@ -155,11 +155,11 @@ parse_pastebutton(void)
      * \pastebutton{name}
      */
     pb = curr_node;
-    pb->type = Pastebutton;
+    pb->type = openaxiom_Pastebutton_token;
 
     /* first thing I should do is get the name */
     get_token();
-    if (token.type != Lbrace) {
+    if (token.type != openaxiom_Lbrace_token) {
         fprintf(stderr, "(HyperDoc) \\pastebutton needs a name\n");
         print_page_and_filename();
         print_next_ten_tokens();
@@ -186,7 +186,7 @@ parse_pastebutton(void)
     /* Now we need to parse the HyperDoc and for the displayed text */
 
     get_token();
-    if (token.type != Lbrace) {
+    if (token.type != openaxiom_Lbrace_token) {
         fprintf(stderr, "(HyperDoc) \\pastebutton was expecting a { \n");
         print_page_and_filename();
         print_next_ten_tokens();
@@ -195,7 +195,7 @@ parse_pastebutton(void)
     pb->next = alloc_node();
     curr_node = pb->next;
     parse_HyperDoc();
-    curr_node->type = Endpastebutton;
+    curr_node->type = openaxiom_Endpastebutton_token;
 
     /* once that is done I need only make the window for this link */
     pb->link = make_paste_window(paste);
@@ -236,7 +236,7 @@ parse_patch(PasteNode *paste)
     /* now read the new stuff and add it in between all this stuff */
 
     switch (where) {
-      case FromFile:
+      case openaxiom_FromFile_input:
         patch_name = print_to_string(arg_node);
         patch = (PatchStore *) hash_find(gWindow->fPatchHashTable, patch_name);
         if (!patch) {
@@ -246,11 +246,11 @@ parse_patch(PasteNode *paste)
         }
         if (!patch->loaded)
             load_patch(patch);
-        input_type = FromString;
+        input_type = openaxiom_FromString_input;
         input_string = patch->string;
         break;
-      case FromSpadSocket:
-        input_type = FromSpadSocket;
+      case openaxiom_FromSpadSocket_input:
+        input_type = openaxiom_FromSpadSocket_input;
         ret_value = issue_serverpaste(arg_node);
         if (ret_value < 0) {
             paste->where = where;
@@ -262,8 +262,8 @@ parse_patch(PasteNode *paste)
             return 0;
         }
         break;
-      case FromUnixFD:
-        input_type = FromUnixFD;
+      case openaxiom_FromUnixFD_input:
+        input_type = openaxiom_FromUnixFD_input;
         issue_unixpaste(arg_node);
         break;
       default:
@@ -294,14 +294,14 @@ parse_patch(PasteNode *paste)
     init_parse_patch(gWindow->page);
     init_paste_item(paste_item);
     get_token();
-    if (token.type != Patch) {
+    if (token.type != openaxiom_Patch_token) {
         fprintf(stderr, "(HyperDoc) Pastebutton %s was expecting a patch\n",
                 paste->name);
         jump();
     }
-    if (input_type == FromString) {
+    if (input_type == openaxiom_FromString_input) {
         get_token();
-        if (token.type != Lbrace) {
+        if (token.type != openaxiom_Lbrace_token) {
             token_name(token.type);
             fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
             print_page_and_filename();
@@ -309,7 +309,7 @@ parse_patch(PasteNode *paste)
         }
 
         get_token();
-        if (token.type != Word) {
+        if (token.type != openaxiom_Word_token) {
             token_name(token.type);
             fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
             print_page_and_filename();
@@ -317,7 +317,7 @@ parse_patch(PasteNode *paste)
         }
 
         get_token();
-        if (token.type != Rbrace) {
+        if (token.type != openaxiom_Rbrace_token) {
             token_name(token.type);
             fprintf(stderr, "(HyperDoc) Unexpected %s \n", ebuffer);
             print_page_and_filename();
@@ -329,10 +329,10 @@ parse_patch(PasteNode *paste)
     parse_HyperDoc();
 
     /* Once I am back, I need only reallign all the text structures */
-    curr_node->type = Noop;
+    curr_node->type = openaxiom_Noop_token;
     curr_node->next = next_node;
     begin_node->next = new;
-    begin_node->type = Noop;
+    begin_node->type = openaxiom_Noop_token;
     free(begin_node->data.text);
     begin_node->data.text = 0;
 
@@ -362,16 +362,16 @@ load_patch(PatchStore *patch)
 
     /** First thing I should do is make sure that the name is correct ***/
     start_fpos = fpos;
-    get_expected_token(Patch);
-    get_expected_token(Lbrace);
-    get_expected_token(Word);
+    get_expected_token(openaxiom_Patch_token);
+    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(openaxiom_Word_token);
     if (strcmp(token.id, patch->name)) {
         /** WOW, Somehow I had the location of the wrong macro **/
         fprintf(stderr, "(HyperDoc) Expected patch name %s: got instead %s in load_patch\n",
                 patch->name, token.id);
         jump();
     }
-    get_expected_token(Rbrace);
+    get_expected_token(openaxiom_Rbrace_token);
 
     scan_HyperDoc();
     fseek(cfile, patch->fpos.pos + start_fpos, 0);

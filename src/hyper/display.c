@@ -147,7 +147,7 @@ show_page(HyperDocPage *page)
     gRegionOffset = 0;
     y_off = 0;
     gDisplayRegion = Header;
-    show_text(page->header->next, Endheader);
+    show_text(page->header->next, openaxiom_Endheader_token);
 
     if (doShowScrollBars && page->scrolling) {
         /* Show the footer  */
@@ -155,14 +155,14 @@ show_page(HyperDocPage *page)
             gDisplayRegion = Footer;
             gRegionOffset = gWindow->page->bot_scroll_margin +
                 (!((gWindow->page->page_flags & NOLINES)) ? ((int) line_height / 2) : (0));
-            show_text(page->footer->next, Endfooter);
+            show_text(page->footer->next, openaxiom_Endfooter_token);
             /* Show the scrolling region */
             if (page->scrolling->next)
                 gDisplayRegion = Scrolling;
             gRegionOffset = 0;
             gWindow->fDisplayedWindow = gWindow->fScrollWindow;
             y_off = gWindow->page->scroll_off;
-            show_text(page->scrolling->next, Endscrolling);
+            show_text(page->scrolling->next, openaxiom_Endscrolling_token);
             showScrollBars(gWindow);
         }
         drawScrollLines();
@@ -189,7 +189,7 @@ expose_page(HyperDocPage *page)
     gWindow->fDisplayedWindow = gWindow->fMainWindow;
     gRegionOffset = 0;
     gDisplayRegion = Header;
-    show_text(page->header->next, Endheader);
+    show_text(page->header->next, openaxiom_Endheader_token);
     getScrollBarMinimumSize(&width, &height);
 
     /*
@@ -200,7 +200,7 @@ expose_page(HyperDocPage *page)
             gDisplayRegion = Footer;
             gRegionOffset = gWindow->page->bot_scroll_margin +
                 (!((gWindow->page->page_flags & NOLINES)) ? ((int) line_height / 2) : (0));
-            show_text(page->footer->next, Endfooter);
+            show_text(page->footer->next, openaxiom_Endfooter_token);
         }
 
         if (height > gWindow->scrollheight) {
@@ -216,7 +216,7 @@ expose_page(HyperDocPage *page)
             gRegionOffset = 0;
             gWindow->fDisplayedWindow = gWindow->fScrollWindow;
             y_off = gWindow->page->scroll_off;
-            show_text(page->scrolling->next, Endscrolling);
+            show_text(page->scrolling->next, openaxiom_Endscrolling_token);
             if (doShowScrollBars)
                 showScrollBars(gWindow);
         }
@@ -240,7 +240,7 @@ scroll_page(HyperDocPage *page)
     gRegionOffset = 0;
     gWindow->fDisplayedWindow = gWindow->fScrollWindow;
     y_off = gWindow->page->scroll_off;
-    show_text(page->scrolling->next, Endscrolling);
+    show_text(page->scrolling->next, openaxiom_Endscrolling_token);
     moveScroller(gWindow);
     XFlush(gXDisplay);
 }
@@ -283,7 +283,7 @@ paste_page(TextNode *node)
     else
         XClearWindow(gXDisplay, gWindow->fScrollWindow);
 
-    show_text(gWindow->page->scrolling->next, Endscrolling);
+    show_text(gWindow->page->scrolling->next, openaxiom_Endscrolling_token);
     XFlush(gXDisplay);
     hideScrollBars(gWindow);
 

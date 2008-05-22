@@ -123,29 +123,29 @@ check_condition(TextNode *node)
 
     /* checks the condition presented and returns a 1 or a 0 */
     switch (node->type) {
-      case Cond:
+      case openaxiom_Cond_token:
         cond = (CondNode *) hash_find(gWindow->fCondHashTable, node->data.text);
         if (!strcmp("0", cond->cond))
             return 0;
         else
             return 1;
-      case Boxcond:
+      case openaxiom_Boxcond_token:
         box = (InputBox *) hash_find(gWindow->page->box_hash, node->data.text);
         return (box->picked);
-      case Haslisp:
+      case openaxiom_Haslisp_token:
         if (spad_socket != NULL) {
             ret_val = send_int(spad_socket, TestLine);
             return (ret_val + 1);
         }
         else
             return 0;
-      case Hasup:
+      case openaxiom_Hasup_token:
         return need_up_button;
-      case Hasreturn:
+      case openaxiom_Hasreturn_token:
         return gWindow->fMemoStackIndex;
-      case Hasreturnto:
+      case openaxiom_Hasreturnto_token:
         return (check_memostack(node));
-      case Lastwindow:
+      case openaxiom_Lastwindow_token:
         return (gSessionHashTable.num_entries == 1 || gParentWindow == gWindow);
       default:
         return 0;

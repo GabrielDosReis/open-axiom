@@ -165,7 +165,7 @@ compute_punctuation_extent(TextNode * node)
      */
 
     if (!(node->space & BACKSPACE))
-        nextwidth = total_width(node->next, Endtokens);
+        nextwidth = total_width(node->next, openaxiom_Endtokens_token);
     else
         nextwidth = 0;
 
@@ -228,7 +228,7 @@ compute_word_extent(TextNode * node)
      * space in front and add there width on.
      */
 
-    nextwidth = total_width(node->next, Endtokens);
+    nextwidth = total_width(node->next, openaxiom_Endtokens_token);
 
 
     /*
@@ -311,7 +311,7 @@ compute_dash_extent(TextNode *node)
      * space in front and add there width on.
      */
 
-    nextwidth = total_width(node->next, Endtokens);
+    nextwidth = total_width(node->next, openaxiom_Endtokens_token);
 
     /*
      * Should we start a new line?
@@ -349,75 +349,75 @@ compute_text_extent(TextNode *node)
 {
     for (; node != NULL; node = node->next) {
         switch (node->type) {
-          case Endpastebutton:
+          case openaxiom_Endpastebutton_token:
             endpastebutton_extent(node);
             break;
-          case Paste:
+          case openaxiom_Paste_token:
             compute_paste_extent(node);
             break;
-          case Endpaste:
+          case openaxiom_Endpaste_token:
             if (gInLine) {
                 start_newline(present_line_height, node);
                 text_x = indent;
             }
             break;
-          case Pastebutton:
+          case openaxiom_Pastebutton_token:
             compute_pastebutton_extent(node);
             break;
-          case Ifcond:
+          case openaxiom_Ifcond_token:
             compute_ifcond_extent(node);
             break;
-          case Fi:
+          case openaxiom_Fi_token:
             break;
-          case Endif:
+          case openaxiom_Endif_token:
             if (if_node == NULL) {
                 return;
             }
             else
                 endif_extent(node);
             break;
-          case Endcenter:
+          case openaxiom_Endcenter_token:
             start_newline(present_line_height, node->next);
             pop_group_stack();
             text_x = indent;
             break;
-          case Pound:
-          case Macro:
+          case openaxiom_Pound_token:
+          case openaxiom_Macro_token:
             /* check to see if we had space in front of me, if so add it */
 
             if (node->space && gInLine)
                 text_x += inter_word_space;
             break;
-          case Punctuation:
+          case openaxiom_Punctuation_token:
             compute_punctuation_extent(node);
             break;
-          case Endmath:
+          case openaxiom_Endmath_token:
             break;
-          case Endverbatim:
+          case openaxiom_Endverbatim_token:
             if (gInLine) {
                 start_newline(present_line_height, node);
                 text_x = indent;
             }
             break;
-          case Spadsrctxt:
+          case openaxiom_Spadsrctxt_token:
             compute_spadsrctxt_extent(node);
             break;
-          case Math:
+          case openaxiom_Math_token:
             compute_word_extent(node);
             break;
-          case Verbatim:
+          case openaxiom_Verbatim_token:
             compute_verbatim_extent(node);
             break;
-          case WindowId:
-          case Word:
-          case Lsquarebrace:
-          case Rsquarebrace:
+          case openaxiom_WindowId_token:
+          case openaxiom_Word_token:
+          case openaxiom_Lsquarebrace_token:
+          case openaxiom_Rsquarebrace_token:
             compute_word_extent(node);
             break;
-          case Dash:
+          case openaxiom_Dash_token:
             compute_dash_extent(node);
             break;
-          case HSpace:
+          case openaxiom_HSpace_token:
             node->height = line_height;
             node->x = text_x;
             node->y = text_y;
@@ -426,7 +426,7 @@ compute_text_extent(TextNode *node)
                     (node->data.node != NULL ? atoi(node->data.node->data.text) : 1);
             }
             break;
-          case VSpace:
+          case openaxiom_VSpace_token:
             node->height = line_height;
             node->x = text_x;
             node->y = text_y + present_line_height;;
@@ -439,20 +439,20 @@ compute_text_extent(TextNode *node)
 
             present_line_height = line_height;
             break;
-          case Space:
+          case openaxiom_Space_token:
             node->height = line_height;
             node->x = text_x;
             node->y = text_y;
             text_x += (gTopOfGroupStack->cur_font->max_bounds.width) *
                 (node->data.node != NULL ? atoi(node->data.node->data.text) : 1);
             break;
-          case Tab:
+          case openaxiom_Tab_token:
             node->height = line_height;
             text_x = indent + (gTopOfGroupStack->cur_font->max_bounds.width) *
                 (node->data.node != NULL ? atoi(node->data.node->data.text) : 1);
             gInLine = 0;
             break;
-          case Par:
+          case openaxiom_Par_token:
             node->height = line_height;
             if (gInItem)
                 text_x = indent;
@@ -462,13 +462,13 @@ compute_text_extent(TextNode *node)
                 start_newline(present_line_height, node);
             }
             break;
-          case Newline:
+          case openaxiom_Newline_token:
             if (gInLine) {
                 start_newline(present_line_height, node);
                 text_x = indent;
             }
             break;
-          case Horizontalline:
+          case openaxiom_Horizontalline_token:
             if (gInLine) {
                 start_newline(present_line_height, node);
                 text_x = indent;
@@ -479,167 +479,167 @@ compute_text_extent(TextNode *node)
             node->x = text_x;
             start_newline(present_line_height, node);
             break;
-          case Center:
+          case openaxiom_Center_token:
             compute_center_extent(node);
             break;
-          case Box:
+          case openaxiom_Box_token:
             compute_box_extent(node);
             break;
-          case Mbox:
+          case openaxiom_Mbox_token:
             compute_mbox_extent(node);
             break;
-          case Beginitems:
-          case Begintitems:
+          case openaxiom_Beginitems_token:
+          case openaxiom_Begintitems_token:
             compute_begin_items_extent(node);
             break;
-          case Enditems:
-          case Endtitems:
+          case openaxiom_Enditems_token:
+          case openaxiom_Endtitems_token:
             pop_item_stack();
             if (gInLine) {
                 start_newline(present_line_height, node);
             }
             text_x = indent;
             break;
-          case Titem:
+          case openaxiom_Titem_token:
             if (gInLine) {
                 start_newline(present_line_height, node);
             }
             text_x = indent - item_space;
             break;
-          case Item:
+          case openaxiom_Item_token:
             compute_item_extent(node);
             break;
-          case Mitem:
+          case openaxiom_Mitem_token:
             compute_mitem_extent(node);
             break;
-          case Upbutton:
-          case Returnbutton:
-          case Memolink:
-          case Downlink:
-          case Link:
-          case Windowlink:
+          case openaxiom_Upbutton_token:
+          case openaxiom_Returnbutton_token:
+          case openaxiom_Memolink_token:
+          case openaxiom_Downlink_token:
+          case openaxiom_Link_token:
+          case openaxiom_Windowlink_token:
             compute_button_extent(node);
             break;
-          case Unixlink:
-          case Lisplink:
-          case Lispwindowlink:
-          case Spadcall:
-          case Spadcallquit:
-          case Qspadcall:
-          case Qspadcallquit:
-          case LispDownLink:
-          case LispMemoLink:
-          case Lispcommand:
-          case Lispcommandquit:
-          case Spadlink:
-          case Spaddownlink:
-          case Spadmemolink:
-          case Unixcommand:
+          case openaxiom_Unixlink_token:
+          case openaxiom_Lisplink_token:
+          case openaxiom_Lispwindowlink_token:
+          case openaxiom_Spadcall_token:
+          case openaxiom_Spadcallquit_token:
+          case openaxiom_Qspadcall_token:
+          case openaxiom_Qspadcallquit_token:
+          case openaxiom_LispDownLink_token:
+          case openaxiom_LispMemoLink_token:
+          case openaxiom_Lispcommand_token:
+          case openaxiom_Lispcommandquit_token:
+          case openaxiom_Spadlink_token:
+          case openaxiom_Spaddownlink_token:
+          case openaxiom_Spadmemolink_token:
+          case openaxiom_Unixcommand_token:
             compute_button_extent(node);
             break;
-          case Endbutton:
+          case openaxiom_Endbutton_token:
             endbutton_extent(node);
             break;
-          case Endlink:
+          case openaxiom_Endlink_token:
             if (link_node == NULL)
                 return;
             else
                 endbutton_extent(node);
             break;
-          case Spadsrc:
+          case openaxiom_Spadsrc_token:
             compute_spadsrc_extent(node);
             break;
-          case Spadcommand:
-          case Spadgraph:
+          case openaxiom_Spadcommand_token:
+          case openaxiom_Spadgraph_token:
             compute_spadcommand_extent(node);
             break;
-          case Endspadsrc:
+          case openaxiom_Endspadsrc_token:
             end_spadsrc_extent(node);
             break;
-          case Endspadcommand:
+          case openaxiom_Endspadcommand_token:
             end_spadcommand_extent(node);
             break;
-          case Indent:
+          case openaxiom_Indent_token:
             indent = left_margin +
                 atoi(node->data.node->data.text) *
                 (gTopOfGroupStack->cur_font->max_bounds.width);
             if (!gInLine)
                 text_x = indent;
             break;
-          case Indentrel:
+          case openaxiom_Indentrel_token:
             indent += atoi(node->data.node->data.text) *
                 (gTopOfGroupStack->cur_font->max_bounds.width);
             if (!gInLine)
                 text_x = indent;
             break;
-          case Group:
+          case openaxiom_Group_token:
             push_group_stack();
             node->y = text_y;
             if (gInLine && node->space)
                 text_x += inter_word_space;
             break;
-          case Endgroup:
+          case openaxiom_Endgroup_token:
             pop_group_stack();
             break;
-          case Tableitem:
+          case openaxiom_Tableitem_token:
             push_group_stack();
             node->y = text_y;
             if (gInLine && node->space)
                 text_x += inter_word_space;
             break;
-          case Endtableitem:
+          case openaxiom_Endtableitem_token:
             pop_group_stack();
             return;
-          case Controlbitmap:
-          case Inputbitmap:
+          case openaxiom_Controlbitmap_token:
+          case openaxiom_Inputbitmap_token:
             if (node->width == -1)
                 insert_bitmap_file(node);
             compute_image_extent(node);
             break;
-          case Inputpixmap:
+          case openaxiom_Inputpixmap_token:
             if (node->width == -1)
                 insert_pixmap_file(node);
             compute_image_extent(node);
             break;
-          case Table:
+          case openaxiom_Table_token:
             compute_table_extent(&node);
             break;
-          case BoldFace:
+          case openaxiom_BoldFace_token:
             compute_bf_extent(node);
             break;
-          case Emphasize:
+          case openaxiom_Emphasize_token:
             compute_em_extent(node);
             break;
-          case It:
+          case openaxiom_It_token:
             compute_it_extent(node);
             break;
-          case Rm:
-          case Sl:
-          case Tt:
+          case openaxiom_Rm_token:
+          case openaxiom_Sl_token:
+          case openaxiom_Tt_token:
             compute_rm_extent(node);
             break;
-          case Inputstring:
+          case openaxiom_Inputstring_token:
             compute_input_extent(node);
             break;
-          case SimpleBox:
-          case Radiobox:
+          case openaxiom_SimpleBox_token:
+          case openaxiom_Radiobox_token:
             compute_ir_extent(node);
             break;
-          case Endbox:
+          case openaxiom_Endbox_token:
             text_x += box_width;
             break;
-          case Endmacro:
-          case Endparameter:
+          case openaxiom_Endmacro_token:
+          case openaxiom_Endparameter_token:
             break;
-          case Description:
+          case openaxiom_Description_token:
             bf_top_group();
             break;
-          case Enddescription:
+          case openaxiom_Enddescription_token:
             pop_group_stack();
             if (gInDesc)
                 return;
             break;
-          case Endscrolling:
+          case openaxiom_Endscrolling_token:
 
             /*
              * What we should do here is if we am in the middle of a line, we
@@ -649,17 +649,17 @@ compute_text_extent(TextNode *node)
             if (gInLine)
                 start_newline(present_line_height, node);
             break;
-          case Noop:
+          case openaxiom_Noop_token:
             noop_count++;
             break;
-          case Endinputbox:
-          case Endheader:
-          case Endtitle:
-          case Endfooter:
-          case Rbrace:
-          case Free:
-          case Bound:
-          case Beep:
+          case openaxiom_Endinputbox_token:
+          case openaxiom_Endheader_token:
+          case openaxiom_Endtitle_token:
+          case openaxiom_Endfooter_token:
+          case openaxiom_Rbrace_token:
+          case openaxiom_Free_token:
+          case openaxiom_Bound_token:
+          case openaxiom_Beep_token:
           case 0:
             break;
           default:
@@ -693,7 +693,7 @@ compute_begin_items_extent(TextNode * node)
         gInDesc = 1;
         compute_text_extent(node->data.node);
         gInDesc = 0;
-        item_space = text_width(node->data.node, Enddescription);
+        item_space = text_width(node->data.node, openaxiom_Enddescription_token);
         text_x = store_x;
         text_y = store_y;
         present_line_height = lh;
@@ -872,7 +872,7 @@ compute_button_extent(TextNode *node)
     if (gInLine && node->space)
         text_x += inter_word_space;
 
-    twidth = text_width(node->next, Endbutton);
+    twidth = text_width(node->next, openaxiom_Endbutton_token);
     if (gInLine && node->space)
         text_x += inter_word_space;
     if (text_x + twidth > right_margin && gInLine) {
@@ -893,10 +893,11 @@ endbutton_extent(TextNode *node)
     int y;
     int maxx;
 
-    maxx = max_x(link_node, Endbutton);
-    link_node->width = twidth = text_width(link_node->next, Endbutton);
+    maxx = max_x(link_node, openaxiom_Endbutton_token);
+    link_node->width = twidth = text_width(link_node->next,
+                                           openaxiom_Endbutton_token);
     height = link_node->y;
-    temp = text_height(link_node->next, Endbutton);
+    temp = text_height(link_node->next, openaxiom_Endbutton_token);
     link_node->height = temp - link_node->y + line_height;
 
     if (gInLine)
@@ -933,7 +934,7 @@ compute_pastebutton_extent(TextNode *node)
     if (gInLine && node->space)
         text_x += inter_word_space;
 
-    twidth = text_width(node->next, Endpastebutton);
+    twidth = text_width(node->next, openaxiom_Endpastebutton_token);
     if (gInLine && node->space)
         text_x += inter_word_space;
     if (text_x + twidth > right_margin && gInLine) {
@@ -953,9 +954,9 @@ endpastebutton_extent(TextNode *node)
     int height;
     int twidth;
 
-    paste_node->width = twidth = text_width(paste_node->next, Endpastebutton);
+    paste_node->width = twidth = text_width(paste_node->next, openaxiom_Endpastebutton_token);
     height = paste_node->y;
-    temp = text_height(paste_node->next, Endpastebutton);
+    temp = text_height(paste_node->next, openaxiom_Endpastebutton_token);
     paste_node->height = temp - paste_node->y + line_height;
     if (text_y > height) {
         paste_node->y = temp;
@@ -1009,7 +1010,7 @@ compute_spadcommand_extent(TextNode *node)
     /* Check to see if we should space in front of myself         */
     if (gInLine && node->space)
         text_x += inter_word_space;
-    t_width = text_width(node->next, Endspadcommand);
+    t_width = text_width(node->next, openaxiom_Endspadcommand_token);
     if (gInLine && ((text_x + t_width) > right_margin)) {
         start_newline(present_line_height, node);
         text_x = indent;
@@ -1055,10 +1056,11 @@ end_spadcommand_extent(TextNode *node)
     int maxx;
     /*int y = (gInLine) ? (text_y) : (text_y - past_line_height);*/
 
-    maxx = max_x(spad_node, Endspadcommand);
-    twidth = spad_node->width = text_width(spad_node->next, Endspadcommand);
+    maxx = max_x(spad_node, openaxiom_Endspadcommand_token);
+    twidth = spad_node->width = text_width(spad_node->next,
+                                           openaxiom_Endspadcommand_token);
     height = spad_node->y;
-    temp = text_height(spad_node->next, Endspadcommand);
+    temp = text_height(spad_node->next, openaxiom_Endspadcommand_token);
 
     spad_node->height = temp - height + line_height;
     if (text_y > height && gInLine) {
@@ -1085,11 +1087,12 @@ end_spadsrc_extent(TextNode *node)
     int maxx;
     int y = (gInLine) ? (text_y) : (text_y - past_line_height);
 
-    maxx = max_x(spad_node, Endspadsrc);
+    maxx = max_x(spad_node, openaxiom_Endspadsrc_token);
 
-    twidth = spad_node->width = text_width(spad_node->next, Endspadsrc);
+    twidth = spad_node->width = text_width(spad_node->next,
+                                           openaxiom_Endspadsrc_token);
     height = spad_node->y;
-    temp = text_height(spad_node->next, Endspadsrc);
+    temp = text_height(spad_node->next, openaxiom_Endspadsrc_token);
     spad_node->height = temp - height + line_height;
     if (y > height && gInLine) {
         spad_node->y = temp;
@@ -1109,8 +1112,7 @@ end_spadsrc_extent(TextNode *node)
 static void
 compute_mbox_extent(TextNode *node)
 {
-
-    node->width = text_width(node->next, Endmbox);
+    node->width = text_width(node->next, openaxiom_Endmbox_token);
     if (node->space)
         text_x += inter_word_space;
     if (text_x + node->width > right_margin) {
@@ -1136,7 +1138,7 @@ compute_box_extent(TextNode *node)
 
     /* Calculate the actual width of the box */
 
-    t_width = text_width(node->next, Endbox) + 2 * box_width;
+    t_width = text_width(node->next, openaxiom_Endbox_token) + 2 * box_width;
 
     if (text_x + t_width > right_margin) {
         start_newline(present_line_height, node);
@@ -1220,13 +1222,14 @@ compute_table_extent(TextNode **node)
     gInTable = 1;
     front->x = text_x;
     front->y = text_y;
-    for (tn = front->next; tn->type != Endtable; num_entries++, tn = tn->next) {
+    for (tn = front->next; tn->type != openaxiom_Endtable_token;
+         num_entries++, tn = tn->next) {
         /* Now we need to scan the table group by group */
-        node_width = text_width(tn->next, Endtableitem);
+        node_width = text_width(tn->next, openaxiom_Endtableitem_token);
         if (node_width > max_width)
             max_width = node_width;
         /* Get to the beginning og the next group */
-        for (; tn->type != Endtableitem; tn = tn->next);
+        for (; tn->type != openaxiom_Endtableitem_token; tn = tn->next);
     }
     col_width = max_width + min_inter_column_space;
     screen_width = gWindow->width - right_margin_space - indent;
@@ -1245,7 +1248,7 @@ compute_table_extent(TextNode **node)
         ++num_cols;
     col_width = screen_width / num_cols;
     for (tn = front->next, x = 0; x < num_cols; x++)
-        for (y = 0; y < num_lines && tn->type != Endtable; y++) {
+        for (y = 0; y < num_lines && tn->type != openaxiom_Endtable_token; y++) {
             if (num_cols == 1 && y > 0)
                 text_y += line_height;
             else
@@ -1253,7 +1256,7 @@ compute_table_extent(TextNode **node)
             text_x = indent + x * col_width;
             gInLine = 0;
             compute_text_extent(tn->next);
-            for (; tn->type != Endtableitem; tn = tn->next);
+            for (; tn->type != openaxiom_Endtableitem_token; tn = tn->next);
             tn = tn->next;
         }
     front->height = num_lines * line_height;
@@ -1277,7 +1280,8 @@ compute_title_extent(HyperDocPage *page)
     init_title_extents(page);
     text_y = top_margin + line_height;
     compute_text_extent(page->title->next);
-    page->title->height = max(text_height(page->title->next, Endtitle),
+    page->title->height = max(text_height(page->title->next,
+                                          openaxiom_Endtitle_token),
                               twheight);
 }
 
@@ -1298,7 +1302,8 @@ compute_header_extent(HyperDocPage *page)
     ty = text_y = 3 * top_margin + line_height + max(page->title->height, twheight);
     gLineNode = page->header->next;
     compute_text_extent(page->header->next);
-    page->header->height = text_height(page->header->next, Endheader);
+    page->header->height = text_height(page->header->next,
+                                       openaxiom_Endheader_token);
     if (page->header->height) {
         page->header->height += 1 / 2 * line_height;
         page->top_scroll_margin = (gInLine) ? text_y : text_y - past_line_height;
@@ -1323,7 +1328,8 @@ compute_footer_extent(HyperDocPage * page)
         text_y = line_height;
         gLineNode = page->footer->next;
         compute_text_extent(page->footer->next);
-        page->footer->height = text_height(page->footer->next, Endfooter);
+        page->footer->height = text_height(page->footer->next,
+                                           openaxiom_Endfooter_token);
         if (page->footer->height) {
             if ((!page->page_flags & NOLINES))
                 page->footer->height += (int) line_height / 2;
