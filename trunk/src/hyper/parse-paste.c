@@ -56,7 +56,6 @@
 #include "all_hyper_proto.H1"
 
 
-extern FILE *cfile;
 short int gInPaste;
 
 

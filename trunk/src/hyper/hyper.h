@@ -110,12 +110,6 @@ extern openaxiom_cursor gBusyCursor; /* The clock cursor for when I am busy */
 extern int gIsAxiomServer;            /* true iff HyperDoc is acting as an Axiom server */
 extern int    gArgc;                  /* original argc from main */
 extern char **gArgv;                  /* original argv from main */
-/* from lex.c */
-extern long fpos, keyword_fpos;
-extern Token token;
-extern int last_token, input_type, last_ch;
-extern char *input_string;
-extern FILE *cfile;
 /* from input.c */
 extern openaxiom_image *picked;
 extern int picked_height;

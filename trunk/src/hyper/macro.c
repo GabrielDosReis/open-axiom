@@ -47,8 +47,6 @@
 
 
 /* #define DEBUG 1 */
-extern FILE *cfile;
-
 
 /*
  * This routine keeps scanning until it reaches it pops off 1 more
