@@ -1,5 +1,9 @@
 2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lib/cfuns-c.c (oa_getenv): Fix thinko.
+	(oa_getcwd): Likewise.
+	* lib/cfuns-c.c (oa_access_file_for_read): Likewise.
+
 	* hyper/lex.c: Don't include hyper.h, hterror.h and
 	sockio.h. Include node.h.
 	* hyper/hyper.h: Don't include X11 headers.  Include node.h.

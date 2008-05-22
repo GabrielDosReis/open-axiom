@@ -454,7 +454,7 @@ oa_getenv(const char* var)
       return NULL;
    }
    else if (len > BUFSIZE) {
-      buf = (char*) realloc(len);
+     buf = (char*) realloc(buf,len);
       len = GetEnvironmentVariable(var, buf, len);
       if (len == 0) {
          free(buf);
@@ -474,7 +474,7 @@ oa_getcwd(void)
    int bufsz = 256;
    char* buf = (char*) malloc(bufsz);
 #ifdef __MINGW32__
-   int n = GetCurrentDirectory(bufsz, bufsz);
+   int n = GetCurrentDirectory(bufsz, buf);
    if (n == 0) {
       perror("oa_getcwd");
       exit(-1);
@@ -508,7 +508,7 @@ OPENAXIOM_EXPORT int
 oa_access_file_for_read(const char* path)
 {
 #ifdef __MINGW32__
-   GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES ? -1 : 1;
+  return GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES ? -1 : 1;
 #else
    return access(path, R_OK);
 #endif   
