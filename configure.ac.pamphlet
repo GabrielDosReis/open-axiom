@@ -423,18 +423,13 @@ of the HyperDoc components need X11.  Some, such as [[htadd]], don't
 need X11 at all.  Therefore we have lifted part of the restrictions.
 See \File{src/hyper/Makefile} for more details.  Note that is we don't
 build the HyperDoc component, the compilation of algebra files are
-drawn in [[Unexpected HT command]] noise.  We still haven't clean up
-the X11 dependencies, so we are back to the old requirements.
+drawn in [[Unexpected HT command]] noise.
 <<C headers and libraries>>=
-if test x"$axiom_use_x" != xyes; then
-   AC_MSG_NOTICE([HyperDoc is disabled because it depends on X11])
-else
-   AC_CHECK_HEADER([regex.h], 
-		   [axiom_src_all="$axiom_src_all all-hyper"
-		    axiom_src_subdirs="$axiom_src_subdirs hyper"
-		    AXIOM_MAKEFILE([src/hyper/Makefile])], 
-		   [AC_MSG_NOTICE([HyperDoc is disabled.])])
-fi
+AC_CHECK_HEADER([regex.h], 
+		[axiom_src_all="$axiom_src_all all-hyper"
+		 axiom_src_subdirs="$axiom_src_subdirs hyper"
+		 AXIOM_MAKEFILE([src/hyper/Makefile])], 
+		[AC_MSG_NOTICE([HyperDoc is disabled.])])
 @
 
 

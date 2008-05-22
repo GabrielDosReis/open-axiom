@@ -492,15 +492,11 @@ else
 fi
 AC_SUBST(axiom_src_all)
 AC_SUBST(axiom_use_x)
-if test x"$axiom_use_x" != xyes; then
-   AC_MSG_NOTICE([HyperDoc is disabled because it depends on X11])
-else
-   AC_CHECK_HEADER([regex.h], 
-                   [axiom_src_all="$axiom_src_all all-hyper"
-                    axiom_src_subdirs="$axiom_src_subdirs hyper"
-                    AXIOM_MAKEFILE([src/hyper/Makefile])], 
-                   [AC_MSG_NOTICE([HyperDoc is disabled.])])
-fi
+AC_CHECK_HEADER([regex.h], 
+                [axiom_src_all="$axiom_src_all all-hyper"
+                 axiom_src_subdirs="$axiom_src_subdirs hyper"
+                 AXIOM_MAKEFILE([src/hyper/Makefile])], 
+                [AC_MSG_NOTICE([HyperDoc is disabled.])])
 
 axiom_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.

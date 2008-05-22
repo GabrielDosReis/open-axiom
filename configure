@@ -25130,11 +25130,7 @@ echo "$as_me: The Garphics component is disabled." >&6;}
 fi
 
 
-if test x"$axiom_use_x" != xyes; then
-   { echo "$as_me:$LINENO: HyperDoc is disabled because it depends on X11" >&5
-echo "$as_me: HyperDoc is disabled because it depends on X11" >&6;}
-else
-   if test "${ac_cv_header_regex_h+set}" = set; then
+if test "${ac_cv_header_regex_h+set}" = set; then
   { echo "$as_me:$LINENO: checking for regex.h" >&5
 echo $ECHO_N "checking for regex.h... $ECHO_C" >&6; }
 if test "${ac_cv_header_regex_h+set}" = set; then
@@ -25290,8 +25286,8 @@ echo "${ECHO_T}$ac_cv_header_regex_h" >&6; }
 fi
 if test $ac_cv_header_regex_h = yes; then
   axiom_src_all="$axiom_src_all all-hyper"
-                    axiom_src_subdirs="$axiom_src_subdirs hyper"
-                    ac_config_files="$ac_config_files src/hyper/Makefile:config/var-def.mk:src/hyper/Makefile.in:config/setup-dep.mk"
+                 axiom_src_subdirs="$axiom_src_subdirs hyper"
+                 ac_config_files="$ac_config_files src/hyper/Makefile:config/var-def.mk:src/hyper/Makefile.in:config/setup-dep.mk"
 
 else
   { echo "$as_me:$LINENO: HyperDoc is disabled." >&5
@@ -25299,7 +25295,6 @@ echo "$as_me: HyperDoc is disabled." >&6;}
 fi
 
 
-fi
 
 axiom_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.

@@ -1,3 +1,7 @@
+2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Don't key all of HyperTex on X11.
+
 2008-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Check from uint8_t.
