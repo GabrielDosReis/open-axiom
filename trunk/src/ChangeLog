@@ -1,5 +1,7 @@
 2008-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* hyper/token.h: Avoid numeric constants macros.  
+
 	* hyper/hyper.h: Move lexing stuff to hyper/lex.h
 	* hyper/htadd.c: Don't include hyper.h.  Include cfuns.h and
 	node.h instead.

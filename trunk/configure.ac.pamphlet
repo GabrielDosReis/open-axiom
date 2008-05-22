@@ -425,11 +425,11 @@ See \File{src/hyper/Makefile} for more details.  Note that is we don't
 build the HyperDoc component, the compilation of algebra files are
 drawn in [[Unexpected HT command]] noise.
 <<C headers and libraries>>=
+openaxiom_host_has_regex=
 AC_CHECK_HEADER([regex.h], 
-		[axiom_src_all="$axiom_src_all all-hyper"
-		 axiom_src_subdirs="$axiom_src_subdirs hyper"
-		 AXIOM_MAKEFILE([src/hyper/Makefile])], 
-		[AC_MSG_NOTICE([HyperDoc is disabled.])])
+		[openaxiom_host_has_regex=yes],
+		[openaxiom_host_has_regex=no])
+AC_SUBST(openaxiom_host_has_regex)
 @
 
 
@@ -1165,6 +1165,7 @@ AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 AXIOM_MAKEFILE([Makefile])
 AXIOM_MAKEFILE([src/Makefile])
 AXIOM_MAKEFILE([src/lib/Makefile])
+AXIOM_MAKEFILE([src/hyper/Makefile])
 AXIOM_MAKEFILE([src/driver/Makefile])
 AXIOM_MAKEFILE([src/lisp/Makefile])
 AXIOM_MAKEFILE([src/boot/Makefile])
@@ -1276,7 +1277,7 @@ AC_SUBST(oa_shrlib_flags)
 
 <<runtime checking>>
 
-axiom_src_subdirs="lib lisp boot interp share algebra input etc doc"
+axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
 <<host build target platfoms>>

@@ -124,11 +124,7 @@ all-boot: all-lisp
 Once \Tool{bootsys} exists we need to build 
 \Tool{interpsys}. 
 <<interpdir>>=
-ifeq (@axiom_use_x@,yes)
 all-interpsys: all-boot all-hyper
-else
-all-interpsys: all-boot
-endif
 	cd interp && ${MAKE} all-interpsys
 
 all-axiomsys: all-asq
