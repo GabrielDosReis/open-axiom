@@ -1,5 +1,24 @@
 2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* hyper/lex.c: Don't include hyper.h, hterror.h and
+	sockio.h. Include node.h.
+	* hyper/hyper.h: Don't include X11 headers.  Include node.h.
+	Mode node data structures to node.h.
+	* hyper/cond.c: Don't include hterror.h.  Include lex.h
+	* hyper/Makefile.in (HEADERS): Include node.h.  Remove hterror.h.
+	(hypertex_SOURCES): Remove hterror.c
+	(htadd_SOURCES): Likewise.
+	* hyper/node.h: New.
+	* hyper/hterror.h: Remove.
+	* hyper/hterror.c (token_name): Move to hyper/lex.c.
+	(print_token): Likewise.
+	(print_next_ten_tokens): Likewise.
+	(print_page_and_filename): Likewise.
+	(jump): Likewise.
+	(ebuffer): Likewise.
+	(htperror): Move to parse-types.c
+	Remove file.
+
 	* include/cfuns.h (oa_get_tmpdir): Declare.
 	(oa_access_file_for_read): Likewise.
 	* lib/cfuns-c.c (oa_getcwd): Define.

@@ -53,8 +53,8 @@ SCRIPTS=${OUTLIB}/htsearch ${OUTLIB}/presea
 
 BINFILES= $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
 
-HEADERS = display.h event.h extent.h \
-	group.h hterror.h hyper.h initx.h keyin.h lex.h \
+HEADERS = display.h event.h extent.h node.h \
+	group.h hyper.h initx.h keyin.h lex.h \
 	parse.h parse-paste.h parse-types.h scrollbar.h \
 	titlebar.h token.h $(axiom_c_macros_h)
 
@@ -62,7 +62,7 @@ HEADERS = display.h event.h extent.h \
 build_libdir = $(top_builddir)/src/lib
 
 hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
-		extent2.c form-ext.c group.c hterror.c \
+		extent2.c form-ext.c group.c \
 		htinp.c hyper.c initx.c input.c item.c keyin.c lex.c \
 		macro.c mem.c parse.c parse-aux.c parse-input.c \
 		parse-paste.c parse-types.c ReadBitmap.c scrollbar.c \
@@ -74,7 +74,7 @@ hypertex_objects = $(hypertex_SOURCES:.c=.lo)
 hypertex_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 hypertex_DEPENDENCIES =
 
-htadd_SOURCES = addfile.c htadd.c hterror.c lex.c
+htadd_SOURCES = addfile.c htadd.c lex.c
 htadd_objects = $(htadd_SOURCES:.c=.lo)
 htadd_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 htadd_DEPENDENCIES =

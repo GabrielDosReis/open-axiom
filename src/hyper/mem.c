@@ -340,7 +340,7 @@ alloc_ifnode(void)
 {
   IfNode *tempif;
 
-  tempif = (IfNode *) halloc(sizeof(struct if_node), "IfNode");
+  tempif = (IfNode *) halloc(sizeof(IfNode), "IfNode");
   tempif->thennode = tempif->elsenode = tempif->cond = NULL;
   return tempif;
 }
@@ -350,7 +350,7 @@ alloc_condnode(void)
 {
   CondNode *temp;
 
-  temp = (CondNode *) halloc(sizeof(struct cond_node), "Cond Node");
+  temp = (CondNode *) halloc(sizeof(CondNode), "Cond Node");
   temp->cond = temp->label = NULL;
   return temp;
 }

@@ -46,8 +46,8 @@
 #include "debug.h"
 
 #include "sockio.h"
-#include "hterror.h"
 #include "halloc.h"
+#include "lex.h"
 #include "hyper.h"
 
 #include "all_hyper_proto.H1"
