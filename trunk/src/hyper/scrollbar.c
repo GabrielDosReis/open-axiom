@@ -507,7 +507,7 @@ linkScrollBars(void)
     barlink->win = gWindow->scrollbar;
     uplink->type = Scrollupbutton;
     downlink->type = Scrolldownbutton;
-    barlink->type = Scrollbar;
+    barlink->type = openaxiom_Scrollbar_token;
     barlink->x = barlink->y = 0;
     uplink->x = uplink->y = 0;
     downlink->x = downlink->y = 0;

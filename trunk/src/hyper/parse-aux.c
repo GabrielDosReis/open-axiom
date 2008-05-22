@@ -227,7 +227,7 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
                 ungetc(c, db_fp);
                 get_token();
                 switch (token.type) {
-                  case Page:
+                  case openaxiom_Page_token:
                     get_token();
 
                     /*
@@ -254,7 +254,7 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
                     hash_insert(page_hash, (char *)page, page->name);
                     pages++;
                     break;
-                  case NewCommand:
+                  case openaxiom_NewCommand_token:
                     get_token();
                     macro = (MacroStore *) halloc(sizeof(MacroStore), "MacroStore");
                     macro->fpos.name = alloc_string(fullname);
@@ -278,7 +278,7 @@ read_ht_file(HashTable *page_hash, HashTable *macro_hash,
                     macro->loaded = 0;
                     hash_insert(macro_hash, (char *)macro, macro->name);
                     break;
-                  case Patch:
+                  case openaxiom_Patch_token:
                     get_token();
                     patch = (PatchStore *) alloc_patchstore();
                     patch->fpos.name = alloc_string(fullname);
@@ -321,9 +321,9 @@ make_link_window(TextNode *link_node, int type, int isSubWin)
 
     if (make_input_file)
         switch (type) {
-          case Downlink:
-          case Memolink:
-          case Windowlink:{
+          case openaxiom_Downlink_token:
+          case openaxiom_Memolink_token:
+          case openaxiom_Windowlink_token: {
                 char *name;
                 HyperDocPage *p;
 
@@ -375,7 +375,7 @@ make_paste_window(PasteNode *paste)
                                   0, 0, 100, 100, 0,
                                   0, InputOnly, CopyFromParent,
                                   CWEventMask | CWCursor, &at);
-        link->type = Pastebutton;
+        link->type = openaxiom_Pastebutton_token;
         link->x = link->y = 0;
         link->reference.paste = paste;
         hash_insert(gLinkHashTable, (char *)link,(char *) &link->win);
@@ -409,11 +409,16 @@ make_special_page(int type, char *name)
 void
 make_special_pages(HashTable *pageHashTable)
 {
-    hash_insert(pageHashTable, (char *)make_special_page(Quitbutton, "QuitPage"),
+    hash_insert(pageHashTable,
+                (char *)make_special_page(openaxiom_Quitbutton_token,
+                                          "QuitPage"),
                 "QuitPage");
-    hash_insert(pageHashTable, (char *)make_special_page(Returnbutton, "ReturnPage"),
+    hash_insert(pageHashTable,
+                (char *)make_special_page(openaxiom_Returnbutton_token,
+                                          "ReturnPage"),
                 "ReturnPage");
-    hash_insert(pageHashTable, (char *)make_special_page(Upbutton, "UpPage"),
+    hash_insert(pageHashTable,
+                (char *)make_special_page(openaxiom_Upbutton_token, "UpPage"),
                 "UpPage");
 }
 
@@ -434,12 +439,12 @@ add_dependencies(void)
         print_page_and_filename();
         exit(-1);
     }
-    curr_node->type = Bound;
+    curr_node->type = openaxiom_Bound_token;
     curr_node->data.node = alloc_node();
     curr_node = curr_node->data.node;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    curr_node->type = Endarg;
+    curr_node->type = openaxiom_Endarg_token;
     curr_node = bound_node;
 
     if (gPageBeingParsed->depend_hash == NULL) {
@@ -451,8 +456,10 @@ add_dependencies(void)
                   (EqualFunction) string_equal, 
                   (HashcodeFunction) string_hash);
     }
-    for (node = bound_node->data.node; node->type != Endarg; node = node->next) {
-        if (node->type == Word) {
+    for (node = bound_node->data.node;
+         node->type != openaxiom_Endarg_token;
+         node = node->next) {
+        if (node->type == openaxiom_Word_token) {
             depend = (SpadcomDepend *) halloc(sizeof(SpadcomDepend), "SpadcomDepend");
             depend->label = alloc_string(node->data.text);
             depend->spadcom = cur_spadcom;
@@ -538,7 +545,7 @@ get_filename(void)
         } while ((c = get_char()) != EOF && !delim(c));
         unget_char(c);
         *buf = '\0';
-        token.type = Word;
+        token.type = openaxiom_Word_token;
         token.id = buffer;
         seen_white = 0;
         break;
@@ -557,7 +564,7 @@ get_input_string(void)
     string_node = alloc_node();
     curr_node = string_node;
     parse_HyperDoc();
-    curr_node->type = Endarg;
+    curr_node->type = openaxiom_Endarg_token;
 
     /* Once here we print to string to get the actual name */
     string = print_to_string(string_node);
@@ -576,18 +583,18 @@ get_where(void)
     int tw;
 
     get_token();
-    if (token.type != Word)
+    if (token.type != openaxiom_Word_token)
         return -1;
 
     /* Now try to determine if it is a good type */
     if (!strcmp(token.id, "lisp")) {
-        tw = FromSpadSocket;
+        tw = openaxiom_FromSpadSocket_input;
     }
     else if (!strcmp(token.id, "unix")) {
-        tw = FromUnixFD;
+        tw = openaxiom_FromUnixFD_input;
     }
     else if (!strcmp(token.id, "ht")) {
-        tw = FromFile;
+        tw = openaxiom_FromFile_input;
     }
     else {
         return -1;
@@ -595,7 +602,7 @@ get_where(void)
 
     /* now check to see if I got a closing square brace */
     get_token();
-    if (token.type != Rsquarebrace)
+    if (token.type != openaxiom_Rsquarebrace_token)
         return -1;
 
     return tw;

@@ -67,17 +67,17 @@ scan_HyperDoc(void)
             longjmp(jmpbuf, 1);
         }
         switch (token.type) {
-          case Page:
+          case openaxiom_Page_token:
             fprintf(stderr, "scan_HyperDoc: Unexpected Page Declaration\n");
             break;
-          case NewCommand:
+          case openaxiom_NewCommand_token:
             fprintf(stderr, "scan_HyperDoc: Unexpected Macro Declaration\n");
             break;
-          case Lbrace:
+          case openaxiom_Lbrace_token:
             number_of_left_braces++;
             break;
-          case Endpatch:
-          case Rbrace:
+          case openaxiom_Endpatch_token:
+          case openaxiom_Rbrace_token:
             number_of_left_braces--;
             break;
           default:
@@ -116,22 +116,22 @@ load_macro(MacroStore *macro)
     init_scanner();
 
     /** First thing I should do is make sure that the name is correct ***/
-    get_expected_token(NewCommand);
-    get_expected_token(Lbrace);
-    get_expected_token(Macro);
+    get_expected_token(openaxiom_NewCommand_token);
+    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(openaxiom_Macro_token);
     if (strcmp(token.id, macro->name)) {
         /** WOW, Somehow I had the location of the wrong macro **/
         fprintf(stderr, "Expected macro name %s got insted %s in load_macro\n",
                 macro->name, token.id);
         longjmp(jmpbuf, 1);
     }
-    get_expected_token(Rbrace);
+    get_expected_token(openaxiom_Rbrace_token);
 
     /** Next I should check to see if I have any parameters **/
     get_token();
-    if (token.type == Lsquarebrace) {
+    if (token.type == openaxiom_Lsquarebrace_token) {
         /** The person is telling me the number of macros he is going to use **/
-        get_expected_token(Word);
+        get_expected_token(openaxiom_Word_token);
         if (!number(token.id)) {
             fprintf(stderr, "load_macro: Expected A Value Instead Got %s\n",
                     token.id);
@@ -144,7 +144,7 @@ load_macro(MacroStore *macro)
         fprintf(stderr,
               "The number of parameters is %d\n", macro->number_parameters);
 #endif
-        get_expected_token(Rsquarebrace);
+        get_expected_token(openaxiom_Rsquarebrace_token);
         get_token();
     }
     else
@@ -152,7 +152,7 @@ load_macro(MacroStore *macro)
 
     /*** Now I should be able to check the token, and insure that I have read
       a leftbrace, then the string will follow                    ****/
-    if (token.type != Lbrace) {
+    if (token.type != openaxiom_Lbrace_token) {
         /** The macro is not in a group, uh oh **/
         fprintf(stderr, "load_macro:Expected a Left Brace got type %d\n",
                 token.type);
@@ -247,7 +247,7 @@ parse_macro(void)
     MacroStore *macro;
     int s;
 
-    curr_node->type = Macro;
+    curr_node->type = openaxiom_Macro_token;
     curr_node->space = token.id[-1];
     curr_node->next = alloc_node();
     curr_node = curr_node->next;
@@ -259,13 +259,13 @@ parse_macro(void)
         parse_from_string(macro->macro_string);
         if (gEndedPage) {
             s = curr_node->type;
-            curr_node->type = Endmacro;
+            curr_node->type = openaxiom_Endmacro_token;
             curr_node->next = alloc_node();
             curr_node = curr_node->next;
             curr_node->type = s;
         }
         else
-            curr_node->type = Endmacro;
+            curr_node->type = openaxiom_Endmacro_token;
         if (pop_parameters())
             return 1;
         else {
@@ -302,7 +302,7 @@ get_parameter_strings(int number,char * macro_name)
     }
     for (count = 0; count < number; count++) {
         get_token();
-        if (token.type != Lbrace) {
+        if (token.type != openaxiom_Lbrace_token) {
             /** The macro is not in a group, uh oh **/
             fprintf(stderr, "Wrong number of arguments to the macro %s\n",
                     macro_name);
@@ -387,6 +387,6 @@ parse_parameters(void)
     }
 
     parse_from_string((parameters->list)[value - 1]);
-    curr_node->type = Endparameter;
+    curr_node->type = openaxiom_Endparameter_token;
     return;
 }

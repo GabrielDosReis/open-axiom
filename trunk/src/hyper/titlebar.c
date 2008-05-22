@@ -214,7 +214,7 @@ showTitleBar(void)
 
     pop_group_stack();
 
-    show_text(gWindow->page->title->next, Endheader);
+    show_text(gWindow->page->title->next, openaxiom_Endheader_token);
 
     /* Now draw the box around the title */
 
@@ -275,22 +275,22 @@ linkTitleBarWindows(void)
               *tw4link = (HyperLink *) halloc(sizeof(HyperLink), "HyperLink");
 
     tw1link->win = gWindow->fTitleBarButton1;
-    tw1link->type = Quitbutton;
+    tw1link->type = openaxiom_Quitbutton_token;
     tw1link->reference.node = NULL;
     tw1link->x = tw1link->y = 0;
 
     tw2link->win = gWindow->fTitleBarButton2;
-    tw2link->type = Helpbutton;
+    tw2link->type = openaxiom_Helpbutton_token;
     tw2link->reference.node = NULL;
     tw2link->x = tw2link->y = 0;
 
     tw3link->win = gWindow->fTitleBarButton3;
-    tw3link->type = Returnbutton;
+    tw3link->type = openaxiom_Returnbutton_token;
     tw3link->reference.node = NULL;
     tw3link->x = tw3link->y = 0;
 
     tw4link->win = gWindow->fTitleBarButton4;
-    tw4link->type = Upbutton;
+    tw4link->type = openaxiom_Upbutton_token;
     tw4link->reference.node = NULL;
     tw4link->x = tw4link->y = 0;
 

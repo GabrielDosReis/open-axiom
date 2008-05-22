@@ -74,7 +74,7 @@ make_input_window(InputItem * item)
                               0, InputOutput, CopyFromParent,
                               CWCursor | CWBackPixel | CWBorderPixel, &at);
     XSelectInput(gXDisplay, link->win, ButtonPressMask);
-    link->type = Inputstring;
+    link->type = openaxiom_Inputstring_token;
     link->x = link->y = 0;
     /** This way when I click in an input window, I need only use reference
       to get a pointer to the item                             ***/
@@ -177,13 +177,13 @@ parse_inputstring(void)
 
   /* first get the name */
   input_node->type = token.type;
-  get_expected_token(Lbrace);
+  get_expected_token(openaxiom_Lbrace_token);
   name = get_input_string();
   input_node->data.text = alloc_string(name);
   /* now get the width */
-  get_expected_token(Lbrace);
-  get_expected_token(Word);
-  get_expected_token(Rbrace);
+  get_expected_token(openaxiom_Lbrace_token);
+  get_expected_token(openaxiom_Word_token);
+  get_expected_token(openaxiom_Rbrace_token);
   size = atoi(token.id);
   if (size < 0) {
     fprintf(stderr, "Illegal size in Input string\n");
@@ -191,7 +191,7 @@ parse_inputstring(void)
   }
 
   /* get the default value */
-  get_expected_token(Lbrace);
+  get_expected_token(openaxiom_Lbrace_token);
   default_value = get_input_string();
 
   /** now I need to malloc space for the input stuff **/
@@ -230,13 +230,13 @@ parse_simplebox(void)
   gStringValueOk = 0;
 
   /* set the type and space fields  */
-  input_box->type = SimpleBox;
+  input_box->type = openaxiom_SimpleBox_token;
   input_box->space = token.id[-1];
 
   /* IS it selected? */
   get_token();
-  if (token.type == Lsquarebrace) {
-    get_expected_token(Word);
+  if (token.type == openaxiom_Lsquarebrace_token) {
+    get_expected_token(openaxiom_Word_token);
     if (!is_number(token.id)) {
       fprintf(stderr,
               "parse_simple_box: Expected a value not %s\n", token.id);
@@ -252,11 +252,11 @@ parse_simplebox(void)
       print_page_and_filename();
       jump();
     }
-    get_expected_token(Rsquarebrace);
+    get_expected_token(openaxiom_Rsquarebrace_token);
     get_token();
   }
 
-  if (token.type != Lbrace) {
+  if (token.type != openaxiom_Lbrace_token) {
     token_name(token.type);
     fprintf(stderr, "parse_inputbox was expecting a { not a %s\n", ebuffer);
     print_page_and_filename();
@@ -276,11 +276,11 @@ parse_simplebox(void)
   box->picked = picked;
 
   /* Get the filename for the selected and unselected bitmaps */
-  get_expected_token(Lbrace);
+  get_expected_token(openaxiom_Lbrace_token);
   filename = get_input_string();
   if (!make_input_file)
     box->selected = insert_image_struct(filename);
-  get_expected_token(Lbrace);
+  get_expected_token(openaxiom_Lbrace_token);
   filename = get_input_string();
   if (!make_input_file) {
     box->unselected = insert_image_struct(filename);
@@ -288,7 +288,7 @@ parse_simplebox(void)
     input_box->height = max(box->selected->height, box->unselected->height);
     input_box->width = max(box->selected->width, box->unselected->width);
     /* Make the window and stuff */
-    input_box->link = make_box_window(box, SimpleBox);
+    input_box->link = make_box_window(box, openaxiom_SimpleBox_token);
     box->win = input_box->link->win;
 
     /* Now add the box to the box_has table for this window */
@@ -321,13 +321,13 @@ parse_radiobox(void)
   gStringValueOk = 0;
 
   /* set the type and space fields  */
-  input_box->type = Radiobox;
+  input_box->type = openaxiom_Radiobox_token;
   input_box->space = token.id[-1];
 
   /* IS it selected? */
   get_token();
-  if (token.type == Lsquarebrace) {
-    get_expected_token(Word);
+  if (token.type == openaxiom_Lsquarebrace_token) {
+    get_expected_token(openaxiom_Word_token);
     if (!is_number(token.id)) {
       fprintf(stderr,
               "parse_simple_box: Expected a value not %s\n", token.id);
@@ -343,11 +343,11 @@ parse_radiobox(void)
       print_page_and_filename();
       jump();
     }
-    get_expected_token(Rsquarebrace);
+    get_expected_token(openaxiom_Rsquarebrace_token);
     get_token();
   }
 
-  if (token.type != Lbrace) {
+  if (token.type != openaxiom_Lbrace_token) {
     token_name(token.type);
     fprintf(stderr, "parse_inputbox was expecting a { not a %s\n", ebuffer);
     print_page_and_filename();
@@ -368,7 +368,7 @@ parse_radiobox(void)
 
   /* Now what I need to do is get the group name */
   get_token();
-  if (token.type != Lbrace) {
+  if (token.type != openaxiom_Lbrace_token) {
     token_name(token.type);
     fprintf(stderr, "parse_inputbox was expecting a { not a %s\n", ebuffer);
     print_page_and_filename();
@@ -385,7 +385,7 @@ parse_radiobox(void)
   input_box->width = box->rbs->width;
   input_box->height = box->rbs->height;
   /* Make the window and stuff */
-  input_box->link = make_box_window(box, Radiobox);
+  input_box->link = make_box_window(box, openaxiom_Radiobox_token);
   if (!make_input_file)
     box->win = input_box->link->win;        /* TTT */
 
@@ -547,12 +547,12 @@ parse_radioboxes(void)
   char *fname;
 
   /* I really don't need this node, it just sets up some parsing stuff */
-  return_node->type = Noop;
+  return_node->type = openaxiom_Noop_token;
 
   newrb = alloc_rbs();
 
   get_token();
-  if (token.type != Lbrace) {
+  if (token.type != openaxiom_Lbrace_token) {
     token_name(token.type);
     fprintf(stderr, "\\radioboxes was expecting a name not %s\n", ebuffer);
     print_page_and_filename();
@@ -571,7 +571,7 @@ parse_radioboxes(void)
   }
   /* now I have to get the selected and unslected bitmaps */
   get_token();
-  if (token.type != Lbrace) {
+  if (token.type != openaxiom_Lbrace_token) {
     token_name(token.type);
     fprintf(stderr, "\\radioboxes was expecting a name not %s\n", ebuffer);
     print_page_and_filename();
@@ -582,7 +582,7 @@ parse_radioboxes(void)
     newrb->selected = insert_image_struct(fname);
 
   get_token();
-  if (token.type != Lbrace) {
+  if (token.type != openaxiom_Lbrace_token) {
     token_name(token.type);
     fprintf(stderr, "\\radioboxes was expecting a name not %s\n", ebuffer);
     print_page_and_filename();

@@ -356,9 +356,11 @@ find_page(TextNode * node)
  * stack.
  */
 
-#define NotSpecial(t) ((t == Quitbutton || t == Returnbutton || \
-                        t == Upbutton || t == UnknownPage || \
-                        t == UlUnknownPage || t == ErrorPage) ?(0):(1))
+#define NotSpecial(t) \
+  ((t == openaxiom_Quitbutton_token || t == openaxiom_Returnbutton_token \
+    || t == openaxiom_Upbutton_token || t == UnknownPage \
+    || t == UlUnknownPage || t == ErrorPage) \
+   ?(0):(1))
 
 /* pushes a page onto the down link stack */
 
@@ -585,18 +587,18 @@ handle_button(int button, XButtonEvent * event)
     }
 
     switch (link->type) {
-      case Pastebutton:
+      case openaxiom_Pastebutton_token:
         page = paste_button(link->reference.paste);
         break;
-      case Link:
+      case openaxiom_Link_token:
         page_name = print_to_string(link->reference.node);
         page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, page_name);
         break;
-      case Helpbutton:
+      case openaxiom_Helpbutton_token:
         helpForHyperDoc();
         page = NULL;
         break;
-      case Scrollbar:
+      case openaxiom_Scrollbar_token:
         scrollScroller(event);
         break;
       case Scrollupbutton:
@@ -606,7 +608,7 @@ handle_button(int button, XButtonEvent * event)
         scrollDown();
         break;
 
-      case Inputstring:
+      case openaxiom_Inputstring_token:
         /* We must be changing input focus or getting a selection */
 
         change_input_focus(link);
@@ -618,34 +620,34 @@ handle_button(int button, XButtonEvent * event)
         }
         break;
 
-      case SimpleBox:
+      case openaxiom_SimpleBox_token:
         page = NULL;
         toggle_input_box(link);
         break;
-      case Radiobox:
+      case openaxiom_Radiobox_token:
         page = NULL;
         toggle_radio_box(link);
         break;
-      case Quitbutton:
+      case openaxiom_Quitbutton_token:
         quitHyperDoc();
         break;
-      case Returnbutton:        /* pop memo information */
+      case openaxiom_Returnbutton_token: /* pop memo information */
         page = returnlink();
         break;
-      case Upbutton:            /* pop downlink information */
+      case openaxiom_Upbutton_token: /* pop downlink information */
         page = uplink();
         break;
-      case Downlink:
+      case openaxiom_Downlink_token:
         page = find_page(link->reference.node);
         if (page  && NotSpecial(page->type))
             downlink();
         break;
-      case Memolink:
+      case openaxiom_Memolink_token:
         page = find_page(link->reference.node);
         if (page && NotSpecial(page->type))
             memolink();
         break;
-      case Windowlink:
+      case openaxiom_Windowlink_token:
         page = find_page(link->reference.node);
         if (page && NotSpecial(page->type)) {
             windowlink_handler(link->reference.node);
@@ -653,51 +655,51 @@ handle_button(int button, XButtonEvent * event)
             page = NULL;
         }
         break;
-      case Lispwindowlink:
+      case openaxiom_Lispwindowlink_token:
         lispwindowlink_handler(link);
         gNeedIconName = 1;
         page = NULL;
         break;
-      case LispMemoLink:
-      case Spadmemolink:
+      case openaxiom_LispMemoLink_token:
+      case openaxiom_Spadmemolink_token:
         page = issue_server_command(link);
         if (page && NotSpecial(page->type))
             memolink();
         break;
-      case LispDownLink:
-      case Spaddownlink:
+      case openaxiom_LispDownLink_token:
+      case openaxiom_Spaddownlink_token:
         page = issue_server_command(link);
         if (page && NotSpecial(page->type))
             downlink();
         break;
-      case Spadlink:
-      case Lisplink:
+      case openaxiom_Spadlink_token:
+      case openaxiom_Lisplink_token:
         page = issue_server_command(link);
         break;
-      case Lispcommand:
-      case Qspadcall:
-      case Spadcall:
+      case openaxiom_Lispcommand_token:
+      case openaxiom_Qspadcall_token:
+      case openaxiom_Spadcall_token:
         page = issue_server_command(link);
         break;
-      case Lispcommandquit:
-      case Spadcallquit:
-      case Qspadcallquit:
+      case openaxiom_Lispcommandquit_token:
+      case openaxiom_Spadcallquit_token:
+      case openaxiom_Qspadcallquit_token:
         page = issue_server_command(link);
         exitHyperDoc();
         break;
-      case Spadcommand:
-      case Spadgraph:
-      case Spadsrc:
+      case openaxiom_Spadcommand_token:
+      case openaxiom_Spadgraph_token:
+      case openaxiom_Spadsrc_token:
         issue_spadcommand(gWindow->page, link->reference.node,
                           button == Button1, link->type);
         break;
-      case Unixlink:
+      case openaxiom_Unixlink_token:
         page = issue_unixlink(link->reference.node);
         if (page && NotSpecial(page->type)) {
             downlink();
         }
         break;
-      case Unixcommand:
+      case openaxiom_Unixcommand_token:
         issue_unixcommand(link->reference.node);
         break;
       default:
@@ -706,13 +708,13 @@ handle_button(int button, XButtonEvent * event)
 
     if (page) {
         switch (page->type) {   /* check for special button types */
-          case Quitbutton:
+          case openaxiom_Quitbutton_token:
             exitHyperDoc();
             return;
-          case Returnbutton:
+          case openaxiom_Returnbutton_token:
             gWindow->page = returnlink();
             break;
-          case Upbutton:
+          case openaxiom_Upbutton_token:
             gWindow->page = uplink();
             break;
           case ErrorPage:
@@ -727,7 +729,7 @@ handle_button(int button, XButtonEvent * event)
             gWindow->page = page;
             break;
         }
-        if (link->type != Pastebutton)
+        if (link->type != openaxiom_Pastebutton_token)
             display_page(gWindow->page);
         gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;      /* reset the window hash */
     }
@@ -872,7 +874,7 @@ get_new_window(void)
         init_top_window(NULL);
         val = get_int(spad_socket);
         init_scanner();
-        input_type = FromSpadSocket;
+        input_type = openaxiom_FromSpadSocket_input;
         input_string = "";
         gWindow->page = parse_page_from_socket();
         gWindow->fAxiomFrame = frame;
@@ -891,7 +893,7 @@ get_new_window(void)
         init_form_window(NULL, val);
         send_int(spad_socket, gWindow->fMainWindow);
         init_scanner();
-        input_type = FromSpadSocket;
+        input_type = openaxiom_FromSpadSocket_input;
         input_string = "";
         gWindow->page = parse_page_from_socket();
         compute_form_page(gWindow->page);
@@ -941,7 +943,7 @@ get_new_window(void)
         wid = (Window) get_int(spad_socket);
         set_window(wid);
         init_scanner();
-        input_type = FromSpadSocket;
+        input_type = openaxiom_FromSpadSocket_input;
         input_string = "";
         gWindow->page = parse_page_from_socket();
         display_page(gWindow->page);

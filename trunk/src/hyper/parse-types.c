@@ -109,14 +109,14 @@ parse_ifcond(void)
      * <hypertext> fi
      */
     if (gInIf) {
-        curr_node->type = Noop;
+        curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "\\if found within \\if \n");
         longjmp(jmpbuf, 1);
         fprintf(stderr, "Longjump failed, Exiting\n");
         exit(-1);
     }
     gInIf++;
-    curr_node->type = Ifcond;
+    curr_node->type = openaxiom_Ifcond_token;
     curr_node->space = token.id[-1];
     curr_node->data.ifnode = alloc_ifnode();
     /* Now get the cond node I hope */
@@ -126,36 +126,36 @@ parse_ifcond(void)
     parse_condnode();
 
     endif = alloc_node();
-    endif->type = Endif;
+    endif->type = openaxiom_Endif_token;
     ifnode->data.ifnode->thennode = alloc_node();
     curr_node = ifnode->data.ifnode->thennode;
     parse_HyperDoc();
-    if (token.type == Fi) {
-        curr_node->type = Fi;
+    if (token.type == openaxiom_Fi_token) {
+        curr_node->type = openaxiom_Fi_token;
         curr_node->next = endif;
         ifnode->data.ifnode->elsenode = endif;
     }
-    else if (token.type == Else) {
+    else if (token.type == openaxiom_Else_token) {
         /* first finish up the then part */
-        curr_node->type = Fi;
+        curr_node->type = openaxiom_Fi_token;
         curr_node->next = endif;
         /* the go and parse the else part */
         ifnode->data.ifnode->elsenode = alloc_node();
         curr_node = ifnode->data.ifnode->elsenode;
         parse_HyperDoc();
-        if (token.type != Fi) {
+        if (token.type != openaxiom_Fi_token) {
             token_name(token.type);
-            curr_node->type = Noop;
+            curr_node->type = openaxiom_Noop_token;
             fprintf(stderr, "Expected a \\fi not a %s", ebuffer);
             longjmp(jmpbuf, 1);
             fprintf(stderr, "Longjump failed, Exiting\n");
             exit(-1);
         }
-        curr_node->type = Fi;
+        curr_node->type = openaxiom_Fi_token;
         curr_node->next = endif;
     }
     else {
-        curr_node->type = Noop;
+        curr_node->type = openaxiom_Noop_token;
         token_name(token.type);
         fprintf(stderr, "Expected a \\fi not a %s", ebuffer);
         longjmp(jmpbuf, 1);
@@ -174,21 +174,21 @@ parse_condnode(void)
     get_token();
 
     switch (token.type) {
-      case Cond:
-        curr_node->type = Cond;
+      case openaxiom_Cond_token:
+        curr_node->type = openaxiom_Cond_token;
         curr_node->data.text = alloc_string(token.id);
         break;
-      case Haslisp:
-      case Hasreturn:
-      case Lastwindow:
-      case Hasup:
+      case openaxiom_Haslisp_token:
+      case openaxiom_Hasreturn_token:
+      case openaxiom_Lastwindow_token:
+      case openaxiom_Hasup_token:
         curr_node->type = token.type;
         break;
-      case Boxcond:
-        curr_node->type = Boxcond;
+      case openaxiom_Boxcond_token:
+        curr_node->type = openaxiom_Boxcond_token;
         curr_node->data.text = alloc_string(token.id);
         break;
-      case Hasreturnto:
+      case openaxiom_Hasreturnto_token:
         parse_hasreturnto();
         break;
       default:
@@ -207,11 +207,11 @@ parse_hasreturnto(void)
 {
     TextNode *hrt = curr_node, *arg_node = alloc_node();
 
-    curr_node->type = Hasreturnto;
+    curr_node->type = openaxiom_Hasreturnto_token;
     curr_node = arg_node;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    curr_node->type = Endarg;
+    curr_node->type = openaxiom_Endarg_token;
     hrt->data.node = arg_node;
     curr_node = hrt;
 }
@@ -221,12 +221,12 @@ parse_newcond(void)
 {
     char label[256];
 
-    get_expected_token(Lbrace);
-    get_expected_token(Unkeyword);
+    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(openaxiom_Unkeyword_token);
     strcpy(label, token.id);
-    get_expected_token(Rbrace);
+    get_expected_token(openaxiom_Rbrace_token);
     insert_cond(label, "0");
-    curr_node->type = Noop;
+    curr_node->type = openaxiom_Noop_token;
 }
 
 void
@@ -234,16 +234,16 @@ parse_setcond(void)
 {
     char label[256], cond[256];
 
-    get_expected_token(Lbrace);
-    get_expected_token(Cond);
+    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(openaxiom_Cond_token);
     strcpy(label, token.id);
-    get_expected_token(Rbrace);
-    get_expected_token(Lbrace);
-    get_expected_token(Word);
+    get_expected_token(openaxiom_Rbrace_token);
+    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(openaxiom_Word_token);
     strcpy(cond, token.id);
-    get_expected_token(Rbrace);
+    get_expected_token(openaxiom_Rbrace_token);
     change_cond(label, cond);
-    curr_node->type = Noop;
+    curr_node->type = openaxiom_Noop_token;
 }
 
 void
@@ -258,14 +258,14 @@ parse_begin_items(void)
 
     bi->type = token.type;
     get_token();
-    if (token.type == Lsquarebrace) {
+    if (token.type == openaxiom_Lsquarebrace_token) {
         bi->data.node = alloc_node();
         curr_node = bi->data.node;
         gInOptional++;
         parse_HyperDoc();
         gInOptional--;
-        curr_node->type = Enddescription;
-        if (token.type != Rsquarebrace) {
+        curr_node->type = openaxiom_Enddescription_token;
+        if (token.type != openaxiom_Rsquarebrace_token) {
             fprintf(stderr, "(HyperDoc) Optional arguments must end with ].\n");
             print_next_ten_tokens();
             print_page_and_filename();
@@ -287,20 +287,20 @@ parse_item(void)
         print_next_ten_tokens();
         jump();
     }
-    curr_node->type = Item;
+    curr_node->type = openaxiom_Item_token;
     get_token();
-    if (token.type == Lsquarebrace) {
+    if (token.type == openaxiom_Lsquarebrace_token) {
         /* I should parse the optional argument */
         curr_node->next = alloc_node();
         curr_node = curr_node->next;
-        curr_node->type = Description;
+        curr_node->type = openaxiom_Description_token;
         curr_node->next = alloc_node();
         curr_node = curr_node->next;
         gInOptional++;
         parse_HyperDoc();
         gInOptional--;
-        curr_node->type = Enddescription;
-        if (token.type != Rsquarebrace) {
+        curr_node->type = openaxiom_Enddescription_token;
+        if (token.type != openaxiom_Rsquarebrace_token) {
             fprintf(stderr, "(HyperDoc) Optional arguments must end with ].\n");
             print_next_ten_tokens();
             print_page_and_filename();
@@ -321,7 +321,7 @@ parse_mitem(void)
         print_next_ten_tokens();
         jump();
     }
-    curr_node->type = Mitem;
+    curr_node->type = openaxiom_Mitem_token;
 }
 
 char *vbuf = NULL;
@@ -340,7 +340,7 @@ int vbuf_size = 0;
   curr_node->data.text = alloc_string(vbuf); \
   curr_node->next = alloc_node(); \
   curr_node = curr_node->next; \
-  curr_node->type = Newline; \
+  curr_node->type = openaxiom_Newline_token; \
   curr_node->next = alloc_node(); \
   curr_node = curr_node->next; \
   curr_node->type = type; \
@@ -358,10 +358,10 @@ parse_verbatim(int type)
     curr_node->type = type;
     if (token.id[-1])
         curr_node->space = 1;
-    if (type == Spadsrctxt) {
+    if (type == openaxiom_Spadsrctxt_token) {
         es = end_string = "\n\\end{spadsrc}";
     }
-    else if (type == Math)
+    else if (type == openaxiom_Math_token)
         es = end_string = "$";
     else
         es = end_string = "\\end{verbatim}";
@@ -393,12 +393,12 @@ parse_verbatim(int type)
         curr_node->next = alloc_node();
         curr_node = curr_node->next;
     }
-    if (type == Spadsrctxt)
-        curr_node->type = Endspadsrc;
-    else if (type == Math)
-        curr_node->type = Endmath;
+    if (type == openaxiom_Spadsrctxt_token)
+        curr_node->type = openaxiom_Endspadsrc_token;
+    else if (type == openaxiom_Math_token)
+        curr_node->type = openaxiom_Endmath_token;
     else
-        curr_node->type = Endverbatim;
+        curr_node->type = openaxiom_Endverbatim_token;
 }
 
 void
@@ -411,16 +411,16 @@ parse_input_pix(void)
     pixnode->type = token.type;
     pixnode->space = token.id[-1];
     pixnode->width = -1;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     filename = get_input_string();
     pixnode->data.text = alloc_string(filename);
     curr_node = pixnode;
-    if (pixnode->type == Inputimage) {
+    if (pixnode->type == openaxiom_Inputimage_token) {
         char f[256];
         char *p;
 
         if ((gXDisplay && DisplayPlanes(gXDisplay, gXScreenNumber) == 1) || gSwitch_to_mono ==1) {
-            pixnode->type = Inputbitmap;
+            pixnode->type = openaxiom_Inputbitmap_token;
             strcpy(f, pixnode->data.text);
             strcat(f, ".bm");
             p=pixnode->data.text;
@@ -428,7 +428,7 @@ parse_input_pix(void)
             free(p);
         }
         else {
-            pixnode->type = Inputpixmap;
+            pixnode->type = openaxiom_Inputpixmap_token;
             strcpy(f, pixnode->data.text);
 #ifdef OLD
             strcat(f, ".pm");
@@ -449,16 +449,16 @@ parse_centerline(void)
     curr_node->width = -1;
     curr_node->next = alloc_node();
     curr_node = curr_node->next;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    if (token.type != Rbrace) {
-        curr_node->type = Noop;
+    if (token.type != openaxiom_Rbrace_token) {
+        curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "(HyperdDoc) \\centerline was expecting a }\n");
         print_page_and_filename();
         print_next_ten_tokens();
         longjmp(jmpbuf, 1);
     }
-    curr_node->type = Endcenter;
+    curr_node->type = openaxiom_Endcenter_token;
 }
 
 void
@@ -468,7 +468,7 @@ parse_command(void)
 
     gInButton++;
     if (gParserMode == SimpleMode) {
-        curr_node->type = Noop;
+        curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "Parser Error token %s unexpected\n",
                 token_table[token.type]);
         longjmp(jmpbuf, 1);
@@ -483,15 +483,15 @@ parse_command(void)
     link_node = curr_node;
     curr_node->next = alloc_node();
     curr_node = curr_node->next;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    curr_node->type = Endbutton;
+    curr_node->type = openaxiom_Endbutton_token;
     save_node = curr_node;
     arg_node = alloc_node();
     curr_node = arg_node;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    curr_node->type = Endarg;
+    curr_node->type = openaxiom_Endarg_token;
     link_node->link = make_link_window(arg_node, link_node->type, 0);
     gStringValueOk = 0;
     curr_node = save_node;
@@ -505,7 +505,7 @@ parse_button(void)
 
     gInButton++;
     if (gParserMode == SimpleMode) {
-        curr_node->type = Noop;
+        curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "Parser Error token %s unexpected\n",
                 token_table[token.type]);
         longjmp(jmpbuf, 1);
@@ -520,17 +520,17 @@ parse_button(void)
     /* then parse the label */
     curr_node->next = alloc_node();
     curr_node = curr_node->next;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    curr_node->type = Endbutton;
+    curr_node->type = openaxiom_Endbutton_token;
 
     /* now try to get the argument node */
     save_node = curr_node;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     save_node->data.node = alloc_node();
     curr_node = save_node->data.node;
     parse_HyperDoc();
-    curr_node->type = Endarg;
+    curr_node->type = openaxiom_Endarg_token;
 
     /*
      * buffer[0] = '\0'; print_to_string(arg_node, buffer + 1);
@@ -552,13 +552,13 @@ parse_spadcommand(TextNode *spad_node)
     gInButton++;
     spad_node->type = token.type;
     spad_node->space = token.id[-1];
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     cur_spadcom = curr_node;
 
     spad_node->next = alloc_node();
     curr_node = spad_node->next;
     parse_HyperDoc();
-    curr_node->type = Endspadcommand;
+    curr_node->type = openaxiom_Endspadcommand_token;
     cur_spadcom = NULL;
     spad_node->link = make_link_window(spad_node->next, spad_node->type, 1);
     gInButton--;
@@ -574,7 +574,7 @@ parse_spadsrc(TextNode *spad_node)
     example_number++;
     gInButton++;
     gInSpadsrc++;
-    spad_node->type = Spadsrc;
+    spad_node->type = openaxiom_Spadsrc_token;
     spad_node->space = token.id[-1];
 
     cur_spadcom = curr_node;
@@ -591,12 +591,13 @@ parse_spadsrc(TextNode *spad_node)
             start_opts = 1;
     } while (ch != '\n');
     *c = '\0';
-    parse_verbatim(Spadsrctxt);
+    parse_verbatim(openaxiom_Spadsrctxt_token);
     parse_from_string(buf);
 
-    curr_node->type = Endspadsrc;
+    curr_node->type = openaxiom_Endspadsrc_token;
     cur_spadcom = NULL;
-    spad_node->link = make_link_window(spad_node->next, Spadsrc, 1);
+    spad_node->link = make_link_window(spad_node->next,
+                                       openaxiom_Spadsrc_token, 1);
     gInButton--;
     gInSpadsrc--;
 }
@@ -609,8 +610,8 @@ parse_env(TextNode *node)
     char *buff_pntr = &buff[1];
     int  noEnv = 0;
 
-    get_expected_token(Lbrace);
-    get_expected_token(Word);
+    get_expected_token(openaxiom_Lbrace_token);
+    get_expected_token(openaxiom_Word_token);
     env = getenv(token.id);
 
     if (env == NULL) {
@@ -631,9 +632,9 @@ parse_env(TextNode *node)
         free(env);
 
     node->data.text = alloc_string(buff_pntr);
-    node->type = Word;
+    node->type = openaxiom_Word_token;
 
-    get_expected_token(Rbrace);
+    get_expected_token(openaxiom_Rbrace_token);
 }
 
 /*
@@ -651,9 +652,9 @@ parse_value1(void)
     curr_node->space = token.id[-1];
 
     value_node = alloc_node();
-    value_node->type = Word;
+    value_node->type = openaxiom_Word_token;
     curr_node->data.node = value_node;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     s = get_input_string();
     if (!is_number(s)) {
         fprintf(stderr,
@@ -681,9 +682,9 @@ parse_value2(void)
     curr_node->space = token.id[-1];
 
     value_node = alloc_node();
-    value_node->type = Word;
+    value_node->type = openaxiom_Word_token;
     curr_node->data.node = value_node;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     s = get_input_string();
     if (!is_number(s)) {
         fprintf(stderr,
@@ -705,32 +706,32 @@ parse_table(void)
     TextNode *tn = curr_node;
 
     if (gParserMode != AllMode) {
-        curr_node->type = Noop;
+        curr_node->type = openaxiom_Noop_token;
         fprintf(stderr, "Parser Error token %s unexpected\n",
                 token_table[token.type]);
         longjmp(jmpbuf, 1);
     }
-    curr_node->type = Table;
-    get_expected_token(Lbrace);
+    curr_node->type = openaxiom_Table_token;
+    get_expected_token(openaxiom_Lbrace_token);
     curr_node->next = alloc_node();
     curr_node = curr_node->next;
 
     get_token();
-    if (token.type == Lbrace) {
-        while (token.type != Rbrace) {
-            curr_node->type = Tableitem;
+    if (token.type == openaxiom_Lbrace_token) {
+        while (token.type != openaxiom_Rbrace_token) {
+            curr_node->type = openaxiom_Tableitem_token;
             curr_node->next = alloc_node();
             curr_node = curr_node->next;
             parse_HyperDoc();
-            curr_node->type = Endtableitem;
+            curr_node->type = openaxiom_Endtableitem_token;
             curr_node->next = alloc_node();
             curr_node = curr_node->next;
             get_token();
         }
-        curr_node->type = Endtable;
+        curr_node->type = openaxiom_Endtable_token;
     }
     else {                      /* a patch for SG for empty tables */
-        if (token.type != Rbrace) {
+        if (token.type != openaxiom_Rbrace_token) {
             token_name(token.type);
             fprintf(stderr,
                     "Unexpected Token %s found while parsing a table\n",
@@ -738,7 +739,7 @@ parse_table(void)
             print_page_and_filename();
             jump();
         }
-        tn->type = Noop;
+        tn->type = openaxiom_Noop_token;
         tn->next = NULL;
         free(curr_node);
         curr_node = tn;
@@ -753,9 +754,9 @@ parse_box(void)
     curr_node->width = -1;
     curr_node->next = alloc_node();
     curr_node = curr_node->next;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    curr_node->type = Endbox;
+    curr_node->type = openaxiom_Endbox_token;
 }
 
 void
@@ -766,9 +767,9 @@ parse_mbox(void)
     curr_node->width = -1;
     curr_node->next = alloc_node();
     curr_node = curr_node->next;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    curr_node->type = Endbox;
+    curr_node->type = openaxiom_Endbox_token;
 }
 
 void
@@ -781,18 +782,18 @@ parse_free(void)
     curr_node->width = -1;
     curr_node->data.node = alloc_node();
     curr_node = curr_node->data.node;
-    get_expected_token(Lbrace);
+    get_expected_token(openaxiom_Lbrace_token);
     parse_HyperDoc();
-    curr_node->type = Endarg;
+    curr_node->type = openaxiom_Endarg_token;
     curr_node = free_node;
 }
 
 void
 parse_help(void)
 {
-    curr_node->type = Noop;
+    curr_node->type = openaxiom_Noop_token;
     get_token();
-    if (token.type != Lbrace) {
+    if (token.type != openaxiom_Lbrace_token) {
         token_name(token.type);
         fprintf(stderr, "\\helppage was expecting a { and not a %s\n", ebuffer);
         print_page_and_filename();
@@ -803,7 +804,7 @@ parse_help(void)
     free(gPageBeingParsed->helppage);
     gPageBeingParsed->helppage = alloc_string(get_input_string());
 
-    if (token.type != Rbrace) {
+    if (token.type != openaxiom_Rbrace_token) {
         token_name(token.type);
         fprintf(stderr, "\\helppage was expecting a } and not a %s\n",
                 ebuffer);
