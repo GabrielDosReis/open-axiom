@@ -36,14 +36,15 @@
 
 /* Cope with MS-platform oddities.  */
 #ifdef __MINGW32__
-#  ifdef  OPENAXIOM_BUILD_DLL
+#  ifdef  DLL_EXPORT
 #    define OPENAXIOM_EXPORT  __declspec(dllexport)
-#  else
+#  elif defined(OPENAXIOM_DLL_IMPORT)
 #    define OPENAXIOM_EXPORT  __declspec(dllimport)
-#  endif /* OPENAXIOM_BUILD_DLL */
-#else
-#  define OPENAXIOM_EXPORT      /* nothing */
-#endif /* __MINGW32__ */
+#  endif  /* DLL_EXPORT */
+#endif	/* __MINGW32__ */
+#ifndef OPENAXIOM_EXPORT
+#  define OPENAXIOM_EXPORT  /* nothing */
+#endif /* OPENAXIOM_EXPORT */
 
 #if defined(HAVE_STDINT_H)
 #  include <stdint.h>

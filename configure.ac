@@ -111,7 +111,7 @@ AC_PROG_CC
 if test x$GCC != xyes; then
     AC_MSG_ERROR([We need a C compiler from GCC])
 fi
-axiom_cflags="-O2 -fno-strength-reduce -Wall -D_GNU_SOURCE"
+axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
 AC_SUBST(axiom_cflags)
 
 ## What is the extension of object files on this platform?
@@ -522,14 +522,14 @@ axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
 axiom_gcl_emacs="--enable-emacs=correct"
 
 PFL=
-CCF="-O2 -fno-strength-reduce -Wall -D_GNU_SOURCE"
+CCF="-O2 -Wall -D_GNU_SOURCE"
 LDF=
 LISP=lsp
 
 case $target in
     *bsd*)
         AC_DEFINE([BSDplatform], [], [BSD flavour])
-        CCF="-O2 -pipe -fno-strength-reduce -Wall -D_GNU_SOURCE -I/usr/local/include"
+        CCF="-O2 -Wall -D_GNU_SOURCE -I/usr/local/include"
         LDF="-L/usr/local/lib"
         ;;
     windows)
@@ -544,7 +544,7 @@ case $target in
         ;;
     powerpc*darwin*)
         AC_DEFINE([MACOSXplatform], [], [MACOX flavour])
-        CCF="-O2 -fno-strength-reduce -Wall -D_GNU_SOURCE \
+        CCF="-O2 -Wall -D_GNU_SOURCE \
             -I/usr/include -I/usr/include/sys"
         axiom_gcl_bfd_option="--disable-statsysbfd \
                                 --enable-machine=powerpc-macosx"

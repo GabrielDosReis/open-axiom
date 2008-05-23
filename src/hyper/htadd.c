@@ -42,9 +42,7 @@
 #include <errno.h>
 #include <setjmp.h>
 #include <stdlib.h>
-#ifndef __MINGW32__
-#  include <sys/stat.h>
-#endif
+#include <sys/stat.h>
 
 #include "cfuns.h"
 #include "hash.h"
@@ -62,7 +60,6 @@ static int delete_file(char*, char*);
 static void get_filename(void);
 static void parse_args(char**, char*, char**, short*);
 static void update_db(FILE*, FILE*, FILE*, char*, char*, int);
-static int writable(struct stat);
 
 
 
@@ -171,27 +168,6 @@ parse_args(char **argv, char *db_dir, char **filenames, short *fl)
 
 
 
-static int
-writable(struct stat buff)
-{
-#ifdef DEBUG
-    unsigned short uid = geteuid(), gid = getegid();
-
-    fprintf(stderr, "Uid = %d and Gid = %d\n", uid, gid);
-#endif
-
-    /*
-     * Checks the status structure sent against the user id, and goup id
-     */
-    if ((buff.st_uid == geteuid()) && (buff.st_mode & S_IWUSR))
-        return 1;
-    else if ((buff.st_gid == getegid()) && (buff.st_mode & S_IWGRP))
-        return 1;
-    else if ((buff.st_mode & S_IWOTH))
-        return 1;
-    return 0;
-}
-
 /* check to see if the user has permission */
 
 /*
@@ -204,7 +180,6 @@ static int
 build_db_filename(short flag, char *db_dir, char *dbfilename)
 {
     int ret_status;
-    struct stat buff;
     char *SPAD;
     char path[256];
 
@@ -229,22 +204,13 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
     }
 /*    fprintf(stderr,"htadd:build_db_filename:dbfilename=%s\n",dbfilename);*/
     /* Now see if I can write to the file  */
-    ret_status = stat(dbfilename, &buff);
+    ret_status = writeablep (dbfilename);
     if (ret_status == -1) {
-        if (errno == ENOENT) {
-            /* If the file does not exist, then check it's path */
-            ret_status = stat(path, &buff);
-        }
-        if (ret_status == -1) {
-            perror("build_db_file");
-            exit(-1);
-        }
+      perror("build_db_file");
+      exit(-1);
     }
-
-    /* check the status */
-
-    if (writable(buff))
-        return 1;
+    else if (ret_status > 0)
+      return 1;
 
     fprintf(stderr, "build_db_filename: Database file name is not writable\n");
     exit(-1);
