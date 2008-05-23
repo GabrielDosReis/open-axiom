@@ -73,33 +73,35 @@ hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
 
 libspad_la = -L$(build_libdir) -lspad
 
+openaxiom_c_libs = -lopen-axiom-core @axiom_c_runtime_extra@ -lm
+
 hypertex_objects = $(hypertex_SOURCES:.c=.$(OBJEXT))
-hypertex_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
+hypertex_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
 hypertex_DEPENDENCIES =
 
 htadd_SOURCES = addfile.c htadd.c lex.c
 htadd_objects = $(htadd_SOURCES:.c=.$(OBJEXT))
-htadd_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
+htadd_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
 htadd_DEPENDENCIES =
 
 spadbuf_SOURCES = spadbuf.c
 spadbuf_objects = $(spadbuf_SOURCES:.c=.$(OBJEXT))
-spadbuf_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
+spadbuf_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
 spadbuf_DEPENDENCIES =
 
 hthits_SOURCES = hthits.c
 hthits_objects = $(hthits_SOURCES:.c=.$(OBJEXT))
-hthits_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
+hthits_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
 hthits_DEPENDENCIES =
 
 ex2ht_SOURCES = ex2ht.c
 ex2ht_objects = $(ex2ht_SOURCES:.c=.$(OBJEXT))
-ex2ht_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
+ex2ht_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
 ex2ht_DEPENDENCIES =
 
 subdir = src/hyper/
 
-.PHONY: all all-hyper
+.PHONY: all all-hyper all-hyper-pre all-hyper-post
 .SUFFIXES:
 .SUFFIXES: .c .$(OBJEXT) .h
 
@@ -108,9 +110,18 @@ all: all-ax
 all-ax all-hyper: stamp
 	@ echo finished $(builddir)
 
-stamp: $(HEADERS) ${BITMAPS} ${SCRIPTS} ${BINFILES} ${HYPER}/pages/ht.db  
+stamp: all-hyper-post
 	-rm -f stamp
 	$(STAMP) stamp
+
+all-hyper-pre: $(BINFILES) $(HYPER)/pages/util.ht
+
+$(HYPER)/pages/util.ht: $(srcdir)/pages/util.ht
+	rm -f $@
+	mkdir -p $(HYPER)/pages
+	cp -p $< $@
+
+all-hyper-post: all-hyper-pre $(HYPER)/pages/ht.db
 
 mostclean-local:
 	$(LIBTOOL) --mode=clean rm -f $(hypertex_objects) $(htadd_objects) \
@@ -129,10 +140,10 @@ distclean-local: clean-local
 %.$(OBJEXT) %.lo: %.c $(HEADERS)
 	$(COMPILE) -o $@ $(CFLAGS) ${CCF} $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
-${HYPER}/pages/ht.db: $(HTADD) $(srcdir)/pages/*.ht $(srcdir)/pages/*.pht
+${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@echo making ${HYPER}/pages from $(axiom_src_srcdir)/pages directory
 	@ mkdir -p "${HYPER}"/pages
-	@ cp -pr "$(srcdir)"/pages/*.ht "${HYPER}"/pages
+	@ cp "$(srcdir)"/pages/*.ht "$(HYPER)"/pages/
 	@ for A in `ls "$(srcdir)"/pages/*.pht`; do \
 	     sed 's,/doc/viewports/,/share/viewports/,g' $$A \
 			> ${HYPER}/pages/`basename $$A`; \
@@ -141,7 +152,7 @@ ${HYPER}/pages/ht.db: $(HTADD) $(srcdir)/pages/*.ht $(srcdir)/pages/*.pht
 	@ rm -f "${HYPER}"/pages/*~
 	for f in `ls "${HYPER}"/pages/*.ht "${HYPER}"/pages/*.pht`; do \
              AXIOM="$(AXIOM)" $(HTADD) -s $$f || exit 1; done
-	@ mkdir -p "$(HYPER)"/bimaps
+	@ mkdir -p "$(HYPER)"/bitmaps
 	@ for f in `ls "$(srcdir)"/bitmaps/*.bitmap "$(srcdir)"/bitmaps/*.xbm`; do\
 	    cp -p $$f "$(HYPER)"/bitmaps; done
 	@ # cp -pr "$(srcdir)"/viewports "$(axiom_target_datadir)"
@@ -154,14 +165,13 @@ ${OUTLIB}/presea: presea
 	$(INSTALL_PROGRAM) $< $@
 
 ${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
-	${LINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD) -lm
+	${LINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)
 
 $(OUTLIB)/htadd$(EXEEXT): $(htadd_objects) $(htadd_DEPENDENCIES)
-	${LINK} -o $@ $(htadd_objects) $(htadd_LDADD) \
-		@axiom_c_runtime_extra@ -lm
+	${LINK} -o $@ $(htadd_objects) $(htadd_LDADD)
 
 ${OUTLIB}/hthits$(EXEEXT): $(hthits_objects) $(hthits_DEPENDENCIES)
-	${LINK} -o $@ $(hthits_objects) $(hthits_LDADD) -lm
+	${LINK} -o $@ $(hthits_objects) $(hthits_LDADD)
 
 
 $(OUTLIB)/hypertex$(EXEEXT): $(hypertex_objects) $(hypertex_DEPENDENCIES)

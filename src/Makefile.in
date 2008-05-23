@@ -41,18 +41,24 @@ all-lisp: all-lib
 	cd lisp && $(MAKE) all-lisp
 all-boot: all-lisp
 	@cd boot && $(MAKE) $@
-all-interpsys: all-boot all-hyper
+all-interpsys: all-boot all-hyper-pre
 	cd interp && ${MAKE} all-interpsys
 
 all-axiomsys: all-asq
 	cd interp && $(MAKE) all-axiomsys
-all-algebra: all-interpsys all-share
+all-algebra: all-interpsys all-share all-hyper-pre
 	@ $(mkinstalldirs) algebra/strap
 	cd algebra && ${MAKE}
+
+all-hyper-pre: all-lib
+	cd hyper && $(MAKE) all-hyper-pre
 all-input: all-axiomsys
 	cd input && ${MAKE}
-all-asq: all-algebra
+all-asq: all-hyper-post
 	cd etc && ${MAKE}
+
+all-hyper-post: all-algebra
+	cd hyper && $(MAKE) all-hyper-post
 all-graph: all-lib
 	cd graph && ${MAKE}
 
