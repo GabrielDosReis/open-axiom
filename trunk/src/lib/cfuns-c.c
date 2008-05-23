@@ -524,16 +524,18 @@ oa_get_tmpdir(void)
    int bufsz = GetTempPath(0, NULL);
    if (bufsz == 0) {
       perror("oa_get_tmpdir");
-      exit(-1);
+      exit(1);
    }
    else {
+      int new_size;
       buf = (char*) malloc(bufsz + 1);
-      if(GetTempPath(bufsz, buf) != bufsz) {
+      new_size = GetTempPath(bufsz, buf);
+      if(new_size = 0 || new_size >= bufsz) {
          perror("oa_get_tmpdir");
          free(buf);
-         exit(-1);
+         exit(1);
       }
-      buf[bufsz] = '\0';
+      buf[new_size] = '\0';
    }
    return buf;
 #else

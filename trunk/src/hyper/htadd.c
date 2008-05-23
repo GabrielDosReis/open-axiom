@@ -132,26 +132,26 @@ parse_args(char **argv, char *db_dir, char **filenames, short *fl)
     *fl = 0;
 
     while (*++argv) {
-        if (!strcmp(*argv, "-d"))
+        if (strcmp(*argv, "-d") == 0)
             *fl |= Delete;
-        else if (!strcmp(*argv, "-s")) {
+        else if (strcmp(*argv, "-s") == 0) {
             if (*fl & Current || *fl & Named) {
                 fprintf(stderr, "%s\n", usage);
                 exit(-1);
             }
             *fl |= System;
         }
-        else if (!strcmp(*argv, "-n")) {
+        else if (strcmp(*argv, "-n") == 0) {
             fresh = 1;
         }
-        else if (!strcmp(*argv, "-l")) {
+        else if (strcmp(*argv, "-l") == 0) {
             if (*fl & System || *fl & Named) {
                 fprintf(stderr, "%s\n", usage);
                 exit(-1);
             }
             *fl |= Current;
         }
-        else if (!strcmp(*argv, "-f")) {
+        else if (strcmp(*argv, "-f") == 0) {
             if (*fl & System || *fl & Current) {
                 fprintf(stderr, "%s\n", usage);
                 exit(-1);
@@ -181,6 +181,7 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
 {
     int ret_status;
     char *SPAD;
+    struct stat buff;
     char path[256];
 
 
@@ -204,16 +205,23 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
     }
 /*    fprintf(stderr,"htadd:build_db_filename:dbfilename=%s\n",dbfilename);*/
     /* Now see if I can write to the file  */
-    ret_status = writeablep (dbfilename);
+    errno = 0;
+    ret_status = stat(dbfilename, &buff);
     if (ret_status == -1) {
-      perror("build_db_file");
-      exit(-1);
+      if (errno == ENOENT) 
+	/* If the file does not exist, check the path.  */
+	ret_status = stat(path, &buff);
+      if (ret_status == -1) {
+	perror("build_db_file");
+	exit(1);
+      }
     }
-    else if (ret_status > 0)
+    
+    if (writeablep(dbfilename) != 0)
       return 1;
 
     fprintf(stderr, "build_db_filename: Database file name is not writable\n");
-    exit(-1);
+    exit(1);
     return 0;
 }
 
