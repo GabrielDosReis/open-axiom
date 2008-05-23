@@ -36,8 +36,6 @@ core_SOURCES = bsdsignal.c cfuns-c.c sockio-c.c
 terminal_io_SOURCES = cursor.c edin.c fnct_key.c openpty.c prt.c wct.c
 
 graphics_SOURCES = \
-		halloc.c \
-		hash.c \
 		pixmap.c \
 		spadcolors.c \
 		util.c \
@@ -47,7 +45,8 @@ graphics_SOURCES = \
 
 libspad_SOURCES = $(foreach comp, \
 			 $(addsuffix _SOURCES, @axiom_c_runtime@), \
-			 $($(comp)))
+			 $($(comp))) \
+		halloc.c hash.c 
 
 unused_SOURCES = emupty.c
 
@@ -81,16 +80,16 @@ $(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
 		@axiom_c_runtime_extra@ -lm
 
 libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
-	$(LIBTOOL) --mode=link $(CC) -o $@ \
+	$(LIBTOOL) --mode=link $(CC) -static -o $@ \
 		$(libopen_axiom_core_SOURCES:.c=.lo)
 
 libspad.$(LIBEXT): $(libspad_objects)
-	$(LIBTOOL) --mode=link $(CC) -o $@ $(libspad_objects)
+	$(LIBTOOL) --mode=link $(CC) -static -o $@ $(libspad_objects)
 
 .PRECIOUS: %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) $(oa_shrobj_flags) -o $@ $(CCF) -DOPENAXIOM_BUILD_DLL \
+	$(COMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CCF) \
 		$(axiom_includes) $(AXIOM_X11_CFLAGS) $<
 
 # This is a support library, so it does not change often and

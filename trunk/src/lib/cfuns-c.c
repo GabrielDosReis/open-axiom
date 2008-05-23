@@ -540,3 +540,33 @@ oa_get_tmpdir(void)
    return "/tmp";
 #endif   
 }
+
+
+
+OPENAXIOM_EXPORT double 
+plus_infinity(void )
+{
+#ifdef INFINITY   
+   return INFINITY;
+#else
+   /* This must be a curious platform.  */
+   volatile double zero = 0.0;
+   return 1.0 / zero;           /* If it traps, well, it traps.  */
+#endif   
+}
+
+OPENAXIOM_EXPORT double 
+minus_infinity(void)
+{
+   return -plus_infinity();
+}
+
+OPENAXIOM_EXPORT double 
+NANQ(void)
+{
+#ifdef NAN
+   return NAN;
+#else
+   return sqrt(-1.0);            /* Juts pick one.  */
+#endif
+}

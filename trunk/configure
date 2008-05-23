@@ -20300,7 +20300,7 @@ if test x$GCC != xyes; then
 echo "$as_me: error: We need a C compiler from GCC" >&2;}
    { (exit 1); exit 1; }; }
 fi
-axiom_cflags="-O2 -fno-strength-reduce -Wall -D_GNU_SOURCE"
+axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
 
 
 ## What is the extension of object files on this platform?
@@ -25549,7 +25549,7 @@ axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
 axiom_gcl_emacs="--enable-emacs=correct"
 
 PFL=
-CCF="-O2 -fno-strength-reduce -Wall -D_GNU_SOURCE"
+CCF="-O2 -Wall -D_GNU_SOURCE"
 LDF=
 LISP=lsp
 
@@ -25560,7 +25560,7 @@ cat >>confdefs.h <<\_ACEOF
 #define BSDplatform
 _ACEOF
 
-        CCF="-O2 -pipe -fno-strength-reduce -Wall -D_GNU_SOURCE -I/usr/local/include"
+        CCF="-O2 -Wall -D_GNU_SOURCE -I/usr/local/include"
         LDF="-L/usr/local/lib"
         ;;
     windows)
@@ -25591,7 +25591,7 @@ cat >>confdefs.h <<\_ACEOF
 #define MACOSXplatform
 _ACEOF
 
-        CCF="-O2 -fno-strength-reduce -Wall -D_GNU_SOURCE \
+        CCF="-O2 -Wall -D_GNU_SOURCE \
             -I/usr/include -I/usr/include/sys"
         axiom_gcl_bfd_option="--disable-statsysbfd \
                                 --enable-machine=powerpc-macosx"

@@ -49,13 +49,6 @@
 #include "cfuns.h"
 
 
-
-#if defined(SUN4OS5platform)||defined(SGIplatform)
-/* can't find a prototype anywhere */
-extern int utimes(const char *, const struct timeval [2]);
-#endif
-
-
 #define MaxLineLength 512
 #define MaxFiles      100
 
@@ -94,9 +87,7 @@ static void
 closeCoverFile(void)
 {
     fclose(coverFile);
-#ifdef HP9platform
-    times("coverex.ht",latest_date);
-#else
+#ifndef __MINGW32__		/* FIXME! */
     utimes("coverex.ht",latest_date);
 #endif
 }

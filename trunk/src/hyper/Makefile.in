@@ -73,27 +73,27 @@ hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
 
 libspad_la = -L$(build_libdir) -lspad
 
-hypertex_objects = $(hypertex_SOURCES:.c=.lo)
+hypertex_objects = $(hypertex_SOURCES:.c=.$(OBJEXT))
 hypertex_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 hypertex_DEPENDENCIES =
 
 htadd_SOURCES = addfile.c htadd.c lex.c
-htadd_objects = $(htadd_SOURCES:.c=.lo)
+htadd_objects = $(htadd_SOURCES:.c=.$(OBJEXT))
 htadd_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 htadd_DEPENDENCIES =
 
 spadbuf_SOURCES = spadbuf.c
-spadbuf_objects = $(spadbuf_SOURCES:.c=.lo)
+spadbuf_objects = $(spadbuf_SOURCES:.c=.$(OBJEXT))
 spadbuf_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 spadbuf_DEPENDENCIES =
 
 hthits_SOURCES = hthits.c
-hthits_objects = $(hthits_SOURCES:.c=.lo)
+hthits_objects = $(hthits_SOURCES:.c=.$(OBJEXT))
 hthits_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 hthits_DEPENDENCIES =
 
 ex2ht_SOURCES = ex2ht.c
-ex2ht_objects = $(ex2ht_SOURCES:.c=.lo)
+ex2ht_objects = $(ex2ht_SOURCES:.c=.$(OBJEXT))
 ex2ht_LDADD = $(libspad_la) -L$(build_libdir) -lopen-axiom-core
 ex2ht_DEPENDENCIES =
 
@@ -101,7 +101,7 @@ subdir = src/hyper/
 
 .PHONY: all all-hyper
 .SUFFIXES:
-.SUFFIXES: .c .o .h
+.SUFFIXES: .c .$(OBJEXT) .h
 
 all: all-ax
 
@@ -126,7 +126,7 @@ distclean-local: clean-local
 
 .PRECIOUS: %.lo %.$(OBJEXT)
 
-%.lo: %.c $(HEADERS)
+%.$(OBJEXT) %.lo: %.c $(HEADERS)
 	$(COMPILE) -o $@ $(CFLAGS) ${CCF} $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 ${HYPER}/pages/ht.db: $(HTADD) $(srcdir)/pages/*.ht $(srcdir)/pages/*.pht
@@ -139,7 +139,7 @@ ${HYPER}/pages/ht.db: $(HTADD) $(srcdir)/pages/*.ht $(srcdir)/pages/*.pht
 	     done
 	@ rm -f ${HYPER}/pages/ht.db ; \
           rm -f ${HYPER}/pages/*~ ; AXIOM=$(AXIOM) \
-	  ${HTADD} -s ${HYPER}/pages/*.ht ${HYPER}/pages/*.pht
+	  ${HTADD} -s ${HYPER}/pages/*.ht ${HYPER}/pages/*.pht || exit 1
 	@ cp -pr $(srcdir)/bitmaps ${HYPER}
 	@ cp -pr $(srcdir)/viewports $(axiom_target_datadir)
 
@@ -151,13 +151,14 @@ ${OUTLIB}/presea: presea
 	$(INSTALL_PROGRAM) $< $@
 
 ${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
-	${LINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD) $(AXIOM_X11_LDFLAGS) -lm
+	${LINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD) -lm
 
 $(OUTLIB)/htadd$(EXEEXT): $(htadd_objects) $(htadd_DEPENDENCIES)
-	${LINK} -o $@ $(htadd_objects) $(htadd_LDADD) $(AXIOM_X11_LDFLAGS) -lm
+	${LINK} -o $@ $(htadd_objects) $(htadd_LDADD) \
+		@axiom_c_runtime_extra@ -lm
 
 ${OUTLIB}/hthits$(EXEEXT): $(hthits_objects) $(hthits_DEPENDENCIES)
-	${LINK} -o $@ $(hthits_objects) $(hthits_LDADD) $(AXIOM_X11_LDFLAGS) -lm
+	${LINK} -o $@ $(hthits_objects) $(hthits_LDADD) -lm
 
 
 $(OUTLIB)/hypertex$(EXEEXT): $(hypertex_objects) $(hypertex_DEPENDENCIES)

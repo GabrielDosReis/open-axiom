@@ -47,6 +47,7 @@ typedef Window openaxiom_window;
 typedef Pixmap openaxiom_pixmap;
 typedef XImage openaxiom_image;
 typedef GC openaxiom_graphic_context;
+typedef XFontStruct openaxiom_font;
 typedef Cursor openaxiom_cursor;
 #else                            /* X_DISPLAY_MISSING */
 typedef HANDLE openaxiom_window;
@@ -54,6 +55,7 @@ typedef HANDLE openaxiom_pixmap;
 typedef HANDLE openaxiom_image;
 typedef HANDLE openaxiom_graphic_context;
 typedef HANDLE openaxiom_cursor;
+typedef HANDLE openaxiom_font;
 #endif /* X_DISPLAY_MISSING */
 
 /* Struct forward declarations */
@@ -353,7 +355,7 @@ typedef struct LinkHashID {
 
 typedef struct GroupItem {
     int cur_color;
-    XFontStruct *cur_font;
+    openaxiom_font *cur_font;
     int center;
     struct GroupItem *next;
 } GroupItem;
@@ -433,7 +435,7 @@ typedef struct parameter_list_type {
 
 #define need_help_button (gWindow->page->helppage != NULL)
 
-#define max(x,y) ((x) > (y) ? (x) : (y))
+#define openaxiom_max(x,y) ((x) > (y) ? (x) : (y))
 
 
 #define pick_box(box) fill_box(box->win, box->selected)
