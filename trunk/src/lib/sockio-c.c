@@ -48,9 +48,6 @@
 #include <string.h>
 #include <signal.h>
 
-#define _ISOC99_SOURCE
-#include <math.h>
-
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"

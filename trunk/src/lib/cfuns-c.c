@@ -44,6 +44,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
+
 
 #ifdef __WIN32__
 #  include <windows.h>

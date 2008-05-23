@@ -124,7 +124,7 @@ all-boot: all-lisp
 Once \Tool{bootsys} exists we need to build 
 \Tool{interpsys}. 
 <<interpdir>>=
-all-interpsys: all-boot all-hyper
+all-interpsys: all-boot all-hyper-pre
 	cd interp && ${MAKE} all-interpsys
 
 all-axiomsys: all-asq
@@ -174,9 +174,12 @@ steps. The first step uses the [[document]] command to extract
 the normal Makefile information.
 
 <<algebradir>>=
-all-algebra: all-interpsys all-share
+all-algebra: all-interpsys all-share all-hyper-pre
 	@ $(mkinstalldirs) algebra/strap
 	cd algebra && ${MAKE}
+
+all-hyper-pre: all-lib
+	cd hyper && $(MAKE) all-hyper-pre
 @
 
 \subsection{The \File{input/} directory}
@@ -208,8 +211,11 @@ The \Tool{asq} \cite{2} command, contained in this directory, is useful
 for finding detailed information about domains, packages, and
 categories from the shell without running Axiom.
 <<etcdir>>=
-all-asq: all-algebra
+all-asq: all-hyper-post
 	cd etc && ${MAKE}
+
+all-hyper-post: all-algebra
+	cd hyper && $(MAKE) all-hyper-post
 @
 
 \subsection{The \File{doc/} directory}
