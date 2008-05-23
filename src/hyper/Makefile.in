@@ -131,17 +131,20 @@ distclean-local: clean-local
 
 ${HYPER}/pages/ht.db: $(HTADD) $(srcdir)/pages/*.ht $(srcdir)/pages/*.pht
 	@echo making ${HYPER}/pages from $(axiom_src_srcdir)/pages directory
-	@ mkdir -p ${HYPER}/pages
-	@ cp -pr $(srcdir)/pages/*.ht ${HYPER}/pages
-	@ for A in `ls $(srcdir)/pages/*.pht`; do \
+	@ mkdir -p "${HYPER}"/pages
+	@ cp -pr "$(srcdir)"/pages/*.ht "${HYPER}"/pages
+	@ for A in `ls "$(srcdir)"/pages/*.pht`; do \
 	     sed 's,/doc/viewports/,/share/viewports/,g' $$A \
 			> ${HYPER}/pages/`basename $$A`; \
 	     done
-	@ rm -f ${HYPER}/pages/ht.db ; \
-          rm -f ${HYPER}/pages/*~ ; AXIOM=$(AXIOM) \
-	  ${HTADD} -s ${HYPER}/pages/*.ht ${HYPER}/pages/*.pht || exit 1
-	@ cp -pr $(srcdir)/bitmaps ${HYPER}
-	@ cp -pr $(srcdir)/viewports $(axiom_target_datadir)
+	@ rm -f "${HYPER}"/pages/ht.db
+	@ rm -f "${HYPER}"/pages/*~
+	for f in `ls "${HYPER}"/pages/*.ht "${HYPER}"/pages/*.pht`; do \
+             AXIOM="$(AXIOM)" $(HTADD) -s $$f || exit 1; done
+	@ mkdir -p "$(HYPER)"/bimaps
+	@ for f in `ls "$(srcdir)"/bitmaps/*.bitmap "$(srcdir)"/bitmaps/*.xbm`; do\
+	    cp -p $$f "$(HYPER)"/bitmaps; done
+	@ # cp -pr "$(srcdir)"/viewports "$(axiom_target_datadir)"
 
 
 ${OUTLIB}/htsearch: htsearch

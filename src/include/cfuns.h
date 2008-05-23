@@ -54,5 +54,8 @@ OPENAXIOM_EXPORT char* oa_getenv(const char*);
 OPENAXIOM_EXPORT char* oa_getcwd(void);
 OPENAXIOM_EXPORT int oa_access_file_for_read(const char*);
 OPENAXIOM_EXPORT const char* oa_get_tmpdir(void);
+OPENAXIOM_EXPORT double plus_infinity(void);
+OPENAXIOM_EXPORT double minus_infinity(void);
+OPENAXIOM_EXPORT double NANQ(void);
 
 #endif /* OPENAXIOM_CFUNS_included */

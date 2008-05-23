@@ -103,9 +103,6 @@ OPENAXIOM_EXPORT double get_float(openaxiom_sio*);
 OPENAXIOM_EXPORT double sock_get_float(int);
 OPENAXIOM_EXPORT int get_sfloats(openaxiom_sio*, float*, int);
 OPENAXIOM_EXPORT char* get_string(openaxiom_sio*);
-OPENAXIOM_EXPORT double plus_infinity(void);
-OPENAXIOM_EXPORT double minus_infinity(void);
-OPENAXIOM_EXPORT double NANQ(void);
 OPENAXIOM_EXPORT void sigpipe_handler(int);
 OPENAXIOM_EXPORT int fill_buf(openaxiom_sio*, openaxiom_byte*, int,
                               const char*);
