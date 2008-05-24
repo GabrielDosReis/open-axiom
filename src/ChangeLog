@@ -1,5 +1,9 @@
 2008-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/modgcd.spad.pamphlet: Fix sectioning thinko.
+
+2008-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix AW/57
 	* etc/Makefile.in: Make all databases part of the final system.
 
