@@ -69,7 +69,7 @@ static char *errmess[] =  {
 
 /*
  * htperror(): arguments: msg - like perror it accepts an error
- * message to be printed errno - the errno which occurred. This is so an
+ * message to be printed erno - the erno which occurred. This is so an
  * appropriate error message can be printed.
  *
  * The prints out the page name, and then the filename in which the error
@@ -84,7 +84,7 @@ htperror(char *msg, int erno)
     /* The first thing I do is create the error message */
 
     if (erno <= Numerrors) {
-        sprintf(obuff, "%s:%s\n", msg, errmess[errno]);
+        sprintf(obuff, "%s:%s\n", msg, errmess[erno]);
     }
     else {
         sprintf(obuff, "%s:\n", msg);

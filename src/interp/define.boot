@@ -442,12 +442,10 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     target:= first signature'
     $functorTarget:= target
     $e:= giveFormalParametersValues(argl,$e)
-    [ds,.,$e]:= compMakeCategoryObject(target,$e) or
---+ copy needed since slot1 is reset; compMake.. can return a cached vector
-      sayBrightly '"   cannot produce category object:"
-      pp target
-      return nil
+    [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
+       stackAndThrow('"   cannot produce category object: %1pb",[target])
     $domainShell:= COPY_-SEQ ds
+--+ copy needed since slot1 is reset; compMake.. can return a cached vector
     $attributesName:local := INTERN STRCONC(PNAME $op,'";attributes")
     attributeList := disallowNilAttribute ds.2 --see below under "loadTimeAlist"
 --+ 7 lines for $NRT follow
