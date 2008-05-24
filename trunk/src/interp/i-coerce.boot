@@ -212,6 +212,7 @@ retract2Specialization object ==
     null isRectangularList(val',n,m) => NIL
     coerceInt(object,['Matrix,D'])
   type is ['Expression,D] =>
+    atom val' => nil          -- certainly not a fraction
     [num,:den] := val'
     -- coerceRetract already handles case where den = 1
     num isnt [0,:num] => NIL

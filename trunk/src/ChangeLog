@@ -1,5 +1,8 @@
 2008-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-coerce.boot (retract2Specialization): Leave if object
+	is an Expression, but not a fraction.
+
 	* interp/define.boot (compDefineFunctor1): Robustify.
 	* hyper/parse-types.c (htperror): Fix thinko.
 
