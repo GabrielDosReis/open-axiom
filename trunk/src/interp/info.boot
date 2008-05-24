@@ -164,10 +164,10 @@ knownInfo pred ==
   pred is ["or",:l] => or/[knownInfo u for u in l]
   pred is ["and",:l] => and/[knownInfo u for u in l]
   pred is ["ATTRIBUTE",name,attr] =>
-    v:= compForMode(name,$EmptyMode,$e)
-    null v => stackSemanticError(["can't find category of ",name],nil)
-    [vv,.,.]:= compMakeCategoryObject(CADR v,$e)
-    null vv => stackSemanticError(["can't make category of ",name],nil)
+    v:= compForMode(name,$EmptyMode,$e) or return
+          stackAndThrow('"can't find category of %1pb",[name])
+    [vv,.,.]:= compMakeCategoryObject(CADR v,$e) or return
+                 stackAndThrow('"can't make category of %1pb",[name])
     member(attr,vv.2) => true
     x:= assoc(attr,vv.2) => knownInfo CADR x
           --format is a list of two elements: information, predicate
@@ -176,15 +176,14 @@ knownInfo pred ==
     cat is ["ATTRIBUTE",:a] => knownInfo ["ATTRIBUTE",name,:a]
     cat is ["SIGNATURE",:a] => knownInfo ["SIGNATURE",name,:a]
     name is ['Union,:.] => false
-    v:= compForMode(name,$EmptyMode,$e)
-    null v => stackSemanticError(["can't find category of ",name],nil)
+    v:= compForMode(name,$EmptyMode,$e) or return
+          stackAndThrow('"can't find category of %1pb",[name])
     vmode := CADR v
     cat = vmode => true
     vmode is ["Join",:l] and member(cat,l) => true
-    [vv,.,.]:= compMakeCategoryObject(vmode,$e)
+    [vv,.,.]:= compMakeCategoryObject(vmode,$e) or return
+                 stackAndThrow('"cannot find category %1pb",[vmode])
     catlist := vv.4
-    --catlist := SUBST(name,'$,vv.4)
-    null vv => stackSemanticError(["can't make category of ",name],nil)
     member(cat,first catlist) => true  --checks princ. ancestors
     (u:=assoc(cat,CADR catlist)) and knownInfo(CADR u) => true
     -- previous line checks fundamental anscestors, we should check their
