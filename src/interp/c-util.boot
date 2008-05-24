@@ -527,7 +527,9 @@ stackMessageIfNone msg ==
     [msg,:$compErrorMessageStack]
   nil
  
-stackAndThrow msg ==
+stackAndThrow(msg, args == nil) ==
+  if args ^= nil then
+    msg := buildMessage(msg,args)
   $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   THROW("compOrCroak",nil)
  

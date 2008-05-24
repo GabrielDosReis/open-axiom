@@ -920,7 +920,7 @@ compLeave(["leave",level,x],m,e) ==
 compReturn: (%Form,%Mode,%Env) -> %Maybe %Triple
 compReturn(["return",level,x],m,e) ==
   null $exitModeStack =>
-    stackSemanticError(["the return before","%b",x,"%d","is unneccessary"],nil)
+    stackAndThrow('"the return before %1b is unneccessary",[x])
     nil
   level^=1 => userError '"multi-level returns not supported"
   index:= MAX(0,#$exitModeStack-1)
@@ -1206,7 +1206,7 @@ unknownTypeError name ==
   name:=
     name is [op,:.] => op
     name
-  stackSemanticError(["%b",name,"%d","is not a known type"],nil)
+  stackAndThrow('"%1b is not a known type",[name])
 
 compPretend: (%Form,%Mode,%Env) -> %Maybe %Triple
 compPretend(["pretend",x,t],m,e) ==

@@ -1,5 +1,10 @@
 2008-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (stackAndThrow): Take an optional parameter.
+	* interp/compiler.boot (compReturn): Robustify.
+	(unknownTypeError): Likewise.
+	* interp/info.boot (knownInfo): Likewise.
+
 	* algebra/modgcd.spad.pamphlet: Fix sectioning thinko.
 
 2008-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
