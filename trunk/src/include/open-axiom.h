@@ -34,6 +34,8 @@
 #ifndef OPENAXIOM_included
 #define OPENAXIOM_included
 
+#include "openaxiom-c-macros.h"
+
 /* Cope with MS-platform oddities.  */
 #ifdef __MINGW32__
 #  ifdef  DLL_EXPORT
@@ -52,5 +54,12 @@
 #  include <inttypes.h>
 #endif
 typedef uint8_t openaxiom_byte;
+
+/* The opaque datatype.  */
+#ifdef __MINGW32__
+typedef HANDLE openaxiom_handle;
+#else
+typedef void* openaxiom_handle;
+#endif
 
 #endif /* OPENAXIOM_included */
