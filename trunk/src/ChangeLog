@@ -1,3 +1,8 @@
+2008-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (OrderedSemiGroup): New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include OSGROUP.
+
 2008-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-coerce.boot (retract2Specialization): Leave if object
