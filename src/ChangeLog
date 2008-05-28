@@ -1,3 +1,8 @@
+2008-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* include/open-axiom.h (openaxiom_handle): New datatype.
+	* hyper/node.h [!X_DISPLAY_MISSING]: Use it.
+
 2008-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (OrderedSemiGroup): New.

@@ -36,7 +36,7 @@
 #ifndef OPENAXIOM_NODE
 #define OPENAXIOM_NODE
 
-#include "openaxiom-c-macros.h"
+#include "open-axiom.h"
 #include "hash.h"
 
 #ifndef X_DISPLAY_MISSING
@@ -50,12 +50,12 @@ typedef GC openaxiom_graphic_context;
 typedef XFontStruct openaxiom_font;
 typedef Cursor openaxiom_cursor;
 #else                            /* X_DISPLAY_MISSING */
-typedef HANDLE openaxiom_window;
-typedef HANDLE openaxiom_pixmap;
-typedef HANDLE openaxiom_image;
-typedef HANDLE openaxiom_graphic_context;
-typedef HANDLE openaxiom_cursor;
-typedef HANDLE openaxiom_font;
+typedef openaxiom_handle openaxiom_window;
+typedef openaxiom_handle openaxiom_pixmap;
+typedef openaxiom_handle openaxiom_image;
+typedef openaxiom_handle openaxiom_graphic_context;
+typedef openaxiom_handle openaxiom_cursor;
+typedef openaxiom_handle openaxiom_font;
 #endif /* X_DISPLAY_MISSING */
 
 /* Struct forward declarations */
