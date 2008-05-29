@@ -1,3 +1,8 @@
+2008-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/interop.boot (newHasCategory): Category is a category, and
+	all domains belong to Category.
+
 2008-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/showimp.boot (showPredicates): Fix typo.

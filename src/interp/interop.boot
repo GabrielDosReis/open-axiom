@@ -566,7 +566,7 @@ newHasAttribute(domain,attrib) ==
   false
 
 newHasCategory(domain,catform) ==
-  catform = '(Type) => true  
+  catform = $Type or catform = $Category => true  
   slot4 := domain.4
   auxvec := CAR slot4
   catvec := CADR slot4
