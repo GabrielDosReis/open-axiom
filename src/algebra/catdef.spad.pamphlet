@@ -3025,7 +3025,7 @@ Note that this code is not included in the generated catdef.spad file.
 )abbrev category ORDMON OrderedMonoid
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: May 28, 2008
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -3040,7 +3040,7 @@ Note that this code is not included in the generated catdef.spad file.
 ++   \spad{x < y => x*z < y*z}
 ++   \spad{x < y => z*x < z*y}
 
-OrderedMonoid(): Category == Join(OrderedSet, Monoid)
+OrderedMonoid(): Category == Join(OrderedSemiGroup, Monoid)
 
 @
 \section{category ORDRING OrderedRing}
