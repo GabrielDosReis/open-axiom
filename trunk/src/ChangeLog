@@ -1,5 +1,10 @@
 2008-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/showimp.boot (showPredicates): Fix typo.
+	* testsuite/interpreter/show.input: New.
+
+2008-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (OrderedMonoid): Nown
 	OrderedSemiGroup and a Monoid.
 	* share/algebra: Updata databases.
