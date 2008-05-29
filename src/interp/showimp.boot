@@ -209,7 +209,7 @@ showPredicates dom ==
   sayBrightly '"--------------------Predicate summary-------------------"
   conname := CAR dom.0
   predvector := dom.3
-  predicateList := getConstructorPredicateFromDB conname
+  predicateList := getConstructorPredicatesFromDB conname
   for i in 1.. for p in predicateList repeat
     prefix := 
       testBitVector(predvector,i) => '"true : "
