@@ -1,5 +1,12 @@
 2008-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix AW/421.
+	* interp/i-spec2.boot (uphas): When compiling a function, don't
+	bother evaluating type variables.
+	* testsuite/interpreter/aw-412.input: Add.
+
+2008-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-analy.boot (conceptualType): Only Mode, Domain, and
 	Category are conceptually abstract.
 	* testsuite/interpreter/category.input: Add a testcase.
