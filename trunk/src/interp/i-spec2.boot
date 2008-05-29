@@ -193,13 +193,19 @@ uphas t ==
   t isnt [op,type,prop] => nil
   -- handler for category and attribute queries
   type :=
-    isLocalVar(type) => ["unabbrev", type]
+    isLocalVar(type) => 
+      $genValue => ["evaluateType", ["unabbrev", type]]
+      -- At this point, type will have already been reduced to
+      -- its object representation.
+      ["devaluate", type]
     MKQ unabbrev type
   catCode :=
+    -- FIXME: when we come to support category valued variable
+    --        this code needs to be adapted.
     prop := unabbrev prop
     evaluateType0 prop => ["evaluateType", MKQ prop]
     MKQ prop
-  code:=["newHasTest",["evaluateType", type], catCode]
+  code:=["newHasTest",type, catCode]
   if $genValue then code := wrap timedEVALFUN code
   putValue(op,objNew(code,$Boolean))
   putModeSet(op,[$Boolean])
