@@ -4086,6 +4086,7 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<category VSPACE VectorSpace>>
 <<category ORDSET OrderedSet>>
 <<category ORDFIN OrderedFinite>>
+<<category OSGROUP OrderedSemiGroup>>
 <<category ORDMON OrderedMonoid>>
 <<category OASGP OrderedAbelianSemiGroup>>
 <<category OAMON OrderedAbelianMonoid>>
