@@ -2931,7 +2931,6 @@ OrderedAbelianSemiGroup(): Category == Join(OrderedSet, AbelianSemiGroup)
 OrderedSemiGroup(): Category == Join(OrderedSet, SemiGroup)
 @
 
-@
 \section{category OCAMON OrderedCancellationAbelianMonoid}
 <<category OCAMON OrderedCancellationAbelianMonoid>>=
 )abbrev category OCAMON OrderedCancellationAbelianMonoid
