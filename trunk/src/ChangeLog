@@ -1,3 +1,8 @@
+2008-06-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (compDefineCategory): Check that a category
+	was indeed abbreviated a category.
+
 2008-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix AW/421.

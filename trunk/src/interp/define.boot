@@ -371,6 +371,11 @@ mkConstructor form ==
 compDefineCategory(df,m,e,prefix,fal) ==
   $domainShell: local -- holds the category of the object being compiled
   $lisplibCategory: local := nil
+  -- since we have so many ways to say state the kind of a constructor,
+  -- make sure we do have some minimal internal coherence.
+  ctor := opOf second df
+  kind := getConstructorKindFromDB ctor
+  kind ^= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
   not $insideFunctorIfTrue and $LISPLIB =>
     compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
   compDefineCategory1(df,m,e,prefix,fal)

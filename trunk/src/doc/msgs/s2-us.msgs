@@ -119,6 +119,8 @@ S2IC0014
  The type %1bp is not branch of %2bp
 S2IC0015
  Generated code is incorrect for %b equation %d
+S2IC0016
+ %1b is defined as a %2b, but was abbreviated as a %3b.
 S2ID0004
  Cannot locate %1 for %2b .
 S2ID0014
