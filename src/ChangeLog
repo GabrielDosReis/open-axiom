@@ -1,5 +1,11 @@
 2008-06-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/comp.lisp (|compAndDefine|): Move to interp/compiler.boot
+	(COMP): Likewise.
+	(|compQuietly|): Likewise.
+	(|compileQuietly|): Likewise.
+	(COMP-1): Likewise.
+
 	* interp/define.boot (compDefineCategory): Check that a category
 	was indeed abbreviated a category.
 

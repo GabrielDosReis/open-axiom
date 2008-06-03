@@ -1614,6 +1614,49 @@ compileFileQuietly path ==
     MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
   COMPILE_-FILE path
 
+compAndDefine l ==
+  _*COMP370_-APPLY_* := function PRINT_-AND_-EVAL_-DEFUN
+  COMP l
+
+compQuietly fn ==
+  _*COMP370_-APPLY_* :=
+    $InteractiveMode =>
+      $compileDontDefineFunctions => function COMPILE_-DEFUN
+      function EVAL_-DEFUN
+    function PRINT_-DEFUN
+  -- create a null outputstream if $InteractiveMode
+  $OutputStream := 
+    $InteractiveMode => MAKE_-BROADCAST_-STREAM()
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+  COMP fn
+
+compileQuietly fn ==
+  _*COMP370_-APPLY_* :=
+     $InteractiveMode =>
+       $compileDontDefineFunctions => function COMPILE_-DEFUN
+       function EVAL_-DEFUN
+     function PRINT_-DEFUN
+  $OutputStream := 
+    $InteractiveMode => MAKE_-BROADCAST_-STREAM()
+    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+  COMP370 fn
+
+
+COMP l ==
+  MAPCAR(function COMP_-2, MAPCAN(function COMP_-1,l))
+
+COMP_-1 x ==
+  fname := first x
+  $FUNNAME := fname
+  $FUNNAME__TAIL := [fname]
+  lamex := second x
+  $CLOSEDFNS := []
+  lamex := COMP_-TRAN lamex
+  COMP_-NEWNAM lamex
+  if FBOUNDP fname then
+    FORMAT(true,'"~&~%;;;     ***       ~S REDEFINED~%",fname)
+  [[fname,lamex],:$CLOSEDFNS]
+
 
 --% Register compilers for special forms.
 -- Those compilers are on the `SPECIAL' property of the corresponding

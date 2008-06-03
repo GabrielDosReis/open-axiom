@@ -65,36 +65,6 @@
 
 (defvar $closedfns nil)
 
-(defun |compAndDefine| (L)
-  (let ((*comp370-apply* (function print-and-eval-defun)))
-    (declare (special *comp370-apply*))
-    (COMP L)))
-
-(defun COMP (L) (MAPCAR #'COMP-2 (MAPCAN #'COMP-1 L)))
-
-;;(defun |compQuietly| (L)
-;;  (let (U CUROUTSTREAM)
-;;    (declare (special CUROUTSTREAM))
-;;    (ADDOPTIONS 'LISTING NULLOUTSTREAM)                     
-;;    (SETQ CUROUTSTREAM NULLOUTSTREAM)                       
-;;    (setq U (COMP L))
-;;    (setq OPTIONLIST (CDDR OPTIONLIST))
-;;    U))
-
-(defun |compQuietly| (fn)
-  (let ((*comp370-apply*
-         (if |$InteractiveMode|
-             (if |$compileDontDefineFunctions|
-		 #'compile-defun
-	       #'eval-defun)
-           #'print-defun))
-     ;; following creates a null outputstream if $InteractiveMode
-        (|$OutputStream|
-         (if |$InteractiveMode|
-	     (make-broadcast-stream)
-           (make-synonym-stream '*standard-output*))))
-    (COMP fn)))
-
 ;; The following are used mainly in setvars.boot
 (defun notEqualLibs (u v)
   (if (string= u (library-name v)) (seq (close-library v) t) nil))
@@ -112,46 +82,6 @@
 (defun |addInputLibrary| (lib)
   (|dropInputLibrary| lib)
    (setq input-libraries (cons (open-library lib) input-libraries)) )
-
-
-
-;;(defun |compileQuietly| (L) (PROG (U CUROUTSTREAM)
-;;  ;; calls lisp system COMPILE or DEFINE                  
-;;  (ADDOPTIONS 'QUIET 'T)                                  
-;;  (ADDOPTIONS 'LISTING NULLOUTSTREAM)                     
-;;  (SETQ CUROUTSTREAM NULLOUTSTREAM)                       
-;;  (SETQ U (COND                                           
-;;    (|$compileDontDefineFunctions| (COMPILE L))           
-;;    ('T (DEFINE L))))                                     
-;;  (SETQ OPTIONLIST (CDDR OPTIONLIST))                     
-;;  (RETURN U)   ))                                       
-
-(defun |compileQuietly| (fn)
-  (let ((*comp370-apply*
-         (if |$InteractiveMode|
-             (if |$compileDontDefineFunctions| 
-		 #'compile-defun
-	       #'eval-defun)
-           #'print-defun))
-	;; following creates a null outputstream if $InteractiveMode
-        (|$OutputStream|
-         (if |$InteractiveMode| 
-	     (make-broadcast-stream)
-           (make-synonym-stream '*standard-output*))))
-    (COMP370 fn)))
-
-(defun COMP-1 (X)
-  (let* ((FNAME (car X))
-         ($FUNNAME FNAME)
-         ($FUNNAME_TAIL (LIST FNAME))
-         (LAMEX (second X))
-         ($closedfns nil))
-    (declare (special $FUNNAME $FUNNAME_TAIL $CLOSEDFNS))
-    (setq LAMEX (COMP-TRAN LAMEX))
-    (COMP-NEWNAM LAMEX)
-    (if (fboundp FNAME)
-        (format t "~&~%;;;     ***       ~S REDEFINED~%" FNAME))
-    (CONS (LIST FNAME LAMEX) $CLOSEDFNS)))
 
 (defun Comp-2 (args &aux name type argl bodyl junk)
     (dsetq (NAME (TYPE ARGL . BODYL) . JUNK) args)
