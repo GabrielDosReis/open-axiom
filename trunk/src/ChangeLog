@@ -1,3 +1,7 @@
+2008-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/variable.spad.pamphlet (ModePatternVariable): New.
+
 2008-06-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/comp.lisp (|compAndDefine|): Move to interp/compiler.boot

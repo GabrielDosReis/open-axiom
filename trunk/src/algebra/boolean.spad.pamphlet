@@ -60,7 +60,7 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
     variable?: % -> Boolean
       ++ variables? p returns true when `p' really is a variable.
     variable: % -> Symbol
-      ++ variable p extracts the varible name from `p'; otherwise errors.
+      ++ variable p extracts the variable name from `p'; otherwise errors.
 
     not?: % -> Boolean
       ++ not? p is true when `p' is a logical negation

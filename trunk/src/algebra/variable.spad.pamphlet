@@ -112,6 +112,25 @@ AnonymousFunction():SetCategory with
       CADDR(f)$Lisp : Syntax
 
 @
+
+\section{The ModePatternVariable}
+<<domain MODEPVAR ModePatternVariable>>=
+)abbrev domain MODEPVAR ModePatternVariable
+++ Author: Gabriel Dos Reis
+++ Date Create: June 10, 2008
+++ Description:  This is the datatype for pattern variables in library
+++   modemap description.
+ModePatternVariable(): Public == Private where
+  Public == SetCategory
+  Private == add
+    Rep == Symbol
+    x = y ==
+      rep x = rep y
+    coerce(x: %): OutputForm ==
+      outputForm rep x
+@
+
+
 \section{License}
 <<license>>=
 --Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
