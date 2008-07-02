@@ -1,3 +1,7 @@
+2008-07-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compExpression): Tidy.
+
 2008-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/variable.spad.pamphlet (ModePatternVariable): New.
