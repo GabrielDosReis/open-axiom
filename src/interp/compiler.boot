@@ -348,13 +348,13 @@ hasUniqueCaseView(x,m,e) ==
     p = "value" => return false
 
 
-convertOrCroak: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+convertOrCroak: (%Triple,%Mode) -> %Maybe %Triple
 convertOrCroak(T,m) ==
   u:= convert(T,m) => u
   userError ["CANNOT CONVERT: ",T.expr,"%l"," OF MODE: ",T.mode,"%l",
     " TO MODE: ",m,"%l"]
 
-convert: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+convert: (%Triple,%Mode) -> %Maybe %Triple
 convert(T,m) ==
   coerce(T,resolve(T.mode,m) or return nil)
 
@@ -1249,7 +1249,7 @@ compIs(["is",a,b],m,e) ==
 --  One should always call the correct function, since the represent-
 --  ation of basic objects may not be the same.
 
-coerce: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+coerce: (%Triple,%Mode) -> %Maybe %Triple
 coerce(T,m) ==
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
@@ -1266,7 +1266,7 @@ coerce(T,m) ==
     [T.expr,T.mode,m])
 
 
-coerceEasy: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+coerceEasy: (%Triple,%Mode) -> %Maybe %Triple
 coerceEasy(T,m) ==
   m=$EmptyMode => T
   m=$NoValueMode or m=$Void => [T.expr,m,T.env]
@@ -1279,7 +1279,7 @@ coerceEasy(T,m) ==
     [T.expr,m,T.env]
 
 
-coerceSubset: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+coerceSubset: (%Triple,%Mode) -> %Maybe %Triple
 coerceSubset([x,m,e],m') ==
   isSubset(m,m',e) => [x,m',e]
   m is ['SubDomain,=m',:.] => [x,m',e]
@@ -1291,7 +1291,7 @@ coerceSubset([x,m,e],m') ==
       [x,m',e]
   nil
 
-coerceHard: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+coerceHard: (%Triple,%Mode) -> %Maybe %Triple
 coerceHard(T,m) ==
   $e: local:= T.env
   m':= T.mode
@@ -1310,7 +1310,7 @@ coerceHard(T,m) ==
     [T.expr,m,$e]
   coerceExtraHard(T,m)
 
-coerceExtraHard: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+coerceExtraHard: (%Triple,%Mode) -> %Maybe %Triple
 coerceExtraHard(T is [x,m',e],m) ==
   T':= autoCoerceByModemap(T,m) => T'
   isUnionMode(m',e) is ["Union",:l] and (t:= hasType(x,e)) and
@@ -1320,6 +1320,8 @@ coerceExtraHard(T is [x,m',e],m) ==
       [['coerceRe2E,x,['ELT,COPY m',0]],m,e]
   belongsTo?(m',["UnionType"],e) and hasUniqueCaseView(x,m,e) =>
     autoCoerceByModemap(T,m)
+  -- Domain instantiations are first class objects
+  m = $Domain and isCategoryForm(m',e) => [x,m',e]
   nil
 
 ++ returns true if mode `m' is known to belong to category `cat' in
@@ -1338,7 +1340,7 @@ coerceable(m,m',e) ==
   coerce(["$fromCoerceable$",m,e],m') => m'
   nil
 
-coerceExit: (%Maybe %Triple,%Mode) -> %Maybe %Triple
+coerceExit: (%Triple,%Mode) -> %Maybe %Triple
 coerceExit([x,m,e],m') ==
   m':= resolve(m,m')
   x':= replaceExitEtc(x,catchTag:= MKQ GENSYM(),"TAGGEDexit",$exitMode)
