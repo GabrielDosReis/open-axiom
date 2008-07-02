@@ -1,5 +1,0 @@
-#ifdef _NO_PROTO
-extern int writeViewport();
-#else
-extern int writeViewport(int );
-#endif
