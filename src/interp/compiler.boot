@@ -283,7 +283,8 @@ extractCodeAndConstructTriple(u, m, oldE) ==
 compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
-  atom first x and (fn:= GETL(first x,"SPECIAL")) =>
+  -- special forms have dedicated compilers.
+  (op := first x) and SYMBOLP op and (fn := GET(op,"SPECIAL")) =>
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
@@ -1702,4 +1703,4 @@ for x in [["|", :"compSuchthat"],_
 	  ["UnionCategory", :"compConstructorCategory"],_
 	  ["where", :"compWhere"],_
           ["[||]", :"compileQuasiquote"]] repeat
-  MAKEPROP(car x, 'SPECIAL, cdr x)
+  MAKEPROP(first x, "SPECIAL", rest x)
