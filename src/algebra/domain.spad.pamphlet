@@ -38,7 +38,7 @@ Category(): Public == Private where
 ++ Related Constructors: Type, Syntax, OutputForm
 ++ Also See: Type, ConstructorCall
 Domain(): Public == Private where
-  Public ==> CoercibleTo(OutputForm) with
+  Public == SetCategory with
     reify: % -> ConstructorCall
       ++ reify(d) returns the abstract syntax for the domain `x'.
 
@@ -51,7 +51,7 @@ Domain(): Public == Private where
       ++ showSummary(d) prints out implementation detail information
       ++ of domain `d'.
 
-  Private ==> add
+  Private == add
     coerce x ==
       outputDomainConstructor(x)$Lisp
 
@@ -60,6 +60,9 @@ Domain(): Public == Private where
 
     reflect cc ==
       evalDomain(cc)$Lisp @ %
+
+    x = y ==
+      reify x = reify y
 
     showSummary x ==
       showSummary(x)$Lisp
