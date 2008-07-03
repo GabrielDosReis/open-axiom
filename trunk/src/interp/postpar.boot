@@ -182,10 +182,11 @@ postMakeCons l ==
 postAtom: %Atom -> %ParseForm
 postAtom x ==
   $BOOT => x
-  x=0 => '(Zero)
-  x=1 => '(One)
+  x=0 => $Zero
+  x=1 => $One
   EQ(x,'T) => "T$" -- rename T in spad code to T$
   IDENTP x and niladicConstructorFromDB x => [x]
+  x="," => "%Comma"
   x
 
 postBlock: %ParseTree -> %ParseForm
@@ -602,36 +603,36 @@ postBootNotEqual u ==
 
 --% Register special parse tree tranformers.
 
-for x in [["with", :function postWith],_
-	  ["Scripts", :function postScripts],_
-	  ["/", :function postSlash],_
-	  ["construct", :function postConstruct],_
-	  ["%Block", :function postBlock],_
-	  ["QUOTE", :function postQUOTE],_
-	  ["COLLECT", :function postCollect],_
-	  [":BF:", :function postBigFloat],_
-	  ["in", :function postin],_
-	  ["IN", :function postIn],_
-	  ["REPEAT", :function postRepeat],_
-	  ["TupleCollect", :function postTupleCollect],_
-	  ["add", :function postAdd],_
-	  ["%Reduce", :function postReduce],_
-	  [",", :function postComma],_
-	  [";", :function postSemiColon],_
-	  ["where", :function postWhere],_
-	  ["::", :function postColonColon],_
-	  [":", :function postColon],_
-	  ["@", :function postAtSign],_
-	  ["pretend", :function postPretend],_
-	  ["if", :function postIf],_
-	  ["Join", :function postJoin],_
-	  ["%Signature", :function postSignature],_
-	  ["CATEGORY", :function postCategory],_
-	  ["==", :function postDef],_
-	  ["==>", :function postMDef],_
-	  ["->", :function postMapping],_
-	  ["=>", :function postExit],_
-          ["^=", :function postBootNotEqual],_
-	  ["%Comma", :function post%Comma]] repeat
+for x in [["with", :"postWith"],_
+	  ["Scripts", :"postScripts"],_
+	  ["/", :"postSlash"],_
+	  ["construct", :"postConstruct"],_
+	  ["%Block", :"postBlock"],_
+	  ["QUOTE", :"postQUOTE"],_
+	  ["COLLECT", :"postCollect"],_
+	  [":BF:", :"postBigFloat"],_
+	  ["in", :"postin"],_
+	  ["IN", :"postIn"],_
+	  ["REPEAT", :"postRepeat"],_
+	  ["TupleCollect", :"postTupleCollect"],_
+	  ["add", :"postAdd"],_
+	  ["%Reduce", :"postReduce"],_
+	  [",", :"postComma"],_
+	  [";", :"postSemiColon"],_
+	  ["where", :"postWhere"],_
+	  ["::", :"postColonColon"],_
+	  [":", :"postColon"],_
+	  ["@", :"postAtSign"],_
+	  ["pretend", :"postPretend"],_
+	  ["if", :"postIf"],_
+	  ["Join", :"postJoin"],_
+	  ["%Signature", :"postSignature"],_
+	  ["CATEGORY", :"postCategory"],_
+	  ["==", :"postDef"],_
+	  ["==>", :"postMDef"],_
+	  ["->", :"postMapping"],_
+	  ["=>", :"postExit"],_
+          ["^=", :"postBootNotEqual"],_
+	  ["%Comma", :"post%Comma"]] repeat
   MAKEPROP(first x, "postTran", rest x)
 
