@@ -536,14 +536,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 
 (defun DROPTRAILINGBLANKS  (LINE) (string-right-trim " " LINE))
 
-(defun print-and-eval-defun (name body)
-   (eval body)
-   (print-defun name body)
-  ;; (set name (symbol-function name)) ;; this should go away
-   )
-
-(defun eval-defun (name body) (eval (macroexpandall body)))
-
 ; This function was modified by Greg Vanuxem on March 31, 2005
 ; to handle the special case of #'(lambda ..... which expands
 ; into (function (lambda .....
@@ -589,9 +581,6 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
        sexpr))
   ('else        
     (mapcar #'macroexpandall sexpr))))
-
-
-(defun compile-defun (name body) (eval body) (compile name))
 
 
 (defun |deleteWOC| (item list) (delete item list :test #'equal))

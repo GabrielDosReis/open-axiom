@@ -1618,15 +1618,15 @@ compileFileQuietly path ==
   COMPILE_-FILE path
 
 compAndDefine l ==
-  _*COMP370_-APPLY_* := function PRINT_-AND_-EVAL_-DEFUN
+  _*COMP370_-APPLY_* := "PRINT-AND-EVAL-DEFUN"
   COMP l
 
 compQuietly fn ==
   _*COMP370_-APPLY_* :=
     $InteractiveMode =>
-      $compileDontDefineFunctions => function COMPILE_-DEFUN
-      function EVAL_-DEFUN
-    function PRINT_-DEFUN
+      $compileDontDefineFunctions => "COMPILE-DEFUN"
+      "EVAL-DEFUN"
+    "PRINT-DEFUN"
   -- create a null outputstream if $InteractiveMode
   $OutputStream := 
     $InteractiveMode => MAKE_-BROADCAST_-STREAM()
@@ -1636,9 +1636,9 @@ compQuietly fn ==
 compileQuietly fn ==
   _*COMP370_-APPLY_* :=
      $InteractiveMode =>
-       $compileDontDefineFunctions => function COMPILE_-DEFUN
-       function EVAL_-DEFUN
-     function PRINT_-DEFUN
+       $compileDontDefineFunctions => "COMPILE-DEFUN"
+       "EVAL-DEFUN"
+     "PRINT-DEFUN"
   $OutputStream := 
     $InteractiveMode => MAKE_-BROADCAST_-STREAM()
     MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"

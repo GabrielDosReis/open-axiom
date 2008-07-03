@@ -190,7 +190,7 @@ loadModule(path,name) ==
   FMAKUNBOUND name
   LOAD path
 
---% numericis
+--% numerics
 log10 x ==
   LOG(x,10)
 
@@ -201,4 +201,22 @@ bitand(x,y) ==
 bitior: (%Short,%Short) -> %Short
 bitior(x,y) ==
   BOOLE(BOOLE_-IOR,x,y)
+
+
+--% Back ends 
+
+++ compile a function definition, augmenting the current
+++ evaluation environement with the result of the compilation.
+COMPILE_-DEFUN(name,body) ==
+  EVAL body
+  COMPILE name
+
+++ Augment the current evaluation environment with a function definition.
+EVAL_-DEFUN(name,body) ==
+  EVAL MACROEXPANDALL body
+
+PRINT_-AND_-EVAL_-DEFUN(name,body) ==
+  EVAL body
+  PRINT_-DEFUN(name,body)
+
 
