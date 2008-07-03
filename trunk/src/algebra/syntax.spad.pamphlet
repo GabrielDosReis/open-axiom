@@ -217,27 +217,29 @@ Syntax(): Public == Private where
 )abbrev domain CTORCALL ConstructorCall
 ++ Author: Gabriel Dos Reis
 ++ Date Created: January 19, 2008
-++ Date Last Updated: January 19, 2008
+++ Date Last Updated: July 03, 2008
 ++ Description: This domains represents a syntax object that
 ++ designates a category, domain, or a package.
 ++ See Also: Syntax, Domain
 ConstructorCall(): Public == Private where
-  Public ==> CoercibleTo OutputForm with
+  Public == SetCategory with
     constructorName: % -> Symbol
       ++ constructorName c returns the name of the constructor
     arguments: % -> List Syntax
       ++ arguments returns the list of syntax objects for the
       ++ arguments used to invoke the constructor.
 
-  Private ==> add
-    rep(x: %): List Syntax ==
-      x pretend List(Syntax)
+  Private == add
+    Rep == List Syntax
 
     constructorName x ==
       (first rep x)::Symbol
 
     arguments x ==
       rest rep x
+
+    x = y ==
+      rep x = rep y
 
     coerce x ==
       outputDomainConstructor(x)$Lisp

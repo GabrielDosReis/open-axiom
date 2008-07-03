@@ -1,3 +1,13 @@
+2008-07-03  Bill Page  <bill.page@newsynthesis.org>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/428
+	* algebra/syntax.spad.pamphlet (ConstructorCall): Now a member of
+	SetCategory. 
+	(Domain): Likewise.
+	* share/algebra: Update databases.
+	* testsuite/interpreter/aw-428.input: New.
+
 2008-07-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compExpression): Tidy.

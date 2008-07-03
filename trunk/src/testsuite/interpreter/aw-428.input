@@ -1,0 +1,5 @@
+V1 := DirectProduct(3+4,Integer)
+V2 := DirectProduct(7,Integer)
+V1 = V2
+%::Boolean
+(Integer=Float)@Boolean
