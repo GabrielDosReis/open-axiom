@@ -2,6 +2,12 @@
 
 	* interp/compiler.boot (compExpression): Tidy.
 	(coerceExtraHard): Convert domain instantiations to domain objects.
+	(compAndDefine): Capture by name, not pointer.
+	(compQuietly): Likewise.
+	(compileQuietly): Likewise.
+	* interp/macros.lisp (PRINT-AND-EVAL-DEFUN): Move to sys-utility.boot.
+	(EVAL-DEFUN): Likewise.
+	(COMPILE-DEFUN): Likewise.
 
 2008-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
