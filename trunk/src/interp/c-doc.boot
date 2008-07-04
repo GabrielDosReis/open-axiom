@@ -45,12 +45,12 @@ getDoc(conName,op,modemap) ==
   [dc,target,sl,pred,D] := simplifyModemap modemap
   sig := [target,:sl]
   null atom dc =>
-    sig := substitute('$,dc,sig)
+    sig := MSUSBT('$,dc,sig)
     sig := SUBLISLIS($FormalMapVariableList,rest dc,sig)
     getDocForDomain(conName,op,sig)
   if argList := IFCDR getOfCategoryArgument pred then
      SUBLISLIS($FormalMapArgumentList,argList,sig)
-  sig := substitute('$,dc,sig)
+  sig := MSUBST('$,dc,sig)
   getDocForCategory(conName,op,sig)
 
 ++ Given a preidcate `pred' for a modemap, returns the first

@@ -429,9 +429,9 @@ substVars(pred,patternAlist,patternVarList) ==
   --make pattern variable substitutions
   domainPredicates := nil
   for [[patVar,:value],:.] in tails patternAlist repeat
-    pred := substitute(patVar,value,pred)
+    pred := MSUBST(patVar,value,pred)
     patternAlist := nsubst(patVar,value,patternAlist)
-    domainPredicates := substitute(patVar,value,domainPredicates)
+    domainPredicates := MSUBST(patVar,value,domainPredicates)
     if ^MEMQ(value,$FormalMapVariableList) then
       domainPredicates := [["isDomain",patVar,value],:domainPredicates]
   everything := [pred,patternAlist,domainPredicates]

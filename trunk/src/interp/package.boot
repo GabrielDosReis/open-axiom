@@ -200,7 +200,7 @@ optPackageCall(x,["PAC",packageVariableOrForm,functionName],arglist) ==
  
 encodeFunctionName(fun,package is [packageName,:arglist],signature,sep,count)
    ==
-    signature':= substitute("$",package,signature)
+    signature':= MSUBST("$",package,signature)
     reducedSig:= mkRepititionAssoc [:rest signature',first signature']
     encodedSig:=
       ("STRCONC"/[encodedPair for [n,:x] in reducedSig]) where
