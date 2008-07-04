@@ -96,7 +96,7 @@ deltaTran(item,compItem) ==
   [op,:modemap] := item
   [dcSig,[.,[kind,:.]]] := modemap
   [dc,:sig] := dcSig
-  sig := substitute('$,dc,substitute("$$",'$,sig))
+  sig := MSUBST('$,dc,substitute("$$",'$,sig))
   dcCode :=
     dc = '$ => 0
     dc = $NRTaddForm => 5
@@ -153,7 +153,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
     dc = '$ => $functorForm
     atom dc and (dcval := get(dc,'value,$e)) => dcval.expr
     dc
-  sig := substitute(ndc,dc,sig)
+  sig := MSUBST(ndc,dc,sig)
   not MEMQ(KAR ndc,$optimizableConstructorNames) => nil
   dcval := optCallEval ndc
   -- MSUBST guarantees to use EQUAL testing
@@ -187,7 +187,7 @@ genDeltaEntry opMmPair ==
   if eltOrConst = 'Subsumed then eltOrConst := 'ELT
   if atom dc then
     dc = "$" => nsig := sig
-    if NUMBERP nsig then nsig := substitute('$,dc,substitute("$$","$",sig))
+    if NUMBERP nsig then nsig := MSUBST('$,dc,substitute("$$","$",sig))
   newimp := optDeltaEntry(op,nsig,dc,eltOrConst) => newimp
   setDifference(listOfBoundVars dc,$functorLocalParameters) ^= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,

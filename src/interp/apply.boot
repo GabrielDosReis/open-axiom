@@ -92,11 +92,19 @@ compApplication(op,argl,m,e,T) ==
   eltForm := ['elt, op, :argl]
   comp(eltForm, m, e)
 
+++ `form' is a call to a operation described by the signature `sig'.
+++ Massage the call so that homogeneous variable length argument lists
+++ are properly tuplified.
+reshapeArgumentList: (%Form,%Signature) -> %Form
+reshapeArgumentList(form,sig) ==
+  [op,:args] := form
+  wantArgumentsAsTuple(args,sig) => [op,["%Comma",:args]]
+  form
+
 compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
-compFormWithModemap(form is [op,:argl],m,e,modemap) ==
-  [map:= [.,target,:.],[pred,impl]]:= modemap
-  -- this fails if the subsuming modemap is conditional
-  --impl is ['Subsumed,:.] => nil
+compFormWithModemap(form,m,e,modemap) ==
+  [map:= [.,target,:sig],[pred,impl]]:= modemap
+  [op,:argl] := form := reshapeArgumentList(form,sig)
   if isCategoryForm(target,e) and isFunctor op then
     [modemap,e]:= substituteIntoFunctorModemap(argl,modemap,e) or return nil
     [map:= [.,target,:.],:cexpr]:= modemap

@@ -52,6 +52,32 @@ substituteDollarIfRepHack m ==
   $useRepresentationHack => substitute("$","Rep",m)
   m
 
+
+++ Returns true if the form `t' is an instance of the Tuple constructor.
+isTupleInstance: %Form -> %Boolean
+isTupleInstance t ==
+  t is ["Tuple",.]
+
+++ Returns true if the signature `sig' describes a function that can
+++ accept a homogeneous variable length argument list.
+isHomoegenousVarargSignature: %Signature -> %Boolean
+isHomoegenousVarargSignature sig ==
+  #sig = 1 and isTupleInstance first sig
+
+++ Returns true if the arguments list `args' match in shape the
+++ parameter type list `sig'.  This means that either the number
+++ of arguments is exactly the number of parameters, or that the
+++ signature describes a homogeneous vararg operation.
+enoughArguments: (%List,%Signature) -> %Boolean
+enoughArguments(args,sig) ==
+  #args = #sig or isHomoegenousVarargSignature sig
+
+++ Returns true if the operation described by the signature `sig'
+++ wants its arguments as a Tuple object.
+wantArgumentsAsTuple: (%List,%Signature) -> %Boolean
+wantArgumentsAsTuple(args,sig) ==
+  isHomoegenousVarargSignature sig and #args ^= #sig
+
 --% Debugging Functions
  
 --CONTINUE() == continue()

@@ -420,7 +420,7 @@ mkDomainConstructor x ==
 setVector4(catNames,catsig,conditions) ==
   if $HackSlot4 then
     for ['LET,name,cond,:.] in $getDomainCode repeat
-      $HackSlot4:=substitute(name,cond,$HackSlot4)
+      $HackSlot4:=MSUSBT(name,cond,$HackSlot4)
   code:=
 --+
     ['SETELT,'$,4,'TrueDomain]

@@ -479,16 +479,22 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
       compForm3(form,m,e,modemapList)
   compForm3(form,m,e,modemapList)
 
+++ We are about to compile a call.  Returns true if each argument
+++ partially matches (as could be determined by type inference) the
+++ corresponding expected type in the callee's modemap.
+compFormMatch: (%Modemap,%List) -> %Boolean
+compFormMatch(mm,partialModeList) == main where
+  main() ==
+    mm is [[.,.,:argModeList],:.] and match(argModeList,partialModeList) 
+      or wantArgumentsAsTuple(partialModeList,argModeList)
+  match(a,b) ==
+    null b => true
+    null first b => match(rest a,rest b)
+    first a=first b and match(rest a,rest b)
+
 compFormPartiallyBottomUp(form,m,e,modemapList,partialModeList) ==
   mmList:= [mm for mm in modemapList | compFormMatch(mm,partialModeList)] =>
     compForm3(form,m,e,mmList)
-
-compFormMatch(mm,partialModeList) ==
-  mm is [[.,.,:argModeList],:.] and match(argModeList,partialModeList) where
-    match(a,b) ==
-      null b => true
-      null first b => match(rest a,rest b)
-      first a=first b and match(rest a,rest b)
 
 compForm3(form is [op,:argl],m,e,modemapList) ==
   T:=
@@ -501,12 +507,19 @@ compForm3(form is [op,:argl],m,e,modemapList) ==
     T
   T
 
+++ Returns the list of candidate modemaps for a form.  A modemap
+++ is candidate for a form if its signature has the same number
+++ of paramter types as arguments supplied to the form.  A special
+++ case is made for a modemap whose sole parameter type is a Tuple.
+++ In that case, it matches any number of supplied arguments.
 getFormModemaps: (%Form,%Env) -> %List
 getFormModemaps(form is [op,:argl],e) ==
   op is ["elt",domain,op1] =>
     [x for x in getFormModemaps([op1,:argl],e) | x is [[ =domain,:.],:.]]
-  null atom op => nil
+  not atom op => nil
   modemapList:= get(op,"modemap",e)
+  -- Within default implementations, modemaps cannot mention the
+  -- current domain. 
   if $insideCategoryPackageIfTrue then
     modemapList := [x for x in modemapList | x is [[dom,:.],:.] and dom ^= '$]
   if op="elt"
@@ -515,7 +528,8 @@ getFormModemaps(form is [op,:argl],e) ==
       if op="setelt" then modemapList:=
         seteltModemapFilter(CADR argl,modemapList,e) or return nil
   nargs:= #argl
-  finalModemapList:= [mm for (mm:= [[.,.,:sig],:.]) in modemapList | #sig=nargs]
+  finalModemapList:= [mm for (mm:= [[.,.,:sig],:.]) in modemapList 
+                       | enoughArguments(argl,sig)]
   modemapList and null finalModemapList =>
     stackMessage('"no modemap for %1b with %2 arguments", [op,nargs])
   finalModemapList
@@ -1255,7 +1269,7 @@ coerce(T,m) ==
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
   if $useRepresentationHack then
-    rplac(CADR T,substitute("$",$Rep,CADR T))
+    rplac(CADR T,MSUBST("$",$Rep,CADR T))
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => T'
   T':= coerceHard(T,m) => T'
@@ -1408,6 +1422,30 @@ autoCoerceByModemap([x,source,e],target) ==
     stackMessage('"cannot coerce %1b of mode %2pb to %3pb without a case statement",
       [x,source,target])
   [["call",genDeltaEntry ["autoCoerce", :fn],x],target,e]
+
+
+++ Compile a comma separated expression list. These typically are
+++ tuple objects, or argument list in a call to a homogeneous
+++ vararg operations.
+compComma: (%Form,%Mode,%Env) -> %Maybe %Triple
+compComma(form,m,e) ==
+  form isnt ["%Comma",:argl] => systemErrorHere "compComma"
+  Tl := [comp(a,$EmptyMode,e) or return "failed" for a in argl]
+  Tl = "failed" => nil
+  -- ??? Ideally, we would like to compile to a Cross type, then
+  -- convert to the target type.  However, the current compiler and
+  -- runtime data structures are not regular enough in their interfaces;
+  -- so we make a special rule when compiling with a Tuple as target,
+  -- we do the convertion here (instead of calling convert).  Semantically,
+  -- there should be no difference, but it makes the compiler code
+  -- less regular, with duplicated effort.
+  m is ["Tuple",t] =>
+    Tl' := [convert(T,t) or return "failed" for T in Tl]
+    Tl' = "failed" => nil
+    [["asTupleNew0", [T.expr for T in Tl']], m, e]
+  T := [["LIST2VEC", [T.expr for T in Tl]], 
+        ["Cross",:[T.mode for T in Tl]], e]
+  convert(T,m)
 
 --% Very old resolve
 -- should only be used in the old (preWATT) compiler
@@ -1704,5 +1742,6 @@ for x in [["|", :"compSuchthat"],_
 	  ["Mapping", :"compCat"],_
 	  ["UnionCategory", :"compConstructorCategory"],_
 	  ["where", :"compWhere"],_
+          ["%Comma",:"compComma"],_
           ["[||]", :"compileQuasiquote"]] repeat
   MAKEPROP(first x, "SPECIAL", rest x)

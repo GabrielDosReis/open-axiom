@@ -1,5 +1,17 @@
 2008-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compFormMatch): Tidy.
+	(getFormModemaps): Likewise.
+	(compComma): New. 
+	* interp/c-util.boot (isTupleInstance): New.
+	(isHomoegenousVarargSignature): Likewise.
+	(enoughArguments): Likewise.
+	(wantArgumentsAsTuple): Likewise.
+	* interp/apply.boot (reshapeArgumentList): New.
+	(compFormWithModemap): Use it.
+
+2008-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix AW/429
 	* algebra/multpoly.spad.pamphlet (IndexedExponents): Fix comment type.
 
