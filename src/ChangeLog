@@ -1,3 +1,16 @@
+2008-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/Makefile.pamphlet (OBJS): Don't include nruntime.$(FASLEXT).
+	(nruntime.$(FASLEXT)): Remove rule.
+	* interp/g-util.boot (getShellEntry): Move from interp/nruntime.boot.
+	(setShellEntry): Likewise.
+	* interp/i-util.boot (devaluateDeeply): Likewise.
+	* interp/lisplib.boot (unloadOneConstructor): Likewise.
+	* interp/nrungo.boot (lookupDisplay): Likewise.
+	(isIntantiated): Likewise
+	* interp/package.boot (isCategoryPackageName): Likewise.
+	* interp/nruntime.boot: Remove.
+
 2008-07-03  Bill Page  <bill.page@newsynthesis.org>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

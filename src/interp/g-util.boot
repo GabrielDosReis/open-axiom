@@ -728,10 +728,20 @@ gensymInt g ==
   for i in 2..#p-1 repeat n := 10 * n + charDigitVal p.i
   n
 
-++
+++ Returns a newly allocated domain shell (a simple vector) of length `n'.
 newShell: %Short -> SIMPLE_-ARRAY
 newShell n ==
   MAKE_-ARRAY(n,KEYWORD::INITIAL_-ELEMENT,nil)
+
+++ fetchs the item in the nth entry of a domain shell.
+getShellEntry: (%Shell,%Short) -> %Thing
+getShellEntry(s,i) ==
+  SVREF(s,i)
+
+++ sets the nth nth entry of a domain shell to an item.
+setShellEntry: (%Shell,%Short,%Thing) -> %Thing
+setShellEntry(s,i,t) ==
+  SETF(SVREF(s,i),t)
 
 
 -- Push into the BOOT package when invoked in batch mode.

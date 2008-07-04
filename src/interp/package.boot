@@ -39,7 +39,11 @@ isPackageFunction() ==
   -- called by compile/putInLocalDomainReferences
 --+
   nil
- 
+
+isCategoryPackageName nam ==
+  p := PNAME opOf nam
+  p.(MAXINDEX p) = char '_&
+
 processFunctorOrPackage(form,signature,data,localParList,m,e) ==
 --+
   processFunctor(form,signature,data,localParList,e)

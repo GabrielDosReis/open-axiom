@@ -142,6 +142,11 @@ devaluate d ==
  
 devaluateList l == [devaluate d for d in l]
  
+devaluateDeeply x ==
+  VECP x => devaluate x
+  atom x => x
+  [devaluateDeeply y for y in x]
+
 --HasAttribute(domain,attrib) ==
 ---->
 --  isNewWorldDomain domain => newHasAttribute(domain,attrib)
