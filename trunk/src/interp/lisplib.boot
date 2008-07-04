@@ -278,7 +278,11 @@ setAutoLoadProperty(name) ==
 --  abb := constructor? name
   REMPROP(name,'LOADED)
   SETF(SYMBOL_-FUNCTION name,mkAutoLoad(constructor? name, name))
- 
+
+unloadOneConstructor(cnam,fn) ==
+    REMPROP(cnam,'LOADED)
+    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+
 --% Compilation
  
 compileConstructorLib(l,op,editFlag,traceFlag) ==

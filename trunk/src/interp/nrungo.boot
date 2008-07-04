@@ -38,6 +38,20 @@ namespace BOOT
 ++
 $insideCompileBodyIfTrue := false
 
+--% Monitoring functions
+
+lookupDisplay(op,sig,vectorOrForm,suffix) ==
+  null $NRTmonitorIfTrue => nil
+  prefix := (suffix = '"" => ">"; "<")
+  sayBrightly
+    concat(prefix,formatOpSignature(op,sig),
+        '" from ", prefix2String devaluateDeeply vectorOrForm,suffix)
+
+isInstantiated [op,:argl] ==
+  u:= lassocShiftWithFunction(argl,HGET($ConstructorCache,op),'domainEqualList)
+    => CDRwithIncrement u
+  nil
+
 --=======================================================
 --             Lookup From Interpreter
 --=======================================================

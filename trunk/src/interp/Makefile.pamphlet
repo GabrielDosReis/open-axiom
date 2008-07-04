@@ -135,7 +135,7 @@ OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
 	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
 	nlib.$(FASLEXT)	nrunfast.$(FASLEXT)	\
 	nrungo.$(FASLEXT)	nrunopt.$(FASLEXT)	\
-	nruntime.$(FASLEXT)	osyscmd.$(FASLEXT)	\
+	osyscmd.$(FASLEXT)	\
 	packtran.$(FASLEXT)	pathname.$(FASLEXT)	\
 	pf2sex.$(FASLEXT)	pile.$(FASLEXT)	\
 	posit.$(FASLEXT)	property.$(FASLEXT)	\
@@ -607,7 +607,6 @@ nrunopt.$(FASLEXT): c-util.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
 nruncomp.$(FASLEXT): c-util.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT)
-nruntime.$(FASLEXT): c-util.$(FASLEXT)
 template.$(FASLEXT): c-util.$(FASLEXT)
 iterator.$(FASLEXT): g-util.$(FASLEXT)
 define.$(FASLEXT): cattable.$(FASLEXT) category.$(FASLEXT) c-util.$(FASLEXT)
