@@ -1,5 +1,10 @@
 2008-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix AW/429
+	* algebra/multpoly.spad.pamphlet (IndexedExponents): Fix comment type.
+
+2008-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/category.boot (isCategory): Document.
 	(isCategoryForm): Likewise.  Tidy.
 	(mkCategory): Likewise.
