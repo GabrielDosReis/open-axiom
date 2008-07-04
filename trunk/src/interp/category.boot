@@ -34,8 +34,21 @@
 
 import g_-util
 namespace BOOT
+
+++ Returns true if `a' is a category (runtime) object.
+isCategory: %Thing -> %Boolean
+isCategory a == 
+  REFVECP a and #a > 5 and getShellEntry(a,3) = $Category
+
+++ Return true if the form `x' designates an instantiaion of a
+++ category constructor known to the global database or the
+++ envronement `e'.
+isCategoryForm: (%Form,%Env) -> %Boolean
+isCategoryForm(x,e) ==
+  atom x => u:= get(x,"macro",e) => isCategoryForm(u,e)
+  categoryForm? first x
  
--- Functions for building categories
+--% Functions for building categories
  
 CategoryPrint(D,$e) ==
   SAY "--------------------------------------"
@@ -56,10 +69,17 @@ CategoryPrint(D,$e) ==
     null u => SAY "another domain"
     atom first u => SAY("Alternate View corresponding to: ",u)
     PRETTYPRINT u
- 
+
+++ Returns a fresly built category object for a domain or package
+++ (as indicated by `domainOrPackage'), with signature list
+++ designated by `sigList', attribute list designated by `attList,
+++ domain list designatured by `domList', and a princical ancestor
+++ category object designated by `PrincipalAncestor'.
+mkCategory: (%Symbol,%List,%List,%List, %Maybe %Shell) -> %Shell
 mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
-  NSigList:= nil
-  if PrincipalAncestor=nil then count:= 6 else count:= SIZE PrincipalAncestor
+  NSigList := nil
+  if PrincipalAncestor=nil then count := 6 
+  else count := #PrincipalAncestor
   sigList:=
     [if s is [sig,pred]
        then
@@ -86,29 +106,30 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
           "union"/[Prepare2 x for x in stripUnionTags w]
         v is ["Mapping",:w] => "union"/[Prepare2 x for x in w]
         v is ["List",w] => Prepare2 w
-        v is ["Record",.,:w] => "union"/[Prepare2 CADDR x for x in w]
+        v is ["Record",.,:w] => "union"/[Prepare2 third x for x in w]
         [v]
   OldLocals:= nil
-  if PrincipalAncestor then for u in (OldLocals:= CADDR PrincipalAncestor.4)
-     repeat NewLocals:= delete(first u,NewLocals)
+  if PrincipalAncestor then 
+    for u in (OldLocals:= third PrincipalAncestor.4) repeat 
+      NewLocals := delete(first u,NewLocals)
   for u in NewLocals repeat
-    (OldLocals:= [[u,:count],:OldLocals]; count:= count+1)
-  v:= newShell count
-  v.(0):= nil
-  v.(1):= sigList
-  v.2:= attList
-  v.3:= ["Category"]
-  if not PrincipalAncestor=nil
-     then
-      for x in 6..SIZE PrincipalAncestor-1 repeat v.x:= PrincipalAncestor.x
-      v.4:= [first PrincipalAncestor.4,CADR PrincipalAncestor.4,OldLocals]
-   else v.4:= [nil,nil,OldLocals] --associated categories and domains
-  v.5:= domList
-  for [nsig,:sequence] in NSigList repeat v.sequence:= nsig
+    OldLocals := [[u,:count],:OldLocals]
+    count := count+1
+  v := newShell count
+  v.0 := nil
+  v.1 := sigList
+  v.2 := attList
+  v.3 := $Category
+  if PrincipalAncestor ^= nil then
+    for x in 6..#PrincipalAncestor-1 repeat 
+      v.x := PrincipalAncestor.x
+    v.4 := [first PrincipalAncestor.4,second PrincipalAncestor.4,OldLocals]
+  else v.4 := [nil,nil,OldLocals] --associated categories and domains
+  v.5 := domList
+  for [nsig,:sequence] in NSigList repeat 
+    v.sequence := nsig
   v
 
-isCategory a == REFVECP a and #a>5 and a.3=["Category"]
- 
 --% Subsumption code (for operators)
  
 DropImplementations (a is [sig,pred,:implem]) ==
@@ -169,6 +190,7 @@ SigListUnion(extra,original) ==
     original:= [e,:original]
   original
  
+mkOr: (%Form,%Form) -> %Form
 mkOr(a,b) ==
   a=true => true
   b=true => true
@@ -179,17 +201,18 @@ mkOr(a,b) ==
       (b is ["OR",:b'] => union(a',b'); mkOr2(b,a') )
     b is ["OR",:b'] => mkOr2(a,b')
     (a is ["has",avar,acat]) and (b is ["has",=avar,bcat]) =>
-      DescendantP(acat,bcat) => LIST b
-      DescendantP(bcat,acat) => LIST a
+      DescendantP(acat,bcat) => [b]
+      DescendantP(bcat,acat) => [a]
       [a,b]
-    a is ['AND,:a'] and member(b,a') => LIST b
-    b is ['AND,:b'] and member(a,b') => LIST a
-    a is ["and",:a'] and member(b,a') => LIST b
-    b is ["and",:b'] and member(a,b') => LIST a
+    a is ['AND,:a'] and member(b,a') => [b]
+    b is ['AND,:b'] and member(a,b') => [a]
+    a is ["and",:a'] and member(b,a') => [b]
+    b is ["and",:b'] and member(a,b') => [a]
     [a,b]
-  LENGTH l = 1 => CAR l
+  #l = 1 => first l
   ["OR",:l]
  
+mkOr2: (%Form,%Form) -> %Form
 mkOr2(a,b) ==
   --a is a condition, "b" a list of them
   member(a,b) => b
@@ -203,6 +226,7 @@ mkOr2(a,b) ==
     [a,:b]
   [a,:b]
  
+mkAnd: (%Form,%Form) -> %Form
 mkAnd(a,b) ==
   a=true => b
   b=true => a
@@ -213,13 +237,14 @@ mkAnd(a,b) ==
       (b is ["AND",:b'] => union(a',b'); mkAnd2(b,a') )
     b is ["AND",:b'] => mkAnd2(a,b')
     (a is ["has",avar,acat]) and (b is ["has",=avar,bcat]) =>
-      DescendantP(acat,bcat) => LIST a
-      DescendantP(bcat,acat) => LIST b
+      DescendantP(acat,bcat) => [a]
+      DescendantP(bcat,acat) => [b]
       [a,b]
     [a,b]
-  LENGTH l = 1 => CAR l
+  #l = 1 => first l
   ["AND",:l]
  
+mkAnd2: (%Form,%Form) -> %Form
 mkAnd2(a,b) ==
   --a is a condition, "b" a list of them
   member(a,b) => b
@@ -328,10 +353,11 @@ FindFundAncs l ==
   -- descendant of something previously added which is therefore
   -- subsumed
  
+CatEval: %Thing -> %Shell
 CatEval x ==
   REFVECP x => x
-  $InteractiveMode => CAR compMakeCategoryObject(x,$CategoryFrame)
-  CAR compMakeCategoryObject(x,$e)
+  $InteractiveMode => first compMakeCategoryObject(x,$CategoryFrame)
+  first compMakeCategoryObject(x,$e)
  
 --RemovePrinAncs(l,leaves) ==
 --  l=nil => nil
@@ -339,6 +365,7 @@ CatEval x ==
 --               --remove the slot pointers
 --  [x for x in l | not AncestorP(x.(0),leaves)]
  
+AncestorP: (%Form, %List) -> %Form
 AncestorP(xname,leaves) ==
   -- checks for being a principal ancestor of one of the leaves
   member(xname,leaves) => xname
@@ -354,18 +381,21 @@ CondAncestorP(xname,leaves,condition) ==
       first rest u
     xname = u' or member(xname,first (CatEval u').4) =>
       PredImplies(ucond,condition) => return u'
- 
+
+
+++ Returns true if the form `a' designates a category that is any 
+++ kind of descendant of the category designated by the form `b'.
+DescendantP: (%Form,%Form) -> %Boolean
 DescendantP(a,b) ==
-  -- checks to see if a is any kind of Descendant of b
   a=b => true
-  a is ["ATTRIBUTE",:.] => nil
-  a is ["SIGNATURE",:.] => nil
+  a is ["ATTRIBUTE",:.] => false
+  a is ["SIGNATURE",:.] => false
   a:= CatEval a
   b is ["ATTRIBUTE",b'] =>
-    (l:=assoc(b',a.2)) => TruthP CADR l
+    (l:=assoc(b',a.2)) => TruthP second l
   member(b,first a.4) => true
-  AncestorP(b,[first u for u in CADR a.4]) => true
-  nil
+  AncestorP(b,[first u for u in second a.4]) => true
+  false
  
 --% The implementation of Join
  
@@ -547,8 +577,3 @@ Join(:l) ==
 --  [c,.,.]:= compMakeCategoryObject(sig,e)
 --  -- We assume that the environment need not be kept
 --  c.(1)
- 
-isCategoryForm(x,e) ==
-  x is [name,:.] => categoryForm? name
-  atom x => u:= get(x,"macro",e) => isCategoryForm(u,e)
- 

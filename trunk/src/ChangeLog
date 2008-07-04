@@ -1,3 +1,9 @@
+2008-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/category.boot (isCategory): Document.
+	(isCategoryForm): Likewise.  Tidy.
+	(mkCategory): Likewise.
+
 2008-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet (OBJS): Don't include nruntime.$(FASLEXT).
