@@ -218,6 +218,11 @@ genDeltaSpecialSig x ==
   x is [":",y,z] => [":",y,NRTgetLocalIndex z]
   NRTgetLocalIndex x
 
+++ Return the slot number (within the template vector of the functor
+++ being compiled) of the domain or value referenced by the form `x'.
+++ Otherwise, return nil this is the first time `x' is referenced, or
+++ if `x' designates neither a domain nor a value (e.g. a modemap).
+NRTassocIndex: %Form -> %Maybe %Short
 NRTassocIndex x == --returns index of "domain" entry x in al
   NULL x => x
   x = $NRTaddForm => 5
@@ -226,11 +231,8 @@ NRTassocIndex x == --returns index of "domain" entry x in al
     $NRTbase + $NRTdeltaLength - k
   nil
 
-NRTgetLocalIndexClear item == NRTgetLocalIndex1(item,true)
-
-NRTgetLocalIndex item == NRTgetLocalIndex1(item,false)
-
-NRTgetLocalIndex1(item,killBindingIfTrue) ==
+NRTgetLocalIndex: %Form -> %Short
+NRTgetLocalIndex item ==
   k := NRTassocIndex item => k
   item = $NRTaddForm => 5
   item = "$" => 0
@@ -242,12 +244,16 @@ NRTgetLocalIndex1(item,killBindingIfTrue) ==
   atom item and null value =>  --give slots to atoms
     $NRTdeltaList:= [['domain,NRTaddInner item,:value],:$NRTdeltaList]
     $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
+    index := $NRTbase + $NRTdeltaLength      -- slot number to return
     $NRTdeltaLength := $NRTdeltaLength+1
-    $NRTbase + $NRTdeltaLength - 1
+    index
   -- when assigning slot to flag values, we don't really want to
   -- compile them.  Rather, we want to record them as if they were atoms.
   flag := isQuasiquote item
   $NRTdeltaList:= [['domain, NRTaddInner item,:value], :$NRTdeltaList]
+  -- remember the item's place in the `delta list' and its slot number
+  -- before the recursive call to the compiler, as that might generate
+  -- more references that would extend the `delta list'.
   saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
   saveIndex := $NRTbase + $NRTdeltaLength
   $NRTdeltaLength := $NRTdeltaLength+1

@@ -1,3 +1,13 @@
+2008-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (NRTassocIndex): Document.
+	(NRTgetLocalIndexClear): Remove.
+	(NRTgetLocalIndex1): Lose second unused argument; move body to
+	NRTgetLocalIndex. 
+	* interp/define.boot (doIt): Call NRTgetLocalIndex, not
+	NRTgetLocalIndexClear. 
+	* interp/wi2.boot (NRTgetLocalIndex): Rename from NRTgetLocalIndex1.
+
 2008-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compFormMatch): Tidy.
