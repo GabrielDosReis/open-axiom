@@ -1368,7 +1368,7 @@ doIt(item,$predl) ==
       RPLACA(item,"setShellEntry")
       rhsCode:=
        rhs'
-      RPLACD(item,['$,NRTgetLocalIndexClear lhs,rhsCode])
+      RPLACD(item,['$,NRTgetLocalIndex lhs,rhsCode])
     RPLACA(item,first code)
     RPLACD(item,rest code)
   item is [":",a,t] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
