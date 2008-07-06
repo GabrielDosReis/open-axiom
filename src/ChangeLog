@@ -1,5 +1,17 @@
 2008-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/parse.boot ($normalizeTree): New.
+	(parseNotEqual): Likewise.
+	* interp/compiler.boot (compCompilerPredicate): New.
+	(compileNot): Use it.
+	* interp/define.boot (compSubDomain1): Likewise.
+	(doItIf): Likewise.
+	* interp/bootlex.lisp (boot): Set $nornamizeTree.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_9): Move from
+	layer 4 to here.
+
+2008-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/parse.boot (parseTran): Don't set $op.  Don't strip parse
 	tree codes.
 	(parseConstruct): Handle parse tree code.

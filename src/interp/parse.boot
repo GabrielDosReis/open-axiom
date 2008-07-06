@@ -40,6 +40,15 @@ namespace BOOT
 ++ If non nil, holds the operator being being defined.
 $defOp := nil
 
+++ When true, means that we are building a compile time value.  For
+++ the parse tree transformer, this means that some assumtpions
+++ are made about certain operators, regardless of their types
+++ and semantics.  For example `x >= y' is assumed to have the
+++ same semantics as `not(x < y)'.  Note that this normalization
+++ is also done when this parser is used to translate Boot codes
+++ to Lisp.  That usage is being phased out though.
+$normalizeTree := false
+
 parseTransform: %ParseForm -> %Form 
 parseTransform x ==
   $defOp: local:= nil
@@ -285,12 +294,10 @@ parseGreaterThan: %ParseForm -> %Form
 parseGreaterThan t ==
   t isnt [op,x,y] => systemErrorHere "parseGreaterThan"
   [substitute("<",">",op),parseTran y,parseTran x]
- 
 
 parseGreaterEqual: %ParseForm -> %Form
 parseGreaterEqual u == 
   parseTran ["not",[substitute("<",">=",first u),:rest u]]
- 
 
 parseLessEqual: %ParseForm -> %Form
 parseLessEqual u == 
@@ -298,7 +305,8 @@ parseLessEqual u ==
 
 parseNotEqual: %ParseForm -> %Form 
 parseNotEqual u == 
-  parseTran ["not",[substitute("=","^=",first u),:rest u]]
+  $normalizeTree => parseTran ["not",[substitute("=","^=",first u),:rest u]]
+  u
 
 parseAnd: %ParseForm -> %Form 
 parseAnd t ==
@@ -317,7 +325,7 @@ parseOr t ==
   null rest u => first u
   (x:= parseTran first u) is ["not",y] => 
     parseIf ["IF",y,parseOr ["or",:rest u],"true"]
-  true => parseIf ["IF",x,"true",parseOr ["or",:rest u]]
+  parseIf ["IF",x,"true",parseOr ["or",:rest u]]
  
 
 parseEquivalence: %ParseForm -> %Form
@@ -420,8 +428,8 @@ parseIf t ==
   t isnt ["IF",p,a,b] => t
   ifTran(parseTran p,parseTran a,parseTran b) where
     ifTran(p,a,b) ==
-      null($InteractiveMode) and p="true"  => a
-      null($InteractiveMode) and p="false"  => b
+      not $InteractiveMode and p="true"  => a
+      not $InteractiveMode and p="false"  => b
       p is ["not",p'] => ifTran(p',b,a)
       p is ["IF",p',a',b'] => ifTran(p',ifTran(a',COPY a,COPY b),ifTran(b',a,b))
       p is ["SEQ",:l,["exit",1,p']] =>

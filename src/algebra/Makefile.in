@@ -411,7 +411,7 @@ axiom_algebra_layer_3_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_3)))
 axiom_algebra_layer_4 = \
-  ANON     COLOR    COMM     COMPPROP ESCONT1  EXIT     \
+  ANON              COMM     COMPPROP ESCONT1  EXIT     \
   FAMONC   FORMULA1 IDPC              NONE     NUMINT   \
   ODECAT            OMENC    ONECOMP2 OPTCAT            \
   PALETTE  PARPCURV PARPC2   PARSCURV PARSC2   PARSURF  \
@@ -486,7 +486,7 @@ axiom_algebra_layer_9 = \
   PTFUNC2  RADCAT   RADCAT-  RATRET   RADUTIL  UPXS2    \
   XFALG    ZLINDEP  BBTREE   LSAGG    LSAGG-   SRAGG    \
   SRAGG-   STRICAT  ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
-  PDEPROB  
+  PDEPROB  COLOR
 
 
 axiom_algebra_layer_9_nrlibs = \

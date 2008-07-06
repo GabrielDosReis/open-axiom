@@ -68,7 +68,8 @@ compUniquely(x,m,e) ==
   CATCH("compUniquely",comp(x,m,e))
 
 compOrCroak: (%Form,%Mode,%Env) -> %Maybe %Triple
-compOrCroak(x,m,e) == compOrCroak1(x,m,e,'comp)
+compOrCroak(x,m,e) == 
+  compOrCroak1(x,m,e,'comp)
 
 compOrCroak1: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
 compOrCroak1(x,m,e,compFn) ==
@@ -98,6 +99,17 @@ compOrCroak1(x,m,e,compFn) ==
 
 tc() ==
   comp($x,$m,$f)
+
+++ The form `x' is intended to be evaluated by the compiler, e.g. in
+++ toplevel conditional definition or as sub-domain predicate.  
+++ Normalize operators and compile the form.
+compCompilerPredicate: (%Form,%Env) -> %Maybe %Triple
+compCompilerPredicate(x,e) ==
+  savedNormalizeTree := $normalizeTree
+  $normalizeTree := true
+  t := compOrCroak(parseTran x, $Boolean, e)
+  $normalizeTree := savedNormalizeTree
+  t
 
 
 comp: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1132,16 +1144,12 @@ compImport(["import",:doms],m,e) ==
 compileNot: (%Form,%Mode,%Env) -> %Maybe %Triple
 compileNot(x,m,e) ==
   x isnt ["not", y] => nil
-  -- If there is a modemap available that can make this work, just use it.
-  T := compForm(x,m,e) => T
-  
-  -- Otherwise, we may be in a case where we might want to apply
-  -- built-in Boolean meaning.  Eventually, we should not need to
-  -- do this special case here.
-  [xcode, xmode, xtrueEnv, xfalseEnv] := compBoolean(y, $Boolean, e)
-     or return nil
-  convert([["NOT", xcode], xmode, xfalseEnv], m)
- 
+  -- ??? For the time being compiler values cannot handle operations
+  -- ??? selected through general modemaps, and their semantics
+  -- ??? are quite hardwired with their syntax.
+  -- ??? Eventually, we should not need to do this.
+  $compilerValue => compIf(["IF",y,"false","true"],m,e)
+  compForm(x,m,e)
 
 --% Case
 compCase: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1562,6 +1570,8 @@ compileSpad2Cmd args ==
         throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
 
     $InteractiveMode : local := nil
+    -- avoid transformations based on syntax only
+    $normalizeTree := false
     if translateOldToNew then
         spad2AsTranslatorAutoloadOnceTrigger()
         sayKeyedMsg("S2IZ0085", nil)
