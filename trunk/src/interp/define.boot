@@ -1276,7 +1276,7 @@ compSubDomain1(domainForm,predicate,m,e) ==
   [.,.,e]:=
     compMakeDeclaration([":","#1",domainForm],$EmptyMode,addDomain(domainForm,e))
   u:=
-    compOrCroak(predicate,$Boolean,e) or
+    compCompilerPredicate(predicate,e) or
       stackSemanticError(["predicate: ",predicate,
         " cannot be interpreted with #1: ",domainForm],nil)
   prefixPredicate:= lispize u.expr
@@ -1403,7 +1403,7 @@ isMacro(x,e) ==
  
 doItIf(item is [.,p,x,y],$predl,$e) ==
   olde:= $e
-  [p',.,$e]:= comp(p,$Boolean,$e) or userError ['"not a Boolean:",p]
+  [p',.,$e]:= compCompilerPredicate(p,$e) or userError ['"not a Boolean:",p]
   oldFLP:=$functorLocalParameters
   if x^="%noBranch" then
     compSingleCapsuleItem(x,$predl,getSuccessEnvironment(p,$e))

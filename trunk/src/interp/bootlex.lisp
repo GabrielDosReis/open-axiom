@@ -114,6 +114,7 @@
              (*fileactq-apply* (function print-defun))
              (*comp370-apply* (function print-defun)))
   (declare (special echo-meta *comp370-apply* *EOF* File-Closed XCape))
+  (setq |$normalizeTree| t)
   (setq |$InteractiveMode| NIL)
   (init-boot/spad-reader)
   (with-open-stream
