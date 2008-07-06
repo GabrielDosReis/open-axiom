@@ -1,3 +1,44 @@
+2008-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/parse.boot (parseTran): Don't set $op.  Don't strip parse
+	tree codes.
+	(parseConstruct): Handle parse tree code.
+	(parseUpArrow): Likewise.
+	(parseLeftArrow): Likewise.
+	(parseIs): Likewise.
+	(parseIsnt): Likewise.
+	(parseLET): Likewise.
+	(parseLETD): Likewise.
+	(parseColon): Likewise.
+	(parseBigelt): Likewise.
+	(parseCoerce): Likewise.
+	(parseAtSign): Likewise.
+	(parsePretend): Likewise.
+	(parseHas): Likewise.
+	(parseDEF): Likewise.
+	(parseMDEF): Likewise.
+	(parseCategory): Likewise.
+	(parseGreaterThan): Likewise.
+	(parseGreaterEqual): Likewise.
+	(parseLessEqual): Likewise.
+	(parseNotEqual): Likewise.
+	(parseAnd): Likewise.
+	(parseOr): Likewise.
+	(parseEquivalence): Likewise.
+	(parseImplies): Likewise.
+	(parseExclusiveOr): Likewise.
+	(parseExit): Likewise.
+	(parseLeave): Likewise.
+	(parseReturn): Likewise.
+	(parseJoin): Likewise.
+	(parseInBy): Likewise.
+	(parseSegment): Likewise.
+	(parseIn): Likewise.
+	(parseIf): Likewise.
+	(parseWhere): Likewise.
+	(parseSeq): Likewise.
+	(parseVCONS): Likewise.
+
 2008-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (NRTassocIndex): Document.

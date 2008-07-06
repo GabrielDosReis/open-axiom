@@ -48,22 +48,21 @@ parseTransform x ==
 
 parseTran: %ParseForm -> %Form
 parseTran x ==
-  $op: local := nil
   atom x => parseAtom x
-  [$op,:argl]:= x
-  u := g($op) where g op == (op is ["elt",op,x] => g x; op)
+  [op,:argl]:= x
+  u := g(op) where g op == (op is ["elt",op,x] => g x; op)
   u="construct" =>
-    r:= parseConstruct argl
-    $op is ["elt",:.] => [parseTran $op,:rest r]
+    r:= parseConstruct ["construct",:argl]
+    op is ["elt",:.] => [parseTran op,:rest r]
     r
-  SYMBOLP u and (fn:= GET(u,'parseTran)) => FUNCALL(fn,argl)
-  [parseTran $op,:parseTranList argl]
+  SYMBOLP u and (fn:= GET(u,'parseTran)) => FUNCALL(fn,x)
+  [parseTran op,:parseTranList argl]
  
 
 parseAtom: %Atom -> %Form
 parseAtom x ==
  -- next line for compatibility with new compiler
-  x = "break" => parseLeave ["$NoValue"]
+  x = "break" => parseLeave ["leave","$NoValue"]
   x
  
 parseTranList: %List -> %List
@@ -74,27 +73,26 @@ parseTranList l ==
 parseConstruct: %ParseForm -> %Form
 parseConstruct u ==
   $insideConstructIfTrue: local:= true
-  l:= parseTranList u
-  ["construct",:l]
- 
+  [first u,:parseTranList rest u]
 
+-- ??? This parser is unused at the moment.
 parseUpArrow: %ParseForm -> %Form
 parseUpArrow u ==  
-  parseTran ["**",:u]
+  parseTran ["**",:rest u]
 
- 
+-- ??? This parser is unused at the moment.
 parseLeftArrow: %ParseForm -> %Form
 parseLeftArrow u == 
-  parseTran ["LET",:u]
+  parseTran ["LET",:rest u]
 
 parseIs: %ParseForm -> %Form 
 parseIs t == 
-  t isnt [a,b] => systemErrorHere "parseIs"
+  t isnt ["is",a,b] => systemErrorHere "parseIs"
   ["is",parseTran a,transIs parseTran b]
  
 parseIsnt: %ParseForm -> %Form
 parseIsnt t == 
-  t isnt [a,b] => systemErrorHere "parseIsnt"
+  t isnt ["isnt",a,b] => systemErrorHere "parseIsnt"
   ["isnt",parseTran a,transIs parseTran b]
  
 
@@ -126,7 +124,7 @@ transIs1 u ==
  
 parseLET: %ParseForm -> %Form
 parseLET t ==
-  t isnt [x,y] => systemErrorHere "parseLET"
+  t isnt ["LET",x,y] => systemErrorHere "parseLET"
   p := ["LET",parseTran x,parseTranCheckForRecord(y,opOf x)]
   opOf x = "cons" => ["LET",transIs p.1,p.2]
   p
@@ -134,22 +132,24 @@ parseLET t ==
 
 parseLETD: %ParseForm -> %Form
 parseLETD t == 
-  t isnt [x,y] => systemErrorHere "parseLETD"
+  t isnt ["LETD",x,y] => systemErrorHere "parseLETD"
   ["LETD",parseTran x,parseTran parseType y]
 
 parseColon: %ParseForm -> %Form 
 parseColon u ==
-  u is [x] => [":",parseTran x]
-  u is [x,typ] =>
+  u isnt [":",:.] => systemErrorHere "parseColon"
+  u is [":",x] => [":",parseTran x]
+  u is [":",x,typ] =>
     $InteractiveMode =>
       $insideConstructIfTrue=true => ["TAG",parseTran x,parseTran typ]
       [":",parseTran x,parseTran parseType typ]
     [":",parseTran x,parseTran typ]
  
 
+-- ??? This parser is unused at the moment.
 parseBigelt: %ParseForm -> %Form
 parseBigelt t ==
-  t isnt [typ,consForm] => systemErrorHere "parseBigelt"
+  t isnt [.,typ,consForm] => systemErrorHere "parseBigelt"
   [["elt",typ,"makeRecord"],:transUnCons consForm]
 
 transUnCons: %ParseForm -> %Form 
@@ -164,20 +164,20 @@ transUnCons u ==
 
 parseCoerce: %ParseForm -> %Form 
 parseCoerce t ==
-  t isnt [x,typ] => systemErrorHere "parseCoerce"
+  t isnt [.,x,typ] => systemErrorHere "parseCoerce"
   $InteractiveMode => ["::",parseTran x,parseTran parseType typ]
   ["::",parseTran x,parseTran typ]
 
 parseAtSign: %ParseForm -> %Form 
 parseAtSign t ==
-  t isnt [x,typ] => systemErrorHere "parseAtSign"
+  t isnt [.,x,typ] => systemErrorHere "parseAtSign"
   $InteractiveMode => ["@",parseTran x,parseTran parseType typ]
   ["@",parseTran x,parseTran typ]
  
 
 parsePretend: %ParseForm -> %Form
 parsePretend t ==
-  t isnt [x,typ] => systemErrorHere "parsePretend"
+  t isnt ["pretend",x,typ] => systemErrorHere "parsePretend"
   $InteractiveMode => ["pretend",parseTran x,parseTran parseType typ]
   ["pretend",parseTran x,parseTran typ]
  
@@ -190,7 +190,7 @@ parseType x ==
  
 parseHas: %ParseForm -> %Form 
 parseHas t ==
-  t isnt [x,y] => systemErrorHere "parseHas"
+  t isnt ["has",x,y] => systemErrorHere "parseHas"
   if $InteractiveMode then
     x:=
       get(x,'value,$CategoryFrame) is [D,m,.]
@@ -226,7 +226,7 @@ parseHasRhs u ==   --$InteractiveMode = true
 
 parseDEF: %ParseForm -> %Form
 parseDEF t ==
-  t isnt [$lhs,tList,specialList,body] => systemErrorHere "parseDEF"
+  t isnt ["DEF",$lhs,tList,specialList,body] => systemErrorHere "parseDEF"
   setDefOp $lhs
   ["DEF",parseLhs $lhs,parseTranList tList,parseTranList specialList,
     parseTranCheckForRecord(body,opOf $lhs)]
@@ -240,7 +240,7 @@ parseLhs x ==
 
 parseMDEF: %ParseForm -> %Form
 parseMDEF t ==
-  t isnt [$lhs,tList,specialList,body] => systemErrorHere "parseMDEF"
+  t isnt ["MDEF",$lhs,tList,specialList,body] => systemErrorHere "parseMDEF"
   ["MDEF",parseTran $lhs,parseTranList tList,parseTranList specialList,
     parseTranCheckForRecord(body,opOf $lhs)]
  
@@ -252,6 +252,7 @@ parseTranCheckForRecord(x,op) ==
     x
   x
  
+-- ??? This parser is unused at the moment.
 parseCases: %ParseForm -> %Form
 parseCases t ==
   t isnt [expr,ifClause] => systemErrorHere "parseCases"
@@ -263,7 +264,8 @@ parseCases t ==
  
 
 parseCategory: %ParseForm -> %Form
-parseCategory x ==
+parseCategory t ==
+  t isnt ["CATEGORY",:x] => systemErrorHere "parseCategory"
   l:= parseTranList parseDropAssertions x
   key:=
     CONTAINED("$",l) => "domain"
@@ -281,67 +283,70 @@ parseDropAssertions x ==
  
 parseGreaterThan: %ParseForm -> %Form
 parseGreaterThan t ==
-  t isnt [x,y] => systemErrorHere "parseGreaterThan"
-  [substitute("<",">",$op),parseTran y,parseTran x]
+  t isnt [op,x,y] => systemErrorHere "parseGreaterThan"
+  [substitute("<",">",op),parseTran y,parseTran x]
  
 
 parseGreaterEqual: %ParseForm -> %Form
 parseGreaterEqual u == 
-  parseTran ["not",[substitute("<",">=",$op),:u]]
+  parseTran ["not",[substitute("<",">=",first u),:rest u]]
  
 
 parseLessEqual: %ParseForm -> %Form
 parseLessEqual u == 
-  parseTran ["not",[substitute(">","<=",$op),:u]]
+  parseTran ["not",[substitute(">","<=",first u),:rest u]]
 
 parseNotEqual: %ParseForm -> %Form 
 parseNotEqual u == 
-  parseTran ["not",[substitute("=","^=",$op),:u]]
+  parseTran ["not",[substitute("=","^=",first u),:rest u]]
 
 parseAnd: %ParseForm -> %Form 
-parseAnd u ==
+parseAnd t ==
+  t isnt ["and",:u] => systemErrorHere "parseAnd"
   $InteractiveMode => ["and",:parseTranList u]
   null u => "true"
   null rest u => first u
-  parseIf [parseTran first u,parseAnd rest u,"false"]
+  parseIf ["IF",parseTran first u,parseAnd ["and",:rest u],"false"]
  
 
 parseOr: %ParseForm -> %Form
-parseOr u ==
+parseOr t ==
+  t isnt ["or",:u] => systemErrorHere "parseOr"
   $InteractiveMode => ["or",:parseTranList u]
   null u => "false"
   null rest u => first u
-  (x:= parseTran first u) is ["not",y] => parseIf [y,parseOr rest u,"true"]
-  true => parseIf [x,"true",parseOr rest u]
+  (x:= parseTran first u) is ["not",y] => 
+    parseIf ["IF",y,parseOr ["or",:rest u],"true"]
+  true => parseIf ["IF",x,"true",parseOr ["or",:rest u]]
  
 
 parseEquivalence: %ParseForm -> %Form
 parseEquivalence t == 
-  t isnt [a,b] => systemErrorHere "parseEquivalence"
-  parseIf [a,b,parseIf [b,:'(false true)]]
+  t isnt ["eqv",a,b] => systemErrorHere "parseEquivalence"
+  parseIf ["IF",a,b,parseIf ["IF",b,:'(false true)]]
  
 
 parseImplies: %ParseForm -> %Form
 parseImplies t == 
-  t isnt [a,b] => systemErrorHere "parseImplies"
-  parseIf [a,b,"true"]
+  t isnt ["implies",a,b] => systemErrorHere "parseImplies"
+  parseIf ["IF",a,b,"true"]
  
 parseExclusiveOr: %ParseForm -> %Form
 parseExclusiveOr t == 
-  t isnt [a,b] => systemErrorHere "parseExclusiveOr"
-  parseIf [a,parseIf [b,:'(false true)],b]
+  t isnt ["xor",a,b] => systemErrorHere "parseExclusiveOr"
+  parseIf ["IF",a,parseIf ["IF",b,:'(false true)],b]
  
 
 parseExit: %ParseForm -> %Form
 parseExit t ==
-  t isnt [a,:b] => systemErrorHere "parseExit"
+  t isnt ["exit",a,:b] => systemErrorHere "parseExit"
   --  note: I wanted to convert 1s to 0s here to facilitate indexing in
   --   comp code; unfortunately, parseTran-ning is sometimes done more
   --   than once so that the count can be decremented more than once
   a:= parseTran a
   b:= parseTran b
   b =>
-    null INTEGERP a =>
+    not INTEGERP a =>
       (MOAN('"first arg ",a,'" for exit must be integer"); ["exit",1,a])
     ["exit",a,:b]
   ["exit",1,a]
@@ -349,11 +354,11 @@ parseExit t ==
 
 parseLeave: %ParseForm -> %Form
 parseLeave t ==
-  t isnt [a,:b] => systemErrorHere "parseLeave"
+  t isnt ["leave",a,:b] => systemErrorHere "parseLeave"
   a:= parseTran a
   b:= parseTran b
   b =>
-    null INTEGERP a =>
+    not INTEGERP a =>
       (MOAN('"first arg ",a,'" for 'leave' must be integer"); ["leave",1,a])
     ["leave",a,:b]
   ["leave",1,a]
@@ -361,15 +366,16 @@ parseLeave t ==
 
 parseReturn: %ParseForm -> %Form
 parseReturn t ==
-  t isnt [a,:b] => systemErrorHere "parseReturn"
+  t isnt ["return",a,:b] => systemErrorHere "parseReturn"
   a:= parseTran a
   b:= parseTran b
   b =>
     (if a^=1 then MOAN '"multiple-level 'return' not allowed"; ["return",1,:b])
   ["return",1,a]
  
-parseJoin: %List -> %Form
-parseJoin l ==
+parseJoin: %ParseForm -> %Form
+parseJoin t ==
+  t isnt ["Join",:l] => systemErrorHere "parseJoin"
   ["Join",:fn parseTranList l] where
     fn l ==
       null l => nil
@@ -379,8 +385,8 @@ parseJoin l ==
 
 parseInBy: %ParseForm -> %Form
 parseInBy t ==
-  t isnt [i,n,inc] => systemErrorHere "parseInBy"
-  (u:= parseIn [i,n]) isnt ["STEP",i,a,j,:r] =>
+  t isnt ["INBY",i,n,inc] => systemErrorHere "parseInBy"
+  (u:= parseIn ["IN",i,n]) isnt ["STEP",i,a,j,:r] =>
     postError ["   You cannot use",:bright '"by",
       '"except for an explicitly indexed sequence."]
   inc:= parseTran inc
@@ -388,14 +394,15 @@ parseInBy t ==
 
 parseSegment: %ParseForm -> %Form 
 parseSegment p ==
-  p is [a,b] =>
+  p is ["SEGMENT",a,b] =>
     b => ["SEGMENT",parseTran a, parseTran b]
     ["SEGMENT",parseTran a]
-  ["SEGMENT",:p]
+  -- SEGMENT is being elted from a domain
+  ["SEGMENT",:rest p]
  
 parseIn: %ParseForm -> %Form
 parseIn t ==
-  t isnt [i,n] => systemErrorHere "parseIn"
+  t isnt ["IN",i,n] => systemErrorHere "parseIn"
   i:= parseTran i
   n:= parseTran n
   n is ["SEGMENT",a] => ["STEP",i,a,1]
@@ -410,7 +417,7 @@ parseIn t ==
  
 parseIf: %ParseForm -> %Form
 parseIf t ==
-  t isnt [p,a,b] => t
+  t isnt ["IF",p,a,b] => t
   ifTran(parseTran p,parseTran a,parseTran b) where
     ifTran(p,a,b) ==
       null($InteractiveMode) and p="true"  => a
@@ -434,13 +441,15 @@ makeSimplePredicateOrNil p ==
  
 
 parseWhere: %List -> %Form
-parseWhere l == 
+parseWhere t == 
+  t isnt ["where",:l] => systemErrorHere "parseWhere"
   ["where",:mapInto(l, function parseTran)]
  
  
 parseSeq: %List -> %Form
-parseSeq l ==
-  not l is [:.,["exit",:.]] =>
+parseSeq t ==
+  t isnt ["SEQ",:l] => systemErrorHere "parseSeq"
+  l isnt [:.,["exit",:.]] =>
     postError ['"   Invalid ending to block: ",last l]
   transSeq mapInto(l,function parseTran)
  
@@ -508,7 +517,7 @@ scriptTranRow1 x ==
  
 parseVCONS: %List -> %Form
 parseVCONS l == 
-  ["VECTOR",:parseTranList l]
+  ["VECTOR",:parseTranList rest l]
 
 --% Register special parsers.
 
@@ -516,8 +525,8 @@ for x in [["<=", :"parseLessEqual"],_
 	  [">", :"parseGreaterThan"],_
 	  [">=", :"parseGreaterEqual"],_
 	  ["^=", :"parseNotEqual"],_
-	  ["_:", :"parseColon"],_
-	  ["_:_:", :"parseCoerce"],_
+	  [":", :"parseColon"],_
+	  ["::", :"parseCoerce"],_
 	  ["@", :"parseAtSign"],_
 	  ["and", :"parseAnd"],_
 	  ["CATEGORY", :"parseCategory"],_
