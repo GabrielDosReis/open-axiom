@@ -186,7 +186,6 @@ executeSpadScript(progname,options,file) ==
   initializeInterpreterFrameRing()
   $currentLine := nil
   RESTART0()
-  $BOOT := NIL
   $NEWSPAD := true
   $SPAD := true
   if getOption(Option '"verbose",%systemOptions()) then
@@ -215,7 +214,6 @@ compileSpadLibrary(progname,options,file) ==
   initializeInterpreterFrameRing()
   $currentLine := nil
   RESTART0()
-  $BOOT := NIL
   $NEWSPAD := true
   $SPAD := true
   $EchoLines := false

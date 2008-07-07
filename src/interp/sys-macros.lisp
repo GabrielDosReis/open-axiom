@@ -996,7 +996,7 @@
 			     ((EQ OP 'OR)
 			      (LIST (LIST 'UNTIL G)))
 			     (NIL) )))
-	   (RETURN (COND ((AND $NEWSPAD (NULL $BOOT))
+	   (RETURN (COND ((AND $NEWSPAD)
 			  (LIST 'PROGN 
 				PRESET
 				(CONS 'REPEAT 
@@ -1121,7 +1121,7 @@
 	(SETQ U-VARS VL)
 	XT  
 	(RETURN (COND
-		 ((AND $NEWSPAD (NULL $BOOT))
+		 ((AND $NEWSPAD)
 		  (CONS 'SEQ
 			(NCONC (DO_LET VARS INITS)
 			       (LIST 'G190 

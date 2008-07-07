@@ -524,7 +524,6 @@ condErrorMsg type ==
 
 parseAndEval string ==
   $InteractiveMode :fluid := true
-  $BOOT: fluid := NIL
   $SPAD: fluid := true
   $e:fluid := $InteractiveFrame
   $QuietCommand:local := true

@@ -89,7 +89,6 @@
            (*comp370-apply* (function print-defun))
            (*fileactq-apply* (function print-defun))
            ($SPAD T)
-           ($BOOT nil)
            (XCape #\_)
            (OPTIONLIST nil)
            (*EOF* NIL)
@@ -141,9 +140,6 @@
     (if *spad-output-file* (shut out-stream)))
   T))
 
-(defun READ-BOOT (FN FM TO)
-  (let (($boot t)) (READ-SPAD1 FN 'BOOT FM TO)))
-
 (defun READ-SPAD1 (FN FT FM TO)
     (LET ((STRM IN-STREAM))
       (SETQ $MAXLINENUMBER 0)
@@ -161,17 +157,6 @@
             '|%l| '|%b| (ELT $SPAD_ERRORS 2) '|%d| '|semantic errors| '|%l|)))
       (+ (ELT $SPAD_ERRORS 0) (ELT $SPAD_ERRORS 1) (ELT $SPAD_ERRORS 2))))
 
-
-(defun READBOOT ()
-  (let (form expr ($BOOT 'T))
-    (declare (special $BOOT))
-    (ADVANCE-TOKEN)
-    (|PARSE-Expression|)
-   ;; (|pp| (setq form (|postTransform| (FIRST STACK))))
-    (|pp| (setq form (|postTransform| (pop-STACK-1))))
-    (setq EXPR (DEF-RENAME form))
-    (DEF-PROCESS EXPR)
-    (TERSYSCOMMAND)))
 
 ;  *** 2. BOOT Line Handling ***
 

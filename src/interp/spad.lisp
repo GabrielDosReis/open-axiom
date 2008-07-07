@@ -315,20 +315,17 @@
           (SETQ |$postStack| nil)
           (SETQ |$TraceFlag| T)
           (if (NOT X) (RETURN NIL))
-          (setq X (if $BOOT (DEF-RENAME (|new2OldLisp| X))
-                    (|parseTransform| (|postTransform| X))))
+          (setq X (|parseTransform| (|postTransform| X)))
           ;; (if |$TranslateOnly| (RETURN (SETQ |$Translation| X)))
           (when |$postStack| (|displayPreCompilationErrors|) (RETURN NIL))
           (COND (|$PrintOnly|
                  (format t "~S   =====>~%" |$currentLine|)
                  (RETURN (PRETTYPRINT X))))
-          (if (NOT $BOOT)
-              (if |$InteractiveMode|
-                  (|processInteractive| X NIL)
-                (if (setq U (|compTopLevel|      X |$EmptyMode|
-                             |$InteractiveFrame|))
-                    (SETQ |$InteractiveFrame| (third U))))
-            (DEF-PROCESS X))
+	  (if |$InteractiveMode|
+	      (|processInteractive| X NIL)
+	    (if (setq U (|compTopLevel|      X |$EmptyMode|
+			 |$InteractiveFrame|))
+		(SETQ |$InteractiveFrame| (third U))))
           (if |$semanticErrorStack| (|displaySemanticErrors|))
           (TERPRI))))
 

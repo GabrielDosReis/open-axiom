@@ -99,7 +99,7 @@
 
 ;; Suffix:         +=(CURRENT-SYMBOL) .(ADVANCE-TOKEN) <TokTail> +(#1 #1) ;
 
-;; TokTail:        ?(AND (NULL \$BOOT) (EQ (CURRENT-SYMBOL) "\$)
+;; TokTail:        ?(AND (EQ (CURRENT-SYMBOL) "\$)
 ;;                       (OR (ALPHA-CHAR-P (CURRENT-CHAR))
 ;;                           (CHAR-EQ (CURRENT-CHAR) '$')
 ;;                           (CHAR-EQ (CURRENT-CHAR) '\%')
@@ -178,8 +178,8 @@
 ;; Application: Primary <Selector>* <Application +(#2 #1)>;
 
 ;; Selector: ?NONBLANK ?(EQ (CURRENT-SYMBOL) "\.) ?(CHAR-NE (CURRENT-CHAR) "\ )
-;;                  '.' PrimaryNoFloat (=\$BOOT +(ELT #2 #1)/ +(#2 #1))
-;;           / (Float /'.' Primary) (=\$BOOT +(ELT #2 #1)/ +(#2 #1));
+;;                  '.' PrimaryNoFloat +(#2 #1)
+;;           / (Float /'.' Primary) +(#2 #1);
 
 ;; PrimaryNoFloat: Primary1 <TokTail> ;
 
@@ -190,7 +190,7 @@
 ;;         /String
 ;;         /IntegerTok
 ;;         /FormalParameter
-;;         /='\'' (?\$BOOT Data / '\'' Expr{999} +(QUOTE #1))
+;;         /='\'' ('\'' Expr{999} +(QUOTE #1))
 ;;         /Sequence
 ;;         /Enclosure ;
 
@@ -221,13 +221,13 @@
 
 ;; IntegerTok:     NUMBER ;
 
-;; FloatTok:       NUMBER +=(IF \$BOOT #1 (BFP- #1)) ;
+;; FloatTok:       NUMBER +=(BFP- #1) ;
 
 ;; FormalParameter: FormalParameterTok ;
 
 ;; FormalParameterTok: ARGUMENT-DESIGNATOR ;
 
-;; Quad:           '$' +\$ / ?\$BOOT GliphTok{"\.} +\. ;
+;; Quad:           '$' +\$ ;
 
 ;; String:         SPADSTRING ;
 
@@ -482,7 +482,7 @@
 (DEFUN |PARSE-TokTail| ()
   (PROG (G1)
     (RETURN
-      (AND (NULL $BOOT) (EQ (CURRENT-SYMBOL) '$)
+      (AND (EQ (CURRENT-SYMBOL) '$)
            (OR (ALPHA-CHAR-P (CURRENT-CHAR))
                (CHAR-EQ (CURRENT-CHAR) "$")
                (CHAR-EQ (CURRENT-CHAR) "%")
@@ -699,23 +699,13 @@
   (OR (AND NONBLANK (EQ (CURRENT-SYMBOL) '|.|)
            (CHAR-NE (CURRENT-CHAR) '| |) (MATCH-ADVANCE-STRING ".")
            (MUST (|PARSE-PrimaryNoFloat|))
-           (MUST (OR (AND $BOOT
-                          (PUSH-REDUCTION '|PARSE-Selector|
-                              (CONS 'ELT
-                                    (CONS (POP-STACK-2)
-                                     (CONS (POP-STACK-1) NIL)))))
-                     (PUSH-REDUCTION '|PARSE-Selector|
-                         (CONS (POP-STACK-2) (CONS (POP-STACK-1) NIL))))))
+           (MUST (PUSH-REDUCTION '|PARSE-Selector|
+                     (CONS (POP-STACK-2) (CONS (POP-STACK-1) NIL)))))
       (AND (OR (|PARSE-Float|)
                (AND (MATCH-ADVANCE-STRING ".")
                     (MUST (|PARSE-Primary|))))
-           (MUST (OR (AND $BOOT
-                          (PUSH-REDUCTION '|PARSE-Selector|
-                              (CONS 'ELT
-                                    (CONS (POP-STACK-2)
-                                     (CONS (POP-STACK-1) NIL)))))
-                     (PUSH-REDUCTION '|PARSE-Selector|
-                         (CONS (POP-STACK-2) (CONS (POP-STACK-1) NIL)))))))) 
+           (MUST (PUSH-REDUCTION '|PARSE-Selector|
+                     (CONS (POP-STACK-2) (CONS (POP-STACK-1) NIL))))))) 
 
 
 (DEFUN |PARSE-PrimaryNoFloat| ()
@@ -736,11 +726,10 @@
       (|PARSE-Quad|) (|PARSE-String|) (|PARSE-IntegerTok|)
       (|PARSE-FormalParameter|)
       (AND (MATCH-STRING "'")
-           (MUST (OR (AND $BOOT (|PARSE-Data|))
-                     (AND (MATCH-ADVANCE-STRING "'")
-                          (MUST (|PARSE-Expr| 999))
-                          (PUSH-REDUCTION '|PARSE-Primary1|
-                              (CONS 'QUOTE (CONS (POP-STACK-1) NIL)))))))
+           (MUST (AND (MATCH-ADVANCE-STRING "'")
+                      (MUST (|PARSE-Expr| 999))
+                      (PUSH-REDUCTION '|PARSE-Primary1|
+                          (CONS 'QUOTE (CONS (POP-STACK-1) NIL))))))
       (|PARSE-Sequence|) (|PARSE-Enclosure|))) 
 
 
@@ -829,8 +818,7 @@
 
 (DEFUN |PARSE-FloatTok| ()
   (AND (PARSE-NUMBER)
-       (PUSH-REDUCTION '|PARSE-FloatTok|
-           (IF $BOOT (POP-STACK-1) (BFP- (POP-STACK-1)))))) 
+       (PUSH-REDUCTION '|PARSE-FloatTok| (POP-STACK-1))))) 
 
 
 (DEFUN |PARSE-FormalParameter| () (|PARSE-FormalParameterTok|)) 
@@ -840,10 +828,8 @@
 
 
 (DEFUN |PARSE-Quad| ()
-  (OR (AND (MATCH-ADVANCE-STRING "$")
-           (PUSH-REDUCTION '|PARSE-Quad| '$))
-      (AND $BOOT (|PARSE-GliphTok| '|.|)
-           (PUSH-REDUCTION '|PARSE-Quad| '|.|)))) 
+  (AND (MATCH-ADVANCE-STRING "$")
+       (PUSH-REDUCTION '|PARSE-Quad| '$)))
 
 
 (DEFUN |PARSE-String| () (PARSE-SPADSTRING)) 

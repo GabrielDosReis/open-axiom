@@ -1,3 +1,25 @@
+2008-07-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/spad.lisp (S-PROCESS): Remove Old Boot specific codes.
+	* interp/server.boot (parseAndInterpret): Don't set $BOOT.
+	* interp/setvars.boot (resetWorkspaceVariables): Likewise.
+	* interp/spad-parser.boot (parseSpadFile): Likewise.
+	* interp/postpar.boot: Disable Old Boot handling codes.
+	* interp/metalex.lisp (quote-if-string): Don't test for $BOOT.
+	* interp/parsing.lisp (IOStat): Likewise.
+	(IOClear): Likewise.
+	* interp/ht-util.boot (parseAndEval): Don't set $BOOT.
+	* interp/int-top.boot (ncTopLevel): Likewise.
+	* interp/fnewmeta.lisp: Remove Old Boot specific productions.
+	* interp/sys-macros.lisp (-REDUCE): Don't test for $BOOT.
+	(SPADDO): Likewise.
+	* interp/comp.lisp (COMP-TRAN-1): Likewise.
+	* interp/util.lisp (|string2SpadTree|): Likewise.
+	* interp/bootlex.lisp (READBOOT): Remove.
+	(READ-BOOT): Likewise.
+	(spad): Don't initialize $BOOT.
+	* interp/debug.lisp (/D-2): Likewise.
+
 2008-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/initial-env.lisp: Export $InteractiveMode and

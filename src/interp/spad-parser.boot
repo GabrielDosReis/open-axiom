@@ -54,7 +54,6 @@ namespace BOOT
 ++ ??? finally use the new parser everwhere.
 parseSpadFile sourceFile ==
   $SPAD := true                          -- we are parsing Spad, 
-  $BOOT := false                         --   not Boot.
   SETQ(_*EOF_*, false)                   -- end of current input?
   FILE_-CLOSED : local := false          -- current stream closed?
 
