@@ -390,26 +390,6 @@
 ;; directory from the current {\bf AXIOM} shell variable.
 (defvar $relative-library-directory-list '("/algebra/"))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  #-:GCL (defpackage "OLD-BOOT")
-  #+:GCL (in-package "OLD-BOOT"))
-
-(defun 
-#-:GCL old-boot::boot  ;; translates a single boot file
-#+:GCL boot
-   (file)
-#+:AKCL
-  (in-package "BOOT")
-  (let (*print-level* 
-        *print-length* 
-        (fn (pathname-name file))
-        (*print-pretty* t))
-    (boot::boot
-      file
-      (merge-pathnames (make-pathname :type "clisp") file))))
-
-#+:GCL (in-package "BOOT")
-
 ;; This is a little used subsystem to generate {\bf ALDOR} code
 ;; from {\bf Spad} code. Frankly, I'd be amazed if it worked.
 (defparameter translate-functions '(
@@ -543,17 +523,6 @@
   (resethashtables) ; the databases into core, then close the streams
  )
 
-
-(DEFUN |string2BootTree| (S)
-  (init-boot/spad-reader)
-  (LET* ((BOOT-LINE-STACK (LIST (CONS 1 S)))
-     ($BOOT T)
-     ($SPAD NIL)
-     (XTOKENREADER 'GET-BOOT-TOKEN)
-     (LINE-HANDLER 'NEXT-BOOT-LINE)
-     (PARSEOUT (PROGN (|PARSE-Expression|) (POP-STACK-1))))
-    (DECLARE (SPECIAL BOOT-LINE-STACK $BOOT $SPAD XTOKENREADER LINE-HANDLER))
-    (DEF-RENAME (|new2OldLisp| PARSEOUT))))
 
 (DEFUN |string2SpadTree| (LINE)
   (DECLARE (SPECIAL LINE))

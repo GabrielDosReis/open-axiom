@@ -1,5 +1,25 @@
 2008-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/initial-env.lisp: Export $InteractiveMode and
+	string2BootTree. 
+	* boot/translator.boot (BOOTTOCL): Tidy.
+	(BOOTTOCLC): Likewise.
+	(BOOTTOCLLINES): Likewise.
+	(BOOTTOCLCLINES): Likewise.
+	(string2BootTree): Define.
+	(translateToplevelExpression): Tidy.
+	(translateToplevel): Handle atoms.  Tidy.
+	(shoePCompileTrees): Don't use bStreamPackageNull.
+	* interp/boot-pkg.lisp: Import $interactiveMode and string2BootTree.
+	* interp/util.lisp (string2BootTree): Remove.
+	(OLD-BOOT::BOOT): Likewise.
+	* interp/bootlex.lisp (boot): Likewise.
+	(boot-parse-1): Likewise.
+	* interp/compiler.boot (compileNot): Fix thinko.
+	* interp/sys-globals.boot ($InteractiveMode): Don't define here.
+
+2008-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/parse.boot ($normalizeTree): New.
 	(parseNotEqual): Likewise.
 	* interp/compiler.boot (compCompilerPredicate): New.

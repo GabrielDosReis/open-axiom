@@ -79,7 +79,11 @@ shoeCOMPILE_-FILE lspFileName ==
 
  
 BOOTTOCL(fn, out) ==
-  BOOTTOCLLINES(nil,fn, out)
+  callingPackage := _*PACKAGE_*
+  IN_-PACKAGE '"BOOTTRAN"
+  result := BOOTTOCLLINES(nil,fn, out)
+  setCurrentPackage callingPackage
+  result
  
 ++ (bootclam "filename") translates the file "filename.boot" to
 ++ the common lisp file "filename.clisp" , producing, for each function
@@ -95,13 +99,8 @@ BOOTCLAMLINES(lines, fn, out) ==
 BOOTTOCLLINES(lines, fn, outfn)==
    -- The default floating point number is double-float.
    SETQ(_*READ_-DEFAULT_-FLOAT_-FORMAT_*, 'DOUBLE_-FLOAT)
-   callingPackage := _*PACKAGE_*
-   IN_-PACKAGE '"BOOTTRAN"
    infn:=shoeAddbootIfNec fn
-   result := shoeOpenInputFile(a,infn,
-                shoeClLines(a,fn,lines,outfn))
-   setCurrentPackage callingPackage
-   result
+   shoeOpenInputFile(a,infn, shoeClLines(a,fn,lines,outfn))
  
 shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
@@ -116,16 +115,15 @@ shoeClLines(a,fn,lines,outfn)==
 ++ the common lisp file "filename.clisp" with the original boot
 ++ code as comments
 BOOTTOCLC(fn, out)==
-  BOOTTOCLCLINES(nil, fn, out)
- 
-BOOTTOCLCLINES(lines, fn, outfn)==
   callingPackage := _*PACKAGE_*
   IN_-PACKAGE '"BOOTTRAN"
-  infn:=shoeAddbootIfNec fn
-  result := shoeOpenInputFile(a,infn,
-               shoeClCLines(a,fn,lines,outfn))
+  result := BOOTTOCLCLINES(nil, fn, out)
   setCurrentPackage callingPackage
   result
+ 
+BOOTTOCLCLINES(lines, fn, outfn)==
+  infn:=shoeAddbootIfNec fn
+  shoeOpenInputFile(a,infn, shoeClCLines(a,fn,lines,outfn))
   
  
 shoeClCLines(a,fn,lines,outfn)==
@@ -189,14 +187,24 @@ shoeToConsole(a,fn)==
   a=nil => shoeNotFound fn
   shoeConsoleTrees shoeTransformToConsole
     shoeInclude bAddLineNumber(bRgen a,bIgen 0)
- 
+
 -- (stout "string") translates the string "string"
 -- and prints the result at the console
+
+STOUT string == 
+  PSTOUT [string]
  
-STOUT string==   PSTOUT [string]
---   $GenVarCounter  := 0
---   $bfClamming :=false
---   shoeConsoleTrees shoeTransformString [string]
+string2BootTree string ==   
+  callingPackage := _*PACKAGE_*
+  IN_-PACKAGE '"BOOTTRAN"
+  $GenVarCounter := 0
+  a := shoeTransformString [string]
+  result :=
+    bStreamNull a => nil
+    stripm(first a,callingPackage,FIND_-PACKAGE '"BOOTTRAN")
+  setCurrentPackage callingPackage
+  result
+
  
 STEVAL string==
    callingPackage := _*PACKAGE_*
@@ -204,7 +212,7 @@ STEVAL string==
    $GenVarCounter := 0
    a:=  shoeTransformString [string]
    result := 
-      bStreamPackageNull a => nil
+      bStreamNull a => nil
       fn:=stripm(first a,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
       EVAL fn
    setCurrentPackage callingPackage
@@ -219,7 +227,7 @@ STTOMC string==
    $GenVarCounter := 0
    a:=  shoeTransformString [string]
    result := 
-      bStreamPackageNull a => nil
+      bStreamNull a => nil
       shoePCompile first a
    setCurrentPackage callingPackage
    result
@@ -230,7 +238,7 @@ shoeCompileTrees s==
          shoeCompile first s
          s := rest s
 
-shoerCompile: %Ast -> %Thing 
+shoeCompile: %Ast -> %Thing 
 shoeCompile fn==
     fn is ['DEFUN,name,bv,:body] =>
           COMPILE (name,['LAMBDA,bv,:body])
@@ -473,15 +481,18 @@ translateToplevelExpression expr ==
   for t in expr' repeat
     t is ["DECLARE",:.] =>
       RPLACA(t,"DECLAIM")
-  shoeEVALANDFILEACTQ
+  expr' :=
     #expr' > 1 => ["PROGN",:expr']
     first expr'
+  $InteractiveMode => expr'
+  shoeEVALANDFILEACTQ expr'
 
 maybeExportDecl(d,export?) ==
   export? => d
   d
 
 translateToplevel(b,export?) ==
+  atom b => [b]  -- generally happens in interactive mode.
   b is ["TUPLE",:xs] => [maybeExportDecl(x,export?) for x in xs]
   case b of
     Signature(op,t) =>
@@ -514,6 +525,7 @@ translateToplevel(b,export?) ==
       if lhs is ["%Signature",n,t] then
         sig := maybeExportDecl(genDeclaration(n,t),export?)
         lhs := n
+      $InteractiveMode => [["SETF",lhs,rhs]]
       [maybeExportDecl(["DEFPARAMETER",lhs,rhs],export?)]
 
     namespace(n) =>
@@ -759,7 +771,7 @@ shoeFindName(fn,name,a)==
   shoePCompileTrees shoeTransformString lines
  
 shoePCompileTrees s==
-  while not bStreamPackageNull s repeat
+  while not bStreamNull s repeat
     REALLYPRETTYPRINT shoePCompile first s
     s := rest s
  

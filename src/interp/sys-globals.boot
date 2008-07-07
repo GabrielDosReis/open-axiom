@@ -160,9 +160,6 @@ $e := $EmptyEnvironment
 $env := [[nil]]
 
 ++
-$InteractiveMode := false
-
-++
 $InteractiveTimingStatsIfTrue := false
 
 ++
