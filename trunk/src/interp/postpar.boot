@@ -97,7 +97,6 @@ postTranList x ==
 postBigFloat: %ParseTree -> %ParseTree
 postBigFloat x ==
   [.,mant,:expon] := x
-  $BOOT => INT2RNUM(mant) * INT2RNUM(10) ** expon
   eltword := if $InteractiveMode then "$elt" else "elt"
   postTran [[eltword,'(Float),"float"],[",",[",",mant,expon],10]]
 
@@ -131,14 +130,6 @@ postColon: %ParseTree -> %ParseForm
 postColon u ==
   u is [":",x] => [":",postTran x]
   u is [":",x,y] => [":",postTran x,:postType y]
-
-postColonColon: %ParseTree -> %ParseForm
-postColonColon u ==
-  -- for Lisp package calling
-  -- boot syntax is package::fun but probably need to parenthesize it
-  $BOOT and u is ["::",package,fun] =>
-    INTERN(STRINGIMAGE fun, package)
-  postForm u
 
 postAtSign: %ParseTree -> %ParseForm
 postAtSign t == 
@@ -181,7 +172,6 @@ postMakeCons l ==
 
 postAtom: %Atom -> %ParseForm
 postAtom x ==
-  $BOOT => x
   x=0 => $Zero
   x=1 => $One
   EQ(x,'T) => "T$" -- rename T in spad code to T$
@@ -227,7 +217,7 @@ postDef t ==
 --+
   lhs is ["macro",name] => postMDef ["==>",name,rhs]
 
-  if not($BOOT) then recordHeaderDocumentation nil
+  recordHeaderDocumentation nil
   if $maxSignatureLineNumber ^= 0 then
     $docList := [["constructor",:$headerDocumentation],:$docList]
     $maxSignatureLineNumber := 0
@@ -263,7 +253,7 @@ postDefArgs argl ==
 postMDef: %ParseTree -> %ParseForm
 postMDef(t) ==
   [.,lhs,rhs] := t
-  $InteractiveMode and not $BOOT =>
+  $InteractiveMode =>
     lhs := postTran lhs
     not IDENTP lhs => throwKeyedMsg("S2IP0001",NIL)
     ["MDEF",lhs,nil,nil,postTran rhs]
@@ -305,7 +295,6 @@ postForm u ==
       argl':= postTranList argl
       op':=
         true=> op
-        $BOOT => op
         GETL(op,'Led) or GETL(op,'Nud) or op = 'IN => op
         numOfArgs:= (argl' is [["%Comma",:l]] => #l; 1)
         INTERNL("*",STRINGIMAGE numOfArgs,PNAME op)
@@ -364,7 +353,7 @@ decodeScripts a ==
 postIf: %ParseTree -> %ParseForm
 postIf t ==
   t isnt ["if",:l] => t
-  ["IF",:[(null (x:= postTran x) and not $BOOT => "%noBranch"; x)
+  ["IF",:[(null (x:= postTran x) => "%noBranch"; x)
     for x in l]]
 
 postJoin: %ParseTree -> %ParseForm
@@ -385,9 +374,7 @@ postMapping u  ==
 
 postOp: %ParseTree -> %ParseForm
 postOp x ==
-  x=":=" =>
-    $BOOT => "SPADLET"
-    "LET"
+  x=":=" => "LET"
   x=":-" => "LETD"
   x="%Attribute" => "ATTRIBUTE"
   x
@@ -462,7 +449,7 @@ tuple2List l ==
     u:= tuple2List l'
     a is ["SEGMENT",p,q] =>
       null u => ["construct",postTranSegment(p,q)]
-      $InteractiveMode and not $BOOT =>
+      $InteractiveMode =>
         ["append",["construct",postTranSegment(p,q)],tuple2List l']
       ["nconc",["construct",postTranSegment(p,q)],tuple2List l']
     null u => ["construct",postTran a]
@@ -596,7 +583,6 @@ unComma x ==
 ++ check that `^=' is not used in Spad code to mean `not equal'.
 postBootNotEqual: %ParseTree -> %ParseForm
 postBootNotEqual u ==
-  $BOOT => [first u, :postTran rest u]
   checkWarning ['"Operator ", :bright '"^=", 
    '"is not valid Spad.  Please use",:bright '"~=",'"instead."]
   ["~=",:postTran rest u]
@@ -620,7 +606,6 @@ for x in [["with", :"postWith"],_
 	  [",", :"postComma"],_
 	  [";", :"postSemiColon"],_
 	  ["where", :"postWhere"],_
-	  ["::", :"postColonColon"],_
 	  [":", :"postColon"],_
 	  ["@", :"postAtSign"],_
 	  ["pretend", :"postPretend"],_

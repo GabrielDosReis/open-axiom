@@ -102,7 +102,6 @@ serverReadLine(stream) ==
 
 parseAndInterpret str ==
   $InteractiveMode :fluid := true
-  $BOOT: fluid := NIL
   $SPAD: fluid := true
   $e:fluid := $InteractiveFrame
   ncParseAndInterpretString str
@@ -198,7 +197,6 @@ parseAndInterpToString str ==
 
 parseAndEvalStr string ==
   $InteractiveMode :fluid := true
-  $BOOT: fluid := NIL
   $SPAD: fluid := true
   $e:fluid := $InteractiveFrame
   parseAndEvalStr1 string

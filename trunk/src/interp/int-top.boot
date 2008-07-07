@@ -93,7 +93,6 @@ ncTopLevel() ==
   IN_-STREAM: fluid := $InputStream
   _*EOF_*: fluid := NIL
   $InteractiveMode :fluid := true
-  $BOOT: fluid := NIL
   $NEWSPAD: fluid := true
   $SPAD: fluid := true
   $e:fluid := $InteractiveFrame

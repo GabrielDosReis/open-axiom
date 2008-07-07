@@ -518,7 +518,7 @@ the stack, then stack a NIL. Return the value of prod."
   "Tell me what the current state of the parsing world is."
   ;(IOStreams-show)
   (current-line-show)
-  (if (or $BOOT $SPAD) (next-lines-show))
+  (if $SPAD (next-lines-show))
   (token-stack-show)
   ;(reduce-stack-show)
   nil)
@@ -529,7 +529,7 @@ the stack, then stack a NIL. Return the value of prod."
   (current-line-clear)
   (token-stack-clear)
   (reduce-stack-clear)
-  (if (or $BOOT $SPAD) (next-lines-clear))
+  (if $SPAD (next-lines-clear))
   nil)
 
 ;; auxiliary functions needed by the parser

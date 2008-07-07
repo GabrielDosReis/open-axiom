@@ -558,7 +558,7 @@ empty (if File-Closed (return nil))
     (identifier         (let ((id (symbol-name (token-symbol token)))
                               (pack (package-name (symbol-package
                                                    (token-symbol token)))))
-                          (if (or $BOOT $SPAD)
+                          (if $SPAD
                               (if (equal pack "BOOT")
                                   (escape-keywords (underscore id) (token-symbol token))
                                 (concatenate 'string
