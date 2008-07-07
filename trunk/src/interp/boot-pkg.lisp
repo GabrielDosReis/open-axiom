@@ -41,7 +41,9 @@
 		"systemRootDirectory"
 		"systemLibraryDirectory"
 		"loadNativeModule"
-		"loadSystemRuntimeCore"))
+		"loadSystemRuntimeCore"
+                "$InteractiveMode"
+		"string2BootTree"))
 
 (in-package "BOOT")
   

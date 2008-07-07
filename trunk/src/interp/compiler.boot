@@ -1148,7 +1148,7 @@ compileNot(x,m,e) ==
   -- ??? selected through general modemaps, and their semantics
   -- ??? are quite hardwired with their syntax.
   -- ??? Eventually, we should not need to do this.
-  $compilerValue => compIf(["IF",y,"false","true"],m,e)
+  $normalizeTree => compIf(["IF",y,"false","true"],m,e)
   compForm(x,m,e)
 
 --% Case

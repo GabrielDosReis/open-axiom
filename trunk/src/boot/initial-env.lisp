@@ -49,13 +49,19 @@
   (:export "systemRootDirectory" 
 	   "systemLibraryDirectory"
 	   "loadNativeModule"
-	   "loadSystemRuntimeCore"))
+	   "loadSystemRuntimeCore"
+           "$InteractiveMode"
+	   "string2BootTree"))
 
 (in-package "BOOTTRAN")
 
 ;## need the conditional here so it appears in boottran
 #+:ieee-floating-point (defparameter $ieee t)
 #-:ieee-floating-point (defparameter $ieee nil)
+
+;; when true indicate that that the Boot translator
+;; is called interactively.
+(defparameter |$InteractiveMode| nil)
 
 (defmacro memq (a b) 
   `(member ,a ,b :test #'eq))
