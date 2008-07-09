@@ -1164,7 +1164,7 @@ S2NR0001
 S2NR0002
  Cannot process predicate: %1s
 S2NR0003
- Error while instantiating type %1b
+ Error while instantiating type %1pb
 S2NR0004
  Cannot find domain in template: %1s
 S2OO0001

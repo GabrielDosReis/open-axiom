@@ -100,9 +100,10 @@ evalSlotDomain(u,dollar) ==
     VECP (y := dollar.u) => y
     y is ['SETELT,:.] => eval y--lazy domains need to marked; this is dangerous?
     y is [v,:.] =>
-      VECP v => lazyDomainSet(y,dollar,u)               --old style has [$,code,:lazyt]
-      IDENTP v and constructor? v or MEMQ(v,'(Record Union Mapping)) =>
-        lazyDomainSet(y,dollar,u)                       --new style has lazyt
+      VECP v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]
+      IDENTP v and constructor? v 
+        or MEMQ(v,'(Record Union Mapping Enumeration)) =>
+           lazyDomainSet(y,dollar,u)        --new style has lazyt
       y
     y
   u is ['NRTEVAL,y] => eval  y
@@ -113,6 +114,7 @@ evalSlotDomain(u,dollar) ==
   u is ['Union,:argl] and first argl is ['_:,.,.] =>
      APPLY('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
                                  for [.,tag,dom] in argl])
+  u is ["Enumeration",:.] => eval u
   u is [op,:argl] => APPLY(op,[evalSlotDomain(x,dollar) for x in argl])
   systemErrorHere '"evalSlotDomain"
 
@@ -286,6 +288,8 @@ NRTaddInner x ==
     getConstructorSignature first x is [.,:ml] =>
       for y in rest x for m in ml | not (y = '$) repeat
         isCategoryForm(m,$CategoryFrame) => NRTinnerGetLocalIndex y
+    x is ["Enumeration",:.] =>
+      for y in rest x repeat NRTinnerGetLocalIndex y
     keyedSystemError("S2NR0003",[x])
   x
 
@@ -295,7 +299,7 @@ NRTinnerGetLocalIndex x ==
   atom x => x
   -- following test should skip Unions, Records, Mapping
   op := first x
-  MEMQ(op,'(Union Record Mapping _[_|_|_])) => NRTgetLocalIndex x
+  MEMQ(op,'(Union Record Mapping Enumeration _[_|_|_])) => NRTgetLocalIndex x
   constructor? op => NRTgetLocalIndex x
   NRTaddInner x
 
