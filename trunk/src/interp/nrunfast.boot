@@ -428,7 +428,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
       MEMQ(op,'(Record Union)) and first argl is [":",:.] =>
         and/[stag = atag and lazyMatchArg(s,a,dollar,domain)
               for [.,stag,s] in sargl for [.,atag,a] in argl]
-      MEMQ(op,'(Union Mapping _[_|_|_] QUOTE)) =>
+      MEMQ(op,'(Union Mapping _[_|_|_] QUOTE Enumeration)) =>
          and/[lazyMatchArg(s,a,dollar,domain) for s in sargl for a in argl]
       coSig := getDualSignatureFromDB op
       null coSig => error ["bad Constructor op", op]
@@ -510,7 +510,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
   MEMQ(functorName, '(Record Union)) and first argl is [":",:.] =>
     [functorName,:[['_:,tag,newExpandLocalTypeArgs(dom,dollar,domain,true)]
                                  for [.,tag,dom] in argl]]
-  MEMQ(functorName, '(Union Mapping _[_|_|_])) =>
+  MEMQ(functorName, '(Union Mapping _[_|_|_] Enumeration)) =>
           [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
   functorName = "QUOTE"  => [functorName,:argl]
   coSig := getDualSignatureFromDB functorName

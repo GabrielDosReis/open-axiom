@@ -122,7 +122,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
         for [.,a,b] in rest x for [.,=a,c] in rest compForm]]
     (x' := isQuasiquote x) =>
       quasiquote encode(x',isQuasiquote compForm,false)
-    IDENTP op and (constructor? op or MEMQ(op,'(Union Mapping))) =>
+    IDENTP op and (constructor? op or MEMQ(op,'(Union Mapping Enumeration))) =>
       [op,:[encode(y,z,false) for y in rest x for z in rest compForm]]
     ["NRTEVAL",NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]
   MEMQ(x,$formalArgList) =>
@@ -143,9 +143,9 @@ listOfBoundVars form ==
     [form]
   atom form => []
   CAR form = 'QUOTE => []
-  EQ(CAR form,":") => listOfBoundVars CADDR form
+  EQ(CAR form,":") => listOfBoundVars third form
   -- We don't want to pick up the tag, only the domain
-  "union"/[listOfBoundVars x for x in CDR form]
+  "union"/[listOfBoundVars x for x in rest form]
 
 optDeltaEntry(op,sig,dc,eltOrConst) ==
   $killOptimizeIfTrue = true => nil

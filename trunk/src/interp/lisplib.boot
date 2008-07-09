@@ -710,7 +710,7 @@ isFunctor x ==
     MEMQ(op,$DomainNames) => true
     MEMQ(getConstructorKindFromDB op,'(domain package))
   u:= get(op,'isFunctor,$CategoryFrame)
-    or MEMQ(op,'(SubDomain Union Record)) => u
+    or MEMQ(op,'(SubDomain Union Record Enumeration)) => u
   constructor? op =>
     prop := get(op,'isFunctor,$CategoryFrame) => prop
     if getConstructorKindFromDB op = "category"
