@@ -818,7 +818,7 @@
 
 (DEFUN |PARSE-FloatTok| ()
   (AND (PARSE-NUMBER)
-       (PUSH-REDUCTION '|PARSE-FloatTok| (POP-STACK-1))))) 
+       (PUSH-REDUCTION '|PARSE-FloatTok| (POP-STACK-1)))) 
 
 
 (DEFUN |PARSE-FormalParameter| () (|PARSE-FormalParameterTok|)) 

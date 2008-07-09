@@ -67,6 +67,16 @@ upDEF t ==
 
 --% Handler for package calling and $ constants
 
+++ Constant `c' is referenced from domain `d'; return its value
+++ in the VAT `op'.
+findConstantInDomain(op,c,d) ==
+  isPartialMode d => throwKeyedMsg("S2IS0020",NIL)
+  if $genValue then
+    val := wrap getConstantFromDomain([c],d)
+  else val := ["getConstantFromDomain",["LIST",MKQ c],MKQ d]
+  putValue(op,objNew(val,d))
+  putModeSet(op,[d])
+
 upDollar t ==
   -- Puts "dollar" property in atree node, and calls bottom up
   t isnt [op,D,form] => nil
@@ -82,15 +92,13 @@ upDollar t ==
   if f = $immediateDataSymbol then
     f := objValUnwrap coerceInteractive(getValue form,$OutputForm)
     if f = '(construct) then f := "nil"
-  ATOM(form) and (f ^= $immediateDataSymbol) and
-    (u := findUniqueOpInDomain(op,f,t)) => u
+  -- FIXME: The next two cases should be simplified and merged as
+  --        we move to general constant definitions.
+  atom form and (f ^= $immediateDataSymbol) =>
+    constantInDomain?([f],t) => findConstantInDomain(op,f,t)
+    findUniqueOpInDomain(op,f,t)
   f in '(One Zero true false nil) and constantInDomain?([f],t) =>
-    isPartialMode t => throwKeyedMsg("S2IS0020",NIL)
-    if $genValue then
-      val := wrap getConstantFromDomain([f],t)
-    else val := ["getConstantFromDomain",["LIST",MKQ f],MKQ t]
-    putValue(op,objNew(val,t))
-    putModeSet(op,[t])
+    findConstantInDomain(op,f,t)
 
   nargs := #rest form
 

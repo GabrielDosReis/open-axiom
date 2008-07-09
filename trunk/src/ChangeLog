@@ -1,3 +1,10 @@
+2008-07-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-spec2.boot (findConstantInDomain): Abstract from
+	upDollar.
+	(upDollar): Use it.  Don't return general constants as mappings.
+	* interp/fnewmeta.lisp (|PARSE-FloatTok|): Fix typo.
+
 2008-07-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/template.boot (evalSlotDomain): Likewise.
