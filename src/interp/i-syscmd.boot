@@ -2451,13 +2451,18 @@ resetHighlight() ==
   $specialCharacters := $saveSpecialchars
 
 spool filename ==
+  -- Note: The base Lisp system may change the value of the standard
+  -- output stream as part of executing DRIBBLE(), so one must
+  -- ensure that traces are still sent to the spool.
   null filename =>
     DRIBBLE()
+    SETQ(_*TRACE_-OUTPUT_*,_*STANDARD_-OUTPUT_*)
     TERPRI()
     resetHighlight()
   PROBE_-FILE car filename =>
     systemError CONCAT('"file ", STRING car filename, '" already exists")
   DRIBBLE car filename
+  SETQ(_*TRACE_-OUTPUT_*,_*STANDARD_-OUTPUT_*)
   TERPRI()
   clearHighlight()
 

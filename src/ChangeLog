@@ -1,5 +1,11 @@
 2008-07-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-driver.boot (initializeGlobalState): New.
+	(executeSpadScript): Use it.
+	(compileSpadLibrary): Likewise.
+	* interp/i-syscmd.boot (spool): Synchronize with standard output.
+	* boot/translator.boot (bpOutItem): Tidy.
+
 	* interp/nruncomp.boot (NRTencode): Don't encode enumerations.
 	(listofBoundVars): Enumerations don't bind any varaible.
 
