@@ -176,8 +176,7 @@ SET_-RESTART_-HOOK() ==
 )endif
   "restart"
 
-++ execute Spad script
-executeSpadScript(progname,options,file) ==
+initializeGlobalState() ==
   REROOT()
   $IOindex := 1
   $InteractiveFrame := makeInitialModemapFrame()
@@ -188,6 +187,10 @@ executeSpadScript(progname,options,file) ==
   RESTART0()
   $NEWSPAD := true
   $SPAD := true
+
+++ execute Spad script
+executeSpadScript(progname,options,file) ==
+  initializeGlobalState()
   if getOption(Option '"verbose",%systemOptions()) then
     $verbose := true
     $options := []
@@ -206,16 +209,7 @@ associateRequestWithFileType(Option '"script", '"input",
 
 ++ compiler Spad Library File.
 compileSpadLibrary(progname,options,file) ==
-  REROOT()
-  $IOindex := 1
-  $InteractiveFrame := makeInitialModemapFrame()
-  loadExposureGroupData()
-  initHist()
-  initializeInterpreterFrameRing()
-  $currentLine := nil
-  RESTART0()
-  $NEWSPAD := true
-  $SPAD := true
+  initializeGlobalState()
   $EchoLines := false
   ECHO_-META : fluid := false
   $verbose := false
