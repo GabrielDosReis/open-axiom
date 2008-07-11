@@ -253,7 +253,7 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
 
       notFormula(p: %): OutputForm ==
         not? p =>
-          elt(outputForm '_not, [notFormula((rep p).'unForm)])$OutputForm
+          elt(outputForm '_not, [notFormula((rep p).unForm)])$OutputForm
         primaryFormula p
       
       andFormula(p: %): OutputForm ==
@@ -488,7 +488,7 @@ Boolean(): Join(OrderedSet, Finite, Logic, PropositionalLogic, ConvertibleTo Inp
     test a        == a
 
     nt b          == (b => false; true)
-    true          == 'T
+    true          == 'T pretend %
     false         == NIL$Lisp
     sample()      == true
     not b         == (b => false; true)

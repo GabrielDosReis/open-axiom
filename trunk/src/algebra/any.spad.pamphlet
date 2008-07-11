@@ -337,11 +337,12 @@ Scope(): Public == Private where
 
   Private ==> add
     import Contour
+    Rep == List Contour
     empty() ==
-      '(())
+      per NIL$Lisp
 
     contours s ==
-      s pretend List(Contour)
+      rep s
 
     findBinding(n,s) ==
       for c in contours s repeat
@@ -394,11 +395,12 @@ Environment(): Public == Private where
        ++ the current category environment in the interpreter.
 
   Private ==> add
+    Rep == List Scope
     empty() ==
-      '((()))
+      per NIL$Lisp
 
     scopes e ==
-      e pretend List(Scope)
+      rep e
 
     getProperty(n,p,e) ==
       v := get(n,p,e)$Lisp

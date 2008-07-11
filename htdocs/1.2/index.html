@@ -126,6 +126,13 @@
            or a collectt, are local to that loop.  This change should not
            affect well written Spad codes.
        </li>
+
+       <li>The Spad compiler used to accept constructs like
+           <code>&prime;e</code> where <code>e</code> is any s-expression
+           as a way to inject a value in any datatype without 
+           type checking.  That capability is discontinued and the
+           quoting is now accepted only for literal symbols.
+       </li>
     </ul>
 
   <h4>2.1.3. Algebra</h4>

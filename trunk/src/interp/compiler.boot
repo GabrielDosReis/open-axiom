@@ -828,7 +828,11 @@ compConstruct(form is ["construct",:l],m,e) ==
       (T:= compVector(l,["Vector",CADR y],e)) and (T':= convert(T,m)) =>
          return T'
 
-compQuote(expr,m,e) == [expr,m,e]
+++ Compile a literal (quoted) symbol.
+compQuote: (%Form,%Mode,%Env) -> %Maybe %Triple
+compQuote(expr,m,e) == 
+  expr is ["QUOTE",x] and SYMBOLP x => convert([expr,$Symbol,e],m)
+  stackAndThrow('"%1b is not a literal symbol.",[x])
 
 compList: (%Form,%Mode,%Env) -> %Maybe %Triple
 compList(l,m is ["List",mUnder],e) ==
