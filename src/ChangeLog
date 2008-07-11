@@ -1,3 +1,10 @@
+2008-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compQuote): Restrict quoting to literal
+	symbols. 
+	* algebra/any.spad.pamphlet: Use nil for empty list.
+	* algebra/boolean.spad.pamphlet: Fix quoting.
+
 2008-07-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-spec2.boot (findConstantInDomain): Abstract from
