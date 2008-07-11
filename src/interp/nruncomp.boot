@@ -122,8 +122,11 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
         for [.,a,b] in rest x for [.,=a,c] in rest compForm]]
     (x' := isQuasiquote x) =>
       quasiquote encode(x',isQuasiquote compForm,false)
-    IDENTP op and (constructor? op or MEMQ(op,'(Union Mapping Enumeration))) =>
+    IDENTP op and (constructor? op or MEMQ(op,'(Union Mapping))) =>
       [op,:[encode(y,z,false) for y in rest x for z in rest compForm]]
+    -- enumeration constants are like field names, they do not need
+    -- to be encoded.
+    op = "Enumeration" => x
     ["NRTEVAL",NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]
   MEMQ(x,$formalArgList) =>
     v := $FormalMapVariableList.(POSN1(x,$formalArgList))
@@ -142,9 +145,10 @@ listOfBoundVars form ==
     MEMQ(KAR u,'(Union Record)) => listOfBoundVars u
     [form]
   atom form => []
-  CAR form = 'QUOTE => []
-  EQ(CAR form,":") => listOfBoundVars third form
+  first form = 'QUOTE => []
   -- We don't want to pick up the tag, only the domain
+  first form = ":" => listOfBoundVars third form
+  first form = "Enumeration" => []
   "union"/[listOfBoundVars x for x in rest form]
 
 optDeltaEntry(op,sig,dc,eltOrConst) ==
@@ -687,7 +691,7 @@ NRTsubstDelta(initSig) ==
           t = 2 => '_$_$
           t = 5 => $NRTaddForm
           u:= $NRTdeltaList.($NRTdeltaLength+5-t)
-          CAR u = 'domain => CADR u
+          first u = 'domain => second u
           error "bad $NRTdeltaList entry"
         MEMQ(CAR t,'(Mapping Union Record _:)) =>
            [CAR t,:[replaceSlotTypes(x) for x in rest t]]
