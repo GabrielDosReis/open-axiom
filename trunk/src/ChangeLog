@@ -1,3 +1,8 @@
+2008-07-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-funsel.boot (findUniqueOpInDomain): Use evaluation type
+	context.
+
 2008-07-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-driver.boot (initializeGlobalState): New.
