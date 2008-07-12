@@ -723,22 +723,26 @@ findCommonSigInDomain(opName,dom,nargs) ==
 
 findUniqueOpInDomain(op,opName,dom) ==
   -- return function named op in domain dom if unique, choose one if not
-  mmList := ASSQ(opName,getOperationAlistFromLisplib CAR dom)
+  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList =>
     throwKeyedMsg("S2IS0021",[opName,dom])
-  if #CDR mmList > 1 then
-    mm := selectMostGeneralMm CDR mmList
-    sayKeyedMsg("S2IS0022",[opName,dom,['Mapping,:CAR mm]])
-  else mm := CADR mmList
+  mmList := rest mmList   -- ignore the operator name
+  -- use evaluation type context to narrow down the candidate set
+  if target := getTarget op then
+    mmList := [mm for mm in mmList | mm is [=rest target,:.]]
+    null mmList => throwKeyedMsg("S2IS0061",[opName,target,dom])
+  if #mmList > 1 then
+    mm := selectMostGeneralMm mmList
+    sayKeyedMsg("S2IS0022",[opName,dom,['Mapping,:first mm]])
+  else mm := first mmList
   [sig,slot,:.] := mm
   fun :=
---+
       $genValue =>
          compiledLookupCheck(opName,sig,evalDomain dom)
       NRTcompileEvalForm(opName, sig, evalDomain dom)
-  NULL(fun) or NULL(PAIRP(fun)) => NIL
-  CAR fun = function(Undef) => throwKeyedMsg("S2IS0023",[opName,dom])
+  fun=nil or not CONSP fun => nil
+  first fun = function(Undef) => throwKeyedMsg("S2IS0023",[opName,dom])
   binVal :=
     $genValue => wrap fun
     fun
