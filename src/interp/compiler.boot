@@ -1347,7 +1347,10 @@ coerceExtraHard(T is [x,m',e],m) ==
   belongsTo?(m',["UnionType"],e) and hasUniqueCaseView(x,m,e) =>
     autoCoerceByModemap(T,m)
   -- Domain instantiations are first class objects
-  m = $Domain and isCategoryForm(m',e) => [x,m',e]
+  m = $Domain =>
+    m' = $Category => nil
+    isCategoryForm(m',e) => [x,m',e]
+    nil
   nil
 
 ++ returns true if mode `m' is known to belong to category `cat' in
