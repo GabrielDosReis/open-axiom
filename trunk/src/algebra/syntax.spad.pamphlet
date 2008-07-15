@@ -245,6 +245,34 @@ ConstructorCall(): Public == Private where
       outputDomainConstructor(x)$Lisp
 @
 
+\section{The Signature domain}
+<<domain SIG Signature>>=
+)abbrev domain SIG Signature
+++ Author: Gabriel Dos Reis
+++ Date Created: January 10, 2008
+++ Date Last Updated: July 14, 2008
+++ Description: This is the datatype for operation signatures as
+++ used by the compiler and the interpreter.
+++ See also: ConstructorCall, Domain.
+Signature(): Public == Private where
+  Public == SetCategory with
+    target: % -> ConstructorCall
+      ++ target(s) returns the target type of the signature `s'.
+    source: % -> List ConstructorCall
+      ++ source(s) returns the list of parameter types of `s'.
+  Private == add
+    Rep == List ConstructorCall
+    target x ==
+      first rep x
+    source x ==
+      rest rep x
+    x = y ==
+      rep x = rep y
+    coerce(x: %): OutputForm ==
+      rarrow([s::OutputForm for s in source x]::OutputForm,
+         target(x)::OutputForm)$OutputForm
+@
+
 \section{domain ElaboratedExpression}
 <<domain ELABEXPR ElaboratedExpression>>=
 )abbrev domain ELABEXPR ElaboratedExpression

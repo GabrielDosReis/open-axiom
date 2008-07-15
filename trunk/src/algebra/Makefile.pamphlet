@@ -314,7 +314,7 @@ axiom_algebra_layer_5 = \
   MRF2     NARNG    NARNG-   NSUP2    ODVAR    OPQUERY  \
   ORDFIN   ORDMON   PATMATCH PERMCAT  PDRING   PDRING-  \
   SDVAR    SUP2     TRIGCAT  TRIGCAT- ULS2     UP2      \
-  ELABEXPR OCAMON
+  ELABEXPR OCAMON   
 
 axiom_algebra_layer_5_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_5))
@@ -413,7 +413,7 @@ axiom_algebra_layer_9 = \
   PTFUNC2  RADCAT   RADCAT-  RATRET   RADUTIL  UPXS2    \
   XFALG    ZLINDEP  BBTREE   LSAGG    LSAGG-   SRAGG    \
   SRAGG-   STRICAT  ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
-  PDEPROB  COLOR
+  PDEPROB  COLOR    SIG
 
 
 axiom_algebra_layer_9_nrlibs = \
