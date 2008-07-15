@@ -1,3 +1,9 @@
+2008-07-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* share/algebra: Update databases.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_9): Add SIG.
+	* algebra/syntax.spad.pamphlet (Signature): New.
+
 2008-07-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-funsel.boot (findUniqueOpInDomain): Use evaluation type
