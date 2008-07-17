@@ -102,6 +102,16 @@
         argument list, when the constructor is declared to accept a Tuple.
      </li>
 
+     <li>It is now possible to restrict the type of a mapping-valued
+         expression, e.g.
+         <pre>
+              _*$Float@((Float,NonNegativeInteger) -> Float)
+         </pre>
+         now selects the multiplication operation default supplied
+         by the category <code>AbelianGroup</code> instead of 
+         producing an error.
+     </li>
+
     </ul>
 
   <h4>2.1.2. Compiler<h4>
@@ -148,6 +158,10 @@
       <code>System</code>:  This package provides access to some
         runtime characteristics of the running OpenAxiom system.  This
         package has been contributed by Gabriel Dos Reis.
+    </li>
+
+    <li><code>Signature</code>: This domain is the datatype for 
+       operation signatures as used by the interpreter and compilr.
     </li>
 
   </ul>
