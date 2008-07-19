@@ -59,10 +59,10 @@
 
   <h2 name="changes">2. Changes From The Base Document</h2>
 
-  <h3>2.1. OpenAxiom-1.2.0</h3>
+  <h3 name="1.2.0-changes">2.1. OpenAxiom-1.2.0</h3>
 
   This release introduces the following changes from the base document
-  <h4>2.1.1 Interpreter</h4>
+  <h4 name="1.2.0-changes-int">2.1.1 Interpreter</h4>
 
     <ul>
 
@@ -105,7 +105,7 @@
      <li>It is now possible to restrict the type of a mapping-valued
          expression, e.g.
          <pre>
-              _*$Float@((Float,NonNegativeInteger) -> Float)
+              _*$Float@((NonNegativeInteger,Float) -> Float)
          </pre>
          now selects the multiplication operation default supplied
          by the category <code>AbelianGroup</code> instead of 
@@ -114,7 +114,7 @@
 
     </ul>
 
-  <h4>2.1.2. Compiler<h4>
+  <h4 name="1.2.0-changes-comp">2.1.2. Compiler</h4>
     <ul>
        <li>The compiler now accepts constant declarations in a more
            direct style.  For example, the following code is now accepted
@@ -145,7 +145,7 @@
        </li>
     </ul>
 
-  <h4>2.1.3. Algebra</h4>
+  <h4 name="1.2.0-changes-alg">2.1.3. Algebra</h4>
  
   The following types have been added to OpenAxiom-1.2.0
   <ul>
@@ -166,7 +166,7 @@
 
   </ul>
   
-  <h3>2.2.  Runtime System </h3>
+  <h3 name="1.2.0-changes-rt">2.2.  Runtime System </h3>
    
   Starting from OpenAxiom-1.2.0, new Lisp systems are supported:
   SBCL, and CLisp.  This means that if GCL is not supported on
