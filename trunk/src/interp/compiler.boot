@@ -1145,8 +1145,8 @@ compImport(["import",:doms],m,e) ==
 --% etc.
 
 ++ compile a logical negation form `(not ...)'.
-compileNot: (%Form,%Mode,%Env) -> %Maybe %Triple
-compileNot(x,m,e) ==
+compNot: (%Form,%Mode,%Env) -> %Maybe %Triple
+compNot(x,m,e) ==
   x isnt ["not", y] => nil
   -- ??? For the time being compiler values cannot handle operations
   -- ??? selected through general modemaps, and their semantics
@@ -1744,7 +1744,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["leave", :"compLeave"],_
 	  ["LET", :"compSetq"],_
 	  ["MDEF", :"compMacro"],_
-          ["not", :"compileNot"],_
+          ["not", :"compNot"],_
 	  ["pretend", :"compPretend"],_
 	  ["Record", :"compCat"],_
 	  ["RecordCategory", :"compConstructorCategory"],_
