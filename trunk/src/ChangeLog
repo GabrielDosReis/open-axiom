@@ -1,3 +1,15 @@
+2008-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpExportItemTail): New.
+	(bpExportItem): Likewise.
+	(bpExportItemList): Use it.
+	(bpSimplMapping): New.
+	(bpMapping): Use it.
+	* boot/translator.boot (translateToplevel): Tidy.
+	* include/open-axiom.h [__MINGW32__]: Include <windows.h>.
+	* interp/astr.boot: Export functions.
+	* interp/posit.boot: Likewise.
+
 2008-07-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compNot): Rename from compileNot.

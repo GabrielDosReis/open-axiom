@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,11 @@
 import sys_-macros
 import astr
 namespace BOOT
+module posit where
+  %Position <=> %List
+  tokType: %List -> %Symbol
+  tokPart: %List -> %Thing
+  tokPosn: %List -> %Position
 
 $nopos ==
   ['noposition]
@@ -52,7 +57,7 @@ pfPosOrNopos pf ==
     poNoPosition()
  
 poIsPos? pos ==
-    PAIRP pos and PAIRP CAR pos and LENGTH CAR pos = 5
+    PAIRP pos and PAIRP first pos and #first pos = 5
  
 lnCreate(extBl, st, gNo, :optFileStuff) ==
     lNo :=
@@ -81,7 +86,7 @@ lnFileName lineObject    ==
     ncBug('"there is no file name in %1", [lineObject] )
  
 lnFileName? lineObject   ==
-    NOT PAIRP (fN := lineObject.4)  => NIL
+    atom (fN := lineObject.4)  => nil
     fN
  
 lnPlaceOfOrigin lineObject ==
@@ -91,7 +96,8 @@ lnImmediate? lineObject  ==
     not lnFileName? lineObject
  
 poGetLineObject posn ==
-    CAR posn
+    first posn
+
 pfGetLineObject posn == poGetLineObject posn
  
 pfSourceStok x==
@@ -113,23 +119,25 @@ pfSourceToken form ==
 tokConstruct(hd,tok,:pos)==
          a:=cons(hd,tok)
          IFCAR pos =>
-             pfNoPosition? CAR pos=> a
-             ncPutQ(a,"posn",CAR pos)
+             pfNoPosition? first pos=> a
+             ncPutQ(a,"posn",first pos)
              a
          a
 
 tokType x== ncTag x
-tokPart x== CDR x
+
+tokPart x== rest x
+
 tokPosn x==
      a:= QASSQ("posn",ncAlist x)
-     if a then CDR a else pfNoPosition()
+     if a then rest a else pfNoPosition()
 
 pfAbSynOp form ==
-    hd := CAR form
+    hd := first form
     IFCAR hd or hd
 
 pfAbSynOp?(form, op) ==
-    hd := CAR form
+    hd := first form
     EQ(hd, op) or EQCAR(hd, op)
 
 pfLeaf? form ==
@@ -141,10 +149,10 @@ pfLeaf(x,y,:z)      == tokConstruct(x,y, IFCAR z or pfNoPosition())
 pfLeafToken form    == tokPart form
 pfLeafPosition form == tokPosn form
 
-pfTree(x,y)         == CONS(x,y)       -- was ==>
-pfParts  form       == CDR form       -- was ==>
-pfFirst  form       == CADR form       -- was ==>
-pfSecond form       == CADDR form       -- was ==>
+pfTree(x,y)   == [x,:y]
+pfParts  form == rest form
+pfFirst  form == second form
+pfSecond form == third form
 
 pfPosn pf == pfSourcePosition pf
  
@@ -172,44 +180,54 @@ pfSourcePositionlist x==
       else APPEND(pfSourcePositions first x,pfSourcePositionlist rest x)
  
  
-poCharPosn posn       == CDR posn
+poCharPosn posn == rest posn
+
 pfCharPosn posn == poCharPosn posn
  
 poLinePosn posn       ==
     posn => lnLocalNum  poGetLineObject posn  --VECP posn =>
     CDAR posn
+
 pfLinePosn posn == poLinePosn posn
  
 poGlobalLinePosn posn ==
     posn => lnGlobalNum poGetLineObject posn
     ncBug('"old style pos objects have no global positions",[])
+
 pfGlobalLinePosn posn == poGlobalLinePosn posn
  
 poFileName posn       ==
     posn => lnFileName poGetLineObject posn
     CAAR posn
+
 pfFileName posn == poFileName posn
  
 poFileName? posn       ==
-    posn = ['noposition] => NIL
+    posn = ['noposition] => nil
     posn => lnFileName? poGetLineObject posn
     CAAR posn
+
 pfFileName? posn == poFileName? posn
  
 poPlaceOfOrigin posn ==
     lnPlaceOfOrigin poGetLineObject posn
+
 pfPlaceOfOrigin posn == poPlaceOfOrigin posn
  
 poNopos? posn ==
     posn = ['noposition]
+
 pfNopos? posn == poNopos? posn
+
 poPosImmediate? txp==
-    poNopos? txp => NIL
+    poNopos? txp => nil
     lnImmediate? poGetLineObject txp
+
 pfPosImmediate? txp == poPosImmediate? txp
  
 poImmediate? txp==
     lnImmediate? poGetLineObject txp
+
 pfImmediate? txp == poImmediate? txp
  
  
@@ -222,7 +240,7 @@ pfPrintSrcLines(pf) ==
   lines := pfSourcePositions pf
   lno := 0
   for l in lines repeat
-    line := car l
+    line := first l
     if lno < lnGlobalNum(line) then 
       FORMAT(true, '"   ~A~%",  lnString line)
       lno := lnGlobalNum(line)

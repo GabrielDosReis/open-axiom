@@ -33,6 +33,11 @@
 
 import vmlisp
 namespace BOOT
+module astr where
+  ncTag: %Thing -> %Symbol
+  ncAlist: %Thing -> %List
+  ncEltQ: %List -> %Thing
+  ncPutQ: (%List,%Thing,%Thing) -> %Thing
 
 --% Attributed Structures (astr)
 -- For objects which are pairs where the CAR field is either just a tag
@@ -40,25 +45,25 @@ namespace BOOT
  
 -- Pick off the tag
 ncTag x ==
-   not PAIRP x => ncBug('S2CB0031,[])
-   x := QCAR x
+   atom x => ncBug('S2CB0031,[])
+   x := first x
    IDENTP x => x
-   not PAIRP x => ncBug('S2CB0031,[])
-   QCAR x
+   atom x => ncBug('S2CB0031,[])
+   first x
  
 -- Pick off the property list
 ncAlist x ==
-   not PAIRP x => ncBug('S2CB0031,[])
-   x := QCAR x
-   IDENTP x => NIL
-   not PAIRP x => ncBug('S2CB0031,[])
-   QCDR x
+   atom x => ncBug('S2CB0031,[])
+   x := first x
+   IDENTP x => nil
+   atom x => ncBug('S2CB0031,[])
+   rest x
 
  --- Get the entry for key k on x's association list
 ncEltQ(x,k) ==
    r := QASSQ(k,ncAlist x)
-   NULL r => ncBug ('S2CB0007,[k])
-   CDR r
+   null r => ncBug ('S2CB0007,[k])
+   rest r
  
 -- Put (k . v) on the association list of x and return v
 -- case1: ncPutQ(x,k,v) where k is a key (an identifier), v a value
@@ -70,9 +75,9 @@ ncPutQ(x,k,v) ==
       for key in k for val in v repeat ncPutQ(x,key,val)
       v
    r := QASSQ(k,ncAlist x)
-   if NULL r then
-      r := CONS( CONS(k,v), ncAlist x)
-      RPLACA(x,CONS(ncTag x,r))
+   if null r then
+      r := [[k,:v], :ncAlist x]
+      RPLACA(x,[ncTag x,:r])
    else
       RPLACD(r,v)
    v
