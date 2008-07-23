@@ -35,8 +35,8 @@
 
 import tokens
 import includer
-module scanner
 namespace BOOTTRAN
+module scanner
 
 -- converts X to double-float.
 double x ==
