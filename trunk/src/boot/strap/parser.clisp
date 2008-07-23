@@ -442,7 +442,31 @@
             (|bpPush| (|bfSymbol| (|bpPop1|))))))
     ('T (|bpString|))))
 
-(DEFUN |bpExportItemList| () (|bpListAndRecover| #'|bpSignature|))
+(DEFUN |bpExportItemTail| ()
+  (OR (AND (|bpEqKey| 'BEC) (OR (|bpAssign|) (|bpTrap|))
+           (|bpPush| (|%Assignment| (|bpPop2|) (|bpPop1|))))
+      (|bpSimpleDefinitionTail|)))
+
+(DEFUN |bpExportItem| ()
+  (PROG (|a|)
+    (RETURN
+      (COND
+        ((|bpEqPeek| 'STRUCTURE) (|bpStruct|))
+        (#0='T
+         (PROGN
+           (SETQ |a| (|bpState|))
+           (COND
+             ((|bpName|)
+              (COND
+                ((|bpEqPeek| 'COLON)
+                 (PROGN
+                   (|bpRestore| |a|)
+                   (OR (|bpSignature|) (|bpTrap|))
+                   (OR (|bpExportItemTail|) T)))
+                (#0# (PROGN (|bpRestore| |a|) (|bpTypeAliasDefition|)))))
+             (#0# NIL))))))))
+
+(DEFUN |bpExportItemList| () (|bpListAndRecover| #'|bpExportItem|))
 
 (DEFUN |bpExports| () (|bpPileBracketed| #'|bpExportItemList|))
 
@@ -478,10 +502,20 @@
   (AND (|bpName|) (|bpEqKey| 'COLON) (|bpMapping|)
        (|bpPush| (|Signature| (|bpPop2|) (|bpPop1|)))))
 
+(DEFUN |bpSimpleMapping| ()
+  (COND
+    ((|bpApplication|)
+     (PROGN
+       (AND (|bpEqKey| 'ARROW) (OR (|bpApplication|) (|bpTrap|))
+            (|bpPush| (|Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|)))))
+       T))
+    ('T NIL)))
+
 (DEFUN |bpMapping| ()
-  (AND (OR (|bpName|) (|bpParenthesized| #'|bpIdList|))
-       (|bpEqKey| 'ARROW) (|bpName|)
-       (|bpPush| (|Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|))))))
+  (OR (AND (|bpParenthesized| #'|bpIdList|) (|bpEqKey| 'ARROW)
+           (|bpApplication|)
+           (|bpPush| (|Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|)))))
+      (|bpSimpleMapping|)))
 
 (DEFUN |bpCancel| ()
   (PROG (|a|)
