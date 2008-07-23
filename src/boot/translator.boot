@@ -38,8 +38,8 @@ import scanner
 import pile
 import parser
 import ast
-module translator
 namespace BOOTTRAN
+module translator
 
 ++ If non nil, holds the name of the current module being translated.
 $currentModuleName := nil
@@ -502,7 +502,7 @@ translateToplevel(b,export?) ==
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
       [["PROVIDE", STRING m],
-        :[translateToplevel(d,true) for d in ds]]
+        :[first translateToplevel(d,true) for d in ds]]
 
     Import(m) => 
       [["IMPORT-MODULE", STRING m]]

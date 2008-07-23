@@ -57,6 +57,7 @@ typedef uint8_t openaxiom_byte;
 
 /* The opaque datatype.  */
 #ifdef __MINGW32__
+#include <windows.h>
 typedef HANDLE openaxiom_handle;
 #else
 typedef void* openaxiom_handle;

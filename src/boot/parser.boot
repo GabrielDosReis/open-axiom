@@ -411,11 +411,35 @@ bpConstTok() ==
      bpString()
 
 
+++ Subroutine of bpExportItem.  Parses tails of ExportItem.
+bpExportItemTail() ==
+  bpEqKey "BEC" and (bpAssign() or bpTrap()) and
+    bpPush %Assignment(bpPop2(), bpPop1())
+      or bpSimpleDefinitionTail()
+
+++ ExportItem:
+++   Structure
+++   TypeAliasDefinition
+++   Signature
+++   Signature := Where
+++   Signature  == Where
+bpExportItem() ==
+  bpEqPeek "STRUCTURE" => bpStruct()
+  a := bpState()
+  bpName() =>
+    bpEqPeek "COLON" =>
+      bpRestore a
+      bpSignature() or bpTrap()
+      bpExportItemTail() or true
+    bpRestore a
+    bpTypeAliasDefition()
+  false
+
 ++ ExportItemList:
 ++    Signature
 ++    ExportItemList Signature
 bpExportItemList() ==
-  bpListAndRecover function bpSignature
+  bpListAndRecover function bpExportItem
 
 ++ Exports:
 ++   pile-bracketed ExporItemList
@@ -460,13 +484,25 @@ bpSignature() ==
   bpName() and bpEqKey "COLON" and bpMapping()
     and bpPush Signature(bpPop2(), bpPop1())
 
+++ SimpleMapping:
+++   Application
+++   Application -> Application
+bpSimpleMapping() ==
+  bpApplication() =>
+    bpEqKey "ARROW" and (bpApplication() or bpTrap()) and
+      bpPush Mapping(bpPop1(), bfUntuple bpPop1())
+    true
+  false
+
 ++ Parse a mapping expression
 ++   Mapping:
-++      (Name | IdList) -> Name
+++     (IdList) -> Application
+++      SimpleMapping
 bpMapping() ==
-  (bpName() or bpParenthesized function bpIdList) and 
-     bpEqKey "ARROW" and bpName() and 
+  bpParenthesized function bpIdList and 
+     bpEqKey "ARROW" and bpApplication() and 
        bpPush Mapping(bpPop1(), bfUntuple bpPop1())
+         or bpSimpleMapping()
 
 bpCancel()==
     a:=bpState()
