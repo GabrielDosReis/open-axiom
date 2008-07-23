@@ -1,5 +1,7 @@
 2008-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/strap: Update cached Lisp translation.
+
 	* boot/parser.boot (bpExportItemTail): New.
 	(bpExportItem): Likewise.
 	(bpExportItemList): Use it.
