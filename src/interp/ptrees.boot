@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,12 @@
 import posit
 import serror
 namespace BOOT
+module ptrees
+
+--% This structure is incomplet
+structure %Ast ==
+  %Exist(%Vars,%Ast)
+  %Forall(%Vars,%Ast)
 
 --% SPECIAL NODES
 pfListOf x          == pfTree('listOf,x)

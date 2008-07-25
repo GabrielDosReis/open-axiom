@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -165,7 +165,10 @@ pf2Sex1 pf ==
   -- the user to figure out what happened.
   pfAbSynOp(pf) = "command" => tokPart(pf)
 
-  keyedSystemError('"S2GE0017", ['"pf2Sex1"])
+  case pf of
+    %Exist(vars,expr) => pfQuantified2Sex("%Exist",vars,expr)
+    %Forall(vars,expr) => pfQuantified2Sex("%Forall",vars,expr)
+    otherwise => keyedSystemError('"S2GE0017", ['"pf2Sex1"])
 
 pfLiteral2Sex pf ==
   type := pfLiteralClass pf
@@ -479,6 +482,5 @@ pfSuchThat2Sex args ==
   $predicateList := [[name, lhsSex, :rhsSex], :$predicateList]
   name
 
-
-
-
+pfQuantified2Sex(quantifier,vars,expr) ==
+  [quantifier, [pf2Sex1 t for t in pfParts vars], pf2Sex1 expr]

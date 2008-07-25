@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -36,26 +36,27 @@ import bits
 import dq
 import incl
 namespace BOOT
+module scan
 
 --% Separators
 
-$SPACE       := QENUM('"    ", 0)
-ESCAPE      := QENUM('"__  ", 0)
-STRING_CHAR := QENUM('"_"  ", 0)
-PLUSCOMMENT := QENUM('"+   ", 0)
-MINUSCOMMENT:= QENUM('"-   ", 0)
-RADIX_CHAR  := QENUM('"r   ", 0)
-DOT         := QENUM('".   ", 0)
-EXPONENT1   := QENUM('"E   ", 0)
-EXPONENT2   := QENUM('"e   ", 0)
-CLOSEPAREN  := QENUM('")   ", 0)
-CLOSEANGLE  := QENUM('">   ", 0)
-QUESTION    := QENUM('"?   ",0)
+$SPACE       == QENUM('"    ", 0)
+ESCAPE       == QENUM('"__  ", 0)
+STRING_CHAR  == QENUM('"_"  ", 0)
+PLUSCOMMENT  == QENUM('"+   ", 0)
+MINUSCOMMENT == QENUM('"-   ", 0)
+RADIX_CHAR   == QENUM('"r   ", 0)
+DOT          == QENUM('".   ", 0)
+EXPONENT1    == QENUM('"E   ", 0)
+EXPONENT2    == QENUM('"e   ", 0)
+CLOSEPAREN   == QENUM('")   ", 0)
+CLOSEANGLE   == QENUM('">   ", 0)
+QUESTION     == QENUM('"?   ",0)
 
 
 --% Keywords
 
-scanKeyWords := [ _
+scanKeyWords == [ _
            ['"add",      "ADD" ],_
            ['"and",      "AND" ],_
            ['"break",   "BREAK" ],_
@@ -65,8 +66,10 @@ scanKeyWords := [ _
            ['"define",  "DEFN" ],_
            ['"do",        "DO"],_
            ['"else",    "ELSE" ],_
+           ['"exist",   "EXIST"],_
            ['"exit",    "EXIT" ],_
            ['"export","EXPORT" ],_
+           ['"forall", "FORALL"],_
            ['"for",      "FOR" ],_
            ['"free",    "FREE" ],_
            ['"from",    "FROM" ],_
@@ -294,7 +297,7 @@ lineoftoks(s)==
       else cons([[toks,s]],$r)
 
 
-scanToken () ==
+scanToken() ==
       ln:=$ln
       c:=QENUM($ln,$n)
       linepos:=$linepos
@@ -451,7 +454,7 @@ scanPossFloat (w)==
        w:=spleI(function digit?)
        scanExponent('"0",w)
 
-scanCloser:=[")","}","]","|)","|}","|]"]
+scanCloser == [")","}","]","|)","|}","|]"]
 
 scanCloser? w== MEMQ(keyword w,scanCloser)
 

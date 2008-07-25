@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -532,11 +532,24 @@ npLogical()   ==  npLeftAssoc('(OR ),function npDisjand)
 npSuch() == npLeftAssoc( '(BAR),function npLogical)
 npMatch()   ==    npLeftAssoc ('(IS ISNT ), function npSuch)
 
-npType()    ==  npMatch()  and
+++ Parse a type expression
+++   Type:
+++     MonoType
+++     QuantifiedVariable Type
+npType() ==
+  npEqPeek "FORALL" =>
+    npQuantifierVariable "FORALL" and npType() and
+      npPush %Forall(npPop2(), npPop1())
+  npEqPeek "EXIST" =>
+    npQuantifierVariable "EXIST" and npType() and
+      npPush %Exist(npPop2(), npPop1())
+  npMonoType()
+
+npMonoType() ==  npMatch()  and
                 a:=npPop1()
                 npWith(a) or npPush a
 
-npADD()    ==   npType() and
+npADD()    ==   npMonoType() and
                 a:=npPop1()
                 npAdd(a) or npPush a
 
@@ -792,6 +805,17 @@ npVariable()== npParenthesized function npVariablelist or
       (npVariableName() and npPush pfListOf [npPop1()])
 
 npVariablelist()== npListing function npVariableName
+
+++ Parse binders of a quantified expression
+++   QuantifiedVariable:
+++      Quantifier Variable DOT
+++   Quantifier:
+++      EXIST
+++      FORALL
+npQuantifierVariable quantifier ==
+  npEqKey quantifier and (npVariable() or npTrap())
+    and npEqKey "DOT"
+
 
 npListing (p)==npList(p,"COMMA",function pfListOf)
 npQualified(f)==
