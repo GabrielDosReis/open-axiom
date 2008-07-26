@@ -569,23 +569,6 @@ checkCallingConvention(sigs,nargs) ==
   v
 
 
-getConstructorFormOfMode(m,e) ==
-  isConstructorForm m => m
-  m := RepIfRepHack m
-  atom m and get(m,"value",e) is [v,:.] =>
-    isConstructorForm v => v
-
-getConstructorMode(x,e) ==
-  atom x => (u:= getmode(x,e) or return nil; getConstructorFormOfMode(u,e))
-  x is ["elt",y,a] =>
-    u:= getConstructorMode(y,e)
-    u is ["Vector",R] or u is ["List",R] =>
-      isConstructorForm R => R
-    u is ["Record",:l] =>
-      (or/[p is [., =a,R] for p in l]) and isConstructorForm R => R
-
-isConstructorForm u == u is [name,:.] and member(name,'(Record Vector List))
-
 eltModemapFilter(name,mmList,e) ==
   isConstantId(name,e) =>
     l:= [mm for mm in mmList | mm is [[.,.,.,sel,:.],:.] and sel=name] => l
