@@ -1,4 +1,16 @@
+2008-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/scan.boot: Tidy.
+	* interp/ptrees.boot: Define AST for type schemes.
+	* interp/cparse.boot (npType): Parse type schemes.
+	(npQuantifierVariable): New.
+	(npADD): Accept only monotypes.
+	* interp/pf2sex.boot (pf2Sex1): Handle type schemes.
+	(pfQuantified2Sex): New.
+
 2008-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cparse.boot (npMonoType): Rename from npType.
 
 	* boot/strap: Update cached Lisp translation.
 
