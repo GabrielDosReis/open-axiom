@@ -413,12 +413,12 @@
 	 (sayBrightlyNT1 X |$OutputStream|))))
  
 (defun sayBrightlyNT1 (X |$OutputStream|)
-  (if (ATOM X) (BRIGHTPRINT-0 X) (BRIGHTPRINT X)))
+  (if (ATOM X) (|brightPrint0| X) (|brightPrint| X)))
  
 (defun sayBrightly1 (X |$OutputStream|)
     (if (ATOM X)
-        (progn (BRIGHTPRINT-0 X) (TERPRI) (force-output))
-      (progn (BRIGHTPRINT X) (TERPRI) (force-output))))
+        (progn (|brightPrint0| X) (TERPRI) (force-output))
+      (progn (|brightPrint| X) (TERPRI) (force-output))))
  
 (defun |saySpadMsg| (X)
   (if (NULL X) NIL (sayBrightly1 X |$algebraOutputStream|)))
