@@ -1,5 +1,24 @@
 2008-08-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/macros.lisp (sayBrightlyNT1): Tidy.
+	(sayBrightly1): Likewise.
+	* interp/msgdb.boot (sayNewLine): Take two defauled arguments.
+	(sayString): Take a second defaulted arguments.
+	(spadStartUpMsgs): Tidy.
+	(brightPrint): Likewise.
+	(brightPrint0): Likewise.
+	(brightPrint0AsTeX): Likewise.
+	(brightPrint1): Likewise.
+	(brightPrintHighlight): Likewise.
+	(brightPrintHighlightAsTeX): Likewise.
+	(brightPrintCenter): Likewise.
+	(brightPrintCenterAsTeX): Likewise.
+	(brightPrintRightJustify): Likewise.
+	* interp/i-output.boot (mathprint): Take a second defaulted argument.
+	* boot/ast.boot (%Assignment): Rename from Assignment.
+
+2008-08-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/msgdb.boot (BRIGHTPRINT-0): Remove.
 	(BRIGHTPRINT): Likewise.
 	* interp/macros.lisp (sayBrightly1): Use brightPrint0 and brightPrint.

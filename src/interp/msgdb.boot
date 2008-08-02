@@ -578,17 +578,17 @@ mkMessage msg ==
 
 sayMessage msg == sayMSG mkMessage msg
 
-sayNewLine(:margin) ==
+sayNewLine(out == $OutputStream, margin == nil) ==
   -- Note: this function should *always* be used by sayBrightly and
   -- friends rather than TERPRI --  see bindSayBrightly
-  TERPRI()
-  if margin is [n] then BLANKS n
+  TERPRI(out)
+  if margin ^= nil then BLANKS(margin,out)
   nil
 
-sayString x ==
+sayString(x,out == $OutputStream) ==
   -- Note: this function should *always* be used by sayBrightly and
   -- friends rather than PRINTEXP --  see bindSayBrightly
-  PRINTEXP x
+  PRINTEXP(x,out)
 
 spadStartUpMsgs() ==
   -- messages displayed when the system starts up
@@ -600,28 +600,6 @@ spadStartUpMsgs() ==
   sayKeyedMsg("S2GL0018D",NIL)
   sayKeyedMsg("S2GL0003B",[$opSysName])
   sayMSG bar
---  sayMSG bar
---  sayMSG '"                                    *"
---  sayMSG '"               *****    **     **  ***     ******    ** *     *"
---  sayMSG '"              *     *     *   *     *     *      *    ** ** ** **"
---  sayMSG '"                    *      * *      *    *        *   **  ***  **"
---  sayMSG '"               ******       *       *   *          *  *    *    *"
---  sayMSG '"              *     *      * *      *    *        *   *    *    *"
---  sayMSG '"              *     *     *   *     *     *      *    *    *    *"
---  sayMSG '"              *     *    *     *    *      *    *     *    *    *"
---  sayMSG '"               ***** * **       ** ***      ****     **   ***  ***"
---  sayMSG '"                                    *"
---  sayMSG '"   Issue )copyright for copyright notices."
---  sayKeyedMsg("S2GL0018A",NIL)
---  sayKeyedMsg("S2GL0018B",NIL)
---  sayKeyedMsg("S2GL0003C",NIL)
---  sayKeyedMsg("S2GL0003A",NIL)
---  if not $printTimeIfTrue then sayKeyedMsg("S2GL0004",NIL)
---  if not $printTypeIfTrue then sayKeyedMsg("S2GL0005",NIL)
-  --  if not $displaySetValue then sayKeyedMsg("S2GL0007",NIL)
---  if not $HiFiAccess then sayKeyedMsg("S2GL0008",NIL)
---  sayMSG bar
---  version()
   $msgAlist := NIL    -- these msgs need not be saved
   sayMSG " "
 
@@ -631,13 +609,13 @@ version() == _*YEARWEEK_*
 
 --% Some Advanced Formatting Functions
 
-brightPrint x ==
+brightPrint(x,out == $OutputStream) ==
   $MARG : local := 0
-  for y in x repeat brightPrint0 y
+  for y in x repeat brightPrint0(y,out)
   NIL
 
-brightPrint0 x ==
-  $texFormatting => brightPrint0AsTeX x
+brightPrint0(x,out == $OutputStream) ==
+  $texFormatting => brightPrint0AsTeX(x,out)
   if IDENTP x then x := PNAME x
 
   -- if the first character is a backslash and the second is a percent sign,
@@ -645,10 +623,10 @@ brightPrint0 x ==
   -- it without the backslash.
 
   STRINGP x and STRINGLENGTH x > 1 and x.0 = char "\" and x.1 = char "%" =>
-    sayString SUBSTRING(x,1,NIL)
+    sayString(SUBSTRING(x,1,NIL),out)
   x = '"%l" =>
-    sayNewLine()
-    for i in 1..$MARG repeat sayString '" "
+    sayNewLine(out)
+    for i in 1..$MARG repeat sayString('" ",out)
   x = '"%i" =>
     $MARG := $MARG + 3
   x = '"%u" =>
@@ -657,29 +635,29 @@ brightPrint0 x ==
   x = '"%U" =>
     $MARG := 0
   x = '"%" =>
-    sayString '" "
+    sayString('" ",out)
   x = '"%%" =>
-    sayString  '"%"
+    sayString('"%",out)
   x = '"%b" =>
     -- FIXME: this kludge is GCL-specific.  Find way to support
     -- highlighting on all supported Lisp.
-    NULL IS_-CONSOLE $OutputStream or %hasFeature KEYWORD::WIN32
-      or stdStreamIsTerminal(1) = 0 => sayString '" "
-    NULL $highlightAllowed        => sayString '" "
-    sayString $highlightFontOn
-  k := blankIndicator x => BLANKS k
+    not IS_-CONSOLE out or %hasFeature KEYWORD::WIN32
+      or stdStreamIsTerminal(1) = 0 => sayString('" ",out)
+    not $highlightAllowed => sayString('" ",out)
+    sayString($highlightFontOn,out)
+  k := blankIndicator x => BLANKS(k,out)
   x = '"%d" =>
-    NULL IS_-CONSOLE $OutputStream or %hasFeature KEYWORD::WIN32
-      or stdStreamIsTerminal(1) = 0 => sayString '" "
-    NULL $highlightAllowed        => sayString '" "
-    sayString $highlightFontOff
-  STRINGP x => sayString x
-  brightPrintHighlight x
+    not IS_-CONSOLE out or %hasFeature KEYWORD::WIN32
+      or stdStreamIsTerminal(1) = 0 => sayString('" ",out)
+    not $highlightAllowed => sayString('" ",out)
+    sayString($highlightFontOff,out)
+  STRINGP x => sayString(x,out)
+  brightPrintHighlight(x,out)
 
-brightPrint0AsTeX x == 
+brightPrint0AsTeX(x, out == $OutputStream) == 
   x = '"%l" =>
-    sayString('"\\")
-    for i in 1..$MARG repeat sayString '"\ "
+    sayString('"\\",out)
+    for i in 1..$MARG repeat sayString('"\ ",out)
   x = '"%i" =>
     $MARG := $MARG + 3
   x = '"%u" =>
@@ -688,20 +666,20 @@ brightPrint0AsTeX x ==
   x = '"%U" =>
     $MARG := 0
   x = '"%" =>
-    sayString '"\ "
+    sayString('"\ ",out)
   x = '"%%" =>
-    sayString  '"%"
+    sayString('"%",out)
   x = '"%b" =>
-    sayString '" {\tt "
-  k := blankIndicator x => for i in 1..k repeat sayString '"\ "
+    sayString('" {\tt ",out)
+  k := blankIndicator x => for i in 1..k repeat sayString('"\ ",out)
   x = '"%d" =>
-    sayString '"} "
+    sayString('"} ",out)
   x = '"_"$_"" => 
-    sayString('"_"\verb!$!_"")
+    sayString('"_"\verb!$!_"",out)
   x = '"$" => 
-    sayString('"\verb!$!")
-  STRINGP x => sayString x
-  brightPrintHighlight x
+    sayString('"\verb!$!",out)
+  STRINGP x => sayString(x,out)
+  brightPrintHighlight(x,out)
 
 blankIndicator x ==
   if IDENTP x then x := PNAME x
@@ -711,75 +689,74 @@ blankIndicator x ==
     1
   nil
 
-brightPrint1 x ==
-  if member(x,'(%l "%l")) then sayNewLine()
-  else if STRINGP x then sayString x
-       else brightPrintHighlight x
+brightPrint1(x, out == $OutputStream) ==
+  if member(x,'(%l "%l")) then sayNewLine(out)
+  else if STRINGP x then sayString(x,out)
+       else brightPrintHighlight(x,out)
   NIL
 
-brightPrintHighlight x ==
-  $texFormatting => brightPrintHighlightAsTeX x
+brightPrintHighlight(x, out == $OutputStream) ==
+  $texFormatting => brightPrintHighlightAsTeX(x,out)
   IDENTP x =>
     pn := PNAME x
-    sayString pn
+    sayString(pn,out)
   -- following line helps find certain bugs that slip through
   -- also see sayBrightlyLength1
-  VECP x => sayString '"UNPRINTABLE"
-  ATOM x => sayString object2String x
+  VECP x => sayString('"UNPRINTABLE",out)
+  ATOM x => sayString(object2String x,out)
   [key,:rst] := x
   if IDENTP key then key:=PNAME key
-  key = '"%m" => mathprint rst
-  member(key,'("%p" "%s")) => PRETTYPRIN0 rst
-  key = '"%ce" => brightPrintCenter rst
-  key = '"%rj" => brightPrintRightJustify rst
+  key = '"%m" => mathprint(rst,out)
+  member(key,'("%p" "%s")) => PRETTYPRIN0(rst,out)
+  key = '"%ce" => brightPrintCenter(rst,out)
+  key = '"%rj" => brightPrintRightJustify(rst,out)
   key = '"%t"  => $MARG := $MARG + tabber rst
-  sayString '"("
-  brightPrint1 key
+  sayString('"(",out)
+  brightPrint1(key,out)
   if EQ(key,'TAGGEDreturn) then
     rst:=[CAR rst,CADR rst,CADDR rst, '"environment (omitted)"]
   for y in rst repeat
-    sayString '" "
-    brightPrint1 y
+    sayString('" ",out)
+    brightPrint1(y,out)
   if rst and (la := LASTATOM rst) then
-    sayString '" . "
-    brightPrint1 la
-  sayString '")"
+    sayString('" . ",out)
+    brightPrint1(la,out)
+  sayString('")",out)
 
-brightPrintHighlightAsTeX x ==
+brightPrintHighlightAsTeX(x, out == $OutputStream) ==
   IDENTP x =>
     pn := PNAME x
-    sayString pn
-  ATOM x => sayString object2String x
-  VECP x => sayString '"UNPRINTABLE"
+    sayString(pn,out)
+  ATOM x => sayString(object2String x,out)
+  VECP x => sayString('"UNPRINTABLE",out)
   [key,:rst] := x
-  key = '"%m" => mathprint rst
-  key = '"%m" => rst
+  key = '"%m" => mathprint(rst,out)
   key = '"%s" => 
-    sayString '"\verb__"
-    PRETTYPRIN0 rst
-    sayString '"__"
-  key = '"%ce" => brightPrintCenter rst
+    sayString('"\verb__",out)
+    PRETTYPRIN0(rst,out)
+    sayString('"__",out)
+  key = '"%ce" => brightPrintCenter(rst,out)
   key = '"%t"  => $MARG := $MARG + tabber rst
   -- unhandled junk (print verbatim(ish)
-  sayString '"("
-  brightPrint1 key
+  sayString('"(",out)
+  brightPrint1(key,out)
   if EQ(key,'TAGGEDreturn) then
     rst:=[CAR rst,CADR rst,CADDR rst, '"environment (omitted)"]
   for y in rst repeat
-    sayString '" "
-    brightPrint1 y
+    sayString('" ",out)
+    brightPrint1(y,out)
   if rst and (la := LASTATOM rst) then
-    sayString '" . "
-    brightPrint1 la
-  sayString '")"
+    sayString('" . ",out)
+    brightPrint1(la,out)
+  sayString('")",out)
 
 tabber num ==
     maxTab := 50
     num > maxTab => maxTab
     num
 
-brightPrintCenter x ==
-  $texFormatting => brightPrintCenterAsTeX x
+brightPrintCenter(x,out == $OutputStream) ==
+  $texFormatting => brightPrintCenterAsTeX(x,out)
   -- centers rst within $LINELENGTH, checking for %l's
   ATOM x =>
     x := object2String x
@@ -787,7 +764,7 @@ brightPrintCenter x ==
     if wid < $LINELENGTH then
       f := DIVIDE($LINELENGTH - wid,2)
       x := LIST(fillerSpaces(f.0,'" "),x)
-    for y in x repeat brightPrint0 y
+    for y in x repeat brightPrint0(y,out)
     NIL
   y := NIL
   ok := true
@@ -800,17 +777,17 @@ brightPrintCenter x ==
   if wid < $LINELENGTH then
     f := DIVIDE($LINELENGTH - wid,2)
     y := CONS(fillerSpaces(f.0,'" "),y)
-  for z in y repeat brightPrint0 z
+  for z in y repeat brightPrint0(z,out)
   if x then
-    sayNewLine()
-    brightPrintCenter x
+    sayNewLine(out)
+    brightPrintCenter(x,out)
   NIL
 
-brightPrintCenterAsTeX x ==
+brightPrintCenterAsTeX(x, out == $OutputStream) ==
   ATOM x =>
-    sayString '"\centerline{"
-    sayString x
-    sayString '"}"
+    sayString('"\centerline{",out)
+    sayString(x,out)
+    sayString('"}",out)
   lst := x
   while lst repeat 
     words := nil
@@ -818,23 +795,23 @@ brightPrintCenterAsTeX x ==
       words := [CAR lst,: words]
       lst := CDR lst
     if lst then lst := cdr lst
-    sayString '"\centerline{"
+    sayString('"\centerline{",out)
     words := nreverse words
     for zz in words repeat
-      brightPrint0 zz
-    sayString '"}"
+      brightPrint0(zz,out)
+    sayString('"}",out)
   nil 
 
-brightPrintRightJustify x ==
+brightPrintRightJustify(x, out == $OutputStream) ==
   -- right justifies rst within $LINELENGTH, checking for %l's
   ATOM x =>
     x := object2String x
     wid := STRINGLENGTH x
     wid < $LINELENGTH =>
       x := LIST(fillerSpaces($LINELENGTH-wid,'" "),x)
-      for y in x repeat brightPrint0 y
+      for y in x repeat brightPrint0(y,out)
       NIL
-    brightPrint0 x
+    brightPrint0(x,out)
     NIL
   y := NIL
   ok := true
@@ -846,10 +823,10 @@ brightPrintRightJustify x ==
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
     y := CONS(fillerSpaces($LINELENGTH-wid,'" "),y)
-  for z in y repeat brightPrint0 z
+  for z in y repeat brightPrint0(z,out)
   if x then
-    sayNewLine()
-    brightPrintRightJustify x
+    sayNewLine(out)
+    brightPrintRightJustify(x,out)
   NIL
 
 --% Message Formatting Utilities
@@ -1034,10 +1011,10 @@ splitListSayBrightly u ==
 --                Utility Functions
 --=======================================================================
 
-$htSpecialChars := ['"_#", '"[", '"]", '"%", '"{", '"}", '"_\",
+$htSpecialChars == ['"_#", '"[", '"]", '"%", '"{", '"}", '"_\",
                     '"$", '"&", '"^", '"__", '"_~"]
 
-$htCharAlist := '(
+$htCharAlist == '(
   ("$"  . "\%")
   ("[]" . "\[\]")
   ("{}" . "\{\}")

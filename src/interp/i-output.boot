@@ -300,7 +300,7 @@ mathprintWithNumber x ==
     $IOindex => ['EQUATNUM,$IOindex,x]
     x
 
-mathprint x == 
+mathprint(x,out == $OutputStream) == 
    x := outputTran x
    $saturn => texFormat1 x
    maprin x
