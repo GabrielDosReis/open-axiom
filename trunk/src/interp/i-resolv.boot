@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -162,10 +164,10 @@ resolveTTSpecial(t1,t2) ==
   -- things. (RSS 1/-86)
 
   -- following is just an efficiency hack
-  (t1 = '(Symbol) or t1 is ['OrderedVariableList,.]) and PAIRP(t2) and
+  (t1 = $Symbol or t1 is ['OrderedVariableList,.]) and PAIRP(t2) and
     CAR(t2) in '(Polynomial RationalFunction) => t2
 
-  (t1 = '(Symbol)) and ofCategory(t2, '(IntegerNumberSystem)) =>
+  (t1 = $Symbol) and ofCategory(t2, '(IntegerNumberSystem)) =>
     resolveTT1(['Polynomial, t2], t2)
 
   t1 = '(AlgebraicNumber) and (t2 = $Float or t2 = $DoubleFloat) =>
@@ -193,23 +195,23 @@ resolveTTSpecial(t1,t2) ==
     resolveTT1($Integer,t2)
   t1 is ['OrderedVariableList,[x]] => resolveTTSpecial(['Variable, x], t2)
   t1 is ['OrderedVariableList,vl] =>
-    ofCategory(t2,'(Ring)) => resolveTT(['Polynomial,'(Integer)],t2)
+    ofCategory(t2,'(Ring)) => resolveTT(['Polynomial,$Integer],t2)
     resolveTT($Symbol,t2)
   t1 is ['Variable,x] =>
     EQCAR(t2,'SimpleAlgebraicExtension) => resolveTTSpecial(t2,t1)
     t2 is ['UnivariatePolynomial,y,S] =>
       x = y => t2
-      resolveTT1(['UnivariatePolynomial,x,'(Integer)],t2)
+      resolveTT1(['UnivariatePolynomial,x,$Integer],t2)
     t2 is ['Variable,y] =>
       x = y => t1
 --    ['OrderedVariableList, MSORT [x,y]]
       $Symbol
-    t2 = '(Symbol) => t2
+    t2 = $Symbol => t2
     t2 is ['Polynomial,.] => t2
     t2 is ['OrderedVariableList, vl] and member(x,vl) => t2
     isPolynomialMode t2 => nil
     ofCategory(t2, '(IntegerNumberSystem)) => resolveTT(['Polynomial, t2], t2)
-    resolveTT(['Polynomial,'(Integer)],t2)
+    resolveTT(['Polynomial,$Integer],t2)
   t1 is ['FunctionCalled,f] and t2 is ['FunctionCalled,g] =>
     null (mf := get(f,'mode,$e)) => NIL
     null (mg := get(g,'mode,$e)) => NIL

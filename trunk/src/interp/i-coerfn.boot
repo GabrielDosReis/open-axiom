@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -1688,14 +1690,14 @@ P2Us(u, source is [.,S], target is [.,T,var,cen], type) ==
     -- might be able to say yes
     canCoerce(S,T)
   T isnt ['Expression, :.] => coercionFailure()
-  if S ^= '(Float) then S := $Integer
+  if S ^= $Float then S := $Integer
   obj := objNewWrap(u, source)
   E := ['Expression, S]
   newU := coerceInt(obj, E)
   null newU => coercionFailure()
   EQtype := ['Equation, E]
   eqfun := getFunctionFromDomain('_=, EQtype, [E,E])
-  varE := coerceInt(objNewWrap(var, '(Symbol)), E)
+  varE := coerceInt(objNewWrap(var, $Symbol), E)
   null varE => coercionFailure()
   cenE := coerceInt(objNewWrap(cen, T), E)
   null cenE => coercionFailure()

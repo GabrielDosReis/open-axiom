@@ -423,8 +423,8 @@ evalCOERCE(op,tree,m) ==
     t2 :=
       if isPartialMode m
         then
-          $genValue and (t1 = '(Symbol)) and containsPolynomial m =>
-            resolveTM(['UnivariatePolynomial,objValUnwrap(v),'(Integer)],m)
+          $genValue and (t1 = $Symbol) and containsPolynomial m =>
+            resolveTM(['UnivariatePolynomial,objValUnwrap(v),$Integer],m)
           resolveTM(t1,m)
         else m
     null t2 => throwKeyedMsgCannotCoerceWithValue(e,t1,m)

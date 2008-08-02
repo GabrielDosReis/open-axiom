@@ -1,5 +1,19 @@
 2008-08-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot: Use constants by names.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+
+2008-08-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (bpTerm): Term forms depend on the kind of
 	variable.
 	(bpTypeItem): New.

@@ -782,8 +782,8 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
     -- should go.
     op = '_= =>
         #args1 ^= 2 or args1.0 ^= dc or args1.1 ^= dc => NIL
-        tar and tar ^= '(Boolean) => NIL
-        [[[dc, '(Boolean), dc, dc], ['(Boolean),'$,'$], [NIL, NIL]]]
+        tar and tar ^= $Boolean => NIL
+        [[[dc, $Boolean, dc, dc], [$Boolean,'$,'$], [NIL, NIL]]]
     op = 'coerce =>
         #args1 ^= 1 
         dcName='Enumeration and (args1.0=$Symbol or tar=dc)=>
@@ -944,7 +944,7 @@ matchMmSig(mm,tar,args1,args2) ==
       (STRINGP(x) and (x1 is ['Variable,v]) and (x = PNAME v)) or
         $SubDom and isSubDomain(x,x1) => rtc:= 'T
         $Coerce => x2=x or canCoerceFrom(x1,x)
-        x1 is ['Variable,:.] and x = '(Symbol)
+        x1 is ['Variable,:.] and x = $Symbol
     $RTC:= CONS(rtc,$RTC)
   null args1 and null a and b and matchMmSigTar(tar,CAR sig)
 
@@ -1755,9 +1755,9 @@ defaultTypeForCategory(cat, SL) ==
   cat is [c] =>
     c = 'Field => $RationalNumber
     c in '(Ring IntegralDomain EuclideanDomain GcdDomain
-      OrderedRing DifferentialRing) => '(Integer)
+      OrderedRing DifferentialRing) => $Integer
     c = 'OrderedSet => $Symbol
-    c = 'FloatingPointSystem => '(Float)
+    c = 'FloatingPointSystem => $Float
     NIL
   cat is [c,p1] =>
     c = 'FiniteLinearAggregate => ['Vector, p1]
