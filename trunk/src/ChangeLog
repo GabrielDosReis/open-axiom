@@ -1,5 +1,11 @@
 2008-08-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nrungo.boot (NRTisRecurrenceRelation): Lookup "not" with 
+	signature % -> %.
+	* interp/br-con.boot: Use "~=" for inequality.
+
+2008-08-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot: Use constants by names.
 	* interp/i-analy.boot: Likewise.
 	* interp/i-coerfn.boot: Likewise.
