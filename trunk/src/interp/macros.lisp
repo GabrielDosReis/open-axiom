@@ -386,7 +386,10 @@
         ((stringp x) x)
         ((write-to-string x))))
  
-(defun |sayTeX| (x) (if (null x) nil (sayBrightly1 x |$texOutputStream|)))
+(defun |sayTeX| (x) 
+  (if (null x) 
+      nil 
+    (sayBrightly1 x |$texOutputStream|)))
  
 (defvar |$sayBrightlyStream| nil "if not nil, gives stream for sayBrightly output")
  
@@ -412,13 +415,21 @@
         ((sayBrightly1 X S)
 	 (sayBrightlyNT1 X |$OutputStream|))))
  
-(defun sayBrightlyNT1 (X |$OutputStream|)
-  (if (ATOM X) (|brightPrint0| X) (|brightPrint| X)))
+(defun sayBrightlyNT1 (X out)
+  (if (ATOM X) 
+      (|brightPrint0| X out) 
+    (|brightPrint| X out)))
  
-(defun sayBrightly1 (X |$OutputStream|)
+(defun sayBrightly1 (X out)
     (if (ATOM X)
-        (progn (|brightPrint0| X) (TERPRI) (force-output))
-      (progn (|brightPrint| X) (TERPRI) (force-output))))
+        (progn 
+	  (|brightPrint0| X out) 
+	  (TERPRI out) 
+	  (force-output out))
+      (progn 
+	(|brightPrint| X out) 
+	(TERPRI out) 
+	(force-output out))))
  
 (defun |saySpadMsg| (X)
   (if (NULL X) NIL (sayBrightly1 X |$algebraOutputStream|)))

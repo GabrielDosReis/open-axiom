@@ -103,7 +103,7 @@ structure %Ast ==
   Definition(Name, List, Ast, Ast)      -- f x == y
   Macro(Name, List, Ast)                -- m x ==> y
   SuchThat(Ast)                         -- | p
-  Assignment(Ast, Ast)                  -- x := y
+  %Assignment(Ast, Ast)                -- x := y
   While(Ast)                            -- while p           -- iterator
   Until(Ast)                            -- until p           -- iterator
   For(Ast, Ast, Ast)                    -- for x in e by k   -- iterator
