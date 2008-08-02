@@ -2,9 +2,9 @@
 
 (IMPORT-MODULE "includer")
 
-(PROVIDE "scanner")
-
 (IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "scanner")
 
 (DEFUN |double| (|x|) (FLOAT |x| 1.0))
 

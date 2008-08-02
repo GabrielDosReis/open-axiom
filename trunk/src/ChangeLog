@@ -1,3 +1,16 @@
+2008-08-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpTerm): Term forms depend on the kind of
+	variable.
+	(bpTypeItem): New.
+	(bpTypeItemList): Use it.
+	(bpTypeAliasDefition): Tidy.
+	(bpCaseItem): Accept wildchars in pattern terms.
+	* boot/ast.boot (bfCompDef): Don't name unused pattern variables.
+	(bfSmintable): A character compares EQL.
+	(bfCI): Ignore wildcard pattern variables.
+	* boot/strap: Update cached Lisp translation.
+
 2008-08-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/macros.lisp (sayBrightlyNT1): Tidy.

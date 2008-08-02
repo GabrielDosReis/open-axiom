@@ -473,7 +473,7 @@ bpImport() ==
 --    type-alias-definition: 
 --          identifier <=> logical-expression
 bpTypeAliasDefition() ==
-  (bpTerm() or bpTrap()) and 
+  (bpTerm function bpIdList or bpTrap()) and 
     bpEqKey "TDEF" and bpLogical() and
       bpPush %TypeAlias(bpPop2(), bpPop1())
 
@@ -1110,13 +1110,17 @@ bpStruct()==
            bpTypeList() and bpPush bfStruct(bpPop2(),bpPop1())
  
 bpTypeList() == bpPileBracketed function bpTypeItemList
-       or bpTerm() and bpPush [bpPop1()]
+       or bpTerm function bpIdList and bpPush [bpPop1()]
+
+bpTypeItem() ==
+  bpTerm function bpIdList
  
-bpTypeItemList() ==  bpListAndRecover function bpTerm
+bpTypeItemList() ==  
+  bpListAndRecover function bpTypeItem
  
-bpTerm() ==
+bpTerm idListParser ==
           (bpName() or bpTrap()) and
-            ((bpParenthesized function bpIdList and
+            ((bpParenthesized idListParser and
               bpPush bfNameArgs (bpPop2(),bpPop1()))
                 or bpName() and bpPush bfNameArgs(bpPop2(),bpPop1()))
                  or bpPush(bfNameOnly bpPop1())
@@ -1132,11 +1136,18 @@ bpCase()==
 bpPiledCaseItems()==
    bpPileBracketed function bpCaseItemList and
        bpPush bfCase(bpPop2(),bpPop1())
+
 bpCaseItemList()==
    bpListAndRecover function bpCaseItem
+
+bpCasePatternVar() ==
+  bpName() or bpDot()
+
+bpCasePatternVarList() ==
+  bpTuple function bpCasePatternVar
  
 bpCaseItem()==
-    (bpTerm() or bpTrap()) and
+    (bpTerm function bpCasePatternVarList or bpTrap()) and
        (bpEqKey "EXIT" or bpTrap()) and
          (bpWhere() or bpTrap()) and
             bpPush bfCaseItem (bpPop2(),bpPop1())

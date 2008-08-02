@@ -273,7 +273,7 @@
 (DEFUN |shoePlainLine?| (|s|)
   (COND
     ((EQL (LENGTH |s|) 0) T)
-    ('T (NOT (EQUAL (ELT |s| 0) (|char| '|)|))))))
+    ('T (NOT (EQL (ELT |s| 0) (|char| '|)|))))))
 
 (DEFUN |shoeSay?| (|s|) (|shoePrefix?| ")say" |s|))
 

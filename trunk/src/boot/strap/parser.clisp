@@ -495,8 +495,8 @@
     (#0# NIL)))
 
 (DEFUN |bpTypeAliasDefition| ()
-  (AND (OR (|bpTerm|) (|bpTrap|)) (|bpEqKey| 'TDEF) (|bpLogical|)
-       (|bpPush| (|%TypeAlias| (|bpPop2|) (|bpPop1|)))))
+  (AND (OR (|bpTerm| #'|bpIdList|) (|bpTrap|)) (|bpEqKey| 'TDEF)
+       (|bpLogical|) (|bpPush| (|%TypeAlias| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpSignature| ()
   (AND (|bpName|) (|bpEqKey| 'COLON) (|bpMapping|)
@@ -1144,13 +1144,15 @@
 
 (DEFUN |bpTypeList| ()
   (OR (|bpPileBracketed| #'|bpTypeItemList|)
-      (AND (|bpTerm|) (|bpPush| (LIST (|bpPop1|))))))
+      (AND (|bpTerm| #'|bpIdList|) (|bpPush| (LIST (|bpPop1|))))))
 
-(DEFUN |bpTypeItemList| () (|bpListAndRecover| #'|bpTerm|))
+(DEFUN |bpTypeItem| () (|bpTerm| #'|bpIdList|))
 
-(DEFUN |bpTerm| ()
+(DEFUN |bpTypeItemList| () (|bpListAndRecover| #'|bpTypeItem|))
+
+(DEFUN |bpTerm| (|idListParser|)
   (OR (AND (OR (|bpName|) (|bpTrap|))
-           (OR (AND (|bpParenthesized| #'|bpIdList|)
+           (OR (AND (|bpParenthesized| |idListParser|)
                     (|bpPush| (|bfNameArgs| (|bpPop2|) (|bpPop1|))))
                (AND (|bpName|)
                     (|bpPush| (|bfNameArgs| (|bpPop2|) (|bpPop1|))))))
@@ -1168,8 +1170,12 @@
 
 (DEFUN |bpCaseItemList| () (|bpListAndRecover| #'|bpCaseItem|))
 
+(DEFUN |bpCasePatternVar| () (OR (|bpName|) (|bpDot|)))
+
+(DEFUN |bpCasePatternVarList| () (|bpTuple| #'|bpCasePatternVar|))
+
 (DEFUN |bpCaseItem| ()
-  (AND (OR (|bpTerm|) (|bpTrap|)) (OR (|bpEqKey| 'EXIT) (|bpTrap|))
-       (OR (|bpWhere|) (|bpTrap|))
+  (AND (OR (|bpTerm| #'|bpCasePatternVarList|) (|bpTrap|))
+       (OR (|bpEqKey| 'EXIT) (|bpTrap|)) (OR (|bpWhere|) (|bpTrap|))
        (|bpPush| (|bfCaseItem| (|bpPop2|) (|bpPop1|)))))
 
