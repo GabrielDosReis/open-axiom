@@ -96,8 +96,8 @@
 
 (DEFUN |SuchThat| #0=(|bfVar#51|) (CONS '|SuchThat| (LIST . #0#)))
 
-(DEFUN |Assignment| #0=(|bfVar#52| |bfVar#53|)
-  (CONS '|Assignment| (LIST . #0#)))
+(DEFUN |%Assignment| #0=(|bfVar#52| |bfVar#53|)
+  (CONS '|%Assignment| (LIST . #0#)))
 
 (DEFUN |While| #0=(|bfVar#54|) (CONS '|While| (LIST . #0#)))
 
@@ -229,9 +229,7 @@
         (SETQ |bfVar#78| |x|)
         (SETQ |bfVar#79| (CDR |bfVar#78|))
         (CASE (CAR |bfVar#78|)
-          (|ConstantDefinition|
-              (LET ((|n| (CAR |bfVar#79|)) (|e| (CADR |bfVar#79|)))
-                |x|))
+          (|ConstantDefinition| |x|)
           (T (COND
                ((AND (CONSP |x|)
                      (PROGN
@@ -1252,7 +1250,8 @@
   (AND (EQCAR |x| 'QUOTE) (IDENTP (CADR |x|))))
 
 (DEFUN |bfSmintable| (|x|)
-  (OR (INTEGERP |x|) (AND (CONSP |x|) (MEMQ (CAR |x|) '(SIZE LENGTH)))))
+  (OR (INTEGERP |x|)
+      (AND (CONSP |x|) (MEMBER (CAR |x|) '(SIZE LENGTH |char|)))))
 
 (DEFUN |bfQ| (|l| |r|)
   (COND
@@ -2119,12 +2118,16 @@
                             (PROGN (SETQ |i| (CAR |bfVar#126|)) NIL))
                         (RETURN (NREVERSE |bfVar#127|)))
                        ('T
-                        (SETQ |bfVar#127|
-                              (CONS (LIST |i| (|bfCARCDR| |j| |g|))
-                                    |bfVar#127|))))
+                        (AND (NOT (EQ |i| 'DOT))
+                             (SETQ |bfVar#127|
+                                   (CONS
+                                    (LIST |i| (|bfCARCDR| |j| |g|))
+                                    |bfVar#127|)))))
                      (SETQ |bfVar#126| (CDR |bfVar#126|))
                      (SETQ |j| (+ |j| 1)))))
-           (LIST (CAR |x|) (LIST 'LET |b| |y|))))))))
+           (COND
+             ((NULL |b|) (LIST (CAR |x|) |y|))
+             ('T (LIST (CAR |x|) (LIST 'LET |b| |y|))))))))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Thing|) |%List|) |bfCARCDR|))
 

@@ -201,7 +201,7 @@ bfMDefinition(bflhsitems, bfrhs,body) ==
 bfCompDef: %Thing -> %List 
 bfCompDef x ==
   case x of
-    ConstantDefinition(n, e) => x
+    ConstantDefinition(.,.) => x
     otherwise =>
       x is [def, op, args, body] =>
         bfDef(def,op,args,body)
@@ -781,7 +781,7 @@ defQuoteId x==  EQCAR(x,"QUOTE") and IDENTP second x
  
 bfSmintable x==
   INTEGERP x or CONSP x and
-      MEMQ(first x, '(SIZE LENGTH))
+      first x in '(SIZE LENGTH char)
  
 bfQ(l,r)==
        if bfSmintable l or bfSmintable r
@@ -1167,7 +1167,8 @@ bfCI(g,x,y)==
     if null a
     then [first x,y]
     else
-       b:=[[i,bfCARCDR(j,g)] for i in a for j in 0..]
+       b:=[[i,bfCARCDR(j,g)] for i in a for j in 0.. | i ^= "DOT"]
+       null b => [first x,y]
        [first x,["LET",b,y]]
 
 bfCARCDR: (%Short,%Thing) -> %List 
