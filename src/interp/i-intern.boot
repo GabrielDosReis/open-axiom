@@ -148,13 +148,13 @@ mkAtree2(x,op,argl) ==
     [mkAtreeNode "COERCE",mkAtree1 first argl,CADR argl]
   x is ["@", expr, type] =>
     t := evaluateType unabbrev type
-    t = '(DoubleFloat) and expr is [['_$elt, '(Float), 'float], :args] =>
-        mkAtree1 [['_$elt, '(DoubleFloat), 'float], :args]
-    t = '(DoubleFloat) and INTEGERP expr =>
+    t = $DoubleFloat and expr is [['_$elt, =$Float, 'float], :args] =>
+        mkAtree1 [['_$elt, $DoubleFloat, 'float], :args]
+    t = $DoubleFloat and INTEGERP expr =>
         v := mkAtreeNode $immediateDataSymbol
         putValue(v,getBasicObject float expr)
         v
-    t = '(Float) and INTEGERP expr =>
+    t = $Float and INTEGERP expr =>
         mkAtree1 ["::", expr, t]
     typeIsASmallInteger(t) and INTEGERP expr =>
         mkAtree1 ["::", expr, t]

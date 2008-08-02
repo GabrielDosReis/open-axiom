@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -689,7 +689,7 @@ markCons(i,s) == [[i,:x] for x in s]
 markPathsEqual(x,y) ==
   x = y => true
   x is ["::",.,a] and y is ["::",.,b] and 
-    a = '(Integer) and b = '(NonNegativeInteger) => true
+    a = $Integer and b = $NonNegativeInteger => true
   y is [fn,.,z] and MEMQ(fn,'(PART CATCH THROW)) and markPathsEqual(x,z) => true
   y is ['LET,a,b] and GENSYMP a and markPathsEqual(x,b) => true
   y is ['IF,a,b,:.] and GENSYMP a => markPathsEqual(x,b)  -------> ??? 

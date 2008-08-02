@@ -348,7 +348,7 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
   integer := EVALFUN $Integer
   iequalSlot:=compiledLookupCheck("=",'((Boolean) $ $),integer)
   lesspSlot:=compiledLookupCheck("<",'((Boolean) $ $),integer)
-  bf := '(Boolean)
+  bf := $Boolean
   notpSlot:= compiledLookupCheck("not",'((Boolean)(Boolean)),EVALFUN bf)
   for [p,c] in pcl repeat
     p is ['SPADCALL,sharpVar,n1,['ELT,=minivectorName,slot]]

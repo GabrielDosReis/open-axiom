@@ -98,7 +98,7 @@ postBigFloat: %ParseTree -> %ParseTree
 postBigFloat x ==
   [.,mant,:expon] := x
   eltword := if $InteractiveMode then "$elt" else "elt"
-  postTran [[eltword,'(Float),"float"],[",",[",",mant,expon],10]]
+  postTran [[eltword,$Float,"float"],[",",[",",mant,expon],10]]
 
 postAdd: %ParseTree -> %ParseForm
 postAdd x ==

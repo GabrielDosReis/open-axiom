@@ -348,8 +348,8 @@ compAtom(x,m,e) ==
       compSymbol(x,m,e) or return nil
     m = $Expression and primitiveType x => [x,m,e]
     STRINGP x => 
-      x ^= '"failed" and (member('(Symbol), $localImportStack) or
-        member('(Symbol), $globalImportStack)) => markAt [x, '(String), e]
+      x ^= '"failed" and (member($Symbol, $localImportStack) or
+        member($Symbol, $globalImportStack)) => markAt [x, '(String), e]
       [x, x, e]
     [x,primitiveType x or return nil,e]
   convert(t,m)
@@ -791,8 +791,8 @@ resolve(min, mout) ==
   dout := markKillAll mout
   din=$NoValueMode or dout=$NoValueMode => $NoValueMode
   dout=$EmptyMode => din
-  STRINGP din and dout = '(Symbol) => dout   ------> hack 8/14/94
-  STRINGP dout and din = '(Symbol) => din    ------> hack 8/14/94
+  STRINGP din and dout = $Symbol => dout   ------> hack 8/14/94
+  STRINGP dout and din = $Symbol => din    ------> hack 8/14/94
   din^=dout and (STRINGP din or STRINGP dout) =>
     modeEqual(dout,$String) => dout
     modeEqual(din,$String) =>  nil
