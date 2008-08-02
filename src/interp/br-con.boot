@@ -1295,7 +1295,7 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
   (constructor (NIL MESSAGE))
   (_= (((Boolean) _$ _$)
     "\spad{e = f} tests for equality of two enumerations \spad{e} and \spad{f}"))
-  (_^_= (((Boolean) _$ _$)
+  (_~_= (((Boolean) _$ _$)
     "\spad{e ^= f} tests that two enumerations \spad{e} and \spad{f} are nont equal"))
   (coerce (((OutputForm) _$)
      "\spad{coerce(e)} returns a representation of enumeration \spad{r} as an output form")
