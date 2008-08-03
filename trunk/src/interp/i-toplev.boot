@@ -156,8 +156,6 @@ processInteractive(form, posnForm) ==
   $fortVar : local :=              --variable name for FORTRAN output
      $defaultFortVar
   $minivector: local := NIL
-  $minivectorCode: local := NIL
-  $minivectorNames: local := NIL
   $domPvar: local := NIL
   $inRetract: local := NIL
   object := processInteractive1(form, posnForm)

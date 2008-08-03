@@ -1,3 +1,14 @@
+2008-08-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-globals.boot ($compilingInputFile): Remove.
+	($minivectorNames): Likewise.
+	* interp/i-map.boot (compileCoerceMap): Don't set $minivectorNames
+	and $minivectorCode.
+	* interp/i-spec1.boot (compileADEFBody): Likewise.
+	* interp/i-toplev.boot (processInteractive): Likewise.
+	* interp/nrungo.boot (NRTgetMinivectorIndex): Likewise.
+	* interp/slam.boot (reportFunctionCompilation): Likewise.
+
 2008-08-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nrungo.boot (NRTisRecurrenceRelation): Lookup "not" with 
