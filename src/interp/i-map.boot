@@ -754,10 +754,7 @@ compileCoerceMap(op,argTypes,mm) ==
   parms:= [:parms,'envArg]
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
   minivectorName := makeInternalMapMinivectorName(name)
-  $minivectorNames := [[op,:minivectorName],:$minivectorNames]
   body := substitute(minivectorName,"$$$",body)
-  if $compilingInputFile then
-    $minivectorCode := [:$minivectorCode,minivectorName]
   setDynamicBinding(minivectorName,LIST2REFVEC $minivector)
   compileInteractive [name,['LAMBDA,parms,body]]
   CAR sig

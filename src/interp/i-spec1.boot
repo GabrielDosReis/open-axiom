@@ -155,10 +155,7 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
 --+
   $compiledOpNameList := [$mapName]
   minivectorName := makeInternalMapMinivectorName(PNAME $mapName)
-  $minivectorNames := [[$mapName,:minivectorName],:$minivectorNames]
   body := substitute(minivectorName,"$$$",body)
-  if $compilingInputFile then
-    $minivectorCode := [:$minivectorCode,minivectorName]
   setDynamicBinding(minivectorName,LIST2REFVEC $minivector)
 
   -- The use of the three variables $definingMap, $genValue and $compilingMap
