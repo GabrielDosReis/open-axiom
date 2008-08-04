@@ -1,5 +1,14 @@
 2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/cparse.boot ($npPParg): Remove.
+	($npPCff): Likewise.
+	(npPPff, npPCff): Take an argument.
+	(npPPf): Likewise.
+	(npPPg, npPCg): Likewise.
+	(npPP, npPC): Pass around a suspension of the argument.
+
+2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet: Use $(mkdir_p) in lieu of $(mkinstalldirs),
 	during build.  Also use 'cp -p' instead of $(INSTALL).
 	* algebra/Makefile.pamphlet: Likewise.
