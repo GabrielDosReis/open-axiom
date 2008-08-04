@@ -839,7 +839,7 @@ stamp: mkdir-output-directory ${SPADFILES} bootstrap-stamp ${TESTS}
 	$(STAMP) stamp
 
 mkdir-output-directory:
-	$(mkinstalldirs) $(OUTSRC)
+	$(mkdir_p) $(OUTSRC)
 
 everything: check lib db cmd gloss
 	@ echo 4303 invoking make in `pwd` with parms:
@@ -873,7 +873,7 @@ ${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
 
 .PHONY: mk-target-src-algabra-dir
 mk-target-src-algabra-dir:
-	@ [ -d $(OUTSRC) ] || $(mkinstalldirs) $(OUTSRC)
+	@ [ -d $(OUTSRC) ] || $(mkdir_p) $(OUTSRC)
 
 .PRECIOUS: $(builddir)/%.tex
 .PRECIOUS: $(builddir)/%.dvi
@@ -882,10 +882,10 @@ $(DOC)/%.dvi:  mk-target-doc-dir
 
 .PHONY: mk-target-doc-dir
 mk-target-doc-dir:
-	@ [ -d $(DOC) ] || $(mkinstalldirs) $(DOC)
+	@ [ -d $(DOC) ] || $(mkdir_p) $(DOC)
 
 $(DOC)/%.dvi: $(builddir)/%.dvi
-	$(INSTALL_DATA) $< $@
+	@cp -p $< $@
 
 $(builddir)/%.dvi: $(axiom_build_texdir)/diagrams.tex \
 		   $(axiom_build_texdir)/axiom.sty
@@ -897,7 +897,7 @@ $(builddir)/%.tex: $(srcdir)/%.pamphlet
 	$(axiom_build_document) --weave --output=$@ $<
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
-	$(INSTALL_DATA) $< $@
+	@cp -p $< $@
 
 SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
 	@ rm -rf SPADPRSR.NRLIB
@@ -920,7 +920,7 @@ ${INPUT}/VIEW2D.input: $(srcdir)/view2D.spad.pamphlet
 
 
 ${DOC}/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
-	$(INSTALL_DATA) $< $@
+	@cp -p $< $@
  
 $(axiom_algebra_layer_0_objects): strap-stamp
 $(axiom_algebra_layer_1_objects): 0-stamp

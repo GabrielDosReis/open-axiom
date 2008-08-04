@@ -159,10 +159,10 @@ ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 
 
 ${OUTLIB}/htsearch: htsearch
-	$(INSTALL_PROGRAM) $< $@
+	cp -p $< $@
 
 ${OUTLIB}/presea: presea
-	$(INSTALL_PROGRAM) $< $@
+	cp -p $< $@
 
 ${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
 	${LINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)

@@ -1814,7 +1814,7 @@ ${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
 
 .PHONY: mk-target-src-algabra-dir
 mk-target-src-algabra-dir:
-	@ [ -d $(OUTSRC) ] || $(mkinstalldirs) $(OUTSRC)
+	@ [ -d $(OUTSRC) ] || $(mkdir_p) $(OUTSRC)
 
 @
 <<genericDOCfiles>>=
@@ -1825,10 +1825,10 @@ $(DOC)/%.dvi:  mk-target-doc-dir
 
 .PHONY: mk-target-doc-dir
 mk-target-doc-dir:
-	@ [ -d $(DOC) ] || $(mkinstalldirs) $(DOC)
+	@ [ -d $(DOC) ] || $(mkdir_p) $(DOC)
 
 $(DOC)/%.dvi: $(builddir)/%.dvi
-	$(INSTALL_DATA) $< $@
+	@cp -p $< $@
 
 $(builddir)/%.dvi: $(axiom_build_texdir)/diagrams.tex \
 		   $(axiom_build_texdir)/axiom.sty
@@ -1840,7 +1840,7 @@ $(builddir)/%.tex: $(srcdir)/%.pamphlet
 	$(axiom_build_document) --weave --output=$@ $<
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
-	$(INSTALL_DATA) $< $@
+	@cp -p $< $@
 @
 <<genericRules>>=
 
@@ -1862,7 +1862,7 @@ PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
 <<diagrams.tex (OUT from IN)>>=
 
 ${DOC}/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
-	$(INSTALL_DATA) $< $@
+	@cp -p $< $@
  
 @
 
@@ -2261,7 +2261,7 @@ stamp: mkdir-output-directory ${SPADFILES} bootstrap-stamp ${TESTS}
 	$(STAMP) stamp
 
 mkdir-output-directory:
-	$(mkinstalldirs) $(OUTSRC)
+	$(mkdir_p) $(OUTSRC)
 
 everything: check lib db cmd gloss
 	@ echo 4303 invoking make in `pwd` with parms:

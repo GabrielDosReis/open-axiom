@@ -505,11 +505,11 @@ all-ax all-input: $(OUT) ${FILES} ${FILES2} ${ASFILES}
 	@echo 1 finished $(srcdir)
 
 $(OUT):
-	$(mkinstalldirs) $@
+	$(mkdir_p) $@
 
 
 ${OUT}/%.input: %.input
-	@ $(INSTALL) $< $@
+	@cp -p $< $@
 
 .PRECIOUS: %.input
 
@@ -517,7 +517,7 @@ ${OUT}/%.input: %.input
 	@$(axiom_build_document) --output=$@ --tangle $<
 
 ${OUT}/%.as: %.as
-	@ $(INSTALL) $< $@
+	@cp -p $< $@
 
 %.as: ${IN}/%.as.pamphlet
 	@ $(axiom_build_document) --output=$@ --tangle $<

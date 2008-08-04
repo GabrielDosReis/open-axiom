@@ -20,18 +20,18 @@ all-driver:
 	@cd driver && $(MAKE) $@
 
 all-clef: all-lib
-	@$(mkinstalldirs) $(axiom_target_bindir)
+	@$(mkdir_p) $(axiom_target_bindir)
 	cd clef && ${MAKE}
 all-sman: all-lib all-driver
-	$(mkinstalldirs) $(axiom_target_bindir)
-	$(mkinstalldirs) $(axiom_target_libdir)
+	$(mkdir_p) $(axiom_target_bindir)
+	$(mkdir_p) $(axiom_target_libdir)
 	cd sman && ${MAKE}
 all-hyper: all-lib
-	$(mkinstalldirs) $(axiom_target_bindir)
-	$(mkinstalldirs) $(axiom_target_datadir)
+	$(mkdir_p) $(axiom_target_bindir)
+	$(mkdir_p) $(axiom_target_datadir)
 	cd hyper && ${MAKE}
 all-share:
-	$(mkinstalldirs) $(axiom_target_libdir)
+	$(mkdir_p) $(axiom_target_libdir)
 	cd share && ${MAKE}
 all-doc:
 	cd doc && ${MAKE}
@@ -47,7 +47,7 @@ all-interpsys: all-boot all-hyper-pre
 all-axiomsys: all-asq
 	cd interp && $(MAKE) all-axiomsys
 all-algebra: all-interpsys all-share all-hyper-pre
-	@ $(mkinstalldirs) algebra/strap
+	@ $(mkdir_p) algebra/strap
 	cd algebra && ${MAKE}
 
 all-hyper-pre: all-lib

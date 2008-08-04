@@ -74,7 +74,7 @@ stamp: $(axiom_target_libdir)/libopen-axiom-core$(SHREXT) \
 
 $(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
 	$(libopen_axiom_core_objects)
-	$(mkinstalldirs) $(axiom_target_libdir)
+	$(mkdir_p) $(axiom_target_libdir)
 	$(LINK_SHRLIB) $(oa_shrlib_flags) -o $@ \
 		$(libopen_axiom_core_objects) \
 		@axiom_c_runtime_extra@ -lm

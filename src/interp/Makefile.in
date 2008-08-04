@@ -168,7 +168,7 @@ remove-stamp:
 build-images: remove-stamp all-interpsys
 
 all-interpsys:
-	$(mkinstalldirs) $(AUTO)
+	$(mkdir_p) $(AUTO)
 	$(MAKE) $(SAVESYS)
 
 all-axiomsys: all-interpsys
@@ -192,8 +192,8 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	        ../algebra/warm.data
 	@ echo 5 invoking make in `pwd` with parms:
 	@rm -f makeint.lisp
-	$(mkinstalldirs) $(axiom_target_datadir)/msgs
-	$(INSTALL_DATA) $(axiom_src_docdir)/msgs/s2-us.msgs \
+	$(mkdir_p) $(axiom_target_datadir)/msgs
+	cp -p $(axiom_src_docdir)/msgs/s2-us.msgs \
 		 $(axiom_target_datadir)/msgs
 	@ echo '(|importModule| "sys-driver")' >> makeint.lisp
 	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
@@ -219,7 +219,7 @@ ${SAVESYS}: makeint.lisp
 		--make --output=$@ --main="BOOT::|restart|" \
 		--load-directory=. makeint.lisp
 	@ echo 6 ${SAVESYS} created
-	$(mkinstalldirs) $(axiom_target_bindir)
+	$(mkdir_p) $(axiom_target_bindir)
 .PHONY: all-axiomsys
 
 all-axiomsys: ${AXIOMSYS}
@@ -237,7 +237,7 @@ exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
 
 $(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp ${LISPSYS}
 	@ echo 616 making $@ from exposed.lsp
-	$(mkinstalldirs) $(axiom_targetdir)/algebra
+	$(mkdir_p) $(axiom_targetdir)/algebra
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 database.date:
@@ -249,7 +249,7 @@ database.date:
 .PREVIOUS: $(AUTO)/%.$(FASLEXT)
 
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
-	$(INSTALL) $< $@
+	@cp -p $< $@
 
 %.$(FASLEXT): %.boot
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
@@ -454,5 +454,5 @@ boot-pkg.$(FASLEXT): boot-pkg.lisp
 
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
-	$(INSTALL_DATA) $< $@
+	@cp -p $< $@
 
