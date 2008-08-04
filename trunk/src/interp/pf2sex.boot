@@ -225,11 +225,11 @@ pfApplication2Sex pf ==
   op := opTran op
   op = "->" => pfFinishApplication
     args := pf0TupleParts pfApplicationArg pf
-    if pfTuple? CAR args then
-      typeList := [pf2Sex1 arg for arg in pf0TupleParts CAR args]
+    if pfTuple? first args then
+      typeList := [pf2Sex1 arg for arg in pf0TupleParts first args]
     else
-      typeList := [pf2Sex1 CAR args]
-    args := [pf2Sex1 CADR args, :typeList]
+      typeList := [pf2Sex1 first args]
+    args := [pf2Sex1 second args, :typeList]
     ["Mapping", :args]
   symEqual(op, ":") and $insideRule = 'left =>
     pfFinishApplication ["multiple", pf2Sex pfApplicationArg pf]
@@ -241,17 +241,17 @@ pfApplication2Sex pf ==
       pfSuchThat2Sex args
     argSex := rest pf2Sex1 args
     symEqual(op, ">") =>
-      ["<", CADR argSex, CAR argSex]
+      ["<", second argSex, first argSex]
     symEqual(op, ">=") =>
-      ["not", ["<", CAR argSex, CADR argSex]]
+      ["not", ["<", first argSex, second argSex]]
     symEqual(op, "<=") =>
-      ["not", ["<", CADR argSex, CAR argSex]]
+      ["not", ["<", second argSex, first argSex]]
 --    symEqual(op, "reduce") and (#argSex) = 2 =>
---      ["REDUCE", first argSex, 0, CADR argSex]
+--      ["REDUCE", first argSex, 0, second argSex]
     symEqual(op, "AND") =>
-      ["and", CAR argSex, CADR argSex]
+      ["and", first argSex, second argSex]
     symEqual(op, "OR") =>
-      ["or", CAR argSex, CADR argSex]
+      ["or", first argSex, second argSex]
     symEqual(op, "Iterate") =>
       ["iterate"]
     symEqual(op, "by") =>
@@ -293,7 +293,7 @@ hasOptArgs? argSex ==
 
 pfDefinition2Sex pf ==
   $insideApplication > $insideQuasiquotation =>
-    ["OPTARG", pf2Sex1 CAR pf0DefinitionLhsItems pf,
+    ["OPTARG", pf2Sex1 first pf0DefinitionLhsItems pf,
      pf2Sex1 pfDefinitionRhs pf]
   idList := [pf2Sex1 x for x in pf0DefinitionLhsItems pf]
   #idList ^= 1 =>
@@ -477,8 +477,8 @@ pfRhsRule2Sex rhs ==
 pfSuchThat2Sex args ==
   name := GENSYM()
   argList := pf0TupleParts args
-  lhsSex := pf2Sex1 CAR argList
-  rhsSex := pf2Sex CADR argList
+  lhsSex := pf2Sex1 first argList
+  rhsSex := pf2Sex second argList
   $predicateList := [[name, lhsSex, :rhsSex], :$predicateList]
   name
 
