@@ -94,11 +94,11 @@ ifeq (@axiom_lisp_flavor@,gcl)
                       ' si::*system-directory* (quote (list ".lsp")))' \
                '  "$(lisp_c_objects) @axiom_c_runtime_extra@"))' \
             | ./base-lisp$(EXEEXT)
-	$(mkinstalldirs) $(OUT)
-	$(INSTALL_PROGRAM) lisp$(EXEEXT) $(OUT)
+	$(mkdir_p) $(OUT)
+	cp -p lisp$(EXEEXT) $(OUT)
 else
-	$(mkinstalldirs) $(OUT)
-	$(INSTALL_PROGRAM) $< $@ && $(INSTALL_PROGRAM) $< lisp$(EXEEXT)
+	$(mkdir_p) $(OUT)
+	cp -p $< $@ && cp -p $< lisp$(EXEEXT)
 endif
 
 ifeq (@axiom_lisp_flavor@,ecl)

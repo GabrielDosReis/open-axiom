@@ -56,10 +56,10 @@ maybe-cp-noweb-srcdir: $(srcdir)/noweb
 $(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
 	## Noweb would like to install many things even if we
 	## are not interested in those.  Prepare the ground.
-	$(mkinstalldirs) "$(axiom_build_bindir)"
-	$(mkinstalldirs) "$(axiom_build_libdir)"
-	$(mkinstalldirs) "$(axiom_build_texdir)"
-	$(mkinstalldirs) "$(axiom_build_mandir)"
+	$(mkdir_p) "$(axiom_build_bindir)"
+	$(mkdir_p) "$(axiom_build_libdir)"
+	$(mkdir_p) "$(axiom_build_texdir)"
+	$(mkdir_p) "$(axiom_build_mandir)"
 	$(TOUCH) $(addprefix noweb/src/shell/, \
 			noweave notangle noweb noroff toroff) \
 		 $(wildcard "$(builddir)"/noweb/src/c/*.h) \

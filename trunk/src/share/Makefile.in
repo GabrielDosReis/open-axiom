@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -53,4 +53,4 @@ clean-local: mostlyclean-local
 distclean-local: clean-local
 
 $(axiom_target_libdir)/command.list: $(srcdir)/algebra/command.list
-	$(INSTALL_DATA) $< $@
+	cp -p $< $@

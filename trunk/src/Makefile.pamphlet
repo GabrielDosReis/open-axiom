@@ -56,7 +56,7 @@ The {\bf clef} directory contains an Axiom command that works similar
 to GNU Readline.
 <<clefdir>>=
 all-clef: all-lib
-	@$(mkinstalldirs) $(axiom_target_bindir)
+	@$(mkdir_p) "$(axiom_target_bindir)"
 	cd clef && ${MAKE}
 @
 
@@ -66,8 +66,8 @@ Superman (\Tool{sman}) is the master process that runs all of the other
 processes including \Tool{axiom}, \Tool{clef}, nagman, graphics, and hyperdoc
 <<smandir>>=
 all-sman: all-lib all-driver
-	$(mkinstalldirs) $(axiom_target_bindir)
-	$(mkinstalldirs) $(axiom_target_libdir)
+	$(mkdir_p) "$(axiom_target_bindir)"
+	$(mkdir_p) "$(axiom_target_libdir)"
 	cd sman && ${MAKE}
 @
 
@@ -76,8 +76,8 @@ all-sman: all-lib all-driver
 Hyperdoc is the Axiom document browser.
 <<hyperdir>>=
 all-hyper: all-lib
-	$(mkinstalldirs) $(axiom_target_bindir)
-	$(mkinstalldirs) $(axiom_target_datadir)
+	$(mkdir_p) "$(axiom_target_bindir)"
+	$(mkdir_p) "$(axiom_target_datadir)"
 	cd hyper && ${MAKE}
 @
 
@@ -88,7 +88,7 @@ system.
 
 <<sharedir>>=
 all-share:
-	$(mkinstalldirs) $(axiom_target_libdir)
+	$(mkdir_p) "$(axiom_target_libdir)"
 	cd share && ${MAKE}
 @
 
@@ -175,7 +175,7 @@ the normal Makefile information.
 
 <<algebradir>>=
 all-algebra: all-interpsys all-share all-hyper-pre
-	@ $(mkinstalldirs) algebra/strap
+	@ $(mkdir_p) algebra/strap
 	cd algebra && ${MAKE}
 
 all-hyper-pre: all-lib

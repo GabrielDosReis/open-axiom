@@ -86,8 +86,8 @@ stamp: $(axiom_target_bindir)/bootsys$(EXEEXT)
 
 ## The final `bootsys' image.
 $(axiom_target_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)
-	$(mkinstalldirs) $(axiom_target_bindir)
-	$(INSTALL_PROGRAM) $< $@
+	$(mkdir_p) $(axiom_target_bindir)
+	cp -p $< $@
 
 .PRECIOUS: strap/%.$(FASLEXT)
 
@@ -169,7 +169,7 @@ stage2/%.clisp: %.boot stage1/stamp stage2/.started
 
 .PRECIOUS: %/.started
 %/.started:
-	$(mkinstalldirs) $*
+	$(mkdir_p) $*
 	$(STAMP) $@
 
 ## Dependency for various modules.  
