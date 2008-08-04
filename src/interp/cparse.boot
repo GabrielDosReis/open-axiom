@@ -198,39 +198,31 @@ npList(f,str1,g)== -- always produces a list, g is applied to it
     else npPush FUNCALL(g, [])
 
 
-++ rewrite flets, using global scoping
-$npPParg := nil
+npPPff f ==
+  FUNCALL f and npPush [npPop1()]
 
-npPPff() ==
-  FUNCALL $npPParg and npPush [npPop1()]
+npPPf f ==
+  npSemiListing function LAMBDA(nil, npPPff f)
 
-npPPf() ==
-  npSemiListing function npPPff
-
-npPPg() ==
-  npListAndRecover function npPPf
+npPPg f ==
+  npListAndRecover function LAMBDA(nil, npPPf f)
     and npPush pfAppend npPop1()
 
 npPP(f) ==
-  $npPParg := f
-  npParened function npPPf
-    or npPileBracketed function npPPg and
+  npParened function LAMBDA(nil, npPPf f)
+    or npPileBracketed function LAMBDA(nil, npPPg f) and
       npPush pfEnSequence npPop1()
         or FUNCALL f
 
-++ rewrite flets, using global scoping
-$npPCff := nil
+npPCff f ==
+  FUNCALL f and npPush [npPop1()]
 
-npPCff() ==
-  FUNCALL $npPCff and npPush [npPop1()]
-
-npPCg() ==
-  npListAndRecover function npPCff
+npPCg f ==
+  npListAndRecover function LAMBDA(nil,npPCff f)
     and npPush pfAppend npPop1()
 
 npPC(f) ==
-  $npPCff := f
-  npPileBracketed function npPCg and
+  npPileBracketed function LAMBDA(nil, npPCg f) and
     npPush pfEnSequence npPop1()
       or FUNCALL f
 
