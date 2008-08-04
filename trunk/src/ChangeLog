@@ -1,3 +1,8 @@
+2008-08-03	Alfredo Portes	<doyenatccny@gmail.com>
+
+	* interp/setvart.boot: Fix wrong parenthesis.
+	* interp/format.boot: Add mathObject2String function.
+
 2008-08-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-globals.boot ($compilingInputFile): Remove.
