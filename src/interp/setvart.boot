@@ -1501,7 +1501,6 @@ $setOptions := '(
         chkOutputFileName
         "console"))
       NIL)
-   ))
 
 -- ----------------------- The mathml Option ------------------------
 --
@@ -1550,6 +1549,7 @@ $setOptions := '(
   chkOutputFileName
   "console"))
   NIL)
+  ))
 
 -- ----------------------- The quit Option -----------------------
 --
