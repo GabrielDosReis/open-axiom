@@ -1,5 +1,11 @@
 2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2037804
+	* interp/i-syscmd.boot (cd): Convert new directory name
+	to PATHNAME type before setting as default.
+
+2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/cparse.boot ($npPParg): Remove.
 	($npPCff): Likewise.
 	(npPPff, npPCff): Take an argument.

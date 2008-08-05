@@ -258,9 +258,10 @@ listConstructorAbbreviations() ==
 --% )cd
 
 cd args ==
-  dir := TRUENAME STRING(car args or '"")
+  dir := TRUENAME STRING(first args or '"")
   changeDirectory NAMESTRING dir
-  SETF(_*DEFAULT_-PATHNAME_-DEFAULTS_*, ensureTrailingSlash NAMESTRING dir)
+  SETF(_*DEFAULT_-PATHNAME_-DEFAULTS_*, 
+    PATHNAME ensureTrailingSlash NAMESTRING dir)
   sayKeyedMsg("S2IZ0070", [NAMESTRING _*DEFAULT_-PATHNAME_-DEFAULTS_*]) 
 
 

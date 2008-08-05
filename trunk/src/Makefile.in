@@ -20,18 +20,18 @@ all-driver:
 	@cd driver && $(MAKE) $@
 
 all-clef: all-lib
-	@$(mkdir_p) $(axiom_target_bindir)
+	@$(mkdir_p) "$(axiom_target_bindir)"
 	cd clef && ${MAKE}
 all-sman: all-lib all-driver
-	$(mkdir_p) $(axiom_target_bindir)
-	$(mkdir_p) $(axiom_target_libdir)
+	$(mkdir_p) "$(axiom_target_bindir)"
+	$(mkdir_p) "$(axiom_target_libdir)"
 	cd sman && ${MAKE}
 all-hyper: all-lib
-	$(mkdir_p) $(axiom_target_bindir)
-	$(mkdir_p) $(axiom_target_datadir)
+	$(mkdir_p) "$(axiom_target_bindir)"
+	$(mkdir_p) "$(axiom_target_datadir)"
 	cd hyper && ${MAKE}
 all-share:
-	$(mkdir_p) $(axiom_target_libdir)
+	$(mkdir_p) "$(axiom_target_libdir)"
 	cd share && ${MAKE}
 all-doc:
 	cd doc && ${MAKE}
