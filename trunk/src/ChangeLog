@@ -1,5 +1,18 @@
 2008-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/cparse.boot (npWith): Commit to parsing upon `with'.
+	(npAdd): Commit to parsing upon `add'.
+	(npDef): Tell npDefTail to look for '=='.
+	(npMdef): Accept argument to indicate '==' or '==>' forms.
+	(npSingleRule): A Rule is given by '=='.
+	(npDefTail): Take the kind of definition as a parameter.
+	(npDefinitionItem): Macro definitions are definitions.
+	(npMDEFinition): Remove.
+	(npMDEF): Hand off to npMdef to parse macro definitions.
+	(npMacro): Macros introduced by `macro' keyword uses '=='.
+
+2008-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/cparse.boot (npExpress1): Make assignment an expression,
 	therefore a statement.
 
