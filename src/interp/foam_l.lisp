@@ -82,7 +82,7 @@
  compile-as-file cases
 
  |Clos| |Char| |Bool| |Byte| |HInt| |SInt| |BInt| |SFlo| |DFlo| |Ptr| 
- |Word| |Arb| |Env| |Level| |Arr| |Record|
+ |Word| |Arb| |Env| |Level| |Arr| |Record| |Nil|
 
  |ClosInit| |CharInit| |BoolInit| |ByteInit| |HIntInit| |SIntInit| 
  |BIntInit| |SFloInit| |DFloInit| |PtrInit| |WordInit| |ArbInit| |EnvInit|
