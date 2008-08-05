@@ -547,7 +547,9 @@ npADD()    ==   npMonoType() and
 
 npConditionalStatement()==npConditional function npQualifiedDefinition
 
-npExpress1()==npConditionalStatement() or  npADD()
+npExpress1()==
+  npConditionalStatement() 
+    or npBackTrack(function npADD, "BECOMES", function npAssignment)
 
 npCommaBackSet()== npEqKey "COMMA" and (npEqKey "BACKSET" or true)
 

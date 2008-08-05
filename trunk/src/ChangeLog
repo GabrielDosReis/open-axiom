@@ -1,3 +1,8 @@
+2008-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cparse.boot (npExpress1): Make assignment an expression,
+	therefore a statement.
+
 2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2037811
