@@ -264,7 +264,7 @@ shoeCompileTrees s==
          shoeCompile first s
          s := rest s
 
-shoerCompile: %Ast -> %Thing 
+shoeCompile: %Ast -> %Thing 
 shoeCompile fn==
     fn is ['DEFUN,name,bv,:body] =>
           COMPILE (name,['LAMBDA,bv,:body])
