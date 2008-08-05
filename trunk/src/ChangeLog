@@ -1,5 +1,13 @@
 2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2037811
+	* interp/vmlisp.lisp (EMBED): Evaluate lambda forms to FUNCTIOn type.
+	* interp/trace.boot (transTraceItem): Fix thinko.
+	(spadTrace): Use assoc, not ASSOC.
+	(addTraceItem): Test for domain objects before constructors.
+
+2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2037804
 	* interp/i-syscmd.boot (cd): Convert new directory name
 	to PATHNAME type before setting as default.

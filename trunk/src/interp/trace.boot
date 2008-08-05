@@ -304,9 +304,8 @@ transTraceItem x ==
         (y:= domainToGenvar x) => y
         x
     UPPER_-CASE_-P (STRINGIMAGE x).(0) =>
-      y := unabbrev x
-      constructor?(y) => y
-      PAIRP(y) and constructor?(CAR y) => CAR y
+      y := opOf unabbrev x
+      constructor? y => y
       (y:= domainToGenvar x) => y
       x
     x
@@ -438,7 +437,7 @@ spadTrace(domain,options) ==
     options := removeOption("VARBREAK",options)
   anyifTrue:= null listOfOperations
   domainId:= opOf domain.(0)
-  currentEntry:= ASSOC(domain,_/TRACENAMES)
+  currentEntry:= assoc(domain,_/TRACENAMES)
   currentAlist:= KDR currentEntry
   opStructureList:= flattenOperationAlist getOperationAlistFromLisplib domainId
   sigSlotNumberAlist:=
@@ -760,9 +759,9 @@ traceReply() ==
     sayBrightly flowSegmentedMsg(displayList,$LINELENGTH,6)
 
 addTraceItem d ==
-  constructor? d => $constructors:=[d,:$constructors]
   isDomain d => $domains:= [devaluate d,:$domains]
   isDomainOrPackage d => $packages:= [devaluate d,:$packages]
+  constructor? d => $constructors:=[d,:$constructors]
 
 _?t() ==
   null _/TRACENAMES => sayMSG bright '"nothing is traced"

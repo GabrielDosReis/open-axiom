@@ -1601,10 +1601,11 @@
                 (OR (EQ OP 'LAMBDA) (EQ OP 'MLAMBDA)))
               (COND
                 ( (NOT (MEMQ CURRENT-BINDING (FLAT-BV-LIST BV)))
-                 `(,OP ,BV ((LAMBDA (,CURRENT-BINDING) . ,BODY) ',OLD-DEF))
+                 (eval `(,OP ,BV ((LAMBDA (,CURRENT-BINDING) . ,BODY)
+				  ',OLD-DEF)))
                    )
                 ( 'T
-                  NEW-DEFINITION ) ) )
+                  (eval NEW-DEFINITION) ) ) )
             ( 'T
               `((LAMBDA (,CURRENT-BINDING) ,NEW-DEFINITION) ',OLD-DEF)))
             ) )
