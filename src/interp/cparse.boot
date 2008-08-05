@@ -599,9 +599,9 @@ npBackTrack(p1,p2,p3)==
          true
      false
 
-npMDEF()== npBackTrack(function npStatement,"MDEF",function npMDEFinition)
-
-npMDEFinition() == npPP function npMdef
+npMDEF() == 
+  npBackTrack(function npStatement,"MDEF",
+    function LAMBDA(nil, npMdef "MDEF"))
 
 npAssign()== npBackTrack(function npMDEF,"BECOMES",function npAssignment)
 
@@ -707,12 +707,13 @@ npDefn()== npEqKey "DEFN" and  npPP function npDef
 npFix()== npEqKey "FIX" and  npPP function npDef
                and npPush pfFix npPop1 ()
 
-npMacro()== npEqKey "MACRO" and  npPP function npMdef
+npMacro() == 
+  npEqKey "MACRO" and  npPP function LAMBDA(nil, npMdef "DEF")
 
 npRule()== npEqKey "RULE" and  npPP function npSingleRule
 
 npAdd(extra)==
-     npEqKey "ADD" and
+     npEqKey "ADD" =>
        a:=npState()
        npDefinitionOrStatement() or npTrap()
        npEqPeek "IN" =>
@@ -729,7 +730,7 @@ npDefaultValue()==
          and  npPush [pfAdd(pfNothing(),npPop1(),pfNothing())]
 
 npWith(extra)==
-     npEqKey "WITH" and
+     npEqKey "WITH" =>
        a:=npState()
        npCategoryL() or npTrap()
        npEqPeek "IN" =>
@@ -889,19 +890,19 @@ npLambda()==
 npDef()==
     npMatch() =>
          [op,arg,rt]:=  pfCheckItOut(npPop1())
-         npDefTail() or npTrap()
+         npDefTail "DEF" or npTrap()
          body:=npPop1()
          null arg => npPush pfDefinition (op,body)
          npPush pfDefinition (op,pfPushBody(rt,arg,body))
     false
 
---npDefTail()== npEqKey "DEF" and npDefinitionOrStatement()
-npDefTail()== (npEqKey "DEF" or npEqKey "MDEF") and npDefinitionOrStatement()
+npDefTail kw == 
+  npEqKey kw and npDefinitionOrStatement()
 
-npMdef()==
+npMdef kw ==
     npQuiver() =>
          [op,arg]:=  pfCheckMacroOut(npPop1())
-         npDefTail() or npTrap()
+         npDefTail kw or npTrap()
          body:=npPop1()
          null arg => npPush pfMacro (op,body)
          npPush pfMacro (op,pfPushMacroBody(arg,body))
@@ -910,7 +911,7 @@ npMdef()==
 
 npSingleRule()==
     npQuiver() =>
-         npDefTail() or npTrap()
+         npDefTail "DEF" or npTrap()
          npPush pfRule (npPop2(),npPop1())
     false
 
@@ -922,6 +923,9 @@ npDefinitionItem()==
                npEqPeek "DEF" =>
                   npRestore a
                   npDef()
+               npEqPeek "MDEF" =>
+                  npRestore a
+                  npMdef "MDEF"
                npRestore a
                npMacro() or npDefn()
           npTrap()
