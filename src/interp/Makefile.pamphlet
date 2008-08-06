@@ -102,51 +102,60 @@ OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
 	sys-utility.$(FASLEXT)  macros.$(FASLEXT)	\
 	unlisp.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
+	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
+	br-search.$(FASLEXT)	\
 	alql.$(FASLEXT)	buildom.$(FASLEXT)	\
-	cattable.$(FASLEXT)				\
+	g-util.$(FASLEXT)	\
+	simpbool.$(FASLEXT)	g-timer.$(FASLEXT)	\
+	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
 	cformat.$(FASLEXT)	cfuns.$(FASLEXT)	\
-	clam.$(FASLEXT)	clammed.$(FASLEXT)	\
+	clam.$(FASLEXT)	        \
+	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
 	comp.$(FASLEXT)	        foam_l.$(FASLEXT) \
+	pathname.$(FASLEXT)	\
 	compat.$(FASLEXT)	compress.$(FASLEXT)	\
+	serror.$(FASLEXT)	ptrees.$(FASLEXT)	\
 	cparse.$(FASLEXT)	cstream.$(FASLEXT)	\
-	database.$(FASLEXT)	\
+	g-cndata.$(FASLEXT)	database.$(FASLEXT)	\
 	debug.$(FASLEXT)	dq.$(FASLEXT)		\
 	fname.$(FASLEXT)	format.$(FASLEXT)	\
-	g-boot.$(FASLEXT)	g-cndata.$(FASLEXT)	\
+	def.$(FASLEXT)	        g-boot.$(FASLEXT)	\
 	g-error.$(FASLEXT)	g-opt.$(FASLEXT)	\
-	g-timer.$(FASLEXT)	g-util.$(FASLEXT)	\
 	ggreater.$(FASLEXT)				\
-	hypertex.$(FASLEXT)	i-analy.$(FASLEXT)	\
-	i-object.$(FASLEXT)				\
-	i-code.$(FASLEXT)	i-coerce.$(FASLEXT)	\
+	hypertex.$(FASLEXT)	\
+	i-object.$(FASLEXT)	i-analy.$(FASLEXT)	\
+	i-code.$(FASLEXT)	i-resolv.$(FASLEXT)	\
+	i-coerce.$(FASLEXT)	\
 	i-coerfn.$(FASLEXT)	i-eval.$(FASLEXT)	\
 	i-funsel.$(FASLEXT)	\
 	i-intern.$(FASLEXT)	i-map.$(FASLEXT)	\
-	i-output.$(FASLEXT)	i-resolv.$(FASLEXT)	\
+	i-output.$(FASLEXT)	\
 	i-spec1.$(FASLEXT)				\
 	i-spec2.$(FASLEXT)	i-syscmd.$(FASLEXT)	\
 	i-toplev.$(FASLEXT)	i-util.$(FASLEXT)	\
 	incl.$(FASLEXT)	int-top.$(FASLEXT)	\
-	intfile.$(FASLEXT)				\
+	intfile.$(FASLEXT)	c-util.$(FASLEXT)	\
 	lisplib.$(FASLEXT)	macex.$(FASLEXT)	\
 	match.$(FASLEXT)				\
 	monitor.$(FASLEXT)	msg.$(FASLEXT)		\
 	msgdb.$(FASLEXT)	\
 	newaux.$(FASLEXT)	newfort.$(FASLEXT)	\
-	nlib.$(FASLEXT)	nrunfast.$(FASLEXT)	\
+	nrunfast.$(FASLEXT)	\
 	nrungo.$(FASLEXT)	nrunopt.$(FASLEXT)	\
 	osyscmd.$(FASLEXT)	\
-	packtran.$(FASLEXT)	pathname.$(FASLEXT)	\
-	pf2sex.$(FASLEXT)	pile.$(FASLEXT)	\
-	posit.$(FASLEXT)	property.$(FASLEXT)	\
-	ptrees.$(FASLEXT)	spad-parser.$(FASLEXT) \
+	packtran.$(FASLEXT)	\
+	pf2sex.$(FASLEXT)	\
+	scan.$(FASLEXT)		pile.$(FASLEXT)		\
+	property.$(FASLEXT)	\
+	postpar.$(FASLEXT)	parse.$(FASLEXT)	\
+	spad-parser.$(FASLEXT) \
 	record.$(FASLEXT)				\
 	rulesets.$(FASLEXT)	\
-	scan.$(FASLEXT)	serror.$(FASLEXT)	\
 	server.$(FASLEXT)				\
 	setvars.$(FASLEXT)	\
 	sfsfun-l.$(FASLEXT)	sfsfun.$(FASLEXT)	\
-	simpbool.$(FASLEXT)	slam.$(FASLEXT)	\
+	slam.$(FASLEXT)		fnewmeta.$(FASLEXT)	\
+	preparse.$(FASLEXT)	bootlex.$(FASLEXT)	\
 	spad.$(FASLEXT)	\
 	spaderror.$(FASLEXT)				\
 	template.$(FASLEXT)	termrw.$(FASLEXT)	\
@@ -199,11 +208,7 @@ rethinking.
 
 <<environment>>=
 # These are autloaded old parser files
-OPOBJS=	parsing.$(FASLEXT)	bootlex.$(FASLEXT)	\
-        def.$(FASLEXT)	\
-	fnewmeta.$(FASLEXT)	metalex.$(FASLEXT)	\
-	parse.$(FASLEXT)	postpar.$(FASLEXT)	\
-	preparse.$(FASLEXT)
+OPOBJS=	parsing.$(FASLEXT) metalex.$(FASLEXT)
 
 autoload_objects += $(OPBJS)
 @
@@ -211,13 +216,14 @@ autoload_objects += $(OPBJS)
 The {\bf OCOBJS} list contains files from the old compiler. Again,
 ``old'' is meaningless. These files should probably be autoloaded.
 <<environment>>=
-OCOBJS=	apply.$(FASLEXT)	c-doc.$(FASLEXT)	\
-	c-util.$(FASLEXT)	profile.$(FASLEXT)	\
-	category.$(FASLEXT)	compiler.$(FASLEXT)	\
-	define.$(FASLEXT)	functor.$(FASLEXT)	\
-	info.$(FASLEXT)	iterator.$(FASLEXT)	\
-	modemap.$(FASLEXT)	nruncomp.$(FASLEXT)	\
-	package.$(FASLEXT)	htcheck.$(FASLEXT)
+OCOBJS=	\
+	info.$(FASLEXT)		modemap.$(FASLEXT)	\
+	category.$(FASLEXT)	define.$(FASLEXT)	\
+	iterator.$(FASLEXT)	compiler.$(FASLEXT)	\
+	apply.$(FASLEXT)	c-doc.$(FASLEXT)	\
+	profile.$(FASLEXT)	functor.$(FASLEXT)	\
+	nruncomp.$(FASLEXT)	package.$(FASLEXT)	\
+	htcheck.$(FASLEXT)
 
 autoload_objects += $(OCOBJS)
 
@@ -228,13 +234,12 @@ browser. These files should probably be autoloaded.
 <<environment>>=
 BROBJS=	bc-matrix.$(FASLEXT)				\
 	bc-misc.$(FASLEXT)	bc-solve.$(FASLEXT)	\
-	bc-util.$(FASLEXT)				\
-	ht-util.$(FASLEXT)	htsetvar.$(FASLEXT)	\
+	htsetvar.$(FASLEXT)	\
 	ht-root.$(FASLEXT)	\
 	br-con.$(FASLEXT)	\
 	br-data.$(FASLEXT)	showimp.$(FASLEXT)    \
 	br-op1.$(FASLEXT)	br-op2.$(FASLEXT)	\
-	br-search.$(FASLEXT)	br-util.$(FASLEXT)	\
+	br-util.$(FASLEXT)	\
 	topics.$(FASLEXT)     br-prof.$(FASLEXT)    \
 	br-saturn.$(FASLEXT)
 
@@ -388,10 +393,23 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	$(mkdir_p) $(axiom_target_datadir)/msgs
 	cp -p $(axiom_src_docdir)/msgs/s2-us.msgs \
 		 $(axiom_target_datadir)/msgs
+	@ echo '(|importModule| "boot-pkg")' >> makeint.lisp
+	@ echo '(|importModule| "types")' >> makeint.lisp
 	@ echo '(|importModule| "sys-driver")' >> makeint.lisp
-	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
+	@ echo '(|importModule| "sys-constants")' >> makeint.lisp
 	@ echo '(|importModule| "hash")' >> makeint.lisp
+	@ echo '(|importModule| "sys-globals")' >> makeint.lisp
+	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
 	@ echo '#+:GCL (gbc t)' >> makeint.lisp
+	@ echo '(|importModule| "cfuns")' >> makeint.lisp
+	@ echo '(|importModule| "sys-os")' >> makeint.lisp
+	@ echo '(|importModule| "sys-utility")' >> makeint.lisp
+	@ echo '(|importModule| "diagnostics")' >> makeint.lisp
+	@ echo '(|importModule| "union")' >> makeint.lisp
+	@ echo '(|importModule| "sys-macros")' >> makeint.lisp
+	@ echo '(|importModule| "macros")' >> makeint.lisp
+	@ echo '(|importModule| "metalex")' >> makeint.lisp
+	@ echo '(|importModule| "parsing")' >> makeint.lisp
 	@ echo '(|importModule| "util")' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
