@@ -102,7 +102,7 @@ OCOBJS=	\
 	info.$(FASLEXT)		modemap.$(FASLEXT)	\
 	category.$(FASLEXT)	define.$(FASLEXT)	\
 	iterator.$(FASLEXT)	compiler.$(FASLEXT)	\
-	apply.$(FASLEXT)	c-doc.$(FASLEXT)	\
+	c-doc.$(FASLEXT)	\
 	profile.$(FASLEXT)	functor.$(FASLEXT)	\
 	nruncomp.$(FASLEXT)	package.$(FASLEXT)	\
 	htcheck.$(FASLEXT)
@@ -330,7 +330,6 @@ setvart.$(FASLEXT): macros.$(FASLEXT)
 ## OpenAxiom's compiler
 wi2.$(FASLEXT): macros.$(FASLEXT) define.$(FASLEXT)
 wi1.$(FASLEXT): macros.$(FASLEXT)
-apply.$(FASLEXT): compiler.$(FASLEXT)
 compiler.$(FASLEXT): c-util.$(FASLEXT) modemap.$(FASLEXT) \
 		pathname.$(FASLEXT) define.$(FASLEXT) iterator.$(FASLEXT)
 nrunopt.$(FASLEXT): c-util.$(FASLEXT)
