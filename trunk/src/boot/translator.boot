@@ -60,6 +60,10 @@ genModuleFinalization(stream) ==
     REALLYPRETTYPRINT(init,stream)
   nil
 
+genOptimizeOptions stream ==
+  REALLYPRETTYPRINT
+    (["PROCLAIM",["QUOTE",["OPTIMIZE",:$LispOptimizeOptions]]],stream)
+
 +++ True if we are translating code written in Old Boot.
 $translatingOldBoot := false
 
@@ -106,7 +110,8 @@ shoeClLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
   $GenVarCounter := 0
   shoeOpenOutputFile(stream,outfn,_
-    ((for line in lines repeat shoeFileLine(line,stream);
+    (genOptimizeOptions stream;
+     (for line in lines repeat shoeFileLine(line,stream);
        shoeFileTrees(shoeTransformStream a,stream));
       genModuleFinalization(stream)))
   outfn
@@ -130,7 +135,8 @@ shoeClCLines(a,fn,lines,outfn)==
   a=nil => shoeNotFound fn
   $GenVarCounter := 0
   shoeOpenOutputFile(stream,outfn,
-    (for line in lines repeat shoeFileLine (line,stream);
+    (genOptimizeOptions stream;
+     for line in lines repeat shoeFileLine (line,stream);
       shoeFileTrees(shoeTransformToFile(stream,
 	  shoeInclude bAddLineNumber(bRgen a,bIgen 0)),stream);
       genModuleFinalization(stream)))

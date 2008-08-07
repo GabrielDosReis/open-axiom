@@ -831,8 +831,6 @@ libext
 oa_use_libtool_for_shared_lib
 oa_shrobj_flags
 oa_shrlib_flags
-axiom_enable_checking
-axiom_optimize_options
 axiom_src_subdirs
 target
 target_cpu
@@ -860,6 +858,8 @@ axiom_quiet_flags
 axiom_eval_flags
 axiom_fasl_type
 axiom_all_prerequisites
+axiom_enable_checking
+axiom_optimize_options
 axiom_c_runtime
 axiom_c_runtime_extra
 XMKMF
@@ -1485,8 +1485,8 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-checking  turn runtime checking on
   --enable-gcl   build GCL from OpenAxiom source
+  --enable-checking  turn runtime checking on
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -19333,27 +19333,6 @@ esac
 
 
 
-axiom_optimize_options=speed
-## Shall we proclaim safety?
-axiom_enable_checking=no          # don't turn on checking by default.
-# Check whether --enable-checking was given.
-if test "${enable_checking+set}" = set; then
-  enableval=$enable_checking; case $enableval in
-                  yes|no) axiom_enable_checking=$enableval ;;
-                  *) { { echo "$as_me:$LINENO: error: erroneous value for --enable-checking" >&5
-echo "$as_me: error: erroneous value for --enable-checking" >&2;}
-   { (exit 1); exit 1; }; } ;;
-               esac
-fi
-
-if test x"$axiom_enable_checking" = xyes; then
-   axiom_optimize_options="$axiom_optimize_options safety"
-   { echo "$as_me:$LINENO: runtime checking may increase compilation time" >&5
-echo "$as_me: runtime checking may increase compilation time" >&6;}
-fi
-
-
-
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 
 
@@ -21057,6 +21036,7 @@ esac
 
 
 
+
 cat >>confdefs.h <<_ACEOF
 #define OPENAXIOM_BASE_RTS openaxiom_${axiom_lisp_flavor}_runtime
 _ACEOF
@@ -21122,6 +21102,33 @@ echo "$as_me: error: Could not determine extension for compiled Lisp files" >&2;
     fi
     { echo "$as_me:$LINENO: result: $axiom_fasl_type" >&5
 echo "${ECHO_T}$axiom_fasl_type" >&6; }
+fi
+
+
+
+axiom_optimize_options=speed
+## Shall we proclaim safety?
+axiom_enable_checking=no          # don't turn on checking by default.
+# Check whether --enable-checking was given.
+if test "${enable_checking+set}" = set; then
+  enableval=$enable_checking; case $enableval in
+                  yes|no) axiom_enable_checking=$enableval ;;
+                  *) { { echo "$as_me:$LINENO: error: erroneous value for --enable-checking" >&5
+echo "$as_me: error: erroneous value for --enable-checking" >&2;}
+   { (exit 1); exit 1; }; } ;;
+               esac
+fi
+
+if test x"$axiom_enable_checking" = xyes; then
+   case $axiom_lisp_flavor in
+     gcl) # GCL-2.6.x does not understand debug.
+        axiom_optimize_options="$axiom_optimize_options safety"
+        ;;
+     *) axiom_optimize_options="$axiom_optimize_options safety debug"
+        ;;
+   esac
+   { echo "$as_me:$LINENO: runtime checking may increase compilation time" >&5
+echo "$as_me: runtime checking may increase compilation time" >&6;}
 fi
 
 
@@ -26392,8 +26399,6 @@ libext!$libext$ac_delim
 oa_use_libtool_for_shared_lib!$oa_use_libtool_for_shared_lib$ac_delim
 oa_shrobj_flags!$oa_shrobj_flags$ac_delim
 oa_shrlib_flags!$oa_shrlib_flags$ac_delim
-axiom_enable_checking!$axiom_enable_checking$ac_delim
-axiom_optimize_options!$axiom_optimize_options$ac_delim
 axiom_src_subdirs!$axiom_src_subdirs$ac_delim
 target!$target$ac_delim
 target_cpu!$target_cpu$ac_delim
@@ -26412,6 +26417,8 @@ PATCH!$PATCH$ac_delim
 LATEX!$LATEX$ac_delim
 MAKEINDEX!$MAKEINDEX$ac_delim
 NOTANGLE!$NOTANGLE$ac_delim
+NOWEAVE!$NOWEAVE$ac_delim
+AXIOM_LISP!$AXIOM_LISP$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -26453,8 +26460,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-NOWEAVE!$NOWEAVE$ac_delim
-AXIOM_LISP!$AXIOM_LISP$ac_delim
 axiom_include_gcl!$axiom_include_gcl$ac_delim
 axiom_lisp_flavor!$axiom_lisp_flavor$ac_delim
 axiom_gcl_rsym_hack!$axiom_gcl_rsym_hack$ac_delim
@@ -26462,6 +26467,8 @@ axiom_quiet_flags!$axiom_quiet_flags$ac_delim
 axiom_eval_flags!$axiom_eval_flags$ac_delim
 axiom_fasl_type!$axiom_fasl_type$ac_delim
 axiom_all_prerequisites!$axiom_all_prerequisites$ac_delim
+axiom_enable_checking!$axiom_enable_checking$ac_delim
+axiom_optimize_options!$axiom_optimize_options$ac_delim
 axiom_c_runtime!$axiom_c_runtime$ac_delim
 axiom_c_runtime_extra!$axiom_c_runtime_extra$ac_delim
 XMKMF!$XMKMF$ac_delim

@@ -1,3 +1,10 @@
+2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (genOptimizeOptions): New.
+	(shoeClLines): Use it.
+	(shorClCLines): Likewise.
+	* lisp/core.lisp.in ($LispOptimizeOptions): New; export.
+
 2008-08-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet (makeint.lisp): Tidy.

@@ -78,6 +78,7 @@
 	   "$NativeModuleExt"
 	   "$systemInstallationDirectory"
 	   "$NativeTypeTable"
+	   "$LispOptimizeOptions"
 
            "getCommandLineArguments"
            "processCommandLine"
@@ -119,6 +120,8 @@
   "@open_axiom_installdir@/")
 
 ;; Lisp compiler optimization settings.
+(defconstant |$LispOptimizeOptions|
+  '(@axiom_optimize_options@))
 (proclaim '(optimize @axiom_optimize_options@))
 
 ;; 
