@@ -1,5 +1,10 @@
 2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/apply.boot: Move content to compiler.boot.  Remove.
+	* interp/Makefile.pamphlet (OCOBJS): Remove apply.$(OBJEXT).
+
+2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (boot-completed-p): New.
 	(|$useDynamicLink|): Likewise.
 	(|$effectiveFaslType|): Hold extension of linkable FASL.

@@ -38,6 +38,54 @@ import modemap
 import define
 import iterator
 namespace BOOT
+module compiler where
+  coerce: (%Triple,%Mode) -> %Maybe %Triple
+  convert: (%Triple,%Mode) -> %Maybe %Triple
+  comp: (%Form,%Mode,%Env) -> %Maybe %Triple
+  compOrCroak: (%Form,%Mode,%Env) -> %Maybe %Triple
+  compCompilerPredicate: (%Form,%Env) -> %Maybe %Triple
+  checkCallingConvention: (%List,%Short) -> %SimpleArray %Short
+
+
+--% 
+compUniquely: (%Form,%Mode,%Env) -> %Maybe %Triple
+compNoStacking: (%Form,%Mode,%Env) -> %Maybe %Triple
+compNoStacking1: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+compOrCroak1: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
+comp2: (%Form,%Mode,%Env) -> %Maybe %Triple
+comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
+compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
+compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
+compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
+compString: (%Form,%Mode,%Env) -> %Maybe %Triple
+compAtomWithModemap: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
+compTypeOf: (%Form,%Mode,%Env) -> %Maybe %Triple
+compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
+compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
+compForm2: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+compForm3: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+compArgumentsAndTryAgain: (%Form,%Mode,%Env) -> %Maybe %Triple
+compExpressionList: (%List,%Mode,%Env) -> %Maybe %Triple
+compWithMappingMode: (%Form,%Mode,%List) -> %List
+compFormMatch: (%Modemap,%List) -> %Boolean
+compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
+compApply: (%List,%List,%Thing,%List,%Mode,%Env) -> %Maybe %Triple
+compToApply: (%Form,%List,%Mode,%Env) -> %Maybe %Triple
+compApplication: (%Form,%List,%Mode,%Env,%Triple) -> %Maybe %Triple
+compApplyModemap: (%Form,%Modemap,%Env,%List) -> %Maybe %Triple
+
+primitiveType: %Thing -> %Mode
+hasUniqueCaseView: (%Form,%Mode,%Env) -> %Boolean
+convertOrCroak: (%Triple,%Mode) -> %Maybe %Triple
+getFormModemaps: (%Form,%Env) -> %List
+transImplementation: (%Form,%Modemap,%Thing) -> %Code
+reshapeArgumentList: (%Form,%Signature) -> %Form
+applyMapping: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
+compMapCond: (%Symbol,%Mode,%Env,%List) -> %Code
+compMapCond': (%List,%Symbol,%Mode,%Env) -> %Code
+compMapCond'': (%Thing,%Mode) -> %Boolean
+compMapCondFun: (%Thing,%Symbol,%Mode,%Env) -> %Code
+
 
 ++ A list of routines for diagnostic reports.  These functions, in an
 ++ abstract sense, have type: forall T: Type . String -> T, so they
@@ -62,16 +110,13 @@ compTopLevel(x,m,e) ==
         --keep old environment after top level function defs
   compOrCroak(x,m,e)
 
-compUniquely: (%Form,%Mode,%Env) -> %Maybe %Triple
 compUniquely(x,m,e) ==
   $compUniquelyIfTrue: local:= true
   CATCH("compUniquely",comp(x,m,e))
 
-compOrCroak: (%Form,%Mode,%Env) -> %Maybe %Triple
 compOrCroak(x,m,e) == 
   compOrCroak1(x,m,e,'comp)
 
-compOrCroak1: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
 compOrCroak1(x,m,e,compFn) ==
   fn(x,m,e,nil,nil,compFn) where
     fn(x,m,e,$compStack,$compErrorMessageStack,compFn) ==
@@ -103,7 +148,6 @@ tc() ==
 ++ The form `x' is intended to be evaluated by the compiler, e.g. in
 ++ toplevel conditional definition or as sub-domain predicate.  
 ++ Normalize operators and compile the form.
-compCompilerPredicate: (%Form,%Env) -> %Maybe %Triple
 compCompilerPredicate(x,e) ==
   savedNormalizeTree := $normalizeTree
   $normalizeTree := true
@@ -112,13 +156,11 @@ compCompilerPredicate(x,e) ==
   t
 
 
-comp: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp(x,m,e) ==
   T:= compNoStacking(x,m,e) => ($compStack:= nil; T)
   $compStack:= [[x,m,e,$exitModeStack],:$compStack]
   nil
 
-compNoStacking: (%Form,%Mode,%Env) -> %Maybe %Triple
 compNoStacking(x,m,e) ==
   T:= comp2(x,m,e) =>
     $useRepresentationHack and m=$EmptyMode and T.mode=$Representation => 
@@ -131,13 +173,11 @@ compNoStacking(x,m,e) ==
     --hack only when `Rep' is defined the old way. -- gdr 2008/01/26
   compNoStacking1(x,m,e,$compStack)
 
-compNoStacking1: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
 compNoStacking1(x,m,e,$compStack) ==
   u:= get(RepIfRepHack m,"value",e) =>
     (T:= comp2(x,u.expr,e) => [T.expr,m,T.env]; nil)
   nil
 
-comp2: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp2(x,m,e) ==
   [y,m',e]:= comp3(x,m,e) or return nil
   if $LISPLIB and isDomainForm(x,e) then
@@ -150,7 +190,6 @@ comp2(x,m,e) ==
         --$bootStrapMode-test necessary for compiling Ring in $bootStrapMode
   [y,m',e]
 
-comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
 comp3(x,m,$e) ==
   --returns a Triple or %else nil to signalcan't do'
   $e:= addDomain(m,$e)
@@ -175,12 +214,38 @@ comp3(x,m,$e) ==
     [x',m',addDomain(m',e')]
   t
 
-compTypeOf: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTypeOf(x:=[op,:argl],m,e) ==
   $insideCompTypeOf: local := true
   newModemap:= EQSUBSTLIST(argl,$FormalMapVariableList,get(op,'modemap,e))
   e:= put(op,'modemap,newModemap,e)
   comp3(x,m,e)
+
+applyMapping([op,:argl],m,e,ml) ==
+  #argl^=#ml-1 => nil
+  isCategoryForm(first ml,e) =>
+                                --is op a functor?
+    pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
+    ml' := SUBLIS(pairlis, ml)
+    argl':=
+      [T.expr for x in argl for m' in rest ml'] where
+        T() == [.,.,e]:= comp(x,m',e) or return "failed"
+    if argl'="failed" then return nil
+    form:= [op,:argl']
+    convert([form,first ml',e],m)
+  argl':=
+    [T.expr for x in argl for m' in rest ml] where
+      T() == [.,.,e]:= comp(x,m',e) or return "failed"
+  if argl'="failed" then return nil
+  form:=
+    not member(op,$formalArgList) and ATOM op and not get(op,'value,e) =>
+      nprefix := $prefix or
+   -- following needed for referencing local funs at capsule level
+        getAbbreviation($op,#rest $form)
+      [op',:argl',"$"] where
+        op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
+    ['call,['applyFun,op],:argl']
+  pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
+  convert([form,SUBLIS(pairlis,first ml),e],m)
 
 hasFormalMapVariable(x, vl) ==
   $formalMapVariables: local := vl
@@ -188,7 +253,6 @@ hasFormalMapVariable(x, vl) ==
   ScanOrPairVec(function hasone?,x) where
      hasone? x == MEMQ(x,$formalMapVariables)
 
-compWithMappingMode: (%Form,%Mode,%List) -> %List
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   $killOptimizeIfTrue: local:= true
   e:= oldE
@@ -292,7 +356,6 @@ extractCodeAndConstructTriple(u, m, oldE) ==
   [op,:.,env] := u
   [["CONS",["function",op],env],m,oldE]
 
-compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
   -- special forms have dedicated compilers.
@@ -300,7 +363,21 @@ compExpression(x,m,e) ==
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
-compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
+compAtomWithModemap(x,m,e,v) ==
+  Tl :=
+    [[transImplementation(x,map,fn),target,e]
+      for map in v | map is [[.,target],[.,fn]]] =>
+                                         --accept only monadic operators
+        T:= or/[t for (t:= [.,target,.]) in Tl | modeEqual(m,target)] => T
+        1=#(Tl:= [y for t in Tl | (y:= convert(t,m))]) => first Tl
+        0<#Tl and m=$NoValueMode => first Tl
+        nil
+
+transImplementation(op,map,fn) ==
+  fn := genDeltaEntry [op,:map]
+  fn is ["XLAM",:.] => [fn]
+  ["call",fn]
+
 compAtom(x,m,e) ==
   T:= compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   x="nil" =>
@@ -316,7 +393,6 @@ compAtom(x,m,e) ==
     [x,primitiveType x or return nil,e]
   convert(t,m)
 
-primitiveType: %Thing -> %Mode
 primitiveType x ==
   x is nil => $EmptyMode
   STRINGP x => $String
@@ -327,7 +403,6 @@ primitiveType x ==
   FLOATP x => $DoubleFloat
   nil
 
-compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol(s,m,e) ==
   s="$NoValue" => ["$NoValue",$NoValueMode,e]
   isFluid s => [s,getmode(s,e) or return nil,e]
@@ -352,7 +427,6 @@ compSymbol(s,m,e) ==
 
 ++ Return true if `m' is the most recent unique type case assumption 
 ++ on `x' that predates its declaration in environment `e'.
-hasUniqueCaseView: (%Form,%Mode,%Env) -> %Boolean
 hasUniqueCaseView(x,m,e) ==
   props := getProplist(x,e)
   for [p,:v] in props repeat
@@ -360,13 +434,11 @@ hasUniqueCaseView(x,m,e) ==
     p = "value" => return false
 
 
-convertOrCroak: (%Triple,%Mode) -> %Maybe %Triple
 convertOrCroak(T,m) ==
   u:= convert(T,m) => u
   userError ["CANNOT CONVERT: ",T.expr,"%l"," OF MODE: ",T.mode,"%l",
     " TO MODE: ",m,"%l"]
 
-convert: (%Triple,%Mode) -> %Maybe %Triple
 convert(T,m) ==
   coerce(T,resolve(T.mode,m) or return nil)
 
@@ -390,13 +462,6 @@ hasType(x,e) ==
       fn rest x
 
 --% General Forms
-
-compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
-compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
-compForm2: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
-compForm3: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
-compArgumentsAndTryAgain: (%Form,%Mode,%Env) -> %Maybe %Triple
-compExpressionList: (%List,%Mode,%Env) -> %Maybe %Triple
 
 compForm(form,m,e) ==
   T:=
@@ -494,7 +559,6 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
 ++ We are about to compile a call.  Returns true if each argument
 ++ partially matches (as could be determined by type inference) the
 ++ corresponding expected type in the callee's modemap.
-compFormMatch: (%Modemap,%List) -> %Boolean
 compFormMatch(mm,partialModeList) == main where
   main() ==
     mm is [[.,.,:argModeList],:.] and match(argModeList,partialModeList) 
@@ -519,12 +583,75 @@ compForm3(form is [op,:argl],m,e,modemapList) ==
     T
   T
 
+
+compFormWithModemap(form,m,e,modemap) ==
+  [map:= [.,target,:sig],[pred,impl]]:= modemap
+  [op,:argl] := form := reshapeArgumentList(form,sig)
+  if isCategoryForm(target,e) and isFunctor op then
+    [modemap,e]:= substituteIntoFunctorModemap(argl,modemap,e) or return nil
+    [map:= [.,target,:.],:cexpr]:= modemap
+  sv:=listOfSharpVars map
+  if sv then
+     -- SAY [ "compiling ", op, " in compFormWithModemap,
+     -- mode= ",map," sharp vars=",sv]
+    for x in argl for ss in $FormalMapVariableList repeat
+      if ss in sv then
+        [map:= [.,target,:.],:cexpr]:= modemap :=SUBST(x,ss,modemap)
+        -- SAY ["new map is",map]
+  not (target':= coerceable(target,m,e)) => nil
+  map:= [target',:rest map]
+  [f,Tl,sl]:= compApplyModemap(form,modemap,e,nil) or return nil
+
+  --generate code; return
+  T:=
+    [x',m',e'] where
+      m':= SUBLIS(sl,map.(1))
+      x':=
+        form':= [f,:[t.expr for t in Tl]]
+        m'=$Category or isCategoryForm(m',e) => form'
+        -- try to deal with new-style Unions where we know the conditions
+        op = "elt" and f is ['XLAM,:.] and IDENTP(z:=CAR argl) and
+          (c:=get(z,'condition,e)) and
+            c is [["case",=z,c1]] and
+              (c1 is [":",=(CADR argl),=m] or EQ(c1,CADR argl) ) =>
+-- first is a full tag, as placed by getInverseEnvironment
+-- second is what getSuccessEnvironment will place there
+                ["CDR",z]
+        ["call",:form']
+      e':=
+        Tl => (LAST Tl).env
+        e
+  convert(T,m)
+
+-- This version tends to give problems with #1 and categories
+-- applyMapping([op,:argl],m,e,ml) ==
+--   #argl^=#ml-1 => nil
+--   mappingHasCategoryTarget :=
+--     isCategoryForm(first ml,e) => --is op a functor?
+--       form:= [op,:argl']
+--       pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
+--       ml:= SUBLIS(pairlis,ml)
+--       true
+--     false
+--   argl':=
+--     [T.expr for x in argl for m' in rest ml] where
+--       T() == [.,.,e]:= comp(x,m',e) or return "failed"
+--   if argl'="failed" then return nil
+--   mappingHasCategoryTarget => convert([form,first ml,e],m)
+--   form:=
+--     not member(op,$formalArgList) and ATOM op =>
+--       [op',:argl',"$"] where
+--         op':= INTERN STRCONC(STRINGIMAGE $prefix,";",STRINGIMAGE op)
+--     ["call",["applyFun",op],:argl']
+--   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
+--   convert([form,SUBLIS(pairlis,first ml),e],m)
+
+
 ++ Returns the list of candidate modemaps for a form.  A modemap
 ++ is candidate for a form if its signature has the same number
 ++ of paramter types as arguments supplied to the form.  A special
 ++ case is made for a modemap whose sole parameter type is a Tuple.
 ++ In that case, it matches any number of supplied arguments.
-getFormModemaps: (%Form,%Env) -> %List
 getFormModemaps(form is [op,:argl],e) ==
   op is ["elt",domain,op1] =>
     [x for x in getFormModemaps([op1,:argl],e) | x is [[ =domain,:.],:.]]
@@ -555,7 +682,6 @@ getFormModemaps(form is [op,:argl],e) ==
 ++ the same arity and must take flag argument in the same position.
 ++ Returns a vector of length `nargs' with positive entries indicating
 ++ flag arguments, and negative entries for normal argument passing.
-checkCallingConvention: (%List,%Short) -> %SimpleArray %Short
 checkCallingConvention(sigs,nargs) ==
   v := makeFilledSimpleArray("%Short",nargs,0)
   for sig in sigs repeat
@@ -585,6 +711,52 @@ seteltModemapFilter(name,mmList,e) ==
     nil
   mmList
 
+
+compApply(sig,varl,body,argl,m,e) ==
+  argTl:= [[.,.,e]:= comp(x,$EmptyMode,e) for x in argl]
+  contour:=
+    [Pair(x,[["mode",m'],["value",removeEnv comp(a,m',e)]])
+      for x in varl for m' in sig.source for a in argl]
+  code:= [["LAMBDA",varl,body'],:[T.expr for T in argTl]]
+  m':= resolve(m,sig.target)
+  body':= (comp(body,m',addContour(contour,e))).expr
+  [code,m',e]
+
+compToApply(op,argl,m,e) ==
+  T:= compNoStacking(op,$EmptyMode,e) or return nil
+  m1:= T.mode
+  T.expr is ["QUOTE", =m1] => nil
+  compApplication(op,argl,m,T.env,T)
+
+compApplication(op,argl,m,e,T) ==
+  T.mode is ['Mapping, retm, :argml] =>
+    #argl ^= #argml => nil
+    retm := resolve(m, retm)
+    retm = $Category or isCategoryForm(retm,e) => nil  -- not handled
+    argTl := [[.,.,e] := comp(x,m,e) or return "failed"
+              for x in argl for m in argml]
+    argTl = "failed" => nil
+    form:=
+      not (member(op,$formalArgList) or member(T.expr,$formalArgList)) and ATOM T.expr =>
+        nprefix := $prefix or
+        -- following needed for referencing local funs at capsule level
+           getAbbreviation($op,#rest $form)
+        [op',:[a.expr for a in argTl],"$"] where
+          op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem T.expr)
+      ['call, ['applyFun, T.expr], :[a.expr for a in argTl]]
+    coerce([form, retm, e],resolve(retm,m))
+  op = 'elt => nil
+  eltForm := ['elt, op, :argl]
+  comp(eltForm, m, e)
+
+++ `form' is a call to a operation described by the signature `sig'.
+++ Massage the call so that homogeneous variable length argument lists
+++ are properly tuplified.
+reshapeArgumentList(form,sig) ==
+  [op,:args] := form
+  wantArgumentsAsTuple(args,sig) => [op,["%Comma",:args]]
+  form
+
 substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
   #dc^=#sig =>
     keyedSystemError("S2GE0016",['"substituteIntoFunctorModemap",
@@ -602,7 +774,6 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
 
 compConstructorCategory(x,m,e) == [x,resolve($Category,m),e]
 
-compString: (%Form,%Mode,%Env) -> %Maybe %Triple
 compString(x,m,e) == [x,resolve($StringCategory,m),e]
 
 --% SUBSET CATEGORY
@@ -1258,7 +1429,6 @@ compIs(["is",a,b],m,e) ==
 --  One should always call the correct function, since the represent-
 --  ation of basic objects may not be the same.
 
-coerce: (%Triple,%Mode) -> %Maybe %Triple
 coerce(T,m) ==
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
@@ -1645,7 +1815,76 @@ compCat(form is [functorName,:argl],m,e) ==
   --sure if it uses any of the other signatures(see extendsCategoryForm)
   [form,catForm,e]
  
+--% APPLY MODEMAPS
 
+compApplyModemap(form,modemap,$e,sl) ==
+  [op,:argl] := form                   --form to be compiled
+  [[mc,mr,:margl],:fnsel] := modemap   --modemap we are testing
+
+  -- $e     is the current environment
+  -- sl     substitution list, nil means bottom-up, otherwise top-down
+
+  -- 0.  fail immediately if #argl=#margl
+
+  if #argl^=#margl then return nil
+
+  -- 1.  use modemap to evaluate arguments, returning failed if
+  --     not possible
+
+  lt:=
+    [[.,m',$e]:=
+      comp(y,g,$e) or return "failed" where
+        g:= SUBLIS(sl,m) where
+            sl:= pmatchWithSl(m',m,sl) for y in argl for m in margl]
+  lt="failed" => return nil
+
+  -- 2.  coerce each argument to final domain, returning failed
+  --     if not possible
+
+  lt':= [coerce(y,d) or return "failed"
+         for y in lt for d in SUBLIS(sl,margl)]
+  lt'="failed" => return nil
+
+  -- 3.  obtain domain-specific function, if possible, and return
+
+  --$bindings is bound by compMapCond
+  [f,$bindings]:= compMapCond(op,mc,sl,fnsel) or return nil
+
+--+ can no longer trust what the modemap says for a reference into
+--+ an exterior domain (it is calculating the displacement based on view
+--+ information which is no longer valid; thus ignore this index and
+--+ store the signature instead.
+
+  f is [op1,d,.] and member(op1,'(ELT CONST Subsumed)) =>
+    [genDeltaEntry [op,:modemap],lt',$bindings]
+  [f,lt',$bindings]
+
+compMapCond(op,mc,$bindings,fnsel) ==
+  or/[compMapCond'(u,op,mc,$bindings) for u in fnsel]
+
+compMapCond'([cexpr,fnexpr],op,dc,bindings) ==
+  compMapCond''(cexpr,dc) => compMapCondFun(fnexpr,op,dc,bindings)
+  stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
+
+compMapCond''(cexpr,dc) ==
+  cexpr=true => true
+  --cexpr = "true" => true
+  cexpr is ["AND",:l] => and/[compMapCond''(u,dc) for u in l]
+  cexpr is ["OR",:l] => or/[compMapCond''(u,dc) for u in l]
+  cexpr is ["not",u] => not compMapCond''(u,dc)
+  cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
+        --for the time being we'll stop here - shouldn't happen so far
+        --$disregardConditionIfTrue => true
+        --stackSemanticError(("not known that",'%b,name,
+        -- '%d,"has",'%b,cat,'%d),nil)
+  --now it must be an attribute
+  member(["ATTRIBUTE",dc,cexpr],get("$Information","special",$e)) => true
+  --for the time being we'll stop here - shouldn't happen so far
+  stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
+  false
+
+compMapCondFun(fnexpr,op,dc,bindings) == 
+  [fnexpr,bindings]
 
 --% Interface to the backend
 
