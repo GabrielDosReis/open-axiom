@@ -44,21 +44,6 @@ AC_SUBST(oa_use_libtool_for_shared_lib)
 AC_SUBST(oa_shrobj_flags)
 AC_SUBST(oa_shrlib_flags)
 
-axiom_optimize_options=speed
-## Shall we proclaim safety?
-axiom_enable_checking=no          # don't turn on checking by default.
-AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
-              [case $enableval in
-                  yes|no) axiom_enable_checking=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
-               esac])
-if test x"$axiom_enable_checking" = xyes; then
-   axiom_optimize_options="$axiom_optimize_options safety"
-   AC_MSG_NOTICE([runtime checking may increase compilation time])
-fi
-AC_SUBST(axiom_enable_checking)
-AC_SUBST(axiom_optimize_options)
-
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
@@ -274,6 +259,7 @@ case $axiom_include_gcl,$axiom_lisp in
        esac
        AC_MSG_RESULT([$axiom_lisp_flavor])
 esac
+
 AC_SUBST(axiom_include_gcl)
 AC_SUBST(axiom_lisp_flavor)
 AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
@@ -338,6 +324,27 @@ fi
 AC_SUBST(axiom_fasl_type)
 
 AC_SUBST(axiom_all_prerequisites)
+axiom_optimize_options=speed
+## Shall we proclaim safety?
+axiom_enable_checking=no          # don't turn on checking by default.
+AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
+              [case $enableval in
+                  yes|no) axiom_enable_checking=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
+               esac])
+if test x"$axiom_enable_checking" = xyes; then
+   case $axiom_lisp_flavor in
+     gcl) # GCL-2.6.x does not understand debug.
+        axiom_optimize_options="$axiom_optimize_options safety" 
+        ;;
+     *) axiom_optimize_options="$axiom_optimize_options safety debug" 
+        ;;
+   esac
+   AC_MSG_NOTICE([runtime checking may increase compilation time])
+fi
+
+AC_SUBST(axiom_enable_checking)
+AC_SUBST(axiom_optimize_options)
 
 # FIXME: Move this out of here.  
 axiom_c_runtime=

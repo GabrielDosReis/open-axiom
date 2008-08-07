@@ -1,3 +1,8 @@
+2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Add 'debug' to Lisp optimize proclamation
+	when --enable-checking.
+
 2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet: Use $(mkdir_p) in lieu of $(mkinstalldirs),
