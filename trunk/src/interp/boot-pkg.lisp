@@ -52,6 +52,9 @@
  #-:common-lisp (compile load eval)
  (defun define-function (f v)
    (setf (symbol-function f) v)))
+
+;; The Boot system is certainly completed by now.
+(pushnew :open-axiom-boot-complete *features*)
  
 
 ;; Below are some missing functions.  There here for lack of better

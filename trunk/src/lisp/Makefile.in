@@ -92,7 +92,7 @@ ifeq (@axiom_lisp_flavor@,gcl)
                                         ' (si::sgc-on nil))' \
 				  ' (setq si::*top-level-hook* (read-from-string \"|AxiomCore|::|topLevel|\")))"' \
                       ' si::*system-directory* (quote (list ".lsp")))' \
-               '  "$(lisp_c_objects) @axiom_c_runtime_extra@"))' \
+               '  "$(lisp_c_objects) $(oa_c_runtime_extra)"))' \
             | ./base-lisp$(EXEEXT)
 	$(mkdir_p) $(OUT)
 	cp -p lisp$(EXEEXT) $(OUT)
@@ -131,6 +131,8 @@ edit = sed \
 	-e 's|@build[@]|$(build)|g' \
 	-e 's|@target[@]|$(target)|g' \
 	-e 's|@SHREXT[@]|$(SHREXT)|g' \
+	-e 's|@LIBEXT[@]|$(LIBEXT)|g' \
+	-e 's|@oa_c_runtime_extra[@]|$(oa_c_runtime_extra)|g' \
 	-e 's|@void_type[@]|$(void_type)|g' \
 	-e 's|@char_type[@]|$(char_type)|g' \
 	-e 's|@int_type[@]|$(int_type)|g' \

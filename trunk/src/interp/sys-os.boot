@@ -38,14 +38,12 @@
 -- supporting C runtime libopen-axiom-core.
 --
 
-module sys_-os
 import types
 import cfuns
 namespace BOOT
+module sys_-os
 
-)if not %hasFeature KEYWORD::GCL
 loadSystemRuntimeCore()
-)endif
 
 ++ change current working directory.
 import changeDirectory for

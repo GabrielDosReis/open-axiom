@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-08-05], 
+AC_INIT([OpenAxiom], [1.2.0-2008-08-07], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -279,16 +279,22 @@ case $axiom_lisp_flavor,$target in
         ;;
 esac
 AC_SUBST(axiom_gcl_rsym_hack)
+## Can we use dynamically linked libraries?  
+## Tentatively answer `yes' -- this is modern time.
+oa_use_dynamic_lib=yes
+
 ## How are we supposed to tell the Lisp system to eval an expression
 ## in batch mode?  What is the extension of a compiled Lisp file?
 case $axiom_lisp_flavor in
     gcl) 
        axiom_quiet_flags='-batch'
        axiom_eval_flags='-eval'
+       oa_use_dynamic_lib=no  
        ;;
     ecl) 
        axiom_quiet_flags=
        axiom_eval_flags='-eval'
+       oa_use_dynamic_lib=no  
        ;;
     sbcl) 
        axiom_quiet_flags='--noinform --noprint'
@@ -302,13 +308,14 @@ case $axiom_lisp_flavor in
 esac
 AC_SUBST(axiom_quiet_flags)
 AC_SUBST(axiom_eval_flags)
+AC_SUBST(oa_use_dynamic_lib)
 if test -z $axiom_fasl_type; then
     AC_MSG_CHECKING([compiled Lisp file extension])
     ## We set the IFS to <space> as we don't want automatic
     ## replacement of <newline> by <space>.
     axiom_save_IFS=$IFS
     IFS=' '
-    axiom_fasl_type=`$axiom_lisp $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp" #+:ecl :type #+:ecl :object))) (quit))'`
+    axiom_fasl_type=`$axiom_lisp $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
 
     ## Now pull out the fasl type.  ECL has the habit of spitting noise
     ## about internal loading.  Therefore, we must look only for a line that

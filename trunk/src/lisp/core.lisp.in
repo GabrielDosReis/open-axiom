@@ -93,6 +93,8 @@
            "compileLispFile"
            "compileLispHandler"
            "Option"
+	   "systemRootDirectory"
+	   "systemLibraryDirectory"
 
 	   "pathBasename"
 
@@ -124,9 +126,21 @@
   '(@axiom_optimize_options@))
 (proclaim '(optimize @axiom_optimize_options@))
 
+
+;; Return true if the Boot system is complete bootstrapped.
+(defun boot-completed-p nil
+  (member :open-axiom-boot-complete *features*))
+
 ;; 
 ;; -*- Hosting Lisp System -*-
-;; 
+;;
+
+;; Almost every supported Lisp use dynamic link for FFI.
+;; ECL's support is partial.  GCL-2.6.x hasn't discovered it yet.
+(defconstant |$useDynamicLink|
+  #+:ecl si::*use-dffi*
+  #+:gcl nil
+  #-(or :ecl :gcl) t)
 
 ;; The top level read-eval-print loop function of the base
 ;; Lisp system we are using.  This is a very brittle way
@@ -145,17 +159,31 @@
   (pathname-type (compile-file-pathname "foo.lisp")))
 
 (defconstant |$effectiveFaslType|
-  ;#+:ecl (pathname-type (compile-file-pathname "foo.lisp" :system-p t))
-  ;; until ECL is fixed, return a hard coded value
-  #+:ecl "o"
+  #+:ecl (pathname-type (compile-file-pathname "foo.lisp" :system-p t))
   #-:ecl |$faslType|)
 
 ;; Extension of file containers for native shared libraries.
 (defconstant |$NativeModuleExt|
-  "@SHREXT@")
+  (cond (|$useDynamicLink| "@SHREXT@")
+	(t ".@LIBEXT@")))
+
+;; Base name of the native core runtime library
+(defconstant |$CoreLibName|
+  "open-axiom-core")
+
+;; C runtime needed by the target system; e.g. -lm or -lwinsock
+(defconstant |$ExtraRuntimeLibraries|
+  "@oa_c_runtime_extra@")
+
+(defun extra-runtime-libs nil
+  (if (boot-completed-p)
+      (list (concatenate 'string "-L" (|systemLibraryDirectory|))
+	    (concatenate 'string "-l" |$CoreLibName|)
+	    |$ExtraRuntimeLibraries|)
+    (list |$ExtraRuntimeLibraries|)))
 
 ;; 
-;; -*- OpenAxiom source file extensions -*-
+;; -*- OpenAxiom filesystem -*-
 ;; 
 
 (defconstant |$BootFileType| "boot")
@@ -170,6 +198,27 @@
            |$LispFileType|)
           (t file-type))))
 
+;; Returns the root directory of the running system.
+;; A directory specified on command line takes precedence
+;; over directory specified at configuration time.
+(defun |systemRootDirectory| nil
+  (let ((dir (assoc (|Option| '|system|) (|%systemOptions|))))
+    (if (not (null dir))
+	(|ensureTrailingSlash| (cdr dir))
+      |$systemInstallationDirectory|)))
+
+;; Returns the directory containing the core runtime support
+;; libraries, either as specified on command line, or as inferred
+;; from the system root directory.
+(defun |systemLibraryDirectory| nil
+  (let ((dir (assoc (|Option| '|syslib|) (|%systemOptions|))))
+    (if (not (null dir))
+	(|ensureTrailingSlash| (cdr dir))
+      (concatenate 'string (|systemRootDirectory|) "lib/"))))
+
+
+(defun complete-fasl-list-for-link (fasls)
+  (mapcar #'|compileFilePathname| fasls))
 
 ;; 
 ;; -*- OpenAxiom Driver Table -*-
@@ -184,7 +233,8 @@
 ;;    --compile: boot or lisp files
 ;;    --translate: boot files
 ;;    --make: boot, lisp, or fasl files
-(defparameter |$driverTable| (make-hash-table :test #'equal :size 5))
+(defparameter |$driverTable| 
+  (make-hash-table :test #'equal :size 5))
 
 
 ;; Look up the driver that can handle REQUEST.  Returns nil when
@@ -493,8 +543,9 @@
            (unless entry-point
              (setq entry-point #'si::top-level))
            (c:build-program core-image 
-                            :lisp-files (mapcar #'|compileFilePathname| 
-						lisp-files)
+                            :lisp-files 
+			    (complete-fasl-list-for-link lisp-files)
+			    :ld-flags (extra-runtime-libs)
                             :epilogue-code `(funcall ,entry-point))
            (|coreQuit|)))
 
@@ -645,6 +696,7 @@
 ;; compilation process for ECL:
 ;;   (1) compile as object code;
 ;;   (2) build a FASL from the result of (1).
+
 (defun |compileLispFile| (file out-file)
   ;; When OUT-FILE does not have a specified parent directory, it is
   ;; implied that the compiled file is placed in the current directory.
@@ -658,29 +710,30 @@
                 (make-pathname :name (pathname-name out-file)
                                :type (pathname-type out-file)
                                :directory (list (|currentDirectoryName|)))))
-
-  (multiple-value-bind (result warning-p failure-p) 
-                       #-:ecl (compile-file file :output-file out-file)
-                       #+:ecl (multiple-value-prog1
-                               (compile-file file 
-                                             :output-file out-file 
-                                             :system-p t)
-                               (c::build-fasl 
-                                (compile-file-pathname out-file)
-                                :lisp-files `(,out-file)))
-                       (unless result
-                         (|coreError| "compilation of Lisp code failed"))
-                       (cond ((and failure-p)
-                              ;; Since we believe the source code must
-                              ;; be fixed, we don't want to leave
-                              ;; the generated FASL behing us, as that
-                              ;; would confuse both user and tools.
-                              (delete-file result)
-                              (|coreError| "Lisp code contained errors"))
-
-                             (warning-p
-                              (|warn| "Lisp code contained warnings")))
-                       result))
+  (unwind-protect
+      (progn
+	(begin-compile-time)
+	(multiple-value-bind (result warning-p failure-p) 
+	 #-:ecl (compile-file file :output-file out-file)
+	 #+:ecl (compile-file file :output-file out-file :system-p t)
+	 #+:ecl (if (and result (not failure-p)
+			 (null (c::build-fasl (compile-file-pathname out-file)
+					      :lisp-files `(,out-file)
+					      :ld-flags (extra-runtime-libs))))
+		    (setq result nil))
+	 (cond ((null result) 
+		(|coreError| "compilation of Lisp code failed"))
+	       (failure-p
+		;; Since we believe the source code must
+		;; be fixed, we don't want to leave
+		;; the generated FASL behing us, as that
+		;; would confuse both users and tools.
+		(delete-file result)
+		(|coreError| "Lisp code contained errors"))
+	       (warning-p
+		(|warn| "Lisp code contained warnings")))
+	 result))
+    (end-compile-time)))
 
 (defun |compileLispHandler| (prog-name options in-file)
   (declare (ignore prog-name))
@@ -813,7 +866,8 @@
   `(progn (eval-when 
            #+:common-lisp (:compile-toplevel :load-toplevel :execute)
            #-:common-lisp (compile load eval)
-                     (|importModule| ,module))))
+	   (if (compile-time-p)
+	       (|importModule| ,module)))))
 
 (defmacro boot-import (module)
   `(eval-when (:compile-toplevel)
@@ -825,6 +879,15 @@
 
 (defun |%hasFeature| (f)
   (member f *features* :test #'eq))
+
+(defun begin-compile-time nil
+  (push :open-axiom-compile-time *features*))
+
+(defun end-compile-time nil
+  (pop *features*))
+
+(defun compile-time-p nil
+  (member :open-axiom-compile-time *features*))
 
 ;; -*- Lisp Implementatiom-dependent Supports -*-
 

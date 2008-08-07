@@ -837,7 +837,7 @@ defaultBootToLispFile file ==
 getIntermediateLispFile(file,options) ==
   out := NAMESTRING getOutputPathname(options)
   out ^= nil => 
-    strconc(shoeRemoveStringIfNec($effectiveFaslType,out),'".clisp")
+    strconc(shoeRemoveStringIfNec($effectiveFaslType,out),'"clisp")
   defaultBootToLispFile file
 
 translateBootFile(progname, options, file) ==
@@ -859,26 +859,6 @@ associateRequestWithFileType(Option '"translate", '"boot",
 associateRequestWithFileType(Option '"compile", '"boot", 
                              function compileBootHandler)
 
---% System wide properties
-
-++ Returns the root directory of the running system.
-++ A directory specified on command line takes precedence
-++ over directory specified at configuration time.
-systemRootDirectory() ==
-  dir := ASSOC(Option '"system", %systemOptions()) =>
-    ensureTrailingSlash rest dir
-  $systemInstallationDirectory
-
-++ Returns the directory containing the core runtime support
-++ libraries, either as specified on command line, or as inferred
-++ from the system root directory.
-
-systemLibraryDirectory() ==
-  dir := ASSOC(Option "syslib",%systemOptions()) =>
-    ensureTrailingSlash rest dir
-  strconc(systemRootDirectory(),'"lib/")
-
-
 --% Runtime support
 
 ++ Load native dynamically linked module
@@ -887,8 +867,11 @@ loadNativeModule m ==
     FUNCALL(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),m)
   %hasFeature KEYWORD::CLISP =>
     EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
+  %hasFeature KEYWORD::ECL =>
+    EVAL [bfColonColon("FFI","LOAD-FOREIGN-LIBRARY"), m]
   coreError '"don't know how to load a dynamically linked module"
 
 loadSystemRuntimeCore() ==
+  %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::GCL => nil
   loadNativeModule strconc(systemLibraryDirectory(),
     '"libopen-axiom-core",$NativeModuleExt)
