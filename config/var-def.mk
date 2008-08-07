@@ -198,6 +198,7 @@ PLF=@PLF@
 CCF=@CCF@
 LDF=@LDF@ -lm
 LISP=@LISP@
+oa_c_runtime_extra = @axiom_c_runtime_extra@ -lm
 
 axiom_use_x = @axiom_use_x@
 AXIOM_X11_CFLAGS = @X_CFLAGS@ 

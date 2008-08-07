@@ -540,7 +540,7 @@ all-axiomsys: all-interpsys
 	$(MAKE) $(AXIOMSYS)
 
 mostlyclean-local:
-	@rm -f *.fn *.data *.$(FASLEXT) *.lib
+	@rm -f *.fn *.data *.$(FASLEXT) *.lib *.$(OBJEXT)
 
 clean-local: mostlyclean-local
 	@rm -f *.clisp *.lsp

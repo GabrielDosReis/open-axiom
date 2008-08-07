@@ -1,5 +1,30 @@
 2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (boot-completed-p): New.
+	(|$useDynamicLink|): Likewise.
+	(|$effectiveFaslType|): Hold extension of linkable FASL.
+	(|$NativeModuleExt|): Tidy.
+	(|$CoreLibName|): New.
+	(|$ExtraRuntimeLibraries|): Likewise.
+	(extra-runtime-libs): Likewise.
+	(complete-fasl-list-for-link): Likewise.
+	(|link|) [ECL]: Link against system libraries.
+	(|compileLispFile|): Tidy.
+	(begin-compile-time): New.
+	(end-compile-time): Likewise.
+	(compile-time-p): Likewise.
+	(import-module): Use it.
+	* lisp/Makefile.in ($(OUT)/lisp$(EXEEXT)): Use oa_c_runtime_extra.
+	* lib/Makefile.in (oa_installed_corelib): New.
+	* boot/initial-env.lisp: Don't export systemRootDirectory and
+	systemLibraryDirectory from here.
+	* boot/translator.boot (systemRootDirectory): Move to lisp/core.lisp.
+	(systemLibraryDirectory): Likewise.
+	(loadSystemRuntimeCore): Do nothing for GCL and ECL.
+	* interp/boot-pkg.lisp: Inform that Boot system is compleye.
+
+2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/translator.boot (genOptimizeOptions): New.
 	(shoeClLines): Use it.
 	(shorClCLines): Likewise.

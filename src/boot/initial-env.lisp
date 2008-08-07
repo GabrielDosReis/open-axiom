@@ -46,9 +46,7 @@
   (:use "AxiomCore")
   #+:common-lisp  (:use "COMMON-LISP")
   #-:common-lisp  (:use "LISP")
-  (:export "systemRootDirectory" 
-	   "systemLibraryDirectory"
-	   "loadNativeModule"
+  (:export "loadNativeModule"
 	   "loadSystemRuntimeCore"
            "$InteractiveMode"
 	   "string2BootTree"))

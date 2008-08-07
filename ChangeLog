@@ -1,5 +1,11 @@
 2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet (oa_use_dynamic_lib): New.  Decide when to
+	use dynamically linked libraries.
+	(axiom_fasl_type): Hold extensions of loadable FASL.
+
+2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* configure.ac.pamphlet: Add 'debug' to Lisp optimize proclamation
 	when --enable-checking.
 
