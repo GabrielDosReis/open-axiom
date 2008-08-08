@@ -76,11 +76,16 @@ stamp: $(oa_installed_corelib) libspad.$(LIBEXT)
 	rm -f stamp
 	$(STAMP) stamp
 
-$(axiom_target_libdir)/libopen-axiom-core.%: libopen-axiom-core.%
+$(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT): \
+	libopen-axiom-core.$(LIBEXT)
 	$(mkdir_p) $(axiom_target_libdir)
 	cp -p $< $@
 
-libopen-axiom-core$(SHREXT): $(libopen_axiom_core_objects)
+# Don't put the shared lib here -- place it directly in its final home;
+# we don't want to pick it accidently.
+$(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
+	$(libopen_axiom_core_objects)
+	$(mkdir_p) $(axiom_target_libdir)
 	$(LINK_SHRLIB) $(oa_shrlib_flags) -o $@ \
 		$(libopen_axiom_core_objects) \
 		@axiom_c_runtime_extra@ -lm
