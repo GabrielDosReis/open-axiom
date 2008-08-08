@@ -1,6 +1,0 @@
-(PROVIDE "translator")
-(IMPORT-MODULE "includer")
-(IMPORT-MODULE "scanner")
-(IMPORT-MODULE "pile")
-(IMPORT-MODULE "parser")
-(IMPORT-MODULE "ast")

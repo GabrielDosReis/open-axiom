@@ -1,9 +1,0 @@
-(PROVIDE "pile")
-(IMPORT-MODULE "includer")
-(IMPORT-MODULE "scanner")
-(IN-PACKAGE "BOOTTRAN")
-(EVAL-WHEN (:COMPILE-TOPLEVEL :LOAD-TOPLEVEL :EXECUTE)
-  (PROGN
-    (DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |shoePileInsert|))
-    (DECLAIM (FTYPE (FUNCTION (|%List|) |%Thing|) |shoeFirstTokPosn|))
-    (DECLAIM (FTYPE (FUNCTION (|%List|) |%Thing|) |shoeLastTokPosn|))))

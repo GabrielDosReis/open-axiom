@@ -1,3 +1,0 @@
-extern float absolute(float);
-extern void goodbye(int);
-
