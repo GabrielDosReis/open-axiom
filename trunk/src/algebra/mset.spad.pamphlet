@@ -278,7 +278,7 @@ Multiset(S: SetCategory): MultisetAggregate S with
                 t1.e ~= t2.e => return false
             true
 
-        m1 < m2 ==
+        part?(m1,m2) ==
             m1.count >= m2.count => false
             t1 := m1.table
             t2 := m2.table

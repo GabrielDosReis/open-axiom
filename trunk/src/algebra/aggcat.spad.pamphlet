@@ -1330,7 +1330,7 @@ MultiDictionary(S:SetCategory): Category == DictionaryOperations S with
 SetAggregate(S:SetCategory):
   Category == Join(SetCategory, Collection(S)) with
    partiallyOrderedSet
-   "<"         : (%, %) -> Boolean
+   part?         : (%, %) -> Boolean
      ++ s < t returns true if all elements of set aggregate s are also
      ++ elements of set aggregate t.
    brace       : () -> %
@@ -1404,8 +1404,8 @@ Note that this code is not included in the generated catdef.spad file.
 
 (DEFPARAMETER |SetAggregate;AL| 'NIL) 
 
-(DEFUN |SetAggregate| (#0=#:G1398)
-  (LET (#1=#:G1399)
+(DEFUN |SetAggregate| (#0=#:G1394)
+  (LET (#1=#:G1395)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |SetAggregate;AL|))
        (CDR #1#))
@@ -1416,7 +1416,7 @@ Note that this code is not included in the generated catdef.spad file.
          #1#)))) 
 
 (DEFUN |SetAggregate;| (|t#1|)
-  (PROG (#0=#:G1397)
+  (PROG (#0=#:G1393)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -1428,7 +1428,8 @@ Note that this code is not included in the generated catdef.spad file.
                                 (|Join| (|SetCategory|)
                                         (|Collection| '|t#1|)
                                         (|mkCategory| '|domain|
-                                         '(((< ((|Boolean|) $ $)) T)
+                                         '(((|part?| ((|Boolean|) $ $))
+                                            T)
                                            ((|brace| ($)) T)
                                            ((|brace|
                                              ($ (|List| |t#1|)))
@@ -1455,6 +1456,7 @@ Note that this code is not included in the generated catdef.spad file.
                                 . #1=(|SetAggregate|))))) . #1#)
         (SETELT #0# 0 (LIST '|SetAggregate| (|devaluate| |t#1|))))))) 
 @
+
 \section{SETAGG-.lsp BOOTSTRAP}
 {\bf SETAGG-} depends on {\bf SETAGG}. We need to break this cycle to build
 the algebra. So we keep a cached copy of the translated {\bf SETAGG-}
@@ -1469,17 +1471,20 @@ Note that this code is not included in the generated catdef.spad file.
 (/VERSIONCHECK 2) 
 
 (DEFUN |SETAGG-;symmetricDifference;3A;1| (|x| |y| $)
-  (SPADCALL (SPADCALL |x| |y| (QREFELT $ 8))
-      (SPADCALL |y| |x| (QREFELT $ 8)) (QREFELT $ 9))) 
+  (SPADCALL (SPADCALL |x| |y| (|getShellEntry| $ 8))
+      (SPADCALL |y| |x| (|getShellEntry| $ 8)) (|getShellEntry| $ 9))) 
 
 (DEFUN |SETAGG-;union;ASA;2| (|s| |x| $)
-  (SPADCALL |s| (SPADCALL (LIST |x|) (QREFELT $ 12)) (QREFELT $ 9))) 
+  (SPADCALL |s| (SPADCALL (LIST |x|) (|getShellEntry| $ 12))
+      (|getShellEntry| $ 9))) 
 
 (DEFUN |SETAGG-;union;S2A;3| (|x| |s| $)
-  (SPADCALL |s| (SPADCALL (LIST |x|) (QREFELT $ 12)) (QREFELT $ 9))) 
+  (SPADCALL |s| (SPADCALL (LIST |x|) (|getShellEntry| $ 12))
+      (|getShellEntry| $ 9))) 
 
 (DEFUN |SETAGG-;difference;ASA;4| (|s| |x| $)
-  (SPADCALL |s| (SPADCALL (LIST |x|) (QREFELT $ 12)) (QREFELT $ 8))) 
+  (SPADCALL |s| (SPADCALL (LIST |x|) (|getShellEntry| $ 12))
+      (|getShellEntry| $ 8))) 
 
 (DEFUN |SetAggregate&| (|#1| |#2|)
   (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
@@ -1488,12 +1493,13 @@ Note that this code is not included in the generated catdef.spad file.
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|SetAggregate&|))
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$| (LIST '|SetAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (GETREFV 16) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 16) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
-        (QSETREFV $ 7 |#2|)
+        (|setShellEntry| $ 6 |#1|)
+        (|setShellEntry| $ 7 |#2|)
         $)))) 
 
 (MAKEPROP '|SetAggregate&| '|infovec|
@@ -1512,6 +1518,7 @@ Note that this code is not included in the generated catdef.spad file.
                                   2 0 0 0 7 15)))))
           '|lookupComplete|)) 
 @
+
 \section{category FSAGG FiniteSetAggregate}
 <<category FSAGG FiniteSetAggregate>>=
 )abbrev category FSAGG FiniteSetAggregate
@@ -1549,7 +1556,7 @@ FiniteSetAggregate(S:SetCategory): Category ==
 	++ min(u) returns the smallest element of aggregate u.
 
  add
-   s < t	   == #s < #t and s = intersect(s,t)
+   part?(s,t)	   == #s < #t and s = intersect(s,t)
    s = t	   == #s = #t and empty? difference(s,t)
    brace l	   == construct l
    set	 l	   == construct l
