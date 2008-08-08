@@ -1,10 +1,16 @@
 2008-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	
+	* interp/pf2sex.boot (pfApplication2Sex): Don't transform ">",
+	"=>", and "<=" expressions.
 
 	* algebra/aggcat.spad.pamphlet (part?$SetAggregate): Rename
 	from <$SetAggregate.
 	(part?$FiniteSetAggregate): Rename from <$FiniteSetAggregate
 	* algebra/mset.spad.pamphlet (part?$Multiset): Rename from
 	<$Mulitset.
+	* algebra/pleqn.spad.pamphlet (overset?$ParametricLinearEquations): 
+	Use part? instead of <.
+	* algebra/qalgset.spad.pamphlet (overset?$QuasiAlgebraicSet): Likewise.
 	* input/mset.input.pamphlet: Adjust.
 	* input/mset2.input.pamphlet: Likewise.
 
