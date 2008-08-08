@@ -193,7 +193,8 @@ QuasiAlgebraicSet(R, Var,Expon,Dpoly) : C == T
  
      overset?(p,qlist) ==
        empty? qlist => false
-       or/[(brace$(Set Dpoly) q) <$(Set Dpoly) (brace$(Set Dpoly) p) for q in qlist]
+       or/[part?(brace(q)$Set(Dpoly), brace(p)$Set(Dpoly))$Set(Dpoly) 
+             for q in qlist]
 
 @
 \section{package QALGSET2 QuasiAlgebraicSet2}

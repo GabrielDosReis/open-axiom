@@ -240,12 +240,6 @@ pfApplication2Sex pf ==
     symEqual(op, "|") and $insideRule = 'left =>
       pfSuchThat2Sex args
     argSex := rest pf2Sex1 args
-    symEqual(op, ">") =>
-      ["<", second argSex, first argSex]
-    symEqual(op, ">=") =>
-      ["not", ["<", first argSex, second argSex]]
-    symEqual(op, "<=") =>
-      ["not", ["<", second argSex, first argSex]]
 --    symEqual(op, "reduce") and (#argSex) = 2 =>
 --      ["REDUCE", first argSex, 0, second argSex]
     symEqual(op, "AND") =>

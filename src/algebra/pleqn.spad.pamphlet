@@ -625,7 +625,7 @@ ParametricLinearEquations(R,Var,Expon,GR):
 
     overset?(p,qlist) ==
       empty? qlist => false
-      or/[(brace$(Set GR) q) <$(Set GR) (brace$(Set GR) p) _
+      or/[part?(brace(q)$Set(GR), brace(p)$Set(GR))$Set(GR) _
                                                 for q in qlist]
 
 
