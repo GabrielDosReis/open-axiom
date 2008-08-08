@@ -25,7 +25,8 @@ I := intersect(s,t)
 difference(s,t)
 S := symmetricDifference(s,t)
 (U = union(S,I))@Boolean
-t1 := multiset [1,2,2,3]; [t1 < t, t1 < s, t < s, t1 <= s]
+t1 := multiset [1,2,2,3]; 
+[part?(t1,t), part?(t1,s), part?(t,s), not part?(s,t1)]
 @
 \eject
 \begin{thebibliography}{99}

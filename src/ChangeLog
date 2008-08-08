@@ -1,3 +1,13 @@
+2008-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/aggcat.spad.pamphlet (part?$SetAggregate): Rename
+	from <$SetAggregate.
+	(part?$FiniteSetAggregate): Rename from <$FiniteSetAggregate
+	* algebra/mset.spad.pamphlet (part?$Multiset): Rename from
+	<$Mulitset.
+	* input/mset.input.pamphlet: Adjust.
+	* input/mset2.input.pamphlet: Likewise.
+
 2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/apply.boot: Move content to compiler.boot.  Remove.

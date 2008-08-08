@@ -32,9 +32,9 @@ symdif(s,t)
 symdif(s,s)
 
 t1 := multiset [2,2]
-[t1 < t, t1 < s, t1 <= t, t1 <= s]
+[part?(t1,t), part?(t1,s), not part?(t,t1), not part?(s,t1)]
 t1 := multiset [2,2,2]
-[t1 < t, t1 < s, t1 <= t, t1 <= s]
+[part?(t1,t), part?(t1,s), not part?(t,t1), not part?(s,t1)]
 @
 \eject
 \begin{thebibliography}{99}
