@@ -1,5 +1,9 @@
 2008-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-	
+
+	* lib/Makefile.in ($(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT)): Tidy.
+
+2008-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/pf2sex.boot (pfApplication2Sex): Don't transform ">",
 	"=>", and "<=" expressions.
 
