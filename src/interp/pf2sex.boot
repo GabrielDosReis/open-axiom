@@ -125,8 +125,7 @@ pf2Sex1 pf ==
     pfDefinition2Sex pf
   pfLambda? pf =>
     pfLambda2Sex pf
-  pfMLambda? pf =>
-    "/throwAway"
+  pfMLambda? pf => pfMLambda2Sex pf
   pfRestrict? pf =>
     ["@", pf2Sex1 pfRestrictExpr pf, pf2Sex1 pfRestrictType pf]
   pfFree? pf =>
@@ -148,8 +147,7 @@ pf2Sex1 pf ==
     pfRule2Sex pf
   pfBreak? pf =>
     ["break", pfBreakFrom pf]
-  pfMacro? pf =>
-    "/throwAway"
+  pfMacro? pf => pfMacro2Sex pf
   pfReturn? pf =>
     ["return", pf2Sex1 pfReturnExpr pf]
   pfIterate? pf =>
@@ -478,3 +476,10 @@ pfSuchThat2Sex args ==
 
 pfQuantified2Sex(quantifier,vars,expr) ==
   [quantifier, [pf2Sex1 t for t in pfParts vars], pf2Sex1 expr]
+
+pfMacro2Sex pf ==
+  ["%Macro", pf2Sex1 pfMacroLhs pf, pf2Sex1 pfMacroRhs pf]
+
+pfMLambda2Sex pf ==
+  ["%MLambda", [pf2Sex1 a for a in pf0MLambdaArgs pf], 
+    pf2Sex1 pfMLambdaBody pf]

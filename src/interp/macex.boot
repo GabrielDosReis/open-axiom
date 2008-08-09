@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -108,16 +108,14 @@ mac0SubstituteOuter( replist , pform ) ==
 -- This function adds the appropriate definition and returns
 -- the original Macro pform.
 macMacro pf ==
-    lhs := pfMacroLhs pf
-    rhs := pfMacroRhs pf
-    not pfId? lhs =>
-        ncSoftError (pfSourcePosition lhs, 'S2CM0001, [%pform lhs] )
-        pf
-    sy := pfIdSymbol lhs
-
-    mac0Define(sy, if pfMLambda? rhs then 'mlambda else 'mbody, macSubstituteOuter rhs)
- 
-    if pfNothing? rhs then pf else pfMacro(lhs, pfNothing())
+  lhs := pfMacroLhs pf
+  rhs := pfMacroRhs pf
+  not pfId? lhs =>
+      ncSoftError (pfSourcePosition lhs, 'S2CM0001, [%pform lhs] )
+      pf
+  sy := pfIdSymbol lhs
+  mac0Define(sy, (pfMLambda? rhs => 'mlambda; 'mbody), macSubstituteOuter rhs)
+  pf
  
 mac0Define(sy, state, body) ==
     $pfMacros := cons([sy, state, body], $pfMacros)

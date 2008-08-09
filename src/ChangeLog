@@ -1,8 +1,25 @@
 2008-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* lib/Makefile.in ($(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT)): Tidy.
+	* interp/pf2sex.boot (pfMacro2Sex): New.
+	(pfMLambda2Sex): Likewise.
+	(pf2Sex1): Use them.
+	* interp/i-spec2.boot ($VoidValueObject): New.
+	($VoidCodeObject): Likewise.
+	(setValueToVoid): Likewise.
+	(setCodeToVoid): Likewise.
+	(upDEF): Call setValueToVoid.
+	(upfree): Call setCodeToVoid
+	(uplocal): Likewise.
+	(interpIF): Call setValueToVoid.
+	(up%Macro): New.
+	(up%MLambda): Likewise.
+	* interp/i-spec1.boot ($specialOps): Add %Macro and %MLambda.
+	* interp/macex.boot (macMacro): Really return the original macro
+	as the documentation says.
 
 2008-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/Makefile.in ($(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT)): Tidy.
 
 	* interp/pf2sex.boot (pfApplication2Sex): Don't transform ">",
 	"=>", and "<=" expressions.

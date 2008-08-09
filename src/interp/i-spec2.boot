@@ -35,6 +35,18 @@
 import i_-spec1
 namespace BOOT
 
+++ The `void' value object (an oxymoron).  There really are constants.
+$VoidValueObject := objNew(voidValue(), $Void)
+$VoidCodeObject := objNew('(voidValue), $Void)
+
+setValueToVoid t ==
+  putValue(t,$VoidValueObject)
+  putModeSet(t,[$Void])
+
+setCodeToVoid t ==
+  putValue(t,$VoidCodeObject)
+  putModeSet(t,[$Void])
+
 ++ Interpreter macros
 $InterpreterMacroAlist ==
   '((%i . (complex 0 1))
@@ -62,8 +74,7 @@ upDEF t ==
       keyedSystemError("S2GE0016",['"upDEF",'"bad map definition"])
     mapOp := first mapOp
   put(mapOp,"value",v,$e)
-  putValue(op,objNew(voidValue(), $Void))
-  putModeSet(op,[$Void])
+  setValueToVoid op
 
 --% Handler for package calling and $ constants
 
@@ -180,12 +191,10 @@ uperror t ==
 --% Handlers for free and local
 
 upfree t ==
-  putValue(t,objNew('(voidValue),$Void))
-  putModeSet(t,[$Void])
+  setCodeToVoid t
 
 uplocal t ==
-  putValue(t,objNew('(voidValue),$Void))
-  putModeSet(t,[$Void])
+  setCodeToVoid t
 
 upfreeWithType(var,type) ==
   sayKeyedMsg("S2IS0055",['"free",var])
@@ -306,9 +315,7 @@ interpIF(op,cond,a,b) ==
   val:= getValue cond
   val:= coerceInteractive(val,$Boolean) =>
     objValUnwrap(val) => upIFgenValue(op,a)
-    EQ(b,"%noBranch") =>
-      putValue(op,objNew(voidValue(), $Void))
-      putModeSet(op,[$Void])
+    EQ(b,"%noBranch") => setValueToVoid op
     upIFgenValue(op,b)
   throwKeyedMsg("S2IS0031",NIL)
 
@@ -1152,6 +1159,19 @@ copyHack(env) ==
   d:= [fn p for p in c] where fn(p) ==
     CONS(CAR p,[(EQCAR(q,'localModemap) => q; copy q) for q in CDR p])
   [[d]]
+
+--% Macro handling
+
+-- Well, in fact we never handle macros in the interpreter directly.
+-- Rather, they are saved in the `macro processing phase' (phMacro)
+-- to be used in future macro expansions, and the AST we get at this
+-- point already went through the macro expansion massage.  So, all we
+-- have to do is to the rubber stamp.
+up%Macro t ==
+  setValueToVoid t
+
+up%MLambda t ==
+  setValueToVoid t
 
 -- Creates the function names of the special function handlers and puts
 --  them on the property list of the function name
