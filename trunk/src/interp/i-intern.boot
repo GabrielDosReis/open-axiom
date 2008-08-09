@@ -251,6 +251,7 @@ mkAtree3(x,op,argl) ==
       [mkAtreeNode 'DEF,[[op,:v.0],:r],if v.2 then v.2 else true,false]
     [mkAtreeNode 'DEF,[a,:r],true,false]
   op="[||]" => [mkAtreeNode op, :argl]
+  op in '(%Inline %With %Add %Export) => [mkAtreeNode op,:argl]
 --x is ['when,y,pred] =>
 --  y isnt ['DEF,a,:r] =>
 --    keyedSystemError("S2II0003",['"when",y,'"improper argument form"])

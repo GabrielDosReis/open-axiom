@@ -1,5 +1,31 @@
 2008-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/pf2sex.boot (pf2Sex1): Handle more ASTs.
+	(pfType2SexOrNil): New.
+	(pfDoc2SexOrNil): Likewise.
+	(pfWith2Sex): Likewise.
+	(pfAdd2Sex): Likewise.
+	(pfWDeclare2Sex): Likewise.
+	(pfAttribute2Sex): Likewise.
+	(pfWIf2Sex): Likewise.
+	(pfExport2Sex): Likewise.
+	(pfInline2Sex): Likewise.
+	(pfImport2Sex): Likewise.
+	(pfQualType2Sex): Likewise.
+	* interp/ptrees.boot (pf0InlineItems): New.
+	* interp/i-spec2.boot (up%Import): New.
+	(sorry): Likewise.
+	(up%Export): Likewise.
+	(up%Inline): Likewise.
+	(up%With): Likewise.
+	(up%Add): Likewise.
+	* interp/i-intern.boot (mkAtree3): Handle %Inline, %With, %Add,
+	and %Export.
+	* interp/i-spec1.boot ($specialOps): Adjust.
+	* doc/msgs/s2-us.msgs (S2IP0006): New.
+
+2008-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/open-axiom.h (OPENAXIOM_HAVE_GRAPHICS): Define.
 	* sman/sman.c (process_arguments): Use it.
 	(process_arguments): Likewise.
