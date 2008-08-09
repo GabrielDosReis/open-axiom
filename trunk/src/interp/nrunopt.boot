@@ -305,7 +305,7 @@ mungeAddGensyms(u,gal) ==
   ['LIST,:[fn(x,gal,0) for x in u]] where fn(x,gal,n) ==
     atom x => x
     g := LASSOC(x,gal) =>
-      n = 0 => ['LET,g,x]
+      n = 0 => ["%LET",g,x]
       g
     [first x,:[fn(y,gal,n + 1) for y in rest x]]
  

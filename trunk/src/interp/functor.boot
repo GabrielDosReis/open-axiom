@@ -419,17 +419,17 @@ mkDomainConstructor x ==
  
 setVector4(catNames,catsig,conditions) ==
   if $HackSlot4 then
-    for ['LET,name,cond,:.] in $getDomainCode repeat
+    for ["%LET",name,cond,:.] in $getDomainCode repeat
       $HackSlot4:=MSUSBT(name,cond,$HackSlot4)
   code:=
 --+
     ['SETELT,'$,4,'TrueDomain]
-  code:=['(LET TrueDomain (NREVERSE TrueDomain)),:$HackSlot4,code]
+  code:=['(%LET TrueDomain (NREVERSE TrueDomain)),:$HackSlot4,code]
   code:=
     [:
       [setVector4Onecat(u,v,w)
         for u in catNames for v in catsig for w in conditions],:code]
-  ['(LET TrueDomain NIL),:code]
+  ['(%LET TrueDomain NIL),:code]
  
 setVector4Onecat(name,instantiator,info) ==
             --generates code to create one item in the
@@ -578,7 +578,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
         [name,:count]:=u
         v:=["setShellEntry",name,count,v]
       code:=[v,:code]
-  [['LET,instantiatedBase,base],:code]
+  [["%LET",instantiatedBase,base],:code]
  
 DescendCode(code,flag,viewAssoc,EnvToPass) ==
   -- flag = true if we are walking down code always executed;
@@ -617,7 +617,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
         c:=NREVERSE CDR NREVERSE c
     null c => '(LIST)
     ['COND,:c]
-  code is ['LET,name,body,:.] =>
+  code is ["%LET",name,body,:.] =>
                     --only keep the names that are useful
     if body is [a,:.] and isFunctor a
       then $packagesUsed:=[body,:$packagesUsed]
@@ -674,7 +674,7 @@ TryGDC cond ==
   cond is ['HasCategory,:l] =>
     solved:= nil
     for u in $getDomainCode | not solved repeat
-      if u is ['LET,name, =cond] then solved:= name
+      if u is ["%LET",name, =cond] then solved:= name
     solved => solved
     cond
   cond

@@ -116,7 +116,7 @@ formatDeftranRepper([op,a],SEQflag) ==
     a is ['SEQ,:r] => ['SEQ,:[formatSeqRepper(op,x) for x in r]]
     a is ['IF,p,b,c] => 
       formatDeftran(['IF,p,[op,b],[op, c]], SEQflag)
-    a is ['LET,a,b] => formatDeftran(['LET,a,[op,b]],SEQflag)
+    a is ["%LET",a,b] => formatDeftran(["%LET",a,[op,b]],SEQflag)
     a is ['not,[op,a,b]] and (op1 := LASSOC(op,$pspadRelationAlist)) =>
       formatDeftran([op1,a,b],SEQflag)
     a is ["return",n,r] => 
@@ -330,7 +330,7 @@ formatTail1 x ==
 -- x = "." => format ""
 formatConstructItem x == format x
  
-formatLET ["LET",a,b] == 
+formatLET ["%LET",a,b] == 
   $insideTypeExpression: local := true
   a = "Rep" or atom a and constructor? opOf b =>
     tryBreakNB(formatAtom a and format " == ",b,":=","Led")

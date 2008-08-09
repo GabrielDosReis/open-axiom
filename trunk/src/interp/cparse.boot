@@ -822,7 +822,7 @@ npQualified(f)==
     else  npLetQualified  f
 
 npLetQualified f==
-      npEqKey "LET" and
+      npEqKey "%LET" and
       (npDefinition() or npTrap()) and
       npCompMissing "IN"  and
       (FUNCALL f or npTrap()) and

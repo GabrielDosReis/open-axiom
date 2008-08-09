@@ -817,13 +817,13 @@ compCons1(["CONS",x,y],m,e) ==
 compSetq: (%List,%Thing,%List) -> %List
 compSetq1: (%Form,%Thing,%Mode,%List) -> %List
 
-compSetq(["LET",form,val],m,E) == compSetq1(form,val,m,E)
+compSetq(["%LET",form,val],m,E) == compSetq1(form,val,m,E)
 
 compSetq1(form,val,m,E) ==
   IDENTP form => setqSingle(form,val,m,E)
   form is [":",x,y] =>
     [.,.,E']:= compMakeDeclaration(form,$EmptyMode,E)
-    compSetq(["LET",x,val],m,E')
+    compSetq(["%LET",x,val],m,E')
   form is [op,:l] =>
     op="CONS"  => setqMultiple(uncons form,val,m,E)
     op="%Comma" => setqMultiple(l,val,m,E)
@@ -868,13 +868,13 @@ setqSingle(id,val,m,E) ==
       stackWarning("domain valued variable %1b has been reassigned within its scope",[id])
     e':= augModemapsFromDomain1(id,val,e')
       --all we do now is to allocate a slot number for lhs
-      --e.g. the LET form below will be changed by putInLocalDomainReferences
+      --e.g. the %LET form below will be changed by putInLocalDomainReferences
 --+
   if (k:=NRTassocIndex(id))
      then form:=['SETELT,"$",k,x]
      else form:=
-         $QuickLet => ["LET",id,x]
-         ["LET",id,x,
+         $QuickLet => ["%LET",id,x]
+         ["%LET",id,x,
             (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
   [form,m',e']
 
@@ -897,7 +897,7 @@ setqMultiple(nameList,val,m,e) ==
   1.1 --exit if result is a list
   m1 is ["List",D] =>
     for y in nameList repeat e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
-    convert([["PROGN",x,["LET",nameList,g],g],m',e],m)
+    convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
   2 --verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
                                                 --list of modes
@@ -1558,7 +1558,7 @@ compCoerce1(x,m',e) ==
   pred:=isSubset(m',T.mode,e) =>
     gg:=GENSYM()
     pred:= substitute(gg,"*",pred)
-    code:= ['PROG1,['LET,gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
+    code:= ['PROG1,["%LET",gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
     [code,m',T.env]
 
 coerceByModemap([x,m,e],m') ==
@@ -1964,7 +1964,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["is", :"compIs"],_
 	  ["Join", :"compJoin"],_
 	  ["leave", :"compLeave"],_
-	  ["LET", :"compSetq"],_
+	  ["%LET", :"compSetq"],_
 	  ["MDEF", :"compMacro"],_
           ["not", :"compNot"],_
 	  ["pretend", :"compPretend"],_

@@ -338,7 +338,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 --  $definition: constructor form, e.g. (SquareMatrix 10 (RationalNumber))
 --  sig: signature of constructor form
 --  code: result of "doIt", converting body of capsule to CodeDefine forms, e.g.
---       (PROGN (LET Rep ...)
+--       (PROGN (%LET Rep ...)
 --              (: (ListOf x y) $)
 --              (CodeDefine (<op> <signature> <functionName>))
 --              (COND ((HasCategory $ ...) (PROGN ...))) ..)
@@ -431,14 +431,14 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 --CODE: part 1
   codePart1:= [:devaluateCode,:domainFormCode,createDomainCode,
                 createViewCode,setVector0Code, slot3Code,:slamCode] where
-    devaluateCode:= [['LET,b,['devaluate,a]] for [a,:b] in $devaluateList]
-    domainFormCode := [['LET,a,b] for [a,:b] in NREVERSE $NRTdomainFormList]
+    devaluateCode:= [["%LET",b,['devaluate,a]] for [a,:b] in $devaluateList]
+    domainFormCode := [["%LET",a,b] for [a,:b] in NREVERSE $NRTdomainFormList]
       --$NRTdomainFormList is unused now
     createDomainCode:=
-      ['LET,domname,['LIST,MKQ CAR $definition,:ASSOCRIGHT $devaluateList]]
-    createViewCode:= ['LET,'$,["newShell", $NRTbase + $NRTdeltaLength]]
+      ["%LET",domname,['LIST,MKQ CAR $definition,:ASSOCRIGHT $devaluateList]]
+    createViewCode:= ["%LET",'$,["newShell", $NRTbase + $NRTdeltaLength]]
     setVector0Code:=[$setelt,'$,0,'dv_$]
-    slot3Code := ["setShellEntry",'$,3,['LET,'pv_$,predBitVectorCode1]]
+    slot3Code := ["setShellEntry",'$,3,["%LET",'pv_$,predBitVectorCode1]]
     slamCode:=
       isCategoryPackageName opOf $definition => nil
       [NRTaddToSlam($definition,'$)]
@@ -508,15 +508,15 @@ NRTsetVector4(siglist,formlist,condlist) ==
   code := ['mapConsDB,MKQ REVERSE REMDUP $uncondList]
   if $condList then
     localVariable := GENSYM()
-    code := [['LET,localVariable,code]]
+    code := [["%LET",localVariable,code]]
     for [pred,list] in $condList repeat
       code :=
-        [['COND,[pred,['LET,localVariable,
+        [['COND,[pred,["%LET",localVariable,
           ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
             :code]
     code := ['PROGN,:NREVERSE [['NREVERSE,localVariable],:code]]
   g := GENSYM()
-  [$setelt,'$,4,['PROG2,['LET,g,code],
+  [$setelt,'$,4,['PROG2,["%LET",g,code],
     ['VECTOR,['catList2catPackageList,g],g]]]
 
 NRTsetVector4Part1(siglist,formlist,condlist) ==
@@ -548,15 +548,15 @@ NRTsetVector4Part2(uncondList,condList) ==
   code := ['mapConsDB,MKQ REVERSE REMDUP uncondList]
   if condList then
     localVariable := GENSYM()
-    code := [['LET,localVariable,code]]
+    code := [["%LET",localVariable,code]]
     for [pred,list] in condList repeat
       code :=
-        [['COND,[predicateBitRef SUBLIS($pairlis,pred),['LET,localVariable,
+        [['COND,[predicateBitRef SUBLIS($pairlis,pred),["%LET",localVariable,
           ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
             :code]
     code := ['PROGN,:NREVERSE [['NREVERSE,localVariable],:code]]
   g := GENSYM()
-  [$setelt,'$,4,['PROG2,['LET,g,code],
+  [$setelt,'$,4,['PROG2,["%LET",g,code],
     ['VECTOR,['catList2catPackageList,g],g]]]
 
 mergeAppend(l1,l2) ==

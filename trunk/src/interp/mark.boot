@@ -120,7 +120,7 @@ markCoerceChk x ==
 markMultipleExplicit(nameList, valList, T) ==
   tcheck T
   [mkWi('setqMultipleExplicit, 'WI,
-    ['LET, ["%Comma",:nameList], ["%Comma",:valList]],
+    ["%LET", ["%Comma",:nameList], ["%Comma",:valList]],
     T.expr), :CDR T]
 
 markRetract(x,T) ==
@@ -311,7 +311,7 @@ markMacroTran name ==     --called by markImport
 markSetq(originalLet,T) ==                                --for compSetq
   BOUNDP '$convert2NewCompiler and $convert2NewCompiler => 
     $coerceList : local := nil
-    ['LET,form,originalBody] := originalLet
+    ["%LET",form,originalBody] := originalLet
     id := markLhs form
     not $insideCapsuleFunctionIfTrue =>
       $from : local := '"Setq"
@@ -319,7 +319,7 @@ markSetq(originalLet,T) ==                                --for compSetq
       markEncodeChanges(code,nil)
       noriginalLet := markSpliceInChanges originalBody
       if IDENTP id then $domainLevelVariableList := insert(id,$domainLevelVariableList) 
-      nlet := ['LET,id,noriginalLet]
+      nlet := ["%LET",id,noriginalLet]
       entry := [originalLet,:nlet]
       $importStack := [nil,:$importStack]
       $freeStack   := [nil,:$freeStack]
@@ -526,7 +526,7 @@ markOrigName x ==
 
 markEncodeLoop(i, r, s) ==  
   [.,:itl1, b1] := i   --op is REPEAT or COLLECT
-  if r is ['LET,.,a] then r := a
+  if r is ["%LET",.,a] then r := a
   r is [op1,:itl2,b2] and MEMQ(op1, '(REPEAT COLLECT)) =>
     for it1 in itl1 for it2 in itl2 repeat markEncodeChanges(it2,[it1,:s])
     markEncodeChanges(b2, [b1,:s])
@@ -668,9 +668,9 @@ markPaths(x,y,s) ==    --x < y; find location s of x in y (initially s=nil)
   x is [op,:u] and MEMQ(op,'(LIST VECTOR)) and y is ['construct,:v] and
     (p := markPaths(['construct,:u],y,s)) => p
   atom y => nil
-  y is ['LET,a,b] and IDENTP a => 
+  y is ["%LET",a,b] and IDENTP a => 
     markPaths(x,b,markCons(2,s)) --and IDENTP x
-  y is ['LET,a,b] and GENSYMP a => markPaths(x,b,s)     --for loops
+  y is ["%LET",a,b] and GENSYMP a => markPaths(x,b,s)     --for loops
   y is ['IF,a,b,:.] and GENSYMP a => markPaths(x,b,s)   --for loops
   y is ['IF,a,b,c] and (p := (markPathsEqual(x,b) => 2;
                               markPathsEqual(x,c) => 3;
@@ -691,7 +691,7 @@ markPathsEqual(x,y) ==
   x is ["::",.,a] and y is ["::",.,b] and 
     a = $Integer and b = $NonNegativeInteger => true
   y is [fn,.,z] and MEMQ(fn,'(PART CATCH THROW)) and markPathsEqual(x,z) => true
-  y is ['LET,a,b] and GENSYMP a and markPathsEqual(x,b) => true
+  y is ["%LET",a,b] and GENSYMP a and markPathsEqual(x,b) => true
   y is ['IF,a,b,:.] and GENSYMP a => markPathsEqual(x,b)  -------> ??? 
   y is ['call,:r] => markPathsEqual(IFCDR x,r)
   x is ['REDUCE,.,.,c,:.] and c is ['COLLECT,:u] and 
@@ -953,7 +953,7 @@ mkNewCapsuleItem(frees,i,x) ==
   imports := REVERSE orderByContainment REMDUP SETDIFFERENCE(i,$finalImports)
   importPart := [["import",d] for d in imports]
   nbody := 
-    ndef is ['LET,.,x] => x
+    ndef is ["%LET",.,x] => x
     ndef is ['DEF,.,.,.,x] => x
     ndef
   newerBody :=
@@ -962,7 +962,7 @@ mkNewCapsuleItem(frees,i,x) ==
       ['SEQ,:newPart,['exit,1,nbody]]
     nbody
   newerDef := 
-    ndef is ['LET,a,x] => ['LET,a,newerBody]
+    ndef is ["%LET",a,x] => ["%LET",a,newerBody]
     ndef is ['DEF,a,b,c,x] => ['DEF,a,b,c,newerBody]
     newerBody
   entry := [originalDef,:newerDef]
@@ -997,9 +997,9 @@ markFinishItem x ==
             foobum x
             pp x
             x
-  x is ['LET,lhs,rhs] =>
+  x is ["%LET",lhs,rhs] =>
     "or"/[new for [old,:new] in $capsuleStack |
-        old is ['LET,olhs,orhs]
+        old is ["%LET",olhs,orhs]
           and markCompare(lhs,olhs) and markCompare(rhs,orhs)]
             or x
   x is ['IF,p,a,b] => ['IF,p,markFinishItem a,markFinishItem b]
@@ -1144,12 +1144,12 @@ markInsertBodyParts u ==
     ['SEQ,:[markInsertBodyParts y for y in l],
            ['exit,n,markInsertBodyParts x]]
   u is [op,:l] and MEMQ(op,'(REPEAT COLLECT)) => markInsertRepeat u
-  u is ['LET,["%Comma",:s],b] =>
-    ['LET,["%Comma",:[markWrapPart x for x in s]],markInsertBodyParts b]
---u is ['LET,a,b] and constructor? opOf b => u
-  u is ['LET,a,b] and a is [op,:.] =>
-    ['LET,[markWrapPart x for x in a],markInsertBodyParts b]
-  u is [op,a,b] and MEMQ(op,'(_add _with IN LET)) =>
+  u is ["%LET",["%Comma",:s],b] =>
+    ["%LET",["%Comma",:[markWrapPart x for x in s]],markInsertBodyParts b]
+--u is ["%LET",a,b] and constructor? opOf b => u
+  u is ["%LET",a,b] and a is [op,:.] =>
+    ["%LET",[markWrapPart x for x in a],markInsertBodyParts b]
+  u is [op,a,b] and MEMQ(op,'(_add _with IN %LET)) =>
     [op,markInsertBodyParts a,markInsertBodyParts b]
   u is [op,a,b] and MEMQ(op,'(_: _:_: _pretend _@)) =>
     [op,markInsertBodyParts a,b]
@@ -1381,7 +1381,7 @@ mkPaths(x,y) ==   --x < y; find location s of x in y (initially s=nil)
   atom y => nil
   x is [op, :u] and MEMQ(op,'(LIST VECTOR)) and y is ['construct,:v] 
     and markPathsEqual(['construct,:u],y) => [y]
-  (y is ['LET,a,b] or y is ['IF,a,b,:.]) and GENSYMP a and markPathsEqual(x,b) => [y]
+  (y is ["%LET",a,b] or y is ['IF,a,b,:.]) and GENSYMP a and markPathsEqual(x,b) => [y]
   y is ['call,:r] => 
 --  markPathsEqual(x,y1) => [y]
     mkPaths(x,r) => [y]
@@ -1497,7 +1497,7 @@ ppf x ==
 
 
 --%
-for x in [["LET", :"compSetq"],_
+for x in [["%LET", :"compSetq"],_
           ["Join", :"compJoin"],_
           ["Record", :"compCat"],_
           ["Union", :"compCat"],_

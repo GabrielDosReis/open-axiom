@@ -350,7 +350,7 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
 			$InteractiveMode =>
 			  ["XLAM",["#1"],["PROG1",["QCDR","#1"],
 			    ["check-union",["QEQCAR","#1",i],type,"#1"]]]
-			["XLAM",["#1"],["PROG2",["LET",gg,"#1"],["QCDR",gg],
+			["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],["QCDR",gg],
 			  ["check-union",["QEQCAR",gg,i],type,gg]]]
   [cList,e]
 
@@ -395,7 +395,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		  else
 		     ref:=gg
 		     q:= substitute(gg,"#1",p)
-		  ["XLAM",["#1"],["PROG2",["LET",gg,"#1"],ref,
+		  ["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],ref,
 		       ["check-union",q,t,gg]]]
 		downFun() ==
 		   p is ["EQCAR",x,.] =>

@@ -178,7 +178,7 @@ pf2Atree1 pf ==
 
     (pfAssign?)(pf) =>
         -- declarations on the lhs are broken out into another
-        -- statement preceding the LET of the id(s)
+        -- statement preceding the %LET of the id(s)
         lhsThings := (pf0AssignLhsItems)(pf)
         if #lhsThings = 1 and (pfTuple?)(first lhsThings) then
             lhsThings := (pf0TupleParts)(first lhsThings)
@@ -193,7 +193,7 @@ pf2Atree1 pf ==
         if #idList ^= 1 then idList :=
             [mkAtreeNodeWithSrcPos("tuple",pf), :idList]
         else idList := first idList
-        x := [mkAtreeNodeWithSrcPos("LET",pf),
+        x := [mkAtreeNodeWithSrcPos("%LET",pf),
             idList, pf2Atree1 (pfAssignRhs)(pf)]
         decls =>
             [mkAtreeNodeWithSrcPos("SEQ",pf),

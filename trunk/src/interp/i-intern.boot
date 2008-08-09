@@ -162,10 +162,10 @@ mkAtree2(x,op,argl) ==
   (op="case") and (nargl = 2)  =>
     [mkAtreeNode "case",mkAtree1 first argl,unabbrev CADR argl]
   op="REPEAT" => [mkAtreeNode op,:transformREPEAT argl]
-  op="LET" and argl is [['construct,:.],rhs] =>
-    [mkAtreeNode "LET",first argl,mkAtree1 rhs]
-  op="LET" and argl is [[":",a,.],rhs] =>
-    mkAtree1 ["SEQ",first argl,["LET",a,rhs]]
+  op="%LET" and argl is [['construct,:.],rhs] =>
+    [mkAtreeNode "%LET",first argl,mkAtree1 rhs]
+  op="%LET" and argl is [[":",a,.],rhs] =>
+    mkAtree1 ["SEQ",first argl,["%LET",a,rhs]]
   op is ['_$elt,D,op1] =>
     op1 is "=" =>
       a' := [mkAtreeNode '_=,:[mkAtree1 arg for arg in argl]]

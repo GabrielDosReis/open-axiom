@@ -718,13 +718,13 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
 
   -- RSS: 6-21-94
   -- The following code ensures that local variables really are local
-  -- to a function. We will unnecessarily generate preliminary LETs for
-  -- loop variables and variables that do have LET expressions, but that
+  -- to a function. We will unnecessarily generate preliminary %LETs for
+  -- loop variables and variables that do have %LET expressions, but that
   -- can be finessed later.
 
   locals := SETDIFFERENCE(COPY $localVars, parms)
   if locals then
-    lets := [['LET, l, ''UNINITIALIZED__VARIABLE, op] for l in locals]
+    lets := [["%LET", l, ''UNINITIALIZED__VARIABLE, op] for l in locals]
     body := ['PROGN, :lets, body]
 
   reportFunctionCompilation(op,fnName,parms,
@@ -999,10 +999,10 @@ findLocalVars1(op,form) ==
   form is ['free, :vars] =>
     for x in vars repeat
       ATOM x => mkFreeVar(op, x)
-  form is ['LET,a,b] =>
+  form is ["%LET",a,b] =>
     (a is ["tuple",:vars]) and (b is ["tuple",:vals]) =>
       for var in vars for val in vals repeat
-        findLocalVars1(op,['LET,var,val])
+        findLocalVars1(op,["%LET",var,val])
     a is ['construct,:pat] =>
       for var in listOfVariables pat repeat mkLocalVar(op,var)
       findLocalVars1(op,b)
