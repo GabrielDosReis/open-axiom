@@ -638,6 +638,7 @@ pf0ImportItems pf == pfParts pfImportItems pf
 pfInline(pfitems) == pfTree('Inline, [pfitems])
 pfInline?(pf) == pfAbSynOp? (pf, 'Inline)
 pfInlineItems pf == second pf       -- was ==>
+pf0InlineItems pf == pfParts pfInlineItems pf
 
 -- QualType    := (Type: Type, Qual: ? Type)
 

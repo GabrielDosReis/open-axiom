@@ -42,7 +42,7 @@ $specialOps := '(
   ADEF AlgExtension _and _case COERCE COLLECT construct Declare DEF Dollar
    equation error free has IF _is _isnt iterate _break %LET _local MDEF _or
     pretend QUOTE REDUCE REPEAT _return SEQ TARGET tuple typeOf _where 
-     _[_|_|_] %Macro %MLambda)
+     _[_|_|_] %Macro %MLambda %Import %Export %Inline %With %Add)
 
 $repeatLabel := NIL
 $breakCount := 0

@@ -495,19 +495,25 @@ pfMLambda2Sex pf ==
 
 
 pfType2SexOrNil pf ==
-  pfNohting? pf => nil
+  pfNothing? pf => nil
+  pf2Sex1 pf
+
+pfDoc2SexOrNil pf ==
+  pfNothing? pf => nil
   pf2Sex1 pf
 
 pfWith2Sex pf ==
-  ["%With", pf2Sex1 pfWithBase, pf2Sex1 pfWithWithin pf, 
-    pf2Sex1 pf2Sex1 pfWithWithon pf]
+  ["%With", pfType2SexOrNil pfWithBase pf, 
+    [pf2Sex1 s for s in pf0WithWithin pf], 
+      pfType2SexOrNil pfWithWithon pf]
 
 pfAdd2Sex pf ==
   ["%Add", pf2Sex1 pfAddBase pf, pf2Sex1 pfAddAddin pf,
     pfType2SexOrNil pfAddAddon pf]
 
 pfWDeclare2Sex pf ==
-  ["%Declare", pf2Sex1 pfWDeclareSignature pf, pf2Sex1 pfWDeclareDoc pf]
+  ["%Signature", rest pf2Sex1 pfWDeclareSignature pf, 
+    pfDoc2SexOrNil pfWDeclareDoc pf]
 
 pfAttribute2Sex pf ==
   ["%Attribute", pf2Sex1 pfAttributeExpr pf]
@@ -523,9 +529,8 @@ pfImport2Sex pf ==
   ["%Import", :[pf2Sex1 item for item in pf0ImportItems pf]]
 
 pfInline2Sex pf ==
-  ["%Inline", :[pf2Sex1 item for item in pfInlineItems pf]]
+  ["%Inline", :[pf2Sex1 item for item in pf0InlineItems pf]]
 
 pfQualType2Sex pf ==
-  ["%QualType", pf2Sex1 pfQyalTypeType pf, 
-    pfType2SexOrNil pfQualTypeQual pf]
-
+  -- pfQualTypeQual is always nothing.
+  pf2Sex1 pfQualTypeType pf

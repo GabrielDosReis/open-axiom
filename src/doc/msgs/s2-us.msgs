@@ -414,6 +414,8 @@ S2IP0004
  %1 macro %2b .
 S2IP0005
  %1b is not a valid identifier to use in OpenAxiom.
+S2IP0006
+ Sorry, %1b is not handled in the interpreter yet.  Try the compiler.
 S2IR0001
  Cannot resolve all the types in the list to be created.
 S2IR0002

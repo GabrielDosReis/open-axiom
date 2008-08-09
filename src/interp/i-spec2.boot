@@ -1160,6 +1160,14 @@ copyHack(env) ==
     CONS(CAR p,[(EQCAR(q,'localModemap) => q; copy q) for q in CDR p])
   [[d]]
 
+--% importing domains
+up%Import t ==
+  t isnt [.,:types] => nil
+  -- ??? shall we error in case types is nil?
+  for x in types repeat
+    $e := addDomain(devaluate objVal getValue x,$e)
+  setValueToVoid t
+
 --% Macro handling
 
 -- Well, in fact we never handle macros in the interpreter directly.
@@ -1172,6 +1180,27 @@ up%Macro t ==
 
 up%MLambda t ==
   setValueToVoid t
+
+
+--% Sorry for unhandled input constructs
+sorry kind ==
+  throwKeyedMsg("S2IP0006",[kind])
+
+--% Export
+up%Export t ==
+  sorry '"export declaration"
+
+--% Inline
+up%Inline t ==
+  sorry '"inline declaration"
+
+--% Category
+up%With t ==
+  sorry '"category definition"
+
+--% Domain
+up%Add t ==
+  sorry '"domain definition"
 
 -- Creates the function names of the special function handlers and puts
 --  them on the property list of the function name
