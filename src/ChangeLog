@@ -1,3 +1,9 @@
+2008-08-09	Alfredo Portes <doyenatccny@gmail.com>
+			Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman/sman.c: Do not start hyperdoc/graphics
+	  if OpenAxiom was build without X support.
+
 2008-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* input/grpthry.input.pamphlet: Fix typo.

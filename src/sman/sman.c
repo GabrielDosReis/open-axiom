@@ -158,12 +158,20 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
       start_clef = 0;
     else if (strcmp(argv[arg], "-clef")        == 0)
       start_clef = 1;
-    else if (strcmp(argv[arg], "-gr")          == 0)
-      start_graphics = 1;
+    else if (strcmp(argv[arg], "-gr")          == 0) {
+      if (X_DISPLAY_MISSING)
+        fprintf(stderr, "OpenAxiom was not build with Graphics support.\n");
+      else
+        start_graphics = 1;
+    }
     else if (strcmp(argv[arg], "-nogr")        == 0)
       start_graphics = 0;
-    else if (strcmp(argv[arg], "-ht")          == 0)
-      start_ht = 1;
+    else if (strcmp(argv[arg], "-ht")          == 0) {
+      if (X_DISPLAY_MISSING)
+        fprintf(stderr, "OpenAxiom was not build with HyperDoc support.\n");
+      else
+        start_ht = 1;
+    }
     else if (strcmp(argv[arg], "-noht")        == 0)
       start_ht = 0;
     else if (strcmp(argv[arg], "-iw")          == 0)
@@ -176,14 +184,13 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
       start_spadclient = 0;
     else if (strcmp(argv[arg], "-comp")        == 0)
       ws_path = "$AXIOM/etc/images/comp";
-    else if (strcmp(argv[arg], "-nox")         == 0)
-      {
+    else if (strcmp(argv[arg], "-nox")         == 0) {
         use_X = 0;
         start_local_spadclient = 1;
         start_spadclient = 0;
         start_ht = 0;
         start_graphics = 0;
-      }
+    }
     else if (strcmp(argv[arg], "-clefprog")    == 0) {
       strcpy(ClefCommandLine,argv[++arg]);
       ClefProgram = 
@@ -205,6 +212,20 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
   command->core_argv = argv;
   command->core_argc = other;
   argv[++other] = NULL;
+
+/* If there were no X libraries
+ * at build-time, we proceed to
+ * overwrite the defaults startup 
+ * values to not start any of the 
+ * graphical components of 
+ * OpenAxiom (Hyperdoc, Graphics). */
+  
+  if (X_DISPLAY_MISSING) {
+    use_X = 0;
+    start_local_spadclient = 1;
+    start_ht = 0;
+    start_graphics = 0;
+  }
 }
 
 static int
