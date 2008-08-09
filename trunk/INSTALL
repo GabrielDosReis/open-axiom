@@ -39,6 +39,12 @@ a good idea to separately build and install those tools once for all.
 
 
 If you already have GCL and noweb installed, please go to step 2.
+Note however that if you want to build OpenAxiom with the GCL from
+the dependency tarball (assuming you have unpacked it as explained
+in step 1.b.), and you have other Lisp systems available in the build 
+environment, then you should add the option --enable-gcl to the 
+configure command line.  In short, add --enable-gcl if you
+specifically insist on GCL as the base Lisp runtime system.
 
 1.a. Download the dependency tarball open-axiom-1.1.x-dep.tar.bz2
 
