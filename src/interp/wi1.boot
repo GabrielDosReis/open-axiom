@@ -528,7 +528,7 @@ compMacro(form,m,e) ==
 --    ["/throwAway",$NoValueMode,put(first lhs,"macro",rhs,e)]
 
 compSetq(oform,m,E) ==
-  ["LET",form,val] := oform
+  ["%LET",form,val] := oform
   T := compSetq1(form,val,m,E) => markSetq(oform,T)
   nil
 
@@ -537,7 +537,7 @@ compSetq1(oform,val,m,E) ==
   IDENTP form => setqSingle(form,val,m,E)
   form is [":",x,y] =>
     [.,.,E']:= compMakeDeclaration(form,$EmptyMode,E)
-    compSetq(["LET",x,val],m,E')
+    compSetq(["%LET",x,val],m,E')
   form is [op,:l] =>
     op="CONS"  => setqMultiple(uncons form,val,m,E)
     op="%Comma" => setqMultiple(l,val,m,E)
@@ -588,8 +588,8 @@ setqSingle(id,val,m,E) ==
        $markFreeStack := [id,:$markFreeStack]
        form:=['SETELT,"$",k,x]
      else form:=
-         $QuickLet => ["LET",id,x]
-         ["LET",id,x,
+         $QuickLet => ["%LET",id,x]
+         ["%LET",id,x,
             (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
   [form,m',e']
 
@@ -606,7 +606,7 @@ setqMultiple(nameList,val,m,e) ==
   --1.1 exit if result is a list
   m1 is ["List",D] =>
     for y in nameList repeat e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
-    convert([["PROGN",x,["LET",nameList,g],g],m',e],m)
+    convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
   --2. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
                                                 --list of modes
@@ -923,7 +923,7 @@ compCoerce1(x,m',e) ==
   pred:=isSubset(m',T.mode,e) =>
     gg:=GENSYM()
     pred:= substitute(gg,"*",pred)
-    code:= ['PROG1,['LET,gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
+    code:= ['PROG1,["%LET",gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
     [code,m',T.env]
 
 coerceByModemap([x,m,e],m') ==
@@ -977,7 +977,7 @@ comp3(x,m,$e) ==
 yyyyy x == x
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
-  if x is ['LET,['PART,.,w],[['elt,B,'new],['PART,.,["#",['PART,.,l]]],:.],:.] then yyyyy x 
+  if x is ["%LET",['PART,.,w],[['elt,B,'new],['PART,.,["#",['PART,.,l]]],:.],:.] then yyyyy x 
   x := compRenameOp x
   atom first x and (fn:= GETL(first x,"SPECIAL")) =>
     FUNCALL(fn,x,m,e)
@@ -1225,7 +1225,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ['PROG1,['LET,g:= GENSYM(),body],['SETELT,g,0,mkConstructor $functorForm]]
+      ['PROG1,["%LET",g:= GENSYM(),body],['SETELT,g,0,mkConstructor $functorForm]]
     fun:= compile [op',['LAM,sargl,body]]
 
 --  5. give operator a 'modemap property

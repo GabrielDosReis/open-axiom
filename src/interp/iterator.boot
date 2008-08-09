@@ -57,19 +57,19 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   acc:= GENSYM()
   afterFirst:= GENSYM()
   bodyVal:= GENSYM()
-  [part1,m,e]:= comp(["LET",bodyVal,body],m,e) or return nil
-  [part2,.,e]:= comp(["LET",acc,bodyVal],m,e) or return nil
-  [part3,.,e]:= comp(["LET",acc,parseTran [op,acc,bodyVal]],m,e) or return nil
+  [part1,m,e]:= comp(["%LET",bodyVal,body],m,e) or return nil
+  [part2,.,e]:= comp(["%LET",acc,bodyVal],m,e) or return nil
+  [part3,.,e]:= comp(["%LET",acc,parseTran [op,acc,bodyVal]],m,e) or return nil
   identityCode:=
     id:= getIdentity(op,e) => u.expr where u() == comp(id,m,e) or return nil
     ["IdentityError",MKQ op]
   finalCode:=
     ["PROGN",
-      ["LET",afterFirst,nil],
+      ["%LET",afterFirst,nil],
        ["REPEAT",:itl,
         ["PROGN",part1,
           ["IF", afterFirst,part3,
-                   ["PROGN",part2,["LET",afterFirst,MKQ true]]]]],
+                   ["PROGN",part2,["%LET",afterFirst,MKQ true]]]]],
                     ["IF",afterFirst,acc,identityCode]]
   if $until then
     [untilCode,.,e]:= comp($until,$Boolean,e)

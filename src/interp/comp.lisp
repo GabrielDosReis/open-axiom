@@ -276,7 +276,7 @@
           ((AND (eq U 'MAKEPROP) $TRACELETFLAG (RPLAC (CAR X) 'MAKEPROP-SAY) NIL)
            NIL)
            ; temporarily make TRACELET cause MAKEPROPs to be reported
-          ((MEMQ U '(DCQ RELET PRELET SPADLET SETQ LET) )
+          ((MEMQ U '(DCQ RELET PRELET SPADLET SETQ %LET) )
            (COND ((NOT (eq U 'DCQ))
                   (COND ((OR (AND (eq $NEWSPAD T))
                              (MEMQ $FUNNAME |$traceletFunctions|))
@@ -286,7 +286,7 @@
                         ; looks only at global variables in top-level environment;
                         ; thus SPADLET cannot itself test for such flags (7/83).
                         ($TRACELETFLAG (RPLACA X '/TRACE-LET))
-                        ((eq U 'LET) (RPLACA X 'SPADLET)))))
+                        ((eq U '%LET) (RPLACA X 'SPADLET)))))
            (COMP-TRAN-1 (CDDR X))
            (AND (NOT (MEMQ U '(setq RELET)))
                 (COND ((IDENTP (CADR X)) (PUSHLOCVAR (CADR X)))

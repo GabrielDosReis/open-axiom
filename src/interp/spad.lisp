@@ -381,7 +381,7 @@
         '((COMMENT |formatCOMMENT|)
           (SEQ |formatSEQ|)
           (DEF |formatDEF|)
-          (LET |formatLET|)
+          (%LET |formatLET|)
           (\: |formatColon|)
           (ELT |formatELT|)
           (SEGMENT |formatSEGMENT|)
@@ -469,7 +469,7 @@
 (MAKEPROP 'TAG '|Led| '(TAG TAG 122 121))
 (MAKEPROP 'EQUATNUM '|Nud| '(|dummy| |dummy| 0 0))
 (MAKEPROP 'EQUATNUM '|Led| '(|dummy| |dummy| 10000 0))
-(MAKEPROP 'LET '|Led| '(:= LET 125 124))
+(MAKEPROP '%LET '|Led| '(:= %LET 125 124))
 (MAKEPROP 'RARROW '|Led| '(== DEF 122 121))
 (MAKEPROP 'SEGMENT '|Led| '(\.\. SEGMENT 401 699 (|boot-Seg|)))
 

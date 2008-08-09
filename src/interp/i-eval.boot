@@ -457,7 +457,7 @@ failCheck x ==
 --    $StreamFrame: used in printing streams, it is the environment
 --                  where local stream variables are stored
 --    $declaredMode: Weak type propagation for symbols, set in upCOERCE
---                   and upLET.  This variable is used to determine
+--                   and up%LET.  This variable is used to determine
 --                   the alternate polynomial types of Symbols.
 --    $localVars: list of local variables in a map body
 --    $MapArgumentTypeList: hack for stream compilation

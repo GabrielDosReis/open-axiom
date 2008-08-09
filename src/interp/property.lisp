@@ -58,14 +58,14 @@
 (MAKEPROP 'TAG 'Led '(TAG TAG 122 121))
 (MAKEPROP 'EQUATNUM '|Nud| '(|dummy| |dummy| 0 0))
 (MAKEPROP 'EQUATNUM '|Led| '(|dummy| |dummy| 10000 0))
-(MAKEPROP 'LET '|Led| '(|:=| LET 125 124))
+(MAKEPROP '%LET '|Led| '(|:=| %LET 125 124))
 (MAKEPROP 'RARROW '|Led| '(== DEF 122 121))
 (MAKEPROP 'SEGMENT '|Led| '(|..| SEGMENT 401 699 (|P:Seg|)))
 (MAKEPROP 'SEGMENT '|isSuffix| 'T)
 (MAKEPROP 'EQUAL1 'CHRYBNAM 'EQ)
 
 (REPEAT (IN X '(
-   (LET " := ")
+   (%LET " := ")
    (= "=")
    (|/| "/")
    (+ "+")
@@ -286,7 +286,7 @@
   (|::| |DEF-::|)
   (ELT DEF-ELT)
   (SETELT DEF-SETELT)
-  (LET DEF-LET)
+  (%LET DEF-LET)
   (COLLECT DEF-COLLECT)
   (LESSP DEF-LESSP)
   (|<| DEF-LESSP)
@@ -469,6 +469,6 @@
   (\: |compColonInteractive|)
   (DEF |compDefineInteractive|)
   (|construct| |compConstructInteractive|)
-  (LET |compSetqInteractive|)
+  (%LET |compSetqInteractive|)
 )) (MAKEPROP (CAR X) 'INTERACTIVE (CADR X)))
 

@@ -92,7 +92,7 @@ parseUpArrow u ==
 -- ??? This parser is unused at the moment.
 parseLeftArrow: %ParseForm -> %Form
 parseLeftArrow u == 
-  parseTran ["LET",:rest u]
+  parseTran ["%LET",:rest u]
 
 parseIs: %ParseForm -> %Form 
 parseIs t == 
@@ -133,9 +133,9 @@ transIs1 u ==
  
 parseLET: %ParseForm -> %Form
 parseLET t ==
-  t isnt ["LET",x,y] => systemErrorHere "parseLET"
-  p := ["LET",parseTran x,parseTranCheckForRecord(y,opOf x)]
-  opOf x = "cons" => ["LET",transIs p.1,p.2]
+  t isnt ["%LET",x,y] => systemErrorHere "parseLET"
+  p := ["%LET",parseTran x,parseTranCheckForRecord(y,opOf x)]
+  opOf x = "cons" => ["%LET",transIs p.1,p.2]
   p
  
 
@@ -445,7 +445,7 @@ makeSimplePredicateOrNil: %ParseForm -> %Form
 makeSimplePredicateOrNil p ==
   isSimple p => nil
   u:= isAlmostSimple p => u
-  true => wrapSEQExit [["LET",g:= GENSYM(),p],g]
+  true => wrapSEQExit [["%LET",g:= GENSYM(),p],g]
  
 
 parseWhere: %List -> %Form
@@ -468,7 +468,7 @@ transSeq l ==
   null rest l => decExitLevel first l
   [item,:tail]:= l
   item is ["SEQ",:l,["exit",1,["IF",p,["exit", =2,q],"%noBranch"]]] and
-    (and/[x is ["LET",:.] for x in l]) =>
+    (and/[x is ["%LET",:.] for x in l]) =>
       ["SEQ",:[decExitLevel x for x in l],["exit",1,["IF",decExitLevel p,
         decExitLevel q,transSeq tail]]]
   item is ["IF",a,["exit",1,b],"%noBranch"] =>
@@ -551,7 +551,7 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["isnt", :"parseIsnt"],_
 	  ["Join", :"parseJoin"],_
 	  ["leave", :"parseLeave"],_
-	  ["LET", :"parseLET"],_
+	  ["%LET", :"parseLET"],_
 	  ["LETD", :"parseLETD"],_
 	  ["MDEF", :"parseMDEF"],_
 	  ["or", :"parseOr"],_

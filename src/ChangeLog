@@ -1,3 +1,37 @@
+2008-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot: Rename AST code LET to %LET throughout.
+	* interp/c-util.boot: Likewise.
+	* interp/comp.lisp: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/cparse.boot: Likewise.
+	* interp/def.lisp: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/iterator.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/newaux.lisp: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/package.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/property.lisp: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
 2008-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/pf2sex.boot (pfMacro2Sex): New.

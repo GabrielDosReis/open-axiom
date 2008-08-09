@@ -40,7 +40,7 @@ namespace BOOT
 
 $specialOps := '(
   ADEF AlgExtension _and _case COERCE COLLECT construct Declare DEF Dollar
-   equation error free has IF _is _isnt iterate _break LET _local MDEF _or
+   equation error free has IF _is _isnt iterate _break %LET _local MDEF _or
     pretend QUOTE REDUCE REPEAT _return SEQ TARGET tuple typeOf _where 
      _[_|_|_] %Macro %MLambda)
 
@@ -822,9 +822,9 @@ checkForFreeVariables(v,locals) ==
        $boundVariables := delete(var,$boundVariables)
        r
       ["REPEAT",:[checkForFreeVariables(a,locals) for a in args]]
-    op = "LET" =>
+    op = "%LET" =>
       args is [var,form,name] =>
-        -- This is some bizarre LET, not what one would expect in Common Lisp!
+        -- This is some bizarre %LET, not what one would expect in Common Lisp!
         -- Treat var as a free variable, since it may be bound out of scope
         -- if we are in a lambda within another lambda.
         newvar := 

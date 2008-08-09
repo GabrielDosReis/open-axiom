@@ -100,7 +100,7 @@ maybeInsertViewMorphisms body ==
   
   -- Trick the rest of the compiler into believing that
   -- that `Rep' was defined the old way, for the purpose of lookup.
-  [:reverse before, ["LET","Rep",domainRep], 
+  [:reverse before, ["%LET","Rep",domainRep], 
      :[repMorphism,perMorphism],:after]
 
 
@@ -329,7 +329,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ['PROG1,['LET,g:= GENSYM(),body],['SETELT,g,0,mkConstructor $form]]
+      ['PROG1,["%LET",g:= GENSYM(),body],['SETELT,g,0,mkConstructor $form]]
     fun:= compile [op',['LAM,sargl,body]]
  
 --  5. give operator a 'modemap property
@@ -487,7 +487,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
                  u:=
                    while cb repeat
                      ATOM cb => return nil
-                     cb is [['LET,'Rep,v,:.],:.] => return (u:=v)
+                     cb is [["%LET",'Rep,v,:.],:.] => return (u:=v)
                      cb:=CDR cb
                  u
       then $e:= augModemapsFromCategoryRep('_$,ab,cb,target,$e)
@@ -691,7 +691,7 @@ genDomainView(viewName,originalName,c,viewSelector) ==
     c
   $e:= augModemapsFromCategory(originalName,viewName,nil,c,$e)
   --$alternateViewList:= ((viewName,:code),:$alternateViewList)
-  cd:= ['LET,viewName,[viewSelector,originalName,mkDomainConstructor code]]
+  cd:= ["%LET",viewName,[viewSelector,originalName,mkDomainConstructor code]]
   if null member(cd,$getDomainCode) then
           $getDomainCode:= [cd,:$getDomainCode]
   viewName
@@ -701,7 +701,7 @@ genDomainOps(viewName,dom,cat) ==
   siglist:= [sig for [sig,:.] in oplist]
   oplist:= substNames(dom,viewName,dom,oplist)
   cd:=
-    ['LET,viewName,['mkOpVec,dom,['LIST,:
+    ["%LET",viewName,['mkOpVec,dom,['LIST,:
       [['LIST,MKQ op,['LIST,:[mkDomainConstructor mode for mode in sig]]]
         for [op,sig] in siglist]]]]
   $getDomainCode:= [cd,:$getDomainCode]
@@ -1067,7 +1067,7 @@ compileCases(x,$e) == -- $e is referenced in compile
         FindNamesFor(R,R') ==
           [R,:
             [v
-              for ['LET,v,u,:.] in $getDomainCode | CADR u=R and
+              for ["%LET",v,u,:.] in $getDomainCode | CADR u=R and
                 eval substitute(R',R,u)]]
         isEltArgumentIn(Rlist,x) ==
           atom x => nil
@@ -1338,10 +1338,10 @@ doIt(item,$predl) ==
     RPLACA(item,first u)
     RPLACD(item,rest u)
     doIt(item,$predl)
-  item is ['LET,lhs,rhs,:.] =>
+  item is ["%LET",lhs,rhs,:.] =>
     not (compOrCroak(item,$EmptyMode,$e) is [code,.,$e]) =>
       stackSemanticError(["cannot compile assigned value to",:bright lhs],nil)
-    not (code is ['LET,lhs',rhs',:.] and atom lhs') =>
+    not (code is ["%LET",lhs',rhs',:.] and atom lhs') =>
       code is ["PROGN",:.] =>
          stackSemanticError(["multiple assignment ",item," not allowed"],nil)
       RPLACA(item,first code)
@@ -1350,7 +1350,7 @@ doIt(item,$predl) ==
     if not member(KAR rhs,$NonMentionableDomainNames) and
       not MEMQ(lhs, $functorLocalParameters) then
          $functorLocalParameters:= [:$functorLocalParameters,lhs]
-    if code is ['LET,.,rhs',:.] and isDomainForm(rhs',$e) then
+    if code is ["%LET",.,rhs',:.] and isDomainForm(rhs',$e) then
       if isFunctor rhs' then
         $functorsUsed:= insert(opOf rhs',$functorsUsed)
         $packagesUsed:= insert([opOf rhs'],$packagesUsed)
@@ -1364,7 +1364,7 @@ doIt(item,$predl) ==
       $LocalDomainAlist:= --see genDeltaEntry
         [[lhs,:SUBLIS($LocalDomainAlist,(get(lhs,'value,$e)).0)],:$LocalDomainAlist]
 --+
-    code is ['LET,:.] =>
+    code is ["%LET",:.] =>
       RPLACA(item,"setShellEntry")
       rhsCode:=
        rhs'
@@ -1433,7 +1433,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
          nils:=[u,:nils]
        else
          gv := GENSYM()
-         ans:=[['LET,gv,u],:ans]
+         ans:=[["%LET",gv,u],:ans]
          nils:=[gv,:nils]
      n:=n+1
    $functorLocalParameters:=[:oldFLP,:NREVERSE nils]

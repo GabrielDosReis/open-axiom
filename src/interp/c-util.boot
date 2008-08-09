@@ -427,9 +427,9 @@ isAlmostSimple x ==
         [op,y,:l]:= x
         op="has" => x
         op="is" => x
-        op="LET" =>
+        op="%LET" =>
           IDENTP y => (setAssignment LIST x; y)
-          (setAssignment [["LET",g:= genVariable(),:l],["LET",y,g]]; g)
+          (setAssignment [["%LET",g:= genVariable(),:l],["%LET",y,g]]; g)
         op = "case" and IDENTP y => x
         isSideEffectFree op => [op,:mapInto(rest x, function fn)]
         $assignmentList:= "failed"

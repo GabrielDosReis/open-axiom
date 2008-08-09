@@ -175,11 +175,11 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   stateVal:= GENSYM()
   lastArg := INTERNL STRCONC('"#",STRINGIMAGE QSADD1 LENGTH argl)
   decomposeCode:=
-    [["LET",gIndex,["ELT",lastArg,0]],:[["LET",g,["ELT",lastArg,i]]
+    [["%LET",gIndex,["ELT",lastArg,0]],:[["%LET",g,["ELT",lastArg,i]]
       for g in gsList for i in 1..]]
   gsRev:= REVERSE gsList
-  rotateCode:= [["LET",p,q] for p in gsRev for q in [:rest gsRev,g]]
-  advanceCode:= ["LET",gIndex,['ADD1,gIndex]]
+  rotateCode:= [["%LET",p,q] for p in gsRev for q in [:rest gsRev,g]]
+  advanceCode:= ["%LET",gIndex,['ADD1,gIndex]]
  
   newTripleCode := ["LIST",sharpArg,:gsList]
   newStateCode :=
@@ -192,16 +192,16 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
     cbody:=
       endTest:=
         ["COND", [["EQL",sharpArg,gIndex],['RETURN,returnValue]]]
-      newValueCode:= ["LET",g,substitute(gIndex,sharpArg,
+      newValueCode:= ["%LET",g,substitute(gIndex,sharpArg,
         EQSUBSTLIST(gsList,rest $TriangleVariableList,body))]
       ["PROGN",:decomposeCode,
         ["REPEAT",["WHILE",'T],["PROGN",endTest,advanceCode,
           newValueCode,:rotateCode]]]
   fromScratchInit:=
-    [["LET",gIndex,n],:[["LET",g,x] for g in gsList for x in initCode]]
+    [["%LET",gIndex,n],:[["%LET",g,x] for g in gsList for x in initCode]]
   continueInit:=
-    [["LET",gIndex,["ELT",stateVar,0]],
-      :[["LET",g,["ELT",stateVar,i]] for g in gsList for i in 1..]]
+    [["%LET",gIndex,["%ELT",stateVar,0]],
+      :[["%LET",g,["%ELT",stateVar,i]] for g in gsList for i in 1..]]
   mainFunction:= [nam,["LAM",margl,mbody]] where
     margl:= [:argl,'envArg]
     max:= GENSYM()
@@ -216,20 +216,20 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       cacheResetCode := ["SETQ",stateNam,initialValueCode]
       ["COND",[["NULL",["AND",["BOUNDP",MKQ stateNam], _
                           ["PAIRP",stateNam]]],    _
-                 ["LET",stateVar,cacheResetCode]], _
-             [''T, ["LET",stateVar,stateNam]]]
+                 ["%LET",stateVar,cacheResetCode]], _
+             [''T, ["%LET",stateVar,stateNam]]]
  
     -- when there are extra arguments, initialResetCode resets "stateVar"
     --  to the hashtable entry for the extra arguments
     initialResetCode :=
       null extraArguments => nil
-      [["LET",stateVar,["OR",
+      [["%LET",stateVar,["OR",
          ["HGET",stateVar,extraArgumentCode],
           ["HPUT",stateVar,extraArgumentCode,tripleCode]]]]
  
     mbody :=
-      preset := [initialSetCode,:initialResetCode,["LET",max,["ELT",stateVar,0]]]
-      phrase1:= [["AND",["LET",max,["ELT",stateVar,0]],["GE",sharpArg,max]],
+      preset := [initialSetCode,:initialResetCode,["%LET",max,["ELT",stateVar,0]]]
+      phrase1:= [["AND",["%LET",max,["ELT",stateVar,0]],["GE",sharpArg,max]],
                   [auxfn,:argl,stateVar]]
       phrase2:= [["GT",sharpArg,["SETQ",max,["DIFFERENCE",max,k]]],
                   ["ELT",stateVar,["QSADD1",["QSDIFFERENCE",k,["DIFFERENCE",sharpArg,max]]]]]

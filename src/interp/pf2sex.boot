@@ -120,7 +120,7 @@ pf2Sex1 pf ==
     idList := [pf2Sex1 x for x in pf0AssignLhsItems pf]
     if #idList ^= 1 then idList := ["tuple", :idList]
     else idList := first idList
-    ["LET", idList, pf2Sex1 pfAssignRhs pf]
+    ["%LET", idList, pf2Sex1 pfAssignRhs pf]
   pfDefinition? pf =>
     pfDefinition2Sex pf
   pfLambda? pf =>

@@ -477,7 +477,7 @@ formatLeft(fn,x,op,key) ==
  
 formatRight(fn,x,op,key) ==
   --are there exceptional cases where piles are ok?
-  x is ['LET,:.] => FUNCALL(fn,x)
+  x is ["%LET",:.] => FUNCALL(fn,x)
   --decide on basis of binding power whether prens are needed
   rbp := formatOpBindingPower(op,key,"right")
   lbp := formatOpBindingPower(opOf x,key,"left")

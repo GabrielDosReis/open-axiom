@@ -387,10 +387,10 @@ compileIs(val,pattern) ==
     IDENTP(pat) and isLocalVar(pat) => vars:=[pat,:vars]
     pat is [":",var] => vars:= [var,:vars]
     pat is ["=",var] => vars:= [var,:vars]
-  predCode:=["LET",g:=GENSYM(),["isPatternMatch",
+  predCode:=["%LET",g:=GENSYM(),["isPatternMatch",
     getArgValue(val,computedMode val),MKQ removeConstruct pattern]]
   for var in REMDUP vars repeat
-    assignCode:=[["LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
+    assignCode:=[["%LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
   null $opIsIs =>
     ["COND",[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,MKQ 'T]]]
   ["COND",[["NOT",["EQ",predCode,MKQ "failed"]],["SEQ",:assignCode,MKQ 'T]]]
@@ -477,9 +477,9 @@ upbreak t ==
   putValue(op,objNew(code,$Void))
   putModeSet(op,[$Void])
 
---% Handlers for LET
+--% Handlers for %LET
 
-upLET t ==
+up%LET t ==
   -- analyzes and evaluates the righthand side, and does the variable
   -- binding
   t isnt [op,lhs,rhs] => nil
@@ -565,7 +565,7 @@ evalLETput(lhs,value) ==
             compFailure ['"   The type of the local variable",
               :bright name,'"has changed in the computation."]
         if dm and isSubDomain(dm,om) then put(name,'mode,om,$env)
-        ['LET,name,objVal value,$mapName]
+        ["%LET",name,objVal value,$mapName]
                -- $mapName is set in analyzeMap
       om := objMode value
       dm := get(name, 'mode, $env) or objMode(get(name, 'value, $e))
@@ -631,13 +631,13 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
     for lvar in temps repeat mkLocalVar($mapName,lvar)
     for l in reverse rest lhs for t in temps repeat
       transferPropsToNode(getUnname l,l)
-      let := mkAtreeNode 'LET
+      let := mkAtreeNode "%LET"
       t'  := mkAtreeNode t
       if m := getMode(l) then putMode(t',m)
       seq := cons([let,l,t'],seq)
     for t in temps for r in reverse rest rhs
       for l in reverse rest lhs repeat
-        let := mkAtreeNode 'LET
+        let := mkAtreeNode "%LET"
         t'  := mkAtreeNode t
         if m := getMode(l) then putMode(t',m)
         seq := cons([let,t',r],seq)
@@ -701,7 +701,7 @@ upTableSetelt(op,lhs is [htOp,:args],rhs) ==
   putMode (htOp,['Table,keyMode,'(Any)])
   -- if we are to use a new table, we must call the "table"
   -- function to give it an initial value.
-  bottomUp [mkAtreeNode 'LET,htOp,[mkAtreeNode 'table]]
+  bottomUp [mkAtreeNode "%LET",htOp,[mkAtreeNode 'table]]
   tableCode := objVal getValue htOp
   r := upSetelt(op, lhs, [mkAtreeNode "setelt",:lhs,rhs])
   $genValue => r

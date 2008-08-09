@@ -144,7 +144,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
                  u:=
                    while cb repeat
                      ATOM cb => return nil
-                     cb is [['LET,'Rep,v,:.],:.] => return (u:=v)
+                     cb is [["%LET",'Rep,v,:.],:.] => return (u:=v)
                      cb:=CDR cb
                  u
       then $e:= augModemapsFromCategoryRep('_$,ab,cb,target,$e)
@@ -477,7 +477,7 @@ getInverseEnvironment(a,E) ==
   E
 
 unLet x ==
-  x is ['LET,u,:.] => unLet u
+  x is ["%LET",u,:.] => unLet u
   x
 
 corrupted? u ==
@@ -1049,7 +1049,7 @@ doIt(item,$predl) ==
   -------------------------------------
   item is ['SEQ,:.] => doItSeq item
   isDomainForm(item,$e) => doItDomain item
-  item is ['LET,:.] => doItLet item
+  item is ["%LET",:.] => doItLet item
   item is [":",a,t] => [.,.,$e]:= 
     markDeclaredImport markKillAll t
     compOrCroak(item,$EmptyMode,$e)
@@ -1096,7 +1096,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
                   nils:=[u,:nils]
                 else
                   gv := GENSYM()
-                  ans:=[['LET,gv,u],:ans]
+                  ans:=[["%LET",gv,u],:ans]
                   nils:=[gv,:nils]
               n:=n+1
 
@@ -1133,12 +1133,12 @@ doItLet item ==
   res
  
 doItLet1 item ==
-  ['LET,lhs,rhs,:.] := item
+  ["%LET",lhs,rhs,:.] := item
   not (compOrCroak(item,$EmptyMode,$e) is [code,.,$e]) =>
       stackSemanticError(["cannot compile assigned value to",:bright lhs],nil)
   qe(5,$e)
   code := markKillAll code
-  not (code is ['LET,lhs',rhs',:.] and atom lhs') =>
+  not (code is ["%LET",lhs',rhs',:.] and atom lhs') =>
       code is ["PROGN",:.] =>
          stackSemanticError(["multiple assignment ",item," not allowed"],nil)
       wiReplaceNode(item, code, 24)
@@ -1162,14 +1162,14 @@ doItLet1 item ==
         [[lhs,:SUBLIS($LocalDomainAlist,(get(lhs,'value,$e)).0)],:$LocalDomainAlist]
 --+
   qe(6,$e)
-  code is ['LET,:.] =>
+  code is ["%LET",:.] =>
       rhsCode:= rhs'
       op := "setShellEntry"
       wiReplaceNode(item,[op,'$,NRTgetLocalIndex lhs,rhsCode], 16)
   wiReplaceNode(item, code, 18)
 
 rhsOfLetIsDomainForm code ==
-  code is ['LET,.,rhs',:.] =>
+  code is ["%LET",.,rhs',:.] =>
     isDomainForm(rhs',$e) => rhs'
     isDomainForm(rhs' := markKillAll rhs',$e) => rhs'
     false

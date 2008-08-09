@@ -100,7 +100,7 @@ processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
             code:=[["setShellEntry","$",i,u'],:code]
           nreverse code
   code:=
-    ["PROGN",:$getDomainCode,["LET","$",["newShell",#locals]],
+    ["PROGN",:$getDomainCode,["%LET","$",["newShell",#locals]],
                            --It is important to place this code here,
                            --after $ is set up
                    --slam functor with shell
@@ -116,7 +116,7 @@ processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
                                            (LIST (GENSYM)));[]) ],
               "$"]
   for u in $getDomainCode repeat
-    u is ['LET,.,u'] and u' is ['getDomainView,.,u''] =>
+    u is ["%LET",.,u'] and u' is ['getDomainView,.,u''] =>
       $packagesUsed:=union(CategoriesFromGDC u'',$packagesUsed)
   $packagesUsed:=union($functorLocalParameters,$packagesUsed)
   $getDomainCode:= nil
@@ -158,7 +158,7 @@ PackageDescendCode(code,flag,viewAssoc) ==
                    else viewAssoc) for v in rest u])] for u in condlist]]
     TruthP CAADR c => ["PROGN",:CDADR c]
     c
-  code is ["LET",name,body,:.] =>
+  code is ["%LET",name,body,:.] =>
     if not MEMQ(name,$ResetItems) then $ResetItems:= [name,:$ResetItems]
     if body is [a,:.] and isFunctor a
       then $packagesUsed:=[body,:$packagesUsed]

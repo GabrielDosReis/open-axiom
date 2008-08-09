@@ -374,7 +374,7 @@ postMapping u  ==
 
 postOp: %ParseTree -> %ParseForm
 postOp x ==
-  x=":=" => "LET"
+  x=":=" => "%LET"
   x=":-" => "LETD"
   x="%Attribute" => "ATTRIBUTE"
   x
