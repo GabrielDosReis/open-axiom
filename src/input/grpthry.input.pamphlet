@@ -17,16 +17,16 @@
 x : PERM INT := [[1,3,5],[7,11,9]]
 y : PERM INT := [[3,5,7,9]]
 z : PERM INT := [1,3,11]
-g1 : PERMGRPS INT := [ x , y ]
-g2 : PERMGRPS INT := [ x , z ]
-g3 : PERMGRPS INT := [ y , z ]
+g1 : PERMGRP INT := [ x , y ]
+g2 : PERMGRP INT := [ x , z ]
+g3 : PERMGRP INT := [ y , z ]
 order g1
 degree g3
 movedPoints g2
 orbit (g1, 3)
 orbits g3
 member? ( y , g2 )
-)sh PERMGRPS
+)sh PERMGRP
 
 -- Input for page IrrRepSymPage
 )clear all
