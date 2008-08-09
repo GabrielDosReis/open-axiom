@@ -1,5 +1,9 @@
 2008-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* input/grpthry.input.pamphlet: Fix typo.
+
+2008-08-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot: Rename AST code LET to %LET throughout.
 	* interp/c-util.boot: Likewise.
 	* interp/comp.lisp: Likewise.
