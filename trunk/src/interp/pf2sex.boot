@@ -157,6 +157,15 @@ pf2Sex1 pf ==
     #args = 1 =>
       ["where", pf2Sex1 pfWhereExpr pf, :args]
     ["where", pf2Sex1 pfWhereExpr pf, ["SEQ", :args]]
+  pfWith? pf => pfWith2Sex pf
+  pfAdd? pf => pfAdd2Sex pf
+  pfWDeclare? pf => pfWDeclare2Sex pf
+  pfAttribute? pf => pfAttribute2Sex pf
+  pfWIf? pf => pfWIf2Sex pf
+  pfExport? pf => pfExport2Sex pf
+  pfImport? pf => pfImport2Sex pf
+  pfInline? pf => pfInline2Sex pf
+  pfQualType? pf => pfQualType2Sex pf
 
   -- under strange circumstances/piling, system commands can wind
   -- up in expressions. This just passes it through as a string for
@@ -483,3 +492,40 @@ pfMacro2Sex pf ==
 pfMLambda2Sex pf ==
   ["%MLambda", [pf2Sex1 a for a in pf0MLambdaArgs pf], 
     pf2Sex1 pfMLambdaBody pf]
+
+
+pfType2SexOrNil pf ==
+  pfNohting? pf => nil
+  pf2Sex1 pf
+
+pfWith2Sex pf ==
+  ["%With", pf2Sex1 pfWithBase, pf2Sex1 pfWithWithin pf, 
+    pf2Sex1 pf2Sex1 pfWithWithon pf]
+
+pfAdd2Sex pf ==
+  ["%Add", pf2Sex1 pfAddBase pf, pf2Sex1 pfAddAddin pf,
+    pfType2SexOrNil pfAddAddon pf]
+
+pfWDeclare2Sex pf ==
+  ["%Declare", pf2Sex1 pfWDeclareSignature pf, pf2Sex1 pfWDeclareDoc pf]
+
+pfAttribute2Sex pf ==
+  ["%Attribute", pf2Sex1 pfAttributeExpr pf]
+
+pfWIf2Sex pf ==
+  ["%ConditionalExport", pf2Sex1 pfWIfCond pf,
+    pf2Sex1 pfWIfThen pf, pf2Sex1 pfWIfElse pf]
+
+pfExport2Sex pf ==
+  ["%Export", :[pf2Sex1 item for item in pf0ExportItems pf]]
+
+pfImport2Sex pf ==
+  ["%Import", :[pf2Sex1 item for item in pf0ImportItems pf]]
+
+pfInline2Sex pf ==
+  ["%Inline", :[pf2Sex1 item for item in pfInlineItems pf]]
+
+pfQualType2Sex pf ==
+  ["%QualType", pf2Sex1 pfQyalTypeType pf, 
+    pfType2SexOrNil pfQualTypeQual pf]
+

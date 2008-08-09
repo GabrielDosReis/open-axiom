@@ -159,7 +159,7 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
     else if (strcmp(argv[arg], "-clef")        == 0)
       start_clef = 1;
     else if (strcmp(argv[arg], "-gr")          == 0) {
-      if (X_DISPLAY_MISSING)
+      if (!OPENAXIOM_HAVE_GRAPHICS)
         fprintf(stderr, "OpenAxiom was not build with Graphics support.\n");
       else
         start_graphics = 1;
@@ -167,7 +167,7 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
     else if (strcmp(argv[arg], "-nogr")        == 0)
       start_graphics = 0;
     else if (strcmp(argv[arg], "-ht")          == 0) {
-      if (X_DISPLAY_MISSING)
+      if (!OPENAXIOM_HAVE_GRAPHICS)
         fprintf(stderr, "OpenAxiom was not build with HyperDoc support.\n");
       else
         start_ht = 1;
@@ -220,7 +220,7 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
  * graphical components of 
  * OpenAxiom (Hyperdoc, Graphics). */
   
-  if (X_DISPLAY_MISSING) {
+  if (!OPENAXIOM_HAVE_GRAPHICS) {
     use_X = 0;
     start_local_spadclient = 1;
     start_ht = 0;

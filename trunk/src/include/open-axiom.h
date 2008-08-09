@@ -63,4 +63,11 @@ typedef HANDLE openaxiom_handle;
 typedef void* openaxiom_handle;
 #endif
 
+/* Do we have graphics support?  */
+#ifdef X_DISPLAY_MISSING
+#  define OPENAXIOM_HAVE_GRAPHICS 0
+#else
+#  define OPENAXIOM_HAVE_GRAPHICS 1
+#endif
+
 #endif /* OPENAXIOM_included */
