@@ -225,7 +225,11 @@ getUserIdentifiersIn body ==
       S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
     S_-(userIds,getIteratorIds itl)
   body is [op,:l] =>
-    argIdList:= "append"/[getUserIdentifiersIn y for y in l]
+    argIdList := 
+      -- field tags do not contribute to dependencies.
+      op = "Record" or (op = "Union" and l is [[":",.,.],:.]) =>
+        append/[getUserIdentifiersIn y for [.,.,y] in l]
+      "append"/[getUserIdentifiersIn y for y in l]
     bodyIdList :=
       CONSP op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
         NCONC(getUserIdentifiersIn op, argIdList)
@@ -1019,7 +1023,10 @@ findLocalVars1(op,form) ==
   form is [oper,:itrl,body] and MEMQ(oper,'(REPEAT COLLECT)) =>
     findLocalsInLoop(op,itrl,body)
   form is [y,:argl] =>
-    y is 'Record => nil
+    y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 
+      -- don't pick field tags, their are not variables.
+      for [tag,type] in argl repeat
+        findLocalsInLoop(op,type)
     for x in argl repeat findLocalVars1(op,x)
   keyedSystemError("S2IM0020",[op])
 
