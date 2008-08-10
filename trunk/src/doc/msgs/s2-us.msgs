@@ -167,6 +167,8 @@ S2IE0013
 S2IE0014
  You cannot use %1bp or any other category in a target, coercion, or
  package-call context.
+S2IE0020
+ Only identifiers can be used as Record of Union field names.
 S2IF0001
  A $-expression must have a fully specified domain or package on the
  right-hand side.

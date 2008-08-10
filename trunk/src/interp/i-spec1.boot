@@ -1098,6 +1098,12 @@ upDeclare t ==
   not isLegitimateMode(mode,nil,nil) => throwKeyedMsgSP("S2IE0004",[mode],op)
   categoryForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'category],op)
   packageForm?(mode) => throwKeyedMsgSP("S2IE0011",[mode, 'package],op)
+  getAtree(op,"callingFunction") =>
+    -- This isn't a real declaration, rather a field specification.
+    not IDENTP lhs => throwKeyedMsg("S2IE0020",nil)
+    -- ??? When we come to support field spec as type, change this.
+    putValue(op,objNewWrap([":",lhs,mode],mode))
+    putModeSet(op,[mode])
   junk :=
     lhs is ["free",["tuple",:vars]] or lhs is ['free,['LISTOF,:vars]] or
       lhs is ["free",:vars] =>
