@@ -1,5 +1,10 @@
 2008-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/syntax.spad.pamphlet (AbstractSyntaxCategory): New.
+	(HeadAst): Likewise.
+
+2008-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix AW/422
 	* interp/i-spec1.boot (upDeclare): Fields are not declarations.
 	* interp/i-map.boot (getUserIdentifiersIn): Ignore field names.

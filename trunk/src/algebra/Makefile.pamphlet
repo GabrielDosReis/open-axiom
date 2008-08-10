@@ -1243,7 +1243,8 @@ axiom_algebra_layer_23_objects = \
 Rather than classify newly created algebra into the existing type lattice
 we add it here.
 <<USERLAYER>>=
-axiom_algebra_layer_user =  RINTERP
+axiom_algebra_layer_user =  \
+	RINTERP	ASTCAT  HEADAST
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -1251,6 +1252,8 @@ axiom_algebra_layer_user_nrlibs = \
 axiom_algebra_layer_user_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_user)))
+
+HEADAST.NRLIB/code.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
 @
 
 \section{Broken Files}
@@ -2019,8 +2022,8 @@ $(axiom_algebra_layer_20_objects): 19-stamp
 $(axiom_algebra_layer_21_objects): 20-stamp
 $(axiom_algebra_layer_22_objects): 21-stamp
 $(axiom_algebra_layer_23_objects): 22-stamp
-$(axiom_algebra_layer_user_objects): 23-stamp
-$(axiom_algebra_bootstrap_objects): user-stamp
+$(axiom_algebra_bootstrap_objects): 23-stamp
+$(axiom_algebra_layer_user_objects): bootstrap-stamp
 
 strap-stamp: $(axiom_algebra_layer_strap_objects)
 	@ rm -f strap-stamp
@@ -2197,22 +2200,18 @@ strap-stamp: $(axiom_algebra_layer_strap_objects)
 	@ echo === layer 23 of 23 complete ======
 	@ echo ==================================
 
-user-stamp: 23-stamp $(axiom_algebra_layer_user_objects)
-	@ rm -f user-stamp
-	@ $(STAMP) user-stamp
-
-
-# bootstrap-pre: user-stamp $(axiom_algebra_bootstrap_nrlibs)
-# $(axiom_algebra_bootstrap_nrlibs): user-stamp
-
-# bootstrap-post: bootstrap-pre $(axiom_algebra_bootstrap_objects)
-
-bootstrap-stamp: $(axiom_algebra_bootstrap_objects)
+bootstrap-stamp: 23-stamp $(axiom_algebra_bootstrap_objects)
 	@ rm -f bootstrap-stamp
 	@ $(STAMP) bootstrap-stamp
 	@ echo ==================================
 	@ echo ===    algebra complete     ======
 	@ echo ==================================
+
+user-stamp: bootstrap-stamp $(axiom_algebra_layer_user_objects)
+	@ rm -f user-stamp
+	@ $(STAMP) user-stamp
+
+
 @
 
 \section{The Makefile}
@@ -2256,7 +2255,7 @@ all: all-ax
 all-ax all-algebra: stamp
 	@ echo finished $(builddir)
 
-stamp: mkdir-output-directory ${SPADFILES} bootstrap-stamp ${TESTS}
+stamp: mkdir-output-directory ${SPADFILES} user-stamp ${TESTS}
 	-rm -f stamp
 	$(STAMP) stamp
 

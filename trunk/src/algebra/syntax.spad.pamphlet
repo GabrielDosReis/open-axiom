@@ -335,7 +335,49 @@ ElaboratedExpression(): Public == Private where
 @
 
 
+\section{SpadAbstractSyntaxCategory}
+
+<<category ASTCAT AbstractSyntaxCategory>>=
+)abbrev category ASTCAT AbstractSyntaxCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: July 5, 2008
+++ Description: This is the category of Spad abstract syntax trees.
+AbstractSyntaxCategory(): Category == 
+    Join(SetCategory, CoercibleTo Syntax)
+  add
+    coerce(x: %): Syntax ==
+      x pretend Syntax
+    coerce(x: %): OutputForm ==
+      x::Syntax::OutputForm 
+@
+
+\subsection{The HeadAst domain}
+
+<<domain HEADAST HeadAst>>=
+)abbrev domain HEADAST HeadAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: July 2008
+++ Description: This domain represents the header of a definition.
+HeadAst(): Public == Private where
+  Public == AbstractSyntaxCategory with
+    headAst: List Symbol -> %
+      ++ headAst [f,x1,..,xn] constructs a function definition header.
+    name: % -> Symbol
+      ++ name(h) returns the name of the operation defined defined.
+    parameters: % -> List Symbol
+      ++ parameters(h) gives the parameters specified in the
+      ++ definition header `h'.
+  Private == add
+    Rep == List Symbol
+    headAst h == per h
+    name h == first rep h
+    parameters h == rest rep h
+@
+
 \section{License}
+
 <<license>>=
 --Copyright (C) 2007-2008, Gabriel Dos Reis.
 --All rights reserved.
@@ -374,6 +416,9 @@ ElaboratedExpression(): Public == Private where
 <<domain SYNTAX Syntax>>
 <<domain CTORCALL ConstructorCall>>
 <<domain ELABEXPR ElaboratedExpression>>
+
+<<category ASTCAT AbstractSyntaxCategory>>
+<<domain HEADAST HeadAst>>
 @
 
 \end{document}
