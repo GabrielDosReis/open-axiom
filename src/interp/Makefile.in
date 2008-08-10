@@ -17,10 +17,15 @@ BOOTSYS= $(axiom_target_bindir)/bootsys -- --syslib=$(axiom_target_libdir)
 SAVESYS= interpsys$(EXEEXT)
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
 
-OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
-	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
-	diagnostics.$(FASLEXT)	sys-driver.$(FASLEXT) \
-	sys-utility.$(FASLEXT)  macros.$(FASLEXT)	\
+OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
+	sys-driver.$(FASLEXT)	sys-constants.$(FASLEXT) \
+	hash.$(FASLEXT) 	 			 \
+	sys-globals.$(FASLEXT)	vmlisp.$(FASLEXT)	 \
+	cfuns.$(FASLEXT)	sys-os.$(FASLEXT)	 \
+	sys-utility.$(FASLEXT)  diagnostics.$(FASLEXT)	 \
+	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
+	macros.$(FASLEXT)	metalex.$(FASLEXT)	 \
+	parsing.$(FASLEXT)	util.$(FASLEXT)		 \
 	unlisp.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
@@ -29,7 +34,7 @@ OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
 	g-util.$(FASLEXT)	\
 	simpbool.$(FASLEXT)	g-timer.$(FASLEXT)	\
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
-	cformat.$(FASLEXT)	cfuns.$(FASLEXT)	\
+	cformat.$(FASLEXT)		\
 	clam.$(FASLEXT)	        \
 	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
 	comp.$(FASLEXT)	        foam_l.$(FASLEXT) \
@@ -83,9 +88,8 @@ OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
 	trace.$(FASLEXT)	\
 	union.$(FASLEXT)       daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) \
-	$(OPOBJS) \
 	$(OCOBJS) \
-	$(BROBJS) i-parser.$(FASLEXT)
+	$(BROBJS) i-parser.$(FASLEXT) obey.$(FASLEXT)
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 INOBJS=	setvart.$(FASLEXT)\
@@ -94,10 +98,6 @@ INOBJS=	setvart.$(FASLEXT)\
 
 IN_modules = $(patsubst %.$(FASLEXT), "%", $(INOBJS))
 
-# These are autloaded old parser files
-OPOBJS=	parsing.$(FASLEXT) metalex.$(FASLEXT)
-
-autoload_objects += $(OPBJS)
 OCOBJS=	\
 	info.$(FASLEXT)		modemap.$(FASLEXT)	\
 	category.$(FASLEXT)	define.$(FASLEXT)	\
@@ -137,9 +137,9 @@ ASAUTO= ${AUTO}/ax.$(FASLEXT)
 
 autoload_objects += $(ASAUTO)
 TIMESTAMP=$(axiom_targetdir)/timestamp
-YEARWEEK=(progn (defconstant boot::timestamp "${TIMESTAMP}") \
-                (setq boot::*build-version* "$(PACKAGE_STRING)") \
-                (boot::yearweek))
+YEARWEEK=(progn (defconstant timestamp "${TIMESTAMP}") \
+                (setq *build-version* "$(PACKAGE_STRING)") \
+                (yearweek))
 
 
 .PRECIOUS:	${SAVESYS}
@@ -187,9 +187,7 @@ clean-local: mostlyclean-local
 
 distclean-local: clean-local
 
-makeint.lisp:	${OBJS} util.$(FASLEXT) \
-		sys-driver.$(FASLEXT) \
-	        ${OUTINTERP} obey.$(FASLEXT) \
+makeint.lisp:	$(OBJS) ${OUTINTERP} \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
 		${TRANOBJS} \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
@@ -222,11 +220,9 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
 	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
-	@ echo '(boot::set-restart-hook)' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ echo '(load "../algebra/warm.data")' >> makeint.lisp
 	@ echo '(boot::|clearClams|)' >> makeint.lisp
-	@ echo '(load "obey")' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (gbc t)' >> makeint.lisp

@@ -1,5 +1,10 @@
 2008-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.pamphlet: Clean up.
+	* interp/sys-driver.boot (SET-RESTART-HOOK): Remove.
+
+2008-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/syntax.spad.pamphlet (AbstractSyntaxCategory): New.
 	(HeadAst): Likewise.
 
