@@ -96,10 +96,15 @@ AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
 \subsection{The Spad interpreter and compiler}
 
 <<environment>>=
-OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
-	vmlisp.$(FASLEXT)	hash.$(FASLEXT)	\
-	diagnostics.$(FASLEXT)	sys-driver.$(FASLEXT) \
-	sys-utility.$(FASLEXT)  macros.$(FASLEXT)	\
+OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
+	sys-driver.$(FASLEXT)	sys-constants.$(FASLEXT) \
+	hash.$(FASLEXT) 	 			 \
+	sys-globals.$(FASLEXT)	vmlisp.$(FASLEXT)	 \
+	cfuns.$(FASLEXT)	sys-os.$(FASLEXT)	 \
+	sys-utility.$(FASLEXT)  diagnostics.$(FASLEXT)	 \
+	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
+	macros.$(FASLEXT)	metalex.$(FASLEXT)	 \
+	parsing.$(FASLEXT)	util.$(FASLEXT)		 \
 	unlisp.$(FASLEXT)	\
 	astr.$(FASLEXT)	bits.$(FASLEXT)	\
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
@@ -108,7 +113,7 @@ OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
 	g-util.$(FASLEXT)	\
 	simpbool.$(FASLEXT)	g-timer.$(FASLEXT)	\
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
-	cformat.$(FASLEXT)	cfuns.$(FASLEXT)	\
+	cformat.$(FASLEXT)		\
 	clam.$(FASLEXT)	        \
 	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
 	comp.$(FASLEXT)	        foam_l.$(FASLEXT) \
@@ -162,9 +167,8 @@ OBJS=	types.$(FASLEXT)	sys-os.$(FASLEXT) \
 	trace.$(FASLEXT)	\
 	union.$(FASLEXT)       daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) \
-	$(OPOBJS) \
 	$(OCOBJS) \
-	$(BROBJS) i-parser.$(FASLEXT)
+	$(BROBJS) i-parser.$(FASLEXT) obey.$(FASLEXT)
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 @
@@ -192,12 +196,8 @@ first time they are called. Loading the files overwrites
 the autoload function call and re-calls the function. 
 Any subsequent calls will run the compiled code.
 
-The {\bf OPOBJS} list contains files from the old parser. The use of
-``old'' is something of a subtle concept as there were several
-generations of ``old'' and all meaning of the term is lost.
-
 Notice that the object file [[def.$(FASLEXT)]] appears on both the
-[[OPBJS]] and [[TRANOBJS]] lists.  In normal situation, parsing 
+[[OBJS]] and [[TRANOBJS]] lists.  In normal situation, parsing 
 precedes translation; consequently the file [[def]] is loaded by the 
 parser, so that it does not need to be reloaded by the translator. 
 However, it may theoretically be that a translation could happen without 
@@ -205,13 +205,6 @@ prior parsing (in case someone types in a parse tree for SPAD code).
 Consequently, it must be ensured that [[def.]] is still loaded in that
 configuration.  In the long term, the autoload machinery need
 rethinking.
-
-<<environment>>=
-# These are autloaded old parser files
-OPOBJS=	parsing.$(FASLEXT) metalex.$(FASLEXT)
-
-autoload_objects += $(OPBJS)
-@
 
 The {\bf OCOBJS} list contains files from the old compiler. Again,
 ``old'' is meaningless. These files should probably be autoloaded.
@@ -301,9 +294,9 @@ A new variable [[boot::*build-version*]] is set here and used by the
 This information is set by hand in the top level Makefile.
 <<environment>>=
 TIMESTAMP=$(axiom_targetdir)/timestamp
-YEARWEEK=(progn (defconstant boot::timestamp "${TIMESTAMP}") \
-                (setq boot::*build-version* "$(PACKAGE_STRING)") \
-                (boot::yearweek))
+YEARWEEK=(progn (defconstant timestamp "${TIMESTAMP}") \
+                (setq *build-version* "$(PACKAGE_STRING)") \
+                (yearweek))
 
 @
 
@@ -380,9 +373,7 @@ should not be set here just because we happen to save an GCL-based image.
 Doing otherwise causes havoc.
 
 <<savesys>>=
-makeint.lisp:	${OBJS} util.$(FASLEXT) \
-		sys-driver.$(FASLEXT) \
-	        ${OUTINTERP} obey.$(FASLEXT) \
+makeint.lisp:	$(OBJS) ${OUTINTERP} \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
 		${TRANOBJS} \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
@@ -415,11 +406,9 @@ makeint.lisp:	${OBJS} util.$(FASLEXT) \
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
 	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
-	@ echo '(boot::set-restart-hook)' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ echo '(load "../algebra/warm.data")' >> makeint.lisp
 	@ echo '(boot::|clearClams|)' >> makeint.lisp
-	@ echo '(load "obey")' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (gbc t)' >> makeint.lisp

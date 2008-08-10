@@ -170,12 +170,6 @@ SPAD_-SAVE(file) ==
 )endif
 
 
-SET_-RESTART_-HOOK() ==
-)if %hasFeature KEYWORD::GCL
-  SETQ(SYSTEM::_*TOP_-LEVEL_-HOOK_*,"restart")
-)endif
-  "restart"
-
 initializeGlobalState() ==
   REROOT()
   $IOindex := 1
