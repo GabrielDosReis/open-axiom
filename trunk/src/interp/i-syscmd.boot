@@ -591,7 +591,7 @@ compileAsharpCmd1 args ==
     command :=
      STRCONC(STRCONC(GETENV('"ALDORROOT"),'"/bin/"),_
                "aldor ", asharpArgs, '" ", namestring args)
-    rc := OBEY command
+    rc := runCommand command
 
     if (rc = 0) and doCompileLisp then
         lsp := fnameMake('".", pathnameName args, '"lsp")
@@ -644,7 +644,7 @@ compileAsharpArchiveCmd args ==
     cd [ object2Identifier namestring dir ]
 
     cmd := STRCONC( '"ar x ", namestring path )
-    rc := OBEY cmd
+    rc := runCommand cmd
     rc ^= 0 =>
         cd [ object2Identifier namestring curDir ]
         throwKeyedMsg("S2IL0028",[namestring dir, namestring args])
@@ -766,10 +766,10 @@ withAsharpCmd args ==
 --% )copyright -- display copyright notice
 
 summary l ==
- OBEY STRCONC ('"cat ", systemRootDirectory(),'"/lib/summary")
+ runCommand STRCONC ('"cat ", systemRootDirectory(),'"/lib/summary")
 
 copyright () ==
- OBEY STRCONC ('"cat ", systemRootDirectory(),'"/lib/copyright")
+ runCommand STRCONC ('"cat ", systemRootDirectory(),'"/lib/copyright")
 
 --% )credits -- display credit list
 
@@ -1172,7 +1172,7 @@ newHelpSpad2Cmd args ==
   null (helpFile := MAKE_-INPUT_-FILENAME [narg,'HELPSPAD,'_*]) => NIL
 
   $useFullScreenHelp =>
-    OBEY STRCONC('"$AXIOM/lib/SPADEDIT ",namestring helpFile)
+    runCommand STRCONC('"$AXIOM/lib/SPADEDIT ",namestring helpFile)
     true
 
   filestream := MAKE_-INSTREAM(helpFile)
@@ -3053,7 +3053,7 @@ npsystem(unab, str) ==
   null SEARCH(sysPart, STRING unab) =>
     sayKeyedMsg('"S2IZ0080", [sysPart])
   command := SUBSEQ(str, spaceIndex+1)
-  OBEY command
+  runCommand command
 
 npsynonym(unab, str) ==
   npProcessSynonym(str)

@@ -358,7 +358,7 @@ charRangeTest n ==
   false
 
 update() ==
-  OBEY
+  runCommand
     STRCONC('"SPADEDIT ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
   _/UPDATE()
 

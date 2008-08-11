@@ -1,3 +1,21 @@
+2008-08-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/obey.lisp: Remove.
+	* interp/Makefile.pamphlet (OBJS): Don't include obey.$(FASLEXT).
+	* interp/br-data.boot: Replace OBEY with runCommand.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/compat.boot: Likewise.
+	* interp/debug.lisp: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/patches.lisp: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/util.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+
 2008-08-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet: Clean up.

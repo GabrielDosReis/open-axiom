@@ -107,7 +107,7 @@
     (PROG (TO OPTIONL OPTIONS FNL INFILE OUTSTREAM FN )
           (declare (special fn infile outstream ))
           (if (member '? L :test #'eq)
-              (RETURN (OBEY "EXEC SPADEDIT /C TELL")))
+              (RETURN (|runCommand| "EXEC SPADEDIT /C TELL")))
           (SETQ OPTIONL (/OPTIONS L))
           (SETQ FNL (TRUNCLIST L OPTIONL))
           (SETQ OPTIONS (OPTIONS2UC OPTIONL))
@@ -192,7 +192,7 @@
           (SETQ INPUTSTREAM (DEFSTREAM EDINFILE 'INPUT))
           (|sayBrightly|
             (LIST  "   editing file" '|%b| (|namestring| EDINFILE) '|%d|))
-          (OBEY
+          (|runCommand|
             (STRCONC
               (|makeAbsoluteFilename| "/lib/SPADEDFN ")
               (|namestring| EDINFILE)
@@ -453,7 +453,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
  
 (DEFUN /TRACE-0 (L)
   (if (member '? L :test #'eq)
-      (OBEY "EXEC NORMEDIT TRACE TELL")
+      (|runCommand| "EXEC NORMEDIT TRACE TELL")
       (let* ((options (/OPTIONS L)) (FNL (TRUNCLIST L OPTIONS)))
         (/TRACE-1 FNL OPTIONS))))
  
@@ -641,7 +641,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
  
 (DEFUN /UNTRACE-0 (L)
     (PROG (OPTIONL OPTIONS FNL)
-      (if (member '? L :test #'eq) (RETURN (OBEY "EXEC NORMEDIT TRACE TELL")))
+      (if (member '? L :test #'eq) (RETURN (|runCommand| "EXEC NORMEDIT TRACE TELL")))
       (SETQ OPTIONL (/OPTIONS L))
       (SETQ FNL (TRUNCLIST L OPTIONL))
       (SETQ OPTIONS (if OPTIONL (CAR OPTIONL)))
@@ -852,7 +852,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 (DEFMACRO /TRACELET (&rest L) `',
   (PROG (OPTIONL FNL)
         (if (member '? L :test #'eq)
-            (RETURN (OBEY (if (EQ (SYSID) 1)
+            (RETURN (|runCommand| (if (EQ (SYSID) 1)
                               "EXEC NORMEDIT TRACELET TELL"
                               "$COPY AZ8F:TRLET.TELL")) ))
         (SETQ OPTIONL (/OPTIONS L))
@@ -904,7 +904,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
  
 (defmacro /EMBED (&rest L) `',
  (COND ((NOT L) (/EMBEDREPLY))
-       ((member '? L :test #'eq) (OBEY "EXEC NORMEDIT EMBED TELL"))
+       ((member '? L :test #'eq) (|runCommand| "EXEC NORMEDIT EMBED TELL"))
        ((EQ 2 (LENGTH L)) (/EMBED-1 (CAR L) (CADR L)))
        ((MOAN "IMPROPER USE OF /EMBED"))))
  

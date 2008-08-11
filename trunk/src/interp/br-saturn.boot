@@ -93,7 +93,7 @@ off()==
 --    '"/windows/temp/browser.text"
 --  $saturn =>
 --    saturnEvalToFile(x, fn)
---    OBEY  '"cat /tmp/sat.text"
+--    runCommand  '"cat /tmp/sat.text"
 --  EVAL x
 
 
@@ -1617,7 +1617,7 @@ mkButtonBox n == STRCONC('"\buttonbox{", STRINGIMAGE n, '"}")
 dbSort(x,y) ==
   sin := STRINGIMAGE x
   sout:= STRINGIMAGE y
-  OBEY STRCONC('"sort -f _"",sin,'".text_" > _"", sout, '".text_"")
+  runCommand STRCONC('"sort -f _"",sin,'".text_" > _"", sout, '".text_"")
   removeFile STRCONC(sin, '".text")
 
 

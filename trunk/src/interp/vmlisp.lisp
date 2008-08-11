@@ -1893,20 +1893,6 @@
  ())
 
   
-#+(and :Lucid (not :ibm/370))
-(defun OBEY (S)
-  (system::run-aix-program (|makeAbsoluteFilename| "/lib/obey")
-                       :arguments       (list "-c" S)))
-#+:cmulisp
-(defun OBEY (S)
-   (ext:run-program (|makeAbsoluteFilename| "/lib/obey")
-                    (list "-c" S) :input t :output t))
-#+(OR IBCL KCL :CCL)
-(defun OBEY (S) (SYSTEM S))
-
-#+:allegro
-(defun OBEY (S) (excl::run-shell-command s))
-
 (defun RE-ENABLE-INT (number-of-handler) number-of-handler)
 
 

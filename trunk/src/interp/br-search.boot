@@ -912,7 +912,7 @@ underscoreDollars(s) == fn(s,0,MAXINDEX s) where
 
 obey x ==
   $saturn and not $aixTestSaturn => nil
-  OBEY x
+  runCommand x
 
 --=======================================================================
 --                         I/O Code

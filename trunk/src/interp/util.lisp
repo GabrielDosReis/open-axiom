@@ -187,7 +187,7 @@
 ;; of the information in an NRLIB is now kept in the daase files. Thus
 ;; we lift the FOO.NRLIB/code.o to FOO.o in the final system.
 (defun lift-NRLIB-name (f)
-  (obey (concat "cp " f "/code.o " (subseq f 0 (position #\. f)) ".o"))
+  (|runCommand| (concat "cp " f "/code.o " (subseq f 0 (position #\. f)) ".o"))
   nil)
 
 ;; Translate a directory of boot code to common lisp if the boot code
@@ -217,9 +217,9 @@
 ;; set of functions that construct TAGS files for Axiom.
 (defun make-tags-file ()
   (|changeDirectory| "/tmp")
-  (obey (concat "etags " (|makeAbsoluteFilename| "../../src/interp/*.lisp")))
+  (|runCommand| (concat "etags " (|makeAbsoluteFilename| "../../src/interp/*.lisp")))
   (spadtags-from-directory "../../src/interp" "boot")
-  (obey "cat /tmp/boot.TAGS >> /tmp/TAGS"))
+  (|runCommand| "cat /tmp/boot.TAGS >> /tmp/TAGS"))
 
 (defun spadtags-from-directory (dir type)
    (let* ((direc (make-directory dir))
@@ -666,7 +666,7 @@
       (concatenate 'string out "/" (pathname-name lib) ".NRLIB/index.KAF*"))
     (unless (probe-file mntlib)
      (format t "creating directory ~a~%" mntlib)
-     (obey (concatenate 'string "cp -pr " (namestring lib) " " out))
+     (|runCommand| (concatenate 'string "cp -pr " (namestring lib) " " out))
      (when (probe-file (concatenate 'string mntlib "/code." stype))
       (delete-file  (concatenate 'string mntlib "/code." stype))))
     (setq intkafdate (and (probe-file intkaf) (file-write-date intkaf)))
@@ -674,7 +674,7 @@
     (when intkafdate
      (unless (and mntkafdate (> mntkafdate intkafdate))
       (format t "~&copying ~s to ~s" intkaf mntkaf)
-      (obey
+      (|runCommand|
        (concatenate 'string "cp " 
          (namestring intkaf) " " (namestring mntkaf)))))
     (setq lspdate (and (probe-file dotlsp) (file-write-date dotlsp)))
