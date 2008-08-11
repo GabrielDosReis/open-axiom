@@ -1025,8 +1025,8 @@ findLocalVars1(op,form) ==
   form is [y,:argl] =>
     y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 
       -- don't pick field tags, their are not variables.
-      for [tag,type] in argl repeat
-        findLocalsInLoop(op,type)
+      for [.,.,t] in argl repeat
+        findLocalVars1(op,t)
     for x in argl repeat findLocalVars1(op,x)
   keyedSystemError("S2IM0020",[op])
 
