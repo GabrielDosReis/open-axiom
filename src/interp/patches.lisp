@@ -84,8 +84,8 @@
 (defvar |$internalHistoryTable| ())
 (defun |cpCms| (prefix &optional (string (|getSystemCommandLine|)))
   (setq string (concat prefix string))
-  (if (equal string "") (obey "sh")
-    (obey string))
+  (if (equal string "") (|runCommand| "sh")
+    (|runCommand| string))
    (|terminateSystemCommand|))
 (setq *print-escape* nil) ;; so stringimage doesn't escape idents?
 #+(and :GCL :IEEE-FLOATING-POINT )
@@ -127,7 +127,7 @@
      (t (spad input-file)))))
 
 (defun /EF (&rest foo)
-  (obey (concat "vi " (namestring (make-input-filename /EDITFILE)))))
+  (|runCommand| (concat "vi " (namestring (make-input-filename /EDITFILE)))))
 
 ;; non-interactive restarts...
 (defun restart0 ()
@@ -276,7 +276,7 @@
 (defun |waitForViewport| ()
   (progn
    (do ()
-       ((not (zerop (obey
+       ((not (zerop (|runCommand|
          (concat
           "ps "
           |$ViewportProcessToWatch|

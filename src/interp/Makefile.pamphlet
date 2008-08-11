@@ -168,7 +168,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	union.$(FASLEXT)       daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) \
 	$(OCOBJS) \
-	$(BROBJS) i-parser.$(FASLEXT) obey.$(FASLEXT)
+	$(BROBJS) i-parser.$(FASLEXT)
 
 interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 @
@@ -691,7 +691,6 @@ dq.$(FASLEXT): types.$(FASLEXT)
 
 ## General support and utilities.
 cfuns.$(FASLEXT): boot-pkg.$(FASLEXT)
-obey.$(FASLEXT): macros.$(FASLEXT)
 daase.$(FASLEXT): macros.$(FASLEXT) foam_l.$(FASLEXT)
 spaderror.$(FASLEXT): macros.$(FASLEXT)
 debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)

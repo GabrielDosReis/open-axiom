@@ -270,7 +270,7 @@ htTutorialSearch pattern ==
   s := mkUnixPattern s
   source := '"$AXIOM/share/hypertex/pages/ht.db"
   target :='"/tmp/temp.text.$SPADNUM"
-  OBEY STRCONC('"$AXIOM/lib/hthits",'" _"",s,'"_" ",source,'" > ",target)
+  runCommand STRCONC('"$AXIOM/lib/hthits",'" _"",s,'"_" ",source,'" > ",target)
   lines := dbReadLines 'temp
   htInitPageNoScroll(nil,['"Tutorial Pages mentioning {\em ",pattern,'"}"])
   htSay('"\beginscroll\table{")

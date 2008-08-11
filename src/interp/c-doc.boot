@@ -1216,11 +1216,11 @@ checkAlphabetic c ==
 docreport(nam) ==
 --creates a report for person "nam" using file "whofiles"
   removeFile '"docreport.input"
-  OBEY STRCONC('"echo _")bo setOutStream('",STRINGIMAGE nam,'")_" > temp.input")
-  OBEY '"cat docreport.header temp.input > docreport.input"
-  OBEY STRCONC('"awk '/",STRINGIMAGE nam,'"/ {printf(_")co %s.spad\n_",$2)}' whofiles > temp.input")
-  OBEY '"cat docreport.input temp.input > temp1.input"
-  OBEY '"cat temp1.input docreport.trailer > docreport.input"
+  runCommand STRCONC('"echo _")bo setOutStream('",STRINGIMAGE nam,'")_" > temp.input")
+  runCommand '"cat docreport.header temp.input > docreport.input"
+  runCommand STRCONC('"awk '/",STRINGIMAGE nam,'"/ {printf(_")co %s.spad\n_",$2)}' whofiles > temp.input")
+  runCommand '"cat docreport.input temp.input > temp1.input"
+  runCommand '"cat temp1.input docreport.trailer > docreport.input"
   removeFile '"temp.input"
   removeFile '"temp1.input"
   SETQ(_/EDITFILE,'"docreport.input")
@@ -1235,7 +1235,7 @@ whoOwns(con) ==
 --con=constructor name (id beginning with a capital), returns owner as a string
   filename := getConstructorSourceFileFromDB con
   quoteChar := char '_"
-  OBEY STRCONC('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
+  runCommand STRCONC('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
   instream := MAKE_-INSTREAM '"/tmp/temp"
   value :=
     EOFP instream => nil

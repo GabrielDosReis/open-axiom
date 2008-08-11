@@ -90,7 +90,7 @@ buildLibdb(:options) ==  --called by buildDatabase (database.boot)
     buildLibAttrs attrlist
   SHUT $outStream
   domainList => 'done         --leave new database in temp.text
-  OBEY
+  runCommand
     $machineType = 'RIOS => '"sort -f -T /tmp -y200 _"temp.text_"  > _"libdb.text_""
     $machineType = 'SPARC => '"sort -f  _"temp.text_"  > _"libdb.text_""
     '"sort  _"temp.text_"  > _"libdb.text_""

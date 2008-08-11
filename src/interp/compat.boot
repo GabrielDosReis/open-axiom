@@ -68,13 +68,13 @@ system() ==
   -- VM version of system command
   string := getSystemCommandLine()
   if string = '"" then string := '"sh"
-  sayMessage ["   Return Code = ", OBEY string]
+  sayMessage ["   Return Code = ", runCommand string]
   terminateSystemCommand()
 
 editFile file ==
   MEMQ(INTERN('"WIN32",FIND_-PACKAGE("KEYWORD")),_*FEATURES_*) => 
-    OBEY STRCONC('"notepad ", namestring pathname file)
-  OBEY STRCONC('"$AXIOM/lib/SPADEDIT ",namestring pathname file)
+    runCommand STRCONC('"notepad ", namestring pathname file)
+  runCommand STRCONC('"$AXIOM/lib/SPADEDIT ",namestring pathname file)
 
 makeBigFloat(mantissa,expon) ==
   [$BFtag,mantissa,:expon]
