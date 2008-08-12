@@ -311,38 +311,6 @@ exist.
 
 @
 
-\section{The warm.data file}
-
-This is a file of commands that will be loaded into interpsys
-at the last minute. It execute functions that will likely be
-used in a running system so all of the required routines will
-be in the lisp image thus minimizing their startup time.
-<<warm.data.stanza>>=
-../algebra/warm.data: $(srcdir)/Makefile.pamphlet
-	@ echo 2 building warm.data
-	$(axiom_build_document) --tangle=warm.data --output=$@ $<
-
-@
-
-<<warm.data>>=
-(in-package "BOOT")
-(defparameter |$topicHash| (make-hash-table))
-(setf (gethash '|basic| |$topicHash|) 2)
-(setf (gethash '|algebraic| |$topicHash|) 4)
-(setf (gethash '|miscellaneous| |$topicHash|) 13)
-(setf (gethash '|extraction| |$topicHash|) 6)
-(setf (gethash '|conversion| |$topicHash|) 7)
-(setf (gethash '|hidden| |$topicHash|) 3)
-(setf (gethash '|extended| |$topicHash|) 1)
-(setf (gethash '|destructive| |$topicHash|) 5)
-(setf (gethash '|transformation| |$topicHash|) 10)
-(setf (gethash '|hyperbolic| |$topicHash|) 12)
-(setf (gethash '|construct| |$topicHash|) 9)
-(setf (gethash '|predicate| |$topicHash|) 8)
-(setf (gethash '|trignometric| |$topicHash|) 11)
-
-@
-
 \section{UNUSED}
 
 These files were in the interp distribution from NAG but have
@@ -377,8 +345,7 @@ makeint.lisp:	$(OBJS) ${OUTINTERP} \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
 		${TRANOBJS} \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
-		$(axiom_src_docdir)/msgs/s2-us.msgs \
-	        ../algebra/warm.data
+		$(axiom_src_docdir)/msgs/s2-us.msgs
 	@ echo 5 invoking make in `pwd` with parms:
 	@rm -f makeint.lisp
 	$(mkdir_p) $(axiom_target_datadir)/msgs
@@ -405,13 +372,11 @@ makeint.lisp:	$(OBJS) ${OUTINTERP} \
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
-	@ echo '(in-package "BOOT")' >> makeint.lisp
-	@ echo '(load "../algebra/warm.data")' >> makeint.lisp
-	@ echo '(boot::|clearClams|)' >> makeint.lisp
+	@ echo '(build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
+	@ echo '(|clearClams|)' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
-	@ echo '#+:GCL (gbc t)' >> makeint.lisp
+	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
 
 ${SAVESYS}: makeint.lisp
 	$(BOOTSYS) -- --system="$(AXIOM)/" \
@@ -740,8 +705,6 @@ vmlisp.$(FASLEXT): types.$(FASLEXT) sys-globals.$(FASLEXT)
 sys-os.$(FASLEXT): types.$(FASLEXT) cfuns.$(FASLEXT) 
 types.$(FASLEXT): boot-pkg.$(FASLEXT)
 boot-pkg.$(FASLEXT): boot-pkg.lisp
-
-<<warm.data.stanza>>
 
 <<DVI from pamphlet>>
 
