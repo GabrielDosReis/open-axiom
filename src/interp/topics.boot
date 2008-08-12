@@ -64,6 +64,22 @@ $topicSynonyms := '(
 
 $groupAssoc := '((extended . 1) (basic . 2) (hidden . 4))
 
+$topicHash := MAKE_-HASHTABLE "ID"
+SETF(GETHASH("basic",$topicHash),2)
+SETF(GETHASH("algebraic",$topicHash),4)
+SETF(GETHASH("miscellaneous",$topicHash),13)
+SETF(GETHASH("extraction",$topicHash),6)
+SETF(GETHASH("conversion",$topicHash),7)
+SETF(GETHASH("hidden",$topicHash),3)
+SETF(GETHASH("extended",$topicHash),1)
+SETF(GETHASH("destructive",$topicHash),5)
+SETF(GETHASH("transformation",$topicHash),10)
+SETF(GETHASH("hyperbolic",$topicHash),12)
+SETF(GETHASH("construct",$topicHash),9)
+SETF(GETHASH("predicate",$topicHash),8)
+SETF(GETHASH("trignometric",$topicHash),11)
+
+
 --=======================================================================
 --           Create Hashtable of Operation Properties
 --=======================================================================

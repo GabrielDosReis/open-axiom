@@ -1,5 +1,9 @@
 2008-08-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.pamphlet: Move warm.data.stanza to topics.boot.
+
+2008-08-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/obey.lisp: Remove.
 	* interp/Makefile.pamphlet (OBJS): Don't include obey.$(FASLEXT).
 	* interp/br-data.boot: Replace OBEY with runCommand.

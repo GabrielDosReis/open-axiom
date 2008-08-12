@@ -191,8 +191,7 @@ makeint.lisp:	$(OBJS) ${OUTINTERP} \
 		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
 		${TRANOBJS} \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
-		$(axiom_src_docdir)/msgs/s2-us.msgs \
-	        ../algebra/warm.data
+		$(axiom_src_docdir)/msgs/s2-us.msgs
 	@ echo 5 invoking make in `pwd` with parms:
 	@rm -f makeint.lisp
 	$(mkdir_p) $(axiom_target_datadir)/msgs
@@ -219,13 +218,11 @@ makeint.lisp:	$(OBJS) ${OUTINTERP} \
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(boot::build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
-	@ echo '(in-package "BOOT")' >> makeint.lisp
-	@ echo '(load "../algebra/warm.data")' >> makeint.lisp
-	@ echo '(boot::|clearClams|)' >> makeint.lisp
+	@ echo '(build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
+	@ echo '(|clearClams|)' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
-	@ echo '#+:GCL (gbc t)' >> makeint.lisp
+	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
 
 ${SAVESYS}: makeint.lisp
 	$(BOOTSYS) -- --system="$(AXIOM)/" \
@@ -459,11 +456,6 @@ vmlisp.$(FASLEXT): types.$(FASLEXT) sys-globals.$(FASLEXT)
 sys-os.$(FASLEXT): types.$(FASLEXT) cfuns.$(FASLEXT) 
 types.$(FASLEXT): boot-pkg.$(FASLEXT)
 boot-pkg.$(FASLEXT): boot-pkg.lisp
-
-../algebra/warm.data: $(srcdir)/Makefile.pamphlet
-	@ echo 2 building warm.data
-	$(axiom_build_document) --tangle=warm.data --output=$@ $<
-
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	@cp -p $< $@
