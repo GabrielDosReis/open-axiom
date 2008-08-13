@@ -159,17 +159,6 @@ restart() ==
   spad()
    
 
-++ ??? Rework this
-SPAD_-SAVE(file) ==
-  SETQ($SpadServer,false)
-  SETQ($openServerIfTrue,true)
-)if %hasFeature KEYWORD::GCL
-  SYSTEM::SAVE_-SYSTEM file
-)else
-  fatalError '"don't know how to same image"
-)endif
-
-
 initializeGlobalState() ==
   REROOT()
   $IOindex := 1
