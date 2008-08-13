@@ -273,7 +273,7 @@ autoLoad(abb,cname) ==
   cname in $BuiltinConstructorNames => cname
   if not GETL(cname,'LOADED) then loadLib cname
   SYMBOL_-FUNCTION cname
- 
+
 setAutoLoadProperty(name) ==
 --  abb := constructor? name
   REMPROP(name,'LOADED)

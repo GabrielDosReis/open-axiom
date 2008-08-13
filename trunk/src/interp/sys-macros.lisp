@@ -427,7 +427,7 @@
                             ,var
                             (QUOTE ,(KAR L))))
 	    ('T ,var))))
-   ;; used for LETs in SPAD code --- see devious trick in COMP,TRAN,1
+   ;; used for LETs in SPAD code --- see devious trick in COMP-TRAN-1
    ((ATOM var)
     `(PROGN
       (SETQ ,var ,val)

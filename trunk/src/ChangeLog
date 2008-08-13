@@ -2,6 +2,27 @@
 
 	* interp/patches.lisp (RESTART0): Don't duplicate code; call
 	CREATE-INITIALIZERS. 
+	(|COMP,TRAN|): Remove.
+	(|spadHash|): Likewise.
+	(|$internalHistoryTable|): Don't define here.
+	(|isBpiOrLambda|): Remove.
+	(|libraryFileLists|): Likewise.
+	(|normalizeArgFileName|): Likewise.
+	(save-system) [LUCID]: Likewise.
+	(|undoINITIALIZE|): Likewise.
+	(|isLowerCaseLetter|): Don't define here.
+	(|isUpperCaseLetter|): Likewise.
+	(|isLetter|): Likewise.
+	(printCopyright): Remove.
+	(user-homedir-pathname): Likewise.
+	(BUMPCOMPERRORCOUNT): Likewise.
+	(|cpCms|): Likewise.
+	(|normalizeTimeAndStringify|): Likewise.
+	(whocalled): Likewise.
+	(|compressHashTable|): Likewise.
+	(SETLETPRINTFLAG): Don't define here.
+	(RESTART0): Move to sys-driver.boot
+	* interp/g-util.boot (charRangeTest): Remove.
 
 2008-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
