@@ -34,7 +34,7 @@ display(bar, pbar)
 f
 ff
 -- back to normal
-deleteProperty(bar, "%display")
+deleteProperty!(bar, "%display")
 f
 -- let's give bar some partial derivatives, say bar(u, v) = u * v
 bar1 l == last l

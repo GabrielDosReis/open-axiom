@@ -1,5 +1,9 @@
 2008-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* input/expr.input.pamphlet: Fix typo.
+
+2008-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (LINKSET-FROM): New.
 	(SYSTEM-SUBDIRECTORY): Likewise.
 	(LINKSET-FROM-IF): Likewise.
