@@ -165,7 +165,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	spaderror.$(FASLEXT)				\
 	template.$(FASLEXT)	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	\
-	union.$(FASLEXT)       daase.$(FASLEXT)  	\
+	daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) \
 	$(OCOBJS) \
 	$(BROBJS) i-parser.$(FASLEXT)
@@ -265,8 +265,7 @@ autoload_objects += $(TRANOBJS)
 The {\bf ASCOMP} list contains files used by the {\bf Aldor}
 \cite{5} compiler. These files should probably be autoloaded.
 <<environment>>=
-ASCOMP= hashcode.$(FASLEXT) as.$(FASLEXT) \
-	foam_l.$(FASLEXT) axext_l.$(FASLEXT)
+ASCOMP= hashcode.$(FASLEXT) as.$(FASLEXT) axext_l.$(FASLEXT)
 
 AS_modules = $(patsubst %.$(FASLEXT), "%", $(ASCOMP))
 
