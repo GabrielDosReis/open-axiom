@@ -1355,7 +1355,7 @@
 ;;(defun DaaseName (name erase?)
 ;; (let (daase filename)
 ;;  (declare (special $spadroot))
-;;  (if (setq daase (|getEnv| "DAASE"))
+;;  (if (setq daase (|systemDatabaseDirectory|))
 ;;   (progn
 ;;    (setq filename  (concatenate 'string daase "/algebra/" name))
 ;;    (format t "   Using local database ~a.." filename))
