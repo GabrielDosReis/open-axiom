@@ -62,9 +62,9 @@ $options := []
 +++ ??? This part is still in flux.
 AxiomCore::%sysInit() ==
   SETQ(_*PACKAGE_*, FIND_-PACKAGE '"BOOT")
+  SETQ(_*LOAD_-VERBOSE_*,false)
   initMemoryConfig()
-  if not (%hasFeature KEYWORD::GCL) then
-    loadSystemRuntimeCore()
+  loadSystemRuntimeCore()
 )if %hasFeature KEYWORD::CLISP
     -- a goat for CLisp FFI, please.
     sys_-osInitCLispFFI()    
