@@ -136,14 +136,7 @@
   (operationopen);; all of the operations known to the system
   (categoryopen);; answer hasCategory question
   (browseopen)
-  (let ((asharprootlib (strconc (|systemRootDirectory|) "/aldor/lib/")))
-    (set-file-getter (strconc asharprootlib "runtime.o"))
-    (set-file-getter (strconc asharprootlib "lang.o"))
-    (set-file-getter (strconc asharprootlib "attrib.o"))
-    (set-file-getter (strconc asharprootlib "axlit.o"))
-    (set-file-getter (strconc asharprootlib "minimach.o"))
-    (set-file-getter (strconc asharprootlib "axextend.o")))
-)
+  (create-initializers))
 
 (defun SHAREDITEMS (x) T) ;;checked in history code
 (defun whocalled (n) nil) ;; no way to look n frames up the stack
