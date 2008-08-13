@@ -1,3 +1,8 @@
+2008-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-driver.boot (SPAD-SAVE): Fold content into
+	savesystem.  Remove.
+
 2008-08-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet: Move warm.data.stanza to topics.boot.

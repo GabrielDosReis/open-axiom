@@ -2237,8 +2237,14 @@ readSpad2Cmd l ==
 
 --% )savesystem
 savesystem l ==
-  #l ^= 1 or not(SYMBOLP CAR l) => helpSpad2Cmd '(savesystem)
-  SPAD_-SAVE SYMBOL_-NAME CAR l
+  #l ^= 1 or not(SYMBOLP first l) => helpSpad2Cmd '(savesystem)
+  SETQ($SpadServer,false)
+  SETQ($openServerIfTrue,true)
+)if not %hasFeature KEYWORD::ECL
+  AxiomCore::saveCore SYMBOL_-NAME first l
+)else
+  fatalError '"don't know how to same image"
+)endif
 
 --% )show
 
