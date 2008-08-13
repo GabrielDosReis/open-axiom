@@ -1,5 +1,10 @@
 2008-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/patches.lisp (RESTART0): Don't duplicate code; call
+	CREATE-INITIALIZERS. 
+
+2008-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-driver.boot (SPAD-SAVE): Fold content into
 	savesystem.  Remove.
 
