@@ -1,3 +1,7 @@
+2008-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (LNKEXT): New.
+
 2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet (oa_use_dynamic_lib): New.  Decide when to

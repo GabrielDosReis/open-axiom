@@ -1,3 +1,28 @@
+2008-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (LINKSET-FROM): New.
+	(SYSTEM-SUBDIRECTORY): Likewise.
+	(LINKSET-FROM-IF): Likewise.
+	(COMPLETE-FASL-LIST-FOR-LINK): Use it.
+	(getPrologue): New.
+	(link): Take an additional optional parameter for prologue.  Tidy.
+	(makeHandler): Adjust.
+	* lisp/Makefile.in: Use LNKEXT where appropriate.
+	(oa_base_lisp_linkset): New.
+	($(oa_target_lispdir)/core.$(LNKEXT)): New rule.
+	(base-lisp$(EXEEXT)): Now depends on $(oa_base_lisp_linkset).
+	(mostlyclean-local): Remove $(oa_target_lispdir) too.
+	* boot/Makefile.in: Use LNKEXT instead of FASLEXT.
+	(boot_objects_extra): Remove.
+	(oa_target_bootdir): New.
+	(oa_boot_linkset): Likewise.
+	(stamp): Require $(oa_boot_linkset).
+	($(oa_target_bootdir)/%.$(LNKEXT)): New rule.
+	(strap/bootsys$(EXEEXT)): Add prologue code.
+	(stage1/bootsys$(EXEEXT)): Likewise.
+	(stage2/bootsys$(EXEEXT)): Likewise.
+	(mostlyclean-local): Remove $(oa_target_bootdir) too.
+
 2008-08-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/patches.lisp (RESTART0): Don't duplicate code; call

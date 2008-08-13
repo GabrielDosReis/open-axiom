@@ -56,20 +56,19 @@ boot_SOURCES = initial-env.lisp $(boot_sources)
 boot_sources = tokens.boot includer.boot scanner.boot \
 	pile.boot ast.boot parser.boot  translator.boot
 boot_clisp = $(boot_sources:.boot=.clisp)
-boot_objects = initial-env.$(FASLEXT) $(boot_sources:.boot=.$(FASLEXT))
+boot_objects = initial-env.$(LNKEXT) $(boot_sources:.boot=.$(LNKEXT))
+
+oa_target_bootdir = $(axiom_targetdir)/boot
+ifeq (@axiom_lisp_flavor@,ecl)
+oa_boot_linkset = \
+	$(addprefix $(oa_target_bootdir)/, $(boot_objects))
+else
+oa_boot_linkset = 
+endif
 
 # Garbage produced by GCL during compilation
 boot_data = $(boot_sources:.boot=.data)
 boot_fn = $(boot_sources:.boot=.fn)
-
-##
-## ECL's program construction model is not based on image-dumping.  It is
-## closer to `traditional C' application building.  Therefore, since
-## bootsys is an augmentation of base-lisp, we need to have the objects
-## that made up base-lisp too.
-ifeq (@axiom_lisp_flavor@,ecl)
-boot_objects_extra = ../lisp/core.$(FASLEXT)
-endif
 
 # reference to this directory from toplevel
 subdir = src/boot/
@@ -80,7 +79,7 @@ all: all-ax all-boot
 
 all-ax all-boot: stamp
 
-stamp: $(axiom_target_bindir)/bootsys$(EXEEXT)
+stamp: $(axiom_target_bindir)/bootsys$(EXEEXT) $(oa_boot_linkset)
 	@rm -f stamp
 	$(STAMP) $@
 
@@ -89,7 +88,14 @@ $(axiom_target_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)
 	$(mkdir_p) $(axiom_target_bindir)
 	cp -p $< $@
 
+$(oa_target_bootdir)/%.$(LNKEXT): stage2/%.$(LNKEXT) $(oa_target_bootdir)
+	cp $< $@
+
+$(oa_target_bootdir):
+	$(mkdir_p) $(oa_target_bootdir)
+
 .PRECIOUS: strap/%.$(FASLEXT)
+.PRECIOUS: strap/%.$(LNKEXT)
 
 ##
 ## The bootstrapping `bootsys' image.
@@ -108,8 +114,9 @@ strap/stamp: strap/bootsys$(EXEEXT)
 
 strap/bootsys$(EXEEXT): $(strap_boot_objects)
 	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|"\
-		 --output=$@ --load-directory=strap \
-		$(boot_objects_extra) $(strap_boot_objects)
+		--system=$(axiom_targetdir) \
+		--prologue='(pushnew :open-axiom-boot *features*)' \
+		 --output=$@ --load-directory=strap $(strap_boot_objects)
 
 
 $(strap_boot_objects): $(AXIOM_LOCAL_LISP)
@@ -119,6 +126,7 @@ $(strap_boot_objects): $(AXIOM_LOCAL_LISP)
 ##
 
 .PRECIOUS: stage1/%.$(FASLEXT)
+.PRECIOUS: stage1/%.$(LNKEXT)
 .PRECIOUS: stage1/%.clisp
 
 stage1_boot_clisp = $(addprefix stage1/, $(boot_clisp))
@@ -132,8 +140,9 @@ stage1/stamp: stage1/bootsys$(EXEEXT)
 
 stage1/bootsys$(EXEEXT): $(stage1_boot_objects)
 	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|" \
-		 --output=$@ --load-directory=stage1 \
-		$(boot_objects_extra) $(stage1_boot_objects)
+		--system=$(axiom_targetdir) \
+		--prologue='(pushnew :open-axiom-boot *features*)' \
+		 --output=$@ --load-directory=stage1 $(stage1_boot_objects)
 
 stage1/%.clisp: %.boot strap/stamp stage1/.started
 	strap/bootsys -- --translate --output=$@ $<
@@ -144,6 +153,7 @@ stage1/%.clisp: %.boot strap/stamp stage1/.started
 ##
 
 .PRECIOUS: stage2/%.$(FASLEXT)
+.PRECIOUS: stage2/%.$(LNKEXT)
 .PRECIOUS: stage2/%.clisp
 
 stage2_boot_clisp = $(addprefix stage2/, $(boot_clisp))
@@ -157,8 +167,9 @@ stage2/stamp: stage2/bootsys$(EXEEXT)
 
 stage2/bootsys$(EXEEXT): $(stage2_boot_objects)
 	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|" \
-		--output=$@ --load-directory=stage2 \
-		$(boot_objects_extra) $(stage2_boot_objects)
+		--system=$(axiom_targetdir) \
+		--prologue='(pushnew :open-axiom-boot *features*)' \
+		--output=$@ --load-directory=stage2 $(stage2_boot_objects)
 
 stage2/%.clisp: %.boot stage1/stamp stage2/.started
 	stage1/bootsys -- --translate --output=$@ $<
@@ -176,31 +187,31 @@ stage2/%.clisp: %.boot stage1/stamp stage2/.started
 ## FIXME: This should be automatically extracted from the
 ## Boot source file at packaging time.
 
-%/initial-env.$(FASLEXT): initial-env.lisp %/.started
+%/initial-env.$(LNKEXT): initial-env.lisp %/.started
 	$(AXIOM_LOCAL_LISP) -- --compile --output=$@ $<
 
-%/tokens.$(FASLEXT): %/tokens.clisp %/initial-env.$(FASLEXT)
+%/tokens.$(LNKEXT): %/tokens.clisp %/initial-env.$(LNKEXT)
 	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
 
-%/includer.$(FASLEXT): %/includer.clisp %/tokens.$(FASLEXT)
+%/includer.$(LNKEXT): %/includer.clisp %/tokens.$(LNKEXT)
 	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
 
-%/scanner.$(FASLEXT): %/scanner.clisp %/tokens.$(FASLEXT) %/includer.$(FASLEXT)
+%/scanner.$(LNKEXT): %/scanner.clisp %/tokens.$(LNKEXT) %/includer.$(LNKEXT)
 	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
 
-%/pile.$(FASLEXT): %/pile.clisp %/scanner.$(FASLEXT) %/includer.$(FASLEXT)
+%/pile.$(LNKEXT): %/pile.clisp %/scanner.$(LNKEXT) %/includer.$(LNKEXT)
 	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
 
-%/ast.$(FASLEXT): %/ast.clisp %/includer.$(FASLEXT)
+%/ast.$(LNKEXT): %/ast.clisp %/includer.$(LNKEXT)
 	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
 
-%/parser.$(FASLEXT): %/parser.clisp %/ast.$(FASLEXT) %/scanner.$(FASLEXT) \
-		 %/includer.$(FASLEXT)
+%/parser.$(LNKEXT): %/parser.clisp %/ast.$(LNKEXT) %/scanner.$(LNKEXT) \
+		 %/includer.$(LNKEXT)
 	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
 
-%/translator.$(FASLEXT): %/translator.clisp %/parser.$(FASLEXT) \
-		%/ast.$(FASLEXT) %/pile.$(FASLEXT) %/scanner.$(FASLEXT) \
-		%/includer.$(FASLEXT)
+%/translator.$(LNKEXT): %/translator.clisp %/parser.$(LNKEXT) \
+		%/ast.$(LNKEXT) %/pile.$(LNKEXT) %/scanner.$(LNKEXT) \
+		%/includer.$(LNKEXT)
 	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
 
 
@@ -212,6 +223,7 @@ mostlyclean-local:
 	@rm -f $(axiom_target_bindir)/bootsys$(EXEEXT)
 	@rm -rf prev-stage
 	@rm -rf strap stage1 stage2
+	@rm -rf $(oa_target_bootdir)
 	@rm -f *.data *.fn
 	@rm -f stamp
 

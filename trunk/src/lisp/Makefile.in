@@ -31,6 +31,7 @@
 
 
 OUT = $(axiom_build_bindir)
+oa_target_lispdir = $(axiom_targetdir)/lisp
 
 subdir = src/lisp/
 
@@ -55,6 +56,16 @@ GCL_LTLD = $(if $(findstring mingw, $(target)),"","$(LIBTOOL) --mode=link ")
 fasl_ext = $(if $(findstring mingw, $(target)),.lisp,.$(FASLEXT))
 FASLS = $(patsubst %,"%", $(addsuffix $(fasl_ext),core))
 
+
+ifeq (@axiom_lisp_flavor@,ecl)
+base_lisp_objects = ("core.$(LNKEXT)")
+oa_base_lisp_linkset = $(oa_target_lispdir)/core.$(LNKEXT)
+else
+base_lisp_objects = nil
+oa_base_lisp_linkset =
+endif
+
+
 .PHONY: all all-lisp
 all: all-ax all-lisp
 
@@ -63,6 +74,11 @@ all-ax all-lisp: stamp
 stamp: $(OUT)/lisp$(EXEEXT)
 	@rm -f stamp
 	$(STAMP) $@
+
+$(oa_target_lispdir)/core.$(LNKEXT): core.$(LNKEXT)
+	$(mkdir_p) $(oa_target_lispdir)/
+	cp $< $@
+
 
 ## Create a fresh image for building interpsys and AXIOMsys
 ## These objects files are the C runtime support
@@ -101,14 +117,7 @@ else
 	cp -p $< $@ && cp -p $< lisp$(EXEEXT)
 endif
 
-ifeq (@axiom_lisp_flavor@,ecl)
-base_lisp_objects = ("core.$(OBJEXT)")
-else
-base_lisp_objects = nil
-endif
-
-
-base-lisp$(EXEEXT): core.$(FASLEXT)
+base-lisp$(EXEEXT): core.$(FASLEXT)  $(oa_base_lisp_linkset)
 	$(AXIOM_LISP) \
 		$(eval_flags) '(load "core")' \
 		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote $(base_lisp_objects)) "|AxiomCore|::|topLevel|")'
@@ -133,6 +142,7 @@ edit = sed \
 	-e 's|@SHREXT[@]|$(SHREXT)|g' \
 	-e 's|@LIBEXT[@]|$(LIBEXT)|g' \
 	-e 's|@oa_c_runtime_extra[@]|$(oa_c_runtime_extra)|g' \
+	-e 's|@oa_base_lisp_linkset[@]|$(base_lisp_objects)|g' \
 	-e 's|@void_type[@]|$(void_type)|g' \
 	-e 's|@char_type[@]|$(char_type)|g' \
 	-e 's|@int_type[@]|$(int_type)|g' \
@@ -150,7 +160,7 @@ ifeq (@axiom_lisp_flavor@,ecl)
 	$(AXIOM_LISP) $(quiet_flags) \
 		$(eval_flags) '(require (quote cmp))' \
 		$(eval_flags) '(compile-file "$<" :system-p t)' \
-		$(eval_flags) '(c::build-fasl "$@" :lisp-files (quote ("core.$(OBJEXT)")))' \
+		$(eval_flags) '(c::build-fasl "$@" :lisp-files (quote ("core.$(LNKEXT)")))' \
 		$(eval_flags) '(quit)'
 else
 	$(AXIOM_LISP) $(quiet_flags) \
@@ -161,6 +171,7 @@ endif
 mostlyclean-local:
 	rm -f *.$(FASLEXT)
 	@rm -f $(OUT)/lisp$(EXEEXT) lisp$(EXEEXT)
+	rm -rf $(oa_target_lispdir)
 	@rm -f stamp
 
 clean-local: mostlyclean
