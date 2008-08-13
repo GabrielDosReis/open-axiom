@@ -86,7 +86,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	spaderror.$(FASLEXT)				\
 	template.$(FASLEXT)	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	\
-	union.$(FASLEXT)       daase.$(FASLEXT)  	\
+	daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) \
 	$(OCOBJS) \
 	$(BROBJS) i-parser.$(FASLEXT)
@@ -128,8 +128,7 @@ TRANOBJS= ${AUTO}/wi1.$(FASLEXT) ${AUTO}/wi2.$(FASLEXT) ${AUTO}/pspad1.$(FASLEXT
 
 autoload_objects += $(TRANOBJS)
 
-ASCOMP= hashcode.$(FASLEXT) as.$(FASLEXT) \
-	foam_l.$(FASLEXT) axext_l.$(FASLEXT)
+ASCOMP= hashcode.$(FASLEXT) as.$(FASLEXT) axext_l.$(FASLEXT)
 
 AS_modules = $(patsubst %.$(FASLEXT), "%", $(ASCOMP))
 
