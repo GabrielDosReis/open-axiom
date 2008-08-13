@@ -126,10 +126,9 @@
   '(@axiom_optimize_options@))
 (proclaim '(optimize @axiom_optimize_options@))
 
-
 ;; Return true if the Boot system is complete bootstrapped.
 (defun boot-completed-p nil
-  (member :open-axiom-boot-complete *features*))
+  (member :open-axiom-boot *features*))
 
 ;; 
 ;; -*- Hosting Lisp System -*-
@@ -217,8 +216,29 @@
       (concatenate 'string (|systemRootDirectory|) "lib/"))))
 
 
+;; Return the list of linkable fasls in in the directory `dir'.
+(defun linkset-from (dir)
+  (directory (make-pathname :directory (pathname-directory dir)
+			    :name :wild
+			    :type |$effectiveFaslType|)))
+
+;; Return a path to the the subdirectory `subdir' within the 
+;; OpenAxiom filesystem.
+(defun system-subdirectory (subdir)
+  (concatenate 'string (|systemRootDirectory|) subdir))
+
+;; Like linkset-from when `feature' in on the features list.
+(defun linkset-from-if (dir pred)
+  (if (member feature *features*)
+      (linkset-from (system-subdirectory dir))
+    nil))
+
+;; Return a complete list of fasls as appropriate for building
+;; an executable program user thought consists only of `fasls'.
 (defun complete-fasl-list-for-link (fasls)
-  (mapcar #'|compileFilePathname| fasls))
+  (append (linkset-from-if "lisp/" :open-axiom-base-lisp)
+	  (linkset-from-if "boot/" :open-axiom-boot)
+	  (map 'list #'|compileFilePathname| fasls)))
 
 ;; 
 ;; -*- OpenAxiom Driver Table -*-
@@ -232,6 +252,7 @@
 ;;    --sysalg=<dir>: specify <dir> as directory containing algebras
 ;;    --compile: boot or lisp files
 ;;    --translate: boot files
+;;    --prologue=<lisp-code>: Run <lisp-code> just before the main entry point.
 ;;    --make: boot, lisp, or fasl files
 (defparameter |$driverTable| 
   (make-hash-table :test #'equal :size 5))
@@ -329,6 +350,10 @@
 
 (defun |getMainEntryPoint| (options)
   (|getOptionValue| (|Option| "main") options))
+
+(defun |getPrologue| (options)
+  (let ((prologue (|getOptionValue| (|Option| "prologue") options)))
+    (if prologue (read-from-string prologue) nil)))
 
 ;; Save current image on disk as executable and quit.
 (defun |saveCore| (core-image &optional (entry-point nil))
@@ -533,7 +558,9 @@
 ;; Note, despite the name LISP-FILEs, we do not expect bare Lisp source
 ;; files here.  We do insist on FASLs.  There is no check for that at
 ;; this point.  You have been warned.
-(defun |link| (core-image lisp-files &optional (entry-point nil))
+(defun |link| (core-image lisp-files 
+			  &optional (entry-point nil) (prologue nil))
+  #-:ecl (declare (ignore prologue))
   (if (and entry-point (stringp entry-point))
       (setq entry-point `(read-from-string ,entry-point)))
   #-:ecl (progn
@@ -546,7 +573,11 @@
                             :lisp-files 
 			    (complete-fasl-list-for-link lisp-files)
 			    :ld-flags (extra-runtime-libs)
-                            :epilogue-code `(funcall ,entry-point))
+                            :epilogue-code 
+			    `(progn
+			       (pushnew :open-axiom-base-lisp *features*)
+			       ,prologue
+			       (funcall ,entry-point)))
            (|coreQuit|)))
 
 
@@ -637,7 +668,8 @@
 
   (|link| (or (|getOutputPathname| options) "a.out") 
           args 
-          (|getMainEntryPoint| options))
+          (|getMainEntryPoint| options)
+	  (|getPrologue| options))
   (|coreQuit|))
 
 (|installDriver| (|Option| "make") #'|makeHandler|)

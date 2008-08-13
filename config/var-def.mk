@@ -233,6 +233,15 @@ AXIOM_LISP = @AXIOM_LISP@
 # Extension of the output file name returned by compile-file
 FASLEXT = @axiom_fasl_type@
 
+# Extension of compiled FASLs appropriate for linking into executable
+# programs.  For most Lisp systems, it is the same as FASLEXT because
+# they build programs by dumping images.
+ifeq (@axiom_lisp_flavor@,ecl)
+LNKEXT = $(OBJEXT)
+else
+LNKEXT = $(FASLEXT)
+endif
+
 ##
 AXIOMXLROOT=${AXIOM}/compiler
 
