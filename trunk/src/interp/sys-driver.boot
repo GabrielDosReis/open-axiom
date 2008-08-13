@@ -75,19 +75,27 @@ AxiomCore::%sysInit() ==
   SETQ(COMPILER::_*SUPPRESS_-COMPILER_-NOTES_*,true)
 )endif
 
+--%
+
+++ Returns the directory name as specified through option name `opt'.
+directoryFromCommandLine opt ==
+  dir := ASSOC(Option opt, %systemOptions()) =>
+    ensureTrailingSlash rest dir
+  nil
 
 ++ Returns the system algebra directory, as specified on command
 ++ line.  nil, otherwise.
 systemAlgebraDirectory() ==
-  dir := ASSOC(Option '"sysalg", %systemOptions()) =>
-    ensureTrailingSlash rest dir
-  nil
+  directoryFromCommandLine '"sysalg"
 
 ++ Returns a path to the directory containing algebra bootstsrap files.
 algebraBootstrapDir() ==
-  dir := ASSOC(Option '"strap",%systemOptions()) =>
-    ensureTrailingSlash rest dir
-  nil
+  directoryFromCommandLine '"strap"
+
+++ Returns a path to the directory containing databases, as specified
+++ on command line.  Nil otherwise.
+systemDatabaseDirectory() ==
+  directoryFromCommandLine '"sysdb"
 
 ++ Load list of exposed categories, domains, and packages.
 ++ User-specified list takes precedence over system wide list.
