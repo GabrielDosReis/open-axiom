@@ -338,24 +338,14 @@ flattenSexpr s ==
   ATOM f => [f,:flattenSexpr r]
   [:flattenSexpr f,:flattenSexpr r]
 
-isLowerCaseLetter c == charRangeTest CHAR2NUM c
+isLowerCaseLetter c ==
+  LOWER_-CASE_-P c
 
-isUpperCaseLetter c == charRangeTest QSDIFFERENCE(CHAR2NUM c,64)
+isUpperCaseLetter c ==
+  UPPER_-CASE_-P c
 
 isLetter c ==
-  n:= CHAR2NUM c
-  charRangeTest n or charRangeTest QSDIFFERENCE(CHAR2NUM c,64)
-
-charRangeTest n ==
-  QSLESSP(153,n) =>
-    QSLESSP(169,n) => false
-    QSLESSP(161,n) => true
-    false
-  QSLESSP(128,n) =>
-    QSLESSP(144,n) => true
-    QSLESSP(138,n) => false
-    true
-  false
+  ALPHA_-CHAR_-P c
 
 update() ==
   runCommand

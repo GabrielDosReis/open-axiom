@@ -129,6 +129,16 @@ initMemoryConfig() ==
   nil
 )endif
 
+--%
+
+RESTART0() ==
+  COMPRESSOPEN()
+  INTERPOPEN()
+  OPERATIONOPEN()
+  CATEGORYOPEN()
+  BROWSEOPEN()
+  CREATE_-INITIALIZERS()
+
 ++
 restart() ==
   IN_-PACKAGE '"BOOT"      -- ??? is this still necessary?

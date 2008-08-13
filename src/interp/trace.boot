@@ -72,6 +72,8 @@ $traceOptionList == '(
 
 $lastUntraced := NIL
 
+SETLETPRINTFLAG x == x
+
 trace l == traceSpad2Cmd l
 
 traceSpad2Cmd l ==

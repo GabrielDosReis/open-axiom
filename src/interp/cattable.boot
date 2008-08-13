@@ -70,9 +70,9 @@ genCategoryTable() ==
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
       HPUT(_*HASCATEGORY_-HASH_*,[id,:a],b)
   simpTempCategoryTable()
-  compressHashTable _*ANCESTORS_-HASH_*
+  -- compressHashTable _*ANCESTORS_-HASH_*
   simpCategoryTable()
-  compressHashTable _*HASCATEGORY_-HASH_*
+  -- compressHashTable _*HASCATEGORY_-HASH_*
 
 simpTempCategoryTable() ==
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
@@ -478,7 +478,7 @@ updateCategoryTableForDomain(cname,category) ==
   for [a,:b] in encodeCategoryAlist(cname,domainEntry) repeat
     HPUT(_*HASCATEGORY_-HASH_*,[cname,:a],b)
   $doNotCompressHashTableIfTrue = true => _*HASCATEGORY_-HASH_*
-  compressHashTable _*HASCATEGORY_-HASH_*
+  -- compressHashTable _*HASCATEGORY_-HASH_*
 
 clearCategoryTable($cname) ==
   MAPHASH('clearCategoryTable1,_*HASCATEGORY_-HASH_*)

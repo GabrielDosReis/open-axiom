@@ -49,9 +49,6 @@
 (defvar |$demoFlag| nil)
 
 (define-function '|construct| #'list) ;; NEEDED , SPAD-COMPILER generated Lisp code
-(define-function '|COMP,TRAN| #'comp-tran) ;called by |compWithMappingMode|
-
-(define-function '|spadHash| #'sxhash)
 
 (defun |mkAutoLoad| (fn cname)
    (function (lambda (&rest args)
@@ -76,17 +73,6 @@
 (define-function 'unwind #'|spadThrow|)
 (define-function 'resume #'|spadThrow|)
 
-(DEFUN BUMPCOMPERRORCOUNT () ())
-
-(define-function '|isBpiOrLambda| #'FBOUNDP)
-;;(defun |isSharpVar| (x) (and (identp x) (char= (elt (pname x) 0) #\#)))
-
-(defvar |$internalHistoryTable| ())
-(defun |cpCms| (prefix &optional (string (|getSystemCommandLine|)))
-  (setq string (concat prefix string))
-  (if (equal string "") (|runCommand| "sh")
-    (|runCommand| string))
-   (|terminateSystemCommand|))
 (setq *print-escape* nil) ;; so stringimage doesn't escape idents?
 #+(and :GCL :IEEE-FLOATING-POINT )
  (setq system:*print-nans* T)
@@ -129,30 +115,11 @@
 (defun /EF (&rest foo)
   (|runCommand| (concat "vi " (namestring (make-input-filename /EDITFILE)))))
 
-;; non-interactive restarts...
-(defun restart0 ()
-  (compressopen);; set up the compression tables
-  (interpopen);; open up the interpreter database
-  (operationopen);; all of the operations known to the system
-  (categoryopen);; answer hasCategory question
-  (browseopen)
-  (create-initializers))
-
 (defun SHAREDITEMS (x) T) ;;checked in history code
-(defun whocalled (n) nil) ;; no way to look n frames up the stack
-(defun setletprintflag (x) x)
-(defun |normalizeTimeAndStringify| (time)
-  (if (= time 0.0) "0" (format nil "~,1F" time)))
 
 (define-function '|eval| #'eval)
 
-(defun |libraryFileLists| () '((SPAD SPADLIBS J)))
-
-;;--------------------> NEW DEFINITION (see cattable.boot.pamphlet)
-(defun |compressHashTable| (ht) ht)
 (defun GETZEROVEC (n) (MAKE-ARRAY n :initial-element 0))
-
-(defun |normalizeArgFileName| (l) l)
 
 (defun READSPADEXPR ()
   (declare (special in-stream))
@@ -176,21 +143,6 @@
 (eval-when (eval load compile) (shadow 'map))
 (defmacro map (&rest args) `'(map ,@args))
 
-#+:Lucid
-(defun save-system (filename)
-      (in-package "BOOT")
-      (UNTRACE)
-      (|untrace| NIL)
-      (|clearClams|)
-        ;; bind output to nulloutstream
-      (let ((|$OutputStream| (make-broadcast-stream)))
-        (|resetWorkspaceVariables|))
-      (setq |$specialCharacters| |$plainRTspecialCharacters|)
-
-          (load (|makeAbsoluteFilename| "lib/interp/obey"))
-      (system:disksave filename :restart-function restart-hook :full-gc t))
-#+:Lucid (define-function 'user::save-system  #'boot::save-system)
-(defun |undoINITIALIZE| () ())
 ;; following are defined in spadtest.boot and stantest.boot
 (defun |installStandardTestPackages| () ())
 (defun |spadtestValueHook| (val type) ())
@@ -198,10 +150,6 @@
 (defvar |$TestOptions| ())
 ;; following in defined in word.boot
 (defun |bootFind| (word) ())
-;; following 3 are replacements for g-util.boot
-(define-function '|isLowerCaseLetter| #'LOWER-CASE-P)
-(define-function '|isUpperCaseLetter| #'UPPER-CASE-P)
-(define-function '|isLetter| #'ALPHA-CHAR-P)
 
 (defvar *msghash* nil "hash table keyed by msg number")
 
@@ -252,13 +200,6 @@
     (setq |$InteractiveFrame| (cons (cons nil nil) nil))
     (setq returncode 0))
    (unless (zerop returncode) (bye returncode)))))
-
-#+:dos
-(defun user-homedir-pathname ()
- (truename "."))
-
-(defun boot::|printCopyright| ()
- (format t "there is no such thing as a simple job -- ((iHy))~%"))
 
 (defvar |$ViewportProcessToWatch| nil)
 (defun |setViewportProcess| ()
