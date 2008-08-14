@@ -59,8 +59,7 @@ stamp: $(openaxiom_databases) $(axiom_target_bindir)/asq$(EXEEXT) \
 $(openaxiom_databases): ../algebra/*.NRLIB/code.$(FASLEXT)
 	@ echo rebuilding databases...
 	cp $(axiom_src_docdir)/topics.data ../algebra
-	(cd ../algebra ; \
-           echo ')lisp (make-databases nil)' | $(INTERPSYS) )
+	(cd ../algebra && $(INTERPSYS) --build-databases)
 	mkdir -p $(axiom_targetdir)/algebra
 	cp -p ../algebra/*.daase $(axiom_targetdir)/algebra
 	cp -p ../algebra/libdb.text $(axiom_targetdir)/algebra
