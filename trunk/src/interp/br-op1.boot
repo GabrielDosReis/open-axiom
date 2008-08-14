@@ -922,7 +922,7 @@ mathform2HtString form == escapeString
 
 niladicHack form ==
   atom form => form
-  form is [x] and niladicConstructorFromDB x => x
+  form is [x] and GETL(x,"NILADIC") => x
   [niladicHack x for x in form]
 
 --============================================================================

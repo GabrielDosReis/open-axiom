@@ -311,7 +311,7 @@ formatDOLLAR ['DOLLAR,x,y] == formatDollar1(y, x)
 formatDollar1(name,arg) ==
   id :=
     IDENTP name => name
-    name is [p] and niladicConstructorFromDB p => p
+    name is [p] and GETL(p,"NILADIC") => p
     name
   format arg and format "$$" and formatForcePren id
  
@@ -379,7 +379,7 @@ formatFunctionCall u ==
 formatFunctionCall1 [op,:argl] ==
 --null argl and getConstructorProperty(op,'niladic) => formatOp op
   null argl => 
-    niladicConstructorFromDB op => formatOp op
+    GETL(op,"NILADIC") => formatOp op
     formatOp op and format "()"
   formatOp op and formatFunctionCallTail argl 
  

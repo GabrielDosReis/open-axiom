@@ -547,7 +547,7 @@ asytranForm1(form,levels,local?) ==
   if form = '_% then $hasPerCent := true
   IDENTP form =>
     form = "%" => "$"
-    niladicConstructorFromDB form => [form]
+    GETL(form,"NILADIC") => [form]
     form
   [asytranForm(x,levels,local?) for x in form]
 
@@ -925,7 +925,7 @@ asyTypeUnit x ==
     fn = 'Declare and r is [name,typ,:.] => asyTypeUnitDeclare(name,typ)
     x is '(_%) => '(_$)
     [fn,:asyTypeUnitList r]
-  niladicConstructorFromDB x => [x]
+  GETL(x,"NILADIC") => [x]
 --x = 'Type => '(Type)
   x = '_% => '_$
   x
