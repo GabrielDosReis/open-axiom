@@ -175,7 +175,8 @@ restart() ==
   RESTART0()
   readSpadProfileIfThere()
   spad()
-   
+
+--%    
 
 initializeGlobalState() ==
   REROOT()
@@ -224,3 +225,10 @@ compileSpadLibrary(progname,options,file) ==
 associateRequestWithFileType(Option '"compile", '"spad",
    function compileSpadLibrary)
 
+
+buildDatabasesHandler(prog,options,args) ==
+  initializeGlobalState()
+  MAKE_-DATABASES args
+  coreQuit(errorCount() > 0 => 1; 0)
+
+installDriver(Option '"build-databases",function buildDatabasesHandler)

@@ -1,3 +1,9 @@
+2008-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-driver.boot (buildDatabasesHandler): New.
+	Install it as handler for --build-databases.
+	* etc/Makefile.in ($(openaxiom_databases)): Adjust.
+
 2008-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet (OBJS): Don't include union.$(FASLEXT)
