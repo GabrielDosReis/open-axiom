@@ -143,6 +143,7 @@ edit = sed \
 	-e 's|@LIBEXT[@]|$(LIBEXT)|g' \
 	-e 's|@oa_c_runtime_extra[@]|$(oa_c_runtime_extra)|g' \
 	-e 's|@oa_base_lisp_linkset[@]|$(base_lisp_objects)|g' \
+	-e 's|@oa_standard_linking[@]|$(oa_standard_linking)|g' \
 	-e 's|@void_type[@]|$(void_type)|g' \
 	-e 's|@char_type[@]|$(char_type)|g' \
 	-e 's|@int_type[@]|$(int_type)|g' \
