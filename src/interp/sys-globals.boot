@@ -468,3 +468,8 @@ $OutputStream :=
 
 $ErrorStream :=
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
+--%
+
+++ True if we are building the system algebra.
+$buildingSystemAlgebra := false

@@ -1,3 +1,17 @@
+2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (getOptionValue): Export.
+	* interp/sys-driver.boot (initializeGlobalState): Record value for
+	--system-algebra. 
+	* interp/sys-globals.boot ($buildingSystemAlgebra): Declare.
+	* interp/compiler.boot (compileSpad2Cmd): Don't build local
+	database if compiling system algebra.
+	* interp/i-syscmd.boot (compileAsharpCmd1): Likewise.
+	* algebra/Makefile.pamphlet (%.NRLIB/code.$(FASLEXT)): Use
+	--system-algebra. 
+	(SPADPRSR.NRLIB/code.$(FASLEXT)): Likewise.
+	(PARSER.NRLIB/code.$(FASLEXT)): Likewise.
+
 2008-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet: Simplify build of interpsys and AXIOMsys.
