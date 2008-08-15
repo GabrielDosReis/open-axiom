@@ -1814,7 +1814,7 @@
 #+:cmulisp
 (defun gcmsg (x)
    (prog1 ext:*gc-verbose* (setq ext:*gc-verbose* x)))
-#+ (or :allegro :sbcl :clisp)
+#+ (or :allegro :sbcl :clisp :ecl)
 (defun gcmsg (x))
 
 #+Lucid
@@ -1864,7 +1864,7 @@
      (intern (symbol-name (symbol-function x)) "BOOT")
     nil))
 
-#+(or :SBCL :clisp)
+#+(or :SBCL :clisp :ecl)
 (defun BPINAME (x)
   (if (symbolp x)
       x
