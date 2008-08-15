@@ -1,5 +1,12 @@
 2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (BPINAME): Define for ECL too.
+	* interp/util.lisp (*BIN-TYPE*): Remove.  Use $faslType throughout.
+	* interp/daase.lisp (get-current-directory): Tidy conditional
+	definition. 
+
+2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (getOptionValue): Export.
 	* interp/sys-driver.boot (initializeGlobalState): Record value for
 	--system-algebra. 

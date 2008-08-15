@@ -939,7 +939,7 @@
 (defun get-current-directory ()
   (namestring (extensions::default-directory)))
 
-#+(or :akcl :gcl :clisp :sbcl)
+#-:cmu
 (defun get-current-directory ()
   (namestring (truename "")))
 

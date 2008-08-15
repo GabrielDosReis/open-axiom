@@ -90,20 +90,10 @@
 	 current-dir
        (concat (|ensureTrailingSlash| current-dir) direc)))))
 
-;; Various lisps use different ``extensions'' on the filename to indicate
-;; that a file has been compiled. We set this variable correctly depending
-;; on the system we are using.
-(defvar *bin-path*
-  #+kcl "o"
-  #+lucid "bbin"
-  #+symbolics "bin"
-  #+cmulisp "fasl"
-  #+:ccl "not done this way at all")
-
 (defun load-directory (dir)
    (let* ((direc (make-directory dir))
           (pattern (make-pathname :directory (pathname-directory direc)
-                                  :name :wild :type *bin-path*))
+                                  :name :wild :type |$faslType|))
           (files (directory pattern)))
       (mapcar #'load files)))
 
@@ -140,7 +130,7 @@
 ;; the given file and its compiled binary. If the file has changed
 ;; since it was last compiled this function will recompile it.
 (defun recompile-file-if-necessary (lfile)
-   (let* ((bfile (make-pathname :type *bin-path* :defaults lfile))
+   (let* ((bfile (make-pathname :type |$faslType| :defaults lfile))
           (bdate (our-write-date bfile))
           (ldate (our-write-date lfile)))
        (if (and bdate ldate (> bdate ldate)) nil
@@ -204,7 +194,7 @@
 (defun retranslate-file-if-necessary (bootfile)
    (let* ((lfile (make-pathname :type "lisp" :defaults bootfile))
           (ldate (our-write-date lfile))
-          (binfile (make-pathname :type *bin-path*  :defaults bootfile))
+          (binfile (make-pathname :type |$faslType|  :defaults bootfile))
           (bindate (our-write-date binfile))
           (bootdate (our-write-date   bootfile)))
        (if (and ldate bootdate (> ldate bootdate)) nil
@@ -349,10 +339,10 @@
 (defun compile-boot-file (file)
   "compile and load a boot file"
   (boot (concat file ".boot") (concat file ".lisp"))
-#+:AKCL
+#-:ccl
   (compile-file (concat file ".lisp"))
-#+:AKCL
-  (load (concat file "." *bin-path*))
+#-:ccl
+  (load (concat file "." |$faslType|))
 #+:CCL
   (load (concat file ".lisp"))
 )
