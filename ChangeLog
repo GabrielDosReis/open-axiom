@@ -1,3 +1,7 @@
+2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (oa_standard_linking): New.  AC-substitute.
+
 2008-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/var-def.mk (LNKEXT): New.

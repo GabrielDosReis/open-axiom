@@ -164,6 +164,8 @@ fi
 ## We will default to GCL later, if no lisp implementation is specified.
 axiom_lisp=
 axiom_lisp_flavor=unknown
+# Most Lisp systems don't use conventional methods for building programs.
+oa_standard_linking=no
 AC_ARG_WITH([lisp], [ --with-lisp=L         use L as Lisp platform],
               [axiom_lisp=$withval])
 ## If --enable-gcl is specified, we need to check for coonsistency
@@ -243,6 +245,7 @@ case $axiom_include_gcl,$axiom_lisp in
                ;;
            *ecl*) 
                axiom_lisp_flavor=ecl 
+               oa_standard_linking=yes
                ;;
            *sbcl*) 
                axiom_lisp_flavor=sbcl 
@@ -262,6 +265,7 @@ esac
 
 AC_SUBST(axiom_include_gcl)
 AC_SUBST(axiom_lisp_flavor)
+AC_SUBST(oa_standard_linking)
 AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
                    [openaxiom_${axiom_lisp_flavor}_runtime],
                    [The kind of base runtime system for this build.])
