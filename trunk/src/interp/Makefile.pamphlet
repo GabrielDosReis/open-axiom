@@ -164,13 +164,10 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	spad.$(FASLEXT)	\
 	spaderror.$(FASLEXT)				\
 	template.$(FASLEXT)	termrw.$(FASLEXT)	\
-	trace.$(FASLEXT)	\
-	daase.$(FASLEXT)  	\
-	fortcall.$(FASLEXT) \
-	$(OCOBJS) \
-	$(BROBJS) i-parser.$(FASLEXT)
+	trace.$(FASLEXT)	daase.$(FASLEXT)  	\
+	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
+	$(OCOBJS) $(BROBJS) $(ASCOMP) $(INOBJS)
 
-interpsys_modules = $(patsubst %.$(FASLEXT), "%", $(OBJS))
 @
 
 Before we save the {\bf SAVESYS} image we need to run some
@@ -179,11 +176,7 @@ for various parts of the system. The {\bf patches.lisp} \cite{5}
 file contains last-minute changes to various functions and
 constants.
 <<environment>>=
-INOBJS=	setvart.$(FASLEXT)\
-        interop.$(FASLEXT)     \
-        patches.$(FASLEXT)
-
-IN_modules = $(patsubst %.$(FASLEXT), "%", $(INOBJS))
+INOBJS=	setvart.$(FASLEXT) interop.$(FASLEXT) patches.$(FASLEXT)
 
 @
 
@@ -267,8 +260,6 @@ The {\bf ASCOMP} list contains files used by the {\bf Aldor}
 <<environment>>=
 ASCOMP= hashcode.$(FASLEXT) as.$(FASLEXT) axext_l.$(FASLEXT)
 
-AS_modules = $(patsubst %.$(FASLEXT), "%", $(ASCOMP))
-
 @
 
 The {\bf ASAUTO} list contains files used by the {\bf Aldor}
@@ -340,49 +331,33 @@ should not be set here just because we happen to save an GCL-based image.
 Doing otherwise causes havoc.
 
 <<savesys>>=
-makeint.lisp:	$(OBJS) ${OUTINTERP} \
-		database.date ${INOBJS} ${ASCOMP} ${ASAUTO} \
-		${TRANOBJS} \
-		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
-		$(axiom_src_docdir)/msgs/s2-us.msgs
-	@ echo 5 invoking make in `pwd` with parms:
-	@rm -f makeint.lisp
+
+$(axiom_target_datadir)/msgs/s2-us.msgs: \
+	$(axiom_src_docdir)/msgs/s2-us.msgs
 	$(mkdir_p) $(axiom_target_datadir)/msgs
-	cp -p $(axiom_src_docdir)/msgs/s2-us.msgs \
-		 $(axiom_target_datadir)/msgs
-	@ echo '(|importModule| "boot-pkg")' >> makeint.lisp
-	@ echo '(|importModule| "types")' >> makeint.lisp
-	@ echo '(|importModule| "sys-driver")' >> makeint.lisp
-	@ echo '(|importModule| "sys-constants")' >> makeint.lisp
-	@ echo '(|importModule| "hash")' >> makeint.lisp
-	@ echo '(|importModule| "sys-globals")' >> makeint.lisp
-	@ echo '(|importModule| "vmlisp")' >> makeint.lisp
-	@ echo '#+:GCL (gbc t)' >> makeint.lisp
-	@ echo '(|importModule| "cfuns")' >> makeint.lisp
-	@ echo '(|importModule| "sys-os")' >> makeint.lisp
-	@ echo '(|importModule| "sys-utility")' >> makeint.lisp
-	@ echo '(|importModule| "diagnostics")' >> makeint.lisp
-	@ echo '(|importModule| "union")' >> makeint.lisp
-	@ echo '(|importModule| "sys-macros")' >> makeint.lisp
-	@ echo '(|importModule| "macros")' >> makeint.lisp
-	@ echo '(|importModule| "metalex")' >> makeint.lisp
-	@ echo '(|importModule| "parsing")' >> makeint.lisp
-	@ echo '(|importModule| "util")' >> makeint.lisp
+	cp -p $< $@
+
+makeint.lisp: Makefile
+	@rm -f makeint.lisp
+	@ echo '(import-module "util")' >> makeint.lisp
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(build-interpsys (append (quote ($(interpsys_modules))) (quote ($(AS_modules))) (quote ($(IN_modules))))  (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
+	@ echo '(build-interpsys (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
 	@ echo '(|clearClams|)' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
 
-${SAVESYS}: makeint.lisp
+${SAVESYS}: database.date \
+		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
+		$(axiom_target_datadir)/msgs/s2-us.msgs \
+		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
 	$(BOOTSYS) -- --system="$(AXIOM)/" \
 		--sysalg="$(axiom_src_datadir)/algebra/" \
 		--make --output=$@ --main="BOOT::|restart|" \
-		--load-directory=. makeint.lisp
-	@ echo 6 ${SAVESYS} created
+		--load-directory=. $(OBJS) makeint.$(LNKEXT)
+	@ echo 6 $@ created
 	$(mkdir_p) $(axiom_target_bindir)
 @
 
@@ -398,13 +373,16 @@ are re-generated after leaving \File{interp/} directory.
 
 all-axiomsys: ${AXIOMSYS}
 
-${AXIOMSYS}: makeint.lisp
+${AXIOMSYS}: database.date \
+		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
+		$(axiom_target_datadir)/msgs/s2-us.msgs \
+		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
 	$(BOOTSYS) -- \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
 		--make --output=$@ --main="BOOT::|restart|" \
-		--load-directory=. makeint.lisp
-	@ echo 6a ${AXIOMSYS} created
+		--load-directory=. $(OBJS) makeint.$(LNKEXT)
+	@ echo 6a $@ created
 @
 
 \section{The Interpreter files}
@@ -447,7 +425,7 @@ exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
 	@ echo 615 making exposed.lsp from $(axiom_src_algdir)/exposed.lsp.pamphlet
 	$(axiom_build_document) --tangle --output=$@ $<
 
-$(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp ${LISPSYS}
+$(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp boot-pkg.$(LNKEXT)
 	@ echo 616 making $@ from exposed.lsp
 	$(mkdir_p) $(axiom_targetdir)/algebra
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
@@ -494,6 +472,7 @@ all-axiomsys: all-interpsys
 
 mostlyclean-local:
 	@rm -f *.fn *.data *.$(FASLEXT) *.lib *.$(OBJEXT)
+	rm -f makeint.lisp
 
 clean-local: mostlyclean-local
 	@rm -f *.clisp *.lsp
@@ -541,6 +520,7 @@ htsetvar.$(FASLEXT): macros.$(FASLEXT)
 hypertex.$(FASLEXT): types.$(FASLEXT)
 
 ## OpenAxiom's interpreter.
+makeint.$(FASLEXT): util.$(FASLEXT)
 patches.$(FASLEXT): macros.$(FASLEXT) g-timer.$(FASLEXT) sys-driver.$(FASLEXT)
 setvars.$(FASLEXT): macros.$(FASLEXT) debug.$(FASLEXT)
 profile.$(FASLEXT): macros.$(FASLEXT)

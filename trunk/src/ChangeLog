@@ -1,5 +1,17 @@
 2008-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.pamphlet: Simplify build of interpsys and AXIOMsys.
+	(interpsys_modules): Remove.
+	(IN_modules): Likewise.
+	(AS_modules): Likewise.
+	(makeint.lisp): Simplify.
+	(makeint.$(LNKEXT)): New make rule.
+	(${SAVESYS}): Tidy.
+	(${AXIOMSYS}): Likewise.
+	* interp/util.lisp (build-interpsys): Lose first parameter.  Tidy.
+
+2008-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-driver.boot (buildDatabasesHandler): New.
 	Install it as handler for --build-databases.
 	* etc/Makefile.in ($(openaxiom_databases)): Adjust.
