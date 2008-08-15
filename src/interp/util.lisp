@@ -505,9 +505,8 @@
 ;; loads the databases, sets up autoload triggers and clears out hash tables.
 ;; After this function is called the image is clean and can be saved.
 
-(defun build-interpsys (load-files translate-files asauto-files)
+(defun build-interpsys (translate-files asauto-files)
   (reroot)
-  (mapcar #'|AxiomCore|::|importModule| load-files)
   (|resetWorkspaceVariables|)
   (|AxiomCore|::|%sysInit|)
   (|initHist|)
