@@ -200,7 +200,7 @@ ${SAVESYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
 		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
-	$(BOOTSYS) -- --system="$(AXIOM)/" \
+	$(BOOTSYS) -- --system="$(AXIOM)/" --system-algebra \
 		--sysalg="$(axiom_src_datadir)/algebra/" \
 		--make --output=$@ --main="BOOT::|restart|" \
 		--load-directory=. $(OBJS) makeint.$(LNKEXT)

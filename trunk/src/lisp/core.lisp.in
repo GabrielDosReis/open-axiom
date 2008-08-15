@@ -79,6 +79,7 @@
 	   "$systemInstallationDirectory"
 	   "$NativeTypeTable"
 	   "$LispOptimizeOptions"
+	   "$StandardLinking"
 
 	   "getOptionValue"
            "getCommandLineArguments"
@@ -134,6 +135,14 @@
 ;; 
 ;; -*- Hosting Lisp System -*-
 ;;
+
+;; True means that the base Lisp system uses conventional C-style
+;; program linking model, whereby programs are constructed by linking
+;; separately compiled units.  By constrast, many Lisp systems build
+;; executable programs by loading FASLs into core and dumping the resulting
+;; image on disk.
+(defconstant |$StandardLinking|
+  (eq '@oa_standard_linking@ 'yes))
 
 ;; Almost every supported Lisp use dynamic link for FFI.
 ;; ECL's support is partial.  GCL-2.6.x hasn't discovered it yet.
