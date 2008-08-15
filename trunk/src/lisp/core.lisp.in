@@ -80,6 +80,7 @@
 	   "$NativeTypeTable"
 	   "$LispOptimizeOptions"
 
+	   "getOptionValue"
            "getCommandLineArguments"
            "processCommandLine"
            "handleCommandLine"

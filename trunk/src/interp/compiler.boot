@@ -1741,7 +1741,8 @@ compileSpad2Cmd args ==
         compilerDoitWithScreenedLisplib(constructor, fun)
     else
         compilerDoit(constructor, fun)
-    extendLocalLibdb $newConlist
+    if not $buildingSystemAlgebra then 
+      extendLocalLibdb $newConlist
     terminateSystemCommand()
     spadPrompt()
 

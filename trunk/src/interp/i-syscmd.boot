@@ -608,7 +608,8 @@ compileAsharpCmd1 args ==
     else if ^beQuiet then
         sayKeyedMsg("S2IZ0084", nil)
 
-    extendLocalLibdb $newConlist
+    if not $buildingSystemAlgebra then
+      extendLocalLibdb $newConlist
 
 compileAsharpArchiveCmd args ==
     -- Assume we entered from the "compiler" function, so args ^= nil

@@ -189,6 +189,8 @@ initializeGlobalState() ==
   RESTART0()
   $NEWSPAD := true
   $SPAD := true
+  $buildingSystemAlgebra := 
+    getOptionValue(Option '"system-algebra",%systemOptions())
 
 ++ execute Spad script
 executeSpadScript(progname,options,file) ==
