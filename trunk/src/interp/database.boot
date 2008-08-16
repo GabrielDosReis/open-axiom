@@ -42,6 +42,18 @@ namespace BOOT
 $getUnexposedOperations := true
 $globalExposureGroupAlist := []
 
+
+--% 
+
+pathToDatabase name ==
+  if dbdir := systemAlgebraDirectory() then
+    path := strconc(dbdir,name)
+    FORMAT(true,'"   Using local database ~a..",path)
+  else
+    path := strconc(systemRootDirectory(),'"algebra/",name)
+  path
+
+
 --%
 
 getConstructorAbbreviationFromDB: %Symbol -> %Maybe %Symbol

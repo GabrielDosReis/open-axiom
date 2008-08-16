@@ -1,5 +1,12 @@
 2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/daase.lisp (DaaseName): Move to database.boot.  Rename as
+	pathToDatabase. 
+	(|closeAllDatabases|): New.  Split from RESETHASHTABLES.
+	* interp/util.lisp (build-interpsys): Call it here.
+
+2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/Makefile.pamphlet (%.$(LNKEXT) %.$(FASLEXT)): Tidy.
 	(%.$(LNKEXT) %.$(FASLEXT)): Likewise.
 
