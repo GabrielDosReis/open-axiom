@@ -242,7 +242,7 @@
   (concatenate 'string (|systemRootDirectory|) subdir))
 
 ;; Like linkset-from when `feature' in on the features list.
-(defun linkset-from-if (dir pred)
+(defun linkset-from-if (dir feature)
   (if (member feature *features*)
       (linkset-from (system-subdirectory dir))
     nil))
