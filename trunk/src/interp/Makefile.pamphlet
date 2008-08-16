@@ -490,10 +490,10 @@ distclean-local: clean-local
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	@cp -p $< $@
 
-%.$(FASLEXT): %.boot
+%.$(LNKEXT) %.$(FASLEXT): %.boot
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-%.$(FASLEXT): %.lisp
+%.$(LNKEXT) %.$(FASLEXT): %.lisp
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 ## Translation to Fortran

@@ -1,5 +1,10 @@
 2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.pamphlet (%.$(LNKEXT) %.$(FASLEXT)): Tidy.
+	(%.$(LNKEXT) %.$(FASLEXT)): Likewise.
+
+2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/strap: Update cached Lisp translation.
 	* lisp/core.lisp.in (linkset-from-if): Fix typo.
 
