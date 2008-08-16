@@ -1,5 +1,7 @@
 -- Copyright (C) 2007-2008 Gabriel Dos Reis
 -- All rights reserved.
+-- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -149,13 +151,6 @@ RESTART0() ==
 
 ++
 restart() ==
-  IN_-PACKAGE '"BOOT"      -- ??? is this still necessary?
-  -- ??? Ideally, we should not be calling AxiomCore::topLevel.
-  -- ??? Rather, we should be called by that function.  Therefore
-  -- ??? it currently serves only for option processing and we cannot
-  -- ??? do any substantial work if we call from it.
-  AxiomCore::topLevel()
-  REROOT()
 )if %hasFeature KEYWORD::GCL
   SYSTEM::GBC_-TIME 0
 )endif
@@ -234,3 +229,17 @@ buildDatabasesHandler(prog,options,args) ==
   coreQuit(errorCount() > 0 => 1; 0)
 
 installDriver(Option '"build-databases",function buildDatabasesHandler)
+
+--%
+
+++ Main entry point to the system.
+systemMain() ==
+  IN_-PACKAGE '"BOOT"      -- ??? is this still necessary?
+  -- ??? Ideally, we should not be calling AxiomCore::topLevel.
+  -- ??? Rather, we should be called by that function.  Therefore
+  -- ??? it currently serves only for option processing and we cannot
+  -- ??? do any substantial work if we call from it.
+  AxiomCore::topLevel()
+  REROOT()
+  %basicSystemIsComplete() => restart()
+  fatalError '"fell off systemMain"

@@ -133,6 +133,7 @@ STAMP = echo timestamp >
 
 quiet_flags = @axiom_quiet_flags@
 eval_flags = @axiom_eval_flags@
+oa_standard_linking = @oa_standard_linking@
 
 
 ## Absolute path to the toplevel source directory for OpenAxiom.  This is
