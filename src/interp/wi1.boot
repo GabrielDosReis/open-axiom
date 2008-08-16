@@ -1232,11 +1232,11 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
-----    lisplibWrite('"compilerInfo",
+----    rwriteLispForm('"compilerInfo",
 ----      ['SETQ,'$CategoryFrame,
 ----       ['put,['QUOTE,op'],'
 ----        (QUOTE isCategory),true,['addModemap,MKQ op',MKQ parForm,
-----          MKQ parSignature,true,MKQ fun,'$CategoryFrame]]],$libFile)
+----          MKQ parSignature,true,MKQ fun,'$CategoryFrame]]])
     --Equivalent to the following two lines, we hope
     if null sargl then
       evalAndRwriteLispForm('NILADIC,
