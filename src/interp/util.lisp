@@ -510,6 +510,7 @@
   (|setBootAutloadProperties| asauto-functions asauto-files)
   (setf (symbol-function '|addConsDB|) #'identity)
   (resethashtables) ; the databases into core, then close the streams
+  (|closeAllDatabases|)
  )
 
 

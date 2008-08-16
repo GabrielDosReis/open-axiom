@@ -332,6 +332,14 @@
    (concatenate 'string (|systemRootDirectory|) "/compiler/bin/axiomxl")
     (list flags file)))
 
+
+(defun |closeAllDatabases| nil
+  (close *interp-stream*)
+  (close *operation-stream*)
+  (close *category-stream*)
+  (close *browse-stream*))
+
+
 (defun resethashtables ()
  "set all -hash* to clean values. used to clean up core before saving system"
  (setq *hascategory-hash* (make-hash-table :test #'equal))
@@ -350,10 +358,6 @@
  (categoryopen) ;note: this depends on constructorform in browse.daase
  (unless (|getOptionValue| (|Option| "system-algebra") (|%systemOptions|))
    (initial-getdatabase))
- (close *interp-stream*)
- (close *operation-stream*)
- (close *category-stream*)
- (close *browse-stream*)
 #+:AKCL (gbc t)
 )
 
@@ -557,7 +561,7 @@
 (defun interpOpen ()
   "open the interpreter database and hash the keys"
   (let (constructors pos stamp dbstruct)
-    (setq *interp-stream* (open (DaaseName "interp.daase" nil)))
+    (setq *interp-stream* (open (|pathToDatabase| "interp.daase")))
     (setq stamp (read *interp-stream*))
     (unless (equal stamp *interp-stream-stamp*)
       (format t "   Re-reading interp.daase")
@@ -612,7 +616,7 @@
 (defun browseOpen ()
   "open the constructor database and hash the keys"
   (let (constructors pos stamp dbstruct)
-    (setq *browse-stream* (open (DaaseName "browse.daase" nil)))
+    (setq *browse-stream* (open (|pathToDatabase| "browse.daase")))
     (setq stamp (read *browse-stream*))
     (unless (equal stamp *browse-stream-stamp*)
       (format t "   Re-reading browse.daase")
@@ -641,7 +645,7 @@
 (defun categoryOpen ()
   "open category.daase and hash the keys"
   (let (pos keys stamp)
-    (setq *category-stream* (open (DaaseName "category.daase" nil)))
+    (setq *category-stream* (open (|pathToDatabase| "category.daase")))
     (setq stamp (read *category-stream*))
     (unless (equal stamp *category-stream-stamp*)
       (format t "   Re-reading category.daase")
@@ -658,7 +662,7 @@
 (defun operationOpen ()
   "read operation database and hash the keys"
   (let (operations pos stamp)
-    (setq *operation-stream* (open (DaaseName "operation.daase" nil)))
+    (setq *operation-stream* (open (|pathToDatabase| "operation.daase")))
     (setq stamp (read *operation-stream*))
     (unless (equal stamp *operation-stream-stamp*)
       (format t "   Re-reading operation.daase")
@@ -1339,36 +1343,10 @@
   (rename-file "category.build" 
                (final-name "category")))))
 
-(defun DaaseName (name erase?)
- (let (daase filename)
-  (if (setq daase (|systemAlgebraDirectory|))
-   (progn
-    (setq filename  (concatenate 'string daase name))
-    (format t "   Using local database ~a.." filename))
-   (setq filename (concatenate 'string 
-                               (|systemRootDirectory|)
-                               "/algebra/"
-                               name)))
-  (when erase? (|removeFile| filename))
-  filename))
-
-;; rewrite this so it works in mnt
-;;(defun DaaseName (name erase?)
-;; (let (daase filename)
-;;  (declare (special $spadroot))
-;;  (if (setq daase (|systemDatabaseDirectory|))
-;;   (progn
-;;    (setq filename  (concatenate 'string daase "/algebra/" name))
-;;    (format t "   Using local database ~a.." filename))
-;;   (setq filename (concatenate 'string $spadroot "/algebra/" name)))
-;;  (when erase? (|removeFile| filename))
-;;  filename))
-
-
 (defun compressOpen ()
  (let (lst stamp pos)
   (setq *compress-stream*
-    (open (DaaseName "compress.daase"  nil) :direction :input))
+    (open (|pathToDatabase| "compress.daase") :direction :input))
   (setq stamp (read *compress-stream*))
   (unless (equal stamp *compress-stream-stamp*)
    (format t "   Re-reading compress.daase")
