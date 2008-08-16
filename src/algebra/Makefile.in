@@ -5,9 +5,6 @@ DOC=$(axiom_target_docdir)/src/algebra
 OUTSRC=$(axiom_target_srcdir)/algebra
 INPUT=../input
 
-EXTRACT_BOOTSTRAP_FILE = \
-	$(axiom_build_document) --output=$@ --tangle="$@ BOOTSTRAP" $<
-
 ## We use interpsys, built from previous stage, to bootstrap the algebra
 ## files.  In fact, we use interpsys to build everything.
 COMPILE_LISP = $(INTERPSYS) --compile --output=$@ $<
@@ -846,8 +843,6 @@ mkdir-output-directory:
 
 everything: check lib db cmd gloss
 	@ echo 4303 invoking make in `pwd` with parms:
-	@ echo SYS= ${SYS} LSP= ${LSP}
-	@ echo MNT= ${MNT} LISP=${LISP} BYE=${BYE}
 
 check:
 	@ echo 4305 Checking that INTERP.EXPOSED and NRLIBs are consistent
@@ -866,7 +861,7 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 	${INTERPSYS} --strap=strap --system-algebra --compile $<
 # Compile bootstrap file to machine object code, and the result
 # immediately available for AXIOMsys consumption.
-strap/%.$(FASLEXT): %.lsp
+strap/%.$(FASLEXT): $(srcdir)/strap/%.lsp
 	$(COMPILE_LISP)
 
 $(OUTSRC)/%.spad: mk-target-src-algabra-dir
@@ -1151,7 +1146,6 @@ clean-local: mostlyclean-local
 
 distclean-local: clean-local
 
-include extract-lisp-files.mk
 include extract-spad.mk
 
 .NOTPARALLEL:

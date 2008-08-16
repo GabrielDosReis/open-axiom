@@ -1,3 +1,8 @@
+2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/strap:  New.  Sequester cached Lisp translation of
+	algebra bootstrap domains here.
+
 2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (compDefineCategory2): Use rwriteLispForm.
