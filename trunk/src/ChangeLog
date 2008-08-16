@@ -1,5 +1,12 @@
 2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compDefineCategory2): Use rwriteLispForm.
+	(compDefineFunctor1): Likewise.
+	* interp/wi1.boot (compDefineCategory2): Likewise.
+	(compDefineFunctor1): Likewise.
+
+2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (|%basicSystemIsComplete|): New.  Export.
 	(|link|): Use prologue for all systems.
 	* interp/sys-driver.boot (systemMain): New.  Break from restart().

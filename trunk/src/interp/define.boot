@@ -336,11 +336,11 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
-    lisplibWrite('"compilerInfo",
+    rwriteLispForm('"compilerInfo",
       removeZeroOne ['SETQ,'$CategoryFrame,
        ['put,['QUOTE,op'],'
         (QUOTE isCategory),true,['addModemap,MKQ op',MKQ parForm,
-          MKQ parSignature,true,MKQ fun,'$CategoryFrame]]],$libFile)
+          MKQ parSignature,true,MKQ fun,'$CategoryFrame]]])
     --Equivalent to the following two lines, we hope
     if null sargl then
       evalAndRwriteLispForm('NILADIC,
@@ -571,14 +571,14 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       $lisplibSlot1 := $NRTslot1Info --NIL or set by $NRTmakeSlot1
       $lisplibOperationAlist:= operationAlist
       $lisplibMissingFunctions:= $CheckVectorList
-    lisplibWrite('"compilerInfo",
+    rwriteLispForm('"compilerInfo",
        removeZeroOne ['SETQ,'$CategoryFrame,
         ['put,['QUOTE,op'],'
          (QUOTE isFunctor),
           ['QUOTE,operationAlist],['addModemap,['QUOTE,op'],['
            QUOTE,parForm],['QUOTE,parSignature],true,['QUOTE,op'],
             ['put,['QUOTE,op' ],'(QUOTE mode),
-             ['QUOTE,['Mapping,:parSignature]],'$CategoryFrame]]]], $libFile)
+             ['QUOTE,['Mapping,:parSignature]],'$CategoryFrame]]]])
     if null argl then
       evalAndRwriteLispForm('NILADIC,
             ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'NILADIC], true])
