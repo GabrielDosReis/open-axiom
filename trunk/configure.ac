@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-08-15], 
+AC_INIT([OpenAxiom], [1.2.0-2008-08-16], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -648,23 +648,6 @@ AC_CONFIG_FILES(build/scripts/document:$srcdir/src/scripts/document.in, \
                 [chmod +x build/scripts/document])
 
 AC_OUTPUT
-
-## Generate rules for Algebra bootstrap files.
-echo -n "building list of Algebra bootstrap files..."
-egrep ".*BOOTSTRAP>>=" $srcdir/src/algebra/*.spad.pamphlet \
-    | sort | uniq | \
-  while IFS=':' read spad_file chunk_desc; do
-      chunk_desc=`echo $chunk_desc | sed -e 's,<<,,' -e 's,>>=,,'`
-      set $chunk_desc; bootstrap_file=$1
-      cat >> src/algebra/tmp-extract-lisp-files.mk <<EOF
-$bootstrap_file: \$(srcdir)/`basename $spad_file`; \
-    \$(EXTRACT_BOOTSTRAP_FILE)
-EOF
-  done 
-echo done
-$srcdir/config/move-if-change \
-    src/algebra/tmp-extract-lisp-files.mk \
-    src/algebra/extract-lisp-files.mk
 
 ## Generate rules to extrad SPAD type definitions from pamphlets.
 echo -n "extracting list of SPAD type definitions..."

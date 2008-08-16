@@ -1306,9 +1306,6 @@ DOC=$(axiom_target_docdir)/src/algebra
 OUTSRC=$(axiom_target_srcdir)/algebra
 INPUT=../input
 
-EXTRACT_BOOTSTRAP_FILE = \
-	$(axiom_build_document) --output=$@ --tangle="$@ BOOTSTRAP" $<
-
 @
 
 <<environment>>=
@@ -1698,9 +1695,7 @@ system is built from scratch.
 
 A 5 stanza group for this case performs the following functions:
 \begin{enumerate}
-\item extract the lisp [[BAR.lsp]] from the pamphlet [[foo.spad.pamphlet]]
 \item compile and copy the bootstrap lisp to the final algebra directory
-\item extract the bootstrap [[BAR.lsp]] from the spad file [[foo.spad]]
 \item compile the extracted [[BAR]] domain
 \item copy the compiled [[BAR]] to the final algebra directory
 \end{enumerate}
@@ -1804,7 +1799,7 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 <<genericBOOTSTRAPfiles>>=
 # Compile bootstrap file to machine object code, and the result
 # immediately available for AXIOMsys consumption.
-strap/%.$(FASLEXT): %.lsp
+strap/%.$(FASLEXT): $(srcdir)/strap/%.lsp
 	$(COMPILE_LISP)
 @
 
@@ -1961,38 +1956,6 @@ ${MID}/LEXTRIPK.spad: $(srcdir)/zerodim.spad.pamphlet
 	$(axiom_build_document) --tangle='package LEXTRIPK LexTriangularPackage' --output=$@ $<
 \end{verbatim}
 
-\subsection{Find the algebra bootstrap code}
-
-Step 3 works like step 1 above except that we are looking for
-chunk names that have the "BOOTSTRAP" string. The output will look like:
-\begin{verbatim}
-vector.spad.pamphlet:@<<VECTOR.lsp BOOTSTRAP>>=
-\end{verbatim}
-This output, which can consist of many lines per input file is piped
-into [[awk]].
-
-The process is the same way as described above except that
-there are only two parts to the chunk names
-\begin{verbatim}
-  part[1]=VECTOR.lsp
-  part[2]=BOOTSTRAP
-\end{verbatim}
-The [[lspfile]] variable is assigned
-\begin{verbatim}
-${MID}/VECTOR.lsp
-\end{verbatim}
-Finally we output two lines:
-\begin{verbatim}
-${MID}/vector.spad.pamphlet: $(srcdir)/vector.spad.pamphlet
-	$(axiom_build_document) --tangle='VECTOR.lsp BOOTSTRAP' --output=$@ $<
-\end{verbatim}
-
-The first line is the stanza head and creates a dependence between
-the intermediate file, in this case [[int/algebra/VECTOR.lsp]] and
-the input file [[src/algebra/vector.spad.pamphlet]]
-
-The second line calls [[notangle]] to extract the required chunk
-from the source file.
 
 \section{Stage markers}
 
@@ -2264,8 +2227,6 @@ mkdir-output-directory:
 
 everything: check lib db cmd gloss
 	@ echo 4303 invoking make in `pwd` with parms:
-	@ echo SYS= ${SYS} LSP= ${LSP}
-	@ echo MNT= ${MNT} LISP=${LISP} BYE=${BYE}
 
 check:
 	@ echo 4305 Checking that INTERP.EXPOSED and NRLIBs are consistent
@@ -2289,7 +2250,6 @@ clean-local: mostlyclean-local
 
 distclean-local: clean-local
 
-include extract-lisp-files.mk
 include extract-spad.mk
 
 .NOTPARALLEL:
