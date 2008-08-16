@@ -1,5 +1,10 @@
 2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/strap: Update cached Lisp translation.
+	* lisp/core.lisp.in (linkset-from-if): Fix typo.
+
+2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/strap:  New.  Sequester cached Lisp translation of
 	algebra bootstrap domains here.
 

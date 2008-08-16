@@ -82,6 +82,13 @@
               (REALLYPRETTYPRINT |init| |stream|)))))
         (#0# NIL)))))
 
+(DEFUN |genOptimizeOptions| (|stream|)
+  (DECLARE (SPECIAL |$LispOptimizeOptions|))
+  (REALLYPRETTYPRINT
+      (LIST 'PROCLAIM
+            (LIST 'QUOTE (CONS 'OPTIMIZE |$LispOptimizeOptions|)))
+      |stream|))
+
 (DEFPARAMETER |$translatingOldBoot| NIL)
 
 (DEFUN |AxiomCore|::|%sysInit| ()
@@ -134,6 +141,7 @@
        (SETQ |$GenVarCounter| 0)
        (|shoeOpenOutputFile| |stream| |outfn|
            (PROGN
+             (|genOptimizeOptions| |stream|)
              (LET ((|bfVar#5| |lines|) (|line| NIL))
                (LOOP
                  (COND
@@ -173,6 +181,7 @@
        (SETQ |$GenVarCounter| 0)
        (|shoeOpenOutputFile| |stream| |outfn|
            (PROGN
+             (|genOptimizeOptions| |stream|)
              (LET ((|bfVar#6| |lines|) (|line| NIL))
                (LOOP
                  (COND
@@ -1697,7 +1706,7 @@
         (COND
           (|out| (CONCAT (|shoeRemoveStringIfNec| |$effectiveFaslType|
                              |out|)
-                         ".clisp"))
+                         "clisp"))
           ('T (|defaultBootToLispFile| |file|)))))))
 
 (DEFUN |translateBootFile| (|progname| |options| |file|)
@@ -1735,35 +1744,23 @@
   (|associateRequestWithFileType| (|Option| "compile") "boot"
       #'|compileBootHandler|))
 
-(DEFUN |systemRootDirectory| ()
-  (PROG (|dir|)
-    (DECLARE (SPECIAL |$systemInstallationDirectory|))
-    (RETURN
-      (COND
-        ((SETQ |dir| (ASSOC (|Option| "system") (|%systemOptions|)))
-         (|ensureTrailingSlash| (CDR |dir|)))
-        ('T |$systemInstallationDirectory|)))))
-
-(DEFUN |systemLibraryDirectory| ()
-  (PROG (|dir|)
-    (RETURN
-      (COND
-        ((SETQ |dir| (ASSOC (|Option| '|syslib|) (|%systemOptions|)))
-         (|ensureTrailingSlash| (CDR |dir|)))
-        ('T (CONCAT (|systemRootDirectory|) "lib/"))))))
-
 (DEFUN |loadNativeModule| (|m|)
   (COND
     ((|%hasFeature| :SBCL)
      (FUNCALL (|bfColonColon| 'SB-ALIEN 'LOAD-SHARED-OBJECT) |m|))
     ((|%hasFeature| :CLISP)
      (EVAL (LIST (|bfColonColon| 'FFI 'DEFAULT-FOREIGN-LIBRARY) |m|)))
+    ((|%hasFeature| :ECL)
+     (EVAL (LIST (|bfColonColon| 'FFI 'LOAD-FOREIGN-LIBRARY) |m|)))
     ('T
      (|coreError| "don't know how to load a dynamically linked module"))))
 
 (DEFUN |loadSystemRuntimeCore| ()
   (DECLARE (SPECIAL |$NativeModuleExt|))
-  (|loadNativeModule|
-      (CONCAT (|systemLibraryDirectory|) "libopen-axiom-core"
-              |$NativeModuleExt|)))
+  (COND
+    ((OR (|%hasFeature| :ECL) (|%hasFeature| :GCL)) NIL)
+    ('T
+     (|loadNativeModule|
+         (CONCAT (|systemLibraryDirectory|) "libopen-axiom-core"
+                 |$NativeModuleExt|)))))
 
