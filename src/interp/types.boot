@@ -113,8 +113,12 @@ namespace BOOT
 %Env <=> %List                                 -- compiling env
 %Mode <=> %Symbol or %String or %List          -- type of forms
 %Code <=> %Form                                -- generated code
+)if %hasFeature KEYWORD::ECL
+%Triple <=> %List   -- ??? ECL has trouble with the spec below
+)else
 %Triple <=>                                    -- form + type + env
   cons(%Code,cons(%Mode,cons(%Env,null))) 
+)endif
 
 %Signature                      -- signature
   <=> %Symbol or cons

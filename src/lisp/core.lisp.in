@@ -68,6 +68,7 @@
            "%hasFeature"
 	   "%systemOptions"
 	   "%systemArguments"
+	   "%basicSystemIsComplete"
 	   
 	   "$hostPlatform"
 	   "$buildPlatform"
@@ -131,6 +132,9 @@
 ;; Return true if the Boot system is complete bootstrapped.
 (defun boot-completed-p nil
   (member :open-axiom-boot *features*))
+
+(defun |%basicSystemIsComplete| nil
+  (member :open-axiom-basic-system *features*))
 
 ;; 
 ;; -*- Hosting Lisp System -*-
@@ -570,11 +574,11 @@
 ;; this point.  You have been warned.
 (defun |link| (core-image lisp-files 
 			  &optional (entry-point nil) (prologue nil))
-  #-:ecl (declare (ignore prologue))
   (if (and entry-point (stringp entry-point))
       (setq entry-point `(read-from-string ,entry-point)))
   #-:ecl (progn
            (mapcar #'(lambda (p) (|loadOrElse| p)) lisp-files)
+	   (eval prologue)
            (|saveCore| core-image entry-point))
   #+:ecl (progn
            (unless entry-point

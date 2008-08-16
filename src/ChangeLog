@@ -1,5 +1,13 @@
 2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (|%basicSystemIsComplete|): New.  Export.
+	(|link|): Use prologue for all systems.
+	* interp/sys-driver.boot (systemMain): New.  Break from restart().
+	(restart): Tidy.
+	* interp/boot-pkg.lisp: Don't push :OPEN-AXIOM-BOOT-COMPLETE.
+
+2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (|$StandardLinking|): New.  Export.
 	* lisp/Makefile.in (edit): Update.
 	* interp/daase.lisp: Don't load initial databases when

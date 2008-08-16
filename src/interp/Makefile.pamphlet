@@ -343,8 +343,7 @@ makeint.lisp: Makefile
 	@ echo '(in-package "BOOT")' >> makeint.lisp
 	@ touch ${TIMESTAMP}
 	@ echo '${YEARWEEK}' >> makeint.lisp
-	@ echo '(build-interpsys (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))' >> makeint.lisp
-	@ echo '(|clearClams|)' >> makeint.lisp
+	@ echo '(unless (|%basicSystemIsComplete|) (build-interpsys (quote ($(patsubst %, "%", ${TRANOBJS}))) (quote ($(patsubst %, "%", ${ASAUTO}))))(|clearClams|))' >> makeint.lisp
 	@ echo '#+:akcl (setq compiler::*suppress-compiler-notes* t)' >> makeint.lisp
 	@ echo '#+:akcl (si::gbc-time 0)' >> makeint.lisp
 	@ echo '#+:GCL (si::gbc t)' >> makeint.lisp
@@ -355,7 +354,8 @@ ${SAVESYS}: database.date \
 		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
 	$(BOOTSYS) -- --system="$(AXIOM)/" --system-algebra \
 		--sysalg="$(axiom_src_datadir)/algebra/" \
-		--make --output=$@ --main="BOOT::|restart|" \
+		--prologue="(pushnew :open-axiom-basic-system *features*)" \
+		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS) makeint.$(LNKEXT)
 	@ echo 6 $@ created
 	$(mkdir_p) $(axiom_target_bindir)
@@ -380,7 +380,8 @@ ${AXIOMSYS}: database.date \
 	$(BOOTSYS) -- \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
-		--make --output=$@ --main="BOOT::|restart|" \
+		--prologue="(pushnew :open-axiom-basic-system *features*)" \
+		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS) makeint.$(LNKEXT)
 	@ echo 6a $@ created
 @
