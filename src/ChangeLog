@@ -1,5 +1,12 @@
 2008-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-globals.boot ($verbose): Move from sys-driver.boot.
+	(initializeGlobalState): Set it and honor it.
+	* interp/daase.lisp (initial-getdatabase): Be talkative only when
+	asked. 
+
+2008-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-globals.boot ($updateCatTableIfTrue): Default to false.
 	* interp/sys-driver.boot (AxiomCore::%sysInit): Have ECL quiet.
 	(initializeGlobalState): Initialize new world states.
