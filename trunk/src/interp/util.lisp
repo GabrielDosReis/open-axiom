@@ -499,6 +499,7 @@
   (reroot)
   (|resetWorkspaceVariables|)
   (|AxiomCore|::|%sysInit|)
+  (|buildHtMacroTable|)
   (|initHist|)
   (|initNewWorld|)
   (compressopen)
@@ -509,8 +510,8 @@
   (|setBootAutloadProperties| translate-functions translate-files)
   (|setBootAutloadProperties| asauto-functions asauto-files)
   (setf (symbol-function '|addConsDB|) #'identity)
-  (resethashtables) ; the databases into core, then close the streams
-  (|closeAllDatabases|)
+  (|fillDatabasesInCore|) ; the databases into core, then close the streams
+  (|closeAllDatabaseStreams|)
  )
 
 

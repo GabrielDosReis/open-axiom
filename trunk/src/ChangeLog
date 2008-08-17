@@ -1,5 +1,20 @@
 2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-driver.boot (openDatabases): Rename from RESTART0.
+	(initializeGlobalState): Tidy.
+	(executeSpadScript): Don't display start up messages.
+	(compileSpadLibrary): Likewise.
+	(buildDatabasesHandler): Likewise.
+	(systemMain): Initialize global states.
+	* interp/nrunfast.boot: Defin $NRTvec, $monitorNewWorld.
+	* interp/daase.lisp (|fillDatabasesInCore|): Rename from
+	RESETHASHTABLES. 
+	(|closeAllDatabaseStreams|): Rename from closeAllDatabases
+	* interp/util.lisp (build-interpsys): Initialize macro table.
+	* interp/htcheck.boot: Don't initialize macro table here.
+
+2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/daase.lisp (DaaseName): Move to database.boot.  Rename as
 	pathToDatabase. 
 	(|closeAllDatabases|): New.  Split from RESETHASHTABLES.

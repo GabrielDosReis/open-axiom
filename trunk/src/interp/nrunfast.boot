@@ -39,6 +39,12 @@ namespace BOOT
 $doNotCompressHashTableIfTrue := false
 
 ++
+$NRTvec := true
+
+++
+$monitorNewWorld := false
+
+++
 $lookupDefaults := false
 
 ++
