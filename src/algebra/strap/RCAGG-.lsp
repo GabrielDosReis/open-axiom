@@ -1,13 +1,15 @@
 
 (/VERSIONCHECK 2) 
 
-(DEFUN |RCAGG-;elt;AvalueS;1| (|x| T0 $) (SPADCALL |x| (QREFELT $ 8))) 
+(DEFUN |RCAGG-;elt;AvalueS;1| (|x| T0 $)
+  (SPADCALL |x| (|getShellEntry| $ 8))) 
 
 (DEFUN |RCAGG-;setelt;Avalue2S;2| (|x| T1 |y| $)
-  (SPADCALL |x| |y| (QREFELT $ 11))) 
+  (SPADCALL |x| |y| (|getShellEntry| $ 11))) 
 
 (DEFUN |RCAGG-;child?;2AB;3| (|x| |l| $)
-  (SPADCALL |x| (SPADCALL |l| (QREFELT $ 14)) (QREFELT $ 17))) 
+  (SPADCALL |x| (SPADCALL |l| (|getShellEntry| $ 14))
+      (|getShellEntry| $ 17))) 
 
 (DEFUN |RecursiveAggregate&| (|#1| |#2|)
   (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
@@ -16,23 +18,23 @@
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|RecursiveAggregate&|))
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$| (LIST '|RecursiveAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (GETREFV 19) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3
+        (LETT $ (|newShell| 19) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
             (LETT |pv$|
                   (|buildPredVector| 0 0
                       (LIST (|HasAttribute| |#1| '|shallowlyMutable|)
                             (|HasCategory| |#2| '(|SetCategory|)))) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
-        (QSETREFV $ 7 |#2|)
+        (|setShellEntry| $ 6 |#1|)
+        (|setShellEntry| $ 7 |#2|)
         (COND
           ((|testBitVector| |pv$| 1)
-           (QSETREFV $ 12
+           (|setShellEntry| $ 12
                (CONS (|dispatchFunction| |RCAGG-;setelt;Avalue2S;2|) $))))
         (COND
           ((|testBitVector| |pv$| 2)
-           (QSETREFV $ 18
+           (|setShellEntry| $ 18
                (CONS (|dispatchFunction| |RCAGG-;child?;2AB;3|) $))))
         $)))) 
 
@@ -52,3 +54,27 @@
                                   18 3 0 7 0 9 7 12 2 0 7 0 9 10 2 0 15
                                   0 0 18)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|RecursiveAggregate&| '|isFunctor|
+             '(((|setelt| (|#2| $ "value" |#2|)) T (ELT $ 12))
+               ((|child?| ((|Boolean|) $ $)) T (ELT $ 18))
+               ((|elt| (|#2| $ "value")) T (ELT $ 10)))
+             (|addModemap| '|RecursiveAggregate&|
+                 '(|RecursiveAggregate&| |#1| |#2|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |setelt| (|#2| |#1| "value" |#2|))
+                       (SIGNATURE |child?| ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |elt| (|#2| |#1| "value")))
+                   (|RecursiveAggregate| |#2|) (|Type|))
+                 T '|RecursiveAggregate&|
+                 (|put| '|RecursiveAggregate&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |setelt|
+                                     (|#2| |#1| "value" |#2|))
+                                 (SIGNATURE |child?|
+                                     ((|Boolean|) |#1| |#1|))
+                                 (SIGNATURE |elt| (|#2| |#1| "value")))
+                             (|RecursiveAggregate| |#2|) (|Type|))
+                        |$CategoryFrame|)))) 

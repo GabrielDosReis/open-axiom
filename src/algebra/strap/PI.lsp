@@ -14,7 +14,7 @@
 (DEFUN |PositiveInteger| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1396)
+      (PROG (#0=#:G1398)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|PositiveInteger|)
@@ -71,5 +71,44 @@
                                   2 0 7 0 0 1 2 0 0 0 0 1 2 0 0 0 6 1 2
                                   0 0 0 5 1 2 0 0 0 0 1 2 0 0 6 0 1)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|PositiveInteger| '|isFunctor|
+             '(((|gcd| ($ $ $)) T (ELT $ NIL))
+               ((* ($ $ $)) T (ELT $ NIL))
+               ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
+               ((^ ($ $ (|PositiveInteger|))) T (ELT $ NIL))
+               ((|One| ($)) T (CONST $ NIL))
+               ((|sample| ($)) T (CONST $ NIL))
+               ((|one?| ((|Boolean|) $)) T (ELT $ NIL))
+               ((** ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
+               ((^ ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
+               ((|recip| ((|Union| $ "failed") $)) T (ELT $ NIL))
+               ((+ ($ $ $)) T (ELT $ NIL))
+               ((* ($ (|PositiveInteger|) $)) T (ELT $ NIL))
+               ((|min| ($ $ $)) T (ELT $ NIL))
+               ((|max| ($ $ $)) T (ELT $ NIL))
+               ((<= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((>= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((> ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((< ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((|latex| ((|String|) $)) T (ELT $ NIL))
+               ((|hash| ((|SingleInteger|) $)) T (ELT $ NIL))
+               ((|coerce| ((|OutputForm|) $)) T (ELT $ NIL))
+               ((= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
+             (|addModemap| '|PositiveInteger| '(|PositiveInteger|)
+                 '((|Join| (|OrderedAbelianSemiGroup|) (|Monoid|)
+                           (CATEGORY |domain| (SIGNATURE |gcd| ($ $ $))
+                               (ATTRIBUTE (|commutative| "*")))))
+                 T '|PositiveInteger|
+                 (|put| '|PositiveInteger| '|mode|
+                        '(|Mapping|
+                             (|Join| (|OrderedAbelianSemiGroup|)
+                                     (|Monoid|)
+                                     (CATEGORY |domain|
+                                      (SIGNATURE |gcd| ($ $ $))
+                                      (ATTRIBUTE (|commutative| "*")))))
+                        |$CategoryFrame|)))) 
 
 (MAKEPROP '|PositiveInteger| 'NILADIC T) 

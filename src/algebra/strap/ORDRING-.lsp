@@ -2,23 +2,24 @@
 (/VERSIONCHECK 2) 
 
 (DEFUN |ORDRING-;positive?;SB;1| (|x| $)
-  (SPADCALL (|spadConstant| $ 7) |x| (QREFELT $ 9))) 
+  (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |ORDRING-;negative?;SB;2| (|x| $)
-  (SPADCALL |x| (|spadConstant| $ 7) (QREFELT $ 9))) 
+  (SPADCALL |x| (|spadConstant| $ 7) (|getShellEntry| $ 9))) 
 
 (DEFUN |ORDRING-;sign;SI;3| (|x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 12)) 1)
-    ((SPADCALL |x| (QREFELT $ 13)) -1)
-    ((SPADCALL |x| (QREFELT $ 15)) 0)
+    ((SPADCALL |x| (|getShellEntry| $ 12)) 1)
+    ((SPADCALL |x| (|getShellEntry| $ 13)) -1)
+    ((SPADCALL |x| (|getShellEntry| $ 15)) 0)
     ('T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
 (DEFUN |ORDRING-;abs;2S;4| (|x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 12)) |x|)
-    ((SPADCALL |x| (QREFELT $ 13)) (SPADCALL |x| (QREFELT $ 18)))
-    ((SPADCALL |x| (QREFELT $ 15)) (|spadConstant| $ 7))
+    ((SPADCALL |x| (|getShellEntry| $ 12)) |x|)
+    ((SPADCALL |x| (|getShellEntry| $ 13))
+     (SPADCALL |x| (|getShellEntry| $ 18)))
+    ((SPADCALL |x| (|getShellEntry| $ 15)) (|spadConstant| $ 7))
     ('T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
 (DEFUN |OrderedRing&| (|#1|)
@@ -27,11 +28,12 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|OrderedRing&|))
         (LETT |dv$| (LIST '|OrderedRing&| |dv$1|) . #0#)
-        (LETT $ (GETREFV 20) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 20) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         $)))) 
 
 (MAKEPROP '|OrderedRing&| '|infovec|
@@ -50,3 +52,28 @@
                                   0 16 0 17 1 0 8 0 10 1 0 8 0 11 1 0 0
                                   0 19)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|OrderedRing&| '|isFunctor|
+             '(((|abs| ($ $)) T (ELT $ 19))
+               ((|sign| ((|Integer|) $)) T (ELT $ 17))
+               ((|negative?| ((|Boolean|) $)) T (ELT $ 11))
+               ((|positive?| ((|Boolean|) $)) T (ELT $ 10)))
+             (|addModemap| '|OrderedRing&| '(|OrderedRing&| |#1|)
+                 '((CATEGORY |domain| (SIGNATURE |abs| (|#1| |#1|))
+                       (SIGNATURE |sign| ((|Integer|) |#1|))
+                       (SIGNATURE |negative?| ((|Boolean|) |#1|))
+                       (SIGNATURE |positive?| ((|Boolean|) |#1|)))
+                   (|OrderedRing|))
+                 T '|OrderedRing&|
+                 (|put| '|OrderedRing&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |abs| (|#1| |#1|))
+                                 (SIGNATURE |sign| ((|Integer|) |#1|))
+                                 (SIGNATURE |negative?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |positive?|
+                                     ((|Boolean|) |#1|)))
+                             (|OrderedRing|))
+                        |$CategoryFrame|)))) 

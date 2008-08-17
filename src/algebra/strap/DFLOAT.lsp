@@ -71,7 +71,7 @@
 (DEFUN |DFLOAT;precision;Pi;10| ($) (FLOAT-DIGITS 0.0)) 
 
 (DEFUN |DFLOAT;bits;Pi;11| ($)
-  (PROG (#0=#:G1419)
+  (PROG (#0=#:G1421)
     (RETURN
       (COND
         ((EQL (FLOAT-RADIX 0.0) 2) (FLOAT-DIGITS 0.0))
@@ -317,9 +317,9 @@
 (DEFUN |DFLOAT;float;2IPi$;72| (|ma| |ex| |b| $)
   (* |ma| (EXPT (FLOAT |b| MOST-POSITIVE-LONG-FLOAT) |ex|))) 
 
-(PUT '|DFLOAT;convert;$Df;73| '|SPADreplace| '(XLAM (|x|) |x|)) 
+(PUT '|DFLOAT;convert;2$;73| '|SPADreplace| '(XLAM (|x|) |x|)) 
 
-(DEFUN |DFLOAT;convert;$Df;73| (|x| $) |x|) 
+(DEFUN |DFLOAT;convert;2$;73| (|x| $) |x|) 
 
 (DEFUN |DFLOAT;convert;$F;74| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 103))) 
@@ -348,7 +348,7 @@
                    (EXIT |theta|)))))))) 
 
 (DEFUN |DFLOAT;retract;$F;77| (|x| $)
-  (PROG (#0=#:G1494)
+  (PROG (#0=#:G1496)
     (RETURN
       (SPADCALL |x|
           (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
@@ -357,7 +357,7 @@
           (FLOAT-RADIX 0.0) (|getShellEntry| $ 107))))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;78| (|x| $)
-  (PROG (#0=#:G1499)
+  (PROG (#0=#:G1501)
     (RETURN
       (CONS 0
             (SPADCALL |x|
@@ -393,7 +393,7 @@
 (DEFUN |DFLOAT;abs;2$;82| (|x| $) (FLOAT-SIGN 1.0 |x|)) 
 
 (DEFUN |DFLOAT;manexp| (|x| $)
-  (PROG (|s| #0=#:G1520 |me| |two53|)
+  (PROG (|s| #0=#:G1522 |me| |two53|)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|) (CONS 0 0))
@@ -429,9 +429,9 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;84| (|f| |d| |b| $)
-  (PROG (|#G103| |nu| |ex| BASE #0=#:G1523 |de| |tol| |#G104| |q| |r|
-                 |p2| |q2| #1=#:G1541 |#G105| |#G106| |p0| |p1| |#G107|
-                 |#G108| |q0| |q1| |#G109| |#G110| |s| |t| #2=#:G1539)
+  (PROG (|#G103| |nu| |ex| BASE #0=#:G1525 |de| |tol| |#G104| |q| |r|
+                 |p2| |q2| #1=#:G1543 |#G105| |#G106| |p0| |p1| |#G107|
+                 |#G108| |q0| |q1| |#G109| |#G110| |s| |t| #2=#:G1541)
     (RETURN
       (SEQ (EXIT (SEQ (PROGN
                         (LETT |#G103| (|DFLOAT;manexp| |f| $)
@@ -552,7 +552,7 @@
            #1# (EXIT #1#))))) 
 
 (DEFUN |DFLOAT;**;$F$;85| (|x| |r| $)
-  (PROG (|n| |d| #0=#:G1550)
+  (PROG (|n| |d| #0=#:G1552)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|)
@@ -618,7 +618,7 @@
 (DEFUN |DoubleFloat| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1563)
+      (PROG (#0=#:G1565)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|DoubleFloat|)
@@ -692,7 +692,7 @@
              (|DoubleFloatSpecialFunctions|) (47 . |Gamma|)
              |DFLOAT;Gamma;2$;69| (52 . |Beta|) |DFLOAT;Beta;3$;70|
              |DFLOAT;wholePart;$I;71| |DFLOAT;float;2IPi$;72|
-             |DFLOAT;convert;$Df;73| (|Float|) (58 . |convert|)
+             |DFLOAT;convert;2$;73| (|Float|) (58 . |convert|)
              |DFLOAT;convert;$F;74| (|Fraction| 26)
              (|NonNegativeInteger|)
              |DFLOAT;rationalApproximation;$2NniF;84|
@@ -757,8 +757,8 @@
                          |DivisionRing&| |IntegralDomain&| |Algebra&|
                          |Algebra&| |DifferentialRing&| NIL
                          |OrderedRing&| |Module&| NIL NIL |Module&| NIL
-                         NIL NIL |Ring&| NIL NIL NIL NIL NIL NIL NIL
-                         |AbelianGroup&| NIL NIL |AbelianMonoid&|
+                         NIL |Ring&| NIL NIL NIL NIL NIL NIL NIL
+                         |AbelianGroup&| NIL NIL NIL |AbelianMonoid&|
                          |Monoid&| NIL |OrderedSet&|
                          |AbelianSemiGroup&| |SemiGroup&|
                          |TranscendentalFunctionCategory&| NIL
@@ -780,17 +780,16 @@
                                (|CharacteristicZero|) (|OrderedRing|)
                                (|Module| 105) (|EntireRing|)
                                (|CommutativeRing|) (|Module| $$)
-                               (|OrderedAbelianGroup|)
                                (|BiModule| 105 105) (|BiModule| $$ $$)
-                               (|Ring|)
-                               (|OrderedCancellationAbelianMonoid|)
+                               (|Ring|) (|OrderedAbelianGroup|)
                                (|RightModule| 105) (|LeftModule| 105)
                                (|LeftModule| $$) (|Rng|)
                                (|RightModule| $$)
-                               (|OrderedAbelianMonoid|)
+                               (|OrderedCancellationAbelianMonoid|)
                                (|AbelianGroup|)
-                               (|OrderedAbelianSemiGroup|)
+                               (|OrderedAbelianMonoid|)
                                (|CancellationAbelianMonoid|)
+                               (|OrderedAbelianSemiGroup|)
                                (|AbelianMonoid|) (|Monoid|)
                                (|PatternMatchable| 102) (|OrderedSet|)
                                (|AbelianSemiGroup|) (|SemiGroup|)
@@ -868,5 +867,270 @@
                                   1 2 0 0 0 0 50 2 0 0 26 0 51 2 0 0
                                   106 0 1 2 0 0 24 0 31)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|DoubleFloat| '|isFunctor|
+             '(((|rationalApproximation|
+                    ((|Fraction| (|Integer|)) $ (|NonNegativeInteger|)
+                     (|NonNegativeInteger|)))
+                T (ELT $ 107))
+               ((|rationalApproximation|
+                    ((|Fraction| (|Integer|)) $ (|NonNegativeInteger|)))
+                T (ELT $ 108))
+               ((|doubleFloatFormat| ((|String|) (|String|))) T
+                (ELT $ 8))
+               ((|Beta| ($ $ $)) T (ELT $ 98))
+               ((|Gamma| ($ $)) T (ELT $ 96))
+               ((|atan| ($ $ $)) T (ELT $ 109))
+               ((|log10| ($ $)) T (ELT $ 57))
+               ((|log2| ($ $)) T (ELT $ 30))
+               ((|hash| ((|Integer|) $)) T (ELT $ 90))
+               ((|exp1| ($)) T (ELT $ 38))
+               ((/ ($ $ (|Integer|))) T (ELT $ 55))
+               ((|convert| ((|InputForm|) $)) T (ELT $ 45))
+               ((|tan| ($ $)) T (ELT $ 65))
+               ((|sin| ($ $)) T (ELT $ 63))
+               ((|sec| ($ $)) T (ELT $ 67))
+               ((|csc| ($ $)) T (ELT $ 68))
+               ((|cot| ($ $)) T (ELT $ 66))
+               ((|cos| ($ $)) T (ELT $ 64))
+               ((|acos| ($ $)) T (ELT $ 70))
+               ((|acot| ($ $)) T (ELT $ 73))
+               ((|acsc| ($ $)) T (ELT $ 72))
+               ((|asec| ($ $)) T (ELT $ 74))
+               ((|asin| ($ $)) T (ELT $ 69))
+               ((|atan| ($ $)) T (ELT $ 71))
+               ((|cosh| ($ $)) T (ELT $ 76))
+               ((|coth| ($ $)) T (ELT $ 79))
+               ((|csch| ($ $)) T (ELT $ 78))
+               ((|sech| ($ $)) T (ELT $ 80))
+               ((|sinh| ($ $)) T (ELT $ 75))
+               ((|tanh| ($ $)) T (ELT $ 77))
+               ((|acosh| ($ $)) T (ELT $ 82))
+               ((|acoth| ($ $)) T (ELT $ 85))
+               ((|acsch| ($ $)) T (ELT $ 84))
+               ((|asech| ($ $)) T (ELT $ 86))
+               ((|asinh| ($ $)) T (ELT $ 81))
+               ((|atanh| ($ $)) T (ELT $ 83))
+               ((|log| ($ $)) T (ELT $ 62))
+               ((|exp| ($ $)) T (ELT $ 61)) ((** ($ $ $)) T (ELT $ 59))
+               ((|pi| ($)) T (ELT $ 39))
+               ((|OMwrite| ((|Void|) (|OpenMathDevice|) $ (|Boolean|)))
+                T (ELT $ 23))
+               ((|OMwrite| ((|Void|) (|OpenMathDevice|) $)) T
+                (ELT $ 22))
+               ((|OMwrite| ((|String|) $ (|Boolean|))) T (ELT $ 21))
+               ((|OMwrite| ((|String|) $)) T (ELT $ 19))
+               ((|differentiate| ($ $)) T (ELT $ 93))
+               ((D ($ $)) T (ELT $ NIL))
+               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((D ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
+               ((|max| ($))
+                (AND (|not| (|has| $ (ATTRIBUTE |arbitraryExponent|)))
+                     (|not| (|has| $ (ATTRIBUTE |arbitraryPrecision|))))
+                (ELT $ 33))
+               ((|min| ($))
+                (AND (|not| (|has| $ (ATTRIBUTE |arbitraryExponent|)))
+                     (|not| (|has| $ (ATTRIBUTE |arbitraryPrecision|))))
+                (ELT $ 34))
+               ((|decreasePrecision| ((|PositiveInteger|) (|Integer|)))
+                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
+               ((|increasePrecision| ((|PositiveInteger|) (|Integer|)))
+                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
+               ((|precision| ((|PositiveInteger|) (|PositiveInteger|)))
+                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
+               ((|digits| ((|PositiveInteger|) (|PositiveInteger|)))
+                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
+               ((|bits| ((|PositiveInteger|) (|PositiveInteger|)))
+                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
+               ((|precision| ((|PositiveInteger|))) T (ELT $ 29))
+               ((|digits| ((|PositiveInteger|))) T (ELT $ NIL))
+               ((|bits| ((|PositiveInteger|))) T (ELT $ 32))
+               ((|mantissa| ((|Integer|) $)) T (ELT $ 27))
+               ((|exponent| ((|Integer|) $)) T (ELT $ 28))
+               ((|base| ((|PositiveInteger|))) T (ELT $ 25))
+               ((|order| ((|Integer|) $)) T (ELT $ 35))
+               ((|float| ($ (|Integer|) (|Integer|)
+                            (|PositiveInteger|)))
+                T (ELT $ 100))
+               ((|float| ($ (|Integer|) (|Integer|))) T (ELT $ NIL))
+               ((|round| ($ $)) T (ELT $ NIL))
+               ((|truncate| ($ $)) T (ELT $ NIL))
+               ((|fractionPart| ($ $)) T (ELT $ NIL))
+               ((|wholePart| ((|Integer|) $)) T (ELT $ 99))
+               ((|floor| ($ $)) T (ELT $ NIL))
+               ((|ceiling| ($ $)) T (ELT $ NIL))
+               ((|norm| ($ $)) T (ELT $ NIL))
+               ((|patternMatch|
+                    ((|PatternMatchResult| (|Float|) $) $
+                     (|Pattern| (|Float|))
+                     (|PatternMatchResult| (|Float|) $)))
+                T (ELT $ NIL))
+               ((|convert| ((|Pattern| (|Float|)) $)) T (ELT $ NIL))
+               ((** ($ $ (|Fraction| (|Integer|)))) T (ELT $ 128))
+               ((|nthRoot| ($ $ (|Integer|))) T (ELT $ NIL))
+               ((|sqrt| ($ $)) T (ELT $ 56))
+               ((|retract| ((|Fraction| (|Integer|)) $)) T (ELT $ 110))
+               ((|retractIfCan|
+                    ((|Union| (|Fraction| (|Integer|)) "failed") $))
+                T (ELT $ 112))
+               ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ NIL))
+               ((|retract| ((|Integer|) $)) T (ELT $ 113))
+               ((|retractIfCan| ((|Union| (|Integer|) "failed") $)) T
+                (ELT $ 115))
+               ((|coerce| ($ (|Integer|))) T (ELT $ 60))
+               ((|convert| ((|DoubleFloat|) $)) T (ELT $ 101))
+               ((|convert| ((|Float|) $)) T (ELT $ 104))
+               ((< ((|Boolean|) $ $)) T (ELT $ 46))
+               ((> ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((>= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((<= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((|max| ($ $ $)) T (ELT $ 52))
+               ((|min| ($ $ $)) T (ELT $ 53))
+               ((|positive?| ((|Boolean|) $)) T (ELT $ NIL))
+               ((|negative?| ((|Boolean|) $)) T (ELT $ 88))
+               ((|sign| ((|Integer|) $)) T (ELT $ 116))
+               ((|abs| ($ $)) T (ELT $ 117)) ((/ ($ $ $)) T (ELT $ 87))
+               ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ NIL))
+               ((* ($ (|Fraction| (|Integer|)) $)) T (ELT $ NIL))
+               ((* ($ $ (|Fraction| (|Integer|)))) T (ELT $ NIL))
+               ((** ($ $ (|Integer|))) T (ELT $ 58))
+               ((^ ($ $ (|Integer|))) T (ELT $ NIL))
+               ((|inv| ($ $)) T (ELT $ NIL))
+               ((|prime?| ((|Boolean|) $)) T (ELT $ NIL))
+               ((|squareFree| ((|Factored| $) $)) T (ELT $ NIL))
+               ((|squareFreePart| ($ $)) T (ELT $ NIL))
+               ((|factor| ((|Factored| $) $)) T (ELT $ NIL))
+               ((|multiEuclidean|
+                    ((|Union| (|List| $) "failed") (|List| $) $))
+                T (ELT $ NIL))
+               ((|extendedEuclidean|
+                    ((|Union| (|Record| (|:| |coef1| $)
+                                  (|:| |coef2| $))
+                              "failed")
+                     $ $ $))
+                T (ELT $ NIL))
+               ((|extendedEuclidean|
+                    ((|Record| (|:| |coef1| $) (|:| |coef2| $)
+                         (|:| |generator| $))
+                     $ $))
+                T (ELT $ NIL))
+               ((|rem| ($ $ $)) T (ELT $ NIL))
+               ((|quo| ($ $ $)) T (ELT $ NIL))
+               ((|divide|
+                    ((|Record| (|:| |quotient| $) (|:| |remainder| $))
+                     $ $))
+                T (ELT $ NIL))
+               ((|euclideanSize| ((|NonNegativeInteger|) $)) T
+                (ELT $ NIL))
+               ((|sizeLess?| ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((|expressIdealMember|
+                    ((|Union| (|List| $) "failed") (|List| $) $))
+                T (ELT $ NIL))
+               ((|principalIdeal|
+                    ((|Record| (|:| |coef| (|List| $))
+                         (|:| |generator| $))
+                     (|List| $)))
+                T (ELT $ NIL))
+               ((|gcdPolynomial|
+                    ((|SparseUnivariatePolynomial| $)
+                     (|SparseUnivariatePolynomial| $)
+                     (|SparseUnivariatePolynomial| $)))
+                T (ELT $ NIL))
+               ((|lcm| ($ (|List| $))) T (ELT $ NIL))
+               ((|lcm| ($ $ $)) T (ELT $ NIL))
+               ((|gcd| ($ (|List| $))) T (ELT $ NIL))
+               ((|gcd| ($ $ $)) T (ELT $ NIL))
+               ((|unit?| ((|Boolean|) $)) T (ELT $ NIL))
+               ((|associates?| ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((|unitCanonical| ($ $)) T (ELT $ NIL))
+               ((|unitNormal|
+                    ((|Record| (|:| |unit| $) (|:| |canonical| $)
+                         (|:| |associate| $))
+                     $))
+                T (ELT $ NIL))
+               ((|exquo| ((|Union| $ "failed") $ $)) T (ELT $ NIL))
+               ((|coerce| ($ $)) T (ELT $ NIL))
+               ((|coerce| ($ (|Integer|))) T (ELT $ 60))
+               ((|characteristic| ((|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|One| ($)) T (CONST $ 37))
+               ((|one?| ((|Boolean|) $)) T (ELT $ NIL))
+               ((** ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
+               ((^ ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
+               ((|recip| ((|Union| $ "failed") $)) T (ELT $ 92))
+               ((* ($ $ $)) T (ELT $ 50))
+               ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
+               ((^ ($ $ (|PositiveInteger|))) T (ELT $ NIL))
+               ((* ($ (|Integer|) $)) T (ELT $ 51))
+               ((- ($ $ $)) T (ELT $ 49)) ((- ($ $)) T (ELT $ 47))
+               ((|subtractIfCan| ((|Union| $ "failed") $ $)) T
+                (ELT $ NIL))
+               ((* ($ (|NonNegativeInteger|) $)) T (ELT $ NIL))
+               ((|zero?| ((|Boolean|) $)) T (ELT $ 89))
+               ((|sample| ($)) T (CONST $ NIL))
+               ((|Zero| ($)) T (CONST $ 36))
+               ((* ($ (|PositiveInteger|) $)) T (ELT $ 31))
+               ((+ ($ $ $)) T (ELT $ 48))
+               ((|latex| ((|String|) $)) T (ELT $ NIL))
+               ((|hash| ((|SingleInteger|) $)) T (ELT $ NIL))
+               ((|coerce| ((|OutputForm|) $)) T (ELT $ 42))
+               ((= ((|Boolean|) $ $)) T (ELT $ 54))
+               ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
+             (|addModemap| '|DoubleFloat| '(|DoubleFloat|)
+                 '((|Join| (|FloatingPointSystem|) (|DifferentialRing|)
+                           (|OpenMath|)
+                           (|TranscendentalFunctionCategory|)
+                           (|ConvertibleTo| (|InputForm|))
+                           (CATEGORY |domain|
+                               (SIGNATURE / ($ $ (|Integer|)))
+                               (SIGNATURE ** ($ $ $))
+                               (SIGNATURE |exp1| ($))
+                               (SIGNATURE |hash| ((|Integer|) $))
+                               (SIGNATURE |log2| ($ $))
+                               (SIGNATURE |log10| ($ $))
+                               (SIGNATURE |atan| ($ $ $))
+                               (SIGNATURE |Gamma| ($ $))
+                               (SIGNATURE |Beta| ($ $ $))
+                               (SIGNATURE |doubleFloatFormat|
+                                   ((|String|) (|String|)))
+                               (SIGNATURE |rationalApproximation|
+                                   ((|Fraction| (|Integer|)) $
+                                    (|NonNegativeInteger|)))
+                               (SIGNATURE |rationalApproximation|
+                                   ((|Fraction| (|Integer|)) $
+                                    (|NonNegativeInteger|)
+                                    (|NonNegativeInteger|))))))
+                 T '|DoubleFloat|
+                 (|put| '|DoubleFloat| '|mode|
+                        '(|Mapping|
+                             (|Join| (|FloatingPointSystem|)
+                                     (|DifferentialRing|) (|OpenMath|)
+                                     (|TranscendentalFunctionCategory|)
+                                     (|ConvertibleTo| (|InputForm|))
+                                     (CATEGORY |domain|
+                                      (SIGNATURE / ($ $ (|Integer|)))
+                                      (SIGNATURE ** ($ $ $))
+                                      (SIGNATURE |exp1| ($))
+                                      (SIGNATURE |hash|
+                                       ((|Integer|) $))
+                                      (SIGNATURE |log2| ($ $))
+                                      (SIGNATURE |log10| ($ $))
+                                      (SIGNATURE |atan| ($ $ $))
+                                      (SIGNATURE |Gamma| ($ $))
+                                      (SIGNATURE |Beta| ($ $ $))
+                                      (SIGNATURE |doubleFloatFormat|
+                                       ((|String|) (|String|)))
+                                      (SIGNATURE
+                                       |rationalApproximation|
+                                       ((|Fraction| (|Integer|)) $
+                                        (|NonNegativeInteger|)))
+                                      (SIGNATURE
+                                       |rationalApproximation|
+                                       ((|Fraction| (|Integer|)) $
+                                        (|NonNegativeInteger|)
+                                        (|NonNegativeInteger|))))))
+                        |$CategoryFrame|)))) 
 
 (MAKEPROP '|DoubleFloat| 'NILADIC T) 

@@ -2,19 +2,22 @@
 (/VERSIONCHECK 2) 
 
 (DEFUN |ABELGRP-;-;3S;1| (|x| |y| $)
-  (SPADCALL |x| (SPADCALL |y| (QREFELT $ 7)) (QREFELT $ 8))) 
+  (SPADCALL |x| (SPADCALL |y| (|getShellEntry| $ 7))
+      (|getShellEntry| $ 8))) 
 
 (DEFUN |ABELGRP-;subtractIfCan;2SU;2| (|x| |y| $)
-  (CONS 0 (SPADCALL |x| |y| (QREFELT $ 10)))) 
+  (CONS 0 (SPADCALL |x| |y| (|getShellEntry| $ 10)))) 
 
 (DEFUN |ABELGRP-;*;Nni2S;3| (|n| |x| $)
-  (SPADCALL |n| |x| (QREFELT $ 14))) 
+  (SPADCALL |n| |x| (|getShellEntry| $ 14))) 
 
 (DEFUN |ABELGRP-;*;I2S;4| (|n| |x| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 17))
-    ((< 0 |n|) (SPADCALL |n| |x| (QREFELT $ 20)))
-    ('T (SPADCALL (- |n|) (SPADCALL |x| (QREFELT $ 7)) (QREFELT $ 20))))) 
+    ((< 0 |n|) (SPADCALL |n| |x| (|getShellEntry| $ 20)))
+    ('T
+     (SPADCALL (- |n|) (SPADCALL |x| (|getShellEntry| $ 7))
+         (|getShellEntry| $ 20))))) 
 
 (DEFUN |AbelianGroup&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -22,15 +25,16 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|AbelianGroup&|))
         (LETT |dv$| (LIST '|AbelianGroup&| |dv$1|) . #0#)
-        (LETT $ (GETREFV 22) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 22) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         (COND
           ((|HasCategory| |#1| '(|Ring|)))
           ('T
-           (QSETREFV $ 21
+           (|setShellEntry| $ 21
                (CONS (|dispatchFunction| |ABELGRP-;*;I2S;4|) $))))
         $)))) 
 
@@ -51,3 +55,38 @@
                                   0 0 13 0 21 2 0 11 0 0 12 2 0 0 0 0 9
                                   2 0 0 13 0 21 2 0 0 15 0 16)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|AbelianGroup&| '|isFunctor|
+             '(((* ($ (|Integer|) $)) T (ELT $ 21))
+               ((- ($ $ $)) T (ELT $ 9)) ((- ($ $)) T (ELT $ NIL))
+               ((|subtractIfCan| ((|Union| $ "failed") $ $)) T
+                (ELT $ 12))
+               ((* ($ (|NonNegativeInteger|) $)) T (ELT $ 16))
+               ((* ($ (|PositiveInteger|) $)) T (ELT $ NIL)))
+             (|addModemap| '|AbelianGroup&| '(|AbelianGroup&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE * (|#1| (|Integer|) |#1|))
+                       (SIGNATURE - (|#1| |#1| |#1|))
+                       (SIGNATURE - (|#1| |#1|))
+                       (SIGNATURE |subtractIfCan|
+                           ((|Union| |#1| "failed") |#1| |#1|))
+                       (SIGNATURE * (|#1| (|NonNegativeInteger|) |#1|))
+                       (SIGNATURE * (|#1| (|PositiveInteger|) |#1|)))
+                   (|AbelianGroup|))
+                 T '|AbelianGroup&|
+                 (|put| '|AbelianGroup&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE * (|#1| (|Integer|) |#1|))
+                                 (SIGNATURE - (|#1| |#1| |#1|))
+                                 (SIGNATURE - (|#1| |#1|))
+                                 (SIGNATURE |subtractIfCan|
+                                     ((|Union| |#1| "failed") |#1|
+                                      |#1|))
+                                 (SIGNATURE *
+                                     (|#1| (|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE *
+                                     (|#1| (|PositiveInteger|) |#1|)))
+                             (|AbelianGroup|))
+                        |$CategoryFrame|)))) 

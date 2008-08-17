@@ -5,8 +5,8 @@
 
 (DEFPARAMETER |RecursiveAggregate;AL| 'NIL) 
 
-(DEFUN |RecursiveAggregate| (#0=#:G1398)
-  (LET (#1=#:G1399)
+(DEFUN |RecursiveAggregate| (#0=#:G1395)
+  (LET (#1=#:G1396)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |RecursiveAggregate;AL|))
        (CDR #1#))
@@ -17,7 +17,7 @@
          #1#)))) 
 
 (DEFUN |RecursiveAggregate;| (|t#1|)
-  (PROG (#0=#:G1397)
+  (PROG (#0=#:G1394)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -72,3 +72,9 @@
                                          NIL))
                                 . #1=(|RecursiveAggregate|))))) . #1#)
         (SETELT #0# 0 (LIST '|RecursiveAggregate| (|devaluate| |t#1|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|RecursiveAggregate| '|isCategory| T
+             (|addModemap| '|RecursiveAggregate|
+                 '(|RecursiveAggregate| |#1|) '((|Category|) (|Type|))
+                 T '|RecursiveAggregate| |$CategoryFrame|))) 

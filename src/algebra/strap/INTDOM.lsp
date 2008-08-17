@@ -4,13 +4,13 @@
 (DEFPARAMETER |IntegralDomain;AL| 'NIL) 
 
 (DEFUN |IntegralDomain| ()
-  (LET (#:G1393)
+  (LET (#:G1402)
     (COND
       (|IntegralDomain;AL|)
       (T (SETQ |IntegralDomain;AL| (|IntegralDomain;|)))))) 
 
 (DEFUN |IntegralDomain;| ()
-  (PROG (#0=#:G1391)
+  (PROG (#0=#:G1400)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|CommutativeRing|) (|Algebra| '$)
@@ -30,5 +30,10 @@
                                NIL '((|Boolean|)) NIL))
                    |IntegralDomain|)
         (SETELT #0# 0 '(|IntegralDomain|)))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|IntegralDomain| '|isCategory| T
+             (|addModemap| '|IntegralDomain| '(|IntegralDomain|)
+                 '((|Category|)) T '|IntegralDomain| |$CategoryFrame|))) 
 
 (MAKEPROP '|IntegralDomain| 'NILADIC T) 

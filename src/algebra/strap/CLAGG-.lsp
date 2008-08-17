@@ -2,15 +2,15 @@
 (/VERSIONCHECK 2) 
 
 (DEFUN |CLAGG-;#;ANni;1| (|c| $)
-  (LENGTH (SPADCALL |c| (QREFELT $ 9)))) 
+  (LENGTH (SPADCALL |c| (|getShellEntry| $ 9)))) 
 
 (DEFUN |CLAGG-;count;MANni;2| (|f| |c| $)
-  (PROG (|x| #0=#:G1406 #1=#:G1403 #2=#:G1401 #3=#:G1402)
+  (PROG (|x| #0=#:G1403 #1=#:G1400 #2=#:G1398 #3=#:G1399)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;count;MANni;2|)
              (SEQ (LETT |x| NIL |CLAGG-;count;MANni;2|)
-                  (LETT #0# (SPADCALL |c| (QREFELT $ 9))
+                  (LETT #0# (SPADCALL |c| (|getShellEntry| $ 9))
                         |CLAGG-;count;MANni;2|)
                   G190
                   (COND
@@ -38,12 +38,12 @@
              (COND (#3# #2#) ('T 0))))))) 
 
 (DEFUN |CLAGG-;any?;MAB;3| (|f| |c| $)
-  (PROG (|x| #0=#:G1411 #1=#:G1409 #2=#:G1407 #3=#:G1408)
+  (PROG (|x| #0=#:G1408 #1=#:G1406 #2=#:G1404 #3=#:G1405)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;any?;MAB;3|)
              (SEQ (LETT |x| NIL |CLAGG-;any?;MAB;3|)
-                  (LETT #0# (SPADCALL |c| (QREFELT $ 9))
+                  (LETT #0# (SPADCALL |c| (|getShellEntry| $ 9))
                         |CLAGG-;any?;MAB;3|)
                   G190
                   (COND
@@ -68,12 +68,12 @@
              (COND (#3# #2#) ('T 'NIL))))))) 
 
 (DEFUN |CLAGG-;every?;MAB;4| (|f| |c| $)
-  (PROG (|x| #0=#:G1416 #1=#:G1414 #2=#:G1412 #3=#:G1413)
+  (PROG (|x| #0=#:G1413 #1=#:G1411 #2=#:G1409 #3=#:G1410)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;every?;MAB;4|)
              (SEQ (LETT |x| NIL |CLAGG-;every?;MAB;4|)
-                  (LETT #0# (SPADCALL |c| (QREFELT $ 9))
+                  (LETT #0# (SPADCALL |c| (|getShellEntry| $ 9))
                         |CLAGG-;every?;MAB;4|)
                   G190
                   (COND
@@ -99,35 +99,44 @@
              (COND (#3# #2#) ('T 'T))))))) 
 
 (DEFUN |CLAGG-;find;MAU;5| (|f| |c| $)
-  (SPADCALL |f| (SPADCALL |c| (QREFELT $ 9)) (QREFELT $ 18))) 
+  (SPADCALL |f| (SPADCALL |c| (|getShellEntry| $ 9))
+      (|getShellEntry| $ 18))) 
 
 (DEFUN |CLAGG-;reduce;MAS;6| (|f| |x| $)
-  (SPADCALL |f| (SPADCALL |x| (QREFELT $ 9)) (QREFELT $ 21))) 
+  (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
+      (|getShellEntry| $ 21))) 
 
 (DEFUN |CLAGG-;reduce;MA2S;7| (|f| |x| |s| $)
-  (SPADCALL |f| (SPADCALL |x| (QREFELT $ 9)) |s| (QREFELT $ 23))) 
+  (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9)) |s|
+      (|getShellEntry| $ 23))) 
 
 (DEFUN |CLAGG-;remove;M2A;8| (|f| |x| $)
-  (SPADCALL (SPADCALL |f| (SPADCALL |x| (QREFELT $ 9)) (QREFELT $ 25))
-      (QREFELT $ 26))) 
+  (SPADCALL (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
+                (|getShellEntry| $ 25))
+            (|getShellEntry| $ 26))) 
 
 (DEFUN |CLAGG-;select;M2A;9| (|f| |x| $)
-  (SPADCALL (SPADCALL |f| (SPADCALL |x| (QREFELT $ 9)) (QREFELT $ 28))
-      (QREFELT $ 26))) 
+  (SPADCALL (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
+                (|getShellEntry| $ 28))
+            (|getShellEntry| $ 26))) 
 
 (DEFUN |CLAGG-;remove;S2A;10| (|s| |x| $)
   (SPADCALL (CONS #'|CLAGG-;remove;S2A;10!0| (VECTOR $ |s|)) |x|
-      (QREFELT $ 31))) 
+      (|getShellEntry| $ 31))) 
 
 (DEFUN |CLAGG-;remove;S2A;10!0| (|#1| $$)
-  (SPADCALL |#1| (QREFELT $$ 1) (QREFELT (QREFELT $$ 0) 30))) 
+  (SPADCALL |#1| (|getShellEntry| $$ 1)
+      (|getShellEntry| (|getShellEntry| $$ 0) 30))) 
 
 (DEFUN |CLAGG-;reduce;MA3S;11| (|f| |x| |s1| |s2| $)
-  (SPADCALL |f| (SPADCALL |x| (QREFELT $ 9)) |s1| |s2| (QREFELT $ 33))) 
+  (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9)) |s1| |s2|
+      (|getShellEntry| $ 33))) 
 
 (DEFUN |CLAGG-;removeDuplicates;2A;12| (|x| $)
-  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 9)) (QREFELT $ 35))
-      (QREFELT $ 26))) 
+  (SPADCALL
+      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 9))
+          (|getShellEntry| $ 35))
+      (|getShellEntry| $ 26))) 
 
 (DEFUN |Collection&| (|#1| |#2|)
   (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
@@ -136,9 +145,9 @@
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|Collection&|))
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$| (LIST '|Collection&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (GETREFV 37) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3
+        (LETT $ (|newShell| 37) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
             (LETT |pv$|
                   (|buildPredVector| 0 0
                       (LIST (|HasCategory| |#2|
@@ -146,40 +155,40 @@
                             (|HasCategory| |#2| '(|SetCategory|))
                             (|HasAttribute| |#1| '|finiteAggregate|))) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
-        (QSETREFV $ 7 |#2|)
+        (|setShellEntry| $ 6 |#1|)
+        (|setShellEntry| $ 7 |#2|)
         (COND
           ((|testBitVector| |pv$| 3)
            (PROGN
-             (QSETREFV $ 11
+             (|setShellEntry| $ 11
                  (CONS (|dispatchFunction| |CLAGG-;#;ANni;1|) $))
-             (QSETREFV $ 13
+             (|setShellEntry| $ 14
                  (CONS (|dispatchFunction| |CLAGG-;count;MANni;2|) $))
-             (QSETREFV $ 15
+             (|setShellEntry| $ 15
                  (CONS (|dispatchFunction| |CLAGG-;any?;MAB;3|) $))
-             (QSETREFV $ 16
+             (|setShellEntry| $ 16
                  (CONS (|dispatchFunction| |CLAGG-;every?;MAB;4|) $))
-             (QSETREFV $ 19
+             (|setShellEntry| $ 19
                  (CONS (|dispatchFunction| |CLAGG-;find;MAU;5|) $))
-             (QSETREFV $ 22
+             (|setShellEntry| $ 22
                  (CONS (|dispatchFunction| |CLAGG-;reduce;MAS;6|) $))
-             (QSETREFV $ 24
+             (|setShellEntry| $ 24
                  (CONS (|dispatchFunction| |CLAGG-;reduce;MA2S;7|) $))
-             (QSETREFV $ 27
+             (|setShellEntry| $ 27
                  (CONS (|dispatchFunction| |CLAGG-;remove;M2A;8|) $))
-             (QSETREFV $ 29
+             (|setShellEntry| $ 29
                  (CONS (|dispatchFunction| |CLAGG-;select;M2A;9|) $))
              (COND
                ((|testBitVector| |pv$| 2)
                 (PROGN
-                  (QSETREFV $ 32
+                  (|setShellEntry| $ 32
                       (CONS (|dispatchFunction| |CLAGG-;remove;S2A;10|)
                             $))
-                  (QSETREFV $ 34
+                  (|setShellEntry| $ 34
                       (CONS (|dispatchFunction|
                                 |CLAGG-;reduce;MA3S;11|)
                             $))
-                  (QSETREFV $ 36
+                  (|setShellEntry| $ 36
                       (CONS (|dispatchFunction|
                                 |CLAGG-;removeDuplicates;2A;12|)
                             $))))))))
@@ -188,7 +197,7 @@
 (MAKEPROP '|Collection&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)
              (|List| 7) (0 . |parts|) (|NonNegativeInteger|) (5 . |#|)
-             (|Mapping| 14 7) (10 . |count|) (|Boolean|) (16 . |any?|)
+             (|Boolean|) (|Mapping| 12 7) (10 . |count|) (16 . |any?|)
              (22 . |every?|) (|Union| 7 '"failed") (28 . |find|)
              (34 . |find|) (|Mapping| 7 7 7) (40 . |reduce|)
              (46 . |reduce|) (52 . |reduce|) (59 . |reduce|)
@@ -204,18 +213,122 @@
                 (CONS '#()
                       (CONS '#()
                             (|makeByteWordVec2| 36
-                                '(1 6 8 0 9 1 0 10 0 11 2 0 10 12 0 13
-                                  2 0 14 12 0 15 2 0 14 12 0 16 2 8 17
-                                  12 0 18 2 0 17 12 0 19 2 8 7 20 0 21
+                                '(1 6 8 0 9 1 0 10 0 11 2 0 10 13 0 14
+                                  2 0 12 13 0 15 2 0 12 13 0 16 2 8 17
+                                  13 0 18 2 0 17 13 0 19 2 8 7 20 0 21
                                   2 0 7 20 0 22 3 8 7 20 0 7 23 3 0 7
-                                  20 0 7 24 2 8 0 12 0 25 1 6 0 8 26 2
-                                  0 0 12 0 27 2 8 0 12 0 28 2 0 0 12 0
-                                  29 2 7 14 0 0 30 2 6 0 12 0 31 2 0 0
+                                  20 0 7 24 2 8 0 13 0 25 1 6 0 8 26 2
+                                  0 0 13 0 27 2 8 0 13 0 28 2 0 0 13 0
+                                  29 2 7 12 0 0 30 2 6 0 13 0 31 2 0 0
                                   7 0 32 4 8 7 20 0 7 7 33 4 0 7 20 0 7
-                                  7 34 1 8 0 0 35 1 0 0 0 36 2 0 0 12 0
-                                  29 1 0 0 0 36 2 0 0 7 0 32 2 0 0 12 0
+                                  7 34 1 8 0 0 35 1 0 0 0 36 2 0 0 13 0
+                                  29 1 0 0 0 36 2 0 0 7 0 32 2 0 0 13 0
                                   27 4 0 7 20 0 7 7 34 3 0 7 20 0 7 24
-                                  2 0 7 20 0 22 2 0 17 12 0 19 2 0 14
-                                  12 0 16 2 0 10 12 0 13 2 0 14 12 0 15
+                                  2 0 7 20 0 22 2 0 17 13 0 19 2 0 12
+                                  13 0 16 2 0 10 13 0 14 2 0 12 13 0 15
                                   1 0 10 0 11)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|Collection&| '|isFunctor|
+             '(((|removeDuplicates| ($ $)) T (ELT $ 36))
+               ((|remove| ($ |#2| $)) T (ELT $ 32))
+               ((|reduce|
+                    (|#2| (|Mapping| |#2| |#2| |#2|) $ |#2| |#2|))
+                T (ELT $ 34))
+               ((|select| ($ (|Mapping| (|Boolean|) |#2|) $)) T
+                (ELT $ 29))
+               ((|remove| ($ (|Mapping| (|Boolean|) |#2|) $)) T
+                (ELT $ 27))
+               ((|reduce| (|#2| (|Mapping| |#2| |#2| |#2|) $ |#2|)) T
+                (ELT $ 24))
+               ((|reduce| (|#2| (|Mapping| |#2| |#2| |#2|) $)) T
+                (ELT $ 22))
+               ((|find| ((|Union| |#2| "failed")
+                         (|Mapping| (|Boolean|) |#2|) $))
+                T (ELT $ 19))
+               ((|count| ((|NonNegativeInteger|) |#2| $)) T
+                (ELT $ NIL))
+               ((|count| ((|NonNegativeInteger|)
+                          (|Mapping| (|Boolean|) |#2|) $))
+                T (ELT $ 14))
+               ((|every?| ((|Boolean|) (|Mapping| (|Boolean|) |#2|) $))
+                T (ELT $ 16))
+               ((|any?| ((|Boolean|) (|Mapping| (|Boolean|) |#2|) $)) T
+                (ELT $ 15))
+               ((|#| ((|NonNegativeInteger|) $)) T (ELT $ 11)))
+             (|addModemap| '|Collection&| '(|Collection&| |#1| |#2|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |removeDuplicates| (|#1| |#1|))
+                       (SIGNATURE |remove| (|#1| |#2| |#1|))
+                       (SIGNATURE |reduce|
+                           (|#2| (|Mapping| |#2| |#2| |#2|) |#1| |#2|
+                                 |#2|))
+                       (SIGNATURE |select|
+                           (|#1| (|Mapping| (|Boolean|) |#2|) |#1|))
+                       (SIGNATURE |remove|
+                           (|#1| (|Mapping| (|Boolean|) |#2|) |#1|))
+                       (SIGNATURE |reduce|
+                           (|#2| (|Mapping| |#2| |#2| |#2|) |#1| |#2|))
+                       (SIGNATURE |reduce|
+                           (|#2| (|Mapping| |#2| |#2| |#2|) |#1|))
+                       (SIGNATURE |find|
+                           ((|Union| |#2| "failed")
+                            (|Mapping| (|Boolean|) |#2|) |#1|))
+                       (SIGNATURE |count|
+                           ((|NonNegativeInteger|) |#2| |#1|))
+                       (SIGNATURE |count|
+                           ((|NonNegativeInteger|)
+                            (|Mapping| (|Boolean|) |#2|) |#1|))
+                       (SIGNATURE |every?|
+                           ((|Boolean|) (|Mapping| (|Boolean|) |#2|)
+                            |#1|))
+                       (SIGNATURE |any?|
+                           ((|Boolean|) (|Mapping| (|Boolean|) |#2|)
+                            |#1|))
+                       (SIGNATURE |#| ((|NonNegativeInteger|) |#1|)))
+                   (|Collection| |#2|) (|Type|))
+                 T '|Collection&|
+                 (|put| '|Collection&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |removeDuplicates|
+                                     (|#1| |#1|))
+                                 (SIGNATURE |remove| (|#1| |#2| |#1|))
+                                 (SIGNATURE |reduce|
+                                     (|#2| (|Mapping| |#2| |#2| |#2|)
+                                      |#1| |#2| |#2|))
+                                 (SIGNATURE |select|
+                                     (|#1| (|Mapping| (|Boolean|) |#2|)
+                                      |#1|))
+                                 (SIGNATURE |remove|
+                                     (|#1| (|Mapping| (|Boolean|) |#2|)
+                                      |#1|))
+                                 (SIGNATURE |reduce|
+                                     (|#2| (|Mapping| |#2| |#2| |#2|)
+                                      |#1| |#2|))
+                                 (SIGNATURE |reduce|
+                                     (|#2| (|Mapping| |#2| |#2| |#2|)
+                                      |#1|))
+                                 (SIGNATURE |find|
+                                     ((|Union| |#2| "failed")
+                                      (|Mapping| (|Boolean|) |#2|)
+                                      |#1|))
+                                 (SIGNATURE |count|
+                                     ((|NonNegativeInteger|) |#2| |#1|))
+                                 (SIGNATURE |count|
+                                     ((|NonNegativeInteger|)
+                                      (|Mapping| (|Boolean|) |#2|)
+                                      |#1|))
+                                 (SIGNATURE |every?|
+                                     ((|Boolean|)
+                                      (|Mapping| (|Boolean|) |#2|)
+                                      |#1|))
+                                 (SIGNATURE |any?|
+                                     ((|Boolean|)
+                                      (|Mapping| (|Boolean|) |#2|)
+                                      |#1|))
+                                 (SIGNATURE |#|
+                                     ((|NonNegativeInteger|) |#1|)))
+                             (|Collection| |#2|) (|Type|))
+                        |$CategoryFrame|)))) 

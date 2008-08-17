@@ -340,6 +340,10 @@ endif
 $(AXIOM_SRC_TARGETS):
 	cd "$(build_srcdir)" && $(MAKE) $@
 
+.PHONY: all-algstrap
+all-algstrap:
+	cd src/algebra && $(MAKE) $@
+
 <<rootdirs>>
 
 <<noweb>>

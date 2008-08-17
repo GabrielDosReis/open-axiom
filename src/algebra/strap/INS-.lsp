@@ -8,129 +8,152 @@
 (DEFUN |INS-;differentiate;2S;2| (|x| $) (|spadConstant| $ 9)) 
 
 (DEFUN |INS-;even?;SB;3| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 12)) (QREFELT $ 13))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 12))
+      (|getShellEntry| $ 13))) 
 
 (DEFUN |INS-;positive?;SB;4| (|x| $)
-  (SPADCALL (|spadConstant| $ 9) |x| (QREFELT $ 15))) 
+  (SPADCALL (|spadConstant| $ 9) |x| (|getShellEntry| $ 15))) 
 
 (PUT '|INS-;copy;2S;5| '|SPADreplace| '(XLAM (|x|) |x|)) 
 
 (DEFUN |INS-;copy;2S;5| (|x| $) |x|) 
 
 (DEFUN |INS-;bit?;2SB;6| (|x| |i| $)
-  (SPADCALL (SPADCALL |x| (SPADCALL |i| (QREFELT $ 18)) (QREFELT $ 19))
-      (QREFELT $ 12))) 
+  (SPADCALL
+      (SPADCALL |x| (SPADCALL |i| (|getShellEntry| $ 18))
+          (|getShellEntry| $ 19))
+      (|getShellEntry| $ 12))) 
 
 (DEFUN |INS-;mask;2S;7| (|n| $)
-  (SPADCALL (SPADCALL (|spadConstant| $ 21) |n| (QREFELT $ 19))
-      (QREFELT $ 22))) 
+  (SPADCALL (SPADCALL (|spadConstant| $ 21) |n| (|getShellEntry| $ 19))
+      (|getShellEntry| $ 22))) 
 
 (PUT '|INS-;rational?;SB;8| '|SPADreplace| '(XLAM (|x|) 'T)) 
 
 (DEFUN |INS-;rational?;SB;8| (|x| $) 'T) 
 
 (DEFUN |INS-;euclideanSize;SNni;9| (|x| $)
-  (PROG (#0=#:G1412 #1=#:G1413)
+  (PROG (#0=#:G1421 #1=#:G1422)
     (RETURN
       (COND
-        ((SPADCALL |x| (|spadConstant| $ 9) (QREFELT $ 25))
+        ((SPADCALL |x| (|spadConstant| $ 9) (|getShellEntry| $ 25))
          (|error| "euclideanSize called on zero"))
-        ((SPADCALL |x| (|spadConstant| $ 9) (QREFELT $ 15))
-         (PROG1 (LETT #0# (- (SPADCALL |x| (QREFELT $ 27)))
+        ((SPADCALL |x| (|spadConstant| $ 9) (|getShellEntry| $ 15))
+         (PROG1 (LETT #0# (- (SPADCALL |x| (|getShellEntry| $ 27)))
                       |INS-;euclideanSize;SNni;9|)
            (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))
         ('T
-         (PROG1 (LETT #1# (SPADCALL |x| (QREFELT $ 27))
+         (PROG1 (LETT #1# (SPADCALL |x| (|getShellEntry| $ 27))
                       |INS-;euclideanSize;SNni;9|)
            (|check-subtype| (>= #1# 0) '(|NonNegativeInteger|) #1#))))))) 
 
 (DEFUN |INS-;convert;SF;10| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 27)) (QREFELT $ 30))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 27))
+      (|getShellEntry| $ 30))) 
 
 (DEFUN |INS-;convert;SDf;11| (|x| $)
-  (FLOAT (SPADCALL |x| (QREFELT $ 27)) MOST-POSITIVE-LONG-FLOAT)) 
+  (FLOAT (SPADCALL |x| (|getShellEntry| $ 27))
+         MOST-POSITIVE-LONG-FLOAT)) 
 
 (DEFUN |INS-;convert;SIf;12| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 27)) (QREFELT $ 35))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 27))
+      (|getShellEntry| $ 35))) 
 
-(DEFUN |INS-;retract;SI;13| (|x| $) (SPADCALL |x| (QREFELT $ 27))) 
+(DEFUN |INS-;retract;SI;13| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 27))) 
 
 (DEFUN |INS-;convert;SP;14| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 27)) (QREFELT $ 39))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 27))
+      (|getShellEntry| $ 39))) 
 
-(DEFUN |INS-;factor;SF;15| (|x| $) (SPADCALL |x| (QREFELT $ 43))) 
+(DEFUN |INS-;factor;SF;15| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 43))) 
 
-(DEFUN |INS-;squareFree;SF;16| (|x| $) (SPADCALL |x| (QREFELT $ 46))) 
+(DEFUN |INS-;squareFree;SF;16| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 46))) 
 
-(DEFUN |INS-;prime?;SB;17| (|x| $) (SPADCALL |x| (QREFELT $ 49))) 
+(DEFUN |INS-;prime?;SB;17| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 49))) 
 
-(DEFUN |INS-;factorial;2S;18| (|x| $) (SPADCALL |x| (QREFELT $ 52))) 
+(DEFUN |INS-;factorial;2S;18| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 52))) 
 
 (DEFUN |INS-;binomial;3S;19| (|n| |m| $)
-  (SPADCALL |n| |m| (QREFELT $ 54))) 
+  (SPADCALL |n| |m| (|getShellEntry| $ 54))) 
 
 (DEFUN |INS-;permutation;3S;20| (|n| |m| $)
-  (SPADCALL |n| |m| (QREFELT $ 56))) 
+  (SPADCALL |n| |m| (|getShellEntry| $ 56))) 
 
 (DEFUN |INS-;retractIfCan;SU;21| (|x| $)
-  (CONS 0 (SPADCALL |x| (QREFELT $ 27)))) 
+  (CONS 0 (SPADCALL |x| (|getShellEntry| $ 27)))) 
 
 (DEFUN |INS-;init;S;22| ($) (|spadConstant| $ 9)) 
 
 (DEFUN |INS-;nextItem;SU;23| (|n| $)
   (COND
-    ((SPADCALL |n| (QREFELT $ 61)) (CONS 0 (|spadConstant| $ 21)))
-    ((SPADCALL (|spadConstant| $ 9) |n| (QREFELT $ 15))
-     (CONS 0 (SPADCALL |n| (QREFELT $ 18))))
-    ('T (CONS 0 (SPADCALL (|spadConstant| $ 21) |n| (QREFELT $ 62)))))) 
+    ((SPADCALL |n| (|getShellEntry| $ 61))
+     (CONS 0 (|spadConstant| $ 21)))
+    ((SPADCALL (|spadConstant| $ 9) |n| (|getShellEntry| $ 15))
+     (CONS 0 (SPADCALL |n| (|getShellEntry| $ 18))))
+    ('T
+     (CONS 0
+           (SPADCALL (|spadConstant| $ 21) |n| (|getShellEntry| $ 62)))))) 
 
 (DEFUN |INS-;patternMatch;SP2Pmr;24| (|x| |p| |l| $)
-  (SPADCALL |x| |p| |l| (QREFELT $ 67))) 
+  (SPADCALL |x| |p| |l| (|getShellEntry| $ 67))) 
 
 (DEFUN |INS-;rational;SF;25| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 27)) (QREFELT $ 71))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 27))
+      (|getShellEntry| $ 71))) 
 
 (DEFUN |INS-;rationalIfCan;SU;26| (|x| $)
-  (CONS 0 (SPADCALL (SPADCALL |x| (QREFELT $ 27)) (QREFELT $ 71)))) 
+  (CONS 0
+        (SPADCALL (SPADCALL |x| (|getShellEntry| $ 27))
+            (|getShellEntry| $ 71)))) 
 
 (DEFUN |INS-;symmetricRemainder;3S;27| (|x| |n| $)
   (PROG (|r|)
     (RETURN
-      (SEQ (LETT |r| (SPADCALL |x| |n| (QREFELT $ 75))
+      (SEQ (LETT |r| (SPADCALL |x| |n| (|getShellEntry| $ 75))
                  |INS-;symmetricRemainder;3S;27|)
            (EXIT (COND
-                   ((SPADCALL |r| (|spadConstant| $ 9) (QREFELT $ 25))
+                   ((SPADCALL |r| (|spadConstant| $ 9)
+                        (|getShellEntry| $ 25))
                     |r|)
                    ('T
                     (SEQ (COND
                            ((SPADCALL |n| (|spadConstant| $ 9)
-                                (QREFELT $ 15))
-                            (LETT |n| (SPADCALL |n| (QREFELT $ 18))
+                                (|getShellEntry| $ 15))
+                            (LETT |n|
+                                  (SPADCALL |n| (|getShellEntry| $ 18))
                                   |INS-;symmetricRemainder;3S;27|)))
                          (EXIT (COND
                                  ((SPADCALL (|spadConstant| $ 9) |r|
-                                      (QREFELT $ 15))
+                                      (|getShellEntry| $ 15))
                                   (COND
                                     ((SPADCALL |n|
-                                      (SPADCALL 2 |r| (QREFELT $ 77))
-                                      (QREFELT $ 15))
-                                     (SPADCALL |r| |n| (QREFELT $ 62)))
+                                      (SPADCALL 2 |r|
+                                       (|getShellEntry| $ 77))
+                                      (|getShellEntry| $ 15))
+                                     (SPADCALL |r| |n|
+                                      (|getShellEntry| $ 62)))
                                     ('T |r|)))
                                  ((NULL (SPADCALL (|spadConstant| $ 9)
                                          (SPADCALL
                                           (SPADCALL 2 |r|
-                                           (QREFELT $ 77))
-                                          |n| (QREFELT $ 78))
-                                         (QREFELT $ 15)))
-                                  (SPADCALL |r| |n| (QREFELT $ 78)))
+                                           (|getShellEntry| $ 77))
+                                          |n| (|getShellEntry| $ 78))
+                                         (|getShellEntry| $ 15)))
+                                  (SPADCALL |r| |n|
+                                      (|getShellEntry| $ 78)))
                                  ('T |r|))))))))))) 
 
 (DEFUN |INS-;invmod;3S;28| (|a| |b| $)
   (PROG (|q| |r| |r1| |c| |c1| |d| |d1|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |a| (QREFELT $ 80))
-              (LETT |a| (SPADCALL |a| |b| (QREFELT $ 81))
+             ((SPADCALL |a| (|getShellEntry| $ 80))
+              (LETT |a| (SPADCALL |a| |b| (|getShellEntry| $ 81))
                     |INS-;invmod;3S;28|)))
            (LETT |c| |a| |INS-;invmod;3S;28|)
            (LETT |c1| (|spadConstant| $ 21) |INS-;invmod;3S;28|)
@@ -138,20 +161,24 @@
            (LETT |d1| (|spadConstant| $ 9) |INS-;invmod;3S;28|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL (SPADCALL |d| (QREFELT $ 61))
-                             (QREFELT $ 13)))
+                  ((NULL (SPADCALL
+                             (SPADCALL |d| (|getShellEntry| $ 61))
+                             (|getShellEntry| $ 13)))
                    (GO G191)))
-                (SEQ (LETT |q| (SPADCALL |c| |d| (QREFELT $ 82))
+                (SEQ (LETT |q|
+                           (SPADCALL |c| |d| (|getShellEntry| $ 82))
                            |INS-;invmod;3S;28|)
                      (LETT |r|
                            (SPADCALL |c|
-                               (SPADCALL |q| |d| (QREFELT $ 83))
-                               (QREFELT $ 62))
+                               (SPADCALL |q| |d|
+                                   (|getShellEntry| $ 83))
+                               (|getShellEntry| $ 62))
                            |INS-;invmod;3S;28|)
                      (LETT |r1|
                            (SPADCALL |c1|
-                               (SPADCALL |q| |d1| (QREFELT $ 83))
-                               (QREFELT $ 62))
+                               (SPADCALL |q| |d1|
+                                   (|getShellEntry| $ 83))
+                               (|getShellEntry| $ 62))
                            |INS-;invmod;3S;28|)
                      (LETT |c| |d| |INS-;invmod;3S;28|)
                      (LETT |c1| |d1| |INS-;invmod;3S;28|)
@@ -159,24 +186,27 @@
                      (EXIT (LETT |d1| |r1| |INS-;invmod;3S;28|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (COND
-                   ((SPADCALL |c| (|spadConstant| $ 21) (QREFELT $ 25))
+                   ((SPADCALL |c| (|spadConstant| $ 21)
+                        (|getShellEntry| $ 25))
                     (COND
-                      ((SPADCALL |c1| (QREFELT $ 80))
-                       (SPADCALL |c1| |b| (QREFELT $ 78)))
+                      ((SPADCALL |c1| (|getShellEntry| $ 80))
+                       (SPADCALL |c1| |b| (|getShellEntry| $ 78)))
                       ('T |c1|)))
                    ('T (|error| "inverse does not exist")))))))) 
 
 (DEFUN |INS-;powmod;4S;29| (|x| |n| |p| $)
-  (PROG (|y| #0=#:G1470 |z|)
+  (PROG (|y| #0=#:G1479 |z|)
     (RETURN
       (SEQ (EXIT (SEQ (COND
-                        ((SPADCALL |x| (QREFELT $ 80))
-                         (LETT |x| (SPADCALL |x| |p| (QREFELT $ 81))
+                        ((SPADCALL |x| (|getShellEntry| $ 80))
+                         (LETT |x|
+                               (SPADCALL |x| |p|
+                                   (|getShellEntry| $ 81))
                                |INS-;powmod;4S;29|)))
                       (EXIT (COND
-                              ((SPADCALL |x| (QREFELT $ 61))
+                              ((SPADCALL |x| (|getShellEntry| $ 61))
                                (|spadConstant| $ 9))
-                              ((SPADCALL |n| (QREFELT $ 61))
+                              ((SPADCALL |n| (|getShellEntry| $ 61))
                                (|spadConstant| $ 21))
                               ('T
                                (SEQ (LETT |y| (|spadConstant| $ 21)
@@ -186,10 +216,11 @@
                                      (SEQ G190 NIL
                                       (SEQ
                                        (COND
-                                         ((SPADCALL |n| (QREFELT $ 12))
+                                         ((SPADCALL |n|
+                                           (|getShellEntry| $ 12))
                                           (LETT |y|
                                            (SPADCALL |y| |z| |p|
-                                            (QREFELT $ 85))
+                                            (|getShellEntry| $ 85))
                                            |INS-;powmod;4S;29|)))
                                        (EXIT
                                         (COND
@@ -198,10 +229,10 @@
                                              (SPADCALL |n|
                                               (SPADCALL
                                                (|spadConstant| $ 21)
-                                               (QREFELT $ 18))
-                                              (QREFELT $ 19))
+                                               (|getShellEntry| $ 18))
+                                              (|getShellEntry| $ 19))
                                              |INS-;powmod;4S;29|)
-                                            (QREFELT $ 61))
+                                            (|getShellEntry| $ 61))
                                            (PROGN
                                              (LETT #0# |y|
                                               |INS-;powmod;4S;29|)
@@ -209,7 +240,7 @@
                                           ('T
                                            (LETT |z|
                                             (SPADCALL |z| |z| |p|
-                                             (QREFELT $ 85))
+                                             (|getShellEntry| $ 85))
                                             |INS-;powmod;4S;29|)))))
                                       NIL (GO G190) G191 (EXIT NIL)))))))))
            #0# (EXIT #0#))))) 
@@ -220,11 +251,12 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|IntegerNumberSystem&|))
         (LETT |dv$| (LIST '|IntegerNumberSystem&| |dv$1|) . #0#)
-        (LETT $ (GETREFV 87) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 87) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         $)))) 
 
 (MAKEPROP '|IntegerNumberSystem&| '|infovec|
@@ -296,3 +328,164 @@
                                   36 0 0 7 8 2 0 11 0 0 20 2 0 0 0 0
                                   55)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|IntegerNumberSystem&| '|isFunctor|
+             '(((|invmod| ($ $ $)) T (ELT $ 84))
+               ((|powmod| ($ $ $ $)) T (ELT $ 86))
+               ((|mask| ($ $)) T (ELT $ 23))
+               ((|copy| ($ $)) T (ELT $ 17))
+               ((|rationalIfCan|
+                    ((|Union| (|Fraction| (|Integer|)) "failed") $))
+                T (ELT $ 74))
+               ((|rational| ((|Fraction| (|Integer|)) $)) T (ELT $ 72))
+               ((|rational?| ((|Boolean|) $)) T (ELT $ 24))
+               ((|symmetricRemainder| ($ $ $)) T (ELT $ 79))
+               ((|bit?| ((|Boolean|) $ $)) T (ELT $ 20))
+               ((|even?| ((|Boolean|) $)) T (ELT $ 14))
+               ((|init| ($)) T (ELT $ 60))
+               ((|nextItem| ((|Union| $ "failed") $)) T (ELT $ 64))
+               ((|convert| ((|DoubleFloat|) $)) T (ELT $ 33))
+               ((|convert| ((|Float|) $)) T (ELT $ 31))
+               ((|permutation| ($ $ $)) T (ELT $ 57))
+               ((|factorial| ($ $)) T (ELT $ 53))
+               ((|binomial| ($ $ $)) T (ELT $ 55))
+               ((|patternMatch|
+                    ((|PatternMatchResult| (|Integer|) $) $
+                     (|Pattern| (|Integer|))
+                     (|PatternMatchResult| (|Integer|) $)))
+                T (ELT $ 69))
+               ((|convert| ((|Pattern| (|Integer|)) $)) T (ELT $ 40))
+               ((|convert| ((|InputForm|) $)) T (ELT $ 36))
+               ((|retract| ((|Integer|) $)) T (ELT $ 37))
+               ((|retractIfCan| ((|Union| (|Integer|) "failed") $)) T
+                (ELT $ 59))
+               ((|convert| ((|Integer|) $)) T (ELT $ NIL))
+               ((|differentiate| ($ $)) T (ELT $ 10))
+               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|positive?| ((|Boolean|) $)) T (ELT $ 16))
+               ((|euclideanSize| ((|NonNegativeInteger|) $)) T
+                (ELT $ 28))
+               ((|factor| ((|Factored| $) $)) T (ELT $ 45))
+               ((|squareFree| ((|Factored| $) $)) T (ELT $ 47))
+               ((|prime?| ((|Boolean|) $)) T (ELT $ 50))
+               ((|characteristic| ((|NonNegativeInteger|))) T
+                (ELT $ 8)))
+             (|addModemap| '|IntegerNumberSystem&|
+                 '(|IntegerNumberSystem&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |invmod| (|#1| |#1| |#1|))
+                       (SIGNATURE |powmod| (|#1| |#1| |#1| |#1|))
+                       (SIGNATURE |mask| (|#1| |#1|))
+                       (SIGNATURE |copy| (|#1| |#1|))
+                       (SIGNATURE |rationalIfCan|
+                           ((|Union| (|Fraction| (|Integer|)) "failed")
+                            |#1|))
+                       (SIGNATURE |rational|
+                           ((|Fraction| (|Integer|)) |#1|))
+                       (SIGNATURE |rational?| ((|Boolean|) |#1|))
+                       (SIGNATURE |symmetricRemainder|
+                           (|#1| |#1| |#1|))
+                       (SIGNATURE |bit?| ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |even?| ((|Boolean|) |#1|))
+                       (SIGNATURE |init| (|#1|))
+                       (SIGNATURE |nextItem|
+                           ((|Union| |#1| "failed") |#1|))
+                       (SIGNATURE |convert| ((|DoubleFloat|) |#1|))
+                       (SIGNATURE |convert| ((|Float|) |#1|))
+                       (SIGNATURE |permutation| (|#1| |#1| |#1|))
+                       (SIGNATURE |factorial| (|#1| |#1|))
+                       (SIGNATURE |binomial| (|#1| |#1| |#1|))
+                       (SIGNATURE |patternMatch|
+                           ((|PatternMatchResult| (|Integer|) |#1|)
+                            |#1| (|Pattern| (|Integer|))
+                            (|PatternMatchResult| (|Integer|) |#1|)))
+                       (SIGNATURE |convert|
+                           ((|Pattern| (|Integer|)) |#1|))
+                       (SIGNATURE |convert| ((|InputForm|) |#1|))
+                       (SIGNATURE |retract| ((|Integer|) |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| (|Integer|) "failed") |#1|))
+                       (SIGNATURE |convert| ((|Integer|) |#1|))
+                       (SIGNATURE |differentiate| (|#1| |#1|))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |positive?| ((|Boolean|) |#1|))
+                       (SIGNATURE |euclideanSize|
+                           ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |factor| ((|Factored| |#1|) |#1|))
+                       (SIGNATURE |squareFree|
+                           ((|Factored| |#1|) |#1|))
+                       (SIGNATURE |prime?| ((|Boolean|) |#1|))
+                       (SIGNATURE |characteristic|
+                           ((|NonNegativeInteger|))))
+                   (|IntegerNumberSystem|))
+                 T '|IntegerNumberSystem&|
+                 (|put| '|IntegerNumberSystem&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |invmod| (|#1| |#1| |#1|))
+                                 (SIGNATURE |powmod|
+                                     (|#1| |#1| |#1| |#1|))
+                                 (SIGNATURE |mask| (|#1| |#1|))
+                                 (SIGNATURE |copy| (|#1| |#1|))
+                                 (SIGNATURE |rationalIfCan|
+                                     ((|Union| (|Fraction| (|Integer|))
+                                       "failed")
+                                      |#1|))
+                                 (SIGNATURE |rational|
+                                     ((|Fraction| (|Integer|)) |#1|))
+                                 (SIGNATURE |rational?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |symmetricRemainder|
+                                     (|#1| |#1| |#1|))
+                                 (SIGNATURE |bit?|
+                                     ((|Boolean|) |#1| |#1|))
+                                 (SIGNATURE |even?| ((|Boolean|) |#1|))
+                                 (SIGNATURE |init| (|#1|))
+                                 (SIGNATURE |nextItem|
+                                     ((|Union| |#1| "failed") |#1|))
+                                 (SIGNATURE |convert|
+                                     ((|DoubleFloat|) |#1|))
+                                 (SIGNATURE |convert| ((|Float|) |#1|))
+                                 (SIGNATURE |permutation|
+                                     (|#1| |#1| |#1|))
+                                 (SIGNATURE |factorial| (|#1| |#1|))
+                                 (SIGNATURE |binomial|
+                                     (|#1| |#1| |#1|))
+                                 (SIGNATURE |patternMatch|
+                                     ((|PatternMatchResult| (|Integer|)
+                                       |#1|)
+                                      |#1| (|Pattern| (|Integer|))
+                                      (|PatternMatchResult| (|Integer|)
+                                       |#1|)))
+                                 (SIGNATURE |convert|
+                                     ((|Pattern| (|Integer|)) |#1|))
+                                 (SIGNATURE |convert|
+                                     ((|InputForm|) |#1|))
+                                 (SIGNATURE |retract|
+                                     ((|Integer|) |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| (|Integer|) "failed")
+                                      |#1|))
+                                 (SIGNATURE |convert|
+                                     ((|Integer|) |#1|))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |positive?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |euclideanSize|
+                                     ((|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE |factor|
+                                     ((|Factored| |#1|) |#1|))
+                                 (SIGNATURE |squareFree|
+                                     ((|Factored| |#1|) |#1|))
+                                 (SIGNATURE |prime?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |characteristic|
+                                     ((|NonNegativeInteger|))))
+                             (|IntegerNumberSystem|))
+                        |$CategoryFrame|)))) 

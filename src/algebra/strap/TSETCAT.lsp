@@ -5,9 +5,9 @@
 
 (DEFPARAMETER |TriangularSetCategory;AL| 'NIL) 
 
-(DEFUN |TriangularSetCategory| (&REST #0=#:G1439 &AUX #1=#:G1437)
+(DEFUN |TriangularSetCategory| (&REST #0=#:G1448 &AUX #1=#:G1446)
   (DSETQ #1# #0#)
-  (LET (#2=#:G1438)
+  (LET (#2=#:G1447)
     (COND
       ((SETQ #2#
              (|assoc| (|devaluateList| #1#) |TriangularSetCategory;AL|))
@@ -21,7 +21,7 @@
          #2#)))) 
 
 (DEFUN |TriangularSetCategory;| (|t#1| |t#2| |t#3| |t#4|)
-  (PROG (#0=#:G1436)
+  (PROG (#0=#:G1445)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -198,3 +198,12 @@
                 (LIST '|TriangularSetCategory| (|devaluate| |t#1|)
                       (|devaluate| |t#2|) (|devaluate| |t#3|)
                       (|devaluate| |t#4|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|TriangularSetCategory| '|isCategory| T
+             (|addModemap| '|TriangularSetCategory|
+                 '(|TriangularSetCategory| |#1| |#2| |#3| |#4|)
+                 '((|Category|) (|IntegralDomain|)
+                   (|OrderedAbelianMonoidSup|) (|OrderedSet|)
+                   (|RecursivePolynomialCategory| |t#1| |t#2| |t#3|))
+                 T '|TriangularSetCategory| |$CategoryFrame|))) 

@@ -2,7 +2,7 @@
 (/VERSIONCHECK 2) 
 
 (DEFUN |UFD-;squareFreePart;2S;1| (|x| $)
-  (PROG (|s| |f| #0=#:G1403 #1=#:G1401 #2=#:G1399 #3=#:G1400)
+  (PROG (|s| |f| #0=#:G1405 #1=#:G1403 #2=#:G1401 #3=#:G1402)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
@@ -81,3 +81,24 @@
                                   0 0 0 15 0 6 0 16 1 6 7 0 18 1 9 21 0
                                   22 1 0 0 0 17 1 0 23 0 24)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|UniqueFactorizationDomain&| '|isFunctor|
+             '(((|squareFreePart| ($ $)) T (ELT $ 17))
+               ((|prime?| ((|Boolean|) $)) T (ELT $ 24)))
+             (|addModemap| '|UniqueFactorizationDomain&|
+                 '(|UniqueFactorizationDomain&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |squareFreePart| (|#1| |#1|))
+                       (SIGNATURE |prime?| ((|Boolean|) |#1|)))
+                   (|UniqueFactorizationDomain|))
+                 T '|UniqueFactorizationDomain&|
+                 (|put| '|UniqueFactorizationDomain&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |squareFreePart|
+                                     (|#1| |#1|))
+                                 (SIGNATURE |prime?|
+                                     ((|Boolean|) |#1|)))
+                             (|UniqueFactorizationDomain|))
+                        |$CategoryFrame|)))) 

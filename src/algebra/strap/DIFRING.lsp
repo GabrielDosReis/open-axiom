@@ -4,13 +4,13 @@
 (DEFPARAMETER |DifferentialRing;AL| 'NIL) 
 
 (DEFUN |DifferentialRing| ()
-  (LET (#:G1387)
+  (LET (#:G1396)
     (COND
       (|DifferentialRing;AL|)
       (T (SETQ |DifferentialRing;AL| (|DifferentialRing;|)))))) 
 
 (DEFUN |DifferentialRing;| ()
-  (PROG (#0=#:G1385)
+  (PROG (#0=#:G1394)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|Ring|)
@@ -24,5 +24,11 @@
                                NIL '((|NonNegativeInteger|)) NIL))
                    |DifferentialRing|)
         (SETELT #0# 0 '(|DifferentialRing|)))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|DifferentialRing| '|isCategory| T
+             (|addModemap| '|DifferentialRing| '(|DifferentialRing|)
+                 '((|Category|)) T '|DifferentialRing|
+                 |$CategoryFrame|))) 
 
 (MAKEPROP '|DifferentialRing| 'NILADIC T) 

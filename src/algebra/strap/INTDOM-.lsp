@@ -5,26 +5,30 @@
   (VECTOR (|spadConstant| $ 7) |x| (|spadConstant| $ 7))) 
 
 (DEFUN |INTDOM-;unitCanonical;2S;2| (|x| $)
-  (QVELT (SPADCALL |x| (QREFELT $ 10)) 1)) 
+  (QVELT (SPADCALL |x| (|getShellEntry| $ 10)) 1)) 
 
 (DEFUN |INTDOM-;recip;SU;3| (|x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 13)) (CONS 1 "failed"))
-    ('T (SPADCALL (|spadConstant| $ 7) |x| (QREFELT $ 15))))) 
+    ((SPADCALL |x| (|getShellEntry| $ 13)) (CONS 1 "failed"))
+    ('T (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 15))))) 
 
 (DEFUN |INTDOM-;unit?;SB;4| (|x| $)
-  (COND ((QEQCAR (SPADCALL |x| (QREFELT $ 17)) 1) 'NIL) ('T 'T))) 
+  (COND
+    ((QEQCAR (SPADCALL |x| (|getShellEntry| $ 17)) 1) 'NIL)
+    ('T 'T))) 
 
 (DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
-  (SPADCALL (QVELT (SPADCALL |x| (QREFELT $ 10)) 1)
-      (QVELT (SPADCALL |y| (QREFELT $ 10)) 1) (QREFELT $ 19))) 
+  (SPADCALL (QVELT (SPADCALL |x| (|getShellEntry| $ 10)) 1)
+      (QVELT (SPADCALL |y| (|getShellEntry| $ 10)) 1)
+      (|getShellEntry| $ 19))) 
 
 (DEFUN |INTDOM-;associates?;2SB;6| (|x| |y| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 13)) (SPADCALL |y| (QREFELT $ 13)))
-    ((OR (SPADCALL |y| (QREFELT $ 13))
-         (OR (QEQCAR (SPADCALL |x| |y| (QREFELT $ 15)) 1)
-             (QEQCAR (SPADCALL |y| |x| (QREFELT $ 15)) 1)))
+    ((SPADCALL |x| (|getShellEntry| $ 13))
+     (SPADCALL |y| (|getShellEntry| $ 13)))
+    ((OR (SPADCALL |y| (|getShellEntry| $ 13))
+         (OR (QEQCAR (SPADCALL |x| |y| (|getShellEntry| $ 15)) 1)
+             (QEQCAR (SPADCALL |y| |x| (|getShellEntry| $ 15)) 1)))
      'NIL)
     ('T 'T))) 
 
@@ -34,23 +38,24 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|IntegralDomain&|))
         (LETT |dv$| (LIST '|IntegralDomain&| |dv$1|) . #0#)
-        (LETT $ (GETREFV 21) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 21) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         (COND
           ((|HasCategory| |#1| '(|Field|)))
           ('T
-           (QSETREFV $ 9
+           (|setShellEntry| $ 9
                (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
         (COND
           ((|HasAttribute| |#1| '|canonicalUnitNormal|)
-           (QSETREFV $ 20
+           (|setShellEntry| $ 20
                (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|)
                      $)))
           ('T
-           (QSETREFV $ 20
+           (|setShellEntry| $ 20
                (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|)
                      $))))
         $)))) 
@@ -77,3 +82,47 @@
                                   11 1 0 12 0 18 1 0 14 0 16 2 0 12 0 0
                                   20)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|IntegralDomain&| '|isFunctor|
+             '(((|unit?| ((|Boolean|) $)) T (ELT $ 18))
+               ((|associates?| ((|Boolean|) $ $)) T (ELT $ 20))
+               ((|unitCanonical| ($ $)) T (ELT $ 11))
+               ((|unitNormal|
+                    ((|Record| (|:| |unit| $) (|:| |canonical| $)
+                         (|:| |associate| $))
+                     $))
+                T (ELT $ 9))
+               ((|recip| ((|Union| $ "failed") $)) T (ELT $ 16)))
+             (|addModemap| '|IntegralDomain&| '(|IntegralDomain&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |unit?| ((|Boolean|) |#1|))
+                       (SIGNATURE |associates?|
+                                  ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |unitCanonical| (|#1| |#1|))
+                       (SIGNATURE |unitNormal|
+                           ((|Record| (|:| |unit| |#1|)
+                                (|:| |canonical| |#1|)
+                                (|:| |associate| |#1|))
+                            |#1|))
+                       (SIGNATURE |recip|
+                           ((|Union| |#1| "failed") |#1|)))
+                   (|IntegralDomain|))
+                 T '|IntegralDomain&|
+                 (|put| '|IntegralDomain&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |unit?| ((|Boolean|) |#1|))
+                                 (SIGNATURE |associates?|
+                                     ((|Boolean|) |#1| |#1|))
+                                 (SIGNATURE |unitCanonical|
+                                     (|#1| |#1|))
+                                 (SIGNATURE |unitNormal|
+                                     ((|Record| (|:| |unit| |#1|)
+                                       (|:| |canonical| |#1|)
+                                       (|:| |associate| |#1|))
+                                      |#1|))
+                                 (SIGNATURE |recip|
+                                     ((|Union| |#1| "failed") |#1|)))
+                             (|IntegralDomain|))
+                        |$CategoryFrame|)))) 

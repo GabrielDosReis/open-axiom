@@ -5,8 +5,8 @@
 
 (DEFPARAMETER |LinearAggregate;AL| 'NIL) 
 
-(DEFUN |LinearAggregate| (#0=#:G1400)
-  (LET (#1=#:G1401)
+(DEFUN |LinearAggregate| (#0=#:G1397)
+  (LET (#1=#:G1398)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |LinearAggregate;AL|))
        (CDR #1#))
@@ -17,13 +17,13 @@
          #1#)))) 
 
 (DEFUN |LinearAggregate;| (|t#1|)
-  (PROG (#0=#:G1399)
+  (PROG (#0=#:G1396)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
                        (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                        (|sublisV|
-                           (PAIR '(#1=#:G1398) (LIST '(|Integer|)))
+                           (PAIR '(#1=#:G1395) (LIST '(|Integer|)))
                            (COND
                              (|LinearAggregate;CAT|)
                              ('T
@@ -79,3 +79,9 @@
                                       NIL))
                                     . #2=(|LinearAggregate|)))))) . #2#)
         (SETELT #0# 0 (LIST '|LinearAggregate| (|devaluate| |t#1|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|LinearAggregate| '|isCategory| T
+             (|addModemap| '|LinearAggregate| '(|LinearAggregate| |#1|)
+                 '((|Category|) (|Type|)) T '|LinearAggregate|
+                 |$CategoryFrame|))) 

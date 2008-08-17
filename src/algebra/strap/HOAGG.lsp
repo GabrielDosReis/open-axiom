@@ -5,8 +5,8 @@
 
 (DEFPARAMETER |HomogeneousAggregate;AL| 'NIL) 
 
-(DEFUN |HomogeneousAggregate| (#0=#:G1399)
-  (LET (#1=#:G1400)
+(DEFUN |HomogeneousAggregate| (#0=#:G1396)
+  (LET (#1=#:G1397)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |HomogeneousAggregate;AL|))
        (CDR #1#))
@@ -17,7 +17,7 @@
          #1#)))) 
 
 (DEFUN |HomogeneousAggregate;| (|t#1|)
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1395)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -110,3 +110,10 @@
                                 . #1=(|HomogeneousAggregate|))))) . #1#)
         (SETELT #0# 0
                 (LIST '|HomogeneousAggregate| (|devaluate| |t#1|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|HomogeneousAggregate| '|isCategory| T
+             (|addModemap| '|HomogeneousAggregate|
+                 '(|HomogeneousAggregate| |#1|)
+                 '((|Category|) (|Type|)) T '|HomogeneousAggregate|
+                 |$CategoryFrame|))) 

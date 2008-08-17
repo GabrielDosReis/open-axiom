@@ -4,11 +4,11 @@
 (DEFPARAMETER |GcdDomain;AL| 'NIL) 
 
 (DEFUN |GcdDomain| ()
-  (LET (#:G1393)
+  (LET (#:G1402)
     (COND (|GcdDomain;AL|) (T (SETQ |GcdDomain;AL| (|GcdDomain;|)))))) 
 
 (DEFUN |GcdDomain;| ()
-  (PROG (#0=#:G1391)
+  (PROG (#0=#:G1400)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|IntegralDomain|)
@@ -28,5 +28,10 @@
                                NIL))
                    |GcdDomain|)
         (SETELT #0# 0 '(|GcdDomain|)))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|GcdDomain| '|isCategory| T
+             (|addModemap| '|GcdDomain| '(|GcdDomain|) '((|Category|))
+                 T '|GcdDomain| |$CategoryFrame|))) 
 
 (MAKEPROP '|GcdDomain| 'NILADIC T) 

@@ -2,25 +2,27 @@
 (/VERSIONCHECK 2) 
 
 (DEFUN |DIVRING-;^;SIS;1| (|x| |n| $)
-  (SPADCALL |x| |n| (QREFELT $ 8))) 
+  (SPADCALL |x| |n| (|getShellEntry| $ 8))) 
 
 (DEFUN |DIVRING-;**;SIS;2| (|x| |n| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 10))
-    ((SPADCALL |x| (QREFELT $ 12))
+    ((SPADCALL |x| (|getShellEntry| $ 12))
      (COND ((< |n| 0) (|error| "division by zero")) ('T |x|)))
     ((< |n| 0)
-     (SPADCALL (SPADCALL |x| (QREFELT $ 14)) (- |n|) (QREFELT $ 17)))
-    ('T (SPADCALL |x| |n| (QREFELT $ 17))))) 
+     (SPADCALL (SPADCALL |x| (|getShellEntry| $ 14)) (- |n|)
+         (|getShellEntry| $ 17)))
+    ('T (SPADCALL |x| |n| (|getShellEntry| $ 17))))) 
 
 (DEFUN |DIVRING-;*;F2S;3| (|q| |x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |q| (QREFELT $ 20))
+      (SPADCALL (SPADCALL |q| (|getShellEntry| $ 20))
           (SPADCALL
-              (SPADCALL (SPADCALL |q| (QREFELT $ 21)) (QREFELT $ 22))
-              (QREFELT $ 14))
-          (QREFELT $ 23))
-      |x| (QREFELT $ 24))) 
+              (SPADCALL (SPADCALL |q| (|getShellEntry| $ 21))
+                  (|getShellEntry| $ 22))
+              (|getShellEntry| $ 14))
+          (|getShellEntry| $ 23))
+      |x| (|getShellEntry| $ 24))) 
 
 (DEFUN |DivisionRing&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -28,11 +30,12 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|DivisionRing&|))
         (LETT |dv$| (LIST '|DivisionRing&| |dv$1|) . #0#)
-        (LETT $ (GETREFV 27) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 27) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         $)))) 
 
 (MAKEPROP '|DivisionRing&| '|infovec|
@@ -54,3 +57,64 @@
                                   23 2 6 0 0 0 24 2 0 0 0 7 9 2 0 0 0 7
                                   18 2 0 0 19 0 25)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|DivisionRing&| '|isFunctor|
+             '(((^ ($ $ (|Integer|))) T (ELT $ 9))
+               ((** ($ $ (|Integer|))) T (ELT $ 18))
+               ((* ($ $ (|Fraction| (|Integer|)))) T (ELT $ NIL))
+               ((* ($ (|Fraction| (|Integer|)) $)) T (ELT $ 25))
+               ((** ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
+               ((^ ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
+               ((* ($ $ $)) T (ELT $ NIL))
+               ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
+               ((^ ($ $ (|PositiveInteger|))) T (ELT $ NIL))
+               ((* ($ (|Integer|) $)) T (ELT $ NIL))
+               ((* ($ (|NonNegativeInteger|) $)) T (ELT $ NIL))
+               ((* ($ (|PositiveInteger|) $)) T (ELT $ NIL)))
+             (|addModemap| '|DivisionRing&| '(|DivisionRing&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE ^ (|#1| |#1| (|Integer|)))
+                       (SIGNATURE ** (|#1| |#1| (|Integer|)))
+                       (SIGNATURE *
+                           (|#1| |#1| (|Fraction| (|Integer|))))
+                       (SIGNATURE *
+                           (|#1| (|Fraction| (|Integer|)) |#1|))
+                       (SIGNATURE **
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE ^ (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE * (|#1| |#1| |#1|))
+                       (SIGNATURE ** (|#1| |#1| (|PositiveInteger|)))
+                       (SIGNATURE ^ (|#1| |#1| (|PositiveInteger|)))
+                       (SIGNATURE * (|#1| (|Integer|) |#1|))
+                       (SIGNATURE * (|#1| (|NonNegativeInteger|) |#1|))
+                       (SIGNATURE * (|#1| (|PositiveInteger|) |#1|)))
+                   (|DivisionRing|))
+                 T '|DivisionRing&|
+                 (|put| '|DivisionRing&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE ^ (|#1| |#1| (|Integer|)))
+                                 (SIGNATURE ** (|#1| |#1| (|Integer|)))
+                                 (SIGNATURE *
+                                     (|#1| |#1|
+                                      (|Fraction| (|Integer|))))
+                                 (SIGNATURE *
+                                     (|#1| (|Fraction| (|Integer|))
+                                      |#1|))
+                                 (SIGNATURE **
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE ^
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE * (|#1| |#1| |#1|))
+                                 (SIGNATURE **
+                                     (|#1| |#1| (|PositiveInteger|)))
+                                 (SIGNATURE ^
+                                     (|#1| |#1| (|PositiveInteger|)))
+                                 (SIGNATURE * (|#1| (|Integer|) |#1|))
+                                 (SIGNATURE *
+                                     (|#1| (|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE *
+                                     (|#1| (|PositiveInteger|) |#1|)))
+                             (|DivisionRing|))
+                        |$CategoryFrame|)))) 

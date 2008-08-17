@@ -5,8 +5,8 @@
 
 (DEFPARAMETER |ListAggregate;AL| 'NIL) 
 
-(DEFUN |ListAggregate| (#0=#:G1431)
-  (LET (#1=#:G1432)
+(DEFUN |ListAggregate| (#0=#:G1428)
+  (LET (#1=#:G1429)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |ListAggregate;AL|))
        (CDR #1#))
@@ -17,7 +17,7 @@
          #1#)))) 
 
 (DEFUN |ListAggregate;| (|t#1|)
-  (PROG (#0=#:G1430)
+  (PROG (#0=#:G1427)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -36,3 +36,9 @@
                                          'NIL NIL))
                                 . #1=(|ListAggregate|))))) . #1#)
         (SETELT #0# 0 (LIST '|ListAggregate| (|devaluate| |t#1|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|ListAggregate| '|isCategory| T
+             (|addModemap| '|ListAggregate| '(|ListAggregate| |#1|)
+                 '((|Category|) (|Type|)) T '|ListAggregate|
+                 |$CategoryFrame|))) 

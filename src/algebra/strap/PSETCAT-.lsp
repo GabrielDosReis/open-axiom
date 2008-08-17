@@ -8,7 +8,7 @@
             |PSETCAT-;elements|)))) 
 
 (DEFUN |PSETCAT-;variables1| (|lp| $)
-  (PROG (#0=#:G1435 |p| #1=#:G1436 |lvars|)
+  (PROG (#0=#:G1437 |p| #1=#:G1438 |lvars|)
     (RETURN
       (SEQ (LETT |lvars|
                  (PROGN
@@ -41,7 +41,7 @@
   (SPADCALL |#2| |#1| (|getShellEntry| $ 16))) 
 
 (DEFUN |PSETCAT-;variables2| (|lp| $)
-  (PROG (#0=#:G1440 |p| #1=#:G1441 |lvars|)
+  (PROG (#0=#:G1442 |p| #1=#:G1443 |lvars|)
     (RETURN
       (SEQ (LETT |lvars|
                  (PROGN
@@ -220,7 +220,7 @@
                          (SPADCALL |ws| (|getShellEntry| $ 31)))))))) 
 
 (DEFUN |PSETCAT-;=;2SB;11| (|ps1| |ps2| $)
-  (PROG (#0=#:G1475 #1=#:G1476 #2=#:G1477 |p| #3=#:G1478)
+  (PROG (#0=#:G1477 #1=#:G1478 #2=#:G1479 |p| #3=#:G1480)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
@@ -399,7 +399,7 @@
     ('T 'NIL))) 
 
 (DEFUN |PSETCAT-;exactQuo| (|r| |s| $)
-  (PROG (#0=#:G1510)
+  (PROG (#0=#:G1512)
     (RETURN
       (COND
         ((|HasCategory| (|getShellEntry| $ 7) '(|EuclideanDomain|))
@@ -883,3 +883,130 @@
                                   0 0 0 9 32 2 0 0 0 9 34 2 0 15 0 0
                                   40)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|PolynomialSetCategory&| '|isFunctor|
+             '(((|triangular?| ((|Boolean|) $)) T (ELT $ 47))
+               ((|rewriteIdealWithRemainder|
+                    ((|List| |#5|) (|List| |#5|) $))
+                T (ELT $ 90))
+               ((|rewriteIdealWithHeadRemainder|
+                    ((|List| |#5|) (|List| |#5|) $))
+                T (ELT $ 87))
+               ((|remainder|
+                    ((|Record| (|:| |rnum| |#2|) (|:| |polnum| |#5|)
+                         (|:| |den| |#2|))
+                     |#5| $))
+                T (ELT $ 81))
+               ((|headRemainder|
+                    ((|Record| (|:| |num| |#5|) (|:| |den| |#2|)) |#5|
+                     $))
+                T (ELT $ 73))
+               ((|roughUnitIdeal?| ((|Boolean|) $)) T (ELT $ 49))
+               ((|roughEqualIdeals?| ((|Boolean|) $ $)) T (ELT $ 58))
+               ((|roughSubIdeal?| ((|Boolean|) $ $)) T (ELT $ 55))
+               ((|roughBase?| ((|Boolean|) $)) T (ELT $ 53))
+               ((|trivialIdeal?| ((|Boolean|) $)) T (ELT $ 48))
+               ((|sort| ((|Record| (|:| |under| $) (|:| |floor| $)
+                             (|:| |upper| $))
+                         $ |#4|))
+                T (ELT $ 36))
+               ((|collectUpper| ($ $ |#4|)) T (ELT $ 33))
+               ((|collect| ($ $ |#4|)) T (ELT $ 34))
+               ((|collectUnder| ($ $ |#4|)) T (ELT $ 32))
+               ((|mainVariable?| ((|Boolean|) |#4| $)) T (ELT $ 30))
+               ((|mainVariables| ((|List| |#4|) $)) T (ELT $ 27))
+               ((|variables| ((|List| |#4|) $)) T (ELT $ 23))
+               ((= ((|Boolean|) $ $)) T (ELT $ 40)))
+             (|addModemap| '|PolynomialSetCategory&|
+                 '(|PolynomialSetCategory&| |#1| |#2| |#3| |#4| |#5|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |triangular?| ((|Boolean|) |#1|))
+                       (SIGNATURE |rewriteIdealWithRemainder|
+                           ((|List| |#5|) (|List| |#5|) |#1|))
+                       (SIGNATURE |rewriteIdealWithHeadRemainder|
+                           ((|List| |#5|) (|List| |#5|) |#1|))
+                       (SIGNATURE |remainder|
+                           ((|Record| (|:| |rnum| |#2|)
+                                (|:| |polnum| |#5|) (|:| |den| |#2|))
+                            |#5| |#1|))
+                       (SIGNATURE |headRemainder|
+                           ((|Record| (|:| |num| |#5|)
+                                (|:| |den| |#2|))
+                            |#5| |#1|))
+                       (SIGNATURE |roughUnitIdeal?| ((|Boolean|) |#1|))
+                       (SIGNATURE |roughEqualIdeals?|
+                           ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |roughSubIdeal?|
+                           ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |roughBase?| ((|Boolean|) |#1|))
+                       (SIGNATURE |trivialIdeal?| ((|Boolean|) |#1|))
+                       (SIGNATURE |sort|
+                           ((|Record| (|:| |under| |#1|)
+                                (|:| |floor| |#1|) (|:| |upper| |#1|))
+                            |#1| |#4|))
+                       (SIGNATURE |collectUpper| (|#1| |#1| |#4|))
+                       (SIGNATURE |collect| (|#1| |#1| |#4|))
+                       (SIGNATURE |collectUnder| (|#1| |#1| |#4|))
+                       (SIGNATURE |mainVariable?|
+                           ((|Boolean|) |#4| |#1|))
+                       (SIGNATURE |mainVariables| ((|List| |#4|) |#1|))
+                       (SIGNATURE |variables| ((|List| |#4|) |#1|))
+                       (SIGNATURE = ((|Boolean|) |#1| |#1|)))
+                   (|PolynomialSetCategory| |#2| |#3| |#4| |#5|)
+                   (|Ring|) (|OrderedAbelianMonoidSup|) (|OrderedSet|)
+                   (|RecursivePolynomialCategory| |#2| |#3| |#4|))
+                 T '|PolynomialSetCategory&|
+                 (|put| '|PolynomialSetCategory&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |triangular?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |rewriteIdealWithRemainder|
+                                     ((|List| |#5|) (|List| |#5|) |#1|))
+                                 (SIGNATURE
+                                     |rewriteIdealWithHeadRemainder|
+                                     ((|List| |#5|) (|List| |#5|) |#1|))
+                                 (SIGNATURE |remainder|
+                                     ((|Record| (|:| |rnum| |#2|)
+                                       (|:| |polnum| |#5|)
+                                       (|:| |den| |#2|))
+                                      |#5| |#1|))
+                                 (SIGNATURE |headRemainder|
+                                     ((|Record| (|:| |num| |#5|)
+                                       (|:| |den| |#2|))
+                                      |#5| |#1|))
+                                 (SIGNATURE |roughUnitIdeal?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |roughEqualIdeals?|
+                                     ((|Boolean|) |#1| |#1|))
+                                 (SIGNATURE |roughSubIdeal?|
+                                     ((|Boolean|) |#1| |#1|))
+                                 (SIGNATURE |roughBase?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |trivialIdeal?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |sort|
+                                     ((|Record| (|:| |under| |#1|)
+                                       (|:| |floor| |#1|)
+                                       (|:| |upper| |#1|))
+                                      |#1| |#4|))
+                                 (SIGNATURE |collectUpper|
+                                     (|#1| |#1| |#4|))
+                                 (SIGNATURE |collect| (|#1| |#1| |#4|))
+                                 (SIGNATURE |collectUnder|
+                                     (|#1| |#1| |#4|))
+                                 (SIGNATURE |mainVariable?|
+                                     ((|Boolean|) |#4| |#1|))
+                                 (SIGNATURE |mainVariables|
+                                     ((|List| |#4|) |#1|))
+                                 (SIGNATURE |variables|
+                                     ((|List| |#4|) |#1|))
+                                 (SIGNATURE = ((|Boolean|) |#1| |#1|)))
+                             (|PolynomialSetCategory| |#2| |#3| |#4|
+                                 |#5|)
+                             (|Ring|) (|OrderedAbelianMonoidSup|)
+                             (|OrderedSet|)
+                             (|RecursivePolynomialCategory| |#2| |#3|
+                                 |#4|))
+                        |$CategoryFrame|)))) 

@@ -1,3 +1,8 @@
+2008-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/Makefile.pamphlet (all-algstrap): New.
+	* algebra/strap: Update cached Lisp translation.
+
 2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-driver.boot (openDatabases): Rename from RESTART0.

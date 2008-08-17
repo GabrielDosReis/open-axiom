@@ -4,18 +4,18 @@
 (DEFPARAMETER |IntegerNumberSystem;AL| 'NIL) 
 
 (DEFUN |IntegerNumberSystem| ()
-  (LET (#:G1403)
+  (LET (#:G1412)
     (COND
       (|IntegerNumberSystem;AL|)
       (T (SETQ |IntegerNumberSystem;AL| (|IntegerNumberSystem;|)))))) 
 
 (DEFUN |IntegerNumberSystem;| ()
-  (PROG (#0=#:G1401)
+  (PROG (#0=#:G1410)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
-                       (PAIR '(#1=#:G1395 #2=#:G1396 #3=#:G1397
-                                  #4=#:G1398 #5=#:G1399 #6=#:G1400)
+                       (PAIR '(#1=#:G1404 #2=#:G1405 #3=#:G1406
+                                  #4=#:G1407 #5=#:G1408 #6=#:G1409)
                              (LIST '(|Integer|) '(|Integer|)
                                    '(|Integer|) '(|InputForm|)
                                    '(|Pattern| (|Integer|))
@@ -71,5 +71,11 @@
                                    NIL)))
                    |IntegerNumberSystem|)
         (SETELT #0# 0 '(|IntegerNumberSystem|)))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|IntegerNumberSystem| '|isCategory| T
+             (|addModemap| '|IntegerNumberSystem|
+                 '(|IntegerNumberSystem|) '((|Category|)) T
+                 '|IntegerNumberSystem| |$CategoryFrame|))) 
 
 (MAKEPROP '|IntegerNumberSystem| 'NILADIC T) 

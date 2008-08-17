@@ -2,7 +2,7 @@
 (/VERSIONCHECK 2) 
 
 (DEFUN |ABELSG-;*;Pi2S;1| (|n| |x| $)
-  (SPADCALL |n| |x| (QREFELT $ 9))) 
+  (SPADCALL |n| |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |AbelianSemiGroup&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -10,15 +10,16 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|AbelianSemiGroup&|))
         (LETT |dv$| (LIST '|AbelianSemiGroup&| |dv$1|) . #0#)
-        (LETT $ (GETREFV 11) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 11) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         (COND
           ((|HasCategory| |#1| '(|Ring|)))
           ('T
-           (QSETREFV $ 10
+           (|setShellEntry| $ 10
                (CONS (|dispatchFunction| |ABELSG-;*;Pi2S;1|) $))))
         $)))) 
 
@@ -33,3 +34,20 @@
                                 '(2 8 6 7 6 9 2 0 0 7 0 10 2 0 0 7 0
                                   10)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|AbelianSemiGroup&| '|isFunctor|
+             '(((* ($ (|PositiveInteger|) $)) T (ELT $ 10)))
+             (|addModemap| '|AbelianSemiGroup&|
+                 '(|AbelianSemiGroup&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE * (|#1| (|PositiveInteger|) |#1|)))
+                   (|AbelianSemiGroup|))
+                 T '|AbelianSemiGroup&|
+                 (|put| '|AbelianSemiGroup&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE *
+                                     (|#1| (|PositiveInteger|) |#1|)))
+                             (|AbelianSemiGroup|))
+                        |$CategoryFrame|)))) 

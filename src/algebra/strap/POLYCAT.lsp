@@ -5,9 +5,9 @@
 
 (DEFPARAMETER |PolynomialCategory;AL| 'NIL) 
 
-(DEFUN |PolynomialCategory| (&REST #0=#:G1406 &AUX #1=#:G1404)
+(DEFUN |PolynomialCategory| (&REST #0=#:G1415 &AUX #1=#:G1413)
   (DSETQ #1# #0#)
-  (LET (#2=#:G1405)
+  (LET (#2=#:G1414)
     (COND
       ((SETQ #2#
              (|assoc| (|devaluateList| #1#) |PolynomialCategory;AL|))
@@ -20,7 +20,7 @@
          #2#)))) 
 
 (DEFUN |PolynomialCategory;| (|t#1| |t#2| |t#3|)
-  (PROG (#0=#:G1403)
+  (PROG (#0=#:G1412)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -236,3 +236,11 @@
         (SETELT #0# 0
                 (LIST '|PolynomialCategory| (|devaluate| |t#1|)
                       (|devaluate| |t#2|) (|devaluate| |t#3|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|PolynomialCategory| '|isCategory| T
+             (|addModemap| '|PolynomialCategory|
+                 '(|PolynomialCategory| |#1| |#2| |#3|)
+                 '((|Category|) (|Ring|) (|OrderedAbelianMonoidSup|)
+                   (|OrderedSet|))
+                 T '|PolynomialCategory| |$CategoryFrame|))) 
