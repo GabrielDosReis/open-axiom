@@ -140,6 +140,9 @@
 ;; -*- Hosting Lisp System -*-
 ;;
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (setq *load-verbose* nil))
+
 ;; True means that the base Lisp system uses conventional C-style
 ;; program linking model, whereby programs are constructed by linking
 ;; separately compiled units.  By constrast, many Lisp systems build

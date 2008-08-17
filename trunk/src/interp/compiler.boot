@@ -831,7 +831,7 @@ compSetq1(form,val,m,E) ==
 
 compMakeDeclaration: (%Form,%Mode,%Env) -> %Maybe %Triple
 compMakeDeclaration(x,m,e) ==
-  $insideExpressionIfTrue: local
+  $insideExpressionIfTrue: local := false
   compColon(x,m,e)
 
 setqSetelt([v,:s],val,m,E) ==

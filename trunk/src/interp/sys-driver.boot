@@ -71,7 +71,7 @@ AxiomCore::%sysInit() ==
     -- a goat for CLisp FFI, please.
     sys_-osInitCLispFFI()    
 )endif
-)if %hasFeature KEYWORD::GCL
+)if %hasFeature KEYWORD::GCL or %hasFeature KEYWORD::ECL
   SETQ(COMPILER::_*COMPILE_-VERBOSE_*,false)
   SETQ(COMPILER::_*SUPPRESS_-COMPILER_-WARNINGS_*,true)
   SETQ(COMPILER::_*SUPPRESS_-COMPILER_-NOTES_*,true)
@@ -190,6 +190,7 @@ initializeGlobalState() ==
   GCMSG(NIL)
   if have_to then
     $superHash := MAKE_-HASHTABLE('UEQUAL)
+  initNewWorld()
 
   -- 1. Macros.
   if have_to then buildHtMacroTable()

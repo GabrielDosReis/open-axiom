@@ -68,6 +68,14 @@ genOptimizeOptions stream ==
 $translatingOldBoot := false
 
 AxiomCore::%sysInit() ==
+  SETQ(_*LOAD_-VERBOSE_*,false)
+  if %hasFeature KEYWORD::GCL or %hasFeature KEYWORD::ECL then
+    SETF(SYMBOL_-VALUE
+      bfColonColon("COMPILER","*COMPILE-VERBOSE*"),false)
+    SETF(SYMBOL_-VALUE 
+      bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*"),false)
+    SETF(SYMBOL_-VALUE 
+      bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*"),true)
   if rest ASSOC(Option '"boot", %systemOptions()) = '"old"
   then $translatingOldBoot := true
 
