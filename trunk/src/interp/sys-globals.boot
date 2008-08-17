@@ -473,3 +473,8 @@ $ErrorStream :=
 
 ++ True if we are building the system algebra.
 $buildingSystemAlgebra := false
+
+++ if true, then the interpreter or compiler should inform about 
+++ code generation, etc.
+$verbose := true
+

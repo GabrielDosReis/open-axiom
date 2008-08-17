@@ -50,10 +50,6 @@ $SpadServerName == '"/tmp/.d"
 ++ true means that the core executable acts as remote server.
 $SpadServer := false
 
-++ if true, then the interpreter or compiler should inform about 
-++ code generation, etc.
-$verbose := true
-
 $PrintCompilerMessageIfTrue := true
 
 ++
@@ -187,6 +183,7 @@ initializeGlobalState() ==
   $SPAD := true
   $buildingSystemAlgebra := 
     getOptionValue(Option '"system-algebra",%systemOptions())
+  $verbose := getOptionValue(Option '"verbose",%systemOptions())
   GCMSG(NIL)
   if have_to then
     $superHash := MAKE_-HASHTABLE('UEQUAL)
@@ -196,12 +193,12 @@ initializeGlobalState() ==
   if have_to then buildHtMacroTable()
 
   -- 2. History
-  if $displayStartMsgs then 
+  if $verbose and $displayStartMsgs then 
     sayKeyedMsg("S2IZ0053",['"history"])
   initHist()
 
   -- 3. Databases
-  if $displayStartMsgs then 
+  if $verbose and $displayStartMsgs then 
     sayKeyedMsg("S2IZ0053",['"database"])
   if have_to then  -- ??? remove this functiom from the system?
     SETF(SYMBOL_-FUNCTION "addConsDB", function IDENTITY)
@@ -212,7 +209,7 @@ initializeGlobalState() ==
     openDatabases()
 
   -- 4. Constructors
-  if $displayStartMsgs then 
+  if $verbose and $displayStartMsgs then 
     sayKeyedMsg("S2IZ0053",['"constructors"])
   loadExposureGroupData()
   if have_to then makeConstructorsAutoLoad()
@@ -223,7 +220,7 @@ initializeGlobalState() ==
 
   -- 6. Interpreter
   if have_to then
-    if $displayStartMsgs then 
+    if $verbose and $displayStartMsgs then 
       sayKeyedMsg("S2IZ0053",['"interpreter"])
     initializeTimedNames($interpreterTimedNames,$interpreterTimedClasses)
     statisticsInitialization()
@@ -241,12 +238,10 @@ initializeGlobalState() ==
 executeSpadScript(progname,options,file) ==
   $displayStartMsgs := false
   initializeGlobalState()
-  if getOption(Option '"verbose",%systemOptions()) then
-    $verbose := true
+  if $verbose then
     $options := []
     $ProcessInteractiveValue := false
   else
-    $verbose := false
     $options := [["quiet"]]
     $ProcessInteractiveValue := true
   $PrintCompilerMessageIfTrue := $verbose

@@ -364,7 +364,8 @@
 (defun initial-getdatabase ()
   "fetch data we want in the saved system"
   (let (hascategory constructormodemapAndoperationalist operation constr)
-    (format t "Initial getdatabase~%")
+    (when |$verbose|
+      (format t "Initial getdatabase~%"))
     (setq hascategory '(
 			(|Equation| . |Ring|)
 			(|Expression| . |CoercibleTo|)
@@ -533,14 +534,18 @@
     (dolist (con constr)
       (let ((c (|getSystemModulePath| 
 		(string (|getConstructorAbbreviationFromDB| con)))))
-	(format t "   preloading ~a.." c)
+	(when |$verbose|
+	  (format t "   preloading ~a.." c))
 	(if (probe-file c)
 	    (progn
 	      (put con 'loaded c)
 	      (|loadModule| c con)
-	      (format t "loaded.~%"))
-	  (format t "skipped.~%"))))
-    (format t "~%")))
+	      (when |$verbose|
+		(format t "loaded.~%")))
+	  (when |$verbose|
+	    (format t "skipped.~%")))))
+    (when |$verbose|
+      (format t "~%"))))
 
 ; format of an entry in interp.daase:
 ;  (constructor-name
@@ -564,7 +569,8 @@
     (setq *interp-stream* (open (|pathToDatabase| "interp.daase")))
     (setq stamp (read *interp-stream*))
     (unless (equal stamp *interp-stream-stamp*)
-      (format t "   Re-reading interp.daase")
+      (when |$verbose|
+	(format t "   Re-reading interp.daase"))
       (setq *interp-stream-stamp* stamp)
       (setq pos (car stamp))
       (file-position *interp-stream* pos)
@@ -619,7 +625,8 @@
     (setq *browse-stream* (open (|pathToDatabase| "browse.daase")))
     (setq stamp (read *browse-stream*))
     (unless (equal stamp *browse-stream-stamp*)
-      (format t "   Re-reading browse.daase")
+      (when |$verbose|
+	(format t "   Re-reading browse.daase"))
       (setq *browse-stream-stamp* stamp)
       (setq pos (car stamp))
       (file-position *browse-stream* pos)
@@ -648,7 +655,8 @@
     (setq *category-stream* (open (|pathToDatabase| "category.daase")))
     (setq stamp (read *category-stream*))
     (unless (equal stamp *category-stream-stamp*)
-      (format t "   Re-reading category.daase")
+      (when |$verbose|
+	(format t "   Re-reading category.daase"))
       (setq *category-stream-stamp* stamp)
       (setq pos (car stamp))
       (file-position *category-stream* pos)
@@ -665,7 +673,8 @@
     (setq *operation-stream* (open (|pathToDatabase| "operation.daase")))
     (setq stamp (read *operation-stream*))
     (unless (equal stamp *operation-stream-stamp*)
-      (format t "   Re-reading operation.daase")
+      (when |$verbose|
+	(format t "   Re-reading operation.daase"))
       (setq *operation-stream-stamp* stamp)
       (setq pos (car stamp))
       (file-position *operation-stream* pos)
@@ -1349,7 +1358,8 @@
     (open (|pathToDatabase| "compress.daase") :direction :input))
   (setq stamp (read *compress-stream*))
   (unless (equal stamp *compress-stream-stamp*)
-   (format t "   Re-reading compress.daase")
+    (when |$verbose|
+      (format t "   Re-reading compress.daase"))
    (setq *compress-stream-stamp* stamp)
    (setq pos (car stamp))
    (file-position *compress-stream* pos)
