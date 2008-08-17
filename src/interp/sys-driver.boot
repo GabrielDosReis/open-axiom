@@ -141,7 +141,7 @@ initMemoryConfig() ==
 
 --%
 
-RESTART0() ==
+openDatabases() ==
   COMPRESSOPEN()
   INTERPOPEN()
   OPERATIONOPEN()
@@ -167,28 +167,78 @@ restart() ==
   if $displayStartMsgs then 
     spadStartUpMsgs()
   $currentLine := nil
-  RESTART0()
+  openDatabases()
   readSpadProfileIfThere()
   spad()
 
 --%    
 
+++ Initialize all global states that need to.  Sub-routine of the command
+++ line compiler, the script executor, etc.  Mess with care.
 initializeGlobalState() ==
   REROOT()
+  have_to := $StandardLinking or not %basicSystemIsComplete()
+
+  -- 0. Global variables.
+  $inLispVM := false
   $IOindex := 1
-  $InteractiveFrame := makeInitialModemapFrame()
-  loadExposureGroupData()
-  initHist()
-  initializeInterpreterFrameRing()
   $currentLine := nil
-  RESTART0()
   $NEWSPAD := true
   $SPAD := true
   $buildingSystemAlgebra := 
     getOptionValue(Option '"system-algebra",%systemOptions())
+  GCMSG(NIL)
+  if have_to then
+    $superHash := MAKE_-HASHTABLE('UEQUAL)
+
+  -- 1. Macros.
+  if have_to then buildHtMacroTable()
+
+  -- 2. History
+  if $displayStartMsgs then 
+    sayKeyedMsg("S2IZ0053",['"history"])
+  initHist()
+
+  -- 3. Databases
+  if $displayStartMsgs then 
+    sayKeyedMsg("S2IZ0053",['"database"])
+  if have_to then  -- ??? remove this functiom from the system?
+    SETF(SYMBOL_-FUNCTION "addConsDB", function IDENTITY)
+  if have_to then
+    fillDatabasesInCore()
+    mkLowerCaseConTable()
+  else  
+    openDatabases()
+
+  -- 4. Constructors
+  if $displayStartMsgs then 
+    sayKeyedMsg("S2IZ0053",['"constructors"])
+  loadExposureGroupData()
+  if have_to then makeConstructorsAutoLoad()
+
+  -- 5. Rule sets.
+  if not $ruleSetsInitialized 
+    then initializeRuleSets()
+
+  -- 6. Interpreter
+  if have_to then
+    if $displayStartMsgs then 
+      sayKeyedMsg("S2IZ0053",['"interpreter"])
+    initializeTimedNames($interpreterTimedNames,$interpreterTimedClasses)
+    statisticsInitialization()
+    initializeSystemCommands()
+  $InteractiveFrame := makeInitialModemapFrame()
+  initializeInterpreterFrameRing()
+
+  -- 7. Etc.
+  if have_to and functionp 'addtopath then 
+    addtopath CONCAT(systemRootDirectory(),'"bin")
+  -- Take off
+
 
 ++ execute Spad script
 executeSpadScript(progname,options,file) ==
+  $displayStartMsgs := false
   initializeGlobalState()
   if getOption(Option '"verbose",%systemOptions()) then
     $verbose := true
@@ -208,6 +258,7 @@ associateRequestWithFileType(Option '"script", '"input",
 
 ++ compiler Spad Library File.
 compileSpadLibrary(progname,options,file) ==
+  $displayStartMsgs := false
   initializeGlobalState()
   $EchoLines := false
   ECHO_-META : fluid := false
@@ -224,6 +275,7 @@ associateRequestWithFileType(Option '"compile", '"spad",
 
 
 buildDatabasesHandler(prog,options,args) ==
+  $displayStartMsgs := false
   initializeGlobalState()
   MAKE_-DATABASES args
   coreQuit(errorCount() > 0 => 1; 0)
@@ -241,5 +293,7 @@ systemMain() ==
   -- ??? do any substantial work if we call from it.
   AxiomCore::topLevel()
   REROOT()
+  -- ??? Make this call unconditional
+  if $StandardLinking then initializeGlobalState()
   %basicSystemIsComplete() => restart()
   fatalError '"fell off systemMain"

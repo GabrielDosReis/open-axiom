@@ -333,14 +333,14 @@
     (list flags file)))
 
 
-(defun |closeAllDatabases| nil
+(defun |closeAllDatabaseStreams| nil
   (close *interp-stream*)
   (close *operation-stream*)
   (close *category-stream*)
   (close *browse-stream*))
 
 
-(defun resethashtables ()
+(defun |fillDatabasesInCore| nil
  "set all -hash* to clean values. used to clean up core before saving system"
  (setq *hascategory-hash* (make-hash-table :test #'equal))
  (setq *operation-hash* (make-hash-table))
