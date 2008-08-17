@@ -19,7 +19,7 @@
   (SPADCALL (|ES-;listk| |f| $) (|getShellEntry| $ 27))) 
 
 (DEFUN |ES-;allk| (|l| $)
-  (PROG (#0=#:G1419 |f| #1=#:G1420)
+  (PROG (#0=#:G1421 |f| #1=#:G1422)
     (RETURN
       (SEQ (SPADCALL (ELT $ 32)
                (PROGN
@@ -42,7 +42,7 @@
                (|getShellEntry| $ 35)))))) 
 
 (DEFUN |ES-;operators;SL;7| (|f| $)
-  (PROG (#0=#:G1423 |k| #1=#:G1424)
+  (PROG (#0=#:G1425 |k| #1=#:G1426)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |ES-;operators;SL;7|)
@@ -65,7 +65,7 @@
                   G191 (EXIT (NREVERSE0 #0#)))))))) 
 
 (DEFUN |ES-;height;SNni;8| (|f| $)
-  (PROG (#0=#:G1429 |k| #1=#:G1430)
+  (PROG (#0=#:G1431 |k| #1=#:G1432)
     (RETURN
       (SEQ (SPADCALL (ELT $ 42)
                (PROGN
@@ -91,7 +91,7 @@
                0 (|getShellEntry| $ 45)))))) 
 
 (DEFUN |ES-;freeOf?;SSB;9| (|x| |s| $)
-  (PROG (#0=#:G1434 |k| #1=#:G1435)
+  (PROG (#0=#:G1436 |k| #1=#:G1437)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL |s|
@@ -120,7 +120,7 @@
                (|getShellEntry| $ 50)))))) 
 
 (DEFUN |ES-;distribute;2S;10| (|x| $)
-  (PROG (#0=#:G1438 |k| #1=#:G1439)
+  (PROG (#0=#:G1440 |k| #1=#:G1441)
     (RETURN
       (SEQ (|ES-;unwrap|
                (PROGN
@@ -202,7 +202,7 @@
   (SPADCALL |x| (LIST |e|) (|getShellEntry| $ 80))) 
 
 (DEFUN |ES-;eval;SLLS;24| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1459 |f| #1=#:G1460)
+  (PROG (#0=#:G1461 |f| #1=#:G1462)
     (RETURN
       (SEQ (SPADCALL |x| |ls|
                (PROGN
@@ -230,7 +230,7 @@
       (|getShellEntry| $$ 0))) 
 
 (DEFUN |ES-;eval;SLLS;25| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1463 |f| #1=#:G1464)
+  (PROG (#0=#:G1465 |f| #1=#:G1466)
     (RETURN
       (SEQ (SPADCALL |x| |ls|
                (PROGN
@@ -258,7 +258,7 @@
       (|getShellEntry| $$ 0))) 
 
 (DEFUN |ES-;eval;SLLS;26| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1468 |s| #1=#:G1469)
+  (PROG (#0=#:G1470 |s| #1=#:G1471)
     (RETURN
       (SEQ (SPADCALL |x|
                (PROGN
@@ -282,7 +282,7 @@
                |lf| (|getShellEntry| $ 68)))))) 
 
 (DEFUN |ES-;map;MKS;27| (|fn| |k| $)
-  (PROG (#0=#:G1484 |x| #1=#:G1485 |l|)
+  (PROG (#0=#:G1486 |x| #1=#:G1487 |l|)
     (RETURN
       (SEQ (COND
              ((SPADCALL
@@ -327,7 +327,7 @@
     ('T (|error| "Unknown operator")))) 
 
 (DEFUN |ES-;mainKernel;SU;29| (|x| $)
-  (PROG (|l| |kk| #0=#:G1501 |n| |k|)
+  (PROG (|l| |kk| #0=#:G1503 |n| |k|)
     (RETURN
       (SEQ (COND
              ((NULL (LETT |l| (SPADCALL |x| (|getShellEntry| $ 39))
@@ -367,7 +367,7 @@
                    (EXIT (CONS 0 |k|))))))))) 
 
 (DEFUN |ES-;allKernels| (|f| $)
-  (PROG (|l| |k| #0=#:G1514 |u| |s0| |n| |arg| |t| |s|)
+  (PROG (|l| |k| #0=#:G1516 |u| |s0| |n| |arg| |t| |s|)
     (RETURN
       (SEQ (LETT |s|
                  (SPADCALL
@@ -441,7 +441,7 @@
     ('T (|ES-;okkernel| |op| |args| $)))) 
 
 (DEFUN |ES-;okkernel| (|op| |l| $)
-  (PROG (#0=#:G1521 |f| #1=#:G1522)
+  (PROG (#0=#:G1523 |f| #1=#:G1524)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL |op| |l|
@@ -472,7 +472,7 @@
                (|getShellEntry| $ 88)))))) 
 
 (DEFUN |ES-;elt;BoLS;33| (|op| |args| $)
-  (PROG (|u| #0=#:G1538 |v|)
+  (PROG (|u| #0=#:G1540 |v|)
     (RETURN
       (SEQ (EXIT (COND
                    ((NULL (SPADCALL |op| (|getShellEntry| $ 99)))
@@ -552,7 +552,7 @@
                     (SPADCALL (QCDR |k|) |op| (|getShellEntry| $ 52))))))))) 
 
 (DEFUN |ES-;unwrap| (|l| |x| $)
-  (PROG (|k| #0=#:G1565)
+  (PROG (|k| #0=#:G1567)
     (RETURN
       (SEQ (SEQ (LETT |k| NIL |ES-;unwrap|)
                 (LETT #0# (NREVERSE |l|) |ES-;unwrap|) G190
@@ -572,7 +572,7 @@
            (EXIT |x|))))) 
 
 (DEFUN |ES-;distribute;3S;39| (|x| |y| $)
-  (PROG (|ky| #0=#:G1570 |k| #1=#:G1571)
+  (PROG (|ky| #0=#:G1572 |k| #1=#:G1573)
     (RETURN
       (SEQ (LETT |ky| (SPADCALL |y| (|getShellEntry| $ 57))
                  |ES-;distribute;3S;39|)
@@ -624,7 +624,7 @@
                      (|getShellEntry| $ 122))))))) 
 
 (DEFUN |ES-;mkKerLists| (|leq| $)
-  (PROG (|eq| #0=#:G1588 |k| |lk| |lv|)
+  (PROG (|eq| #0=#:G1590 |k| |lk| |lv|)
     (RETURN
       (SEQ (LETT |lk| NIL |ES-;mkKerLists|)
            (LETT |lv| NIL |ES-;mkKerLists|)
@@ -794,3 +794,282 @@
                                   53 1 0 0 15 55 1 0 0 0 17 1 0 20 10
                                   22)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|ExpressionSpace&| '|isFunctor|
+             '(((|odd?| ((|Boolean|) $)) T (ELT $ 131))
+               ((|even?| ((|Boolean|) $)) T (ELT $ 129))
+               ((|eval| ($ $ (|BasicOperator|) (|Mapping| $ $))) T
+                (ELT $ 77))
+               ((|eval| ($ $ (|BasicOperator|)
+                           (|Mapping| $ (|List| $))))
+                T (ELT $ 71))
+               ((|eval| ($ $ (|List| (|BasicOperator|))
+                           (|List| (|Mapping| $ (|List| $)))))
+                T (ELT $ 85))
+               ((|eval| ($ $ (|List| (|BasicOperator|))
+                           (|List| (|Mapping| $ $))))
+                T (ELT $ 83))
+               ((|eval| ($ $ (|Symbol|) (|Mapping| $ $))) T (ELT $ 75))
+               ((|eval| ($ $ (|Symbol|) (|Mapping| $ (|List| $)))) T
+                (ELT $ 69))
+               ((|eval| ($ $ (|List| (|Symbol|))
+                           (|List| (|Mapping| $ (|List| $)))))
+                T (ELT $ NIL))
+               ((|eval| ($ $ (|List| (|Symbol|))
+                           (|List| (|Mapping| $ $))))
+                T (ELT $ 84))
+               ((|freeOf?| ((|Boolean|) $ (|Symbol|))) T (ELT $ 51))
+               ((|freeOf?| ((|Boolean|) $ $)) T (ELT $ 59))
+               ((|map| ($ (|Mapping| $ $) (|Kernel| $))) T (ELT $ 89))
+               ((|kernel| ($ (|BasicOperator|) (|List| $))) T
+                (ELT $ 100))
+               ((|kernel| ($ (|BasicOperator|) $)) T (ELT $ 61))
+               ((|is?| ((|Boolean|) $ (|Symbol|))) T (ELT $ 116))
+               ((|is?| ((|Boolean|) $ (|BasicOperator|))) T
+                (ELT $ 117))
+               ((|belong?| ((|Boolean|) (|BasicOperator|))) T
+                (ELT $ 22))
+               ((|operator| ((|BasicOperator|) (|BasicOperator|))) T
+                (ELT $ 91))
+               ((|operators| ((|List| (|BasicOperator|)) $)) T
+                (ELT $ 38))
+               ((|tower| ((|List| (|Kernel| $)) $)) T (ELT $ 30))
+               ((|mainKernel| ((|Union| (|Kernel| $) "failed") $)) T
+                (ELT $ 93))
+               ((|height| ((|NonNegativeInteger|) $)) T (ELT $ 46))
+               ((|distribute| ($ $ $)) T (ELT $ 119))
+               ((|distribute| ($ $)) T (ELT $ 53))
+               ((|paren| ($ (|List| $))) T (ELT $ 56))
+               ((|paren| ($ $)) T (ELT $ 19))
+               ((|box| ($ (|List| $))) T (ELT $ 55))
+               ((|box| ($ $)) T (ELT $ 17))
+               ((|subst| ($ $ (|List| (|Kernel| $)) (|List| $))) T
+                (ELT $ NIL))
+               ((|subst| ($ $ (|List| (|Equation| $)))) T (ELT $ 123))
+               ((|subst| ($ $ (|Equation| $))) T (ELT $ 81))
+               ((|elt| ($ (|BasicOperator|) (|List| $))) T (ELT $ 109))
+               ((|elt| ($ (|BasicOperator|) $ $ $ $)) T (ELT $ 65))
+               ((|elt| ($ (|BasicOperator|) $ $ $)) T (ELT $ 64))
+               ((|elt| ($ (|BasicOperator|) $ $)) T (ELT $ 63))
+               ((|elt| ($ (|BasicOperator|) $)) T (ELT $ 62))
+               ((|eval| ($ $ (|List| $) (|List| $))) T (ELT $ NIL))
+               ((|eval| ($ $ $ $)) T (ELT $ NIL))
+               ((|eval| ($ $ (|Equation| $))) T (ELT $ NIL))
+               ((|eval| ($ $ (|List| (|Equation| $)))) T (ELT $ 121))
+               ((|eval| ($ $ (|List| (|Kernel| $)) (|List| $))) T
+                (ELT $ NIL))
+               ((|eval| ($ $ (|Kernel| $) $)) T (ELT $ NIL))
+               ((|retract| ((|Kernel| $) $)) T (ELT $ 112))
+               ((|retractIfCan| ((|Union| (|Kernel| $) "failed") $)) T
+                (ELT $ 113)))
+             (|addModemap| '|ExpressionSpace&|
+                 '(|ExpressionSpace&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |odd?| ((|Boolean|) |#1|))
+                       (SIGNATURE |even?| ((|Boolean|) |#1|))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|BasicOperator|)
+                                 (|Mapping| |#1| |#1|)))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|BasicOperator|)
+                                 (|Mapping| |#1| (|List| |#1|))))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| (|BasicOperator|))
+                                 (|List| (|Mapping| |#1| (|List| |#1|)))))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| (|BasicOperator|))
+                                 (|List| (|Mapping| |#1| |#1|))))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|Symbol|) (|Mapping| |#1| |#1|)))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|Symbol|)
+                                 (|Mapping| |#1| (|List| |#1|))))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| (|Symbol|))
+                                 (|List| (|Mapping| |#1| (|List| |#1|)))))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| (|Symbol|))
+                                 (|List| (|Mapping| |#1| |#1|))))
+                       (SIGNATURE |freeOf?|
+                           ((|Boolean|) |#1| (|Symbol|)))
+                       (SIGNATURE |freeOf?| ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |map|
+                           (|#1| (|Mapping| |#1| |#1|) (|Kernel| |#1|)))
+                       (SIGNATURE |kernel|
+                           (|#1| (|BasicOperator|) (|List| |#1|)))
+                       (SIGNATURE |kernel|
+                                  (|#1| (|BasicOperator|) |#1|))
+                       (SIGNATURE |is?| ((|Boolean|) |#1| (|Symbol|)))
+                       (SIGNATURE |is?|
+                           ((|Boolean|) |#1| (|BasicOperator|)))
+                       (SIGNATURE |belong?|
+                           ((|Boolean|) (|BasicOperator|)))
+                       (SIGNATURE |operator|
+                           ((|BasicOperator|) (|BasicOperator|)))
+                       (SIGNATURE |operators|
+                           ((|List| (|BasicOperator|)) |#1|))
+                       (SIGNATURE |tower|
+                           ((|List| (|Kernel| |#1|)) |#1|))
+                       (SIGNATURE |mainKernel|
+                           ((|Union| (|Kernel| |#1|) "failed") |#1|))
+                       (SIGNATURE |height|
+                           ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |distribute| (|#1| |#1| |#1|))
+                       (SIGNATURE |distribute| (|#1| |#1|))
+                       (SIGNATURE |paren| (|#1| (|List| |#1|)))
+                       (SIGNATURE |paren| (|#1| |#1|))
+                       (SIGNATURE |box| (|#1| (|List| |#1|)))
+                       (SIGNATURE |box| (|#1| |#1|))
+                       (SIGNATURE |subst|
+                           (|#1| |#1| (|List| (|Kernel| |#1|))
+                                 (|List| |#1|)))
+                       (SIGNATURE |subst|
+                           (|#1| |#1| (|List| (|Equation| |#1|))))
+                       (SIGNATURE |subst|
+                                  (|#1| |#1| (|Equation| |#1|)))
+                       (SIGNATURE |elt|
+                           (|#1| (|BasicOperator|) (|List| |#1|)))
+                       (SIGNATURE |elt|
+                           (|#1| (|BasicOperator|) |#1| |#1| |#1| |#1|))
+                       (SIGNATURE |elt|
+                                  (|#1| (|BasicOperator|) |#1| |#1|
+                                        |#1|))
+                       (SIGNATURE |elt|
+                           (|#1| (|BasicOperator|) |#1| |#1|))
+                       (SIGNATURE |elt| (|#1| (|BasicOperator|) |#1|))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| |#1|) (|List| |#1|)))
+                       (SIGNATURE |eval| (|#1| |#1| |#1| |#1|))
+                       (SIGNATURE |eval| (|#1| |#1| (|Equation| |#1|)))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| (|Equation| |#1|))))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| (|Kernel| |#1|))
+                                 (|List| |#1|)))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|Kernel| |#1|) |#1|))
+                       (SIGNATURE |retract| ((|Kernel| |#1|) |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| (|Kernel| |#1|) "failed") |#1|)))
+                   (|ExpressionSpace|))
+                 T '|ExpressionSpace&|
+                 (|put| '|ExpressionSpace&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |odd?| ((|Boolean|) |#1|))
+                                 (SIGNATURE |even?| ((|Boolean|) |#1|))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|BasicOperator|)
+                                      (|Mapping| |#1| |#1|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|BasicOperator|)
+                                      (|Mapping| |#1| (|List| |#1|))))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|List| (|BasicOperator|))
+                                      (|List|
+                                       (|Mapping| |#1| (|List| |#1|)))))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|List| (|BasicOperator|))
+                                      (|List| (|Mapping| |#1| |#1|))))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|Symbol|)
+                                      (|Mapping| |#1| |#1|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|Symbol|)
+                                      (|Mapping| |#1| (|List| |#1|))))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|List| (|Symbol|))
+                                      (|List|
+                                       (|Mapping| |#1| (|List| |#1|)))))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|List| (|Symbol|))
+                                      (|List| (|Mapping| |#1| |#1|))))
+                                 (SIGNATURE |freeOf?|
+                                     ((|Boolean|) |#1| (|Symbol|)))
+                                 (SIGNATURE |freeOf?|
+                                     ((|Boolean|) |#1| |#1|))
+                                 (SIGNATURE |map|
+                                     (|#1| (|Mapping| |#1| |#1|)
+                                      (|Kernel| |#1|)))
+                                 (SIGNATURE |kernel|
+                                     (|#1| (|BasicOperator|)
+                                      (|List| |#1|)))
+                                 (SIGNATURE |kernel|
+                                     (|#1| (|BasicOperator|) |#1|))
+                                 (SIGNATURE |is?|
+                                     ((|Boolean|) |#1| (|Symbol|)))
+                                 (SIGNATURE |is?|
+                                     ((|Boolean|) |#1|
+                                      (|BasicOperator|)))
+                                 (SIGNATURE |belong?|
+                                     ((|Boolean|) (|BasicOperator|)))
+                                 (SIGNATURE |operator|
+                                     ((|BasicOperator|)
+                                      (|BasicOperator|)))
+                                 (SIGNATURE |operators|
+                                     ((|List| (|BasicOperator|)) |#1|))
+                                 (SIGNATURE |tower|
+                                     ((|List| (|Kernel| |#1|)) |#1|))
+                                 (SIGNATURE |mainKernel|
+                                     ((|Union| (|Kernel| |#1|)
+                                       "failed")
+                                      |#1|))
+                                 (SIGNATURE |height|
+                                     ((|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE |distribute|
+                                     (|#1| |#1| |#1|))
+                                 (SIGNATURE |distribute| (|#1| |#1|))
+                                 (SIGNATURE |paren|
+                                     (|#1| (|List| |#1|)))
+                                 (SIGNATURE |paren| (|#1| |#1|))
+                                 (SIGNATURE |box| (|#1| (|List| |#1|)))
+                                 (SIGNATURE |box| (|#1| |#1|))
+                                 (SIGNATURE |subst|
+                                     (|#1| |#1|
+                                      (|List| (|Kernel| |#1|))
+                                      (|List| |#1|)))
+                                 (SIGNATURE |subst|
+                                     (|#1| |#1|
+                                      (|List| (|Equation| |#1|))))
+                                 (SIGNATURE |subst|
+                                     (|#1| |#1| (|Equation| |#1|)))
+                                 (SIGNATURE |elt|
+                                     (|#1| (|BasicOperator|)
+                                      (|List| |#1|)))
+                                 (SIGNATURE |elt|
+                                     (|#1| (|BasicOperator|) |#1| |#1|
+                                      |#1| |#1|))
+                                 (SIGNATURE |elt|
+                                     (|#1| (|BasicOperator|) |#1| |#1|
+                                      |#1|))
+                                 (SIGNATURE |elt|
+                                     (|#1| (|BasicOperator|) |#1| |#1|))
+                                 (SIGNATURE |elt|
+                                     (|#1| (|BasicOperator|) |#1|))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|List| |#1|)
+                                      (|List| |#1|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| |#1| |#1|))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|Equation| |#1|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|List| (|Equation| |#1|))))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|List| (|Kernel| |#1|))
+                                      (|List| |#1|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|Kernel| |#1|) |#1|))
+                                 (SIGNATURE |retract|
+                                     ((|Kernel| |#1|) |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| (|Kernel| |#1|)
+                                       "failed")
+                                      |#1|)))
+                             (|ExpressionSpace|))
+                        |$CategoryFrame|)))) 

@@ -37,40 +37,48 @@
   (SPADCALL
       (SPADCALL
           (SPADCALL |s|
-              (SPADCALL (QREFELT $ 6) (- |i| 1) (QREFELT $ 20))
-              (QREFELT $ 21))
-          |t| (QREFELT $ 16))
-      (SPADCALL |s| (SPADCALL |i| (QREFELT $ 22)) (QREFELT $ 21))
-      (QREFELT $ 16))) 
+              (SPADCALL (|getShellEntry| $ 6) (- |i| 1)
+                  (|getShellEntry| $ 20))
+              (|getShellEntry| $ 21))
+          |t| (|getShellEntry| $ 16))
+      (SPADCALL |s| (SPADCALL |i| (|getShellEntry| $ 22))
+          (|getShellEntry| $ 21))
+      (|getShellEntry| $ 16))) 
 
-(DEFUN |ISTRING;coerce;$Of;10| (|s| $) (SPADCALL |s| (QREFELT $ 26))) 
+(DEFUN |ISTRING;coerce;$Of;10| (|s| $)
+  (SPADCALL |s| (|getShellEntry| $ 26))) 
 
-(DEFUN |ISTRING;minIndex;$I;11| (|s| $) (QREFELT $ 6)) 
+(DEFUN |ISTRING;minIndex;$I;11| (|s| $) (|getShellEntry| $ 6)) 
 
 (DEFUN |ISTRING;upperCase!;2$;12| (|s| $)
-  (SPADCALL (ELT $ 31) |s| (QREFELT $ 33))) 
+  (SPADCALL (ELT $ 31) |s| (|getShellEntry| $ 33))) 
 
 (DEFUN |ISTRING;lowerCase!;2$;13| (|s| $)
-  (SPADCALL (ELT $ 36) |s| (QREFELT $ 33))) 
+  (SPADCALL (ELT $ 36) |s| (|getShellEntry| $ 33))) 
 
 (DEFUN |ISTRING;latex;$S;14| (|s| $)
   (STRCONC "\\mbox{``" (STRCONC |s| "''}"))) 
 
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
-  (PROG (|l| |m| |n| |h| #0=#:G1770 |r| #1=#:G1776 #2=#:G1777 |i|
-             #3=#:G1778 |k|)
+  (PROG (|l| |m| |n| |h| #0=#:G1434 |r| #1=#:G1440 #2=#:G1441 |i|
+             #3=#:G1442 |k|)
     (RETURN
-      (SEQ (LETT |l| (- (SPADCALL |sg| (QREFELT $ 39)) (QREFELT $ 6))
+      (SEQ (LETT |l|
+                 (- (SPADCALL |sg| (|getShellEntry| $ 39))
+                    (|getShellEntry| $ 6))
                  |ISTRING;replace;$Us2$;15|)
-           (LETT |m| (SPADCALL |s| (QREFELT $ 13))
+           (LETT |m| (SPADCALL |s| (|getShellEntry| $ 13))
                  |ISTRING;replace;$Us2$;15|)
-           (LETT |n| (SPADCALL |t| (QREFELT $ 13))
+           (LETT |n| (SPADCALL |t| (|getShellEntry| $ 13))
                  |ISTRING;replace;$Us2$;15|)
            (LETT |h|
                  (COND
-                   ((SPADCALL |sg| (QREFELT $ 40))
-                    (- (SPADCALL |sg| (QREFELT $ 41)) (QREFELT $ 6)))
-                   ('T (- (SPADCALL |s| (QREFELT $ 42)) (QREFELT $ 6))))
+                   ((SPADCALL |sg| (|getShellEntry| $ 40))
+                    (- (SPADCALL |sg| (|getShellEntry| $ 41))
+                       (|getShellEntry| $ 6)))
+                   ('T
+                    (- (SPADCALL |s| (|getShellEntry| $ 42))
+                       (|getShellEntry| $ 6))))
                  |ISTRING;replace;$Us2$;15|)
            (COND
              ((OR (OR (< |l| 0) (NULL (< |h| |m|))) (< |h| (- |l| 1)))
@@ -81,7 +89,8 @@
                                   |ISTRING;replace;$Us2$;15|)
                        (|check-subtype| (>= #0# 0)
                            '(|NonNegativeInteger|) #0#))
-                     (SPADCALL (QREFELT $ 43)) (QREFELT $ 9))
+                     (SPADCALL (|getShellEntry| $ 43))
+                     (|getShellEntry| $ 9))
                  |ISTRING;replace;$Us2$;15|)
            (SEQ (LETT |i| 0 |ISTRING;replace;$Us2$;15|)
                 (LETT #1# (- |l| 1) |ISTRING;replace;$Us2$;15|)
@@ -119,19 +128,22 @@
 
 (DEFUN |ISTRING;setelt;$I2C;16| (|s| |i| |c| $)
   (SEQ (COND
-         ((OR (< |i| (QREFELT $ 6))
-              (< (SPADCALL |s| (QREFELT $ 42)) |i|))
+         ((OR (< |i| (|getShellEntry| $ 6))
+              (< (SPADCALL |s| (|getShellEntry| $ 42)) |i|))
           (|error| "index out of range"))
-         ('T (SEQ (QESET |s| (- |i| (QREFELT $ 6)) |c|) (EXIT |c|)))))) 
+         ('T
+          (SEQ (QESET |s| (- |i| (|getShellEntry| $ 6)) |c|)
+               (EXIT |c|)))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)
-  (PROG (|np| |nw| |iw| |ip| #0=#:G1788 #1=#:G1787 #2=#:G1783)
+  (PROG (|np| |nw| |iw| |ip| #0=#:G1452 #1=#:G1451 #2=#:G1447)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |np| (QCSIZE |part|)
                             |ISTRING;substring?;2$IB;17|)
                       (LETT |nw| (QCSIZE |whole|)
                             |ISTRING;substring?;2$IB;17|)
-                      (LETT |startpos| (- |startpos| (QREFELT $ 6))
+                      (LETT |startpos|
+                            (- |startpos| (|getShellEntry| $ 6))
                             |ISTRING;substring?;2$IB;17|)
                       (EXIT (COND
                               ((< |startpos| 0)
@@ -178,29 +190,31 @@
 (DEFUN |ISTRING;position;2$2I;18| (|s| |t| |startpos| $)
   (PROG (|r|)
     (RETURN
-      (SEQ (LETT |startpos| (- |startpos| (QREFELT $ 6))
+      (SEQ (LETT |startpos| (- |startpos| (|getShellEntry| $ 6))
                  |ISTRING;position;2$2I;18|)
            (EXIT (COND
                    ((< |startpos| 0) (|error| "index out of bounds"))
                    ((NULL (< |startpos| (QCSIZE |t|)))
-                    (- (QREFELT $ 6) 1))
+                    (- (|getShellEntry| $ 6) 1))
                    ('T
                     (SEQ (LETT |r| (STRPOS |s| |t| |startpos| NIL)
                                |ISTRING;position;2$2I;18|)
                          (EXIT (COND
-                                 ((EQ |r| NIL) (- (QREFELT $ 6) 1))
-                                 ('T (+ |r| (QREFELT $ 6))))))))))))) 
+                                 ((EQ |r| NIL)
+                                  (- (|getShellEntry| $ 6) 1))
+                                 ('T (+ |r| (|getShellEntry| $ 6))))))))))))) 
 
 (DEFUN |ISTRING;position;C$2I;19| (|c| |t| |startpos| $)
-  (PROG (|r| #0=#:G1799 #1=#:G1798)
+  (PROG (|r| #0=#:G1463 #1=#:G1462)
     (RETURN
-      (SEQ (EXIT (SEQ (LETT |startpos| (- |startpos| (QREFELT $ 6))
+      (SEQ (EXIT (SEQ (LETT |startpos|
+                            (- |startpos| (|getShellEntry| $ 6))
                             |ISTRING;position;C$2I;19|)
                       (EXIT (COND
                               ((< |startpos| 0)
                                (|error| "index out of bounds"))
                               ((NULL (< |startpos| (QCSIZE |t|)))
-                               (- (QREFELT $ 6) 1))
+                               (- (|getShellEntry| $ 6) 1))
                               ('T
                                (SEQ (SEQ
                                      (LETT |r| |startpos|
@@ -216,25 +230,27 @@
                                          ((CHAR= (CHAR |t| |r|) |c|)
                                           (PROGN
                                             (LETT #1#
-                                             (+ |r| (QREFELT $ 6))
+                                             (+ |r|
+                                              (|getShellEntry| $ 6))
                                              |ISTRING;position;C$2I;19|)
                                             (GO #1#))))))
                                      (LETT |r| (+ |r| 1)
                                       |ISTRING;position;C$2I;19|)
                                      (GO G190) G191 (EXIT NIL))
-                                    (EXIT (- (QREFELT $ 6) 1))))))))
+                                    (EXIT (- (|getShellEntry| $ 6) 1))))))))
            #1# (EXIT #1#))))) 
 
 (DEFUN |ISTRING;position;Cc$2I;20| (|cc| |t| |startpos| $)
-  (PROG (|r| #0=#:G1806 #1=#:G1805)
+  (PROG (|r| #0=#:G1470 #1=#:G1469)
     (RETURN
-      (SEQ (EXIT (SEQ (LETT |startpos| (- |startpos| (QREFELT $ 6))
+      (SEQ (EXIT (SEQ (LETT |startpos|
+                            (- |startpos| (|getShellEntry| $ 6))
                             |ISTRING;position;Cc$2I;20|)
                       (EXIT (COND
                               ((< |startpos| 0)
                                (|error| "index out of bounds"))
                               ((NULL (< |startpos| (QCSIZE |t|)))
-                               (- (QREFELT $ 6) 1))
+                               (- (|getShellEntry| $ 6) 1))
                               ('T
                                (SEQ (SEQ
                                      (LETT |r| |startpos|
@@ -248,47 +264,52 @@
                                       (EXIT
                                        (COND
                                          ((SPADCALL (CHAR |t| |r|) |cc|
-                                           (QREFELT $ 49))
+                                           (|getShellEntry| $ 49))
                                           (PROGN
                                             (LETT #1#
-                                             (+ |r| (QREFELT $ 6))
+                                             (+ |r|
+                                              (|getShellEntry| $ 6))
                                              |ISTRING;position;Cc$2I;20|)
                                             (GO #1#))))))
                                      (LETT |r| (+ |r| 1)
                                       |ISTRING;position;Cc$2I;20|)
                                      (GO G190) G191 (EXIT NIL))
-                                    (EXIT (- (QREFELT $ 6) 1))))))))
+                                    (EXIT (- (|getShellEntry| $ 6) 1))))))))
            #1# (EXIT #1#))))) 
 
 (DEFUN |ISTRING;suffix?;2$B;21| (|s| |t| $)
   (PROG (|n| |m|)
     (RETURN
-      (SEQ (LETT |n| (SPADCALL |t| (QREFELT $ 42))
+      (SEQ (LETT |n| (SPADCALL |t| (|getShellEntry| $ 42))
                  |ISTRING;suffix?;2$B;21|)
-           (LETT |m| (SPADCALL |s| (QREFELT $ 42))
+           (LETT |m| (SPADCALL |s| (|getShellEntry| $ 42))
                  |ISTRING;suffix?;2$B;21|)
            (EXIT (COND
                    ((< |n| |m|) 'NIL)
                    ('T
-                    (SPADCALL |s| |t| (- (+ (QREFELT $ 6) |n|) |m|)
-                        (QREFELT $ 46))))))))) 
+                    (SPADCALL |s| |t|
+                        (- (+ (|getShellEntry| $ 6) |n|) |m|)
+                        (|getShellEntry| $ 46))))))))) 
 
 (DEFUN |ISTRING;split;$CL;22| (|s| |c| $)
   (PROG (|n| |j| |i| |l|)
     (RETURN
-      (SEQ (LETT |n| (SPADCALL |s| (QREFELT $ 42))
+      (SEQ (LETT |n| (SPADCALL |s| (|getShellEntry| $ 42))
                  |ISTRING;split;$CL;22|)
-           (SEQ (LETT |i| (QREFELT $ 6) |ISTRING;split;$CL;22|) G190
+           (SEQ (LETT |i| (|getShellEntry| $ 6) |ISTRING;split;$CL;22|)
+                G190
                 (COND
                   ((OR (> |i| |n|)
                        (NULL (SPADCALL
-                                 (SPADCALL |s| |i| (QREFELT $ 52)) |c|
-                                 (QREFELT $ 53))))
+                                 (SPADCALL |s| |i|
+                                     (|getShellEntry| $ 52))
+                                 |c| (|getShellEntry| $ 53))))
                    (GO G191)))
                 (SEQ (EXIT 0))
                 (LETT |i| (+ |i| 1) |ISTRING;split;$CL;22|) (GO G190)
                 G191 (EXIT NIL))
-           (LETT |l| (SPADCALL (QREFELT $ 55)) |ISTRING;split;$CL;22|)
+           (LETT |l| (SPADCALL (|getShellEntry| $ 55))
+                 |ISTRING;split;$CL;22|)
            (SEQ G190
                 (COND
                   ((NULL (COND
@@ -297,18 +318,18 @@
                             (SPADCALL
                                 (< (LETT |j|
                                     (SPADCALL |c| |s| |i|
-                                     (QREFELT $ 48))
+                                     (|getShellEntry| $ 48))
                                     |ISTRING;split;$CL;22|)
-                                   (QREFELT $ 6))
-                                (QREFELT $ 56)))))
+                                   (|getShellEntry| $ 6))
+                                (|getShellEntry| $ 56)))))
                    (GO G191)))
                 (SEQ (LETT |l|
                            (SPADCALL
                                (SPADCALL |s|
                                    (SPADCALL |i| (- |j| 1)
-                                    (QREFELT $ 20))
-                                   (QREFELT $ 21))
-                               |l| (QREFELT $ 57))
+                                    (|getShellEntry| $ 20))
+                                   (|getShellEntry| $ 21))
+                               |l| (|getShellEntry| $ 57))
                            |ISTRING;split;$CL;22|)
                      (EXIT (SEQ (LETT |i| |j| |ISTRING;split;$CL;22|)
                                 G190
@@ -316,8 +337,9 @@
                                   ((OR (> |i| |n|)
                                     (NULL
                                      (SPADCALL
-                                      (SPADCALL |s| |i| (QREFELT $ 52))
-                                      |c| (QREFELT $ 53))))
+                                      (SPADCALL |s| |i|
+                                       (|getShellEntry| $ 52))
+                                      |c| (|getShellEntry| $ 53))))
                                    (GO G191)))
                                 (SEQ (EXIT 0))
                                 (LETT |i| (+ |i| 1)
@@ -328,28 +350,33 @@
              ((NULL (< |n| |i|))
               (LETT |l|
                     (SPADCALL
-                        (SPADCALL |s| (SPADCALL |i| |n| (QREFELT $ 20))
-                            (QREFELT $ 21))
-                        |l| (QREFELT $ 57))
+                        (SPADCALL |s|
+                            (SPADCALL |i| |n| (|getShellEntry| $ 20))
+                            (|getShellEntry| $ 21))
+                        |l| (|getShellEntry| $ 57))
                     |ISTRING;split;$CL;22|)))
-           (EXIT (SPADCALL |l| (QREFELT $ 58))))))) 
+           (EXIT (SPADCALL |l| (|getShellEntry| $ 58))))))) 
 
 (DEFUN |ISTRING;split;$CcL;23| (|s| |cc| $)
   (PROG (|n| |j| |i| |l|)
     (RETURN
-      (SEQ (LETT |n| (SPADCALL |s| (QREFELT $ 42))
+      (SEQ (LETT |n| (SPADCALL |s| (|getShellEntry| $ 42))
                  |ISTRING;split;$CcL;23|)
-           (SEQ (LETT |i| (QREFELT $ 6) |ISTRING;split;$CcL;23|) G190
+           (SEQ (LETT |i| (|getShellEntry| $ 6)
+                      |ISTRING;split;$CcL;23|)
+                G190
                 (COND
                   ((OR (> |i| |n|)
                        (NULL (SPADCALL
-                                 (SPADCALL |s| |i| (QREFELT $ 52)) |cc|
-                                 (QREFELT $ 49))))
+                                 (SPADCALL |s| |i|
+                                     (|getShellEntry| $ 52))
+                                 |cc| (|getShellEntry| $ 49))))
                    (GO G191)))
                 (SEQ (EXIT 0))
                 (LETT |i| (+ |i| 1) |ISTRING;split;$CcL;23|) (GO G190)
                 G191 (EXIT NIL))
-           (LETT |l| (SPADCALL (QREFELT $ 55)) |ISTRING;split;$CcL;23|)
+           (LETT |l| (SPADCALL (|getShellEntry| $ 55))
+                 |ISTRING;split;$CcL;23|)
            (SEQ G190
                 (COND
                   ((NULL (COND
@@ -358,18 +385,18 @@
                             (SPADCALL
                                 (< (LETT |j|
                                     (SPADCALL |cc| |s| |i|
-                                     (QREFELT $ 50))
+                                     (|getShellEntry| $ 50))
                                     |ISTRING;split;$CcL;23|)
-                                   (QREFELT $ 6))
-                                (QREFELT $ 56)))))
+                                   (|getShellEntry| $ 6))
+                                (|getShellEntry| $ 56)))))
                    (GO G191)))
                 (SEQ (LETT |l|
                            (SPADCALL
                                (SPADCALL |s|
                                    (SPADCALL |i| (- |j| 1)
-                                    (QREFELT $ 20))
-                                   (QREFELT $ 21))
-                               |l| (QREFELT $ 57))
+                                    (|getShellEntry| $ 20))
+                                   (|getShellEntry| $ 21))
+                               |l| (|getShellEntry| $ 57))
                            |ISTRING;split;$CcL;23|)
                      (EXIT (SEQ (LETT |i| |j| |ISTRING;split;$CcL;23|)
                                 G190
@@ -377,8 +404,9 @@
                                   ((OR (> |i| |n|)
                                     (NULL
                                      (SPADCALL
-                                      (SPADCALL |s| |i| (QREFELT $ 52))
-                                      |cc| (QREFELT $ 49))))
+                                      (SPADCALL |s| |i|
+                                       (|getShellEntry| $ 52))
+                                      |cc| (|getShellEntry| $ 49))))
                                    (GO G191)))
                                 (SEQ (EXIT 0))
                                 (LETT |i| (+ |i| 1)
@@ -389,93 +417,105 @@
              ((NULL (< |n| |i|))
               (LETT |l|
                     (SPADCALL
-                        (SPADCALL |s| (SPADCALL |i| |n| (QREFELT $ 20))
-                            (QREFELT $ 21))
-                        |l| (QREFELT $ 57))
+                        (SPADCALL |s|
+                            (SPADCALL |i| |n| (|getShellEntry| $ 20))
+                            (|getShellEntry| $ 21))
+                        |l| (|getShellEntry| $ 57))
                     |ISTRING;split;$CcL;23|)))
-           (EXIT (SPADCALL |l| (QREFELT $ 58))))))) 
+           (EXIT (SPADCALL |l| (|getShellEntry| $ 58))))))) 
 
 (DEFUN |ISTRING;leftTrim;$C$;24| (|s| |c| $)
   (PROG (|n| |i|)
     (RETURN
-      (SEQ (LETT |n| (SPADCALL |s| (QREFELT $ 42))
+      (SEQ (LETT |n| (SPADCALL |s| (|getShellEntry| $ 42))
                  |ISTRING;leftTrim;$C$;24|)
-           (SEQ (LETT |i| (QREFELT $ 6) |ISTRING;leftTrim;$C$;24|) G190
+           (SEQ (LETT |i| (|getShellEntry| $ 6)
+                      |ISTRING;leftTrim;$C$;24|)
+                G190
                 (COND
                   ((OR (> |i| |n|)
                        (NULL (SPADCALL
-                                 (SPADCALL |s| |i| (QREFELT $ 52)) |c|
-                                 (QREFELT $ 53))))
+                                 (SPADCALL |s| |i|
+                                     (|getShellEntry| $ 52))
+                                 |c| (|getShellEntry| $ 53))))
                    (GO G191)))
                 (SEQ (EXIT 0))
                 (LETT |i| (+ |i| 1) |ISTRING;leftTrim;$C$;24|)
                 (GO G190) G191 (EXIT NIL))
-           (EXIT (SPADCALL |s| (SPADCALL |i| |n| (QREFELT $ 20))
-                     (QREFELT $ 21))))))) 
+           (EXIT (SPADCALL |s|
+                     (SPADCALL |i| |n| (|getShellEntry| $ 20))
+                     (|getShellEntry| $ 21))))))) 
 
 (DEFUN |ISTRING;leftTrim;$Cc$;25| (|s| |cc| $)
   (PROG (|n| |i|)
     (RETURN
-      (SEQ (LETT |n| (SPADCALL |s| (QREFELT $ 42))
+      (SEQ (LETT |n| (SPADCALL |s| (|getShellEntry| $ 42))
                  |ISTRING;leftTrim;$Cc$;25|)
-           (SEQ (LETT |i| (QREFELT $ 6) |ISTRING;leftTrim;$Cc$;25|)
+           (SEQ (LETT |i| (|getShellEntry| $ 6)
+                      |ISTRING;leftTrim;$Cc$;25|)
                 G190
                 (COND
                   ((OR (> |i| |n|)
                        (NULL (SPADCALL
-                                 (SPADCALL |s| |i| (QREFELT $ 52)) |cc|
-                                 (QREFELT $ 49))))
+                                 (SPADCALL |s| |i|
+                                     (|getShellEntry| $ 52))
+                                 |cc| (|getShellEntry| $ 49))))
                    (GO G191)))
                 (SEQ (EXIT 0))
                 (LETT |i| (+ |i| 1) |ISTRING;leftTrim;$Cc$;25|)
                 (GO G190) G191 (EXIT NIL))
-           (EXIT (SPADCALL |s| (SPADCALL |i| |n| (QREFELT $ 20))
-                     (QREFELT $ 21))))))) 
+           (EXIT (SPADCALL |s|
+                     (SPADCALL |i| |n| (|getShellEntry| $ 20))
+                     (|getShellEntry| $ 21))))))) 
 
 (DEFUN |ISTRING;rightTrim;$C$;26| (|s| |c| $)
-  (PROG (|j| #0=#:G1830)
+  (PROG (|j| #0=#:G1494)
     (RETURN
-      (SEQ (SEQ (LETT |j| (SPADCALL |s| (QREFELT $ 42))
+      (SEQ (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 42))
                       |ISTRING;rightTrim;$C$;26|)
-                (LETT #0# (QREFELT $ 6) |ISTRING;rightTrim;$C$;26|)
+                (LETT #0# (|getShellEntry| $ 6)
+                      |ISTRING;rightTrim;$C$;26|)
                 G190
                 (COND
                   ((OR (< |j| #0#)
                        (NULL (SPADCALL
-                                 (SPADCALL |s| |j| (QREFELT $ 52)) |c|
-                                 (QREFELT $ 53))))
+                                 (SPADCALL |s| |j|
+                                     (|getShellEntry| $ 52))
+                                 |c| (|getShellEntry| $ 53))))
                    (GO G191)))
                 (SEQ (EXIT 0))
                 (LETT |j| (+ |j| -1) |ISTRING;rightTrim;$C$;26|)
                 (GO G190) G191 (EXIT NIL))
            (EXIT (SPADCALL |s|
-                     (SPADCALL (SPADCALL |s| (QREFELT $ 28)) |j|
-                         (QREFELT $ 20))
-                     (QREFELT $ 21))))))) 
+                     (SPADCALL (SPADCALL |s| (|getShellEntry| $ 28))
+                         |j| (|getShellEntry| $ 20))
+                     (|getShellEntry| $ 21))))))) 
 
 (DEFUN |ISTRING;rightTrim;$Cc$;27| (|s| |cc| $)
-  (PROG (|j| #0=#:G1834)
+  (PROG (|j| #0=#:G1498)
     (RETURN
-      (SEQ (SEQ (LETT |j| (SPADCALL |s| (QREFELT $ 42))
+      (SEQ (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 42))
                       |ISTRING;rightTrim;$Cc$;27|)
-                (LETT #0# (QREFELT $ 6) |ISTRING;rightTrim;$Cc$;27|)
+                (LETT #0# (|getShellEntry| $ 6)
+                      |ISTRING;rightTrim;$Cc$;27|)
                 G190
                 (COND
                   ((OR (< |j| #0#)
                        (NULL (SPADCALL
-                                 (SPADCALL |s| |j| (QREFELT $ 52)) |cc|
-                                 (QREFELT $ 49))))
+                                 (SPADCALL |s| |j|
+                                     (|getShellEntry| $ 52))
+                                 |cc| (|getShellEntry| $ 49))))
                    (GO G191)))
                 (SEQ (EXIT 0))
                 (LETT |j| (+ |j| -1) |ISTRING;rightTrim;$Cc$;27|)
                 (GO G190) G191 (EXIT NIL))
            (EXIT (SPADCALL |s|
-                     (SPADCALL (SPADCALL |s| (QREFELT $ 28)) |j|
-                         (QREFELT $ 20))
-                     (QREFELT $ 21))))))) 
+                     (SPADCALL (SPADCALL |s| (|getShellEntry| $ 28))
+                         |j| (|getShellEntry| $ 20))
+                     (|getShellEntry| $ 21))))))) 
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
-  (PROG (#0=#:G1842 #1=#:G1837 #2=#:G1835 #3=#:G1836 |t| |s| #4=#:G1843
+  (PROG (#0=#:G1506 #1=#:G1501 #2=#:G1499 #3=#:G1500 |t| |s| #4=#:G1507
             |i|)
     (RETURN
       (SEQ (LETT |t|
@@ -493,7 +533,8 @@
                                (GO G191)))
                             (SEQ (EXIT (PROGN
                                          (LETT #1#
-                                          (SPADCALL |s| (QREFELT $ 13))
+                                          (SPADCALL |s|
+                                           (|getShellEntry| $ 13))
                                           |ISTRING;concat;L$;28|)
                                          (COND
                                            (#3#
@@ -508,9 +549,10 @@
                             (LETT #0# (CDR #0#) |ISTRING;concat;L$;28|)
                             (GO G190) G191 (EXIT NIL))
                        (COND (#3# #2#) ('T 0)))
-                     (SPADCALL (QREFELT $ 43)) (QREFELT $ 9))
+                     (SPADCALL (|getShellEntry| $ 43))
+                     (|getShellEntry| $ 9))
                  |ISTRING;concat;L$;28|)
-           (LETT |i| (QREFELT $ 6) |ISTRING;concat;L$;28|)
+           (LETT |i| (|getShellEntry| $ 6) |ISTRING;concat;L$;28|)
            (SEQ (LETT |s| NIL |ISTRING;concat;L$;28|)
                 (LETT #4# |l| |ISTRING;concat;L$;28|) G190
                 (COND
@@ -519,9 +561,11 @@
                          (LETT |s| (CAR #4#) |ISTRING;concat;L$;28|)
                          NIL))
                    (GO G191)))
-                (SEQ (SPADCALL |t| |s| |i| (QREFELT $ 66))
+                (SEQ (SPADCALL |t| |s| |i| (|getShellEntry| $ 66))
                      (EXIT (LETT |i|
-                                 (+ |i| (SPADCALL |s| (QREFELT $ 13)))
+                                 (+ |i|
+                                    (SPADCALL |s|
+                                     (|getShellEntry| $ 13)))
                                  |ISTRING;concat;L$;28|)))
                 (LETT #4# (CDR #4#) |ISTRING;concat;L$;28|) (GO G190)
                 G191 (EXIT NIL))
@@ -530,11 +574,12 @@
 (DEFUN |ISTRING;copyInto!;2$I$;29| (|y| |x| |s| $)
   (PROG (|m| |n|)
     (RETURN
-      (SEQ (LETT |m| (SPADCALL |x| (QREFELT $ 13))
+      (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 13))
                  |ISTRING;copyInto!;2$I$;29|)
-           (LETT |n| (SPADCALL |y| (QREFELT $ 13))
+           (LETT |n| (SPADCALL |y| (|getShellEntry| $ 13))
                  |ISTRING;copyInto!;2$I$;29|)
-           (LETT |s| (- |s| (QREFELT $ 6)) |ISTRING;copyInto!;2$I$;29|)
+           (LETT |s| (- |s| (|getShellEntry| $ 6))
+                 |ISTRING;copyInto!;2$I$;29|)
            (COND
              ((OR (< |s| 0) (< |n| (+ |s| |m|)))
               (EXIT (|error| "index out of range"))))
@@ -542,24 +587,30 @@
 
 (DEFUN |ISTRING;elt;$IC;30| (|s| |i| $)
   (COND
-    ((OR (< |i| (QREFELT $ 6)) (< (SPADCALL |s| (QREFELT $ 42)) |i|))
+    ((OR (< |i| (|getShellEntry| $ 6))
+         (< (SPADCALL |s| (|getShellEntry| $ 42)) |i|))
      (|error| "index out of range"))
-    ('T (CHAR |s| (- |i| (QREFELT $ 6)))))) 
+    ('T (CHAR |s| (- |i| (|getShellEntry| $ 6)))))) 
 
 (DEFUN |ISTRING;elt;$Us$;31| (|s| |sg| $)
   (PROG (|l| |h|)
     (RETURN
-      (SEQ (LETT |l| (- (SPADCALL |sg| (QREFELT $ 39)) (QREFELT $ 6))
+      (SEQ (LETT |l|
+                 (- (SPADCALL |sg| (|getShellEntry| $ 39))
+                    (|getShellEntry| $ 6))
                  |ISTRING;elt;$Us$;31|)
            (LETT |h|
                  (COND
-                   ((SPADCALL |sg| (QREFELT $ 40))
-                    (- (SPADCALL |sg| (QREFELT $ 41)) (QREFELT $ 6)))
-                   ('T (- (SPADCALL |s| (QREFELT $ 42)) (QREFELT $ 6))))
+                   ((SPADCALL |sg| (|getShellEntry| $ 40))
+                    (- (SPADCALL |sg| (|getShellEntry| $ 41))
+                       (|getShellEntry| $ 6)))
+                   ('T
+                    (- (SPADCALL |s| (|getShellEntry| $ 42))
+                       (|getShellEntry| $ 6))))
                  |ISTRING;elt;$Us$;31|)
            (COND
              ((OR (< |l| 0)
-                  (NULL (< |h| (SPADCALL |s| (QREFELT $ 13)))))
+                  (NULL (< |h| (SPADCALL |s| (|getShellEntry| $ 13)))))
               (EXIT (|error| "index out of bound"))))
            (EXIT (SUBSTRING |s| |l| (MAX 0 (+ (- |h| |l|) 1)))))))) 
 
@@ -571,40 +622,44 @@
                    ((ZEROP |n|) 0)
                    ((EQL |n| 1)
                     (SPADCALL
-                        (SPADCALL |s| (QREFELT $ 6) (QREFELT $ 52))
-                        (QREFELT $ 68)))
+                        (SPADCALL |s| (|getShellEntry| $ 6)
+                            (|getShellEntry| $ 52))
+                        (|getShellEntry| $ 68)))
                    ('T
                     (* (* (SPADCALL
-                              (SPADCALL |s| (QREFELT $ 6)
-                                  (QREFELT $ 52))
-                              (QREFELT $ 68))
+                              (SPADCALL |s| (|getShellEntry| $ 6)
+                                  (|getShellEntry| $ 52))
+                              (|getShellEntry| $ 68))
                           (SPADCALL
-                              (SPADCALL |s| (- (+ (QREFELT $ 6) |n|) 1)
-                                  (QREFELT $ 52))
-                              (QREFELT $ 68)))
+                              (SPADCALL |s|
+                                  (- (+ (|getShellEntry| $ 6) |n|) 1)
+                                  (|getShellEntry| $ 52))
+                              (|getShellEntry| $ 68)))
                        (SPADCALL
                            (SPADCALL |s|
-                               (+ (QREFELT $ 6) (QUOTIENT2 |n| 2))
-                               (QREFELT $ 52))
-                           (QREFELT $ 68)))))))))) 
+                               (+ (|getShellEntry| $ 6)
+                                  (QUOTIENT2 |n| 2))
+                               (|getShellEntry| $ 52))
+                           (|getShellEntry| $ 68)))))))))) 
 
 (DEFUN |ISTRING;match;2$CNni;33| (|pattern| |target| |wildcard| $)
   (|stringMatch| |pattern| |target| (CHARACTER |wildcard|))) 
 
 (DEFUN |ISTRING;match?;2$CB;34| (|pattern| |target| |dontcare| $)
-  (PROG (|n| |m| #0=#:G1857 #1=#:G1859 |s| #2=#:G1860 #3=#:G1868 |i|
-             |p| #4=#:G1861 |q|)
+  (PROG (|n| |m| #0=#:G1521 #1=#:G1524 |s| #2=#:G1525 #3=#:G1534 |i|
+             |p| #4=#:G1526 |q|)
     (RETURN
-      (SEQ (EXIT (SEQ (LETT |n| (SPADCALL |pattern| (QREFELT $ 42))
+      (SEQ (EXIT (SEQ (LETT |n|
+                            (SPADCALL |pattern| (|getShellEntry| $ 42))
                             |ISTRING;match?;2$CB;34|)
                       (LETT |p|
                             (PROG1 (LETT #0#
                                     (SPADCALL |dontcare| |pattern|
                                      (LETT |m|
                                       (SPADCALL |pattern|
-                                       (QREFELT $ 28))
+                                       (|getShellEntry| $ 28))
                                       |ISTRING;match?;2$CB;34|)
-                                     (QREFELT $ 48))
+                                     (|getShellEntry| $ 48))
                                     |ISTRING;match?;2$CB;34|)
                               (|check-subtype| (>= #0# 0)
                                   '(|NonNegativeInteger|) #0#))
@@ -612,18 +667,20 @@
                       (EXIT (COND
                               ((EQL |p| (- |m| 1))
                                (SPADCALL |pattern| |target|
-                                   (QREFELT $ 14)))
+                                   (|getShellEntry| $ 14)))
                               ('T
                                (SEQ (COND
-                                      ((NULL (EQL |p| |m|))
+                                      ((SPADCALL |p| |m|
+                                        (|getShellEntry| $ 71))
                                        (COND
                                          ((NULL
                                            (SPADCALL
                                             (SPADCALL |pattern|
                                              (SPADCALL |m| (- |p| 1)
-                                              (QREFELT $ 20))
-                                             (QREFELT $ 21))
-                                            |target| (QREFELT $ 71)))
+                                              (|getShellEntry| $ 20))
+                                             (|getShellEntry| $ 21))
+                                            |target|
+                                            (|getShellEntry| $ 72)))
                                           (EXIT 'NIL)))))
                                     (LETT |i| |p|
                                      |ISTRING;match?;2$CB;34|)
@@ -631,7 +688,8 @@
                                      (PROG1
                                       (LETT #1#
                                        (SPADCALL |dontcare| |pattern|
-                                        (+ |p| 1) (QREFELT $ 48))
+                                        (+ |p| 1)
+                                        (|getShellEntry| $ 48))
                                        |ISTRING;match?;2$CB;34|)
                                        (|check-subtype| (>= #1# 0)
                                         '(|NonNegativeInteger|) #1#))
@@ -639,21 +697,21 @@
                                     (SEQ G190
                                      (COND
                                        ((NULL
-                                         (SPADCALL (EQL |q| (- |m| 1))
-                                          (QREFELT $ 56)))
+                                         (SPADCALL |q| (- |m| 1)
+                                          (|getShellEntry| $ 71)))
                                         (GO G191)))
                                      (SEQ
                                       (LETT |s|
                                        (SPADCALL |pattern|
                                         (SPADCALL (+ |p| 1) (- |q| 1)
-                                         (QREFELT $ 20))
-                                        (QREFELT $ 21))
+                                         (|getShellEntry| $ 20))
+                                        (|getShellEntry| $ 21))
                                        |ISTRING;match?;2$CB;34|)
                                       (LETT |i|
                                        (PROG1
                                         (LETT #2#
                                          (SPADCALL |s| |target| |i|
-                                          (QREFELT $ 47))
+                                          (|getShellEntry| $ 47))
                                          |ISTRING;match?;2$CB;34|)
                                          (|check-subtype| (>= #2# 0)
                                           '(|NonNegativeInteger|) #2#))
@@ -670,7 +728,7 @@
                                            (LETT |i|
                                             (+ |i|
                                              (SPADCALL |s|
-                                              (QREFELT $ 13)))
+                                              (|getShellEntry| $ 13)))
                                             |ISTRING;match?;2$CB;34|)
                                            (LETT |p| |q|
                                             |ISTRING;match?;2$CB;34|)
@@ -680,7 +738,7 @@
                                               (LETT #4#
                                                (SPADCALL |dontcare|
                                                 |pattern| (+ |q| 1)
-                                                (QREFELT $ 48))
+                                                (|getShellEntry| $ 48))
                                                |ISTRING;match?;2$CB;34|)
                                                (|check-subtype|
                                                 (>= #4# 0)
@@ -689,23 +747,25 @@
                                              |ISTRING;match?;2$CB;34|)))))))
                                      NIL (GO G190) G191 (EXIT NIL))
                                     (COND
-                                      ((NULL (EQL |p| |n|))
+                                      ((SPADCALL |p| |n|
+                                        (|getShellEntry| $ 71))
                                        (COND
                                          ((NULL
                                            (SPADCALL
                                             (SPADCALL |pattern|
                                              (SPADCALL (+ |p| 1) |n|
-                                              (QREFELT $ 20))
-                                             (QREFELT $ 21))
-                                            |target| (QREFELT $ 51)))
+                                              (|getShellEntry| $ 20))
+                                             (|getShellEntry| $ 21))
+                                            |target|
+                                            (|getShellEntry| $ 51)))
                                           (EXIT 'NIL)))))
                                     (EXIT 'T)))))))
            #3# (EXIT #3#))))) 
 
-(DEFUN |IndexedString| (#0=#:G1875)
+(DEFUN |IndexedString| (#0=#:G1541)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1876)
+      (PROG (#1=#:G1542)
         (RETURN
           (COND
             ((LETT #1#
@@ -728,9 +788,9 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|IndexedString|))
         (LETT |dv$| (LIST '|IndexedString| |dv$1|) . #0#)
-        (LETT $ (|newShell| 84) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3
+        (LETT $ (|newShell| 85) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
             (LETT |pv$|
                   (|buildPredVector| 0 0
                       (LIST (OR (AND (|HasCategory| (|Character|)
@@ -767,7 +827,7 @@
         (|haddProp| |$ConstructorCache| '|IndexedString| (LIST |dv$1|)
             (CONS 1 $))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         $)))) 
 
 (MAKEPROP '|IndexedString| '|infovec|
@@ -797,28 +857,28 @@
              |ISTRING;leftTrim;$Cc$;25| |ISTRING;rightTrim;$C$;26|
              |ISTRING;rightTrim;$Cc$;27| |ISTRING;copyInto!;2$I$;29|
              |ISTRING;concat;L$;28| (96 . |ord|) |ISTRING;hash;$I;32|
-             |ISTRING;match;2$CNni;33| (101 . |prefix?|)
-             |ISTRING;match?;2$CB;34| (|List| 8) (|List| 75)
-             (|Equation| 8) (|Mapping| 8 8 8) (|InputForm|)
+             |ISTRING;match;2$CNni;33| (101 . ~=) (107 . |prefix?|)
+             |ISTRING;match?;2$CB;34| (|List| 8) (|Equation| 8)
+             (|List| 75) (|Mapping| 8 8 8) (|InputForm|)
              (|SingleInteger|) (|Mapping| 11 8) (|Mapping| 11 8 8)
              (|Void|) (|Union| 8 '"failed") (|List| 18))
-          '#(~= 107 |upperCase!| 113 |upperCase| 118 |trim| 123 |swap!|
-             135 |suffix?| 142 |substring?| 148 |split| 155 |sorted?|
-             167 |sort!| 178 |sort| 189 |size?| 200 |setelt| 206
-             |select| 220 |sample| 226 |rightTrim| 230 |reverse!| 242
-             |reverse| 247 |replace| 252 |removeDuplicates| 259
-             |remove| 264 |reduce| 276 |qsetelt!| 297 |qelt| 304
-             |prefix?| 310 |position| 316 |parts| 349 |new| 354 |more?|
-             360 |minIndex| 366 |min| 371 |merge| 377 |members| 390
-             |member?| 395 |maxIndex| 401 |max| 406 |match?| 412
-             |match| 419 |map!| 426 |map| 432 |lowerCase!| 445
-             |lowerCase| 450 |less?| 455 |leftTrim| 461 |latex| 473
-             |insert| 478 |indices| 492 |index?| 497 |hash| 503 |first|
-             513 |find| 518 |fill!| 524 |every?| 530 |eval| 536 |eq?|
-             562 |entry?| 568 |entries| 574 |empty?| 579 |empty| 584
-             |elt| 588 |delete| 613 |count| 625 |copyInto!| 637 |copy|
-             644 |convert| 649 |construct| 654 |concat| 659 |coerce|
-             682 |any?| 692 >= 698 > 704 = 710 <= 716 < 722 |#| 728)
+          '#(~= 113 |upperCase!| 119 |upperCase| 124 |trim| 129 |swap!|
+             141 |suffix?| 148 |substring?| 154 |split| 161 |sorted?|
+             173 |sort!| 184 |sort| 195 |size?| 206 |setelt| 212
+             |select| 226 |sample| 232 |rightTrim| 236 |reverse!| 248
+             |reverse| 253 |replace| 258 |removeDuplicates| 265
+             |remove| 270 |reduce| 282 |qsetelt!| 303 |qelt| 310
+             |prefix?| 316 |position| 322 |parts| 355 |new| 360 |more?|
+             366 |minIndex| 372 |min| 377 |merge| 383 |members| 396
+             |member?| 401 |maxIndex| 407 |max| 412 |match?| 418
+             |match| 425 |map!| 432 |map| 438 |lowerCase!| 451
+             |lowerCase| 456 |less?| 461 |leftTrim| 467 |latex| 479
+             |insert| 484 |indices| 498 |index?| 503 |hash| 509 |first|
+             519 |find| 524 |fill!| 530 |every?| 536 |eval| 542 |eq?|
+             568 |entry?| 574 |entries| 580 |empty?| 585 |empty| 590
+             |elt| 594 |delete| 619 |count| 631 |copyInto!| 643 |copy|
+             650 |convert| 655 |construct| 660 |concat| 665 |coerce|
+             688 |any?| 698 >= 704 > 710 = 716 <= 722 < 728 |#| 734)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 5
                     '(0 0 0 0 0 0 0 5 0 0 1 4 0 0 1 2 3 4))
@@ -841,51 +901,307 @@
                                (|EltableAggregate| 18 8) (|Evalable| 8)
                                (|SetCategory|) (|Type|)
                                (|Eltable| 18 8) (|InnerEvalable| 8 8)
-                               (|CoercibleTo| 25) (|ConvertibleTo| 77)
+                               (|CoercibleTo| 25) (|ConvertibleTo| 78)
                                (|BasicType|))
-                            (|makeByteWordVec2| 83
+                            (|makeByteWordVec2| 84
                                 '(2 19 0 18 18 20 1 19 0 18 22 1 25 0
                                   24 26 0 29 0 30 1 8 0 0 31 2 0 0 32 0
                                   33 0 29 0 35 1 8 0 0 36 1 19 18 0 39
                                   1 19 11 0 40 1 19 18 0 41 1 0 18 0 42
                                   0 8 0 43 2 29 11 8 0 49 2 8 11 0 0 53
                                   0 54 0 55 1 11 0 0 56 2 54 0 2 0 57 1
-                                  54 0 0 58 1 8 7 0 68 2 0 11 0 0 71 2
-                                  7 11 0 0 1 1 0 0 0 34 1 0 0 0 1 2 0 0
-                                  0 8 1 2 0 0 0 29 1 3 0 81 0 18 18 1 2
-                                  0 11 0 0 51 3 0 11 0 0 18 46 2 0 59 0
-                                  29 61 2 0 59 0 8 60 1 5 11 0 1 2 0 11
-                                  80 0 1 1 5 0 0 1 2 0 0 80 0 1 1 5 0 0
-                                  1 2 0 0 80 0 1 2 0 11 0 7 1 3 0 8 0
-                                  19 8 1 3 0 8 0 18 8 45 2 0 0 79 0 1 0
-                                  0 0 1 2 0 0 0 8 64 2 0 0 0 29 65 1 0
-                                  0 0 1 1 0 0 0 1 3 0 0 0 19 0 44 1 7 0
-                                  0 1 2 7 0 8 0 1 2 0 0 79 0 1 4 7 8 76
-                                  0 8 8 1 3 0 8 76 0 8 1 2 0 8 76 0 1 3
-                                  0 8 0 18 8 1 2 0 8 0 18 1 2 0 11 0 0
-                                  71 3 7 18 8 0 18 48 2 7 18 8 0 1 3 0
-                                  18 29 0 18 50 3 0 18 0 0 18 47 2 0 18
-                                  79 0 1 1 0 73 0 1 2 0 0 7 8 9 2 0 11
-                                  0 7 1 1 6 18 0 28 2 5 0 0 0 1 2 5 0 0
-                                  0 1 3 0 0 80 0 0 1 1 0 73 0 1 2 7 11
-                                  8 0 1 1 6 18 0 42 2 5 0 0 0 1 3 0 11
-                                  0 0 8 72 3 0 7 0 0 8 70 2 0 0 32 0 33
-                                  3 0 0 76 0 0 1 2 0 0 32 0 1 1 0 0 0
-                                  37 1 0 0 0 1 2 0 11 0 7 1 2 0 0 0 8
-                                  62 2 0 0 0 29 63 1 7 24 0 38 3 0 0 8
-                                  0 18 1 3 0 0 0 0 18 23 1 0 83 0 1 2 0
-                                  11 18 0 1 1 7 78 0 1 1 0 18 0 69 1 6
-                                  8 0 1 2 0 82 79 0 1 2 0 0 0 8 1 2 0
-                                  11 79 0 1 3 8 0 0 73 73 1 3 8 0 0 8 8
-                                  1 2 8 0 0 74 1 2 8 0 0 75 1 2 0 11 0
-                                  0 1 2 7 11 8 0 1 1 0 73 0 1 1 0 11 0
-                                  12 0 0 0 10 2 0 0 0 0 1 2 0 0 0 19 21
-                                  2 0 8 0 18 52 3 0 8 0 18 8 1 2 0 0 0
-                                  18 1 2 0 0 0 19 1 2 7 7 8 0 1 2 0 7
-                                  79 0 1 3 0 0 0 0 18 66 1 0 0 0 17 1 3
-                                  77 0 1 1 0 0 73 1 1 0 0 59 67 2 0 0 0
-                                  0 16 2 0 0 0 8 1 2 0 0 8 0 1 1 9 25 0
-                                  27 1 0 0 8 1 2 0 11 79 0 1 2 5 11 0 0
-                                  1 2 5 11 0 0 1 2 7 11 0 0 14 2 5 11 0
-                                  0 1 2 5 11 0 0 15 1 0 7 0 13)))))
+                                  54 0 0 58 1 8 7 0 68 2 18 11 0 0 71 2
+                                  0 11 0 0 72 2 7 11 0 0 1 1 0 0 0 34 1
+                                  0 0 0 1 2 0 0 0 8 1 2 0 0 0 29 1 3 0
+                                  82 0 18 18 1 2 0 11 0 0 51 3 0 11 0 0
+                                  18 46 2 0 59 0 29 61 2 0 59 0 8 60 1
+                                  5 11 0 1 2 0 11 81 0 1 1 5 0 0 1 2 0
+                                  0 81 0 1 1 5 0 0 1 2 0 0 81 0 1 2 0
+                                  11 0 7 1 3 0 8 0 19 8 1 3 0 8 0 18 8
+                                  45 2 0 0 80 0 1 0 0 0 1 2 0 0 0 8 64
+                                  2 0 0 0 29 65 1 0 0 0 1 1 0 0 0 1 3 0
+                                  0 0 19 0 44 1 7 0 0 1 2 7 0 8 0 1 2 0
+                                  0 80 0 1 4 7 8 77 0 8 8 1 3 0 8 77 0
+                                  8 1 2 0 8 77 0 1 3 0 8 0 18 8 1 2 0 8
+                                  0 18 1 2 0 11 0 0 72 3 7 18 8 0 18 48
+                                  2 7 18 8 0 1 3 0 18 29 0 18 50 3 0 18
+                                  0 0 18 47 2 0 18 80 0 1 1 0 74 0 1 2
+                                  0 0 7 8 9 2 0 11 0 7 1 1 6 18 0 28 2
+                                  5 0 0 0 1 2 5 0 0 0 1 3 0 0 81 0 0 1
+                                  1 0 74 0 1 2 7 11 8 0 1 1 6 18 0 42 2
+                                  5 0 0 0 1 3 0 11 0 0 8 73 3 0 7 0 0 8
+                                  70 2 0 0 32 0 33 3 0 0 77 0 0 1 2 0 0
+                                  32 0 1 1 0 0 0 37 1 0 0 0 1 2 0 11 0
+                                  7 1 2 0 0 0 8 62 2 0 0 0 29 63 1 7 24
+                                  0 38 3 0 0 8 0 18 1 3 0 0 0 0 18 23 1
+                                  0 84 0 1 2 0 11 18 0 1 1 7 79 0 1 1 0
+                                  18 0 69 1 6 8 0 1 2 0 83 80 0 1 2 0 0
+                                  0 8 1 2 0 11 80 0 1 3 8 0 0 74 74 1 3
+                                  8 0 0 8 8 1 2 8 0 0 76 1 2 8 0 0 75 1
+                                  2 0 11 0 0 1 2 7 11 8 0 1 1 0 74 0 1
+                                  1 0 11 0 12 0 0 0 10 2 0 0 0 0 1 2 0
+                                  0 0 19 21 2 0 8 0 18 52 3 0 8 0 18 8
+                                  1 2 0 0 0 18 1 2 0 0 0 19 1 2 7 7 8 0
+                                  1 2 0 7 80 0 1 3 0 0 0 0 18 66 1 0 0
+                                  0 17 1 3 78 0 1 1 0 0 74 1 1 0 0 59
+                                  67 2 0 0 0 0 16 2 0 0 0 8 1 2 0 0 8 0
+                                  1 1 9 25 0 27 1 0 0 8 1 2 0 11 80 0 1
+                                  2 5 11 0 0 1 2 5 11 0 0 1 2 7 11 0 0
+                                  14 2 5 11 0 0 1 2 5 11 0 0 15 1 0 7 0
+                                  13)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|IndexedString| '|isFunctor|
+             '(((~= ((|Boolean|) $ $))
+                (|has| (|Character|) (|SetCategory|)) (ELT $ NIL))
+               ((= ((|Boolean|) $ $))
+                (|has| (|Character|) (|SetCategory|)) (ELT $ 14))
+               ((|coerce| ((|OutputForm|) $))
+                (|has| (|Character|) (|CoercibleTo| (|OutputForm|)))
+                (ELT $ 27))
+               ((|hash| ((|SingleInteger|) $))
+                (|has| (|Character|) (|SetCategory|)) (ELT $ NIL))
+               ((|latex| ((|String|) $))
+                (|has| (|Character|) (|SetCategory|)) (ELT $ 38))
+               ((|hash| ((|Integer|) $)) T (ELT $ 69))
+               ((|elt| ($ $ $)) T (ELT $ NIL))
+               ((|rightTrim| ($ $ (|CharacterClass|))) T (ELT $ 65))
+               ((|rightTrim| ($ $ (|Character|))) T (ELT $ 64))
+               ((|leftTrim| ($ $ (|CharacterClass|))) T (ELT $ 63))
+               ((|leftTrim| ($ $ (|Character|))) T (ELT $ 62))
+               ((|trim| ($ $ (|CharacterClass|))) T (ELT $ NIL))
+               ((|trim| ($ $ (|Character|))) T (ELT $ NIL))
+               ((|split| ((|List| $) $ (|CharacterClass|))) T
+                (ELT $ 61))
+               ((|split| ((|List| $) $ (|Character|))) T (ELT $ 60))
+               ((|coerce| ($ (|Character|))) T (ELT $ NIL))
+               ((|position|
+                    ((|Integer|) (|CharacterClass|) $ (|Integer|)))
+                T (ELT $ 50))
+               ((|position| ((|Integer|) $ $ (|Integer|))) T
+                (ELT $ 47))
+               ((|replace| ($ $ (|UniversalSegment| (|Integer|)) $)) T
+                (ELT $ 44))
+               ((|match?| ((|Boolean|) $ $ (|Character|))) T
+                (ELT $ 73))
+               ((|match| ((|NonNegativeInteger|) $ $ (|Character|))) T
+                (ELT $ 70))
+               ((|substring?| ((|Boolean|) $ $ (|Integer|))) T
+                (ELT $ 46))
+               ((|suffix?| ((|Boolean|) $ $)) T (ELT $ 51))
+               ((|prefix?| ((|Boolean|) $ $)) T (ELT $ 72))
+               ((|upperCase!| ($ $)) T (ELT $ 34))
+               ((|upperCase| ($ $)) T (ELT $ NIL))
+               ((|lowerCase!| ($ $)) T (ELT $ 37))
+               ((|lowerCase| ($ $)) T (ELT $ NIL))
+               ((< ((|Boolean|) $ $))
+                (|has| (|Character|) (|OrderedSet|)) (ELT $ 15))
+               ((> ((|Boolean|) $ $))
+                (|has| (|Character|) (|OrderedSet|)) (ELT $ NIL))
+               ((>= ((|Boolean|) $ $))
+                (|has| (|Character|) (|OrderedSet|)) (ELT $ NIL))
+               ((<= ((|Boolean|) $ $))
+                (|has| (|Character|) (|OrderedSet|)) (ELT $ NIL))
+               ((|max| ($ $ $)) (|has| (|Character|) (|OrderedSet|))
+                (ELT $ NIL))
+               ((|min| ($ $ $)) (|has| (|Character|) (|OrderedSet|))
+                (ELT $ NIL))
+               ((|sort!| ($ $))
+                (AND (|has| $ (ATTRIBUTE |shallowlyMutable|))
+                     (|has| (|Character|) (|OrderedSet|)))
+                (ELT $ NIL))
+               ((|sort!| ($ (|Mapping| (|Boolean|) (|Character|)
+                                (|Character|))
+                            $))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ NIL))
+               ((|reverse!| ($ $))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ NIL))
+               ((|copyInto!| ($ $ $ (|Integer|)))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ 66))
+               ((|sorted?| ((|Boolean|) $))
+                (|has| (|Character|) (|OrderedSet|)) (ELT $ NIL))
+               ((|sort| ($ $)) (|has| (|Character|) (|OrderedSet|))
+                (ELT $ NIL))
+               ((|merge| ($ $ $)) (|has| (|Character|) (|OrderedSet|))
+                (ELT $ NIL))
+               ((|position| ((|Integer|) (|Character|) $ (|Integer|)))
+                (|has| (|Character|) (|SetCategory|)) (ELT $ 48))
+               ((|position| ((|Integer|) (|Character|) $))
+                (|has| (|Character|) (|SetCategory|)) (ELT $ NIL))
+               ((|position|
+                    ((|Integer|) (|Mapping| (|Boolean|) (|Character|))
+                     $))
+                T (ELT $ NIL))
+               ((|sorted?|
+                    ((|Boolean|)
+                     (|Mapping| (|Boolean|) (|Character|)
+                         (|Character|))
+                     $))
+                T (ELT $ NIL))
+               ((|sort| ($ (|Mapping| (|Boolean|) (|Character|)
+                               (|Character|))
+                           $))
+                T (ELT $ NIL))
+               ((|reverse| ($ $)) T (ELT $ NIL))
+               ((|merge| ($ (|Mapping| (|Boolean|) (|Character|)
+                                (|Character|))
+                            $ $))
+                T (ELT $ NIL))
+               ((|setelt|
+                    ((|Character|) $ (|UniversalSegment| (|Integer|))
+                     (|Character|)))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ NIL))
+               ((|insert| ($ $ $ (|Integer|))) T (ELT $ 23))
+               ((|insert| ($ (|Character|) $ (|Integer|))) T
+                (ELT $ NIL))
+               ((|delete| ($ $ (|UniversalSegment| (|Integer|)))) T
+                (ELT $ NIL))
+               ((|delete| ($ $ (|Integer|))) T (ELT $ NIL))
+               ((|elt| ($ $ (|UniversalSegment| (|Integer|)))) T
+                (ELT $ 21))
+               ((|map| ($ (|Mapping| (|Character|) (|Character|)
+                              (|Character|))
+                          $ $))
+                T (ELT $ NIL))
+               ((|concat| ($ (|List| $))) T (ELT $ 67))
+               ((|concat| ($ $ $)) T (ELT $ 16))
+               ((|concat| ($ (|Character|) $)) T (ELT $ NIL))
+               ((|concat| ($ $ (|Character|))) T (ELT $ NIL))
+               ((|new| ($ (|NonNegativeInteger|) (|Character|))) T
+                (ELT $ 9))
+               ((|construct| ($ (|List| (|Character|)))) T (ELT $ NIL))
+               ((|find| ((|Union| (|Character|) "failed")
+                         (|Mapping| (|Boolean|) (|Character|)) $))
+                T (ELT $ NIL))
+               ((|reduce|
+                    ((|Character|)
+                     (|Mapping| (|Character|) (|Character|)
+                         (|Character|))
+                     $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|reduce|
+                    ((|Character|)
+                     (|Mapping| (|Character|) (|Character|)
+                         (|Character|))
+                     $ (|Character|)))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|remove| ($ (|Mapping| (|Boolean|) (|Character|)) $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|select| ($ (|Mapping| (|Boolean|) (|Character|)) $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|reduce|
+                    ((|Character|)
+                     (|Mapping| (|Character|) (|Character|)
+                         (|Character|))
+                     $ (|Character|) (|Character|)))
+                (AND (|has| $ (ATTRIBUTE |finiteAggregate|))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|remove| ($ (|Character|) $))
+                (AND (|has| $ (ATTRIBUTE |finiteAggregate|))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|removeDuplicates| ($ $))
+                (AND (|has| $ (ATTRIBUTE |finiteAggregate|))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|convert| ((|InputForm|) $))
+                (|has| (|Character|) (|ConvertibleTo| (|InputForm|)))
+                (ELT $ NIL))
+               ((|swap!| ((|Void|) $ (|Integer|) (|Integer|)))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ NIL))
+               ((|fill!| ($ $ (|Character|)))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ NIL))
+               ((|first| ((|Character|) $))
+                (|has| (|Integer|) (|OrderedSet|)) (ELT $ NIL))
+               ((|minIndex| ((|Integer|) $))
+                (|has| (|Integer|) (|OrderedSet|)) (ELT $ 28))
+               ((|maxIndex| ((|Integer|) $))
+                (|has| (|Integer|) (|OrderedSet|)) (ELT $ 42))
+               ((|entry?| ((|Boolean|) (|Character|) $))
+                (AND (|has| $ (ATTRIBUTE |finiteAggregate|))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|indices| ((|List| (|Integer|)) $)) T (ELT $ NIL))
+               ((|index?| ((|Boolean|) (|Integer|) $)) T (ELT $ NIL))
+               ((|entries| ((|List| (|Character|)) $)) T (ELT $ NIL))
+               ((|elt| ((|Character|) $ (|Integer|))) T (ELT $ 52))
+               ((|elt| ((|Character|) $ (|Integer|) (|Character|))) T
+                (ELT $ NIL))
+               ((|qelt| ((|Character|) $ (|Integer|))) T (ELT $ NIL))
+               ((|setelt| ((|Character|) $ (|Integer|) (|Character|)))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ 45))
+               ((|qsetelt!|
+                    ((|Character|) $ (|Integer|) (|Character|)))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ NIL))
+               ((|eval| ($ $ (|List| (|Character|))
+                           (|List| (|Character|))))
+                (AND (|has| (|Character|) (|Evalable| (|Character|)))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|eval| ($ $ (|Character|) (|Character|)))
+                (AND (|has| (|Character|) (|Evalable| (|Character|)))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|eval| ($ $ (|Equation| (|Character|))))
+                (AND (|has| (|Character|) (|Evalable| (|Character|)))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|eval| ($ $ (|List| (|Equation| (|Character|)))))
+                (AND (|has| (|Character|) (|Evalable| (|Character|)))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|member?| ((|Boolean|) (|Character|) $))
+                (AND (|has| $ (ATTRIBUTE |finiteAggregate|))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|count| ((|NonNegativeInteger|) (|Character|) $))
+                (AND (|has| $ (ATTRIBUTE |finiteAggregate|))
+                     (|has| (|Character|) (|SetCategory|)))
+                (ELT $ NIL))
+               ((|members| ((|List| (|Character|)) $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|parts| ((|List| (|Character|)) $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|count| ((|NonNegativeInteger|)
+                          (|Mapping| (|Boolean|) (|Character|)) $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|every?|
+                    ((|Boolean|) (|Mapping| (|Boolean|) (|Character|))
+                     $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|any?| ((|Boolean|)
+                         (|Mapping| (|Boolean|) (|Character|)) $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ NIL))
+               ((|map!| ($ (|Mapping| (|Character|) (|Character|)) $))
+                (|has| $ (ATTRIBUTE |shallowlyMutable|)) (ELT $ 33))
+               ((|map| ($ (|Mapping| (|Character|) (|Character|)) $)) T
+                (ELT $ NIL))
+               ((|#| ((|NonNegativeInteger|) $))
+                (|has| $ (ATTRIBUTE |finiteAggregate|)) (ELT $ 13))
+               ((|sample| ($)) T (CONST $ NIL))
+               ((|size?| ((|Boolean|) $ (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|more?| ((|Boolean|) $ (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|less?| ((|Boolean|) $ (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|empty?| ((|Boolean|) $)) T (ELT $ 12))
+               ((|empty| ($)) T (ELT $ 10))
+               ((|copy| ($ $)) T (ELT $ 17))
+               ((|eq?| ((|Boolean|) $ $)) T (ELT $ NIL)))
+             (|addModemap| '|IndexedString| '(|IndexedString| |#1|)
+                 '((|Join| (|StringAggregate|)
+                           (CATEGORY |domain|
+                               (SIGNATURE |hash| ((|Integer|) $))))
+                   (|Integer|))
+                 T '|IndexedString|
+                 (|put| '|IndexedString| '|mode|
+                        '(|Mapping|
+                             (|Join| (|StringAggregate|)
+                                     (CATEGORY |domain|
+                                      (SIGNATURE |hash|
+                                       ((|Integer|) $))))
+                             (|Integer|))
+                        |$CategoryFrame|)))) 

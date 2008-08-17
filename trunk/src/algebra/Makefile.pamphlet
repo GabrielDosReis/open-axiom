@@ -2239,6 +2239,14 @@ check:
 <<diagrams.tex (OUT from IN)>>
 <<stages>>
 
+
+.PHONY: all-algstrap
+all-algstrap: $(addsuffix .NRLIB/code.lsp,$(axiom_algebra_bootstrap))
+	for a in $(axiom_algebra_bootstrap); do \
+	  old=$(srcdir)/strap/$$a.lsp; new=$$a.NRLIB/code.lsp; \
+	  if cmp -s $$new $$old; then cp -p $$new $$old || exit 1; fi; \
+	done
+
 mostlyclean-local:
 	@rm -f $(OUT)/*.$(FASLEXT) $(OUT)/*.daase
 	@rm -rf *.NRLIB

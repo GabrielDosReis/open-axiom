@@ -1,28 +1,36 @@
 
 (/VERSIONCHECK 2) 
 
-(DEFUN |URAGG-;elt;AfirstS;1| (|x| T0 $) (SPADCALL |x| (QREFELT $ 8))) 
+(DEFUN |URAGG-;elt;AfirstS;1| (|x| T0 $)
+  (SPADCALL |x| (|getShellEntry| $ 8))) 
 
-(DEFUN |URAGG-;elt;AlastS;2| (|x| T1 $) (SPADCALL |x| (QREFELT $ 11))) 
+(DEFUN |URAGG-;elt;AlastS;2| (|x| T1 $)
+  (SPADCALL |x| (|getShellEntry| $ 11))) 
 
-(DEFUN |URAGG-;elt;ArestA;3| (|x| T2 $) (SPADCALL |x| (QREFELT $ 14))) 
+(DEFUN |URAGG-;elt;ArestA;3| (|x| T2 $)
+  (SPADCALL |x| (|getShellEntry| $ 14))) 
 
 (DEFUN |URAGG-;second;AS;4| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 14)) (QREFELT $ 8))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 14))
+      (|getShellEntry| $ 8))) 
 
 (DEFUN |URAGG-;third;AS;5| (|x| $)
-  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 14)) (QREFELT $ 14))
-      (QREFELT $ 8))) 
+  (SPADCALL
+      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 14))
+                (|getShellEntry| $ 14))
+      (|getShellEntry| $ 8))) 
 
 (DEFUN |URAGG-;cyclic?;AB;6| (|x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 20)) 'NIL)
+    ((SPADCALL |x| (|getShellEntry| $ 20)) 'NIL)
     ('T
-     (SPADCALL (SPADCALL (|URAGG-;findCycle| |x| $) (QREFELT $ 20))
-         (QREFELT $ 21))))) 
+     (SPADCALL
+         (SPADCALL (|URAGG-;findCycle| |x| $) (|getShellEntry| $ 20))
+         (|getShellEntry| $ 21))))) 
 
 (DEFUN |URAGG-;last;AS;7| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 23)) (QREFELT $ 8))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 23))
+      (|getShellEntry| $ 8))) 
 
 (DEFUN |URAGG-;nodes;AL;8| (|x| $)
   (PROG (|l|)
@@ -30,11 +38,13 @@
       (SEQ (LETT |l| NIL |URAGG-;nodes;AL;8|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL (SPADCALL |x| (QREFELT $ 20))
-                             (QREFELT $ 21)))
+                  ((NULL (SPADCALL
+                             (SPADCALL |x| (|getShellEntry| $ 20))
+                             (|getShellEntry| $ 21)))
                    (GO G191)))
                 (SEQ (LETT |l| (CONS |x| |l|) |URAGG-;nodes;AL;8|)
-                     (EXIT (LETT |x| (SPADCALL |x| (QREFELT $ 14))
+                     (EXIT (LETT |x|
+                                 (SPADCALL |x| (|getShellEntry| $ 14))
                                  |URAGG-;nodes;AL;8|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (NREVERSE |l|)))))) 
@@ -44,15 +54,18 @@
     (RETURN
       (SEQ (LETT |l| NIL |URAGG-;children;AL;9|)
            (EXIT (COND
-                   ((SPADCALL |x| (QREFELT $ 20)) |l|)
-                   ('T (CONS (SPADCALL |x| (QREFELT $ 14)) |l|)))))))) 
+                   ((SPADCALL |x| (|getShellEntry| $ 20)) |l|)
+                   ('T
+                    (CONS (SPADCALL |x| (|getShellEntry| $ 14)) |l|)))))))) 
 
-(DEFUN |URAGG-;leaf?;AB;10| (|x| $) (SPADCALL |x| (QREFELT $ 20))) 
+(DEFUN |URAGG-;leaf?;AB;10| (|x| $)
+  (SPADCALL |x| (|getShellEntry| $ 20))) 
 
 (DEFUN |URAGG-;value;AS;11| (|x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 20)) (|error| "value of empty object"))
-    ('T (SPADCALL |x| (QREFELT $ 8))))) 
+    ((SPADCALL |x| (|getShellEntry| $ 20))
+     (|error| "value of empty object"))
+    ('T (SPADCALL |x| (|getShellEntry| $ 8))))) 
 
 (DEFUN |URAGG-;less?;ANniB;12| (|l| |n| $)
   (PROG (|i|)
@@ -62,11 +75,12 @@
                 (COND
                   ((NULL (COND
                            ((< 0 |i|)
-                            (SPADCALL (SPADCALL |l| (QREFELT $ 20))
-                                (QREFELT $ 21)))
+                            (SPADCALL
+                                (SPADCALL |l| (|getShellEntry| $ 20))
+                                (|getShellEntry| $ 21)))
                            ('T 'NIL)))
                    (GO G191)))
-                (SEQ (LETT |l| (SPADCALL |l| (QREFELT $ 14))
+                (SEQ (LETT |l| (SPADCALL |l| (|getShellEntry| $ 14))
                            |URAGG-;less?;ANniB;12|)
                      (EXIT (LETT |i| (- |i| 1) |URAGG-;less?;ANniB;12|)))
                 NIL (GO G190) G191 (EXIT NIL))
@@ -80,18 +94,19 @@
                 (COND
                   ((NULL (COND
                            ((< 0 |i|)
-                            (SPADCALL (SPADCALL |l| (QREFELT $ 20))
-                                (QREFELT $ 21)))
+                            (SPADCALL
+                                (SPADCALL |l| (|getShellEntry| $ 20))
+                                (|getShellEntry| $ 21)))
                            ('T 'NIL)))
                    (GO G191)))
-                (SEQ (LETT |l| (SPADCALL |l| (QREFELT $ 14))
+                (SEQ (LETT |l| (SPADCALL |l| (|getShellEntry| $ 14))
                            |URAGG-;more?;ANniB;13|)
                      (EXIT (LETT |i| (- |i| 1) |URAGG-;more?;ANniB;13|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (COND
                    ((ZEROP |i|)
-                    (SPADCALL (SPADCALL |l| (QREFELT $ 20))
-                        (QREFELT $ 21)))
+                    (SPADCALL (SPADCALL |l| (|getShellEntry| $ 20))
+                        (|getShellEntry| $ 21)))
                    ('T 'NIL))))))) 
 
 (DEFUN |URAGG-;size?;ANniB;14| (|l| |n| $)
@@ -101,15 +116,15 @@
            (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((SPADCALL |l| (QREFELT $ 20)) 'NIL)
+                           ((SPADCALL |l| (|getShellEntry| $ 20)) 'NIL)
                            ('T (< 0 |i|))))
                    (GO G191)))
-                (SEQ (LETT |l| (SPADCALL |l| (QREFELT $ 14))
+                (SEQ (LETT |l| (SPADCALL |l| (|getShellEntry| $ 14))
                            |URAGG-;size?;ANniB;14|)
                      (EXIT (LETT |i| (- |i| 1) |URAGG-;size?;ANniB;14|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (COND
-                   ((SPADCALL |l| (QREFELT $ 20)) (ZEROP |i|))
+                   ((SPADCALL |l| (|getShellEntry| $ 20)) (ZEROP |i|))
                    ('T 'NIL))))))) 
 
 (DEFUN |URAGG-;#;ANni;15| (|x| $)
@@ -117,15 +132,17 @@
     (RETURN
       (SEQ (SEQ (LETT |k| 0 |URAGG-;#;ANni;15|) G190
                 (COND
-                  ((NULL (SPADCALL (SPADCALL |x| (QREFELT $ 20))
-                             (QREFELT $ 21)))
+                  ((NULL (SPADCALL
+                             (SPADCALL |x| (|getShellEntry| $ 20))
+                             (|getShellEntry| $ 21)))
                    (GO G191)))
                 (SEQ (COND
                        ((EQL |k| 1000)
                         (COND
-                          ((SPADCALL |x| (QREFELT $ 34))
+                          ((SPADCALL |x| (|getShellEntry| $ 34))
                            (EXIT (|error| "cyclic list"))))))
-                     (EXIT (LETT |x| (SPADCALL |x| (QREFELT $ 14))
+                     (EXIT (LETT |x|
+                                 (SPADCALL |x| (|getShellEntry| $ 14))
                                  |URAGG-;#;ANni;15|)))
                 (LETT |k| (QSADD1 |k|) |URAGG-;#;ANni;15|) (GO G190)
                 G191 (EXIT NIL))
@@ -135,62 +152,74 @@
   (PROG (|k| |y|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |x| (QREFELT $ 20)) (|error| "empty list"))
+             ((SPADCALL |x| (|getShellEntry| $ 20))
+              (|error| "empty list"))
              ('T
-              (SEQ (LETT |y| (SPADCALL |x| (QREFELT $ 14))
+              (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
                          |URAGG-;tail;2A;16|)
                    (SEQ (LETT |k| 0 |URAGG-;tail;2A;16|) G190
                         (COND
                           ((NULL (SPADCALL
-                                     (SPADCALL |y| (QREFELT $ 20))
-                                     (QREFELT $ 21)))
+                                     (SPADCALL |y|
+                                      (|getShellEntry| $ 20))
+                                     (|getShellEntry| $ 21)))
                            (GO G191)))
                         (SEQ (COND
                                ((EQL |k| 1000)
                                 (COND
-                                  ((SPADCALL |x| (QREFELT $ 34))
+                                  ((SPADCALL |x|
+                                    (|getShellEntry| $ 34))
                                    (EXIT (|error| "cyclic list"))))))
                              (EXIT (LETT |y|
                                     (SPADCALL
                                      (LETT |x| |y| |URAGG-;tail;2A;16|)
-                                     (QREFELT $ 14))
+                                     (|getShellEntry| $ 14))
                                     |URAGG-;tail;2A;16|)))
                         (LETT |k| (QSADD1 |k|) |URAGG-;tail;2A;16|)
                         (GO G190) G191 (EXIT NIL))
                    (EXIT |x|)))))))) 
 
 (DEFUN |URAGG-;findCycle| (|x| $)
-  (PROG (#0=#:G1475 |y|)
+  (PROG (#0=#:G1472 |y|)
     (RETURN
-      (SEQ (EXIT (SEQ (LETT |y| (SPADCALL |x| (QREFELT $ 14))
+      (SEQ (EXIT (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
                             |URAGG-;findCycle|)
                       (SEQ G190
                            (COND
                              ((NULL (SPADCALL
-                                     (SPADCALL |y| (QREFELT $ 20))
-                                     (QREFELT $ 21)))
+                                     (SPADCALL |y|
+                                      (|getShellEntry| $ 20))
+                                     (|getShellEntry| $ 21)))
                               (GO G191)))
                            (SEQ (COND
-                                  ((SPADCALL |x| |y| (QREFELT $ 37))
+                                  ((SPADCALL |x| |y|
+                                    (|getShellEntry| $ 37))
                                    (PROGN
                                      (LETT #0# |x| |URAGG-;findCycle|)
                                      (GO #0#))))
-                                (LETT |x| (SPADCALL |x| (QREFELT $ 14))
+                                (LETT |x|
+                                      (SPADCALL |x|
+                                       (|getShellEntry| $ 14))
                                       |URAGG-;findCycle|)
-                                (LETT |y| (SPADCALL |y| (QREFELT $ 14))
+                                (LETT |y|
+                                      (SPADCALL |y|
+                                       (|getShellEntry| $ 14))
                                       |URAGG-;findCycle|)
                                 (COND
-                                  ((SPADCALL |y| (QREFELT $ 20))
+                                  ((SPADCALL |y|
+                                    (|getShellEntry| $ 20))
                                    (PROGN
                                      (LETT #0# |y| |URAGG-;findCycle|)
                                      (GO #0#))))
                                 (COND
-                                  ((SPADCALL |x| |y| (QREFELT $ 37))
+                                  ((SPADCALL |x| |y|
+                                    (|getShellEntry| $ 37))
                                    (PROGN
                                      (LETT #0# |y| |URAGG-;findCycle|)
                                      (GO #0#))))
                                 (EXIT (LETT |y|
-                                       (SPADCALL |y| (QREFELT $ 14))
+                                       (SPADCALL |y|
+                                        (|getShellEntry| $ 14))
                                        |URAGG-;findCycle|)))
                            NIL (GO G190) G191 (EXIT NIL))
                       (EXIT |y|)))
@@ -202,23 +231,25 @@
       (SEQ (COND
              ((SPADCALL
                   (LETT |y|
-                        (LETT |x| (SPADCALL |x| (QREFELT $ 38))
+                        (LETT |x| (SPADCALL |x| (|getShellEntry| $ 38))
                               |URAGG-;cycleTail;2A;18|)
                         |URAGG-;cycleTail;2A;18|)
-                  (QREFELT $ 20))
+                  (|getShellEntry| $ 20))
               |x|)
              ('T
-              (SEQ (LETT |z| (SPADCALL |x| (QREFELT $ 14))
+              (SEQ (LETT |z| (SPADCALL |x| (|getShellEntry| $ 14))
                          |URAGG-;cycleTail;2A;18|)
                    (SEQ G190
                         (COND
                           ((NULL (SPADCALL
-                                     (SPADCALL |x| |z| (QREFELT $ 37))
-                                     (QREFELT $ 21)))
+                                     (SPADCALL |x| |z|
+                                      (|getShellEntry| $ 37))
+                                     (|getShellEntry| $ 21)))
                            (GO G191)))
                         (SEQ (LETT |y| |z| |URAGG-;cycleTail;2A;18|)
                              (EXIT (LETT |z|
-                                    (SPADCALL |z| (QREFELT $ 14))
+                                    (SPADCALL |z|
+                                     (|getShellEntry| $ 14))
                                     |URAGG-;cycleTail;2A;18|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT |y|)))))))) 
@@ -227,23 +258,25 @@
   (PROG (|l| |z| |k| |y|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |x| (QREFELT $ 20)) |x|)
+             ((SPADCALL |x| (|getShellEntry| $ 20)) |x|)
              ((SPADCALL
                   (LETT |y| (|URAGG-;findCycle| |x| $)
                         |URAGG-;cycleEntry;2A;19|)
-                  (QREFELT $ 20))
+                  (|getShellEntry| $ 20))
               |y|)
              ('T
-              (SEQ (LETT |z| (SPADCALL |y| (QREFELT $ 14))
+              (SEQ (LETT |z| (SPADCALL |y| (|getShellEntry| $ 14))
                          |URAGG-;cycleEntry;2A;19|)
                    (SEQ (LETT |l| 1 |URAGG-;cycleEntry;2A;19|) G190
                         (COND
                           ((NULL (SPADCALL
-                                     (SPADCALL |y| |z| (QREFELT $ 37))
-                                     (QREFELT $ 21)))
+                                     (SPADCALL |y| |z|
+                                      (|getShellEntry| $ 37))
+                                     (|getShellEntry| $ 21)))
                            (GO G191)))
                         (SEQ (EXIT (LETT |z|
-                                    (SPADCALL |z| (QREFELT $ 14))
+                                    (SPADCALL |z|
+                                     (|getShellEntry| $ 14))
                                     |URAGG-;cycleEntry;2A;19|)))
                         (LETT |l| (QSADD1 |l|)
                               |URAGG-;cycleEntry;2A;19|)
@@ -252,7 +285,8 @@
                    (SEQ (LETT |k| 1 |URAGG-;cycleEntry;2A;19|) G190
                         (COND ((QSGREATERP |k| |l|) (GO G191)))
                         (SEQ (EXIT (LETT |y|
-                                    (SPADCALL |y| (QREFELT $ 14))
+                                    (SPADCALL |y|
+                                     (|getShellEntry| $ 14))
                                     |URAGG-;cycleEntry;2A;19|)))
                         (LETT |k| (QSADD1 |k|)
                               |URAGG-;cycleEntry;2A;19|)
@@ -260,13 +294,17 @@
                    (SEQ G190
                         (COND
                           ((NULL (SPADCALL
-                                     (SPADCALL |x| |y| (QREFELT $ 37))
-                                     (QREFELT $ 21)))
+                                     (SPADCALL |x| |y|
+                                      (|getShellEntry| $ 37))
+                                     (|getShellEntry| $ 21)))
                            (GO G191)))
-                        (SEQ (LETT |x| (SPADCALL |x| (QREFELT $ 14))
+                        (SEQ (LETT |x|
+                                   (SPADCALL |x|
+                                    (|getShellEntry| $ 14))
                                    |URAGG-;cycleEntry;2A;19|)
                              (EXIT (LETT |y|
-                                    (SPADCALL |y| (QREFELT $ 14))
+                                    (SPADCALL |y|
+                                     (|getShellEntry| $ 14))
                                     |URAGG-;cycleEntry;2A;19|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT |x|)))))))) 
@@ -275,23 +313,25 @@
   (PROG (|k| |y|)
     (RETURN
       (SEQ (COND
-             ((OR (SPADCALL |x| (QREFELT $ 20))
+             ((OR (SPADCALL |x| (|getShellEntry| $ 20))
                   (SPADCALL
                       (LETT |x| (|URAGG-;findCycle| |x| $)
                             |URAGG-;cycleLength;ANni;20|)
-                      (QREFELT $ 20)))
+                      (|getShellEntry| $ 20)))
               0)
              ('T
-              (SEQ (LETT |y| (SPADCALL |x| (QREFELT $ 14))
+              (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
                          |URAGG-;cycleLength;ANni;20|)
                    (SEQ (LETT |k| 1 |URAGG-;cycleLength;ANni;20|) G190
                         (COND
                           ((NULL (SPADCALL
-                                     (SPADCALL |x| |y| (QREFELT $ 37))
-                                     (QREFELT $ 21)))
+                                     (SPADCALL |x| |y|
+                                      (|getShellEntry| $ 37))
+                                     (|getShellEntry| $ 21)))
                            (GO G191)))
                         (SEQ (EXIT (LETT |y|
-                                    (SPADCALL |y| (QREFELT $ 14))
+                                    (SPADCALL |y|
+                                     (|getShellEntry| $ 14))
                                     |URAGG-;cycleLength;ANni;20|)))
                         (LETT |k| (QSADD1 |k|)
                               |URAGG-;cycleLength;ANni;20|)
@@ -304,19 +344,21 @@
       (SEQ (SEQ (LETT |i| 1 |URAGG-;rest;ANniA;21|) G190
                 (COND ((QSGREATERP |i| |n|) (GO G191)))
                 (SEQ (EXIT (COND
-                             ((SPADCALL |x| (QREFELT $ 20))
+                             ((SPADCALL |x| (|getShellEntry| $ 20))
                               (|error| "Index out of range"))
                              ('T
-                              (LETT |x| (SPADCALL |x| (QREFELT $ 14))
+                              (LETT |x|
+                                    (SPADCALL |x|
+                                     (|getShellEntry| $ 14))
                                     |URAGG-;rest;ANniA;21|)))))
                 (LETT |i| (QSADD1 |i|) |URAGG-;rest;ANniA;21|)
                 (GO G190) G191 (EXIT NIL))
            (EXIT |x|))))) 
 
 (DEFUN |URAGG-;last;ANniA;22| (|x| |n| $)
-  (PROG (|m| #0=#:G1498)
+  (PROG (|m| #0=#:G1495)
     (RETURN
-      (SEQ (LETT |m| (SPADCALL |x| (QREFELT $ 43))
+      (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 43))
                  |URAGG-;last;ANniA;22|)
            (EXIT (COND
                    ((< |m| |n|) (|error| "index out of range"))
@@ -327,69 +369,77 @@
                                     |URAGG-;last;ANniA;22|)
                               (|check-subtype| (>= #0# 0)
                                   '(|NonNegativeInteger|) #0#))
-                            (QREFELT $ 44))
-                        (QREFELT $ 45))))))))) 
+                            (|getShellEntry| $ 44))
+                        (|getShellEntry| $ 45))))))))) 
 
 (DEFUN |URAGG-;=;2AB;23| (|x| |y| $)
-  (PROG (|k| #0=#:G1508)
+  (PROG (|k| #0=#:G1505)
     (RETURN
       (SEQ (EXIT (COND
-                   ((SPADCALL |x| |y| (QREFELT $ 37)) 'T)
+                   ((SPADCALL |x| |y| (|getShellEntry| $ 37)) 'T)
                    ('T
                     (SEQ (SEQ (LETT |k| 0 |URAGG-;=;2AB;23|) G190
                               (COND
                                 ((NULL (COND
-                                         ((SPADCALL |x| (QREFELT $ 20))
+                                         ((SPADCALL |x|
+                                           (|getShellEntry| $ 20))
                                           'NIL)
                                          ('T
                                           (SPADCALL
                                            (SPADCALL |y|
-                                            (QREFELT $ 20))
-                                           (QREFELT $ 21)))))
+                                            (|getShellEntry| $ 20))
+                                           (|getShellEntry| $ 21)))))
                                  (GO G191)))
                               (SEQ (COND
                                      ((EQL |k| 1000)
                                       (COND
-                                        ((SPADCALL |x| (QREFELT $ 34))
+                                        ((SPADCALL |x|
+                                          (|getShellEntry| $ 34))
                                          (EXIT (|error| "cyclic list"))))))
-                                   (COND
-                                     ((NULL
-                                       (SPADCALL
-                                        (SPADCALL |x| (QREFELT $ 8))
-                                        (SPADCALL |y| (QREFELT $ 8))
-                                        (QREFELT $ 47)))
-                                      (EXIT
+                                   (EXIT
+                                    (COND
+                                      ((SPADCALL
+                                        (SPADCALL |x|
+                                         (|getShellEntry| $ 8))
+                                        (SPADCALL |y|
+                                         (|getShellEntry| $ 8))
+                                        (|getShellEntry| $ 47))
                                        (PROGN
                                          (LETT #0# 'NIL
                                           |URAGG-;=;2AB;23|)
-                                         (GO #0#)))))
-                                   (LETT |x|
-                                    (SPADCALL |x| (QREFELT $ 14))
-                                    |URAGG-;=;2AB;23|)
-                                   (EXIT
-                                    (LETT |y|
-                                     (SPADCALL |y| (QREFELT $ 14))
-                                     |URAGG-;=;2AB;23|)))
+                                         (GO #0#)))
+                                      ('T
+                                       (SEQ
+                                        (LETT |x|
+                                         (SPADCALL |x|
+                                          (|getShellEntry| $ 14))
+                                         |URAGG-;=;2AB;23|)
+                                        (EXIT
+                                         (LETT |y|
+                                          (SPADCALL |y|
+                                           (|getShellEntry| $ 14))
+                                          |URAGG-;=;2AB;23|)))))))
                               (LETT |k| (QSADD1 |k|) |URAGG-;=;2AB;23|)
                               (GO G190) G191 (EXIT NIL))
                          (EXIT (COND
-                                 ((SPADCALL |x| (QREFELT $ 20))
-                                  (SPADCALL |y| (QREFELT $ 20)))
+                                 ((SPADCALL |x| (|getShellEntry| $ 20))
+                                  (SPADCALL |y| (|getShellEntry| $ 20)))
                                  ('T 'NIL)))))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |URAGG-;node?;2AB;24| (|u| |v| $)
-  (PROG (|k| #0=#:G1513)
+  (PROG (|k| #0=#:G1510)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ (LETT |k| 0 |URAGG-;node?;2AB;24|) G190
                            (COND
                              ((NULL (SPADCALL
-                                     (SPADCALL |v| (QREFELT $ 20))
-                                     (QREFELT $ 21)))
+                                     (SPADCALL |v|
+                                      (|getShellEntry| $ 20))
+                                     (|getShellEntry| $ 21)))
                               (GO G191)))
                            (SEQ (EXIT (COND
                                         ((SPADCALL |u| |v|
-                                          (QREFELT $ 49))
+                                          (|getShellEntry| $ 49))
                                          (PROGN
                                            (LETT #0# 'T
                                             |URAGG-;node?;2AB;24|)
@@ -400,53 +450,54 @@
                                             ((EQL |k| 1000)
                                              (COND
                                                ((SPADCALL |v|
-                                                 (QREFELT $ 34))
+                                                 (|getShellEntry| $ 34))
                                                 (EXIT
                                                  (|error|
                                                   "cyclic list"))))))
                                           (EXIT
                                            (LETT |v|
                                             (SPADCALL |v|
-                                             (QREFELT $ 14))
+                                             (|getShellEntry| $ 14))
                                             |URAGG-;node?;2AB;24|)))))))
                            (LETT |k| (QSADD1 |k|)
                                  |URAGG-;node?;2AB;24|)
                            (GO G190) G191 (EXIT NIL))
-                      (EXIT (SPADCALL |u| |v| (QREFELT $ 49)))))
+                      (EXIT (SPADCALL |u| |v| (|getShellEntry| $ 49)))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |URAGG-;setelt;Afirst2S;25| (|x| T3 |a| $)
-  (SPADCALL |x| |a| (QREFELT $ 51))) 
+  (SPADCALL |x| |a| (|getShellEntry| $ 51))) 
 
 (DEFUN |URAGG-;setelt;Alast2S;26| (|x| T4 |a| $)
-  (SPADCALL |x| |a| (QREFELT $ 53))) 
+  (SPADCALL |x| |a| (|getShellEntry| $ 53))) 
 
 (DEFUN |URAGG-;setelt;Arest2A;27| (|x| T5 |a| $)
-  (SPADCALL |x| |a| (QREFELT $ 55))) 
+  (SPADCALL |x| |a| (|getShellEntry| $ 55))) 
 
 (DEFUN |URAGG-;concat;3A;28| (|x| |y| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 45)) |y| (QREFELT $ 57))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 45)) |y|
+      (|getShellEntry| $ 57))) 
 
 (DEFUN |URAGG-;setlast!;A2S;29| (|x| |s| $)
   (SEQ (COND
-         ((SPADCALL |x| (QREFELT $ 20))
+         ((SPADCALL |x| (|getShellEntry| $ 20))
           (|error| "setlast: empty list"))
          ('T
-          (SEQ (SPADCALL (SPADCALL |x| (QREFELT $ 23)) |s|
-                   (QREFELT $ 51))
+          (SEQ (SPADCALL (SPADCALL |x| (|getShellEntry| $ 23)) |s|
+                   (|getShellEntry| $ 51))
                (EXIT |s|)))))) 
 
 (DEFUN |URAGG-;setchildren!;ALA;30| (|u| |lv| $)
   (COND
     ((EQL (LENGTH |lv|) 1)
-     (SPADCALL |u| (|SPADfirst| |lv|) (QREFELT $ 55)))
+     (SPADCALL |u| (|SPADfirst| |lv|) (|getShellEntry| $ 55)))
     ('T (|error| "wrong number of children specified")))) 
 
 (DEFUN |URAGG-;setvalue!;A2S;31| (|u| |s| $)
-  (SPADCALL |u| |s| (QREFELT $ 51))) 
+  (SPADCALL |u| |s| (|getShellEntry| $ 51))) 
 
 (DEFUN |URAGG-;split!;AIA;32| (|p| |n| $)
-  (PROG (#0=#:G1524 |q|)
+  (PROG (#0=#:G1521 |q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))
@@ -457,12 +508,12 @@
                                      |URAGG-;split!;AIA;32|)
                                (|check-subtype| (>= #0# 0)
                                    '(|NonNegativeInteger|) #0#))
-                             (QREFELT $ 44))
+                             (|getShellEntry| $ 44))
                          |URAGG-;split!;AIA;32|)
-                   (LETT |q| (SPADCALL |p| (QREFELT $ 14))
+                   (LETT |q| (SPADCALL |p| (|getShellEntry| $ 14))
                          |URAGG-;split!;AIA;32|)
-                   (SPADCALL |p| (SPADCALL (QREFELT $ 62))
-                       (QREFELT $ 55))
+                   (SPADCALL |p| (SPADCALL (|getShellEntry| $ 62))
+                       (|getShellEntry| $ 55))
                    (EXIT |q|)))))))) 
 
 (DEFUN |URAGG-;cycleSplit!;2A;33| (|x| $)
@@ -470,27 +521,29 @@
     (RETURN
       (SEQ (COND
              ((OR (SPADCALL
-                      (LETT |y| (SPADCALL |x| (QREFELT $ 38))
+                      (LETT |y| (SPADCALL |x| (|getShellEntry| $ 38))
                             |URAGG-;cycleSplit!;2A;33|)
-                      (QREFELT $ 20))
-                  (SPADCALL |x| |y| (QREFELT $ 37)))
+                      (|getShellEntry| $ 20))
+                  (SPADCALL |x| |y| (|getShellEntry| $ 37)))
               |y|)
              ('T
-              (SEQ (LETT |z| (SPADCALL |x| (QREFELT $ 14))
+              (SEQ (LETT |z| (SPADCALL |x| (|getShellEntry| $ 14))
                          |URAGG-;cycleSplit!;2A;33|)
                    (SEQ G190
                         (COND
                           ((NULL (SPADCALL
-                                     (SPADCALL |z| |y| (QREFELT $ 37))
-                                     (QREFELT $ 21)))
+                                     (SPADCALL |z| |y|
+                                      (|getShellEntry| $ 37))
+                                     (|getShellEntry| $ 21)))
                            (GO G191)))
                         (SEQ (LETT |x| |z| |URAGG-;cycleSplit!;2A;33|)
                              (EXIT (LETT |z|
-                                    (SPADCALL |z| (QREFELT $ 14))
+                                    (SPADCALL |z|
+                                     (|getShellEntry| $ 14))
                                     |URAGG-;cycleSplit!;2A;33|)))
                         NIL (GO G190) G191 (EXIT NIL))
-                   (SPADCALL |x| (SPADCALL (QREFELT $ 62))
-                       (QREFELT $ 55))
+                   (SPADCALL |x| (SPADCALL (|getShellEntry| $ 62))
+                       (|getShellEntry| $ 55))
                    (EXIT |y|)))))))) 
 
 (DEFUN |UnaryRecursiveAggregate&| (|#1| |#2|)
@@ -502,52 +555,52 @@
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$|
               (LIST '|UnaryRecursiveAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (GETREFV 67) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3
+        (LETT $ (|newShell| 67) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
             (LETT |pv$|
                   (|buildPredVector| 0 0
                       (LIST (|HasAttribute| |#1| '|shallowlyMutable|))) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
-        (QSETREFV $ 7 |#2|)
+        (|setShellEntry| $ 6 |#1|)
+        (|setShellEntry| $ 7 |#2|)
         (COND
           ((|HasAttribute| |#1| '|finiteAggregate|)
-           (QSETREFV $ 46
+           (|setShellEntry| $ 46
                (CONS (|dispatchFunction| |URAGG-;last;ANniA;22|) $))))
         (COND
           ((|HasCategory| |#2| '(|SetCategory|))
            (PROGN
-             (QSETREFV $ 48
+             (|setShellEntry| $ 48
                  (CONS (|dispatchFunction| |URAGG-;=;2AB;23|) $))
-             (QSETREFV $ 50
+             (|setShellEntry| $ 50
                  (CONS (|dispatchFunction| |URAGG-;node?;2AB;24|) $)))))
         (COND
           ((|testBitVector| |pv$| 1)
            (PROGN
-             (QSETREFV $ 52
+             (|setShellEntry| $ 52
                  (CONS (|dispatchFunction| |URAGG-;setelt;Afirst2S;25|)
                        $))
-             (QSETREFV $ 54
+             (|setShellEntry| $ 54
                  (CONS (|dispatchFunction| |URAGG-;setelt;Alast2S;26|)
                        $))
-             (QSETREFV $ 56
+             (|setShellEntry| $ 56
                  (CONS (|dispatchFunction| |URAGG-;setelt;Arest2A;27|)
                        $))
-             (QSETREFV $ 58
+             (|setShellEntry| $ 58
                  (CONS (|dispatchFunction| |URAGG-;concat;3A;28|) $))
-             (QSETREFV $ 59
+             (|setShellEntry| $ 59
                  (CONS (|dispatchFunction| |URAGG-;setlast!;A2S;29|) $))
-             (QSETREFV $ 60
+             (|setShellEntry| $ 60
                  (CONS (|dispatchFunction|
                            |URAGG-;setchildren!;ALA;30|)
                        $))
-             (QSETREFV $ 61
+             (|setShellEntry| $ 61
                  (CONS (|dispatchFunction| |URAGG-;setvalue!;A2S;31|)
                        $))
-             (QSETREFV $ 64
+             (|setShellEntry| $ 64
                  (CONS (|dispatchFunction| |URAGG-;split!;AIA;32|) $))
-             (QSETREFV $ 65
+             (|setShellEntry| $ 65
                  (CONS (|dispatchFunction| |URAGG-;cycleSplit!;2A;33|)
                        $)))))
         $)))) 
@@ -568,7 +621,7 @@
              (41 . |cycleEntry|) |URAGG-;cycleTail;2A;18|
              |URAGG-;cycleEntry;2A;19| |URAGG-;cycleLength;ANni;20|
              |URAGG-;rest;ANniA;21| (46 . |#|) (51 . |rest|)
-             (57 . |copy|) (62 . |last|) (68 . =) (74 . =) (80 . =)
+             (57 . |copy|) (62 . |last|) (68 . ~=) (74 . =) (80 . =)
              (86 . |node?|) (92 . |setfirst!|) (98 . |setelt|)
              (105 . |setlast!|) (111 . |setelt|) (118 . |setrest!|)
              (124 . |setelt|) (131 . |concat!|) (137 . |concat|)
@@ -610,3 +663,170 @@
                                   1 0 30 0 41 1 0 0 0 40 2 0 0 0 0 58 1
                                   0 25 0 27 2 0 19 0 0 48 1 0 30 0 35)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|UnaryRecursiveAggregate&| '|isFunctor|
+             '(((|split!| ($ $ (|Integer|))) T (ELT $ 64))
+               ((|setelt| (|#2| $ "last" |#2|)) T (ELT $ 54))
+               ((|setlast!| (|#2| $ |#2|)) T (ELT $ 59))
+               ((|setelt| ($ $ "rest" $)) T (ELT $ 56))
+               ((|setelt| (|#2| $ "first" |#2|)) T (ELT $ 52))
+               ((|cycleSplit!| ($ $)) T (ELT $ 65))
+               ((|cycleTail| ($ $)) T (ELT $ 39))
+               ((|cycleLength| ((|NonNegativeInteger|) $)) T
+                (ELT $ 41))
+               ((|cycleEntry| ($ $)) T (ELT $ 40))
+               ((|third| (|#2| $)) T (ELT $ 18))
+               ((|second| (|#2| $)) T (ELT $ 17))
+               ((|tail| ($ $)) T (ELT $ 36))
+               ((|last| ($ $ (|NonNegativeInteger|))) T (ELT $ 46))
+               ((|elt| (|#2| $ "last")) T (ELT $ 13))
+               ((|last| (|#2| $)) T (ELT $ 24))
+               ((|rest| ($ $ (|NonNegativeInteger|))) T (ELT $ 42))
+               ((|elt| ($ $ "rest")) T (ELT $ 16))
+               ((|rest| ($ $)) T (ELT $ NIL))
+               ((|elt| (|#2| $ "first")) T (ELT $ 10))
+               ((|concat| ($ |#2| $)) T (ELT $ NIL))
+               ((|concat| ($ $ $)) T (ELT $ 58))
+               ((|setvalue!| (|#2| $ |#2|)) T (ELT $ 61))
+               ((|setelt| (|#2| $ "value" |#2|)) T (ELT $ NIL))
+               ((|setchildren!| ($ $ (|List| $))) T (ELT $ 60))
+               ((|node?| ((|Boolean|) $ $)) T (ELT $ 50))
+               ((|cyclic?| ((|Boolean|) $)) T (ELT $ 22))
+               ((|elt| (|#2| $ "value")) T (ELT $ NIL))
+               ((|value| (|#2| $)) T (ELT $ 29))
+               ((|leaf?| ((|Boolean|) $)) T (ELT $ 28))
+               ((|nodes| ((|List| $) $)) T (ELT $ 26))
+               ((|children| ((|List| $) $)) T (ELT $ 27))
+               ((= ((|Boolean|) $ $)) T (ELT $ 48))
+               ((|#| ((|NonNegativeInteger|) $)) T (ELT $ 35))
+               ((|size?| ((|Boolean|) $ (|NonNegativeInteger|))) T
+                (ELT $ 33))
+               ((|more?| ((|Boolean|) $ (|NonNegativeInteger|))) T
+                (ELT $ 32))
+               ((|less?| ((|Boolean|) $ (|NonNegativeInteger|))) T
+                (ELT $ 31)))
+             (|addModemap| '|UnaryRecursiveAggregate&|
+                 '(|UnaryRecursiveAggregate&| |#1| |#2|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |split!| (|#1| |#1| (|Integer|)))
+                       (SIGNATURE |setelt| (|#2| |#1| "last" |#2|))
+                       (SIGNATURE |setlast!| (|#2| |#1| |#2|))
+                       (SIGNATURE |setelt| (|#1| |#1| "rest" |#1|))
+                       (SIGNATURE |setelt| (|#2| |#1| "first" |#2|))
+                       (SIGNATURE |cycleSplit!| (|#1| |#1|))
+                       (SIGNATURE |cycleTail| (|#1| |#1|))
+                       (SIGNATURE |cycleLength|
+                           ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |cycleEntry| (|#1| |#1|))
+                       (SIGNATURE |third| (|#2| |#1|))
+                       (SIGNATURE |second| (|#2| |#1|))
+                       (SIGNATURE |tail| (|#1| |#1|))
+                       (SIGNATURE |last|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |elt| (|#2| |#1| "last"))
+                       (SIGNATURE |last| (|#2| |#1|))
+                       (SIGNATURE |rest|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |elt| (|#1| |#1| "rest"))
+                       (SIGNATURE |rest| (|#1| |#1|))
+                       (SIGNATURE |elt| (|#2| |#1| "first"))
+                       (SIGNATURE |concat| (|#1| |#2| |#1|))
+                       (SIGNATURE |concat| (|#1| |#1| |#1|))
+                       (SIGNATURE |setvalue!| (|#2| |#1| |#2|))
+                       (SIGNATURE |setelt| (|#2| |#1| "value" |#2|))
+                       (SIGNATURE |setchildren!|
+                           (|#1| |#1| (|List| |#1|)))
+                       (SIGNATURE |node?| ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |cyclic?| ((|Boolean|) |#1|))
+                       (SIGNATURE |elt| (|#2| |#1| "value"))
+                       (SIGNATURE |value| (|#2| |#1|))
+                       (SIGNATURE |leaf?| ((|Boolean|) |#1|))
+                       (SIGNATURE |nodes| ((|List| |#1|) |#1|))
+                       (SIGNATURE |children| ((|List| |#1|) |#1|))
+                       (SIGNATURE = ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |#| ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |size?|
+                           ((|Boolean|) |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |more?|
+                           ((|Boolean|) |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |less?|
+                           ((|Boolean|) |#1| (|NonNegativeInteger|))))
+                   (|UnaryRecursiveAggregate| |#2|) (|Type|))
+                 T '|UnaryRecursiveAggregate&|
+                 (|put| '|UnaryRecursiveAggregate&| '|mode|
+                        '(|Mapping| (CATEGORY |domain|
+                                     (SIGNATURE |split!|
+                                      (|#1| |#1| (|Integer|)))
+                                     (SIGNATURE |setelt|
+                                      (|#2| |#1| "last" |#2|))
+                                     (SIGNATURE |setlast!|
+                                      (|#2| |#1| |#2|))
+                                     (SIGNATURE |setelt|
+                                      (|#1| |#1| "rest" |#1|))
+                                     (SIGNATURE |setelt|
+                                      (|#2| |#1| "first" |#2|))
+                                     (SIGNATURE |cycleSplit!|
+                                      (|#1| |#1|))
+                                     (SIGNATURE |cycleTail|
+                                      (|#1| |#1|))
+                                     (SIGNATURE |cycleLength|
+                                      ((|NonNegativeInteger|) |#1|))
+                                     (SIGNATURE |cycleEntry|
+                                      (|#1| |#1|))
+                                     (SIGNATURE |third| (|#2| |#1|))
+                                     (SIGNATURE |second| (|#2| |#1|))
+                                     (SIGNATURE |tail| (|#1| |#1|))
+                                     (SIGNATURE |last|
+                                      (|#1| |#1|
+                                       (|NonNegativeInteger|)))
+                                     (SIGNATURE |elt|
+                                      (|#2| |#1| "last"))
+                                     (SIGNATURE |last| (|#2| |#1|))
+                                     (SIGNATURE |rest|
+                                      (|#1| |#1|
+                                       (|NonNegativeInteger|)))
+                                     (SIGNATURE |elt|
+                                      (|#1| |#1| "rest"))
+                                     (SIGNATURE |rest| (|#1| |#1|))
+                                     (SIGNATURE |elt|
+                                      (|#2| |#1| "first"))
+                                     (SIGNATURE |concat|
+                                      (|#1| |#2| |#1|))
+                                     (SIGNATURE |concat|
+                                      (|#1| |#1| |#1|))
+                                     (SIGNATURE |setvalue!|
+                                      (|#2| |#1| |#2|))
+                                     (SIGNATURE |setelt|
+                                      (|#2| |#1| "value" |#2|))
+                                     (SIGNATURE |setchildren!|
+                                      (|#1| |#1| (|List| |#1|)))
+                                     (SIGNATURE |node?|
+                                      ((|Boolean|) |#1| |#1|))
+                                     (SIGNATURE |cyclic?|
+                                      ((|Boolean|) |#1|))
+                                     (SIGNATURE |elt|
+                                      (|#2| |#1| "value"))
+                                     (SIGNATURE |value| (|#2| |#1|))
+                                     (SIGNATURE |leaf?|
+                                      ((|Boolean|) |#1|))
+                                     (SIGNATURE |nodes|
+                                      ((|List| |#1|) |#1|))
+                                     (SIGNATURE |children|
+                                      ((|List| |#1|) |#1|))
+                                     (SIGNATURE =
+                                      ((|Boolean|) |#1| |#1|))
+                                     (SIGNATURE |#|
+                                      ((|NonNegativeInteger|) |#1|))
+                                     (SIGNATURE |size?|
+                                      ((|Boolean|) |#1|
+                                       (|NonNegativeInteger|)))
+                                     (SIGNATURE |more?|
+                                      ((|Boolean|) |#1|
+                                       (|NonNegativeInteger|)))
+                                     (SIGNATURE |less?|
+                                      ((|Boolean|) |#1|
+                                       (|NonNegativeInteger|))))
+                                    (|UnaryRecursiveAggregate| |#2|)
+                                    (|Type|))
+                        |$CategoryFrame|)))) 

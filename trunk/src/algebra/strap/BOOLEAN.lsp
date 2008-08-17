@@ -38,9 +38,9 @@
 (DEFUN |BOOLEAN;nand;3$;14| (|a| |b| $)
   (COND (|a| (|BOOLEAN;nt| |b| $)) ('T 'T))) 
 
-(PUT '|BOOLEAN;=;2$B;15| '|SPADreplace| 'EQ) 
+(PUT '|BOOLEAN;=;3$;15| '|SPADreplace| 'EQ) 
 
-(DEFUN |BOOLEAN;=;2$B;15| (|a| |b| $) (EQ |a| |b|)) 
+(DEFUN |BOOLEAN;=;3$;15| (|a| |b| $) (EQ |a| |b|)) 
 
 (DEFUN |BOOLEAN;implies;3$;16| (|a| |b| $) (COND (|a| |b|) ('T 'T))) 
 
@@ -48,7 +48,7 @@
 
 (DEFUN |BOOLEAN;equiv;3$;17| (|a| |b| $) (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;<;2$B;18| (|a| |b| $)
+(DEFUN |BOOLEAN;<;3$;18| (|a| |b| $)
   (COND (|b| (|BOOLEAN;nt| |a| $)) ('T 'NIL))) 
 
 (PUT '|BOOLEAN;size;Nni;19| '|SPADreplace| '(XLAM NIL 2)) 
@@ -79,7 +79,7 @@
 (DEFUN |Boolean| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1421)
+      (PROG (#0=#:G1423)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Boolean|) |Boolean|)
@@ -116,8 +116,8 @@
              |BOOLEAN;and;3$;8| |BOOLEAN;/\\;3$;9| |BOOLEAN;or;3$;10|
              |BOOLEAN;\\/;3$;11| |BOOLEAN;xor;3$;12|
              |BOOLEAN;nor;3$;13| |BOOLEAN;nand;3$;14| (|Boolean|)
-             |BOOLEAN;=;2$B;15| |BOOLEAN;implies;3$;16|
-             |BOOLEAN;equiv;3$;17| |BOOLEAN;<;2$B;18|
+             |BOOLEAN;=;3$;15| |BOOLEAN;implies;3$;16|
+             |BOOLEAN;equiv;3$;17| |BOOLEAN;<;3$;18|
              (|NonNegativeInteger|) |BOOLEAN;size;Nni;19| (|Integer|)
              (0 . |even?|) (|PositiveInteger|) |BOOLEAN;index;Pi$;20|
              |BOOLEAN;lookup;$Pi;21| |BOOLEAN;random;$;22| (|String|)
@@ -152,5 +152,65 @@
                                   0 20 2 0 19 0 0 1 2 0 19 0 0 23 2 0 0
                                   0 0 13)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|Boolean| '|isFunctor|
+             '(((|test| ($ $)) T (ELT $ 6))
+               ((|nor| ($ $ $)) T (ELT $ 17))
+               ((|nand| ($ $ $)) T (ELT $ 18))
+               ((|xor| ($ $ $)) T (ELT $ 16)) ((^ ($ $)) T (ELT $ 10))
+               ((|false| ($)) T (CONST $ 8))
+               ((|true| ($)) T (CONST $ 7))
+               ((|convert| ((|InputForm|) $)) T (ELT $ 37))
+               ((|equiv| ($ $ $)) T (ELT $ 22))
+               ((|implies| ($ $ $)) T (ELT $ 21))
+               ((|or| ($ $ $)) T (ELT $ 14))
+               ((|and| ($ $ $)) T (ELT $ 12))
+               ((|not| ($ $)) T (ELT $ 9)) ((~ ($ $)) T (ELT $ 11))
+               ((|/\\| ($ $ $)) T (ELT $ 13))
+               ((|\\/| ($ $ $)) T (ELT $ 15))
+               ((|size| ((|NonNegativeInteger|))) T (ELT $ 25))
+               ((|index| ($ (|PositiveInteger|))) T (ELT $ 29))
+               ((|lookup| ((|PositiveInteger|) $)) T (ELT $ 30))
+               ((|random| ($)) T (ELT $ 31))
+               ((|min| ($ $ $)) T (ELT $ NIL))
+               ((|max| ($ $ $)) T (ELT $ NIL))
+               ((<= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((>= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((> ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((< ((|Boolean|) $ $)) T (ELT $ 23))
+               ((|latex| ((|String|) $)) T (ELT $ NIL))
+               ((|hash| ((|SingleInteger|) $)) T (ELT $ NIL))
+               ((|coerce| ((|OutputForm|) $)) T (ELT $ 40))
+               ((= ((|Boolean|) $ $)) T (ELT $ 20))
+               ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
+             (|addModemap| '|Boolean| '(|Boolean|)
+                 '((|Join| (|OrderedSet|) (|Finite|) (|Logic|)
+                           (|PropositionalLogic|)
+                           (|ConvertibleTo| (|InputForm|))
+                           (CATEGORY |domain|
+                               (SIGNATURE |true| ($) |constant|)
+                               (SIGNATURE |false| ($) |constant|)
+                               (SIGNATURE ^ ($ $))
+                               (SIGNATURE |xor| ($ $ $))
+                               (SIGNATURE |nand| ($ $ $))
+                               (SIGNATURE |nor| ($ $ $))
+                               (SIGNATURE |test| ($ $)))))
+                 T '|Boolean|
+                 (|put| '|Boolean| '|mode|
+                        '(|Mapping|
+                             (|Join| (|OrderedSet|) (|Finite|)
+                                     (|Logic|) (|PropositionalLogic|)
+                                     (|ConvertibleTo| (|InputForm|))
+                                     (CATEGORY |domain|
+                                      (SIGNATURE |true| ($) |constant|)
+                                      (SIGNATURE |false| ($)
+                                       |constant|)
+                                      (SIGNATURE ^ ($ $))
+                                      (SIGNATURE |xor| ($ $ $))
+                                      (SIGNATURE |nand| ($ $ $))
+                                      (SIGNATURE |nor| ($ $ $))
+                                      (SIGNATURE |test| ($ $)))))
+                        |$CategoryFrame|)))) 
 
 (MAKEPROP '|Boolean| 'NILADIC T) 

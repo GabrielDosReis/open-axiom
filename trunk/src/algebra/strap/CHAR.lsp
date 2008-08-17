@@ -14,17 +14,17 @@
 (DEFUN |CHAR;size;Nni;3| ($) 256) 
 
 (DEFUN |CHAR;index;Pi$;4| (|n| $)
-  (PROG (#0=#:G1389)
+  (PROG (#0=#:G1398)
     (RETURN
       (SPADCALL
           (PROG1 (LETT #0# (- |n| 1) |CHAR;index;Pi$;4|)
             (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#))
-          (QREFELT $ 11))))) 
+          (|getShellEntry| $ 11))))) 
 
 (DEFUN |CHAR;lookup;$Pi;5| (|c| $)
-  (PROG (#0=#:G1391)
+  (PROG (#0=#:G1400)
     (RETURN
-      (PROG1 (LETT #0# (+ 1 (SPADCALL |c| (QREFELT $ 14)))
+      (PROG1 (LETT #0# (+ 1 (SPADCALL |c| (|getShellEntry| $ 14)))
                    |CHAR;lookup;$Pi;5|)
         (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))) 
 
@@ -37,7 +37,8 @@
 (DEFUN |CHAR;ord;$Nni;7| (|c| $) (CHAR-CODE |c|)) 
 
 (DEFUN |CHAR;random;$;8| ($)
-  (SPADCALL (RANDOM (SPADCALL (QREFELT $ 10))) (QREFELT $ 11))) 
+  (SPADCALL (RANDOM (SPADCALL (|getShellEntry| $ 10)))
+      (|getShellEntry| $ 11))) 
 
 (PUT '|CHAR;space;$;9| '|SPADreplace| '(XLAM NIL (CHAR "   " 0))) 
 
@@ -56,22 +57,22 @@
 (DEFUN |CHAR;coerce;$Of;12| (|c| $) |c|) 
 
 (DEFUN |CHAR;digit?;$B;13| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 23) (QREFELT $ 25))) 
+  (SPADCALL |c| (|spadConstant| $ 23) (|getShellEntry| $ 25))) 
 
 (DEFUN |CHAR;hexDigit?;$B;14| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 27) (QREFELT $ 25))) 
+  (SPADCALL |c| (|spadConstant| $ 27) (|getShellEntry| $ 25))) 
 
 (DEFUN |CHAR;upperCase?;$B;15| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 29) (QREFELT $ 25))) 
+  (SPADCALL |c| (|spadConstant| $ 29) (|getShellEntry| $ 25))) 
 
 (DEFUN |CHAR;lowerCase?;$B;16| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 31) (QREFELT $ 25))) 
+  (SPADCALL |c| (|spadConstant| $ 31) (|getShellEntry| $ 25))) 
 
 (DEFUN |CHAR;alphabetic?;$B;17| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 33) (QREFELT $ 25))) 
+  (SPADCALL |c| (|spadConstant| $ 33) (|getShellEntry| $ 25))) 
 
 (DEFUN |CHAR;alphanumeric?;$B;18| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 35) (QREFELT $ 25))) 
+  (SPADCALL |c| (|spadConstant| $ 35) (|getShellEntry| $ 25))) 
 
 (DEFUN |CHAR;latex;$S;19| (|c| $)
   (STRCONC "\\mbox{`" (STRCONC (MAKE-FULL-CVEC 1 |c|) "'}"))) 
@@ -79,7 +80,8 @@
 (DEFUN |CHAR;char;S$;20| (|s| $)
   (COND
     ((EQL (QCSIZE |s|) 1)
-     (SPADCALL |s| (SPADCALL |s| (QREFELT $ 40)) (QREFELT $ 41)))
+     (SPADCALL |s| (SPADCALL |s| (|getShellEntry| $ 40))
+         (|getShellEntry| $ 41)))
     ('T (|userError| "String is not a single character")))) 
 
 (PUT '|CHAR;upperCase;2$;21| '|SPADreplace| 'CHAR-UPCASE) 
@@ -93,7 +95,7 @@
 (DEFUN |Character| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1412)
+      (PROG (#0=#:G1421)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Character|)
@@ -114,8 +116,9 @@
       (PROGN
         (LETT |dv$| '(|Character|) . #0=(|Character|))
         (LETT $ (|newShell| 46) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|haddProp| |$ConstructorCache| '|Character| NIL (CONS 1 $))
         (|stuffDomainSlots| $)
         $)))) 
@@ -164,5 +167,86 @@
                                   0 0 1 2 0 6 0 0 1 2 0 6 0 0 7 2 0 6 0
                                   0 1 2 0 6 0 0 8)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|Character| '|isFunctor|
+             '(((|alphanumeric?| ((|Boolean|) $)) T (ELT $ 36))
+               ((|lowerCase?| ((|Boolean|) $)) T (ELT $ 32))
+               ((|upperCase?| ((|Boolean|) $)) T (ELT $ 30))
+               ((|alphabetic?| ((|Boolean|) $)) T (ELT $ 34))
+               ((|hexDigit?| ((|Boolean|) $)) T (ELT $ 28))
+               ((|digit?| ((|Boolean|) $)) T (ELT $ 26))
+               ((|lowerCase| ($ $)) T (ELT $ 44))
+               ((|upperCase| ($ $)) T (ELT $ 43))
+               ((|escape| ($)) T (ELT $ 19))
+               ((|quote| ($)) T (ELT $ 18))
+               ((|space| ($)) T (ELT $ 17))
+               ((|char| ($ (|String|))) T (ELT $ 42))
+               ((|char| ($ (|NonNegativeInteger|))) T (ELT $ 11))
+               ((|ord| ((|NonNegativeInteger|) $)) T (ELT $ 14))
+               ((|size| ((|NonNegativeInteger|))) T (ELT $ 10))
+               ((|index| ($ (|PositiveInteger|))) T (ELT $ 13))
+               ((|lookup| ((|PositiveInteger|) $)) T (ELT $ 15))
+               ((|random| ($)) T (ELT $ 16))
+               ((|min| ($ $ $)) T (ELT $ NIL))
+               ((|max| ($ $ $)) T (ELT $ NIL))
+               ((<= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((>= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((> ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((< ((|Boolean|) $ $)) T (ELT $ 8))
+               ((|latex| ((|String|) $)) T (ELT $ 38))
+               ((|hash| ((|SingleInteger|) $)) T (ELT $ NIL))
+               ((|coerce| ((|OutputForm|) $)) T (ELT $ 21))
+               ((= ((|Boolean|) $ $)) T (ELT $ 7))
+               ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
+             (|addModemap| '|Character| '(|Character|)
+                 '((|Join| (|OrderedFinite|)
+                           (CATEGORY |domain|
+                               (SIGNATURE |ord|
+                                   ((|NonNegativeInteger|) $))
+                               (SIGNATURE |char|
+                                   ($ (|NonNegativeInteger|)))
+                               (SIGNATURE |char| ($ (|String|)))
+                               (SIGNATURE |space| ($))
+                               (SIGNATURE |quote| ($))
+                               (SIGNATURE |escape| ($))
+                               (SIGNATURE |upperCase| ($ $))
+                               (SIGNATURE |lowerCase| ($ $))
+                               (SIGNATURE |digit?| ((|Boolean|) $))
+                               (SIGNATURE |hexDigit?| ((|Boolean|) $))
+                               (SIGNATURE |alphabetic?|
+                                   ((|Boolean|) $))
+                               (SIGNATURE |upperCase?| ((|Boolean|) $))
+                               (SIGNATURE |lowerCase?| ((|Boolean|) $))
+                               (SIGNATURE |alphanumeric?|
+                                   ((|Boolean|) $)))))
+                 T '|Character|
+                 (|put| '|Character| '|mode|
+                        '(|Mapping|
+                             (|Join| (|OrderedFinite|)
+                                     (CATEGORY |domain|
+                                      (SIGNATURE |ord|
+                                       ((|NonNegativeInteger|) $))
+                                      (SIGNATURE |char|
+                                       ($ (|NonNegativeInteger|)))
+                                      (SIGNATURE |char| ($ (|String|)))
+                                      (SIGNATURE |space| ($))
+                                      (SIGNATURE |quote| ($))
+                                      (SIGNATURE |escape| ($))
+                                      (SIGNATURE |upperCase| ($ $))
+                                      (SIGNATURE |lowerCase| ($ $))
+                                      (SIGNATURE |digit?|
+                                       ((|Boolean|) $))
+                                      (SIGNATURE |hexDigit?|
+                                       ((|Boolean|) $))
+                                      (SIGNATURE |alphabetic?|
+                                       ((|Boolean|) $))
+                                      (SIGNATURE |upperCase?|
+                                       ((|Boolean|) $))
+                                      (SIGNATURE |lowerCase?|
+                                       ((|Boolean|) $))
+                                      (SIGNATURE |alphanumeric?|
+                                       ((|Boolean|) $)))))
+                        |$CategoryFrame|)))) 
 
 (MAKEPROP '|Character| 'NILADIC T) 

@@ -48,3 +48,38 @@
                                   0 0 7 0 14 2 0 0 0 7 13 2 0 0 0 0 10
                                   2 0 0 0 7 15)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|SetAggregate&| '|isFunctor|
+             '(((|union| ($ |#2| $)) T (ELT $ 14))
+               ((|union| ($ $ |#2|)) T (ELT $ 13))
+               ((|union| ($ $ $)) T (ELT $ NIL))
+               ((|symmetricDifference| ($ $ $)) T (ELT $ 10))
+               ((|difference| ($ $ |#2|)) T (ELT $ 15))
+               ((|difference| ($ $ $)) T (ELT $ NIL)))
+             (|addModemap| '|SetAggregate&|
+                 '(|SetAggregate&| |#1| |#2|)
+                 '((CATEGORY |domain|
+                             (SIGNATURE |union| (|#1| |#2| |#1|))
+                             (SIGNATURE |union| (|#1| |#1| |#2|))
+                             (SIGNATURE |union| (|#1| |#1| |#1|))
+                             (SIGNATURE |symmetricDifference|
+                                 (|#1| |#1| |#1|))
+                             (SIGNATURE |difference| (|#1| |#1| |#2|))
+                             (SIGNATURE |difference| (|#1| |#1| |#1|)))
+                   (|SetAggregate| |#2|) (|SetCategory|))
+                 T '|SetAggregate&|
+                 (|put| '|SetAggregate&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |union| (|#1| |#2| |#1|))
+                                 (SIGNATURE |union| (|#1| |#1| |#2|))
+                                 (SIGNATURE |union| (|#1| |#1| |#1|))
+                                 (SIGNATURE |symmetricDifference|
+                                     (|#1| |#1| |#1|))
+                                 (SIGNATURE |difference|
+                                     (|#1| |#1| |#2|))
+                                 (SIGNATURE |difference|
+                                     (|#1| |#1| |#1|)))
+                             (|SetAggregate| |#2|) (|SetCategory|))
+                        |$CategoryFrame|)))) 

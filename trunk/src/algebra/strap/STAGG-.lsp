@@ -2,13 +2,14 @@
 (/VERSIONCHECK 2) 
 
 (DEFUN |STAGG-;explicitlyFinite?;AB;1| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 9)) (QREFELT $ 10))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 9))
+      (|getShellEntry| $ 10))) 
 
 (DEFUN |STAGG-;possiblyInfinite?;AB;2| (|x| $)
-  (SPADCALL |x| (QREFELT $ 9))) 
+  (SPADCALL |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |STAGG-;first;ANniA;3| (|x| |n| $)
-  (PROG (#0=#:G1411 |i|)
+  (PROG (#0=#:G1408 |i|)
     (RETURN
       (SEQ (SPADCALL
                (PROGN
@@ -19,24 +20,26 @@
                                        (CONS
                                         (|STAGG-;c2| |x|
                                          (LETT |x|
-                                          (SPADCALL |x| (QREFELT $ 13))
+                                          (SPADCALL |x|
+                                           (|getShellEntry| $ 13))
                                           |STAGG-;first;ANniA;3|)
                                          $)
                                         #0#)
                                        |STAGG-;first;ANniA;3|)))
                       (LETT |i| (QSADD1 |i|) |STAGG-;first;ANniA;3|)
                       (GO G190) G191 (EXIT (NREVERSE0 #0#))))
-               (QREFELT $ 15)))))) 
+               (|getShellEntry| $ 15)))))) 
 
 (DEFUN |STAGG-;c2| (|x| |r| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 18)) (|error| "Index out of range"))
-    ('T (SPADCALL |x| (QREFELT $ 19))))) 
+    ((SPADCALL |x| (|getShellEntry| $ 18))
+     (|error| "Index out of range"))
+    ('T (SPADCALL |x| (|getShellEntry| $ 19))))) 
 
 (DEFUN |STAGG-;elt;AIS;5| (|x| |i| $)
-  (PROG (#0=#:G1414)
+  (PROG (#0=#:G1411)
     (RETURN
-      (SEQ (LETT |i| (- |i| (SPADCALL |x| (QREFELT $ 21)))
+      (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21)))
                  |STAGG-;elt;AIS;5|)
            (COND
              ((OR (< |i| 0)
@@ -47,37 +50,37 @@
                                         |STAGG-;elt;AIS;5|)
                                   (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
-                                (QREFELT $ 22))
+                                (|getShellEntry| $ 22))
                             |STAGG-;elt;AIS;5|)
-                      (QREFELT $ 18)))
+                      (|getShellEntry| $ 18)))
               (EXIT (|error| "index out of range"))))
-           (EXIT (SPADCALL |x| (QREFELT $ 19))))))) 
+           (EXIT (SPADCALL |x| (|getShellEntry| $ 19))))))) 
 
 (DEFUN |STAGG-;elt;AUsA;6| (|x| |i| $)
-  (PROG (|l| #0=#:G1418 |h| #1=#:G1420 #2=#:G1421)
+  (PROG (|l| #0=#:G1415 |h| #1=#:G1417 #2=#:G1418)
     (RETURN
       (SEQ (LETT |l|
-                 (- (SPADCALL |i| (QREFELT $ 25))
-                    (SPADCALL |x| (QREFELT $ 21)))
+                 (- (SPADCALL |i| (|getShellEntry| $ 25))
+                    (SPADCALL |x| (|getShellEntry| $ 21)))
                  |STAGG-;elt;AUsA;6|)
            (EXIT (COND
                    ((< |l| 0) (|error| "index out of range"))
-                   ((NULL (SPADCALL |i| (QREFELT $ 26)))
+                   ((NULL (SPADCALL |i| (|getShellEntry| $ 26)))
                     (SPADCALL
                         (SPADCALL |x|
                             (PROG1 (LETT #0# |l| |STAGG-;elt;AUsA;6|)
                               (|check-subtype| (>= #0# 0)
                                   '(|NonNegativeInteger|) #0#))
-                            (QREFELT $ 22))
-                        (QREFELT $ 27)))
+                            (|getShellEntry| $ 22))
+                        (|getShellEntry| $ 27)))
                    ('T
                     (SEQ (LETT |h|
-                               (- (SPADCALL |i| (QREFELT $ 28))
-                                  (SPADCALL |x| (QREFELT $ 21)))
+                               (- (SPADCALL |i| (|getShellEntry| $ 28))
+                                  (SPADCALL |x| (|getShellEntry| $ 21)))
                                |STAGG-;elt;AUsA;6|)
                          (EXIT (COND
                                  ((< |h| |l|)
-                                  (SPADCALL (QREFELT $ 29)))
+                                  (SPADCALL (|getShellEntry| $ 29)))
                                  ('T
                                   (SPADCALL
                                       (SPADCALL |x|
@@ -86,23 +89,25 @@
                                          |STAGG-;elt;AUsA;6|)
                                          (|check-subtype| (>= #1# 0)
                                           '(|NonNegativeInteger|) #1#))
-                                       (QREFELT $ 22))
+                                       (|getShellEntry| $ 22))
                                       (PROG1
                                        (LETT #2# (+ (- |h| |l|) 1)
                                         |STAGG-;elt;AUsA;6|)
                                         (|check-subtype| (>= #2# 0)
                                          '(|NonNegativeInteger|) #2#))
-                                      (QREFELT $ 30))))))))))))) 
+                                      (|getShellEntry| $ 30))))))))))))) 
 
 (DEFUN |STAGG-;concat;3A;7| (|x| |y| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 27)) |y| (QREFELT $ 32))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 27)) |y|
+      (|getShellEntry| $ 32))) 
 
 (DEFUN |STAGG-;concat;LA;8| (|l| $)
   (COND
-    ((NULL |l|) (SPADCALL (QREFELT $ 29)))
+    ((NULL |l|) (SPADCALL (|getShellEntry| $ 29)))
     ('T
-     (SPADCALL (SPADCALL (|SPADfirst| |l|) (QREFELT $ 27))
-         (SPADCALL (CDR |l|) (QREFELT $ 35)) (QREFELT $ 32))))) 
+     (SPADCALL (SPADCALL (|SPADfirst| |l|) (|getShellEntry| $ 27))
+         (SPADCALL (CDR |l|) (|getShellEntry| $ 35))
+         (|getShellEntry| $ 32))))) 
 
 (DEFUN |STAGG-;map!;M2A;9| (|f| |l| $)
   (PROG (|y|)
@@ -110,13 +115,16 @@
       (SEQ (LETT |y| |l| |STAGG-;map!;M2A;9|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL (SPADCALL |l| (QREFELT $ 18))
-                             (QREFELT $ 10)))
+                  ((NULL (SPADCALL
+                             (SPADCALL |l| (|getShellEntry| $ 18))
+                             (|getShellEntry| $ 10)))
                    (GO G191)))
                 (SEQ (SPADCALL |l|
-                         (SPADCALL (SPADCALL |l| (QREFELT $ 19)) |f|)
-                         (QREFELT $ 37))
-                     (EXIT (LETT |l| (SPADCALL |l| (QREFELT $ 13))
+                         (SPADCALL
+                             (SPADCALL |l| (|getShellEntry| $ 19)) |f|)
+                         (|getShellEntry| $ 37))
+                     (EXIT (LETT |l|
+                                 (SPADCALL |l| (|getShellEntry| $ 13))
                                  |STAGG-;map!;M2A;9|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT |y|))))) 
@@ -127,19 +135,21 @@
       (SEQ (LETT |y| |x| |STAGG-;fill!;ASA;10|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL (SPADCALL |y| (QREFELT $ 18))
-                             (QREFELT $ 10)))
+                  ((NULL (SPADCALL
+                             (SPADCALL |y| (|getShellEntry| $ 18))
+                             (|getShellEntry| $ 10)))
                    (GO G191)))
-                (SEQ (SPADCALL |y| |s| (QREFELT $ 37))
-                     (EXIT (LETT |y| (SPADCALL |y| (QREFELT $ 13))
+                (SEQ (SPADCALL |y| |s| (|getShellEntry| $ 37))
+                     (EXIT (LETT |y|
+                                 (SPADCALL |y| (|getShellEntry| $ 13))
                                  |STAGG-;fill!;ASA;10|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT |x|))))) 
 
 (DEFUN |STAGG-;setelt;AI2S;11| (|x| |i| |s| $)
-  (PROG (#0=#:G1437)
+  (PROG (#0=#:G1434)
     (RETURN
-      (SEQ (LETT |i| (- |i| (SPADCALL |x| (QREFELT $ 21)))
+      (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21)))
                  |STAGG-;setelt;AI2S;11|)
            (COND
              ((OR (< |i| 0)
@@ -150,28 +160,31 @@
                                         |STAGG-;setelt;AI2S;11|)
                                   (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
-                                (QREFELT $ 22))
+                                (|getShellEntry| $ 22))
                             |STAGG-;setelt;AI2S;11|)
-                      (QREFELT $ 18)))
+                      (|getShellEntry| $ 18)))
               (EXIT (|error| "index out of range"))))
-           (EXIT (SPADCALL |x| |s| (QREFELT $ 37))))))) 
+           (EXIT (SPADCALL |x| |s| (|getShellEntry| $ 37))))))) 
 
 (DEFUN |STAGG-;setelt;AUs2S;12| (|x| |i| |s| $)
-  (PROG (|l| |h| #0=#:G1442 #1=#:G1443 |z| |y|)
+  (PROG (|l| |h| #0=#:G1439 #1=#:G1440 |z| |y|)
     (RETURN
       (SEQ (LETT |l|
-                 (- (SPADCALL |i| (QREFELT $ 25))
-                    (SPADCALL |x| (QREFELT $ 21)))
+                 (- (SPADCALL |i| (|getShellEntry| $ 25))
+                    (SPADCALL |x| (|getShellEntry| $ 21)))
                  |STAGG-;setelt;AUs2S;12|)
            (EXIT (COND
                    ((< |l| 0) (|error| "index out of range"))
                    ('T
                     (SEQ (LETT |h|
                                (COND
-                                 ((SPADCALL |i| (QREFELT $ 26))
-                                  (- (SPADCALL |i| (QREFELT $ 28))
-                                     (SPADCALL |x| (QREFELT $ 21))))
-                                 ('T (SPADCALL |x| (QREFELT $ 42))))
+                                 ((SPADCALL |i| (|getShellEntry| $ 26))
+                                  (- (SPADCALL |i|
+                                      (|getShellEntry| $ 28))
+                                     (SPADCALL |x|
+                                      (|getShellEntry| $ 21))))
+                                 ('T
+                                  (SPADCALL |x| (|getShellEntry| $ 42))))
                                |STAGG-;setelt;AUs2S;12|)
                          (EXIT (COND
                                  ((< |h| |l|) |s|)
@@ -184,7 +197,7 @@
                                            (|check-subtype| (>= #0# 0)
                                             '(|NonNegativeInteger|)
                                             #0#))
-                                         (QREFELT $ 22))
+                                         (|getShellEntry| $ 22))
                                         |STAGG-;setelt;AUs2S;12|)
                                        (LETT |z|
                                         (SPADCALL |y|
@@ -194,33 +207,33 @@
                                            (|check-subtype| (>= #1# 0)
                                             '(|NonNegativeInteger|)
                                             #1#))
-                                         (QREFELT $ 22))
+                                         (|getShellEntry| $ 22))
                                         |STAGG-;setelt;AUs2S;12|)
                                        (SEQ G190
                                         (COND
                                           ((NULL
                                             (SPADCALL
                                              (SPADCALL |y| |z|
-                                              (QREFELT $ 43))
-                                             (QREFELT $ 10)))
+                                              (|getShellEntry| $ 43))
+                                             (|getShellEntry| $ 10)))
                                            (GO G191)))
                                         (SEQ
                                          (SPADCALL |y| |s|
-                                          (QREFELT $ 37))
+                                          (|getShellEntry| $ 37))
                                          (EXIT
                                           (LETT |y|
                                            (SPADCALL |y|
-                                            (QREFELT $ 13))
+                                            (|getShellEntry| $ 13))
                                            |STAGG-;setelt;AUs2S;12|)))
                                         NIL (GO G190) G191 (EXIT NIL))
                                        (EXIT |s|))))))))))))) 
 
 (DEFUN |STAGG-;concat!;3A;13| (|x| |y| $)
   (SEQ (COND
-         ((SPADCALL |x| (QREFELT $ 18)) |y|)
+         ((SPADCALL |x| (|getShellEntry| $ 18)) |y|)
          ('T
-          (SEQ (SPADCALL (SPADCALL |x| (QREFELT $ 45)) |y|
-                   (QREFELT $ 46))
+          (SEQ (SPADCALL (SPADCALL |x| (|getShellEntry| $ 45)) |y|
+                   (|getShellEntry| $ 46))
                (EXIT |x|)))))) 
 
 (DEFUN |StreamAggregate&| (|#1| |#2|)
@@ -230,28 +243,29 @@
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|StreamAggregate&|))
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$| (LIST '|StreamAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (GETREFV 52) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 52) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
-        (QSETREFV $ 7 |#2|)
+        (|setShellEntry| $ 6 |#1|)
+        (|setShellEntry| $ 7 |#2|)
         (COND
           ((|HasAttribute| |#1| '|shallowlyMutable|)
            (PROGN
-             (QSETREFV $ 33
+             (|setShellEntry| $ 33
                  (CONS (|dispatchFunction| |STAGG-;concat;3A;7|) $))
-             (QSETREFV $ 36
+             (|setShellEntry| $ 36
                  (CONS (|dispatchFunction| |STAGG-;concat;LA;8|) $))
-             (QSETREFV $ 39
+             (|setShellEntry| $ 39
                  (CONS (|dispatchFunction| |STAGG-;map!;M2A;9|) $))
-             (QSETREFV $ 40
+             (|setShellEntry| $ 40
                  (CONS (|dispatchFunction| |STAGG-;fill!;ASA;10|) $))
-             (QSETREFV $ 41
+             (|setShellEntry| $ 41
                  (CONS (|dispatchFunction| |STAGG-;setelt;AI2S;11|) $))
-             (QSETREFV $ 44
+             (|setShellEntry| $ 44
                  (CONS (|dispatchFunction| |STAGG-;setelt;AUs2S;12|) $))
-             (QSETREFV $ 47
+             (|setShellEntry| $ 47
                  (CONS (|dispatchFunction| |STAGG-;concat!;3A;13|) $)))))
         $)))) 
 
@@ -295,3 +309,119 @@
                                   20 23 2 0 0 0 24 31 2 0 0 0 0 47 1 0
                                   0 34 36 2 0 0 0 0 33)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|StreamAggregate&| '|isFunctor|
+             '(((|possiblyInfinite?| ((|Boolean|) $)) T (ELT $ 12))
+               ((|explicitlyFinite?| ((|Boolean|) $)) T (ELT $ 11))
+               ((|setelt| (|#2| $ (|Integer|) |#2|)) T (ELT $ 41))
+               ((|elt| (|#2| $ (|Integer|) |#2|)) T (ELT $ NIL))
+               ((|elt| (|#2| $ (|Integer|))) T (ELT $ 23))
+               ((|fill!| ($ $ |#2|)) T (ELT $ 40))
+               ((|concat| ($ $ |#2|)) T (ELT $ NIL))
+               ((|concat| ($ (|List| $))) T (ELT $ 36))
+               ((|elt| ($ $ (|UniversalSegment| (|Integer|)))) T
+                (ELT $ 31))
+               ((|setelt|
+                    (|#2| $ (|UniversalSegment| (|Integer|)) |#2|))
+                T (ELT $ 44))
+               ((|setelt| (|#2| $ "last" |#2|)) T (ELT $ NIL))
+               ((|setelt| ($ $ "rest" $)) T (ELT $ NIL))
+               ((|setelt| (|#2| $ "first" |#2|)) T (ELT $ NIL))
+               ((|concat!| ($ $ |#2|)) T (ELT $ NIL))
+               ((|concat!| ($ $ $)) T (ELT $ 47))
+               ((|elt| (|#2| $ "last")) T (ELT $ NIL))
+               ((|elt| ($ $ "rest")) T (ELT $ NIL))
+               ((|first| ($ $ (|NonNegativeInteger|))) T (ELT $ 17))
+               ((|elt| (|#2| $ "first")) T (ELT $ NIL))
+               ((|first| (|#2| $)) T (ELT $ NIL))
+               ((|concat| ($ |#2| $)) T (ELT $ NIL))
+               ((|concat| ($ $ $)) T (ELT $ 33))
+               ((|setelt| (|#2| $ "value" |#2|)) T (ELT $ NIL))
+               ((|elt| (|#2| $ "value")) T (ELT $ NIL))
+               ((|map!| ($ (|Mapping| |#2| |#2|) $)) T (ELT $ 39)))
+             (|addModemap| '|StreamAggregate&|
+                 '(|StreamAggregate&| |#1| |#2|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |possiblyInfinite?|
+                           ((|Boolean|) |#1|))
+                       (SIGNATURE |explicitlyFinite?|
+                           ((|Boolean|) |#1|))
+                       (SIGNATURE |setelt|
+                           (|#2| |#1| (|Integer|) |#2|))
+                       (SIGNATURE |elt| (|#2| |#1| (|Integer|) |#2|))
+                       (SIGNATURE |elt| (|#2| |#1| (|Integer|)))
+                       (SIGNATURE |fill!| (|#1| |#1| |#2|))
+                       (SIGNATURE |concat| (|#1| |#1| |#2|))
+                       (SIGNATURE |concat| (|#1| (|List| |#1|)))
+                       (SIGNATURE |elt|
+                           (|#1| |#1| (|UniversalSegment| (|Integer|))))
+                       (SIGNATURE |setelt|
+                           (|#2| |#1| (|UniversalSegment| (|Integer|))
+                                 |#2|))
+                       (SIGNATURE |setelt| (|#2| |#1| "last" |#2|))
+                       (SIGNATURE |setelt| (|#1| |#1| "rest" |#1|))
+                       (SIGNATURE |setelt| (|#2| |#1| "first" |#2|))
+                       (SIGNATURE |concat!| (|#1| |#1| |#2|))
+                       (SIGNATURE |concat!| (|#1| |#1| |#1|))
+                       (SIGNATURE |elt| (|#2| |#1| "last"))
+                       (SIGNATURE |elt| (|#1| |#1| "rest"))
+                       (SIGNATURE |first|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |elt| (|#2| |#1| "first"))
+                       (SIGNATURE |first| (|#2| |#1|))
+                       (SIGNATURE |concat| (|#1| |#2| |#1|))
+                       (SIGNATURE |concat| (|#1| |#1| |#1|))
+                       (SIGNATURE |setelt| (|#2| |#1| "value" |#2|))
+                       (SIGNATURE |elt| (|#2| |#1| "value"))
+                       (SIGNATURE |map!|
+                           (|#1| (|Mapping| |#2| |#2|) |#1|)))
+                   (|StreamAggregate| |#2|) (|Type|))
+                 T '|StreamAggregate&|
+                 (|put| '|StreamAggregate&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |possiblyInfinite?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |explicitlyFinite?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |setelt|
+                                     (|#2| |#1| (|Integer|) |#2|))
+                                 (SIGNATURE |elt|
+                                     (|#2| |#1| (|Integer|) |#2|))
+                                 (SIGNATURE |elt|
+                                     (|#2| |#1| (|Integer|)))
+                                 (SIGNATURE |fill!| (|#1| |#1| |#2|))
+                                 (SIGNATURE |concat| (|#1| |#1| |#2|))
+                                 (SIGNATURE |concat|
+                                     (|#1| (|List| |#1|)))
+                                 (SIGNATURE |elt|
+                                     (|#1| |#1|
+                                      (|UniversalSegment| (|Integer|))))
+                                 (SIGNATURE |setelt|
+                                     (|#2| |#1|
+                                      (|UniversalSegment| (|Integer|))
+                                      |#2|))
+                                 (SIGNATURE |setelt|
+                                     (|#2| |#1| "last" |#2|))
+                                 (SIGNATURE |setelt|
+                                     (|#1| |#1| "rest" |#1|))
+                                 (SIGNATURE |setelt|
+                                     (|#2| |#1| "first" |#2|))
+                                 (SIGNATURE |concat!| (|#1| |#1| |#2|))
+                                 (SIGNATURE |concat!| (|#1| |#1| |#1|))
+                                 (SIGNATURE |elt| (|#2| |#1| "last"))
+                                 (SIGNATURE |elt| (|#1| |#1| "rest"))
+                                 (SIGNATURE |first|
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |elt| (|#2| |#1| "first"))
+                                 (SIGNATURE |first| (|#2| |#1|))
+                                 (SIGNATURE |concat| (|#1| |#2| |#1|))
+                                 (SIGNATURE |concat| (|#1| |#1| |#1|))
+                                 (SIGNATURE |setelt|
+                                     (|#2| |#1| "value" |#2|))
+                                 (SIGNATURE |elt| (|#2| |#1| "value"))
+                                 (SIGNATURE |map!|
+                                     (|#1| (|Mapping| |#2| |#2|) |#1|)))
+                             (|StreamAggregate| |#2|) (|Type|))
+                        |$CategoryFrame|)))) 

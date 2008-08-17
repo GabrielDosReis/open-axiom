@@ -55,9 +55,9 @@
 (DEFUN |SYMBOL;convert;$If;6| (|s| $)
   (SPADCALL |s| (|getShellEntry| $ 45))) 
 
-(PUT '|SYMBOL;convert;$S;7| '|SPADreplace| '(XLAM (|s|) |s|)) 
+(PUT '|SYMBOL;convert;2$;7| '|SPADreplace| '(XLAM (|s|) |s|)) 
 
-(DEFUN |SYMBOL;convert;$S;7| (|s| $) |s|) 
+(DEFUN |SYMBOL;convert;2$;7| (|s| $) |s|) 
 
 (DEFUN |SYMBOL;coerce;S$;8| (|s| $) (VALUES (INTERN |s|))) 
 
@@ -98,7 +98,7 @@
   (SPADCALL |x| (|getShellEntry| $ 76))) 
 
 (DEFUN |SYMBOL;syprefix| (|sc| $)
-  (PROG (|ns| #0=#:G1449 |n| #1=#:G1450)
+  (PROG (|ns| #0=#:G1451 |n| #1=#:G1452)
     (RETURN
       (SEQ (LETT |ns|
                  (LIST (LENGTH (QVELT |sc| 3)) (LENGTH (QVELT |sc| 2))
@@ -343,7 +343,7 @@
            (EXIT |s|))))) 
 
 (DEFUN |SYMBOL;anyRadix| (|n| |s| $)
-  (PROG (|qr| |ns| #0=#:G1500)
+  (PROG (|qr| |ns| #0=#:G1502)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |ns| "" |SYMBOL;anyRadix|)
                       (EXIT (SEQ G190 NIL
@@ -437,7 +437,7 @@
                      (|getShellEntry| $ 82))))))) 
 
 (DEFUN |SYMBOL;resetNew;V;29| ($)
-  (PROG (|k| #0=#:G1523)
+  (PROG (|k| #0=#:G1525)
     (RETURN
       (SEQ (SPADCALL (|getShellEntry| $ 9) 0 (|getShellEntry| $ 94))
            (SEQ (LETT |k| NIL |SYMBOL;resetNew;V;29|)
@@ -462,7 +462,7 @@
   (SPADCALL (ATOM |sy|) (|getShellEntry| $ 88))) 
 
 (DEFUN |SYMBOL;name;2$;31| (|sy| $)
-  (PROG (|str| |i| #0=#:G1530 #1=#:G1529 #2=#:G1527)
+  (PROG (|str| |i| #0=#:G1532 #1=#:G1531 #2=#:G1529)
     (RETURN
       (SEQ (EXIT (COND
                    ((NULL (SPADCALL |sy| (|getShellEntry| $ 22))) |sy|)
@@ -516,8 +516,8 @@
            #1# (EXIT #1#))))) 
 
 (DEFUN |SYMBOL;scripts;$R;32| (|sy| $)
-  (PROG (|lscripts| |str| |nstr| |j| #0=#:G1533 |nscripts| |m| |n|
-            #1=#:G1542 |i| #2=#:G1543 |a| #3=#:G1544 |allscripts|)
+  (PROG (|lscripts| |str| |nstr| |j| #0=#:G1535 |nscripts| |m| |n|
+            #1=#:G1544 |i| #2=#:G1545 |a| #3=#:G1546 |allscripts|)
     (RETURN
       (SEQ (COND
              ((NULL (SPADCALL |sy| (|getShellEntry| $ 22)))
@@ -657,7 +657,7 @@
 (DEFUN |SYMBOL;istring| (|n| $)
   (COND
     ((< 9 |n|) (|error| "Can have at most 9 scripts of each kind"))
-    ('T (ELT (|getShellEntry| $ 17) (+ |n| 0))))) 
+    ('T (|getSimpleArrayEntry| (|getShellEntry| $ 17) (+ |n| 0))))) 
 
 (DEFUN |SYMBOL;list;$L;34| (|sy| $)
   (COND
@@ -671,7 +671,7 @@
 (DEFUN |Symbol| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1551)
+      (PROG (#0=#:G1553)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Symbol|) |Symbol|)
@@ -725,7 +725,7 @@
              |SYMBOL;OMwrite;Omd$V;4| |SYMBOL;OMwrite;Omd$BV;5| '|hd|
              '|lhd| (|Character|) (45 . |char|) (|NonNegativeInteger|)
              (50 . |ord|) '|ord0| (|InputForm|) (55 . |convert|)
-             |SYMBOL;convert;$If;6| |SYMBOL;convert;$S;7|
+             |SYMBOL;convert;$If;6| |SYMBOL;convert;2$;7|
              |SYMBOL;coerce;S$;8| |SYMBOL;=;2$B;9| |SYMBOL;<;2$B;10|
              (|OutputForm|) (60 . |outputForm|) |SYMBOL;coerce;$Of;11|
              (|List| 51) (|List| 54) |SYMBOL;script;$L$;22|
@@ -812,5 +812,192 @@
                                   2 0 21 0 0 1 2 0 21 0 0 49 2 0 21 0 0
                                   1 2 0 21 0 0 50)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|Symbol| '|isFunctor|
+             '(((|sample| ($)) T (CONST $ 124))
+               ((|list| ((|List| $) $)) T (ELT $ 107))
+               ((|string| ((|String|) $)) T (ELT $ 84))
+               ((|elt| ($ $ (|List| (|OutputForm|)))) T (ELT $ 58))
+               ((|argscript| ($ $ (|List| (|OutputForm|)))) T
+                (ELT $ 60))
+               ((|superscript| ($ $ (|List| (|OutputForm|)))) T
+                (ELT $ 59))
+               ((|subscript| ($ $ (|List| (|OutputForm|)))) T
+                (ELT $ 57))
+               ((|script|
+                    ($ $
+                       (|Record| (|:| |sub| (|List| (|OutputForm|)))
+                           (|:| |sup| (|List| (|OutputForm|)))
+                           (|:| |presup| (|List| (|OutputForm|)))
+                           (|:| |presub| (|List| (|OutputForm|)))
+                           (|:| |args| (|List| (|OutputForm|))))))
+                T (ELT $ 82))
+               ((|script| ($ $ (|List| (|List| (|OutputForm|))))) T
+                (ELT $ 56))
+               ((|scripts|
+                    ((|Record| (|:| |sub| (|List| (|OutputForm|)))
+                         (|:| |sup| (|List| (|OutputForm|)))
+                         (|:| |presup| (|List| (|OutputForm|)))
+                         (|:| |presub| (|List| (|OutputForm|)))
+                         (|:| |args| (|List| (|OutputForm|))))
+                     $))
+                T (ELT $ 87))
+               ((|scripted?| ((|Boolean|) $)) T (ELT $ 22))
+               ((|name| ($ $)) T (ELT $ 83))
+               ((|coerce| ($ (|String|))) T (ELT $ 48))
+               ((|resetNew| ((|Void|))) T (ELT $ 106))
+               ((|new| ($ $)) T (ELT $ 101)) ((|new| ($)) T (ELT $ 95))
+               ((|patternMatch|
+                    ((|PatternMatchResult| (|Float|) $) $
+                     (|Pattern| (|Float|))
+                     (|PatternMatchResult| (|Float|) $)))
+                T (ELT $ 73))
+               ((|patternMatch|
+                    ((|PatternMatchResult| (|Integer|) $) $
+                     (|Pattern| (|Integer|))
+                     (|PatternMatchResult| (|Integer|) $)))
+                T (ELT $ 66))
+               ((|convert| ((|Pattern| (|Float|)) $)) T (ELT $ 75))
+               ((|convert| ((|Pattern| (|Integer|)) $)) T (ELT $ 77))
+               ((|convert| ((|Symbol|) $)) T (ELT $ 47))
+               ((|OMwrite| ((|Void|) (|OpenMathDevice|) $ (|Boolean|)))
+                T (ELT $ 36))
+               ((|OMwrite| ((|Void|) (|OpenMathDevice|) $)) T
+                (ELT $ 35))
+               ((|OMwrite| ((|String|) $ (|Boolean|))) T (ELT $ 34))
+               ((|OMwrite| ((|String|) $)) T (ELT $ 33))
+               ((|convert| ((|InputForm|) $)) T (ELT $ 46))
+               ((|min| ($ $ $)) T (ELT $ NIL))
+               ((|max| ($ $ $)) T (ELT $ NIL))
+               ((<= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((>= ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((> ((|Boolean|) $ $)) T (ELT $ NIL))
+               ((< ((|Boolean|) $ $)) T (ELT $ 50))
+               ((|latex| ((|String|) $)) T (ELT $ 90))
+               ((|hash| ((|SingleInteger|) $)) T (ELT $ NIL))
+               ((|coerce| ((|OutputForm|) $)) T (ELT $ 53))
+               ((= ((|Boolean|) $ $)) T (ELT $ 49))
+               ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
+             (|addModemap| '|Symbol| '(|Symbol|)
+                 '((|Join| (|OrderedSet|)
+                           (|ConvertibleTo| (|InputForm|)) (|OpenMath|)
+                           (|ConvertibleTo| (|Symbol|))
+                           (|ConvertibleTo| (|Pattern| (|Integer|)))
+                           (|ConvertibleTo| (|Pattern| (|Float|)))
+                           (|PatternMatchable| (|Integer|))
+                           (|PatternMatchable| (|Float|))
+                           (CATEGORY |domain| (SIGNATURE |new| ($))
+                               (SIGNATURE |new| ($ $))
+                               (SIGNATURE |resetNew| ((|Void|)))
+                               (SIGNATURE |coerce| ($ (|String|)))
+                               (SIGNATURE |name| ($ $))
+                               (SIGNATURE |scripted?| ((|Boolean|) $))
+                               (SIGNATURE |scripts|
+                                   ((|Record|
+                                     (|:| |sub|
+                                      (|List| (|OutputForm|)))
+                                     (|:| |sup|
+                                      (|List| (|OutputForm|)))
+                                     (|:| |presup|
+                                      (|List| (|OutputForm|)))
+                                     (|:| |presub|
+                                      (|List| (|OutputForm|)))
+                                     (|:| |args|
+                                      (|List| (|OutputForm|))))
+                                    $))
+                               (SIGNATURE |script|
+                                   ($ $
+                                    (|List| (|List| (|OutputForm|)))))
+                               (SIGNATURE |script|
+                                   ($ $
+                                    (|Record|
+                                     (|:| |sub|
+                                      (|List| (|OutputForm|)))
+                                     (|:| |sup|
+                                      (|List| (|OutputForm|)))
+                                     (|:| |presup|
+                                      (|List| (|OutputForm|)))
+                                     (|:| |presub|
+                                      (|List| (|OutputForm|)))
+                                     (|:| |args|
+                                      (|List| (|OutputForm|))))))
+                               (SIGNATURE |subscript|
+                                   ($ $ (|List| (|OutputForm|))))
+                               (SIGNATURE |superscript|
+                                   ($ $ (|List| (|OutputForm|))))
+                               (SIGNATURE |argscript|
+                                   ($ $ (|List| (|OutputForm|))))
+                               (SIGNATURE |elt|
+                                   ($ $ (|List| (|OutputForm|))))
+                               (SIGNATURE |string| ((|String|) $))
+                               (SIGNATURE |list| ((|List| $) $))
+                               (SIGNATURE |sample| ($) |constant|))))
+                 T '|Symbol|
+                 (|put| '|Symbol| '|mode|
+                        '(|Mapping|
+                             (|Join| (|OrderedSet|)
+                                     (|ConvertibleTo| (|InputForm|))
+                                     (|OpenMath|)
+                                     (|ConvertibleTo| (|Symbol|))
+                                     (|ConvertibleTo|
+                                      (|Pattern| (|Integer|)))
+                                     (|ConvertibleTo|
+                                      (|Pattern| (|Float|)))
+                                     (|PatternMatchable| (|Integer|))
+                                     (|PatternMatchable| (|Float|))
+                                     (CATEGORY |domain|
+                                      (SIGNATURE |new| ($))
+                                      (SIGNATURE |new| ($ $))
+                                      (SIGNATURE |resetNew| ((|Void|)))
+                                      (SIGNATURE |coerce|
+                                       ($ (|String|)))
+                                      (SIGNATURE |name| ($ $))
+                                      (SIGNATURE |scripted?|
+                                       ((|Boolean|) $))
+                                      (SIGNATURE |scripts|
+                                       ((|Record|
+                                         (|:| |sub|
+                                          (|List| (|OutputForm|)))
+                                         (|:| |sup|
+                                          (|List| (|OutputForm|)))
+                                         (|:| |presup|
+                                          (|List| (|OutputForm|)))
+                                         (|:| |presub|
+                                          (|List| (|OutputForm|)))
+                                         (|:| |args|
+                                          (|List| (|OutputForm|))))
+                                        $))
+                                      (SIGNATURE |script|
+                                       ($ $
+                                        (|List|
+                                         (|List| (|OutputForm|)))))
+                                      (SIGNATURE |script|
+                                       ($ $
+                                        (|Record|
+                                         (|:| |sub|
+                                          (|List| (|OutputForm|)))
+                                         (|:| |sup|
+                                          (|List| (|OutputForm|)))
+                                         (|:| |presup|
+                                          (|List| (|OutputForm|)))
+                                         (|:| |presub|
+                                          (|List| (|OutputForm|)))
+                                         (|:| |args|
+                                          (|List| (|OutputForm|))))))
+                                      (SIGNATURE |subscript|
+                                       ($ $ (|List| (|OutputForm|))))
+                                      (SIGNATURE |superscript|
+                                       ($ $ (|List| (|OutputForm|))))
+                                      (SIGNATURE |argscript|
+                                       ($ $ (|List| (|OutputForm|))))
+                                      (SIGNATURE |elt|
+                                       ($ $ (|List| (|OutputForm|))))
+                                      (SIGNATURE |string|
+                                       ((|String|) $))
+                                      (SIGNATURE |list| ((|List| $) $))
+                                      (SIGNATURE |sample| ($)
+                                       |constant|))))
+                        |$CategoryFrame|)))) 
 
 (MAKEPROP '|Symbol| 'NILADIC T) 

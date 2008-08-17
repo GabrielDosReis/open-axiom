@@ -5,8 +5,8 @@
 
 (DEFPARAMETER |UnaryRecursiveAggregate;AL| 'NIL) 
 
-(DEFUN |UnaryRecursiveAggregate| (#0=#:G1426)
-  (LET (#1=#:G1427)
+(DEFUN |UnaryRecursiveAggregate| (#0=#:G1423)
+  (LET (#1=#:G1424)
     (COND
       ((SETQ #1#
              (|assoc| (|devaluate| #0#) |UnaryRecursiveAggregate;AL|))
@@ -19,7 +19,7 @@
          #1#)))) 
 
 (DEFUN |UnaryRecursiveAggregate;| (|t#1|)
-  (PROG (#0=#:G1425)
+  (PROG (#0=#:G1422)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -111,3 +111,10 @@
                                 . #1=(|UnaryRecursiveAggregate|))))) . #1#)
         (SETELT #0# 0
                 (LIST '|UnaryRecursiveAggregate| (|devaluate| |t#1|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|UnaryRecursiveAggregate| '|isCategory| T
+             (|addModemap| '|UnaryRecursiveAggregate|
+                 '(|UnaryRecursiveAggregate| |#1|)
+                 '((|Category|) (|Type|)) T '|UnaryRecursiveAggregate|
+                 |$CategoryFrame|))) 

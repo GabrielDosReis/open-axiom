@@ -44,7 +44,7 @@
   (CONS 0 (SPADCALL |x| (|getShellEntry| $ 28)))) 
 
 (DEFUN |FFIELDC-;createPrimitiveElement;S;8| ($)
-  (PROG (|sm1| |start| |i| #0=#:G1441 |e| |found|)
+  (PROG (|sm1| |start| |i| #0=#:G1443 |e| |found|)
     (RETURN
       (SEQ (LETT |sm1| (- (SPADCALL (|getShellEntry| $ 36)) 1)
                  |FFIELDC-;createPrimitiveElement;S;8|)
@@ -81,7 +81,7 @@
            (EXIT |e|))))) 
 
 (DEFUN |FFIELDC-;primitive?;SB;9| (|a| $)
-  (PROG (|explist| |q| |exp| #0=#:G1453 |equalone|)
+  (PROG (|explist| |q| |exp| #0=#:G1455 |equalone|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |a| (|getShellEntry| $ 14)) 'NIL)
@@ -116,7 +116,7 @@
                    (EXIT (SPADCALL |equalone| (|getShellEntry| $ 45)))))))))) 
 
 (DEFUN |FFIELDC-;order;SPi;10| (|e| $)
-  (PROG (|lof| |rec| #0=#:G1461 |primeDivisor| |j| #1=#:G1462 |a|
+  (PROG (|lof| |rec| #0=#:G1463 |primeDivisor| |j| #1=#:G1464 |a|
                |goon| |ord|)
     (RETURN
       (SEQ (COND
@@ -184,7 +184,7 @@
                    (EXIT |ord|)))))))) 
 
 (DEFUN |FFIELDC-;discreteLog;SNni;11| (|b| $)
-  (PROG (|faclist| |gen| |groupord| |f| #0=#:G1482 |fac| |t| #1=#:G1483
+  (PROG (|faclist| |gen| |groupord| |f| #0=#:G1484 |fac| |t| #1=#:G1485
             |exp| |exptable| |n| |end| |i| |rho| |found| |disc1| |c|
             |mult| |disclog| |a|)
     (RETURN
@@ -341,8 +341,8 @@
                                  (EXIT |disclog|)))))))))))) 
 
 (DEFUN |FFIELDC-;discreteLog;2SU;12| (|logbase| |b| $)
-  (PROG (|groupord| |faclist| |f| #0=#:G1501 |fac| |primroot| |t|
-            #1=#:G1502 |exp| |rhoHelp| #2=#:G1500 |rho| |disclog|
+  (PROG (|groupord| |faclist| |f| #0=#:G1503 |fac| |primroot| |t|
+            #1=#:G1504 |exp| |rhoHelp| #2=#:G1502 |rho| |disclog|
             |mult| |a|)
     (RETURN
       (SEQ (EXIT (COND
@@ -470,7 +470,7 @@
   (SPADCALL |f| (|getShellEntry| $ 78))) 
 
 (DEFUN |FFIELDC-;factorSquareFreePolynomial| (|f| $)
-  (PROG (|flist| |u| #0=#:G1515 #1=#:G1512 #2=#:G1510 #3=#:G1511)
+  (PROG (|flist| |u| #0=#:G1517 #1=#:G1514 #2=#:G1512 #3=#:G1513)
     (RETURN
       (SEQ (COND
              ((SPADCALL |f| (|spadConstant| $ 79)
@@ -613,3 +613,105 @@
                                   8 0 0 0 46 1 0 32 33 34 1 0 0 0 39 1
                                   0 15 0 40)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|FiniteFieldCategory&| '|isFunctor|
+             '(((|order| ((|PositiveInteger|) $)) T (ELT $ 53))
+               ((|discreteLog| ((|NonNegativeInteger|) $)) T
+                (ELT $ 61))
+               ((|primitive?| ((|Boolean|) $)) T (ELT $ 52))
+               ((|createPrimitiveElement| ($)) T (ELT $ 46))
+               ((|conditionP|
+                    ((|Union| (|Vector| $) "failed") (|Matrix| $)))
+                T (ELT $ 34))
+               ((|charthRoot| ($ $)) T (ELT $ 39))
+               ((|differentiate| ($ $)) T (ELT $ 8))
+               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|init| ($)) T (ELT $ 9))
+               ((|nextItem| ((|Union| $ "failed") $)) T (ELT $ 16))
+               ((|discreteLog|
+                    ((|Union| (|NonNegativeInteger|) "failed") $ $))
+                T (ELT $ 72))
+               ((|order| ((|OnePointCompletion| (|PositiveInteger|)) $))
+                T (ELT $ 21))
+               ((|charthRoot| ((|Union| $ "failed") $)) T (ELT $ 40))
+               ((|gcdPolynomial|
+                    ((|SparseUnivariatePolynomial| $)
+                     (|SparseUnivariatePolynomial| $)
+                     (|SparseUnivariatePolynomial| $)))
+                T (ELT $ 94)))
+             (|addModemap| '|FiniteFieldCategory&|
+                 '(|FiniteFieldCategory&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |order| ((|PositiveInteger|) |#1|))
+                       (SIGNATURE |discreteLog|
+                           ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |primitive?| ((|Boolean|) |#1|))
+                       (SIGNATURE |createPrimitiveElement| (|#1|))
+                       (SIGNATURE |conditionP|
+                           ((|Union| (|Vector| |#1|) "failed")
+                            (|Matrix| |#1|)))
+                       (SIGNATURE |charthRoot| (|#1| |#1|))
+                       (SIGNATURE |differentiate| (|#1| |#1|))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |init| (|#1|))
+                       (SIGNATURE |nextItem|
+                           ((|Union| |#1| "failed") |#1|))
+                       (SIGNATURE |discreteLog|
+                           ((|Union| (|NonNegativeInteger|) "failed")
+                            |#1| |#1|))
+                       (SIGNATURE |order|
+                           ((|OnePointCompletion| (|PositiveInteger|))
+                            |#1|))
+                       (SIGNATURE |charthRoot|
+                           ((|Union| |#1| "failed") |#1|))
+                       (SIGNATURE |gcdPolynomial|
+                           ((|SparseUnivariatePolynomial| |#1|)
+                            (|SparseUnivariatePolynomial| |#1|)
+                            (|SparseUnivariatePolynomial| |#1|))))
+                   (|FiniteFieldCategory|))
+                 T '|FiniteFieldCategory&|
+                 (|put| '|FiniteFieldCategory&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |order|
+                                     ((|PositiveInteger|) |#1|))
+                                 (SIGNATURE |discreteLog|
+                                     ((|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE |primitive?|
+                                     ((|Boolean|) |#1|))
+                                 (SIGNATURE |createPrimitiveElement|
+                                     (|#1|))
+                                 (SIGNATURE |conditionP|
+                                     ((|Union| (|Vector| |#1|)
+                                       "failed")
+                                      (|Matrix| |#1|)))
+                                 (SIGNATURE |charthRoot| (|#1| |#1|))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |init| (|#1|))
+                                 (SIGNATURE |nextItem|
+                                     ((|Union| |#1| "failed") |#1|))
+                                 (SIGNATURE |discreteLog|
+                                     ((|Union| (|NonNegativeInteger|)
+                                       "failed")
+                                      |#1| |#1|))
+                                 (SIGNATURE |order|
+                                     ((|OnePointCompletion|
+                                       (|PositiveInteger|))
+                                      |#1|))
+                                 (SIGNATURE |charthRoot|
+                                     ((|Union| |#1| "failed") |#1|))
+                                 (SIGNATURE |gcdPolynomial|
+                                     ((|SparseUnivariatePolynomial|
+                                       |#1|)
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|)
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|))))
+                             (|FiniteFieldCategory|))
+                        |$CategoryFrame|)))) 

@@ -1,14 +1,15 @@
 
 (/VERSIONCHECK 2) 
 
-(DEFUN |DIFRING-;D;2S;1| (|r| $) (SPADCALL |r| (QREFELT $ 7))) 
+(DEFUN |DIFRING-;D;2S;1| (|r| $) (SPADCALL |r| (|getShellEntry| $ 7))) 
 
 (DEFUN |DIFRING-;differentiate;SNniS;2| (|r| |n| $)
   (PROG (|i|)
     (RETURN
       (SEQ (SEQ (LETT |i| 1 |DIFRING-;differentiate;SNniS;2|) G190
                 (COND ((QSGREATERP |i| |n|) (GO G191)))
-                (SEQ (EXIT (LETT |r| (SPADCALL |r| (QREFELT $ 7))
+                (SEQ (EXIT (LETT |r|
+                                 (SPADCALL |r| (|getShellEntry| $ 7))
                                  |DIFRING-;differentiate;SNniS;2|)))
                 (LETT |i| (QSADD1 |i|)
                       |DIFRING-;differentiate;SNniS;2|)
@@ -16,7 +17,7 @@
            (EXIT |r|))))) 
 
 (DEFUN |DIFRING-;D;SNniS;3| (|r| |n| $)
-  (SPADCALL |r| |n| (QREFELT $ 11))) 
+  (SPADCALL |r| |n| (|getShellEntry| $ 11))) 
 
 (DEFUN |DifferentialRing&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -24,11 +25,12 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|DifferentialRing&|))
         (LETT |dv$| (LIST '|DifferentialRing&| |dv$1|) . #0#)
-        (LETT $ (GETREFV 13) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 13) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         $)))) 
 
 (MAKEPROP '|DifferentialRing&| '|infovec|
@@ -44,3 +46,33 @@
                                 '(1 6 0 0 7 2 6 0 0 9 11 2 0 0 0 9 10 2
                                   0 0 0 9 12 1 0 0 0 8)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|DifferentialRing&| '|isFunctor|
+             '(((D ($ $ (|NonNegativeInteger|))) T (ELT $ 12))
+               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
+                (ELT $ 10))
+               ((D ($ $)) T (ELT $ 8))
+               ((|differentiate| ($ $)) T (ELT $ NIL)))
+             (|addModemap| '|DifferentialRing&|
+                 '(|DifferentialRing&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE D (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE D (|#1| |#1|))
+                       (SIGNATURE |differentiate| (|#1| |#1|)))
+                   (|DifferentialRing|))
+                 T '|DifferentialRing&|
+                 (|put| '|DifferentialRing&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE D
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE D (|#1| |#1|))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|)))
+                             (|DifferentialRing|))
+                        |$CategoryFrame|)))) 

@@ -135,7 +135,7 @@
   (SPADCALL |pp| (|getShellEntry| $ 87))) 
 
 (DEFUN |UPOLYC-;factor;SF;23| (|p| $)
-  (PROG (|ansR| #0=#:G1516 |w| #1=#:G1517)
+  (PROG (|ansR| #0=#:G1518 |w| #1=#:G1519)
     (RETURN
       (SEQ (COND
              ((ZEROP (SPADCALL |p| (|getShellEntry| $ 11)))
@@ -187,7 +187,7 @@
                   (|getShellEntry| $ 106)))))))) 
 
 (DEFUN |UPOLYC-;vectorise;SNniV;24| (|p| |n| $)
-  (PROG (|v| |m| |i| #0=#:G1522 #1=#:G1518)
+  (PROG (|v| |m| |i| #0=#:G1524 #1=#:G1520)
     (RETURN
       (SEQ (LETT |m|
                  (SPADCALL
@@ -234,7 +234,7 @@
   (SPADCALL (|spadConstant| $ 118) (|getShellEntry| $ 30))) 
 
 (DEFUN |UPOLYC-;nextItemInner| (|n| $)
-  (PROG (|nn| |n1| |n2| #0=#:G1543 |n3|)
+  (PROG (|nn| |n1| |n2| #0=#:G1545 |n3|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |n| (|getShellEntry| $ 9))
@@ -322,7 +322,7 @@
                                             (|getShellEntry| $ 50))))))))))))))))) 
 
 (DEFUN |UPOLYC-;nextItem;SU;29| (|n| $)
-  (PROG (|n1| #0=#:G1556)
+  (PROG (|n1| #0=#:G1558)
     (RETURN
       (SEQ (LETT |n1| (|UPOLYC-;nextItemInner| |n| $)
                  |UPOLYC-;nextItem;SU;29|)
@@ -347,7 +347,7 @@
       (|getShellEntry| $ 30))) 
 
 (DEFUN |UPOLYC-;primeFactor| (|p| |q| $)
-  (PROG (#0=#:G1562 |p1|)
+  (PROG (#0=#:G1564 |p1|)
     (RETURN
       (SEQ (LETT |p1|
                  (PROG2 (LETT #0#
@@ -365,7 +365,7 @@
                    ('T (|UPOLYC-;primeFactor| |p1| |q| $)))))))) 
 
 (DEFUN |UPOLYC-;separate;2SR;32| (|p| |q| $)
-  (PROG (|a| #0=#:G1568)
+  (PROG (|a| #0=#:G1570)
     (RETURN
       (SEQ (LETT |a| (|UPOLYC-;primeFactor| |p| |q| $)
                  |UPOLYC-;separate;2SR;32|)
@@ -379,7 +379,7 @@
                              (|getShellEntry| $ 6) #0#)))))))) 
 
 (DEFUN |UPOLYC-;differentiate;SM2S;33| (|x| |deriv| |x'| $)
-  (PROG (|dg| |lc| #0=#:G1573 |d|)
+  (PROG (|dg| |lc| #0=#:G1575 |d|)
     (RETURN
       (SEQ (LETT |d| (|spadConstant| $ 61)
                  |UPOLYC-;differentiate;SM2S;33|)
@@ -424,7 +424,7 @@
                      (|getShellEntry| $ 66))))))) 
 
 (DEFUN |UPOLYC-;ncdiff| (|n| |x'| $)
-  (PROG (#0=#:G1591 |n1|)
+  (PROG (#0=#:G1593 |n1|)
     (RETURN
       (COND
         ((ZEROP |n|) (|spadConstant| $ 61))
@@ -487,7 +487,7 @@
   (SPADCALL |x| |deriv| (|spadConstant| $ 48) (|getShellEntry| $ 136))) 
 
 (DEFUN |UPOLYC-;differentiate;2S;37| (|x| $)
-  (PROG (|dg| #0=#:G1600 |d|)
+  (PROG (|dg| #0=#:G1602 |d|)
     (RETURN
       (SEQ (LETT |d| (|spadConstant| $ 61)
                  |UPOLYC-;differentiate;2S;37|)
@@ -531,7 +531,7 @@
       (|getShellEntry| $ 146))) 
 
 (DEFUN |UPOLYC-;pseudoQuotient;3S;40| (|p| |q| $)
-  (PROG (|n| #0=#:G1646 #1=#:G1648)
+  (PROG (|n| #0=#:G1648 #1=#:G1650)
     (RETURN
       (SEQ (LETT |n|
                  (+ (- (SPADCALL |p| (|getShellEntry| $ 11))
@@ -565,7 +565,7 @@
                           (|getShellEntry| $ 6) #1#))))))))) 
 
 (DEFUN |UPOLYC-;pseudoDivide;2SR;41| (|p| |q| $)
-  (PROG (|n| |prem| #0=#:G1654 |lc| #1=#:G1656)
+  (PROG (|n| |prem| #0=#:G1656 |lc| #1=#:G1658)
     (RETURN
       (SEQ (LETT |n|
                  (+ (- (SPADCALL |p| (|getShellEntry| $ 11))
@@ -632,7 +632,7 @@
                                          (|getShellEntry| $ 155)))))))))))))) 
 
 (DEFUN |UPOLYC-;composite;2SU;43| (|p| |q| $)
-  (PROG (|cqr| |v| |u| |w| #0=#:G1682)
+  (PROG (|cqr| |v| |u| |w| #0=#:G1684)
     (RETURN
       (SEQ (COND
              ((SPADCALL |p| (|getShellEntry| $ 158)) (CONS 0 |p|))
@@ -694,7 +694,7 @@
                    #0# (EXIT #0#)))))))) 
 
 (DEFUN |UPOLYC-;elt;S2F;44| (|p| |f| $)
-  (PROG (|n| #0=#:G1688 |ans|)
+  (PROG (|n| #0=#:G1690 |ans|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |p| (|getShellEntry| $ 9))
@@ -754,7 +754,7 @@
                                 (|getShellEntry| $ 166)))))))))))) 
 
 (DEFUN |UPOLYC-;order;2SNni;45| (|p| |q| $)
-  (PROG (|u| #0=#:G1702 |ans|)
+  (PROG (|u| #0=#:G1704 |ans|)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |p| (|getShellEntry| $ 9))
@@ -830,7 +830,7 @@
     ('T (SPADCALL |x| (|getShellEntry| $ 11))))) 
 
 (DEFUN |UPOLYC-;divide;2SR;52| (|x| |y| $)
-  (PROG (|lc| |f| #0=#:G1714 |n| |quot|)
+  (PROG (|lc| |f| #0=#:G1716 |n| |quot|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |y| (|getShellEntry| $ 9))
@@ -1229,3 +1229,642 @@
                                   19 0 14 20 2 0 0 0 12 125 2 0 120 0 0
                                   161 2 0 156 143 0 157 1 0 0 12 51)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|UnivariatePolynomialCategory&| '|isFunctor|
+             '(((|coerce| ($ $)) T (ELT $ NIL))
+               ((|gcdPolynomial|
+                    ((|SparseUnivariatePolynomial| $)
+                     (|SparseUnivariatePolynomial| $)
+                     (|SparseUnivariatePolynomial| $)))
+                T (ELT $ 182))
+               ((|squareFree| ((|Factored| $) $)) T (ELT $ 173))
+               ((|squareFreePart| ($ $)) T (ELT $ 175))
+               ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ NIL))
+               ((|init| ($)) T (ELT $ 119))
+               ((|nextItem| ((|Union| $ "failed") $)) T (ELT $ 123))
+               ((|elt| ((|Fraction| $) $ (|Fraction| $))) T
+                (ELT $ 169))
+               ((|euclideanSize| ((|NonNegativeInteger|) $)) T
+                (ELT $ 188))
+               ((|divide|
+                    ((|Record| (|:| |quotient| $) (|:| |remainder| $))
+                     $ $))
+                T (ELT $ 191))
+               ((|integrate| ($ $)) T (ELT $ 197))
+               ((|elt| (|#2| (|Fraction| $) |#2|)) T (ELT $ 187))
+               ((|separate|
+                    ((|Record| (|:| |primePart| $)
+                         (|:| |commonPart| $))
+                     $ $))
+                T (ELT $ 130))
+               ((|pseudoDivide|
+                    ((|Record| (|:| |coef| |#2|) (|:| |quotient| $)
+                         (|:| |remainder| $))
+                     $ $))
+                T (ELT $ 153))
+               ((|pseudoQuotient| ($ $ $)) T (ELT $ 151))
+               ((|composite|
+                    ((|Union| (|Fraction| $) "failed") (|Fraction| $)
+                     $))
+                T (ELT $ 157))
+               ((|composite| ((|Union| $ "failed") $ $)) T (ELT $ 161))
+               ((|order| ((|NonNegativeInteger|) $ $)) T (ELT $ 170))
+               ((|elt| ((|Fraction| $) (|Fraction| $) (|Fraction| $)))
+                T (ELT $ 147))
+               ((|differentiate| ($ $ (|Mapping| |#2| |#2|) $)) T
+                (ELT $ 134))
+               ((|shiftLeft| ($ $ (|NonNegativeInteger|))) T
+                (ELT $ 73))
+               ((|shiftRight| ($ $ (|NonNegativeInteger|))) T
+                (ELT $ 71))
+               ((|karatsubaDivide|
+                    ((|Record| (|:| |quotient| $) (|:| |remainder| $))
+                     $ (|NonNegativeInteger|)))
+                T (ELT $ 70))
+               ((|unmakeSUP| ($ (|SparseUnivariatePolynomial| |#2|))) T
+                (ELT $ 67))
+               ((|makeSUP| ((|SparseUnivariatePolynomial| |#2|) $)) T
+                (ELT $ 59))
+               ((|vectorise|
+                    ((|Vector| |#2|) $ (|NonNegativeInteger|)))
+                T (ELT $ 114))
+               ((|differentiate| ($ $ (|Mapping| |#2| |#2|))) T
+                (ELT $ 137))
+               ((|differentiate|
+                    ($ $ (|Mapping| |#2| |#2|) (|NonNegativeInteger|)))
+                T (ELT $ NIL))
+               ((|differentiate|
+                    ($ $ (|List| (|Symbol|))
+                       (|List| (|NonNegativeInteger|))))
+                T (ELT $ NIL))
+               ((|differentiate|
+                    ($ $ (|Symbol|) (|NonNegativeInteger|)))
+                T (ELT $ NIL))
+               ((|differentiate| ($ $ (|List| (|Symbol|)))) T
+                (ELT $ NIL))
+               ((|differentiate| ($ $ (|Symbol|))) T (ELT $ NIL))
+               ((|differentiate| ($ $)) T (ELT $ 138))
+               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|elt| ($ $ $)) T (ELT $ NIL))
+               ((|elt| (|#2| $ |#2|)) T (ELT $ NIL))
+               ((|factor| ((|Factored| $) $)) T (ELT $ 107))
+               ((|squareFreePolynomial|
+                    ((|Factored| (|SparseUnivariatePolynomial| $))
+                     (|SparseUnivariatePolynomial| $)))
+                T (ELT $ 185))
+               ((|factorPolynomial|
+                    ((|Factored| (|SparseUnivariatePolynomial| $))
+                     (|SparseUnivariatePolynomial| $)))
+                T (ELT $ 86))
+               ((|factorSquareFreePolynomial|
+                    ((|Factored| (|SparseUnivariatePolynomial| $))
+                     (|SparseUnivariatePolynomial| $)))
+                T (ELT $ 88))
+               ((|solveLinearPolynomialEquation|
+                    ((|Union| (|List| (|SparseUnivariatePolynomial| $))
+                              "failed")
+                     (|List| (|SparseUnivariatePolynomial| $))
+                     (|SparseUnivariatePolynomial| $)))
+                T (ELT $ 82))
+               ((|content| ($ $ (|SingletonAsOrderedSet|))) T
+                (ELT $ 125))
+               ((|variables| ((|List| (|SingletonAsOrderedSet|)) $)) T
+                (ELT $ 15))
+               ((|totalDegree|
+                    ((|NonNegativeInteger|) $
+                     (|List| (|SingletonAsOrderedSet|))))
+                T (ELT $ 18))
+               ((|totalDegree| ((|NonNegativeInteger|) $)) T
+                (ELT $ NIL))
+               ((|monomial|
+                    ($ $ (|List| (|SingletonAsOrderedSet|))
+                       (|List| (|NonNegativeInteger|))))
+                T (ELT $ NIL))
+               ((|monomial|
+                    ($ $ (|SingletonAsOrderedSet|)
+                       (|NonNegativeInteger|)))
+                T (ELT $ 47))
+               ((|minimumDegree|
+                    ((|List| (|NonNegativeInteger|)) $
+                     (|List| (|SingletonAsOrderedSet|))))
+                T (ELT $ 43))
+               ((|minimumDegree|
+                    ((|NonNegativeInteger|) $
+                     (|SingletonAsOrderedSet|)))
+                T (ELT $ 42))
+               ((|mainVariable|
+                    ((|Union| (|SingletonAsOrderedSet|) "failed") $))
+                T (ELT $ 40))
+               ((|degree|
+                    ((|List| (|NonNegativeInteger|)) $
+                     (|List| (|SingletonAsOrderedSet|))))
+                T (ELT $ 20))
+               ((|degree|
+                    ((|NonNegativeInteger|) $
+                     (|SingletonAsOrderedSet|)))
+                T (ELT $ 16))
+               ((|retract| ((|SingletonAsOrderedSet|) $)) T
+                (ELT $ NIL))
+               ((|retractIfCan|
+                    ((|Union| (|SingletonAsOrderedSet|) "failed") $))
+                T (ELT $ NIL))
+               ((|coerce| ($ (|SingletonAsOrderedSet|))) T (ELT $ 51))
+               ((|eval| ($ $ (|List| (|SingletonAsOrderedSet|))
+                           (|List| $)))
+                T (ELT $ 23))
+               ((|eval| ($ $ (|SingletonAsOrderedSet|) $)) T
+                (ELT $ 25))
+               ((|eval| ($ $ (|List| (|SingletonAsOrderedSet|))
+                           (|List| |#2|)))
+                T (ELT $ 28))
+               ((|eval| ($ $ (|SingletonAsOrderedSet|) |#2|)) T
+                (ELT $ 31))
+               ((|eval| ($ $ (|List| $) (|List| $))) T (ELT $ NIL))
+               ((|eval| ($ $ $ $)) T (ELT $ NIL))
+               ((|eval| ($ $ (|Equation| $))) T (ELT $ NIL))
+               ((|eval| ($ $ (|List| (|Equation| $)))) T (ELT $ 39))
+               ((|degree| ((|NonNegativeInteger|) $)) T (ELT $ NIL))
+               ((|monomial| ($ |#2| (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|retract| ((|Integer|) $)) T (ELT $ NIL))
+               ((|retractIfCan| ((|Union| (|Integer|) "failed") $)) T
+                (ELT $ NIL))
+               ((|retract| ((|Fraction| (|Integer|)) $)) T (ELT $ NIL))
+               ((|retractIfCan|
+                    ((|Union| (|Fraction| (|Integer|)) "failed") $))
+                T (ELT $ NIL))
+               ((|coerce| ($ |#2|)) T (ELT $ NIL))
+               ((|retractIfCan| ((|Union| |#2| "failed") $)) T
+                (ELT $ 117))
+               ((|retract| (|#2| $)) T (ELT $ 115))
+               ((|minimumDegree| ((|NonNegativeInteger|) $)) T
+                (ELT $ NIL))
+               ((|content| (|#2| $)) T (ELT $ NIL))
+               ((|differentiate|
+                    ($ $ (|List| (|SingletonAsOrderedSet|))
+                       (|List| (|NonNegativeInteger|))))
+                T (ELT $ NIL))
+               ((|differentiate|
+                    ($ $ (|SingletonAsOrderedSet|)
+                       (|NonNegativeInteger|)))
+                T (ELT $ NIL))
+               ((|differentiate|
+                    ($ $ (|List| (|SingletonAsOrderedSet|))))
+                T (ELT $ NIL))
+               ((|differentiate| ($ $ (|SingletonAsOrderedSet|))) T
+                (ELT $ 140))
+               ((|coerce| ($ (|Integer|))) T (ELT $ NIL))
+               ((|coerce| ((|OutputForm|) $)) T (ELT $ NIL)))
+             (|addModemap| '|UnivariatePolynomialCategory&|
+                 '(|UnivariatePolynomialCategory&| |#1| |#2|)
+                 '((CATEGORY |domain| (SIGNATURE |coerce| (|#1| |#1|))
+                       (SIGNATURE |gcdPolynomial|
+                           ((|SparseUnivariatePolynomial| |#1|)
+                            (|SparseUnivariatePolynomial| |#1|)
+                            (|SparseUnivariatePolynomial| |#1|)))
+                       (SIGNATURE |squareFree|
+                           ((|Factored| |#1|) |#1|))
+                       (SIGNATURE |squareFreePart| (|#1| |#1|))
+                       (SIGNATURE |coerce|
+                           (|#1| (|Fraction| (|Integer|))))
+                       (SIGNATURE |init| (|#1|))
+                       (SIGNATURE |nextItem|
+                           ((|Union| |#1| "failed") |#1|))
+                       (SIGNATURE |elt|
+                           ((|Fraction| |#1|) |#1| (|Fraction| |#1|)))
+                       (SIGNATURE |euclideanSize|
+                           ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |divide|
+                           ((|Record| (|:| |quotient| |#1|)
+                                (|:| |remainder| |#1|))
+                            |#1| |#1|))
+                       (SIGNATURE |integrate| (|#1| |#1|))
+                       (SIGNATURE |elt| (|#2| (|Fraction| |#1|) |#2|))
+                       (SIGNATURE |separate|
+                           ((|Record| (|:| |primePart| |#1|)
+                                (|:| |commonPart| |#1|))
+                            |#1| |#1|))
+                       (SIGNATURE |pseudoDivide|
+                           ((|Record| (|:| |coef| |#2|)
+                                (|:| |quotient| |#1|)
+                                (|:| |remainder| |#1|))
+                            |#1| |#1|))
+                       (SIGNATURE |pseudoQuotient| (|#1| |#1| |#1|))
+                       (SIGNATURE |composite|
+                           ((|Union| (|Fraction| |#1|) "failed")
+                            (|Fraction| |#1|) |#1|))
+                       (SIGNATURE |composite|
+                           ((|Union| |#1| "failed") |#1| |#1|))
+                       (SIGNATURE |order|
+                           ((|NonNegativeInteger|) |#1| |#1|))
+                       (SIGNATURE |elt|
+                           ((|Fraction| |#1|) (|Fraction| |#1|)
+                            (|Fraction| |#1|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|Mapping| |#2| |#2|) |#1|))
+                       (SIGNATURE |shiftLeft|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |shiftRight|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |karatsubaDivide|
+                           ((|Record| (|:| |quotient| |#1|)
+                                      (|:| |remainder| |#1|))
+                            |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |unmakeSUP|
+                           (|#1| (|SparseUnivariatePolynomial| |#2|)))
+                       (SIGNATURE |makeSUP|
+                           ((|SparseUnivariatePolynomial| |#2|) |#1|))
+                       (SIGNATURE |vectorise|
+                           ((|Vector| |#2|) |#1|
+                            (|NonNegativeInteger|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|Mapping| |#2| |#2|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|Mapping| |#2| |#2|)
+                                 (|NonNegativeInteger|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|List| (|Symbol|))
+                                 (|List| (|NonNegativeInteger|))))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|Symbol|)
+                                 (|NonNegativeInteger|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|List| (|Symbol|))))
+                       (SIGNATURE |differentiate|
+                                  (|#1| |#1| (|Symbol|)))
+                       (SIGNATURE |differentiate| (|#1| |#1|))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |elt| (|#1| |#1| |#1|))
+                       (SIGNATURE |elt| (|#2| |#1| |#2|))
+                       (SIGNATURE |factor| ((|Factored| |#1|) |#1|))
+                       (SIGNATURE |squareFreePolynomial|
+                           ((|Factored|
+                                (|SparseUnivariatePolynomial| |#1|))
+                            (|SparseUnivariatePolynomial| |#1|)))
+                       (SIGNATURE |factorPolynomial|
+                           ((|Factored|
+                                (|SparseUnivariatePolynomial| |#1|))
+                            (|SparseUnivariatePolynomial| |#1|)))
+                       (SIGNATURE |factorSquareFreePolynomial|
+                           ((|Factored|
+                                (|SparseUnivariatePolynomial| |#1|))
+                            (|SparseUnivariatePolynomial| |#1|)))
+                       (SIGNATURE |solveLinearPolynomialEquation|
+                           ((|Union| (|List|
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|))
+                                     "failed")
+                            (|List| (|SparseUnivariatePolynomial| |#1|))
+                            (|SparseUnivariatePolynomial| |#1|)))
+                       (SIGNATURE |content|
+                           (|#1| |#1| (|SingletonAsOrderedSet|)))
+                       (SIGNATURE |variables|
+                           ((|List| (|SingletonAsOrderedSet|)) |#1|))
+                       (SIGNATURE |totalDegree|
+                           ((|NonNegativeInteger|) |#1|
+                            (|List| (|SingletonAsOrderedSet|))))
+                       (SIGNATURE |totalDegree|
+                           ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |monomial|
+                           (|#1| |#1|
+                                 (|List| (|SingletonAsOrderedSet|))
+                                 (|List| (|NonNegativeInteger|))))
+                       (SIGNATURE |monomial|
+                           (|#1| |#1| (|SingletonAsOrderedSet|)
+                                 (|NonNegativeInteger|)))
+                       (SIGNATURE |minimumDegree|
+                           ((|List| (|NonNegativeInteger|)) |#1|
+                            (|List| (|SingletonAsOrderedSet|))))
+                       (SIGNATURE |minimumDegree|
+                           ((|NonNegativeInteger|) |#1|
+                            (|SingletonAsOrderedSet|)))
+                       (SIGNATURE |mainVariable|
+                           ((|Union| (|SingletonAsOrderedSet|)
+                                     "failed")
+                            |#1|))
+                       (SIGNATURE |degree|
+                           ((|List| (|NonNegativeInteger|)) |#1|
+                            (|List| (|SingletonAsOrderedSet|))))
+                       (SIGNATURE |degree|
+                           ((|NonNegativeInteger|) |#1|
+                            (|SingletonAsOrderedSet|)))
+                       (SIGNATURE |retract|
+                           ((|SingletonAsOrderedSet|) |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| (|SingletonAsOrderedSet|)
+                                     "failed")
+                            |#1|))
+                       (SIGNATURE |coerce|
+                           (|#1| (|SingletonAsOrderedSet|)))
+                       (SIGNATURE |eval|
+                           (|#1| |#1|
+                                 (|List| (|SingletonAsOrderedSet|))
+                                 (|List| |#1|)))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|SingletonAsOrderedSet|) |#1|))
+                       (SIGNATURE |eval|
+                                  (|#1| |#1|
+                                        (|List|
+                                         (|SingletonAsOrderedSet|))
+                                        (|List| |#2|)))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|SingletonAsOrderedSet|) |#2|))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| |#1|) (|List| |#1|)))
+                       (SIGNATURE |eval| (|#1| |#1| |#1| |#1|))
+                       (SIGNATURE |eval| (|#1| |#1| (|Equation| |#1|)))
+                       (SIGNATURE |eval|
+                           (|#1| |#1| (|List| (|Equation| |#1|))))
+                       (SIGNATURE |degree|
+                           ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |monomial|
+                           (|#1| |#2| (|NonNegativeInteger|)))
+                       (SIGNATURE |retract| ((|Integer|) |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| (|Integer|) "failed") |#1|))
+                       (SIGNATURE |retract|
+                           ((|Fraction| (|Integer|)) |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| (|Fraction| (|Integer|)) "failed")
+                            |#1|))
+                       (SIGNATURE |coerce| (|#1| |#2|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| |#2| "failed") |#1|))
+                       (SIGNATURE |retract| (|#2| |#1|))
+                       (SIGNATURE |minimumDegree|
+                           ((|NonNegativeInteger|) |#1|))
+                       (SIGNATURE |content| (|#2| |#1|))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1|
+                                 (|List| (|SingletonAsOrderedSet|))
+                                 (|List| (|NonNegativeInteger|))))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|SingletonAsOrderedSet|)
+                                 (|NonNegativeInteger|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1|
+                                 (|List| (|SingletonAsOrderedSet|))))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|SingletonAsOrderedSet|)))
+                       (SIGNATURE |coerce| (|#1| (|Integer|)))
+                       (SIGNATURE |coerce| ((|OutputForm|) |#1|)))
+                   (|UnivariatePolynomialCategory| |#2|) (|Ring|))
+                 T '|UnivariatePolynomialCategory&|
+                 (|put| '|UnivariatePolynomialCategory&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |coerce| (|#1| |#1|))
+                                 (SIGNATURE |gcdPolynomial|
+                                     ((|SparseUnivariatePolynomial|
+                                       |#1|)
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|)
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|)))
+                                 (SIGNATURE |squareFree|
+                                     ((|Factored| |#1|) |#1|))
+                                 (SIGNATURE |squareFreePart|
+                                     (|#1| |#1|))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|Fraction| (|Integer|))))
+                                 (SIGNATURE |init| (|#1|))
+                                 (SIGNATURE |nextItem|
+                                     ((|Union| |#1| "failed") |#1|))
+                                 (SIGNATURE |elt|
+                                     ((|Fraction| |#1|) |#1|
+                                      (|Fraction| |#1|)))
+                                 (SIGNATURE |euclideanSize|
+                                     ((|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE |divide|
+                                     ((|Record| (|:| |quotient| |#1|)
+                                       (|:| |remainder| |#1|))
+                                      |#1| |#1|))
+                                 (SIGNATURE |integrate| (|#1| |#1|))
+                                 (SIGNATURE |elt|
+                                     (|#2| (|Fraction| |#1|) |#2|))
+                                 (SIGNATURE |separate|
+                                     ((|Record| (|:| |primePart| |#1|)
+                                       (|:| |commonPart| |#1|))
+                                      |#1| |#1|))
+                                 (SIGNATURE |pseudoDivide|
+                                     ((|Record| (|:| |coef| |#2|)
+                                       (|:| |quotient| |#1|)
+                                       (|:| |remainder| |#1|))
+                                      |#1| |#1|))
+                                 (SIGNATURE |pseudoQuotient|
+                                     (|#1| |#1| |#1|))
+                                 (SIGNATURE |composite|
+                                     ((|Union| (|Fraction| |#1|)
+                                       "failed")
+                                      (|Fraction| |#1|) |#1|))
+                                 (SIGNATURE |composite|
+                                     ((|Union| |#1| "failed") |#1|
+                                      |#1|))
+                                 (SIGNATURE |order|
+                                     ((|NonNegativeInteger|) |#1| |#1|))
+                                 (SIGNATURE |elt|
+                                     ((|Fraction| |#1|)
+                                      (|Fraction| |#1|)
+                                      (|Fraction| |#1|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Mapping| |#2| |#2|)
+                                      |#1|))
+                                 (SIGNATURE |shiftLeft|
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |shiftRight|
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |karatsubaDivide|
+                                     ((|Record| (|:| |quotient| |#1|)
+                                       (|:| |remainder| |#1|))
+                                      |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |unmakeSUP|
+                                     (|#1|
+                                      (|SparseUnivariatePolynomial|
+                                       |#2|)))
+                                 (SIGNATURE |makeSUP|
+                                     ((|SparseUnivariatePolynomial|
+                                       |#2|)
+                                      |#1|))
+                                 (SIGNATURE |vectorise|
+                                     ((|Vector| |#2|) |#1|
+                                      (|NonNegativeInteger|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Mapping| |#2| |#2|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Mapping| |#2| |#2|)
+                                      (|NonNegativeInteger|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|List| (|Symbol|))
+                                      (|List| (|NonNegativeInteger|))))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Symbol|)
+                                      (|NonNegativeInteger|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|List| (|Symbol|))))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Symbol|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |elt| (|#1| |#1| |#1|))
+                                 (SIGNATURE |elt| (|#2| |#1| |#2|))
+                                 (SIGNATURE |factor|
+                                     ((|Factored| |#1|) |#1|))
+                                 (SIGNATURE |squareFreePolynomial|
+                                     ((|Factored|
+                                       (|SparseUnivariatePolynomial|
+                                        |#1|))
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|)))
+                                 (SIGNATURE |factorPolynomial|
+                                     ((|Factored|
+                                       (|SparseUnivariatePolynomial|
+                                        |#1|))
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|)))
+                                 (SIGNATURE
+                                     |factorSquareFreePolynomial|
+                                     ((|Factored|
+                                       (|SparseUnivariatePolynomial|
+                                        |#1|))
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|)))
+                                 (SIGNATURE
+                                     |solveLinearPolynomialEquation|
+                                     ((|Union|
+                                       (|List|
+                                        (|SparseUnivariatePolynomial|
+                                         |#1|))
+                                       "failed")
+                                      (|List|
+                                       (|SparseUnivariatePolynomial|
+                                        |#1|))
+                                      (|SparseUnivariatePolynomial|
+                                       |#1|)))
+                                 (SIGNATURE |content|
+                                     (|#1| |#1|
+                                      (|SingletonAsOrderedSet|)))
+                                 (SIGNATURE |variables|
+                                     ((|List|
+                                       (|SingletonAsOrderedSet|))
+                                      |#1|))
+                                 (SIGNATURE |totalDegree|
+                                     ((|NonNegativeInteger|) |#1|
+                                      (|List|
+                                       (|SingletonAsOrderedSet|))))
+                                 (SIGNATURE |totalDegree|
+                                     ((|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE |monomial|
+                                     (|#1| |#1|
+                                      (|List|
+                                       (|SingletonAsOrderedSet|))
+                                      (|List| (|NonNegativeInteger|))))
+                                 (SIGNATURE |monomial|
+                                     (|#1| |#1|
+                                      (|SingletonAsOrderedSet|)
+                                      (|NonNegativeInteger|)))
+                                 (SIGNATURE |minimumDegree|
+                                     ((|List| (|NonNegativeInteger|))
+                                      |#1|
+                                      (|List|
+                                       (|SingletonAsOrderedSet|))))
+                                 (SIGNATURE |minimumDegree|
+                                     ((|NonNegativeInteger|) |#1|
+                                      (|SingletonAsOrderedSet|)))
+                                 (SIGNATURE |mainVariable|
+                                     ((|Union|
+                                       (|SingletonAsOrderedSet|)
+                                       "failed")
+                                      |#1|))
+                                 (SIGNATURE |degree|
+                                     ((|List| (|NonNegativeInteger|))
+                                      |#1|
+                                      (|List|
+                                       (|SingletonAsOrderedSet|))))
+                                 (SIGNATURE |degree|
+                                     ((|NonNegativeInteger|) |#1|
+                                      (|SingletonAsOrderedSet|)))
+                                 (SIGNATURE |retract|
+                                     ((|SingletonAsOrderedSet|) |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union|
+                                       (|SingletonAsOrderedSet|)
+                                       "failed")
+                                      |#1|))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|SingletonAsOrderedSet|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|List|
+                                       (|SingletonAsOrderedSet|))
+                                      (|List| |#1|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|SingletonAsOrderedSet|) |#1|))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|List|
+                                       (|SingletonAsOrderedSet|))
+                                      (|List| |#2|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|SingletonAsOrderedSet|) |#2|))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|List| |#1|)
+                                      (|List| |#1|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| |#1| |#1|))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1| (|Equation| |#1|)))
+                                 (SIGNATURE |eval|
+                                     (|#1| |#1|
+                                      (|List| (|Equation| |#1|))))
+                                 (SIGNATURE |degree|
+                                     ((|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE |monomial|
+                                     (|#1| |#2| (|NonNegativeInteger|)))
+                                 (SIGNATURE |retract|
+                                     ((|Integer|) |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| (|Integer|) "failed")
+                                      |#1|))
+                                 (SIGNATURE |retract|
+                                     ((|Fraction| (|Integer|)) |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| (|Fraction| (|Integer|))
+                                       "failed")
+                                      |#1|))
+                                 (SIGNATURE |coerce| (|#1| |#2|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| |#2| "failed") |#1|))
+                                 (SIGNATURE |retract| (|#2| |#1|))
+                                 (SIGNATURE |minimumDegree|
+                                     ((|NonNegativeInteger|) |#1|))
+                                 (SIGNATURE |content| (|#2| |#1|))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|
+                                      (|List|
+                                       (|SingletonAsOrderedSet|))
+                                      (|List| (|NonNegativeInteger|))))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|
+                                      (|SingletonAsOrderedSet|)
+                                      (|NonNegativeInteger|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|
+                                      (|List|
+                                       (|SingletonAsOrderedSet|))))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|
+                                      (|SingletonAsOrderedSet|)))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|Integer|)))
+                                 (SIGNATURE |coerce|
+                                     ((|OutputForm|) |#1|)))
+                             (|UnivariatePolynomialCategory| |#2|)
+                             (|Ring|))
+                        |$CategoryFrame|)))) 

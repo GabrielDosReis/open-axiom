@@ -6,9 +6,9 @@
 (DEFPARAMETER |MultivariateTaylorSeriesCategory;AL| 'NIL) 
 
 (DEFUN |MultivariateTaylorSeriesCategory|
-       (&REST #0=#:G1390 &AUX #1=#:G1388)
+       (&REST #0=#:G1399 &AUX #1=#:G1397)
   (DSETQ #1# #0#)
-  (LET (#2=#:G1389)
+  (LET (#2=#:G1398)
     (COND
       ((SETQ #2#
              (|assoc| (|devaluateList| #1#)
@@ -24,7 +24,7 @@
          #2#)))) 
 
 (DEFUN |MultivariateTaylorSeriesCategory;| (|t#1| |t#2|)
-  (PROG (#0=#:G1387)
+  (PROG (#0=#:G1396)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -32,7 +32,7 @@
                              (LIST (|devaluate| |t#1|)
                                    (|devaluate| |t#2|)))
                        (|sublisV|
-                           (PAIR '(#1=#:G1386)
+                           (PAIR '(#1=#:G1395)
                                  (LIST '(|IndexedExponents| |t#2|)))
                            (COND
                              (|MultivariateTaylorSeriesCategory;CAT|)
@@ -105,3 +105,10 @@
         (SETELT #0# 0
                 (LIST '|MultivariateTaylorSeriesCategory|
                       (|devaluate| |t#1|) (|devaluate| |t#2|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|MultivariateTaylorSeriesCategory| '|isCategory| T
+             (|addModemap| '|MultivariateTaylorSeriesCategory|
+                 '(|MultivariateTaylorSeriesCategory| |#1| |#2|)
+                 '((|Category|) (|Ring|) (|OrderedSet|)) T
+                 '|MultivariateTaylorSeriesCategory| |$CategoryFrame|))) 

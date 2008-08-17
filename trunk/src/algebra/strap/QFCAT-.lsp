@@ -438,3 +438,269 @@
                                   67 0 70 1 0 76 0 79 1 0 0 55 57 1 0 0
                                   85 90 0 0 29 31 2 0 48 0 0 50)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|QuotientFieldCategory&| '|isFunctor|
+             '(((< ((|Boolean|) $ $)) T (ELT $ 50))
+               ((|init| ($)) T (ELT $ 16))
+               ((|nextItem| ((|Union| $ "failed") $)) T (ELT $ 20))
+               ((|retract| ((|Integer|) $)) T (ELT $ 92))
+               ((|retractIfCan| ((|Union| (|Integer|) "failed") $)) T
+                (ELT $ 95))
+               ((|retract| ((|Fraction| (|Integer|)) $)) T (ELT $ NIL))
+               ((|retractIfCan|
+                    ((|Union| (|Fraction| (|Integer|)) "failed") $))
+                T (ELT $ NIL))
+               ((|convert| ((|DoubleFloat|) $)) T (ELT $ 47))
+               ((|convert| ((|Float|) $)) T (ELT $ 44))
+               ((|convert| ((|InputForm|) $)) T (ELT $ 40))
+               ((|retract| ((|Symbol|) $)) T (ELT $ 60))
+               ((|retractIfCan| ((|Union| (|Symbol|) "failed") $)) T
+                (ELT $ 65))
+               ((|coerce| ($ (|Symbol|))) T (ELT $ 57))
+               ((|random| ($)) T (ELT $ 98))
+               ((|fractionPart| ($ $)) T (ELT $ 54))
+               ((|denominator| ($ $)) T (ELT $ 12))
+               ((|numerator| ($ $)) T (ELT $ 10))
+               ((|patternMatch|
+                    ((|PatternMatchResult| (|Float|) $) $
+                     (|Pattern| (|Float|))
+                     (|PatternMatchResult| (|Float|) $)))
+                T (ELT $ 84))
+               ((|patternMatch|
+                    ((|PatternMatchResult| (|Integer|) $) $
+                     (|Pattern| (|Integer|))
+                     (|PatternMatchResult| (|Integer|) $)))
+                T (ELT $ 75))
+               ((|convert| ((|Pattern| (|Float|)) $)) T (ELT $ 79))
+               ((|convert| ((|Pattern| (|Integer|)) $)) T (ELT $ 70))
+               ((|reducedSystem| ((|Matrix| |#2|) (|Matrix| $))) T
+                (ELT $ 28))
+               ((|reducedSystem|
+                    ((|Record| (|:| |mat| (|Matrix| |#2|))
+                         (|:| |vec| (|Vector| |#2|)))
+                     (|Matrix| $) (|Vector| $)))
+                T (ELT $ 112))
+               ((|reducedSystem|
+                    ((|Record| (|:| |mat| (|Matrix| (|Integer|)))
+                         (|:| |vec| (|Vector| (|Integer|))))
+                     (|Matrix| $) (|Vector| $)))
+                T (ELT $ NIL))
+               ((|reducedSystem| ((|Matrix| (|Integer|)) (|Matrix| $)))
+                T (ELT $ NIL))
+               ((|differentiate| ($ $ (|Mapping| |#2| |#2|))) T
+                (ELT $ 36))
+               ((|differentiate|
+                    ($ $ (|Mapping| |#2| |#2|) (|NonNegativeInteger|)))
+                T (ELT $ NIL))
+               ((|differentiate|
+                    ($ $ (|List| (|Symbol|))
+                       (|List| (|NonNegativeInteger|))))
+                T (ELT $ NIL))
+               ((|differentiate|
+                    ($ $ (|Symbol|) (|NonNegativeInteger|)))
+                T (ELT $ NIL))
+               ((|differentiate| ($ $ (|List| (|Symbol|)))) T
+                (ELT $ NIL))
+               ((|differentiate| ($ $ (|Symbol|))) T (ELT $ NIL))
+               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
+                (ELT $ NIL))
+               ((|differentiate| ($ $)) T (ELT $ NIL))
+               ((|map| ($ (|Mapping| |#2| |#2|) $)) T (ELT $ 22))
+               ((|retract| (|#2| $)) T (ELT $ NIL))
+               ((|retractIfCan| ((|Union| |#2| "failed") $)) T
+                (ELT $ NIL))
+               ((|coerce| ($ |#2|)) T (ELT $ NIL))
+               ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ 90))
+               ((|coerce| ($ $)) T (ELT $ NIL))
+               ((|coerce| ($ (|Integer|))) T (ELT $ NIL))
+               ((|characteristic| ((|NonNegativeInteger|))) T
+                (ELT $ 31))
+               ((|coerce| ((|OutputForm|) $)) T (ELT $ NIL)))
+             (|addModemap| '|QuotientFieldCategory&|
+                 '(|QuotientFieldCategory&| |#1| |#2|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE < ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |init| (|#1|))
+                       (SIGNATURE |nextItem|
+                           ((|Union| |#1| "failed") |#1|))
+                       (SIGNATURE |retract| ((|Integer|) |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| (|Integer|) "failed") |#1|))
+                       (SIGNATURE |retract|
+                           ((|Fraction| (|Integer|)) |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| (|Fraction| (|Integer|)) "failed")
+                            |#1|))
+                       (SIGNATURE |convert| ((|DoubleFloat|) |#1|))
+                       (SIGNATURE |convert| ((|Float|) |#1|))
+                       (SIGNATURE |convert| ((|InputForm|) |#1|))
+                       (SIGNATURE |retract| ((|Symbol|) |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| (|Symbol|) "failed") |#1|))
+                       (SIGNATURE |coerce| (|#1| (|Symbol|)))
+                       (SIGNATURE |random| (|#1|))
+                       (SIGNATURE |fractionPart| (|#1| |#1|))
+                       (SIGNATURE |denominator| (|#1| |#1|))
+                       (SIGNATURE |numerator| (|#1| |#1|))
+                       (SIGNATURE |patternMatch|
+                           ((|PatternMatchResult| (|Float|) |#1|) |#1|
+                            (|Pattern| (|Float|))
+                            (|PatternMatchResult| (|Float|) |#1|)))
+                       (SIGNATURE |patternMatch|
+                           ((|PatternMatchResult| (|Integer|) |#1|)
+                            |#1| (|Pattern| (|Integer|))
+                            (|PatternMatchResult| (|Integer|) |#1|)))
+                       (SIGNATURE |convert|
+                           ((|Pattern| (|Float|)) |#1|))
+                       (SIGNATURE |convert|
+                           ((|Pattern| (|Integer|)) |#1|))
+                       (SIGNATURE |reducedSystem|
+                           ((|Matrix| |#2|) (|Matrix| |#1|)))
+                       (SIGNATURE |reducedSystem|
+                           ((|Record| (|:| |mat| (|Matrix| |#2|))
+                                (|:| |vec| (|Vector| |#2|)))
+                            (|Matrix| |#1|) (|Vector| |#1|)))
+                       (SIGNATURE |reducedSystem|
+                           ((|Record|
+                                (|:| |mat| (|Matrix| (|Integer|)))
+                                (|:| |vec| (|Vector| (|Integer|))))
+                            (|Matrix| |#1|) (|Vector| |#1|)))
+                       (SIGNATURE |reducedSystem|
+                           ((|Matrix| (|Integer|)) (|Matrix| |#1|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|Mapping| |#2| |#2|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|Mapping| |#2| |#2|)
+                                 (|NonNegativeInteger|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|List| (|Symbol|))
+                                 (|List| (|NonNegativeInteger|))))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|Symbol|)
+                                 (|NonNegativeInteger|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|List| (|Symbol|))))
+                       (SIGNATURE |differentiate|
+                                  (|#1| |#1| (|Symbol|)))
+                       (SIGNATURE |differentiate|
+                           (|#1| |#1| (|NonNegativeInteger|)))
+                       (SIGNATURE |differentiate| (|#1| |#1|))
+                       (SIGNATURE |map|
+                           (|#1| (|Mapping| |#2| |#2|) |#1|))
+                       (SIGNATURE |retract| (|#2| |#1|))
+                       (SIGNATURE |retractIfCan|
+                           ((|Union| |#2| "failed") |#1|))
+                       (SIGNATURE |coerce| (|#1| |#2|))
+                       (SIGNATURE |coerce|
+                           (|#1| (|Fraction| (|Integer|))))
+                       (SIGNATURE |coerce| (|#1| |#1|))
+                       (SIGNATURE |coerce| (|#1| (|Integer|)))
+                       (SIGNATURE |characteristic|
+                           ((|NonNegativeInteger|)))
+                       (SIGNATURE |coerce| ((|OutputForm|) |#1|)))
+                   (|QuotientFieldCategory| |#2|) (|IntegralDomain|))
+                 T '|QuotientFieldCategory&|
+                 (|put| '|QuotientFieldCategory&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE < ((|Boolean|) |#1| |#1|))
+                                 (SIGNATURE |init| (|#1|))
+                                 (SIGNATURE |nextItem|
+                                     ((|Union| |#1| "failed") |#1|))
+                                 (SIGNATURE |retract|
+                                     ((|Integer|) |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| (|Integer|) "failed")
+                                      |#1|))
+                                 (SIGNATURE |retract|
+                                     ((|Fraction| (|Integer|)) |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| (|Fraction| (|Integer|))
+                                       "failed")
+                                      |#1|))
+                                 (SIGNATURE |convert|
+                                     ((|DoubleFloat|) |#1|))
+                                 (SIGNATURE |convert| ((|Float|) |#1|))
+                                 (SIGNATURE |convert|
+                                     ((|InputForm|) |#1|))
+                                 (SIGNATURE |retract|
+                                     ((|Symbol|) |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| (|Symbol|) "failed")
+                                      |#1|))
+                                 (SIGNATURE |coerce| (|#1| (|Symbol|)))
+                                 (SIGNATURE |random| (|#1|))
+                                 (SIGNATURE |fractionPart| (|#1| |#1|))
+                                 (SIGNATURE |denominator| (|#1| |#1|))
+                                 (SIGNATURE |numerator| (|#1| |#1|))
+                                 (SIGNATURE |patternMatch|
+                                     ((|PatternMatchResult| (|Float|)
+                                       |#1|)
+                                      |#1| (|Pattern| (|Float|))
+                                      (|PatternMatchResult| (|Float|)
+                                       |#1|)))
+                                 (SIGNATURE |patternMatch|
+                                     ((|PatternMatchResult| (|Integer|)
+                                       |#1|)
+                                      |#1| (|Pattern| (|Integer|))
+                                      (|PatternMatchResult| (|Integer|)
+                                       |#1|)))
+                                 (SIGNATURE |convert|
+                                     ((|Pattern| (|Float|)) |#1|))
+                                 (SIGNATURE |convert|
+                                     ((|Pattern| (|Integer|)) |#1|))
+                                 (SIGNATURE |reducedSystem|
+                                     ((|Matrix| |#2|) (|Matrix| |#1|)))
+                                 (SIGNATURE |reducedSystem|
+                                     ((|Record|
+                                       (|:| |mat| (|Matrix| |#2|))
+                                       (|:| |vec| (|Vector| |#2|)))
+                                      (|Matrix| |#1|) (|Vector| |#1|)))
+                                 (SIGNATURE |reducedSystem|
+                                     ((|Record|
+                                       (|:| |mat|
+                                        (|Matrix| (|Integer|)))
+                                       (|:| |vec|
+                                        (|Vector| (|Integer|))))
+                                      (|Matrix| |#1|) (|Vector| |#1|)))
+                                 (SIGNATURE |reducedSystem|
+                                     ((|Matrix| (|Integer|))
+                                      (|Matrix| |#1|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Mapping| |#2| |#2|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Mapping| |#2| |#2|)
+                                      (|NonNegativeInteger|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|List| (|Symbol|))
+                                      (|List| (|NonNegativeInteger|))))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Symbol|)
+                                      (|NonNegativeInteger|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|List| (|Symbol|))))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|Symbol|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1| (|NonNegativeInteger|)))
+                                 (SIGNATURE |differentiate|
+                                     (|#1| |#1|))
+                                 (SIGNATURE |map|
+                                     (|#1| (|Mapping| |#2| |#2|) |#1|))
+                                 (SIGNATURE |retract| (|#2| |#1|))
+                                 (SIGNATURE |retractIfCan|
+                                     ((|Union| |#2| "failed") |#1|))
+                                 (SIGNATURE |coerce| (|#1| |#2|))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|Fraction| (|Integer|))))
+                                 (SIGNATURE |coerce| (|#1| |#1|))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|Integer|)))
+                                 (SIGNATURE |characteristic|
+                                     ((|NonNegativeInteger|)))
+                                 (SIGNATURE |coerce|
+                                     ((|OutputForm|) |#1|)))
+                             (|QuotientFieldCategory| |#2|)
+                             (|IntegralDomain|))
+                        |$CategoryFrame|)))) 

@@ -6,89 +6,102 @@
 (DEFUN |RNS-;characteristic;Nni;1| ($) 0) 
 
 (DEFUN |RNS-;fractionPart;2S;2| (|x| $)
-  (SPADCALL |x| (SPADCALL |x| (QREFELT $ 9)) (QREFELT $ 10))) 
+  (SPADCALL |x| (SPADCALL |x| (|getShellEntry| $ 9))
+      (|getShellEntry| $ 10))) 
 
 (DEFUN |RNS-;truncate;2S;3| (|x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 13))
-     (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 14)) (QREFELT $ 15))
-         (QREFELT $ 14)))
-    ('T (SPADCALL |x| (QREFELT $ 15))))) 
+    ((SPADCALL |x| (|getShellEntry| $ 13))
+     (SPADCALL
+         (SPADCALL (SPADCALL |x| (|getShellEntry| $ 14))
+             (|getShellEntry| $ 15))
+         (|getShellEntry| $ 14)))
+    ('T (SPADCALL |x| (|getShellEntry| $ 15))))) 
 
 (DEFUN |RNS-;round;2S;4| (|x| $)
   (COND
-    ((SPADCALL |x| (QREFELT $ 13))
+    ((SPADCALL |x| (|getShellEntry| $ 13))
      (SPADCALL
          (SPADCALL |x|
              (SPADCALL (|spadConstant| $ 17)
-                 (SPADCALL 2 (QREFELT $ 19)) (QREFELT $ 20))
-             (QREFELT $ 10))
-         (QREFELT $ 9)))
+                 (SPADCALL 2 (|getShellEntry| $ 19))
+                 (|getShellEntry| $ 20))
+             (|getShellEntry| $ 10))
+         (|getShellEntry| $ 9)))
     ('T
      (SPADCALL
          (SPADCALL |x|
              (SPADCALL (|spadConstant| $ 17)
-                 (SPADCALL 2 (QREFELT $ 19)) (QREFELT $ 20))
-             (QREFELT $ 21))
-         (QREFELT $ 9))))) 
+                 (SPADCALL 2 (|getShellEntry| $ 19))
+                 (|getShellEntry| $ 20))
+             (|getShellEntry| $ 21))
+         (|getShellEntry| $ 9))))) 
 
-(DEFUN |RNS-;norm;2S;5| (|x| $) (SPADCALL |x| (QREFELT $ 23))) 
+(DEFUN |RNS-;norm;2S;5| (|x| $) (SPADCALL |x| (|getShellEntry| $ 23))) 
 
 (DEFUN |RNS-;coerce;FS;6| (|x| $)
-  (SPADCALL (SPADCALL (SPADCALL |x| (QREFELT $ 26)) (QREFELT $ 19))
-      (SPADCALL (SPADCALL |x| (QREFELT $ 27)) (QREFELT $ 19))
-      (QREFELT $ 20))) 
+  (SPADCALL
+      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 26))
+          (|getShellEntry| $ 19))
+      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 27))
+          (|getShellEntry| $ 19))
+      (|getShellEntry| $ 20))) 
 
 (DEFUN |RNS-;convert;SP;7| (|x| $)
-  (SPADCALL (SPADCALL |x| (QREFELT $ 30)) (QREFELT $ 32))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 30))
+      (|getShellEntry| $ 32))) 
 
 (DEFUN |RNS-;floor;2S;8| (|x| $)
   (PROG (|x1|)
     (RETURN
       (SEQ (LETT |x1|
-                 (SPADCALL (SPADCALL |x| (QREFELT $ 34))
-                     (QREFELT $ 19))
+                 (SPADCALL (SPADCALL |x| (|getShellEntry| $ 34))
+                     (|getShellEntry| $ 19))
                  |RNS-;floor;2S;8|)
            (EXIT (COND
-                   ((SPADCALL |x| |x1| (QREFELT $ 35)) |x|)
-                   ((SPADCALL |x| (|spadConstant| $ 36) (QREFELT $ 37))
+                   ((SPADCALL |x| |x1| (|getShellEntry| $ 35)) |x|)
+                   ((SPADCALL |x| (|spadConstant| $ 36)
+                        (|getShellEntry| $ 37))
                     (SPADCALL |x1| (|spadConstant| $ 17)
-                        (QREFELT $ 10)))
+                        (|getShellEntry| $ 10)))
                    ('T |x1|))))))) 
 
 (DEFUN |RNS-;ceiling;2S;9| (|x| $)
   (PROG (|x1|)
     (RETURN
       (SEQ (LETT |x1|
-                 (SPADCALL (SPADCALL |x| (QREFELT $ 34))
-                     (QREFELT $ 19))
+                 (SPADCALL (SPADCALL |x| (|getShellEntry| $ 34))
+                     (|getShellEntry| $ 19))
                  |RNS-;ceiling;2S;9|)
            (EXIT (COND
-                   ((SPADCALL |x| |x1| (QREFELT $ 35)) |x|)
-                   ((SPADCALL |x| (|spadConstant| $ 36) (QREFELT $ 37))
+                   ((SPADCALL |x| |x1| (|getShellEntry| $ 35)) |x|)
+                   ((SPADCALL |x| (|spadConstant| $ 36)
+                        (|getShellEntry| $ 37))
                     |x1|)
                    ('T
                     (SPADCALL |x1| (|spadConstant| $ 17)
-                        (QREFELT $ 21))))))))) 
+                        (|getShellEntry| $ 21))))))))) 
 
 (DEFUN |RNS-;patternMatch;SP2Pmr;10| (|x| |p| |l| $)
   (PROG (|r|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |p| (QREFELT $ 40))
-              (SPADCALL |p| |x| |l| (QREFELT $ 42)))
-             ((SPADCALL |p| (QREFELT $ 43))
-              (SEQ (LETT |r| (SPADCALL |p| (QREFELT $ 45))
+             ((SPADCALL |p| (|getShellEntry| $ 40))
+              (SPADCALL |p| |x| |l| (|getShellEntry| $ 42)))
+             ((SPADCALL |p| (|getShellEntry| $ 43))
+              (SEQ (LETT |r| (SPADCALL |p| (|getShellEntry| $ 45))
                          |RNS-;patternMatch;SP2Pmr;10|)
                    (EXIT (COND
                            ((QEQCAR |r| 0)
                             (COND
-                              ((SPADCALL (SPADCALL |x| (QREFELT $ 30))
-                                   (QCDR |r|) (QREFELT $ 46))
+                              ((SPADCALL
+                                   (SPADCALL |x|
+                                    (|getShellEntry| $ 30))
+                                   (QCDR |r|) (|getShellEntry| $ 46))
                                |l|)
-                              ('T (SPADCALL (QREFELT $ 47)))))
-                           ('T (SPADCALL (QREFELT $ 47)))))))
-             ('T (SPADCALL (QREFELT $ 47)))))))) 
+                              ('T (SPADCALL (|getShellEntry| $ 47)))))
+                           ('T (SPADCALL (|getShellEntry| $ 47)))))))
+             ('T (SPADCALL (|getShellEntry| $ 47)))))))) 
 
 (DEFUN |RealNumberSystem&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -96,11 +109,12 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|RealNumberSystem&|))
         (LETT |dv$| (LIST '|RealNumberSystem&| |dv$1|) . #0#)
-        (LETT $ (GETREFV 52) . #0#)
-        (QSETREFV $ 0 |dv$|)
-        (QSETREFV $ 3 (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
+        (LETT $ (|newShell| 52) . #0#)
+        (|setShellEntry| $ 0 |dv$|)
+        (|setShellEntry| $ 3
+            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
         (|stuffDomainSlots| $)
-        (QSETREFV $ 6 |#1|)
+        (|setShellEntry| $ 6 |#1|)
         $)))) 
 
 (MAKEPROP '|RealNumberSystem&| '|infovec|
@@ -142,3 +156,91 @@
                                   0 33 1 0 0 25 28 1 0 0 25 28 0 0 7 8
                                   1 0 0 0 39)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|RealNumberSystem&| '|isFunctor|
+             '(((|round| ($ $)) T (ELT $ 22))
+               ((|truncate| ($ $)) T (ELT $ 16))
+               ((|fractionPart| ($ $)) T (ELT $ 11))
+               ((|floor| ($ $)) T (ELT $ 38))
+               ((|ceiling| ($ $)) T (ELT $ 39))
+               ((|norm| ($ $)) T (ELT $ 24))
+               ((|patternMatch|
+                    ((|PatternMatchResult| (|Float|) $) $
+                     (|Pattern| (|Float|))
+                     (|PatternMatchResult| (|Float|) $)))
+                T (ELT $ 49))
+               ((|convert| ((|Pattern| (|Float|)) $)) T (ELT $ 33))
+               ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ 28))
+               ((|coerce| ($ (|Integer|))) T (ELT $ NIL))
+               ((|convert| ((|DoubleFloat|) $)) T (ELT $ NIL))
+               ((|convert| ((|Float|) $)) T (ELT $ NIL))
+               ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ 28))
+               ((|coerce| ($ $)) T (ELT $ NIL))
+               ((|coerce| ($ (|Integer|))) T (ELT $ NIL))
+               ((|characteristic| ((|NonNegativeInteger|))) T
+                (ELT $ 8))
+               ((|coerce| ((|OutputForm|) $)) T (ELT $ NIL)))
+             (|addModemap| '|RealNumberSystem&|
+                 '(|RealNumberSystem&| |#1|)
+                 '((CATEGORY |domain| (SIGNATURE |round| (|#1| |#1|))
+                       (SIGNATURE |truncate| (|#1| |#1|))
+                       (SIGNATURE |fractionPart| (|#1| |#1|))
+                       (SIGNATURE |floor| (|#1| |#1|))
+                       (SIGNATURE |ceiling| (|#1| |#1|))
+                       (SIGNATURE |norm| (|#1| |#1|))
+                       (SIGNATURE |patternMatch|
+                           ((|PatternMatchResult| (|Float|) |#1|) |#1|
+                            (|Pattern| (|Float|))
+                            (|PatternMatchResult| (|Float|) |#1|)))
+                       (SIGNATURE |convert|
+                           ((|Pattern| (|Float|)) |#1|))
+                       (SIGNATURE |coerce|
+                           (|#1| (|Fraction| (|Integer|))))
+                       (SIGNATURE |coerce| (|#1| (|Integer|)))
+                       (SIGNATURE |convert| ((|DoubleFloat|) |#1|))
+                       (SIGNATURE |convert| ((|Float|) |#1|))
+                       (SIGNATURE |coerce|
+                           (|#1| (|Fraction| (|Integer|))))
+                       (SIGNATURE |coerce| (|#1| |#1|))
+                       (SIGNATURE |coerce| (|#1| (|Integer|)))
+                       (SIGNATURE |characteristic|
+                           ((|NonNegativeInteger|)))
+                       (SIGNATURE |coerce| ((|OutputForm|) |#1|)))
+                   (|RealNumberSystem|))
+                 T '|RealNumberSystem&|
+                 (|put| '|RealNumberSystem&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |round| (|#1| |#1|))
+                                 (SIGNATURE |truncate| (|#1| |#1|))
+                                 (SIGNATURE |fractionPart| (|#1| |#1|))
+                                 (SIGNATURE |floor| (|#1| |#1|))
+                                 (SIGNATURE |ceiling| (|#1| |#1|))
+                                 (SIGNATURE |norm| (|#1| |#1|))
+                                 (SIGNATURE |patternMatch|
+                                     ((|PatternMatchResult| (|Float|)
+                                       |#1|)
+                                      |#1| (|Pattern| (|Float|))
+                                      (|PatternMatchResult| (|Float|)
+                                       |#1|)))
+                                 (SIGNATURE |convert|
+                                     ((|Pattern| (|Float|)) |#1|))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|Fraction| (|Integer|))))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|Integer|)))
+                                 (SIGNATURE |convert|
+                                     ((|DoubleFloat|) |#1|))
+                                 (SIGNATURE |convert| ((|Float|) |#1|))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|Fraction| (|Integer|))))
+                                 (SIGNATURE |coerce| (|#1| |#1|))
+                                 (SIGNATURE |coerce|
+                                     (|#1| (|Integer|)))
+                                 (SIGNATURE |characteristic|
+                                     ((|NonNegativeInteger|)))
+                                 (SIGNATURE |coerce|
+                                     ((|OutputForm|) |#1|)))
+                             (|RealNumberSystem|))
+                        |$CategoryFrame|)))) 

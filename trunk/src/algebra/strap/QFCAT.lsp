@@ -5,8 +5,8 @@
 
 (DEFPARAMETER |QuotientFieldCategory;AL| 'NIL) 
 
-(DEFUN |QuotientFieldCategory| (#0=#:G1388)
-  (LET (#1=#:G1389)
+(DEFUN |QuotientFieldCategory| (#0=#:G1397)
+  (LET (#1=#:G1398)
     (COND
       ((SETQ #1#
              (|assoc| (|devaluate| #0#) |QuotientFieldCategory;AL|))
@@ -18,7 +18,7 @@
          #1#)))) 
 
 (DEFUN |QuotientFieldCategory;| (|t#1|)
-  (PROG (#0=#:G1387)
+  (PROG (#0=#:G1396)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -103,3 +103,10 @@
                                 . #1=(|QuotientFieldCategory|))))) . #1#)
         (SETELT #0# 0
                 (LIST '|QuotientFieldCategory| (|devaluate| |t#1|))))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|QuotientFieldCategory| '|isCategory| T
+             (|addModemap| '|QuotientFieldCategory|
+                 '(|QuotientFieldCategory| |#1|)
+                 '((|Category|) (|IntegralDomain|)) T
+                 '|QuotientFieldCategory| |$CategoryFrame|))) 

@@ -198,7 +198,7 @@
                                           (|getShellEntry| $ 30)))))))))))))))) 
 
 (DEFUN |EUCDOM-;principalIdeal;LR;9| (|l| $)
-  (PROG (|uca| |v| |u| #0=#:G1478 |vv| #1=#:G1479)
+  (PROG (|uca| |v| |u| #0=#:G1480 |vv| #1=#:G1481)
     (RETURN
       (SEQ (COND
              ((SPADCALL |l| NIL (|getShellEntry| $ 39))
@@ -258,7 +258,7 @@
                                (QVELT |u| 2)))))))))) 
 
 (DEFUN |EUCDOM-;expressIdealMember;LSU;10| (|l| |z| $)
-  (PROG (#0=#:G1494 #1=#:G1495 |pid| |q| #2=#:G1496 |v| #3=#:G1497)
+  (PROG (#0=#:G1496 #1=#:G1497 |pid| |q| #2=#:G1498 |v| #3=#:G1499)
     (RETURN
       (SEQ (COND
              ((SPADCALL |z| (|spadConstant| $ 27)
@@ -326,9 +326,9 @@
                                      (EXIT (NREVERSE0 #2#))))))))))))))) 
 
 (DEFUN |EUCDOM-;multiEuclidean;LSU;11| (|l| |z| $)
-  (PROG (|n| |l1| |l2| #0=#:G1392 #1=#:G1516 #2=#:G1503 #3=#:G1501
-             #4=#:G1502 #5=#:G1393 #6=#:G1517 #7=#:G1506 #8=#:G1504
-             #9=#:G1505 |u| |v1| |v2|)
+  (PROG (|n| |l1| |l2| #0=#:G1394 #1=#:G1518 #2=#:G1505 #3=#:G1503
+             #4=#:G1504 #5=#:G1395 #6=#:G1519 #7=#:G1508 #8=#:G1506
+             #9=#:G1507 |u| |v1| |v2|)
     (RETURN
       (SEQ (LETT |n| (LENGTH |l|) |EUCDOM-;multiEuclidean;LSU;11|)
            (EXIT (COND
@@ -516,3 +516,102 @@
                                   0 0 0 0 21 3 0 36 0 0 0 37 2 0 31 0 0
                                   32 2 0 16 0 0 17 2 0 45 41 0 46)))))
           '|lookupComplete|)) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|EuclideanDomain&| '|isFunctor|
+             '(((|multiEuclidean|
+                    ((|Union| (|List| $) "failed") (|List| $) $))
+                T (ELT $ 53))
+               ((|extendedEuclidean|
+                    ((|Union| (|Record| (|:| |coef1| $)
+                                  (|:| |coef2| $))
+                              "failed")
+                     $ $ $))
+                T (ELT $ 37))
+               ((|extendedEuclidean|
+                    ((|Record| (|:| |coef1| $) (|:| |coef2| $)
+                         (|:| |generator| $))
+                     $ $))
+                T (ELT $ 32))
+               ((|rem| ($ $ $)) T (ELT $ 15))
+               ((|quo| ($ $ $)) T (ELT $ 14))
+               ((|sizeLess?| ((|Boolean|) $ $)) T (ELT $ 11))
+               ((|expressIdealMember|
+                    ((|Union| (|List| $) "failed") (|List| $) $))
+                T (ELT $ 46))
+               ((|principalIdeal|
+                    ((|Record| (|:| |coef| (|List| $))
+                         (|:| |generator| $))
+                     (|List| $)))
+                T (ELT $ 44))
+               ((|gcd| ($ (|List| $))) T (ELT $ NIL))
+               ((|gcd| ($ $ $)) T (ELT $ 21))
+               ((|exquo| ((|Union| $ "failed") $ $)) T (ELT $ 17)))
+             (|addModemap| '|EuclideanDomain&|
+                 '(|EuclideanDomain&| |#1|)
+                 '((CATEGORY |domain|
+                       (SIGNATURE |multiEuclidean|
+                           ((|Union| (|List| |#1|) "failed")
+                            (|List| |#1|) |#1|))
+                       (SIGNATURE |extendedEuclidean|
+                           ((|Union| (|Record| (|:| |coef1| |#1|)
+                                      (|:| |coef2| |#1|))
+                                     "failed")
+                            |#1| |#1| |#1|))
+                       (SIGNATURE |extendedEuclidean|
+                           ((|Record| (|:| |coef1| |#1|)
+                                (|:| |coef2| |#1|)
+                                (|:| |generator| |#1|))
+                            |#1| |#1|))
+                       (SIGNATURE |rem| (|#1| |#1| |#1|))
+                       (SIGNATURE |quo| (|#1| |#1| |#1|))
+                       (SIGNATURE |sizeLess?| ((|Boolean|) |#1| |#1|))
+                       (SIGNATURE |expressIdealMember|
+                           ((|Union| (|List| |#1|) "failed")
+                            (|List| |#1|) |#1|))
+                       (SIGNATURE |principalIdeal|
+                           ((|Record| (|:| |coef| (|List| |#1|))
+                                (|:| |generator| |#1|))
+                            (|List| |#1|)))
+                       (SIGNATURE |gcd| (|#1| (|List| |#1|)))
+                       (SIGNATURE |gcd| (|#1| |#1| |#1|))
+                       (SIGNATURE |exquo|
+                           ((|Union| |#1| "failed") |#1| |#1|)))
+                   (|EuclideanDomain|))
+                 T '|EuclideanDomain&|
+                 (|put| '|EuclideanDomain&| '|mode|
+                        '(|Mapping|
+                             (CATEGORY |domain|
+                                 (SIGNATURE |multiEuclidean|
+                                     ((|Union| (|List| |#1|) "failed")
+                                      (|List| |#1|) |#1|))
+                                 (SIGNATURE |extendedEuclidean|
+                                     ((|Union|
+                                       (|Record| (|:| |coef1| |#1|)
+                                        (|:| |coef2| |#1|))
+                                       "failed")
+                                      |#1| |#1| |#1|))
+                                 (SIGNATURE |extendedEuclidean|
+                                     ((|Record| (|:| |coef1| |#1|)
+                                       (|:| |coef2| |#1|)
+                                       (|:| |generator| |#1|))
+                                      |#1| |#1|))
+                                 (SIGNATURE |rem| (|#1| |#1| |#1|))
+                                 (SIGNATURE |quo| (|#1| |#1| |#1|))
+                                 (SIGNATURE |sizeLess?|
+                                     ((|Boolean|) |#1| |#1|))
+                                 (SIGNATURE |expressIdealMember|
+                                     ((|Union| (|List| |#1|) "failed")
+                                      (|List| |#1|) |#1|))
+                                 (SIGNATURE |principalIdeal|
+                                     ((|Record|
+                                       (|:| |coef| (|List| |#1|))
+                                       (|:| |generator| |#1|))
+                                      (|List| |#1|)))
+                                 (SIGNATURE |gcd| (|#1| (|List| |#1|)))
+                                 (SIGNATURE |gcd| (|#1| |#1| |#1|))
+                                 (SIGNATURE |exquo|
+                                     ((|Union| |#1| "failed") |#1|
+                                      |#1|)))
+                             (|EuclideanDomain|))
+                        |$CategoryFrame|)))) 

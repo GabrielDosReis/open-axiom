@@ -4,17 +4,17 @@
 (DEFPARAMETER |ExpressionSpace;AL| 'NIL) 
 
 (DEFUN |ExpressionSpace| ()
-  (LET (#:G1400)
+  (LET (#:G1411)
     (COND
       (|ExpressionSpace;AL|)
       (T (SETQ |ExpressionSpace;AL| (|ExpressionSpace;|)))))) 
 
 (DEFUN |ExpressionSpace;| ()
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1409)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
-                       (PAIR '(#1=#:G1396 #2=#:G1397)
+                       (PAIR '(#1=#:G1407 #2=#:G1408)
                              (LIST '(|Kernel| $) '(|Kernel| $)))
                        (|Join| (|OrderedSet|) (|RetractableTo| '#1#)
                                (|InnerEvalable| '#2# '$)
@@ -151,5 +151,10 @@
                                    NIL)))
                    |ExpressionSpace|)
         (SETELT #0# 0 '(|ExpressionSpace|)))))) 
+
+(SETQ |$CategoryFrame|
+      (|put| '|ExpressionSpace| '|isCategory| T
+             (|addModemap| '|ExpressionSpace| '(|ExpressionSpace|)
+                 '((|Category|)) T '|ExpressionSpace| |$CategoryFrame|))) 
 
 (MAKEPROP '|ExpressionSpace| 'NILADIC T) 
