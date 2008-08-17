@@ -356,7 +356,7 @@
  (browseopen)
  (setq *category-stream-stamp* '(0 . 0))
  (categoryopen) ;note: this depends on constructorform in browse.daase
- (unless (|getOptionValue| (|Option| "system-algebra") (|%systemOptions|))
+ (unless |$buildingSystemAlgebra|
    (initial-getdatabase))
 #+:AKCL (gbc t)
 )

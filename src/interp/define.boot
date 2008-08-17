@@ -60,8 +60,7 @@ compDefine(form,m,e) ==
   $tripleHits: local:= 0
   $macroIfTrue: local := false
   $packagesUsed: local := false
-  result:= compDefine1(form,m,e)
-  result
+  compDefine1(form,m,e)
 
 ++ We are about to process the body of a capsule.  If the capsule defines
 ++ `Rep' as a constant, then implicitly insert the view morphisms
@@ -279,15 +278,15 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
   $prefix,$formalArgList) ==
     --1. bind global variables
     $insideCategoryIfTrue: local:= true
-    $TOP__LEVEL: local
-    $definition: local
+    $TOP__LEVEL: local := nil
+    $definition: local := form
                  --used by DomainSubstitutionFunction
     $form: local := nil
     $op: local := nil
     $extraParms: local := nil
              --Set in DomainSubstitutionFunction, used further down
 --  1.1  augment e to add declaration $: <form>
-    [$op,:argl]:= $definition:= form
+    [$op,:argl] := $definition
     e:= addBinding("$",[['mode,:$definition]],e)
  
 --  2. obtain signature

@@ -1,5 +1,20 @@
 2008-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-globals.boot ($updateCatTableIfTrue): Default to false.
+	* interp/sys-driver.boot (AxiomCore::%sysInit): Have ECL quiet.
+	(initializeGlobalState): Initialize new world states.
+	* interp/define.boot (compDefine): Tidy.
+	(compDefineCategory2): Explicitly initialize $TOP_LEVEL and
+	$definition. 
+	* interp/daase.lisp (|fillDatabasesInCore|): Use
+	$buildingSystemAlgebra. 
+	* interp/compiler.boot (compMakeDeclaration): Explicitly
+	initialize $insideExpressionIfTrue.
+	* boot/translator.boot (AxiomCore::%sysInit): Supper GCL and ECL
+	compiler notes, but ask for warning.
+
+2008-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.pamphlet (all-algstrap): New.
 	* algebra/strap: Update cached Lisp translation.
 
