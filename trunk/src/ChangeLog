@@ -1,5 +1,11 @@
 2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (compDefineLisplib): Don't update
+	$CategoryFrame with modemap for the constructor we just finished
+	compiling.
+
+2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/database.boot (pathToDatabase): Honor $verbose.
 	* interp/compiler.boot (COMP-1): Likewise.
 

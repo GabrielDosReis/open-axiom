@@ -225,7 +225,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
       $lisplibSlot1 := $NRTslot1Info --NIL or set by $NRTmakeSlot1
       $lisplibOperationAlist:= operationAlist
       $lisplibMissingFunctions:= $CheckVectorList
-    rwriteLispForm('"compilerInfo",
+    evalAndRwriteLispForm('"compilerInfo",
        ['SETQ,'$CategoryFrame,
         ['put,['QUOTE,op'],'
          (QUOTE isFunctor),

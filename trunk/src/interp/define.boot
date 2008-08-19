@@ -335,7 +335,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
-    rwriteLispForm('"compilerInfo",
+    evalAndRwriteLispForm('"compilerInfo",
       removeZeroOne ['SETQ,'$CategoryFrame,
        ['put,['QUOTE,op'],'
         (QUOTE isCategory),true,['addModemap,MKQ op',MKQ parForm,
@@ -570,7 +570,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       $lisplibSlot1 := $NRTslot1Info --NIL or set by $NRTmakeSlot1
       $lisplibOperationAlist:= operationAlist
       $lisplibMissingFunctions:= $CheckVectorList
-    rwriteLispForm('"compilerInfo",
+    evalAndRwriteLispForm('"compilerInfo",
        removeZeroOne ['SETQ,'$CategoryFrame,
         ['put,['QUOTE,op'],'
          (QUOTE isFunctor),
