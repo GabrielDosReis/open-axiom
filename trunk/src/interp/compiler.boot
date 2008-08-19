@@ -1934,7 +1934,9 @@ COMP_-1 x ==
   $CLOSEDFNS := []
   lamex := COMP_-TRAN lamex
   COMP_-NEWNAM lamex
-  if FBOUNDP fname then
+  -- Note that category constructors are evaluated before they
+  -- their compiled, so this noise is not very helpful.
+  if $verbose and FBOUNDP fname then
     FORMAT(true,'"~&~%;;;     ***       ~S REDEFINED~%",fname)
   [[fname,lamex],:$CLOSEDFNS]
 

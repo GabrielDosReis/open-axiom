@@ -48,7 +48,8 @@ $globalExposureGroupAlist := []
 pathToDatabase name ==
   if dbdir := systemAlgebraDirectory() then
     path := strconc(dbdir,name)
-    FORMAT(true,'"   Using local database ~a..",path)
+    if $verbose then
+      FORMAT(true,'"   Using local database ~a..",path)
   else
     path := strconc(systemRootDirectory(),'"algebra/",name)
   path
