@@ -1,3 +1,8 @@
+2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/database.boot (pathToDatabase): Honor $verbose.
+	* interp/compiler.boot (COMP-1): Likewise.
+
 2008-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-globals.boot ($verbose): Move from sys-driver.boot.
