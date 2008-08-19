@@ -1,5 +1,16 @@
 2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/open-axiom.h (oa_buffer_address): New macro.
+	* sman/session.c (read_from_spad_io): Use It.
+	(accept_session_connection): Likewise.
+	(read_from_session): Likewise.
+	* sman/sman.c (read_from_spad_io): Likewise.
+	(read_from_manager): Likewise.
+	(exec_command_env): Explicitly cast the null pointer
+	to char*.
+
+2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (compDefineLisplib): Don't update
 	$CategoryFrame with modemap for the constructor we just finished
 	compiling.

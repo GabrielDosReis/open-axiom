@@ -70,4 +70,11 @@ typedef void* openaxiom_handle;
 #  define OPENAXIOM_HAVE_GRAPHICS 1
 #endif
 
+
+/* Return the address of the data buffer `BUF'.  */
+
+#define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
+
+
+
 #endif /* OPENAXIOM_included */

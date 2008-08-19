@@ -274,11 +274,12 @@ static void
 read_from_spad_io(void)
 {
   int ret_code;
-  ret_code = sread(spad_io, big_bad_buf, BufSize, "session: stdout socket");
+  ret_code = sread(spad_io, oa_buffer_address(big_bad_buf), BufSize,
+                   "session: stdout socket");
   if (ret_code == -1) return;
   if(active_session != (openaxiom_sio *) 0) {
-    ret_code = swrite(active_session, big_bad_buf, ret_code,
-                      NULL);
+    ret_code = swrite(active_session, oa_buffer_address(big_bad_buf),
+                      ret_code, NULL);
   }
 }
 
@@ -350,7 +351,8 @@ accept_session_connection(openaxiom_sio *server_sock)
       plSock->Socket.frame = get_int(spad_server);
       active_session = (openaxiom_sio *)plSock;
       get_string_buf(spad_server, big_bad_buf, BufSize);
-      ret_code = swrite((openaxiom_sio *)plSock, big_bad_buf,
+      ret_code = swrite((openaxiom_sio *)plSock,
+                        oa_buffer_address(big_bad_buf),
                         strlen(big_bad_buf)+1,
                         "session: writing to InterpWindow");
       if (ret_code == -1) 
@@ -373,14 +375,14 @@ read_from_session(openaxiom_sio *sock)
     send_int(spad_server, sock->frame);
   }
   active_session = sock;
-  ret_code = sread(sock, big_bad_buf, BufSize, 
+  ret_code = sread(sock, oa_buffer_address(big_bad_buf), BufSize, 
                    "session: reading InterpWindow");
   if (ret_code == -1) {
     active_session = (openaxiom_sio *) 0;
     reading_output = 0;
     return;
   }
-  ret_code = swrite(spad_io, big_bad_buf, ret_code,
+  ret_code = swrite(spad_io, oa_buffer_address(big_bad_buf), ret_code,
                     "session: writing SessionIO");
   if (ret_code == -1) {
     active_session = (openaxiom_sio *)0 ;

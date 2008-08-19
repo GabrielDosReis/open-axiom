@@ -403,7 +403,7 @@ exec_command_env(char *command,char ** env)
 {
   char new_command[512];
   sprintf(new_command, "exec %s", command);
-  execle("/bin/sh","/bin/sh", "-c", new_command, 0, env);
+  execle("/bin/sh","/bin/sh", "-c", new_command, (char*)NULL, env);
 }
 
 static SpadProcess *
@@ -611,7 +611,7 @@ read_from_spad_io(int ptcNum)
     }
   }
   else
-    ret_code = swrite(session_io, big_bad_buf, ret_code,
+    ret_code = swrite(session_io, oa_buffer_address(big_bad_buf), ret_code,
                       "writing to session man");
   if (ret_code == -1) {
     perror("writing output to session manager");
@@ -624,7 +624,8 @@ static void
 read_from_manager(int ptcNum)
 {
   int ret_code;
-  ret_code = sread(session_io, big_bad_buf, BufSize, "reading session io");
+  ret_code = sread(session_io, oa_buffer_address(big_bad_buf), BufSize,
+                   "reading session io");
   if (ret_code == -1) {
     return;
   }
