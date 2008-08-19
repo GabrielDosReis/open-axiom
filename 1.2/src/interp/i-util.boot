@@ -1,0 +1,236 @@
+-- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+-- All rights reserved.
+--
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are
+-- met:
+--
+--     - Redistributions of source code must retain the above copyright
+--       notice, this list of conditions and the following disclaimer.
+--
+--     - Redistributions in binary form must reproduce the above copyright
+--       notice, this list of conditions and the following disclaimer in
+--       the documentation and/or other materials provided with the
+--       distribution.
+--
+--     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--       names of its contributors may be used to endorse or promote products
+--       derived from this software without specific prior written permission.
+--
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+-- IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+-- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+-- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+-- OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+-- EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+-- PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+-- PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+-- LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+-- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+-- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+import g_-util
+namespace BOOT
+
+--% The function for making prompts
+ 
+spadPrompt() ==
+  SAY '"   AXIOM"
+  sayNewLine()
+ 
+inputPrompt str ==
+  -- replaces older INPUT-PROMPT
+  atom (x := $SCREENSIZE()) => NIL
+  p := CAR(x) - 2
+  y := $OLDLINE
+  SETQ($OLDLINE,NIL)
+  y => _$SHOWLINE(STRCONC(str,EBCDIC 19,y),p)
+  0 = SIZE str => NIL
+  _$SHOWLINE(STRCONC(str,EBCDIC 19),p)
+ 
+protectedPrompt(:p) ==
+  [str,:br] := p
+  0 = SIZE str => inputPrompt str
+  msg := EBCDIC 29                       -- start of field
+  msg :=
+    if br then STRCONC(msg,EBCDIC 232)   -- bright write protect
+    else       STRCONC(msg,EBCDIC  96)   -- write protect
+  msg := STRCONC(msg,str,EBCDIC 29,EBCDIC 64)  -- unprotect again
+  inputPrompt msg
+ 
+MKPROMPT() ==
+  $inputPromptType = 'none    => '""
+  $inputPromptType = 'plain   => '"-> "
+  $inputPromptType = 'step    =>
+    STRCONC('"(",STRINGIMAGE $IOindex,'") -> ")
+  $inputPromptType = 'frame   =>
+    STRCONC(STRINGIMAGE $interpreterFrameName,
+      '" (",STRINGIMAGE $IOindex,'") -> ")
+  STRCONC(STRINGIMAGE $interpreterFrameName,
+   '" [", SUBSTRING(CURRENTTIME(),8,NIL),'"] [",
+    STRINGIMAGE $IOindex, '"] -> ")
+ 
+--% Miscellaneous
+ 
+Zeros n ==
+  BOUNDP '$ZeroVecCache and #$ZeroVecCache=n => $ZeroVecCache
+  $ZeroVecCache:= MAKE_-VEC n
+  for i in 0..n-1 repeat $ZeroVecCache.i:=0
+  $ZeroVecCache
+ 
+LZeros n ==
+  n < 1 => nil
+  l := [0]
+  for i in 2..n repeat l := [0, :l]
+  l
+ 
+-- bpi2FunctionName x ==
+--   s:= BPINAME x  => s
+--   x
+ 
+-- subrToName x == BPINAME x
+
+-- formerly in clammed.boot
+
+isSubDomain(d1,d2) ==
+  -- d1 and d2 are different domains
+  subDomainList := '(Integer NonNegativeInteger PositiveInteger)
+  ATOM d1 or ATOM d2 => nil
+  l := MEMQ(CAR d2, subDomainList) =>
+    MEMQ(CAR d1, CDR l)
+  nil
+
+$variableNumberAlist := nil
+
+variableNumber(x) ==
+  p := ASSQ(x, $variableNumberAlist)
+  null p => 
+    $variableNumberAlist := [[x,:0], :$variableNumberAlist]
+    0
+  RPLACD(p, 1+CDR p)
+  CDR p
+
+newType? t == nil
+
+
+-- functions used at run-time which were formerly in the compiler files
+
+Undef(:u) ==
+  u':= LAST u
+  [[domain,slot],op,sig]:= u'
+  domain':=eval mkEvalable domain
+  ^EQ(CAR ELT(domain',slot), function Undef) =>
+-- OK - thefunction is now defined
+    [:u'',.]:=u
+    if $reportBottomUpFlag then
+      sayMessage concat ['"   Retrospective determination of slot",'%b,
+        slot,'%d,'"of",'%b,:prefix2String domain,'%d]
+    APPLY(CAR ELT(domain',slot),[:u'',CDR ELT(domain',slot)])
+  throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
+ 
+--------------------> NEW DEFINITION (see interop.boot.pamphlet)
+devaluate d ==
+  not REFVECP d => d
+  QSGREATERP(QVSIZE d,5) and getShellEntry(d,3) is ['Category] => 
+    getShellEntry(d,0)
+  QSGREATERP(QVSIZE d,0) =>
+    d':=getShellEntry(d,0)
+    isFunctor d' => d'
+    d
+  d
+ 
+devaluateList l == [devaluate d for d in l]
+ 
+devaluateDeeply x ==
+  VECP x => devaluate x
+  atom x => x
+  [devaluateDeeply y for y in x]
+
+--HasAttribute(domain,attrib) ==
+---->
+--  isNewWorldDomain domain => newHasAttribute(domain,attrib)
+----+
+--  (u := LASSOC(attrib,domain.2)) and lookupPred(first u,domain,domain)
+ 
+HasSignature(domain,[op,sig]) ==
+  compiledLookup(op,sig,domain)
+ 
+--HasCategory(domain,catform') ==
+--  catform' is ['SIGNATURE,:f] => HasSignature(domain,f)
+--  catform' is ['ATTRIBUTE,f] => HasAttribute(domain,f)
+--  catform:= devaluate catform'
+--  domain0:=domain.0
+--  isNewWorldDomain domain => newHasCategory(domain,catform)
+--  slot4 := domain.4
+--  catlist := slot4.1
+--  member(catform,catlist) or
+--   MEMQ(opOf(catform),'(Object Type)) or  --temporary hack
+--    or/[compareSigEqual(catform,cat,domain0,domain) for cat in catlist]
+ 
+makeInitialModemapFrame() == 
+  COPY $InitialModemapFrame
+ 
+isCapitalWord x ==
+  (y := PNAME x) and and/[UPPER_-CASE_-P y.i for i in 0..MAXINDEX y]
+ 
+--------------------> NEW DEFINITION (see interop.boot.pamphlet)
+domainEqual(a,b) == VECP a and VECP b and a.0 = b.0
+ 
+lispize x == first optimize [x]
+ 
+$newCompilerUnionFlag := true
+
+orderUnionEntries l ==
+  $newCompilerUnionFlag => l
+  first l is [":",.,.] => l  -- new style Unions
+  [a,b]:=
+    split(l,nil,nil) where
+      split(l,a,b) ==
+        l is [x,:l'] =>
+          (STRINGP x => split(l',[x,:a],b); split(l',a,[x,:b]))
+        [a,b]
+  [:orderList a,:orderList b]
+ 
+mkPredList listOfEntries ==
+  $newCompilerUnionFlag =>
+     [['EQCAR,"#1",i] for arg in listOfEntries for i in 0..]
+  first listOfEntries is [":",.,.] =>   -- new Tagged Unions
+     [['EQCAR,"#1",MKQ tag] for [.,tag,.] in listOfEntries]
+  --1. generate list of type-predicate pairs from union specification
+  initTypePredList:=
+    [selTypePred for x in listOfEntries] where
+      selTypePred() ==
+        STRINGP x => [x,'EQUAL,"#1",x]
+        [x,:GETL(opOf x,"BasicPredicate")]
+  typeList:= ASSOCLEFT initTypePredList
+  initPredList:= ASSOCRIGHT initTypePredList
+  hasDuplicatePredicate:=
+    fn initPredList where
+      fn x ==
+        null x => false
+        first x and member(first x,rest x) => true
+        fn rest x
+                                 --if duplicate predicate, kill them all
+  if hasDuplicatePredicate then initPredList:= [nil for x in initPredList]
+  nonEmptyPredList:= [p for p in initPredList | p^=nil]
+  numberWithoutPredicate:= #listOfEntries-#nonEmptyPredList
+  predList:=
+    numberWithoutPredicate=0 and not hasDuplicatePredicate => initPredList
+    numberWithoutPredicate=1 and null LAST initPredList and
+      [STRINGP x for x in rest REVERSE listOfEntries] =>
+        allButLast:= rest REVERSE initPredList
+        NREVERSE [['NULL,MKPF(allButLast,"OR")],:allButLast]
+  --otherwise, generate a tagged-union
+  --we have made an even number of REVERSE operations, therefore
+  --the original order is preserved.  JHD 25.Sept.1983
+    tagPredList:= [["EQCAR","#1",i] for i in 1..numberWithoutPredicate]
+    [addPredIfNecessary for p in initPredList] where
+      addPredIfNecessary() ==
+        p => p
+        [u,:tagPredList]:= tagPredList
+        u
+  predList
+
+
+
