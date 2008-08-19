@@ -381,9 +381,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   unloadOneConstructor(op,libName)
   LOCALDATABASE(LIST SYMBOL_-NAME getConstructorAbbreviationFromDB op,NIL)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
-  if $lisplibKind = 'category
-    then updateCategoryFrameForCategory op
-     else updateCategoryFrameForConstructor op
   res
  
 compileDocumentation libName ==
