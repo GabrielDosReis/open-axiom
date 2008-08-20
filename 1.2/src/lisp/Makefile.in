@@ -59,7 +59,7 @@ FASLS = $(patsubst %,"%", $(addsuffix $(fasl_ext),core))
 
 ifeq (@axiom_lisp_flavor@,ecl)
 base_lisp_objects = ("core.$(LNKEXT)")
-oa_base_lisp_linkset = $(oa_target_lispdir)/core.$(LNKEXT)
+oa_base_lisp_linkset = $(oa_target_lispdir)/linkset
 else
 base_lisp_objects = nil
 oa_base_lisp_linkset =
@@ -122,6 +122,9 @@ base-lisp$(EXEEXT): core.$(FASLEXT)  $(oa_base_lisp_linkset)
 		$(eval_flags) '(load "core")' \
 		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote $(base_lisp_objects)) "|AxiomCore|::|topLevel|")'
 
+$(oa_base_lisp_linkset): $(oa_target_lispdir)/core.$(LNKEXT)
+	rm -f $@
+	echo '$(base_lisp_objects)' > $@
 
 axiom_optimize_options = @axiom_optimize_options@
 
@@ -142,7 +145,6 @@ edit = sed \
 	-e 's|@SHREXT[@]|$(SHREXT)|g' \
 	-e 's|@LIBEXT[@]|$(LIBEXT)|g' \
 	-e 's|@oa_c_runtime_extra[@]|$(oa_c_runtime_extra)|g' \
-	-e 's|@oa_base_lisp_linkset[@]|$(base_lisp_objects)|g' \
 	-e 's|@oa_standard_linking[@]|$(oa_standard_linking)|g' \
 	-e 's|@void_type[@]|$(void_type)|g' \
 	-e 's|@char_type[@]|$(char_type)|g' \

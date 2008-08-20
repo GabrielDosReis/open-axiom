@@ -60,8 +60,7 @@ boot_objects = initial-env.$(LNKEXT) $(boot_sources:.boot=.$(LNKEXT))
 
 oa_target_bootdir = $(axiom_targetdir)/boot
 ifeq (@axiom_lisp_flavor@,ecl)
-oa_boot_linkset = \
-	$(addprefix $(oa_target_bootdir)/, $(boot_objects))
+oa_boot_linkset = $(oa_target_bootdir)/linkset
 else
 oa_boot_linkset = 
 endif
@@ -87,6 +86,10 @@ stamp: $(axiom_target_bindir)/bootsys$(EXEEXT) $(oa_boot_linkset)
 $(axiom_target_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)
 	$(mkdir_p) $(axiom_target_bindir)
 	cp -p $< $@
+
+$(oa_boot_linkset): $(addprefix $(oa_target_bootdir)/, $(boot_objects))
+	rm -f $@
+	echo '($(patsubst %, "%", $(boot_objects)))' > $@
 
 $(oa_target_bootdir)/%.$(LNKEXT): stage2/%.$(LNKEXT) $(oa_target_bootdir)
 	cp $< $@
