@@ -45,6 +45,7 @@ $currentFrameNum := 0
 $EndServerSession := false
 $NeedToSignalSessionManager := false
 $sockBufferLength := 9217
+$Prompt := false
 
 serverReadLine(stream) ==
 -- used in place of READ-LINE in a scratchpad server system.
