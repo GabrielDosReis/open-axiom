@@ -499,14 +499,15 @@ compMacro(form,m,e) ==
   ["MDEF",lhs,signature,specialCases,rhs]:= form := markKillAll form
   firstForm := ["MDEF",first lhs,'(NIL),'(NIL),rhs]
   markMacro(first lhs,rhs)
-  rhs :=
-    rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
-    rhs is ['Join,:.]     => ['"-- the constructor category"]
-    rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
-    rhs is ['add,:.]      => ['"-- the constructor capsule"]
-    formatUnabbreviated rhs
-  sayBrightly ['"   processing macro definition",'%b,
-    :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
+  if $verbose then
+    rhs :=
+      rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
+      rhs is ['Join,:.]     => ['"-- the constructor category"]
+      rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
+      rhs is ['add,:.]      => ['"-- the constructor capsule"]
+      formatUnabbreviated rhs
+    sayBrightly ['"   processing macro definition",'%b,
+      :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
   ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   m=$EmptyMode or m=$NoValueMode =>
     ["/throwAway",$NoValueMode,put(first lhs,"macro",rhs,e)]

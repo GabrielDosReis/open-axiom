@@ -1,3 +1,9 @@
+2008-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compMacro): Honor $verbose.
+	* interp/modemap.boot (putDomainsInScope): Likewise.
+	* interp/wi1.boot (compMacro): Likewise.
+
 2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* include/open-axiom.h (oa_buffer_address): New macro.

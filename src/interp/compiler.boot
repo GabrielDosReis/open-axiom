@@ -1006,14 +1006,15 @@ compVector(l,m is ["Vector",mUnder],e) ==
 compMacro(form,m,e) ==
   $macroIfTrue: local:= true
   ["MDEF",lhs,signature,specialCases,rhs]:= form
-  prhs :=
-    rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
-    rhs is ['Join,:.]     => ['"-- the constructor category"]
-    rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
-    rhs is ['add,:.]      => ['"-- the constructor capsule"]
-    formatUnabbreviated rhs
-  sayBrightly ['"   processing macro definition",'%b,
-    :formatUnabbreviated lhs,'" ==> ",:prhs,'%d]
+  if $verbose then
+    prhs :=
+      rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
+      rhs is ['Join,:.]     => ['"-- the constructor category"]
+      rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
+      rhs is ['add,:.]      => ['"-- the constructor capsule"]
+      formatUnabbreviated rhs
+    sayBrightly ['"   processing macro definition",'%b,
+      :formatUnabbreviated lhs,'" ==> ",:prhs,'%d]
   m=$EmptyMode or m=$NoValueMode =>
     ["/throwAway",$NoValueMode,put(first lhs,"macro",macroExpand(rhs,e),e)]
 
