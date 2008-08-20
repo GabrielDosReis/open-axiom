@@ -1,5 +1,10 @@
 2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-driver.boot (AxiomCore::%sysInit): Fix indentation
+	thinko. 
+
+2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/open-axiom.h (oa_buffer_address): New macro.
 	* sman/session.c (read_from_spad_io): Use It.
 	(accept_session_connection): Likewise.
