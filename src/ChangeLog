@@ -1,5 +1,13 @@
 2008-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/Makefile.in (oa_boot_linkset): Tidy.
+	($(oa_boot_linkset)): New Make rule.
+	* lisp/Makefile.in (oa_base_lisp_linkset): Tidy.
+	($(oa_base_lisp_linkset)): New Make rule.
+	* lisp/core.lisp.in (linkset-from): Read the linkset from the file.
+
+2008-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compMacro): Honor $verbose.
 	* interp/modemap.boot (putDomainsInScope): Likewise.
 	* interp/wi1.boot (compMacro): Likewise.
