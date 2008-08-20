@@ -154,7 +154,7 @@
 ;; Almost every supported Lisp use dynamic link for FFI.
 ;; ECL's support is partial.  GCL-2.6.x hasn't discovered it yet.
 (defconstant |$useDynamicLink|
-  #+:ecl si::*use-dffi*
+  #+:ecl (member :dffi *features*)
   #+:gcl nil
   #-(or :ecl :gcl) t)
 
