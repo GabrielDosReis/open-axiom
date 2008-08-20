@@ -21144,6 +21144,16 @@ if test x"$axiom_enable_checking" = xyes; then
 echo "$as_me: runtime checking may increase compilation time" >&6;}
 fi
 
+## Note: There currently seems to be a bug in ECL such that
+## only a debug+safety build can succeed.
+case $axiom_lisp_flavor,$axiom_enable_checking in
+  ecl,no)
+    axiom_optimize_options="$axiom_optimize_options safety debug"
+    ;;
+  *) ;;
+esac
+
+
 
 
 

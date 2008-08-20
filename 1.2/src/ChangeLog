@@ -1,5 +1,9 @@
 2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (|$useDynamicLink|)[ECL]: Test for :DFFI feature.
+
+2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-driver.boot (AxiomCore::%sysInit): Fix indentation
 	thinko. 
 

@@ -1,3 +1,8 @@
+2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Activate safety+debug build for ECL-based
+	system. 
+
 2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Don't generate rules for extracting

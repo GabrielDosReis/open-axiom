@@ -354,6 +354,15 @@ if test x"$axiom_enable_checking" = xyes; then
    AC_MSG_NOTICE([runtime checking may increase compilation time])
 fi
 
+## ??? There currently seems to be a bug in ECL such that
+## ??? only a debug+safety build can succeed.
+case $axiom_lisp_flavor,$axiom_enable_checking in
+  ecl,no)
+    axiom_optimize_options="$axiom_optimize_options safety debug" 
+    ;;
+  *) ;;
+esac
+
 AC_SUBST(axiom_enable_checking)
 AC_SUBST(axiom_optimize_options)
 
