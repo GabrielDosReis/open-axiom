@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-08-19], 
+AC_INIT([OpenAxiom], [1.2.0-2008-08-21], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -354,8 +354,8 @@ if test x"$axiom_enable_checking" = xyes; then
    AC_MSG_NOTICE([runtime checking may increase compilation time])
 fi
 
-## Note: There currently seems to be a bug in ECL such that
-## only a debug+safety build can succeed.
+## ??? There currently seems to be a bug in ECL such that
+## ??? only a debug+safety build can succeed.
 case $axiom_lisp_flavor,$axiom_enable_checking in
   ecl,no)
     axiom_optimize_options="$axiom_optimize_options safety debug" 

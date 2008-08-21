@@ -194,3 +194,17 @@ throwMessage(:msg) ==
   if $printMsgsToFile then sayMSG2File msg'
   spadThrow()
 
+
+++ Error handler for Lisp systems that support Common Lisp conditions.
+++ We don't want users to get dropped into the Lisp debugger.
+systemErrorHandler c ==
+  $NeedToSignalSessionManager := true
+  $BreakMode = "validate" => 
+    systemError ERROR_-FORMAT('"~a",[c])
+  not $inLispVM and $BreakMode in '(nobreak query resume) =>
+    $inLispVM := true
+    systemError ERROR_-FORMAT('"~a",[c])
+  $BreakMode = "letPrint2" =>
+    $BreakMode := nil
+    THROW("letPrint2",nil)
+

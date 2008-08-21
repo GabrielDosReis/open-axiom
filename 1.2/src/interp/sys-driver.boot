@@ -165,7 +165,12 @@ restart() ==
   $currentLine := nil
   openDatabases()
   readSpadProfileIfThere()
+)if %hasFeature KEYWORD::GCL
   spad()
+)else
+  SETQ(_*DEBUGGER_-HOOK_*,LAMBDA(c h, systemErrorHandler c))
+  !(handler-bind ((error #'|systemErrorHandler|)) (|spad|))
+)endif
 
 --%    
 
