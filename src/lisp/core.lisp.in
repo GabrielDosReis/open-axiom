@@ -218,7 +218,7 @@
 ;; A directory specified on command line takes precedence
 ;; over directory specified at configuration time.
 (defun |systemRootDirectory| nil
-  (let ((dir (assoc (|Option| '|system|) (|%systemOptions|))))
+  (let ((dir (assoc (|Option| "system") (|%systemOptions|))))
     (if (not (null dir))
 	(|ensureTrailingSlash| (cdr dir))
       |$systemInstallationDirectory|)))
@@ -227,7 +227,7 @@
 ;; libraries, either as specified on command line, or as inferred
 ;; from the system root directory.
 (defun |systemLibraryDirectory| nil
-  (let ((dir (assoc (|Option| '|syslib|) (|%systemOptions|))))
+  (let ((dir (assoc (|Option| "syslib") (|%systemOptions|))))
     (if (not (null dir))
 	(|ensureTrailingSlash| (cdr dir))
       (concatenate 'string (|systemRootDirectory|) "lib/"))))
