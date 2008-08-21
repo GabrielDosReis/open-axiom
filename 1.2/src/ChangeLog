@@ -1,5 +1,10 @@
 2008-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (|systemRootDirectory|): Lookup option by name. 
+	(|systemLibraryDirectory|): Likewise.
+
+2008-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-error.boot (systemErrorHandler): New.
 	* interp/sys-driver.boot (restart): Use it.
 
