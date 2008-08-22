@@ -1,3 +1,8 @@
+2008-08-21  Grégory Vanuxem  <g.vanuxem@orange.fr>
+
+	* interp/g-timer.boot (printTimeIfTrue): Don't compute the
+	quotient of the integer division.
+
 2008-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (|systemRootDirectory|): Lookup option by name. 
