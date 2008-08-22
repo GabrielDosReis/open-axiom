@@ -1,3 +1,7 @@
+2008-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* OpenAxiom-1.2.0 has been released.
+
 2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Active safety+debug build for ECL-base system.
