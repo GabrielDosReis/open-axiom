@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.0-2008-08-21], 
+AC_INIT([OpenAxiom], [1.2.0], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -197,7 +197,7 @@ if test -z $axiom_lisp; then
        esac
     fi
     if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website.])
+       AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball http://voxel.dl.sf.net/sourceforge/open-axiom/open-axiom-1.2.x-dep.tar.bz2.])
     fi
     axiom_lisp=$AXIOM_LISP
 else
