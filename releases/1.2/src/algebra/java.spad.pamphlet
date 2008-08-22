@@ -1,0 +1,135 @@
+\documentclass{article}
+\usepackage{axiom}
+
+\author{Gabriel Dos~Reis}
+
+\begin{document}
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+\section{The JavaBytecode domain}
+<<domain JAVACODE JavaBytecode>>=
+)abbrev domain JAVACODE JavaBytecode
+++ Author: Gabriel Dos Reis
+++ Date Created: May 08, 2008
+++ Description:  This domain defines the datatype for the Java
+++ Virtual Machine byte codes.
+JavaBytecode(): Public == Private where
+  Public ==> Join(CoercibleTo OutputForm, CoercibleTo Byte) with
+    coerce: Byte -> %
+      ++ coerce(x) the numerical byte value into a JVM bytecode.
+
+  Private ==> add
+    -- mnemonics equivalent of bytecodes.
+    mnemonics : PrimitiveArray Symbol := 
+      [['nop, 'aconst__null, 'iconst__m1, 'iconst__0, 'iconst__1,  _
+       'iconst__2, 'iconst__3, 'iconst__4, 'iconst__5, 'lconst__0, _
+       'lconst__1, 'fconst__0, 'fconst__1, 'fconst__2, 'dconst__0, _
+       'dconst__1, 'bipush, 'sipush, 'ldc, ldc__w, 'ldc2__w,       _
+       'iload, 'lload, 'fload, 'dload, 'aload, 'iload__0,          _
+       'iload__1, 'iload__2, 'iload__3, 'lload_0, 'lload__1,       _
+       'lload__2, 'lload__3, 'fload__0, 'fload__1, 'fload__2,      _
+       'fload__3, 'dload__0, 'dload__1, 'dload__2, 'dload__3,      _
+       'aload__0, 'aload__1, 'aload__2, 'aload__3, 'iaload,        _
+       'laload, 'faload, 'daload, 'aaload, 'baload, 'caload,       _
+       'saload, 'istore, 'lstore, 'fstore, 'dstore, 'atore,        _
+       'istore__0, 'istore__1, 'istore__2, 'istore__3, 'lstore__0, _
+       'lstore__1, 'lstore__2, 'lstore__3, 'fstore__0, 'fstore__1, _
+       'fstore__2, 'fstore__3, 'dstore__0, 'dstore__1, 'dstore__2, _
+       'dstore__3, 'astore__0, 'astore__1, 'astore__2, 'astore__3, _
+       'iastore, 'lastore, 'fastore, 'dastore, 'aastore, 'bastore, _
+       'castore, 'sastore, 'pop, 'pop2, 'dup, 'dup__x1, 'dup__x2,  _
+       'dup2, 'dup2__x1, 'dup2__x2, 'swap, 'iadd, 'ladd, 'fadd,    _
+       'dadd, 'isub, 'lsub, 'fsub, 'dsub, 'imul, 'lmul, 'fmul,     _
+       'dmul, 'idiv, 'ldiv, 'fdiv, 'ddiv, 'irem, 'lrem, 'frem,     _
+       'drem, 'ineg, 'lneg, 'fneg, 'dneg, 'ishl, 'lshl, 'ishr,     _
+       'lshr, 'iushr, 'lushr, 'iand, 'land, 'ior, 'lor, 'ixor,     _
+       'lxor, 'iinc, 'i2l, 'i2f, 'i2d, 'l2i, 'l2f, 'l2d, 'f2i,     _
+       'f2l, 'f2d, 'd2i, 'd2l, 'd2f, 'i2b, 'i2c, 'i2s, 'lcmp,      _
+       'fcmpl, 'fcmpg, 'dcmpl, 'dcompg, 'ifeq, 'ifne, 'iflt,       _
+       'ifge, 'ifle, 'if__icmpeq, 'if__icmpne, 'if__icmplt,        _
+       'if__cmpge, 'if__cmpgt, 'if__cmple, 'if__cmpeq, 'if__acmpeq,_
+       'if__acmpne, 'goto, 'jsr, 'ret, 'tableswitch, 'lookupswitch,_
+       'ireturn, 'lreturn, 'freturn, 'dreturn, 'areturn, 'return,  _
+       'getstatic, 'putstatic, 'getfield,'putfield, 'invokevirtual,_
+       'invokespecial, 'invokestatic, 'invokeinterface,            _
+       'xxxunusedxxx, 'new, 'newarray, 'anewarray, 'arraylength,   _
+       'athrow, 'checkcast, 'instanceof, 'monitorenter,            _
+       'monitorexit, 'wide, 'multianewarray, 'ifnull, 'ifnonnull,  _
+       'goto__w, 'jsr__w, 'breakpoint, 'unknownopcode0,            _
+       'unknownopcode1, 'unknownopcode2, 'unknownopcode3,          _
+       'unknownopcode4, 'unknownopcode5, 'unknownopcode6,          _
+       'unknownopcode7, 'unknownopcode8, 'unknownopcode9,          _
+       'unknownopcode10, 'unknownopcode11, 'unknownopcode12,       _
+       'unknownopcode13, 'unknownopcode14, 'unknownopcode15,       _
+       'unknownopcode16, 'unknownopcode17, 'unknownopcode18,       _
+       'unknownopcode19, 'unknownopcode20, 'unknownopcode21,       _
+       'unknownopcode22, 'unknownopcode23, 'unknownopcode24,       _
+       'unknownopcode25, 'unknownopcode26, 'unknownopcode27,       _
+       'unknownopcode28, 'unknownopcode29, 'unknownopcode30,       _
+       'unknownopcode31, 'unknownopcode32, 'unknownopcode33,       _
+       'unknownopcode34, 'unknownopcode35, 'unknownopcode36,       _
+       'unknownopcode37, 'unknownopcode38, 'unknownopcode39,       _
+       'unknownopcode40, 'unknownopcode41, 'unknownopcode42,       _
+       'unknownopcode43, 'unknownopcode44, 'unknownopcode45,       _
+       'unknownopcode46, 'unknownopcode47, 'unknownopcode48,       _
+       'unknownopcode49, 'unknownopcode50,       _
+       'impldep1, 'impldep2 ]]$PrimitiveArray(Symbol)
+
+    Rep == Byte
+
+    coerce(x: Byte): % ==
+      per x
+
+    coerce(x: %): Byte ==
+      rep x
+
+    coerce(x: %): OutputForm ==
+      mnemonics.(x::Byte::Integer) :: OutputForm
+@
+
+
+\section{License}
+<<license>>=
+--Copyright (C) 2007-2008, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+
+<<*>>=
+<<license>>
+<<domain JAVACODE JavaBytecode>>
+@
+
+\end{document}

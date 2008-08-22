@@ -1,0 +1,112 @@
+\documentclass{article}
+\usepackage{axiom}
+
+\author{Gabriel Dos~Reis}
+
+\begin{document}
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+\section{domain Category}
+<<domain CATEGORY Category>>=
+)abbrev domain CATEGORY Category
+++ Author: Gabriel Dos Reis
+++ Date Create: February 16, 2008.
+++ Date Last Updated: February 16, 2008.
+++ Basic Operations: coerce
+++ Related Constructors: 
+++ Also See: Type
+Category(): Public == Private where
+  Public ==> CoercibleTo OutputForm 
+  Private ==> add
+    coerce x ==
+      outputDomainConstructor(x)$Lisp
+@
+
+
+\section{domain Domain}
+<<domain DOMAIN Domain>>=
+)abbrev domain DOMAIN Domain
+++ Author: Gabriel Dos Reis
+++ Date Create: October 18, 2007.
+++ Date Last Updated: January 19, 2008.
+++ Basic Operations: coerce, reify
+++ Related Constructors: Type, Syntax, OutputForm
+++ Also See: Type, ConstructorCall
+Domain(): Public == Private where
+  Public == SetCategory with
+    reify: % -> ConstructorCall
+      ++ reify(d) returns the abstract syntax for the domain `x'.
+
+    reflect: ConstructorCall -> %
+      ++ reflect cc returns the domain object designated by the
+      ++ ConstructorCall syntax `cc'.  The constructor implied 
+      ++ by `cc' must be known to the system since it is instantiated.
+   
+    showSummary: % -> Void
+      ++ showSummary(d) prints out implementation detail information
+      ++ of domain `d'.
+
+  Private == add
+    coerce x ==
+      outputDomainConstructor(x)$Lisp
+
+    reify x ==
+      devaluate(x)$Lisp @ ConstructorCall
+
+    reflect cc ==
+      evalDomain(cc)$Lisp @ %
+
+    x = y ==
+      reify x = reify y
+
+    showSummary x ==
+      showSummary(x)$Lisp
+
+@
+
+
+\section{License}
+<<license>>=
+--Copyright (C) 2007-2008, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+
+
+<<*>>=
+<<license>>
+<<domain CATEGORY Category>>
+<<domain DOMAIN Domain>>
+@

@@ -1,0 +1,337 @@
+(IMPORT-MODULE "initial-env")
+
+(IN-PACKAGE "BOOTTRAN")
+
+(PROVIDE "tokens")
+
+(DEFCONSTANT |shoeKeyWords|
+    (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
+          (LIST "catch" 'CATCH) (LIST "cross" 'CROSS)
+          (LIST "else" 'ELSE) (LIST "for" 'FOR) (LIST "if" 'IF)
+          (LIST "import" 'IMPORT) (LIST "in" 'IN) (LIST "is" 'IS)
+          (LIST "isnt" 'ISNT) (LIST "module" 'MODULE) (LIST "of" 'OF)
+          (LIST "or" 'OR) (LIST "repeat" 'REPEAT)
+          (LIST "return" 'RETURN) (LIST "structure" 'STRUCTURE)
+          (LIST "then" 'THEN) (LIST "throw" 'THROW) (LIST "try" 'TRY)
+          (LIST "until" 'UNTIL) (LIST "where" 'WHERE)
+          (LIST "while" 'WHILE) (LIST "." 'DOT) (LIST ":" 'COLON)
+          (LIST "::" 'COLON-COLON) (LIST "," 'COMMA)
+          (LIST ";" 'SEMICOLON) (LIST "*" 'TIMES) (LIST "**" 'POWER)
+          (LIST "/" 'SLASH) (LIST "+" 'PLUS) (LIST "-" 'MINUS)
+          (LIST "<" 'LT) (LIST ">" 'GT) (LIST "<=" 'LE) (LIST ">=" 'GE)
+          (LIST "=" 'SHOEEQ) (LIST "^" 'NOT) (LIST "^=" 'SHOENE)
+          (LIST ".." 'SEG) (LIST "#" 'LENGTH) (LIST "=>" 'EXIT)
+          (LIST "->" 'ARROW) (LIST ":=" 'BEC) (LIST "==" 'DEF)
+          (LIST "==>" 'MDEF) (LIST "<=>" 'TDEF) (LIST "(" 'OPAREN)
+          (LIST ")" 'CPAREN) (LIST "(|" 'OBRACK) (LIST "|)" 'CBRACK)
+          (LIST "[" 'OBRACK) (LIST "]" 'CBRACK) (LIST "suchthat" 'BAR)
+          (LIST "'" 'QUOTE) (LIST "|" 'BAR)))
+
+(DEFUN |shoeKeyTableCons| ()
+  (PROG (|KeyTable|)
+    (RETURN
+      (PROGN
+        (SETQ |KeyTable| (MAKE-HASHTABLE 'CVEC))
+        (LET ((|bfVar#1| |shoeKeyWords|) (|st| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#1|)
+                   (PROGN (SETQ |st| (CAR |bfVar#1|)) NIL))
+               (RETURN NIL))
+              ('T (HPUT |KeyTable| (CAR |st|) (CADR |st|))))
+            (SETQ |bfVar#1| (CDR |bfVar#1|))))
+        |KeyTable|))))
+
+(DEFPARAMETER |shoeKeyTable| (|shoeKeyTableCons|))
+
+(DEFCONSTANT |shoeSPACE| (QENUM "    " 0))
+
+(DEFCONSTANT |shoeESCAPE| (QENUM "_  " 0))
+
+(DEFPARAMETER |shoeLispESCAPE| (QENUM "!  " 0))
+
+(DEFCONSTANT |shoeSTRINGCHAR| (QENUM "\"  " 0))
+
+(DEFCONSTANT |shoePLUSCOMMENT| (QENUM "+   " 0))
+
+(DEFCONSTANT |shoeMINUSCOMMENT| (QENUM "-   " 0))
+
+(DEFCONSTANT |shoeDOT| (QENUM ".   " 0))
+
+(DEFCONSTANT |shoeEXPONENT1| (QENUM "E   " 0))
+
+(DEFCONSTANT |shoeEXPONENT2| (QENUM "e   " 0))
+
+(DEFCONSTANT |shoeCLOSEPAREN| (QENUM ")   " 0))
+
+(DEFCONSTANT |shoeTAB| 9)
+
+(DEFUN |shoeInsert| (|s| |d|)
+  (PROG (|v| |k| |n| |u| |h| |l|)
+    (RETURN
+      (PROGN
+        (SETQ |l| (LENGTH |s|))
+        (SETQ |h| (QENUM |s| 0))
+        (SETQ |u| (ELT |d| |h|))
+        (SETQ |n| (LENGTH |u|))
+        (SETQ |k| 0)
+        (LOOP
+          (COND
+            ((< (LENGTH (ELT |u| |k|)) |l|) (RETURN NIL))
+            (#0='T (SETQ |k| (+ |k| 1)))))
+        (SETQ |v| (MAKE-VEC (+ |n| 1)))
+        (LET ((|bfVar#2| (- |k| 1)) (|i| 0))
+          (LOOP
+            (COND
+              ((> |i| |bfVar#2|) (RETURN NIL))
+              (#0# (VEC-SETELT |v| |i| (ELT |u| |i|))))
+            (SETQ |i| (+ |i| 1))))
+        (VEC-SETELT |v| |k| |s|)
+        (LET ((|bfVar#3| (- |n| 1)) (|i| |k|))
+          (LOOP
+            (COND
+              ((> |i| |bfVar#3|) (RETURN NIL))
+              (#0# (VEC-SETELT |v| (+ |i| 1) (ELT |u| |i|))))
+            (SETQ |i| (+ |i| 1))))
+        (VEC-SETELT |d| |h| |v|)
+        |s|))))
+
+(DEFUN |shoeDictCons| ()
+  (PROG (|d| |b| |a| |l|)
+    (RETURN
+      (PROGN
+        (SETQ |l| (HKEYS |shoeKeyTable|))
+        (SETQ |d|
+              (PROGN
+                (SETQ |a| (MAKE-VEC 256))
+                (SETQ |b| (MAKE-VEC 1))
+                (VEC-SETELT |b| 0 (MAKE-CVEC 0))
+                (LET ((|i| 0))
+                  (LOOP
+                    (COND
+                      ((> |i| 255) (RETURN NIL))
+                      (#0='T (VEC-SETELT |a| |i| |b|)))
+                    (SETQ |i| (+ |i| 1))))
+                |a|))
+        (LET ((|bfVar#4| |l|) (|s| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#4|)
+                   (PROGN (SETQ |s| (CAR |bfVar#4|)) NIL))
+               (RETURN NIL))
+              (#0# (|shoeInsert| |s| |d|)))
+            (SETQ |bfVar#4| (CDR |bfVar#4|))))
+        |d|))))
+
+(DEFPARAMETER |shoeDict| (|shoeDictCons|))
+
+(DEFUN |shoePunCons| ()
+  (PROG (|a| |listing|)
+    (RETURN
+      (PROGN
+        (SETQ |listing| (HKEYS |shoeKeyTable|))
+        (SETQ |a| (MAKE-BVEC 256))
+        (LET ((|i| 0))
+          (LOOP
+            (COND
+              ((> |i| 255) (RETURN NIL))
+              (#0='T (BVEC-SETELT |a| |i| 0)))
+            (SETQ |i| (+ |i| 1))))
+        (LET ((|bfVar#5| |listing|) (|k| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#5|)
+                   (PROGN (SETQ |k| (CAR |bfVar#5|)) NIL))
+               (RETURN NIL))
+              (#0#
+               (COND
+                 ((NOT (|shoeStartsId| (ELT |k| 0)))
+                  (BVEC-SETELT |a| (QENUM |k| 0) 1)))))
+            (SETQ |bfVar#5| (CDR |bfVar#5|))))
+        |a|))))
+
+(DEFPARAMETER |shoePun| (|shoePunCons|))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
+  (LET ((|bfVar#6| (LIST 'NOT 'LENGTH)) (|i| NIL))
+    (LOOP
+      (COND
+        ((OR (ATOM |bfVar#6|) (PROGN (SETQ |i| (CAR |bfVar#6|)) NIL))
+         (RETURN NIL))
+        ('T (SETF (GET |i| 'SHOEPRE) 'T)))
+      (SETQ |bfVar#6| (CDR |bfVar#6|)))))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
+  (LET ((|bfVar#7| (LIST (LIST 'SHOEEQ '=) (LIST 'TIMES '*)
+                         (LIST 'PLUS '+) (LIST 'IS '|is|)
+                         (LIST 'ISNT '|isnt|) (LIST 'AND '|and|)
+                         (LIST 'OR '|or|) (LIST 'SLASH '/)
+                         (LIST 'POWER '**) (LIST 'MINUS '-)
+                         (LIST 'LT '<) (LIST 'GT '>) (LIST 'LE '<=)
+                         (LIST 'GE '>=) (LIST 'SHOENE '^=)))
+        (|i| NIL))
+    (LOOP
+      (COND
+        ((OR (ATOM |bfVar#7|) (PROGN (SETQ |i| (CAR |bfVar#7|)) NIL))
+         (RETURN NIL))
+        ('T (SETF (GET (CAR |i|) 'SHOEINF) (CADR |i|))))
+      (SETQ |bfVar#7| (CDR |bfVar#7|)))))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
+  (LET ((|bfVar#8|
+            (LIST (LIST '+ 0) (LIST '|gcd| 0) (LIST '|lcm| 1)
+                  (LIST 'STRCONC "") (LIST '|strconc| "")
+                  (LIST 'MAX (- 999999)) (LIST 'MIN 999999) (LIST '* 1)
+                  (LIST '|times| 1) (LIST 'CONS NIL) (LIST 'APPEND NIL)
+                  (LIST '|append| NIL) (LIST 'UNION NIL)
+                  (LIST 'UNIONQ NIL) (LIST '|union| NIL)
+                  (LIST 'NCONC NIL) (LIST '|and| 'T) (LIST '|or| NIL)
+                  (LIST 'AND 'T) (LIST 'OR NIL)))
+        (|i| NIL))
+    (LOOP
+      (COND
+        ((OR (ATOM |bfVar#8|) (PROGN (SETQ |i| (CAR |bfVar#8|)) NIL))
+         (RETURN NIL))
+        ('T (SETF (GET (CAR |i|) 'SHOETHETA) (CDR |i|))))
+      (SETQ |bfVar#8| (CDR |bfVar#8|)))))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
+  (LET ((|bfVar#9| (LIST (LIST '|and| 'AND) (LIST '|append| 'APPEND)
+                         (LIST '|apply| 'APPLY) (LIST '|atom| 'ATOM)
+                         (LIST '|car| 'CAR) (LIST '|cdr| 'CDR)
+                         (LIST '|cons| 'CONS) (LIST '|copy| 'COPY)
+                         (LIST '|croak| 'CROAK) (LIST '|drop| 'DROP)
+                         (LIST '|exit| 'EXIT) (LIST '|false| 'NIL)
+                         (LIST '|first| 'CAR)
+                         (LIST '|function| 'FUNCTION)
+                         (LIST '|genvar| 'GENVAR) (LIST 'IN 'MEMBER)
+                         (LIST '|is| 'IS) (LIST '|isnt| 'ISNT)
+                         (LIST '|lastNode| 'LAST) (LIST 'LAST '|last|)
+                         (LIST '|list| 'LIST) (LIST '|mkpf| 'MKPF)
+                         (LIST '|nconc| 'NCONC) (LIST '|nil| NIL)
+                         (LIST '|not| 'NOT)
+                         (LIST '|nreverse| 'NREVERSE)
+                         (LIST '|null| 'NULL) (LIST '|or| 'OR)
+                         (LIST '|otherwise| 'T) (LIST 'PAIRP 'CONSP)
+                         (LIST '|removeDuplicates| 'REMDUP)
+                         (LIST '|rest| 'CDR) (LIST '|reverse| 'REVERSE)
+                         (LIST '|second| 'CADR)
+                         (LIST '|setDifference| 'SETDIFFERENCE)
+                         (LIST '|setIntersection| 'INTERSECTION)
+                         (LIST '|setPart| 'SETELT)
+                         (LIST '|setUnion| 'UNION) (LIST '|size| 'SIZE)
+                         (LIST '|strconc| 'CONCAT)
+                         (LIST '|substitute| 'SUBST)
+                         (LIST '|take| 'TAKE) (LIST '|third| 'CADDR)
+                         (LIST '|true| 'T) (LIST 'PLUS '+)
+                         (LIST 'MINUS '-) (LIST 'TIMES '*)
+                         (LIST 'POWER 'EXPT) (LIST 'SLASH '/)
+                         (LIST 'LT '<) (LIST 'GT '>) (LIST 'LE '<=)
+                         (LIST 'GE '>=) (LIST 'SHOEEQ 'EQUAL)
+                         (LIST 'SHOENE '/=) (LIST 'T 'T$)))
+        (|i| NIL))
+    (LOOP
+      (COND
+        ((OR (ATOM |bfVar#9|) (PROGN (SETQ |i| (CAR |bfVar#9|)) NIL))
+         (RETURN NIL))
+        ('T (SETF (GET (CAR |i|) 'SHOERENAME) (CDR |i|))))
+      (SETQ |bfVar#9| (CDR |bfVar#9|)))))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
+  (LET ((|bfVar#10| (LIST (LIST 'PLUS 'PLUS) (LIST '|and| 'AND)
+                          (LIST '|append| 'APPEND)
+                          (LIST '|apply| 'APPLY) (LIST '|atom| 'ATOM)
+                          (LIST '|brace| 'REMDUP) (LIST '|car| 'CAR)
+                          (LIST '|cdr| 'CDR) (LIST '|cons| 'CONS)
+                          (LIST '|copy| 'COPY) (LIST '|croak| 'CROAK)
+                          (LIST '|drop| 'DROP) (LIST '|exit| 'EXIT)
+                          (LIST '|false| 'NIL) (LIST '|first| 'CAR)
+                          (LIST '|genvar| 'GENVAR)
+                          (LIST '|in| '|member|) (LIST '|is| 'IS)
+                          (LIST '|lastNode| 'LASTNODE)
+                          (LIST '|list| 'LIST) (LIST '|mkpf| 'MKPF)
+                          (LIST '|nconc| 'NCONC) (LIST '|nil| 'NIL)
+                          (LIST '|not| 'NOT)
+                          (LIST '|nreverse| 'NREVERSE)
+                          (LIST '|null| 'NULL) (LIST '|or| 'OR)
+                          (LIST '|otherwise| 'T)
+                          (LIST '|removeDuplicates| 'REMDUP)
+                          (LIST '|rest| 'CDR) (LIST '|return| 'RETURN)
+                          (LIST '|reverse| 'REVERSE)
+                          (LIST '|setDifference| 'SETDIFFERENCE)
+                          (LIST '|setIntersection| '|intersection|)
+                          (LIST '|setPart| 'SETELT)
+                          (LIST '|setUnion| '|union|)
+                          (LIST '|size| 'SIZE)
+                          (LIST '|strconc| 'STRCONC)
+                          (LIST '|substitute| 'MSUBST)
+                          (LIST 'SUBST 'MSUBST) (LIST '|take| 'TAKE)
+                          (LIST '|true| 'T) (LIST '|where| 'WHERE)
+                          (LIST 'TIMES 'TIMES) (LIST 'POWER 'EXPT)
+                          (LIST 'SHOENE 'NEQUAL)
+                          (LIST 'MINUS 'SPADDIFFERENCE)
+                          (LIST 'SLASH 'QUOTIENT) (LIST '= 'EQUAL)
+                          (LIST 'SHOEEQ 'EQUAL) (LIST 'ASSOC '|assoc|)
+                          (LIST 'DELETE '|delete|) (LIST 'GET 'GETL)
+                          (LIST 'INTERSECTION '|intersection|)
+                          (LIST 'LAST '|last|) (LIST 'MEMBER '|member|)
+                          (LIST 'RASSOC '|rassoc|) (LIST 'READ 'VMREAD)
+                          (LIST 'READ-LINE '|read-line|)
+                          (LIST 'REDUCE 'SPADREDUCE)
+                          (LIST 'REMOVE '|remove|)
+                          (LIST 'BAR 'SUCHTHAT) (LIST 'T 'T$)
+                          (LIST 'IN '|member|) (LIST 'UNION '|union|)))
+        (|i| NIL))
+    (LOOP
+      (COND
+        ((OR (ATOM |bfVar#10|) (PROGN (SETQ |i| (CAR |bfVar#10|)) NIL))
+         (RETURN NIL))
+        ('T (SETF (GET (CAR |i|) 'OLD-BOOT) (CDR |i|))))
+      (SETQ |bfVar#10| (CDR |bfVar#10|)))))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
+  (LET ((|bfVar#11|
+            (LIST 'LT 'LE 'GT 'GE 'SHOENE 'TIMES 'PLUS 'MINUS
+                  '|function| 'PAIRP))
+        (|i| NIL))
+    (LOOP
+      (COND
+        ((OR (ATOM |bfVar#11|) (PROGN (SETQ |i| (CAR |bfVar#11|)) NIL))
+         (RETURN NIL))
+        ('T (SETF (GET |i| 'RENAME-OK) T)))
+      (SETQ |bfVar#11| (CDR |bfVar#11|)))))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
+  (LET ((|bfVar#12| (LIST (LIST '|setName| 0) (LIST '|setLabel| 1)
+                          (LIST '|setLevel| 2) (LIST '|setType| 3)
+                          (LIST '|setVar| 4) (LIST '|setLeaf| 5)
+                          (LIST '|setDef| 6) (LIST '|aGeneral| 4)
+                          (LIST '|aMode| 1) (LIST '|aModeSet| 3)
+                          (LIST '|aTree| 0) (LIST '|aValue| 2)
+                          (LIST '|attributes| 'CADDR)
+                          (LIST '|cacheCount| 'CADDDDR)
+                          (LIST '|cacheName| 'CADR)
+                          (LIST '|cacheReset| 'CADDDR)
+                          (LIST '|cacheType| 'CADDR)
+                          (LIST '|env| 'CADDR) (LIST '|expr| 'CAR)
+                          (LIST 'CAR 'CAR) (LIST '|mmCondition| 'CAADR)
+                          (LIST '|mmDC| 'CAAR)
+                          (LIST '|mmImplementation| 'CADADR)
+                          (LIST '|mmSignature| 'CDAR)
+                          (LIST '|mmTarget| 'CADAR)
+                          (LIST '|mode| 'CADR) (LIST '|op| 'CAR)
+                          (LIST '|opcode| 'CADR) (LIST '|opSig| 'CADR)
+                          (LIST 'CDR 'CDR) (LIST '|sig| 'CDDR)
+                          (LIST '|source| 'CDR)
+                          (LIST '|streamCode| 'CADDDR)
+                          (LIST '|streamDef| 'CADDR)
+                          (LIST '|streamName| 'CADR)
+                          (LIST '|target| 'CAR)))
+        (|i| NIL))
+    (LOOP
+      (COND
+        ((OR (ATOM |bfVar#12|) (PROGN (SETQ |i| (CAR |bfVar#12|)) NIL))
+         (RETURN NIL))
+        ('T (SETF (GET (CAR |i|) 'SHOESELFUNCTION) (CADR |i|))))
+      (SETQ |bfVar#12| (CDR |bfVar#12|)))))
+

@@ -1,0 +1,490 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/algebra any.spad}
+\author{Robert S. Sutor}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+\section{domain NONE None}
+<<domain NONE None>>=
+)abbrev domain NONE None
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions: coerce
+++ Related Constructors: NoneFunctions1
+++ Also See: Any
+++ AMS Classification:
+++ Keywords: none, empty
+++ Description:
+++    \spadtype{None} implements a type with no objects. It is mainly
+++    used in technical situations where such a thing is needed (e.g.
+++    the interpreter and some of the internal \spadtype{Expression}
+++    code).
+
+None():SetCategory == add
+    coerce(none:%):OutputForm == "NONE" :: OutputForm
+    x:% = y:% == EQ(x,y)$Lisp
+
+@
+\section{package NONE1 NoneFunctions1}
+<<package NONE1 NoneFunctions1>>=
+)abbrev package NONE1 NoneFunctions1
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions: coerce
+++ Related Constructors: None
+++ Also See:
+++ AMS Classification:
+++ Keywords:
+++ Description:
+++   \spadtype{NoneFunctions1} implements functions on \spadtype{None}.
+++   It particular it includes a particulary dangerous coercion from
+++   any other type to \spadtype{None}.
+
+NoneFunctions1(S:Type): Exports == Implementation where
+  Exports ==> with
+    coerce: S -> None
+      ++ coerce(x) changes \spad{x} into an object of type
+      ++ \spadtype{None}.
+
+  Implementation ==> add
+    coerce(s:S):None == s pretend None
+
+@
+\section{domain ANY Any}
+<<domain ANY Any>>=
+)abbrev domain ANY Any
+++ Author: Robert S. Sutor
+++ Date Created:
+++ Change History:
+++ Basic Functions: any, domainOf, objectOf, dom, obj, showTypeInOutput
+++ Related Constructors: AnyFunctions1
+++ Also See: None
+++ AMS Classification:
+++ Keywords:
+++ Description:
+++   \spadtype{Any} implements a type that packages up objects and their
+++   types in objects of \spadtype{Any}. Roughly speaking that means
+++   that if \spad{s : S} then when converted to \spadtype{Any}, the new
+++   object will include both the original object and its type. This is
+++   a way of converting arbitrary objects into a single type without
+++   losing any of the original information. Any object can be converted
+++   to one of \spadtype{Any}.
+
+Any(): SetCategory with
+        any             : (SExpression, None) -> %
+          ++ any(type,object) is a technical function for creating
+          ++ an object of \spadtype{Any}. Arugment \spad{type} is a \spadgloss{LISP} form
+          ++ for the type of \spad{object}.
+        domainOf        : % -> OutputForm
+          ++ domainOf(a) returns a printable form of the type of the
+          ++ original object that was converted to \spadtype{Any}.
+        objectOf        : % -> OutputForm
+          ++ objectOf(a) returns a printable form of the
+          ++ original object that was converted to \spadtype{Any}.
+        dom             : % -> SExpression
+          ++ dom(a) returns a \spadgloss{LISP} form of the type of the
+          ++ original object that was converted to \spadtype{Any}.
+        obj             : % -> None
+          ++ obj(a) essentially returns the original object that was
+          ++ converted to \spadtype{Any} except that the type is forced
+          ++ to be \spadtype{None}.
+        showTypeInOutput: Boolean -> String
+          ++ showTypeInOutput(bool) affects the way objects of
+          ++ \spadtype{Any} are displayed. If \spad{bool} is true
+          ++ then the type of the original object that was converted
+          ++ to \spadtype{Any} will be printed. If \spad{bool} is
+          ++ false, it will not be printed.
+
+ == add
+     Rep := Record(dm: SExpression, ob: None)
+
+     printTypeInOutputP:Reference(Boolean) := ref false
+
+     obj x      == x.ob
+     dom x      == x.dm
+     domainOf x == x.dm pretend OutputForm
+     x = y      == (x.dm = y.dm) and EQ(x.ob, y.ob)$Lisp
+
+     objectOf(x : %) : OutputForm ==
+       spad2BootCoerce(x.ob, x.dm,
+          list("OutputForm"::Symbol)$List(Symbol))$Lisp
+
+     showTypeInOutput(b : Boolean) : String ==
+      printTypeInOutputP := ref b
+      b=> "Type of object will be displayed in output of a member of Any"
+      "Type of object will not be displayed in output of a member of Any"
+
+     coerce(x):OutputForm ==
+       obj1 : OutputForm := objectOf x
+       not deref printTypeInOutputP => obj1
+       dom1 :=
+         p:Symbol := prefix2String(devaluate(x.dm)$Lisp)$Lisp
+         atom?(p pretend SExpression) => list(p)$List(Symbol)
+         list(p)$Symbol
+       hconcat cons(obj1,
+         cons(":"::OutputForm, [a::OutputForm for a in dom1]))
+
+     any(domain, object) ==
+       (isValidType(domain)$Lisp)@Boolean => [domain, object]
+       domain := devaluate(domain)$Lisp
+       (isValidType(domain)$Lisp)@Boolean => [domain, object]
+       error "function any must have a domain as first argument"
+
+@
+\section{package ANY1 AnyFunctions1}
+<<package ANY1 AnyFunctions1>>=
+)abbrev package ANY1 AnyFunctions1
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions:  coerce, retractIfCan, retractable?, retract
+++ Related Constructors: Any
+++ Also See:
+++ AMS Classification:
+++ Keywords:
+++ Description:
+++   \spadtype{AnyFunctions1} implements several utility functions for
+++   working with \spadtype{Any}. These functions are used to go back
+++   and forth between objects of \spadtype{Any} and objects of other
+++   types.
+
+AnyFunctions1(S:Type): with
+        coerce      : S -> Any
+          ++ coerce(s) creates an object of \spadtype{Any} from the
+          ++ object \spad{s} of type \spad{S}.
+        retractIfCan: Any -> Union(S, "failed")
+          ++ retractIfCan(a) tries change \spad{a} into an object
+          ++ of type \spad{S}. If it can, then such an object is
+          ++ returned. Otherwise, "failed" is returned.
+        retractable?: Any -> Boolean
+          ++ retractable?(a) tests if \spad{a} can be converted
+          ++ into an object of type \spad{S}.
+        retract     : Any -> S
+          ++ retract(a) tries to convert \spad{a} into an object of
+          ++ type \spad{S}. If possible, it returns the object.
+          ++ Error: if no such retraction is possible.
+
+    == add
+        import NoneFunctions1(S)
+
+        Sexpr:SExpression := devaluate(S)$Lisp
+
+        retractable? a  == dom(a) = Sexpr
+        coerce(s:S):Any == any(Sexpr, s::None)
+
+        retractIfCan a ==
+            retractable? a => obj(a) pretend S
+            "failed"
+
+        retract a ==
+            retractable? a => obj(a) pretend S
+            error "Cannot retract value."
+
+@
+
+\section{domain PROPERTY Property}
+<<domain PROPERTY Property>>=
+)abbrev domain PROPERTY Property
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ An `Property' is a pair of name and value.  
+Property(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    name: % -> Symbol         
+      ++ name(p) returns the name of property p
+    value: % -> SExpression   
+      ++ value(p) returns value of property p
+    property: (Symbol, SExpression) -> %
+      ++ property(n,val) constructs a property with name `n' and
+      ++ value `val'.
+  
+  Private ==> add
+    rep(x: %): SExpression ==
+      x pretend SExpression
+
+    per(x: SExpression): % ==
+      x pretend %
+
+    name x == 
+      -- Note: It is always well defined to take the `car' here
+      -- because there is no way we could have type safely 
+      -- constructed a null property.
+      symbol car rep x
+
+    value x ==
+      cdr rep x
+
+    property(n,val) ==
+      per CONS(n,val)$Lisp
+ 
+    coerce x ==
+      v := value x
+      val: OutputForm
+      if null? v then val := false::OutputForm
+      else if EQ(v, true)$Lisp : Boolean
+           then val := true::OutputForm
+           else val := v::OutputForm
+      
+      bracket(infix(outputForm '_=_>, outputForm name x, 
+                val)$OutputForm)$OutputForm
+
+@
+
+\section{domain BINDING Binding}
+<<domain BINDING Binding>>=
+)abbrev domain BINDING Binding
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Binding' is a name asosciated with a collection of properties.
+Binding(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    name: % -> Symbol               
+      ++ name(b) returns the name of binding b
+    properties: % -> List Property  
+      ++ properties(b) returns the properties associated with binding b.
+    binding: (Symbol, List Property) -> %
+      ++ binding(n,props) constructs a binding with name `n' and 
+      ++ property list `props'.
+
+  Private ==> add
+    rep(x: %): SExpression ==
+      x pretend SExpression
+
+    per(x: SExpression): % ==
+      x pretend %
+
+    name b ==
+      -- this is well defined because there is no way one could
+      -- type safely ask the name of an inexisting binding.
+      symbol car rep b
+
+    properties b ==
+      (cdr rep b) pretend List(Property)
+
+    binding(n,props) ==
+      per CONS(n,props)$Lisp
+
+    coerce b ==
+      null? rep b => empty()$OutputForm
+      rarrow(outputForm name b, (properties b)::OutputForm)$OutputForm
+@
+
+\section{domain CONTOUR Contour}
+<<domain CONTOUR Contour>>=
+)abbrev domain CONTOUR Contour
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Contour' a list of bindings making up a `virtual scope'.
+Contour(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    bindings: % -> List Binding     
+      ++ bindings(c) returns the list of bindings in countour c.
+    push: (Binding,%) -> %
+      ++ push(c,b) augments the contour with binding `b'.
+    findBinding: (Symbol,%) -> Union(Binding, "failed")
+      ++ findBinding(c,n) returns the first binding associated with `n'.
+      ++ Otherwise `failed'.
+
+  Private ==> add
+    bindings c ==
+      c pretend List(Binding)
+
+    findBinding(n,c) ==
+      for b in bindings c repeat
+        EQ(n, name b)$Lisp => return b
+      "failed"
+
+    push(b,c) ==
+      CONS(b,c)$Lisp pretend %
+
+    coerce c ==
+      (bindings c)::OutputForm
+@
+
+\section{domain SCOPE Scope}
+<<domain SCOPE Scope>>=
+)abbrev domain SCOPE Scope
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Scope' is a sequence of contours.
+Scope(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    empty: () -> %
+      ++ empty() returns an empty scope.
+    contours: % -> List Contour     
+      ++ contours(s) returns the list of contours in scope s.
+    findBinding: (Symbol,%) -> Union(Binding, "failed")
+      ++ findBinding(n,s) returns the first binding of `n' in `s'; 
+      ++ otherwise `failed'.
+    pushNewContour: (Binding,%) -> %
+      ++ pushNewContour(b,s) pushs a new contour with sole binding `b'.
+    currentScope: () -> %
+      ++ currentScope() returns the scope currently in effect
+    currentCategoryFrame: () -> %
+      ++ currentCategoryFrame() returns the category frame currently
+      ++ in effect.
+
+  Private ==> add
+    import Contour
+    Rep == List Contour
+    empty() ==
+      per NIL$Lisp
+
+    contours s ==
+      rep s
+
+    findBinding(n,s) ==
+      for c in contours s repeat
+        b := findBinding(n,c)$Contour
+        not b case "failed" => return b
+      "failed"
+
+    pushNewContour(b,s) ==
+      c := LIST(b)$Lisp
+      CONS(c,s)$Lisp @ %
+
+    currentScope() ==
+      CAR(_$e$Lisp)$Lisp @ %
+
+    currentCategoryFrame() ==
+      CAR(_$CategoryFrame$Lisp)$Lisp @ %
+
+    coerce s ==
+      (contours s)::OutputForm
+@
+
+\section{domain ENV Environment}
+<<domain ENV Environment>>=
+)abbrev domain ENV Environment
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 19, 2008.
+++ An `Environment' is a stack of scope.
+Environment(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    empty: () -> %
+      ++ empty() constructs an empty environment
+    scopes: % -> List Scope     
+      ++ scopes(e) returns the stack of scopes in environment e.
+    getProperty: (Symbol, Symbol, %) -> Union(SExpression, "failed")
+      ++ getProperty(n,p,e) returns the value of property with name `p'
+      ++ for the symbol `n' in environment `e'. Otherwise, `failed'.
+    setProperty!: (Symbol, Symbol, SExpression, %) -> %
+      ++ setProperty!(n,p,v,e) binds the property `(p,v)' to `n'
+      ++ in the topmost scope of `e'.
+    getProperties: (Symbol, %) -> Union(List Property, "failed")
+      ++ getBinding(n,e) returns the list of properties of `n' in
+      ++ e; otherwise `failed'.
+    setProperties!: (Symbol, List Property, %) -> %
+      ++ setBinding!(n,props,e) set the list of properties of `n' 
+      ++ to `props' in `e'.
+    currentEnv: () -> %        
+      ++ the current normal environment in effect.
+    categoryFrame: () -> %  
+       ++ the current category environment in the interpreter.
+
+  Private ==> add
+    Rep == List Scope
+    empty() ==
+      per NIL$Lisp
+
+    scopes e ==
+      rep e
+
+    getProperty(n,p,e) ==
+      v := get(n,p,e)$Lisp
+      null? v => "failed"
+      v 
+
+    setProperty!(n,p,v,e) ==
+      put(n,p,v,e)$Lisp @ %
+
+    getProperties(n,e) ==
+      b: SExpression := getProplist(n,e)$Lisp
+      null? b => "failed"
+      b pretend List(Property)
+
+    setProperties!(n,b,e) ==
+      addBinding(n,b,e)$Lisp @ %
+
+    currentEnv() ==
+      _$e$Lisp @ %
+
+    categoryFrame() ==
+      _$CategoryFrame$Lisp @ %
+
+    coerce e ==
+      (scopes e)::OutputForm
+@
+
+
+\section{License}
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2008, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+
+-- Any and None complete the type lattice. They are also used in the
+-- interpreter in various situations. For example, it is always possible
+-- to resolve two types in the interpreter because at worst the answer
+-- may be Any.
+
+<<domain NONE None>>
+<<package NONE1 NoneFunctions1>>
+<<domain ANY Any>>
+<<package ANY1 AnyFunctions1>>
+
+<<domain PROPERTY Property>>
+<<domain BINDING Binding>>
+<<domain CONTOUR Contour>>
+<<domain SCOPE Scope>>
+<<domain ENV Environment>>
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}
