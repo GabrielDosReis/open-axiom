@@ -49,14 +49,11 @@ ThreeDimensionalViewport(): Exports == Implementation where
   S   ==> String
   E   ==> OutputForm
   PLOT3D ==> Plot3D
-  TUBE   ==> TubePlot
   V   ==> Record( theta:SF, phi:SF, scale:SF, scaleX:SF, scaleY:SF, scaleZ:SF, deltaX:SF, deltaY:SF )
   H   ==> Record( hueOffset:I, hueNumber:I)
   FLAG   ==> Record( showCP:I, style:I, axesOn:I, diagonalsOn:I, outlineRenderOn:I, showRegionField:I )
   FR  ==> Record( fn:Fn2, fc: FnU, xmin:SF, xmax:SF, ymin:SF, ymax:SF, xnum:I, ynum:I )
-  FParamR ==> Record( theTube:TUBE )
   LR  ==> Record( lightX:SF, lightY:SF, lightZ:SF, lightTheta:SF, lightPhi:SF , translucence:SF)
-  UFR ==> Union(FR,FParamR,"undefined")
   PR  ==> Record( perspectiveField:I, eyeDistance:SF, hitherPlane:SF)
   VR  ==> Record( clipXMin:SF, clipXMax:SF, clipYMin:SF, clipYMax:SF, clipZMin:SF, clipZMax:SF, clipRegionField:I, clipSurfaceField:I)
   C   ==> Color()
@@ -390,7 +387,6 @@ ThreeDimensionalViewport(): Exports == Implementation where
     import Color()
     import ViewDefaultsPackage()
     import Plot3D()
-    import TubePlot()
     import POINT
     import PointPackage(SF)
     import SubSpaceComponentProperty()

@@ -1,5 +1,11 @@
 2008-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/view3D.spad.pamphlet (TUBE): Remove as unused.
+	(FParamR): Likewise.
+	(URF): Likewise.
+
+2008-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* OpenAxiom-1.2.0 released.
 
 2008-08-21  Grégory Vanuxem  <g.vanuxem@orange.fr>
