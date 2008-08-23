@@ -198,6 +198,17 @@
 	    |$ExtraRuntimeLibraries|)
     (list |$ExtraRuntimeLibraries|)))
 
+
+#+:clisp 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (progn
+	     (setf custom:*ansi* t)
+	     (setf custom:*floating-point-contagion-ansi* t)
+	     (setf custom:*warn-on-floating-point-contagion* t)
+	     (setf custom:*trace-indent* t)
+	     (setf custom:*foreign-encoding* 
+		   (ext:make-encoding :charset charset:iso-8859-1))))
+
 ;; 
 ;; -*- OpenAxiom filesystem -*-
 ;; 

@@ -1220,5 +1220,10 @@ bootSymbol s ==
 
 nativeType t ==
   null t => t
-  t' := ASSOC(coreSymbol t,$NativeTypeTable) => rest t'
+  t' := rest ASSOC(coreSymbol t,$NativeTypeTable) => 
+    -- ??? decree we have not discovered Unicode yet.
+    t = "string" and %hasFeature KEYWORD::SBCL =>
+      [t',KEYWORD::EXTERNAL_-FORMAT,KEYWORD::ASCII,
+         KEYWORD::ELEMENT_-TYPE, "BASE-CHAR"]
+    t'
   fatalError CONCAT('"unsupported native type: ", SYMBOL_-NAME t)
