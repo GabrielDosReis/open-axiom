@@ -1,3 +1,9 @@
+2008-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/any.spad.pamphlet (Maybe): New domain.
+	* algebra/exposed.lsp.pamphlet: Expose it.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include MAYBE.
+
 2008-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/view3D.spad.pamphlet (TUBE): Remove as unused.

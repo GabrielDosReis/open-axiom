@@ -222,6 +222,7 @@
   (|MatrixCategoryFunctions2| . MATCAT2)
   (|MatrixCommonDenominator| . MCDEN)
   (|MatrixLinearAlgebraFunctions| . MATLIN)
+  (|Maybe| . MAYBE)
   (|MergeThing| . MTHING)
   (|ModularDistinctDegreeFactorizer| . MDDFACT)
   (|ModuleOperator| . MODOP)

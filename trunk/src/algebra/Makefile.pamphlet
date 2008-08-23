@@ -219,7 +219,7 @@ axiom_algebra_layer_1 = \
   PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
   RETRACT- SEGCAT   BINDING  SYNTAX   BMODULE   LOGIC    \
   LOGIC-   EVALAB   EVALAB-  FEVALAB  FEVALAB-  BYTE     \
-  OSGROUP
+  OSGROUP  MAYBE
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
