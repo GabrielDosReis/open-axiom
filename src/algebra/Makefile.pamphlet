@@ -219,7 +219,7 @@ axiom_algebra_layer_1 = \
   PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
   RETRACT- SEGCAT   BINDING  SYNTAX   BMODULE   LOGIC    \
   LOGIC-   EVALAB   EVALAB-  FEVALAB  FEVALAB-  BYTE     \
-  OSGROUP  MAYBE
+  OSGROUP  MAYBE    DATABUF
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -543,9 +543,9 @@ axiom_algebra_layer_11_objects = \
 
 <<layer12>>=
 axiom_algebra_layer_12 = \
-  DIOPS    DIOPS-  DIAGG   DIAGG-   BITS    DIRPROD2 IMATRIX \
-  IVECTOR  LPOLY   LSMP    LSMP1    MATCAT2 PTCAT    TRIMAT  \
-  FSAGG    FSAGG-  SYSTEM  BYTEARY
+  DIOPS    DIOPS-  DIAGG   DIAGG-  BITS     DIRPROD2 IMATRIX \
+  IVECTOR  LPOLY   LSMP    LSMP1   MATCAT2  PTCAT    TRIMAT  \
+  FSAGG    FSAGG-  SYSTEM  BYTEARY HOSTNAME PORTNUM
 
 axiom_algebra_layer_12_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_12))

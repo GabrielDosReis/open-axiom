@@ -1,3 +1,14 @@
+2008-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/data.spad.pamphlet (DataBuffer): New.
+
+2008-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/net.spad.pamphlet: New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include
+	HOSTNAME and PORTNUM.
+	* algebra/exposed.lsp.pamphlet: Export them.
+
 2008-08-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in [CLISP]: Set global customization variables.
