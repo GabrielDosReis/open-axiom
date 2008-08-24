@@ -1,3 +1,7 @@
+2008-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* etc/Makefile.in: Tidy databases construction rule.
+
 2008-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/view3D.spad.pamphlet (TUBE): Remove as unused.
