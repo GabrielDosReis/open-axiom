@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2008, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -50,17 +50,23 @@ all: all-ax
 all-ax all-asq: stamp
 	@echo finished $(builddir)
 
-stamp: $(openaxiom_databases) $(axiom_target_bindir)/asq$(EXEEXT) \
+stamp: stamp-databases $(axiom_target_bindir)/asq$(EXEEXT) \
 		$(axiom_target_libdir)/summary \
 		$(axiom_target_libdir)/copyright
 	rm -f stamp
 	$(STAMP) stamp
 
-$(openaxiom_databases): ../algebra/*.NRLIB/code.$(FASLEXT)
+stamp-databases: ../algebra/*.NRLIB/code.$(FASLEXT)
 	@ echo rebuilding databases...
+	rm -f stamp-databases
+	rm -f ../algebra/topics.data
+	rm -f $(axiom_targetdir)/*.daase
+	rm -f $(axiom_targetdir)/libdb.text
+	rm -f $(axiom_targetdir)/comdb.text
+	rm -rf $(axiom_targetdir)/algebra/USERS.DAASE
+	rm -rf $(axiom_targetdir)/algebra/DEPENDENTS.DAASE
 	cp $(axiom_src_docdir)/topics.data ../algebra
 	(cd ../algebra && $(INTERPSYS) --build-databases)
-	mkdir -p $(axiom_targetdir)/algebra
 	cp -p ../algebra/*.daase $(axiom_targetdir)/algebra
 	cp -p ../algebra/libdb.text $(axiom_targetdir)/algebra
 	cp -p ../algebra/comdb.text $(axiom_targetdir)/algebra
