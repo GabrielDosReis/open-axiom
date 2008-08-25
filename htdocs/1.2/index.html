@@ -47,6 +47,9 @@
 
 <div id="main">
 
+  In addition to thr numerous bugs that have been fixed, the following
+  subsections detail some featured changes.
+
   <h2 name="base">1. Base Reference Document</h2>
 
   <p>
@@ -65,7 +68,6 @@
   <h4 name="1.2.0-changes-int">2.1.1 Interpreter</h4>
 
     <ul>
-
       <li>
          The interpreter now evaluates the <code>typeOf</code> of a
          category as <code>Category</code>, when it previously reported
@@ -90,13 +92,6 @@
      </li>
 
      <li>
-        The interpreter now allows <code>f(x +-> 2*x,y)</code> without
-        extra parenthesis around the anonymous function, where the 
-        function f is a function accepting a function as the first
-        argument.  This change was contributed by Juergen Weiss.
-     </li>
-
-     <li>
         The interpreter now accepts instantiation of a domain or
         category constructor with a homogeneous variable length
         argument list, when the constructor is declared to accept a Tuple.
@@ -111,6 +106,13 @@
          by the category <code>AbelianGroup</code> instead of 
          producing an error.
      </li>
+
+     <li>The interpreter now avoids syntactic transformations that
+          have reaching semantics implications.  For example, 
+          previously, the expression <code> a &ge; b</code> was
+          systematically transformed into <code>not(a &lt; b)</code>
+          irrespective of the types of the sub-expressions <code>a</code>
+          and <code>b</code>.</li>
 
     </ul>
 
@@ -137,6 +139,13 @@
            affect well written Spad codes.
        </li>
 
+     <li>
+        The compiler now allows <code>f(x +-> 2*x,y)</code> without
+        extra parenthesis around the anonymous function, where the 
+        function f is a function accepting a function as the first
+        argument.  This change was contributed by Juergen Weiss.
+     </li>
+
        <li>The Spad compiler used to accept constructs like
            <code>&prime;e</code> where <code>e</code> is any s-expression
            as a way to inject a value in any datatype without 
@@ -161,7 +170,7 @@
     </li>
 
     <li><code>Signature</code>: This domain is the datatype for 
-       operation signatures as used by the interpreter and compilr.
+       operation signatures as used by the interpreter and compiler.
     </li>
 
     <li>The category <code>SetAggregate</code> used to export an operation
@@ -170,6 +179,17 @@
         operator is consistently reserved for the category 
         <code>OrderedSet</code>.
     </li>
+
+    <li>Addition of new categories: <code>OrderedSemiGroup</code>,
+        <code>JavaBytecode</code>, <code>Byte</code>, 
+        <code>ByteArray</code>
+
+    <li><code>Category</code> is now defined as a real domain, and acts
+        conceptually as a type for categories.  In particular, it is now
+        possible to call regular functions with categories as regular 
+        runtime values.</li>
+
+    <li>Algebra databases are now built on the Windows platform.</li>
 
   </ul>
   
@@ -181,6 +201,8 @@
   can run OpenAxiom.  OpenAxiom's <code>configure</code> script
   will automatically detected that if you're building from source
   code.
+
+  <p>The Foreign Function Interface has been improved.
 
 </div>
 
