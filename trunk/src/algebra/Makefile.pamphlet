@@ -1784,7 +1784,7 @@ deriving the dependencies by scanning the ``Loading ...'' messages.
 <<genericDotOfiles>>=
 
 ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
-	cp $*.NRLIB/code.$(FASLEXT) ${OUT}/$*.$(FASLEXT)
+	cp $< $@
 
 @ 
 

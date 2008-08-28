@@ -1,3 +1,7 @@
+2008-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Tidy.
+
 2008-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* etc/Makefile.in: Tidy databases construction rule.

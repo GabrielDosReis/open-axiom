@@ -852,7 +852,7 @@ check:
 
 
 ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
-	cp $*.NRLIB/code.$(FASLEXT) ${OUT}/$*.$(FASLEXT)
+	cp $< $@
 
 
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)

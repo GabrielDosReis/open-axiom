@@ -57,7 +57,7 @@ to GNU Readline.
 <<clefdir>>=
 all-clef: all-lib
 	@$(mkdir_p) "$(axiom_target_bindir)"
-	cd clef && ${MAKE}
+	cd clef && $(MAKE) $@
 @
 
 \subsection{The \File{sman/} directory}
@@ -68,7 +68,7 @@ processes including \Tool{axiom}, \Tool{clef}, nagman, graphics, and hyperdoc
 all-sman: all-lib all-driver
 	$(mkdir_p) "$(axiom_target_bindir)"
 	$(mkdir_p) "$(axiom_target_libdir)"
-	cd sman && ${MAKE}
+	cd sman && $(MAKE) $@
 @
 
 \subsection{The \File{hyper/} directory}
@@ -78,7 +78,7 @@ Hyperdoc is the Axiom document browser.
 all-hyper: all-lib
 	$(mkdir_p) "$(axiom_target_bindir)"
 	$(mkdir_p) "$(axiom_target_datadir)"
-	cd hyper && ${MAKE}
+	cd hyper && $(MAKE) $@
 @
 
 \subsection{The \File{share/} directory}
@@ -89,7 +89,7 @@ system.
 <<sharedir>>=
 all-share:
 	$(mkdir_p) "$(axiom_target_libdir)"
-	cd share && ${MAKE}
+	cd share && $(MAKE) $@
 @
 
 \subsection{The \File{lib/} directory}
@@ -176,7 +176,7 @@ the normal Makefile information.
 <<algebradir>>=
 all-algebra: all-interpsys all-share all-hyper-pre
 	@ $(mkdir_p) algebra/strap
-	cd algebra && ${MAKE}
+	cd algebra && $(MAKE) $@
 
 all-hyper-pre: all-lib
 	cd hyper && $(MAKE) all-hyper-pre
@@ -212,7 +212,7 @@ for finding detailed information about domains, packages, and
 categories from the shell without running Axiom.
 <<etcdir>>=
 all-asq: all-hyper-post
-	cd etc && ${MAKE}
+	cd etc && $(MAKE) $@
 
 all-hyper-post: all-algebra
 	cd hyper && $(MAKE) all-hyper-post
@@ -223,14 +223,14 @@ The \File{doc/} directory contains code used for documenting Axiom.
 
 <<docdir>>=
 all-doc:
-	cd doc && ${MAKE}
+	cd doc && $(MAKE) $@
 @
 
 \subsection{The \File{graph/} directory}
 
 <<graphdir>>=
 all-graph: all-lib
-	cd graph && ${MAKE}
+	cd graph && $(MAKE) $@
 @
 
 
