@@ -4,13 +4,18 @@
 \title{\$SPAD/src/algebra stream.spad}
 \author{Clifton J. Williamson, William Burge, Stephen M. Watt}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
+
 \tableofcontents
 \eject
+
 \section{category LZSTAGG LazyStreamAggregate}
 <<category LZSTAGG LazyStreamAggregate>>=
+import Type
+import Boolean
+import NonNegativeInteger
 )abbrev category LZSTAGG LazyStreamAggregate
 ++ Category of streams with lazy evaluation
 ++ Author: Clifton J. Williamson
@@ -486,8 +491,13 @@ LazyStreamAggregate(S:Type): Category == StreamAggregate(S) with
     x
 
 @
+
 \section{package CSTTOOLS CyclicStreamTools}
+
 <<package CSTTOOLS CyclicStreamTools>>=
+import Type
+import NonNegativeInteger
+import LazyStreamAggregate
 )abbrev package CSTTOOLS CyclicStreamTools
 ++ Functions for dealing with cyclic streams
 ++ Author: Clifton J. Williamson
@@ -540,6 +550,12 @@ CyclicStreamTools(S,ST): Exports == Implementation where
 @
 \section{domain STREAM Stream}
 <<domain STREAM Stream>>=
+import Type
+import Boolean
+import Integer
+import NonNegativeInteger
+import UniversalSegment
+import List
 )abbrev domain STREAM Stream
 ++ Implementation of streams via lazy evaluation
 ++ Authors: Burge, Watt; updated by Clifton J. Williamson
@@ -1132,6 +1148,7 @@ Stream(S): Exports == Implementation where
 \section{package STREAM1 StreamFunctions1}
 
 <<package STREAM1 StreamFunctions1>>=
+import Type
 import Stream
 )abbrev package STREAM1 StreamFunctions1
 ++ Authors: Burge, Watt; updated by Clifton J. Williamson
@@ -1159,6 +1176,7 @@ StreamFunctions1(S:Type): Exports == Implementation where
 \section{package STREAM2 StreamFunctions2}
 
 <<package STREAM2 StreamFunctions2>>=
+import Type
 import Stream
 )abbrev package STREAM2 StreamFunctions2
 ++ Authors: Burge, Watt; updated by Clifton J. Williamson
@@ -1221,6 +1239,7 @@ StreamFunctions2(A:Type,B:Type): Exports == Implementation where
 \section{package STREAM3 StreamFunctions3}
 
 <<package STREAM3 StreamFunctions3>>=
+import Type
 import Stream
 )abbrev package STREAM3 StreamFunctions3
 ++ Authors: Burge, Watt; updated by Clifton J. Williamson

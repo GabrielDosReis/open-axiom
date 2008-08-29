@@ -12,7 +12,15 @@
 \eject
 
 \section{domain Syntax}
+
 <<domain SYNTAX Syntax>>=
+import UnionType
+import SetCategory
+import Boolean
+import Integer
+import DoubleFloat
+import Symbol
+import SExpression
 )abbrev domain SYNTAX Syntax
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
@@ -213,7 +221,11 @@ Syntax(): Public == Private where
 
 
 \section{domain ConstructorCall}
+
 <<domain CTORCALL ConstructorCall>>=
+import SetCategory
+import Symbol
+import List Syntax
 )abbrev domain CTORCALL ConstructorCall
 ++ Author: Gabriel Dos Reis
 ++ Date Created: January 19, 2008
@@ -246,7 +258,10 @@ ConstructorCall(): Public == Private where
 @
 
 \section{The Signature domain}
+
 <<domain SIG Signature>>=
+import SetCategory
+import ConstructorCall
 )abbrev domain SIG Signature
 ++ Author: Gabriel Dos Reis
 ++ Date Created: January 10, 2008
@@ -274,7 +289,13 @@ Signature(): Public == Private where
 @
 
 \section{domain ElaboratedExpression}
+
 <<domain ELABEXPR ElaboratedExpression>>=
+import Boolean
+import Symbol
+import ConstructorCall
+import List
+import SExpression
 )abbrev domain ELABEXPR ElaboratedExpression
 ++ Author: Gabriel Dos Reis
 ++ Date Created: January 19, 2008
@@ -338,6 +359,8 @@ ElaboratedExpression(): Public == Private where
 \section{SpadAbstractSyntaxCategory}
 
 <<category ASTCAT AbstractSyntaxCategory>>=
+import SetCategory
+import CoercibleTo Syntax
 )abbrev category ASTCAT AbstractSyntaxCategory
 ++ Author: Gabriel Dos Reis
 ++ Date Created: July 5, 2008
@@ -355,6 +378,9 @@ AbstractSyntaxCategory(): Category ==
 \subsection{The HeadAst domain}
 
 <<domain HEADAST HeadAst>>=
+import AbstractSyntaxCategory
+import Symbol
+import List Symbol
 )abbrev domain HEADAST HeadAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007

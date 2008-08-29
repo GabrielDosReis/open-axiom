@@ -12,7 +12,10 @@
 \eject
 
 \section{domain NONE None}
+
 <<domain NONE None>>=
+import SetCategory
+import OutputForm
 )abbrev domain NONE None
 ++ Author:
 ++ Date Created:
@@ -36,7 +39,11 @@ None():SetCategory == add
 
 
 \section{The Maybe domain}
+
 <<domain MAYBE Maybe>>=
+import UnionType
+import CoercibleTo OutputForm
+import Boolean
 )abbrev domain MAYBE Maybe
 ++ Author: Gabriel Dos Reis
 ++ Date Created: August 20, 2008
@@ -107,7 +114,14 @@ NoneFunctions1(S:Type): Exports == Implementation where
 @
 
 \section{domain ANY Any}
+
 <<domain ANY Any>>=
+import SetCategory
+import Boolean
+import String
+import OutputForm
+import SExpression
+import None
 )abbrev domain ANY Any
 ++ Author: Robert S. Sutor
 ++ Date Created:
@@ -191,6 +205,7 @@ Any(): SetCategory with
 \section{package ANY1 AnyFunctions1}
 
 <<package ANY1 AnyFunctions1>>=
+import Type
 import Boolean
 import Any
 )abbrev package ANY1 AnyFunctions1
@@ -245,6 +260,7 @@ AnyFunctions1(S:Type): with
 \section{domain PROPERTY Property}
 
 <<domain PROPERTY Property>>=
+import CoercibleTo OutputForm
 import Symbol
 import SExpression
 )abbrev domain PROPERTY Property
@@ -295,7 +311,11 @@ Property(): Public == Private where
 @
 
 \section{domain BINDING Binding}
+
 <<domain BINDING Binding>>=
+import CoercibleTo OutputForm
+import Symbol
+import List Property
 )abbrev domain BINDING Binding
 ++ Author: Gabriel Dos Reis
 ++ Date Created: October 24, 2007
@@ -335,7 +355,12 @@ Binding(): Public == Private where
 @
 
 \section{domain CONTOUR Contour}
+
 <<domain CONTOUR Contour>>=
+import CoercibleTo OutputForm
+import Symbol
+import Binding
+import List Binding
 )abbrev domain CONTOUR Contour
 ++ Author: Gabriel Dos Reis
 ++ Date Created: October 24, 2007
@@ -368,7 +393,11 @@ Contour(): Public == Private where
 @
 
 \section{domain SCOPE Scope}
+
 <<domain SCOPE Scope>>=
+import CoercibleTo OutputForm
+import Binding
+import List Contour
 )abbrev domain SCOPE Scope
 ++ Author: Gabriel Dos Reis
 ++ Date Created: October 24, 2007
@@ -421,7 +450,12 @@ Scope(): Public == Private where
 @
 
 \section{domain ENV Environment}
+
 <<domain ENV Environment>>=
+import CoercibleTo OutputForm
+import Symbol
+import List Scope
+import List Property
 )abbrev domain ENV Environment
 ++ Author: Gabriel Dos Reis
 ++ Date Created: October 24, 2007
@@ -486,6 +520,7 @@ Environment(): Public == Private where
 
 
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 --All rights reserved.
