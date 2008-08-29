@@ -61,6 +61,24 @@ import renameFile for
 import mkdir for
   oa__mkdir: string -> int  -- 0: sucess, -1: failure.
 
+import readFromFileHandle for
+  oa__filedesc__read: (int,buffer,int) -> int -- -1: failure; otherwise
+                                              -- actual read bytes count
+
+import writeToFileHandle for
+  oa__filedesc__write: (int,buffer,int) -> int -- -1: failure; otherwise
+                                               -- actual written bytes count
+
+import closeFileHandle for
+  oa__filedesc__close: int -> int    -- -1: failure; otherwise 0.
+
+--% Local IPC socket support
+
+import openLocalClientStreamSocket for
+  oa__open__local__client__stream__socket: string -> int -- -1: failure
+
+--% OpenAxiom subsystem socket support
+
 import getEnv for
   oa__getenv: string -> string
 

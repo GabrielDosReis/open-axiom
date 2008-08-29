@@ -1,5 +1,20 @@
 2008-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-os.boot (readFromFileHandle): New.
+	(writeToFileHandle): Likewise.
+	(closeFileHandle): Likewise.
+	(openLocalClientStreamSocket): Likewise
+	(oa_filedesc_read): Likewise.
+	(oa_filedesc_write): Likewise.
+	(oa_filedesc_close): Likewise.
+	* include/sockio.h (oa_open_local_client_stream_socket): Declare.
+	* lib/sockio-c.c (oa_open_local_client_stream_socket): Define.
+	(oa_filedesc_read): Likewise.
+	(oa_filedesc_write): Likewise.
+	(oa_filedesc_close): Likewise.
+
+2008-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.pamphlet: Tidy.
 
 2008-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>

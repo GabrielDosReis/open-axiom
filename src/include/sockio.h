@@ -44,6 +44,7 @@
 #  include <sys/types.h>
 #  include <sys/socket.h>
 #  include <netinet/in.h>
+#  include <sys/un.h>
 #endif
 
 #include "openaxiom-c-macros.h"
@@ -78,6 +79,13 @@ typedef struct openaxiom_sio {
 } openaxiom_sio;
 
 
+
+OPENAXIOM_EXPORT int oa_open_local_client_stream_socket(const char*);
+OPENAXIOM_EXPORT int oa_open_local_server_stream_socket(const char*);
+
+OPENAXIOM_EXPORT int oa_filedesc_write(int, const openaxiom_byte*, int);
+OPENAXIOM_EXPORT int oa_filedesc_read(int, openaxiom_byte*, int);
+OPENAXIOM_EXPORT int oa_filedesc_close(int);
 
 OPENAXIOM_EXPORT int sread(openaxiom_sio*, openaxiom_byte*, int, const char*);
 OPENAXIOM_EXPORT int swrite(openaxiom_sio*, const openaxiom_byte*, int,
