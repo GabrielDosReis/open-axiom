@@ -1,15 +1,17 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra void.spad}
+\title{src/algebra void.spad}
 \author{Stephen M. Watt}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain VOID Void}
+
 <<domain VOID Void>>=
 )abbrev domain VOID Void
 -- These types act as the top and bottom of the type lattice
@@ -39,8 +41,11 @@ Void: with
         coerce(v:%) == coerce(v)$Rep
 
 @
+
 \section{domain EXIT Exit}
+
 <<domain EXIT Exit>>=
+import SetCategory
 )abbrev domain EXIT Exit
 ++ Author: Stephen M. Watt
 ++ Date Created: 1986
@@ -64,8 +69,12 @@ Exit: SetCategory == add
         n1 = n2     == error "Cannot use an Exit value."
 
 @
+
 \section{package RESLATC ResolveLatticeCompletion}
+
 <<package RESLATC ResolveLatticeCompletion>>=
+import Void
+import Exit
 )abbrev package RESLATC ResolveLatticeCompletion
 ++ Author: Stephen M. Watt
 ++ Date Created: 1986
@@ -98,7 +107,9 @@ ResolveLatticeCompletion(S: Type): with
             error "Bug: Should not be able to obtain value of type Exit"
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

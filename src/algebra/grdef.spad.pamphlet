@@ -4,13 +4,18 @@
 \title{\$SPAD/src/algebra grdef.spad}
 \author{Clifton J. Williamson}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{package GRDEF GraphicsDefaults}
+
 <<package GRDEF GraphicsDefaults>>=
+import Boolean
+import Integer
+import DoubleFloat
 )abbrev package GRDEF GraphicsDefaults
 ++ Author: Clifton J. Williamson
 ++ Date Created: 8 January 1990
@@ -98,7 +103,9 @@ GraphicsDefaults(): Exports == Implementation where
     screenResolution n == setScreenResolution(n)$Plot
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

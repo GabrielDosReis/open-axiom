@@ -4,13 +4,17 @@
 \title{\$SPAD/src/algebra seg.spad}
 \author{Stephen M. Watt, Robert Sutor}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{category SEGCAT SegmentCategory}
+
 <<category SEGCAT SegmentCategory>>=
+import Type
+import Integer
 )abbrev category SEGCAT SegmentCategory
 ++ Author:  Stephen M. Watt
 ++ Date Created:  December 1986
@@ -54,8 +58,13 @@ SegmentCategory(S:Type): Category == Type with
         ++ convert(i) creates the segment \spad{i..i}.
 
 @
+
 \section{category SEGXCAT SegmentExpansionCategory}
+
 <<category SEGXCAT SegmentExpansionCategory>>=
+import OrderedRing
+import StreamAggregate
+import List
 )abbrev category SEGXCAT SegmentExpansionCategory
 ++ Author:  Stephen M. Watt
 ++ Date Created: June 5, 1991
@@ -87,8 +96,16 @@ SegmentExpansionCategory(S: OrderedRing, L: StreamAggregate(S)): Category ==
         ++ \spad{[f(l), f(l+k), ..., f(lN)]}, where \spad{lN <= h < lN+k}.
 
 @
+
 \section{domain SEG Segment}
+
 <<domain SEG Segment>>=
+import Type
+import SetCategory
+import SegmentCategory
+import SegmentExpansionCategory
+import Integer
+import List
 )abbrev domain SEG Segment
 ++ Author:  Stephen M. Watt
 ++ Date Created:  December 1986
@@ -165,8 +182,14 @@ Segment(S:Type): SegmentCategory(S) with
         reverse_! lr
 
 @
+
 \section{package SEG2 SegmentFunctions2}
+
 <<package SEG2 SegmentFunctions2>>=
+import Type
+import OrderedRing
+import Segment
+import List
 )abbrev package SEG2 SegmentFunctions2
 ++ Author:
 ++ Date Created:
@@ -215,8 +238,13 @@ SegmentFunctions2(R:Type, S:Type): public == private where
        reverse_! lr
 
 @
+
 \section{domain SEGBIND SegmentBinding}
+
 <<domain SEGBIND SegmentBinding>>=
+import Type
+import SetCategory
+import Segement
 )abbrev domain SEGBIND SegmentBinding
 ++ Author:
 ++ Date Created:
@@ -264,6 +292,7 @@ SegmentBinding(S:Type): Type with
 \section{package SEGBIND2 SegmentBindingFunctions2}
 
 <<package SEGBIND2 SegmentBindingFunctions2>>=
+import Type
 import SegmentBinding
 )abbrev package SEGBIND2 SegmentBindingFunctions2
 ++ Author:
@@ -287,8 +316,13 @@ SegmentBindingFunctions2(R:Type, S:Type): with
     equation(variable b, map(f, segment b)$SegmentFunctions2(R, S))
 
 @
+
 \section{domain UNISEG UniversalSegment}
+
 <<domain UNISEG UniversalSegment>>=
+import Type
+import SegmentCategory
+import Segment
 )abbrev domain UNISEG UniversalSegment
 ++ Author:  Robert S. Sutor
 ++ Date Created: 1987
@@ -414,8 +448,13 @@ UniversalSegment(S: Type): SegmentCategory(S) with
         concat(construct expand(lb),  st)
 
 @
+
 \section{package UNISEG2 UniversalSegmentFunctions2}
+
 <<package UNISEG2 UniversalSegmentFunctions2>>=
+import Type
+import OrderedRing
+import UniversalSegment
 )abbrev package UNISEG2 UniversalSegmentFunctions2
 ++ Author:
 ++ Date Created:
@@ -451,8 +490,12 @@ UniversalSegmentFunctions2(R:Type, S:Type): with
         map(f, expand u)$StreamFunctions2(R, S)
 
 @
+
 \section{package INCRMAPS IncrementingMaps}
+
 <<package INCRMAPS IncrementingMaps>>=
+import Monoid
+import AbelianSemiGroup
 )abbrev package INCRMAPS IncrementingMaps
 ++ Author:
 ++ Date Created:
@@ -481,7 +524,9 @@ IncrementingMaps(R:Join(Monoid, AbelianSemiGroup)): with
     incrementBy n == n + #1
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

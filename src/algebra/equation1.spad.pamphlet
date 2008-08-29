@@ -4,13 +4,18 @@
 \title{\$SPAD/src/algebra equation1.spad}
 \author{The Axiom Team}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{category IEVALAB InnerEvalable}
+
 <<category IEVALAB InnerEvalable>>=
+import SetCategory
+import Type
+import List
 )abbrev category IEVALAB InnerEvalable
 -- FOR THE BENEFIT OF LIBAX0 GENERATION
 ++ Author:
@@ -39,8 +44,14 @@ InnerEvalable(A:SetCategory, B:Type): Category == with
     eval(f:$, x:A, v:B) == eval(f, [x], [v])
 
 @
+
 \section{category EVALAB Evalable}
+
 <<category EVALAB Evalable>>=
+import SetCategory
+import InnerEvalable
+import Equation
+import List
 )abbrev category EVALAB Evalable
 ++ Author:
 ++ Date Created:
@@ -66,7 +77,9 @@ Evalable(R:SetCategory): Category == InnerEvalable(R,R) with
     eval(f:$, xs:List R,vs:List R) == eval(f,[x=v for x in xs for v in vs])
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra aggcat.spad}
+\title{src/algebra aggcat.spad}
 \author{Michael Monagan, Manuel Bronstein, Richard Jenks, Stephen Watt}
 \maketitle
 
@@ -12,7 +12,9 @@
 \eject
 
 \section{category AGG Aggregate}
+
 <<category AGG Aggregate>>=
+import Type
 import Boolean
 import NonNegativeInteger
 )abbrev category AGG Aggregate
@@ -863,8 +865,12 @@ KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
      keys t == [x.key for x in parts t]
 
 @
+
 \section{category ELTAB Eltable}
+
 <<category ELTAB Eltable>>=
+import Type
+import SetCategory
 )abbrev category ELTAB Eltable
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Manuel Bronstein
 ++ Date Created: August 87 through August 88
@@ -886,8 +892,12 @@ Eltable(S:SetCategory, Index:Type): Category == with
      ++ Error: if i is not an index of u.
 
 @
+
 \section{category ELTAGG EltableAggregate}
+
 <<category ELTAGG EltableAggregate>>=
+import Type
+import SetCategory
 )abbrev category ELTAGG EltableAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -937,8 +947,15 @@ EltableAggregate(Dom:SetCategory, Im:Type): Category ==
     qsetelt_!(a, x, y) == (a.x := y)
 
 @
+
 \section{category IXAGG IndexedAggregate}
+
 <<category IXAGG IndexedAggregate>>=
+import Type
+import SetCategory
+import HomogeneousAggregate
+import EltableAggregate
+import List
 )abbrev category IXAGG IndexedAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1026,8 +1043,13 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
       void
 
 @
+
 \section{category TBAGG TableAggregate}
+
 <<category TBAGG TableAggregate>>=
+import SetCategory
+import KeyedDictionary
+import IndexedAggregate
 )abbrev category TBAGG TableAggregate
 ++ Author: Michael Monagan, Stephen Watt; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1150,8 +1172,14 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
        tally
 
 @
+
 \section{category RCAGG RecursiveAggregate}
+
 <<category RCAGG RecursiveAggregate>>=
+import Type
+import SetCategory
+import List
+import Boolean
 )abbrev category RCAGG RecursiveAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1217,7 +1245,10 @@ RecursiveAggregate(S:Type): Category == HomogeneousAggregate(S) with
 @
 
 \section{category BRAGG BinaryRecursiveAggregate}
+
 <<category BRAGG BinaryRecursiveAggregate>>=
+import Type
+import RecursiveAggregate
 )abbrev category BRAGG BinaryRecursiveAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1331,8 +1362,12 @@ BinaryRecursiveAggregate(S:Type):Category == RecursiveAggregate S with
      setelt(x,"right",b) == setright_!(x,b)
 
 @
+
 \section{category DLAGG DoublyLinkedAggregate}
+
 <<category DLAGG DoublyLinkedAggregate>>=
+import Type
+import RecursiveAggregate
 )abbrev category DLAGG DoublyLinkedAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1377,8 +1412,13 @@ DoublyLinkedAggregate(S:Type): Category == RecursiveAggregate S with
 	++ setnext!(u,v) destructively sets the next node of doubly-linked aggregate u to v, returning v.
 
 @
+
 \section{category URAGG UnaryRecursiveAggregate}
+
 <<category URAGG UnaryRecursiveAggregate>>=
+import Type
+import RecursiveAggregate
+import NonNegativeInteger
 )abbrev category URAGG UnaryRecursiveAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1644,7 +1684,12 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
 @
 
 \section{category STAGG StreamAggregate}
+
 <<category STAGG StreamAggregate>>=
+import Type
+import UnaryRecursiveAggregate
+import LinearAggregate
+import Boolean
 )abbrev category STAGG StreamAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1736,7 +1781,13 @@ StreamAggregate(S:Type): Category ==
 @
 
 \section{category LNAGG LinearAggregate}
+
 <<category LNAGG LinearAggregate>>=
+import Type
+import Collection
+import IndexedAggregate
+import NonNegativeInteger
+import Integer
 )abbrev category LNAGG LinearAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1822,7 +1873,14 @@ LinearAggregate(S:Type): Category ==
 @
 
 \section{category FLAGG FiniteLinearAggregate}
+
 <<category FLAGG FiniteLinearAggregate>>=
+import Type
+import SetCategory
+import OrderedSet
+import LinearAggregate
+import Boolean
+import Integer
 )abbrev category FLAGG FiniteLinearAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1904,8 +1962,12 @@ FiniteLinearAggregate(S:Type): Category == LinearAggregate S with
 	sort_! l == sort_!(_<$S, l)
 
 @
+
 \section{category A1AGG OneDimensionalArrayAggregate}
+
 <<category A1AGG OneDimensionalArrayAggregate>>=
+import Type
+import FiniteLinearAggregate
 )abbrev category A1AGG OneDimensionalArrayAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -2157,8 +2219,14 @@ OneDimensionalArrayAggregate(S:Type): Category ==
 
 
 @
+
 \section{category ELAGG ExtensibleLinearAggregate}
+
 <<category ELAGG ExtensibleLinearAggregate>>=
+import Type
+import LinearAggregate
+import OrderedSet
+import Integer
 )abbrev category ELAGG ExtensibleLinearAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -2225,8 +2293,14 @@ ExtensibleLinearAggregate(S:Type):Category == LinearAggregate S with
      merge_!(x, y) == merge_!(_<$S, x, y)
 
 @
+
 \section{category LSAGG ListAggregate}
+
 <<category LSAGG ListAggregate>>=
+import Type
+import StreamAggregate
+import FiniteLinearAggregate
+import ExtensibleLinearAggregate
 )abbrev category LSAGG ListAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -2449,7 +2523,11 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
 @
 
 \section{category ALAGG AssociationListAggregate}
+
 <<category ALAGG AssociationListAggregate>>=
+import SetCategory
+import TableAggregate
+import ListAggregate
 )abbrev category ALAGG AssociationListAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -2473,7 +2551,14 @@ AssociationListAggregate(Key:SetCategory,Entry:SetCategory): Category ==
 @
 
 \section{category SRAGG StringAggregate}
+
 <<category SRAGG StringAggregate>>=
+import OneDimensionalArrayAggregate Character
+import UniversalSegment
+import Boolean
+import Character
+import CharacterClass
+import Integer
 )abbrev category SRAGG StringAggregate
 ++ Author: Stephen Watt and Michael Monagan. revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -2574,8 +2659,13 @@ StringAggregate: Category == OneDimensionalArrayAggregate Character with
    elt(s:%, t:%): %	 == concat(s,t)$%
 
 @
+
 \section{category BTAGG BitAggregate}
+
 <<category BTAGG BitAggregate>>=
+import OrderedSet
+import Logic
+import OneDimensionalArrayAggregate Boolean
 )abbrev category BTAGG BitAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -2623,7 +2713,9 @@ BitAggregate(): Category ==
    nor(v, u)  == map(nor, v, u)
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

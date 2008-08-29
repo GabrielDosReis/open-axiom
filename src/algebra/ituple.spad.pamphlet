@@ -1,16 +1,22 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra ituple.spad}
+\title{src/algebra ituple.spad}
 \author{Clifton J. Williamson}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain ITUPLE InfiniteTuple}
+
 <<domain ITUPLE InfiniteTuple>>=
+import Type
+import CoercibleTo OutputForm
+import Boolean
+import Stream
 )abbrev domain ITUPLE InfiniteTuple
 ++ Infinite tuples for the interpreter
 ++ Author: Clifton J. Williamson
@@ -52,6 +58,7 @@ InfiniteTuple(S:Type): Exports == Implementation where
 \section{package ITFUN2 InfiniteTupleFunctions2}
 
 <<package ITFUN2 InfiniteTupleFunctions2>>=
+import Type
 import InfiniteTuple
 )abbrev package ITFUN2 InfiniteTupleFunctions2
 InfiniteTupleFunctions2(A:Type,B:Type): Exports == Implementation where
@@ -72,6 +79,7 @@ InfiniteTupleFunctions2(A:Type,B:Type): Exports == Implementation where
 \section{package ITFUN3 InfiniteTupleFunctions3}
 
 <<package ITFUN3 InfiniteTupleFunctions3>>=
+import Type
 import InfiniteTuple
 import Stream
 )abbrev package ITFUN3 InfiniteTupleFunctions3
@@ -100,7 +108,9 @@ InfiniteTupleFunctions3(A:Type, B:Type,C:Type): Exports
        map(f, s1 pretend Stream(A), s2)$SF3
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

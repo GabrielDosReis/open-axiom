@@ -1,16 +1,20 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra list.spad}
+\title{src/algebra list.spad}
 \author{Michael Monagon, Manuel Bronstein}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain ILIST IndexedList}
+
 <<domain ILIST IndexedList>>=
+import Type
+import ListAggregate
 )abbrev domain ILIST IndexedList
 ++ Author: Michael Monagan
 ++ Date Created: Sep 1987
@@ -204,6 +208,8 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
 
 \section{domain LIST List}
 <<domain LIST List>>=
+import Type
+import ListAggregate
 )abbrev domain LIST List
 ++ Author: Michael Monagan
 ++ Date Created: Sep 1987
@@ -340,7 +346,10 @@ List(S:Type): Exports == Implementation where
 @
 
 \section{package LIST2 ListFunctions2}
+
 <<package LIST2 ListFunctions2>>=
+import Type
+import FiniteLinearAggregateFunctions2
 )abbrev package LIST2 ListFunctions2
 ++ Author:
 ++ Date Created:
@@ -387,8 +396,12 @@ ListFunctions2(A:Type, B:Type): public == private where
     reduce(f, l, b) == reduce(f, l, b)$O2
 
 @
+
 \section{package LIST3 ListFunctions3}
+
 <<package LIST3 ListFunctions3>>=
+import Type
+import Type
 )abbrev package LIST3 ListFunctions3
 ++ Author:
 ++ Date Created:
@@ -423,8 +436,13 @@ ListFunctions3(A:Type, B:Type, C:Type): public == private where
       concat(fn(first la, first lb), map(fn, rest la, rest lb))
 
 @
+
 \section{package LIST2MAP ListToMap}
+
 <<package LIST2MAP ListToMap>>=
+import Type
+import SetCategory
+import List
 )abbrev package LIST2MAP ListToMap
 ++ Author: Manuel Bronstein
 ++ Date Created: 22 Mar 1988
@@ -513,8 +531,13 @@ ListToMap(A:SetCategory, B:Type): Exports == Implementation where
       lb.p
 
 @
+
 \section{domain ALIST AssociationList}
+
 <<domain ALIST AssociationList>>=
+import SetCategory
+import List
+import Reference
 )abbrev domain ALIST AssociationList
 ++ Author:
 ++ Date Created:
@@ -596,7 +619,9 @@ AssociationList(Key:SetCategory, Entry:SetCategory):
           first(curr).entry
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

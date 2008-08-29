@@ -1,16 +1,23 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra retract.spad}
+\title{src/algebra retract.spad}
 \author{Manuel Bronstein}
+
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{category FRETRCT FullyRetractableTo}
+
 <<category FRETRCT FullyRetractableTo>>=
+import Type
+import RetractableTo
+import Integer
+import Fraction
 )abbrev category FRETRCT FullyRetractableTo
 ++ Author: Manuel Bronstein
 ++ Description:
@@ -45,8 +52,13 @@ FullyRetractableTo(S: Type): Category == RetractableTo(S) with
           retractIfCan(u::S)
 
 @
+
 \section{package INTRET IntegerRetractions}
+
 <<package INTRET IntegerRetractions>>=
+import RetractableTo 
+import Boolean
+import Integer
 )abbrev package INTRET IntegerRetractions
 ++ Author: Manuel Bronstein
 ++ Description: Provides integer testing and retraction functions.
@@ -67,8 +79,14 @@ IntegerRetractions(S:RetractableTo(Integer)): with
     integerIfCan s == retractIfCan s
 
 @
+
 \section{package RATRET RationalRetractions}
+
 <<package RATRET RationalRetractions>>=
+import RetractableTo
+import Boolean
+import Integer
+import Fraction
 )abbrev package RATRET RationalRetractions
 ++ Author: Manuel Bronstein
 ++ Description: rational number testing and retraction functions.
@@ -90,7 +108,9 @@ RationalRetractions(S:RetractableTo(Fraction Integer)): with
     rationalIfCan s == retractIfCan s
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

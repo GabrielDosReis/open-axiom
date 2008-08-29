@@ -1508,7 +1508,7 @@ compCategory(x,m,e) ==
       $sigList: local := nil
       $atList: local := nil
       $sigList:= $atList:= nil
-      for x in l repeat compCategoryItem(x,nil)
+      for x in l repeat compCategoryItem(x,nil,e)
       rep:= mkExplicitCategoryFunction(domainOrPackage,$sigList,$atList)
     --if inside compDefineCategory, provide for category argument substitution
       [rep,m,e]
@@ -1567,41 +1567,41 @@ DomainSubstitutionFunction(parameters,body) ==
   body:= ["COND",[name],['(QUOTE T),['SETQ,name,body]]]
   body
  
-compCategoryItem(x,predl) ==
+compCategoryItem(x,predl,env) ==
   x is nil => nil
   --1. if x is a conditional expression, recurse; otherwise, form the predicate
   x is ["COND",[p,e]] =>
     predl':= [p,:predl]
-    e is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl')
-    compCategoryItem(e,predl')
+    e is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl',env)
+    compCategoryItem(e,predl',env)
   x is ["IF",a,b,c] =>
     predl':= [a,:predl]
     if b^="%noBranch" then
-      b is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl')
-      compCategoryItem(b,predl')
+      b is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl',env)
+      compCategoryItem(b,predl',env)
     c="%noBranch" => nil
     predl':= [["not",a],:predl]
-    c is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl')
-    compCategoryItem(c,predl')
+    c is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl',env)
+    compCategoryItem(c,predl',env)
   pred:= (predl => MKPF(predl,"AND"); true)
  
   --2. if attribute, push it and return
   x is ["ATTRIBUTE",y] => PUSH(MKQ [y,pred],$atList)
  
   --3. it may be a list, with PROGN as the CAR, and some information as the CDR
-  x is ["PROGN",:l] => for u in l repeat compCategoryItem(u,predl)
+  x is ["PROGN",:l] => for u in l repeat compCategoryItem(u,predl,env)
  
 -- 4. otherwise, x gives a signature for a
 --    single operator name or a list of names; if a list of names,
 --    recurse
   ["SIGNATURE",op,:sig]:= x
   null atom op =>
-    for y in op repeat compCategoryItem(["SIGNATURE",y,:sig],predl)
+    for y in op repeat compCategoryItem(["SIGNATURE",y,:sig],predl,env)
   op in '(per rep) =>
     stackSemanticError(['"cannot export signature for", :bright op],nil)
     nil
  
   --4. branch on a single type or a signature %with source and target
   for t in first sig repeat
-    diagnoseUknownType(t,e)
+    diagnoseUknownType(t,env)
   PUSH(MKQ [rest x,pred],$sigList)
