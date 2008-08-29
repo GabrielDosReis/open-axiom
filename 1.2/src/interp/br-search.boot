@@ -51,6 +51,7 @@ grepConstruct(s,key,:options) == --key = a o c d p x k (all) . (aok) w (doc)
 --an alist of the form ((kind . <list of lines for that kind>) ...)
   $localLibdb : local := fnameExists? '"libdb.text" and '"libdb.text"
   lines := grepConstruct1(s,key)
+  lines is ["error",:.] => lines
   IFCAR options => grepSplit(lines,key = 'w)    --leave now if a constructor
   MEMQ(key,'(o a)) => dbScreenForDefaultFunctions lines --kill default lines if a/o
   lines
