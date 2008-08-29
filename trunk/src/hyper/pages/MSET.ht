@@ -4,7 +4,7 @@
 \newcommand{\MultisetXmpNumber}{9.53}
 %
 % =====================================================================
-\begin{page}{MultisetXmpPage}{9.53 MultiSet}
+\begin{page}{MultisetXmpPage}{9.53 Multiset}
 % =====================================================================
 \beginscroll
 The domain \spadtype{Multiset(R)} is similar to \spadtype{Set(R)}
