@@ -1,3 +1,20 @@
+2008-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/aggcat.spad.pamphlet: Import used domains.
+	* algebra/any.spad.pamphlet: Likewise.
+	* algebra/catdef.spad.pamphlet: Likewise.
+	* algebra/drawopt.spad.pamphlet: Likewise.
+	* algebra/equation2.spad.pamphlet: Likewise.
+	* algebra/ituple.spad.pamphlet: Likewise.
+	* algebra/mkfunc.spad.pamphlet: Likewise.
+	* algebra/omdev.spad.pamphlet: Likewise.
+	* algebra/out.spad.pamphlet: Likewise.
+	* algebra/plot.spad.pamphlet: Likewise.
+	* algebra/print.spad.pamphlet: Likewise.
+	* algebra/seg.spad.pamphlet: Likewise.
+	* algebra/stream.spad.pamphlet: Likewise.
+	* algebra/system.spad.pamphlet: Likewise.
+
 2008-08-29  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 

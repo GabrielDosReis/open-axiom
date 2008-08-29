@@ -54,6 +54,8 @@ System(): Public == Private where
 \section{package MSYSCMD MoreSystemCommands}
 
 <<package MSYSCMD MoreSystemCommands>>=
+import Void
+import String
 )abbrev package MSYSCMD MoreSystemCommands
 ++ Author:
 ++ Date Created:

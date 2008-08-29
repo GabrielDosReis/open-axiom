@@ -78,7 +78,9 @@ Maybe(T: CoercibleTo OutputForm): Public == Private where
 
 
 \section{package NONE1 NoneFunctions1}
+
 <<package NONE1 NoneFunctions1>>=
+import None
 )abbrev package NONE1 NoneFunctions1
 ++ Author:
 ++ Date Created:
@@ -185,8 +187,12 @@ Any(): SetCategory with
        error "function any must have a domain as first argument"
 
 @
+
 \section{package ANY1 AnyFunctions1}
+
 <<package ANY1 AnyFunctions1>>=
+import Boolean
+import Any
 )abbrev package ANY1 AnyFunctions1
 ++ Author:
 ++ Date Created:
@@ -237,7 +243,10 @@ AnyFunctions1(S:Type): with
 @
 
 \section{domain PROPERTY Property}
+
 <<domain PROPERTY Property>>=
+import Symbol
+import SExpression
 )abbrev domain PROPERTY Property
 ++ Author: Gabriel Dos Reis
 ++ Date Created: October 24, 2007

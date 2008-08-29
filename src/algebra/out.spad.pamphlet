@@ -4,13 +4,20 @@
 \title{\$SPAD/src/algebra out.spad}
 \author{Stephen M. Watt, Robert S. Sutor}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
+
 \tableofcontents
 \eject
+
 \section{package OUT OutputPackage}
+
 <<package OUT OutputPackage>>=
+import Void
+import String
+import OutputForm
+import List Any
 )abbrev package OUT OutputPackage
 ++ Author: Stephen M. Watt
 ++ Date Created: February 1986

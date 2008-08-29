@@ -260,8 +260,11 @@ SegmentBinding(S:Type): Type with
        variable(b)::OutputForm = segment(b)::OutputForm
 
 @
+
 \section{package SEGBIND2 SegmentBindingFunctions2}
+
 <<package SEGBIND2 SegmentBindingFunctions2>>=
+import SegmentBinding
 )abbrev package SEGBIND2 SegmentBindingFunctions2
 ++ Author:
 ++ Date Created:

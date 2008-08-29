@@ -4,14 +4,17 @@
 \title{\$SPAD/src/algebra aggcat.spad}
 \author{Michael Monagan, Manuel Bronstein, Richard Jenks, Stephen Watt}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
+
 \tableofcontents
 \eject
+
 \section{category AGG Aggregate}
 <<category AGG Aggregate>>=
-
+import Boolean
+import NonNegativeInteger
 )abbrev category AGG Aggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -64,8 +67,16 @@ Aggregate: Category == Type with
     size?(a,n) == #a = n
 
 @
+
 \section{category HOAGG HomogeneousAggregate}
+
 <<category HOAGG HomogeneousAggregate>>=
+import Boolean
+import OutputForm
+import SetCategory
+import Aggregate
+import CoercibleTo OutputForm
+import Evalable
 )abbrev category HOAGG HomogeneousAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -145,7 +156,10 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
 @
 
 \section{category CLAGG Collection}
+
 <<category CLAGG Collection>>=
+import Boolean
+import HomogeneousAggregate
 )abbrev category CLAGG Collection
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -230,7 +244,10 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
 @
 
 \section{category BGAGG BagAggregate}
+
 <<category BGAGG BagAggregate>>=
+import HomogeneousAggregate
+import List
 )abbrev category BGAGG BagAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -264,8 +281,12 @@ BagAggregate(S:Type): Category == HomogeneousAggregate S with
      x
 
 @
+
 \section{category SKAGG StackAggregate}
+
 <<category SKAGG StackAggregate>>=
+import NonNegativeInteger
+import BagAggregate
 )abbrev category SKAGG StackAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -297,8 +318,12 @@ StackAggregate(S:Type): Category == BagAggregate S with
 
 
 @
+
 \section{category QUAGG QueueAggregate}
+
 <<category QUAGG QueueAggregate>>=
+import NonNegativeInteger
+import BagAggregate
 )abbrev category QUAGG QueueAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -336,8 +361,12 @@ QueueAggregate(S:Type): Category == BagAggregate S with
      ++ Error: if q is empty.
 
 @
+
 \section{category DQAGG DequeueAggregate}
+
 <<category DQAGG DequeueAggregate>>=
+import StackAggregate
+import QueueAggregate
 )abbrev category DQAGG DequeueAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -387,8 +416,11 @@ DequeueAggregate(S:Type):
      ++ the top (front) element is now the bottom (back) element, and so on.
 
 @
+
 \section{category PRQAGG PriorityQueueAggregate}
+
 <<category PRQAGG PriorityQueueAggregate>>=
+import BagAggregate
 )abbrev category PRQAGG PriorityQueueAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -414,8 +446,12 @@ PriorityQueueAggregate(S:OrderedSet): Category == BagAggregate S with
      ++ values from priority queue q1.
 
 @
+
 \section{category DIOPS DictionaryOperations}
 <<category DIOPS DictionaryOperations>>=
+import Boolean
+import Collection
+import BagAggregate
 )abbrev category DIOPS DictionaryOperations
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -464,8 +500,12 @@ DictionaryOperations(S:SetCategory): Category ==
 				      [x::OutputForm for x in parts s])
 
 @
+
 \section{category DIAGG Dictionary}
+
 <<category DIAGG Dictionary>>=
+import Boolean
+import DictionaryOperations
 )abbrev category DIAGG Dictionary
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -509,8 +549,12 @@ Dictionary(S:SetCategory): Category ==
        t
 
 @
+
 \section{category MDAGG MultiDictionary}
+
 <<category MDAGG MultiDictionary>>=
+import NonNegativeInteger
+import DictionaryOperations
 )abbrev category MDAGG MultiDictionary
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -541,8 +585,12 @@ MultiDictionary(S:SetCategory): Category == DictionaryOperations S with
 -- to become duplicates: % -> Iterator(D,D)
 
 @
+
 \section{category SETAGG SetAggregate}
+
 <<category SETAGG SetAggregate>>=
+import SetCategory
+import Collection
 )abbrev category SETAGG SetAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -622,7 +670,10 @@ SetAggregate(S:SetCategory):
 @
 
 \section{category FSAGG FiniteSetAggregate}
+
 <<category FSAGG FiniteSetAggregate>>=
+import Dictionary
+import SetAggregate
 )abbrev category FSAGG FiniteSetAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -713,8 +764,12 @@ FiniteSetAggregate(S:SetCategory): Category ==
        reduce("min", l)
 
 @
+
 \section{category MSETAGG MultisetAggregate}
+
 <<category MSETAGG MultisetAggregate>>=
+import MultiDictionary
+import SetAggregate
 )abbrev category MSETAGG MultisetAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -732,8 +787,13 @@ MultisetAggregate(S:SetCategory):
  Category == Join(MultiDictionary S, SetAggregate S)
 
 @
+
 \section{category OMSAGG OrderedMultisetAggregate}
+
 <<category OMSAGG OrderedMultisetAggregate>>=
+import MultisetAggregate
+import PriorityQueueAggregate
+import List
 )abbrev category OMSAGG OrderedMultisetAggregate
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -758,8 +818,12 @@ OrderedMultisetAggregate(S:OrderedSet): Category ==
 	++ min(u) returns the smallest entry in the multiset aggregate u.
 
 @
+
 \section{category KDAGG KeyedDictionary}
+
 <<category KDAGG KeyedDictionary>>=
+import Dictionary
+import List
 )abbrev category KDAGG KeyedDictionary
 ++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88

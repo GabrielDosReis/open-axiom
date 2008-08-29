@@ -218,8 +218,12 @@ DrawOption(): Exports == Implementation where
     "failed"
 
 @
+
 \section{package DROPT1 DrawOptionFunctions1}
+
 <<package DROPT1 DrawOptionFunctions1>>=
+import Symbol
+import List DrawOption
 )abbrev package DROPT1 DrawOptionFunctions1
 ++ This package \undocumented{}
 DrawOptionFunctions1(S:Type): Exports == Implementation where
