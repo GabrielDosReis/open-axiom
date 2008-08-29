@@ -355,7 +355,33 @@ TrimCF() ==
       new:= [[first u,:NREVERSE unew],:new]
   $CategoryFrame:= [[NREVERSE new]]
   nil
+
+--%
  
+++ Returns non-nil if `t' is a known type in the environement `e'.
+isKnownType: (%Mode,%Env) -> %Form
+isKnownType(t,e) ==
+  atom t =>
+    t in '($ constant) => t
+    t' := assoc(t,getDomainsInScope e) => t'
+    get(first getmode(t,e),"isCategory",$CategoryFrame) => t
+    STRINGP t => t
+  t is ["Mapping",:sig] => 
+    and/[isKnownType(t',e) for t' in sig] => t
+    nil
+  ctor := first t
+  ctor in $BuiltinConstructorNames => t -- ??? check Record and Union fields
+  -- ??? Ideally `e' should be a local extension of $CategoryFrame
+  -- ??? so that we don't have to access it here as a global state.
+  get(ctor,"isFunctor",$CategoryFrame) 
+    or get(ctor,"isCategory",$CategoryFrame) => t
+  nil
+ 
+diagnoseUknownType: (%Mode,%Env) -> %Thing
+diagnoseUknownType(t,e) ==
+  if not isKnownType(t,e) then
+    stackWarning('"%1pb is unknown.  Try importing it.",[t])
+
  
 --% PREDICATES
  

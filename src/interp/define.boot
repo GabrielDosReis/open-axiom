@@ -1602,4 +1602,6 @@ compCategoryItem(x,predl) ==
     nil
  
   --4. branch on a single type or a signature %with source and target
+  for t in first sig repeat
+    diagnoseUknownType(t,e)
   PUSH(MKQ [rest x,pred],$sigList)

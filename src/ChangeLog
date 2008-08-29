@@ -1,5 +1,12 @@
 2008-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (isKnownType): New.
+	(diagnoseUknownType): Likewise.
+	* interp/define.boot (compCategoryItem): Use it.  Check for
+	unknown types.	
+
+2008-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisplib.boot (augModemapsFromDomain1): Move to modemap.boot
 	(mkEvalableCategoryForm): Move to define.boot
 	
