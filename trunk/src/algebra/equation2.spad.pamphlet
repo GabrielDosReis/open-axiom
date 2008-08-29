@@ -223,8 +223,11 @@ Equation(S: Type): public == private where
             [subst(lhs eq1,eq3),subst(rhs eq1,eq3)]
 
 @
+
 \section{package EQ2 EquationFunctions2}
+
 <<package EQ2 EquationFunctions2>>=
+import Equation
 )abbrev package EQ2 EquationFunctions2
 ++ Author:
 ++ Date Created:

@@ -56,6 +56,13 @@ OpenMathEncoding(): SetCategory with
 @
 \section{domain OMDEV OpenMathDevice}
 <<domain OMDEV OpenMathDevice>>=
+import Void
+import String
+import Integer
+import DoubleFloat
+import String
+import Symbol
+import OpenMathEncoding
 )abbrev domain OMDEV OpenMathDevice
 ++ Author: Vilya Harvey
 ++ Date Created:
@@ -223,6 +230,11 @@ OpenMathDevice(): with
 @
 \section{domain OMCONN OpenMathConnection}
 <<domain OMCONN OpenMathConnection>>=
+import Void
+import Boolean
+import SingleInteger
+import String
+import OpenMathDevice
 )abbrev domain OMCONN OpenMathConnection
 ++ Author: Vilya Harvey
 ++ Date Created:

@@ -94,7 +94,9 @@ AbelianMonoid(): Category == AbelianSemiGroup with
 
 
 \section{category ABELSG AbelianSemiGroup}
+
 <<category ABELSG AbelianSemiGroup>>=
+import PositiveInteger
 )abbrev category ABELSG AbelianSemiGroup
 ++ Author:
 ++ Date Created:
@@ -155,8 +157,11 @@ Algebra(R:CommutativeRing): Category ==
   coerce(x:R):% == x * 1$%
 
 @
+
 \section{category BASTYPE BasicType}
+
 <<category BASTYPE BasicType>>=
+import Boolean
 )abbrev category BASTYPE BasicType
 --% BasicType
 ++ Author:
@@ -178,7 +183,9 @@ BasicType(): Category == with
       _~_=(x:%,y:%) : Boolean == not(x=y)
 
 @
+
 \section{category BMODULE BiModule}
+
 <<category BMODULE BiModule>>=
 )abbrev category BMODULE BiModule
 ++ Author:
@@ -1255,7 +1262,9 @@ OrderedRing(): Category == Join(OrderedAbelianGroup,Ring,Monoid) with
 @
 
 \section{category ORDSET OrderedSet}
+
 <<category ORDSET OrderedSet>>=
+import Boolean
 )abbrev category ORDSET OrderedSet
 ++ Author:
 ++ Date Created:
@@ -1578,7 +1587,9 @@ Rng(): Category == Join(AbelianGroup,SemiGroup)
 @ 
 
 \section{category SGROUP SemiGroup}
+
 <<category SGROUP SemiGroup>>=
+import PositiveInteger
 )abbrev category SGROUP SemiGroup
 ++ Author:
 ++ Date Created:

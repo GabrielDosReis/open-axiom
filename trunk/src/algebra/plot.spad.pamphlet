@@ -568,8 +568,13 @@ Plot(): Exports == Implementation where
       prefix("PLOT" :: OUT, reverse_! f)
 
 @
+
 \section{package PLOT1 PlotFunctions1}
+
 <<package PLOT1 PlotFunctions1>>=
+import Symbol
+import Segment DoubleFloat
+import Plot
 )abbrev package PLOT1 PlotFunctions1
 ++ Authors: R.T.M. Bronstein, C.J. Williamson
 ++ Date Created: Jan 1989

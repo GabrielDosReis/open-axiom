@@ -252,8 +252,11 @@ MakeFunction(S:ConvertibleTo InputForm): Exports == Implementation where
       name
 
 @
+
 \section{package MKUCFUNC MakeUnaryCompiledFunction}
+
 <<package MKUCFUNC MakeUnaryCompiledFunction>>=
+import Symbol
 )abbrev package MKUCFUNC MakeUnaryCompiledFunction
 ++ Tools for making compiled functions from top-level expressions
 ++ Author: Manuel Bronstein
@@ -290,8 +293,11 @@ MakeUnaryCompiledFunction(S, D, I): Exports == Implementation where
       unaryFunction compile(function(e, declare DI, x), t)
 
 @
+
 \section{package MKBCFUNC MakeBinaryCompiledFunction}
+
 <<package MKBCFUNC MakeBinaryCompiledFunction>>=
+import Symbol
 )abbrev package MKBCFUNC MakeBinaryCompiledFunction
 ++ Tools for making compiled functions from top-level expressions
 ++ Author: Manuel Bronstein

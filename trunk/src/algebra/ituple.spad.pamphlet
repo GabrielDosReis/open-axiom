@@ -48,8 +48,11 @@ InfiniteTuple(S:Type): Exports == Implementation where
 --      coerce(x)$Stream(S)
 
 @
+
 \section{package ITFUN2 InfiniteTupleFunctions2}
+
 <<package ITFUN2 InfiniteTupleFunctions2>>=
+import InfiniteTuple
 )abbrev package ITFUN2 InfiniteTupleFunctions2
 InfiniteTupleFunctions2(A:Type,B:Type): Exports == Implementation where
   ++ Functions defined on streams with entries in two sets.
@@ -65,8 +68,12 @@ InfiniteTupleFunctions2(A:Type,B:Type): Exports == Implementation where
       map(f,x pretend Stream(A))$StreamFunctions2(A,B) pretend IT(B)
 
 @
+
 \section{package ITFUN3 InfiniteTupleFunctions3}
+
 <<package ITFUN3 InfiniteTupleFunctions3>>=
+import InfiniteTuple
+import Stream
 )abbrev package ITFUN3 InfiniteTupleFunctions3
 InfiniteTupleFunctions3(A:Type, B:Type,C:Type): Exports
  == Implementation where
