@@ -1,3 +1,8 @@
+2008-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (augModemapsFromDomain1): Move to modemap.boot
+	(mkEvalableCategoryForm): Move to define.boot
+	
 2008-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-os.boot (readFromFileHandle): New.

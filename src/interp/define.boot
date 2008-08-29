@@ -206,19 +206,39 @@ macroExpandList(l,e) ==
   (l is [name]) and IDENTP name and niladicConstructorFromDB name and
         (u := get(name, 'macro, e)) => macroExpand(u,e)
   [macroExpand(x,e) for x in l]
+
+--% constructor evaluation
+--  The following functions are used by the compiler but are modified
+--  here for use with new LISPLIB scheme
+ 
+mkEvalableCategoryForm c ==
+  c is [op,:argl] =>
+    op="Join" => ["Join",:[mkEvalableCategoryForm x for x in argl]]
+    op is "DomainSubstitutionMacro" =>
+        --$extraParms :local
+        --catobj := EVAL c -- DomainSubstitutionFunction makes $extraParms
+        --mkEvalableCategoryForm sublisV($extraParms, catobj)
+        mkEvalableCategoryForm CADR argl
+    op is "mkCategory" => c
+    MEMQ(op,$CategoryNames) =>
+      ([x,m,$e]:= compOrCroak(c,$EmptyMode,$e); m=$Category => x)
+    --loadIfNecessary op
+    getConstructorKindFromDB op = 'category or
+      get(op,"isCategory",$CategoryFrame) =>
+        [op,:[quotifyCategoryArgument x for x in argl]]
+    [x,m,$e]:= compOrCroak(c,$EmptyMode,$e)
+    m=$Category => x
+  MKQ c
  
 compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
   categoryCapsule :=
---+
     body is ['add,cat,capsule] =>
       body := cat
       capsule
     nil
   [d,m,e]:= compDefineCategory2(form,sig,sc,body,m,e,prefix,fal)
---+ next two lines
   if categoryCapsule and not $bootStrapMode then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true  --see NRTmakeSlot1
--->
     $categoryPredicateList: local :=
         makeCategoryPredicates(form,$lisplibCategory)
     compDefine1(mkCategoryPackage(form,cat,categoryCapsule),$EmptyMode,e)
@@ -238,7 +258,6 @@ makeCategoryPredicates(form,u) ==
           for x in u repeat pl := fn(x,pl)
           pl
  
---+ the following function
 mkCategoryPackage(form is [op,:argl],cat,def) ==
   packageName:= INTERN(STRCONC(PNAME op,'"&"))
   packageAbb := INTERN(STRCONC(getConstructorAbbreviationFromDB op,'"-"))
@@ -506,7 +525,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
           for i in 6..MAXINDEX $domainShell |
             $domainShell.i is [.,.,['ELT,'_$,.]]]]
     --leave space for vector ops and package name to be stored
---+
     $functorLocalParameters:=
       argPars :=
         makeFunctorArgumentParameters(argl,rest signature',first signature')
@@ -525,7 +543,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     lamOrSlam:= if $mutableDomain then 'LAM else 'SPADSLAM
     fun:= compile SUBLIS($pairlis, [op',[lamOrSlam,argl,body']])
     --The above statement stops substitutions gettting in one another's way
---+
     operationAlist := SUBLIS($pairlis,$lisplibOperationAlist)
     if $LISPLIB then
       augmentLisplibModemapsFromFunctor(parForm,operationAlist,parSignature)
@@ -728,7 +745,6 @@ mkOpVec(dom,siglist) ==
   ops
  
 genDomainViewName(a,category) ==
---+
   a
  
 compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
@@ -880,7 +896,6 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
  
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or ["",rettype,e]
---+
     NRTassignCapsuleFunctionSlot($op,signature')
     if $newCompCompare=true then
        SAY '"The old compiler generates:"
@@ -1036,7 +1051,6 @@ addArgumentConditions($body,$functionName) ==
  
 putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
   $elt: local := "getShellEntry"
---+
   NRTputInTail CDDADR def
   def
  
@@ -1233,7 +1247,6 @@ compAdd(['add,$addForm,capsule],m,e) ==
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
     $packagesUsed := [domainForm,:$packagesUsed]
---+
     $NRTaddForm := domainForm
     NRTgetLocalIndex domainForm
     --need to generate slot for add form since all $ go-get
@@ -1243,7 +1256,6 @@ compAdd(['add,$addForm,capsule],m,e) ==
     $packagesUsed :=
       $addForm is ["%Comma",:u] => [:u,:$packagesUsed]
       [$addForm,:$packagesUsed]
---+
     $NRTaddForm := $addForm
     [$addForm,.,e]:=
       $addForm is ["%Comma",:.] =>
@@ -1268,7 +1280,6 @@ compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addForm: local := nil
   $NRTaddForm := domainForm
   [$addForm,.,e]:= compSubDomain1(domainForm,predicate,m,e)
---+
   compCapsule(['CAPSULE],m,e)
  
 compSubDomain1(domainForm,predicate,m,e) ==
@@ -1356,13 +1367,10 @@ doIt(item,$predl) ==
       if lhs="Rep" then
         $Representation:= (get("Rep",'value,$e)).(0)
            --$Representation bound by compDefineFunctor, used in compNoStacking
---+
         if $NRTopt = true
           then NRTgetLocalIndex $Representation
---+
       $LocalDomainAlist:= --see genDeltaEntry
         [[lhs,:SUBLIS($LocalDomainAlist,(get(lhs,'value,$e)).0)],:$LocalDomainAlist]
---+
     code is ["%LET",:.] =>
       RPLACA(item,"setShellEntry")
       rhsCode:=
@@ -1387,7 +1395,6 @@ doIt(item,$predl) ==
         --Note that DescendCode, in CodeDefine, is looking for this
     RPLACD(CADR item,[$signatureOfForm])
       --This is how the signature is updated for buildFunctor to recognise
---+
     functionPart:= ['dispatchFunction,t.expr]
     RPLACA(CDDR item,functionPart)
     RPLACD(CDDR item,nil)

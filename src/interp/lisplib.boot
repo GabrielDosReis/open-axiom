@@ -644,49 +644,12 @@ getConstructorSignature ctor ==
     sig
   nil
  
---% from MODEMAP BOOT
- 
-augModemapsFromDomain1(name,functorForm,e) ==
-  GETL(KAR functorForm,"makeFunctionList") =>
-    addConstructorModemaps(name,functorForm,e)
-  atom functorForm and (catform:= getmode(functorForm,e)) =>
-    augModemapsFromCategory(name,name,functorForm,catform,e)
-  mappingForm:= getmodeOrMapping(KAR functorForm,e) =>
-    ["Mapping",categoryForm,:functArgTypes]:= mappingForm
-    catform:= substituteCategoryArguments(rest functorForm,categoryForm)
-    augModemapsFromCategory(name,name,functorForm,catform,e)
-  stackMessage('"%1pb is an unknown mode",[functorForm])
-  e
- 
 getSlotFromCategoryForm ([op,:argl],index) ==
   u:= eval [op,:MAPCAR('MKQ,TAKE(#argl,$FormalMapVariableList))]
   null VECP u =>
     systemErrorHere '"getSlotFromCategoryForm"
   u . index
  
- 
---% constructor evaluation
---  The following functions are used by the compiler but are modified
---  here for use with new LISPLIB scheme
- 
-mkEvalableCategoryForm c ==       --from DEFINE
-  c is [op,:argl] =>
-    op="Join" => ["Join",:[mkEvalableCategoryForm x for x in argl]]
-    op is "DomainSubstitutionMacro" =>
-        --$extraParms :local
-        --catobj := EVAL c -- DomainSubstitutionFunction makes $extraParms
-        --mkEvalableCategoryForm sublisV($extraParms, catobj)
-        mkEvalableCategoryForm CADR argl
-    op is "mkCategory" => c
-    MEMQ(op,$CategoryNames) =>
-      ([x,m,$e]:= compOrCroak(c,$EmptyMode,$e); m=$Category => x)
-    --loadIfNecessary op
-    getConstructorKindFromDB op = 'category or
-      get(op,"isCategory",$CategoryFrame) =>
-        [op,:[quotifyCategoryArgument x for x in argl]]
-    [x,m,$e]:= compOrCroak(c,$EmptyMode,$e)
-    m=$Category => x
-  MKQ c
  
 isDomainForm(D,e) ==
   --added for MPOLY 3/83 by RDJ
