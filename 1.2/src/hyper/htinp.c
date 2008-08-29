@@ -273,7 +273,7 @@ strCopy(char *s)
 {
     char *b = halloc(strlen(s) + 1,"String");
 
-    strcat(b, s);
+    strcpy(b, s);
     return b;
 }
 
