@@ -204,6 +204,106 @@ openaxiom_read(openaxiom_sio* s, openaxiom_byte* buf, size_t n)
    return recv(s->socket, buf, n, 0);
 }
 
+/* Local IPC Socket:
+      On POSIX systems, this is just the Local IPC Socket.
+      On Windows, we Windows Named Pipes.
+
+      Please, remember that Windows Named Pipes are closer to
+      Unix Domain Sockets than they are to Unix Named Pipes.  They
+      ae full duplex communication links, supporting regular
+      file I/O operations.  */
+
+OPENAXIOM_EXPORT int
+oa_open_local_client_stream_socket(const char* path)
+{
+#ifdef __WIN32__
+#  define NAMED_PIPE_PREFIX "\\\\.\\pipe"
+   char* pipename;
+   HANDLE handle;
+
+   pipename = (char *) malloc(sizeof NAMED_PIPE_PREFIX + strlen(path));
+   strcpy(pipename, NAMED_PIPE_PREFIX);
+   strcat(pipename, path);
+
+   /* Try to open only an existing named pipe.  */
+   while (1) {
+      handle = CreateFile(/* lpFileName */ pipename,
+                          /* dwDesiredAccess */ GENERIC_READ | GENERIC_WRITE,
+                          /* dwSharedMode */ 0,
+                          /* lpSecurityAttributes */ NULL,
+                          /* dwCreationDisposition */ OPEN_EXISTING,
+                          /* dwFlagsAttributes */ 0,
+                          /* hTemplateFile */ NULL);
+
+      if (handle != INVALID_HANDLE_VALUE)
+         return handle;
+
+      if (GetLastError() != ERROR_PIPE_BUSY
+          || !WaitNamedPipe(pipename, NMPWAIT_WAIT_FOREVER))
+         return -1;
+   }
+#  undef NAMED_PIPE_PREFIX   
+#else
+   int sock = socket(AF_UNIX, SOCK_STREAM, 0);
+   struct sockaddr_un addr;
+   if (sock < 0)
+      return -1;
+
+   memset(&addr, 0, sizeof addr);
+   addr.sun_family = AF_LOCAL;
+   strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
+   if (connect(sock, (struct sockaddr*)&addr, sizeof addr) < 0) {
+      close(sock);
+      return -1;
+   }
+   return sock;
+#endif   
+}
+
+OPENAXIOM_EXPORT int
+oa_filedesc_read(int desc, openaxiom_byte* buf, int size)
+{
+#ifdef __WIN32__
+   DWORD count = -1;
+   if (ReadFile(/* hFile */ desc,
+                /* lpBuffer */ buf,
+                /* nNumberOfBytesToRead */ size,
+                /* lpNumberOfBytesRead */ &count,
+                /* lpOverlapped */ NULL))
+      return count;
+   return -1;
+#else
+   return read(desc, buf, size);
+#endif   
+}
+
+OPENAXIOM_EXPORT int
+oa_filedesc_write(int desc, const openaxiom_byte* buf, int size)
+{
+#ifdef __WIN32__
+   DWORD count = -1;
+   if (WriteFile(/* hFile */ desc,
+                 /* lpBuffer */ buf,
+                 /* nNumberOfBytesToWrite */ size,
+                 /* lpNumberOfBytesWritten */ &count,
+                 /* lpOverlapped */ NULL))
+      return count;
+   return -1;
+#else
+   return write(desc, buf, size);
+#endif   
+}
+
+OPENAXIOM_EXPORT int
+oa_filedesc_close(int desc)
+{
+#ifdef __WIN32__
+   return CloseHandle(desc) ? 0 : -1;
+#else
+   return close(desc);
+#endif   
+}
+
 
 /* Return 1 is the last call was cancelled. */
 
