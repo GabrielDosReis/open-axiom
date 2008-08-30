@@ -1,16 +1,21 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra algext.spad}
+\title{src/algebra algext.spad}
 \author{Barry Trager, Manuel Bronstein, Clifton Williamson}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
+
 \eject
+
 \section{domain SAE SimpleAlgebraicExtension}
+
 <<domain SAE SimpleAlgebraicExtension>>=
+import UnivariatePolynomialCategory
+import MonogenicAlgebra
 )abbrev domain SAE SimpleAlgebraicExtension
 ++ Algebraic extension of a ring by a single polynomial
 ++ Author: Barry Trager, Manuel Bronstein, Clifton Williamson
@@ -190,7 +195,9 @@ SimpleAlgebraicExtension(R:CommutativeRing,
 --      ffe.f
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

@@ -1,16 +1,24 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra algcat.spad}
+\title{src/algebra algcat.spad}
 \author{Barry Trager, Claude Quitte, Manuel Bronstein}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{category FINRALG FiniteRankAlgebra}
+
 <<category FINRALG FiniteRankAlgebra>>=
+import CommutativeRing
+import Algebra
+import UnivariatePolynomialCategory
+import PositiveInteger
+import Vector
+import Matrix
 )abbrev category FINRALG FiniteRankAlgebra
 ++ Author: Barry Trager
 ++ Date Created:
@@ -87,8 +95,13 @@ FiniteRankAlgebra(R:CommutativeRing, UP:UnivariatePolynomialCategory R):
        [parts coordinates(x*b(i+m),b) for i in 1..rank()]$List(List R)
 
 @
+
 \section{category FRAMALG FramedAlgebra}
+
 <<category FRAMALG FramedAlgebra>>=
+import CommutativeRing
+import UnivariatePolynomialCategory
+import Vector
 )abbrev category FRAMALG FramedAlgebra
 ++ Author: Barry Trager
 ++ Date Created:
@@ -178,8 +191,15 @@ FramedAlgebra(R:CommutativeRing, UP:UnivariatePolynomialCategory R):
         +/[monomial(v.(i+1),i) for i in 0..#v-1]
 
 @
+
 \section{category MONOGEN MonogenicAlgebra}
+
 <<category MONOGEN MonogenicAlgebra>>=
+import CommutativeRing
+import UnivariatePolynomialCategory
+import FramedAlgebra
+import FullyRetractableTo
+import FullyLinearlyExplicitRingOver
 )abbrev category MONOGEN MonogenicAlgebra
 ++ Author: Barry Trager
 ++ Date Created:
@@ -256,8 +276,13 @@ MonogenicAlgebra(R:CommutativeRing, UP:UnivariatePolynomialCategory R):
        reduce(bc.coef1)
 
 @
+
 \section{package CPIMA CharacteristicPolynomialInMonogenicalAlgebra}
+
 <<package CPIMA CharacteristicPolynomialInMonogenicalAlgebra>>=
+import CommutativeRing
+import UnivariatePolynomialCategory
+import MonogenicAlgebra
 )abbrev package CPIMA CharacteristicPolynomialInMonogenicalAlgebra
 ++ Author: Claude Quitte
 ++ Date Created: 10/12/93
@@ -293,8 +318,13 @@ CharacteristicPolynomialInMonogenicalAlgebra(R : CommutativeRing,
        return resultant(P, X - XtoY(Qx))
 
 @
+
 \section{package NORMMA NormInMonogenicAlgebra}
+
 <<package NORMMA NormInMonogenicAlgebra>>=
+import GcdDomain
+import UnivariatePolynomialCategory
+import MonogenicAlgebra
 )abbrev package NORMMA NormInMonogenicAlgebra
 ++ Author: Manuel Bronstein
 ++ Date Created: 23 February 1995
@@ -333,7 +363,9 @@ NormInMonogenicAlgebra(R, PolR, E, PolE): Exports == Implementation where
       primitivePart resultant(p, defpol)
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

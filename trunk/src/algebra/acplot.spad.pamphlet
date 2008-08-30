@@ -1,16 +1,25 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra acplot.spad}
+\title{src/algebra acplot.spad}
 \author{Clifton J. Williamson}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{package REALSOLV RealSolvePackage}
+
 <<package REALSOLV RealSolvePackage>>=
+import PolynomialCategoryLifting
+import Integer
+import Float
+import Symbol
+import Fraction
+import Polynomial
+import FloatingRealPackage
 )abbrev package REALSOLV RealSolvePackage
 
 RealSolvePackage(): Exports == Implementation where
@@ -58,8 +67,22 @@ RealSolvePackage(): Exports == Implementation where
       realRoots(map(pi2rfi,lp)$ListFunctions2(P I,RFI),lv,eps)$SOLV
 
 @
+
 \section{domain ACPLOT PlaneAlgebraicCurvePlot}
+
 <<domain ACPLOT PlaneAlgebraicCurvePlot>>=
+import PlottablePlaneCurveCategory
+import Boolean
+import Integer
+import PositiveInteger
+import DoubleFloat
+import Float
+import Symbol
+import Polynomial
+import UnivariatePolynomial
+import SparseUnivariatePolynomial
+import Point
+import List
 --% PlaneAlgebraicCurvePlot
 ++ Plot a NON-SINGULAR plane algebraic curve p(x,y) = 0.
 ++ Author: Clifton J. Williamson

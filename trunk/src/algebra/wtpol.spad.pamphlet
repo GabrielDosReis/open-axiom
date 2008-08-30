@@ -4,13 +4,21 @@
 \title{\$SPAD/src/algebra wtpol.spad}
 \author{James Davenport}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain WP WeightedPolynomials}
+
 <<domain WP WeightedPolynomials>>=
+import Ring
+import OrderedSet
+import OrderedAbelianMonoidSup
+import PolynomialCategory
+import List
+import NonNegativeInteger
 )abbrev domain WP WeightedPolynomials
 ++ Author: James Davenport
 ++ Date Created:  17 April 1992
@@ -113,8 +121,18 @@ WeightedPolynomials(R:Ring,VarSet: OrderedSet, E:OrderedAbelianMonoidSup,
      w
 
 @
+
 \section{domain OWP OrdinaryWeightedPolynomials}
+
 <<domain OWP OrdinaryWeightedPolynomials>>=
+import Ring
+import Field
+import CommutativeRing
+import Algebra
+import Polynomial
+import Void
+import List
+import NonNegativeInteger
 )abbrev domain OWP OrdinaryWeightedPolynomials
 ++ Author: James Davenport
 ++ Date Created:  17 April 1992

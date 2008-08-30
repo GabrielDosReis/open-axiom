@@ -1,16 +1,20 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra weier.spad}
+\title{src/algebra weier.spad}
 \author{William H. Burge}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{package WEIER WeierstrassPreparation}
+
 <<package WEIER WeierstrassPreparation>>=
+import Field
+import NonNegativeInteger
 )abbrev package WEIER WeierstrassPreparation
 ++ Author:William H. Burge
 ++ Date Created:Sept 1988
