@@ -58,7 +58,7 @@ WeightedPolynomials(R:Ring,VarSet: OrderedSet, E:OrderedAbelianMonoidSup,
    if #vl ~= #wl then error "incompatible length lists in WeightedPolynomial"
    lookupList:=[[v,n] for v in vl for n in wl]
    -- local operation
-   innercoerce:(p,z) -> $
+   innercoerce: (P,Integer) -> $
    lookup:VarSet -> NonNegativeInteger
    lookup v ==
       l:=lookupList

@@ -1,16 +1,23 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra fortran.spad}
+\title{src/algebra fortran.spad}
 \author{Didier Pinchon, Mike Dewar, William Naylor}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain RESULT Result}
+
 <<domain RESULT Result>>=
+import Boolean
+import Symbol
+import OutputForm
+import Any
+import TableAggregate
 )abbrev domain RESULT Result
 ++ Author: Didier Pinchon and Mike Dewar
 ++ Date Created:  8 April 1994
@@ -39,6 +46,7 @@ Result():Exports==Implementation where
     finiteAggregate
 
   Implementation ==> Table(Symbol,Any) add
+    import SExpression
 
     -- Constant
     colon := ": "::Symbol::O
@@ -78,8 +86,13 @@ Result():Exports==Implementation where
     showScalarValues(b:Boolean):Boolean == showScalarValuesFlag := b
 
 @
+
 \section{domain FC FortranCode}
+
 <<domain FC FortranCode>>=
+import Void
+import List
+import Fraction
 )abbrev domain FC FortranCode 
 -- The FortranCode domain is used to represent operations which are to be
 -- translated into FORTRAN.

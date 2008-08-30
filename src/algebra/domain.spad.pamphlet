@@ -13,6 +13,7 @@
 
 \section{domain Category}
 <<domain CATEGORY Category>>=
+import CoercibleTo OutputForm
 )abbrev domain CATEGORY Category
 ++ Author: Gabriel Dos Reis
 ++ Date Create: February 16, 2008.
@@ -30,6 +31,9 @@ Category(): Public == Private where
 
 \section{domain Domain}
 <<domain DOMAIN Domain>>=
+import SetCategory
+import Void
+import ConstructorCall
 )abbrev domain DOMAIN Domain
 ++ Author: Gabriel Dos Reis
 ++ Date Create: October 18, 2007.

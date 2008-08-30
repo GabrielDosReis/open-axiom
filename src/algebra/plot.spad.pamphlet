@@ -572,8 +572,10 @@ Plot(): Exports == Implementation where
 \section{package PLOT1 PlotFunctions1}
 
 <<package PLOT1 PlotFunctions1>>=
+import ConvertibleTo InputForm
 import Symbol
-import Segment DoubleFloat
+import DoubleFloat
+import Segment
 import Plot
 )abbrev package PLOT1 PlotFunctions1
 ++ Authors: R.T.M. Bronstein, C.J. Williamson

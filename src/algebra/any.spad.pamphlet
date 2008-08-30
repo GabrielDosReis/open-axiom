@@ -87,6 +87,7 @@ Maybe(T: CoercibleTo OutputForm): Public == Private where
 \section{package NONE1 NoneFunctions1}
 
 <<package NONE1 NoneFunctions1>>=
+import Type
 import None
 )abbrev package NONE1 NoneFunctions1
 ++ Author:
