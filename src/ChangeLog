@@ -1,3 +1,8 @@
+2008-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/sockio-c.c (oa_open_local_client_stream_socket): Use
+	OPENAXIOM_AF_LOCAL, not AF_LOCAL.
+
 2008-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-driver.boot (initializeGlobalState): Parse --bootstrap.
