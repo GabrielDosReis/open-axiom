@@ -1,15 +1,17 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra drawopt.spad}
+\title{src/algebra drawopt.spad}
 \author{Stephen M. Watt, Jim Wen}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain DROPT DrawOption}
+
 <<domain DROPT DrawOption>>=
 )abbrev domain DROPT DrawOption
 ++ Author: Stephen Watt
@@ -222,6 +224,7 @@ DrawOption(): Exports == Implementation where
 \section{package DROPT1 DrawOptionFunctions1}
 
 <<package DROPT1 DrawOptionFunctions1>>=
+import Type
 import Symbol
 import List DrawOption
 )abbrev package DROPT1 DrawOptionFunctions1

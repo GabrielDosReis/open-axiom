@@ -60,6 +60,7 @@ InfiniteTuple(S:Type): Exports == Implementation where
 <<package ITFUN2 InfiniteTupleFunctions2>>=
 import Type
 import InfiniteTuple
+import Stream
 )abbrev package ITFUN2 InfiniteTupleFunctions2
 InfiniteTupleFunctions2(A:Type,B:Type): Exports == Implementation where
   ++ Functions defined on streams with entries in two sets.

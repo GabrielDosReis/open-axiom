@@ -1,16 +1,19 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra mkrecord.spad}
+\title{src/algebra mkrecord.spad}
 \author{The Axiom Team}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{package MKRECORD MakeRecord}
+
 <<package MKRECORD MakeRecord>>=
+import Type
 )abbrev package MKRECORD MakeRecord
 ++ Description:
 ++  MakeRecord is used internally by the interpreter to create record
@@ -27,7 +30,11 @@ MakeRecord(S: Type, T: Type): public == private where
 @
 
 \section{domain PAIR Pair}
+
 <<domain PAIR Pair>>=
+import Type
+import CoercibleTo OutputForm
+import SetCategory
 )abbrev domain PAIR Pair
 ++ Author: Gabriel Dos Reis
 ++ Date Created: January 16, 2008
