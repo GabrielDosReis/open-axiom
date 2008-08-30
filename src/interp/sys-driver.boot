@@ -189,6 +189,7 @@ initializeGlobalState() ==
   $buildingSystemAlgebra := 
     getOptionValue(Option '"system-algebra",%systemOptions())
   $verbose := getOptionValue(Option '"verbose",%systemOptions())
+  $bootStrapMode := getOptionValue(Option '"bootstrap",%systemOptions())
   GCMSG(NIL)
   if have_to then
     $superHash := MAKE_-HASHTABLE('UEQUAL)
