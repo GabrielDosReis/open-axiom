@@ -1,16 +1,20 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra aggcat2.spad}
+\title{src/algebra aggcat2.spad}
 \author{Robert S. Sutor}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{package FLAGG2 FiniteLinearAggregateFunctions2}
+
 <<package FLAGG2 FiniteLinearAggregateFunctions2>>=
+import Type
+import FiniteLinearAggregate
 )abbrev package FLAGG2 FiniteLinearAggregateFunctions2
 --% FiniteLinearAggregateFunctions2
 
@@ -125,8 +129,12 @@ FiniteLinearAggregateFunctions2(S, A, R, B):
             w
 
 @
+
 \section{package FSAGG2 FiniteSetAggregateFunctions2}
+
 <<package FSAGG2 FiniteSetAggregateFunctions2>>=
+import SetCategory
+import FiniteSetAggregate
 )abbrev package FSAGG2 FiniteSetAggregateFunctions2
 
 --% FiniteSetAggregateFunctions2

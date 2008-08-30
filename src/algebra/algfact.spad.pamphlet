@@ -1,16 +1,23 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra algfact.spad}
+\title{src/algebra algfact.spad}
 \author{Patrizia Gianni, Manuel Bronstein}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{package IALGFACT InnerAlgFactor}
+
 <<package IALGFACT InnerAlgFactor>>=
+import Field
+import UnivariatePolynomialCategory
+import CharacteristicZero
+import MonogenicAlgebra
+import Factored
 )abbrev package IALGFACT InnerAlgFactor
 ++ Factorisation in a simple algebraic extension
 ++ Author: Patrizia Gianni
@@ -98,8 +105,17 @@ InnerAlgFactor(F, UP, AlExt, AlPol): Exports == Implementation where
            UP, NUP))$CommuteUnivariatePolynomialCategory(F, UP, NUP)
 
 @
+
 \section{package SAEFACT SimpleAlgebraicExtensionAlgFactor}
+
 <<package SAEFACT SimpleAlgebraicExtensionAlgFactor>>=
+import UnivariatePolynomialCategory
+import CharacteristicZero
+import Field
+import MonogenicAlgebra
+import Fraction
+import Integer
+import Factored
 )abbrev package SAEFACT SimpleAlgebraicExtensionAlgFactor
 ++ Factorisation in a simple algebraic extension;
 ++ Author: Patrizia Gianni
@@ -126,8 +142,14 @@ SimpleAlgebraicExtensionAlgFactor(UP,SAE,UPA):Exports==Implementation where
                        )$InnerAlgFactor(Fraction Integer, UP, SAE, UPA)
 
 @
+
 \section{package RFFACT RationalFunctionFactor}
+
 <<package RFFACT RationalFunctionFactor>>=
+import UnivariatePolynomialCategory
+import Factored
+import Polynomial
+import Integer
 )abbrev package RFFACT RationalFunctionFactor
 ++ Factorisation in UP FRAC POLY INT
 ++ Author: Patrizia Gianni
@@ -165,8 +187,16 @@ RationalFunctionFactor(UP): Exports == Implementation where
                IndexedExponents SE,Integer,P))$FactoredFunctions2(P, UP)
 
 @
+
 \section{package SAERFFC SAERationalFunctionAlgFactor}
+
 <<package SAERFFC SAERationalFunctionAlgFactor>>=
+import UnivariatePolynomialCategory
+import Field
+import CharacteristicZero
+import Polynomial
+import Fraction
+import Integer
 )abbrev package SAERFFC SAERationalFunctionAlgFactor
 ++ Factorisation in UP SAE FRAC POLY INT
 ++ Author: Patrizia Gianni
@@ -193,8 +223,13 @@ SAERationalFunctionAlgFactor(UP, SAE, UPA): Exports == Implementation where
               )$InnerAlgFactor(Fraction Polynomial Integer, UP, SAE, UPA)
 
 @
+
 \section{package ALGFACT AlgFactor}
+
 <<package ALGFACT AlgFactor>>=
+import UnivariatePolynomialCategory
+import AlgebraicNumber
+import Boolean
 )abbrev package ALGFACT AlgFactor
 ++ Factorization of UP AN;
 ++ Author: Manuel Bronstein
@@ -297,7 +332,9 @@ AlgFactor(UP): Exports == Implementation where
                                  fc.exponent) for fc in factors fr]
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

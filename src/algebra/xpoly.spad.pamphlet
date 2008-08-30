@@ -1,16 +1,21 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra xpoly.spad}
+\title{src/algebra xpoly.spad}
 \author{Michel Petitot}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain OFMONOID OrderedFreeMonoid}
+
 <<domain OFMONOID OrderedFreeMonoid>>=
+import OrderedSet
+import OrderedMonoid
+import RetractableTo
 )abbrev domain OFMONOID OrderedFreeMonoid
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -162,8 +167,14 @@ OrderedFreeMonoid(S: OrderedSet): OFMcategory == OFMdefinition where
         mirror x == reverse(x)$Rep
 
 @
+
 \section{category FMCAT FreeModuleCat}
+
 <<category FMCAT FreeModuleCat>>=
+import Ring
+import SetCategory
+import BiModule
+import RetractableTo
 )abbrev category FMCAT FreeModuleCat
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -235,8 +246,12 @@ FreeModuleCat(R, Basis):Category == Exports where
         if R has CommutativeRing then Module(R)
 
 @
+
 \section{domain FM1 FreeModule1}
+
 <<domain FM1 FreeModule1>>=
+import Ring
+import OrderedSet
 )abbrev domain FM1 FreeModule1
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -337,8 +352,14 @@ FreeModule1(R:Ring,S:OrderedSet): FMcat == FMdef where
          0$R
 
 @
+
 \section{category XALG XAlgebra}
+
 <<category XALG XAlgebra>>=
+import Ring
+import BiModule
+import CommutativeRing
+import Algebra
 )abbrev category XALG XAlgebra
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -369,8 +390,14 @@ XAlgebra(R: Ring): Category ==
 --  coerce(x:R):% == x * 1$%
 
 @
+
 \section{category XFALG XFreeAlgebra}
+
 <<category XFALG XFreeAlgebra>>=
+import OrderedSet
+import Ring
+import XAlgebra
+import RetractableTo
 )abbrev category XFALG XFreeAlgebra
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -453,8 +480,12 @@ XFreeAlgebra(vl:OrderedSet,R:Ring):Category == Catdef where
        if R has noZeroDivisors then noZeroDivisors
 
 @
+
 \section{category XPOLYC XPolynomialsCat}
+
 <<category XPOLYC XPolynomialsCat>>=
+import OrderedSet
+import XFreeAlgebra
 )abbrev category XPOLYC XPolynomialsCat
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -485,8 +516,14 @@ XPolynomialsCat(vl:OrderedSet,R:Ring):Category == Export where
       ++  \spad{trunc(p,n)} returns the polynomial \spad{p} truncated at order \spad{n}.
 
 @
+
 \section{domain XPR XPolynomialRing}
+
 <<domain XPR XPolynomialRing>>=
+import Ring
+import OrderedMonoid
+import XAlgebra
+import FreeMonoidCat
 )abbrev domain XPR XPolynomialRing
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -644,7 +681,9 @@ XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
           x/r == inv(r)*x
 
 @
+
 \section{domain XDPOLY XDistributedPolynomial}
+
 Polynomial arithmetic with non-commutative variables has been improved
 by a contribution of Michel Petitot (University of Lille I, France).
 The domain constructor
@@ -652,7 +691,13 @@ The domain constructor
 representation for these polynomials. It is the non-commutative
 equivalent for the 
 {\bf DistributedMultivariatePolynomial} constructor.
+
 <<domain XDPOLY XDistributedPolynomial>>=
+import OrderedSet
+import Ring
+import FreeModuleCat
+import XPolynomialRing
+import XPolynomialsCat
 )abbrev domain XDPOLY XDistributedPolynomial
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -759,13 +804,19 @@ XDistributedPolynomial(vl:OrderedSet,R:Ring): XDPcat == XDPdef where
          return p.first.c * q.first.c + coef(p.rest,q.rest)
 
 @
+
 \section{domain XRPOLY XRecursivePolynomial}
 Polynomial arithmetic with non-commutative variables has been improved
 by a contribution of Michel Petitot (University of Lille I, France).
 The domain constructors {\bf XRecursivePolynomial} 
 provides a recursive for these polynomials. It is the non-commutative
 equivalents for the {\bf SparseMultivariatePolynomial} constructor.
+
 <<domain XRPOLY XRecursivePolynomial>>=
+import OrderedSet
+import Ring
+import XPolynomialsCat
+import XDistributedPolynomial
 )abbrev domain XRPOLY XRecursivePolynomial
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -1052,8 +1103,11 @@ XRecursivePolynomial(VarSet:OrderedSet,R:Ring):  Xcat == Xdef where
          sort_!(lv)
 
 @
+
 \section{domain XPOLY XPolynomial}
+
 <<domain XPOLY XPolynomial>>=
+import XRecursivePolynomial
 )abbrev domain XPOLY XPolynomial
 ++ Author: Michel Petitot petitot@lifl.fr
 ++ Date Created: 91
@@ -1078,7 +1132,9 @@ XRecursivePolynomial(VarSet:OrderedSet,R:Ring):  Xcat == Xdef where
 XPolynomial(R:Ring) == XRecursivePolynomial(Symbol, R)
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

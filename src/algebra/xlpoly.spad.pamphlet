@@ -4,13 +4,17 @@
 \title{\$SPAD/src/algebra xlpoly.spad}
 \author{Michel Petitot}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain MAGMA Magma}
+
 <<domain MAGMA Magma>>=
+import OrderedSet
+import RetractableTo
 )abbrev domain MAGMA Magma
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -152,13 +156,20 @@ Magma(VarSet:OrderedSet):Public == Private where
          lx < ly 
 
 @
+
 \section{domain LWORD LyndonWord}
+
 A function $f \epsilon \lbrace 0,1 \rbrace$ is called acyclic if
 $C(F)$ consists of $n$ different objects. The canonical representative
 of the orbit of an acyclic function is usually called a Lyndon Word \cite{1}.
 If $f$ is acyclic, then all elements in the orbit $C(f)$ are acyclic
 as well, and we call $C(f)$ an acyclic orbit. 
+
 <<domain LWORD LyndonWord>>=
+import OrderedSet
+import RetractableTo
+import Boolean
+import Magma
 )abbrev domain LWORD LyndonWord
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -319,8 +330,12 @@ LyndonWord(VarSet:OrderedSet):Public == Private where
            "append"/ [v.i for i in 1..n] 
 
 @
+
 \section{category LIECAT LieAlgebra}
+
 <<category LIECAT LieAlgebra>>=
+import CommutativeRing
+import Field
 )abbrev category LIECAT LieAlgebra
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -355,8 +370,13 @@ LieAlgebra(R: CommutativeRing): Category ==  Module(R) with
     if R has Field then x / r == inv(r)$R * x
 
 @
+
 \section{category FLALG FreeLieAlgebra}
+
 <<category FLALG FreeLieAlgebra>>=
+import OrderedSet
+import CommutativeRing
+import LieAlgebra
 )abbrev category FLALG FreeLieAlgebra
 ++ Author: Michel Petitot (petitot@lifl.fr)
 ++ Date Created: 91
@@ -415,8 +435,13 @@ FreeLieAlgebra(VarSet:OrderedSet, R:CommutativeRing) :Category == CatDef where
          ++ in \axiom{p}.
 
 @
+
 \section{package XEXPPKG XExponentialPackage}
+
 <<package XEXPPKG XExponentialPackage>>=
+import OrderedSet
+import XPolynomialsCat
+import NonNegativeInteger
 )abbrev package XEXPPKG XExponentialPackage
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -487,8 +512,15 @@ XExponentialPackage(R, VarSet, XPOLY): Public == Private where
            log(p1*q1, n)
 
 @
+
 \section{domain LPOLY LiePolynomial}
+
 <<domain LPOLY LiePolynomial>>=
+import OrderedSet
+import CommutativeRing
+import FreeLieAlgebra
+import FreeModuleCat
+import LyndonWord
 )abbrev domain LPOLY LiePolynomial
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -682,8 +714,13 @@ LiePolynomial(VarSet:OrderedSet, R:CommutativeRing) : Public == Private where
 --           mkNary("+" :: EX,le)
 
 @
+
 \section{domain PBWLB PoincareBirkhoffWittLyndonBasis}
+
 <<domain PBWLB PoincareBirkhoffWittLyndonBasis>>=
+import OrderedSet
+import RetractableTo
+import LyndonWord
 )abbrev domain PBWLB PoincareBirkhoffWittLyndonBasis
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -793,8 +830,12 @@ PoincareBirkhoffWittLyndonBasis(VarSet: OrderedSet): Public == Private where
        lx < ly
 
 @
+
 \section{domain XPBWPOLY XPBWPolynomial}
+
 <<domain XPBWPOLY XPBWPolynomial>>=
+import OrderedSet
+import CommutativeRing
 )abbrev domain XPBWPOLY XPBWPolynomial
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -1026,8 +1067,13 @@ XPBWPolynomial(VarSet:OrderedSet,R:CommutativeRing): XDPcat == XDPdef where
          +/ [t.c * mirror1(t.k) for t in p]
 
 @
+
 \section{domain LEXP LieExponentials}
+
 <<domain LEXP LieExponentials>>=
+import OrderedSet
+import CommutativeRing
+import Module
 )abbrev domain LEXP LieExponentials
 ++ Author: Michel Petitot (petitot@lifl.fr).
 ++ Date Created: 91
@@ -1162,7 +1208,9 @@ LieExponentials(VarSet, R, Order): XDPcat == XDPdef where
          lt pretend $
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.

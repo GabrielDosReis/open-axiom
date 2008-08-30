@@ -1,16 +1,20 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra ystream.spad}
+\title{src/algebra ystream.spad}
 \author{William Burge, Stephen M. Watt, Clifton J. Williamson}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{package YSTREAM ParadoxicalCombinatorsForStreams}
+
 <<package YSTREAM ParadoxicalCombinatorsForStreams>>=
+import Type
+import Stream
 )abbrev package YSTREAM ParadoxicalCombinatorsForStreams
 ++ Computation of fixed points of mappings on streams
 ++ Author: Burge, Watt (revised by Williamson)
@@ -51,6 +55,7 @@ ParadoxicalCombinatorsForStreams(A):Exports == Implementation where
       x
 
 @
+
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.

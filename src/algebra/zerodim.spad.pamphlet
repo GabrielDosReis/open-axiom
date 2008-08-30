@@ -1,16 +1,21 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra zerodim.spad}
+\title{src/algebra zerodim.spad}
 \author{Marc Moreno Maza}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{package FGLMICPK FGLMIfCanPackage}
+
 <<package FGLMICPK FGLMIfCanPackage>>=
+import GcdDomain
+import Symbol
+import List
 )abbrev package FGLMICPK FGLMIfCanPackage
 ++ Author: Marc Moreno Maza
 ++ Date Created: 08/02/1999
@@ -91,8 +96,15 @@ FGLMIfCanPackage(R,ls): Exports == Implementation where
        [dmpToP(q3)$poltopol for q3 in lq3]
 
 @
+
 \section{domain RGCHAIN RegularChain}
+
 <<domain RGCHAIN RegularChain>>=
+import GcdDomain
+import RegularTriangularSet
+import Symbol
+import Boolean
+import List
 )abbrev domain RGCHAIN RegularChain
 ++ Author: Marc Moreno Maza
 ++ Date Created: 01/1999
@@ -126,8 +138,13 @@ RegularChain(R,ls): Exports == Implementation where
   Implementation == RegularTriangularSet(R,E,V,P) 
 
 @
+
 \section{package LEXTRIPK LexTriangularPackage}
+
 <<package LEXTRIPK LexTriangularPackage>>=
+import GcdDomain
+import Symbol
+import List
 )abbrev package LEXTRIPK LexTriangularPackage
 ++ Author: Marc Moreno Maza
 ++ Date Created: 08/02/1999
@@ -351,8 +368,17 @@ LexTriangularPackage(R,ls): Exports == Implementation where
        squareFreeLexTriangular(bar::(List P),norm?)
 
 @
+
 \section{package IRURPK InternalRationalUnivariateRepresentationPackage}
+
 <<package IRURPK InternalRationalUnivariateRepresentationPackage>>=
+import EuclideanDomain
+import CharacteristicZero
+import OrderedAbelianMonoidSup
+import OrderedSet
+import RecursivePolynomialCategory
+import SquareFreeRegularTriangularSetCategory
+import List
 )abbrev package IRURPK InternalRationalUnivariateRepresentationPackage
 ++ Author: Marc Moreno Maza
 ++ Date Created: 01/1999
@@ -546,8 +572,14 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
        toSave
 
 @
+
 \section{package RURPK RationalUnivariateRepresentationPackage}
+
 <<package RURPK RationalUnivariateRepresentationPackage>>=
+import EuclideanDomain
+import CharacteristicZero
+import Symbol
+import List
 )abbrev package RURPK RationalUnivariateRepresentationPackage
 ++ Author: Marc Moreno Maza
 ++ Date Created: 01/1999
@@ -678,12 +710,18 @@ RationalUnivariateRepresentationPackage(R,ls): Exports == Implementation where
      rur(lp: List P): List RUR == rur(lp,true)
 
 @
+
 \section{package ZDSOLVE ZeroDimensionalSolvePackage}
 Based on triangular decompositions and the {\bf RealClosure} constructor,
 the pacakge {\bf ZeroDimensionalSolvePackage} provides operations for
 computing symbolically the real or complex roots of polynomial systems
 with finitely many solutions.
+
 <<package ZDSOLVE ZeroDimensionalSolvePackage>>=
+import OrderedRing
+import EuclideanDomain
+import CharacteristicZero
+import RealConstant
 )abbrev package ZDSOLVE ZeroDimensionalSolvePackage
 ++ Author: Marc Moreno Maza
 ++ Date Created: 23/01/1999
@@ -1139,7 +1177,9 @@ ZeroDimensionalSolvePackage(R,ls,ls2): Exports == Implementation where
        univariateSolve(lp,false,false,false)
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
