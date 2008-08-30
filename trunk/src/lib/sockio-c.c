@@ -250,7 +250,7 @@ oa_open_local_client_stream_socket(const char* path)
       return -1;
 
    memset(&addr, 0, sizeof addr);
-   addr.sun_family = AF_LOCAL;
+   addr.sun_family = OPENAXIOM_AF_LOCAL;
    strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
    if (connect(sock, (struct sockaddr*)&addr, sizeof addr) < 0) {
       close(sock);
