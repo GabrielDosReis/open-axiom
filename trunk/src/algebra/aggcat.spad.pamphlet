@@ -2684,9 +2684,6 @@ BitAggregate(): Category ==
     "not": % -> %
       ++ not(b) returns the logical {\em not} of bit aggregate 
       ++ \axiom{b}.
-    "^"  : % -> %
-      ++ ^ b returns the logical {\em not} of bit aggregate 
-      ++ \axiom{b}.
     nand : (%, %) -> %
       ++ nand(a,b) returns the logical {\em nand} of bit aggregates \axiom{a}
       ++ and \axiom{b}.
@@ -2705,7 +2702,6 @@ BitAggregate(): Category ==
 
  add
    not v      == map(_not, v)
-   _^ v	      == map(_not, v)
    _~(v)      == map(_~, v)
    _/_\(v, u) == map(_/_\, v, u)
    _\_/(v, u) == map(_\_/, v, u)

@@ -1,5 +1,41 @@
 2008-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/boolean.spad.pamphlet (Boolean): Remove definition of
+	operator ^.
+	* algebra/aggcat.spad.pamphlet (BitAggregate): Likewise.
+	* algebra/color.spad.pamphlet: Replace use of '^' as logical
+	negation by 'not'.
+	* algebra/ddfact.spad.pamphlet: Likewise.
+	* algebra/fortran.spad.pamphlet: Likewise.
+	* algebra/gaussfac.spad.pamphlet: Likewise.
+	* algebra/gbeuclid.spad.pamphlet: Likewise.
+	* algebra/gbintern.spad.pamphlet: Likewise.
+	* algebra/ghensel.spad.pamphlet: Likewise.
+	* algebra/groebsol.spad.pamphlet: Likewise.
+	* algebra/ideal.spad.pamphlet: Likewise.
+	* algebra/idecomp.spad.pamphlet: Likewise.
+	* algebra/indexedp.spad.pamphlet: Likewise.
+	* algebra/listgcd.spad.pamphlet: Likewise.
+	* algebra/mfinfact.spad.pamphlet: Likewise.
+	* algebra/modgcd.spad.pamphlet: Likewise.
+	* algebra/multfact.spad.pamphlet: Likewise.
+	* algebra/multsqfr.spad.pamphlet: Likewise.
+	* algebra/newpoint.spad.pamphlet: Likewise.
+	* algebra/npcoef.spad.pamphlet: Likewise.
+	* algebra/permgrps.spad.pamphlet: Likewise.
+	* algebra/pgcd.spad.pamphlet: Likewise.
+	* algebra/pleqn.spad.pamphlet: Likewise.
+	* algebra/qalgset.spad.pamphlet: Likewise.
+	* algebra/radeigen.spad.pamphlet: Likewise.
+	* algebra/rep2.spad.pamphlet: Likewise.
+	* algebra/solverad.spad.pamphlet: Likewise.
+	* algebra/space.spad.pamphlet: Likewise.
+	* algebra/view2D.spad.pamphlet: Likewise.
+	* algebra/strap/: Update cached Lisp translateion
+	* share/algebra/: Update databases.
+
+2008-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/sockio-c.c (oa_open_local_client_stream_socket): Use
 	OPENAXIOM_AF_LOCAL, not AF_LOCAL.
 
