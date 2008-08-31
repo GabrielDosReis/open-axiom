@@ -1,5 +1,9 @@
 2008-08-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/stream.spad.pamphlet (Stream): Remove duplicate of concat.
+	* algebra/naalgc.spad.pamphlet (FramedNonAssociativeAlgebra): 
+	disambiguate coordinates.
+
 	* algebra/aggcat.spad.pamphlet (FiniteLinearAggregate): Remove
 	duplicate definition of reverse.
 	* algebra/algcat.spad.pamphlet (FramedAlgebra): Remove duplicate
@@ -10,6 +14,7 @@
 	definition of asinhIfCan, acoshIfCan, asechIfCan, acshIfCan.
 	* algebra/equation2.spad.pamphlet (Equation): Remove duplicate
 	definition of *: (S,%) -> %.
+	Remove duplicate of factorAndSplit.
 	* algebra/fortpak.spad.pamphlet (MultiVariableCalculusFunctions):
 	Remove duplicate definition of jacobian.
 	* algebra/tree.spad.pamphlet (BinaryTree): Remove duplicate
