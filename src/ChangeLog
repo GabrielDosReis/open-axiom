@@ -1,3 +1,20 @@
+2008-08-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/aggcat.spad.pamphlet (FiniteLinearAggregate): Remove
+	duplicate definition of reverse.
+	* algebra/algcat.spad.pamphlet (FramedAlgebra): Remove duplicate
+	definition of regularRepresentation.  Explicitly disambiguate
+	the argument of coodinates.
+	* algebra/efupxs.spad.pamphlet
+	(ElementaryFunctionsUnivariatePuiseuxSeries):  Remove duplicate
+	definition of asinhIfCan, acoshIfCan, asechIfCan, acshIfCan.
+	* algebra/equation2.spad.pamphlet (Equation): Remove duplicate
+	definition of *: (S,%) -> %.
+	* algebra/fortpak.spad.pamphlet (MultiVariableCalculusFunctions):
+	Remove duplicate definition of jacobian.
+	* algebra/tree.spad.pamphlet (BinaryTree): Remove duplicate
+	definition of empty.
+
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 

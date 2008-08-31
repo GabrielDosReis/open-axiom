@@ -382,7 +382,6 @@ BinaryTree(S: SetCategory): Exports == Implementation where
      Rep := List Tree S
      t1 = t2 == (t1::Rep) =$Rep (t2::Rep)
      empty()== [] pretend %
-     empty()== [] pretend %
      node(l,v,r) == cons(tree(v,l:Rep),r:Rep)
      binaryTree(l,v,r) == node(l,v,r)
      binaryTree(v:S) == node(empty(),v,empty())
