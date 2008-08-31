@@ -154,8 +154,7 @@ FramedAlgebra(R:CommutativeRing, UP:UnivariatePolynomialCategory R):
    convert(v:Vector R):%   == represents(v)
    traceMatrix()           == traceMatrix basis()
    discriminant()          == discriminant basis()
-   regularRepresentation x == regularRepresentation(x, basis())
-   coordinates x           == coordinates(x, basis())
+   coordinates(x:%)        == coordinates(x, basis())
    represents x            == represents(x, basis())
 
    coordinates(v:Vector %) ==
