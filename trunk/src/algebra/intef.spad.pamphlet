@@ -229,7 +229,7 @@ ElementaryIntegration(R, F): Exports == Implementation where
 
     lfextendedint(f, x, g) ==
       empty?(l := varselect(kernels f, x)) => [x::F * f, 0]
-      symbolIfCan(k := kmax(l := union(l, varselect(kernels g, x))))
+      symbolIfCan(k := kmax(l))
         case SE =>
           map(multivariate(#1, k), extendedint(univariate(f, k),
                                                univariate(g, k)))
@@ -240,7 +240,7 @@ ElementaryIntegration(R, F): Exports == Implementation where
 
     lflimitedint(f, x, lu) ==
       empty?(l := varselect(kernels f, x)) => [x::F * f, empty()]
-      symbolIfCan(k := kmax(l := union(l, vark(lu, x)))) case SE =>
+      symbolIfCan(k := kmax(l)) case SE =>
        map(multivariate(#1, k), limitedint(univariate(f, k),
                                         [univariate(u, k) for u in lu]))
       is?(k, "exp"::SE) => explimint(f, x, k, lu)
