@@ -1,18 +1,22 @@
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+	    Alfredo Portes  <doyenatccny@gmail.com>
 
 	* hyper/pages/util.ht: Restore commented commands.
 
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+	    Alfredo Portes  <doyenatccny@gmail.com>
 
-    * algebra/intef.spad.pamphlet: Fix Bug AW308.
-
-2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
-
-	* algebra/gaussian.spad.pamphlet: Fix Bug AW15.
+        * algebra/intef.spad.pamphlet: Fix Bug AW/308.
 
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+	    Alfredo Portes  <doyenatccny@gmail.com>
 
-	* algebra/manip.spad.pamphlet: Fix Bug AW278.
+	* algebra/gaussian.spad.pamphlet: Fix Bug AW/15.
+
+2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+	    Alfredo Portes  <doyenatccny@gmail.com>
+
+	* algebra/manip.spad.pamphlet: Fix Bug AW/278.
 
 2008-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
