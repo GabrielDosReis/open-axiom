@@ -367,10 +367,18 @@ ComplexCategory(R:CommutativeRing): Category ==
            argument x == atan2loc(imag x, real x)
 
          else
-           -- Not ordered so dictate two quadrants
-           argument x ==
-             zero? real x => pi()$R * half
-             atan(imag(x) * recip(real x)::R)
+           if R has RadicalCategory then
+             argument x ==
+               n1 := sqrt(norm(x))
+               x1 := real(x) + n1
+               (2::R)*atan(imag(x) * recip(x1)::R)
+
+           else
+             -- Emulate sqrt using exp and log
+             argument x ==
+               n1 := exp(half*log(norm(x)))
+               x1 := real(x) + n1
+               (2::R)*atan(imag(x) * recip(x1)::R)
 
          pi()  == pi()$R :: %
 

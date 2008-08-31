@@ -1,5 +1,9 @@
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 
+	* algebra/gaussian.spad.pamphlet: Fix Bug AW15.
+
+2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
 	* algebra/manip.spad.pamphlet: Fix Bug AW278.
 
 2008-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
