@@ -624,10 +624,13 @@ TranscendentalManipulations(R, F): Exports == Implementation where
         -- like to combine it with a log term.
         terms :List F := [simplifyLog(term) for term in termList::List(F)]
         exprs :List F := []
-        for i in 1..#terms repeat
-          if retractIfCan(terms.i)@Union(FPR,"failed") case FPR then
-            exprs := cons(terms.i,exprs)
-            terms := delete!(terms,i)
+        nterms :List F := []
+        for term in terms repeat
+          if retractIfCan(term)@Union(FPR,"failed") case FPR then
+            exprs := cons(term, exprs)
+          else
+            nterms := cons(term, nterms)
+        terms := nterms
         if not empty? exprs then
           foundLog := false
           i : NonNegativeInteger := 0
