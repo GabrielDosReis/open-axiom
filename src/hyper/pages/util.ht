@@ -432,11 +432,9 @@ The page you requested was not found in the \HyperName{} database.
 % redundant defns for system commands
 \newcommand{\syscom}[1]{\lispdownlink{)#1}{(|syscomPage| '|#1|)}}
 %
-% 20030110000 tpd added a leading open paren
-\newcommand{\spadsyscom}[1]{){\tt #1}}
-% 20030110000 tpd these two commands are never used
-%\newcommand{\spadcmd}[1]{\spadsyscom{#1}}
-%\newcommand{\spadsys}[1]{\spadsyscom{#1}}
+\newcommand{\spadsyscom}[1]{{\tt #1}}
+\newcommand{\spadcmd}[1]{\spadsyscom{#1}}
+\newcommand{\spadsys}[1]{\spadsyscom{#1}}
 
 
 % Following macros should be phased out in favor of ones above:
