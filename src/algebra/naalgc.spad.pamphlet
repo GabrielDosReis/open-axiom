@@ -1199,7 +1199,7 @@ FramedNonAssociativeAlgebra(R:CommutativeRing):
     rightDiscriminant()     == rightDiscriminant basis()
     leftRegularRepresentation x == leftRegularRepresentation(x, basis())
     rightRegularRepresentation x == rightRegularRepresentation(x, basis())
-    coordinates x           == coordinates(x, basis())
+    coordinates(x: %)       == coordinates(x, basis())
     represents(v:Vector R):%== represents(v, basis())
 
     coordinates(v:Vector %) ==

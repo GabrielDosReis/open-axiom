@@ -886,7 +886,7 @@ Stream(S): Exports == Implementation where
       concat(frst x,concat(rst x,s))
 
     concat(x:%,y:%) == delay
-      empty? x => copy y
+      empty? x => y
       concat(frst x,concat(rst x, y))
 
     concat l == delay
@@ -1097,10 +1097,6 @@ Stream(S): Exports == Implementation where
     gen:(S -> S,S) -> %
     gen(f,s) == delay(ss:=f s; concat(ss, gen(f,ss)))
     generate(f,s)==concat(s,gen(f,s))
-
-    concat(x:%,y:%) ==delay
-      empty? x => y
-      concat(frst x,concat(rst x,y))
 
     swhilee:(S -> Boolean,%) -> %
     swhilee(p,x) == delay
