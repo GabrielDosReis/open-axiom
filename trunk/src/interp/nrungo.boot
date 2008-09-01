@@ -65,6 +65,11 @@ compiledLookup(op,sig,dollar) ==
 --called by coerceByFunction, evalForm, findEqualFun, findUniqueOpInDomain,
 --  getFunctionFromDomain, optDeltaEntry, retractByFunction
   if not VECP dollar then dollar := NRTevalDomain dollar
+  -- "^" is an alternate name for "**" in OpenAxiom libraries.
+  -- ??? When, we get to support Aldor libraries and the equivalence
+  -- ??? does not hold, we may want to do the reverse lookup too.
+  -- ??? See compiledLookupCheck below.
+  if op = "^" then op := "**"
   basicLookup(op,sig,dollar,dollar)
 
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
@@ -80,12 +85,8 @@ compiledLookupCheck(op,sig,dollar) ==
   fn := compiledLookup(op,sig,dollar)
 
   -- NEW COMPILER COMPATIBILITY ON
-
-  if      (fn = nil)  and (op = "^") then
-    fn := compiledLookup("**",sig,dollar)
-  else if (fn = nil)  and (op = "**") then
+  if (fn = nil)  and (op = "**") then
     fn := compiledLookup("^",sig,dollar)
-
   -- NEW COMPILER COMPATIBILITY OFF
 
   fn = nil =>

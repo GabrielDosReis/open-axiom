@@ -17,7 +17,6 @@
                                  ((|sample| ($) |constant|) T)
                                  ((|one?| ((|Boolean|) $)) T)
                                  ((** ($ $ (|NonNegativeInteger|))) T)
-                                 ((^ ($ $ (|NonNegativeInteger|))) T)
                                  ((|recip| ((|Union| $ "failed") $)) T))
                                NIL
                                '((|NonNegativeInteger|) (|Boolean|))

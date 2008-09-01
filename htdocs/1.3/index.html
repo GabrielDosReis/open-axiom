@@ -69,6 +69,15 @@
 
   <h4 name="1.3.0-changes-comp">2.1.2. Compiler</h4>
     <ul>
+      <li>The compiler now treats <code>^</code> as alias for <code>**</code>.
+          Previously, it was an informal understanding that the operator
+          <code>^</code> (which is not documented in the Axiom Book) acts
+          like the exponentiation operator <code>**</code> (described 
+          documented in the Axiom Book).  However, that was not mechanically
+          enforced and library writers had to remember and offer duplicate
+          definitions.  Those ad hoc methods are no longer needed:  The 
+          compiler systematically make them synonymous.
+      </li>
     </ul>
 
   <h4 name="1.3.0-changes-alg">2.1.3. Algebra</h4>

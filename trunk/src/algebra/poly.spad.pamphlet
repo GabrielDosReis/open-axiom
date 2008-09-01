@@ -294,9 +294,6 @@ PolynomialRing(R:Ring,E:OrderedAbelianMonoid): T == C
 --                  -- reduces both time and space [Abbott/Bradford/Davenport]
        if R has CommutativeRing  then
          p ** np == p ** (np pretend NonNegativeInteger)
-         p ^ np  == p ** (np pretend NonNegativeInteger)
-         p ^ nn  == p ** nn
-            
 
          p ** nn  ==
             null p => 0
@@ -434,8 +431,6 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
 
    if R has FieldOfPrimeCharacteristic  then 
          p ** np == p ** (np pretend NonNegativeInteger)
-         p ^ np  == p ** (np pretend NonNegativeInteger)
-         p ^ n  == p ** n
          p ** n  ==
             null p => 0
             zero? n => 1

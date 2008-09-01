@@ -19,7 +19,6 @@
                        (|Join| (|EntireRing|) (|Algebra| '#1#)
                                (|mkCategory| '|domain|
                                    '(((** ($ $ (|Integer|))) T)
-                                     ((^ ($ $ (|Integer|))) T)
                                      ((|inv| ($ $)) T))
                                    NIL '((|Integer|)) NIL)))
                    |DivisionRing|)

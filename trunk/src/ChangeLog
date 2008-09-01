@@ -1,3 +1,45 @@
+2008-09-01  Martin Rubey  <martin.rubey@univie.ac.at>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/431
+	* algebra/ore.spad.pamphlet (SpareUnivariateSkewPolynomial):
+	Implement **.
+
+2008-09-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Make ^ an alias for **.
+	* interp/postpar.boot (postAtom): Replace "^" with "**".
+	* interp/format.boot (reportOpSymbol): Announce that "^" is an
+	alias for "**".
+	* interp/nrungo.boot (compiledLookup): Be sure to look for "**"
+	when operation is "^".
+	* interp/define.boot (noteCapsuleFunctionDefinition): New.
+	(clearCapsuleFunctionTable): Likewise.
+	(noteExport): Likewise.
+	(clearExportsTable): Likewise.
+	(compDefineCapsuleFunction): Rename "^" to "**".  Take a note
+	of the capsule function being compiled.
+	(compCapsule): Clear previous capsule functions table.
+	(doItIf): Keep track of predicate validity.
+	(compCategory): Clear previous exports table.
+	(compCategoryItem): Take notes of declared attributes and signatures.
+	* algebra/catdef.spad.pamphlet (DivisionRing): Remove duplicate
+	definition for "^".
+	(Group): Likewise.
+	(Monoid): Likewise.
+	(SemiGroup): Likewise.
+	* algebra/poly.spad.pamphlet (PolynomialRing): Remove duplicate
+	definitins of "^".
+	(SparseUnivariatePolynomial): Likewise.
+	* algebra/multpoly.spad.pamphlet (SparseMultivariatePolynomial):
+	Remove duplicate definitions for "^".
+	* algebra/interval.spad.pamphlet (Interval): Remove duplicate
+	definition for "^".
+	* algebra/curve.spad.pamphlet (FunctionFieldCategory): Remove
+	duplicate declaration for represents.
+	* algebra/strap/: Update cached Lisp translations.
+	* share/algebra: Update databases.
+
 2008-08-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/stream.spad.pamphlet (Stream): Remove duplicate of concat.
