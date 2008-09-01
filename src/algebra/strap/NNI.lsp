@@ -68,13 +68,13 @@
              |NNI;shift;$I$;2| (|Union| $ '"failed")
              |NNI;subtractIfCan;2$U;3|
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
-             (|PositiveInteger|) (|Boolean|) (|NonNegativeInteger|)
-             (|SingleInteger|) (|String|) (|OutputForm|))
+             (|PositiveInteger|) (|NonNegativeInteger|) (|Boolean|)
+             (|String|) (|OutputForm|) (|SingleInteger|))
           '#(~= 0 |zero?| 6 |sup| 11 |subtractIfCan| 17 |shift| 23
              |sample| 29 |rem| 33 |recip| 39 |random| 44 |quo| 49
              |one?| 55 |min| 60 |max| 66 |latex| 72 |hash| 77 |gcd| 82
-             |exquo| 88 |divide| 94 |coerce| 100 ^ 105 |Zero| 117 |One|
-             121 >= 125 > 131 = 137 <= 143 < 149 + 155 ** 161 * 173)
+             |exquo| 88 |divide| 94 |coerce| 100 |Zero| 105 |One| 109
+             >= 113 > 119 = 125 <= 131 < 137 + 143 ** 149 * 161)
           '(((|commutative| "*") . 0))
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(NIL NIL NIL NIL NIL |Monoid&| |AbelianMonoid&|
@@ -88,19 +88,18 @@
                                (|AbelianMonoid|) (|OrderedSet|)
                                (|SemiGroup|) (|AbelianSemiGroup|)
                                (|SetCategory|) (|BasicType|)
-                               (|CoercibleTo| 16))
+                               (|CoercibleTo| 15))
                             (|makeByteWordVec2| 16
-                                '(2 0 12 0 0 1 1 0 12 0 1 2 0 0 0 0 6 2
+                                '(2 0 13 0 0 1 1 0 13 0 1 2 0 0 0 0 6 2
                                   0 8 0 0 9 2 0 0 0 5 7 0 0 0 1 2 0 0 0
                                   0 1 1 0 8 0 1 1 0 0 0 1 2 0 0 0 0 1 1
-                                  0 12 0 1 2 0 0 0 0 1 2 0 0 0 0 1 1 0
-                                  15 0 1 1 0 14 0 1 2 0 0 0 0 1 2 0 8 0
-                                  0 1 2 0 10 0 0 1 1 0 16 0 1 2 0 0 0
-                                  11 1 2 0 0 0 13 1 0 0 0 1 0 0 0 1 2 0
-                                  12 0 0 1 2 0 12 0 0 1 2 0 12 0 0 1 2
-                                  0 12 0 0 1 2 0 12 0 0 1 2 0 0 0 0 1 2
-                                  0 0 0 11 1 2 0 0 0 13 1 2 0 0 0 0 1 2
-                                  0 0 13 0 1 2 0 0 11 0 1)))))
+                                  0 13 0 1 2 0 0 0 0 1 2 0 0 0 0 1 1 0
+                                  14 0 1 1 0 16 0 1 2 0 0 0 0 1 2 0 8 0
+                                  0 1 2 0 10 0 0 1 1 0 15 0 1 0 0 0 1 0
+                                  0 0 1 2 0 13 0 0 1 2 0 13 0 0 1 2 0
+                                  13 0 0 1 2 0 13 0 0 1 2 0 13 0 0 1 2
+                                  0 0 0 0 1 2 0 0 0 11 1 2 0 0 0 12 1 2
+                                  0 0 0 0 1 2 0 0 12 0 1 2 0 0 11 0 1)))))
           '|lookupComplete|)) 
 
 (SETQ |$CategoryFrame|
@@ -117,11 +116,9 @@
                ((|quo| ($ $ $)) T (ELT $ NIL))
                ((* ($ $ $)) T (ELT $ NIL))
                ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
-               ((^ ($ $ (|PositiveInteger|))) T (ELT $ NIL))
                ((|One| ($)) T (CONST $ NIL))
                ((|one?| ((|Boolean|) $)) T (ELT $ NIL))
                ((** ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
-               ((^ ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
                ((|recip| ((|Union| $ "failed") $)) T (ELT $ NIL))
                ((|sup| ($ $ $)) T (ELT $ 6))
                ((|subtractIfCan| ((|Union| $ "failed") $ $)) T

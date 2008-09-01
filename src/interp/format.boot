@@ -171,6 +171,10 @@ substInOrder(alist,x) ==
   x
 
 reportOpSymbol op1 ==
+  -- Don't forget that "^" is another name for "**"
+  if op1 = "^" then
+    sayMessage ['"  ",op1, '" is another name for", :bright '"**"]
+    op1 := "**"
   op := (STRINGP op1 => INTERN op1; op1)
   modemaps := getAllModemapsFromDatabase(op,nil)
   null modemaps =>

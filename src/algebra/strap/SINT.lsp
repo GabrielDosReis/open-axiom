@@ -332,17 +332,17 @@
              (|Record| (|:| |unit| $) (|:| |canonical| $)
                  (|:| |associate| $))
              |SINT;unitNormal;$R;54| (|Fraction| 12)
-             (|Union| 86 '"failed") (|Union| $ '"failed") (|Float|)
-             (|DoubleFloat|) (|Pattern| 12) (|PatternMatchResult| 12 $)
-             (|InputForm|) (|Union| 12 '"failed") (|List| $)
+             (|Union| 86 '"failed") (|DoubleFloat|)
+             (|Union| $ '"failed") (|Float|)
+             (|PatternMatchResult| 12 $) (|Pattern| 12) (|InputForm|)
+             (|Union| 12 '"failed") (|List| $) (|Union| 95 '"failed")
              (|Record| (|:| |coef| 95) (|:| |generator| $))
-             (|Union| 95 '"failed")
+             (|Record| (|:| |coef1| $) (|:| |coef2| $))
+             (|Union| 98 '"failed")
              (|Record| (|:| |coef1| $) (|:| |coef2| $)
                  (|:| |generator| $))
-             (|Record| (|:| |coef1| $) (|:| |coef2| $))
-             (|Union| 99 '"failed") (|Factored| $)
-             (|SparseUnivariatePolynomial| $) (|PositiveInteger|)
-             (|SingleInteger|))
+             (|Factored| $) (|SparseUnivariatePolynomial| $)
+             (|PositiveInteger|) (|SingleInteger|))
           '#(~= 58 ~ 64 |zero?| 69 |xor| 74 |unitNormal| 80
              |unitCanonical| 85 |unit?| 90 |symmetricRemainder| 95
              |subtractIfCan| 101 |submod| 107 |squareFreePart| 114
@@ -362,9 +362,9 @@
              |divide| 419 |differentiate| 425 |dec| 436 |copy| 441
              |convert| 446 |coerce| 471 |characteristic| 491 |bit?| 495
              |binomial| 501 |base| 507 |associates?| 511 |addmod| 517
-             |abs| 524 ^ 529 |\\/| 541 |Zero| 547 |Or| 551 |One| 557
-             |OMwrite| 561 |Not| 585 D 590 |And| 601 >= 607 > 613 = 619
-             <= 625 < 631 |/\\| 637 - 643 + 654 ** 660 * 672)
+             |abs| 524 |\\/| 529 |Zero| 535 |Or| 539 |One| 545
+             |OMwrite| 549 |Not| 573 D 578 |And| 589 >= 595 > 601 = 607
+             <= 613 < 619 |/\\| 625 - 631 + 642 ** 648 * 660)
           '((|noetherian| . 0) (|canonicalsClosed| . 0)
             (|canonical| . 0) (|canonicalUnitNormal| . 0)
             (|multiplicativeValuation| . 0) (|noZeroDivisors| . 0)
@@ -407,10 +407,10 @@
                                (|OrderedSet|) (|AbelianSemiGroup|)
                                (|SemiGroup|) (|Logic|) (|RealConstant|)
                                (|SetCategory|) (|OpenMath|)
-                               (|ConvertibleTo| 89)
                                (|ConvertibleTo| 90)
+                               (|ConvertibleTo| 88)
                                (|CombinatorialFunctionCategory|)
-                               (|ConvertibleTo| 91)
+                               (|ConvertibleTo| 92)
                                (|ConvertibleTo| 93)
                                (|RetractableTo| 12)
                                (|ConvertibleTo| 12) (|BasicType|)
@@ -422,42 +422,41 @@
                                   12 29 0 30 1 0 0 12 33 2 0 22 0 0 1 1
                                   0 0 0 41 1 0 22 0 65 2 0 0 0 0 48 1 0
                                   84 0 85 1 0 0 0 1 1 0 22 0 1 2 0 0 0
-                                  0 1 2 0 88 0 0 1 3 0 0 0 0 0 74 1 0 0
+                                  0 1 2 0 89 0 0 1 3 0 0 0 0 0 74 1 0 0
                                   0 1 1 0 101 0 1 2 0 22 0 0 1 1 0 12 0
                                   1 2 0 0 0 0 71 0 0 0 1 1 0 94 0 1 1 0
-                                  12 0 1 2 0 0 0 0 59 1 0 26 27 28 2 0
-                                  77 27 78 79 1 0 88 0 1 1 0 87 0 1 1 0
-                                  22 0 1 1 0 86 0 1 1 0 0 0 83 0 0 0 82
-                                  2 0 0 0 0 58 1 0 96 95 1 1 0 22 0 1 3
+                                  12 0 1 2 0 0 0 0 59 2 0 77 27 78 79 1
+                                  0 26 27 28 1 0 89 0 1 1 0 87 0 1 1 0
+                                  22 0 1 1 0 86 0 1 0 0 0 82 1 0 0 0 83
+                                  2 0 0 0 0 58 1 0 97 95 1 1 0 22 0 1 3
                                   0 0 0 0 0 1 2 0 0 0 0 80 1 0 22 0 1 2
-                                  0 0 0 0 1 3 0 92 0 91 92 1 1 0 22 0
-                                  66 1 0 22 0 64 1 0 0 0 42 1 0 88 0 1
-                                  1 0 22 0 75 2 0 97 95 0 1 3 0 0 0 0 0
+                                  0 0 0 0 1 3 0 91 0 92 91 1 1 0 22 0
+                                  66 1 0 22 0 64 1 0 0 0 42 1 0 89 0 1
+                                  1 0 22 0 75 2 0 96 95 0 1 3 0 0 0 0 0
                                   72 0 0 0 39 2 0 0 0 0 68 0 0 0 38 2 0
-                                  0 0 0 67 1 0 0 0 1 1 0 0 0 70 1 0 0
-                                  95 1 2 0 0 0 0 1 1 0 10 0 1 2 0 0 0 0
-                                  1 0 0 0 1 1 0 0 0 50 1 0 0 0 69 1 0
-                                  104 0 1 2 0 102 102 102 1 1 0 0 95 1
-                                  2 0 0 0 0 62 1 0 0 0 1 1 0 101 0 1 2
-                                  0 98 0 0 1 3 0 100 0 0 0 1 2 0 88 0 0
-                                  1 2 0 97 95 0 1 1 0 22 0 1 1 0 56 0 1
-                                  2 0 60 0 0 61 1 0 0 0 1 2 0 0 0 56 1
-                                  1 0 0 0 51 1 0 0 0 1 1 0 89 0 1 1 0
-                                  90 0 1 1 0 91 0 1 1 0 93 0 1 1 0 12 0
-                                  32 1 0 0 12 81 1 0 0 0 1 1 0 0 12 81
-                                  1 0 29 0 31 0 0 56 1 2 0 22 0 0 1 2 0
-                                  0 0 0 1 0 0 0 37 2 0 22 0 0 1 3 0 0 0
-                                  0 0 73 1 0 0 0 63 2 0 0 0 56 1 2 0 0
-                                  0 103 1 2 0 0 0 0 44 0 0 0 35 2 0 0 0
-                                  0 47 0 0 0 36 3 0 7 8 0 22 25 2 0 10
-                                  0 22 23 2 0 7 8 0 24 1 0 10 0 21 1 0
-                                  0 0 45 1 0 0 0 1 2 0 0 0 56 1 2 0 0 0
-                                  0 46 2 0 22 0 0 1 2 0 22 0 0 1 2 0 22
-                                  0 0 40 2 0 22 0 0 1 2 0 22 0 0 49 2 0
-                                  0 0 0 43 1 0 0 0 52 2 0 0 0 0 54 2 0
-                                  0 0 0 53 2 0 0 0 56 57 2 0 0 0 103 1
-                                  2 0 0 0 0 55 2 0 0 12 0 34 2 0 0 56 0
-                                  1 2 0 0 103 0 1)))))
+                                  0 0 0 67 1 0 0 0 1 1 0 0 0 70 2 0 0 0
+                                  0 1 1 0 0 95 1 1 0 10 0 1 2 0 0 0 0 1
+                                  0 0 0 1 1 0 0 0 50 1 0 0 0 69 1 0 104
+                                  0 1 2 0 102 102 102 1 2 0 0 0 0 62 1
+                                  0 0 95 1 1 0 0 0 1 1 0 101 0 1 3 0 99
+                                  0 0 0 1 2 0 100 0 0 1 2 0 89 0 0 1 2
+                                  0 96 95 0 1 1 0 22 0 1 1 0 56 0 1 2 0
+                                  60 0 0 61 1 0 0 0 1 2 0 0 0 56 1 1 0
+                                  0 0 51 1 0 0 0 1 1 0 88 0 1 1 0 90 0
+                                  1 1 0 93 0 1 1 0 92 0 1 1 0 12 0 32 1
+                                  0 0 12 81 1 0 0 12 81 1 0 0 0 1 1 0
+                                  29 0 31 0 0 56 1 2 0 22 0 0 1 2 0 0 0
+                                  0 1 0 0 0 37 2 0 22 0 0 1 3 0 0 0 0 0
+                                  73 1 0 0 0 63 2 0 0 0 0 44 0 0 0 35 2
+                                  0 0 0 0 47 0 0 0 36 3 0 7 8 0 22 25 2
+                                  0 10 0 22 23 2 0 7 8 0 24 1 0 10 0 21
+                                  1 0 0 0 45 1 0 0 0 1 2 0 0 0 56 1 2 0
+                                  0 0 0 46 2 0 22 0 0 1 2 0 22 0 0 1 2
+                                  0 22 0 0 40 2 0 22 0 0 1 2 0 22 0 0
+                                  49 2 0 0 0 0 43 1 0 0 0 52 2 0 0 0 0
+                                  54 2 0 0 0 0 53 2 0 0 0 56 57 2 0 0 0
+                                  103 1 2 0 0 0 0 55 2 0 0 12 0 34 2 0
+                                  0 56 0 1 2 0 0 103 0 1)))))
           '|lookupComplete|)) 
 
 (SETQ |$CategoryFrame|
@@ -603,11 +602,9 @@
                ((|One| ($)) T (CONST $ 36))
                ((|one?| ((|Boolean|) $)) T (ELT $ 66))
                ((** ($ $ (|NonNegativeInteger|))) T (ELT $ 57))
-               ((^ ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
                ((|recip| ((|Union| $ "failed") $)) T (ELT $ NIL))
                ((* ($ $ $)) T (ELT $ 55))
                ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
-               ((^ ($ $ (|PositiveInteger|))) T (ELT $ NIL))
                ((* ($ (|Integer|) $)) T (ELT $ 34))
                ((- ($ $ $)) T (ELT $ 54)) ((- ($ $)) T (ELT $ 52))
                ((|subtractIfCan| ((|Union| $ "failed") $ $)) T

@@ -124,9 +124,6 @@ FunctionFieldCategory(F, UP, UPUP): Category == Definition where
     differentiate          : ($, UP -> UP) -> $
       ++ differentiate(x, d) extends the derivation d from UP to $ and
       ++ applies it to x.
-    represents             : (Vector UP, UP) -> $
-      ++ represents([A0,...,A(n-1)],D) returns
-      ++ \spad{(A0 + A1 y +...+ A(n-1)*y**(n-1))/D}.
     primitivePart          : $ -> $
       ++ primitivePart(f) removes the content of the denominator and
       ++ the common content of the numerator of f.

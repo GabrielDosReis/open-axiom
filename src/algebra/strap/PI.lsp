@@ -51,8 +51,8 @@
              (|PositiveInteger|) (|Boolean|) (|Union| $ '"failed")
              (|SingleInteger|) (|String|) (|OutputForm|))
           '#(~= 0 |sample| 6 |recip| 10 |one?| 15 |min| 20 |max| 26
-             |latex| 32 |hash| 37 |gcd| 42 |coerce| 48 ^ 53 |One| 65 >=
-             69 > 75 = 81 <= 87 < 93 + 99 ** 105 * 117)
+             |latex| 32 |hash| 37 |gcd| 42 |coerce| 48 |One| 53 >= 57 >
+             63 = 69 <= 75 < 81 + 87 ** 93 * 105)
           '(((|commutative| "*") . 0))
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
                 (CONS '#(NIL |Monoid&| |OrderedSet&| |SemiGroup&|
@@ -65,11 +65,11 @@
                             (|makeByteWordVec2| 11
                                 '(2 0 7 0 0 1 0 0 0 1 1 0 8 0 1 1 0 7 0
                                   1 2 0 0 0 0 1 2 0 0 0 0 1 1 0 10 0 1
-                                  1 0 9 0 1 2 0 0 0 0 1 1 0 11 0 1 2 0
-                                  0 0 6 1 2 0 0 0 5 1 0 0 0 1 2 0 7 0 0
-                                  1 2 0 7 0 0 1 2 0 7 0 0 1 2 0 7 0 0 1
-                                  2 0 7 0 0 1 2 0 0 0 0 1 2 0 0 0 6 1 2
-                                  0 0 0 5 1 2 0 0 0 0 1 2 0 0 6 0 1)))))
+                                  1 0 9 0 1 2 0 0 0 0 1 1 0 11 0 1 0 0
+                                  0 1 2 0 7 0 0 1 2 0 7 0 0 1 2 0 7 0 0
+                                  1 2 0 7 0 0 1 2 0 7 0 0 1 2 0 0 0 0 1
+                                  2 0 0 0 6 1 2 0 0 0 5 1 2 0 0 0 0 1 2
+                                  0 0 6 0 1)))))
           '|lookupComplete|)) 
 
 (SETQ |$CategoryFrame|
@@ -77,12 +77,10 @@
              '(((|gcd| ($ $ $)) T (ELT $ NIL))
                ((* ($ $ $)) T (ELT $ NIL))
                ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
-               ((^ ($ $ (|PositiveInteger|))) T (ELT $ NIL))
                ((|One| ($)) T (CONST $ NIL))
                ((|sample| ($)) T (CONST $ NIL))
                ((|one?| ((|Boolean|) $)) T (ELT $ NIL))
                ((** ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
-               ((^ ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
                ((|recip| ((|Union| $ "failed") $)) T (ELT $ NIL))
                ((+ ($ $ $)) T (ELT $ NIL))
                ((* ($ (|PositiveInteger|) $)) T (ELT $ NIL))

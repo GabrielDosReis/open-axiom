@@ -176,11 +176,6 @@ Interval(R:Join(FloatingPointSystem,TranscendentalFunctionCategory)): IntervalCa
     interval(inf(a)**n,sup(a)**n)
 
 
-  _^ (a:%,n:PositiveInteger):% ==  
-    contains?(a,0) and zero?((n pretend Integer) rem 2) => 
-      interval(0,max(inf(a)**n,sup(a)**n))
-    interval(inf(a)**n,sup(a)**n)
-
   _- (a:%):% == exactInterval(-sup(a),-inf(a))
 
   _= (a:%,b:%):Boolean == (inf(a)=inf(b)) and (sup(a)=sup(b))

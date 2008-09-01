@@ -53,6 +53,51 @@ $suffix := nil
 -- ??? turns off buggy code
 $NRTopt := false
 
+++ List of operations defined in a given capsule
+++ Each item on this list is of the form
+++    (op sig pred)
+++ where
+++   op:   name of the operation
+++   sig:  signature of the operation
+++   pred: scope predicate of the operation.
+$capsuleFunctions := nil
+
+++ record that the operation `op' with signature `sig' and predicate
+++ `pred' is defined in the current capsule of the current domain
+++ being compiled.
+noteCapsuleFunctionDefinition(op,sig,pred) ==
+  member([op,sig,pred],$capsuleFunctions) =>
+    stackAndThrow('"redefinition of %1b: %2 %3",
+      [op,formatUnabbreviated ["Mapping",:sig],formatIf pred])
+  $capsuleFunctions := [[op,sig,pred],:$capsuleFunctions]
+
+++ Clear the list of functions defined in the last domain capsule.
+clearCapsuleFunctionTable() ==
+  $capsuleFunctions := nil
+
+
+++ List of exports (paireed with scope predicate) declared in
+++ the category of the currend domain or package.
+++ Note: for category packages, this list is nil.
+$exports := nil
+
+noteExport(form,pred) ==
+  -- don't recheck category package exports; we just check
+  -- them when defining the category.  Plus, we might actually
+  -- get indirect duplicates, which is OK.
+  $insideCategoryPackageIfTrue => nil
+  member([form,pred],$exports) =>
+    stackAndThrow('"redeclaration of %1 %2",
+      [form,formatIf pred])
+  $exports := [[form,pred],:$exports]
+
+clearExportsTable() ==
+  $exports := nil
+
+makePredicate l ==
+  null l => true
+  MKPF(l,"and")
+
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
 
 compDefine: (%Form,%Mode,%Env) -> %Maybe %Triple 
@@ -842,6 +887,11 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     $CapsuleDomainsInScope: local:= get("$DomainsInScope","special",e)
     $insideExpressionIfTrue: local:= true
     $returnMode:= m
+    -- Change "^" to "**" in definitions.  All other places have 
+    -- been changed before we get here.
+    if first form = "^" then 
+      sayBrightly ['"Replacing", :bright '"^", '"with",:bright '"**"]
+      rplac(first form,"**")
     [$op,:argl]:= form
     $form:= [$op,:argl]
     argl:= stripOffArgumentConditions argl
@@ -894,6 +944,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
  
+    noteCapsuleFunctionDefinition($op,signature', makePredicate $predl)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
 	 or ["",rettype,e]
     NRTassignCapsuleFunctionSlot($op,signature')
@@ -1272,6 +1323,7 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
     [bootStrapError($functorForm, _/EDITFILE),m,e]
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true
+  clearCapsuleFunctionTable()
   compCapsuleInner(maybeInsertViewMorphisms itemList,m,addDomain('_$,e))
  
 compSubDomain: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1324,7 +1376,8 @@ compCapsuleItems(itemlist,$predl,$e) ==
   $myFunctorBody :local := nil   ---needed for translator
   $signatureOfForm: local := nil
   $suffix: local:= 0
-  for item in itemlist repeat $e:= compSingleCapsuleItem(item,$predl,$e)
+  for item in itemlist repeat 
+    $e:= compSingleCapsuleItem(item,$predl,$e)
   $e
  
 compSingleCapsuleItem(item,$predl,$e) ==
@@ -1412,11 +1465,11 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   [p',.,$e]:= compCompilerPredicate(p,$e) or userError ['"not a Boolean:",p]
   oldFLP:=$functorLocalParameters
   if x^="%noBranch" then
-    compSingleCapsuleItem(x,$predl,getSuccessEnvironment(p,$e))
+    compSingleCapsuleItem(x,[p,:$predl],getSuccessEnvironment(p,$e))
     x':=localExtras(oldFLP)
   oldFLP:=$functorLocalParameters
   if y^="%noBranch" then
-    compSingleCapsuleItem(y,$predl,getInverseEnvironment(p,olde))
+    compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
   RPLACA(item,"COND")
   RPLACD(item,[[p',x,:x'],['(QUOTE T),y,:y']])
@@ -1503,6 +1556,7 @@ makeCategoryForm(c,e) ==
 compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compCategory(x,m,e) ==
   $TOP__LEVEL: local:= true
+  clearExportsTable()
   (m:= resolve(m,$Category))=$Category and x is ['CATEGORY,
     domainOrPackage,:l] =>
       $sigList: local := nil
@@ -1572,24 +1626,30 @@ compCategoryItem(x,predl,env) ==
   --1. if x is a conditional expression, recurse; otherwise, form the predicate
   x is ["COND",[p,e]] =>
     predl':= [p,:predl]
-    e is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl',env)
+    e is ["PROGN",:l] =>
+      for y in l repeat compCategoryItem(y,predl',env)
     compCategoryItem(e,predl',env)
   x is ["IF",a,b,c] =>
     predl':= [a,:predl]
     if b^="%noBranch" then
-      b is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl',env)
+      b is ["PROGN",:l] => 
+        for y in l repeat compCategoryItem(y,predl',env)
       compCategoryItem(b,predl',env)
     c="%noBranch" => nil
     predl':= [["not",a],:predl]
-    c is ["PROGN",:l] => for y in l repeat compCategoryItem(y,predl',env)
+    c is ["PROGN",:l] => 
+      for y in l repeat compCategoryItem(y,predl',env)
     compCategoryItem(c,predl',env)
-  pred:= (predl => MKPF(predl,"AND"); true)
+  pred := (predl => MKPF(predl,"AND"); true)
  
   --2. if attribute, push it and return
-  x is ["ATTRIBUTE",y] => PUSH(MKQ [y,pred],$atList)
+  x is ["ATTRIBUTE",y] => 
+    noteExport(y,pred)
+    PUSH(MKQ [y,pred],$atList)
  
   --3. it may be a list, with PROGN as the CAR, and some information as the CDR
-  x is ["PROGN",:l] => for u in l repeat compCategoryItem(u,predl,env)
+  x is ["PROGN",:l] => 
+    for u in l repeat compCategoryItem(u,predl,env)
  
 -- 4. otherwise, x gives a signature for a
 --    single operator name or a list of names; if a list of names,
@@ -1604,4 +1664,5 @@ compCategoryItem(x,predl,env) ==
   --4. branch on a single type or a signature %with source and target
   for t in first sig repeat
     diagnoseUknownType(t,env)
+  noteExport(rest x,pred)
   PUSH(MKQ [rest x,pred],$sigList)
