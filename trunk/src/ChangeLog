@@ -1,3 +1,8 @@
+2008-09-02  Alfredo Portes  <doyenatccny@gmail.com>
+
+	* hyper/util.ht: Use OpenAxiom name in Hyperdoc pages.
+	* hyper/rootpage.ht: Likewise.
+
 2008-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/syntax.spad.pamphlet (Literal): New.
