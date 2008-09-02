@@ -8,7 +8,6 @@
 %------------------------------------------------------------------------
 %\downlink{\inputbitmap{\htbmdir{}/axiom.xbm}}{RootPage1}
 \beginscroll
-\centerline{\inputbitmap{\htbmdir{}/axiom1.bitmap}}
 Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997 by
 the Numerical Algorithms Group Limited, which is also the proprietor of the
 trademarks AXIOM and the AXIOM logo and of the registered
@@ -23,10 +22,9 @@ Incorporating ANNA : the AXIOM/NAG Numerical Analyst Expert System
 
 
 %------------------------------------------------------------------------
-\begin{page}{RootPage}{AXIOM HyperDoc Top Level}
+\begin{page}{RootPage}{OpenAxiom HyperDoc Top Level}
 %------------------------------------------------------------------------
 \beginscroll
-\centerline{\inputbitmap{\htbmdir{}/axiom1.bitmap}}
 %This is the top level of \HyperName{} for \Language{}.
 %The mouse cursor becomes a hand when the cursor is over a
 %\downlink{selectable}{YouTriedIt} item.
@@ -63,7 +61,7 @@ What would you like to do?
 %\menuwindowlink{\inputbitmap{\htbmdir{}/anna.xbm.tiny}}{UXANNA}
 %\tab{16} The AXIOM/NAG Numerical Analyst Expert System
 
-\menuwindowlink{About AXIOM}{RootPageLogo}
+\menuwindowlink{About OpenAxiom}{RootPageLogo}
 \tab{16}See some basic information about \Language{}.
 
 %\menuwindowlink{What's New}{ugWhatsNewTwoTwoPage}

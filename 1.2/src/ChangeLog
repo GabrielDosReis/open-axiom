@@ -1,3 +1,8 @@
+2008-09-02  Alfredo Portes  <doyenatccny@gmail.com>
+
+	* hyper/util.ht: Use OpenAxiom in Hyperdoc pages.
+	* hyper/rootpage.ht: Likewise.
+
 2008-09-02  Martin Rubey  <martin.rubey@univie.ac.at>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
@@ -8,27 +13,27 @@
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
-        * hyper/pages/util.ht: Restore commented commands.
+	* hyper/pages/util.ht: Restore commented commands.
 
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
-        * algebra/intef.spad.pamphlet: Fix Bug AW/308.
+	* algebra/intef.spad.pamphlet: Fix Bug AW/308.
 
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
-        * algebra/gaussian.spad.pamphlet: Fix Bug AW/15.
+	* algebra/gaussian.spad.pamphlet: Fix Bug AW/15.
 
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
-        * algebra/manip.spad.pamphlet: Fix Bug AW/278.
+	* algebra/manip.spad.pamphlet: Fix Bug AW/278.
 
 2008-08-29  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
-        * hyper/htinp.c: Use strcpy instead of strcat.
+    * hyper/htinp.c: Use strcpy instead of strcat.
 	* hyper/presea: Misc.
 	* hyper/pages/man0.ht: Fix htsearch path.
 	* hyper/pages/MSET.ht: Fix link name.
