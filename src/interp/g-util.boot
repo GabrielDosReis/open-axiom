@@ -36,6 +36,9 @@ import macros
 import sys_-utility
 namespace BOOT
 
+module g_-util where
+  getTypeOfSyntax: %Form -> %Mode
+
 ++
 $interpOnly := false
 
@@ -105,6 +108,8 @@ put(x,prop,val,e) ==
   addBinding(x,newProplist,e)
 
 
+--% Syntax manipulation
+
 ++ Build a quasiquotation form for `x'.
 quasiquote x ==
   ["[||]",x]
@@ -113,6 +118,16 @@ quasiquote x ==
 isQuasiquote m ==
   m is ["[||]",y] => y
 
+
+getTypeOfSyntax t ==
+  atom t => 
+    IDENTP t => '(Identifier)
+    (m := getBasicMode t) and not member(m,[$EmptyMode,$NoValueMode]) =>
+      ["Literal",m]
+    $Syntax
+  $Syntax
+
+--%
 
 -- Convert an arbitrary lisp object to canonical boolean.
 bool: %Thing -> %Boolean

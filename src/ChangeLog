@@ -1,3 +1,14 @@
+2008-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad.pamphlet (Literal): New.
+	(Identifier): Likewise.
+	(Signature): Tidy.
+	* algebra/exposed.lsp.pamphlet: Expose IDENT and LITERAL.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_user): Add
+	LITERAL and IDENT.
+	(user-stamp): Don't depend directly on bootstrap-stamp.
+	* share/algebra/: Update databases.
+
 2008-09-01  Martin Rubey  <martin.rubey@univie.ac.at>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

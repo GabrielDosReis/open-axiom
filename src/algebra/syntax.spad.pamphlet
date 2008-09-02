@@ -261,28 +261,32 @@ ConstructorCall(): Public == Private where
 
 <<domain SIG Signature>>=
 import SetCategory
-import ConstructorCall
+import CoercibleTo
+import List
+import Syntax
 )abbrev domain SIG Signature
 ++ Author: Gabriel Dos Reis
 ++ Date Created: January 10, 2008
-++ Date Last Updated: July 14, 2008
+++ Date Last Updated: August 30, 2008
 ++ Description: This is the datatype for operation signatures as
-++ used by the compiler and the interpreter.
+++   used by the compiler and the interpreter.  Note that this domain
+++   differs from SignatureAst.
 ++ See also: ConstructorCall, Domain.
 Signature(): Public == Private where
   Public == SetCategory with
-    target: % -> ConstructorCall
+    signature: (List Syntax,Syntax) -> %
+      ++ signature(s,t) constructs a Signature object with parameter
+      ++ types indicaded by `s', and return type indicated by `t'.
+    target: % -> Syntax
       ++ target(s) returns the target type of the signature `s'.
-    source: % -> List ConstructorCall
+    source: % -> List Syntax
       ++ source(s) returns the list of parameter types of `s'.
   Private == add
-    Rep == List ConstructorCall
-    target x ==
-      first rep x
-    source x ==
-      rest rep x
-    x = y ==
-      rep x = rep y
+    Rep == List Syntax
+    signature(s,t) == per cons(t,s)
+    target x == first rep x
+    source x == rest rep x
+    x = y == rep x = rep y
     coerce(x: %): OutputForm ==
       rarrow([s::OutputForm for s in source x]::OutputForm,
          target(x)::OutputForm)$OutputForm
@@ -375,6 +379,54 @@ AbstractSyntaxCategory(): Category ==
       x::Syntax::OutputForm 
 @
 
+\section{The SpadSyntaxCategory category}
+
+<<category SASTCAT SpadSyntaxCategory>>=
+)abbrev category SASTCAT SpadSyntaxCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 1, 2008
+++ Description: This is the category of Spad syntax objects.
+SpadSyntaxCategory(): Category == AbstractSyntaxCategory
+  -- for the moment.
+
+@
+
+\subsection{The Literal domain}
+
+<<domain LITERAL Literal>>=
+)abbrev domain LITERAL Literal
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 1, 2008
+++ Description: This domain represents AST for Spad literals.
+Literal(T: SetCategory): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo T)
+  Private == add
+    Rep == T
+    coerce(x: %): T == rep x
+    coerce(x: %): OutputForm == x::T::OutputForm
+    
+@
+
+\subsection{The Identifier domain}
+
+<<domain IDENT Identifier>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 1, 2008
+++ Description: This domain represents identifer AST.
+)abbrev domain IDENT Identifier
+Identifier(): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo Symbol)
+  Private == add
+    Rep == Symbol
+    coerce(x: %): Symbol == rep x
+    coerce(x: %): OutputForm == x::Symbol::OutputForm
+
+@
+
+
 \subsection{The HeadAst domain}
 
 <<domain HEADAST HeadAst>>=
@@ -387,7 +439,7 @@ import List Symbol
 ++ Date Last Modified: July 2008
 ++ Description: This domain represents the header of a definition.
 HeadAst(): Public == Private where
-  Public == AbstractSyntaxCategory with
+  Public == SpadSyntaxCategory with
     headAst: List Symbol -> %
       ++ headAst [f,x1,..,xn] constructs a function definition header.
     name: % -> Symbol
@@ -444,6 +496,9 @@ HeadAst(): Public == Private where
 <<domain ELABEXPR ElaboratedExpression>>
 
 <<category ASTCAT AbstractSyntaxCategory>>
+<<category SASTCAT SpadSyntaxCategory>>
+
+<<domain LITERAL Literal>>
 <<domain HEADAST HeadAst>>
 @
 

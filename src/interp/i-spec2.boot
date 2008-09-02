@@ -809,8 +809,9 @@ evalQUOTE(op,[expr],[m]) ==
 --% Quasiquotation
 up_[_|_|_] t ==
   t isnt [op, x] => nil
-  putValue(op, objNewWrap(x, $Syntax))
-  putModeSet(op, [$Syntax])
+  mode := getTypeOfSyntax x
+  putValue(op, objNewWrap(x, mode))
+  putModeSet(op, [mode])
 
 --% Handler for pretend
 
