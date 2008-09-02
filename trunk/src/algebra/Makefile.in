@@ -817,7 +817,7 @@ axiom_algebra_layer_23_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_23)))
 axiom_algebra_layer_user =  \
-	RINTERP	ASTCAT  HEADAST
+	RINTERP	ASTCAT  ASTCAT- SASTCAT    HEADAST   LITERAL   IDENT
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -826,7 +826,10 @@ axiom_algebra_layer_user_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_user)))
 
-HEADAST.NRLIB/code.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
+SASTCAT.NRLIB/code.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
+LITERAL.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
+IDENT.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
+HEADAST.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
 
 .PHONY: all all-algebra mkdir-output-directory
 all: all-ax
@@ -1129,7 +1132,7 @@ bootstrap-stamp: 23-stamp $(axiom_algebra_bootstrap_objects)
 	@ echo ===    algebra complete     ======
 	@ echo ==================================
 
-user-stamp: bootstrap-stamp $(axiom_algebra_layer_user_objects)
+user-stamp: $(axiom_algebra_layer_user_objects)
 	@ rm -f user-stamp
 	@ $(STAMP) user-stamp
 
