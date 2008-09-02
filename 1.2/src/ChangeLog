@@ -1,3 +1,10 @@
+2008-09-02  Martin Rubey  <martin.rubey@univie.ac.at>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/431
+	* algebra/ore.spad.pamphlet (SpareUnivariateSkewPolynomial):
+	Implement both ** and ^.
+
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
@@ -6,17 +13,17 @@
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
-        * algebra/intef.spad.pamphlet: Fix Bug AW308.
+        * algebra/intef.spad.pamphlet: Fix Bug AW/308.
 
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
-        * algebra/gaussian.spad.pamphlet: Fix Bug AW15.
+        * algebra/gaussian.spad.pamphlet: Fix Bug AW/15.
 
 2008-08-31  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
-        * algebra/manip.spad.pamphlet: Fix Bug AW278.
+        * algebra/manip.spad.pamphlet: Fix Bug AW/278.
 
 2008-08-29  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Alfredo Portes  <doyenatccny@gmail.com>

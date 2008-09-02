@@ -464,7 +464,7 @@ UnivariateSkewPolynomialCategoryOps(R, C): Exports == Implementation where
 )abbrev domain ORESUP SparseUnivariateSkewPolynomial
 ++ Author: Manuel Bronstein
 ++ Date Created: 19 October 1993
-++ Date Last Updated: 1 February 1994
+++ Date Last Updated: September 2, 2008
 ++ Description:
 ++   This is the domain of sparse univariate skew polynomials over an Ore
 ++   coefficient field.
@@ -479,6 +479,12 @@ SparseUnivariateSkewPolynomial(R:Ring, sigma:Automorphism R, delta: R -> R):
  
       x:% * y:%      == times(x, y, sigma, delta)
       apply(p, c, r) == apply(p, c, r, sigma, delta)
+      x:% ** p:PositiveInteger == expt(x,p)$RepeatedSquaring(%)
+      x:% ^ p:PositiveInteger == x ** p
+      x:% ** n:NonNegativeInteger == 
+        zero? n => 1
+        expt(x,n::PositiveInteger)$RepeatedSquaring(%)
+      x:% ^ n:NonNegativeInteger == x ** n
  
       if R has IntegralDomain then
           monicLeftDivide(a, b)  == monicLeftDivide(a, b, sigma)
