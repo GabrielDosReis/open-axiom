@@ -1129,7 +1129,7 @@ bootstrap-stamp: 23-stamp $(axiom_algebra_bootstrap_objects)
 	@ echo ===    algebra complete     ======
 	@ echo ==================================
 
-user-stamp: bootstrap-stamp $(axiom_algebra_layer_user_objects)
+user-stamp: $(axiom_algebra_layer_user_objects)
 	@ rm -f user-stamp
 	@ $(STAMP) user-stamp
 
