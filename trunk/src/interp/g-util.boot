@@ -125,6 +125,26 @@ getTypeOfSyntax t ==
     (m := getBasicMode t) and not member(m,[$EmptyMode,$NoValueMode]) =>
       ["Literal",m]
     $Syntax
+  [op,:.] := t
+  op = "Mapping" => '(MappingAst)
+  op = "Join" => '(JoinAst)
+  op in '(%Import import) => '(ImportAst)
+  op in '(%Signature SIGNATURE) => '(SignatureAst)
+  op = "QUOTE" and #t = 2 and IDENTP second t => ["Literal",$Symbol]
+  op = "IF" => '(IfAst)
+  op = "REPEAT" => '(RepeatAst)
+  op = "WHILE" => '(WhileAst)
+  op = "IN" => '(InAst)
+  op = "COLLECT" => '(CollectAst)
+  op = "construct" => '(ConstructAst)
+  op = "exit" => '(ExitAst)
+  op = "return" => '(ReturnAst)
+  op = "SEGMENT" => '(SegmentAst)
+  op = "SEQ" => '(SequenceAst)
+  op = "pretend" => '(PretendAst)
+  op = "::" => '(CoerceAst)
+  op = "@" => '(RestrictAst)
+  op = "%LET" => '(LetAst)
   $Syntax
 
 --%

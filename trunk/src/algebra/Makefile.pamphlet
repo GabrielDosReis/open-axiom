@@ -1244,7 +1244,11 @@ Rather than classify newly created algebra into the existing type lattice
 we add it here.
 <<USERLAYER>>=
 axiom_algebra_layer_user =  \
-	RINTERP	ASTCAT  ASTCAT- SASTCAT    HEADAST   LITERAL   IDENT
+	RINTERP	 ASTCAT   ASTCAT- SASTCAT  SASTCAT- HEADAST  \
+	LITERAL  IDENT    TYPEAST IMPTAST  MAPPAST  ATTRAST  \
+	JOINAST  IFAST    RPTAST  WHILEAST INAST    CLLCAST  \
+	LSTAST   EXITAST  RETAST  SEGAST   PRTDAST  CRCAST   \
+	LETAST
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -1256,7 +1260,11 @@ axiom_algebra_layer_user_objects = \
 SASTCAT.NRLIB/code.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
 LITERAL.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
 IDENT.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
-HEADAST.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
+HEADAST.NRLIB/code.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
+ATTRAST.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
+TYPEAST.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
+IMPTAST.NRLIB/code.$(FASLEXT): $(OUT)/TYPEAST.$(FASLEXT)
+MAPPAST.NRLIB/code.$(FASLEXT): $(OUT)/TYPEAST.$(FASLEXT)
 @
 
 \section{Broken Files}

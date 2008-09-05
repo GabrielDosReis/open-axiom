@@ -385,11 +385,119 @@ AbstractSyntaxCategory(): Category ==
 )abbrev category SASTCAT SpadSyntaxCategory
 ++ Author: Gabriel Dos Reis
 ++ Date Created: July 5, 2008
-++ Date Last Modified: September 1, 2008
+++ Date Last Modified: September 3, 2008
 ++ Description: This is the category of Spad syntax objects.
 SpadSyntaxCategory(): Category == AbstractSyntaxCategory
-  -- for the moment.
+  add
+    renderSyntax: Syntax -> OutputForm
 
+    renderMapping(x: List Syntax): OutputForm ==
+      src := [renderSyntax t for t in rest x]::List(OutputForm)::OutputForm
+      tar := renderSyntax first x
+      elt('MappingAst::OutputForm,
+        ['source::OutputForm = src, 'target::OutputForm = tar])$OutputForm
+     
+    renderAttribute(x: Syntax): OutputForm ==
+      elt('AttributeAst::OutputForm,
+        ['name::OutputForm = renderSyntax x])$OutputForm
+
+    renderImport(x: List Syntax): OutputForm ==
+      ts := [renderSyntax t for t in x]::List(OutputForm)::OutputForm
+      elt('ImportAst::OutputForm, ['imports::OutputForm = ts])$OutputForm
+
+    renderSignature(x: List Syntax): OutputForm ==
+      n := renderSyntax first x
+      s := (last(x) : Signature)::OutputForm
+      elt('SignatureAst::OutputForm,
+        ['name::OutputForm = n, 'signature::OutputForm = s])$OutputForm
+
+    renderIf(x: List Syntax): OutputForm ==
+      c := renderSyntax first x
+      t := renderSyntax second x
+      e := renderSyntax third x
+      elt('IfAst::OutputForm,
+        ['condition::OutputForm = c, 'thenBranch::OutputForm = t,
+           'elseBranch::OutputForm = e])$OutputForm
+
+    renderRepeat(x: List Syntax): OutputForm ==
+      its := [renderSyntax(x.i) for i in 1..(#x-1)]
+               ::List(OutputForm)::OutputForm
+      b := renderSyntax last x
+      elt('RepeatAst::OutputForm,
+        ['iterators::OutputForm = its, 'body::OutputForm = b])$OutputForm
+
+    renderWhile(x: List Syntax): OutputForm ==
+      elt('WhileAst::OutputForm,
+        ['condition::OutputForm = renderSyntax(x : Syntax)])$OutputForm
+
+    renderIn(x: List Syntax): OutputForm ==
+      elt('InAst::OutputForm,
+        ['iterationVar::OutputForm = renderSyntax first x,
+           'sequence::OutputForm = renderSyntax last x])$OutputForm
+     
+    renderCollect(x: List Syntax): OutputForm ==
+      its := [renderSyntax(x.i) for i in 1..(#x-1)]
+               ::List(OutputForm)::OutputForm
+      elt('CollectAst::OutputForm,
+        ['iterators::OutputForm = its, 
+           'body::OutputForm = renderSyntax last x])$OutputForm
+   
+    renderConstruct(x: List Syntax): OutputForm ==
+      es := [renderSyntax t for t in x]::List(OutputForm)::OutputForm
+      elt('ConstructAst::OutputForm,
+        ['elements::OutputForm = es])$OutputForm
+
+    renderControl(tag: Symbol, x: List Syntax): OutputForm ==
+      elt(tag::OutputForm, 
+        ['expression::OutputForm = renderSyntax value x])$OutputForm
+
+    renderRestrictedExpr(tag: Symbol, x: List Syntax): OutputForm ==
+      elt(tag::OutputForm,
+        ['expression::OutputForm = renderSyntax first x,
+           'target::OutputForm = renderSyntax second x])$OutputForm
+
+    renderSegment(x: List Syntax): OutputForm ==
+      es := [renderSyntax t for t in x]::List(OutputForm)::OutputForm
+      elt('SegmentAst::OutputForm, ['bounds::OutputForm = es])$OutputForm
+
+    renderSequence(x: List Syntax): OutputForm ==
+      elts := [renderSyntax t for t in x]
+      elt('SequenceAst::OutputForm,
+        ['body::OutputForm = elts::OutputForm, 
+          'last::OutputForm = last elts])$OutputForm
+
+    renderLet(x: List Syntax): OutputForm ==
+      elt('LetAst::OutputForm, 
+        ['lhs::OutputForm = renderSyntax first x,
+           'rhs::OutputForm = renderSyntax second x])$OutputForm
+
+    renderSyntax x ==
+      compound? x =>
+        op := getOperator x
+        args := getOperands x
+        op = 'Mapping => renderMapping args
+        op = 'ATTRIBUTE or op = '%Attribute => renderAttribute value args
+        op = 'IMPORT or op = '%Import => renderImport args
+        op = 'SIGNATURE or op = '%Signature => renderSignature args
+        op = 'IF => renderIf args
+        op = 'REPEAT => renderRepeat args
+        op = 'WHILE => renderWhile args
+        op = 'IN => renderIn args
+        op = 'COLLECT => renderCollect args
+        op = 'construct => renderConstruct args
+        op = '_exit => renderControl('ExitAst,args)
+        op = '_return => renderControl('ReturnAst,args)
+        op = '_:_: => renderRestrictedExpr('CoerceAst,args)
+        op = '_pretend => renderRestrictedExpr('PretendAst,args)
+        op = '_@ => renderRestrictedExpr('RestrictAst,args)
+        op = 'SEGMENT => renderSegment args
+        op = 'SEQ => renderSequence args
+        op = '%LET => renderLet args
+        x::OutputForm
+      x::OutputForm
+
+    coerce(x: %): OutputForm ==
+      renderSyntax(x::Syntax)
 @
 
 \subsection{The Literal domain}
@@ -436,23 +544,499 @@ import List Symbol
 )abbrev domain HEADAST HeadAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: July 2008
+++ Date Last Modified: September 3, 2008
 ++ Description: This domain represents the header of a definition.
 HeadAst(): Public == Private where
   Public == SpadSyntaxCategory with
-    headAst: List Symbol -> %
-      ++ headAst [f,x1,..,xn] constructs a function definition header.
-    name: % -> Symbol
+    headAst: (Identifier,List Identifier) -> %
+      ++ headAst(f,[x1,..,xn]) constructs a function definition header.
+    name: % -> Identifier
       ++ name(h) returns the name of the operation defined defined.
-    parameters: % -> List Symbol
+    parameters: % -> List Identifier
       ++ parameters(h) gives the parameters specified in the
       ++ definition header `h'.
   Private == add
-    Rep == List Symbol
-    headAst h == per h
+    Rep == List Identifier
+    headAst(op,args) == per cons(op,args)
     name h == first rep h
     parameters h == rest rep h
+
 @
+
+\subsection{The TypeAst domain}
+
+<<domain TYPEAST TypeAst>>=
+import AbstractSyntaxCategory
+import Syntax
+)abbrev domain TYPEAST TypeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 28, 2008
+++ Description: This domain represents a type AST.
+TypeAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    coerce: Syntax -> %
+      ++ s::TypeAst injects `s' into the TypeAst domain.
+  Private == add
+    Rep == Syntax
+    coerce(x: Syntax): % == per x
+
+@
+
+\subsection{The ImportAst domain}
+
+<<domain IMPTAST ImportAst>>=
+import List
+import TypeAst
+)abbrev domain IMPTAST ImportAst
+)abbrev domain TYPEAST TypeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 28, 2008
+++ Description: This domain represents an `import' of types.
+ImportAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    coerce: List TypeAst -> %
+      ++ ts::ImportAst constructs an ImportAst for the list if types `ts'.
+    imports: % -> List TypeAst
+      ++ imports(x) returns the list of imported types.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol, List TypeAst)
+    coerce(ts: List TypeAst): % == per pair('import,ts)
+    imports x == second rep x
+
+@
+
+\subsection{The MappingAst domain}
+
+<<domain MAPPAST MappingAst>>=
+)abbrev domain MAPPAST MappingAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 28, 2008
+++ Description: This domain represents a mapping type AST.  A mapping AST
+++   is a syntactic description of a function type, e.g. its result 
+++   type and the list of its argument types.
+MappingAst(): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
+    coerce: Signature -> %
+      ++ sig::MappingAst builds a MappingAst from the Signature `sig'.
+    mappingAst: (List TypeAst, TypeAst) -> %
+      ++ mappingAst(s,t) builds the mapping AST s -> t
+    source: % -> List TypeAst
+      ++ source(s) returns the parameter type AST list of `s'.
+    target: % -> TypeAst
+      ++ target(s) returns the result type AST for `s'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol,Signature)
+    coerce(sig: Signature): % == per pair('Mapping,sig)
+    mappingAst(s,t) == 
+      per pair('Mapping,cons(t,s) : Signature)
+    source x == source(second rep x)$Signature : List(TypeAst)
+    target x == target(second rep x)$Signature : TypeAst
+    coerce(x: %): TypeAst == x : TypeAst
+
+@
+
+\subsection{The SignatureAst domain}
+
+<<domain SIGAST SignatureAst>>=
+)abbrev domain SIGAST SignatureAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 28, 2008
+++ Description: This domain represents a signature AST.  A signature AST
+++   is a description of an exported operation, e.g. its name, result
+++   type, and the list of its argument types.
+SignatureAst(): Public == Private where
+  Public ==  SpadSyntaxCategory with
+    signatureAst: (Identifier, Signature) -> %
+      ++ signatureAst(n,s,t) builds the signature AST n: s -> t
+    name: % -> Symbol
+      ++ name(s) returns the name of the signature `s'.
+    signature: % -> Signature
+      ++ signature(s) returns AST of the declared signature for `s'.
+  Private == add
+    import List
+    Rep == Pair(Symbol, Pair(Symbol,List Signature))
+    signatureAst(n,sig) == 
+      per pair('SIGNATURE,pair(n,[sig]))
+    name x == first second rep x
+    signature x == value second second rep x
+
+@
+
+
+\subsection{The AttributeAst domain}
+
+<<domain ATTRAST AttributeAst>>=
+)abbrev domain ATTRAST AttributeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents the syntax of an attribute in
+++   a category expression.
+AttributeAst(): Public == Private where
+  Public ==  SpadSyntaxCategory with
+    name: % -> Syntax
+      ++ name(a) returns the name of the attribute `a'.  Note, this
+      ++ name may be domain name, not just an identifier. 
+  Private == add
+    Rep == Pair(Symbol,Syntax)
+    name x == second rep x
+
+@
+
+\subsection{The JoinAst domain}
+
+<<domain JOINAST JoinAst>>=
+)abbrev domain JOINAST JoinAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents the join of categories ASTs.
+JoinAst(): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
+    coerce: List TypeAst -> %
+      ++ ts::JoinAst construct the AST for a join of the types `ts'.
+    categories: % -> List TypeAst
+      ++ catehories(x) returns the types in the join `x'.
+  Private == add
+    Rep == Pair(Symbol, List TypeAst)
+    categories x == second rep x
+    coerce(cats: List TypeAst): % == per pair('Join,cats)
+    coerce(x: %): TypeAst == x : TypeAst
+
+@
+
+
+\subsection{The IfAst domain}
+
+<<domain IFAST IfAst>>=
+)abbrev domain IFAST IfAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents AST for conditional expressions.
+IfAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    condition: % -> Syntax
+      ++ condition(e) returns the condition of the if-expression `e'.
+    thenBranch: % -> Syntax
+      ++ thenBranch(e) returns the `then-branch' of `e'.
+    elseBranch: % -> Syntax
+      ++ thenBranch(e) returns the `else-branch' of `e'.
+  Private == add
+    Rep == List Syntax
+    condition x == second rep x
+    thenBranch x == third rep x
+    elseBranch x == last rep x
+@
+
+
+\subsection{The RepeatAst domain}
+
+<<domain RPTAST RepeatAst>>=
+)abbrev domain RPTAST RepeatAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents the `repeat' iterator syntax.
+RepeatAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterators: % -> List Syntax
+      ++ iterators(e) returns the list of iterators controlling the loop `e'.
+    body: % -> Syntax
+      ++ body(e) returns the body of the loop `e'.
+  Private == add
+    Rep == List Syntax
+    iterators x == 
+      s := rep x
+      s.(2..(#s - 1))
+
+    body x == last rep x
+  
+@
+
+\subsection{The WhileAst domain}
+
+<<domain WHILEAST WhileAst>>=
+)abbrev domain WHILEAST WhileAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents the `while' iterator syntax.
+WhileAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    condition: % -> Syntax
+      ++ condition(i) returns the condition of the while iterator `i'.
+  Private == add
+    Rep == Pair(Symbol,Syntax)
+    condition x == second rep x
+
+@
+
+\subsection{The InAst domain}
+
+<<domain INAST InAst>>=
+)abbrev domain INAST InAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents the `in' iterator syntax.
+InAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterationVar: % -> Symbol
+      ++ iterationVar(i) returns the name of the iterating 
+      ++ variable of the `in' iterator 'i'
+    sequence: % -> Syntax
+      ++ sequence(i) returns the sequence expression being 
+      ++ iterated over by `i'.
+  Private == add
+    Rep == List Syntax
+    iterationVar x == (second rep x)::Symbol
+    sequence x == last rep x
+@
+
+\subsection{The CollectAst domain}
+
+<<domain CLLCTAST CollectAst>>=
+)abbrev domain CLLCTAST CollectAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents list comprehension syntax.
+CollectAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterators: % -> List Syntax
+      ++ iterators(e) returns the list of the iterators of
+      ++ the list comprehension `e'.
+    body: % -> Syntax
+      ++ body(e) return the expression being
+      ++ collected by the list comprehension `e'.
+  Private == add
+    Rep == List Syntax
+    body x == last rep x
+    iterators x ==
+      s := rep x
+      s.(2..(#s -1))
+
+@
+
+
+\subsection{The ConstructAst domain}
+
+<<domain LSTAST ConstructAst>>=
+)abbrev domain LSTAST ConstructAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents `literal sequence' syntax.
+ConstructAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    elements: % -> List Syntax
+      ++ elements(e) returns the list of expressions in the
+      ++ `literal' list `e'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol, List Syntax)
+    elements x == second rep x
+
+@
+
+
+\subsection{The ExitAst domain}
+
+<<domain EXITAST ExitAst>>=
+)abbrev domain EXITAST ExitAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents exit expressions.
+ExitAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> Syntax
+      ++ expression(e) returns the exit expression of `e'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol,Syntax)
+    expression x == second rep x
+
+@
+
+
+
+\subsection{The ReturnAst domain}
+
+<<domain RETAST ReturnAst>>=
+)abbrev domain RETAST ReturnAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents `return' expressions.
+ReturnAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> Syntax
+      ++ expression(e) returns the expression returned by `e'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol,Syntax)
+    expression x == second rep x
+
+@
+
+\subsection{The SequenceAst domain}
+
+<<domain SEQAST SequenceAst>>=
+)abbrev domain SEQAST SequenceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents a block of expressions.
+SequenceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List Syntax
+      ++ body(e) returns the list of expressions in the sequence
+      ++ of instruction `e'.
+    last: % -> Syntax
+      ++ last(e) returns the last instruction in `e'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol,List Syntax)
+    body x == second rep x
+    last x == last(second rep x)$List(Syntax)
+@
+
+\subsection{The LetAst domain}
+
+<<domain LETAST LetAst>>=
+import Syntax
+import List
+)abbrev domain LETAST LetAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents assignment expressions.
+LetAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> Syntax
+      ++ lhs(e) returns the left hand side of the assignment expression `e'.
+    rhs: % -> Syntax
+      ++ rhs(e) returns the right hand side of the assignment expression `e'.
+  Private == add
+    Rep == List Syntax
+    lhs x == second rep x
+    rhs x == third rep x
+
+@
+
+\subsection{The PretendAst domain}
+
+<<domain PRTDAST PretendAst>>=
+)abbrev domain PRTDAST PretendAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents `pretend' expressions.
+PretendAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> Syntax
+      ++ expression(e) returns the expression being converted.
+    target: % -> TypeAst
+      ++ target(e) returns the target type of the conversion..
+  Private == add
+    Rep == List Syntax
+    expression x == second rep x
+    target x == (third rep x) : TypeAst
+
+@
+
+\subsection{The CoerceAst domain}
+
+<<domain CRCAST CoercedAst>>=
+)abbrev domain CRCAST CoerceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents `coerce' expressions.
+CoerceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> Syntax
+      ++ expression(e) returns the expression being converted.
+    target: % -> TypeAst
+      ++ target(e) returns the target type of the conversion..
+  Private == add
+    Rep == List Syntax
+    expression x == second rep x
+    target x == (third rep x) : TypeAst
+
+@
+
+
+\subsection{The RestrictAst domain}
+
+<<domain RSTRCAST RestrictAst>>=
+)abbrev domain RSTRCAST RestrictAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents `restrict' expressions.
+RestrictAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> Syntax
+      ++ expression(e) returns the expression being converted.
+    target: % -> TypeAst
+      ++ target(e) returns the target type of the conversion..
+  Private == add
+    Rep == List Syntax
+    expression x == second rep x
+    target x == (third rep x) : TypeAst
+
+@
+
+\subsection{The CallAst domain}
+
+<<domain CALLAST CallAst>>=
+import Syntax
+import List
+)abbrev domain CALLAST CallAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents calls.
+CallAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    operator: % -> Syntax
+      ++ operation(e) returns the operation being called in `e'.
+    operands: % -> List Syntax
+      ++ arguments(e) returns the argument list used in the call `e'.
+  Private == add
+    Rep == List Syntax
+    operator x == first rep x
+    operands x == rest rep x
+
+@
+
+\subsection{The SegmentAst domain}
+
+<<domain SEGAST SegmentAst>>=
+)abbrev domain SEGAST SegmentAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents segement expressions.
+SegmentAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    bounds: % -> List Syntax
+  Private == add
+    Rep == List Syntax
+    bounds x == rest rep x
+
+@
+
+
 
 \section{License}
 
@@ -487,6 +1071,7 @@ HeadAst(): Public == Private where
 --LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 --NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 @
 
 <<*>>=
@@ -500,6 +1085,28 @@ HeadAst(): Public == Private where
 
 <<domain LITERAL Literal>>
 <<domain HEADAST HeadAst>>
+<<domain TYPEAST TypeAst>>
+<<domain ATTRAST AttributeAst>>
+<<domain IMPTAST ImportAst>>
+<<domain MAPPAST MappingAst>>
+<<domain SIGAST SignatureAst>>
+<<domain JOINAST JoinAst>>
+
+<<domain IFAST IfAst>>
+<<domain RPTAST RepeatAst>>
+<<domain WHILEAST WhileAst>>
+<<domain INAST InAst>>
+<<domain CLLCTAST CollectAst>>
+<<domain LSTAST ConstructAst>>
+<<domain EXITAST ExitAst>>
+<<domain RETAST ReturnAst>>
+<<domain SEGAST SegmentAst>>
+<<domain SEQAST SequenceAst>>
+<<domain PRTDAST PretendAst>>
+<<domain CRCAST CoercedAst>>
+<<domain RSTRCAST RestrictAst>>
+<<domain LETAST LetAst>>
+
 @
 
 \end{document}
