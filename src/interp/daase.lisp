@@ -982,11 +982,9 @@
 		      (when options
 			(format t "   Ignoring unknown )library option: ~a~%" options))
 		      (values only dir noexpose)))
-    (processDir (dirarg thisdir)
-		(|changeDirectory| (string dirarg))
-		(let ((indexFiles (|getAllIndexPathnames|))
-		      (aldorFiles (|getAllAldorObjectFiles|)))
-		  (|changeDirectory| thisdir)
+    (processDir (dirarg)
+		(let ((indexFiles (|getAllIndexPathnames| dirarg))
+		      (aldorFiles (|getAllAldorObjectFiles| dirarg)))
 		  (values
 		   indexFiles
 		   (first aldorFiles)
@@ -1006,7 +1004,7 @@
 	 (setq noexpose t))
      (if dir 
        (multiple-value-setq (nrlibs asys asos libs)
-			    (processDir dir thisdir)))
+          (processDir (|ensureTrailingSlash| (string dir)))))
      (dolist (file filelist)
        (let ((filename (pathname-name file))
 	     (namedir (directory-namestring file)))
