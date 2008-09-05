@@ -1,3 +1,11 @@
+2008-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/daase.lisp (processDir): Lose last argument.  Don't
+	change directory.
+	(localdatabase): Adjust call.
+	* interp/lisplib.boot (getAllIndexPathnames): Take an argument.
+	(getAllAldorObjectFiles): Likewise.
+
 2008-09-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot (getTypeOfSyntax): Handle more ASTs.

@@ -685,21 +685,23 @@ getIndexPathname: %String -> %String
 getIndexPathname dir ==
   strconc(ensureTrailingSlash dir, $IndexFilename)
 
-getAllIndexPathnames() ==
+getAllIndexPathnames: %String -> %List
+getAllIndexPathnames dir ==
   -- GCL's semantics of Common Lisp's `DIRECTORY *' differs from the
   -- rest of everybody else' semantics.  Namely, GCL would return a
   -- a list of drirectories AND files.  Pretty much like `ls *'.
   -- Everybody else strips out directories.
 )if %hasFeature KEYWORD::GCL
-  [getIndexPathname NAMESTRING d for d in DIRECTORY '"*.NRLIB"]
+  [getIndexPathname NAMESTRING d for d in DIRECTORY strconc(dir,'"*.NRLIB")]
 )else
-  DIRECTORY strconc('"*.NRLIB/",$IndexFilename)
+  DIRECTORY strconc(dir,'"*.NRLIB/",$IndexFilename)
 )endif
   
 
-getAllAldorObjectFiles() ==
-  asys := DIRECTORY '"*.asy"
-  asos := DIRECTORY '"*.ao"
+getAllAldorObjectFiles: %String -> %List
+getAllAldorObjectFiles dir ==
+  asys := DIRECTORY strconc(dir,'"*.asy")
+  asos := DIRECTORY strconc(dir,'"*.ao")
   -- don't include both a `x.asy' and `x.ao', and retain
   -- only sensical .asy files.
   dupAOs := MAPCAN(function PATHNAME_-NAME,asys)
