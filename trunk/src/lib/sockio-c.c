@@ -122,7 +122,7 @@ openaxiom_unload_socket_module(void)
 {
 #ifdef __WIN32__
    WSACleanup();
-   openaxiom_socket_moduler_loaded = 0;
+   openaxiom_socket_module_loaded = 0;
 #endif
 }
 
