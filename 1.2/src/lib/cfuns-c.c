@@ -344,7 +344,7 @@ oa_unlink(const char* path)
    if (is_dot_or_dotdot(path))
       return -1;
 
-   pathAttributes = GetFileAttributes(path)
+   pathAttributes = GetFileAttributes(path);
    if (pathAttributes == 0xFFFFFFFF)
       return -1;
 
@@ -556,7 +556,7 @@ oa_get_tmpdir(void)
       int new_size;
       buf = (char*) malloc(bufsz + 1);
       new_size = GetTempPath(bufsz, buf);
-      if(new_size = 0 || new_size >= bufsz) {
+      if(new_size == 0 || new_size >= bufsz) {
          perror("oa_get_tmpdir");
          free(buf);
          exit(1);
