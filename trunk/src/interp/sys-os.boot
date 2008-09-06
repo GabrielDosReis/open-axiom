@@ -72,15 +72,29 @@ import writeToFileHandle for
 import closeFileHandle for
   oa__filedesc__close: int -> int    -- -1: failure; otherwise 0.
 
+import getEnv for
+  oa__getenv: string -> string
+
 --% Local IPC socket support
 
 import openLocalClientStreamSocket for
   oa__open__local__client__stream__socket: string -> int -- -1: failure
 
---% OpenAxiom subsystem socket support
+--% INET socket stream support
 
-import getEnv for
-  oa__getenv: string -> string
+import openIP4ClientStreamSocket for
+  oa__open__ip4__client__stream__socket: (string,int) -> int
+
+import readFromStreamSocket for
+  oa__socket__read: (int,string,int) -> int
+
+import writeToStreamSocket for
+  oa__socket__write: (int,string,int) -> int
+
+import closeSocket for
+  oa__close__socket: int -> int
+
+--% OpenAxiom subsystem socket support
 
 ++ socket interface
 import openServer for

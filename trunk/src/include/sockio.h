@@ -40,11 +40,14 @@
 
 #ifdef __MINGW32__
 #  include <winsock2.h>
+#  define OPENAXIOM_INVALID_SOCKET INVALID_SOCKET
 #else
 #  include <sys/types.h>
 #  include <sys/socket.h>
 #  include <netinet/in.h>
+#  include <arpa/inet.h>
 #  include <sys/un.h>
+#  define OPENAXIOM_INVALID_SOCKET (-1)
 #endif
 
 #include "openaxiom-c-macros.h"
@@ -61,7 +64,7 @@ typedef SOCKET openaxiom_socket;
 #else
 typedef int openaxiom_socket;
 #endif
-
+typedef int openaxiom_port;
 
 typedef struct openaxiom_sio {
   openaxiom_socket socket; /* descriptor of this socket I/O endpoint.  */
@@ -82,6 +85,13 @@ typedef struct openaxiom_sio {
 
 OPENAXIOM_EXPORT int oa_open_local_client_stream_socket(const char*);
 OPENAXIOM_EXPORT int oa_open_local_server_stream_socket(const char*);
+OPENAXIOM_EXPORT openaxiom_socket
+oa_open_ip4_client_stream_socket(const char*, openaxiom_port);
+OPENAXIOM_EXPORT int oa_socket_write(openaxiom_socket,
+                                     const openaxiom_byte*, int);
+OPENAXIOM_EXPORT int oa_socket_read(openaxiom_socket,
+                                    openaxiom_byte*, int);
+OPENAXIOM_EXPORT void oa_close_socket(openaxiom_socket);
 
 OPENAXIOM_EXPORT int oa_filedesc_write(int, const openaxiom_byte*, int);
 OPENAXIOM_EXPORT int oa_filedesc_read(int, openaxiom_byte*, int);
@@ -104,7 +114,6 @@ OPENAXIOM_EXPORT int open_server(const char*);
 OPENAXIOM_EXPORT int accept_connection(openaxiom_sio*);
 OPENAXIOM_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
 OPENAXIOM_EXPORT void close_socket(openaxiom_socket, const char*);
-OPENAXIOM_EXPORT void axiom_close_socket(openaxiom_socket);
 
 OPENAXIOM_EXPORT int get_int(openaxiom_sio*);
 OPENAXIOM_EXPORT double get_float(openaxiom_sio*);

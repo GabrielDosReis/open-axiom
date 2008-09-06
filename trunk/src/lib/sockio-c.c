@@ -48,6 +48,7 @@
 #include <string.h>
 #include <signal.h>
 
+#include "cfuns.h"
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
@@ -109,11 +110,24 @@ openaxiom_sleep(int n)
 #endif   
 }
 
+/* Non zero if the host system module support for socket is activated.
+   This is needed only for MS platforms.  */
+static int openaxiom_socket_module_loaded = 0;
+
 /* Windows require some handshaking with the WinSock DLL before
    we can even think about talking about sockets. */
 
 static void
-openaxiom_load_socket_module()
+openaxiom_unload_socket_module(void)
+{
+#ifdef __WIN32__
+   WSACleanup();
+   openaxiom_socket_moduler_loaded = 0;
+#endif
+}
+
+static void
+openaxiom_load_socket_module(void)
 {
 #ifdef __WIN32__
    WSADATA wsaData;
@@ -123,22 +137,25 @@ openaxiom_load_socket_module()
       perror("could not find suitable WinSock DLL.");
       exit(WSAGetLastError());
    }
+
+   atexit(&openaxiom_unload_socket_module);
    
    if (LOBYTE(wsaData.wVersion) != 2 || HIBYTE(wsaData.wVersion) != 0) {
       perror("could not find suitable WinSock DLL.");
-      WSACleanup();
       exit(WSAGetLastError());
    }
 #endif   
+   openaxiom_socket_module_loaded = 1;
 }
 
 
 /* Get a socket identifier to a local server.  We take whatever protocol
    is the default for the address family in the SOCK_STREAM type.  */
 static inline openaxiom_socket
-openaxiom_communication_link(int family)
+openaxiom_socket_stream_link(int family)
 {
-   openaxiom_load_socket_module();
+   if (!openaxiom_socket_module_loaded)
+      openaxiom_load_socket_module();
    return socket(family, SOCK_STREAM, 0);
 }
 
@@ -146,13 +163,19 @@ openaxiom_communication_link(int family)
 /* Returns 1 if SOCKET is an invalid socket.  Otherwise return 0.  */
 
 static inline int
-is_invalid_socket(const openaxiom_sio* s)
+openaxiom_socket_is_invalid(openaxiom_socket sock)
 {
 #ifdef __WIN32__
-   return s->socket == INVALID_SOCKET;
+   return sock == INVALID_SOCKET;
 #else
-   return s->socket < 0;
+   return sock < 0;
 #endif   
+}
+
+static inline int
+is_invalid_socket(const openaxiom_sio* s)
+{
+   return openaxiom_socket_is_invalid(s->socket);
 }
 
 /* Returns 1 if SOCKET is a valid socket.  Otherwise return 0.  */
@@ -174,35 +197,16 @@ is_valid_socket(const openaxiom_sio* s)
    any other file descriptor function.  Furthermore, Windows
    requires cleanup.  */
 
-void
-openaxiom_close_socket(openaxiom_socket s)
+OPENAXIOM_EXPORT void
+oa_close_socket(openaxiom_socket s)
 {
 #ifdef __WIN32__
    shutdown(s, SD_BOTH);
    closesocket(s);
-   WSACleanup();
 #else
    close(s);
 #endif
 }  
-
-/* It is idiomatic in the Unix/POSIX world to use the standard
-   read() and write() functions on sockets.  However, in the Windows
-   world, that is invalid.  Consequently, portability suggests that
-   we restrict ourselves to the POSIX standard functions recv() and
-   send().  */
-
-static inline int
-openaxiom_write(openaxiom_sio* s, const openaxiom_byte* buf, size_t n)
-{
-   return send(s->socket, buf, n, 0);
-}
-
-static inline int
-openaxiom_read(openaxiom_sio* s, openaxiom_byte* buf, size_t n)
-{
-   return recv(s->socket, buf, n, 0);
-}
 
 /* Local IPC Socket:
       On POSIX systems, this is just the Local IPC Socket.
@@ -304,6 +308,50 @@ oa_filedesc_close(int desc)
 #endif   
 }
 
+/* IP sockets.
+*/
+
+OPENAXIOM_EXPORT openaxiom_socket
+oa_open_ip4_client_stream_socket(const char* addr, openaxiom_port port)
+{
+   struct sockaddr_in server;
+   openaxiom_socket sock = openaxiom_socket_stream_link(AF_INET);
+   if (openaxiom_socket_is_invalid(sock))
+      return OPENAXIOM_INVALID_SOCKET;
+   memset(&server, 0, sizeof server);
+   server.sin_family = AF_INET;
+   if (inet_pton(AF_INET, addr, &server.sin_addr) <= 0) {
+      fflush(stderr);
+      oa_close_socket(sock);
+      return OPENAXIOM_INVALID_SOCKET;
+   }
+   server.sin_port = htons(port);
+   if (connect(sock, (struct sockaddr*)&server, sizeof server) < 0) {
+      fflush(stderr);
+      oa_close_socket(sock);
+      return OPENAXIOM_INVALID_SOCKET;
+   }
+   return sock;
+}
+
+/* It is idiomatic in the Unix/POSIX world to use the standard
+   read() and write() functions on sockets.  However, in the Windows
+   world, that is invalid.  Consequently, portability suggests that
+   we restrict ourselves to the POSIX standard functions recv() and
+   send().  */
+
+OPENAXIOM_EXPORT int
+oa_socket_read(openaxiom_socket sock, openaxiom_byte* buf, int size)
+{
+   return recv(sock, buf, size, 0);
+}
+
+OPENAXIOM_EXPORT int
+oa_socket_write(openaxiom_socket sock, const openaxiom_byte* buf, int size)
+{
+   return send(sock, buf, size, 0);
+}
+
 
 /* Return 1 is the last call was cancelled. */
 
@@ -379,12 +427,12 @@ sread(openaxiom_sio* sock, openaxiom_byte* buf, int buf_size, const char *msg)
   char err_msg[256];
   errno = 0;
   do {
-    ret_val = openaxiom_read(sock, buf, buf_size);
+    ret_val = oa_socket_read(sock->socket, buf, buf_size);
   } while (ret_val == -1 && openaxiom_syscall_was_cancelled());
   if (ret_val == 0) {
     FD_CLR(sock->socket, &socket_mask);
     purpose_table[sock->purpose] = NULL;
-    openaxiom_close_socket(sock->socket);
+    oa_close_socket(sock->socket);
     return wait_for_client_read(sock, buf, buf_size, msg);
   }
   if (ret_val == -1) {
@@ -405,13 +453,13 @@ swrite(openaxiom_sio* sock, const openaxiom_byte* buf, int buf_size,
   char err_msg[256];
   errno = 0;
   socket_closed = 0;
-  ret_val = openaxiom_write(sock, buf, buf_size);
+  ret_val = oa_socket_write(sock->socket, buf, buf_size);
   if (ret_val == -1) {
     if (socket_closed) {
       FD_CLR(sock->socket, &socket_mask);
       purpose_table[sock->purpose] = NULL;
       /*      printf("   closing socket %d\n", sock->socket); */
-      openaxiom_close_socket(sock->socket);
+      oa_close_socket(sock->socket);
       return wait_for_client_write(sock, buf, buf_size, msg);
     } else {
       if (msg) {
@@ -820,7 +868,7 @@ send_signal(openaxiom_sio *sock, int sig)
     FD_CLR(sock->socket, &socket_mask);
     purpose_table[sock->purpose] = NULL;
 /*    printf("   closing socket %d\n", sock->socket); */
-    openaxiom_close_socket(sock->socket);
+    oa_close_socket(sock->socket);
     return wait_for_client_kill(sock, sig);
   }
   return ret_val;
@@ -866,7 +914,7 @@ connect_to_local_server_new(char *server_name, int purpose, int time_out)
     return NULL;
   }
 
-  sock->socket = openaxiom_communication_link(OPENAXIOM_AF_LOCAL);
+  sock->socket = openaxiom_socket_stream_link(OPENAXIOM_AF_LOCAL);
   if (is_invalid_socket(sock)) {
     perror("opening client socket");
     free(sock);
@@ -920,7 +968,7 @@ connect_to_local_server(char *server_name, int purpose, int time_out)
 
   sock->purpose = purpose;
   /* create the socket */
-  sock->socket = openaxiom_communication_link(OPENAXIOM_AF_LOCAL);
+  sock->socket = openaxiom_socket_stream_link(OPENAXIOM_AF_LOCAL);
   if (is_invalid_socket(sock)) {
     perror("opening client socket");
     free(sock);
@@ -1013,10 +1061,8 @@ make_server_number(void)
 OPENAXIOM_EXPORT void 
 close_socket(openaxiom_socket socket_num, const char *name)
 {
-  openaxiom_close_socket(socket_num);
-#ifndef RTplatform
-  unlink(name);
-#endif
+  oa_close_socket(socket_num);
+  oa_unlink(name);
 }
 
 OPENAXIOM_EXPORT int 
@@ -1053,7 +1099,7 @@ open_server(const char* server_name)
     return -2;
   /* create the socket internet socket */
   server[0].socket = 0;
-/*  server[0].socket = openaxiom_communication_link(AF_INET);
+/*  server[0].socket = openaxiom_socket_stream_link(AF_INET);
   if (is_invalid_socket(&server[0])) {
     server[0].socket = 0;
   } else {
@@ -1078,7 +1124,7 @@ open_server(const char* server_name)
     listen(server[0].socket,5);
   } */
   /* Next create the local domain socket */
-  server[1].socket = openaxiom_communication_link(OPENAXIOM_AF_LOCAL);
+  server[1].socket = openaxiom_socket_stream_link(OPENAXIOM_AF_LOCAL);
   if (is_invalid_socket(&server[1])) {
     perror("opening local server socket");
     server[1].socket = 0;
