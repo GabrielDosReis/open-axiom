@@ -327,13 +327,15 @@ is_dot_or_dotdot(const char* path)
 }
 
 /* Remove a directory entry.  Files are removed, directories are
-   recursively walked and there removed.
+   recursively walked and removed.
    Return 0 on success, and -1 on falure.
    In practice, OpenAxiom does not remove directories with
    non-trivial recursive structues.  */
 OPENAXIOM_EXPORT int
 oa_unlink(const char* path)
 {
+   const char* curdir;
+   int status = -1;
 #ifdef __MINGW32__
    WIN32_FIND_DATA findData;
    HANDLE walkHandle;
@@ -342,30 +344,42 @@ oa_unlink(const char* path)
    if (is_dot_or_dotdot(path))
       return -1;
 
-   if ((pathAttributes = GetFileAttributes(path)) == 0xFFFFFFFF)
+   pathAttributes = GetFileAttributes(path)
+   if (pathAttributes == 0xFFFFFFFF)
       return -1;
 
-   if (pathAttributes & ~FILE_ATTRIBUTE_DIRECTORY)
-      return DeleteFile(path) ? 0 : -1;
-   
-   if ((walkHandle = FindFirstFile(path, &findData)) == INVALID_HANDLE_VALUE
-       || oa_chdir(path) < 0)
+   walkHandle = FindFirstFile(path, &findData);
+   if (walkHandle == INVALID_HANDLE_VALUE) 
       return -1;
+
+   /* Remember where we are so we can return back properly.  */
+   curdir = oa_getcwd();
+
    do {
       if (is_dot_or_dotdot(findData.cFileName))
          continue;
       if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-         if (oa_chdir(findData.cFileName) < 0)
-            return -1;
+         if ((status = oa_chdir(findData.cFileName)) < 0)
+            goto sortie;
+         if ((status = oa_unlink("*")) < 0)
+            goto sortie;
+         if ((status = oa_chdir("..")) < 0)
+            goto sortie;
+         if(!RemoveDirectory(findData.cFileName)) {
+            status = -1;
+            goto sortie;
+         }
       }
-      else if (!DeleteFile(findData.cFileName))
-         return -1;
+      else if (!DeleteFile(findData.cFileName)) {
+         status = -1;
+         goto sortie;
+      }
+      status = 0;
    } while (FindNextFile(walkHandle, &findData));
-   if (!FindClose(walkHandle))
-      return -1;
-   if (oa_chdir("..") < 0)
-      return -1;
-   return RemoveDirectory(path) ? 0 : -1;
+   if (!FindClose(walkHandle)) {
+      status = -1;
+      goto sortie;
+   }
 #else
    struct stat pathstat;
    DIR* dir;
@@ -378,35 +392,45 @@ oa_unlink(const char* path)
    if (stat(path, &pathstat) < 0)
       return -1;
 
-   /* handle non dictories first.  */
+   /* handle non directories first.  */
    if (!S_ISDIR(pathstat.st_mode))
       return unlink(path);
 
    /* change into the path so that we don't have to form full
       pathnames. */
+   curdir = oa_getcwd();
    if ((dir = opendir(path)) == NULL || oa_chdir(path) < 0)
-      return -1;
+      goto sortie;
 
    while (errno = 0, (entry = readdir(dir)) != NULL) {
       struct stat s;
       if (is_dot_or_dotdot(entry->d_name))
          continue;
-      if (stat(entry->d_name, &s) < 0)
-         return -1;
-      if (S_ISDIR(s.st_mode) && oa_unlink(entry->d_name) < 0)
-         return -1;
-      else if (unlink(entry->d_name) < 0)
-         return -1;
+      if ((status = stat(entry->d_name, &s)) < 0)
+         goto sortie;
+      if (S_ISDIR(s.st_mode)) {
+         if ((status = oa_unlink(entry->d_name)) < 0)
+            goto sortie;
+      }
+      else if ((status = unlink(entry->d_name)) < 0)
+         goto sortie;
    }
-   if (errno != 0)
-      return -1;
+   if (errno != 0) {
+      status = -1;
+      goto sortie;
+   }
 
    /* Now, get one level up, and remove the empty directory.  */
-   if (oa_chdir("..") < 0 || closedir(dir) < 0 || rmdir(path) < 0)
-      return -1;
-
-   return 0;
+   if (oa_chdir("..") < 0 || closedir(dir) < 0 || rmdir(path) < 0) 
+      status = -1;
+   else
+      status = 0;
 #endif /* __MINGW32__ */
+
+  sortie:
+   oa_chdir(curdir);
+   free((char*) curdir);
+   return status;
 }
 
 /* Rename a file or directory.  */

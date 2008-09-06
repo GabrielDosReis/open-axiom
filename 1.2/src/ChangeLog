@@ -1,3 +1,7 @@
+2008-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/cfuns-c.c (oa_unlink): Tidy.
+
 2008-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/daase.lisp (processDir): Lose last argument.  Don't
