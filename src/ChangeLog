@@ -1,5 +1,23 @@
 2008-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-os.boot (openIP4ClientStreamSocket): New.
+	(readFromStreamSocket): Likewise.
+	(writeToStreamSocket): Likewise.
+	(closeSocket): Likewise.
+	* include/sockio.h: Include <arpa/inet.h>
+	(oa_open_ip4_client_stream_socket): Declare.
+	(oa_socket_write): Likewise.
+	(oa_socket_read): Likewise.
+	* lib/sockio-c.c (openaxiom_unload_socket_module): New.
+	(openaxiom_load_socket_module): Tidy.
+	(openaxiom_socket_is_invalid): New.
+	(is_invalid_socket): Use it.
+	(oa_open_ip4_client_stream_socket): Define.
+	(oa_socket_read): Likewise.
+	(oa_socket_write): Likewise.
+
+2008-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/cfuns-c.c (oa_unlink): Tidy.
 	
 2008-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
