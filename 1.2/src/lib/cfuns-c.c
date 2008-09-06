@@ -339,13 +339,8 @@ oa_unlink(const char* path)
 #ifdef __MINGW32__
    WIN32_FIND_DATA findData;
    HANDLE walkHandle;
-   DWORD pathAttributes;
 
    if (is_dot_or_dotdot(path))
-      return -1;
-
-   pathAttributes = GetFileAttributes(path);
-   if (pathAttributes == 0xFFFFFFFF)
       return -1;
 
    walkHandle = FindFirstFile(path, &findData);
