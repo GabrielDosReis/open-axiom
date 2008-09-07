@@ -17,9 +17,6 @@
 * Improve Boot, Spad
 * Integrate to development environments
 
-* Revisit the underlying definition of the types DFlo in foam
-  interface, and DoubleFloat in OpenAxiom.
-
 * Audit all codes that manipulate sockets.
 
 * Automate the process of "optimized" OpenAxiom: this requires a two-pass
@@ -48,6 +45,10 @@
 ============
 === DONE ===
 ============
+
+* Revisit the underlying definition of the types DFlo in foam
+  interface, and DoubleFloat in OpenAxiom.  Now, we ensure that
+  SingleFloat is 32-bit, and DoubleFloat is 64-bit.
 
 * Support more Lisp systems (GCL, SBCL, CLisp)
 

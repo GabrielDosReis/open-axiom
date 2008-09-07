@@ -1,3 +1,21 @@
+2008-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Ensure SingleFloat is 32-bit, DoubleFloat 64-bit.
+	* interp/types.boot: Tidy.
+	* interp/sys-constants.boot: Define limits for builtin numeric types.
+	* interp/sys-os.boot: Import sys-constants.
+	* interp/foam_l.lisp: Import sys-constants.  Align builtin numeric
+	types with OpenAxiom runtime's.
+	* interp/fortcall.boot: Tidy.
+	* interp/i-output.boot: Likewise.
+	* interp/Makefile.pamphlet (foam_l.$(FASLEXT)): Now require
+	sys-constants.$(FASLEXT).
+	* algebra/si.spad.pamphlet: Use $ShortMinimum and $ShortMaximum
+	for SingleInteger limits.
+	* algebra/sf.spad.pamphlet: Use $DoubleFloatMaximum,
+	$DoubleFloatMinimum for DoubleFloat limits.
+	* algebra/strap: Update cached Lisp translation.
+
 2008-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* include/sockio.h (openaxiom_filedesc): New.  Abstract over

@@ -75,6 +75,7 @@
 #+:gcl (in-package "BOOT")
 (in-package "AxiomCore")
 (import-module "vmlisp")
+(import-module "sys-constants")
 
 (in-package "FOAM")
 
@@ -184,24 +185,18 @@
 
 
 ;; type defs for Foam types
-(deftype |Char| () 'character)
+(deftype |Char| () 'BOOT::|%Char|)
 (deftype |Clos| () 'list)
 (deftype |Bool| () '(member t nil))
-(deftype |Byte| () 'unsigned-byte)
+(deftype |Byte| () 'BOOT::|%Byte|)
 (deftype |HInt| () '(integer #.(- (expt 2 15)) #.(1- (expt 2 15))))
-(deftype |SInt| () 'fixnum)
+(deftype |SInt| () 'BOOT::|%Short|)
 
-#+:AKCL
-(deftype |BInt| () t)
-#-:AKCL
-(deftype |BInt| () 'integer)
+(deftype |BInt| () 'BOOT::|%Integer|)
 
-(deftype |SFlo| () 'short-float)
+(deftype |SFlo| () 'BOOT::|%SingleFloat|)
 
-#+:AKCL
-(deftype |DFlo| () t)
-#-:AKCL
-(deftype |DFlo| () 'long-float)
+(deftype |DFlo| () 'BOOT::|%DoubleFloat|)
 
 (deftype |Level| () t) ;; structure??
 
@@ -221,9 +216,8 @@
 (defconstant |HIntInit| (the |HInt| 0))
 (defconstant |SIntInit| (the |SInt| 0))
 (defconstant |BIntInit| (the |BInt|  0))
-(defconstant |SFloInit| (the |SFlo| 0.0s0))
-;; FIXME: Revisit the definition of DFlo as long-double.
-(defconstant |DFloInit| (the |DFlo| 0.0l0))
+(defconstant |SFloInit| (coerce 0 '|SFlo|))
+(defconstant |DFloInit| (coerce 0 '|DFlo|))
 (defconstant |PtrInit|  (the |Ptr|  nil))
 (defconstant |ArrInit|  (the |Arr|  nil))
 (defconstant |RecordInit|  (the |Record|  nil))
@@ -261,11 +255,11 @@
 (defmacro |CharOrd|     (x) `(CHAR-INT (the |Char| ,x)))
 (defmacro |CharNum|     (x) `(INT-CHAR (the |SInt| ,x)))
 
-(defmacro |SFlo0|        () 0.0s0)
-(defmacro |SFlo1|        () 1.0s0)
-(defmacro |SFloMin|      () most-negative-short-float)
-(defmacro |SFloMax|      () most-positive-short-float)
-(defmacro |SFloEpsilon|  () short-float-epsilon)
+(defmacro |SFlo0|        () (coerce 0 '|SFlo|))
+(defmacro |SFlo1|        () (coerce 1 '|SFlo|))
+(defmacro |SFloMin|      () BOOT::|$SingleFloatMinimum|)
+(defmacro |SFloMax|      () BOOT::|$SingleFloatMaximum|)
+(defmacro |SFloEpsilon|  () BOOT::|$SingleFloatEpsilon|)
 (defmacro |SFloIsZero|  (x) `(zerop (the |SFlo| ,x)))
 (defmacro |SFloIsNeg|   (x) `(minusp (the |SFlo| ,x)))
 (defmacro |SFloIsPos|   (x) `(plusp (the |SFlo| ,x)))
@@ -274,8 +268,8 @@
 (defmacro |SFloEQ|    (x y) `(= (the |SFlo| ,x) (the |SFlo| ,y)))
 (defmacro |SFloNE|    (x y) `(/= (the |SFlo| ,x) (the |SFlo| ,y)))
 (defmacro |SFloNegate|  (x) `(the |SFlo| (- (the |SFlo| ,x))))
-(defmacro |SFloNext|    (x) `(the |SFlo| (+ (the |SFlo| ,x) 1.0s0)))
-(defmacro |SFloPrev|    (x) `(the |SFlo| (- (the |SFlo| ,x) 1.0s0)))
+(defmacro |SFloNext|    (x) `(the |SFlo| (+ (the |SFlo| ,x) |SFlo1|)))
+(defmacro |SFloPrev|    (x) `(the |SFlo| (- (the |SFlo| ,x) |SFlo1|)))
 (defmacro |SFloMinus| (x y) `(the |SFlo| (- (the |SFlo| ,x) (the |SFlo| ,y))))
 (defmacro |SFloTimes| (x y) `(the |SFlo| (* (the |SFlo| ,x) (the |SFlo| ,y))))
 (defmacro |SFloTimesPlus| (x y z)
@@ -295,11 +289,11 @@
 ;;(defmacro |SFloFloor|    (x) `(the |BInt| (floor (the |SFlo| ,x))))
 ;;(defmacro |SFloCeiling|  (x) `(the |BInt| (ceiling (the |SFlo| ,x))))
 
-(defmacro |DFlo0|         () 0.0d0)
-(defmacro |DFlo1|         () 1.0d0)
-(defmacro |DFloMin|       () most-negative-long-float)
-(defmacro |DFloMax|       () most-positive-long-float)
-(defmacro |DFloEpsilon|   () long-float-epsilon)
+(defmacro |DFlo0|         () (coerce 0 '|DFlo|))
+(defmacro |DFlo1|         () (coerce 1 '|DFlo|))
+(defmacro |DFloMin|       () BOOT::|$DoubleFloatMinimum|)
+(defmacro |DFloMax|       () BOOT::|$DoubleFloatMaximum|)
+(defmacro |DFloEpsilon|   () BOOT::|$DoubleFloatEpsilon|)
 (defmacro |DFloIsZero|   (x) `(zerop (the |DFlo| ,x)))
 (defmacro |DFloIsNeg|    (x) `(minusp (the |DFlo| ,x)))
 (defmacro |DFloIsPos|    (x) `(plusp (the |DFlo| ,x)))
@@ -308,8 +302,8 @@
 (defmacro |DFloLT|     (x y) `(< (the |DFlo| ,x) (the |DFlo| ,y)))
 (defmacro |DFloNE|     (x y) `(/= (the |DFlo| ,x) (the |DFlo| ,y)))
 (defmacro |DFloNegate|   (x) `(the |DFlo| (- (the |DFlo| ,x))))
-(defmacro |DFloNext|     (x) `(the |DFlo| (+ (the |DFlo| ,x) 1.0d0)))
-(defmacro |DFloPrev|     (x) `(the |DFlo| (- (the |DFlo| ,x) 1.0d0)))
+(defmacro |DFloNext|     (x) `(the |DFlo| (+ (the |DFlo| ,x) |DFlo1|)))
+(defmacro |DFloPrev|     (x) `(the |DFlo| (- (the |DFlo| ,x) |DFlo1|)))
 (defmacro |DFloPlus|   (x y) `(the |DFlo| (+ (the |DFlo| ,x) (the |DFlo| ,y))))
 (defmacro |DFloMinus|  (x y) `(the |DFlo| (- (the |DFlo| ,x) (the |DFlo| ,y))))
 (defmacro |DFloTimes|  (x y) `(the |DFlo| (* (the |DFlo| ,x) (the |DFlo| ,y))))
@@ -344,8 +338,8 @@
 
 (defmacro |SInt0|         () 0)
 (defmacro |SInt1|         () 1)
-(defmacro |SIntMin|       () `(the |SInt| most-negative-fixnum))
-(defmacro |SIntMax|       () `(the |SInt| most-positive-fixnum))
+(defmacro |SIntMin|       () `(the |SInt| BOOT::|$ShortMinimum|))
+(defmacro |SIntMax|       () `(the |SInt| BOOT::|$ShortMaximum|))
 (defmacro |SIntIsZero|   (x) `(zerop (the |SInt| ,x)))
 (defmacro |SIntIsNeg|    (x) `(minusp (the |SInt| ,x)))
 (defmacro |SIntIsPos|    (x) `(plusp (the |SInt| ,x)))

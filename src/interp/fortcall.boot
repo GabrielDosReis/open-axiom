@@ -399,11 +399,11 @@ vec2Lists u == [vec2Lists1 ELT(u,i) for i in 0..#u-1]
 spad2lisp(u) ==
   -- Turn complexes into arrays of floats
   first first(u)="Complex" =>
-    makeVector([makeVector([CADR u,CDDR u],'DOUBLE_-FLOAT)],NIL)
+    makeVector([makeVector([CADR u,CDDR u],"%DoubleFloat")],NIL)
   -- Turn arrays of complexes into arrays of floats so that tarnsposing
   -- them puts them in the correct fortran order
   first first(u)="Matrix" and first SECOND first(u) = "Complex" =>
-    makeVector([makeVector(complexRows vec2Lists rest u,'DOUBLE_-FLOAT)],NIL)
+    makeVector([makeVector(complexRows vec2Lists rest u,"%DoubleFloat")],NIL)
   rest(u)
 
 invokeFortran(objFile,args,dummies,decls,results,actual) ==
@@ -526,14 +526,14 @@ spadify(l,results,decls,names,actual) ==
 lispType u ==
   -- Return the lisp type equivalent to the given Fortran type.
   LISTP u => lispType first u
-  u = "real" => "SHORT-FLOAT"
-  u = "double" => "DOUBLE-FLOAT"
-  u = "double precision" => "DOUBLE-FLOAT"
+  u = "real" => "%SingleFloat"
+  u = "double" => "%DoubleFloat"
+  u = "double precision" => "DoubleFloat"
   u = "integer" => "FIXNUM"
   u = "logical" => "BOOLEAN"
   u = "character" => "CHARACTER"
-  u = "complex" => "SHORT-FLOAT"
-  u = "double complex" => "DOUBLE-FLOAT"
+  u = "complex" => "%SingleFloat"
+  u = "double complex" => "%DoubleFloat"
   error ['"Unrecognised Fortran type: ",u]
 
 getVal(u,names,values) ==
@@ -552,11 +552,11 @@ prepareData(args,dummies,values,decls) ==
 
 
 checkForBoolean u ==
-  u = "BOOLEAN" => "FIXNUM"
+  u = "BOOLEAN" => "%Short"
   u
 
-shortZero == COERCE(0.0,'SHORT_-FLOAT)
-longZero == COERCE(0.0,'DOUBLE_-FLOAT)
+shortZero == COERCE(0,"%SingleFloat")
+longZero == COERCE(0,"%DoubleFloat")
 
 prepareResults(results,args,dummies,values,decls) ==
   -- Create the floating point zeros (boot doesn't like 0.0d0, 0.0D0 etc)
@@ -570,7 +570,7 @@ prepareResults(results,args,dummies,values,decls) ==
           makeVector(  makeList(
             2*APPLY('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
             if first(type)="complex" then shortZero else longZero),_
-          if first(type)="complex" then "SHORT-FLOAT" else "DOUBLE-FLOAT" )
+          if first(type)="complex" then "%SingleFloat" else "%DoubleFloat" )
         LISTP type => makeVector(_
           makeList(
             APPLY('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
@@ -582,8 +582,8 @@ prepareResults(results,args,dummies,values,decls) ==
         type = "double precision" => longZero
         type = "logical" => 0
         type = "character" => MAKE_-STRING(1)
-        type = "complex" => makeVector([shortZero,shortZero],'SHORT_-FLOAT)
-        type = "double complex" => makeVector([longZero,longZero],'LONG_-FLOAT)
+        type = "complex" => makeVector([shortZero,shortZero],"%SingleFloat")
+        type = "double complex" => makeVector([longZero,longZero],"%DoubleFloat")
         error ['"Unrecognised Fortran type: ",type]
   NREVERSE data
 

@@ -88,31 +88,31 @@
            (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))))) 
 
 (PUT '|DFLOAT;max;$;12| '|SPADreplace|
-     '(XLAM NIL MOST-POSITIVE-LONG-FLOAT)) 
+     '(XLAM NIL |$DoubleFloatMaximum|)) 
 
-(DEFUN |DFLOAT;max;$;12| ($) MOST-POSITIVE-LONG-FLOAT) 
+(DEFUN |DFLOAT;max;$;12| ($) |$DoubleFloatMaximum|) 
 
 (PUT '|DFLOAT;min;$;13| '|SPADreplace|
-     '(XLAM NIL MOST-NEGATIVE-LONG-FLOAT)) 
+     '(XLAM NIL |$DoubleFloatMinimum|)) 
 
-(DEFUN |DFLOAT;min;$;13| ($) MOST-NEGATIVE-LONG-FLOAT) 
+(DEFUN |DFLOAT;min;$;13| ($) |$DoubleFloatMinimum|) 
 
 (DEFUN |DFLOAT;order;$I;14| (|a| $)
   (- (+ (FLOAT-DIGITS 0.0) (SPADCALL |a| (|getShellEntry| $ 28))) 1)) 
 
 (PUT '|DFLOAT;Zero;$;15| '|SPADreplace|
-     '(XLAM NIL (FLOAT 0 MOST-POSITIVE-LONG-FLOAT))) 
+     '(XLAM NIL (FLOAT 0 |$DoubleFloatMaximum|))) 
 
-(DEFUN |DFLOAT;Zero;$;15| ($) (FLOAT 0 MOST-POSITIVE-LONG-FLOAT)) 
+(DEFUN |DFLOAT;Zero;$;15| ($) (FLOAT 0 |$DoubleFloatMaximum|)) 
 
 (PUT '|DFLOAT;One;$;16| '|SPADreplace|
-     '(XLAM NIL (FLOAT 1 MOST-POSITIVE-LONG-FLOAT))) 
+     '(XLAM NIL (FLOAT 1 |$DoubleFloatMaximum|))) 
 
-(DEFUN |DFLOAT;One;$;16| ($) (FLOAT 1 MOST-POSITIVE-LONG-FLOAT)) 
+(DEFUN |DFLOAT;One;$;16| ($) (FLOAT 1 |$DoubleFloatMaximum|)) 
 
 (DEFUN |DFLOAT;exp1;$;17| ($)
-  (/ (FLOAT 534625820200 MOST-POSITIVE-LONG-FLOAT)
-     (FLOAT 196677847971 MOST-POSITIVE-LONG-FLOAT))) 
+  (/ (FLOAT 534625820200 |$DoubleFloatMaximum|)
+     (FLOAT 196677847971 |$DoubleFloatMaximum|))) 
 
 (PUT '|DFLOAT;pi;$;18| '|SPADreplace| '(XLAM NIL PI)) 
 
@@ -179,10 +179,10 @@
   (|DFLOAT;checkComplex| (EXPT |x| |y|) $)) 
 
 (PUT '|DFLOAT;coerce;I$;35| '|SPADreplace|
-     '(XLAM (|i|) (FLOAT |i| MOST-POSITIVE-LONG-FLOAT))) 
+     '(XLAM (|i|) (FLOAT |i| |$DoubleFloatMaximum|))) 
 
 (DEFUN |DFLOAT;coerce;I$;35| (|i| $)
-  (FLOAT |i| MOST-POSITIVE-LONG-FLOAT)) 
+  (FLOAT |i| |$DoubleFloatMaximum|)) 
 
 (PUT '|DFLOAT;exp;2$;36| '|SPADreplace| 'EXP) 
 
@@ -315,7 +315,7 @@
 (DEFUN |DFLOAT;wholePart;$I;71| (|x| $) (FIX |x|)) 
 
 (DEFUN |DFLOAT;float;2IPi$;72| (|ma| |ex| |b| $)
-  (* |ma| (EXPT (FLOAT |b| MOST-POSITIVE-LONG-FLOAT) |ex|))) 
+  (* |ma| (EXPT (FLOAT |b| |$DoubleFloatMaximum|) |ex|))) 
 
 (PUT '|DFLOAT;convert;2$;73| '|SPADreplace| '(XLAM (|x|) |x|)) 
 
@@ -372,7 +372,7 @@
     (RETURN
       (SEQ (LETT |n| (FIX |x|) |DFLOAT;retract;$I;79|)
            (EXIT (COND
-                   ((= |x| (FLOAT |n| MOST-POSITIVE-LONG-FLOAT)) |n|)
+                   ((= |x| (FLOAT |n| |$DoubleFloatMaximum|)) |n|)
                    ('T (|error| "Not an integer")))))))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;80| (|x| $)
@@ -380,7 +380,7 @@
     (RETURN
       (SEQ (LETT |n| (FIX |x|) |DFLOAT;retractIfCan;$U;80|)
            (EXIT (COND
-                   ((= |x| (FLOAT |n| MOST-POSITIVE-LONG-FLOAT))
+                   ((= |x| (FLOAT |n| |$DoubleFloatMaximum|))
                     (CONS 0 |n|))
                    ('T (CONS 1 "failed")))))))) 
 
@@ -404,17 +404,16 @@
                          (LETT |x| (FLOAT-SIGN 1.0 |x|)
                                |DFLOAT;manexp|)
                          (COND
-                           ((< MOST-POSITIVE-LONG-FLOAT |x|)
+                           ((< |$DoubleFloatMaximum| |x|)
                             (PROGN
                               (LETT #0#
                                     (CONS
                                      (+
                                       (* |s|
-                                       (SPADCALL
-                                        MOST-POSITIVE-LONG-FLOAT
+                                       (SPADCALL |$DoubleFloatMaximum|
                                         (|getShellEntry| $ 27)))
                                       1)
-                                     (SPADCALL MOST-POSITIVE-LONG-FLOAT
+                                     (SPADCALL |$DoubleFloatMaximum|
                                       (|getShellEntry| $ 28)))
                                     |DFLOAT;manexp|)
                               (GO #0#))))
@@ -610,9 +609,9 @@
                                      (SPADCALL |x|
                                       (/
                                        (FLOAT |n|
-                                        MOST-POSITIVE-LONG-FLOAT)
+                                        |$DoubleFloatMaximum|)
                                        (FLOAT |d|
-                                        MOST-POSITIVE-LONG-FLOAT))
+                                        |$DoubleFloatMaximum|))
                                       (|getShellEntry| $ 59)))))))))))
            #0# (EXIT #0#))))) 
 

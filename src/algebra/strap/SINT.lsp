@@ -80,13 +80,13 @@
 
 (DEFUN |SINT;base;$;12| ($) 2) 
 
-(PUT '|SINT;max;$;13| '|SPADreplace| '(XLAM NIL MOST-POSITIVE-FIXNUM)) 
+(PUT '|SINT;max;$;13| '|SPADreplace| '(XLAM NIL |$ShortMaximum|)) 
 
-(DEFUN |SINT;max;$;13| ($) MOST-POSITIVE-FIXNUM) 
+(DEFUN |SINT;max;$;13| ($) |$ShortMaximum|) 
 
-(PUT '|SINT;min;$;14| '|SPADreplace| '(XLAM NIL MOST-NEGATIVE-FIXNUM)) 
+(PUT '|SINT;min;$;14| '|SPADreplace| '(XLAM NIL |$ShortMinimum|)) 
 
-(DEFUN |SINT;min;$;14| ($) MOST-NEGATIVE-FIXNUM) 
+(DEFUN |SINT;min;$;14| ($) |$ShortMinimum|) 
 
 (PUT '|SINT;=;2$B;15| '|SPADreplace| 'EQL) 
 
@@ -240,8 +240,8 @@
 
 (DEFUN |SINT;coerce;I$;51| (|x| $)
   (SEQ (COND
-         ((NULL (< MOST-POSITIVE-FIXNUM |x|))
-          (COND ((NULL (< |x| MOST-NEGATIVE-FIXNUM)) (EXIT |x|)))))
+         ((NULL (< |$ShortMaximum| |x|))
+          (COND ((NULL (< |x| |$ShortMinimum|)) (EXIT |x|)))))
        (EXIT (|error| "integer too large to represent in a machine word")))) 
 
 (DEFUN |SINT;random;$;52| ($)

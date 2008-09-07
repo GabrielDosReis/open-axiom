@@ -876,7 +876,7 @@ WIDTH u ==
       negative := 0
     -- Try and be fairly exact for smallish integers:
     u = 0 => 1
-    u < MOST_-POSITIVE_-LONG_-FLOAT => 1+negative+FLOOR ((log10 u) + 0.0000001)
+    u < $DoubleFloatMaximum => 1+negative+FLOOR ((log10 u) + 0.0000001)
     -- Rough guess: integer-length returns log2 rounded up, so divide it by
     -- roughly log2(10). This should return an over-estimate, but for objects
     -- this big does it matter?
