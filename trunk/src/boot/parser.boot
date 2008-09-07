@@ -462,10 +462,14 @@ bpModule() ==
 ++    IMPORT QUOTE String
 bpImport() ==
   bpEqKey "IMPORT" =>
+    a := bpState()
     bpName() or bpTrap()
-    bpEqKey "FOR" =>
+    bpEqPeek "COLON" =>
+      bpRestore a
       (bpSignature() or bpTrap()) and 
-         bpPush ImportSignature(bpPop2(), bpPop1())
+        (bpEqKey "FOR" or bpTrap()) and
+           (bpName() or bpTrap()) and
+              bpPush ImportSignature(bpPop1(), bpPop1())
     bpPush Import bpPop1()
   false
 

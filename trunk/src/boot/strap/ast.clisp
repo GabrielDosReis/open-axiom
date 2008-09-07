@@ -2206,9 +2206,14 @@
     (RETURN
       (COND
         ((NULL |t|) |t|)
-        ((SETQ |t'| (ASSOC (|coreSymbol| |t|) |$NativeTypeTable|))
-         (CDR |t'|))
-        ('T
+        ((SETQ |t'|
+               (CDR (ASSOC (|coreSymbol| |t|) |$NativeTypeTable|)))
+         (COND
+           ((AND (EQ |t| '|string|) (|%hasFeature| :SBCL))
+            (LIST |t'| :EXTERNAL-FORMAT :ASCII :ELEMENT-TYPE
+                  'BASE-CHAR))
+           (#0='T |t'|)))
+        (#0#
          (|fatalError|
              (CONCAT "unsupported native type: " (SYMBOL-NAME |t|))))))))
 

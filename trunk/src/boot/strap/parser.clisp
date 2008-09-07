@@ -483,16 +483,24 @@
              ('T (|bpPush| (|%Module| (|bpPop1|) NIL)))))))))
 
 (DEFUN |bpImport| ()
-  (COND
-    ((|bpEqKey| 'IMPORT)
-     (PROGN
-       (OR (|bpName|) (|bpTrap|))
-       (COND
-         ((|bpEqKey| 'FOR)
-          (AND (OR (|bpSignature|) (|bpTrap|))
-               (|bpPush| (|ImportSignature| (|bpPop2|) (|bpPop1|)))))
-         (#0='T (|bpPush| (|Import| (|bpPop1|)))))))
-    (#0# NIL)))
+  (PROG (|a|)
+    (RETURN
+      (COND
+        ((|bpEqKey| 'IMPORT)
+         (PROGN
+           (SETQ |a| (|bpState|))
+           (OR (|bpName|) (|bpTrap|))
+           (COND
+             ((|bpEqPeek| 'COLON)
+              (PROGN
+                (|bpRestore| |a|)
+                (AND (OR (|bpSignature|) (|bpTrap|))
+                     (OR (|bpEqKey| 'FOR) (|bpTrap|))
+                     (OR (|bpName|) (|bpTrap|))
+                     (|bpPush|
+                         (|ImportSignature| (|bpPop1|) (|bpPop1|))))))
+             (#0='T (|bpPush| (|Import| (|bpPop1|)))))))
+        (#0# NIL)))))
 
 (DEFUN |bpTypeAliasDefition| ()
   (AND (OR (|bpTerm| #'|bpIdList|) (|bpTrap|)) (|bpEqKey| 'TDEF)

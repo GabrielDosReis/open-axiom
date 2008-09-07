@@ -107,6 +107,7 @@
   (|DirectProductFunctions2| . DIRPROD2)
   (|DisplayPackage| . DISPLAY)
   (|DistinctDegreeFactorize| . DDFACT)
+  (|Domain| . DOMAIN)
   (|DoubleFloat| . DFLOAT)
   (|DoubleFloatSpecialFunctions| . DFSFUN)
   (|DrawComplex| . DRAWCX)

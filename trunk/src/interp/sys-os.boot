@@ -46,105 +46,90 @@ module sys_-os
 loadSystemRuntimeCore()
 
 ++ change current working directory.
-import changeDirectory for
-  oa__chdir: string -> int -- 0: success, -1: failure
-
+import oa__chdir: string -> int for changeDirectory
+       -- 0: success, -1: failure
+  
 ++ remove file or directory tree.
-import removeFile for
-  oa__unlink: string -> int -- 0: sucess, -1: failure
+import oa__unlink: string -> int for removeFile
+       -- 0: sucess, -1: failure
 
 ++ rename file or directory
-import renameFile for
-  oa__rename: (string,string) -> int  -- 0: success, -1 failure
+import oa__rename: (string,string) -> int for renameFile
+       -- 0: success, -1 failure
 
 ++ create a directory
-import mkdir for
-  oa__mkdir: string -> int  -- 0: sucess, -1: failure.
+import oa__mkdir: string -> int for mkdir
+       -- 0: sucess, -1: failure.
 
-import readFromFileHandle for
-  oa__filedesc__read: (int,buffer,int) -> int -- -1: failure; otherwise
-                                              -- actual read bytes count
+import oa__filedesc__read: (int,buffer,int) -> int for readFromFileHandle
+       -- -1: failure; otherwise
+       -- actual read bytes count
 
-import writeToFileHandle for
-  oa__filedesc__write: (int,buffer,int) -> int -- -1: failure; otherwise
-                                               -- actual written bytes count
+import oa__filedesc__write: (int,buffer,int) -> int for writeToFileHandle
+       -- -1: failure; otherwise
+       -- actual written bytes count
 
-import closeFileHandle for
-  oa__filedesc__close: int -> int    -- -1: failure; otherwise 0.
+import oa__filedesc__close: int -> int for closeFileHandle
+       -- -1: failure; otherwise 0.
 
-import getEnv for
-  oa__getenv: string -> string
+import oa__getenv: string -> string for getEnv
+  
 
 --% Local IPC socket support
 
-import openLocalClientStreamSocket for
-  oa__open__local__client__stream__socket: string -> int -- -1: failure
+import oa__open__local__client__stream__socket: string -> int 
+  for openLocalClientStreamSocket
+       -- -1: failure
 
 --% INET socket stream support
 
-import openIP4ClientStreamSocket for
-  oa__open__ip4__client__stream__socket: (string,int) -> int
+import oa__open__ip4__client__stream__socket: (string,int) -> int
+  for openIP4ClientStreamSocket
 
-import readFromStreamSocket for
-  oa__socket__read: (int,string,int) -> int
+import oa__socket__read: (int,string,int) -> int for readFromStreamSocket
+  
+import oa__socket__write: (int,string,int) -> int for writeToStreamSocket
 
-import writeToStreamSocket for
-  oa__socket__write: (int,string,int) -> int
-
-import closeSocket for
-  oa__close__socket: int -> int
+import oa__close__socket: int -> int for closeSocket
 
 --% OpenAxiom subsystem socket support
 
 ++ socket interface
-import openServer for
-  open__server: string -> int
+import open__server: string -> int for openServer
 
-import sockGetInt for
-  sock__get__int: int -> int
+import sock__get__int: int -> int for sockGetInt
 
-import sockSendInt for
-  sock__send__int: (int,int) -> int
+import sock__send__int: (int,int) -> int for sockSendInt
 
-import sockGetString for
-  sock__get__string: int -> string
+import sock__get__string: int -> string for sockGetString
 
-import doSendString for
-  sock__send__string__len: (int, string, int) -> int
+import sock__send__string__len: (int, string, int) -> int
+  for doSendString
 
 sockSendString(type,str) ==
   doSendString(type, str, LENGTH str)
 
-import sockGetFloat for
-  sock__get__float: int -> double
+import sock__get__float: int -> double for sockGetFloat
 
-import sockSendFloat for
-  sock__send__float: (int,double) -> int
+import sock__send__float: (int,double) -> int for sockSendFloat
 
-import sockSendWakeup for
-  sock__send__wakeup: (int,int) -> int
+import sock__send__wakeup: (int,int) -> int for sockSendWakeup
 
-import serverSwitch for
-  server__switch: () -> int
+import server__switch: () -> int for serverSwitch
 
-import flushStdout for
-  flush__stdout: () -> int
+import flush__stdout: () -> int for flushStdout
 
-import sockSendSignal for
-  sock__send__signal: (int,int) -> int
+import sock__send__signal: (int,int) -> int for sockSendSignal
 
-import printLine for
-  print__line: string -> int
+import print__line: string -> int for printLine
 
 --%
-import directoryp for
-  directoryp: string -> int
+import directoryp: string -> int for directoryp
+  
 
-import writeablep for
-  writeablep: string -> int
+import writeablep: string -> int for writeablep
 
-import runCommand for
-  oa__system: string -> int
+import oa__system: string -> int for runCommand
 
 ++ run a program with specified arguments
 runProgram(prog,args) ==
@@ -161,14 +146,11 @@ runProgram(prog,args) ==
   
 ++ numeric limits
 )if %hasFeature KEYWORD::GCL
-import plusInfinity for
-  plus__infinity: () -> double
+import plus__infinity: () -> double for plusInfinity
 
-import minusInfinity for
-  minus__infinity: () -> double
+import minus__infinity: () -> double for minusInfinity
 
-import NaNQ for
-  NANQ: () -> double
+import NANQ: () -> double for NaNQ
 
 $plusInfinity := plusInfinity()
 $minusInfinity := minusInfinity()
@@ -197,6 +179,6 @@ minusInfinity() ==
 ++ stdStreamIsTerminal:
 ++   returns 1 if the standard stream is attached to a terminal;
 ++   otherwise 0.
-import stdStreamIsTerminal for std__stream__is__terminal: int -> int
+import  std__stream__is__terminal: int -> int for stdStreamIsTerminal
 
 --%
