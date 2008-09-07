@@ -93,9 +93,23 @@
 
 (DEFUN |AxiomCore|::|%sysInit| ()
   (DECLARE (SPECIAL |$translatingOldBoot|))
-  (COND
-    ((EQUAL (CDR (ASSOC (|Option| "boot") (|%systemOptions|))) "old")
-     (SETQ |$translatingOldBoot| T))))
+  (PROGN
+    (SETQ *LOAD-VERBOSE* NIL)
+    (COND
+      ((OR (|%hasFeature| :GCL) (|%hasFeature| :ECL))
+       (SETF (SYMBOL-VALUE
+                 (|bfColonColon| 'COMPILER '*COMPILE-VERBOSE*))
+             NIL)
+       (SETF (SYMBOL-VALUE
+                 (|bfColonColon| 'COMPILER
+                     'SUPPRESS-COMPILER-WARNINGS*))
+             NIL)
+       (SETF (SYMBOL-VALUE
+                 (|bfColonColon| 'COMPILER 'SUPPRESS-COMPILER-NOTES*))
+             T)))
+    (COND
+      ((EQUAL (CDR (ASSOC (|Option| "boot") (|%systemOptions|))) "old")
+       (SETQ |$translatingOldBoot| T)))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |setCurrentPackage|))
 
