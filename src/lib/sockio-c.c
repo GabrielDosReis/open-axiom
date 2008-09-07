@@ -320,14 +320,16 @@ oa_open_ip4_client_stream_socket(const char* addr, openaxiom_port port)
       return OPENAXIOM_INVALID_SOCKET;
    memset(&server, 0, sizeof server);
    server.sin_family = AF_INET;
+#ifdef __WIN32__
+   if ((server.sin_addr.s_addr = inet_addr(addr)) == INADDR_NONE) {
+#else
    if (inet_pton(AF_INET, addr, &server.sin_addr) <= 0) {
-      fflush(stderr);
+#endif
       oa_close_socket(sock);
       return OPENAXIOM_INVALID_SOCKET;
    }
    server.sin_port = htons(port);
    if (connect(sock, (struct sockaddr*)&server, sizeof server) < 0) {
-      fflush(stderr);
       oa_close_socket(sock);
       return OPENAXIOM_INVALID_SOCKET;
    }
