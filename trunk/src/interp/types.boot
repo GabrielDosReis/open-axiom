@@ -64,12 +64,16 @@ namespace BOOT
   INTEGER
 
 ++ Type of single precision floating point numbers.  Most of the
-++ time, this is a 32-bit datatype.
+++ time, this is a 32-bit datatype on IEEE-754 host.
 %SingleFloat <=>
+)if %hasFeature KEYWORD::GCL
+  SHORT_-FLOAT
+)else
   SINGLE_-FLOAT
+)endif
 
 ++ Type of double precision floating point numbers.  Most of the time,
-++ this is a 64-bit sized datatype.
+++ this is a 64-bit sized datatype on IEEE-756 host.
 %DoubleFloat <=>
   DOUBLE_-FLOAT
 

@@ -481,13 +481,13 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
      base() = 2 => precision()
      base() = 16 => 4*precision()
      wholePart(precision()*log2(base()::%))::PositiveInteger
-   max()            == MOST_-POSITIVE_-LONG_-FLOAT$Lisp
-   min()            == MOST_-NEGATIVE_-LONG_-FLOAT$Lisp
+   max()            == _$DoubleFloatMaximum$Lisp
+   min()            == _$DoubleFloatMinimum$Lisp
    order(a) == precision() + exponent a - 1
-   0                == FLOAT(0$Lisp,MOST_-POSITIVE_-LONG_-FLOAT$Lisp)$Lisp
-   1                == FLOAT(1$Lisp,MOST_-POSITIVE_-LONG_-FLOAT$Lisp)$Lisp
+   0                == FLOAT(0$Lisp,_$DoubleFloatMaximum$Lisp)$Lisp
+   1                == FLOAT(1$Lisp,_$DoubleFloatMaximum$Lisp)$Lisp
    -- rational approximation to e accurate to 23 digits
-   exp1()           == FLOAT(534625820200,MOST_-POSITIVE_-LONG_-FLOAT$Lisp)$Lisp / FLOAT(196677847971,MOST_-POSITIVE_-LONG_-FLOAT$Lisp)$Lisp
+   exp1()           == FLOAT(534625820200,_$DoubleFloatMaximum$Lisp)$Lisp / FLOAT(196677847971,_$DoubleFloatMaximum$Lisp)$Lisp
    pi()             == PI$Lisp
    coerce(x:%):OutputForm == 
      outputForm(FORMAT(NIL$Lisp,format,x)$Lisp pretend DoubleFloat)
@@ -506,7 +506,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    log10 x          == checkComplex log(x)$Lisp
    x:% ** i:Integer == EXPT(x,i)$Lisp
    x:% ** y:%       == checkComplex EXPT(x,y)$Lisp
-   coerce(i:Integer):% == FLOAT(i,MOST_-POSITIVE_-LONG_-FLOAT$Lisp)$Lisp
+   coerce(i:Integer):% == FLOAT(i,_$DoubleFloatMaximum$Lisp)$Lisp
    exp x            == EXP(x)$Lisp
    log x            == checkComplex LN(x)$Lisp
    log2 x           == checkComplex LOG2(x)$Lisp

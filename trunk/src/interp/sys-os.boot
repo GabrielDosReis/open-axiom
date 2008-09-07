@@ -38,7 +38,7 @@
 -- supporting C runtime libopen-axiom-core.
 --
 
-import types
+import sys_-constants
 import cfuns
 namespace BOOT
 module sys_-os
@@ -181,7 +181,7 @@ $minusInfinity == SB_-EXT::DOUBLE_-FLOAT_-NEGATIVE_-INFINITY
 )else
 -- In general Common Lisp does not provide support for infinities
 -- and the like.
-$plusInfinity == MOST_-POSITIVE_-DOUBLE_-FLOAT
+$plusInfinity == $DoubleFloatMaximum
 
 $minusInfinity == -$plusInfinity
 )endif

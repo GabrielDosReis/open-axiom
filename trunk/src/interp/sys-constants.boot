@@ -40,6 +40,55 @@
 import types
 namespace BOOT
 
+--%
+--% Numeric limits
+--%
+
+++ Minimum for %Short values.
+$ShortMinimum ==
+  MOST_-NEGATIVE_-FIXNUM
+
+++ Maximum for %Short values.
+$ShortMaximum ==
+  MOST_-POSITIVE_-FIXNUM
+
+++ Minimum for %SingleFloat values.
+$SingleFloatMinimum ==
+)if %hasFeature KEYWORD::GCL
+  MOST_-NEGATIVE_-SHORT_-FLOAT
+)else
+  MOST_-NEGATIVE_-SINGLE_-FLOAT
+)endif
+
+++ Maximum for %SingleFloat values.
+$SingleFloatMaximum ==
+)if %hasFeature KEYWORD::GCL
+  MOST_-POSITIVE_-SHORT_-FLOAT
+)else
+  MOST_-POSITIVE_-SINGLE_-FLOAT
+)endif
+
+++ Machine precision for %SingleFloat
+$SingleFloatEpsilon ==
+)if %hasFeature KEYWORD::GCL
+  SHORT_-FLOAT_-EPSILON
+)else
+  SINGLE_-FLOAT_-EPSILON
+)endif
+
+++ Maximum for %DoubleFloat values
+$DoubleFloatMinimum ==
+  MOST_-NEGATIVE_-DOUBLE_-FLOAT
+
+++ Maximum for %DoubleFloat values
+$DoubleFloatMaximum ==
+  MOST_-POSITIVE_-DOUBLE_-FLOAT
+
+++ Machine precision for %DoubleFloat
+$DoubleFloatEpsilon ==
+  DOUBLE_-FLOAT_-EPSILON
+
+--% 
 
 ++ Clock time unit per second.
 $timerTicksPerSecond == 

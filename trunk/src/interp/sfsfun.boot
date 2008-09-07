@@ -370,7 +370,7 @@ rPsiW(n,x) ==
         xmin := float(FLOOR(alpha + beta*n) + 1)
         if n>0
         then
-                a := MIN(0,1.0/float(n)*LOG(DOUBLE_-FLOAT_-EPSILON/MIN(1.0,x)))
+                a := MIN(0,1.0/float(n)*LOG($DoubleFloatPrecision/MIN(1.0,x)))
                 c := EXP(a)
                 if ABS(a) >= 0.001
                 then

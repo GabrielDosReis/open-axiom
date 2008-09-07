@@ -236,8 +236,8 @@ SingleInteger(): Join(IntegerNumberSystem,Logic,OpenMath) with
  == add
 
    seed : % := 1$Lisp               -- for random()
-   MAXINT ==> MOST_-POSITIVE_-FIXNUM$Lisp
-   MININT ==> MOST_-NEGATIVE_-FIXNUM$Lisp
+   MAXINT ==> _$ShortMaximum$Lisp
+   MININT ==> _$ShortMinimum$Lisp
    BASE ==> 67108864$Lisp           -- 2**26
    MULTIPLIER ==> 314159269$Lisp    -- from Knuth's table
    MODULUS ==> 2147483647$Lisp      -- 2**31-1

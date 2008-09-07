@@ -52,8 +52,7 @@
       (|getShellEntry| $ 30))) 
 
 (DEFUN |INS-;convert;SDf;11| (|x| $)
-  (FLOAT (SPADCALL |x| (|getShellEntry| $ 27))
-         MOST-POSITIVE-LONG-FLOAT)) 
+  (FLOAT (SPADCALL |x| (|getShellEntry| $ 27)) |$DoubleFloatMaximum|)) 
 
 (DEFUN |INS-;convert;SIf;12| (|x| $)
   (SPADCALL (SPADCALL |x| (|getShellEntry| $ 27))

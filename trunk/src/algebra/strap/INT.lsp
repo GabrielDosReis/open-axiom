@@ -135,10 +135,9 @@
   (SPADCALL |x| (|getShellEntry| $ 45))) 
 
 (PUT '|INT;convert;$Df;24| '|SPADreplace|
-     '(XLAM (|x|) (FLOAT |x| MOST-POSITIVE-LONG-FLOAT))) 
+     '(XLAM (|x|) (FLOAT |x| |$DoubleFloatMaximum|))) 
 
-(DEFUN |INT;convert;$Df;24| (|x| $)
-  (FLOAT |x| MOST-POSITIVE-LONG-FLOAT)) 
+(DEFUN |INT;convert;$Df;24| (|x| $) (FLOAT |x| |$DoubleFloatMaximum|)) 
 
 (DEFUN |INT;convert;$If;25| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 50))) 
