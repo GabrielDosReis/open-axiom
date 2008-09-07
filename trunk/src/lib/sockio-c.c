@@ -217,7 +217,7 @@ oa_close_socket(openaxiom_socket s)
       ae full duplex communication links, supporting regular
       file I/O operations.  */
 
-OPENAXIOM_EXPORT int
+OPENAXIOM_EXPORT openaxiom_filedesc
 oa_open_local_client_stream_socket(const char* path)
 {
 #ifdef __WIN32__
@@ -244,7 +244,7 @@ oa_open_local_client_stream_socket(const char* path)
 
       if (GetLastError() != ERROR_PIPE_BUSY
           || !WaitNamedPipe(pipename, NMPWAIT_WAIT_FOREVER))
-         return -1;
+         return INVALID_HANDLE_VALUE;
    }
 #  undef NAMED_PIPE_PREFIX   
 #else
@@ -265,7 +265,7 @@ oa_open_local_client_stream_socket(const char* path)
 }
 
 OPENAXIOM_EXPORT int
-oa_filedesc_read(int desc, openaxiom_byte* buf, int size)
+oa_filedesc_read(openaxiom_filedesc desc, openaxiom_byte* buf, int size)
 {
 #ifdef __WIN32__
    DWORD count = -1;
@@ -282,7 +282,7 @@ oa_filedesc_read(int desc, openaxiom_byte* buf, int size)
 }
 
 OPENAXIOM_EXPORT int
-oa_filedesc_write(int desc, const openaxiom_byte* buf, int size)
+oa_filedesc_write(openaxiom_filedesc desc, const openaxiom_byte* buf, int size)
 {
 #ifdef __WIN32__
    DWORD count = -1;
@@ -299,7 +299,7 @@ oa_filedesc_write(int desc, const openaxiom_byte* buf, int size)
 }
 
 OPENAXIOM_EXPORT int
-oa_filedesc_close(int desc)
+oa_filedesc_close(openaxiom_filedesc desc)
 {
 #ifdef __WIN32__
    return CloseHandle(desc) ? 0 : -1;

@@ -1,5 +1,11 @@
 2008-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* include/sockio.h (openaxiom_filedesc): New.  Abstract over
+	differences between Win32 named pipes and POSIX local sockets.
+	* lib/sockio-c.c: Use it.
+
+2008-09-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/sockio-c.c (oa_open_ip4_client_stream_socket): Use deprecated 
 	inet_addr on MinGW host.
 

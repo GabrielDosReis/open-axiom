@@ -61,8 +61,10 @@
 
 #ifdef __MINGW32__
 typedef SOCKET openaxiom_socket;
+typedef HANDLE openaxiom_filedesc;
 #else
 typedef int openaxiom_socket;
+typedef int openaxiom_filedesc;
 #endif
 typedef int openaxiom_port;
 
@@ -83,7 +85,8 @@ typedef struct openaxiom_sio {
 
 
 
-OPENAXIOM_EXPORT int oa_open_local_client_stream_socket(const char*);
+OPENAXIOM_EXPORT openaxiom_filedesc
+ oa_open_local_client_stream_socket(const char*);
 OPENAXIOM_EXPORT int oa_open_local_server_stream_socket(const char*);
 OPENAXIOM_EXPORT openaxiom_socket
 oa_open_ip4_client_stream_socket(const char*, openaxiom_port);
@@ -93,9 +96,11 @@ OPENAXIOM_EXPORT int oa_socket_read(openaxiom_socket,
                                     openaxiom_byte*, int);
 OPENAXIOM_EXPORT void oa_close_socket(openaxiom_socket);
 
-OPENAXIOM_EXPORT int oa_filedesc_write(int, const openaxiom_byte*, int);
-OPENAXIOM_EXPORT int oa_filedesc_read(int, openaxiom_byte*, int);
-OPENAXIOM_EXPORT int oa_filedesc_close(int);
+OPENAXIOM_EXPORT int 
+oa_filedesc_write(openaxiom_filedesc, const openaxiom_byte*, int);
+OPENAXIOM_EXPORT int 
+oa_filedesc_read(openaxiom_filedesc, openaxiom_byte*, int);
+OPENAXIOM_EXPORT int oa_filedesc_close(openaxiom_filedesc);
 
 OPENAXIOM_EXPORT int sread(openaxiom_sio*, openaxiom_byte*, int, const char*);
 OPENAXIOM_EXPORT int swrite(openaxiom_sio*, const openaxiom_byte*, int,
