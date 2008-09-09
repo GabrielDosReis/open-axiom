@@ -34,12 +34,12 @@
 */
 
 #define _SPOON2D_C
-#include "openaxiom-c-macros.h"
 
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "open-axiom.h"
 #include "viewAlone.h"
 
 
@@ -133,7 +133,7 @@ spoonView2D(void)
     /*** get acknowledge from viewport */
 
     code = read(viewP.viewIn,&(viewP.viewWindow),sizeof(Window));
-    sleep(1);  /* wait a second...*/
+    openaxiom_sleep(1);  /* wait a second...*/
     exit(0); 
 
   }   /* switch */

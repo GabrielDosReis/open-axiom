@@ -37,8 +37,8 @@
 
 /* Communication interface for external OpenAxiom buffers */
 #define _SPADINT_C
-#include "openaxiom-c-macros.h"
 
+#include "open-axiom.h"
 #include "debug.h"
 
 #include <signal.h>
@@ -172,7 +172,7 @@ issue_dependent_commands(HyperDocPage *page, TextNode *command,int type)
                                           depend->spadcom->type);
                         while (!gIsEndOfOutput)
                             pause();
-                        sleep(1);
+                        openaxiom_sleep(1);
                     }
                 }
 }
@@ -259,7 +259,7 @@ start_user_buffer(HyperDocPage *page)
          */
     }
     accept_menu_server_connection(page);
-    sleep(2);
+    openaxiom_sleep(2);
 }
 
 /* Clears the execution marks in a hash table when a buffer has been killed */

@@ -94,22 +94,6 @@ int spad_server_number = -1;
 
 #include "sockio.h"
 
-/* The function sleep() is not available under Windows.  Instead, they
-   have Sleep(); with capital S, please.  Furthermore, it does not
-   take argument in second, but in milliseconds, three order
-   of magnitude of difference when compared to the Unix world.
-   We abstract over that difference here.  */
-
-static inline void
-openaxiom_sleep(int n)
-{
-#ifdef __WIN32__
-   Sleep(n * 1000);
-#else
-   sleep(n);
-#endif   
-}
-
 /* Non zero if the host system module support for socket is activated.
    This is needed only for MS platforms.  */
 static int openaxiom_socket_module_loaded = 0;

@@ -34,7 +34,6 @@
 */
 
 #define _FUN2D_C
-#include "openaxiom-c-macros.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -42,7 +41,7 @@
 #include <string.h>
 
 
-
+#include "open-axiom.h"
 #include "viewman.h"
 #include "actions.h"
 
@@ -282,7 +281,7 @@ forkView2D(void)
          /*** get acknowledge from viewport */
 
     code = readViewport(viewport,&(viewport->viewWindow),sizeof(Window));
-    sleep(1);  /* wait a second...*/
+    openaxiom_sleep(1);  /* wait a second...*/
     send_int(spadSock,viewport->PID);  /* acknowledge to spad */
 
   }   /* switch */

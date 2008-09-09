@@ -33,8 +33,6 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "openaxiom-c-macros.h"
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -47,7 +45,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-
+#include "open-axiom.h"
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
@@ -735,7 +733,7 @@ monitor_children(void)
     if (dead_baby == -1 && death_signal) {
       kill_all_children();
       clean_up_sockets();
-      sleep(2);
+      openaxiom_sleep(2);
       exit(0);
     }
 
@@ -754,7 +752,7 @@ monitor_children(void)
     case Die:
       kill_all_children();
       clean_up_sockets();
-      sleep(2);
+      openaxiom_sleep(2);
       exit(0);
     case NadaDelShitsky:
       break;
@@ -789,7 +787,7 @@ main(int argc, char *argv[],char *envp[])
   if (start_local_spadclient) start_the_local_spadclient();
   if (start_ht)               start_the_hypertex();
   if (start_graphics)         start_the_graphics();
-  sleep(1);
+  openaxiom_sleep(1);
 
   if (fork_you(Die) != NULL) {
     sman_catch_signals();

@@ -63,6 +63,8 @@ typedef HANDLE openaxiom_handle;
 typedef void* openaxiom_handle;
 #endif
 
+#include <unistd.h>
+
 /* Do we have graphics support?  */
 #ifdef X_DISPLAY_MISSING
 #  define OPENAXIOM_HAVE_GRAPHICS 0
@@ -76,5 +78,20 @@ typedef void* openaxiom_handle;
 #define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
 
 
+/* The function sleep() is not available under Windows.  Instead, they
+   have Sleep(); with capital S, please.  Furthermore, it does not
+   take argument in second, but in milliseconds, three order
+   of magnitude of difference when compared to the Unix world.
+   We abstract over that difference here.  */
+
+static inline void
+openaxiom_sleep(int n)
+{
+#ifdef __WIN32__
+   Sleep(n * 1000);
+#else
+   sleep(n);
+#endif   
+}
 
 #endif /* OPENAXIOM_included */

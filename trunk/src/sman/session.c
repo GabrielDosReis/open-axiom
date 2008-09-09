@@ -37,12 +37,13 @@
 /* #define DEBUG */
 #define _SESSION_C
 
-#include "openaxiom-c-macros.h"
 #include <stdlib.h>
 #include <sys/time.h>
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
+
+#include "open-axiom.h"
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
@@ -465,7 +466,7 @@ main(void)
 
 #ifdef DEBUG2
   /* delay for attaching with debugger before interesting things happen */
-  sleep(30);
+   openaxiom_sleep(30);
 #endif
 
  /* spad_server connects to Lisp server socket         
