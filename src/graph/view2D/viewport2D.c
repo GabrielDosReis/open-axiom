@@ -34,7 +34,6 @@
 */
 
 #define _VIEWPORT2D_C
-#include "openaxiom-c-macros.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +44,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <limits.h>
+
+#include "open-axiom.h"
 
 #define NotPoint        (SHRT_MAX)
 #define eqNANQ(x)       (x == NotPoint)
@@ -571,7 +572,7 @@ makeViewport(char *title,int vX,int vY,int vW,int vH,int showCP)
   /* Create a viewport */
   if (!(viewport = (viewPoints *)malloc(sizeof(viewPoints)))) {
     fprintf(stderr,"Ran out of memory (malloc) trying to create a viewport.\n");
-    sleep(5);
+    openaxiom_sleep(5);
     exitWithAck(RootWindow(dsply,scrn),Window,-1);
   }
 

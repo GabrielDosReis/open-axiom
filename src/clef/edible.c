@@ -33,8 +33,6 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "openaxiom-c-macros.h"
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -46,7 +44,7 @@
 #include <errno.h>
 #include <signal.h>
 
-
+#include "open-axiom.h"
 #include "sockio.h"
 #include "edible.h"
 #include "com.h"
@@ -398,7 +396,7 @@ terminate_handler(int sig)
   sigfile = open(sigbuff, O_RDWR | O_APPEND);
   write(sigfile, "Terminate Handler\n", strlen("Terminate Handler\n") + 1);
   close(sigfile);
-  sleep(1);
+  openaxiom_sleep(1);
 #endif
   kill(child_pid, SIGTERM);
   /* fix the terminal, and exit */
@@ -420,7 +418,7 @@ interrupt_handler(int sig)
   sigfile = open(sigbuff, O_RDWR | O_APPEND);
   write(sigfile, "Interrupt Handler\n", strlen("Interrupt Handler\n") + 1);
   close(sigfile);
-  sleep(1);
+  openaxiom_sleep(1);
 #endif
   kill(child_pid, SIGINT);
 }

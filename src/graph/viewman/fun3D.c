@@ -34,13 +34,13 @@
 */
 
 #define _FUN3D_C
-#include "openaxiom-c-macros.h"
 
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "open-axiom.h"
 #include "viewman.h"
 #include "mode.h"
 #include "actions.h"
@@ -355,7 +355,7 @@ forkView3D(int typeOfViewport)
     
          /*** get acknowledge from viewport */
     code = readViewport(viewport,&(viewport->viewWindow),sizeof(Window)); 
-    sleep(1);  /* wait a second...*/
+    openaxiom_sleep(1);  /* wait a second...*/
     send_int(spadSock,viewport->PID);  /* acknowledge to spad */
 
   }   /* switch */

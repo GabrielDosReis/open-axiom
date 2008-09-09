@@ -1,3 +1,18 @@
+2008-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	    Alfredo Portes  <doyenatccny@gmail.com>
+
+	* lib/sockio-c.c (openaxiom_sleep): Move to open-axiom.h.
+	* clef/edible.c: Include "open-axiom.h".  Use openaxiom_sleep, not
+	sleep. 
+	* graph/view2D/viewport2D.c: Likewise.
+	* graph/viewAlone/spoon2D.c: Likewise.
+	* graph/viewAlone/spoonComp.c: Likewise.
+	* graph/viewman/fun2D.c: Likewise.
+	* graph/viewman/fun3D.c: Likewise.
+	* hyper/spadint.c: Likewise.
+	* sman/session.c: Likewise.
+	* sman/sman.c: Likewise.
+
 2008-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/parser.boot (bpImport): Invert syntax for importing foreign
