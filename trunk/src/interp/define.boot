@@ -680,7 +680,7 @@ displayMissingFunctions() ==
   exp := nil
   for [[op,sig,:.],:pred] in $CheckVectorList  | null pred repeat
     null member(op,$formalArgList) and
-      getmode(op,$env) is ['Mapping,:.] =>
+      getmode(op,$e) is ['Mapping,:.] =>
         loc := [[op,sig],:loc]
     exp := [[op,sig],:exp]
   if loc then
