@@ -1,3 +1,7 @@
+2008-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (displayMissingFunctions): Fix typo.
+
 2008-09-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
