@@ -985,6 +985,5 @@
     (|int|     . @int_type@)
     (|float|   . @float_type@)
     (|double|  . @double_type@)
-    (|string|  . @string_type@)
-    (|buffer|  . @pointer_type@)
-    (|pointer| . @pointer_type@)))
+    (|string|  . @string_type@)))
+

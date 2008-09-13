@@ -1,3 +1,8 @@
+2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Simplify native type translation table
+	entries. 
+
 2008-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* OpenAxiom-1.2.0 has been released.

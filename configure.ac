@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.3.0-2008-09-09], 
+AC_INIT([OpenAxiom], [1.3.0-2008-09-12], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -594,25 +594,22 @@ case $axiom_lisp_flavor in
       float_type='float'
       double_type='double'
       string_type='string'
-      pointer_type='object'
       ;;
    sbcl)
-      void_type='sb-alien:void'
-      char_type='sb-alien:char'
-      int_type='sb-alien:int'
-      float_type='sb-alien:float'
-      double_type='sb-alien:double'
-      string_type='sb-alien:c-string'
-      pointer_type='sb-alien:system-area-pointer'
+      void_type='void'
+      char_type='char'
+      int_type='int'
+      float_type='float'
+      double_type='double'
+      string_type='c-string'
       ;;
    clisp)
       void_type='nil'
-      char_type='ffi:character'
-      int_type='ffi:int'
-      float_type='ffi:single-float'
-      double_type='ffi:double-float'
-      string_type='ffi:c-string'
-      pointer_type='ffi:c-pointer'
+      char_type='character'
+      int_type='int'
+      float_type='single-float'
+      double_type='double-float'
+      string_type='c-string'
       ;;
    ecl)
       void_type=':void'
@@ -621,7 +618,6 @@ case $axiom_lisp_flavor in
       float_type=':float'
       double_type=':double'
       string_type=':cstring'
-      pointer_type=':pointer-void'
       ;;
    *)
       AC_MSG_ERROR([We do not know how to translate native types for this Lisp])

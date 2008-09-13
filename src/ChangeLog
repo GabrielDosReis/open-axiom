@@ -1,5 +1,15 @@
 2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (|$NativeTypeTable|): Don' include `pointer'
+	and `buffer'.
+	* lisp/Makefile.in (pointer_type): Remove.
+	(edit): Tidy.
+	* boot/ast.boot (nativeType): Tidy.  Handle `pointer' and `buffer'
+	here. 
+	* boot/translator.boot (genImportDeclaration): Tidy.
+	
+2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/translator.boot (AxiomCore::%sysInit) [ECL]: Remove
 	settings for ECL-base builds.
 	(getIntermediateLispFile): Tidy.

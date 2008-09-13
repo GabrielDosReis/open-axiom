@@ -426,9 +426,8 @@ genImportDeclaration(op, sig) ==
       n := INTERN strconc(SYMBOL_-NAME op, '"%clisp-hack")
       [bfColonColon("FFI","DEF-CALL-OUT"),n,
 	[KEYWORD::NAME,SYMBOL_-NAME op'],
-	  [KEYWORD::ARGUMENTS,:[[a, 
-	    bfColonColon("FFI", nativeType x)] for x in s for a in args]],
-	      [KEYWORD::RETURN_-TYPE,bfColonColon("FFI",nativeType t)],
+	  [KEYWORD::ARGUMENTS,:[[a, nativeType x] for x in s for a in args]],
+            [KEYWORD::RETURN_-TYPE, nativeType t],
 		[KEYWORD::LANGUAGE,KEYWORD::STDC]]
     forwardingFun := 
       ["DEFUN",op,args,
