@@ -1,3 +1,9 @@
+2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (AxiomCore::%sysInit) [ECL]: Remove
+	settings for ECL-base builds.
+	(getIntermediateLispFile): Tidy.
+
 2008-09-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (displayMissingFunctions): Fix typo.
