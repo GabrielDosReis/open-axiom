@@ -1218,12 +1218,28 @@ bootSymbol: %Symbol -> %Symbol
 bootSymbol s ==
   INTERN SYMBOL_-NAME s
 
+
+unknownNativeTypeError t ==
+  fatalError CONCAT('"unsupported native type: ", SYMBOL_-NAME t)
+
+
 nativeType t ==
   null t => t
+  -- for the time being, approximate `data buffer' by `pointer to data'
+  t = "buffer" or t = "pointer" =>
+    %hasFeature KEYWORD::GCL => "fixnum"
+    %hasFeature KEYWORD::ECL => KEYWORD::POINTER_-VOID
+    %hasFeature KEYWORD::SBCL => ["*",true]
+    %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
+    unknownNativeTypeError t
   t' := rest ASSOC(coreSymbol t,$NativeTypeTable) => 
+    t' := 
+      %hasFeature KEYWORD::SBCL => bfColonColon("SB-ALIEN", t')
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI",t')
+      t'
     -- ??? decree we have not discovered Unicode yet.
     t = "string" and %hasFeature KEYWORD::SBCL =>
       [t',KEYWORD::EXTERNAL_-FORMAT,KEYWORD::ASCII,
          KEYWORD::ELEMENT_-TYPE, "BASE-CHAR"]
     t'
-  fatalError CONCAT('"unsupported native type: ", SYMBOL_-NAME t)
+  unknownNativeTypeError t
