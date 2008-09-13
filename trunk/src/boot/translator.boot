@@ -69,7 +69,7 @@ $translatingOldBoot := false
 
 AxiomCore::%sysInit() ==
   SETQ(_*LOAD_-VERBOSE_*,false)
-  if %hasFeature KEYWORD::GCL or %hasFeature KEYWORD::ECL then
+  if %hasFeature KEYWORD::GCL then
     SETF(SYMBOL_-VALUE
       bfColonColon("COMPILER","*COMPILE-VERBOSE*"),false)
     SETF(SYMBOL_-VALUE 
@@ -845,7 +845,8 @@ defaultBootToLispFile file ==
 getIntermediateLispFile(file,options) ==
   out := NAMESTRING getOutputPathname(options)
   out ^= nil => 
-    strconc(shoeRemoveStringIfNec($effectiveFaslType,out),'"clisp")
+    strconc(shoeRemoveStringIfNec
+       (strconc('".",$effectiveFaslType),out),'".clisp")
   defaultBootToLispFile file
 
 translateBootFile(progname, options, file) ==
