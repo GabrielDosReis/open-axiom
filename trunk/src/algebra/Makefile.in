@@ -363,7 +363,7 @@ axiom_algebra_layer_0 = \
   ABELSG-  ORDSET   ORDSET-  FNCAT    FILECAT  SEXCAT   \
   MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
   ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
-  COMBOPC  EQ2      NONE1
+  COMBOPC  EQ2      NONE1    CONDUIT
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -569,7 +569,8 @@ axiom_algebra_layer_13 = \
   ODESYS   ODETOOLS ORDFUNS  PERMAN   \
   PFECAT   PFECAT-  POINT    PSEUDLIN \
   PTPACK   REP2     SETMN    SEX      \
-  SYMFUNC  VECTOR2     CHAR  
+  SYMFUNC  VECTOR2     CHAR  \
+  INBCON   INBCON-  OUTBCON  OUTBCON-
 
 axiom_algebra_layer_13_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_13))
@@ -636,7 +637,8 @@ axiom_algebra_layer_14 = \
   VOID     WEIER    WP       \
  EQTBL  GSTBL   HASHTBL \
   INTABL  INTFTBL  STBL    STRTBL\
-  TABLE     FST SYMS     SYMTAB
+  TABLE     FST SYMS     SYMTAB \
+  IOBCON
 
 
 axiom_algebra_layer_14_nrlibs = \

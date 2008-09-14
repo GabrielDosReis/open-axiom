@@ -1,5 +1,17 @@
 2008-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/net.spad.pamphlet (Conduit): New.
+	(InputByteConduit): Likewise.
+	(OutputByteConduit): Likewise.
+	(InputOutputByteConduit): Likewise.
+	* algebra/exposed.lsp.pamphlet: Expose Conduit, InputByteConduit,
+	OutputByteConduit, InputOutputByteConduit.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include CONDUIT.
+	(axiom_algebra_layer_13): Include INBCON, INBCON-, OUTBCON, OUTBCON-.
+	(axiom_algebra_layer_14): Include IOBCON.
+
+2008-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-os.boot (readablep): Import.
 	(writeablep): Document.
 	* algebra/fname.spad.pamphlet (exists?$FileName): Use existingFile?
