@@ -11,6 +11,101 @@
 \tableofcontents
 \eject
 
+\section{The Conduit category}
+
+<<category CONDUIT Conduit>>=
+)abbrev category CONDUIT Conduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ Description:
+++   This category is the root of the I/O conduits.
+Conduit(): Category == with
+    close!: % -> %
+      ++ close!(c) closes the conduit c, changing its state to one
+      ++ that is invalid for future read or write operations.
+
+@
+
+\subsection{The InputByteConduit category}
+
+<<category INBCON InputByteConduit>>=
+)abbrev category INBCON InputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ Description:
+++   This category describes input byte stream conduits.
+InputByteConduit(): Category == Conduit with
+    readByteIfCan!: % -> SingleInteger
+      ++ readByteIfCan!(cond) attempts to read a byte from the
+      ++ input conduit `cond'.  Returns the read byte if successful,
+      ++ otherwise return -1.
+      ++ Note: Ideally, the return value should have been of type
+      ++   Maybe Byte; but that would have implied allocating
+      ++   a cons cell for every read attempt, which is overkill.
+    readBytes!: (%,ByteArray) -> SingleInteger
+      ++ readBytes!(c,b) reads byte sequences from conduit `c' into
+      ++ the byte buffer `b'.  The actual number of bytes written
+      ++ is returned.
+  add
+    readBytes!(cond,ary) ==
+      count: SingleInteger := 0
+      b : SingleInteger
+      while count < #ary and ((b := readByteIfCan! cond) >= 0) repeat
+        qsetelt!(ary,count,b : Byte)
+        count := count + 1
+      count
+
+@
+
+\subsection{The OutputByteConduit category}
+
+<<category OUTBCON OutputByteConduit>>=
+)abbrev category OUTBCON OutputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ Description:
+++   This category describes output byte stream conduits.
+OutputByteConduit(): Category == Conduit with
+    writeByteIfCan!: (%,Byte) -> SingleInteger
+      ++ writeByteIfCan!(c,b) attempts to write the byte `b' on
+      ++ the conduit `c'.  Returns the written byte if successful,
+      ++ otherwise, returns -1.
+      ++ Note: Ideally, the return value should have been of type
+      ++   Maybe Byte; but that would have implied allocating
+      ++   a cons cell for every write attempt, which is overkill.
+    writeBytes!: (%,ByteArray) -> SingleInteger
+      ++ writeBytes!(c,b) write bytes from buffer `b' 
+      ++ onto the conduit `c'.  The actual number of written 
+      ++ bytes is returned.
+  add
+    writeBytes!(cond,ary) ==
+      count: SingleInteger := 0
+      while count < #ary and 
+        writeByteIfCan!(cond,qelt(ary,count)) >= 0 repeat
+          count := count + 1
+      count
+
+@
+
+\subsection{The InputOutputByteConduit category}
+
+<<category IOBCON InputOutputByteConduit>>=
+)abbrev category IOBCON InputOutputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ See Also: InputByteConduit, OutputByteConduit.
+++ Description:
+++   This category describes byte stream conduits supporting
+++   both input and output operations.
+InputOutputByteConduit(): Category ==
+    Join(InputByteConduit,OutputByteConduit)
+
+@
+
 \section{The Hostname domain}
 
 <<domain HOSTNAME Hostname>>=
@@ -94,6 +189,12 @@ PortNumber(): Public == Private where
 
 <<*>>=
 <<license>>
+
+<<category CONDUIT Conduit>>
+<<category INBCON InputByteConduit>>
+<<category OUTBCON OutputByteConduit>>
+<<category IOBCON InputOutputByteConduit>>
+
 <<domain HOSTNAME Hostname>>
 <<domain PORTNUM PortNumber>>
 
