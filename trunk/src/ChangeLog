@@ -1,3 +1,11 @@
+2008-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-os.boot (readablep): Import.
+	(writeablep): Document.
+	* algebra/fname.spad.pamphlet (exists?$FileName): Use existingFile?
+	(readable?$FileName): Use readablep.
+	(writeable?$FileName): Use writeable.
+
 2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (TRANSLATE-OPTION-VALUE): New.

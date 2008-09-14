@@ -184,7 +184,7 @@ axiom_has_write_access(const struct stat* file_info)
 
 /* Return
      -1 if the file designated by PATH is inexistent.
-      0 if the file exists but wirte access is denied.
+      0 if the file exists but write access is denied.
       1 if the file exists and process has write access.
       2 if the file does not exists but process has write
         has write access to the dirname of path.  */
@@ -291,7 +291,7 @@ std_stream_is_terminal(int fd)
    }
    /* The MS documentation suggests `GetFileType' for determining
       the nature of the file handle.  The return value, in our case,
-      is an over approximation of what we are interested int:  Are we
+      is an over approximation of what we are interested in:  Are we
       dealing with a stream connected to a terminal?  The constant
       FILE_TYPE_CHAR characterises character files; in particular
       a console terminal, or a printer.  There is an undocumented

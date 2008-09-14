@@ -45,6 +45,8 @@ module sys_-os
 
 loadSystemRuntimeCore()
 
+--% File System Support
+
 ++ change current working directory.
 import oa__chdir: string -> int for changeDirectory
        -- 0: success, -1: failure
@@ -60,6 +62,22 @@ import oa__rename: (string,string) -> int for renameFile
 ++ create a directory
 import oa__mkdir: string -> int for mkdir
        -- 0: sucess, -1: failure.
+
+++ Test whether a path names a directory.
+import directoryp: string -> int for directoryp
+
+++ Test whether a file exists and is accessible for read.
+import readablep: string -> int for readablep
+       -- -1: inexistent.
+       --  0: exist but read access denied.
+       --  1: exist and read accress granted.
+  
+++ Test whether a file exists and is accessible for write.
+import writeablep: string -> int for writeablep
+       -- -1: inexistent.
+       --  0: exists but write access denied
+       --  1: exists and write access granted
+       --  2: inexistent but write access to parent directory granted.
 
 import oa__filedesc__read: (int,buffer,int) -> int for readFromFileHandle
        -- -1: failure; otherwise
@@ -124,10 +142,6 @@ import sock__send__signal: (int,int) -> int for sockSendSignal
 import print__line: string -> int for printLine
 
 --%
-import directoryp: string -> int for directoryp
-  
-
-import writeablep: string -> int for writeablep
 
 import oa__system: string -> int for runCommand
 
