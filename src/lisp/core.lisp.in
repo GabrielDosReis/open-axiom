@@ -316,6 +316,21 @@
 (defun |Option| (opt)
   (intern (string opt) (find-package "AxiomCore")))
 
+
+;; Translate option value:
+;;    "no"   -> nil
+;;    "yes"  -> t
+;;    [0-9]+ -> integer value
+;;   otherwise -> input string unmolested
+(defun translate-option-value (val)
+  (cond ((string= val "no") nil)
+	((string= val "yes") t)
+	(t (multiple-value-bind (ival idx)
+	    (parse-integer val :junk-allowed t)
+	    (cond ((null ival) val)
+		  ((eql idx (length val)) ival)
+		  (t val))))))
+				
 ;; Returns a pair (name . value) if OPTION if of the form "--name=value",
 ;; where name is a symbol and value is a string.  Otherwise, if
 ;; OPTION is of the form "--name", returns the symbol name.
@@ -323,7 +338,8 @@
   (setq option (subseq option 2))
   (let ((p (position #\= option)))
     (if p
-        (cons (|Option| (subseq option 0 p)) (subseq option (1+ p)))
+        (cons (|Option| (subseq option 0 p)) 
+	      (translate-option-value (subseq option (1+ p))))
       (|Option| option))))
 
 ;; Returns the value specified for OPTION. Otherwise, return nil

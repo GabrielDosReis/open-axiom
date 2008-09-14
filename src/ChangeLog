@@ -1,5 +1,10 @@
 2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (TRANSLATE-OPTION-VALUE): New.
+	(parseOption): Use it.
+
+2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (|$NativeTypeTable|): Don' include `pointer'
 	and `buffer'.
 	* lisp/Makefile.in (pointer_type): Remove.
