@@ -1,15 +1,18 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra fname.spad}
+
+\title{src/algebra fname.spad}
 \author{Stephen M. Watt}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{category FNCAT FileNameCategory}
+
 <<category FNCAT FileNameCategory>>=
 )abbrev category FNCAT FileNameCategory
 ++ Author: Stephen M. Watt
@@ -70,7 +73,7 @@ FileNameCategory(): Category == SetCategory with
 )abbrev domain FNAME FileName
 ++ Author: Stephen M. Watt
 ++ Date Created: 1985
-++ Date Last Updated: June 20, 1991
+++ Date Last Updated: September 14, 2008
 ++ Basic Operations: 
 ++ Related Domains: 
 ++ Also See:
@@ -95,14 +98,16 @@ FileName(): FileNameCategory == add
         name(f:%): String        == fnameName(f)$Lisp
         extension(f:%): String   == fnameType(f)$Lisp
  
-        exists? f                == fnameExists?(f)$Lisp
-        readable? f              == fnameReadable?(f)$Lisp
-        writable? f              == fnameWritable?(f)$Lisp
+        exists? f   == existingFile?(f::String)$Lisp
+        readable? f == readablep(f::String)$Lisp : Integer = 1
+        writable? f == writeablep(f::String)$Lisp : Integer = 1
 
         new(d,pref,e)            == fnameNew(d,pref,e)$Lisp
 
 @
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
