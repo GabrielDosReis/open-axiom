@@ -11,6 +11,8 @@
 \eject
 \section{domain CARD CardinalNumber}
 <<domain CARD CardinalNumber>>=
+import Boolean
+import NonNegativeInteger
 )abbrev domain CARD CardinalNumber
 ++ Author: S.M. Watt
 ++ Date Created: June 1986
@@ -133,7 +135,7 @@ CardinalNumber: Join(OrderedSet, AbelianMonoid, Monoid,
             finite? x => [FINord, n*x.ival]
             n = 0     => 0
             x
-        x**y ==
+        (x: %) ** (y: %) ==
             y = 0 =>
                 x ~= 0 => 1
                 error "0**0 not defined for cardinal numbers."

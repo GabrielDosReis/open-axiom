@@ -78,6 +78,9 @@ AbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
 @
 \section{category FAMR FiniteAbelianMonoidRing}
 <<category FAMR FiniteAbelianMonoidRing>>=
+import Boolean
+import NonNegativeInteger
+import List
 )abbrev category FAMR FiniteAbelianMonoidRing
 ++ Author:
 ++ Date Created:
@@ -162,7 +165,7 @@ FiniteAbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
     if R has Field then
        x/r == map(#1/r,x)
     if R has IntegralDomain then
-       x exquo r ==
+       (x: %) exquo (r: R) ==
           -- probably not a very good definition in most special cases
           zero? x => 0
           ans:% :=0

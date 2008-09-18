@@ -383,8 +383,12 @@ PolynomialRing(R:Ring,E:OrderedAbelianMonoid): T == C
           x/r == inv(r)*x
 
 @
+
 \section{domain SUP SparseUnivariatePolynomial}
+
 <<domain SUP SparseUnivariatePolynomial>>=
+import NonNegativeInteger
+import OutputForm
 )abbrev domain SUP SparseUnivariatePolynomial
 ++ Author: Dave Barton, Barry Trager
 ++ Date Created:
@@ -555,7 +559,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
 
    if R has IntegralDomain then
     if R has approximate then
-     p1 exquo p2  ==
+     p1:% exquo p2:%  ==
         null p2 => error "Division by 0"
         p2 = 1 => p1
         p1=p2 => 1
@@ -571,7 +575,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
         null p1 => reverse(rout)::%    -- nreverse?
         "failed"
     else -- R not approximate
-     p1 exquo p2  ==
+     p1:% exquo p2:%  ==
         null p2 => error "Division by 0"
         p2 = 1 => p1
       --(p1.lastElt.c exquo p2.lastElt.c) case "failed" => "failed"

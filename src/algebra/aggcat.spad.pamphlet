@@ -1050,6 +1050,9 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
 import SetCategory
 import KeyedDictionary
 import IndexedAggregate
+import Boolean
+import OutputForm
+import List
 )abbrev category TBAGG TableAggregate
 ++ Author: Michael Monagan, Stephen Watt; revised by Manuel Bronstein and Richard Jenks
 ++ Date Created: August 87 through August 88
@@ -1098,7 +1101,7 @@ TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
       (r := search(k, t)) case Entry => r::Entry
       e
 
-   map_!(f, t) ==
+   map_!(f: Entry->Entry, t: %) ==
       for k in keys t repeat t.k := f t.k
       t
 

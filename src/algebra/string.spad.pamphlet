@@ -117,6 +117,9 @@ Character: OrderedFinite() with
 
 \section{domain CCLASS CharacterClass}
 <<domain CCLASS CharacterClass>>=
+import Character
+import String
+import List
 )abbrev domain CCLASS CharacterClass
 ++ Author: Stephen M. Watt
 ++ Date Created: July 1986
@@ -204,7 +207,7 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 	brace():%	== charClass []
 
 	insert_!(c, a)	== (a(ord c) := true; a)
-	remove_!(c, a)	== (a(ord c) := false; a)
+	remove_!(c: Character, a:%) == (a(ord c) := false; a)
 
 	inspect(a) ==
 	    for i in 0..N-1 | a.i repeat

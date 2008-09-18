@@ -379,8 +379,12 @@ InnerNormalBasisFieldFunctions(GF): Exports == Implementation where
       +/[monomial(x.i,(i-1)::NNI)$(SUP GF) for i in 1..(#x)::I]
 
 @
+
 \section{domain FFNBP FiniteFieldNormalBasisExtensionByPolynomial}
+
 <<domain FFNBP FiniteFieldNormalBasisExtensionByPolynomial>>=
+import NonNegativeInteger
+import Matrix
 )abbrev domain FFNBP FiniteFieldNormalBasisExtensionByPolynomial
 ++ Authors: J.Grabmeier, A.Scheerhorn
 ++ Date Created: 26.03.1991
@@ -514,7 +518,7 @@ FiniteFieldNormalBasisExtensionByPolynomial(GF,uni): Exports == _
     coerce(v:GF):$  == new(extdeg,v /$GF traceAlpha)$Rep
     represents(v)   ==  v::$
 
-    degree(a) ==
+    degree(a: %): PositiveInteger ==
       d:PI:=1
       b:= qPot(a::Rep,1)$INBFF
       while (b~=a) repeat
@@ -652,7 +656,7 @@ divisor of the order of the multiplicative group"
       if empty? facOfGroupSize then initializeElt()
       facOfGroupSize
 
-    extensionDegree() == extdeg
+    extensionDegree(): PositiveInteger == extdeg
 
     sizeOfGroundField() == size()$GF pretend NNI
 

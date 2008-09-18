@@ -794,3 +794,17 @@ displayModemaps E ==
  
 GCOPY ob == COPY ob  -- for now
  
+--%
+++ format the set of candidate operations.
+displayAmbiguousSignatures(op,sigs) ==
+  [:showCandidate(op, sig) for sig in sigs] where
+     showCandidate(op,sig) ==
+       ["%l", "        ", op, '": ", 
+         :bright formatUnabbreviated ["Mapping",:sig]]
+
+++ Display diagnostic message about ambiguous operation `op', with
+++ possible resolutions given by the list `sigs'.
+ambiguousSignatureError(op, sigs) ==
+  stackSemanticError(['"signature of lhs not unique.  Candidates are:",
+    :displayAmbiguousSignatures($op,sigs)],nil)
+

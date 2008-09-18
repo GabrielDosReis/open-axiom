@@ -25,8 +25,12 @@
 -- finite field represented by it's cyclic group and 'zero' as an
 -- extra element
 \end{verbatim}
+
 \section{domain FFCGP FiniteFieldCyclicGroupExtensionByPolynomial}
+
 <<domain FFCGP FiniteFieldCyclicGroupExtensionByPolynomial>>=
+import SingleInteger
+import PrimitiveArray
 )abbrev domain FFCGP FiniteFieldCyclicGroupExtensionByPolynomial
 ++ Authors: J.Grabmeier, A.Scheerhorn
 ++ Date Created: 26.03.1991
@@ -282,7 +286,7 @@ FiniteFieldCyclicGroupExtensionByPolynomial(GF,defpol):_
       initelt?:=false
       void()$Void
 
-    extensionDegree() == extdeg pretend PI
+    extensionDegree(): PositiveInteger == extdeg pretend PI
 
     characteristic() == characteristic()$GF
 

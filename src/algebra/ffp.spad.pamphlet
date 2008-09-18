@@ -28,7 +28,9 @@
 -- 04.04.91 JG: comment of FFP was changed
 
 \end{verbatim}
+
 \section{domain FFP FiniteFieldExtensionByPolynomial}
+
 <<domain FFP FiniteFieldExtensionByPolynomial>>=
 )abbrev domain FFP FiniteFieldExtensionByPolynomial
 ++ Authors: R.Sutor, J. Grabmeier, O. Gschnitzer, A. Scheerhorn
@@ -130,7 +132,7 @@ FiniteFieldExtensionByPolynomial(GF:FiniteFieldCategory,_
       a:$:=norm(primitiveElement(),n)
       vector [a**i for i in 0..n-1]
 
-    degree(x) ==
+    degree(x: %): PositiveInteger ==
       y:$:=1
       m:=zero(extdeg,extdeg+1)$(Matrix GF)
       for i in 1..extdeg+1 repeat
@@ -249,7 +251,7 @@ FiniteFieldExtensionByPolynomial(GF:FiniteFieldCategory,_
 
     coerce(e:$):OutputForm == outputForm(lift(e),alpha)
 
-    extensionDegree() == extdeg
+    extensionDegree(): PositiveInteger == extdeg
 
     size() == (sizeCG + 1) pretend NNI
 

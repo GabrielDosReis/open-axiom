@@ -425,7 +425,7 @@ initializeLisplib libName ==
 ++ return to toplevel reader.
 leaveIfErrors libName ==
   errorCount() ^=0 =>
-    sayMSG ['"   Errors in processing ",$liplibkind,'" ",:bright libName,'":"]
+    sayMSG ['"   Errors in processing ",$lisplibKind,'" ",:bright libName,'":"]
     sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
     spadThrow()
 

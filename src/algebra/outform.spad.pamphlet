@@ -202,8 +202,18 @@ NumberFormats(): NFexports == NFimplementation where
             tot::PI
 
 @
+
 \section{domain OUTFORM OutputForm}
+
 <<domain OUTFORM OutputForm>>=
+import Void
+import Boolean
+import Integer
+import NonNegativeInteger
+import DoubleFloat
+import Symbol
+import String
+import List
 )abbrev domain OUTFORM OutputForm
 ++ Keywords: output, I/O, expression
 ++ SMW March/88
@@ -571,7 +581,7 @@ OutputForm(): SetCategory with
         vconcat(a,b)  == [eform VCONCAT, a, b]
         vconcat l     == cons(eform VCONCAT, l)
 
-        a ~= b      == [sform "~=",    a, b]
+        (a:% ~= b:%): % == [sform "~=",    a, b]
         a < b       == [sform "<",     a, b]
         a > b       == [sform ">",     a, b]
         a <= b      == [sform "<=",    a, b]

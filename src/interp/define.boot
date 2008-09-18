@@ -996,10 +996,8 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
     --accept only those signatures op right length which match declared modes
   0=c => (#(sig:= getSignatureFromMode(form,e))=#form => sig; nil)
   1<c =>
-    sig:= first potentialSigList
-    stackWarning('"signature of lhs not unique: %1bp chosen",
-      [["Mapping",:sig]])
-    sig
+    ambiguousSignatureError($op,potentialSigList)
+    first potentialSigList
   nil --this branch will force all arguments to be declared
  
 compareMode2Arg(x,m) == null x or modeEqual(x,m)

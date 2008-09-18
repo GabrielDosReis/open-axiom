@@ -9,8 +9,14 @@
 \eject
 \tableofcontents
 \eject
+
 \section{category TSETCAT TriangularSetCategory}
+
 <<category TSETCAT TriangularSetCategory>>=
+import Boolean
+import NonNegativeInteger
+import OutputForm
+import List
 )abbrev category TSETCAT TriangularSetCategory
 ++ Author: Marc Moreno Maza (marc@nag.co.uk)
 ++ Date Created: 04/26/1994
@@ -317,7 +323,7 @@ TriangularSetCategory(R:IntegralDomain,E:OrderedAbelianMonoidSup,_
                  p := init(p)
        red
 
-     reduce(p,ts,redOp,redOp?) ==
+     reduce(p: P,ts: S,redOp: (P,P)->P,redOp?: (P,P)->Boolean) ==
        (empty? ts) or (ground? p) => p
        ts0 := ts
        while (not empty? ts) and (not ground? p) repeat
@@ -428,7 +434,7 @@ TriangularSetCategory(R:IntegralDomain,E:OrderedAbelianMonoidSup,_
      algebraic? (v,ts) ==
        member?(v,algebraicVariables(ts))
 
-     select  (ts,v) ==
+     select(ts: %,v: V): Union(P,"failed") ==
        lp : List (P) := sort(supRittWu?,members(ts))$(List P)
        while (not empty? lp) and (not (v = mvar(first lp))) repeat
          lp := rest lp

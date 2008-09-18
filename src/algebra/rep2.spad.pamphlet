@@ -9,8 +9,17 @@
 \eject
 \tableofcontents
 \eject
+
 \section{package REP2 RepresentationPackage2}
+
 <<package REP2 RepresentationPackage2>>=
+import Boolean
+import Integer
+import PositiveInteger
+import List
+import Vector
+import Matrix
+
 )abbrev package REP2 RepresentationPackage2
 ++ Authors: Holger Gollan, Johannes Grabmeier
 ++ Date Created: 10 September 1987
@@ -745,7 +754,7 @@ RepresentationPackage2(R): public == private where
           meatAxe(algebraGenerators, false, 25, 7)
  
  
-        meatAxe (algebraGenerators, randomElements?) ==
+        meatAxe (algebraGenerators: L M R, randomElements?: Boolean) ==
           randomElements? => meatAxe (algebraGenerators, true, 25, 7)
           meatAxe(algebraGenerators, false, 6, 7)
  

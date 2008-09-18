@@ -1,3 +1,41 @@
+2008-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (displayAmbiguousSignatures): New.
+	(ambiguousSignatureError): Likewise.
+	* interp/define.boot (hasSigInTargetCategory): Use it to reject
+	ambiguous lhs of a definition.
+	* interp/lisplib.boot (leaveIfErrors): Fix typo.
+	* algebra/aggcat.spad.pamphlet: Disambiguate definitions.
+	* algebra/card.spad.pamphlet: Likewise.
+	* algebra/dhmatrix.spad.pamphlet: Likewise.
+	* algebra/divisor.spad.pamphlet: Likewise.
+	* algebra/expexpan.spad.pamphlet: Likewise.
+	* algebra/ffcat.spad.pamphlet: Likewise.
+	* algebra/ffcg.spad.pamphlet: Likewise.
+	* algebra/ffnb.spad.pamphlet: Likewise.
+	* algebra/ffp.spad.pamphlet: Likewise.
+	* algebra/generic.spad.pamphlet: Likewise.
+	* algebra/groebf.spad.pamphlet: Likewise.
+	* algebra/modring.spad.pamphlet: Likewise.
+	* algebra/moebius.spad.pamphlet: Likewise.
+	* algebra/mts.spad.pamphlet: Likewise.
+	* algebra/naalgc.spad.pamphlet: Likewise.
+	* algebra/ore.spad.pamphlet: Likewise.
+	* algebra/outform.spad.pamphlet: Likewise.
+	* algebra/pf.spad.pamphlet: Likewise.
+	* algebra/poly.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/prtition.spad.pamphlet: Likewise.
+	* algebra/radix.spad.pamphlet: Likewise.
+	* algebra/rep2.spad.pamphlet: Likewise.
+	* algebra/stream.spad.pamphlet: Likewise.
+	* algebra/string.spad.pamphlet: Likewise.
+	* algebra/tree.spad.pamphlet: Likewise.
+	* algebra/triset.spad.pamphlet: Likewise.
+	* algebra/view2D.spad.pamphlet: Likewise.
+	* algebra/sf.spad.pamphlet: Remove signature for hash.
+	* algebra/si.spad.pamphlet: Likewise.
+
 2008-09-18  Bill Page  <bill.page@newsynthesis.org>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
