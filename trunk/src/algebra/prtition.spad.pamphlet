@@ -1,16 +1,21 @@
 \documentclass{article}
 \usepackage{axiom}
 \begin{document}
-\title{\$SPAD/src/algebra prtition.spad}
+
+\title{src/algebra prtition.spad}
 \author{William H. Burge}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain PRTITION Partition}
+
 <<domain PRTITION Partition>>=
+import Integer
+import List
 )abbrev domain PRTITION Partition
 ++ Domain for partitions of positive integers
 ++ Author: William H. Burge
@@ -56,7 +61,7 @@ Partition: Exports == Implementation where
     Rep := List Integer
     0 == nil()
  
-    coerce (s:%) == s pretend List Integer
+    coerce (s:%): List Integer == s pretend List Integer
     convert x == copy(x pretend L I)
  
     partition list == sort(#2 < #1,list)

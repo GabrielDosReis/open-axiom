@@ -9,8 +9,14 @@
 \eject
 \tableofcontents
 \eject
+
 \section{domain RADIX RadixExpansion}
+
 <<domain RADIX RadixExpansion>>=
+import Integer
+import Fraction
+import List
+import Stream
 )abbrev domain RADIX RadixExpansion
 ++ Author: Stephen M. Watt
 ++ Date Created: October 1986
@@ -128,7 +134,7 @@ RadixExpansion(bb): Exports == Implementation where
       n0 := 0
       for r in a.int repeat n0 := bb*n0 + r
       a.sgn*n0
-    fractionPart a ==
+    fractionPart(a: %): Fraction Integer ==
       n0 := 0
       for r in a.pfx repeat n0 := bb*n0 + r
       null a.cyc =>

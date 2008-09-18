@@ -9,8 +9,13 @@
 \eject
 \tableofcontents
 \eject
+
 \section{domain GCNAALG GenericNonAssociativeAlgebra}
+
 <<domain GCNAALG GenericNonAssociativeAlgebra>>=
+import Fraction
+import Polynomial
+import SparseUnivariatePolynomial
 )abbrev domain GCNAALG GenericNonAssociativeAlgebra
 ++ Authors: J. Grabmeier, R. Wisbauer
 ++ Date Created: 26 June 1991
@@ -209,11 +214,11 @@ GenericNonAssociativeAlgebra(R : CommutativeRing, n : PositiveInteger,_
         rightRankPoly := rightMinimalPolynomial genericElement
         void()$Void
 
-      leftRankPolynomial() ==
+      leftRankPolynomial(): SparseUnivariatePolynomial FPR ==
         if initLeft? then initializeLeft()
         leftRankPoly
 
-      rightRankPolynomial() ==
+      rightRankPolynomial(): SparseUnivariatePolynomial FPR ==
         if initRight? then initializeRight()
         rightRankPoly
 

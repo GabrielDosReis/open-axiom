@@ -78,6 +78,10 @@
           definitions.  Those ad hoc methods are no longer needed:  The 
           compiler systematically make them synonymous.
       </li>
+ 
+      <li>The compiler now rejects ambiguous left hand sides of 
+          definitions where parameter types are left out for inference.
+      </li>
     </ul>
 
   <h4 name="1.3.0-changes-alg">2.1.3. Algebra</h4>
@@ -88,6 +92,13 @@
         no longer export the operation <code>^</code> for logical negation.
         Use the operator <code>not</code> which is the canonical and 
         documented operator.        
+    </li>
+    <li>The domain <code>InputForm</code> now has a new exported
+        signature
+        <pre>
+                 parseString: String -> %
+        </pre>
+        for parsing expressions given as string.
     </li>
   </ul>
   

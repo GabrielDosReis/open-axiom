@@ -6,10 +6,11 @@
 \maketitle
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain GRIMAGE GraphImage}
+
 <<domain GRIMAGE GraphImage>>=
 )abbrev domain GRIMAGE GraphImage
 ++ Author: Jim Wen
@@ -365,7 +366,7 @@ GraphImage (): Exports == Implementation where
       unitsToBe
     graphImage                == graph []
 
-    makeGraphImage(llp) ==
+    makeGraphImage(llp: L L P) ==
       l := #llp
       makeGraphImage(llp,
         [pointColorDefault() for i in 1..l],

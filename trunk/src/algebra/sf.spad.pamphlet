@@ -399,8 +399,6 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
         ++ x ** y returns the yth power of x (equal to \spad{exp(y log x)}).
       exp1 : () -> %
         ++ exp1() returns the natural log base \spad{2.718281828...}.
-      hash : % -> Integer
-        ++ hash(x) returns the hash key for x
       log2 :  % -> %
         ++ log2(x) computes the logarithm with base 2 for x.
       log10: % -> %

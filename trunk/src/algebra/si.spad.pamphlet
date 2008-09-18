@@ -59,8 +59,6 @@ IntegerNumberSystem(): Category ==
       ++ random() creates a random element.
    random   : % -> %
       ++ random(a) creates a random element from 0 to \spad{n-1}.
-   hash     : % -> %
-      ++ hash(n) returns the hash code of n.
    copy     : % -> %
       ++ copy(n) gives a copy of n.
    inc      : % -> %

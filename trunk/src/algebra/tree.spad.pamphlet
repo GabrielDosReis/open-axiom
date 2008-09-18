@@ -9,8 +9,12 @@
 \eject
 \tableofcontents
 \eject
+
 \section{domain TREE Tree}
+
 <<domain TREE Tree>>=
+import Boolean
+import List
 )abbrev domain TREE Tree
 ++ Author:W. H. Burge
 ++ Date Created:17 Feb 1992
@@ -66,7 +70,7 @@ Tree(S: SetCategory): T==C where
     setvalue_!(t,s) == 
       t case empty => error "cannot set value of an empty tree"
       (t.node.value:=s;s)
-    count(n, t) == 
+    count(n: S, t: %) == 
       t case empty => 0
       i := +/[count(n, c) for c in children t]
       value t = n => i + 1

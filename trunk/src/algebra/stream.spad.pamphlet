@@ -551,11 +551,13 @@ CyclicStreamTools(S,ST): Exports == Implementation where
 \section{domain STREAM Stream}
 <<domain STREAM Stream>>=
 import Type
+import Void
 import Boolean
 import Integer
 import NonNegativeInteger
 import UniversalSegment
 import List
+import OutputForm
 )abbrev domain STREAM Stream
 ++ Implementation of streams via lazy evaluation
 ++ Authors: Burge, Watt; updated by Clifton J. Williamson
@@ -823,7 +825,7 @@ Stream(S): Exports == Implementation where
       p(frst x) => remove(p,rst x)
       concat(frst x,remove(p,rst x))
 
-    remove(p,x) ==
+    remove(p: S -> Boolean,x:%) ==
       explicitlyEmpty? x => empty()
       eq?(x,rst x) =>
         p(frst x) => empty()

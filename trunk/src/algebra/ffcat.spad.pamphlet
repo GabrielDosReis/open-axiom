@@ -117,8 +117,18 @@ ExtensionField(F:Field) : Category  == Join(Field,RetractableTo F,VectorSpace F)
       Frobenius(a,s) == a ** (size()$F ** s)
 
 @
+
 \section{category FAXF FiniteAlgebraicExtensionField}
+
 <<category FAXF FiniteAlgebraicExtensionField>>=
+import Boolean
+import NonNegativeInteger
+import PositiveInteger
+import Vector
+import Matrix
+import SparseUnivariatePolynomial
+import OnePointCompletion
+import CardinalNumber
 )abbrev category FAXF FiniteAlgebraicExtensionField
 ++ Author: J. Grabmeier, A. Scheerhorn
 ++ Date Created: 11 March 1991
@@ -283,7 +293,7 @@ FiniteAlgebraicExtensionField(F : Field) : Category == _
       m
     algebraic? a == true
     transcendent? a == false
-    extensionDegree() == (#basis()) :: PositiveInteger
+    extensionDegree(): PositiveInteger == (#basis()) :: PositiveInteger
     -- degree a == degree(minimalPolynomial a)$SUP(F) :: PI
     trace a ==
       b := basis()
@@ -384,7 +394,7 @@ FiniteAlgebraicExtensionField(F : Field) : Category == _
                    for i in 0..extensionDegree()-1]
         gcd(p,f) = 1 => true
         false
-      degree a ==
+      degree(a: %): PositiveInteger ==
         y:$:=Frobenius a
         deg:PI:=1
         while y~=a repeat
@@ -475,8 +485,19 @@ DiscreteLogarithmPackage(M): public == private where
       disclog pretend NonNegativeInteger
 
 @
+
 \section{category FFIELDC FiniteFieldCategory}
+
 <<category FFIELDC FiniteFieldCategory>>=
+import Boolean
+import Integer
+import NonNegativeInteger
+import PositiveInteger
+import Matrix
+import List
+import Table
+import OnePointCompletion
+import SparseUnivariatePolynomial
 )abbrev category FFIELDC FiniteFieldCategory
 ++ Author: J. Grabmeier, A. Scheerhorn
 ++ Date Created: 11 March 1991
@@ -600,7 +621,7 @@ FiniteFieldCategory() : Category ==_
 --        equalone := one?(a**(q quo exp.factor))
         equalone := ((a**(q quo exp.factor)) = 1)
       not equalone
-    order e ==
+    order(e: %): PositiveInteger ==
       e = 0 => error "order(0) is not defined "
       ord:Integer:= size()-1 -- order e divides ord
       a:Integer:= 0
