@@ -15,7 +15,7 @@
 ++ Parser forms
 ++ Author: Manuel Bronstein
 ++ Date Created: ???
-++ Date Last Updated: 19 April 1991
+++ Date Last Updated: September 18, 2008
 ++ Description:
 ++   Domain of parsed forms which can be passed to the interpreter.
 ++   This is also the interface between algebra code and facilities
@@ -64,6 +64,9 @@ InputForm():
       ++ unparse(f) returns a string s such that the parser
       ++ would transform s to f.
       ++ Error: if f is not the parsed form of a string.
+    parseString: String -> %
+      ++ parseString is the inverse of unparse.  It parses a 
+      ++ string to InputForm.
     declare  : List %   -> Symbol
       ++ declare(t) returns a name f such that f has been
       ++ declared to the interpreter to be of type t, but has
@@ -136,6 +139,9 @@ InputForm():
     unparse x ==
       atom?(s:% := form2String(x)$Lisp) => strsym s
       concat [strsym a for a in destruct s]
+
+    parseString x ==
+      ncParseFromString(x)$Lisp
 
     declare signature ==
       declare(name := new()$Symbol, signature)$Lisp

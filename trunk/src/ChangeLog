@@ -1,3 +1,8 @@
+2008-09-18  Bill Page  <bill.page@newsynthesis.org>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/mkfunc.spad.pamphlet (parseString$InputForm): New.
+
 2008-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot (getTypeOfSyntax): Infer more syntax domains.
