@@ -145,6 +145,16 @@ getTypeOfSyntax t ==
   op = "::" => '(CoerceAst)
   op = "@" => '(RestrictAst)
   op = "%LET" => '(LetAst)
+  op = "|" => '(SuchThatAst)
+  op = ":" => '(ColonAst)
+  op = "CAPSULE" => '(CapsuleAst)
+  op = "case" => '(CaseAst)
+  op = "has" => '(HasAst)
+  op = "is" => '(IsAst)
+  op = "CATEGORY" => '(CategoryAst)
+  op = "DEF" => '(DefinitionAst)
+  op = "MDEF" => '(MacroAst)
+  op in '(ATTRIBUTE %Attribute) => '(AttributeAst)
   $Syntax
 
 --%

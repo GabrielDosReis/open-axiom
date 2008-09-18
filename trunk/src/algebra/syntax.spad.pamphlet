@@ -428,7 +428,7 @@ SpadSyntaxCategory(): Category == AbstractSyntaxCategory
 
     renderWhile(x: List Syntax): OutputForm ==
       elt('WhileAst::OutputForm,
-        ['condition::OutputForm = renderSyntax(x : Syntax)])$OutputForm
+        ['condition::OutputForm = renderSyntax first x])$OutputForm
 
     renderIn(x: List Syntax): OutputForm ==
       elt('InAst::OutputForm,
@@ -471,6 +471,42 @@ SpadSyntaxCategory(): Category == AbstractSyntaxCategory
         ['lhs::OutputForm = renderSyntax first x,
            'rhs::OutputForm = renderSyntax second x])$OutputForm
 
+    renderSuchThat(x: List Syntax): OutputForm ==
+      elt('SuchThatAst::OutputForm, 
+        ['predicate::OutputForm = renderSyntax first x])$OutputForm
+
+    renderColon(x: List Syntax): OutputForm ==
+      elt('ColonAst::OutputForm,
+        ['lhs::OutputForm = renderSyntax first x, 
+           'rhs::OutputForm = renderSyntax second x])$OutputForm
+
+    renderCapsule(x: List Syntax): OutputForm ==
+      elt('CapsuleAst::OutputForm,
+        ['body::OutputForm = 
+          [renderSyntax s for s in x]::List(OutputForm)::OutputForm])
+
+    renderBinaryExpr(op: Symbol, args: List Syntax): OutputForm ==
+      elt(op::OutputForm,
+        ['lhs::OutputForm = renderSyntax first args,
+          'rhs::OutputForm = renderSyntax second args])$OutputForm
+
+    renderCategory(x: List Syntax): OutputForm ==
+      elt('CategoryAst::OutputForm,
+        ['kind::OutputForm = renderSyntax first x,
+          'body::OutputForm = 
+            [renderSyntax s for s in x]::List(OutputForm)::OutputForm])
+
+    renderDefinition(x: List Syntax): OutputForm ==
+      elt('DefinitionAst::OutputForm,
+        ['head::OutputForm = renderSyntax first x,
+          'signature::OutputForm = renderSyntax second x,
+            'body::OutputForm = renderSyntax last x])$OutputForm
+
+    renderMacro(x: List Syntax): OutputForm ==
+      elt('MacroAst::OutputForm,
+        ['head::OutputForm = renderSyntax first x,
+          'body::OutputForm = renderSyntax last x])$OutputForm
+
     renderSyntax x ==
       compound? x =>
         op := getOperator x
@@ -493,6 +529,15 @@ SpadSyntaxCategory(): Category == AbstractSyntaxCategory
         op = 'SEGMENT => renderSegment args
         op = 'SEQ => renderSequence args
         op = '%LET => renderLet args
+        op = '_| => renderSuchThat args
+        op = '_: => renderColon args
+        op = 'CAPSULE => renderCapsule args
+        op = '_case => renderBinaryExpr('CaseAst, args)
+        op = '_has => renderBinaryExpr('HasAst, args)
+        op = '_is => renderBinaryExpr('IsAst, args)
+        op = 'CATEGORY => renderCategory args
+        op = 'DEF => renderDefinition args
+        op = 'MDEF => renderMacro args
         x::OutputForm
       x::OutputForm
 
@@ -826,6 +871,27 @@ CollectAst(): Public == Private where
 @
 
 
+\subsection{The ReduceAst domain}
+
+<<domain RDUCEAST ReduceAst>>=
+)abbrev domain RDUCEAST ReduceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: August 30, 2008
+++ Description: This domain represents list reduction syntax.
+ReduceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    operator: % -> Syntax
+      ++ operator(e) returns the magma operation being applied.
+    body: % -> Syntax
+      ++ body(e) return the list of expressions being redcued.
+  Private == add
+    Rep == List Syntax
+    operator x == second rep x
+    body x == third rep x
+
+@
+
 \subsection{The ConstructAst domain}
 
 <<domain LSTAST ConstructAst>>=
@@ -859,13 +925,13 @@ ExitAst(): Public == Private where
   Public == SpadSyntaxCategory with
     expression: % -> Syntax
       ++ expression(e) returns the exit expression of `e'.
+    level: % -> Integer
+      ++ level(e) returns the nesting exit level of `e'
   Private == add
-    import Pair
-    Rep == Pair(Symbol,Syntax)
-    expression x == second rep x
-
+    Rep == List Syntax
+    expression x == third rep x
+    level x == (second rep x) : Integer
 @
-
 
 
 \subsection{The ReturnAst domain}
@@ -1025,17 +1091,291 @@ CallAst(): Public == Private where
 )abbrev domain SEGAST SegmentAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: August 30, 2008
+++ Date Last Modified: September 17, 2008
 ++ Description: This domain represents segement expressions.
 SegmentAst(): Public == Private where
   Public == SpadSyntaxCategory with
     bounds: % -> List Syntax
+      ++ bounds(s) returns the bounds of the segment `s'.  If
+      ++ `s' designates an infinite interval, then the returns
+      ++ list a singleton list.
   Private == add
     Rep == List Syntax
     bounds x == rest rep x
 
 @
 
+
+\subsection{The SuchThatAst domain}
+
+<<domain SUCHTAST SuchThatAst>>=
+)abbrev domain SUCHTAST SuchThatAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 17, 2008
+++ Description: This domain represents the filter iterator syntax.
+SuchThatAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    predicate: % -> Syntax
+      ++ predicate(e) returns the syntax object for the predicate
+      ++ in the filter iterator syntax `e'.
+  Private == add
+    Rep == List Syntax
+    predicate e == second rep x
+@
+
+\subsection{The ColonAst domain}
+
+<<domain COLONAST ColonAst>>=
+)abbrev domain COLONAST ColonAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 17, 2008
+++ Description: This domain represents type specification 
+++   for an identifier or expression.
+ColonAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> Syntax
+      ++ lhs(e) returns the left hand side of the colon expression `e'.
+    rhs: % -> TypeAst
+      ++ rhs(e) returns the right hand side of the colon expression `e'.
+  Private == add
+    Rep == List Syntax
+    lhs x == second rep x
+    rhs x == (third rep x) : TypeAst
+@
+
+\subsection{The AddAst domain}
+
+<<domain ADDAST AddAst>>=
+)abbrev domain ADDAST AddAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 17, 2008
+++ Description: This domain represents the syntax for an add-expression.
+AddAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    base: % -> Syntax
+      ++ base(d) returns the base domain(s) of the add-domain expression.
+    body: % -> Syntax
+      ++ base(d) returns the actual body of the add-domain expression `d'.
+  Private == add
+    Rep == List Syntax
+    base x == second rep x
+    body x == third rep x
+@
+
+
+\subsection{The CapsuleAst domain}
+
+<<domain CAPSLAST CapsuleAst>>=
+)abbrev domain CAPSLAST CapsuleAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 17, 2008
+++ Description: This domain represents the capsule of a domain definition.
+CapsuleAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List Syntax
+      ++ body(c) returns the list of top level expressions appearing in `c'.
+  Private == add
+    Rep == Pair(Symbol, List Syntax)
+    body x == second rep x
+@
+
+\subsection{The CaseAst domain}
+
+<<domain CASEAST CaseAst>>=
+)abbrev domain CASEAST CaseAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 17, 2008
+++ Description: This domain represents a `case' expression.
+CaseAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> Syntax
+      ++ lhs(e) returns the left hand side of the case expression `e'.
+    rhs: % -> Syntax
+      ++ rhs(e) returns the right hand side of the case expression `e'.
+  Private == add
+    Rep == List Syntax
+    lhs x == second rep x
+    rhs x == third rep x
+@
+
+
+\subsection{The HasAst domain}
+
+<<domain HASAST HasAst>>=
+)abbrev domain HASAST HasAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 17, 2008
+++ Description: This domain represents a `has' expression.
+HasAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> Syntax
+      ++ lhs(e) returns the left hand side of the has expression `e'.
+    rhs: % -> Syntax
+      ++ rhs(e) returns the right hand side of the case expression `e'.
+  Private == add
+    Rep == List Syntax
+    lhs x == second rep x
+    rhs x == third rep x
+@
+
+\subsection{The IsAst domain}
+
+<<domain ISAST IsAst>>=
+)abbrev domain ISAST IsAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 17, 2008
+++ Description: This domain represents a `has' expression.
+IsAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> Syntax
+      ++ lhs(e) returns the left hand side of the is expression `e'.
+    rhs: % -> Syntax
+      ++ rhs(e) returns the right hand side of the is expression `e'.
+  Private == add
+    Rep == List Syntax
+    lhs x == second rep x
+    rhs x == third rep x
+@
+
+\subsection{The CategoryAst domain}
+
+<<domain CATAST CategoryAst>>=
+)abbrev domain CATAST CategoryAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 17, 2008
+++ Description: This domain represents the unnamed category defined
+++   by a list of exported signatures
+CategoryAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    kind: % -> Symbol
+      ++ kind(c) returns the kind of unnamed category, either
+      ++ 'domain' or 'package'.
+    body: % -> List Syntax
+      ++ body(c) returns the list of exports in category syntax `c'.
+  Private == add
+    Rep == List Syntax
+    kind x == second rep x
+    body x == rest rest rep x
+@
+
+\subsection{The WhereAst domain}
+
+<<domain WHEREAST WhereAst>>=
+)abbrev domain WHEREAST WhereAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 18, 2008
+++ Description: This domain represents the syntax of a `where' expression.
+WhereAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    mainExpression: % -> Syntax
+      ++ mainExpression(e) returns the main expression of the 
+      ++ `where' expression `e'.
+    qualifier: % -> Syntax
+      ++ qualifier(e) returns the qualifier of the expression `e'.
+  Private == add
+    Rep == List Syntax
+    mainExpression x == second rep x
+    qualifier x == third rep x
+@
+
+\subsection{The CommaAst domain}
+
+<<domain COMMAAST CommaAst>>=
+)abbrev domain COMMAAST CommaAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 18, 2008
+++ Description: This domain represents the syntax of a comma-separated
+++   list of expressions.
+CommaAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List Syntax
+      ++ body(e) returns the list of expressions making up `e'.
+  Private == add
+    Rep == List Syntax
+    body x == rest rep x
+@
+
+
+\subsection{The QuasiquoteAst domain}
+
+<<domain QQUTAST QuasiquoteAst>>=
+)abbrev domain QQUTAST QuasiquoteAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 18, 2008
+++ Description: This domain represents the syntax of a quasiquote
+++   expression.
+QuasiquoteAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> Syntax
+      ++ expression(e) returns the syntax for the expression being quoted.
+  Private == add
+    Rep == List Syntax
+    expression x == second rep x
+@
+
+
+\subsection{The DefinitionAst domain}
+
+<<domain DEFAST DefinitionAst>>=
+)abbrev domain DEFAST DefinitionAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 18, 2008
+++ Description: This domain represents the syntax of a definition.
+DefinitionAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    head: % -> List Identifier
+      ++ head(d) returns the head of the definition `d'.  This is a 
+      ++ list of identifiers starting with the name of the operation
+      ++ followed by the name of the parameters, if any.
+    signature: % -> Signature
+      ++ signature(d) returns the signature of the operation being
+      ++ defined.  Note that this list may be partial in that it
+      ++ contains only the types actually specified in the definition.
+    body: % -> Syntax
+      ++ body(d) returns the right hand side of the definition `d'.
+  Private == add
+    Rep == List Syntax
+    head x == (second rep x) : List Identifier
+    signature x == (third rep x) : Signature
+    body x == last rep x
+
+@
+
+
+\subsection{The MacroAst domain}
+
+<<domain MACROAST MacroAst>>=
+)abbrev domain MACROAST MacroAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 18, 2008
+++ Description: This domain represents the syntax of a macro definition.
+MacroAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    head: % -> List Identifier
+      ++ head(m) returns the head of the macro definition `m'.  This is a 
+      ++ list of identifiers starting with the name of the macro
+      ++ followed by the name of the parameters, if any.
+    body: % -> Syntax
+      ++ body(m) returns the right hand side of the definition `m'.
+  Private == add
+    Rep == List Syntax
+    head x == (second rep x) : List Identifier
+    body x == last rep x
+
+@
 
 
 \section{License}
@@ -1106,6 +1446,21 @@ SegmentAst(): Public == Private where
 <<domain CRCAST CoercedAst>>
 <<domain RSTRCAST RestrictAst>>
 <<domain LETAST LetAst>>
+
+<<domain RDUCEAST ReduceAst>>
+<<domain SUCHTAST SuchThatAst>>
+<<domain COLONAST ColonAst>>
+<<domain ADDAST AddAst>>
+<<domain CAPSLAST CapsuleAst>>
+<<domain CASEAST CaseAst>>
+<<domain HASAST HasAst>>
+<<domain ISAST IsAst>>
+<<domain CATAST CategoryAst>>
+<<domain WHEREAST WhereAst>>
+<<domain COMMAAST CommaAst>>
+<<domain QQUTAST QuasiquoteAst>>
+<<domain DEFAST DefinitionAst>>
+<<domain MACROAST MacroAst>>
 
 @
 

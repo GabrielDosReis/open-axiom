@@ -1,3 +1,11 @@
+2008-09-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot (getTypeOfSyntax): Infer more syntax domains.
+	* algebra/syntax.spad.pamphlet: Add more syntax domains.
+	* algebra/exposed.lsp.pamphlet: Expose more syntax object domains.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_user): Add more
+	syntax object files.
+
 2008-09-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/net.spad.pamphlet (Conduit): New.
