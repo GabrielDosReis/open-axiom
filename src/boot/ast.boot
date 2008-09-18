@@ -1227,7 +1227,7 @@ nativeType t ==
   null t => t
   -- for the time being, approximate `data buffer' by `pointer to data'
   t = "buffer" or t = "pointer" =>
-    %hasFeature KEYWORD::GCL => "fixnum"
+    %hasFeature KEYWORD::GCL => "FIXNUM"
     %hasFeature KEYWORD::ECL => KEYWORD::POINTER_-VOID
     %hasFeature KEYWORD::SBCL => ["*",true]
     %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")

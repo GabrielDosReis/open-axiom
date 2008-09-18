@@ -1051,7 +1051,6 @@ AC_SUBST(int_type)
 AC_SUBST(float_type)
 AC_SUBST(double_type)
 AC_SUBST(string_type)
-AC_SUBST(pointer_type)
 
 @
 
@@ -1127,7 +1126,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.3.0-2008-09-17], 
+AC_INIT([OpenAxiom], [1.3.0-2008-09-18], 
         [open-axiom-bugs@lists.sf.net])
 
 @
