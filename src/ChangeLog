@@ -1,5 +1,9 @@
 2008-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/lisplib.boot (getConstructorSignature): Relax.
+
+2008-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (displayAmbiguousSignatures): New.
 	(ambiguousSignatureError): Likewise.
 	* interp/define.boot (hasSigInTargetCategory): Use it to reject
