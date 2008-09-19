@@ -127,9 +127,6 @@ getTypeOfSyntax t ==
     $Syntax
   [op,:.] := t
   op = "Mapping" => '(MappingAst)
-  op = "Join" => '(JoinAst)
-  op in '(%Import import) => '(ImportAst)
-  op in '(%Signature SIGNATURE) => '(SignatureAst)
   op = "QUOTE" and #t = 2 and IDENTP second t => ["Literal",$Symbol]
   op = "IF" => '(IfAst)
   op = "REPEAT" => '(RepeatAst)
@@ -147,14 +144,21 @@ getTypeOfSyntax t ==
   op = "%LET" => '(LetAst)
   op = "|" => '(SuchThatAst)
   op = ":" => '(ColonAst)
-  op = "CAPSULE" => '(CapsuleAst)
+  op = ":=" => '(LetAst)
+  op = "%Comma" => '(CommaAst)
   op = "case" => '(CaseAst)
   op = "has" => '(HasAst)
   op = "is" => '(IsAst)
-  op = "CATEGORY" => '(CategoryAst)
   op = "DEF" => '(DefinitionAst)
-  op = "MDEF" => '(MacroAst)
+  op in '(MDEF %Macro) => '(MacroAst)
+  op = "where" => '(WhereAst)
   op in '(ATTRIBUTE %Attribute) => '(AttributeAst)
+  op = "Join" => '(JoinAst)
+  op = "CAPSULE" => '(CapsuleAst)
+  op in '(%Import import) => '(ImportAst)
+  op in '(%Signature SIGNATURE) => '(SignatureAst)
+  op = "CATEGORY" => '(CategoryAst)
+  op = "[||]" => '(QuasiquoteAst)
   $Syntax
 
 --%
