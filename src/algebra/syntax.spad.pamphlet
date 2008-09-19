@@ -1021,8 +1021,8 @@ PretendAst(): Public == Private where
 
 \subsection{The CoerceAst domain}
 
-<<domain CRCAST CoercedAst>>=
-)abbrev domain CRCAST CoerceAst
+<<domain CRCEAST CoercedAst>>=
+)abbrev domain CRCEAST CoerceAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
 ++ Date Last Modified: August 30, 2008
@@ -1417,6 +1417,7 @@ MacroAst(): Public == Private where
 <<*>>=
 <<license>>
 <<domain SYNTAX Syntax>>
+<<domain SIG Signature>>
 <<domain CTORCALL ConstructorCall>>
 <<domain ELABEXPR ElaboratedExpression>>
 
@@ -1443,7 +1444,7 @@ MacroAst(): Public == Private where
 <<domain SEGAST SegmentAst>>
 <<domain SEQAST SequenceAst>>
 <<domain PRTDAST PretendAst>>
-<<domain CRCAST CoercedAst>>
+<<domain CRCEAST CoercedAst>>
 <<domain RSTRCAST RestrictAst>>
 <<domain LETAST LetAst>>
 

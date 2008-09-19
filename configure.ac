@@ -629,7 +629,6 @@ AC_SUBST(int_type)
 AC_SUBST(float_type)
 AC_SUBST(double_type)
 AC_SUBST(string_type)
-AC_SUBST(pointer_type)
 
 AXIOM_MAKEFILE([Makefile])
 AXIOM_MAKEFILE([src/Makefile])
