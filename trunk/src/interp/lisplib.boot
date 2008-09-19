@@ -639,10 +639,10 @@ findDomainSlotNumber(domain,op,sig) == --using slot 1 of the domain
 
 getConstructorSignature: %Symbol -> %Form
 getConstructorSignature ctor ==
-  (mm := getConstructorModemapFromDB ctor) =>
-    [[.,:sig],:.] := mm
-    sig
-  nil
+  ([[.,:sig],:.] := getConstructorModemapFromDB ctor) => sig
+  -- If we have a local or forward declaration take it.
+  -- Note: constructors are not overloadable.
+  rest getmode(ctor,$e)
  
 getSlotFromCategoryForm ([op,:argl],index) ==
   u:= eval [op,:MAPCAR('MKQ,TAKE(#argl,$FormalMapVariableList))]
