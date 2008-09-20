@@ -38,7 +38,7 @@ namespace BOOT
 
 InterpExecuteSpadSystemCommand string ==
   CATCH($intCoerceFailure,
-    CATCH($intSpadReader, ExecuteInterpSystemCommand string) )
+    CATCH($SpadReaderTag, ExecuteInterpSystemCommand string) )
  
 ExecuteInterpSystemCommand string ==
    string := intProcessSynonyms(string)

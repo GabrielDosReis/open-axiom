@@ -40,12 +40,6 @@ namespace BOOT
 $intCoerceFailure ==
   "coerceFailure"
 
-$intTopLevel ==
-  "top__level"
-
-$intSpadReader ==
-  "SPAD__READER"
-
 $intRestart ==
   "restart"
 

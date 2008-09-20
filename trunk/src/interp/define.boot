@@ -37,6 +37,8 @@ import cattable
 import category
 namespace BOOT
 
+--%
+
 NRTPARSE := false
 $newCompCompare := false
 
@@ -52,6 +54,11 @@ $suffix := nil
 
 -- ??? turns off buggy code
 $NRTopt := false
+
+
+$doNotCompileJustPrint := false
+
+--%
 
 ++ List of operations defined in a given capsule
 ++ Each item on this list is of the form

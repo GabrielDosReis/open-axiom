@@ -35,6 +35,13 @@
 import g_-util
 namespace BOOT
 
+--%
+
+++ List of global attributes.
+$Attributes := []
+
+--%
+
 ++ Returns true if `a' is a category (runtime) object.
 isCategory: %Thing -> %Boolean
 isCategory a == 

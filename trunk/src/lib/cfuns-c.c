@@ -94,6 +94,51 @@ addtopath(char *dir)
     return putenv(newpath);
 }
 
+
+
+/* Returns 1 if `c' designates a path separator, 0 otherwise.  */
+static inline int
+openaxiom_is_path_separator(char c)
+{
+#ifdef __WIN32__
+   return c == '\\' || c == '/';
+#else
+   return c == '/';
+#endif      
+}
+
+/*
+  Returns a the dirname of `path'.  If `path' has no separator, then
+  returns ".".  The returned value if malloc-allocated.  */
+
+OPENAXIOM_EXPORT char*
+oa_dirname(const char* path)
+{
+   const int n = strlen(path);
+   char* mark = mark + n;
+
+   if (n == 0)
+      return strdup(".");
+   else if (n == 1 &&  openaxiom_is_path_separator(*path))
+      return strdup("/");
+
+   /* For "/banana/space/", we want "/banana".  */
+   if (openaxiom_is_path_separator(*--mark))
+      --mark;
+   while (path < mark && !openaxiom_is_path_separator(*mark))
+      --mark;
+
+   if (path == mark)
+      return strdup(openaxiom_is_path_separator(*path) ? "/" : ".");
+   else {
+      const int l = mark - path;
+      char* dir = (char*) malloc(l + 1);
+      memcpy(dir, path, l);
+      dir[l] = '\0';
+      return dir;
+   }
+}
+
 /*
  * Test whether the path is the name of a directory.  Returns 1 if so, 0 if
  * not, -1 if it doesn't exist.
@@ -167,15 +212,15 @@ axiom_has_write_access(const struct stat* file_info)
       return 1;
 
    if (effetive_uid == file_info->st_uid)
-      return file_info->st_mode & S_IWUSR;
+      return (file_info->st_mode & S_IWUSR) ? 1 : 0;
 
 #ifdef S_IWGRP
    if (getegid() == file_info->st_gid)
-      return file_info->st_mode & S_IWGRP;
+      return (file_info->st_mode & S_IWGRP) ? 1 : 0;
 #endif
 
 #ifdef S_IWOTH
-   return file_info->st_mode & S_IWOTH;
+   return (file_info->st_mode & S_IWOTH) ? 1 : 0;
 #else
    return 0;
 #endif   
@@ -193,18 +238,16 @@ OPENAXIOM_EXPORT int
 writeablep(char *path)
 {
     struct stat buf;
-    char newpath[100];
     int code;
 
     code = stat(path, &buf);
     if (code == -1) {
-        /** The file does not exist, so check to see
-                 if the directory is writable                  *****/
-        if (make_path_from_file(newpath, path) == -1
-            || stat(newpath, &buf) == -1)
-           return -1;
-
-        return 2 * axiom_has_write_access(&buf);
+       /* The file does not exist, so check to see if the directory
+          is writable.  */
+       char* dir = oa_dirname(path);
+       code = stat(dir, &buf);
+       free(dir);
+       return (code == 0) && axiom_has_write_access(&buf) ? 2 : -1;
     }
 
     return axiom_has_write_access(&buf);

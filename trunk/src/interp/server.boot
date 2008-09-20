@@ -88,7 +88,7 @@ serverReadLine(stream) ==
      action = $SpadCommand =>
        $NeedToSignalSessionManager := true
        stringBuf := sockGetString $MenuServer
-       CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
+       CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
 	 parseAndInterpret stringBuf)))
        PRINC MKPROMPT()
        FINISH_-OUTPUT()
@@ -114,7 +114,7 @@ oldParseAndInterpret str ==
 executeQuietCommand() ==
   $QuietCommand: fluid := true
   stringBuf := sockGetString $MenuServer
-  CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
+  CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
     parseAndInterpret stringBuf)))
 
 -- Includued for compatability with old-parser systems
@@ -126,7 +126,7 @@ serverLoop() ==
     $Prompt := NIL
     action := serverSwitch()
     action = $CallInterp =>
-      CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
+      CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
         parseAndInterpret read_-line($InputStream) )))
       PRINC MKPROMPT()
       FINISH_-OUTPUT()
@@ -153,7 +153,7 @@ serverLoop() ==
       executeQuietCommand()
     action = $SpadCommand =>
       stringBuf := sockGetString $MenuServer
-      CATCH('coerceFailure,CATCH('top__level, CATCH('SPAD__READER,
+      CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
         parseAndInterpret stringBuf)))
       PRINC MKPROMPT()
       FINISH_-OUTPUT()
@@ -173,21 +173,21 @@ parseAndEvalToString str ==
   $collectOutput:local := true
   $outputLines: local := nil
   $IOindex: local := nil
-  v := CATCH('SPAD__READER, CATCH('top__level, parseAndEvalStr str))
+  v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
   NREVERSE $outputLines
 
 parseAndEvalToStringForHypertex str ==
   $collectOutput:local := true
   $outputLines: local := nil
-  v := CATCH('SPAD__READER, CATCH('top__level, parseAndEvalStr str))
+  v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
   NREVERSE $outputLines
 
 parseAndEvalToStringEqNum str ==
   $collectOutput:local := true
   $outputLines: local := nil
-  v := CATCH('SPAD__READER, CATCH('top__level, parseAndEvalStr str))
+  v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
   NREVERSE $outputLines
 

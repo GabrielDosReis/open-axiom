@@ -99,8 +99,8 @@ FileName(): FileNameCategory == add
         extension(f:%): String   == fnameType(f)$Lisp
  
         exists? f   == existingFile?(f::String)$Lisp
-        readable? f == readablep(f::String)$Lisp : Integer = 1
-        writable? f == writeablep(f::String)$Lisp : Integer = 1
+        readable? f == readablep(f::String)$Lisp = 1@SingleInteger
+        writable? f == writeablep(f::String)$Lisp > 0@SingleInteger
 
         new(d,pref,e)            == fnameNew(d,pref,e)$Lisp
 
