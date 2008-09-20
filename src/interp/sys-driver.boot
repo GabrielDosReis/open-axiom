@@ -252,7 +252,7 @@ executeSpadScript(progname,options,file) ==
     $ProcessInteractiveValue := true
   $PrintCompilerMessageIfTrue := $verbose
   CATCH($intCoerceFailure,
-   CATCH($intSpadReader,read [file]))
+   CATCH($SpadReaderTag,read [file]))
   coreQuit (errorCount()> 0 => 1; 0)
 
 associateRequestWithFileType(Option '"script", '"input",
@@ -269,7 +269,7 @@ compileSpadLibrary(progname,options,file) ==
   $PrintCompilerMessageIfTrue := $verbose
   CATCH($intTopLevel,
     CATCH("SpadCompileItem",
-     CATCH($intSpadReader,compiler [file])))
+     CATCH($SpadReaderTag,compiler [file])))
   coreQuit (errorCount()> 0 => 1; 0)
 
 associateRequestWithFileType(Option '"compile", '"spad",

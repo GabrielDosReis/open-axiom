@@ -1687,7 +1687,7 @@ compileSpad2Cmd args ==
 
     translateOldToNew        := nil
 
-    $scanIfTrue              : local := nil
+    $scanIfTrue              : local := false
     $compileOnlyCertainItems : local := nil
     $f                       : local := nil  -- compiler
     $m                       : local := nil  --   variables
@@ -1774,7 +1774,7 @@ convertSpadToAsFile path ==
     $outStream :local := MAKE_-OUTSTREAM newName
     markSay('"#include _"axiom.as_"")
     markTerpri()
-    CATCH("SPAD__READER",compiler [path])
+    CATCH($SpadReaderTag,compiler [path])
     SHUT $outStream
     mkCheck()
     'done

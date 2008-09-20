@@ -131,7 +131,7 @@ handleLispBreakLoop($BreakMode) ==
         BREAK()
       sayBrightly
         '"   Processing will continue where it was interrupted."
-      THROW('SPAD__READER, nil)
+      THROW($SpadReaderTag, nil)
   $BreakMode = 'resume =>
     returnToReader()
   returnToTopLevel()
@@ -146,7 +146,7 @@ returnToTopLevel() ==
 returnToReader() ==
   ^$ReadingFile => returnToTopLevel()
   sayBrightly ['"   Continuing to read the file...", '%l]
-  THROW('SPAD__READER, nil)
+  THROW($SpadReaderTag, nil)
 
 sayErrorly(errorLabel, msg) ==
   $saturn => saturnSayErrorly(errorLabel, msg)

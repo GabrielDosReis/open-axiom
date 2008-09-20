@@ -712,3 +712,6 @@ $QuerySpad == 12
 $NonSmanSession == 13
 $KillLispSystem == 14
 
+
+$SpadReaderTag ==
+  "SPAD__READER"

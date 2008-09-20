@@ -33,6 +33,13 @@
 import g_-util
 namespace BOOT
 
+module i_-util
+
+--% 
+
+$intTopLevel ==
+  "top__level"
+
 --% The function for making prompts
  
 spadPrompt() ==

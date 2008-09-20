@@ -35,6 +35,19 @@
 import g_-util
 namespace BOOT
 
+--% 
+++ if true continue compiling after errors
+$scanIfTrue := false
+
+
++++ If non nil, holds compiled value of 'Rep' of the current domain.
+$Representation := nil
+
+
+$formalArgList := []
+
+--%
+
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
 ++ Otherwise, return `m'.
 dollarIfRepHack m ==
@@ -129,10 +142,10 @@ displayComp level ==
   $bright:= " << "
   $dim:= " >> "
   if $insideCapsuleFunctionIfTrue=true then
-    sayBrightly ['"error in function",'%b,$op,'%d,'%l]
+    sayBrightly ['"error in function",:bright $op,'%l]
   --mathprint removeZeroOne mkErrorExpr level
   pp removeZeroOne mkErrorExpr level
-  sayBrightly ['"****** level",'%b,level,'%d,'" ******"]
+  sayBrightly ['"****** level",:bright level,'" ******"]
   [$x,$m,$f,$exitModeStack]:= ELEM($s,level)
   SAY("$x:= ",$x)
   SAY("$m:= ",$m)

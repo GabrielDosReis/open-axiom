@@ -1,3 +1,11 @@
+2008-09-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* include/cfuns.h (oa_dirname): Declare.
+	* lib/cfuns-c.c (openaxiom_is_path_separator): New.
+	(oa_dirname): Define.
+	(writeablep): Use it.
+	* algebra/fname.spad.pamphlet (writable?$FileName): Tidy.
+
 2008-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot (getTypeOfSyntax): Infer more syntax domains.

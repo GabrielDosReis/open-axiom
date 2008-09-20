@@ -41,7 +41,7 @@ ncParseAndInterpretString s ==
   processInteractive(packageTran parseFromString s, nil)
 
 ncParseFromString s ==
-  zeroOneTran packageTran CATCH("SPAD__READER", parseFromString s)
+  zeroOneTran packageTran CATCH($SpadReaderTag, parseFromString s)
 
 ncINTERPFILE(file, echo) ==
   savedEcho := $EchoLines
@@ -85,7 +85,7 @@ runspad() ==
   while mode='restart repeat
     resetStackLimits()
     CATCH($quitTag, CATCH('coerceFailure,
-                  mode:=CATCH('top__level, ncTopLevel())))
+                  mode:=CATCH($intTopLevel, ncTopLevel())))
 
 ncTopLevel() ==
 -- Top-level read-parse-eval-print loop for the interpreter.  Uses
@@ -228,7 +228,7 @@ intloopSpadProcess(stepNo,lines,ptree,interactive?)==
     ncPutQ(cc, 'lines, lines)
     $ncMsgList := nil
     result := CatchAsCan(flung, Catch("SpadCompileItem",
-     CATCH($intCoerceFailure, CATCH($intSpadReader,
+     CATCH($intCoerceFailure, CATCH($SpadReaderTag,
        interp(cc, ptree, interactive?))))) where
  
         interp(cc, ptree, interactive?) ==

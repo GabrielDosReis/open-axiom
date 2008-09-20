@@ -473,7 +473,7 @@ executeInterpreterCommand command ==
   PRINC command
   TERPRI()
   ncSetCurrentLine(command)
-  CATCH('SPAD__READER, parseAndInterpret command)
+  CATCH($SpadReaderTag, parseAndInterpret command)
   PRINC MKPROMPT()
   FINISH_-OUTPUT()
 
@@ -512,7 +512,7 @@ checkCondition(s1, string, condList) ==
     val = '"Syntax Error " => '"Error: Syntax Error "
     condErrorMsg pattern
   [type, : data] := val
-  newType := CATCH('SPAD__READER, resolveTM(type, pattern))
+  newType := CATCH($SpadReaderTag, resolveTM(type, pattern))
   null newType =>
     condErrorMsg pattern
   coerceInt(val, newType)

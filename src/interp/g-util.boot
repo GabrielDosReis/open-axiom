@@ -464,7 +464,7 @@ mergeSort(f,g,p,n) ==
 spadThrow() ==
   if $interpOnly and $mapName then
     putHist($mapName,'localModemap, nil, $e)
-  THROW("SPAD__READER",nil)
+  THROW($SpadReaderTag,nil)
 
 spadThrowBrightly x ==
   sayBrightly x

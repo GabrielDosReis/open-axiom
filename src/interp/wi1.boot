@@ -53,7 +53,7 @@ tr fn ==
   markSay '"#pile"
   markSay('"#include _"axiom.as_"")
   markTerpri()
-  CATCH("SPAD__READER",compiler [INTERN sfn])
+  CATCH($SpadReaderTag,compiler [INTERN sfn])
   SHUT $outStream
 
 ppFull x ==
@@ -146,8 +146,6 @@ compDefineLisplib(df,m,e,prefix,fal,fn) ==
   --will eventually become the "constructorCategory" property in lisplib
   --set in compDefineCategory if category, otherwise in finalizeLisplib
   libName := getConstructorAbbreviation op
- -- $incrementalLisplibFlag seems never to be set so next line not used
- -- originalLisplibCategory:= getLisplib(libName,'constructorCategory)
   BOUNDP '$compileDocumentation and $compileDocumentation =>
      compileDocumentation libName
   sayMSG ['"   initializing ",$spadLibFT,:bright libName,
@@ -171,7 +169,7 @@ compTopLevel(x,m,e) ==
   $resolveTimeSum: local := 0
   $packagesUsed: local := []
   -- The next line allows the new compiler to be tested interactively.
-  compFun := if $newCompAtTopLevel=true then 'newComp else 'compOrCroak
+  compFun := 'compOrCroak
   if x is ["where",:.] then x := markWhereTran x
   def :=
     x is ["where",a,:.] => a
