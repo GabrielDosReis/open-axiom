@@ -54,7 +54,6 @@
                                       T)
                                      ((|random| ($)) T)
                                      ((|random| ($ $)) T)
-                                     ((|hash| ($ $)) T)
                                      ((|copy| ($ $)) T)
                                      ((|inc| ($ $)) T)
                                      ((|dec| ($ $)) T)
