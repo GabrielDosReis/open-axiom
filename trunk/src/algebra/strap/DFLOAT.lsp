@@ -81,7 +81,7 @@
                       (FIX (SPADCALL (FLOAT-DIGITS 0.0)
                                (SPADCALL
                                    (FLOAT (FLOAT-RADIX 0.0)
-                                    MOST-POSITIVE-LONG-FLOAT)
+                                    |$DoubleFloatMaximum|)
                                    (|getShellEntry| $ 30))
                                (|getShellEntry| $ 31)))
                       |DFLOAT;bits;Pi;11|)
@@ -293,9 +293,9 @@
 
 (DEFUN |DFLOAT;zero?;$B;65| (|x| $) (ZEROP |x|)) 
 
-(PUT '|DFLOAT;hash;$I;66| '|SPADreplace| 'HASHEQ) 
+(PUT '|DFLOAT;hash;$Si;66| '|SPADreplace| 'HASHEQ) 
 
-(DEFUN |DFLOAT;hash;$I;66| (|x| $) (HASHEQ |x|)) 
+(DEFUN |DFLOAT;hash;$Si;66| (|x| $) (HASHEQ |x|)) 
 
 (DEFUN |DFLOAT;recip;$U;67| (|x| $)
   (COND ((ZEROP |x|) (CONS 1 "failed")) ('T (CONS 0 (/ 1.0 |x|))))) 
@@ -305,10 +305,10 @@
 (DEFUN |DFLOAT;differentiate;2$;68| (|x| $) 0.0) 
 
 (DEFUN |DFLOAT;Gamma;2$;69| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 95))) 
+  (SPADCALL |x| (|getShellEntry| $ 96))) 
 
 (DEFUN |DFLOAT;Beta;3$;70| (|x| |y| $)
-  (SPADCALL |x| |y| (|getShellEntry| $ 97))) 
+  (SPADCALL |x| |y| (|getShellEntry| $ 98))) 
 
 (PUT '|DFLOAT;wholePart;$I;71| '|SPADreplace| 'FIX) 
 
@@ -322,10 +322,10 @@
 (DEFUN |DFLOAT;convert;2$;73| (|x| $) |x|) 
 
 (DEFUN |DFLOAT;convert;$F;74| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 103))) 
+  (SPADCALL |x| (|getShellEntry| $ 104))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$NniF;75| (|x| |d| $)
-  (SPADCALL |x| |d| 10 (|getShellEntry| $ 107))) 
+  (SPADCALL |x| |d| 10 (|getShellEntry| $ 108))) 
 
 (DEFUN |DFLOAT;atan;3$;76| (|x| |y| $)
   (PROG (|theta|)
@@ -354,7 +354,7 @@
           (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
                        |DFLOAT;retract;$F;77|)
             (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#))
-          (FLOAT-RADIX 0.0) (|getShellEntry| $ 107))))) 
+          (FLOAT-RADIX 0.0) (|getShellEntry| $ 108))))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;78| (|x| $)
   (PROG (#0=#:G1501)
@@ -365,7 +365,7 @@
                              |DFLOAT;retractIfCan;$U;78|)
                   (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|)
                       #0#))
-                (FLOAT-RADIX 0.0) (|getShellEntry| $ 107)))))) 
+                (FLOAT-RADIX 0.0) (|getShellEntry| $ 108)))))) 
 
 (DEFUN |DFLOAT;retract;$I;79| (|x| $)
   (PROG (|n|)
@@ -385,7 +385,7 @@
                    ('T (CONS 1 "failed")))))))) 
 
 (DEFUN |DFLOAT;sign;$I;81| (|x| $)
-  (SPADCALL (FLOAT-SIGN |x| 1.0) (|getShellEntry| $ 113))) 
+  (SPADCALL (FLOAT-SIGN |x| 1.0) (|getShellEntry| $ 114))) 
 
 (PUT '|DFLOAT;abs;2$;82| '|SPADreplace|
      '(XLAM (|x|) (FLOAT-SIGN 1.0 |x|))) 
@@ -399,7 +399,7 @@
                    ((ZEROP |x|) (CONS 0 0))
                    ('T
                     (SEQ (LETT |s|
-                               (SPADCALL |x| (|getShellEntry| $ 116))
+                               (SPADCALL |x| (|getShellEntry| $ 117))
                                |DFLOAT;manexp|)
                          (LETT |x| (FLOAT-SIGN 1.0 |x|)
                                |DFLOAT;manexp|)
@@ -421,7 +421,7 @@
                          (LETT |two53|
                                (SPADCALL (FLOAT-RADIX 0.0)
                                    (FLOAT-DIGITS 0.0)
-                                   (|getShellEntry| $ 118))
+                                   (|getShellEntry| $ 119))
                                |DFLOAT;manexp|)
                          (EXIT (CONS (* |s|
                                       (FIX (* |two53| (QCAR |me|))))
@@ -499,14 +499,14 @@
                                                    (- (* |nu| |q2|)
                                                     (* |de| |p2|)))
                                                   (|getShellEntry| $
-                                                   121))
+                                                   122))
                                                  (* |de| (ABS |p2|))))
                                                (EXIT
                                                 (PROGN
                                                   (LETT #1#
                                                    (SPADCALL |p2| |q2|
                                                     (|getShellEntry| $
-                                                     120))
+                                                     121))
                                                    |DFLOAT;rationalApproximation;$2NniF;84|)
                                                   (GO #1#)))))
                                             (PROGN
@@ -548,7 +548,7 @@
                                        |DFLOAT;rationalApproximation;$2NniF;84|)
                                        (|check-subtype| (>= #2# 0)
                                         '(|NonNegativeInteger|) #2#))))
-                                   (|getShellEntry| $ 122)))))))
+                                   (|getShellEntry| $ 123)))))))
            #1# (EXIT #1#))))) 
 
 (DEFUN |DFLOAT;**;$F$;85| (|x| |r| $)
@@ -557,27 +557,27 @@
       (SEQ (EXIT (COND
                    ((ZEROP |x|)
                     (COND
-                      ((SPADCALL |r| (|getShellEntry| $ 123))
-                       (|error| "0**0 is undefined"))
                       ((SPADCALL |r| (|getShellEntry| $ 124))
+                       (|error| "0**0 is undefined"))
+                      ((SPADCALL |r| (|getShellEntry| $ 125))
                        (|error| "division by 0"))
                       ('T 0.0)))
-                   ((OR (SPADCALL |r| (|getShellEntry| $ 123))
+                   ((OR (SPADCALL |r| (|getShellEntry| $ 124))
                         (= |x| 1.0))
                     1.0)
                    ('T
                     (COND
-                      ((SPADCALL |r| (|spadConstant| $ 125)
-                           (|getShellEntry| $ 126))
+                      ((SPADCALL |r| (|spadConstant| $ 126)
+                           (|getShellEntry| $ 127))
                        |x|)
                       ('T
                        (SEQ (LETT |n|
                                   (SPADCALL |r|
-                                      (|getShellEntry| $ 127))
+                                      (|getShellEntry| $ 128))
                                   |DFLOAT;**;$F$;85|)
                             (LETT |d|
                                   (SPADCALL |r|
-                                      (|getShellEntry| $ 128))
+                                      (|getShellEntry| $ 129))
                                   |DFLOAT;**;$F$;85|)
                             (EXIT (COND
                                     ((MINUSP |x|)
@@ -589,14 +589,14 @@
                                              (LETT #0#
                                               (-
                                                (SPADCALL (- |x|) |r|
-                                                (|getShellEntry| $ 129)))
+                                                (|getShellEntry| $ 130)))
                                               |DFLOAT;**;$F$;85|)
                                              (GO #0#)))
                                           ('T
                                            (PROGN
                                              (LETT #0#
                                               (SPADCALL (- |x|) |r|
-                                               (|getShellEntry| $ 129))
+                                               (|getShellEntry| $ 130))
                                               |DFLOAT;**;$F$;85|)
                                              (GO #0#)))))
                                        ('T (|error| "negative root"))))
@@ -687,8 +687,9 @@
              |DFLOAT;acsch;2$;60| |DFLOAT;acoth;2$;61|
              |DFLOAT;asech;2$;62| |DFLOAT;/;3$;63|
              |DFLOAT;negative?;$B;64| |DFLOAT;zero?;$B;65|
-             |DFLOAT;hash;$I;66| (|Union| $ '"failed")
-             |DFLOAT;recip;$U;67| |DFLOAT;differentiate;2$;68|
+             (|SingleInteger|) |DFLOAT;hash;$Si;66|
+             (|Union| $ '"failed") |DFLOAT;recip;$U;67|
+             |DFLOAT;differentiate;2$;68|
              (|DoubleFloatSpecialFunctions|) (47 . |Gamma|)
              |DFLOAT;Gamma;2$;69| (52 . |Beta|) |DFLOAT;Beta;3$;70|
              |DFLOAT;wholePart;$I;71| |DFLOAT;float;2IPi$;72|
@@ -698,24 +699,23 @@
              |DFLOAT;rationalApproximation;$2NniF;84|
              |DFLOAT;rationalApproximation;$NniF;75|
              |DFLOAT;atan;3$;76| |DFLOAT;retract;$F;77|
-             (|Union| 105 '"failed") |DFLOAT;retractIfCan;$U;78|
+             (|Union| 106 '"failed") |DFLOAT;retractIfCan;$U;78|
              |DFLOAT;retract;$I;79| (|Union| 26 '"failed")
              |DFLOAT;retractIfCan;$U;80| |DFLOAT;sign;$I;81|
              |DFLOAT;abs;2$;82| (63 . **) (69 . |Zero|) (73 . /)
              (79 . *) (85 . |coerce|) (90 . |zero?|) (95 . |negative?|)
              (100 . |One|) (104 . =) (110 . |numer|) (115 . |denom|)
-             |DFLOAT;**;$F$;85| (|PatternMatchResult| 102 $)
-             (|Pattern| 102) (|Factored| $)
+             |DFLOAT;**;$F$;85| (|PatternMatchResult| 103 $)
+             (|Pattern| 103) (|Factored| $)
              (|Record| (|:| |coef1| $) (|:| |coef2| $))
-             (|Union| 133 '"failed") (|List| $) (|Union| 135 '"failed")
+             (|Union| 134 '"failed") (|List| $) (|Union| 136 '"failed")
              (|Record| (|:| |coef1| $) (|:| |coef2| $)
                  (|:| |generator| $))
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
              (|SparseUnivariatePolynomial| $)
-             (|Record| (|:| |coef| 135) (|:| |generator| $))
+             (|Record| (|:| |coef| 136) (|:| |generator| $))
              (|Record| (|:| |unit| $) (|:| |canonical| $)
-                 (|:| |associate| $))
-             (|SingleInteger|))
+                 (|:| |associate| $)))
           '#(~= 120 |zero?| 126 |wholePart| 131 |unitNormal| 136
              |unitCanonical| 141 |unit?| 146 |truncate| 151 |tanh| 156
              |tan| 161 |subtractIfCan| 166 |squareFreePart| 172
@@ -728,20 +728,20 @@
              |one?| 312 |nthRoot| 317 |norm| 323 |negative?| 328
              |multiEuclidean| 333 |min| 339 |max| 349 |mantissa| 359
              |log2| 364 |log10| 369 |log| 374 |lcm| 379 |latex| 390
-             |inv| 395 |hash| 400 |gcdPolynomial| 410 |gcd| 416
-             |fractionPart| 427 |floor| 432 |float| 437 |factor| 450
-             |extendedEuclidean| 455 |exquo| 468 |expressIdealMember|
-             474 |exponent| 480 |exp1| 485 |exp| 489 |euclideanSize|
-             494 |doubleFloatFormat| 499 |divide| 504 |digits| 510
-             |differentiate| 514 |csch| 525 |csc| 530 |coth| 535 |cot|
-             540 |cosh| 545 |cos| 550 |convert| 555 |coerce| 575
-             |characteristic| 605 |ceiling| 609 |bits| 614 |base| 618
-             |atanh| 622 |atan| 627 |associates?| 638 |asinh| 644
-             |asin| 649 |asech| 654 |asec| 659 |acsch| 664 |acsc| 669
-             |acoth| 674 |acot| 679 |acosh| 684 |acos| 689 |abs| 694
-             |Zero| 699 |One| 703 |OMwrite| 707 |Gamma| 731 D 736
-             |Beta| 747 >= 753 > 759 = 765 <= 771 < 777 / 783 - 795 +
-             806 ** 812 * 842)
+             |inv| 395 |hash| 400 |gcdPolynomial| 405 |gcd| 411
+             |fractionPart| 422 |floor| 427 |float| 432 |factor| 445
+             |extendedEuclidean| 450 |exquo| 463 |expressIdealMember|
+             469 |exponent| 475 |exp1| 480 |exp| 484 |euclideanSize|
+             489 |doubleFloatFormat| 494 |divide| 499 |digits| 505
+             |differentiate| 509 |csch| 520 |csc| 525 |coth| 530 |cot|
+             535 |cosh| 540 |cos| 545 |convert| 550 |coerce| 570
+             |characteristic| 600 |ceiling| 604 |bits| 609 |base| 613
+             |atanh| 617 |atan| 622 |associates?| 633 |asinh| 639
+             |asin| 644 |asech| 649 |asec| 654 |acsch| 659 |acsc| 664
+             |acoth| 669 |acot| 674 |acosh| 679 |acos| 684 |abs| 689
+             |Zero| 694 |One| 698 |OMwrite| 702 |Gamma| 726 D 731
+             |Beta| 742 >= 748 > 754 = 760 <= 766 < 772 / 778 - 790 +
+             801 ** 807 * 837)
           '((|approximate| . 0) (|canonicalsClosed| . 0)
             (|canonicalUnitNormal| . 0) (|noZeroDivisors| . 0)
             ((|commutative| "*") . 0) (|rightUnitary| . 0)
@@ -774,14 +774,14 @@
                                (|PrincipalIdealDomain|)
                                (|UniqueFactorizationDomain|)
                                (|GcdDomain|) (|DivisionRing|)
-                               (|IntegralDomain|) (|Algebra| 105)
+                               (|IntegralDomain|) (|Algebra| 106)
                                (|Algebra| $$) (|DifferentialRing|)
                                (|CharacteristicZero|) (|OrderedRing|)
-                               (|Module| 105) (|EntireRing|)
+                               (|Module| 106) (|EntireRing|)
                                (|CommutativeRing|) (|Module| $$)
-                               (|BiModule| 105 105) (|BiModule| $$ $$)
+                               (|BiModule| 106 106) (|BiModule| $$ $$)
                                (|Ring|) (|OrderedAbelianGroup|)
-                               (|RightModule| 105) (|LeftModule| 105)
+                               (|RightModule| 106) (|LeftModule| 106)
                                (|LeftModule| $$) (|Rng|)
                                (|RightModule| $$)
                                (|OrderedCancellationAbelianMonoid|)
@@ -790,7 +790,7 @@
                                (|CancellationAbelianMonoid|)
                                (|OrderedAbelianSemiGroup|)
                                (|AbelianMonoid|) (|Monoid|)
-                               (|PatternMatchable| 102) (|OrderedSet|)
+                               (|PatternMatchable| 103) (|OrderedSet|)
                                (|AbelianSemiGroup|) (|SemiGroup|)
                                (|TranscendentalFunctionCategory|)
                                (|RealConstant|) (|SetCategory|)
@@ -800,70 +800,70 @@
                                (|HyperbolicFunctionCategory|)
                                (|ArcTrigonometricFunctionCategory|)
                                (|TrigonometricFunctionCategory|)
-                               (|OpenMath|) (|ConvertibleTo| 131)
+                               (|OpenMath|) (|ConvertibleTo| 132)
                                (|RadicalCategory|)
-                               (|RetractableTo| 105)
+                               (|RetractableTo| 106)
                                (|RetractableTo| 26)
-                               (|ConvertibleTo| 102)
+                               (|ConvertibleTo| 103)
                                (|ConvertibleTo| 15) (|BasicType|)
                                (|CoercibleTo| 40))
                             (|makeByteWordVec2| 142
                                 '(0 9 0 10 2 11 0 7 9 12 1 11 13 0 14 2
                                   11 13 0 15 16 1 11 13 0 17 1 11 13 0
                                   18 2 0 0 24 0 31 1 40 0 15 41 1 43 0
-                                  15 44 1 94 15 15 95 2 94 15 15 15 97
-                                  1 102 0 15 103 2 26 0 0 24 118 0 105
-                                  0 119 2 105 0 26 26 120 2 26 0 106 0
-                                  121 1 105 0 26 122 1 105 20 0 123 1
-                                  105 20 0 124 0 105 0 125 2 105 20 0 0
-                                  126 1 105 26 0 127 1 105 26 0 128 2 0
-                                  20 0 0 1 1 0 20 0 89 1 0 26 0 99 1 0
-                                  141 0 1 1 0 0 0 1 1 0 20 0 1 1 0 0 0
-                                  1 1 0 0 0 77 1 0 0 0 65 2 0 91 0 0 1
-                                  1 0 0 0 1 1 0 132 0 1 1 0 0 0 56 2 0
+                                  15 44 1 95 15 15 96 2 95 15 15 15 98
+                                  1 103 0 15 104 2 26 0 0 24 119 0 106
+                                  0 120 2 106 0 26 26 121 2 26 0 107 0
+                                  122 1 106 0 26 123 1 106 20 0 124 1
+                                  106 20 0 125 0 106 0 126 2 106 20 0 0
+                                  127 1 106 26 0 128 1 106 26 0 129 2 0
+                                  20 0 0 1 1 0 20 0 89 1 0 26 0 100 1 0
+                                  142 0 1 1 0 0 0 1 1 0 20 0 1 1 0 0 0
+                                  1 1 0 0 0 77 1 0 0 0 65 2 0 92 0 0 1
+                                  1 0 0 0 1 1 0 133 0 1 1 0 0 0 56 2 0
                                   20 0 0 1 1 0 0 0 75 1 0 0 0 63 1 0 26
-                                  0 116 1 0 0 0 80 1 0 0 0 67 0 0 0 1 1
-                                  0 0 0 1 1 0 111 0 112 1 0 114 0 115 1
-                                  0 105 0 110 1 0 26 0 113 2 0 0 0 0 1
-                                  1 0 91 0 92 2 0 105 0 106 108 3 0 105
-                                  0 106 106 107 2 0 0 0 0 1 1 0 140 135
+                                  0 117 1 0 0 0 80 1 0 0 0 67 0 0 0 1 1
+                                  0 0 0 1 1 0 112 0 113 1 0 115 0 116 1
+                                  0 106 0 111 1 0 26 0 114 2 0 0 0 0 1
+                                  1 0 92 0 93 2 0 106 0 107 109 3 0 106
+                                  0 107 107 108 2 0 0 0 0 1 1 0 141 136
                                   1 1 0 20 0 1 0 0 24 29 1 0 20 0 1 0 0
-                                  0 39 3 0 130 0 131 130 1 1 0 26 0 35
+                                  0 39 3 0 131 0 132 131 1 1 0 26 0 35
                                   1 0 20 0 1 2 0 0 0 26 1 1 0 0 0 1 1 0
-                                  20 0 88 2 0 136 135 0 1 0 0 0 34 2 0
+                                  20 0 88 2 0 137 136 0 1 0 0 0 34 2 0
                                   0 0 0 53 0 0 0 33 2 0 0 0 0 52 1 0 26
                                   0 27 1 0 0 0 30 1 0 0 0 57 1 0 0 0 62
-                                  2 0 0 0 0 1 1 0 0 135 1 1 0 7 0 1 1 0
-                                  0 0 1 1 0 26 0 90 1 0 142 0 1 2 0 139
-                                  139 139 1 1 0 0 135 1 2 0 0 0 0 1 1 0
-                                  0 0 1 1 0 0 0 1 2 0 0 26 26 1 3 0 0
-                                  26 26 24 100 1 0 132 0 1 3 0 134 0 0
-                                  0 1 2 0 137 0 0 1 2 0 91 0 0 1 2 0
-                                  136 135 0 1 1 0 26 0 28 0 0 0 38 1 0
-                                  0 0 61 1 0 106 0 1 1 0 7 7 8 2 0 138
-                                  0 0 1 0 0 24 1 1 0 0 0 93 2 0 0 0 106
-                                  1 1 0 0 0 78 1 0 0 0 68 1 0 0 0 79 1
-                                  0 0 0 66 1 0 0 0 76 1 0 0 0 64 1 0 43
-                                  0 45 1 0 131 0 1 1 0 15 0 101 1 0 102
-                                  0 104 1 0 0 105 1 1 0 0 26 60 1 0 0
-                                  105 1 1 0 0 26 60 1 0 0 0 1 1 0 40 0
-                                  42 0 0 106 1 1 0 0 0 1 0 0 24 32 0 0
-                                  24 25 1 0 0 0 83 2 0 0 0 0 109 1 0 0
-                                  0 71 2 0 20 0 0 1 1 0 0 0 81 1 0 0 0
-                                  69 1 0 0 0 86 1 0 0 0 74 1 0 0 0 84 1
-                                  0 0 0 72 1 0 0 0 85 1 0 0 0 73 1 0 0
-                                  0 82 1 0 0 0 70 1 0 0 0 117 0 0 0 36
-                                  0 0 0 37 3 0 13 11 0 20 23 2 0 7 0 20
-                                  21 2 0 13 11 0 22 1 0 7 0 19 1 0 0 0
-                                  96 1 0 0 0 1 2 0 0 0 106 1 2 0 0 0 0
-                                  98 2 0 20 0 0 1 2 0 20 0 0 1 2 0 20 0
-                                  0 54 2 0 20 0 0 1 2 0 20 0 0 46 2 0 0
-                                  0 26 55 2 0 0 0 0 87 2 0 0 0 0 49 1 0
-                                  0 0 47 2 0 0 0 0 48 2 0 0 0 0 59 2 0
-                                  0 0 105 129 2 0 0 0 26 58 2 0 0 0 106
-                                  1 2 0 0 0 24 1 2 0 0 0 105 1 2 0 0
-                                  105 0 1 2 0 0 0 0 50 2 0 0 26 0 51 2
-                                  0 0 106 0 1 2 0 0 24 0 31)))))
+                                  2 0 0 0 0 1 1 0 0 136 1 1 0 7 0 1 1 0
+                                  0 0 1 1 0 90 0 91 2 0 140 140 140 1 1
+                                  0 0 136 1 2 0 0 0 0 1 1 0 0 0 1 1 0 0
+                                  0 1 2 0 0 26 26 1 3 0 0 26 26 24 101
+                                  1 0 133 0 1 3 0 135 0 0 0 1 2 0 138 0
+                                  0 1 2 0 92 0 0 1 2 0 137 136 0 1 1 0
+                                  26 0 28 0 0 0 38 1 0 0 0 61 1 0 107 0
+                                  1 1 0 7 7 8 2 0 139 0 0 1 0 0 24 1 1
+                                  0 0 0 94 2 0 0 0 107 1 1 0 0 0 78 1 0
+                                  0 0 68 1 0 0 0 79 1 0 0 0 66 1 0 0 0
+                                  76 1 0 0 0 64 1 0 43 0 45 1 0 132 0 1
+                                  1 0 15 0 102 1 0 103 0 105 1 0 0 106
+                                  1 1 0 0 26 60 1 0 0 106 1 1 0 0 26 60
+                                  1 0 0 0 1 1 0 40 0 42 0 0 107 1 1 0 0
+                                  0 1 0 0 24 32 0 0 24 25 1 0 0 0 83 2
+                                  0 0 0 0 110 1 0 0 0 71 2 0 20 0 0 1 1
+                                  0 0 0 81 1 0 0 0 69 1 0 0 0 86 1 0 0
+                                  0 74 1 0 0 0 84 1 0 0 0 72 1 0 0 0 85
+                                  1 0 0 0 73 1 0 0 0 82 1 0 0 0 70 1 0
+                                  0 0 118 0 0 0 36 0 0 0 37 3 0 13 11 0
+                                  20 23 2 0 7 0 20 21 2 0 13 11 0 22 1
+                                  0 7 0 19 1 0 0 0 97 1 0 0 0 1 2 0 0 0
+                                  107 1 2 0 0 0 0 99 2 0 20 0 0 1 2 0
+                                  20 0 0 1 2 0 20 0 0 54 2 0 20 0 0 1 2
+                                  0 20 0 0 46 2 0 0 0 26 55 2 0 0 0 0
+                                  87 2 0 0 0 0 49 1 0 0 0 47 2 0 0 0 0
+                                  48 2 0 0 0 0 59 2 0 0 0 106 130 2 0 0
+                                  0 26 58 2 0 0 0 107 1 2 0 0 0 24 1 2
+                                  0 0 0 106 1 2 0 0 106 0 1 2 0 0 0 0
+                                  50 2 0 0 26 0 51 2 0 0 107 0 1 2 0 0
+                                  24 0 31)))))
           '|lookupComplete|)) 
 
 (SETQ |$CategoryFrame|
@@ -871,18 +871,17 @@
              '(((|rationalApproximation|
                     ((|Fraction| (|Integer|)) $ (|NonNegativeInteger|)
                      (|NonNegativeInteger|)))
-                T (ELT $ 107))
+                T (ELT $ 108))
                ((|rationalApproximation|
                     ((|Fraction| (|Integer|)) $ (|NonNegativeInteger|)))
-                T (ELT $ 108))
+                T (ELT $ 109))
                ((|doubleFloatFormat| ((|String|) (|String|))) T
                 (ELT $ 8))
-               ((|Beta| ($ $ $)) T (ELT $ 98))
-               ((|Gamma| ($ $)) T (ELT $ 96))
-               ((|atan| ($ $ $)) T (ELT $ 109))
+               ((|Beta| ($ $ $)) T (ELT $ 99))
+               ((|Gamma| ($ $)) T (ELT $ 97))
+               ((|atan| ($ $ $)) T (ELT $ 110))
                ((|log10| ($ $)) T (ELT $ 57))
                ((|log2| ($ $)) T (ELT $ 30))
-               ((|hash| ((|Integer|) $)) T (ELT $ 90))
                ((|exp1| ($)) T (ELT $ 38))
                ((/ ($ $ (|Integer|))) T (ELT $ 55))
                ((|convert| ((|InputForm|) $)) T (ELT $ 45))
@@ -919,7 +918,7 @@
                 (ELT $ 22))
                ((|OMwrite| ((|String|) $ (|Boolean|))) T (ELT $ 21))
                ((|OMwrite| ((|String|) $)) T (ELT $ 19))
-               ((|differentiate| ($ $)) T (ELT $ 93))
+               ((|differentiate| ($ $)) T (ELT $ 94))
                ((D ($ $)) T (ELT $ NIL))
                ((|differentiate| ($ $ (|NonNegativeInteger|))) T
                 (ELT $ NIL))
@@ -951,12 +950,12 @@
                ((|order| ((|Integer|) $)) T (ELT $ 35))
                ((|float| ($ (|Integer|) (|Integer|)
                             (|PositiveInteger|)))
-                T (ELT $ 100))
+                T (ELT $ 101))
                ((|float| ($ (|Integer|) (|Integer|))) T (ELT $ NIL))
                ((|round| ($ $)) T (ELT $ NIL))
                ((|truncate| ($ $)) T (ELT $ NIL))
                ((|fractionPart| ($ $)) T (ELT $ NIL))
-               ((|wholePart| ((|Integer|) $)) T (ELT $ 99))
+               ((|wholePart| ((|Integer|) $)) T (ELT $ 100))
                ((|floor| ($ $)) T (ELT $ NIL))
                ((|ceiling| ($ $)) T (ELT $ NIL))
                ((|norm| ($ $)) T (ELT $ NIL))
@@ -966,20 +965,20 @@
                      (|PatternMatchResult| (|Float|) $)))
                 T (ELT $ NIL))
                ((|convert| ((|Pattern| (|Float|)) $)) T (ELT $ NIL))
-               ((** ($ $ (|Fraction| (|Integer|)))) T (ELT $ 129))
+               ((** ($ $ (|Fraction| (|Integer|)))) T (ELT $ 130))
                ((|nthRoot| ($ $ (|Integer|))) T (ELT $ NIL))
                ((|sqrt| ($ $)) T (ELT $ 56))
-               ((|retract| ((|Fraction| (|Integer|)) $)) T (ELT $ 110))
+               ((|retract| ((|Fraction| (|Integer|)) $)) T (ELT $ 111))
                ((|retractIfCan|
                     ((|Union| (|Fraction| (|Integer|)) "failed") $))
-                T (ELT $ 112))
+                T (ELT $ 113))
                ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ NIL))
-               ((|retract| ((|Integer|) $)) T (ELT $ 113))
+               ((|retract| ((|Integer|) $)) T (ELT $ 114))
                ((|retractIfCan| ((|Union| (|Integer|) "failed") $)) T
-                (ELT $ 115))
+                (ELT $ 116))
                ((|coerce| ($ (|Integer|))) T (ELT $ 60))
-               ((|convert| ((|DoubleFloat|) $)) T (ELT $ 101))
-               ((|convert| ((|Float|) $)) T (ELT $ 104))
+               ((|convert| ((|DoubleFloat|) $)) T (ELT $ 102))
+               ((|convert| ((|Float|) $)) T (ELT $ 105))
                ((< ((|Boolean|) $ $)) T (ELT $ 46))
                ((> ((|Boolean|) $ $)) T (ELT $ NIL))
                ((>= ((|Boolean|) $ $)) T (ELT $ NIL))
@@ -988,8 +987,8 @@
                ((|min| ($ $ $)) T (ELT $ 53))
                ((|positive?| ((|Boolean|) $)) T (ELT $ NIL))
                ((|negative?| ((|Boolean|) $)) T (ELT $ 88))
-               ((|sign| ((|Integer|) $)) T (ELT $ 116))
-               ((|abs| ($ $)) T (ELT $ 117)) ((/ ($ $ $)) T (ELT $ 87))
+               ((|sign| ((|Integer|) $)) T (ELT $ 117))
+               ((|abs| ($ $)) T (ELT $ 118)) ((/ ($ $ $)) T (ELT $ 87))
                ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ NIL))
                ((* ($ (|Fraction| (|Integer|)) $)) T (ELT $ NIL))
                ((* ($ $ (|Fraction| (|Integer|)))) T (ELT $ NIL))
@@ -1055,7 +1054,7 @@
                ((|One| ($)) T (CONST $ 37))
                ((|one?| ((|Boolean|) $)) T (ELT $ NIL))
                ((** ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
-               ((|recip| ((|Union| $ "failed") $)) T (ELT $ 92))
+               ((|recip| ((|Union| $ "failed") $)) T (ELT $ 93))
                ((* ($ $ $)) T (ELT $ 50))
                ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
                ((* ($ (|Integer|) $)) T (ELT $ 51))
@@ -1069,7 +1068,7 @@
                ((* ($ (|PositiveInteger|) $)) T (ELT $ 31))
                ((+ ($ $ $)) T (ELT $ 48))
                ((|latex| ((|String|) $)) T (ELT $ NIL))
-               ((|hash| ((|SingleInteger|) $)) T (ELT $ NIL))
+               ((|hash| ((|SingleInteger|) $)) T (ELT $ 91))
                ((|coerce| ((|OutputForm|) $)) T (ELT $ 42))
                ((= ((|Boolean|) $ $)) T (ELT $ 54))
                ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
@@ -1082,7 +1081,6 @@
                                (SIGNATURE / ($ $ (|Integer|)))
                                (SIGNATURE ** ($ $ $))
                                (SIGNATURE |exp1| ($))
-                               (SIGNATURE |hash| ((|Integer|) $))
                                (SIGNATURE |log2| ($ $))
                                (SIGNATURE |log10| ($ $))
                                (SIGNATURE |atan| ($ $ $))
@@ -1108,8 +1106,6 @@
                                       (SIGNATURE / ($ $ (|Integer|)))
                                       (SIGNATURE ** ($ $ $))
                                       (SIGNATURE |exp1| ($))
-                                      (SIGNATURE |hash|
-                                       ((|Integer|) $))
                                       (SIGNATURE |log2| ($ $))
                                       (SIGNATURE |log10| ($ $))
                                       (SIGNATURE |atan| ($ $ $))
