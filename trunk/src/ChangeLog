@@ -1,5 +1,12 @@
 2008-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/syntax.spad.pamphlet (SpadAstExports): New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_user): Add
+	SPADXPT.  Update dependency rules.
+	* share/algebra: Update algebra databases.
+
+2008-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (Boolean): Now belong to
 	OrderedFinite.
 
