@@ -64,6 +64,7 @@
   (|AssociatedJordanAlgebra| . JORDAN)
   (|AssociatedLieAlgebra| . LIE)
   (|AttachPredicates| . PMPRED)
+  (|AttributeAst| . ATTRAST)
   (|BalancedBinaryTree| . BBTREE)
   (|BasicOperator| . BOP)
   (|BasicOperatorFunctions1| . BOP1)

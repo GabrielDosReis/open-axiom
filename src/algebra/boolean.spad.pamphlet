@@ -511,12 +511,15 @@ Bits(): Exports == Implementation where
 ++   This domain implements Kleene's 3-valued propositional logic.
 KleeneTrivalentLogic(): Public == Private where
   Public == PropositionalLogic with
-    false: %
-    unknown: %
-    true: %
+    false: %       ++ the definite falsehood value
+    unknown: %     ++ the indefinite `unknown' 
+    true: %        ++ the definite truth value
     _case: (%,[| false |]) -> Boolean
+      ++ x case false holds if the value of `x' is `false'
     _case: (%,[| unknown |]) -> Boolean
+      ++ x case unknown holds if the value of `x' is `unknown'
     _case: (%,[| true |]) -> Boolean
+      ++ s case true holds if the value of `x' is `true'.
   Private == add
     Rep == Byte    -- We need only 3 bits, in fact.
     false == per(0::NonNegativeInteger::Byte)
