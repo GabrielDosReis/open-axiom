@@ -1,3 +1,8 @@
+2008-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (Boolean): Now belong to
+	OrderedFinite.
+
 2008-09-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-macros.lisp (|byteEqual|): New.

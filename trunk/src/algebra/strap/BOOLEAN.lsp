@@ -128,12 +128,13 @@
              |false| 115 |equiv| 119 |convert| 125 |coerce| 130 |and|
              135 |\\/| 141 >= 147 > 153 = 159 <= 165 < 171 |/\\| 177)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
-                (CONS '#(|OrderedSet&| NIL |Logic&| |SetCategory&| NIL
-                         NIL |BasicType&| NIL)
-                      (CONS '#((|OrderedSet|) (|Finite|) (|Logic|)
-                               (|SetCategory|) (|ConvertibleTo| 34)
-                               (|PropositionalLogic|) (|BasicType|)
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0))
+                (CONS '#(NIL |OrderedSet&| NIL NIL |Logic&|
+                         |SetCategory&| NIL |BasicType&| NIL)
+                      (CONS '#((|OrderedFinite|) (|OrderedSet|)
+                               (|PropositionalLogic|) (|Finite|)
+                               (|Logic|) (|SetCategory|)
+                               (|ConvertibleTo| 34) (|BasicType|)
                                (|CoercibleTo| 37))
                             (|makeByteWordVec2| 40
                                 '(1 25 18 0 26 1 32 0 31 33 1 34 0 32
@@ -181,7 +182,7 @@
                ((= ((|Boolean|) $ $)) T (ELT $ 19))
                ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
              (|addModemap| '|Boolean| '(|Boolean|)
-                 '((|Join| (|OrderedSet|) (|Finite|) (|Logic|)
+                 '((|Join| (|OrderedFinite|) (|Logic|)
                            (|PropositionalLogic|)
                            (|ConvertibleTo| (|InputForm|))
                            (CATEGORY |domain|
@@ -194,8 +195,8 @@
                  T '|Boolean|
                  (|put| '|Boolean| '|mode|
                         '(|Mapping|
-                             (|Join| (|OrderedSet|) (|Finite|)
-                                     (|Logic|) (|PropositionalLogic|)
+                             (|Join| (|OrderedFinite|) (|Logic|)
+                                     (|PropositionalLogic|)
                                      (|ConvertibleTo| (|InputForm|))
                                      (CATEGORY |domain|
                                       (SIGNATURE |true| ($) |constant|)
