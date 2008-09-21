@@ -119,6 +119,7 @@ isQuasiquote m ==
   m is ["[||]",y] => y
 
 
+++ returns the inferred domain for the syntactic object t.
 getTypeOfSyntax t ==
   atom t => 
     IDENTP t => '(Identifier)
