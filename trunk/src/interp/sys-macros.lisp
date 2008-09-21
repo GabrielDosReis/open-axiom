@@ -62,11 +62,14 @@
 ;; -*- Byte -*-
 ;; 
 
+(defmacro |byteEqual| (|x| |y|)
+  `(EQL (the |%Byte| ,|x|) (the |%Byte| ,|y|)))
+
 (defmacro |byteLessThan| (|x| |y|)
-  `(< (the fixnum ,|x|) (the fixnum ,|y|)))
+  `(< (the |%Byte| ,|x|) (the |%Byte| ,|y|)))
 
 (defmacro |byteGreaterEqual| (|x| |y|)
-  `(>= (the fixnum ,|x|) (the fixnum ,|y|)))
+  `(>= (the |%Byte| ,|x|) (the |%Byte| ,|y|)))
 
 ;; 
 ;; -*- BigFloat Constructors -*-

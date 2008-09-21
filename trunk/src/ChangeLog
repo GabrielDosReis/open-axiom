@@ -1,5 +1,17 @@
 2008-09-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-macros.lisp (|byteEqual|): New.
+	* algebra/boolean.spad.pamphlet (PropositionalLogic): Extend
+	SetCategory.  
+	(PropositionalFormula): Now unconditional exports coercion to
+	OutputForm. Adjust implementation.
+	(KleeneTrivalentLogic): New.
+	* algebra/data.spad.pamphlet (Byte): Tidy.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Move PROPLOG
+	to layer 1.
+
+2008-09-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/cfuns.h (oa_dirname): Declare.
 	* lib/cfuns-c.c (openaxiom_is_path_separator): New.
 	(oa_dirname): Define.

@@ -36,7 +36,7 @@ Byte(): Public == Private where
 
   Private ==> add
     byte(x: NonNegativeInteger): % ==
-      byteGreaterEqual(x,256$Lisp)$Lisp => 
+      not (x < 256$Lisp) => 
         userError "integer value cannot be represented by a byte"
       x : %
 
@@ -48,6 +48,9 @@ Byte(): Public == Private where
 
     coerce(x: %): OutputForm ==
       x::NonNegativeInteger::OutputForm
+    
+    x = y ==
+      byteEqual(x,y)$Lisp
 
     x < y ==
       byteLessThan(x,y)$Lisp
