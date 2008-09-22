@@ -37,7 +37,7 @@ import SExpression
 ++ Fixme: Provide direct support for boolean values, arbritrary 
 ++        precision float point values.
 Syntax(): Public == Private where
-  Public ==> Join(UnionType, SetCategory) with
+  Public == Join(UnionType, SetCategory) with
     convert: % -> SExpression
       ++ convert(s) returns the s-expression representation of a syntax.
 
@@ -117,15 +117,10 @@ Syntax(): Public == Private where
     _case: (%, [|String|]) -> Boolean
       ++ x case String is true if `x' really is a String
 
-  Private ==> SExpression add
-    rep(x: %): SExpression ==
-      x pretend SExpression
-
-    per(x: SExpression): % ==
-      x pretend %
-
+  Private == add
+    Rep == SExpression
     x = y ==
-      EQUAL(x,y)$Lisp @ Boolean
+      EQUAL(x,y)$Lisp
 
     s case Integer ==
       integer? rep s
@@ -138,6 +133,9 @@ Syntax(): Public == Private where
 
     s case Symbol ==
       symbol? rep s
+
+    coerce(x: %): OutputForm ==
+      rep(x)::OutputForm
 
     convert(x: %): SExpression ==
       rep x
@@ -570,6 +568,24 @@ SpadAstExports(): Category == Join(SpadSyntaxCategory, UnionType) with
     ++ s case IsAst holds if `s' represents an is-expression.
   autoCoerce: % -> IsAst()
     ++ autoCoerce(s) returns the IsAst view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  _case: (%, [|Identifier|]) -> Boolean
+    ++ s case Identifier holds if `s' represents an identifier.
+  autoCoerce: % -> Identifier
+    ++ autoCoerce(s) returns the Identifier view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  _case: (%, [|String|]) -> Boolean
+    ++ s case String holds if `s' represents a string literal.
+  autoCoerce: % -> String
+    ++ autoCoerce(s) returns the String view of `s'.  Left at the
+    ++ discretion of the compiler.
+
+  _case: (%, [|Integer|]) -> Boolean
+    ++ s case Integer holds if `s' represents an integer literal.
+  autoCoerce: % -> Integer
+    ++ autoCoerce(s) returns the Integer view of `s'.  Left at the
     ++ discretion of the compiler.
 
 @
@@ -1019,8 +1035,8 @@ ExitAst(): Public == Private where
     level x == (second rep x) : Integer
     coerce(x: %): OutputForm ==
       elt('ExitAst::OutputForm,
-        ['expression::OutputForm = expression(x)::OutputForm,
-          'level::OutputForm = level(x)::OutputForm])$OutputForm
+        ['level::OutputForm = level(x)::OutputForm,
+           'expression::OutputForm = expression(x)::OutputForm])$OutputForm
 @
 
 
@@ -1681,6 +1697,15 @@ SpadAst(): SpadAstExports() == add
 
   x case IsAst == isAst(x,'_is)
   autoCoerce(x: %): IsAst == x : IsAst
+
+  x case Identifier == (x::Syntax) case Symbol
+  autoCoerce(x: %): Identifier == x:Identifier
+
+  x case String == (x::Syntax) case String
+  autoCoerce(x: %): String == x : String
+
+  x case Integer == (x::Syntax) case Integer
+  autoCoerce(x: %): Integer == x : Integer
 
   coerce(x: %): OutputForm ==
     x' := x : Syntax
