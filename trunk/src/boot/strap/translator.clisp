@@ -96,7 +96,7 @@
   (PROGN
     (SETQ *LOAD-VERBOSE* NIL)
     (COND
-      ((OR (|%hasFeature| :GCL) (|%hasFeature| :ECL))
+      ((|%hasFeature| :GCL)
        (SETF (SYMBOL-VALUE
                  (|bfColonColon| 'COMPILER '*COMPILE-VERBOSE*))
              NIL)
@@ -755,16 +755,14 @@
                                            (SETQ |bfVar#25|
                                             (CONS
                                              (LIST |a|
-                                              (|bfColonColon| 'FFI
-                                               (|nativeType| |x|)))
+                                              (|nativeType| |x|))
                                              |bfVar#25|))))
                                         (SETQ |bfVar#23|
                                          (CDR |bfVar#23|))
                                         (SETQ |bfVar#24|
                                          (CDR |bfVar#24|)))))
                                    (LIST :RETURN-TYPE
-                                    (|bfColonColon| 'FFI
-                                     (|nativeType| |t|)))
+                                    (|nativeType| |t|))
                                    (LIST :LANGUAGE :STDC))))
                      (SETQ |forwardingFun|
                            (LIST 'DEFUN |op| |args|
@@ -1718,9 +1716,9 @@
       (PROGN
         (SETQ |out| (NAMESTRING (|getOutputPathname| |options|)))
         (COND
-          (|out| (CONCAT (|shoeRemoveStringIfNec| |$effectiveFaslType|
-                             |out|)
-                         "clisp"))
+          (|out| (CONCAT (|shoeRemoveStringIfNec|
+                             (CONCAT "." |$effectiveFaslType|) |out|)
+                         ".clisp"))
           ('T (|defaultBootToLispFile| |file|)))))))
 
 (DEFUN |translateBootFile| (|progname| |options| |file|)

@@ -1,3 +1,7 @@
+2008-09-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpReturn): Allow assignment.
+
 2008-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/syntax.spad.pamphlet: Tie the recursive knots between

@@ -2200,20 +2200,35 @@
 
 (DEFUN |bootSymbol| (|s|) (INTERN (SYMBOL-NAME |s|)))
 
+(DEFUN |unknownNativeTypeError| (|t|)
+  (|fatalError| (CONCAT "unsupported native type: " (SYMBOL-NAME |t|))))
+
 (DEFUN |nativeType| (|t|)
   (PROG (|t'|)
     (DECLARE (SPECIAL |$NativeTypeTable|))
     (RETURN
       (COND
         ((NULL |t|) |t|)
+        ((OR (EQ |t| '|buffer|) (EQ |t| '|pointer|))
+         (COND
+           ((|%hasFeature| :GCL) 'FIXNUM)
+           ((|%hasFeature| :ECL) :POINTER-VOID)
+           ((|%hasFeature| :SBCL) (LIST '* T))
+           ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'C-POINTER))
+           (#0='T (|unknownNativeTypeError| |t|))))
         ((SETQ |t'|
                (CDR (ASSOC (|coreSymbol| |t|) |$NativeTypeTable|)))
-         (COND
-           ((AND (EQ |t| '|string|) (|%hasFeature| :SBCL))
-            (LIST |t'| :EXTERNAL-FORMAT :ASCII :ELEMENT-TYPE
-                  'BASE-CHAR))
-           (#0='T |t'|)))
-        (#0#
-         (|fatalError|
-             (CONCAT "unsupported native type: " (SYMBOL-NAME |t|))))))))
+         (PROGN
+           (SETQ |t'|
+                 (COND
+                   ((|%hasFeature| :SBCL)
+                    (|bfColonColon| 'SB-ALIEN |t'|))
+                   ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI |t'|))
+                   (#0# |t'|)))
+           (COND
+             ((AND (EQ |t| '|string|) (|%hasFeature| :SBCL))
+              (LIST |t'| :EXTERNAL-FORMAT :ASCII :ELEMENT-TYPE
+                    'BASE-CHAR))
+             (#0# |t'|))))
+        (#0# (|unknownNativeTypeError| |t|))))))
 
