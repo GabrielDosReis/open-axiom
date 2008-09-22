@@ -740,8 +740,10 @@ bpCatchItem() ==
   (bpException() or bpTrap()) and 
     bpPush %Catch bpPop1()
 
+++ Return:
+++   RETURN Assign
 bpReturn()==
-  (bpEqKey "RETURN" and  (bpAnd() or bpTrap()) and
+  (bpEqKey "RETURN" and  (bpAssign() or bpTrap()) and
 	 bpPush bfReturnNoName bpPop1()) 
     or bpThrow()
       or bpAnd()

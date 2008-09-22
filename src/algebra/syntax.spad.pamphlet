@@ -135,7 +135,9 @@ Syntax(): Public == Private where
       symbol? rep s
 
     coerce(x: %): OutputForm ==
-      rep(x)::OutputForm
+      x' := rep x
+      string? x' => outputForm(x' : String)
+      x'::OutputForm
 
     convert(x: %): SExpression ==
       rep x

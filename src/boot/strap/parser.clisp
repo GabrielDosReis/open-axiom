@@ -783,7 +783,7 @@
        (|bpPush| (|%Catch| (|bpPop1|)))))
 
 (DEFUN |bpReturn| ()
-  (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAnd|) (|bpTrap|))
+  (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAssign|) (|bpTrap|))
            (|bpPush| (|bfReturnNoName| (|bpPop1|))))
       (|bpThrow|) (|bpAnd|)))
 
