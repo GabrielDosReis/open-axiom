@@ -159,6 +159,7 @@ getTypeOfSyntax t ==
   op in '(%Import import) => '(ImportAst)
   op in '(%Signature SIGNATURE) => '(SignatureAst)
   op = "CATEGORY" => '(CategoryAst)
+  op = "where" => '(WhereAst)
   op = "[||]" => '(QuasiquoteAst)
   $Syntax
 
