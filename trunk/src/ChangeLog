@@ -1,5 +1,10 @@
 2008-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/syntax.spad.pamphlet: Tie the recursive knots between
+	syntax domains.
+
+2008-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/syntax.spad.pamphlet (SpadAst): New.
 	* algebra/Makefile.pamphlet (axiom_algebra_layer_user): Add SPADAST.
 	* share/algebra: Update algebra databases.
