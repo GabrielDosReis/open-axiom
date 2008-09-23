@@ -1,3 +1,7 @@
+2008-09-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/fortmac.spad.pamphlet (MachineFloat): Don't redeclare base.
+
 2008-09-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/parser.boot (bpReturn): Allow assignment.
