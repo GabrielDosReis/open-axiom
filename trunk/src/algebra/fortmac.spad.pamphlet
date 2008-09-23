@@ -98,8 +98,6 @@ MachineFloat(): Exports == Implementation where
       ++ precision() returns the number of digits in the model 
     base   : PI -> PI
       ++ base(b) sets the base of the model to b
-    base   : () -> PI
-      ++ base() returns the base of the model
     maximumExponent : I -> I
       ++ maximumExponent(e) sets the maximum exponent in the model to e
     maximumExponent : () -> I
