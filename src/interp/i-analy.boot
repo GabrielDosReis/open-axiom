@@ -52,6 +52,13 @@ $inRetract := false
 
 --% Interpreter Analysis Functions
 
+++ Record calling context information in the VAT `t'.
+putCallInfo(t,op,arg,nargs) ==
+  putAtree(t,"callingFunction",op)
+  putAtree(t,"argumentNumber",arg)
+  putAtree(t,"totalArgs",nargs)
+  t
+
 getMinimalVariableTower(var,t) ==
   -- gets the minimal polynomial subtower of t that contains the
   -- given variable. Returns NIL if none.
@@ -228,9 +235,7 @@ bottomUp t ==
     (null dol) and (fn:= GETL(opName,"up")) and (u:= FUNCALL(fn, t)) => u
     nargs := #argl
     if opName then for x in argl for i in 1.. repeat
-      putAtree(x,'callingFunction,opName)
-      putAtree(x,'argumentNumber,i)
-      putAtree(x,'totalArgs,nargs)
+      putCallInfo(x,opName,i,nargs)
 
     if tar then pushDownTargetInfo(opName,tar,argl)
 

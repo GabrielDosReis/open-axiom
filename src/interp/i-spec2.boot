@@ -183,7 +183,7 @@ uperror t ==
   -- which is the name of the function.
   not $compilingMap => NIL
   t isnt [op,msg] => NIL
-  msgMs := bottomUp msg
+  msgMs := bottomUp putCallInfo(msg,"error",1,1)
   msgMs isnt [=$String] => NIL
   RPLACD(t,[mkAtree object2String $mapName,msg])
   bottomUp t
