@@ -249,7 +249,9 @@ upand x ==
   -- evaluated if the first argument is true.
   x isnt [op,term1,term2] => NIL
   putTarget(term1,$Boolean)
+  putCallInfo(term1,"and",1,2)
   putTarget(term2,$Boolean)
+  putCallInfo(term2,"and",2,2)
   ms := bottomUp term1
   ms isnt [=$Boolean] => nil   -- use general modemap
   $genValue =>
@@ -284,7 +286,9 @@ upor x ==
   -- evaluated if the first argument is false.
   x isnt [op,term1,term2] => NIL
   putTarget(term1,$Boolean)
+  putCallInfo(term1,"or",1,2)
   putTarget(term2,$Boolean)
+  putCallInfo(term2,"or",2,2)
   ms := bottomUp term1
   ms isnt [=$Boolean] => nil
   $genValue =>
@@ -331,6 +335,7 @@ userDefinedCase(t is [op, lhs, rhs]) ==
 
 upcase t ==
   t isnt [op,lhs,rhs] => nil
+  putCallInfo(lhs,"case",1,2)
   bottomUp lhs
   triple := getValue lhs
   objMode(triple) isnt ['Union,:unionDoms] => userDefinedCase t
@@ -964,7 +969,9 @@ upconstruct t ==
     CAR(tar) in '(Matrix SquareMatrix RectangularMatrix) =>
       vec := ['List,underDomainOf tar]
       for x in l repeat if not getTarget(x) then putTarget(x,vec)
-  argModeSetList:= [bottomUp x for x in l]
+  nargs := #l
+  argModeSetList:= [bottomUp putCallInfo(x,"construct",i,nargs)
+                      for x in l for i in 1..]
   dol and dol is [topType,:.] and not (topType in aggs) =>
     (mmS:= selectMms(op,l,tar)) and (mS:= evalForm(op,getUnname op,l,mmS)) =>
       putModeSet(op,mS)
