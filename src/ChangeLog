@@ -1,3 +1,12 @@
+2008-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* include/cfuns.h (oa_copy_file): Declare.
+	* lib/cfuns-c.c (oa_chdir): Define.
+	(oa_dirname): Fix typo.
+	* hyper/htadd.c (copy_file): Remove.
+	(build_db_filename): Tidy.
+	(delete_file): Use oa_copy_file.
+
 2008-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-analy.boot (putCallInfo): New.

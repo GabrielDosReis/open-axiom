@@ -39,18 +39,19 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
+#include <unistd.h>
 
 
 #ifdef __WIN32__
 #  include <windows.h>
 #else
 #  include <dirent.h>
+#  include <fcntl.h>
 #endif
 
 #include "cfuns.h"
@@ -115,7 +116,7 @@ OPENAXIOM_EXPORT char*
 oa_dirname(const char* path)
 {
    const int n = strlen(path);
-   char* mark = mark + n;
+   char* mark = path + n;
 
    if (n == 0)
       return strdup(".");
@@ -607,6 +608,33 @@ oa_get_tmpdir(void)
 #endif   
 }
 
+
+OPENAXIOM_EXPORT int
+oa_copy_file(const char* src, const char* dst)
+{
+#ifdef __WIN32__
+   return CopyFile(src,dst, /* bFailIfExists = */ 0) ? 0 : -1;
+#else
+#define OA_BUFSZ 512
+   char buf[OA_BUFSZ];
+   int src_fd;
+   int dst_fd;
+   int count;
+   if((src_fd = open(src, O_RDONLY)) < 0)
+      return -1;
+   if ((dst_fd = open(dst, O_WRONLY | O_CREAT | O_TRUNC)) < 0) {
+      close(src_fd);
+      return -1;
+   }
+
+   while ((count = read(src_fd, buf, OA_BUFSZ)) > 0) 
+      if (write(dst_fd, buf, count) != count)
+         break;
+
+#undef OA_BUFSZ
+   return (close(dst_fd) < 0 || close(src_fd) < 0 || count < 0) ? -1 : 0;
+#endif   
+}
 
 
 OPENAXIOM_EXPORT double 

@@ -38,6 +38,10 @@
 
 #include "open-axiom.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif   
+
 OPENAXIOM_EXPORT int addtopath(char*);
 OPENAXIOM_EXPORT int directoryp(char*);
 OPENAXIOM_EXPORT int make_path_from_file(char*, char*);
@@ -55,8 +59,15 @@ OPENAXIOM_EXPORT char* oa_getcwd(void);
 OPENAXIOM_EXPORT int oa_access_file_for_read(const char*);
 OPENAXIOM_EXPORT char* oa_dirname(const char*);
 OPENAXIOM_EXPORT const char* oa_get_tmpdir(void);
+OPENAXIOM_EXPORT int oa_copy_file(const char*, const char*);
+
 OPENAXIOM_EXPORT double plus_infinity(void);
 OPENAXIOM_EXPORT double minus_infinity(void);
 OPENAXIOM_EXPORT double NANQ(void);
 
+
+#ifdef __cplusplus
+}
+#endif   
+   
 #endif /* OPENAXIOM_CFUNS_included */

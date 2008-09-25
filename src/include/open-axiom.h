@@ -65,6 +65,10 @@ typedef void* openaxiom_handle;
 
 #include <unistd.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif   
+
 /* Do we have graphics support?  */
 #ifdef X_DISPLAY_MISSING
 #  define OPENAXIOM_HAVE_GRAPHICS 0
@@ -94,4 +98,9 @@ openaxiom_sleep(int n)
 #endif   
 }
 
+
+#ifdef __cplusplus
+}
+#endif   
+   
 #endif /* OPENAXIOM_included */

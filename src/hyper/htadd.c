@@ -54,7 +54,6 @@
 static void add_file(char*, char*, int);
 static void add_new_pages(FILE*, FILE*, char*, char*);
 static int build_db_filename(short, char*, char*);
-static void copy_file(char*, char*);
 static void delete_db(FILE*, FILE*, char*);
 static int delete_file(char*, char*);
 static void get_filename(void);
@@ -217,10 +216,10 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
       }
     }
     
-    if (writeablep(dbfilename) != 0)
+    if (writeablep(dbfilename) > 0)
       return 1;
 
-    fprintf(stderr, "build_db_filename: Database file name is not writable\n");
+    fprintf(stderr, "build_db_filename: '%s' is not writable\n",dbfilename);
     exit(1);
     return 0;
 }
@@ -270,6 +269,7 @@ add_file(char *dbname, char *name, int fresh)
     }
     else {
         if ((db_fp = fopen(dbname, "r")) == NULL) {
+            exit(-1);
         }
     }
     if (!fresh)
@@ -284,7 +284,8 @@ add_file(char *dbname, char *name, int fresh)
     if (db_fp != NULL)
         fclose(db_fp);
     if (!fresh) {
-        copy_file(temp_db_file, dbname);
+       if (oa_copy_file(temp_db_file, dbname) < 0)
+          exit(-1);
         unlink(temp_db_file);
     }
 }
@@ -400,23 +401,6 @@ add_new_pages(FILE *temp_db, FILE *new_file, char *addname, char *fullname)
     printf("Added %3d pages and/or macros from %s\n", pages, addname);
 }
 
-static void
-copy_file(char *f1, char *f2)
-{
-    FILE *fp1, *fp2;
-    int c;
-
-    fp1 = fopen(f1, "r");
-    fp2 = fopen(f2, "w");
-    while ((c = getc(fp1)) != EOF) {
-        putc(c, fp2);
-    }
-    fclose(fp2);
-    fclose(fp1);
-}
-
-
-
 #define whitespace(c) ((c) == ' ' || (c) == '\t' || (c) == '\n')
 #define delim(c) \
   (whitespace(c) )
@@ -481,7 +465,8 @@ delete_file(char *dbname, char *name)
     fclose(temp_db_fp);
     if (db_fp != NULL)
         fclose(db_fp);
-    copy_file(temp_db_file, dbname);
+    if (oa_copy_file(temp_db_file, dbname) < 0)
+       return -1;
     unlink(temp_db_file);
     return 0;
 }
