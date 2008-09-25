@@ -150,6 +150,7 @@ ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	     done
 	@ rm -f "${HYPER}"/pages/ht.db
 	@ rm -f "${HYPER}"/pages/*~
+	@ touch "${HYPER}"/pages/ht.db
 	for f in `ls "${HYPER}"/pages/*.ht "${HYPER}"/pages/*.pht`; do \
              AXIOM="$(AXIOM)" $(HTADD) -s $$f || exit 1; done
 	@ mkdir -p "$(HYPER)"/bitmaps
