@@ -342,7 +342,33 @@ bottomUpIdentifier(t,id) ==
       (isMapExpr expr and [objMode(u)]) or
         keyedSystemError("S2GE0016",
           ['"bottomUpIdentifier",'"cannot evaluate identifier"])
+  m := namedConstant(id,t) => [m]
   bottomUpDefault(t,id,defaultType,getTarget t)
+
+getConstantObject(id,dc,sig) ==
+  mode := substitute(dc,"$",first sig)
+  $genValue =>
+    objNewWrap(SPADCALL compiledLookupCheck(id,sig,evalDomain dc),mode)
+  objNew(["SPADCALL",["compiledLookupCheck",id,sig,["evalDomain",dc]]],mode)
+
+namedConstant(id,t) ==
+  -- for the time being, ignore the case where the target type is imposed.
+  getTarget(t) ^= nil => nil
+  sysmms := getModemapsFromDatabase(id,0) or return nil
+  -- ignore polymorphic constants are not supported yet.
+  doms := [getDCFromSystemModemap sysmm for sysmm in sysmms]
+  candidates := nil
+  for dc in doms | niladicConstructorFromDB first dc repeat
+    LASSOC(id,getOperationAlistFromLisplib first dc) is [[sig,.,.,"CONST"]] =>
+      candidates := [[dc,sig],:candidates]
+  null candidates => nil
+  #candidates = 1 =>
+    [[dc,sig]] := candidates
+    val := getConstantObject(id,dc,sig)
+    putValue(t,val)
+    putMode(t,objMode val)
+    
+  -- error for ambiguity.
 
 bottomUpDefault(t,id,defaultMode,target) ==
   if $genValue
