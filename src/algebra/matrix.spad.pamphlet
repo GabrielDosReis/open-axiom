@@ -368,15 +368,16 @@ SquareMatrix(ndim,R): Exports == Implementation where
  
   Exports ==> Join(SquareMatrixCategory(ndim,R,Row,Col),_
                    CoercibleTo Matrix R) with
- 
+
+    new: R -> %
+      ++ \spad{new(c)} constructs a new \spadtype{SquareMatrix}
+      ++ object of dimension  \spad{ndim} with initial entries equal
+      ++ to \spad{c}. 
     transpose: $ -> $
       ++ \spad{transpose(m)} returns the transpose of the matrix m.
     squareMatrix: Matrix R -> $
       ++ \spad{squareMatrix(m)} converts a matrix of type \spadtype{Matrix}
       ++ to a matrix of type \spadtype{SquareMatrix}.
-    coerce: $ -> Matrix R
-      ++ \spad{coerce(m)} converts a matrix of type \spadtype{SquareMatrix}
-      ++ to a matrix of type \spadtype{Matrix}.
 --  symdecomp : $ -> Record(sym:$,antisym:$)
 --    ++ \spad{symdecomp(m)} decomposes the matrix m as a sum of a symmetric
 --    ++ matrix \spad{m1} and an antisymmetric matrix \spad{m2}. The object
@@ -394,6 +395,7 @@ SquareMatrix(ndim,R): Exports == Implementation where
     if R has ConvertibleTo InputForm then ConvertibleTo InputForm
  
   Implementation ==> Matrix R add
+    Rep == Matrix R
     minr ==> minRowIndex
     maxr ==> maxRowIndex
     minc ==> minColIndex
@@ -407,78 +409,80 @@ SquareMatrix(ndim,R): Exports == Implementation where
     1    == ONE
 
     characteristic() == characteristic()$R
+
+    new c == per new(ndim,ndim,c)$Rep
  
     matrix(l: List List R) ==
       -- error check: this is a top level function
       #l ~= ndim => error "matrix: wrong number of rows"
       for ll in l repeat
         #ll ~= ndim => error "matrix: wrong number of columns"
-      ans : Matrix R := new(ndim,ndim,0)
+      ans := new(ndim,ndim,0)$Rep
       for i in minr(ans)..maxr(ans) for ll in l repeat
         for j in minc(ans)..maxc(ans) for r in ll repeat
-          qsetelt_!(ans,i,j,r)
-      ans pretend $
+          qsetelt!(ans,i,j,r)
+      per ans
  
-    row(x,i)    == directProduct row(x pretend Matrix(R),i)
-    column(x,j) == directProduct column(x pretend Matrix(R),j)
-    coerce(x:$):OutputForm == coerce(x pretend Matrix R)$Matrix(R)
+    row(x,i)    == directProduct row(rep x,i)
+    column(x,j) == directProduct column(rep x,j)
+    coerce(x:$):OutputForm == rep(x)::OutputForm
  
-    scalarMatrix r == scalarMatrix(ndim,r)$Matrix(R) pretend $
+    scalarMatrix r == per scalarMatrix(ndim,r)$Matrix(R)
  
     diagonalMatrix l ==
       #l ~= ndim =>
         error "diagonalMatrix: wrong number of entries in list"
-      diagonalMatrix(l)$Matrix(R) pretend $
+      per diagonalMatrix(l)$Matrix(R)
  
-    coerce(x:$):Matrix(R) == copy(x pretend Matrix(R))
+    coerce(x: %): Matrix(R) == copy rep x
  
     squareMatrix x ==
       (nrows(x) ~= ndim) or (ncols(x) ~= ndim) =>
         error "squareMatrix: matrix of bad dimensions"
-      copy(x) pretend $
+      per copy x
  
-    x:$ * v:Col ==
-      directProduct((x pretend Matrix(R)) * (v :: Vector(R)))
+    x:% * v:Col ==
+      directProduct(rep(x) * (v :: Vector(R)))
  
     v:Row * x:$ ==
-      directProduct((v :: Vector(R)) * (x pretend Matrix(R)))
+      directProduct((v :: Vector(R)) * rep(x))
  
     x:$ ** n:NonNegativeInteger ==
-      ((x pretend Matrix(R)) ** n) pretend $
+      per(rep(x) ** n)
  
     if R has commutative("*") then
  
-      determinant x == determinant(x pretend Matrix(R))
-      minordet x    == minordet(x pretend Matrix(R))
+      determinant x == determinant rep x
+      minordet x    == minordet rep x
  
     if R has EuclideanDomain then
  
-      rowEchelon x == rowEchelon(x pretend Matrix(R)) pretend $
+      rowEchelon x == per rowEchelon rep x
  
     if R has IntegralDomain then
  
-      rank x    == rank(x pretend Matrix(R))
-      nullity x == nullity(x pretend Matrix(R))
+      rank x    == rank rep x
+      nullity x == nullity rep x
       nullSpace x ==
-        [directProduct c for c in nullSpace(x pretend Matrix(R))]
+        [directProduct c for c in nullSpace rep x]
  
     if R has Field then
  
       dimension() == (m * n) :: CardinalNumber
  
       inverse x ==
-        (u := inverse(x pretend Matrix(R))) case "failed" => "failed"
-        (u :: Matrix(R)) pretend $
+        (u := inverse rep x) case "failed" => "failed"
+        per(u :: Matrix(R))
  
       x:$ ** n:Integer ==
-        ((x pretend Matrix(R)) ** n) pretend $
+        per(rep(x) ** n)
  
       recip x == inverse x
  
     if R has ConvertibleTo InputForm then
       convert(x:$):InputForm ==
          convert [convert("squareMatrix"::Symbol)@InputForm,
-                  convert(x::Matrix(R))]$List(InputForm)
+                  convert(rep x)@InputForm]$List(InputForm)
 
 
 @

@@ -491,15 +491,26 @@ replaceVars(x,oldvars,newvars) ==
     x := substitute(new,old,x)
   x
 
+++ Return the list of qualifying predicates of the system modemap `mm'.
+getConditionListFromMm mm ==
+  [., cond] := mm
+  if cond is ["partial", :c] then cond := c
+  cond is ["AND", :cl] => cl
+  cond is ["OR", ["AND", :cl],:.] => cl  --all cl's should give same info
+  [cond]
+
+
+++ Returns the domain of computation of the modemap `mm'.  This is not
+++ to be confused with `getDomainFromMm' below, which can also return
+++ a category.
+getDCFromSystemModemap mm ==
+  for cond in getConditionListFromMm mm repeat
+    cond is ["isDomain","*1",dom] => return dom
+
 getDomainFromMm mm ==
   -- Returns the Domain (or package or category) of origin from a pattern
   -- modemap
-  [., cond] := mm
-  if cond is ['partial, :c] then cond := c
-  condList :=
-    cond is ['AND, :cl] => cl
-    cond is ['OR, ['AND, :cl],:.] => cl  --all cl's should give same info
-    [cond]
+  condList := getConditionListFromMm mm
   val :=
     for condition in condList repeat
       condition is ['isDomain, "*1", dom] => return opOf dom

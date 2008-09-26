@@ -1,3 +1,8 @@
+2008-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/matrix.spad.pamphlet (new$Matrix): New.
+	Remove uses of pretend.  Define Rep.
+
 2008-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* include/cfuns.h (oa_copy_file): Declare.
