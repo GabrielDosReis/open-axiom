@@ -1,3 +1,8 @@
+2008-09-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/regset.spad.pamphlet (RegularTriangularSet): Remove
+	unused local decompose function.
+
 2008-09-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/outform.spad.pamphlet (OutputForm): Remove bogus
