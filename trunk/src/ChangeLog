@@ -1,3 +1,8 @@
+2008-09-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/outform.spad.pamphlet (OutputForm): Remove bogus
+	definition for Rep.  Tidy.
+
 2008-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/matrix.spad.pamphlet (new$Matrix): New.
