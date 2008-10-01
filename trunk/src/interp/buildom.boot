@@ -408,3 +408,11 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
   cList:= substitute(dollarIfRepHack op,g,cList)
   [cList,e]
 
+--%
+for x in '((Record mkRecordFunList)
+           (Union mkUnionFunList)
+           (Mapping mkMappingFunList)
+           (Enumeration mkEnumerationFunList)) 
+ repeat
+   MAKEPROP(first x, "makeFunctionList", second x)
+

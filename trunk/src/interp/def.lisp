@@ -39,6 +39,26 @@
 
 (in-package "BOOT")
 
+(REPEAT (IN X '(
+  (|:| |DEF-:|)
+  (|::| |DEF-::|)
+  (ELT DEF-ELT)
+  (SETELT DEF-SETELT)
+  (%LET DEF-LET)
+  (COLLECT DEF-COLLECT)
+  (LESSP DEF-LESSP)
+  (|<| DEF-LESSP)
+  (REPEAT DEF-REPEAT)
+;;(|TRACE,LET| DEF-TRACE-LET)
+  (CATEGORY DEF-CATEGORY)
+  (EQUAL DEF-EQUAL)
+  (|is| DEF-IS)
+  (SEQ DEF-SEQ)
+  (|isnt| DEF-ISNT)
+  (|where| DEF-WHERE)
+)) (PROGN (MAKEPROP (CAR X) '|DEF-TRAN| (CADR X)) (CADR X)))
+
+
 ;;; Common Block
 
 (defparameter deftran nil)
