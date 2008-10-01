@@ -1,5 +1,11 @@
 2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-output.boot: Move dispatch table from property.lisp.
+	* interp/buildom.boot: Likewise.
+	* interp/def.lisp: Likewise.
+
+2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/files.spad.pamphlet (IOMode): New domain.
 	* algebra/net.spad.pamphlet (InputBinaryFile): Likewise.
 	(OutputBinaryFile): Likewise.
