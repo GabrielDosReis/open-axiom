@@ -267,6 +267,8 @@ compileSpadLibrary(progname,options,file) ==
   $verbose := false
   $ProcessInteractiveValue := true
   $PrintCompilerMessageIfTrue := $verbose
+  setCompilerOptimizations 
+    getOptionValue(Option '"optimize",%systemOptions())
   CATCH($intTopLevel,
     CATCH("SpadCompileItem",
      CATCH($SpadReaderTag,compiler [file])))

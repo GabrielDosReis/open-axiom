@@ -46,6 +46,15 @@ $Representation := nil
 
 $formalArgList := []
 
+--% Optimization control
+
+++ true if we have to proclaim function signatures in the generated Lisp.
+$optProclaim := false
+
+++ true if we have to inline simple functions before codegen.
+$optReplaceSimpleFunctions := false
+
+
 --%
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
@@ -821,3 +830,44 @@ ambiguousSignatureError(op, sigs) ==
   stackSemanticError(['"signature of lhs not unique.  Candidates are:",
     :displayAmbiguousSignatures($op,sigs)],nil)
 
+--%
+setCompilerOptimizations level ==
+  level = nil => nil
+  INTEGERP level =>
+    if level = 0 then
+      -- explicit request for no optimization.
+      $optProclaim := false
+      $optReplaceSimpleFunctions := false
+    if level > 0 then 
+      $optProclaim := true
+      $optReplaceSimpleFunctions := true
+  coreError '"unknown optimization level request"
+
+++ Proclaim the type of the capsule function `op' with signature `sig'.
+++ Note that all capsule functions take an additional argument 
+++ standing for the domain of computation object.
+proclaimCapsuleFunction(op,sig) ==
+  LAM_,EVALANDFILEACTQ
+    ["DECLAIM",["FTYPE",
+       ["FUNCTION",[:[argType first d for d in tails rest sig],"%Shell"], 
+          retType first sig],op]] where
+      argType d ==
+        getVMType normalize d
+      retType d ==
+        d := normalize d
+        atom d => getVMType d
+        args := rest d
+        #args = 0 => getVMType d
+        or/[atom a for a in args] => "%Thing"
+        -- not theoretically correct, but practically OK.
+        getVMType d
+      normalize d ==
+        d = "$" => 
+          -- If the representation is explicitly stated, use it.  That way
+          -- we optimize abstractions just as well as builtins.
+          rep := get("Rep","value",$e) => rep
+          -- Cope with old-style constructor definition
+          atom $functorForm => [$functorForm] 
+          $functorForm
+        atom d => d
+        [first d, :[normalize first args for args in tails rest d]]

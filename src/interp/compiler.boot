@@ -1683,6 +1683,7 @@ compileSpad2Cmd args ==
       vartrace _
       quiet _
       translate _
+      optimize
         )
 
     translateOldToNew        := nil
@@ -1728,6 +1729,7 @@ compileSpad2Cmd args ==
               throwKeyedMsg("S2IZ0037",['")constructor"])
             fun.0       := 'c
             constructor := [unabbrev o for o in optargs]
+        fullopt = "optimize" => setCompilerOptimizations first optargs
         throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
 
     $InteractiveMode : local := nil
@@ -1745,6 +1747,8 @@ compileSpad2Cmd args ==
     if not $buildingSystemAlgebra then 
       extendLocalLibdb $newConlist
     terminateSystemCommand()
+    -- reset compiler optimization options
+    setCompilerOptimizations 0
     spadPrompt()
 
 convertSpadToAsFile path ==

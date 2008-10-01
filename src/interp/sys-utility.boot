@@ -44,6 +44,8 @@ namespace BOOT
 ++ representation of a domain, as a Lisp type specifier as seen by
 ++ the runtime system.
 getVMType d ==
+  IDENTP d => "%Thing"
+  STRINGP d => "%Thing"            -- literal flag parameter
   case (d' := devaluate d) of
     Void => "%Void"
     Boolean => "%Boolean"
@@ -51,11 +53,19 @@ getVMType d ==
     Character => "%Char"
     SingleInteger => "%Short"
     Integer => "%Integer"
+    NonNegativeInteger => ["%IntegerSection",0]
+    PositiveInteger => ["%IntegerSection",1]
+    IntegerMod => "%Integer"
+    DoubleFloat => "%DoubleFloat"
     String => "%String"
     List => "%List"
     Vector => ["%Vector",getVMType second d']
     PrimitiveArray => ["%SimpleArray", getVMType second d']
     Pair => "%Pair"
+    Union => "%Pair"
+    Record =>
+      #rest d' > 2 => "%Shell"
+      "%Pair"
     otherwise => "%Thing"                 -- good enough, for now.
 
 --%
