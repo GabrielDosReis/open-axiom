@@ -1,3 +1,13 @@
+2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/files.spad.pamphlet (IOMode): New domain.
+	* algebra/net.spad.pamphlet (InputBinaryFile): Likewise.
+	(OutputBinaryFile): Likewise.
+	* interp/sys-utility.boot (openBinaryFile): New.
+	(readByteFromFile): Likewise.
+	(writeByteToFile): Likewise.
+	(closeFile): Likewise.
+
 2008-09-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/regset.spad.pamphlet (RegularTriangularSet): Remove

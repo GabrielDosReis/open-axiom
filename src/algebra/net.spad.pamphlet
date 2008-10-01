@@ -106,6 +106,94 @@ InputOutputByteConduit(): Category ==
 
 @
 
+
+\subsection{The InputBinaryFile domain}
+
+<<domain INBFILE InputBinaryFile>>=
+)abbrev domain INBFILE InputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: September 30, 2008
+++ Date Last Modified: September 30, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for input operations.  `Binary' here means that the conduits
+++   do not interpret their contents.
+InputBinaryFile(): Public == Private where
+  Public == Join(InputByteConduit, CoercibleTo OutputForm) with
+    inputBinaryFile: FileName -> %
+      ++ inputBinaryFile(f) returns an input conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    inputBinaryFile: String -> %
+      ++ inputBinaryFile(f) returns an input conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    eof?: % -> Boolean
+      ++ eof?(ifile) holds when end-of-file has been reached
+      ++ for the conduit file `ifile'.
+    isOpen?: % -> Boolean
+      ++ open?(ifile) holds if `ifile' is in open state.
+  Private == add
+    Rep == Record(stream: SExpression, filename: FileName)
+    inputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,input$IOMode)$Lisp,f]
+    inputBinaryFile(f: String) ==
+      per [openBinaryFile(f,input$IOMode)$Lisp,f::FileName]
+    isOpen? ifile ==
+      not null? rep(ifile).stream
+    readByteIfCan! ifile ==
+      isOpen? ifile => readByteFromFile(rep(ifile).stream)$Lisp
+      error "file is not open"
+    eof? ifile ==
+      isOpen? ifile => readByteIfCan! ifile < 0@SingleInteger
+      error "file is not open"
+    close! ifile ==
+      if isOpen? ifile then
+        rep(ifile).stream := closeFile(rep(ifile).stream)$Lisp
+      ifile
+    coerce(ifile: %): OutputForm ==
+      rep(ifile).filename::OutputForm
+@
+
+\subsection{The OutputBinaryFile domain}
+
+<<domain OUTBFILE OutputBinaryFile>>=
+)abbrev domain OUTBFILE OutputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: September 30, 2008
+++ Date Last Modified: September 30, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for output operations.  `Binary' here means that the conduits
+++   do not interpret their contents.
+OutputBinaryFile(): Public == Private where
+  Public == Join(OutputByteConduit, CoercibleTo OutputForm) with
+    outputBinaryFile: FileName -> %
+      ++ outputBinaryFile(f) returns an output conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    outputBinaryFile: String -> %
+      ++ outputBinaryFile(f) returns an output conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    isOpen?: % -> Boolean
+      ++ open?(ifile) holds if `ifile' is in open state.
+  Private == add
+    Rep == Record(stream: SExpression, filename: FileName)
+    outputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,output$IOMode)$Lisp,f]
+    outputBinaryFile(f: String) ==
+      per [openBinaryFile(f,output$IOMode)$Lisp,f::FileName]
+    isOpen? ifile ==
+      not null? rep(ifile).stream
+    writeByteIfCan!(ifile,b) ==
+      isOpen? ifile => writeByteToFile(rep(ifile).stream,b)$Lisp
+      error "file is not open"
+    close! ifile ==
+      if isOpen? ifile then
+        rep(ifile).stream := closeFile(rep(ifile).stream)$Lisp
+      ifile
+    coerce(ifile: %): OutputForm ==
+      rep(ifile).filename::OutputForm
+@
+
+
 \section{The Hostname domain}
 
 <<domain HOSTNAME Hostname>>=
@@ -194,6 +282,9 @@ PortNumber(): Public == Private where
 <<category INBCON InputByteConduit>>
 <<category OUTBCON OutputByteConduit>>
 <<category IOBCON InputOutputByteConduit>>
+
+<<domain INBFILE InputBinaryFile>>
+<<domain OUTBFILE OutputBinaryFile>>
 
 <<domain HOSTNAME Hostname>>
 <<domain PORTNUM PortNumber>>
