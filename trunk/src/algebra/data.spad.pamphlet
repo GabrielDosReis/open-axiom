@@ -23,7 +23,7 @@ import OutputForm
 ++ Description:
 ++   Byte is the datatype of 8-bit sized unsigned integer values.
 Byte(): Public == Private where
-  Public ==> Join(OrderedSet, CoercibleTo NonNegativeInteger) with
+  Public == Join(OrderedSet, CoercibleTo NonNegativeInteger) with
     byte: NonNegativeInteger -> %
       ++ byte(x) injects the unsigned integer value `v' into
       ++ the Byte algebra.  `v' must be non-negative and less than 256.
@@ -34,11 +34,14 @@ Byte(): Public == Private where
     bitior: (%,%) -> %
       ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
 
-  Private ==> add
+  Private == add
     byte(x: NonNegativeInteger): % ==
       not (x < 256$Lisp) => 
         userError "integer value cannot be represented by a byte"
       x : %
+
+    hash x ==
+      SXHASH(x)$Lisp
 
     coerce(x: NonNegativeInteger): % ==
       byte x

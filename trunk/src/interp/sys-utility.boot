@@ -220,3 +220,35 @@ PRINT_-AND_-EVAL_-DEFUN(name,body) ==
   PRINT_-DEFUN(name,body)
 
 
+
+--% File IO
+$InputIOMode == KEYWORD::INPUT
+$OutputIOMode == KEYWORD::OUTPUT
+$BothWaysIOMode == KEYWORD::IO
+
+++ return a binary stream open for `file' in mode `mode'; nil
+++ if something wnet wrong.
+openBinaryFile(file,mode) ==
+  mode = $InputIOMode =>
+    OPEN(file,KEYWORD::DIRECTION,mode,
+      KEYWORD::IF_-DOES_-NOT_-EXIST,nil,
+        KEYWORD::ELEMENT_-TYPE,"%Byte")
+  OPEN(file,KEYWORD::DIRECTION,mode,
+    KEYWORD::IF_-EXISTS,KEYWORD::SUPERSEDE,
+      KEYWORD::ELEMENT_-TYPE,"%Byte")
+
+++ Attemp to read a byte from input file `ifile'.  If not end of
+++ file, return the read byte; otherwise -1.
+readByteFromFile: %Thing -> %Short
+readByteFromFile ifile ==
+  byte := READ_-BYTE(ifile,false) => byte
+  -1
+
+++ Write byte `b' to output binary file `ofile'.
+writeByteToFile: (%Thing,%Byte) -> %Short
+writeByteToFile(ofile,b) ==
+  WRITE_-BYTE(b,ofile)
+
+closeFile file ==
+  CLOSE file
+  nil
