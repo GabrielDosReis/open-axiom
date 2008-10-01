@@ -36,9 +36,17 @@ namespace BOOT
 
 --% Basic types used throughout Boot codes.
 
-++ Type of nothing.  Bottom of the latting.
+++ Type of nothing.  Bottom of the abstract machine type lattice.
+++ Since Lisp functions always returns something, we cannot
+++ use the `nil' type specifier (the ideal answer).  Second
+++ best possibility is to have Void-returning functions
+++ systematically return `nil'.  However, until the Lisp
+++ backend is fixed, we will use the interpretation that a 
+++ Void-returning function may return anything, but nobody cares.
+++ Hence, the choice below which contradicts the very first line
+++ of this description.
 %Void <=> 
-  nil
+  true
 
 ++ Type of truth values.
 %Boolean <=> 
@@ -62,6 +70,9 @@ namespace BOOT
 
 %Integer <=>
   INTEGER
+
+%IntegerSection n <=>
+  INTEGER n
 
 ++ Type of single precision floating point numbers.  Most of the
 ++ time, this is a 32-bit datatype on IEEE-754 host.

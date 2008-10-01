@@ -1207,6 +1207,11 @@ compile u ==
        else putInLocalDomainReferences optimizedBody
   $doNotCompileJustPrint=true => (PRETTYPRINT stuffToCompile; op')
   $macroIfTrue => constructMacro stuffToCompile
+
+  -- Let the backend know about this function's type
+  if $insideCapsuleFunctionIfTrue and $optProclaim then
+    proclaimCapsuleFunction(op',$signatureOfForm)
+
   result:= spadCompileOrSetq stuffToCompile
   functionStats:=[0,elapsedTime()]
   $functionStats:= addStats($functionStats,functionStats)
