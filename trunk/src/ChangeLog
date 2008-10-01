@@ -1,5 +1,9 @@
 2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/net.spad.pamphlet (InputBinaryFile): Tidy.
+
+2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Tidy.
 	* algebra/sregset.spad.pamphlet (SquareFreeRegularTriangularSet):
 	Remove unused function decompose.

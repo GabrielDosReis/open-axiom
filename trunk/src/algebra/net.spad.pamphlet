@@ -127,27 +127,31 @@ InputBinaryFile(): Public == Private where
       ++ inputBinaryFile(f) returns an input conduit obtained by
       ++ opening the file named by `f' as a binary file.
     eof?: % -> Boolean
-      ++ eof?(ifile) holds when end-of-file has been reached
-      ++ for the conduit file `ifile'.
+      ++ eof?(ifile) holds when the last read reached end of file.
     isOpen?: % -> Boolean
       ++ open?(ifile) holds if `ifile' is in open state.
   Private == add
-    Rep == Record(stream: SExpression, filename: FileName)
+    Rep == Record(stream: SExpression, filename: FileName, eof: Boolean)
     inputBinaryFile(f: FileName) ==
-      per [openBinaryFile(f::String,input$IOMode)$Lisp,f]
+      per [openBinaryFile(f::String,input$IOMode)$Lisp,f,false]
     inputBinaryFile(f: String) ==
-      per [openBinaryFile(f,input$IOMode)$Lisp,f::FileName]
+      per [openBinaryFile(f,input$IOMode)$Lisp,f::FileName,false]
     isOpen? ifile ==
       not null? rep(ifile).stream
     readByteIfCan! ifile ==
-      isOpen? ifile => readByteFromFile(rep(ifile).stream)$Lisp
+      isOpen? ifile => 
+        b: SingleInteger := readByteFromFile(rep(ifile).stream)$Lisp
+        if b < 0@SingleInteger then 
+          rep(ifile).eof := true
+        b
       error "file is not open"
     eof? ifile ==
-      isOpen? ifile => readByteIfCan! ifile < 0@SingleInteger
+      isOpen? ifile => rep(ifile).eof
       error "file is not open"
     close! ifile ==
       if isOpen? ifile then
         rep(ifile).stream := closeFile(rep(ifile).stream)$Lisp
+        rep(ifile).eof := true
       ifile
     coerce(ifile: %): OutputForm ==
       rep(ifile).filename::OutputForm
