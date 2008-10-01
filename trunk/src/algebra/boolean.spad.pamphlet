@@ -471,7 +471,8 @@ IndexedBits(mn:Integer): BitAggregate() with
         _or(u, v)       == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
         xor(v,u)        == (#v=#u => BVEC_-XOR(v,u)$Lisp; map("xor",v,u))
         setelt(v:%, i:Integer, f:Boolean) ==
-          BVEC_-SETELT(v, range(v, i-mn), TRUTH_-TO_-BIT(f)$Lisp)$Lisp
+          BIT_-TO_-TRUTH(BVEC_-SETELT(v, range(v, i-mn), 
+            TRUTH_-TO_-BIT(f)$Lisp)$Lisp)$Lisp
         elt(v:%, i:Integer) ==
           BIT_-TO_-TRUTH(BVEC_-ELT(v, range(v, i-mn))$Lisp)$Lisp
 

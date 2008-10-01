@@ -1,5 +1,13 @@
 2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/mkfunc.spad.pamphlet (InputForm): Remove local mkProperOp.
+	(compile$InputForm): Tidy.
+	* algebra/boolean.spad.pamphlet (setelt$IndexedBits): A bit is
+	not a Boolean.
+	* interp/i-intern.boot (mkAtreeForToken): New.
+
+2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot ($optProclaim): New.
 	($optReplaceSimpleFunctions): Likewise.
 	(setCompilerOptimizations): Likewise.  Set them.
