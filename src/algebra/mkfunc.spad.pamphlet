@@ -83,7 +83,6 @@ InputForm():
  == SExpression add
     Rep := SExpression
 
-    mkProperOp: Symbol -> %
     strsym    : % -> String
     tuplify   : List Symbol -> %
     flatten0  : (%, Symbol, NonNegativeInteger) ->
@@ -148,14 +147,10 @@ InputForm():
       name
 
     compile(name, types) ==
+      name' := convert(name)@%
       symbol car cdr car
-        selectLocalMms(mkProperOp name, convert(name)@%,
+        selectLocalMms(mkAtreeForToken(name')$Lisp, name',
           types, nil$List(%))$Lisp
-
-    mkProperOp name ==
-      op := mkAtree(nme := convert(name)@%)$Lisp
-      transferPropsToNode(nme, op)$Lisp
-      convert op
 
     binary(op, args) ==
       (n := #args) < 2 => error "Need at least 2 arguments"
@@ -165,7 +160,7 @@ InputForm():
     tuplify l ==
       empty? rest l => convert first l
       conv
-        concat(convert("Tuple"::Symbol), [convert x for x in l]$List(%))
+        concat(convert("tuple"::Symbol), [convert x for x in l]$List(%))
 
     function(f, l, name) ==
       nn := convert(new(1 + #l, convert(nil()$List(%)))$List(%))@%

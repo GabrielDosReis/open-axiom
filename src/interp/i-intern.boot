@@ -517,3 +517,12 @@ transformCollect [:itrl,body] ==
       it is ["|",pred] => nil
   [:iterList,bodyTree]
 
+--%
+
+++ Make a VAT for the symbol `x' and collect all known information
+++ about `x' in the current environment into the new VAT.
+++ Note: This routine is used in the algebra interface to the interpreter.
+mkAtreeForToken: %Symbol -> %Shell
+mkAtreeForToken x ==
+  t := mkAtreeNode x
+  transferPropsToNode(x,t)
