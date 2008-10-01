@@ -1,5 +1,9 @@
 2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/array2.spad.pamphlet (TwoDimensionalArrayCategory): Tidy.
+
+2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/mkfunc.spad.pamphlet (InputForm): Remove local mkProperOp.
 	(compile$InputForm): Tidy.
 	* algebra/boolean.spad.pamphlet (setelt$IndexedBits): A bit is

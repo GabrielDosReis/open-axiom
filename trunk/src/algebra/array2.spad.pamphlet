@@ -164,9 +164,15 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       entryList
 
 --% Creation
+    -- array creation requires an initial element used to
+    -- populate the array.  This is a best effort attempt
+    -- to supply such element, when semantics permits.
+    sampleElement(): R ==
+      R has sample: () -> R => sample()$R
+      NIL$Lisp    -- better obfuscation welcome.
 
     copy m ==
-      ans := new(nrows m,ncols m,NIL$Lisp)
+      ans := new(nrows m,ncols m,sampleElement())
       for i in minRowIndex(m)..maxRowIndex(m) repeat
         for j in minColIndex(m)..maxColIndex(m) repeat
           qsetelt_!(ans,i,j,qelt(m,i,j))
@@ -179,7 +185,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       m
 
     map(f,m) ==
-      ans := new(nrows m,ncols m,NIL$Lisp)
+      ans := new(nrows m,ncols m,sampleElement())
       for i in minRowIndex(m)..maxRowIndex(m) repeat
         for j in minColIndex(m)..maxColIndex(m) repeat
           qsetelt_!(ans,i,j,f(qelt(m,i,j)))
@@ -194,7 +200,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
     map(f,m,n) ==
       (nrows(m) ~= nrows(n)) or (ncols(m) ~= ncols(n)) =>
         error "map: arguments must have same dimensions"
-      ans := new(nrows m,ncols m,NIL$Lisp)
+      ans := new(nrows m,ncols m,sampleElement())
       for i in minRowIndex(m)..maxRowIndex(m) repeat
         for j in minColIndex(m)..maxColIndex(m) repeat
           qsetelt_!(ans,i,j,f(qelt(m,i,j),qelt(n,i,j)))
@@ -203,7 +209,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
     map(f,m,n,r) ==
       maxRow := max(maxRowIndex m,maxRowIndex n)
       maxCol := max(maxColIndex m,maxColIndex n)
-      ans := new(max(nrows m,nrows n),max(ncols m,ncols n),NIL$Lisp)
+      ans := new(max(nrows m,nrows n),max(ncols m,ncols n),sampleElement())
       for i in minRowIndex(m)..maxRow repeat
         for j in minColIndex(m)..maxCol repeat
           qsetelt_!(ans,i,j,f(elt(m,i,j,r),elt(n,i,j,r)))
@@ -248,7 +254,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       row(m,i) ==
         i < minRowIndex(m) or i > maxRowIndex(m) =>
           error "row: index out of range"
-        v : Row := new(ncols m,NIL$Lisp)
+        v : Row := new(ncols m,sampleElement())
         for j in minColIndex(m)..maxColIndex(m) _
           for k in minIndex(v)..maxIndex(v) repeat
             qsetelt_!(v,k,qelt(m,i,j))
@@ -259,7 +265,7 @@ TwoDimensionalArrayCategory(R,Row,Col): Category == Definition where
       column(m,j) ==
         j < minColIndex(m) or j > maxColIndex(m) =>
           error "column: index out of range"
-        v : Col := new(nrows m,NIL$Lisp)
+        v : Col := new(nrows m,sampleElement())
         for i in minRowIndex(m)..maxRowIndex(m) _
           for k in minIndex(v)..maxIndex(v) repeat
             qsetelt_!(v,k,qelt(m,i,j))
