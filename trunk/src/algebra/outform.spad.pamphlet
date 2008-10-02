@@ -244,6 +244,9 @@ OutputForm(): SetCategory with
           ++ outputForm(sf) creates an form for small float sf.
         empty   : () -> %
           ++ empty() creates an empty form.
+        doubleFloatFormat : String -> String	
+          ++ change the output format for doublefloats using lisp 
+          ++ format strings
 
         --% Sizings
         width: % -> Integer
@@ -486,6 +489,12 @@ OutputForm(): SetCategory with
         car  ==> CAR$Lisp
         cdr  ==> CDR$Lisp
 
+        format: String := "~G"
+        doubleFloatFormat(s:String): String ==
+          ss: String := format
+          format := s
+          ss
+
         a, b: %
         l: List %
         s: String
@@ -507,7 +516,10 @@ OutputForm(): SetCategory with
         coerce(a):OutputForm  == a pretend OutputForm
         outputForm n          == n pretend %
         outputForm e          == e pretend %
-        outputForm(f:DoubleFloat) == f pretend %
+        outputForm(f:DoubleFloat) == 
+          -- ??? this really should be rendered in as a sequence of
+          -- ??? OutputForm bytecodes, not hardcoded here.
+          FORMAT(NIL$Lisp,format,f)$Lisp
 
         outputForm s ==
           sform concat(quote()$Character, concat(s, quote()$Character))
