@@ -204,146 +204,6 @@ FloatingPointSystem(): Category == RealNumberSystem() with
 @
 
 \section{domain DFLOAT DoubleFloat}
-Greg Vanuxem has added some functionality to allow the user to modify
-the printed format of floating point numbers. The format of the numbers
-follows the common lisp format specification for floats. First we include
-Greg's email to show the use of this feature:
-\begin{verbatim}
-PS: For those who use the Doublefloat domain
-    there is an another (undocumented) patch that adds a
-    lisp format to the DoubleFloat output routine. Copy 
-    int/algebra/DFLOAT.spad to your working directory,
-    patch it, compile it and ")lib" it when necessary.
-
-
-(1) -> )boot $useBFasDefault:=false
-
-(SPADLET |$useBFasDefault| NIL)
-Value = NIL
-(1) -> a:= matrix [ [0.5978,0.2356], [0.4512,0.2355] ]
-
-        +      0.5978               0.2356       +
-   (1)  |                                        |
-        +0.45119999999999999  0.23549999999999999+
-                               Type: Matrix DoubleFloat
-(2) -> )lib DFLOAT
-   DoubleFloat is now explicitly exposed in frame initial
-   DoubleFloat will be automatically loaded when needed
-from /home/greg/Axiom/DFLOAT.NRLIB/code
-(2) -> doubleFloatFormat("~,4,,F")
-
-   (2)  "~G"
-                               Type: String
-(3) -> a
-
-        +0.5978  0.2356+
-   (3)  |              |
-        +0.4512  0.2355+
-                               Type: Matrix DoubleFloat
-
-\end{verbatim}
-So it is clear that he has added a new function called
-{\tt doubleFloatFormat} which takes a string argument that
-specifies the common lisp format control string (\"{}\~{},4,,F\"{}).
-For reference we quote from the common lisp manual \cite{1}.
-On page 582 we find:
-
-\begin{quote}
-A format directive consists of a tilde (\~{}), optional prefix
-parameters separated by commas, optional colon (:) and at-sign (@)
-modifiers, and a single character indicating what kind of directive this is.
-The alphabetic case of the directive character is ignored. The prefix
-parameters are generally integers, notated as optionally signed decimal
-numbers.
-
-X3J13 voted in June 1987 (80) to specify that if both colon and at-sign
-modifiers are present, they may appear in either order; thus \~{}:@R
-and \~{}@:R mean the same thing. However, it is traditional to put the
-colon first, and all examples in the book put colon before at-signs.
-\end{quote}
-
-\noindent
-On page 588 we find:
-
-\begin{quote}
-\~{}F
-
-{\sl Fixed-format floating-point}. The next {\sl arg} is printed as a
-floating point number.
-
-The full form is {\sl \~{}w,d,k,overfowchar,padchar}F. The parameter
-{\sl w} is the width of the filed to be printed; {\sl d} is the number
-of digits to print after the decimal point; {\sl k} is a scale factor
-that defaults to zero.
-
-Exactly {\sl w} characters will be output. First, leading copies of the
-character {\sl padchar} (which defaults to a space) are printed, if 
-necessary, to pad the field on the left. If the {\sl arg} is negative,
-then a minus sign is printed; if the {\sl arg} is not negative, then
-a plus signed is printed if and only if the @ modifier was specified.
-Then a sequence of digits, containing a single embedded decimal point,
-is printed; this represents the magnitude of the value of {\sl arg}
-times $10^k$, rounded to {\sl d} fractional digits. (When rounding up
-and rounding down would produce printed values equidistant from the
-scaled value of {\sl arg}, then the implementation is free to use
-either one. For example, printing the argument 6.375 using the format
-\~{}4.2F may correctly produce either 6.37 or 6.38.) Leading zeros are
-not permitted, except that a single zero digit is output before the
-decimal point if the printed value is less than 1, and this single zero
-digit is not output after all if $w = d + 1$.
-
-If it is impossible to print the value in the required format in the
-field of width {\sl w}, then one of two actions is taken. If the
-parameter {\sl overflowchar} is specified, then {\sl w} copies of that
-parameter are printed instead of the scaled value of {\sl arg}. If the
-{\sl overflowchar} parameter is omitted, then the scaled value is
-printed using more than {\sl w} characters, as many more as may be
-needed.
-
-If the {\sl w} parameter is omitted, then the field is of variable width.
-In effect, a value is chosen for {\sl w} in such a way that no leading pad
-characters need to be printed and exactly {\sl d} characters will follow
-the decimal point. For example, the directive \~{},2F will print exactly
-two digits after the decimal point and as many as necessary before the
-decimal point.
-
-If the parameter {\sl d} is omitted, then there is no constraint on the 
-number of digits to appear after the decimal point. A value is chosen
-for {\sl d} in such a way that as many digits as possible may be printed
-subject to the width constraint imposed by the parameter {\sl w} and the
-constraint that no trailing zero digits may appear in the fraction, except
-that if the fraction to be printed is zero, then a single zero digit should
-appear after the decimal point if permitted by the width constraint.
-
-If both {\sl w} and {\sl d} are omitted, then the effect is to print the
-value using ordinary free-format output; {\tt prin1} uses this format
-for any number whose magnitude is either zero or between $10^{-3}$
-(inclusive) and $10^7$ (exclusive).
-
-If {\sl w} is omitted, then if the magnitude of {\sl arg} is so large
-(or, if {\sl d} is also omitted, so small) that more than 100 digits
-would have to be printed, then an implementation is free, at its 
-discretion, to print the number using exponential notation instead,
-as if by the directive \~{}E (with all parameters of \~{}E defaulted,
-not taking their valued from the \~{}F directive).
-
-If {\sl arg} is a rational number, then it is coerced to be a 
-{\tt single-float} and then printed. (Alternatively, an implementation
-is permitted to process a rational number by any other method that has
-essentially the same behavior but avoids such hazards as loss of
-precision or overflow because of the coercion. However, note that if
-{\sl w} and {\sl d} are unspecified and the number has no exact decimal
-representation, for example 1/3, some precision cutoff must be chosen
-by the implementation; only a finite number of digits may be printed.)
-
-If {\sl arg} is a complex number or some non-numeric object, then it 
-is printed using the format directive {\sl \~{}w}D, thereby printing
-it in decimal radix and a minimum field width of {\sl w}. (If it is
-desired to print each of the real part and imaginary part of a 
-complex number using a \~{}F directive, then this must be done explicitly
-with two \~{}F directives and code to extract the two parts of the
-complex number.)
-
 
 \end{quote}
 <<domain DFLOAT DoubleFloat>>=
@@ -409,8 +269,6 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
         ++ Gamma(x) is the Euler Gamma function.
       Beta : (%,%) -> %
         ++ Beta(x,y) is \spad{Gamma(x) * Gamma(y)/Gamma(x+y)}.
-      doubleFloatFormat : String -> String	
-        ++ change the output format for doublefloats using lisp format strings
       rationalApproximation: (%, NonNegativeInteger) -> Fraction Integer
         ++ rationalApproximation(f, n) computes a rational approximation
         ++ r to f with relative error \spad{< 10**(-n)}.
@@ -420,15 +278,9 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
          ++ (that is, \spad{|(r-f)/f| < b**(-n)}).
 
  == add
-   format: String := "~G"
    MER ==> Record(MANTISSA:Integer,EXPONENT:Integer)
 
    manexp: % -> MER
-
-   doubleFloatFormat(s:String): String ==
-     ss: String := format
-     format := s
-     ss
 
    OMwrite(x: %): String ==
      s: String := ""
@@ -487,8 +339,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    -- rational approximation to e accurate to 23 digits
    exp1()           == FLOAT(534625820200,_$DoubleFloatMaximum$Lisp)$Lisp / FLOAT(196677847971,_$DoubleFloatMaximum$Lisp)$Lisp
    pi()             == PI$Lisp
-   coerce(x:%):OutputForm == 
-     outputForm(FORMAT(NIL$Lisp,format,x)$Lisp pretend DoubleFloat)
+   coerce(x:%):OutputForm == outputForm x
    convert(x:%):InputForm == convert(x pretend DoubleFloat)$InputForm
    x < y            == (x<y)$Lisp
    - x              == (-x)$Lisp
