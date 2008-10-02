@@ -1,5 +1,11 @@
 2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-spec1.boot (upcase): Tidy.
+	* interp/i-spec2.boot (evalIsntPredicate): Likewise.
+	* interp/sys-utility.boot (existingFile?): Likewise.
+
+2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/outform.spad.pamphlet (doubleFloatFormat$OutputForm): Move
 	from DoubleFloat.
 	

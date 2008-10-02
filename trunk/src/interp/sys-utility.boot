@@ -172,7 +172,8 @@ makeAbsoluteFilename name ==
 
 ++ returns true if `file' exists as a pathname.
 existingFile? file ==
-  PROBE_-FILE file
+  PROBE_-FILE file => true
+  false
 
 ++ original version returned 0 on success, and 1 on failure
 ++ ??? fix that to return -1 on failure.
