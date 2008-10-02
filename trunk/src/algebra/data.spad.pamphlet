@@ -23,46 +23,44 @@ import OutputForm
 ++ Description:
 ++   Byte is the datatype of 8-bit sized unsigned integer values.
 Byte(): Public == Private where
-  Public == Join(OrderedSet, CoercibleTo NonNegativeInteger) with
+  Public == Join(OrderedSet, CoercibleTo NonNegativeInteger,
+              CoercibleTo Character) with
     byte: NonNegativeInteger -> %
       ++ byte(x) injects the unsigned integer value `v' into
       ++ the Byte algebra.  `v' must be non-negative and less than 256.
     coerce: NonNegativeInteger -> %
       ++ coerce(x) has the same effect as byte(x).
+    coerce: Character -> %
+      ++ coerce(c) views `c' a a byte.  In particular `c' is supposed
+      ++ to have a numerical value less than 256.
     bitand: (%,%) -> %
       ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
     bitior: (%,%) -> %
       ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
 
   Private == add
+    import Character
     byte(x: NonNegativeInteger): % ==
       not (x < 256$Lisp) => 
         userError "integer value cannot be represented by a byte"
       x : %
 
-    hash x ==
-      SXHASH(x)$Lisp
+    hash x == SXHASH(x)$Lisp
 
-    coerce(x: NonNegativeInteger): % ==
-      byte x
+    coerce(x: NonNegativeInteger): % == byte x
+    coerce(x: %): NonNegativeInteger == x : NonNegativeInteger
 
-    coerce(x: %): NonNegativeInteger ==
-      x : NonNegativeInteger
+    coerce(c: Character) == ord(c)::%
+    coerce(x: %): Character == char(x::NonNegativeInteger)
 
     coerce(x: %): OutputForm ==
       x::NonNegativeInteger::OutputForm
     
-    x = y ==
-      byteEqual(x,y)$Lisp
+    x = y == byteEqual(x,y)$Lisp
+    x < y ==  byteLessThan(x,y)$Lisp
 
-    x < y ==
-      byteLessThan(x,y)$Lisp
-
-    bitand(x,y) ==
-      bitand(x,y)$Lisp
-
-    bitior(x,y) ==
-      bitior(x,y)$Lisp
+    bitand(x,y) == bitand(x,y)$Lisp
+    bitior(x,y) == bitior(x,y)$Lisp
 @
 
 

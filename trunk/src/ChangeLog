@@ -1,3 +1,8 @@
+2008-10-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/data.spad.pamphlet (Byte): Add coercion to and from
+	Character. 
+
 2008-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-spec1.boot (upcase): Tidy.
