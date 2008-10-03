@@ -1851,7 +1851,7 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
 	@ rm -rf $*.NRLIB
-	${INTERPSYS} --strap=strap --system-algebra --compile $<
+	${INTERPSYS} --strap=strap --system-algebra --optimize=2 --compile $<
 @
 
 <<genericBOOTSTRAPfiles>>=
