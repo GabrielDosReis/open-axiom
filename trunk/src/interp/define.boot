@@ -1231,6 +1231,9 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
     renameParameter() ==
       NUMBERP v or IDENTP v or STRINGP v => v
       GENSYM '"flag"
+  clearReplacement nam   -- Make sure we have fresh info
+  if $optReplaceSimpleFunctions then
+    body := replaceSimpleFunctions body
   form := [nam,[lam,vl,body]]
 
   if vl is [:vl',E] and body is [nam',: =vl'] then

@@ -1,5 +1,12 @@
 2008-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (clearReplacement): New.
+	(getFunctionReplacement): Likewise.
+	(replaceSimpleFunctions): Likewise.
+	* interp/define.boot (spadCompileOrSetq): Use it.
+
+2008-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.pamphlet: Turn non optimization for algbera build.
 
 2008-10-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
