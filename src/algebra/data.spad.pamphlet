@@ -37,14 +37,15 @@ Byte(): Public == Private where
       ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
     bitior: (%,%) -> %
       ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
-
+    sample: () -> %
+      ++ sample() returns a sample datum of type Byte.
   Private == add
     import Character
     byte(x: NonNegativeInteger): % ==
       not (x < 256$Lisp) => 
         userError "integer value cannot be represented by a byte"
       x : %
-
+    sample() = byte(0@NonNegativeInteger)
     hash x == SXHASH(x)$Lisp
 
     coerce(x: NonNegativeInteger): % == byte x
