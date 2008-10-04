@@ -35,6 +35,10 @@
 import g_-util
 namespace BOOT
 
+module c_-util where
+  clearReplacement: %Symbol -> %Thing
+  replaceSimpleFunctions: %Form -> %Form
+
 --% 
 ++ if true continue compiling after errors
 $scanIfTrue := false
@@ -830,7 +834,46 @@ ambiguousSignatureError(op, sigs) ==
   stackSemanticError(['"signature of lhs not unique.  Candidates are:",
     :displayAmbiguousSignatures($op,sigs)],nil)
 
---%
+--% 
+
+-- A function is simple if it looks like a super combinator, and it
+-- does not use its environment argument.  They can be safely replaced
+-- by more efficient (hopefully) functions.
+
+getFunctionReplacement: %Symbol -> %Form
+getFunctionReplacement name ==
+  GET(compileTimeBindingOf name, "SPADreplace")
+
+++ remove any replacement info possibly associated with `name'.
+clearReplacement name ==
+  REMPROP(name,"SPADreplace")
+
+++ Walk `form' and replace simple functions as appropriate.
+replaceSimpleFunctions form ==
+  atom form => form
+  form is ["QUOTE",:.] => form
+  -- process argument first.
+  for args in tails rest form repeat
+    arg' := replaceSimpleFunctions(arg := first args)
+    not EQ(arg',arg) =>
+      rplac(first args, arg')
+  -- now, see if we know something about this function.
+  [fun,:args] := form
+  atom fun =>
+    null (fun' := getFunctionReplacement fun) => form
+    -- the renaming case.
+    atom fun' =>
+      rplac(first form,fun')
+      NBUTLAST form
+    -- the substitution case; ignore for now.
+    form
+  fun' := replaceSimpleFunctions fun
+  not EQ(fun',fun) => rplac(first form,fun')
+  form
+    
+
+
+++ record optimizations permitted at level `level'.
 setCompilerOptimizations level ==
   level = nil => nil
   INTEGERP level =>
@@ -842,6 +885,9 @@ setCompilerOptimizations level ==
       $optProclaim := true
       $optReplaceSimpleFunctions := true
   coreError '"unknown optimization level request"
+
+
+--%
 
 ++ Proclaim the type of the capsule function `op' with signature `sig'.
 ++ Note that all capsule functions take an additional argument 
