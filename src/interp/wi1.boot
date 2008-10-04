@@ -39,8 +39,6 @@ namespace BOOT
 
 spad2AsTranslatorAutoloadOnceTrigger() == nil
 
-pairList(u,v) == [[x,:y] for x in u for y in v]
-
 --======================================================================
 --    Temporary definitions---for tracing and debugging
 --======================================================================

@@ -38,6 +38,7 @@ namespace BOOT
 
 module g_-util where
   getTypeOfSyntax: %Form -> %Mode
+  pairList: (%List,%List) -> %List
 
 ++
 $interpOnly := false
