@@ -848,30 +848,45 @@ getFunctionReplacement name ==
 clearReplacement name ==
   REMPROP(name,"SPADreplace")
 
+eqSubstAndCopy: (%List, %List, %Form) -> %Form
+eqSubstAndCopy(args,parms,body) ==
+  SUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
+
+eqSubst: (%List, %List, %Form) -> %Form
+eqSubst(args,parms,body) ==
+  NSUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
+
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
   atom form => form
   form is ["QUOTE",:.] => form
-  -- process argument first.
+  -- 1. process argument first.
   for args in tails rest form repeat
     arg' := replaceSimpleFunctions(arg := first args)
     not EQ(arg',arg) =>
       rplac(first args, arg')
-  -- now, see if we know something about this function.
+  -- 2. see if we know something about this function.
   [fun,:args] := form
   atom fun =>
     null (fun' := getFunctionReplacement fun) => form
-    -- the renaming case.
+    -- 2.1. the renaming case.
     atom fun' =>
       rplac(first form,fun')
       NBUTLAST form
-    -- the substitution case; ignore for now.
+    -- 2.2. the substitution case.
+    fun' is ["XLAM",parms,body] =>
+      -- conversatively approximate eager semantics
+      and/[atom first as for as in tails args] =>
+        -- alpha rename before substitution.
+	newparms := [GENSYM() for p in parms]
+	body := eqSubstAndCopy(newparms,parms,body)
+	eqSubst(args,newparms,body)
+      -- get cute later.
+      form
     form
   fun' := replaceSimpleFunctions fun
   not EQ(fun',fun) => rplac(first form,fun')
   form
-    
-
 
 ++ record optimizations permitted at level `level'.
 setCompilerOptimizations level ==

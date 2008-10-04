@@ -1,3 +1,10 @@
+2008-10-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (eqSubstAndCopy): New.
+	(eqSubst): Likewise.
+	(replaceSimpleFunctions): Handle XLAM-replaceable functions.
+	* interp/wi1.boot (pairList): Remove duplicate.
+
 2008-10-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (clearReplacement): New.
