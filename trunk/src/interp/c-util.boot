@@ -875,7 +875,7 @@ replaceSimpleFunctions form ==
       NBUTLAST form
     -- 2.2. the substitution case.
     fun' is ["XLAM",parms,body] =>
-      -- conversatively approximate eager semantics
+      -- conservatively approximate eager semantics
       and/[atom first as for as in tails args] =>
         -- alpha rename before substitution.
 	newparms := [GENSYM() for p in parms]
