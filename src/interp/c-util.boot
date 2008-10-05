@@ -842,7 +842,7 @@ ambiguousSignatureError(op, sigs) ==
 
 getFunctionReplacement: %Symbol -> %Form
 getFunctionReplacement name ==
-  GET(compileTimeBindingOf name, "SPADreplace")
+  GET(name, "SPADreplace")
 
 ++ remove any replacement info possibly associated with `name'.
 clearReplacement name ==
