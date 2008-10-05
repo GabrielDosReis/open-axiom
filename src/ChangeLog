@@ -1,5 +1,13 @@
 2008-10-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot ($optExportedFunctionReference): New.
+	(setCompilerOptimizations): Set it.
+	* interp/define.boot ($capsuleFunctionStack): New.
+	(spadCompileOrSetq): Collect capsule function definitions.
+	(compFunctorBody): Compile them at end of capsule.
+
+2008-10-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (getFunctionReplacement): Tidy.
 	* algebra/data.spad.pamphlet (Byte): Likewise.
 
