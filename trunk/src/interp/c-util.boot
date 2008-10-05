@@ -58,6 +58,8 @@ $optProclaim := false
 ++ true if we have to inline simple functions before codegen.
 $optReplaceSimpleFunctions := false
 
+++ true if we have to resolve references to exported operations.
+$optExportedFunctionReference := false
 
 --%
 
@@ -904,6 +906,8 @@ setCompilerOptimizations level ==
     if level > 0 then 
       $optProclaim := true
       $optReplaceSimpleFunctions := true
+    if level > 1 then
+      $optExportedFunctionReference := true
   coreError '"unknown optimization level request"
 
 

@@ -37,6 +37,8 @@ import cattable
 import category
 namespace BOOT
 
+module define
+
 --%
 
 NRTPARSE := false
@@ -55,8 +57,10 @@ $suffix := nil
 -- ??? turns off buggy code
 $NRTopt := false
 
-
 $doNotCompileJustPrint := false
+
+++ stack of pending capsule function definitions.
+$capsuleFunctionStack := []
 
 --%
 
@@ -659,7 +663,10 @@ disallowNilAttribute x ==
 compFunctorBody(body,m,e,parForm) ==
   $bootStrapMode = true =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
+  $capsuleFunctionStack := nil   -- start collecting capsule functions.
   T:= compOrCroak(body,m,e)
+  COMP $capsuleFunctionStack
+  $capsuleFunctionStack := nil   -- release storage.
   body is [op,:.] and MEMQ(op,'(add CAPSULE)) => T
   $NRTaddForm :=
     body is ["SubDomain",domainForm,predicate] => domainForm
@@ -1244,7 +1251,11 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
            macform := ['XLAM,vl',body]
            LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
-  $insideCapsuleFunctionIfTrue => first COMP LIST form
+  $insideCapsuleFunctionIfTrue => 
+    $optExportedFunctionReference =>
+      $capsuleFunctionStack := [form,:$capsuleFunctionStack]
+      first form
+    first COMP LIST form
   compileConstructor form
  
 compileConstructor form ==
@@ -1679,3 +1690,5 @@ compCategoryItem(x,predl,env) ==
     diagnoseUknownType(t,env)
   noteExport(rest x,pred)
   PUSH(MKQ [rest x,pred],$sigList)
+
+--%
