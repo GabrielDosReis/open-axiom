@@ -19,7 +19,9 @@ import OutputForm
 )abbrev domain BYTE Byte
 ++ Author: Gabriel Dos Reis
 ++ Date Created: April 19, 2008
-++ Related Constructor:
+++ Date Last Updated: October 5, 2008
+++ Basic Operations: byte, bitand, bitor, bitxor
+++ Related Constructor: NonNegativeInteger
 ++ Description:
 ++   Byte is the datatype of 8-bit sized unsigned integer values.
 Byte(): Public == Private where
@@ -40,12 +42,11 @@ Byte(): Public == Private where
     sample: () -> %
       ++ sample() returns a sample datum of type Byte.
   Private == add
-    import Character
     byte(x: NonNegativeInteger): % ==
       not (x < 256$Lisp) => 
         userError "integer value cannot be represented by a byte"
       x : %
-    sample() = byte(0@NonNegativeInteger)
+    sample() = 0$Lisp
     hash x == SXHASH(x)$Lisp
 
     coerce(x: NonNegativeInteger): % == byte x
