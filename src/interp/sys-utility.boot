@@ -44,7 +44,9 @@ namespace BOOT
 ++ representation of a domain, as a Lisp type specifier as seen by
 ++ the runtime system.
 getVMType d ==
-  IDENTP d => "%Thing"
+  IDENTP d => 
+    d = "*" => d
+    "%Thing"
   STRINGP d => "%Thing"            -- literal flag parameter
   case (d' := devaluate d) of
     Void => "%Void"

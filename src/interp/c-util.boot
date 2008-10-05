@@ -856,10 +856,15 @@ eqSubst: (%List, %List, %Form) -> %Form
 eqSubst(args,parms,body) ==
   NSUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
 
+
+++ returns true if `form' does not really induce computations.
+isAtomicForm: %Form -> %Boolean
+isAtomicForm form ==
+  atom form or first form = "QUOTE"
+
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
-  atom form => form
-  form is ["QUOTE",:.] => form
+  isAtomicForm form => form
   -- 1. process argument first.
   for args in tails rest form repeat
     arg' := replaceSimpleFunctions(arg := first args)
@@ -876,7 +881,7 @@ replaceSimpleFunctions form ==
     -- 2.2. the substitution case.
     fun' is ["XLAM",parms,body] =>
       -- conservatively approximate eager semantics
-      and/[atom first as for as in tails args] =>
+      and/[isAtomicForm first as for as in tails args] =>
         -- alpha rename before substitution.
 	newparms := [GENSYM() for p in parms]
 	body := eqSubstAndCopy(newparms,parms,body)
@@ -910,25 +915,21 @@ setCompilerOptimizations level ==
 proclaimCapsuleFunction(op,sig) ==
   LAM_,EVALANDFILEACTQ
     ["DECLAIM",["FTYPE",
-       ["FUNCTION",[:[argType first d for d in tails rest sig],"%Shell"], 
-          retType first sig],op]] where
-      argType d ==
-        getVMType normalize d
-      retType d ==
-        d := normalize d
-        atom d => getVMType d
-        args := rest d
-        #args = 0 => getVMType d
-        or/[atom a for a in args] => "%Thing"
-        -- not theoretically correct, but practically OK.
-        getVMType d
-      normalize d ==
+       ["FUNCTION",[:[vmType first d for d in tails rest sig],"%Shell"], 
+          vmType first sig],op]] where
+      vmType d ==
+        getVMType normalize(d,true)
+      normalize(d,top?) ==
         d = "$" => 
+          not top? => "*"
           -- If the representation is explicitly stated, use it.  That way
           -- we optimize abstractions just as well as builtins.
-          rep := get("Rep","value",$e) => rep
+          r := get("Rep","value",$e) => normalize(r.expr,top?)
           -- Cope with old-style constructor definition
           atom $functorForm => [$functorForm] 
-          $functorForm
-        atom d => d
-        [first d, :[normalize first args for args in tails rest d]]
+          normalize($functorForm,top?)
+        atom d => 
+          top? => "%Thing"
+          getmode(d,$e) => "*"
+          d
+        [first d, :[normalize(first args,false) for args in tails rest d]]

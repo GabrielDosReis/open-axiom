@@ -2,6 +2,7 @@
 === TODO ===
 ============
 
+* Fix STREAM implementation (dynamic semantics rules violation).
 * Fix compilation of domain where withon is empty.
 * Improve overload resolution routines.
 * Have an option to build OpenAxiom as a Firefox-based standalone
