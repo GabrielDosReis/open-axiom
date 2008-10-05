@@ -927,8 +927,8 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     e:= compArgumentConditions e
  
     if $profileCompiler then
-      for x in argl for t in rest signature' repeat profileRecord('arguments,x,t)
-
+      for x in argl for t in rest signature' repeat 
+        profileRecord('arguments,x,t)
 
     --4. introduce needed domains into extendedEnv
     for domain in signature' repeat e:= addDomain(domain,e)

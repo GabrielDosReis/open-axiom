@@ -883,8 +883,9 @@ $(OUT):
 <<genericRules>>
 
 mostlyclean-local:
-	-rm -rf $(MID)
-	-rm -rf $(OUT)
+	rm -f *.output
+	rm -rf $(MID)
+	rm -rf $(OUT)
 
 clean-local: mostlyclean-local
 

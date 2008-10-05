@@ -550,6 +550,9 @@ CyclicStreamTools(S,ST): Exports == Implementation where
 @
 \section{domain STREAM Stream}
 <<domain STREAM Stream>>=
+-- As explained below, in the capsule, the Rep for STREAM is actually
+-- a half lie.  So, the system should not be allowed to trust it.
+)boot $optProclaim := false
 import Type
 import Void
 import Boolean
