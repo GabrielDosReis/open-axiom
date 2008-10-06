@@ -663,10 +663,15 @@ disallowNilAttribute x ==
 compFunctorBody(body,m,e,parForm) ==
   $bootStrapMode = true =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
-  $capsuleFunctionStack := nil   -- start collecting capsule functions.
+  clearCapsuleDirectory()        -- start collecting capsule functions.
   T:= compOrCroak(body,m,e)
-  COMP $capsuleFunctionStack
-  $capsuleFunctionStack := nil   -- release storage.
+  $capsuleFunctionStack := nreverse $capsuleFunctionStack
+  -- ??? Don't resolve default definitions, yet.
+  if $insideCategoryPackageIfTrue then
+    COMP $capsuleFunctionStack
+  else 
+    COMP foldExportedFunctionReferences $capsuleFunctionStack
+  clearCapsuleDirectory()        -- release storage.
   body is [op,:.] and MEMQ(op,'(add CAPSULE)) => T
   $NRTaddForm :=
     body is ["SubDomain",domainForm,predicate] => domainForm
