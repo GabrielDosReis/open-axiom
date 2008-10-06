@@ -1309,5 +1309,12 @@
          '(COND ($reportFlag (sayBrightly x)) ((QUOTE T) NIL))))
 
 
+;; Quietly execute `cmd' if in interactive session
+(defmacro |quietlyIfInteractive| (cmd)
+  `(let ((|$OutputStream| (if |$InteractiveMode|
+			      (make-broadcast-stream)
+			    (make-synonym-stream '*standard-output*))))
+     ,cmd))
+
 (defmacro |spadConstant| (dollar n)
  `(spadcall (svref ,dollar (the fixnum ,n))))

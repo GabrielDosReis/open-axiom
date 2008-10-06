@@ -1,3 +1,10 @@
+2008-10-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-macros.lisp (|quietlyIfInteractive|): New.
+	* interp/compiler.boot (quietlyIfInteractive): Use it.
+	(compQuietly): Likewise.
+	(compileQuietly): Likewise.
+
 2008-09-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-macros.lisp (|byteEqual|): New.

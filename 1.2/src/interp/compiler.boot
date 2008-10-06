@@ -1891,10 +1891,7 @@ compMapCondFun(fnexpr,op,dc,bindings) ==
 --% Interface to the backend
 
 compileFileQuietly path ==
-  $OutputStream :=
-    $InteractiveMode => MAKE_-BROADCAST_-STREAM()
-    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-  COMPILE_-FILE path
+  quietlyIfInteractive COMPILE_-FILE path
 
 compAndDefine l ==
   _*COMP370_-APPLY_* := "PRINT-AND-EVAL-DEFUN"
@@ -1906,11 +1903,7 @@ compQuietly fn ==
       $compileDontDefineFunctions => "COMPILE-DEFUN"
       "EVAL-DEFUN"
     "PRINT-DEFUN"
-  -- create a null outputstream if $InteractiveMode
-  $OutputStream := 
-    $InteractiveMode => MAKE_-BROADCAST_-STREAM()
-    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-  COMP fn
+  quietlyIfInteractive COMP fn
 
 compileQuietly fn ==
   _*COMP370_-APPLY_* :=
@@ -1918,10 +1911,7 @@ compileQuietly fn ==
        $compileDontDefineFunctions => "COMPILE-DEFUN"
        "EVAL-DEFUN"
      "PRINT-DEFUN"
-  $OutputStream := 
-    $InteractiveMode => MAKE_-BROADCAST_-STREAM()
-    MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-  COMP370 fn
+  quietlyIfInteractive COMP370 fn
 
 
 COMP l ==
