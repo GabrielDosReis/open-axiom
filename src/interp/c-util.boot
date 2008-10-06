@@ -38,6 +38,7 @@ namespace BOOT
 module c_-util where
   clearReplacement: %Symbol -> %Thing
   replaceSimpleFunctions: %Form -> %Form
+  foldExportedFunctionReferences: %List -> %List
 
 --% 
 ++ if true continue compiling after errors
@@ -836,6 +837,30 @@ ambiguousSignatureError(op, sigs) ==
   stackSemanticError(['"signature of lhs not unique.  Candidates are:",
     :displayAmbiguousSignatures($op,sigs)],nil)
 
+
+--% Capsule Directory Management
+
+++ Holds the list of slot number-export function pairs of 
+++ the current functor.
+$capsuleDirectory := nil
+
+clearCapsuleDirectory() ==
+  $capsuleDirectory := nil
+  $capsuleFunctionStack := nil
+
+++ Return the linkage name of the exported operation associated with
+++ slot number `slot'.  A nil entry means that either the operation
+++ is not defined, or it is conditional.
+getCapsuleDirectoryEntry slot ==
+  rest ASSOC(slot,$capsuleDirectory)
+
+++ Update the current capsule directory with entry controlled by 
+++ predicate `pred'.
+updateCapsuleDirectory(entry,pred) ==
+  pred ^= true => nil
+  entry isnt ["$",slot,["CONS",["dispatchFunction",fun],:.],:.] => nil
+  $capsuleDirectory := [[slot,:fun],:$capsuleDirectory]
+
 --% 
 
 -- A function is simple if it looks like a super combinator, and it
@@ -894,6 +919,31 @@ replaceSimpleFunctions form ==
   fun' := replaceSimpleFunctions fun
   not EQ(fun',fun) => rplac(first form,fun')
   form
+
+
+++ Replace all SPADCALLs to operations defined in the current
+++ domain.  Conditional operations are not folded.
+foldSpadcall: %Form -> %Form
+foldSpadcall form ==
+  isAtomicForm form => form
+  for args in tails rest form repeat
+    foldSpadcall first args
+  first form isnt "SPADCALL" => form
+  fun := lastNode form
+  fun isnt [["getShellEntry","$",slot]] => form
+  null (op := getCapsuleDirectoryEntry slot) => form
+  rplac(first fun, "$")
+  rplac(first form, op)
+
+
+++ `defs' is a list of function definitions from the current domain.
+++ Walk that list and replace references to unconditional operations
+++ with their corresponding linkage names.  
+foldExportedFunctionReferences defs ==
+  for fun in defs repeat
+    foldSpadcall fun is [.,lamex] =>
+      rplac(third lamex, replaceSimpleFunctions third lamex)
+  defs
 
 ++ record optimizations permitted at level `level'.
 setCompilerOptimizations level ==

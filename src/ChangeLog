@@ -1,5 +1,17 @@
 2008-10-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/functor.boot (DescendCode): Update capsule directory only
+	for non-default implementations.
+	* interp/c-util.boot ($capsuleDirectory): New.
+	(clearCapsuleDirectory): Likewise.
+	(getCapsuleDirectoryEntry): Likewise.
+	(updateCapsuleDirectory): Likewise.
+	(foldSpadcall): Likewise.
+	(foldExportedFunctionReferences): Likewise.
+	* interp/define.boot (compFunctorBody): Use it.
+
+2008-10-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-macros.lisp (|quietlyIfInteractive|): New.
 	* interp/compiler.boot (quietlyIfInteractive): Use it.
 	(compQuietly): Likewise.

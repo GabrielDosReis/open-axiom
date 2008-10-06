@@ -639,6 +639,9 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
       dom
     body:= ['CONS,implem,dom]
     u:= SetFunctionSlots(sig,body,flag,'original)
+    -- ??? We do not resolve default definitions, yet.
+    if not $insideCategoryPackageIfTrue then
+      updateCapsuleDirectory(rest u, flag)
     ConstantCreator u =>
       if not (flag=true) then u:= ['COND,[ProcessCond(flag,viewAssoc),u]]
       $ConstantAssignments:= [u,:$ConstantAssignments]
@@ -657,9 +660,10 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
   code
  
 ConstantCreator u ==
-  null u => nil
-  u is [q,.,.,u'] and (q in '(setShellEntry SETELT QSETREFV)) => ConstantCreator u'
-  u is ['CONS,:.] => nil
+  null u => false
+  u is [q,.,.,u'] and (q in '(setShellEntry SETELT QSETREFV)) => 
+    ConstantCreator u'
+  u is ['CONS,:.] => false
   true
  
 ProcessCond(cond,viewassoc) ==
@@ -683,7 +687,7 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
 --+
   catNames := ['$]
   for u in $catvecList for v in catNames repeat
-    null body => return NIL
+    null body => return nil
     for catImplem in LookUpSigSlots(sig,u.1) repeat
       if catImplem is [q,.,index] and (q='ELT or q='CONST)
          then
