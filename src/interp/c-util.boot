@@ -39,6 +39,8 @@ module c_-util where
   clearReplacement: %Symbol -> %Thing
   replaceSimpleFunctions: %Form -> %Form
   foldExportedFunctionReferences: %List -> %List
+  diagnoseUknownType: (%Mode,%Env) -> %Form
+
 
 --% 
 ++ if true continue compiling after errors
@@ -386,32 +388,62 @@ TrimCF() ==
   nil
 
 --%
+
+isKnownCategory: (%Mode,%Env) -> %Boolean
+isKnownCategory(c,e) ==
+  c = $Type => true
+  c = $Category => true
+  [ctor,:args] := c
+  ctor = "Join" => true           -- don't check arguments yet.
+  ctor = "SubsetCategory" => true -- ditto
+  get(ctor,"isCategory",e) => true
+  false
+
+--TRACE isKnownCategory
  
 ++ Returns non-nil if `t' is a known type in the environement `e'.
-isKnownType: (%Mode,%Env) -> %Form
-isKnownType(t,e) ==
+diagnoseUknownType(t,e) ==
   atom t =>
     t in '($ constant) => t
     t' := assoc(t,getDomainsInScope e) => t'
-    get(first getmode(t,e),"isCategory",$CategoryFrame) => t
+    (m := getmode(t,e)) and isKnownCategory(m,$CategoryFrame) => t
     STRINGP t => t
-  t is ["Mapping",:sig] => 
-    and/[isKnownType(t',e) for t' in sig] => t
-    nil
-  ctor := first t
+    -- ??? We should not to check for $$ at this stage.  
+    -- ??? This is a bug in the compiler that needs to be fixed.
+    t = "$$" => t
+    stackSemanticError(['"The identifier", :bright t, 
+                         '"is not known to name a type"],nil)
+  [ctor,:args] := t
+  ctor = "Mapping" => 
+    for t' in args repeat diagnoseUknownType(t',e)
+    t
+  ctor = "Record" =>
+    for [.,.,t'] in args repeat diagnoseUknownType(t',e)
+    t
+  ctor = "Union" =>
+    if args is [[":",:.],:.] then
+      for [.,.,t'] in args repeat diagnoseUknownType(t',e)
+    else
+      for t' in args repeat diagnoseUknownType(t',e)
+    t
+  ctor = "Enumeration" =>
+    for t' in args repeat
+      IDENTP t' => nil
+      stackSemanticError(['"Enumerators must be symbols."], nil)
+    t
+  ctor = "[||]" => t
   ctor in $BuiltinConstructorNames => t -- ??? check Record and Union fields
   -- ??? Ideally `e' should be a local extension of $CategoryFrame
   -- ??? so that we don't have to access it here as a global state.
   get(ctor,"isFunctor",$CategoryFrame) 
     or get(ctor,"isCategory",$CategoryFrame) => t
-  nil
- 
-diagnoseUknownType: (%Mode,%Env) -> %Thing
-diagnoseUknownType(t,e) ==
-  if not isKnownType(t,e) then
-    stackWarning('"%1pb is unknown.  Try importing it.",[t])
+  -- ctor maybe a constructor, but user forgot to import.  Warn.
+  getConstructorAbbreviationFromDB ctor =>
+    stackWarning('"Type %1pb is not in scope.  Import it",[t])
+    t
+  stackSemanticError(['"Identifier", :bright ctor, 
+                       '"is not known to name a constructor"],nil)
 
- 
 --% PREDICATES
  
  

@@ -1,5 +1,12 @@
 2008-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compCategoryItem): Don't check signatures yet.
+	* interp/c-util.boot (isKnownCategory): New.
+	(diagnoseUknownType): Use it.  Expand.
+	* interp/compiler.boot (compCat): Use it.
+
+2008-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot: Remove unused variable $maximalViews.
 	* interp/package.boot: Likewise.
 
