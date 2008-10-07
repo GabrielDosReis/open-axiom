@@ -52,8 +52,6 @@ processPackage($definition is [name,:args],[$catsig,:argssig],code,locals,$e) ==
   $GENNO: local:= 0 --for GENVAR()
   $catsig: local := nil
                --used in ProcessCond
-  $maximalViews: local := nil
-                      --read by ProcessCond
   $ResetItems: local := nil
        --stores those items that get SETQed, and may need re-processing
   $catvecList: local:= [$domainShell]

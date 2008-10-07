@@ -1,3 +1,8 @@
+2008-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot: Remove unused variable $maximalViews.
+	* interp/package.boot: Likewise.
+
 2008-10-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/functor.boot (DescendCode): Update capsule directory only
