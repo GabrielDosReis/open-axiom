@@ -362,7 +362,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $catvecList: local := nil   --list of vectors v1..vn for each view
   $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
   $catNames: local := nil      --list of names n1..nn for each view
-  $maximalViews: local := nil  --list of maximal categories for domain (???)
   $catsig: local := nil        --target category (used in ProcessCond)
   $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
   $MissingFunctionInfo: local := nil --now useless
@@ -377,7 +376,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
    --set in InvestigateConditions to represent any additional
    --category membership tests that may be needed(see buildFunctor for details)
 ------------------------
-  $maximalViews: local := nil
   oldtime:= TEMPUS_-FUGIT()
   [$catsig,:argsig]:= sig
   catvecListMaker:=REMDUP
@@ -397,7 +395,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
     nil
   $catvecList:= [domainShell,:[emptyVector for u in CADR domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
-  $maximalViews:= nil
   $SetFunctions:= newShell SIZE domainShell
   $MissingFunctionInfo:= newShell SIZE domainShell
   $catNames:= ['$,:[GENVAR() for u in rest catvecListMaker]]
