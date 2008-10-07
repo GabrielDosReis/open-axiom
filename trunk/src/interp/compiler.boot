@@ -1813,6 +1813,7 @@ compilerDoitWithScreenedLisplib(constructor, fun) ==
 
 compCat(form is [functorName,:argl],m,e) ==
   fn:= GETL(functorName,"makeFunctionList") or return nil
+  diagnoseUknownType(form,e)
   [funList,e]:= FUNCALL(fn,form,form,e)
   catForm:=
     ["Join",'(SetCategory),["CATEGORY","domain",:
