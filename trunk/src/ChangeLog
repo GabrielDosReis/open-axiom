@@ -1,5 +1,13 @@
 2008-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_user): Include
+	RGBCMDL, RGBCSPC.
+	* algebra/color.spad.pamphlet (RGBColorModel): New.
+	(RGBColorSpace): Likewise.
+	* algebra/exposed.lsp.pamphlet: Expose them
+
+2008-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (compCategoryItem): Don't check signatures yet.
 	* interp/c-util.boot (isKnownCategory): New.
 	(diagnoseUknownType): Use it.  Expand.
