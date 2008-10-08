@@ -348,7 +348,7 @@ bfSep(iters)==
 bfReduce(op,y)==
      a:=if EQCAR(op,"QUOTE") then second op else op
      op:=bfReName a
-     init:=GET(op,"SHOETHETA")
+     init := GET(a,"SHOETHETA") or GET(op,"SHOETHETA")
      g:=bfGenSymbol()
      g1:=bfGenSymbol()
      body:=['SETQ,g,[op,g,g1]]
@@ -371,7 +371,7 @@ bfReduceCollect(op,y)==
      itl:=y.2
      a:=if EQCAR(op,"QUOTE") then second op else op
      op:=bfReName a
-     init:=GET(op,"SHOETHETA")
+     init := GET(a, "SHOETHETA") or GET(op,"SHOETHETA")
      bfOpReduce(op,init,body,itl)
    else
      a:=bfTupleConstruct (y.1)
@@ -436,7 +436,7 @@ bfOpReduce(op,init,y,itl)==
      then
         g1:=bfGenSymbol()
         init:=['CAR,g1]
-        y:=['CDR,g1]
+        y:=['CDR,g1]          -- ??? bogus self-assignment/initialization
         extrait:= [[[g],[init],[],[],[],[g]]]
         bfMKPROGN [['L%T,g1,y],bfLp2(extrait,itl,body)]
      else

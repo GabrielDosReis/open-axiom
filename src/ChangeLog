@@ -1,3 +1,9 @@
+2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfReduce): Check neutral value for original
+	operator too.
+	(bfReduceCollect): Likewise.
+
 2008-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-util.boot (printPrompt): New.
