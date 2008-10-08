@@ -740,6 +740,8 @@
   (|RegularChain| . RGCHAIN)
   (|RegularTriangularSetCategory| . RSETCAT)
   (|RetractableTo| . RETRACT)
+  (|RGBColorModel| . RGBCMDL)
+  (|RGBColorSpace| . RGBCSPC)
   (|RightModule| . RMODULE)
   (|Ring| . RING)
   (|Rng| . RNG)

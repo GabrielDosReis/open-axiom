@@ -1,15 +1,56 @@
 \documentclass{article}
 \usepackage{axiom}
+
+\title{src/algebra color.spad}
+
 \begin{document}
-\title{\$SPAD/src/algebra color.spad}
-\author{Jim Wen}
+\author{Gabriel Dos~Reis \and Jim Wen}
+
 \maketitle
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
+\section{The category of RGB Color Model}
+
+<<category RGBCMDL RGBColorModel>>=
+)abbrev category RGBCMDL RGBColorModel
+++ Author: Gabriel Dos Reis
+++ Date Created: October 06, 2008
+++ Related Constructor: 
+++ Description:
+++   This category defines the common interface for RGB color models.
+RGBColorModel(T: AbelianMonoid): Category == AbelianMonoid with
+    red: % -> T
+      ++ red(c) returns the `red' component of `c'.
+    green: % -> T
+      ++ green(c) returns the `green' component of `c'.
+    blue: % -> T
+      ++ blue(c) returns the `blue' component of `c'.
+    componentUpperBound: T
+      ++ componentUpperBound is an upper bound for all component values.
+@
+
+
+\section{The category of RGB Color Space}
+
+<<category RGBCSPC RGBColorSpace>>=
+)abbrev category RGBCSPC RGBColorSpace
+++ Author: Gabriel Dos Reis
+++ Date Created: October 06, 2008
+++ Related Constructor: 
+++ Description:
+++   This category defines the common interface for RGB color spaces.
+RGBColorSpace(T: AbelianMonoid): Category == RGBColorModel T with
+    whitePoint: %
+      ++ whitepoint is the contant indicating the white point 
+      ++ of this color space.
+@
+
+
 \section{domain COLOR Color}
+
 <<domain COLOR Color>>=
 )abbrev domain COLOR Color
 ++ Author: Jim Wen
@@ -160,7 +201,10 @@ Palette(): Exports == Implementation where
 @
 \section{License}
 <<license>>=
---Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+--All rights reserved.
+--
+--Copyright (C) 2007-2008, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -175,7 +219,7 @@ Palette(): Exports == Implementation where
 --      the documentation and/or other materials provided with the
 --      distribution.
 --
---    - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+--    - Neither the name of The Numerical Algorithms Group Ltd. nor the
 --      names of its contributors may be used to endorse or promote products
 --      derived from this software without specific prior written permission.
 --
@@ -193,6 +237,9 @@ Palette(): Exports == Implementation where
 @
 <<*>>=
 <<license>>
+
+<<category RGBCMDL RGBColorModel>>
+<<category RGBCSPC RGBColorSpace>>
  
 <<domain COLOR Color>>
 <<domain PALETTE Palette>>

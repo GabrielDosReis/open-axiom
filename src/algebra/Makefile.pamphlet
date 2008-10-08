@@ -1253,7 +1253,7 @@ axiom_algebra_layer_user =  \
 	LETAST   SUCHAST  RDUCEAST COLONAST ADDAST   CAPSLAST \
 	CASEAST  HASAST   ISAST    CATAST   WHEREAST COMMAAST \
 	QQUTAST  DEFAST   MACROAST SPADXPT  SPADAST           \
-	INBFILE  OUTBFILE
+	INBFILE  OUTBFILE RGBCMDL  RGBCSPC
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
