@@ -458,8 +458,8 @@ bpModule() ==
 
 ++ Parse a module import, or a import declaration for a foreign entity.
 ++ Import:
-++    IMPORT Name for Signature
-++    IMPORT QUOTE String
+++    IMPORT Signature FOR Name
+++    IMPORT Name
 bpImport() ==
   bpEqKey "IMPORT" =>
     a := bpState()
@@ -498,12 +498,20 @@ bpSimpleMapping() ==
     true
   false
 
+++ ArgtypeList:
+++   ( ArgtypeSequence )
+++ ArgtypeSequence:
+++   Application
+++   Application , ArgtypeSequence
+bpArgtypeList() ==
+  bpTuple function bpApplication
+
 ++ Parse a mapping expression
 ++   Mapping:
-++     (IdList) -> Application
-++      SimpleMapping
+++     ArgtypeList -> Application
+++     SimpleMapping
 bpMapping() ==
-  bpParenthesized function bpIdList and 
+  bpParenthesized function bpArgtypeList and 
      bpEqKey "ARROW" and bpApplication() and 
        bpPush Mapping(bpPop1(), bfUntuple bpPop1())
          or bpSimpleMapping()

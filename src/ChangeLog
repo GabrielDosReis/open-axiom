@@ -1,5 +1,12 @@
 2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Allow compound argument types in Boot signatures.
+	* boot/parser.boot (bpArgtypeList): New.
+	(bpMapping); Use it.
+	* boot/tokens.boot: Define neutral element for CONCAT.
+
+2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfReduce): Check neutral value for original
 	operator too.
 	(bfReduceCollect): Likewise.
