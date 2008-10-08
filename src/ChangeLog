@@ -1,5 +1,14 @@
 2008-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-util.boot (printPrompt): New.
+	* interp/ht-util.boot (executeInterpreterCommand): Use it.
+	* interp/int-top.boot (SpadInterpretStream): Likewise.
+	* interp/metalex.lisp (get-a-line): Likewise.
+	* interp/server.boot (serverReadLine): Likewise.
+	(serverLoop): Likewise.
+
+2008-10-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.pamphlet (axiom_algebra_layer_user): Include
 	RGBCMDL, RGBCSPC.
 	* algebra/color.spad.pamphlet (RGBColorModel): New.

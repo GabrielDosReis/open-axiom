@@ -474,8 +474,7 @@ executeInterpreterCommand command ==
   TERPRI()
   ncSetCurrentLine(command)
   CATCH($SpadReaderTag, parseAndInterpret command)
-  PRINC MKPROMPT()
-  FINISH_-OUTPUT()
+  printPrompt "andFlush"
 
 typeCheckInputAreas htPage ==
   -- This needs to be severly beefed up

@@ -179,7 +179,7 @@
                        :adjustable t :initial-contents s))))
 
 (defun get-a-line (stream)
-  (if (IS-CONSOLE stream) (princ (MKPROMPT)))
+  (if (IS-CONSOLE stream) (|printPrompt|))
   (let ((ll (read-a-line stream)))
     (if (stringp ll) (make-string-adjustable ll) ll)))
 

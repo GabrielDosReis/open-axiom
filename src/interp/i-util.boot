@@ -78,6 +78,12 @@ MKPROMPT() ==
    '" [", SUBSTRING(CURRENTTIME(),8,NIL),'"] [",
     STRINGIMAGE $IOindex, '"] -> ")
  
+
+printPrompt(flush? == false) ==
+  PRINC(MKPROMPT(), $OutputStream)
+  if flush? then
+    FORCE_-OUTPUT $OutputStream
+
 --% Miscellaneous
  
 Zeros n ==
