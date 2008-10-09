@@ -1,7 +1,12 @@
 2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	SF/1872404 fixed.
+	* testsuite/compiler/1872404.spad: New.
+
+2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	SF/1872445 fixed.
-	* testsuite/compiler/1872445.spad: 
+	* testsuite/compiler/1872445.spad: New.
 
 2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
