@@ -1,5 +1,10 @@
 2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	SF/1872445 fixed.
+	* testsuite/compiler/1872445.spad: 
+
+2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Allow compound argument types in Boot signatures.
 	* boot/parser.boot (bpArgtypeList): New.
 	(bpMapping); Use it.
