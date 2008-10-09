@@ -1,6 +1,6 @@
 
-(30 . 3432414583)            
-(4351 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3432506629)            
+(4356 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -45,11 +45,12 @@
  |CommutativeRing| |Conduit| |ContinuedFraction| |Contour| |CoordinateSystems|
  |CharacteristicPolynomialInMonogenicalAlgebra| |ComplexPatternMatch|
  |CRApackage| |CoerceAst| |ComplexRootFindingPackage| |CyclicStreamTools|
- |ConstructorCall| |ComplexTrigonometricManipulations|
- |CoerceVectorMatrixPackage| |CycleIndicators| |CyclotomicPolynomialPackage|
- |d01AgentsPackage| |d01ajfAnnaType| |d01akfAnnaType| |d01alfAnnaType|
- |d01amfAnnaType| |d01anfAnnaType| |d01apfAnnaType| |d01aqfAnnaType|
- |d01asfAnnaType| |d01fcfAnnaType| |d01gbfAnnaType| |d01TransformFunctionType|
+ |Constructor| |ConstructorCall| |ConstructorKind|
+ |ComplexTrigonometricManipulations| |CoerceVectorMatrixPackage|
+ |CycleIndicators| |CyclotomicPolynomialPackage| |d01AgentsPackage|
+ |d01ajfAnnaType| |d01akfAnnaType| |d01alfAnnaType| |d01amfAnnaType|
+ |d01anfAnnaType| |d01apfAnnaType| |d01aqfAnnaType| |d01asfAnnaType|
+ |d01fcfAnnaType| |d01gbfAnnaType| |d01TransformFunctionType|
  |d01WeightsPackage| |d02AgentsPackage| |d02bbfAnnaType| |d02bhfAnnaType|
  |d02cjfAnnaType| |d02ejfAnnaType| |d03AgentsPackage| |d03eefAnnaType|
  |d03fafAnnaType| |DataBuffer| |Database| |DoubleResultantPackage|
@@ -429,14 +430,14 @@
  |bezoutMatrix| |bezoutResultant| |bezoutDiscriminant| |bfEntry| |bfKeys|
  |inspect| |extract!| |bag| |binding| |position!| |test| |setProperties|
  |setProperty| |deleteProperty!| |has?| |comparison| |equality| |nary?|
- |unary?| |nullary?| |arity| |properties| |derivative| |constantOperator|
+ |unary?| |nullary?| |properties| |derivative| |constantOperator|
  |constantOpIfCan| |integerBound| |setright!| |setleft!|
  |brillhartIrreducible?| |brillhartTrials| |noLinearFactor?| |insertRoot!|
  |binarySearchTree| |nor| |nand| |node| |binaryTournament| |binaryTree|
  |bitior| |bitand| |byte| |subtractIfCan| |setPosition|
  |generalizedContinuumHypothesisAssumed|
  |generalizedContinuumHypothesisAssumed?| |countable?| |Aleph| |unravel|
- |ravel| |leviCivitaSymbol| |kroneckerDelta| |reindex| |kind| |alphanumeric|
+ |ravel| |leviCivitaSymbol| |kroneckerDelta| |reindex| |alphanumeric|
  |alphabetic| |hexDigit| |digit| |charClass| |alphanumeric?| |lowerCase?|
  |upperCase?| |alphabetic?| |hexDigit?| |digit?| |escape| |char| |ord|
  |mkIntegral| |radPoly| |rootPoly| |goodPoint| |chvar| |removeDuplicates|
@@ -452,9 +453,10 @@
  |toroidal| |conical| |modTree| |multiEuclideanTree| |complexZeros|
  |divisorCascade| |graeffe| |pleskenSplit| |reciprocalPolynomial| |rootRadius|
  |schwerpunkt| |setErrorBound| |startPolynomial| |cycleElt|
- |computeCycleLength| |computeCycleEntry| |arguments| |constructorName|
- |coerceP| |powerSum| |elementary| |alternating| |cyclic| |dihedral| |cap|
- |cup| |wreath| |SFunction| |skewSFunction| |cyclotomicDecomposition|
+ |computeCycleLength| |computeCycleEntry| |arity| |kind| |arguments|
+ |constructorName| |package| |domain| |category| |coerceP| |powerSum|
+ |elementary| |alternating| |cyclic| |dihedral| |cap| |cup| |wreath|
+ |SFunction| |skewSFunction| |cyclotomicDecomposition|
  |cyclotomicFactorization| |rangeIsFinite| |functionIsContinuousAtEndPoints|
  |functionIsOscillatory| |changeName| |exprHasWeightCosWXorSinWX|
  |exprHasAlgebraicWeight| |exprHasLogarithmicWeights|

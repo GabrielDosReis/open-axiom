@@ -11,6 +11,61 @@
 \tableofcontents
 \eject
 
+\section{The Constructor domain}
+
+<<domain CTORKIND ConstructorKinid>>=
+)abbrev domain CTORKIND ConstructorKind
+++ Author: Gabriel Dos Reis
+++ Date Create: October 07, 2008.
+++ Date Last Updated: October 07, 2008.
+++ Related Constructors: 
+++ Description:
+++   This domain enumerates the three kinds of constructors
+++   available in OpenAxiom: category constructors, domain
+++   constructors, and package constructors.
+ConstructorKind(): Public == Private where
+  Public == SetCategory with
+    category: % ++ `category' designates category constructors
+    domain: %   ++ `domain' designates domain constructors
+    package: %  ++ `package' designates package constructors.
+  Private == add
+    category == INTERN("category","KEYWORD")$Lisp
+    domain == INTERN("domain","KEYWORD")$Lisp
+    package == INTERN("package","KEYWORD")$Lisp
+    k1 = k2 == EQ(k1,k2)$Lisp
+    coerce(k: %): OutputForm ==
+      k = category => outputForm 'category
+      k = domain => outputForm 'domain
+      outputForm 'package
+@
+
+<<domain CTOR Constructor>>=
+)abbrev domain CTOR Constructor
+++ Author: Gabriel Dos Reis
+++ Date Create: October 07, 2008.
+++ Date Last Updated: October 07, 2008.
+++ Related Constructors: Domain, Category
+++ Basic Operations: name, kind, arity.
+++ Description:
+++   This domain provides implementations for constructors.
+Constructor(): Public == Private where
+  Public == SetCategory with
+    name: % -> Identifier
+      ++ name(ctor) returns the name of the constructor `ctor'.
+    kind: % -> ConstructorKind
+      ++ kind(ctor) returns the kind of the constructor `ctor'.
+    arity: % -> SingleInteger
+      ++ arity(ctor) returns the arity of the constructor `ctor'.
+      ++   A negative value means that the ctor takes a variable
+      ++   length argument list, e.g. Mapping, Record, etc.
+  Private == add
+    Rep == Identifier
+    name x == rep x
+    x = y == rep x = rep y
+    coerce(x: %): OutputForm == rep(x)::OutputForm
+@
+
+
 \section{domain Category}
 <<domain CATEGORY Category>>=
 import CoercibleTo OutputForm
@@ -27,7 +82,6 @@ Category(): Public == Private where
     coerce x ==
       outputDomainConstructor(x)$Lisp
 @
-
 
 \section{domain Domain}
 <<domain DOMAIN Domain>>=
@@ -111,6 +165,9 @@ Domain(): Public == Private where
 
 <<*>>=
 <<license>>
+
+<<domain CTORKIND ConstructorKinid>>
+
 <<domain CATEGORY Category>>
 <<domain DOMAIN Domain>>
 @
