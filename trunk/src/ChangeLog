@@ -1,3 +1,11 @@
+2008-10-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/domain.spad.pamphlet (ConstructorKinid): New domain.
+	(Constructor): Likewise.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include
+	CTORKIND. 
+	(axiom_algebra_layer_user): Include CTOR.
+
 2008-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	SF/1872404 fixed.

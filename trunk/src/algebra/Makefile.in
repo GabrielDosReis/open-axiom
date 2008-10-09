@@ -363,7 +363,7 @@ axiom_algebra_layer_0 = \
   ABELSG-  ORDSET   ORDSET-  FNCAT    FILECAT  SEXCAT   \
   MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
   ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
-  COMBOPC  EQ2      NONE1    CONDUIT  IOMODE
+  COMBOPC  EQ2      NONE1    CONDUIT  IOMODE   CTORKIND
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -826,7 +826,7 @@ axiom_algebra_layer_user =  \
 	LETAST   SUCHAST  RDUCEAST COLONAST ADDAST   CAPSLAST \
 	CASEAST  HASAST   ISAST    CATAST   WHEREAST COMMAAST \
 	QQUTAST  DEFAST   MACROAST SPADXPT  SPADAST           \
-	INBFILE  OUTBFILE RGBCMDL  RGBCSPC
+	INBFILE  OUTBFILE RGBCMDL  RGBCSPC  CTORKIND CTOR
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -885,6 +885,9 @@ INBFILE.NRLIB/code.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT) \
 	$(OUT)/INBCON.$(FASLEXT) $(OUT)/STRING.$(FASLEXT)
 OUTBFILE.NRLIB/code.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT) \
 	$(OUT)/OUTBCON.$(FASLEXT) $(OUT)/STRING.$(FASLEXT)
+
+CTOR.NRLIB/code.$(FASLEXT): $(OUT)/CTORKIND.$(FASLEXT) \
+	$(OUT)/IDENT.$(FASLEXT)
 
 .PHONY: all all-algebra mkdir-output-directory
 all: all-ax
