@@ -1,5 +1,10 @@
 2008-10-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/translator.boot (loadNativeModule): Don't save loaded
+	shared objects.
+
+2008-10-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/domain.spad.pamphlet (ConstructorKinid): New domain.
 	(Constructor): Likewise.
 	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include

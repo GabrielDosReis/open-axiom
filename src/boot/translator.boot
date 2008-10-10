@@ -872,7 +872,8 @@ associateRequestWithFileType(Option '"compile", '"boot",
 ++ Load native dynamically linked module
 loadNativeModule m ==
   %hasFeature KEYWORD::SBCL =>
-    FUNCALL(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),m)
+    FUNCALL(bfColonColon("SB-ALIEN","LOAD-SHARED-OBJECT"),m, 
+             KEYWORD::DONT_-SAVE, true)
   %hasFeature KEYWORD::CLISP =>
     EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
   %hasFeature KEYWORD::ECL =>
