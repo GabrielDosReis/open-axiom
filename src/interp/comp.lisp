@@ -86,10 +86,10 @@
 (defun Comp-2 (args &aux name type argl bodyl junk)
     (dsetq (NAME (TYPE ARGL . BODYL) . JUNK) args)
     (cond (JUNK (MOAN (format nil "******pren error in (~S (~S ...) ...)" NAME TYPE)))
-          ((eq TYPE 'SLAM) (COMP-SLAM NAME ARGL BODYL))
+          ((eq TYPE 'SLAM) (|backendCompileSLAM| NAME ARGL BODYL))
           ((LASSQ NAME |$clamList|) (|compClam| NAME ARGL BODYL |$clamList|))
-          ((eq TYPE 'SPADSLAM) (COMP-SPADSLAM NAME ARGL BODYL))
-          ((eq TYPE 'ILAM) (COMP-ILAM NAME ARGL BODYL))
+          ((eq TYPE 'SPADSLAM) (|backendCompileSPADSLAM| NAME ARGL BODYL))
+          ((eq TYPE 'ILAM) (|backendCompileILAM| NAME ARGL BODYL))
           ((setq BODYL (LIST NAME (CONS TYPE (CONS ARGL BODYL))))
            (if |$PrettyPrint| (pprint bodyl))
            (if (null $COMPILE) (SAY "No Compilation")
@@ -98,81 +98,6 @@
 
 ;; used to be called POSN - but that interfered with a CCL function
 (DEFUN POSN1 (X L) (position x l :test #'equal))
-
-(DEFUN COMP-ILAM (NAME ARGL BODYL)
-  (let* ((FARGL (NLIST (LENGTH ARGL) '(GENSYM)))
-         (BODYLP (SUBLISLIS FARGL ARGL BODYL)))
-        (MAKEPROP NAME 'ILAM T)
-        (SET NAME (CONS 'LAMBDA (CONS FARGL BODYLP)))
-        NAME))
-
-(DEFUN COMP-SPADSLAM (NAME ARGL BODYL)
-  (let* ((AL (INTERNL NAME ";AL"))
-         (AUXFN (INTERNL NAME ";"))
-         (G1 (GENSYM))
-         (G2 (GENSYM))
-         (U (COND ((NOT ARGL) (LIST NIL NIL (LIST AUXFN)))
-                  ((NOT (CDR ARGL))
-                   (LIST (LIST G1) (LIST '|devaluate| G1) (LIST AUXFN G1)))
-                  ((LIST G1
-                         (LIST '|devaluateList| G1)
-                         (LIST 'APPLY (LIST 'FUNCTION AUXFN) G1)))))
-         (ARG (first U))
-         (ARGTRAN (second U))
-         (APP (third U))
-         (LAMEX  `(lam ,ARG
-                       (let (,g2)
-                         (cond ,(COND (ARGL `((setq ,g2 (|assoc| ,argtran ,al))
-                                              (cdr ,g2)))
-                                      ((LIST AL)))
-                               ,(COND (ARGL
-                                       `(t(setq ,al(|cons5|(cons ,argtran
-                                                                 (setq ,g2 ,app))
-                                                           ,al))
-                                          ,g2))
-                                      (`(t (setq ,al ,app)))))))))
-    (setandfile AL NIL)
-    (setq U (LIST NAME LAMEX))
-    (if |$PrettyPrint| (PRETTYPRINT U))
-    (COMP370 (LIST U))
-    (setq U (LIST AUXFN (CONS 'LAMBDA (CONS ARGL BODYL))))
-    (COND (|$PrettyPrint| (PRETTYPRINT U)))
-    (COMP370 (LIST U))
-    NAME))
-
-(DEFUN COMP-SLAM (NAME ARGL BODYL)
-  (let* ((AL (INTERNL NAME ";AL"))
-         (AUXFN (INTERNL NAME ";"))
-         (G1 (GENSYM))
-         (G2 (GENSYM))
-         (U (COND ((NOT ARGL) `(nil (,auxfn)))
-                  ((NOT (CDR ARGL)) `((,g1)(,auxfn ,g1)))
-                  (`(,g1 (applx (function ,auxfn) ,g1)))))
-         (ARG (CAR U))
-         (APP (CADR U))
-         (LAMEX
-           (LIST 'LAM ARG
-                 (LIST 'PROG (LIST G2)
-                       (LIST 'RETURN
-                             (LIST 'COND
-                                   (COND (ARGL
-                                          `((setq ,G2 (|assoc| ,G1 ,AL))
-                                            (CDR ,G2)))
-                                         ((LIST AL)))
-                                   (COND (ARGL (LIST ''T `(setq ,G2 ,APP)
-                                                     (LIST 'SETQ AL
-                                                           `(CONS
-                                                              (CONS ,G1 ,G2) ,AL))
-                                                     G2))
-                                         ((LIST ''T `(setq ,AL ,APP))))))))))
-    (set AL NIL)
-    (setq U (LIST NAME LAMEX))
-    (if |$PrettyPrint| (PRETTYPRINT U))
-    (COMP370 (LIST U))
-    (setq U (LIST AUXFN (CONS 'LAMBDA (CONS ARGL BODYL))))
-    (if |$PrettyPrint| (PRETTYPRINT U))
-    (COMP370 (LIST U))
-    NAME))
 
 (DEFUN COMP-NEWNAM (X)
   (let (y u)
@@ -192,7 +117,7 @@
 
 (DEFUN COMP-TRAN (X)
   "SEXPR<FN. BODY> -> SEXPR"
-  (let ((X (COMP-EXPAND X)) FluidVars LocVars SpecialVars)
+  (let ((X (|middleEndExpand| X)) FluidVars LocVars SpecialVars)
     (COMP-TRAN-1 (CDDR X))
     (setq X (list (first x) (second x)
                   (if (and (null (cdddr x))
@@ -249,25 +174,6 @@
       (COND ((AND (EQ A (QCAR X)) (EQ B (QCDR X)))
               (RETURN X))
             ('T (RETURN (CONS A B)) )) )    )))
-
-; NOTE: It is potentially dangerous to assume every occurrence of element of
-; $COMP-MACROLIST is actually a macro call
-
-(defparameter $COMP-MACROLIST
-  '(COLLECT REPEAT SUCHTHATCLAUSE THETA COLLECTV COLLECTVEC
-            THETA1 SPADREDUCE SPADDO)
-  "???")
-
-(DEFUN COMP-EXPAND (X)
-  (COND ((atom x) x)
-        ((eq (CAR X) 'QUOTE) X)
-        ((memq (CAR X) $COMP-MACROLIST)
-         (comp-expand (macroexpand-1 x)))
-        ((let ((a (comp-expand (car x)))
-               (b (comp-expand (cdr x))))
-           (if (AND (eq A (CAR X)) (eq B (CDR X)))
-               x
-               (CONS A B))))))
 
 (DEFUN COMP-TRAN-1 (X)
   (let (u)

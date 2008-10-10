@@ -895,6 +895,26 @@ updateCapsuleDirectory(entry,pred) ==
 
 --% 
 
+++ List of macros used by the middle end to represent some
+++ high level control structures.
+-- NOTE: It is potentially dangerous to assume every occurrence of 
+-- element of $middleEndMacroList is actually a macro call
+$middleEndMacroList == 
+  '(COLLECT REPEAT SUCHTHATCLAUSE THETA COLLECTV 
+    COLLECTVEC THETA1 SPADREDUCE SPADDO)
+
+middleEndExpand: %Form -> %Form
+middleEndExpand x ==
+  isAtomicForm x => x
+  first x in $middleEndMacroList =>
+    middleEndExpand MACROEXPAND_-1 x
+  a := middleEndExpand first x
+  b := middleEndExpand rest x
+  EQ(a,first x) and EQ(b,rest x) => x
+  [a,:b]
+
+
+
 -- A function is simple if it looks like a super combinator, and it
 -- does not use its environment argument.  They can be safely replaced
 -- by more efficient (hopefully) functions.
@@ -993,7 +1013,7 @@ setCompilerOptimizations level ==
   coreError '"unknown optimization level request"
 
 
---%
+--% Lisp backend support.
 
 ++ Proclaim the type of the capsule function `op' with signature `sig'.
 ++ Note that all capsule functions take an additional argument 
@@ -1019,3 +1039,85 @@ proclaimCapsuleFunction(op,sig) ==
           getmode(d,$e) => "*"
           d
         [first d, :[normalize(first args,false) for args in tails rest d]]
+
+++ Lisp back end compiler for ILAM with `name', formal `args', and `body'.
+backendCompileILAM: (%Symbol,%List, %Code) -> %Symbol
+backendCompileILAM(name,args,body) ==
+  args' := NLIST(#args, ["GENSYM"])
+  body' := eqSubst(args',args,body)
+  MAKEPROP(name,"ILAM",true)
+  setDynamicBinding(name,["LAMBDA",args',:body'])
+  name
+
+
+++ Lisp back end compiler for SLAM forms [namd,args,:body].
+++ A SLAM form is one that is `functional' in the sense that
+++ its values are cached, so that equal lists of argument values
+++ yield equal values.  The arguments-value pairs are stored
+++ as alists.
+backendCompileSLAM: (%Symbol,%List,%Code) -> %Symbol
+backendCompileSLAM(name,args,body) ==
+  al := INTERNL(name,'";AL")    -- name of the cache alist.
+  auxfn := INTERNL(name,'";")   -- name of the worker function.
+  g1 := GENSYM()                -- name for the parameter.
+  g2 := GENSYM()                -- name for the cache value
+  u :=                          -- body of the stub function
+    null args => [nil,[auxfn]]
+    null rest args => [[g1],[auxfn,g1]]
+    [g1,["APPLX", ["FUNCTION",auxfn], g1]]
+  arg := first u
+  app := second u
+  codePart1 :=                  -- look up the value if it is already there
+    args ^= nil => [["SETQ", g2, ["assoc",g1,al]], ["CDR",g2]]
+    [al]
+  codePart2 :=                  -- otherwise, compute it.
+    args ^= nil => [true,["SETQ",g2,app],["SETQ",al,[[g1,:g2],:al]],g2]
+    [true,["SETQ",al,app]]
+  lamex := ["LAM",arg,["PROG",[g2],
+                        ["RETURN",["COND",codePart1,codePart2]]]]
+  setDynamicBinding(al,nil)     -- clear the cache
+  -- compile the worker function, first.
+  u := [auxfn,["LAMBDA",args,:body]]
+  COMP370 [u]
+  -- then compile the original function.
+  u := [name,lamex]
+  if $PrettyPrint then PRETTYPRINT u
+  COMP370 [u]
+  name
+
+++ Same as backendCompileSPADSLAM, except that the cache is a hash
+++ table.  This backend compiler is used to compile constructors.
+backendCompileSPADSLAM: (%Symbol,%List,%Code) -> %Symbol
+backendCompileSPADSLAM(name,args,body) ==
+  al := INTERNL(name,'";AL")   -- name of the cache hash table.
+  auxfn := INTERNL(name,'";")  -- name of the worker function.
+  g1 := GENSYM()               -- name of the worker function parameter
+  g2 := GENSYM()               -- name for the cache value.
+  u := 
+    null args => [nil,nil,[auxfn]]
+    null rest args => [[g1],["devaluate",g1],[auxfn,g1]]
+    [g1,["devaluateList",g1],["APPLY",["FUNCTION",auxfn],g1]]
+  arg := first u
+  argtran := second u          -- devaluate argument
+  app := third u
+  codePart1 :=                 -- if value already computed, grab it.
+    null args = nil => [al]
+    [["SETQ",g2,["assoc",argtran,al]], ["CDR",g2]]
+  codePart2 :=                 -- otherwise compute it, and cache it.
+                               -- Note: at most five values are cached.
+    null args = nil => [true,["SETQ",al,app]]
+    [true,["SETQ",al,["cons5",["CONS",argtran, ["SETQ",g2,app]],al]],g2]
+  decl :=                      -- declare the cache variable.
+    null args => nil
+    [g2]
+  lamex := ["LAM",arg,["LET",decl,["COND",codePart1,codePart2]]]
+  SETANDFILE(al,nil)           -- define the global cache.
+  -- compile the worker function first.
+  u := [auxfn,["LAMBDA",args,:body]]
+  if $PrettyPrint then PRETTYPRINT u
+  COMP370 [u]
+  -- then compiler the stub (which is the user-visible constructor).
+  u := [name,lamex]
+  if $PrettyPrint then PRETTYPRINT u
+  COMP370 [u]
+  name

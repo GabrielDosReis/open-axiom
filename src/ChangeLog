@@ -1,3 +1,18 @@
+2008-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot ($middleEndMacroList): New.
+	(middleEndExpand): New.
+	(backendCompileILAM): Bootify COMP-ILAM.
+	(backendCompileSLAM): Bootify COMP-SLAM.
+	(backendCompileSPADSLAM): Bootify COMP-SPADSLAM.
+	* interp/comp.lisp (COMP-2): Use them.
+	(COMP-ILAM): Remove.
+	(COMP-SLAM): Likewise.
+	(COMP-SPADLSAM): Likewise.
+	(COMP-TRAN): Use middleEndExpand.
+	(COMP-EXPAND): Remove.
+	($COMP-MACROLIS): Likewise.
+
 2008-10-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/translator.boot (loadNativeModule): Don't save loaded
