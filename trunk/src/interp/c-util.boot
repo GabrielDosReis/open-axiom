@@ -1101,11 +1101,11 @@ backendCompileSPADSLAM(name,args,body) ==
   argtran := second u          -- devaluate argument
   app := third u
   codePart1 :=                 -- if value already computed, grab it.
-    null args = nil => [al]
+    null args => [al]
     [["SETQ",g2,["assoc",argtran,al]], ["CDR",g2]]
   codePart2 :=                 -- otherwise compute it, and cache it.
                                -- Note: at most five values are cached.
-    null args = nil => [true,["SETQ",al,app]]
+    null args => [true,["SETQ",al,app]]
     [true,["SETQ",al,["cons5",["CONS",argtran, ["SETQ",g2,app]],al]],g2]
   decl :=                      -- declare the cache variable.
     null args => nil
