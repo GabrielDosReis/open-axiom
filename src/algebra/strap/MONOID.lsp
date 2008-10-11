@@ -3,12 +3,8 @@
 
 (DEFPARAMETER |Monoid;AL| 'NIL) 
 
-(DEFUN |Monoid| ()
-  (LET (#:G1397)
-    (COND (|Monoid;AL|) (T (SETQ |Monoid;AL| (|Monoid;|)))))) 
-
 (DEFUN |Monoid;| ()
-  (PROG (#0=#:G1395)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|SemiGroup|)
@@ -23,6 +19,9 @@
                                NIL))
                    |Monoid|)
         (SETELT #0# 0 '(|Monoid|)))))) 
+
+(DEFUN |Monoid| ()
+  (LET () (COND (|Monoid;AL|) (T (SETQ |Monoid;AL| (|Monoid;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|Monoid| '|isCategory| T

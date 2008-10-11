@@ -1,6 +1,24 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Shell|)
+                |INTDOM-;unitNormal;SR;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INTDOM-;unitCanonical;2S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |INTDOM-;recip;SU;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |INTDOM-;unit?;SB;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |INTDOM-;associates?;2SB;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |INTDOM-;associates?;2SB;6|)) 
+
 (DEFUN |INTDOM-;unitNormal;SR;1| (|x| $)
   (VECTOR (|spadConstant| $ 7) |x| (|spadConstant| $ 7))) 
 

@@ -1,6 +1,18 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |MONOID-;one?;SB;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |MONOID-;sample;S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |MONOID-;recip;SU;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |MONOID-;**;SNniS;4|)) 
+
 (DEFUN |MONOID-;one?;SB;1| (|x| $)
   (SPADCALL |x| (|spadConstant| $ 7) (|getShellEntry| $ 9))) 
 

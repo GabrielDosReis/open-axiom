@@ -1,11 +1,55 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION ((|%SimpleArray| *) |%Shell|)
+                    (|%IntegerSection| 0))
+                |PRIMARR;#;$Nni;1|)) 
+
 (PUT '|PRIMARR;#;$Nni;1| '|SPADreplace| '|sizeOfSimpleArray|) 
 
-(DEFUN |PRIMARR;#;$Nni;1| (|x| $) (|sizeOfSimpleArray| |x|)) 
+(DECLAIM (FTYPE (FUNCTION ((|%SimpleArray| *) |%Shell|) |%Integer|)
+                |PRIMARR;minIndex;$I;2|)) 
 
 (PUT '|PRIMARR;minIndex;$I;2| '|SPADreplace| '(XLAM (|x|) 0)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%SimpleArray| *))
+                |PRIMARR;empty;$;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Thing| |%Shell|)
+                    (|%SimpleArray| *))
+                |PRIMARR;new;NniS$;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%SimpleArray| *) |%Integer| |%Shell|)
+                    |%Thing|)
+                |PRIMARR;qelt;$IS;5|)) 
+
+(PUT '|PRIMARR;qelt;$IS;5| '|SPADreplace| '|getSimpleArrayEntry|) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%SimpleArray| *) |%Integer| |%Shell|)
+                    |%Thing|)
+                |PRIMARR;elt;$IS;6|)) 
+
+(PUT '|PRIMARR;elt;$IS;6| '|SPADreplace| '|getSimpleArrayEntry|) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    ((|%SimpleArray| *) |%Integer| |%Thing| |%Shell|)
+                    |%Thing|)
+                |PRIMARR;qsetelt!;$I2S;7|)) 
+
+(PUT '|PRIMARR;qsetelt!;$I2S;7| '|SPADreplace| '|setSimpleArrayEntry|) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    ((|%SimpleArray| *) |%Integer| |%Thing| |%Shell|)
+                    |%Thing|)
+                |PRIMARR;setelt;$I2S;8|)) 
+
+(PUT '|PRIMARR;setelt;$I2S;8| '|SPADreplace| '|setSimpleArrayEntry|) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%SimpleArray| *) |%Thing| |%Shell|)
+                    (|%SimpleArray| *))
+                |PRIMARR;fill!;$S$;9|)) 
+
+(DEFUN |PRIMARR;#;$Nni;1| (|x| $) (|sizeOfSimpleArray| |x|)) 
 
 (DEFUN |PRIMARR;minIndex;$I;2| (|x| $) 0) 
 
@@ -15,28 +59,20 @@
 (DEFUN |PRIMARR;new;NniS$;4| (|n| |x| $)
   (|makeFilledSimpleArray| (|getVMType| (|getShellEntry| $ 6)) |n| |x|)) 
 
-(PUT '|PRIMARR;qelt;$IS;5| '|SPADreplace| '|getSimpleArrayEntry|) 
-
 (DEFUN |PRIMARR;qelt;$IS;5| (|x| |i| $)
   (|getSimpleArrayEntry| |x| |i|)) 
-
-(PUT '|PRIMARR;elt;$IS;6| '|SPADreplace| '|getSimpleArrayEntry|) 
 
 (DEFUN |PRIMARR;elt;$IS;6| (|x| |i| $)
   (|getSimpleArrayEntry| |x| |i|)) 
 
-(PUT '|PRIMARR;qsetelt!;$I2S;7| '|SPADreplace| '|setSimpleArrayEntry|) 
-
 (DEFUN |PRIMARR;qsetelt!;$I2S;7| (|x| |i| |s| $)
   (|setSimpleArrayEntry| |x| |i| |s|)) 
-
-(PUT '|PRIMARR;setelt;$I2S;8| '|SPADreplace| '|setSimpleArrayEntry|) 
 
 (DEFUN |PRIMARR;setelt;$I2S;8| (|x| |i| |s| $)
   (|setSimpleArrayEntry| |x| |i| |s|)) 
 
 (DEFUN |PRIMARR;fill!;$S$;9| (|x| |s| $)
-  (PROG (|i| #0=#:G1405)
+  (PROG (|i| #0=#:G1415)
     (RETURN
       (SEQ (SEQ (LETT |i| 0 |PRIMARR;fill!;$S$;9|)
                 (LETT #0# (|maxIndexOfSimpleArray| |x|)
@@ -47,10 +83,10 @@
                 G191 (EXIT NIL))
            (EXIT |x|))))) 
 
-(DEFUN |PrimitiveArray| (#0=#:G1413)
+(DEFUN |PrimitiveArray| (#0=#:G1416)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1414)
+      (PROG (#1=#:G1417)
         (RETURN
           (COND
             ((LETT #1#

@@ -1,6 +1,12 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Shell|) |%Thing|)
+                |DIVRING-;**;SIS;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |DIVRING-;*;F2S;2|)) 
+
 (DEFUN |DIVRING-;**;SIS;1| (|x| |n| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 7))

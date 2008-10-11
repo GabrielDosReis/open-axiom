@@ -5,26 +5,8 @@
 
 (DEFPARAMETER |MultivariateTaylorSeriesCategory;AL| 'NIL) 
 
-(DEFUN |MultivariateTaylorSeriesCategory|
-       (&REST #0=#:G1399 &AUX #1=#:G1397)
-  (DSETQ #1# #0#)
-  (LET (#2=#:G1398)
-    (COND
-      ((SETQ #2#
-             (|assoc| (|devaluateList| #1#)
-                      |MultivariateTaylorSeriesCategory;AL|))
-       (CDR #2#))
-      (T (SETQ |MultivariateTaylorSeriesCategory;AL|
-               (|cons5| (CONS (|devaluateList| #1#)
-                              (SETQ #2#
-                                    (APPLY
-                                     #'|MultivariateTaylorSeriesCategory;|
-                                     #1#)))
-                        |MultivariateTaylorSeriesCategory;AL|))
-         #2#)))) 
-
 (DEFUN |MultivariateTaylorSeriesCategory;| (|t#1| |t#2|)
-  (PROG (#0=#:G1396)
+  (PROG (#0=#:G1399)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -32,7 +14,7 @@
                              (LIST (|devaluate| |t#1|)
                                    (|devaluate| |t#2|)))
                        (|sublisV|
-                           (PAIR '(#1=#:G1395)
+                           (PAIR '(#1=#:G1398)
                                  (LIST '(|IndexedExponents| |t#2|)))
                            (COND
                              (|MultivariateTaylorSeriesCategory;CAT|)
@@ -105,6 +87,24 @@
         (SETELT #0# 0
                 (LIST '|MultivariateTaylorSeriesCategory|
                       (|devaluate| |t#1|) (|devaluate| |t#2|))))))) 
+
+(DEFUN |MultivariateTaylorSeriesCategory|
+       (&REST #0=#:G1402 &AUX #1=#:G1400)
+  (DSETQ #1# #0#)
+  (LET (#2=#:G1401)
+    (COND
+      ((SETQ #2#
+             (|assoc| (|devaluateList| #1#)
+                      |MultivariateTaylorSeriesCategory;AL|))
+       (CDR #2#))
+      (T (SETQ |MultivariateTaylorSeriesCategory;AL|
+               (|cons5| (CONS (|devaluateList| #1#)
+                              (SETQ #2#
+                                    (APPLY
+                                     #'|MultivariateTaylorSeriesCategory;|
+                                     #1#)))
+                        |MultivariateTaylorSeriesCategory;AL|))
+         #2#)))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|MultivariateTaylorSeriesCategory| '|isCategory| T

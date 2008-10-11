@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |EuclideanDomain;AL| 'NIL) 
 
-(DEFUN |EuclideanDomain| ()
-  (LET (#:G1411)
-    (COND
-      (|EuclideanDomain;AL|)
-      (T (SETQ |EuclideanDomain;AL| (|EuclideanDomain;|)))))) 
-
 (DEFUN |EuclideanDomain;| ()
-  (PROG (#0=#:G1409)
+  (PROG (#0=#:G1412)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|PrincipalIdealDomain|)
@@ -49,6 +43,12 @@
                                NIL))
                    |EuclideanDomain|)
         (SETELT #0# 0 '(|EuclideanDomain|)))))) 
+
+(DEFUN |EuclideanDomain| ()
+  (LET ()
+    (COND
+      (|EuclideanDomain;AL|)
+      (T (SETQ |EuclideanDomain;AL| (|EuclideanDomain;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|EuclideanDomain| '|isCategory| T

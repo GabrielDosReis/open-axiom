@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |FloatingPointSystem;AL| 'NIL) 
 
-(DEFUN |FloatingPointSystem| ()
-  (LET (#:G1396)
-    (COND
-      (|FloatingPointSystem;AL|)
-      (T (SETQ |FloatingPointSystem;AL| (|FloatingPointSystem;|)))))) 
-
 (DEFUN |FloatingPointSystem;| ()
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|RealNumberSystem|)
@@ -77,6 +71,12 @@
                                '((|PositiveInteger|) (|Integer|)) NIL))
                    |FloatingPointSystem|)
         (SETELT #0# 0 '(|FloatingPointSystem|)))))) 
+
+(DEFUN |FloatingPointSystem| ()
+  (LET ()
+    (COND
+      (|FloatingPointSystem;AL|)
+      (T (SETQ |FloatingPointSystem;AL| (|FloatingPointSystem;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|FloatingPointSystem| '|isCategory| T

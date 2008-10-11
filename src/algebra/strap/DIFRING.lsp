@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |DifferentialRing;AL| 'NIL) 
 
-(DEFUN |DifferentialRing| ()
-  (LET (#:G1396)
-    (COND
-      (|DifferentialRing;AL|)
-      (T (SETQ |DifferentialRing;AL| (|DifferentialRing;|)))))) 
-
 (DEFUN |DifferentialRing;| ()
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|Ring|)
@@ -24,6 +18,12 @@
                                NIL '((|NonNegativeInteger|)) NIL))
                    |DifferentialRing|)
         (SETELT #0# 0 '(|DifferentialRing|)))))) 
+
+(DEFUN |DifferentialRing| ()
+  (LET ()
+    (COND
+      (|DifferentialRing;AL|)
+      (T (SETQ |DifferentialRing;AL| (|DifferentialRing;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|DifferentialRing| '|isCategory| T

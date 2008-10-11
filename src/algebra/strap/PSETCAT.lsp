@@ -5,23 +5,8 @@
 
 (DEFPARAMETER |PolynomialSetCategory;AL| 'NIL) 
 
-(DEFUN |PolynomialSetCategory| (&REST #0=#:G1431 &AUX #1=#:G1429)
-  (DSETQ #1# #0#)
-  (LET (#2=#:G1430)
-    (COND
-      ((SETQ #2#
-             (|assoc| (|devaluateList| #1#) |PolynomialSetCategory;AL|))
-       (CDR #2#))
-      (T (SETQ |PolynomialSetCategory;AL|
-               (|cons5| (CONS (|devaluateList| #1#)
-                              (SETQ #2#
-                                    (APPLY #'|PolynomialSetCategory;|
-                                     #1#)))
-                        |PolynomialSetCategory;AL|))
-         #2#)))) 
-
 (DEFUN |PolynomialSetCategory;| (|t#1| |t#2| |t#3| |t#4|)
-  (PROG (#0=#:G1428)
+  (PROG (#0=#:G1431)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -31,7 +16,7 @@
                                    (|devaluate| |t#3|)
                                    (|devaluate| |t#4|)))
                        (|sublisV|
-                           (PAIR '(#1=#:G1427) (LIST '(|List| |t#4|)))
+                           (PAIR '(#1=#:G1430) (LIST '(|List| |t#4|)))
                            (COND
                              (|PolynomialSetCategory;CAT|)
                              ('T
@@ -121,6 +106,21 @@
                 (LIST '|PolynomialSetCategory| (|devaluate| |t#1|)
                       (|devaluate| |t#2|) (|devaluate| |t#3|)
                       (|devaluate| |t#4|))))))) 
+
+(DEFUN |PolynomialSetCategory| (&REST #0=#:G1434 &AUX #1=#:G1432)
+  (DSETQ #1# #0#)
+  (LET (#2=#:G1433)
+    (COND
+      ((SETQ #2#
+             (|assoc| (|devaluateList| #1#) |PolynomialSetCategory;AL|))
+       (CDR #2#))
+      (T (SETQ |PolynomialSetCategory;AL|
+               (|cons5| (CONS (|devaluateList| #1#)
+                              (SETQ #2#
+                                    (APPLY #'|PolynomialSetCategory;|
+                                     #1#)))
+                        |PolynomialSetCategory;AL|))
+         #2#)))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|PolynomialSetCategory| '|isCategory| T

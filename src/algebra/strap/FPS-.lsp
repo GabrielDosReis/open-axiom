@@ -1,12 +1,18 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Thing|)
+                |FPS-;float;2IS;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 1))
+                |FPS-;digits;Pi;2|)) 
+
 (DEFUN |FPS-;float;2IS;1| (|ma| |ex| $)
   (SPADCALL |ma| |ex| (SPADCALL (|getShellEntry| $ 8))
       (|getShellEntry| $ 10))) 
 
 (DEFUN |FPS-;digits;Pi;2| ($)
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1401)
     (RETURN
       (PROG1 (LETT #0#
                    (MAX 1

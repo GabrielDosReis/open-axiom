@@ -1,6 +1,17 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |DIFRING-;D;2S;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |DIFRING-;differentiate;SNniS;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |DIFRING-;D;SNniS;3|)) 
+
 (DEFUN |DIFRING-;D;2S;1| (|r| $) (SPADCALL |r| (|getShellEntry| $ 7))) 
 
 (DEFUN |DIFRING-;differentiate;SNniS;2| (|r| |n| $)

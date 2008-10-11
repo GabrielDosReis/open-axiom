@@ -5,22 +5,8 @@
 
 (DEFPARAMETER |PolynomialCategory;AL| 'NIL) 
 
-(DEFUN |PolynomialCategory| (&REST #0=#:G1415 &AUX #1=#:G1413)
-  (DSETQ #1# #0#)
-  (LET (#2=#:G1414)
-    (COND
-      ((SETQ #2#
-             (|assoc| (|devaluateList| #1#) |PolynomialCategory;AL|))
-       (CDR #2#))
-      (T (SETQ |PolynomialCategory;AL|
-               (|cons5| (CONS (|devaluateList| #1#)
-                              (SETQ #2#
-                                    (APPLY #'|PolynomialCategory;| #1#)))
-                        |PolynomialCategory;AL|))
-         #2#)))) 
-
 (DEFUN |PolynomialCategory;| (|t#1| |t#2| |t#3|)
-  (PROG (#0=#:G1412)
+  (PROG (#0=#:G1415)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -236,6 +222,20 @@
         (SETELT #0# 0
                 (LIST '|PolynomialCategory| (|devaluate| |t#1|)
                       (|devaluate| |t#2|) (|devaluate| |t#3|))))))) 
+
+(DEFUN |PolynomialCategory| (&REST #0=#:G1418 &AUX #1=#:G1416)
+  (DSETQ #1# #0#)
+  (LET (#2=#:G1417)
+    (COND
+      ((SETQ #2#
+             (|assoc| (|devaluateList| #1#) |PolynomialCategory;AL|))
+       (CDR #2#))
+      (T (SETQ |PolynomialCategory;AL|
+               (|cons5| (CONS (|devaluateList| #1#)
+                              (SETQ #2#
+                                    (APPLY #'|PolynomialCategory;| #1#)))
+                        |PolynomialCategory;AL|))
+         #2#)))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|PolynomialCategory| '|isCategory| T

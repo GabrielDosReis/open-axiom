@@ -1,6 +1,38 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |HOAGG-;eval;ALA;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |HOAGG-;#;ANni;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |HOAGG-;any?;MAB;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |HOAGG-;every?;MAB;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|)
+                    (|%IntegerSection| 0))
+                |HOAGG-;count;MANni;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |HOAGG-;members;AL;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|)
+                    (|%IntegerSection| 0))
+                |HOAGG-;count;SANni;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |HOAGG-;member?;SAB;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |HOAGG-;=;2AB;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |HOAGG-;coerce;AOf;10|)) 
+
 (DEFUN |HOAGG-;eval;ALA;1| (|u| |l| $)
   (SPADCALL (CONS #'|HOAGG-;eval;ALA;1!0| (VECTOR $ |l|)) |u|
       (|getShellEntry| $ 12))) 
@@ -13,7 +45,7 @@
   (LENGTH (SPADCALL |c| (|getShellEntry| $ 15)))) 
 
 (DEFUN |HOAGG-;any?;MAB;3| (|f| |c| $)
-  (PROG (|x| #0=#:G1406 #1=#:G1403 #2=#:G1401 #3=#:G1402)
+  (PROG (|x| #0=#:G1428 #1=#:G1406 #2=#:G1404 #3=#:G1405)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |HOAGG-;any?;MAB;3|)
@@ -43,7 +75,7 @@
              (COND (#3# #2#) ('T 'NIL))))))) 
 
 (DEFUN |HOAGG-;every?;MAB;4| (|f| |c| $)
-  (PROG (|x| #0=#:G1411 #1=#:G1409 #2=#:G1407 #3=#:G1408)
+  (PROG (|x| #0=#:G1429 #1=#:G1411 #2=#:G1409 #3=#:G1410)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |HOAGG-;every?;MAB;4|)
@@ -74,7 +106,7 @@
              (COND (#3# #2#) ('T 'T))))))) 
 
 (DEFUN |HOAGG-;count;MANni;5| (|f| |c| $)
-  (PROG (|x| #0=#:G1416 #1=#:G1414 #2=#:G1412 #3=#:G1413)
+  (PROG (|x| #0=#:G1430 #1=#:G1415 #2=#:G1413 #3=#:G1414)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |HOAGG-;count;MANni;5|)
@@ -126,7 +158,7 @@
       (|getShellEntry| (|getShellEntry| $$ 0) 24))) 
 
 (DEFUN |HOAGG-;=;2AB;9| (|x| |y| $)
-  (PROG (|b| #0=#:G1426 |a| #1=#:G1425 #2=#:G1422 #3=#:G1420
+  (PROG (|b| #0=#:G1432 |a| #1=#:G1431 #2=#:G1422 #3=#:G1420
              #4=#:G1421)
     (RETURN
       (SEQ (COND
@@ -174,7 +206,7 @@
              ('T 'NIL)))))) 
 
 (DEFUN |HOAGG-;coerce;AOf;10| (|x| $)
-  (PROG (#0=#:G1430 |a| #1=#:G1431)
+  (PROG (#0=#:G1433 |a| #1=#:G1434)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL

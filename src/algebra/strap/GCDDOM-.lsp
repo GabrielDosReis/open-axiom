@@ -1,6 +1,18 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |GCDDOM-;lcm;3S;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |GCDDOM-;lcm;LS;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |GCDDOM-;gcd;LS;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |GCDDOM-;gcdPolynomial;3Sup;4|)) 
+
 (DEFUN |GCDDOM-;lcm;3S;1| (|x| |y| $)
   (PROG (LCM)
     (RETURN
@@ -31,7 +43,7 @@
       (|getShellEntry| $ 19))) 
 
 (DEFUN |GCDDOM-;gcdPolynomial;3Sup;4| (|p1| |p2| $)
-  (PROG (|e2| |e1| |c1| |p| |c2| #0=#:G1415)
+  (PROG (|e2| |e1| |c1| |p| |c2| #0=#:G1418)
     (RETURN
       (SEQ (COND
              ((SPADCALL |p1| (|getShellEntry| $ 24))

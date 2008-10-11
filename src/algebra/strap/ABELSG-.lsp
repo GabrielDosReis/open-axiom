@@ -1,6 +1,10 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 1) |%Thing| |%Shell|)
+                    |%Thing|)
+                |ABELSG-;*;Pi2S;1|)) 
+
 (DEFUN |ABELSG-;*;Pi2S;1| (|n| |x| $)
   (SPADCALL |n| |x| (|getShellEntry| $ 9))) 
 

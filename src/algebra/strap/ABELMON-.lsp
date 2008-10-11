@@ -1,6 +1,19 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |ABELMON-;zero?;SB;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 1) |%Thing| |%Shell|)
+                    |%Thing|)
+                |ABELMON-;*;Pi2S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |ABELMON-;sample;S;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Thing| |%Shell|)
+                    |%Thing|)
+                |ABELMON-;*;Nni2S;4|)) 
+
 (DEFUN |ABELMON-;zero?;SB;1| (|x| $)
   (SPADCALL |x| (|spadConstant| $ 7) (|getShellEntry| $ 9))) 
 

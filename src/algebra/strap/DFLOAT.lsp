@@ -1,6 +1,376 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%String|)
+                |DFLOAT;OMwrite;$S;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Boolean| |%Shell|)
+                    |%String|)
+                |DFLOAT;OMwrite;$BS;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%DoubleFloat| |%Shell|) |%Void|)
+                |DFLOAT;OMwrite;Omd$V;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%DoubleFloat| |%Boolean| |%Shell|)
+                    |%Void|)
+                |DFLOAT;OMwrite;Omd$BV;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;checkComplex|)) 
+
+(PUT '|DFLOAT;checkComplex| '|SPADreplace| 'C-TO-R) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 1))
+                |DFLOAT;base;Pi;6|)) 
+
+(PUT '|DFLOAT;base;Pi;6| '|SPADreplace| '(XLAM NIL (FLOAT-RADIX 0.0))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Integer|)
+                |DFLOAT;mantissa;$I;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Integer|)
+                |DFLOAT;exponent;$I;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 1))
+                |DFLOAT;precision;Pi;9|)) 
+
+(PUT '|DFLOAT;precision;Pi;9| '|SPADreplace|
+     '(XLAM NIL (FLOAT-DIGITS 0.0))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 1))
+                |DFLOAT;bits;Pi;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%DoubleFloat|) |DFLOAT;max;$;11|)) 
+
+(PUT '|DFLOAT;max;$;11| '|SPADreplace|
+     '(XLAM NIL |$DoubleFloatMaximum|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%DoubleFloat|) |DFLOAT;min;$;12|)) 
+
+(PUT '|DFLOAT;min;$;12| '|SPADreplace|
+     '(XLAM NIL |$DoubleFloatMinimum|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Integer|)
+                |DFLOAT;order;$I;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%DoubleFloat|)
+                |DFLOAT;Zero;$;14|)) 
+
+(PUT '|DFLOAT;Zero;$;14| '|SPADreplace|
+     '(XLAM NIL (FLOAT 0 |$DoubleFloatMaximum|))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%DoubleFloat|) |DFLOAT;One;$;15|)) 
+
+(PUT '|DFLOAT;One;$;15| '|SPADreplace|
+     '(XLAM NIL (FLOAT 1 |$DoubleFloatMaximum|))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%DoubleFloat|)
+                |DFLOAT;exp1;$;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%DoubleFloat|) |DFLOAT;pi;$;17|)) 
+
+(PUT '|DFLOAT;pi;$;17| '|SPADreplace| '(XLAM NIL PI)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Thing|)
+                |DFLOAT;coerce;$Of;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Thing|)
+                |DFLOAT;convert;$If;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%Boolean|)
+                |DFLOAT;<;2$B;20|)) 
+
+(PUT '|DFLOAT;<;2$B;20| '|SPADreplace| '<) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;-;2$;21|)) 
+
+(PUT '|DFLOAT;-;2$;21| '|SPADreplace| '-) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;+;3$;22|)) 
+
+(PUT '|DFLOAT;+;3$;22| '|SPADreplace| '+) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;-;3$;23|)) 
+
+(PUT '|DFLOAT;-;3$;23| '|SPADreplace| '-) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;*;3$;24|)) 
+
+(PUT '|DFLOAT;*;3$;24| '|SPADreplace| '*) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;*;I2$;25|)) 
+
+(PUT '|DFLOAT;*;I2$;25| '|SPADreplace| '*) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;max;3$;26|)) 
+
+(PUT '|DFLOAT;max;3$;26| '|SPADreplace| 'MAX) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;min;3$;27|)) 
+
+(PUT '|DFLOAT;min;3$;27| '|SPADreplace| 'MIN) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%Boolean|)
+                |DFLOAT;=;2$B;28|)) 
+
+(PUT '|DFLOAT;=;2$B;28| '|SPADreplace| '=) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Integer| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;/;$I$;29|)) 
+
+(PUT '|DFLOAT;/;$I$;29| '|SPADreplace| '/) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;sqrt;2$;30|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;log10;2$;31|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Integer| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;**;$I$;32|)) 
+
+(PUT '|DFLOAT;**;$I$;32| '|SPADreplace| 'EXPT) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;**;3$;33|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;coerce;I$;34|)) 
+
+(PUT '|DFLOAT;coerce;I$;34| '|SPADreplace|
+     '(XLAM (|i|) (FLOAT |i| |$DoubleFloatMaximum|))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;exp;2$;35|)) 
+
+(PUT '|DFLOAT;exp;2$;35| '|SPADreplace| 'EXP) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;log;2$;36|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;log2;2$;37|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;sin;2$;38|)) 
+
+(PUT '|DFLOAT;sin;2$;38| '|SPADreplace| 'SIN) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;cos;2$;39|)) 
+
+(PUT '|DFLOAT;cos;2$;39| '|SPADreplace| 'COS) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;tan;2$;40|)) 
+
+(PUT '|DFLOAT;tan;2$;40| '|SPADreplace| 'TAN) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;cot;2$;41|)) 
+
+(PUT '|DFLOAT;cot;2$;41| '|SPADreplace| 'COT) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;sec;2$;42|)) 
+
+(PUT '|DFLOAT;sec;2$;42| '|SPADreplace| 'SEC) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;csc;2$;43|)) 
+
+(PUT '|DFLOAT;csc;2$;43| '|SPADreplace| 'CSC) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;asin;2$;44|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;acos;2$;45|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;atan;2$;46|)) 
+
+(PUT '|DFLOAT;atan;2$;46| '|SPADreplace| 'ATAN) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;acsc;2$;47|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;acot;2$;48|)) 
+
+(PUT '|DFLOAT;acot;2$;48| '|SPADreplace| 'ACOT) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;asec;2$;49|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;sinh;2$;50|)) 
+
+(PUT '|DFLOAT;sinh;2$;50| '|SPADreplace| 'SINH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;cosh;2$;51|)) 
+
+(PUT '|DFLOAT;cosh;2$;51| '|SPADreplace| 'COSH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;tanh;2$;52|)) 
+
+(PUT '|DFLOAT;tanh;2$;52| '|SPADreplace| 'TANH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;csch;2$;53|)) 
+
+(PUT '|DFLOAT;csch;2$;53| '|SPADreplace| 'CSCH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;coth;2$;54|)) 
+
+(PUT '|DFLOAT;coth;2$;54| '|SPADreplace| 'COTH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;sech;2$;55|)) 
+
+(PUT '|DFLOAT;sech;2$;55| '|SPADreplace| 'SECH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;asinh;2$;56|)) 
+
+(PUT '|DFLOAT;asinh;2$;56| '|SPADreplace| 'ASINH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;acosh;2$;57|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;atanh;2$;58|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;acsch;2$;59|)) 
+
+(PUT '|DFLOAT;acsch;2$;59| '|SPADreplace| 'ACSCH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;acoth;2$;60|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;asech;2$;61|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;/;3$;62|)) 
+
+(PUT '|DFLOAT;/;3$;62| '|SPADreplace| '/) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Boolean|)
+                |DFLOAT;negative?;$B;63|)) 
+
+(PUT '|DFLOAT;negative?;$B;63| '|SPADreplace| 'MINUSP) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Boolean|)
+                |DFLOAT;zero?;$B;64|)) 
+
+(PUT '|DFLOAT;zero?;$B;64| '|SPADreplace| 'ZEROP) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Short|)
+                |DFLOAT;hash;$Si;65|)) 
+
+(PUT '|DFLOAT;hash;$Si;65| '|SPADreplace| 'HASHEQ) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Pair|)
+                |DFLOAT;recip;$U;66|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;differentiate;2$;67|)) 
+
+(PUT '|DFLOAT;differentiate;2$;67| '|SPADreplace| '(XLAM (|x|) 0.0)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;Gamma;2$;68|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;Beta;3$;69|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Integer|)
+                |DFLOAT;wholePart;$I;70|)) 
+
+(PUT '|DFLOAT;wholePart;$I;70| '|SPADreplace| 'FIX) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%Integer| |%Integer| (|%IntegerSection| 1)
+                        |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;float;2IPi$;71|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;convert;2$;72|)) 
+
+(PUT '|DFLOAT;convert;2$;72| '|SPADreplace| '(XLAM (|x|) |x|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Thing|)
+                |DFLOAT;convert;$F;73|)) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%DoubleFloat| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |DFLOAT;rationalApproximation;$NniF;74|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;atan;3$;75|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Thing|)
+                |DFLOAT;retract;$F;76|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Pair|)
+                |DFLOAT;retractIfCan;$U;77|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Integer|)
+                |DFLOAT;retract;$I;78|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Pair|)
+                |DFLOAT;retractIfCan;$U;79|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Integer|)
+                |DFLOAT;sign;$I;80|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
+                |DFLOAT;abs;2$;81|)) 
+
+(PUT '|DFLOAT;abs;2$;81| '|SPADreplace|
+     '(XLAM (|x|) (FLOAT-SIGN 1.0 |x|))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Pair|)
+                |DFLOAT;manexp|)) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%DoubleFloat| (|%IntegerSection| 0)
+                        (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |DFLOAT;rationalApproximation;$2NniF;83|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Thing| |%Shell|)
+                    |%DoubleFloat|)
+                |DFLOAT;**;$F$;84|)) 
+
 (DEFUN |DFLOAT;OMwrite;$S;1| (|x| $)
   (PROG (|sp| |dev| |s|)
     (RETURN
@@ -46,20 +416,13 @@
        (EXIT (COND
                (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 15))))))) 
 
-(PUT '|DFLOAT;checkComplex| '|SPADreplace| 'C-TO-R) 
-
 (DEFUN |DFLOAT;checkComplex| (|x| $) (C-TO-R |x|)) 
-
-(PUT '|DFLOAT;base;Pi;6| '|SPADreplace| '(XLAM NIL (FLOAT-RADIX 0.0))) 
 
 (DEFUN |DFLOAT;base;Pi;6| ($) (FLOAT-RADIX 0.0)) 
 
 (DEFUN |DFLOAT;mantissa;$I;7| (|x| $) (QCAR (|DFLOAT;manexp| |x| $))) 
 
 (DEFUN |DFLOAT;exponent;$I;8| (|x| $) (QCDR (|DFLOAT;manexp| |x| $))) 
-
-(PUT '|DFLOAT;precision;Pi;9| '|SPADreplace|
-     '(XLAM NIL (FLOAT-DIGITS 0.0))) 
 
 (DEFUN |DFLOAT;precision;Pi;9| ($) (FLOAT-DIGITS 0.0)) 
 
@@ -72,42 +435,28 @@
         ('T
          (PROG1 (LETT #0#
                       (FIX (SPADCALL (FLOAT-DIGITS 0.0)
-                               (SPADCALL
+                               (|DFLOAT;log2;2$;37|
                                    (FLOAT (FLOAT-RADIX 0.0)
                                     |$DoubleFloatMaximum|)
-                                   (|getShellEntry| $ 28))
+                                   $)
                                (|getShellEntry| $ 29)))
                       |DFLOAT;bits;Pi;10|)
            (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))))) 
 
-(PUT '|DFLOAT;max;$;11| '|SPADreplace|
-     '(XLAM NIL |$DoubleFloatMaximum|)) 
-
 (DEFUN |DFLOAT;max;$;11| ($) |$DoubleFloatMaximum|) 
-
-(PUT '|DFLOAT;min;$;12| '|SPADreplace|
-     '(XLAM NIL |$DoubleFloatMinimum|)) 
 
 (DEFUN |DFLOAT;min;$;12| ($) |$DoubleFloatMinimum|) 
 
 (DEFUN |DFLOAT;order;$I;13| (|a| $)
-  (- (+ (FLOAT-DIGITS 0.0) (SPADCALL |a| (|getShellEntry| $ 26))) 1)) 
-
-(PUT '|DFLOAT;Zero;$;14| '|SPADreplace|
-     '(XLAM NIL (FLOAT 0 |$DoubleFloatMaximum|))) 
+  (- (+ (FLOAT-DIGITS 0.0) (|DFLOAT;exponent;$I;8| |a| $)) 1)) 
 
 (DEFUN |DFLOAT;Zero;$;14| ($) (FLOAT 0 |$DoubleFloatMaximum|)) 
-
-(PUT '|DFLOAT;One;$;15| '|SPADreplace|
-     '(XLAM NIL (FLOAT 1 |$DoubleFloatMaximum|))) 
 
 (DEFUN |DFLOAT;One;$;15| ($) (FLOAT 1 |$DoubleFloatMaximum|)) 
 
 (DEFUN |DFLOAT;exp1;$;16| ($)
   (/ (FLOAT 534625820200 |$DoubleFloatMaximum|)
      (FLOAT 196677847971 |$DoubleFloatMaximum|))) 
-
-(PUT '|DFLOAT;pi;$;17| '|SPADreplace| '(XLAM NIL PI)) 
 
 (DEFUN |DFLOAT;pi;$;17| ($) PI) 
 
@@ -117,182 +466,101 @@
 (DEFUN |DFLOAT;convert;$If;19| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 42))) 
 
-(PUT '|DFLOAT;<;2$B;20| '|SPADreplace| '<) 
-
 (DEFUN |DFLOAT;<;2$B;20| (|x| |y| $) (< |x| |y|)) 
-
-(PUT '|DFLOAT;-;2$;21| '|SPADreplace| '-) 
 
 (DEFUN |DFLOAT;-;2$;21| (|x| $) (- |x|)) 
 
-(PUT '|DFLOAT;+;3$;22| '|SPADreplace| '+) 
-
 (DEFUN |DFLOAT;+;3$;22| (|x| |y| $) (+ |x| |y|)) 
-
-(PUT '|DFLOAT;-;3$;23| '|SPADreplace| '-) 
 
 (DEFUN |DFLOAT;-;3$;23| (|x| |y| $) (- |x| |y|)) 
 
-(PUT '|DFLOAT;*;3$;24| '|SPADreplace| '*) 
-
 (DEFUN |DFLOAT;*;3$;24| (|x| |y| $) (* |x| |y|)) 
-
-(PUT '|DFLOAT;*;I2$;25| '|SPADreplace| '*) 
 
 (DEFUN |DFLOAT;*;I2$;25| (|i| |x| $) (* |i| |x|)) 
 
-(PUT '|DFLOAT;max;3$;26| '|SPADreplace| 'MAX) 
-
 (DEFUN |DFLOAT;max;3$;26| (|x| |y| $) (MAX |x| |y|)) 
-
-(PUT '|DFLOAT;min;3$;27| '|SPADreplace| 'MIN) 
 
 (DEFUN |DFLOAT;min;3$;27| (|x| |y| $) (MIN |x| |y|)) 
 
-(PUT '|DFLOAT;=;2$B;28| '|SPADreplace| '=) 
-
 (DEFUN |DFLOAT;=;2$B;28| (|x| |y| $) (= |x| |y|)) 
-
-(PUT '|DFLOAT;/;$I$;29| '|SPADreplace| '/) 
 
 (DEFUN |DFLOAT;/;$I$;29| (|x| |i| $) (/ |x| |i|)) 
 
-(DEFUN |DFLOAT;sqrt;2$;30| (|x| $)
-  (|DFLOAT;checkComplex| (SQRT |x|) $)) 
+(DEFUN |DFLOAT;sqrt;2$;30| (|x| $) (C-TO-R (SQRT |x|))) 
 
-(DEFUN |DFLOAT;log10;2$;31| (|x| $)
-  (|DFLOAT;checkComplex| (|log| |x|) $)) 
-
-(PUT '|DFLOAT;**;$I$;32| '|SPADreplace| 'EXPT) 
+(DEFUN |DFLOAT;log10;2$;31| (|x| $) (C-TO-R (|log| |x|))) 
 
 (DEFUN |DFLOAT;**;$I$;32| (|x| |i| $) (EXPT |x| |i|)) 
 
-(DEFUN |DFLOAT;**;3$;33| (|x| |y| $)
-  (|DFLOAT;checkComplex| (EXPT |x| |y|) $)) 
-
-(PUT '|DFLOAT;coerce;I$;34| '|SPADreplace|
-     '(XLAM (|i|) (FLOAT |i| |$DoubleFloatMaximum|))) 
+(DEFUN |DFLOAT;**;3$;33| (|x| |y| $) (C-TO-R (EXPT |x| |y|))) 
 
 (DEFUN |DFLOAT;coerce;I$;34| (|i| $)
   (FLOAT |i| |$DoubleFloatMaximum|)) 
 
-(PUT '|DFLOAT;exp;2$;35| '|SPADreplace| 'EXP) 
-
 (DEFUN |DFLOAT;exp;2$;35| (|x| $) (EXP |x|)) 
 
-(DEFUN |DFLOAT;log;2$;36| (|x| $) (|DFLOAT;checkComplex| (LN |x|) $)) 
+(DEFUN |DFLOAT;log;2$;36| (|x| $) (C-TO-R (LN |x|))) 
 
-(DEFUN |DFLOAT;log2;2$;37| (|x| $)
-  (|DFLOAT;checkComplex| (LOG2 |x|) $)) 
-
-(PUT '|DFLOAT;sin;2$;38| '|SPADreplace| 'SIN) 
+(DEFUN |DFLOAT;log2;2$;37| (|x| $) (C-TO-R (LOG2 |x|))) 
 
 (DEFUN |DFLOAT;sin;2$;38| (|x| $) (SIN |x|)) 
 
-(PUT '|DFLOAT;cos;2$;39| '|SPADreplace| 'COS) 
-
 (DEFUN |DFLOAT;cos;2$;39| (|x| $) (COS |x|)) 
-
-(PUT '|DFLOAT;tan;2$;40| '|SPADreplace| 'TAN) 
 
 (DEFUN |DFLOAT;tan;2$;40| (|x| $) (TAN |x|)) 
 
-(PUT '|DFLOAT;cot;2$;41| '|SPADreplace| 'COT) 
-
 (DEFUN |DFLOAT;cot;2$;41| (|x| $) (COT |x|)) 
-
-(PUT '|DFLOAT;sec;2$;42| '|SPADreplace| 'SEC) 
 
 (DEFUN |DFLOAT;sec;2$;42| (|x| $) (SEC |x|)) 
 
-(PUT '|DFLOAT;csc;2$;43| '|SPADreplace| 'CSC) 
-
 (DEFUN |DFLOAT;csc;2$;43| (|x| $) (CSC |x|)) 
 
-(DEFUN |DFLOAT;asin;2$;44| (|x| $)
-  (|DFLOAT;checkComplex| (ASIN |x|) $)) 
+(DEFUN |DFLOAT;asin;2$;44| (|x| $) (C-TO-R (ASIN |x|))) 
 
-(DEFUN |DFLOAT;acos;2$;45| (|x| $)
-  (|DFLOAT;checkComplex| (ACOS |x|) $)) 
-
-(PUT '|DFLOAT;atan;2$;46| '|SPADreplace| 'ATAN) 
+(DEFUN |DFLOAT;acos;2$;45| (|x| $) (C-TO-R (ACOS |x|))) 
 
 (DEFUN |DFLOAT;atan;2$;46| (|x| $) (ATAN |x|)) 
 
-(DEFUN |DFLOAT;acsc;2$;47| (|x| $)
-  (|DFLOAT;checkComplex| (ACSC |x|) $)) 
-
-(PUT '|DFLOAT;acot;2$;48| '|SPADreplace| 'ACOT) 
+(DEFUN |DFLOAT;acsc;2$;47| (|x| $) (C-TO-R (ACSC |x|))) 
 
 (DEFUN |DFLOAT;acot;2$;48| (|x| $) (ACOT |x|)) 
 
-(DEFUN |DFLOAT;asec;2$;49| (|x| $)
-  (|DFLOAT;checkComplex| (ASEC |x|) $)) 
-
-(PUT '|DFLOAT;sinh;2$;50| '|SPADreplace| 'SINH) 
+(DEFUN |DFLOAT;asec;2$;49| (|x| $) (C-TO-R (ASEC |x|))) 
 
 (DEFUN |DFLOAT;sinh;2$;50| (|x| $) (SINH |x|)) 
 
-(PUT '|DFLOAT;cosh;2$;51| '|SPADreplace| 'COSH) 
-
 (DEFUN |DFLOAT;cosh;2$;51| (|x| $) (COSH |x|)) 
-
-(PUT '|DFLOAT;tanh;2$;52| '|SPADreplace| 'TANH) 
 
 (DEFUN |DFLOAT;tanh;2$;52| (|x| $) (TANH |x|)) 
 
-(PUT '|DFLOAT;csch;2$;53| '|SPADreplace| 'CSCH) 
-
 (DEFUN |DFLOAT;csch;2$;53| (|x| $) (CSCH |x|)) 
-
-(PUT '|DFLOAT;coth;2$;54| '|SPADreplace| 'COTH) 
 
 (DEFUN |DFLOAT;coth;2$;54| (|x| $) (COTH |x|)) 
 
-(PUT '|DFLOAT;sech;2$;55| '|SPADreplace| 'SECH) 
-
 (DEFUN |DFLOAT;sech;2$;55| (|x| $) (SECH |x|)) 
-
-(PUT '|DFLOAT;asinh;2$;56| '|SPADreplace| 'ASINH) 
 
 (DEFUN |DFLOAT;asinh;2$;56| (|x| $) (ASINH |x|)) 
 
-(DEFUN |DFLOAT;acosh;2$;57| (|x| $)
-  (|DFLOAT;checkComplex| (ACOSH |x|) $)) 
+(DEFUN |DFLOAT;acosh;2$;57| (|x| $) (C-TO-R (ACOSH |x|))) 
 
-(DEFUN |DFLOAT;atanh;2$;58| (|x| $)
-  (|DFLOAT;checkComplex| (ATANH |x|) $)) 
-
-(PUT '|DFLOAT;acsch;2$;59| '|SPADreplace| 'ACSCH) 
+(DEFUN |DFLOAT;atanh;2$;58| (|x| $) (C-TO-R (ATANH |x|))) 
 
 (DEFUN |DFLOAT;acsch;2$;59| (|x| $) (ACSCH |x|)) 
 
-(DEFUN |DFLOAT;acoth;2$;60| (|x| $)
-  (|DFLOAT;checkComplex| (ACOTH |x|) $)) 
+(DEFUN |DFLOAT;acoth;2$;60| (|x| $) (C-TO-R (ACOTH |x|))) 
 
-(DEFUN |DFLOAT;asech;2$;61| (|x| $)
-  (|DFLOAT;checkComplex| (ASECH |x|) $)) 
-
-(PUT '|DFLOAT;/;3$;62| '|SPADreplace| '/) 
+(DEFUN |DFLOAT;asech;2$;61| (|x| $) (C-TO-R (ASECH |x|))) 
 
 (DEFUN |DFLOAT;/;3$;62| (|x| |y| $) (/ |x| |y|)) 
 
-(PUT '|DFLOAT;negative?;$B;63| '|SPADreplace| 'MINUSP) 
-
 (DEFUN |DFLOAT;negative?;$B;63| (|x| $) (MINUSP |x|)) 
 
-(PUT '|DFLOAT;zero?;$B;64| '|SPADreplace| 'ZEROP) 
-
 (DEFUN |DFLOAT;zero?;$B;64| (|x| $) (ZEROP |x|)) 
-
-(PUT '|DFLOAT;hash;$Si;65| '|SPADreplace| 'HASHEQ) 
 
 (DEFUN |DFLOAT;hash;$Si;65| (|x| $) (HASHEQ |x|)) 
 
 (DEFUN |DFLOAT;recip;$U;66| (|x| $)
   (COND ((ZEROP |x|) (CONS 1 "failed")) ('T (CONS 0 (/ 1.0 |x|))))) 
-
-(PUT '|DFLOAT;differentiate;2$;67| '|SPADreplace| '(XLAM (|x|) 0.0)) 
 
 (DEFUN |DFLOAT;differentiate;2$;67| (|x| $) 0.0) 
 
@@ -302,14 +570,10 @@
 (DEFUN |DFLOAT;Beta;3$;69| (|x| |y| $)
   (SPADCALL |x| |y| (|getShellEntry| $ 96))) 
 
-(PUT '|DFLOAT;wholePart;$I;70| '|SPADreplace| 'FIX) 
-
 (DEFUN |DFLOAT;wholePart;$I;70| (|x| $) (FIX |x|)) 
 
 (DEFUN |DFLOAT;float;2IPi$;71| (|ma| |ex| |b| $)
   (* |ma| (EXPT (FLOAT |b| |$DoubleFloatMaximum|) |ex|))) 
-
-(PUT '|DFLOAT;convert;2$;72| '|SPADreplace| '(XLAM (|x|) |x|)) 
 
 (DEFUN |DFLOAT;convert;2$;72| (|x| $) |x|) 
 
@@ -317,7 +581,7 @@
   (SPADCALL |x| (|getShellEntry| $ 102))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$NniF;74| (|x| |d| $)
-  (SPADCALL |x| |d| 10 (|getShellEntry| $ 106))) 
+  (|DFLOAT;rationalApproximation;$2NniF;83| |x| |d| 10 $)) 
 
 (DEFUN |DFLOAT;atan;3$;75| (|x| |y| $)
   (PROG (|theta|)
@@ -342,22 +606,22 @@
 (DEFUN |DFLOAT;retract;$F;76| (|x| $)
   (PROG (#0=#:G1497)
     (RETURN
-      (SPADCALL |x|
+      (|DFLOAT;rationalApproximation;$2NniF;83| |x|
           (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
                        |DFLOAT;retract;$F;76|)
             (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#))
-          (FLOAT-RADIX 0.0) (|getShellEntry| $ 106))))) 
+          (FLOAT-RADIX 0.0) $)))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;77| (|x| $)
   (PROG (#0=#:G1502)
     (RETURN
       (CONS 0
-            (SPADCALL |x|
+            (|DFLOAT;rationalApproximation;$2NniF;83| |x|
                 (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
                              |DFLOAT;retractIfCan;$U;77|)
                   (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|)
                       #0#))
-                (FLOAT-RADIX 0.0) (|getShellEntry| $ 106)))))) 
+                (FLOAT-RADIX 0.0) $))))) 
 
 (DEFUN |DFLOAT;retract;$I;78| (|x| $)
   (PROG (|n|)
@@ -377,10 +641,7 @@
                    ('T (CONS 1 "failed")))))))) 
 
 (DEFUN |DFLOAT;sign;$I;80| (|x| $)
-  (SPADCALL (FLOAT-SIGN |x| 1.0) (|getShellEntry| $ 112))) 
-
-(PUT '|DFLOAT;abs;2$;81| '|SPADreplace|
-     '(XLAM (|x|) (FLOAT-SIGN 1.0 |x|))) 
+  (|DFLOAT;retract;$I;78| (FLOAT-SIGN |x| 1.0) $)) 
 
 (DEFUN |DFLOAT;abs;2$;81| (|x| $) (FLOAT-SIGN 1.0 |x|)) 
 
@@ -390,8 +651,7 @@
       (SEQ (EXIT (COND
                    ((ZEROP |x|) (CONS 0 0))
                    ('T
-                    (SEQ (LETT |s|
-                               (SPADCALL |x| (|getShellEntry| $ 115))
+                    (SEQ (LETT |s| (|DFLOAT;sign;$I;80| |x| $)
                                |DFLOAT;manexp|)
                          (LETT |x| (FLOAT-SIGN 1.0 |x|)
                                |DFLOAT;manexp|)
@@ -402,11 +662,11 @@
                                     (CONS
                                      (+
                                       (* |s|
-                                       (SPADCALL |$DoubleFloatMaximum|
-                                        (|getShellEntry| $ 25)))
+                                       (|DFLOAT;mantissa;$I;7|
+                                        |$DoubleFloatMaximum| $))
                                       1)
-                                     (SPADCALL |$DoubleFloatMaximum|
-                                      (|getShellEntry| $ 26)))
+                                     (|DFLOAT;exponent;$I;8|
+                                      |$DoubleFloatMaximum| $))
                                     |DFLOAT;manexp|)
                               (GO #0#))))
                          (LETT |me| (MANEXP |x|) |DFLOAT;manexp|)
@@ -580,31 +840,29 @@
                                            (PROGN
                                              (LETT #0#
                                               (-
-                                               (SPADCALL (- |x|) |r|
-                                                (|getShellEntry| $ 128)))
+                                               (|DFLOAT;**;$F$;84|
+                                                (- |x|) |r| $))
                                               |DFLOAT;**;$F$;84|)
                                              (GO #0#)))
                                           ('T
                                            (PROGN
                                              (LETT #0#
-                                              (SPADCALL (- |x|) |r|
-                                               (|getShellEntry| $ 128))
+                                              (|DFLOAT;**;$F$;84|
+                                               (- |x|) |r| $)
                                               |DFLOAT;**;$F$;84|)
                                              (GO #0#)))))
                                        ('T (|error| "negative root"))))
                                     ((EQL |d| 2)
-                                     (EXPT
-                                      (SPADCALL |x|
-                                       (|getShellEntry| $ 54))
+                                     (EXPT (|DFLOAT;sqrt;2$;30| |x| $)
                                       |n|))
                                     ('T
-                                     (SPADCALL |x|
+                                     (|DFLOAT;**;3$;33| |x|
                                       (/
                                        (FLOAT |n|
                                         |$DoubleFloatMaximum|)
                                        (FLOAT |d|
                                         |$DoubleFloatMaximum|))
-                                      (|getShellEntry| $ 57)))))))))))
+                                      $))))))))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |DoubleFloat| ()

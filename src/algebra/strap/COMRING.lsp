@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |CommutativeRing;AL| 'NIL) 
 
-(DEFUN |CommutativeRing| ()
-  (LET (#:G1396)
-    (COND
-      (|CommutativeRing;AL|)
-      (T (SETQ |CommutativeRing;AL| (|CommutativeRing;|)))))) 
-
 (DEFUN |CommutativeRing;| ()
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|Ring|) (|BiModule| '$ '$)
@@ -18,6 +12,12 @@
                                '(((|commutative| "*") T)) 'NIL NIL))
                    |CommutativeRing|)
         (SETELT #0# 0 '(|CommutativeRing|)))))) 
+
+(DEFUN |CommutativeRing| ()
+  (LET ()
+    (COND
+      (|CommutativeRing;AL|)
+      (T (SETQ |CommutativeRing;AL| (|CommutativeRing;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|CommutativeRing| '|isCategory| T

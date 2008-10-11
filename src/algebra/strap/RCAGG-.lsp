@@ -1,6 +1,16 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |RCAGG-;elt;AvalueS;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |RCAGG-;setelt;Avalue2S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |RCAGG-;child?;2AB;3|)) 
+
 (DEFUN |RCAGG-;elt;AvalueS;1| (|x| T0 $)
   (SPADCALL |x| (|getShellEntry| $ 8))) 
 

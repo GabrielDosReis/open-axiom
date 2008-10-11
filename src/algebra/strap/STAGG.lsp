@@ -5,19 +5,8 @@
 
 (DEFPARAMETER |StreamAggregate;AL| 'NIL) 
 
-(DEFUN |StreamAggregate| (#0=#:G1402)
-  (LET (#1=#:G1403)
-    (COND
-      ((SETQ #1# (|assoc| (|devaluate| #0#) |StreamAggregate;AL|))
-       (CDR #1#))
-      (T (SETQ |StreamAggregate;AL|
-               (|cons5| (CONS (|devaluate| #0#)
-                              (SETQ #1# (|StreamAggregate;| #0#)))
-                        |StreamAggregate;AL|))
-         #1#)))) 
-
 (DEFUN |StreamAggregate;| (|t#1|)
-  (PROG (#0=#:G1401)
+  (PROG (#0=#:G1404)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -39,6 +28,17 @@
                                          NIL '((|Boolean|)) NIL))
                                 . #1=(|StreamAggregate|))))) . #1#)
         (SETELT #0# 0 (LIST '|StreamAggregate| (|devaluate| |t#1|))))))) 
+
+(DEFUN |StreamAggregate| (#0=#:G1405)
+  (LET (#1=#:G1406)
+    (COND
+      ((SETQ #1# (|assoc| (|devaluate| #0#) |StreamAggregate;AL|))
+       (CDR #1#))
+      (T (SETQ |StreamAggregate;AL|
+               (|cons5| (CONS (|devaluate| #0#)
+                              (SETQ #1# (|StreamAggregate;| #0#)))
+                        |StreamAggregate;AL|))
+         #1#)))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|StreamAggregate| '|isCategory| T

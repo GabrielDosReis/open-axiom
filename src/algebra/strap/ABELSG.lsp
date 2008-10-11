@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |AbelianSemiGroup;AL| 'NIL) 
 
-(DEFUN |AbelianSemiGroup| ()
-  (LET (#:G1396)
-    (COND
-      (|AbelianSemiGroup;AL|)
-      (T (SETQ |AbelianSemiGroup;AL| (|AbelianSemiGroup;|)))))) 
-
 (DEFUN |AbelianSemiGroup;| ()
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|SetCategory|)
@@ -20,6 +14,12 @@
                                NIL '((|PositiveInteger|)) NIL))
                    |AbelianSemiGroup|)
         (SETELT #0# 0 '(|AbelianSemiGroup|)))))) 
+
+(DEFUN |AbelianSemiGroup| ()
+  (LET ()
+    (COND
+      (|AbelianSemiGroup;AL|)
+      (T (SETQ |AbelianSemiGroup;AL| (|AbelianSemiGroup;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|AbelianSemiGroup| '|isCategory| T

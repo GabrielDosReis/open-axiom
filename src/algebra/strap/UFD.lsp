@@ -3,15 +3,8 @@
 
 (DEFPARAMETER |UniqueFactorizationDomain;AL| 'NIL) 
 
-(DEFUN |UniqueFactorizationDomain| ()
-  (LET (#:G1396)
-    (COND
-      (|UniqueFactorizationDomain;AL|)
-      (T (SETQ |UniqueFactorizationDomain;AL|
-               (|UniqueFactorizationDomain;|)))))) 
-
 (DEFUN |UniqueFactorizationDomain;| ()
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|GcdDomain|)
@@ -23,6 +16,13 @@
                                NIL '((|Factored| $) (|Boolean|)) NIL))
                    |UniqueFactorizationDomain|)
         (SETELT #0# 0 '(|UniqueFactorizationDomain|)))))) 
+
+(DEFUN |UniqueFactorizationDomain| ()
+  (LET ()
+    (COND
+      (|UniqueFactorizationDomain;AL|)
+      (T (SETQ |UniqueFactorizationDomain;AL|
+               (|UniqueFactorizationDomain;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|UniqueFactorizationDomain| '|isCategory| T

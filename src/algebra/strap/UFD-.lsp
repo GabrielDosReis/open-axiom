@@ -1,8 +1,14 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UFD-;squareFreePart;2S;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |UFD-;prime?;SB;2|)) 
+
 (DEFUN |UFD-;squareFreePart;2S;1| (|x| $)
-  (PROG (|s| |f| #0=#:G1405 #1=#:G1403 #2=#:G1401 #3=#:G1402)
+  (PROG (|s| |f| #0=#:G1419 #1=#:G1406 #2=#:G1404 #3=#:G1405)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL

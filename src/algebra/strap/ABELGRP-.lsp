@@ -1,6 +1,19 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ABELGRP-;-;3S;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |ABELGRP-;subtractIfCan;2SU;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Thing| |%Shell|)
+                    |%Thing|)
+                |ABELGRP-;*;Nni2S;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Thing| |%Shell|) |%Thing|)
+                |ABELGRP-;*;I2S;4|)) 
+
 (DEFUN |ABELGRP-;-;3S;1| (|x| |y| $)
   (SPADCALL |x| (SPADCALL |y| (|getShellEntry| $ 7))
       (|getShellEntry| $ 8))) 

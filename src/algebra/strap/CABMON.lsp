@@ -3,15 +3,8 @@
 
 (DEFPARAMETER |CancellationAbelianMonoid;AL| 'NIL) 
 
-(DEFUN |CancellationAbelianMonoid| ()
-  (LET (#:G1396)
-    (COND
-      (|CancellationAbelianMonoid;AL|)
-      (T (SETQ |CancellationAbelianMonoid;AL|
-               (|CancellationAbelianMonoid;|)))))) 
-
 (DEFUN |CancellationAbelianMonoid;| ()
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|AbelianMonoid|)
@@ -22,6 +15,13 @@
                                NIL 'NIL NIL))
                    |CancellationAbelianMonoid|)
         (SETELT #0# 0 '(|CancellationAbelianMonoid|)))))) 
+
+(DEFUN |CancellationAbelianMonoid| ()
+  (LET ()
+    (COND
+      (|CancellationAbelianMonoid;AL|)
+      (T (SETQ |CancellationAbelianMonoid;AL|
+               (|CancellationAbelianMonoid;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|CancellationAbelianMonoid| '|isCategory| T

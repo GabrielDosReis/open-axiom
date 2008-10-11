@@ -3,19 +3,13 @@
 
 (DEFPARAMETER |IntegerNumberSystem;AL| 'NIL) 
 
-(DEFUN |IntegerNumberSystem| ()
-  (LET (#:G1412)
-    (COND
-      (|IntegerNumberSystem;AL|)
-      (T (SETQ |IntegerNumberSystem;AL| (|IntegerNumberSystem;|)))))) 
-
 (DEFUN |IntegerNumberSystem;| ()
-  (PROG (#0=#:G1410)
+  (PROG (#0=#:G1413)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
-                       (PAIR '(#1=#:G1404 #2=#:G1405 #3=#:G1406
-                                  #4=#:G1407 #5=#:G1408 #6=#:G1409)
+                       (PAIR '(#1=#:G1407 #2=#:G1408 #3=#:G1409
+                                  #4=#:G1410 #5=#:G1411 #6=#:G1412)
                              (LIST '(|Integer|) '(|Integer|)
                                    '(|Integer|) '(|InputForm|)
                                    '(|Pattern| (|Integer|))
@@ -70,6 +64,12 @@
                                    NIL)))
                    |IntegerNumberSystem|)
         (SETELT #0# 0 '(|IntegerNumberSystem|)))))) 
+
+(DEFUN |IntegerNumberSystem| ()
+  (LET ()
+    (COND
+      (|IntegerNumberSystem;AL|)
+      (T (SETQ |IntegerNumberSystem;AL| (|IntegerNumberSystem;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|IntegerNumberSystem| '|isCategory| T

@@ -1,8 +1,129 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;=;2SB;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;infRittWu?;2SB;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Boolean|)
+                |TSETCAT-;reduced?;PSMB;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%Pair|)
+                |TSETCAT-;basicSet;LMU;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Thing| |%Shell|) |%Pair|)
+                |TSETCAT-;basicSet;LMMU;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |TSETCAT-;initials;SL;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |TSETCAT-;degree;SNni;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |TSETCAT-;quasiComponent;SR;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;normalized?;PSB;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;stronglyReduced?;PSB;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;headReduced?;PSB;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;initiallyReduced?;PSB;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%Thing| |%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |TSETCAT-;reduce;PSMMP;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%List|)
+                |TSETCAT-;rewriteSetWithReduction;LSMML;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;stronglyReduce;PSP;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;headReduce;PSP;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;initiallyReduce;PSP;17|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;removeZero;PSP;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;reduceByQuasiMonic;PSP;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;autoReduced?;SMB;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;stronglyReduced?;SB;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;normalized?;SB;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;headReduced?;SB;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;initiallyReduced?;SB;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;mvar;SV;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |TSETCAT-;first;SU;26|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |TSETCAT-;last;SU;27|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |TSETCAT-;rest;SU;28|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |TSETCAT-;coerce;SL;29|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |TSETCAT-;algebraicVariables;SL;30|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |TSETCAT-;algebraic?;VSB;31|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |TSETCAT-;select;SVU;32|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;collectQuasiMonic;2S;33|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;collectUnder;SVS;34|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;collectUpper;SVS;35|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |TSETCAT-;construct;LS;36|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Pair|)
+                |TSETCAT-;retractIfCan;LU;37|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |TSETCAT-;extend;SPS;38|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |TSETCAT-;coHeight;SNni;39|)) 
+
 (DEFUN |TSETCAT-;=;2SB;1| (|ts| |us| $)
-  (PROG (#0=#:G1453 #1=#:G1459)
+  (PROG (#0=#:G1456 #1=#:G1462)
     (RETURN
       (COND
         ((SPADCALL |ts| (|getShellEntry| $ 12))
@@ -38,7 +159,7 @@
              (|getShellEntry| $ 18))))))) 
 
 (DEFUN |TSETCAT-;infRittWu?;2SB;2| (|ts| |us| $)
-  (PROG (|p| #0=#:G1466 |q| |v|)
+  (PROG (|p| #0=#:G1469 |q| |v|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |us| (|getShellEntry| $ 12))
@@ -376,7 +497,7 @@
            (EXIT |red|))))) 
 
 (DEFUN |TSETCAT-;reduce;PSMMP;13| (|p| |ts| |redOp| |redOp?| $)
-  (PROG (|ts0| #0=#:G1541 |reductor| #1=#:G1544)
+  (PROG (|ts0| #0=#:G1544 |reductor| #1=#:G1547)
     (RETURN
       (SEQ (COND
              ((OR (SPADCALL |ts| (|getShellEntry| $ 12))
@@ -502,7 +623,7 @@
   (SPADCALL |p| |ts| (ELT $ 79) (ELT $ 80) (|getShellEntry| $ 72))) 
 
 (DEFUN |TSETCAT-;removeZero;PSP;18| (|p| |ts| $)
-  (PROG (|v| |tsv-| #0=#:G1567 #1=#:G1576 |q|)
+  (PROG (|v| |tsv-| #0=#:G1570 #1=#:G1579 |q|)
     (RETURN
       (SEQ (EXIT (COND
                    ((OR (SPADCALL |p| (|getShellEntry| $ 35))
@@ -636,7 +757,7 @@
   (SPADCALL |ts| (ELT $ 106) (|getShellEntry| $ 101))) 
 
 (DEFUN |TSETCAT-;mvar;SV;25| (|ts| $)
-  (PROG (#0=#:G1595)
+  (PROG (#0=#:G1598)
     (RETURN
       (COND
         ((SPADCALL |ts| (|getShellEntry| $ 12))
@@ -696,7 +817,7 @@
             (|getShellEntry| $ 37))) 
 
 (DEFUN |TSETCAT-;algebraicVariables;SL;30| (|ts| $)
-  (PROG (#0=#:G1620 |p| #1=#:G1621)
+  (PROG (#0=#:G1666 |p| #1=#:G1667)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |TSETCAT-;algebraicVariables;SL;30|)
@@ -866,7 +987,7 @@
                     (|error| "in extend : ($,P) -> $ from TSETCAT : bad ars")))))))) 
 
 (DEFUN |TSETCAT-;coHeight;SNni;39| (|ts| $)
-  (PROG (|n| |m| #0=#:G1661)
+  (PROG (|n| |m| #0=#:G1662)
     (RETURN
       (SEQ (LETT |n| (SPADCALL (|getShellEntry| $ 128))
                  |TSETCAT-;coHeight;SNni;39|)

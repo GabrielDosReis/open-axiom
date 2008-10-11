@@ -1,22 +1,41 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Pair| |%Pair| |%Shell|) |%Boolean|)
+                |REF;=;2$B;1|)) 
+
 (PUT '|REF;=;2$B;1| '|SPADreplace| 'EQ) 
 
-(DEFUN |REF;=;2$B;1| (|p| |q| $) (EQ |p| |q|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|) |REF;ref;S$;2|)) 
 
 (PUT '|REF;ref;S$;2| '|SPADreplace| 'LIST) 
 
-(DEFUN |REF;ref;S$;2| (|v| $) (LIST |v|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Pair| |%Shell|) |%Thing|) |REF;elt;$S;3|)) 
 
 (PUT '|REF;elt;$S;3| '|SPADreplace| 'QCAR) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Pair| |%Thing| |%Shell|) |%Thing|)
+                |REF;setelt;$2S;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Pair| |%Shell|) |%Thing|)
+                |REF;deref;$S;5|)) 
+
+(PUT '|REF;deref;$S;5| '|SPADreplace| 'QCAR) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Pair| |%Thing| |%Shell|) |%Thing|)
+                |REF;setref;$2S;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Pair| |%Shell|) |%Thing|)
+                |REF;coerce;$Of;7|)) 
+
+(DEFUN |REF;=;2$B;1| (|p| |q| $) (EQ |p| |q|)) 
+
+(DEFUN |REF;ref;S$;2| (|v| $) (LIST |v|)) 
 
 (DEFUN |REF;elt;$S;3| (|p| $) (QCAR |p|)) 
 
 (DEFUN |REF;setelt;$2S;4| (|p| |v| $)
   (PROGN (RPLACA |p| |v|) (QCAR |p|))) 
-
-(PUT '|REF;deref;$S;5| '|SPADreplace| 'QCAR) 
 
 (DEFUN |REF;deref;$S;5| (|p| $) (QCAR |p|)) 
 
@@ -28,10 +47,10 @@
       (LIST (SPADCALL (QCAR |p|) (|getShellEntry| $ 18)))
       (|getShellEntry| $ 20))) 
 
-(DEFUN |Reference| (#0=#:G1403)
+(DEFUN |Reference| (#0=#:G1406)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1404)
+      (PROG (#1=#:G1407)
         (RETURN
           (COND
             ((LETT #1#

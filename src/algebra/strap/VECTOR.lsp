@@ -1,6 +1,12 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) (|%Vector| *))
+                |VECTOR;vector;L$;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%Vector| *) |%Shell|) |%Thing|)
+                |VECTOR;convert;$If;2|)) 
+
 (DEFUN |VECTOR;vector;L$;1| (|l| $)
   (SPADCALL |l| (|getShellEntry| $ 8))) 
 
@@ -12,10 +18,10 @@
                 (|getShellEntry| $ 16)))
       (|getShellEntry| $ 18))) 
 
-(DEFUN |Vector| (#0=#:G1404)
+(DEFUN |Vector| (#0=#:G1407)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1405)
+      (PROG (#1=#:G1408)
         (RETURN
           (COND
             ((LETT #1#

@@ -5,19 +5,8 @@
 
 (DEFPARAMETER |SetAggregate;AL| 'NIL) 
 
-(DEFUN |SetAggregate| (#0=#:G1395)
-  (LET (#1=#:G1396)
-    (COND
-      ((SETQ #1# (|assoc| (|devaluate| #0#) |SetAggregate;AL|))
-       (CDR #1#))
-      (T (SETQ |SetAggregate;AL|
-               (|cons5| (CONS (|devaluate| #0#)
-                              (SETQ #1# (|SetAggregate;| #0#)))
-                        |SetAggregate;AL|))
-         #1#)))) 
-
 (DEFUN |SetAggregate;| (|t#1|)
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -56,6 +45,17 @@
                                          NIL))
                                 . #1=(|SetAggregate|))))) . #1#)
         (SETELT #0# 0 (LIST '|SetAggregate| (|devaluate| |t#1|))))))) 
+
+(DEFUN |SetAggregate| (#0=#:G1398)
+  (LET (#1=#:G1399)
+    (COND
+      ((SETQ #1# (|assoc| (|devaluate| #0#) |SetAggregate;AL|))
+       (CDR #1#))
+      (T (SETQ |SetAggregate;AL|
+               (|cons5| (CONS (|devaluate| #0#)
+                              (SETQ #1# (|SetAggregate;| #0#)))
+                        |SetAggregate;AL|))
+         #1#)))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|SetAggregate| '|isCategory| T

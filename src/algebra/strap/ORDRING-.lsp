@@ -1,6 +1,18 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |ORDRING-;positive?;SB;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |ORDRING-;negative?;SB;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |ORDRING-;sign;SI;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ORDRING-;abs;2S;4|)) 
+
 (DEFUN |ORDRING-;positive?;SB;1| (|x| $)
   (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 9))) 
 
