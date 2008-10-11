@@ -1122,10 +1122,10 @@ backendCompileSPADSLAM(name,args,body) ==
   COMP370 [u]
   name
 
-
-backendCompile2 form ==
-  form isnt [name,[type,args,:body],:junk] or junk ^= nil =>
-    MOAN FORMAT(nil,'"******* parenthesis error in (~S (~S ...) ...)",name,type)
+backendCompile2: %Code -> %Symbol
+backendCompile2 code ==
+  code isnt [name,[type,args,:body],:junk] or junk ^= nil =>
+    systemError ['"parenthesis error in: ", code]
   type = "SLAM" => backendCompileSLAM(name,args,body)
   LASSQ(name,$clamList) => compClam(name,args,body,$clamList)
   type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
@@ -1135,4 +1135,17 @@ backendCompile2 form ==
   if not $COMPILE then SAY '"No Compilation"
   else COMP370 [body]
   name
+
+
+++ returns all fuild variables contained in `x'.  Fuild variables are
+++ identifiers starting with '$', except domain variable names.
+backendFluidize x ==
+  IDENTP x and x ^= "$" and x ^= "$$" and
+    (PNAME x).0 = char "$" and not DIGITP((PNAME x).1) => x
+  isAtomicForm x => nil
+  first x = "FLUID" => second x
+  a := backendFluidize first x
+  b := backendFluidize rest x
+  a = nil => b
+  [a,:b]
 

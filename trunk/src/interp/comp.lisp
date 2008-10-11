@@ -127,25 +127,12 @@
                      (if (or lvars (contained 'RETURN (third x)))
                          `(prog ,lvars (return ,(third x)))
                          (third x)) )))))
-    (let ((fluids (S+ (comp-fluidize (second x)) SpecialVars)))
+    (let ((fluids (S+ (|backendFluidize| (second x)) SpecialVars)))
       (if fluids
           `(,(first x) ,(second x) (declare (special . ,fluids)) . ,(cddr x))
           `(,(first x) ,(second x) . ,(cddr x))))))
 
 ; Fluidize: Returns a list of fluid variables in X
-
-(DEFUN COMP-FLUIDIZE (X)
-  (COND ((AND (symbolp X)
-              (NE X '$)
-              (NE X '$$)
-              (char= #\$ (ELT (PNAME X) 0))
-              (NOT (DIGITP (ELT (PNAME X) 1))))
-         x)
-        ((atom x) nil)
-        ((eq (first X) 'FLUID) (second X))
-        ((let ((a (comp-fluidize (first x)))
-               (b (comp-fluidize (rest x))))
-           (if a (cons a b) b)))))
 
 (DEFUN COMP\,FLUIDIZE  (X) (COND
   ((AND (IDENTP X)
