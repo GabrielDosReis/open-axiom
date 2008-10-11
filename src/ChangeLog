@@ -1,5 +1,11 @@
 2008-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (backendFluidize): New.
+	* interp/comp.lisp (COMP-TRAN): Use it.
+	(COMP-FLUIDIZE): Remove.
+
+2008-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (backendCompile2): Bootified from COMP-2.
 	* interp/compiler.boot (COMP): Use it.
 	* interp/comp.lisp (COMP-2): Remove.
