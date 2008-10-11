@@ -83,19 +83,6 @@
   (|dropInputLibrary| lib)
    (setq input-libraries (cons (open-library lib) input-libraries)) )
 
-(defun Comp-2 (args &aux name type argl bodyl junk)
-    (dsetq (NAME (TYPE ARGL . BODYL) . JUNK) args)
-    (cond (JUNK (MOAN (format nil "******pren error in (~S (~S ...) ...)" NAME TYPE)))
-          ((eq TYPE 'SLAM) (|backendCompileSLAM| NAME ARGL BODYL))
-          ((LASSQ NAME |$clamList|) (|compClam| NAME ARGL BODYL |$clamList|))
-          ((eq TYPE 'SPADSLAM) (|backendCompileSPADSLAM| NAME ARGL BODYL))
-          ((eq TYPE 'ILAM) (|backendCompileILAM| NAME ARGL BODYL))
-          ((setq BODYL (LIST NAME (CONS TYPE (CONS ARGL BODYL))))
-           (if |$PrettyPrint| (pprint bodyl))
-           (if (null $COMPILE) (SAY "No Compilation")
-               (COMP370 (LIST BODYL)))
-           NAME)))
-
 ;; used to be called POSN - but that interfered with a CCL function
 (DEFUN POSN1 (X L) (position x l :test #'equal))
 

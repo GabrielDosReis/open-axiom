@@ -1920,7 +1920,7 @@ compileQuietly fn ==
 
 
 COMP l ==
-  MAPCAR(function COMP_-2, MAPCAN(function COMP_-1,l))
+  MAPCAR(function backendCompile2, MAPCAN(function COMP_-1,l))
 
 COMP_-1 x ==
   fname := first x

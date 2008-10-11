@@ -1121,3 +1121,18 @@ backendCompileSPADSLAM(name,args,body) ==
   if $PrettyPrint then PRETTYPRINT u
   COMP370 [u]
   name
+
+
+backendCompile2 form ==
+  form isnt [name,[type,args,:body],:junk] or junk ^= nil =>
+    MOAN FORMAT(nil,'"******* parenthesis error in (~S (~S ...) ...)",name,type)
+  type = "SLAM" => backendCompileSLAM(name,args,body)
+  LASSQ(name,$clamList) => compClam(name,args,body,$clamList)
+  type = "SPADSLAM" => backendCompileSPADSLAM(name,args,body)
+  type = "ILAM" => backendCompileILAM(name,args,body)
+  body := [name,[type,args,:body]]
+  if $PrettyPrint then PRETTYPRINT body
+  if not $COMPILE then SAY '"No Compilation"
+  else COMP370 [body]
+  name
+
