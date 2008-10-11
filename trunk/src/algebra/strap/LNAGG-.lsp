@@ -1,8 +1,27 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |LNAGG-;indices;AL;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Thing| |%Shell|) |%Boolean|)
+                |LNAGG-;index?;IAB;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |LNAGG-;concat;ASA;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |LNAGG-;concat;S2A;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
+                    |%Thing|)
+                |LNAGG-;insert;SAIA;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |LNAGG-;maxIndex;AI;6|)) 
+
 (DEFUN |LNAGG-;indices;AL;1| (|a| $)
-  (PROG (#0=#:G1401 |i| #1=#:G1402)
+  (PROG (#0=#:G1410 |i| #1=#:G1411)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |LNAGG-;indices;AL;1|)

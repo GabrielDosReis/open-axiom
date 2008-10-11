@@ -1,6 +1,48 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |STAGG-;explicitlyFinite?;AB;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |STAGG-;possiblyInfinite?;AB;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |STAGG-;first;ANniA;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |STAGG-;c2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Shell|) |%Thing|)
+                |STAGG-;elt;AIS;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |STAGG-;elt;AUsA;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |STAGG-;concat;3A;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |STAGG-;concat;LA;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |STAGG-;map!;M2A;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |STAGG-;fill!;ASA;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Thing| |%Shell|)
+                    |%Thing|)
+                |STAGG-;setelt;AI2S;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |STAGG-;setelt;AUs2S;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |STAGG-;concat!;3A;13|)) 
+
 (DEFUN |STAGG-;explicitlyFinite?;AB;1| (|x| $)
   (SPADCALL (SPADCALL |x| (|getShellEntry| $ 9))
       (|getShellEntry| $ 10))) 
@@ -9,7 +51,7 @@
   (SPADCALL |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |STAGG-;first;ANniA;3| (|x| |n| $)
-  (PROG (#0=#:G1408 |i|)
+  (PROG (#0=#:G1452 |i|)
     (RETURN
       (SEQ (SPADCALL
                (PROGN
@@ -37,7 +79,7 @@
     ('T (SPADCALL |x| (|getShellEntry| $ 19))))) 
 
 (DEFUN |STAGG-;elt;AIS;5| (|x| |i| $)
-  (PROG (#0=#:G1411)
+  (PROG (#0=#:G1413)
     (RETURN
       (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21)))
                  |STAGG-;elt;AIS;5|)
@@ -57,7 +99,7 @@
            (EXIT (SPADCALL |x| (|getShellEntry| $ 19))))))) 
 
 (DEFUN |STAGG-;elt;AUsA;6| (|x| |i| $)
-  (PROG (|l| #0=#:G1415 |h| #1=#:G1417 #2=#:G1418)
+  (PROG (|l| #0=#:G1417 |h| #1=#:G1419 #2=#:G1420)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 25))
@@ -147,7 +189,7 @@
            (EXIT |x|))))) 
 
 (DEFUN |STAGG-;setelt;AI2S;11| (|x| |i| |s| $)
-  (PROG (#0=#:G1434)
+  (PROG (#0=#:G1436)
     (RETURN
       (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21)))
                  |STAGG-;setelt;AI2S;11|)
@@ -167,7 +209,7 @@
            (EXIT (SPADCALL |x| |s| (|getShellEntry| $ 37))))))) 
 
 (DEFUN |STAGG-;setelt;AUs2S;12| (|x| |i| |s| $)
-  (PROG (|l| |h| #0=#:G1439 #1=#:G1440 |z| |y|)
+  (PROG (|l| |h| #0=#:G1441 #1=#:G1442 |z| |y|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 25))

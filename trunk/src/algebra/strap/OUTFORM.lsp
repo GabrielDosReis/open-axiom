@@ -1,6 +1,359 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%String|)
+                |OUTFORM;doubleFloatFormat;2S;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Thing|)
+                |OUTFORM;sform|)) 
+
+(PUT '|OUTFORM;sform| '|SPADreplace| '(XLAM (|s|) |s|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;eform|)) 
+
+(PUT '|OUTFORM;eform| '|SPADreplace| '(XLAM (|e|) |e|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Thing|)
+                |OUTFORM;iform|)) 
+
+(PUT '|OUTFORM;iform| '|SPADreplace| '(XLAM (|i|) |i|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|) |OUTFORM;bless|)) 
+
+(PUT '|OUTFORM;bless| '|SPADreplace| '(XLAM (|x|) |x|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Void|)
+                |OUTFORM;print;$V;6|)) 
+
+(PUT '|OUTFORM;print;$V;6| '|SPADreplace| '|mathprint|) 
+
+(DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Thing|)
+                |OUTFORM;message;S$;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Void|)
+                |OUTFORM;messagePrint;SV;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |OUTFORM;=;2$B;9|)) 
+
+(PUT '|OUTFORM;=;2$B;9| '|SPADreplace| 'EQUAL) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;=;3$;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;coerce;2$;11|)) 
+
+(PUT '|OUTFORM;coerce;2$;11| '|SPADreplace| '(XLAM (|a|) |a|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Thing|)
+                |OUTFORM;outputForm;I$;12|)) 
+
+(PUT '|OUTFORM;outputForm;I$;12| '|SPADreplace| '(XLAM (|n|) |n|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;outputForm;S$;13|)) 
+
+(PUT '|OUTFORM;outputForm;S$;13| '|SPADreplace| '(XLAM (|e|) |e|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Thing|)
+                |OUTFORM;outputForm;Df$;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Thing|)
+                |OUTFORM;outputForm;S$;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |OUTFORM;width;$I;16|)) 
+
+(PUT '|OUTFORM;width;$I;16| '|SPADreplace| '|outformWidth|) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |OUTFORM;height;$I;17|)) 
+
+(PUT '|OUTFORM;height;$I;17| '|SPADreplace| '|height|) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |OUTFORM;subHeight;$I;18|)) 
+
+(PUT '|OUTFORM;subHeight;$I;18| '|SPADreplace| '|subspan|) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |OUTFORM;superHeight;$I;19|)) 
+
+(PUT '|OUTFORM;superHeight;$I;19| '|SPADreplace| '|superspan|) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Integer|) |OUTFORM;height;I;20|)) 
+
+(PUT '|OUTFORM;height;I;20| '|SPADreplace| '(XLAM NIL 20)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Integer|) |OUTFORM;width;I;21|)) 
+
+(PUT '|OUTFORM;width;I;21| '|SPADreplace| '(XLAM NIL 66)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Shell|) |%Thing|)
+                |OUTFORM;center;$I$;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Shell|) |%Thing|)
+                |OUTFORM;left;$I$;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Shell|) |%Thing|)
+                |OUTFORM;right;$I$;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;center;2$;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;left;2$;26|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;right;2$;27|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Thing|)
+                |OUTFORM;vspace;I$;28|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Thing|)
+                |OUTFORM;hspace;I$;29|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Thing|)
+                |OUTFORM;rspace;2I$;30|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;matrix;L$;31|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;pile;L$;32|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;commaSeparate;L$;33|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;semicolonSeparate;L$;34|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;blankSeparate;L$;35|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;brace;2$;36|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;brace;L$;37|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;bracket;2$;38|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;bracket;L$;39|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;paren;2$;40|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;paren;L$;41|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;sub;3$;42|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;super;3$;43|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;presub;3$;44|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;presuper;3$;45|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |OUTFORM;scripts;$L$;46|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |OUTFORM;supersub;$L$;47|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;hconcat;3$;48|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;hconcat;L$;49|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;vconcat;3$;50|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |OUTFORM;vconcat;L$;51|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;~=;3$;52|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;<;3$;53|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;>;3$;54|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;<=;3$;55|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;>=;3$;56|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;+;3$;57|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;-;3$;58|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;-;2$;59|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;*;3$;60|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;/;3$;61|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;**;3$;62|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;div;3$;63|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;rem;3$;64|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;quo;3$;65|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;exquo;3$;66|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;and;3$;67|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;or;3$;68|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;not;2$;69|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;SEGMENT;3$;70|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;SEGMENT;2$;71|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;binomial;3$;72|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |OUTFORM;empty;$;73|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |OUTFORM;infix?;$B;74|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |OUTFORM;elt;$L$;75|)) 
+
+(PUT '|OUTFORM;elt;$L$;75| '|SPADreplace| 'CONS) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |OUTFORM;prefix;$L$;76|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |OUTFORM;infix;$L$;77|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |OUTFORM;infix;4$;78|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;postfix;3$;79|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;string;2$;80|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;quote;2$;81|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;overbar;2$;82|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;dot;2$;83|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;prime;2$;84|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |OUTFORM;dot;$Nni$;85|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |OUTFORM;prime;$Nni$;86|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;overlabel;3$;87|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;box;2$;88|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;zag;3$;89|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;root;2$;90|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;root;3$;91|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;over;3$;92|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;slash;3$;93|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;assign;3$;94|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;label;3$;95|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;rarrow;3$;96|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |OUTFORM;differentiate;$Nni$;97|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;sum;2$;98|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;sum;3$;99|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |OUTFORM;sum;4$;100|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;prod;2$;101|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;prod;3$;102|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |OUTFORM;prod;4$;103|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;int;2$;104|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |OUTFORM;int;3$;105|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |OUTFORM;int;4$;106|)) 
+
 (DEFUN |OUTFORM;doubleFloatFormat;2S;1| (|s| $)
   (PROG (|ss|)
     (RETURN
@@ -8,52 +361,32 @@
                  |OUTFORM;doubleFloatFormat;2S;1|)
            (SETELT $ 6 |s|) (EXIT |ss|))))) 
 
-(PUT '|OUTFORM;sform| '|SPADreplace| '(XLAM (|s|) |s|)) 
-
 (DEFUN |OUTFORM;sform| (|s| $) |s|) 
-
-(PUT '|OUTFORM;eform| '|SPADreplace| '(XLAM (|e|) |e|)) 
 
 (DEFUN |OUTFORM;eform| (|e| $) |e|) 
 
-(PUT '|OUTFORM;iform| '|SPADreplace| '(XLAM (|i|) |i|)) 
-
 (DEFUN |OUTFORM;iform| (|i| $) |i|) 
 
-(PUT '|OUTFORM;bless| '|SPADreplace| '(XLAM (|x|) |x|)) 
-
 (DEFUN |OUTFORM;bless| (|x| $) |x|) 
-
-(PUT '|OUTFORM;print;$V;6| '|SPADreplace| '|mathprint|) 
 
 (DEFUN |OUTFORM;print;$V;6| (|x| $) (|mathprint| |x|)) 
 
 (DEFUN |OUTFORM;message;S$;7| (|s| $)
   (COND
-    ((SPADCALL |s| (|getShellEntry| $ 12))
-     (SPADCALL (|getShellEntry| $ 13)))
+    ((SPADCALL |s| (|getShellEntry| $ 12)) (|OUTFORM;empty;$;73| $))
     ('T |s|))) 
 
 (DEFUN |OUTFORM;messagePrint;SV;8| (|s| $)
-  (SPADCALL (SPADCALL |s| (|getShellEntry| $ 14))
-            (|getShellEntry| $ 10))) 
-
-(PUT '|OUTFORM;=;2$B;9| '|SPADreplace| 'EQUAL) 
+  (|mathprint| (|OUTFORM;message;S$;7| |s| $))) 
 
 (DEFUN |OUTFORM;=;2$B;9| (|a| |b| $) (EQUAL |a| |b|)) 
 
 (DEFUN |OUTFORM;=;3$;10| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "=" $) |a| |b|) $)) 
-
-(PUT '|OUTFORM;coerce;2$;11| '|SPADreplace| '(XLAM (|a|) |a|)) 
+  (|OUTFORM;bless| (LIST "=" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;coerce;2$;11| (|a| $) |a|) 
 
-(PUT '|OUTFORM;outputForm;I$;12| '|SPADreplace| '(XLAM (|n|) |n|)) 
-
 (DEFUN |OUTFORM;outputForm;I$;12| (|n| $) |n|) 
-
-(PUT '|OUTFORM;outputForm;S$;13| '|SPADreplace| '(XLAM (|e|) |e|)) 
 
 (DEFUN |OUTFORM;outputForm;S$;13| (|e| $) |e|) 
 
@@ -68,84 +401,61 @@
           (|getShellEntry| $ 29))
       $)) 
 
-(PUT '|OUTFORM;width;$I;16| '|SPADreplace| '|outformWidth|) 
-
 (DEFUN |OUTFORM;width;$I;16| (|a| $) (|outformWidth| |a|)) 
-
-(PUT '|OUTFORM;height;$I;17| '|SPADreplace| '|height|) 
 
 (DEFUN |OUTFORM;height;$I;17| (|a| $) (|height| |a|)) 
 
-(PUT '|OUTFORM;subHeight;$I;18| '|SPADreplace| '|subspan|) 
-
 (DEFUN |OUTFORM;subHeight;$I;18| (|a| $) (|subspan| |a|)) 
-
-(PUT '|OUTFORM;superHeight;$I;19| '|SPADreplace| '|superspan|) 
 
 (DEFUN |OUTFORM;superHeight;$I;19| (|a| $) (|superspan| |a|)) 
 
-(PUT '|OUTFORM;height;I;20| '|SPADreplace| '(XLAM NIL 20)) 
-
 (DEFUN |OUTFORM;height;I;20| ($) 20) 
-
-(PUT '|OUTFORM;width;I;21| '|SPADreplace| '(XLAM NIL 66)) 
 
 (DEFUN |OUTFORM;width;I;21| ($) 66) 
 
 (DEFUN |OUTFORM;center;$I$;22| (|a| |w| $)
-  (SPADCALL
-      (SPADCALL
-          (QUOTIENT2 (- |w| (SPADCALL |a| (|getShellEntry| $ 31))) 2)
-          (|getShellEntry| $ 37))
-      |a| (|getShellEntry| $ 38))) 
+  (|OUTFORM;hconcat;3$;48|
+      (|OUTFORM;hspace;I$;29|
+          (QUOTIENT2 (- |w| (|outformWidth| |a|)) 2) $)
+      |a| $)) 
 
 (DEFUN |OUTFORM;left;$I$;23| (|a| |w| $)
-  (SPADCALL |a|
-            (SPADCALL (- |w| (SPADCALL |a| (|getShellEntry| $ 31)))
-                (|getShellEntry| $ 37))
-            (|getShellEntry| $ 38))) 
+  (|OUTFORM;hconcat;3$;48| |a|
+      (|OUTFORM;hspace;I$;29| (- |w| (|outformWidth| |a|)) $) $)) 
 
 (DEFUN |OUTFORM;right;$I$;24| (|a| |w| $)
-  (SPADCALL
-      (SPADCALL (- |w| (SPADCALL |a| (|getShellEntry| $ 31)))
-          (|getShellEntry| $ 37))
-      |a| (|getShellEntry| $ 38))) 
+  (|OUTFORM;hconcat;3$;48|
+      (|OUTFORM;hspace;I$;29| (- |w| (|outformWidth| |a|)) $) |a| $)) 
 
 (DEFUN |OUTFORM;center;2$;25| (|a| $)
-  (SPADCALL |a| (SPADCALL (|getShellEntry| $ 36))
-      (|getShellEntry| $ 39))) 
+  (|OUTFORM;center;$I$;22| |a| 66 $)) 
 
-(DEFUN |OUTFORM;left;2$;26| (|a| $)
-  (SPADCALL |a| (SPADCALL (|getShellEntry| $ 36))
-      (|getShellEntry| $ 40))) 
+(DEFUN |OUTFORM;left;2$;26| (|a| $) (|OUTFORM;left;$I$;23| |a| 66 $)) 
 
 (DEFUN |OUTFORM;right;2$;27| (|a| $)
-  (SPADCALL |a| (SPADCALL (|getShellEntry| $ 36))
-      (|getShellEntry| $ 41))) 
+  (|OUTFORM;right;$I$;24| |a| 66 $)) 
 
 (DEFUN |OUTFORM;vspace;I$;28| (|n| $)
   (COND
-    ((EQL |n| 0) (SPADCALL (|getShellEntry| $ 13)))
+    ((EQL |n| 0) (|OUTFORM;empty;$;73| $))
     ('T
-     (SPADCALL (|OUTFORM;sform| " " $)
-         (SPADCALL (- |n| 1) (|getShellEntry| $ 45))
-         (|getShellEntry| $ 46))))) 
+     (|OUTFORM;vconcat;3$;50| " " (|OUTFORM;vspace;I$;28| (- |n| 1) $)
+         $)))) 
 
 (DEFUN |OUTFORM;hspace;I$;29| (|n| $)
   (COND
-    ((EQL |n| 0) (SPADCALL (|getShellEntry| $ 13)))
+    ((EQL |n| 0) (|OUTFORM;empty;$;73| $))
     ('T (|OUTFORM;sform| (|fillerSpaces| |n|) $)))) 
 
 (DEFUN |OUTFORM;rspace;2I$;30| (|n| |m| $)
   (COND
-    ((OR (EQL |n| 0) (EQL |m| 0)) (SPADCALL (|getShellEntry| $ 13)))
+    ((OR (EQL |n| 0) (EQL |m| 0)) (|OUTFORM;empty;$;73| $))
     ('T
-     (SPADCALL (SPADCALL |n| (|getShellEntry| $ 37))
-         (SPADCALL |n| (- |m| 1) (|getShellEntry| $ 47))
-         (|getShellEntry| $ 46))))) 
+     (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
+         (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
-  (PROG (#0=#:G1445 |l| #1=#:G1446 |lv|)
+  (PROG (#0=#:G1614 |l| #1=#:G1615 |lv|)
     (RETURN
       (SEQ (LETT |lv|
                  (|OUTFORM;bless|
@@ -167,22 +477,18 @@
                             (GO G190) G191 (EXIT (NREVERSE0 #0#))))
                      $)
                  |OUTFORM;matrix;L$;31|)
-           (EXIT (CONS (|OUTFORM;eform| 'MATRIX $) (LIST2VEC |lv|))))))) 
+           (EXIT (CONS 'MATRIX (LIST2VEC |lv|))))))) 
 
-(DEFUN |OUTFORM;pile;L$;32| (|l| $)
-  (CONS (|OUTFORM;eform| 'SC $) |l|)) 
+(DEFUN |OUTFORM;pile;L$;32| (|l| $) (CONS 'SC |l|)) 
 
-(DEFUN |OUTFORM;commaSeparate;L$;33| (|l| $)
-  (CONS (|OUTFORM;eform| 'AGGLST $) |l|)) 
+(DEFUN |OUTFORM;commaSeparate;L$;33| (|l| $) (CONS 'AGGLST |l|)) 
 
-(DEFUN |OUTFORM;semicolonSeparate;L$;34| (|l| $)
-  (CONS (|OUTFORM;eform| 'AGGSET $) |l|)) 
+(DEFUN |OUTFORM;semicolonSeparate;L$;34| (|l| $) (CONS 'AGGSET |l|)) 
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
-  (PROG (|c| |u| #0=#:G1454 |l1|)
+  (PROG (|c| |u| #0=#:G1616 |l1|)
     (RETURN
-      (SEQ (LETT |c| (|OUTFORM;eform| 'CONCATB $)
-                 |OUTFORM;blankSeparate;L$;35|)
+      (SEQ (LETT |c| 'CONCATB |OUTFORM;blankSeparate;L$;35|)
            (LETT |l1| NIL |OUTFORM;blankSeparate;L$;35|)
            (SEQ (LETT |u| NIL |OUTFORM;blankSeparate;L$;35|)
                 (LETT #0# (SPADCALL |l| (|getShellEntry| $ 55))
@@ -209,145 +515,128 @@
            (EXIT (CONS |c| |l1|)))))) 
 
 (DEFUN |OUTFORM;brace;2$;36| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'BRACE $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'BRACE |a|) $)) 
 
 (DEFUN |OUTFORM;brace;L$;37| (|l| $)
-  (SPADCALL (SPADCALL |l| (|getShellEntry| $ 52))
-      (|getShellEntry| $ 58))) 
+  (|OUTFORM;brace;2$;36| (|OUTFORM;commaSeparate;L$;33| |l| $) $)) 
 
 (DEFUN |OUTFORM;bracket;2$;38| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'BRACKET $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'BRACKET |a|) $)) 
 
 (DEFUN |OUTFORM;bracket;L$;39| (|l| $)
-  (SPADCALL (SPADCALL |l| (|getShellEntry| $ 52))
-      (|getShellEntry| $ 60))) 
+  (|OUTFORM;bracket;2$;38| (|OUTFORM;commaSeparate;L$;33| |l| $) $)) 
 
 (DEFUN |OUTFORM;paren;2$;40| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'PAREN $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'PAREN |a|) $)) 
 
 (DEFUN |OUTFORM;paren;L$;41| (|l| $)
-  (SPADCALL (SPADCALL |l| (|getShellEntry| $ 52))
-      (|getShellEntry| $ 62))) 
+  (|OUTFORM;paren;2$;40| (|OUTFORM;commaSeparate;L$;33| |l| $) $)) 
 
 (DEFUN |OUTFORM;sub;3$;42| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'SUB $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'SUB |a| |b|) $)) 
 
 (DEFUN |OUTFORM;super;3$;43| (|a| |b| $)
-  (|OUTFORM;bless|
-      (LIST (|OUTFORM;eform| 'SUPERSUB $) |a| (|OUTFORM;sform| " " $)
-            |b|)
-      $)) 
+  (|OUTFORM;bless| (LIST 'SUPERSUB |a| " " |b|) $)) 
 
 (DEFUN |OUTFORM;presub;3$;44| (|a| |b| $)
-  (|OUTFORM;bless|
-      (LIST (|OUTFORM;eform| 'SUPERSUB $) |a| (|OUTFORM;sform| " " $)
-            (|OUTFORM;sform| " " $) (|OUTFORM;sform| " " $) |b|)
-      $)) 
+  (|OUTFORM;bless| (LIST 'SUPERSUB |a| " " " " " " |b|) $)) 
 
 (DEFUN |OUTFORM;presuper;3$;45| (|a| |b| $)
-  (|OUTFORM;bless|
-      (LIST (|OUTFORM;eform| 'SUPERSUB $) |a| (|OUTFORM;sform| " " $)
-            (|OUTFORM;sform| " " $) |b|)
-      $)) 
+  (|OUTFORM;bless| (LIST 'SUPERSUB |a| " " " " |b|) $)) 
 
 (DEFUN |OUTFORM;scripts;$L$;46| (|a| |l| $)
   (COND
     ((SPADCALL |l| (|getShellEntry| $ 68)) |a|)
     ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 69))
          (|getShellEntry| $ 68))
-     (SPADCALL |a| (SPADCALL |l| (|getShellEntry| $ 70))
-         (|getShellEntry| $ 64)))
-    ('T (CONS (|OUTFORM;eform| 'SUPERSUB $) (CONS |a| |l|))))) 
+     (|OUTFORM;sub;3$;42| |a| (SPADCALL |l| (|getShellEntry| $ 70)) $))
+    ('T (CONS 'SUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
          ((ODDP (SPADCALL |l| (|getShellEntry| $ 73)))
           (LETT |l|
-                (SPADCALL |l| (LIST (SPADCALL (|getShellEntry| $ 13)))
+                (SPADCALL |l| (LIST (|OUTFORM;empty;$;73| $))
                     (|getShellEntry| $ 56))
                 |OUTFORM;supersub;$L$;47|)))
-       (EXIT (CONS (|OUTFORM;eform| 'ALTSUPERSUB $) (CONS |a| |l|))))) 
+       (EXIT (CONS 'ALTSUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;hconcat;3$;48| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'CONCAT $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'CONCAT |a| |b|) $)) 
 
-(DEFUN |OUTFORM;hconcat;L$;49| (|l| $)
-  (CONS (|OUTFORM;eform| 'CONCAT $) |l|)) 
+(DEFUN |OUTFORM;hconcat;L$;49| (|l| $) (CONS 'CONCAT |l|)) 
 
 (DEFUN |OUTFORM;vconcat;3$;50| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'VCONCAT $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'VCONCAT |a| |b|) $)) 
 
-(DEFUN |OUTFORM;vconcat;L$;51| (|l| $)
-  (CONS (|OUTFORM;eform| 'VCONCAT $) |l|)) 
+(DEFUN |OUTFORM;vconcat;L$;51| (|l| $) (CONS 'VCONCAT |l|)) 
 
 (DEFUN |OUTFORM;~=;3$;52| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "~=" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "~=" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;<;3$;53| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "<" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "<" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;>;3$;54| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| ">" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST ">" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;<=;3$;55| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "<=" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "<=" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;>=;3$;56| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| ">=" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST ">=" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;+;3$;57| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "+" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "+" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;-;3$;58| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "-" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "-" |a| |b|) $)) 
 
-(DEFUN |OUTFORM;-;2$;59| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "-" $) |a|) $)) 
+(DEFUN |OUTFORM;-;2$;59| (|a| $) (|OUTFORM;bless| (LIST "-" |a|) $)) 
 
 (DEFUN |OUTFORM;*;3$;60| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "*" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "*" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;/;3$;61| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "/" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "/" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;**;3$;62| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "**" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "**" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;div;3$;63| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "div" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "div" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;rem;3$;64| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "rem" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "rem" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;quo;3$;65| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "quo" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "quo" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;exquo;3$;66| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "exquo" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "exquo" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;and;3$;67| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "and" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "and" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;or;3$;68| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "or" $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST "or" |a| |b|) $)) 
 
 (DEFUN |OUTFORM;not;2$;69| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;sform| "not" $) |a|) $)) 
+  (|OUTFORM;bless| (LIST "not" |a|) $)) 
 
 (DEFUN |OUTFORM;SEGMENT;3$;70| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'SEGMENT $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'SEGMENT |a| |b|) $)) 
 
 (DEFUN |OUTFORM;SEGMENT;2$;71| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'SEGMENT $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'SEGMENT |a|) $)) 
 
 (DEFUN |OUTFORM;binomial;3$;72| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'BINOMIAL $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'BINOMIAL |a| |b|) $)) 
 
-(DEFUN |OUTFORM;empty;$;73| ($)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'NOTHING $)) $)) 
+(DEFUN |OUTFORM;empty;$;73| ($) (|OUTFORM;bless| (LIST 'NOTHING) $)) 
 
 (DEFUN |OUTFORM;infix?;$B;74| (|a| $)
-  (PROG (#0=#:G1499 |e|)
+  (PROG (#0=#:G1544 |e|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |e|
                             (COND
@@ -361,57 +650,53 @@
                       (EXIT (COND ((GET |e| 'INFIXOP) 'T) ('T 'NIL)))))
            #0# (EXIT #0#))))) 
 
-(PUT '|OUTFORM;elt;$L$;75| '|SPADreplace| 'CONS) 
-
 (DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $) (CONS |a| |l|)) 
 
 (DEFUN |OUTFORM;prefix;$L$;76| (|a| |l| $)
   (COND
     ((NULL (SPADCALL |a| (|getShellEntry| $ 98))) (CONS |a| |l|))
     ('T
-     (SPADCALL |a|
-         (SPADCALL (SPADCALL |l| (|getShellEntry| $ 52))
-             (|getShellEntry| $ 62))
-         (|getShellEntry| $ 38))))) 
+     (|OUTFORM;hconcat;3$;48| |a|
+         (|OUTFORM;paren;2$;40| (|OUTFORM;commaSeparate;L$;33| |l| $)
+             $)
+         $)))) 
 
 (DEFUN |OUTFORM;infix;$L$;77| (|a| |l| $)
   (COND
-    ((SPADCALL |l| (|getShellEntry| $ 68))
-     (SPADCALL (|getShellEntry| $ 13)))
+    ((SPADCALL |l| (|getShellEntry| $ 68)) (|OUTFORM;empty;$;73| $))
     ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 69))
          (|getShellEntry| $ 68))
      (SPADCALL |l| (|getShellEntry| $ 70)))
     ((SPADCALL |a| (|getShellEntry| $ 98)) (CONS |a| |l|))
     ('T
-     (SPADCALL
+     (|OUTFORM;hconcat;L$;49|
          (LIST (SPADCALL |l| (|getShellEntry| $ 70)) |a|
-               (SPADCALL |a| (SPADCALL |l| (|getShellEntry| $ 69))
-                   (|getShellEntry| $ 101)))
-         (|getShellEntry| $ 75))))) 
+               (|OUTFORM;infix;$L$;77| |a|
+                   (SPADCALL |l| (|getShellEntry| $ 69)) $))
+         $)))) 
 
 (DEFUN |OUTFORM;infix;4$;78| (|a| |b| |c| $)
   (COND
     ((SPADCALL |a| (|getShellEntry| $ 98))
      (|OUTFORM;bless| (LIST |a| |b| |c|) $))
-    ('T (SPADCALL (LIST |b| |a| |c|) (|getShellEntry| $ 75))))) 
+    ('T (|OUTFORM;hconcat;L$;49| (LIST |b| |a| |c|) $)))) 
 
 (DEFUN |OUTFORM;postfix;3$;79| (|a| |b| $)
-  (SPADCALL |b| |a| (|getShellEntry| $ 38))) 
+  (|OUTFORM;hconcat;3$;48| |b| |a| $)) 
 
 (DEFUN |OUTFORM;string;2$;80| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'STRING $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'STRING |a|) $)) 
 
 (DEFUN |OUTFORM;quote;2$;81| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'QUOTE $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'QUOTE |a|) $)) 
 
 (DEFUN |OUTFORM;overbar;2$;82| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'OVERBAR $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'OVERBAR |a|) $)) 
 
-(DEFUN |OUTFORM;dot;2$;83| (|a| $)
-  (SPADCALL |a| (|OUTFORM;sform| "." $) (|getShellEntry| $ 65))) 
+(DEFUN |OUTFORM;dot;2$;83| (|a| $) (|OUTFORM;super;3$;43| |a| "." $)) 
 
 (DEFUN |OUTFORM;prime;2$;84| (|a| $)
-  (SPADCALL |a| (|OUTFORM;sform| "," $) (|getShellEntry| $ 65))) 
+  (|OUTFORM;super;3$;43| |a| "," $)) 
 
 (DEFUN |OUTFORM;dot;$Nni$;85| (|a| |nn| $)
   (PROG (|s|)
@@ -420,8 +705,7 @@
                  (MAKE-FULL-CVEC |nn|
                      (SPADCALL "." (|getShellEntry| $ 109)))
                  |OUTFORM;dot;$Nni$;85|)
-           (EXIT (SPADCALL |a| (|OUTFORM;sform| |s| $)
-                     (|getShellEntry| $ 65))))))) 
+           (EXIT (|OUTFORM;super;3$;43| |a| |s| $)))))) 
 
 (DEFUN |OUTFORM;prime;$Nni$;86| (|a| |nn| $)
   (PROG (|s|)
@@ -430,45 +714,44 @@
                  (MAKE-FULL-CVEC |nn|
                      (SPADCALL "," (|getShellEntry| $ 109)))
                  |OUTFORM;prime;$Nni$;86|)
-           (EXIT (SPADCALL |a| (|OUTFORM;sform| |s| $)
-                     (|getShellEntry| $ 65))))))) 
+           (EXIT (|OUTFORM;super;3$;43| |a| |s| $)))))) 
 
 (DEFUN |OUTFORM;overlabel;3$;87| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'OVERLABEL $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'OVERLABEL |a| |b|) $)) 
 
 (DEFUN |OUTFORM;box;2$;88| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'BOX $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'BOX |a|) $)) 
 
 (DEFUN |OUTFORM;zag;3$;89| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'ZAG $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'ZAG |a| |b|) $)) 
 
 (DEFUN |OUTFORM;root;2$;90| (|a| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'ROOT $) |a|) $)) 
+  (|OUTFORM;bless| (LIST 'ROOT |a|) $)) 
 
 (DEFUN |OUTFORM;root;3$;91| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'ROOT $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'ROOT |a| |b|) $)) 
 
 (DEFUN |OUTFORM;over;3$;92| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'OVER $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'OVER |a| |b|) $)) 
 
 (DEFUN |OUTFORM;slash;3$;93| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'SLASH $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'SLASH |a| |b|) $)) 
 
 (DEFUN |OUTFORM;assign;3$;94| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'LET $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'LET |a| |b|) $)) 
 
 (DEFUN |OUTFORM;label;3$;95| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'EQUATNUM $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'EQUATNUM |a| |b|) $)) 
 
 (DEFUN |OUTFORM;rarrow;3$;96| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'TAG $) |a| |b|) $)) 
+  (|OUTFORM;bless| (LIST 'TAG |a| |b|) $)) 
 
 (DEFUN |OUTFORM;differentiate;$Nni$;97| (|a| |nn| $)
-  (PROG (#0=#:G1529 |r| |s|)
+  (PROG (#0=#:G1591 |r| |s|)
     (RETURN
       (SEQ (COND
              ((ZEROP |nn|) |a|)
-             ((< |nn| 4) (SPADCALL |a| |nn| (|getShellEntry| $ 111)))
+             ((< |nn| 4) (|OUTFORM;prime;$Nni$;86| |a| |nn| $))
              ('T
               (SEQ (LETT |r|
                          (SPADCALL
@@ -480,55 +763,43 @@
                          |OUTFORM;differentiate;$Nni$;97|)
                    (LETT |s| (SPADCALL |r| (|getShellEntry| $ 125))
                          |OUTFORM;differentiate;$Nni$;97|)
-                   (EXIT (SPADCALL |a|
-                             (SPADCALL (|OUTFORM;sform| |s| $)
-                                 (|getShellEntry| $ 62))
-                             (|getShellEntry| $ 65)))))))))) 
+                   (EXIT (|OUTFORM;super;3$;43| |a|
+                             (|OUTFORM;paren;2$;40| |s| $) $))))))))) 
 
 (DEFUN |OUTFORM;sum;2$;98| (|a| $)
-  (|OUTFORM;bless|
-      (LIST (|OUTFORM;eform| 'SIGMA $)
-            (SPADCALL (|getShellEntry| $ 13)) |a|)
-      $)) 
+  (|OUTFORM;bless| (LIST 'SIGMA (|OUTFORM;empty;$;73| $) |a|) $)) 
 
 (DEFUN |OUTFORM;sum;3$;99| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'SIGMA $) |b| |a|) $)) 
+  (|OUTFORM;bless| (LIST 'SIGMA |b| |a|) $)) 
 
 (DEFUN |OUTFORM;sum;4$;100| (|a| |b| |c| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'SIGMA2 $) |b| |c| |a|) $)) 
+  (|OUTFORM;bless| (LIST 'SIGMA2 |b| |c| |a|) $)) 
 
 (DEFUN |OUTFORM;prod;2$;101| (|a| $)
-  (|OUTFORM;bless|
-      (LIST (|OUTFORM;eform| 'PI $) (SPADCALL (|getShellEntry| $ 13))
-            |a|)
-      $)) 
+  (|OUTFORM;bless| (LIST 'PI (|OUTFORM;empty;$;73| $) |a|) $)) 
 
 (DEFUN |OUTFORM;prod;3$;102| (|a| |b| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'PI $) |b| |a|) $)) 
+  (|OUTFORM;bless| (LIST 'PI |b| |a|) $)) 
 
 (DEFUN |OUTFORM;prod;4$;103| (|a| |b| |c| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'PI2 $) |b| |c| |a|) $)) 
+  (|OUTFORM;bless| (LIST 'PI2 |b| |c| |a|) $)) 
 
 (DEFUN |OUTFORM;int;2$;104| (|a| $)
   (|OUTFORM;bless|
-      (LIST (|OUTFORM;eform| 'INTSIGN $)
-            (SPADCALL (|getShellEntry| $ 13))
-            (SPADCALL (|getShellEntry| $ 13)) |a|)
+      (LIST 'INTSIGN (|OUTFORM;empty;$;73| $) (|OUTFORM;empty;$;73| $)
+            |a|)
       $)) 
 
 (DEFUN |OUTFORM;int;3$;105| (|a| |b| $)
-  (|OUTFORM;bless|
-      (LIST (|OUTFORM;eform| 'INTSIGN $) |b|
-            (SPADCALL (|getShellEntry| $ 13)) |a|)
-      $)) 
+  (|OUTFORM;bless| (LIST 'INTSIGN |b| (|OUTFORM;empty;$;73| $) |a|) $)) 
 
 (DEFUN |OUTFORM;int;4$;106| (|a| |b| |c| $)
-  (|OUTFORM;bless| (LIST (|OUTFORM;eform| 'INTSIGN $) |b| |c| |a|) $)) 
+  (|OUTFORM;bless| (LIST 'INTSIGN |b| |c| |a|) $)) 
 
 (DEFUN |OutputForm| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1543)
+      (PROG (#0=#:G1618)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|OutputForm|)

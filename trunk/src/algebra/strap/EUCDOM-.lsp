@@ -1,6 +1,40 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |EUCDOM-;sizeLess?;2SB;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |EUCDOM-;quo;3S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |EUCDOM-;rem;3S;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |EUCDOM-;exquo;2SU;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |EUCDOM-;gcd;3S;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell| |%Shell|) |%Shell|)
+                |EUCDOM-;unitNormalizeIdealElt|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Shell|)
+                |EUCDOM-;extendedEuclidean;2SR;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Pair|)
+                |EUCDOM-;extendedEuclidean;3SU;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Pair|)
+                |EUCDOM-;principalIdeal;LR;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%Pair|)
+                |EUCDOM-;expressIdealMember;LSU;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%Pair|)
+                |EUCDOM-;multiEuclidean;LSU;11|)) 
+
 (DEFUN |EUCDOM-;sizeLess?;2SB;1| (|x| |y| $)
   (COND
     ((SPADCALL |y| (|getShellEntry| $ 8)) 'NIL)
@@ -198,7 +232,7 @@
                                           (|getShellEntry| $ 30)))))))))))))))) 
 
 (DEFUN |EUCDOM-;principalIdeal;LR;9| (|l| $)
-  (PROG (|uca| |v| |u| #0=#:G1480 |vv| #1=#:G1481)
+  (PROG (|uca| |v| |u| #0=#:G1515 |vv| #1=#:G1516)
     (RETURN
       (SEQ (COND
              ((SPADCALL |l| NIL (|getShellEntry| $ 39))
@@ -258,7 +292,7 @@
                                (QVELT |u| 2)))))))))) 
 
 (DEFUN |EUCDOM-;expressIdealMember;LSU;10| (|l| |z| $)
-  (PROG (#0=#:G1496 #1=#:G1497 |pid| |q| #2=#:G1498 |v| #3=#:G1499)
+  (PROG (#0=#:G1517 #1=#:G1518 |pid| |q| #2=#:G1519 |v| #3=#:G1520)
     (RETURN
       (SEQ (COND
              ((SPADCALL |z| (|spadConstant| $ 27)
@@ -326,9 +360,9 @@
                                      (EXIT (NREVERSE0 #2#))))))))))))))) 
 
 (DEFUN |EUCDOM-;multiEuclidean;LSU;11| (|l| |z| $)
-  (PROG (|n| |l1| |l2| #0=#:G1394 #1=#:G1518 #2=#:G1505 #3=#:G1503
-             #4=#:G1504 #5=#:G1395 #6=#:G1519 #7=#:G1508 #8=#:G1506
-             #9=#:G1507 |u| |v1| |v2|)
+  (PROG (|n| |l1| |l2| #0=#:G1397 #1=#:G1521 #2=#:G1502 #3=#:G1500
+             #4=#:G1501 #5=#:G1398 #6=#:G1522 #7=#:G1505 #8=#:G1503
+             #9=#:G1504 |u| |v1| |v2|)
     (RETURN
       (SEQ (LETT |n| (LENGTH |l|) |EUCDOM-;multiEuclidean;LSU;11|)
            (EXIT (COND

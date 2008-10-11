@@ -1,41 +1,143 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |ILIST;#;$Nni;1|)) 
+
 (PUT '|ILIST;#;$Nni;1| '|SPADreplace| 'LENGTH) 
 
-(DEFUN |ILIST;#;$Nni;1| (|x| $) (LENGTH |x|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ILIST;concat;S2$;2|)) 
 
 (PUT '|ILIST;concat;S2$;2| '|SPADreplace| 'CONS) 
 
-(DEFUN |ILIST;concat;S2$;2| (|s| |x| $) (CONS |s| |x|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |ILIST;eq?;2$B;3|)) 
 
 (PUT '|ILIST;eq?;2$B;3| '|SPADreplace| 'EQ) 
 
-(DEFUN |ILIST;eq?;2$B;3| (|x| |y| $) (EQ |x| |y|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ILIST;first;$S;4|)) 
 
 (PUT '|ILIST;first;$S;4| '|SPADreplace| '|SPADfirst|) 
 
-(DEFUN |ILIST;first;$S;4| (|x| $) (|SPADfirst| |x|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ILIST;elt;$firstS;5|)) 
 
 (PUT '|ILIST;elt;$firstS;5| '|SPADreplace|
      '(XLAM (|x| "first") (|SPADfirst| |x|))) 
 
-(DEFUN |ILIST;elt;$firstS;5| (|x| T0 $) (|SPADfirst| |x|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |ILIST;empty;$;6|)) 
 
 (PUT '|ILIST;empty;$;6| '|SPADreplace| '(XLAM NIL NIL)) 
 
-(DEFUN |ILIST;empty;$;6| ($) NIL) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |ILIST;empty?;$B;7|)) 
 
 (PUT '|ILIST;empty?;$B;7| '|SPADreplace| 'NULL) 
 
-(DEFUN |ILIST;empty?;$B;7| (|x| $) (NULL |x|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ILIST;rest;2$;8|)) 
 
 (PUT '|ILIST;rest;2$;8| '|SPADreplace| 'CDR) 
 
-(DEFUN |ILIST;rest;2$;8| (|x| $) (CDR |x|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ILIST;elt;$rest$;9|)) 
 
 (PUT '|ILIST;elt;$rest$;9| '|SPADreplace|
      '(XLAM (|x| "rest") (CDR |x|))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ILIST;setfirst!;$2S;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ILIST;setelt;$first2S;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ILIST;setrest!;3$;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ILIST;setelt;$rest2$;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |ILIST;construct;L$;14|)) 
+
+(PUT '|ILIST;construct;L$;14| '|SPADreplace| '(XLAM (|l|) |l|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |ILIST;parts;$L;15|)) 
+
+(PUT '|ILIST;parts;$L;15| '|SPADreplace| '(XLAM (|s|) |s|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ILIST;reverse!;2$;16|)) 
+
+(PUT '|ILIST;reverse!;2$;16| '|SPADreplace| 'NREVERSE) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ILIST;reverse;2$;17|)) 
+
+(PUT '|ILIST;reverse;2$;17| '|SPADreplace| 'REVERSE) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |ILIST;minIndex;$I;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |ILIST;rest;$Nni$;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ILIST;copy;2$;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ILIST;coerce;$Of;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |ILIST;=;2$B;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%String|)
+                |ILIST;latex;$S;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |ILIST;member?;S$B;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ILIST;concat!;3$;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ILIST;removeDuplicates!;2$;26|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ILIST;sort!;M2$;27|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ILIST;merge!;M3$;28|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Shell|) |%Thing|)
+                |ILIST;split!;$I$;29|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
+                    |%Thing|)
+                |ILIST;mergeSort|)) 
+
+(DEFUN |ILIST;#;$Nni;1| (|x| $) (LENGTH |x|)) 
+
+(DEFUN |ILIST;concat;S2$;2| (|s| |x| $) (CONS |s| |x|)) 
+
+(DEFUN |ILIST;eq?;2$B;3| (|x| |y| $) (EQ |x| |y|)) 
+
+(DEFUN |ILIST;first;$S;4| (|x| $) (|SPADfirst| |x|)) 
+
+(DEFUN |ILIST;elt;$firstS;5| (|x| T0 $) (|SPADfirst| |x|)) 
+
+(DEFUN |ILIST;empty;$;6| ($) NIL) 
+
+(DEFUN |ILIST;empty?;$B;7| (|x| $) (NULL |x|)) 
+
+(DEFUN |ILIST;rest;2$;8| (|x| $) (CDR |x|)) 
 
 (DEFUN |ILIST;elt;$rest$;9| (|x| T1 $) (CDR |x|)) 
 
@@ -63,19 +165,11 @@
      (|error| "Cannot update an empty list"))
     ('T (QCDR (RPLACD |x| |y|))))) 
 
-(PUT '|ILIST;construct;L$;14| '|SPADreplace| '(XLAM (|l|) |l|)) 
-
 (DEFUN |ILIST;construct;L$;14| (|l| $) |l|) 
-
-(PUT '|ILIST;parts;$L;15| '|SPADreplace| '(XLAM (|s|) |s|)) 
 
 (DEFUN |ILIST;parts;$L;15| (|s| $) |s|) 
 
-(PUT '|ILIST;reverse!;2$;16| '|SPADreplace| 'NREVERSE) 
-
 (DEFUN |ILIST;reverse!;2$;16| (|x| $) (NREVERSE |x|)) 
-
-(PUT '|ILIST;reverse;2$;17| '|SPADreplace| 'REVERSE) 
 
 (DEFUN |ILIST;reverse;2$;17| (|x| $) (REVERSE |x|)) 
 
@@ -96,8 +190,7 @@
 (DEFUN |ILIST;copy;2$;20| (|x| $)
   (PROG (|i| |y|)
     (RETURN
-      (SEQ (LETT |y| (SPADCALL (|getShellEntry| $ 16))
-                 |ILIST;copy;2$;20|)
+      (SEQ (LETT |y| NIL |ILIST;copy;2$;20|)
            (SEQ (LETT |i| 0 |ILIST;copy;2$;20|) G190
                 (COND
                   ((NULL (SPADCALL (NULL |x|) (|getShellEntry| $ 33)))
@@ -122,15 +215,11 @@
                  |ILIST;coerce;$Of;21|)
            (SEQ G190 (COND ((NULL (NEQ |x| |s|)) (GO G191)))
                 (SEQ (LETT |y|
-                           (CONS (SPADCALL
-                                     (SPADCALL |x|
-                                      (|getShellEntry| $ 13))
+                           (CONS (SPADCALL (|SPADfirst| |x|)
                                      (|getShellEntry| $ 38))
                                  |y|)
                            |ILIST;coerce;$Of;21|)
-                     (EXIT (LETT |x|
-                                 (SPADCALL |x| (|getShellEntry| $ 18))
-                                 |ILIST;coerce;$Of;21|)))
+                     (EXIT (LETT |x| (CDR |x|) |ILIST;coerce;$Of;21|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (LETT |y| (NREVERSE |y|) |ILIST;coerce;$Of;21|)
            (EXIT (COND
@@ -139,28 +228,19 @@
                    ('T
                     (SEQ (LETT |z|
                                (SPADCALL
-                                   (SPADCALL
-                                    (SPADCALL |x|
-                                     (|getShellEntry| $ 13))
+                                   (SPADCALL (|SPADfirst| |x|)
                                     (|getShellEntry| $ 38))
                                    (|getShellEntry| $ 42))
                                |ILIST;coerce;$Of;21|)
                          (SEQ G190
                               (COND
-                                ((NULL (NEQ |s|
-                                        (SPADCALL |x|
-                                         (|getShellEntry| $ 18))))
-                                 (GO G191)))
-                              (SEQ (LETT |x|
-                                    (SPADCALL |x|
-                                     (|getShellEntry| $ 18))
+                                ((NULL (NEQ |s| (CDR |x|))) (GO G191)))
+                              (SEQ (LETT |x| (CDR |x|)
                                     |ILIST;coerce;$Of;21|)
                                    (EXIT
                                     (LETT |z|
                                      (CONS
-                                      (SPADCALL
-                                       (SPADCALL |x|
-                                        (|getShellEntry| $ 13))
+                                      (SPADCALL (|SPADfirst| |x|)
                                        (|getShellEntry| $ 38))
                                       |z|)
                                      |ILIST;coerce;$Of;21|)))
@@ -175,7 +255,7 @@
                                    (|getShellEntry| $ 40))))))))))) 
 
 (DEFUN |ILIST;=;2$B;22| (|x| |y| $)
-  (PROG (#0=#:G1466)
+  (PROG (#0=#:G1469)
     (RETURN
       (SEQ (EXIT (COND
                    ((EQ |x| |y|) 'T)
@@ -231,7 +311,7 @@
            (EXIT (STRCONC |s| " \\right]")))))) 
 
 (DEFUN |ILIST;member?;S$B;24| (|s| |x| $)
-  (PROG (#0=#:G1474)
+  (PROG (#0=#:G1477)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ G190
                            (COND
@@ -260,10 +340,8 @@
               (COND
                 ((NULL |y|) |x|)
                 ('T
-                 (SEQ (PUSH (SPADCALL |y| (|getShellEntry| $ 13)) |x|)
-                      (QRPLACD |x|
-                               (SPADCALL |y| (|getShellEntry| $ 18)))
-                      (EXIT |x|)))))
+                 (SEQ (PUSH (|SPADfirst| |y|) |x|)
+                      (QRPLACD |x| (CDR |y|)) (EXIT |x|)))))
              ('T
               (SEQ (LETT |z| |x| |ILIST;concat!;3$;25|)
                    (SEQ G190
@@ -311,7 +389,7 @@
            (EXIT |l|))))) 
 
 (DEFUN |ILIST;sort!;M2$;27| (|f| |l| $)
-  (|ILIST;mergeSort| |f| |l| (SPADCALL |l| (|getShellEntry| $ 9)) $)) 
+  (|ILIST;mergeSort| |f| |l| (LENGTH |l|) $)) 
 
 (DEFUN |ILIST;merge!;M3$;28| (|f| |p| |q| $)
   (PROG (|r| |t|)
@@ -363,24 +441,24 @@
                    (EXIT |r|)))))))) 
 
 (DEFUN |ILIST;split!;$I$;29| (|p| |n| $)
-  (PROG (#0=#:G1503 |q|)
+  (PROG (#0=#:G1506 |q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))
              ('T
               (SEQ (LETT |p|
-                         (SPADCALL |p|
+                         (|ILIST;rest;$Nni$;19| |p|
                              (PROG1 (LETT #0# (- |n| 1)
                                      |ILIST;split!;$I$;29|)
                                (|check-subtype| (>= #0# 0)
                                    '(|NonNegativeInteger|) #0#))
-                             (|getShellEntry| $ 32))
+                             $)
                          |ILIST;split!;$I$;29|)
                    (LETT |q| (QCDR |p|) |ILIST;split!;$I$;29|)
                    (QRPLACD |p| NIL) (EXIT |q|)))))))) 
 
 (DEFUN |ILIST;mergeSort| (|f| |p| |n| $)
-  (PROG (#0=#:G1507 |l| |q|)
+  (PROG (#0=#:G1510 |l| |q|)
     (RETURN
       (SEQ (COND
              ((EQL |n| 2)
@@ -389,8 +467,7 @@
                      (SPADCALL (SPADCALL |p| (|getShellEntry| $ 18))
                          (|getShellEntry| $ 13))
                      (SPADCALL |p| (|getShellEntry| $ 13)) |f|)
-                 (LETT |p| (SPADCALL |p| (|getShellEntry| $ 28))
-                       |ILIST;mergeSort|)))))
+                 (LETT |p| (NREVERSE |p|) |ILIST;mergeSort|)))))
            (EXIT (COND
                    ((< |n| 3) |p|)
                    ('T
@@ -400,9 +477,7 @@
                                  (|check-subtype| (>= #0# 0)
                                      '(|NonNegativeInteger|) #0#))
                                |ILIST;mergeSort|)
-                         (LETT |q|
-                               (SPADCALL |p| |l|
-                                   (|getShellEntry| $ 59))
+                         (LETT |q| (|ILIST;split!;$I$;29| |p| |l| $)
                                |ILIST;mergeSort|)
                          (LETT |p| (|ILIST;mergeSort| |f| |p| |l| $)
                                |ILIST;mergeSort|)
@@ -410,14 +485,13 @@
                                (|ILIST;mergeSort| |f| |q| (- |n| |l|)
                                    $)
                                |ILIST;mergeSort|)
-                         (EXIT (SPADCALL |f| |p| |q|
-                                   (|getShellEntry| $ 58))))))))))) 
+                         (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
 
-(DEFUN |IndexedList| (&REST #0=#:G1519 &AUX #1=#:G1517)
+(DEFUN |IndexedList| (&REST #0=#:G1522 &AUX #1=#:G1520)
   (DSETQ #1# #0#)
   (PROG ()
     (RETURN
-      (PROG (#2=#:G1518)
+      (PROG (#2=#:G1521)
         (RETURN
           (COND
             ((LETT #2#

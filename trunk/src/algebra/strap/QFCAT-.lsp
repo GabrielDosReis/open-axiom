@@ -1,6 +1,87 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;numerator;2A;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;denominator;2A;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |QFCAT-;init;A;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |QFCAT-;nextItem;AU;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;map;M2A;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;reducedSystem;MM;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
+                |QFCAT-;characteristic;Nni;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;differentiate;AMA;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;convert;AIf;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;convert;AF;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%DoubleFloat|)
+                |QFCAT-;convert;ADf;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |QFCAT-;<;2AB;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |QFCAT-;<;2AB;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |QFCAT-;<;2AB;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;fractionPart;2A;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;coerce;SA;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;retract;AS;17|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |QFCAT-;retractIfCan;AU;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;convert;AP;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |QFCAT-;patternMatch;AP2Pmr;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;convert;AP;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |QFCAT-;patternMatch;AP2Pmr;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |QFCAT-;coerce;FA;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |QFCAT-;retract;AI;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |QFCAT-;retractIfCan;AU;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |QFCAT-;random;A;26|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%Vector| *) |%Shell|) |%Pair|)
+                |QFCAT-;reducedSystem;MVR;27|)) 
+
 (DEFUN |QFCAT-;numerator;2A;1| (|x| $)
   (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8)) (|getShellEntry| $ 9))) 
 

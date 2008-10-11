@@ -1,58 +1,120 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
+                |CHAR;=;2$B;1|)) 
+
 (PUT '|CHAR;=;2$B;1| '|SPADreplace| 'CHAR=) 
 
-(DEFUN |CHAR;=;2$B;1| (|a| |b| $) (CHAR= |a| |b|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
+                |CHAR;<;2$B;2|)) 
 
 (PUT '|CHAR;<;2$B;2| '|SPADreplace| 'CHAR<) 
 
-(DEFUN |CHAR;<;2$B;2| (|a| |b| $) (CHAR< |a| |b|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
+                |CHAR;size;Nni;3|)) 
 
 (PUT '|CHAR;size;Nni;3| '|SPADreplace| '(XLAM NIL 256)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 1) |%Shell|) |%Char|)
+                |CHAR;index;Pi$;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) (|%IntegerSection| 1))
+                |CHAR;lookup;$Pi;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Shell|) |%Char|)
+                |CHAR;char;Nni$;6|)) 
+
+(PUT '|CHAR;char;Nni$;6| '|SPADreplace| 'CODE-CHAR) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) (|%IntegerSection| 0))
+                |CHAR;ord;$Nni;7|)) 
+
+(PUT '|CHAR;ord;$Nni;7| '|SPADreplace| 'CHAR-CODE) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;random;$;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;space;$;9|)) 
+
+(PUT '|CHAR;space;$;9| '|SPADreplace| '(XLAM NIL (CHAR "   " 0))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;quote;$;10|)) 
+
+(PUT '|CHAR;quote;$;10| '|SPADreplace| '(XLAM NIL (CHAR "\" " 0))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;escape;$;11|)) 
+
+(PUT '|CHAR;escape;$;11| '|SPADreplace| '(XLAM NIL (CHAR "_ " 0))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Thing|)
+                |CHAR;coerce;$Of;12|)) 
+
+(PUT '|CHAR;coerce;$Of;12| '|SPADreplace| '(XLAM (|c|) |c|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
+                |CHAR;digit?;$B;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
+                |CHAR;hexDigit?;$B;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
+                |CHAR;upperCase?;$B;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
+                |CHAR;lowerCase?;$B;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
+                |CHAR;alphabetic?;$B;17|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
+                |CHAR;alphanumeric?;$B;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%String|)
+                |CHAR;latex;$S;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Char|)
+                |CHAR;char;S$;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Char|)
+                |CHAR;upperCase;2$;21|)) 
+
+(PUT '|CHAR;upperCase;2$;21| '|SPADreplace| 'CHAR-UPCASE) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Char|)
+                |CHAR;lowerCase;2$;22|)) 
+
+(PUT '|CHAR;lowerCase;2$;22| '|SPADreplace| 'CHAR-DOWNCASE) 
+
+(DEFUN |CHAR;=;2$B;1| (|a| |b| $) (CHAR= |a| |b|)) 
+
+(DEFUN |CHAR;<;2$B;2| (|a| |b| $) (CHAR< |a| |b|)) 
 
 (DEFUN |CHAR;size;Nni;3| ($) 256) 
 
 (DEFUN |CHAR;index;Pi$;4| (|n| $)
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1401)
     (RETURN
-      (SPADCALL
+      (CODE-CHAR
           (PROG1 (LETT #0# (- |n| 1) |CHAR;index;Pi$;4|)
-            (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#))
-          (|getShellEntry| $ 11))))) 
+            (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))))) 
 
 (DEFUN |CHAR;lookup;$Pi;5| (|c| $)
-  (PROG (#0=#:G1400)
+  (PROG (#0=#:G1403)
     (RETURN
-      (PROG1 (LETT #0# (+ 1 (SPADCALL |c| (|getShellEntry| $ 14)))
-                   |CHAR;lookup;$Pi;5|)
+      (PROG1 (LETT #0# (+ 1 (CHAR-CODE |c|)) |CHAR;lookup;$Pi;5|)
         (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))) 
-
-(PUT '|CHAR;char;Nni$;6| '|SPADreplace| 'CODE-CHAR) 
 
 (DEFUN |CHAR;char;Nni$;6| (|n| $) (CODE-CHAR |n|)) 
 
-(PUT '|CHAR;ord;$Nni;7| '|SPADreplace| 'CHAR-CODE) 
-
 (DEFUN |CHAR;ord;$Nni;7| (|c| $) (CHAR-CODE |c|)) 
 
-(DEFUN |CHAR;random;$;8| ($)
-  (SPADCALL (RANDOM (SPADCALL (|getShellEntry| $ 10)))
-      (|getShellEntry| $ 11))) 
-
-(PUT '|CHAR;space;$;9| '|SPADreplace| '(XLAM NIL (CHAR "   " 0))) 
+(DEFUN |CHAR;random;$;8| ($) (CODE-CHAR (RANDOM 256))) 
 
 (DEFUN |CHAR;space;$;9| ($) (CHAR "   " 0)) 
 
-(PUT '|CHAR;quote;$;10| '|SPADreplace| '(XLAM NIL (CHAR "\" " 0))) 
-
 (DEFUN |CHAR;quote;$;10| ($) (CHAR "\" " 0)) 
 
-(PUT '|CHAR;escape;$;11| '|SPADreplace| '(XLAM NIL (CHAR "_ " 0))) 
-
 (DEFUN |CHAR;escape;$;11| ($) (CHAR "_ " 0)) 
-
-(PUT '|CHAR;coerce;$Of;12| '|SPADreplace| '(XLAM (|c|) |c|)) 
 
 (DEFUN |CHAR;coerce;$Of;12| (|c| $) |c|) 
 
@@ -84,18 +146,14 @@
          (|getShellEntry| $ 41)))
     ('T (|userError| "String is not a single character")))) 
 
-(PUT '|CHAR;upperCase;2$;21| '|SPADreplace| 'CHAR-UPCASE) 
-
 (DEFUN |CHAR;upperCase;2$;21| (|c| $) (CHAR-UPCASE |c|)) 
-
-(PUT '|CHAR;lowerCase;2$;22| '|SPADreplace| 'CHAR-DOWNCASE) 
 
 (DEFUN |CHAR;lowerCase;2$;22| (|c| $) (CHAR-DOWNCASE |c|)) 
 
 (DEFUN |Character| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1421)
+      (PROG (#0=#:G1424)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Character|)

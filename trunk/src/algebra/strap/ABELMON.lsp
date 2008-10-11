@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |AbelianMonoid;AL| 'NIL) 
 
-(DEFUN |AbelianMonoid| ()
-  (LET (#:G1397)
-    (COND
-      (|AbelianMonoid;AL|)
-      (T (SETQ |AbelianMonoid;AL| (|AbelianMonoid;|)))))) 
-
 (DEFUN |AbelianMonoid;| ()
-  (PROG (#0=#:G1395)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|AbelianSemiGroup|)
@@ -24,6 +18,12 @@
                                NIL))
                    |AbelianMonoid|)
         (SETELT #0# 0 '(|AbelianMonoid|)))))) 
+
+(DEFUN |AbelianMonoid| ()
+  (LET ()
+    (COND
+      (|AbelianMonoid;AL|)
+      (T (SETQ |AbelianMonoid;AL| (|AbelianMonoid;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|AbelianMonoid| '|isCategory| T

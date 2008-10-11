@@ -1,6 +1,179 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |UPOLYC-;variables;SL;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|)
+                    (|%IntegerSection| 0))
+                |UPOLYC-;degree;SSaosNni;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|)
+                    (|%IntegerSection| 0))
+                |UPOLYC-;totalDegree;SLNni;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
+                |UPOLYC-;degree;SLL;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%List| |%Shell|) |%Thing|)
+                |UPOLYC-;eval;SLLS;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |UPOLYC-;eval;SSaos2S;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%List| |%Shell|) |%Thing|)
+                |UPOLYC-;eval;SLLS;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |UPOLYC-;eval;SSaosRS;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |UPOLYC-;eval;SLS;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;mainVariable;SU;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|)
+                    (|%IntegerSection| 0))
+                |UPOLYC-;minimumDegree;SSaosNni;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
+                |UPOLYC-;minimumDegree;SLL;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%Thing| |%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |UPOLYC-;monomial;SSaosNniS;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;coerce;SaosS;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;makeSUP;SSup;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;unmakeSUP;SupS;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Pair|)
+                |UPOLYC-;karatsubaDivide;SNniR;17|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |UPOLYC-;shiftRight;SNniS;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |UPOLYC-;shiftLeft;SNniS;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;solveLinearPolynomialEquation;LSupU;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;factorPolynomial;SupF;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;factorSquareFreePolynomial;SupF;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;factor;SF;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    (|%Vector| *))
+                |UPOLYC-;vectorise;SNniV;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;retract;SR;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;retractIfCan;SU;26|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |UPOLYC-;init;S;27|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;nextItemInner|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;nextItem;SU;29|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;content;SSaosS;30|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;primeFactor|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;separate;2SR;32|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |UPOLYC-;differentiate;SM2S;33|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Thing| |%Shell|)
+                    |%Thing|)
+                |UPOLYC-;ncdiff|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |UPOLYC-;differentiate;SM2S;35|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;differentiate;SMS;36|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;differentiate;2S;37|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;differentiate;SSaosS;38|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;elt;3F;39|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;pseudoQuotient;3S;40|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Shell|)
+                |UPOLYC-;pseudoDivide;2SR;41|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;composite;FSU;42|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;composite;2SU;43|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;elt;S2F;44|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|)
+                    (|%IntegerSection| 0))
+                |UPOLYC-;order;2SNni;45|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;squareFree;SF;46|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;squareFreePart;2S;47|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;gcdPolynomial;3Sup;48|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;squareFreePolynomial;SupF;49|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;elt;F2R;50|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |UPOLYC-;euclideanSize;SNni;51|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |UPOLYC-;divide;2SR;52|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |UPOLYC-;integrate;2S;53|)) 
+
 (DEFUN |UPOLYC-;variables;SL;1| (|p| $)
   (COND
     ((OR (SPADCALL |p| (|getShellEntry| $ 9))
@@ -135,7 +308,7 @@
   (SPADCALL |pp| (|getShellEntry| $ 87))) 
 
 (DEFUN |UPOLYC-;factor;SF;23| (|p| $)
-  (PROG (|ansR| #0=#:G1518 |w| #1=#:G1519)
+  (PROG (|ansR| #0=#:G1732 |w| #1=#:G1733)
     (RETURN
       (SEQ (COND
              ((ZEROP (SPADCALL |p| (|getShellEntry| $ 11)))
@@ -187,7 +360,7 @@
                   (|getShellEntry| $ 106)))))))) 
 
 (DEFUN |UPOLYC-;vectorise;SNniV;24| (|p| |n| $)
-  (PROG (|v| |m| |i| #0=#:G1524 #1=#:G1520)
+  (PROG (|v| |m| |i| #0=#:G1734 #1=#:G1521)
     (RETURN
       (SEQ (LETT |m|
                  (SPADCALL

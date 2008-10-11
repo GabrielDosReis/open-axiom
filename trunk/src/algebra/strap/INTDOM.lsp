@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |IntegralDomain;AL| 'NIL) 
 
-(DEFUN |IntegralDomain| ()
-  (LET (#:G1402)
-    (COND
-      (|IntegralDomain;AL|)
-      (T (SETQ |IntegralDomain;AL| (|IntegralDomain;|)))))) 
-
 (DEFUN |IntegralDomain;| ()
-  (PROG (#0=#:G1400)
+  (PROG (#0=#:G1403)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|CommutativeRing|) (|Algebra| '$)
@@ -30,6 +24,12 @@
                                NIL '((|Boolean|)) NIL))
                    |IntegralDomain|)
         (SETELT #0# 0 '(|IntegralDomain|)))))) 
+
+(DEFUN |IntegralDomain| ()
+  (LET ()
+    (COND
+      (|IntegralDomain;AL|)
+      (T (SETQ |IntegralDomain;AL| (|IntegralDomain;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|IntegralDomain| '|isCategory| T

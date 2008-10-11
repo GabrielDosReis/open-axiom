@@ -11,11 +11,27 @@
                                          |$CategoryFrame|)))
                     |$CategoryFrame|))) 
 
+(DECLAIM (FTYPE (FUNCTION
+                    ((|%IntegerSection| 0) (|%IntegerSection| 0)
+                     |%Shell|)
+                    (|%IntegerSection| 0))
+                |NNI;sup;3$;1|)) 
+
 (PUT '|NNI;sup;3$;1| '|SPADreplace| 'MAX) 
 
-(DEFUN |NNI;sup;3$;1| (|x| |y| $) (MAX |x| |y|)) 
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Integer| |%Shell|)
+                    (|%IntegerSection| 0))
+                |NNI;shift;$I$;2|)) 
 
 (PUT '|NNI;shift;$I$;2| '|SPADreplace| 'ASH) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    ((|%IntegerSection| 0) (|%IntegerSection| 0)
+                     |%Shell|)
+                    |%Pair|)
+                |NNI;subtractIfCan;2$U;3|)) 
+
+(DEFUN |NNI;sup;3$;1| (|x| |y| $) (MAX |x| |y|)) 
 
 (DEFUN |NNI;shift;$I$;2| (|x| |n| $) (ASH |x| |n|)) 
 
@@ -30,7 +46,7 @@
 (DEFUN |NonNegativeInteger| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1406)
+      (PROG (#0=#:G1409)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|NonNegativeInteger|)

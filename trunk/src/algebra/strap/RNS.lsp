@@ -3,19 +3,13 @@
 
 (DEFPARAMETER |RealNumberSystem;AL| 'NIL) 
 
-(DEFUN |RealNumberSystem| ()
-  (LET (#:G1405)
-    (COND
-      (|RealNumberSystem;AL|)
-      (T (SETQ |RealNumberSystem;AL| (|RealNumberSystem;|)))))) 
-
 (DEFUN |RealNumberSystem;| ()
-  (PROG (#0=#:G1403)
+  (PROG (#0=#:G1406)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
-                       (PAIR '(#1=#:G1399 #2=#:G1400 #3=#:G1401
-                                  #4=#:G1402)
+                       (PAIR '(#1=#:G1402 #2=#:G1403 #3=#:G1404
+                                  #4=#:G1405)
                              (LIST '(|Integer|)
                                    '(|Fraction| (|Integer|))
                                    '(|Pattern| (|Float|)) '(|Float|)))
@@ -38,6 +32,12 @@
                                    NIL '((|Integer|)) NIL)))
                    |RealNumberSystem|)
         (SETELT #0# 0 '(|RealNumberSystem|)))))) 
+
+(DEFUN |RealNumberSystem| ()
+  (LET ()
+    (COND
+      (|RealNumberSystem;AL|)
+      (T (SETQ |RealNumberSystem;AL| (|RealNumberSystem;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|RealNumberSystem| '|isCategory| T

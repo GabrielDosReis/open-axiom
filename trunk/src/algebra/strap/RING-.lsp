@@ -1,6 +1,9 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Thing|)
+                |RING-;coerce;IS;1|)) 
+
 (DEFUN |RING-;coerce;IS;1| (|n| $)
   (SPADCALL |n| (|spadConstant| $ 7) (|getShellEntry| $ 9))) 
 

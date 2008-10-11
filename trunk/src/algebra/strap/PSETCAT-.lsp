@@ -1,6 +1,84 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |PSETCAT-;elements|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%List|)
+                |PSETCAT-;variables1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%List|)
+                |PSETCAT-;variables2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |PSETCAT-;variables;SL;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |PSETCAT-;mainVariables;SL;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;mainVariable?;VarSetSB;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |PSETCAT-;collectUnder;SVarSetS;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |PSETCAT-;collectUpper;SVarSetS;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |PSETCAT-;collect;SVarSetS;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Shell|)
+                |PSETCAT-;sort;SVarSetR;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;=;2SB;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;localInf?|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Boolean|)
+                |PSETCAT-;localTriangular?|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;triangular?;SB;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;trivialIdeal?;SB;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;roughUnitIdeal?;SB;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;relativelyPrimeLeadingMonomials?|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;roughBase?;SB;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;roughSubIdeal?;2SB;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |PSETCAT-;roughEqualIdeals?;2SB;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |PSETCAT-;exactQuo|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |PSETCAT-;headRemainder;PSR;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Pair| |%Shell|) |%Pair|)
+                |PSETCAT-;makeIrreducible!|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Shell|)
+                |PSETCAT-;remainder;PSR;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%List|)
+                |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%List|)
+                |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)) 
+
 (DEFUN |PSETCAT-;elements| (|ps| $)
   (PROG (|lp|)
     (RETURN
@@ -8,7 +86,7 @@
             |PSETCAT-;elements|)))) 
 
 (DEFUN |PSETCAT-;variables1| (|lp| $)
-  (PROG (#0=#:G1437 |p| #1=#:G1438 |lvars|)
+  (PROG (#0=#:G1558 |p| #1=#:G1559 |lvars|)
     (RETURN
       (SEQ (LETT |lvars|
                  (PROGN
@@ -41,7 +119,7 @@
   (SPADCALL |#2| |#1| (|getShellEntry| $ 16))) 
 
 (DEFUN |PSETCAT-;variables2| (|lp| $)
-  (PROG (#0=#:G1442 |p| #1=#:G1443 |lvars|)
+  (PROG (#0=#:G1560 |p| #1=#:G1561 |lvars|)
     (RETURN
       (SEQ (LETT |lvars|
                  (PROGN
@@ -220,7 +298,7 @@
                          (SPADCALL |ws| (|getShellEntry| $ 31)))))))) 
 
 (DEFUN |PSETCAT-;=;2SB;11| (|ps1| |ps2| $)
-  (PROG (#0=#:G1477 #1=#:G1478 #2=#:G1479 |p| #3=#:G1480)
+  (PROG (#0=#:G1562 #1=#:G1563 #2=#:G1564 |p| #3=#:G1565)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
@@ -399,7 +477,7 @@
     ('T 'NIL))) 
 
 (DEFUN |PSETCAT-;exactQuo| (|r| |s| $)
-  (PROG (#0=#:G1512)
+  (PROG (#0=#:G1507)
     (RETURN
       (COND
         ((|HasCategory| (|getShellEntry| $ 7) '(|EuclideanDomain|))

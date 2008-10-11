@@ -1,6 +1,18 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |SETAGG-;symmetricDifference;3A;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |SETAGG-;union;ASA;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |SETAGG-;union;S2A;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |SETAGG-;difference;ASA;4|)) 
+
 (DEFUN |SETAGG-;symmetricDifference;3A;1| (|x| |y| $)
   (SPADCALL (SPADCALL |x| |y| (|getShellEntry| $ 8))
       (SPADCALL |y| |x| (|getShellEntry| $ 8)) (|getShellEntry| $ 9))) 

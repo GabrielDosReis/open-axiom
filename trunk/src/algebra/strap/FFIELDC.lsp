@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |FiniteFieldCategory;AL| 'NIL) 
 
-(DEFUN |FiniteFieldCategory| ()
-  (LET (#:G1404)
-    (COND
-      (|FiniteFieldCategory;AL|)
-      (T (SETQ |FiniteFieldCategory;AL| (|FiniteFieldCategory;|)))))) 
-
 (DEFUN |FiniteFieldCategory;| ()
-  (PROG (#0=#:G1402)
+  (PROG (#0=#:G1405)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|FieldOfPrimeCharacteristic|) (|Finite|)
@@ -56,6 +50,12 @@
                                NIL))
                    |FiniteFieldCategory|)
         (SETELT #0# 0 '(|FiniteFieldCategory|)))))) 
+
+(DEFUN |FiniteFieldCategory| ()
+  (LET ()
+    (COND
+      (|FiniteFieldCategory;AL|)
+      (T (SETQ |FiniteFieldCategory;AL| (|FiniteFieldCategory;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|FiniteFieldCategory| '|isCategory| T

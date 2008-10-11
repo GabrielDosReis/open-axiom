@@ -1,12 +1,18 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Short|)
+                |SETCAT-;hash;SSi;1|)) 
+
 (PUT '|SETCAT-;hash;SSi;1| '|SPADreplace| '(XLAM (|s|) 0)) 
 
-(DEFUN |SETCAT-;hash;SSi;1| (|s| $) 0) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%String|)
+                |SETCAT-;latex;SS;2|)) 
 
 (PUT '|SETCAT-;latex;SS;2| '|SPADreplace|
      '(XLAM (|s|) "\\mbox{\\bf Unimplemented}")) 
+
+(DEFUN |SETCAT-;hash;SSi;1| (|s| $) 0) 
 
 (DEFUN |SETCAT-;latex;SS;2| (|s| $) "\\mbox{\\bf Unimplemented}") 
 

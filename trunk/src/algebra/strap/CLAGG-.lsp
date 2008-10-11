@@ -1,11 +1,51 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |CLAGG-;#;ANni;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|)
+                    (|%IntegerSection| 0))
+                |CLAGG-;count;MANni;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |CLAGG-;any?;MAB;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |CLAGG-;every?;MAB;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |CLAGG-;find;MAU;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |CLAGG-;reduce;MAS;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |CLAGG-;reduce;MA2S;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |CLAGG-;remove;M2A;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |CLAGG-;select;M2A;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |CLAGG-;remove;S2A;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%Thing| |%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |CLAGG-;reduce;MA3S;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |CLAGG-;removeDuplicates;2A;12|)) 
+
 (DEFUN |CLAGG-;#;ANni;1| (|c| $)
   (LENGTH (SPADCALL |c| (|getShellEntry| $ 9)))) 
 
 (DEFUN |CLAGG-;count;MANni;2| (|f| |c| $)
-  (PROG (|x| #0=#:G1403 #1=#:G1400 #2=#:G1398 #3=#:G1399)
+  (PROG (|x| #0=#:G1429 #1=#:G1403 #2=#:G1401 #3=#:G1402)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;count;MANni;2|)
@@ -38,7 +78,7 @@
              (COND (#3# #2#) ('T 0))))))) 
 
 (DEFUN |CLAGG-;any?;MAB;3| (|f| |c| $)
-  (PROG (|x| #0=#:G1408 #1=#:G1406 #2=#:G1404 #3=#:G1405)
+  (PROG (|x| #0=#:G1430 #1=#:G1408 #2=#:G1406 #3=#:G1407)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;any?;MAB;3|)
@@ -68,7 +108,7 @@
              (COND (#3# #2#) ('T 'NIL))))))) 
 
 (DEFUN |CLAGG-;every?;MAB;4| (|f| |c| $)
-  (PROG (|x| #0=#:G1413 #1=#:G1411 #2=#:G1409 #3=#:G1410)
+  (PROG (|x| #0=#:G1431 #1=#:G1412 #2=#:G1410 #3=#:G1411)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;every?;MAB;4|)

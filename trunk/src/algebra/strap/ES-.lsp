@@ -1,6 +1,146 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|) |ES-;box;2S;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ES-;paren;2S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |ES-;belong?;BoB;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|) |ES-;listk|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |ES-;tower;SL;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|) |ES-;allk|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |ES-;operators;SL;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |ES-;height;SNni;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |ES-;freeOf?;SSB;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ES-;distribute;2S;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|) |ES-;box;LS;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |ES-;paren;LS;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |ES-;freeOf?;2SB;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ES-;kernel;Bo2S;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ES-;elt;Bo2S;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ES-;elt;Bo3S;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%Thing| |%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ES-;elt;Bo4S;17|)) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%Thing| |%Thing| |%Thing| |%Thing| |%Thing|
+                        |%Shell|)
+                    |%Thing|)
+                |ES-;elt;Bo5S;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ES-;eval;SSMS;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ES-;eval;SBoMS;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ES-;eval;SSMS;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |ES-;eval;SBoMS;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ES-;subst;SES;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%List| |%Shell|) |%Thing|)
+                |ES-;eval;SLLS;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%List| |%Shell|) |%Thing|)
+                |ES-;eval;SLLS;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%List| |%Shell|) |%Thing|)
+                |ES-;eval;SLLS;26|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ES-;map;MKS;27|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ES-;operator;2Bo;28|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |ES-;mainKernel;SU;29|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ES-;allKernels|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |ES-;kernel;BoLS;31|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |ES-;okkernel|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |ES-;elt;BoLS;33|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |ES-;retract;SK;34|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |ES-;retractIfCan;SU;35|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |ES-;is?;SSB;36|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |ES-;is?;SBoB;37|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%Thing|)
+                |ES-;unwrap|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |ES-;distribute;3S;39|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |ES-;eval;SLS;40|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |ES-;subst;SLS;41|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Pair|) |ES-;mkKerLists|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |ES-;even?;SB;43|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |ES-;odd?;SB;44|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |ES-;intpred?|)) 
+
 (DEFUN |ES-;box;2S;1| (|x| $)
   (SPADCALL (LIST |x|) (|getShellEntry| $ 16))) 
 
@@ -19,7 +159,7 @@
   (SPADCALL (|ES-;listk| |f| $) (|getShellEntry| $ 27))) 
 
 (DEFUN |ES-;allk| (|l| $)
-  (PROG (#0=#:G1421 |f| #1=#:G1422)
+  (PROG (#0=#:G1578 |f| #1=#:G1579)
     (RETURN
       (SEQ (SPADCALL (ELT $ 32)
                (PROGN
@@ -42,7 +182,7 @@
                (|getShellEntry| $ 35)))))) 
 
 (DEFUN |ES-;operators;SL;7| (|f| $)
-  (PROG (#0=#:G1425 |k| #1=#:G1426)
+  (PROG (#0=#:G1580 |k| #1=#:G1581)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |ES-;operators;SL;7|)
@@ -65,7 +205,7 @@
                   G191 (EXIT (NREVERSE0 #0#)))))))) 
 
 (DEFUN |ES-;height;SNni;8| (|f| $)
-  (PROG (#0=#:G1431 |k| #1=#:G1432)
+  (PROG (#0=#:G1582 |k| #1=#:G1583)
     (RETURN
       (SEQ (SPADCALL (ELT $ 42)
                (PROGN
@@ -91,7 +231,7 @@
                0 (|getShellEntry| $ 45)))))) 
 
 (DEFUN |ES-;freeOf?;SSB;9| (|x| |s| $)
-  (PROG (#0=#:G1436 |k| #1=#:G1437)
+  (PROG (#0=#:G1584 |k| #1=#:G1585)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL |s|
@@ -120,7 +260,7 @@
                (|getShellEntry| $ 50)))))) 
 
 (DEFUN |ES-;distribute;2S;10| (|x| $)
-  (PROG (#0=#:G1440 |k| #1=#:G1441)
+  (PROG (#0=#:G1586 |k| #1=#:G1587)
     (RETURN
       (SEQ (|ES-;unwrap|
                (PROGN
@@ -202,7 +342,7 @@
   (SPADCALL |x| (LIST |e|) (|getShellEntry| $ 80))) 
 
 (DEFUN |ES-;eval;SLLS;24| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1461 |f| #1=#:G1462)
+  (PROG (#0=#:G1588 |f| #1=#:G1589)
     (RETURN
       (SEQ (SPADCALL |x| |ls|
                (PROGN
@@ -230,7 +370,7 @@
       (|getShellEntry| $$ 0))) 
 
 (DEFUN |ES-;eval;SLLS;25| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1465 |f| #1=#:G1466)
+  (PROG (#0=#:G1590 |f| #1=#:G1591)
     (RETURN
       (SEQ (SPADCALL |x| |ls|
                (PROGN
@@ -258,7 +398,7 @@
       (|getShellEntry| $$ 0))) 
 
 (DEFUN |ES-;eval;SLLS;26| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1470 |s| #1=#:G1471)
+  (PROG (#0=#:G1592 |s| #1=#:G1593)
     (RETURN
       (SEQ (SPADCALL |x|
                (PROGN
@@ -282,7 +422,7 @@
                |lf| (|getShellEntry| $ 68)))))) 
 
 (DEFUN |ES-;map;MKS;27| (|fn| |k| $)
-  (PROG (#0=#:G1486 |x| #1=#:G1487 |l|)
+  (PROG (#0=#:G1594 |x| #1=#:G1595 |l|)
     (RETURN
       (SEQ (COND
              ((SPADCALL
@@ -327,7 +467,7 @@
     ('T (|error| "Unknown operator")))) 
 
 (DEFUN |ES-;mainKernel;SU;29| (|x| $)
-  (PROG (|l| |kk| #0=#:G1503 |n| |k|)
+  (PROG (|l| |kk| #0=#:G1596 |n| |k|)
     (RETURN
       (SEQ (COND
              ((NULL (LETT |l| (SPADCALL |x| (|getShellEntry| $ 39))
@@ -367,7 +507,7 @@
                    (EXIT (CONS 0 |k|))))))))) 
 
 (DEFUN |ES-;allKernels| (|f| $)
-  (PROG (|l| |k| #0=#:G1516 |u| |s0| |n| |arg| |t| |s|)
+  (PROG (|l| |k| #0=#:G1597 |u| |s0| |n| |arg| |t| |s|)
     (RETURN
       (SEQ (LETT |s|
                  (SPADCALL
@@ -441,7 +581,7 @@
     ('T (|ES-;okkernel| |op| |args| $)))) 
 
 (DEFUN |ES-;okkernel| (|op| |l| $)
-  (PROG (#0=#:G1523 |f| #1=#:G1524)
+  (PROG (#0=#:G1598 |f| #1=#:G1599)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL |op| |l|
@@ -472,7 +612,7 @@
                (|getShellEntry| $ 88)))))) 
 
 (DEFUN |ES-;elt;BoLS;33| (|op| |args| $)
-  (PROG (|u| #0=#:G1540 |v|)
+  (PROG (|u| #0=#:G1521 |v|)
     (RETURN
       (SEQ (EXIT (COND
                    ((NULL (SPADCALL |op| (|getShellEntry| $ 99)))
@@ -552,7 +692,7 @@
                     (SPADCALL (QCDR |k|) |op| (|getShellEntry| $ 52))))))))) 
 
 (DEFUN |ES-;unwrap| (|l| |x| $)
-  (PROG (|k| #0=#:G1567)
+  (PROG (|k| #0=#:G1600)
     (RETURN
       (SEQ (SEQ (LETT |k| NIL |ES-;unwrap|)
                 (LETT #0# (NREVERSE |l|) |ES-;unwrap|) G190
@@ -572,7 +712,7 @@
            (EXIT |x|))))) 
 
 (DEFUN |ES-;distribute;3S;39| (|x| |y| $)
-  (PROG (|ky| #0=#:G1572 |k| #1=#:G1573)
+  (PROG (|ky| #0=#:G1601 |k| #1=#:G1602)
     (RETURN
       (SEQ (LETT |ky| (SPADCALL |y| (|getShellEntry| $ 57))
                  |ES-;distribute;3S;39|)
@@ -624,7 +764,7 @@
                      (|getShellEntry| $ 122))))))) 
 
 (DEFUN |ES-;mkKerLists| (|leq| $)
-  (PROG (|eq| #0=#:G1590 |k| |lk| |lv|)
+  (PROG (|eq| #0=#:G1603 |k| |lk| |lv|)
     (RETURN
       (SEQ (LETT |lk| NIL |ES-;mkKerLists|)
            (LETT |lv| NIL |ES-;mkKerLists|)

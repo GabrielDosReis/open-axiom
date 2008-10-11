@@ -3,12 +3,8 @@
 
 (DEFPARAMETER |GcdDomain;AL| 'NIL) 
 
-(DEFUN |GcdDomain| ()
-  (LET (#:G1402)
-    (COND (|GcdDomain;AL|) (T (SETQ |GcdDomain;AL| (|GcdDomain;|)))))) 
-
 (DEFUN |GcdDomain;| ()
-  (PROG (#0=#:G1400)
+  (PROG (#0=#:G1403)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|IntegralDomain|)
@@ -28,6 +24,10 @@
                                NIL))
                    |GcdDomain|)
         (SETELT #0# 0 '(|GcdDomain|)))))) 
+
+(DEFUN |GcdDomain| ()
+  (LET ()
+    (COND (|GcdDomain;AL|) (T (SETQ |GcdDomain;AL| (|GcdDomain;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|GcdDomain| '|isCategory| T

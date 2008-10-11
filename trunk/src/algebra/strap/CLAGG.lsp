@@ -5,19 +5,8 @@
 
 (DEFPARAMETER |Collection;AL| 'NIL) 
 
-(DEFUN |Collection| (#0=#:G1395)
-  (LET (#1=#:G1396)
-    (COND
-      ((SETQ #1# (|assoc| (|devaluate| #0#) |Collection;AL|))
-       (CDR #1#))
-      (T (SETQ |Collection;AL|
-               (|cons5| (CONS (|devaluate| #0#)
-                              (SETQ #1# (|Collection;| #0#)))
-                        |Collection;AL|))
-         #1#)))) 
-
 (DEFUN |Collection;| (|t#1|)
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -102,6 +91,17 @@
                                          '((|List| |t#1|)) NIL))
                                 . #1=(|Collection|))))) . #1#)
         (SETELT #0# 0 (LIST '|Collection| (|devaluate| |t#1|))))))) 
+
+(DEFUN |Collection| (#0=#:G1398)
+  (LET (#1=#:G1399)
+    (COND
+      ((SETQ #1# (|assoc| (|devaluate| #0#) |Collection;AL|))
+       (CDR #1#))
+      (T (SETQ |Collection;AL|
+               (|cons5| (CONS (|devaluate| #0#)
+                              (SETQ #1# (|Collection;| #0#)))
+                        |Collection;AL|))
+         #1#)))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|Collection| '|isCategory| T

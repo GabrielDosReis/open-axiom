@@ -1,7 +1,99 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
+                |INS-;characteristic;Nni;1|)) 
+
 (PUT '|INS-;characteristic;Nni;1| '|SPADreplace| '(XLAM NIL 0)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;differentiate;2S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |INS-;even?;SB;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |INS-;positive?;SB;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;copy;2S;5|)) 
+
+(PUT '|INS-;copy;2S;5| '|SPADreplace| '(XLAM (|x|) |x|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |INS-;bit?;2SB;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;mask;2S;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |INS-;rational?;SB;8|)) 
+
+(PUT '|INS-;rational?;SB;8| '|SPADreplace| '(XLAM (|x|) 'T)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |INS-;euclideanSize;SNni;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;convert;SF;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%DoubleFloat|)
+                |INS-;convert;SDf;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;convert;SIf;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Integer|)
+                |INS-;retract;SI;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;convert;SP;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;factor;SF;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;squareFree;SF;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |INS-;prime?;SB;17|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;factorial;2S;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |INS-;binomial;3S;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |INS-;permutation;3S;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |INS-;retractIfCan;SU;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |INS-;init;S;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |INS-;nextItem;SU;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |INS-;patternMatch;SP2Pmr;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |INS-;rational;SF;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |INS-;rationalIfCan;SU;26|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |INS-;symmetricRemainder;3S;27|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |INS-;invmod;3S;28|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |INS-;powmod;4S;29|)) 
 
 (DEFUN |INS-;characteristic;Nni;1| ($) 0) 
 
@@ -13,8 +105,6 @@
 
 (DEFUN |INS-;positive?;SB;4| (|x| $)
   (SPADCALL (|spadConstant| $ 9) |x| (|getShellEntry| $ 15))) 
-
-(PUT '|INS-;copy;2S;5| '|SPADreplace| '(XLAM (|x|) |x|)) 
 
 (DEFUN |INS-;copy;2S;5| (|x| $) |x|) 
 
@@ -28,12 +118,10 @@
   (SPADCALL (SPADCALL (|spadConstant| $ 21) |n| (|getShellEntry| $ 19))
       (|getShellEntry| $ 22))) 
 
-(PUT '|INS-;rational?;SB;8| '|SPADreplace| '(XLAM (|x|) 'T)) 
-
 (DEFUN |INS-;rational?;SB;8| (|x| $) 'T) 
 
 (DEFUN |INS-;euclideanSize;SNni;9| (|x| $)
-  (PROG (#0=#:G1421 #1=#:G1422)
+  (PROG (#0=#:G1424 #1=#:G1425)
     (RETURN
       (COND
         ((SPADCALL |x| (|spadConstant| $ 9) (|getShellEntry| $ 25))
@@ -194,7 +282,7 @@
                    ('T (|error| "inverse does not exist")))))))) 
 
 (DEFUN |INS-;powmod;4S;29| (|x| |n| |p| $)
-  (PROG (|y| #0=#:G1479 |z|)
+  (PROG (|y| #0=#:G1482 |z|)
     (RETURN
       (SEQ (EXIT (SEQ (COND
                         ((SPADCALL |x| (|getShellEntry| $ 80))

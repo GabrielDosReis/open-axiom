@@ -1,19 +1,58 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%List|) |LIST;nil;$;1|)) 
+
 (PUT '|LIST;nil;$;1| '|SPADreplace| '(XLAM NIL NIL)) 
 
-(DEFUN |LIST;nil;$;1| ($) NIL) 
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Boolean|)
+                |LIST;null;$B;2|)) 
 
 (PUT '|LIST;null;$B;2| '|SPADreplace| 'NULL) 
 
-(DEFUN |LIST;null;$B;2| (|l| $) (NULL |l|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
+                |LIST;cons;S2$;3|)) 
 
 (PUT '|LIST;cons;S2$;3| '|SPADreplace| 'CONS) 
 
-(DEFUN |LIST;cons;S2$;3| (|s| |l| $) (CONS |s| |l|)) 
+(DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%List|)
+                |LIST;append;3$;4|)) 
 
 (PUT '|LIST;append;3$;4| '|SPADreplace| 'APPEND) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Void|)
+                |LIST;writeOMList|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%String|)
+                |LIST;OMwrite;$S;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Boolean| |%Shell|) |%String|)
+                |LIST;OMwrite;$BS;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Void|)
+                |LIST;OMwrite;Omd$V;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Boolean| |%Shell|)
+                    |%Void|)
+                |LIST;OMwrite;Omd$BV;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%List|)
+                |LIST;setUnion;3$;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%List|)
+                |LIST;setIntersection;3$;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%List|)
+                |LIST;setDifference;3$;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
+                |LIST;convert;$If;13|)) 
+
+(DEFUN |LIST;nil;$;1| ($) NIL) 
+
+(DEFUN |LIST;null;$B;2| (|l| $) (NULL |l|)) 
+
+(DEFUN |LIST;cons;S2$;3| (|s| |l| $) (CONS |s| |l|)) 
 
 (DEFUN |LIST;append;3$;4| (|l| |t| $) (APPEND |l| |t|)) 
 
@@ -121,7 +160,7 @@
            (EXIT |lu|))))) 
 
 (DEFUN |LIST;convert;$If;13| (|x| $)
-  (PROG (#0=#:G1437 |a| #1=#:G1438)
+  (PROG (#0=#:G1447 |a| #1=#:G1448)
     (RETURN
       (SEQ (SPADCALL
                (CONS (SPADCALL
@@ -148,10 +187,10 @@
                             (GO G190) G191 (EXIT (NREVERSE0 #0#)))))
                (|getShellEntry| $ 44)))))) 
 
-(DEFUN |List| (#0=#:G1446)
+(DEFUN |List| (#0=#:G1449)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1447)
+      (PROG (#1=#:G1450)
         (RETURN
           (COND
             ((LETT #1#

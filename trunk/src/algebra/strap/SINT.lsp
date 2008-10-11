@@ -1,6 +1,247 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Short| |%Shell|) |%Void|)
+                |SINT;writeOMSingleInt|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%String|)
+                |SINT;OMwrite;$S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Boolean| |%Shell|) |%String|)
+                |SINT;OMwrite;$BS;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Short| |%Shell|) |%Void|)
+                |SINT;OMwrite;Omd$V;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Short| |%Boolean| |%Shell|)
+                    |%Void|)
+                |SINT;OMwrite;Omd$BV;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |SINT;reducedSystem;MM;6|)) 
+
+(PUT '|SINT;reducedSystem;MM;6| '|SPADreplace| '(XLAM (|m|) |m|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Thing|)
+                |SINT;coerce;$Of;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Integer|)
+                |SINT;convert;$I;8|)) 
+
+(PUT '|SINT;convert;$I;8| '|SPADreplace| '(XLAM (|x|) |x|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Short| |%Shell|) |%Short|)
+                |SINT;*;I2$;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Short|) |SINT;Zero;$;10|)) 
+
+(PUT '|SINT;Zero;$;10| '|SPADreplace| '(XLAM NIL 0)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Short|) |SINT;One;$;11|)) 
+
+(PUT '|SINT;One;$;11| '|SPADreplace| '(XLAM NIL 1)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Short|) |SINT;base;$;12|)) 
+
+(PUT '|SINT;base;$;12| '|SPADreplace| '(XLAM NIL 2)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Short|) |SINT;max;$;13|)) 
+
+(PUT '|SINT;max;$;13| '|SPADreplace| '(XLAM NIL |$ShortMaximum|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Short|) |SINT;min;$;14|)) 
+
+(PUT '|SINT;min;$;14| '|SPADreplace| '(XLAM NIL |$ShortMinimum|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
+                |SINT;=;2$B;15|)) 
+
+(PUT '|SINT;=;2$B;15| '|SPADreplace| 'EQL) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|) |SINT;~;2$;16|)) 
+
+(PUT '|SINT;~;2$;16| '|SPADreplace| 'LOGNOT) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
+                |SINT;not;2$;17|)) 
+
+(PUT '|SINT;not;2$;17| '|SPADreplace| 'LOGNOT) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;/\\;3$;18|)) 
+
+(PUT '|SINT;/\\;3$;18| '|SPADreplace| 'LOGAND) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;\\/;3$;19|)) 
+
+(PUT '|SINT;\\/;3$;19| '|SPADreplace| 'LOGIOR) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
+                |SINT;Not;2$;20|)) 
+
+(PUT '|SINT;Not;2$;20| '|SPADreplace| 'LOGNOT) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;And;3$;21|)) 
+
+(PUT '|SINT;And;3$;21| '|SPADreplace| 'LOGAND) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;Or;3$;22|)) 
+
+(PUT '|SINT;Or;3$;22| '|SPADreplace| 'LOGIOR) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;xor;3$;23|)) 
+
+(PUT '|SINT;xor;3$;23| '|SPADreplace| 'LOGXOR) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
+                |SINT;<;2$B;24|)) 
+
+(PUT '|SINT;<;2$B;24| '|SPADreplace| 'QSLESSP) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
+                |SINT;inc;2$;25|)) 
+
+(PUT '|SINT;inc;2$;25| '|SPADreplace| 'QSADD1) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
+                |SINT;dec;2$;26|)) 
+
+(PUT '|SINT;dec;2$;26| '|SPADreplace| 'QSSUB1) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|) |SINT;-;2$;27|)) 
+
+(PUT '|SINT;-;2$;27| '|SPADreplace| 'QSMINUS) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;+;3$;28|)) 
+
+(PUT '|SINT;+;3$;28| '|SPADreplace| 'QSPLUS) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;-;3$;29|)) 
+
+(PUT '|SINT;-;3$;29| '|SPADreplace| 'QSDIFFERENCE) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;*;3$;30|)) 
+
+(PUT '|SINT;*;3$;30| '|SPADreplace| 'QSTIMES) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| (|%IntegerSection| 0) |%Shell|)
+                    |%Short|)
+                |SINT;**;$Nni$;31|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;quo;3$;32|)) 
+
+(PUT '|SINT;quo;3$;32| '|SPADreplace| 'QSQUOTIENT) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;rem;3$;33|)) 
+
+(PUT '|SINT;rem;3$;33| '|SPADreplace| 'QSREMAINDER) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Pair|)
+                |SINT;divide;2$R;34|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;gcd;3$;35|)) 
+
+(PUT '|SINT;gcd;3$;35| '|SPADreplace| 'GCD) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
+                |SINT;abs;2$;36|)) 
+
+(PUT '|SINT;abs;2$;36| '|SPADreplace| 'QSABSVAL) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Boolean|)
+                |SINT;odd?;$B;37|)) 
+
+(PUT '|SINT;odd?;$B;37| '|SPADreplace| 'QSODDP) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Boolean|)
+                |SINT;zero?;$B;38|)) 
+
+(PUT '|SINT;zero?;$B;38| '|SPADreplace| 'QSZEROP) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Boolean|)
+                |SINT;one?;$B;39|)) 
+
+(PUT '|SINT;one?;$B;39| '|SPADreplace| '(XLAM (|x|) (EQL |x| 1))) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;max;3$;40|)) 
+
+(PUT '|SINT;max;3$;40| '|SPADreplace| 'QSMAX) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;min;3$;41|)) 
+
+(PUT '|SINT;min;3$;41| '|SPADreplace| 'QSMIN) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
+                |SINT;hash;2$;42|)) 
+
+(PUT '|SINT;hash;2$;42| '|SPADreplace| 'HASHEQ) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
+                |SINT;length;2$;43|)) 
+
+(PUT '|SINT;length;2$;43| '|SPADreplace| 'INTEGER-LENGTH) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;shift;3$;44|)) 
+
+(PUT '|SINT;shift;3$;44| '|SPADreplace| 'QSLEFTSHIFT) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Short| |%Shell|)
+                    |%Short|)
+                |SINT;mulmod;4$;45|)) 
+
+(PUT '|SINT;mulmod;4$;45| '|SPADreplace| 'QSMULTMOD) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Short| |%Shell|)
+                    |%Short|)
+                |SINT;addmod;4$;46|)) 
+
+(PUT '|SINT;addmod;4$;46| '|SPADreplace| 'QSADDMOD) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Short| |%Shell|)
+                    |%Short|)
+                |SINT;submod;4$;47|)) 
+
+(PUT '|SINT;submod;4$;47| '|SPADreplace| 'QSDIFMOD) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Boolean|)
+                |SINT;negative?;$B;48|)) 
+
+(PUT '|SINT;negative?;$B;48| '|SPADreplace| 'QSMINUSP) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%Vector| *) |%Shell|) |%Pair|)
+                |SINT;reducedSystem;MVR;49|)) 
+
+(PUT '|SINT;reducedSystem;MVR;49| '|SPADreplace| 'CONS) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
+                |SINT;positiveRemainder;3$;50|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Short|)
+                |SINT;coerce;I$;51|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Short|) |SINT;random;$;52|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
+                |SINT;random;2$;53|)) 
+
+(PUT '|SINT;random;2$;53| '|SPADreplace| 'RANDOM) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Shell|)
+                |SINT;unitNormal;$R;54|)) 
+
 (DEFUN |SINT;writeOMSingleInt| (|dev| |x| $)
   (SEQ (COND
          ((QSLESSP |x| 0)
@@ -54,175 +295,95 @@
        (EXIT (COND
                (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 19))))))) 
 
-(PUT '|SINT;reducedSystem;MM;6| '|SPADreplace| '(XLAM (|m|) |m|)) 
-
 (DEFUN |SINT;reducedSystem;MM;6| (|m| $) |m|) 
 
 (DEFUN |SINT;coerce;$Of;7| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 30))) 
-
-(PUT '|SINT;convert;$I;8| '|SPADreplace| '(XLAM (|x|) |x|)) 
 
 (DEFUN |SINT;convert;$I;8| (|x| $) |x|) 
 
 (DEFUN |SINT;*;I2$;9| (|i| |y| $)
   (QSTIMES (SPADCALL |i| (|getShellEntry| $ 33)) |y|)) 
 
-(PUT '|SINT;Zero;$;10| '|SPADreplace| '(XLAM NIL 0)) 
-
 (DEFUN |SINT;Zero;$;10| ($) 0) 
-
-(PUT '|SINT;One;$;11| '|SPADreplace| '(XLAM NIL 1)) 
 
 (DEFUN |SINT;One;$;11| ($) 1) 
 
-(PUT '|SINT;base;$;12| '|SPADreplace| '(XLAM NIL 2)) 
-
 (DEFUN |SINT;base;$;12| ($) 2) 
-
-(PUT '|SINT;max;$;13| '|SPADreplace| '(XLAM NIL |$ShortMaximum|)) 
 
 (DEFUN |SINT;max;$;13| ($) |$ShortMaximum|) 
 
-(PUT '|SINT;min;$;14| '|SPADreplace| '(XLAM NIL |$ShortMinimum|)) 
-
 (DEFUN |SINT;min;$;14| ($) |$ShortMinimum|) 
-
-(PUT '|SINT;=;2$B;15| '|SPADreplace| 'EQL) 
 
 (DEFUN |SINT;=;2$B;15| (|x| |y| $) (EQL |x| |y|)) 
 
-(PUT '|SINT;~;2$;16| '|SPADreplace| 'LOGNOT) 
-
 (DEFUN |SINT;~;2$;16| (|x| $) (LOGNOT |x|)) 
-
-(PUT '|SINT;not;2$;17| '|SPADreplace| 'LOGNOT) 
 
 (DEFUN |SINT;not;2$;17| (|x| $) (LOGNOT |x|)) 
 
-(PUT '|SINT;/\\;3$;18| '|SPADreplace| 'LOGAND) 
-
 (DEFUN |SINT;/\\;3$;18| (|x| |y| $) (LOGAND |x| |y|)) 
-
-(PUT '|SINT;\\/;3$;19| '|SPADreplace| 'LOGIOR) 
 
 (DEFUN |SINT;\\/;3$;19| (|x| |y| $) (LOGIOR |x| |y|)) 
 
-(PUT '|SINT;Not;2$;20| '|SPADreplace| 'LOGNOT) 
-
 (DEFUN |SINT;Not;2$;20| (|x| $) (LOGNOT |x|)) 
-
-(PUT '|SINT;And;3$;21| '|SPADreplace| 'LOGAND) 
 
 (DEFUN |SINT;And;3$;21| (|x| |y| $) (LOGAND |x| |y|)) 
 
-(PUT '|SINT;Or;3$;22| '|SPADreplace| 'LOGIOR) 
-
 (DEFUN |SINT;Or;3$;22| (|x| |y| $) (LOGIOR |x| |y|)) 
-
-(PUT '|SINT;xor;3$;23| '|SPADreplace| 'LOGXOR) 
 
 (DEFUN |SINT;xor;3$;23| (|x| |y| $) (LOGXOR |x| |y|)) 
 
-(PUT '|SINT;<;2$B;24| '|SPADreplace| 'QSLESSP) 
-
 (DEFUN |SINT;<;2$B;24| (|x| |y| $) (QSLESSP |x| |y|)) 
-
-(PUT '|SINT;inc;2$;25| '|SPADreplace| 'QSADD1) 
 
 (DEFUN |SINT;inc;2$;25| (|x| $) (QSADD1 |x|)) 
 
-(PUT '|SINT;dec;2$;26| '|SPADreplace| 'QSSUB1) 
-
 (DEFUN |SINT;dec;2$;26| (|x| $) (QSSUB1 |x|)) 
-
-(PUT '|SINT;-;2$;27| '|SPADreplace| 'QSMINUS) 
 
 (DEFUN |SINT;-;2$;27| (|x| $) (QSMINUS |x|)) 
 
-(PUT '|SINT;+;3$;28| '|SPADreplace| 'QSPLUS) 
-
 (DEFUN |SINT;+;3$;28| (|x| |y| $) (QSPLUS |x| |y|)) 
 
-(PUT '|SINT;-;3$;29| '|SPADreplace| 'QSDIFFERENCE) 
-
 (DEFUN |SINT;-;3$;29| (|x| |y| $) (QSDIFFERENCE |x| |y|)) 
-
-(PUT '|SINT;*;3$;30| '|SPADreplace| 'QSTIMES) 
 
 (DEFUN |SINT;*;3$;30| (|x| |y| $) (QSTIMES |x| |y|)) 
 
 (DEFUN |SINT;**;$Nni$;31| (|x| |n| $)
   (SPADCALL (EXPT |x| |n|) (|getShellEntry| $ 33))) 
 
-(PUT '|SINT;quo;3$;32| '|SPADreplace| 'QSQUOTIENT) 
-
 (DEFUN |SINT;quo;3$;32| (|x| |y| $) (QSQUOTIENT |x| |y|)) 
-
-(PUT '|SINT;rem;3$;33| '|SPADreplace| 'QSREMAINDER) 
 
 (DEFUN |SINT;rem;3$;33| (|x| |y| $) (QSREMAINDER |x| |y|)) 
 
 (DEFUN |SINT;divide;2$R;34| (|x| |y| $)
   (CONS (QSQUOTIENT |x| |y|) (QSREMAINDER |x| |y|))) 
 
-(PUT '|SINT;gcd;3$;35| '|SPADreplace| 'GCD) 
-
 (DEFUN |SINT;gcd;3$;35| (|x| |y| $) (GCD |x| |y|)) 
-
-(PUT '|SINT;abs;2$;36| '|SPADreplace| 'QSABSVAL) 
 
 (DEFUN |SINT;abs;2$;36| (|x| $) (QSABSVAL |x|)) 
 
-(PUT '|SINT;odd?;$B;37| '|SPADreplace| 'QSODDP) 
-
 (DEFUN |SINT;odd?;$B;37| (|x| $) (QSODDP |x|)) 
-
-(PUT '|SINT;zero?;$B;38| '|SPADreplace| 'QSZEROP) 
 
 (DEFUN |SINT;zero?;$B;38| (|x| $) (QSZEROP |x|)) 
 
-(PUT '|SINT;one?;$B;39| '|SPADreplace| '(XLAM (|x|) (EQL |x| 1))) 
-
 (DEFUN |SINT;one?;$B;39| (|x| $) (EQL |x| 1)) 
-
-(PUT '|SINT;max;3$;40| '|SPADreplace| 'QSMAX) 
 
 (DEFUN |SINT;max;3$;40| (|x| |y| $) (QSMAX |x| |y|)) 
 
-(PUT '|SINT;min;3$;41| '|SPADreplace| 'QSMIN) 
-
 (DEFUN |SINT;min;3$;41| (|x| |y| $) (QSMIN |x| |y|)) 
-
-(PUT '|SINT;hash;2$;42| '|SPADreplace| 'HASHEQ) 
 
 (DEFUN |SINT;hash;2$;42| (|x| $) (HASHEQ |x|)) 
 
-(PUT '|SINT;length;2$;43| '|SPADreplace| 'INTEGER-LENGTH) 
-
 (DEFUN |SINT;length;2$;43| (|x| $) (INTEGER-LENGTH |x|)) 
-
-(PUT '|SINT;shift;3$;44| '|SPADreplace| 'QSLEFTSHIFT) 
 
 (DEFUN |SINT;shift;3$;44| (|x| |n| $) (QSLEFTSHIFT |x| |n|)) 
 
-(PUT '|SINT;mulmod;4$;45| '|SPADreplace| 'QSMULTMOD) 
-
 (DEFUN |SINT;mulmod;4$;45| (|a| |b| |p| $) (QSMULTMOD |a| |b| |p|)) 
-
-(PUT '|SINT;addmod;4$;46| '|SPADreplace| 'QSADDMOD) 
 
 (DEFUN |SINT;addmod;4$;46| (|a| |b| |p| $) (QSADDMOD |a| |b| |p|)) 
 
-(PUT '|SINT;submod;4$;47| '|SPADreplace| 'QSDIFMOD) 
-
 (DEFUN |SINT;submod;4$;47| (|a| |b| |p| $) (QSDIFMOD |a| |b| |p|)) 
 
-(PUT '|SINT;negative?;$B;48| '|SPADreplace| 'QSMINUSP) 
-
 (DEFUN |SINT;negative?;$B;48| (|x| $) (QSMINUSP |x|)) 
-
-(PUT '|SINT;reducedSystem;MVR;49| '|SPADreplace| 'CONS) 
 
 (DEFUN |SINT;reducedSystem;MVR;49| (|m| |v| $) (CONS |m| |v|)) 
 
@@ -250,8 +411,6 @@
                    2147483647))
        (EXIT (REMAINDER (|getShellEntry| $ 6) 67108864)))) 
 
-(PUT '|SINT;random;2$;53| '|SPADreplace| 'RANDOM) 
-
 (DEFUN |SINT;random;2$;53| (|n| $) (RANDOM |n|)) 
 
 (DEFUN |SINT;unitNormal;$R;54| (|x| $)
@@ -262,7 +421,7 @@
 (DEFUN |SingleInteger| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1488)
+      (PROG (#0=#:G1491)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|SingleInteger|)

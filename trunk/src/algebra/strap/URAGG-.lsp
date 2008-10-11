@@ -1,6 +1,113 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |URAGG-;elt;AfirstS;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |URAGG-;elt;AlastS;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |URAGG-;elt;ArestA;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;second;AS;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;third;AS;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |URAGG-;cyclic?;AB;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;last;AS;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |URAGG-;nodes;AL;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%List|)
+                |URAGG-;children;AL;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |URAGG-;leaf?;AB;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;value;AS;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Boolean|)
+                |URAGG-;less?;ANniB;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Boolean|)
+                |URAGG-;more?;ANniB;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Boolean|)
+                |URAGG-;size?;ANniB;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |URAGG-;#;ANni;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;tail;2A;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;findCycle|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;cycleTail;2A;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;cycleEntry;2A;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |URAGG-;cycleLength;ANni;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |URAGG-;rest;ANniA;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
+                    |%Thing|)
+                |URAGG-;last;ANniA;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |URAGG-;=;2AB;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |URAGG-;node?;2AB;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |URAGG-;setelt;Afirst2S;25|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |URAGG-;setelt;Alast2S;26|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |URAGG-;setelt;Arest2A;27|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |URAGG-;concat;3A;28|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |URAGG-;setlast!;A2S;29|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
+                |URAGG-;setchildren!;ALA;30|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |URAGG-;setvalue!;A2S;31|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Shell|) |%Thing|)
+                |URAGG-;split!;AIA;32|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |URAGG-;cycleSplit!;2A;33|)) 
+
 (DEFUN |URAGG-;elt;AfirstS;1| (|x| T0 $)
   (SPADCALL |x| (|getShellEntry| $ 8))) 
 
@@ -180,7 +287,7 @@
                    (EXIT |x|)))))))) 
 
 (DEFUN |URAGG-;findCycle| (|x| $)
-  (PROG (#0=#:G1472 |y|)
+  (PROG (#0=#:G1475 |y|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
                             |URAGG-;findCycle|)
@@ -356,7 +463,7 @@
            (EXIT |x|))))) 
 
 (DEFUN |URAGG-;last;ANniA;22| (|x| |n| $)
-  (PROG (|m| #0=#:G1495)
+  (PROG (|m| #0=#:G1498)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 43))
                  |URAGG-;last;ANniA;22|)
@@ -373,7 +480,7 @@
                         (|getShellEntry| $ 45))))))))) 
 
 (DEFUN |URAGG-;=;2AB;23| (|x| |y| $)
-  (PROG (|k| #0=#:G1505)
+  (PROG (|k| #0=#:G1508)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |x| |y| (|getShellEntry| $ 37)) 'T)
@@ -428,7 +535,7 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |URAGG-;node?;2AB;24| (|u| |v| $)
-  (PROG (|k| #0=#:G1510)
+  (PROG (|k| #0=#:G1513)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ (LETT |k| 0 |URAGG-;node?;2AB;24|) G190
                            (COND
@@ -497,7 +604,7 @@
   (SPADCALL |u| |s| (|getShellEntry| $ 51))) 
 
 (DEFUN |URAGG-;split!;AIA;32| (|p| |n| $)
-  (PROG (#0=#:G1521 |q|)
+  (PROG (#0=#:G1524 |q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))

@@ -3,14 +3,8 @@
 
 (DEFPARAMETER |EntireRing;AL| 'NIL) 
 
-(DEFUN |EntireRing| ()
-  (LET (#:G1396)
-    (COND
-      (|EntireRing;AL|)
-      (T (SETQ |EntireRing;AL| (|EntireRing;|)))))) 
-
 (DEFUN |EntireRing;| ()
-  (PROG (#0=#:G1394)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|Ring|) (|BiModule| '$ '$)
@@ -18,6 +12,12 @@
                                '((|noZeroDivisors| T)) 'NIL NIL))
                    |EntireRing|)
         (SETELT #0# 0 '(|EntireRing|)))))) 
+
+(DEFUN |EntireRing| ()
+  (LET ()
+    (COND
+      (|EntireRing;AL|)
+      (T (SETQ |EntireRing;AL| (|EntireRing;|)))))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|EntireRing| '|isCategory| T

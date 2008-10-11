@@ -5,19 +5,8 @@
 
 (DEFPARAMETER |HomogeneousAggregate;AL| 'NIL) 
 
-(DEFUN |HomogeneousAggregate| (#0=#:G1396)
-  (LET (#1=#:G1397)
-    (COND
-      ((SETQ #1# (|assoc| (|devaluate| #0#) |HomogeneousAggregate;AL|))
-       (CDR #1#))
-      (T (SETQ |HomogeneousAggregate;AL|
-               (|cons5| (CONS (|devaluate| #0#)
-                              (SETQ #1# (|HomogeneousAggregate;| #0#)))
-                        |HomogeneousAggregate;AL|))
-         #1#)))) 
-
 (DEFUN |HomogeneousAggregate;| (|t#1|)
-  (PROG (#0=#:G1395)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -110,6 +99,17 @@
                                 . #1=(|HomogeneousAggregate|))))) . #1#)
         (SETELT #0# 0
                 (LIST '|HomogeneousAggregate| (|devaluate| |t#1|))))))) 
+
+(DEFUN |HomogeneousAggregate| (#0=#:G1399)
+  (LET (#1=#:G1400)
+    (COND
+      ((SETQ #1# (|assoc| (|devaluate| #0#) |HomogeneousAggregate;AL|))
+       (CDR #1#))
+      (T (SETQ |HomogeneousAggregate;AL|
+               (|cons5| (CONS (|devaluate| #0#)
+                              (SETQ #1# (|HomogeneousAggregate;| #0#)))
+                        |HomogeneousAggregate;AL|))
+         #1#)))) 
 
 (SETQ |$CategoryFrame|
       (|put| '|HomogeneousAggregate| '|isCategory| T

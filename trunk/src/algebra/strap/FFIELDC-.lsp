@@ -1,6 +1,53 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |FFIELDC-;differentiate;2S;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |FFIELDC-;init;S;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |FFIELDC-;nextItem;SU;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |FFIELDC-;order;SOpc;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |FFIELDC-;conditionP;MU;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |FFIELDC-;charthRoot;2S;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Pair|)
+                |FFIELDC-;charthRoot;SU;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|)
+                |FFIELDC-;createPrimitiveElement;S;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
+                |FFIELDC-;primitive?;SB;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 1))
+                |FFIELDC-;order;SPi;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
+                |FFIELDC-;discreteLog;SNni;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |FFIELDC-;discreteLog;2SU;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |FFIELDC-;squareFreePolynomial|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |FFIELDC-;factorPolynomial|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |FFIELDC-;factorSquareFreePolynomial|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |FFIELDC-;gcdPolynomial;3Sup;16|)) 
+
 (DEFUN |FFIELDC-;differentiate;2S;1| (|x| $) (|spadConstant| $ 7)) 
 
 (DEFUN |FFIELDC-;init;S;2| ($) (|spadConstant| $ 7)) 
@@ -41,7 +88,7 @@
   (CONS 0 (SPADCALL |x| (|getShellEntry| $ 28)))) 
 
 (DEFUN |FFIELDC-;createPrimitiveElement;S;8| ($)
-  (PROG (|sm1| |start| |i| #0=#:G1443 |e| |found|)
+  (PROG (|sm1| |start| |i| #0=#:G1446 |e| |found|)
     (RETURN
       (SEQ (LETT |sm1| (- (SPADCALL (|getShellEntry| $ 39)) 1)
                  |FFIELDC-;createPrimitiveElement;S;8|)
@@ -78,7 +125,7 @@
            (EXIT |e|))))) 
 
 (DEFUN |FFIELDC-;primitive?;SB;9| (|a| $)
-  (PROG (|explist| |q| |exp| #0=#:G1455 |equalone|)
+  (PROG (|explist| |q| |exp| #0=#:G1514 |equalone|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |a| (|getShellEntry| $ 14)) 'NIL)
@@ -112,7 +159,7 @@
                    (EXIT (SPADCALL |equalone| (|getShellEntry| $ 43)))))))))) 
 
 (DEFUN |FFIELDC-;order;SPi;10| (|e| $)
-  (PROG (|lof| |rec| #0=#:G1463 |primeDivisor| |j| #1=#:G1464 |a|
+  (PROG (|lof| |rec| #0=#:G1515 |primeDivisor| |j| #1=#:G1516 |a|
                |goon| |ord|)
     (RETURN
       (SEQ (COND
@@ -179,7 +226,7 @@
                    (EXIT |ord|)))))))) 
 
 (DEFUN |FFIELDC-;discreteLog;SNni;11| (|b| $)
-  (PROG (|faclist| |gen| |groupord| |f| #0=#:G1484 |fac| |t| #1=#:G1485
+  (PROG (|faclist| |gen| |groupord| |f| #0=#:G1517 |fac| |t| #1=#:G1518
             |exp| |exptable| |n| |end| |i| |rho| |found| |disc1| |c|
             |mult| |disclog| |a|)
     (RETURN
@@ -332,8 +379,8 @@
                                  (EXIT |disclog|)))))))))))) 
 
 (DEFUN |FFIELDC-;discreteLog;2SU;12| (|logbase| |b| $)
-  (PROG (|groupord| |faclist| |f| #0=#:G1503 |fac| |primroot| |t|
-            #1=#:G1504 |exp| |rhoHelp| #2=#:G1502 |rho| |disclog|
+  (PROG (|groupord| |faclist| |f| #0=#:G1519 |fac| |primroot| |t|
+            #1=#:G1520 |exp| |rhoHelp| #2=#:G1500 |rho| |disclog|
             |mult| |a|)
     (RETURN
       (SEQ (EXIT (COND
@@ -461,7 +508,7 @@
   (SPADCALL |f| (|getShellEntry| $ 77))) 
 
 (DEFUN |FFIELDC-;factorSquareFreePolynomial| (|f| $)
-  (PROG (|flist| |u| #0=#:G1517 #1=#:G1514 #2=#:G1512 #3=#:G1513)
+  (PROG (|flist| |u| #0=#:G1521 #1=#:G1510 #2=#:G1508 #3=#:G1509)
     (RETURN
       (SEQ (COND
              ((SPADCALL |f| (|spadConstant| $ 78)

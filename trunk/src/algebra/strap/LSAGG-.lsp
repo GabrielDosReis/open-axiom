@@ -1,6 +1,93 @@
 
 (/VERSIONCHECK 2) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;sort!;M2A;1|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;list;SA;2|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;reduce;MAS;3|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;merge;M3A;4|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;select!;M2A;5|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;merge!;M3A;6|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;insert!;SAIA;7|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;insert!;2AIA;8|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;remove!;M2A;9|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Integer| |%Shell|) |%Thing|)
+                |LSAGG-;delete!;AIA;10|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;delete!;AUsA;11|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Pair|)
+                |LSAGG-;find;MAU;12|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Integer|)
+                |LSAGG-;position;MAI;13|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;mergeSort|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |LSAGG-;sorted?;MAB;15|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;reduce;MA2S;16|)) 
+
+(DECLAIM (FTYPE (FUNCTION
+                    (|%Thing| |%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;reduce;MA3S;17|)) 
+
+(DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Thing| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;new;NniSA;18|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;map;M3A;19|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;reverse!;2A;20|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;copy;2A;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
+                    |%Thing|)
+                |LSAGG-;copyInto!;2AIA;22|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
+                    |%Integer|)
+                |LSAGG-;position;SA2I;23|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+                |LSAGG-;removeDuplicates!;2A;24|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
+                |LSAGG-;<;2AB;25|)) 
+
 (DEFUN |LSAGG-;sort!;M2A;1| (|f| |l| $)
   (|LSAGG-;mergeSort| |f| |l| (SPADCALL |l| (|getShellEntry| $ 9)) $)) 
 
@@ -155,7 +242,7 @@
                    (EXIT |r|)))))))) 
 
 (DEFUN |LSAGG-;insert!;SAIA;7| (|s| |x| |i| $)
-  (PROG (|m| #0=#:G1461 |y| |z|)
+  (PROG (|m| #0=#:G1464 |y| |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 32))
                  |LSAGG-;insert!;SAIA;7|)
@@ -182,7 +269,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;insert!;2AIA;8| (|w| |x| |i| $)
-  (PROG (|m| #0=#:G1465 |y| |z|)
+  (PROG (|m| #0=#:G1468 |y| |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 32))
                  |LSAGG-;insert!;2AIA;8|)
@@ -262,7 +349,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;delete!;AIA;10| (|x| |i| $)
-  (PROG (|m| #0=#:G1477 |y|)
+  (PROG (|m| #0=#:G1480 |y|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 32))
                  |LSAGG-;delete!;AIA;10|)
@@ -286,7 +373,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;delete!;AUsA;11| (|x| |i| $)
-  (PROG (|l| |m| |h| #0=#:G1482 #1=#:G1483 |t| #2=#:G1484)
+  (PROG (|l| |m| |h| #0=#:G1485 #1=#:G1486 |t| #2=#:G1487)
     (RETURN
       (SEQ (LETT |l| (SPADCALL |i| (|getShellEntry| $ 40))
                  |LSAGG-;delete!;AUsA;11|)
@@ -383,7 +470,7 @@
                    ('T |k|))))))) 
 
 (DEFUN |LSAGG-;mergeSort| (|f| |p| |n| $)
-  (PROG (#0=#:G1504 |l| |q|)
+  (PROG (#0=#:G1507 |l| |q|)
     (RETURN
       (SEQ (COND
              ((EQL |n| 2)
@@ -417,7 +504,7 @@
                                    (|getShellEntry| $ 23))))))))))) 
 
 (DEFUN |LSAGG-;sorted?;MAB;15| (|f| |l| $)
-  (PROG (#0=#:G1513 |p|)
+  (PROG (#0=#:G1516 |p|)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |l| (|getShellEntry| $ 16)) 'T)
@@ -606,7 +693,7 @@
            (EXIT (SPADCALL |y| (|getShellEntry| $ 48))))))) 
 
 (DEFUN |LSAGG-;copyInto!;2AIA;22| (|y| |x| |s| $)
-  (PROG (|m| #0=#:G1542 |z|)
+  (PROG (|m| #0=#:G1545 |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |y| (|getShellEntry| $ 32))
                  |LSAGG-;copyInto!;2AIA;22|)
@@ -651,7 +738,7 @@
                          (EXIT |y|))))))))) 
 
 (DEFUN |LSAGG-;position;SA2I;23| (|w| |x| |s| $)
-  (PROG (|m| #0=#:G1549 |k|)
+  (PROG (|m| #0=#:G1552 |k|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 32))
                  |LSAGG-;position;SA2I;23|)
@@ -729,7 +816,7 @@
             (|getShellEntry| $ 62)))))) 
 
 (DEFUN |LSAGG-;<;2AB;25| (|x| |y| $)
-  (PROG (#0=#:G1563)
+  (PROG (#0=#:G1566)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ G190
                            (COND
