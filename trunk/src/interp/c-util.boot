@@ -1049,6 +1049,24 @@ backendCompileILAM(name,args,body) ==
   setDynamicBinding(name,["LAMBDA",args',:body'])
   name
 
+$CLOSEDFNS := nil
+
+MAKE_-CLOSEDFN_-NAME() ==
+  INTERNL($FUNNAME,'"!", STRINGIMAGE # $CLOSEDFNS)
+
+backendCompileNEWNAM: %Form -> %Void
+backendCompileNEWNAM x ==
+  isAtomicForm x => nil
+  atom(y := first x) =>
+    backendCompileNEWNAM rest x
+    if y = "CLOSEDFN" then
+      u := MAKE_-CLOSEDFN_-NAME()
+      PUSH([u,second x], $CLOSEDFNS)
+      RPLACA(x,"FUNCTION")
+      RPLACA(rest x,u)
+  backendCompileNEWNAM first x
+  backendCompileNEWNAM rest x
+
 
 ++ Lisp back end compiler for SLAM forms [namd,args,:body].
 ++ A SLAM form is one that is `functional' in the sense that
@@ -1136,7 +1154,6 @@ backendCompile2 code ==
   else COMP370 [body]
   name
 
-
 ++ returns all fuild variables contained in `x'.  Fuild variables are
 ++ identifiers starting with '$', except domain variable names.
 backendFluidize x ==
@@ -1148,4 +1165,89 @@ backendFluidize x ==
   b := backendFluidize rest x
   a = nil => b
   [a,:b]
+
+
+$FluidVars := []
+$LocalVars := []
+$SpecialVars := []
+
+
+++ push `x' into the list of local variables.
+pushLocalVariable: %Symbol -> %List
+pushLocalVariable x ==
+  x ^= "$" and (p := PNAME x).0 = char "$" and
+    p.1 ^= char "," and not DIGITP p.1 => nil
+  PUSH(x,$LocalVars)
+
+
+
+++ Replace every middle end sub-forms in `x' with Lisp code.
+mutateToBackendCode: %Form -> %Void
+mutateToBackendCode x ==
+  isAtomicForm x => nil
+  -- temporarily have TRACELET report MAKEPROPs.
+  if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
+    RPLACA(x,"MAKEPROP-SAY")
+  u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
+    if u ^= "DCQ" then
+      $NEWSPAD or $FUNAME in $traceletFunctions =>
+        nconc(x,$FUNNAME__TAIL)
+        RPLACA(x,"LETT")
+      $TRACELETFLAG => RPLACA(x,"/TRACE-LET")
+      u = "%LET" => RPLACA(x,"SPADLET")
+    mutateToBackendCode CDDR x
+    if not (u in '(SETQ RELET)) then
+      IDENTP second x => pushLocalVariable second x
+      second x is ["FLUID",:.] =>
+        PUSH(CADADR x, $FluidVars)
+        rplac(second x, CADADR x)
+      MAPC(function pushLocalVariable, LISTOFATOMS second x)
+  IDENTP u and GET(u,"ILAM") ^= nil =>
+    RPLACA(x, eval u)
+    mutateToBackendCode x
+  u in '(PROG LAMBDA) =>
+    newBindings := []
+    for y in second x repeat
+      not (y in $LocalVars) =>
+        $LocalVars := [y,:$LocalVars]
+        newBindings := [y,:newBindings]
+    res := mutateToBackendCode CDDR x
+    $LocalVars := REMOVE_-IF(function LAMBDA(y(), y in newBindings), 
+                     $LocalVars)
+    [u,second x,:res]
+  mutateToBackendCode u
+  mutateToBackendCode rest x
+
+
+++ Generate Lisp code by lowering middle end form `x'.
+transformToBackendCode: %Form -> %Code
+transformToBackendCode x ==
+  $FluidVars: fluid := nil
+  $LocalVars: fluid := nil
+  $SpecialVars: fluid := nil
+  x := middleEndExpand x
+  mutateToBackendCode CDDR x
+  body := 
+    null CDDDR x and 
+      (atom third x or first third x = "SEQ"
+        or not CONTAINED("EXIT",third x)) =>
+          third x
+    ["SEQ",:CDDR x]
+  x := [first x, second x, body]
+  $FluidVars := REMDUP nreverse $FluidVars
+  $LocalVars := S_-(S_-(REMDUP nreverse $LocalVars,$FluidVars),
+                  LISTOFATOMS second x)
+  lvars := [:$FluidVars,:$LocalVars]
+  fluids := S_+($FluidVars,$SpecialVars)
+  x := 
+    fluids ^= nil =>
+      [first x, second x, ["PROG",lvars,["DECLARE","SPECIAL",:fluids],
+                            ["RETURN",third x]]]
+    [first x, second x, 
+      (lvars ^= nil or CONTAINED("RETURN",third x) =>
+        ["PROG",lvars,["RETURN",third x]]; third x)]
+  -- add reference parameters to the list of special variables.
+  fluids := S_+(backendFluidize second x, $SpecialVars)
+  null fluids => x
+  [first x, second x, ["DECLARE","SPECIAL",:fluids],:CDDR x]
 

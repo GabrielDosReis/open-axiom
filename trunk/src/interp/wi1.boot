@@ -324,7 +324,6 @@ compWithMappingMode(x,m,oldE) ==
   originalFun := u
   if originalFun is ['WI,a,b] then u := b
   uu := ['LAMBDA,vl,u]
-  --------------------------> 11/28 drop COMP-TRAN, optimizations
   T := [uu,m,oldE]
   originalFun is ['WI,a,b] => markLambda(vl,a,m,T)
   markLambda(vl,originalFun,m,T)
