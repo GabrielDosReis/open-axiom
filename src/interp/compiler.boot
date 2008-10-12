@@ -277,7 +277,7 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   --  pass this as the environment to our inner function.
   $FUNNAME :local := nil
   $FUNNAME__TAIL :local := [nil]
-  expandedFunction:=COMP_-TRAN CADR uu
+  expandedFunction:= transformToBackendCode second uu
   frees:=FreeList(expandedFunction,vl,nil,e)
     where FreeList(u,bound,free,e) ==
       atom u =>
@@ -1928,8 +1928,8 @@ COMP_-1 x ==
   $FUNNAME__TAIL := [fname]
   lamex := second x
   $CLOSEDFNS := []
-  lamex := COMP_-TRAN lamex
-  COMP_-NEWNAM lamex
+  lamex := transformToBackendCode lamex
+  backendCompileNEWNAM lamex
   -- Note that category constructors are evaluated before they
   -- their compiled, so this noise is not very helpful.
   if $verbose and FBOUNDP fname then

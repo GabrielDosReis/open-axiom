@@ -1,3 +1,21 @@
+2008-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (backendCompileNEWNAM): New.
+	(pushLocalVariable): Likewise.
+	(mutateToBackendCode): Likewise.
+	(transformToBackendCode): Likewise
+	* interp/comp.lisp (FLUIDVARS): Remove.
+	(LOCVARS): Likewise.
+	(SPECIALVARS): Likewise.
+	($CLOSEDFNS): Likewise.
+	(COMP-NAM): Likewise.
+	(COMP-TRAN): Likewise.
+	(COMP-TRAN-1): Likewise.
+	* interp/compiler.boot (compWithMappingMode): Use
+	transformToBackendCode. 
+	(COMP-1): Use backendCompileNEWNAM.
+	* interp/i-analy.boot (bottomUpCompile): Use mutateToBackendCode.
+
 2008-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (backendFluidize): New.
