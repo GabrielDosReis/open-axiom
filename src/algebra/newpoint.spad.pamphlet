@@ -102,6 +102,7 @@ SubSpaceComponentProperty() : Exports == Implementation where
 	++ copy(x) \undocumented
  
   Implementation ==> add
+    import B
     Rep := Record(closed:B, solid:B)
     closed? p == p.closed
     solid? p == p.solid

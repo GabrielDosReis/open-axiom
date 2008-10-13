@@ -1,3 +1,24 @@
+2008-10-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Don't step over Common Lisp MAP.
+	* interp/i-analy.boot (bottomUp): Change MAP to %Map.
+	(isEltable): Likewise.
+	* interp/i-coerce.boot (retract): Likewise.
+	* interp/i-eval.boot (getArgValue): Likewise.
+	* interp/i-funsel.boot (selectLocalMms): Likewise.
+	* interp/i-intern.boot (getValueFromEnvironment): Likewise.
+	* interp/i-map.boot (mkAuxiliaryName): Likewise.
+	(augmentMap): Likewise.
+	(displayMap): Likewise.
+	(putBodyInEnd): Likewise.
+	(expandRecursiveBody): Likewise.
+	* interp/i-output.boot (outputTran): Likewise.
+	* interp/i-spec1.boot (declare): Likewise.
+	* interp/i-syscmd.boot (displayMacro): Likewise.
+	* interp/i-toplev.boot (interpret2): Likewise.
+	* interp/patches.lisp (MAP): Remove.
+	* interp/trace.boot (isUncompiledMap): Likewise.
+
 2008-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add support for Lisp declarations in generated Lisp code.

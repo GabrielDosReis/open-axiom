@@ -1142,7 +1142,7 @@ declare(var,mode) ==
       throwKeyedMsg("S2IS0017",[var,mode])
     -- validate that the new declaration has the defined # of args
     mapval := objVal get(var,'value,$e)
-    -- mapval looks like '(MAP (args . defn))
+    -- mapval looks like '(%Map (args . defn))
     margs := CAADR mapval
     -- if one args, margs is not a pair, just #1 or NIL
     -- otherwise it looks like (tuple #1 #2 ...)
@@ -1166,7 +1166,7 @@ declare(var,mode) ==
 
 declareMap(var,mode) ==
   -- declare a Mapping property
-  (v:=get(var,'value,$e)) and objVal(v) isnt ['MAP,:.] =>
+  (v:=get(var,'value,$e)) and objVal(v) isnt ["%Map",:.] =>
     throwKeyedMsg("S2IS0019",[var])
   isPartialMode mode => throwKeyedMsg("S2IM0004",NIL)
   putHist(var,'mode,mode,$e)

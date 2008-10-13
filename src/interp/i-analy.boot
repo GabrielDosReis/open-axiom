@@ -241,7 +241,7 @@ bottomUp t ==
 
     -- see if we are calling a declared user map
     -- if so, push down the declared types as targets on the args
-    if opVal and (objVal opVal  is ['MAP,:.]) and
+    if opVal and (objVal opVal  is ["%Map",:.]) and
       (getMode op is ['Mapping,:ms]) and (nargs + 1= #ms) then
         for m in rest ms for x in argl repeat putTarget(x,m)
 
@@ -832,7 +832,7 @@ isEltable(op,argl,numArgs) ==
     ZEROP numArgs => true
     not(m := objMode(v)) => nil
     m is ['Mapping, :.] => nil
-    objVal(v) is ['MAP, :mapDef] and numMapArgs(mapDef) > 0 => nil
+    objVal(v) is ["%Map",:mapDef] and numMapArgs(mapDef) > 0 => nil
     true
   m := getMode op =>
     ZEROP numArgs => true

@@ -502,7 +502,7 @@ outputTran x ==
     c is ['COLLECT,:m,d] and d is ['construct,e] and e is ['COLLECT,:.] =>
       outputTran ['COLLECT,:m,e]
   x is ['LIST,:l] => outputTran ['BRACKET,['AGGLST,:l]]
-  x is ['MAP,:l] => outputMapTran l
+  x is ["%Map",:l] => outputMapTran l
   x is ['brace, :l]    =>
     ['BRACE,  ['AGGLST,:[outputTran y for y in l]]]
   x is ["return",l] => ["return",outputTran l]
@@ -1641,7 +1641,7 @@ outputOp x ==
     [newop,:[outputOp y for y in args]]
   x
 
---% MAP PRINTER (FROM EV BOOT)
+--% %Map PRINTER (FROM EV BOOT)
 
 printMap u ==
   printBasic specialChar 'lbrk

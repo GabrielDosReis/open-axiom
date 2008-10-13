@@ -184,6 +184,8 @@ Palette(): Exports == Implementation where
       ++ indicated color c.
  
   Implementation ==> add
+    import I
+    import C
     Rep := Record(shadeField:I, hueField:C)
 
     dark   c == [1,c]

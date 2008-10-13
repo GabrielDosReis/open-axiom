@@ -136,13 +136,6 @@
 ;; (eval-when (eval load compile) (shadow 'delete))
 ;; (define-function 'boot::delete #'|delete|)
 
-;; following code is to mimic def of MAP in NEWSPAD LISP
-;; i.e. MAP in boot package is a self evaluating form
-;; #-:CCL (eval-when (eval load compile) (shadow 'map))
-;; #-:CCL (defmacro map (&rest args) `'(map ,@args))
-(eval-when (eval load compile) (shadow 'map))
-(defmacro map (&rest args) `'(map ,@args))
-
 ;; following are defined in spadtest.boot and stantest.boot
 (defun |installStandardTestPackages| () ())
 (defun |spadtestValueHook| (val type) ())
