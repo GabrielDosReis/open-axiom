@@ -129,21 +129,33 @@
                     |%Boolean|)
                 |ISTRING;match?;2$CB;34|)) 
 
-(DEFUN |ISTRING;new;NniC$;1| (|n| |c| $) (MAKE-FULL-CVEC |n| |c|)) 
+(DEFUN |ISTRING;new;NniC$;1| (|n| |c| $)
+  (DECLARE (IGNORE $))
+  (MAKE-FULL-CVEC |n| |c|)) 
 
-(DEFUN |ISTRING;empty;$;2| ($) (MAKE-FULL-CVEC 0)) 
+(DEFUN |ISTRING;empty;$;2| ($)
+  (DECLARE (IGNORE $))
+  (MAKE-FULL-CVEC 0)) 
 
 (DEFUN |ISTRING;empty?;$B;3| (|s| $) (EQL (QCSIZE |s|) 0)) 
 
-(DEFUN |ISTRING;#;$Nni;4| (|s| $) (QCSIZE |s|)) 
+(DEFUN |ISTRING;#;$Nni;4| (|s| $) (DECLARE (IGNORE $)) (QCSIZE |s|)) 
 
-(DEFUN |ISTRING;=;2$B;5| (|s| |t| $) (EQUAL |s| |t|)) 
+(DEFUN |ISTRING;=;2$B;5| (|s| |t| $)
+  (DECLARE (IGNORE $))
+  (EQUAL |s| |t|)) 
 
-(DEFUN |ISTRING;<;2$B;6| (|s| |t| $) (CGREATERP |t| |s|)) 
+(DEFUN |ISTRING;<;2$B;6| (|s| |t| $)
+  (DECLARE (IGNORE $))
+  (CGREATERP |t| |s|)) 
 
-(DEFUN |ISTRING;concat;3$;7| (|s| |t| $) (STRCONC |s| |t|)) 
+(DEFUN |ISTRING;concat;3$;7| (|s| |t| $)
+  (DECLARE (IGNORE $))
+  (STRCONC |s| |t|)) 
 
-(DEFUN |ISTRING;copy;2$;8| (|s| $) (COPY-SEQ |s|)) 
+(DEFUN |ISTRING;copy;2$;8| (|s| $)
+  (DECLARE (IGNORE $))
+  (COPY-SEQ |s|)) 
 
 (DEFUN |ISTRING;insert;2$I$;9| (|s| |t| |i| $)
   (STRCONC (STRCONC (|ISTRING;elt;$Us$;31| |s|

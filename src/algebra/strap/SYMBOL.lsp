@@ -167,13 +167,17 @@
 (DEFUN |SYMBOL;convert;$If;6| (|s| $)
   (SPADCALL |s| (|getShellEntry| $ 45))) 
 
-(DEFUN |SYMBOL;convert;2$;7| (|s| $) |s|) 
+(DEFUN |SYMBOL;convert;2$;7| (|s| $) (DECLARE (IGNORE $)) |s|) 
 
 (DEFUN |SYMBOL;coerce;S$;8| (|s| $) (VALUES (INTERN |s|))) 
 
-(DEFUN |SYMBOL;=;2$B;9| (|x| |y| $) (EQUAL |x| |y|)) 
+(DEFUN |SYMBOL;=;2$B;9| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (EQUAL |x| |y|)) 
 
-(DEFUN |SYMBOL;<;2$B;10| (|x| |y| $) (GGREATERP |y| |x|)) 
+(DEFUN |SYMBOL;<;2$B;10| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (GGREATERP |y| |x|)) 
 
 (DEFUN |SYMBOL;coerce;$Of;11| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 52))) 

@@ -31,9 +31,11 @@
                     |%Pair|)
                 |NNI;subtractIfCan;2$U;3|)) 
 
-(DEFUN |NNI;sup;3$;1| (|x| |y| $) (MAX |x| |y|)) 
+(DEFUN |NNI;sup;3$;1| (|x| |y| $) (DECLARE (IGNORE $)) (MAX |x| |y|)) 
 
-(DEFUN |NNI;shift;$I$;2| (|x| |n| $) (ASH |x| |n|)) 
+(DEFUN |NNI;shift;$I$;2| (|x| |n| $)
+  (DECLARE (IGNORE $))
+  (ASH |x| |n|)) 
 
 (DEFUN |NNI;subtractIfCan;2$U;3| (|x| |y| $)
   (PROG (|c|)

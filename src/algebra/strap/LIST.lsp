@@ -48,13 +48,17 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |LIST;convert;$If;13|)) 
 
-(DEFUN |LIST;nil;$;1| ($) NIL) 
+(DEFUN |LIST;nil;$;1| ($) (DECLARE (IGNORE $)) NIL) 
 
-(DEFUN |LIST;null;$B;2| (|l| $) (NULL |l|)) 
+(DEFUN |LIST;null;$B;2| (|l| $) (DECLARE (IGNORE $)) (NULL |l|)) 
 
-(DEFUN |LIST;cons;S2$;3| (|s| |l| $) (CONS |s| |l|)) 
+(DEFUN |LIST;cons;S2$;3| (|s| |l| $)
+  (DECLARE (IGNORE $))
+  (CONS |s| |l|)) 
 
-(DEFUN |LIST;append;3$;4| (|l| |t| $) (APPEND |l| |t|)) 
+(DEFUN |LIST;append;3$;4| (|l| |t| $)
+  (DECLARE (IGNORE $))
+  (APPEND |l| |t|)) 
 
 (DEFUN |LIST;writeOMList| (|dev| |x| $)
   (SEQ (SPADCALL |dev| (|getShellEntry| $ 14))

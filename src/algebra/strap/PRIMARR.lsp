@@ -49,9 +49,11 @@
                     (|%SimpleArray| *))
                 |PRIMARR;fill!;$S$;9|)) 
 
-(DEFUN |PRIMARR;#;$Nni;1| (|x| $) (|sizeOfSimpleArray| |x|)) 
+(DEFUN |PRIMARR;#;$Nni;1| (|x| $)
+  (DECLARE (IGNORE $))
+  (|sizeOfSimpleArray| |x|)) 
 
-(DEFUN |PRIMARR;minIndex;$I;2| (|x| $) 0) 
+(DEFUN |PRIMARR;minIndex;$I;2| (|x| $) (DECLARE (IGNORE $)) 0) 
 
 (DEFUN |PRIMARR;empty;$;3| ($)
   (|makeSimpleArray| (|getVMType| (|getShellEntry| $ 6)) 0)) 
@@ -60,15 +62,19 @@
   (|makeFilledSimpleArray| (|getVMType| (|getShellEntry| $ 6)) |n| |x|)) 
 
 (DEFUN |PRIMARR;qelt;$IS;5| (|x| |i| $)
+  (DECLARE (IGNORE $))
   (|getSimpleArrayEntry| |x| |i|)) 
 
 (DEFUN |PRIMARR;elt;$IS;6| (|x| |i| $)
+  (DECLARE (IGNORE $))
   (|getSimpleArrayEntry| |x| |i|)) 
 
 (DEFUN |PRIMARR;qsetelt!;$I2S;7| (|x| |i| |s| $)
+  (DECLARE (IGNORE $))
   (|setSimpleArrayEntry| |x| |i| |s|)) 
 
 (DEFUN |PRIMARR;setelt;$I2S;8| (|x| |i| |s| $)
+  (DECLARE (IGNORE $))
   (|setSimpleArrayEntry| |x| |i| |s|)) 
 
 (DEFUN |PRIMARR;fill!;$S$;9| (|x| |s| $)

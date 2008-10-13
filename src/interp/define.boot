@@ -1246,7 +1246,6 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
   clearReplacement nam   -- Make sure we have fresh info
   if $optReplaceSimpleFunctions then
     body := replaceSimpleFunctions body
-  form := [nam,[lam,vl,body]]
 
   if vl is [:vl',E] and body is [nam',: =vl'] then
       LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
@@ -1256,6 +1255,12 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
            macform := ['XLAM,vl',body]
            LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
+
+  if GET(nam,"SPADreplace") then
+    form := [nam,[lam,vl,["DECLARE",["IGNORE",E]],body]]
+  else
+    form := [nam,[lam,vl,body]]
+
   $insideCapsuleFunctionIfTrue => 
     $optExportedFunctionReference =>
       $capsuleFunctionStack := [form,:$capsuleFunctionStack]

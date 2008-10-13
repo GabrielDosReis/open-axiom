@@ -28,16 +28,16 @@
 (DECLAIM (FTYPE (FUNCTION (|%Pair| |%Shell|) |%Thing|)
                 |REF;coerce;$Of;7|)) 
 
-(DEFUN |REF;=;2$B;1| (|p| |q| $) (EQ |p| |q|)) 
+(DEFUN |REF;=;2$B;1| (|p| |q| $) (DECLARE (IGNORE $)) (EQ |p| |q|)) 
 
-(DEFUN |REF;ref;S$;2| (|v| $) (LIST |v|)) 
+(DEFUN |REF;ref;S$;2| (|v| $) (DECLARE (IGNORE $)) (LIST |v|)) 
 
-(DEFUN |REF;elt;$S;3| (|p| $) (QCAR |p|)) 
+(DEFUN |REF;elt;$S;3| (|p| $) (DECLARE (IGNORE $)) (QCAR |p|)) 
 
 (DEFUN |REF;setelt;$2S;4| (|p| |v| $)
   (PROGN (RPLACA |p| |v|) (QCAR |p|))) 
 
-(DEFUN |REF;deref;$S;5| (|p| $) (QCAR |p|)) 
+(DEFUN |REF;deref;$S;5| (|p| $) (DECLARE (IGNORE $)) (QCAR |p|)) 
 
 (DEFUN |REF;setref;$2S;6| (|p| |v| $)
   (PROGN (RPLACA |p| |v|) (QCAR |p|))) 

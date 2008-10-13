@@ -85,11 +85,15 @@
 
 (PUT '|CHAR;lowerCase;2$;22| '|SPADreplace| 'CHAR-DOWNCASE) 
 
-(DEFUN |CHAR;=;2$B;1| (|a| |b| $) (CHAR= |a| |b|)) 
+(DEFUN |CHAR;=;2$B;1| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (CHAR= |a| |b|)) 
 
-(DEFUN |CHAR;<;2$B;2| (|a| |b| $) (CHAR< |a| |b|)) 
+(DEFUN |CHAR;<;2$B;2| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (CHAR< |a| |b|)) 
 
-(DEFUN |CHAR;size;Nni;3| ($) 256) 
+(DEFUN |CHAR;size;Nni;3| ($) (DECLARE (IGNORE $)) 256) 
 
 (DEFUN |CHAR;index;Pi$;4| (|n| $)
   (PROG (#0=#:G1401)
@@ -104,19 +108,21 @@
       (PROG1 (LETT #0# (+ 1 (CHAR-CODE |c|)) |CHAR;lookup;$Pi;5|)
         (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))) 
 
-(DEFUN |CHAR;char;Nni$;6| (|n| $) (CODE-CHAR |n|)) 
+(DEFUN |CHAR;char;Nni$;6| (|n| $)
+  (DECLARE (IGNORE $))
+  (CODE-CHAR |n|)) 
 
-(DEFUN |CHAR;ord;$Nni;7| (|c| $) (CHAR-CODE |c|)) 
+(DEFUN |CHAR;ord;$Nni;7| (|c| $) (DECLARE (IGNORE $)) (CHAR-CODE |c|)) 
 
 (DEFUN |CHAR;random;$;8| ($) (CODE-CHAR (RANDOM 256))) 
 
-(DEFUN |CHAR;space;$;9| ($) (CHAR "   " 0)) 
+(DEFUN |CHAR;space;$;9| ($) (DECLARE (IGNORE $)) (CHAR "   " 0)) 
 
-(DEFUN |CHAR;quote;$;10| ($) (CHAR "\" " 0)) 
+(DEFUN |CHAR;quote;$;10| ($) (DECLARE (IGNORE $)) (CHAR "\" " 0)) 
 
-(DEFUN |CHAR;escape;$;11| ($) (CHAR "_ " 0)) 
+(DEFUN |CHAR;escape;$;11| ($) (DECLARE (IGNORE $)) (CHAR "_ " 0)) 
 
-(DEFUN |CHAR;coerce;$Of;12| (|c| $) |c|) 
+(DEFUN |CHAR;coerce;$Of;12| (|c| $) (DECLARE (IGNORE $)) |c|) 
 
 (DEFUN |CHAR;digit?;$B;13| (|c| $)
   (SPADCALL |c| (|spadConstant| $ 23) (|getShellEntry| $ 25))) 
@@ -146,9 +152,13 @@
          (|getShellEntry| $ 41)))
     ('T (|userError| "String is not a single character")))) 
 
-(DEFUN |CHAR;upperCase;2$;21| (|c| $) (CHAR-UPCASE |c|)) 
+(DEFUN |CHAR;upperCase;2$;21| (|c| $)
+  (DECLARE (IGNORE $))
+  (CHAR-UPCASE |c|)) 
 
-(DEFUN |CHAR;lowerCase;2$;22| (|c| $) (CHAR-DOWNCASE |c|)) 
+(DEFUN |CHAR;lowerCase;2$;22| (|c| $)
+  (DECLARE (IGNORE $))
+  (CHAR-DOWNCASE |c|)) 
 
 (DEFUN |Character| ()
   (PROG ()

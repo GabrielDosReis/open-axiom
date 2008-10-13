@@ -295,97 +295,139 @@
        (EXIT (COND
                (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 19))))))) 
 
-(DEFUN |SINT;reducedSystem;MM;6| (|m| $) |m|) 
+(DEFUN |SINT;reducedSystem;MM;6| (|m| $) (DECLARE (IGNORE $)) |m|) 
 
 (DEFUN |SINT;coerce;$Of;7| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 30))) 
 
-(DEFUN |SINT;convert;$I;8| (|x| $) |x|) 
+(DEFUN |SINT;convert;$I;8| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
 (DEFUN |SINT;*;I2$;9| (|i| |y| $)
   (QSTIMES (SPADCALL |i| (|getShellEntry| $ 33)) |y|)) 
 
-(DEFUN |SINT;Zero;$;10| ($) 0) 
+(DEFUN |SINT;Zero;$;10| ($) (DECLARE (IGNORE $)) 0) 
 
-(DEFUN |SINT;One;$;11| ($) 1) 
+(DEFUN |SINT;One;$;11| ($) (DECLARE (IGNORE $)) 1) 
 
-(DEFUN |SINT;base;$;12| ($) 2) 
+(DEFUN |SINT;base;$;12| ($) (DECLARE (IGNORE $)) 2) 
 
-(DEFUN |SINT;max;$;13| ($) |$ShortMaximum|) 
+(DEFUN |SINT;max;$;13| ($) (DECLARE (IGNORE $)) |$ShortMaximum|) 
 
-(DEFUN |SINT;min;$;14| ($) |$ShortMinimum|) 
+(DEFUN |SINT;min;$;14| ($) (DECLARE (IGNORE $)) |$ShortMinimum|) 
 
-(DEFUN |SINT;=;2$B;15| (|x| |y| $) (EQL |x| |y|)) 
+(DEFUN |SINT;=;2$B;15| (|x| |y| $) (DECLARE (IGNORE $)) (EQL |x| |y|)) 
 
-(DEFUN |SINT;~;2$;16| (|x| $) (LOGNOT |x|)) 
+(DEFUN |SINT;~;2$;16| (|x| $) (DECLARE (IGNORE $)) (LOGNOT |x|)) 
 
-(DEFUN |SINT;not;2$;17| (|x| $) (LOGNOT |x|)) 
+(DEFUN |SINT;not;2$;17| (|x| $) (DECLARE (IGNORE $)) (LOGNOT |x|)) 
 
-(DEFUN |SINT;/\\;3$;18| (|x| |y| $) (LOGAND |x| |y|)) 
+(DEFUN |SINT;/\\;3$;18| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (LOGAND |x| |y|)) 
 
-(DEFUN |SINT;\\/;3$;19| (|x| |y| $) (LOGIOR |x| |y|)) 
+(DEFUN |SINT;\\/;3$;19| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (LOGIOR |x| |y|)) 
 
-(DEFUN |SINT;Not;2$;20| (|x| $) (LOGNOT |x|)) 
+(DEFUN |SINT;Not;2$;20| (|x| $) (DECLARE (IGNORE $)) (LOGNOT |x|)) 
 
-(DEFUN |SINT;And;3$;21| (|x| |y| $) (LOGAND |x| |y|)) 
+(DEFUN |SINT;And;3$;21| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (LOGAND |x| |y|)) 
 
-(DEFUN |SINT;Or;3$;22| (|x| |y| $) (LOGIOR |x| |y|)) 
+(DEFUN |SINT;Or;3$;22| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (LOGIOR |x| |y|)) 
 
-(DEFUN |SINT;xor;3$;23| (|x| |y| $) (LOGXOR |x| |y|)) 
+(DEFUN |SINT;xor;3$;23| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (LOGXOR |x| |y|)) 
 
-(DEFUN |SINT;<;2$B;24| (|x| |y| $) (QSLESSP |x| |y|)) 
+(DEFUN |SINT;<;2$B;24| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QSLESSP |x| |y|)) 
 
-(DEFUN |SINT;inc;2$;25| (|x| $) (QSADD1 |x|)) 
+(DEFUN |SINT;inc;2$;25| (|x| $) (DECLARE (IGNORE $)) (QSADD1 |x|)) 
 
-(DEFUN |SINT;dec;2$;26| (|x| $) (QSSUB1 |x|)) 
+(DEFUN |SINT;dec;2$;26| (|x| $) (DECLARE (IGNORE $)) (QSSUB1 |x|)) 
 
-(DEFUN |SINT;-;2$;27| (|x| $) (QSMINUS |x|)) 
+(DEFUN |SINT;-;2$;27| (|x| $) (DECLARE (IGNORE $)) (QSMINUS |x|)) 
 
-(DEFUN |SINT;+;3$;28| (|x| |y| $) (QSPLUS |x| |y|)) 
+(DEFUN |SINT;+;3$;28| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QSPLUS |x| |y|)) 
 
-(DEFUN |SINT;-;3$;29| (|x| |y| $) (QSDIFFERENCE |x| |y|)) 
+(DEFUN |SINT;-;3$;29| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QSDIFFERENCE |x| |y|)) 
 
-(DEFUN |SINT;*;3$;30| (|x| |y| $) (QSTIMES |x| |y|)) 
+(DEFUN |SINT;*;3$;30| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QSTIMES |x| |y|)) 
 
 (DEFUN |SINT;**;$Nni$;31| (|x| |n| $)
   (SPADCALL (EXPT |x| |n|) (|getShellEntry| $ 33))) 
 
-(DEFUN |SINT;quo;3$;32| (|x| |y| $) (QSQUOTIENT |x| |y|)) 
+(DEFUN |SINT;quo;3$;32| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QSQUOTIENT |x| |y|)) 
 
-(DEFUN |SINT;rem;3$;33| (|x| |y| $) (QSREMAINDER |x| |y|)) 
+(DEFUN |SINT;rem;3$;33| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QSREMAINDER |x| |y|)) 
 
 (DEFUN |SINT;divide;2$R;34| (|x| |y| $)
   (CONS (QSQUOTIENT |x| |y|) (QSREMAINDER |x| |y|))) 
 
-(DEFUN |SINT;gcd;3$;35| (|x| |y| $) (GCD |x| |y|)) 
+(DEFUN |SINT;gcd;3$;35| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (GCD |x| |y|)) 
 
-(DEFUN |SINT;abs;2$;36| (|x| $) (QSABSVAL |x|)) 
+(DEFUN |SINT;abs;2$;36| (|x| $) (DECLARE (IGNORE $)) (QSABSVAL |x|)) 
 
-(DEFUN |SINT;odd?;$B;37| (|x| $) (QSODDP |x|)) 
+(DEFUN |SINT;odd?;$B;37| (|x| $) (DECLARE (IGNORE $)) (QSODDP |x|)) 
 
-(DEFUN |SINT;zero?;$B;38| (|x| $) (QSZEROP |x|)) 
+(DEFUN |SINT;zero?;$B;38| (|x| $) (DECLARE (IGNORE $)) (QSZEROP |x|)) 
 
-(DEFUN |SINT;one?;$B;39| (|x| $) (EQL |x| 1)) 
+(DEFUN |SINT;one?;$B;39| (|x| $) (DECLARE (IGNORE $)) (EQL |x| 1)) 
 
-(DEFUN |SINT;max;3$;40| (|x| |y| $) (QSMAX |x| |y|)) 
+(DEFUN |SINT;max;3$;40| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QSMAX |x| |y|)) 
 
-(DEFUN |SINT;min;3$;41| (|x| |y| $) (QSMIN |x| |y|)) 
+(DEFUN |SINT;min;3$;41| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QSMIN |x| |y|)) 
 
-(DEFUN |SINT;hash;2$;42| (|x| $) (HASHEQ |x|)) 
+(DEFUN |SINT;hash;2$;42| (|x| $) (DECLARE (IGNORE $)) (HASHEQ |x|)) 
 
-(DEFUN |SINT;length;2$;43| (|x| $) (INTEGER-LENGTH |x|)) 
+(DEFUN |SINT;length;2$;43| (|x| $)
+  (DECLARE (IGNORE $))
+  (INTEGER-LENGTH |x|)) 
 
-(DEFUN |SINT;shift;3$;44| (|x| |n| $) (QSLEFTSHIFT |x| |n|)) 
+(DEFUN |SINT;shift;3$;44| (|x| |n| $)
+  (DECLARE (IGNORE $))
+  (QSLEFTSHIFT |x| |n|)) 
 
-(DEFUN |SINT;mulmod;4$;45| (|a| |b| |p| $) (QSMULTMOD |a| |b| |p|)) 
+(DEFUN |SINT;mulmod;4$;45| (|a| |b| |p| $)
+  (DECLARE (IGNORE $))
+  (QSMULTMOD |a| |b| |p|)) 
 
-(DEFUN |SINT;addmod;4$;46| (|a| |b| |p| $) (QSADDMOD |a| |b| |p|)) 
+(DEFUN |SINT;addmod;4$;46| (|a| |b| |p| $)
+  (DECLARE (IGNORE $))
+  (QSADDMOD |a| |b| |p|)) 
 
-(DEFUN |SINT;submod;4$;47| (|a| |b| |p| $) (QSDIFMOD |a| |b| |p|)) 
+(DEFUN |SINT;submod;4$;47| (|a| |b| |p| $)
+  (DECLARE (IGNORE $))
+  (QSDIFMOD |a| |b| |p|)) 
 
-(DEFUN |SINT;negative?;$B;48| (|x| $) (QSMINUSP |x|)) 
+(DEFUN |SINT;negative?;$B;48| (|x| $)
+  (DECLARE (IGNORE $))
+  (QSMINUSP |x|)) 
 
-(DEFUN |SINT;reducedSystem;MVR;49| (|m| |v| $) (CONS |m| |v|)) 
+(DEFUN |SINT;reducedSystem;MVR;49| (|m| |v| $)
+  (DECLARE (IGNORE $))
+  (CONS |m| |v|)) 
 
 (DEFUN |SINT;positiveRemainder;3$;50| (|x| |n| $)
   (PROG (|r|)
@@ -411,7 +453,7 @@
                    2147483647))
        (EXIT (REMAINDER (|getShellEntry| $ 6) 67108864)))) 
 
-(DEFUN |SINT;random;2$;53| (|n| $) (RANDOM |n|)) 
+(DEFUN |SINT;random;2$;53| (|n| $) (DECLARE (IGNORE $)) (RANDOM |n|)) 
 
 (DEFUN |SINT;unitNormal;$R;54| (|x| $)
   (COND

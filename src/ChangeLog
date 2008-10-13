@@ -1,5 +1,23 @@
 2008-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Add support for Lisp declarations in generated Lisp code.
+	* interp/i-map.boot (compileCoerceMap): Tell backend that
+	minivector is global.
+	* interp/i-spec1.boot (compileADEFBody): Likewise.
+	* interp/slam.boot (reportFunctionCompilation): Likewise.
+	* interp/define.boot (spadCompileOrSetq): Tell backend to ignore
+	last argument for simple functions.
+	* interp/c-util.boot (skipDeclarations): New.
+	(lastDeclarationNode): Likewise.
+	(declareGlobalVariables): Likewise.
+	(transformToBackendCode): Use them to allow for Lisp
+	declarations in middle-end forms.
+	* interp/sys-driver.boot (AxiomCore::%sysInit): Reading Lisp level
+	Floating point numbers default to double precision.
+	* algebra/strap: Update.
+
+2008-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nlib.lisp (rpackfile): Remove obsolete code.
 
 2008-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>

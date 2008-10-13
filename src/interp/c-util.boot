@@ -1215,11 +1215,31 @@ mutateToBackendCode x ==
     $LocalVars := REMOVE_-IF(function LAMBDA(y(), y in newBindings), 
                      $LocalVars)
     [u,second x,:res]
+  u = "DECLARE" => nil       -- there is nothing to do convert there
   mutateToBackendCode u
   mutateToBackendCode rest x
 
 
-++ Generate Lisp code by lowering middle end form `x'.
+skipDeclarations: %List -> %List
+skipDeclarations form ==
+  while first form is ["DECLARE",:.] repeat
+    form := rest form
+  form
+
+++ return the last node containing a declaration in form, otherwise nil.
+lastDeclarationNode: %List -> %List
+lastDeclarationNode form ==
+  while second form is ["DECLARE",:.] repeat
+     form := rest form
+  first form is ["DECLARE",:.] => form
+  nil
+
+declareGlobalVariables: %List -> %List
+declareGlobalVariables vars ==
+  ["DECLARE",["SPECIAL",:vars]]
+
+++ Generate Lisp code by lowering middle end defining form `x'.
+++ x has the strucrure: <name, parms, stmt1, ...>
 transformToBackendCode: %Form -> %Code
 transformToBackendCode x ==
   $FluidVars: fluid := nil
@@ -1227,27 +1247,32 @@ transformToBackendCode x ==
   $SpecialVars: fluid := nil
   x := middleEndExpand x
   mutateToBackendCode CDDR x
+  body := skipDeclarations CDDR x
+  -- Make it explicitly a sequence of statements if it is not a one liner.
   body := 
-    null CDDDR x and 
-      (atom third x or first third x = "SEQ"
-        or not CONTAINED("EXIT",third x)) =>
-          third x
-    ["SEQ",:CDDR x]
-  x := [first x, second x, body]
+    stmt := first body
+    null rest body and 
+      (atom stmt or first stmt = "SEQ" or not CONTAINED("EXIT",stmt)) =>
+        body
+    [["SEQ",:body]]
   $FluidVars := REMDUP nreverse $FluidVars
   $LocalVars := S_-(S_-(REMDUP nreverse $LocalVars,$FluidVars),
                   LISTOFATOMS second x)
   lvars := [:$FluidVars,:$LocalVars]
   fluids := S_+($FluidVars,$SpecialVars)
-  x := 
+  body := 
     fluids ^= nil =>
-      [first x, second x, ["PROG",lvars,["DECLARE","SPECIAL",:fluids],
-                            ["RETURN",third x]]]
-    [first x, second x, 
-      (lvars ^= nil or CONTAINED("RETURN",third x) =>
-        ["PROG",lvars,["RETURN",third x]]; third x)]
+      [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
+    lvars ^= nil or CONTAINED("RETURN",body) =>
+      [["PROG",lvars,["RETURN",:body]]]
+    body
   -- add reference parameters to the list of special variables.
   fluids := S_+(backendFluidize second x, $SpecialVars)
-  null fluids => x
-  [first x, second x, ["DECLARE","SPECIAL",:fluids],:CDDR x]
-
+  lastdecl := lastDeclarationNode rest x
+  if lastdecl = nil then
+    RPLACD(rest x, body)
+  else
+    null fluids =>
+      RPLACD(lastdecl, body)
+    RPLACD(lastdecl, [declareGlobalVariables fluids,:body])
+  x

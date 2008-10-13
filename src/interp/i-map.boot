@@ -760,7 +760,8 @@ compileCoerceMap(op,argTypes,mm) ==
   minivectorName := makeInternalMapMinivectorName(name)
   body := substitute(minivectorName,"$$$",body)
   setDynamicBinding(minivectorName,LIST2REFVEC $minivector)
-  compileInteractive [name,['LAMBDA,parms,body]]
+  compileInteractive 
+    [name,['LAMBDA,parms,declareGlobalVariables [minivectorName],body]]
   CAR sig
 
 depthOfRecursion(opName,body) ==

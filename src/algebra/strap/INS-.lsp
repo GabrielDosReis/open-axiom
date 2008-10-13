@@ -95,7 +95,7 @@
                     |%Thing|)
                 |INS-;powmod;4S;29|)) 
 
-(DEFUN |INS-;characteristic;Nni;1| ($) 0) 
+(DEFUN |INS-;characteristic;Nni;1| ($) (DECLARE (IGNORE $)) 0) 
 
 (DEFUN |INS-;differentiate;2S;2| (|x| $) (|spadConstant| $ 9)) 
 
@@ -106,7 +106,7 @@
 (DEFUN |INS-;positive?;SB;4| (|x| $)
   (SPADCALL (|spadConstant| $ 9) |x| (|getShellEntry| $ 15))) 
 
-(DEFUN |INS-;copy;2S;5| (|x| $) |x|) 
+(DEFUN |INS-;copy;2S;5| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
 (DEFUN |INS-;bit?;2SB;6| (|x| |i| $)
   (SPADCALL
@@ -118,7 +118,7 @@
   (SPADCALL (SPADCALL (|spadConstant| $ 21) |n| (|getShellEntry| $ 19))
       (|getShellEntry| $ 22))) 
 
-(DEFUN |INS-;rational?;SB;8| (|x| $) 'T) 
+(DEFUN |INS-;rational?;SB;8| (|x| $) (DECLARE (IGNORE $)) 'T) 
 
 (DEFUN |INS-;euclideanSize;SNni;9| (|x| $)
   (PROG (#0=#:G1424 #1=#:G1425)

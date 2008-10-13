@@ -416,15 +416,19 @@
        (EXIT (COND
                (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 15))))))) 
 
-(DEFUN |DFLOAT;checkComplex| (|x| $) (C-TO-R |x|)) 
+(DEFUN |DFLOAT;checkComplex| (|x| $)
+  (DECLARE (IGNORE $))
+  (C-TO-R |x|)) 
 
-(DEFUN |DFLOAT;base;Pi;6| ($) (FLOAT-RADIX 0.0)) 
+(DEFUN |DFLOAT;base;Pi;6| ($) (DECLARE (IGNORE $)) (FLOAT-RADIX 0.0)) 
 
 (DEFUN |DFLOAT;mantissa;$I;7| (|x| $) (QCAR (|DFLOAT;manexp| |x| $))) 
 
 (DEFUN |DFLOAT;exponent;$I;8| (|x| $) (QCDR (|DFLOAT;manexp| |x| $))) 
 
-(DEFUN |DFLOAT;precision;Pi;9| ($) (FLOAT-DIGITS 0.0)) 
+(DEFUN |DFLOAT;precision;Pi;9| ($)
+  (DECLARE (IGNORE $))
+  (FLOAT-DIGITS 0.0)) 
 
 (DEFUN |DFLOAT;bits;Pi;10| ($)
   (PROG (#0=#:G1422)
@@ -443,22 +447,30 @@
                       |DFLOAT;bits;Pi;10|)
            (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))))) 
 
-(DEFUN |DFLOAT;max;$;11| ($) |$DoubleFloatMaximum|) 
+(DEFUN |DFLOAT;max;$;11| ($)
+  (DECLARE (IGNORE $))
+  |$DoubleFloatMaximum|) 
 
-(DEFUN |DFLOAT;min;$;12| ($) |$DoubleFloatMinimum|) 
+(DEFUN |DFLOAT;min;$;12| ($)
+  (DECLARE (IGNORE $))
+  |$DoubleFloatMinimum|) 
 
 (DEFUN |DFLOAT;order;$I;13| (|a| $)
   (- (+ (FLOAT-DIGITS 0.0) (|DFLOAT;exponent;$I;8| |a| $)) 1)) 
 
-(DEFUN |DFLOAT;Zero;$;14| ($) (FLOAT 0 |$DoubleFloatMaximum|)) 
+(DEFUN |DFLOAT;Zero;$;14| ($)
+  (DECLARE (IGNORE $))
+  (FLOAT 0 |$DoubleFloatMaximum|)) 
 
-(DEFUN |DFLOAT;One;$;15| ($) (FLOAT 1 |$DoubleFloatMaximum|)) 
+(DEFUN |DFLOAT;One;$;15| ($)
+  (DECLARE (IGNORE $))
+  (FLOAT 1 |$DoubleFloatMaximum|)) 
 
 (DEFUN |DFLOAT;exp1;$;16| ($)
   (/ (FLOAT 534625820200 |$DoubleFloatMaximum|)
      (FLOAT 196677847971 |$DoubleFloatMaximum|))) 
 
-(DEFUN |DFLOAT;pi;$;17| ($) PI) 
+(DEFUN |DFLOAT;pi;$;17| ($) (DECLARE (IGNORE $)) PI) 
 
 (DEFUN |DFLOAT;coerce;$Of;18| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 39))) 
@@ -466,103 +478,112 @@
 (DEFUN |DFLOAT;convert;$If;19| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 42))) 
 
-(DEFUN |DFLOAT;<;2$B;20| (|x| |y| $) (< |x| |y|)) 
+(DEFUN |DFLOAT;<;2$B;20| (|x| |y| $) (DECLARE (IGNORE $)) (< |x| |y|)) 
 
-(DEFUN |DFLOAT;-;2$;21| (|x| $) (- |x|)) 
+(DEFUN |DFLOAT;-;2$;21| (|x| $) (DECLARE (IGNORE $)) (- |x|)) 
 
-(DEFUN |DFLOAT;+;3$;22| (|x| |y| $) (+ |x| |y|)) 
+(DEFUN |DFLOAT;+;3$;22| (|x| |y| $) (DECLARE (IGNORE $)) (+ |x| |y|)) 
 
-(DEFUN |DFLOAT;-;3$;23| (|x| |y| $) (- |x| |y|)) 
+(DEFUN |DFLOAT;-;3$;23| (|x| |y| $) (DECLARE (IGNORE $)) (- |x| |y|)) 
 
-(DEFUN |DFLOAT;*;3$;24| (|x| |y| $) (* |x| |y|)) 
+(DEFUN |DFLOAT;*;3$;24| (|x| |y| $) (DECLARE (IGNORE $)) (* |x| |y|)) 
 
-(DEFUN |DFLOAT;*;I2$;25| (|i| |x| $) (* |i| |x|)) 
+(DEFUN |DFLOAT;*;I2$;25| (|i| |x| $) (DECLARE (IGNORE $)) (* |i| |x|)) 
 
-(DEFUN |DFLOAT;max;3$;26| (|x| |y| $) (MAX |x| |y|)) 
+(DEFUN |DFLOAT;max;3$;26| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (MAX |x| |y|)) 
 
-(DEFUN |DFLOAT;min;3$;27| (|x| |y| $) (MIN |x| |y|)) 
+(DEFUN |DFLOAT;min;3$;27| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (MIN |x| |y|)) 
 
-(DEFUN |DFLOAT;=;2$B;28| (|x| |y| $) (= |x| |y|)) 
+(DEFUN |DFLOAT;=;2$B;28| (|x| |y| $) (DECLARE (IGNORE $)) (= |x| |y|)) 
 
-(DEFUN |DFLOAT;/;$I$;29| (|x| |i| $) (/ |x| |i|)) 
+(DEFUN |DFLOAT;/;$I$;29| (|x| |i| $) (DECLARE (IGNORE $)) (/ |x| |i|)) 
 
 (DEFUN |DFLOAT;sqrt;2$;30| (|x| $) (C-TO-R (SQRT |x|))) 
 
 (DEFUN |DFLOAT;log10;2$;31| (|x| $) (C-TO-R (|log| |x|))) 
 
-(DEFUN |DFLOAT;**;$I$;32| (|x| |i| $) (EXPT |x| |i|)) 
+(DEFUN |DFLOAT;**;$I$;32| (|x| |i| $)
+  (DECLARE (IGNORE $))
+  (EXPT |x| |i|)) 
 
 (DEFUN |DFLOAT;**;3$;33| (|x| |y| $) (C-TO-R (EXPT |x| |y|))) 
 
 (DEFUN |DFLOAT;coerce;I$;34| (|i| $)
+  (DECLARE (IGNORE $))
   (FLOAT |i| |$DoubleFloatMaximum|)) 
 
-(DEFUN |DFLOAT;exp;2$;35| (|x| $) (EXP |x|)) 
+(DEFUN |DFLOAT;exp;2$;35| (|x| $) (DECLARE (IGNORE $)) (EXP |x|)) 
 
 (DEFUN |DFLOAT;log;2$;36| (|x| $) (C-TO-R (LN |x|))) 
 
 (DEFUN |DFLOAT;log2;2$;37| (|x| $) (C-TO-R (LOG2 |x|))) 
 
-(DEFUN |DFLOAT;sin;2$;38| (|x| $) (SIN |x|)) 
+(DEFUN |DFLOAT;sin;2$;38| (|x| $) (DECLARE (IGNORE $)) (SIN |x|)) 
 
-(DEFUN |DFLOAT;cos;2$;39| (|x| $) (COS |x|)) 
+(DEFUN |DFLOAT;cos;2$;39| (|x| $) (DECLARE (IGNORE $)) (COS |x|)) 
 
-(DEFUN |DFLOAT;tan;2$;40| (|x| $) (TAN |x|)) 
+(DEFUN |DFLOAT;tan;2$;40| (|x| $) (DECLARE (IGNORE $)) (TAN |x|)) 
 
-(DEFUN |DFLOAT;cot;2$;41| (|x| $) (COT |x|)) 
+(DEFUN |DFLOAT;cot;2$;41| (|x| $) (DECLARE (IGNORE $)) (COT |x|)) 
 
-(DEFUN |DFLOAT;sec;2$;42| (|x| $) (SEC |x|)) 
+(DEFUN |DFLOAT;sec;2$;42| (|x| $) (DECLARE (IGNORE $)) (SEC |x|)) 
 
-(DEFUN |DFLOAT;csc;2$;43| (|x| $) (CSC |x|)) 
+(DEFUN |DFLOAT;csc;2$;43| (|x| $) (DECLARE (IGNORE $)) (CSC |x|)) 
 
 (DEFUN |DFLOAT;asin;2$;44| (|x| $) (C-TO-R (ASIN |x|))) 
 
 (DEFUN |DFLOAT;acos;2$;45| (|x| $) (C-TO-R (ACOS |x|))) 
 
-(DEFUN |DFLOAT;atan;2$;46| (|x| $) (ATAN |x|)) 
+(DEFUN |DFLOAT;atan;2$;46| (|x| $) (DECLARE (IGNORE $)) (ATAN |x|)) 
 
 (DEFUN |DFLOAT;acsc;2$;47| (|x| $) (C-TO-R (ACSC |x|))) 
 
-(DEFUN |DFLOAT;acot;2$;48| (|x| $) (ACOT |x|)) 
+(DEFUN |DFLOAT;acot;2$;48| (|x| $) (DECLARE (IGNORE $)) (ACOT |x|)) 
 
 (DEFUN |DFLOAT;asec;2$;49| (|x| $) (C-TO-R (ASEC |x|))) 
 
-(DEFUN |DFLOAT;sinh;2$;50| (|x| $) (SINH |x|)) 
+(DEFUN |DFLOAT;sinh;2$;50| (|x| $) (DECLARE (IGNORE $)) (SINH |x|)) 
 
-(DEFUN |DFLOAT;cosh;2$;51| (|x| $) (COSH |x|)) 
+(DEFUN |DFLOAT;cosh;2$;51| (|x| $) (DECLARE (IGNORE $)) (COSH |x|)) 
 
-(DEFUN |DFLOAT;tanh;2$;52| (|x| $) (TANH |x|)) 
+(DEFUN |DFLOAT;tanh;2$;52| (|x| $) (DECLARE (IGNORE $)) (TANH |x|)) 
 
-(DEFUN |DFLOAT;csch;2$;53| (|x| $) (CSCH |x|)) 
+(DEFUN |DFLOAT;csch;2$;53| (|x| $) (DECLARE (IGNORE $)) (CSCH |x|)) 
 
-(DEFUN |DFLOAT;coth;2$;54| (|x| $) (COTH |x|)) 
+(DEFUN |DFLOAT;coth;2$;54| (|x| $) (DECLARE (IGNORE $)) (COTH |x|)) 
 
-(DEFUN |DFLOAT;sech;2$;55| (|x| $) (SECH |x|)) 
+(DEFUN |DFLOAT;sech;2$;55| (|x| $) (DECLARE (IGNORE $)) (SECH |x|)) 
 
-(DEFUN |DFLOAT;asinh;2$;56| (|x| $) (ASINH |x|)) 
+(DEFUN |DFLOAT;asinh;2$;56| (|x| $) (DECLARE (IGNORE $)) (ASINH |x|)) 
 
 (DEFUN |DFLOAT;acosh;2$;57| (|x| $) (C-TO-R (ACOSH |x|))) 
 
 (DEFUN |DFLOAT;atanh;2$;58| (|x| $) (C-TO-R (ATANH |x|))) 
 
-(DEFUN |DFLOAT;acsch;2$;59| (|x| $) (ACSCH |x|)) 
+(DEFUN |DFLOAT;acsch;2$;59| (|x| $) (DECLARE (IGNORE $)) (ACSCH |x|)) 
 
 (DEFUN |DFLOAT;acoth;2$;60| (|x| $) (C-TO-R (ACOTH |x|))) 
 
 (DEFUN |DFLOAT;asech;2$;61| (|x| $) (C-TO-R (ASECH |x|))) 
 
-(DEFUN |DFLOAT;/;3$;62| (|x| |y| $) (/ |x| |y|)) 
+(DEFUN |DFLOAT;/;3$;62| (|x| |y| $) (DECLARE (IGNORE $)) (/ |x| |y|)) 
 
-(DEFUN |DFLOAT;negative?;$B;63| (|x| $) (MINUSP |x|)) 
+(DEFUN |DFLOAT;negative?;$B;63| (|x| $)
+  (DECLARE (IGNORE $))
+  (MINUSP |x|)) 
 
-(DEFUN |DFLOAT;zero?;$B;64| (|x| $) (ZEROP |x|)) 
+(DEFUN |DFLOAT;zero?;$B;64| (|x| $) (DECLARE (IGNORE $)) (ZEROP |x|)) 
 
-(DEFUN |DFLOAT;hash;$Si;65| (|x| $) (HASHEQ |x|)) 
+(DEFUN |DFLOAT;hash;$Si;65| (|x| $) (DECLARE (IGNORE $)) (HASHEQ |x|)) 
 
 (DEFUN |DFLOAT;recip;$U;66| (|x| $)
   (COND ((ZEROP |x|) (CONS 1 "failed")) ('T (CONS 0 (/ 1.0 |x|))))) 
 
-(DEFUN |DFLOAT;differentiate;2$;67| (|x| $) 0.0) 
+(DEFUN |DFLOAT;differentiate;2$;67| (|x| $) (DECLARE (IGNORE $)) 0.0) 
 
 (DEFUN |DFLOAT;Gamma;2$;68| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 94))) 
@@ -570,12 +591,14 @@
 (DEFUN |DFLOAT;Beta;3$;69| (|x| |y| $)
   (SPADCALL |x| |y| (|getShellEntry| $ 96))) 
 
-(DEFUN |DFLOAT;wholePart;$I;70| (|x| $) (FIX |x|)) 
+(DEFUN |DFLOAT;wholePart;$I;70| (|x| $)
+  (DECLARE (IGNORE $))
+  (FIX |x|)) 
 
 (DEFUN |DFLOAT;float;2IPi$;71| (|ma| |ex| |b| $)
   (* |ma| (EXPT (FLOAT |b| |$DoubleFloatMaximum|) |ex|))) 
 
-(DEFUN |DFLOAT;convert;2$;72| (|x| $) |x|) 
+(DEFUN |DFLOAT;convert;2$;72| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
 (DEFUN |DFLOAT;convert;$F;73| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 102))) 
@@ -643,7 +666,9 @@
 (DEFUN |DFLOAT;sign;$I;80| (|x| $)
   (|DFLOAT;retract;$I;78| (FLOAT-SIGN |x| 1.0) $)) 
 
-(DEFUN |DFLOAT;abs;2$;81| (|x| $) (FLOAT-SIGN 1.0 |x|)) 
+(DEFUN |DFLOAT;abs;2$;81| (|x| $)
+  (DECLARE (IGNORE $))
+  (FLOAT-SIGN 1.0 |x|)) 
 
 (DEFUN |DFLOAT;manexp| (|x| $)
   (PROG (|s| #0=#:G1523 |me| |two53|)
