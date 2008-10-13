@@ -12,9 +12,11 @@
 (PUT '|SETCAT-;latex;SS;2| '|SPADreplace|
      '(XLAM (|s|) "\\mbox{\\bf Unimplemented}")) 
 
-(DEFUN |SETCAT-;hash;SSi;1| (|s| $) 0) 
+(DEFUN |SETCAT-;hash;SSi;1| (|s| $) (DECLARE (IGNORE $)) 0) 
 
-(DEFUN |SETCAT-;latex;SS;2| (|s| $) "\\mbox{\\bf Unimplemented}") 
+(DEFUN |SETCAT-;latex;SS;2| (|s| $)
+  (DECLARE (IGNORE $))
+  "\\mbox{\\bf Unimplemented}") 
 
 (DEFUN |SetCategory&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)

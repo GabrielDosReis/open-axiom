@@ -302,34 +302,38 @@
        (EXIT (COND
                (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 18))))))) 
 
-(DEFUN |INT;zero?;$B;6| (|x| $) (ZEROP |x|)) 
+(DEFUN |INT;zero?;$B;6| (|x| $) (DECLARE (IGNORE $)) (ZEROP |x|)) 
 
-(DEFUN |INT;one?;$B;7| (|x| $) (EQL |x| 1)) 
+(DEFUN |INT;one?;$B;7| (|x| $) (DECLARE (IGNORE $)) (EQL |x| 1)) 
 
-(DEFUN |INT;Zero;$;8| ($) 0) 
+(DEFUN |INT;Zero;$;8| ($) (DECLARE (IGNORE $)) 0) 
 
-(DEFUN |INT;One;$;9| ($) 1) 
+(DEFUN |INT;One;$;9| ($) (DECLARE (IGNORE $)) 1) 
 
-(DEFUN |INT;base;$;10| ($) 2) 
+(DEFUN |INT;base;$;10| ($) (DECLARE (IGNORE $)) 2) 
 
-(DEFUN |INT;copy;2$;11| (|x| $) |x|) 
+(DEFUN |INT;copy;2$;11| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
-(DEFUN |INT;inc;2$;12| (|x| $) (+ |x| 1)) 
+(DEFUN |INT;inc;2$;12| (|x| $) (DECLARE (IGNORE $)) (+ |x| 1)) 
 
-(DEFUN |INT;dec;2$;13| (|x| $) (- |x| 1)) 
+(DEFUN |INT;dec;2$;13| (|x| $) (DECLARE (IGNORE $)) (- |x| 1)) 
 
-(DEFUN |INT;hash;$Si;14| (|x| $) (SXHASH |x|)) 
+(DEFUN |INT;hash;$Si;14| (|x| $) (DECLARE (IGNORE $)) (SXHASH |x|)) 
 
-(DEFUN |INT;negative?;$B;15| (|x| $) (MINUSP |x|)) 
+(DEFUN |INT;negative?;$B;15| (|x| $)
+  (DECLARE (IGNORE $))
+  (MINUSP |x|)) 
 
 (DEFUN |INT;coerce;$Of;16| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 37))) 
 
-(DEFUN |INT;coerce;2$;17| (|m| $) |m|) 
+(DEFUN |INT;coerce;2$;17| (|m| $) (DECLARE (IGNORE $)) |m|) 
 
-(DEFUN |INT;convert;2$;18| (|x| $) |x|) 
+(DEFUN |INT;convert;2$;18| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
-(DEFUN |INT;length;2$;19| (|a| $) (INTEGER-LENGTH |a|)) 
+(DEFUN |INT;length;2$;19| (|a| $)
+  (DECLARE (IGNORE $))
+  (INTEGER-LENGTH |a|)) 
 
 (DEFUN |INT;addmod;4$;20| (|a| |b| |p| $)
   (PROG (|c| #0=#:G1432)
@@ -356,12 +360,16 @@
 (DEFUN |INT;convert;$F;23| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 46))) 
 
-(DEFUN |INT;convert;$Df;24| (|x| $) (FLOAT |x| |$DoubleFloatMaximum|)) 
+(DEFUN |INT;convert;$Df;24| (|x| $)
+  (DECLARE (IGNORE $))
+  (FLOAT |x| |$DoubleFloatMaximum|)) 
 
 (DEFUN |INT;convert;$If;25| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 51))) 
 
-(DEFUN |INT;convert;$S;26| (|x| $) (STRINGIMAGE |x|)) 
+(DEFUN |INT;convert;$S;26| (|x| $)
+  (DECLARE (IGNORE $))
+  (STRINGIMAGE |x|)) 
 
 (DEFUN |INT;latex;$S;27| (|x| $)
   (PROG (|s|)
@@ -379,45 +387,55 @@
          (COND ((MINUSP |b|) (- |r| |b|)) ('T (+ |r| |b|))))
         ('T |r|))))) 
 
-(DEFUN |INT;reducedSystem;2M;29| (|m| $) |m|) 
+(DEFUN |INT;reducedSystem;2M;29| (|m| $) (DECLARE (IGNORE $)) |m|) 
 
 (DEFUN |INT;reducedSystem;MVR;30| (|m| |v| $) (CONS |m| '|vec|)) 
 
-(DEFUN |INT;abs;2$;31| (|x| $) (ABS |x|)) 
+(DEFUN |INT;abs;2$;31| (|x| $) (DECLARE (IGNORE $)) (ABS |x|)) 
 
-(DEFUN |INT;random;$;32| ($) (|random|)) 
+(DEFUN |INT;random;$;32| ($) (DECLARE (IGNORE $)) (|random|)) 
 
-(DEFUN |INT;random;2$;33| (|x| $) (RANDOM |x|)) 
+(DEFUN |INT;random;2$;33| (|x| $) (DECLARE (IGNORE $)) (RANDOM |x|)) 
 
-(DEFUN |INT;=;2$B;34| (|x| |y| $) (EQL |x| |y|)) 
+(DEFUN |INT;=;2$B;34| (|x| |y| $) (DECLARE (IGNORE $)) (EQL |x| |y|)) 
 
-(DEFUN |INT;<;2$B;35| (|x| |y| $) (< |x| |y|)) 
+(DEFUN |INT;<;2$B;35| (|x| |y| $) (DECLARE (IGNORE $)) (< |x| |y|)) 
 
-(DEFUN |INT;-;2$;36| (|x| $) (- |x|)) 
+(DEFUN |INT;-;2$;36| (|x| $) (DECLARE (IGNORE $)) (- |x|)) 
 
-(DEFUN |INT;+;3$;37| (|x| |y| $) (+ |x| |y|)) 
+(DEFUN |INT;+;3$;37| (|x| |y| $) (DECLARE (IGNORE $)) (+ |x| |y|)) 
 
-(DEFUN |INT;-;3$;38| (|x| |y| $) (- |x| |y|)) 
+(DEFUN |INT;-;3$;38| (|x| |y| $) (DECLARE (IGNORE $)) (- |x| |y|)) 
 
-(DEFUN |INT;*;3$;39| (|x| |y| $) (* |x| |y|)) 
+(DEFUN |INT;*;3$;39| (|x| |y| $) (DECLARE (IGNORE $)) (* |x| |y|)) 
 
-(DEFUN |INT;*;3$;40| (|m| |y| $) (* |m| |y|)) 
+(DEFUN |INT;*;3$;40| (|m| |y| $) (DECLARE (IGNORE $)) (* |m| |y|)) 
 
-(DEFUN |INT;**;$Nni$;41| (|x| |n| $) (EXPT |x| |n|)) 
+(DEFUN |INT;**;$Nni$;41| (|x| |n| $)
+  (DECLARE (IGNORE $))
+  (EXPT |x| |n|)) 
 
-(DEFUN |INT;odd?;$B;42| (|x| $) (ODDP |x|)) 
+(DEFUN |INT;odd?;$B;42| (|x| $) (DECLARE (IGNORE $)) (ODDP |x|)) 
 
-(DEFUN |INT;max;3$;43| (|x| |y| $) (MAX |x| |y|)) 
+(DEFUN |INT;max;3$;43| (|x| |y| $) (DECLARE (IGNORE $)) (MAX |x| |y|)) 
 
-(DEFUN |INT;min;3$;44| (|x| |y| $) (MIN |x| |y|)) 
+(DEFUN |INT;min;3$;44| (|x| |y| $) (DECLARE (IGNORE $)) (MIN |x| |y|)) 
 
-(DEFUN |INT;divide;2$R;45| (|x| |y| $) (DIVIDE2 |x| |y|)) 
+(DEFUN |INT;divide;2$R;45| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (DIVIDE2 |x| |y|)) 
 
-(DEFUN |INT;quo;3$;46| (|x| |y| $) (QUOTIENT2 |x| |y|)) 
+(DEFUN |INT;quo;3$;46| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (QUOTIENT2 |x| |y|)) 
 
-(DEFUN |INT;rem;3$;47| (|x| |y| $) (REMAINDER2 |x| |y|)) 
+(DEFUN |INT;rem;3$;47| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (REMAINDER2 |x| |y|)) 
 
-(DEFUN |INT;shift;3$;48| (|x| |y| $) (ASH |x| |y|)) 
+(DEFUN |INT;shift;3$;48| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (ASH |x| |y|)) 
 
 (DEFUN |INT;exquo;2$U;49| (|x| |y| $)
   (COND
@@ -430,12 +448,14 @@
     ((OR (EQL |x| 1) (EQL |x| -1)) (CONS 0 |x|))
     ('T (CONS 1 "failed")))) 
 
-(DEFUN |INT;gcd;3$;51| (|x| |y| $) (GCD |x| |y|)) 
+(DEFUN |INT;gcd;3$;51| (|x| |y| $) (DECLARE (IGNORE $)) (GCD |x| |y|)) 
 
 (DEFUN |INT;unitNormal;$R;52| (|x| $)
   (COND ((< |x| 0) (VECTOR -1 (- |x|) -1)) ('T (VECTOR 1 |x| 1)))) 
 
-(DEFUN |INT;unitCanonical;2$;53| (|x| $) (ABS |x|)) 
+(DEFUN |INT;unitCanonical;2$;53| (|x| $)
+  (DECLARE (IGNORE $))
+  (ABS |x|)) 
 
 (DEFUN |INT;solveLinearPolynomialEquation| (|lp| |p| $)
   (SPADCALL |lp| |p| (|getShellEntry| $ 94))) 

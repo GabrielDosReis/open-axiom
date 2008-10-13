@@ -361,15 +361,17 @@
                  |OUTFORM;doubleFloatFormat;2S;1|)
            (SETELT $ 6 |s|) (EXIT |ss|))))) 
 
-(DEFUN |OUTFORM;sform| (|s| $) |s|) 
+(DEFUN |OUTFORM;sform| (|s| $) (DECLARE (IGNORE $)) |s|) 
 
-(DEFUN |OUTFORM;eform| (|e| $) |e|) 
+(DEFUN |OUTFORM;eform| (|e| $) (DECLARE (IGNORE $)) |e|) 
 
-(DEFUN |OUTFORM;iform| (|i| $) |i|) 
+(DEFUN |OUTFORM;iform| (|i| $) (DECLARE (IGNORE $)) |i|) 
 
-(DEFUN |OUTFORM;bless| (|x| $) |x|) 
+(DEFUN |OUTFORM;bless| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
-(DEFUN |OUTFORM;print;$V;6| (|x| $) (|mathprint| |x|)) 
+(DEFUN |OUTFORM;print;$V;6| (|x| $)
+  (DECLARE (IGNORE $))
+  (|mathprint| |x|)) 
 
 (DEFUN |OUTFORM;message;S$;7| (|s| $)
   (COND
@@ -379,16 +381,18 @@
 (DEFUN |OUTFORM;messagePrint;SV;8| (|s| $)
   (|mathprint| (|OUTFORM;message;S$;7| |s| $))) 
 
-(DEFUN |OUTFORM;=;2$B;9| (|a| |b| $) (EQUAL |a| |b|)) 
+(DEFUN |OUTFORM;=;2$B;9| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (EQUAL |a| |b|)) 
 
 (DEFUN |OUTFORM;=;3$;10| (|a| |b| $)
   (|OUTFORM;bless| (LIST "=" |a| |b|) $)) 
 
-(DEFUN |OUTFORM;coerce;2$;11| (|a| $) |a|) 
+(DEFUN |OUTFORM;coerce;2$;11| (|a| $) (DECLARE (IGNORE $)) |a|) 
 
-(DEFUN |OUTFORM;outputForm;I$;12| (|n| $) |n|) 
+(DEFUN |OUTFORM;outputForm;I$;12| (|n| $) (DECLARE (IGNORE $)) |n|) 
 
-(DEFUN |OUTFORM;outputForm;S$;13| (|e| $) |e|) 
+(DEFUN |OUTFORM;outputForm;S$;13| (|e| $) (DECLARE (IGNORE $)) |e|) 
 
 (DEFUN |OUTFORM;outputForm;Df$;14| (|f| $)
   (FORMAT NIL (|getShellEntry| $ 6) |f|)) 
@@ -401,17 +405,25 @@
           (|getShellEntry| $ 29))
       $)) 
 
-(DEFUN |OUTFORM;width;$I;16| (|a| $) (|outformWidth| |a|)) 
+(DEFUN |OUTFORM;width;$I;16| (|a| $)
+  (DECLARE (IGNORE $))
+  (|outformWidth| |a|)) 
 
-(DEFUN |OUTFORM;height;$I;17| (|a| $) (|height| |a|)) 
+(DEFUN |OUTFORM;height;$I;17| (|a| $)
+  (DECLARE (IGNORE $))
+  (|height| |a|)) 
 
-(DEFUN |OUTFORM;subHeight;$I;18| (|a| $) (|subspan| |a|)) 
+(DEFUN |OUTFORM;subHeight;$I;18| (|a| $)
+  (DECLARE (IGNORE $))
+  (|subspan| |a|)) 
 
-(DEFUN |OUTFORM;superHeight;$I;19| (|a| $) (|superspan| |a|)) 
+(DEFUN |OUTFORM;superHeight;$I;19| (|a| $)
+  (DECLARE (IGNORE $))
+  (|superspan| |a|)) 
 
-(DEFUN |OUTFORM;height;I;20| ($) 20) 
+(DEFUN |OUTFORM;height;I;20| ($) (DECLARE (IGNORE $)) 20) 
 
-(DEFUN |OUTFORM;width;I;21| ($) 66) 
+(DEFUN |OUTFORM;width;I;21| ($) (DECLARE (IGNORE $)) 66) 
 
 (DEFUN |OUTFORM;center;$I$;22| (|a| |w| $)
   (|OUTFORM;hconcat;3$;48|
@@ -650,7 +662,9 @@
                       (EXIT (COND ((GET |e| 'INFIXOP) 'T) ('T 'NIL)))))
            #0# (EXIT #0#))))) 
 
-(DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $) (CONS |a| |l|)) 
+(DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $)
+  (DECLARE (IGNORE $))
+  (CONS |a| |l|)) 
 
 (DEFUN |OUTFORM;prefix;$L$;76| (|a| |l| $)
   (COND

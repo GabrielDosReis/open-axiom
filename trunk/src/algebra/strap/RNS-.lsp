@@ -34,7 +34,7 @@
                     |%Thing|)
                 |RNS-;patternMatch;SP2Pmr;10|)) 
 
-(DEFUN |RNS-;characteristic;Nni;1| ($) 0) 
+(DEFUN |RNS-;characteristic;Nni;1| ($) (DECLARE (IGNORE $)) 0) 
 
 (DEFUN |RNS-;fractionPart;2S;2| (|x| $)
   (SPADCALL |x| (SPADCALL |x| (|getShellEntry| $ 9))

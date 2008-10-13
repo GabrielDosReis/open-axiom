@@ -123,23 +123,31 @@
                     |%Thing|)
                 |ILIST;mergeSort|)) 
 
-(DEFUN |ILIST;#;$Nni;1| (|x| $) (LENGTH |x|)) 
+(DEFUN |ILIST;#;$Nni;1| (|x| $) (DECLARE (IGNORE $)) (LENGTH |x|)) 
 
-(DEFUN |ILIST;concat;S2$;2| (|s| |x| $) (CONS |s| |x|)) 
+(DEFUN |ILIST;concat;S2$;2| (|s| |x| $)
+  (DECLARE (IGNORE $))
+  (CONS |s| |x|)) 
 
-(DEFUN |ILIST;eq?;2$B;3| (|x| |y| $) (EQ |x| |y|)) 
+(DEFUN |ILIST;eq?;2$B;3| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (EQ |x| |y|)) 
 
-(DEFUN |ILIST;first;$S;4| (|x| $) (|SPADfirst| |x|)) 
+(DEFUN |ILIST;first;$S;4| (|x| $)
+  (DECLARE (IGNORE $))
+  (|SPADfirst| |x|)) 
 
-(DEFUN |ILIST;elt;$firstS;5| (|x| T0 $) (|SPADfirst| |x|)) 
+(DEFUN |ILIST;elt;$firstS;5| (|x| T0 $)
+  (DECLARE (IGNORE $))
+  (|SPADfirst| |x|)) 
 
-(DEFUN |ILIST;empty;$;6| ($) NIL) 
+(DEFUN |ILIST;empty;$;6| ($) (DECLARE (IGNORE $)) NIL) 
 
-(DEFUN |ILIST;empty?;$B;7| (|x| $) (NULL |x|)) 
+(DEFUN |ILIST;empty?;$B;7| (|x| $) (DECLARE (IGNORE $)) (NULL |x|)) 
 
-(DEFUN |ILIST;rest;2$;8| (|x| $) (CDR |x|)) 
+(DEFUN |ILIST;rest;2$;8| (|x| $) (DECLARE (IGNORE $)) (CDR |x|)) 
 
-(DEFUN |ILIST;elt;$rest$;9| (|x| T1 $) (CDR |x|)) 
+(DEFUN |ILIST;elt;$rest$;9| (|x| T1 $) (DECLARE (IGNORE $)) (CDR |x|)) 
 
 (DEFUN |ILIST;setfirst!;$2S;10| (|x| |s| $)
   (COND
@@ -165,13 +173,17 @@
      (|error| "Cannot update an empty list"))
     ('T (QCDR (RPLACD |x| |y|))))) 
 
-(DEFUN |ILIST;construct;L$;14| (|l| $) |l|) 
+(DEFUN |ILIST;construct;L$;14| (|l| $) (DECLARE (IGNORE $)) |l|) 
 
-(DEFUN |ILIST;parts;$L;15| (|s| $) |s|) 
+(DEFUN |ILIST;parts;$L;15| (|s| $) (DECLARE (IGNORE $)) |s|) 
 
-(DEFUN |ILIST;reverse!;2$;16| (|x| $) (NREVERSE |x|)) 
+(DEFUN |ILIST;reverse!;2$;16| (|x| $)
+  (DECLARE (IGNORE $))
+  (NREVERSE |x|)) 
 
-(DEFUN |ILIST;reverse;2$;17| (|x| $) (REVERSE |x|)) 
+(DEFUN |ILIST;reverse;2$;17| (|x| $)
+  (DECLARE (IGNORE $))
+  (REVERSE |x|)) 
 
 (DEFUN |ILIST;minIndex;$I;18| (|x| $) (|getShellEntry| $ 7)) 
 

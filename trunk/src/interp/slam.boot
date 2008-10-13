@@ -54,7 +54,8 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   cacheCount:= getCacheCount op
   cacheCount = "all" => reportFunctionCacheAll(op,nam,argl,body)
   cacheCount = 0 or null argl =>
-    fun:= [nam,["LAMBDA",[:argl,'envArg],body]]
+    fun:= [nam,["LAMBDA",[:argl,'envArg],
+                 declareGlobalVariables [minivectorName],body]]
     compileInteractive fun
     nam
   num :=

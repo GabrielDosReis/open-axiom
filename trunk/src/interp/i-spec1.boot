@@ -177,7 +177,8 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   --
   -- MCD 13/3/96
   if not $definingMap and ($genValue or $compilingMap) then
-    fun := [$mapName,["LAMBDA",[:vars,'envArg],body]]
+    fun := [$mapName,["LAMBDA",[:vars,'envArg],
+                        declareGlobalVariables [minivectorName],body]]
     code :=  wrap compileInteractive fun
   else
     $freeVariables := []

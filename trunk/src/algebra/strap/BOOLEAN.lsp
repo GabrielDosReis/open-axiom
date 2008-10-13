@@ -79,13 +79,13 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Thing|)
                 |BOOLEAN;coerce;$Of;23|)) 
 
-(DEFUN |BOOLEAN;test;2$;1| (|a| $) |a|) 
+(DEFUN |BOOLEAN;test;2$;1| (|a| $) (DECLARE (IGNORE $)) |a|) 
 
 (DEFUN |BOOLEAN;nt| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
 
-(DEFUN |BOOLEAN;true;$;3| ($) 'T) 
+(DEFUN |BOOLEAN;true;$;3| ($) (DECLARE (IGNORE $)) 'T) 
 
-(DEFUN |BOOLEAN;false;$;4| ($) NIL) 
+(DEFUN |BOOLEAN;false;$;4| ($) (DECLARE (IGNORE $)) NIL) 
 
 (DEFUN |BOOLEAN;not;2$;5| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
 
@@ -108,16 +108,20 @@
 (DEFUN |BOOLEAN;nand;3$;13| (|a| |b| $)
   (COND (|a| (|BOOLEAN;nt| |b| $)) ('T 'T))) 
 
-(DEFUN |BOOLEAN;=;3$;14| (|a| |b| $) (EQ |a| |b|)) 
+(DEFUN |BOOLEAN;=;3$;14| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (EQ |a| |b|)) 
 
 (DEFUN |BOOLEAN;implies;3$;15| (|a| |b| $) (COND (|a| |b|) ('T 'T))) 
 
-(DEFUN |BOOLEAN;equiv;3$;16| (|a| |b| $) (EQ |a| |b|)) 
+(DEFUN |BOOLEAN;equiv;3$;16| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (EQ |a| |b|)) 
 
 (DEFUN |BOOLEAN;<;3$;17| (|a| |b| $)
   (COND (|b| (|BOOLEAN;nt| |a| $)) ('T 'NIL))) 
 
-(DEFUN |BOOLEAN;size;Nni;18| ($) 2) 
+(DEFUN |BOOLEAN;size;Nni;18| ($) (DECLARE (IGNORE $)) 2) 
 
 (DEFUN |BOOLEAN;index;Pi$;19| (|i| $)
   (COND ((SPADCALL |i| (|getShellEntry| $ 26)) 'NIL) ('T 'T))) 
