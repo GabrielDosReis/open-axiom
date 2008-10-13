@@ -34,7 +34,7 @@ IOMode(): Public == Private where
   Private == add
     input == _$InputIOMode$Lisp
     output == _$OutputIOMode$Lisp
-    bothWays == _$BothWaysIOode$Lisp
+    bothWays == _$BothWaysIOmode$Lisp
     x = y == EQ(x,y)$Lisp
     coerce m ==
       m = input => outputForm 'input

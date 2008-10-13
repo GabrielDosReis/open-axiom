@@ -91,7 +91,7 @@ retract object ==
   STRINGP type => 'failed
   type = $EmptyMode => 'failed
   val := objVal object
-  not isWrapped val and val isnt ['MAP,:.] => 'failed
+  not isWrapped val and val isnt ["%Map",:.] => 'failed
   type' := equiType(type)
   (ans := retract1 objNew(val,equiType(type))) = 'failed => ans
   objNew(objVal ans,eqType objMode ans)

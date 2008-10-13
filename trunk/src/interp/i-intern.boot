@@ -399,7 +399,7 @@ getValueFromSpecificEnvironment(id,mode,e) ==
         systemErrorHere '"getValueFromSpecificEnvironment"
       v := objValUnwrap u
       mode isnt ['Mapping,:mapSig] => v
-      v isnt ['MAP,:.] => v
+      v isnt ["%Map",:.] => v
       v' := coerceInt(u,mode)
       null v' => throwKeyedMsg("S2IC0002",[objMode u,mode])
       objValUnwrap v'

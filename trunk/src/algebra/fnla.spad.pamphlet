@@ -63,6 +63,7 @@ Commutator: Export == Implement where
 	++ mkcomm(i,j) \undocumented{}
 
    Implement == add
+     import OSI
      P   :=  Record(left:%,right:%)
      Rep := Union(OSI,P)
      x,y: %
