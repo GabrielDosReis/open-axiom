@@ -1,5 +1,9 @@
 2008-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nlib.lisp (rpackfile): Remove obsolete code.
+
+2008-10-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (backendCompileNEWNAM): New.
 	(pushLocalVariable): Likewise.
 	(mutateToBackendCode): Likewise.
