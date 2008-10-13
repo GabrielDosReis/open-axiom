@@ -2,6 +2,9 @@
 === TODO ===
 ============
 
+* Finish Bemol backend.
+* Finish JVM backend.
+* Generate better codes for scripts.
 * Fix STREAM implementation (dynamic semantics rules violation).
 * Fix compilation of domain where withon is empty.
 * Improve overload resolution routines.
