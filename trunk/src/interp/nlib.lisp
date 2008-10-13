@@ -209,29 +209,9 @@
 (defun rpackfile (filespec)
   (setq filespec (make-filename filespec))
   (if (string= (pathname-type filespec) "NRLIB")
-#-:GCL (recompile-lib-file-if-necessary 
-         (concat (namestring filespec) "/code.lsp"))
+      (recompile-lib-file-if-necessary 
+       (concat (namestring filespec) "/code.lsp"))
 
-;; When we compile an algebra file we create an NRLIB directory which contains
-;; several files. One of the files is named [[code.lsp]]. 
-;; On certain platforms this causes linking problems for GCL. 
-;; The problem is that the compiler produces an init code block which is
-;; sensitive to the name of the source file.
-;; Since all of the [[code.lsp]] files have the same name all of
-;; the init blocks have the same name. At link time this causes
-;; the names to collide. Here we rename the file before we compile,
-;; do the compile, and then rename the result back to [[code.o]].
-;; This code used to read:
-;; but has been changed to read:
-#+:GCL (let* ((base (pathname-name filespec))
-             (code (concatenate 'string (namestring filespec) "/code.lsp"))
-             (temp (concatenate 'string (namestring filespec) "/" base ".lsp"))
-             (o (make-pathname :type "o")))
-        (si::system (format nil "cp ~S ~S" code temp))
-        (recompile-lib-file-if-necessary temp)
-        (|renameFile|
-           (namestring (merge-pathnames o temp))
-           (namestring (merge-pathnames o code))))
   ;; only pack non libraries to avoid lucid file handling problems    
     (let* ((rstream (rdefiostream (list (cons 'file filespec) (cons 'mode 'input))))
            (nstream nil)
