@@ -1,5 +1,10 @@
 2008-10-13  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 
+	Fix AW/338
+	* algebra/fspace.spad.pamphlet (smprep$FunctionSpace): Fix thinko
+
+2008-10-13  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
 	Fix AW/292
 	* algebra/defintef.spad.pamphlet (checkForPole): Handler exponention.
 	(checkSMP): Likewise.
