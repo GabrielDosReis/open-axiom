@@ -1,5 +1,11 @@
 2008-10-13  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 
+	Fix AW/292
+	* algebra/defintef.spad.pamphlet (checkForPole): Handler exponention.
+	(checkSMP): Likewise.
+
+2008-10-13  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
 	Fix AW/23
 	* algebra/fspace.spad.pamphlet (isExpt): Tidy.
 	* algebra/algfunc.spad.pamphlet (inroot): Likewise. 
