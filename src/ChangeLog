@@ -1,3 +1,9 @@
+2008-10-13  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+
+	Fix AW/23
+	* algebra/fspace.spad.pamphlet (isExpt): Tidy.
+	* algebra/algfunc.spad.pamphlet (inroot): Likewise. 
+
 2008-10-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Don't step over Common Lisp MAP.
