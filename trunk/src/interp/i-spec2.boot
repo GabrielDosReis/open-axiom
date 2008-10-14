@@ -796,7 +796,7 @@ upQUOTE t ==
     IDENTP expr =>
 --    $useSymbolNotVariable => $Symbol
       ['Variable,expr]
-    $OutputForm
+    $InputForm
   evalQUOTE(op,[expr],ms)
   putModeSet(op,ms)
 

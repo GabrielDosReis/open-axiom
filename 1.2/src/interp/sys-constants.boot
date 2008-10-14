@@ -380,6 +380,10 @@ $EmptyMode ==
 $OutputForm ==
   '(OutputForm)
 
+++ The InputForm domain form
+$InputForm ==
+  '(InputForm)
+
 ++ The domain constructor for functional expression
 $FunctionalExpression ==
   'Expression
