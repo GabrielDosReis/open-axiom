@@ -634,7 +634,7 @@ FunctionSpace(R:OrderedSet): Category == Definition where
       -- op(arg)**m ==> func(arg)**(m quo n) * op(arg)**(m rem n)
       smprep(lop, lexp, lfunc, p) ==
         (v := mainVariable p) case "failed" => p::%
-        symbolIfCan(k := v::K) case SY => p::%
+        k := v::K
         g := (op := operator k)
            (arg := [eval(a,lop,lexp,lfunc) for a in argument k]$List(%))
         q := map(eval(#1::%, lop, lexp, lfunc),

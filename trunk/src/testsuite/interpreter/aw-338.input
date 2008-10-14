@@ -1,0 +1,3 @@
+g := operator 'g
+eval(a*g(1783),g, i +-> i)
+-- expected: 1783 a
