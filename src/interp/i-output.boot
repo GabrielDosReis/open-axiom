@@ -2581,3 +2581,99 @@ maPrin u ==
     form
   if ^$collectOutput then PRETTYPRINT(u,$algebraOutputStream)
   nil
+
+
+--% Rendering of InputForm
+
+$allClassicOps == 
+  ["~","#","-","**","^","*","/","rem","quo","+","-",
+    "@","::","$", "pretend"]
+
+isUnaryPrefix op ==
+  op in '(_~ _# _-)
+
+primaryForm2String x ==
+  x = nil => '""
+  STRINGP x => x
+  x = $EmptyMode => specialChar 'quad
+  IDENTP x => SYMBOL_-NAME x
+  atom x => WRITE_-TO_-STRING x
+  strconc('"(",inputForm2String x, '")")
+
+callForm2String x ==
+  atom x => primaryForm2String x
+  [op,:args] := x
+
+  op in $allClassicOps => primaryForm2String x
+
+  #args = 0 =>
+    op = "Zero" => '"0"
+    op = "One" => '"1"
+    constructor? op => primaryForm2String op
+    strconc(inputForm2String op, '"()")
+
+  "strconc"/[inputForm2String op, '"(",:args','")"] where
+    args' := [toString(a,i) for a in args for i in 0..]
+    toString(a,i) ==
+      i = 0 => inputForm2String a
+      strconc('",",inputForm2String a)
+  
+typedForm2String(s,x,t) ==
+  s = "pretend" =>
+    strconc(primaryForm2String x, '" pretend ", callForm2String t)
+  strconc(primaryForm2String x, SYMBOL_-NAME s, callForm2String t)
+
+expForm2String x ==
+  x is [op,lhs,rhs] and op in '(** _^) =>
+    strconc(expForm2String lhs,'"^", primaryForm2String rhs)
+  callForm2String x
+
+unaryForm2String x ==
+  x is [op,arg] and isUnaryPrefix op =>
+    strconc(inputForm2String op, inputForm2String arg)
+  expForm2String x
+
+multForm2String x ==
+  x isnt ["*",lhs,rhs] => unaryForm2String x
+  strconc(multForm2String lhs,'"*", multForm2String rhs)
+
+divForm2String x ==
+  x isnt ["/",lhs,rhs] => multForm2String x
+  strconc(divForm2String lhs,'"/", expForm2String rhs)
+
+remForm2String x ==
+  x isnt ["rem",lhs,rhs] => divForm2String x  
+  strconc(divForm2String lhs,'" rem ", multForm2String rhs)
+
+quoForm2String x ==
+  x isnt ["quo",lhs,rhs] => remForm2String x
+  strconc(quoForm2String lhs,'" quo ", remForm2String rhs)
+
+plusForm2String x ==
+  x isnt ["+",lhs,rhs] => quoForm2String x
+  strconc(plusForm2String lhs,'" + ", plusForm2String rhs)
+  
+minusForm2String x ==
+  x isnt ["-",lhs,rhs] => plusForm2String x
+  strconc(minusForm2String lhs,'" - ", minusForm2String rhs)
+
+inputForm2String x ==
+  atom x => primaryForm2String x
+  [op,:args] := x
+  isUnaryPrefix op and #args = 1 => unaryForm2String x
+  #args = 2 =>
+    op in '(** _^) => expForm2String x
+    op = "*" => multForm2String x
+    op = "/" => divForm2String x
+    op = "rem" => remForm2String x
+    op = "quo" => quoForm2String x
+    op = "+" => plusForm2String x
+    op = "-" => minusForm2String x
+    op in '(_@ _:_: $ pretend) =>
+      typedForm2String(op, first args, second args)
+    callForm2String x
+  callForm2String x
+
+inputForm2OutputForm x ==
+  INTERN inputForm2String x
+

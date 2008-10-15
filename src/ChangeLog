@@ -1,5 +1,13 @@
 2008-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/mkfunc.spad.pamphlet (coerce$InputForm): Display
+	InputForm as a one-dimensional stream of characters suitable
+	for input to the interpreter.
+	* interp/i-output.boot: Implement conversion of InputForm to
+	displayed OutputForm.
+
+2008-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-spec2.boot (upQUOTE): Quoted forms belong to InputForm.
 	* interp/sys-constants.boot ($InputForm): New.
 
