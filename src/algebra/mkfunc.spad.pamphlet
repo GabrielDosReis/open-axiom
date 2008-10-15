@@ -139,8 +139,7 @@ InputForm():
       error ["strsym: form", s, "is neither a string or symbol"]
 
     unparse x ==
-      atom?(s:% := form2String(x)$Lisp) => strsym s
-      concat [strsym a for a in destruct s]
+      inputForm2String(x)$Lisp
 
     parseString x ==
       ncParseFromString(x)$Lisp
