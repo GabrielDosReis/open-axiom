@@ -1,21 +1,25 @@
 \documentclass{article}
 \usepackage{axiom}
-\begin{document}
-\title{\$SPAD/src/algebra mkfunc.spad}
+
+\title{src/algebra mkfunc.spad}
 \author{Manuel Bronstein}
+
+\begin{document}
 \maketitle
+
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain INFORM InputForm}
+
 <<domain INFORM InputForm>>=
 )abbrev domain INFORM InputForm
 ++ Parser forms
 ++ Author: Manuel Bronstein
 ++ Date Created: ???
-++ Date Last Updated: 19 April 1991
+++ Date Last Updated: October 14, 2008
 ++ Description:
 ++   Domain of parsed forms which can be passed to the interpreter.
 ++   This is also the interface between algebra code and facilities
@@ -189,6 +193,11 @@ InputForm():
     s1 / s2 ==
       s2 = 1 => s1
       conv [convert("/"::Symbol), s1, s2]$List(%)
+
+    -- A displayed form of an InputForm should be suitable as
+    -- input to the interpreter parser.
+    coerce(x: %): OutputForm ==
+      inputForm2OutputForm(x)$Lisp
 
 @
 \section{package INFORM1 InputFormFunctions1}
