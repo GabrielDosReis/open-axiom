@@ -83,7 +83,7 @@ foo defined inside of fum gets renamed as fum,foo.")
          (argl (DEF-INSERT_LET argl))
          (arglp (DEF-STRINGTOQUOTE argl))
          ($body (|bootTransform| $body)))
-      (COMP (SUBLIS $OPASSOC (list (list $OP (list 'LAM arglp $body)))))))
+      (|backendCompile| (SUBLIS $OPASSOC (list (list $OP (list 'LAM arglp $body)))))))
 
 ; We are making shallow binding cells for these functions as well
 
@@ -139,7 +139,7 @@ foo defined inside of fum gets renamed as fum,foo.")
         ($BODY (SUBLISLIS GARGL ARGL (|bootTransform| (DEFTRAN $BODY))))
         ($BODY (LIST 'SUBLISLIS (CONS 'LIST GARGL) (LIST 'QUOTE GARGL)
                      (LIST 'QUOTE $BODY))))
-   (COMP (SUBLIS $OPASSOC
+   (|backendCompile| (SUBLIS $OPASSOC
                  (LIST (LIST $OP (LIST 'MLAMBDA (CONS () GARGL) $BODY)))))))
 
 (defun DEF-INNER (FORM SIGNATURE $BODY)
@@ -147,7 +147,7 @@ foo defined inside of fum gets renamed as fum,foo.")
  (let ($OpAssoc ($op (first form)) (argl (rest form)))
    (let* ((ARGL (DEF-INSERT_LET ARGL))
           (ARGLP (DEF-STRINGTOQUOTE ARGL)))
-    (COMP (SUBLIS $OPASSOC `((,$OP (LAM ,ARGLP ,$BODY))))))))
+    (|backendCompile| (SUBLIS $OPASSOC `((,$OP (LAM ,ARGLP ,$BODY))))))))
 
 (defun DEF-INSERT_LET (X)
   (if (ATOM X) X

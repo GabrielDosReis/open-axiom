@@ -98,7 +98,7 @@
  
 (defun heapelapsed () 0)
  
-(defun /COMP () (if (fboundp 'COMP) 'COMP 'COMP370))
+(defun /COMP () (if (fboundp '|backendCompile|) '|backendCompile| 'COMP370))
  
 (defvar /fn nil)
 
@@ -869,7 +869,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
        (APPEND /TRACELETNAMES (LIST 'tracelet))))
  
 (DEFUN /TRACELET-2 (FN OPTIONL &AUX ($TRACELETFLAG T))
-  (/D-1 (CONS FN OPTIONL) 'COMP NIL NIL)
+  (/D-1 (CONS FN OPTIONL) '|backendCompile| NIL NIL)
   (SETQ /TRACELETNAMES
         (if (ATOM /TRACELETNAMES) (LIST FN) (CONS FN /TRACELETNAMES)))
   FN)
@@ -896,7 +896,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
      (PROGN (PRINT (STRCONC (PNAME X) " not tracelet")) (TERPRI)))
     ((PROGN
        (/UNTRACELET-2 X)
-       (/D-1 (LIST X) 'COMP NIL NIL)))))
+       (/D-1 (LIST X) '|backendCompile| NIL NIL)))))
  
 (DEFUN /UNTRACELET-2 (X)
   (SETQ /TRACELETNAMES (REMOVE X /TRACELETNAMES))

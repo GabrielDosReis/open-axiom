@@ -1276,3 +1276,45 @@ transformToBackendCode x ==
       RPLACD(lastdecl, body)
     RPLACD(lastdecl, [declareGlobalVariables fluids,:body])
   x
+
+backendCompile1 x ==
+  fname := first x
+  $FUNNAME: local := fname
+  $FUNNAME__TAIL: local := [fname]
+  lamex := second x
+  $CLOSEDFNS: local := []
+  lamex := transformToBackendCode lamex
+  backendCompileNEWNAM lamex
+  -- Note that category constructors are evaluated before they
+  -- their compiled, so this noise is not very helpful.
+  if $verbose and FBOUNDP fname then
+    FORMAT(true,'"~&~%;;;     ***       ~S REDEFINED~%",fname)
+  [[fname,lamex],:$CLOSEDFNS]
+
+backendCompile l ==
+  MAPCAR(function backendCompile2, MAPCAN(function backendCompile1,l))
+
+compileFileQuietly path ==
+  quietlyIfInteractive COMPILE_-FILE path
+
+compAndDefine l ==
+  _*COMP370_-APPLY_* := "PRINT-AND-EVAL-DEFUN"
+  backendCompile l
+
+compQuietly fn ==
+  _*COMP370_-APPLY_* :=
+    $InteractiveMode =>
+      $compileDontDefineFunctions => "COMPILE-DEFUN"
+      "EVAL-DEFUN"
+    "PRINT-DEFUN"
+  quietlyIfInteractive backendCompile fn
+
+compileQuietly fn ==
+  _*COMP370_-APPLY_* :=
+     $InteractiveMode =>
+       $compileDontDefineFunctions => "COMPILE-DEFUN"
+       "EVAL-DEFUN"
+     "PRINT-DEFUN"
+  quietlyIfInteractive COMP370 fn
+
+

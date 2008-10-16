@@ -65,7 +65,7 @@ namespace BOOT
 --     entries have their use count set
 --     to 0 on garbage collection; those with 0 use count at garbage collection
 --     are cleared
--- see definition of COMP,2 in COMP LISP which calls clamComp below
+-- see definition of backendCompile2 in c-util which calls clamComp below
 
 ++
 $hashNode := [[]]
