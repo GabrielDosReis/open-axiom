@@ -541,7 +541,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
        --this is used below to set $lisplibSlot1 global
     $NRTaddForm: local := nil   -- see compAdd; NRTmakeSlot1
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
-    $NRTdeltaListComp: local := nil --list of COMP-ed forms for $NRTdeltaList
+    $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTaddList: local := nil --list of fncts not defined in capsule (added)
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
     $NRTloadTimeAlist: local := nil --used for things in slot4 (NRTsetVector4)
@@ -668,9 +668,9 @@ compFunctorBody(body,m,e,parForm) ==
   $capsuleFunctionStack := nreverse $capsuleFunctionStack
   -- ??? Don't resolve default definitions, yet.
   if $insideCategoryPackageIfTrue then
-    COMP $capsuleFunctionStack
+    backendCompile $capsuleFunctionStack
   else 
-    COMP foldExportedFunctionReferences $capsuleFunctionStack
+    backendCompile foldExportedFunctionReferences $capsuleFunctionStack
   clearCapsuleDirectory()        -- release storage.
   body is [op,:.] and MEMQ(op,'(add CAPSULE)) => T
   $NRTaddForm :=
@@ -1265,7 +1265,7 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
     $optExportedFunctionReference =>
       $capsuleFunctionStack := [form,:$capsuleFunctionStack]
       first form
-    first COMP LIST form
+    first backendCompile LIST form
   compileConstructor form
  
 compileConstructor form ==
@@ -1287,7 +1287,7 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
   compForm:= LIST [fn,[lambdaOrSlam,vl,:bodyl]]
   if getConstructorKindFromDB fn = "category"
       then u:= compAndDefine compForm
-      else u:=COMP compForm
+      else u:= backendCompile compForm
   clearConstructorCache fn      --clear cache for constructor
   first u
  

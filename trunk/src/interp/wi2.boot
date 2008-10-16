@@ -124,7 +124,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
        --this is used below to set $lisplibSlot1 global
     $NRTaddForm: local := nil   -- see compAdd; NRTmakeSlot1
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
-    $NRTdeltaListComp: local := nil --list of COMP-ed forms for $NRTdeltaList
+    $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTaddList: local := nil --list of fncts not defined in capsule (added)
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
     $NRTloadTimeAlist: local := nil --used for things in slot4 (NRTsetVector4)

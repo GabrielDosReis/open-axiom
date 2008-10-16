@@ -861,7 +861,7 @@ spadCompileOrSetq form ==
            macform := ['XLAM,vl',body]
            LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
-  $insideCapsuleFunctionIfTrue => first COMP LIST form
+  $insideCapsuleFunctionIfTrue => first backendCompile LIST form
   compileConstructor form
 
 coerceHard(T,m) ==

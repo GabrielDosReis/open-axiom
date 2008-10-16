@@ -1,5 +1,14 @@
 2008-10-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (backendCompile1): Move to c-util.boot.
+	(COMP): Likewise.  Rename to backendCompile.
+	(compileFileQuietly): Move to c-util.boot.
+	(compAndDefine): Likewise.
+	(compQuietly): Likewise.
+	(compileQuitely): Likewise.
+
+2008-10-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/mkfunc.spad.pamphlet (unparse$InputForm): Use
 	inputForm2String$Lisp. 
 
