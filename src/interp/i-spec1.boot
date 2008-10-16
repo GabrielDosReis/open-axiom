@@ -1201,9 +1201,26 @@ isDomainValuedVariable form ==
         objValUnwrap(val)
   nil
 
+
+++ returns true if category form `c1' implies category form `c2'.
+++ Both are assumed to be definite categories, i.e. they contain
+++ no variables.
+categoryImplies(c1,c2) ==
+  c2 = $Type => true
+  c1 is ["Join",:cats] =>  
+    or/[categoryImplies(c,c2) for c in cats] => true
+  c1 = c2
+  -- ??? Should also check conditional definition and
+  -- ??? possibly attributes
+
+++ returns true if domain `d' satisfies category `c'.
 evalCategory(d,c) ==
   -- tests whether domain d has category c
-  isPartialMode d or ofCategory(d,c)
+  isPartialMode d => true            -- maybe too generous
+  -- If this is a local variable then, its declared type 
+  -- must imply category `c' satisfaction.
+  IDENTP d and (m := getmode(d,$env)) => categoryImplies(m,c)
+  ofCategory(d,c)
 
 isOkInterpMode m ==
   isPartialMode(m) => isLegitimateMode(m,nil,nil)
