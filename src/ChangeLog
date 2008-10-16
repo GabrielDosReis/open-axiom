@@ -1,5 +1,9 @@
 2008-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/scan.boot (scanKeyWords): `assume' is a keyword.
+
+2008-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-spec1.boot (categoryImplies): New.
 	(evalCategory): Use it.
 

@@ -59,6 +59,7 @@ QUESTION     == QENUM('"?   ",0)
 scanKeyWords == [ _
            ['"add",      "ADD" ],_
            ['"and",      "AND" ],_
+           ['"assume","ASSUME" ],_
            ['"break",   "BREAK" ],_
            ['"by",        "BY" ],_
            ['"case",     "CASE" ],_
