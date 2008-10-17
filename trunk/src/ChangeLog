@@ -1,3 +1,13 @@
+2008-10-17  Martin Rubey  <martin.rubey@univie.ac.at>
+
+	Fix AW/413, AW/414
+	* src/algebra/fr.spad.pamphlet: Fix missing returns in loops.
+	* src/algebra/gdpoly.spad.pamphlet: Likewise.
+	* src/algebra/lmdict.spad.pamphet: Likewise.
+	* src/algebra/plot3d.spad.pamphlet: Likewise.
+	* src/algebra/prs.spad.pamphlet: Likewise.
+	* src/algebra/sups.spad.pamphlet: Likewise.
+
 2008-10-17  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
