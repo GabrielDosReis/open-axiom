@@ -331,6 +331,10 @@ $SideEffectFreeFunctionList ==
 
 --% Types
 
+++ The Field category form
+$Field ==
+  '(Field)
+
 ++ The Void domain constructor form
 $Void ==
   '(Void)
