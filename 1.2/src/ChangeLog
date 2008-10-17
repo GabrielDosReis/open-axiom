@@ -1,3 +1,12 @@
+2008-10-17  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/271
+	* interp/sys-constants.boot ($Field): New.
+	* interp/i-coerce.boot (retract2Specialization): Ignore
+	expressions whose types do no belong to Field.
+	
+
 2008-10-17  Martin Rubey  <martin.rubey@univie.ac.at>
 
 	Fix AW/413, AW/414

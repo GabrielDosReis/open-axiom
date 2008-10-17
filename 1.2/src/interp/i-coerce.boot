@@ -214,10 +214,12 @@ retract2Specialization object ==
   type is ['Expression,D] =>
     atom val' => nil          -- certainly not a fraction
     [num,:den] := val'
-    -- coerceRetract already handles case where den = 1
-    num isnt [0,:num] => NIL
-    den isnt [0,:den] => NIL
-    objNewWrap([num,:den],[$QuotientField, D])
+    ofCategory(type,$Field) =>
+      -- coerceRetract already handles case where den = 1
+      num isnt [0,:num] => NIL
+      den isnt [0,:den] => NIL
+      objNewWrap([num,:den],[$QuotientField, D])
+    nil
   type is ['SimpleAlgebraicExtension,k,rep,.] =>
     -- try to retract as an element of rep and see if we can get an
     -- element of k
