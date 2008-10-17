@@ -1,3 +1,10 @@
+2008-10-17  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/410
+	* interp/i-syscmd.boot (displaySpad2Cmd): Handle constructor
+	abbreviation. 
+
 2008-10-17  Grégory Vanuxem  <g.vanuxem@orange.fr>
 
 	Fix AW/260
