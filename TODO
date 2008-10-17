@@ -2,8 +2,10 @@
 === TODO ===
 ============
 
+* Finish network communication support.
 * Finish Bemol backend.
 * Finish JVM backend.
+* Add support for concurrency.
 * Generate better codes for scripts.
 * Fix STREAM implementation (dynamic semantics rules violation).
 * Fix compilation of domain where withon is empty.
@@ -20,6 +22,8 @@
 * Interfaces to mainstream programming languages
 * Improve Boot, Spad
 * Integrate to development environments
+* Move rule semantics transformation from the ParseForm -> SExpression
+  transformer to the interpreter.
 
 * Audit all codes that manipulate sockets.
 
