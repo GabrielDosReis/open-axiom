@@ -1,3 +1,8 @@
+2008-10-17  Grégory Vanuxem  <g.vanuxem@orange.fr>
+
+	Fix AW/260
+	* graph/view2D/graph2d.c (freeGraph): 
+
 2008-10-15  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 
 	Fix AW/101

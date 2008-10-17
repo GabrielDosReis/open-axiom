@@ -1,3 +1,8 @@
+2008-10-17  Gregory Vanuxem  <g.vanuxem@wanadoo.fr>
+
+	Fix AW/260
+	* graph/view2D/graph2d.c (freeGraph): 
+
 2008-10-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/scan.boot (scanKeyWords): `assume' is a keyword.
