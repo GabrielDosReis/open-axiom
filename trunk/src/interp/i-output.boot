@@ -2586,8 +2586,7 @@ maPrin u ==
 --% Rendering of InputForm
 
 $allClassicOps == 
-  ["~","#","-","**","^","*","/","rem","quo","+","-",
-    "@","::","$", "pretend"]
+  ["~","#","**","^","*","/","rem","quo","+","-","@","::", "pretend"]
 
 isUnaryPrefix op ==
   op in '(_~ _# _-)
@@ -2611,7 +2610,8 @@ callForm2String x ==
     op = "One" => '"1"
     constructor? op => primaryForm2String op
     strconc(inputForm2String op, '"()")
-
+  op = "$elt" => typedForm2String("$", second args, first args)
+  op is ["$elt",t,op'] => typedForm2String("$",[op',:args], t)
   "strconc"/[inputForm2String op, '"(",:args','")"] where
     args' := [toString(a,i) for a in args for i in 0..]
     toString(a,i) ==
@@ -2620,12 +2620,12 @@ callForm2String x ==
   
 typedForm2String(s,x,t) ==
   s = "pretend" =>
-    strconc(primaryForm2String x, '" pretend ", callForm2String t)
-  strconc(primaryForm2String x, SYMBOL_-NAME s, callForm2String t)
+    strconc(callForm2String x, '" pretend ", callForm2String t)
+  strconc(callForm2String x, SYMBOL_-NAME s, callForm2String t)
 
 expForm2String x ==
   x is [op,lhs,rhs] and op in '(** _^) =>
-    strconc(expForm2String lhs,'"^", primaryForm2String rhs)
+    strconc(expForm2String lhs,'"^", callForm2String rhs)
   callForm2String x
 
 unaryForm2String x ==
@@ -2669,7 +2669,7 @@ inputForm2String x ==
     op = "quo" => quoForm2String x
     op = "+" => plusForm2String x
     op = "-" => minusForm2String x
-    op in '(_@ _:_: $ pretend) =>
+    op in '(_@ _:_: pretend) =>
       typedForm2String(op, first args, second args)
     callForm2String x
   callForm2String x
