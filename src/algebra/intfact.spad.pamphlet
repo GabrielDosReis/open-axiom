@@ -407,27 +407,51 @@ IntegerFactorizationPackage(I): Exports == Implementation where
        G:I := 1
        ys: I
        x: I
+       l: I
+       k: I
        until G > 1 repeat
           x := y
-          k: I
+          ys := y
           for i in 1..convert(r)@Integer repeat
              y := (y*y+5::I) rem n
              q := (q*abs(x-y)) rem n
-             k := 0
+          k := 0::I
+          G := gcd(q,n)
           until (k>=r) or (G>1) repeat
              ys := y
              for i in 1..convert(min(m,r-k))@Integer repeat
                 y := (y*y+5::I) rem n
-                q := q*abs(x-y) rem n
+                q := (q*abs(x-y)) rem n
              G := gcd(q,n)
              k := k+m
+          k := k + r
           r := 2*r
        if G=n then
+          l := k - m
+          G := 1::I
           until G>1 repeat
              ys := (ys*ys+5::I) rem n
              G := gcd(abs(x-ys),n)
+             l := l + 1
+          if G = n then
+            y := x0
+            x := x0
+            for i in 1..convert(l)@Integer repeat
+              y := (y*y + 5::I) rem n
+            G := gcd(abs(x-y),n)
+            until G > 1 repeat
+              y := (y*y + 5::I) rem n
+              x := (x*x + 5::I) rem n
+              G := gcd(abs(x-y),n)
        G=n => "failed"
        G
+
+    PollardSmallFactor20(n: I): Union(I,"failed") ==
+      r: Union(I,"failed")
+      for i in 1..20 repeat
+        r := PollardSmallFactor n
+        r case I => return r
+      r
 
     BasicSieve(r, lim) ==
        l:List(I) :=
@@ -480,7 +504,7 @@ IntegerFactorizationPackage(I): Exports == Implementation where
           (y:=perfectSqrt (x**2-n)) case I =>
                 insert_!(x+y,a,c)
                 insert_!(x-y,a,c)
-          (d := PollardSmallFactor n) case I =>
+          (d := PollardSmallFactor20 n) case I =>
              m' : NonNegativeInteger
              for m' in 0.. while zero?(n rem d) repeat n := n quo d
              insert_!(d, a, m' * c)

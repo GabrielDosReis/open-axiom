@@ -1,3 +1,9 @@
+2008-10-17  Alfredo Portes  <doyenatccny@gmail.com>
+
+	Fix AW/293
+	* algebra/gaussian.spad.pamphlet (ComplexCategory): Remove complex
+	attribute. 
+
 2008-10-17  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
