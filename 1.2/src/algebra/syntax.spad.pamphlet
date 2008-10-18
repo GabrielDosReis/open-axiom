@@ -16,18 +16,19 @@
 )abbrev domain SYNTAX Syntax
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Updated: December 05, 2007
+++ Date Last Updated: October 18, 2008
 ++ Description:  This domain provides a simple domain, general enough for
-++ building complete representation of Spad programs as objects 
-++ of a term algebra built from ground terms of type integers, foats, 
-++ symbols, and strings.  
-++ This domain differs from InputForm in that it represents
-++ any entity in a Spad program, not just expressions.
+++   building complete representation of Spad programs as objects 
+++   of a term algebra built from ground terms of type integers, foats, 
+++   symbols, and strings.  
+++   This domain differs from InputForm in that it represents
+++   any entity in a Spad program, not just expressions.  Furthermore,
+++   while InputForm may contain atoms like vectors and other Lisp
+++   objects, the Syntax domain is supposed to contain only that
+++   initial algebra build from the primitives listed above.
 ++ Related Constructors: Boolean, Integer, Float, Symbol, String, SExpression.
-++ See Also: SExpression, SetCategory.
+++ See Also: SExpression.
 ++ The equality supported by this domain is structural.
-++ Fixme: Provide direct support for boolean values, arbritrary 
-++        precision float point values.
 Syntax(): Public == Private where
   Public ==> Join(UnionType, SetCategory) with
     convert: % -> SExpression
@@ -110,32 +111,26 @@ Syntax(): Public == Private where
       ++ x case String is true if `x' really is a String
 
   Private ==> SExpression add
-    rep(x: %): SExpression ==
-      x pretend SExpression
-
-    per(x: SExpression): % ==
-      x pretend %
-
     x = y ==
-      EQUAL(x,y)$Lisp @ Boolean
+      EQUAL(x,y)$Lisp
 
     s case Integer ==
-      integer? rep s
+      INTEGERP(s)$Lisp
 
     s case DoubleFloat ==
-      float? rep s
+      FLOATP(s)$Lisp
 
     s case String ==
-      string? rep s
+      STRINGP(s)$Lisp
 
     s case Symbol ==
-      symbol? rep s
+      IDENTP(s)$Lisp
 
     convert(x: %): SExpression ==
-      rep x
+      x : SExpression
 
     convert(x: SExpression): % ==
-      per x
+      x pretend %
 
     coerce(i: Integer): % ==
       i pretend %
@@ -178,37 +173,32 @@ Syntax(): Public == Private where
       userError "invalid conversion target type"
 
     buildSyntax(s: Symbol, l: List %): % ==
-      -- ??? ideally we should have overloaded operator `per' that convert
-      -- from list of syntax to syntax.  But the compiler is at the 
-      -- moment defective for non-exported overloaded operations.
-      -- Furthermore, this direct call to `CONS' is currently necessary
-      -- in order to have the Syntax domain compiled as early as possible
-      -- in algebra boostrapping process.  It should be removed once
-      -- the bootstrap process is improved.
-      CONS(s,l)$Lisp @ %
+      CONS(s,l)$Lisp
 
     buildSyntax(op: %, l: List %): % ==
-      CONS(op,l)$Lisp @ %
+      CONS(op,l)$Lisp
 
     nil? x ==
-      null? rep x
+      NULL(x)$Lisp
+
+    atom?(x: %): Boolean ==
+      ATOM(x)$Lisp
 
     getOperator x ==
-      atom? rep x => userError "atom as operand to getOperator"
-      op := car rep x
-      symbol? op => symbol op
-      integer? op => integer op
-      float? op => float op
-      string? op => string op
-      convert op
+      atom? x => userError "atom as operand to getOperator"
+      op: % := CAR(x)$Lisp
+      op case Symbol => op pretend Symbol
+      op case Integer => op pretend Integer
+      op case DoubleFloat => op pretend DoubleFloat
+      op case String => op pretend String
+      op
    
     compound? x ==
-      pair? rep x
+      CONSP(x)$Lisp
 
     getOperands x ==
-      s := rep x
-      atom? s => []
-      [per t for t in destruct cdr s]
+      atom? x => []
+      CDR(x)$Lisp
 @
 
 
