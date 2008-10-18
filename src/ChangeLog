@@ -1,3 +1,8 @@
+2008-10-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-output.boot (callForm2String): Properly display package
+	call. 
+
 2008-10-17  Waldek Hebisch  <hebisch@math.uni.wroc.pl>
 
 	Fix AW/374
