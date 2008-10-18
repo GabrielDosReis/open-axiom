@@ -964,6 +964,8 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 
 (defvar |$TraceFlag| t)
 (defvar |depthAlist| nil)
+
+(defun WHOCALLED nil nil)
  
 (defun /MONITORX (/ARGS FUNCT OPTS &AUX NAME TYPE TRACECODE COUNTNAM TIMERNAM
                         BEFORE AFTER CONDITION BREAK TRACEDMODEMAP
