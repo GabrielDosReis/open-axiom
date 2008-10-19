@@ -374,7 +374,7 @@ axiom_algebra_layer_0_objects = \
 axiom_algebra_layer_1 = \
   AGG      AGG-     IEVALAB  IEVALAB- FORTCAT   ITUPLE   \
   PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
-  RETRACT- SEGCAT   BINDING  SYNTAX   BMODULE   LOGIC    \
+  RETRACT- SEGCAT   BINDING           BMODULE   LOGIC    \
   LOGIC-   EVALAB   EVALAB-  FEVALAB  FEVALAB-  BYTE     \
   OSGROUP  MAYBE    DATABUF  PROPLOG
 
@@ -386,7 +386,7 @@ axiom_algebra_layer_1_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_1)))
 axiom_algebra_layer_2 = \
   ELTAGG   ELTAGG- FMC      FMFUN   FORTFN   FVC     \
-  CTORCALL FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
+  SYNTAX   FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
   CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC
 
 axiom_algebra_layer_2_nrlibs = \
@@ -397,7 +397,7 @@ axiom_algebra_layer_2_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_2)))
 axiom_algebra_layer_3 = \
    GRDEF     SCOPE    MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1  \
-   MAPPKG2   MAPPKG3  INTBIT   MONAD    MONAD-   
+   MAPPKG2   MAPPKG3  INTBIT   MONAD    MONAD-   CTORCALL
 
 
 
