@@ -30,6 +30,8 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+openaxiom_host_has_regex = @openaxiom_host_has_regex@
+
 bin_PROGRAMS = htadd$(EXEEXT) ex2ht$(EXEEXT)
 ifeq ($(strip $(openaxiom_host_has_regex)),yes)
 bin_PROGRAMS += hthits$(EXEEXT)
@@ -114,7 +116,7 @@ stamp: all-hyper-post
 	-rm -f stamp
 	$(STAMP) stamp
 
-all-hyper-pre: $(BINFILES) $(HYPER)/pages/util.ht
+all-hyper-pre: $(BINFILES) $(SCRIPTS) $(HYPER)/pages/util.ht
 
 $(HYPER)/pages/util.ht: $(srcdir)/pages/util.ht
 	rm -f $@
