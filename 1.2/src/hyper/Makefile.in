@@ -114,7 +114,7 @@ stamp: all-hyper-post
 	-rm -f stamp
 	$(STAMP) stamp
 
-all-hyper-pre: $(BINFILES) $(HYPER)/pages/util.ht
+all-hyper-pre: $(BINFILES) $(SCRIPTS) $(HYPER)/pages/util.ht
 
 $(HYPER)/pages/util.ht: $(srcdir)/pages/util.ht
 	rm -f $@

@@ -26,11 +26,13 @@
 ++   while InputForm may contain atoms like vectors and other Lisp
 ++   objects, the Syntax domain is supposed to contain only that
 ++   initial algebra build from the primitives listed above.
-++ Related Constructors: Boolean, Integer, Float, Symbol, String, SExpression.
+++ Related Constructors: Integer, DoubleFloat, Symbol, String, SExpression.
 ++ See Also: SExpression.
 ++ The equality supported by this domain is structural.
 Syntax(): Public == Private where
-  Public == Join(UnionType, SetCategory) with
+  Public == Join(UnionType, SetCategory, RetractableTo Integer,
+              RetractableTo DoubleFloat, RetractableTo Symbol,
+                RetractableTo String) with
     convert: % -> SExpression
       ++ convert(s) returns the s-expression representation of a syntax.
 
@@ -39,8 +41,6 @@ Syntax(): Public == Private where
       ++ is not an atom, it is expected that it designates a proper list,
       ++ e.g. a sequence of cons cells ending with nil.
 
-    coerce: Integer -> %
-      ++ coerce(i) injects the integer value `i' into the Syntax domain.
     coerce: % -> Integer
       ++ coerce(s) extracts and integer value from the syntax `s'
     autoCoerce: % -> Integer
@@ -48,8 +48,6 @@ Syntax(): Public == Private where
       ++ the syntax `s'; no check performed.  To be called only
       ++ at the discretion of the compiler.
 
-    coerce: DoubleFloat -> %
-      ++ coerce(f) injects the float value `f' into the Syntax domain
     coerce: % -> DoubleFloat
       ++ coerce(s) extracts a float value from the syntax `s'.
     autoCoerce: % -> DoubleFloat
@@ -57,8 +55,6 @@ Syntax(): Public == Private where
       ++ no check performed.  To be called only at the discretion of
       ++ the compiler
 
-    coerce: Symbol -> %
-      ++ coerce(s) injects the symbol `s' into the Syntax domain.
     coerce: % -> Symbol
       ++ coerce(s) extracts a symbol from the syntax `s'.
     autoCoerce: % -> Symbol
@@ -66,8 +62,6 @@ Syntax(): Public == Private where
       ++ domain `s'; no check performed.  To be called only at
       ++ at the discretion of the compiler.
 
-    coerce: String -> %
-      ++ coerce(s) injects the string value `s' into the syntax domain
     coerce: % -> String
       ++ coerce(s) extracts a string value from the syntax `s'.
     autoCoerce: % -> String
@@ -142,9 +136,12 @@ Syntax(): Public == Private where
     autoCoerce(i: %): Integer ==                -- used for hard coercion
       i : Integer
 
-    coerce(i: %): Integer ==
-      i case Integer => i
-      userError "invalid conversion target type"
+    retractIfCan(x: %): Union(Integer,"failed") ==
+      x case Integer => x@Integer
+      "failed"
+
+    coerce(i: %): Integer == 
+      retract(i)@Integer
 
     coerce(f: DoubleFloat): % ==
       f pretend %
@@ -152,9 +149,12 @@ Syntax(): Public == Private where
     autoCoerce(f: %): DoubleFloat ==		-- used for hard coercion
       f : DoubleFloat
 
+    retractIfCan(x: %): Union(DoubleFloat,"failed") ==
+      x case DoubleFloat => x@DoubleFloat
+      "failed"
+
     coerce(f: %): DoubleFloat ==
-      f case DoubleFloat => f
-      userError "invalid conversion target type"
+      retract(f)@DoubleFloat
 
     coerce(s: Symbol): % ==
       s pretend %
@@ -162,9 +162,12 @@ Syntax(): Public == Private where
     autoCoerce(s: %): Symbol ==                 -- used for hard coercion
       s : Symbol
 
+    retractIfCan(x: %): Union(Symbol,"failed") ==
+      x case Symbol => x@Symbol
+      "failed"
+
     coerce(s: %): Symbol ==
-      s case Symbol => s
-      userError "invalid conversion target type"
+      retract(s)@Symbol
 
     coerce(s: String): % ==
       s pretend %
@@ -172,9 +175,12 @@ Syntax(): Public == Private where
     autoCoerce(s: %): String ==                 -- used for hard coercion
       s : String
 
+    retractIfCan(x: %): Union(String,"failed") ==
+      x case String => x@String
+      "failed"
+
     coerce(s: %): String ==
-      s case String => s
-      userError "invalid conversion target type"
+      retract(s)@String
 
     buildSyntax(s: Symbol, l: List %): % ==
       CONS(s,l)$Lisp
