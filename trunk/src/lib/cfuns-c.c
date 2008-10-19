@@ -355,11 +355,11 @@ std_stream_is_terminal(int fd)
 OPENAXIOM_EXPORT int
 oa_chdir(const char* path)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
    return SetCurrentDirectory(path) ? 0 : -1;
 #else
    return chdir(path);
-#endif /* __MINGW32__ */
+#endif /* __WIN32__ */
 }
 
 
@@ -380,7 +380,7 @@ oa_unlink(const char* path)
 {
    const char* curdir;
    int status = -1;
-#ifdef __MINGW32__
+#ifdef __WIN32__
    WIN32_FIND_DATA findData;
    HANDLE walkHandle;
 
@@ -464,7 +464,7 @@ oa_unlink(const char* path)
       status = -1;
    else
       status = 0;
-#endif /* __MINGW32__ */
+#endif /* __WIN32__ */
 
   sortie:
    oa_chdir(curdir);
@@ -476,7 +476,7 @@ oa_unlink(const char* path)
 OPENAXIOM_EXPORT int
 oa_rename(const char* old_path, const char* new_path)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
    return MoveFile(old_path, new_path) ? 0 : -1;
 #else
    return rename(old_path, new_path);
@@ -488,7 +488,7 @@ oa_rename(const char* old_path, const char* new_path)
 OPENAXIOM_EXPORT int
 oa_mkdir(const char* path)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
    return CreateDirectory(path, NULL) ? 0 : -1;
 #else
 #  define DIRECTORY_PERM ((S_IRWXU|S_IRWXG|S_IRWXO) & ~(S_IWGRP|S_IWOTH))
@@ -510,7 +510,7 @@ oa_system(const char* cmd)
 OPENAXIOM_EXPORT char*
 oa_getenv(const char* var)
 {
-#ifdef __MINGW32__   
+#ifdef __WIN32__   
 #define BUFSIZE 128
    char* buf = (char*) malloc(BUFSIZE);
    int len = GetEnvironmentVariable(var, buf, BUFSIZE);
@@ -538,7 +538,7 @@ oa_getcwd(void)
 {
    int bufsz = 256;
    char* buf = (char*) malloc(bufsz);
-#ifdef __MINGW32__
+#ifdef __WIN32__
    int n = GetCurrentDirectory(bufsz, buf);
    if (n == 0) {
       perror("oa_getcwd");
@@ -552,7 +552,7 @@ oa_getcwd(void)
       }
    }
    return buf;
-#else /* __MINGW32__ */
+#else /* __WIN32__ */
    errno = 0;
    while (getcwd(buf,bufsz) == 0) {
       if (errno == ERANGE) {
@@ -572,7 +572,7 @@ oa_getcwd(void)
 OPENAXIOM_EXPORT int
 oa_access_file_for_read(const char* path)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
   return GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES ? -1 : 1;
 #else
    return access(path, R_OK);
@@ -583,7 +583,7 @@ oa_access_file_for_read(const char* path)
 OPENAXIOM_EXPORT const char*
 oa_get_tmpdir(void)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
    char* buf;
    /* First, probe.  */
    int bufsz = GetTempPath(0, NULL);

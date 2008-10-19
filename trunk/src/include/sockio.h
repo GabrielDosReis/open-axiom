@@ -38,7 +38,7 @@
 
 #include <stddef.h>
 
-#ifdef __MINGW32__
+#ifdef __WIN32__
 #  include <winsock2.h>
 #  define OPENAXIOM_INVALID_SOCKET INVALID_SOCKET
 #else
@@ -59,7 +59,7 @@
    Consequently, we abstract over that variation, using the typedef
    axiom_socket.  */
 
-#ifdef __MINGW32__
+#ifdef __WIN32__
 typedef SOCKET openaxiom_socket;
 typedef HANDLE openaxiom_filedesc;
 #else
