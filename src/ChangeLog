@@ -1,3 +1,11 @@
+2008-10-19	Alfredo Portes	<doyenatccny@gmail.com>
+
+	* include/open-axiom.h: Replace __MINGW32__ declaration
+	with __WIN32__.
+	* include/sockio.h:	Likewise.
+	* hyper/ex2ht.c: Likewise.
+	* lib/cfuns-c.c: Likewise.
+
 2008-10-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* hyper/Makefile.in (openaxiom_host_has_regex): Define.

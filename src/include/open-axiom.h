@@ -37,13 +37,13 @@
 #include "openaxiom-c-macros.h"
 
 /* Cope with MS-platform oddities.  */
-#ifdef __MINGW32__
+#ifdef __WIN32__
 #  ifdef  DLL_EXPORT
 #    define OPENAXIOM_EXPORT  __declspec(dllexport)
 #  elif defined(OPENAXIOM_DLL_IMPORT)
 #    define OPENAXIOM_EXPORT  __declspec(dllimport)
 #  endif  /* DLL_EXPORT */
-#endif	/* __MINGW32__ */
+#endif	/* __WIN32__ */
 #ifndef OPENAXIOM_EXPORT
 #  define OPENAXIOM_EXPORT  /* nothing */
 #endif /* OPENAXIOM_EXPORT */
@@ -56,7 +56,7 @@
 typedef uint8_t openaxiom_byte;
 
 /* The opaque datatype.  */
-#ifdef __MINGW32__
+#ifdef __WIN32__
 #include <windows.h>
 typedef HANDLE openaxiom_handle;
 #else
