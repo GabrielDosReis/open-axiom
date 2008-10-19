@@ -30,7 +30,7 @@
 ++ See Also: SExpression.
 ++ The equality supported by this domain is structural.
 Syntax(): Public == Private where
-  Public ==> Join(UnionType, SetCategory) with
+  Public == Join(UnionType, SetCategory) with
     convert: % -> SExpression
       ++ convert(s) returns the s-expression representation of a syntax.
 
@@ -110,10 +110,10 @@ Syntax(): Public == Private where
     _case: (%, [|String|]) -> Boolean
       ++ x case String is true if `x' really is a String
 
-  Private ==> SExpression add
+  Private == add
     x = y ==
       EQUAL(x,y)$Lisp
-
+   
     s case Integer ==
       INTEGERP(s)$Lisp
 
@@ -125,6 +125,10 @@ Syntax(): Public == Private where
 
     s case Symbol ==
       IDENTP(s)$Lisp
+
+    coerce(x: %): OutputForm ==
+      x case String => outputForm(x : String)
+      x pretend OutputForm
 
     convert(x: %): SExpression ==
       x : SExpression
