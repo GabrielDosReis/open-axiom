@@ -1,5 +1,10 @@
 2008-10-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* hyper/Makefile.in (openaxiom_host_has_regex): Define.
+	(all-hyper-pre): Install scripts too.
+
+2008-10-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/syntax.spad.pamphlet (Syntax): Now belong to
 	RetractableTo Integer, RetractableTo DoubleFloat, RetractableTo
 	Symbol, and RetractableTo String.
