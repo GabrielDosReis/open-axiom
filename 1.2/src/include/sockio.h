@@ -38,12 +38,16 @@
 
 #include <stddef.h>
 
-#ifdef __MINGW32__
+#ifdef __WIN32__
 #  include <winsock2.h>
+#  define OPENAXIOM_INVALID_SOCKET INVALID_SOCKET
 #else
 #  include <sys/types.h>
 #  include <sys/socket.h>
 #  include <netinet/in.h>
+#  include <arpa/inet.h>
+#  include <sys/un.h>
+#  define OPENAXIOM_INVALID_SOCKET (-1)
 #endif
 
 #include "openaxiom-c-macros.h"
@@ -55,12 +59,14 @@
    Consequently, we abstract over that variation, using the typedef
    axiom_socket.  */
 
-#ifdef __MINGW32__
+#ifdef __WIN32__
 typedef SOCKET openaxiom_socket;
+typedef HANDLE openaxiom_filedesc;
 #else
 typedef int openaxiom_socket;
+typedef int openaxiom_filedesc;
 #endif
-
+typedef int openaxiom_port;
 
 typedef struct openaxiom_sio {
   openaxiom_socket socket; /* descriptor of this socket I/O endpoint.  */
@@ -79,6 +85,23 @@ typedef struct openaxiom_sio {
 
 
 
+OPENAXIOM_EXPORT openaxiom_filedesc
+ oa_open_local_client_stream_socket(const char*);
+OPENAXIOM_EXPORT int oa_open_local_server_stream_socket(const char*);
+OPENAXIOM_EXPORT openaxiom_socket
+oa_open_ip4_client_stream_socket(const char*, openaxiom_port);
+OPENAXIOM_EXPORT int oa_socket_write(openaxiom_socket,
+                                     const openaxiom_byte*, int);
+OPENAXIOM_EXPORT int oa_socket_read(openaxiom_socket,
+                                    openaxiom_byte*, int);
+OPENAXIOM_EXPORT void oa_close_socket(openaxiom_socket);
+
+OPENAXIOM_EXPORT int 
+oa_filedesc_write(openaxiom_filedesc, const openaxiom_byte*, int);
+OPENAXIOM_EXPORT int 
+oa_filedesc_read(openaxiom_filedesc, openaxiom_byte*, int);
+OPENAXIOM_EXPORT int oa_filedesc_close(openaxiom_filedesc);
+
 OPENAXIOM_EXPORT int sread(openaxiom_sio*, openaxiom_byte*, int, const char*);
 OPENAXIOM_EXPORT int swrite(openaxiom_sio*, const openaxiom_byte*, int,
                             const char*);
@@ -96,7 +119,6 @@ OPENAXIOM_EXPORT int open_server(const char*);
 OPENAXIOM_EXPORT int accept_connection(openaxiom_sio*);
 OPENAXIOM_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
 OPENAXIOM_EXPORT void close_socket(openaxiom_socket, const char*);
-OPENAXIOM_EXPORT void axiom_close_socket(openaxiom_socket);
 
 OPENAXIOM_EXPORT int get_int(openaxiom_sio*);
 OPENAXIOM_EXPORT double get_float(openaxiom_sio*);

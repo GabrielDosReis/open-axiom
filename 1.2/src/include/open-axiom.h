@@ -37,13 +37,13 @@
 #include "openaxiom-c-macros.h"
 
 /* Cope with MS-platform oddities.  */
-#ifdef __MINGW32__
+#ifdef __WIN32__
 #  ifdef  DLL_EXPORT
 #    define OPENAXIOM_EXPORT  __declspec(dllexport)
 #  elif defined(OPENAXIOM_DLL_IMPORT)
 #    define OPENAXIOM_EXPORT  __declspec(dllimport)
 #  endif  /* DLL_EXPORT */
-#endif	/* __MINGW32__ */
+#endif	/* __WIN32__ */
 #ifndef OPENAXIOM_EXPORT
 #  define OPENAXIOM_EXPORT  /* nothing */
 #endif /* OPENAXIOM_EXPORT */
@@ -56,12 +56,18 @@
 typedef uint8_t openaxiom_byte;
 
 /* The opaque datatype.  */
-#ifdef __MINGW32__
+#ifdef __WIN32__
 #include <windows.h>
 typedef HANDLE openaxiom_handle;
 #else
 typedef void* openaxiom_handle;
 #endif
+
+#include <unistd.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif   
 
 /* Do we have graphics support?  */
 #ifdef X_DISPLAY_MISSING
@@ -76,5 +82,25 @@ typedef void* openaxiom_handle;
 #define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
 
 
+/* The function sleep() is not available under Windows.  Instead, they
+   have Sleep(); with capital S, please.  Furthermore, it does not
+   take argument in second, but in milliseconds, three order
+   of magnitude of difference when compared to the Unix world.
+   We abstract over that difference here.  */
 
+static inline void
+openaxiom_sleep(int n)
+{
+#ifdef __WIN32__
+   Sleep(n * 1000);
+#else
+   sleep(n);
+#endif   
+}
+
+
+#ifdef __cplusplus
+}
+#endif   
+   
 #endif /* OPENAXIOM_included */

@@ -39,18 +39,19 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
+#include <unistd.h>
 
 
 #ifdef __WIN32__
 #  include <windows.h>
 #else
 #  include <dirent.h>
+#  include <fcntl.h>
 #endif
 
 #include "cfuns.h"
@@ -92,6 +93,51 @@ addtopath(char *dir)
     sprintf(newpath, "PATH=%s:%s", path, dir);
 
     return putenv(newpath);
+}
+
+
+
+/* Returns 1 if `c' designates a path separator, 0 otherwise.  */
+static inline int
+openaxiom_is_path_separator(char c)
+{
+#ifdef __WIN32__
+   return c == '\\' || c == '/';
+#else
+   return c == '/';
+#endif      
+}
+
+/*
+  Returns a the dirname of `path'.  If `path' has no separator, then
+  returns ".".  The returned value if malloc-allocated.  */
+
+OPENAXIOM_EXPORT char*
+oa_dirname(const char* path)
+{
+   const int n = strlen(path);
+   char* mark = path + n;
+
+   if (n == 0)
+      return strdup(".");
+   else if (n == 1 &&  openaxiom_is_path_separator(*path))
+      return strdup("/");
+
+   /* For "/banana/space/", we want "/banana".  */
+   if (openaxiom_is_path_separator(*--mark))
+      --mark;
+   while (path < mark && !openaxiom_is_path_separator(*mark))
+      --mark;
+
+   if (path == mark)
+      return strdup(openaxiom_is_path_separator(*path) ? "/" : ".");
+   else {
+      const int l = mark - path;
+      char* dir = (char*) malloc(l + 1);
+      memcpy(dir, path, l);
+      dir[l] = '\0';
+      return dir;
+   }
 }
 
 /*
@@ -167,15 +213,15 @@ axiom_has_write_access(const struct stat* file_info)
       return 1;
 
    if (effetive_uid == file_info->st_uid)
-      return file_info->st_mode & S_IWUSR;
+      return (file_info->st_mode & S_IWUSR) ? 1 : 0;
 
 #ifdef S_IWGRP
    if (getegid() == file_info->st_gid)
-      return file_info->st_mode & S_IWGRP;
+      return (file_info->st_mode & S_IWGRP) ? 1 : 0;
 #endif
 
 #ifdef S_IWOTH
-   return file_info->st_mode & S_IWOTH;
+   return (file_info->st_mode & S_IWOTH) ? 1 : 0;
 #else
    return 0;
 #endif   
@@ -184,7 +230,7 @@ axiom_has_write_access(const struct stat* file_info)
 
 /* Return
      -1 if the file designated by PATH is inexistent.
-      0 if the file exists but wirte access is denied.
+      0 if the file exists but write access is denied.
       1 if the file exists and process has write access.
       2 if the file does not exists but process has write
         has write access to the dirname of path.  */
@@ -193,18 +239,16 @@ OPENAXIOM_EXPORT int
 writeablep(char *path)
 {
     struct stat buf;
-    char newpath[100];
     int code;
 
     code = stat(path, &buf);
     if (code == -1) {
-        /** The file does not exist, so check to see
-                 if the directory is writable                  *****/
-        if (make_path_from_file(newpath, path) == -1
-            || stat(newpath, &buf) == -1)
-           return -1;
-
-        return 2 * axiom_has_write_access(&buf);
+       /* The file does not exist, so check to see if the directory
+          is writable.  */
+       char* dir = oa_dirname(path);
+       code = stat(dir, &buf);
+       free(dir);
+       return (code == 0) && axiom_has_write_access(&buf) ? 2 : -1;
     }
 
     return axiom_has_write_access(&buf);
@@ -291,7 +335,7 @@ std_stream_is_terminal(int fd)
    }
    /* The MS documentation suggests `GetFileType' for determining
       the nature of the file handle.  The return value, in our case,
-      is an over approximation of what we are interested int:  Are we
+      is an over approximation of what we are interested in:  Are we
       dealing with a stream connected to a terminal?  The constant
       FILE_TYPE_CHAR characterises character files; in particular
       a console terminal, or a printer.  There is an undocumented
@@ -311,11 +355,11 @@ std_stream_is_terminal(int fd)
 OPENAXIOM_EXPORT int
 oa_chdir(const char* path)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
    return SetCurrentDirectory(path) ? 0 : -1;
 #else
    return chdir(path);
-#endif /* __MINGW32__ */
+#endif /* __WIN32__ */
 }
 
 
@@ -336,7 +380,7 @@ oa_unlink(const char* path)
 {
    const char* curdir;
    int status = -1;
-#ifdef __MINGW32__
+#ifdef __WIN32__
    WIN32_FIND_DATA findData;
    HANDLE walkHandle;
 
@@ -420,7 +464,7 @@ oa_unlink(const char* path)
       status = -1;
    else
       status = 0;
-#endif /* __MINGW32__ */
+#endif /* __WIN32__ */
 
   sortie:
    oa_chdir(curdir);
@@ -432,7 +476,7 @@ oa_unlink(const char* path)
 OPENAXIOM_EXPORT int
 oa_rename(const char* old_path, const char* new_path)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
    return MoveFile(old_path, new_path) ? 0 : -1;
 #else
    return rename(old_path, new_path);
@@ -444,7 +488,7 @@ oa_rename(const char* old_path, const char* new_path)
 OPENAXIOM_EXPORT int
 oa_mkdir(const char* path)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
    return CreateDirectory(path, NULL) ? 0 : -1;
 #else
 #  define DIRECTORY_PERM ((S_IRWXU|S_IRWXG|S_IRWXO) & ~(S_IWGRP|S_IWOTH))
@@ -466,7 +510,7 @@ oa_system(const char* cmd)
 OPENAXIOM_EXPORT char*
 oa_getenv(const char* var)
 {
-#ifdef __MINGW32__   
+#ifdef __WIN32__   
 #define BUFSIZE 128
    char* buf = (char*) malloc(BUFSIZE);
    int len = GetEnvironmentVariable(var, buf, BUFSIZE);
@@ -494,7 +538,7 @@ oa_getcwd(void)
 {
    int bufsz = 256;
    char* buf = (char*) malloc(bufsz);
-#ifdef __MINGW32__
+#ifdef __WIN32__
    int n = GetCurrentDirectory(bufsz, buf);
    if (n == 0) {
       perror("oa_getcwd");
@@ -508,7 +552,7 @@ oa_getcwd(void)
       }
    }
    return buf;
-#else /* __MINGW32__ */
+#else /* __WIN32__ */
    errno = 0;
    while (getcwd(buf,bufsz) == 0) {
       if (errno == ERANGE) {
@@ -528,7 +572,7 @@ oa_getcwd(void)
 OPENAXIOM_EXPORT int
 oa_access_file_for_read(const char* path)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
   return GetFileAttributes(path) == INVALID_FILE_ATTRIBUTES ? -1 : 1;
 #else
    return access(path, R_OK);
@@ -539,7 +583,7 @@ oa_access_file_for_read(const char* path)
 OPENAXIOM_EXPORT const char*
 oa_get_tmpdir(void)
 {
-#ifdef __MINGW32__
+#ifdef __WIN32__
    char* buf;
    /* First, probe.  */
    int bufsz = GetTempPath(0, NULL);
@@ -551,7 +595,7 @@ oa_get_tmpdir(void)
       int new_size;
       buf = (char*) malloc(bufsz + 1);
       new_size = GetTempPath(bufsz, buf);
-      if(new_size == 0 || new_size >= bufsz) {
+      if(new_size = 0 || new_size >= bufsz) {
          perror("oa_get_tmpdir");
          free(buf);
          exit(1);
@@ -564,6 +608,33 @@ oa_get_tmpdir(void)
 #endif   
 }
 
+
+OPENAXIOM_EXPORT int
+oa_copy_file(const char* src, const char* dst)
+{
+#ifdef __WIN32__
+   return CopyFile(src,dst, /* bFailIfExists = */ 0) ? 0 : -1;
+#else
+#define OA_BUFSZ 512
+   char buf[OA_BUFSZ];
+   int src_fd;
+   int dst_fd;
+   int count;
+   if((src_fd = open(src, O_RDONLY)) < 0)
+      return -1;
+   if ((dst_fd = open(dst, O_WRONLY | O_CREAT | O_TRUNC)) < 0) {
+      close(src_fd);
+      return -1;
+   }
+
+   while ((count = read(src_fd, buf, OA_BUFSZ)) > 0) 
+      if (write(dst_fd, buf, count) != count)
+         break;
+
+#undef OA_BUFSZ
+   return (close(dst_fd) < 0 || close(src_fd) < 0 || count < 0) ? -1 : 0;
+#endif   
+}
 
 
 OPENAXIOM_EXPORT double 
