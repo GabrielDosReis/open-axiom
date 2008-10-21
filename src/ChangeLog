@@ -1,4 +1,8 @@
-2008-10-19	Alfredo Portes	<doyenatccny@gmail.com>
+2008-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/debug.lisp (WHOCALLED): Fix thinko.
+
+2008-10-19  Alfredo Portes  <doyenatccny@gmail.com>
 
 	* include/open-axiom.h: Replace __MINGW32__ declaration
 	with __WIN32__.
