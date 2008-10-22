@@ -1209,7 +1209,66 @@ genTypeAlias(head,body) ==
   [op,:args] := head
   ["DEFTYPE",op,args,backquote(body,args)]
 
---% Native datatype translation
+--%
+--% Native Interface Translation
+--%
+
+-- The Native Interface Translation support the following datatypes
+--   void:    No value, useful only as function return type.
+--
+--   char:    Character type, corresponds to C type 'char'.
+--
+--   byte:    8-bit data type for the unit of information; corresponds 
+--            to C type 'unsigned char'.  
+--
+--    int:    Native integer data type.  Ideally should be wide enough
+--            to represent native address space.  However, only ECL
+--            and GCL seems to give that guarantee at the moment.
+--
+--  float:    single precision datatype for floating poing values.
+--            Corresponds to C type 'float'.  On most architecture,
+--            this is a 32-bit precision IEEE 756 data type.
+--
+-- double:    double precision datatype for floating point values.
+--            Corresponds to C type 'double'.  On most architecture,
+--            this is a 64-bit precision IEEE 756 data type.
+--
+-- string:    a data type for strings of characters.  The general
+--            semantics is that a string is passed by value (e.g.
+--            copied into a separate storage) to a native
+--            function.  In many cases, that is appropriate (e.g.
+--            mkdir "foo") if just wasteful.  In other cases, that is
+--            not appropriate, as the native function may expect a
+--            pass-by-reference semantics, e.g. modify the argument.
+--            Consequently, argument types may be combined with the
+--            modifiers `readonly' and `writeonly'.  Note that a
+--            function return type may not use modifiers.
+--            Corresponds to C's notion of NUL-terminated string,
+--            'char*'.  In particular, the length of a string is
+--            stored as separate datum part of the data being
+--            transmitted.
+--
+-- buffer:    A data type constructor for array of simple data 
+--            (e.g. array of bytes, array of float, array of double).
+--            This is used to communicate data between native
+--            functions and OpenAxiom functions.  The `buffer' type
+--            constructor must be used in conjunction with one of the 
+--            modifier `readonly' or `writeonly', and instantiated
+--            with one of `char', `byte', `int', `float', and `double'.
+--            It cannot be used a function return type.
+--            Note that the length of the array is not stored as 
+--            part of the data being transmitted.
+
+$NativeSimpleDataTypes ==
+  '(char byte int float double)
+
+$NativeSimpleReturnTypes ==
+  [:$NativeSimpleDataTypes,:'(void string)]
+
+++ Returns true if `t' is a simple native data type.
+isSimpleNativeType t ==
+  t in $NativeSimpleReturnTypes
+
 coreSymbol: %Symbol -> %Symbol
 coreSymbol s ==
   INTERN(SYMBOL_-NAME s, "AxiomCore")
@@ -1224,22 +1283,270 @@ unknownNativeTypeError t ==
 
 
 nativeType t ==
-  null t => t
-  -- for the time being, approximate `data buffer' by `pointer to data'
-  t = "buffer" or t = "pointer" =>
-    %hasFeature KEYWORD::GCL => "FIXNUM"
-    %hasFeature KEYWORD::ECL => KEYWORD::POINTER_-VOID
-    %hasFeature KEYWORD::SBCL => ["*",true]
+  t = nil => t
+  atom t =>
+    t' := rest ASSOC(coreSymbol t,$NativeTypeTable) => 
+      t' := 
+	%hasFeature KEYWORD::SBCL => bfColonColon("SB-ALIEN", t')
+	%hasFeature KEYWORD::CLISP => bfColonColon("FFI",t')
+	t'
+      -- ??? decree we have not discovered Unicode yet.
+      t = "string" and %hasFeature KEYWORD::SBCL =>
+	[t',KEYWORD::EXTERNAL_-FORMAT,KEYWORD::ASCII,
+	   KEYWORD::ELEMENT_-TYPE, "BASE-CHAR"]
+      t'
+    t = "byte" =>
+      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),8]
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT8")
+      %hasFeature KEYWORD::ECL => KEYWORD::UNSIGNED_-BYTE
+      -- approximate by 'char' for GCL
+      nativeType "char"
+    unknownNativeTypeError t
+  -- composite, reference type.
+  first t = "buffer" =>
+    %hasFeature KEYWORD::GCL => "OBJECT"
+    %hasFeature KEYWORD::ECL => KEYWORD::OBJECT
+    %hasFeature KEYWORD::SBCL => ["*",nativeType second t]
     %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
     unknownNativeTypeError t
-  t' := rest ASSOC(coreSymbol t,$NativeTypeTable) => 
-    t' := 
-      %hasFeature KEYWORD::SBCL => bfColonColon("SB-ALIEN", t')
-      %hasFeature KEYWORD::CLISP => bfColonColon("FFI",t')
-      t'
-    -- ??? decree we have not discovered Unicode yet.
-    t = "string" and %hasFeature KEYWORD::SBCL =>
-      [t',KEYWORD::EXTERNAL_-FORMAT,KEYWORD::ASCII,
-         KEYWORD::ELEMENT_-TYPE, "BASE-CHAR"]
-    t'
   unknownNativeTypeError t
+
+
+++ Check that `t' is a valid return type for a native function, and
+++ returns its translation
+nativeReturnType t ==
+  t in $NativeSimpleReturnTypes => nativeType t
+  coreError strconc('"invalid return type for native function: ", 
+              SYMBOL_-NAME t)
+
+
+++ Check that `t' is a valid parameter type for a native function,
+++ and returns its translation.
+nativeArgumentType t ==
+  t in $NativeSimpleDataTypes => nativeType t
+  -- Allow 'string'  for `pass-by-value'
+  t = "string" => nativeType t
+  -- anything else must use a modified reference type.
+  atom t or #t ^= 2 => 
+     coreError '"invalid argument type for a native function"
+  [m,[c,t']] := t
+  -- Require a modifier.
+  not (m in '(readonly writeonly)) =>
+    coreError '"missing modifier for argument type for a native function"
+  -- Only 'pointer' and 'buffer' can be instantiated.
+  not (c in '(buffer pointer)) =>
+    coreError '"expect 'buffer' or 'pointer' type instance"
+  not (t' in $NativeSimpleDataTypes) =>
+    coreError '"expected simple native data type"
+  nativeType second t
+  
+
+++ True if objects of type native type `t' are sensible to GC.
+needsStableReference? t ==
+  not atom t and first t in '(readonly writeonly)
+
+++ coerce argument `a' to native type `t', in preparation for
+++ a call to a native functions.
+coerceToNativeType(a,t) ==
+  -- GCL, ECL, and CLISP don't do it this way.
+  %hasFeature KEYWORD::GCL or %hasFeature KEYWORD::ECL
+     or %hasFeature KEYWORD::CLISP  => a
+  %hasFeature KEYWORD::SBCL =>
+    not needsStableReference? t => a
+    [.,[c,y]] := t
+    c = "buffer" => [bfColonColon("SB-SYS","VECTOR-SAP"),a]
+    c = "pointer" => [bfColonColon("SB-SYS","ALIEN-SAP"),a]
+    needsStableReference? t =>
+      fatalError strconc('"don't know how to coerce argument for native type",
+        SYMBOL_-NAME c)
+  fatalError '"don't know how to coerce argument for native type"
+
+
+++ Generate GCL native translation for import op: s -> t for op'
+++ `argtypes' is the list of GCL FFI names for types in `s'.
+++ `rettype' is the GCL FFI name for `t'.
+genGCLnativeTranslation(op,s,t,op') ==
+  argtypes := [nativeArgumentType x for x in s]
+  rettype := nativeReturnType t
+  -- If a simpel DEFENTRY will do, go for it
+  and/[isSimpleNativeType x for x in [t,:s]] =>
+    [["DEFENTRY", op, argtypes, [rettype, SYMBOL_-NAME op']]]
+  -- Otherwise, do it the hard way.
+  [["CLINES",ccode], ["DEFENTRY", op, argtypes, [rettype, cop]]] where
+    cop := strconc(SYMBOL_-NAME op','"__stub")
+    ccode := 
+      "strconc"/[gclTypeInC t, '" ", cop, '"(",
+	 :[cparm(x,a) for x in tails s for a in tails cargs],
+	   '") { ", (t ^= "void" => '"return "; ""),
+	     SYMBOL_-NAME op', '"(",
+	       :[gclArgsInC(x,a) for x in tails s for a in tails cargs],
+		  '"); }" ]
+                where cargs := [mkCArgName i for i in 0..(#s - 1)]
+    mkCArgName i == strconc('"x",STRINGIMAGE i)
+    cparm(x,a) ==
+      strconc(gclTypeInC first x, '" ", first a,
+	(rest x => '", "; '""))
+    gclTypeInC x ==
+      x in $NativeSimpleDataTypes => SYMBOL_-NAME x
+      x = "void" => '"void"
+      x = "string" => '"char*"
+      '"object" 
+    gclArgInC(x,a) ==
+      x in $NativeSimpleDataTypes => a
+      x = "string" => strconc(a,'"->st.st__self")
+      [.,[.,y]] := x
+      y = "char" => strconc(a,'"->st.st__self")
+      y = "byte" => strconc(a,'"->ust.ust__self")
+      y = "int" => strconc(a,'"->fixa.fixa__self")
+      y = "float" => strconc(a,'"->sfa.sfa__self")
+      y = "double" => strconc(a,'"->lfa.lfa__self")
+      coreError '"unknown argument type"
+    gclArgsInC(x,a) ==
+      strconc(gclArgInC(first x, first a),
+	(rest x => '", "; '""))  
+
+genECLnativeTranslation(op,s,t,op') ==
+  args := nil
+  argtypes := nil
+  for x in s repeat
+     argtypes := [nativeReturnType x,:argtypes]
+     args := [GENSYM(),:args]
+  argtypes := nreverse argtypes
+  args := nreverse args
+  rettype := nativeReturnType t
+  [["DEFUN",op, args,
+    [bfColonColon("FFI","C-INLINE"),args,argtypes,
+      rettype, callTemplate(op',#args,s), 
+        KEYWORD::ONE_-LINER, true]]] where
+	  callTemplate(op,n,s) ==
+	    "strconc"/[SYMBOL_-NAME op,'"(",
+	      :[sharpArg(i,x) for i in 0..(n-1) for x in s],'")"]
+	  sharpArg(i,x) == 
+	    i = 0 => strconc('"(#0)",selectDatum x)
+	    strconc('",",'"(#", STRINGIMAGE i, '")", selectDatum x)
+	  selectDatum x ==
+	    isSimpleNativeType x => '""
+	    [.,[c,y]] := x
+            c = "buffer" => 
+	      y = "char" or y = "byte" => '"->vector.self.ch"
+	      y = "int" => '"->vector.self.fix"
+	      y = "float" => '"->vector.self.sf"
+	      y = "double" => '"->vector.self.df"
+	      coreError '"unknown argument to buffer type constructor"
+            c = "pointer" => ""
+            coreError '"unknown type constructor"
+
+genCLISPnativeTranslation(op,s,t,op') ==
+  -- check parameter types and return types.
+  rettype := nativeReturnType t
+  argtypes := [nativeArgumentType x for x in s]
+
+  -- There is a curious bug in the CLisp's FFI support whereby
+  -- foreign declarations compiled separately will have the wrong
+  -- types when used in other modules.  We work around that problem
+  -- by defining forwarding functions to the foreign declarations
+  -- in the same module the latter are declared.  Even if and when
+  -- that bug is fixed, we still need forwarding function because,
+  -- CLISP's FFI takes every step to ensure that Lisp world objects
+  -- do not mix with C world object, presumably because they are not
+  -- from the same class.  Consequently, we must allocate C-storage,
+  -- copy data there, pass pointers to them, and possibly copy
+  -- them back.  Ugh.  
+  n := INTERN strconc(SYMBOL_-NAME op, '"%clisp-hack")
+  parms := [GENSYM '"parm" for x in s]  -- parameters of the forward decl.
+
+  -- Now, separate non-simple data from the rest.  This is a triple-list
+  -- of the form ((parameter boot-time . ffi-type) ...)
+  unstableArgs := nil
+  for p in parms for x in s for y in argtypes repeat
+    needsStableReference? x =>
+      unstableArgs := [[p,x,:y],:unstableArgs]
+
+  -- The actual FFI declaration for the native call.  Note that 
+  -- parameter of non-simple datatype are described as being poinyers.
+  foreignDecl := 
+    [bfColonColon("FFI","DEF-CALL-OUT"),n,
+      [KEYWORD::NAME,SYMBOL_-NAME op'],
+	[KEYWORD::ARGUMENTS,:[[a, x] for x in argtypes for a in parms]],
+	  [KEYWORD::RETURN_-TYPE, rettype],
+	      [KEYWORD::LANGUAGE,KEYWORD::STDC]]
+
+  -- The forwarding function.  We have to introduce local foreign
+  -- variables to hold the address of converted Lisp obejcts.  Then
+  -- we have to copy back those that are `writeonly' to simulate
+  -- the reference semantics.  Don't try ever try to pass around
+  -- gigantic buffer, you might find out that it is insanely inefficient.
+  forwardingFun := 
+    null unstableArgs => ["DEFUN",op,parms, [n,:parms]]
+    localPairs := [[a,x,y,:GENSYM '"loc"] for [a,x,:y] in unstableArgs]
+    call := 
+      [n,:[actualArg(p,localPairs) for p in parms]] where
+	    actualArg(p,pairs) ==
+	      a' := rest ASSOC(p,pairs) => rest rest a'
+	      p
+    -- Fix up the call if there is any `writeonly' parameter.
+    call := 
+      fixups := [q | not null (q := copyBack p) for p in localPairs] where
+                  copyBack [p,x,y,:a] ==
+                    x isnt ["writeonly",:.] => nil
+                    ["SETF", p, [bfColonColon("FFI","FOREIGN-VALUE"), a]]
+      null fixups => [call]
+      [["PROG1",call, :fixups]]
+    -- Set up local foreign variables to hold address of traveling data
+    for [p,x,y,:a] in localPairs repeat
+      call := 
+        [[bfColonColon("FFI","WITH-FOREIGN-OBJECT"),
+            [a, ["FUNCALL",
+               ["INTERN",'"getCLISPType",'"BOOTTRAN"], p], p], :call]]
+    -- Finally, define the forwarding function.
+    ["DEFUN",op,parms,:call]
+  $foreignsDefsForCLisp := [foreignDecl,:$foreignsDefsForCLisp]
+  [forwardingFun]
+
+getCLISPType a ==
+  [bfColonColon("FFI","C-ARRAY"), #a]
+
+
+genSBCLnativeTranslation(op,s,t,op') ==    
+  -- check return type and argument types.
+  rettype := nativeReturnType t
+  argtypes := [nativeArgumentType x for x in s]
+
+  args := [GENSYM() for x in s]
+  unstableArgs := nil
+  newArgs := nil
+  for a in args for x in s repeat
+    newArgs := [coerceToNativeType(a,x), :newArgs]
+    if needsStableReference? x then
+      unstableArgs := [a,:unstableArgs]
+  newArgs := nreverse newArgs
+  unstableArgs = nreverse unstableArgs
+    
+  null unstableArgs =>
+    [["DEFUN",op,args,
+      [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
+	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
+	  ["FUNCTION",rettype,:argtypes]], :args]]]
+  [["DEFUN",op,args,
+    [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"),unstableArgs,       
+      [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
+	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
+	  ["FUNCTION",rettype,:argtypes]], :newArgs]]]]
+
+
+++ Generate an import declaration for `op' as equivalent of the
+++ foreign signature `sig'.  Here, `foreign' operationally means that
+++ the entity is from the C language world. 
+genImportDeclaration(op, sig) ==
+  sig isnt ["Signature", op', m] => coreError '"invalid signature"
+  m isnt ["Mapping", t, s] => coreError '"invalid function type"
+  if not null s and SYMBOLP s then s := [s]
+
+  %hasFeature KEYWORD::GCL => genGCLnativeTranslation(op,s,t,op')
+  %hasFeature KEYWORD::SBCL => genSBCLnativeTranslation(op,s,t,op')
+  %hasFeature KEYWORD::CLISP => genCLISPnativeTranslation(op,s,t,op')
+  %hasFeature KEYWORD::ECL => genECLnativeTranslation(op,s,t,op')
+  fatalError '"import declaration not implemented for this Lisp"
+
+
+
