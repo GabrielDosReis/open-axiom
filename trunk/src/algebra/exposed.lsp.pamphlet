@@ -201,6 +201,7 @@
   (|InfiniteTupleFunctions3| . ITFUN3)
   (|Infinity| . INFINITY)
   (|InputBinaryFile| . INBFILE)
+  (|InputOutputBinaryFile| . IOBFILE)
   (|Integer| . INT)
   (|IntegerCombinatoricFunctions| . COMBINAT)
   (|IntegerLinearDependence| . ZLINDEP)

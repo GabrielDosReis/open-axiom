@@ -130,6 +130,10 @@ InputBinaryFile(): Public == Private where
       ++ eof?(ifile) holds when the last read reached end of file.
     isOpen?: % -> Boolean
       ++ open?(ifile) holds if `ifile' is in open state.
+    position: % -> SingleInteger
+      ++ position(f) returns the current byte-position in the file `f'.
+    position!: (%,SingleInteger) -> SingleInteger
+      ++ position(f,p) sets the current byte-position to `i'.
   Private == add
     Rep == Record(stream: SExpression, filename: FileName, eof: Boolean)
     inputBinaryFile(f: FileName) ==
@@ -153,6 +157,15 @@ InputBinaryFile(): Public == Private where
         rep(ifile).stream := closeFile(rep(ifile).stream)$Lisp
         rep(ifile).eof := true
       ifile
+    position ifile ==
+      isOpen? ifile =>
+        FILE_-POSITION(rep(ifile).stream)$Lisp
+      error "file is not open"
+    position!(ifile,p) ==
+      isOpen? ifile =>
+        FILE_-POSITION(rep(ifile).stream,p)$Lisp
+        p
+      error "file is not open"
     coerce(ifile: %): OutputForm ==
       rep(ifile).filename::OutputForm
 @
@@ -195,6 +208,35 @@ OutputBinaryFile(): Public == Private where
       ifile
     coerce(ifile: %): OutputForm ==
       rep(ifile).filename::OutputForm
+@
+
+\subsection{The InputOutputBinaryFile domain}
+
+<<domain IOBFILE InputOutputBinaryFile>>=
+)abbrev domain IOBFILE InputOutputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: October 21, 2008
+++ Date Last Modified: October 21, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for input and output operations.
+++ See Also: InputBinaryFile, OutputBinaryFile
+InputOutputBinaryFile(): Public == Private where
+  Public == Join(InputOutputByteConduit, CoercibleTo OutputForm) with
+    inputOutputBinaryFile: FileName -> %
+      ++ inputOutputBinaryFile(f) returns an input/output conduit obtained
+      ++ by opening the file designated by `f' as a binary file.
+    inputOutputBinaryFile: String -> %
+      ++ inputOutputBinaryFile(f) returns an input/output conduit obtained
+      ++ by opening the file named by `f' as a binary file.
+    isOpen?: % -> Boolean
+      ++ isOpen?(f) holds if `f' is in open state.
+  Private == (InputBinaryFile, OutputBinaryFile) add
+    Rep == Record(stream: SExpression, filename: FileName)
+    inputOutputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,bothWays$IOMode)$Lisp,f]
+    inputOutputBinaryFile(f: String) ==
+      per [openBinaryFile(f,bothWays$IOMode)$Lisp,f::FileName]
 @
 
 
@@ -289,6 +331,7 @@ PortNumber(): Public == Private where
 
 <<domain INBFILE InputBinaryFile>>
 <<domain OUTBFILE OutputBinaryFile>>
+<<domain IOBFILE InputOutputBinaryFile>>
 
 <<domain HOSTNAME Hostname>>
 <<domain PORTNUM PortNumber>>
