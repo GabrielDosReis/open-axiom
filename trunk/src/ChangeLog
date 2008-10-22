@@ -1,3 +1,9 @@
+2008-10-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: Expand on native call translation.
+	* interp/sys-os.boot (oa_filedesc_read): Adjust declaration.
+	(oa_filedesc_write): Likewise.
+
 2008-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/debug.lisp (WHOCALLED): Fix thinko.

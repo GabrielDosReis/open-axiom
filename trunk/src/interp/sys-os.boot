@@ -79,11 +79,13 @@ import writeablep: string -> int for writeablep
        --  1: exists and write access granted
        --  2: inexistent but write access to parent directory granted.
 
-import oa__filedesc__read: (int,buffer,int) -> int for readFromFileHandle
+import oa__filedesc__read: (int,writeonly buffer byte,int) -> int 
+  for readFromFileHandle
        -- -1: failure; otherwise
        -- actual read bytes count
 
-import oa__filedesc__write: (int,buffer,int) -> int for writeToFileHandle
+import oa__filedesc__write: (int,readonly buffer byte,int) -> int 
+  for writeToFileHandle
        -- -1: failure; otherwise
        -- actual written bytes count
 
