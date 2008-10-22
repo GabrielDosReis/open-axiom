@@ -69,7 +69,6 @@
   (|BasicOperator| . BOP)
   (|BasicOperatorFunctions1| . BOP1)
   (|BinaryExpansion| . BINARY)
-  (|BinaryFile| . BINFILE)
   (|BinarySearchTree| . BSTREE)
   (|BinaryTournament| . BTOURN)
   (|BinaryTree| . BTREE)

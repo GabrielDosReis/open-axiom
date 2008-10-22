@@ -95,6 +95,7 @@
         Use the operator <code>not</code> which is the canonical and 
         documented operator.        
     </li>
+
     <li>The domain <code>InputForm</code> now has a new exported
         signature
         <pre>
@@ -102,10 +103,13 @@
         </pre>
         for parsing expressions given as string.
     </li>
+
     <li>The domain <code>Boolean</code> now belongs to the category
         <code>OrderedFinite</code>.</li>
+
     <li>The domain <code>KleeneTrivalentLogic</code> is added.  It
         implements Stephen Kleene's 3-valued propositional logic.</li>
+
     <li>For file orinted I/O, new domains have been added:
         <ul>
           <li><code>IOMode</code>: This domains defines three constants
@@ -114,6 +118,18 @@
              the basic input operations on binary files.</li>
           <li><code>OutputBinaryFile</code>: This domains implements
              the basic output operations on binary files.</li>
+        </ul>
+    </li>
+
+    <li>The domain <code>BinaryFile</code> has been replaced by three
+        specific domains:
+        <ul>
+           <li><code>InputBinaryFile</code>: datatype for input file
+               open in binary mode;</li>
+           <li><code>OutputBinaryFile</code>: datatype for output file
+               open in binary mode;</li>
+           <li><code>InputOutputBinaryFile</code>: datatype for input
+               and output file open in binary mode.</li>
         </ul>
     </li>
   </ul>
