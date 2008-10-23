@@ -643,7 +643,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       $lisplibSlot1 := $NRTslot1Info --NIL or set by $NRTmakeSlot1
       $lisplibOperationAlist:= operationAlist
       $lisplibMissingFunctions:= $CheckVectorList
-    evalAndRwriteLispForm('"compilerInfo",
+    rwriteLispForm('"compilerInfo",
        removeZeroOne ['SETQ,'$CategoryFrame,
         ['put,['QUOTE,op'],'
          (QUOTE isFunctor),
