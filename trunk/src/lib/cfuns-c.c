@@ -82,7 +82,7 @@ addtopath(char *dir)
 {
     char *path, *newpath;
 
-    path = getenv("PATH");
+    path = oa_getenv("PATH");
     if (path == NULL)
         return -1;
 
@@ -312,7 +312,7 @@ copyEnvValue(char *varName, char *buffer)
 {
     char *s;
 
-    s = getenv(varName);
+    s = oa_getenv(varName);
     if (s == NULL)
         return 0;
     strcpy(buffer, s);

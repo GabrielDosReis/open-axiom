@@ -964,23 +964,23 @@ mergeDatabases(void)
         serverDB = XrmGetStringDatabase(XResourceManagerString(gXDisplay));
     }
     else {
-        (void) strcpy(filename, getenv("HOME"));
+        (void) strcpy(filename, oa_getenv("HOME"));
         (void) strcat(filename, "/.Xdefaults");
 /*        fprintf(stderr,"initx:mergeDatabases:XrmGetFileDatase\n");*/
         serverDB = XrmGetFileDatabase(filename);
     }
 /*    fprintf(stderr,"initx:mergeDatabases:XrmMergeDatabases 2\n");*/
     XrmMergeDatabases(serverDB, &rDB);
-    if (getenv("XENVIRONMENT") == NULL) {
+    if (oa_getenv("XENVIRONMENT") == NULL) {
         int len;
 
-        (void) strcpy(filename, getenv("HOME"));
+        (void) strcpy(filename, oa_getenv("HOME"));
         (void) strcat(filename, "/.Xdefaults-");
         len = strlen(filename);
         (void) gethostname(filename + len, 1024 - len);
     }
     else {
-        (void) strcpy(filename, getenv("XENVIRONMENT"));
+        (void) strcpy(filename, oa_getenv("XENVIRONMENT"));
     }
 /*    fprintf(stderr,"initx:mergeDatabases:filename=%s\n",filename);*/
     homeDB = XrmGetFileDatabase(filename);

@@ -185,7 +185,7 @@ build_db_filename(short flag, char *db_dir, char *dbfilename)
 
 
     if (flag & System) {
-        SPAD = (char *) getenv("AXIOM");
+        SPAD = oa_getenv("AXIOM");
         if (SPAD == NULL) {
             fprintf(stderr,
                     "build_db_filename: cannot find system root directory\n");

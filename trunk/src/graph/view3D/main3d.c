@@ -263,7 +263,7 @@ main(void)
   splitPoints = NIL(viewTriple);
 
   /**** Set up display ****/
-  if ((dsply = XOpenDisplay(getenv("DISPLAY"))) == NULL)
+  if ((dsply = XOpenDisplay(oa_getenv("DISPLAY"))) == NULL)
     {fprintf(stderr,"Could not open display.\n");exit (-1);}
   scrn = DefaultScreen(dsply);
   rtWindow = RootWindow(dsply,scrn);
@@ -612,14 +612,14 @@ mergeDatabases(void)
     serverDB = XrmGetStringDatabase(XResourceManagerString(dsply));
   }
   else {
-    (void) strcpy(filename,getenv("HOME"));
+    (void) strcpy(filename,oa_getenv("HOME"));
     (void) strcat(filename,"/.Xdefaults");
     serverDB = XrmGetFileDatabase(filename);
   }
   XrmMergeDatabases(serverDB,&rDB);
-  if ( getenv ("XENVIRONMENT") == NULL) {
+  if ( oa_getenv ("XENVIRONMENT") == NULL) {
     int len;
-    (void) strcpy(filename,getenv("HOME"));
+    (void) strcpy(filename,oa_getenv("HOME"));
     (void) strcat(filename,"/.Xdefaults-");
     len = strlen(filename);
 
@@ -627,7 +627,7 @@ mergeDatabases(void)
 
   }
   else {
-    (void) strcpy (filename,getenv ("XENVIRONMENT"));
+    (void) strcpy (filename,oa_getenv ("XENVIRONMENT"));
   }
   homeDB = XrmGetFileDatabase(filename);
   XrmMergeDatabases(homeDB,&rDB);

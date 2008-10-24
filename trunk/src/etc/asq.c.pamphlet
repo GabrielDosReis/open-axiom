@@ -1463,7 +1463,7 @@ int isspace(int c);
   int i;             /* a temporary                          */
   char proparg[256]; /* a temporary                          */
   /* echoargs(argc, argv);*/
-  AXIOM=(char *)getenv("AXIOM");
+  AXIOM=oa_getenv("AXIOM");
   if (AXIOM == NULL)
     printf("AXIOM shell variable has no value. using current directory\n");
 

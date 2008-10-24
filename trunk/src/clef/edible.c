@@ -215,7 +215,7 @@ main(int argc, char *argv[])
       fprintf(stderr, "Process --> %s\n", pargs[0]);
     }
     else{
-      program = getenv("SHELL");
+      program = oa_getenv("SHELL");
       if (!program)
         program = strdup("/bin/sh");  
       else 

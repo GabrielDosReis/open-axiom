@@ -134,7 +134,7 @@ send_pile(openaxiom_sio *sock,char * str)
     FILE *f;
     char name[512], command[512];
 
-    sprintf(name, "/tmp/hyper%s.input", getenv("SPADNUM"));
+    sprintf(name, "/tmp/hyper%s.input", oa_getenv("SPADNUM"));
     f = fopen(name, "w");
     if (f == NULL) {
         fprintf(stderr, "Can't open temporary input file %s\n", name);
@@ -211,7 +211,7 @@ start_user_buffer(HyperDocPage *page)
     char complfile[250];
     int ret_val;
 
-    SPAD = (char *) getenv("AXIOM");
+    SPAD = (char *) oa_getenv("AXIOM");
     if (SPAD == NULL) {
         sprintf(SPAD, "/spad/mnt/rios");
     }

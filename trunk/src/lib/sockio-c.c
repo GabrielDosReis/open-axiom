@@ -1099,7 +1099,7 @@ make_server_name(char *name, const char* base)
     sprintf(name, "%s%d", base, spad_server_number);
     return 0;
   }
-  num = getenv("SPADNUM");
+  num = oa_getenv("SPADNUM");
   if (num == NULL) {
 /*    fprintf(stderr,
       "\n(AXIOM Sockets) The AXIOM server number is undefined.\n");
@@ -1170,7 +1170,7 @@ open_server(const char* server_name)
     FD_SET(server[1].socket, &server_mask);
     listen(server[1].socket, 5);
   }
-  s = getenv("SPADSERVER");
+  s = oa_getenv("SPADSERVER");
   if (s == NULL) {
 /*    fprintf(stderr, "Not a spad server system\n"); */
     return -1;
@@ -1226,7 +1226,7 @@ sock_accept_connection(int purpose)
 {
   fd_set rd;
   int ret_val, i, p;
-  if (getenv("SPADNUM") == NULL) return -1;
+  if (oa_getenv("SPADNUM") == NULL) return -1;
   while (1) {
     rd = server_mask;
     ret_val = sselect(FD_SETSIZE, (fd_set *)&rd, (fd_set *)0, (fd_set *)0, NULL);

@@ -434,7 +434,7 @@ send_command(char *command,int com_type)
         FILE *f;
         char name[512], str[512]/*, *c*/;
 
-        sprintf(name, "/tmp/hyper%s.input", getenv("SPADNUM"));
+        sprintf(name, "/tmp/hyper%s.input", oa_getenv("SPADNUM"));
         f = fopen(name, "w");
         if (f == NULL) {
             fprintf(stderr, "Can't open temporary input file %s\n", name);

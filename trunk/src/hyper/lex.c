@@ -249,8 +249,8 @@ parser_init(void)
 void
 init_scanner(void)
 {
-    if (getenv("HTASCII")) {
-        useAscii = (strcmp(getenv("HTASCII"), "yes") == 0);
+    if (oa_getenv("HTASCII")) {
+        useAscii = (strcmp(oa_getenv("HTASCII"), "yes") == 0);
     }
     else {
         if(gTtFontIs850==1) useAscii = 0;

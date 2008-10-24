@@ -149,11 +149,11 @@ build_ht_filename(char *fname, char *aname, char *name)
         return oa_access_file_for_read(fname);
     }
     else {/** If not I am going to have to append path names to it **/
-        HTPATH = (char *) getenv("HTPATH");
+        HTPATH = oa_getenv("HTPATH");
         if (HTPATH == NULL) {
         /** The user does not have a HTPATH, so I will use the the directory
         $AXIOM/share/hypertex/pages/ as the default path ***/
-          char *spad = (char *) getenv("AXIOM");
+          char *spad = oa_getenv("AXIOM");
           if (spad == NULL) {
             fprintf(stderr,
             "ht_file_open:Cannot find ht data base: setenv HTPATH or AXIOM\n");
@@ -257,9 +257,9 @@ db_file_open(char *db_file)
      */
 /*    fprintf(stderr,"addfile:db_file_open: entered db_file=%s\n",db_file);*/
     if (gDatabasePath == NULL) {
-        gDatabasePath = (char *) getenv("HTPATH");
+        gDatabasePath = oa_getenv("HTPATH");
         if (gDatabasePath == NULL) {
-            spad = (char *) getenv("AXIOM");
+            spad = oa_getenv("AXIOM");
             if (spad == NULL) {
 /*                fprintf(stderr,
                    "addfile:db_file_open: Cannot find ht data base path:\n");*/
