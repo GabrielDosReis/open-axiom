@@ -268,7 +268,7 @@ main(void)
   splitPoints = NIL(viewTriple);
 
   /**** Set up display ****/
-  if ((dsply = XOpenDisplay(getenv("DISPLAY"))) == NULL)
+  if ((dsply = XOpenDisplay(oa_getenv("DISPLAY"))) == NULL)
     {fprintf(stderr,"Could not open display.\n");exit (-1);}
   scrn = DefaultScreen(dsply);
   rtWindow = RootWindow(dsply,scrn);

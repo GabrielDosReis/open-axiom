@@ -612,7 +612,7 @@ parse_env(TextNode *node)
 
     get_expected_token(openaxiom_Lbrace_token);
     get_expected_token(openaxiom_Word_token);
-    env = getenv(token.id);
+    env = oa_getenv(token.id);
 
     if (env == NULL) {
         /** The environment variable was not found **/

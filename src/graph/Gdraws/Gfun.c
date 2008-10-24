@@ -692,7 +692,7 @@ PSGlobalInit(void)
 
   /* path specific file names */
 
-  if ((envAXIOM = getenv("DEVE")) != NULL) {  /* get env var AXIOM */
+  if ((envAXIOM = oa_getenv("DEVE")) != NULL) {  /* get env var AXIOM */
 
     psData[headerps].flag = yes;
     sprintf(psData[headerps].filename, "%s%s", envAXIOM, "/Gdraws/PS/header.ps");
@@ -728,7 +728,7 @@ PSGlobalInit(void)
     sprintf(psData[setupps].filename, "%s%s", envAXIOM, "/Gdraws/PS/setup.ps");
     sprintf(psData[endps].filename, "%s%s", envAXIOM, "/Gdraws/PS/end.ps");
   }
-  else if ((envAXIOM = getenv("AXIOM")) != NULL) {
+  else if ((envAXIOM = oa_getenv("AXIOM")) != NULL) {
     psData[headerps].flag = yes;
     sprintf(psData[headerps].filename, "%s%s", envAXIOM,
             "/lib/graph/header.ps");

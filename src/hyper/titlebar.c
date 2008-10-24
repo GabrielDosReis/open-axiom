@@ -307,7 +307,7 @@ readTitleBarImages(void)
     char filename[128];
     char *axiomEnvVar = NULL;
 
-    axiomEnvVar = getenv("AXIOM");
+    axiomEnvVar = oa_getenv("AXIOM");
 
     if (axiomEnvVar)
         sprintf(filename, "%s/share/hypertex/bitmaps/%s", axiomEnvVar, tw1file);

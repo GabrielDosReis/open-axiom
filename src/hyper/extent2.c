@@ -840,7 +840,7 @@ insert_bitmap_file(TextNode * node)
     if (node->image.pm == 0) {
         if (
         ((image = (ImageStruct *) hash_find(&gImageHashTable, filename)) == NULL)
-            || (getenv("HTCACHE"))) {
+            || (oa_getenv("HTCACHE"))) {
 
             /*
              * read the bitmap if not already in memory or if the environment

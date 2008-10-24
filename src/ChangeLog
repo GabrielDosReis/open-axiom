@@ -1,3 +1,30 @@
+2008-10-24	Alfredo Portes	<doyenatccny@gmail.com>
+
+	* hyper/addfile.c: Use oa_getenv function.
+	* hyper/titlebar.c: Likewise.
+	* src/hyper/parse-types.c: Likewise.
+	* src/hyper/htinp.c: Likewise.
+	* src/hyper/extent2.c: Likewise.
+	* src/hyper/spadint.c: Likewise.
+	* src/hyper/htadd.c: Likewise.
+	* src/hyper/lex.c: Likewise.
+	* src/hyper/initx.c: Likewise.
+	* src/sman/sman.c: Likewise.
+	* src/graph/view2D/main2d.c: Likewise.
+	* src/graph/view3D/testcol.c: Likewise.
+	* src/graph/view3D/main3d.c: Likewise.
+	* src/graph/viewman/fun2D.c: Likewise.
+	* src/graph/viewman/fun3D.c: Likewise.
+	* src/graph/Gdraws/Gfun.c: Likewise.
+	* src/graph/viewAlone/spoon2D.c: Likewise.
+	* src/graph/viewAlone/spoonComp.c: Likewise.
+	* src/lib/cfuns-c.c: Likewise.
+	* src/lib/fnct_key.c: Likewise.
+	* src/lib/sockio-c.c: Likewise.
+	* src/lib/cursor.c: Likewise.
+	* src/clef/edible.c: Likewise.
+	* src/etc/asq.c.pamphlet: Likewise.
+
 2008-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add basic support for stream client socket.

@@ -108,7 +108,7 @@ define_function_keys(void)
     for (key = 0; key < 13; key++)
         (function_key[key]).str = NULL;
     /** see if the user has a .clef file       ***/
-    HOME = getenv("HOME");
+    HOME = oa_getenv("HOME");
     sprintf(path, "%s/.clef", HOME);
     if ((fd = open(path, O_RDONLY)) == -1) {
         return;

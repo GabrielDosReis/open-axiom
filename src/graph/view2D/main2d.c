@@ -163,7 +163,7 @@ main(void)
 
 
   /**** Set up display ****/
-  if ((dsply = XOpenDisplay(getenv("DISPLAY"))) == NULL)
+  if ((dsply = XOpenDisplay(oa_getenv("DISPLAY"))) == NULL)
     fprintf(stderr,"Could not open the display.\n");
   scrn  = DefaultScreen(dsply);
   rtWindow  = RootWindow(dsply,scrn);
@@ -473,20 +473,20 @@ mergeDatabases(void)
   if (XResourceManagerString(dsply) != NULL)
     serverDB = XrmGetStringDatabase(XResourceManagerString(dsply));
   else {
-    (void) strcpy(filename,getenv("HOME"));
+    (void) strcpy(filename,oa_getenv("HOME"));
     (void) strcat(filename,"/.Xdefaults");
     serverDB = XrmGetFileDatabase(filename);
   }
   XrmMergeDatabases(serverDB,&rDB);
-  if ( getenv ("XENVIRONMENT") == NULL) {
+  if ( oa_getenv ("XENVIRONMENT") == NULL) {
     int len;
-    (void) strcpy(filename,getenv("HOME"));
+    (void) strcpy(filename,oa_getenv("HOME"));
     (void) strcat(filename,"/.Xdefaults-");
     len = strlen(filename);
     (void) gethostname(filename+len,1024-len);
   }
   else 
-    (void) strcpy (filename,getenv ("XENVIRONMENT"));
+    (void) strcpy (filename,oa_getenv ("XENVIRONMENT"));
   
   homeDB = XrmGetFileDatabase(filename);
   XrmMergeDatabases(homeDB,&rDB);

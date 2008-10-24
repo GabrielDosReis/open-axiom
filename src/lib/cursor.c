@@ -61,7 +61,7 @@ Cursor_shape(int shape)
     struct hftgetid hftgid;
     char *termVal;
 
-    termVal = (char *) getenv("TERM");
+    termVal = oa_getenv("TERM");
     if (strcmp("hft", termVal) && strncmp("aixterm", termVal, 7))
         return;
 

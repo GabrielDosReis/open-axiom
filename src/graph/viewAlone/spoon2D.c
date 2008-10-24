@@ -81,7 +81,7 @@ spoonView2D(void)
     close(pipe1[1]);
     printf("(spoon2D child) start the TwoDimensionalViewport process\n");
     sprintf(errorStr,"%s","(viewAlone) execution of the TwoDimensionalViewport process");
-    sprintf(envAXIOM,"%s",getenv("AXIOM"));
+    sprintf(envAXIOM,"%s",oa_getenv("AXIOM"));
     sprintf(runView,"%s%s",envAXIOM,"/lib/view2D");
     check(execl(runView,runView,NULL));
     fprintf(stderr,"Could not execute view2D! Check that view2D is on your path variable.\n");

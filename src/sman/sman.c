@@ -235,7 +235,7 @@ should_I_clef(void)
 static int 
 in_X(void)
 {
-  if (getenv("DISPLAY")) return 1;
+  if (oa_getenv("DISPLAY")) return 1;
   return 0;
 }
 

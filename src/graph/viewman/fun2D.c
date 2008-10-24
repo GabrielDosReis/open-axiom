@@ -219,7 +219,7 @@ forkView2D(void)
 #ifdef DEBUG
     fprintf(stderr,"Executing TwoDimensionalViewport process\n");
 #endif
-    sprintf(envAXIOM,"%s",getenv("AXIOM"));
+    sprintf(envAXIOM,"%s",oa_getenv("AXIOM"));
     sprintf(runView,"%s%s",envAXIOM,"/lib/view2D");
     check(execl(runView,runView,NULL));
     fprintf(stderr,"The viewport manager could not execute view2D.\nCheck that view2D is on your PATH.\n");
