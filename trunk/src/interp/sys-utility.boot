@@ -265,3 +265,9 @@ writeByteToFile(ofile,b) ==
 closeFile file ==
   CLOSE file
   nil
+
+
+--%
+makeByteBuffer(n,b == 0) ==
+  MAKE_-ARRAY(n,KEYWORD::ELEMENT_-TYPE,"%Byte",
+    KEYWORD::FILL_-POINTER,0, KEYWORD::INITIAL_-ELEMENT,b)

@@ -47,6 +47,8 @@
 #include <sys/time.h>
 #include <string.h>
 #include <signal.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #include "cfuns.h"
 #include "sockio.h"
@@ -130,6 +132,44 @@ openaxiom_load_socket_module(void)
    }
 #endif   
    openaxiom_socket_module_loaded = 1;
+}
+
+
+/* Convert an IP address from presentation (string or ascii form)
+   to numeric form.  The result is stored in the last argument.
+   Success is indicated by a return value 0; failure is -1.  */
+OPENAXIOM_EXPORT int
+oa_inet_pton(const char* addr, int prot, openaxiom_byte* bytes)
+{
+   switch (prot) {
+   case 4: {
+      struct in_addr inet_val;
+      if (inet_aton(addr, &inet_val) != 0) {
+         memcpy(bytes, &inet_val, 4);
+         return 0;
+      }
+      return -1;
+   }
+      
+   default:
+      return -1;
+   }
+}
+
+/* Resolve a hostname to its IP address.  On success return 0,
+   otherwise -1.  */
+OPENAXIOM_EXPORT int
+oa_get_host_address(const char* n, int prot, openaxiom_byte* bytes)
+{
+   struct hostent* h = gethostbyname(n);
+   if (h == 0)
+      return -1;
+
+   if (h->h_length != prot)
+      /* Protocol mismatch.  */
+      return -1;
+   memcpy(bytes, h->h_addr_list[0], prot);
+   return 0;
 }
 
 
@@ -296,22 +336,22 @@ oa_filedesc_close(openaxiom_filedesc desc)
 */
 
 OPENAXIOM_EXPORT openaxiom_socket
-oa_open_ip4_client_stream_socket(const char* addr, openaxiom_port port)
+oa_connect_ip_port_stream(const openaxiom_byte* addr, int prot,
+                          openaxiom_port port)
 {
    struct sockaddr_in server;
-   openaxiom_socket sock = openaxiom_socket_stream_link(AF_INET);
+   openaxiom_socket sock;
+   /* IP6 is not yet supported.  */
+   if (prot != 4)
+      return OPENAXIOM_INVALID_SOCKET;
+
+   sock = openaxiom_socket_stream_link(AF_INET);
    if (openaxiom_socket_is_invalid(sock))
       return OPENAXIOM_INVALID_SOCKET;
+
    memset(&server, 0, sizeof server);
    server.sin_family = AF_INET;
-#ifdef __WIN32__
-   if ((server.sin_addr.s_addr = inet_addr(addr)) == INADDR_NONE) {
-#else
-   if (inet_pton(AF_INET, addr, &server.sin_addr) <= 0) {
-#endif
-      oa_close_socket(sock);
-      return OPENAXIOM_INVALID_SOCKET;
-   }
+   memcpy(&server.sin_addr, addr, prot);
    server.sin_port = htons(port);
    if (connect(sock, (struct sockaddr*)&server, sizeof server) < 0) {
       oa_close_socket(sock);

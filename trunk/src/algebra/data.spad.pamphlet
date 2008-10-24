@@ -66,54 +66,137 @@ Byte(): Public == Private where
 @
 
 
-\section{The ByteArray domain}
+\section{The ByteBuffer domain}
 
-<<domain BYTEARY ByteArray>>=
-import PrimitiveArray
+<<domain BYTEBUF ByteBuffer>>=
 import Byte
-)abbrev domain BYTEARY ByteArray
+)abbrev domain BYTEBUF ByteBuffer
 ++ Author: Gabriel Dos Reis
 ++ Date Created: April 19, 2008
 ++ Related Constructor:
 ++ Description:
-++   ByteArray provides datatype for fix-sized buffer of bytes.
-ByteArray() == PrimitiveArray Byte
+++   ByteBuffer provides datatype for buffers of bytes.  This domain
+++   differs from PrimitiveArray Byte in that it has it is not as rigid
+++   as  PrimitiveArray Byte is.  That is, the typical use of
+++   ByteBuffer is to pre-allocate a vector of Byte of some capacity
+++   `c'.  The array can then store up to `c' bytes.   The actual
+++   interesting bytes count (the length of the buffer) is therefore 
+++   different from the capacity.  The length is no more than the 
+++   capacity, but it can be set dynamically as needed.  This 
+++   functionality is used for example when reading bytes from
+++   input/output devices where we use buffers to transfer data in and 
+++   out of the system.
+++   Note: a value of type ByteBuffer is 0-based indexed, as opposed
+++         Vector, but not unlike PrimitiveArray Byte.
+ByteBuffer(): Public == Private where
+  Public == Join(OneDimensionalArrayAggregate Byte, CoercibleTo String) with
+    byteBuffer: NonNegativeInteger -> %
+      ++ byteBuffer(n) creates a buffer of capacity n, and length 0.
+    _#: % -> NonNegativeInteger
+      ++ #buf returns the number of active elements in the buffer.
+    capacity: % -> NonNegativeInteger
+      ++ capacity(buf) returns the pre-allocated maximum size of `buf'.
+    setLength!: (%,NonNegativeInteger) -> NonNegativeInteger
+      ++ setLength!(buf,n) sets the number of active bytes in the
+      ++ `buf'.  Error if `n' is more than the capacity.
+  Private == add
+    byteBuffer n == 
+      buf := makeByteBuffer(n)$Lisp
+      setLength!(buf,0)
+      buf
+
+    empty() == byteBuffer 0
+
+    new(n,b) == makeByteBuffer(n,b)$Lisp
+
+    qelt(buf,i) ==
+      AREF(buf,i)$Lisp
+
+    elt(buf: %,i: Integer) == 
+      i >= capacity buf => error "index out of range"
+      qelt(buf,i)
+
+    qsetelt!(buf,i,b) ==
+      SETF(AREF(buf,i)$Lisp,b)$Lisp
+
+    setelt(buf: %,i: Integer, b: Byte) == 
+      i >= capacity buf => error "index out of range"
+      qsetelt!(buf,i,b)
+
+    capacity buf == ARRAY_-DIMENSION(buf,0)$Lisp
+
+    minIndex buf == 0
+
+    maxIndex buf == capacity(buf)::Integer - 1
+
+    # buf == LENGTH(buf)$Lisp
+
+    x = y == 
+      EQUAL(x,y)$Lisp
+
+    setLength!(buf,n) == 
+      n > capacity buf => 
+        error "attempt to set length higher than capacity"
+      SETF(FILL_-POINTER(buf)$Lisp,n)$Lisp
+
+    coerce(buf: %): String == 
+      s: String := MAKE_-STRING(#buf)$Lisp
+      for i in 0..(#buf - 1) repeat
+        qsetelt!(s,i + 1,qelt(buf,i)::Character)$String
+      s
+
+    construct l ==
+      buf := byteBuffer(#l)
+      for b in l for i in 0.. repeat
+        buf.i := b
+      buf
+
+    concat(x: %, y:%) ==
+      nx := #x
+      ny := #y
+      buf := byteBuffer(nx + ny)
+      for i in 0..(nx - 1) repeat
+        buf.i := x.i
+      for i in 0..(ny - 1) repeat
+        buf.(nx + i) := y.i
+      buf
+
 @
 
 
-\section{The DataBuffer domain}
+\section{The DataArray domain}
 
-<<domain DATABUF DataBuffer>>=
-)abbrev domain DATABUF DataBuffer
+<<domain DATAARY DataArray>>=
+)abbrev domain DATAARY DataArray
 ++ Author: Gabriel Dos Reis
 ++ Date Created: August 23, 2008
 ++ Description:
 ++   This domain provides for a fixed-sized homogeneous data buffer.
-DataBuffer(N: PositiveInteger, T: SetCategory): Public == Private where
+DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
   Public == SetCategory with
     new: () -> %
       ++ new() returns a fresly allocated data buffer or length N.
-    elt: (%,NonNegativeInteger) -> T
+    qelt: (%,NonNegativeInteger) -> T
       ++ elt(b,i) returns the ith element in buffer `b'.  Indexing
       ++ is 0-based.
-    setelt: (%,NonNegativeInteger,T) -> T
+    qsetelt: (%,NonNegativeInteger,T) -> T
       ++ setelt(b,i,x) sets the ith entry of data buffer `b' to `x'.
       ++ Indexing is 0-based.
   Private == add
     new() == 
       makeSimpleArray(getVMType(T)$Lisp,N)$Lisp
 
-    elt(b,i) == 
+    qelt(b,i) == 
       getSimpleArrayEntry(b,i)$Lisp
 
-    setelt(b,i,x) ==
+    qsetelt(b,i,x) ==
       setSimpleArrayEntry(b,i,x)$Lisp
 
     x = y ==
       EQUAL(x,y)$Lisp
 
     coerce(b: %): OutputForm ==
-      bracket([elt(b,i)::OutputForm for i in 0..(N-1)])
+      bracket([qelt(b,i)::OutputForm for i in 0..(N-1)])
 @
 
 
@@ -155,7 +238,9 @@ DataBuffer(N: PositiveInteger, T: SetCategory): Public == Private where
 <<*>>=
 <<license>>
 <<domain BYTE Byte>>
-<<domain BYTEARY ByteArray>>
+<<domain BYTEBUF ByteBuffer>>
+<<domain DATAARY DataArray>>
+
 @
 
 \end{document}

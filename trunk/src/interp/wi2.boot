@@ -225,14 +225,14 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
       $lisplibSlot1 := $NRTslot1Info --NIL or set by $NRTmakeSlot1
       $lisplibOperationAlist:= operationAlist
       $lisplibMissingFunctions:= $CheckVectorList
-    evalAndRwriteLispForm('"compilerInfo",
+    lisplibWrite('"compilerInfo",
        ['SETQ,'$CategoryFrame,
         ['put,['QUOTE,op'],'
          (QUOTE isFunctor),
           ['QUOTE,operationAlist],['addModemap,['QUOTE,op'],['
            QUOTE,parForm],['QUOTE,parSignature],true,['QUOTE,op'],
             ['put,['QUOTE,op' ],'(QUOTE mode),
-             ['QUOTE,['Mapping,:parSignature]],'$CategoryFrame]]]])
+             ['QUOTE,['Mapping,:parSignature]],'$CategoryFrame]]]],$libFile)
     if null argl then
       evalAndRwriteLispForm('NILADIC,
             ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'NILADIC], true])

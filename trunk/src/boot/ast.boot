@@ -1393,7 +1393,7 @@ genGCLnativeTranslation(op,s,t,op') ==
       '"object" 
     gclArgInC(x,a) ==
       x in $NativeSimpleDataTypes => a
-      x = "string" => strconc(a,'"->st.st__self")
+      x = "string" => a   -- GCL takes responsability for the conversion
       [.,[.,y]] := x
       y = "char" => strconc(a,'"->st.st__self")
       y = "byte" => strconc(a,'"->ust.ust__self")

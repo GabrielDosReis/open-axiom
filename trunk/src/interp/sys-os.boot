@@ -103,12 +103,34 @@ import oa__open__local__client__stream__socket: string -> int
 
 --% INET socket stream support
 
-import oa__open__ip4__client__stream__socket: (string,int) -> int
-  for openIP4ClientStreamSocket
+++ Convert an IP address (4 or 6) to numeric form.  The result of
+++ the conversion is stored in the last argument.  The return value
+++ is interpreted as follows:
+++    -1: failure
+++     0: success
+++ Note that at the moment, only IP4 is supported.
+import oa__inet__pton: (string, int, writeonly buffer byte) -> int
+  for presentationToNumeric
 
-import oa__socket__read: (int,string,int) -> int for readFromStreamSocket
+++ Try to resolve a network hostname to its IP address.  On success,
+++ return 0, otherwise -1.  The IP address is written into the 
+++ third argument.
+import oa__get__host__address: (string, int, writeonly buffer byte) -> int
+  for hostnameToNumeric
+
+++ Try to establish a client TCP/IP socket connection.  The IP numeric
+++ address is specified by the first argument; second argument is the
+++ version of IP used (4 or 6); third argument is the desired port.
+++ Return -1 on failure, otherwise the file descriptor corresponding
+++ to the obtained client socket.
+import oa__connect__ip__port__stream: (readonly buffer byte,int,int) -> int
+  for connectToHostAndPort
+
+import oa__socket__read: (int,writeonly buffer byte,int) -> int 
+  for readFromStreamSocket
   
-import oa__socket__write: (int,string,int) -> int for writeToStreamSocket
+import oa__socket__write: (int,readonly buffer byte,int) -> int 
+  for writeToStreamSocket
 
 import oa__close__socket: int -> int for closeSocket
 

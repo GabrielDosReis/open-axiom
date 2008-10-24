@@ -44,16 +44,16 @@ InputByteConduit(): Category == Conduit with
       ++ Note: Ideally, the return value should have been of type
       ++   Maybe Byte; but that would have implied allocating
       ++   a cons cell for every read attempt, which is overkill.
-    readBytes!: (%,ByteArray) -> SingleInteger
+    readBytes!: (%,ByteBuffer) -> SingleInteger
       ++ readBytes!(c,b) reads byte sequences from conduit `c' into
       ++ the byte buffer `b'.  The actual number of bytes written
       ++ is returned.
   add
-    readBytes!(cond,ary) ==
+    readBytes!(cond,buf) ==
       count: SingleInteger := 0
       b : SingleInteger
-      while count < #ary and ((b := readByteIfCan! cond) >= 0) repeat
-        qsetelt!(ary,count,b : Byte)
+      while count < capacity buf and ((b := readByteIfCan! cond) >= 0) repeat
+        qsetelt!(buf,count,b : Byte)
         count := count + 1
       count
 
@@ -76,15 +76,15 @@ OutputByteConduit(): Category == Conduit with
       ++ Note: Ideally, the return value should have been of type
       ++   Maybe Byte; but that would have implied allocating
       ++   a cons cell for every write attempt, which is overkill.
-    writeBytes!: (%,ByteArray) -> SingleInteger
+    writeBytes!: (%,ByteBuffer) -> SingleInteger
       ++ writeBytes!(c,b) write bytes from buffer `b' 
       ++ onto the conduit `c'.  The actual number of written 
       ++ bytes is returned.
   add
-    writeBytes!(cond,ary) ==
+    writeBytes!(cond,buf) ==
       count: SingleInteger := 0
-      while count < #ary and 
-        writeByteIfCan!(cond,qelt(ary,count)) >= 0 repeat
+      while count < capacity buf and 
+        writeByteIfCan!(cond,qelt(buf,count)) >= 0 repeat
           count := count + 1
       count
 
@@ -284,6 +284,106 @@ PortNumber(): Public == Private where
 
 @
 
+\section{The IP4Address domain}
+
+<<domain IP4ADDR IP4Address>>=
+)abbrev domain IP4ADDR IP4Address
+++ Author: Gabriel Dos Reis
+++ Date Created: October 22, 2008
+++ Date Last Modified: October 22, 2008
+++ Description:  
+++   This domain provides representation for ARPA Internet IP4 addresses.
+IP4Address(): Public == Private where
+  Public == SetCategory with
+    ip4Address: String -> %
+      ++ ip4Address(a) builds a numeric address out of the ASCII form `a'.
+    bytes: % -> DataArray(4,Byte)
+      ++ bytes(x) returns the bytes of the numeric address `x'.
+    resolve: Hostname -> Union(%,"failed")
+      ++ resolve(h) returns the IP4 address of host `h'.
+  Private == add
+    Rep == DataArray(4,Byte)
+    ip4Address a ==
+      n := new()$Rep
+      presentationToNumeric(a,4,n)$Lisp = 0@SingleInteger => per n
+      userError "invalid Internet IP4 address"
+    resolve h ==
+      n := new()$Rep
+      hostnameToNumeric(h::String,4,n)$Lisp = 0@SingleInteger => per n
+      "failed"
+    bytes x == rep x
+    x = y == rep x = rep y
+    coerce(x: %): OutputForm == 
+      infix('_.::OutputForm, 
+        [qelt(rep x,i)::OutputForm for i in 0..3])$OutputForm
+@
+
+
+\section{The NetworkClientSocket category}
+
+<<category NETCLT NetworkClientSocket>>=
+)abbrev category NETCLT NetworkClientSocket
+NetworkClientSocket(T: SetCategory): Category == InputOutputByteConduit with
+   connectTo: (T, PortNumber) -> Union(%,"failed")
+   isConnected?: % -> Boolean
+@
+
+
+\section{The InetClientStreamSocket domain}
+
+<<domain INETCLTS InetClientStreamSocket>>=
+)abbrev domain INETCLTS InetClientStreamSocket
+InetClientStreamSocket(): Public == Private where
+  Public == Join(NetworkClientSocket IP4Address, CoercibleTo OutputForm) with
+    connectTo: (Hostname, PortNumber) -> Union(%,"failed")
+  Private == add
+    -- we hope that a small integer is OK on all platform
+    Host == Union(IP4Address,Hostname)
+    Rep == Record(%host: Host, %port: PortNumber, %sock: SingleInteger)
+
+    connectTo(ip: IP4Address, p: PortNumber) ==
+      s: SingleInteger := connectToHostAndPort(ip,4,p)$Lisp
+      s = -1::SingleInteger => "failed"
+      per [ip::Host,p,s]
+
+    connectTo(h: Hostname, p: PortNumber) ==
+      (ip := resolve(h)$IP4Address) case "failed" => "failed"
+      s: SingleInteger := connectToHostAndPort(ip::IP4Address,4,p)$Lisp
+      s = -1::SingleInteger => "failed"
+      per [h::Host,p,s]
+
+    isConnected? s ==
+      rep(s).%sock ~= -1::SingleInteger
+
+    readBytes!(x,b) ==
+      n: SingleInteger := 
+          readFromStreamSocket(rep(x).%sock,b, capacity b)$Lisp
+      if n <= 0 then close! x
+      else setLength!(b,n : NonNegativeInteger)
+      n
+
+    writeBytes!(x,b) ==
+      n: SingleInteger := 
+          writeToStreamSocket(rep(x).%sock,b, capacity b)$Lisp
+      if n <= 0 then close! x
+      else setLength!(b,n : NonNegativeInteger)
+      n
+
+    close! x ==
+      closeSocket(rep(x).%sock)$Lisp
+      rep(x).%sock := -1::SingleInteger
+      x
+
+    coerce(x: %): OutputForm ==
+      x' := rep x
+      h := 
+        x'.%host case IP4Address => x'.%host::IP4Address::OutputForm
+        x'.%host::Hostname::OutputForm
+      infix('_:::OutputForm,h,x'.%port::OutputForm)$OutputForm
+      
+@
+
+
 
 \section{License}
 
@@ -328,6 +428,7 @@ PortNumber(): Public == Private where
 <<category INBCON InputByteConduit>>
 <<category OUTBCON OutputByteConduit>>
 <<category IOBCON InputOutputByteConduit>>
+<<category NETCLT NetworkClientSocket>>
 
 <<domain INBFILE InputBinaryFile>>
 <<domain OUTBFILE OutputBinaryFile>>
@@ -335,6 +436,9 @@ PortNumber(): Public == Private where
 
 <<domain HOSTNAME Hostname>>
 <<domain PORTNUM PortNumber>>
+<<domain IP4ADDR IP4Address>>
+
+<<domain INETCLTS InetClientStreamSocket>>
 
 @
 
