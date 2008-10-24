@@ -376,7 +376,7 @@ axiom_algebra_layer_1 = \
   PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
   RETRACT- SEGCAT   BINDING           BMODULE   LOGIC    \
   LOGIC-   EVALAB   EVALAB-  FEVALAB  FEVALAB-  BYTE     \
-  OSGROUP  MAYBE    DATABUF  PROPLOG
+  OSGROUP  MAYBE    DATAARY  PROPLOG
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -550,7 +550,7 @@ axiom_algebra_layer_11_objects = \
 axiom_algebra_layer_12 = \
   DIOPS    DIOPS-  DIAGG   DIAGG-  BITS     DIRPROD2 IMATRIX \
   IVECTOR  LPOLY   LSMP    LSMP1   MATCAT2  PTCAT    TRIMAT  \
-  FSAGG    FSAGG-  SYSTEM  BYTEARY HOSTNAME PORTNUM
+  FSAGG    FSAGG-  SYSTEM  HOSTNAME PORTNUM
 
 axiom_algebra_layer_12_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_12))
@@ -652,7 +652,7 @@ axiom_algebra_layer_15 = \
   FRAMALG  FRAMALG- MDAGG    ODPOL   \
   PLOT     RMCAT2   ROIRC    SDPOL   \
   SMATCAT  SMATCAT- TUBETOOL UPXSCCA \
-  UPXSCCA- JAVACODE POLY
+  UPXSCCA- JAVACODE POLY       BYTEBUF
 
 axiom_algebra_layer_15_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_15))
@@ -827,7 +827,7 @@ axiom_algebra_layer_user =  \
 	CASEAST  HASAST   ISAST    CATAST   WHEREAST COMMAAST \
 	QQUTAST  DEFAST   MACROAST SPADXPT  SPADAST           \
 	INBFILE  OUTBFILE IOBFILE  RGBCMDL  RGBCSPC  CTORKIND \
-        CTOR
+        CTOR     IP4ADDR  NETCLT   INETCLTS
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -892,6 +892,9 @@ IOBFILE.NRLIB/code.$(FASLEXT): $(OUT)/INBFILE.$(FASLEXT) \
 
 CTOR.NRLIB/code.$(FASLEXT): $(OUT)/CTORKIND.$(FASLEXT) \
 	$(OUT)/IDENT.$(FASLEXT)
+
+NETCLT.NRLIB/code.$(FASLEXT): $(OUT)/IOBCON.$(FASLEXT)
+INETCLTS.NRLIB/code.$(FASLEXT): $(OUT)/NETCLT.$(FASLEXT)
 
 .PHONY: all all-algebra mkdir-output-directory
 all: all-ax

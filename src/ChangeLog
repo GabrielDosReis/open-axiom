@@ -1,3 +1,16 @@
+2008-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add basic support for stream client socket.
+	* lib/sockio-c.c (oa_inet_pton): Define.
+	(oa_get_host_address): Likewise.
+	* algebra/net.spad.pamphlet (IP4Address): New.
+	(NetworkClientSocket): Likewise.
+	(InetClientStreamSocket): Likewise.
+	* algebra/data.spad.pamphlet (DataArray): Rename from DataBuffer.
+	(ByteBuffer): Rename from ByteArray.  Reimplement.
+	* algebra/exposed.lsp.pamphlet: Expose IP4Address,
+	InetClientStreamSocket, NetworkClientSocket.
+
 2008-10-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/exposed.lsp.pamphlet: Unexpose BinaryFile.

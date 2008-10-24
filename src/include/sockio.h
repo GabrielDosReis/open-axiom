@@ -86,10 +86,12 @@ typedef struct openaxiom_sio {
 
 
 OPENAXIOM_EXPORT openaxiom_filedesc
- oa_open_local_client_stream_socket(const char*);
+   oa_open_local_client_stream_socket(const char*);
+OPENAXIOM_EXPORT int oa_inet_pton(const char*, int, openaxiom_byte*);
+OPENAXIOM_EXPORT int oa_get_host_address(const char*, int, openaxiom_byte*);
 OPENAXIOM_EXPORT int oa_open_local_server_stream_socket(const char*);
 OPENAXIOM_EXPORT openaxiom_socket
-oa_open_ip4_client_stream_socket(const char*, openaxiom_port);
+   oa_connect_ip_port_stream(const openaxiom_byte*, int, openaxiom_port);
 OPENAXIOM_EXPORT int oa_socket_write(openaxiom_socket,
                                      const openaxiom_byte*, int);
 OPENAXIOM_EXPORT int oa_socket_read(openaxiom_socket,
