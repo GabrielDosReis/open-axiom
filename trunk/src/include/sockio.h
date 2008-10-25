@@ -92,10 +92,15 @@ OPENAXIOM_EXPORT int oa_get_host_address(const char*, int, openaxiom_byte*);
 OPENAXIOM_EXPORT int oa_open_local_server_stream_socket(const char*);
 OPENAXIOM_EXPORT openaxiom_socket
    oa_connect_ip_port_stream(const openaxiom_byte*, int, openaxiom_port);
+
 OPENAXIOM_EXPORT int oa_socket_write(openaxiom_socket,
                                      const openaxiom_byte*, int);
+OPENAXIOM_EXPORT int oa_socket_write_byte(openaxiom_socket, openaxiom_byte);
+
 OPENAXIOM_EXPORT int oa_socket_read(openaxiom_socket,
                                     openaxiom_byte*, int);
+OPENAXIOM_EXPORT int oa_socket_read_byte(openaxiom_socket);
+
 OPENAXIOM_EXPORT void oa_close_socket(openaxiom_socket);
 
 OPENAXIOM_EXPORT int 
