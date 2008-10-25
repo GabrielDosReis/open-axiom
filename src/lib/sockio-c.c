@@ -47,8 +47,13 @@
 #include <sys/time.h>
 #include <string.h>
 #include <signal.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#ifdef __WIN32__
+#  include <winsock2.h>
+#  include <ws2tcpip.h>
+#else
+#  include <arpa/inet.h>
+#  include <netdb.h>
+#endif
 
 #include "cfuns.h"
 #include "sockio.h"
@@ -143,14 +148,21 @@ oa_inet_pton(const char* addr, int prot, openaxiom_byte* bytes)
 {
    switch (prot) {
    case 4: {
+#ifdef __WIN32__
+      unsigned long inet_val = inet_addr(addr);
+      if (inet_val == INADDR_NONE || inet_val == INADDR_ANY)
+         return -1;
+      memcpy(bytes, &inet_val, 4);
+      return 0;
+#else
       struct in_addr inet_val;
       if (inet_aton(addr, &inet_val) != 0) {
          memcpy(bytes, &inet_val, 4);
          return 0;
       }
       return -1;
+#endif
    }
-      
    default:
       return -1;
    }

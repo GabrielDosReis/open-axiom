@@ -43,6 +43,9 @@
 #  elif defined(OPENAXIOM_DLL_IMPORT)
 #    define OPENAXIOM_EXPORT  __declspec(dllimport)
 #  endif  /* DLL_EXPORT */
+#  ifndef WIN32_LEAN_AND_MEAN
+#    define WIN32_LEAN_AND_MEAN
+#  endif
 #endif	/* __WIN32__ */
 #ifndef OPENAXIOM_EXPORT
 #  define OPENAXIOM_EXPORT  /* nothing */

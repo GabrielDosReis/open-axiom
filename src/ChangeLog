@@ -1,3 +1,8 @@
+2008-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* include/open-axiom.h: Define WIN32_LEAN_AND_MEAN
+	* lib/sockio-c.c (oa_inet_pton) [__WIN32__]: Use inet_addr.
+
 2008-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-os.boot: Import oa_socket_read_byte as
