@@ -120,6 +120,7 @@ openaxiom_unload_socket_module(void)
 static void
 openaxiom_load_socket_module(void)
 {
+  if (!openaxiom_socket_module_loaded) {
 #ifdef __WIN32__
    WSADATA wsaData;
 
@@ -136,6 +137,7 @@ openaxiom_load_socket_module(void)
       exit(WSAGetLastError());
    }
 #endif   
+  }
    openaxiom_socket_module_loaded = 1;
 }
 
@@ -146,6 +148,7 @@ openaxiom_load_socket_module(void)
 OPENAXIOM_EXPORT int
 oa_inet_pton(const char* addr, int prot, openaxiom_byte* bytes)
 {
+   openaxiom_load_socket_module();
    switch (prot) {
    case 4: {
 #ifdef __WIN32__
@@ -173,7 +176,9 @@ oa_inet_pton(const char* addr, int prot, openaxiom_byte* bytes)
 OPENAXIOM_EXPORT int
 oa_get_host_address(const char* n, int prot, openaxiom_byte* bytes)
 {
-   struct hostent* h = gethostbyname(n);
+   struct hostent* h;
+   openaxiom_load_socket_module();
+   h = gethostbyname(n);
    if (h == 0)
       return -1;
 
@@ -190,8 +195,7 @@ oa_get_host_address(const char* n, int prot, openaxiom_byte* bytes)
 static inline openaxiom_socket
 openaxiom_socket_stream_link(int family)
 {
-   if (!openaxiom_socket_module_loaded)
-      openaxiom_load_socket_module();
+   openaxiom_load_socket_module();
    return socket(family, SOCK_STREAM, 0);
 }
 
