@@ -1,4 +1,18 @@
-2008-10-24	Alfredo Portes	<doyenatccny@gmail.com>
+2008-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-os.boot: Import oa_socket_read_byte as
+	readByteFromStreamSocket. Import oa_socket_write_byte as
+	writeByteToStreamSocket.
+	* include/sockio.h (oa_socket_read_byte): Declare.
+	(oa_socket_write_byte): Likewise.
+	* lib/sockio-c.c (oa_socket_read_byte): Define.
+	(oa_socket_write_byte): Likewise.
+	* algebra/net.spad.pamphlet (readByteIfCan!$InetClientStreamSocket):
+	Implement.
+	(writeByteIfCan!$InetClientStreamSocket): Likewise.
+	* etc/asq.c.pamphlet: Update build rules for asq$(EXEEXT).
+
+2008-10-24  Alfredo Portes  <doyenatccny@gmail.com>
 
 	* hyper/addfile.c: Use oa_getenv function.
 	* hyper/titlebar.c: Likewise.

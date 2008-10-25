@@ -361,6 +361,10 @@ InetClientStreamSocket(): Public == Private where
       if n <= 0 then close! x
       else setLength!(b,n : NonNegativeInteger)
       n
+    readByteIfCan! x ==
+      r: SingleInteger := readByteFromStreamSocket(rep(x).%sock)$Lisp
+      if r < 0 then close! x
+      r
 
     writeBytes!(x,b) ==
       n: SingleInteger := 
@@ -368,6 +372,11 @@ InetClientStreamSocket(): Public == Private where
       if n <= 0 then close! x
       else setLength!(b,n : NonNegativeInteger)
       n
+
+    writeByteIfCan!(x,b) ==
+      r: SingleInteger := writeByteToStreamSocket(rep(x).%sock,b)$Lisp
+      if r < 0 then close! x
+      r
 
     close! x ==
       closeSocket(rep(x).%sock)$Lisp

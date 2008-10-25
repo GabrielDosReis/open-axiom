@@ -43,6 +43,12 @@ subdir = src/etc/
 
 pamphlets = Makefile.pamphlet $(asq_SOURCES)
 
+build_libdir = $(top_builddir)/src/lib
+
+libspad_la = -L$(build_libdir) -lspad
+
+openaxiom_c_libs = -lopen-axiom-core @axiom_c_runtime_extra@ -lm
+
 
 .PHONY: all all-asq
 all: all-ax
@@ -81,10 +87,12 @@ bin_PROGRAMS = asq$(EXEEXT)
 asq_sources = asq.c
 asq_SOURCES = $(addsuffix .pamphlet, $(asq_sources))
 asq_objects = $(asq_sources:.c=.$(OBJEXT))
+asq_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
 
 $(axiom_target_bindir)/asq$(EXEEXT): asq.c $(axiom_c_macros_h)
 	@echo making $@ from $<
-	${CC} ${CCF} $(axiom_includes) -o asq$(EXEEXT) asq.c
+	${CC} ${CCF} $(axiom_includes) -o asq$(EXEEXT) asq.c \
+		$(asq_LDADD)
 	cp -p asq$(EXEEXT) $(axiom_target_bindir)
 
 asq.c: $(srcdir)/asq.c.pamphlet

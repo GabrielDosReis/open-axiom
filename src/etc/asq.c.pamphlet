@@ -530,6 +530,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "openaxiom-c-macros.h"
+#include "cfuns.h"
 
 /* we need to predeclare some functions so their signatures are known */
 int printandor(char *list);

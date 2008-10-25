@@ -366,16 +366,44 @@ oa_connect_ip_port_stream(const openaxiom_byte* addr, int prot,
    we restrict ourselves to the POSIX standard functions recv() and
    send().  */
 
+
+/* Read some bytes of data into buffer `buf' with capacity `size'.
+   On failure, return -1; otherwise return the number of bytes
+   actually read.  */
+
 OPENAXIOM_EXPORT int
 oa_socket_read(openaxiom_socket sock, openaxiom_byte* buf, int size)
 {
    return recv(sock, buf, size, 0);
 }
 
+/* Attempt to read a byte from scoket `sock'.
+   On failure, return -1; otherwise the actual byte read.  */
+
+OPENAXIOM_EXPORT int
+oa_socket_read_byte(openaxiom_socket sock)
+{
+   openaxiom_byte byte;
+   if(oa_socket_read(sock, &byte, 1) < 1)
+      return -1;
+   return byte;
+}
+   
+
+/* Send `size' bytes of data contained in `buf' to the socket `sock'.
+   Return -1 on failured; the number of actualy write bytes on success.  */
+
 OPENAXIOM_EXPORT int
 oa_socket_write(openaxiom_socket sock, const openaxiom_byte* buf, int size)
 {
    return send(sock, buf, size, 0);
+}
+
+/* Send one byte to socket `sock'.  */
+OPENAXIOM_EXPORT int
+oa_socket_write_byte(openaxiom_socket sock, openaxiom_byte byte)
+{
+   return oa_socket_write(sock, &byte, 1) < 1 ? -1 : byte;
 }
 
 
