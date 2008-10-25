@@ -331,7 +331,8 @@ std_stream_is_terminal(int fd)
    case 0: handle = STD_INPUT_HANDLE; break;
    case 1: handle = STD_OUTPUT_HANDLE; break;
    case 2: handle = STD_ERROR_HANDLE; break;
-      
+   /* Next code is never executed but it makes the compiler happy.  */
+   default: return 0;
    }
    /* The MS documentation suggests `GetFileType' for determining
       the nature of the file handle.  The return value, in our case,
@@ -595,7 +596,7 @@ oa_get_tmpdir(void)
       int new_size;
       buf = (char*) malloc(bufsz + 1);
       new_size = GetTempPath(bufsz, buf);
-      if(new_size = 0 || new_size >= bufsz) {
+      if(new_size == 0 || new_size >= bufsz) {
          perror("oa_get_tmpdir");
          free(buf);
          exit(1);
