@@ -46,6 +46,7 @@
 #include "hash.h"
 
 #include "Gfun.H1"
+#include "cfuns.h"
 
 
 /*

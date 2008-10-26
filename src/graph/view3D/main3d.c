@@ -52,6 +52,7 @@
 #include "XSpadFill.H1"
 #include "XShade.H1"
 #include "all_3d.H1"
+#include "cfuns.h"
 
                                  /**********************/
                                  /** global variables **/

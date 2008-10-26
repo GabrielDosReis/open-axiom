@@ -53,6 +53,7 @@
 
 #include "sockio.h"
 #include "openpty.H1"
+#include "cfuns.h"
 #include "utils.h"
 
 static void process_arguments(openaxiom_command*, int, char**);

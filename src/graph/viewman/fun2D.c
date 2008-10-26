@@ -50,6 +50,7 @@
 #include "fun2D.H1"
 #include "readView.H1"
 #include "make2D.H1"
+#include "cfuns.h"
 
 #define writeEach
 

@@ -61,6 +61,8 @@
 #include <sys/stat.h>
 #include <regex.h>
 
+#include "cfuns.h"
+
 /*
  * For fixed-size arrays.
  */

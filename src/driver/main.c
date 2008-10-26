@@ -37,12 +37,12 @@
    as the seesion manager.  */
 
 
-#include "utils.h"
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
 
+#include "utils.h"
 
 #define OPENAXIOM_GLOBAL_ENV   "AXIOM"
 

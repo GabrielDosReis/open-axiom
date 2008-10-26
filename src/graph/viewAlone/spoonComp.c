@@ -44,6 +44,7 @@
 #include "mode.h"
 
 #include "util.H1"
+#include "cfuns.h"
 #include "all_alone.H1"
 
 

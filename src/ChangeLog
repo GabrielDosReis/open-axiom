@@ -1,5 +1,29 @@
 2008-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* clef/edible.c: #include "cfuns.h" for oa_getenv use.
+	* graph/Gdraws/Gfun.c: Likewise.
+	* graph/view2D/control2d.c: Likewise.
+	* graph/view2D/main2d.c: Likewise.
+	* graph/view2D/process2d.c: Likewise.
+	* graph/view3D/main3d.c: Likewise.
+	* graph/view3D/process3d.c: Likewise.
+	* graph/viewAlone/spoon2D.c: Likewise.
+	* graph/viewAlone/spoonComp.c: Likewise.
+	* graph/viewman/fun2D.c: Likewise.
+	* graph/viewman/fun3D.c: Likewise.
+	* hyper/extent2.c: Likewise.
+	* hyper/hthits.c: Likewise.
+	* hyper/htinp.c: Likewise.
+	* hyper/initx.c: Likewise.
+	* hyper/lex.c: Likewise.
+	* hyper/parse-types.c: Likewise.
+	* hyper/spadint.c: Likewise.
+	* hyper/titlebar.c: Likewise.
+	* lib/fnct_key.c: Likewise.
+	* sman/sman.c: Likewise.
+
+2008-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* include/open-axiom.h: Define WIN32_LEAN_AND_MEAN
 	* lib/sockio-c.c (oa_inet_pton) [__WIN32__]: Use inet_addr.
 

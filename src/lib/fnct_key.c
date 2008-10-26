@@ -45,6 +45,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include "cfuns.h"
 #include "edible.h"
 #include "bsdsignal.h"
 

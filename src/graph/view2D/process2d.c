@@ -52,6 +52,7 @@
 #include "util.H1"
 #include "Gfun.H1"
 #include "XSpadFill.H1"
+#include "cfuns.h"
 
 
 static int doit=0;  /* globish variable for picking/dropping/clearing - all sorts of

@@ -48,6 +48,7 @@
 #include "group.h"
 #include "parse.h"
 #include "bsdsignal.h"
+#include "cfuns.h"
 
 #include "all_hyper_proto.H1"
 #include "sockio.h"

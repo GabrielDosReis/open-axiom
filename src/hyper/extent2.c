@@ -54,6 +54,7 @@
 
 #include "all_hyper_proto.H1"
 #include "pixmap.H1"
+#include "cfuns.h"
 
 
 static int cur_height = 0;

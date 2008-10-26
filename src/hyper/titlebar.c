@@ -46,6 +46,7 @@
 #include "debug.h"
 
 #include <stdlib.h>
+
 #include "halloc.h"
 #include "sockio.h"
 #include "titlebar.h"
@@ -53,6 +54,7 @@
 #include "group.h"
 #include "initx.h"
 #include "parse.h"
+#include "cfuns.h"
 
 #include "all_hyper_proto.H1"
 

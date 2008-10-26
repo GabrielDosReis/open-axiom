@@ -50,6 +50,7 @@
 #include "fun3D.H1"
 #include "make3D.H1"
 #include "readView.H1"
+#include "cfuns.h"
 
 void 
 funView3D(int viewCommand)
