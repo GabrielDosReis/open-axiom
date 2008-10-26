@@ -59,6 +59,10 @@
 #define _LEX_C
 #include "openaxiom-c-macros.h"
 
+#include <ctype.h>
+#include <setjmp.h>
+#include <stdlib.h>
+
 #include "debug.h"
 #include "sockio.h"
 
@@ -69,10 +73,7 @@ int useAscii;
 #include "halloc.h"
 #include "lex.h"
 #include "node.h"
-
-#include <ctype.h>
-#include <setjmp.h>
-#include <stdlib.h>
+#include "cfuns.h"
 
 static int get_char1(void );
 static void spad_error_handler(void );

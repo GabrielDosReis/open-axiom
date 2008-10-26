@@ -49,6 +49,7 @@
 #include "Gfun.H1"
 #include "util.H1"
 #include "XSpadFill.H1"
+#include "cfuns.h"
 
 
 /**********************/

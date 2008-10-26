@@ -76,4 +76,7 @@ const char* openaxiom_make_path_for(const char*, openaxiom_driver);
 int openaxiom_execute_core(const openaxiom_command*, openaxiom_driver);
 void openaxiom_build_rts_options(openaxiom_command*, openaxiom_driver);
 
+openaxiom_driver
+  openaxiom_preprocess_arguments(openaxiom_command*, int, char**);
+
 #endif /* OPENAXIOM_UTILS_INCLUDED */

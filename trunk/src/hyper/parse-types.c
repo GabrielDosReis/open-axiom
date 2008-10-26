@@ -51,6 +51,7 @@
 #include "hyper.h"
 #include "lex.h"
 #include "extent.h"
+#include "cfuns.h"
 
 #include "all_hyper_proto.H1"
 

@@ -56,6 +56,7 @@
 #include "wct.H1"
 #include "edible.H1"
 #include "fnct_key.H1"
+#include "cfuns.h"
 
 #ifdef AXIOM_UNLIKELY
 #define log 1

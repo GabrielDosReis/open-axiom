@@ -50,6 +50,7 @@
 
 #include "all_hyper_proto.H1"
 #include "sockio.h"
+#include "cfuns.h"
 
 
 typedef struct sock_list {      /* linked list of openaxiom_sio */

@@ -60,6 +60,7 @@
 #include "XShade.H1"
 #include "XSpadFill.H1"
 #include "all_3d.H1"
+#include "cfuns.h"
 
 #define inside(A,B) (((XButtonEvent *)event)->x >= A && \
                      ((XButtonEvent *)event)->x <= B)

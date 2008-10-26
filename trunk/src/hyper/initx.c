@@ -46,16 +46,16 @@
 #define _INITX_C
 #include "openaxiom-c-macros.h"
 
-#include "debug.h"
-#include "sockio.h"
-#include "initx.h"
-
 #include <unistd.h>
 #include <sys/signal.h>
 #include <setjmp.h>
 #include <X11/cursorfont.h>
 #include <X11/Xresource.h>
 #include <X11/Xatom.h>
+
+#include "debug.h"
+#include "sockio.h"
+#include "initx.h"
 
 #ifdef SUN4OS5platform
 extern int gethostname(char *, int );
@@ -70,6 +70,7 @@ extern int gethostname(char *, int );
 
 #include "all_hyper_proto.H1"
 #include "util.H1"
+#include "cfuns.h"
 
 #include "spadcolors.h"
 #include "spadcolors.H1"
