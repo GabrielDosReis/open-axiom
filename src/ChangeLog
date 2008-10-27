@@ -1,5 +1,10 @@
 2008-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-syscmd.boot (summary): Quote path.
+	(copyright): Likewise.
+
+2008-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* hyper/presea.in: Rename from hyper/presea.  `awk' is not
 	substitued at configuration time.
 
