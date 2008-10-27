@@ -129,7 +129,7 @@ InputBinaryFile(): Public == Private where
     eof?: % -> Boolean
       ++ eof?(ifile) holds when the last read reached end of file.
     isOpen?: % -> Boolean
-      ++ open?(ifile) holds if `ifile' is in open state.
+      ++ isOpen?(ifile) holds if `ifile' is in open state.
     position: % -> SingleInteger
       ++ position(f) returns the current byte-position in the file `f'.
     position!: (%,SingleInteger) -> SingleInteger

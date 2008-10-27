@@ -1,4 +1,4 @@
-#!/bin/awk -f
+#!@HOST_AWK@ -f
 BEGIN {n=0;m=0
 }
 

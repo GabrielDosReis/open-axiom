@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.3.0-2008-10-24], 
+AC_INIT([OpenAxiom], [1.3.0-2008-10-25], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -112,22 +112,11 @@ AC_CHECK_PROG([TOUCH], [touch],
               [touch], [AC_MSG_ERROR(['touch' program is missing.])])
 AC_CHECK_PROGS([MKTEMP], [mktemp])
 
-case $build in
-     *-solaris9)
-        AC_CHECK_PROG([AWK], [gawk], 
-                      [gawk], [AC_MSG_ERROR([OpenAxiom needs gawk])])
+AC_PROG_AWK
+AC_PATH_PROGS([HOST_AWK],[gawk mawk nawk awk])
 
-        AC_CHECK_PROG([PATCH], [gpatch],
-                      [gptach], [AC_MSG_ERROR([OpenAxiom needs gpatch])]) 
-        ;;
-
-      *)
-        AC_PROG_AWK
-
-        AC_CHECK_PROGS([PATCH], [gpatch patch], 
-                       [AC_MSG_ERROR([OpenAxiom needs a patch program])])
-        ;;
-esac
+AC_CHECK_PROGS([PATCH], [gpatch patch], 
+   [AC_MSG_ERROR([OpenAxiom needs a patch program])])
 
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 
@@ -644,6 +633,8 @@ AXIOM_MAKEFILE([src/input/Makefile])
 AXIOM_MAKEFILE([src/etc/Makefile])
 AXIOM_MAKEFILE([src/doc/Makefile])
 
+AC_CONFIG_FILES([src/hyper/presea], [chmod +x src/hyper/presea])
+
 
 ## We now generate the "document" script and support files at configure time.
 ## We put them in the build directory because they are intended to be 
@@ -663,7 +654,8 @@ egrep '<<(category|domain|package) .*>>=' \
         set $chunk_desc; spad_abbrev=$2
         cat >> src/algebra/tmp-extract-spad.mk <<EOF
 $spad_abbrev.spad: \$(srcdir)/`basename $spad_file` ; \
-    @\$(axiom_build_document) --output=\$@ --tangle="$chunk_desc" \$<
+    @\$(axiom_build_document) --output=\$@.tmp --tangle="$chunk_desc" \$< && \
+    \$(top_confdir)/move-if-change \$@.tmp \$@
 EOF
     done 
 echo done

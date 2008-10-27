@@ -373,6 +373,7 @@ import CoercibleTo Syntax
 AbstractSyntaxCategory(): Category == 
     Join(SetCategory, CoercibleTo Syntax) with
       coerce: Syntax -> %
+        ++ coerce(s) parses syntax object `s' as a Spad construct.
   add
     coerce(x: %): Syntax ==
       x pretend Syntax

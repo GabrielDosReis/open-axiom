@@ -1,3 +1,8 @@
+2008-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Look for path to `awk'.
+	Instantiate src/hyper/presea.
+
 2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Simplify native type translation table
