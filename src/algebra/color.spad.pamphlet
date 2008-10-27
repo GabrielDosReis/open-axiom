@@ -44,7 +44,7 @@ RGBColorModel(T: AbelianMonoid): Category == AbelianMonoid with
 ++   This category defines the common interface for RGB color spaces.
 RGBColorSpace(T: AbelianMonoid): Category == RGBColorModel T with
     whitePoint: %
-      ++ whitepoint is the contant indicating the white point 
+      ++ whitePoint is the contant indicating the white point 
       ++ of this color space.
 @
 

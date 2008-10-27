@@ -1,3 +1,8 @@
+2008-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* hyper/presea.in: Rename from hyper/presea.  `awk' is not
+	substitued at configuration time.
+
 2008-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* clef/edible.c: #include "cfuns.h" for oa_getenv use.

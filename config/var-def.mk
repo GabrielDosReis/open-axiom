@@ -38,6 +38,7 @@ srcdir = @srcdir@
 abs_srcdir = @abs_srcdir@
 top_srcdir = @top_srcdir@
 abs_top_srcdir = @abs_top_srcdir@
+top_confdir = $(top_srcdir)/config
 
 # Notice that there is a bug in Autoconf 2.59 whereby the variable
 # top_builddir is not defined.  So avoid to use it directly.  Use

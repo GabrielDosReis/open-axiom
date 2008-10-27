@@ -1851,6 +1851,7 @@ deriving the dependencies by scanning the ``Loading ...'' messages.
 
 <<genericDotOfiles>>=
 
+.PRECIOUS: $(OUT)/%.$(FASLEXT)
 ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 	cp $< $@
 
@@ -1860,7 +1861,6 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
-	@ rm -rf $*.NRLIB
 	${INTERPSYS} --strap=strap --system-algebra --optimize=2 --compile $<
 @
 
@@ -1917,11 +1917,9 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 <<genericDOCfiles>>
 
 SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
-	@ rm -rf SPADPRSR.NRLIB
 	${INTERPSYS} --system-algebra --compile $<
 
 PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
-	@ rm -rf PARSER.NRLIB
 	${INTERPSYS} --system-algebra --compile $<
 
 @
