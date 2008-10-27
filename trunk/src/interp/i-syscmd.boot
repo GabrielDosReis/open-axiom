@@ -767,10 +767,10 @@ withAsharpCmd args ==
 --% )copyright -- display copyright notice
 
 summary l ==
- runCommand STRCONC ('"cat ", systemRootDirectory(),'"/lib/summary")
+ runCommand strconc('"cat _"", systemRootDirectory(),'"/lib/summary_"")
 
 copyright () ==
- runCommand STRCONC ('"cat ", systemRootDirectory(),'"/lib/copyright")
+ runCommand strconc('"cat _"", systemRootDirectory(),'"/lib/copyright_"")
 
 --% )credits -- display credit list
 

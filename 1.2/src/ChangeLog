@@ -1,3 +1,8 @@
+2008-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-syscmd.boot (summary): Quote path.
+	(copyright): Likewise.
+
 2008-10-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/debug.lisp (WHOCALLED): Fix thinko.
