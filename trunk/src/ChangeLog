@@ -1,3 +1,9 @@
+2008-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-analy.boot (bottomUpDefaultCompile): Declared local
+	variables really are locals.
+	* interp/i-map.boot (findLocalVars1): Fix typo.
+
 2008-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-syscmd.boot (summary): Quote path.

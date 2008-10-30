@@ -1014,7 +1014,7 @@ findLocalVars1(op,form) ==
     (atom a) or (a is ['_:,a,.]) =>
       mkLocalVar(op,a)
       findLocalVars1(op,b)
-    findLocalVars(op,b)
+    findLocalVars1(op,b)
     for x in a repeat findLocalVars1(op,x)
   form is ['_:,a,.] =>
     mkLocalVar(op,a)
