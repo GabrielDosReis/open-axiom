@@ -432,6 +432,7 @@ bottomUpDefaultCompile(t,id,defaultMode,target,isSub) ==
   tval  := getValue t
   expr:=
     id in $localVars => id
+    get(id,"mode",$env) => id       -- declared local variable
     tmode or tval =>
       envMode := tmode or objMode tval
       envMode is ['Variable, :.] => objVal tval
