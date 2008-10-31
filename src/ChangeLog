@@ -1,3 +1,7 @@
+2008-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-macros.lisp (APPEND2): Remove.
+
 2008-10-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-analy.boot (bottomUpDefaultCompile): Declared local
