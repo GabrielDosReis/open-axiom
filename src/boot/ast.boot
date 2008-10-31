@@ -1409,7 +1409,7 @@ genECLnativeTranslation(op,s,t,op') ==
   args := nil
   argtypes := nil
   for x in s repeat
-     argtypes := [nativeReturnType x,:argtypes]
+     argtypes := [nativeArgumentType x,:argtypes]
      args := [GENSYM(),:args]
   argtypes := nreverse argtypes
   args := nreverse args
