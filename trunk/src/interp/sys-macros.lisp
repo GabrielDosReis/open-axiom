@@ -173,9 +173,6 @@
   `(IFCAR (IFCDR (IFCDR ,arg))))
 
 
-(defmacro APPEND2 (x y)
-  `(append ,x ,y))
-
 (eval-when 
  #+:common-lisp (:compile-toplevel :load-toplevel :execute)
  #-:common-lisp (compile load eval)
