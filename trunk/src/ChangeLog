@@ -1,3 +1,7 @@
+2008-10-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (genECLnativeTranslation): Fix thinko.
+
 2008-10-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-macros.lisp (APPEND2): Remove.
