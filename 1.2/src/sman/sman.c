@@ -138,7 +138,7 @@ unsigned char  _INTR, _QUIT, _ERASE, _KILL, _EOF, _EOL, _RES1, _RES2;
 /*************************************/
 
 int ptsNum, ptcNum;
-char ptsPath[20], ptcPath[20];
+char ptsPath[20];
 
 char **new_envp;                /* new environment for the core executable */
 int child_pid;                  /* child's process id */
@@ -557,7 +557,7 @@ start_the_Axiom(char **envp)
     fprintf(stderr, "could not get an OpenAxiom server number\n");
     exit(-1);
   }
-  if (ptyopen(&ptcNum, &ptsNum, ptcPath, ptsPath) == -1) {
+  if (ptyopen(&ptcNum, &ptsNum, ptsPath) == -1) {
     perror("start_the_Axiom: ptyopen failed");
     exit(-1);
   }

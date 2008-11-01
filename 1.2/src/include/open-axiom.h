@@ -82,23 +82,6 @@ extern "C" {
 #define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
 
 
-/* The function sleep() is not available under Windows.  Instead, they
-   have Sleep(); with capital S, please.  Furthermore, it does not
-   take argument in second, but in milliseconds, three order
-   of magnitude of difference when compared to the Unix world.
-   We abstract over that difference here.  */
-
-static inline void
-openaxiom_sleep(int n)
-{
-#ifdef __WIN32__
-   Sleep(n * 1000);
-#else
-   sleep(n);
-#endif   
-}
-
-
 #ifdef __cplusplus
 }
 #endif   

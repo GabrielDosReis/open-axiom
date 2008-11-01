@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.2.1-2008-10-18], 
+AC_INIT([OpenAxiom], [1.2.1-2008-11-01], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -462,6 +462,20 @@ AC_CHECK_DECLS([fork],
                [],
                [],
                [#include <unistd.h>])
+
+## Does this system have openpty or shall we emulate?
+AC_CHECK_HEADERS([pty.h util.h])
+AC_CHECK_DECLS([openpty],[],[],
+   [#if HAVE_PTY_H
+    #  include <pty.h>
+    #endif
+    #if HAVE_UTIL_H
+    #  include <util.h>
+    #endif
+   ])
+if test x"$ac_cv_have_decl_openpty" = xyes; then \
+   AC_SEARCH_LIBS([openpty],[util])
+fi
 
 axiom_use_sman=1
 if test x"$ac_cv_have_decl_fork" = xyes \

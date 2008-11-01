@@ -116,7 +116,7 @@ OPENAXIOM_EXPORT char*
 oa_dirname(const char* path)
 {
    const int n = strlen(path);
-   char* mark = path + n;
+   const char* mark = path + n;
 
    if (n == 0)
       return strdup(".");
