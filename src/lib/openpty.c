@@ -38,7 +38,16 @@
 #include <fcntl.h>
 #include <string.h>
 
+#ifdef HAVE_PTY_H
+#  include <pty.h>
+#endif
+#ifdef HAVE_UTIL_H
+#  include <util.h>
+#endif
+
 #include "openpty.H1"
+
+static void makeNextPtyNames(char *  , char * );
 
 
 /*
@@ -52,8 +61,6 @@
  * ptyopen(controller, server, controllerPath, serverPath) 
  * int *controller;     The file descriptor for controller side of the pty 
  * int *server;         The file descriptor for the server side 
- * char *controllerPath;  actually , this is not used anywhere on return
-                          and can be taken out of the call sequence
  * char *serverPath;
  *
  * The path name  vars should be declared of size 11 or more
@@ -61,11 +68,15 @@
 
 
 int  
-ptyopen(int *controller,int * server, char *controllerPath,char * serverPath)
+ptyopen(int *controller,int * server,char * serverPath)
 {
-#if defined(SUNplatform) || defined (HP9platform) || defined(RTplatform) ||defined(AIX370platform) || defined(BSDplatform)
+#if HAVE_DECL_OPENPTY
+   return openpty(controller,server, serverPath, NULL, NULL);
+#else   
+#if defined(SUNplatform)
   int looking = 1, i;
   int oflag = O_RDWR;                  /* flag for opening the pty */
+  char controllerPath[128];
   
   for (i = 0; looking && i < 1000; i++) {
     makeNextPtyNames(controllerPath, serverPath);
@@ -85,28 +96,7 @@ ptyopen(int *controller,int * server, char *controllerPath,char * serverPath)
   }
   return (*controller);
 #endif
-#if defined RIOSplatform
-  int fdm,fds;
-  char *slavename;
-
-  /* open master */
-  if ((fdm=open("/dev/ptc",O_RDWR))<0)
-    perror("ptyopen failed to open /dev/ptc");
-  else {
-    /* get slave name */
-    if((slavename = ttyname(fdm))==0)
-      perror("ptyopen failed to get the slave device name");
-    /* open slave */
-    if ((fds = open(slavename, O_RDWR)) < 0 )
-      perror("ptyopen: Failed to open slave");
-    strcpy(serverPath,slavename);
-    *controller=fdm;
-    *server=fds;
-  }
-  return(fdm);
-#endif
-
-#if defined(SUN4OS5platform) ||defined(ALPHAplatform) || defined(HP10platform) || defined(LINUXplatform) || defined(MACOSXplatform) || defined(BSDplatform)
+#if defined(SUN4OS5platform)
 extern int grantpt(int);
 extern int unlockpt(int);
 extern char* ptsname(int);
@@ -130,7 +120,7 @@ extern char* ptsname(int);
     if ((fds = open(slavename, O_RDWR)) < 0 )
       perror("ptyopen: Failed to open slave");
     else {
-#if defined(SUN4OS5platform) || defined(HP10platform)
+#if defined(SUN4OS5platform)
       /* push ptem */
       if (ioctl(fds, I_PUSH, "ptem") < 0)
         perror("ptyopen: Failed to push ptem");
@@ -145,32 +135,16 @@ extern char* ptsname(int);
   }
   return(fdm);
 #endif
-#if defined SGIplatform
-  char *fds;
-  fds = _getpty(controller, O_RDWR|O_NDELAY, 0600, 0);
-  strcpy(serverPath,fds);
-  if (0 == serverPath)
-    return(-1);
-  if (0 > (*server = open(serverPath,O_RDWR))) {
-    (void) close(*controller);
-    return(-1);
-  }
-  return (*controller);
 
+#  error "don't know open to open a pty"
 #endif
 }
 
 
-void 
+static void 
 makeNextPtyNames(char *cont,char * serv)
 {
-#ifdef AIX370platform
-        static int channelNo = 0;
-        sprintf(cont, "/dev/ptyp%02x", channelNo);
-        sprintf(serv, "/dev/ttyp%02x", channelNo);
-        channelNo++;
-#endif
-#if defined(SUNplatform) || defined(HP9platform) || defined(LINUXplatform) || defined(MACOSXplatform) || defined(BSDplatform)
+#if defined(SUNplatform)
         static int channelNo = 0;
         static char group[] = "pqrstuvwxyzPQRST";
         static int groupNo = 0;

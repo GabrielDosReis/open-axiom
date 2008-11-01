@@ -33,6 +33,10 @@
    */
 #undef HAVE_DECL_KILL
 
+/* Define to 1 if you have the declaration of `openpty', and to 0 if you
+   don't. */
+#undef HAVE_DECL_OPENPTY
+
 /* Define to 1 if you have the declaration of `sigaction', and to 0 if you
    don't. */
 #undef HAVE_DECL_SIGACTION
@@ -52,6 +56,9 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <pty.h> header file. */
+#undef HAVE_PTY_H
 
 /* Define to 1 if you have the <signal.h> header file. */
 #undef HAVE_SIGNAL_H
@@ -82,6 +89,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the <util.h> header file. */
+#undef HAVE_UTIL_H
 
 /* Define to 1 if you have the <winsock2.h> header file. */
 #undef HAVE_WINSOCK2_H

@@ -101,7 +101,6 @@ int  buff_flag[MAXLINE];      /**     flags for whether buff chars
                                            or non-printing                **/
 
 
-char controllerPath[20];  /* path name for opening the controller side */
 char serverPath[20];      /* path name for opening the server side     */
 
 int contNum, serverNum;          /* file descriptors for pty's */
@@ -130,7 +129,7 @@ main(int argc, char *argv[])
   
   
   /* try to get a pseudoterminal to play with */
-  if (ptyopen(&contNum, &serverNum, controllerPath, serverPath) == -1) {
+  if (ptyopen(&contNum, &serverNum, serverPath) == -1) {
     perror("ptyopen failed");
     exit(-1);
   }
