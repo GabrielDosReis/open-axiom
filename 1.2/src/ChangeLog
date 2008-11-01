@@ -1,5 +1,11 @@
 2008-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix AW/2212001
+	* sman/sman.c (process_arguments): Fix thinko.
+	(process_options): Complain about unknown options.
+
+2008-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* sman/sman.c (ptsPath): Remove.
 	* sman/Makefile.in: Add additional C runtimes for link.
 	* lib/openpty.c: Include <pty.h> and <util.h> where available.
