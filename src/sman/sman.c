@@ -202,15 +202,11 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
     else if (strcmp(argv[arg], "-paste")  == 0)
       PasteFile = argv[++arg];
     else
-       argv[++other] = argv[arg];
+       argv[other++] = argv[arg];
   }
-
-  if (other > 0)
-     ++other;
 
   command->core_argv = argv;
   command->core_argc = other;
-  argv[++other] = NULL;
 
 /* If there were no X libraries
  * at build-time, we proceed to
@@ -257,6 +253,13 @@ process_options(openaxiom_command* command, int argc, char **argv)
 {
   set_up_defaults();
   process_arguments(command, argc, argv);
+   /* Complain about command line arguments unknown to Superman.  */
+   if (command->core_argc > 0) {
+      int i;
+      for (i = 0; i < command->core_argc; ++i)
+         fprintf(stderr,"command line error: %s\n", command->core_argv[i]);
+      exit(-1);
+   }
 }
 
 static void
