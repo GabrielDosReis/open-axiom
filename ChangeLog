@@ -1,5 +1,9 @@
 2008-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet (axiom_use_sman): Fix typo.
+
+2008-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* config/var-def.mk (oa_c_runtime_extra): Add @LIBS@.
 	* configure.ac.pamphlet: Check for <pty.h> and <util.h>.  Check
 	for openpty.	

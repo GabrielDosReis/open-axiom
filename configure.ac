@@ -466,8 +466,7 @@ if test x"$ac_cv_have_decl_openpty" = xyes; then \
 fi
 
 axiom_use_sman=1
-if test x"$ac_cv_header_pty_h" = xyes \
-     -a x"$ac_cv_have_decl_fork" = xyes \
+if test x"$ac_cv_have_decl_fork" = xyes \
      -a x"$ac_cv_have_decl_wait" = xyes; then \
     axiom_c_runtime="$axiom_c_runtime terminal_io"
     axiom_src_all="$axiom_src_all all-sman all-clef"
