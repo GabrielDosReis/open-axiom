@@ -1,3 +1,14 @@
+2008-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman/sman.c (ptsPath): Remove.
+	* sman/Makefile.in: Add additional C runtimes for link.
+	* lib/openpty.c: Include <pty.h> and <util.h> where available.
+	(ptyopen): Lose third parameter.  Tidy.
+	(makeNextPtyNames): Now static.
+	* clef/edible.c (controllerPath): Remove.  
+	Adjust call to ptyopen.
+	* clef/Makefile.in (clef_LDADD): Add extra C runtimes.
+
 2008-10-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (genECLnativeTranslation): Fix thinko.

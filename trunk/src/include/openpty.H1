@@ -1,2 +1,1 @@
-extern void makeNextPtyNames(char *  , char * );
-extern int ptyopen(int *  , int *  , char *  , char * );
+extern int ptyopen(int*, int*, char*);
