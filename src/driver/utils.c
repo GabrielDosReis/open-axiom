@@ -160,12 +160,10 @@ openaxiom_build_rts_options(openaxiom_command* command,
    }
 }
 
-#ifdef __WIN32__
-#  define OPENAXIOM_DEFAULT_DRIVER openaxiom_core_driver
-#elif OPENAXIOM_USE_SMAN
+#if OPENAXIOM_USE_SMAN
 #  define OPENAXIOM_DEFAULT_DRIVER openaxiom_sman_driver
 #else
-#  define OPENAXIOM_DEFAULT_DRIVER openaxiom_unknown_driver
+#  define OPENAXIOM_DEFAULT_DRIVER openaxiom_core_driver
 #endif
 
 
@@ -175,21 +173,60 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
                                int argc, char** argv)
 {
    int i;
-   openaxiom_driver driver = OPENAXIOM_DEFAULT_DRIVER;
+   int other = 1;
+   int files = 0;
+   openaxiom_driver driver = openaxiom_unknown_driver;
 
-   command->core_argc = argc;
-   command->core_argv = argv;
    command->root_dir = openaxiom_get_systemdir(argc, argv);
    for (i = 1; i < argc; ++i)
-      if (strcmp(argv[i], "--script") == 0)
-         driver = openaxiom_script_driver;
-      else if(strcmp(argv[i], "--compile") == 0)
-         driver = openaxiom_compiler_driver;
-      else if(strcmp(argv[i], "--no-server") == 0)
+      if(strcmp(argv[i], "--no-server") == 0)
          driver = openaxiom_core_driver;
       else if (strcmp(argv[i], "--server") == 0)
          driver = openaxiom_sman_driver;
-   
+      else {
+         if (strcmp(argv[i], "--script") == 0)
+            driver = openaxiom_script_driver;
+         else if(strcmp(argv[i], "--compile") == 0)
+            driver = openaxiom_compiler_driver;
+         else {
+            if (argv[i][0] == '-')
+               /* Maybe option for the driver.  */
+               ;
+            else if (strlen(argv[i]) > 0)
+               /* Assume a file.  */
+               ++files;
+            else 
+               /* Silly.  */
+               continue;
+         }
+         /* Save it for the core executable.  */
+         argv[other++] = argv[i];
+      }
+   command->core_argc = other;
+   command->core_argv = argv;
+
+   /* If we have a file but not instructed to compiler, assume
+      we are asked to interpret a script.  */
+   if (files > 0)
+      switch (driver) {
+      case openaxiom_unknown_driver:
+      case openaxiom_sman_driver:
+         command->core_argc += 1;
+         command->core_argv =
+            (char**) malloc((other + 2) * sizeof(char*));
+         command->core_argv[0] = argv[0];
+         command->core_argv[1] = "--script";
+         for (i = 0; i < other; ++i)
+            command->core_argv[2 + i] = argv[1 + i];
+         driver = openaxiom_script_driver;
+         break;
+      default:
+         /* Driver specified by user.  */
+         break;
+   }
+   else if (driver == openaxiom_unknown_driver)
+      driver = OPENAXIOM_DEFAULT_DRIVER;
+   command->core_argv[command->core_argc] = NULL;
 
    openaxiom_build_rts_options(command, driver);
    return driver;
