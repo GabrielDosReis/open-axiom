@@ -1,3 +1,10 @@
+2008-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/utils.c (OPENAXIOM_DEFAULT_DRIVER): Can no longer be
+	openaxiom_unknown_driver. 
+	(openaxiom_preprocess_arguments): If a file is specified, then it
+	is a script unless told otherwise.
+
 2008-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot: Import "ggreater".
