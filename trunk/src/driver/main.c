@@ -34,7 +34,7 @@
 /* This program is a driver for the OpenAxiom core executable.
    It pretends to be the OpenAxiom interpreter when, in fact, the actual
    work is done by the Core Executable.  It also occasionally masquerades
-   as the seesion manager.  */
+   as the session manager.  */
 
 
 #include <stdlib.h>

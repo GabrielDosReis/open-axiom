@@ -379,6 +379,10 @@ optEQ u ==
     -- That undoes some weird work in Boolean to do with the definition of true
     u
   u
+
+lispize x == first optimize [x]
+ 
+--% optimizer hash table
  
 for x in '( (call         optCall) _
            (SEQ          optSEQ)_

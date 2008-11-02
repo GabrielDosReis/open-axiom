@@ -190,8 +190,6 @@ isCapitalWord x ==
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
 domainEqual(a,b) == VECP a and VECP b and a.0 = b.0
  
-lispize x == first optimize [x]
- 
 $newCompilerUnionFlag := true
 
 orderUnionEntries l ==

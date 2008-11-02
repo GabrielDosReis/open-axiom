@@ -2677,3 +2677,23 @@ inputForm2String x ==
 inputForm2OutputForm x ==
   INTERN inputForm2String x
 
+-- function for turning strings in tex format
+
+str2Outform s ==
+  parse := ncParseFromString s or systemError '"String for TeX will not parse"
+  parse2Outform parse
+
+parse2Outform x ==
+  x is [op,:argl] =>
+    nargl := [parse2Outform y for y in argl]
+    op = 'construct => ['BRACKET,['ARGLST,:[parse2Outform y for y in argl]]]
+    op = 'brace and nargl is [[BRACKET,:r]] => ['BRACE,:r]
+    [op,:nargl]
+  x
+
+str2Tex s ==
+  outf := str2Outform s
+  val := coerceInt(objNew(wrap outf, '(OutputForm)), '(TexFormat))
+  val := objValUnwrap val
+  CAR val.1
+

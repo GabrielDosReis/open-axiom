@@ -32,6 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+import ggreater
 import macros
 import sys_-utility
 namespace BOOT
@@ -61,7 +62,7 @@ PPtoFile(x, fname) ==
 get: (%Thing,%Symbol,%List) -> %Thing
 get0: (%Thing,%Symbol,%List) -> %Thing
 get1: (%Thing,%Symbol,%List) -> %Thing
-get2: (%Thing,%Symbol,%List) -> %Thing
+get2: (%Thing,%Symbol) -> %Thing
 
 get(x,prop,e) ==
   $InteractiveMode => get0(x,prop,e)
@@ -79,27 +80,31 @@ get1(x,prop,e) ==
   not atom x => get(QCAR x,prop,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     LASSOC("modemap",getProplist(x,$CapsuleModemapFrame))
-      or get2(x,prop,e)
-  LASSOC(prop,getProplist(x,e)) or get2(x,prop,e)
+      or get2(x,prop)
+  LASSOC(prop,getProplist(x,e)) or get2(x,prop)
 
-get2(x,prop,e) ==
+get2(x,prop) ==
   prop="modemap" and IDENTP x and constructor? x =>
     (u := getConstructorModemapFromDB x) => [u]
     nil
   nil
 
 ++ Update properties of an entity in an environment.
-put: (%Thing,%Symbol,%Thing,%List) -> %List
-addBinding: (%Thing,%List,%List) -> %List
-augProplistOf: (%Thing,%Symbol,%Thing,%List) -> %List
-augProplist: (%List,%Thing,%Thing) -> %List
+put: (%Thing,%Symbol,%Thing,%Env) -> %Env
+addBinding: (%Thing,%List,%Env) -> %Env
+addBindingInteractive: (%Thing, %List, %Env) -> %Env
+augProplistOf: (%Thing,%Symbol,%Thing,%Env) -> %List
+augProplist: (%List,%Symbol,%Thing) -> %List
+augProplistInteractive: (%List,%Symbol,%Thing) -> %List
+putIntSymTab: (%Thing,%Symbol,%Form,%Env) -> %Env
+addIntSymTabBinding: (%Thing,%List,%Env) -> %Env
 
 put(x,prop,val,e) ==
   $InteractiveMode and not EQ(e,$CategoryFrame) =>
     putIntSymTab(x,prop,val,e)
   --e must never be $CapsuleModemapFrame
-  null atom x => put(first x,prop,val,e)
-  newProplist:= augProplistOf(x,prop,val,e)
+  not atom x => put(first x,prop,val,e)
+  newProplist := augProplistOf(x,prop,val,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
     $CapsuleModemapFrame:=
@@ -108,6 +113,28 @@ put(x,prop,val,e) ==
     e
   addBinding(x,newProplist,e)
 
+putIntSymTab(x,prop,val,e) ==
+  null atom x => putIntSymTab(first x,prop,val,e)
+  pl0 := pl := search(x,e)
+  pl :=
+    null pl => [[prop,:val]]
+    u := ASSQ(prop,pl) =>
+      RPLACD(u,val)
+      pl
+    lp := LASTPAIR pl
+    u := [[prop,:val]]
+    RPLACD(lp,u)
+    pl
+  EQ(pl0,pl) => e
+  addIntSymTabBinding(x,pl,e)
+
+addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
+  -- change proplist of var in e destructively
+  u := ASSQ(var,curContour) =>
+    RPLACD(u,proplist)
+    e
+  RPLAC(CAAR e,[[var,:proplist],:curContour])
+  e
 
 --% Syntax manipulation
 
@@ -315,7 +342,7 @@ dropLeadingBlanks str ==
   nb := NIL
   i := 0
   while (i < l) and not nb repeat
-    if SCHAR(str,i) ^= " " then nb := i
+    if SCHAR(str,i) ^= char " " then nb := i
     else i := i + 1
   nb = 0 => str
   nb => SUBSTRING(str,nb,NIL)
@@ -493,10 +520,10 @@ formatUnabbreviatedTuple t ==
   [:t0,'",",:formatUnabbreviatedTuple QCDR t]
 
 formatUnabbreviated t ==
-  atom t =>
-    [t]
   null t =>
     ['"()"]
+  atom t =>
+    [t]
   t is [p,sel,arg] and p = ":" =>
     [sel,'": ",:formatUnabbreviated arg]
   t is ['Union,:args] =>
@@ -526,36 +553,16 @@ sublisNQ(al,e) ==
     EQ(a,u) and EQ(rest e,v) => e
     [u,:v]
 
--- function for turning strings in tex format
-
-str2Outform s ==
-  parse := ncParseFromString s or systemError '"String for TeX will not parse"
-  parse2Outform parse
-
-parse2Outform x ==
-  x is [op,:argl] =>
-    nargl := [parse2Outform y for y in argl]
-    op = 'construct => ['BRACKET,['ARGLST,:[parse2Outform y for y in argl]]]
-    op = 'brace and nargl is [[BRACKET,:r]] => ['BRACE,:r]
-    [op,:nargl]
-  x
-
-str2Tex s ==
-  outf := str2Outform s
-  val := coerceInt(objNew(wrap outf, '(OutputForm)), '(TexFormat))
-  val := objValUnwrap val
-  CAR val.1
-
 opOf: %Thing -> %Thing
 opOf x ==
   atom x => x
   first x
 
 
-getProplist: (%Thing,%List) -> %List
-search: (%Thing,%List) -> %List
+getProplist: (%Thing,%Env) -> %List
+search: (%Thing,%Env) -> %List
 searchCurrentEnv: (%Thing,%List) -> %List
-searchTailEnv: (%Thing,%List) -> %List
+searchTailEnv: (%Thing,%Env) -> %List
 
 getProplist(x,E) ==
   not atom x => getProplist(first x,E)
@@ -610,6 +617,20 @@ addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
                  --Previous line should save some space
   [[[lx,:curContour],:tailContour],:tailEnv] where lx:= [var,:proplist]
 
+addBindingInteractive(var,proplist,e is [[curContour,:.],:.]) ==
+  -- change proplist of var in e destructively
+  u := ASSQ(var,curContour) =>
+    RPLACD(u,proplist)
+    e
+  RPLAC(CAAR e,[[var,:proplist],:curContour])
+  e
+
+augProplistInteractive(proplist,prop,val) ==
+  u := ASSQ(prop,proplist) =>
+    RPLACD(u,val)
+    proplist
+  [[prop,:val],:proplist]
+
 position(x,l) ==
   posn(x,l,0) where
     posn(x,l,n) ==
@@ -627,7 +648,7 @@ after(u,v) ==
   r
 
 
-$blank := char ('_ )
+$blank == char ('_ )
 
 trimString s ==
   leftTrim rightTrim s
@@ -695,24 +716,24 @@ $exposeFlag        := false     --if true, messages go to $outStream
 $exposeFlagHeading := false     --see htcheck.boot
 $checkingXmptex? := false       --see htcheck.boot
 $exposeDocHeading:= nil         --see htcheck.boot
-$charPlus := char '_+
-$charBlank:= (char '_ )
-$charLbrace:= char '_{
-$charRbrace:= char '_}
-$charBack := char '_\
-$charDash := char '_-
+$charPlus == char '_+
+$charBlank == (char '_ )
+$charLbrace == char '_{
+$charRbrace == char '_}
+$charBack == char '_\
+$charDash == char '_-
 
-$charTab            := CODE_-CHAR(9)
-$charNewline        := CODE_-CHAR(10)
-$charFauxNewline    := CODE_-CHAR(25)
-$stringNewline      := PNAME CODE_-CHAR(10)
-$stringFauxNewline  := PNAME CODE_-CHAR(25)
+$charTab            == CODE_-CHAR(9)
+$charNewline        == CODE_-CHAR(10)
+$charFauxNewline    == CODE_-CHAR(25)
+$stringNewline      == PNAME CODE_-CHAR(10)
+$stringFauxNewline  == PNAME CODE_-CHAR(25)
 
-$charExclusions := [char 'a, char 'A]
-$charQuote := char '_'
-$charSemiColon := char '_;
-$charComma     := char '_,
-$charPeriod    := char '_.
+$charExclusions == [char 'a, char 'A]
+$charQuote == char '_'
+$charSemiColon == char '_;
+$charComma     == char '_,
+$charPeriod    == char '_.
 $checkPrenAlist := [[char '_(,:char '_)],[char '_{,:char '_}],[char '_[,:char '_]]]
 $charEscapeList:= [char '_%,char '_#,$charBack]
 $charIdentifierEndings := [char '__, char '_!, char '_?]
