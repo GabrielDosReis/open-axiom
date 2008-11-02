@@ -189,14 +189,15 @@
 
 ;; C runtime needed by the target system; e.g. -lm or -lwinsock
 (defconstant |$ExtraRuntimeLibraries|
-  "@oa_c_runtime_extra@")
+  '(@oa_c_runtime_extra@))
 
 (defun extra-runtime-libs nil
   (if (boot-completed-p)
-      (list (concatenate 'string "-L" (|systemLibraryDirectory|))
-	    (concatenate 'string "-l" |$CoreLibName|)
-	    |$ExtraRuntimeLibraries|)
-    (list |$ExtraRuntimeLibraries|)))
+      (append
+       (list (concatenate 'string "-L" (|systemLibraryDirectory|))
+	     (concatenate 'string "-l" |$CoreLibName|))
+       |$ExtraRuntimeLibraries|)
+    |$ExtraRuntimeLibraries|))
 
 ;; 
 ;; -*- OpenAxiom filesystem -*-

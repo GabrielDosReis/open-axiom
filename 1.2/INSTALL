@@ -3,7 +3,7 @@ Requirements
 
 OpenAxiom currenly requires a Lisp system for its runtime support.
 OpenAxiom is known to build with the GNU Common Lisp (GCL versions 2.6.7
-or 2.6.8), Steel Bank Common Lisp (SBCL version 1.0.21.15 or higher),
+or 2.6.8), Steel Bank Common Lisp (SBCL version 1.0.22 or higher),
 CLisp (version 2.44.x or higher), and ECL (version 0.9l or higher).  
 So, if you already have any of the above mentioned Lisp system, your
 are good to go.  Otherwise, you would need to download a dependency
