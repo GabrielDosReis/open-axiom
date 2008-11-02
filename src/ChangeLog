@@ -1,5 +1,11 @@
 2008-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (|$ExtraRuntimeLibraries|): Listify.
+	(extra-runtime-libs): Tidy.
+	* lisp/Makefile.in (edit): stringify $(oa_c_runtime_extra) elements.
+
+2008-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* driver/utils.c (OPENAXIOM_DEFAULT_DRIVER): Can no longer be
 	openaxiom_unknown_driver. 
 	(openaxiom_preprocess_arguments): If a file is specified, then it
