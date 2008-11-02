@@ -417,20 +417,6 @@ getValueFromSpecificEnvironment(id,mode,e) ==
     $failure
   $failure
 
-addBindingInteractive(var,proplist,e is [[curContour,:.],:.]) ==
-  -- change proplist of var in e destructively
-  u := ASSQ(var,curContour) =>
-    RPLACD(u,proplist)
-    e
-  RPLAC(CAAR e,[[var,:proplist],:curContour])
-  e
-
-augProplistInteractive(proplist,prop,val) ==
-  u := ASSQ(prop,proplist) =>
-    RPLACD(u,val)
-    proplist
-  [[prop,:val],:proplist]
-
 getFlag x == get("--flags--",x,$e)
 
 putFlag(flag,value) ==
@@ -464,30 +450,6 @@ fastSearchCurrentEnv(x,currentEnv) ==
   u:= QLASSQ(x,CAR currentEnv) => u
   while (currentEnv:= QCDR currentEnv) repeat
     u:= QLASSQ(x,CAR currentEnv) => u
-
-putIntSymTab(x,prop,val,e) ==
-  null atom x => putIntSymTab(first x,prop,val,e)
-  pl0 := pl := search(x,e)
-  pl :=
-    null pl => [[prop,:val]]
-    u := ASSQ(prop,pl) =>
-      RPLACD(u,val)
-      pl
-    lp := LASTPAIR pl
-    u := [[prop,:val]]
-    RPLACD(lp,u)
-    pl
-  EQ(pl0,pl) => e
-  addIntSymTabBinding(x,pl,e)
-
-addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
-  -- change proplist of var in e destructively
-  u := ASSQ(var,curContour) =>
-    RPLACD(u,proplist)
-    e
-  RPLAC(CAAR e,[[var,:proplist],:curContour])
-  e
-
 
 transformCollect [:itrl,body] ==
   -- syntactic transformation for COLLECT form, called from mkAtree1

@@ -381,7 +381,7 @@ the stack, then stack a NIL. Return the value of prod."
                              (mapcar #'(lambda (x) (internl metapfx (pname x)))
                                      (assocleft rs))))
          n unpfx-funlist)
-    (set flnam pfx-funlist)
+    (|setDynamicBinding| flnam pfx-funlist)
     (if (not (lessp (setq n (length metapfx)) 0))
         (setq unpfx-funlist
               (mapcar #'(lambda (x) 

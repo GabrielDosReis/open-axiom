@@ -33,6 +33,7 @@
 
 
 import g_-util
+import g_-cndata
 namespace BOOT
 
 --%

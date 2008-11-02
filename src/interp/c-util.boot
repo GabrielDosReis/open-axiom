@@ -33,6 +33,7 @@
 
 
 import g_-util
+import g_-opt
 namespace BOOT
 
 module c_-util where
@@ -464,7 +465,8 @@ isFunction(x,e) ==
  
 isLiteral: (%Symbol,%Env) -> %Boolean
 isLiteral(x,e) == 
-  get(x,"isLiteral",e)
+  get(x,"isLiteral",e) => true
+  false
  
 
 makeLiteral: (%Symbol,%Env) -> %Thing
