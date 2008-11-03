@@ -347,6 +347,8 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $lisplibModemapAlist: local := NIL
   $lisplibSlot1 : local := NIL   -- used by NRT mechanisms
   $lisplibOperationAlist: local := NIL
+  $lisplibOpAlist: local := nil  --operations alist for new runtime system
+  $lisplibSignatureAlist: local := nil
   $lisplibSuperDomain: local := NIL
   $libFile: local := NIL
   $lisplibVariableAlist: local := NIL
@@ -404,20 +406,8 @@ getLisplibVersion libName ==
 initializeLisplib libName ==
   _$ERASE(libName,'ERRORLIB,$libraryDirectory)
   resetErrorCount()
-  $libFile:= writeLib1(libName,'ERRORLIB,$libraryDirectory)
+  $libFile := writeLib1(libName,'ERRORLIB,$libraryDirectory)
   ADDOPTIONS('FILE,$libFile)
-  $lisplibForm := nil             --defining form for lisplib
-  $lisplibModemap := nil          --modemap for constructor form
-  $lisplibKind := nil             --category, domain, or package
-  $lisplibModemapAlist := nil  --changed in "augmentLisplibModemapsFromCategory"
-  $lisplibAbbreviation := nil
-  $lisplibAncestors := nil
-  $lisplibOpAlist := nil  --operations alist for new runtime system
-  $lisplibOperationAlist := nil   --old list of operations for functor/package
-  $lisplibSuperDomain:= nil
-  -- next var changed in "augmentLisplibDependents"
-  $lisplibVariableAlist := nil    --this and the next are used by "luke"
-  $lisplibSignatureAlist := nil
   if pathnameTypeId(_/EDITFILE) = 'SPAD
     then LAM_,FILEACTQ('VERSION,['_/VERSIONCHECK,_/MAJOR_-VERSION])
 
@@ -571,21 +561,6 @@ sayNonUnique x ==
 -- flattenOperationAlist operationAlist ==
 --   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
 --   [:[[op,:x] for x in y] for [op,:y] in operationAlist]
- 
-getSlotFromDomain(dom,op,oldSig) ==
-  --  returns the slot number in the domain where the function whose
-  --  signature is oldSig may be found in the domain dom
-  oldSig:= removeOPT oldSig
-  dom:= removeOPT dom
-  sig:= SUBST("$",dom,oldSig)
-  loadIfNecessary first dom
-  isPackageForm dom => getSlotFromPackage(dom,op,oldSig)
-  domain:= evalDomain dom
-  n:= findConstructorSlotNumber(dom,domain,op,sig) =>
-    (slot:= domain.n).0 = function Undef =>
-      throwKeyedMsg("S2IL0023A",[op,formatSignature sig,dom])
-    slot
-  throwKeyedMsg("S2IL0024A",[op,formatSignature sig,dom])
  
 findConstructorSlotNumber(domainForm,domain,op,sig) ==
   null domain.1 => getSlotNumberFromOperationAlist(domainForm,op,sig)

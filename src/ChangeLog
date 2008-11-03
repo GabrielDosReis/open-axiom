@@ -1,3 +1,13 @@
+2008-11-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/postpar.boot (postcheckTarget): Likewise.
+	(isPackageType): Likewise.
+	* interp/lisplib.boot (getSlotFromDomain): Remove.
+	* interp/macros.lisp (|saySpadMsg|): Remove.
+	* interp/vmlisp.lisp (qsetq): Remove.
+	(STATEP, FUNARGP, PAPPP): Likewise.
+	(LISTOFQUOTES, LISTOFFREES): Likewise.
+
 2008-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/syntax.spad.pamphlet (Syntax): Print syntax objects as

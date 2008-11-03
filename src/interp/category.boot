@@ -408,7 +408,7 @@ DescendantP(a,b) ==
 --% The implementation of Join
  
 JoinInner(l,$e) ==
-  $NewCatVec: local
+  $NewCatVec: local := nil
   CondList:= nil
   for u in l repeat
     for at in u.2 repeat

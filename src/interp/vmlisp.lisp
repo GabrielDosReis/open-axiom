@@ -381,10 +381,6 @@
 (defmacro qsdifference (x y)
  `(the fixnum (- (the fixnum ,x) (the fixnum ,y))))
 
-(defmacro qsetq (&whole form pattern exp)
- (declare (ignore form))
-  `(,(dcqexp pattern '=) ,exp))
-
 (defmacro qsetrefv (vec ind val)
  `(setf (svref ,vec (the fixnum ,ind)) ,val))
 
@@ -484,7 +480,6 @@
  `(setf (elt ,vec ,ind) ,val))
 
 (defmacro setqp (&whole form pattern exp)
- (declare (ignore form))
   `(,(dcqexp pattern '=) ,exp))
 
 (defmacro seq (&rest form)
@@ -1795,16 +1790,6 @@
 (defun |read-line| (st &optional (eofval *read-place-holder*))
   (read-line st nil eofval))
 
-(defun STATEP (item)
- (declare (ignore item))
-   nil) ;no state objects
-(defun FUNARGP (item)
- (declare (ignore item))
-  nil) ;can't tell closures from other functions
-(defun PAPPP (item)
- (declare (ignore item))
-  nil) ;no partial application objects
-
 #+Lucid
 (defun gcmsg (x)
    (prog1 (not system::*gc-silence*) (setq system::*gc-silence* (not x))))
@@ -1872,25 +1857,6 @@
       (function-lambda-expression x)
       (declare (ignore l c))
       n)))
-
-(defun LISTOFQUOTES (bpi)
- (declare (ignore bpi))
-  ())
-
-#+Lucid
-(defun LISTOFFREES (bpi)
-  (if (compiled-function-p bpi)
-      (let ((end (- (lucid::procedure-length bpi) 2)))
-        (do ((i 3 (1+ i))
-             (ans nil))
-            ((> i end) ans)
-            (let ((locexp (svref bpi i)))
-              (if (symbolp locexp) (push locexp ans)))))))
-
-#-Lucid
-(defun LISTOFFREES (bpi)
- (declare (ignore bpi))
- ())
 
   
 (defun RE-ENABLE-INT (number-of-handler) number-of-handler)

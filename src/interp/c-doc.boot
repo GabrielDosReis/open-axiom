@@ -208,7 +208,7 @@ transDocList($constructorName,doclist) == --returns ((key line)...)
 transDoc(conname,doclist) ==
 --$exposeFlag and not isExposedConstructor conname => nil
 --skip over unexposed constructors when checking system files
-  $x: local
+  $x: local := nil
   rlist := REVERSE doclist
   for [$x,:lines] in rlist repeat
     $attribute? : local := $x is [.,[key]] and key = 'attribute

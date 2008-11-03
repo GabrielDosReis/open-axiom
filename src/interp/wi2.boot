@@ -80,7 +80,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $insideFunctorIfTrue: local:= true
     $functorsUsed: local := nil --not currently used, finds dependent functors
     $setelt: local := "setShellEntry"
-    $TOP__LEVEL: local := nil
     $genSDVar: local:= 0
     originale:= $e
     [$op,:argl]:= form

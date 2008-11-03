@@ -431,9 +431,6 @@
 	(TERPRI out) 
 	(force-output out))))
  
-(defun |saySpadMsg| (X)
-  (if (NULL X) NIL (sayBrightly1 X |$algebraOutputStream|)))
- 
 (defun |sayALGEBRA| (X) "Prints on Algebra output stream."
   (if (NULL X) NIL (sayBrightly1 X |$algebraOutputStream|)))
  
@@ -467,8 +464,11 @@
  
 (DEFUN BLANKS (N &optional (stream |$OutputStream|))
   "Print N blanks."
-    (do ((i 1 (the fixnum(1+ i))))
-        ((> i N))(declare (fixnum i n)) (princ " " stream)))
+  (declare (fixnum N))
+  (do ((i 1 (the fixnum(1+ i))))
+      ((> i N))
+      (declare (fixnum i))
+      (princ " " stream)))
  
 ; 23 FILE SYSTEM INTERFACE
  
