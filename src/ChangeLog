@@ -1,5 +1,12 @@
 2008-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/syntax.spad.pamphlet (Syntax): Print syntax objects as
+	s-expressions. 
+	* algebra/sex.spad.pamphlet (SExpression): Print strings as
+	String. 
+
+2008-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/Makefile.pamphlet (template.$(FASLEXT)): Remove.
 	* interp/template.boot: Move non-dead code where appropriate.
 	Remove file.

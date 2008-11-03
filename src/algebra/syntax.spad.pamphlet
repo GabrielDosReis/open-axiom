@@ -129,8 +129,9 @@ Syntax(): Public == Private where
       IDENTP(s)$Lisp
 
     coerce(x: %): OutputForm ==
-      x case String => outputForm(x : String)
-      x pretend OutputForm
+      -- For the moment, print syntax as s-expression.
+      import SExpression
+      (x pretend SExpression)::OutputForm
 
     convert(x: %): SExpression ==
       x : SExpression
