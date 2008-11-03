@@ -120,9 +120,9 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
       REMDUP [CADR x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
-    $NRTslot1Info: local := nil --set in NRTmakeSlot1 called by NRTbuildFunctor
+    $NRTslot1Info: local := nil --set in NRTmakeSlot1Info
        --this is used below to set $lisplibSlot1 global
-    $NRTaddForm: local := nil   -- see compAdd; NRTmakeSlot1
+    $NRTaddForm: local := nil   -- see compAdd
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTaddList: local := nil --list of fncts not defined in capsule (added)

@@ -37,6 +37,9 @@ import sys_-os
 import vmlisp
 namespace BOOT
 
+--%
+$COMBLOCKLIST := nil
+
 
 --%
 

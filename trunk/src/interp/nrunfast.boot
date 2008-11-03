@@ -65,14 +65,41 @@ isNewWorldDomain domain == INTEGERP domain.3    --see HasCategory/Attribute
  
 getDomainByteVector dom == CDDR dom.4
  
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
 getOpCode(op,vec,max) ==
 --search Op vector for "op" returning code if found, nil otherwise
   res := nil
   for i in 0..max by 2 repeat
     EQ(QVELT(vec,i),op) => return (res := QSADD1 i)
   res
- 
+
+evalSlotDomain(u,dollar) ==
+  $returnNowhereFromGoGet: local := false
+  $ : fluid := dollar                      -- ??? substitute
+  $lookupDefaults : local := nil -- new world
+  u = '$ => dollar
+  u = "$$" => dollar
+  FIXP u =>
+    VECP (y := dollar.u) => y
+    y is ['SETELT,:.] => eval y--lazy domains need to marked; this is dangerous?
+    y is [v,:.] =>
+      VECP v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]
+      IDENTP v and constructor? v 
+        or MEMQ(v,'(Record Union Mapping Enumeration)) =>
+           lazyDomainSet(y,dollar,u)        --new style has lazyt
+      y
+    y
+  u is ['NRTEVAL,y] => eval  y
+  u is ['QUOTE,y] => y
+  u is ['Record,:argl] =>
+     apply('Record,[[":",tag,evalSlotDomain(dom,dollar)]
+                                 for [.,tag,dom] in argl])
+  u is ['Union,:argl] and first argl is ['_:,.,.] =>
+     APPLY('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
+                                 for [.,tag,dom] in argl])
+  u is ["Enumeration",:.] => eval u
+  u is [op,:argl] => APPLY(op,[evalSlotDomain(x,dollar) for x in argl])
+  systemErrorHere '"evalSlotDomain"
+
 --=======================================================
 --                 Lookup From Compiled Code
 --=======================================================
@@ -126,10 +153,6 @@ lookupComplete(op,sig,dollar,env) == newLookupInTable(op,sig,dollar,env,nil)
  
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
 lookupIncomplete(op,sig,dollar,env) == newLookupInTable(op,sig,dollar,env,true)
- 
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
-lookupInCompactTable(op,sig,dollar,env) ==
-  newLookupInTable(op,sig,dollar,env,true)
  
 newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   dollar = nil => systemError()

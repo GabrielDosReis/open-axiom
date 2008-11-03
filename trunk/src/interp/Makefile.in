@@ -84,7 +84,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	preparse.$(FASLEXT)	bootlex.$(FASLEXT)	\
 	spad.$(FASLEXT)	\
 	spaderror.$(FASLEXT)				\
-	template.$(FASLEXT)	termrw.$(FASLEXT)	\
+	                       	termrw.$(FASLEXT)	\
 	trace.$(FASLEXT)	daase.$(FASLEXT)  	\
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
 	$(OCOBJS) $(BROBJS) $(ASCOMP) $(INOBJS)
@@ -309,7 +309,6 @@ nrunopt.$(FASLEXT): c-util.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
 nruncomp.$(FASLEXT): c-util.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT)
-template.$(FASLEXT): c-util.$(FASLEXT)
 iterator.$(FASLEXT): g-util.$(FASLEXT)
 define.$(FASLEXT): cattable.$(FASLEXT) category.$(FASLEXT) c-util.$(FASLEXT)
 package.$(FASLEXT): clam.$(FASLEXT)

@@ -75,6 +75,7 @@ compApplication: (%Form,%List,%Mode,%Env,%Triple) -> %Maybe %Triple
 compApplyModemap: (%Form,%Modemap,%Env,%List) -> %Maybe %Triple
 
 primitiveType: %Thing -> %Mode
+modeEqual: (%Form,%Form) -> %Boolean
 hasUniqueCaseView: (%Form,%Mode,%Env) -> %Boolean
 convertOrCroak: (%Triple,%Mode) -> %Maybe %Triple
 getFormModemaps: (%Form,%Env) -> %List

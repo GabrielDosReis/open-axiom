@@ -294,7 +294,7 @@ compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
     nil
   [d,m,e]:= compDefineCategory2(form,sig,sc,body,m,e,prefix,fal)
   if categoryCapsule and not $bootStrapMode then [.,.,e] :=
-    $insideCategoryPackageIfTrue: local := true  --see NRTmakeSlot1
+    $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local :=
         makeCategoryPredicates(form,$lisplibCategory)
     compDefine1(mkCategoryPackage(form,cat,categoryCapsule),$EmptyMode,e)
@@ -335,8 +335,6 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
   catvec := eval mkEvalableCategoryForm form
   fullCatOpList:=(JoinInner([catvec],$e)).1
   catOpList :=
-    --note: this gets too many modemaps in general
-    --   this is cut down in NRTmakeSlot1
     [['SIGNATURE,op1,sig] for [[op1,sig],:.] in fullCatOpList
          --above line calls the category constructor just compiled
         | assoc(op1,capsuleDefAlist)]
@@ -403,8 +401,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ['PROG1,["%LET",g:= GENSYM(),body],['SETELT,g,0,mkConstructor $form]]
-    fun:= compile [op',['LAM,sargl,body]]
+      ["PROG1",["%LET",g:= GENSYM(),body],
+         ["setShellEntry",g,0,mkConstructor $form]]
+    fun:= compile [op',["LAM",sargl,body]]
  
 --  5. give operator a 'modemap property
     pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
@@ -537,9 +536,9 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       REMDUP [CADR x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
-    $NRTslot1Info: local := nil  --set in NRTmakeSlot1 called by NRTbuildFunctor
+    $NRTslot1Info: local := nil  --set in NRTmakeSlot1Info
        --this is used below to set $lisplibSlot1 global
-    $NRTaddForm: local := nil   -- see compAdd; NRTmakeSlot1
+    $NRTaddForm: local := nil   -- see compAdd
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTaddList: local := nil --list of fncts not defined in capsule (added)
@@ -640,7 +639,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
           [simpBool x for x in $NRTslot1PredicateList]
         rwriteLispForm('loadTimeStuff,
           ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
-      $lisplibSlot1 := $NRTslot1Info --NIL or set by $NRTmakeSlot1
+      $lisplibSlot1 := $NRTslot1Info
       $lisplibOperationAlist:= operationAlist
       $lisplibMissingFunctions:= $CheckVectorList
     lisplibWrite('"compilerInfo",

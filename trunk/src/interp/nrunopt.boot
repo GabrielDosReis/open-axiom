@@ -142,7 +142,8 @@ makeCompactSigCode(sig,$isOpPackageName) == [fn for x in sig] where
   fn() == 
     x = '_$_$ => 2
     x = '$ => 0
-    not INTEGERP x => systemError ['"code vector slot is ",x,"; must be number"]
+    not INTEGERP x => 
+      systemError ['"code vector slot is ",x,'"; must be number"]
 --  x = 6 and $isOpPackageName => 0  --treat slot 6 as $ for default packages
     x
   
@@ -176,6 +177,13 @@ stuffDomainSlots dollar ==
 getLookupFun infovec ==
   MAXINDEX infovec = 4 => infovec.4
   'lookupIncomplete
+
+makeSpadConstant [fn,dollar,slot] ==
+  val := FUNCALL(fn,dollar)
+  u:= dollar.slot
+  RPLACA(u,function IDENTITY)
+  RPLACD(u,val)
+  val
 
 stuffSlot(dollar,i,item) ==
   dollar.i :=

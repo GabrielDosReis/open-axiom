@@ -94,7 +94,6 @@
 
 
 (defvar $skipme)
-(defvar $COMBLOCKLIST)
  
 (defun PREPARSE (Strm &aux (stack ()))
   (SETQ $COMBLOCKLIST NIL $skipme NIL)
