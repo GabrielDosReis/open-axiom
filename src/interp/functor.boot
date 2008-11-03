@@ -54,8 +54,7 @@ DomainPrint(D,brief) ==
   $Sublis: local := nil
   $WhereCounter: local := 1
   env:=
-    not BOUNDP '$e => $EmptyEnvironment
-    $e='$e => $EmptyEnvironment
+    null $e => $EmptyEnvironment
     $e --in case we are called from top level
   isCategory D => CategoryPrint(D,env)
   $Sublis:= [[keyItem D,:'original]]

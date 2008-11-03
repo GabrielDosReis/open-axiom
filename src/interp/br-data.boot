@@ -512,8 +512,11 @@ getParentsFor(cname,formalParams,constructorCategory) ==
     acc := [:explodeIfs x,:acc]
   NREVERSE acc
 
+$parentsCache := nil
+
 parentsOf con == --called by kcpPage, ancestorsRecur
-  if null BOUNDP '$parentsCache then SETQ($parentsCache,MAKE_-HASHTABLE 'ID)
+  if null $parentsCache then 
+     $parentsCache := MAKE_-HASHTABLE 'ID
   HGET($parentsCache,con) or
     parents := getParentsForDomain con
     HPUT($parentsCache,con,parents)

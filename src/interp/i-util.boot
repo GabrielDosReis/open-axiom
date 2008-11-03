@@ -86,9 +86,10 @@ printPrompt(flush? == false) ==
 
 --% Miscellaneous
  
+$ZeroVecCache := nil
 Zeros n ==
-  BOUNDP '$ZeroVecCache and #$ZeroVecCache=n => $ZeroVecCache
-  $ZeroVecCache:= MAKE_-VEC n
+  #$ZeroVecCache = n => $ZeroVecCache
+  $ZeroVecCache := MAKE_-VEC n
   for i in 0..n-1 repeat $ZeroVecCache.i:=0
   $ZeroVecCache
  

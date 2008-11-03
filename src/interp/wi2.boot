@@ -88,7 +88,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $mutableDomain: local :=
       -- all defaulting packages should have caching turned off
        isCategoryPackageName $op or   
-         (if BOUNDP '$mutableDomains then MEMQ($op,$mutableDomains)
+         (if $mutableDomains then MEMQ($op,$mutableDomains)
             else false )   --true if domain has mutable state
     signature':=
       [first signature,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
@@ -175,7 +175,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     SETQ($myFunctorBody, body)  -------->  new  <--------
     T:= compFunctorBody(body,rettype,$e,parForm)
 ---------------> new <---------------------
-    BOUNDP '$convert2NewCompiler and $convert2NewCompiler => 
+    $convert2NewCompiler => 
        return markFinish($originalBody,[$form,['Mapping,:signature'],T.env])
 ---------------> new <---------------------
     -- If only compiling certain items, then ignore the body shell.
@@ -372,7 +372,7 @@ compCapsuleInner(itemList,m,e) ==
   data:= ["PROGN",:itemList]
       --RPLACd by compCapsuleItems and Friends
   e:= compCapsuleItems(itemList,nil,e)
-  BOUNDP '$convert2NewCompiler and $convert2NewCompiler => 
+  $convert2NewCompiler => 
      [nil,m,e] --nonsense but that's fine
   localParList:= $functorLocalParameters
   if $addForm then data:= ['add,$addForm,data]

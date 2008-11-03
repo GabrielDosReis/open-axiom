@@ -42,6 +42,7 @@ spad2AsTranslatorAutoloadOnceTrigger() == nil
 --======================================================================
 --    Temporary definitions---for tracing and debugging
 --======================================================================
+$convertingSpadFile := false
 tr fn ==
   $convertingSpadFile : local := true
   $options: local := nil
@@ -144,8 +145,7 @@ compDefineLisplib(df,m,e,prefix,fal,fn) ==
   --will eventually become the "constructorCategory" property in lisplib
   --set in compDefineCategory if category, otherwise in finalizeLisplib
   libName := getConstructorAbbreviation op
-  BOUNDP '$compileDocumentation and $compileDocumentation =>
-     compileDocumentation libName
+  $compileDocumentation => compileDocumentation libName
   sayMSG ['"   initializing ",$spadLibFT,:bright libName,
     '"for",:bright op]
   initializeLisplib libName
@@ -668,7 +668,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
                 for v in rest expr]
   op="IF" =>
     expr is [.,a,b,c]
-    if not canReturn(a,0,0,true) and not (BOUNDP '$convert2NewCompiler and $convert2NewCompiler) then
+    if not canReturn(a,0,0,true) and not $convert2NewCompiler then
       SAY "IF statement can not cause consequents to be executed"
       pp expr
     canReturn(a,level,exitCount,nil) or canReturn(b,level,exitCount,ValueFlag)
@@ -1143,7 +1143,7 @@ compDefineCategory1(df,m,e,prefix,fal) ==
     nil
   [d,m,e]:= compDefineCategory2(form,sig,sc,body,m,e,prefix,fal)
 --+ next two lines
---  if BOUNDP '$convertingSpadFile and $convertingSpadFile then nil
+--  if $convertingSpadFile then nil
 --  else
   if categoryCapsule and not $bootStrapMode then
     [.,.,e] :=
@@ -1238,7 +1238,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 
 --   6. put modemaps into InteractiveModemapFrame
     $domainShell :=
-      BOUNDP '$convertingSpadFile and $convertingSpadFile => nil
+      $convertingSpadFile => nil
       eval [op',:MAPCAR('MKQ,sargl)]
     $lisplibCategory:= formalBody
 ----    if $LISPLIB then

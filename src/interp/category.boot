@@ -573,7 +573,7 @@ JoinInner(l,$e) ==
 
 Join(:l) ==
   e :=
-    (not BOUNDP '$e) or null $e or $InteractiveMode => $CategoryFrame
+    null $e or $InteractiveMode => $CategoryFrame
     $e
   JoinInner(l, e)
  
