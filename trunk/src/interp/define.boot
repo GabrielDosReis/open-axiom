@@ -113,7 +113,6 @@ makePredicate l ==
 
 compDefine: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compDefine(form,m,e) ==
-  $tripleHits: local:= 0
   $macroIfTrue: local := false
   $packagesUsed: local := false
   compDefine1(form,m,e)
@@ -351,9 +350,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
   $prefix,$formalArgList) ==
     --1. bind global variables
     $insideCategoryIfTrue: local:= true
-    $TOP__LEVEL: local := nil
-    $definition: local := form
-                 --used by DomainSubstitutionFunction
+    $definition: local := form   --used by DomainSubstitutionFunction
     $form: local := nil
     $op: local := nil
     $extraParms: local := nil
@@ -442,7 +439,7 @@ mkConstructor form ==
   ['LIST,MKQ first form,:[mkConstructor x for x in rest form]]
  
 compDefineCategory(df,m,e,prefix,fal) ==
-  $domainShell: local -- holds the category of the object being compiled
+  $domainShell: local := nil -- holds the category of the object being compiled
   $lisplibCategory: local := nil
   -- since we have so many ways to say state the kind of a constructor,
   -- make sure we do have some minimal internal coherence.
@@ -502,7 +499,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $insideFunctorIfTrue: local:= true
     $functorsUsed: local := nil --not currently used, finds dependent functors
     $setelt: local := "setShellEntry"
-    $TOP__LEVEL: local := nil
     $genSDVar: local:= 0
     originale:= $e
     [$op,:argl]:= form
@@ -1405,7 +1401,6 @@ processFunctor(form,signature,data,localParList,e) ==
   buildFunctor(form,signature,data,localParList,e)
  
 compCapsuleItems(itemlist,$predl,$e) ==
-  $TOP__LEVEL: local := nil
   $myFunctorBody :local := nil   ---needed for translator
   $signatureOfForm: local := nil
   $suffix: local:= 0
@@ -1588,7 +1583,6 @@ makeCategoryForm(c,e) ==
 
 compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compCategory(x,m,e) ==
-  $TOP__LEVEL: local:= true
   clearExportsTable()
   (m:= resolve(m,$Category))=$Category and x is ['CATEGORY,
     domainOrPackage,:l] =>

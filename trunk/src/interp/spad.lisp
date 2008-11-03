@@ -291,7 +291,7 @@
         (|$warningStack| ())
         (|$returnMode| |$EmptyMode|)
         (|$leaveLevelStack| ())
-        $TOP_LEVEL |$insideFunctorIfTrue| |$insideExpressionIfTrue|
+        |$insideFunctorIfTrue| |$insideExpressionIfTrue|
         |$insideCoerceInteractiveHardIfTrue| |$insideWhereIfTrue|
         |$insideCategoryIfTrue| |$insideCapsuleFunctionIfTrue| |$form|
         (|$e| |$EmptyEnvironment|)

@@ -1065,7 +1065,6 @@ compNot([op,arg], pWas, m, e) ==
   coerce(markAny('compNot, pWas, [["NOT",x],$Boolean,ei]),m)
 
 compDefine(form,m,e) ==
-  $tripleHits: local:= 0
   $macroIfTrue: local
   $packagesUsed: local
   ['DEF,.,originalSignature,.,body] := form
@@ -1165,7 +1164,6 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
   $prefix,$formalArgList) ==
     --1. bind global variables
     $insideCategoryIfTrue: local:= true
-    $TOP__LEVEL: local := nil
     $definition: local := nil
                  --used by DomainSubstitutionFunction
     $form: local := nil

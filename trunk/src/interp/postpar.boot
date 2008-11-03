@@ -553,7 +553,8 @@ postcheck: %ParseTree -> %ParseForm
 postcheck x ==
   atom x => nil
   x is ["DEF",form,[target,:.],:.] =>
-    (setDefOp form; postcheckTarget target; postcheck rest rest x)
+    setDefOp form
+    postcheck rest rest x
   x is ["QUOTE",:.] => nil
   postcheck first x
   postcheck rest x
@@ -563,17 +564,6 @@ setDefOp f ==
   if f is [":",g,:.] then f := g
   f := (atom f => f; first f)
   if $topOp then $defOp:= f else $topOp:= f
-
-postcheckTarget: %ParseForm -> %Thing
-postcheckTarget x ==
-  -- doesn't seem that useful!
-  isPackageType x => nil
-  x is ["Join",:.] => nil
-  NIL
-
-isPackageType: %ParseForm -> %Boolean
-isPackageType x == 
-  not CONTAINED("$",x)
 
 unComma: %ParseForm -> %ParseForm
 unComma x ==

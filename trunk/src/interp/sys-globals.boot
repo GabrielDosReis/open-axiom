@@ -252,9 +252,6 @@ $topOp := nil
 $streamCount := 0
 
 ++
-$TOP__LEVEL := true
-
-++
 $TOKSTACK := nil
 
 ++
