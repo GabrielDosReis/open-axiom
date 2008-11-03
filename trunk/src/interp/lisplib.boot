@@ -331,7 +331,7 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   val
  
 compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
-  --fn= compDefineCategory OR compDefineFunctor
+  --fn= compDefineCategory1 OR compDefineFunctor1
   sayMSG fillerSpaces(72,'"-")
   $LISPLIB: local := 'T
   $op: local := op
@@ -358,8 +358,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   --will eventually become the "constructorCategory" property in lisplib
   --set in compDefineCategory1 if category, otherwise in finalizeLisplib
   libName := getConstructorAbbreviation op
-  BOUNDP '$compileDocumentation and $compileDocumentation =>
-     compileDocumentation libName
+  $compileDocumentation => compileDocumentation libName
   sayMSG ['"   initializing ",$spadLibFT,:bright libName,
     '"for",:bright op]
   initializeLisplib libName

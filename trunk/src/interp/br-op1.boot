@@ -697,11 +697,6 @@ htSayExpose(op,flag) ==
 dbShowOperationsFromConform(htPage,which,opAlist) ==  --branch in with lists
   $groupChoice := nil
   conform := htpProperty(htPage,'conform)
-  --prepare opAlist for possible filtering of groups
-  if null BOUNDP '$topicHash then
-    $topicHash := MAKE_-HASHTABLE 'ID
-    for [x,:c] in '((extended . 0) (basic . 1) (hidden . 2)) repeat
-      HPUT($topicHash,x,c)
   if domform := htpProperty(htPage,'domname) then
     $conformsAreDomains : local := true
     reduceOpAlistForDomain(opAlist,domform,conform)
@@ -747,6 +742,8 @@ reduceOpAlistForDomain(opAlist,domform,conform) ==
       item
   opAlist
 
+$attributeArgs := nil
+
 dbShowOperationLines(which,linelist) ==  --branch in with lines
   htPage := htInitPage(nil,nil)  --create empty page
   opAlist := nil
@@ -766,7 +763,7 @@ dbShowOperationLines(which,linelist) ==  --branch in with lines
     'expandAttributes
   htpSetProperty(htPage,expandProperty,'strings)
   dbResetOpAlistCondition(htPage,which,opAlist)
-  if which = '"attribute" and BOUNDP '$attributeArgs and $attributeArgs then
+  if which = '"attribute" and $attributeArgs then
     --code needed to handle commutative("*"); called from aPage
     --must completely expand the opAlist then check for those with
     --arguments equal to $attributeArgs

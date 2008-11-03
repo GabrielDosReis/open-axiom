@@ -127,7 +127,7 @@ abbQuery(x) ==
 installConstructor(cname,type) ==
   (entry := getCDTEntry(cname,true)) => entry
   item := [cname,getConstructorAbbreviationFromDB cname,nil]
-  if BOUNDP '$lowerCaseConTb and $lowerCaseConTb then
+  if $lowerCaseConTb then
     HPUT($lowerCaseConTb,cname,item)
     HPUT($lowerCaseConTb,DOWNCASE cname,item)
  

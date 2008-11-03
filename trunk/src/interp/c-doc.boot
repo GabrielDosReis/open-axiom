@@ -202,6 +202,8 @@ transDocList($constructorName,doclist) == --returns ((key line)...)
   checkDocError1 ['"Missing Description"]
   acc
 
+$attribute? := nil
+
 ++ Given a functor `conname', and a list of documenation strings,
 ++ sanity-check the documentation.  In particular extract information
 ++ such as `Description', etc.
@@ -562,8 +564,8 @@ checkComments(nameSig,lines) == main where
   main() ==
     $checkErrorFlag: local := false
     margin := checkGetMargin lines
-    if (null BOUNDP '$attribute? or null $attribute?)
-      and nameSig ^= 'constructor then lines :=
+    if null $attribute? and nameSig ^= 'constructor then 
+      lines :=
         [checkTransformFirsts(first nameSig,first lines,margin),:rest lines]
     u := checkIndentedLines(lines, margin)
     $argl := checkGetArgs first u      --set $argl
@@ -1246,9 +1248,12 @@ whoOwns(con) ==
 --=======================================================================
 --             Report Documentation Error
 --=======================================================================
+++ True if we are compiling only documentation.
+$compileDocumentation := false
+
 checkDocError1 u ==
 --when compiling for documentation, ignore certain errors
-  BOUNDP '$compileDocumentation and $compileDocumentation => nil
+  $compileDocumentation => nil
   checkDocError u
 
 checkDocError u ==
@@ -1273,7 +1278,7 @@ checkDocMessage u ==
   sourcefile := getConstructorSourceFileFromDB $constructorName
   person := whoOwns $constructorName or '"---"
   middle :=
-    BOUNDP '$x => ['"(",$x,'"): "]
+    not null $x => ['"(",$x,'"): "]
     ['": "]
   concat(person,'">",sourcefile,'"-->",$constructorName,middle,u)
 

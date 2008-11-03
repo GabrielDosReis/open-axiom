@@ -1,5 +1,19 @@
 2008-11-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-data.boot: Remove uses of BOUNDP.
+	* interp/br-op1.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
+2008-11-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/postpar.boot (postcheckTarget): Likewise.
 	(isPackageType): Likewise.
 	* interp/lisplib.boot (getSlotFromDomain): Remove.

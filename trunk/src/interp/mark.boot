@@ -133,7 +133,7 @@ markSimpleReduce(x,T) ==
 
 markCompAtom(x,T) ==                                     --for compAtom
   tcheck T
-  BOUNDP '$convert2NewCompiler and $convert2NewCompiler =>
+  $convert2NewCompiler =>
     [mkWi('compAtom,'ATOM,nil,['REPLACE,[x]],T.expr),:CDR T]
   T
 
@@ -205,13 +205,13 @@ markAt(T) ==
 
 markCompColonInside(op,T) ==                         --for compColonInside
   tcheck T
-  BOUNDP '$convert2NewCompiler and $convert2NewCompiler =>
+  $convert2NewCompiler =>
     [mkWi('compColonInside,'COLON,op,T.mode,T.expr),:CDR T]
   T
 
 markLisp(T,m) ==                                     --for compForm1
   tcheck T
-  BOUNDP '$convert2NewCompiler and $convert2NewCompiler =>
+  $convert2NewCompiler =>
     [mkWi('compForm1,'COLON,'Lisp,T.mode,T.expr),:CDR T]
   T
 
@@ -224,7 +224,7 @@ markLambda(vl,body,mode,T) ==                       --for compWithMappingMode
   [mkWi('compWithMappingMode,'LAMBDA,nil,['REPLACE,fun],T.expr),:CDR T]
 
 markMacro(before,after) ==                            --for compMacro
-  BOUNDP '$convert2NewCompiler and $convert2NewCompiler => 
+  $convert2NewCompiler => 
     if before is [x] then before := x
     $def := ['MDEF,before,'(NIL),'(NIL),after]
     if $insideFunctorIfTrue 
@@ -294,7 +294,7 @@ markImport(d,:option) ==   --from compFormWithModemap/genDeltaEntry/compImport
   $insideCapsuleFunctionIfTrue => 
     $localImportStack := insert(dom,$localImportStack)
     if IFCAR option then $localDeclareStack := insert(dom,$localDeclareStack)
-  if BOUNDP '$globalImportStack then
+  if $globalImportStack then
     $globalImportStack := insert(dom,$globalImportStack)
     if IFCAR option then $globalDeclareStack := insert(dom,$globalDeclareStack)
 
@@ -309,7 +309,7 @@ markMacroTran name ==     --called by markImport
   [op,:[markMacroTran x for x in argl]]
    
 markSetq(originalLet,T) ==                                --for compSetq
-  BOUNDP '$convert2NewCompiler and $convert2NewCompiler => 
+  $convert2NewCompiler => 
     $coerceList : local := nil
     ["%LET",form,originalBody] := originalLet
     id := markLhs form
@@ -370,7 +370,7 @@ foobum(x) == x         --from doIT
 --======================================================================
 --called from compDefineCapsuleFunction
 markChanges(originalDef,T,sig) == 
-  BOUNDP '$convert2NewCompiler and $convert2NewCompiler => 
+  $convert2NewCompiler => 
     if $insideCategoryIfTrue and $insideFunctorIfTrue then
       originalDef := markCatsub(originalDef)
       T := [markCatsub(T.expr),
@@ -553,6 +553,9 @@ getTargetWI x ==
   x is ['WI,a,b] or x is ['MI,a,b] => getTargetWI b
   x is ['PART,.,a] => getTargetWI a
   x
+
+$shout1 := false
+$shout2 := false
   
 markRecord(source,target,u) ==
 --Record changes on $coerceList
@@ -572,7 +575,7 @@ markRecord(source,target,u) ==
   path := 
     path = 0 => nil     --wrap the WHOLE thing
     path
-  if BOUNDP '$shout2 and $shout2 then
+  if $shout2 then
       pp '"========="
       pp path
       ipath := reverse path
@@ -618,13 +621,15 @@ markPath1 u ==
   u is [a,b,:r] =>  -- a < b < ...
     a = b => markPath1 CDR u       ---> allow duplicates on path
     path := markGetPath(a,b) or return nil    -----> early exit
-    if BOUNDP '$shout1 and $shout1 then
+    if $shout1 then
       pp '"========="
       pp path
       pp a
       pp b
     [:first path,:markPath1 CDR u]
   nil
+
+$pathErrorStack := nil
 
 markGetPath(x,y) ==    -- x < y  ---> find its location
   u := markGetPaths(x,y) 
@@ -634,8 +639,7 @@ markGetPath(x,y) ==    -- x < y  ---> find its location
     null u => '"no match"
     '"ambiguous"
   sayBrightly ['"-----",key,'"--------"]
-  if not BOUNDP '$pathErrorStack then SETQ($pathErrorStack,nil)
-  SETQ($pathErrorStack,[$path,:$pathErrorStack])
+  $pathErrorStack := [$path,:$pathErrorStack]
   pp "CAUTION: this can cause RPLAC errors"
   pp "Paths are: "
   pp u
@@ -655,7 +659,7 @@ markTryPaths() == markGetPaths($x,$y)
 markPaths(x,y,s) ==    --x < y; find location s of x in y (initially s=nil)
 --NOTES: This location is what it will be in the source program with
 --  all PART information removed. 
-  if BOUNDP '$shout and $shout then
+  if $shout then
     pp '"-----"
     pp x
     pp y
@@ -709,6 +713,7 @@ markPathsMacro y ==
 --      Capsule Function: DO the transformations
 --======================================================================
 --called by markChanges (inside capsule), markSetq (outside capsule)
+$hohum := false
 markSpliceInChanges body ==
 --  pp '"before---->"
 --  pp $coerceList
@@ -728,7 +733,7 @@ markSpliceInChanges body ==
 --entries can have duplicate codes
   for [code,target,:loc] in $coerceList repeat
     $data: local := [code, target, loc]
-    if BOUNDP '$hohum and $hohum then 
+    if $hohum then 
       pp '"---------->>>>>"
       pp $data
       pp body
@@ -762,7 +767,7 @@ markInsertChanges(code,form,t,loc) ==
         pp $data
         foobum form
         form
-    if BOUNDP '$hohum and $hohum then pp [i, '" >>> ", x]
+    if $hohum then pp [i, '" >>> ", x]
     SETQ($CHANGE,COPY x)
     if x is ['elt,:y] and r then x := y
     RPLACA(x,markInsertChanges(code,CAR x,t,rest loc))
@@ -1344,9 +1349,11 @@ markConstructorForm name ==  --------> same as getConstructorForm
 --======================================================================
 --                new path functions
 --======================================================================
+
+$newPaths := false
   
 markGetPaths(x,y) == 
-  BOUNDP '$newPaths and $newPaths => 
+  $newPaths => 
 --  res := reverseDown mkGetPaths(x, y)
     res := mkGetPaths(x, y)
 --    oldRes := markPaths(x,y,[nil])
