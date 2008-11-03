@@ -1,5 +1,12 @@
 2008-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/Makefile.pamphlet (template.$(FASLEXT)): Remove.
+	* interp/template.boot: Move non-dead code where appropriate.
+	Remove file.
+	* boot/ast.boot (bfQ): Improve.
+
+2008-11-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (|$ExtraRuntimeLibraries|): Listify.
 	(extra-runtime-libs): Tidy.
 	* lisp/Makefile.in (edit): stringify $(oa_c_runtime_extra) elements.

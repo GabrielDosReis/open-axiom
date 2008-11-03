@@ -57,7 +57,7 @@ pathToDatabase name ==
 
 --%
 
-getConstructorAbbreviationFromDB: %Symbol -> %Maybe %Symbol
+getConstructorAbbreviationFromDB: %Symbol -> %Symbol
 getConstructorAbbreviationFromDB ctor ==
   GETDATABASE(ctor,"ABBREVIATION")
 
@@ -75,7 +75,7 @@ getConstructorAncestorsFromDB ctor ==
 
 ++ return the modemap of the constructor or the instantiation
 ++ of the constructor `form'. 
-getConstructorModemapFromDB: %Symbol -> %Maybe %Symbol
+getConstructorModemapFromDB: %Symbol -> %Mode
 getConstructorModemapFromDB form ==
   GETDATABASE(opOf form, 'CONSTRUCTORMODEMAP)
  
@@ -270,17 +270,6 @@ getDependentsOfConstructor(con) ==
   val := rread(con, stream, nil)
   RSHUT stream
   val
-
-putModemapIntoDatabase(name,modemap,fileName) ==
-  $forceAdd: local:= nil
-  mml:= ASSOC(name,$databaseQueue)
-  if mml = [] then
-    $databaseQueue:=[[name, modemap],:$databaseQueue]
-  else
-    or/[modemap=map' for map' in CDR mml] => "already there"
-    newEntry:= [modemap,:CDR mml]
-    RPLACD(mml,newEntry)
-  newEntry
 
 orderPredicateItems(pred1,sig,skip) ==
   pred:= signatureTran pred1
@@ -645,23 +634,6 @@ updateDatabase(fname,cname,systemdir?) ==
     clearClams()
     clearAllSlams []
 
-removeCoreModemaps(modemapList,c) ==
-  newUserModemaps:= nil
-  c := opOf unabbrev c
-  for [op,mmList] in modemapList repeat
-    temp:= nil
-    for mm in mmList repeat
-      cname := getDomainFromMm mm
-      if cname ^= c then temp:= [:temp,mm]
-    if temp then newUserModemaps:= [:newUserModemaps,[op,temp]]
-  newUserModemaps
-
-addCoreModemap(modemapList,op,modemap,cname) ==
-  entry:= ASSQ(op,modemapList) =>
-    RPLAC(CADR entry,[modemap,:CADR entry])
-    modemapList
-  modeMapList:= [:modemapList,[op,[ modemap]]]
-
 REMOVER(lst,item) ==
   --destructively removes item from lst
   not PAIRP lst =>
@@ -684,6 +656,30 @@ loadDependents fn ==
         loadIfNecessary x
 
 --% Miscellaneous Stuff
+
+markUnique x ==
+  u := first x
+  RPLACA(x,'(_$unique))
+  RPLACD(x,[u,:rest x])
+  rest x
+
+getOperationAlistFromLisplib x ==
+  u := getConstructorOperationsFromDB x
+--  u := removeZeroOneDestructively u
+  null u => u          -- this can happen for Object
+  CAAR u = '_$unique => rest u
+  f:= addConsDB '(NIL T ELT)
+  for [op,:sigList] in u repeat
+    for items in tails sigList repeat
+      [sig,:r] := first items
+      if r is [.,:s] then
+        if s is [.,:t] then
+          if t is [.] then nil
+          else RPLACD(s,QCDDR f)
+        else RPLACD(r,QCDR f)
+      else RPLACD(first items,f)
+      RPLACA(items,addConsDB CAR items)
+  u and markUnique u
 
 getOplistForConstructorForm (form := [op,:argl]) ==
   --  The new form is an op-Alist which has entries (<op> . signature-Alist)

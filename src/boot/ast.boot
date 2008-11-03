@@ -784,16 +784,12 @@ bfSmintable x==
       first x in '(SIZE LENGTH char)
  
 bfQ(l,r)==
-       if bfSmintable l or bfSmintable r
-       then  ["EQL",l,r]
-       else if defQuoteId l or defQuoteId r
-            then  ["EQ",l,r]
-            else
-              if null l
-              then ["NULL",r]
-              else if null r
-                   then ["NULL",l]
-                   else ["EQUAL",l,r]
+  bfSmintable l or bfSmintable r => ["EQL",l,r]
+  defQuoteId l or defQuoteId r => ["EQ",l,r]
+  null l => ["NULL",r]
+  null r => ["NULL",l]
+  EQ(l,true) or EQ(r,true) => ["EQ",l,r]
+  ["EQUAL",l,r]
  
 bfLessp(l,r)==
       if r=0

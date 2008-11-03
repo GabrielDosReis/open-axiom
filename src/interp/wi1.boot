@@ -1148,7 +1148,7 @@ compDefineCategory1(df,m,e,prefix,fal) ==
 --  else
   if categoryCapsule and not $bootStrapMode then
     [.,.,e] :=
-      $insideCategoryPackageIfTrue: local := true  --see NRTmakeSlot1
+      $insideCategoryPackageIfTrue: local := true
       $categoryPredicateList: local :=
           makeCategoryPredicates(form,$lisplibCategory)
       defform := mkCategoryPackage(form,cat,categoryCapsule)
