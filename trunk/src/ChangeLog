@@ -1,5 +1,12 @@
 2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot: Import "msgdb", not "c-util".  Move
+	compiler driver to i-syscmd.boot.
+	* interp/define.boot: Import "nruncomp", "functor", "package".
+	* interp/wi2.boot (NRTgetLocalIndex): Remove duplicate.
+
+2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/spad.lisp (incTimeSum): Remove.
 	* interp/modemap.boot ($forceAdd): Define.
 	* interp/nruncomp.boot ($NRTderivedTargetIfTrue): Likewise.

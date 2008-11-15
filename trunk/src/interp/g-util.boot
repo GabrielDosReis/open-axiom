@@ -40,11 +40,16 @@ namespace BOOT
 module g_-util where
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List,%List) -> %List
+  mkList: %List -> %List
 
 ++
 $interpOnly := false
 
 --% Utility Functions of General Use
+
+mkList u ==
+  u => ["LIST",:u]
+  nil
 
 ELEMN(x, n, d) ==
   null x => d
@@ -56,6 +61,25 @@ PPtoFile(x, fname) ==
     PRETTYPRINT(x, stream)
     SHUT stream
     x
+
+ScanOrPairVec(f, ob) ==
+    $seen:     local := MAKE_-HASHTABLE 'EQ
+ 
+    CATCH('ScanOrPairVecAnswer, ScanOrInner(f, ob)) where
+        ScanOrInner(f, ob) ==
+            HGET($seen, ob) => nil
+            PAIRP ob =>
+                HPUT($seen, ob, true)
+                ScanOrInner(f, QCAR ob)
+                ScanOrInner(f, QCDR ob)
+                nil
+            VECP ob =>
+                HPUT($seen, ob, true)
+                for i in 0..#ob-1 repeat ScanOrInner(f, ob.i)
+                nil
+            FUNCALL(f, ob) =>
+                THROW('ScanOrPairVecAnswer, true)
+            nil
 
 
 ++ Query properties for an entity in a given environment.

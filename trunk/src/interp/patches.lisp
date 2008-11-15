@@ -117,8 +117,6 @@
 
 (defun SHAREDITEMS (x) T) ;;checked in history code
 
-(define-function '|eval| #'eval)
-
 (defun GETZEROVEC (n) (MAKE-ARRAY n :initial-element 0))
 
 (defun READSPADEXPR ()

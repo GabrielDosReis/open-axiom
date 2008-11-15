@@ -126,10 +126,6 @@ subTree(u,v) ==
   ATOM v => nil
   or/[subTree(u,v') for v' in v]
  
-mkList u ==
-  u => ["LIST",:u]
-  nil
- 
 setPackageLocals(pac,locs) ==
   for var in locs for i in 0.. | var^=nil repeat pac.i:= var
  

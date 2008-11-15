@@ -671,30 +671,6 @@ compMapCond''(cexpr,dc) ==
 --======================================================================
 --                    From nruncomp.boot
 --======================================================================
-NRTgetLocalIndex item ==
-  k := NRTassocIndex item => k
-  item = $NRTaddForm => 5
-  item = '$ => 0 
-  item = '_$_$ => 2
-  value:=
-    MEMQ(item,$formalArgList) => item
-    nil
-  atom item and null MEMQ(item,'($ _$_$)) 
-   and null value =>  --give slots to atoms
-    $NRTdeltaList:= [['domain,NRTaddInner item,:value],:$NRTdeltaList]
-    $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
-    $NRTdeltaLength := $NRTdeltaLength+1
-    $NRTbase + $NRTdeltaLength - 1
-  $NRTdeltaList:= [['domain,NRTaddInner item,:value],:$NRTdeltaList]
-  saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
-  saveIndex := $NRTbase + $NRTdeltaLength
-  $NRTdeltaLength := $NRTdeltaLength+1
-  compEntry:=  item
-               ----94/11/07
-  --      WAS: compOrCroak(item,$EmptyMode,$e).expr
-  RPLACA(saveNRTdeltaListComp,compEntry)
-  saveIndex
-
 optDeltaEntry(op,sig,dc,eltOrConst) ==
   return nil    --------> kill it
   $killOptimizeIfTrue = true => nil
