@@ -47,6 +47,21 @@ $interpOnly := false
 
 --% Utility Functions of General Use
 
+
+++ tests if x is an identifier beginning with #
+isSharpVar x ==
+  IDENTP x and SCHAR(SYMBOL_-NAME x,0) = char "#"
+ 
+isSharpVarWithNum x ==
+  null isSharpVar x => nil
+  (n := QCSIZE(p := PNAME x)) < 2 => nil
+  ok := true
+  c := 0
+  for i in 1..(n-1) while ok repeat
+    d := ELT(p,i)
+    ok := DIGITP d => c := 10*c + DIG2FIX d
+  if ok then c else nil
+
 mkList u ==
   u => ["LIST",:u]
   nil

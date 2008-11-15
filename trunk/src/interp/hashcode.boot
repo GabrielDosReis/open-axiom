@@ -88,7 +88,6 @@ hashType(type, percentHash) ==
 
         hash
 
---The following are in cfuns.lisp
 $hashModulus := 1073741789                      -- largest 30-bit prime
 
 -- Produce a 30-bit hash code.  This function must produce the same codes

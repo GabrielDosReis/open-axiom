@@ -143,53 +143,11 @@ Undef(:u) ==
     APPLY(CAR ELT(domain',slot),[:u'',CDR ELT(domain',slot)])
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
-devaluate d ==
-  not REFVECP d => d
-  QSGREATERP(QVSIZE d,5) and getShellEntry(d,3) is ['Category] => 
-    getShellEntry(d,0)
-  QSGREATERP(QVSIZE d,0) =>
-    d':=getShellEntry(d,0)
-    isFunctor d' => d'
-    d
-  d
- 
-devaluateList l == [devaluate d for d in l]
- 
-devaluateDeeply x ==
-  VECP x => devaluate x
-  atom x => x
-  [devaluateDeeply y for y in x]
-
---HasAttribute(domain,attrib) ==
----->
---  isNewWorldDomain domain => newHasAttribute(domain,attrib)
-----+
---  (u := LASSOC(attrib,domain.2)) and lookupPred(first u,domain,domain)
- 
-HasSignature(domain,[op,sig]) ==
-  compiledLookup(op,sig,domain)
- 
---HasCategory(domain,catform') ==
---  catform' is ['SIGNATURE,:f] => HasSignature(domain,f)
---  catform' is ['ATTRIBUTE,f] => HasAttribute(domain,f)
---  catform:= devaluate catform'
---  domain0:=domain.0
---  isNewWorldDomain domain => newHasCategory(domain,catform)
---  slot4 := domain.4
---  catlist := slot4.1
---  member(catform,catlist) or
---   MEMQ(opOf(catform),'(Object Type)) or  --temporary hack
---    or/[compareSigEqual(catform,cat,domain0,domain) for cat in catlist]
- 
 makeInitialModemapFrame() == 
   COPY $InitialModemapFrame
  
 isCapitalWord x ==
   (y := PNAME x) and and/[UPPER_-CASE_-P y.i for i in 0..MAXINDEX y]
- 
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
-domainEqual(a,b) == VECP a and VECP b and a.0 = b.0
  
 $newCompilerUnionFlag := true
 
