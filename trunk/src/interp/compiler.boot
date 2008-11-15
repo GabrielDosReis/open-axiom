@@ -39,6 +39,7 @@ import define
 import iterator
 namespace BOOT
 module compiler where
+  compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
   coerce: (%Triple,%Mode) -> %Maybe %Triple
   convert: (%Triple,%Mode) -> %Maybe %Triple
   comp: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -69,7 +70,6 @@ compExpressionList: (%List,%Mode,%Env) -> %Maybe %Triple
 compWithMappingMode: (%Form,%Mode,%List) -> %List
 compFormMatch: (%Modemap,%List) -> %Boolean
 compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
-compApply: (%List,%List,%Thing,%List,%Mode,%Env) -> %Maybe %Triple
 compToApply: (%Form,%List,%Mode,%Env) -> %Maybe %Triple
 compApplication: (%Form,%List,%Mode,%Env,%Triple) -> %Maybe %Triple
 compApplyModemap: (%Form,%Modemap,%Env,%List) -> %Maybe %Triple
@@ -97,14 +97,11 @@ $coreDiagnosticFunctions ==
 ++ list of functions to compile
 $compileOnlyCertainItems := []
 
-compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
 --+ signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
   $killOptimizeIfTrue: local:= false
   $forceAdd: local:= false
-  $compTimeSum: local := 0
-  $resolveTimeSum: local := 0
   $packagesUsed: local := []
   x is ["DEF",:.] or x is ["where",["DEF",:.],:.] =>
     ([val,mode,.]:= compOrCroak(x,m,e); [val,mode,e])
@@ -124,17 +121,16 @@ compOrCroak1(x,m,e,compFn) ==
       T:= CATCH("compOrCroak",FUNCALL(compFn,x,m,e)) => T
       --stackAndThrow here and moan in UT LISP K does the appropriate THROW
       $compStack:= [[x,m,e,$exitModeStack],:$compStack]
-      $s:=
+      $s: local :=
         compactify $compStack where
           compactify al ==
             null al => nil
             LASSOC(first first al,rest al) => compactify rest al
             [first al,:compactify rest al]
-      $level:= #$s
+      $level: local := #$s
       errorMessage:=
-        if $compErrorMessageStack
-           then first $compErrorMessageStack
-           else "unspecified error"
+        $compErrorMessageStack ^= nil => first $compErrorMessageStack
+        "unspecified error"
       $scanIfTrue =>
         stackSemanticError(errorMessage,mkErrorExpr $level)
         ["failedCompilation",m,e]
@@ -143,19 +139,12 @@ compOrCroak1(x,m,e,compFn) ==
       displayComp $level
       userError errorMessage
 
-tc() ==
-  comp($x,$m,$f)
-
 ++ The form `x' is intended to be evaluated by the compiler, e.g. in
 ++ toplevel conditional definition or as sub-domain predicate.  
 ++ Normalize operators and compile the form.
 compCompilerPredicate(x,e) ==
-  savedNormalizeTree := $normalizeTree
-  $normalizeTree := true
-  t := compOrCroak(parseTran x, $Boolean, e)
-  $normalizeTree := savedNormalizeTree
-  t
-
+  $normalizeTree: local := true
+  compOrCroak(parseTran x, $Boolean, e)
 
 comp(x,m,e) ==
   T:= compNoStacking(x,m,e) => ($compStack:= nil; T)
@@ -170,7 +159,7 @@ compNoStacking(x,m,e) ==
     --$Representation is bound in compDefineFunctor, set by doIt
     --this hack says that when something is undeclared, $ is
     --preferred to the underlying representation -- RDJ 9/12/83
-    --Now that `per' and `rep' are built in, we do the above
+    --Now that `per' and `rep' are built in, we use the above
     --hack only when `Rep' is defined the old way. -- gdr 2008/01/26
   compNoStacking1(x,m,e,$compStack)
 
@@ -205,7 +194,6 @@ comp3(x,m,$e) ==
   ^x or atom x => compAtom(x,m,e)
   op:= first x
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
-  op is ["KAPPA",sig,varlist,body] => compApply(sig,varlist,body,rest x,m,e)
   op=":" => compColon(x,m,e)
   op="::" => compCoerce(x,m,e)
   not ($insideCompTypeOf=true) and stringPrefix?('"TypeOf",PNAME op) =>
@@ -238,9 +226,9 @@ applyMapping([op,:argl],m,e,ml) ==
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
   if argl'="failed" then return nil
   form:=
-    not member(op,$formalArgList) and ATOM op and not get(op,'value,e) =>
+    atom op and not(op in $formalArgList) and not get(op,"value",e) =>
       nprefix := $prefix or
-   -- following needed for referencing local funs at capsule level
+      -- following needed for referencing local funs at capsule level
         getAbbreviation($op,#rest $form)
       [op',:argl',"$"] where
         op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
@@ -264,14 +252,14 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   if STRINGP x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration([":",v,m],$EmptyMode,e)
-  not null vl and not hasFormalMapVariable(x, vl) => return
+  (vl ^= nil) and not hasFormalMapVariable(x, vl) => return
     [u,.,.] := comp([x,:vl],m',e) or return nil
     extractCodeAndConstructTriple(u, m, oldE)
   null vl and (t := comp([x], m', e)) => return
     [u,.,.] := t
     extractCodeAndConstructTriple(u, m, oldE)
   [u,.,.]:= comp(x,m',e) or return nil
-  uu:=optimizeFunctionDef [nil,['LAMBDA,vl,u]]
+  uu:=optimizeFunctionDef [nil,["LAMBDA",vl,u]]
   --  At this point, we have a function that we would like to pass.
   --  Unfortunately, it makes various free variable references outside
   --  itself.  So we build a mini-vector that contains them all, and
@@ -285,42 +273,42 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
         not IDENTP u => free
         MEMQ(u,bound) => free
         v:=ASSQ(u,free) =>
-          RPLACD(v,1+CDR v)
+          RPLACD(v,1 + rest v)
           free
         null getmode(u,e) => free
         [[u,:1],:free]
-      op:=CAR u
-      MEMQ(op, '(QUOTE GO function)) => free
-      EQ(op,'LAMBDA) =>
-        bound:=UNIONQ(bound,CADR u)
+      op := first u
+      op in '(QUOTE GO function) => free
+      op = "LAMBDA" =>
+        bound := UNIONQ(bound, second u)
         for v in CDDR u repeat
           free:=FreeList(v,bound,free,e)
         free
-      EQ(op,'PROG) =>
-        bound:=UNIONQ(bound,CADR u)
-        for v in CDDR u | NOT ATOM v repeat
+      op = "PROG" =>
+        bound := UNIONQ(bound, second u)
+        for v in CDDR u | not atom v repeat
           free:=FreeList(v,bound,free,e)
         free
-      EQ(op,'SEQ) =>
-        for v in CDR u | NOT ATOM v repeat
+      op = "SEQ" =>
+        for v in rest u | not atom v repeat
           free:=FreeList(v,bound,free,e)
         free
-      EQ(op,'COND) =>
-        for v in CDR u repeat
+      op = "COND" =>
+        for v in rest u repeat
           for vv in v repeat
             free:=FreeList(vv,bound,free,e)
         free
-      if ATOM op then u:=CDR u  --Atomic functions aren't descended
+      if atom op then u := rest u  --Atomic functions aren't descended
       for v in u repeat
         free:=FreeList(v,bound,free,e)
       free
   expandedFunction :=
             --One free can go by itself, more than one needs a vector
          --An A-list name . number of times used
-    #frees = 0 => ['LAMBDA,[:vl,"$$"], :CDDR expandedFunction]
+    #frees = 0 => ["LAMBDA",[:vl,"$$"], :CDDR expandedFunction]
     #frees = 1 =>
       vec:=first first frees
-      ['LAMBDA,[:vl,vec], :CDDR expandedFunction]
+      ["LAMBDA",[:vl,vec], :CDDR expandedFunction]
     scode:=nil
     vec:=nil
     slist:=nil
@@ -338,16 +326,16 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
       slist => SUBLISNQ(slist,CDDR expandedFunction)
       CDDR expandedFunction
     if locals then
-      if body is [['DECLARE,:.],:.] then
-        body:=[CAR body,['PROG,locals,:scode,['RETURN,['PROGN,:CDR body]]]]
-      else body:=[['PROG,locals,:scode,['RETURN,['PROGN,:body]]]]
-    vec:=['VECTOR,:NREVERSE vec]
-    ['LAMBDA,[:vl,"$$"],:body]
-  fname:=['CLOSEDFN,expandedFunction]
-         --Like QUOTE, but gets compiled
+      if body is [["DECLARE",:.],:.] then
+        body := [first body,["PROG",locals,:scode,
+                               ["RETURN",["PROGN",:rest body]]]]
+      else body:=[["PROG",locals,:scode,["RETURN",["PROGN",:body]]]]
+    vec:=["VECTOR",:nreverse vec]
+    ["LAMBDA",[:vl,"$$"],:body]
+  fname:=["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
   uu:=
-    frees => ['CONS,fname,vec]
-    ['LIST,fname]
+    frees => ["CONS",fname,vec]
+    ["LIST",fname]
   [uu,m,oldE]
 
 extractCodeAndConstructTriple(u, m, oldE) ==
@@ -360,7 +348,7 @@ extractCodeAndConstructTriple(u, m, oldE) ==
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
   -- special forms have dedicated compilers.
-  (op := first x) and SYMBOLP op and (fn := GET(op,"SPECIAL")) =>
+  (op := first x) and IDENTP op and (fn := GET(op,"SPECIAL")) =>
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
@@ -489,10 +477,8 @@ outputComp(x,e) ==
   [x,$OutputForm,e]
 
 compForm1(form is [op,:argl],m,e) ==
-  $NumberOfArgsIfInteger: local:= #argl --see compElt
   op in $coreDiagnosticFunctions =>
-    [[op,:[([.,.,e]:=outputComp(x,e)).expr
-      for x in argl]],m,e]
+    [[op,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],m,e]
   op is ["elt",domain,op'] =>
     domain="Lisp" =>
       --op'='QUOTE and null rest argl => [first argl,m,e]
@@ -527,18 +513,21 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
   modemapList:= SUBLIS(aList,modemapList)
   deleteList:=[]
   newList := []
-  -- now delete any modemaps that are subsumed by something else, provided the conditions
-  -- are right (i.e. subsumer true whenever subsumee true)
+  -- now delete any modemaps that are subsumed by something else, 
+  -- provided the conditions are right (i.e. subsumer true 
+  -- whenever subsumee true)
   for u in modemapList repeat
     if u is [[dc,:.],[cond,["Subsumed",.,nsig]]] and
        (v:=assoc([dc,:nsig],modemapList)) and v is [.,[ncond,:.]] then
            deleteList:=[u,:deleteList]
            if not PredImplies(ncond,cond) then
              newList := [[CAR u,[cond,['ELT,dc,nil]]],:newList]
-  if deleteList then modemapList:=[u for u in modemapList | not MEMQ(u,deleteList)]
+  if deleteList then 
+    modemapList := [u for u in modemapList | not MEMQ(u,deleteList)]
   -- We can use MEMQ since deleteList was built out of members of modemapList
   -- its important that subsumed ops (newList) be considered last
-  if newList then modemapList := append(modemapList,newList)
+  if newList then 
+    modemapList := append(modemapList,newList)
 
   -- The calling convention vector is used to determine when it is
   -- appropriate to infer type by compiling the argument vs. just
@@ -611,10 +600,10 @@ compFormWithModemap(form,m,e,modemap) ==
         form':= [f,:[t.expr for t in Tl]]
         m'=$Category or isCategoryForm(m',e) => form'
         -- try to deal with new-style Unions where we know the conditions
-        op = "elt" and f is ['XLAM,:.] and IDENTP(z:=CAR argl) and
+        op = "elt" and f is ['XLAM,:.] and IDENTP(z := first argl) and
           (c:=get(z,'condition,e)) and
             c is [["case",=z,c1]] and
-              (c1 is [":",=(CADR argl),=m] or EQ(c1,CADR argl) ) =>
+              (c1 is [":",=(second argl),=m] or EQ(c1,second argl) ) =>
 -- first is a full tag, as placed by getInverseEnvironment
 -- second is what getSuccessEnvironment will place there
                 ["CDR",z]
@@ -712,17 +701,6 @@ seteltModemapFilter(name,mmList,e) ==
     nil
   mmList
 
-
-compApply(sig,varl,body,argl,m,e) ==
-  argTl:= [[.,.,e]:= comp(x,$EmptyMode,e) for x in argl]
-  contour:=
-    [Pair(x,[["mode",m'],["value",removeEnv comp(a,m',e)]])
-      for x in varl for m' in sig.source for a in argl]
-  code:= [["LAMBDA",varl,body'],:[T.expr for T in argTl]]
-  m':= resolve(m,sig.target)
-  body':= (comp(body,m',addContour(contour,e))).expr
-  [code,m',e]
-
 compToApply(op,argl,m,e) ==
   T:= compNoStacking(op,$EmptyMode,e) or return nil
   m1:= T.mode
@@ -807,7 +785,7 @@ compCons1(["CONS",x,y],m,e) ==
     my is ["List",m',:.] =>
       mr:= ["List",resolve(m',mx) or return nil]
       yt':= convert(yt,mr) or return nil
-      [x,.,e]:= convert([x,mx,yt'.env],CADR mr) or return nil
+      [x,.,e]:= convert([x,mx,yt'.env],second mr) or return nil
       yt'.expr is ["LIST",:.] => [["LIST",x,:rest yt'.expr],mr,e]
       [["CONS",x,yt'.expr],mr,e]
     [["CONS",x,y],["Pair",mx,my],e]
@@ -818,7 +796,8 @@ compCons1(["CONS",x,y],m,e) ==
 compSetq: (%List,%Thing,%List) -> %List
 compSetq1: (%Form,%Thing,%Mode,%List) -> %List
 
-compSetq(["%LET",form,val],m,E) == compSetq1(form,val,m,E)
+compSetq(["%LET",form,val],m,E) == 
+  compSetq1(form,val,m,E)
 
 compSetq1(form,val,m,E) ==
   IDENTP form => setqSingle(form,val,m,E)
@@ -843,10 +822,10 @@ setqSingle(id,val,m,E) ==
     --used for comping domain forms within functions
   currentProplist:= getProplist(id,E)
   m'':=
-    get(id,'mode,E) or getmode(id,E) or
+    get(id,"mode",E) or getmode(id,E) or
        (if m=$NoValueMode then $EmptyMode else m)
 -- m'':= LASSOC("mode",currentProplist) or $EmptyMode
-       --for above line to work, line 3 of compNoStackingis required
+       --for above line to work, line 3 of compNoStacking is required
   T:=
     eval or return nil where
       eval() ==
@@ -859,11 +838,14 @@ setqSingle(id,val,m,E) ==
   if $profileCompiler = true then
     null IDENTP id => nil
     key :=
-      MEMQ(id,rest $form) => 'arguments
-      'locals
+      id in rest $form => "arguments"
+      "locals"
     profileRecord(key,id,T.mode)
-  newProplist:= consProplistOf(id,currentProplist,"value",removeEnv [val,:rest T])
-  e':= (PAIRP id => e'; addBinding(id,newProplist,e'))
+  newProplist := 
+    consProplistOf(id,currentProplist,"value",removeEnv [val,:rest T])
+  e':= 
+    CONSP id => e'
+    addBinding(id,newProplist,e')
   if isDomainForm(val,e') then
     if isDomainInScope(id,e') then
       stackWarning("domain valued variable %1b has been reassigned within its scope",[id])
@@ -871,9 +853,9 @@ setqSingle(id,val,m,E) ==
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
 --+
-  if (k:=NRTassocIndex(id))
-     then form:=['SETELT,"$",k,x]
-     else form:=
+  if k := NRTassocIndex(id) then 
+    form := ['SETELT,"$",k,x]
+  else form:=
          $QuickLet => ["%LET",id,x]
          ["%LET",id,x,
             (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
@@ -897,7 +879,8 @@ setqMultiple(nameList,val,m,e) ==
   [x,m',e]:= convert(T,m) or return nil
   1.1 --exit if result is a list
   m1 is ["List",D] =>
-    for y in nameList repeat e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
+    for y in nameList repeat 
+      e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
     convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
   2 --verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
@@ -969,24 +952,24 @@ compWhere([.,form,:exprList],m,eInit) ==
 compConstruct: (%Form,%Mode,%Env) -> %Maybe %Triple
 compConstruct(form is ["construct",:l],m,e) ==
   y:= modeIsAggregateOf("List",m,e) =>
-    T:= compList(l,["List",CADR y],e) => convert(T,m)
+    T:= compList(l,["List",second y],e) => convert(T,m)
     compForm(form,m,e)
   y:= modeIsAggregateOf("Vector",m,e) =>
-    T:= compVector(l,["Vector",CADR y],e) => convert(T,m)
+    T:= compVector(l,["Vector",second y],e) => convert(T,m)
     compForm(form,m,e)
   T:= compForm(form,m,e) => T
   for D in getDomainsInScope e repeat
     (y:=modeIsAggregateOf("List",D,e)) and
-      (T:= compList(l,["List",CADR y],e)) and (T':= convert(T,m)) =>
+      (T:= compList(l,["List",second y],e)) and (T':= convert(T,m)) =>
          return T'
     (y:=modeIsAggregateOf("Vector",D,e)) and
-      (T:= compVector(l,["Vector",CADR y],e)) and (T':= convert(T,m)) =>
+      (T:= compVector(l,["Vector",second y],e)) and (T':= convert(T,m)) =>
          return T'
 
 ++ Compile a literal (quoted) symbol.
 compQuote: (%Form,%Mode,%Env) -> %Maybe %Triple
 compQuote(expr,m,e) == 
-  expr is ["QUOTE",x] and SYMBOLP x => convert([expr,$Symbol,e],m)
+  expr is ["QUOTE",x] and IDENTP x => convert([expr,$Symbol,e],m)
   stackAndThrow('"%1b is not a literal symbol.",[x])
 
 compList: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1029,18 +1012,15 @@ compSeq: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSeq1: (%Form,%List,%Env) -> %Maybe %Triple
 compSeqItem: (%Thing,%Thing,%List) -> %List
 
-compSeq(["SEQ",:l],m,e) == compSeq1(l,[m,:$exitModeStack],e)
+compSeq(["SEQ",:l],m,e) == 
+  compSeq1(l,[m,:$exitModeStack],e)
 
 compSeq1(l,$exitModeStack,e) ==
   $insideExpressionIfTrue: local
-  $finalEnv: local
-           --used in replaceExitEtc.
+  $finalEnv: local := nil   --used in replaceExitEtc.
   c:=
     [([.,.,e]:=
-
-
       --this used to be compOrCroak-- but changed so we can back out
-
         ($insideExpressionIfTrue:= NIL; compSeqItem(x,$NoValueMode,e) or return
           "failed")).expr for x in l]
   if c="failed" then return nil
@@ -1048,7 +1028,8 @@ compSeq1(l,$exitModeStack,e) ==
   form:= ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",$exitModeStack.(0))]
   [["CATCH",catchTag,form],$exitModeStack.(0),$finalEnv]
 
-compSeqItem(x,m,e) == comp(macroExpand(x,e),m,e)
+compSeqItem(x,m,e) == 
+  comp(macroExpand(x,e),m,e)
 
 replaceExitEtc(x,tag,opFlag,opMode) ==
   (fn(x,tag,opFlag,opMode); x) where
@@ -1115,7 +1096,8 @@ compReturn(["return",level,x],m,e) ==
     nil
   level^=1 => userError '"multi-level returns not supported"
   index:= MAX(0,#$exitModeStack-1)
-  if index>=0 then $returnMode:= resolve($exitModeStack.index,$returnMode)
+  if index >= 0 then 
+    $returnMode:= resolve($exitModeStack.index,$returnMode)
   [x',m',e']:= u:= comp(x,$returnMode,e) or return nil
   if index>=0 then
     $returnMode:= resolve(m',$returnMode)

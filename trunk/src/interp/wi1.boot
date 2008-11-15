@@ -163,8 +163,6 @@ compTopLevel(x,m,e) ==
   $NRTderivedTargetIfTrue: local := false
   $killOptimizeIfTrue: local:= false
   $forceAdd: local:= false
-  $compTimeSum: local := 0
-  $resolveTimeSum: local := 0
   $packagesUsed: local := []
   -- The next line allows the new compiler to be tested interactively.
   compFun := 'compOrCroak
@@ -389,7 +387,6 @@ compForm(form,m,e) ==
 
 compForm1(form,m,e) ==
   [op,:argl] := form
-  $NumberOfArgsIfInteger: local:= #argl --see compElt
   op="error" =>
     [[op,:[([.,.,e]:=outputComp(x,e)).expr
       for x in argl]],m,e]
@@ -957,7 +954,6 @@ comp3(x,m,$e) ==
   ^x or atom x => compAtom(x,m,e)
   op:= first x
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
-  op is ["KAPPA",sig,varlist,body] => compApply(sig,varlist,body,rest x,m,e)
   op=":" => compColon(x,m,e)
   op="::" => compCoerce(x,m,e)
   not ($insideCompTypeOf=true) and stringPrefix?('"TypeOf",PNAME op) =>

@@ -129,14 +129,13 @@ processInteractive(form, posnForm) ==
 
   $op: local:= (form is [op,:.] => op; form) --name of operator
   $Coerce: local := NIL
-  $compErrorMessageStack:local
+  $compErrorMessageStack: local := nil
   $freeVars : local := NIL
   $mapList:local := NIL            --list of maps being type analyzed
   $compilingMap:local:= NIL        --true when compiling a map
   $compilingLoop:local:= NIL       --true when compiling a loop body
   $interpOnly: local := NIL        --true when in interpret only mode
   $whereCacheList: local := NIL    --maps compiled because of where
-  $timeGlobalName: local := '$compTimeSum  --see incrementTimeSum
   $StreamFrame: local := nil       --used in printing streams
   $declaredMode: local := NIL      --Weak type propagation for symbols
   $localVars:local := NIL          --list of local variables in function

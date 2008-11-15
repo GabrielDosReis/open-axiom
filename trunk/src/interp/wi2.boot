@@ -1145,7 +1145,7 @@ doItLet1 item ==
         $packagesUsed:= insert([opOf rhs'],$packagesUsed)
         $globalImportDefAlist := pp [[lhs, :rhs'],:$globalImportDefAlist]
       if lhs="Rep" then
-        $Representation:= (get("Rep",'value,$e)).(0)
+        $Representation:= (get("Rep",'value,$e)).expr
            --$Representation bound by compDefineFunctor, used in compNoStacking
 --+
         if $NRTopt = true

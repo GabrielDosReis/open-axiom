@@ -1488,7 +1488,7 @@ doIt(item,$predl) ==
         $functorsUsed:= insert(opOf rhs',$functorsUsed)
         $packagesUsed:= insert([opOf rhs'],$packagesUsed)
       if lhs="Rep" then
-        $Representation:= (get("Rep",'value,$e)).(0)
+        $Representation:= (get("Rep",'value,$e)).expr
            --$Representation bound by compDefineFunctor, used in compNoStacking
         if $NRTopt = true
           then NRTgetLocalIndex $Representation

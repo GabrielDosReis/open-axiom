@@ -61,6 +61,9 @@ $NRTdeltaLength := 0
 ++
 $NRTaddForm := nil
 
+++
+$NRTderivedTargetIfTrue := false
+$killOptimizeIfTrue := false
 
 -----------------------------NEW buildFunctor CODE-----------------------------
 NRTaddDeltaCode() ==
