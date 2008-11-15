@@ -1858,10 +1858,11 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 @ 
 
 <<genericNRLIBfiles>>=
-
+.PREVIOUS: %.spad
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
 	${INTERPSYS} --strap=strap --system-algebra --optimize=2 --compile $<
+
 @
 
 <<genericBOOTSTRAPfiles>>=
@@ -1869,6 +1870,7 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 # immediately available for AXIOMsys consumption.
 strap/%.$(FASLEXT): $(srcdir)/strap/%.lsp
 	$(COMPILE_LISP)
+
 @
 
 <<genericSPADfiles>>=

@@ -1,5 +1,9 @@
 2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/Makefile.pamphlet: Individual .spad files are .PRECIOUS.
+
+2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/category.boot: Define global vars.
 	* interp/compiler.boot: Likewise.
 	* interp/define.boot: Likewise.
