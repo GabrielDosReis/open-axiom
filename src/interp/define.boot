@@ -62,6 +62,47 @@ $doNotCompileJustPrint := false
 ++ stack of pending capsule function definitions.
 $capsuleFunctionStack := []
 
+$functionStats := nil
+$functorStats := nil
+
+$lisplibCategory := nil
+$lisplibAncestors := nil
+$lisplibAbbreviation := nil
+$LocalDomainAlist := []
+$CheckVectorList := []
+$functorsUsed := []
+$setelt := nil
+$pairlis := []
+$functorTarget := nil
+$condAlist := []
+$uncondAlist := []
+$NRTslot1PredicateList := []
+$NRTattributeAlist := []
+$NRTslot1Info := nil
+$NRTdeltaListComp := []
+$NRTdomainFormList := []
+$template := nil
+$signature := nil
+$isOpPackageName := false
+$lisplibCategoriesExtended := []
+$lookupFunction := nil
+$byteAddress := nil
+$byteVec := nil
+$lisplibSlot1 := nil
+$sigAlist := []
+$predAlist := []
+$argumentConditionList := []
+$finalEnv := nil
+$initCapsuleErrorCount := nil
+$CapsuleModemapFrame := nil
+$CapsuleDomainsInScope := nil
+$signatureOfForm := nil
+$addFormLhs := nil
+$lisplibSuperDomain := nil
+$sigList := []
+$atList := []
+
+
 --%
 
 ++ List of operations defined in a given capsule
@@ -111,10 +152,13 @@ makePredicate l ==
 
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
 
+++ List of packages used by the current domain.
+$packagesUsed := []
+
 compDefine: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compDefine(form,m,e) ==
   $macroIfTrue: local := false
-  $packagesUsed: local := false
+  $packagesUsed: local := []
   compDefine1(form,m,e)
 
 ++ We are about to process the body of a capsule.  If the capsule defines
@@ -298,10 +342,13 @@ compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
         makeCategoryPredicates(form,$lisplibCategory)
     compDefine1(mkCategoryPackage(form,cat,categoryCapsule),$EmptyMode,e)
   [d,m,e]
+
+$tvl := []
+$mvl := []
  
 makeCategoryPredicates(form,u) ==
-      $tvl := TAKE(#rest form,$TriangleVariableList)
-      $mvl := TAKE(#rest form,rest $FormalMapVariableList)
+      $tvl: local := TAKE(#rest form,$TriangleVariableList)
+      $mvl: local := TAKE(#rest form,rest $FormalMapVariableList)
       fn(u,nil) where
         fn(u,pl) ==
           u is ['Join,:.,a] => fn(a,pl)
@@ -376,7 +423,6 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 --Begin lines for category default definitions
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
-    $frontier: local := 0
     $getDomainCode: local := nil
     $addForm: local:= nil
     for x in sargl for t in rest signature' repeat
@@ -489,7 +535,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $Representation: local := nil
          --Set in doIt, accessed in the compiler - compNoStacking
     $LocalDomainAlist: local := []  --set in doIt, accessed in genDeltaEntry
-    $LocalDomainAlist:= nil
     $functorForm: local := nil
     $functorLocalParameters: local := nil
     SETQ($myFunctorBody, body)
@@ -520,10 +565,8 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     $domainShell:= COPY_-SEQ ds
 --+ copy needed since slot1 is reset; compMake.. can return a cached vector
-    $attributesName:local := INTERN STRCONC(PNAME $op,'";attributes")
     attributeList := disallowNilAttribute ds.2 --see below under "loadTimeAlist"
 --+ 7 lines for $NRT follow
-    $goGetList: local := nil
 -->--these globals used by NRTmakeCategoryAlist, set by NRTsetVector4Part1
     $condAlist: local := nil
     $uncondAlist: local := nil
@@ -537,9 +580,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $NRTaddForm: local := nil   -- see compAdd
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
-    $NRTaddList: local := nil --list of fncts not defined in capsule (added)
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
-    $NRTloadTimeAlist: local := nil --used for things in slot4 (NRTsetVector4)
     $NRTdomainFormList: local := nil -- of form ((gensym . (Repe...)) ...
     -- the above optimizes the calls to local domains
     $template: local:= nil --stored in the lisplib (if $NRTvec = true)
@@ -637,7 +678,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
           ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
       $lisplibSlot1 := $NRTslot1Info
       $lisplibOperationAlist:= operationAlist
-      $lisplibMissingFunctions:= $CheckVectorList
     lisplibWrite('"compilerInfo",
        removeZeroOne ['SETQ,'$CategoryFrame,
         ['put,['QUOTE,op'],'
@@ -711,7 +751,6 @@ displayMissingFunctions() ==
 --% domain view code
  
 makeFunctorArgumentParameters(argl,sigl,target) ==
-  $alternateViewList: local:= nil
   $forceAdd: local:= true
   $ConditionalOperators: local := nil
   ("append"/[fn(a,augmentSig(s,findExtras(a,target)))
@@ -765,7 +804,6 @@ genDomainView(viewName,originalName,c,viewSelector) ==
     c is ['SubsetCategory,c',.] => c'
     c
   $e:= augModemapsFromCategory(originalName,viewName,nil,c,$e)
-  --$alternateViewList:= ((viewName,:code),:$alternateViewList)
   cd:= ["%LET",viewName,[viewSelector,originalName,mkDomainConstructor code]]
   if null member(cd,$getDomainCode) then
           $getDomainCode:= [cd,:$getDomainCode]
@@ -1098,6 +1136,8 @@ compArgumentConditions e ==
         T := [.,.,e]:= compOrCroak(y,$Boolean,e)
         [n,x,T.expr]
   e
+
+$body := nil
  
 addArgumentConditions($body,$functionName) ==
   $argumentConditionList =>
@@ -1123,7 +1163,6 @@ canCacheLocalDomain(dom,elt)==
    domargsglobal(dom) =>
         $functorLocalParameters:= [:$functorLocalParameters,dom]
         PUSH([dom,GENVAR(),[elt,$selector,$funcLocLen]],$usedDomList)
-        $selcount:= $selcount+1
         $funcLocLen:= $funcLocLen+1
    nil
   where
@@ -1165,6 +1204,9 @@ compileCases(x,$e) == -- $e is referenced in compile
 getSpecialCaseAssoc() ==
   [[R,:l] for R in rest $functorForm
     for l in rest $functorSpecialCases | l]
+
+
+$savableItems := nil
  
 compile u ==
   [op,lamExpr] := u
@@ -1588,7 +1630,6 @@ compCategory(x,m,e) ==
     domainOrPackage,:l] =>
       $sigList: local := nil
       $atList: local := nil
-      $sigList:= $atList:= nil
       for x in l repeat compCategoryItem(x,nil,e)
       rep:= mkExplicitCategoryFunction(domainOrPackage,$sigList,$atList)
     --if inside compDefineCategory, provide for category argument substitution

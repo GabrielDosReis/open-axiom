@@ -1004,6 +1004,10 @@ compVector(l,m is ["Vector",mUnder],e) ==
   [["VECTOR",:[T.expr for T in Tl]],m,e]
 
 --% MACROS
+
+++ True if we are compiling a macro definition.
+$macroIfTrue := false
+
 compMacro(form,m,e) ==
   $macroIfTrue: local:= true
   ["MDEF",lhs,signature,specialCases,rhs]:= form

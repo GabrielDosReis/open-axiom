@@ -107,10 +107,8 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
       pp target
       return nil
     $domainShell:= COPY_-SEQ ds
-    $attributesName:local := INTERN STRCONC(PNAME $op,'";attributes")
     attributeList := ds.2 --see below under "loadTimeAlist"
 --+ 7 lines for $NRT follow
-    $goGetList: local := nil
 -->--these globals used by NRTmakeCategoryAlist, set by NRTsetVector4Part1
     $condAlist: local := nil
     $uncondAlist: local := nil
@@ -124,9 +122,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $NRTaddForm: local := nil   -- see compAdd
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
-    $NRTaddList: local := nil --list of fncts not defined in capsule (added)
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
-    $NRTloadTimeAlist: local := nil --used for things in slot4 (NRTsetVector4)
     $NRTdomainFormList: local := nil -- of form ((gensym . (Repe...)) ...
     -- the above optimizes the calls to local domains
     $template: local:= nil --stored in the lisplib (if $NRTvec = true)
@@ -223,7 +219,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
           ['MAKEPROP,MKQ $op,''infovec,getInfovecCode()])
       $lisplibSlot1 := $NRTslot1Info --NIL or set by $NRTmakeSlot1
       $lisplibOperationAlist:= operationAlist
-      $lisplibMissingFunctions:= $CheckVectorList
     lisplibWrite('"compilerInfo",
        ['SETQ,'$CategoryFrame,
         ['put,['QUOTE,op'],'
@@ -238,7 +233,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     [fun,['Mapping,:signature'],originale]
 
 makeFunctorArgumentParameters(argl,sigl,target) ==
-  $alternateViewList: local:= nil
   $forceAdd: local:= true
   $ConditionalOperators: local
   target := markKillAll target

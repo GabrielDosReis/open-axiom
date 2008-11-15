@@ -41,6 +41,8 @@ namespace BOOT
 ++ List of global attributes.
 $Attributes := []
 
+$NewCatVec := nil
+
 --%
 
 ++ Returns true if `a' is a category (runtime) object.
