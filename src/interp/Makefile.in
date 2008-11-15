@@ -171,7 +171,7 @@ all-axiomsys: all-interpsys
 
 mostlyclean-local:
 	@rm -f *.fn *.data *.$(FASLEXT) *.lib *.$(OBJEXT)
-	rm -f makeint.lisp
+	@rm -f $(SAVESYS) makeint.lisp
 
 clean-local: mostlyclean-local
 	@rm -f *.clisp *.lsp
@@ -303,14 +303,16 @@ setvart.$(FASLEXT): macros.$(FASLEXT)
 ## OpenAxiom's compiler
 wi2.$(FASLEXT): macros.$(FASLEXT) define.$(FASLEXT)
 wi1.$(FASLEXT): macros.$(FASLEXT)
-compiler.$(FASLEXT): c-util.$(FASLEXT) modemap.$(FASLEXT) \
+compiler.$(FASLEXT): msgdb.$(FASLEXT) modemap.$(FASLEXT) \
 		pathname.$(FASLEXT) define.$(FASLEXT) iterator.$(FASLEXT)
 nrunopt.$(FASLEXT): c-util.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
-nruncomp.$(FASLEXT): c-util.$(FASLEXT)
+nruncomp.$(FASLEXT): c-util.$(FASLEXT) profile.$(FASLEXT) simpbool.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT)
 iterator.$(FASLEXT): g-util.$(FASLEXT)
-define.$(FASLEXT): cattable.$(FASLEXT) category.$(FASLEXT) c-util.$(FASLEXT)
+define.$(FASLEXT): g-error.$(FASLEXT) cattable.$(FASLEXT) \
+	functor.$(FASLEXT) lisplib.$(FASLEXT) package.$(FASLEXT) \
+	nruncomp.$(FASLEXT)
 package.$(FASLEXT): clam.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)

@@ -364,6 +364,9 @@
     `(let ((,gi ,fn)) 
        (the (values t) (funcall (car ,gi) ,@args (cdr ,gi))))))
 
+(defmacro |eval| (form)
+  `(EVAL ,form))
+
 ;; 
 ;; -*- Arithmetics -*-
 ;; 

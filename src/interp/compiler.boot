@@ -32,12 +32,13 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import c_-util
+import msgdb
 import pathname
 import modemap
 import define
 import iterator
 namespace BOOT
+
 module compiler where
   compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
   coerce: (%Triple,%Mode) -> %Maybe %Triple
@@ -1640,161 +1641,6 @@ modeEqualSubst(m1,m,e) ==
 -- in the DEFAULTS package
         and/[modeEqualSubst(xm1,xm2,e) for xm1 in l1 for xm2 in l2]
   nil
-
---% Things to support )compile
-
-compileSpad2Cmd args ==
-    -- This is the old compiler
-    -- Assume we entered from the "compiler" function, so args ^= nil
-    -- and is a file with file extension .spad.
-
-    path := pathname args
-    pathnameType path ^= '"spad" => throwKeyedMsg("S2IZ0082", nil)
-    ^PROBE_-FILE path => throwKeyedMsg("S2IL0003",[namestring args])
-
-    SETQ(_/EDITFILE, path)
-    updateSourceFiles path
-    sayKeyedMsg("S2IZ0038",[namestring args])
-
-    optList :=  '( _
-      break _
-      constructor _
-      functions _
-      library _
-      lisp _
-      new _
-      old _
-      nobreak _
-      nolibrary _
-      noquiet _
-      vartrace _
-      quiet _
-      translate _
-      optimize
-        )
-
-    translateOldToNew        := nil
-
-    $scanIfTrue              : local := false
-    $compileOnlyCertainItems : local := nil
-    $f                       : local := nil  -- compiler
-    $m                       : local := nil  --   variables
-
-    -- following are for )quick option for code generation
-    $QuickLet   : local := true
-
-    fun         := ['rq, 'lib]
-    constructor := nil
-    $sourceFileTypes : local := '("SPAD")
-
-    for opt in $options repeat
-        [optname,:optargs] := opt
-        fullopt := selectOptionLC(optname,optList,nil)
-
-        fullopt = 'new         => error "Internal error: compileSpad2Cmd got )new"
-        fullopt = 'old         => NIL     -- no opt
-        fullopt = 'translate   => translateOldToNew := true
-
-        fullopt = 'library     => fun.1 := 'lib
-        fullopt = 'nolibrary   => fun.1 := 'nolib
-
-        -- Ignore quiet/nonquiet if "constructor" is given.
-        fullopt = 'quiet       => if fun.0 ^= 'c then fun.0 := 'rq
-        fullopt = 'noquiet     => if fun.0 ^= 'c then fun.0 := 'rf
-        fullopt = 'nobreak     => $scanIfTrue := true
-        fullopt = 'break       => $scanIfTrue := nil
-        fullopt = 'vartrace      =>
-          $QuickLet  := false
-        fullopt = 'lisp        =>
-          throwKeyedMsg("S2IZ0036",['")lisp"])
-        fullopt = 'functions   =>
-            null optargs =>
-              throwKeyedMsg("S2IZ0037",['")functions"])
-            $compileOnlyCertainItems := optargs
-        fullopt = 'constructor =>
-            null optargs =>
-              throwKeyedMsg("S2IZ0037",['")constructor"])
-            fun.0       := 'c
-            constructor := [unabbrev o for o in optargs]
-        fullopt = "optimize" => setCompilerOptimizations first optargs
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
-
-    $InteractiveMode : local := nil
-    -- avoid transformations based on syntax only
-    $normalizeTree := false
-    if translateOldToNew then
-        spad2AsTranslatorAutoloadOnceTrigger()
-        sayKeyedMsg("S2IZ0085", nil)
-        convertSpadToAsFile path
-    else if $compileOnlyCertainItems then
-        null constructor => sayKeyedMsg("S2IZ0040",NIL)
-        compilerDoitWithScreenedLisplib(constructor, fun)
-    else
-        compilerDoit(constructor, fun)
-    if not $buildingSystemAlgebra then 
-      extendLocalLibdb $newConlist
-    terminateSystemCommand()
-    -- reset compiler optimization options
-    setCompilerOptimizations 0
-    spadPrompt()
-
-convertSpadToAsFile path ==
-    -- can assume path has type = .spad
-    $globalMacroStack : local := nil       -- for spad -> as translator
-    $abbreviationStack: local := nil       -- for spad -> as translator
-    $macrosAlreadyPrinted: local := nil    -- for spad -> as translator
-    SETQ($badStack, nil)                   --ditto  TEMP to check for bad code
-    $newPaths: local := true               --ditto  TEMP
-    $abbreviationsAlreadyPrinted: local := nil    -- for spad -> as translator
-    $convertingSpadFile : local := true
-    $options: local := '((nolib))      -- translator shouldn't create nrlibs
-    SETQ(HT,MAKE_-HASHTABLE 'UEQUAL)
-
-    newName := fnameMake(pathnameDirectory path, pathnameName path, '"as")
-    canDoIt := true
-    if not fnameWritable? newName then
-        sayKeyedMsg("S2IZ0086", [NAMESTRING newName])
-        newName := fnameMake('".", pathnameName path, '"as")
-        if not fnameWritable? newName then
-            sayKeyedMsg("S2IZ0087", [NAMESTRING newName])
-            canDoIt := false
-    not canDoIt => 'failure
-
-    sayKeyedMsg("S2IZ0088", [NAMESTRING newName])
-
-    $outStream :local := MAKE_-OUTSTREAM newName
-    markSay('"#include _"axiom.as_"")
-    markTerpri()
-    CATCH($SpadReaderTag,compiler [path])
-    SHUT $outStream
-    mkCheck()
-    'done
-
-compilerDoit(constructor, fun) ==
-    $byConstructors : local := []
-    $constructorsSeen : local := []
-    fun = ['rf, 'lib]   => _/RQ_,LIB()    -- Ignore "noquiet".
-    fun = ['rf, 'nolib] => _/RF()
-    fun = ['rq, 'lib]   => _/RQ_,LIB()
-    fun = ['rq, 'nolib] => _/RQ()
-    fun = ['c,  'lib]   =>
-      $byConstructors := [opOf x for x in constructor]
-      _/RQ_,LIB()
-      for ii in $byConstructors repeat
-        null member(ii,$constructorsSeen) =>
-          sayBrightly ['">>> Warning ",'%b,ii,'%d,'" was not found"]
-
-compilerDoitWithScreenedLisplib(constructor, fun) ==
-    EMBED('RWRITE,
-          '(LAMBDA (KEY VALUE STREAM)
-                   (COND ((AND (EQ STREAM $libFile)
-                               (NOT (MEMBER KEY $saveableItems)))
-                          VALUE)
-                         ((NOT NIL)
-                          (RWRITE KEY VALUE STREAM)))) )
-    UNWIND_-PROTECT(compilerDoit(constructor,fun),
-                   SEQ(UNEMBED 'RWRITE))
-
 
 --% Categories
 

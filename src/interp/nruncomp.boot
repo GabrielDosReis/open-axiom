@@ -34,6 +34,7 @@
 
 import c_-util
 import simpbool
+import profile
 namespace BOOT
 
 

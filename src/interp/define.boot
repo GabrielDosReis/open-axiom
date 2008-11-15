@@ -31,10 +31,13 @@
 -- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-import c_-util
+import nruncomp
+import g_-error
+import lisplib
 import cattable
-import category
+import functor
+import package
+
 namespace BOOT
 
 module define
