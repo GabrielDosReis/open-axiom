@@ -39,8 +39,9 @@
 --
 
 import sys_-constants
-import cfuns
+
 namespace BOOT
+
 module sys_-os
 
 loadSystemRuntimeCore()

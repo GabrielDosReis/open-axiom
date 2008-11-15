@@ -100,7 +100,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	sys-driver.$(FASLEXT)	sys-constants.$(FASLEXT) \
 	hash.$(FASLEXT) 	 			 \
 	sys-globals.$(FASLEXT)	vmlisp.$(FASLEXT)	 \
-	cfuns.$(FASLEXT)	sys-os.$(FASLEXT)	 \
+	                    	sys-os.$(FASLEXT)	 \
 	sys-utility.$(FASLEXT)  diagnostics.$(FASLEXT)	 \
 	union.$(FASLEXT)	sys-macros.$(FASLEXT)	 \
 	macros.$(FASLEXT)	metalex.$(FASLEXT)	 \
@@ -110,7 +110,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	ht-util.$(FASLEXT)	bc-util.$(FASLEXT)	\
 	br-search.$(FASLEXT)	\
 	alql.$(FASLEXT)	buildom.$(FASLEXT)	\
-	g-util.$(FASLEXT)	\
+	g-util.$(FASLEXT)	hashcode.$(FASLEXT) \
 	simpbool.$(FASLEXT)	g-timer.$(FASLEXT)	\
 	cattable.$(FASLEXT)	posit.$(FASLEXT)	\
 	cformat.$(FASLEXT)		\
@@ -258,7 +258,7 @@ autoload_objects += $(TRANOBJS)
 The {\bf ASCOMP} list contains files used by the {\bf Aldor}
 \cite{5} compiler. These files should probably be autoloaded.
 <<environment>>=
-ASCOMP= hashcode.$(FASLEXT) as.$(FASLEXT) axext_l.$(FASLEXT)
+ASCOMP= as.$(FASLEXT) axext_l.$(FASLEXT)
 
 @
 
@@ -556,8 +556,8 @@ compiler.$(FASLEXT): msgdb.$(FASLEXT) modemap.$(FASLEXT) \
 		pathname.$(FASLEXT) define.$(FASLEXT) iterator.$(FASLEXT)
 nrunopt.$(FASLEXT): c-util.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
-nruncomp.$(FASLEXT): c-util.$(FASLEXT) profile.$(FASLEXT) simpbool.$(FASLEXT)
-nrungo.$(FASLEXT): c-util.$(FASLEXT)
+nruncomp.$(FASLEXT): nrunopt.$(FASLEXT) profile.$(FASLEXT) simpbool.$(FASLEXT)
+nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
 iterator.$(FASLEXT): g-util.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) cattable.$(FASLEXT) \
 	functor.$(FASLEXT) lisplib.$(FASLEXT) package.$(FASLEXT) \
@@ -572,7 +572,7 @@ compat.$(FASLEXT): pathname.$(FASLEXT)
 simpbool.$(FASLEXT): macros.$(FASLEXT)
 newfort.$(FASLEXT): macros.$(FASLEXT)
 lisplib.$(FASLEXT): nlib.$(FASLEXT) c-util.$(FASLEXT) debug.$(FASLEXT)
-interop.$(FASLEXT): interop.boot c-util.$(FASLEXT)
+interop.$(FASLEXT): interop.boot c-util.$(FASLEXT) hashcode.$(FASLEXT)
 c-doc.$(FASLEXT): c-util.$(FASLEXT)
 
 ## Interface with the Aldor compiler.
@@ -636,7 +636,6 @@ bits.$(FASLEXT): boot-pkg.$(FASLEXT)
 dq.$(FASLEXT): types.$(FASLEXT)
 
 ## General support and utilities.
-cfuns.$(FASLEXT): boot-pkg.$(FASLEXT)
 daase.$(FASLEXT): macros.$(FASLEXT) foam_l.$(FASLEXT)
 spaderror.$(FASLEXT): macros.$(FASLEXT)
 debug.$(FASLEXT): macros.$(FASLEXT) parsing.$(FASLEXT)
@@ -675,7 +674,7 @@ buildom.$(FASLEXT): buildom.boot sys-macros.$(FASLEXT)
 diagnostics.$(FASLEXT): sys-globals.$(FASLEXT) vmlisp.$(FASLEXT)
 sys-driver.$(FASLEXT): sys-driver.boot types.$(FASLEXT)
 sys-globals.$(FASLEXT): sys-constants.$(FASLEXT) hash.$(FASLEXT)
-sys-os.$(FASLEXT): sys-constants.$(FASLEXT) cfuns.$(FASLEXT) 
+sys-os.$(FASLEXT): sys-constants.$(FASLEXT)
 sys-constants.$(FASLEXT): types.$(FASLEXT)
 hash.$(FASLEXT): types.$(FASLEXT)
 union.$(FASLEXT): vmlisp.$(FASLEXT)

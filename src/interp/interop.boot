@@ -33,6 +33,7 @@
 
 
 import c_-util
+import hashcode
 namespace BOOT
 
 -- note domainObjects are now (dispatchVector hashCode . domainVector)
@@ -583,6 +584,9 @@ getCatForm(catvec, index, domain) ==
    NUMBERP(form := QVELT(catvec,index)) => domain.form
    form
 
+HasSignature(domain,[op,sig]) ==
+  compiledLookup(op,sig,domain)
+ 
 has(domain,catform') == HasCategory(domain,catform')
 
 HasCategory(domain,catform') ==
@@ -606,3 +610,6 @@ HasCategory(domain,catform') ==
 --    FBOUNDP(cnam) => "next"
 --    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
 
+domainEqual(a,b) == 
+  VECP a and VECP b and a.0 = b.0
+ 

@@ -113,6 +113,24 @@ wantArgumentsAsTuple: (%List,%Signature) -> %Boolean
 wantArgumentsAsTuple(args,sig) ==
   isHomoegenousVarargSignature sig and #args ^= #sig
 
+
+devaluate d ==
+  not REFVECP d => d
+  QSGREATERP(QVSIZE d,5) and getShellEntry(d,3) is ['Category] => 
+    getShellEntry(d,0)
+  QSGREATERP(QVSIZE d,0) =>
+    d':=getShellEntry(d,0)
+    isFunctor d' => d'
+    d
+  d
+ 
+devaluateList l == [devaluate d for d in l]
+ 
+devaluateDeeply x ==
+  VECP x => devaluate x
+  atom x => x
+  [devaluateDeeply y for y in x]
+
 --% Debugging Functions
  
 --CONTINUE() == continue()

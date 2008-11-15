@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import c_-util
+import nrunopt
 import simpbool
 import profile
 namespace BOOT
