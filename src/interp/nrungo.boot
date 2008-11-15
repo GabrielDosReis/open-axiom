@@ -142,7 +142,7 @@ substDomainArgs(domain,object) ==
 --=======================================================
 domainTableLookup(op,sig,dollar,env) == lookupInTable(op,sig,dollar,env)
 lookupInTable(op,sig,dollar,[domain,table]) ==
-  EQ(table,'derived) => lookupInAddChain(op,sig,domain,dollar)
+  table = "derived" => lookupInAddChain(op,sig,domain,dollar)
   success := false
   someMatch := false
   while not success for [sig1,:code] in LASSQ(op,table) repeat

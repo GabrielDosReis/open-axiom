@@ -54,6 +54,9 @@ $Representation := nil
 
 $formalArgList := []
 
+
+$compErrorMessageStack := nil
+
 --% Optimization control
 
 ++ true if we have to proclaim function signatures in the generated Lisp.

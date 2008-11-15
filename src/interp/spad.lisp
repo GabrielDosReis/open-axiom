@@ -284,7 +284,6 @@
         (*print-pretty* t)
         ($MACROASSOC ())
         ($NEWSPAD T)
-        (|$compUniquelyIfTrue| nil)
         |$currentFunction|
         |$topOp|
         (|$semanticErrorStack| ())
@@ -383,15 +382,6 @@
           (REPEAT |formatREPEAT|)
           (COLLECT |formatCOLLECT|)
           (REDUCE |formatREDUCE|)))
-
-(defmacro |incTimeSum| (a b)
-  (if (not |$InteractiveTimingStatsIfTrue|) a
-      (let ((key  b) (oldkey (gensym)) (val (gensym)))
-        `(prog (,oldkey ,val)
-               (setq ,oldkey (|incrementTimeSum| ,key))
-               (setq ,val ,a)
-               (|incrementTimeSum| ,oldkey)
-               (return ,val)))))
 
 (defun SETELTFIRST (A B C) (declare (ignore b)) (RPLACA A C))
 

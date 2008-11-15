@@ -1,5 +1,19 @@
 2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/spad.lisp (incTimeSum): Remove.
+	* interp/modemap.boot ($forceAdd): Define.
+	* interp/nruncomp.boot ($NRTderivedTargetIfTrue): Likewise.
+	($killOptimizeIfTrue): Likewise.
+	* interp/i-toplev.boot (processInteractive): Tidy.
+	* interp/c-util.boot ($compErrorMessageStack): Define.
+	* interp/compiler.boot (compApply): Remove.
+	($compTimeSum): Likewise
+	($resolveTimeSum): Likewise.
+	(compCompilerPredicate): Tidy.
+	(comp3): There is no such thing as KAPPA.
+
+2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/Makefile.pamphlet: Individual .spad files are .PRECIOUS.
 
 2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>

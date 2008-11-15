@@ -36,6 +36,10 @@ import c_-util
 import info
 namespace BOOT
 
+--%
+
+$forceAdd := false
+
 --% EXTERNAL ROUTINES
  
 --These functions are called from outside this file to add a domain
