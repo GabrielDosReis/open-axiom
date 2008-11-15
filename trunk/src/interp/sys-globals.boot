@@ -437,6 +437,14 @@ $m := nil
 _/SOURCEFILES := []
 _/SPACELIST := []
 
+$extraParms := []
+
+$categoryPredicateList := []
+
+$getDomainCode := nil
+$addForm := nil
+$domainShell := nil
+
 --%
 
 $algebraOutputStream :=

@@ -1190,7 +1190,6 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 --Begin lines for category default definitions
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
-    $frontier: local := 0
     $getDomainCode: local := nil
     $addForm: local:= nil
     for x in sargl for t in rest signature' repeat
