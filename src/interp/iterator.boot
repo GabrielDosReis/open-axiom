@@ -93,7 +93,7 @@ compRepeatOrCollect(form,m,e) ==
   fn(form,[m,:$exitModeStack],[#$exitModeStack,:$leaveLevelStack],$formalArgList
     ,e) where
       fn(form,$exitModeStack,$leaveLevelStack,$formalArgList,e) ==
-        $until: local
+        $until: local := nil
         oldEnv := e
         [repeatOrCollect,:itl,body]:= form
         itl':=
@@ -117,7 +117,6 @@ compRepeatOrCollect(form,m,e) ==
             -- then we've boobed. JHD 26.July.1990
           $NoValueMode
         [body',m',e']:=
-          -- (m1:= listOrVectorElementMode targetMode) and comp(body,m1,e) or
             compOrCroak(body,bodyMode,e) or return nil
         if $until then
           [untilCode,.,e']:= comp($until,$Boolean,e')

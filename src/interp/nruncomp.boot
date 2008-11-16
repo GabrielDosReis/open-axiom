@@ -35,6 +35,7 @@
 import nrunopt
 import simpbool
 import profile
+import functor
 namespace BOOT
 
 
