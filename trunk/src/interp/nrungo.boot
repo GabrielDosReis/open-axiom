@@ -345,10 +345,10 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
   pcl := [x for x in pcl | not (x is [''T,:mess] and
     (CONTAINED('throwMessage,mess) or
       CONTAINED('throwKeyedMsg,mess)))]
-  integer := EVALFUN $Integer
+  integer := eval $Integer
   iequalSlot:=compiledLookupCheck("=",[$Boolean,"$","$"],integer)
   lesspSlot:=compiledLookupCheck("<",[$Boolean,"$","$"],integer)
-  notpSlot:= compiledLookupCheck("not",["$","$"],EVALFUN $Boolean)
+  notpSlot:= compiledLookupCheck("not",["$","$"],eval $Boolean)
   for [p,c] in pcl repeat
     p is ['SPADCALL,sharpVar,n1,['ELT,=minivectorName,slot]]
       and EQ(iequalSlot,$minivector.slot) =>

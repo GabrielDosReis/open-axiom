@@ -32,8 +32,8 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import c_-util
-import clam
+import lisplib
+import nrungo
 import category
 namespace BOOT
 

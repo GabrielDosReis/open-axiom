@@ -137,6 +137,6 @@ namespace BOOT
 %Modemap <=> %List                             -- modemap
 
 %ConstructorKind <=>                           -- kind of ctor instances
-  MEMBER("category","domain","package")
+  MEMBER(category,domain,package)
 
 %Shell <=> SIMPLE_-VECTOR                      -- constructor instantiation

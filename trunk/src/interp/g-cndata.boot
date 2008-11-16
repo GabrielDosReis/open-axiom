@@ -112,7 +112,7 @@ getConstructorUnabbreviation op ==
   abbreviation?(op) or throwKeyedMsg("S2IL0019",[op])
  
 mkUserConstructorAbbreviation(c,a,type) ==
-  if not atom c then c:= CAR c  --  Existing constructors will be wrapped
+  if not atom c then c := first c  --  Existing constructors will be wrapped
   constructorAbbreviationErrorCheck(c,a,type,'abbreviationError)
   clearClams()
   clearConstructorCache(c)
@@ -135,10 +135,10 @@ constructorNameConflict(name,kind) ==
   userError
     ["The name",:bright name,"conflicts with the name of an existing rule",
       "%l","please choose another ",kind]
- 
+
 constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
   siz := SIZE (s := PNAME a)
-  if typ = 'category and siz > 7
+  if typ = "category" and siz > 7
     then throwKeyedErrorMsg('precompilation,"S2IL0021",NIL)
   if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",NIL)
   if s ^= UPCASE s then throwKeyedMsg("S2IL0006",NIL)

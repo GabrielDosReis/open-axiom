@@ -266,7 +266,6 @@
   (if (zerop y) (truncate 1 Y)
     (multiple-value-call #'cons (TRUNCATE X Y))))
 
-(define-function 'list1 #'list)
 (define-function '|not| #'NOT)
 
 (defun |random| () (random (expt 2 26)))
@@ -452,7 +451,7 @@
 (DEFUN DECIMAL-LENGTH (X)
    (LET* ((K (FIX (* #.(LOG 2.0 10.) (INTEGER-LENGTH X))))
           (X (TRUNCATE (ABS X) (EXPT 10 (1- K)))))
-     (IF (LESSP X 10) K (1+ K))))
+     (IF (< X 10) K (1+ K))))
 
 ;(DEFUN DECIMAL-LENGTH2 (X)
 ;   (LET ((K (FIX (* #.(LOG 2.0 10.) (INTEGER-LENGTH X)))))

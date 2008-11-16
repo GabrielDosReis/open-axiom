@@ -589,7 +589,7 @@ letPrint(x,val,currentFunction) ==
       if (y="all" or MEMQ(x,y)) and
         not (IS__GENVAR(x) or isSharpVarWithNum(x) or GENSYMP x) then
          sayBrightlyNT [:bright x,": "]
-         PRIN0 shortenForPrinting val
+         PRIN1 shortenForPrinting val
          TERPRI()
       if (y:= hasPair("BREAK",y)) and
         (y="all" or MEMQ(x,y) and

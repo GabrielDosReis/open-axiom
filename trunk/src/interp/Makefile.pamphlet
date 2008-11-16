@@ -551,18 +551,18 @@ setvart.$(FASLEXT): macros.$(FASLEXT)
 ## OpenAxiom's compiler
 wi2.$(FASLEXT): macros.$(FASLEXT) define.$(FASLEXT)
 wi1.$(FASLEXT): macros.$(FASLEXT)
-compiler.$(FASLEXT): msgdb.$(FASLEXT) modemap.$(FASLEXT) \
+compiler.$(FASLEXT): msgdb.$(FASLEXT) \
 		pathname.$(FASLEXT) define.$(FASLEXT) iterator.$(FASLEXT)
 nrunopt.$(FASLEXT): c-util.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
 nruncomp.$(FASLEXT): nrunopt.$(FASLEXT) profile.$(FASLEXT) simpbool.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
 iterator.$(FASLEXT): g-util.$(FASLEXT)
-define.$(FASLEXT): g-error.$(FASLEXT) cattable.$(FASLEXT) \
-	functor.$(FASLEXT) lisplib.$(FASLEXT) nruncomp.$(FASLEXT)
+define.$(FASLEXT): g-error.$(FASLEXT) modemap.$(FASLEXT) \
+	functor.$(FASLEXT) nruncomp.$(FASLEXT) database.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)
-functor.$(FASLEXT): category.$(FASLEXT) c-util.$(FASLEXT) clam.$(FASLEXT)
+functor.$(FASLEXT): category.$(FASLEXT) nrungo.$(FASLEXT) lisplib.$(FASLEXT)
 category.$(FASLEXT): g-util.$(FASLEXT) g-cndata.$(FASLEXT)
 cattable.$(FASLEXT): simpbool.$(FASLEXT) g-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)
