@@ -34,12 +34,18 @@
 import nruncomp
 import g_-error
 import database
-import functor
 import modemap
 
 namespace BOOT
 
-module define
+module define where
+  compDefine: (%Form,%Mode,%Env) -> %Maybe %Triple 
+  compSubDomain: (%Form,%Mode,%Env) -> %Maybe %Triple
+  compCapsule: (%Form, %Mode, %Env) -> %Maybe %Triple
+  compJoin: (%Form,%Mode,%Env) -> %Maybe %Triple 
+  compAdd: (%Form, %Mode, %Env) -> %Maybe %Triple 
+  compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple 
+
 
 --%
 
@@ -107,6 +113,12 @@ $atList := []
 
 --%
 
+compDefineAddSignature: (%Form,%Signature,%Env) -> %Env
+DomainSubstitutionFunction: (%List,%Form) -> %Form 
+
+
+--% 
+
 ++ List of operations defined in a given capsule
 ++ Each item on this list is of the form
 ++    (op sig pred)
@@ -157,7 +169,6 @@ makePredicate l ==
 ++ List of packages used by the current domain.
 $packagesUsed := []
 
-compDefine: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compDefine(form,m,e) ==
   $macroIfTrue: local := false
   $packagesUsed: local := []
@@ -245,7 +256,6 @@ compDefine1(form,m,e) ==
     getAbbreviation($op,#rest $form)
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
 
-compDefineAddSignature: (%Form,%Signature,%Env) -> %Env
 compDefineAddSignature([op,:argl],signature,e) ==
   (sig:= hasFullSignature(argl,signature,e)) and
    not assoc(['$,:sig],LASSOC('modemap,getProplist(op,e))) =>
@@ -1358,7 +1368,6 @@ bootStrapError(functorForm,sourceFile) ==
     [''T, ['systemError,['LIST,''%b,MKQ CAR functorForm,''%d,'"from", _
       ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
 
-compAdd: (%Form, %Mode, %Env) -> %Maybe %Triple 
 compAdd(['add,$addForm,capsule],m,e) ==
   $bootStrapMode = true =>
     if $addForm is ["%Comma",:.] then code := nil
@@ -1390,7 +1399,6 @@ compAdd(['add,$addForm,capsule],m,e) ==
  
 compTuple2Record u == ['Record,:[[":",i,x] for i in 1.. for x in rest u]]
 
-compCapsule: (%Form, %Mode, %Env) -> %Maybe %Triple
 compCapsule(['CAPSULE,:itemList],m,e) ==
   $bootStrapMode = true =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
@@ -1399,7 +1407,6 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   clearCapsuleFunctionTable()
   compCapsuleInner(maybeInsertViewMorphisms itemList,m,addDomain('_$,e))
  
-compSubDomain: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm
   $addForm: local := nil
@@ -1583,7 +1590,6 @@ compContained(["CONTAINED",a,b],m,e) ==
     (T:= [["CONTAINED",a,b],$Boolean,e]; convert(T,m))
   nil
 
-compJoin: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compJoin(["Join",:argl],m,e) ==
   catList:= [(compForMode(x,$Category,e) or return 'failed).expr for x in argl]
   catList='failed => stackSemanticError(["cannot form Join of: ",argl],nil)
@@ -1625,7 +1631,6 @@ makeCategoryForm(c,e) ==
   [x,e]
 
 
-compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple 
 compCategory(x,m,e) ==
   clearExportsTable()
   (m:= resolve(m,$Category))=$Category and x is ['CATEGORY,
@@ -1660,7 +1665,6 @@ mustInstantiate D ==
   D is [fn,:.] and not (MEMQ(fn,$DummyFunctorNames) 
     or GETL(fn,"makeFunctionList"))
 
-DomainSubstitutionFunction: (%List,%Form) -> %Form 
 DomainSubstitutionFunction(parameters,body) ==
   --see definition of DomainSubstitutionMacro in SPAD LISP
   if parameters then
