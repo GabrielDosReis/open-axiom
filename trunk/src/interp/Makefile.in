@@ -97,8 +97,7 @@ OCOBJS=	\
 	iterator.$(FASLEXT)	compiler.$(FASLEXT)	\
 	c-doc.$(FASLEXT)	\
 	profile.$(FASLEXT)	functor.$(FASLEXT)	\
-	nruncomp.$(FASLEXT)	package.$(FASLEXT)	\
-	htcheck.$(FASLEXT)
+	nruncomp.$(FASLEXT)	htcheck.$(FASLEXT)
 
 autoload_objects += $(OCOBJS)
 
@@ -311,12 +310,10 @@ nruncomp.$(FASLEXT): nrunopt.$(FASLEXT) profile.$(FASLEXT) simpbool.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
 iterator.$(FASLEXT): g-util.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) cattable.$(FASLEXT) \
-	functor.$(FASLEXT) lisplib.$(FASLEXT) package.$(FASLEXT) \
-	nruncomp.$(FASLEXT)
-package.$(FASLEXT): clam.$(FASLEXT)
+	functor.$(FASLEXT) lisplib.$(FASLEXT) nruncomp.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \
 		cattable.$(FASLEXT) compat.$(FASLEXT) g-cndata.$(FASLEXT)
-functor.$(FASLEXT): category.$(FASLEXT) c-util.$(FASLEXT)
+functor.$(FASLEXT): category.$(FASLEXT) c-util.$(FASLEXT) clam.$(FASLEXT)
 category.$(FASLEXT): g-util.$(FASLEXT) g-cndata.$(FASLEXT)
 cattable.$(FASLEXT): simpbool.$(FASLEXT) g-util.$(FASLEXT)
 compat.$(FASLEXT): pathname.$(FASLEXT)

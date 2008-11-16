@@ -36,7 +36,6 @@ import g_-error
 import lisplib
 import cattable
 import functor
-import package
 
 namespace BOOT
 
