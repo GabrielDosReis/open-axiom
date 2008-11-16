@@ -511,10 +511,6 @@
 (defmacro subrp (x)
  `(compiled-function-p ,x))
 
-#-:CCL
-(defmacro sub1 (x)
- `(1- ,x))
-
 (defmacro throw-protect (exp1 exp2)
  `(unwind-protect ,exp1 ,exp2))
 
@@ -631,8 +627,6 @@
  (declare (ignore sd))
   (macroexpand `(,arg ,item)))
 
-(define-function 'MDEFX #'MDEF)
-
 ; 8.0 Operator Definition and Transformation
 
 ; 8.1 Definition and Transformation Operations
@@ -696,8 +690,6 @@
           v)
          (t (cons (remove-fluids (car arglist))
                   (remove-fluids (cdr arglist))))))
-
-(define-function 'KOMPILE #'COMP370)
 
 ; 9.4 Vectors and Bpis
 
@@ -826,24 +818,7 @@
 (define-function 'FIX #'truncate)
 (define-function 'INT2RNUM #'float)
 
-; 12.2 Predicates
-
-;(define-function 'lessp #'<)
-
-;(define-function 'greaterp #'>)
-
-
-;(define-function 'fixp #'integerp)
-
 ; 12.3 Computation
-
-;(define-function 'add1 #'1+)
-;(define-function 'sub1 #'1-)
-;(define-function 'plus #'+)
-;(define-function 'times #'*)
-;(define-function 'difference #'-)
-;(define-function 'minus #'-)
-;(define-function 'absval #'abs)
 
 (defun QUOTIENT (x y)
   (cond ((or (floatp x) (floatp y)) (/ x y))
@@ -915,8 +890,6 @@
 
 ; 14.2 Accessing
 
-;(define-function 'lastnode #'last)
-;(define-function 'lastpair #'last)
 (defun |last| (x) (car (lastpair x)))
 
 ; 14.3 Searching
@@ -997,8 +970,6 @@
 ; 16.2 Accessing
 
 
-;(define-function 'FETCHCHAR #'char)
-
 ;; Oddly, LENGTH is more efficient than LIST-LENGTH in CCL, since the former
 ;; is compiled and the latter is byte-coded!
 (defun size (l) 
@@ -1035,8 +1006,6 @@
 (define-function 'strconc #'concat)
 
 (defun make-cvec (sint) (make-array sint :fill-pointer 0 :element-type 'character))
-
-;(define-function 'CVECP #'stringp)
 
 (define-function 'getstr #'make-cvec)
 
@@ -1113,8 +1082,6 @@
         (t (concat cvec id))))
 
 (defun setsize (vector size) (adjust-array vector size))
-
-(define-function 'changelength #'setsize)
 
 (defun trimstring (x) x)
 
@@ -1492,13 +1459,10 @@
 
 ; 24.0 Printing
 
-;(define-function 'prin2cvec #'write-to-string)
 (define-function 'prin2cvec #'princ-to-string)
-;(define-function 'stringimage #'write-to-string)
 (define-function 'stringimage #'princ-to-string)
 
 (define-function 'printexp #'princ)
-(define-function 'prin0  #'prin1)
 
 (defun |F,PRINT-ONE| (form &optional (stream |$OutputStream|))
  (declare (ignore stream))
@@ -1779,10 +1743,6 @@
        (if *FILEACTQ-APPLY* (FUNCALL *FILEACTQ-APPLY* name form)))
 
 (defun CALLBELOW (&rest junk) junk) ; to invoke system dependent code?
-
-(define-function 'EVA1 #'eval) ;EVA1 and VMLISP EVAL make lexicals visible
-(define-function 'EVALFUN #'eval) ;EVALFUN drops lexicals before evaluating
-(define-function 'EVA1FUN #'EVALFUN)
 
 (defun PLACEP (item) (eq item *read-place-holder*))
 (defun VMREAD (&optional (st |$InputStream|) (eofval *read-place-holder*))

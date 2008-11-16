@@ -158,7 +158,7 @@
                    (SETQ A ""))
                   ('T (PUSH (STRCONC (GETFULLSTR N " ")
                                   (SUBSTRING A N ())) $LINELIST)
-                      (SETQ $INDEX (SUB1 $INDEX))
+                      (SETQ $INDEX (1- $INDEX))
                       (SETQ A (SUBSEQ A 0 N))))
          (GO NOCOMS))
                ((= N OPARSYM) (setq PCOUNT (1+ PCOUNT)))

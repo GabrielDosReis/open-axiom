@@ -69,13 +69,13 @@ wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
 wordsOfString1(s,j) ==
-  k := or/[i for i in j..SUB1(MAXINDEX(s)) | UPPER_-CASE_-P s.i] =>
+  k := or/[i for i in j..(MAXINDEX(s)-1) | UPPER_-CASE_-P s.i] =>
     tailWords:=
       UPPER_-CASE_-P s.(k+1) =>
-        n:= or/[i for i in (k+2)..SUB1(MAXINDEX(s))|not UPPER_-CASE_-P s.i]
+        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not UPPER_-CASE_-P s.i]
         null n => [SUBSTRING(s,k,nil)]
         n > k+1 => [SUBSTRING(s,k,n-k-1),:wordsOfString1(s,n-1)]
-      m := or/[i for i in (k+2)..SUB1(MAXINDEX(s)) | UPPER_-CASE_-P s.i] =>
+      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | UPPER_-CASE_-P s.i] =>
         [SUBSTRING(s,k,m-k),:wordsOfString1(s,m)]
       [SUBSTRING(s,k,nil)]
     k > j+1 => [SUBSTRING(s,j,k-j),:tailWords]

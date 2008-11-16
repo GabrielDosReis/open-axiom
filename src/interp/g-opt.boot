@@ -132,7 +132,7 @@ optSPADCALL(form is ['SPADCALL,:argl]) ==
   null $InteractiveMode => form
   -- last arg is function/env, but may be a form
   argl is [:argl,fun] =>
-    fun is ['ELT,dom,slot] or fun is ['LISPELT,dom,slot] =>
+    fun is ['ELT,dom,slot] =>
       optCall ['call,['ELT,dom,slot],:argl]
     form
   form
@@ -338,7 +338,7 @@ optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
 optRECORDCOPY ["RECORDCOPY",name,len] ==
   len=1 => ["LIST",["CAR",name]]
   len=2 => ["CONS",["CAR",name],["CDR",name]]
-  ["MOVEVEC",["MAKE_-VEC",len],name]
+  ["REPLACE",["MAKE_-VEC",len],name]
  
 --mkRecordAccessFunction(ind,len) ==
 --  stringOfDs:= $EmptyString

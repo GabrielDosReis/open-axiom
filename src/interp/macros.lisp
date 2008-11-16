@@ -158,8 +158,6 @@
  
 ; 14.1 Simple Sequence Functions
  
-(define-function 'getchar #'elt)
- 
 (defun GETCHARN (A M) "Return the code of the Mth character of A"
   (let ((a (if (identp a) (symbol-name a) a))) (char-code (elt A M))))
  
@@ -175,9 +173,6 @@
   (concatenate 'string target source))
  
 (defun NSTRCONC (s1 s2) (concatenate 'string (string s1) (string s2)))
- 
- 
-(define-function '|append| #'APPEND)
  
  
 (defun THETACHECK (VAL VAR OP) (if (EQL VAL VAR) (THETA_ERROR OP) val))
@@ -202,8 +197,6 @@
 (DEFUN LASTATOM (L) (if (ATOM L) L (LASTATOM (CDR L))))
  
 (define-function 'LASTTAIL #'last)
- 
-(define-function 'LISPELT #'ELT)
  
 (defun DROP (N X &aux m)
   "Return a pointer to the Nth cons of X, counting 0 as the first cons."

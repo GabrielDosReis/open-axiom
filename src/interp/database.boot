@@ -792,3 +792,4 @@ displayHiddenConstructors() ==
 squeezeAll: %List -> %List
 squeezeAll x ==
   [SQUEEZE t for t in x]
+

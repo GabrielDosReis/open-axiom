@@ -220,12 +220,12 @@
  invocation of FN"
      (if (LT N 1)
 	 NIL 
-       (CONS (EVAL FN) (NLIST (SUB1 N) FN))))
+       (CONS (EVAL FN) (NLIST (1- N) FN))))
 
    (defun TAILFN (X N) 
      (if (LT N 1) 
 	 X 
-       (TAILFN (CDR X) (SUB1 N))))
+       (TAILFN (CDR X) (1- N))))
     
    ))
 
@@ -373,8 +373,6 @@
  
 (defmacro SPADDIFFERENCE (&rest x)
   `(- . ,x))
-
-(define-function 'QSEXPT #'expt)
 
 ;; following macros assume 0 <= x,y < z
 
@@ -882,7 +880,7 @@
    (defun NREVERSE-N (X AXIS)
      (COND ((EQL AXIS 0)
 	    (NREVERSE X))
-	   ((MAPCAR #'(LAMBDA (Y) (NREVERSE-N Y (SUB1 AXIS))) X))))
+	   ((MAPCAR #'(LAMBDA (Y) (NREVERSE-N Y (1- AXIS))) X))))
  
 
    (defun REDUCE-1 (OP AXIS BOD)

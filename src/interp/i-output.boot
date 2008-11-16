@@ -1667,7 +1667,7 @@ printBasic x ==
   x='(Zero) => PRIN1(0,$algebraOutputStream)
   IDENTP x => PRINTEXP(PNAME x,$algebraOutputStream)
   atom x => PRIN1(x,$algebraOutputStream)
-  PRIN0(x,$algebraOutputStream)
+  PRIN1(x,$algebraOutputStream)
 
 charybdis(u,start,linelength) ==
   EQ(keyp u,'EQUATNUM) and ^(CDDR u) =>

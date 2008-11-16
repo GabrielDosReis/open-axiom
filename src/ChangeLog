@@ -1,5 +1,27 @@
 2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot: Clean up.
+	* interp/database.boot: Likewise.
+	* interp/debug.lisp: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/macros.lisp: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/preparse.lisp: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/sys-macros.lisp: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/types.boot: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+	* interp/word.boot: Likewise.
+
+2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/package.boot: Fold content into functor.boot.  Delete.
 	* interp/Makefile.pamphlet: Adjust.
 
