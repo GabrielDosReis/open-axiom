@@ -508,7 +508,6 @@ compiler args ==
 compileAsharpCmd args ==
     compileAsharpCmd1 args
     terminateSystemCommand()
-    spadPrompt()
 
 compileAsharpCmd1 args ==
     -- Assume we entered from the "compiler" function, so args ^= nil
@@ -667,7 +666,6 @@ compileAsharpArchiveCmd args ==
     cd [ object2Identifier namestring curDir ]
 
     terminateSystemCommand()
-    spadPrompt()
 
 compileAsharpLispCmd args ==
     -- Assume we entered from the "compiler" function, so args ^= nil
@@ -712,7 +710,6 @@ compileAsharpLispCmd args ==
     else if ^beQuiet then
         sayKeyedMsg("S2IZ0084", nil)
     terminateSystemCommand()
-    spadPrompt()
 
 compileSpadLispCmd args ==
     -- Assume we entered from the "compiler" function, so args ^= nil
@@ -758,7 +755,6 @@ compileSpadLispCmd args ==
     else if ^beQuiet then
         sayKeyedMsg("S2IZ0084", nil)
     terminateSystemCommand()
-    spadPrompt()
 
 compileSpad2Cmd args ==
     -- This is the old compiler
@@ -853,7 +849,6 @@ compileSpad2Cmd args ==
     terminateSystemCommand()
     -- reset compiler optimization options
     setCompilerOptimizations 0
-    spadPrompt()
 
 convertSpadToAsFile path ==
     -- can assume path has type = .spad

@@ -42,10 +42,6 @@ $intTopLevel ==
 
 --% The function for making prompts
  
-spadPrompt() ==
-  SAY '"   AXIOM"
-  sayNewLine()
- 
 inputPrompt str ==
   -- replaces older INPUT-PROMPT
   atom (x := $SCREENSIZE()) => NIL

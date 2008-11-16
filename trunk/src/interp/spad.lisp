@@ -192,22 +192,19 @@
     (Q  (/RQ))
     ('T (/RF)) )
   (FLAG |boot-NewKEY| 'KEY)
-  (|terminateSystemCommand|)
-  (|spadPrompt|))
+  (|terminateSystemCommand|))
 
 (defun /EDIT (L)
   (SETQ /EDITFILE L)
   (/EF)
-  (|terminateSystemCommand|)
-  (|spadPrompt|))
+  (|terminateSystemCommand|))
 
 (defun /COMPINTERP (L OPTS)
   (SETQ /EDITFILE (/MKINFILENAM L))
   (COND ((EQUAL OPTS "rf") (/RF))
         ((EQUAL OPTS "rq") (/RQ))
         ('T (/RQ-LIB)))
-  (|terminateSystemCommand|)
-  (|spadPrompt|))
+  (|terminateSystemCommand|))
 
 (defun CPSAY (X) (let (n) (if (EQ 0 (setq N (|runCommand| X))) NIL (PRINT N))))
 

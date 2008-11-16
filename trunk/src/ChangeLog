@@ -1,5 +1,10 @@
 2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-syscmd.boot: Remove dead code.
+	* interp/spad.lisp: Likewise.
+
+2008-11-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/Makefile.pamphlet (OBJS): Remove cfuns.  Include
 	hashcode.
 	* interp/cfuns.lisp: Delete.
