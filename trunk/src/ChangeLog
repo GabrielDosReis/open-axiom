@@ -1,3 +1,10 @@
+2008-11-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (compDefineExports): Now take operation
+	exported list, instead of category object.  Tidy.
+	* interp/define.boot (compDefineFunctor1): Adjust call to
+	compDefineExports. 
+
 2008-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (|getOptionValue|): Make second argument optional.

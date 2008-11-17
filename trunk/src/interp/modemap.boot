@@ -332,7 +332,8 @@ evalAndSub(domainName,viewName,functorForm,form,$e) ==
   [substAlist,$e]
  
 getOperationAlist(name,functorForm,form) ==
-  if atom name and niladicConstructorFromDB name then functorForm:= [functorForm]
+  if atom name and niladicConstructorFromDB name then 
+    functorForm:= [functorForm]
 -- (null isConstructorForm functorForm) and (u:= isFunctor functorForm)
   (u:= isFunctor functorForm) and not
     ($insideFunctorIfTrue and first functorForm=first $functorForm) => u
