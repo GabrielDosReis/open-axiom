@@ -582,7 +582,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $e:= giveFormalParametersValues(argl,$e)
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
-    $compileExportsOnly => compDefineExports($op, ds, signature',$e)
+    $compileExportsOnly => compDefineExports($op, ds.1, signature',$e)
     $domainShell:= COPY_-SEQ ds
 --+ copy needed since slot1 is reset; compMake.. can return a cached vector
     attributeList := disallowNilAttribute ds.2 --see below under "loadTimeAlist"
@@ -623,7 +623,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       then $e:= augModemapsFromCategoryRep('_$,ab,cb,target,$e)
       else $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
     $signature:= signature'
-    operationAlist:= SUBLIS($pairlis,$domainShell.(1))
     parSignature:= SUBLIS($pairlis,signature')
     parForm:= SUBLIS($pairlis,form)
  

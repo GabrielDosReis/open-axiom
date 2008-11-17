@@ -73,7 +73,6 @@ compFormMatch: (%Modemap,%List) -> %Boolean
 compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
 compToApply: (%Form,%List,%Mode,%Env) -> %Maybe %Triple
 compApplication: (%Form,%List,%Mode,%Env,%Triple) -> %Maybe %Triple
-compApplyModemap: (%Form,%Modemap,%Env,%List) -> %Maybe %Triple
 
 primitiveType: %Thing -> %Mode
 modeEqual: (%Form,%Form) -> %Boolean

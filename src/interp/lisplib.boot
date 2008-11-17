@@ -225,8 +225,8 @@ convertOpAlist2compilerInfo(opalist) ==
    "append"/[[formatSig(op,sig) for sig in siglist]
                 for [op,:siglist] in opalist] where
       formatSig(op, [typelist, slot,:stuff]) ==
-          pred := if stuff then first stuff else 'T
-          impl := if CDR stuff then CADR stuff else 'ELT -- handles 'CONST
+          pred := if stuff then first stuff else true
+          impl := if rest stuff then second stuff else "ELT" -- handles 'CONST
           [[op, typelist], pred, [impl, '$, slot]]
    
 updateCategoryFrameForConstructor(constructor) ==
@@ -706,16 +706,33 @@ getIndexTable dir ==
     nil)
 
 --%
-compDefineExports(op,catobj,sig,e) ==
+compDefineExports(op,ops,sig,e) ==
   not $LISPLIB => systemErrorHere "compDefineExports"
+  -- Ensure constructor parameters appear as formals
+  sig := SUBLIS($pairlis, sig)
+  ops := SUBLIS($pairlis,ops)
+  -- Since we don't compile the capsule, the slot numbers are
+  -- most likely bogus.  Nullify them so people don't think they
+  -- bear any meaningful semantics (well, they should not think
+  -- these are forwarding either).
+  for entry in ops repeat
+    fixupSigloc entry where
+      fixupSigloc entry ==
+        [opsig,pred,funsel] := entry
+	if pred ^= 'T then 
+           rplac(second entry, simpBool pred)
+	funsel is [op,a,:.] and op in '(ELT CONST) =>
+          rplac(third entry,[op,a,nil])
+  ops := listSort(function GGREATERP, ops, function first)
   libName := getConstructorAbbreviation op
   exportsFile := strconc(STRING libName,'".sig")
   removeFile exportsFile
   withOutputFile(s,exportsFile, 
     PRETTYPRINT(
-      ["put", quoteForm op, quoteForm "isFunctor", quoteForm catobj.1,
-        ["addModemap", quoteForm op, quoteForm first sig,
-           quoteForm sig, true, quoteForm op,
-             ["put", quoteForm op, quoteForm "mode",
-                quoteForm ["Mapping",:sig], "$CategoryFrame"]]], s))
+      ["SETQ", "$CategoryFrame",
+        ["put", quoteForm op, quoteForm "isFunctor", quoteForm ops,
+          ["addModemap", quoteForm op, quoteForm first sig,
+             quoteForm sig, true, quoteForm op,
+               ["put", quoteForm op, quoteForm "mode",
+                 quoteForm ["Mapping",:sig], "$CategoryFrame"]]]], s))
   [op,["Mapping",:sig],e]
