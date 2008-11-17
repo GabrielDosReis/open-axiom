@@ -483,3 +483,8 @@ $buildingSystemAlgebra := false
 ++ code generation, etc.
 $verbose := true
 
+++ True if the compiler is invoked to produced only exports of
+++ a domain or a category.  For a category, the compilation of
+++ defaults, if any, is suppressed.
+$compileExportsOnly := false
+

@@ -1313,5 +1313,10 @@
 			    (make-synonym-stream '*standard-output*))))
      ,cmd))
 
+(defmacro |withOutputFile| (stream filespec form)
+  `(with-open-file (,stream ,filespec :direction :output 
+			    :if-exists :supersede)
+		   ,form))
+
 (defmacro |spadConstant| (dollar n)
  `(spadcall (svref ,dollar (the fixnum ,n))))

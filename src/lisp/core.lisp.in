@@ -344,8 +344,8 @@
       (|Option| option))))
 
 ;; Returns the value specified for OPTION. Otherwise, return nil
-(defun |getOptionValue| (opt options)
-  (let ((val (assoc opt options)))
+(defun |getOptionValue| (opt &optional (options (|%systemOptions|)))
+  (let ((val (assoc (|Option| opt) options)))
     (cond (val (cdr val))
           (t nil))))
 

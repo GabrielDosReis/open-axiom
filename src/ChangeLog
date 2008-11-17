@@ -1,5 +1,19 @@
 2008-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (|getOptionValue|): Make second argument optional.
+	* interp/sys-driver.boot (initializeGlobalState): Set
+	$compileExportsOnly.
+	* interp/lisplib.boot (compDefineExports): New.
+	* interp/define.boot (skipCategoryPackage?): New.
+	(compDefineCategory1): Use it.
+	(compDefineFunctor): Don't compile to NRLIB if interested only in
+	exports. 
+	(compDefineFunctor1): Honor $compileExportsOnly.
+	* interp/sys-macros.lisp (|withOutputFile|): New.
+	* interp/sys-utility.boot (quoteForm): Likewise.
+
+2008-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot: More cleanup.
 	* interp/iterator.boot: Likewise.
 
