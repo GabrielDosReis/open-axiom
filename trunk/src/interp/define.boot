@@ -341,6 +341,12 @@ mkEvalableCategoryForm c ==
     m=$Category => x
   MKQ c
  
+++ Return true if we should skip compilation of category package.
+++ This situation happens either when there is no default, of we are in
+++ bootstrap mode, or we are compiling only for exports.
+skipCategoryPackage? capsule ==
+  null capsule or $bootStrapMode or $compileExportsOnly
+
 compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
   categoryCapsule :=
     body is ['add,cat,capsule] =>
@@ -348,7 +354,7 @@ compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
       capsule
     nil
   [d,m,e]:= compDefineCategory2(form,sig,sc,body,m,e,prefix,fal)
-  if categoryCapsule and not $bootStrapMode then [.,.,e] :=
+  if not skipCategoryPackage? categoryCapsule then [.,.,e] :=
     $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local :=
         makeCategoryPredicates(form,$lisplibCategory)
@@ -523,8 +529,9 @@ compDefineFunctor(df,m,e,prefix,fal) ==
   $profileCompiler: local := true
   $profileAlist:    local := nil
   $mutableDomain: fluid := false
-  $LISPLIB => compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
-  compDefineFunctor1(df,m,e,prefix,fal)
+  $compileExportsOnly or not $LISPLIB => 
+    compDefineFunctor1(df,m,e,prefix,fal)
+  compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
  
 compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
   m,$e,$prefix,$formalArgList) ==
@@ -575,6 +582,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $e:= giveFormalParametersValues(argl,$e)
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
+    $compileExportsOnly => compDefineExports($op, ds, signature',$e)
     $domainShell:= COPY_-SEQ ds
 --+ copy needed since slot1 is reset; compMake.. can return a cached vector
     attributeList := disallowNilAttribute ds.2 --see below under "loadTimeAlist"

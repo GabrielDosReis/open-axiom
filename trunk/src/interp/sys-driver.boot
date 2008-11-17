@@ -187,10 +187,10 @@ initializeGlobalState() ==
   $currentLine := nil
   $NEWSPAD := true
   $SPAD := true
-  $buildingSystemAlgebra := 
-    getOptionValue(Option '"system-algebra",%systemOptions())
-  $verbose := getOptionValue(Option '"verbose",%systemOptions())
-  $bootStrapMode := getOptionValue(Option '"bootstrap",%systemOptions())
+  $buildingSystemAlgebra := getOptionValue "system-algebra"
+  $verbose := getOptionValue "verbose"
+  $bootStrapMode := getOptionValue "bootstrap"
+  $compileExportsOnly := getOptionValue "exports-only"
   GCMSG(NIL)
   if have_to then
     $superHash := MAKE_-HASHTABLE('UEQUAL)
@@ -268,8 +268,7 @@ compileSpadLibrary(progname,options,file) ==
   $verbose := false
   $ProcessInteractiveValue := true
   $PrintCompilerMessageIfTrue := $verbose
-  setCompilerOptimizations 
-    getOptionValue(Option '"optimize",%systemOptions())
+  setCompilerOptimizations getOptionValue "optimize"
   CATCH($intTopLevel,
     CATCH("SpadCompileItem",
      CATCH($SpadReaderTag,compiler [file])))

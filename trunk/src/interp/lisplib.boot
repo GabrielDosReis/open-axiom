@@ -35,7 +35,10 @@
 import nlib
 import c_-util
 import debug
+
 namespace BOOT
+module lisplib
+
 
 ++
 $functionLocations := []
@@ -701,3 +704,18 @@ getIndexTable dir ==
   -- index file doesn't exist but mark this directory as a Lisplib.
   WITH_-OPEN_-FILE(stream(indexFile,KEYWORD::DIRECTION,KEYWORD::OUTPUT),
     nil)
+
+--%
+compDefineExports(op,catobj,sig,e) ==
+  not $LISPLIB => systemErrorHere "compDefineExports"
+  libName := getConstructorAbbreviation op
+  exportsFile := strconc(STRING libName,'".sig")
+  removeFile exportsFile
+  withOutputFile(s,exportsFile, 
+    PRETTYPRINT(
+      ["put", quoteForm op, quoteForm "isFunctor", quoteForm catobj.1,
+        ["addModemap", quoteForm op, quoteForm first sig,
+           quoteForm sig, true, quoteForm op,
+             ["put", quoteForm op, quoteForm "mode",
+                quoteForm ["Mapping",:sig], "$CategoryFrame"]]], s))
+  [op,["Mapping",:sig],e]
