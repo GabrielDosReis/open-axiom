@@ -42,6 +42,7 @@
 		"systemLibraryDirectory"
 		"loadNativeModule"
 		"loadSystemRuntimeCore"
+		"loadFileIfPresent"
                 "$InteractiveMode"
 		"string2BootTree"))
 

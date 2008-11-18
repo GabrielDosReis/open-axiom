@@ -1,5 +1,17 @@
 2008-11-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-utility.boot (loadExports): New.
+	* interp/sys-driver.boot (initializeGlobalState): Set
+	$compileDefaultsOnly.
+	* interp/lisplib.boot (isFunctor): Load exports file if present.
+	* interp/define.boot (compDefineCategory2): Don't write out
+	category load time stuff if we are compiling only defaults.
+	* interp/boot-pkg.lisp: Import loadFileIfPresent.
+	* lisp/core.lisp.in (|loadFileIfPresent|): New.
+	(|loadIfPresent|): Use it.
+
+2008-11-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nrunfast.boot (resolveNiladicConstructors): New.
 	(newHasTest): Use it to handle signature export test.
 	* testsuite/interpreter/has.input: New.

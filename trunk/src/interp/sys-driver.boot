@@ -191,6 +191,7 @@ initializeGlobalState() ==
   $verbose := getOptionValue "verbose"
   $bootStrapMode := getOptionValue "bootstrap"
   $compileExportsOnly := getOptionValue "exports-only"
+  $compileDefaultsOnly := getOptionValue "defaults-only"
   GCMSG(NIL)
   if have_to then
     $superHash := MAKE_-HASHTABLE('UEQUAL)

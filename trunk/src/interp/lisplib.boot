@@ -648,11 +648,10 @@ isFunctor x ==
     MEMQ(getConstructorKindFromDB op,'(domain package))
   u:= get(op,'isFunctor,$CategoryFrame)
     or MEMQ(op,'(SubDomain Union Record Enumeration)) => u
-  constructor? op =>
-    prop := get(op,'isFunctor,$CategoryFrame) => prop
+  ab := getConstructorAbbreviationFromDB op =>
     if getConstructorKindFromDB op = "category"
       then updateCategoryFrameForCategory op
-      else updateCategoryFrameForConstructor op
+      else loadExports ab or updateCategoryFrameForConstructor op
     get(op,'isFunctor,$CategoryFrame)
   nil
 

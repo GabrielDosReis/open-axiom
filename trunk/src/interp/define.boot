@@ -358,7 +358,11 @@ compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
     $insideCategoryPackageIfTrue: local := true
     $categoryPredicateList: local :=
         makeCategoryPredicates(form,$lisplibCategory)
-    compDefine1(mkCategoryPackage(form,cat,categoryCapsule),$EmptyMode,e)
+    T := compDefine1(mkCategoryPackage(form,cat,categoryCapsule),$EmptyMode,e)
+           or return stackSemanticError(
+                        ['"cannot compile defaults of",:bright opOf form],nil)
+    if $compileDefaultsOnly then 
+      [d,m,e] := T
   [d,m,e]
 
 $tvl := []
@@ -470,15 +474,19 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
-    lisplibWrite('"compilerInfo",
-      removeZeroOne ['SETQ,'$CategoryFrame,
-       ['put,['QUOTE,op'],'
-        (QUOTE isCategory),true,['addModemap,MKQ op',MKQ parForm,
-          MKQ parSignature,true,MKQ fun,'$CategoryFrame]]],$libFile)
-    --Equivalent to the following two lines, we hope
-    if null sargl then
-      evalAndRwriteLispForm('NILADIC,
-            ['MAKEPROP,['QUOTE,op'],'(QUOTE NILADIC),true])
+    -- If we are only interested in the defaults, there is no point
+    -- in writing out compiler info and load-time stuff for 
+    --the category which is assumed to have already been translated.
+    if not $compileDefaultsOnly then
+      lisplibWrite('"compilerInfo",
+        removeZeroOne ['SETQ,'$CategoryFrame,
+         ['put,['QUOTE,op'],'
+          (QUOTE isCategory),true,['addModemap,MKQ op',MKQ parForm,
+            MKQ parSignature,true,MKQ fun,'$CategoryFrame]]],$libFile)
+      --Equivalent to the following two lines, we hope
+      if null sargl then
+        evalAndRwriteLispForm('NILADIC,
+              ['MAKEPROP,['QUOTE,op'],'(QUOTE NILADIC),true])
  
 --   6. put modemaps into InteractiveModemapFrame
     $domainShell := eval [op',:MAPCAR('MKQ,sargl)]
@@ -510,9 +518,9 @@ compDefineCategory(df,m,e,prefix,fal) ==
   ctor := opOf second df
   kind := getConstructorKindFromDB ctor
   kind ^= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
-  not $insideFunctorIfTrue and $LISPLIB =>
-    compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
-  compDefineCategory1(df,m,e,prefix,fal)
+  $insideFunctorIfTrue or not $LISPLIB or $compileDefaultsOnly =>
+    compDefineCategory1(df,m,e,prefix,fal)
+  compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
 
 
 %CatObjRes                   -- result of compiling a category

@@ -93,6 +93,7 @@
            "ensureTrailingSlash"
            "getOutputPathname"
            "loadPathname"
+	   "loadFileIfPresent"
            "compileLispFile"
            "compileLispHandler"
            "Option"
@@ -907,10 +908,13 @@
                  :name module
 		 :type "btx"))
 
+(defun |loadFileIfPresent| (file)
+  (load file :if-does-not-exist nil))
+
 (defun |loadIfPresent| (module)
   (if (|alreadyLoaded?| module)
       module
-    (when (load module :if-does-not-exist nil)
+    (when (|loadFileIfPresent| module)
       (|noteUnitLoaded| module)
       module)))
 
