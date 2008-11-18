@@ -591,6 +591,19 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
   name := CAR form
   setShellEntry(thisDomain,slot,slotDomain)
  
+
+++ `type' is a type form constructed by the new parser.
+++ Return a type form where all niladic constructors are
+++ resolved to constructor calls.  Note: it is assumed that no
+++ such resolution has already occured.
+resolveNiladicConstructors type ==
+  atom type => 
+    IDENTP type and niladicConstructorFromDB type => [type]
+    type
+  for args in tails rest type repeat
+    rplac(first args, resolveNiladicConstructors first args)
+  type
+
 --=======================================================
 --                   HasCategory/Attribute
 --=======================================================
@@ -637,6 +650,15 @@ newHasTest(domform,catOrAtt) ==
   null isAtom and constructor? op  =>
     domain := eval mkEvalable domform
     newHasCategory(domain,catOrAtt)
+  catOrAtt is [":",op,type] =>
+    sig := 
+      type is ["Mapping",:sig'] =>
+         for ts in tails sig' repeat
+           rplac(first ts, resolveNiladicConstructors first ts)
+         sig'
+      -- a constant; make it look like op: () -> type
+      [resolveNiladicConstructors type]
+    HasSignature(evalDomain domform, [op,sig])
   newHasAttribute(eval mkEvalable domform,catOrAtt)
  
 lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4

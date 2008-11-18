@@ -1,3 +1,9 @@
+2008-11-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nrunfast.boot (resolveNiladicConstructors): New.
+	(newHasTest): Use it to handle signature export test.
+	* testsuite/interpreter/has.input: New.
+
 2008-11-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/lisplib.boot (compDefineExports): Now take operation
