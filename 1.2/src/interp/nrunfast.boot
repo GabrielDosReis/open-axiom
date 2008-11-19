@@ -614,6 +614,15 @@ newHasTest(domform,catOrAtt) ==
   null isAtom and constructor? op  =>
     domain := eval mkEvalable domform
     newHasCategory(domain,catOrAtt)
+  catOrAtt is [":",op,type] =>
+    sig := 
+      type is ["Mapping",:sig'] =>
+        for ts in tails sig' repeat
+          rplac(first ts, evaluateType first ts)
+        sig'
+      -- a constant; make it look like op: () -> type
+      [evaluateType type]
+    HasSignature(evalDomain domform,[op,sig])
   newHasAttribute(eval mkEvalable domform,catOrAtt)
  
 lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
