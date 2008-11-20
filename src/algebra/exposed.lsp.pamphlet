@@ -663,6 +663,7 @@
   (|GradedModule| . GRMOD)
   (|Group| . GROUP)
   (|HomogeneousAggregate| . HOAGG)
+  (|HomotopicTo| . HOMOTOP)
   (|HyperbolicFunctionCategory| . HYPCAT)
   (|IndexedAggregate| . IXAGG)
   (|IndexedDirectProductCategory| . IDPC)

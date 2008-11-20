@@ -79,6 +79,23 @@ CoercibleFrom(S: Type): Category == with
 @
 
 
+\section{category HOMOTOP HomotopicTo}
+
+<<category HOMOTOP HomotopicTo>>=
+)abbrev category HOMOTOP HomotopicTo
+++ Author: Gabriel Dos Reis
+++ Date Create: November 19, 2008
+++ Date Last Modified: November 19, 2008
+++ See Also: CoercibleTo, CoercibleFrom
+++ Description:
+++   A is homotopic to B iff any element of domain B can be
+++   automically converted into an element of domain B, and nay
+++   element of domain B can be automatically converted into an A.
+HomotopicTo(S: Type): Category ==  Join(CoercibleTo S, CoercibleFrom S)
+
+@
+
+
 \section{category KONVERT ConvertibleTo}
 
 <<category KONVERT ConvertibleTo>>=
@@ -189,6 +206,8 @@ RetractableTo(S: Type): Category == CoercibleFrom S with
 <<category UTYPE UnionType>>
 <<category KOERCE CoercibleTo>>
 <<category KRCFROM CoercibleFrom>>
+<<category HOMOTOP HomotopicTo>>
+
 <<category KONVERT ConvertibleTo>>
 <<category KVTFROM ConvertibleFrom>>
 <<category RETRACT RetractableTo>>

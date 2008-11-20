@@ -1,5 +1,11 @@
 2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/coerce.spad.pamphlet (HomotopicTo): New.
+	* algebra/exposed.lsp.pamphlet: Expose it.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include HOMOTOP.
+
+2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/coerce.spad.pamphlet (CoercibleFrom): New.
 	(ConvertibleFrom): Likewise.
 	(RetractableTo): Use it.
