@@ -87,24 +87,3 @@
                                   0 0 0 15 0 6 0 16 1 6 7 0 18 1 9 21 0
                                   22 1 0 0 0 17 1 0 23 0 24)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|UniqueFactorizationDomain&| '|isFunctor|
-             '(((|squareFreePart| ($ $)) T (ELT $ 17))
-               ((|prime?| ((|Boolean|) $)) T (ELT $ 24)))
-             (|addModemap| '|UniqueFactorizationDomain&|
-                 '(|UniqueFactorizationDomain&| |#1|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE |squareFreePart| (|#1| |#1|))
-                       (SIGNATURE |prime?| ((|Boolean|) |#1|)))
-                   (|UniqueFactorizationDomain|))
-                 T '|UniqueFactorizationDomain&|
-                 (|put| '|UniqueFactorizationDomain&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE |squareFreePart|
-                                     (|#1| |#1|))
-                                 (SIGNATURE |prime?|
-                                     ((|Boolean|) |#1|)))
-                             (|UniqueFactorizationDomain|))
-                        |$CategoryFrame|)))) 

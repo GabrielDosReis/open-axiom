@@ -97,8 +97,8 @@
                                            (|List| |t#1|))
                                          NIL))
                                 . #1=(|HomogeneousAggregate|))))) . #1#)
-        (SETELT #0# 0
-                (LIST '|HomogeneousAggregate| (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|HomogeneousAggregate| (|devaluate| |t#1|))))))) 
 
 (DEFUN |HomogeneousAggregate| (#0=#:G1399)
   (LET (#1=#:G1400)
@@ -110,10 +110,3 @@
                               (SETQ #1# (|HomogeneousAggregate;| #0#)))
                         |HomogeneousAggregate;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|HomogeneousAggregate| '|isCategory| T
-             (|addModemap| '|HomogeneousAggregate|
-                 '(|HomogeneousAggregate| |#1|)
-                 '((|Category|) (|Type|)) T '|HomogeneousAggregate|
-                 |$CategoryFrame|))) 

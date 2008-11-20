@@ -11,17 +11,12 @@
                            (|mkCategory| '|package| NIL
                                '((|noZeroDivisors| T)) 'NIL NIL))
                    |EntireRing|)
-        (SETELT #0# 0 '(|EntireRing|)))))) 
+        (|setShellEntry| #0# 0 '(|EntireRing|)))))) 
 
 (DEFUN |EntireRing| ()
   (LET ()
     (COND
       (|EntireRing;AL|)
       (T (SETQ |EntireRing;AL| (|EntireRing;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|EntireRing| '|isCategory| T
-             (|addModemap| '|EntireRing| '(|EntireRing|)
-                 '((|Category|)) T '|EntireRing| |$CategoryFrame|))) 
 
 (MAKEPROP '|EntireRing| 'NILADIC T) 

@@ -185,6 +185,7 @@ system.spad.pamphlet  (MSYSCMD)
 
 axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
+  KRCFROM  KVTFROM                                      \
   MSYSCMD           OM       OMCONN   OMDEV    OUT      \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
            PROPERTY BASTYPE  BASTYPE- CATEGORY LMODULE  \

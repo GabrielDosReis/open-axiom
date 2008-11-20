@@ -17,14 +17,9 @@
                                '((|Integer|) (|NonNegativeInteger|))
                                NIL))
                    |Ring|)
-        (SETELT #0# 0 '(|Ring|)))))) 
+        (|setShellEntry| #0# 0 '(|Ring|)))))) 
 
 (DEFUN |Ring| ()
   (LET () (COND (|Ring;AL|) (T (SETQ |Ring;AL| (|Ring;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|Ring| '|isCategory| T
-             (|addModemap| '|Ring| '(|Ring|) '((|Category|)) T '|Ring|
-                 |$CategoryFrame|))) 
 
 (MAKEPROP '|Ring| 'NILADIC T) 

@@ -15,7 +15,7 @@
                                  ((|factor| ((|Factored| $) $)) T))
                                NIL '((|Factored| $) (|Boolean|)) NIL))
                    |UniqueFactorizationDomain|)
-        (SETELT #0# 0 '(|UniqueFactorizationDomain|)))))) 
+        (|setShellEntry| #0# 0 '(|UniqueFactorizationDomain|)))))) 
 
 (DEFUN |UniqueFactorizationDomain| ()
   (LET ()
@@ -23,11 +23,5 @@
       (|UniqueFactorizationDomain;AL|)
       (T (SETQ |UniqueFactorizationDomain;AL|
                (|UniqueFactorizationDomain;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|UniqueFactorizationDomain| '|isCategory| T
-             (|addModemap| '|UniqueFactorizationDomain|
-                 '(|UniqueFactorizationDomain|) '((|Category|)) T
-                 '|UniqueFactorizationDomain| |$CategoryFrame|))) 
 
 (MAKEPROP '|UniqueFactorizationDomain| 'NILADIC T) 

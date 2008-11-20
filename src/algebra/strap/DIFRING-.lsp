@@ -57,33 +57,3 @@
                                 '(1 6 0 0 7 2 6 0 0 9 11 2 0 0 0 9 10 2
                                   0 0 0 9 12 1 0 0 0 8)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|DifferentialRing&| '|isFunctor|
-             '(((D ($ $ (|NonNegativeInteger|))) T (ELT $ 12))
-               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
-                (ELT $ 10))
-               ((D ($ $)) T (ELT $ 8))
-               ((|differentiate| ($ $)) T (ELT $ NIL)))
-             (|addModemap| '|DifferentialRing&|
-                 '(|DifferentialRing&| |#1|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE D (|#1| |#1| (|NonNegativeInteger|)))
-                       (SIGNATURE |differentiate|
-                           (|#1| |#1| (|NonNegativeInteger|)))
-                       (SIGNATURE D (|#1| |#1|))
-                       (SIGNATURE |differentiate| (|#1| |#1|)))
-                   (|DifferentialRing|))
-                 T '|DifferentialRing&|
-                 (|put| '|DifferentialRing&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE D
-                                     (|#1| |#1| (|NonNegativeInteger|)))
-                                 (SIGNATURE |differentiate|
-                                     (|#1| |#1| (|NonNegativeInteger|)))
-                                 (SIGNATURE D (|#1| |#1|))
-                                 (SIGNATURE |differentiate|
-                                     (|#1| |#1|)))
-                             (|DifferentialRing|))
-                        |$CategoryFrame|)))) 

@@ -44,7 +44,8 @@
                                          '((|Boolean|) (|List| |t#1|))
                                          NIL))
                                 . #1=(|SetAggregate|))))) . #1#)
-        (SETELT #0# 0 (LIST '|SetAggregate| (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|SetAggregate| (|devaluate| |t#1|))))))) 
 
 (DEFUN |SetAggregate| (#0=#:G1398)
   (LET (#1=#:G1399)
@@ -56,9 +57,3 @@
                               (SETQ #1# (|SetAggregate;| #0#)))
                         |SetAggregate;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|SetAggregate| '|isCategory| T
-             (|addModemap| '|SetAggregate| '(|SetAggregate| |#1|)
-                 '((|Category|) (|SetCategory|)) T '|SetAggregate|
-                 |$CategoryFrame|))) 

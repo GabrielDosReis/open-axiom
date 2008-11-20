@@ -31,18 +31,12 @@
                                      ((|abs| ($ $)) T))
                                    NIL '((|Integer|)) NIL)))
                    |RealNumberSystem|)
-        (SETELT #0# 0 '(|RealNumberSystem|)))))) 
+        (|setShellEntry| #0# 0 '(|RealNumberSystem|)))))) 
 
 (DEFUN |RealNumberSystem| ()
   (LET ()
     (COND
       (|RealNumberSystem;AL|)
       (T (SETQ |RealNumberSystem;AL| (|RealNumberSystem;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|RealNumberSystem| '|isCategory| T
-             (|addModemap| '|RealNumberSystem| '(|RealNumberSystem|)
-                 '((|Category|)) T '|RealNumberSystem|
-                 |$CategoryFrame|))) 
 
 (MAKEPROP '|RealNumberSystem| 'NILADIC T) 

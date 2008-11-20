@@ -68,38 +68,3 @@
                                   0 0 13 0 21 2 0 11 0 0 12 2 0 0 0 0 9
                                   2 0 0 13 0 21 2 0 0 15 0 16)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|AbelianGroup&| '|isFunctor|
-             '(((* ($ (|Integer|) $)) T (ELT $ 21))
-               ((- ($ $ $)) T (ELT $ 9)) ((- ($ $)) T (ELT $ NIL))
-               ((|subtractIfCan| ((|Union| $ "failed") $ $)) T
-                (ELT $ 12))
-               ((* ($ (|NonNegativeInteger|) $)) T (ELT $ 16))
-               ((* ($ (|PositiveInteger|) $)) T (ELT $ NIL)))
-             (|addModemap| '|AbelianGroup&| '(|AbelianGroup&| |#1|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE * (|#1| (|Integer|) |#1|))
-                       (SIGNATURE - (|#1| |#1| |#1|))
-                       (SIGNATURE - (|#1| |#1|))
-                       (SIGNATURE |subtractIfCan|
-                           ((|Union| |#1| "failed") |#1| |#1|))
-                       (SIGNATURE * (|#1| (|NonNegativeInteger|) |#1|))
-                       (SIGNATURE * (|#1| (|PositiveInteger|) |#1|)))
-                   (|AbelianGroup|))
-                 T '|AbelianGroup&|
-                 (|put| '|AbelianGroup&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE * (|#1| (|Integer|) |#1|))
-                                 (SIGNATURE - (|#1| |#1| |#1|))
-                                 (SIGNATURE - (|#1| |#1|))
-                                 (SIGNATURE |subtractIfCan|
-                                     ((|Union| |#1| "failed") |#1|
-                                      |#1|))
-                                 (SIGNATURE *
-                                     (|#1| (|NonNegativeInteger|) |#1|))
-                                 (SIGNATURE *
-                                     (|#1| (|PositiveInteger|) |#1|)))
-                             (|AbelianGroup|))
-                        |$CategoryFrame|)))) 

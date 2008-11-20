@@ -17,17 +17,12 @@
                                '((|NonNegativeInteger|) (|Boolean|))
                                NIL))
                    |AbelianMonoid|)
-        (SETELT #0# 0 '(|AbelianMonoid|)))))) 
+        (|setShellEntry| #0# 0 '(|AbelianMonoid|)))))) 
 
 (DEFUN |AbelianMonoid| ()
   (LET ()
     (COND
       (|AbelianMonoid;AL|)
       (T (SETQ |AbelianMonoid;AL| (|AbelianMonoid;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|AbelianMonoid| '|isCategory| T
-             (|addModemap| '|AbelianMonoid| '(|AbelianMonoid|)
-                 '((|Category|)) T '|AbelianMonoid| |$CategoryFrame|))) 
 
 (MAKEPROP '|AbelianMonoid| 'NILADIC T) 

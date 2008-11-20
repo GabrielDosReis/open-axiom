@@ -42,17 +42,12 @@
                                  (|Boolean|))
                                NIL))
                    |EuclideanDomain|)
-        (SETELT #0# 0 '(|EuclideanDomain|)))))) 
+        (|setShellEntry| #0# 0 '(|EuclideanDomain|)))))) 
 
 (DEFUN |EuclideanDomain| ()
   (LET ()
     (COND
       (|EuclideanDomain;AL|)
       (T (SETQ |EuclideanDomain;AL| (|EuclideanDomain;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|EuclideanDomain| '|isCategory| T
-             (|addModemap| '|EuclideanDomain| '(|EuclideanDomain|)
-                 '((|Category|)) T '|EuclideanDomain| |$CategoryFrame|))) 
 
 (MAKEPROP '|EuclideanDomain| 'NILADIC T) 

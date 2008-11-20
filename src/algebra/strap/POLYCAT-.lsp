@@ -142,8 +142,8 @@
                 |POLYCAT-;convert;SIf;43|)) 
 
 (DEFUN |POLYCAT-;eval;SLS;1| (|p| |l| $)
-  (PROG (#0=#:G1686 #1=#:G1426 #2=#:G1687 #3=#:G1688 |lvar| #4=#:G1689
-            |e| #5=#:G1690)
+  (PROG (#0=#:G1688 #1=#:G1426 #2=#:G1689 #3=#:G1690 |lvar| #4=#:G1691
+            |e| #5=#:G1692)
     (RETURN
       (SEQ (COND
              ((NULL |l|) |p|)
@@ -261,7 +261,7 @@
         ('T (CONS 0 |l|)))))) 
 
 (DEFUN |POLYCAT-;isTimes;SU;4| (|p| $)
-  (PROG (|lv| #0=#:G1691 |v| #1=#:G1692 |l| |r|)
+  (PROG (|lv| #0=#:G1693 |v| #1=#:G1694 |l| |r|)
     (RETURN
       (SEQ (COND
              ((OR (NULL (LETT |lv|
@@ -402,7 +402,7 @@
       (|getShellEntry| $ 62))) 
 
 (DEFUN |POLYCAT-;primitiveMonomials;SL;12| (|p| $)
-  (PROG (#0=#:G1693 |q| #1=#:G1694)
+  (PROG (#0=#:G1695 |q| #1=#:G1696)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |POLYCAT-;primitiveMonomials;SL;12|)
@@ -522,7 +522,7 @@
       (|getShellEntry| $ 77))) 
 
 (DEFUN |POLYCAT-;allMonoms| (|l| $)
-  (PROG (#0=#:G1695 |p| #1=#:G1696)
+  (PROG (#0=#:G1697 |p| #1=#:G1698)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
@@ -549,7 +549,7 @@
                (|getShellEntry| $ 82)))))) 
 
 (DEFUN |POLYCAT-;P2R| (|p| |b| |n| $)
-  (PROG (|w| |bj| #0=#:G1698 |i| #1=#:G1697)
+  (PROG (|w| |bj| #0=#:G1700 |i| #1=#:G1699)
     (RETURN
       (SEQ (LETT |w|
                  (SPADCALL |n| (|spadConstant| $ 23)
@@ -578,7 +578,7 @@
            (EXIT |w|))))) 
 
 (DEFUN |POLYCAT-;eq2R| (|l| |b| $)
-  (PROG (#0=#:G1699 |bj| #1=#:G1700 #2=#:G1701 |p| #3=#:G1702)
+  (PROG (#0=#:G1701 |bj| #1=#:G1702 #2=#:G1703 |p| #3=#:G1704)
     (RETURN
       (SEQ (SPADCALL
                (PROGN
@@ -628,7 +628,7 @@
                (|getShellEntry| $ 92)))))) 
 
 (DEFUN |POLYCAT-;reducedSystem;MM;20| (|m| $)
-  (PROG (#0=#:G1703 |r| #1=#:G1704 |b| #2=#:G1705 |bj| #3=#:G1706 |d|
+  (PROG (#0=#:G1705 |r| #1=#:G1706 |b| #2=#:G1707 |bj| #3=#:G1708 |d|
             |mm| |l|)
     (RETURN
       (SEQ (LETT |l| (SPADCALL |m| (|getShellEntry| $ 95))
@@ -705,7 +705,7 @@
            (EXIT |mm|))))) 
 
 (DEFUN |POLYCAT-;reducedSystem;MVR;21| (|m| |v| $)
-  (PROG (#0=#:G1707 |s| #1=#:G1708 |b| #2=#:G1709 |bj| #3=#:G1710 |d|
+  (PROG (#0=#:G1709 |s| #1=#:G1710 |b| #2=#:G1711 |bj| #3=#:G1712 |d|
             |n| |mm| |w| |l| |r|)
     (RETURN
       (SEQ (LETT |l| (SPADCALL |m| (|getShellEntry| $ 95))
@@ -812,8 +812,8 @@
   (SPADCALL |pp| (|getShellEntry| $ 121))) 
 
 (DEFUN |POLYCAT-;factor;SF;26| (|p| $)
-  (PROG (|v| |ansR| #0=#:G1711 |w| #1=#:G1712 |up| |ansSUP| #2=#:G1713
-             |ww| #3=#:G1714)
+  (PROG (|v| |ansR| #0=#:G1713 |w| #1=#:G1714 |up| |ansSUP| #2=#:G1715
+             |ww| #3=#:G1716)
     (RETURN
       (SEQ (LETT |v| (SPADCALL |p| (|getShellEntry| $ 43))
                  |POLYCAT-;factor;SF;26|)
@@ -912,13 +912,13 @@
                                    (|getShellEntry| $ 134))))))))))) 
 
 (DEFUN |POLYCAT-;conditionP;MU;27| (|mat| $)
-  (PROG (|ll| #0=#:G1715 |z| #1=#:G1716 |ch| |l| #2=#:G1717 #3=#:G1718
-              #4=#:G1580 #5=#:G1578 #6=#:G1579 #7=#:G1719 |vars| |degs|
-              #8=#:G1720 |d| #9=#:G1721 |nd| #10=#:G1607 #11=#:G1587
-              |deg1| |redmons| #12=#:G1722 |v| #13=#:G1724 |u|
-              #14=#:G1723 |llR| |monslist| |ans| #15=#:G1725
-              #16=#:G1726 |mons| #17=#:G1727 |m| #18=#:G1728 |i|
-              #19=#:G1603 #20=#:G1601 #21=#:G1602)
+  (PROG (|ll| #0=#:G1717 |z| #1=#:G1718 |ch| |l| #2=#:G1719 #3=#:G1720
+              #4=#:G1582 #5=#:G1580 #6=#:G1581 #7=#:G1721 |vars| |degs|
+              #8=#:G1722 |d| #9=#:G1723 |nd| #10=#:G1609 #11=#:G1589
+              |deg1| |redmons| #12=#:G1724 |v| #13=#:G1726 |u|
+              #14=#:G1725 |llR| |monslist| |ans| #15=#:G1727
+              #16=#:G1728 |mons| #17=#:G1729 |m| #18=#:G1730 |i|
+              #19=#:G1605 #20=#:G1603 #21=#:G1604)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |ll|
                             (SPADCALL
@@ -1281,7 +1281,7 @@
                                    $)))))))))) 
 
 (DEFUN |POLYCAT-;charthRootlv| (|p| |vars| |ch| $)
-  (PROG (|v| |dd| |cp| |d| #0=#:G1628 |ans| |ansx| #1=#:G1635)
+  (PROG (|v| |dd| |cp| |d| #0=#:G1630 |ans| |ansx| #1=#:G1637)
     (RETURN
       (SEQ (EXIT (COND
                    ((NULL |vars|)
@@ -1410,7 +1410,7 @@
   (SPADCALL |p| (|getShellEntry| $ 167))) 
 
 (DEFUN |POLYCAT-;squareFreePart;2S;34| (|p| $)
-  (PROG (|s| |f| #0=#:G1729 #1=#:G1649 #2=#:G1647 #3=#:G1648)
+  (PROG (|s| |f| #0=#:G1731 #1=#:G1651 #2=#:G1649 #3=#:G1650)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
@@ -1456,7 +1456,7 @@
       (|getShellEntry| $ 174))) 
 
 (DEFUN |POLYCAT-;primitivePart;2S;36| (|p| $)
-  (PROG (#0=#:G1653)
+  (PROG (#0=#:G1655)
     (RETURN
       (QVELT (SPADCALL
                  (PROG2 (LETT #0#
@@ -1472,7 +1472,7 @@
              1)))) 
 
 (DEFUN |POLYCAT-;primitivePart;SVarSetS;37| (|p| |v| $)
-  (PROG (#0=#:G1659)
+  (PROG (#0=#:G1661)
     (RETURN
       (QVELT (SPADCALL
                  (PROG2 (LETT #0#
@@ -1895,425 +1895,3 @@
                                   149 98 154 3 0 0 0 16 53 55 3 0 0 0 9
                                   36 52 1 0 145 0 156 2 0 24 0 0 186)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|PolynomialCategory&| '|isFunctor|
-             '(((|gcdPolynomial|
-                    ((|SparseUnivariatePolynomial| $)
-                     (|SparseUnivariatePolynomial| $)
-                     (|SparseUnivariatePolynomial| $)))
-                T (ELT $ 109))
-               ((|squareFree| ((|Factored| $) $)) T (ELT $ 165))
-               ((|squareFreePart| ($ $)) T (ELT $ 173))
-               ((|charthRoot| ((|Union| $ "failed") $)) T (ELT $ 156))
-               ((< ((|Boolean|) $ $)) T (ELT $ 186))
-               ((|convert| ((|InputForm|) $)) T (ELT $ 221))
-               ((|convert| ((|Pattern| (|Integer|)) $)) T (ELT $ 206))
-               ((|convert| ((|Pattern| (|Float|)) $)) T (ELT $ 213))
-               ((|patternMatch|
-                    ((|PatternMatchResult| (|Integer|) $) $
-                     (|Pattern| (|Integer|))
-                     (|PatternMatchResult| (|Integer|) $)))
-                T (ELT $ 192))
-               ((|patternMatch|
-                    ((|PatternMatchResult| (|Float|) $) $
-                     (|Pattern| (|Float|))
-                     (|PatternMatchResult| (|Float|) $)))
-                T (ELT $ 199))
-               ((|factor| ((|Factored| $) $)) T (ELT $ 140))
-               ((|factorPolynomial|
-                    ((|Factored| (|SparseUnivariatePolynomial| $))
-                     (|SparseUnivariatePolynomial| $)))
-                T (ELT $ 120))
-               ((|factorSquareFreePolynomial|
-                    ((|Factored| (|SparseUnivariatePolynomial| $))
-                     (|SparseUnivariatePolynomial| $)))
-                T (ELT $ 122))
-               ((|solveLinearPolynomialEquation|
-                    ((|Union| (|List| (|SparseUnivariatePolynomial| $))
-                              "failed")
-                     (|List| (|SparseUnivariatePolynomial| $))
-                     (|SparseUnivariatePolynomial| $)))
-                T (ELT $ 116))
-               ((|conditionP|
-                    ((|Union| (|Vector| $) "failed") (|Matrix| $)))
-                T (ELT $ 154))
-               ((|primitivePart| ($ $ |#4|)) T (ELT $ 183))
-               ((|content| ($ $ |#4|)) T (ELT $ 175))
-               ((|discriminant| ($ $ |#4|)) T (ELT $ 78))
-               ((|resultant| ($ $ $ |#4|)) T (ELT $ 76))
-               ((|primitiveMonomials| ((|List| $) $)) T (ELT $ 63))
-               ((|totalDegree|
-                    ((|NonNegativeInteger|) $ (|List| |#4|)))
-                T (ELT $ 74))
-               ((|totalDegree| ((|NonNegativeInteger|) $)) T
-                (ELT $ 71))
-               ((|isExpt|
-                    ((|Union| (|Record| (|:| |var| |#4|)
-                                  (|:| |exponent|
-                                       (|NonNegativeInteger|)))
-                              "failed")
-                     $))
-                T (ELT $ 47))
-               ((|isTimes| ((|Union| (|List| $) "failed") $)) T
-                (ELT $ 42))
-               ((|isPlus| ((|Union| (|List| $) "failed") $)) T
-                (ELT $ 31))
-               ((|monomial|
-                    ($ $ (|List| |#4|) (|List| (|NonNegativeInteger|))))
-                T (ELT $ 57))
-               ((|monomial| ($ $ |#4| (|NonNegativeInteger|))) T
-                (ELT $ NIL))
-               ((|monicDivide|
-                    ((|Record| (|:| |quotient| $) (|:| |remainder| $))
-                     $ $ |#4|))
-                T (ELT $ 162))
-               ((|monomials| ((|List| $) $)) T (ELT $ 28))
-               ((|coefficient|
-                    ($ $ (|List| |#4|) (|List| (|NonNegativeInteger|))))
-                T (ELT $ 55))
-               ((|coefficient| ($ $ |#4| (|NonNegativeInteger|))) T
-                (ELT $ 52))
-               ((|reducedSystem| ((|Matrix| |#2|) (|Matrix| $))) T
-                (ELT $ 99))
-               ((|reducedSystem|
-                    ((|Record| (|:| |mat| (|Matrix| |#2|))
-                         (|:| |vec| (|Vector| |#2|)))
-                     (|Matrix| $) (|Vector| $)))
-                T (ELT $ 106))
-               ((|reducedSystem|
-                    ((|Record| (|:| |mat| (|Matrix| (|Integer|)))
-                         (|:| |vec| (|Vector| (|Integer|))))
-                     (|Matrix| $) (|Vector| $)))
-                T (ELT $ NIL))
-               ((|reducedSystem| ((|Matrix| (|Integer|)) (|Matrix| $)))
-                T (ELT $ NIL))
-               ((|retract| (|#4| $)) T (ELT $ 59))
-               ((|retractIfCan| ((|Union| |#4| "failed") $)) T
-                (ELT $ 60))
-               ((|eval| ($ $ (|List| |#4|) (|List| $))) T (ELT $ NIL))
-               ((|eval| ($ $ |#4| $)) T (ELT $ NIL))
-               ((|eval| ($ $ (|List| |#4|) (|List| |#2|))) T
-                (ELT $ NIL))
-               ((|eval| ($ $ |#4| |#2|)) T (ELT $ NIL))
-               ((|eval| ($ $ (|List| $) (|List| $))) T (ELT $ NIL))
-               ((|eval| ($ $ $ $)) T (ELT $ NIL))
-               ((|eval| ($ $ (|Equation| $))) T (ELT $ NIL))
-               ((|eval| ($ $ (|List| (|Equation| $)))) T (ELT $ 21))
-               ((|monomial| ($ |#2| |#3|)) T (ELT $ NIL))
-               ((|coefficient| (|#2| $ |#3|)) T (ELT $ NIL))
-               ((|retract| ((|Integer|) $)) T (ELT $ NIL))
-               ((|retractIfCan| ((|Union| (|Integer|) "failed") $)) T
-                (ELT $ NIL))
-               ((|retract| ((|Fraction| (|Integer|)) $)) T (ELT $ NIL))
-               ((|retractIfCan|
-                    ((|Union| (|Fraction| (|Integer|)) "failed") $))
-                T (ELT $ NIL))
-               ((|retractIfCan| ((|Union| |#2| "failed") $)) T
-                (ELT $ NIL))
-               ((|retract| (|#2| $)) T (ELT $ NIL))
-               ((|content| (|#2| $)) T (ELT $ NIL))
-               ((|primitivePart| ($ $)) T (ELT $ 180)))
-             (|addModemap| '|PolynomialCategory&|
-                 '(|PolynomialCategory&| |#1| |#2| |#3| |#4|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE |gcdPolynomial|
-                           ((|SparseUnivariatePolynomial| |#1|)
-                            (|SparseUnivariatePolynomial| |#1|)
-                            (|SparseUnivariatePolynomial| |#1|)))
-                       (SIGNATURE |squareFree|
-                           ((|Factored| |#1|) |#1|))
-                       (SIGNATURE |squareFreePart| (|#1| |#1|))
-                       (SIGNATURE |charthRoot|
-                           ((|Union| |#1| "failed") |#1|))
-                       (SIGNATURE < ((|Boolean|) |#1| |#1|))
-                       (SIGNATURE |convert| ((|InputForm|) |#1|))
-                       (SIGNATURE |convert|
-                           ((|Pattern| (|Integer|)) |#1|))
-                       (SIGNATURE |convert|
-                           ((|Pattern| (|Float|)) |#1|))
-                       (SIGNATURE |patternMatch|
-                           ((|PatternMatchResult| (|Integer|) |#1|)
-                            |#1| (|Pattern| (|Integer|))
-                            (|PatternMatchResult| (|Integer|) |#1|)))
-                       (SIGNATURE |patternMatch|
-                           ((|PatternMatchResult| (|Float|) |#1|) |#1|
-                            (|Pattern| (|Float|))
-                            (|PatternMatchResult| (|Float|) |#1|)))
-                       (SIGNATURE |factor| ((|Factored| |#1|) |#1|))
-                       (SIGNATURE |factorPolynomial|
-                           ((|Factored|
-                                (|SparseUnivariatePolynomial| |#1|))
-                            (|SparseUnivariatePolynomial| |#1|)))
-                       (SIGNATURE |factorSquareFreePolynomial|
-                           ((|Factored|
-                                (|SparseUnivariatePolynomial| |#1|))
-                            (|SparseUnivariatePolynomial| |#1|)))
-                       (SIGNATURE |solveLinearPolynomialEquation|
-                           ((|Union| (|List|
-                                      (|SparseUnivariatePolynomial|
-                                       |#1|))
-                                     "failed")
-                            (|List| (|SparseUnivariatePolynomial| |#1|))
-                            (|SparseUnivariatePolynomial| |#1|)))
-                       (SIGNATURE |conditionP|
-                           ((|Union| (|Vector| |#1|) "failed")
-                            (|Matrix| |#1|)))
-                       (SIGNATURE |primitivePart| (|#1| |#1| |#4|))
-                       (SIGNATURE |content| (|#1| |#1| |#4|))
-                       (SIGNATURE |discriminant| (|#1| |#1| |#4|))
-                       (SIGNATURE |resultant| (|#1| |#1| |#1| |#4|))
-                       (SIGNATURE |primitiveMonomials|
-                           ((|List| |#1|) |#1|))
-                       (SIGNATURE |totalDegree|
-                           ((|NonNegativeInteger|) |#1| (|List| |#4|)))
-                       (SIGNATURE |totalDegree|
-                           ((|NonNegativeInteger|) |#1|))
-                       (SIGNATURE |isExpt|
-                           ((|Union| (|Record| (|:| |var| |#4|)
-                                      (|:| |exponent|
-                                       (|NonNegativeInteger|)))
-                                     "failed")
-                            |#1|))
-                       (SIGNATURE |isTimes|
-                           ((|Union| (|List| |#1|) "failed") |#1|))
-                       (SIGNATURE |isPlus|
-                           ((|Union| (|List| |#1|) "failed") |#1|))
-                       (SIGNATURE |monomial|
-                           (|#1| |#1| (|List| |#4|)
-                                 (|List| (|NonNegativeInteger|))))
-                       (SIGNATURE |monomial|
-                           (|#1| |#1| |#4| (|NonNegativeInteger|)))
-                       (SIGNATURE |monicDivide|
-                           ((|Record| (|:| |quotient| |#1|)
-                                (|:| |remainder| |#1|))
-                            |#1| |#1| |#4|))
-                       (SIGNATURE |monomials| ((|List| |#1|) |#1|))
-                       (SIGNATURE |coefficient|
-                           (|#1| |#1| (|List| |#4|)
-                                 (|List| (|NonNegativeInteger|))))
-                       (SIGNATURE |coefficient|
-                           (|#1| |#1| |#4| (|NonNegativeInteger|)))
-                       (SIGNATURE |reducedSystem|
-                           ((|Matrix| |#2|) (|Matrix| |#1|)))
-                       (SIGNATURE |reducedSystem|
-                           ((|Record| (|:| |mat| (|Matrix| |#2|))
-                                (|:| |vec| (|Vector| |#2|)))
-                            (|Matrix| |#1|) (|Vector| |#1|)))
-                       (SIGNATURE |reducedSystem|
-                           ((|Record| (|:| |mat|
-                                       (|Matrix| (|Integer|)))
-                                      (|:| |vec|
-                                       (|Vector| (|Integer|))))
-                            (|Matrix| |#1|) (|Vector| |#1|)))
-                       (SIGNATURE |reducedSystem|
-                           ((|Matrix| (|Integer|)) (|Matrix| |#1|)))
-                       (SIGNATURE |retract| (|#4| |#1|))
-                       (SIGNATURE |retractIfCan|
-                           ((|Union| |#4| "failed") |#1|))
-                       (SIGNATURE |eval|
-                           (|#1| |#1| (|List| |#4|) (|List| |#1|)))
-                       (SIGNATURE |eval| (|#1| |#1| |#4| |#1|))
-                       (SIGNATURE |eval|
-                           (|#1| |#1| (|List| |#4|) (|List| |#2|)))
-                       (SIGNATURE |eval| (|#1| |#1| |#4| |#2|))
-                       (SIGNATURE |eval|
-                           (|#1| |#1| (|List| |#1|) (|List| |#1|)))
-                       (SIGNATURE |eval| (|#1| |#1| |#1| |#1|))
-                       (SIGNATURE |eval| (|#1| |#1| (|Equation| |#1|)))
-                       (SIGNATURE |eval|
-                           (|#1| |#1| (|List| (|Equation| |#1|))))
-                       (SIGNATURE |monomial| (|#1| |#2| |#3|))
-                       (SIGNATURE |coefficient| (|#2| |#1| |#3|))
-                       (SIGNATURE |retract| ((|Integer|) |#1|))
-                       (SIGNATURE |retractIfCan|
-                           ((|Union| (|Integer|) "failed") |#1|))
-                       (SIGNATURE |retract|
-                           ((|Fraction| (|Integer|)) |#1|))
-                       (SIGNATURE |retractIfCan|
-                           ((|Union| (|Fraction| (|Integer|)) "failed")
-                            |#1|))
-                       (SIGNATURE |retractIfCan|
-                           ((|Union| |#2| "failed") |#1|))
-                       (SIGNATURE |retract| (|#2| |#1|))
-                       (SIGNATURE |content| (|#2| |#1|))
-                       (SIGNATURE |primitivePart| (|#1| |#1|)))
-                   (|PolynomialCategory| |#2| |#3| |#4|) (|Ring|)
-                   (|OrderedAbelianMonoidSup|) (|OrderedSet|))
-                 T '|PolynomialCategory&|
-                 (|put| '|PolynomialCategory&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE |gcdPolynomial|
-                                     ((|SparseUnivariatePolynomial|
-                                       |#1|)
-                                      (|SparseUnivariatePolynomial|
-                                       |#1|)
-                                      (|SparseUnivariatePolynomial|
-                                       |#1|)))
-                                 (SIGNATURE |squareFree|
-                                     ((|Factored| |#1|) |#1|))
-                                 (SIGNATURE |squareFreePart|
-                                     (|#1| |#1|))
-                                 (SIGNATURE |charthRoot|
-                                     ((|Union| |#1| "failed") |#1|))
-                                 (SIGNATURE < ((|Boolean|) |#1| |#1|))
-                                 (SIGNATURE |convert|
-                                     ((|InputForm|) |#1|))
-                                 (SIGNATURE |convert|
-                                     ((|Pattern| (|Integer|)) |#1|))
-                                 (SIGNATURE |convert|
-                                     ((|Pattern| (|Float|)) |#1|))
-                                 (SIGNATURE |patternMatch|
-                                     ((|PatternMatchResult| (|Integer|)
-                                       |#1|)
-                                      |#1| (|Pattern| (|Integer|))
-                                      (|PatternMatchResult| (|Integer|)
-                                       |#1|)))
-                                 (SIGNATURE |patternMatch|
-                                     ((|PatternMatchResult| (|Float|)
-                                       |#1|)
-                                      |#1| (|Pattern| (|Float|))
-                                      (|PatternMatchResult| (|Float|)
-                                       |#1|)))
-                                 (SIGNATURE |factor|
-                                     ((|Factored| |#1|) |#1|))
-                                 (SIGNATURE |factorPolynomial|
-                                     ((|Factored|
-                                       (|SparseUnivariatePolynomial|
-                                        |#1|))
-                                      (|SparseUnivariatePolynomial|
-                                       |#1|)))
-                                 (SIGNATURE
-                                     |factorSquareFreePolynomial|
-                                     ((|Factored|
-                                       (|SparseUnivariatePolynomial|
-                                        |#1|))
-                                      (|SparseUnivariatePolynomial|
-                                       |#1|)))
-                                 (SIGNATURE
-                                     |solveLinearPolynomialEquation|
-                                     ((|Union|
-                                       (|List|
-                                        (|SparseUnivariatePolynomial|
-                                         |#1|))
-                                       "failed")
-                                      (|List|
-                                       (|SparseUnivariatePolynomial|
-                                        |#1|))
-                                      (|SparseUnivariatePolynomial|
-                                       |#1|)))
-                                 (SIGNATURE |conditionP|
-                                     ((|Union| (|Vector| |#1|)
-                                       "failed")
-                                      (|Matrix| |#1|)))
-                                 (SIGNATURE |primitivePart|
-                                     (|#1| |#1| |#4|))
-                                 (SIGNATURE |content| (|#1| |#1| |#4|))
-                                 (SIGNATURE |discriminant|
-                                     (|#1| |#1| |#4|))
-                                 (SIGNATURE |resultant|
-                                     (|#1| |#1| |#1| |#4|))
-                                 (SIGNATURE |primitiveMonomials|
-                                     ((|List| |#1|) |#1|))
-                                 (SIGNATURE |totalDegree|
-                                     ((|NonNegativeInteger|) |#1|
-                                      (|List| |#4|)))
-                                 (SIGNATURE |totalDegree|
-                                     ((|NonNegativeInteger|) |#1|))
-                                 (SIGNATURE |isExpt|
-                                     ((|Union|
-                                       (|Record| (|:| |var| |#4|)
-                                        (|:| |exponent|
-                                         (|NonNegativeInteger|)))
-                                       "failed")
-                                      |#1|))
-                                 (SIGNATURE |isTimes|
-                                     ((|Union| (|List| |#1|) "failed")
-                                      |#1|))
-                                 (SIGNATURE |isPlus|
-                                     ((|Union| (|List| |#1|) "failed")
-                                      |#1|))
-                                 (SIGNATURE |monomial|
-                                     (|#1| |#1| (|List| |#4|)
-                                      (|List| (|NonNegativeInteger|))))
-                                 (SIGNATURE |monomial|
-                                     (|#1| |#1| |#4|
-                                      (|NonNegativeInteger|)))
-                                 (SIGNATURE |monicDivide|
-                                     ((|Record| (|:| |quotient| |#1|)
-                                       (|:| |remainder| |#1|))
-                                      |#1| |#1| |#4|))
-                                 (SIGNATURE |monomials|
-                                     ((|List| |#1|) |#1|))
-                                 (SIGNATURE |coefficient|
-                                     (|#1| |#1| (|List| |#4|)
-                                      (|List| (|NonNegativeInteger|))))
-                                 (SIGNATURE |coefficient|
-                                     (|#1| |#1| |#4|
-                                      (|NonNegativeInteger|)))
-                                 (SIGNATURE |reducedSystem|
-                                     ((|Matrix| |#2|) (|Matrix| |#1|)))
-                                 (SIGNATURE |reducedSystem|
-                                     ((|Record|
-                                       (|:| |mat| (|Matrix| |#2|))
-                                       (|:| |vec| (|Vector| |#2|)))
-                                      (|Matrix| |#1|) (|Vector| |#1|)))
-                                 (SIGNATURE |reducedSystem|
-                                     ((|Record|
-                                       (|:| |mat|
-                                        (|Matrix| (|Integer|)))
-                                       (|:| |vec|
-                                        (|Vector| (|Integer|))))
-                                      (|Matrix| |#1|) (|Vector| |#1|)))
-                                 (SIGNATURE |reducedSystem|
-                                     ((|Matrix| (|Integer|))
-                                      (|Matrix| |#1|)))
-                                 (SIGNATURE |retract| (|#4| |#1|))
-                                 (SIGNATURE |retractIfCan|
-                                     ((|Union| |#4| "failed") |#1|))
-                                 (SIGNATURE |eval|
-                                     (|#1| |#1| (|List| |#4|)
-                                      (|List| |#1|)))
-                                 (SIGNATURE |eval|
-                                     (|#1| |#1| |#4| |#1|))
-                                 (SIGNATURE |eval|
-                                     (|#1| |#1| (|List| |#4|)
-                                      (|List| |#2|)))
-                                 (SIGNATURE |eval|
-                                     (|#1| |#1| |#4| |#2|))
-                                 (SIGNATURE |eval|
-                                     (|#1| |#1| (|List| |#1|)
-                                      (|List| |#1|)))
-                                 (SIGNATURE |eval|
-                                     (|#1| |#1| |#1| |#1|))
-                                 (SIGNATURE |eval|
-                                     (|#1| |#1| (|Equation| |#1|)))
-                                 (SIGNATURE |eval|
-                                     (|#1| |#1|
-                                      (|List| (|Equation| |#1|))))
-                                 (SIGNATURE |monomial|
-                                     (|#1| |#2| |#3|))
-                                 (SIGNATURE |coefficient|
-                                     (|#2| |#1| |#3|))
-                                 (SIGNATURE |retract|
-                                     ((|Integer|) |#1|))
-                                 (SIGNATURE |retractIfCan|
-                                     ((|Union| (|Integer|) "failed")
-                                      |#1|))
-                                 (SIGNATURE |retract|
-                                     ((|Fraction| (|Integer|)) |#1|))
-                                 (SIGNATURE |retractIfCan|
-                                     ((|Union| (|Fraction| (|Integer|))
-                                       "failed")
-                                      |#1|))
-                                 (SIGNATURE |retractIfCan|
-                                     ((|Union| |#2| "failed") |#1|))
-                                 (SIGNATURE |retract| (|#2| |#1|))
-                                 (SIGNATURE |content| (|#2| |#1|))
-                                 (SIGNATURE |primitivePart|
-                                     (|#1| |#1|)))
-                             (|PolynomialCategory| |#2| |#3| |#4|)
-                             (|Ring|) (|OrderedAbelianMonoidSup|)
-                             (|OrderedSet|))
-                        |$CategoryFrame|)))) 

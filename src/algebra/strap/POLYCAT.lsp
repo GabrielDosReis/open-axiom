@@ -219,9 +219,9 @@
                                             (|NonNegativeInteger|)))
                                          NIL))
                                 . #1=(|PolynomialCategory|))))) . #1#)
-        (SETELT #0# 0
-                (LIST '|PolynomialCategory| (|devaluate| |t#1|)
-                      (|devaluate| |t#2|) (|devaluate| |t#3|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|PolynomialCategory| (|devaluate| |t#1|)
+                  (|devaluate| |t#2|) (|devaluate| |t#3|))))))) 
 
 (DEFUN |PolynomialCategory| (&REST #0=#:G1418 &AUX #1=#:G1416)
   (DSETQ #1# #0#)
@@ -236,11 +236,3 @@
                                     (APPLY #'|PolynomialCategory;| #1#)))
                         |PolynomialCategory;AL|))
          #2#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|PolynomialCategory| '|isCategory| T
-             (|addModemap| '|PolynomialCategory|
-                 '(|PolynomialCategory| |#1| |#2| |#3|)
-                 '((|Category|) (|Ring|) (|OrderedAbelianMonoidSup|)
-                   (|OrderedSet|))
-                 T '|PolynomialCategory| |$CategoryFrame|))) 

@@ -70,18 +70,12 @@
                                '((|approximate| T))
                                '((|PositiveInteger|) (|Integer|)) NIL))
                    |FloatingPointSystem|)
-        (SETELT #0# 0 '(|FloatingPointSystem|)))))) 
+        (|setShellEntry| #0# 0 '(|FloatingPointSystem|)))))) 
 
 (DEFUN |FloatingPointSystem| ()
   (LET ()
     (COND
       (|FloatingPointSystem;AL|)
       (T (SETQ |FloatingPointSystem;AL| (|FloatingPointSystem;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|FloatingPointSystem| '|isCategory| T
-             (|addModemap| '|FloatingPointSystem|
-                 '(|FloatingPointSystem|) '((|Category|)) T
-                 '|FloatingPointSystem| |$CategoryFrame|))) 
 
 (MAKEPROP '|FloatingPointSystem| 'NILADIC T) 

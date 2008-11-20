@@ -93,9 +93,9 @@
                                           (|:| |c| |t#1|))))
                                       NIL))
                                     . #2=(|UnivariateLaurentSeriesCategory|)))))) . #2#)
-        (SETELT #0# 0
-                (LIST '|UnivariateLaurentSeriesCategory|
-                      (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|UnivariateLaurentSeriesCategory|
+                  (|devaluate| |t#1|))))))) 
 
 (DEFUN |UnivariateLaurentSeriesCategory| (#0=#:G1400)
   (LET (#1=#:G1401)
@@ -111,10 +111,3 @@
                                      #0#)))
                         |UnivariateLaurentSeriesCategory;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|UnivariateLaurentSeriesCategory| '|isCategory| T
-             (|addModemap| '|UnivariateLaurentSeriesCategory|
-                 '(|UnivariateLaurentSeriesCategory| |#1|)
-                 '((|Category|) (|Ring|)) T
-                 '|UnivariateLaurentSeriesCategory| |$CategoryFrame|))) 

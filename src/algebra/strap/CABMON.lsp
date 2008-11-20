@@ -14,7 +14,7 @@
                                   T))
                                NIL 'NIL NIL))
                    |CancellationAbelianMonoid|)
-        (SETELT #0# 0 '(|CancellationAbelianMonoid|)))))) 
+        (|setShellEntry| #0# 0 '(|CancellationAbelianMonoid|)))))) 
 
 (DEFUN |CancellationAbelianMonoid| ()
   (LET ()
@@ -22,11 +22,5 @@
       (|CancellationAbelianMonoid;AL|)
       (T (SETQ |CancellationAbelianMonoid;AL|
                (|CancellationAbelianMonoid;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|CancellationAbelianMonoid| '|isCategory| T
-             (|addModemap| '|CancellationAbelianMonoid|
-                 '(|CancellationAbelianMonoid|) '((|Category|)) T
-                 '|CancellationAbelianMonoid| |$CategoryFrame|))) 
 
 (MAKEPROP '|CancellationAbelianMonoid| 'NILADIC T) 

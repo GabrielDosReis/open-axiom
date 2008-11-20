@@ -15,17 +15,12 @@
                                  ((|abs| ($ $)) T))
                                NIL '((|Integer|) (|Boolean|)) NIL))
                    |OrderedRing|)
-        (SETELT #0# 0 '(|OrderedRing|)))))) 
+        (|setShellEntry| #0# 0 '(|OrderedRing|)))))) 
 
 (DEFUN |OrderedRing| ()
   (LET ()
     (COND
       (|OrderedRing;AL|)
       (T (SETQ |OrderedRing;AL| (|OrderedRing;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|OrderedRing| '|isCategory| T
-             (|addModemap| '|OrderedRing| '(|OrderedRing|)
-                 '((|Category|)) T '|OrderedRing| |$CategoryFrame|))) 
 
 (MAKEPROP '|OrderedRing| 'NILADIC T) 

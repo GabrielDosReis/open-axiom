@@ -23,17 +23,12 @@
                                  ((|unit?| ((|Boolean|) $)) T))
                                NIL '((|Boolean|)) NIL))
                    |IntegralDomain|)
-        (SETELT #0# 0 '(|IntegralDomain|)))))) 
+        (|setShellEntry| #0# 0 '(|IntegralDomain|)))))) 
 
 (DEFUN |IntegralDomain| ()
   (LET ()
     (COND
       (|IntegralDomain;AL|)
       (T (SETQ |IntegralDomain;AL| (|IntegralDomain;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|IntegralDomain| '|isCategory| T
-             (|addModemap| '|IntegralDomain| '(|IntegralDomain|)
-                 '((|Category|)) T '|IntegralDomain| |$CategoryFrame|))) 
 
 (MAKEPROP '|IntegralDomain| 'NILADIC T) 

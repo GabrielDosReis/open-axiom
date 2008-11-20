@@ -1,3 +1,12 @@
+2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/coerce.spad.pamphlet (CoercibleFrom): New.
+	(ConvertibleFrom): Likewise.
+	(RetractableTo): Use it.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include
+	KRCFROM and KVTFROM.
+	* share/algebra/: Update databases.
+
 2008-11-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot (loadExports): New.

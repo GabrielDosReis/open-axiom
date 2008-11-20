@@ -63,18 +63,12 @@
                                      (|Boolean|))
                                    NIL)))
                    |IntegerNumberSystem|)
-        (SETELT #0# 0 '(|IntegerNumberSystem|)))))) 
+        (|setShellEntry| #0# 0 '(|IntegerNumberSystem|)))))) 
 
 (DEFUN |IntegerNumberSystem| ()
   (LET ()
     (COND
       (|IntegerNumberSystem;AL|)
       (T (SETQ |IntegerNumberSystem;AL| (|IntegerNumberSystem;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|IntegerNumberSystem| '|isCategory| T
-             (|addModemap| '|IntegerNumberSystem|
-                 '(|IntegerNumberSystem|) '((|Category|)) T
-                 '|IntegerNumberSystem| |$CategoryFrame|))) 
 
 (MAKEPROP '|IntegerNumberSystem| 'NILADIC T) 

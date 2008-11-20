@@ -64,28 +64,3 @@
                                   0 16 0 17 1 0 8 0 10 1 0 8 0 11 1 0 0
                                   0 19)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|OrderedRing&| '|isFunctor|
-             '(((|abs| ($ $)) T (ELT $ 19))
-               ((|sign| ((|Integer|) $)) T (ELT $ 17))
-               ((|negative?| ((|Boolean|) $)) T (ELT $ 11))
-               ((|positive?| ((|Boolean|) $)) T (ELT $ 10)))
-             (|addModemap| '|OrderedRing&| '(|OrderedRing&| |#1|)
-                 '((CATEGORY |domain| (SIGNATURE |abs| (|#1| |#1|))
-                       (SIGNATURE |sign| ((|Integer|) |#1|))
-                       (SIGNATURE |negative?| ((|Boolean|) |#1|))
-                       (SIGNATURE |positive?| ((|Boolean|) |#1|)))
-                   (|OrderedRing|))
-                 T '|OrderedRing&|
-                 (|put| '|OrderedRing&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE |abs| (|#1| |#1|))
-                                 (SIGNATURE |sign| ((|Integer|) |#1|))
-                                 (SIGNATURE |negative?|
-                                     ((|Boolean|) |#1|))
-                                 (SIGNATURE |positive?|
-                                     ((|Boolean|) |#1|)))
-                             (|OrderedRing|))
-                        |$CategoryFrame|)))) 

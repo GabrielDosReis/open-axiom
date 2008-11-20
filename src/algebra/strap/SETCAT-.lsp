@@ -42,22 +42,3 @@
                             (|makeByteWordVec2| 10
                                 '(1 0 9 0 10 1 0 7 0 8)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|SetCategory&| '|isFunctor|
-             '(((|latex| ((|String|) $)) T (ELT $ 10))
-               ((|hash| ((|SingleInteger|) $)) T (ELT $ 8)))
-             (|addModemap| '|SetCategory&| '(|SetCategory&| |#1|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE |latex| ((|String|) |#1|))
-                       (SIGNATURE |hash| ((|SingleInteger|) |#1|)))
-                   (|SetCategory|))
-                 T '|SetCategory&|
-                 (|put| '|SetCategory&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE |latex| ((|String|) |#1|))
-                                 (SIGNATURE |hash|
-                                     ((|SingleInteger|) |#1|)))
-                             (|SetCategory|))
-                        |$CategoryFrame|)))) 

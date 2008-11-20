@@ -38,20 +38,3 @@
                                 '(2 8 6 7 6 9 2 0 0 7 0 10 2 0 0 7 0
                                   10)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|AbelianSemiGroup&| '|isFunctor|
-             '(((* ($ (|PositiveInteger|) $)) T (ELT $ 10)))
-             (|addModemap| '|AbelianSemiGroup&|
-                 '(|AbelianSemiGroup&| |#1|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE * (|#1| (|PositiveInteger|) |#1|)))
-                   (|AbelianSemiGroup|))
-                 T '|AbelianSemiGroup&|
-                 (|put| '|AbelianSemiGroup&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE *
-                                     (|#1| (|PositiveInteger|) |#1|)))
-                             (|AbelianSemiGroup|))
-                        |$CategoryFrame|)))) 

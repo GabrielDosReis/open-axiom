@@ -8,18 +8,12 @@
     (RETURN
       (PROG1 (LETT #0# (|Join| (|IntegralDomain|) (|OrderedRing|))
                    |OrderedIntegralDomain|)
-        (SETELT #0# 0 '(|OrderedIntegralDomain|)))))) 
+        (|setShellEntry| #0# 0 '(|OrderedIntegralDomain|)))))) 
 
 (DEFUN |OrderedIntegralDomain| ()
   (LET ()
     (COND
       (|OrderedIntegralDomain;AL|)
       (T (SETQ |OrderedIntegralDomain;AL| (|OrderedIntegralDomain;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|OrderedIntegralDomain| '|isCategory| T
-             (|addModemap| '|OrderedIntegralDomain|
-                 '(|OrderedIntegralDomain|) '((|Category|)) T
-                 '|OrderedIntegralDomain| |$CategoryFrame|))) 
 
 (MAKEPROP '|OrderedIntegralDomain| 'NILADIC T) 

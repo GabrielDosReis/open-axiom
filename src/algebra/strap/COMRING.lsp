@@ -11,17 +11,12 @@
                            (|mkCategory| '|package| NIL
                                '(((|commutative| "*") T)) 'NIL NIL))
                    |CommutativeRing|)
-        (SETELT #0# 0 '(|CommutativeRing|)))))) 
+        (|setShellEntry| #0# 0 '(|CommutativeRing|)))))) 
 
 (DEFUN |CommutativeRing| ()
   (LET ()
     (COND
       (|CommutativeRing;AL|)
       (T (SETQ |CommutativeRing;AL| (|CommutativeRing;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|CommutativeRing| '|isCategory| T
-             (|addModemap| '|CommutativeRing| '(|CommutativeRing|)
-                 '((|Category|)) T '|CommutativeRing| |$CategoryFrame|))) 
 
 (MAKEPROP '|CommutativeRing| 'NILADIC T) 

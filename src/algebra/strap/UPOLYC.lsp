@@ -138,9 +138,8 @@
                                         (|Vector| |t#1|))
                                       NIL))
                                     . #3=(|UnivariatePolynomialCategory|)))))) . #3#)
-        (SETELT #0# 0
-                (LIST '|UnivariatePolynomialCategory|
-                      (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|UnivariatePolynomialCategory| (|devaluate| |t#1|))))))) 
 
 (DEFUN |UnivariatePolynomialCategory| (#0=#:G1436)
   (LET (#1=#:G1437)
@@ -156,10 +155,3 @@
                                      #0#)))
                         |UnivariatePolynomialCategory;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|UnivariatePolynomialCategory| '|isCategory| T
-             (|addModemap| '|UnivariatePolynomialCategory|
-                 '(|UnivariatePolynomialCategory| |#1|)
-                 '((|Category|) (|Ring|)) T
-                 '|UnivariatePolynomialCategory| |$CategoryFrame|))) 

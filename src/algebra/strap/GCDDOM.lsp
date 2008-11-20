@@ -23,15 +23,10 @@
                                  (|List| $))
                                NIL))
                    |GcdDomain|)
-        (SETELT #0# 0 '(|GcdDomain|)))))) 
+        (|setShellEntry| #0# 0 '(|GcdDomain|)))))) 
 
 (DEFUN |GcdDomain| ()
   (LET ()
     (COND (|GcdDomain;AL|) (T (SETQ |GcdDomain;AL| (|GcdDomain;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|GcdDomain| '|isCategory| T
-             (|addModemap| '|GcdDomain| '(|GcdDomain|) '((|Category|))
-                 T '|GcdDomain| |$CategoryFrame|))) 
 
 (MAKEPROP '|GcdDomain| 'NILADIC T) 

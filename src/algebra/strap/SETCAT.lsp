@@ -16,17 +16,12 @@
                                    NIL '((|String|) (|SingleInteger|))
                                    NIL)))
                    |SetCategory|)
-        (SETELT #0# 0 '(|SetCategory|)))))) 
+        (|setShellEntry| #0# 0 '(|SetCategory|)))))) 
 
 (DEFUN |SetCategory| ()
   (LET ()
     (COND
       (|SetCategory;AL|)
       (T (SETQ |SetCategory;AL| (|SetCategory;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|SetCategory| '|isCategory| T
-             (|addModemap| '|SetCategory| '(|SetCategory|)
-                 '((|Category|)) T '|SetCategory| |$CategoryFrame|))) 
 
 (MAKEPROP '|SetCategory| 'NILADIC T) 

@@ -696,9 +696,8 @@
                               (GO #0#))))
                          (LETT |me| (MANEXP |x|) |DFLOAT;manexp|)
                          (LETT |two53|
-                               (SPADCALL (FLOAT-RADIX 0.0)
-                                   (FLOAT-DIGITS 0.0)
-                                   (|getShellEntry| $ 117))
+                               (EXPT (FLOAT-RADIX 0.0)
+                                     (FLOAT-DIGITS 0.0))
                                |DFLOAT;manexp|)
                          (EXIT (CONS (* |s|
                                       (FIX (* |two53| (QCAR |me|))))
@@ -706,9 +705,9 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;83| (|f| |d| |b| $)
-  (PROG (|#G102| |nu| |ex| BASE #0=#:G1525 |de| |tol| |#G103| |q| |r|
-                 |p2| |q2| #1=#:G1541 |#G104| |#G105| |p0| |p1| |#G106|
-                 |#G107| |q0| |q1| |#G108| |#G109| |s| |t| #2=#:G1539)
+  (PROG (|#G102| |nu| |ex| BASE #0=#:G1526 |de| |tol| |#G103| |q| |r|
+                 |p2| |q2| #1=#:G1544 |#G104| |#G105| |p0| |p1| |#G106|
+                 |#G107| |q0| |q1| |#G108| |#G109| |s| |t| #2=#:G1542)
     (RETURN
       (SEQ (EXIT (SEQ (PROGN
                         (LETT |#G102| (|DFLOAT;manexp| |f| $)
@@ -776,14 +775,14 @@
                                                    (- (* |nu| |q2|)
                                                     (* |de| |p2|)))
                                                   (|getShellEntry| $
-                                                   120))
+                                                   119))
                                                  (* |de| (ABS |p2|))))
                                                (EXIT
                                                 (PROGN
                                                   (LETT #1#
                                                    (SPADCALL |p2| |q2|
                                                     (|getShellEntry| $
-                                                     119))
+                                                     118))
                                                    |DFLOAT;rationalApproximation;$2NniF;83|)
                                                   (GO #1#)))))
                                             (PROGN
@@ -825,36 +824,36 @@
                                        |DFLOAT;rationalApproximation;$2NniF;83|)
                                        (|check-subtype| (>= #2# 0)
                                         '(|NonNegativeInteger|) #2#))))
-                                   (|getShellEntry| $ 121)))))))
+                                   (|getShellEntry| $ 120)))))))
            #1# (EXIT #1#))))) 
 
 (DEFUN |DFLOAT;**;$F$;84| (|x| |r| $)
-  (PROG (|n| |d| #0=#:G1550)
+  (PROG (|n| |d| #0=#:G1553)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|)
                     (COND
-                      ((SPADCALL |r| (|getShellEntry| $ 122))
+                      ((SPADCALL |r| (|getShellEntry| $ 121))
                        (|error| "0**0 is undefined"))
-                      ((SPADCALL |r| (|getShellEntry| $ 123))
+                      ((SPADCALL |r| (|getShellEntry| $ 122))
                        (|error| "division by 0"))
                       ('T 0.0)))
-                   ((OR (SPADCALL |r| (|getShellEntry| $ 122))
+                   ((OR (SPADCALL |r| (|getShellEntry| $ 121))
                         (= |x| 1.0))
                     1.0)
                    ('T
                     (COND
-                      ((SPADCALL |r| (|spadConstant| $ 124)
-                           (|getShellEntry| $ 125))
+                      ((SPADCALL |r| (|spadConstant| $ 123)
+                           (|getShellEntry| $ 124))
                        |x|)
                       ('T
                        (SEQ (LETT |n|
                                   (SPADCALL |r|
-                                      (|getShellEntry| $ 126))
+                                      (|getShellEntry| $ 125))
                                   |DFLOAT;**;$F$;84|)
                             (LETT |d|
                                   (SPADCALL |r|
-                                      (|getShellEntry| $ 127))
+                                      (|getShellEntry| $ 126))
                                   |DFLOAT;**;$F$;84|)
                             (EXIT (COND
                                     ((MINUSP |x|)
@@ -893,7 +892,7 @@
 (DEFUN |DoubleFloat| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1563)
+      (PROG (#0=#:G1566)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|DoubleFloat|)
@@ -914,7 +913,7 @@
     (RETURN
       (PROGN
         (LETT |dv$| '(|DoubleFloat|) . #0=(|DoubleFloat|))
-        (LETT $ (|newShell| 141) . #0#)
+        (LETT $ (|newShell| 140) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -975,45 +974,45 @@
              (|Union| 104 '"failed") |DFLOAT;retractIfCan;$U;77|
              |DFLOAT;retract;$I;78| (|Union| 24 '"failed")
              |DFLOAT;retractIfCan;$U;79| |DFLOAT;sign;$I;80|
-             |DFLOAT;abs;2$;81| (63 . **) (69 . |Zero|) (73 . /)
-             (79 . *) (85 . |coerce|) (90 . |zero?|) (95 . |negative?|)
-             (100 . |One|) (104 . =) (110 . |numer|) (115 . |denom|)
+             |DFLOAT;abs;2$;81| (63 . |Zero|) (67 . /) (73 . *)
+             (79 . |coerce|) (84 . |zero?|) (89 . |negative?|)
+             (94 . |One|) (98 . =) (104 . |numer|) (109 . |denom|)
              |DFLOAT;**;$F$;84| (|PatternMatchResult| 101 $)
              (|Pattern| 101) (|Factored| $)
              (|Record| (|:| |coef1| $) (|:| |coef2| $))
-             (|Union| 132 '"failed") (|List| $) (|Union| 134 '"failed")
+             (|Union| 131 '"failed") (|List| $) (|Union| 133 '"failed")
              (|Record| (|:| |coef1| $) (|:| |coef2| $)
                  (|:| |generator| $))
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
              (|SparseUnivariatePolynomial| $)
-             (|Record| (|:| |coef| 134) (|:| |generator| $))
+             (|Record| (|:| |coef| 133) (|:| |generator| $))
              (|Record| (|:| |unit| $) (|:| |canonical| $)
                  (|:| |associate| $)))
-          '#(~= 120 |zero?| 126 |wholePart| 131 |unitNormal| 136
-             |unitCanonical| 141 |unit?| 146 |truncate| 151 |tanh| 156
-             |tan| 161 |subtractIfCan| 166 |squareFreePart| 172
-             |squareFree| 177 |sqrt| 182 |sizeLess?| 187 |sinh| 193
-             |sin| 198 |sign| 203 |sech| 208 |sec| 213 |sample| 218
-             |round| 222 |retractIfCan| 227 |retract| 237 |rem| 247
-             |recip| 253 |rationalApproximation| 258 |quo| 271
-             |principalIdeal| 277 |prime?| 282 |precision| 287
-             |positive?| 291 |pi| 296 |patternMatch| 300 |order| 307
-             |one?| 312 |nthRoot| 317 |norm| 323 |negative?| 328
-             |multiEuclidean| 333 |min| 339 |max| 349 |mantissa| 359
-             |log2| 364 |log10| 369 |log| 374 |lcm| 379 |latex| 390
-             |inv| 395 |hash| 400 |gcdPolynomial| 405 |gcd| 411
-             |fractionPart| 422 |floor| 427 |float| 432 |factor| 445
-             |extendedEuclidean| 450 |exquo| 463 |expressIdealMember|
-             469 |exponent| 475 |exp1| 480 |exp| 484 |euclideanSize|
-             489 |divide| 494 |digits| 500 |differentiate| 504 |csch|
-             515 |csc| 520 |coth| 525 |cot| 530 |cosh| 535 |cos| 540
-             |convert| 545 |coerce| 565 |characteristic| 595 |ceiling|
-             599 |bits| 604 |base| 608 |atanh| 612 |atan| 617
-             |associates?| 628 |asinh| 634 |asin| 639 |asech| 644
-             |asec| 649 |acsch| 654 |acsc| 659 |acoth| 664 |acot| 669
-             |acosh| 674 |acos| 679 |abs| 684 |Zero| 689 |One| 693
-             |OMwrite| 697 |Gamma| 721 D 726 |Beta| 737 >= 743 > 749 =
-             755 <= 761 < 767 / 773 - 785 + 796 ** 802 * 832)
+          '#(~= 114 |zero?| 120 |wholePart| 125 |unitNormal| 130
+             |unitCanonical| 135 |unit?| 140 |truncate| 145 |tanh| 150
+             |tan| 155 |subtractIfCan| 160 |squareFreePart| 166
+             |squareFree| 171 |sqrt| 176 |sizeLess?| 181 |sinh| 187
+             |sin| 192 |sign| 197 |sech| 202 |sec| 207 |sample| 212
+             |round| 216 |retractIfCan| 221 |retract| 231 |rem| 241
+             |recip| 247 |rationalApproximation| 252 |quo| 265
+             |principalIdeal| 271 |prime?| 276 |precision| 281
+             |positive?| 285 |pi| 290 |patternMatch| 294 |order| 301
+             |one?| 306 |nthRoot| 311 |norm| 317 |negative?| 322
+             |multiEuclidean| 327 |min| 333 |max| 343 |mantissa| 353
+             |log2| 358 |log10| 363 |log| 368 |lcm| 373 |latex| 384
+             |inv| 389 |hash| 394 |gcdPolynomial| 399 |gcd| 405
+             |fractionPart| 416 |floor| 421 |float| 426 |factor| 439
+             |extendedEuclidean| 444 |exquo| 457 |expressIdealMember|
+             463 |exponent| 469 |exp1| 474 |exp| 478 |euclideanSize|
+             483 |divide| 488 |digits| 494 |differentiate| 498 |csch|
+             509 |csc| 514 |coth| 519 |cot| 524 |cosh| 529 |cos| 534
+             |convert| 539 |coerce| 559 |characteristic| 589 |ceiling|
+             593 |bits| 598 |base| 602 |atanh| 606 |atan| 611
+             |associates?| 622 |asinh| 628 |asin| 633 |asech| 638
+             |asec| 643 |acsch| 648 |acsc| 653 |acoth| 658 |acot| 663
+             |acosh| 668 |acos| 673 |abs| 678 |Zero| 683 |One| 687
+             |OMwrite| 691 |Gamma| 715 D 720 |Beta| 731 >= 737 > 743 =
+             749 <= 755 < 761 / 767 - 779 + 790 ** 796 * 826)
           '((|approximate| . 0) (|canonicalsClosed| . 0)
             (|canonicalUnitNormal| . 0) (|noZeroDivisors| . 0)
             ((|commutative| "*") . 0) (|rightUnitary| . 0)
@@ -1021,7 +1020,7 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0))
                 (CONS '#(|FloatingPointSystem&| |RealNumberSystem&|
                          |Field&| |EuclideanDomain&| NIL
                          |UniqueFactorizationDomain&| |GcdDomain&|
@@ -1038,8 +1037,8 @@
                          |HyperbolicFunctionCategory&|
                          |ArcTrigonometricFunctionCategory&|
                          |TrigonometricFunctionCategory&| NIL NIL
-                         |RadicalCategory&| |RetractableTo&|
-                         |RetractableTo&| NIL NIL |BasicType&| NIL)
+                         |RadicalCategory&| |RetractableTo&| NIL
+                         |RetractableTo&| NIL NIL NIL |BasicType&| NIL)
                       (CONS '#((|FloatingPointSystem|)
                                (|RealNumberSystem|) (|Field|)
                                (|EuclideanDomain|)
@@ -1072,321 +1071,71 @@
                                (|HyperbolicFunctionCategory|)
                                (|ArcTrigonometricFunctionCategory|)
                                (|TrigonometricFunctionCategory|)
-                               (|OpenMath|) (|ConvertibleTo| 130)
+                               (|OpenMath|) (|ConvertibleTo| 129)
                                (|RadicalCategory|)
                                (|RetractableTo| 104)
+                               (|CoercibleFrom| 104)
                                (|RetractableTo| 24)
+                               (|CoercibleFrom| 24)
                                (|ConvertibleTo| 101)
                                (|ConvertibleTo| 13) (|BasicType|)
                                (|CoercibleTo| 38))
-                            (|makeByteWordVec2| 140
+                            (|makeByteWordVec2| 139
                                 '(0 6 0 7 2 9 0 8 6 10 1 9 11 0 12 2 9
                                   11 0 13 14 1 9 11 0 15 1 9 11 0 16 2
                                   0 0 22 0 29 1 38 0 13 39 1 41 0 13 42
                                   1 93 13 13 94 2 93 13 13 13 96 1 101
-                                  0 13 102 2 24 0 0 22 117 0 104 0 118
-                                  2 104 0 24 24 119 2 24 0 105 0 120 1
-                                  104 0 24 121 1 104 18 0 122 1 104 18
-                                  0 123 0 104 0 124 2 104 18 0 0 125 1
-                                  104 24 0 126 1 104 24 0 127 2 0 18 0
-                                  0 1 1 0 18 0 87 1 0 24 0 98 1 0 140 0
-                                  1 1 0 0 0 1 1 0 18 0 1 1 0 0 0 1 1 0
-                                  0 0 75 1 0 0 0 63 2 0 90 0 0 1 1 0 0
-                                  0 1 1 0 131 0 1 1 0 0 0 54 2 0 18 0 0
-                                  1 1 0 0 0 73 1 0 0 0 61 1 0 24 0 115
-                                  1 0 0 0 78 1 0 0 0 65 0 0 0 1 1 0 0 0
-                                  1 1 0 110 0 111 1 0 113 0 114 1 0 104
-                                  0 109 1 0 24 0 112 2 0 0 0 0 1 1 0 90
-                                  0 91 2 0 104 0 105 107 3 0 104 0 105
-                                  105 106 2 0 0 0 0 1 1 0 139 134 1 1 0
-                                  18 0 1 0 0 22 27 1 0 18 0 1 0 0 0 37
-                                  3 0 129 0 130 129 1 1 0 24 0 33 1 0
-                                  18 0 1 2 0 0 0 24 1 1 0 0 0 1 1 0 18
-                                  0 86 2 0 135 134 0 1 0 0 0 32 2 0 0 0
-                                  0 51 0 0 0 31 2 0 0 0 0 50 1 0 24 0
-                                  25 1 0 0 0 28 1 0 0 0 55 1 0 0 0 60 2
-                                  0 0 0 0 1 1 0 0 134 1 1 0 8 0 1 1 0 0
-                                  0 1 1 0 88 0 89 2 0 138 138 138 1 1 0
-                                  0 134 1 2 0 0 0 0 1 1 0 0 0 1 1 0 0 0
-                                  1 3 0 0 24 24 22 99 2 0 0 24 24 1 1 0
-                                  131 0 1 3 0 133 0 0 0 1 2 0 136 0 0 1
-                                  2 0 90 0 0 1 2 0 135 134 0 1 1 0 24 0
-                                  26 0 0 0 36 1 0 0 0 59 1 0 105 0 1 2
-                                  0 137 0 0 1 0 0 22 1 1 0 0 0 92 2 0 0
-                                  0 105 1 1 0 0 0 76 1 0 0 0 66 1 0 0 0
-                                  77 1 0 0 0 64 1 0 0 0 74 1 0 0 0 62 1
-                                  0 41 0 43 1 0 130 0 1 1 0 101 0 103 1
-                                  0 13 0 100 1 0 0 104 1 1 0 0 24 58 1
-                                  0 0 104 1 1 0 0 24 58 1 0 0 0 1 1 0
-                                  38 0 40 0 0 105 1 1 0 0 0 1 0 0 22 30
-                                  0 0 22 23 1 0 0 0 81 2 0 0 0 0 108 1
-                                  0 0 0 69 2 0 18 0 0 1 1 0 0 0 79 1 0
-                                  0 0 67 1 0 0 0 84 1 0 0 0 72 1 0 0 0
-                                  82 1 0 0 0 70 1 0 0 0 83 1 0 0 0 71 1
-                                  0 0 0 80 1 0 0 0 68 1 0 0 0 116 0 0 0
-                                  34 0 0 0 35 2 0 11 9 0 20 3 0 11 9 0
-                                  18 21 1 0 8 0 17 2 0 8 0 18 19 1 0 0
-                                  0 95 1 0 0 0 1 2 0 0 0 105 1 2 0 0 0
-                                  0 97 2 0 18 0 0 1 2 0 18 0 0 1 2 0 18
-                                  0 0 52 2 0 18 0 0 1 2 0 18 0 0 44 2 0
-                                  0 0 24 53 2 0 0 0 0 85 2 0 0 0 0 47 1
-                                  0 0 0 45 2 0 0 0 0 46 2 0 0 0 0 57 2
-                                  0 0 0 104 128 2 0 0 0 24 56 2 0 0 0
-                                  105 1 2 0 0 0 22 1 2 0 0 104 0 1 2 0
-                                  0 0 104 1 2 0 0 0 0 48 2 0 0 24 0 49
-                                  2 0 0 105 0 1 2 0 0 22 0 29)))))
+                                  0 13 102 0 104 0 117 2 104 0 24 24
+                                  118 2 24 0 105 0 119 1 104 0 24 120 1
+                                  104 18 0 121 1 104 18 0 122 0 104 0
+                                  123 2 104 18 0 0 124 1 104 24 0 125 1
+                                  104 24 0 126 2 0 18 0 0 1 1 0 18 0 87
+                                  1 0 24 0 98 1 0 139 0 1 1 0 0 0 1 1 0
+                                  18 0 1 1 0 0 0 1 1 0 0 0 75 1 0 0 0
+                                  63 2 0 90 0 0 1 1 0 0 0 1 1 0 130 0 1
+                                  1 0 0 0 54 2 0 18 0 0 1 1 0 0 0 73 1
+                                  0 0 0 61 1 0 24 0 115 1 0 0 0 78 1 0
+                                  0 0 65 0 0 0 1 1 0 0 0 1 1 0 110 0
+                                  111 1 0 113 0 114 1 0 104 0 109 1 0
+                                  24 0 112 2 0 0 0 0 1 1 0 90 0 91 2 0
+                                  104 0 105 107 3 0 104 0 105 105 106 2
+                                  0 0 0 0 1 1 0 138 133 1 1 0 18 0 1 0
+                                  0 22 27 1 0 18 0 1 0 0 0 37 3 0 128 0
+                                  129 128 1 1 0 24 0 33 1 0 18 0 1 2 0
+                                  0 0 24 1 1 0 0 0 1 1 0 18 0 86 2 0
+                                  134 133 0 1 0 0 0 32 2 0 0 0 0 51 0 0
+                                  0 31 2 0 0 0 0 50 1 0 24 0 25 1 0 0 0
+                                  28 1 0 0 0 55 1 0 0 0 60 2 0 0 0 0 1
+                                  1 0 0 133 1 1 0 8 0 1 1 0 0 0 1 1 0
+                                  88 0 89 2 0 137 137 137 1 1 0 0 133 1
+                                  2 0 0 0 0 1 1 0 0 0 1 1 0 0 0 1 3 0 0
+                                  24 24 22 99 2 0 0 24 24 1 1 0 130 0 1
+                                  3 0 132 0 0 0 1 2 0 135 0 0 1 2 0 90
+                                  0 0 1 2 0 134 133 0 1 1 0 24 0 26 0 0
+                                  0 36 1 0 0 0 59 1 0 105 0 1 2 0 136 0
+                                  0 1 0 0 22 1 1 0 0 0 92 2 0 0 0 105 1
+                                  1 0 0 0 76 1 0 0 0 66 1 0 0 0 77 1 0
+                                  0 0 64 1 0 0 0 74 1 0 0 0 62 1 0 41 0
+                                  43 1 0 129 0 1 1 0 101 0 103 1 0 13 0
+                                  100 1 0 0 104 1 1 0 0 24 58 1 0 0 104
+                                  1 1 0 0 24 58 1 0 0 0 1 1 0 38 0 40 0
+                                  0 105 1 1 0 0 0 1 0 0 22 30 0 0 22 23
+                                  1 0 0 0 81 2 0 0 0 0 108 1 0 0 0 69 2
+                                  0 18 0 0 1 1 0 0 0 79 1 0 0 0 67 1 0
+                                  0 0 84 1 0 0 0 72 1 0 0 0 82 1 0 0 0
+                                  70 1 0 0 0 83 1 0 0 0 71 1 0 0 0 80 1
+                                  0 0 0 68 1 0 0 0 116 0 0 0 34 0 0 0
+                                  35 2 0 11 9 0 20 3 0 11 9 0 18 21 1 0
+                                  8 0 17 2 0 8 0 18 19 1 0 0 0 95 1 0 0
+                                  0 1 2 0 0 0 105 1 2 0 0 0 0 97 2 0 18
+                                  0 0 1 2 0 18 0 0 1 2 0 18 0 0 52 2 0
+                                  18 0 0 1 2 0 18 0 0 44 2 0 0 0 24 53
+                                  2 0 0 0 0 85 2 0 0 0 0 47 1 0 0 0 45
+                                  2 0 0 0 0 46 2 0 0 0 0 57 2 0 0 0 104
+                                  127 2 0 0 0 24 56 2 0 0 0 105 1 2 0 0
+                                  0 22 1 2 0 0 104 0 1 2 0 0 0 104 1 2
+                                  0 0 0 0 48 2 0 0 24 0 49 2 0 0 105 0
+                                  1 2 0 0 22 0 29)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|DoubleFloat| '|isFunctor|
-             '(((|rationalApproximation|
-                    ((|Fraction| (|Integer|)) $ (|NonNegativeInteger|)
-                     (|NonNegativeInteger|)))
-                T (ELT $ 106))
-               ((|rationalApproximation|
-                    ((|Fraction| (|Integer|)) $ (|NonNegativeInteger|)))
-                T (ELT $ 107))
-               ((|Beta| ($ $ $)) T (ELT $ 97))
-               ((|Gamma| ($ $)) T (ELT $ 95))
-               ((|atan| ($ $ $)) T (ELT $ 108))
-               ((|log10| ($ $)) T (ELT $ 55))
-               ((|log2| ($ $)) T (ELT $ 28))
-               ((|exp1| ($)) T (ELT $ 36))
-               ((/ ($ $ (|Integer|))) T (ELT $ 53))
-               ((|convert| ((|InputForm|) $)) T (ELT $ 43))
-               ((|tan| ($ $)) T (ELT $ 63))
-               ((|sin| ($ $)) T (ELT $ 61))
-               ((|sec| ($ $)) T (ELT $ 65))
-               ((|csc| ($ $)) T (ELT $ 66))
-               ((|cot| ($ $)) T (ELT $ 64))
-               ((|cos| ($ $)) T (ELT $ 62))
-               ((|acos| ($ $)) T (ELT $ 68))
-               ((|acot| ($ $)) T (ELT $ 71))
-               ((|acsc| ($ $)) T (ELT $ 70))
-               ((|asec| ($ $)) T (ELT $ 72))
-               ((|asin| ($ $)) T (ELT $ 67))
-               ((|atan| ($ $)) T (ELT $ 69))
-               ((|cosh| ($ $)) T (ELT $ 74))
-               ((|coth| ($ $)) T (ELT $ 77))
-               ((|csch| ($ $)) T (ELT $ 76))
-               ((|sech| ($ $)) T (ELT $ 78))
-               ((|sinh| ($ $)) T (ELT $ 73))
-               ((|tanh| ($ $)) T (ELT $ 75))
-               ((|acosh| ($ $)) T (ELT $ 80))
-               ((|acoth| ($ $)) T (ELT $ 83))
-               ((|acsch| ($ $)) T (ELT $ 82))
-               ((|asech| ($ $)) T (ELT $ 84))
-               ((|asinh| ($ $)) T (ELT $ 79))
-               ((|atanh| ($ $)) T (ELT $ 81))
-               ((|log| ($ $)) T (ELT $ 60))
-               ((|exp| ($ $)) T (ELT $ 59)) ((** ($ $ $)) T (ELT $ 57))
-               ((|pi| ($)) T (ELT $ 37))
-               ((|OMwrite| ((|Void|) (|OpenMathDevice|) $ (|Boolean|)))
-                T (ELT $ 21))
-               ((|OMwrite| ((|Void|) (|OpenMathDevice|) $)) T
-                (ELT $ 20))
-               ((|OMwrite| ((|String|) $ (|Boolean|))) T (ELT $ 19))
-               ((|OMwrite| ((|String|) $)) T (ELT $ 17))
-               ((|differentiate| ($ $)) T (ELT $ 92))
-               ((D ($ $)) T (ELT $ NIL))
-               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
-                (ELT $ NIL))
-               ((D ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
-               ((|max| ($))
-                (AND (|not| (|has| $ (ATTRIBUTE |arbitraryExponent|)))
-                     (|not| (|has| $ (ATTRIBUTE |arbitraryPrecision|))))
-                (ELT $ 31))
-               ((|min| ($))
-                (AND (|not| (|has| $ (ATTRIBUTE |arbitraryExponent|)))
-                     (|not| (|has| $ (ATTRIBUTE |arbitraryPrecision|))))
-                (ELT $ 32))
-               ((|decreasePrecision| ((|PositiveInteger|) (|Integer|)))
-                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
-               ((|increasePrecision| ((|PositiveInteger|) (|Integer|)))
-                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
-               ((|precision| ((|PositiveInteger|) (|PositiveInteger|)))
-                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
-               ((|digits| ((|PositiveInteger|) (|PositiveInteger|)))
-                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
-               ((|bits| ((|PositiveInteger|) (|PositiveInteger|)))
-                (|has| $ (ATTRIBUTE |arbitraryPrecision|)) (ELT $ NIL))
-               ((|precision| ((|PositiveInteger|))) T (ELT $ 27))
-               ((|digits| ((|PositiveInteger|))) T (ELT $ NIL))
-               ((|bits| ((|PositiveInteger|))) T (ELT $ 30))
-               ((|mantissa| ((|Integer|) $)) T (ELT $ 25))
-               ((|exponent| ((|Integer|) $)) T (ELT $ 26))
-               ((|base| ((|PositiveInteger|))) T (ELT $ 23))
-               ((|order| ((|Integer|) $)) T (ELT $ 33))
-               ((|float| ($ (|Integer|) (|Integer|)
-                            (|PositiveInteger|)))
-                T (ELT $ 99))
-               ((|float| ($ (|Integer|) (|Integer|))) T (ELT $ NIL))
-               ((|round| ($ $)) T (ELT $ NIL))
-               ((|truncate| ($ $)) T (ELT $ NIL))
-               ((|fractionPart| ($ $)) T (ELT $ NIL))
-               ((|wholePart| ((|Integer|) $)) T (ELT $ 98))
-               ((|floor| ($ $)) T (ELT $ NIL))
-               ((|ceiling| ($ $)) T (ELT $ NIL))
-               ((|norm| ($ $)) T (ELT $ NIL))
-               ((|patternMatch|
-                    ((|PatternMatchResult| (|Float|) $) $
-                     (|Pattern| (|Float|))
-                     (|PatternMatchResult| (|Float|) $)))
-                T (ELT $ NIL))
-               ((|convert| ((|Pattern| (|Float|)) $)) T (ELT $ NIL))
-               ((** ($ $ (|Fraction| (|Integer|)))) T (ELT $ 128))
-               ((|nthRoot| ($ $ (|Integer|))) T (ELT $ NIL))
-               ((|sqrt| ($ $)) T (ELT $ 54))
-               ((|retract| ((|Fraction| (|Integer|)) $)) T (ELT $ 109))
-               ((|retractIfCan|
-                    ((|Union| (|Fraction| (|Integer|)) "failed") $))
-                T (ELT $ 111))
-               ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ NIL))
-               ((|retract| ((|Integer|) $)) T (ELT $ 112))
-               ((|retractIfCan| ((|Union| (|Integer|) "failed") $)) T
-                (ELT $ 114))
-               ((|coerce| ($ (|Integer|))) T (ELT $ 58))
-               ((|convert| ((|DoubleFloat|) $)) T (ELT $ 100))
-               ((|convert| ((|Float|) $)) T (ELT $ 103))
-               ((< ((|Boolean|) $ $)) T (ELT $ 44))
-               ((> ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((>= ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((<= ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((|max| ($ $ $)) T (ELT $ 50))
-               ((|min| ($ $ $)) T (ELT $ 51))
-               ((|positive?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((|negative?| ((|Boolean|) $)) T (ELT $ 86))
-               ((|sign| ((|Integer|) $)) T (ELT $ 115))
-               ((|abs| ($ $)) T (ELT $ 116)) ((/ ($ $ $)) T (ELT $ 85))
-               ((|coerce| ($ (|Fraction| (|Integer|)))) T (ELT $ NIL))
-               ((* ($ (|Fraction| (|Integer|)) $)) T (ELT $ NIL))
-               ((* ($ $ (|Fraction| (|Integer|)))) T (ELT $ NIL))
-               ((** ($ $ (|Integer|))) T (ELT $ 56))
-               ((|inv| ($ $)) T (ELT $ NIL))
-               ((|prime?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((|squareFree| ((|Factored| $) $)) T (ELT $ NIL))
-               ((|squareFreePart| ($ $)) T (ELT $ NIL))
-               ((|factor| ((|Factored| $) $)) T (ELT $ NIL))
-               ((|multiEuclidean|
-                    ((|Union| (|List| $) "failed") (|List| $) $))
-                T (ELT $ NIL))
-               ((|extendedEuclidean|
-                    ((|Union| (|Record| (|:| |coef1| $)
-                                  (|:| |coef2| $))
-                              "failed")
-                     $ $ $))
-                T (ELT $ NIL))
-               ((|extendedEuclidean|
-                    ((|Record| (|:| |coef1| $) (|:| |coef2| $)
-                         (|:| |generator| $))
-                     $ $))
-                T (ELT $ NIL))
-               ((|rem| ($ $ $)) T (ELT $ NIL))
-               ((|quo| ($ $ $)) T (ELT $ NIL))
-               ((|divide|
-                    ((|Record| (|:| |quotient| $) (|:| |remainder| $))
-                     $ $))
-                T (ELT $ NIL))
-               ((|euclideanSize| ((|NonNegativeInteger|) $)) T
-                (ELT $ NIL))
-               ((|sizeLess?| ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((|expressIdealMember|
-                    ((|Union| (|List| $) "failed") (|List| $) $))
-                T (ELT $ NIL))
-               ((|principalIdeal|
-                    ((|Record| (|:| |coef| (|List| $))
-                         (|:| |generator| $))
-                     (|List| $)))
-                T (ELT $ NIL))
-               ((|gcdPolynomial|
-                    ((|SparseUnivariatePolynomial| $)
-                     (|SparseUnivariatePolynomial| $)
-                     (|SparseUnivariatePolynomial| $)))
-                T (ELT $ NIL))
-               ((|lcm| ($ (|List| $))) T (ELT $ NIL))
-               ((|lcm| ($ $ $)) T (ELT $ NIL))
-               ((|gcd| ($ (|List| $))) T (ELT $ NIL))
-               ((|gcd| ($ $ $)) T (ELT $ NIL))
-               ((|unit?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((|associates?| ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((|unitCanonical| ($ $)) T (ELT $ NIL))
-               ((|unitNormal|
-                    ((|Record| (|:| |unit| $) (|:| |canonical| $)
-                         (|:| |associate| $))
-                     $))
-                T (ELT $ NIL))
-               ((|exquo| ((|Union| $ "failed") $ $)) T (ELT $ NIL))
-               ((|coerce| ($ $)) T (ELT $ NIL))
-               ((|coerce| ($ (|Integer|))) T (ELT $ 58))
-               ((|characteristic| ((|NonNegativeInteger|))) T
-                (ELT $ NIL))
-               ((|One| ($)) T (CONST $ 35))
-               ((|one?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((** ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
-               ((|recip| ((|Union| $ "failed") $)) T (ELT $ 91))
-               ((* ($ $ $)) T (ELT $ 48))
-               ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
-               ((* ($ (|Integer|) $)) T (ELT $ 49))
-               ((- ($ $ $)) T (ELT $ 47)) ((- ($ $)) T (ELT $ 45))
-               ((|subtractIfCan| ((|Union| $ "failed") $ $)) T
-                (ELT $ NIL))
-               ((* ($ (|NonNegativeInteger|) $)) T (ELT $ NIL))
-               ((|zero?| ((|Boolean|) $)) T (ELT $ 87))
-               ((|sample| ($)) T (CONST $ NIL))
-               ((|Zero| ($)) T (CONST $ 34))
-               ((* ($ (|PositiveInteger|) $)) T (ELT $ 29))
-               ((+ ($ $ $)) T (ELT $ 46))
-               ((|latex| ((|String|) $)) T (ELT $ NIL))
-               ((|hash| ((|SingleInteger|) $)) T (ELT $ 89))
-               ((|coerce| ((|OutputForm|) $)) T (ELT $ 40))
-               ((= ((|Boolean|) $ $)) T (ELT $ 52))
-               ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
-             (|addModemap| '|DoubleFloat| '(|DoubleFloat|)
-                 '((|Join| (|FloatingPointSystem|) (|DifferentialRing|)
-                           (|OpenMath|)
-                           (|TranscendentalFunctionCategory|)
-                           (|ConvertibleTo| (|InputForm|))
-                           (CATEGORY |domain|
-                               (SIGNATURE / ($ $ (|Integer|)))
-                               (SIGNATURE ** ($ $ $))
-                               (SIGNATURE |exp1| ($))
-                               (SIGNATURE |log2| ($ $))
-                               (SIGNATURE |log10| ($ $))
-                               (SIGNATURE |atan| ($ $ $))
-                               (SIGNATURE |Gamma| ($ $))
-                               (SIGNATURE |Beta| ($ $ $))
-                               (SIGNATURE |rationalApproximation|
-                                   ((|Fraction| (|Integer|)) $
-                                    (|NonNegativeInteger|)))
-                               (SIGNATURE |rationalApproximation|
-                                   ((|Fraction| (|Integer|)) $
-                                    (|NonNegativeInteger|)
-                                    (|NonNegativeInteger|))))))
-                 T '|DoubleFloat|
-                 (|put| '|DoubleFloat| '|mode|
-                        '(|Mapping|
-                             (|Join| (|FloatingPointSystem|)
-                                     (|DifferentialRing|) (|OpenMath|)
-                                     (|TranscendentalFunctionCategory|)
-                                     (|ConvertibleTo| (|InputForm|))
-                                     (CATEGORY |domain|
-                                      (SIGNATURE / ($ $ (|Integer|)))
-                                      (SIGNATURE ** ($ $ $))
-                                      (SIGNATURE |exp1| ($))
-                                      (SIGNATURE |log2| ($ $))
-                                      (SIGNATURE |log10| ($ $))
-                                      (SIGNATURE |atan| ($ $ $))
-                                      (SIGNATURE |Gamma| ($ $))
-                                      (SIGNATURE |Beta| ($ $ $))
-                                      (SIGNATURE
-                                       |rationalApproximation|
-                                       ((|Fraction| (|Integer|)) $
-                                        (|NonNegativeInteger|)))
-                                      (SIGNATURE
-                                       |rationalApproximation|
-                                       ((|Fraction| (|Integer|)) $
-                                        (|NonNegativeInteger|)
-                                        (|NonNegativeInteger|))))))
-                        |$CategoryFrame|)))) 
 
 (MAKEPROP '|DoubleFloat| 'NILADIC T) 

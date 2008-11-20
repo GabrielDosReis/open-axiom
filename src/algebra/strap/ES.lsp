@@ -144,17 +144,12 @@
                                      (|Equation| $))
                                    NIL)))
                    |ExpressionSpace|)
-        (SETELT #0# 0 '(|ExpressionSpace|)))))) 
+        (|setShellEntry| #0# 0 '(|ExpressionSpace|)))))) 
 
 (DEFUN |ExpressionSpace| ()
   (LET ()
     (COND
       (|ExpressionSpace;AL|)
       (T (SETQ |ExpressionSpace;AL| (|ExpressionSpace;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|ExpressionSpace| '|isCategory| T
-             (|addModemap| '|ExpressionSpace| '(|ExpressionSpace|)
-                 '((|Category|)) T '|ExpressionSpace| |$CategoryFrame|))) 
 
 (MAKEPROP '|ExpressionSpace| 'NILADIC T) 
