@@ -40,15 +40,11 @@ WeightedPolynomials(R:Ring,VarSet: OrderedSet, E:OrderedAbelianMonoidSup,
                            P:PolynomialCategory(R,E,VarSet),
                              vl:List VarSet, wl:List NonNegativeInteger,
                               wtlevel:NonNegativeInteger):
-       Ring with
+       Join(Ring, HomotopicTo P) with
          if R has CommutativeRing then Algebra(R)
-         coerce: $ -> P
-	         ++ convert back into a "P", ignoring weights
          if R has Field then "/": ($,$) -> Union($,"failed")
 	         ++ x/y division (only works if minimum weight
 	         ++ of divisor is zero, and if R is a Field)
-         coerce: P -> $
-	         ++ coerce(p) coerces p into Weighted form, applying weights and ignoring terms
          changeWeightLevel: NonNegativeInteger -> Void
         	 ++ changeWeightLevel(n) changes the weight level to the new value given:
 	         ++ NB: previously calculated terms are not affected
@@ -153,13 +149,8 @@ import NonNegativeInteger
 OrdinaryWeightedPolynomials(R:Ring,
                              vl:List Symbol, wl:List NonNegativeInteger,
                               wtlevel:NonNegativeInteger):
-       Ring with
+       Join(Ring, HomotopicTo Polynomial R) with
          if R has CommutativeRing then Algebra(R)
-         coerce: $ -> Polynomial(R)
-	         ++ coerce(p) converts back into a Polynomial(R), ignoring weights
-         coerce: Polynomial(R) -> $
-      	 	++ coerce(p) coerces a Polynomial(R) into Weighted form,
-         	++ applying weights and ignoring terms
          if R has Field then "/": ($,$) -> Union($,"failed")
 	         ++ x/y division (only works if minimum weight
        		 ++ of divisor is zero, and if R is a Field)

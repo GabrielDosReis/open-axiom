@@ -92,9 +92,7 @@ PrimitiveArrayFunctions2(A, B): Exports == Implementation where
 )abbrev domain TUPLE Tuple
 ++ This domain is used to interface with the interpreter's notion
 ++ of comma-delimited sequences of values.
-Tuple(S:Type): CoercibleTo(PrimitiveArray S) with
-  coerce: PrimitiveArray S -> %
-	++ coerce(a) makes a tuple from primitive array a
+Tuple(S:Type): HomotopicTo (PrimitiveArray S) with
   select: (%, NonNegativeInteger) -> S
 	++ select(x,n) returns the n-th element of tuple x.
 	++ tuples are 0-based

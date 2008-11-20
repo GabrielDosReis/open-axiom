@@ -1,5 +1,25 @@
 2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/wtpol.spad.pamphlet (WeightedPolynomials): No
+	HomotopicTo P.
+	(OrdinaryWeightedPolynomials): Likewise.
+	* algebra/modmonom.spad.pamphlet (ModuleMonomial): Now
+	HomotopicTo MM.
+	* algebra/matrix.spad.pamphlet (coerce$RectangularMatrix): Remove
+	redundant signature.
+	* algebra/lodop.spad.pamphlet (OrdinaryDifferentialRing): Now
+	HomotopicTo HomotopicTo R.
+	* algebra/alql.spad.pamphlet (DataList): Now HomotopicTo List S.
+	* algebra/array1.spad.pamphlet (Tuple): Now HomotopicTo
+	PrimitiveArray S.
+	* algebra/kl.spad.pamphlet (CachableSet): Now HomotopicTo S.
+	* algebra/java.spad.pamphlet (JavaBytecode): Now HomotopicTo Byte.
+	* algebra/fname.spad.pamphlet (FileNameCategory): Extends
+	HomotopicTo String.
+	* algebra/data.spad.pamphlet (Byte): Now HomotopicTo Character.
+
+2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/coerce.spad.pamphlet (HomotopicTo): New.
 	* algebra/exposed.lsp.pamphlet: Expose it.
 	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include HOMOTOP.

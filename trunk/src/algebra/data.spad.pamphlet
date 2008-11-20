@@ -26,15 +26,12 @@ import OutputForm
 ++   Byte is the datatype of 8-bit sized unsigned integer values.
 Byte(): Public == Private where
   Public == Join(OrderedSet, CoercibleTo NonNegativeInteger,
-              CoercibleTo Character) with
+              HomotopicTo Character) with
     byte: NonNegativeInteger -> %
       ++ byte(x) injects the unsigned integer value `v' into
       ++ the Byte algebra.  `v' must be non-negative and less than 256.
     coerce: NonNegativeInteger -> %
       ++ coerce(x) has the same effect as byte(x).
-    coerce: Character -> %
-      ++ coerce(c) views `c' a a byte.  In particular `c' is supposed
-      ++ to have a numerical value less than 256.
     bitand: (%,%) -> %
       ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
     bitior: (%,%) -> %

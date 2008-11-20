@@ -284,9 +284,6 @@ RectangularMatrix(m,n,R): Exports == Implementation where
     rectangularMatrix: Matrix R -> $
       ++ \spad{rectangularMatrix(m)} converts a matrix of type \spadtype{Matrix}
       ++ to a matrix of type \spad{RectangularMatrix}.
-    coerce: $ -> Matrix R
-      ++ \spad{coerce(m)} converts a matrix of type \spadtype{RectangularMatrix}
-      ++ to a matrix of type \spad{Matrix}.
  
   Implementation ==> Matrix R add
     minr ==> minRowIndex

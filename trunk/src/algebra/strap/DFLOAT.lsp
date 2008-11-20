@@ -1031,14 +1031,15 @@
                          |AbelianGroup&| NIL NIL NIL |AbelianMonoid&|
                          |Monoid&| NIL |OrderedSet&|
                          |AbelianSemiGroup&| |SemiGroup&|
-                         |TranscendentalFunctionCategory&| NIL
+                         |TranscendentalFunctionCategory&|
+                         |RetractableTo&| |RetractableTo&| NIL
                          |SetCategory&| NIL
                          |ElementaryFunctionCategory&| NIL
                          |HyperbolicFunctionCategory&|
                          |ArcTrigonometricFunctionCategory&|
                          |TrigonometricFunctionCategory&| NIL NIL
-                         |RadicalCategory&| |RetractableTo&| NIL
-                         |RetractableTo&| NIL NIL NIL |BasicType&| NIL)
+                         |RadicalCategory&| NIL NIL NIL NIL
+                         |BasicType&| NIL)
                       (CONS '#((|FloatingPointSystem|)
                                (|RealNumberSystem|) (|Field|)
                                (|EuclideanDomain|)
@@ -1064,8 +1065,9 @@
                                (|PatternMatchable| 101) (|OrderedSet|)
                                (|AbelianSemiGroup|) (|SemiGroup|)
                                (|TranscendentalFunctionCategory|)
-                               (|RealConstant|) (|SetCategory|)
-                               (|ConvertibleTo| 41)
+                               (|RetractableTo| 104)
+                               (|RetractableTo| 24) (|RealConstant|)
+                               (|SetCategory|) (|ConvertibleTo| 41)
                                (|ElementaryFunctionCategory|)
                                (|ArcHyperbolicFunctionCategory|)
                                (|HyperbolicFunctionCategory|)
@@ -1073,9 +1075,7 @@
                                (|TrigonometricFunctionCategory|)
                                (|OpenMath|) (|ConvertibleTo| 129)
                                (|RadicalCategory|)
-                               (|RetractableTo| 104)
                                (|CoercibleFrom| 104)
-                               (|RetractableTo| 24)
                                (|CoercibleFrom| 24)
                                (|ConvertibleTo| 101)
                                (|ConvertibleTo| 13) (|BasicType|)

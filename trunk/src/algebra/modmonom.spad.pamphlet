@@ -20,15 +20,11 @@ ModuleMonomial(IS: OrderedSet,
 
    MM ==> Record(index:IS, exponent:E)
 
-   T == OrderedSet  with
+   T == Join(OrderedSet, HomotopicTo MM)  with
         exponent: $ -> E
 		++ exponent(x) \undocumented
         index: $ -> IS
 		++ index(x) \undocumented
-        coerce: MM -> $
-		++ coerce(x) \undocumented
-        coerce: $ -> MM
-		++ coerce(x) \undocumented
         construct: (IS, E) -> $
 		++ construct(i,e) \undocumented
    C == MM  add

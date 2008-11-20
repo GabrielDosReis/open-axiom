@@ -581,8 +581,8 @@
                          |AbelianGroup&| NIL NIL NIL |AbelianMonoid&|
                          |Monoid&| NIL NIL |OrderedSet&|
                          |AbelianSemiGroup&| |SemiGroup&| |Logic&| NIL
-                         |SetCategory&| NIL NIL NIL NIL NIL NIL
-                         |RetractableTo&| NIL NIL |BasicType&| NIL)
+                         |RetractableTo&| |SetCategory&| NIL NIL NIL
+                         NIL NIL NIL NIL NIL |BasicType&| NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -606,13 +606,12 @@
                                (|StepThrough|) (|PatternMatchable| 12)
                                (|OrderedSet|) (|AbelianSemiGroup|)
                                (|SemiGroup|) (|Logic|) (|RealConstant|)
-                               (|SetCategory|) (|OpenMath|)
-                               (|ConvertibleTo| 90)
+                               (|RetractableTo| 12) (|SetCategory|)
+                               (|OpenMath|) (|ConvertibleTo| 90)
                                (|ConvertibleTo| 91)
                                (|CombinatorialFunctionCategory|)
                                (|ConvertibleTo| 92)
                                (|ConvertibleTo| 94)
-                               (|RetractableTo| 12)
                                (|CoercibleFrom| 12)
                                (|ConvertibleTo| 12) (|BasicType|)
                                (|CoercibleTo| 29))
