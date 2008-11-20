@@ -13,18 +13,12 @@
                                  ((* ($ (|PositiveInteger|) $)) T))
                                NIL '((|PositiveInteger|)) NIL))
                    |AbelianSemiGroup|)
-        (SETELT #0# 0 '(|AbelianSemiGroup|)))))) 
+        (|setShellEntry| #0# 0 '(|AbelianSemiGroup|)))))) 
 
 (DEFUN |AbelianSemiGroup| ()
   (LET ()
     (COND
       (|AbelianSemiGroup;AL|)
       (T (SETQ |AbelianSemiGroup;AL| (|AbelianSemiGroup;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|AbelianSemiGroup| '|isCategory| T
-             (|addModemap| '|AbelianSemiGroup| '(|AbelianSemiGroup|)
-                 '((|Category|)) T '|AbelianSemiGroup|
-                 |$CategoryFrame|))) 
 
 (MAKEPROP '|AbelianSemiGroup| 'NILADIC T) 

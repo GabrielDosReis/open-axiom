@@ -17,18 +17,12 @@
                                  ((D ($ $ (|NonNegativeInteger|))) T))
                                NIL '((|NonNegativeInteger|)) NIL))
                    |DifferentialRing|)
-        (SETELT #0# 0 '(|DifferentialRing|)))))) 
+        (|setShellEntry| #0# 0 '(|DifferentialRing|)))))) 
 
 (DEFUN |DifferentialRing| ()
   (LET ()
     (COND
       (|DifferentialRing;AL|)
       (T (SETQ |DifferentialRing;AL| (|DifferentialRing;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|DifferentialRing| '|isCategory| T
-             (|addModemap| '|DifferentialRing| '(|DifferentialRing|)
-                 '((|Category|)) T '|DifferentialRing|
-                 |$CategoryFrame|))) 
 
 (MAKEPROP '|DifferentialRing| 'NILADIC T) 

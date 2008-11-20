@@ -34,9 +34,9 @@
                                          T))
                                       NIL 'NIL NIL))
                                     . #2=(|AssociationListAggregate|)))))) . #2#)
-        (SETELT #0# 0
-                (LIST '|AssociationListAggregate| (|devaluate| |t#1|)
-                      (|devaluate| |t#2|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|AssociationListAggregate| (|devaluate| |t#1|)
+                  (|devaluate| |t#2|))))))) 
 
 (DEFUN |AssociationListAggregate| (&REST #0=#:G1402 &AUX #1=#:G1400)
   (DSETQ #1# #0#)
@@ -53,10 +53,3 @@
                                      #'|AssociationListAggregate;| #1#)))
                         |AssociationListAggregate;AL|))
          #2#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|AssociationListAggregate| '|isCategory| T
-             (|addModemap| '|AssociationListAggregate|
-                 '(|AssociationListAggregate| |#1| |#2|)
-                 '((|Category|) (|SetCategory|) (|SetCategory|)) T
-                 '|AssociationListAggregate| |$CategoryFrame|))) 

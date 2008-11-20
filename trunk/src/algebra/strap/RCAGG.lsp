@@ -60,7 +60,8 @@
                                            (|Integer|) (|List| |t#1|))
                                          NIL))
                                 . #1=(|RecursiveAggregate|))))) . #1#)
-        (SETELT #0# 0 (LIST '|RecursiveAggregate| (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|RecursiveAggregate| (|devaluate| |t#1|))))))) 
 
 (DEFUN |RecursiveAggregate| (#0=#:G1398)
   (LET (#1=#:G1399)
@@ -72,9 +73,3 @@
                               (SETQ #1# (|RecursiveAggregate;| #0#)))
                         |RecursiveAggregate;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|RecursiveAggregate| '|isCategory| T
-             (|addModemap| '|RecursiveAggregate|
-                 '(|RecursiveAggregate| |#1|) '((|Category|) (|Type|))
-                 T '|RecursiveAggregate| |$CategoryFrame|))) 

@@ -102,10 +102,10 @@
                                         (|List| |t#3|))
                                       NIL))
                                     . #2=(|PolynomialSetCategory|)))))) . #2#)
-        (SETELT #0# 0
-                (LIST '|PolynomialSetCategory| (|devaluate| |t#1|)
-                      (|devaluate| |t#2|) (|devaluate| |t#3|)
-                      (|devaluate| |t#4|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|PolynomialSetCategory| (|devaluate| |t#1|)
+                  (|devaluate| |t#2|) (|devaluate| |t#3|)
+                  (|devaluate| |t#4|))))))) 
 
 (DEFUN |PolynomialSetCategory| (&REST #0=#:G1434 &AUX #1=#:G1432)
   (DSETQ #1# #0#)
@@ -121,12 +121,3 @@
                                      #1#)))
                         |PolynomialSetCategory;AL|))
          #2#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|PolynomialSetCategory| '|isCategory| T
-             (|addModemap| '|PolynomialSetCategory|
-                 '(|PolynomialSetCategory| |#1| |#2| |#3| |#4|)
-                 '((|Category|) (|Ring|) (|OrderedAbelianMonoidSup|)
-                   (|OrderedSet|)
-                   (|RecursivePolynomialCategory| |t#1| |t#2| |t#3|))
-                 T '|PolynomialSetCategory| |$CategoryFrame|))) 

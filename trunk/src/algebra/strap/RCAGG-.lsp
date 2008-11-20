@@ -64,27 +64,3 @@
                                   18 3 0 7 0 9 7 12 2 0 7 0 9 10 2 0 15
                                   0 0 18)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|RecursiveAggregate&| '|isFunctor|
-             '(((|setelt| (|#2| $ "value" |#2|)) T (ELT $ 12))
-               ((|child?| ((|Boolean|) $ $)) T (ELT $ 18))
-               ((|elt| (|#2| $ "value")) T (ELT $ 10)))
-             (|addModemap| '|RecursiveAggregate&|
-                 '(|RecursiveAggregate&| |#1| |#2|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE |setelt| (|#2| |#1| "value" |#2|))
-                       (SIGNATURE |child?| ((|Boolean|) |#1| |#1|))
-                       (SIGNATURE |elt| (|#2| |#1| "value")))
-                   (|RecursiveAggregate| |#2|) (|Type|))
-                 T '|RecursiveAggregate&|
-                 (|put| '|RecursiveAggregate&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE |setelt|
-                                     (|#2| |#1| "value" |#2|))
-                                 (SIGNATURE |child?|
-                                     ((|Boolean|) |#1| |#1|))
-                                 (SIGNATURE |elt| (|#2| |#1| "value")))
-                             (|RecursiveAggregate| |#2|) (|Type|))
-                        |$CategoryFrame|)))) 

@@ -89,8 +89,8 @@
                                              (|PolynomialFactorizationExplicit|))))
                                          'NIL NIL))
                                 . #1=(|QuotientFieldCategory|))))) . #1#)
-        (SETELT #0# 0
-                (LIST '|QuotientFieldCategory| (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|QuotientFieldCategory| (|devaluate| |t#1|))))))) 
 
 (DEFUN |QuotientFieldCategory| (#0=#:G1400)
   (LET (#1=#:G1401)
@@ -103,10 +103,3 @@
                               (SETQ #1# (|QuotientFieldCategory;| #0#)))
                         |QuotientFieldCategory;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|QuotientFieldCategory| '|isCategory| T
-             (|addModemap| '|QuotientFieldCategory|
-                 '(|QuotientFieldCategory| |#1|)
-                 '((|Category|) (|IntegralDomain|)) T
-                 '|QuotientFieldCategory| |$CategoryFrame|))) 

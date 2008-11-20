@@ -27,7 +27,8 @@
                                             T))
                                          NIL '((|Boolean|)) NIL))
                                 . #1=(|StreamAggregate|))))) . #1#)
-        (SETELT #0# 0 (LIST '|StreamAggregate| (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|StreamAggregate| (|devaluate| |t#1|))))))) 
 
 (DEFUN |StreamAggregate| (#0=#:G1405)
   (LET (#1=#:G1406)
@@ -39,9 +40,3 @@
                               (SETQ #1# (|StreamAggregate;| #0#)))
                         |StreamAggregate;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|StreamAggregate| '|isCategory| T
-             (|addModemap| '|StreamAggregate| '(|StreamAggregate| |#1|)
-                 '((|Category|) (|Type|)) T '|StreamAggregate|
-                 |$CategoryFrame|))) 

@@ -67,7 +67,8 @@
                                         (|NonNegativeInteger|))
                                       NIL))
                                     . #2=(|LinearAggregate|)))))) . #2#)
-        (SETELT #0# 0 (LIST '|LinearAggregate| (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|LinearAggregate| (|devaluate| |t#1|))))))) 
 
 (DEFUN |LinearAggregate| (#0=#:G1400)
   (LET (#1=#:G1401)
@@ -79,9 +80,3 @@
                               (SETQ #1# (|LinearAggregate;| #0#)))
                         |LinearAggregate;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|LinearAggregate| '|isCategory| T
-             (|addModemap| '|LinearAggregate| '(|LinearAggregate| |#1|)
-                 '((|Category|) (|Type|)) T '|LinearAggregate|
-                 |$CategoryFrame|))) 

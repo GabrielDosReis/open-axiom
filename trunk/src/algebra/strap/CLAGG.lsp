@@ -90,7 +90,8 @@
                                               (|InputForm|)))))
                                          '((|List| |t#1|)) NIL))
                                 . #1=(|Collection|))))) . #1#)
-        (SETELT #0# 0 (LIST '|Collection| (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|Collection| (|devaluate| |t#1|))))))) 
 
 (DEFUN |Collection| (#0=#:G1398)
   (LET (#1=#:G1399)
@@ -102,9 +103,3 @@
                               (SETQ #1# (|Collection;| #0#)))
                         |Collection;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|Collection| '|isCategory| T
-             (|addModemap| '|Collection| '(|Collection| |#1|)
-                 '((|Category|) (|Type|)) T '|Collection|
-                 |$CategoryFrame|))) 

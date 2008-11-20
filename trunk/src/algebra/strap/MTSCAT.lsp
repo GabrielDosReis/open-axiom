@@ -84,9 +84,9 @@
                                         (|List| (|NonNegativeInteger|)))
                                       NIL))
                                     . #2=(|MultivariateTaylorSeriesCategory|)))))) . #2#)
-        (SETELT #0# 0
-                (LIST '|MultivariateTaylorSeriesCategory|
-                      (|devaluate| |t#1|) (|devaluate| |t#2|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|MultivariateTaylorSeriesCategory|
+                  (|devaluate| |t#1|) (|devaluate| |t#2|))))))) 
 
 (DEFUN |MultivariateTaylorSeriesCategory|
        (&REST #0=#:G1402 &AUX #1=#:G1400)
@@ -105,10 +105,3 @@
                                      #1#)))
                         |MultivariateTaylorSeriesCategory;AL|))
          #2#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|MultivariateTaylorSeriesCategory| '|isCategory| T
-             (|addModemap| '|MultivariateTaylorSeriesCategory|
-                 '(|MultivariateTaylorSeriesCategory| |#1| |#2|)
-                 '((|Category|) (|Ring|) (|OrderedSet|)) T
-                 '|MultivariateTaylorSeriesCategory| |$CategoryFrame|))) 

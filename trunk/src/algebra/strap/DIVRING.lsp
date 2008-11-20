@@ -16,17 +16,12 @@
                                      ((|inv| ($ $)) T))
                                    NIL '((|Integer|)) NIL)))
                    |DivisionRing|)
-        (SETELT #0# 0 '(|DivisionRing|)))))) 
+        (|setShellEntry| #0# 0 '(|DivisionRing|)))))) 
 
 (DEFUN |DivisionRing| ()
   (LET ()
     (COND
       (|DivisionRing;AL|)
       (T (SETQ |DivisionRing;AL| (|DivisionRing;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|DivisionRing| '|isCategory| T
-             (|addModemap| '|DivisionRing| '(|DivisionRing|)
-                 '((|Category|)) T '|DivisionRing| |$CategoryFrame|))) 
 
 (MAKEPROP '|DivisionRing| 'NILADIC T) 

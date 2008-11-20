@@ -59,35 +59,3 @@
                                   0 0 11 1 0 12 0 13 1 0 8 0 10 2 0 0 0
                                   17 18)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|Monoid&| '|isFunctor|
-             '(((|recip| ((|Union| $ "failed") $)) T (ELT $ 13))
-               ((** ($ $ (|NonNegativeInteger|))) T (ELT $ 18))
-               ((|one?| ((|Boolean|) $)) T (ELT $ 10))
-               ((|sample| ($)) T (ELT $ 11))
-               ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL)))
-             (|addModemap| '|Monoid&| '(|Monoid&| |#1|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE |recip|
-                           ((|Union| |#1| "failed") |#1|))
-                       (SIGNATURE **
-                           (|#1| |#1| (|NonNegativeInteger|)))
-                       (SIGNATURE |one?| ((|Boolean|) |#1|))
-                       (SIGNATURE |sample| (|#1|))
-                       (SIGNATURE ** (|#1| |#1| (|PositiveInteger|))))
-                   (|Monoid|))
-                 T '|Monoid&|
-                 (|put| '|Monoid&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE |recip|
-                                     ((|Union| |#1| "failed") |#1|))
-                                 (SIGNATURE **
-                                     (|#1| |#1| (|NonNegativeInteger|)))
-                                 (SIGNATURE |one?| ((|Boolean|) |#1|))
-                                 (SIGNATURE |sample| (|#1|))
-                                 (SIGNATURE **
-                                     (|#1| |#1| (|PositiveInteger|))))
-                             (|Monoid|))
-                        |$CategoryFrame|)))) 

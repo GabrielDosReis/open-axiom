@@ -31,23 +31,3 @@
                             (|makeByteWordVec2| 10
                                 '(0 6 0 7 2 6 0 8 0 9 1 0 0 8 10)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|Ring&| '|isFunctor|
-             '(((|coerce| ($ (|Integer|))) T (ELT $ 10))
-               ((|coerce| ((|OutputForm|) $)) T (ELT $ NIL)))
-             (|addModemap| '|Ring&| '(|Ring&| |#1|)
-                 '((CATEGORY |domain|
-                       (SIGNATURE |coerce| (|#1| (|Integer|)))
-                       (SIGNATURE |coerce| ((|OutputForm|) |#1|)))
-                   (|Ring|))
-                 T '|Ring&|
-                 (|put| '|Ring&| '|mode|
-                        '(|Mapping|
-                             (CATEGORY |domain|
-                                 (SIGNATURE |coerce|
-                                     (|#1| (|Integer|)))
-                                 (SIGNATURE |coerce|
-                                     ((|OutputForm|) |#1|)))
-                             (|Ring|))
-                        |$CategoryFrame|)))) 

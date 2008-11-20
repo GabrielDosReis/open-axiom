@@ -49,18 +49,12 @@
                                  (|Matrix| $))
                                NIL))
                    |FiniteFieldCategory|)
-        (SETELT #0# 0 '(|FiniteFieldCategory|)))))) 
+        (|setShellEntry| #0# 0 '(|FiniteFieldCategory|)))))) 
 
 (DEFUN |FiniteFieldCategory| ()
   (LET ()
     (COND
       (|FiniteFieldCategory;AL|)
       (T (SETQ |FiniteFieldCategory;AL| (|FiniteFieldCategory;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|FiniteFieldCategory| '|isCategory| T
-             (|addModemap| '|FiniteFieldCategory|
-                 '(|FiniteFieldCategory|) '((|Category|)) T
-                 '|FiniteFieldCategory| |$CategoryFrame|))) 
 
 (MAKEPROP '|FiniteFieldCategory| 'NILADIC T) 

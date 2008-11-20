@@ -628,7 +628,7 @@
             (|unitsKnown| . 0))
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
@@ -638,7 +638,7 @@
                          |Monoid&| NIL NIL |OrderedSet&|
                          |AbelianSemiGroup&| |SemiGroup&| NIL
                          |SetCategory&| NIL NIL NIL NIL NIL NIL NIL
-                         |RetractableTo&| NIL |BasicType&| NIL)
+                         |RetractableTo&| NIL NIL |BasicType&| NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -669,6 +669,7 @@
                                (|ConvertibleTo| 123)
                                (|ConvertibleTo| 50)
                                (|RetractableTo| 11)
+                               (|CoercibleFrom| 11)
                                (|ConvertibleTo| 11) (|BasicType|)
                                (|CoercibleTo| 36))
                             (|makeByteWordVec2| 131
@@ -718,181 +719,5 @@
                                   0 0 0 0 71 2 0 0 11 0 72 2 0 0 73 0 1
                                   2 0 0 131 0 1)))))
           '|lookupComplete|)) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|Integer| '|isFunctor|
-             '(((|OMwrite| ((|Void|) (|OpenMathDevice|) $ (|Boolean|)))
-                T (ELT $ 24))
-               ((|OMwrite| ((|Void|) (|OpenMathDevice|) $)) T
-                (ELT $ 23))
-               ((|OMwrite| ((|String|) $ (|Boolean|))) T (ELT $ 22))
-               ((|OMwrite| ((|String|) $)) T (ELT $ 20))
-               ((|convert| ((|String|) $)) T (ELT $ 53))
-               ((|invmod| ($ $ $)) T (ELT $ NIL))
-               ((|powmod| ($ $ $ $)) T (ELT $ NIL))
-               ((|mulmod| ($ $ $ $)) T (ELT $ 44))
-               ((|submod| ($ $ $ $)) T (ELT $ 43))
-               ((|addmod| ($ $ $ $)) T (ELT $ 42))
-               ((|mask| ($ $)) T (ELT $ NIL))
-               ((|dec| ($ $)) T (ELT $ 32))
-               ((|inc| ($ $)) T (ELT $ 31))
-               ((|copy| ($ $)) T (ELT $ 30))
-               ((|random| ($ $)) T (ELT $ 65))
-               ((|random| ($)) T (ELT $ 64))
-               ((|rationalIfCan|
-                    ((|Union| (|Fraction| (|Integer|)) "failed") $))
-                T (ELT $ NIL))
-               ((|rational| ((|Fraction| (|Integer|)) $)) T
-                (ELT $ NIL))
-               ((|rational?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((|symmetricRemainder| ($ $ $)) T (ELT $ NIL))
-               ((|positiveRemainder| ($ $ $)) T (ELT $ 55))
-               ((|bit?| ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((|shift| ($ $ $)) T (ELT $ 82))
-               ((|length| ($ $)) T (ELT $ 41))
-               ((|base| ($)) T (ELT $ 29))
-               ((|even?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((|odd?| ((|Boolean|) $)) T (ELT $ 75))
-               ((|init| ($)) T (CONST $ NIL))
-               ((|nextItem| ((|Union| $ "failed") $)) T (ELT $ NIL))
-               ((|convert| ((|DoubleFloat|) $)) T (ELT $ 49))
-               ((|convert| ((|Float|) $)) T (ELT $ 47))
-               ((|permutation| ($ $ $)) T (ELT $ NIL))
-               ((|factorial| ($ $)) T (ELT $ NIL))
-               ((|binomial| ($ $ $)) T (ELT $ NIL))
-               ((|patternMatch|
-                    ((|PatternMatchResult| (|Integer|) $) $
-                     (|Pattern| (|Integer|))
-                     (|PatternMatchResult| (|Integer|) $)))
-                T (ELT $ NIL))
-               ((|convert| ((|Pattern| (|Integer|)) $)) T (ELT $ NIL))
-               ((|convert| ((|InputForm|) $)) T (ELT $ 52))
-               ((|reducedSystem| ((|Matrix| (|Integer|)) (|Matrix| $)))
-                T (ELT $ 58))
-               ((|reducedSystem|
-                    ((|Record| (|:| |mat| (|Matrix| (|Integer|)))
-                         (|:| |vec| (|Vector| (|Integer|))))
-                     (|Matrix| $) (|Vector| $)))
-                T (ELT $ 62))
-               ((|retract| ((|Integer|) $)) T (ELT $ NIL))
-               ((|retractIfCan| ((|Union| (|Integer|) "failed") $)) T
-                (ELT $ NIL))
-               ((|coerce| ($ (|Integer|))) T (ELT $ 39))
-               ((|convert| ((|Integer|) $)) T (ELT $ 40))
-               ((|differentiate| ($ $)) T (ELT $ NIL))
-               ((D ($ $)) T (ELT $ NIL))
-               ((|differentiate| ($ $ (|NonNegativeInteger|))) T
-                (ELT $ NIL))
-               ((D ($ $ (|NonNegativeInteger|))) T (ELT $ NIL))
-               ((|abs| ($ $)) T (ELT $ 63))
-               ((|sign| ((|Integer|) $)) T (ELT $ NIL))
-               ((|negative?| ((|Boolean|) $)) T (ELT $ 35))
-               ((|positive?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((|min| ($ $ $)) T (ELT $ 77))
-               ((|max| ($ $ $)) T (ELT $ 76))
-               ((<= ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((>= ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((> ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((< ((|Boolean|) $ $)) T (ELT $ 67))
-               ((|principalIdeal|
-                    ((|Record| (|:| |coef| (|List| $))
-                         (|:| |generator| $))
-                     (|List| $)))
-                T (ELT $ NIL))
-               ((|expressIdealMember|
-                    ((|Union| (|List| $) "failed") (|List| $) $))
-                T (ELT $ NIL))
-               ((|sizeLess?| ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((|euclideanSize| ((|NonNegativeInteger|) $)) T
-                (ELT $ NIL))
-               ((|divide|
-                    ((|Record| (|:| |quotient| $) (|:| |remainder| $))
-                     $ $))
-                T (ELT $ 79))
-               ((|quo| ($ $ $)) T (ELT $ 80))
-               ((|rem| ($ $ $)) T (ELT $ 81))
-               ((|extendedEuclidean|
-                    ((|Record| (|:| |coef1| $) (|:| |coef2| $)
-                         (|:| |generator| $))
-                     $ $))
-                T (ELT $ NIL))
-               ((|extendedEuclidean|
-                    ((|Union| (|Record| (|:| |coef1| $)
-                                  (|:| |coef2| $))
-                              "failed")
-                     $ $ $))
-                T (ELT $ NIL))
-               ((|multiEuclidean|
-                    ((|Union| (|List| $) "failed") (|List| $) $))
-                T (ELT $ NIL))
-               ((|factor| ((|Factored| $) $)) T (ELT $ 105))
-               ((|squareFreePart| ($ $)) T (ELT $ NIL))
-               ((|squareFree| ((|Factored| $) $)) T (ELT $ NIL))
-               ((|prime?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((|gcdPolynomial|
-                    ((|SparseUnivariatePolynomial| $)
-                     (|SparseUnivariatePolynomial| $)
-                     (|SparseUnivariatePolynomial| $)))
-                T (ELT $ 119))
-               ((|lcm| ($ (|List| $))) T (ELT $ NIL))
-               ((|lcm| ($ $ $)) T (ELT $ NIL))
-               ((|gcd| ($ (|List| $))) T (ELT $ NIL))
-               ((|gcd| ($ $ $)) T (ELT $ 86))
-               ((|unit?| ((|Boolean|) $)) T (ELT $ NIL))
-               ((|associates?| ((|Boolean|) $ $)) T (ELT $ NIL))
-               ((|unitCanonical| ($ $)) T (ELT $ 89))
-               ((|unitNormal|
-                    ((|Record| (|:| |unit| $) (|:| |canonical| $)
-                         (|:| |associate| $))
-                     $))
-                T (ELT $ 88))
-               ((|exquo| ((|Union| $ "failed") $ $)) T (ELT $ 84))
-               ((|coerce| ($ $)) T (ELT $ NIL))
-               ((|coerce| ($ (|Integer|))) T (ELT $ 39))
-               ((|characteristic| ((|NonNegativeInteger|))) T
-                (ELT $ NIL))
-               ((|One| ($)) T (CONST $ 28))
-               ((|one?| ((|Boolean|) $)) T (ELT $ 26))
-               ((** ($ $ (|NonNegativeInteger|))) T (ELT $ 74))
-               ((|recip| ((|Union| $ "failed") $)) T (ELT $ 85))
-               ((* ($ $ $)) T (ELT $ 71))
-               ((** ($ $ (|PositiveInteger|))) T (ELT $ NIL))
-               ((* ($ (|Integer|) $)) T (ELT $ 72))
-               ((- ($ $ $)) T (ELT $ 70)) ((- ($ $)) T (ELT $ 68))
-               ((|subtractIfCan| ((|Union| $ "failed") $ $)) T
-                (ELT $ NIL))
-               ((* ($ (|NonNegativeInteger|) $)) T (ELT $ NIL))
-               ((|zero?| ((|Boolean|) $)) T (ELT $ 25))
-               ((|sample| ($)) T (CONST $ NIL))
-               ((|Zero| ($)) T (CONST $ 27))
-               ((* ($ (|PositiveInteger|) $)) T (ELT $ NIL))
-               ((+ ($ $ $)) T (ELT $ 69))
-               ((|latex| ((|String|) $)) T (ELT $ 54))
-               ((|hash| ((|SingleInteger|) $)) T (ELT $ 34))
-               ((|coerce| ((|OutputForm|) $)) T (ELT $ 38))
-               ((= ((|Boolean|) $ $)) T (ELT $ 66))
-               ((~= ((|Boolean|) $ $)) T (ELT $ NIL)))
-             (|addModemap| '|Integer| '(|Integer|)
-                 '((|Join| (|IntegerNumberSystem|)
-                           (|ConvertibleTo| (|String|)) (|OpenMath|)
-                           (CATEGORY |domain|
-                               (SIGNATURE |random| ($ $))
-                               (ATTRIBUTE |canonical|)
-                               (ATTRIBUTE |canonicalsClosed|)
-                               (ATTRIBUTE |noetherian|)
-                               (ATTRIBUTE |infinite|))))
-                 T '|Integer|
-                 (|put| '|Integer| '|mode|
-                        '(|Mapping|
-                             (|Join| (|IntegerNumberSystem|)
-                                     (|ConvertibleTo| (|String|))
-                                     (|OpenMath|)
-                                     (CATEGORY |domain|
-                                      (SIGNATURE |random| ($ $))
-                                      (ATTRIBUTE |canonical|)
-                                      (ATTRIBUTE |canonicalsClosed|)
-                                      (ATTRIBUTE |noetherian|)
-                                      (ATTRIBUTE |infinite|))))
-                        |$CategoryFrame|)))) 
 
 (MAKEPROP '|Integer| 'NILADIC T) 

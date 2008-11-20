@@ -18,14 +18,9 @@
                                '((|NonNegativeInteger|) (|Boolean|))
                                NIL))
                    |Monoid|)
-        (SETELT #0# 0 '(|Monoid|)))))) 
+        (|setShellEntry| #0# 0 '(|Monoid|)))))) 
 
 (DEFUN |Monoid| ()
   (LET () (COND (|Monoid;AL|) (T (SETQ |Monoid;AL| (|Monoid;|)))))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|Monoid| '|isCategory| T
-             (|addModemap| '|Monoid| '(|Monoid|) '((|Category|)) T
-                 '|Monoid| |$CategoryFrame|))) 
 
 (MAKEPROP '|Monoid| 'NILADIC T) 

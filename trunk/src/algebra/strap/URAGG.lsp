@@ -96,8 +96,8 @@
                                            (|NonNegativeInteger|))
                                          NIL))
                                 . #1=(|UnaryRecursiveAggregate|))))) . #1#)
-        (SETELT #0# 0
-                (LIST '|UnaryRecursiveAggregate| (|devaluate| |t#1|))))))) 
+        (|setShellEntry| #0# 0
+            (LIST '|UnaryRecursiveAggregate| (|devaluate| |t#1|))))))) 
 
 (DEFUN |UnaryRecursiveAggregate| (#0=#:G1426)
   (LET (#1=#:G1427)
@@ -111,10 +111,3 @@
                                     (|UnaryRecursiveAggregate;| #0#)))
                         |UnaryRecursiveAggregate;AL|))
          #1#)))) 
-
-(SETQ |$CategoryFrame|
-      (|put| '|UnaryRecursiveAggregate| '|isCategory| T
-             (|addModemap| '|UnaryRecursiveAggregate|
-                 '(|UnaryRecursiveAggregate| |#1|)
-                 '((|Category|) (|Type|)) T '|UnaryRecursiveAggregate|
-                 |$CategoryFrame|))) 
