@@ -361,7 +361,7 @@ axiom_algebra_layer_0 = \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
            PROPERTY BASTYPE  BASTYPE- CATEGORY LMODULE  \
   RMODULE  FINITE   STEP     SGROUP   SGROUP-  ABELSG   \
-  ABELSG-  ORDSET   ORDSET-  FNCAT    FILECAT  SEXCAT   \
+  ABELSG-  ORDSET   ORDSET-           FILECAT  SEXCAT   \
   MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
   ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
   COMBOPC  EQ2      NONE1    CONDUIT  IOMODE   CTORKIND
@@ -376,7 +376,7 @@ axiom_algebra_layer_1 = \
   AGG      AGG-     IEVALAB  IEVALAB- FORTCAT   ITUPLE   \
   PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
   RETRACT- SEGCAT   BINDING           BMODULE   LOGIC    \
-  LOGIC-   EVALAB   EVALAB-  FEVALAB  FEVALAB-  BYTE     \
+  LOGIC-   EVALAB   EVALAB-  FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP
 
 axiom_algebra_layer_1_nrlibs = \
@@ -388,7 +388,8 @@ axiom_algebra_layer_1_objects = \
 axiom_algebra_layer_2 = \
   ELTAGG   ELTAGG- FMC      FMFUN   FORTFN   FVC     \
   SYNTAX   FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
-  CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC
+  CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC FNCAT   \
+  BYTE
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))

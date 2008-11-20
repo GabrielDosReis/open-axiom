@@ -14,11 +14,7 @@
 )abbrev domain DLIST DataList
 ++ This domain provides some nice functions on lists
 DataList(S:OrderedSet) : Exports == Implementation where
-  Exports == ListAggregate(S) with
-    coerce: List S -> %
-      ++ coerce(l) creates a datalist from l  	
-    coerce: % -> List S
-      ++ coerce(x) returns the list of elements in x
+  Exports == Join(ListAggregate(S), HomotopicTo List S) with
     datalist: List S -> %
       ++ datalist(l) creates a datalist from l 
     elt: (%,"unique") -> %

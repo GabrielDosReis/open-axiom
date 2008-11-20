@@ -217,12 +217,8 @@ OrdinaryDifferentialRing(Kernels,R,var): DRcategory == DRcapsule where
     Kernels:SetCategory
     R: PartialDifferentialRing(Kernels)
     var : Kernels
-    DRcategory == Join(BiModule($,$), DifferentialRing) with
+    DRcategory == Join(BiModule($,$), DifferentialRing, HomotopicTo R) with
         if R has Field then Field
-        coerce: R -> $
-            ++ coerce(r) views r as a value in the ordinary differential ring.
-        coerce: $ -> R
-            ++ coerce(p) views p as a valie in the partial differential ring.
     DRcapsule == R add
         n: Integer
         Rep := R

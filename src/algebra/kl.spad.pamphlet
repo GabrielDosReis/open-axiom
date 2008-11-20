@@ -116,11 +116,8 @@ SortedCache(S:CachableSet): Exports == Implementation where
 ++ Description:
 ++   MakeCachableSet(S) returns a cachable set which is equal to S as a set.
 MakeCachableSet(S:SetCategory): Exports == Implementation where
-  Exports ==> Join(CachableSet, CoercibleTo S) with
-    coerce: S -> %
-      ++ coerce(s) returns s viewed as an element of %.
-
-  Implementation ==> add
+  Exports == Join(CachableSet, HomotopicTo S)
+  Implementation == add
     import SortedCache(%)
 
     Rep := Record(setpart: S, pos: NonNegativeInteger)

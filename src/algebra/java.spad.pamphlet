@@ -19,11 +19,8 @@
 ++ Description:  This domain defines the datatype for the Java
 ++ Virtual Machine byte codes.
 JavaBytecode(): Public == Private where
-  Public ==> Join(CoercibleTo OutputForm, CoercibleTo Byte) with
-    coerce: Byte -> %
-      ++ coerce(x) the numerical byte value into a JVM bytecode.
-
-  Private ==> add
+  Public == Join(CoercibleTo OutputForm, HomotopicTo Byte)
+  Private == add
     -- mnemonics equivalent of bytecodes.
     mnemonics : PrimitiveArray Symbol := 
       [['nop, 'aconst__null, 'iconst__m1, 'iconst__0, 'iconst__1,  _
