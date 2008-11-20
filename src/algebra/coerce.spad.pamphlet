@@ -70,8 +70,7 @@ CoercibleTo(S:Type): Category == with
 ++ See Also: CoercibleTo
 ++ Description:
 ++   A is coercible from B iff any element of domain B can be
-++   automically converted into an element of domain B.  In symbols
-++      A has CoercibleFrom B   <=>  B has CoercibleTo A
+++   automically converted into an element of domain A. 
 CoercibleFrom(S: Type): Category == with
   coerce: S -> %
     ++ coerce(s) transforms `s' into an element of `%'.
@@ -124,8 +123,7 @@ ConvertibleTo(S:Type): Category == with
 ++ See Also: ConvertibleTo
 ++ Description:
 ++   A is convertible from B iff any element of domain B can be
-++   explicitly converted into an element of domain B.  In symbols
-++      A has ConvertibleFrom B   <=>  B has ConvertibleTo A
+++   explicitly converted into an element of domain A. 
 ConvertibleFrom(S: Type): Category == with
   convert: S -> %
     ++ convert(s) transforms `s' into an element of `%'.
