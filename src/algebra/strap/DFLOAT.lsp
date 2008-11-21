@@ -1020,7 +1020,7 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0))
                 (CONS '#(|FloatingPointSystem&| |RealNumberSystem&|
                          |Field&| |EuclideanDomain&| NIL
                          |UniqueFactorizationDomain&| |GcdDomain&|
@@ -1038,7 +1038,7 @@
                          |HyperbolicFunctionCategory&|
                          |ArcTrigonometricFunctionCategory&|
                          |TrigonometricFunctionCategory&| NIL NIL
-                         |RadicalCategory&| NIL NIL NIL NIL
+                         |RadicalCategory&| NIL NIL NIL NIL NIL
                          |BasicType&| NIL)
                       (CONS '#((|FloatingPointSystem|)
                                (|RealNumberSystem|) (|Field|)
@@ -1074,11 +1074,11 @@
                                (|ArcTrigonometricFunctionCategory|)
                                (|TrigonometricFunctionCategory|)
                                (|OpenMath|) (|ConvertibleTo| 129)
-                               (|RadicalCategory|)
-                               (|CoercibleFrom| 104)
-                               (|CoercibleFrom| 24)
+                               (|RadicalCategory|) (|CoercibleFrom| 24)
                                (|ConvertibleTo| 101)
-                               (|ConvertibleTo| 13) (|BasicType|)
+                               (|ConvertibleTo| 13)
+                               (|CoercibleFrom| 104)
+                               (|CoercibleFrom| $$) (|BasicType|)
                                (|CoercibleTo| 38))
                             (|makeByteWordVec2| 139
                                 '(0 6 0 7 2 9 0 8 6 10 1 9 11 0 12 2 9

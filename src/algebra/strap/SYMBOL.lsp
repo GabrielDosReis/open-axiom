@@ -871,13 +871,14 @@
              |elt| 371 |convert| 377 |coerce| 397 |argscript| 407
              |OMwrite| 413 >= 437 > 443 = 449 <= 455 < 461)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0))
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|OrderedSet&| NIL NIL |SetCategory&|
-                         |BasicType&| NIL NIL NIL NIL NIL NIL)
+                         |BasicType&| NIL NIL NIL NIL NIL NIL NIL)
                       (CONS '#((|OrderedSet|) (|PatternMatchable| 67)
                                (|PatternMatchable| 6) (|SetCategory|)
                                (|BasicType|) (|ConvertibleTo| 69)
                                (|ConvertibleTo| 62)
+                               (|CoercibleFrom| 13)
                                (|ConvertibleTo| 24) (|OpenMath|)
                                (|ConvertibleTo| 44) (|CoercibleTo| 51))
                             (|makeByteWordVec2| 125
@@ -903,11 +904,11 @@
                                   0 0 0 54 59 2 0 0 0 54 57 1 0 13 0 84
                                   1 0 81 0 87 1 0 21 0 22 2 0 0 0 55 56
                                   2 0 0 0 81 82 0 0 0 124 0 0 23 106 3
-                                  0 65 0 62 65 66 3 0 72 0 69 72 73 1 0
-                                  0 0 101 0 0 0 95 1 0 0 0 83 2 0 0 0 0
+                                  0 72 0 69 72 73 3 0 65 0 62 65 66 0 0
+                                  0 95 1 0 0 0 101 1 0 0 0 83 2 0 0 0 0
                                   1 2 0 0 0 0 1 1 0 78 0 107 1 0 13 0
-                                  90 1 0 125 0 1 2 0 0 0 54 58 1 0 62 0
-                                  77 1 0 69 0 75 1 0 24 0 47 1 0 44 0
+                                  90 1 0 125 0 1 2 0 0 0 54 58 1 0 69 0
+                                  75 1 0 62 0 77 1 0 24 0 47 1 0 44 0
                                   46 1 0 0 13 48 1 0 51 0 53 2 0 0 0 54
                                   60 3 0 23 25 0 21 36 2 0 13 0 21 34 2
                                   0 23 25 0 35 1 0 13 0 33 2 0 21 0 0 1

@@ -628,7 +628,7 @@
             (|unitsKnown| . 0))
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
@@ -638,7 +638,7 @@
                          |Monoid&| NIL NIL |OrderedSet&|
                          |AbelianSemiGroup&| |SemiGroup&| NIL
                          |RetractableTo&| |SetCategory&| NIL NIL NIL
-                         NIL NIL NIL NIL NIL NIL |BasicType&| NIL)
+                         NIL NIL NIL NIL NIL NIL NIL |BasicType&| NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -670,7 +670,8 @@
                                (|ConvertibleTo| 123)
                                (|ConvertibleTo| 50)
                                (|CoercibleFrom| 11)
-                               (|ConvertibleTo| 11) (|BasicType|)
+                               (|ConvertibleTo| 11)
+                               (|CoercibleFrom| $$) (|BasicType|)
                                (|CoercibleTo| 36))
                             (|makeByteWordVec2| 131
                                 '(1 7 6 0 8 3 7 6 0 9 9 10 2 7 6 0 11
