@@ -654,12 +654,8 @@ Asp20(name): Exports == Implementation where
                 MAT EXPR FLOAT, FEXPR,VEC FEXPR,VEC FEXPR,MAT FEXPR)
 
 
-  Exports ==> FortranMatrixFunctionCategory with
-    coerce: MAT FEXPR -> $
-      ++coerce(f) takes objects from the appropriate instantiation of
-      ++\spadtype{FortranExpression} and turns them into an ASP.
-
-  Implementation ==> add
+  Exports == Join(FortranMatrixFunctionCategory, CoercibleFrom MAT FEXPR)
+  Implementation == add
 
     real : UFST := ["real"::FST]$UFST
     syms : SYMTAB := empty()
@@ -2986,11 +2982,7 @@ Asp6(name): Exports == Implementation where
   VEC    ==> Vector
   VF2    ==> VectorFunctions2
 
-  Exports == FortranVectorFunctionCategory with
-    coerce: Vector FEXPR -> %
-      ++coerce(f) takes objects from the appropriate instantiation of
-      ++\spadtype{FortranExpression} and turns them into an ASP.
-
+  Exports == Join(FortranVectorFunctionCategory, CoercibleFrom Vector FEXPR)
   Implementation == add
 
     real : UFST := ["real"::FST]$UFST

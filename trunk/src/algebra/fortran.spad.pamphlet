@@ -163,8 +163,6 @@ FortranCode(): public == private where
                   commonBranch:COMMON, printBranch:PRINTLIST)
 
   public == SetCategory with
-    coerce: $ -> O
-      ++ coerce(f) returns an object of type OutputForm.
     forLoop: (SegmentBinding PIN,$) -> $
      ++ forLoop(i=1..10,c) creates a representation of a FORTRAN DO loop with
      ++ \spad{i} ranging over the values 1 to 10.

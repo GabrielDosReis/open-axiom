@@ -42,9 +42,8 @@ RadixExpansion(bb): Exports == Implementation where
   ST  ==> Stream Integer
   QuoRem ==> Record(quotient: Integer, remainder: Integer)
 
-  Exports ==> QuotientFieldCategory(Integer) with
-    coerce: % -> Fraction Integer
-      ++ coerce(rx) converts a radix expansion to a rational number.
+  Exports == Join(QuotientFieldCategory(Integer),_
+                    CoercibleTo Fraction Integer) with
     fractionPart: % -> Fraction Integer
       ++ fractionPart(rx) returns the fractional part of a radix expansion.
     wholeRagits: % -> List Integer
@@ -280,11 +279,8 @@ RadixExpansion(bb): Exports == Implementation where
 ++   binary expansions.
 
 BinaryExpansion(): Exports == Implementation where
-  Exports ==> QuotientFieldCategory(Integer) with
-    coerce: % -> Fraction Integer
-      ++ coerce(b) converts a binary expansion to a rational number.
-    coerce: % -> RadixExpansion(2)
-      ++ coerce(b) converts a binary expansion to a radix expansion with base 2.
+  Exports == Join(QuotientFieldCategory(Integer),_
+               CoercibleTo Fraction Integer,CoercibleTo RadixExpansion(2)) with
     fractionPart: % -> Fraction Integer
       ++ fractionPart(b) returns the fractional part of a binary expansion.
     binary: Fraction Integer -> %
@@ -312,12 +308,8 @@ BinaryExpansion(): Exports == Implementation where
 ++   This domain allows rational numbers to be presented as repeating
 ++   decimal expansions.
 DecimalExpansion(): Exports == Implementation where
-  Exports ==> QuotientFieldCategory(Integer) with
-    coerce: % -> Fraction Integer
-      ++ coerce(d) converts a decimal expansion to a rational number.
-    coerce: % -> RadixExpansion(10)
-      ++ coerce(d) converts a decimal expansion to a radix expansion
-      ++ with base 10.
+  Exports == Join(QuotientFieldCategory(Integer),_
+              CoercibleTo Fraction Integer,CoercibleTo RadixExpansion 10) with
     fractionPart: % -> Fraction Integer
       ++ fractionPart(d) returns the fractional part of a decimal expansion.
     decimal: Fraction Integer -> %
@@ -346,12 +338,9 @@ DecimalExpansion(): Exports == Implementation where
 ++   hexadecimal expansions.
 
 HexadecimalExpansion(): Exports == Implementation where
-  Exports ==> QuotientFieldCategory(Integer) with
-    coerce: % -> Fraction Integer
-      ++ coerce(h) converts a hexadecimal expansion to a rational number.
-    coerce: % -> RadixExpansion(16)
-      ++ coerce(h) converts a hexadecimal expansion to a radix expansion
-      ++ with base 16.
+  Exports == Join(QuotientFieldCategory(Integer),_
+               CoercibleTo Fraction Integer,_
+               CoercibleTo RadixExpansion 16)  with
     fractionPart: % -> Fraction Integer
       ++ fractionPart(h) returns the fractional part of a hexadecimal expansion.
     hex: Fraction Integer -> %

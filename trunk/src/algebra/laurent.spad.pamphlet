@@ -35,7 +35,7 @@ UnivariateLaurentSeriesConstructorCategory(Coef,UTS):_
   I ==> Integer
 
   Definition ==> Join(UnivariateLaurentSeriesCategory(Coef),_
-                      RetractableTo UTS) with
+                      RetractableTo UTS, CoercibleFrom UTS) with
     laurent: (I,UTS) -> %
       ++ \spad{laurent(n,f(x))} returns \spad{x**n * f(x)}.
     degree: % -> I
@@ -63,9 +63,6 @@ UnivariateLaurentSeriesConstructorCategory(Coef,UTS):_
       ++ 'leading zero' is removed from the Laurent series as follows:
       ++ the series is rewritten by increasing the exponent by 1 and
       ++ dividing the Taylor series by its variable.
-    coerce: UTS -> %
-      ++ \spad{coerce(f(x))} converts the Taylor series \spad{f(x)} to a
-      ++ Laurent series.
     taylor: % -> UTS
       ++ taylor(f(x)) converts the Laurent series f(x) to a Taylor series,
       ++ if possible.  Error: if this is not possible.

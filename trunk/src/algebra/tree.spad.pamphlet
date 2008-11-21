@@ -615,14 +615,11 @@ BalancedBinaryTree(S: SetCategory): Exports == Implementation where
 ++ A PendantTree(S)is either a leaf? and is an S or has
 ++ a left and a right both PendantTree(S)'s
 PendantTree(S: SetCategory): T == C where
- T == BinaryRecursiveAggregate(S) with
+ T == Join(BinaryRecursiveAggregate(S),CoercibleTo Tree S) with
      ptree : S->%
        ++ ptree(s) is a leaf? pendant tree
      ptree:(%, %)->%
 	++ ptree(x,y) \undocumented
-     coerce:%->Tree S
-	++ coerce(x) \undocumented
-
  
  C == add
      Rep := Tree S

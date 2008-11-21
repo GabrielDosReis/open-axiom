@@ -114,7 +114,7 @@ Database(S): Exports == Implementation where
 	++ display(x) displays x in some form
     fullDisplay: % -> Void
 	++ fullDisplay(x) displays x in detail
-  Exports == SetCategory with
+  Exports == Join(SetCategory, CoercibleFrom List S) with
     elt: (%,QueryEquation) -> %
       ++ elt(db,q) returns all elements of \axiom{db} which satisfy \axiom{q}.
     elt: (%,Symbol) -> DataList String
@@ -124,8 +124,6 @@ Database(S): Exports == Implementation where
     _-: (%,%) -> %
       ++ db1-db2 returns the difference of databases db1 and db2 i.e. consisting
       ++ of elements in db1 but not in db2 
-    coerce: List S -> %
-      ++ coerce(l) makes a database out of a list
     display: % -> Void
       ++ display(db) prints a summary line for each entry in \axiom{db}.
     fullDisplay: % -> Void

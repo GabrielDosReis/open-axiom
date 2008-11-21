@@ -587,13 +587,11 @@ Stream(S): Exports == Implementation where
   NNI ==> NonNegativeInteger
   U   ==> UniversalSegment I
 
-  Exports ==> LazyStreamAggregate(S) with
+  Exports == Join(LazyStreamAggregate(S),CoercibleFrom L S) with
     shallowlyMutable
       ++ one may destructively alter a stream by assigning new
       ++ values to its entries.
 
-    coerce: L S -> %
-      ++ coerce(l) converts a list l to a stream.
     repeating: L S -> %
       ++ repeating(l) is a repeating stream whose period is the list l.
     if S has SetCategory then

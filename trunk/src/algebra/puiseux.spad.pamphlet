@@ -36,7 +36,7 @@ UnivariatePuiseuxSeriesConstructorCategory(Coef,ULS):_
   RN ==> Fraction Integer
 
   Definition ==> Join(UnivariatePuiseuxSeriesCategory(Coef),_
-                      RetractableTo ULS) with
+                      RetractableTo ULS,CoercibleFrom ULS) with
     puiseux: (RN,ULS) -> %
       ++ \spad{puiseux(r,f(x))} returns \spad{f(x^r)}.
     rationalPower: % -> RN
@@ -48,9 +48,6 @@ UnivariatePuiseuxSeriesConstructorCategory(Coef,ULS):_
     degree: % -> RN
       ++ \spad{degree(f(x))} returns the degree of the leading term of the
       ++ Puiseux series \spad{f(x)}, which may have zero as a coefficient.
-    coerce: ULS -> %
-      ++ \spad{coerce(f(x))} converts the Laurent series \spad{f(x)} to a
-      ++ Puiseux series.
     laurent: % -> ULS
       ++ \spad{laurent(f(x))} converts the Puiseux series \spad{f(x)} to a
       ++ Laurent series if possible. Error: if this is not possible.
@@ -448,10 +445,7 @@ UnivariatePuiseuxSeries(Coef,var,cen): Exports == Implementation where
   ULS ==> UnivariateLaurentSeries(Coef,var,cen)
 
   Exports ==> Join(UnivariatePuiseuxSeriesConstructorCategory(Coef,ULS),_
-                   RetractableTo UTS) with
-    coerce: Variable(var) -> %
-      ++ coerce(var) converts the series variable \spad{var} into a
-      ++ Puiseux series.
+                   RetractableTo UTS,CoercibleFrom Variable var) with
     differentiate: (%,Variable(var)) -> %
       ++ \spad{differentiate(f(x),x)} returns the derivative of
       ++ \spad{f(x)} with respect to \spad{x}.
