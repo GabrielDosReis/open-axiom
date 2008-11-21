@@ -4,18 +4,18 @@
 (DEFPARAMETER |Ring;AL| 'NIL) 
 
 (DEFUN |Ring;| ()
-  (PROG (#0=#:G1397)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
-                   (|Join| (|Rng|) (|Monoid|) (|LeftModule| '$)
-                           (|mkCategory| '|domain|
-                               '(((|characteristic|
-                                      ((|NonNegativeInteger|)))
-                                  T)
-                                 ((|coerce| ($ (|Integer|))) T))
-                               '((|unitsKnown| T))
-                               '((|Integer|) (|NonNegativeInteger|))
-                               NIL))
+                   (|sublisV| (PAIR '(#1=#:G1397) (LIST '(|Integer|)))
+                       (|Join| (|Rng|) (|Monoid|) (|LeftModule| '$)
+                               (|CoercibleFrom| '#1#)
+                               (|mkCategory| '|package|
+                                   '(((|characteristic|
+                                       ((|NonNegativeInteger|)))
+                                      T))
+                                   '((|unitsKnown| T))
+                                   '((|NonNegativeInteger|)) NIL)))
                    |Ring|)
         (|setShellEntry| #0# 0 '(|Ring|)))))) 
 

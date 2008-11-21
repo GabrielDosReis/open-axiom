@@ -572,7 +572,7 @@
             (|leftUnitary| . 0) (|unitsKnown| . 0))
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
@@ -582,7 +582,7 @@
                          |Monoid&| NIL NIL |OrderedSet&|
                          |AbelianSemiGroup&| |SemiGroup&| |Logic&| NIL
                          |RetractableTo&| |SetCategory&| NIL NIL NIL
-                         NIL NIL NIL NIL NIL |BasicType&| NIL)
+                         NIL NIL NIL NIL NIL NIL |BasicType&| NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -612,8 +612,9 @@
                                (|CombinatorialFunctionCategory|)
                                (|ConvertibleTo| 92)
                                (|ConvertibleTo| 94)
-                               (|CoercibleFrom| 12)
-                               (|ConvertibleTo| 12) (|BasicType|)
+                               (|ConvertibleTo| 12)
+                               (|CoercibleFrom| $$)
+                               (|CoercibleFrom| 12) (|BasicType|)
                                (|CoercibleTo| 29))
                             (|makeByteWordVec2| 104
                                 '(1 8 7 0 9 3 8 7 0 10 10 11 2 8 7 0 12
@@ -644,7 +645,7 @@
                                   61 1 0 0 0 1 2 0 0 0 56 1 1 0 0 0 51
                                   1 0 0 0 1 1 0 90 0 1 1 0 91 0 1 1 0
                                   92 0 1 1 0 94 0 1 1 0 12 0 32 1 0 0
-                                  12 82 1 0 0 12 82 1 0 0 0 1 1 0 29 0
+                                  12 82 1 0 0 0 1 1 0 0 12 82 1 0 29 0
                                   31 0 0 56 1 2 0 22 0 0 1 2 0 0 0 0 1
                                   0 0 0 37 2 0 22 0 0 1 3 0 0 0 0 0 74
                                   1 0 0 0 63 2 0 0 0 0 44 0 0 0 35 2 0
