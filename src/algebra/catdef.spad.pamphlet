@@ -149,10 +149,7 @@ AbelianSemiGroup(): Category == SetCategory with
 ++   \spad{b*x = (b::%)*x}
 ++   \spad{r*(a*b) = (r*a)*b = a*(r*b)}
 Algebra(R:CommutativeRing): Category ==
-  Join(Ring, Module R) with
-    --operations
-      coerce: R -> %
-          ++ coerce(r) maps the ring element r to a member of the algebra.
+  Join(Ring, Module R, CoercibleFrom R)
  add
   coerce(x:R):% == x * 1$%
 
@@ -1529,7 +1526,7 @@ RightModule(R:Rng):Category == AbelianGroup with
 ++ not necessarily commutative.
 
 --Ring(): Category == Join(Rng,Monoid,LeftModule(%:Rng)) with
-Ring(): Category == Join(Rng,Monoid,LeftModule(%)) with
+Ring(): Category == Join(Rng,Monoid,LeftModule(%),CoercibleFrom Integer) with
     --operations
       characteristic: () -> NonNegativeInteger
         ++ characteristic() returns the characteristic of the ring
@@ -1537,9 +1534,6 @@ Ring(): Category == Join(Rng,Monoid,LeftModule(%)) with
         ++ \spad{n*x=0} for all x in the ring, or zero if no such n
         ++ exists.
         --We can not make this a constant, since some domains are mutable
-      coerce: Integer -> %
-        ++ coerce(i) converts the integer i to a member of the given domain.
---    recip: % -> Union(%,"failed") -- inherited from Monoid
       unitsKnown
         ++ recip truly yields
         ++ reciprocal or "failed" if not a unit.

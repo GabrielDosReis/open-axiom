@@ -34,10 +34,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
   R     : Join(GcdDomain,OrderedSet,RetractableTo Integer,_
                LinearlyExplicitRingOver Integer)
   FE    : Join(AlgebraicallyClosedField,TranscendentalFunctionCategory,_
-               FunctionSpace R)
-            with
-              coerce: Expon -> %
-                ++ coerce(e) converts an 'exponent' e to an 'expression'
+               FunctionSpace R, CoercibleFrom Expon)
   Expon : OrderedRing
   UPS   : Join(UnivariatePowerSeriesCategory(FE,Expon),Field,_
                TranscendentalFunctionCategory)

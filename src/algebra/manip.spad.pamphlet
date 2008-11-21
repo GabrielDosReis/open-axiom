@@ -67,13 +67,11 @@ PolynomialRoots(E, V, R, P, F):Exports == Implementation where
   V: OrderedSet
   R: IntegralDomain
   P: PolynomialCategory(R, E, V)
-  F: Field with
+  F: Join(Field,CoercibleFrom P) with
     numer : $ -> P
 	++ numer(x) \undocumented
     denom : $ -> P
 	++ denom(x) \undocumented
-    coerce: P -> $
-	++ coerce(p) \undocumented
 
   N   ==> NonNegativeInteger
   Z   ==> Integer

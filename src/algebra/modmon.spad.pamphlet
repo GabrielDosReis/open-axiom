@@ -21,7 +21,7 @@ ModMonic(R,Rep): C == T
  where
   R: Ring
   Rep: UnivariatePolynomialCategory(R)
-  C == UnivariatePolynomialCategory(R) with
+  C == Join(UnivariatePolynomialCategory(R),CoercibleFrom Rep) with
   --operations
     setPoly : Rep -> Rep
 	++ setPoly(x) \undocumented
@@ -31,8 +31,6 @@ ModMonic(R,Rep): C == T
 	++ reduce(x) \undocumented
     lift: % -> Rep --reduce lift = identity
 	++ lift(x) \undocumented
-    coerce: Rep -> %
-	++ coerce(x) \undocumented
     Vectorise: % -> Vector(R)
 	++ Vectorise(x) \undocumented
     UnVectorise: Vector(R) -> %

@@ -36,7 +36,7 @@ Partition: Exports == Implementation where
   UN  ==> Union(%,"failed")
  
   Exports ==> Join(OrderedCancellationAbelianMonoid,
-                   ConvertibleTo List Integer) with
+                   ConvertibleTo List Integer,CoercibleTo List Integer) with
     partition: L I -> %
       ++ partition(li) converts a list of integers li to a partition
     powers: L I -> L L I
@@ -51,8 +51,6 @@ Partition: Exports == Implementation where
       ++ This function is used in the package \spadtype{CycleIndicators}.
     conjugate: % -> %
       ++ conjugate(p) returns the conjugate partition of a partition p
-    coerce:% -> List Integer
-      ++ coerce(p) coerces a partition into a list of integers
  
   Implementation ==> add
  

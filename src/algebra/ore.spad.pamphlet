@@ -506,9 +506,7 @@ SparseUnivariateSkewPolynomial(R:Ring, sigma:Automorphism R, delta: R -> R):
 ++   coefficient field in a named variable.
 ++   The multiplication is given by \spad{x a = \sigma(a) x + \delta a}.
 UnivariateSkewPolynomial(x:Symbol, R:Ring, sigma:Automorphism R, delta: R -> R):
- UnivariateSkewPolynomialCategory R with
-   coerce: Variable x -> %
-     ++ coerce(x) returns x as a skew-polynomial.
+ Join(UnivariateSkewPolynomialCategory R,CoercibleFrom Variable x)
   == SparseUnivariateSkewPolynomial(R, sigma, delta) add
      Rep := SparseUnivariateSkewPolynomial(R, sigma, delta)
      coerce(v:Variable(x)):% == monomial(1, 1)

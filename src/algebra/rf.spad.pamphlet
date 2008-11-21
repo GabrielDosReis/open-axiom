@@ -26,8 +26,7 @@ PolynomialCategoryQuotientFunctions(E, V, R, P, F):
   V: OrderedSet
   R: Ring
   P: PolynomialCategory(R, E, V)
-  F: Field with
-    coerce: P -> %
+  F: Join(Field,CoercibleFrom P) with
     numer : % -> P
     denom : % -> P
 

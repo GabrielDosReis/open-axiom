@@ -79,8 +79,8 @@ GosperSummationMethod(E, V, R, P, Q): Exports == Impl where
     V: OrderedSet
     R: IntegralDomain
     P: PolynomialCategory(R, E, V)
-    Q: Join(RetractableTo Fraction Integer, Field with
-              (coerce: P -> %; numer : % -> P; denom : % -> P))
+    Q: Join(RetractableTo Fraction Integer, CoercibleFrom P, Field with
+              (numer : % -> P; denom : % -> P))
 
     I   ==> Integer
     RN  ==> Fraction I

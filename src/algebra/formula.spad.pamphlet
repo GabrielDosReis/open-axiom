@@ -44,10 +44,7 @@ ScriptFormulaFormat(): public == private where
   L      ==> List
   S      ==> String
 
-  public == SetCategory with
-    coerce:   E -> %
-      ++ coerce(o) changes o in the standard output format to
-      ++ SCRIPT formula format.
+  public == Join(SetCategory, CoercibleFrom E) with
     convert:  (E,I) -> %
       ++ convert(o,step) changes o in standard output format to
       ++ SCRIPT formula format and also adds the given step number.

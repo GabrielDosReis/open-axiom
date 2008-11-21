@@ -379,10 +379,7 @@ import Algebra
 ++   Author: Michel Petitot (petitot@lifl.fr)
 
 XAlgebra(R: Ring): Category == 
-  Join(Ring, BiModule(R,R)) with
-    --operations
-      coerce: R -> %
-          ++ \spad{coerce(r)} equals  \spad{r*1}.
+  Join(Ring, BiModule(R,R),CoercibleFrom R) with
     -- attributs
       if R has CommutativeRing then Algebra(R)
       -- if R has CommutativeRing then Module(R) 
@@ -548,14 +545,12 @@ XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
   EX     ==> OutputForm
   NNI    ==> NonNegativeInteger
 
-  T == Join(Ring, XAlgebra(R), FreeModuleCat(R,E)) with
+  T == Join(Ring, XAlgebra(R), FreeModuleCat(R,E),CoercibleFrom E) with
     --operations
       "*": (%,R) -> %
         ++ \spad{p*r} returns the product of \spad{p} by \spad{r}.
       "#": % -> NonNegativeInteger
         ++ \spad{# p} returns the number of terms in \spad{p}.
-      coerce: E -> %
-        ++ \spad{coerce(e)} returns \spad{1*e}
       maxdeg: % -> E
         ++ \spad{maxdeg(p)} returns the greatest word occurring in the polynomial \spad{p}
         ++ with a non-zero coefficient. An error is produced if  \spad{p} is zero.

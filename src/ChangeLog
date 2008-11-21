@@ -1,5 +1,26 @@
 2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/alql.spad.pamphlet (Database): Now CoercibleFrom List S.
+	* algebra/asp.spad.pamphlet (Asp20): Now CoercibleFrom MAT FEXPR.
+	(Asp6): Now CoercibleFrom Vector FEXPR.
+	* algebra/catdef.spad.pamphlet (Algebra): Extend CoercibleFrom R.
+	(Ring): Extend CoercibleFrom Integer.
+	* algebra/formula.spad.pamphlet (ScriptFormulaFormat): Now
+	CoercibleFrom E.
+	* algebra/fortran.spad.pamphlet (FortranCode): Remove redundant
+	signature. 
+	* algebra/fs2ups.spad.pamphlet
+	(FunctionSpaceToUnivariatePowerSeries):  Tidy parameter.
+	* algebra/laurent.spad.pamphlet
+	(UnivariateLaurentSeriesConstructorCategory): Extend CoercibleFrom
+	UTS. 
+	* algebra/manip.spad.pamphlet (PolynomialRoots): Tidy parameter.
+	* algebra/modmon.spad.pamphlet (ModMonic): Now CoercibleFrom Rep.
+	* algebra/ore.spad.pamphlet (UnivariateSkewPolynomial): Now
+	CoercibleFrom Variable x.
+
+2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/annacat.spad.pamphlet (NumericalIntegrationProblem):
 	Remove redundant signature.
 	(NumericalODEProblem): Likewise.

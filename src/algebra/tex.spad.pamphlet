@@ -89,10 +89,7 @@ TexFormat(): public == private where
   S      ==> String
   US     ==> UniversalSegment(Integer)
 
-  public == SetCategory with
-    coerce:   E -> $
-      ++ coerce(o) changes o in the standard output format to TeX
-      ++ format.
+  public == Join(SetCategory,CoercibleFrom E) with
     convert:  (E,I) -> $
       ++ convert(o,step) changes o in standard output format to
       ++ TeX format and also adds the given step number. This is useful

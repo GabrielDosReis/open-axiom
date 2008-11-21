@@ -785,9 +785,7 @@ SparseUnivariatePolynomialFunctions2(R:Ring, S:Ring): with
 ++ Note: if the coefficient ring is a field, then this domain forms a euclidean domain.
 
 UnivariatePolynomial(x:Symbol, R:Ring):
-  UnivariatePolynomialCategory(R) with
-    coerce: Variable(x) -> %
-      ++ coerce(x) converts the variable x to a univariate polynomial.
+  Join(UnivariatePolynomialCategory(R),CoercibleFrom Variable x) with
     fmecg: (%,NonNegativeInteger,R,%) -> %
         ++ fmecg(p1,e,r,p2) finds X : p1 - r * X**e * p2
    == SparseUnivariatePolynomial(R)   add

@@ -372,9 +372,7 @@ import CoercibleTo Syntax
 ++ Date Last Modified: September 21, 2008
 ++ Description: This is the category of Spad abstract syntax trees.
 AbstractSyntaxCategory(): Category == 
-    Join(SetCategory, CoercibleTo Syntax) with
-      coerce: Syntax -> %
-        ++ coerce(s) parses syntax object `s' as a Spad construct.
+    Join(SetCategory, HomotopicTo Syntax)
   add
     coerce(x: %): Syntax ==
       x pretend Syntax

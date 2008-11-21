@@ -43,10 +43,7 @@ SparseUnivariatePuiseuxSeries(Coef,var,cen): Exports == Implementation where
   SUPS ==> InnerSparseUnivariatePowerSeries(Coef)
 
   Exports ==> Join(UnivariatePuiseuxSeriesConstructorCategory(Coef,SULS),_
-                   RetractableTo SUTS) with
-    coerce: Variable(var) -> %
-      ++ coerce(var) converts the series variable \spad{var} into a
-      ++ Puiseux series.
+                   RetractableTo SUTS,CoercibleFrom Variable var) with
     differentiate: (%,Variable(var)) -> %
       ++ \spad{differentiate(f(x),x)} returns the derivative of
       ++ \spad{f(x)} with respect to \spad{x}.
