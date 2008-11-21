@@ -52,8 +52,6 @@ NumericalIntegrationProblem():SetCategory with
       ++ coerce(x) \undocumented{}
     coerce: Union(nia:NIAA,mdnia:MDNIAA) -> %
       ++ coerce(x) \undocumented{}
-    coerce: % -> OutputForm
-      ++ coerce(x) \undocumented{}
     retract: % -> Union(nia:NIAA,mdnia:MDNIAA)
       ++ retract(x) \undocumented{}
 
@@ -104,8 +102,6 @@ ODEAB ==> Record(xinit:DFB,xend:DFB,fn:VEDFB,yinit:LDFB,intvals:LDFB,g:EDFB,abse
 NumericalODEProblem():SetCategory with
 
     coerce: ODEAB -> %
-      ++ coerce(x) \undocumented{}
-    coerce: % -> OutputForm
       ++ coerce(x) \undocumented{}
     retract: % -> ODEAB
       ++ retract(x) \undocumented{}
@@ -165,8 +161,6 @@ NumericalPDEProblem():SetCategory with
 
     coerce: PDEBC -> %
       ++ coerce(x) \undocumented{}
-    coerce: % -> OutputForm
-      ++ coerce(x) \undocumented{}
     retract: % -> PDEBC
       ++ retract(x) \undocumented{}
 
@@ -225,8 +219,6 @@ NumericalOptimizationProblem():SetCategory with
     coerce: LSAD -> %
       ++ coerce(x) \undocumented{}
     coerce: UNOALSAD -> %
-      ++ coerce(x) \undocumented{}
-    coerce: % -> OutputForm
       ++ coerce(x) \undocumented{}
     retract: % -> UNOALSAD
       ++ retract(x) \undocumented{}

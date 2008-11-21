@@ -184,8 +184,6 @@ FortranType() : exports == implementation where
   FSTU   ==> Union(fst:FST,void:"void")
 
   exports == SetCategory with
-    coerce : $ -> OutputForm
-      ++ coerce(x) provides a printable form for x
     coerce : FST -> $
       ++ coerce(t) creates an element from a scalar type
     scalarTypeOf : $ -> FSTU

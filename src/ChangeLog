@@ -1,5 +1,15 @@
 2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/annacat.spad.pamphlet (NumericalIntegrationProblem):
+	Remove redundant signature.
+	(NumericalODEProblem): Likewise.
+	(NumericalPDEProblem): Likewise.
+	(NumericalOptimizationProblem): Likewise.
+	* algebra/forttyp.spad.pamphlet (FortranType): Likewise.
+	* algebra/void.spad.pamphlet (Void): Now CoercibleTo OutputForm.
+
+2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/wtpol.spad.pamphlet (WeightedPolynomials): No
 	HomotopicTo P.
 	(OrdinaryWeightedPolynomials): Likewise.
