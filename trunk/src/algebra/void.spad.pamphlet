@@ -32,9 +32,8 @@
 ++   All values can be coerced to type Void.  Once a value has been coerced
 ++   to Void, it cannot be recovered.
 
-Void: with
+Void: CoercibleTo OutputForm with
         void: () -> %            ++ void() produces a void object.
-        coerce: % -> OutputForm  ++ coerce(v) coerces void object to outputForm.
     == add
         Rep := String
         void()      == voidValue()$Lisp
