@@ -323,15 +323,13 @@ PositiveInteger: Join(OrderedAbelianSemiGroup,Monoid) with
 ++ Keywords: roman numerals
 ++ Description:  \spadtype{RomanNumeral} provides functions for converting
 ++   integers to roman numerals.
-RomanNumeral(): IntegerNumberSystem with
+RomanNumeral(): Join(IntegerNumberSystem,ConvertibleFrom Symbol) with
     canonical
       ++ mathematical equality is data structure equality.
     canonicalsClosed
       ++ two positives multiply to give positive.
     noetherian
       ++ ascending chain condition on ideals.
-    convert: Symbol  -> %
-      ++ convert(n) creates a roman numeral for symbol n.
     roman  : Symbol  -> %
       ++ roman(n) creates a roman numeral for symbol n.
     roman  : Integer -> %

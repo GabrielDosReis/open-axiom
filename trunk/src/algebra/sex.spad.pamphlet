@@ -27,7 +27,9 @@
 SExpressionCategory(Str, Sym, Int, Flt, Expr): Category == Decl where
     Str, Sym, Int, Flt, Expr: SetCategory
 
-    Decl ==> SetCategory with
+    Decl == Join(SetCategory,ConvertibleFrom Str, ConvertibleFrom Sym,_
+              ConvertibleFrom Int, ConvertibleFrom Flt,_
+                ConvertibleFrom Flt, ConvertibleFrom List %) with
         eq:        (%,%) -> Boolean
           ++ eq(s, t) is true if EQ(s,t) is true in Lisp.
         null?:     % -> Boolean
@@ -63,18 +65,6 @@ SExpressionCategory(Str, Sym, Int, Flt, Expr): Category == Decl where
         expr:      % -> Expr
           ++ expr(s) returns s as an element of Expr;
           ++ Error: if s is not an atom that also belongs to Expr.
-        convert:   List % -> %
-          ++ convert([a1,...,an]) returns the S-expression \spad{(a1,...,an)}.
-        convert:   Str    -> %
-          ++ convert(x) returns the Lisp atom x;
-        convert:   Sym    -> %
-          ++ convert(x) returns the Lisp atom x.
-        convert:   Int    -> %
-          ++ convert(x) returns the Lisp atom x.
-        convert:   Flt    -> %
-          ++ convert(x) returns the Lisp atom x.
-        convert:   Expr   -> %
-          ++ convert(x) returns the Lisp atom x.
         car:       % -> %
           ++ car((a1,...,an)) returns a1.
         cdr:       % -> %

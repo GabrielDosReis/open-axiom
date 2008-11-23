@@ -1,3 +1,18 @@
+2008-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/seg.spad.pamphlet (SegmentCategory): Extend
+	ConvertibleFrom S.
+	* algebra/newpoint.spad.pamphlet (PointCategory): Extend
+	ConvertibleFrom List R.
+	* algebra/misc.spad.pamphlet (SingletonAsOrderedSet): Now
+	ConvertibleTo Symbol.
+	* algebra/integer.spad.pamphlet (RomanNumeral): Now
+	ConvertibleFrom Symbol.
+	* algebra/float.spad.pamphlet (Float): Now ConvertibleFrom SF.
+	* algebra/sex.spad.pamphlet (SExpressionCategory): Extend
+	ConvertibleFrom Str, ConvertibleFrom Sym, ConvertibleFrom Int,
+	ConvertibleFrom Flt, ConvertibleFrom List %.
+
 2008-11-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/alql.spad.pamphlet (Database): Now CoercibleFrom List S.
