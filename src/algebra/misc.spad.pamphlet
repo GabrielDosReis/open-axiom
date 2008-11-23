@@ -14,9 +14,8 @@
 )abbrev domain SAOS SingletonAsOrderedSet
 ++ This trivial domain lets us build Univariate Polynomials
 ++  in an anonymous variable
-SingletonAsOrderedSet(): OrderedSet with
+SingletonAsOrderedSet(): Join(OrderedSet,ConvertibleTo Symbol) with
               create:() -> %
-              convert:% -> Symbol
   ==  add
    create() == "?" pretend %
    a<b == false -- only one element

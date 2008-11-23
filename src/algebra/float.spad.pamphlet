@@ -120,7 +120,8 @@ N ==> NonNegativeInteger
 
 Float():
  Join(FloatingPointSystem, DifferentialRing, ConvertibleTo String, OpenMath,_
-  CoercibleTo DoubleFloat, TranscendentalFunctionCategory, ConvertibleTo InputForm) with
+  CoercibleTo DoubleFloat, TranscendentalFunctionCategory, _
+    ConvertibleTo InputForm,ConvertibleFrom SF) with
    _/  : (%, I) -> %
       ++ x / i computes the division from x by an integer i.
    _*_*: (%, %) -> %
@@ -151,8 +152,6 @@ Float():
       ++ log2(x) computes the logarithm for x to base 2.
    log10: % -> %
       ++ log10(x) computes the logarithm for x to base 10.
-   convert: SF -> %
-      ++ convert(x) converts a \spadtype{DoubleFloat} x to a \spadtype{Float}.
    outputFloating: () -> Void
       ++ outputFloating() sets the output mode to floating (scientific) notation, i.e.
       ++ \spad{mantissa * 10 exponent} is displayed as  \spad{0.mantissa E exponent}.

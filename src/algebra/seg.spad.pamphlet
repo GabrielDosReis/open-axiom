@@ -30,7 +30,7 @@ import Integer
 ++   This category provides operations on ranges, or {\em segments}
 ++   as they are called.
 
-SegmentCategory(S:Type): Category == Type with
+SegmentCategory(S:Type): Category == ConvertibleFrom S with
     SEGMENT: (S, S) -> %
         ++ \spad{l..h} creates a segment with l and h as the endpoints.
     BY: (%, Integer) -> %
@@ -54,8 +54,6 @@ SegmentCategory(S:Type): Category == Type with
         ++ Note: \spad{incr(l..h by n) = n}.
     segment: (S, S) -> %
         ++ segment(i,j) is an alternate way to create the segment \spad{i..j}.
-    convert: S -> %
-        ++ convert(i) creates the segment \spad{i..i}.
 
 @
 
