@@ -1,5 +1,10 @@
 2008-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lib/cfuns-c.c (oa_copy_file): Specify permission mode for the
+	new file.
+
+2008-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/lodop.spad.pamphlet (OrdinaryDifferentialRing): Tidy.
 	* algebra/sex.spad.pamphlet (SExpressionCategory): Fix breakage
 	from last commit.
