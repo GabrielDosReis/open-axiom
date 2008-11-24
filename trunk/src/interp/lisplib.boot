@@ -705,24 +705,27 @@ getIndexTable dir ==
     nil)
 
 --%
-compDefineExports(op,ops,sig,e) ==
+compDefineExports(form,ops,sig,e) ==
   not $LISPLIB => systemErrorHere "compDefineExports"
+  op := first form
   -- Ensure constructor parameters appear as formals
   sig := SUBLIS($pairlis, sig)
   ops := SUBLIS($pairlis,ops)
-  -- Since we don't compile the capsule, the slot numbers are
+  form := SUBLIS($pairlis,form)
+  -- In case we are not compiling the capsule, the slot numbers are
   -- most likely bogus.  Nullify them so people don't think they
   -- bear any meaningful semantics (well, they should not think
   -- these are forwarding either).
-  for entry in ops repeat
-    fixupSigloc entry where
-      fixupSigloc entry ==
-        [opsig,pred,funsel] := entry
-	if pred ^= 'T then 
-           rplac(second entry, simpBool pred)
-	funsel is [op,a,:.] and op in '(ELT CONST) =>
-          rplac(third entry,[op,a,nil])
-  ops := listSort(function GGREATERP, ops, function first)
+  if $compileExportsOnly then
+    for entry in ops repeat
+      fixupSigloc entry where
+        fixupSigloc entry ==
+          [opsig,pred,funsel] := entry
+          if pred ^= 'T then 
+            rplac(second entry, simpBool pred)
+          funsel is [op,a,:.] and op in '(ELT CONST) =>
+            rplac(third entry,[op,a,nil])
+    ops := listSort(function GGREATERP, ops, function first)
   libName := getConstructorAbbreviation op
   exportsFile := strconc(STRING libName,'".sig")
   removeFile exportsFile
@@ -730,7 +733,7 @@ compDefineExports(op,ops,sig,e) ==
     PRETTYPRINT(
       ["SETQ", "$CategoryFrame",
         ["put", quoteForm op, quoteForm "isFunctor", quoteForm ops,
-          ["addModemap", quoteForm op, quoteForm first sig,
+          ["addModemap", quoteForm op, quoteForm form,
              quoteForm sig, true, quoteForm op,
                ["put", quoteForm op, quoteForm "mode",
                  quoteForm ["Mapping",:sig], "$CategoryFrame"]]]], s))

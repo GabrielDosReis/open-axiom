@@ -1,3 +1,8 @@
+2008-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisplib.boot (compDefineExports): Tidy.
+	* interp/define.boot (compDefineFunctor1): Adjust call.
+
 2008-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-output.boot ($RecordSeparator): New.

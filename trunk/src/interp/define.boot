@@ -590,7 +590,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $e:= giveFormalParametersValues(argl,$e)
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
-    $compileExportsOnly => compDefineExports($op, ds.1, signature',$e)
+    $compileExportsOnly => compDefineExports(form, ds.1, signature',$e)
     $domainShell:= COPY_-SEQ ds
 --+ copy needed since slot1 is reset; compMake.. can return a cached vector
     attributeList := disallowNilAttribute ds.2 --see below under "loadTimeAlist"
