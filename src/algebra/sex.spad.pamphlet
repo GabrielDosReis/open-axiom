@@ -29,7 +29,8 @@ SExpressionCategory(Str, Sym, Int, Flt, Expr): Category == Decl where
 
     Decl == Join(SetCategory,ConvertibleFrom Str, ConvertibleFrom Sym,_
               ConvertibleFrom Int, ConvertibleFrom Flt,_
-                ConvertibleFrom Flt, ConvertibleFrom List %) with
+                ConvertibleFrom Flt, ConvertibleFrom Expr,_
+                  ConvertibleFrom List %) with
         eq:        (%,%) -> Boolean
           ++ eq(s, t) is true if EQ(s,t) is true in Lisp.
         null?:     % -> Boolean

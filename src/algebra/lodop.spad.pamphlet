@@ -217,19 +217,19 @@ OrdinaryDifferentialRing(Kernels,R,var): DRcategory == DRcapsule where
     Kernels:SetCategory
     R: PartialDifferentialRing(Kernels)
     var : Kernels
-    DRcategory == Join(BiModule($,$), DifferentialRing, HomotopicTo R) with
+    DRcategory == Join(BiModule(%,%), DifferentialRing, HomotopicTo R) with
         if R has Field then Field
     DRcapsule == R add
         n: Integer
-        Rep := R
-        coerce(u:R):$ == u::Rep::$
-        coerce(p:$):R == p::Rep::R
-        differentiate p       == differentiate(p, var)
+        Rep == R
+        coerce(u: R): % == per u
+        coerce(p: %): R == rep p
+        differentiate p == per differentiate(rep p, var)
 
         if R has Field then
-            p / q     == ((p::R) /$R (q::R))::$
-            p ** n    == ((p::R) **$R n)::$
-            inv(p)    == (inv(p::R)$R)::$
+            p / q     == per(rep(p) / rep(q))
+            p ** n    == per(rep(p) ** n)
+            inv(p)    == per inv rep p
 
 @
 \section{domain DPMO DirectProductModule}

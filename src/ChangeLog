@@ -1,5 +1,11 @@
 2008-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/lodop.spad.pamphlet (OrdinaryDifferentialRing): Tidy.
+	* algebra/sex.spad.pamphlet (SExpressionCategory): Fix breakage
+	from last commit.
+
+2008-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/seg.spad.pamphlet (SegmentCategory): Extend
 	ConvertibleFrom S.
 	* algebra/newpoint.spad.pamphlet (PointCategory): Extend
