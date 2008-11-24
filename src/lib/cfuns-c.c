@@ -617,13 +617,14 @@ oa_copy_file(const char* src, const char* dst)
    return CopyFile(src,dst, /* bFailIfExists = */ 0) ? 0 : -1;
 #else
 #define OA_BUFSZ 512
+#define OA_DEFAULT_MODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
    char buf[OA_BUFSZ];
    int src_fd;
    int dst_fd;
    int count;
    if((src_fd = open(src, O_RDONLY)) < 0)
       return -1;
-   if ((dst_fd = open(dst, O_WRONLY | O_CREAT | O_TRUNC)) < 0) {
+   if ((dst_fd = creat(dst, OA_DEFAULT_MODE)) < 0) {
       close(src_fd);
       return -1;
    }
@@ -632,6 +633,7 @@ oa_copy_file(const char* src, const char* dst)
       if (write(dst_fd, buf, count) != count)
          break;
 
+#undef OA_DEFAULT_MODE
 #undef OA_BUFSZ
    return (close(dst_fd) < 0 || close(src_fd) < 0 || count < 0) ? -1 : 0;
 #endif   
