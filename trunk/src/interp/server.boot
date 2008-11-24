@@ -90,7 +90,7 @@ serverReadLine(stream) ==
        stringBuf := sockGetString $MenuServer
        CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
 	 parseAndInterpret stringBuf)))
-       printPrompt "andFlush"
+       not $leanMode and printPrompt "andFlush"
      action = $NonSmanSession =>
        $SpadServer := nil
      action = $KillLispSystem => 
@@ -121,13 +121,13 @@ serverLoop() ==
   IN_-STREAM: fluid := $InputStream
   _*EOF_*: fluid := NIL
   while not $EndServerSession and not _*EOF_* repeat
-    if $Prompt then printPrompt "andFlush"
+    if $Prompt and not $leanMode then printPrompt "andFlush"
     $Prompt := NIL
     action := serverSwitch()
     action = $CallInterp =>
       CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
         parseAndInterpret read_-line($InputStream) )))
-      printPrompt "andFlush"
+      not $leanMode and printPrompt "andFlush"
       sockSendInt($SessionManager, $EndOfOutput)
     action = $CreateFrame =>
       frameName := GENSYM('"frame")
@@ -153,7 +153,7 @@ serverLoop() ==
       stringBuf := sockGetString $MenuServer
       CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
         parseAndInterpret stringBuf)))
-      printPrompt "andFlush"
+      not $leanMode and printPrompt "andFlush"
       sockSendInt($SessionManager, $EndOfOutput)
     NIL
   if _*EOF_* then $Prompt := true

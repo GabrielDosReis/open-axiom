@@ -492,3 +492,6 @@ $compileExportsOnly := false
 ++ of category defaults only.  This is meaningful only when
 ++ compiling categories.
 $compileDefaultsOnly := false
+
+++
+$leanMode := false
