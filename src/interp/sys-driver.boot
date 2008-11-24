@@ -299,6 +299,8 @@ systemMain() ==
   AxiomCore::topLevel()
   REROOT()
   -- ??? Make this call unconditional
-  if $StandardLinking then initializeGlobalState()
+  if $StandardLinking then 
+    initializeGlobalState()
+  $leanMode := getOptionValue "mode" = '"lean"
   %basicSystemIsComplete() => restart()
   fatalError '"fell off systemMain"

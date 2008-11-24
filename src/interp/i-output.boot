@@ -164,6 +164,10 @@ $plainRTspecialCharacters == [
     '_\       -- back slash
      ]
 
+++ End of Transmission character; usually to the Algebra Output
+++ Stream in lean mode.
+$RecordSeparator == CODE_-CHAR 30
+
 makeCharacter n ==> INTERN(STRING(CODE_-CHAR n))
 
 $RTspecialCharacters == [
@@ -1122,6 +1126,8 @@ maprinSpecial(x,$MARGIN,$LINELENGTH) == maprin0 x
 maprin x ==
   if $demoFlag=true then recordOrCompareDemoResult x
   CATCH('output,maprin0 x)
+  $leanMode and 
+    WRITE($RecordSeparator,KEYWORD::STREAM,$algebraOutputStream)
   nil
 
 maprin0 x ==

@@ -134,7 +134,7 @@ SpadInterpretStream(str, source, interactive?) ==
     $promptMsg             : local := 'S2CTP023
  
     interactive? =>
-                printPrompt()
+                not $leanMode and printPrompt()
                 intloopReadConsole('"", str)
                 []
     intloopInclude (source,0)
@@ -146,19 +146,19 @@ intloopReadConsole(b, n)==
     a:= serverReadLine $InputStream
     not STRINGP a => leaveScratchpad()
     #a=0 =>
-             printPrompt()
+             not $leanMode and printPrompt()
              intloopReadConsole('"", n)
     pfx := stripSpaces intloopPrefix?('")fi",a)
     pfx and ((pfx = '")fi") or (pfx = '")fin")) => []
     b = '"" and (d := intloopPrefix?('")", a)) =>
              setCurrentLine d
              c := ncloopCommand(d,n)
-             printPrompt()
+             not $leanMode and printPrompt()
              intloopReadConsole('"", c)
     a:=CONCAT(b,a)
     ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (LENGTH a) - 1),n)
     c := intloopProcessString(a, n)
-    printPrompt()
+    not $leanMode and printPrompt()
     intloopReadConsole('"", c)
  
 intloopPrefix?(prefix,whole) ==

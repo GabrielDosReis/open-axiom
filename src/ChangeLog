@@ -1,5 +1,18 @@
 2008-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-output.boot ($RecordSeparator): New.
+	(maprin): Use it.  Separate record in lean mode.
+	* interp/sys-globals.boot ($leanMode): Define.
+	* interp/sys-driver.boot (systemMain): Initialize.
+	* interp/ht-util.boot (executeInterpreterCommand): Print prompt
+	only in non-lean mode.
+	* interp/int-top.boot (SpadInterpretStream): Likewise.
+	(intloopReadConsole): Likewise.
+	* interp/metalex.lisp (get-a-line): Likewise.
+	* interp/server.boot: Likewise.
+
+2008-11-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/cfuns-c.c (oa_copy_file): Specify permission mode for the
 	new file.
 

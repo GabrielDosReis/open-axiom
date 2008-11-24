@@ -474,7 +474,7 @@ executeInterpreterCommand command ==
   TERPRI()
   ncSetCurrentLine(command)
   CATCH($SpadReaderTag, parseAndInterpret command)
-  printPrompt "andFlush"
+  not $leanMode and printPrompt "andFlush"
 
 typeCheckInputAreas htPage ==
   -- This needs to be severly beefed up
