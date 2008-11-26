@@ -334,11 +334,6 @@ parseEquivalence t ==
   parseIf ["IF",a,b,parseIf ["IF",b,:'(false true)]]
  
 
-parseImplies: %ParseForm -> %Form
-parseImplies t == 
-  t isnt ["implies",a,b] => systemErrorHere "parseImplies"
-  parseIf ["IF",a,b,"true"]
- 
 parseExclusiveOr: %ParseForm -> %Form
 parseExclusiveOr t == 
   t isnt ["xor",a,b] => systemErrorHere "parseExclusiveOr"
@@ -544,7 +539,6 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["exit", :"parseExit"],_
 	  ["has", :"parseHas"],_
 	  ["IF", :"parseIf"],_
-	  ["implies", :"parseImplies"],_ 
 	  ["IN", :"parseIn"],_
 	  ["INBY", :"parseInBy"],_
 	  ["is", :"parseIs"],_
@@ -562,4 +556,4 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["VCONS", :"parseVCONS"],_
 	  ["where", :"parseWhere"],_
           ["xor", :"parseExclusiveOr"]] repeat
-  MAKEPROP(car x, "parseTran", cdr x)
+  MAKEPROP(first x, "parseTran", rest x)
