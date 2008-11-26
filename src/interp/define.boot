@@ -336,7 +336,7 @@ mkEvalableCategoryForm c ==
     --loadIfNecessary op
     getConstructorKindFromDB op = 'category or
       get(op,"isCategory",$CategoryFrame) =>
-        [op,:[quotifyCategoryArgument x for x in argl]]
+        [op,:[MKQ x for x in argl]]
     [x,m,$e]:= compOrCroak(c,$EmptyMode,$e)
     m=$Category => x
   MKQ c
@@ -1635,33 +1635,24 @@ compForMode(x,m,e) ==
   $compForModeIfTrue: local:= true
   comp(x,m,e)
 
- 
-quotifyCategoryArgument: %Form -> %Form
-quotifyCategoryArgument x == 
-  MKQ x
-
 makeCategoryForm(c,e) ==
   not isCategoryForm(c,e) => nil
   [x,m,e]:= compOrCroak(c,$EmptyMode,e)
   [x,e]
 
+mustInstantiate: %Form -> %Thing 
+mustInstantiate D ==
+  D is [fn,:.] and (not (fn in $DummyFunctorNames) 
+    or GET(fn,"makeFunctionList"))
 
-compCategory(x,m,e) ==
-  clearExportsTable()
-  (m:= resolve(m,$Category))=$Category and x is ['CATEGORY,
-    domainOrPackage,:l] =>
-      $sigList: local := nil
-      $atList: local := nil
-      for x in l repeat compCategoryItem(x,nil,e)
-      rep:= mkExplicitCategoryFunction(domainOrPackage,$sigList,$atList)
-    --if inside compDefineCategory, provide for category argument substitution
-      [rep,m,e]
-  systemErrorHere '"compCategory"
+wrapDomainSub: (%List, %Form) -> %Form 
+wrapDomainSub(parameters,x) ==
+   ["DomainSubstitutionMacro",parameters,x]
  
 mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
   body:=
-    ["mkCategory",MKQ domainOrPackage,['LIST,:REVERSE sigList],['LIST,:
-      REVERSE atList],MKQ domList,nil] where
+    ["mkCategory",MKQ domainOrPackage,['LIST,:nreverse sigList],
+      ['LIST,:nreverse atList],MKQ domList,nil] where
         domList() ==
           ("union"/[fn sig for ["QUOTE",[[.,sig,:.],:.]] in sigList]) where
             fn sig == [D for D in sig | mustInstantiate D]
@@ -1671,14 +1662,6 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
         [[x for x in sig | IDENTP x and x^='_$]
           for ["QUOTE",[[.,sig,:.],:.]] in sigList])
   wrapDomainSub(parameters,body)
-
-wrapDomainSub: (%List, %Form) -> %Form 
-wrapDomainSub(parameters,x) ==
-   ["DomainSubstitutionMacro",parameters,x]
- 
-mustInstantiate D ==
-  D is [fn,:.] and not (MEMQ(fn,$DummyFunctorNames) 
-    or GETL(fn,"makeFunctionList"))
 
 DomainSubstitutionFunction(parameters,body) ==
   --see definition of DomainSubstitutionMacro in SPAD LISP
@@ -1709,6 +1692,21 @@ DomainSubstitutionFunction(parameters,body) ==
   SETANDFILE(name,nil)
   body:= ["COND",[name],['(QUOTE T),['SETQ,name,body]]]
   body
+
+
+++ Subroutine of compCategoryItem.
+++ Compile exported signature `opsig' under predicate `pred' in
+++ environment `env'.
+compSignature(opsig,pred,env) ==
+  [op,:sig] := opsig
+  not atom op =>
+    for y in op repeat 
+      compSignature([y,:sig],pred,env)
+  op in '(per rep) =>
+    stackSemanticError(['"cannot export signature for", :bright op],nil)
+    nil
+  noteExport(opsig,pred)
+  PUSH(MKQ [opsig,pred],$sigList)
  
 compCategoryItem(x,predl,env) ==
   x is nil => nil
@@ -1738,20 +1736,26 @@ compCategoryItem(x,predl,env) ==
  
   --3. it may be a list, with PROGN as the CAR, and some information as the CDR
   x is ["PROGN",:l] => 
-    for u in l repeat compCategoryItem(u,predl,env)
+    for u in l repeat 
+      compCategoryItem(u,predl,env)
  
 -- 4. otherwise, x gives a signature for a
 --    single operator name or a list of names; if a list of names,
 --    recurse
-  ["SIGNATURE",op,:sig]:= x
-  null atom op =>
-    for y in op repeat compCategoryItem(["SIGNATURE",y,:sig],predl,env)
-  op in '(per rep) =>
-    stackSemanticError(['"cannot export signature for", :bright op],nil)
-    nil
- 
-  --4. branch on a single type or a signature %with source and target
-  noteExport(rest x,pred)
-  PUSH(MKQ [rest x,pred],$sigList)
+  x is ["SIGNATURE",:opsig] => compSignature(opsig,pred,env)
+  systemErrorHere "compCategoryItem"
+
+compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple
+compCategory(x,m,e) ==
+  clearExportsTable()
+  (m:= resolve(m,$Category))=$Category and x is ['CATEGORY,
+    domainOrPackage,:l] =>
+      $sigList: local := nil
+      $atList: local := nil
+      for x in l repeat compCategoryItem(x,nil,e)
+      rep:= mkExplicitCategoryFunction(domainOrPackage,$sigList,$atList)
+    --if inside compDefineCategory, provide for category argument substitution
+      [rep,m,e]
+  systemErrorHere '"compCategory"
 
 --%
