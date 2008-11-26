@@ -1,5 +1,13 @@
 2008-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compSignature): New.  Split from
+	compCategoryItem. 
+	(compCategoryItem): Use it.  Tidy.
+	(quotifyCategoryArgument): Remove.
+	(mkEvalableCategoryForm): Tidy.
+
+2008-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/parse.boot (parseImplies): Remove.
 
 2008-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
