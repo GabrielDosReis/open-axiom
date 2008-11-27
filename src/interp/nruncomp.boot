@@ -232,11 +232,11 @@ genDeltaSpecialSig x ==
 ++ Otherwise, return nil this is the first time `x' is referenced, or
 ++ if `x' designates neither a domain nor a value (e.g. a modemap).
 NRTassocIndex: %Form -> %Maybe %Short
-NRTassocIndex x == --returns index of "domain" entry x in al
-  NULL x => x
+NRTassocIndex x ==
+  null x => x
   x = $NRTaddForm => 5
   k := or/[i for i in 1.. for y in $NRTdeltaList
-            | y.0 = 'domain and y.1 = x and ($found := y)] =>
+            | first y = "domain" and second y = x] =>
     $NRTbase + $NRTdeltaLength - k
   nil
 
