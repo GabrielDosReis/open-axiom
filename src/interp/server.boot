@@ -116,49 +116,6 @@ executeQuietCommand() ==
   CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
     parseAndInterpret stringBuf)))
 
--- Includued for compatability with old-parser systems
-serverLoop() ==
-  IN_-STREAM: fluid := $InputStream
-  _*EOF_*: fluid := NIL
-  while not $EndServerSession and not _*EOF_* repeat
-    if $Prompt and not $leanMode then printPrompt "andFlush"
-    $Prompt := NIL
-    action := serverSwitch()
-    action = $CallInterp =>
-      CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
-        parseAndInterpret read_-line($InputStream) )))
-      not $leanMode and printPrompt "andFlush"
-      sockSendInt($SessionManager, $EndOfOutput)
-    action = $CreateFrame =>
-      frameName := GENSYM('"frame")
-      addNewInterpreterFrame(frameName)
-      $frameAlist := [[$frameNumber,:frameName], :$frameAlist]
-      $currentFrameNum := $frameNumber
-      sockSendInt($SessionManager, $frameNumber)
-      $frameNumber := $frameNumber + 1
-      sockSendString($SessionManager, MKPROMPT())
-    action = $SwitchFrames =>
-      $currentFrameNum := sockGetInt($SessionManager)
-      currentFrame := LASSOC($currentFrameNum, $frameAlist)
-      changeToNamedInterpreterFrame currentFrame
-    action = $EndSession =>
-      $EndServerSession := true
-    action = $LispCommand =>
-      stringBuf := sockGetString $MenuServer
-      form := unescapeStringsInForm READ_-FROM_-STRING stringBuf
-      EVAL form
-    action = $QuietSpadCommand =>
-      executeQuietCommand()
-    action = $SpadCommand =>
-      stringBuf := sockGetString $MenuServer
-      CATCH('coerceFailure,CATCH($intTopLevel, CATCH($SpadReaderTag,
-        parseAndInterpret stringBuf)))
-      not $leanMode and printPrompt "andFlush"
-      sockSendInt($SessionManager, $EndOfOutput)
-    NIL
-  if _*EOF_* then $Prompt := true
-  NIL
-
 parseAndEvalToHypertex str ==
   lines := parseAndEvalToStringForHypertex str
   len := LENGTH lines
