@@ -248,10 +248,10 @@ makePrefixForm(u,op) ==
 --=======================================================================
 --               Generate Slot 3 Predicate Vector
 --=======================================================================
-makePredicateBitVector pl ==   --called by NRTbuildFunctor
+makePredicateBitVector pl ==   --called by buildFunctor
   if $insideCategoryPackageIfTrue then
     pl := union(pl,$categoryPredicateList)
-  $predGensymAlist := nil --bound by NRTbuildFunctor, used by optHas
+  $predGensymAlist := nil --bound by buildFunctor, used by optHas
   for p in removeAttributePredicates pl repeat
     pred := simpBool transHasCode p
     atom pred => 'skip                --skip over T and NIL

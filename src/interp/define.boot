@@ -598,7 +598,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
 -->--these globals used by NRTmakeCategoryAlist, set by NRTsetVector4Part1
     $condAlist: local := nil
     $uncondAlist: local := nil
--->>-- next global initialized here, reset by NRTbuildFunctor
+-->>-- next global initialized here, reset by buildFunctor
     $NRTslot1PredicateList: local :=
       REMDUP [CADR x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
