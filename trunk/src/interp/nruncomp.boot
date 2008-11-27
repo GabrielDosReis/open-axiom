@@ -69,7 +69,7 @@ $killOptimizeIfTrue := false
 
 -----------------------------NEW buildFunctor CODE-----------------------------
 NRTaddDeltaCode() ==
---NOTES: This function is called from NRTbuildFunctor to initially
+--NOTES: This function is called from buildFunctor to initially
 --  fill slots in $template. The $template so created is stored in the
 --  NRLIB. On load, makeDomainTemplate is called on this $template to
 --  create a template which becomes slot 0 of the infovec for the constructor.
@@ -681,9 +681,9 @@ NRTaddToSlam([name,:argnames],shell) ==
   args:= ['LIST,:ASSOCRIGHT $devaluateList]
   addToConstructorCache(name,args,shell)
 
-changeDirectoryInSlot1() ==  --called by NRTbuildFunctor
+changeDirectoryInSlot1() ==  --called by buildFunctor
   --3 cases:
-  --  if called inside NRTbuildFunctor, $NRTdeltaLength gives different locs
+  --  if called inside buildFunctor, $NRTdeltaLength gives different locs
   --  otherwise called from compFunctorBody (all lookups are forwarded):
   --    $NRTdeltaList = nil  ===> all slot numbers become nil
   $lisplibOperationAlist := [sigloc entry for entry in $domainShell.1] where
