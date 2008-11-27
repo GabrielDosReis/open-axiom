@@ -1,5 +1,9 @@
 2008-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (NRTgetAddForm): Remove, as unused.
+
+2008-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (NRTassocIndex): Don't set $found.
 
 2008-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
