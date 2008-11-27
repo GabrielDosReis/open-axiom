@@ -276,11 +276,6 @@ NRTgetLocalIndex item ==
   RPLACA(saveNRTdeltaListComp,compEntry)
   saveIndex
 
-NRTgetAddForm domain ==
-  u := HGET($Slot1DataBase,first domain) =>
-    EQSUBSTLIST(rest domain,$FormalMapVariableList,first u)
-  systemErrorHere '"NRTgetAddForm"
-
 NRTassignCapsuleFunctionSlot(op,sig) ==
 --called from compDefineCapsuleFunction
   opSig := [op,sig]
