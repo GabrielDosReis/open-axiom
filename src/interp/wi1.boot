@@ -579,7 +579,7 @@ setqSingle(id,val,m,E) ==
   if (k:=NRTassocIndex(id))
      then
        $markFreeStack := [id,:$markFreeStack]
-       form:=['SETELT,"$",k,x]
+       form:=["setShellEntry","$",k,x]
      else form:=
          $QuickLet => ["%LET",id,x]
          ["%LET",id,x,
@@ -1214,7 +1214,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ['PROG1,["%LET",g:= GENSYM(),body],['SETELT,g,0,mkConstructor $functorForm]]
+      ['PROG1,["%LET",g:= GENSYM(),body],
+         ["setShellEntry",g,0,mkConstructor $functorForm]]
     fun:= compile [op',['LAM,sargl,body]]
 
 --  5. give operator a 'modemap property

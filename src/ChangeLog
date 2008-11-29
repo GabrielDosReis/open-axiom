@@ -1,3 +1,14 @@
+2008-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (setqSingle): Use setShellEntry.
+	* interp/wi1.boot (setqSingle): Likewise.
+	* interp/functor.boot (setVector4): Likewise.
+	(DescendCode): Abort on SETELT opcode.
+	(SetFunctionSlots): Likewise.
+	* interp/nrunfast.boot (evalSlotDomain): Likewise.
+	* interp/nrungo.boot (NRTevalDomain): Likewise.
+	* interp/showimp.boot (getDomainRefName): Match "setShellEntry".
+
 2008-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (compCapsuleInner): Call processFunctor.

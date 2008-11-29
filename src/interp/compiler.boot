@@ -854,7 +854,7 @@ setqSingle(id,val,m,E) ==
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
 --+
   if k := NRTassocIndex(id) then 
-    form := ['SETELT,"$",k,x]
+    form := ["setShellEntry","$",k,x]
   else form:=
          $QuickLet => ["%LET",id,x]
          ["%LET",id,x,
