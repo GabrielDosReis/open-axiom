@@ -197,10 +197,11 @@ getDomainRefName(dom,nam) ==
   not FIXP nam => nam
   slot := dom.nam
   VECP slot => slot.0
-  slot is ['SETELT,:.] => getDomainRefName(dom,getDomainSeteltForm slot)
+  slot is ["setShellEntry",:.] => 
+    getDomainRefName(dom,getDomainSeteltForm slot)
   slot
 
-getDomainSeteltForm ['SETELT,.,.,form] ==
+getDomainSeteltForm ["setShellEntry",.,.,form] ==
   form is ['evalSlotDomain,u,d] => devaluateSlotDomain(u,d)
   VECP form => systemError()
   form

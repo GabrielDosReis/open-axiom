@@ -76,7 +76,9 @@ evalSlotDomain(u,dollar) ==
   u = "$$" => dollar
   FIXP u =>
     VECP (y := dollar.u) => y
-    y is ['SETELT,:.] => eval y--lazy domains need to marked; this is dangerous?
+    y is ["setShellEntry",:.] => eval y
+             --lazy domains need to marked; this is dangerous?
+    y is ['SETELT,:.] => systemErrorHere "evalSlotDomain"
     y is [v,:.] =>
       VECP v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]
       IDENTP v and constructor? v 
