@@ -67,7 +67,6 @@ $NRTaddForm := nil
 $NRTderivedTargetIfTrue := false
 $killOptimizeIfTrue := false
 
------------------------------NEW buildFunctor CODE-----------------------------
 NRTaddDeltaCode() ==
 --NOTES: This function is called from buildFunctor to initially
 --  fill slots in $template. The $template so created is stored in the
@@ -91,7 +90,7 @@ NRTaddDeltaCode() ==
         $template.i:= deltaTran(item,compItem)
   $template.5 :=
     $NRTaddForm =>
-      $NRTaddForm is ["%Comma",:y] => NREVERSE y
+      $NRTaddForm is ["%Comma",:y] => nreverse y
       NRTencode($NRTaddForm,$addForm)
     nil
 
@@ -120,7 +119,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
   --the operation name should be assigned a slot
   not firstTime and (k:= NRTassocIndex x) => k
   VECP x => systemErrorHere '"NRTencode"
-  PAIRP x =>
+  CONSP x =>
     op := first x
     op = "Record" or x is ['Union,['_:,a,b],:.] =>
       [op,:[['_:,a,encode(b,c,false)]
@@ -202,11 +201,11 @@ genDeltaEntry opMmPair ==
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(nsig,dc),consDomainForm(dc,nil)]]
   odc := dc
-  if null atom dc then dc := substitute("$$",'$,dc)
+  if not atom dc then dc := substitute("$$",'$,dc)
   opModemapPair :=
     [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and dc ^= $NRTaddForm and
-    (member(dc,$functorLocalParameters) or null atom dc) then
+    (member(dc,$functorLocalParameters) or not atom dc) then
     --create "domain" entry to $NRTdeltaList
       $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
@@ -282,7 +281,7 @@ NRTassignCapsuleFunctionSlot(op,sig) ==
   [.,.,implementation] := NRTisExported? opSig or return nil
     --if opSig is not exported, it is local and need not be assigned
   if $insideCategoryPackageIfTrue then
-      sig := substitute('$,CADR($functorForm),sig)
+      sig := substitute('$,second($functorForm),sig)
   sig := [NRTgetLocalIndex x for x in sig]
   opModemapPair := [op,['_$,:sig],["T",implementation]]
   POSN1(opModemapPair,$NRTdeltaList) => nil   --already there
@@ -326,7 +325,7 @@ NRTisExported? opSig ==
   or/[u for u in $domainShell.1 | u.0 = opSig]
 
 consOpSig(op,sig,dc) ==
-  if null atom op then
+  if not atom op then
     keyedSystemError("S2GE0016",['"consOpSig",'"bad operator in table"])
   mkList [MKQ op,mkList consSig(sig,dc)]
 
@@ -433,7 +432,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   [$catsig,:argsig]:= sig
   catvecListMaker:=REMDUP
     [(comp($catsig,$EmptyMode,$e)).expr,
-      :[compCategories first u for u in CADR $domainShell.4]]
+      :[compCategories first u for u in second $domainShell.4]]
   condCats:= InvestigateConditions [$catsig,:rest catvecListMaker]
   -- a list, one %for each element of catvecListMaker
   -- indicating under what conditions this
@@ -444,7 +443,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
   $template := newShell ($NRTbase + $NRTdeltaLength)
-  $catvecList:= [domainShell,:[emptyVector for u in CADR domainShell.4]]
+  $catvecList:= [domainShell,:[emptyVector for u in second domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
   $SetFunctions:= newShell SIZE domainShell
   $MissingFunctionInfo:= newShell SIZE domainShell
@@ -477,10 +476,10 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   codePart1:= [:devaluateCode,:domainFormCode,createDomainCode,
                 createViewCode,setVector0Code, slot3Code,:slamCode] where
     devaluateCode:= [["%LET",b,['devaluate,a]] for [a,:b] in $devaluateList]
-    domainFormCode := [["%LET",a,b] for [a,:b] in NREVERSE $NRTdomainFormList]
+    domainFormCode := [["%LET",a,b] for [a,:b] in nreverse $NRTdomainFormList]
       --$NRTdomainFormList is unused now
     createDomainCode:=
-      ["%LET",domname,['LIST,MKQ CAR $definition,:ASSOCRIGHT $devaluateList]]
+      ["%LET",domname,['LIST,MKQ first $definition,:ASSOCRIGHT $devaluateList]]
     createViewCode:= ["%LET",'$,["newShell", $NRTbase + $NRTdeltaLength]]
     setVector0Code:=[$setelt,'$,0,'dv_$]
     slot3Code := ["setShellEntry",'$,3,["%LET",'pv_$,predBitVectorCode1]]
@@ -556,7 +555,7 @@ NRTsetVector4(siglist,formlist,condlist) ==
         [['COND,[pred,["%LET",localVariable,
           ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
             :code]
-    code := ['PROGN,:NREVERSE [['NREVERSE,localVariable],:code]]
+    code := ['PROGN,:nreverse [['NREVERSE,localVariable],:code]]
   g := GENSYM()
   [$setelt,'$,4,['PROG2,["%LET",g,code],
     ['VECTOR,['catList2catPackageList,g],g]]]
@@ -596,13 +595,13 @@ NRTsetVector4Part2(uncondList,condList) ==
         [['COND,[predicateBitRef SUBLIS($pairlis,pred),["%LET",localVariable,
           ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
             :code]
-    code := ['PROGN,:NREVERSE [['NREVERSE,localVariable],:code]]
+    code := ['PROGN,:nreverse [['NREVERSE,localVariable],:code]]
   g := GENSYM()
   [$setelt,'$,4,['PROG2,["%LET",g,code],
     ['VECTOR,['catList2catPackageList,g],g]]]
 
 mergeAppend(l1,l2) ==
-  ATOM l1 => l2
+  atom l1 => l2
   member(QCAR l1,l2) => mergeAppend(QCDR l1, l2)
   CONS(QCAR l1, mergeAppend(QCDR l1, l2))
 
@@ -650,7 +649,7 @@ slot1Filter opList ==
 --include only those ops which are defined within the capsule
   [u for x in opList | u := fn x] where
     fn [op,:l] ==
-      u := [entry for entry in l | INTEGERP CADR entry] => [op,:u]
+      u := [entry for entry in l | INTEGERP second entry] => [op,:u]
       nil
 
 NRToptimizeHas u ==
@@ -683,13 +682,13 @@ changeDirectoryInSlot1() ==  --called by buildFunctor
           $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
         fnsel is [op,a,:.] and (op = 'ELT or op = 'CONST) =>
           if $insideCategoryPackageIfTrue then
-              opsig := substitute('$,CADR($functorForm),opsig)
-          [opsig,pred,[op,a,vectorLocation(first opsig,CADR opsig)]]
+              opsig := substitute('$,second($functorForm),opsig)
+          [opsig,pred,[op,a,vectorLocation(first opsig,second opsig)]]
         [opsig,pred,fnsel]
   sortedOplist := listSort(function GLESSEQP,
-                           COPY_-LIST $lisplibOperationAlist,function CADR)
-  $lastPred :local := nil
-  $newEnv :local := $e
+                           COPY_-LIST $lisplibOperationAlist,function second)
+  $lastPred: local := false
+  $newEnv: local := $e
   $domainShell.1 := [fn entry for entry in sortedOplist] where
     fn [[op,sig],pred,fnsel] ==
        if $lastPred ^= pred then
@@ -730,8 +729,8 @@ NRTsubstDelta(initSig) ==
           u:= $NRTdeltaList.($NRTdeltaLength+5-t)
           first u = 'domain => second u
           error "bad $NRTdeltaList entry"
-        MEMQ(CAR t,'(Mapping Union Record _:)) =>
-           [CAR t,:[replaceSlotTypes(x) for x in rest t]]
+        MEMQ(first t,'(Mapping Union Record _:)) =>
+           [first t,:[replaceSlotTypes(x) for x in rest t]]
         t
 
 mapConsDB x == 
@@ -742,10 +741,10 @@ addConsDB x ==
     min x ==
       y:=HGET($consDB,x)
       y => y
-      PAIRP x =>
+      CONSP x =>
         for z in tails x repeat
-          u:=min CAR z
-          if not EQ(u,CAR z) then RPLACA(z,u)
+          u:=min first z
+          if not EQ(u,first z) then RPLACA(z,u)
         HashCheck x
       REFVECP x =>
         for i in 0..MAXINDEX x repeat
