@@ -125,7 +125,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
     $NRTdomainFormList: local := nil -- of form ((gensym . (Repe...)) ...
     -- the above optimizes the calls to local domains
-    $template: local:= nil --stored in the lisplib (if $NRTvec = true)
+    $template: local:= nil --stored in the lisplib
     $functionLocations: local := nil --locations of defined functions in source
     -- generate slots for arguments first, then for $NRTaddForm in compAdd
     for x in argl repeat NRTgetLocalIndex x

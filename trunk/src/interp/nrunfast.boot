@@ -39,9 +39,6 @@ namespace BOOT
 $doNotCompressHashTableIfTrue := false
 
 ++
-$NRTvec := true
-
-++
 $monitorNewWorld := false
 
 ++
@@ -54,7 +51,6 @@ $NRTmonitorIfTrue := false
 --                     Basic Functions
 --=======================================================================
 initNewWorld() ==
-  $NRTvec := true
   $monitorNewWorld := false
   $spadLibFT := 'NRLIB
   $NRTmonitorIfTrue := false

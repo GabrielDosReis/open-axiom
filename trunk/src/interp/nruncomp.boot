@@ -443,9 +443,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   domainShell := newShell ($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
-  $template :=
-    $NRTvec = true => newShell ($NRTbase + $NRTdeltaLength)
-    nil
+  $template := newShell ($NRTbase + $NRTdeltaLength)
   $catvecList:= [domainShell,:[emptyVector for u in CADR domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
   $SetFunctions:= newShell SIZE domainShell
@@ -461,21 +459,18 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       makePredicateBitVector [:ASSOCRIGHT $condAlist,:$NRTslot1PredicateList]
 
   storeOperationCode:= DescendCode(code,true,nil,first $catNames)
-  outsideFunctionCode:= NRTaddDeltaCode()
+  NRTaddDeltaCode()
   storeOperationCode:= NRTputInLocalReferences storeOperationCode
-  if $NRTvec = true then
-    NRTdescendCodeTran(storeOperationCode,nil) --side effects storeOperationCode
+  NRTdescendCodeTran(storeOperationCode,nil) --side effects storeOperationCode
   codePart2:=
-    $NRTvec = true =>
-      argStuffCode :=
-        [[$setelt,'$,i,v] for i in $NRTbase.. for v in $FormalMapVariableList
-          for arg in rest $definition]
-      if MEMQ($NRTaddForm,$locals) then
-         addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
-         argStuffCode := [[$setelt,'$,5,addargname],:argStuffCode]
-      [['stuffDomainSlots,'$],:argStuffCode,
-         :predBitVectorCode2,storeOperationCode]
-    [:outsideFunctionCode,storeOperationCode]
+    argStuffCode :=
+      [[$setelt,'$,i,v] for i in $NRTbase.. for v in $FormalMapVariableList
+	for arg in rest $definition]
+    if MEMQ($NRTaddForm,$locals) then
+       addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
+       argStuffCode := [[$setelt,'$,5,addargname],:argStuffCode]
+    [['stuffDomainSlots,'$],:argStuffCode,
+       :predBitVectorCode2,storeOperationCode]
 
   $CheckVectorList := NRTcheckVector domainShell
 --CODE: part 1

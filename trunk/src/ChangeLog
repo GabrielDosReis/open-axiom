@@ -1,3 +1,8 @@
+2008-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (buildFunctor): Remov reference to $NRTvec.
+	* interp/nrunfast.boot ($NRTvec): Don't define.
+
 2008-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/server.boot (serverLoop): Remove, as unused.
