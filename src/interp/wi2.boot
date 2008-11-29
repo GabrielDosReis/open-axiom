@@ -372,7 +372,7 @@ compCapsuleInner(itemList,m,e) ==
   if $addForm then data:= ['add,$addForm,data]
   code:=
     $insideCategoryIfTrue and not $insideCategoryPackageIfTrue => data
-    processFunctorOrPackage($form,$signature,data,localParList,m,e)
+    processFunctor($form,$signature,data,localParList,e)
   [MKPF([:$getDomainCode,code],"PROGN"),m,e]
 
 compSingleCapsuleItem(item,$predl,$e) ==
