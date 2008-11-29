@@ -100,15 +100,14 @@ deltaTran(item,compItem) ==
   [op,:modemap] := item
   [dcSig,[.,[kind,:.]]] := modemap
   [dc,:sig] := dcSig
-  sig := MSUBST('$,dc,substitute("$$",'$,sig))
+  -- NOTE: sig is already in encoded form since it comes from $NRTdeltaList;
+  --       so we need only encode dc. -- gdr 2008-11-28.
   dcCode :=
     dc = '$ => 0
     dc = $NRTaddForm => 5
     NRTassocIndex dc or keyedSystemError("S2NR0004",[dc])
-  formalSig:= SUBLISLIS($FormalMapVariableList,$formalArgList,sig)
   kindFlag:= (kind = 'CONST => 'CONST; nil)
-  newSig := [NRTassocIndex x or x for x in formalSig]
-  [newSig,dcCode,op,:kindFlag]
+  [sig,dcCode,op,:kindFlag]
 
 NRTreplaceAllLocalReferences(form) ==
   $devaluateList :local := []
@@ -188,7 +187,6 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
 genDeltaEntry opMmPair ==
 --called from compApplyModemap
 --$NRTdeltaLength=0.. always equals length of $NRTdeltaList
-  [.,[odc,:.],.] := opMmPair
   [op,[dc,:sig],[.,cform:=[eltOrConst,.,nsig]]] := opMmPair
   if $profileCompiler = true then profileRecord(dc,op,sig)
   eltOrConst = 'XLAM => cform
