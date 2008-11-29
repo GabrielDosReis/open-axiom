@@ -1,5 +1,9 @@
 2008-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (genDeltaSpecialSig): Remove, as unused.
+
+2008-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (deltaTran): Don't encode signature again.
 	(genDeltaEntry): Remove dead pattern match.
 

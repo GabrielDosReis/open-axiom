@@ -220,10 +220,6 @@ genDeltaEntry opMmPair ==
       0
   u
 
-genDeltaSpecialSig x ==
-  x is [":",y,z] => [":",y,NRTgetLocalIndex z]
-  NRTgetLocalIndex x
-
 ++ Return the slot number (within the template vector of the functor
 ++ being compiled) of the domain or value referenced by the form `x'.
 ++ Otherwise, return nil this is the first time `x' is referenced, or
