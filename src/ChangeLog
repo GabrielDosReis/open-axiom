@@ -1,5 +1,10 @@
 2008-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (deltaTran): Don't encode signature again.
+	(genDeltaEntry): Remove dead pattern match.
+
+2008-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (setqSingle): Use setShellEntry.
 	* interp/wi1.boot (setqSingle): Likewise.
 	* interp/functor.boot (setVector4): Likewise.
