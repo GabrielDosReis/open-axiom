@@ -359,7 +359,7 @@
     (RETURN
       (SEQ (LETT |ss| (|getShellEntry| $ 6)
                  |OUTFORM;doubleFloatFormat;2S;1|)
-           (SETELT $ 6 |s|) (EXIT |ss|))))) 
+           (|setShellEntry| $ 6 |s|) (EXIT |ss|))))) 
 
 (DEFUN |OUTFORM;sform| (|s| $) (DECLARE (IGNORE $)) |s|) 
 

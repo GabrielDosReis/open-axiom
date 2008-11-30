@@ -1642,8 +1642,8 @@ makeCategoryForm(c,e) ==
 
 mustInstantiate: %Form -> %Thing 
 mustInstantiate D ==
-  D is [fn,:.] and (not (fn in $DummyFunctorNames) 
-    or GET(fn,"makeFunctionList"))
+  D is [fn,:.] and 
+    not (MEMQ(fn,$DummyFunctorNames) or GET(fn,"makeFunctionList"))
 
 wrapDomainSub: (%List, %Form) -> %Form 
 wrapDomainSub(parameters,x) ==
@@ -1651,8 +1651,8 @@ wrapDomainSub(parameters,x) ==
  
 mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
   body:=
-    ["mkCategory",MKQ domainOrPackage,['LIST,:nreverse sigList],
-      ['LIST,:nreverse atList],MKQ domList,nil] where
+    ["mkCategory",MKQ domainOrPackage,['LIST,:reverse sigList],
+      ['LIST,:reverse atList],MKQ domList,nil] where
         domList() ==
           ("union"/[fn sig for ["QUOTE",[[.,sig,:.],:.]] in sigList]) where
             fn sig == [D for D in sig | mustInstantiate D]
