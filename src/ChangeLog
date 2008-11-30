@@ -1,5 +1,13 @@
 2008-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (deltaTran): Don't check for $NRTaddForm
+	againg; it was already checked by NRTassocIndex.
+	(genDeltaEntry): Likewise.
+	(NRTgetLocalIndex): Likewise.
+	* interp/wi2.boot (genDeltaExntry): Likewise.
+
+2008-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (mustInstantiate): Fix thinko introduced by
 	earlier tweaks.
 	(mkExplicitCategoryFunction): Likewise.

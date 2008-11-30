@@ -104,7 +104,6 @@ deltaTran(item,compItem) ==
   --       so we need only encode dc. -- gdr 2008-11-28.
   dcCode :=
     dc = '$ => 0
-    dc = $NRTaddForm => 5
     NRTassocIndex dc or keyedSystemError("S2NR0004",[dc])
   kindFlag:= (kind = 'CONST => 'CONST; nil)
   [sig,dcCode,op,:kindFlag]
@@ -202,7 +201,7 @@ genDeltaEntry opMmPair ==
   if not atom dc then dc := substitute("$$",'$,dc)
   opModemapPair :=
     [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
-  if null NRTassocIndex dc and dc ^= $NRTaddForm and
+  if null NRTassocIndex dc and
     (member(dc,$functorLocalParameters) or not atom dc) then
     --create "domain" entry to $NRTdeltaList
       $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
@@ -236,7 +235,6 @@ NRTassocIndex x ==
 NRTgetLocalIndex: %Form -> %Short
 NRTgetLocalIndex item ==
   k := NRTassocIndex item => k
-  item = $NRTaddForm => 5
   item = "$" => 0
   item = "$$" => 2
   value:=
