@@ -448,9 +448,9 @@
        (EXIT (|error| "integer too large to represent in a machine word")))) 
 
 (DEFUN |SINT;random;$;52| ($)
-  (SEQ (SETELT $ 6
-               (REMAINDER (TIMES 314159269 (|getShellEntry| $ 6))
-                   2147483647))
+  (SEQ (|setShellEntry| $ 6
+           (REMAINDER (TIMES 314159269 (|getShellEntry| $ 6))
+               2147483647))
        (EXIT (REMAINDER (|getShellEntry| $ 6) 67108864)))) 
 
 (DEFUN |SINT;random;2$;53| (|n| $) (DECLARE (IGNORE $)) (RANDOM |n|)) 

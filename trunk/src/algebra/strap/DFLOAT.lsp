@@ -1074,11 +1074,12 @@
                                (|ArcTrigonometricFunctionCategory|)
                                (|TrigonometricFunctionCategory|)
                                (|OpenMath|) (|ConvertibleTo| 129)
-                               (|RadicalCategory|) (|CoercibleFrom| 24)
+                               (|RadicalCategory|)
                                (|ConvertibleTo| 101)
                                (|ConvertibleTo| 13)
                                (|CoercibleFrom| 104)
-                               (|CoercibleFrom| $$) (|BasicType|)
+                               (|CoercibleFrom| $$)
+                               (|CoercibleFrom| 24) (|BasicType|)
                                (|CoercibleTo| 38))
                             (|makeByteWordVec2| 139
                                 '(0 6 0 7 2 9 0 8 6 10 1 9 11 0 12 2 9
@@ -1118,7 +1119,7 @@
                                   0 0 64 1 0 0 0 74 1 0 0 0 62 1 0 41 0
                                   43 1 0 129 0 1 1 0 101 0 103 1 0 13 0
                                   100 1 0 0 104 1 1 0 0 24 58 1 0 0 104
-                                  1 1 0 0 24 58 1 0 0 0 1 1 0 38 0 40 0
+                                  1 1 0 0 0 1 1 0 0 24 58 1 0 38 0 40 0
                                   0 105 1 1 0 0 0 1 0 0 22 30 0 0 22 23
                                   1 0 0 0 81 2 0 0 0 0 108 1 0 0 0 69 2
                                   0 18 0 0 1 1 0 0 0 79 1 0 0 0 67 1 0

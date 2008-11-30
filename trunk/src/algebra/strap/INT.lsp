@@ -669,9 +669,9 @@
                                (|CombinatorialFunctionCategory|)
                                (|ConvertibleTo| 123)
                                (|ConvertibleTo| 50)
-                               (|CoercibleFrom| 11)
                                (|ConvertibleTo| 11)
-                               (|CoercibleFrom| $$) (|BasicType|)
+                               (|CoercibleFrom| $$)
+                               (|CoercibleFrom| 11) (|BasicType|)
                                (|CoercibleTo| 36))
                             (|makeByteWordVec2| 131
                                 '(1 7 6 0 8 3 7 6 0 9 9 10 2 7 6 0 11
