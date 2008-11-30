@@ -730,7 +730,7 @@ genDeltaEntry opMmPair ==
  --   cform := substitute('$,dc,cform)
   opModemapPair :=
     [op,[dc,:[genDeltaSig x for x in sig]],['T,cform]] -- force pred to T
-  if null NRTassocIndex dc and dc ^= $NRTaddForm and
+  if null NRTassocIndex dc and
     (member(dc,$functorLocalParameters) or null atom dc) then
     --create "domain" entry to $NRTdeltaList
       $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
