@@ -327,13 +327,6 @@ parseOr t ==
     parseIf ["IF",y,parseOr ["or",:rest u],"true"]
   parseIf ["IF",x,"true",parseOr ["or",:rest u]]
  
-
-parseEquivalence: %ParseForm -> %Form
-parseEquivalence t == 
-  t isnt ["eqv",a,b] => systemErrorHere "parseEquivalence"
-  parseIf ["IF",a,b,parseIf ["IF",b,:'(false true)]]
- 
-
 parseExclusiveOr: %ParseForm -> %Form
 parseExclusiveOr t == 
   t isnt ["xor",a,b] => systemErrorHere "parseExclusiveOr"
@@ -535,7 +528,6 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["CATEGORY", :"parseCategory"],_
 	  ["construct", :"parseConstruct"],_
 	  ["DEF", :"parseDEF"],_
-	  ["eqv", :"parseEquivalence"],_
 	  ["exit", :"parseExit"],_
 	  ["has", :"parseHas"],_
 	  ["IF", :"parseIf"],_
