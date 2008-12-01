@@ -555,19 +555,19 @@
                             (|HasCategory| |#1| '(|OrderedSet|))
                             (|HasCategory| (|Integer|) '(|OrderedSet|))
                             (|HasCategory| |#1| '(|SetCategory|))
+                            (|HasCategory| |#1|
+                                '(|CoercibleTo| (|OutputForm|)))
                             (AND (|HasCategory| |#1| '(|SetCategory|))
                                  (|HasCategory| |#1|
                                      (LIST '|Evalable|
-                                      (|devaluate| |#1|))))
-                            (|HasCategory| |#1|
-                                '(|CoercibleTo| (|OutputForm|))))) . #0#))
+                                      (|devaluate| |#1|)))))) . #0#))
         (|haddProp| |$ConstructorCache| '|IndexedList|
             (LIST |dv$1| |dv$2|) (CONS 1 $))
         (|stuffDomainSlots| $)
         (|setShellEntry| $ 6 |#1|)
         (|setShellEntry| $ 7 |#2|)
         (COND
-          ((|testBitVector| |pv$| 9)
+          ((|testBitVector| |pv$| 8)
            (|setShellEntry| $ 46
                (CONS (|dispatchFunction| |ILIST;coerce;$Of;21|) $))))
         (COND
@@ -698,8 +698,8 @@
                                   0 0 0 30 1 3 0 0 6 0 30 1 1 0 71 0 1
                                   2 0 11 30 0 1 1 7 70 0 1 2 0 0 0 8 1
                                   1 0 6 0 13 2 0 72 63 0 1 2 0 0 0 6 1
-                                  1 0 11 0 1 2 0 11 63 0 1 3 8 0 0 6 6
-                                  1 3 8 0 0 25 25 1 2 8 0 0 61 1 2 8 0
+                                  1 0 11 0 1 2 0 11 63 0 1 3 9 0 0 6 6
+                                  1 3 9 0 0 25 25 1 2 9 0 0 61 1 2 9 0
                                   0 62 1 2 0 11 0 0 12 2 7 11 6 0 1 1 0
                                   25 0 1 1 0 11 0 17 0 0 0 16 2 0 6 0
                                   30 1 3 0 6 0 30 6 1 2 0 0 0 65 1 2 0
@@ -711,7 +711,7 @@
                                   8 63 0 1 3 0 0 0 0 30 1 1 0 0 0 35 1
                                   3 69 0 1 1 0 0 25 26 2 0 0 0 0 54 2 0
                                   0 0 6 1 1 0 0 39 1 2 0 0 0 6 1 2 0 0
-                                  6 0 10 2 0 0 0 0 1 1 9 37 0 46 1 0 39
+                                  6 0 10 2 0 0 0 0 1 1 8 37 0 46 1 0 39
                                   0 1 2 7 11 0 0 1 2 0 11 63 0 1 2 5 11
                                   0 0 1 2 5 11 0 0 1 2 7 11 0 0 48 2 5
                                   11 0 0 1 2 5 11 0 0 1 1 0 8 0 9)))))

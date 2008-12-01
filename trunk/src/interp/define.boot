@@ -593,7 +593,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $compileExportsOnly => compDefineExports(form, ds.1, signature',$e)
     $domainShell:= COPY_-SEQ ds
 --+ copy needed since slot1 is reset; compMake.. can return a cached vector
-    attributeList := disallowNilAttribute ds.2 --see below under "loadTimeAlist"
+    attributeList := ds.2 --see below under "loadTimeAlist"
 --+ 7 lines for $NRT follow
 -->--these globals used by NRTmakeCategoryAlist, set by NRTsetVector4Part1
     $condAlist: local := nil
@@ -718,10 +718,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
             ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'NILADIC], true])
     [fun,['Mapping,:signature'],originale]
  
-disallowNilAttribute x == 
-  res := [y for y in x | car y and car y ^= "nil"]
---HACK to get rid of nil attibutes ---NOTE: nil is RENAMED to NIL
-
 compFunctorBody(body,m,e,parForm) ==
   $bootStrapMode = true =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
@@ -1731,6 +1727,8 @@ compCategoryItem(x,predl,env) ==
  
   --2. if attribute, push it and return
   x is ["ATTRIBUTE",y] => 
+    -- Attribute 'nil' carries no semantics.
+    y = "nil" => nil
     noteExport(y,pred)
     PUSH(MKQ [y,pred],$atList)
  

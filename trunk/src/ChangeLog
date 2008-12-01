@@ -1,3 +1,9 @@
+2008-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (disallowNiAttribute): Remove.
+	(compDefineFunctor1): Don't use it anymore.
+	(compCategoryItem): Filter out nil attributes here.
+
 2008-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (deltaTran): Don't check for $NRTaddForm
