@@ -909,12 +909,12 @@
                             (|HasCategory| (|Integer|) '(|OrderedSet|))
                             (|HasCategory| (|Character|)
                                 '(|SetCategory|))
+                            (|HasCategory| (|Character|)
+                                '(|CoercibleTo| (|OutputForm|)))
                             (AND (|HasCategory| (|Character|)
                                      '(|SetCategory|))
                                  (|HasCategory| (|Character|)
-                                     '(|Evalable| (|Character|))))
-                            (|HasCategory| (|Character|)
-                                '(|CoercibleTo| (|OutputForm|))))) . #0#))
+                                     '(|Evalable| (|Character|)))))) . #0#))
         (|haddProp| |$ConstructorCache| '|IndexedString| (LIST |dv$1|)
             (CONS 1 $))
         (|stuffDomainSlots| $)
@@ -1027,8 +1027,8 @@
                                   0 38 3 0 0 8 0 18 1 3 0 0 0 0 18 23 1
                                   0 84 0 1 2 0 11 18 0 1 1 7 79 0 1 1 0
                                   18 0 69 1 6 8 0 1 2 0 83 80 0 1 2 0 0
-                                  0 8 1 2 0 11 80 0 1 3 8 0 0 74 74 1 3
-                                  8 0 0 8 8 1 2 8 0 0 76 1 2 8 0 0 75 1
+                                  0 8 1 2 0 11 80 0 1 3 9 0 0 74 74 1 3
+                                  9 0 0 8 8 1 2 9 0 0 76 1 2 9 0 0 75 1
                                   2 0 11 0 0 1 2 7 11 8 0 1 1 0 74 0 1
                                   1 0 11 0 12 0 0 0 10 2 0 0 0 0 1 2 0
                                   0 0 19 21 2 0 8 0 18 52 3 0 8 0 18 8
@@ -1036,7 +1036,7 @@
                                   1 2 0 7 80 0 1 3 0 0 0 0 18 66 1 0 0
                                   0 17 1 3 78 0 1 1 0 0 74 1 1 0 0 59
                                   67 2 0 0 0 0 16 2 0 0 0 8 1 2 0 0 8 0
-                                  1 1 9 25 0 27 1 0 0 8 1 2 0 11 80 0 1
+                                  1 1 8 25 0 27 1 0 0 8 1 2 0 11 80 0 1
                                   2 5 11 0 0 1 2 5 11 0 0 1 2 7 11 0 0
                                   14 2 5 11 0 0 1 2 5 11 0 0 15 1 0 7 0
                                   13)))))

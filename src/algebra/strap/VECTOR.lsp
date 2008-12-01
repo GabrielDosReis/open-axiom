@@ -78,12 +78,12 @@
                             (AND (|HasCategory| |#1|
                                      '(|RadicalCategory|))
                                  (|HasCategory| |#1| '(|Ring|)))
+                            (|HasCategory| |#1|
+                                '(|CoercibleTo| (|OutputForm|)))
                             (AND (|HasCategory| |#1| '(|SetCategory|))
                                  (|HasCategory| |#1|
                                      (LIST '|Evalable|
-                                      (|devaluate| |#1|))))
-                            (|HasCategory| |#1|
-                                '(|CoercibleTo| (|OutputForm|))))) . #0#))
+                                      (|devaluate| |#1|)))))) . #0#))
         (|haddProp| |$ConstructorCache| '|Vector| (LIST |dv$1|)
             (CONS 1 $))
         (|stuffDomainSlots| $)
