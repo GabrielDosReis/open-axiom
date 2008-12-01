@@ -1247,7 +1247,6 @@ compile u ==
         INTERN STRCONC(encodeItem $prefix,'";",encodeItem op) 
       isPackageFunction() and KAR $functorForm^="CategoryDefaults" =>
         if null opmodes then userError ['"no modemap for ",op]
-        opmodes is [['PAC,.,name]] => name
         encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
       encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
      where

@@ -712,8 +712,7 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
                     else body:= SetFunctionSlots(truename,body,nil,mode)
                else nil
            else
-            if not (catImplem is ['PAC,:.]) then
-              keyedSystemError("S2OR0002",[catImplem])
+             keyedSystemError("S2OR0002",[catImplem])
   body is ["setShellEntry",:.] => body
   body is ['SETELT,:.] => systemErrorHere "SetFunctionSlots"
   body is ['QSETREFV,:.] => systemErrorHere "SetFunctionSlots"
@@ -997,18 +996,10 @@ isCategoryPackageName nam ==
   p := PNAME opOf nam
   p.(MAXINDEX p) = char '_&
 
-mkOperatorEntry(domainOrPackage,opSig is [op,sig,:flag],pred,count) ==
-  domainOrPackage^="domain" =>
-    [opSig,pred,["PAC","$",name]] where
-      name() == encodeFunctionName(op,domainOrPackage,sig,":",count)
+mkOperatorEntry(opSig is [op,sig,:flag],pred,count) ==
   null flag => [opSig,pred,["ELT","$",count]]
   first flag="constant" => [[op,sig],pred,["CONST","$",count]]
   systemError ["unknown variable mode: ",flag]
- 
-optPackageCall(x,["PAC",packageVariableOrForm,functionName],arglist) ==
-  RPLACA(x,functionName)
-  RPLACD(x,[:arglist,packageVariableOrForm])
-  x
  
 --% Code for encoding function names inside package or domain
  
