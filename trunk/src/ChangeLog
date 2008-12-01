@@ -1,3 +1,13 @@
+2008-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (compile): Don't check for PAC names.
+	* interp/g-opt.boot (optCall): Likewise.
+	* interp/functor.boot (SetFunctionSlots): Likewise.
+	(mkOperatorEntry): Lose first parameter.
+	(optPackageCall): Remove.
+	* interp/category.boot (mkCategory): Document.  Adjust call to
+	mkOperatorEntry. 
+
 2008-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/parse.boot (parseEquivalence): Remove.

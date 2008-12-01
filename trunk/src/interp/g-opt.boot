@@ -144,7 +144,6 @@ optCall (x is ["call",:u]) ==
   atom first x => first x
   [fn,:a]:= first x
   atom fn => (RPLAC(rest x,a); RPLAC(first x,fn))
-  fn is ["PAC",:.] => optPackageCall(x,fn,a)
   fn is ["applyFun",name] =>
     (RPLAC(first x,"SPADCALL"); RPLAC(rest x,[:a,name]); x)
   fn is [q,R,n] and MEMQ(q,'(getShellEntry ELT QREFELT CONST)) =>

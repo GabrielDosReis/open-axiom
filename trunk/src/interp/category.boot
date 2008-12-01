@@ -82,21 +82,26 @@ CategoryPrint(D,$e) ==
 
 ++ Returns a fresly built category object for a domain or package
 ++ (as indicated by `domainOrPackage'), with signature list
-++ designated by `sigList', attribute list designated by `attList,
-++ domain list designatured by `domList', and a princical ancestor
+++ designated by `sigList', attribute list designated by `attList',
+++ used domains list designated by `domList', and a princical ancestor
 ++ category object designated by `PrincipalAncestor'.
 mkCategory: (%Symbol,%List,%List,%List, %Maybe %Shell) -> %Shell
 mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   NSigList := nil
-  if PrincipalAncestor=nil then count := 6 
-  else count := #PrincipalAncestor
+  -- Unless extending a principal ancestor (from the end), start
+  -- from the first free, unencumbered slot.
+  count := 
+    PrincipalAncestor = nil => $NRTbase
+    #PrincipalAncestor
   sigList:=
     [if s is [sig,pred]
        then
+         -- Don't retain duplicate signatures.
+         -- ??? Should we not check for predicate subsumption too?
          or/[x is [[ =sig,.,:impl],:num] for x in NSigList] => [sig,pred,:impl]
                  --only needed for multiple copies of sig
          num:= if domainOrPackage="domain" then count else count-5
-         nsig:= mkOperatorEntry("domain",sig,pred,num)
+         nsig:= mkOperatorEntry(sig,pred,num)
          NSigList:= [[nsig,:count],:NSigList]
          count:= count+1
          nsig
@@ -119,12 +124,15 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
         v is ["Record",.,:w] => "union"/[Prepare2 third x for x in w]
         [v]
   OldLocals:= nil
+  -- Remove possible duplicate local domain caches.
   if PrincipalAncestor then 
     for u in (OldLocals:= third PrincipalAncestor.4) repeat 
       NewLocals := delete(first u,NewLocals)
+  -- New local domains caches are hosted in slots at the end onward
   for u in NewLocals repeat
     OldLocals := [[u,:count],:OldLocals]
     count := count+1
+  -- Build a fresh category object stuffed with all updated information
   v := newShell count
   v.0 := nil
   v.1 := sigList
