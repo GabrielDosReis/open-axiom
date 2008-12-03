@@ -217,7 +217,7 @@ the stack, then stack a NIL. Return the value of prod."
 
 (defun initial-substring-p (part whole)
   "Returns length of part if part matches initial segment of whole."
-  (let ((x (string-not-greaterp part whole)))
+  (let ((x (string<= part whole)))
     (and x (= x (length part)) x)))
 
 

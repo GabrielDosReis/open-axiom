@@ -1,3 +1,7 @@
+2008-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/parsing.lisp (initial-substring-p): Match case sensitively.
+
 2008-11-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nrunfast.boot (newHasTest): Handle signature test.
