@@ -1405,7 +1405,10 @@ compColonInside(x,m,e,m') ==
 
 compIs: (%Form,%Mode,%Env) -> %Maybe %Triple
 compIs(["is",a,b],m,e) ==
-  [aval,am,e] := comp(a,$EmptyMode,e) or return nil
+  [aval,am,e] := comp(a,$EmptyMode,e) or 
+    stackAndThrow('"Cannot determine the type of the expression %1b",[a])
+  not isCategoryForm(am,e) =>
+    stackAndThrow('"Expression %1b does not designate a domain",[a])
   [bval,bm,e] := comp(b,$EmptyMode,e) or return nil
   T:= [["domainEqual",aval,bval],$Boolean,e]
   coerce(T,m)

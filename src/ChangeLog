@@ -1,3 +1,8 @@
+2008-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compIs): Error if left operand is not a
+	domain expression.
+
 2008-12-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/parsing.lisp (initial-substring-p): Match case sensitively.
