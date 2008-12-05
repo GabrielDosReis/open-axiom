@@ -1,3 +1,14 @@
+2008-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/fs2ups.spad.pamphlet
+	(FunctionSpaceToUnivariatePowerSeries):  Revert previous
+	requirement change on parameter.
+	* algebra/manip.spad.pamphlet (PolynomialRoots): Likewise.
+	* algebra/rf.spad.pamphlet (PolynomialCategoryQuotientFunctions):
+	Likewise. 
+	* algebra/sum.spad.pamphlet (GosperSummationMethod): Likewise.
+	* share/algebra: Update databases.
+
 2008-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compIs): Error if left operand is not a
