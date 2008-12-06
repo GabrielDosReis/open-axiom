@@ -505,7 +505,15 @@ oa_system(const char* cmd)
    return system(cmd);
 }
 
-
+OPENAXIOM_EXPORT int 
+oa_getpid(void) 
+{
+#ifdef __WIN32__
+   return GetCurrentProcessId();
+#else
+   return getpid();
+#endif
+}
 
 /* Return the value of an environment variable.  */
 OPENAXIOM_EXPORT char*

@@ -155,7 +155,7 @@ main(int argc, char *argv[])
   skim_wct(); 
   
 #ifdef log 
-  sprintf(logpath, "/tmp/cleflog%d", getpid());
+  sprintf(logpath, "/tmp/cleflog%d", oa_getpid());
   logfd = open(logpath, O_CREAT | O_RDWR, 0666);
 #endif
   
@@ -479,7 +479,7 @@ void
 catch_signals(void) 
 {
 #ifdef siglog
-  sprintf(sigbuff, "/tmp/csig%d", getpid());
+  sprintf(sigbuff, "/tmp/csig%d", oa_getpid());
   sigfile = open(sigbuff, O_RDWR | O_TRUNC | O_CREAT);
   write(sigfile, "Started \n", strlen("Started \n"));
   close(sigfile);

@@ -58,7 +58,7 @@ checker(int code, int lineNumber, char *errorStr)
   if (code < 0) {
     fprintf(stderr, "Error occured during %s\n", errorStr);
     fprintf(stderr, "Error code of %d\n", errno);
-    fprintf(stderr, "Error in line number %d of process %d\n", lineNumber, getpid());
+    fprintf(stderr, "Error in line number %d of process %d\n", lineNumber, oa_getpid());
     perror("");
   }
   return (code);

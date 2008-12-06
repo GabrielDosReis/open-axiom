@@ -80,7 +80,7 @@ set_editor_key(void)
 {
     int pid;
 
-    sprintf(editorfilename, "/tmp/clef%d", pid = getpid());
+    sprintf(editorfilename, "/tmp/clef%d", pid = oa_getpid());
 
     if (function_key[12].str == NULL) {
         (function_key[12]).type = SPECIAL;
