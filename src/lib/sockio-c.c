@@ -1014,7 +1014,7 @@ connect_to_local_server_new(char *server_name, int purpose, int time_out)
     return NULL;
   }
 
-  send_int(sock, getpid());
+  send_int(sock, oa_getpid());
   send_int(sock, purpose);
   send_int(sock, sock->socket);
   sock->pid = get_int(sock);
@@ -1066,7 +1066,7 @@ connect_to_local_server(char *server_name, int purpose, int time_out)
   if (code == -1) {
     return NULL;
   }
-  send_int(sock, getpid());
+  send_int(sock, oa_getpid());
   send_int(sock, sock->purpose);
   send_int(sock, sock->socket);
   sock->pid = get_int(sock);
@@ -1124,7 +1124,7 @@ init_purpose_table(void)
 OPENAXIOM_EXPORT int 
 make_server_number(void)
 {
-  spad_server_number = getpid();
+  spad_server_number = oa_getpid();
   return spad_server_number;
 }
 
@@ -1249,7 +1249,7 @@ get_socket_type(openaxiom_sio *sock)
   sock->pid = get_int(sock);
   sock->purpose = get_int(sock);
   sock->remote = get_int(sock);
-  send_int(sock, getpid());
+  send_int(sock, oa_getpid());
   send_int(sock, sock->socket);
   purpose_table[sock->purpose] = sock;
   switch (sock->purpose) {

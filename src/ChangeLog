@@ -1,3 +1,13 @@
+2008-12-06	Alfredo Portes	<doyenatccny@gmail.com>
+
+	* lib/cfuns-c.c (oa_getpid): New function to
+	support getting process id in Windows.
+	* include/cfuns.h: Define it.
+    * lib/fnct_key.c: Use it.
+	* lib/sockio-c.c: Likewise.
+	* lib/util.c: Likewise.
+	* clef/edible.c: Likewise.
+
 2008-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/fs2ups.spad.pamphlet
