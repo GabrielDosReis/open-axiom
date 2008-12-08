@@ -250,6 +250,7 @@ mkAtree3(x,op,argl) ==
       r := [[first types,:at],:r']
       [mkAtreeNode 'DEF,[[op,:v.0],:r],if v.2 then v.2 else true,false]
     [mkAtreeNode 'DEF,[a,:r],true,false]
+  op = "%Match" => [mkAtreeNode op, mkAtree1 first argl, second argl]
   op="[||]" => [mkAtreeNode op, :argl]
   op in '(%Inline %With %Add %Export) => [mkAtreeNode op,:argl]
 --x is ['when,y,pred] =>

@@ -599,6 +599,16 @@
                (CONS 'UNTIL (CONS (POP-STACK-1) NIL)))))) 
 
 
+(DEFUN |PARSE-Match| ()
+  (AND (MATCH-ADVANCE-STRING "case")
+       (MUST (|PARSE-Expr| 400))
+       (MATCH-ADVANCE-STRING "is")
+       (MUST (|PARSE-Expr| 110))
+       (PUSH-REDUCTION '|PARSE-Match|
+		       (CONS '|%Match|
+			     (CONS (POP-STACK-2)
+				   (CONS (POP-STACK-1) NIL))))))
+
 (DEFUN |PARSE-Expr| (RBP)
   (DECLARE (SPECIAL RBP))
   (AND (|PARSE-NudPart| RBP)

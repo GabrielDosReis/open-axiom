@@ -379,13 +379,77 @@ optEQ u ==
     u
   u
 
+$simpleVMoperators == 
+  '(CONS CAR CDR LENGTH SIZE EQUAL EQL EQ
+    INTEGERP FLOATP STRINGP IDENTP SYMBOLP)
+
+isSimpleVMForm form ==
+  isAtomicForm form => true
+  form is [op,:args] and MEMQ(op,$simpleVMoperators) 
+    and ("and"/[isAtomicForm arg for arg in args])
+
+++ Return true if `form' is a VM form whose evaluation does not depend
+++ on the program point where it is evaluated. 
+isFloatableVMForm: %Code -> %Boolean
+isFloatableVMForm form ==
+  atom form => form ^= "$"
+  form is ["QUOTE",:.] => true
+  MEMQ(first form, $simpleVMoperators) and
+    "and"/[isFloatableVMForm arg for arg in rest form]
+    
+
+++ Implement simple-minded LET-inlining.  It seems we can't count
+++ on Lisp implementations to do this simple transformation.
+++ This transformation will probably be more effective when all
+++ type informations are still around.   Which is why we should
+++ have a type directed compilation throughout. 
+optLET u ==
+  -- Hands off non-simple cases.
+  u isnt ["LET",inits,body] => u
+  -- Avoid initialization forms that may not be floatable.
+  not(and/[isFloatableVMForm init for [.,init] in inits]) => u
+  -- Identity function.
+  inits is [[=body,init]] => init
+  -- Handle only most trivial operators.
+  body isnt [op,:args] => u
+  -- Well, with case-patterns, it is beneficial to try a bit harder
+  -- with conditional forms.
+  op = "COND" =>
+    continue := true      -- shall be continue let-inlining?
+    -- Since we do a single pass, we can't reuse the inits list
+    -- as we may find later that we can't really inline into
+    -- all forms due to excessive conversatism.  So we build a 
+    -- substitution list ahead of time.
+    substPairs := [[var,:init] for [var,init] in inits]
+    for clauses in tails args while continue repeat
+      clause := first clauses
+      -- we do not attempt more complicate clauses yet.
+      clause isnt [test,stmt] => continue := false
+      -- Stop inlining at least one test is not simple
+      not isSimpleVMForm test => continue := false
+      rplac(first clause,SUBLIS(substPairs,test))
+      isSimpleVMForm stmt =>
+        rplac(second clause,SUBLIS(substPairs,stmt))
+    continue => body
+    u
+  not MEMQ(op,$simpleVMoperators) => u
+  not(and/[isAtomicForm arg for arg in args]) => u
+  -- Inline only if all parameters are used.  Get cute later.
+  not(and/[MEMQ(x,args) for [x,.] in inits]) => u
+  -- Munge inits into list of dotted-pairs.  Lovely Lisp.
+  for defs in tails inits repeat
+    def := first defs
+    atom def => systemErrorHere "optLET" -- cannot happen
+    rplac(rest def, second def)
+  SUBLIS(inits,body)
+
 lispize x == first optimize [x]
  
 --% optimizer hash table
  
 for x in '( (call         optCall) _
            (SEQ          optSEQ)_
-           (EQ optEQ)
+           (EQ optEQ)_
            (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
            (_-           opt_-)_

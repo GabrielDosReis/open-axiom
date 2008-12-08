@@ -916,6 +916,35 @@ updateCapsuleDirectory(entry,pred) ==
   entry isnt ["$",slot,["CONS",["dispatchFunction",fun],:.],:.] => nil
   $capsuleDirectory := [[slot,:fun],:$capsuleDirectory]
 
+
+
+
+--% Tree walkers
+
+++ Walk VM COND-form mutating sub-forms with unary
+++ function `fun'
+mutateCONDFormWithUnaryFunction(form,fun) ==
+  form isnt ["COND",:body] => form
+  for clauses in tails body repeat
+    -- a clause is a list of forms
+    for subForms in tails first clauses repeat
+      rplac(first subForms, FUNCALL(fun, first subForms))
+  form
+
+++ Walk VM LET-form mutating enclosed expression forms with
+++ unary function `fun'.  Every sub-form is visited except
+++ local variable declarations, though their initializers
+++ are visited.
+mutateLETFormWithUnaryFunction(form,fun) ==
+  form isnt ["LET",inits,:body] => form
+  for defs in tails inits repeat
+    def := first defs
+    atom def => nil -- no initializer
+    rplac(second def, FUNCALL(fun, second def))
+  for stmts in tails body repeat
+    rplac(first stmts, FUNCALL(fun, first stmts))
+  form
+
 --% 
 
 ++ List of macros used by the middle end to represent some
@@ -967,6 +996,10 @@ isAtomicForm form ==
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
   isAtomicForm form => form
+  form is ["COND",:body] =>
+    mutateCONDFormWithUnaryFunction(form,"replaceSimpleFunctions")
+  form is ["LET",:.] =>
+    optLET mutateLETFormWithUnaryFunction(form,"replaceSimpleFunctions")
   -- 1. process argument first.
   for args in tails rest form repeat
     arg' := replaceSimpleFunctions(arg := first args)
@@ -1001,9 +1034,13 @@ replaceSimpleFunctions form ==
 foldSpadcall: %Form -> %Form
 foldSpadcall form ==
   isAtomicForm form => form
+  form is ["LET",inits,:body] =>
+    mutateLETFormWithUnaryFunction(form,"foldSpadcall")
+  form is ["COND",:stmts] =>
+    mutateCONDFormWithUnaryFunction(form,"foldSpadcall")
   for args in tails rest form repeat
     foldSpadcall first args
-  first form isnt "SPADCALL" => form
+  first form ^= "SPADCALL" => form
   fun := lastNode form
   fun isnt [["getShellEntry","$",slot]] => form
   null (op := getCapsuleDirectoryEntry slot) => form

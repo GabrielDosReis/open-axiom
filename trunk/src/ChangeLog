@@ -1,9 +1,40 @@
-2008-12-06	Alfredo Portes	<doyenatccny@gmail.com>
+2008-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* lib/cfuns-c.c (oa_getpid): New function to
-	support getting process id in Windows.
+	* interp/g-opt.boot ($simpleVMoperators): New.
+	(isSimpleVMForm): Likewise.
+	(isFloatableVMForm): Likewise.
+	(optLET): Likewise.  Expand backend let-forms.
+	* interp/c-util.boot (foldSpadcall): Look into LET and COND forms.
+	(replaceSimpleFunctions): Likewise.
+	(mutateCONDFormWithUnaryFunction): New.
+	(mutateLETFormWithUnaryFunction): Likewise.
+	* interp/compiler.boot (tryCourtesyCoercion): Split from coerce.
+	(compRetractAlternative): Simplify. Now try courtesy coercions
+	before retraction.  
+	(compRecoverAlternative): New.
+	(compMatch): Simplify.  Implement type recovery too.
+
+2008-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compRetractAlternative): New.
+	(compMatch): Likewise.  Use it to implement pattern matching
+	for retractable domains.
+	* interp/parse.boot (parseAtAt): New.
+	* interp/postpar.boot (postAtAt): Likewise.
+	(postAlternatives): Likewise.
+	(postMatch): Likewise.
+	* interp/metalex.lisp (Keywords): Remove `otherwise' as keyword.
+	* interp/fnewmeta.lisp (|PARSE-Match|): New local parser.
+	* interp/newaux.lisp (@@): New token.  Align wih interpreter.
+	(otherwise): Remove binding specification.
+	(case): Now also a Nud token.
+
+2008-12-06  Alfredo Portes  <doyenatccny@gmail.com>
+
+	* lib/cfuns-c.c (oa_getpid): New function to support getting
+	process id in Windows. 
 	* include/cfuns.h: Define it.
-    * lib/fnct_key.c: Use it.
+	* lib/fnct_key.c: Use it.
 	* lib/sockio-c.c: Likewise.
 	* lib/util.c: Likewise.
 	* clef/edible.c: Likewise.

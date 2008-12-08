@@ -1161,6 +1161,13 @@ copyHack(env) ==
     CONS(CAR p,[(EQCAR(q,'localModemap) => q; copy q) for q in CDR p])
   [[d]]
 
+
+--% Case patterns
+
+up%Match t ==
+  sorry '"case pattern"
+
+
 --% importing domains
 up%Import t ==
   t isnt [.,:types] => nil

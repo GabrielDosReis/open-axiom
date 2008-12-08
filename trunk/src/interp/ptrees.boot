@@ -446,6 +446,12 @@ pfIfCond pf == second pf       -- was ==>
 pfIfThen pf == third pf       -- was ==>
 pfIfElse pf == CADDDR pf       -- was ==>
 
+-- %Match := (Expr: Expr, Alts: [Exit])
+
+pfCase(pfexpr, pfalts) == pfTree("%Match",[pfexpr,pfalts])
+pfCase? pf == pfAbSynOp?(pf,"%Match")
+pfCaseScrutinee pf == second pf
+pfCaseAlternatives pf == third pf
 
 -- Sequence    := (Args: [Expr])
 

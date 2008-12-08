@@ -35,6 +35,8 @@
 import macros
 namespace BOOT
 
+module postpar
+
 ++ The type of parse trees.
 %ParseTree <=> 
   %Number or %Symbol or %String or cons
@@ -140,6 +142,11 @@ postPretend: %ParseTree -> %ParseForm
 postPretend t == 
   t isnt ["pretend",x,y] => systemErrorHere "postPretend"
   ["pretend",postTran x,:postType y]
+
+postAtAt: %ParseTree -> %ParseForm
+postAtAt t ==
+  t isnt ["@@",x,y] => systemErrorHere "postAtAt"
+  ["@@",postTran x,:postType y]
 
 postConstruct: %ParseTree -> %ParseForm
 postConstruct u ==
@@ -578,6 +585,26 @@ postBootNotEqual u ==
    '"is not valid Spad.  Please use",:bright '"~=",'"instead."]
   ["~=",:postTran rest u]
 
+
+--% %Match
+
+postAlternatives alts ==
+    alts is ["%Block",:cases] => ["%Block",:[tranAlt c for c in cases]]
+    tranAlt alts
+  where
+    tranAlt c ==
+      c is ["=>",pred,conseq] => 
+        ["=>",postTran pred,postTran conseq]
+      postTran c
+
+postMatch: %ParseTree -> %ParseForm
+postMatch t ==
+  t isnt ["%Match",expr,alts] => systemErrorHere "postMatch"
+  alts :=
+    alts is [";",:.] => ["%Block",:postFlattenLeft(alts,";")]
+    alts
+  ["%Match",postTran expr, postAlternatives alts]
+
 --% Register special parse tree tranformers.
 
 for x in [["with", :"postWith"],_
@@ -600,6 +627,7 @@ for x in [["with", :"postWith"],_
 	  [":", :"postColon"],_
 	  ["@", :"postAtSign"],_
 	  ["pretend", :"postPretend"],_
+          ["@@",:"postAtAt"],_
 	  ["if", :"postIf"],_
 	  ["Join", :"postJoin"],_
 	  ["%Signature", :"postSignature"],_
@@ -608,6 +636,7 @@ for x in [["with", :"postWith"],_
 	  ["==>", :"postMDef"],_
 	  ["->", :"postMapping"],_
 	  ["=>", :"postExit"],_
+          ["%Match",:"postMatch"],_
           ["^=", :"postBootNotEqual"],_
 	  ["%Comma", :"post%Comma"]] repeat
   MAKEPROP(first x, "postTran", rest x)

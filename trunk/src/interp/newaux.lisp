@@ -117,7 +117,6 @@
           (|has| 400 400)
           (|where| 121 104)     ; must be 121 for SPAD, 126 for boot--> nboot
           (|when| 112 190)
-          (|otherwise| 119 190 (|PARSE-Suffix|))
           (|is| 400 400)    (|isnt| 400 400)
           (|and| 250 251)   (|or| 200 201)
           (/\\ 250 251)   (\\/ 200 201)
@@ -159,6 +158,7 @@
           (|iterate|)
           (|yield|)
           (|if| 130 0 (|PARSE-Conditional|))    ; was 130
+          (|case| 130 190 (|PARSE-Match|))
           (\| 0 190)
           (|suchthat|)
           (|then| 0 114)
