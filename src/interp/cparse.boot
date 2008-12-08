@@ -576,7 +576,19 @@ npIterators()==
 
 npIterator()==   npForIn() or npSuchThat() or npWhile()
 
+
+++ Parse a case-pattern expression.
+++   Case:
+++     CASE Interval IS PileExit
+npCase() ==
+  npEqKey "CASE" =>
+    (npInterval() or npTrap()) and (npEqKey "IS" or npTrap())
+      and (pPP function npPileExit or npTrap())
+        and npPush pfCase(npPop2(), pfSequenceToList npPop1())
+  false
+
 npStatement()==
+        npCase() or
         npExpress() or
         npLoop() or
         npIterate() or

@@ -35,6 +35,8 @@
 import postpar
 namespace BOOT
 
+module parse
+
 --% Transformation of Parser Output
 
 ++ If non nil, holds the operator being being defined.
@@ -190,6 +192,11 @@ parsePretend t ==
   $InteractiveMode => ["pretend",parseTran x,parseTran parseType typ]
   ["pretend",parseTran x,parseTran typ]
  
+parseAtAt: %ParseForm -> %Form
+parseAtAt t ==
+  t isnt ["@@",x,typ] => systemErrorHere "parseAtAt"
+  $InteractiveMode => ["@@",parseTran x,parseTran parseType typ]
+  ["@@",parseTran x,parseTran typ]
 
 parseType: %ParseForm -> %Form
 parseType x ==
@@ -542,6 +549,7 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["MDEF", :"parseMDEF"],_
 	  ["or", :"parseOr"],_
 	  ["pretend", :"parsePretend"],_
+          ["@@",:"parseAtAt"],_
 	  ["return", :"parseReturn"],_
 	  ["SEGMENT", :"parseSegment"],_
 	  ["SEQ", :"parseSeq"],_

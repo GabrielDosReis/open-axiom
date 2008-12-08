@@ -1420,7 +1420,8 @@ compIs(["is",a,b],m,e) ==
 --  One should always call the correct function, since the represent-
 --  ation of basic objects may not be the same.
 
-coerce(T,m) ==
+tryCourtesyCoercion: (%Triple, %Mode) -> %Maybe %Triple
+tryCourtesyCoercion(T,m) ==
   $InteractiveMode =>
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
@@ -1429,6 +1430,10 @@ coerce(T,m) ==
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => T'
   T':= coerceHard(T,m) => T'
+  nil
+
+coerce(T,m) ==
+  T' := tryCourtesyCoercion(T,m) => T'
   -- if from from coerceable, this coerce was just a trial coercion
   -- from compFormWithModemap to filter through the modemaps
   T.expr = "$fromCoerceable$" or isSomeDomainVariable m => nil
@@ -1728,6 +1733,132 @@ compMapCond''(cexpr,dc) ==
 compMapCondFun(fnexpr,op,dc,bindings) == 
   [fnexpr,bindings]
 
+
+--% %Match
+
+
+++ Subroutine of compMatch, responsible of compiling individual alternative
+++ of the form 
+++      x@t => stmt
+++ in environment `e'.  Here `y' is the scrutinee, and `m' is the
+++ exit mode of `stmt'. And `T' is [y,m,e].
+++ Return a quadruple [code,mode,envTrue,envFalse], where
+++   code is a pair [cond, body]
+++   mode is the final mode (equal to m if everything is OK)
+++   envTrue is the environment resulting from compiling `stmt'
+++   envFalse is the environment for failed match.
+compRetractAlternative(x,t,stmt,m,s,T) ==
+  -- The retract pattern is compiled by transforming
+  --     x@t => sttmt
+  -- into the following program fragment
+  --   y case t => (x := <init>; stmt)
+  -- where <init> is code that compute appropriate initialization
+  -- for `x' under the condition that either `y' may be implicitly
+  -- convertible to t (using only courtesy coerciions) or that
+  -- `y' is retractable to t.
+  --
+  -- 1.  Evaluate the retract condition.
+  y := T.expr            -- guaranteed to be a name.
+  e := T.env
+  [caseCode,caseMode,e,envFalse] := 
+    compBoolean(["case",y,t],$Boolean,e) or return 
+       stackAndThrow('"%1 is not retractable to %2",[s,t])
+  -- 2.  Evaluate the actual retraction to `t'.
+  --     We try courtesy coercions first, then `retract'.  That way
+  --     we can use optimized versions where available.  That also
+  --     makes the scheme works for untagged unions.
+  [restrictCode,.,e] := tryCourtesyCoercion([y,T.mode,e],t) or
+                          comp(["retract",y],t,e) or return nil
+  -- 3.  Now declare `x'.
+  [.,.,e] := compMakeDeclaration([":",x,t],$EmptyMode,e) or return nil
+  e := put(x,"value",[genSomeVariable(),t,e],e)
+  -- 4.  Compile body of the retract pattern.
+  stmtT := comp(stmt,m,e) or return 
+    stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
+  -- 5.  Generate code for the whole pattern.
+  code := [caseCode, ["LET",[[x,restrictCode]],stmtT.expr]]
+  [code,stmtT.mode,stmtT.env,envFalse]
+
+
+++ Subroutine of compMatch, responsible for compiling alternative of
+++ of the form
+++    x: t => stmt
+++ in environment `e', where `y' is the scrutinee, and `m' is the
+++ exit mode of `stmt'. And `T' is [y,m,e].
+++ Return a quadruple [code,mode,envTrue,envFalse], where
+++   code is a pair [cond, body]
+++   mode is the final mode (equal to m if everything is OK)
+++   env is the environment resulting from compiling `stmt'
+compRecoverAlternative(x,t,stmt,m,s,T) ==
+  -- The retract pattern is compiled by transforming
+  --     x: t => sttmt
+  -- into the following program fragment
+  --   domainOf y is t => (x := <init>; stmt)
+  -- where <init> is code that compute appropriate initialization
+  -- for `x' under the condition that y if of type Any, and the
+  -- underlying type is t.
+  --
+  -- 1.  Evaluate the recovery condition
+  y := T.expr              -- guaranteed to be a name.
+  e := T.env
+  T.mode ^= $Any =>
+    stackAndThrow('"Scrutinee must be of type %b Any %d in type recovery alternative of case pattern",nil)
+  caseCode := ["EQUAL",["devaluate",t],["objMode",y]]
+  -- 2. Declare `x'.
+  [.,.,e] := compMakeDeclaration([":",x,t],$EmptyMode,e) or return nil
+  e := put(x,"value",[genSomeVariable(),t,e],e)
+  -- 3. Compile body of alternative
+  stmtT := comp(stmt,m,e) or return 
+    stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
+  -- 4.  Assemble code
+  code := [caseCode,["LET",[[x,["objVal",y]]],stmtT.expr]]
+  [code,stmtT.mode,stmtT.env,e]
+
+warnUnreachableAlternative pat ==
+  stackWarning('"Alternative with pattern %1b will not be reached",[pat])
+
+warnTooManyOtherwise() ==
+  stackWarning('"One too many `otherwise' alternative",nil)
+
+compMatch(["%Match",subject,altBlock],m,e) ==
+  altBlock isnt ["%Block",:alts] => 
+    stackAndThrow('"case pattern must specify block of alternatives",nil)
+  savedEnv := e
+  -- 1.  subjectTmp := subject
+  [se,sm,e] := comp(subject,$EmptyMode,e) or return nil
+  sn := GENSYM()
+  [.,.,e] := compMakeDeclaration([":",sn,sm],$EmptyMode,e)
+               or return nil
+  e := put(sn,"value",[genSomeVariable(),sm,e],e)
+  -- 2. compile alternatives.
+  altsCode := nil
+  catchAllCount := 0
+  for alt in alts repeat
+     alt is ["=>",pat,stmt] =>
+       pat is [op,x,t] and op in '(_: _@) =>
+         not IDENTP x => 
+           stackAndThrow('"pattern %1b must declare a variable",[pat])
+         if catchAllCount > 0 then
+           warnUnreachableAlternative pat
+         [code,mode,.,e] :=
+           op = ":" => compRecoverAlternative(x,t,stmt,m,subject,[sn,sm,e])
+           compRetractAlternative(x,t,stmt,m,subject,[sn,sm,e])
+             or return stackAndThrow('"cannot compile %1b",[alt])
+         altsCode := [code,:altsCode]
+       pat = "otherwise" =>
+         if catchAllCount > 0 then
+           warnTooManyOtherwise()
+         catchAllCount := catchAllCount + 1
+         [code,.,e] := comp(stmt,m,e) or return
+                         stackAndThrow('"cannot compile",[stmt])
+         altsCode := [[true,code],:altsCode]
+       return stackAndThrow('"invalid pattern %1b",[pat])
+     return stackAndThrow('"invalid alternative %1b",[alt])
+  catchAllCount = 0 => 
+    stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
+  code := ["LET",[[sn,se]],["COND",:nreverse altsCode]]
+  [code,m,savedEnv]
+
 --% Register compilers for special forms.
 -- Those compilers are on the `SPECIAL' property of the corresponding
 -- special form operator symbol.
@@ -1772,5 +1903,6 @@ for x in [["|", :"compSuchthat"],_
 	  ["UnionCategory", :"compConstructorCategory"],_
 	  ["where", :"compWhere"],_
           ["%Comma",:"compComma"],_
+          ["%Match",:"compMatch"],_
           ["[||]", :"compileQuasiquote"]] repeat
   MAKEPROP(first x, "SPECIAL", rest x)

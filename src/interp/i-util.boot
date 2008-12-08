@@ -200,3 +200,10 @@ mkPredList listOfEntries ==
 
 
 
+--%
+
+++ Validate variable name `var', or abort analysis.
+validateVariableNameOrElse var ==
+  not IDENTP var => throwKeyedMsg("S2IS0016",[STRINGIMAGE var])
+  var in '(% %%) => throwKeyedMsg("S2IS0050",[var])
+  true

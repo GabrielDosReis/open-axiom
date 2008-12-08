@@ -731,7 +731,7 @@ findUniqueOpInDomain(op,opName,dom) ==
   -- use evaluation type context to narrow down the candidate set
   if target := getTarget op then
     mmList := [mm for mm in mmList | mm is [=rest target,:.]]
-    null mmList => throwKeyedMsg("S2IS0061",[opName,target,dom])
+    null mmList => throwKeyedMsg("S2IS0062",[opName,target,dom])
   if #mmList > 1 then
     mm := selectMostGeneralMm mmList
     sayKeyedMsg("S2IS0022",[opName,dom,['Mapping,:first mm]])

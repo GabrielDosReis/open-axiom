@@ -175,6 +175,7 @@ pf2Sex1 pf ==
   case pf of
     %Exist(vars,expr) => pfQuantified2Sex("%Exist",vars,expr)
     %Forall(vars,expr) => pfQuantified2Sex("%Forall",vars,expr)
+    %Match(expr,alts) => pfCase2Sex(expr,pfParts alts)
     otherwise => keyedSystemError('"S2GE0017", ['"pf2Sex1"])
 
 pfLiteral2Sex pf ==
@@ -534,3 +535,11 @@ pfInline2Sex pf ==
 pfQualType2Sex pf ==
   -- pfQualTypeQual is always nothing.
   pf2Sex1 pfQualTypeType pf
+
+++ convert interpreter parse forms to traditional s-expressions
+pfCase2Sex(expr,alts) ==
+  ["%Match",pf2Sex1 expr, [alt2Sex alt for alt in alts]] where
+     alt2Sex alt ==
+       not pfExit? alt => 
+         systemError '"alternatives must be exit expressions"
+       [pf2Sex1 pfExitCond alt, pf2Sex1 pfExitExpr alt]
