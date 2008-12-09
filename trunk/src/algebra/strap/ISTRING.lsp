@@ -702,8 +702,7 @@
                        (|getShellEntry| $ 6))))
                  |ISTRING;elt;$Us$;31|)
            (COND
-             ((OR (< |l| 0)
-                  (NULL (< |h| (SPADCALL |s| (|getShellEntry| $ 13)))))
+             ((OR (< |l| 0) (NULL (< |h| (QCSIZE |s|))))
               (EXIT (|error| "index out of bound"))))
            (EXIT (SUBSTRING |s| |l| (MAX 0 (+ (- |h| |l|) 1)))))))) 
 
@@ -768,10 +767,11 @@
                                        (COND
                                          ((NULL
                                            (SPADCALL
-                                            (SPADCALL |pattern|
+                                            (|ISTRING;elt;$Us$;31|
+                                             |pattern|
                                              (SPADCALL |m| (- |p| 1)
                                               (|getShellEntry| $ 20))
-                                             (|getShellEntry| $ 21))
+                                             $)
                                             |target|
                                             (|getShellEntry| $ 72)))
                                           (EXIT 'NIL)))))
@@ -842,13 +842,13 @@
                                         (|getShellEntry| $ 71))
                                        (COND
                                          ((NULL
-                                           (SPADCALL
-                                            (SPADCALL |pattern|
+                                           (|ISTRING;suffix?;2$B;21|
+                                            (|ISTRING;elt;$Us$;31|
+                                             |pattern|
                                              (SPADCALL (+ |p| 1) |n|
                                               (|getShellEntry| $ 20))
-                                             (|getShellEntry| $ 21))
-                                            |target|
-                                            (|getShellEntry| $ 51)))
+                                             $)
+                                            |target| $))
                                           (EXIT 'NIL)))))
                                     (EXIT 'T)))))))
            #3# (EXIT #3#))))) 

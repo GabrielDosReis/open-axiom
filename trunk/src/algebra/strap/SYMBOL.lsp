@@ -115,7 +115,7 @@
 
 (DEFUN |SYMBOL;writeOMSym| (|dev| |x| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 22))
+    ((|SYMBOL;scripted?;$B;30| |x| $)
      (|error| "Cannot convert a scripted symbol to OpenMath"))
     ('T (SPADCALL |dev| |x| (|getShellEntry| $ 26))))) 
 
@@ -293,7 +293,7 @@
 
 (DEFUN |SYMBOL;script;$R$;23| (|sy| |sc| $)
   (COND
-    ((SPADCALL |sy| (|getShellEntry| $ 22))
+    ((|SYMBOL;scripted?;$B;30| |sy| $)
      (|error| "Cannot add scripts to a scripted symbol"))
     ('T
      (CONS (|SYMBOL;coerce;$Of;11|
@@ -307,7 +307,7 @@
 
 (DEFUN |SYMBOL;string;$S;24| (|e| $)
   (COND
-    ((NULL (SPADCALL |e| (|getShellEntry| $ 22))) (PNAME |e|))
+    ((NULL (|SYMBOL;scripted?;$B;30| |e| $)) (PNAME |e|))
     ('T (|error| "Cannot form string from non-atomic symbols.")))) 
 
 (DEFUN |SYMBOL;latex;$S;25| (|e| $)
@@ -323,8 +323,7 @@
                      (|getShellEntry| $ 86))
                  (LETT |s| (STRCONC "\\mbox{\\it " (STRCONC |s| "}"))
                        |SYMBOL;latex;$S;25|)))))
-           (COND
-             ((NULL (SPADCALL |e| (|getShellEntry| $ 22))) (EXIT |s|)))
+           (COND ((NULL (|SYMBOL;scripted?;$B;30| |e| $)) (EXIT |s|)))
            (LETT |ss| (|SYMBOL;scripts;$R;32| |e| $)
                  |SYMBOL;latex;$S;25|)
            (LETT |lo| (QVELT |ss| 0) |SYMBOL;latex;$S;25|)
@@ -511,7 +510,7 @@
                (|getShellEntry| $ 98))
            (LETT |xx|
                  (COND
-                   ((NULL (SPADCALL |x| (|getShellEntry| $ 22)))
+                   ((NULL (|SYMBOL;scripted?;$B;30| |x| $))
                     (|SYMBOL;string;$S;24| |x| $))
                    ('T
                     (|SYMBOL;string;$S;24| (|SYMBOL;name;2$;31| |x| $)
@@ -538,7 +537,7 @@
                                  (|getShellEntry| $ 18) $))))
                  |SYMBOL;new;2$;28|)
            (COND
-             ((NULL (SPADCALL |x| (|getShellEntry| $ 22)))
+             ((NULL (|SYMBOL;scripted?;$B;30| |x| $))
               (EXIT (|SYMBOL;coerce;S$;8| |xx| $))))
            (EXIT (|SYMBOL;script;$R$;23| (|SYMBOL;coerce;S$;8| |xx| $)
                      (|SYMBOL;scripts;$R;32| |x| $) $)))))) 
@@ -572,7 +571,7 @@
   (PROG (|str| |i| #0=#:G1551 #1=#:G1531 #2=#:G1529)
     (RETURN
       (SEQ (EXIT (COND
-                   ((NULL (SPADCALL |sy| (|getShellEntry| $ 22))) |sy|)
+                   ((NULL (|SYMBOL;scripted?;$B;30| |sy| $)) |sy|)
                    ('T
                     (SEQ (LETT |str|
                                (|SYMBOL;string;$S;24|
@@ -626,7 +625,7 @@
             #1=#:G1552 |i| #2=#:G1553 |a| #3=#:G1554 |allscripts|)
     (RETURN
       (SEQ (COND
-             ((NULL (SPADCALL |sy| (|getShellEntry| $ 22)))
+             ((NULL (|SYMBOL;scripted?;$B;30| |sy| $))
               (VECTOR NIL NIL NIL NIL NIL))
              ('T
               (SEQ (LETT |nscripts| (LIST 0 0 0 0 0)
@@ -764,7 +763,7 @@
 
 (DEFUN |SYMBOL;list;$L;34| (|sy| $)
   (COND
-    ((NULL (SPADCALL |sy| (|getShellEntry| $ 22)))
+    ((NULL (|SYMBOL;scripted?;$B;30| |sy| $))
      (|error| "Cannot convert a symbol to a list if it is not subscripted"))
     ('T |sy|))) 
 

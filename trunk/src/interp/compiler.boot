@@ -1757,25 +1757,40 @@ compRetractAlternative(x,t,stmt,m,s,T) ==
   -- convertible to t (using only courtesy coerciions) or that
   -- `y' is retractable to t.
   --
-  -- 1.  Evaluate the retract condition.
+  -- 1.  Evaluate the retract condition, and retract.
   y := T.expr            -- guaranteed to be a name.
   e := T.env
-  [caseCode,caseMode,e,envFalse] := 
-    compBoolean(["case",y,t],$Boolean,e) or return 
-       stackAndThrow('"%1 is not retractable to %2",[s,t])
-  -- 2.  Evaluate the actual retraction to `t'.
-  --     We try courtesy coercions first, then `retract'.  That way
-  --     we can use optimized versions where available.  That also
-  --     makes the scheme works for untagged unions.
-  [restrictCode,.,e] := tryCourtesyCoercion([y,T.mode,e],t) or
-                          comp(["retract",y],t,e) or return nil
-  -- 3.  Now declare `x'.
+  caseCode := nil
+  restrictCode := nil
+  envFalse := e
+  -- 1.1. Try courtesy coercions first.  That way we can use 
+  --      optimized versions where available.  That also
+  --      makes the scheme work for untagged unions.
+  if testT := compBoolean(["case",y,t],$Boolean,e) then
+    [caseCode,.,e,envFalse] := testT
+    [restrictCode,.,e] := 
+      tryCourtesyCoercion([y,T.mode,e],t) or
+        comp(["retract",y],t,e) or return 
+          stackAndThrow('"Could not retract %1 to type %2bp",[s,t])
+  -- 1.2. Otherwise try retractIfCan, for those `% has RetractableTo t'.
+  else if retractT := comp(["retractIfCan",y],["Union",t,'"failed"],e) then
+    [retractCode,.,e] := retractT
+    -- Assign this value to a temporary.  From the backend point of
+    -- view, that temporary needs to have a lifetime that covers both
+    -- the condition and the body of the alternative, so just use 
+    -- assignment here and let the rest of the compiler deal with it.
+    z := GENSYM()
+    caseCode := ["PROGN",["%LET",z,retractCode],["QEQCAR",z,0]]
+    restrictCode := ["QCDR",z]
+  -- 1.3. Everything else failed; nice try.
+  else return stackAndThrow('"%1 is not retractable to %2bp",[s,t])
+  -- 2.  Now declare `x'.
   [.,.,e] := compMakeDeclaration([":",x,t],$EmptyMode,e) or return nil
   e := put(x,"value",[genSomeVariable(),t,e],e)
-  -- 4.  Compile body of the retract pattern.
+  -- 3.  Compile body of the retract pattern.
   stmtT := comp(stmt,m,e) or return 
     stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
-  -- 5.  Generate code for the whole pattern.
+  -- 4.  Generate code for the whole pattern.
   code := [caseCode, ["LET",[[x,restrictCode]],stmtT.expr]]
   [code,stmtT.mode,stmtT.env,envFalse]
 

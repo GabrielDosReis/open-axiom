@@ -580,9 +580,13 @@ S2IS0060
  the setelt operation.
 S2IS0061
  Unknown type of loop iterator form.
-S2IS0061
+S2IS0062
  There is no operation named %1b with type %2p in the domain or
  package %3p.
+S2IS0063
+ The pattern %1b is invalid because scrutinee is not of mode %b Any %d
+S2IS0064
+ Could not resolve types %1pb and %2pb.
 S2IT0001
  %1b can have no other options.
 S2IT0002
