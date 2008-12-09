@@ -1,3 +1,11 @@
+2008-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/term.spad.pamphlet: New.  Implement Arity and
+	OperatorCategory. 
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_15): Include ARITY.
+	(axiom_algebra_layer_16): Include OPERCAT.
+	* share/algebra: Update databases.
+
 2008-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compRetractAlternative): Handle domains

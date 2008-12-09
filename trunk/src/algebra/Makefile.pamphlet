@@ -786,7 +786,7 @@ plot.spad.pamphlet (PLOT PLOT1)
 
 <<layer15>>=
 axiom_algebra_layer_15 = \
-  DSMP     EXPUPXS \
+  DSMP     EXPUPXS  ARITY            \
   FRAMALG  FRAMALG- MDAGG    ODPOL   \
   PLOT     RMCAT2   ROIRC    SDPOL   \
   SMATCAT  SMATCAT- TUBETOOL UPXSCCA \
@@ -812,7 +812,7 @@ space.spad.pamphlet (SPACEC SPACE3 TOPSP)
 
 <<layer16>>=
 axiom_algebra_layer_16 = \
-  DPMM     EFUPXS  FFINTBAS FRIDEAL  \
+  DPMM     EFUPXS  FFINTBAS FRIDEAL  OPERCAT  \
   FRIDEAL2 FRMOD   \
   IBATOOL  INTFACT \
   MSETAGG  MONOGEN MONOGEN- NFINTBAS \
