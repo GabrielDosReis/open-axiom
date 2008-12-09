@@ -380,8 +380,8 @@ optEQ u ==
   u
 
 $simpleVMoperators == 
-  '(CONS CAR CDR LENGTH SIZE EQUAL EQL EQ
-    INTEGERP FLOATP STRINGP IDENTP SYMBOLP)
+  '(CONS CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
+    QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP)
 
 isSimpleVMForm form ==
   isAtomicForm form => true
@@ -423,13 +423,14 @@ optLET u ==
     substPairs := [[var,:init] for [var,init] in inits]
     for clauses in tails args while continue repeat
       clause := first clauses
-      -- we do not attempt more complicate clauses yet.
+      -- we do not attempt more complicated clauses yet.
       clause isnt [test,stmt] => continue := false
       -- Stop inlining at least one test is not simple
       not isSimpleVMForm test => continue := false
       rplac(first clause,SUBLIS(substPairs,test))
       isSimpleVMForm stmt =>
         rplac(second clause,SUBLIS(substPairs,stmt))
+      continue := false
     continue => body
     u
   not MEMQ(op,$simpleVMoperators) => u

@@ -1,3 +1,18 @@
+2008-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compRetractAlternative): Handle domains
+	satisfying RetractableTo T.
+	* interp/g-opt.boot ($simpleVMoperators): Add a few more operators.
+	(optLET): Fix thinko.
+	
+2008-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cparse.boot (npCase): New.
+	(npStatement): Use it.
+	* interp/pf2sex.boot (pfCase2Sex): New.
+	(pf2Sex1): Use it.
+	* interp/ptrees.boot: Construct %Match ASTs.
+
 2008-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot ($simpleVMoperators): New.
@@ -25,7 +40,6 @@
 	(postMatch): Likewise.
 	* interp/metalex.lisp (Keywords): Remove `otherwise' as keyword.
 	* interp/fnewmeta.lisp (|PARSE-Match|): New local parser.
-	* interp/newaux.lisp (@@): New token.  Align wih interpreter.
 	(otherwise): Remove binding specification.
 	(case): Now also a Nud token.
 

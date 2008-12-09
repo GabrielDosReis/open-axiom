@@ -668,7 +668,7 @@
 
 (DEFUN |OUTFORM;prefix;$L$;76| (|a| |l| $)
   (COND
-    ((NULL (SPADCALL |a| (|getShellEntry| $ 98))) (CONS |a| |l|))
+    ((NULL (|OUTFORM;infix?;$B;74| |a| $)) (CONS |a| |l|))
     ('T
      (|OUTFORM;hconcat;3$;48| |a|
          (|OUTFORM;paren;2$;40| (|OUTFORM;commaSeparate;L$;33| |l| $)
@@ -681,7 +681,7 @@
     ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 69))
          (|getShellEntry| $ 68))
      (SPADCALL |l| (|getShellEntry| $ 70)))
-    ((SPADCALL |a| (|getShellEntry| $ 98)) (CONS |a| |l|))
+    ((|OUTFORM;infix?;$B;74| |a| $) (CONS |a| |l|))
     ('T
      (|OUTFORM;hconcat;L$;49|
          (LIST (SPADCALL |l| (|getShellEntry| $ 70)) |a|
@@ -691,7 +691,7 @@
 
 (DEFUN |OUTFORM;infix;4$;78| (|a| |b| |c| $)
   (COND
-    ((SPADCALL |a| (|getShellEntry| $ 98))
+    ((|OUTFORM;infix?;$B;74| |a| $)
      (|OUTFORM;bless| (LIST |a| |b| |c|) $))
     ('T (|OUTFORM;hconcat;L$;49| (LIST |b| |a| |c|) $)))) 
 

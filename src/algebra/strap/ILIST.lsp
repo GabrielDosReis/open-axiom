@@ -151,26 +151,22 @@
 
 (DEFUN |ILIST;setfirst!;$2S;10| (|x| |s| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 17))
-     (|error| "Cannot update an empty list"))
+    ((NULL |x|) (|error| "Cannot update an empty list"))
     ('T (QCAR (RPLACA |x| |s|))))) 
 
 (DEFUN |ILIST;setelt;$first2S;11| (|x| T2 |s| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 17))
-     (|error| "Cannot update an empty list"))
+    ((NULL |x|) (|error| "Cannot update an empty list"))
     ('T (QCAR (RPLACA |x| |s|))))) 
 
 (DEFUN |ILIST;setrest!;3$;12| (|x| |y| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 17))
-     (|error| "Cannot update an empty list"))
+    ((NULL |x|) (|error| "Cannot update an empty list"))
     ('T (QCDR (RPLACD |x| |y|))))) 
 
 (DEFUN |ILIST;setelt;$rest2$;13| (|x| T3 |y| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 17))
-     (|error| "Cannot update an empty list"))
+    ((NULL |x|) (|error| "Cannot update an empty list"))
     ('T (QCDR (RPLACD |x| |y|))))) 
 
 (DEFUN |ILIST;construct;L$;14| (|l| $) (DECLARE (IGNORE $)) |l|) 
@@ -235,8 +231,7 @@
                 NIL (GO G190) G191 (EXIT NIL))
            (LETT |y| (NREVERSE |y|) |ILIST;coerce;$Of;21|)
            (EXIT (COND
-                   ((SPADCALL |s| (|getShellEntry| $ 17))
-                    (SPADCALL |y| (|getShellEntry| $ 40)))
+                   ((NULL |s|) (SPADCALL |y| (|getShellEntry| $ 40)))
                    ('T
                     (SEQ (LETT |z|
                                (SPADCALL
@@ -475,10 +470,8 @@
       (SEQ (COND
              ((EQL |n| 2)
               (COND
-                ((SPADCALL
-                     (SPADCALL (SPADCALL |p| (|getShellEntry| $ 18))
-                         (|getShellEntry| $ 13))
-                     (SPADCALL |p| (|getShellEntry| $ 13)) |f|)
+                ((SPADCALL (|SPADfirst| (CDR |p|)) (|SPADfirst| |p|)
+                     |f|)
                  (LETT |p| (NREVERSE |p|) |ILIST;mergeSort|)))))
            (EXIT (COND
                    ((< |n| 3) |p|)
