@@ -590,14 +590,13 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
   setShellEntry(thisDomain,slot,slotDomain)
  
 
-++ `type' is a type form constructed by the new parser.
 ++ Return a type form where all niladic constructors are
 ++ resolved to constructor calls.  Note: it is assumed that no
 ++ such resolution has already occured.
-resolveNiladicConstructors type ==
-  atom type => 
-    IDENTP type and niladicConstructorFromDB type => [type]
-    type
+resolveNiladicConstructors form ==
+  IDENTP form and niladicConstructorFromDB form => [form]
+  atom form => form
+  form is ["QUOTE",:.] => form
   for args in tails rest type repeat
     rplac(first args, resolveNiladicConstructors first args)
   type
