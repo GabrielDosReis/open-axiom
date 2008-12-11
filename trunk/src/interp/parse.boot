@@ -87,11 +87,6 @@ parseConstruct u ==
   [first u,:parseTranList rest u]
 
 -- ??? This parser is unused at the moment.
-parseUpArrow: %ParseForm -> %Form
-parseUpArrow u ==  
-  parseTran ["**",:rest u]
-
--- ??? This parser is unused at the moment.
 parseLeftArrow: %ParseForm -> %Form
 parseLeftArrow u == 
   parseTran ["%LET",:rest u]
@@ -268,17 +263,6 @@ parseTranCheckForRecord(x,op) ==
     x
   x
  
--- ??? This parser is unused at the moment.
-parseCases: %ParseForm -> %Form
-parseCases t ==
-  t isnt [expr,ifClause] => systemErrorHere "parseCases"
-  casefn(expr,ifClause) where
-    casefn(x,ifExpr) ==
-      ifExpr="%noBranch" => ["ifClauseError",x]
-      ifExpr is ["IF",a,b,c] => ["IF",parseTran a,parseTran b,casefn(x,c)]
-      postError ['"   CASES format error: cases ",x," of ",ifExpr]
- 
-
 parseCategory: %ParseForm -> %Form
 parseCategory t ==
   t isnt ["CATEGORY",:x] => systemErrorHere "parseCategory"
@@ -440,7 +424,7 @@ makeSimplePredicateOrNil: %ParseForm -> %Form
 makeSimplePredicateOrNil p ==
   isSimple p => nil
   u:= isAlmostSimple p => u
-  true => wrapSEQExit [["%LET",g:= GENSYM(),p],g]
+  wrapSEQExit [["%LET",g:= GENSYM(),p],g]
  
 
 parseWhere: %List -> %Form

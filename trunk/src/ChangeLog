@@ -1,5 +1,7 @@
 2008-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/parse.boot (parseCases): Remove.
+	(parseUpArrow): Likewise.
 	* interp/compiler.boot (preprocessParseTree): New.
 	(compileParseTree): New.  Split out of S-PROCESS.
 	* interp/spad.lisp (S-PROCESS): Use it.
