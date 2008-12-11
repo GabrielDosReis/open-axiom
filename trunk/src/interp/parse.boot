@@ -139,18 +139,14 @@ parseLET t ==
 parseLETD: %ParseForm -> %Form
 parseLETD t == 
   t isnt ["LETD",x,y] => systemErrorHere "parseLETD"
-  ["LETD",parseTran x,parseTran parseType y]
+  ["%Decl",parseTran x,parseTran y]
 
 parseColon: %ParseForm -> %Form 
 parseColon u ==
   u isnt [":",:.] => systemErrorHere "parseColon"
   u is [":",x] => [":",parseTran x]
-  u is [":",x,typ] =>
-    $InteractiveMode =>
-      $insideConstructIfTrue=true => ["TAG",parseTran x,parseTran typ]
-      [":",parseTran x,parseTran parseType typ]
-    [":",parseTran x,parseTran typ]
- 
+  u is [":",x,typ] => [":",parseTran x,parseTran typ]
+  u
 
 -- ??? This parser is unused at the moment.
 parseBigelt: %ParseForm -> %Form
@@ -171,48 +167,32 @@ transUnCons u ==
 parseCoerce: %ParseForm -> %Form 
 parseCoerce t ==
   t isnt [.,x,typ] => systemErrorHere "parseCoerce"
-  $InteractiveMode => ["::",parseTran x,parseTran parseType typ]
   ["::",parseTran x,parseTran typ]
 
 parseAtSign: %ParseForm -> %Form 
 parseAtSign t ==
   t isnt [.,x,typ] => systemErrorHere "parseAtSign"
-  $InteractiveMode => ["@",parseTran x,parseTran parseType typ]
   ["@",parseTran x,parseTran typ]
  
 
 parsePretend: %ParseForm -> %Form
 parsePretend t ==
   t isnt ["pretend",x,typ] => systemErrorHere "parsePretend"
-  $InteractiveMode => ["pretend",parseTran x,parseTran parseType typ]
   ["pretend",parseTran x,parseTran typ]
  
 parseAtAt: %ParseForm -> %Form
 parseAtAt t ==
   t isnt ["@@",x,typ] => systemErrorHere "parseAtAt"
-  $InteractiveMode => ["@@",parseTran x,parseTran parseType typ]
   ["@@",parseTran x,parseTran typ]
 
-parseType: %ParseForm -> %Form
-parseType x ==
-  x := substitute($EmptyMode,$quadSymbol,x)
-  x is ["typeOf",val] => ["typeOf",parseTran val]
-  x
- 
 parseHas: %ParseForm -> %Form 
 parseHas t ==
   t isnt ["has",x,y] => systemErrorHere "parseHas"
-  if $InteractiveMode then
-    x:=
-      get(x,'value,$CategoryFrame) is [D,m,.]
-        and member(m,$LangSupportTypes) => D
-      parseType x
   mkand [["has",x,u] for u in fn y] where
     mkand x ==
       x is [a] => a
       ["and",:x]
     fn y ==
-      if $InteractiveMode then y:= unabbrevAndLoad y
       y is [":" ,op,["Mapping",:map]] =>
          op:= (STRINGP op => INTERN op; op)
          [["SIGNATURE",op,map]]
@@ -222,19 +202,8 @@ parseHas t ==
       kk = "domain" or kk = "category" => [makeNonAtomic y]
       y is ["ATTRIBUTE",:.] => [y]
       y is ["SIGNATURE",:.] => [y]
-      $InteractiveMode => parseHasRhs y
       [["ATTRIBUTE",y]]
  
-parseHasRhs: %ParseForm -> %Form
-parseHasRhs u ==   --$InteractiveMode = true
-  get(u,'value,$CategoryFrame) is [D,m,.]
-    and member(m,$LangSupportTypes) => m
-  y := abbreviation? u =>
-    loadIfNecessary y => [unabbrevAndLoad y]
-    [["ATTRIBUTE",u]]
-  [["ATTRIBUTE",u]]
- 
-
 parseDEF: %ParseForm -> %Form
 parseDEF t ==
   t isnt ["DEF",$lhs,tList,specialList,body] => systemErrorHere "parseDEF"
@@ -302,7 +271,6 @@ parseNotEqual u ==
 parseAnd: %ParseForm -> %Form 
 parseAnd t ==
   t isnt ["and",:u] => systemErrorHere "parseAnd"
-  $InteractiveMode => ["and",:parseTranList u]
   null u => "true"
   null rest u => first u
   parseIf ["IF",parseTran first u,parseAnd ["and",:rest u],"false"]
@@ -311,7 +279,6 @@ parseAnd t ==
 parseOr: %ParseForm -> %Form
 parseOr t ==
   t isnt ["or",:u] => systemErrorHere "parseOr"
-  $InteractiveMode => ["or",:parseTranList u]
   null u => "false"
   null rest u => first u
   (x:= parseTran first u) is ["not",y] => 
@@ -368,7 +335,6 @@ parseJoin t ==
       null l => nil
       l is [["Join",:x],:y] => [:x,:fn y]
       [first l,:fn rest l]
- 
 
 parseInBy: %ParseForm -> %Form
 parseInBy t ==
@@ -407,8 +373,8 @@ parseIf t ==
   t isnt ["IF",p,a,b] => t
   ifTran(parseTran p,parseTran a,parseTran b) where
     ifTran(p,a,b) ==
-      not $InteractiveMode and p="true"  => a
-      not $InteractiveMode and p="false"  => b
+      p="true"  => a
+      p="false"  => b
       p is ["not",p'] => ifTran(p',b,a)
       p is ["IF",p',a',b'] => ifTran(p',ifTran(a',COPY a,COPY b),ifTran(b',a,b))
       p is ["SEQ",:l,["exit",1,p']] =>

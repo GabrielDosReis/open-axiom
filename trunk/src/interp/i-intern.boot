@@ -278,6 +278,10 @@ mkAtree3(x,op,argl) ==
   [z,:[buildTreeForOperand for y in argl for i in 0..]] where
            buildTreeForOperand() ==
              flagArgPos and flagArgPos.i > 0 =>
+               -- The following call to old parser functions
+               -- is a TEMPORARY HACK to match what the old
+               -- parser gets.  A proper syntax resolution should be
+               -- implemented.
                y' := parseTransform postTransform y
                a := mkAtreeNode $immediateDataSymbol
                m := quasiquote y'
