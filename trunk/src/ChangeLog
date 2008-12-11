@@ -1,5 +1,6 @@
-2008-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+2008-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (quotify): Remove.
 	* interp/parse.boot (parseCases): Remove.
 	(parseUpArrow): Likewise.
 	* interp/compiler.boot (preprocessParseTree): New.
