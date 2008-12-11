@@ -293,25 +293,7 @@
         (|$genSDVar| 0)
         (|$VariableCount| 0)
         (|$previousTime| (TEMPUS-FUGIT)))
-    (prog ((CURSTRM |$OutputStream|) |$s| |$x| |$m| u)
-          (declare (special CURSTRM |$s| |$x| |$m|))
-          (SETQ |$exitModeStack| ())
-          (SETQ |$postStack| nil)
-          (SETQ |$TraceFlag| T)
-          (if (NOT X) (RETURN NIL))
-          (setq X (|parseTransform| (|postTransform| X)))
-          ;; (if |$TranslateOnly| (RETURN (SETQ |$Translation| X)))
-          (when |$postStack| (|displayPreCompilationErrors|) (RETURN NIL))
-          (COND (|$PrintOnly|
-                 (format t "~S   =====>~%" |$currentLine|)
-                 (RETURN (PRETTYPRINT X))))
-	  (if |$InteractiveMode|
-	      (|processInteractive| X NIL)
-	    (if (setq U (|compTopLevel|      X |$EmptyMode|
-			 |$InteractiveFrame|))
-		(SETQ |$InteractiveFrame| (third U))))
-          (if |$semanticErrorStack| (|displaySemanticErrors|))
-          (TERPRI))))
+    (|compileParseTree| X)))
 
 (MAKEPROP 'END_UNIT 'KEY T)
 
