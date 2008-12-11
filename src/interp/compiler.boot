@@ -1874,6 +1874,41 @@ compMatch(["%Match",subject,altBlock],m,e) ==
   code := ["LET",[[sn,se]],["COND",:nreverse altsCode]]
   [code,m,savedEnv]
 
+
+--% Entry point to the compiler
+
+preprocessParseTree pt ==
+  $postStack := []
+  pf := parseTransform postTransform pt
+  $postStack = nil => pf
+  displayPreCompilationErrors()
+  nil
+
+++ Takes a parse tree `pt', typecheck it and compile it down 
+++ to VM instructions.
+compileParseTree pt ==
+  pt = nil => nil
+  CURSTRM: local := $OutputStream
+  pf := preprocessParseTree pt
+  pf = nil => nil       -- stop if preprocessing was a disaster.
+  -- Don't go further if only preprocessing was requested.
+  $PrintOnly =>
+    FORMAT(true,'"~S   =====>~%",$currentLine)
+    PRETTYPRINT pf
+  -- Now start actual compilation.
+  $x: local := nil         -- ???
+  $m: local := nil         -- ???
+  $s: local := nil         -- ???
+  $exitModeStack: local := []    -- Used by the compiler proper
+  -- We don't usually call the compiler to process interpreter
+  -- input, however attempt to second guess nevertheless.
+  if $InteractiveMode then
+    processInteractive(pf,nil)
+  else if T := compTopLevel(pf,$EmptyMode,$InteractiveFrame) then
+    [.,.,$InteractiveFrame] := T
+  TERPRI()
+
+
 --% Register compilers for special forms.
 -- Those compilers are on the `SPECIAL' property of the corresponding
 -- special form operator symbol.

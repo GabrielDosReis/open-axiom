@@ -1,5 +1,11 @@
 2008-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (preprocessParseTree): New.
+	(compileParseTree): New.  Split out of S-PROCESS.
+	* interp/spad.lisp (S-PROCESS): Use it.
+
+2008-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/term.spad.pamphlet: New.  Implement Arity and
 	OperatorCategory. 
 	* algebra/Makefile.pamphlet (axiom_algebra_layer_15): Include ARITY.
