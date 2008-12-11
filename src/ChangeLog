@@ -1,3 +1,7 @@
+2008-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/server.boot (oldParseAndInterpret): Remove.
+
 2008-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nrunfast.boot (resolveNiladicConstructors): Tidy.
