@@ -1167,7 +1167,7 @@ compIf(["IF",a,b,c],m,E) ==
   [xb,mb,Eb]:= Tb:= compFromIf(b,m,Ea) or return nil
   [xc,mc,Ec]:= Tc:= compFromIf(c,resolve(mb,m),Einv) or return nil
   xb':= coerce(Tb,mc) or return nil
-  x:= ["IF",xa,quotify xb'.expr,quotify xc]
+  x:= ["IF",xa,xb'.expr,xc]
   (returnEnv:= Env(xb'.env,Ec,xb'.expr,xc,E)) where
     Env(bEnv,cEnv,b,c,E) ==
       canReturn(b,0,0,true) =>
@@ -1273,9 +1273,7 @@ isUnionMode(m,e) ==
 
 compFromIf(a,m,E) ==
   a="%noBranch" => ["%noBranch",m,E]
-  true => comp(a,m,E)
-
-quotify x == x
+  comp(a,m,E)
 
 compImport: (%Form,%Mode,%Env) -> %Maybe %Triple
 compImport(["import",:doms],m,e) ==
