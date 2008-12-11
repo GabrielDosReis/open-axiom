@@ -597,9 +597,9 @@ resolveNiladicConstructors form ==
   IDENTP form and niladicConstructorFromDB form => [form]
   atom form => form
   form is ["QUOTE",:.] => form
-  for args in tails rest type repeat
+  for args in tails rest form repeat
     rplac(first args, resolveNiladicConstructors first args)
-  type
+  form
 
 --=======================================================
 --                   HasCategory/Attribute
