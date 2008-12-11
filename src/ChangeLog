@@ -1,5 +1,6 @@
 2008-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nrunfast.boot (resolveNiladicConstructors): Tidy.
 	* interp/compiler.boot (quotify): Remove.
 	* interp/parse.boot (parseCases): Remove.
 	(parseUpArrow): Likewise.
