@@ -543,11 +543,6 @@ parseAndEval1 string ==
     '"Type Analysis Error"
   nil
 
-oldParseString string ==
-  tree := applyWithOutputToString('string2SpadTree, [string])
-  CAR tree => parseTransform postTransform CAR tree
-  CDR tree
-
 makeSpadCommand(:l) ==
   opForm := CONCAT(first l, '"(")
   lastArg := last l

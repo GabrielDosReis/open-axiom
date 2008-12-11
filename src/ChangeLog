@@ -1,6 +1,18 @@
 2008-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* interp/server.boot (oldParseAndInterpret): Remove.
+	* interp/ht-util.boot (oldParseString): Remove.
+	* interp/server.boot (oldParseAndInterpret): Likewise.
+	* interp/parse.boot (parseHasRhs): Likewise.
+	(parseType): Likewise.
+	(parseColon): Remove unused code.
+	(parseCoerce): Likewise.
+	(parseAtSign): Likewise.
+	(parsePretend): Likewise.
+	(parseAtAt): Likewise.
+	(parseHas): Likewise.
+	(parseAnd): Likewise.
+	(parseOr): Likewise.
+	(parseIf): Simplify.
 
 2008-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
