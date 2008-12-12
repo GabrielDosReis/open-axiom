@@ -1260,16 +1260,24 @@ pushLocalVariable x ==
 --%     (%ilXLAM   <e> <type>)                   -- XLAM form
 --%     (%ilLAM    <e> <type>)                   -- LAMBDA form
 
-ilConstant(c,t) == ["%ilConst",c,t]
-ilInert(e,t) == ["%ilInert",e,t]
-ilVariable(n,t) == ["%ilVar",n,t]
-ilContext(d,t) == ["%ilCtx",d,t]
-ilLisp(e,t) == ["%ilLisp",e,t]
-ilFun(e,t) == ["%ilFun",e,t]
-ilModemap(e,t) == ["%ilMm",e,t]
-ilLocal(n,t) == ["%ilLocal",n,t]
-ilCall(op,args,t) == ["%ilCall",[op,:args],t]
+structure ILInsn ==
+  %ilConst(c,t)                             -- constant
+  %ilInert(e,t)                             -- inert form
+  %ilContext(e,t)                           -- context
+  %ilVar(n,t)                               -- variable
+  %ilCtor(n,t)                              -- constructor
+  %ilLocal(op,t)                            -- local function
+  %ilLisp(e,t)                              -- Lisp form
+  %ilModemap(e,t)                           -- exported function modemap
+  %ilUnionTag e                             -- union object tag
+  %ilUnionValue(e,t)                        -- union object value
+  %ilDeref(e,t)                             -- deref function pointer
+  %ilCall(e,t)                              -- call
+  %ilType(d,t)                              -- type instantiation request
+  %ilReturn(n,T,t)                          -- `return' expression
+  %ilExit(n,T,t)                            -- `exit' expression
 
+++ Convert middle end IL forms to old back end forms.
 il2OldForm x ==
   atom x => x                     -- ideally should not happen
   x is ["QUOTE",:.] => x          -- idem.
@@ -1277,13 +1285,22 @@ il2OldForm x ==
     %ilConst(c,.) => c
     %ilInert(e,.) => e
     %ilVar(n,.) => n
-    %ilCtx(e,.) => e
+    %ilCtor(n,.) => n
+    %ilContext(e,.) => e
     %ilLisp(e,.) => e
-    %ilMm(e,.) => e
-    %ilTag(e,.) => ["CAR",il2OldForm e]
-    %ilVal(e,.) => ["CAR",il2OldForm e]
+    %ilModemap(e,.) => e
+    %ilUnionTag(e,.) => ["CAR",il2OldForm e]
+    %ilUnionValue(e,.) => ["CAR",il2OldForm e]
+    %ilDeref(e,.) => ["applyFun",il2OldForm e]
+    %ilCall(e,.) =>
+      e is [["%ilLocal",op,:.],:.] =>
+        rplac(first e,op)
+        ilTransformInsns rest e
+        e
+      ["call",:ilTransformInsns e]
     otherwise => ilTransformInsns x
 
+++ Subroutines of il2OldForm to walk sequence of IL instructions.
 ilTransformInsns form ==
   for insns in tails form repeat
     rplac(first insns, il2OldForm first insns)
