@@ -717,7 +717,9 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       evalAndRwriteLispForm('NILADIC,
             ['MAKEPROP, ['QUOTE,op'], ['QUOTE,'NILADIC], true])
     [fun,['Mapping,:signature'],originale]
- 
+
+++ Subroutine of compDefineFunctor1.  Called to generate backend code
+++ for a functor definition. 
 compFunctorBody(body,m,e,parForm) ==
   $bootStrapMode = true =>
     [bootStrapError($functorForm, _/EDITFILE),m,e]
@@ -1288,7 +1290,10 @@ compile u ==
   $functionStats:= addStats($functionStats,functionStats)
   printStats functionStats
   result
- 
+
+++ Subroutine of compile.  Called to generate backend code for
+++ items defined directly or indirectly at capsule level.   This is
+++ also used to compile functors.
 spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
         --bizarre hack to take account of the existence of "known" functions
         --good for performance (LISPLLIB size, BPI size, NILSEC)
