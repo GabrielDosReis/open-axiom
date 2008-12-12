@@ -368,7 +368,7 @@ compSymbol(s,m,e) ==
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile
     [s,v.mode,e] --s has been SETQd
   m':= getmode(s,e) =>
-    if not member(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
+    if not MEMQ(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
       not isFunction(s,e) and null ($compForModeIfTrue=true) then errorRef s
     [s,m',e] --s is a declared argument
   MEMQ(s,$FormalMapVariableList) => stackMessage ["no mode found for",s]
