@@ -1357,10 +1357,13 @@ backendCompile l ==
 compileFileQuietly path ==
   quietlyIfInteractive COMPILE_-FILE path
 
+++ Subroutine of compileConstructor1.  Called to compile the body
+++ of a category constructor definition.
 compAndDefine l ==
   _*COMP370_-APPLY_* := "PRINT-AND-EVAL-DEFUN"
   backendCompile l
 
+++ Subroutine of compileInteractive.
 compQuietly fn ==
   _*COMP370_-APPLY_* :=
     $InteractiveMode =>
