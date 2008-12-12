@@ -1240,6 +1240,57 @@ pushLocalVariable x ==
   PUSH(x,$LocalVars)
 
 
+--%
+--% Middle Env to Back End Transformations.
+--%
+
+--% e ::=
+--%     (%ilConst  <c> <type>)                   -- constant
+--%     (%ilInert  <e> <type>)                   -- inert form
+--%     (%ilCtx    <d> <type>)                   -- context
+--%     (%ilVar    <n> <type>)                   -- variable
+--%     (%ilLisp   <e> <type>)                   -- Lisp form
+--%     (%ilFun    <e> <type>)                   -- function object
+--%     (%ilMm     <e> <type>)                   -- modemap
+--%     (%ilLocal  <n> <type>)                   -- local function
+--%     (%ilCtor   <n> <type>)                   -- constructor
+--%     (%ilTag    <e> <type>)                   -- tag of union object
+--%     (%ilVal    <e> <type>)                   -- value of union object
+--%     (%ilCall   <e...e> <type>)               -- a call
+--%     (%ilXLAM   <e> <type>)                   -- XLAM form
+--%     (%ilLAM    <e> <type>)                   -- LAMBDA form
+
+ilConstant(c,t) == ["%ilConst",c,t]
+ilInert(e,t) == ["%ilInert",e,t]
+ilVariable(n,t) == ["%ilVar",n,t]
+ilContext(d,t) == ["%ilCtx",d,t]
+ilLisp(e,t) == ["%ilLisp",e,t]
+ilFun(e,t) == ["%ilFun",e,t]
+ilModemap(e,t) == ["%ilMm",e,t]
+ilLocal(n,t) == ["%ilLocal",n,t]
+ilCall(op,args,t) == ["%ilCall",[op,:args],t]
+
+il2OldForm x ==
+  atom x => x                     -- ideally should not happen
+  x is ["QUOTE",:.] => x          -- idem.
+  case x of
+    %ilConst(c,.) => c
+    %ilInert(e,.) => e
+    %ilVar(n,.) => n
+    %ilCtx(e,.) => e
+    %ilLisp(e,.) => e
+    %ilMm(e,.) => e
+    %ilTag(e,.) => ["CAR",il2OldForm e]
+    %ilVal(e,.) => ["CAR",il2OldForm e]
+    otherwise => ilTransformInsns x
+
+ilTransformInsns form ==
+  for insns in tails form repeat
+    rplac(first insns, il2OldForm first insns)
+  form
+
+
+--%
 
 ++ Replace every middle end sub-forms in `x' with Lisp code.
 mutateToBackendCode: %Form -> %Void
