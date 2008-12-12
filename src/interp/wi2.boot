@@ -332,7 +332,7 @@ compDefineCapsuleFunction(df,m,oldE,$prefix,$formalArgList) ==
     rettype:= resolve(signature'.target,$returnMode)
  
     localOrExported :=
-      null member($op,$formalArgList) and
+      not MEMQ($op,$formalArgList) and
         getmode($op,e) is ['Mapping,:.] => 'local
       'exported
  
@@ -502,7 +502,7 @@ applyMapping([op,:argl],m,e,ml) ==
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
   if argl'="failed" then return nil
   form:=
-    not member(op,$formalArgList) and ATOM op and not get(op,'value,e) =>
+    not MEMQ(op,$formalArgList) and ATOM op and not get(op,'value,e) =>
       nprefix := $prefix or
    -- following needed for referencing local funs at capsule level
         getAbbreviation($op,#rest $form)
@@ -644,7 +644,7 @@ compApplyModemap(form,modemap,$e,sl) ==
 --+ store the signature instead.
  
 --$NRTflag=true and f is [op1,d,.] and NE(d,'$) and member(op1,'(ELT CONST)) =>
-  f is [op1,d,.] and member(op1,'(ELT CONST Subsumed)) =>
+  f is [op1,d,.] and MEMQ(op1,'(ELT CONST Subsumed)) =>
     [genDeltaEntry [op,:modemap],lt',$bindings]
   markImport mc
   [f,lt',$bindings]

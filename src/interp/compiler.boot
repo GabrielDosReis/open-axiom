@@ -40,7 +40,6 @@ import iterator
 namespace BOOT
 
 module compiler where
-  compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
   coerce: (%Triple,%Mode) -> %Maybe %Triple
   convert: (%Triple,%Mode) -> %Maybe %Triple
   comp: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -72,7 +71,7 @@ compWithMappingMode: (%Form,%Mode,%List) -> %List
 compFormMatch: (%Modemap,%List) -> %Boolean
 compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
 compToApply: (%Form,%List,%Mode,%Env) -> %Maybe %Triple
-compApplication: (%Form,%List,%Mode,%Env,%Triple) -> %Maybe %Triple
+compApplication: (%Form,%List,%Mode,%Triple) -> %Maybe %Triple
 
 primitiveType: %Thing -> %Mode
 modeEqual: (%Form,%Form) -> %Boolean
@@ -97,6 +96,7 @@ $coreDiagnosticFunctions ==
 ++ list of functions to compile
 $compileOnlyCertainItems := []
 
+compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
 --+ signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
@@ -191,7 +191,7 @@ comp3(x,m,$e) ==
   (y := isQuasiquote m) =>
      y = x => [["QUOTE",x], m, $e]
      nil
-  ^x or atom x => compAtom(x,m,e)
+  atom x => compAtom(x,m,e)
   op:= first x
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
   op=":" => compColon(x,m,e)
@@ -235,6 +235,29 @@ applyMapping([op,:argl],m,e,ml) ==
     ['call,['applyFun,op],:argl']
   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
   convert([form,SUBLIS(pairlis,first ml),e],m)
+
+-- This version tends to give problems with #1 and categories
+-- applyMapping([op,:argl],m,e,ml) ==
+--   #argl^=#ml-1 => nil
+--   mappingHasCategoryTarget :=
+--     isCategoryForm(first ml,e) => --is op a functor?
+--       form:= [op,:argl']
+--       pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
+--       ml:= SUBLIS(pairlis,ml)
+--       true
+--     false
+--   argl':=
+--     [T.expr for x in argl for m' in rest ml] where
+--       T() == [.,.,e]:= comp(x,m',e) or return "failed"
+--   if argl'="failed" then return nil
+--   mappingHasCategoryTarget => convert([form,first ml,e],m)
+--   form:=
+--     not MEMQ(op,$formalArgList) and ATOM op =>
+--       [op',:argl',"$"] where
+--         op':= INTERN STRCONC(STRINGIMAGE $prefix,";",STRINGIMAGE op)
+--     ["call",["applyFun",op],:argl']
+--   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
+--   convert([form,SUBLIS(pairlis,first ml),e],m)
 
 hasFormalMapVariable(x, vl) ==
   $formalMapVariables: local := vl
@@ -406,7 +429,7 @@ compSymbol(s,m,e) ==
 
     [s,v.mode,e] --s has been SETQd
   m':= getmode(s,e) =>
-    if not member(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
+    if not MEMQ(s,$formalArgList) and not MEMQ(s,$FormalMapVariableList) and
       not isFunction(s,e) and null ($compForModeIfTrue=true) then errorRef s
     [s,m',e] --s is a declared argument
   MEMQ(s,$FormalMapVariableList) => 
@@ -498,7 +521,6 @@ compForm1(form is [op,:argl],m,e) ==
       (T:= comp([op',:argl],domain,e) or return nil; coerce(T,m))
     nil
 
-  e:= addDomain(m,e) --???unneccessary because of comp2's call???
   (mmList:= getFormModemaps(form,e)) and (T:= compForm2(form,m,e,mmList)) => T
   compToApply(op,argl,m,e)
 
@@ -613,30 +635,6 @@ compFormWithModemap(form,m,e,modemap) ==
         e
   convert(T,m)
 
--- This version tends to give problems with #1 and categories
--- applyMapping([op,:argl],m,e,ml) ==
---   #argl^=#ml-1 => nil
---   mappingHasCategoryTarget :=
---     isCategoryForm(first ml,e) => --is op a functor?
---       form:= [op,:argl']
---       pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
---       ml:= SUBLIS(pairlis,ml)
---       true
---     false
---   argl':=
---     [T.expr for x in argl for m' in rest ml] where
---       T() == [.,.,e]:= comp(x,m',e) or return "failed"
---   if argl'="failed" then return nil
---   mappingHasCategoryTarget => convert([form,first ml,e],m)
---   form:=
---     not member(op,$formalArgList) and ATOM op =>
---       [op',:argl',"$"] where
---         op':= INTERN STRCONC(STRINGIMAGE $prefix,";",STRINGIMAGE op)
---     ["call",["applyFun",op],:argl']
---   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
---   convert([form,SUBLIS(pairlis,first ml),e],m)
-
-
 ++ Returns the list of candidate modemaps for a form.  A modemap
 ++ is candidate for a form if its signature has the same number
 ++ of paramter types as arguments supplied to the form.  A special
@@ -701,13 +699,8 @@ seteltModemapFilter(name,mmList,e) ==
     nil
   mmList
 
-compToApply(op,argl,m,e) ==
-  T:= compNoStacking(op,$EmptyMode,e) or return nil
-  m1:= T.mode
-  T.expr is ["QUOTE", =m1] => nil
-  compApplication(op,argl,m,T.env,T)
-
-compApplication(op,argl,m,e,T) ==
+compApplication(op,argl,m,T) ==
+  e := T.env
   T.mode is ['Mapping, retm, :argml] =>
     #argl ^= #argml => nil
     retm := resolve(m, retm)
@@ -716,7 +709,7 @@ compApplication(op,argl,m,e,T) ==
               for x in argl for m in argml]
     argTl = "failed" => nil
     form:=
-      not (member(op,$formalArgList) or member(T.expr,$formalArgList)) and ATOM T.expr =>
+      atom T.expr and not (MEMQ(op,$formalArgList) or MEMQ(T.expr,$formalArgList)) =>
         nprefix := $prefix or
         -- following needed for referencing local funs at capsule level
            getAbbreviation($op,#rest $form)
@@ -727,6 +720,11 @@ compApplication(op,argl,m,e,T) ==
   op = 'elt => nil
   eltForm := ['elt, op, :argl]
   comp(eltForm, m, e)
+
+compToApply(op,argl,m,e) ==
+  T:= compNoStacking(op,$EmptyMode,e) or return nil
+  T.expr is ["QUOTE", =T.mode] => nil
+  compApplication(op,argl,m,T)
 
 ++ `form' is a call to a operation described by the signature `sig'.
 ++ Massage the call so that homogeneous variable length argument lists
@@ -1700,7 +1698,7 @@ compApplyModemap(form,modemap,$e,sl) ==
 --+ information which is no longer valid; thus ignore this index and
 --+ store the signature instead.
 
-  f is [op1,d,.] and member(op1,'(ELT CONST Subsumed)) =>
+  f is [op1,d,.] and MEMQ(op1,'(ELT CONST Subsumed)) =>
     [genDeltaEntry [op,:modemap],lt',$bindings]
   [f,lt',$bindings]
 
