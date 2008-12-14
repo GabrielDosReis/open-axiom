@@ -684,16 +684,6 @@ printSignature(before,op,[target,:argSigList]) ==
   printAny target
   TERPRI()
  
-pmatch(s,p) == pmatchWithSl(s,p,"ok")
- 
-pmatchWithSl(s,p,al) ==
-  s=$EmptyMode => nil
-  s=p => al
-  v:= assoc(p,al) => s=rest v or al
-  MEMQ(p,$PatternVariableList) => [[p,:s],:al]
-  null atom p and null atom s and (al':= pmatchWithSl(first s,first p,al)) and
-    pmatchWithSl(rest s,rest p,al')
- 
 elapsedTime() ==
   currentTime:= TEMPUS_-FUGIT()
   elapsedSeconds:= (currentTime-$previousTime)*QUOTIENT(1.0,$timerTicksPerSecond)

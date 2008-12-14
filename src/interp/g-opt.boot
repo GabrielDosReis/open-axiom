@@ -176,6 +176,7 @@ optCallSpecially(q,x,n,R) ==
     nil
  
 optCallEval u ==
+  u is ["Boolean"] => Boolean()
   u is ["List",:.] => List Integer()
   u is ["Vector",:.] => Vector Integer()
   u is ["PrimitiveArray",:.] => PrimitiveArray Integer()

@@ -285,12 +285,6 @@ parseOr t ==
     parseIf ["IF",y,parseOr ["or",:rest u],"true"]
   parseIf ["IF",x,"true",parseOr ["or",:rest u]]
  
-parseExclusiveOr: %ParseForm -> %Form
-parseExclusiveOr t == 
-  t isnt ["xor",a,b] => systemErrorHere "parseExclusiveOr"
-  parseIf ["IF",a,parseIf ["IF",b,:'(false true)],b]
- 
-
 parseExit: %ParseForm -> %Form
 parseExit t ==
   t isnt ["exit",a,:b] => systemErrorHere "parseExit"
@@ -504,6 +498,5 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["SEGMENT", :"parseSegment"],_
 	  ["SEQ", :"parseSeq"],_
 	  ["VCONS", :"parseVCONS"],_
-	  ["where", :"parseWhere"],_
-          ["xor", :"parseExclusiveOr"]] repeat
+	  ["where", :"parseWhere"]] repeat
   MAKEPROP(first x, "parseTran", rest x)

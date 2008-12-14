@@ -38,24 +38,22 @@
 (DEFUN |LNAGG-;index?;IAB;2| (|i| |a| $)
   (COND
     ((< |i| (SPADCALL |a| (|getShellEntry| $ 9))) 'NIL)
-    ('T
-     (SPADCALL (< (SPADCALL |a| (|getShellEntry| $ 10)) |i|)
-         (|getShellEntry| $ 14))))) 
+    ('T (NOT (< (SPADCALL |a| (|getShellEntry| $ 10)) |i|))))) 
 
 (DEFUN |LNAGG-;concat;ASA;3| (|a| |x| $)
-  (SPADCALL |a| (SPADCALL 1 |x| (|getShellEntry| $ 17))
-      (|getShellEntry| $ 18))) 
+  (SPADCALL |a| (SPADCALL 1 |x| (|getShellEntry| $ 16))
+      (|getShellEntry| $ 17))) 
 
 (DEFUN |LNAGG-;concat;S2A;4| (|x| |y| $)
-  (SPADCALL (SPADCALL 1 |x| (|getShellEntry| $ 17)) |y|
-      (|getShellEntry| $ 18))) 
+  (SPADCALL (SPADCALL 1 |x| (|getShellEntry| $ 16)) |y|
+      (|getShellEntry| $ 17))) 
 
 (DEFUN |LNAGG-;insert;SAIA;5| (|x| |a| |i| $)
-  (SPADCALL (SPADCALL 1 |x| (|getShellEntry| $ 17)) |a| |i|
-      (|getShellEntry| $ 21))) 
+  (SPADCALL (SPADCALL 1 |x| (|getShellEntry| $ 16)) |a| |i|
+      (|getShellEntry| $ 20))) 
 
 (DEFUN |LNAGG-;maxIndex;AI;6| (|l| $)
-  (+ (- (SPADCALL |l| (|getShellEntry| $ 23)) 1)
+  (+ (- (SPADCALL |l| (|getShellEntry| $ 22)) 1)
      (SPADCALL |l| (|getShellEntry| $ 9)))) 
 
 (DEFUN |LinearAggregate&| (|#1| |#2|)
@@ -65,7 +63,7 @@
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|LinearAggregate&|))
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$| (LIST '|LinearAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 26) . #0#)
+        (LETT $ (|newShell| 25) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -76,29 +74,28 @@
         (|setShellEntry| $ 7 |#2|)
         (COND
           ((|HasAttribute| |#1| '|finiteAggregate|)
-           (|setShellEntry| $ 24
+           (|setShellEntry| $ 23
                (CONS (|dispatchFunction| |LNAGG-;maxIndex;AI;6|) $))))
         $)))) 
 
 (MAKEPROP '|LinearAggregate&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)
              (|Integer|) (0 . |minIndex|) (5 . |maxIndex|) (|List| 8)
-             |LNAGG-;indices;AL;1| (|Boolean|) (10 . |not|)
-             |LNAGG-;index?;IAB;2| (|NonNegativeInteger|) (15 . |new|)
-             (21 . |concat|) |LNAGG-;concat;ASA;3|
-             |LNAGG-;concat;S2A;4| (27 . |insert|)
-             |LNAGG-;insert;SAIA;5| (34 . |#|) (39 . |maxIndex|)
-             (|List| $))
-          '#(|maxIndex| 44 |insert| 49 |indices| 56 |index?| 61
-             |concat| 67)
+             |LNAGG-;indices;AL;1| (|Boolean|) |LNAGG-;index?;IAB;2|
+             (|NonNegativeInteger|) (10 . |new|) (16 . |concat|)
+             |LNAGG-;concat;ASA;3| |LNAGG-;concat;S2A;4|
+             (22 . |insert|) |LNAGG-;insert;SAIA;5| (29 . |#|)
+             (34 . |maxIndex|) (|List| $))
+          '#(|maxIndex| 39 |insert| 44 |indices| 51 |index?| 56
+             |concat| 62)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 24
-                                '(1 6 8 0 9 1 6 8 0 10 1 13 0 0 14 2 6
-                                  0 16 7 17 2 6 0 0 0 18 3 6 0 0 0 8 21
-                                  1 6 16 0 23 1 0 8 0 24 1 0 8 0 24 3 0
-                                  0 7 0 8 22 1 0 11 0 12 2 0 13 8 0 15
-                                  2 0 0 0 7 19 2 0 0 7 0 20)))))
+                            (|makeByteWordVec2| 23
+                                '(1 6 8 0 9 1 6 8 0 10 2 6 0 15 7 16 2
+                                  6 0 0 0 17 3 6 0 0 0 8 20 1 6 15 0 22
+                                  1 0 8 0 23 1 0 8 0 23 3 0 0 7 0 8 21
+                                  1 0 11 0 12 2 0 13 8 0 14 2 0 0 0 7
+                                  18 2 0 0 7 0 19)))))
           '|lookupComplete|)) 

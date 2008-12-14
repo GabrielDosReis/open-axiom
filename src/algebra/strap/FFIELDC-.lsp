@@ -102,10 +102,7 @@
            (LETT |found| 'NIL |FFIELDC-;createPrimitiveElement;S;8|)
            (SEQ (LETT |i| |start|
                       |FFIELDC-;createPrimitiveElement;S;8|)
-                G190
-                (COND
-                  ((NULL (SPADCALL |found| (|getShellEntry| $ 43)))
-                   (GO G191)))
+                G190 (COND ((NULL (NOT |found|)) (GO G191)))
                 (SEQ (LETT |e|
                            (SPADCALL
                                (PROG1 (LETT #0# |i|
@@ -130,7 +127,7 @@
       (SEQ (COND
              ((SPADCALL |a| (|getShellEntry| $ 14)) 'NIL)
              ('T
-              (SEQ (LETT |explist| (SPADCALL (|getShellEntry| $ 47))
+              (SEQ (LETT |explist| (SPADCALL (|getShellEntry| $ 46))
                          |FFIELDC-;primitive?;SB;9|)
                    (LETT |q| (- 2 1) |FFIELDC-;primitive?;SB;9|)
                    (LETT |equalone| 'NIL |FFIELDC-;primitive?;SB;9|)
@@ -143,20 +140,19 @@
                                  (LETT |exp| (CAR #0#)
                                        |FFIELDC-;primitive?;SB;9|)
                                  NIL)
-                               (NULL (SPADCALL |equalone|
-                                      (|getShellEntry| $ 43))))
+                               (NULL (NOT |equalone|)))
                            (GO G191)))
                         (SEQ (EXIT (LETT |equalone|
                                     (SPADCALL
                                      (SPADCALL |a|
                                       (QUOTIENT2 |q| (QCAR |exp|))
-                                      (|getShellEntry| $ 48))
-                                     (|spadConstant| $ 49)
-                                     (|getShellEntry| $ 50))
+                                      (|getShellEntry| $ 47))
+                                     (|spadConstant| $ 48)
+                                     (|getShellEntry| $ 49))
                                     |FFIELDC-;primitive?;SB;9|)))
                         (LETT #0# (CDR #0#) |FFIELDC-;primitive?;SB;9|)
                         (GO G190) G191 (EXIT NIL))
-                   (EXIT (SPADCALL |equalone| (|getShellEntry| $ 43)))))))))) 
+                   (EXIT (NOT |equalone|))))))))) 
 
 (DEFUN |FFIELDC-;order;SPi;10| (|e| $)
   (PROG (|lof| |rec| #0=#:G1515 |primeDivisor| |j| #1=#:G1516 |a|
@@ -164,12 +160,12 @@
     (RETURN
       (SEQ (COND
              ((SPADCALL |e| (|spadConstant| $ 7)
-                  (|getShellEntry| $ 50))
+                  (|getShellEntry| $ 49))
               (|error| "order(0) is not defined "))
              ('T
               (SEQ (LETT |ord| (- 2 1) |FFIELDC-;order;SPi;10|)
                    (LETT |a| 0 |FFIELDC-;order;SPi;10|)
-                   (LETT |lof| (SPADCALL (|getShellEntry| $ 47))
+                   (LETT |lof| (SPADCALL (|getShellEntry| $ 46))
                          |FFIELDC-;order;SPi;10|)
                    (SEQ (LETT |rec| NIL |FFIELDC-;order;SPi;10|)
                         (LETT #0# |lof| |FFIELDC-;order;SPi;10|) G190
@@ -188,9 +184,9 @@
                              (LETT |goon|
                                    (SPADCALL
                                     (SPADCALL |e| |a|
-                                     (|getShellEntry| $ 48))
-                                    (|spadConstant| $ 49)
-                                    (|getShellEntry| $ 50))
+                                     (|getShellEntry| $ 47))
+                                    (|spadConstant| $ 48)
+                                    (|getShellEntry| $ 49))
                                    |FFIELDC-;order;SPi;10|)
                              (SEQ (LETT |j| 0 |FFIELDC-;order;SPi;10|)
                                   (LETT #1# (- (QCDR |rec|) 2)
@@ -210,9 +206,9 @@
                                         (LETT |goon|
                                          (SPADCALL
                                           (SPADCALL |e| |a|
-                                           (|getShellEntry| $ 48))
-                                          (|spadConstant| $ 49)
-                                          (|getShellEntry| $ 50))
+                                           (|getShellEntry| $ 47))
+                                          (|spadConstant| $ 48)
+                                          (|getShellEntry| $ 49))
                                          |FFIELDC-;order;SPi;10|)))
                                   (LETT |j| (QSADD1 |j|)
                                         |FFIELDC-;order;SPi;10|)
@@ -234,13 +230,13 @@
              ((SPADCALL |b| (|getShellEntry| $ 14))
               (|error| "discreteLog: logarithm of zero"))
              ('T
-              (SEQ (LETT |faclist| (SPADCALL (|getShellEntry| $ 47))
+              (SEQ (LETT |faclist| (SPADCALL (|getShellEntry| $ 46))
                          |FFIELDC-;discreteLog;SNni;11|)
                    (LETT |a| |b| |FFIELDC-;discreteLog;SNni;11|)
-                   (LETT |gen| (SPADCALL (|getShellEntry| $ 53))
+                   (LETT |gen| (SPADCALL (|getShellEntry| $ 52))
                          |FFIELDC-;discreteLog;SNni;11|)
                    (EXIT (COND
-                           ((SPADCALL |b| |gen| (|getShellEntry| $ 50))
+                           ((SPADCALL |b| |gen| (|getShellEntry| $ 49))
                             1)
                            ('T
                             (SEQ (LETT |disclog| 0
@@ -282,15 +278,15 @@
                                            |FFIELDC-;discreteLog;SNni;11|)
                                           (LETT |exptable|
                                            (SPADCALL |fac|
-                                            (|getShellEntry| $ 55))
+                                            (|getShellEntry| $ 54))
                                            |FFIELDC-;discreteLog;SNni;11|)
                                           (LETT |n|
                                            (SPADCALL |exptable|
-                                            (|getShellEntry| $ 56))
+                                            (|getShellEntry| $ 55))
                                            |FFIELDC-;discreteLog;SNni;11|)
                                           (LETT |c|
                                            (SPADCALL |a| |exp|
-                                            (|getShellEntry| $ 48))
+                                            (|getShellEntry| $ 47))
                                            |FFIELDC-;discreteLog;SNni;11|)
                                           (LETT |end|
                                            (QUOTIENT2 (- |fac| 1) |n|)
@@ -306,9 +302,7 @@
                                            (COND
                                              ((OR
                                                (QSGREATERP |i| |end|)
-                                               (NULL
-                                                (SPADCALL |found|
-                                                 (|getShellEntry| $ 43))))
+                                               (NULL (NOT |found|)))
                                               (GO G191)))
                                            (SEQ
                                             (LETT |rho|
@@ -316,7 +310,7 @@
                                               (SPADCALL |c|
                                                (|getShellEntry| $ 11))
                                               |exptable|
-                                              (|getShellEntry| $ 58))
+                                              (|getShellEntry| $ 57))
                                              |FFIELDC-;discreteLog;SNni;11|)
                                             (EXIT
                                              (COND
@@ -340,9 +334,9 @@
                                                      |groupord| |fac|)
                                                     (- |n|))
                                                    (|getShellEntry| $
-                                                    48))
+                                                    47))
                                                   (|getShellEntry| $
-                                                   59))
+                                                   58))
                                                  |FFIELDC-;discreteLog;SNni;11|)))))
                                            (LETT |i| (QSADD1 |i|)
                                             |FFIELDC-;discreteLog;SNni;11|)
@@ -363,9 +357,9 @@
                                                   (SPADCALL |gen|
                                                    (- |disc1|)
                                                    (|getShellEntry| $
-                                                    48))
+                                                    47))
                                                   (|getShellEntry| $
-                                                   59))
+                                                   58))
                                                  |FFIELDC-;discreteLog;SNni;11|))))
                                              ('T
                                               (|error|
@@ -386,14 +380,14 @@
       (SEQ (EXIT (COND
                    ((SPADCALL |b| (|getShellEntry| $ 14))
                     (SEQ (SPADCALL "discreteLog: logarithm of zero"
-                             (|getShellEntry| $ 64))
+                             (|getShellEntry| $ 63))
                          (EXIT (CONS 1 "failed"))))
                    ((SPADCALL |logbase| (|getShellEntry| $ 14))
                     (SEQ (SPADCALL
                              "discreteLog: logarithm to base zero"
-                             (|getShellEntry| $ 64))
+                             (|getShellEntry| $ 63))
                          (EXIT (CONS 1 "failed"))))
-                   ((SPADCALL |b| |logbase| (|getShellEntry| $ 50))
+                   ((SPADCALL |b| |logbase| (|getShellEntry| $ 49))
                     (CONS 0 1))
                    ('T
                     (COND
@@ -406,14 +400,14 @@
                                       (|getShellEntry| $ 17)))))
                        (SEQ (SPADCALL
                                 "discreteLog: second argument not in cyclic group generated by first argument"
-                                (|getShellEntry| $ 64))
+                                (|getShellEntry| $ 63))
                             (EXIT (CONS 1 "failed"))))
                       ('T
                        (SEQ (LETT |faclist|
                                   (SPADCALL
                                       (SPADCALL |groupord|
-                                       (|getShellEntry| $ 66))
-                                      (|getShellEntry| $ 68))
+                                       (|getShellEntry| $ 65))
+                                      (|getShellEntry| $ 67))
                                   |FFIELDC-;discreteLog;2SU;12|)
                             (LETT |a| |b|
                                   |FFIELDC-;discreteLog;2SU;12|)
@@ -440,7 +434,7 @@
                                       (LETT |primroot|
                                        (SPADCALL |logbase|
                                         (QUOTIENT2 |groupord| |fac|)
-                                        (|getShellEntry| $ 48))
+                                        (|getShellEntry| $ 47))
                                        |FFIELDC-;discreteLog;2SU;12|)
                                       (EXIT
                                        (SEQ
@@ -459,9 +453,9 @@
                                          (LETT |rhoHelp|
                                           (SPADCALL |primroot|
                                            (SPADCALL |a| |exp|
-                                            (|getShellEntry| $ 48))
+                                            (|getShellEntry| $ 47))
                                            |fac|
-                                           (|getShellEntry| $ 70))
+                                           (|getShellEntry| $ 69))
                                           |FFIELDC-;discreteLog;2SU;12|)
                                          (EXIT
                                           (COND
@@ -489,8 +483,8 @@
                                                  (SPADCALL |logbase|
                                                   (- |rho|)
                                                   (|getShellEntry| $
-                                                   48))
-                                                 (|getShellEntry| $ 59))
+                                                   47))
+                                                 (|getShellEntry| $ 58))
                                                 |FFIELDC-;discreteLog;2SU;12|)))))))
                                         (LETT |t| (QSADD1 |t|)
                                          |FFIELDC-;discreteLog;2SU;12|)
@@ -502,25 +496,25 @@
            #2# (EXIT #2#))))) 
 
 (DEFUN |FFIELDC-;squareFreePolynomial| (|f| $)
-  (SPADCALL |f| (|getShellEntry| $ 75))) 
+  (SPADCALL |f| (|getShellEntry| $ 74))) 
 
 (DEFUN |FFIELDC-;factorPolynomial| (|f| $)
-  (SPADCALL |f| (|getShellEntry| $ 77))) 
+  (SPADCALL |f| (|getShellEntry| $ 76))) 
 
 (DEFUN |FFIELDC-;factorSquareFreePolynomial| (|f| $)
   (PROG (|flist| |u| #0=#:G1521 #1=#:G1510 #2=#:G1508 #3=#:G1509)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |f| (|spadConstant| $ 78)
-                  (|getShellEntry| $ 79))
-              (|spadConstant| $ 80))
+             ((SPADCALL |f| (|spadConstant| $ 77)
+                  (|getShellEntry| $ 78))
+              (|spadConstant| $ 79))
              ('T
               (SEQ (LETT |flist|
-                         (SPADCALL |f| 'T (|getShellEntry| $ 84))
+                         (SPADCALL |f| 'T (|getShellEntry| $ 83))
                          |FFIELDC-;factorSquareFreePolynomial|)
                    (EXIT (SPADCALL
                              (SPADCALL (QCAR |flist|)
-                                 (|getShellEntry| $ 85))
+                                 (|getShellEntry| $ 84))
                              (PROGN
                                (LETT #3# NIL
                                      |FFIELDC-;factorSquareFreePolynomial|)
@@ -542,13 +536,13 @@
                                         (LETT #1#
                                          (SPADCALL (QCAR |u|)
                                           (QCDR |u|)
-                                          (|getShellEntry| $ 86))
+                                          (|getShellEntry| $ 85))
                                          |FFIELDC-;factorSquareFreePolynomial|)
                                         (COND
                                           (#3#
                                            (LETT #2#
                                             (SPADCALL #2# #1#
-                                             (|getShellEntry| $ 87))
+                                             (|getShellEntry| $ 86))
                                             |FFIELDC-;factorSquareFreePolynomial|))
                                           ('T
                                            (PROGN
@@ -561,11 +555,11 @@
                                     (GO G190) G191 (EXIT NIL))
                                (COND
                                  (#3# #2#)
-                                 ('T (|spadConstant| $ 88))))
-                             (|getShellEntry| $ 89)))))))))) 
+                                 ('T (|spadConstant| $ 87))))
+                             (|getShellEntry| $ 88)))))))))) 
 
 (DEFUN |FFIELDC-;gcdPolynomial;3Sup;16| (|f| |g| $)
-  (SPADCALL |f| |g| (|getShellEntry| $ 91))) 
+  (SPADCALL |f| |g| (|getShellEntry| $ 90))) 
 
 (DEFUN |FiniteFieldCategory&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -573,7 +567,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|FiniteFieldCategory&|))
         (LETT |dv$| (LIST '|FiniteFieldCategory&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 94) . #0#)
+        (LETT $ (|newShell| 93) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -597,56 +591,55 @@
              |FFIELDC-;charthRoot;2S;6| |FFIELDC-;charthRoot;SU;7|
              (57 . |size|)
              (|Union| '"prime" '"polynomial" '"normal" '"cyclic")
-             (61 . |representationType|) (65 . =) (71 . |not|)
+             (61 . |representationType|) (65 . =)
              |FFIELDC-;createPrimitiveElement;S;8|
              (|Record| (|:| |factor| 18) (|:| |exponent| 18))
-             (|List| 45) (76 . |factorsOfCyclicGroupSize|) (80 . **)
-             (86 . |One|) (90 . =) |FFIELDC-;primitive?;SB;9|
-             |FFIELDC-;order;SPi;10| (96 . |primitiveElement|)
-             (|Table| 10 35) (100 . |tableForDiscreteLogarithm|)
-             (105 . |#|) (|Union| 35 '"failed") (110 . |search|)
-             (116 . *) |FFIELDC-;discreteLog;SNni;11| (|Void|)
-             (|String|) (|OutputForm|) (122 . |messagePrint|)
-             (|Factored| $) (127 . |factor|) (|Factored| 18)
-             (132 . |factors|) (|DiscreteLogarithmPackage| 6)
-             (137 . |shanksDiscLogAlgorithm|)
+             (|List| 44) (71 . |factorsOfCyclicGroupSize|) (75 . **)
+             (81 . |One|) (85 . =) |FFIELDC-;primitive?;SB;9|
+             |FFIELDC-;order;SPi;10| (91 . |primitiveElement|)
+             (|Table| 10 35) (95 . |tableForDiscreteLogarithm|)
+             (100 . |#|) (|Union| 35 '"failed") (105 . |search|)
+             (111 . *) |FFIELDC-;discreteLog;SNni;11| (|Void|)
+             (|String|) (|OutputForm|) (117 . |messagePrint|)
+             (|Factored| $) (122 . |factor|) (|Factored| 18)
+             (127 . |factors|) (|DiscreteLogarithmPackage| 6)
+             (132 . |shanksDiscLogAlgorithm|)
              |FFIELDC-;discreteLog;2SU;12|
-             (|SparseUnivariatePolynomial| 6) (|Factored| 72)
-             (|UnivariatePolynomialSquareFree| 6 72)
-             (144 . |squareFree|) (|DistinctDegreeFactorize| 6 72)
-             (149 . |factor|) (154 . |Zero|) (158 . =) (164 . |Zero|)
-             (|Record| (|:| |irr| 72) (|:| |pow| 18)) (|List| 81)
-             (|Record| (|:| |cont| 6) (|:| |factors| 82))
-             (168 . |distdfact|) (174 . |coerce|) (179 . |primeFactor|)
-             (185 . *) (191 . |One|) (195 . *) (|EuclideanDomain&| 72)
-             (201 . |gcd|) (|SparseUnivariatePolynomial| $)
+             (|SparseUnivariatePolynomial| 6) (|Factored| 71)
+             (|UnivariatePolynomialSquareFree| 6 71)
+             (139 . |squareFree|) (|DistinctDegreeFactorize| 6 71)
+             (144 . |factor|) (149 . |Zero|) (153 . =) (159 . |Zero|)
+             (|Record| (|:| |irr| 71) (|:| |pow| 18)) (|List| 80)
+             (|Record| (|:| |cont| 6) (|:| |factors| 81))
+             (163 . |distdfact|) (169 . |coerce|) (174 . |primeFactor|)
+             (180 . *) (186 . |One|) (190 . *) (|EuclideanDomain&| 71)
+             (196 . |gcd|) (|SparseUnivariatePolynomial| $)
              |FFIELDC-;gcdPolynomial;3Sup;16|)
-          '#(|primitive?| 207 |order| 212 |nextItem| 222 |init| 227
-             |gcdPolynomial| 231 |discreteLog| 237 |differentiate| 248
-             |createPrimitiveElement| 253 |conditionP| 257 |charthRoot|
-             262)
+          '#(|primitive?| 202 |order| 207 |nextItem| 217 |init| 222
+             |gcdPolynomial| 226 |discreteLog| 232 |differentiate| 243
+             |createPrimitiveElement| 248 |conditionP| 252 |charthRoot|
+             257)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 93
+                            (|makeByteWordVec2| 92
                                 '(0 6 0 7 1 6 10 0 11 1 6 0 10 12 1 6
                                   13 0 14 1 6 10 0 17 1 19 0 18 20 1 24
                                   23 0 25 2 22 13 26 0 27 1 6 0 0 28 2
                                   22 0 29 0 30 2 6 0 0 35 36 0 6 35 39
-                                  0 6 40 41 2 40 13 0 0 42 1 13 0 0 43
-                                  0 6 46 47 2 6 0 0 18 48 0 6 0 49 2 6
-                                  13 0 0 50 0 6 0 53 1 6 54 18 55 1 54
-                                  35 0 56 2 54 57 10 0 58 2 6 0 0 0 59
-                                  1 63 61 62 64 1 18 65 0 66 1 67 46 0
-                                  68 3 69 57 6 6 35 70 1 74 73 72 75 1
-                                  76 73 72 77 0 72 0 78 2 72 13 0 0 79
-                                  0 73 0 80 2 76 83 72 13 84 1 72 0 6
-                                  85 2 73 0 72 18 86 2 73 0 0 0 87 0 73
-                                  0 88 2 73 0 72 0 89 2 90 0 0 0 91 1 0
-                                  13 0 51 1 0 10 0 52 1 0 19 0 21 1 0
-                                  15 0 16 0 0 0 9 2 0 92 92 92 93 1 0
-                                  35 0 60 2 0 57 0 0 71 1 0 0 0 8 0 0 0
-                                  44 1 0 32 33 34 1 0 0 0 37 1 0 15 0
-                                  38)))))
+                                  0 6 40 41 2 40 13 0 0 42 0 6 45 46 2
+                                  6 0 0 18 47 0 6 0 48 2 6 13 0 0 49 0
+                                  6 0 52 1 6 53 18 54 1 53 35 0 55 2 53
+                                  56 10 0 57 2 6 0 0 0 58 1 62 60 61 63
+                                  1 18 64 0 65 1 66 45 0 67 3 68 56 6 6
+                                  35 69 1 73 72 71 74 1 75 72 71 76 0
+                                  71 0 77 2 71 13 0 0 78 0 72 0 79 2 75
+                                  82 71 13 83 1 71 0 6 84 2 72 0 71 18
+                                  85 2 72 0 0 0 86 0 72 0 87 2 72 0 71
+                                  0 88 2 89 0 0 0 90 1 0 13 0 50 1 0 10
+                                  0 51 1 0 19 0 21 1 0 15 0 16 0 0 0 9
+                                  2 0 91 91 91 92 1 0 35 0 59 2 0 56 0
+                                  0 70 1 0 0 0 8 0 0 0 43 1 0 32 33 34
+                                  1 0 0 0 37 1 0 15 0 38)))))
           '|lookupComplete|)) 

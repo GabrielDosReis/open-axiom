@@ -184,9 +184,6 @@
  
 (defmacro TL (&rest L) `(tail . ,L))
  
- 
-(defmacro SPADCONST (&rest L) (cons 'qrefelt L))
- 
 (DEFUN LASTELEM (X) (car (last X)))
  
 (defun LISTOFATOMS (X)

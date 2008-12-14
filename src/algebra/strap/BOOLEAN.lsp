@@ -20,17 +20,23 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;not;2$;5|)) 
 
+(PUT '|BOOLEAN;not;2$;5| '|SPADreplace| 'NOT) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;~;2$;6|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;and;3$;7|)) 
 
+(PUT '|BOOLEAN;and;3$;7| '|SPADreplace| 'AND) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;/\\;3$;8|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;or;3$;9|)) 
+
+(PUT '|BOOLEAN;or;3$;9| '|SPADreplace| 'OR) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;\\/;3$;10|)) 
@@ -87,15 +93,19 @@
 
 (DEFUN |BOOLEAN;false;$;4| ($) (DECLARE (IGNORE $)) NIL) 
 
-(DEFUN |BOOLEAN;not;2$;5| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
+(DEFUN |BOOLEAN;not;2$;5| (|b| $) (DECLARE (IGNORE $)) (NOT |b|)) 
 
 (DEFUN |BOOLEAN;~;2$;6| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
 
-(DEFUN |BOOLEAN;and;3$;7| (|a| |b| $) (COND (|a| |b|) ('T 'NIL))) 
+(DEFUN |BOOLEAN;and;3$;7| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (AND |a| |b|)) 
 
 (DEFUN |BOOLEAN;/\\;3$;8| (|a| |b| $) (COND (|a| |b|) ('T 'NIL))) 
 
-(DEFUN |BOOLEAN;or;3$;9| (|a| |b| $) (COND (|a| 'T) ('T |b|))) 
+(DEFUN |BOOLEAN;or;3$;9| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (OR |a| |b|)) 
 
 (DEFUN |BOOLEAN;\\/;3$;10| (|a| |b| $) (COND (|a| 'T) ('T |b|))) 
 

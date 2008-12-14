@@ -140,7 +140,7 @@ MappingPackage1(A:SetCategory): MPcat == MPdef where
         fixedPoint(fll, n) ==
             g0 := [(GENSYM()$Lisp):A for i in 1..n]
             g1 := fll g0
-            or/[EQ(e0,e1)$Lisp for e0 in g0 for e1 in g1] =>
+            or/[EQ(e0,e1)$Lisp@Boolean for e0 in g0 for e1 in g1] =>
                 error "All points are fixed points"
             GEQNSUBSTLIST(g0, g1, g1)$Lisp
  

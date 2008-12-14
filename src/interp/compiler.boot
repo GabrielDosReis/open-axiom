@@ -610,17 +610,15 @@ compFormWithModemap(form,m,e,modemap) ==
       if ss in sv then
         [map:= [.,target,:.],:cexpr]:= modemap :=SUBST(x,ss,modemap)
         -- SAY ["new map is",map]
-  not (target':= coerceable(target,m,e)) => nil
-  map:= [target',:rest map]
-  [f,Tl,sl]:= compApplyModemap(form,modemap,e,nil) or return nil
+  not coerceable(target,m,e) => nil
+  [f,Tl]:= compApplyModemap(form,modemap,e) or return nil
 
   --generate code; return
   T:=
-    [x',m',e'] where
-      m':= SUBLIS(sl,map.(1))
+    [x',target,e'] where
       x':=
         form':= [f,:[t.expr for t in Tl]]
-        m'=$Category or isCategoryForm(m',e) => form'
+        target=$Category or isCategoryForm(target,e) => form'
         -- try to deal with new-style Unions where we know the conditions
         op = "elt" and f is ['XLAM,:.] and IDENTP(z := first argl) and
           (c:=get(z,'condition,e)) and
@@ -1282,16 +1280,33 @@ compImport(["import",:doms],m,e) ==
 --% meaning, or may need special handling because or short-circuiting
 --% etc.
 
-++ compile a logical negation form `(not ...)'.
-compNot: (%Form,%Mode,%Env) -> %Maybe %Triple
-compNot(x,m,e) ==
+++ Compile a logical negation form `(not ...)'.
+compLogicalNot: (%Form,%Mode,%Env) -> %Maybe %Triple
+compLogicalNot(x,m,e) ==
   x isnt ["not", y] => nil
   -- ??? For the time being compiler values cannot handle operations
   -- ??? selected through general modemaps, and their semantics
   -- ??? are quite hardwired with their syntax.
   -- ??? Eventually, we should not need to do this.
   $normalizeTree => compIf(["IF",y,"false","true"],m,e)
-  compForm(x,m,e)
+  yT := comp(y,$EmptyMode,e) or return nil
+  yT.mode = $Boolean =>
+    e := getInverseEnvironment(y,yT.env)
+    convert([["NOT",yT.expr],$Boolean,e],m)
+  compResolveCall("not",[yT],m,yT.env)
+
+
+++ Compile an exclusive `xor' expression.
+compExclusiveOr: (%Form,%Mode,%Env) -> %Maybe %Triple
+compExclusiveOr(x,m,e) ==
+  x isnt ["xor",a,b] => nil
+  aT := comp(a,$EmptyMode,e) or return nil
+  e := 
+    aT.mode = $Boolean => getSuccessEnvironment(a,aT.env)
+    aT.env
+  bT := comp(b,$EmptyMode,e) or return nil
+  compResolveCall("xor",[aT,bT],m,bT.env)
+
 
 --% Case
 compCase: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1430,9 +1445,7 @@ tryCourtesyCoercion(T,m) ==
 
 coerce(T,m) ==
   T' := tryCourtesyCoercion(T,m) => T'
-  -- if from from coerceable, this coerce was just a trial coercion
-  -- from compFormWithModemap to filter through the modemaps
-  T.expr = "$fromCoerceable$" or isSomeDomainVariable m => nil
+  isSomeDomainVariable m => nil
   stackMessage('"Cannot coerce %1b of mode %2pb to mode %3pb",
     [T.expr,T.mode,m])
 
@@ -1509,9 +1522,7 @@ belongsTo?(m,cat,e) ==
 
 coerceable(m,m',e) ==
   m=m' => m
-  -- must find any free parameters in m
-  sl:= pmatch(m',m) => SUBLIS(sl,m')
-  coerce(["$fromCoerceable$",m,e],m') => m'
+  tryCourtesyCoercion(["$fromCoerceable$",m,e],m') => m'
   nil
 
 coerceExit: (%Triple,%Mode) -> %Maybe %Triple
@@ -1660,61 +1671,55 @@ compCat(form is [functorName,:argl],m,e) ==
  
 --% APPLY MODEMAPS
 
-compApplyModemap(form,modemap,$e,sl) ==
+++ `op' has been selected as a viable candidate exported operation, 
+++ for argument triple list `argTl', modemap `mm'.
+++ Return the most refined implementation that makes the call successful.
+compViableModemap(op,argTl,mm) ==
+  [[dc,.,:margl],fnsel] := mm
+  -- 1. Give up if the call is hopeless.
+  argTl := [coerce(x,m) or return "failed" for x in argTl for m in margl]
+  argTl = "failed" => nil
+
+  -- 2.  obtain domain-specific function, if possible
+  f := compMapCond(dc,fnsel) or return nil
+
+  -- 3. Mark `f' as used.
+  -- We can no longer trust what the modemap says for a reference into
+  -- an exterior domain (it is calculating the displacement based on view
+  -- information which is no longer valid; thus ignore this index and
+  -- store the signature instead.
+  f is [op1,.,.] and MEMQ(op1,'(ELT CONST Subsumed)) =>
+    [genDeltaEntry [op,:mm],argTl]
+  [f,argTl]
+
+compApplyModemap(form,modemap,$e) ==
   [op,:argl] := form                   --form to be compiled
-  [[mc,mr,:margl],:fnsel] := modemap   --modemap we are testing
+  [[mc,mr,:margl],fnsel] := modemap    --modemap we are testing
 
   -- $e     is the current environment
-  -- sl     substitution list, nil means bottom-up, otherwise top-down
 
   -- 0.  fail immediately if #argl=#margl
-
   if #argl^=#margl then return nil
 
   -- 1.  use modemap to evaluate arguments, returning failed if
   --     not possible
-
   lt:=
-    [[.,m',$e]:=
-      comp(y,g,$e) or return "failed" where
-        g:= SUBLIS(sl,m) where
-            sl:= pmatchWithSl(m',m,sl) for y in argl for m in margl]
+    [[.,.,$e]:= comp(y,m,$e) or return "failed"
+            for y in argl for m in margl]
   lt="failed" => return nil
 
-  -- 2.  coerce each argument to final domain, returning failed
-  --     if not possible
+  -- 2. Select viable modemap implementation.
+  compViableModemap(op,lt,modemap)
 
-  lt':= [coerce(y,d) or return "failed"
-         for y in lt for d in SUBLIS(sl,margl)]
-  lt'="failed" => return nil
-
-  -- 3.  obtain domain-specific function, if possible, and return
-
-  --$bindings is bound by compMapCond
-  [f,$bindings]:= compMapCond(op,mc,sl,fnsel) or return nil
-
---+ can no longer trust what the modemap says for a reference into
---+ an exterior domain (it is calculating the displacement based on view
---+ information which is no longer valid; thus ignore this index and
---+ store the signature instead.
-
-  f is [op1,d,.] and MEMQ(op1,'(ELT CONST Subsumed)) =>
-    [genDeltaEntry [op,:modemap],lt',$bindings]
-  [f,lt',$bindings]
-
-compMapCond(op,mc,$bindings,fnsel) ==
-  or/[compMapCond'(u,op,mc,$bindings) for u in fnsel]
-
-compMapCond'([cexpr,fnexpr],op,dc,bindings) ==
-  compMapCond''(cexpr,dc) => compMapCondFun(fnexpr,op,dc,bindings)
+compMapCond(dc,[cexpr,fnexpr]) ==
+  compMapCond'(cexpr,dc) => fnexpr
   stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
 
-compMapCond''(cexpr,dc) ==
+compMapCond'(cexpr,dc) ==
   cexpr=true => true
-  --cexpr = "true" => true
-  cexpr is ["AND",:l] => and/[compMapCond''(u,dc) for u in l]
-  cexpr is ["OR",:l] => or/[compMapCond''(u,dc) for u in l]
-  cexpr is ["not",u] => not compMapCond''(u,dc)
+  cexpr is ["AND",:l] => and/[compMapCond'(u,dc) for u in l]
+  cexpr is ["OR",:l] => or/[compMapCond'(u,dc) for u in l]
+  cexpr is ["not",u] => not compMapCond'(u,dc)
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
         --for the time being we'll stop here - shouldn't happen so far
         --$disregardConditionIfTrue => true
@@ -1726,9 +1731,18 @@ compMapCond''(cexpr,dc) ==
   stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
   false
 
-compMapCondFun(fnexpr,op,dc,bindings) == 
-  [fnexpr,bindings]
 
+--%
+
+compResolveCall(op,argTs,m,$e) ==
+  outcomes := 
+    [t for mm in getModemapList(op,#argTs,$e) | t := tryMM] where
+       tryMM() ==
+         not coerceable(mm.mmTarget,m,$e) =>nil
+         compViableModemap(op,argTs,mm) isnt [f,Ts] => nil
+         coerce([["call",f,:[T.expr for T in Ts]],mm.mmTarget,$e],m)
+  #outcomes ^= 1 => nil
+  first outcomes
 
 --% %Match
 
@@ -1927,13 +1941,14 @@ for x in [["|", :"compSuchthat"],_
 	  ["exit", :"compExit"],_
 	  ["has", :"compHas"],_
 	  ["IF", : "compIf"],_
+          ["xor",: "compExclusiveOr"],_
 	  ["import", :"compImport"],_
 	  ["is", :"compIs"],_
 	  ["Join", :"compJoin"],_
 	  ["leave", :"compLeave"],_
 	  ["%LET", :"compSetq"],_
 	  ["MDEF", :"compMacro"],_
-          ["not", :"compNot"],_
+          ["not", :"compLogicalNot"],_
 	  ["pretend", :"compPretend"],_
 	  ["Record", :"compCat"],_
 	  ["RecordCategory", :"compConstructorCategory"],_

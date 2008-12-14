@@ -565,10 +565,10 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       j:=j-1
       j > i+2 =>
         for k in i..j repeat copyvec.k:=delete([name,:count+k-i],copyvec.k)
-        code:=[['REPLACE, name, instantiatedBase,
-                 INTERN('"START1",'"KEYWORD"), count,
-                  INTERN('"START2",'"KEYWORD"), i,
-                   INTERN('"END2",'"KEYWORD"), j+1],:code]
+        code:=[["REPLACE", name, instantiatedBase,
+                 KEYWORD::START1, count,
+                  KEYWORD::START2, i,
+                   KEYWORD::END2, j+1],:code]
     copyvec.i =>
       v:=["getShellEntry",instantiatedBase,i]
       for u in copyvec.i repeat
