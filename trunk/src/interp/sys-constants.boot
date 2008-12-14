@@ -304,6 +304,10 @@ $BasicPredicates ==
 ++ FIXME: Check that the names on this list are not renamed.
 $SideEffectFreeFunctionList ==
   '(_null    _
+    _not     _
+    _and     _
+    _or      _
+    _xor     _
     _case    _
     Zero     _
     One      _

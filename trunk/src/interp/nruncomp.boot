@@ -775,11 +775,6 @@ NRTputInHead bod ==
   bod is ["QUOTE",:.] => bod
   bod is ["CLOSEDFN",:.] => bod
   bod is ["SPADCONST",dom,ind] =>
-    RPLACA(bod,$elt)
-    dom = '_$ => nil
-    k:= NRTassocIndex dom =>
-      RPLACA(LASTNODE bod,[$elt,'_$,k])
-      bod
     keyedSystemError("S2GE0016",['"NRTputInHead",
        '"unexpected SPADCONST form"])
   NRTputInHead first bod

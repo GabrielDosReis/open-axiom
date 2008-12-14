@@ -884,14 +884,12 @@
                          |UPOLYC-;elt;S2F;44|)
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL
-                                     (SPADCALL
-                                      (LETT |p|
-                                       (SPADCALL |p|
-                                        (|getShellEntry| $ 56))
-                                       |UPOLYC-;elt;S2F;44|)
-                                      (|getShellEntry| $ 9))
-                                     (|getShellEntry| $ 164)))
+                          ((NULL (NOT (SPADCALL
+                                       (LETT |p|
+                                        (SPADCALL |p|
+                                         (|getShellEntry| $ 56))
+                                        |UPOLYC-;elt;S2F;44|)
+                                       (|getShellEntry| $ 9))))
                            (GO G191)))
                         (SEQ (EXIT (LETT |ans|
                                     (SPADCALL
@@ -907,15 +905,15 @@
                                          |UPOLYC-;elt;S2F;44|)
                                          (|check-subtype| (>= #0# 0)
                                           '(|NonNegativeInteger|) #0#))
-                                       (|getShellEntry| $ 165))
-                                      (|getShellEntry| $ 166))
+                                       (|getShellEntry| $ 164))
+                                      (|getShellEntry| $ 165))
                                      (SPADCALL
                                       (SPADCALL
                                        (SPADCALL |p|
                                         (|getShellEntry| $ 54))
                                        (|getShellEntry| $ 30))
                                       (|getShellEntry| $ 163))
-                                     (|getShellEntry| $ 167))
+                                     (|getShellEntry| $ 166))
                                     |UPOLYC-;elt;S2F;44|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT (COND
@@ -923,8 +921,8 @@
                            ('T
                             (SPADCALL |ans|
                                 (SPADCALL |f| |n|
-                                    (|getShellEntry| $ 168))
-                                (|getShellEntry| $ 166)))))))))))) 
+                                    (|getShellEntry| $ 167))
+                                (|getShellEntry| $ 165)))))))))))) 
 
 (DEFUN |UPOLYC-;order;2SNni;45| (|p| |q| $)
   (PROG (|u| #0=#:G1704 |ans|)
@@ -960,33 +958,33 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |UPOLYC-;squareFree;SF;46| (|p| $)
-  (SPADCALL |p| (|getShellEntry| $ 172))) 
+  (SPADCALL |p| (|getShellEntry| $ 171))) 
 
 (DEFUN |UPOLYC-;squareFreePart;2S;47| (|p| $)
-  (SPADCALL |p| (|getShellEntry| $ 174))) 
+  (SPADCALL |p| (|getShellEntry| $ 173))) 
 
 (DEFUN |UPOLYC-;gcdPolynomial;3Sup;48| (|pp| |qq| $)
   (COND
-    ((SPADCALL |pp| (|getShellEntry| $ 176))
-     (SPADCALL |qq| (|getShellEntry| $ 177)))
-    ((SPADCALL |qq| (|getShellEntry| $ 176))
-     (SPADCALL |pp| (|getShellEntry| $ 177)))
+    ((SPADCALL |pp| (|getShellEntry| $ 175))
+     (SPADCALL |qq| (|getShellEntry| $ 176)))
+    ((SPADCALL |qq| (|getShellEntry| $ 175))
+     (SPADCALL |pp| (|getShellEntry| $ 176)))
     ('T
      (SPADCALL
          (SPADCALL
-             (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 178))
-                 (SPADCALL |qq| (|getShellEntry| $ 178))
+             (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 177))
+                 (SPADCALL |qq| (|getShellEntry| $ 177))
                  (|getShellEntry| $ 126))
              (SPADCALL
-                 (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 179))
-                     (SPADCALL |qq| (|getShellEntry| $ 179))
-                     (|getShellEntry| $ 180))
-                 (|getShellEntry| $ 179))
-             (|getShellEntry| $ 181))
-         (|getShellEntry| $ 177))))) 
+                 (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 178))
+                     (SPADCALL |qq| (|getShellEntry| $ 178))
+                     (|getShellEntry| $ 179))
+                 (|getShellEntry| $ 178))
+             (|getShellEntry| $ 180))
+         (|getShellEntry| $ 176))))) 
 
 (DEFUN |UPOLYC-;squareFreePolynomial;SupF;49| (|pp| $)
-  (SPADCALL |pp| (|getShellEntry| $ 184))) 
+  (SPADCALL |pp| (|getShellEntry| $ 183))) 
 
 (DEFUN |UPOLYC-;elt;F2R;50| (|f| |r| $)
   (SPADCALL
@@ -994,7 +992,7 @@
           (|getShellEntry| $ 29))
       (SPADCALL (SPADCALL |f| (|getShellEntry| $ 145)) |r|
           (|getShellEntry| $ 29))
-      (|getShellEntry| $ 186))) 
+      (|getShellEntry| $ 185))) 
 
 (DEFUN |UPOLYC-;euclideanSize;SNni;51| (|x| $)
   (COND
@@ -1014,7 +1012,7 @@
                    (LETT |lc|
                          (SPADCALL
                              (SPADCALL |y| (|getShellEntry| $ 54))
-                             (|getShellEntry| $ 189))
+                             (|getShellEntry| $ 188))
                          |UPOLYC-;divide;2SR;52|)
                    (SEQ G190
                         (COND
@@ -1023,19 +1021,18 @@
                                      (|getShellEntry| $ 9))
                                     'NIL)
                                    ('T
-                                    (SPADCALL
+                                    (NOT
                                      (<
                                       (SPADCALL |x|
                                        (|getShellEntry| $ 11))
                                       (SPADCALL |y|
-                                       (|getShellEntry| $ 11)))
-                                     (|getShellEntry| $ 164)))))
+                                       (|getShellEntry| $ 11)))))))
                            (GO G191)))
                         (SEQ (LETT |f|
                                    (SPADCALL |lc|
                                     (SPADCALL |x|
                                      (|getShellEntry| $ 54))
-                                    (|getShellEntry| $ 190))
+                                    (|getShellEntry| $ 189))
                                    |UPOLYC-;divide;2SR;52|)
                              (LETT |n|
                                    (PROG1
@@ -1073,7 +1070,7 @@
            (SEQ G190
                 (COND
                   ((NULL (SPADCALL |p| (|spadConstant| $ 61)
-                             (|getShellEntry| $ 192)))
+                             (|getShellEntry| $ 191)))
                    (GO G191)))
                 (SEQ (LETT |l| (SPADCALL |p| (|getShellEntry| $ 54))
                            |UPOLYC-;integrate;2S;53|)
@@ -1085,11 +1082,11 @@
                                (SPADCALL
                                    (SPADCALL
                                     (SPADCALL |d|
-                                     (|getShellEntry| $ 194))
-                                    (|getShellEntry| $ 195))
+                                     (|getShellEntry| $ 193))
+                                    (|getShellEntry| $ 194))
                                    (SPADCALL |l| |d|
                                     (|getShellEntry| $ 50))
-                                   (|getShellEntry| $ 196))
+                                   (|getShellEntry| $ 195))
                                (|getShellEntry| $ 66))
                            |UPOLYC-;integrate;2S;53|)
                      (EXIT (LETT |p|
@@ -1107,7 +1104,7 @@
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$|
               (LIST '|UnivariatePolynomialCategory&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 203) . #0#)
+        (LETT $ (|newShell| 202) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -1188,45 +1185,45 @@
              (|setShellEntry| $ 161
                  (CONS (|dispatchFunction| |UPOLYC-;composite;2SU;43|)
                        $))
-             (|setShellEntry| $ 169
+             (|setShellEntry| $ 168
                  (CONS (|dispatchFunction| |UPOLYC-;elt;S2F;44|) $))
-             (|setShellEntry| $ 170
+             (|setShellEntry| $ 169
                  (CONS (|dispatchFunction| |UPOLYC-;order;2SNni;45|) $)))))
         (COND
           ((|testBitVector| |pv$| 3)
            (PROGN
-             (|setShellEntry| $ 173
+             (|setShellEntry| $ 172
                  (CONS (|dispatchFunction| |UPOLYC-;squareFree;SF;46|)
                        $))
-             (|setShellEntry| $ 175
+             (|setShellEntry| $ 174
                  (CONS (|dispatchFunction|
                            |UPOLYC-;squareFreePart;2S;47|)
                        $)))))
         (COND
           ((|HasCategory| |#2| '(|PolynomialFactorizationExplicit|))
            (PROGN
-             (|setShellEntry| $ 182
+             (|setShellEntry| $ 181
                  (CONS (|dispatchFunction|
                            |UPOLYC-;gcdPolynomial;3Sup;48|)
                        $))
-             (|setShellEntry| $ 185
+             (|setShellEntry| $ 184
                  (CONS (|dispatchFunction|
                            |UPOLYC-;squareFreePolynomial;SupF;49|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 2)
            (PROGN
-             (|setShellEntry| $ 187
+             (|setShellEntry| $ 186
                  (CONS (|dispatchFunction| |UPOLYC-;elt;F2R;50|) $))
-             (|setShellEntry| $ 188
+             (|setShellEntry| $ 187
                  (CONS (|dispatchFunction|
                            |UPOLYC-;euclideanSize;SNni;51|)
                        $))
-             (|setShellEntry| $ 191
+             (|setShellEntry| $ 190
                  (CONS (|dispatchFunction| |UPOLYC-;divide;2SR;52|) $)))))
         (COND
           ((|testBitVector| |pv$| 1)
-           (|setShellEntry| $ 197
+           (|setShellEntry| $ 196
                (CONS (|dispatchFunction| |UPOLYC-;integrate;2S;53|) $))))
         $)))) 
 
@@ -1303,40 +1300,39 @@
              (|Union| 143 '"failed") (433 . |composite|)
              (439 . |ground?|) (444 . |pseudoDivide|) (450 . |exquo|)
              (456 . |composite|) (462 . |Zero|) (466 . |coerce|)
-             (471 . |not|) (476 . **) (482 . *) (488 . +) (494 . **)
-             (500 . |elt|) (506 . |order|)
-             (|UnivariatePolynomialSquareFree| 7 6)
-             (512 . |squareFree|) (517 . |squareFree|)
-             (522 . |squareFreePart|) (527 . |squareFreePart|)
-             (532 . |zero?|) (537 . |unitCanonical|) (542 . |content|)
-             (547 . |primitivePart|) (552 . |subResultantGcd|)
-             (558 . *) (564 . |gcdPolynomial|)
+             (471 . **) (477 . *) (483 . +) (489 . **) (495 . |elt|)
+             (501 . |order|) (|UnivariatePolynomialSquareFree| 7 6)
+             (507 . |squareFree|) (512 . |squareFree|)
+             (517 . |squareFreePart|) (522 . |squareFreePart|)
+             (527 . |zero?|) (532 . |unitCanonical|) (537 . |content|)
+             (542 . |primitivePart|) (547 . |subResultantGcd|)
+             (553 . *) (559 . |gcdPolynomial|)
              (|UnivariatePolynomialSquareFree| 6 74)
-             (570 . |squareFree|) (575 . |squareFreePolynomial|)
-             (580 . /) (586 . |elt|) (592 . |euclideanSize|)
-             (597 . |inv|) (602 . *) (608 . |divide|) (614 . ~=)
-             (|Fraction| 94) (620 . |coerce|) (625 . |inv|) (630 . *)
-             (636 . |integrate|) (|Symbol|) (|List| 198)
-             (|Union| 94 '"failed") (|Union| 193 '"failed")
+             (565 . |squareFree|) (570 . |squareFreePolynomial|)
+             (575 . /) (581 . |elt|) (587 . |euclideanSize|)
+             (592 . |inv|) (597 . *) (603 . |divide|) (609 . ~=)
+             (|Fraction| 94) (615 . |coerce|) (620 . |inv|) (625 . *)
+             (631 . |integrate|) (|Symbol|) (|List| 197)
+             (|Union| 94 '"failed") (|Union| 192 '"failed")
              (|OutputForm|))
-          '#(|vectorise| 641 |variables| 647 |unmakeSUP| 652
-             |totalDegree| 657 |squareFreePolynomial| 663
-             |squareFreePart| 668 |squareFree| 673
-             |solveLinearPolynomialEquation| 678 |shiftRight| 684
-             |shiftLeft| 690 |separate| 696 |retractIfCan| 702
-             |retract| 707 |pseudoQuotient| 712 |pseudoDivide| 718
-             |order| 724 |nextItem| 730 |monomial| 735 |minimumDegree|
-             742 |makeSUP| 754 |mainVariable| 759 |karatsubaDivide| 764
-             |integrate| 770 |init| 775 |gcdPolynomial| 779
-             |factorSquareFreePolynomial| 785 |factorPolynomial| 790
-             |factor| 795 |eval| 800 |euclideanSize| 834 |elt| 839
-             |divide| 857 |differentiate| 863 |degree| 887 |content|
-             899 |composite| 905 |coerce| 917)
+          '#(|vectorise| 636 |variables| 642 |unmakeSUP| 647
+             |totalDegree| 652 |squareFreePolynomial| 658
+             |squareFreePart| 663 |squareFree| 668
+             |solveLinearPolynomialEquation| 673 |shiftRight| 679
+             |shiftLeft| 685 |separate| 691 |retractIfCan| 697
+             |retract| 702 |pseudoQuotient| 707 |pseudoDivide| 713
+             |order| 719 |nextItem| 725 |monomial| 730 |minimumDegree|
+             737 |makeSUP| 749 |mainVariable| 754 |karatsubaDivide| 759
+             |integrate| 765 |init| 770 |gcdPolynomial| 774
+             |factorSquareFreePolynomial| 780 |factorPolynomial| 785
+             |factor| 790 |eval| 795 |euclideanSize| 829 |elt| 834
+             |divide| 852 |differentiate| 858 |degree| 882 |content|
+             894 |composite| 900 |coerce| 912)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 197
+                            (|makeByteWordVec2| 196
                                 '(1 6 8 0 9 1 6 10 0 11 0 12 0 13 1 6
                                   10 0 17 3 6 0 0 12 0 21 2 6 0 0 0 24
                                   3 6 0 0 12 7 26 2 6 7 0 7 29 1 6 0 7
@@ -1369,36 +1365,36 @@
                                   154 2 141 0 6 6 155 2 0 156 143 0 157
                                   1 6 8 0 158 2 6 152 0 0 159 2 6 120 0
                                   7 160 2 0 120 0 0 161 0 141 0 162 1
-                                  141 0 6 163 1 8 0 0 164 2 141 0 0 94
-                                  165 2 141 0 0 0 166 2 141 0 0 0 167 2
-                                  141 0 0 10 168 2 0 143 0 143 169 2 0
-                                  10 0 0 170 1 171 100 6 172 1 0 89 0
-                                  173 1 171 6 6 174 1 0 0 0 175 1 74 8
-                                  0 176 1 74 0 0 177 1 74 6 0 178 1 74
-                                  0 0 179 2 74 0 0 0 180 2 74 0 6 0 181
-                                  2 0 79 79 79 182 1 183 83 74 184 1 0
-                                  85 79 185 2 7 0 0 0 186 2 0 7 143 7
-                                  187 1 0 10 0 188 1 7 0 0 189 2 7 0 0
-                                  0 190 2 0 68 0 0 191 2 6 8 0 0 192 1
-                                  193 0 94 194 1 193 0 0 195 2 6 0 193
-                                  0 196 1 0 0 0 197 2 0 109 0 10 114 1
-                                  0 14 0 15 1 0 0 52 67 2 0 10 0 14 18
-                                  1 0 85 79 185 1 0 0 0 175 1 0 89 0
-                                  173 2 0 81 80 79 82 2 0 0 0 10 71 2 0
-                                  0 0 10 73 2 0 129 0 0 130 1 0 116 0
-                                  117 1 0 7 0 115 2 0 0 0 0 151 2 0 152
-                                  0 0 153 2 0 10 0 0 170 1 0 120 0 123
-                                  3 0 0 0 12 10 47 2 0 19 0 14 43 2 0
-                                  10 0 12 42 1 0 52 0 59 1 0 34 0 40 2
-                                  0 68 0 10 70 1 0 0 0 197 0 0 0 119 2
-                                  0 79 79 79 182 1 0 85 79 88 1 0 85 79
-                                  86 1 0 89 0 107 3 0 0 0 12 0 25 3 0 0
-                                  0 14 22 23 3 0 0 0 14 27 28 3 0 0 0
-                                  12 7 31 2 0 0 0 38 39 1 0 10 0 188 2
-                                  0 143 0 143 169 2 0 7 143 7 187 2 0
-                                  143 143 143 147 2 0 68 0 0 191 3 0 0
-                                  0 133 0 134 2 0 0 0 133 137 1 0 0 0
-                                  138 2 0 0 0 12 140 2 0 10 0 12 16 2 0
-                                  19 0 14 20 2 0 0 0 12 125 2 0 120 0 0
-                                  161 2 0 156 143 0 157 1 0 0 12 51)))))
+                                  141 0 6 163 2 141 0 0 94 164 2 141 0
+                                  0 0 165 2 141 0 0 0 166 2 141 0 0 10
+                                  167 2 0 143 0 143 168 2 0 10 0 0 169
+                                  1 170 100 6 171 1 0 89 0 172 1 170 6
+                                  6 173 1 0 0 0 174 1 74 8 0 175 1 74 0
+                                  0 176 1 74 6 0 177 1 74 0 0 178 2 74
+                                  0 0 0 179 2 74 0 6 0 180 2 0 79 79 79
+                                  181 1 182 83 74 183 1 0 85 79 184 2 7
+                                  0 0 0 185 2 0 7 143 7 186 1 0 10 0
+                                  187 1 7 0 0 188 2 7 0 0 0 189 2 0 68
+                                  0 0 190 2 6 8 0 0 191 1 192 0 94 193
+                                  1 192 0 0 194 2 6 0 192 0 195 1 0 0 0
+                                  196 2 0 109 0 10 114 1 0 14 0 15 1 0
+                                  0 52 67 2 0 10 0 14 18 1 0 85 79 184
+                                  1 0 0 0 174 1 0 89 0 172 2 0 81 80 79
+                                  82 2 0 0 0 10 71 2 0 0 0 10 73 2 0
+                                  129 0 0 130 1 0 116 0 117 1 0 7 0 115
+                                  2 0 0 0 0 151 2 0 152 0 0 153 2 0 10
+                                  0 0 169 1 0 120 0 123 3 0 0 0 12 10
+                                  47 2 0 19 0 14 43 2 0 10 0 12 42 1 0
+                                  52 0 59 1 0 34 0 40 2 0 68 0 10 70 1
+                                  0 0 0 196 0 0 0 119 2 0 79 79 79 181
+                                  1 0 85 79 88 1 0 85 79 86 1 0 89 0
+                                  107 3 0 0 0 12 0 25 3 0 0 0 14 22 23
+                                  3 0 0 0 14 27 28 3 0 0 0 12 7 31 2 0
+                                  0 0 38 39 1 0 10 0 187 2 0 143 0 143
+                                  168 2 0 7 143 7 186 2 0 143 143 143
+                                  147 2 0 68 0 0 190 3 0 0 0 133 0 134
+                                  2 0 0 0 133 137 1 0 0 0 138 2 0 0 0
+                                  12 140 2 0 10 0 12 16 2 0 19 0 14 20
+                                  2 0 0 0 12 125 2 0 120 0 0 161 2 0
+                                  156 143 0 157 1 0 0 12 51)))))
           '|lookupComplete|)) 

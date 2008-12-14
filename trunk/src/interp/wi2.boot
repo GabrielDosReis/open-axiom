@@ -542,7 +542,7 @@ compFormWithModemap1(form,m,e,modemap,Rep2Dollar?) ==
   not (target':= coerceable(target,m,e)) => nil
   markMap := map
   map:= [target',:rest map]
-  [f,Tl,sl]:= compApplyModemap(form,modemap,e,nil) or return nil
+  [f,Tl,sl]:= compApplyModemap(form,modemap,e) or return nil
  
   --generate code; return
   T:=
@@ -605,7 +605,8 @@ compElt(origForm,m,E) ==
   compForm(origForm,m,E)
  
 pause op == op
-compApplyModemap(form,modemap,$e,sl) ==
+compApplyModemap(form,modemap,$e) ==
+  sl := nil
   [op,:argl] := form                   --form to be compiled
   [[mc,mr,:margl],:fnsel] := modemap   --modemap we are testing
  

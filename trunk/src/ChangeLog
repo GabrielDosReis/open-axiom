@@ -1,3 +1,11 @@
+2008-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (ILinsn): New structure.
+	(il3OldForm): Convert new forms to old forms.
+	* interp/i-intern.boot (mkAtree3): Don't use old parser functions.
+	* interp/wi2.boot: Use MEMQ to test for parameters names.
+	* interp/compiler.boot: Use MEMQ to test for parameters names.
+
 2008-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/ht-util.boot (oldParseString): Remove.

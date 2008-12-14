@@ -80,7 +80,7 @@ domainMember(dom,domList) == or/[modeEqual(dom,d) for d in domList]
  
 getModemap(x is [op,:.],e) ==
   for modemap in get(op,'modemap,e) repeat
-    if u:= compApplyModemap(x,modemap,e,nil) then return
+    if u:= compApplyModemap(x,modemap,e) then return
       ([.,.,sl]:= u; SUBLIS(sl,modemap))
  
 getUniqueSignature(form,e) ==
