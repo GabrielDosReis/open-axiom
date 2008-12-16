@@ -339,7 +339,7 @@ interpret2(object,m1,posnForm) ==
   m=$EmptyMode =>
     x is [op,:.]  and op in '(%Map STREAM) => objNew(x,m1)
     m1 = $EmptyMode => objNew(x,m)
-    systemErrorHere '"interpret2"
+    systemErrorHere ["interpret2",x]
   m1 =>
     if (ans := coerceInteractive(object,m1)) then ans
     else throwKeyedMsgCannotCoerceWithValue(x,m,m1)

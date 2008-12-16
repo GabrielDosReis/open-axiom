@@ -114,7 +114,7 @@ mkAtree1 x ==
     IDENTP x => mkAtreeNode x
     keyedSystemError("S2II0002",[x])
   x is [op,:argl] => mkAtree2(x,op,argl)
-  systemErrorHere '"mkAtree1"
+  systemErrorHere ["mkAtree1",x]
 
 -- mkAtree2 and mkAtree3 were created because mkAtree1 got so big
 
@@ -398,7 +398,7 @@ getValueFromSpecificEnvironment(id,mode,e) ==
   PAIRP e =>
     u := get(id,'value,e) =>
       objMode(u) = $EmptyMode =>
-        systemErrorHere '"getValueFromSpecificEnvironment"
+        systemErrorHere ["getValueFromSpecificEnvironment",id]
       v := objValUnwrap u
       mode isnt ['Mapping,:mapSig] => v
       v isnt ["%Map",:.] => v

@@ -723,7 +723,7 @@ unVectorize body ==
     if newOp = 'COERCE then newOp := "::"
     if newOp = 'Dollar then newOp := "$elt"
     [newOp,:unVectorize argl]
-  systemErrorHere '"unVectorize"
+  systemErrorHere ["unVectorize",body]
 
 isType t ==
   -- Returns the evaluated type if t is a tree representing a type,

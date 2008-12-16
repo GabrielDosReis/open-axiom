@@ -506,7 +506,7 @@ getFunctorOpsAndAtts(form,modemap) ==
 getSlotFromFunctor([name,:args],slot,[[.,target,:argMml],:.]) ==
   slot = 1 => $lisplibOperationAlist
   t := compMakeCategoryObject(target,$e) or
-      systemErrorHere '"getSlotFromFunctor"
+      systemErrorHere "getSlotFromFunctor"
   t.expr.slot
  
 getSlot1 domainName ==
@@ -521,7 +521,7 @@ getSlot1 domainName ==
     for a in $FormalMapVariableList for m in argMml repeat
       $e:= put(a,'mode,m,$e)
     t := compMakeCategoryObject(target,$e) or
-      systemErrorHere '"getSlot1"
+      systemErrorHere ["getSlot1",domainName]
     t.expr.1
   sayKeyedMsg("S2IL0022",[namestring p,'"constructor modemap"])
   NIL
@@ -575,7 +575,7 @@ findConstructorSlotNumber(domainForm,domain,op,sig) ==
       FIXP b => a=constructorArglist.b
       isSuperDomain(bustUnion b,bustUnion a,$CategoryFrame)
   tail is [.,["ELT",.,n]] => n
-  systemErrorHere '"findSlotNumber"
+  systemErrorHere ["findConstructorSlotNumber",domainForm]
  
 bustUnion d ==
   d is ["Union",domain,utype] and utype='"failed" => domain

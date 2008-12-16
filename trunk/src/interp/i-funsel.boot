@@ -879,7 +879,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   fun:= NIL
  --  cat := constructorCategory dc
   makeFunc := GETL(dcName,"makeFunctionList") or
-      systemErrorHere '"findFunctionInCategory"
+      systemErrorHere ["findFunctionInCategory",dcName]
   [funlist,.] := FUNCALL(makeFunc,"$",dc,$CategoryFrame)
   -- get list of implementations and remove sharps
   maxargs := -1

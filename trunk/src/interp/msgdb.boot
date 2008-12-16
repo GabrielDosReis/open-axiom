@@ -430,8 +430,10 @@ popSatOutput(newmode) ==
   sayString FORMAT(nil, '"What is: ~a", $saturnMode)
   $saturnMode
 
-systemErrorHere functionName ==
-  keyedSystemError("S2GE0017",[functionName])
+systemErrorHere what ==
+  if not atom what then
+     what := [first what, " with: ", :rest what]
+  keyedSystemError("S2GE0017",[what])
 
 isKeyedMsgInDb(key,dbName) ==
   $msgDatabaseName : fluid := pathname dbName

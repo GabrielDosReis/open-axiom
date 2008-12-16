@@ -61,7 +61,7 @@ isInstantiated [op,:argl] ==
 
 NRTevalDomain form ==
   form is ["setShellEntry",:.] => eval form
-  form is ['SETELT,:.] => systemErrorHere "NRTevalDomain"
+  form is ['SETELT,:.] => systemErrorHere ["NRTevalDomain",form]
   evalDomain form
 
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)

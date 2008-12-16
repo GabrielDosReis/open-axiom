@@ -294,7 +294,7 @@ UnionCategory(:"x") == constructorCategory ["Union",:x]
 
 constructorCategory (title is [op,:.]) ==
   constructorFunction:= GETL(op,"makeFunctionList") or
-              systemErrorHere '"constructorCategory"
+              systemErrorHere ['"constructorCategory",title]
   [funlist,.]:= FUNCALL(constructorFunction,"$",title,$CategoryFrame)
   oplist:= [[[a,b],true,c] for [a,b,c] in funlist]
   cat:=

@@ -78,7 +78,6 @@ $lisplibAncestors := nil
 $lisplibAbbreviation := nil
 $LocalDomainAlist := []
 $CheckVectorList := []
-$functorsUsed := []
 $setelt := nil
 $pairlis := []
 $functorTarget := nil
@@ -166,12 +165,8 @@ makePredicate l ==
 
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
 
-++ List of packages used by the current domain.
-$packagesUsed := []
-
 compDefine(form,m,e) ==
   $macroIfTrue: local := false
-  $packagesUsed: local := []
   compDefine1(form,m,e)
 
 ++ We are about to process the body of a capsule.  If the capsule defines
@@ -240,7 +235,7 @@ compDefine1(form,m,e) ==
 -- 2. if signature list for arguments is not empty, replace ('DEF,..) by
 --       ('where,('DEF,..),..) with an empty signature list;
 --     otherwise, fill in all NILs in the signature
-  not (and/[null x for x in rest signature]) => compDefWhereClause(form,m,e)
+  or/[x ^= nil for x in rest signature] => compDefWhereClause(form,m,e)
   signature.target=$Category =>
     compDefineCategory(form,m,e,nil,$formalArgList)
   isDomainForm(rhs,e) and not $insideFunctorIfTrue =>
@@ -569,7 +564,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
                   --prevents CheckVector from printing out same message twice
     $getDomainCode: local -- code for getting views
     $insideFunctorIfTrue: local:= true
-    $functorsUsed: local := nil --not currently used, finds dependent functors
     $setelt: local := "setShellEntry"
     $genSDVar: local:= 0
     originale:= $e
@@ -668,7 +662,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     reportOnFunctorCompilation()
  
 --  5. give operator a 'modemap property
---   if $functorsUsed then MAKEPROP(op',"NEEDS",$functorsUsed)
     if $LISPLIB then
       modemap:= [[parForm,:parSignature],[true,op']]
       $lisplibModemap:= modemap
@@ -1174,7 +1167,7 @@ addArgumentConditions($body,$functionName) ==
             [$true,["argumentDataError",n,
               MKQ untypedCondition,MKQ $functionName]]]
         null clist => $body
-        systemErrorHere '"addArgumentConditions"
+        systemErrorHere ["addArgumentConditions",clist]
   $body
  
 putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
@@ -1394,16 +1387,12 @@ compAdd(['add,$addForm,capsule],m,e) ==
          ''%b,MKQ namestring _/EDITFILE,''%d,'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
-    $packagesUsed := [domainForm,:$packagesUsed]
     $NRTaddForm := domainForm
     NRTgetLocalIndex domainForm
     --need to generate slot for add form since all $ go-get
     --  slots will need to access it
     [$addForm,.,e]:= compSubDomain1(domainForm,predicate,m,e)
   else
-    $packagesUsed :=
-      $addForm is ["%Comma",:u] => [:u,:$packagesUsed]
-      [$addForm,:$packagesUsed]
     $NRTaddForm := $addForm
     [$addForm,.,e]:=
       $addForm is ["%Comma",:.] =>
@@ -1496,7 +1485,7 @@ doIt(item,$predl) ==
     RPLACD(item,rest u)
     doIt(item,$predl)
   item is ["%LET",lhs,rhs,:.] =>
-    not (compOrCroak(item,$EmptyMode,$e) is [code,.,$e]) =>
+    compOrCroak(item,$EmptyMode,$e) isnt [code,.,$e] =>
       stackSemanticError(["cannot compile assigned value to",:bright lhs],nil)
     not (code is ["%LET",lhs',rhs',:.] and atom lhs') =>
       code is ["PROGN",:.] =>
@@ -1508,9 +1497,6 @@ doIt(item,$predl) ==
       not MEMQ(lhs, $functorLocalParameters) then
          $functorLocalParameters:= [:$functorLocalParameters,lhs]
     if code is ["%LET",.,rhs',:.] and isDomainForm(rhs',$e) then
-      if isFunctor rhs' then
-        $functorsUsed:= insert(opOf rhs',$functorsUsed)
-        $packagesUsed:= insert([opOf rhs'],$packagesUsed)
       if lhs="Rep" then
         $Representation:= (get("Rep",'value,$e)).expr
            --$Representation bound by compDefineFunctor, used in compNoStacking
@@ -1520,8 +1506,7 @@ doIt(item,$predl) ==
         [[lhs,:SUBLIS($LocalDomainAlist,(get(lhs,'value,$e)).0)],:$LocalDomainAlist]
     code is ["%LET",:.] =>
       RPLACA(item,"setShellEntry")
-      rhsCode:=
-       rhs'
+      rhsCode := rhs'
       RPLACD(item,['$,NRTgetLocalIndex lhs,rhsCode])
     RPLACA(item,first code)
     RPLACD(item,rest code)
@@ -1540,7 +1525,7 @@ doIt(item,$predl) ==
     [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
     RPLACA(item,"CodeDefine")
         --Note that DescendCode, in CodeDefine, is looking for this
-    RPLACD(CADR item,[$signatureOfForm])
+    RPLACD(second item,[$signatureOfForm])
       --This is how the signature is updated for buildFunctor to recognise
     functionPart:= ['dispatchFunction,t.expr]
     RPLACA(CDDR item,functionPart)
@@ -1745,7 +1730,7 @@ compCategoryItem(x,predl,env) ==
 --    single operator name or a list of names; if a list of names,
 --    recurse
   x is ["SIGNATURE",:opsig] => compSignature(opsig,pred,env)
-  systemErrorHere "compCategoryItem"
+  systemErrorHere ["compCategoryItem",x]
 
 compCategory: (%Form,%Mode,%Env) -> %Maybe %Triple
 compCategory(x,m,e) ==
@@ -1758,6 +1743,6 @@ compCategory(x,m,e) ==
       rep:= mkExplicitCategoryFunction(domainOrPackage,$sigList,$atList)
     --if inside compDefineCategory, provide for category argument substitution
       [rep,m,e]
-  systemErrorHere '"compCategory"
+  systemErrorHere ["compCategory",x]
 
 --%

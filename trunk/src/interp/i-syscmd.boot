@@ -2508,7 +2508,7 @@ reportOpsFromUnitDirectly unitForm ==
       if isRecordOrUnion
         then
           constructorFunction:= GETL(top,"makeFunctionList") or
-            systemErrorHere '"reportOpsFromUnitDirectly"
+            systemErrorHere ["reportOpsFromUnitDirectly",top]
           [funlist,.]:= FUNCALL(constructorFunction,"$",unitForm,
             $CategoryFrame)
           sigList := REMDUP MSORT [[[a,b],true,[c,0,1]] for

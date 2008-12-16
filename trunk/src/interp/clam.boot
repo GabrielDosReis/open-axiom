@@ -488,7 +488,7 @@ assocCacheShiftCount(x,al,fn) ==
  
 clamStats() ==
   for [op,kind,:.] in $clamList repeat
-    cacheVec:= GETL(op,'cacheInfo) or systemErrorHere "clamStats"
+    cacheVec:= GETL(op,'cacheInfo) or systemErrorHere ["clamStats",op]
     prefix:=
       $reportCounts^= true => nil
       hitCounter:= INTERNL(op,'";hit")

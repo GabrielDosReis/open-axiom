@@ -78,7 +78,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
                   --prevents CheckVector from printing out same message twice
     $getDomainCode: local -- code for getting views
     $insideFunctorIfTrue: local:= true
-    $functorsUsed: local := nil --not currently used, finds dependent functors
     $setelt: local := "setShellEntry"
     $genSDVar: local:= 0
     originale:= $e
@@ -190,7 +189,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     reportOnFunctorCompilation()
  
 --  5. give operator a 'modemap property
---   if $functorsUsed then MAKEPROP(op',"NEEDS",$functorsUsed)
     $insideFunctorIfTrue:= false
     if $LISPLIB then
       $lisplibKind:=
@@ -1118,8 +1116,6 @@ doItLet1 item ==
          $functorLocalParameters:= [:$functorLocalParameters,lhs]
   if (rhs' := rhsOfLetIsDomainForm code) then
       if isFunctor rhs' then
-        $functorsUsed:= insert(opOf rhs',$functorsUsed)
-        $packagesUsed:= insert([opOf rhs'],$packagesUsed)
         $globalImportDefAlist := pp [[lhs, :rhs'],:$globalImportDefAlist]
       if lhs="Rep" then
         $Representation:= (get("Rep",'value,$e)).expr

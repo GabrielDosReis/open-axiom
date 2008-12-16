@@ -535,7 +535,7 @@ formIterator2String x ==
   x is ["|",y,p] => concat(formatIterator y," | ",form2StringLocal p)
   x is ["until",p] => concat("until ",form2StringLocal p)
   x is ["while",p] => concat("while ",form2StringLocal p)
-  systemErrorHere "formatIterator"
+  systemErrorHere ["formatIterator",x]
 
 tuple2String argl ==
   null argl => nil
