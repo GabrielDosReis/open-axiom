@@ -93,12 +93,12 @@ parseLeftArrow u ==
 
 parseIs: %ParseForm -> %Form 
 parseIs t == 
-  t isnt ["is",a,b] => systemErrorHere "parseIs"
+  t isnt ["is",a,b] => systemErrorHere ["parseIs",t]
   ["is",parseTran a,transIs parseTran b]
  
 parseIsnt: %ParseForm -> %Form
 parseIsnt t == 
-  t isnt ["isnt",a,b] => systemErrorHere "parseIsnt"
+  t isnt ["isnt",a,b] => systemErrorHere ["parseIsnt",t]
   ["isnt",parseTran a,transIs parseTran b]
  
 
@@ -130,7 +130,7 @@ transIs1 u ==
  
 parseLET: %ParseForm -> %Form
 parseLET t ==
-  t isnt ["%LET",x,y] => systemErrorHere "parseLET"
+  t isnt ["%LET",x,y] => systemErrorHere ["parseLET",t]
   p := ["%LET",parseTran x,parseTranCheckForRecord(y,opOf x)]
   opOf x = "cons" => ["%LET",transIs p.1,p.2]
   p
@@ -138,12 +138,12 @@ parseLET t ==
 
 parseLETD: %ParseForm -> %Form
 parseLETD t == 
-  t isnt ["LETD",x,y] => systemErrorHere "parseLETD"
+  t isnt ["LETD",x,y] => systemErrorHere ["parseLETD",t]
   ["%Decl",parseTran x,parseTran y]
 
 parseColon: %ParseForm -> %Form 
 parseColon u ==
-  u isnt [":",:.] => systemErrorHere "parseColon"
+  u isnt [":",:.] => systemErrorHere ["parseColon",u]
   u is [":",x] => [":",parseTran x]
   u is [":",x,typ] => [":",parseTran x,parseTran typ]
   u
@@ -151,43 +151,43 @@ parseColon u ==
 -- ??? This parser is unused at the moment.
 parseBigelt: %ParseForm -> %Form
 parseBigelt t ==
-  t isnt [.,typ,consForm] => systemErrorHere "parseBigelt"
+  t isnt [.,typ,consForm] => systemErrorHere ["parseBigelt",t]
   [["elt",typ,"makeRecord"],:transUnCons consForm]
 
 transUnCons: %ParseForm -> %Form 
 transUnCons u ==
-  atom u => systemErrorHere '"transUnCons"
+  atom u => systemErrorHere ["transUnCons",u]
   u is ["APPEND",x,y] =>
     null y => x
-    systemErrorHere '"transUnCons"
+    systemErrorHere ["transUnCons",u]
   u is ["CONS",x,y] =>
     atom y => [x,:y]
     [x,:transUnCons y]
 
 parseCoerce: %ParseForm -> %Form 
 parseCoerce t ==
-  t isnt [.,x,typ] => systemErrorHere "parseCoerce"
+  t isnt [.,x,typ] => systemErrorHere ["parseCoerce",t]
   ["::",parseTran x,parseTran typ]
 
 parseAtSign: %ParseForm -> %Form 
 parseAtSign t ==
-  t isnt [.,x,typ] => systemErrorHere "parseAtSign"
+  t isnt [.,x,typ] => systemErrorHere ["parseAtSign",t]
   ["@",parseTran x,parseTran typ]
  
 
 parsePretend: %ParseForm -> %Form
 parsePretend t ==
-  t isnt ["pretend",x,typ] => systemErrorHere "parsePretend"
+  t isnt ["pretend",x,typ] => systemErrorHere ["parsePretend",t]
   ["pretend",parseTran x,parseTran typ]
  
 parseAtAt: %ParseForm -> %Form
 parseAtAt t ==
-  t isnt ["@@",x,typ] => systemErrorHere "parseAtAt"
+  t isnt ["@@",x,typ] => systemErrorHere ["parseAtAt",t]
   ["@@",parseTran x,parseTran typ]
 
 parseHas: %ParseForm -> %Form 
 parseHas t ==
-  t isnt ["has",x,y] => systemErrorHere "parseHas"
+  t isnt ["has",x,y] => systemErrorHere ["parseHas",t]
   mkand [["has",x,u] for u in fn y] where
     mkand x ==
       x is [a] => a
@@ -206,7 +206,7 @@ parseHas t ==
  
 parseDEF: %ParseForm -> %Form
 parseDEF t ==
-  t isnt ["DEF",$lhs,tList,specialList,body] => systemErrorHere "parseDEF"
+  t isnt ["DEF",$lhs,tList,specialList,body] => systemErrorHere ["parseDEF",t]
   setDefOp $lhs
   ["DEF",parseLhs $lhs,parseTranList tList,parseTranList specialList,
     parseTranCheckForRecord(body,opOf $lhs)]
@@ -220,7 +220,8 @@ parseLhs x ==
 
 parseMDEF: %ParseForm -> %Form
 parseMDEF t ==
-  t isnt ["MDEF",$lhs,tList,specialList,body] => systemErrorHere "parseMDEF"
+  t isnt ["MDEF",$lhs,tList,specialList,body] => 
+    systemErrorHere ["parseMDEF",t]
   ["MDEF",parseTran $lhs,parseTranList tList,parseTranList specialList,
     parseTranCheckForRecord(body,opOf $lhs)]
  
@@ -234,7 +235,7 @@ parseTranCheckForRecord(x,op) ==
  
 parseCategory: %ParseForm -> %Form
 parseCategory t ==
-  t isnt ["CATEGORY",:x] => systemErrorHere "parseCategory"
+  t isnt ["CATEGORY",:x] => systemErrorHere ["parseCategory",t]
   l:= parseTranList parseDropAssertions x
   key:=
     CONTAINED("$",l) => "domain"
@@ -252,7 +253,7 @@ parseDropAssertions x ==
  
 parseGreaterThan: %ParseForm -> %Form
 parseGreaterThan t ==
-  t isnt [op,x,y] => systemErrorHere "parseGreaterThan"
+  t isnt [op,x,y] => systemErrorHere ["parseGreaterThan",t]
   [substitute("<",">",op),parseTran y,parseTran x]
 
 parseGreaterEqual: %ParseForm -> %Form
@@ -270,7 +271,7 @@ parseNotEqual u ==
 
 parseAnd: %ParseForm -> %Form 
 parseAnd t ==
-  t isnt ["and",:u] => systemErrorHere "parseAnd"
+  t isnt ["and",:u] => systemErrorHere ["parseAnd",t]
   null u => "true"
   null rest u => first u
   parseIf ["IF",parseTran first u,parseAnd ["and",:rest u],"false"]
@@ -278,7 +279,7 @@ parseAnd t ==
 
 parseOr: %ParseForm -> %Form
 parseOr t ==
-  t isnt ["or",:u] => systemErrorHere "parseOr"
+  t isnt ["or",:u] => systemErrorHere ["parseOr",t]
   null u => "false"
   null rest u => first u
   (x:= parseTran first u) is ["not",y] => 
@@ -287,7 +288,7 @@ parseOr t ==
  
 parseExit: %ParseForm -> %Form
 parseExit t ==
-  t isnt ["exit",a,:b] => systemErrorHere "parseExit"
+  t isnt ["exit",a,:b] => systemErrorHere ["parseExit",t]
   --  note: I wanted to convert 1s to 0s here to facilitate indexing in
   --   comp code; unfortunately, parseTran-ning is sometimes done more
   --   than once so that the count can be decremented more than once
@@ -302,7 +303,7 @@ parseExit t ==
 
 parseLeave: %ParseForm -> %Form
 parseLeave t ==
-  t isnt ["leave",a,:b] => systemErrorHere "parseLeave"
+  t isnt ["leave",a,:b] => systemErrorHere ["parseLeave",t]
   a:= parseTran a
   b:= parseTran b
   b =>
@@ -314,7 +315,7 @@ parseLeave t ==
 
 parseReturn: %ParseForm -> %Form
 parseReturn t ==
-  t isnt ["return",a,:b] => systemErrorHere "parseReturn"
+  t isnt ["return",a,:b] => systemErrorHere ["parseReturn",t]
   a:= parseTran a
   b:= parseTran b
   b =>
@@ -323,7 +324,7 @@ parseReturn t ==
  
 parseJoin: %ParseForm -> %Form
 parseJoin t ==
-  t isnt ["Join",:l] => systemErrorHere "parseJoin"
+  t isnt ["Join",:l] => systemErrorHere ["parseJoin",t]
   ["Join",:fn parseTranList l] where
     fn l ==
       null l => nil
@@ -332,7 +333,7 @@ parseJoin t ==
 
 parseInBy: %ParseForm -> %Form
 parseInBy t ==
-  t isnt ["INBY",i,n,inc] => systemErrorHere "parseInBy"
+  t isnt ["INBY",i,n,inc] => systemErrorHere ["parseInBy",t]
   (u:= parseIn ["IN",i,n]) isnt ["STEP",i,a,j,:r] =>
     postError ["   You cannot use",:bright '"by",
       '"except for an explicitly indexed sequence."]
@@ -349,7 +350,7 @@ parseSegment p ==
  
 parseIn: %ParseForm -> %Form
 parseIn t ==
-  t isnt ["IN",i,n] => systemErrorHere "parseIn"
+  t isnt ["IN",i,n] => systemErrorHere ["parseIn",t]
   i:= parseTran i
   n:= parseTran n
   n is ["SEGMENT",a] => ["STEP",i,a,1]
@@ -389,13 +390,13 @@ makeSimplePredicateOrNil p ==
 
 parseWhere: %List -> %Form
 parseWhere t == 
-  t isnt ["where",:l] => systemErrorHere "parseWhere"
+  t isnt ["where",:l] => systemErrorHere ["parseWhere",t]
   ["where",:mapInto(l, function parseTran)]
  
  
 parseSeq: %List -> %Form
 parseSeq t ==
-  t isnt ["SEQ",:l] => systemErrorHere "parseSeq"
+  t isnt ["SEQ",:l] => systemErrorHere ["parseSeq",t]
   l isnt [:.,["exit",:.]] =>
     postError ['"   Invalid ending to block: ",last l]
   transSeq mapInto(l,function parseTran)

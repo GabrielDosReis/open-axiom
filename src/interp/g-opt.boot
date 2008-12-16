@@ -156,7 +156,7 @@ optCall (x is ["call",:u]) ==
     RPLACA(fn,"getShellEntry")
     RPLAC(rest x,[:a,fn])
     x
-  systemErrorHere ['"optCall with", :bright x]
+  systemErrorHere ["optCall",x]
  
 optCallSpecially(q,x,n,R) ==
     y:= LASSOC(R,$specialCaseKeyList) => optSpecialCall(x,y,n)
@@ -176,7 +176,6 @@ optCallSpecially(q,x,n,R) ==
     nil
  
 optCallEval u ==
-  u is ["Boolean"] => Boolean()
   u is ["List",:.] => List Integer()
   u is ["Vector",:.] => Vector Integer()
   u is ["PrimitiveArray",:.] => PrimitiveArray Integer()
@@ -441,7 +440,7 @@ optLET u ==
   -- Munge inits into list of dotted-pairs.  Lovely Lisp.
   for defs in tails inits repeat
     def := first defs
-    atom def => systemErrorHere "optLET" -- cannot happen
+    atom def => systemErrorHere ["optLET",def] -- cannot happen
     rplac(rest def, second def)
   SUBLIS(inits,body)
 

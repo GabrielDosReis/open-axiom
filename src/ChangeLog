@@ -1,3 +1,25 @@
+2008-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compFormWithModemap): Tidy.
+	(compLogicalNot): Rename from compNot.
+	(compExclusiveOr): New.
+	(compViableModemap): Likewise.
+	(compResolveCall): Likewise.
+	(compApplyModemap): Tidy.
+	(compMapCond): Tidy.
+	(compMapCond''): Remove.
+	* interp/parse.boot (parseExclusiveOr): Remove.
+	* interp/sys-constants.boot ($SideEffectFreeFunctionList): Include
+	"and", "or", and "not".
+	* interp/modemap.boot (getModemap): Adjust call to compApplyModemap.
+	* interp/nruncomp.boot (NRTputInHead): Error on SPADCONST form.
+	* algebra/boolean.spad.pamphlet (and$Boolean): Use Lisp operation.
+	(or$Boolean): Likewise.
+	(not$Boolean): Likewise.
+	* algebra/mappkg.spad.pamphlet (fixedPoint$MappingPackage1):
+	Specify return type for Lisp expression.
+	* algebra/strap: Update cached Lisp translation.
+
 2008-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (ILinsn): New structure.

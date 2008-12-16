@@ -205,7 +205,7 @@ The {\bf OCOBJS} list contains files from the old compiler. Again,
 OCOBJS=	\
 	info.$(FASLEXT)		modemap.$(FASLEXT)	\
 	category.$(FASLEXT)	define.$(FASLEXT)	\
-	iterator.$(FASLEXT)	compiler.$(FASLEXT)	\
+	                    	compiler.$(FASLEXT)	\
 	c-doc.$(FASLEXT)	\
 	profile.$(FASLEXT)	functor.$(FASLEXT)	\
 	nruncomp.$(FASLEXT)	htcheck.$(FASLEXT)
@@ -551,14 +551,12 @@ setvart.$(FASLEXT): macros.$(FASLEXT)
 ## OpenAxiom's compiler
 wi2.$(FASLEXT): macros.$(FASLEXT) define.$(FASLEXT)
 wi1.$(FASLEXT): macros.$(FASLEXT)
-compiler.$(FASLEXT): msgdb.$(FASLEXT) \
-		pathname.$(FASLEXT) define.$(FASLEXT) iterator.$(FASLEXT)
+compiler.$(FASLEXT): msgdb.$(FASLEXT) pathname.$(FASLEXT) define.$(FASLEXT) 
 nrunopt.$(FASLEXT): c-util.$(FASLEXT)
 nrunfast.$(FASLEXT): c-util.$(FASLEXT)
 nruncomp.$(FASLEXT): nrunopt.$(FASLEXT) profile.$(FASLEXT) \
 	simpbool.$(FASLEXT) functor.$(FASLEXT)
 nrungo.$(FASLEXT): c-util.$(FASLEXT) clam.$(FASLEXT) interop.$(FASLEXT)
-iterator.$(FASLEXT): g-util.$(FASLEXT)
 define.$(FASLEXT): g-error.$(FASLEXT) modemap.$(FASLEXT) \
 	nruncomp.$(FASLEXT) database.$(FASLEXT)
 database.$(FASLEXT): clam.$(FASLEXT) nlib.$(FASLEXT) \

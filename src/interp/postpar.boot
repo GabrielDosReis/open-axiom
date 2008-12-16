@@ -104,7 +104,7 @@ postBigFloat x ==
 
 postAdd: %ParseTree -> %ParseForm
 postAdd x ==
-  x isnt ["add",a,:b] => systemErrorHere "postAdd"
+  x isnt ["add",a,:b] => systemErrorHere ["postAdd",x]
   b=nil => postCapsule a
   ["add",postTran a,postCapsule first b]
 
@@ -135,17 +135,17 @@ postColon u ==
 
 postAtSign: %ParseTree -> %ParseForm
 postAtSign t == 
-  t isnt ["@",x,y] => systemErrorHere "postAtSign"
+  t isnt ["@",x,y] => systemErrorHere ["postAtSign",t]
   ["@",postTran x,:postType y]
 
 postPretend: %ParseTree -> %ParseForm
 postPretend t == 
-  t isnt ["pretend",x,y] => systemErrorHere "postPretend"
+  t isnt ["pretend",x,y] => systemErrorHere ["postPretend",t]
   ["pretend",postTran x,:postType y]
 
 postAtAt: %ParseTree -> %ParseForm
 postAtAt t ==
-  t isnt ["@@",x,y] => systemErrorHere "postAtAt"
+  t isnt ["@@",x,y] => systemErrorHere ["postAtAt",t]
   ["@@",postTran x,:postType y]
 
 postConstruct: %ParseTree -> %ParseForm
@@ -189,7 +189,7 @@ postAtom x ==
 
 postBlock: %ParseTree -> %ParseForm
 postBlock t ==
-  t isnt ["%Block",:l,x] => systemErrorHere "postBlock"
+  t isnt ["%Block",:l,x] => systemErrorHere ["postBlock",t]
   ["SEQ",:postBlockItemList l,["exit",postTran x]]
 
 postBlockItemList: %List -> %List
@@ -205,7 +205,7 @@ postBlockItem x ==
 
 postCategory: %ParseTree -> %ParseForm
 postCategory u ==
-  u isnt ["CATEGORY",:l] => systemErrorHere "postCategory"
+  u isnt ["CATEGORY",:l] => systemErrorHere ["postCategory",u]
   --RDJ: ugh_ please -- someone take away need for PROGN as soon as possible
   null l => u
   op :=
@@ -221,8 +221,7 @@ postComma u ==
 
 postDef: %ParseTree -> %ParseForm
 postDef t ==
-  t isnt [defOp,lhs,rhs] => systemErrorHere "postDef"
---+
+  t isnt [defOp,lhs,rhs] => systemErrorHere ["postDef",t]
   lhs is ["macro",name] => postMDef ["==>",name,rhs]
 
   recordHeaderDocumentation nil
@@ -278,7 +277,7 @@ postMDef(t) ==
 
 postElt: %ParseTree -> %ParseForm
 postElt u ==
-  u isnt [.,a,b] => systemErrorHere "postElt"
+  u isnt [.,a,b] => systemErrorHere ["postElt",u]
   a:= postTran a
   b is ["%Sequence",:.] => [["elt",a,"makeRecord"],:postTranList rest b]
   ["elt",a,postTran b]
@@ -286,7 +285,7 @@ postElt u ==
 
 postExit: %ParseTree -> %ParseForm
 postExit t == 
-  t isnt ["=>",a,b] => systemErrorHere "postExit"
+  t isnt ["=>",a,b] => systemErrorHere ["postExit",t]
   ["IF",postTran a,["exit",postTran b],"%noBranch"]
 
 
@@ -297,7 +296,7 @@ postFlatten(x,op) ==
 
 postForm: %ParseTree -> %ParseForm
 postForm u ==
-  u isnt [op,:argl] => systemErrorHere "postForm"
+  u isnt [op,:argl] => systemErrorHere ["postForm",u]
   x:=
     atom op =>
       argl':= postTranList argl
@@ -324,12 +323,12 @@ postQuote [.,a] ==
 
 postScriptsForm: (%ParseTree,%List) -> %ParseForm
 postScriptsForm(t,argl) ==
-  t isnt ["Scripts",op,a] => systemErrorHere "postScriptsForm"
+  t isnt ["Scripts",op,a] => systemErrorHere ["postScriptsForm",t]
   [getScriptName(op,a,#argl),:postTranScripts a,:argl]
 
 postScripts: %ParseTree -> %ParseForm
 postScripts t ==
-  t isnt ["Scripts",op,a] => systemErrorHere "postScripts"
+  t isnt ["Scripts",op,a] => systemErrorHere ["postScripts",t]
   [getScriptName(op,a,0),:postTranScripts a]
 
 getScriptName: (%Symbol,%ParseTree, %Short) -> %ParseForm
@@ -389,18 +388,18 @@ postOp x ==
 
 postRepeat: %ParseTree -> %ParseForm
 postRepeat t == 
-  t isnt ["REPEAT",:m,x] => systemErrorHere "postRepeat"
+  t isnt ["REPEAT",:m,x] => systemErrorHere ["postRepeat",t]
   ["REPEAT",:postIteratorList m,postTran x]
 
 postSEGMENT: %ParseTree -> %ParseForm
 postSEGMENT t ==
-  t isnt ["SEGMENT",a,b] => systemErrorHere "postSEGMENT"
+  t isnt ["SEGMENT",a,b] => systemErrorHere ["postSEGMENT",t]
   key:= [a,'"..",:(b => [b]; nil)]
   postError ['"   Improper placement of segment",:bright key]
 
 postCollect: %ParseTree -> %ParseForm
 postCollect t ==
-  t isnt [constructOp,:m,x] => systemErrorHere "postCollect"
+  t isnt [constructOp,:m,x] => systemErrorHere ["postCollect",t]
   x is [["elt",D,"construct"],:y] =>
     postCollect [["elt",D,"COLLECT"],:m,["construct",:y]]
   itl:= postIteratorList m
@@ -419,7 +418,7 @@ postCollect t ==
 
 postTupleCollect: %ParseTree -> %ParseForm
 postTupleCollect t ==
-  t isnt [constructOp,:m,x] => systemErrorHere "postTupleCollect"
+  t isnt [constructOp,:m,x] => systemErrorHere ["postTupleCollect",t]
   postCollect [constructOp,:m,["construct",x]]
 
 postIteratorList: %List -> %List
@@ -433,12 +432,12 @@ postIteratorList x ==
 
 postin: %ParseTree -> %ParseForm
 postin arg ==
-  arg isnt ["in",i,seq] => systemErrorHere '"postin"
+  arg isnt ["in",i,seq] => systemErrorHere ["postin",arg]
   ["in",postTran i, postInSeq seq]
 
 postIn: %ParseTree -> %ParseForm
 postIn arg ==
-  arg isnt ["IN",i,seq] => systemErrorHere '"postIn"
+  arg isnt ["IN",i,seq] => systemErrorHere ["postIn",arg]
   ["IN",postTran i,postInSeq seq]
 
 postInSeq: %ParseTree -> %ParseForm
@@ -470,7 +469,7 @@ SEGMENT(a,b) ==
 
 postReduce: %ParseTree -> %ParseForm
 postReduce t ==
-  t isnt ["%Reduce",op,expr] => systemErrorHere "postReduce"
+  t isnt ["%Reduce",op,expr] => systemErrorHere ["postReduce",t]
   $InteractiveMode or expr is ["COLLECT",:.] =>
     ["REDUCE",op,0,postTran expr]
   postReduce ["%Reduce",op,["COLLECT",["IN",g:= GENSYM(),expr],
@@ -487,12 +486,12 @@ postSemiColon u ==
 
 postSequence: %ParseTree -> %ParseForm
 postSequence t == 
-  t isnt ["%Sequence",:l] => systemErrorHere "postSequence"
+  t isnt ["%Sequence",:l] => systemErrorHere ["postSequence",t]
   ['(elt $ makeRecord),:postTranList l]
 
 postSignature: %ParseTree -> %ParseForm
 postSignature t ==
-  t isnt ["%Signature",op,sig] => systemErrorHere "postSignature"
+  t isnt ["%Signature",op,sig] => systemErrorHere ["postSignature",t]
   sig is ["->",:.] =>
     sig1:= postType sig
     op:= postAtom (STRINGP op => INTERN op; op)
@@ -509,7 +508,7 @@ killColons x ==
 
 postSlash: %ParseTree -> %ParseForm
 postSlash t ==
-  t isnt ['_/,a,b] => systemErrorHere "postSlash"
+  t isnt ['_/,a,b] => systemErrorHere ["postSlash",t]
   STRINGP a => postTran ["%Reduce",INTERN a,b]
   ['_/,postTran a,postTran b]
 
@@ -536,7 +535,7 @@ post%Comma u ==
 
 postWhere: %ParseTree -> %ParseForm
 postWhere t ==
-  t isnt ["where",a,b] => systemErrorHere "postWhere"
+  t isnt ["where",a,b] => systemErrorHere ["postWhere",t]
   x:=
     b is ["%Block",:c] => c
     [b]
@@ -544,7 +543,7 @@ postWhere t ==
 
 postWith: %ParseTree -> %ParseForm
 postWith t ==
-  t isnt ["with",a] => systemErrorHere "postWidth"
+  t isnt ["with",a] => systemErrorHere ["postWidth",t]
   $insidePostCategoryIfTrue: local := true
   a:= postTran a
   a is [op,:.] and MEMQ(op,'(SIGNATURE ATTRIBUTE IF)) => ["CATEGORY",a]
@@ -599,7 +598,7 @@ postAlternatives alts ==
 
 postMatch: %ParseTree -> %ParseForm
 postMatch t ==
-  t isnt ["%Match",expr,alts] => systemErrorHere "postMatch"
+  t isnt ["%Match",expr,alts] => systemErrorHere ["postMatch",t]
   alts :=
     alts is [";",:.] => ["%Block",:postFlattenLeft(alts,";")]
     alts

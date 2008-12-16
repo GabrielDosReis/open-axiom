@@ -174,7 +174,6 @@ compTopLevel(x,m,e) ==
   $NRTderivedTargetIfTrue: local := false
   $killOptimizeIfTrue: local:= false
   $forceAdd: local:= false
-  $packagesUsed: local := []
   -- The next line allows the new compiler to be tested interactively.
   compFun := 'compOrCroak
   if x is ["where",:.] then x := markWhereTran x
@@ -685,7 +684,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom op => and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
   op is ["XLAM",args,bods] =>
     and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
-  systemErrorHere '"canReturn" --for the time being
+  systemErrorHere ["canReturn",expr] --for the time being
 
 compList(l,m is ["List",mUnder],e) ==
   markImport m
@@ -1073,7 +1072,6 @@ compNot([op,arg], pWas, m, e) ==
 
 compDefine(form,m,e) ==
   $macroIfTrue: local
-  $packagesUsed: local
   ['DEF,.,originalSignature,.,body] := form
   if not $insideFunctorIfTrue then
     $originalBody := COPY body
