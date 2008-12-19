@@ -1,3 +1,10 @@
+2008-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (insertViewMorphisms): New.
+	(checkRepresentation): Rename from maybeInsertViewMorphisms. Tidy.
+	(compDefineFunctor1): Tidy.
+	(doIt): Insert view morphisms if appropriate.
+
 2008-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compFormWithModemap): Tidy.

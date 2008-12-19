@@ -220,12 +220,14 @@ applyMapping([op,:argl],m,e,ml) ==
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
   if argl'="failed" then return nil
   form:=
-    atom op and not(op in $formalArgList) and not get(op,"value",e) =>
+    atom op and not(op in $formalArgList) and null (u := get(op,"value",e)) =>
       nprefix := $prefix or
       -- following needed for referencing local funs at capsule level
         getAbbreviation($op,#rest $form)
       [op',:argl',"$"] where
         op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
+    -- Compiler synthetized operators are inline.
+    u ^= nil and u.expr is ["XLAM",:.] => ["call",u.expr,:argl']
     ['call,['applyFun,op],:argl']
   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
   convert([form,SUBLIS(pairlis,first ml),e],m)

@@ -62,9 +62,6 @@ $mutableDomain := false
 ++ when non nil, holds the declaration number of a function in a capsule.
 $suffix := nil
 
--- ??? turns off buggy code
-$NRTopt := false
-
 $doNotCompileJustPrint := false
 
 ++ stack of pending capsule function definitions.
@@ -76,7 +73,6 @@ $functorStats := nil
 $lisplibCategory := nil
 $lisplibAncestors := nil
 $lisplibAbbreviation := nil
-$LocalDomainAlist := []
 $CheckVectorList := []
 $setelt := nil
 $pairlis := []
@@ -169,45 +165,72 @@ compDefine(form,m,e) ==
   $macroIfTrue: local := false
   compDefine1(form,m,e)
 
-++ We are about to process the body of a capsule.  If the capsule defines
-++ `Rep' as a constant, then implicitly insert the view morphisms
+++ Activate synthetized pair concretization and abstraction
+++ view morphisms for domains.
+insertViewMorphisms: (%Mode,$Env) -> %Env
+insertViewMorphisms(t,e) ==
+  $useRepresentationHack => e
+  g := GENSYM()
+  repType := ["Mapping",t,"$"]
+  perType := ["Mapping","$",t]
+  e := put("rep","value",[["XLAM",[g],g],repType,nil],e)
+  put("per","value",[["XLAM",[g],g],perType,nil],e)
+
+++ We are about to process the body of a capsule.  Check the form of
+++ `Rep' definition, and whether it is appropriate to activate the
+++ implicitly generated morphisms
 ++     per: Rep -> %
 ++     rep: % -> Rep
-++ as local functions.  Note that we do not declare them as macros.
-maybeInsertViewMorphisms: %Form -> %Form
-maybeInsertViewMorphisms body ==
+++ as local inline functions.
+checkRepresentation: %Form -> %Form
+checkRepresentation body ==
   domainRep := nil
-  before := nil
-  
-  while null domainRep for [stmt,:after] in tails body repeat
-    stmt isnt ["DEF",["Rep",:args],sig,nils,domainRep] => 
-      before := [stmt,:before]
-    if args then
-      userError [:bright '"Rep",'"cannot take arguments"]
-    if first sig then
-      userError [:bright '"Rep", "cannot have type sepcification"]
+  hasAssignRep := false        -- assume code does not assign to Rep.
+  viewFuns := nil
 
-  null domainRep => body
-  -- Make sure we don't implicitly convert from `Rep' to `%'.
-  $useRepresentationHack := false
-  -- Reject user-defined view morphisms 
-  for stmt in after repeat
-    stmt is ["DEF",["rep",:.],:.] 
-      or stmt is ["DEF",["per",:.],:.] =>
-        -- ??? We may actually want to stop processing now.
-        stackSemanticError(['"Cannot define",:bright "per"],nil)
-
-  -- OK, insert synthetized view morphisms
-  g := GENSYM()
-  repMorphism := ["DEF",["rep",g],[domainRep,"$"],[nil,nil],
-                    ["pretend",g,domainRep]]
-  perMorphism := ["DEF",["per",g],["$",domainRep],[nil,nil],
-                    ["pretend",g,"$"]]
+  null body => body            -- Don't be too hard on nothing.
   
-  -- Trick the rest of the compiler into believing that
-  -- that `Rep' was defined the old way, for the purpose of lookup.
-  [:reverse before, ["%LET","Rep",domainRep], 
-     :[repMorphism,perMorphism],:after]
+  -- Locate possible Rep definition
+  for [stmt,:.] in tails body repeat
+    stmt is ["%LET","Rep",.] =>
+      domainRep ^= nil =>
+        stackAndThrow('"You cannot assign to constant domain %1b",["Rep"])
+      return hasAssignRep := true
+    stmt is ["MDEF",["Rep",:.],:.] =>
+      stackWarning('"Consider using == definition for %1b",["Rep"])
+      return hasAssignRep := true
+    stmt is ["IF",.,:l] or stmt is ["SEQ",:l] or stmt is ["exit",:l] =>
+      checkRepresentation l
+      $useRepresentationHack => return hasAssignRep := true
+    stmt isnt ["DEF",[op,:args],sig,.,val] => nil -- skip for now.
+    op in '(rep per) =>
+      domainRep ^= nil =>
+        stackAndThrow('"You cannot define implicitly generated %1b",[op])
+      viewFuns := [op,:viewFuns]
+    op ^= "Rep" => nil        -- we are only interested in Rep definition
+    domainRep := val
+    viewFuns ^= nil =>
+      stackAndThrow('"You cannot define both %1b and %2b",["Rep",:viewFuns])
+    -- A package has no "%".
+    $functorKind = "package" =>
+      stackAndThrow('"You cannot define %1b in a package",["Rep"])
+    -- It is a mistake to define Rep in category defaults
+    $insideCategoryPackageIfTrue =>
+      stackAndThrow('"You cannot define %1b in category defaults",["Rep"])
+    if args ^= nil then
+      stackAndThrow('"%1b does take arguments",["Rep"])
+    if first sig ^= nil then
+      stackAndThrow('"You cannot specify type for %1b",["Rep"])
+    -- Now, trick the rest of the compiler into believing that
+    -- `Rep' was defined the Old Way, for lookup purpose.
+    rplac(first stmt,"%LET")
+    rplac(rest stmt,["Rep",domainRep])
+    $useRepresentationHack := false          -- Don't confuse `Rep' and `%'.
+
+  -- Shall we perform the dirty tricks?
+  if hasAssignRep then
+    $useRepresentationHack := true
+  body
 
 
 compDefine1: (%Form,%Mode,%Env) -> %Maybe %Triple 
@@ -556,7 +579,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $functorTarget: local := nil
     $Representation: local := nil
          --Set in doIt, accessed in the compiler - compNoStacking
-    $LocalDomainAlist: local := []  --set in doIt, accessed in genDeltaEntry
     $functorForm: local := nil
     $functorLocalParameters: local := nil
     SETQ($myFunctorBody, body)
@@ -581,6 +603,9 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       modemap2Signature getModemap($form,$e)
     target:= first signature'
     $functorTarget:= target
+    $functorKind: local :=
+      $functorTarget is ["CATEGORY",key,:.] => key
+      "domain"
     $e:= giveFormalParametersValues(argl,$e)
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
@@ -610,20 +635,8 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     -- generate slots for arguments first, then for $NRTaddForm in compAdd
     for x in argl repeat NRTgetLocalIndex x
     [.,.,$e]:= compMakeDeclaration([":",'_$,target],m,$e)
-    --The following loop sees if we can economise on ADDed operations
-    --by using those of Rep, if that is the same. Example: DIRPROD
     if not $insideCategoryPackageIfTrue  then
-      if body is ['add,ab:=[fn,:.],['CAPSULE,:cb]] and MEMQ(fn,'(List Vector))
-         and FindRep(cb) = ab
-               where FindRep cb ==
-                 u:=
-                   while cb repeat
-                     ATOM cb => return nil
-                     cb is [["%LET",'Rep,v,:.],:.] => return (u:=v)
-                     cb:=CDR cb
-                 u
-      then $e:= augModemapsFromCategoryRep('_$,ab,cb,target,$e)
-      else $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
+      $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
     $signature:= signature'
     parSignature:= SUBLIS($pairlis,signature')
     parForm:= SUBLIS($pairlis,form)
@@ -673,8 +686,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $insideFunctorIfTrue:= false
     if $LISPLIB then
       $lisplibKind:=
-------->This next line prohibits changing the KIND once given
---------kk:=getConstructorKindFromDB $op => kk
         $functorTarget is ["CATEGORY",key,:.] and key^="domain" => 'package
         'domain
       $lisplibForm:= form
@@ -1409,7 +1420,7 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true
   clearCapsuleFunctionTable()
-  compCapsuleInner(maybeInsertViewMorphisms itemList,m,addDomain('_$,e))
+  compCapsuleInner(checkRepresentation itemList,m,addDomain('_$,e))
  
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm
@@ -1500,10 +1511,8 @@ doIt(item,$predl) ==
       if lhs="Rep" then
         $Representation:= (get("Rep",'value,$e)).expr
            --$Representation bound by compDefineFunctor, used in compNoStacking
-        if $NRTopt = true
-          then NRTgetLocalIndex $Representation
-      $LocalDomainAlist:= --see genDeltaEntry
-        [[lhs,:SUBLIS($LocalDomainAlist,(get(lhs,'value,$e)).0)],:$LocalDomainAlist]
+        -- Activate view morphisms if appropriate
+        $e := insertViewMorphisms($Representation,$e)
     code is ["%LET",:.] =>
       RPLACA(item,"setShellEntry")
       rhsCode := rhs'
