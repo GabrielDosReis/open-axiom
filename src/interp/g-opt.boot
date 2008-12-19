@@ -381,7 +381,8 @@ optEQ u ==
 
 $simpleVMoperators == 
   '(CONS CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
-    QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP)
+    SPADfirst QVELT _+ _- _* _< _=
+     QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP)
 
 isSimpleVMForm form ==
   isAtomicForm form => true

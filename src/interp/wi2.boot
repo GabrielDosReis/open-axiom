@@ -36,6 +36,9 @@ import macros
 import define
 namespace BOOT
 
+-- ??? turns off buggy code
+$NRTopt := false
+
 compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     ['DEF,form,signature,$functorSpecialCases,body] := df
     signature := markKillAll signature

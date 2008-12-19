@@ -1005,6 +1005,10 @@ replaceSimpleFunctions form ==
       NBUTLAST form
     -- 2.2. the substitution case.
     fun' is ["XLAM",parms,body] =>
+      -- Inline almost constant functions.
+      null parms => body
+      -- Identity function toos.
+      parms is [=body] => first args
       -- conservatively approximate eager semantics
       and/[isAtomicForm first as for as in tails args] =>
         -- alpha rename before substitution.
