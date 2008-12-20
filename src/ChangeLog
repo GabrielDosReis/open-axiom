@@ -1,5 +1,15 @@
 2008-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/newdata.spad.pamphlet (SplittingNode): Define Rep as
+	constant.  Remove definitions for `per' and `rep'.
+	* algebra/regset.spad.pamphlet (RegularTriangularSet): Likewise.
+	* algebra/sregset.spad.pamphlet (SquareFreeRegularTriangularSet):
+	Likewise. 
+	* algebra/triset.spad.pamphlet (GeneralTriangularSet): Likewise.
+	(WuWenTsunTriangularSet): Likewise.
+	
+2008-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (insertViewMorphisms): New.
 	(checkRepresentation): Rename from maybeInsertViewMorphisms. Tidy.
 	(compDefineFunctor1): Tidy.
