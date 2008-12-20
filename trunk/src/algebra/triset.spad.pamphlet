@@ -531,10 +531,7 @@ GeneralTriangularSet(R,E,V,P) : Exports == Implementation where
 
   Implementation == add
 
-     Rep ==> LP
-
-     rep(s:$):Rep == s pretend Rep
-     per(l:Rep):$ == l pretend $
+     Rep == LP
 
      copy ts ==
        per(copy(rep(ts))$LP)
@@ -1515,10 +1512,7 @@ WuWenTsunTriangularSet(R,E,V,P) : Exports == Implementation where
 
      removeSquares: $ -> Union($,"failed")
 
-     Rep ==> LP
-
-     rep(s:$):Rep == s pretend Rep
-     per(l:Rep):$ == l pretend $
+     Rep == LP
 
      removeAssociates (lp:LP):LP ==
        removeDuplicates [primPartElseUnitCanonical(p) for p in lp]

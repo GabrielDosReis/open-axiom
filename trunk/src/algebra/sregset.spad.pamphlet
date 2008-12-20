@@ -1226,10 +1226,7 @@ SquareFreeRegularTriangularSet(R,E,V,P) : Exports == Implementation where
 
   Implementation == add
 
-     Rep ==> LP
-
-     rep(s:$):Rep == s pretend Rep
-     per(l:Rep):$ == l pretend $
+     Rep == LP
 
      copy ts ==
        per(copy(rep(ts))$LP)

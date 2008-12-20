@@ -255,10 +255,7 @@ SplittingNode(V,C) : Exports == Implementation where
 
   Implementation == add
 
-     Rep ==> VTB
-
-     rep(n:%):Rep == n pretend Rep
-     per(r:Rep):% == r pretend %
+     Rep == VTB
 
      empty() == per [empty()$V,empty()$C,false]$Rep
      empty?(n:%) == empty?((rep n).val)$V and  empty?((rep n).tower)$C
@@ -437,10 +434,7 @@ SplittingTree(V,C) : Exports == Implementation where
 
   Implementation == add
 
-     Rep ==> A
-
-     rep(n:%):Rep == n pretend Rep
-     per(r:Rep):% == r pretend %
+     Rep == A
 
      construct(s:S) == 
         per [s,[]]$A
