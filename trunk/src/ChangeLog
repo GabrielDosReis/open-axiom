@@ -1,5 +1,10 @@
 2008-12-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-analy.boot (elaborateForm): New.
+	* interp/i-spec2.boot (uphas): Use it.  Evaluate first operand.
+
+2008-12-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (checkRepresentation): Take a second
 	argument.  For domain extensions, warn about useless assignment to
 	Rep, and syntactically 	conflicting assignment to Rep.

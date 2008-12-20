@@ -200,6 +200,12 @@ pushDownOp?(op,n) ==
 -- Also see I-SPEC BOOT for special handlers and I-MAP BOOT for
 -- user function processing.
 
+++ Take a parse form and return the VAT for its elaboration.
+elaborateForm pf ==
+  t := mkAtree1 pf
+  bottomUp t
+  t
+
 bottomUp t ==
   -- bottomUp takes an attributed tree, and returns the modeSet for it.
   -- As a side-effect it also evaluates the tree.

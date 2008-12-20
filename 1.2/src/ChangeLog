@@ -1,3 +1,8 @@
+2008-12-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-analy.boot (elaborateForm): New.
+	* interp/i-spec2.boot (uphas): Use it.  Evaluate first operand.
+
 2008-12-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/parsing.lisp (initial-substring-p): Match case sensitively.
