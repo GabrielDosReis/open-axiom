@@ -182,8 +182,8 @@ insertViewMorphisms(t,e) ==
 ++     per: Rep -> %
 ++     rep: % -> Rep
 ++ as local inline functions.
-checkRepresentation: %Form -> %Form
-checkRepresentation body ==
+checkRepresentation: (%Form,%List) -> %Form
+checkRepresentation(addForm,body) ==
   domainRep := nil
   hasAssignRep := false        -- assume code does not assign to Rep.
   viewFuns := nil
@@ -192,15 +192,19 @@ checkRepresentation body ==
   
   -- Locate possible Rep definition
   for [stmt,:.] in tails body repeat
-    stmt is ["%LET","Rep",.] =>
+    stmt is ["%LET","Rep",val] =>
       domainRep ^= nil =>
         stackAndThrow('"You cannot assign to constant domain %1b",["Rep"])
+      if addForm = val then
+        stackWarning('"OpenAxiom suggests removing assignment to %1b",["Rep"])
+      else if addForm ^= nil then
+        stackWarning('"%1b differs from the base domain",["Rep"])
       return hasAssignRep := true
     stmt is ["MDEF",["Rep",:.],:.] =>
       stackWarning('"Consider using == definition for %1b",["Rep"])
       return hasAssignRep := true
     stmt is ["IF",.,:l] or stmt is ["SEQ",:l] or stmt is ["exit",:l] =>
-      checkRepresentation l
+      checkRepresentation(addForm,l)
       $useRepresentationHack => return hasAssignRep := true
     stmt isnt ["DEF",[op,:args],sig,.,val] => nil -- skip for now.
     op in '(rep per) =>
@@ -1420,7 +1424,8 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true
   clearCapsuleFunctionTable()
-  compCapsuleInner(checkRepresentation itemList,m,addDomain('_$,e))
+  compCapsuleInner(checkRepresentation($addFormLhs,itemList),m,
+                   addDomain('_$,e))
  
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm
