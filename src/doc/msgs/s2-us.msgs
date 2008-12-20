@@ -169,6 +169,8 @@ S2IE0014
  package-call context.
 S2IE0020
  Only identifiers can be used as Record of Union field names.
+S2IE0021
+ %1b as first argument to %b has %d does not evaluate to a type.
 S2IF0001
  A $-expression must have a fully specified domain or package on the
  right-hand side.
