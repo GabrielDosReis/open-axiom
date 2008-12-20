@@ -1,3 +1,9 @@
+2008-12-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (checkRepresentation): Take a second
+	argument.  For domain extensions, warn about useless assignment to
+	Rep, and syntactically 	conflicting assignment to Rep.
+
 2008-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/newdata.spad.pamphlet (SplittingNode): Define Rep as
