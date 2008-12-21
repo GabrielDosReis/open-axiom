@@ -1622,7 +1622,7 @@ FortranExpression(basicSymbols,subscriptedSymbols,R):
       not empty? extras => 
         m := fixUpSymbols(u)
         m case EXPR(R) => m::EXPR(R)
-        error("Extra symbols detected:",[string(v) for v in extras]$L(String))
+        error ["Extra symbols detected:",[string(v) for v in extras]$L(String)]
       u
 
     notSymbol?(v:BO):Boolean ==
@@ -1648,7 +1648,7 @@ FortranExpression(basicSymbols,subscriptedSymbols,R):
         fortranFunctions : L S := f77Functions
       extras : L S := setDifference(ops,fortranFunctions)
       not empty? extras => 
-        error("Non FORTRAN-77 functions detected:",[string(v) for v in extras])
+        error ["Non FORTRAN-77 functions detected:",[string(v) for v in extras]]
       void()
 
     checkForNagOperators(u:EXPR R):$ ==
@@ -1658,8 +1658,8 @@ FortranExpression(basicSymbols,subscriptedSymbols,R):
         piOp : BasicOperator := operator X01AAF
         piSub : Equation EXPR R :=
           equation(pi()$Pi::EXPR(R),kernel(piOp,0::EXPR(R))$EXPR(R))
-        subst(u,piSub) pretend $
-      u pretend $
+        per subst(u,piSub)
+      per u
 
     -- Conditional retractions:
 
@@ -1720,7 +1720,7 @@ FortranExpression(basicSymbols,subscriptedSymbols,R):
 
     pi():$ == kernel(operator X01AAF,0)
 
-    coerce(u:$):EXPR R == u pretend EXPR(R)
+    coerce(u:$):EXPR R == rep u
 
     retractIfCan(u:EXPR R):Union($,"failed") ==
       if (extraSymbols? u) then 
@@ -1738,12 +1738,12 @@ FortranExpression(basicSymbols,subscriptedSymbols,R):
     retractIfCan(u:Symbol):Union($,"failed") ==
       not (member?(u,basicSymbols) or
            scripted?(u) and member?(name u,subscriptedSymbols)) => "failed"
-      (((u::EXPR(R))$(EXPR R))pretend Rep)::$
+      per (u::EXPR(R))
 
     retract(u:Symbol):$ ==
       res : Union($,"failed") := retractIfCan(u)
-      res case "failed" => error("Illegal Symbol Detected:",u::String)
-      res::$
+      res case "failed" => error ["Illegal Symbol Detected:",u::String]
+      res
 
 @
 \section{License}

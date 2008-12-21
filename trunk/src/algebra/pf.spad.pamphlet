@@ -84,7 +84,7 @@ InnerPrimeField(p:PositiveInteger): Exports == Implementation where
       zero?(n) => 1
       zero?(x) => 0
       r := positiveRemainder(n,p-1)::NNI
-      ((x pretend IntegerMod p) **$IntegerMod(p) r) pretend $
+      per (rep(x) **$IntegerMod(p) r)
 
     if p <= convert(max()$SingleInteger)@Integer then
       q := p::SingleInteger

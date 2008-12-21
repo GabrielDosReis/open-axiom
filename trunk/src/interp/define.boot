@@ -182,13 +182,13 @@ insertViewMorphisms(t,e) ==
 ++     per: Rep -> %
 ++     rep: % -> Rep
 ++ as local inline functions.
-checkRepresentation: (%Form,%List) -> %Form
-checkRepresentation(addForm,body) ==
+checkRepresentation: (%Form,%List,%Env) -> %Env
+checkRepresentation(addForm,body,env) ==
   domainRep := nil
   hasAssignRep := false        -- assume code does not assign to Rep.
   viewFuns := nil
 
-  null body => body            -- Don't be too hard on nothing.
+  null body => env             -- Don't be too hard on nothing.
   
   -- Locate possible Rep definition
   for [stmt,:.] in tails body repeat
@@ -204,8 +204,7 @@ checkRepresentation(addForm,body) ==
       stackWarning('"Consider using == definition for %1b",["Rep"])
       return hasAssignRep := true
     stmt is ["IF",.,:l] or stmt is ["SEQ",:l] or stmt is ["exit",:l] =>
-      checkRepresentation(addForm,l)
-      $useRepresentationHack => return hasAssignRep := true
+      checkRepresentation(nil,l,env)
     stmt isnt ["DEF",[op,:args],sig,.,val] => nil -- skip for now.
     op in '(rep per) =>
       domainRep ^= nil =>
@@ -234,7 +233,19 @@ checkRepresentation(addForm,body) ==
   -- Shall we perform the dirty tricks?
   if hasAssignRep then
     $useRepresentationHack := true
-  body
+  -- Domain extensions with no explicit Rep definition have the
+  -- the base domain as representation (at least operationally).
+  else if null domainRep and addForm ^= nil then
+    if $functorKind = "domain" and addForm isnt ["%Comma",:.] then
+      domainRep :=
+        addForm is ["SubDomain",dom,.] => dom
+        addForm
+      base := compForMode(domainRep,$EmptyMode,env) or 
+        stackAndThrow('"1b is not a domain",[domainRep])
+      $useRepresentationHack := false
+      env := insertViewMorphisms(base.expr,env)
+      -- ??? Maybe we should also make Rep available as macro.
+  env
 
 
 compDefine1: (%Form,%Mode,%Env) -> %Maybe %Triple 
@@ -1424,8 +1435,8 @@ compCapsule(['CAPSULE,:itemList],m,e) ==
   $insideExpressionIfTrue: local:= false
   $useRepresentationHack := true
   clearCapsuleFunctionTable()
-  compCapsuleInner(checkRepresentation($addFormLhs,itemList),m,
-                   addDomain('_$,e))
+  e := checkRepresentation($addFormLhs,itemList,e)
+  compCapsuleInner(itemList,m,addDomain('_$,e))
  
 compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
   $addFormLhs: local:= domainForm

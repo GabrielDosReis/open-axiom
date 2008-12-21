@@ -288,7 +288,7 @@ BinaryExpansion(): Exports == Implementation where
 
   Implementation ==> RadixExpansion(2) add
     binary r == r :: %
-    coerce(x:%): RadixExpansion(2) == x pretend RadixExpansion(2)
+    coerce(x:%): RadixExpansion(2) == rep x
 
 @
 \section{domain DECIMAL DecimalExpansion}
@@ -317,7 +317,7 @@ DecimalExpansion(): Exports == Implementation where
 
   Implementation ==> RadixExpansion(10) add
     decimal r == r :: %
-    coerce(x:%): RadixExpansion(10) == x pretend RadixExpansion(10)
+    coerce(x:%): RadixExpansion(10) == rep x
 
 @
 \section{domain HEXADEC HexadecimalExpansion}
@@ -348,7 +348,7 @@ HexadecimalExpansion(): Exports == Implementation where
 
   Implementation ==> RadixExpansion(16) add
     hex r == r :: %
-    coerce(x:%): RadixExpansion(16) == x pretend RadixExpansion(16)
+    coerce(x:%): RadixExpansion(16) == rep x
 
 @
 \section{package RADUTIL RadixUtilities}

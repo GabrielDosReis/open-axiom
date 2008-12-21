@@ -1,5 +1,22 @@
 2008-12-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (checkRepresentation): Take a third
+	argument. Provide view morphisms for domain extensions.
+	(compCapsule): Adjust call.
+	* algebra/alql.spad.pamphlet (DataList): Use per and rep.
+	* algebra/fortmac.spad.pamphlet (MachineInteger): Likewise.
+	* algebra/fortran.spad.pamphlet (FortranExpression): Likewise.
+	* algebra/integer.spad.pamphlet (NonNegativeInteger): Likewise.
+	(PositiveInteger): Likewise.
+	* algebra/ituple.spad.pamphlet (InfiniteTuple): Likewise.
+	* algebra/matrix.spad.pamphlet (RectangularMatrix): Likewise.
+	* algebra/pf.spad.pamphlet (InnerPrimeField): Likewise.
+	* algebra/radix.spad.pamphlet (BinaryExpansion): Likewise.
+	(DecimalExpansion): Likewise.
+	(HexadecimalExpansion): Likewise.
+
+2008-12-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-analy.boot (elaborateForm): New.
 	* interp/i-spec2.boot (uphas): Use it.  Evaluate first operand.
 
