@@ -281,9 +281,9 @@ NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
       sup(x,y) == MAX(x,y)$Lisp
       shift(x:%, n:Integer):% == ASH(x,n)$Lisp
       subtractIfCan(x, y) ==
-        c:Integer := (x pretend Integer) - (y pretend Integer)
+        c:Integer := rep x - rep y
         c < 0 => "failed"
-        c pretend %
+        per c
 
 @
 
@@ -304,9 +304,7 @@ PositiveInteger: Join(OrderedAbelianSemiGroup,Monoid) with
               ++ positive integers \spad{a} and b.
             commutative("*")
               ++ commutative("*") means multiplication is commutative : x*y = y*x
- == SubDomain(NonNegativeInteger,#1 > 0) add
-     x:%
-     y:%
+ == SubDomain(NonNegativeInteger,#1 > 0)
 
 @
 

@@ -29,8 +29,8 @@ DataList(S:OrderedSet) : Exports == Implementation where
     elt(x,"unique") == removeDuplicates(x)
     elt(x,"sort") == sort(x)
     elt(x,"count") == #x
-    coerce(x:List S) == x pretend %
-    coerce(x:%):List S == x pretend (List S)
+    coerce(x:List S) == per x
+    coerce(x:%):List S == rep x
     coerce(x:%): OutputForm == (x :: List S) :: OutputForm
     datalist(x:List S) == x::%
 

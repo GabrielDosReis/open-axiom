@@ -45,13 +45,11 @@ InfiniteTuple(S:Type): Exports == Implementation where
       ++ construct(t) converts an infinite tuple to a stream.
 
   Implementation ==> Stream S add
-    generate(f,x) == generate(f,x)$Stream(S) pretend %
-    filterWhile(f, x) == filterWhile(f,x pretend Stream(S))$Stream(S) pretend %
-    filterUntil(f, x) == filterUntil(f,x pretend Stream(S))$Stream(S) pretend %
-    select(f, x) == select(f,x pretend Stream(S))$Stream(S) pretend %
-    construct x == x pretend Stream(S)
---    coerce x ==
---      coerce(x)$Stream(S)
+    generate(f,x) == per generate(f,x)$Stream(S)
+    filterWhile(f, x) == per filterWhile(f,rep x)$Stream(S)
+    filterUntil(f, x) == per filterUntil(f,rep x)$Stream(S)
+    select(f, x) == per select(f,rep x)$Stream(S)
+    construct x == rep x
 
 @
 

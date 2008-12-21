@@ -56,11 +56,11 @@ MachineInteger(): Exports == Implementation where
       abs(u) > MAXINT => 
         message: S := concat [convert(u)@S,"  > MAXINT(",convert(MAXINT)@S,")"]
         error message
-      u pretend $
+      per u
 
-    retract(u:$):Integer == u pretend Integer
+    retract(u:$):Integer == rep u
 
-    retractIfCan(u:$):Union(Integer,"failed") == u pretend Integer
+    retractIfCan(u:$):Union(Integer,"failed") == rep u
 
 @
 \section{domain MFLOAT MachineFloat}
