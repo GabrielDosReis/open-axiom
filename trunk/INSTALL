@@ -91,13 +91,25 @@ would then have typed
 
      ../open-axiom-1.3.0/configure --prefix=/banana/space
 
-This is recommended, especially if you already have a different software, 
-not OpenAxiom, the executable filename of which is also called `axiom'.
-That way, you don't confuse OpenAxiom's command `axiom', with any other
-program that you may have on your system.  Most users usually have only
-one software with a given name on their machines.  If you plan to 
-have many software sharing the same executable name, please make sure
-that you install them in distinct directories so that they don't conflict.
+
+If you want to compile OpenAxiom with a specific Lisp system (not
+necessarily GCL), then you should supply the option
+
+         --with-lisp=<your-lisp>
+
+where <your-lisp> stands for the executable name of the Lisp of your
+choice.  For example, you might want to add
+
+         --with-lisp=sbcl
+
+to the configuration line if you plan to use the SBCL system; or you 
+can specify
+
+         --with-lisp=ecl
+
+if you want to use the ECL system.
+
+Note also that OpenAxiom can coexist with other flavours of AXIOM.
 
 2.c. Make the system
 
