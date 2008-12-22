@@ -731,7 +731,7 @@ isType t ==
    op:=opOf t
    VECP op =>
      isMap(op:= getUnname op) => NIL
-     op = 'Mapping =>
+     op = 'Mapping and CONSP t =>
        argTypes := [isType type for type in rest t]
        "or"/[null type for type in argTypes] => nil
        ['Mapping, :argTypes]

@@ -1,3 +1,11 @@
+2008-12-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-eval.boot (evaluateType0): Check for builtin
+	constructors. 
+	(evaluateType): Likewise.
+	* interp/i-spec2.boot (isType): Reject unsaturated constructors.
+	* testsuite/interpreter/ctor.input: New.
+
 2008-12-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (checkRepresentation): Take a third

@@ -116,8 +116,8 @@ evaluateType0 form ==
     op='Enumeration => form
     constructor? op => evaluateType1 form
     NIL
-  constructor? form =>
-    ATOM form => evaluateType [form]
+  IDENTP form and niladicConstructorFromDB form => evaluateType [form]
+  IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
 
 evaluateType form ==
@@ -150,8 +150,8 @@ evaluateType form ==
       [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
     op='Enumeration => form
     evaluateFormAsType form
-  constructor? form =>
-    ATOM form => evaluateType [form]
+  IDENTP form and niladicConstructorFromDB form => evaluateType [form]
+  IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
   evaluateFormAsType form
 

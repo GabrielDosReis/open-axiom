@@ -1,0 +1,7 @@
+-- Test for builtin constructors at toplevel.  They should
+-- not crash the system.
+
+Record
+Union
+Enumeration
+Mapping
