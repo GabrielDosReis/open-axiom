@@ -731,7 +731,7 @@ isType t ==
    op:=opOf t
    VECP op =>
      isMap(op:= getUnname op) => NIL
-     op = 'Mapping =>
+     op = 'Mapping and CONSP t =>
        argTypes := [isType type for type in rest t]
        "or"/[null type for type in argTypes] => nil
        ['Mapping, :argTypes]
@@ -740,7 +740,7 @@ isType t ==
      type:=
        -- next line handles subscripted vars
          (abbreviation?(op) or (op = 'typeOf) or
-           constructor?(op) or (op in '(Record Union Enumeration))) and
+           constructor?(op) or (op in $DomainNames)) and
              unabbrev unVectorize t
      type and evaluateType type
    d := isDomainValuedVariable op => d
