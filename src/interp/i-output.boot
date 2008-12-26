@@ -2601,7 +2601,10 @@ primaryForm2String x ==
   x = nil => '""
   STRINGP x => x
   x = $EmptyMode => specialChar 'quad
-  IDENTP x => SYMBOL_-NAME x
+  IDENTP x => 
+    x = "$" => '"%"
+    x = "$$" => '"%%"
+    SYMBOL_-NAME x
   atom x => WRITE_-TO_-STRING x
   strconc('"(",inputForm2String x, '")")
 

@@ -133,9 +133,7 @@ evaluateType form ==
   form = "$" => form
   $expandSegments : local := nil
   form is ['typeOf,.] =>
-    form' := mkAtree form
-    bottomUp form'
-    objVal getValue(form')
+    objVal getValue elaborateForm form
   form is [op,:argl] =>
     op='CATEGORY =>
       argl is [x,:sigs] => [op,x,:[evaluateSignature(s) for s in sigs]]

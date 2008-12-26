@@ -25,78 +25,267 @@
 ++   constructors, and package constructors.
 ConstructorKind(): Public == Private where
   Public == SetCategory with
-    category: % ++ `category' designates category constructors
-    domain: %   ++ `domain' designates domain constructors
-    package: %  ++ `package' designates package constructors.
+    category: % ++ `category' is the kind of category constructors
+    domain: %   ++ `domain' is the kind of domain constructors
+    package: %  ++ `package' is the kind of package constructors.
   Private == add
-    category == INTERN("category","KEYWORD")$Lisp
-    domain == INTERN("domain","KEYWORD")$Lisp
-    package == INTERN("package","KEYWORD")$Lisp
+    category == 'category : %
+    domain == 'domain : %
+    package == 'package : %
     k1 = k2 == EQ(k1,k2)$Lisp
-    coerce(k: %): OutputForm ==
-      k = category => outputForm 'category
-      k = domain => outputForm 'domain
-      outputForm 'package
+    coerce(k: %): OutputForm == k : OutputForm
 @
+
+<<category CTORCAT ConstructorCategory>>=
+import ConstructorKind
+)abbrev category CTORCAT ConstructorCategory
+++ Author: Gabriel Dos Reis
+++ Date Create: December 17, 2008.
+++ Date Last Updated: December 21, 2008.
+++ Basic Operations: name, kind, arity.
+++ Description:
+++   This category declares basic operations on all constructors.
+ConstructorCategory(): Category == OperatorCategory Identifier with
+     kind: % -> ConstructorKind
+       ++ kind(ctor) returns the kind of the constructor `ctor'.
+     dualSignature: % -> List Boolean
+       ++ dualSignature(c) returns a list l of Boolean values with 
+       ++ the following meaning: 
+       ++   l.(i+1) holds when the constructor takes a domain object
+       ++           as the `i'th argument.  Otherwise the argument
+       ++           must be a non-domain object.
+  add
+    kind x == getConstructorKind(x)$Lisp
+    arity x == getConstructorArity(x)$Lisp
+    dualSignature x == getDualSignatureFromDB(x)$Lisp
+@
+
 
 <<domain CTOR Constructor>>=
 )abbrev domain CTOR Constructor
 ++ Author: Gabriel Dos Reis
 ++ Date Create: October 07, 2008.
-++ Date Last Updated: October 07, 2008.
+++ Date Last Updated: December 17, 2008.
 ++ Related Constructors: Domain, Category
 ++ Basic Operations: name, kind, arity.
 ++ Description:
 ++   This domain provides implementations for constructors.
-Constructor(): Public == Private where
-  Public == SetCategory with
-    name: % -> Identifier
-      ++ name(ctor) returns the name of the constructor `ctor'.
-    kind: % -> ConstructorKind
-      ++ kind(ctor) returns the kind of the constructor `ctor'.
-    arity: % -> SingleInteger
-      ++ arity(ctor) returns the arity of the constructor `ctor'.
-      ++   A negative value means that the ctor takes a variable
-      ++   length argument list, e.g. Mapping, Record, etc.
-  Private == add
+Constructor(): ConstructorCategory == add
     Rep == Identifier
     name x == rep x
+    kind x == getConstructorKind(x)$Lisp
+    arity x == getConstructorArity(x)$Lisp
+@
+
+
+\section{domain ConstructorCall}
+
+<<domain CTORCALL ConstructorCall>>=
+import SetCategory
+import Symbol
+import List Syntax
+)abbrev domain CTORCALL ConstructorCall
+++ Author: Gabriel Dos Reis
+++ Date Created: January 19, 2008
+++ Date Last Updated: July 03, 2008
+++ Description: This domains represents a syntax object that
+++ designates a category, domain, or a package.
+++ See Also: Syntax, Domain
+ConstructorCall(): Public == Private where
+  Public == SetCategory with
+    constructor: % -> Constructor
+      ++ constructor(t) returns the name of the constructor used
+      ++ to make the call.
+    arguments: % -> List Syntax
+      ++ arguments(t) returns the list of syntax objects for the
+      ++ arguments used to invoke the constructor.
+
+  Private == add
+    constructor x ==
+      CAR(x)$Lisp
+
+    arguments x ==
+      CDR(x)$Lisp
+
+    x = y ==
+      EQUAL(x,y)$Lisp
+
+    coerce(x: %): OutputForm ==
+      outputDomainConstructor(x)$Lisp
+@
+
+
+<<domain CATCTOR CategoryConstructor>>=
+)abbrev domain CATCTOR CategoryConstructor
+++ Author: Gabriel Dos Reis
+++ Date Create: December 17, 2008.
+++ Date Last Updated: December 20, 2008.
+++ Related Constructors: Domain, Category
+++ Description:
+++   This domain provides representations for category constructors.
+CategoryConstructor(): Public == Private where
+  Public == Join(ConstructorCategory, CoercibleTo Constructor)
+  Private == Constructor add
+    coerce(x: %): Constructor == rep x
+
+@
+
+<<domain DOMCTOR DomainConstructor>>=
+)abbrev domain DOMCTOR DomainConstructor
+++ Author: Gabriel Dos Reis
+++ Date Create: December 17, 2008.
+++ Date Last Updated: December 20, 2008.
+++ Related Constructors: Domain, Category
+++ Description:
+++   This domain provides representations for domains constructors.
+DomainConstructor(): Public == Private where
+  Public == Join(ConstructorCategory, CoercibleTo Constructor)
+  Private == Constructor add
+    coerce(x: %): Constructor == rep x
+
+@
+
+\section{The Signature domain}
+
+<<domain SIG Signature>>=
+import List
+import Syntax
+)abbrev domain SIG Signature
+++ Author: Gabriel Dos Reis
+++ Date Created: January 10, 2008
+++ Date Last Updated: December 20, 2008
+++ Description: This is the datatype for operation signatures as
+++   used by the compiler and the interpreter.  Note that this domain
+++   differs from SignatureAst.
+++ See also: ConstructorCall, Domain.
+Signature(): Public == Private where
+  Public == SetCategory with
+    signature: (List Syntax,Syntax) -> %
+      ++ signature(s,t) constructs a Signature object with parameter
+      ++ types indicaded by `s', and return type indicated by `t'.
+    target: % -> Syntax
+      ++ target(s) returns the target type of the signature `s'.
+    source: % -> List Syntax
+      ++ source(s) returns the list of parameter types of `s'.
+  Private == add
+    Rep == List Syntax
+    signature(s,t) == per cons(t,s)
+    target x == first rep x
+    source x == rest rep x
     x = y == rep x = rep y
-    coerce(x: %): OutputForm == rep(x)::OutputForm
+    printType(x: Syntax): OutputForm ==
+      x::InputForm::OutputForm
+    coerce(x: %): OutputForm ==
+      #source x = 1 =>
+        rarrow(printType first source x, printType target x)
+      rarrow(paren [printType s for s in source x],
+         printType target x)$OutputForm
+@
+
+\section{A domain for operator signatures}
+
+<<domain OPSIG OperatorSignature>>=
+)abbrev domain OPSIG OperatorSignature
+++ Author: Gabriel Dos Reis
+++ Date Created: December 20, 2008
+++ Date Last Modified: December 20, 2008
+++ Description:
+++   This the datatype for an operator-signature pair.
+OperatorSignature(): Public == Private where
+  Public == OperatorCategory Identifier with
+    signature: % -> Signature
+      ++ signature(x) returns the signature of `x'.
+    construct: (Identifier,Signature) -> %
+      ++ construct(op,sig) construct a signature-operator with
+      ++ operator name `op', and signature `sig'.
+  Private == add
+    construct(o,s) == LIST(o,s)$Lisp
+    name x == CAR(x)$Lisp
+    signature x == CADR(x)$Lisp
+    x = y == EQUAL(x,y)$Lisp
+    arity x == (#source signature x)::Arity
+    coerce(x: %): OutputForm ==
+      infix('_:::OutputForm, name(x)::OutputForm, 
+              signature(x)::OutputForm)
+
+@
+
+\section{The SystemPredicate domain}
+
+<<domain SYSPRED SystemPredicate>>=
+)abbrev domain SYSPRED SystemPredicate
+SystemPredicate(): Public == Private where
+  Public == SetCategory
+  Private == add
+    x = y == EQUAL(x,y)$Lisp
+    coerce(x: %): OutputForm ==
+      NOT(x)$Lisp => '_false::OutputForm
+      EQ(x,'T)$Lisp => '_true::OutputForm
+      EQCAR(x,'NOT)$Lisp => not(CADR(x)$Lisp : % :: OutputForm)
 @
 
 
 \section{domain Category}
 <<domain CATEGORY Category>>=
 import CoercibleTo OutputForm
+import CategoryConstructor
 )abbrev domain CATEGORY Category
 ++ Author: Gabriel Dos Reis
-++ Date Create: February 16, 2008.
+++ Date Create: December 20, 2008.
 ++ Date Last Updated: February 16, 2008.
 ++ Basic Operations: coerce
 ++ Related Constructors: 
 ++ Also See: Type
 Category(): Public == Private where
-  Public ==> CoercibleTo OutputForm 
-  Private ==> add
+  Public == CoercibleTo OutputForm with
+    constructor: % -> CategoryConstructor
+      ++ constructor(c) returns the category constructor used to 
+      ++ instantiate the category object `c'.
+    exportedOperators: % -> List OperatorSignature
+      ++ exportedOperators(c) returns the list of all operator signatures
+      ++ exported by the category `c', along with their predicates.
+    principalAncestors: % -> List ConstructorCall
+      ++ principalAncestors(c) returns the list of all category
+      ++ forms that are principal ancestors of the the category `c'.
+    parents: % -> List ConstructorCall
+      ++ parents(c) returns the list of all category forms directly
+      ++ extended by the category `c'.
+  Private == add
+    constructor x ==
+      CAR(devaluate(x)$Lisp)$Lisp
+
+    exportedOperators c ==
+      [CAR(x)$Lisp@OperatorSignature 
+         for x in getCategoryExports(c)$Lisp@List(Syntax)]
+    
+    principalAncestors c == 
+      getCategoryPrincipalAncestors(c)$Lisp
+
+    parents c ==
+      [CAR(x)$Lisp@ConstructorCall
+         for x in getCategoryParents(c)$Lisp@List(Syntax)]
+
     coerce x ==
       outputDomainConstructor(x)$Lisp
 @
 
 \section{domain Domain}
 <<domain DOMAIN Domain>>=
-import SetCategory
 import Void
 import ConstructorCall
+import DomainConstructor
 )abbrev domain DOMAIN Domain
 ++ Author: Gabriel Dos Reis
 ++ Date Create: October 18, 2007.
-++ Date Last Updated: January 19, 2008.
+++ Date Last Updated: December 20, 2008.
 ++ Basic Operations: coerce, reify
 ++ Related Constructors: Type, Syntax, OutputForm
 ++ Also See: Type, ConstructorCall
 Domain(): Public == Private where
   Public == SetCategory with
+    constructor: % -> DomainConstructor
+      ++ constructor(d) returns the domain constructor that is
+      ++ instantiated to the domain object `d'.
     reify: % -> ConstructorCall
       ++ reify(d) returns the abstract syntax for the domain `x'.
 
@@ -110,6 +299,9 @@ Domain(): Public == Private where
       ++ of domain `d'.
 
   Private == add
+    constructor x ==
+      CAR(devaluate(x)$Lisp)$Lisp
+
     coerce x ==
       outputDomainConstructor(x)$Lisp
 
@@ -167,6 +359,14 @@ Domain(): Public == Private where
 <<license>>
 
 <<domain CTORKIND ConstructorKinid>>
+<<category CTORCAT ConstructorCategory>>
+<<domain CTOR Constructor>>
+<<domain CTORCALL ConstructorCall>>
+<<domain CATCTOR CategoryConstructor>>
+<<domain DOMCTOR DomainConstructor>>
+
+<<domain SIG Signature>>
+<<domain OPSIG OperatorSignature>>
 
 <<domain CATEGORY Category>>
 <<domain DOMAIN Domain>>
