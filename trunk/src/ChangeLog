@@ -1,3 +1,35 @@
+2008-12-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/database.boot (getConstructorArity): New.
+	(getCategoryExports): Likewise.
+	(getCategoryAttributes): Likewise.
+	* interp/i-analy.boot (isUnambiguouslyConstructor): New.
+	(bottomUpIdentifier): Use it.
+	* algebra/syntax.spad.pamphlet (Identifier): No longer satisfies
+	SpadSyntaxCategory). 
+	* algebra/exposed.lsp.pamphlet: Expose Signature and
+	ConstructorCategory. 
+	* algebra/term.spad.pamphlet (operator$OperatorCategory): Remove.
+	* algebra/domain.spad.pamphlet (ConstructorKind): Improve
+	documentation. 
+	(ConstructorCategory): New.
+	(Constructor): Now satisfies ConstructorCategory.
+	(CategoryConstructor): New.
+	(DomainConstructor): New.
+	(Signature): Move from syntax.spad.pamphlet.
+	(OperatorSignature): New.
+	(exportedOperators$Category): New.
+	(principalAncestors$Category): New.
+	(parents$Category): Likewise.
+	(constructor$Domain): New.
+	* algebra/catdef.spad.pamphlet (hash$SetCategory): Tidy default
+	implementation. 
+	* algebra/outform.spad.pamphlet (vspace$OutputForm): Prevent
+	infinite recursion for negative input.
+	(hspace$OutputForm): Likewise.
+	(rspace$OutputForm): Likewise.
+	Explicitly quote bytecode symbols.
+
 2008-12-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-eval.boot (evaluateType0): Check for builtin

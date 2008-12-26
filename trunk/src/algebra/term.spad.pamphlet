@@ -58,7 +58,7 @@ Arity(): Public == Private where
 )abbrev category OPERCAT OperatorCategory
 ++ Author: Gabriel Dos Reis
 ++ Date Created: December 04, 2008
-++ Date Last Updated: December 04, 2008
+++ Date Last Updated: December 17, 2008
 ++ Description:
 ++   This category specifies the interface for operators used to build
 ++   terms, in the sense of Universal Algebra.  The domain parameter S
@@ -69,12 +69,6 @@ OperatorCategory(S: SetCategory): Category ==
         ++ name(op) returns the externam name of `op'.
       arity: % -> Arity
         ++ arity(op) returns the arity of the operator `op'.
-      operator: S -> %
-        ++ operator(s) returns an operator object with external name `s',
-        ++ and of arbitrary arity.
-      operator: (S,NonNegativeInteger) -> %
-        ++ operator(s,n) returns an operator object with external 
-        ++ name `s', and of arity `n'.
   add
     coerce(op: %): OutputForm == name(op)::OutputForm
 

@@ -153,6 +153,21 @@ getOperationModemapsFromDB: %Symbol -> %List
 getOperationModemapsFromDB op ==
   GETDATABASE(op,"MODEMAPS")
 
+
+getConstructorArity: %Symbol -> %Short
+getConstructorArity ctor ==
+  sig := getConstructorSignature ctor => #rest sig
+  -1
+
+getConstructorKind: %Symbol -> %Maybe %ConstructorKind
+getConstructorKind ctor ==
+  kind := getConstructorKindFromDB ctor =>
+    kind = "domain" and isDefaultPackageName ctor => "package"
+    kind
+  ctor in $DomainNames => "domain"
+  ctor in $CategoryNames => "category"
+  nil
+
 --% Functions for manipulating MODEMAP DATABASE
 
 augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
@@ -786,6 +801,26 @@ displayHiddenConstructors() ==
       '"there are no explicitly hidden constructors"
     else for c in $localExposureData.2 repeat
       centerAndHighlight c
+
+
+
+--%
+
+
+++ Return the list of modemaps exported by the category object `c'.
+++ The format of modemap is as found in category objects.
+getCategoryExports: %Shell -> %List
+getCategoryExports c == c.1
+
+++ Return the list of category attribute info for the category object `c'.
+++ A category attribute info is pair of attribute-predicate.
+getCategoryAttributes: %Shell -> %List
+getCategoryAttributes c == c.2
+
+
+getCategoryPrincipalAncestors c == c.4.0
+
+getCategoryParents c == c.4.1
 
 
 --%

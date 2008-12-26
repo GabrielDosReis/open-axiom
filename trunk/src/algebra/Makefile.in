@@ -359,7 +359,7 @@ axiom_algebra_layer_0 = \
   KRCFROM  KVTFROM                                      \
   MSYSCMD           OM       OMCONN   OMDEV    OUT      \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
-           PROPERTY BASTYPE  BASTYPE- CATEGORY LMODULE  \
+           PROPERTY BASTYPE  BASTYPE-          LMODULE  \
   RMODULE  FINITE   STEP     SGROUP   SGROUP-  ABELSG   \
   ABELSG-  ORDSET   ORDSET-           FILECAT  SEXCAT   \
   MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
@@ -389,7 +389,7 @@ axiom_algebra_layer_2 = \
   ELTAGG   ELTAGG- FMC      FMFUN   FORTFN   FVC     \
   SYNTAX   FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
   CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC FNCAT   \
-  BYTE
+  BYTE     IDENT
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))
@@ -399,7 +399,7 @@ axiom_algebra_layer_2_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_2)))
 axiom_algebra_layer_3 = \
    GRDEF     SCOPE    MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1  \
-   MAPPKG2   MAPPKG3  INTBIT   MONAD    MONAD-   CTORCALL
+   MAPPKG2   MAPPKG3  INTBIT   MONAD    MONAD-   
 
 
 
@@ -663,7 +663,7 @@ axiom_algebra_layer_15_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_15)))
 axiom_algebra_layer_16 = \
-  DPMM     EFUPXS  FFINTBAS FRIDEAL  OPERCAT  \
+  DPMM     EFUPXS  FFINTBAS FRIDEAL  OPERCAT  OPERCAT- \
   FRIDEAL2 FRMOD   \
   IBATOOL  INTFACT \
   MSETAGG  MONOGEN MONOGEN- NFINTBAS \
@@ -676,8 +676,8 @@ axiom_algebra_layer_16_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_16)))
 axiom_algebra_layer_17 = \
-  CCLASS  FSAGG2  GALFACT IALGFACT \
-  IBACHIN MMLFORM NORMMA  ODERED  OMSAGG   \
+  CCLASS  FSAGG2  GALFACT IALGFACT CTORCAT  CTORCAT- \
+  IBACHIN MMLFORM NORMMA  ODERED  OMSAGG    OPSIG    \
   PERM    PERMGRP PRIMES  PWFFINTB \
   RDIST   SAE     SAEFACT SAERFFC  \
   SGCF VIEW3D 
@@ -689,7 +689,7 @@ axiom_algebra_layer_17_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_17)))
 axiom_algebra_layer_18 = \
-INTPACK IPF     \
+	INTPACK IPF     CATCTOR DOMCTOR   CTORCALL \
   KAFILE  PATRES TBCMPPK 
 
 axiom_algebra_layer_18_nrlibs = \
@@ -812,7 +812,7 @@ axiom_algebra_layer_22_objects = \
 axiom_algebra_layer_23 = \
   CPIMA    IRURPK   LAZM3PK  LEXTRIPK \
   NORMPK   QCMPACK  RURPK    SFRGCD   \
-  SFQCMPK  INTRVL   ODEEF    DOMAIN
+  SFQCMPK  INTRVL   ODEEF    DOMAIN   CATEGORY
 
 axiom_algebra_layer_23_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_23))
@@ -822,13 +822,13 @@ axiom_algebra_layer_23_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_23)))
 axiom_algebra_layer_user =  \
 	RINTERP	 ASTCAT   ASTCAT-  SASTCAT  SASTCAT- HEADAST  \
-	LITERAL  IDENT    TYPEAST  IMPTAST  MAPPAST  ATTRAST  \
+	LITERAL           TYPEAST  IMPTAST  MAPPAST  ATTRAST  \
 	JOINAST  IFAST    RPTAST   WHILEAST INAST    CLLCAST  \
 	LSTAST   EXITAST  RETAST   SEGAST   PRTDAST  CRCAST   \
 	LETAST   SUCHAST  RDUCEAST COLONAST ADDAST   CAPSLAST \
 	CASEAST  HASAST   ISAST    CATAST   WHEREAST COMMAAST \
 	QQUTAST  DEFAST   MACROAST SPADXPT  SPADAST           \
-	INBFILE  OUTBFILE IOBFILE  RGBCMDL  RGBCSPC  CTORKIND \
+	INBFILE  OUTBFILE IOBFILE  RGBCMDL  RGBCSPC           \
         CTOR     IP4ADDR  NETCLT   INETCLTS
 
 axiom_algebra_layer_user_nrlibs = \
@@ -840,7 +840,6 @@ axiom_algebra_layer_user_objects = \
 
 SASTCAT.NRLIB/code.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
 LITERAL.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
-IDENT.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
 HEADAST.NRLIB/code.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
 SPADXPT.NRLIB/code.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
 ATTRAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)

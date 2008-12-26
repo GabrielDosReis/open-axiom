@@ -539,26 +539,26 @@ OutputForm(): SetCategory with
         right(a)      == right(a,width())
 
         vspace(n) ==
-          n = 0 => empty()
+          n <= 0 => empty()
           vconcat(sform " ",vspace(n - 1))
 
         hspace(n) ==
-          n = 0 => empty()
+          n <= 0 => empty()
           sform(fillerSpaces(n)$Lisp)
 
         rspace(n, m) ==
-          n = 0 or m = 0 => empty()
+          n <= 0 or m <= 0 => empty()
           vconcat(hspace n, rspace(n, m - 1))
 
         matrix ll ==
             lv := bless [LIST2VEC$Lisp l for l in ll]
             CONS(eform MATRIX, LIST2VEC$Lisp lv)$Lisp
 
-        pile l              == cons(eform SC, l)
-        commaSeparate l     == cons(eform AGGLST,  l)
-        semicolonSeparate l == cons(eform AGGSET,  l)
+        pile l              == cons(eform 'SC, l)
+        commaSeparate l     == cons(eform 'AGGLST,  l)
+        semicolonSeparate l == cons(eform 'AGGSET,  l)
         blankSeparate l     ==
-           c:=eform CONCATB
+           c:=eform 'CONCATB
            l1: List % :=[]
            for u in reverse l repeat
                if EQCAR(u,c)$Lisp
@@ -566,29 +566,30 @@ OutputForm(): SetCategory with
                   else l1:=[u,:l1]
            cons(c, l1)
 
-        brace a        == bless [eform BRACE,   a]
+        brace a        == bless [eform 'BRACE,   a]
         brace l        == brace commaSeparate l
-        bracket a      == bless [eform BRACKET, a]
+        bracket a      == bless [eform 'BRACKET, a]
         bracket l      == bracket commaSeparate l
-        paren a        == bless [eform PAREN,   a]
+        paren a        == bless [eform 'PAREN,   a]
         paren l        == paren commaSeparate l
 
-        sub     (a,b)  == bless [eform SUB, a, b]
-        super   (a, b) == bless [eform SUPERSUB,a,sform " ",b]
-        presub(a,b) == bless [eform SUPERSUB,a,sform " ",sform " ",sform " ",b]
-        presuper(a, b) == bless [eform SUPERSUB,a,sform " ",sform " ",b]
+        sub     (a,b)  == bless [eform 'SUB, a, b]
+        super   (a, b) == bless [eform 'SUPERSUB,a,sform " ",b]
+        presub(a,b) == 
+          bless [eform 'SUPERSUB,a,sform " ",sform " ",sform " ",b]
+        presuper(a, b) == bless [eform 'SUPERSUB,a,sform " ",sform " ",b]
         scripts (a, l) ==
             null l => a
             null rest l => sub(a, first l)
-            cons(eform SUPERSUB, cons(a, l))
+            cons(eform 'SUPERSUB, cons(a, l))
         supersub(a, l) ==
             if odd?(#l) then l := append(l, [empty()])
-            cons(eform ALTSUPERSUB, cons(a, l))
+            cons(eform 'ALTSUPERSUB, cons(a, l))
 
-        hconcat(a,b)  == bless [eform CONCAT, a, b]
-        hconcat l     == cons(eform CONCAT, l)
-        vconcat(a,b)  == bless [eform VCONCAT, a, b]
-        vconcat l     == cons(eform VCONCAT, l)
+        hconcat(a,b)  == bless [eform 'CONCAT, a, b]
+        hconcat l     == cons(eform 'CONCAT, l)
+        vconcat(a,b)  == bless [eform 'VCONCAT, a, b]
+        vconcat l     == cons(eform 'VCONCAT, l)
 
         (a:% ~= b:%): % == bless [sform "~=",    a, b]
         a < b       == bless [sform "<",     a, b] 
@@ -609,11 +610,11 @@ OutputForm(): SetCategory with
         a and b     == bless [sform "and",   a, b]
         a or b      == bless [sform "or",    a, b]
         not a       == bless [sform "not",   a]
-        SEGMENT(a,b)== bless [eform SEGMENT, a, b]
-        SEGMENT(a)  == bless [eform SEGMENT, a]
-        binomial(a,b)== bless [eform BINOMIAL, a, b]
+        SEGMENT(a,b)== bless [eform 'SEGMENT, a, b]
+        SEGMENT(a)  == bless [eform 'SEGMENT, a]
+        binomial(a,b)== bless [eform 'BINOMIAL, a, b]
 
-        empty() == bless [eform NOTHING]
+        empty() == bless [eform 'NOTHING]
 
         infix? a ==
             e:$ :=
@@ -638,25 +639,25 @@ OutputForm(): SetCategory with
         postfix(a, b) ==
             hconcat(b, a)
 
-        string a   == bless [eform STRING,  a]
-        quote  a   == bless [eform QUOTE,   a]
-        overbar a  == bless [eform OVERBAR, a]
+        string a   == bless [eform 'STRING,  a]
+        quote  a   == bless [eform 'QUOTE,   a]
+        overbar a  == bless [eform 'OVERBAR, a]
         dot a      == super(a, sform ".")
         prime a    == super(a, sform ",")
         dot(a,nn)   == (s := new(nn, char "."); super(a, sform s))
         prime(a,nn) == (s := new(nn, char ","); super(a, sform s))
 
-        overlabel(a,b) == bless [eform OVERLABEL, a, b]
-        box a      == bless [eform BOX,     a]
-        zag(a,b)   == bless [eform ZAG,     a, b]
-        root a     == bless [eform ROOT,    a]
-        root(a,b)  == bless [eform ROOT,    a, b]
-        over(a,b)  == bless [eform OVER,    a, b]
-        slash(a,b) == bless [eform SLASH,   a, b]
-        assign(a,b)== bless [eform LET,     a, b]
+        overlabel(a,b) == bless [eform 'OVERLABEL, a, b]
+        box a      == bless [eform 'BOX,     a]
+        zag(a,b)   == bless [eform 'ZAG,     a, b]
+        root a     == bless [eform 'ROOT,    a]
+        root(a,b)  == bless [eform 'ROOT,    a, b]
+        over(a,b)  == bless [eform 'OVER,    a, b]
+        slash(a,b) == bless [eform 'SLASH,   a, b]
+        assign(a,b)== bless [eform '%LET,     a, b]
 
-        label(a,b) == bless [eform EQUATNUM, a, b]
-        rarrow(a,b)== bless [eform TAG, a, b]
+        label(a,b) == bless [eform 'EQUATNUM, a, b]
+        rarrow(a,b)== bless [eform 'RARROW, a, b]
         differentiate(a, nn)==
             zero? nn => a
             nn < 4 => prime(a, nn)
@@ -664,15 +665,15 @@ OutputForm(): SetCategory with
             s := lowerCase(r::String)
             super(a, paren sform s)
 
-        sum(a)     == bless [eform SIGMA,  empty(), a]
-        sum(a,b)   == bless [eform SIGMA,  b, a]
-        sum(a,b,c) == bless [eform SIGMA2, b, c, a]
-        prod(a)    == bless [eform PI,     empty(), a]
-        prod(a,b)  == bless [eform PI,     b, a]
-        prod(a,b,c)== bless [eform PI2,    b, c, a]
-        int(a)     == bless [eform INTSIGN,empty(), empty(), a]
-        int(a,b)   == bless [eform INTSIGN,b, empty(), a]
-        int(a,b,c) == bless [eform INTSIGN,b, c, a]
+        sum(a)     == bless [eform 'SIGMA,  empty(), a]
+        sum(a,b)   == bless [eform 'SIGMA,  b, a]
+        sum(a,b,c) == bless [eform 'SIGMA2, b, c, a]
+        prod(a)    == bless [eform 'PI,     empty(), a]
+        prod(a,b)  == bless [eform 'PI,     b, a]
+        prod(a,b,c)== bless [eform 'PI2,    b, c, a]
+        int(a)     == bless [eform 'INTSIGN,empty(), empty(), a]
+        int(a,b)   == bless [eform 'INTSIGN,b, empty(), a]
+        int(a,b,c) == bless [eform 'INTSIGN,b, c, a]
 
 @
 

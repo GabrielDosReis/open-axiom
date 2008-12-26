@@ -320,10 +320,35 @@ bottomUpCompilePredicate(pred, name) ==
   $genValue:local := false
   bottomUpPredicate(pred,name)
 
+
+++ We are in the process of elaborating the identifier `id' into
+++ the  VAT `t'.  Return the modeset of the elaboration if `id'
+++ unambiguously denote a constructor.  Ambiguous constructor
+++ identifiers are precisely those that denote niladic constructors.
+++ By default, the ambiguity is resolved to types. 
+++ See bottomUpIdentifier and isType.
+isUnambiguouslyConstructor(id,t) ==
+  niladicConstructorFromDB id => nil
+  k := getConstructorKindFromDB id or
+        id in $DomainNames => "domain"
+        id in $CategoryNames => "category"
+  k = nil => nil
+  ms := 
+    k = "category" => [$CategoryConstructor]
+    [$DomainConstructor]
+  if not(id in $BuiltinConstructorNames) then 
+    loadIfNecessary id
+  putValue(t,objNewWrap(id,first ms))
+  putModeSet(t,ms)
+  ms
+  
+
+
 bottomUpIdentifier(t,id) ==
+  ms := isUnambiguouslyConstructor(id,t) => ms
   m := isType t => bottomUpType(t, m)
-  EQ(id,'%noMapVal) => throwKeyedMsg('"S2IB0002",NIL)
-  EQ(id,'%noBranch) =>
+  id = "%noMapVal" => throwKeyedMsg('"S2IB0002",NIL)
+  id = "%noBranch" =>
     keyedSystemError("S2GE0016",
       ['"bottomUpIdentifier",'"trying to evaluate %noBranch"])
   transferPropsToNode(id,t)

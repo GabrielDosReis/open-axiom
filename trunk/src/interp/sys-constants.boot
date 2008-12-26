@@ -495,14 +495,20 @@ $Domain ==
 $Mode ==
   '(Mode)
 
+$CategoryConstructor ==
+  '(CategoryConstructor)
+
+$DomainConstructor ==
+  '(DomainConstructor)
+
 
 ++ StringCategory Constructor form
 $StringCategory ==
   '(StringCategory)
 
 
-++ List of categories that do not have entries in the constructor
-++ database. So, they are mostly recognized by their names.
+++ List of category constructors that do not have entries in the 
+++ constructor database. So, they are mostly recognized by their names.
 $CategoryNames ==
   '(Category _
     CATEGORY _
@@ -512,7 +518,7 @@ $CategoryNames ==
     SubsetCategory _
     UnionCategory)
 
-++ List of domains that do not have entries in the constructor
+++ List of domain constructors that do not have entries in the constructor
 ++ database. So, they are mostly recognized by their names.
 ++ See also $CategoryNames.
 $DomainNames ==
@@ -526,7 +532,7 @@ $DomainNames ==
 $BuiltinConstructorNames ==
   [:$CategoryNames,:$DomainNames]
 
-++ List of language support constructor forms.
+++ List of language support type forms.
 $LangSupportTypes ==
   '((Mode) (Domain) (Type) (Category))
 

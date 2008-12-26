@@ -40,7 +40,7 @@ import SExpression
 Syntax(): Public == Private where
   Public == Join(UnionType, SetCategory, RetractableTo Integer,
               RetractableTo DoubleFloat, RetractableTo Symbol,
-                RetractableTo String) with
+                RetractableTo String, CoercibleTo InputForm) with
     convert: % -> SExpression
       ++ convert(s) returns the s-expression representation of a syntax.
 
@@ -218,80 +218,12 @@ Syntax(): Public == Private where
     getOperands x ==
       atom? x => []
       CDR(x)$Lisp
+
+    coerce(x: %): InputForm ==
+      x : InputForm
 @
 
 
-\section{domain ConstructorCall}
-
-<<domain CTORCALL ConstructorCall>>=
-import SetCategory
-import Symbol
-import List Syntax
-)abbrev domain CTORCALL ConstructorCall
-++ Author: Gabriel Dos Reis
-++ Date Created: January 19, 2008
-++ Date Last Updated: July 03, 2008
-++ Description: This domains represents a syntax object that
-++ designates a category, domain, or a package.
-++ See Also: Syntax, Domain
-ConstructorCall(): Public == Private where
-  Public == SetCategory with
-    constructorName: % -> Symbol
-      ++ constructorName c returns the name of the constructor
-    arguments: % -> List Syntax
-      ++ arguments returns the list of syntax objects for the
-      ++ arguments used to invoke the constructor.
-
-  Private == add
-    Rep == List Syntax
-
-    constructorName x ==
-      (first rep x)::Symbol
-
-    arguments x ==
-      rest rep x
-
-    x = y ==
-      rep x = rep y
-
-    coerce x ==
-      outputDomainConstructor(x)$Lisp
-@
-
-\section{The Signature domain}
-
-<<domain SIG Signature>>=
-import SetCategory
-import CoercibleTo
-import List
-import Syntax
-)abbrev domain SIG Signature
-++ Author: Gabriel Dos Reis
-++ Date Created: January 10, 2008
-++ Date Last Updated: August 30, 2008
-++ Description: This is the datatype for operation signatures as
-++   used by the compiler and the interpreter.  Note that this domain
-++   differs from SignatureAst.
-++ See also: ConstructorCall, Domain.
-Signature(): Public == Private where
-  Public == SetCategory with
-    signature: (List Syntax,Syntax) -> %
-      ++ signature(s,t) constructs a Signature object with parameter
-      ++ types indicaded by `s', and return type indicated by `t'.
-    target: % -> Syntax
-      ++ target(s) returns the target type of the signature `s'.
-    source: % -> List Syntax
-      ++ source(s) returns the list of parameter types of `s'.
-  Private == add
-    Rep == List Syntax
-    signature(s,t) == per cons(t,s)
-    target x == first rep x
-    source x == rest rep x
-    x = y == rep x = rep y
-    coerce(x: %): OutputForm ==
-      rarrow([s::OutputForm for s in source x]::OutputForm,
-         target(x)::OutputForm)$OutputForm
-@
 
 \section{domain ElaboratedExpression}
 
@@ -615,15 +547,20 @@ Literal(T: SetCategory): Public == Private where
 <<domain IDENT Identifier>>=
 ++ Author: Gabriel Dos Reis
 ++ Date Created: July 5, 2008
-++ Date Last Modified: September 1, 2008
-++ Description: This domain represents identifer AST.
+++ Date Last Modified: December 17, 2008
+++ Description: 
+++   This domain represents identifer AST.
+++   This domain differs from Symbol in that it does not  support
+++   any form of scripting. 
+++   A value of this domain is a plain old identifier.
+++       
 )abbrev domain IDENT Identifier
 Identifier(): Public == Private where
-  Public == Join(SpadSyntaxCategory, CoercibleTo Symbol)
+  Public == Join(SetCategory, CoercibleTo Symbol)
   Private == add
-    Rep == Symbol
-    coerce(x: %): Symbol == rep x
-    coerce(x: %): OutputForm == x::Symbol::OutputForm
+    x = y == EQ(x,y)$Lisp
+    coerce(x: %): Symbol == x : Symbol
+    coerce(x: %): OutputForm == x : OutputForm
 
 @
 
@@ -1788,8 +1725,6 @@ SpadAst(): SpadAstExports() == add
 <<*>>=
 <<license>>
 <<domain SYNTAX Syntax>>
-<<domain SIG Signature>>
-<<domain CTORCALL ConstructorCall>>
 <<domain ELABEXPR ElaboratedExpression>>
 
 <<category ASTCAT AbstractSyntaxCategory>>
