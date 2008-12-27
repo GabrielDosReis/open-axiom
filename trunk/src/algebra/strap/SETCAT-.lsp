@@ -4,7 +4,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Short|)
                 |SETCAT-;hash;SSi;1|)) 
 
-(PUT '|SETCAT-;hash;SSi;1| '|SPADreplace| '(XLAM (|s|) 0)) 
+(PUT '|SETCAT-;hash;SSi;1| '|SPADreplace| 'SXHASH) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%String|)
                 |SETCAT-;latex;SS;2|)) 
@@ -12,7 +12,7 @@
 (PUT '|SETCAT-;latex;SS;2| '|SPADreplace|
      '(XLAM (|s|) "\\mbox{\\bf Unimplemented}")) 
 
-(DEFUN |SETCAT-;hash;SSi;1| (|s| $) (DECLARE (IGNORE $)) 0) 
+(DEFUN |SETCAT-;hash;SSi;1| (|s| $) (DECLARE (IGNORE $)) (SXHASH |s|)) 
 
 (DEFUN |SETCAT-;latex;SS;2| (|s| $)
   (DECLARE (IGNORE $))

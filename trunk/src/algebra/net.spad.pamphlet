@@ -33,7 +33,7 @@ Conduit(): Category == with
 )abbrev category INBCON InputByteConduit
 ++ Author: Gabriel Dos Reis
 ++ Date Created: August 24, 2008
-++ Date Last Modified: August 24, 2008
+++ Date Last Modified: December 26, 2008
 ++ Description:
 ++   This category describes input byte stream conduits.
 InputByteConduit(): Category == Conduit with
@@ -47,15 +47,15 @@ InputByteConduit(): Category == Conduit with
     readBytes!: (%,ByteBuffer) -> SingleInteger
       ++ readBytes!(c,b) reads byte sequences from conduit `c' into
       ++ the byte buffer `b'.  The actual number of bytes written
-      ++ is returned.
+      ++ is returned, and the length of `b' is set to that amount.
   add
     readBytes!(cond,buf) ==
-      count: SingleInteger := 0
+      count: NonNegativeInteger := 0
       b : SingleInteger
       while count < capacity buf and ((b := readByteIfCan! cond) >= 0) repeat
         qsetelt!(buf,count,b : Byte)
         count := count + 1
-      count
+      setLength!(buf,count)::SingleInteger
 
 @
 
@@ -136,6 +136,7 @@ InputBinaryFile(): Public == Private where
       ++ position(f,p) sets the current byte-position to `i'.
   Private == add
     Rep == Record(stream: SExpression, filename: FileName, eof: Boolean)
+
     inputBinaryFile(f: FileName) ==
       per [openBinaryFile(f::String,input$IOMode)$Lisp,f,false]
     inputBinaryFile(f: String) ==

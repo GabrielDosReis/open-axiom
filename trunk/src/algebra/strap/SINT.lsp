@@ -1,6 +1,15 @@
 
 (/VERSIONCHECK 2) 
 
+(SETQ |$CategoryFrame|
+      (|put| #0='|SingleInteger| '|SuperDomain| #1='(|Integer|)
+             (|put| #1# '|SubDomain|
+                    (CONS '(|SingleInteger| SMINTP |#1|)
+                          (DELASC #0#
+                                  (|get| #1# '|SubDomain|
+                                         |$CategoryFrame|)))
+                    |$CategoryFrame|))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Short| |%Shell|) |%Void|)
                 |SINT;writeOMSingleInt|)) 
 
@@ -248,9 +257,9 @@
           (SEQ (SPADCALL |dev| (|getShellEntry| $ 9))
                (SPADCALL |dev| "arith1" "unaryminus"
                    (|getShellEntry| $ 11))
-               (SPADCALL |dev| (QSMINUS |x|) (|getShellEntry| $ 13))
-               (EXIT (SPADCALL |dev| (|getShellEntry| $ 14)))))
-         ('T (SPADCALL |dev| |x| (|getShellEntry| $ 13)))))) 
+               (SPADCALL |dev| (QSMINUS |x|) (|getShellEntry| $ 12))
+               (EXIT (SPADCALL |dev| (|getShellEntry| $ 13)))))
+         ('T (SPADCALL |dev| |x| (|getShellEntry| $ 12)))))) 
 
 (DEFUN |SINT;OMwrite;$S;2| (|x| $)
   (PROG (|sp| |dev| |s|)
@@ -258,13 +267,13 @@
       (SEQ (LETT |s| "" |SINT;OMwrite;$S;2|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |SINT;OMwrite;$S;2|)
            (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 16))
-                     (|getShellEntry| $ 17))
+                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 15))
+                     (|getShellEntry| $ 16))
                  |SINT;OMwrite;$S;2|)
-           (SPADCALL |dev| (|getShellEntry| $ 18))
+           (SPADCALL |dev| (|getShellEntry| $ 17))
            (|SINT;writeOMSingleInt| |dev| |x| $)
+           (SPADCALL |dev| (|getShellEntry| $ 18))
            (SPADCALL |dev| (|getShellEntry| $ 19))
-           (SPADCALL |dev| (|getShellEntry| $ 20))
            (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |SINT;OMwrite;$S;2|)
            (EXIT |s|))))) 
 
@@ -274,36 +283,36 @@
       (SEQ (LETT |s| "" |SINT;OMwrite;$BS;3|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |SINT;OMwrite;$BS;3|)
            (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 16))
-                     (|getShellEntry| $ 17))
+                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 15))
+                     (|getShellEntry| $ 16))
                  |SINT;OMwrite;$BS;3|)
-           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 18))))
+           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 17))))
            (|SINT;writeOMSingleInt| |dev| |x| $)
-           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 19))))
-           (SPADCALL |dev| (|getShellEntry| $ 20))
+           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 18))))
+           (SPADCALL |dev| (|getShellEntry| $ 19))
            (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |SINT;OMwrite;$BS;3|)
            (EXIT |s|))))) 
 
 (DEFUN |SINT;OMwrite;Omd$V;4| (|dev| |x| $)
-  (SEQ (SPADCALL |dev| (|getShellEntry| $ 18))
+  (SEQ (SPADCALL |dev| (|getShellEntry| $ 17))
        (|SINT;writeOMSingleInt| |dev| |x| $)
-       (EXIT (SPADCALL |dev| (|getShellEntry| $ 19))))) 
+       (EXIT (SPADCALL |dev| (|getShellEntry| $ 18))))) 
 
 (DEFUN |SINT;OMwrite;Omd$BV;5| (|dev| |x| |wholeObj| $)
-  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 18))))
+  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 17))))
        (|SINT;writeOMSingleInt| |dev| |x| $)
        (EXIT (COND
-               (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 19))))))) 
+               (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 18))))))) 
 
 (DEFUN |SINT;reducedSystem;MM;6| (|m| $) (DECLARE (IGNORE $)) |m|) 
 
 (DEFUN |SINT;coerce;$Of;7| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 30))) 
+  (SPADCALL |x| (|getShellEntry| $ 29))) 
 
 (DEFUN |SINT;convert;$I;8| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
 (DEFUN |SINT;*;I2$;9| (|i| |y| $)
-  (QSTIMES (SPADCALL |i| (|getShellEntry| $ 33)) |y|)) 
+  (QSTIMES (SPADCALL |i| (|getShellEntry| $ 32)) |y|)) 
 
 (DEFUN |SINT;Zero;$;10| ($) (DECLARE (IGNORE $)) 0) 
 
@@ -366,7 +375,7 @@
   (QSTIMES |x| |y|)) 
 
 (DEFUN |SINT;**;$Nni$;31| (|x| |n| $)
-  (SPADCALL (EXPT |x| |n|) (|getShellEntry| $ 33))) 
+  (SPADCALL (EXPT |x| |n|) (|getShellEntry| $ 32))) 
 
 (DEFUN |SINT;quo;3$;32| (|x| |y| $)
   (DECLARE (IGNORE $))
@@ -463,7 +472,7 @@
 (DEFUN |SingleInteger| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1491)
+      (PROG (#0=#:G1492)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|SingleInteger|)
@@ -485,7 +494,7 @@
     (RETURN
       (PROGN
         (LETT |dv$| '(|SingleInteger|) . #0=(|SingleInteger|))
-        (LETT $ (|newShell| 105) . #0#)
+        (LETT $ (|newShell| 104) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -496,15 +505,15 @@
         $)))) 
 
 (MAKEPROP '|SingleInteger| '|infovec|
-    (LIST '#(NIL NIL NIL NIL NIL NIL '|seed| (|Void|)
+    (LIST '#(NIL NIL NIL NIL NIL (|Integer|) '|seed| (|Void|)
              (|OpenMathDevice|) (0 . |OMputApp|) (|String|)
-             (5 . |OMputSymbol|) (|Integer|) (12 . |OMputInteger|)
+             (5 . |OMputSymbol|) (12 . |OMputInteger|)
              (18 . |OMputEndApp|) (|OpenMathEncoding|)
              (23 . |OMencodingXML|) (27 . |OMopenString|)
              (33 . |OMputObject|) (38 . |OMputEndObject|)
              (43 . |OMclose|) |SINT;OMwrite;$S;2| (|Boolean|)
              |SINT;OMwrite;$BS;3| |SINT;OMwrite;Omd$V;4|
-             |SINT;OMwrite;Omd$BV;5| (|Matrix| 12) (|Matrix| $)
+             |SINT;OMwrite;Omd$BV;5| (|Matrix| 5) (|Matrix| $)
              |SINT;reducedSystem;MM;6| (|OutputForm|) (48 . |coerce|)
              |SINT;coerce;$Of;7| |SINT;convert;$I;8| (53 . |coerce|)
              |SINT;*;I2$;9|
@@ -526,22 +535,22 @@
              |SINT;max;3$;40| |SINT;min;3$;41| (|SingleInteger|)
              |SINT;hash;2$;42| |SINT;length;2$;43| |SINT;shift;3$;44|
              |SINT;mulmod;4$;45| |SINT;addmod;4$;46|
-             |SINT;submod;4$;47| |SINT;negative?;$B;48| (|Vector| 12)
-             (|Record| (|:| |mat| 26) (|:| |vec| 77)) (|Vector| $)
+             |SINT;submod;4$;47| |SINT;negative?;$B;48| (|Vector| 5)
+             (|Record| (|:| |mat| 25) (|:| |vec| 76)) (|Vector| $)
              |SINT;reducedSystem;MVR;49| |SINT;positiveRemainder;3$;50|
              |SINT;coerce;I$;51| |SINT;random;$;52| |SINT;random;2$;53|
              (|Record| (|:| |unit| $) (|:| |canonical| $)
                  (|:| |associate| $))
-             |SINT;unitNormal;$R;54| (|Fraction| 12)
-             (|Union| 87 '"failed") (|Union| $ '"failed") (|Float|)
-             (|DoubleFloat|) (|Pattern| 12) (|PatternMatchResult| 12 $)
-             (|InputForm|) (|Union| 12 '"failed") (|List| $)
-             (|Record| (|:| |coef| 96) (|:| |generator| $))
-             (|Union| 96 '"failed")
+             |SINT;unitNormal;$R;54| (|Fraction| 5)
+             (|Union| 86 '"failed") (|Union| $ '"failed") (|Float|)
+             (|DoubleFloat|) (|Pattern| 5) (|PatternMatchResult| 5 $)
+             (|InputForm|) (|Union| 5 '"failed") (|List| $)
+             (|Record| (|:| |coef| 95) (|:| |generator| $))
+             (|Union| 95 '"failed")
              (|Record| (|:| |coef1| $) (|:| |coef2| $)
                  (|:| |generator| $))
              (|Record| (|:| |coef1| $) (|:| |coef2| $))
-             (|Union| 100 '"failed") (|Factored| $)
+             (|Union| 99 '"failed") (|Factored| $)
              (|SparseUnivariatePolynomial| $) (|PositiveInteger|))
           '#(~= 58 ~ 64 |zero?| 69 |xor| 74 |unitNormal| 80
              |unitCanonical| 85 |unit?| 90 |symmetricRemainder| 95
@@ -590,7 +599,7 @@
                                (|OrderedIntegralDomain|) (|GcdDomain|)
                                (|IntegralDomain|) (|Algebra| $$)
                                (|CharacteristicZero|)
-                               (|LinearlyExplicitRingOver| 12)
+                               (|LinearlyExplicitRingOver| 5)
                                (|DifferentialRing|) (|OrderedRing|)
                                (|CommutativeRing|) (|EntireRing|)
                                (|Module| $$) (|BiModule| $$ $$)
@@ -603,61 +612,59 @@
                                (|CancellationAbelianMonoid|)
                                (|OrderedAbelianSemiGroup|)
                                (|AbelianMonoid|) (|Monoid|)
-                               (|StepThrough|) (|PatternMatchable| 12)
+                               (|StepThrough|) (|PatternMatchable| 5)
                                (|OrderedSet|) (|AbelianSemiGroup|)
                                (|SemiGroup|) (|Logic|) (|RealConstant|)
-                               (|RetractableTo| 12) (|SetCategory|)
-                               (|OpenMath|) (|ConvertibleTo| 90)
-                               (|ConvertibleTo| 91)
+                               (|RetractableTo| 5) (|SetCategory|)
+                               (|OpenMath|) (|ConvertibleTo| 89)
+                               (|ConvertibleTo| 90)
                                (|CombinatorialFunctionCategory|)
-                               (|ConvertibleTo| 92)
-                               (|ConvertibleTo| 94)
-                               (|ConvertibleTo| 12)
-                               (|CoercibleFrom| $$)
-                               (|CoercibleFrom| 12) (|BasicType|)
-                               (|CoercibleTo| 29))
-                            (|makeByteWordVec2| 104
-                                '(1 8 7 0 9 3 8 7 0 10 10 11 2 8 7 0 12
-                                  13 1 8 7 0 14 0 15 0 16 2 8 0 10 15
-                                  17 1 8 7 0 18 1 8 7 0 19 1 8 7 0 20 1
-                                  12 29 0 30 1 0 0 12 33 2 0 22 0 0 1 1
-                                  0 0 0 41 1 0 22 0 65 2 0 0 0 0 48 1 0
-                                  85 0 86 1 0 0 0 1 1 0 22 0 1 2 0 0 0
-                                  0 1 2 0 89 0 0 1 3 0 0 0 0 0 75 1 0 0
-                                  0 1 1 0 102 0 1 2 0 22 0 0 1 1 0 12 0
-                                  1 2 0 0 0 0 72 0 0 0 1 1 0 95 0 1 1 0
-                                  12 0 1 2 0 0 0 0 59 1 0 26 27 28 2 0
-                                  78 27 79 80 1 0 89 0 1 1 0 88 0 1 1 0
-                                  22 0 1 1 0 87 0 1 1 0 0 0 84 0 0 0 83
-                                  2 0 0 0 0 58 1 0 97 96 1 1 0 22 0 1 3
-                                  0 0 0 0 0 1 2 0 0 0 0 81 1 0 22 0 1 2
-                                  0 0 0 0 1 3 0 93 0 92 93 1 1 0 22 0
-                                  66 1 0 22 0 64 1 0 0 0 42 1 0 89 0 1
-                                  1 0 22 0 76 2 0 98 96 0 1 3 0 0 0 0 0
-                                  73 0 0 0 39 2 0 0 0 0 68 0 0 0 38 2 0
-                                  0 0 0 67 1 0 0 0 1 1 0 0 0 71 2 0 0 0
-                                  0 1 1 0 0 96 1 1 0 10 0 1 2 0 0 0 0 1
-                                  0 0 0 1 1 0 0 0 50 1 0 69 0 70 2 0
-                                  103 103 103 1 2 0 0 0 0 62 1 0 0 96 1
-                                  1 0 0 0 1 1 0 102 0 1 2 0 99 0 0 1 3
-                                  0 101 0 0 0 1 2 0 89 0 0 1 2 0 98 96
-                                  0 1 1 0 22 0 1 1 0 56 0 1 2 0 60 0 0
-                                  61 1 0 0 0 1 2 0 0 0 56 1 1 0 0 0 51
-                                  1 0 0 0 1 1 0 90 0 1 1 0 91 0 1 1 0
-                                  92 0 1 1 0 94 0 1 1 0 12 0 32 1 0 0
-                                  12 82 1 0 0 0 1 1 0 0 12 82 1 0 29 0
-                                  31 0 0 56 1 2 0 22 0 0 1 2 0 0 0 0 1
-                                  0 0 0 37 2 0 22 0 0 1 3 0 0 0 0 0 74
-                                  1 0 0 0 63 2 0 0 0 0 44 0 0 0 35 2 0
-                                  0 0 0 47 0 0 0 36 3 0 7 8 0 22 25 2 0
-                                  10 0 22 23 2 0 7 8 0 24 1 0 10 0 21 1
-                                  0 0 0 45 1 0 0 0 1 2 0 0 0 56 1 2 0 0
-                                  0 0 46 2 0 22 0 0 1 2 0 22 0 0 1 2 0
-                                  22 0 0 40 2 0 22 0 0 1 2 0 22 0 0 49
-                                  2 0 0 0 0 43 1 0 0 0 52 2 0 0 0 0 54
-                                  2 0 0 0 0 53 2 0 0 0 56 57 2 0 0 0
-                                  104 1 2 0 0 0 0 55 2 0 0 12 0 34 2 0
-                                  0 56 0 1 2 0 0 104 0 1)))))
+                               (|ConvertibleTo| 91)
+                               (|ConvertibleTo| 93) (|ConvertibleTo| 5)
+                               (|CoercibleFrom| $$) (|CoercibleFrom| 5)
+                               (|BasicType|) (|CoercibleTo| 28))
+                            (|makeByteWordVec2| 103
+                                '(1 8 7 0 9 3 8 7 0 10 10 11 2 8 7 0 5
+                                  12 1 8 7 0 13 0 14 0 15 2 8 0 10 14
+                                  16 1 8 7 0 17 1 8 7 0 18 1 8 7 0 19 1
+                                  5 28 0 29 1 0 0 5 32 2 0 21 0 0 1 1 0
+                                  0 0 40 1 0 21 0 64 2 0 0 0 0 47 1 0
+                                  84 0 85 1 0 0 0 1 1 0 21 0 1 2 0 0 0
+                                  0 1 2 0 88 0 0 1 3 0 0 0 0 0 74 1 0 0
+                                  0 1 1 0 101 0 1 2 0 21 0 0 1 1 0 5 0
+                                  1 2 0 0 0 0 71 0 0 0 1 1 0 94 0 1 1 0
+                                  5 0 1 2 0 0 0 0 58 1 0 25 26 27 2 0
+                                  77 26 78 79 1 0 88 0 1 1 0 87 0 1 1 0
+                                  21 0 1 1 0 86 0 1 1 0 0 0 83 0 0 0 82
+                                  2 0 0 0 0 57 1 0 96 95 1 1 0 21 0 1 3
+                                  0 0 0 0 0 1 2 0 0 0 0 80 1 0 21 0 1 2
+                                  0 0 0 0 1 3 0 92 0 91 92 1 1 0 21 0
+                                  65 1 0 21 0 63 1 0 0 0 41 1 0 88 0 1
+                                  1 0 21 0 75 2 0 97 95 0 1 3 0 0 0 0 0
+                                  72 0 0 0 38 2 0 0 0 0 67 0 0 0 37 2 0
+                                  0 0 0 66 1 0 0 0 1 1 0 0 0 70 2 0 0 0
+                                  0 1 1 0 0 95 1 1 0 10 0 1 2 0 0 0 0 1
+                                  0 0 0 1 1 0 0 0 49 1 0 68 0 69 2 0
+                                  102 102 102 1 2 0 0 0 0 61 1 0 0 95 1
+                                  1 0 0 0 1 1 0 101 0 1 2 0 98 0 0 1 3
+                                  0 100 0 0 0 1 2 0 88 0 0 1 2 0 97 95
+                                  0 1 1 0 21 0 1 1 0 55 0 1 2 0 59 0 0
+                                  60 1 0 0 0 1 2 0 0 0 55 1 1 0 0 0 50
+                                  1 0 0 0 1 1 0 89 0 1 1 0 90 0 1 1 0
+                                  91 0 1 1 0 93 0 1 1 0 5 0 31 1 0 0 5
+                                  81 1 0 0 0 1 1 0 0 5 81 1 0 28 0 30 0
+                                  0 55 1 2 0 21 0 0 1 2 0 0 0 0 1 0 0 0
+                                  36 2 0 21 0 0 1 3 0 0 0 0 0 73 1 0 0
+                                  0 62 2 0 0 0 0 43 0 0 0 34 2 0 0 0 0
+                                  46 0 0 0 35 3 0 7 8 0 21 24 2 0 10 0
+                                  21 22 2 0 7 8 0 23 1 0 10 0 20 1 0 0
+                                  0 44 1 0 0 0 1 2 0 0 0 55 1 2 0 0 0 0
+                                  45 2 0 21 0 0 1 2 0 21 0 0 1 2 0 21 0
+                                  0 39 2 0 21 0 0 1 2 0 21 0 0 48 2 0 0
+                                  0 0 42 1 0 0 0 51 2 0 0 0 0 53 2 0 0
+                                  0 0 52 2 0 0 0 55 56 2 0 0 0 103 1 2
+                                  0 0 0 0 54 2 0 0 5 0 33 2 0 0 55 0 1
+                                  2 0 0 103 0 1)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|SingleInteger| 'NILADIC T) 

@@ -246,7 +246,7 @@ $OutputIOMode == KEYWORD::OUTPUT
 $BothWaysIOMode == KEYWORD::IO
 
 ++ return a binary stream open for `file' in mode `mode'; nil
-++ if something wnet wrong.
+++ if something went wrong.  This function is used by the Algebra.
 openBinaryFile(file,mode) ==
   mode = $InputIOMode =>
     OPEN(file,KEYWORD::DIRECTION,mode,

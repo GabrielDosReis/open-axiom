@@ -73,10 +73,10 @@ import Byte
 ++ Related Constructor:
 ++ Description:
 ++   ByteBuffer provides datatype for buffers of bytes.  This domain
-++   differs from PrimitiveArray Byte in that it has it is not as rigid
-++   as  PrimitiveArray Byte is.  That is, the typical use of
+++   differs from PrimitiveArray Byte in that it is not as rigid
+++   as  PrimitiveArray Byte.  That is, the typical use of
 ++   ByteBuffer is to pre-allocate a vector of Byte of some capacity
-++   `c'.  The array can then store up to `c' bytes.   The actual
+++   `n'.  The array can then store up to `n' bytes.   The actual
 ++   interesting bytes count (the length of the buffer) is therefore 
 ++   different from the capacity.  The length is no more than the 
 ++   capacity, but it can be set dynamically as needed.  This 
