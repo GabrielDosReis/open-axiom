@@ -504,22 +504,23 @@
 
 (DEFUN |OUTFORM;vspace;I$;28| (|n| $)
   (COND
-    ((EQL |n| 0) (|OUTFORM;empty;$;73| $))
-    ('T
+    ((< 0 |n|)
      (|OUTFORM;vconcat;3$;50| " " (|OUTFORM;vspace;I$;28| (- |n| 1) $)
-         $)))) 
+         $))
+    ('T (|OUTFORM;empty;$;73| $)))) 
 
 (DEFUN |OUTFORM;hspace;I$;29| (|n| $)
   (COND
-    ((EQL |n| 0) (|OUTFORM;empty;$;73| $))
-    ('T (|fillerSpaces| |n|)))) 
+    ((< 0 |n|) (|fillerSpaces| |n|))
+    ('T (|OUTFORM;empty;$;73| $)))) 
 
 (DEFUN |OUTFORM;rspace;2I$;30| (|n| |m| $)
-  (COND
-    ((OR (EQL |n| 0) (EQL |m| 0)) (|OUTFORM;empty;$;73| $))
-    ('T
-     (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
-         (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
+  (SEQ (COND
+         ((< 0 |n|)
+          (COND ((NULL (< 0 |m|)) (EXIT (|OUTFORM;empty;$;73| $)))))
+         ('T (EXIT (|OUTFORM;empty;$;73| $))))
+       (EXIT (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
+                 (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
   (PROG (#0=#:G1539 |l| #1=#:G1540 |lv|)
@@ -800,11 +801,11 @@
 
 (DEFUN |OUTFORM;slash;3$;93| (|a| |b| $) (LIST 'SLASH |a| |b|)) 
 
-(DEFUN |OUTFORM;assign;3$;94| (|a| |b| $) (LIST 'LET |a| |b|)) 
+(DEFUN |OUTFORM;assign;3$;94| (|a| |b| $) (LIST '%LET |a| |b|)) 
 
 (DEFUN |OUTFORM;label;3$;95| (|a| |b| $) (LIST 'EQUATNUM |a| |b|)) 
 
-(DEFUN |OUTFORM;rarrow;3$;96| (|a| |b| $) (LIST 'TAG |a| |b|)) 
+(DEFUN |OUTFORM;rarrow;3$;96| (|a| |b| $) (LIST 'RARROW |a| |b|)) 
 
 (DEFUN |OUTFORM;differentiate;$Nni$;97| (|a| |nn| $)
   (PROG (#0=#:G1526 |r| |s|)

@@ -231,7 +231,7 @@ SingleInteger(): Join(IntegerNumberSystem,Logic,OpenMath) with
       ++ Or(n,m)  returns the bit-by-bit logical {\em or} of
       ++ the single integers n and m.
 
- == add
+ == SubDomain(Integer, SMINTP(#1)$Lisp) add
 
    seed : % := 1$Lisp               -- for random()
    MAXINT ==> _$ShortMaximum$Lisp
@@ -286,8 +286,8 @@ SingleInteger(): Join(IntegerNumberSystem,Logic,OpenMath) with
       OMputEndObject(dev)
 
    reducedSystem m      == m pretend Matrix(Integer)
-   coerce(x):OutputForm == (convert(x)@Integer)::OutputForm
-   convert(x:%):Integer == x pretend Integer
+   coerce(x):OutputForm == rep(x)::OutputForm
+   convert(x:%):Integer == rep x
    i:Integer * y:%      == i::% * y
    0         == 0$Lisp
    1         == 1$Lisp
@@ -295,7 +295,7 @@ SingleInteger(): Join(IntegerNumberSystem,Logic,OpenMath) with
    max()     == MAXINT
    min()     == MININT
    x = y     == EQL(x,y)$Lisp
-   _~ x      == LOGNOT(x)$Lisp
+   ~ x       == LOGNOT(x)$Lisp
    not(x)    == LOGNOT(x)$Lisp
    _/_\(x,y) == LOGAND(x,y)$Lisp
    _\_/(x,y) == LOGIOR(x,y)$Lisp
@@ -342,8 +342,7 @@ SingleInteger(): Join(IntegerNumberSystem,Logic,OpenMath) with
       r
 
    coerce(x:Integer):% ==
-      (x <= max pretend Integer) and (x >= min pretend Integer) =>
-        x pretend %
+      (x <= rep max) and (x >= rep min) => per x
       error "integer too large to represent in a machine word"
 
    random() ==
