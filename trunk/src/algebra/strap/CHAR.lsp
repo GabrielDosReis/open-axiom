@@ -209,11 +209,11 @@
              |CHAR;char;S$;20| |CHAR;upperCase;2$;21|
              |CHAR;lowerCase;2$;22| (|SingleInteger|))
           '#(~= 41 |upperCase?| 47 |upperCase| 52 |space| 57 |size| 61
-             |random| 65 |quote| 69 |ord| 73 |min| 78 |max| 84
-             |lowerCase?| 90 |lowerCase| 95 |lookup| 100 |latex| 105
-             |index| 110 |hexDigit?| 115 |hash| 120 |escape| 125
-             |digit?| 129 |coerce| 134 |char| 139 |alphanumeric?| 149
-             |alphabetic?| 154 >= 159 > 165 = 171 <= 177 < 183)
+             |random| 65 |quote| 69 |ord| 73 |min| 78 |max| 88
+             |lowerCase?| 98 |lowerCase| 103 |lookup| 108 |latex| 113
+             |index| 118 |hexDigit?| 123 |hash| 128 |escape| 133
+             |digit?| 137 |coerce| 142 |char| 147 |alphanumeric?| 157
+             |alphabetic?| 162 >= 167 > 173 = 179 <= 185 < 191)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0))
                 (CONS '#(NIL |OrderedSet&| NIL |SetCategory&|
@@ -226,14 +226,14 @@
                                   22 0 29 0 22 0 31 0 22 0 33 0 22 0 35
                                   1 37 39 0 40 2 37 24 0 39 41 2 0 6 0
                                   0 1 1 0 6 0 30 1 0 0 0 43 0 0 0 17 0
-                                  0 9 10 0 0 0 16 0 0 0 18 1 0 9 0 14 2
-                                  0 0 0 0 1 2 0 0 0 0 1 1 0 6 0 32 1 0
-                                  0 0 44 1 0 12 0 15 1 0 37 0 38 1 0 0
-                                  12 13 1 0 6 0 28 1 0 45 0 1 0 0 0 19
-                                  1 0 6 0 26 1 0 20 0 21 1 0 0 37 42 1
-                                  0 0 9 11 1 0 6 0 36 1 0 6 0 34 2 0 6
-                                  0 0 1 2 0 6 0 0 1 2 0 6 0 0 7 2 0 6 0
-                                  0 1 2 0 6 0 0 8)))))
+                                  0 9 10 0 0 0 16 0 0 0 18 1 0 9 0 14 0
+                                  0 0 1 2 0 0 0 0 1 0 0 0 1 2 0 0 0 0 1
+                                  1 0 6 0 32 1 0 0 0 44 1 0 12 0 15 1 0
+                                  37 0 38 1 0 0 12 13 1 0 6 0 28 1 0 45
+                                  0 1 0 0 0 19 1 0 6 0 26 1 0 20 0 21 1
+                                  0 0 9 11 1 0 0 37 42 1 0 6 0 36 1 0 6
+                                  0 34 2 0 6 0 0 1 2 0 6 0 0 1 2 0 6 0
+                                  0 7 2 0 6 0 0 1 2 0 6 0 0 8)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Character| 'NILADIC T) 

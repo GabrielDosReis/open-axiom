@@ -1149,7 +1149,7 @@ OrderedCancellationAbelianMonoid(): Category ==
 )abbrev category ORDFIN OrderedFinite
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: December 27, 2008
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1159,7 +1159,9 @@ OrderedCancellationAbelianMonoid(): Category ==
 ++ Description:
 ++ Ordered finite sets.
 
-OrderedFinite(): Category == Join(OrderedSet, Finite)
+OrderedFinite(): Category == Join(OrderedSet, Finite) with
+     min: % ++ \spad{min} is the minimum value of %.
+     max: % ++ \spad{max} is the maximum value of %.
 
 @
 \section{category OINTDOM OrderedIntegralDomain}
