@@ -37,8 +37,8 @@ import g_-util
 namespace BOOT
 
 hasCat(domainOrCatName,catName) ==
-  catName='Object or catName='Type  -- every domain is a Type (Object)
-   or constructorHasCategoryFromDB [domainOrCatName,:catName]
+  catName="Type"  -- every domain is a Type
+    or constructorHasCategoryFromDB [domainOrCatName,:catName]
 
 showCategoryTable con ==
   [[b,:val] for (key :=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_*
@@ -77,7 +77,6 @@ genCategoryTable() ==
 simpTempCategoryTable() ==
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
     for (u:=[a,:b]) in getConstructorAncestorsFromDB id repeat
-      RPLACA(u,substitute('Type,'Object,a))
       RPLACD(u,simpHasPred b)
 
 simpCategoryTable() == main where
