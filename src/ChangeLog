@@ -1,3 +1,10 @@
+2008-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (OrderedFinite): Export `min' and
+	`max' values.
+	* algebra/si.spad.pamphlet (SingleInteger): Now satisfies
+	OrderedFinite.  Tidy.
+
 2008-12-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/net.spad.pamphlet (readBytes!$InputByteConduit): Set

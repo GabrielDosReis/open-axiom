@@ -162,9 +162,11 @@ IntegerNumberSystem(): Category ==
 @
 
 \section{domain SINT SingleInteger}
+
 The definition of {\bf one?} has been rewritten 
 as it relies on calling {\bf ONEP} which is a function specific
 to Codemist Common Lisp but is not defined in Common Lisp.
+
 <<domain SINT SingleInteger>>=
 )abbrev domain SINT SingleInteger
 
@@ -195,7 +197,7 @@ to Codemist Common Lisp but is not defined in Common Lisp.
 -- QSOR, QSXOR, QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
 
-SingleInteger(): Join(IntegerNumberSystem,Logic,OpenMath) with
+SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    canonical
       ++ \spad{canonical} means that mathematical equality is implied by data structure equality.
    canonicalsClosed
@@ -203,22 +205,9 @@ SingleInteger(): Join(IntegerNumberSystem,Logic,OpenMath) with
    noetherian
       ++ \spad{noetherian} all ideals are finitely generated (in fact principal).
 
-   max      : () -> %
-      ++ max() returns the largest single integer.
-   min      : () -> %
-      ++ min() returns the smallest single integer.
-
    -- bit operations
    "not":   % -> %
       ++ not(n) returns the bit-by-bit logical {\em not} of the single integer n.
-   "~"  :   % -> %
-      ++  ~ n returns the bit-by-bit logical {\em not } of the single integer n.
-   "/\": (%, %) -> %
-      ++ n /\ m  returns the bit-by-bit logical {\em and} of
-      ++ the single integers n and m.
-   "\/" : (%, %) -> %
-      ++ n \/ m  returns the bit-by-bit logical {\em or} of
-      ++ the single integers n and m.
    "xor": (%, %) -> %
       ++ xor(n,m)  returns the bit-by-bit logical {\em xor} of
       ++ the single integers n and m.
@@ -329,6 +318,12 @@ SingleInteger(): Join(IntegerNumberSystem,Logic,OpenMath) with
    addmod(a,b,p) == QSADDMOD(a,b,p)$Lisp
    submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
    negative?(x)  == QSMINUSP$Lisp x
+   size() == (MAXINT - MININT + 1$Lisp) pretend NonNegativeInteger
+   index i ==
+     i > size() => error ["index %1b out of range",i]
+     per(i + MININT - 1$Lisp)
+   lookup x ==
+     (x - MININT + 1$Lisp) pretend PositiveInteger
 
 
    reducedSystem(m, v) ==
