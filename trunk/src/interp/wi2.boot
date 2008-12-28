@@ -155,12 +155,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
 --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
 --  in this case, D is replaced by D1,..,Dn (gensyms) which are set
 --  to the A1,..,An view of D
-    if isPackageFunction() then $functorLocalParameters:=
-      [nil,:
-        [nil
-          for i in 6..MAXINDEX $domainShell |
-            $domainShell.i is [.,.,['ELT,'_$,.]]]]
-    --leave space for vector ops and package name to be stored
 --+
     $functorLocalParameters:=
       argPars :=

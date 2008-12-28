@@ -566,7 +566,7 @@ compMakeCategoryObject(c,$e) ==
   nil
  
 compDefineFunctor(df,m,e,prefix,fal) ==
-  $domainShell: local -- holds the category of the object being compiled
+  $domainShell: local := nil -- holds the category of the object being compiled
   $profileCompiler: local := true
   $profileAlist:    local := nil
   $mutableDomain: fluid := false
@@ -660,17 +660,9 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
 --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
 --  in this case, D is replaced by D1,..,Dn (gensyms) which are set
 --  to the A1,..,An view of D
-    if isPackageFunction() then $functorLocalParameters:=
-      [nil,:
-        [nil
-          for i in 6..MAXINDEX $domainShell |
-            $domainShell.i is [.,.,['ELT,'_$,.]]]]
-    --leave space for vector ops and package name to be stored
-    $functorLocalParameters:=
-      argPars :=
-        makeFunctorArgumentParameters(argl,rest signature',first signature')
- -- must do above to bring categories into scope --see line 5 of genDomainView
-      argl
+    makeFunctorArgumentParameters(argl,rest signature',first signature')
+    $functorLocalParameters := argl
+
 --  4. compile body in environment of %type declarations for arguments
     op':= $op
     rettype:= signature'.target
@@ -1266,9 +1258,6 @@ compile u ==
       isLocalFunction op =>
         if opexport then userError ['%b,op,'%d,'" is local and exported"]
         INTERN STRCONC(encodeItem $prefix,'";",encodeItem op) 
-      isPackageFunction() and KAR $functorForm^="CategoryDefaults" =>
-        if null opmodes then userError ['"no modemap for ",op]
-        encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
       encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
      where
        isLocalFunction op ==
