@@ -1,5 +1,12 @@
 2008-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (compDefineFunctor1): Remove dead code.
+	(compile): Likewise.
+	* interp/functor.boot (isPackageFunction): Remove.
+	* interp/wi2.boot (compDefineFunctor1): Remove dead code.
+
+2008-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (isSubset): Don't check for Object.
 	* interp/cattable.boot (hasCat): Likewise.
 	(simpTempCategoryTable): Don't substitute for Object.

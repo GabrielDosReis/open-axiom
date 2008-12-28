@@ -986,10 +986,6 @@ resolvePatternVars(p,args) ==
 
 --% Code Processing Packages
 
-isPackageFunction() ==
-  -- called by compile/putInLocalDomainReferences
-  nil
-
 isCategoryPackageName nam ==
   p := PNAME opOf nam
   p.(MAXINDEX p) = char '_&
