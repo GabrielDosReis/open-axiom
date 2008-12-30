@@ -318,12 +318,12 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    addmod(a,b,p) == QSADDMOD(a,b,p)$Lisp
    submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
    negative?(x)  == QSMINUSP$Lisp x
-   size() == (MAXINT - MININT + 1$Lisp) pretend NonNegativeInteger
+   size() == (MAXINT -$Lisp MININT +$Lisp 1$Lisp)  pretend NonNegativeInteger
    index i ==
      i > size() => error ["index %1b out of range",i]
      per(i + MININT - 1$Lisp)
    lookup x ==
-     (x - MININT + 1$Lisp) pretend PositiveInteger
+     (x -$Lisp MININT +$Lisp 1$Lisp) pretend PositiveInteger
 
 
    reducedSystem(m, v) ==
