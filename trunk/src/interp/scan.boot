@@ -38,6 +38,14 @@ import incl
 namespace BOOT
 module scan
 
+--%
+
+$RDigits ==
+  '"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+$smallLetters ==
+  '"abcdefghijklmnopqrstuvwxyz"
+
 --% Separators
 
 $SPACE       == QENUM('"    ", 0)
@@ -665,7 +673,9 @@ scanExponent(a,w)==
         else lffloat(a,w,'"0")
 
 rdigit? x==
-   STRPOS(x,'"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",0,nil)
+   d := STRPOS(x,$RDigits,0,nil) => d
+   d := STRPOS(x,$smallLetters,0,nil) => 10 + d
+   nil
 
 scanError()==
       n:=$n
