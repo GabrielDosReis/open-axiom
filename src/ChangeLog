@@ -1,0 +1,6 @@
+2009-01-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/pf2sex.boot (pfLiteral2Sex): Fix evaluation of intergers
+	with non-decimal radix.
+	* interp/scan.boot (rdigti?): Allow non-capital letters.
+

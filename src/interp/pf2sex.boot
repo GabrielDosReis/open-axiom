@@ -181,7 +181,12 @@ pf2Sex1 pf ==
 pfLiteral2Sex pf ==
   type := pfLiteralClass pf
   type = 'integer =>
-    READ_-FROM_-STRING pfLiteralString pf
+    txt := pfLiteralString pf
+    MULTIPLE_-VALUE_-BIND(part1 pos1,
+      PARSE_-INTEGER(txt,KEYWORD::JUNK_-ALLOWED,true),
+        if pos1 = #txt then part1
+        else PARSE_-INTEGER(SUBSTRING(txt,pos1+1,nil),
+               KEYWORD::RADIX, part1))
   type = 'string or type = 'char =>
     pfLiteralString pf
   type = 'float =>
