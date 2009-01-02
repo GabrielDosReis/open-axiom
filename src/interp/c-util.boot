@@ -900,10 +900,15 @@ getCapsuleDirectoryEntry slot ==
 
 ++ Update the current capsule directory with entry controlled by 
 ++ predicate `pred'.
-updateCapsuleDirectory(entry,pred) ==
+updateCapsuleDirectory(item,pred) ==
   pred ^= true => nil
-  entry isnt ["$",slot,["CONS",["dispatchFunction",fun],:.],:.] => nil
-  $capsuleDirectory := [[slot,:fun],:$capsuleDirectory]
+  entry :=
+    item is ["$",slot,["CONS",["dispatchFunction",fun],:.],:.] => [slot,:fun]
+    item is ["$",slot,["CONS","IDENTITY",
+              ["FUNCALL",["dispatchFunction",fun],"$"]]] => [slot,:fun]
+    nil
+  entry = nil => nil
+  $capsuleDirectory := [entry,:$capsuleDirectory]
 
 
 
@@ -989,6 +994,12 @@ replaceSimpleFunctions form ==
     mutateCONDFormWithUnaryFunction(form,"replaceSimpleFunctions")
   form is ["LET",:.] =>
     optLET mutateLETFormWithUnaryFunction(form,"replaceSimpleFunctions")
+  form is ["spadConstant","$",n] =>
+    null(op := getCapsuleDirectoryEntry n) => form
+    getFunctionReplacement op is ["XLAM",=nil,body] and atom body => body
+    -- Conservatively preserve object identity and storage 
+    -- consumption by not folding non-atomic constant forms.
+    form
   -- 1. process argument first.
   for args in tails rest form repeat
     arg' := replaceSimpleFunctions(arg := first args)

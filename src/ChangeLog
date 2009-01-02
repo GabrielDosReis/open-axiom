@@ -1,3 +1,9 @@
+2009-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (updateCapsuleDirectory): Record constant
+	makers too.
+	(replaceSimpleFunctions): Fold simple constant form makers.
+
 2009-01-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/pf2sex.boot (pfLiteral2Sex): Fix evaluation of intergers
