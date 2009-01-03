@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -47,10 +47,10 @@ $forceAdd := false
  
 addDomain(domain,e) ==
   atom domain =>
-    EQ(domain,"$EmptyMode") => e
-    EQ(domain,"$NoValueMode") => e
+    domain="$EmptyMode" => e
+    domain="$NoValueMode" => e
     not IDENTP domain or 2<#(s:= STRINGIMAGE domain) and
-      EQ(char "#",s.(0)) and EQ(char "#",s.(1)) => e
+      char "#" = s.0 and char "#" = s.1 => e
     MEMQ(domain,getDomainsInScope e) => e
     isLiteral(domain,e) => e
     addNewDomain(domain,e)
@@ -190,7 +190,7 @@ mkNewModemapList(mc,sig,pred,fn,curModemapList,e,filenameOrNil) ==
  
 mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
   for (mmtail:= [[[mc',:sig'],[pred',:.],:.],:.]) in tails modemapList repeat
-    mc=mc' or isSuperDomain(mc',mc,e) =>
+    mc=mc' or isSubset(mc,mc',e) =>
       newmm:= nil
       mm:= modemapList
       while (not EQ(mm,mmtail)) repeat (newmm:= [first mm,:newmm]; mm:= rest mm)
@@ -211,18 +211,12 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
 -- In ptic., SubResGcd in SparseUnivariatePolynomial is miscompiled
 --mergeModemap(entry:=((mc,:sig),:.),modemapList,e) ==
 --    for (mmtail:= (((mc',:sig'),:.),:.)) in tails modemapList do
---       mc=mc' or isSuperDomain(mc',mc,e)  =>
+--       mc=mc' or isSubset(mc,mc',e)  =>
 --         RPLACD(mmtail,(first mmtail,: rest mmtail))
 --         RPLACA(mmtail,entry)
 --         entry := nil
 --         return modemapList
 --     if entry then (:modemapList,entry) else modemapList
- 
-isSuperDomain(domainForm,domainForm',e) ==
-  isSubset(domainForm',domainForm,e) => true
-  --regard $ as a subdomain of Rep, only if using old style Rep
-  domainForm='Rep and domainForm'="$" => $useRepresentationHack
-  LASSOC(opOf domainForm',get(domainForm,"SubDomain",e))
  
 --substituteForRep(entry is [[mc,:sig],:.],curModemapList) ==
 --  --change 'Rep to "$" unless the resulting signature is already in $
@@ -232,14 +226,13 @@ isSuperDomain(domainForm,domainForm',e) ==
  
 addNewDomain(domain,e) ==
   augModemapsFromDomain(domain,domain,e)
- 
+
 augModemapsFromDomain(name,functorForm,e) ==
   member(KAR name or name,$DummyFunctorNames) => e
   name=$Category or isCategoryForm(name,e) => e
   member(name,curDomainsInScope:= getDomainsInScope e) => e
-  if u:= getSuperDomainFromDB opOf functorForm then
-    e:= addNewDomain(first u,e)
-    --need code to handle parameterized SuperDomains
+  if super := superType functorForm then
+    e := addNewDomain(super,e)
   if innerDom:= listOrVectorElementMode name then e:= addDomain(innerDom,e)
   if name is ["Union",:dl] then for d in stripUnionTags dl
                          repeat e:= addDomain(d,e)

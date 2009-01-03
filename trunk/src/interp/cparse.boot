@@ -264,7 +264,7 @@ npLeftAssoc(operations,parser)==
     else false
 
 npInfixOp()==
-  EQ(CAAR $stok,"key") and
+  CAAR $stok = "key" and
     GETL($ttok,"INFGENERIC") and npPushId()
 
 npInfixOperator()== npInfixOp() or
@@ -279,7 +279,7 @@ npInfixOperator()== npInfixOp() or
         npRestore a
         false
 
-npInfKey s==  EQ(CAAR $stok,"key") and  MEMQ($ttok,s) and npPushId()
+npInfKey s==  CAAR $stok="key" and  MEMQ($ttok,s) and npPushId()
 
 npDDInfKey s==
     npInfKey s or
@@ -334,20 +334,20 @@ npWConditional f==
 
 -- peek for keyword s, no advance of token stream
 
-npEqPeek s ==  EQ(CAAR $stok,"key") and EQ(s,$ttok)
+npEqPeek s ==  CAAR $stok="key" and EQ(s,$ttok)
 
 -- test for keyword s, if found advance token stream
 
 npEqKey s ==
-    EQ(CAAR $stok,"key") and EQ(s,$ttok) and npNext()
+    CAAR $stok="key" and EQ(s,$ttok) and npNext()
 
 $npTokToNames:= ["~","#","[]","{}", "[||]","{||}"]
 
 npId() ==
-        EQ(CAAR $stok,"id") =>
+        CAAR $stok="id" =>
                npPush $stok
                npNext()
-        EQ(CAAR $stok,"key") and MEMQ($ttok,$npTokToNames)=>
+        CAAR $stok="key" and MEMQ($ttok,$npTokToNames)=>
                npPush tokConstruct("id",$ttok,tokPosn $stok)
                npNext()
         false

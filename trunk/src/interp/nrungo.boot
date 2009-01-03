@@ -288,7 +288,7 @@ compareSigEqual(s,t,dollar,domain) ==
   EQUAL(s,t) => true
   ATOM t =>
     u :=
-      EQ(t,'$) => dollar
+      t='$ => dollar
       isSharpVar t =>
         VECP domain => ELT(rest domain.0,POSN1(t,$FormalMapVariableList))
         ELT(rest domain,POSN1(t,$FormalMapVariableList))
@@ -297,7 +297,7 @@ compareSigEqual(s,t,dollar,domain) ==
     s = '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
     EQUAL(s,u)
-  EQ(s,'$) => compareSigEqual(dollar,t,dollar,domain)
+  s='$ => compareSigEqual(dollar,t,dollar,domain)
   ATOM s => nil
   #s ^= #t => nil
   match := true

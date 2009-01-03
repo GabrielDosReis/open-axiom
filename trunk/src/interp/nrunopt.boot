@@ -306,7 +306,7 @@ transHasCode x ==
   atom x => x
   op := QCAR x
   MEMQ(op,'(HasCategory HasAttribute)) => x
-  EQ(op,'has) => compHasFormat x
+  op='has => compHasFormat x
   [transHasCode y for y in x]
  
 mungeAddGensyms(u,gal) ==

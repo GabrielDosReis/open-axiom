@@ -663,13 +663,13 @@ hitListOfTarget(t) ==
 
   t = '(Polynomial (Pi)) => 90000
 
-  EQ(CAR t, 'Polynomial) => 300
-  EQ(CAR t, 'List) => 400
-  EQ(CAR t,'Matrix) => 910
-  EQ(CAR t,'UniversalSegment) => 501
-  EQ(CAR t,'RationalFunction) => 900
-  EQ(CAR t,'Union) => 999
-  EQ(CAR t,'Expression) => 1600
+  CAR t ='Polynomial => 300
+  CAR t = 'List => 400
+  CAR t = 'Matrix => 910
+  CAR t = 'UniversalSegment => 501
+  CAR t = 'RationalFunction => 900
+  CAR t = 'Union => 999
+  CAR t = 'Expression => 1600
   500
 
 getFunctionFromDomain(op,dc,args) ==
@@ -856,16 +856,16 @@ findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
   if CONTAINED('_#, sig) or CONTAINED('construct,sig) then
     sig := [replaceSharpCalls t for t in sig]
   matchMmCond cond and matchMmSig(mm,tar,args1,args2) and
-    EQ(y,'Subsumed) and
+    y="Subsumed" and
       -- hmmmm: do Union check in following because (as in DP)
       -- Unions are subsumed by total modemaps which are in the
       -- mm list in findFunctionInDomain.
       y := 'ELT      -- if subsumed fails try it again
       not $SubDom and CAR sig isnt ['Union,:.] and slot is [tar,:args] and
         (f := findFunctionInDomain(op,dc,tar,args,args,NIL,NIL)) => f
-    EQ(y,'ELT) => [[CONS(dc,sig),osig,nreverse $RTC]]
-    EQ(y,'CONST) => [[CONS(dc,sig),osig,nreverse $RTC]]
-    EQ(y,'ASCONST) => [[CONS(dc,sig),osig,nreverse $RTC]]
+    y='ELT => [[CONS(dc,sig),osig,nreverse $RTC]]
+    y='CONST => [[CONS(dc,sig),osig,nreverse $RTC]]
+    y='ASCONST => [[CONS(dc,sig),osig,nreverse $RTC]]
     y is ['XLAM,:.] => [[CONS(dc,sig),y,nreverse $RTC]]
     sayKeyedMsg("S2IF0006",[y])
     NIL
@@ -1112,7 +1112,7 @@ selectMmsGen(op,tar,args1,args2) ==
         NIL
       [c,t,:a] := sig
       if a then matchTypes(a,args1,args2)
-      not EQ($Subst,'failed) =>
+      $Subst ^= 'failed =>
         mmS := nconc(evalMm(op,tar,sig,mmC),mmS)
     mmS
 
@@ -1145,7 +1145,7 @@ evalMm(op,tar,sig,mmC) ==
   mS:= NIL
   for st in evalMmStack mmC repeat
     SL:= evalMmCond(op,sig,st)
-    not EQ(SL,'failed) =>
+    SL ^= 'failed =>
       SL := fixUpTypeArgs SL
       sig:= [subCopy(deepSubCopy(x,SL),$Subst) for x in sig]
       not containsVars sig =>

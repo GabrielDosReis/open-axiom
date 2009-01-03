@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -374,8 +374,7 @@ resolveTCat(t,c) ==
 
   c = '(Ring) and t is ['FactoredForm,t0] => ['FactoredRing,t0]
 
-  (t is [t0]) and (sd := getImmediateSuperDomain(t0)) and sd ^= t0 =>
-    resolveTCat(sd,c)
+  sd := superType t => resolveTCat(sd,c)
 
   SIZE(td := deconstructT t) ^= 2=> NIL
   SIZE(tc := deconstructT c) ^= 2 => NIL

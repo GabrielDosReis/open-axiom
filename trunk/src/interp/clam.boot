@@ -611,7 +611,7 @@ hputNewProp(ht,op,argList,val) ==
 listTruncate(l,n) ==
   u:= l
   n:= QSSUB1 n
-  while NEQ(n,0) and null atom u repeat
+  while n ^= 0 and null atom u repeat
     n:= QSSUB1 n
     u:= QCDR u
   if null atom u then

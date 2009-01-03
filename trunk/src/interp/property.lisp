@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -139,23 +139,6 @@
   (|String| . (STRINGP |#1|))
   (|PrimitiveSymbol| . (IDENTP |#1|))
   )) (MAKEPROP (CAR X) '|BasicPredicate| (CDR X)))
-
-(MAKEPROP '|Integer| '|Subsets|
-  '((|PositiveInteger| . (|>| * 0))
-    (|NonNegativeInteger| . (|>=| * 0))
-    (|NegativeInteger| . (|<| * 0))
-    (|NonPositiveInteger| . (|<=| * 0))
-    (|NonZeroInteger| . (^= * 0))
-    (|SingleInteger| . (SMINTP *))
-    ))
-
-(MAKEPROP '|NonNegativeInteger| '|Subsets| '(
-  (|PositiveInteger| . (|>| * 0))
-  ))
-
-(MAKEPROP '|NonPositiveInteger| '|Subsets| '(
-  (|NegativeInteger| . (|<| * 0))
-  ))
 
 (FLAG '(|Union| |Record| |Enumration| |Mapping| |Enumeration|) 'FUNCTOR)
 

@@ -503,7 +503,7 @@ bottomUpForm3(t,op,opName,argl,argModeSetList) ==
   bottomUpForm2(t,op,opName,argl,argModeSetList)
 
 bottomUpForm2(t,op,opName,argl,argModeSetList) ==
-  not atom t and EQ(opName,"%%") => bottomUpPercent t
+  not atom t and opName="%%" => bottomUpPercent t
   opVal := getValue op
 
   -- for things with objects in operator position, be careful before
@@ -749,7 +749,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
     if PAIRP(m) and CAR(m) = $EmptyMode then return NIL
     object:= retract getValue x
     a:= [x,:a]
-    EQ(object,'failed) =>
+    object="failed" =>
         putAtree(x,'retracted,nil)
         ms := [m, :ms]
     b:= true
@@ -771,7 +771,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
 
 retractAtree atr ==
     object:= retract getValue atr
-    EQ(object,'failed) =>
+    object="failed" =>
         putAtree(atr,'retracted,nil)
         nil
     putAtree(atr,'retracted,true)

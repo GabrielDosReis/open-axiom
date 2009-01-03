@@ -1676,7 +1676,7 @@ printBasic x ==
   PRIN1(x,$algebraOutputStream)
 
 charybdis(u,start,linelength) ==
-  EQ(keyp u,'EQUATNUM) and ^(CDDR u) =>
+  keyp u='EQUATNUM and ^(CDDR u) =>
     charybdis(['PAREN,u.1],start,linelength)
   charyTop(u,start,linelength)
 
@@ -1692,7 +1692,7 @@ charyTop(u,start,linelength) ==
     (w := WIDTH(b)) > linelength-start => charyTop(a,start,linelength)
     charyTop(b,half(linelength-start-w),linelength)
   v := charyTopWidth u
-  EQ(keyp u,'ELSE) => charyElse(u,v,start,linelength)
+  keyp u='ELSE => charyElse(u,v,start,linelength)
   WIDTH(v) > linelength => charyTrouble(u,v,start,linelength)
   d := APP(v,start,0,nil)
   n := superspan v
@@ -1737,16 +1737,16 @@ charyTrouble1(u,v,start,linelength) ==
   atom u => outputString(start,linelength,atom2String u)
   EQ(x:= keyp u,'_-) => charyMinus(u,v,start,linelength)
   MEMQ(x,'(_+ _* AGGLST)) => charySplit(u,v,start,linelength)
-  EQ(x,'EQUATNUM) => charyEquatnum(u,v,start,linelength)
+  x='EQUATNUM => charyEquatnum(u,v,start,linelength)
   d := GETL(x,'INFIXOP) => charyBinary(d,u,v,start,linelength)
   x = 'OVER  =>
     charyBinary(GETL("/",'INFIXOP),u,v,start,linelength)
-  EQ(3,LENGTH u) and GETL(x,'Led) =>
+  3=#u and GETL(x,'Led) =>
     d:= PNAME first GETL(x,'Led)
     charyBinary(d,u,v,start,linelength)
-  EQ(x,'CONCAT) =>
+  x='CONCAT =>
     concatTrouble(rest v,d,start,linelength,nil)
-  EQ(x,'CONCATB) =>
+  x='CONCATB =>
     (rest v) is [loop, 'repeat, body] =>
       charyTop(['CONCATB,loop,'repeat],start,linelength)
       charyTop(body,start+2,linelength-2)
@@ -1756,21 +1756,21 @@ charyTrouble1(u,v,start,linelength) ==
         charyTop(body,start+2,linelength-2)
     concatTrouble(rest v,d,start,linelength,true)
   GETL(x,'INFIXOP) => charySplit(u,v,start,linelength)
-  EQ(x,'PAREN) and
+  x='PAREN and
     (EQ(keyp u.1,'AGGLST) and (v:= ",") or EQ(keyp u.1,'AGGSET) and
       (v:= ";")) => bracketagglist(rest u.1,start,linelength,v,"_(","_)")
-  EQ(x,'PAREN) and EQ(keyp u.1,'CONCATB) =>
+  x='PAREN and EQ(keyp u.1,'CONCATB) =>
     bracketagglist(rest u.1,start,linelength," ","_(","_)")
-  EQ(x,'BRACKET) and (EQ(keyp u.1,'AGGLST) and (v:= ",")) =>
+  x='BRACKET and (EQ(keyp u.1,'AGGLST) and (v:= ",")) =>
     bracketagglist(rest u.1,start,linelength,v,
                    specialChar 'lbrk, specialChar 'rbrk)
-  EQ(x,'BRACE) and (EQ(keyp u.1,'AGGLST) and (v:= ",")) =>
+  x='BRACE and (EQ(keyp u.1,'AGGLST) and (v:= ",")) =>
     bracketagglist(rest u.1,start,linelength,v,
                    specialChar 'lbrc, specialChar 'rbrc)
-  EQ(x,'EXT) => longext(u,start,linelength)
-  EQ(x,'MATRIX) => MATUNWND()
-  EQ(x,'ELSE) => charyElse(u,v,start,linelength)
-  EQ(x,'SC) => charySemiColon(u,v,start,linelength)
+  x='EXT => longext(u,start,linelength)
+  x='MATRIX => MATUNWND()
+  x='ELSE => charyElse(u,v,start,linelength)
+  x='SC => charySemiColon(u,v,start,linelength)
   charybdis(x,start,linelength)
   if rest u then charybdis(['ELSE,:rest u],start,linelength)
   -- changed from charybdis(...) by JHD 2 Aug 89, since rest u might be null
@@ -1964,7 +1964,7 @@ appext(u,x,y,d) ==
   temp := 1 + WIDTH agg(2,u) +  WIDTH agg(3,u)
   n := MAX(WIDTH CADR u, WIDTH agg(4,u), temp)
   if EQCAR(first(z := agg(5,u)), 'EXT) and
-   (EQ(n,3) or (n > 3 and ^(atom z)) ) then
+   (n=3 or (n > 3 and ^(atom z)) ) then
      n := 1 + n
   d := APP(z, x + n, y, d)
 
@@ -2040,7 +2040,7 @@ extwidth(u) ==
            1 + WIDTH agg(2, u) + WIDTH agg(3, u) )
   nil or
          (EQCAR(first(z := agg(5, u)), 'EXT) and _
-          (EQ(n, 3) or ((n > 3) and null atom z) )  =>
+          (n=3 or ((n > 3) and null atom z) )  =>
           n := 1 + n)
   true => n + WIDTH agg(5, u)
 
@@ -2332,7 +2332,7 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
              ((s := s + WIDTH first x + 1) >= linelength) => return(s)
              null rest x => return(s := -1)
     nil or
-       EQ(s, -1) => (nextu := nil)
+       s = -1 => (nextu := nil)
        EQ(lastx, u) => ((nextu := rest u); RPLACD(u, nil) )
        true => ((nextu := lastx); RPLACD(PREDECESSOR(lastx, u), nil))
     for x in tails u repeat

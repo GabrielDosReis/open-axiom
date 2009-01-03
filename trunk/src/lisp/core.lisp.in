@@ -3,7 +3,7 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; 
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -69,6 +69,7 @@
 	   "%systemOptions"
 	   "%systemArguments"
 	   "%basicSystemIsComplete"
+	   "%algebraSystemIsComplete"
 	   
 	   "$hostPlatform"
 	   "$buildPlatform"
@@ -130,12 +131,22 @@
   '(@axiom_optimize_options@))
 (proclaim '(optimize @axiom_optimize_options@))
 
-;; Return true if the Boot system is complete bootstrapped.
-(defun boot-completed-p nil
-  (member :open-axiom-boot *features*))
+;; Return true if the full OpenAxiom algebra system is completed
+;; built.
+(defun |%algebraSystemIsComplete| nil
+  (member :open-axiom-algebra-system *features*))
 
+;; Return true if the basic OpenAxiom system is complete.  This means
+;; that we have a compiler and an interpreter, but not necessarily
+;; the algebras.
 (defun |%basicSystemIsComplete| nil
-  (member :open-axiom-basic-system *features*))
+  (or (|%algebraSystemIsComplete|)
+      (member :open-axiom-basic-system *features*)))
+
+;; Return true if the Boot system is completely bootstrapped.
+(defun boot-completed-p nil
+  (or (|%basicSystemIsComplete|)
+      (member :open-axiom-boot *features*)))
 
 ;; 
 ;; -*- Hosting Lisp System -*-

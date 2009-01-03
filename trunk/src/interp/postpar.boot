@@ -181,7 +181,7 @@ postAtom: %Atom -> %ParseForm
 postAtom x ==
   x=0 => $Zero
   x=1 => $One
-  EQ(x,'T) => "T$" -- rename T in spad code to T$
+  x='T => "T$" -- rename T in spad code to T$
   IDENTP x and niladicConstructorFromDB x => [x]
   x="," => "%Comma"
   x = "^" => "**"  -- always use `**' internally for exponentiation

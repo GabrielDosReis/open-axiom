@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -905,7 +905,7 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
     -----> assume that optFinal is $SmallInteger
     T := comp(final,$EmptyMode,inc'.env) or return nil
     final' := T
-    maxSuperType(T.mode,e) ^= $Integer => return nil
+    maximalSuperType T.mode ^= $Integer => return nil
     givenRange := T.mode
   indexmode:= $SmallInteger
   [.,.,e]:= compMakeDeclaration([":",index,indexmode],$EmptyMode,

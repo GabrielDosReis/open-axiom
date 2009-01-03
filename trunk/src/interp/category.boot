@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -297,10 +297,10 @@ SigListOpSubsume([[name1,sig1,:.],:.],list) ==
   --does m subsume another operator in the list?
         --see "operator subsumption" in SYSTEM SCRIPT
         --if it does, returns the subsumed member
-  lsig1:=LENGTH sig1
+  lsig1 := #sig1
   ans:=[]
   for (n:=[[name2,sig2,:.],:.]) in list repeat
-    name1=name2 and EQ(lsig1,LENGTH sig2) and SourceLevelSubsume(sig1,sig2) =>
+    name1=name2 and lsig1 = #sig2 and SourceLevelSubsume(sig1,sig2) =>
       ans:=[n,:ans]
   return ans
  
@@ -320,9 +320,7 @@ SourceLevelSubset(a,b) ==
   $noSubsumption=true => false
   b is ["Union",:blist] and member(a,blist) => true
   BOUNDP '$noSubsets and $noSubsets => false
-  atom b and assoc(a,GETL(b,"Subsets")) => true
-  a is [a1] and b is [b1] and assoc(a1,GETL(b1,"Subsets")) => true
-  nil
+  not null isSubDomain(a,b)
  
 MachineLevelSubsume([name1,[out1,:in1],:flag1],[name2,[out2,:in2],:flag2]) ==
   -- Checks for machine-level subsumption in the sense of SYSTEM SCRIPT
@@ -338,10 +336,8 @@ MachineLevelSubset(a,b) ==
   b is ["Union",:blist] and member(a,blist) and
     (and/[STRINGP x for x in blist | x^=a]) => true
            --all other branches must be distinct objects
-  atom b and assoc(a,GETL(b,"Subsets")) => true
-  a is [a1] and b is [b1] and assoc(a1,GETL(b1,"Subsets")) => true
+  not null isSubDomain(a,b)
              --we assume all subsets are true at the machine level
-  nil
  
 --% Ancestor chasing code
  

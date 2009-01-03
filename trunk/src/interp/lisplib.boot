@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -573,7 +573,7 @@ findConstructorSlotNumber(domainForm,domain,op,sig) ==
     "and"/[compare for a in sig for b in sig1]] where compare() ==
       a=b => true
       FIXP b => a=constructorArglist.b
-      isSuperDomain(bustUnion b,bustUnion a,$CategoryFrame)
+      isSubset(bustUnion a,bustUnion b,$CategoryFrame)
   tail is [.,["ELT",.,n]] => n
   systemErrorHere ["findConstructorSlotNumber",domainForm]
  
@@ -599,7 +599,7 @@ sigsMatch(sig,sig1,domainForm) ==
     partsMatch:=
       (item:= CAR sig)=(item1:= CAR sig1) => true --ok, go to next iteration
       FIXP item1 => item = domainForm.item1       --item1=n means nth arg
-      isSuperDomain(bustUnion item,bustUnion item1,$CategoryFrame)
+      isSubset(bustUnion item1,bustUnion item,$CategoryFrame)
     null partsMatch => return nil
     sig:= rest sig; sig1 := rest sig1
   sig or sig1 => nil
@@ -608,7 +608,7 @@ sigsMatch(sig,sig1,domainForm) ==
 findDomainSlotNumber(domain,op,sig) == --using slot 1 of the domain
   nsig:=#sig
   tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
-    "and"/[a=b or isSuperDomain(bustUnion b,bustUnion a,$CategoryFrame)
+    "and"/[a=b or isSubset(bustUnion a,bustUnion b,$CategoryFrame)
       for a in sig for b in sig1]]
   tail is [.,["ELT",.,n]] => n
   systemErrorHere '"findDomainSlotNumber"

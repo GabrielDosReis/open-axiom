@@ -1,3 +1,57 @@
+2009-01-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (|%algebraSystemIsComplete|): New.
+	(|%basicSystemIsComplete|): Use it.
+	* interp/wi1.boot (setqSingle): Use maximalSuperType.
+	(coerceSubset): Simplify.
+	(compCoerce1): Tidy.
+	* interp/i-resolv.boot (resolveTCat): Use superType.
+	* interp/lisplib.boot (findConstructorSlotNumber): Use isSubset.
+	(sigsMatch): Likewise.
+	(findDomainSlotNumber): Likewise.
+	* interp/define.boot (compSubDomain1): Reject for complex subdomain
+	predicate.  Support paramterized subdomains.
+	* interp/daase.lisp (interpOpen): Read superdomain slot.
+	(getdatabase): Remove adhoc hardcoded superdomain info.
+	Return superdomain info stored in database.
+	(localnrlib): Read superdomain info.
+	(write-interpdb): Write superdomain info.
+	(database): Add superdomain slot.
+	* interp/g-util.boot (superType): New.
+	(maximalSuperType): Rework.  Support parameterized subdomains.
+	(noteSubDomainInfo): New.
+	(isSubDomain): Rework.
+	* interp/c-util.boot (isSubset): Rework.
+	* interp/g-opt.boot (optEQ): Remove.
+	* interp/g-cndata.boot (getImmediateSuperDomain): Remove.
+	(maximalSuperType): Move to g-util.boot.
+	* interp/types.boot (%Constructor): New type specifier.
+	(%Instantiation): Likewise.
+	* interp/compiler.boot (primitiveType): Don't return $NegativeInteger.
+	(maxSuperType): Remove.
+	(hasType): Use maximalSuperType.
+	(satisfies): New.
+	(coerceSubset): Use it.  Simplify.
+	* interp/wi2.boot (smallIntegerStep): Use maximalSuperType.
+	* interp/sys-constants.boot ($AtVariables): New.
+	($NegativeInteger): Remove.
+	($NonPositiveInteger): Likewise.
+	($CategoryNames): Category is not a category.	
+	* interp/property.lisp: Remove Subsets property settings.
+	* interp/i-coerce.boot (coerceSubDomain): Simplify.
+	(coerceImmediateSubDomain): Remove.
+	(getSubDomainPredicate): Simplify.
+	* interp/category.boot (SourceLevelSubset): Use isSubDomain.
+	(MachineLevelSubset): Likewise.
+	* interp/modemap.boot (mergeModemap): Likewise.
+	(isSuperDomain): Remove.
+	(augModemapsFromDomain): Support parameterized subdomains.
+	* interp/i-util.boot (isSubDomain): Move to g-util.boot.
+	* Makefile.pamphlet (all-databases): New target.
+	* interp/Makefile.pamphlet ($(AXIOMSYS)): Push
+	:open-axiom-algebra-system onto *FEATURES*.
+	* etc/Makefile.in (all-databases): New target.
+
 2009-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/buildom.boot (UnionEqual): Don't call orderUnionEntries.

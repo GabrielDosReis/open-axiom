@@ -94,7 +94,7 @@ upDollar t ==
   t2 := t
   (not $genValue) and "or"/[CONTAINED(var,D) for var in $localVars] =>
     keyedMsgCompFailure("S2IS0032",NIL)
-  EQ(D,"Lisp") => upLispCall(op,form)
+  D="Lisp" => upLispCall(op,form)
   if VECP D and (SIZE(D) > 0) then D := D.0
   t := evaluateType unabbrev D
   categoryForm? t =>
@@ -315,7 +315,7 @@ interpIF(op,cond,a,b) ==
   val:= getValue cond
   val:= coerceInteractive(val,$Boolean) =>
     objValUnwrap(val) => upIFgenValue(op,a)
-    EQ(b,"%noBranch") => setValueToVoid op
+    b="%noBranch" => setValueToVoid op
     upIFgenValue(op,b)
   throwKeyedMsg("S2IS0031",NIL)
 
@@ -653,7 +653,7 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
 seteltable(lhs is [f,:argl],rhs) ==
   -- produces the setelt form for trees such as "l.2:= 3"
   null (g := getUnnameIfCan f) => NIL
-  EQ(g,"elt") => altSeteltable [:argl, rhs]
+  g="elt" => altSeteltable [:argl, rhs]
   get(g,'value,$e) is [expr,:.] and isMapExpr expr => NIL
   transferPropsToNode(g,f)
   getValue(lhs) or getMode(lhs) =>

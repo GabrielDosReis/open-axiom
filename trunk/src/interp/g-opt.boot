@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -372,13 +372,6 @@ optLESSP u ==
     ['GREATERP,b,a]
   u
  
-optEQ u ==
-  u is ['EQ,l,r] =>
-    NUMBERP l and NUMBERP r => ['QUOTE,EQ(l,r)]
-    -- That undoes some weird work in Boolean to do with the definition of true
-    u
-  u
-
 $simpleVMoperators == 
   '(CONS CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
     SPADfirst QVELT _+ _- _* _< _=
@@ -451,7 +444,6 @@ lispize x == first optimize [x]
  
 for x in '( (call         optCall) _
            (SEQ          optSEQ)_
-           (EQ optEQ)_
            (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
            (_-           opt_-)_

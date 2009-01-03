@@ -441,12 +441,12 @@ canCoerce1(t1,t2) ==
     nt1 := CAR t1
     nt2 := CAR t2
 
-    EQ(nt1,'Mapping) => EQ(nt2,'Any)
-    EQ(nt2,'Mapping) =>
-      EQ(nt1,'Variable) or EQ(nt1,'FunctionCalled) =>
+    nt1="Mapping" => nt2="Any"
+    nt2="Mapping" =>
+      nt1="Variable" or nt1="FunctionCalled" =>
         canCoerceExplicit2Mapping(t1,t2)
       NIL
-    EQ(nt1,'Union) or EQ(nt2,'Union) => canCoerceUnion(t1,t2)
+    nt1="Union" or nt2="Union" => canCoerceUnion(t1,t2)
 
     -- efficiency hack
     t1 is ['Segment, s1] and t2 is ['UniversalSegment, s2] and
@@ -929,32 +929,15 @@ coerceInt1(triple,t2) ==
 coerceSubDomain(val, tSuper, tSub) ==
   -- Try to coerce from a sub domain to a super domain
   val = '_$fromCoerceable_$ => nil
-  super := getSuperDomainFromDB first tSub
-  superDomain := first super
-  superDomain = tSuper =>
-    coerceImmediateSubDomain(val, tSuper, tSub, CADR super)
-  coerceSubDomain(val, tSuper, superDomain) =>
-    coerceImmediateSubDomain(val, superDomain, tSub, CADR super)
-  nil
-
-coerceImmediateSubDomain(val, tSuper, tSub, pred) ==
-  predfn := getSubDomainPredicate(tSuper, tSub, pred)
-  FUNCALL(predfn, val, nil) => objNew(val, tSub)
+  pred := isSubDomain(tSub,tSuper) =>
+    predFun := getSubDomainPredicate(tSuper,tSub,pred)
+    FUNCALL(predFun,val) => objNew(val,tSub)
   nil
 
 getSubDomainPredicate(tSuper, tSub, pred) ==
-  $env: local := $InteractiveFrame
   predfn := HGET($superHash, CONS(tSuper, tSub)) => predfn
-  name := GENSYM()
-  decl := ['_:, name, ['Mapping, $Boolean, tSuper]]
-  interpret(decl, nil)
   arg := GENSYM()
-  pred' := substitute(arg, "#1", pred)
-  defn := ['DEF, [name, arg], '(NIL NIL), '(NIL NIL), removeZeroOne pred']
-  interpret(defn, nil)
-  op := mkAtree name
-  transferPropsToNode(name, op)
-  predfn := CADAR selectLocalMms(op, name, [tSuper],$Boolean)
+  predfn := COMPILE(nil,["LAMBDA",[arg],substitute(arg,"#1", pred)])
   HPUT($superHash, CONS(tSuper, tSub), predfn)
   predfn
 
