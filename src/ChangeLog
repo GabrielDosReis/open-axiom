@@ -1,5 +1,16 @@
 2009-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot (UnionEqual): Don't call orderUnionEntries.
+	(coerceUn2E): Likewise.
+	(mkUnionFunList): Likewise.
+	* interp/i-coerce.boot (coerceUnion2Branch): Likewise.
+	(coerceBranch2Union): Likewise.
+	($newCompilerUnionFlag): Remove.
+	(orderUnionEntries): Likewise.
+	(mkPredList): Remove dead code.
+
+2009-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (updateCapsuleDirectory): Record constant
 	makers too.
 	(replaceSimpleFunctions): Fold simple constant form makers.

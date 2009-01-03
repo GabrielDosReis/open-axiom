@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -178,7 +178,6 @@ Union(:args) ==
 
 UnionEqual(x, y, dom) ==
   ["Union",:branches] := dom.0
-  branches := orderUnionEntries branches
   predlist := mkPredList branches
   same := false
   for b in stripUnionTags branches for p in predlist while not same repeat
@@ -193,7 +192,6 @@ UnionPrint(x, dom) == coerceUn2E(x, dom.0)
 
 coerceUn2E(x,source) ==
   ["Union",:branches] := source
-  branches := orderUnionEntries branches
   predlist := mkPredList branches
   byGeorge := byJane := GENSYM()
   for b in stripUnionTags branches for p in predlist  repeat
@@ -367,8 +365,6 @@ mkEnumerationFunList(nam,["Enumeration",:SL],e) ==
 
 mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
   first listOfEntries is [":",.,.] => mkNewUnionFunList(op,form,e)
-     -- following call to order is a bug, but needs massive recomp to fix
-  listOfEntries:= orderUnionEntries listOfEntries
   nargs := #listOfEntries
   --1. create representations of subtypes
   predList:= mkPredList listOfEntries

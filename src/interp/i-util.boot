@@ -145,59 +145,8 @@ makeInitialModemapFrame() ==
 isCapitalWord x ==
   (y := PNAME x) and and/[UPPER_-CASE_-P y.i for i in 0..MAXINDEX y]
  
-$newCompilerUnionFlag := true
-
-orderUnionEntries l ==
-  $newCompilerUnionFlag => l
-  first l is [":",.,.] => l  -- new style Unions
-  [a,b]:=
-    split(l,nil,nil) where
-      split(l,a,b) ==
-        l is [x,:l'] =>
-          (STRINGP x => split(l',[x,:a],b); split(l',a,[x,:b]))
-        [a,b]
-  [:orderList a,:orderList b]
- 
 mkPredList listOfEntries ==
-  $newCompilerUnionFlag =>
-     [['EQCAR,"#1",i] for arg in listOfEntries for i in 0..]
-  first listOfEntries is [":",.,.] =>   -- new Tagged Unions
-     [['EQCAR,"#1",MKQ tag] for [.,tag,.] in listOfEntries]
-  --1. generate list of type-predicate pairs from union specification
-  initTypePredList:=
-    [selTypePred for x in listOfEntries] where
-      selTypePred() ==
-        STRINGP x => [x,'EQUAL,"#1",x]
-        [x,:GETL(opOf x,"BasicPredicate")]
-  typeList:= ASSOCLEFT initTypePredList
-  initPredList:= ASSOCRIGHT initTypePredList
-  hasDuplicatePredicate:=
-    fn initPredList where
-      fn x ==
-        null x => false
-        first x and member(first x,rest x) => true
-        fn rest x
-                                 --if duplicate predicate, kill them all
-  if hasDuplicatePredicate then initPredList:= [nil for x in initPredList]
-  nonEmptyPredList:= [p for p in initPredList | p^=nil]
-  numberWithoutPredicate:= #listOfEntries-#nonEmptyPredList
-  predList:=
-    numberWithoutPredicate=0 and not hasDuplicatePredicate => initPredList
-    numberWithoutPredicate=1 and null LAST initPredList and
-      [STRINGP x for x in rest REVERSE listOfEntries] =>
-        allButLast:= rest REVERSE initPredList
-        NREVERSE [['NULL,MKPF(allButLast,"OR")],:allButLast]
-  --otherwise, generate a tagged-union
-  --we have made an even number of REVERSE operations, therefore
-  --the original order is preserved.  JHD 25.Sept.1983
-    tagPredList:= [["EQCAR","#1",i] for i in 1..numberWithoutPredicate]
-    [addPredIfNecessary for p in initPredList] where
-      addPredIfNecessary() ==
-        p => p
-        [u,:tagPredList]:= tagPredList
-        u
-  predList
-
+  [['EQCAR,"#1",i] for arg in listOfEntries for i in 0..]
 
 
 --%
