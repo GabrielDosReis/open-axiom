@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -994,8 +994,7 @@ thisUnionBranch?(pred,val) ==
   eval ["LET",[["#1",MKQ val]],pred]
 
 coerceUnion2Branch(object) ==
-  [.,:unionDoms] := objMode object
-  doms := orderUnionEntries unionDoms
+  [.,:doms] := objMode object
   predList:= mkPredList doms
   doms := stripUnionTags doms
   val' := objValUnwrap object
@@ -1010,9 +1009,8 @@ coerceUnion2Branch(object) ==
   objNew(objVal object,targetType)
 
 coerceBranch2Union(object,union) ==
-  -- assumes type is a member of unionDoms
-  unionDoms := CDR union
-  doms := orderUnionEntries unionDoms
+  -- assumes type is a member of doms
+  doms := CDR union
   predList:= mkPredList doms
   doms := stripUnionTags doms
   p := position(objMode object,doms)
