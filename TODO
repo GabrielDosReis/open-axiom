@@ -2,6 +2,7 @@
 === TODO ===
 ============
 
+* Rework subsumption.
 * Finish network communication support.
 * Finish Bemol backend.
 * Finish JVM backend.

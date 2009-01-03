@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -564,7 +564,7 @@ setqSingle(id,val,m,E) ==
     (trialT and coerce(trialT,m'')) or eval or return nil where
       eval() ==
         T:= comp(val,m'',E) => T
-        not get(id,"mode",E) and m'' ^= (maxm'':=maxSuperType(m'',E)) and
+        not get(id,"mode",E) and m'' ^= (maxm'':=maximalSuperType m'') and
            (T:=comp(val,maxm'',E)) => T
         (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
           assignError(val,T.mode,id,m'')
@@ -837,14 +837,11 @@ coerceSubset(T := [x,m,e],m') ==
     m' = (r := get(x,'range,e)) or isSubset(r,m',e) => [x,r,e]
     nil
 --  pp [m, m']
-  isSubset(m,m',e) or m="Rep" and m'="$" => [x,m',e]
-  m is ['SubDomain,=m',:.] => [x,m',e]
-  (pred:= LASSOC(opOf m',get(opOf m,'SubDomain,e))) and INTEGERP x and
+  isSubset(m,m',e) => [x,m',e]
+  -- if m is a type variable, we can't know.
+  (pred:= isSubset(m',m,e)) and INTEGERP x and
      -- obviously this is temporary
     eval substitute(x,"#1",pred) => [x,m',e]
-  (pred:= isSubset(m',maxSuperType(m,e),e)) and INTEGERP x -- again temporary
-    and eval substitute(x,"*",pred) =>
-      [x,m',e]
   nil
 
 coerceRep(T,m) ==
@@ -925,7 +922,7 @@ compCoerce1(x,m',e) ==
   T':= coerceByModemap(T,m') => T'
   pred:=isSubset(m',T.mode,e) =>
     gg:=GENSYM()
-    pred:= substitute(gg,"*",pred)
+    pred:= substitute(gg,"#1",pred)
     code:= ['PROG1,["%LET",gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
     [code,m',T.env]
 

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -293,6 +293,10 @@ $TriangleVariableList ==
     t_#31 t_#32 t_#33 t_#34 t_#35 t_#36 t_#37 t_#38 t_#39 t_#40
     t_#41 t_#42 t_#43 t_#44 t_#45 t_#46 t_#47 t_#48 t_#49 t_#50)
 
+
+$AtVariables ==
+  [INTERN strconc('"@",WRITE_-TO_-STRING i) for i in 1..50]
+
 ++ List of basic predicates the system has a built-in optimization
 ++ support for.
 $BasicPredicates ==
@@ -371,17 +375,9 @@ $Integer ==
   '(Integer)
 
 
-++ The NegativeInteger domain constructor form
-$NegativeInteger ==
-  '(NegativeInteger)
-
 ++ The NonNegativeInteger domain constructor form
 $NonNegativeInteger ==
   '(NonNegativeInteger)
-
-++ The NonPositiveInteger domain constructor form
-$NonPositiveInteger ==
-  '(NonPositiveInteger)
 
 ++ The PositiveInteger domain constructor form
 $PositiveInteger ==
@@ -510,8 +506,7 @@ $StringCategory ==
 ++ List of category constructors that do not have entries in the 
 ++ constructor database. So, they are mostly recognized by their names.
 $CategoryNames ==
-  '(Category _
-    CATEGORY _
+  '(CATEGORY _
     RecordCategory _
     Join _
     EnumerationCategory _

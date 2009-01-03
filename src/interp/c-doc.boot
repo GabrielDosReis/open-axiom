@@ -833,8 +833,8 @@ hasNoVowels x ==
   and/[not isVowel(x.i) for i in 0..max]
 
 isVowel c ==
-  EQ(c,char 'a) or EQ(c,char 'e) or EQ(c,char 'i) or EQ(c,char 'o) or EQ(c,char 'u) or
-    EQ(c,char 'A) or EQ(c,char 'E) or EQ(c,char 'I) or EQ(c,char 'O) or EQ(c,char 'U)
+  c=char 'a or c=char 'e or c=char 'i or c=char 'o or c=char 'u or
+    c=char 'A or c=char 'E or c=char 'I or c=char 'O or c=char 'U
 
 
 checkAddBackSlashes s ==

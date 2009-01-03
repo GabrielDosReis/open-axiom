@@ -1,15 +1,8 @@
 
 (/VERSIONCHECK 2) 
 
-(SETQ |$CategoryFrame|
-      (|put| #0='|NonNegativeInteger| '|SuperDomain| #1='(|Integer|)
-             (|put| #1# '|SubDomain|
-                    (CONS '(|NonNegativeInteger| COND ((< |#1| 0) 'NIL)
-                               ('T 'T))
-                          (DELASC #0#
-                                  (|get| #1# '|SubDomain|
-                                         |$CategoryFrame|)))
-                    |$CategoryFrame|))) 
+(|noteSubDomainInfo| '|NonNegativeInteger| '(|Integer|)
+    '(COND ((< |#1| 0) 'NIL) ('T 'T))) 
 
 (DECLAIM (FTYPE (FUNCTION
                     ((|%IntegerSection| 0) (|%IntegerSection| 0)

@@ -1,15 +1,8 @@
 
 (/VERSIONCHECK 2) 
 
-(SETQ |$CategoryFrame|
-      (|put| #0='|PositiveInteger| '|SuperDomain|
-             #1='(|NonNegativeInteger|)
-             (|put| #1# '|SubDomain|
-                    (CONS '(|PositiveInteger| < 0 |#1|)
-                          (DELASC #0#
-                                  (|get| #1# '|SubDomain|
-                                         |$CategoryFrame|)))
-                    |$CategoryFrame|))) 
+(|noteSubDomainInfo| '|PositiveInteger| '(|NonNegativeInteger|)
+    '(< 0 |#1|)) 
 
 (DEFUN |PositiveInteger| ()
   (PROG ()

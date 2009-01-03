@@ -216,7 +216,7 @@ ${AXIOMSYS}: database.date \
 	$(BOOTSYS) -- \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
-		--prologue="(pushnew :open-axiom-basic-system *features*)" \
+		--prologue="(pushnew :open-axiom-algebra-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
 		--load-directory=. $(OBJS) makeint.$(LNKEXT)
 	@ echo 6a $@ created

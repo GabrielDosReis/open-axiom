@@ -61,7 +61,7 @@ syIgnoredFromTo(pos1, pos2) ==
 npTrapForm: %Thing -> %Thing
 npTrapForm(x)==
    a:=pfSourceStok x
-   EQ(a,'NoToken)=>
+   a='NoToken =>
          syGeneralErrorHere()
          THROW("TRAPPOINT","TRAPPED")
    ncSoftError(tokPosn a, 'S2CY0002, [])

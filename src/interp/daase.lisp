@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -226,6 +226,7 @@
  parents                    ; browse.
  users                      ; browse.
  dependents                 ; browse.
+ superdomain                ; interp.
  spare                      ; superstition
  ) ; database structure
 
@@ -557,11 +558,12 @@
 ;         constructormodemap for domains and packages so it is stored
 ;         as NIL for them. it is valid for categories.
 ;    niladic             -- t or nil directly
-;    unused
+;    abbrev              -- kept directly
 ;    cosig               -- kept directly
 ;    constructorkind     -- kept directly
 ;    defaultdomain       -- a short list, for %i
 ;    ancestors           -- used to compute new category updates
+;    superdomain         -- valid for domain, NIL for category and package.
 ;  )
 (defun interpOpen ()
   "open the interpreter database and hash the keys"
@@ -590,7 +592,10 @@
 	(setf (get (eighth item) 'abbreviationfor) (first item)) ;invert
 	(setf (database-cosig dbstruct) (ninth item))
 	(setf (database-constructorkind dbstruct) (tenth item))
-	(setf (database-ancestors dbstruct) (nth 11 item))))
+	(setf (database-ancestors dbstruct) (nth 11 item))
+	(setf (database-superdomain dbstruct) (nth 12 item))
+	))
+    
     (format t "~&")))
 
 ; this is an initialization function for the constructor database
@@ -828,11 +833,9 @@
 	    (constructor?
 	     (|fatalError| "GETDATABASE called with CONSTRUCTOR?"))
 	    (superdomain ; only 2 superdomains in the world
-	     (case constructor
-		   (|NonNegativeInteger|
-		    (setq data '((|Integer|) (IF (< |#1| 0) |false| |true|))))
-		   (|PositiveInteger|
-		    (setq data '((|NonNegativeInteger|) (< 0 |#1|))))))
+	     (setq stream *interp-stream*)
+	     (when (setq struct (get constructor 'database))
+	       (setq data (database-superdomain struct))))
 	    (constructor
 	     (when (setq data (get constructor 'abbreviationfor))))
 	    (defaultdomain
@@ -881,7 +884,11 @@
 	(when *miss*
 	  (format t "getdatabase miss: ~20a ~a~%" key constructor))
 	(file-position stream data)
-	(setq data (unsqueeze (read stream)))
+	;; Don't attempt to uncompress codes -- they are not compressed.
+	(setq data (read stream))
+	(unless (eq key 'superdomain)
+	  (setq data (unsqueeze data)))
+	;;(setq data (unsqueeze (read stream)))
 	(case key ; cache the result of the database read
 	      (operation           
 	       (setf (gethash constructor *operation-hash*) data))
@@ -919,6 +926,8 @@
 	       (setf (database-documentation struct) data))
 	      (parents   
 	       (setf (database-parents struct) data))
+	      (superdomain
+	       (setf (database-superdomain struct) data))
 	      (users     
 	       (setf (database-users struct) data))
 	      (dependents
@@ -1197,6 +1206,14 @@
 			   (fetchdata alist in "predicates"))
 		     (setf (database-niladic dbstruct)
 			   (when (fetchdata alist in "NILADIC") t))
+		     (let ((super (fetchdata alist in "evalOnLoad2")))
+		       (setf (database-superdomain dbstruct)
+			     (when super 
+			       (setq super (cddr super))
+			       ;; unquote the domain and predicate.
+			       (rplaca super (second (first super)))
+			       (rplacd super (cdr (second super)))
+			       super)))
 		     (addoperations key oldmaps)
 		     (unless make-database?
 		       (if (eq kind '|category|)
@@ -1408,7 +1425,7 @@
  (declare (special *ancestors-hash*))
  (let (opalistpos modemapspos cmodemappos master masterpos obj *print-pretty*
         concategory categorypos kind niladic cosig abbrev defaultdomain
-        ancestors ancestorspos out)
+        ancestors ancestorspos superpos out)
   (print "building interp.daase")
   (setq out (open "interp.build" :direction :output))
   (princ "                              " out)
@@ -1452,9 +1469,18 @@
 	  (print ancestors out)
 	  (finish-output out))
       (setq ancestorspos nil))
+    (setq superpos
+	  ;; We do NOT want to compress codes, as we may not be 
+	  ;; able to uncompress them to their original form.
+	  (let ((super (database-superdomain struct)))
+	    (when super
+	      (prog1 (file-position out)
+		(print super out)
+		(finish-output out)))))
+    
     (push (list constructor opalistpos cmodemappos modemapspos
 		obj categorypos niladic abbrev cosig kind defaultdomain
-		ancestorspos) master)))
+		ancestorspos superpos) master)))
   (finish-output out)
   (setq masterpos (file-position out))
   (print (|squeezeAll| master) out)

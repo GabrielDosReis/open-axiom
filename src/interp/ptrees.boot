@@ -126,8 +126,8 @@ pfInfApplication(op,left,right)==
        pfWrong(pfDocument ['"infop as argument to infop"],pfListOf [])
    pfCheckInfop right =>
        pfWrong(pfDocument ['"infop as argument to infop"],pfListOf [])
-   EQ(pfIdSymbol op,"and")=> pfAnd (left,right)
-   EQ(pfIdSymbol op, "or")=> pfOr (left,right)
+   pfIdSymbol op = "and" => pfAnd (left,right)
+   pfIdSymbol op = "or" => pfOr (left,right)
    pfApplication(op,pfTuple pfListOf [left,right])
 
 pfCheckInfop form== false

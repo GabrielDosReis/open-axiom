@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -496,11 +496,26 @@ makeLiteral(x,e) ==
  
 isSomeDomainVariable s ==
   IDENTP s and #(x:= PNAME s)>2 and x.(0)="#" and x.(1)="#"
- 
+
+++ Return non-nil is the domain form `x' is a `subset' of domain
+++ form `y' in the environment `e'.  The relation of subdomain
+++ is understood as equivalent to the fact that all values of
+++ the domain designated by `x' are also values of the domain
+++ designated by `y'.  Examples include declaration of domain `x'
+++ as satisfying  SubsetCategory(SomeCategory, y).  Or, when
+++ x is defined as SubDomain(y,pred).  In that case, the predicate
+++ is returned and its parameter is `#1'.
 isSubset(x,y,e) ==
-  ($useRepresentationHack and x="$" and y="Rep") or x=y or
-    LASSOC(opOf x,get(opOf y,"Subsets",e) or GETL(opOf y,"Subsets")) or
-      LASSOC(opOf x,get(opOf y,"SubDomain",e)) or opOf(y)="Type"
+  x = y => true
+  -- Every domain or catgory is a subset of Type.
+  y = $Type => true
+  -- When using the old style definition, the current domain
+  -- is considered a subset of its representation domain
+  x = "$" and y = "Rep" => $useRepresentationHack
+  -- Or, if x has the Subsets property set by SubsetCategory.
+  pred := LASSOC(opOf x,get(opOf y,"Subsets",e)) => pred
+  -- Or, they are related by subdomain chain.
+  isDomainForm(x,e) and isSubDomain(x,y)
  
 isDomainInScope(domain,e) ==
   domainList:= getDomainsInScope e

@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -100,16 +102,6 @@ LZeros n ==
 --   x
  
 -- subrToName x == BPINAME x
-
--- formerly in clammed.boot
-
-isSubDomain(d1,d2) ==
-  -- d1 and d2 are different domains
-  subDomainList := '(Integer NonNegativeInteger PositiveInteger)
-  ATOM d1 or ATOM d2 => nil
-  l := MEMQ(CAR d2, subDomainList) =>
-    MEMQ(CAR d1, CDR l)
-  nil
 
 $variableNumberAlist := nil
 

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ module g_-util where
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List,%List) -> %List
   mkList: %List -> %List
+  isSubDomain: (%Mode,%Mode) -> %Form
 
 ++
 $interpOnly := false
@@ -61,6 +62,62 @@ isSharpVarWithNum x ==
     d := ELT(p,i)
     ok := DIGITP d => c := 10*c + DIG2FIX d
   if ok then c else nil
+
+
+--% Sub-domains information handlers
+
+++ If `dom' is a subdomain, return its immediate super-domain.  
+superType: %Mode -> %Maybe %Mode
+superType dom ==
+  dom isnt [ctor,:args] => nil
+  [super,.] := getSuperDomainFromDB ctor or return nil
+  sublisFormal(args,super,$AtVariables)
+
+++ Return the root of the reflexive transitive closure of
+++ the super-domain chain for the domain designated by the domain 
+++ form `d'.
+maximalSuperType: %Mode -> %Mode
+maximalSuperType d ==
+  atom d => d
+  d' := superType d => maximalSuperType d'
+  d
+
+++ Note that the functor `sub' instantiates to domains that
+++ are subdomains of `super' instances restricted by the 
+++ predicate `pred'.
+noteSubDomainInfo: (%Symbol,%Instantiation,%Form) -> %Thing
+noteSubDomainInfo(sub,super,pred) ==
+  MAKEPROP(sub,"%SuperDomain",[super,pred])
+
+++ Returns non-nil if `d1' is a sub-domain of `d2'.  This is the
+++ case when `d1' is transitively given by an instance of SubDomain
+++    d1 == SubDomain(d2,pred)
+++ The transitive closure of the predicate form is returned, where 
+++ the predicate parameter is `#1'.
+isSubDomain(d1,d2) ==
+  atom d1 or atom d2 => false
+
+  -- 1.  Easy, if by syntax constructs.
+  d1 is ["SubDomain",=d2,pred] => pred
+
+  -- 2.  Just say no, if there is no hope.
+  [sup,pred] := getSuperDomainFromDB first d1 or return false
+
+  -- 3.  We may be onto something.
+  -- `sup' and `pred' are in most general form.  Instantiate.
+  first sup = first d2 => 
+    -- sanity check.  `d2' should be an instance of `sup'.
+    sublisFormal(rest d1,sup,$AtVariables) ^= d2 =>
+      stackAndThrow('"unexpected instantiation mismatch",nil)
+    sublisFormal(rest d1,pred,$AtVariables)
+
+  -- 4.  Otherwise, lookup in the super-domain chain.
+  pred' := isSubDomain(sup,d2) => MKPF([pred',pred],"AND")
+
+  -- 5.  Lot of smoke, no fire.
+  false
+
+--%
 
 mkList u ==
   u => ["LIST",:u]
@@ -512,7 +569,7 @@ mergeInPlace(f,g,p,q) ==
    r
 
 mergeSort(f,g,p,n) ==
-   if EQ(n,2) and FUNCALL(f,FUNCALL(g,QCADR p),FUNCALL(g,QCAR p)) then
+   if n=2 and FUNCALL(f,FUNCALL(g,QCADR p),FUNCALL(g,QCAR p)) then
       t := p
       p := QCDR p
       QRPLACD(p,t)

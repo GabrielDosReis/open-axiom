@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2008 Gabriel Dos Reis
+-- Copyright (C) 2007-2009 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -124,7 +124,9 @@ namespace BOOT
 %Maybe a <=> null or a
 
 --% Data structures for the compiler
+%Constructor <=> %Symbol                       -- constructor
 %Form <=> %Number or %Symbol or %String or cons -- input syntax form
+%Instantiation <=> cons(%Constructor,%Form)    -- constructor instance
 %Env <=> %List                                 -- compiling env
 %Mode <=> %Symbol or %String or %List          -- type of forms
 %Code <=> %Form                                -- generated code

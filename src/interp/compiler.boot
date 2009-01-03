@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -407,7 +407,7 @@ primitiveType x ==
   INTEGERP x =>
     x=0 => $NonNegativeInteger
     x>0 => $PositiveInteger
-    true => $NegativeInteger
+    $Integer
   FLOATP x => $DoubleFloat
   nil
 
@@ -457,10 +457,6 @@ mkUnion(a,b) ==
     ["Union",:union([b],l)]
   b is ["Union",:l] => ["Union",:union([a],l)]
   ["Union",a,b]
-
-maxSuperType(m,e) ==
-  typ:= get(m,"SuperDomain",e) => maxSuperType(typ,e)
-  m
 
 hasType(x,e) ==
   fn get(x,"condition",e) where
@@ -822,7 +818,7 @@ setqSingle(id,val,m,E) ==
     eval or return nil where
       eval() ==
         T:= comp(val,m'',E) => T
-        not get(id,"mode",E) and m'' ^= (maxm'':=maxSuperType(m'',E)) and
+        not get(id,"mode",E) and m'' ^= (maxm'':=maximalSuperType m'') and
            (T:=comp(val,maxm'',E)) => T
         (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
           assignError(val,T.mode,id,m'')
@@ -1458,17 +1454,18 @@ coerceEasy(T,m) ==
   T.mode=$EmptyMode or modeEqualSubst(T.mode,m,T.env) =>
     [T.expr,m,T.env]
 
+satisfies(val,pred) ==
+  pred=false or pred=true => pred
+  eval ["LET",[["#1",val]],pred]
 
 coerceSubset: (%Triple,%Mode) -> %Maybe %Triple
 coerceSubset([x,m,e],m') ==
   isSubset(m,m',e) => [x,m',e]
-  m is ['SubDomain,=m',:.] => [x,m',e]
-  (pred:= LASSOC(opOf m',get(opOf m,'SubDomain,e))) and INTEGERP x and
-     -- obviously this is temporary
-    eval substitute(x,"#1",pred) => [x,m',e]
-  (pred:= isSubset(m',maxSuperType(m,e),e)) and INTEGERP x -- again temporary
-    and eval substitute(x,"*",pred) =>
-      [x,m',e]
+  isDomainForm(m,e) and isSubDomain(m,m') => [x,m',e]
+  INTEGERP x =>
+    -- obviously this is temporary
+    satisfies(x,isSubDomain(m',maximalSuperType m)) => [x,m',e]
+    nil
   nil
 
 coerceHard: (%Triple,%Mode) -> %Maybe %Triple
@@ -1554,10 +1551,10 @@ compCoerce1(x,m',e) ==
   T:=[T.expr,m1,T.env]
   T':= coerce(T,m') => T'
   T':= coerceByModemap(T,m') => T'
-  pred:=isSubset(m',T.mode,e) =>
-    gg:=GENSYM()
-    pred:= substitute(gg,"*",pred)
-    code:= ['PROG1,["%LET",gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
+  pred := isSubset(m',T.mode,e) =>
+    gg := GENSYM()
+    pred := substitute(gg,"#1",pred)
+    code := ['PROG1,["%LET",gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
     [code,m',T.env]
 
 coerceByModemap([x,m,e],m') ==

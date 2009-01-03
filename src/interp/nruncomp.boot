@@ -784,7 +784,7 @@ NRTputInHead bod ==
 NRTputInTail x ==
   for y in tails x repeat
     atom (u := first y) =>
-      EQ(u,'$) or LASSOC(u,$devaluateList) => nil
+      u='$ or LASSOC(u,$devaluateList) => nil
       k:= NRTassocIndex u =>
         atom u => RPLACA(y,[$elt,'_$,k])
         -- u atomic means that the slot will always contain a vector

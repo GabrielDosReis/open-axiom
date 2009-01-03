@@ -448,7 +448,7 @@ scanPunct()==
                scanKeyTr sss
 
 scanKeyTr w==
-       if EQ(keyword w,"DOT")
+       if keyword w = "DOT"
        then if $floatok
             then scanPossFloat(w)
             else lfkey w

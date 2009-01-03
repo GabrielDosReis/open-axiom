@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1441,16 +1441,18 @@ compSubDomain1(domainForm,predicate,m,e) ==
     compCompilerPredicate(predicate,e) or
       stackSemanticError(["predicate: ",predicate,
         " cannot be interpreted with #1: ",domainForm],nil)
-  prefixPredicate:= lispize u.expr
+  pred := lispize u.expr
+  -- For now, reject predicates that directly reference domains
+  CONTAINED("$",pred) => 
+    stackAndThrow('"predicate %1pb is not simple enough",[predicate])
+  -- Abstract over references to parameters of enclosing functor.
+  pred := eqSubst($AtVariables,rest $form, pred)
   $lisplibSuperDomain:=
     [domainForm,predicate]
-  evalAndRwriteLispForm('evalOnLoad2,
-    ['SETQ,'$CategoryFrame,['put,op':= ['QUOTE,$op],'
-     (QUOTE SuperDomain),dF':= ['QUOTE,domainForm],['put,dF','(QUOTE SubDomain),[
-       'CONS,['QUOTE,[$op,:prefixPredicate]],['DELASC,op',['get,dF','
-         (QUOTE SubDomain),'$CategoryFrame]]],'$CategoryFrame]]])
+  evalAndRwriteLispForm('evalOnLoad2, ["noteSubDomainInfo", quoteForm $op, 
+      quoteForm domainForm, quoteForm pred])
   [domainForm,m,e]
- 
+
 compCapsuleInner(itemList,m,e) ==
   e:= addInformation(m,e)
            --puts a new 'special' property of $Information

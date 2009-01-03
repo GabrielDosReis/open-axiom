@@ -57,6 +57,10 @@ all-input: all-axiomsys
 all-asq: all-hyper-post
 	cd etc && $(MAKE) $@
 
+.PHONY: all-databases
+all-databases:  all-interpsys
+	cd etc && $(MAKE) $@
+
 all-hyper-post: all-algebra
 	cd hyper && $(MAKE) all-hyper-post
 all-graph: all-lib

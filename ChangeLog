@@ -1,0 +1,4 @@
+2009-01-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (AXIOM_SRC_TARGETS): Add all-databases.
+

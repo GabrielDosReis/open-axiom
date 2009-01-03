@@ -360,7 +360,7 @@ basicLookupCheckDefaults(op,sig,domain,dollar) ==
 $hasCatOpHash := hashString '"%%"
 opIsHasCat op ==
   hashCode? op => EQL(op, $hasCatOpHash)
-  EQ(op, "%%")
+  op = "%%"
 
 -- has cat questions lookup up twice if false
 -- replace with following ?
@@ -439,7 +439,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
         nil
       slot := domain.loc
       null atom slot =>
-        EQ(QCAR slot,'newGoGet) => someMatch:=true
+        QCAR slot = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
         --if EQ(QCAR slot,'newGoGet) then
         --  UNWIND_-PROTECT --break infinite recursion
@@ -561,7 +561,7 @@ newHasAttribute(domain,attrib) ==
         or/[x for x in domain.2 | attrib = hashType(first x, hashPercent)]
      LASSOC(attrib,domain.2)
   predIndex =>
-    EQ(predIndex,0) => true
+    predIndex = 0 => true
     predvec := domain.3
     testBitVector(predvec,predIndex)
   false
@@ -575,7 +575,7 @@ newHasCategory(domain,catform) ==
   #catvec > 0 and INTEGERP KDR catvec.0 =>              --old style
     predIndex := lazyMatchAssocV1(catform,catvec,domain)
     null predIndex => false
-    EQ(predIndex,0) => true
+    predIndex = 0 => true
     predvec := QVELT(domain,3)
     testBitVector(predvec,predIndex)
   lazyMatchAssocV(catform,auxvec,catvec,domain)         --new style

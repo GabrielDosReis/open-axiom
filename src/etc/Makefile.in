@@ -62,6 +62,9 @@ stamp: stamp-databases $(axiom_target_bindir)/asq$(EXEEXT) \
 	rm -f stamp
 	$(STAMP) stamp
 
+.PHONY: all-databases
+all-databases:  stamp-databases
+
 stamp-databases: ../algebra/*.NRLIB/code.$(FASLEXT)
 	@ echo rebuilding databases...
 	rm -f stamp-databases

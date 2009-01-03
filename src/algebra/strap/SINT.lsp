@@ -1,14 +1,7 @@
 
 (/VERSIONCHECK 2) 
 
-(SETQ |$CategoryFrame|
-      (|put| #0='|SingleInteger| '|SuperDomain| #1='(|Integer|)
-             (|put| #1# '|SubDomain|
-                    (CONS '(|SingleInteger| SMINTP |#1|)
-                          (DELASC #0#
-                                  (|get| #1# '|SubDomain|
-                                         |$CategoryFrame|)))
-                    |$CategoryFrame|))) 
+(|noteSubDomainInfo| '|SingleInteger| '(|Integer|) '(SMINTP |#1|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Short| |%Shell|) |%Void|)
                 |SINT;writeOMSingleInt|)) 

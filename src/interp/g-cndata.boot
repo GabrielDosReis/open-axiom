@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -93,13 +93,6 @@ categoryForm? c ==
   MEMQ(op, $CategoryNames) => true
   getConstructorKindFromDB op = "category" => true
   false
-
-getImmediateSuperDomain(d) ==
-  IFCAR getSuperDomainFromDB opOf d
-
-maximalSuperType d ==
-  d' := getSuperDomainFromDB opOf d => maximalSuperType first d'
-  d
 
 -- probably will switch over to 'libName soon
 getLisplibName(c) == getConstructorAbbreviation(c)
