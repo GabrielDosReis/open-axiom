@@ -69,6 +69,7 @@ isSharpVarWithNum x ==
 ++ If `dom' is a subdomain, return its immediate super-domain.  
 superType: %Mode -> %Maybe %Mode
 superType dom ==
+  dom = "$" => superType $functorForm
   dom isnt [ctor,:args] => nil
   [super,.] := getSuperDomainFromDB ctor or return nil
   sublisFormal(args,super,$AtVariables)
@@ -78,7 +79,6 @@ superType dom ==
 ++ form `d'.
 maximalSuperType: %Mode -> %Mode
 maximalSuperType d ==
-  atom d => d
   d' := superType d => maximalSuperType d'
   d
 
@@ -87,7 +87,7 @@ maximalSuperType d ==
 ++ predicate `pred'.
 noteSubDomainInfo: (%Symbol,%Instantiation,%Form) -> %Thing
 noteSubDomainInfo(sub,super,pred) ==
-  MAKEPROP(sub,"%SuperDomain",[super,pred])
+  SETDATABASE(sub,"SUPERDOMAIN",[super,pred])
 
 ++ Returns non-nil if `d1' is a sub-domain of `d2'.  This is the
 ++ case when `d1' is transitively given by an instance of SubDomain
