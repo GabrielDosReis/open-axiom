@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ namespace BOOT
 module astr where
   ncTag: %Thing -> %Symbol
   ncAlist: %Thing -> %List
-  ncEltQ: %List -> %Thing
+  ncEltQ: (%List,%Thing) -> %Thing
   ncPutQ: (%List,%Thing,%Thing) -> %Thing
 
 --% Attributed Structures (astr)

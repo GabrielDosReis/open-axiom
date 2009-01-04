@@ -279,7 +279,7 @@ createEnum(sym, dom) ==
   val := -1
   for v in args for i in 0.. repeat
      sym=v => return(val:=i)
-  val<0 => userError ["Cannot coerce",sym,"to",["Enumeration",:args]]
+  val<0 => userError ['"Cannot coerce",sym,'"to",["Enumeration",:args]]
   val
 
 --% INSTANTIATORS

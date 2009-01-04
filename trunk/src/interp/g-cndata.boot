@@ -126,8 +126,8 @@ installConstructor(cname,type) ==
  
 constructorNameConflict(name,kind) ==
   userError
-    ["The name",:bright name,"conflicts with the name of an existing rule",
-      "%l","please choose another ",kind]
+    ['"The name",:bright name,'"conflicts with the name of an existing rule",
+      "%l",'"please choose another ",kind]
 
 constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
   siz := SIZE (s := PNAME a)
@@ -210,7 +210,7 @@ unabbrevSpecialForms(op,arglist,modeIfTrue) ==
 unabbrevRecordComponent(a,modeIfTrue) ==
   a is ["Declare",b,T] or a is [":",b,T] =>
     [":",b,unabbrev1(T,modeIfTrue)]
-  userError "wrong format for Record type"
+  userError '"wrong format for Record type"
  
 unabbrevUnionComponent(a,modeIfTrue) ==
   a is ["Declare",b,T] or a is [":",b,T] =>

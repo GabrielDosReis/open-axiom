@@ -80,9 +80,6 @@ getFormModemaps: (%Form,%Env) -> %List
 transImplementation: (%Form,%Modemap,%Thing) -> %Code
 reshapeArgumentList: (%Form,%Signature) -> %Form
 applyMapping: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
-compMapCond: (%Symbol,%Mode,%Env,%List) -> %Code
-compMapCond': (%List,%Symbol,%Mode,%Env) -> %Code
-compMapCondFun: (%Thing,%Symbol,%Mode,%Env) -> %Code
 
 
 ++ A list of routines for diagnostic reports.  These functions, in an
@@ -444,8 +441,8 @@ hasUniqueCaseView(x,m,e) ==
 
 convertOrCroak(T,m) ==
   u:= convert(T,m) => u
-  userError ["CANNOT CONVERT: ",T.expr,"%l"," OF MODE: ",T.mode,"%l",
-    " TO MODE: ",m,"%l"]
+  userError ['"CANNOT CONVERT: ",T.expr,"%l",'" OF MODE: ",T.mode,"%l",
+    '" TO MODE: ",m,"%l"]
 
 convert(T,m) ==
   coerce(T,resolve(T.mode,m) or return nil)
@@ -1704,10 +1701,7 @@ compApplyModemap(form,modemap,$e) ==
   -- 2. Select viable modemap implementation.
   compViableModemap(op,lt,modemap)
 
-compMapCond(dc,[cexpr,fnexpr]) ==
-  compMapCond'(cexpr,dc) => fnexpr
-  stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
-
+compMapCond': (%Form,%Mode) -> %Boolean
 compMapCond'(cexpr,dc) ==
   cexpr=true => true
   cexpr is ["AND",:l] => and/[compMapCond'(u,dc) for u in l]
@@ -1723,6 +1717,11 @@ compMapCond'(cexpr,dc) ==
   --for the time being we'll stop here - shouldn't happen so far
   stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
   false
+
+compMapCond: (%Mode,%List) -> %Code
+compMapCond(dc,[cexpr,fnexpr]) ==
+  compMapCond'(cexpr,dc) => fnexpr
+  stackMessage('"not known that %1pb has %2pb",[dc,cexpr])
 
 
 --%
@@ -1889,7 +1888,7 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   [collectOp,:itl,body]:= collectForm
   if STRINGP op then op:= INTERN op
   ^MEMQ(collectOp,'(COLLECT COLLECTV COLLECTVEC)) =>
-        systemError ["illegal reduction form:",form]
+        systemError ['"illegal reduction form:",form]
   $sideEffectsList: local := nil
   $until: local := nil
   $initList: local := nil
