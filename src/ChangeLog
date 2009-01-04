@@ -1,3 +1,12 @@
+2009-01-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot (createEnum): Fix quoting.
+	* interp/compat.boot (system): Likewise.
+	* interp/astr.boot (ncEltQ): Fix declaration.
+	* interp/compiler.boot (compMapCond'): Likewise.
+	(compMapCond): Likewise.
+	(compMapCondFun): Remove declaration.
+
 2009-01-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in (|%algebraSystemIsComplete|): New.

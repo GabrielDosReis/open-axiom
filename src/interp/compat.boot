@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ system() ==
   -- VM version of system command
   string := getSystemCommandLine()
   if string = '"" then string := '"sh"
-  sayMessage ["   Return Code = ", runCommand string]
+  sayMessage ['"   Return Code = ", runCommand string]
   terminateSystemCommand()
 
 editFile file ==
