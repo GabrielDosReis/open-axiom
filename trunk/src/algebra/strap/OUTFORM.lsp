@@ -708,7 +708,7 @@
 (DEFUN |OUTFORM;empty;$;73| ($) (LIST 'NOTHING)) 
 
 (DEFUN |OUTFORM;infix?;$B;74| (|a| $)
-  (PROG (#0=#:G1496 |e|)
+  (PROG (#0=#:G1497 |e|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |e|
                             (COND
@@ -808,7 +808,7 @@
 (DEFUN |OUTFORM;rarrow;3$;96| (|a| |b| $) (LIST 'RARROW |a| |b|)) 
 
 (DEFUN |OUTFORM;differentiate;$Nni$;97| (|a| |nn| $)
-  (PROG (#0=#:G1526 |r| |s|)
+  (PROG (|r| |s|)
     (RETURN
       (SEQ (COND
              ((ZEROP |nn|) |a|)
@@ -816,10 +816,9 @@
              ('T
               (SEQ (LETT |r|
                          (SPADCALL
-                             (PROG1 (LETT #0# |nn|
-                                     |OUTFORM;differentiate;$Nni$;97|)
-                               (|check-subtype| (> #0# 0)
-                                   '(|PositiveInteger|) #0#))
+                             (PROG1 |nn|
+                               (|check-subtype| (< 0 |nn|)
+                                   '(|PositiveInteger|) |nn|))
                              (|getShellEntry| $ 124))
                          |OUTFORM;differentiate;$Nni$;97|)
                    (LETT |s| (SPADCALL |r| (|getShellEntry| $ 125))

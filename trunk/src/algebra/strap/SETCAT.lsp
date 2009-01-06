@@ -4,11 +4,11 @@
 (DEFPARAMETER |SetCategory;AL| 'NIL) 
 
 (DEFUN |SetCategory;| ()
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1399)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
-                       (PAIR '(#1=#:G1397) (LIST '(|OutputForm|)))
+                       (PAIR '(#1=#:G1398) (LIST '(|OutputForm|)))
                        (|Join| (|BasicType|) (|CoercibleTo| '#1#)
                                (|mkCategory| '|domain|
                                    '(((|hash| ((|SingleInteger|) $)) T)

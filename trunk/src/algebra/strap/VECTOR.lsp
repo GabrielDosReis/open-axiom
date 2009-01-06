@@ -1,10 +1,10 @@
 
 (/VERSIONCHECK 2) 
 
-(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) (|%Vector| *))
+(DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |VECTOR;vector;L$;1|)) 
 
-(DECLAIM (FTYPE (FUNCTION ((|%Vector| *) |%Shell|) |%Thing|)
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |VECTOR;convert;$If;2|)) 
 
 (DEFUN |VECTOR;vector;L$;1| (|l| $)

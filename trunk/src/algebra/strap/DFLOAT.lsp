@@ -431,7 +431,7 @@
   (FLOAT-DIGITS 0.0)) 
 
 (DEFUN |DFLOAT;bits;Pi;10| ($)
-  (PROG (#0=#:G1422)
+  (PROG (#0=#:G1423)
     (RETURN
       (COND
         ((EQL (FLOAT-RADIX 0.0) 2) (FLOAT-DIGITS 0.0))
@@ -445,7 +445,9 @@
                                    $)
                                (|getShellEntry| $ 29)))
                       |DFLOAT;bits;Pi;10|)
-           (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))))) 
+           (|check-subtype|
+               (AND (COND ((< #0# 0) 'NIL) ('T 'T)) (< 0 #0#))
+               '(|PositiveInteger|) #0#))))))) 
 
 (DEFUN |DFLOAT;max;$;11| ($)
   (DECLARE (IGNORE $))
@@ -627,23 +629,24 @@
                    (EXIT |theta|)))))))) 
 
 (DEFUN |DFLOAT;retract;$F;76| (|x| $)
-  (PROG (#0=#:G1497)
+  (PROG (#0=#:G1498)
     (RETURN
       (|DFLOAT;rationalApproximation;$2NniF;83| |x|
           (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
                        |DFLOAT;retract;$F;76|)
-            (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#))
+            (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
+                '(|NonNegativeInteger|) #0#))
           (FLOAT-RADIX 0.0) $)))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;77| (|x| $)
-  (PROG (#0=#:G1502)
+  (PROG (#0=#:G1503)
     (RETURN
       (CONS 0
             (|DFLOAT;rationalApproximation;$2NniF;83| |x|
                 (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
                              |DFLOAT;retractIfCan;$U;77|)
-                  (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|)
-                      #0#))
+                  (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
+                      '(|NonNegativeInteger|) #0#))
                 (FLOAT-RADIX 0.0) $))))) 
 
 (DEFUN |DFLOAT;retract;$I;78| (|x| $)
@@ -671,7 +674,7 @@
   (FLOAT-SIGN 1.0 |x|)) 
 
 (DEFUN |DFLOAT;manexp| (|x| $)
-  (PROG (|s| #0=#:G1523 |me| |two53|)
+  (PROG (|s| #0=#:G1524 |me| |two53|)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|) (CONS 0 0))
@@ -705,9 +708,9 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;83| (|f| |d| |b| $)
-  (PROG (|#G102| |nu| |ex| BASE #0=#:G1526 |de| |tol| |#G103| |q| |r|
-                 |p2| |q2| #1=#:G1544 |#G104| |#G105| |p0| |p1| |#G106|
-                 |#G107| |q0| |q1| |#G108| |#G109| |s| |t| #2=#:G1542)
+  (PROG (|#G102| |nu| |ex| BASE #0=#:G1527 |de| |tol| |#G103| |q| |r|
+                 |p2| |q2| #1=#:G1535 |#G104| |#G105| |p0| |p1| |#G106|
+                 |#G107| |q0| |q1| |#G108| |#G109| |s| |t|)
     (RETURN
       (SEQ (EXIT (SEQ (PROGN
                         (LETT |#G102| (|DFLOAT;manexp| |f| $)
@@ -726,7 +729,10 @@
                                       (PROG1
                                        (LETT #0# (- |ex|)
                                         |DFLOAT;rationalApproximation;$2NniF;83|)
-                                        (|check-subtype| (>= #0# 0)
+                                        (|check-subtype|
+                                         (COND
+                                           ((< #0# 0) 'NIL)
+                                           ('T 'T))
                                          '(|NonNegativeInteger|) #0#)))
                                      |DFLOAT;rationalApproximation;$2NniF;83|)
                                     (EXIT
@@ -819,16 +825,17 @@
                                (SPADCALL
                                    (* |nu|
                                     (EXPT BASE
-                                     (PROG1
-                                      (LETT #2# |ex|
-                                       |DFLOAT;rationalApproximation;$2NniF;83|)
-                                       (|check-subtype| (>= #2# 0)
-                                        '(|NonNegativeInteger|) #2#))))
+                                     (PROG1 |ex|
+                                       (|check-subtype|
+                                        (COND
+                                          ((< |ex| 0) 'NIL)
+                                          ('T 'T))
+                                        '(|NonNegativeInteger|) |ex|))))
                                    (|getShellEntry| $ 120)))))))
            #1# (EXIT #1#))))) 
 
 (DEFUN |DFLOAT;**;$F$;84| (|x| |r| $)
-  (PROG (|n| |d| #0=#:G1553)
+  (PROG (|n| |d| #0=#:G1544)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|)
@@ -892,7 +899,7 @@
 (DEFUN |DoubleFloat| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1566)
+      (PROG (#0=#:G1557)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|DoubleFloat|)

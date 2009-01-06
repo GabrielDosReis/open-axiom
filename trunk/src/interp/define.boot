@@ -106,13 +106,27 @@ $sigList := []
 $atList := []
 
 
+++ True if the current functor definition refines a domain.
+$subdomain := false
+
 --%
 
 compDefineAddSignature: (%Form,%Signature,%Env) -> %Env
 DomainSubstitutionFunction: (%List,%Form) -> %Form 
 
 
---% 
+--% Subdomains
+
+++ We are defining a functor with head given by `form', as a subdomain
+++ of the domain designated by the domain form `super', and predicate
+++ `pred' (a VM instruction form).  Emit appropriate info into the
+++ databases.
+emitSubdomainInfo(form,super,pred) ==
+  pred := eqSubst($AtVariables,rest form,pred)
+  super := eqSubst($AtVariables,rest form,super)
+  evalAndRwriteLispForm("evalOnLoad2",["noteSubDomainInfo",
+     quoteForm first form,quoteForm super, quoteForm pred])
+
 
 ++ List of operations defined in a given capsule
 ++ Each item on this list is of the form
@@ -161,20 +175,22 @@ makePredicate l ==
 
 --% FUNCTIONS WHICH MUNCH ON == STATEMENTS
 
+++ List of reserved identifiers for which the compiler has special
+++ meanings and that shall not be redefined.
+$reservedNames == '(per rep _$)
+
+++ Check that `var' (a variable of parameter name) is not a reversed name.
+checkVariableName var ==
+  MEMQ(var,$reservedNames) =>
+    stackAndThrow('"You cannot reserved name %1b as variable",[var])
+
+checkParameterNames parms ==
+  for p in parms repeat
+    checkVariableName p
+
 compDefine(form,m,e) ==
   $macroIfTrue: local := false
   compDefine1(form,m,e)
-
-++ Activate synthetized pair concretization and abstraction
-++ view morphisms for domains.
-insertViewMorphisms: (%Mode,$Env) -> %Env
-insertViewMorphisms(t,e) ==
-  $useRepresentationHack => e
-  g := GENSYM()
-  repType := ["Mapping",t,"$"]
-  perType := ["Mapping","$",t]
-  e := put("rep","value",[["XLAM",[g],g],repType,nil],e)
-  put("per","value",[["XLAM",[g],g],perType,nil],e)
 
 ++ We are about to process the body of a capsule.  Check the form of
 ++ `Rep' definition, and whether it is appropriate to activate the
@@ -238,13 +254,15 @@ checkRepresentation(addForm,body,env) ==
   else if null domainRep and addForm ^= nil then
     if $functorKind = "domain" and addForm isnt ["%Comma",:.] then
       domainRep :=
-        addForm is ["SubDomain",dom,.] => dom
+        addForm is ["SubDomain",dom,.] => 
+          $subdomain := true
+          dom
         addForm
       base := compForMode(domainRep,$EmptyMode,env) or 
         stackAndThrow('"1b is not a domain",[domainRep])
       $useRepresentationHack := false
-      env := insertViewMorphisms(base.expr,env)
-      -- ??? Maybe we should also make Rep available as macro.
+      env := put("Rep","value",base,env)
+      -- ??? Maybe we should also make Rep available as macro?
   env
 
 
@@ -254,7 +272,8 @@ compDefine1(form,m,e) ==
   --1. decompose after macro-expanding form
   ['DEF,lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
-     => [lhs,m,put(first lhs,'macro,rhs,e)]
+     => [lhs,m,put(first lhs,"macro",rhs,e)]
+  checkParameterNames rest lhs
   null signature.target and not MEMQ(KAR rhs,$BuiltinConstructorNames) and
     (sig:= getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
@@ -339,7 +358,9 @@ macroExpandInPlace(x,e) ==
 
 macroExpand: (%Form,%Env) -> %Form 
 macroExpand(x,e) ==   --not worked out yet
-  atom x => (u:= get(x,'macro,e) => macroExpand(u,e); x)
+  atom x => 
+    u:= get(x,"macro",e) => macroExpand(u,e)
+    x
   x is ['DEF,lhs,sig,spCases,rhs] =>
     ['DEF,macroExpand(lhs,e),macroExpandList(sig,e),macroExpandList(spCases,e),
       macroExpand(rhs,e)]
@@ -348,7 +369,7 @@ macroExpand(x,e) ==   --not worked out yet
 macroExpandList(l,e) ==
   -- macros should override niladic props
   (l is [name]) and IDENTP name and niladicConstructorFromDB name and
-        (u := get(name, 'macro, e)) => macroExpand(u,e)
+        (u := get(name,"macro", e)) => macroExpand(u,e)
   [macroExpand(x,e) for x in l]
 
 --% constructor evaluation
@@ -580,6 +601,7 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
       [lineNumber,:$functorSpecialCases] := $functorSpecialCases
 --  1. bind global variables
     $addForm: local := nil
+    $subdomain: local := false
     $viewNames: local:= nil
  
             --This list is only used in genDomainViewName, for generating names
@@ -666,6 +688,14 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
 --  4. compile body in environment of %type declarations for arguments
     op':= $op
     rettype:= signature'.target
+    -- If this functor is defined as instantiation of a functor
+    -- that is a subdomain of `D', then make this functor also a subdomain
+    -- of that super domain `D'.
+    if body is ["add",[rhsCtor,:rhsArgs],["CAPSULE"]] 
+        and constructor? rhsCtor 
+         and (u := getSuperDomainFromDB rhsCtor) then 
+           u := sublisFormal(rhsArgs,u,$AtVariables)
+           emitSubdomainInfo($form,first u, second u)
     T:= compFunctorBody(body,rettype,$e,parForm)
     -- If only compiling certain items, then ignore the body shell.
     $compileOnlyCertainItems =>
@@ -1445,12 +1475,8 @@ compSubDomain1(domainForm,predicate,m,e) ==
   -- For now, reject predicates that directly reference domains
   CONTAINED("$",pred) => 
     stackAndThrow('"predicate %1pb is not simple enough",[predicate])
-  -- Abstract over references to parameters of enclosing functor.
-  pred := eqSubst($AtVariables,rest $form, pred)
-  $lisplibSuperDomain:=
-    [domainForm,predicate]
-  evalAndRwriteLispForm('evalOnLoad2, ["noteSubDomainInfo", quoteForm $op, 
-      quoteForm domainForm, quoteForm pred])
+  emitSubdomainInfo($form,domainForm,pred)
+  $lisplibSuperDomain := [domainForm,predicate]
   [domainForm,m,e]
 
 compCapsuleInner(itemList,m,e) ==
@@ -1516,10 +1542,8 @@ doIt(item,$predl) ==
          $functorLocalParameters:= [:$functorLocalParameters,lhs]
     if code is ["%LET",.,rhs',:.] and isDomainForm(rhs',$e) then
       if lhs="Rep" then
-        $Representation:= (get("Rep",'value,$e)).expr
+        $Representation:= getRepresentation $e
            --$Representation bound by compDefineFunctor, used in compNoStacking
-        -- Activate view morphisms if appropriate
-        $e := insertViewMorphisms($Representation,$e)
     code is ["%LET",:.] =>
       RPLACA(item,"setShellEntry")
       rhsCode := rhs'
@@ -1537,7 +1561,7 @@ doIt(item,$predl) ==
   item is ["where",b,:l] => compOrCroak(item,$EmptyMode,$e)
   item is ["MDEF",:.] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
   item is ['DEF,[op,:.],:.] =>
-    body:= isMacro(item,$e) => $e:= put(op,'macro,body,$e)
+    body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
     [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
     RPLACA(item,"CodeDefine")
         --Note that DescendCode, in CodeDefine, is looking for this

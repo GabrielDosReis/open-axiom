@@ -78,7 +78,7 @@
   (|setSimpleArrayEntry| |x| |i| |s|)) 
 
 (DEFUN |PRIMARR;fill!;$S$;9| (|x| |s| $)
-  (PROG (|i| #0=#:G1415)
+  (PROG (|i| #0=#:G1416)
     (RETURN
       (SEQ (SEQ (LETT |i| 0 |PRIMARR;fill!;$S$;9|)
                 (LETT #0# (|maxIndexOfSimpleArray| |x|)
@@ -89,10 +89,10 @@
                 G191 (EXIT NIL))
            (EXIT |x|))))) 
 
-(DEFUN |PrimitiveArray| (#0=#:G1416)
+(DEFUN |PrimitiveArray| (#0=#:G1417)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1417)
+      (PROG (#1=#:G1418)
         (RETURN
           (COND
             ((LETT #1#

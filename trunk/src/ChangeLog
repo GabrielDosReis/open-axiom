@@ -1,3 +1,36 @@
+2009-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (getVMType): IndexList are lists.
+	* interp/g-util.boot (isSubDomain): Tidy.
+	* interp/g-opt.boot (isVMConstantForm): New.
+	(findVMFreeVars): Likewise.
+	* interp/define.boot (insertViewMorphisms): Remove.
+	(emitSubdomainInfo): New.
+	(checkVariableName): Likewise.
+	(checkParameterNames): Likewise.
+	(checkRepresentation): Set $subdomain where appropriate.
+	(compDefines): Check parameter names.
+	(compDefineFunctor1): Propagate subdomain info.
+	(doIt): Don't call insertViewMorphisms.
+	* interp/compiler.boot (setqSingle): Check variable name.
+	(compIterator): Likewise.
+	(commonSuperType): New.
+	(satisfies): Likewise.
+	(coerceSubset): Use them to implemen cross-subdomain coercion.
+	(coerceSuperset): New.
+	(comCoerce1): Use it.
+	(compPer): New.
+	(compRep): Likewise.
+	* interp/c-util.boot (getRepresentation): New.
+	(proclaimCapsuleFunction): Improve for specialized subdomains.
+	* algebra/stream.spad.pamphlet: Don't use `per' as variable name.
+	* algebra/si.spad.pamphlet (size$SingleInteger): Tidy.
+	(coerce$SingleInteger): Likewise.
+	* algebra/reclos.spad.pamphlet (nonNull$RealClosure): Don't use
+	`rep' as parameter name.
+	* algebra/data.spad.pamphlet (Byte): Now a subdomain of
+	NonNegativeInteger.  Tidy.
+
 2009-01-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/daase.lisp (setdatabase): Set superdomain slot too.

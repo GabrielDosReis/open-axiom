@@ -4,10 +4,10 @@
 (DEFPARAMETER |Ring;AL| 'NIL) 
 
 (DEFUN |Ring;| ()
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1399)
     (RETURN
       (PROG1 (LETT #0#
-                   (|sublisV| (PAIR '(#1=#:G1397) (LIST '(|Integer|)))
+                   (|sublisV| (PAIR '(#1=#:G1398) (LIST '(|Integer|)))
                        (|Join| (|Rng|) (|Monoid|) (|LeftModule| '$)
                                (|CoercibleFrom| '#1#)
                                (|mkCategory| '|package|

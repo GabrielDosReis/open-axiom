@@ -12,7 +12,7 @@
       (|getShellEntry| $ 10))) 
 
 (DEFUN |FPS-;digits;Pi;2| ($)
-  (PROG (#0=#:G1401)
+  (PROG (#0=#:G1402)
     (RETURN
       (PROG1 (LETT #0#
                    (MAX 1
@@ -22,7 +22,9 @@
                                 (|getShellEntry| $ 14))
                             13301))
                    |FPS-;digits;Pi;2|)
-        (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))) 
+        (|check-subtype|
+            (AND (COND ((< #0# 0) 'NIL) ('T 'T)) (< 0 #0#))
+            '(|PositiveInteger|) #0#))))) 
 
 (DEFUN |FloatingPointSystem&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)

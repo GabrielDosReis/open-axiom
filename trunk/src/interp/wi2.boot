@@ -411,7 +411,7 @@ compMakeCategoryObject(c,$e) ==
   nil
  
 macroExpand(x,e) ==   --not worked out yet
-  atom x => (u:= get(x,'macro,e) => macroExpand(u,e); x)
+  atom x => (u:= get(x,"macro",e) => macroExpand(u,e); x)
   x is ['DEF,lhs,sig,spCases,rhs] =>
     ['DEF,macroExpand(lhs,e), macroExpandList(sig,e),macroExpandList(spCases,e),
       macroExpand(rhs,e)]
@@ -1140,7 +1140,7 @@ rhsOfLetIsDomainForm code ==
 
 doItDef item == 
   ['DEF,[op,:.],:.] := item
-  body:= isMacro(item,$e) => $e:= put(op,'macro,body,$e)
+  body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
   [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
   chk(item,3)
   RPLACA(item,"CodeDefine")

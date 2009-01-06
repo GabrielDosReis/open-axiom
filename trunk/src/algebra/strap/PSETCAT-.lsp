@@ -86,7 +86,7 @@
             |PSETCAT-;elements|)))) 
 
 (DEFUN |PSETCAT-;variables1| (|lp| $)
-  (PROG (#0=#:G1558 |p| #1=#:G1559 |lvars|)
+  (PROG (#0=#:G1559 |p| #1=#:G1560 |lvars|)
     (RETURN
       (SEQ (LETT |lvars|
                  (PROGN
@@ -119,7 +119,7 @@
   (SPADCALL |#2| |#1| (|getShellEntry| $ 16))) 
 
 (DEFUN |PSETCAT-;variables2| (|lp| $)
-  (PROG (#0=#:G1560 |p| #1=#:G1561 |lvars|)
+  (PROG (#0=#:G1561 |p| #1=#:G1562 |lvars|)
     (RETURN
       (SEQ (LETT |lvars|
                  (PROGN
@@ -284,7 +284,7 @@
                          (SPADCALL |ws| (|getShellEntry| $ 30)))))))) 
 
 (DEFUN |PSETCAT-;=;2SB;11| (|ps1| |ps2| $)
-  (PROG (#0=#:G1562 #1=#:G1563 #2=#:G1564 |p| #3=#:G1565)
+  (PROG (#0=#:G1563 #1=#:G1564 #2=#:G1565 |p| #3=#:G1566)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
@@ -463,7 +463,7 @@
     ('T 'NIL))) 
 
 (DEFUN |PSETCAT-;exactQuo| (|r| |s| $)
-  (PROG (#0=#:G1507)
+  (PROG (#0=#:G1508)
     (RETURN
       (COND
         ((|HasCategory| (|getShellEntry| $ 7) '(|EuclideanDomain|))

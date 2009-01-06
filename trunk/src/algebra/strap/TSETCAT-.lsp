@@ -123,7 +123,7 @@
                 |TSETCAT-;coHeight;SNni;39|)) 
 
 (DEFUN |TSETCAT-;=;2SB;1| (|ts| |us| $)
-  (PROG (#0=#:G1456 #1=#:G1462)
+  (PROG (#0=#:G1457 #1=#:G1463)
     (RETURN
       (COND
         ((SPADCALL |ts| (|getShellEntry| $ 12))
@@ -159,7 +159,7 @@
              (|getShellEntry| $ 18))))))) 
 
 (DEFUN |TSETCAT-;infRittWu?;2SB;2| (|ts| |us| $)
-  (PROG (|p| #0=#:G1469 |q| |v|)
+  (PROG (|p| #0=#:G1470 |q| |v|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |us| (|getShellEntry| $ 12))
@@ -484,7 +484,7 @@
            (EXIT |red|))))) 
 
 (DEFUN |TSETCAT-;reduce;PSMMP;13| (|p| |ts| |redOp| |redOp?| $)
-  (PROG (|ts0| #0=#:G1544 |reductor| #1=#:G1547)
+  (PROG (|ts0| #0=#:G1545 |reductor| #1=#:G1548)
     (RETURN
       (SEQ (COND
              ((OR (SPADCALL |ts| (|getShellEntry| $ 12))
@@ -607,7 +607,7 @@
   (SPADCALL |p| |ts| (ELT $ 78) (ELT $ 79) (|getShellEntry| $ 71))) 
 
 (DEFUN |TSETCAT-;removeZero;PSP;18| (|p| |ts| $)
-  (PROG (|v| |tsv-| #0=#:G1570 #1=#:G1579 |q|)
+  (PROG (|v| |tsv-| #0=#:G1571 #1=#:G1580 |q|)
     (RETURN
       (SEQ (EXIT (COND
                    ((OR (SPADCALL |p| (|getShellEntry| $ 34))
@@ -741,7 +741,7 @@
   (SPADCALL |ts| (ELT $ 105) (|getShellEntry| $ 100))) 
 
 (DEFUN |TSETCAT-;mvar;SV;25| (|ts| $)
-  (PROG (#0=#:G1598)
+  (PROG (#0=#:G1599)
     (RETURN
       (COND
         ((SPADCALL |ts| (|getShellEntry| $ 12))
@@ -801,7 +801,7 @@
             (|getShellEntry| $ 36))) 
 
 (DEFUN |TSETCAT-;algebraicVariables;SL;30| (|ts| $)
-  (PROG (#0=#:G1666 |p| #1=#:G1667)
+  (PROG (#0=#:G1667 |p| #1=#:G1668)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |TSETCAT-;algebraicVariables;SL;30|)
@@ -964,7 +964,7 @@
                     (|error| "in extend : ($,P) -> $ from TSETCAT : bad ars")))))))) 
 
 (DEFUN |TSETCAT-;coHeight;SNni;39| (|ts| $)
-  (PROG (|n| |m| #0=#:G1662)
+  (PROG (|n| |m| #0=#:G1663)
     (RETURN
       (SEQ (LETT |n| (SPADCALL (|getShellEntry| $ 127))
                  |TSETCAT-;coHeight;SNni;39|)

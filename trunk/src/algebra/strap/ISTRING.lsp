@@ -181,8 +181,8 @@
   (STRCONC "\\mbox{``" (STRCONC |s| "''}"))) 
 
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
-  (PROG (|l| |m| |n| |h| #0=#:G1437 |r| #1=#:G1534 #2=#:G1535 |i|
-             #3=#:G1536 |k|)
+  (PROG (|l| |m| |n| |h| #0=#:G1438 |r| #1=#:G1535 #2=#:G1536 |i|
+             #3=#:G1537 |k|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |sg| (|getShellEntry| $ 39))
@@ -206,7 +206,7 @@
                  (MAKE-FULL-CVEC
                      (PROG1 (LETT #0# (+ (- |m| (+ (- |h| |l|) 1)) |n|)
                                   |ISTRING;replace;$Us2$;15|)
-                       (|check-subtype| (>= #0# 0)
+                       (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
                            '(|NonNegativeInteger|) #0#))
                      (SPADCALL (|getShellEntry| $ 43)))
                  |ISTRING;replace;$Us2$;15|)
@@ -254,7 +254,7 @@
                (EXIT |c|)))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)
-  (PROG (|np| |nw| |iw| |ip| #0=#:G1537 #1=#:G1451 #2=#:G1447)
+  (PROG (|np| |nw| |iw| |ip| #0=#:G1538 #1=#:G1452 #2=#:G1448)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |np| (QCSIZE |part|)
                             |ISTRING;substring?;2$IB;17|)
@@ -323,7 +323,7 @@
                                  ('T (+ |r| (|getShellEntry| $ 6))))))))))))) 
 
 (DEFUN |ISTRING;position;C$2I;19| (|c| |t| |startpos| $)
-  (PROG (|r| #0=#:G1538 #1=#:G1461)
+  (PROG (|r| #0=#:G1539 #1=#:G1462)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |startpos|
                             (- |startpos| (|getShellEntry| $ 6))
@@ -359,7 +359,7 @@
            #1# (EXIT #1#))))) 
 
 (DEFUN |ISTRING;position;Cc$2I;20| (|cc| |t| |startpos| $)
-  (PROG (|r| #0=#:G1539 #1=#:G1467)
+  (PROG (|r| #0=#:G1540 #1=#:G1468)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |startpos|
                             (- |startpos| (|getShellEntry| $ 6))
@@ -570,7 +570,7 @@
                      (SPADCALL |i| |n| (|getShellEntry| $ 20)) $)))))) 
 
 (DEFUN |ISTRING;rightTrim;$C$;26| (|s| |c| $)
-  (PROG (|j| #0=#:G1540)
+  (PROG (|j| #0=#:G1541)
     (RETURN
       (SEQ (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 42))
                       |ISTRING;rightTrim;$C$;26|)
@@ -591,7 +591,7 @@
                      $)))))) 
 
 (DEFUN |ISTRING;rightTrim;$Cc$;27| (|s| |cc| $)
-  (PROG (|j| #0=#:G1541)
+  (PROG (|j| #0=#:G1542)
     (RETURN
       (SEQ (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 42))
                       |ISTRING;rightTrim;$Cc$;27|)
@@ -612,7 +612,7 @@
                      $)))))) 
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
-  (PROG (#0=#:G1542 #1=#:G1496 #2=#:G1494 #3=#:G1495 |t| |s| #4=#:G1543
+  (PROG (#0=#:G1543 #1=#:G1497 #2=#:G1495 #3=#:G1496 |t| |s| #4=#:G1544
             |i|)
     (RETURN
       (SEQ (LETT |t|
@@ -734,8 +734,8 @@
   (|stringMatch| |pattern| |target| (CHARACTER |wildcard|))) 
 
 (DEFUN |ISTRING;match?;2$CB;34| (|pattern| |target| |dontcare| $)
-  (PROG (|n| |m| #0=#:G1514 #1=#:G1517 |s| #2=#:G1518 #3=#:G1527 |i|
-             |p| #4=#:G1519 |q|)
+  (PROG (|n| |m| #0=#:G1515 #1=#:G1518 |s| #2=#:G1519 #3=#:G1528 |i|
+             |p| #4=#:G1520 |q|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |n|
                             (SPADCALL |pattern| (|getShellEntry| $ 42))
@@ -750,7 +750,8 @@
                                       |ISTRING;match?;2$CB;34|)
                                      $)
                                     |ISTRING;match?;2$CB;34|)
-                              (|check-subtype| (>= #0# 0)
+                              (|check-subtype|
+                                  (COND ((< #0# 0) 'NIL) ('T 'T))
                                   '(|NonNegativeInteger|) #0#))
                             |ISTRING;match?;2$CB;34|)
                       (EXIT (COND
@@ -780,7 +781,10 @@
                                         |dontcare| |pattern| (+ |p| 1)
                                         $)
                                        |ISTRING;match?;2$CB;34|)
-                                       (|check-subtype| (>= #1# 0)
+                                       (|check-subtype|
+                                        (COND
+                                          ((< #1# 0) 'NIL)
+                                          ('T 'T))
                                         '(|NonNegativeInteger|) #1#))
                                      |ISTRING;match?;2$CB;34|)
                                     (SEQ G190
@@ -802,7 +806,10 @@
                                          (|ISTRING;position;2$2I;18|
                                           |s| |target| |i| $)
                                          |ISTRING;match?;2$CB;34|)
-                                         (|check-subtype| (>= #2# 0)
+                                         (|check-subtype|
+                                          (COND
+                                            ((< #2# 0) 'NIL)
+                                            ('T 'T))
                                           '(|NonNegativeInteger|) #2#))
                                        |ISTRING;match?;2$CB;34|)
                                       (EXIT
@@ -828,7 +835,9 @@
                                                 (+ |q| 1) $)
                                                |ISTRING;match?;2$CB;34|)
                                                (|check-subtype|
-                                                (>= #4# 0)
+                                                (COND
+                                                  ((< #4# 0) 'NIL)
+                                                  ('T 'T))
                                                 '(|NonNegativeInteger|)
                                                 #4#))
                                              |ISTRING;match?;2$CB;34|)))))))
@@ -849,10 +858,10 @@
                                     (EXIT 'T)))))))
            #3# (EXIT #3#))))) 
 
-(DEFUN |IndexedString| (#0=#:G1544)
+(DEFUN |IndexedString| (#0=#:G1545)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1545)
+      (PROG (#1=#:G1546)
         (RETURN
           (COND
             ((LETT #1#

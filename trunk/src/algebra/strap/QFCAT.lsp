@@ -6,7 +6,7 @@
 (DEFPARAMETER |QuotientFieldCategory;AL| 'NIL) 
 
 (DEFUN |QuotientFieldCategory;| (|t#1|)
-  (PROG (#0=#:G1399)
+  (PROG (#0=#:G1400)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -92,8 +92,8 @@
         (|setShellEntry| #0# 0
             (LIST '|QuotientFieldCategory| (|devaluate| |t#1|))))))) 
 
-(DEFUN |QuotientFieldCategory| (#0=#:G1400)
-  (LET (#1=#:G1401)
+(DEFUN |QuotientFieldCategory| (#0=#:G1401)
+  (LET (#1=#:G1402)
     (COND
       ((SETQ #1#
              (|assoc| (|devaluate| #0#) |QuotientFieldCategory;AL|))

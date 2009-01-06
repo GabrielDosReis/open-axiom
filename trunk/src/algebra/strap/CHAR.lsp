@@ -96,17 +96,18 @@
 (DEFUN |CHAR;size;Nni;3| ($) (DECLARE (IGNORE $)) 256) 
 
 (DEFUN |CHAR;index;Pi$;4| (|n| $)
-  (PROG (#0=#:G1401)
+  (PROG (#0=#:G1402)
     (RETURN
       (CODE-CHAR
           (PROG1 (LETT #0# (- |n| 1) |CHAR;index;Pi$;4|)
-            (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))))) 
+            (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
+                '(|NonNegativeInteger|) #0#)))))) 
 
 (DEFUN |CHAR;lookup;$Pi;5| (|c| $)
-  (PROG (#0=#:G1403)
+  (PROG (#0=#:G1404)
     (RETURN
       (PROG1 (LETT #0# (+ 1 (CHAR-CODE |c|)) |CHAR;lookup;$Pi;5|)
-        (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))) 
+        (|check-subtype| (< 0 #0#) '(|PositiveInteger|) #0#))))) 
 
 (DEFUN |CHAR;char;Nni$;6| (|n| $)
   (DECLARE (IGNORE $))
@@ -163,7 +164,7 @@
 (DEFUN |Character| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1424)
+      (PROG (#0=#:G1425)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Character|)

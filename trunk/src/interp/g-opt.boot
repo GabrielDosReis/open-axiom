@@ -374,8 +374,9 @@ optLESSP u ==
  
 $simpleVMoperators == 
   '(CONS CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
-    SPADfirst QVELT _+ _- _* _< _=
-     QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP)
+    SPADfirst QVELT _+ _- _* _< _= ASH INTEGER_-LENGTH
+     QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP
+      MINUSP GREATERP)
 
 isSimpleVMForm form ==
   isAtomicForm form => true
@@ -391,6 +392,27 @@ isFloatableVMForm form ==
   MEMQ(first form, $simpleVMoperators) and
     "and"/[isFloatableVMForm arg for arg in rest form]
     
+
+++ Return true if the VM form `form' is one that we certify to 
+++ evaluate to a (compile time) constant.  Note that this is a
+++ fairly conservative approximation of compile time constants.
+isVMConstantForm: %Code -> %Boolean
+isVMConstantForm form ==
+  INTEGERP form or STRINGP form => true
+  form=nil or form=true => true
+  form isnt [op,:args] => false
+  op = "QUOTE" => true
+  MEMQ(op,$simpleVMoperators) and 
+    "and"/[isVMConstantForm arg for arg in args]
+
+++ Return the set of free variables in the VM form `form'.
+findVMFreeVars form ==
+  IDENTP form => [form]
+  form isnt [op,:args] => nil  
+  op = "QUOTE" => nil
+  vars := union/[findVMFreeVars arg for arg in args]
+  atom op => vars
+  union(findVMFreeVars op,vars)
 
 ++ Implement simple-minded LET-inlining.  It seems we can't count
 ++ on Lisp implementations to do this simple transformation.

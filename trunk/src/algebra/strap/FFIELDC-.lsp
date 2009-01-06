@@ -88,7 +88,7 @@
   (CONS 0 (SPADCALL |x| (|getShellEntry| $ 28)))) 
 
 (DEFUN |FFIELDC-;createPrimitiveElement;S;8| ($)
-  (PROG (|sm1| |start| |i| #0=#:G1446 |e| |found|)
+  (PROG (|sm1| |start| |i| |e| |found|)
     (RETURN
       (SEQ (LETT |sm1| (- (SPADCALL (|getShellEntry| $ 39)) 1)
                  |FFIELDC-;createPrimitiveElement;S;8|)
@@ -105,10 +105,12 @@
                 G190 (COND ((NULL (NOT |found|)) (GO G191)))
                 (SEQ (LETT |e|
                            (SPADCALL
-                               (PROG1 (LETT #0# |i|
-                                       |FFIELDC-;createPrimitiveElement;S;8|)
-                                 (|check-subtype| (> #0# 0)
-                                     '(|PositiveInteger|) #0#))
+                               (PROG1 |i|
+                                 (|check-subtype|
+                                     (AND
+                                      (COND ((< |i| 0) 'NIL) ('T 'T))
+                                      (< 0 |i|))
+                                     '(|PositiveInteger|) |i|))
                                (|getShellEntry| $ 12))
                            |FFIELDC-;createPrimitiveElement;S;8|)
                      (EXIT (LETT |found|

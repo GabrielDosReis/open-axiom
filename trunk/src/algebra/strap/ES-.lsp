@@ -159,7 +159,7 @@
   (SPADCALL (|ES-;listk| |f| $) (|getShellEntry| $ 27))) 
 
 (DEFUN |ES-;allk| (|l| $)
-  (PROG (#0=#:G1578 |f| #1=#:G1579)
+  (PROG (#0=#:G1579 |f| #1=#:G1580)
     (RETURN
       (SEQ (SPADCALL (ELT $ 32)
                (PROGN
@@ -182,7 +182,7 @@
                (|getShellEntry| $ 35)))))) 
 
 (DEFUN |ES-;operators;SL;7| (|f| $)
-  (PROG (#0=#:G1580 |k| #1=#:G1581)
+  (PROG (#0=#:G1581 |k| #1=#:G1582)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |ES-;operators;SL;7|)
@@ -205,7 +205,7 @@
                   G191 (EXIT (NREVERSE0 #0#)))))))) 
 
 (DEFUN |ES-;height;SNni;8| (|f| $)
-  (PROG (#0=#:G1582 |k| #1=#:G1583)
+  (PROG (#0=#:G1583 |k| #1=#:G1584)
     (RETURN
       (SEQ (SPADCALL (ELT $ 42)
                (PROGN
@@ -231,7 +231,7 @@
                0 (|getShellEntry| $ 45)))))) 
 
 (DEFUN |ES-;freeOf?;SSB;9| (|x| |s| $)
-  (PROG (#0=#:G1584 |k| #1=#:G1585)
+  (PROG (#0=#:G1585 |k| #1=#:G1586)
     (RETURN
       (SEQ (NOT (SPADCALL |s|
                     (PROGN
@@ -258,7 +258,7 @@
                     (|getShellEntry| $ 49))))))) 
 
 (DEFUN |ES-;distribute;2S;10| (|x| $)
-  (PROG (#0=#:G1586 |k| #1=#:G1587)
+  (PROG (#0=#:G1587 |k| #1=#:G1588)
     (RETURN
       (SEQ (|ES-;unwrap|
                (PROGN
@@ -338,7 +338,7 @@
   (SPADCALL |x| (LIST |e|) (|getShellEntry| $ 79))) 
 
 (DEFUN |ES-;eval;SLLS;24| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1588 |f| #1=#:G1589)
+  (PROG (#0=#:G1589 |f| #1=#:G1590)
     (RETURN
       (SEQ (SPADCALL |x| |ls|
                (PROGN
@@ -366,7 +366,7 @@
       (|getShellEntry| $$ 0))) 
 
 (DEFUN |ES-;eval;SLLS;25| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1590 |f| #1=#:G1591)
+  (PROG (#0=#:G1591 |f| #1=#:G1592)
     (RETURN
       (SEQ (SPADCALL |x| |ls|
                (PROGN
@@ -394,7 +394,7 @@
       (|getShellEntry| $$ 0))) 
 
 (DEFUN |ES-;eval;SLLS;26| (|x| |ls| |lf| $)
-  (PROG (#0=#:G1592 |s| #1=#:G1593)
+  (PROG (#0=#:G1593 |s| #1=#:G1594)
     (RETURN
       (SEQ (SPADCALL |x|
                (PROGN
@@ -418,7 +418,7 @@
                |lf| (|getShellEntry| $ 67)))))) 
 
 (DEFUN |ES-;map;MKS;27| (|fn| |k| $)
-  (PROG (#0=#:G1594 |x| #1=#:G1595 |l|)
+  (PROG (#0=#:G1595 |x| #1=#:G1596 |l|)
     (RETURN
       (SEQ (COND
              ((SPADCALL
@@ -463,7 +463,7 @@
     ('T (|error| "Unknown operator")))) 
 
 (DEFUN |ES-;mainKernel;SU;29| (|x| $)
-  (PROG (|l| |kk| #0=#:G1596 |n| |k|)
+  (PROG (|l| |kk| #0=#:G1597 |n| |k|)
     (RETURN
       (SEQ (COND
              ((NULL (LETT |l| (SPADCALL |x| (|getShellEntry| $ 39))
@@ -503,7 +503,7 @@
                    (EXIT (CONS 0 |k|))))))))) 
 
 (DEFUN |ES-;allKernels| (|f| $)
-  (PROG (|l| |k| #0=#:G1597 |u| |s0| |n| |arg| |t| |s|)
+  (PROG (|l| |k| #0=#:G1598 |u| |s0| |n| |arg| |t| |s|)
     (RETURN
       (SEQ (LETT |s|
                  (SPADCALL
@@ -577,7 +577,7 @@
     ('T (|ES-;okkernel| |op| |args| $)))) 
 
 (DEFUN |ES-;okkernel| (|op| |l| $)
-  (PROG (#0=#:G1598 |f| #1=#:G1599)
+  (PROG (#0=#:G1599 |f| #1=#:G1600)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL |op| |l|
@@ -608,7 +608,7 @@
                (|getShellEntry| $ 87)))))) 
 
 (DEFUN |ES-;elt;BoLS;33| (|op| |args| $)
-  (PROG (|u| #0=#:G1521 |v|)
+  (PROG (|u| #0=#:G1522 |v|)
     (RETURN
       (SEQ (EXIT (COND
                    ((NULL (SPADCALL |op| (|getShellEntry| $ 98)))
@@ -688,7 +688,7 @@
                     (SPADCALL (QCDR |k|) |op| (|getShellEntry| $ 51))))))))) 
 
 (DEFUN |ES-;unwrap| (|l| |x| $)
-  (PROG (|k| #0=#:G1600)
+  (PROG (|k| #0=#:G1601)
     (RETURN
       (SEQ (SEQ (LETT |k| NIL |ES-;unwrap|)
                 (LETT #0# (NREVERSE |l|) |ES-;unwrap|) G190
@@ -708,7 +708,7 @@
            (EXIT |x|))))) 
 
 (DEFUN |ES-;distribute;3S;39| (|x| |y| $)
-  (PROG (|ky| #0=#:G1601 |k| #1=#:G1602)
+  (PROG (|ky| #0=#:G1602 |k| #1=#:G1603)
     (RETURN
       (SEQ (LETT |ky| (SPADCALL |y| (|getShellEntry| $ 56))
                  |ES-;distribute;3S;39|)
@@ -760,7 +760,7 @@
                      (|getShellEntry| $ 121))))))) 
 
 (DEFUN |ES-;mkKerLists| (|leq| $)
-  (PROG (|eq| #0=#:G1603 |k| |lk| |lv|)
+  (PROG (|eq| #0=#:G1604 |k| |lk| |lv|)
     (RETURN
       (SEQ (LETT |lk| NIL |ES-;mkKerLists|)
            (LETT |lv| NIL |ES-;mkKerLists|)

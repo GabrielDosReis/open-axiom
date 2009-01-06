@@ -74,6 +74,14 @@ superType dom ==
   [super,.] := getSuperDomainFromDB ctor or return nil
   sublisFormal(args,super,$AtVariables)
 
+++ If the domain designated by the domain form `dom' is a subdomain,
+++ then return its defining predicate.  Otherwise, return nil.
+domainVMPredicate dom ==
+  dom = "$" => domainVMPredicate $functorForm
+  dom isnt [ctor,:args] => false
+  [.,pred] := getSuperDomainFromDB ctor or return nil
+  sublisFormal(args,pred,$AtVariables)
+
 ++ Return the root of the reflexive transitive closure of
 ++ the super-domain chain for the domain designated by the domain 
 ++ form `d'.
@@ -104,15 +112,16 @@ isSubDomain(d1,d2) ==
   [sup,pred] := getSuperDomainFromDB first d1 or return false
 
   -- 3.  We may be onto something.
-  -- `sup' and `pred' are in most general form.  Instantiate.
-  first sup = first d2 => 
-    -- sanity check.  `d2' should be an instance of `sup'.
-    sublisFormal(rest d1,sup,$AtVariables) ^= d2 =>
-      stackAndThrow('"unexpected instantiation mismatch",nil)
-    sublisFormal(rest d1,pred,$AtVariables)
+  -- `sup' and `pred' are in most general form.  We cannot just
+  -- test for the functors, as different arguments may instantiate
+  -- to super-domains.  
+  args := rest d1
+  sublisFormal(args,sup,$AtVariables) = d2 => 
+    sublisFormal(args,pred,$AtVariables)
 
   -- 4.  Otherwise, lookup in the super-domain chain.
-  pred' := isSubDomain(sup,d2) => MKPF([pred',pred],"AND")
+  pred' := isSubDomain(sup,d2) => 
+    MKPF([pred',sublisFormal(args,pred,$AtVariables)],"AND")
 
   -- 5.  Lot of smoke, no fire.
   false
