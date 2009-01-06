@@ -6,7 +6,7 @@
 (DEFPARAMETER |StreamAggregate;AL| 'NIL) 
 
 (DEFUN |StreamAggregate;| (|t#1|)
-  (PROG (#0=#:G1404)
+  (PROG (#0=#:G1405)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -30,8 +30,8 @@
         (|setShellEntry| #0# 0
             (LIST '|StreamAggregate| (|devaluate| |t#1|))))))) 
 
-(DEFUN |StreamAggregate| (#0=#:G1405)
-  (LET (#1=#:G1406)
+(DEFUN |StreamAggregate| (#0=#:G1406)
+  (LET (#1=#:G1407)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |StreamAggregate;AL|))
        (CDR #1#))

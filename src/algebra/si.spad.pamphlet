@@ -319,9 +319,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
    negative?(x)  == QSMINUSP$Lisp x
    size() == (MAXINT -$Lisp MININT +$Lisp 1$Lisp)  pretend NonNegativeInteger
-   index i ==
-     i > size() => error ["index %1b out of range",i]
-     per(i + MININT - 1$Lisp)
+   index i == per(i + MININT - 1$Lisp)
    lookup x ==
      (x -$Lisp MININT +$Lisp 1$Lisp) pretend PositiveInteger
 
@@ -336,9 +334,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
           QSPLUS(r, n)$Lisp
       r
 
-   coerce(x:Integer):% ==
-      (x <= rep max) and (x >= rep min) => per x
-      error "integer too large to represent in a machine word"
+   coerce(x:Integer):% == per x
 
    random() ==
       seed := REMAINDER(TIMES(MULTIPLIER,seed)$Lisp,MODULUS)$Lisp

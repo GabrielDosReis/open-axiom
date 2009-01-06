@@ -4,7 +4,7 @@
 (DEFPARAMETER |OrderedIntegralDomain;AL| 'NIL) 
 
 (DEFUN |OrderedIntegralDomain;| ()
-  (PROG (#0=#:G1397)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0# (|Join| (|IntegralDomain|) (|OrderedRing|))
                    |OrderedIntegralDomain|)

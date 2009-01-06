@@ -6,7 +6,7 @@
 (DEFPARAMETER |ListAggregate;AL| 'NIL) 
 
 (DEFUN |ListAggregate;| (|t#1|)
-  (PROG (#0=#:G1430)
+  (PROG (#0=#:G1431)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -27,8 +27,8 @@
         (|setShellEntry| #0# 0
             (LIST '|ListAggregate| (|devaluate| |t#1|))))))) 
 
-(DEFUN |ListAggregate| (#0=#:G1431)
-  (LET (#1=#:G1432)
+(DEFUN |ListAggregate| (#0=#:G1432)
+  (LET (#1=#:G1433)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |ListAggregate;AL|))
        (CDR #1#))

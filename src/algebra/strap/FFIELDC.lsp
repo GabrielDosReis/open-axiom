@@ -4,7 +4,7 @@
 (DEFPARAMETER |FiniteFieldCategory;AL| 'NIL) 
 
 (DEFUN |FiniteFieldCategory;| ()
-  (PROG (#0=#:G1405)
+  (PROG (#0=#:G1406)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|FieldOfPrimeCharacteristic|) (|Finite|)

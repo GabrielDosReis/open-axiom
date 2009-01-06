@@ -803,6 +803,7 @@ setqSetelt([v,:s],val,m,E) ==
   comp(["setelt",v,:s,val],m,E)
 
 setqSingle(id,val,m,E) ==
+  checkVariableName id
   $insideSetqSingleIfTrue: local:= true
     --used for comping domain forms within functions
   currentProplist:= getProplist(id,E)
@@ -1451,17 +1452,39 @@ coerceEasy(T,m) ==
   T.mode=$EmptyMode or modeEqualSubst(T.mode,m,T.env) =>
     [T.expr,m,T.env]
 
+++ Return true if the VM constant form `val' is known to satisfy
+++ the predicate `pred'.  Note that this is a fairly conservatism
+++ approximation in the sense that the retunred value maye be false
+++ for some other reasons, such as the predicate not being closed
+++ with respect to the parameter `#1'.
 satisfies(val,pred) ==
   pred=false or pred=true => pred
+  vars := findVMFreeVars pred
+  vars ^= nil and vars isnt ["#1"] => false
   eval ["LET",[["#1",val]],pred]
 
+
+++ If the domain designated by the domain forms `m' and `m'' have
+++ a common super domain, return least such super domaon (ordered
+++ in terms of sub-domain relationship).  Otherwise, return nil.
+commonSuperType(m,m') ==
+  lineage := [m']
+  while (t := superType m') ^= nil repeat
+    lineage := [t,:lineage]
+    m' := t
+  while m ^= nil repeat
+    member(m,lineage) => return m
+    m := superType m
+
+++ Coerce value `x' of mode `m' to mode `m'', if m is a subset of
+++ of m'.  A special case is made for cross-subdomain conversion
+++ for integral literals.
 coerceSubset: (%Triple,%Mode) -> %Maybe %Triple
 coerceSubset([x,m,e],m') ==
   isSubset(m,m',e) => [x,m',e]
-  isDomainForm(m,e) and isSubDomain(m,m') => [x,m',e]
-  INTEGERP x =>
+  INTEGERP x and (m'' := commonSuperType(m,m')) =>
     -- obviously this is temporary
-    satisfies(x,isSubDomain(m',maximalSuperType m)) => [x,m',e]
+    satisfies(x,isSubDomain(m',m'')) => [x,m',e]
     nil
   nil
 
@@ -1539,6 +1562,30 @@ compCoerce(["::",x,m'],m,e) ==
     T:= (or/[compCoerce1(x,m1,e) for m1 in l]) or return nil
     coerce([T.expr,m',T.env],m)
 
+++ Subroutine of compCoerce1.  If `T' is a triple whose mode is
+++ a super-domain of `sub', then return code that performs the
+++ checked courtesy coercion to `sub'.
+coerceSuperset: (%Triple, %Mode) -> %Maybe %Triple
+coerceSuperset(T,sub) ==
+  sub = "$" =>
+    T' := coerceSuperset(T,$functorForm) or return nil
+    rplac(second T',"$")
+    T'
+  pred := isSubset(sub,T.mode,T.env) =>
+    -- Don't bother introducing a temporary if we have an
+    -- atomic expression.
+    simple? := atom T.expr and not MEMQ(T.expr,$functorLocalParameters)
+    g := 
+      simple? => T.expr
+      GENSYM()
+    result := 
+      simple? => g
+      ["%LET",g,T.expr]
+    pred := substitute(g,"#1",pred)
+    code := ["PROG1",result, ["check-subtype",pred,MKQ sub,g]]
+    [code,sub,T.env]
+  nil
+
 compCoerce1(x,m',e) ==
   T:= comp(x,m',e) or comp(x,$EmptyMode,e) or return nil
   m1:=
@@ -1548,11 +1595,8 @@ compCoerce1(x,m',e) ==
   T:=[T.expr,m1,T.env]
   T':= coerce(T,m') => T'
   T':= coerceByModemap(T,m') => T'
-  pred := isSubset(m',T.mode,e) =>
-    gg := GENSYM()
-    pred := substitute(gg,"#1",pred)
-    code := ['PROG1,["%LET",gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
-    [code,m',T.env]
+  T' := coerceSuperset(T,m') => T'
+  nil
 
 coerceByModemap([x,m,e],m') ==
 --+ modified 6/27 for new runtime system
@@ -1994,7 +2038,9 @@ listOrVectorElementMode x ==
   x is [a,b,:.] and member(a,'(PrimitiveArray Vector List)) => b
  
 compIterator(it,e) ==
+    -- ??? Allow for declared iterator variable.
   it is ["IN",x,y] =>
+    checkVariableName x
     --these two lines must be in this order, to get "for f in list f"
     --to give  an error message if f is undefined
     [y',m,e]:= comp(y,$EmptyMode,e) or return nil
@@ -2008,6 +2054,7 @@ compIterator(it,e) ==
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["IN",x,y''],e]
   it is ["ON",x,y] =>
+    checkVariableName x
     $formalArgList:= [x,:$formalArgList]
     [y',m,e]:= comp(y,$EmptyMode,e) or return nil
     [mOver,mUnder]:=
@@ -2019,6 +2066,7 @@ compIterator(it,e) ==
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["ON",x,y''],e]
   it is ["STEP",index,start,inc,:optFinal] =>
+    checkVariableName index
     $formalArgList:= [index,:$formalArgList]
     --if all start/inc/end compile as small integers, then loop
     --is compiled as a small integer loop
@@ -2148,7 +2196,34 @@ exprDifference(x,y) ==
   y=0 => x
   FIXP x and FIXP y => DIFFERENCE(x,y)
   ["DIFFERENCE",x,y]
- 
+
+
+--% rep/per morphisms
+
+++ Compile the form `per x' under the mode `m'.
+++ The `per' operator is active only for new-style definition for
+++ representation domain.
+compPer(["per",x],m,e) ==
+  $useRepresentationHack => nil
+  inType := getRepresentation e or return nil
+  T := comp(x,inType,e) or return nil
+  if $subdomain then
+    T := 
+      INTEGERP T.expr and satisfies(T.expr,domainVMPredicate "$") => 
+        [T.expr,"$",e]
+      coerceSuperset(T,"$") or return nil
+  else 
+    rplac(second T,"$")
+  coerce(T,m)
+
+++ Compile the form `rep x' under the mode `m'.
+++ Like `per', the `rep' operator is active only for new-style 
+++ definition for representation domain.
+compRep(["rep",x],m,e) ==
+  $useRepresentationHack => nil
+  T := comp(x,"$",e) or return nil
+  rplac(second T,getRepresentation e or return nil)
+  coerce(T,m)
 
 --%
 --% Entry point to the compiler
@@ -2231,6 +2306,8 @@ for x in [["|", :"compSuchthat"],_
 	  ["Mapping", :"compCat"],_
 	  ["UnionCategory", :"compConstructorCategory"],_
 	  ["where", :"compWhere"],_
+          ["per",:"compPer"],_
+          ["rep",:"compRep"],_
           ["%Comma",:"compComma"],_
           ["%Match",:"compMatch"],_
           ["[||]", :"compileQuasiquote"]] repeat

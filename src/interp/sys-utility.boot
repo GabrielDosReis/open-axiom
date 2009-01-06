@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2008 Gabriel Dos Reis.
+-- Copyright (C) 2007-2009 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -71,6 +71,7 @@ getVMType d ==
     Record =>
       #rest d' > 2 => "%Shell"
       "%Pair"
+    IndexedList => "%List"
     otherwise => "%Thing"                 -- good enough, for now.
 
 --%

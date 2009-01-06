@@ -6,7 +6,7 @@
 (DEFPARAMETER |Collection;AL| 'NIL) 
 
 (DEFUN |Collection;| (|t#1|)
-  (PROG (#0=#:G1397)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -93,8 +93,8 @@
         (|setShellEntry| #0# 0
             (LIST '|Collection| (|devaluate| |t#1|))))))) 
 
-(DEFUN |Collection| (#0=#:G1398)
-  (LET (#1=#:G1399)
+(DEFUN |Collection| (#0=#:G1399)
+  (LET (#1=#:G1400)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |Collection;AL|))
        (CDR #1#))

@@ -50,7 +50,7 @@
   (SPADCALL |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |STAGG-;first;ANniA;3| (|x| |n| $)
-  (PROG (#0=#:G1452 |i|)
+  (PROG (#0=#:G1448 |i|)
     (RETURN
       (SEQ (SPADCALL
                (PROGN
@@ -78,27 +78,25 @@
     ('T (SPADCALL |x| (|getShellEntry| $ 18))))) 
 
 (DEFUN |STAGG-;elt;AIS;5| (|x| |i| $)
-  (PROG (#0=#:G1413)
-    (RETURN
-      (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 20)))
-                 |STAGG-;elt;AIS;5|)
-           (COND
-             ((OR (< |i| 0)
-                  (SPADCALL
-                      (LETT |x|
-                            (SPADCALL |x|
-                                (PROG1 (LETT #0# |i|
-                                        |STAGG-;elt;AIS;5|)
-                                  (|check-subtype| (>= #0# 0)
-                                      '(|NonNegativeInteger|) #0#))
-                                (|getShellEntry| $ 21))
-                            |STAGG-;elt;AIS;5|)
-                      (|getShellEntry| $ 17)))
-              (EXIT (|error| "index out of range"))))
-           (EXIT (SPADCALL |x| (|getShellEntry| $ 18))))))) 
+  (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 20)))
+             |STAGG-;elt;AIS;5|)
+       (COND
+         ((OR (< |i| 0)
+              (SPADCALL
+                  (LETT |x|
+                        (SPADCALL |x|
+                            (PROG1 |i|
+                              (|check-subtype|
+                                  (COND ((< |i| 0) 'NIL) ('T 'T))
+                                  '(|NonNegativeInteger|) |i|))
+                            (|getShellEntry| $ 21))
+                        |STAGG-;elt;AIS;5|)
+                  (|getShellEntry| $ 17)))
+          (EXIT (|error| "index out of range"))))
+       (EXIT (SPADCALL |x| (|getShellEntry| $ 18))))) 
 
 (DEFUN |STAGG-;elt;AUsA;6| (|x| |i| $)
-  (PROG (|l| #0=#:G1417 |h| #1=#:G1419 #2=#:G1420)
+  (PROG (|l| |h| #0=#:G1418)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 24))
@@ -109,9 +107,10 @@
                    ((NULL (SPADCALL |i| (|getShellEntry| $ 25)))
                     (SPADCALL
                         (SPADCALL |x|
-                            (PROG1 (LETT #0# |l| |STAGG-;elt;AUsA;6|)
-                              (|check-subtype| (>= #0# 0)
-                                  '(|NonNegativeInteger|) #0#))
+                            (PROG1 |l|
+                              (|check-subtype|
+                                  (COND ((< |l| 0) 'NIL) ('T 'T))
+                                  '(|NonNegativeInteger|) |l|))
                             (|getShellEntry| $ 21))
                         (|getShellEntry| $ 26)))
                    ('T
@@ -125,17 +124,21 @@
                                  ('T
                                   (SPADCALL
                                       (SPADCALL |x|
-                                       (PROG1
-                                        (LETT #1# |l|
-                                         |STAGG-;elt;AUsA;6|)
-                                         (|check-subtype| (>= #1# 0)
-                                          '(|NonNegativeInteger|) #1#))
+                                       (PROG1 |l|
+                                         (|check-subtype|
+                                          (COND
+                                            ((< |l| 0) 'NIL)
+                                            ('T 'T))
+                                          '(|NonNegativeInteger|) |l|))
                                        (|getShellEntry| $ 21))
                                       (PROG1
-                                       (LETT #2# (+ (- |h| |l|) 1)
+                                       (LETT #0# (+ (- |h| |l|) 1)
                                         |STAGG-;elt;AUsA;6|)
-                                        (|check-subtype| (>= #2# 0)
-                                         '(|NonNegativeInteger|) #2#))
+                                        (|check-subtype|
+                                         (COND
+                                           ((< #0# 0) 'NIL)
+                                           ('T 'T))
+                                         '(|NonNegativeInteger|) #0#))
                                       (|getShellEntry| $ 29))))))))))))) 
 
 (DEFUN |STAGG-;concat;3A;7| (|x| |y| $)
@@ -184,27 +187,25 @@
            (EXIT |x|))))) 
 
 (DEFUN |STAGG-;setelt;AI2S;11| (|x| |i| |s| $)
-  (PROG (#0=#:G1436)
-    (RETURN
-      (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 20)))
-                 |STAGG-;setelt;AI2S;11|)
-           (COND
-             ((OR (< |i| 0)
-                  (SPADCALL
-                      (LETT |x|
-                            (SPADCALL |x|
-                                (PROG1 (LETT #0# |i|
-                                        |STAGG-;setelt;AI2S;11|)
-                                  (|check-subtype| (>= #0# 0)
-                                      '(|NonNegativeInteger|) #0#))
-                                (|getShellEntry| $ 21))
-                            |STAGG-;setelt;AI2S;11|)
-                      (|getShellEntry| $ 17)))
-              (EXIT (|error| "index out of range"))))
-           (EXIT (SPADCALL |x| |s| (|getShellEntry| $ 36))))))) 
+  (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 20)))
+             |STAGG-;setelt;AI2S;11|)
+       (COND
+         ((OR (< |i| 0)
+              (SPADCALL
+                  (LETT |x|
+                        (SPADCALL |x|
+                            (PROG1 |i|
+                              (|check-subtype|
+                                  (COND ((< |i| 0) 'NIL) ('T 'T))
+                                  '(|NonNegativeInteger|) |i|))
+                            (|getShellEntry| $ 21))
+                        |STAGG-;setelt;AI2S;11|)
+                  (|getShellEntry| $ 17)))
+          (EXIT (|error| "index out of range"))))
+       (EXIT (SPADCALL |x| |s| (|getShellEntry| $ 36))))) 
 
 (DEFUN |STAGG-;setelt;AUs2S;12| (|x| |i| |s| $)
-  (PROG (|l| |h| #0=#:G1441 #1=#:G1442 |z| |y|)
+  (PROG (|l| |h| #0=#:G1438 |z| |y|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 24))
@@ -228,22 +229,26 @@
                                  ('T
                                   (SEQ (LETT |y|
                                         (SPADCALL |x|
-                                         (PROG1
-                                          (LETT #0# |l|
-                                           |STAGG-;setelt;AUs2S;12|)
-                                           (|check-subtype| (>= #0# 0)
+                                         (PROG1 |l|
+                                           (|check-subtype|
+                                            (COND
+                                              ((< |l| 0) 'NIL)
+                                              ('T 'T))
                                             '(|NonNegativeInteger|)
-                                            #0#))
+                                            |l|))
                                          (|getShellEntry| $ 21))
                                         |STAGG-;setelt;AUs2S;12|)
                                        (LETT |z|
                                         (SPADCALL |y|
                                          (PROG1
-                                          (LETT #1# (+ (- |h| |l|) 1)
+                                          (LETT #0# (+ (- |h| |l|) 1)
                                            |STAGG-;setelt;AUs2S;12|)
-                                           (|check-subtype| (>= #1# 0)
+                                           (|check-subtype|
+                                            (COND
+                                              ((< #0# 0) 'NIL)
+                                              ('T 'T))
                                             '(|NonNegativeInteger|)
-                                            #1#))
+                                            #0#))
                                          (|getShellEntry| $ 21))
                                         |STAGG-;setelt;AUs2S;12|)
                                        (SEQ G190

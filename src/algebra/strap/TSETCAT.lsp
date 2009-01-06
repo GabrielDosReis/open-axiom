@@ -6,7 +6,7 @@
 (DEFPARAMETER |TriangularSetCategory;AL| 'NIL) 
 
 (DEFUN |TriangularSetCategory;| (|t#1| |t#2| |t#3| |t#4|)
-  (PROG (#0=#:G1448)
+  (PROG (#0=#:G1449)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -184,9 +184,9 @@
                   (|devaluate| |t#2|) (|devaluate| |t#3|)
                   (|devaluate| |t#4|))))))) 
 
-(DEFUN |TriangularSetCategory| (&REST #0=#:G1451 &AUX #1=#:G1449)
+(DEFUN |TriangularSetCategory| (&REST #0=#:G1452 &AUX #1=#:G1450)
   (DSETQ #1# #0#)
-  (LET (#2=#:G1450)
+  (LET (#2=#:G1451)
     (COND
       ((SETQ #2#
              (|assoc| (|devaluateList| #1#) |TriangularSetCategory;AL|))

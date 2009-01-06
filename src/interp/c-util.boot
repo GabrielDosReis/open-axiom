@@ -87,6 +87,12 @@ substituteDollarIfRepHack m ==
   $useRepresentationHack => substitute("$","Rep",m)
   m
 
+++ Return the triple for the representation domain for the
+++ current functor, if any.
+getRepresentation: %Env -> %Maybe %Mode
+getRepresentation e ==
+  (get("Rep","value",e) or return nil).expr
+
 
 ++ Returns true if the form `t' is an instance of the Tuple constructor.
 isTupleInstance: %Form -> %Boolean
@@ -1103,13 +1109,19 @@ proclaimCapsuleFunction(op,sig) ==
        ["FUNCTION",[:[vmType first d for d in tails rest sig],"%Shell"], 
           vmType first sig],op]] where
       vmType d ==
-        getVMType normalize(d,true)
-      normalize(d,top?) ==
+        $subdomain and d = "$" =>
+          -- We want accurate approximation for subdomains/superdomains
+          -- that are specialized and known to the VM.
+          (m := getVMType normalize $functorForm) = "%Thing" =>
+             getVMType normalize $
+          m
+        getVMType normalize d
+      normalize(d,top? == true) ==
         d = "$" => 
           not top? => "*"
           -- If the representation is explicitly stated, use it.  That way
           -- we optimize abstractions just as well as builtins.
-          r := get("Rep","value",$e) => normalize(r.expr,top?)
+          r := getRepresentation $e => normalize(r,top?)
           -- Cope with old-style constructor definition
           atom $functorForm => [$functorForm] 
           normalize($functorForm,top?)

@@ -6,7 +6,7 @@
 (DEFPARAMETER |HomogeneousAggregate;AL| 'NIL) 
 
 (DEFUN |HomogeneousAggregate;| (|t#1|)
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1399)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -100,8 +100,8 @@
         (|setShellEntry| #0# 0
             (LIST '|HomogeneousAggregate| (|devaluate| |t#1|))))))) 
 
-(DEFUN |HomogeneousAggregate| (#0=#:G1399)
-  (LET (#1=#:G1400)
+(DEFUN |HomogeneousAggregate| (#0=#:G1400)
+  (LET (#1=#:G1401)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |HomogeneousAggregate;AL|))
        (CDR #1#))

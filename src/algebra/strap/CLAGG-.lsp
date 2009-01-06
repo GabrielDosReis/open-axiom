@@ -45,7 +45,7 @@
   (LENGTH (SPADCALL |c| (|getShellEntry| $ 9)))) 
 
 (DEFUN |CLAGG-;count;MANni;2| (|f| |c| $)
-  (PROG (|x| #0=#:G1429 #1=#:G1403 #2=#:G1401 #3=#:G1402)
+  (PROG (|x| #0=#:G1430 #1=#:G1404 #2=#:G1402 #3=#:G1403)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;count;MANni;2|)
@@ -78,7 +78,7 @@
              (COND (#3# #2#) ('T 0))))))) 
 
 (DEFUN |CLAGG-;any?;MAB;3| (|f| |c| $)
-  (PROG (|x| #0=#:G1430 #1=#:G1408 #2=#:G1406 #3=#:G1407)
+  (PROG (|x| #0=#:G1431 #1=#:G1409 #2=#:G1407 #3=#:G1408)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;any?;MAB;3|)
@@ -108,7 +108,7 @@
              (COND (#3# #2#) ('T 'NIL))))))) 
 
 (DEFUN |CLAGG-;every?;MAB;4| (|f| |c| $)
-  (PROG (|x| #0=#:G1431 #1=#:G1412 #2=#:G1410 #3=#:G1411)
+  (PROG (|x| #0=#:G1432 #1=#:G1413 #2=#:G1411 #3=#:G1412)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |CLAGG-;every?;MAB;4|)

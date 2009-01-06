@@ -1033,7 +1033,7 @@ displaySpad2Cmd l ==
             v
 
       option = 'operations =>     displayOperations vl
-      option = 'macros =>         displayMacros vl
+      option = "macros" =>         displayMacros vl
       option = 'names =>          displayWorkspaceNames()
       displayProperties(option,l)
   optList:= [:['%l,'"        ",x] for x in $displayOptions]

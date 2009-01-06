@@ -308,7 +308,7 @@
   (SPADCALL |pp| (|getShellEntry| $ 87))) 
 
 (DEFUN |UPOLYC-;factor;SF;23| (|p| $)
-  (PROG (|ansR| #0=#:G1732 |w| #1=#:G1733)
+  (PROG (|ansR| #0=#:G1691 |w| #1=#:G1692)
     (RETURN
       (SEQ (COND
              ((ZEROP (SPADCALL |p| (|getShellEntry| $ 11)))
@@ -360,7 +360,7 @@
                   (|getShellEntry| $ 106)))))))) 
 
 (DEFUN |UPOLYC-;vectorise;SNniV;24| (|p| |n| $)
-  (PROG (|v| |m| |i| #0=#:G1734 #1=#:G1521)
+  (PROG (|v| |m| |i| #0=#:G1693 #1=#:G1522)
     (RETURN
       (SEQ (LETT |m|
                  (SPADCALL
@@ -379,7 +379,10 @@
                                          (PROG1
                                           (LETT #1# (- |i| |m|)
                                            |UPOLYC-;vectorise;SNniV;24|)
-                                           (|check-subtype| (>= #1# 0)
+                                           (|check-subtype|
+                                            (COND
+                                              ((< #1# 0) 'NIL)
+                                              ('T 'T))
                                             '(|NonNegativeInteger|)
                                             #1#))
                                          (|getShellEntry| $ 112))
@@ -407,7 +410,7 @@
   (SPADCALL (|spadConstant| $ 118) (|getShellEntry| $ 30))) 
 
 (DEFUN |UPOLYC-;nextItemInner| (|n| $)
-  (PROG (|nn| |n1| |n2| #0=#:G1545 |n3|)
+  (PROG (|nn| |n1| |n2| #0=#:G1546 |n3|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |n| (|getShellEntry| $ 9))
@@ -495,7 +498,7 @@
                                             (|getShellEntry| $ 50))))))))))))))))) 
 
 (DEFUN |UPOLYC-;nextItem;SU;29| (|n| $)
-  (PROG (|n1| #0=#:G1558)
+  (PROG (|n1| #0=#:G1559)
     (RETURN
       (SEQ (LETT |n1| (|UPOLYC-;nextItemInner| |n| $)
                  |UPOLYC-;nextItem;SU;29|)
@@ -520,7 +523,7 @@
       (|getShellEntry| $ 30))) 
 
 (DEFUN |UPOLYC-;primeFactor| (|p| |q| $)
-  (PROG (#0=#:G1564 |p1|)
+  (PROG (#0=#:G1565 |p1|)
     (RETURN
       (SEQ (LETT |p1|
                  (PROG2 (LETT #0#
@@ -538,7 +541,7 @@
                    ('T (|UPOLYC-;primeFactor| |p1| |q| $)))))))) 
 
 (DEFUN |UPOLYC-;separate;2SR;32| (|p| |q| $)
-  (PROG (|a| #0=#:G1570)
+  (PROG (|a| #0=#:G1571)
     (RETURN
       (SEQ (LETT |a| (|UPOLYC-;primeFactor| |p| |q| $)
                  |UPOLYC-;separate;2SR;32|)
@@ -552,7 +555,7 @@
                              (|getShellEntry| $ 6) #0#)))))))) 
 
 (DEFUN |UPOLYC-;differentiate;SM2S;33| (|x| |deriv| |x'| $)
-  (PROG (|dg| |lc| #0=#:G1575 |d|)
+  (PROG (|dg| |lc| #0=#:G1576 |d|)
     (RETURN
       (SEQ (LETT |d| (|spadConstant| $ 61)
                  |UPOLYC-;differentiate;SM2S;33|)
@@ -575,7 +578,10 @@
                                      (PROG1
                                       (LETT #0# (- |dg| 1)
                                        |UPOLYC-;differentiate;SM2S;33|)
-                                       (|check-subtype| (>= #0# 0)
+                                       (|check-subtype|
+                                        (COND
+                                          ((< #0# 0) 'NIL)
+                                          ('T 'T))
                                         '(|NonNegativeInteger|) #0#))
                                      (|getShellEntry| $ 50))
                                     (|getShellEntry| $ 72))
@@ -597,13 +603,14 @@
                      (|getShellEntry| $ 66))))))) 
 
 (DEFUN |UPOLYC-;ncdiff| (|n| |x'| $)
-  (PROG (#0=#:G1593 |n1|)
+  (PROG (#0=#:G1594 |n1|)
     (RETURN
       (COND
         ((ZEROP |n|) (|spadConstant| $ 61))
         ((ZEROP (LETT |n1|
                       (PROG1 (LETT #0# (- |n| 1) |UPOLYC-;ncdiff|)
-                        (|check-subtype| (>= #0# 0)
+                        (|check-subtype|
+                            (COND ((< #0# 0) 'NIL) ('T 'T))
                             '(|NonNegativeInteger|) #0#))
                       |UPOLYC-;ncdiff|))
          |x'|)
@@ -660,7 +667,7 @@
   (SPADCALL |x| |deriv| (|spadConstant| $ 48) (|getShellEntry| $ 136))) 
 
 (DEFUN |UPOLYC-;differentiate;2S;37| (|x| $)
-  (PROG (|dg| #0=#:G1602 |d|)
+  (PROG (|dg| #0=#:G1603 |d|)
     (RETURN
       (SEQ (LETT |d| (|spadConstant| $ 61)
                  |UPOLYC-;differentiate;2S;37|)
@@ -681,7 +688,8 @@
                                    (PROG1
                                     (LETT #0# (- |dg| 1)
                                      |UPOLYC-;differentiate;2S;37|)
-                                     (|check-subtype| (>= #0# 0)
+                                     (|check-subtype|
+                                      (COND ((< #0# 0) 'NIL) ('T 'T))
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 50))
                                (|getShellEntry| $ 66))
@@ -704,7 +712,7 @@
       (|getShellEntry| $ 146))) 
 
 (DEFUN |UPOLYC-;pseudoQuotient;3S;40| (|p| |q| $)
-  (PROG (|n| #0=#:G1648 #1=#:G1650)
+  (PROG (|n| #0=#:G1611)
     (RETURN
       (SEQ (LETT |n|
                  (+ (- (SPADCALL |p| (|getShellEntry| $ 11))
@@ -714,18 +722,19 @@
            (EXIT (COND
                    ((< |n| 1) (|spadConstant| $ 61))
                    ('T
-                    (PROG2 (LETT #1#
+                    (PROG2 (LETT #0#
                                  (SPADCALL
                                      (SPADCALL
                                       (SPADCALL
                                        (SPADCALL
                                         (SPADCALL |q|
                                          (|getShellEntry| $ 54))
-                                        (PROG1
-                                         (LETT #0# |n|
-                                          |UPOLYC-;pseudoQuotient;3S;40|)
-                                          (|check-subtype| (>= #0# 0)
-                                           '(|NonNegativeInteger|) #0#))
+                                        (PROG1 |n|
+                                          (|check-subtype|
+                                           (COND
+                                             ((< |n| 0) 'NIL)
+                                             ('T 'T))
+                                           '(|NonNegativeInteger|) |n|))
                                         (|getShellEntry| $ 148))
                                        |p| (|getShellEntry| $ 135))
                                       (SPADCALL |p| |q|
@@ -733,12 +742,12 @@
                                       (|getShellEntry| $ 150))
                                      |q| (|getShellEntry| $ 127))
                                  |UPOLYC-;pseudoQuotient;3S;40|)
-                           (QCDR #1#)
-                      (|check-union| (QEQCAR #1# 0)
-                          (|getShellEntry| $ 6) #1#))))))))) 
+                           (QCDR #0#)
+                      (|check-union| (QEQCAR #0# 0)
+                          (|getShellEntry| $ 6) #0#))))))))) 
 
 (DEFUN |UPOLYC-;pseudoDivide;2SR;41| (|p| |q| $)
-  (PROG (|n| |prem| #0=#:G1656 |lc| #1=#:G1658)
+  (PROG (|n| |prem| |lc| #0=#:G1617)
     (RETURN
       (SEQ (LETT |n|
                  (+ (- (SPADCALL |p| (|getShellEntry| $ 11))
@@ -758,16 +767,15 @@
                                (SPADCALL
                                    (SPADCALL |q|
                                     (|getShellEntry| $ 54))
-                                   (PROG1
-                                    (LETT #0# |n|
-                                     |UPOLYC-;pseudoDivide;2SR;41|)
-                                     (|check-subtype| (>= #0# 0)
-                                      '(|NonNegativeInteger|) #0#))
+                                   (PROG1 |n|
+                                     (|check-subtype|
+                                      (COND ((< |n| 0) 'NIL) ('T 'T))
+                                      '(|NonNegativeInteger|) |n|))
                                    (|getShellEntry| $ 148))
                                |UPOLYC-;pseudoDivide;2SR;41|)
                          (EXIT (VECTOR |lc|
                                        (PROG2
-                                        (LETT #1#
+                                        (LETT #0#
                                          (SPADCALL
                                           (SPADCALL
                                            (SPADCALL |lc| |p|
@@ -776,9 +784,9 @@
                                            (|getShellEntry| $ 150))
                                           |q| (|getShellEntry| $ 127))
                                          |UPOLYC-;pseudoDivide;2SR;41|)
-                                        (QCDR #1#)
-                                         (|check-union| (QEQCAR #1# 0)
-                                          (|getShellEntry| $ 6) #1#))
+                                        (QCDR #0#)
+                                         (|check-union| (QEQCAR #0# 0)
+                                          (|getShellEntry| $ 6) #0#))
                                        |prem|)))))))))) 
 
 (DEFUN |UPOLYC-;composite;FSU;42| (|f| |q| $)
@@ -805,7 +813,7 @@
                                          (|getShellEntry| $ 155)))))))))))))) 
 
 (DEFUN |UPOLYC-;composite;2SU;43| (|p| |q| $)
-  (PROG (|cqr| |v| |u| |w| #0=#:G1684)
+  (PROG (|cqr| |v| |u| |w| #0=#:G1643)
     (RETURN
       (SEQ (COND
              ((SPADCALL |p| (|getShellEntry| $ 158)) (CONS 0 |p|))
@@ -867,7 +875,7 @@
                    #0# (EXIT #0#)))))))) 
 
 (DEFUN |UPOLYC-;elt;S2F;44| (|p| |f| $)
-  (PROG (|n| #0=#:G1690 |ans|)
+  (PROG (|n| #0=#:G1649 |ans|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |p| (|getShellEntry| $ 9))
@@ -903,7 +911,10 @@
                                             (|getShellEntry| $ 11))
                                            |UPOLYC-;elt;S2F;44|))
                                          |UPOLYC-;elt;S2F;44|)
-                                         (|check-subtype| (>= #0# 0)
+                                         (|check-subtype|
+                                          (COND
+                                            ((< #0# 0) 'NIL)
+                                            ('T 'T))
                                           '(|NonNegativeInteger|) #0#))
                                        (|getShellEntry| $ 164))
                                       (|getShellEntry| $ 165))
@@ -925,7 +936,7 @@
                                 (|getShellEntry| $ 165)))))))))))) 
 
 (DEFUN |UPOLYC-;order;2SNni;45| (|p| |q| $)
-  (PROG (|u| #0=#:G1704 |ans|)
+  (PROG (|u| #0=#:G1663 |ans|)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |p| (|getShellEntry| $ 9))
@@ -1001,7 +1012,7 @@
     ('T (SPADCALL |x| (|getShellEntry| $ 11))))) 
 
 (DEFUN |UPOLYC-;divide;2SR;52| (|x| |y| $)
-  (PROG (|lc| |f| #0=#:G1716 |n| |quot|)
+  (PROG (|lc| |f| #0=#:G1675 |n| |quot|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |y| (|getShellEntry| $ 9))
@@ -1043,7 +1054,8 @@
                                       (SPADCALL |y|
                                        (|getShellEntry| $ 11)))
                                      |UPOLYC-;divide;2SR;52|)
-                                     (|check-subtype| (>= #0# 0)
+                                     (|check-subtype|
+                                      (COND ((< #0# 0) 'NIL) ('T 'T))
                                       '(|NonNegativeInteger|) #0#))
                                    |UPOLYC-;divide;2SR;52|)
                              (LETT |quot|

@@ -4,7 +4,7 @@
 (DEFPARAMETER |OrderedRing;AL| 'NIL) 
 
 (DEFUN |OrderedRing;| ()
-  (PROG (#0=#:G1403)
+  (PROG (#0=#:G1404)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|OrderedAbelianGroup|) (|Ring|) (|Monoid|)

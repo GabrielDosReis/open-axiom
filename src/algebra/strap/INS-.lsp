@@ -120,7 +120,7 @@
 (DEFUN |INS-;rational?;SB;8| (|x| $) (DECLARE (IGNORE $)) 'T) 
 
 (DEFUN |INS-;euclideanSize;SNni;9| (|x| $)
-  (PROG (#0=#:G1424 #1=#:G1425)
+  (PROG (#0=#:G1425 #1=#:G1426)
     (RETURN
       (COND
         ((SPADCALL |x| (|spadConstant| $ 9) (|getShellEntry| $ 24))
@@ -128,11 +128,13 @@
         ((SPADCALL |x| (|spadConstant| $ 9) (|getShellEntry| $ 14))
          (PROG1 (LETT #0# (- (SPADCALL |x| (|getShellEntry| $ 26)))
                       |INS-;euclideanSize;SNni;9|)
-           (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))
+           (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
+               '(|NonNegativeInteger|) #0#)))
         ('T
          (PROG1 (LETT #1# (SPADCALL |x| (|getShellEntry| $ 26))
                       |INS-;euclideanSize;SNni;9|)
-           (|check-subtype| (>= #1# 0) '(|NonNegativeInteger|) #1#))))))) 
+           (|check-subtype| (COND ((< #1# 0) 'NIL) ('T 'T))
+               '(|NonNegativeInteger|) #1#))))))) 
 
 (DEFUN |INS-;convert;SF;10| (|x| $)
   (SPADCALL (SPADCALL |x| (|getShellEntry| $ 26))
@@ -279,7 +281,7 @@
                    ('T (|error| "inverse does not exist")))))))) 
 
 (DEFUN |INS-;powmod;4S;29| (|x| |n| |p| $)
-  (PROG (|y| #0=#:G1482 |z|)
+  (PROG (|y| #0=#:G1483 |z|)
     (RETURN
       (SEQ (EXIT (SEQ (COND
                         ((SPADCALL |x| (|getShellEntry| $ 79))

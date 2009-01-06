@@ -274,7 +274,7 @@
                    (EXIT |x|)))))))) 
 
 (DEFUN |URAGG-;findCycle| (|x| $)
-  (PROG (#0=#:G1475 |y|)
+  (PROG (#0=#:G1476 |y|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
                             |URAGG-;findCycle|)
@@ -441,7 +441,7 @@
            (EXIT |x|))))) 
 
 (DEFUN |URAGG-;last;ANniA;22| (|x| |n| $)
-  (PROG (|m| #0=#:G1498)
+  (PROG (|m| #0=#:G1499)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 42))
                  |URAGG-;last;ANniA;22|)
@@ -452,13 +452,14 @@
                         (SPADCALL |x|
                             (PROG1 (LETT #0# (- |m| |n|)
                                     |URAGG-;last;ANniA;22|)
-                              (|check-subtype| (>= #0# 0)
+                              (|check-subtype|
+                                  (COND ((< #0# 0) 'NIL) ('T 'T))
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 43))
                         (|getShellEntry| $ 44))))))))) 
 
 (DEFUN |URAGG-;=;2AB;23| (|x| |y| $)
-  (PROG (|k| #0=#:G1508)
+  (PROG (|k| #0=#:G1509)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |x| |y| (|getShellEntry| $ 36)) 'T)
@@ -512,7 +513,7 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |URAGG-;node?;2AB;24| (|u| |v| $)
-  (PROG (|k| #0=#:G1513)
+  (PROG (|k| #0=#:G1514)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ (LETT |k| 0 |URAGG-;node?;2AB;24|) G190
                            (COND
@@ -580,7 +581,7 @@
   (SPADCALL |u| |s| (|getShellEntry| $ 50))) 
 
 (DEFUN |URAGG-;split!;AIA;32| (|p| |n| $)
-  (PROG (#0=#:G1524 |q|)
+  (PROG (#0=#:G1525 |q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))
@@ -589,7 +590,8 @@
                          (SPADCALL |p|
                              (PROG1 (LETT #0# (- |n| 1)
                                      |URAGG-;split!;AIA;32|)
-                               (|check-subtype| (>= #0# 0)
+                               (|check-subtype|
+                                   (COND ((< #0# 0) 'NIL) ('T 'T))
                                    '(|NonNegativeInteger|) #0#))
                              (|getShellEntry| $ 43))
                          |URAGG-;split!;AIA;32|)

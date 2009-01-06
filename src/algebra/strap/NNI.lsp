@@ -36,7 +36,12 @@
       (SEQ (LETT |c| (- |x| |y|) |NNI;subtractIfCan;2$U;3|)
            (EXIT (COND
                    ((< |c| 0) (CONS 1 "failed"))
-                   ('T (CONS 0 |c|)))))))) 
+                   ('T
+                    (CONS 0
+                          (PROG1 |c|
+                            (|check-subtype|
+                                (COND ((< |c| 0) 'NIL) ('T 'T))
+                                '(|NonNegativeInteger|) |c|)))))))))) 
 
 (DEFUN |NonNegativeInteger| ()
   (PROG ()

@@ -1137,11 +1137,11 @@ RealClosure(TheField): PUB == PRIV where
                          x.outForm,
                          x.order]$Rec)
 
-       nonNull(rep:Rec):$ ==
-         degree(rep.val)=0 => leadingCoefficient(rep.val)
-         numberOfMonomials(rep.val) = 1 => rep
-         zero?(rep.val,rep.seg)$SEG => 0
-         rep
+       nonNull(r:Rec):$ ==
+         degree(r.val)=0 => leadingCoefficient(r.val)
+         numberOfMonomials(r.val) = 1 => r
+         zero?(r.val,r.seg)$SEG => 0
+         r
 
 --       zero?(x) ==
 --          x case TheField => zero?(x)$TheField

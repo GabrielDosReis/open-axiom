@@ -4,7 +4,7 @@
 (DEFPARAMETER |EntireRing;AL| 'NIL) 
 
 (DEFUN |EntireRing;| ()
-  (PROG (#0=#:G1397)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|Ring|) (|BiModule| '$ '$)
