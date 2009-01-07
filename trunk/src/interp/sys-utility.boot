@@ -40,6 +40,9 @@ namespace BOOT
 --%
 $COMBLOCKLIST := nil
 
+++ No value marker for the Maybe domain.
+%nothing == KEYWORD::%OpenAxiomNoValue
+
 
 --%
 

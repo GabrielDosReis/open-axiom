@@ -41,45 +41,42 @@ None():SetCategory == add
 \section{The Maybe domain}
 
 <<domain MAYBE Maybe>>=
-import UnionType
 import CoercibleTo OutputForm
 import Boolean
 )abbrev domain MAYBE Maybe
 ++ Author: Gabriel Dos Reis
 ++ Date Created: August 20, 2008
-++ Also See: Union(T,"failed")
+++ Date Last Modified: January 06, 2009
 ++ Description:
-++   This domain implements the notion of optional vallue, where
+++   This domain implements the notion of optional value, where
 ++   a computation may fail to produce expected value.
-++ Note: Ideally, this domain definition should be a one-liner.
-++       That is currently impossible because of mismatch between
-++       the `old representation' and `new representation' for domains.
 Maybe(T: CoercibleTo OutputForm): Public == Private where
-  Public == Join(UnionType,CoercibleTo OutputForm) with
+  Public == Join(UnionType,RetractableTo T, CoercibleTo OutputForm) with
+    just: T -> %
+      ++ maybe(x) injects the value `x' into %.
     _case: (%,[| T |]) -> Boolean
       ++ x case T returns true if x is actually a data of type T.
     _case: (%,[| nothing |]) -> Boolean
       ++ x case nothing evaluates true if the value for x is missing.
-    coerce: T -> % 
-      ++ x::T injects the value x into %.
-    coerce: % -> T
-      ++ x::T tries to extract the value of T from the computation x.
-      ++ Produces a runtime error when the computation fails.
     autoCoerce: % -> T
-      ++ same as above but implicitly called by the compiler.
+      ++ autoCoerce is a courtesy coercion function used by the compiler
+      ++ in case it knows that `x' really is a T.
     nothing: %
       ++ represents failure.
   Private == add
-    Rep == Union(T,"nothing")
-    nothing == per("nothing"::Rep)
-    coerce(x: T): % == per(x::Rep)
-    coerce(x: %): T == rep(x)::T
-    autoCoerce x == rep(x)::T
-    x case T == rep x case T
-    x case nothing == rep x case "nothing"
+    nothing == %nothing$Lisp
+    just x == x : %
+    x case nothing == EQ(x,%nothing$Lisp)$Lisp
+    x case T == not(x case nothing)
+    autoCoerce x == x : T
+    coerce(x: T): % == just x
+    retractIfCan x ==
+      x case T => x@T
+      "failed"
     coerce(x: %): OutputForm == 
-      x case T => x::T::OutputForm
-      paren(empty()$OutputForm)$OutputForm
+      x case nothing => paren(empty()$OutputForm)$OutputForm
+      (x@T)::OutputForm
+      
 @
 
 
