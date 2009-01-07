@@ -1,5 +1,9 @@
 2009-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/any.spad.pamphlet (Maybe): Rework.
+
+2009-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-utility.boot (getVMType): IndexList are lists.
 	* interp/g-util.boot (isSubDomain): Tidy.
 	* interp/g-opt.boot (isVMConstantForm): New.
