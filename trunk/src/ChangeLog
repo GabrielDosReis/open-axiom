@@ -1,5 +1,11 @@
 2009-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/net.spad.pamphlet (resolve$Hostname): Return a Maybe %.
+	(connectot$NetworkClientSocket): Likewise.
+	(connectot$InetClientStreamSocket): Likewise.
+
+2009-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/any.spad.pamphlet (Maybe): Rework.
 
 2009-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
