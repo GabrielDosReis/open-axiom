@@ -81,8 +81,11 @@ ByteBuffer(): Public == Private where
       ++ setLength!(buf,n) sets the number of active bytes in the
       ++ `buf'.  Error if `n' is more than the capacity.
   Private == add
+    makeByteBuffer(n: NonNegativeInteger): % ==
+      makeByteBuffer(n)$Lisp
+
     byteBuffer n == 
-      buf := makeByteBuffer(n)$Lisp
+      buf := makeByteBuffer n
       setLength!(buf,0)
       buf
 
@@ -127,7 +130,7 @@ ByteBuffer(): Public == Private where
       s
 
     construct l ==
-      buf := byteBuffer(#l)
+      buf := makeByteBuffer(#l)
       for b in l for i in 0.. repeat
         buf.i := b
       buf
@@ -135,7 +138,7 @@ ByteBuffer(): Public == Private where
     concat(x: %, y:%) ==
       nx := #x
       ny := #y
-      buf := byteBuffer(nx + ny)
+      buf := makeByteBuffer(nx + ny)
       for i in 0..(nx - 1) repeat
         buf.i := x.i
       for i in 0..(ny - 1) repeat

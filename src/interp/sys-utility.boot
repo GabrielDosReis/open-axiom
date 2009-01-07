@@ -261,14 +261,11 @@ openBinaryFile(file,mode) ==
       KEYWORD::ELEMENT_-TYPE,"%Byte")
 
 ++ Attemp to read a byte from input file `ifile'.  If not end of
-++ file, return the read byte; otherwise -1.
-readByteFromFile: %Thing -> %Short
+++ file, return the read byte; %nothing.
 readByteFromFile ifile ==
-  byte := READ_-BYTE(ifile,false) => byte
-  -1
+  READ_-BYTE(ifile,false,%nothing)
 
 ++ Write byte `b' to output binary file `ofile'.
-writeByteToFile: (%Thing,%Byte) -> %Short
 writeByteToFile(ofile,b) ==
   WRITE_-BYTE(b,ofile)
 
@@ -276,11 +273,31 @@ closeFile file ==
   CLOSE file
   nil
 
+--% Socket I/O
+
+++ Attempt to establish a client TCP/IP socket connection.  The IP numeric
+++ address is specified by the first argument; second argument is the
+++ version of IP used (4 or 6); third argument is the desired port.
+++ Return %nothing on failure, otherwise the file descriptor corresponding
+++ to the obtained client socket.
+connectToHostAndPort(addr,prot,port) ==
+  (socket := doConnectToHostAndPort(addr,prot,port)) < 0 => %nothing
+  socket
+
+++ Attempt to read a byte from the socket `s'.  If unsuccessful,
+++ return %nothing.
+readByteFromStreamSocket s ==
+  (byte := doReadByteFromStreamSocket s) < 0 => %nothing
+  COERCE(byte,"%Byte")
+
+writeByteToStreamSocket(s,b) ==
+  (byte := doWriteByteToStreamSocket(s,b)) < 0 => %nothing
+  COERCE(byte,"%Byte")
 
 --%
 makeByteBuffer(n,b == 0) ==
   MAKE_-ARRAY(n,KEYWORD::ELEMENT_-TYPE,"%Byte",
-    KEYWORD::FILL_-POINTER,0, KEYWORD::INITIAL_-ELEMENT,b)
+    KEYWORD::FILL_-POINTER,true, KEYWORD::INITIAL_-ELEMENT,b)
 
 quoteForm t ==
   ["QUOTE",t]

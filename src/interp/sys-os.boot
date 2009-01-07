@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2008 Gabriel Dos Reis.
+-- Copyright (C) 2007-2009 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -125,17 +125,17 @@ import oa__get__host__address: (string, int, writeonly buffer byte) -> int
 ++ Return -1 on failure, otherwise the file descriptor corresponding
 ++ to the obtained client socket.
 import oa__connect__ip__port__stream: (readonly buffer byte,int,int) -> int
-  for connectToHostAndPort
+  for doConnectToHostAndPort
 
 ++ Try to read bytes of data from socket.  
 ++    Return -1 for failure; number of read bytes, otherwise.
 import oa__socket__read: (int,writeonly buffer byte,int) -> int 
   for readFromStreamSocket
 
-++ Try to read a byte socket from a socket.  
+++ Try read a byte socket from a socket.  
 ++ Return -1 on failure; byte read, otherwise.
 import oa__socket__read__byte: int -> int
-  for readByteFromStreamSocket
+  for doReadByteFromStreamSocket
   
 ++ Try to write bytes of data to socket.
 ++    Return -1 on failure; actual bytes written, otherwise.
@@ -145,7 +145,7 @@ import oa__socket__write: (int,readonly buffer byte,int) -> int
 ++ Try to write a byte to socket.
 ++   Return -1 on failure; the written byte, otherwise.
 import oa__socket__write__byte: (int,int) -> int
-  for writeByteToStreamSocket
+  for doWriteByteToStreamSocket
 
 import oa__close__socket: int -> int for closeSocket
 

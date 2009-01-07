@@ -37,25 +37,24 @@ Conduit(): Category == with
 ++ Description:
 ++   This category describes input byte stream conduits.
 InputByteConduit(): Category == Conduit with
-    readByteIfCan!: % -> SingleInteger
-      ++ readByteIfCan!(cond) attempts to read a byte from the
+    readByte!: % -> Maybe Byte
+      ++ readByte!(cond) attempts to read a byte from the
       ++ input conduit `cond'.  Returns the read byte if successful,
-      ++ otherwise return -1.
-      ++ Note: Ideally, the return value should have been of type
-      ++   Maybe Byte; but that would have implied allocating
-      ++   a cons cell for every read attempt, which is overkill.
-    readBytes!: (%,ByteBuffer) -> SingleInteger
+      ++ otherwise \spad{nothing}.
+    readBytes!: (%,ByteBuffer) -> NonNegativeInteger
       ++ readBytes!(c,b) reads byte sequences from conduit `c' into
       ++ the byte buffer `b'.  The actual number of bytes written
       ++ is returned, and the length of `b' is set to that amount.
   add
     readBytes!(cond,buf) ==
-      count: NonNegativeInteger := 0
-      b : SingleInteger
-      while count < capacity buf and ((b := readByteIfCan! cond) >= 0) repeat
-        qsetelt!(buf,count,b : Byte)
-        count := count + 1
-      setLength!(buf,count)::SingleInteger
+      count := 0@NonNegativeInteger
+      while count < capacity buf repeat
+        case readByte! cond is
+          b@Byte =>
+            qsetelt!(buf,count,b)
+            count := count + 1
+          otherwise => break
+      setLength!(buf,count)
 
 @
 
@@ -69,22 +68,19 @@ InputByteConduit(): Category == Conduit with
 ++ Description:
 ++   This category describes output byte stream conduits.
 OutputByteConduit(): Category == Conduit with
-    writeByteIfCan!: (%,Byte) -> SingleInteger
-      ++ writeByteIfCan!(c,b) attempts to write the byte `b' on
+    writeByte!: (%,Byte) -> Maybe Byte
+      ++ writeByte!(c,b) attempts to write the byte `b' on
       ++ the conduit `c'.  Returns the written byte if successful,
-      ++ otherwise, returns -1.
-      ++ Note: Ideally, the return value should have been of type
-      ++   Maybe Byte; but that would have implied allocating
-      ++   a cons cell for every write attempt, which is overkill.
-    writeBytes!: (%,ByteBuffer) -> SingleInteger
+      ++ otherwise, returns \spad{nothing}.
+    writeBytes!: (%,ByteBuffer) -> NonNegativeInteger
       ++ writeBytes!(c,b) write bytes from buffer `b' 
       ++ onto the conduit `c'.  The actual number of written 
       ++ bytes is returned.
   add
     writeBytes!(cond,buf) ==
-      count: SingleInteger := 0
+      count := 0@NonNegativeInteger
       while count < capacity buf and 
-        writeByteIfCan!(cond,qelt(buf,count)) >= 0 repeat
+        writeByte!(cond,qelt(buf,count)) case Byte repeat
           count := count + 1
       count
 
@@ -143,10 +139,10 @@ InputBinaryFile(): Public == Private where
       per [openBinaryFile(f,input$IOMode)$Lisp,f::FileName,false]
     isOpen? ifile ==
       not null? rep(ifile).stream
-    readByteIfCan! ifile ==
+    readByte! ifile ==
       isOpen? ifile => 
-        b: SingleInteger := readByteFromFile(rep(ifile).stream)$Lisp
-        if b < 0@SingleInteger then 
+        b: Maybe Byte := readByteFromFile(rep(ifile).stream)$Lisp
+        if b case nothing then 
           rep(ifile).eof := true
         b
       error "file is not open"
@@ -165,7 +161,6 @@ InputBinaryFile(): Public == Private where
     position!(ifile,p) ==
       isOpen? ifile =>
         FILE_-POSITION(rep(ifile).stream,p)$Lisp
-        p
       error "file is not open"
     coerce(ifile: %): OutputForm ==
       rep(ifile).filename::OutputForm
@@ -200,7 +195,7 @@ OutputBinaryFile(): Public == Private where
       per [openBinaryFile(f,output$IOMode)$Lisp,f::FileName]
     isOpen? ifile ==
       not null? rep(ifile).stream
-    writeByteIfCan!(ifile,b) ==
+    writeByte!(ifile,b) ==
       isOpen? ifile => writeByteToFile(rep(ifile).stream,b)$Lisp
       error "file is not open"
     close! ifile ==
@@ -338,50 +333,45 @@ InetClientStreamSocket(): Public == Private where
   Public == Join(NetworkClientSocket IP4Address, CoercibleTo OutputForm) with
     connectTo: (Hostname, PortNumber) -> Maybe %
   Private == add
-    -- we hope that a small integer is OK on all platform
     Host == Union(IP4Address,Hostname)
-    Rep == Record(%host: Host, %port: PortNumber, %sock: SingleInteger)
+    -- we hope that a small integer is OK on all platforms
+    Rep == Record(%host: Host, %port: PortNumber, %sock: Maybe SingleInteger)
 
     connectTo(ip: IP4Address, p: PortNumber) ==
-      s: SingleInteger := connectToHostAndPort(ip,4,p)$Lisp
-      s = -1::SingleInteger => nothing
+      s: Maybe SingleInteger := connectToHostAndPort(ip,4,p)$Lisp
+      s case nothing => nothing
       just per [ip::Host,p,s]
 
     connectTo(h: Hostname, p: PortNumber) ==
       (ip := resolve(h)$IP4Address) case nothing => nothing
-      s: SingleInteger := connectToHostAndPort(ip@IP4Address,4,p)$Lisp
-      s = -1::SingleInteger => nothing
+      s: Maybe SingleInteger := connectToHostAndPort(ip@IP4Address,4,p)$Lisp
+      s case nothing => nothing
       just per [h::Host,p,s]
 
     isConnected? s ==
-      rep(s).%sock ~= -1::SingleInteger
+      rep(s).%sock case SingleInteger
 
     readBytes!(x,b) ==
-      n: SingleInteger := 
+      not isConnected? x => error "socket is not connected"
+      n: NonNegativeInteger := 
           readFromStreamSocket(rep(x).%sock,b, capacity b)$Lisp
-      if n <= 0 then close! x
-      else setLength!(b,n : NonNegativeInteger)
-      n
-    readByteIfCan! x ==
-      r: SingleInteger := readByteFromStreamSocket(rep(x).%sock)$Lisp
-      if r < 0 then close! x
-      r
+      setLength!(b,n)
+
+    readByte! x ==
+      not isConnected? x => error "socket is not connected"
+      readByteFromStreamSocket(rep(x).%sock)$Lisp
 
     writeBytes!(x,b) ==
-      n: SingleInteger := 
-          writeToStreamSocket(rep(x).%sock,b, capacity b)$Lisp
-      if n <= 0 then close! x
-      else setLength!(b,n : NonNegativeInteger)
-      n
+      not isConnected? x => error "socket is not connected"
+      writeToStreamSocket(rep(x).%sock,b, #b)$Lisp
 
-    writeByteIfCan!(x,b) ==
-      r: SingleInteger := writeByteToStreamSocket(rep(x).%sock,b)$Lisp
-      if r < 0 then close! x
-      r
+    writeByte!(x,b) ==
+      not isConnected? x => error "socket is not connected"
+      writeByteToStreamSocket(rep(x).%sock,b)$Lisp
 
     close! x ==
       closeSocket(rep(x).%sock)$Lisp
-      rep(x).%sock := -1::SingleInteger
+      rep(x).%sock := nothing
       x
 
     coerce(x: %): OutputForm ==
