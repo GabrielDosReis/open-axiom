@@ -53,16 +53,17 @@ import Boolean
 Maybe(T: CoercibleTo OutputForm): Public == Private where
   Public == Join(UnionType,RetractableTo T, CoercibleTo OutputForm) with
     just: T -> %
-      ++ maybe(x) injects the value `x' into %.
+      ++ \spad{just x} injects the value `x' into %.
     _case: (%,[| T |]) -> Boolean
-      ++ x case T returns true if x is actually a data of type T.
+      ++ \spad{x case T} returns true if \spad{x} is actually a data of 
+      ++ type \spad{T}.
     _case: (%,[| nothing |]) -> Boolean
-      ++ x case nothing evaluates true if the value for x is missing.
+      ++ \spad{x case nothing} holds if the value for \spad{x} is missing.
     autoCoerce: % -> T
-      ++ autoCoerce is a courtesy coercion function used by the compiler
-      ++ in case it knows that `x' really is a T.
+      ++ \spad{autoCoerce} is a courtesy coercion function used by the
+      ++ compiler in case it knows that `x' really is a \spadtype{T}.
     nothing: %
-      ++ represents failure.
+      ++ \spad{nothing} represents failure or absence of value.
   Private == add
     nothing == %nothing$Lisp
     just x == x : %

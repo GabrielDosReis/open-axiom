@@ -33,7 +33,7 @@ Conduit(): Category == with
 )abbrev category INBCON InputByteConduit
 ++ Author: Gabriel Dos Reis
 ++ Date Created: August 24, 2008
-++ Date Last Modified: December 26, 2008
+++ Date Last Modified: January 06, 2009
 ++ Description:
 ++   This category describes input byte stream conduits.
 InputByteConduit(): Category == Conduit with
@@ -64,7 +64,7 @@ InputByteConduit(): Category == Conduit with
 )abbrev category OUTBCON OutputByteConduit
 ++ Author: Gabriel Dos Reis
 ++ Date Created: August 24, 2008
-++ Date Last Modified: August 24, 2008
+++ Date Last Modified: January 06, 2008
 ++ Description:
 ++   This category describes output byte stream conduits.
 OutputByteConduit(): Category == Conduit with
