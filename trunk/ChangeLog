@@ -1,3 +1,7 @@
+2009-01-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* contrib/examples/time-client.input: New.
+
 2009-01-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.pamphlet (AXIOM_SRC_TARGETS): Add all-databases.

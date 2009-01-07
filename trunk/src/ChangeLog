@@ -1,3 +1,17 @@
+2009-01-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (readByteFromFile): Tidy.
+	(makeByteBuffer): Set fill pointer.
+	(connectToHostAndPort): Define here.
+	(readByteFromStreamSocket): Likewise.
+	(writeByteToStreamSocket): Likewise.
+	* interp/sys-os.boot (doConnectToHostAndPort): Rename from
+	connectot$NetworkClientSocket. 
+	(doReadByteFromStreamSocket): Rename from readByteFromStreamSocket.
+	(doWriteByteToStreamSocket): Rename from writeByteToStreamSocket.
+	* algebra/net.spad.pamphlet: Use Maybe Byte.
+	* algebra/data.spad.pamphlet (ByteBuffer): Fix fill pointer thinko.
+
 2009-01-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/net.spad.pamphlet (resolve$Hostname): Return a Maybe %.
