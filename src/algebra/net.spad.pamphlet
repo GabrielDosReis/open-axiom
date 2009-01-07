@@ -300,7 +300,7 @@ IP4Address(): Public == Private where
       ++ ip4Address(a) builds a numeric address out of the ASCII form `a'.
     bytes: % -> DataArray(4,Byte)
       ++ bytes(x) returns the bytes of the numeric address `x'.
-    resolve: Hostname -> Union(%,"failed")
+    resolve: Hostname -> Maybe %
       ++ resolve(h) returns the IP4 address of host `h'.
   Private == add
     Rep == DataArray(4,Byte)
@@ -310,8 +310,8 @@ IP4Address(): Public == Private where
       userError "invalid Internet IP4 address"
     resolve h ==
       n := new()$Rep
-      hostnameToNumeric(h::String,4,n)$Lisp = 0@SingleInteger => per n
-      "failed"
+      hostnameToNumeric(h::String,4,n)$Lisp = 0@SingleInteger => just per n
+      nothing
     bytes x == rep x
     x = y == rep x = rep y
     coerce(x: %): OutputForm == 
@@ -325,7 +325,7 @@ IP4Address(): Public == Private where
 <<category NETCLT NetworkClientSocket>>=
 )abbrev category NETCLT NetworkClientSocket
 NetworkClientSocket(T: SetCategory): Category == InputOutputByteConduit with
-   connectTo: (T, PortNumber) -> Union(%,"failed")
+   connectTo: (T, PortNumber) -> Maybe %
    isConnected?: % -> Boolean
 @
 
@@ -336,7 +336,7 @@ NetworkClientSocket(T: SetCategory): Category == InputOutputByteConduit with
 )abbrev domain INETCLTS InetClientStreamSocket
 InetClientStreamSocket(): Public == Private where
   Public == Join(NetworkClientSocket IP4Address, CoercibleTo OutputForm) with
-    connectTo: (Hostname, PortNumber) -> Union(%,"failed")
+    connectTo: (Hostname, PortNumber) -> Maybe %
   Private == add
     -- we hope that a small integer is OK on all platform
     Host == Union(IP4Address,Hostname)
@@ -344,14 +344,14 @@ InetClientStreamSocket(): Public == Private where
 
     connectTo(ip: IP4Address, p: PortNumber) ==
       s: SingleInteger := connectToHostAndPort(ip,4,p)$Lisp
-      s = -1::SingleInteger => "failed"
-      per [ip::Host,p,s]
+      s = -1::SingleInteger => nothing
+      just per [ip::Host,p,s]
 
     connectTo(h: Hostname, p: PortNumber) ==
-      (ip := resolve(h)$IP4Address) case "failed" => "failed"
-      s: SingleInteger := connectToHostAndPort(ip::IP4Address,4,p)$Lisp
-      s = -1::SingleInteger => "failed"
-      per [h::Host,p,s]
+      (ip := resolve(h)$IP4Address) case nothing => nothing
+      s: SingleInteger := connectToHostAndPort(ip@IP4Address,4,p)$Lisp
+      s = -1::SingleInteger => nothing
+      just per [h::Host,p,s]
 
     isConnected? s ==
       rep(s).%sock ~= -1::SingleInteger
@@ -398,7 +398,7 @@ InetClientStreamSocket(): Public == Private where
 \section{License}
 
 <<license>>=
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 -- 
 -- Redistribution and use in source and binary forms, with or without
