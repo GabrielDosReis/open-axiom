@@ -75,6 +75,12 @@ getVMType d ==
       #rest d' > 2 => "%Shell"
       "%Pair"
     IndexedList => "%List"
+    Int8 => ["SIGNED-BYTE", 8]
+    Int16 => ["SIGNED-BYTE", 16]
+    Int32 => ["SIGNED-BYTE", 32]
+    UInt8 => ["UNSIGNED-BYTE", 8]
+    UInt16 => ["UNSIGNED-BYTE", 16]
+    UInt32 => ["UNSIGNED-BYTE", 32]
     otherwise => "%Thing"                 -- good enough, for now.
 
 --%

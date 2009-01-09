@@ -1,3 +1,11 @@
+2009-01-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/data.spad.pamphlet (Byte): Satisfy OrderedFinite.
+	(SystemInteger, SystemNonNegativeInteger, Int8, Int16, Int32,
+	UInt8, UInt 16, UInt32): New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_7): Include INT8,
+	INT16, INT32, UINT8, UINT16, UINT32.
+
 2009-01-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot (readByteFromFile): Tidy.
