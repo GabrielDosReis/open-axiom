@@ -1113,7 +1113,7 @@ proclaimCapsuleFunction(op,sig) ==
           -- We want accurate approximation for subdomains/superdomains
           -- that are specialized and known to the VM.
           (m := getVMType normalize $functorForm) = "%Thing" =>
-             getVMType normalize $
+             getVMType normalize "$"
           m
         getVMType normalize d
       normalize(d,top? == true) ==

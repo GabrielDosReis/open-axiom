@@ -19,13 +19,13 @@ import OutputForm
 )abbrev domain BYTE Byte
 ++ Author: Gabriel Dos Reis
 ++ Date Created: April 19, 2008
-++ Date Last Updated: October 5, 2008
+++ Date Last Updated: January 6, 2009
 ++ Basic Operations: byte, bitand, bitor, bitxor
 ++ Related Constructor: NonNegativeInteger
 ++ Description:
 ++   Byte is the datatype of 8-bit sized unsigned integer values.
 Byte(): Public == Private where
-  Public == Join(OrderedSet, HomotopicTo Character) with
+  Public == Join(OrderedFinite, HomotopicTo Character) with
     byte: NonNegativeInteger -> %
       ++ byte(x) injects the unsigned integer value `v' into
       ++ the Byte algebra.  `v' must be non-negative and less than 256.
@@ -36,14 +36,149 @@ Byte(): Public == Private where
     sample: () -> %
       ++ sample() returns a sample datum of type Byte.
   Private == SubDomain(NonNegativeInteger, #1 < 256) add
-    byte(x: NonNegativeInteger): % == x::%
+    byte(x: NonNegativeInteger): % == per x
     sample() = 0$Lisp
-    coerce(c: Character) == ord(c)::%
+    coerce(c: Character) == per ord c
     coerce(x: %): Character == char rep x
     x = y == byteEqual(x,y)$Lisp
     x < y ==  byteLessThan(x,y)$Lisp
+    min() == per 0
+    max() == per 255
     bitand(x,y) == bitand(x,y)$Lisp
     bitior(x,y) == bitior(x,y)$Lisp
+
+@
+
+
+\section{Sized System Integer datatypes}
+
+<<domain SYSINT SystemInteger>>=
+)abbrev domain SYSINT SystemInteger
+++ Author: Gabriel Dos Reis
+++ Date Created: December 26, 2008
+++ Date Last Modified: December 27, 2008
+++ Description:
+++   This domain implements sized (signed) integer datatypes parameterized
+++   by the precision (or width) of the underlying representation.
+++   The intent is that they map directly to the hosting hardware
+++   natural integer datatypes.  Consequently, natural values for
+++   N are: 8, 16, 32, 64, etc.  These datatypes are mostly useful
+++   for system programming tasks, i.e. interfacting with the hosting
+++   operating system, reading/writing external binary format files.
+SystemInteger(N: PositiveInteger): Public == Private where
+  Public == OrderedFinite
+  Private == SubDomain(Integer, length #1 <= N) add
+    min == per(-shift(1,N-1))
+    max == per(shift(1,N-1)-1)
+    size() == (rep max - rep min + 1)::NonNegativeInteger
+    index i == per (i + rep min - 1)
+    lookup x == (rep x - rep min + 1)::PositiveInteger
+    random() == per(random()$Integer rem rep max)
+
+@
+
+<<domain INT8 Int8>>=
+)abbrev domain INT8 Int8
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (signed) integer values
+++   of precision 8 bits.
+Int8() == SystemInteger 8
+
+@
+
+<<domain INT16 Int16>>=
+)abbrev domain INT16 Int16
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (signed) integer values
+++   of precision 16 bits.
+Int16() == SystemInteger 16
+
+@
+
+<<domain INT32 Int32>>=
+)abbrev domain INT32 Int32
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (signed) integer values
+++   of precision 32 bits.
+Int32() == SystemInteger 32
+
+@
+
+
+<<domain SYSNNI SystemNonNegativeInteger>>=
+)abbrev domain SYSNNI SystemNonNegativeInteger
+++ Author: Gabriel Dos Reis
+++ Date Created: December 26, 2008
+++ Date Last Modified: December 27, 2008
+++ Description:
+++   This domain implements sized (unsigned) integer datatypes 
+++   parameterized by the precision (or width) of the underlying
+++   representation. The intent is that they map directly to the
+++   hosting hardware natural integer datatypes.  Consequently,
+++   natural values for N are: 8, 16, 32, 64, etc.  These datatypes
+++   are mostly useful for system programming tasks, i.e. interfacting
+++   with the hosting operating system, reading/writing external 
+++   binary format files.
+SystemNonNegativeInteger(N: PositiveInteger): Public == Private where
+  Public == OrderedFinite with
+    bitand: (%,%) -> %
+      ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
+    bitior: (%,%) -> %
+      ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
+    sample: () -> %
+      ++ sample() returns a sample datum of type Byte.
+  Private == SubDomain(NonNegativeInteger, length #1 <= N) add
+    min == per 0
+    max == per((shift(1,N)-1)::NonNegativeInteger)
+    sample() == min
+    bitand(x,y) == BOOLE(BOOLE_-AND$Lisp,x,y)$Lisp
+    bitior(x,y) == BOOLE(BOOLE_-IOR$Lisp,x,y)$Lisp
+
+@
+
+<<domain UINT8 UInt8>>=
+)abbrev domain UINT8 UInt8
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (unsigned) integer values
+++   of precision 8 bits.
+UInt8() == SystemNonNegativeInteger 8
+
+@
+
+<<domain UINT16 UInt16>>=
+)abbrev domain UINT16 UInt16
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (unsigned) integer values
+++   of precision 16 bits.
+UInt16() == SystemNonNegativeInteger 16
+
+@
+
+<<domain UINT32 UInt32>>=
+)abbrev domain UINT32 UInt32
+++ Author: Gabriel Dos Reis
+++ Date Created: January 6, 2009
+++ Date Last Modified: January 6, 2009
+++ Description:
+++   This domain is a datatype for (unsigned) integer values
+++   of precision 32 bits.
+UInt32() == SystemNonNegativeInteger 32
+
 @
 
 
@@ -224,6 +359,16 @@ DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
 <<domain BYTE Byte>>
 <<domain BYTEBUF ByteBuffer>>
 <<domain DATAARY DataArray>>
+
+<<domain SYSINT SystemInteger>>
+<<domain INT8 Int8>>
+<<domain INT16 Int16>>
+<<domain INT32 Int32>>
+
+<<domain SYSNNI SystemNonNegativeInteger>>
+<<domain UINT8 UInt8>>
+<<domain UINT16 UInt16>>
+<<domain UINT32 UInt32>>
 
 @
 

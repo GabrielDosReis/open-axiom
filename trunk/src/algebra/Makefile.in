@@ -389,7 +389,7 @@ axiom_algebra_layer_2 = \
   ELTAGG   ELTAGG- FMC      FMFUN   FORTFN   FVC     \
   SYNTAX   FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
   CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC FNCAT   \
-  BYTE     IDENT
+           IDENT
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))
@@ -448,7 +448,7 @@ axiom_algebra_layer_6 = \
   DIFEXT  DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
   HYPCAT  HYPCAT-  MKCHSET  MODRING NASRING  NASRING- \
   SORTPAK ZMOD     PRQAGG   QUAGG   SKAGG    DQAGG    \
-  PID     OAGROUP  OAMONS
+  PID     OAGROUP  OAMONS   BYTE    SYSINT   SYSNNI
 
 axiom_algebra_layer_6_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_6))
@@ -456,8 +456,9 @@ axiom_algebra_layer_6_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_6)))
 axiom_algebra_layer_7 = \
-  BTCAT  BTCAT-  LNAGG    LNAGG-   FMCAT   IDPOAM   \
-  IFAMON GRALG   GRALG-   FLAGG    FLAGG-             
+  BTCAT   BTCAT-  LNAGG    LNAGG-   FMCAT   IDPOAM   \
+  IFAMON  GRALG   GRALG-   FLAGG    FLAGG-           \
+  INT8    INT16   INT32    UNIT6    UINT16  UINT32 
 
 axiom_algebra_layer_7_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_7))
