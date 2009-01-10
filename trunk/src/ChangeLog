@@ -1,5 +1,10 @@
 2009-01-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compPredicate): Rename from compBoolean. 
+	Lose second argument.  Document.
+
+2009-01-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/data.spad.pamphlet (Byte): Satisfy OrderedFinite.
 	(SystemInteger, SystemNonNegativeInteger, Int8, Int16, Int32,
 	UInt8, UInt 16, UInt32): New.

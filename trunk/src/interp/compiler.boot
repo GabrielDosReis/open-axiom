@@ -1145,11 +1145,11 @@ compHasFormat (pred is ["has",olda,b]) ==
 --% IF
 
 compIf: (%Form,%Mode,%Env) -> %Maybe %Triple
-compBoolean: (%Form,%Mode,%Env) -> %List
+compPredicate: (%Form,%Env) -> %List
 compFromIf: (%Form,%Mode,%Env) -> %Maybe %Triple
 
 compIf(["IF",a,b,c],m,E) ==
-  [xa,ma,Ea,Einv]:= compBoolean(a,$Boolean,E) or return nil
+  [xa,ma,Ea,Einv]:= compPredicate(a,E) or return nil
   [xb,mb,Eb]:= Tb:= compFromIf(b,m,Ea) or return nil
   [xc,mc,Ec]:= Tc:= compFromIf(c,resolve(mb,m),Einv) or return nil
   xb':= coerce(Tb,mc) or return nil
@@ -1199,8 +1199,19 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
     and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
   systemErrorHere ['"canReturn",expr] --for the time being
 
-compBoolean(p,m,E) ==
-  [p',m,E]:= comp(p,m,E) or return nil
+++ We are compiling a conditional expression, type check and generate
+++ code for the predicate of the branch as a Boolean expression.
+compPredicate(p,E) ==
+  -- Ideally, we should be first inferring the type of the predicate
+  -- `p'.  That would have the virtue of pointing out possible 
+  -- ambiguities.  Then, on a second phase, implicitly coerce the
+  -- the result to Boolean.  However, that would not quite work.  The 
+  -- being that there are cases, such as equality, that are highgly
+  -- ambiguous (e.g. see the various overloading of `=') for which it
+  -- would be unfortunate to require more type annotation.  Note that
+  -- the problem here is many misguided overloading of some operators.
+  -- Consequently, we compile directly with Boolean as target.
+  [p',m,E] := comp(p,$Boolean,E) or return nil
   [p',m,getSuccessEnvironment(p,E),getInverseEnvironment(p,E)]
 
 getSuccessEnvironment(a,e) ==
@@ -1812,7 +1823,7 @@ compRetractAlternative(x,t,stmt,m,s,T) ==
   -- 1.1. Try courtesy coercions first.  That way we can use 
   --      optimized versions where available.  That also
   --      makes the scheme work for untagged unions.
-  if testT := compBoolean(["case",y,t],$Boolean,e) then
+  if testT := compPredicate(["case",y,t],e) then
     [caseCode,.,e,envFalse] := testT
     [restrictCode,.,e] := 
       tryCourtesyCoercion([y,T.mode,e],t) or
