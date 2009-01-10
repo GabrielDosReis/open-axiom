@@ -1,3 +1,9 @@
+2009-01-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/parse.boot ($parsingType): New.
+	(parseType): New.  Parse types forms.
+	(parseTypeList): New.  Parse list of type forms.
+
 2009-01-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compPredicate): Rename from compBoolean. 
