@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,9 @@ $defOp := nil
 ++ to Lisp.  That usage is being phased out though.
 $normalizeTree := false
 
+++ True if we know we are parsing a form supposed to designate a type.
+$parsingType := false
+
 parseTransform: %ParseForm -> %Form 
 parseTransform x ==
   $defOp: local:= nil
@@ -68,7 +71,13 @@ parseTran x ==
     r
   SYMBOLP u and (fn:= GET(u,'parseTran)) => FUNCALL(fn,x)
   [parseTran op,:parseTranList argl]
- 
+
+parseType t ==
+  $parsingType: local := true
+  parseTran t
+
+parseTypeList l ==
+  mapInto(l, function parseType) 
 
 parseAtom: %Atom -> %Form
 parseAtom x ==
@@ -145,7 +154,7 @@ parseColon: %ParseForm -> %Form
 parseColon u ==
   u isnt [":",:.] => systemErrorHere ["parseColon",u]
   u is [":",x] => [":",parseTran x]
-  u is [":",x,typ] => [":",parseTran x,parseTran typ]
+  u is [":",x,typ] => [":",parseTran x,parseType typ]
   u
 
 -- ??? This parser is unused at the moment.
@@ -167,23 +176,23 @@ transUnCons u ==
 parseCoerce: %ParseForm -> %Form 
 parseCoerce t ==
   t isnt [.,x,typ] => systemErrorHere ["parseCoerce",t]
-  ["::",parseTran x,parseTran typ]
+  ["::",parseTran x,parseType typ]
 
 parseAtSign: %ParseForm -> %Form 
 parseAtSign t ==
   t isnt [.,x,typ] => systemErrorHere ["parseAtSign",t]
-  ["@",parseTran x,parseTran typ]
+  ["@",parseTran x,parseType typ]
  
 
 parsePretend: %ParseForm -> %Form
 parsePretend t ==
   t isnt ["pretend",x,typ] => systemErrorHere ["parsePretend",t]
-  ["pretend",parseTran x,parseTran typ]
+  ["pretend",parseTran x,parseType typ]
  
 parseAtAt: %ParseForm -> %Form
 parseAtAt t ==
   t isnt ["@@",x,typ] => systemErrorHere ["parseAtAt",t]
-  ["@@",parseTran x,parseTran typ]
+  ["@@",parseTran x,parseType typ]
 
 parseHas: %ParseForm -> %Form 
 parseHas t ==
@@ -208,7 +217,7 @@ parseDEF: %ParseForm -> %Form
 parseDEF t ==
   t isnt ["DEF",$lhs,tList,specialList,body] => systemErrorHere ["parseDEF",t]
   setDefOp $lhs
-  ["DEF",parseLhs $lhs,parseTranList tList,parseTranList specialList,
+  ["DEF",parseLhs $lhs,parseTypeList tList,parseTranList specialList,
     parseTranCheckForRecord(body,opOf $lhs)]
  
 parseLhs: %ParseForm -> %Form
@@ -222,7 +231,7 @@ parseMDEF: %ParseForm -> %Form
 parseMDEF t ==
   t isnt ["MDEF",$lhs,tList,specialList,body] => 
     systemErrorHere ["parseMDEF",t]
-  ["MDEF",parseTran $lhs,parseTranList tList,parseTranList specialList,
+  ["MDEF",parseTran $lhs,parseTypeList tList,parseTranList specialList,
     parseTranCheckForRecord(body,opOf $lhs)]
  
 parseTranCheckForRecord: (%ParseForm,%ParseForm) -> %Form
@@ -236,6 +245,7 @@ parseTranCheckForRecord(x,op) ==
 parseCategory: %ParseForm -> %Form
 parseCategory t ==
   t isnt ["CATEGORY",:x] => systemErrorHere ["parseCategory",t]
+  $parsingType: local := true
   l:= parseTranList parseDropAssertions x
   key:=
     CONTAINED("$",l) => "domain"
@@ -325,7 +335,7 @@ parseReturn t ==
 parseJoin: %ParseForm -> %Form
 parseJoin t ==
   t isnt ["Join",:l] => systemErrorHere ["parseJoin",t]
-  ["Join",:fn parseTranList l] where
+  ["Join",:fn parseTypeList l] where
     fn l ==
       null l => nil
       l is [["Join",:x],:y] => [:x,:fn y]
@@ -377,8 +387,9 @@ parseIf t ==
          --this assumes that l has no exits
       a is ["IF", =p,a',.] => ["IF",p,a',b]
       b is ["IF", =p,.,b'] => ["IF",p,a,b']
-      makeSimplePredicateOrNil p is ["SEQ",:s,["exit",1,val]] =>
-        parseTran ["SEQ",:s,["exit",1,incExitLevel ["IF",val,a,b]]]
+      not $parsingType and
+        (makeSimplePredicateOrNil p is ["SEQ",:s,["exit",1,val]]) =>
+           parseTran ["SEQ",:s,["exit",1,incExitLevel ["IF",val,a,b]]]
       ["IF",p,a,b]
  
 makeSimplePredicateOrNil: %ParseForm -> %Form
