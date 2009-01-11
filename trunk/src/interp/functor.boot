@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -311,10 +311,10 @@ cons5(p,l) ==
 setVector0(catNames,definition) ==
           --returns code to set element 0 of the vector
           --to the definition of the category
-  definition:= mkDomainConstructor definition
+  definition:= mkTypeForm definition
 -- If we call addMutableArg this early, then recurise calls to this domain
 -- (e.g. while testing predicates) will generate new domains => trouble
---definition:= addMutableArg mkDomainConstructor definition
+--definition:= addMutableArg mkTypeForm definition
   for u in catNames repeat
     definition:= ["setShellEntry",u,0,definition]
   definition
@@ -387,7 +387,7 @@ setVector3(name,instantiator) ==
       --element 3 is data structure representing category
       --returns a single LISP statement
   instantiator is ['DomainSubstitutionMacro,.,body] => setVector3(name,body)
-  ["setShellEntry",name,3,mkDomainConstructor instantiator]
+  ["setShellEntry",name,3,mkTypeForm instantiator]
  
 mkDomainFormer x ==
   if x is ['DomainSubstitutionMacro,parms,body] then
@@ -398,23 +398,23 @@ mkDomainFormer x ==
   x is ['Join,:.] => ['eval,['QUOTE,x]]
   x
  
-mkDomainConstructor x ==
+mkTypeForm x ==
   atom x => mkDevaluate x
   x is ['Join] => nil
   x is ['LIST] => nil
   x is ['CATEGORY,:.] => MKQ x
   x is ['mkCategory,:.] => MKQ x
   x is ['_:,selector,dom] =>
-    ['LIST,MKQ '_:,MKQ selector,mkDomainConstructor dom]
+    ['LIST,MKQ '_:,MKQ selector,mkTypeForm dom]
   x is ['Record,:argl] =>
-    ['LIST,MKQ 'Record,:[mkDomainConstructor y for y in argl]]
+    ['LIST,MKQ 'Record,:[mkTypeForm y for y in argl]]
   x is ['Join,:argl] =>
-    ['LIST,MKQ 'Join,:[mkDomainConstructor y for y in argl]]
+    ['LIST,MKQ 'Join,:[mkTypeForm y for y in argl]]
   x is ['call,:argl] => ['MKQ, optCall x]
         --The previous line added JHD/BMT 20/3/84
         --Necessary for proper compilation of DPOLY SPAD
   x is [op] => MKQ x
-  x is [op,:argl] => ['LIST,MKQ op,:[mkDomainConstructor a for a in argl]]
+  x is [op,:argl] => ['LIST,MKQ op,:[mkTypeForm a for a in argl]]
  
 setVector4(catNames,catsig,conditions) ==
   if $HackSlot4 then
@@ -437,7 +437,7 @@ setVector4Onecat(name,instantiator,info) ==
   data:=
        --CAR name.4 contains all the names except itself
        --hence we need to add this on, by the above CONS
-    ['CONS,['CONS,mkDomainConstructor instantiator,['CAR,['ELT,name,4]]],
+    ['CONS,['CONS,mkTypeForm instantiator,['CAR,['ELT,name,4]]],
       name]
   data:= ['SETQ,'TrueDomain,['CONS,data,'TrueDomain]]
   TruthP info => data

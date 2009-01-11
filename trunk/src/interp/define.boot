@@ -870,7 +870,7 @@ genDomainView(viewName,originalName,c,viewSelector) ==
     c is ['SubsetCategory,c',.] => c'
     c
   $e:= augModemapsFromCategory(originalName,viewName,nil,c,$e)
-  cd:= ["%LET",viewName,[viewSelector,originalName,mkDomainConstructor code]]
+  cd:= ["%LET",viewName,[viewSelector,originalName,mkTypeForm code]]
   if null member(cd,$getDomainCode) then
           $getDomainCode:= [cd,:$getDomainCode]
   viewName
@@ -881,7 +881,7 @@ genDomainOps(viewName,dom,cat) ==
   oplist:= substNames(dom,viewName,dom,oplist)
   cd:=
     ["%LET",viewName,['mkOpVec,dom,['LIST,:
-      [['LIST,MKQ op,['LIST,:[mkDomainConstructor mode for mode in sig]]]
+      [['LIST,MKQ op,['LIST,:[mkTypeForm mode for mode in sig]]]
         for [op,sig] in siglist]]]]
   $getDomainCode:= [cd,:$getDomainCode]
   for [opsig,cond,:.] in oplist for i in 0.. repeat
@@ -1417,7 +1417,7 @@ uncons x ==
 bootStrapError(functorForm,sourceFile) ==
   ['COND, _
     ['$bootStrapMode, _
-        ['VECTOR,mkDomainConstructor functorForm,nil,nil,nil,nil,nil]],
+        ['VECTOR,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
     [''T, ['systemError,['LIST,''%b,MKQ CAR functorForm,''%d,'"from", _
       ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
 
