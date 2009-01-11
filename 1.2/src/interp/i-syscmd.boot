@@ -1118,7 +1118,7 @@ displayValue($op,u,omitVariableNameIfTrue) ==
     STRCONC('"Value of ", PNAME $op,'": ")
   labmode := prefix2String objMode(u)
   if ATOM labmode then labmode := [labmode]
-  getConstructorKindFromDB expr = "domain" =>
+  IDENTP expr and getConstructorKindFromDB expr = "domain" =>
     sayMSG concat('"   ",label,labmode,rhs,form2String expr)
   mathprint ['CONCAT,label,:labmode,rhs,
     outputFormat(expr,objMode(u))]

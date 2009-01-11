@@ -1,5 +1,11 @@
 2009-01-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2491986
+	* interp/i-syscmd.boot (displayValue): Fix thinko.
+	* testsuite/interpreter/sf-2491986.input (a): New.
+
+2009-01-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/parse.boot ($parsingType): New.
 	(parseType): New.  Parse types forms.
 	(parseTypeList): New.  Parse list of type forms.

@@ -1,0 +1,6 @@
+2009-01-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2491986
+	* interp/i-syscmd.boot (displayValue): Fix thinko.
+	* testsuite/interpreter/sf-2491986.input (a): New.
+
