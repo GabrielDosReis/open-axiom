@@ -1138,9 +1138,9 @@ compHasFormat (pred is ["has",olda,b]) ==
   b is ["ATTRIBUTE",c] => ["HasAttribute",a,["QUOTE",c]]
   b is ["SIGNATURE",op,sig] =>
      ["HasSignature",a,
-       mkList [MKQ op,mkList [mkDomainConstructor type for type in sig]]]
-  isDomainForm(b,$EmptyEnvironment) => ["EQUAL",a,b]
-  ["HasCategory",a,mkDomainConstructor b]
+       mkList [MKQ op,mkList [mkTypeForm type for type in sig]]]
+  isCategoryForm(b,$e) => ["HasCategory",a,mkTypeForm b]
+  stackAndThrow('"Second argument to %1b must be a category, or a signature or an attribute",["has"])
 
 --% IF
 
@@ -1215,12 +1215,6 @@ compPredicate(p,E) ==
   [p',m,getSuccessEnvironment(p,E),getInverseEnvironment(p,E)]
 
 getSuccessEnvironment(a,e) ==
-
-  -- the next four lines try to ensure that explicit special-case tests
-  --  prevent implicit ones from being generated
-  a is ["has",x,m] =>
-    IDENTP x and isDomainForm(m,$EmptyEnvironment) => put(x,"specialCase",m,e)
-    e
   a is ["is",id,m] =>
     IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
          e:=put(id,"specialCase",m,e)
@@ -1234,14 +1228,6 @@ getSuccessEnvironment(a,e) ==
   e
 
 getInverseEnvironment(a,E) ==
-  atom a => E
-  [op,:argl]:= a
--- the next five lines try to ensure that explicit special-case tests
--- prevent implicit ones from being generated
-  op="has" =>
-    [x,m]:= argl
-    IDENTP x and isDomainForm(m,$EmptyEnvironment) => put(x,"specialCase",m,E)
-    E
   a is ["case",x,m] and IDENTP x =>
            --the next two lines are necessary to get 3-branched Unions to work
            -- old-style unions, that is

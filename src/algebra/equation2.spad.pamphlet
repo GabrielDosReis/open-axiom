@@ -213,7 +213,7 @@ Equation(S: Type): public == private where
           (S has factor : S -> Factored S) =>
             eq0 := rightZero eq
             [equation(rcf.factor,0) for rcf in factors factor lhs eq0]
-          (S has Polynomial Integer) =>
+          (S is Polynomial Integer) =>
             eq0 := rightZero eq
             MF ==> MultivariateFactorize(Symbol, IndexedExponents Symbol, _
                Integer, Polynomial Integer)

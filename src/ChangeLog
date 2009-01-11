@@ -1,5 +1,14 @@
 2009-01-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (getSuccessEnvironment): Don't specialize
+	on `has'.
+	(getInverseEnvironment): Likewise.
+	* algebra/equation2.spad.pamphlet (factorAndSplit$Equation): Fix
+	misuses of `has'.
+	* interp/functor.boot (mkTypeForm): Rename from mkDomainConstructor.
+
+2009-01-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2491986
 	* interp/i-syscmd.boot (displayValue): Fix thinko.
 	* testsuite/interpreter/sf-2491986.input (a): New.
