@@ -83,7 +83,6 @@ $NRTslot1PredicateList := []
 $NRTattributeAlist := []
 $NRTslot1Info := nil
 $NRTdeltaListComp := []
-$NRTdomainFormList := []
 $template := nil
 $signature := nil
 $isOpPackageName := false
@@ -182,7 +181,7 @@ $reservedNames == '(per rep _$)
 ++ Check that `var' (a variable of parameter name) is not a reversed name.
 checkVariableName var ==
   MEMQ(var,$reservedNames) =>
-    stackAndThrow('"You cannot reserved name %1b as variable",[var])
+    stackAndThrow('"You cannot use reserved name %1b as variable",[var])
 
 checkParameterNames parms ==
   for p in parms repeat
@@ -279,10 +278,6 @@ compDefine1(form,m,e) ==
   -- here signature of lhs is determined by a previous declaration
       compDefine1(['DEF,lhs,[first sig,:rest signature],specialCases,rhs],m,e)
   if signature.target=$Category then $insideCategoryIfTrue:= true
---?? following 3 lines seem bogus, BMT 6/23/93
---?  if signature.target is ['Mapping,:map] then
---?    signature:= map
---?    form:= ['DEF,lhs,signature,specialCases,rhs]
  
 -- RDJ (11/83): when argument and return types are all declared,
 --  or arguments have types declared in the environment,
@@ -337,10 +332,7 @@ getTargetFromRhs(lhs,rhs,e) ==
   rhs is ['add,D,['CAPSULE,:.]] => getTargetFromRhs(lhs,D,e)
   rhs is ['Record,:l] => ['RecordCategory,:l]
   rhs is ['Union,:l] => ['UnionCategory,:l]
-  rhs is ['List,:l] => ['ListCategory,:l]
-  rhs is ['Vector,:l] => ['VectorCategory,:l]
-  [.,target,.]:= compOrCroak(rhs,$EmptyMode,e)
-  target
+  (compOrCroak(rhs,$EmptyMode,e)).mode
  
 giveFormalParametersValues(argl,e) ==
   for x in argl repeat
@@ -419,15 +411,13 @@ compDefineCategory1(df is ['DEF,form,sig,sc,body],m,e,prefix,fal) ==
       [d,m,e] := T
   [d,m,e]
 
-$tvl := []
-$mvl := []
- 
 makeCategoryPredicates(form,u) ==
       $tvl: local := TAKE(#rest form,$TriangleVariableList)
       $mvl: local := TAKE(#rest form,rest $FormalMapVariableList)
       fn(u,nil) where
         fn(u,pl) ==
           u is ['Join,:.,a] => fn(a,pl)
+          u is ["IF",p,:x] => fnl(x,insert(EQSUBSTLIST($mvl,$tvl,p),pl))
           u is ['has,:.] => insert(EQSUBSTLIST($mvl,$tvl,u),pl)
           u is [op,:.] and MEMQ(op,'(SIGNATURE ATTRIBUTE)) => pl
           atom u => pl
@@ -502,7 +492,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $getDomainCode: local := nil
     $addForm: local:= nil
     for x in sargl for t in rest signature' repeat
-      [.,.,e]:= compMakeDeclaration([":",x,t],m,e)
+      [.,.,e]:= compMakeDeclaration(x,t,e)
  
 --   4. compile body in environment of %type declarations for arguments
     op':= $op
@@ -585,6 +575,11 @@ compMakeCategoryObject(c,$e) ==
   not isCategoryForm(c,$e) => nil
   u:= mkEvalableCategoryForm c => [eval u,$Category,$e]
   nil
+
+predicatesFromAttributes: %List -> %List
+predicatesFromAttributes attrList ==
+  REMDUP [second x for x in attrList]
+
  
 compDefineFunctor(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
@@ -602,12 +597,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
 --  1. bind global variables
     $addForm: local := nil
     $subdomain: local := false
-    $viewNames: local:= nil
- 
-            --This list is only used in genDomainViewName, for generating names
-            --for alternate views, if they do not already exist.
-            --format: Alist: (domain name . sublist)
-            --sublist is alist: category . name of view
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
     $form: local := nil
@@ -618,7 +607,6 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
          --Set in doIt, accessed in the compiler - compNoStacking
     $functorForm: local := nil
     $functorLocalParameters: local := nil
-    SETQ($myFunctorBody, body)
     $CheckVectorList: local := nil
                   --prevents CheckVector from printing out same message twice
     $getDomainCode: local -- code for getting views
@@ -635,11 +623,10 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
                                     --true if domain has mutable state
     signature':=
       [first signature,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
-    $functorForm:= $form:= [$op,:argl]
-    if null first signature' then signature':=
+    $functorForm := $form := [$op,:argl]
+    if null signature'.target then signature':=
       modemap2Signature getModemap($form,$e)
-    target:= first signature'
-    $functorTarget:= target
+    $functorTarget := target := signature'.target
     $functorKind: local :=
       $functorTarget is ["CATEGORY",key,:.] => key
       "domain"
@@ -651,13 +638,9 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
 --+ copy needed since slot1 is reset; compMake.. can return a cached vector
     attributeList := ds.2 --see below under "loadTimeAlist"
 --+ 7 lines for $NRT follow
--->--these globals used by NRTmakeCategoryAlist, set by NRTsetVector4Part1
     $condAlist: local := nil
     $uncondAlist: local := nil
--->>-- next global initialized here, reset by buildFunctor
-    $NRTslot1PredicateList: local :=
-      REMDUP [CADR x for x in attributeList]
--->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
+    $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
     $NRTslot1Info: local := nil  --set in NRTmakeSlot1Info
        --this is used below to set $lisplibSlot1 global
@@ -665,13 +648,11 @@ compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
-    $NRTdomainFormList: local := nil -- of form ((gensym . (Repe...)) ...
-    -- the above optimizes the calls to local domains
     $template: local:= nil --stored in the lisplib
     $functionLocations: local := nil --locations of defined functions in source
     -- generate slots for arguments first, then for $NRTaddForm in compAdd
     for x in argl repeat NRTgetLocalIndex x
-    [.,.,$e]:= compMakeDeclaration([":",'_$,target],m,$e)
+    [.,.,$e]:= compMakeDeclaration("$",target,$e)
     if not $insideCategoryPackageIfTrue  then
       $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
     $signature:= signature'
@@ -850,30 +831,9 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
       ['Join,s,['CATEGORY,'package,:ss]]
     fn(a,s) ==
       isCategoryForm(s,$CategoryFrame) =>
-        s is ["Join",:catlist] => genDomainViewList0(a,rest s)
+        s is ["Join",:catlist] => genDomainViewList(a,rest s)
         [genDomainView(a,a,s,"getDomainView")]
       [a]
- 
-genDomainViewList0(id,catlist) ==
-  l:= genDomainViewList(id,catlist,true)
-  l
- 
-genDomainViewList(id,catlist,firsttime) ==
-  null catlist => nil
-  catlist is [y] and not isCategoryForm(y,$EmptyEnvironment) => nil
-  [genDomainView(if firsttime then id else genDomainViewName(id,first catlist),
-    id,first catlist,"getDomainView"),:genDomainViewList(id,rest catlist,nil)]
- 
-genDomainView(viewName,originalName,c,viewSelector) ==
-  c is ['CATEGORY,.,:l] => genDomainOps(viewName,originalName,c)
-  code:=
-    c is ['SubsetCategory,c',.] => c'
-    c
-  $e:= augModemapsFromCategory(originalName,viewName,nil,c,$e)
-  cd:= ["%LET",viewName,[viewSelector,originalName,mkTypeForm code]]
-  if null member(cd,$getDomainCode) then
-          $getDomainCode:= [cd,:$getDomainCode]
-  viewName
  
 genDomainOps(viewName,dom,cat) ==
   oplist:= getOperationAlist(dom,dom,cat)
@@ -889,6 +849,22 @@ genDomainOps(viewName,dom,cat) ==
     [op,sig]:=opsig
     $e:= addModemap(op,dom,sig,cond,['ELT,viewName,i],$e)
   viewName
+ 
+genDomainView(viewName,originalName,c,viewSelector) ==
+  c is ['CATEGORY,.,:l] => genDomainOps(viewName,originalName,c)
+  code:=
+    c is ['SubsetCategory,c',.] => c'
+    c
+  $e:= augModemapsFromCategory(originalName,viewName,nil,c,$e)
+  cd:= ["%LET",viewName,[viewSelector,originalName,mkTypeForm code]]
+  if null member(cd,$getDomainCode) then
+          $getDomainCode:= [cd,:$getDomainCode]
+  viewName
+
+genDomainViewList: (%Symbol,%List) -> %List 
+genDomainViewList(id,catlist) ==
+  [genDomainView(id,id,cat,"getDomainView") 
+     for cat in catlist | isCategoryForm(cat,$EmptyEnvironment)]
  
 mkOpVec(dom,siglist) ==
   dom:= getPrincipalView dom
@@ -906,9 +882,6 @@ mkOpVec(dom,siglist) ==
                    ops.i := dom.n
     ops.i := [function Undef,[dom.0,i],:opSig]
   ops
- 
-genDomainViewName(a,category) ==
-  a
  
 compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
 -- form is lhs (f a1 ... an) of definition; body is rhs;
@@ -1203,8 +1176,6 @@ compArgumentConditions e ==
         [n,x,T.expr]
   e
 
-$body := nil
- 
 addArgumentConditions($body,$functionName) ==
   $argumentConditionList =>
                --$body is only used in this function
@@ -1466,7 +1437,7 @@ compSubDomain(["SubDomain",domainForm,predicate],m,e) ==
  
 compSubDomain1(domainForm,predicate,m,e) ==
   [.,.,e]:=
-    compMakeDeclaration([":","#1",domainForm],$EmptyMode,addDomain(domainForm,e))
+    compMakeDeclaration("#1",domainForm,addDomain(domainForm,e))
   u:=
     compCompilerPredicate(predicate,e) or
       stackSemanticError(["predicate: ",predicate,
@@ -1500,7 +1471,6 @@ processFunctor(form,signature,data,localParList,e) ==
   buildFunctor(form,signature,data,localParList,e)
  
 compCapsuleItems(itemlist,$predl,$e) ==
-  $myFunctorBody :local := nil   ---needed for translator
   $signatureOfForm: local := nil
   $suffix: local:= 0
   for item in itemlist repeat 

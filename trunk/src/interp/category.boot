@@ -370,8 +370,10 @@ FindFundAncs l ==
 CatEval: %Thing -> %Shell
 CatEval x ==
   REFVECP x => x
-  $InteractiveMode => first compMakeCategoryObject(x,$CategoryFrame)
-  first compMakeCategoryObject(x,$e)
+  e := 
+    $InteractiveMode => $CategoryFrame
+    $e
+  (compMakeCategoryObject(x,e)).expr
  
 --RemovePrinAncs(l,leaves) ==
 --  l=nil => nil

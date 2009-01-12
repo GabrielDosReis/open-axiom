@@ -46,12 +46,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
       [lineNumber,:$functorSpecialCases] := $functorSpecialCases
 --  1. bind global variables
     $addForm: local := nil
-    $viewNames: local:= nil
- 
-            --This list is only used in genDomainViewName, for generating names
-            --for alternate views, if they do not already exist.
-            --format: Alist: (domain name . sublist)
-            --sublist is alist: category . name of view
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
     $DEFdepth :    local  := 0            --for conversion to new compiler 3/93
@@ -125,13 +119,11 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $NRTdeltaList: local := nil --list of misc. elts used in compiled fncts
     $NRTdeltaListComp: local := nil --list of compiled forms for $NRTdeltaList
     $NRTdeltaLength: local := 0 -- =length of block of extra entries in vector
-    $NRTdomainFormList: local := nil -- of form ((gensym . (Repe...)) ...
-    -- the above optimizes the calls to local domains
     $template: local:= nil --stored in the lisplib
     $functionLocations: local := nil --locations of defined functions in source
     -- generate slots for arguments first, then for $NRTaddForm in compAdd
     for x in argl repeat NRTgetLocalIndex x
-    [.,.,$e]:= compMakeDeclaration([":",'_$,target],m,$e)
+    [.,.,$e]:= compMakeDeclaration("$",target,$e)
     --The following loop sees if we can economise on ADDed operations
     --by using those of Rep, if that is the same. Example: DIRPROD
     if not $insideCategoryPackageIfTrue  then
@@ -164,7 +156,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
 --  4. compile body in environment of %type declarations for arguments
     op':= $op
     rettype:= signature'.target
-    SETQ($myFunctorBody, body)  -------->  new  <--------
     T:= compFunctorBody(body,rettype,$e,parForm)
 ---------------> new <---------------------
     $convert2NewCompiler => 
@@ -262,7 +253,7 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
       ['Join,s,['CATEGORY,'package,:ss]]
     fn(a,s) ==
       isCategoryForm(s,$CategoryFrame) =>
-        s is ["Join",:catlist] => genDomainViewList0(a,rest s)
+        s is ["Join",:catlist] => genDomainViewList(a,rest s)
         [genDomainView(a,a,s,"getDomainView")]
       [a]
 
@@ -826,7 +817,7 @@ compIterator(it,e) ==
       modeIsAggregateOf("List",m,e) or modeIsAggregateOf("Vector",m,e) or return
          stackMessage ["mode: ",m," must be a list or vector of some mode"]
     if null get(x,"mode",e) then [.,.,e]:=
-      compMakeDeclaration([":",x,mUnder],$EmptyMode,e) or return nil
+      compMakeDeclaration(x,mUnder,e) or return nil
     e:= put(x,"value",[genSomeVariable(),mUnder,e],e)
     markReduceIn(it, [["IN",x,y'],e])
   it is ["ON",x,y] =>
@@ -842,7 +833,7 @@ compIterator(it,e) ==
       modeIsAggregateOf("List",m,e) or return
         stackMessage ["mode: ",m," must be a list of other modes"]
     if null get(x,"mode",e) then [.,.,e]:=
-      compMakeDeclaration([":",x,m],$EmptyMode,e) or return nil
+      compMakeDeclaration(x,m,e) or return nil
     e:= put(x,"value",[genSomeVariable(),m,e],e)
     [["ON",x,y'],e]
   it is ["STEP",oindex,start,inc,:optFinal] =>
@@ -870,7 +861,7 @@ compIterator(it,e) ==
       $Integer
 --  markImport ['Segment,indexmode]
     if null get(index,"mode",e) then [.,.,e]:=
-      compMakeDeclaration([":",index,indexmode],$EmptyMode,e) or return nil
+      compMakeDeclaration(index,indexmode,e) or return nil
     e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
     markReduceStep(it, [["STEP",markStep(index),start,inc,:optFinal],e])
   it is ["WHILE",p] =>
@@ -908,7 +899,7 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
     maximalSuperType T.mode ^= $Integer => return nil
     givenRange := T.mode
   indexmode:= $SmallInteger
-  [.,.,e]:= compMakeDeclaration([":",index,indexmode],$EmptyMode,
+  [.,.,e]:= compMakeDeclaration(index,indexmode,
      (final' => final'.env; inc'.env)) or return nil
   range :=
     FIXP startNum and FIXP incNum =>

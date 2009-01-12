@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -64,8 +64,7 @@ printInfo $e ==
   nil
  
 addInformation(m,$e) ==
-  $Information: local
-  --$Information:= nil: done by previous statement anyway
+  $Information: local := nil
   info m where
     info m ==
       --Processes information from a mode declaration in compCapsule
@@ -78,12 +77,12 @@ addInformation(m,$e) ==
       get("$Information","special",$e)],$e)
   $e
  
-addInfo u == $Information:= [formatInfo u,:$Information]
+addInfo u == 
+  $Information:= [formatInfo u,:$Information]
  
 formatInfo u ==
   atom u => u
   u is ["SIGNATURE",:v] => ["SIGNATURE","$",:v]
- --u is ("CATEGORY",junk,:l) => ("PROGN",:(formatInfo v for v in l))
   u is ["PROGN",:l] => ["PROGN",:[formatInfo v for v in l]]
   u is ["ATTRIBUTE",v] =>
  
@@ -153,11 +152,11 @@ infoToHas a ==
   a is ["SIGNATURE",b,:data] => ["has",b,["SIGNATURE",:data]]
   a is ["ATTRIBUTE",b,c] => ["has",b,["ATTRIBUTE",c]]
   a
- 
+
+++ Return true if we are certain that the information
+++ denotated by `pred' is derivable from the current environment. 
 knownInfo pred ==
-               --true %if the information is already known
   pred=true => true
-  --pred = "true" => true
   member(pred,get("$Information","special",$e)) => true
   pred is ["OR",:l] => or/[knownInfo u for u in l]
   pred is ["AND",:l] => and/[knownInfo u for u in l]
@@ -166,10 +165,10 @@ knownInfo pred ==
   pred is ["ATTRIBUTE",name,attr] =>
     v:= compForMode(name,$EmptyMode,$e) or return
           stackAndThrow('"can't find category of %1pb",[name])
-    [vv,.,.]:= compMakeCategoryObject(CADR v,$e) or return
+    [vv,.,.]:= compMakeCategoryObject(second v,$e) or return
                  stackAndThrow('"can't make category of %1pb",[name])
     member(attr,vv.2) => true
-    x:= assoc(attr,vv.2) => knownInfo CADR x
+    x:= assoc(attr,vv.2) => knownInfo second x
           --format is a list of two elements: information, predicate
     false
   pred is ["has",name,cat] =>
@@ -178,33 +177,27 @@ knownInfo pred ==
     name is ['Union,:.] => false
     v:= compForMode(name,$EmptyMode,$e) or return
           stackAndThrow('"can't find category of %1pb",[name])
-    vmode := CADR v
+    vmode := second v
     cat = vmode => true
     vmode is ["Join",:l] and member(cat,l) => true
     [vv,.,.]:= compMakeCategoryObject(vmode,$e) or return
                  stackAndThrow('"cannot find category %1pb",[vmode])
     catlist := vv.4
     member(cat,first catlist) => true  --checks princ. ancestors
-    (u:=assoc(cat,CADR catlist)) and knownInfo(CADR u) => true
+    (u:=assoc(cat,second catlist)) and knownInfo second u => true
     -- previous line checks fundamental anscestors, we should check their
     --   principal anscestors but this requires instantiating categories
 
-    -- This line caused recursion on predicates which are no use in deciding
-    -- whether a category was present.
--- this is correct TPD feb, 19, 2003
-    or/[AncestorP(cat,LIST CAR u) for u in CADR catlist | knownInfo CADR u] => true
--- this is wrong TPD feb, 19, 2003
-    -- or/[AncestorP(cat,LIST CAR u) and knownInfo CADR u for u in CADR catlist] => true
+    or/[AncestorP(cat,[first u]) 
+         for u in second catlist | knownInfo second u] => true
     false
   pred is ["SIGNATURE",name,op,sig,:.] =>
     v:= get(op,"modemap",$e)
     for w in v repeat
-      ww:= CDAR w
-          --the actual signature part
-      LENGTH ww=LENGTH sig and SourceLevelSubsume(ww,sig) =>
-        --NULL CAADR w => return false
+      ww:= CDAR w  --the actual signature part
+      #ww = #sig and SourceLevelSubsume(ww,sig) =>
         CAADR w  = true => return true
-        --return false
+        false
         --error '"knownInfo"
   false
  
@@ -247,27 +240,17 @@ actOnInfo(u,$e) ==
          --we are adding information about a category
       [catvec,.,$e]:= u
       [ocatvec,.,$e]:= compMakeCategoryObject(vmode,$e)
-      -- member(vmode,CAR catvec.4) =>
-      --    JHD 82/08/08 01:40 This does not mean that we can ignore the
-      --    extension, since this may not be compatible with the view we
-      --    were passed
  
       --we are adding a principal descendant of what was already known
-      --    $e:= augModemapsFromCategory(name,name,nil,catvec,$e)
-      --    SAY("augmenting ",name,": ",cat)
-      --    put(name, "value", (vval, cat, venv), $e)
       member(cat,first ocatvec.4) or
          assoc(cat,second ocatvec.4) is [.,"T",.] => $e
-        --SAY("Category extension error:
-        --cat shouldn't be a join
-                      --what was being asserted is an ancestor of what was known
+             --what was being asserted is an ancestor of what was known
       if name="$"
         then $e:= augModemapsFromCategory(name,name,name,cat,$e)
         else
-          viewName:=genDomainViewName(name,cat)
-          genDomainView(viewName,name,cat,"HasCategory")
-          if not MEMQ(viewName,$functorLocalParameters) then
-             $functorLocalParameters:=[:$functorLocalParameters,viewName]
+          genDomainView(name,name,cat,"HasCategory")
+          if not MEMQ(name,$functorLocalParameters) then
+             $functorLocalParameters:=[:$functorLocalParameters,name]
       compilerMessage('"augmenting %1: %2p", [name,cat])
       $e:= put(name,"value",[vval,mkJoin(cat,vmode),venv],$e)
     SAY("extension of ",vval," to ",cat," ignored")
