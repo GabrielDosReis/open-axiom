@@ -1,3 +1,14 @@
+2009-01-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/category.boot: Miscellaneous cleanup.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/info.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
 2009-01-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (getSuccessEnvironment): Don't specialize

@@ -267,7 +267,7 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
   if STRINGP x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
-    [.,.,e]:= compMakeDeclaration([":",v,m],$EmptyMode,e)
+    [.,.,e]:= compMakeDeclaration(v,m,e)
   (vl ^= nil) and not hasFormalMapVariable(x, vl) => return
     [u,.,.] := comp([x,:vl],m',e) or return nil
     extractCodeAndConstructTriple(u, m, oldE)
@@ -787,7 +787,7 @@ compSetq(["%LET",form,val],m,E) ==
 compSetq1(form,val,m,E) ==
   IDENTP form => setqSingle(form,val,m,E)
   form is [":",x,y] =>
-    [.,.,E']:= compMakeDeclaration(form,$EmptyMode,E)
+    [.,.,E']:= compMakeDeclaration(x,y,E)
     compSetq(["%LET",x,val],m,E')
   form is [op,:l] =>
     op="CONS"  => setqMultiple(uncons form,val,m,E)
@@ -797,7 +797,7 @@ compSetq1(form,val,m,E) ==
 compMakeDeclaration: (%Form,%Mode,%Env) -> %Maybe %Triple
 compMakeDeclaration(x,m,e) ==
   $insideExpressionIfTrue: local := false
-  compColon(x,m,e)
+  compColon([":",x,m],$EmptyMode,e)
 
 setqSetelt([v,:s],val,m,E) ==
   comp(["setelt",v,:s,val],m,E)
@@ -1828,7 +1828,7 @@ compRetractAlternative(x,t,stmt,m,s,T) ==
   -- 1.3. Everything else failed; nice try.
   else return stackAndThrow('"%1 is not retractable to %2bp",[s,t])
   -- 2.  Now declare `x'.
-  [.,.,e] := compMakeDeclaration([":",x,t],$EmptyMode,e) or return nil
+  [.,.,e] := compMakeDeclaration(x,t,e) or return nil
   e := put(x,"value",[genSomeVariable(),t,e],e)
   -- 3.  Compile body of the retract pattern.
   stmtT := comp(stmt,m,e) or return 
@@ -1863,7 +1863,7 @@ compRecoverAlternative(x,t,stmt,m,s,T) ==
     stackAndThrow('"Scrutinee must be of type %b Any %d in type recovery alternative of case pattern",nil)
   caseCode := ["EQUAL",["devaluate",t],["objMode",y]]
   -- 2. Declare `x'.
-  [.,.,e] := compMakeDeclaration([":",x,t],$EmptyMode,e) or return nil
+  [.,.,e] := compMakeDeclaration(x,t,e) or return nil
   e := put(x,"value",[genSomeVariable(),t,e],e)
   -- 3. Compile body of alternative
   stmtT := comp(stmt,m,e) or return 
@@ -1885,8 +1885,7 @@ compMatch(["%Match",subject,altBlock],m,e) ==
   -- 1.  subjectTmp := subject
   [se,sm,e] := comp(subject,$EmptyMode,e) or return nil
   sn := GENSYM()
-  [.,.,e] := compMakeDeclaration([":",sn,sm],$EmptyMode,e)
-               or return nil
+  [.,.,e] := compMakeDeclaration(sn,sm,e) or return nil
   e := put(sn,"value",[genSomeVariable(),sm,e],e)
   -- 2. compile alternatives.
   altsCode := nil
@@ -2046,7 +2045,7 @@ compIterator(it,e) ==
       modeIsAggregateOf("List",m,e) or return
          stackMessage('"mode: %1pb must be a list of some mode",[m])
     if null get(x,"mode",e) then [.,.,e]:=
-      compMakeDeclaration([":",x,mUnder],$EmptyMode,e) or return nil
+      compMakeDeclaration(x,mUnder,e) or return nil
     e:= put(x,"value",[genSomeVariable(),mUnder,e],e)
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["IN",x,y''],e]
@@ -2058,7 +2057,7 @@ compIterator(it,e) ==
       modeIsAggregateOf("List",m,e) or return
         stackMessage('"mode: %1pb must be a list of other modes",[m])
     if null get(x,"mode",e) then [.,.,e]:=
-      compMakeDeclaration([":",x,m],$EmptyMode,e) or return nil
+      compMakeDeclaration(x,m,e) or return nil
     e:= put(x,"value",[genSomeVariable(),m,e],e)
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["ON",x,y''],e]
@@ -2077,7 +2076,7 @@ compIterator(it,e) ==
                       $NonNegativeInteger
               $SmallInteger
             if null get(index,"mode",e) then [.,.,e]:=
-              compMakeDeclaration([":",index,indexmode],$EmptyMode,
+              compMakeDeclaration(index,indexmode,
                 (final' => final'.env; inc'.env)) or return nil
             e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
             if final' then optFinal:= [final'.expr]
@@ -2097,7 +2096,7 @@ compIterator(it,e) ==
       comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
       $Integer
     if null get(index,"mode",e) then [.,.,e]:=
-      compMakeDeclaration([":",index,indexmode],$EmptyMode,e) or return nil
+      compMakeDeclaration(index,indexmode,e) or return nil
     e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
     [["STEP",index,start,inc,:optFinal],e]
   it is ["WHILE",p] =>
@@ -2161,7 +2160,7 @@ compIteratorV(it,e) ==
 	  comp(start,$NonNegativeInteger,e) => $NonNegativeInteger
 	  $Integer
 	if null get(index,"mode",e) then [.,.,e]:=
-	  compMakeDeclaration([":",index,indexmode],$EmptyMode,final'.env) or
+	  compMakeDeclaration(index,indexmode,final'.env) or
 	    return nil
 	e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
 	[["ISTEP",index,start'.expr,inc'.expr,final'.expr],e]
@@ -2179,7 +2178,7 @@ compIteratorV(it,e) ==
       comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
       $Integer
     if null get(index,"mode",e) then [.,.,e]:=
-      compMakeDeclaration([":",index,indexmode],$EmptyMode,e) or return nil
+      compMakeDeclaration(index,indexmode,e) or return nil
     e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
     [["STEP",index,start,inc,final],e]
   nil

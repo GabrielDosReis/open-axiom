@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -465,11 +465,9 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 
   $CheckVectorList := NRTcheckVector domainShell
 --CODE: part 1
-  codePart1:= [:devaluateCode,:domainFormCode,createDomainCode,
+  codePart1:= [:devaluateCode,createDomainCode,
                 createViewCode,setVector0Code, slot3Code,:slamCode] where
     devaluateCode:= [["%LET",b,['devaluate,a]] for [a,:b] in $devaluateList]
-    domainFormCode := [["%LET",a,b] for [a,:b] in nreverse $NRTdomainFormList]
-      --$NRTdomainFormList is unused now
     createDomainCode:=
       ["%LET",domname,['LIST,MKQ first $definition,:ASSOCRIGHT $devaluateList]]
     createViewCode:= ["%LET",'$,["newShell", $NRTbase + $NRTdeltaLength]]

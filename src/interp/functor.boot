@@ -530,7 +530,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
     return nil
       --I should check that the actual arguments are of the right type
   for u in formalArgs for m in newModes repeat
-    [.,.,e]:= compMakeDeclaration(['_:,u,m],m,e)
+    [.,.,e]:= compMakeDeclaration(u,m,e)
       --we can not substitute in the formal arguments before we comp
       --for that may change the shape of the object, but we must before
       --we match signatures
@@ -594,7 +594,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
       NREVERSE [v for u in REVERSE codelist |
                     (v:= DescendCode(u,flag,viewAssoc,EnvToPass))^=nil]]
   code is ['COND,:condlist] =>
-    c:= [[u2:= ProcessCond(first u,viewAssoc),:q] for u in condlist] where q() ==
+    c:= [[u2:= ProcessCond first u,:q] for u in condlist] where q() ==
           null u2 => nil
           f:=
             TruthP u2 => flag;
@@ -622,7 +622,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
           code:=["setShellEntry",["getShellEntry",'$,5],#$locals-#u,code]
           $epilogue:=
             TruthP flag => [code,:$epilogue]
-            [['COND,[ProcessCond(flag,viewAssoc),code]],:$epilogue]
+            [['COND,[ProcessCond  flag,code]],:$epilogue]
           nil
         code
     code -- doItIf deletes entries from $locals so can't optimize this
@@ -638,7 +638,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
     if not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory(rest u, flag)
     ConstantCreator u =>
-      if not (flag=true) then u:= ['COND,[ProcessCond(flag,viewAssoc),u]]
+      if not (flag=true) then u:= ['COND,[ProcessCond flag,u]]
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
@@ -661,7 +661,7 @@ ConstantCreator u ==
   u is ['CONS,:.] => false
   true
  
-ProcessCond(cond,viewassoc) ==
+ProcessCond cond ==
   ncond := SUBLIS($pairlis,cond)
   INTEGERP POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef ncond
   cond

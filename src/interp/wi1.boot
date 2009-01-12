@@ -321,7 +321,7 @@ compWithMappingMode(x,m,oldE) ==
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
   if STRINGP x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
-    [.,.,e]:= compMakeDeclaration([":",v,m],$EmptyMode,e)
+    [.,.,e]:= compMakeDeclaration(v,m,e)
   not null vl and not hasFormalMapVariable(x, vl) => return
     [u,.,.] := comp([x,:vl],m',e) or return nil
     extractCodeAndConstructTriple(u, m, oldE)
@@ -539,7 +539,7 @@ compSetq1(oform,val,m,E) ==
   form := markKillAll oform
   IDENTP form => setqSingle(form,val,m,E)
   form is [":",x,y] =>
-    [.,.,E']:= compMakeDeclaration(form,$EmptyMode,E)
+    [.,.,E']:= compMakeDeclaration(x,y,E)
     compSetq(["%LET",x,val],m,E')
   form is [op,:l] =>
     op="CONS"  => setqMultiple(uncons form,val,m,E)
@@ -1195,7 +1195,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $getDomainCode: local := nil
     $addForm: local:= nil
     for x in sargl for t in rest signature' repeat
-      [.,.,e]:= compMakeDeclaration([":",x,t],m,e)
+      [.,.,e]:= compMakeDeclaration(x,t,e)
 
 --   4. compile body in environment of %type declarations for arguments
     op':= $op
