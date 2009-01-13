@@ -41,11 +41,65 @@ InputByteConduit(): Category == Conduit with
       ++ readByte!(cond) attempts to read a byte from the
       ++ input conduit `cond'.  Returns the read byte if successful,
       ++ otherwise \spad{nothing}.
+    readInt8!: % -> Maybe Int8
+      ++ readInt8!(cond) attempts to read an Int8 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readUInt8!: % -> Maybe UInt8
+      ++ readUInt8!(cond) attempts to read a UInt8 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readInt16!: % -> Maybe Int16
+      ++ readInt16!(cond) attempts to read an Int16 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readUInt16!: % -> Maybe UInt16
+      ++ readUInt16!(cond) attempts to read a UInt16 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readInt32!: % -> Maybe Int32
+      ++ readInt32!(cond) attempts to read an Int32 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
+    readUInt32!: % -> Maybe UInt32
+      ++ readUInt32!(cond) attempts to read a UInt32 value from the
+      ++ input conduit `cond'.  Returns the value if successful,
+      ++ otherwise \spad{nothing}.
     readBytes!: (%,ByteBuffer) -> NonNegativeInteger
       ++ readBytes!(c,b) reads byte sequences from conduit `c' into
       ++ the byte buffer `b'.  The actual number of bytes written
       ++ is returned, and the length of `b' is set to that amount.
   add
+    NNI == NonNegativeInteger
+    nni(b: UInt8): NNI == b::NNI
+
+    readInt8! cond ==
+      -- OK, because we are using two's complement.
+      readByte!(cond) pretend Maybe(Int8)
+
+    readUInt8! cond ==
+      -- UInt8 and Byte are representationally conformant.
+      readByte!(cond) pretend Maybe(UInt8)
+
+    readUInt16! cond ==
+      (b1 := readUInt8! cond) case nothing => nothing
+      (b0 := readUInt8! cond) case nothing => nothing
+      just((shift(nni b1,8) + nni b0)::UInt16)
+
+    readInt16! cond ==
+      readUInt16!(cond) pretend Maybe(Int16)
+
+    readUInt32! cond ==
+      (b3 := readUInt8! cond) case nothing => nothing
+      (b2 := readUInt8! cond) case nothing => nothing
+      (b1 := readUInt8! cond) case nothing => nothing
+      (b0 := readUInt8! cond) case nothing => nothing
+      just((shift(nni b3,24) + shift(nni b2,16) 
+             + shift(nni b1,8) + nni b0)::UInt32)
+
+    readInt32! cond ==
+      readUInt32!(cond) pretend Maybe(Int32)
+
     readBytes!(cond,buf) ==
       count := 0@NonNegativeInteger
       while count < capacity buf repeat
@@ -72,11 +126,25 @@ OutputByteConduit(): Category == Conduit with
       ++ writeByte!(c,b) attempts to write the byte `b' on
       ++ the conduit `c'.  Returns the written byte if successful,
       ++ otherwise, returns \spad{nothing}.
+    writeInt8!: (%,Int8) -> Maybe Int8
+      ++ writeInt8!(c,b) attempts to write the 8-bit value `v' on
+      ++ the conduit `c'.  Returns the written value if successful,
+      ++ otherwise, returns \spad{nothing}.
+    writeUInt8!: (%,UInt8) -> Maybe UInt8
+      ++ writeUInt8!(c,b) attempts to write the unsigned 8-bit value `v'
+      ++ on the conduit `c'.  Returns the written value if successful,
+      ++ otherwise, returns \spad{nothing}.
     writeBytes!: (%,ByteBuffer) -> NonNegativeInteger
       ++ writeBytes!(c,b) write bytes from buffer `b' 
       ++ onto the conduit `c'.  The actual number of written 
       ++ bytes is returned.
   add
+    writeInt8!(cond,val) ==
+      writeByte!(cond, val pretend Byte) pretend Maybe(Int8)
+
+    writeUInt8!(cond,val) ==
+      writeByte!(cond, val pretend Byte) pretend Maybe(UInt8)
+
     writeBytes!(cond,buf) ==
       count := 0@NonNegativeInteger
       while count < capacity buf and 

@@ -1,3 +1,8 @@
+2009-01-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/net.spad.pamphlet (InputByteConduit): Add readInt8!,
+	readInt16!, readInt32!, readUInt8!, readUInt16!, readUInt32!.
+
 2009-01-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/category.boot: Miscellaneous cleanup.
