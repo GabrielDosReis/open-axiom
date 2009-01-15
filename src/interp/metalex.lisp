@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -305,7 +305,8 @@ NonBlank is true if the token is not preceded by a blank."
 (defparameter Valid-Tokens 0               "Number of tokens in buffer (0, 1 or 2)")
 
 (defun Token-Install (symbol type token &optional (nonblank t))
-  (setf (token-symbol token) symbol (token-type token) type
+  (setf (token-symbol token) symbol 
+	(token-type token) type
         (token-nonblank token) nonblank)
   token)
 
@@ -752,17 +753,17 @@ special character be the atom whose print name is the character itself."
 (defun get-number-token (token)
   "Take a number off the input stream."
   (prog ((buf (make-adjustable-string 0)))
-    nu1 (suffix (current-char) buf)                     ; Integer part
+	nu1 
+	(suffix (current-char) buf)                     ; Integer part
         (let ((next-chr (next-char)))
           (cond ((digitp next-chr)
                  (advance-char)
                  (go nu1))))
         (advance-char) 
- formint(return (token-install
-                 (read-from-string buf)
-                  'number token
-                  (size buf) ;used to keep track of digit count
-                  ))))
+	(return (token-install (read-from-string buf)
+			       'number token
+			       (size buf) ;used to keep track of digit count
+			       ))))
  
 ; *** 4. META Auxiliary Parsing Actions
  
