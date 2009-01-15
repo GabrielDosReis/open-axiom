@@ -1,3 +1,14 @@
+2009-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/riccati.spad.pamphlet (innerlb$PrimitiveRatRicDE): Fix
+	thinko. 
+	* interp/bootlex.lisp (get-decimal-number-token): New.
+	(get-integer-in-radix): Likewise.
+	(is-radix-char): Likewise.
+	(get-spad-integer-token): Likewise.  Use them.
+	(get-BOOT-token): Use it.
+	* interp/metalex.lisp: Tidy.
+
 2009-01-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/net.spad.pamphlet (InputByteConduit): Add readInt8!,

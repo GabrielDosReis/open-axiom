@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -194,7 +194,7 @@ Otherwise, get a .. identifier."
                                 (get-boot-identifier-token token t))
           (argument-designator  (get-argument-designator-token token))
           (id                   (get-boot-identifier-token token))
-          (num                  (get-number-token token))
+          (num                  (get-spad-integer-token token))
           (string               (get-SPADSTRING-token token))
           (special-char         (get-special-token token))
           (t                    (get-gliph-token token token-type))))))
@@ -303,6 +303,56 @@ or the chracters ?, !, ' or %"
         (return (token-install (copy-seq buf) ;should make a simple string
                                'spadstring token))))
 
+;; -*- Parse an integer number -*-
+;; The number may be written in plain format, where the radix
+;; is implicitly taken to be 10.  Or the spelling can explicitly
+;; specify a radix.  That radix can be anything in the range 2..36
+
+;; Subroutine GET-NUMBER-TOKEN-MAYBE-WITH-RADIX.
+;; Read a the characters of a decimal integer and returns its
+;; value.
+(defun get-decimal-number-token (buf)
+  (tagbody lp 
+	   (suffix (current-char) buf)
+	   (let ((next-chr (next-char)))
+	     (cond ((digitp next-chr)
+		    (advance-char)
+		    (go lp)))))
+  (parse-integer buf))
+
+;; Subroutine of GET-NUMBER-TOKEN-MAYBE-WITH-RADIX.
+;; We just read the radix of an integer number; parse the
+;; digits forming that integer token.
+(defun get-integer-in-radix (buf r)
+  (unless (> r 1)
+    (meta-syntax-error))
+  (let ((mark (1+ (size buf))))
+    (tagbody lp
+	     (suffix (current-char) buf)
+	     (let* ((nxt (next-char))
+		    (dig (|rdigit?| nxt)))
+	       (when dig
+		 (unless (< dig r)
+		   (meta-syntax-error))
+		 (advance-char)
+		 (go lp))))
+    (parse-integer buf :start mark :radix r)))
+
+(defun is-radix-char (c)
+  (or (eql c #\r)
+      (eql c #\R)))
+
+;; Parse an integer token, written either implicitly in decimal form,
+;; or explicitly specified radix.
+(defun get-spad-integer-token (token)
+  (let* ((buf (make-adjustable-string 0))
+	 (val (get-decimal-number-token buf)))
+    (advance-char)
+    (when (is-radix-char (current-char))
+      (setq val (get-integer-in-radix buf val))
+      (advance-char))
+    (token-install val 'number token (size buf))))
+
 ; **** 4. BOOT token parsing actions
 
 
@@ -342,5 +392,5 @@ or the chracters ?, !, ' or %"
 (defun SPAD_SHORT_ERROR () (current-line-show))
 
 (defun SPAD_ERROR_LOC (STR)
-  (format str "******** Boot Syntax Error detected ********"))
+  (format str "******** Spad Syntax Error detected ********"))
 
