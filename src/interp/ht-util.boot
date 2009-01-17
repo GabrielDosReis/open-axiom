@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -48,13 +48,15 @@ $curPage := nil
 -- List of currently active window named
 $activePageList := nil
 
+--%
+
 htpDestroyPage(pageName) ==
   pageName in $activePageList =>
     setDynamicBinding(pageName, nil)
     $activePageList := NREMOVE($activePageList, pageName)
 
 htpName htPage ==
--- GENSYM whose value is the page
+-- a symbol whose value is the page
   ELT(htPage, 0)
 
 htpSetName(htPage, val) ==
@@ -293,7 +295,7 @@ htLispMemoLinks(links) == htLispLinks(links,true)
 beforeAfter(x,u) == [[y for [y,:r] in tails u while x ^= y],r]
 
 mkCurryFun(fun, val) ==
-  name := GENSYM()
+  name := GENTEMP()
   code :=
     ['DEFUN, name, '(arg), ['APPLY, MKQ fun, ['CONS, 'arg, MKQ val]]]
   EVAL code
@@ -302,7 +304,7 @@ mkCurryFun(fun, val) ==
 htRadioButtons [groupName, :buttons] ==
   htpSetRadioButtonAlist($curPage, [[groupName, :buttonNames buttons],
                                     : htpRadioButtonAlist $curPage])
-  boxesName := GENSYM()
+  boxesName := GENTEMP()
   iht ['"\newline\indent{5}\radioboxes{", boxesName,
      '"}{\htbmfile{pick}}{\htbmfile{unpick}}\beginitems "]
   defaultValue := '"1"
@@ -320,7 +322,7 @@ htRadioButtons [groupName, :buttons] ==
 htBcRadioButtons [groupName, :buttons] ==
   htpSetRadioButtonAlist($curPage, [[groupName, :buttonNames buttons],
                                     : htpRadioButtonAlist $curPage])
-  boxesName := GENSYM()
+  boxesName := GENTEMP()
   iht ['"\radioboxes{", boxesName,
      '"}{\htbmfile{pick}}{\htbmfile{unpick}} "]
   defaultValue := '"1"

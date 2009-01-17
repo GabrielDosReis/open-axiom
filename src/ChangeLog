@@ -1,3 +1,13 @@
+2009-01-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/br-saturn.boot (htpMakeEmptyPage): Use deprecated GENTEMP
+	instead of GENSYM.
+	* interp/ht-util.boot (htpName): Likewise.
+	(mkCurryFun): Likewise.
+	(htRadioButtons): Likewise.
+	(htBcRadioButtons): Likewise
+	* interp/br-con.boot (kisValidType): Use $LangSupportTypes.
+
 2009-01-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/riccati.spad.pamphlet (innerlb$PrimitiveRatRicDE): Fix
