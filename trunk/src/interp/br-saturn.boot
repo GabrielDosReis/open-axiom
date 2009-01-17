@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -605,7 +605,7 @@ htInitPageNoHeading(propList) ==
 
 --------------------> NEW DEFINITION <--------------------------
 htpMakeEmptyPage(propList,:options) ==
-  name := IFCAR options or  GENSYM()
+  name := IFCAR options or GENTEMP()
   if not $saturn then
     $activePageList := [name, :$activePageList]
   setDynamicBinding(name, val := VECTOR(name, nil, nil, nil, nil, nil, propList, nil))
