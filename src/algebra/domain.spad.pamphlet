@@ -70,11 +70,19 @@ ConstructorCategory(): Category == OperatorCategory Identifier with
 ++ Basic Operations: name, kind, arity.
 ++ Description:
 ++   This domain provides implementations for constructors.
-Constructor(): ConstructorCategory == add
+Constructor(): ConstructorCategory with
+     findConstructor: Symbol -> Maybe %
+       ++ \spad{findConstructor(s)} attempts to find a constructor
+       ++ named \spad{s}.  If successful, returns that constructor;
+       ++ otherwise, returns \spad{nothing}.
+  == add
     Rep == Identifier
     name x == rep x
     kind x == getConstructorKind(x)$Lisp
     arity x == getConstructorArity(x)$Lisp
+    findConstructor s ==
+      isConstructorName(s)$Lisp => just per(s pretend Identifier)
+      nothing
 @
 
 
