@@ -1,3 +1,7 @@
+2009-01-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-error.boot (systemErrorHandler): Tidy.
+
 2009-01-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/br-saturn.boot (htpMakeEmptyPage): Use deprecated GENTEMP

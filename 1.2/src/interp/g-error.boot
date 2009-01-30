@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -202,8 +202,7 @@ systemErrorHandler c ==
   $BreakMode = "validate" => 
     systemError ERROR_-FORMAT('"~a",[c])
   not $inLispVM and $BreakMode in '(nobreak query resume) =>
-    $inLispVM := true
-    systemError ERROR_-FORMAT('"~a",[c])
+    LET(($inLispVM true)(), systemError ERROR_-FORMAT('"~a",[c]))
   $BreakMode = "letPrint2" =>
     $BreakMode := nil
     THROW("letPrint2",nil)
