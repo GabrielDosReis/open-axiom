@@ -1,0 +1,24 @@
+2009-01-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* OpenAxiom 1.2.1 Released.
+
+2009-01-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-error.boot (systemErrorHandler): Tidy.
+
+2009-01-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/br-saturn.boot (htpMakeEmptyPage): Use deprecated GENTEMP
+	instead of GENSYM.
+	* interp/ht-util.boot (htpName): Likewise.
+	(mkCurryFun): Likewise.
+	(htRadioButtons): Likewise.
+	(htBcRadioButtons): Likewise
+	* interp/br-con.boot (kisValidType): Use $LangSupportTypes.
+
+2009-01-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2491986
+	* interp/i-syscmd.boot (displayValue): Fix thinko.
+	* testsuite/interpreter/sf-2491986.input (a): New.
+

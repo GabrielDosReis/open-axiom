@@ -1,0 +1,8 @@
+++ Contributed by Luke Wagner.
+)abbrev package FOO Foo
+
+Foo() : with
+    foo : Integer -> Integer
+  == add
+    foo i -- missing ==
+      i

@@ -1,0 +1,92 @@
+2007-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lexp.input.pamphlet: Fix indentation thinko.
+
+2007-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (TESTSYS): Tidy.
+
+2007-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-ax all-input): Remove regress.
+	(${OUT}/%.input): Don't be overly verbose.
+	(%.input): Likewise.
+	(%.as): Likewise.
+	(use): Remove, as it is empty
+	(regress): Likewise.
+	(bug): Likewise.
+	(document): Likewise.
+	(all-check): New rule.  Launch testing.
+	* Makefile.in: Regenerate.
+
+2007-05-28  Gabriel Dos Reis  <gdr@cs.tamu,edu>
+
+	* Makefile.pamphlet (regress): Don't use AX_FLAGS.
+	* Makefile.in: Regenerate.
+
+2007-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Fix typos.
+	* Makefile.in: Regenerate.
+
+2006-12-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Eradicate use of ENV.
+
+2006-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (TESTSYS): Point DAASE to freshly built
+	database.  Test AXIOMsys, not interpsys.
+	* Makefile.in: Regenerate.
+
+2006-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (MID): Adjust definition.
+	(TESTSYS): Likewise.
+	(OUT): Likewise.
+	(TESTSYS): Test AXIOMsys, not interpsys.
+	* Makefile.in: Regenerate.
+
+2006-11-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-input): New phony target.
+	* Makefile.in: Regenerate.
+
+2006-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (mostlyclean-local): New rule.
+	(clean-local): Use it as prerequisite.
+	(distclean-local): New rule.
+
+2006-10-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove references to ${MNT} throughout.
+	* Makefile.in: Regenerate.
+
+2006-10-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet <<axiom.sty (OUT from In)>>: Remove.
+	(regression-tests): New rule. 
+	Make stanza <<regression tests>> part of the main make file.
+	(all:) Remove ${DOCFILES} as prerequisite.
+
+2006-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all): Create stamp file.
+	* Makefile.in: Regenerate.
+
+2006-09-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (subdir): New.
+	* Makefile.in: Regenerate.
+
+2006-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Use $(axiom_build_document) to tangle
+	pamphlets.  Add support for out-of-source build.
+	* Makefile.in: Regenerate.
+
+2006-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.in: New.
+

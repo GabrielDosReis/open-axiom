@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input exseries.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input for page ExSeriesSubstitution
+)clear all
+
+f := taylor(exp(x))
+eval(f,1.0)
+
+-- Input for page ExSeriesConvert
+)clear all
+
+series(sin(a*x),x = 0)
+series(sin(a*x),a = %pi/4)
+
+-- Input for page ExSeriesFunctions
+)clear all
+
+f := series(1/(1-x),x = 0)
+g := log(f)
+exp(g)
+
+-- Input for page ExSeriesManipulate
+)clear all
+
+f := series(1/(1-x),x = 0)
+f ** 2
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

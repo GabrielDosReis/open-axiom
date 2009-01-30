@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input CHAR.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from CharacterXmpPage
+)clear all
+
+chars := [char "a", char "A", char "X", char "8", char "+"]
+space()
+quote()
+escape()
+[ord c for c in chars]
+[upperCase c for c in chars]
+[lowerCase c for c in chars]
+[alphabetic? c for c in chars]
+[upperCase? c for c in chars]
+[lowerCase? c for c in chars]
+[digit? c for c in chars]
+[hexDigit? c for c in chars]
+[alphanumeric? c for c in chars]
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input FNAME.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from FileNameXmpPage
+)clear all
+
+fn: FileName
+fn := "/spad/src/input/fname.input"
+directory fn
+name fn
+extension fn
+fn := filename("/u/smwatt/work", "fname", "input")
+objdir := "/tmp"
+fn := filename(objdir, "table", "spad")
+fn := filename("", "letter", "")
+exists? "/etc/passwd"
+readable? "/etc/passwd"
+readable? "/etc/security/passwd"
+readable? "/ect/passwd"
+writable? "/etc/passwd"
+writable? "/dev/null"
+writable? "/etc/DoesNotExist"
+writable? "/tmp/DoesNotExist"
+fn := new(objdir, "xxx", "yy")
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}
