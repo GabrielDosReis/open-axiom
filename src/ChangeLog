@@ -1,3 +1,7 @@
+2009-01-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-error.boot (systemErrorHandler): Tidy.
+
 2009-01-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/domain.spad.pamphlet (findConstructor$Constructor): New.
