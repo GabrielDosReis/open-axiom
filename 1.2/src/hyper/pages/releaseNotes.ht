@@ -4,7 +4,7 @@
 \beginscroll
 \beginmenu
     \menudownlink{Online information}{onlineInformation}
-    \menudownlink{February 2005}{feb2005}
+    \menudownlink{January 2009}{jan2009}
 \endmenu
 \endscroll
 \autobuttons
@@ -15,26 +15,24 @@
 % =====================================================================
 \beginscroll
 \Language{} information can be found online at
-{http://page.axiom-developer.org/zope/mathaction/FrontPage}
-{http://savannah.nongnu.org/projects/axiom}
-{http://sourceforge.net/projects/axiom}
-{http://www.caissny.org}
+{http://www.open-axiom.org/}
+{http://www.sf.net/projects/open-axiom}
 \endscroll
 \autobuttons
 \end{page}
 
 % =====================================================================
-\begin{page}{feb2005}{Feature Complete release}
+\begin{page}{jan2009}{Feature Complete release}
 % =====================================================================
 \beginscroll
-The February 2005 release is the first complete release of the 
-\Language{} system since it was first made available as open source.
+The January 2009 release is a bugfix release of the 
+\Language{} system in the 1.2.x series.
 
 This release includes the full complement of algebra, the graphics
 subsystem, and the hyperdoc system. 
 
-This full release runs on Linux and Solaris 9. 
-The algebra runs on Windows.
+This full release runs on all majox Unix and Linux variants systems,
+as well as Windows and Mac OS.
 \endscroll
 \autobuttons
 \end{page}
