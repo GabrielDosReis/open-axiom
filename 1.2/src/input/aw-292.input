@@ -1,5 +1,0 @@
---
--- expected: (1 - cos(1)*sin(1))/2
---
-integrate(sin(x)^2,x=0..1)
-

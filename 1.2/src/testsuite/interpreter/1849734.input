@@ -1,6 +1,0 @@
-++ Contributed by Gabriel Dos Reis
--- Issue: the interpreter should allow overload of logical operators.
-a := 2::OutputForm
-b := 4::OutputForm
-a and b
-

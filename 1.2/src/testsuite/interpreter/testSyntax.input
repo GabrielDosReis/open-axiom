@@ -1,7 +1,0 @@
-++ Contributed by Yixin Cao
-)co "syntax.spad"
-sym:=("b")::Symbol
-syn:=b::Syntax
-test syn
-
-test()
