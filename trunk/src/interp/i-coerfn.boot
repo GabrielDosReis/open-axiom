@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -223,7 +223,10 @@ Dmp2P(u, source is [dmp,vl, S], target is [.,T]) ==
   -- slight optimization for case #u = 1, #vl =1 and S=T
   -- I know it's pathological, but it may avoid an instantiation
   (1 = #u) and (1 = #vl) and (S = T) =>
-    (lexp:= (CAAR u).0) = 0 => [1,:CDAR u]
+    -- The Rep of Polynomial T is a 2-branched Union with scalar 
+    -- (coefficient ring values) first (tag = 0), and non-trivial
+    -- polynomials second (tag = 1).
+    (lexp:= (CAAR u).0) = 0 => [0,:CDAR u]
     [1,vl.0,[lexp,0,:CDAR u]]
 
   vl' := reverse MSORT vl
