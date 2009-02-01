@@ -341,7 +341,7 @@ axiom_algebra_bootstrap = \
   PSETCAT- QFCAT    QFCAT-   RCAGG    \
   RCAGG-   REF      RING     RING-    \
   RNG      RNS      RNS-     SETAGG   \
-  SETAGG-  SETCAT   SETCAT-  SINT     \
+  SETAGG-                    SINT     \
   STAGG    STAGG-   SYMBOL   TSETCAT  \
   TSETCAT- UFD      UFD-     ULSCAT   \
   UPOLYC   UPOLYC-  URAGG    URAGG-   \
@@ -353,6 +353,42 @@ axiom_algebra_bootstrap_nrlibs = \
 axiom_algebra_bootstrap_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT), $(axiom_algebra_bootstrap)))
+
+$(OUT)/UTYPE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/AHYP.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/PRIMCAT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/ATTREG.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/CONDUIT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/CFCAT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/ELTAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/MSYSCMD.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+
+$(OUT)/KOERCE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/KRCFROM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+
+$(OUT)/KONVERT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/KVTFROM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+
+$(OUT)/BASTYPE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/SETCAT.$(FASLEXT) $(OUT)/SETCAT-.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
+
+$(OUT)/FINITE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/ORDSET.$(FASLEXT) $(OUT)/ORDSET-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/FILECAT.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/SEXCAT.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/STEP.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+
+$(OUT)/LMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/RMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+
+$(OUT)/SGROUP.$(FASLEXT) $(OUT)/SGROUP-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+
+$(OUT)/ABELSG.$(FASLEXT) $(OUT)/ABELSG-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+
+$(OUT)/CTORKIND.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/IOMODE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+
+$(OUT)/PRINT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
@@ -443,6 +479,9 @@ axiom_algebra_layer_5_nrlibs = \
 axiom_algebra_layer_5_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_5)))
+
+$(OUT)/CHARPOL.$(FASLEXT): $(OUT)/SETCAT-.$(FASLEXT)
+
 axiom_algebra_layer_6 = \
   ALGEBRA ALGEBRA- AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
   DIFEXT  DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \

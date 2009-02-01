@@ -1,3 +1,10 @@
+2009-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/Makefile.pamphlet: Tidy layer 0 dependency.
+	SETCAT and SETCAT- are no longer required for bootstrap.
+	* algebra/SETCAT.lsp: Remove.
+	* algebra/SETCAT-.lsp: Likewise.
+
 2009-01-30  Waldek Hebisch <hebisch@math.uni.wroc.pl>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
