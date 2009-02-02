@@ -34,6 +34,55 @@ ConstructorKind(): Public == Private where
     package == 'package : %
     k1 = k2 == EQ(k1,k2)$Lisp
     coerce(k: %): OutputForm == k : OutputForm
+
+@
+
+<<domain FUNDESC FunctionDescriptor>>=
+)abbrev domain FUNDESC FunctionDescriptor
+++ Author: Gabriel Dos Reis
+++ Date Created: February 01, 2009
+++ Date Last Modified:
+++ Description:
+++   This is the datatype for exported function descriptor.  
+++   A function descriptor consists of: (1) a signature;
+++   (2) a predicate; and (3) a slot into the scope object.
+FunctionDescriptor(): Public == Private where
+  Public == SetCategory with
+    signature: % -> Signature
+      ++ \spad{signature(x)} returns the signature of function
+      ++ described by \spad{x}.
+  Private == add
+    signature x == CAR(x)$Lisp
+    x = y == EQUAL(x,y)$Lisp
+    coerce x == (x : Syntax)::OutputForm
+
+@
+
+
+<<domain OVERSET OverloadSet>>=
+)abbrev domain OVERSET OverloadSet
+++ Author: Gabriel Dos Reis
+++ Date Created: February 01, 2009
+++ Date Last Modified:
+++ Description:
+++   This domain represents set of overloaded operators (in fact
+++   operator descriptors).
+OverloadSet(): Public == Private where
+  Public == SetCategory with
+    name: % -> Identifier
+      ++ \spad{name(x)} returns the name of the overload set \spad{x}.
+    members: % -> List FunctionDescriptor
+      ++ \spad{members(x)} returns the list of operator descriptors,
+      ++ e.g. signature and implementation slots, of the 
+      ++ overload set \spad{x}.
+  Private == add
+    Rep == Pair(Identifier, List FunctionDescriptor)
+    name x == first rep x
+    members x == second rep x
+    x = y == rep x = rep y
+    coerce x == 
+      rarrow(name(x)::OutputForm, members(x)::OutputForm)
+
 @
 
 <<category CTORCAT ConstructorCategory>>=
@@ -54,10 +103,16 @@ ConstructorCategory(): Category == OperatorCategory Identifier with
        ++   l.(i+1) holds when the constructor takes a domain object
        ++           as the `i'th argument.  Otherwise the argument
        ++           must be a non-domain object.
+     operations: % -> List OverloadSet
+       ++ \spad{operations(c)} returns the list of all operator
+       ++ exported by instantiations of constructor \spad{c}.
+       ++ The operators are partitioned into overload sets.
   add
     kind x == getConstructorKind(x)$Lisp
     arity x == getConstructorArity(x)$Lisp
     dualSignature x == getDualSignatureFromDB(x)$Lisp
+    operations x == getConstructorOperationsFromDB(x)$Lisp
+
 @
 
 
@@ -83,6 +138,7 @@ Constructor(): ConstructorCategory with
     findConstructor s ==
       isConstructorName(s)$Lisp => just per(s pretend Identifier)
       nothing
+
 @
 
 
@@ -120,6 +176,7 @@ ConstructorCall(): Public == Private where
 
     coerce(x: %): OutputForm ==
       outputDomainConstructor(x)$Lisp
+
 @
 
 
@@ -188,6 +245,7 @@ Signature(): Public == Private where
         rarrow(printType first source x, printType target x)
       rarrow(paren [printType s for s in source x],
          printType target x)$OutputForm
+
 @
 
 \section{A domain for operator signatures}
@@ -230,6 +288,7 @@ SystemPredicate(): Public == Private where
       NOT(x)$Lisp => '_false::OutputForm
       EQ(x,'T)$Lisp => '_true::OutputForm
       EQCAR(x,'NOT)$Lisp => not(CADR(x)$Lisp : % :: OutputForm)
+
 @
 
 
@@ -330,7 +389,7 @@ Domain(): Public == Private where
 
 \section{License}
 <<license>>=
---Copyright (C) 2007-2008, Gabriel Dos Reis.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -367,6 +426,8 @@ Domain(): Public == Private where
 <<license>>
 
 <<domain CTORKIND ConstructorKinid>>
+<<domain FUNDESC FunctionDescriptor>>
+<<domain OVERSET OverloadSet>>
 <<category CTORCAT ConstructorCategory>>
 <<domain CTOR Constructor>>
 <<domain CTORCALL ConstructorCall>>

@@ -557,7 +557,8 @@ axiom_algebra_layer_10 = \
   STACK    STTAYLOR TABLBUMP TABLEAU  \
   TOPSP    TRANFUN  TRANFUN- TUBE     \
   UDPO     UNISEG   VIEW     VSPACE   \
-  VSPACE-  XPOLYC   XPR    BTAGG    BTAGG-  
+  VSPACE-  XPOLYC   XPR    BTAGG    BTAGG-  \
+  FUNDESC
 
 
 axiom_algebra_layer_10_nrlibs = \
@@ -694,7 +695,7 @@ axiom_algebra_layer_15 = \
   FRAMALG  FRAMALG- MDAGG    ODPOL   \
   PLOT     RMCAT2   ROIRC    SDPOL   \
   SMATCAT  SMATCAT- TUBETOOL UPXSCCA \
-  UPXSCCA- JAVACODE POLY       BYTEBUF
+  UPXSCCA- JAVACODE POLY       BYTEBUF    OVERSET
 
 axiom_algebra_layer_15_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_15))
