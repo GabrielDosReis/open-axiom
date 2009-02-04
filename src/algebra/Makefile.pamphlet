@@ -1301,45 +1301,45 @@ axiom_algebra_layer_user_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_user)))
 
-SASTCAT.NRLIB/code.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
-LITERAL.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
-HEADAST.NRLIB/code.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
-SPADXPT.NRLIB/code.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
-ATTRAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-TYPEAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-IMPTAST.NRLIB/code.$(FASLEXT): $(OUT)/TYPEAST.$(FASLEXT)
-MAPPAST.NRLIB/code.$(FASLEXT): $(OUT)/TYPEAST.$(FASLEXT)
-SIGAST.NRLIB/code.$(FASLEXT): $(OUT)/SIG.$(FASLEXT) $(OUT)/IDENT.$(FASLEXT)
-JOINAST.NRLIB/code.$(FASLEXT): $(OUT)/TYPEAST.$(FASLEXT)
-IFAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-RPTAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-WHILEAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-INAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-CLLCTAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-LSTAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-EXITAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-RETAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-SEGAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-SEQAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-PRTDAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-CRCEAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-RSTRCAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-LETAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-RDUCEAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-SUCHTAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-COLONAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-ADDAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-CAPSLAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-CASEAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-HASAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-ISAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-CATAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-WHEREAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-COMMAAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-QQUTAST.NRLIB/code.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
-DEFAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-MACROAST.NRLIB/code.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
-SPADAST.NRLIB/code.$(FASLEXT): \
+$(OUT)/SASTCAT.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
+$(OUT)/LITERAL.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
+$(OUT)/HEADAST.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
+$(OUT)/SPADXPT.$(FASLEXT): $(OUT)/ASTCAT.$(FASLEXT)
+$(OUT)/ATTRAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/TYPEAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/IMPTAST.$(FASLEXT): $(OUT)/TYPEAST.$(FASLEXT)
+$(OUT)/MAPPAST.$(FASLEXT): $(OUT)/TYPEAST.$(FASLEXT)
+$(OUT)/SIGAST.$(FASLEXT): $(OUT)/SIG.$(FASLEXT) $(OUT)/IDENT.$(FASLEXT)
+$(OUT)/JOINAST.$(FASLEXT): $(OUT)/TYPEAST.$(FASLEXT)
+$(OUT)/IFAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/RPTAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/WHILEAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/INAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/CLLCTAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/LSTAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/EXITAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/RETAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/SEGAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/SEQAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/PRTDAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/CRCEAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/RSTRCAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/LETAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/RDUCEAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/SUCHTAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/COLONAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/ADDAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/CAPSLAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/CASEAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/HASAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/ISAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/CATAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/WHEREAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/COMMAAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/QQUTAST.$(FASLEXT): $(OUT)/SASTCAT.$(FASLEXT)
+$(OUT)/DEFAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/MACROAST.$(FASLEXT): $(OUT)/SPADXPT.$(FASLEXT)
+$(OUT)/SPADAST.$(FASLEXT): \
   $(addprefix $(OUT)/,$(addsuffix .$(FASLEXT), \
      IMPTAST DEFAST MACROAST WHEREAST  CATAST CAPSLAST \
      SIGAST ATTRAST MAPPAST IFAST RPTAST WHILEAST INAST \
@@ -1347,18 +1347,18 @@ SPADAST.NRLIB/code.$(FASLEXT): \
      SEGAST SEQAST LETAST SUCHTAST COLONAST CASEAST HASAST \
      ISAST))
 
-INBFILE.NRLIB/code.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT) \
+$(OUT)/INBFILE.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT) \
 	$(OUT)/INBCON.$(FASLEXT) $(OUT)/STRING.$(FASLEXT)
-OUTBFILE.NRLIB/code.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT) \
+$(OUT)/OUTBFILE.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT) \
 	$(OUT)/OUTBCON.$(FASLEXT) $(OUT)/STRING.$(FASLEXT)
-IOBFILE.NRLIB/code.$(FASLEXT): $(OUT)/INBFILE.$(FASLEXT) \
+$(OUT)/IOBFILE.$(FASLEXT): $(OUT)/INBFILE.$(FASLEXT) \
 	$(OUT)/OUTBFILE.$(FASLEXT)
 
-CTOR.NRLIB/code.$(FASLEXT): $(OUT)/CTORKIND.$(FASLEXT) \
+$(OUT)/CTOR.$(FASLEXT): $(OUT)/CTORKIND.$(FASLEXT) \
 	$(OUT)/IDENT.$(FASLEXT)
 
-NETCLT.NRLIB/code.$(FASLEXT): $(OUT)/IOBCON.$(FASLEXT)
-INETCLTS.NRLIB/code.$(FASLEXT): $(OUT)/NETCLT.$(FASLEXT)
+$(OUT)/NETCLT.$(FASLEXT): $(OUT)/IOBCON.$(FASLEXT)
+$(OUT)/INETCLTS.$(FASLEXT): $(OUT)/NETCLT.$(FASLEXT)
 @
 
 \section{Broken Files}
@@ -1597,150 +1597,6 @@ ALDORFILES= \
 
 @
 
-\subsection{The DOCFILES list}
-<<environment>>=
-
-DOCFILES= \
- ${DOC}/acplot.spad.dvi ${DOC}/aggcat2.spad.dvi ${DOC}/aggcat.spad.dvi \
- ${DOC}/algcat.spad.dvi ${DOC}/algext.spad.dvi ${DOC}/algfact.spad.dvi \
- ${DOC}/algfunc.spad.dvi ${DOC}/allfact.spad.dvi ${DOC}/alql.spad.dvi \
- ${DOC}/annacat.spad.dvi ${DOC}/any.spad.dvi ${DOC}/array1.spad.dvi \
- ${DOC}/array2.spad.dvi ${DOC}/asp.spad.dvi ${DOC}/attreg.spad.dvi \
- ${DOC}/axtimer.as.dvi \
- ${DOC}/bags.spad.dvi ${DOC}/bezout.spad.dvi ${DOC}/boolean.spad.dvi \
- ${DOC}/brill.spad.dvi \
- ${DOC}/c02.spad.dvi ${DOC}/c05.spad.dvi ${DOC}/c06.spad.dvi \
- ${DOC}/card.spad.dvi ${DOC}/carten.spad.dvi ${DOC}/catdef.spad.dvi \
- ${DOC}/cden.spad.dvi ${DOC}/clifford.spad.dvi ${DOC}/clip.spad.dvi \
- ${DOC}/cmplxrt.spad.dvi ${DOC}/coerce.spad.dvi ${DOC}/color.spad.dvi \
- ${DOC}/combfunc.spad.dvi ${DOC}/combinat.spad.dvi ${DOC}/complet.spad.dvi \
- ${DOC}/constant.spad.dvi ${DOC}/contfrac.spad.dvi ${DOC}/cont.spad.dvi \
- ${DOC}/coordsys.spad.dvi ${DOC}/cra.spad.dvi ${DOC}/crfp.spad.dvi \
- ${DOC}/curve.spad.dvi ${DOC}/cycles.spad.dvi ${DOC}/cyclotom.spad.dvi \
- ${DOC}/d01agents.spad.dvi ${DOC}/d01Package.spad.dvi \
- ${DOC}/d01routine.spad.dvi ${DOC}/d01.spad.dvi ${DOC}/d01transform.spad.dvi \
- ${DOC}/d01weights.spad.dvi ${DOC}/d02agents.spad.dvi \
- ${DOC}/d02Package.spad.dvi ${DOC}/d02routine.spad.dvi ${DOC}/d02.spad.dvi \
- ${DOC}/d03agents.spad.dvi ${DOC}/d03Package.spad.dvi \
- ${DOC}/d03routine.spad.dvi ${DOC}/d03.spad.dvi ${DOC}/ddfact.spad.dvi \
- ${DOC}/defaults.spad.dvi ${DOC}/defintef.spad.dvi ${DOC}/defintrf.spad.dvi \
- ${DOC}/degred.spad.dvi ${DOC}/derham.spad.dvi ${DOC}/dhmatrix.spad.dvi \
- ${DOC}/divisor.spad.dvi ${DOC}/dpolcat.spad.dvi ${DOC}/drawopt.spad.dvi \
- ${DOC}/drawpak.spad.dvi ${DOC}/draw.spad.dvi \
- ${DOC}/e01.spad.dvi ${DOC}/e02.spad.dvi ${DOC}/e04agents.spad.dvi \
- ${DOC}/e04Package.spad.dvi ${DOC}/e04routine.spad.dvi ${DOC}/e04.spad.dvi \
- ${DOC}/efstruc.spad.dvi ${DOC}/efuls.spad.dvi ${DOC}/efupxs.spad.dvi \
- ${DOC}/eigen.spad.dvi ${DOC}/elemntry.spad.dvi ${DOC}/elfuts.spad.dvi \
- ${DOC}/equation1.spad.dvi ${DOC}/equation2.spad.dvi ${DOC}/error.spad.dvi \
- ${DOC}/expexpan.spad.dvi ${DOC}/exposed.lsp.dvi ${DOC}/expr2ups.spad.dvi \
- ${DOC}/exprode.spad.dvi ${DOC}/expr.spad.dvi \
- ${DOC}/f01.spad.dvi ${DOC}/f02.spad.dvi ${DOC}/f04.spad.dvi \
- ${DOC}/f07.spad.dvi ${DOC}/facutil.spad.dvi ${DOC}/ffcat.spad.dvi \
- ${DOC}/ffcg.spad.dvi ${DOC}/fff.spad.dvi ${DOC}/ffhom.spad.dvi \
- ${DOC}/ffnb.spad.dvi ${DOC}/ffpoly2.spad.dvi ${DOC}/ffpoly.spad.dvi \
- ${DOC}/ffp.spad.dvi ${DOC}/ffrac.as.dvi ${DOC}/ffx.spad.dvi \
- ${DOC}/files.spad.dvi ${DOC}/float.spad.dvi ${DOC}/fmod.spad.dvi \
- ${DOC}/fname.spad.dvi ${DOC}/fnla.spad.dvi ${DOC}/formula.spad.dvi \
- ${DOC}/fortcat.spad.dvi ${DOC}/fortmac.spad.dvi ${DOC}/fortpak.spad.dvi \
- ${DOC}/fortran.spad.dvi ${DOC}/forttyp.spad.dvi ${DOC}/fourier.spad.dvi \
- ${DOC}/fparfrac.spad.dvi ${DOC}/fraction.spad.dvi ${DOC}/free.spad.dvi \
- ${DOC}/fr.spad.dvi ${DOC}/fs2expxp.spad.dvi ${DOC}/fs2ups.spad.dvi \
- ${DOC}/fspace.spad.dvi ${DOC}/funcpkgs.spad.dvi ${DOC}/functions.spad.dvi \
- ${DOC}/galfact.spad.dvi ${DOC}/galfactu.spad.dvi ${DOC}/galpolyu.spad.dvi \
- ${DOC}/galutil.spad.dvi ${DOC}/gaussfac.spad.dvi ${DOC}/gaussian.spad.dvi \
- ${DOC}/gbeuclid.spad.dvi ${DOC}/gbintern.spad.dvi ${DOC}/gb.spad.dvi \
- ${DOC}/gdirprod.spad.dvi ${DOC}/gdpoly.spad.dvi ${DOC}/geneez.spad.dvi \
- ${DOC}/generic.spad.dvi ${DOC}/genufact.spad.dvi ${DOC}/genups.spad.dvi \
- ${DOC}/ghensel.spad.dvi ${DOC}/gpgcd.spad.dvi ${DOC}/gpol.spad.dvi \
- ${DOC}/grdef.spad.dvi ${DOC}/groebf.spad.dvi ${DOC}/groebsol.spad.dvi \
- ${DOC}/gseries.spad.dvi \
- ${DOC}/herm.as.dvi \
- ${DOC}/ideal.spad.dvi ${DOC}/idecomp.spad.dvi ${DOC}/indexedp.spad.dvi \
- ${DOC}/infprod.spad.dvi ${DOC}/intaf.spad.dvi ${DOC}/intalg.spad.dvi \
- ${DOC}/intaux.spad.dvi ${DOC}/intclos.spad.dvi ${DOC}/intef.spad.dvi \
- ${DOC}/integer.spad.dvi ${DOC}/integrat.spad.dvi \
- ${DOC}/interval.as.dvi ${DOC}/interval.spad.dvi \
- ${DOC}/intfact.spad.dvi ${DOC}/intpm.spad.dvi \
- ${DOC}/intrf.spad.dvi ${DOC}/invnode.as.dvi ${DOC}/invrender.as.dvi \
- ${DOC}/invtypes.as.dvi ${DOC}/invutils.as.dvi ${DOC}/irexpand.spad.dvi \
- ${DOC}/irsn.spad.dvi ${DOC}/ituple.spad.dvi ${DOC}/iviews.as.dvi \
- ${DOC}/kl.spad.dvi ${DOC}/kovacic.spad.dvi \
- ${DOC}/laplace.spad.dvi ${DOC}/laurent.spad.dvi ${DOC}/leadcdet.spad.dvi \
- ${DOC}/lie.spad.dvi ${DOC}/limitps.spad.dvi ${DOC}/lindep.spad.dvi \
- ${DOC}/lingrob.spad.dvi ${DOC}/liouv.spad.dvi ${DOC}/listgcd.spad.dvi \
- ${DOC}/list.spad.dvi ${DOC}/lmdict.spad.dvi ${DOC}/lodof.spad.dvi \
- ${DOC}/lodop.spad.dvi ${DOC}/lodo.spad.dvi \
- ${DOC}/manip.spad.dvi ${DOC}/mappkg.spad.dvi ${DOC}/matcat.spad.dvi \
- ${DOC}/matfuns.spad.dvi ${DOC}/mathml.spad.dvi \
- ${DOC}/matrix.spad.dvi ${DOC}/matstor.spad.dvi \
- ${DOC}/mesh.spad.dvi ${DOC}/mfinfact.spad.dvi ${DOC}/misc.spad.dvi \
- ${DOC}/mkfunc.spad.dvi ${DOC}/mkrecord.spad.dvi ${DOC}/mlift.spad.jhd.dvi \
- ${DOC}/mlift.spad.dvi ${DOC}/moddfact.spad.dvi ${DOC}/modgcd.spad.dvi \
- ${DOC}/modmonom.spad.dvi ${DOC}/modmon.spad.dvi ${DOC}/modring.spad.dvi \
- ${DOC}/moebius.spad.dvi ${DOC}/mring.spad.dvi ${DOC}/mset.spad.dvi \
- ${DOC}/mts.spad.dvi ${DOC}/multfact.spad.dvi ${DOC}/multpoly.spad.dvi \
- ${DOC}/multsqfr.spad.dvi \
- ${DOC}/naalgc.spad.dvi ${DOC}/naalg.spad.dvi ${DOC}/ndftip.as.dvi \
- ${DOC}/nepip.as.dvi ${DOC}/newdata.spad.dvi ${DOC}/newpoint.spad.dvi \
- ${DOC}/newpoly.spad.dvi ${DOC}/nlinsol.spad.dvi ${DOC}/nlode.spad.dvi \
- ${DOC}/noptip.as.dvi ${DOC}/npcoef.spad.dvi ${DOC}/nqip.as.dvi \
- ${DOC}/nrc.as.dvi ${DOC}/nregset.spad.dvi ${DOC}/nsfip.as.dvi \
- ${DOC}/nsregset.spad.dvi ${DOC}/numeigen.spad.dvi ${DOC}/numeric.spad.dvi \
- ${DOC}/numode.spad.dvi ${DOC}/numquad.spad.dvi ${DOC}/numsolve.spad.dvi \
- ${DOC}/numtheor.spad.dvi \
- ${DOC}/oct.spad.dvi ${DOC}/odealg.spad.dvi ${DOC}/odeef.spad.dvi \
- ${DOC}/oderf.spad.dvi ${DOC}/omcat.spad.dvi ${DOC}/omdev.spad.dvi \
- ${DOC}/omerror.spad.dvi ${DOC}/omserver.spad.dvi ${DOC}/opalg.spad.dvi \
- ${DOC}/openmath.spad.dvi ${DOC}/op.spad.dvi ${DOC}/ore.spad.dvi \
- ${DOC}/outform.spad.dvi ${DOC}/out.spad.dvi \
- ${DOC}/pade.spad.dvi ${DOC}/padiclib.spad.dvi ${DOC}/padic.spad.dvi \
- ${DOC}/paramete.spad.dvi ${DOC}/partperm.spad.dvi ${DOC}/patmatch1.spad.dvi \
- ${DOC}/patmatch2.spad.dvi ${DOC}/pattern.spad.dvi ${DOC}/pcurve.spad.dvi \
- ${DOC}/pdecomp.spad.dvi ${DOC}/perman.spad.dvi ${DOC}/permgrps.spad.dvi \
- ${DOC}/perm.spad.dvi ${DOC}/pfbr.spad.dvi ${DOC}/pfo.spad.dvi \
- ${DOC}/pfr.spad.dvi ${DOC}/pf.spad.dvi ${DOC}/pgcd.spad.dvi \
- ${DOC}/pgrobner.spad.dvi ${DOC}/pinterp.spad.dvi ${DOC}/pleqn.spad.dvi \
- ${DOC}/plot3d.spad.dvi ${DOC}/plot.spad.dvi ${DOC}/plottool.spad.dvi \
- ${DOC}/polset.spad.dvi ${DOC}/poltopol.spad.dvi ${DOC}/polycat.spad.dvi \
- ${DOC}/poly.spad.dvi ${DOC}/primelt.spad.dvi ${DOC}/print.spad.dvi \
- ${DOC}/product.spad.dvi ${DOC}/prs.spad.dvi ${DOC}/prtition.spad.dvi \
- ${DOC}/pscat.spad.dvi ${DOC}/pseudolin.spad.dvi ${DOC}/ptranfn.spad.dvi \
- ${DOC}/puiseux.spad.dvi \
- ${DOC}/qalgset.spad.dvi ${DOC}/quat.spad.dvi \
- ${DOC}/radeigen.spad.dvi ${DOC}/radix.spad.dvi ${DOC}/random.spad.dvi \
- ${DOC}/ratfact.spad.dvi ${DOC}/rdeef.spad.dvi ${DOC}/rderf.spad.dvi \
- ${DOC}/rdesys.spad.dvi ${DOC}/real0q.spad.dvi ${DOC}/realzero.spad.dvi \
- ${DOC}/reclos.spad.dvi ${DOC}/regset.spad.dvi ${DOC}/rep1.spad.dvi \
- ${DOC}/rep2.spad.dvi ${DOC}/resring.spad.dvi ${DOC}/retract.spad.dvi \
- ${DOC}/rf.spad.dvi ${DOC}/riccati.spad.dvi ${DOC}/rinterp.spad.dvi \
- ${DOC}/routines.spad.dvi \
- ${DOC}/rule.spad.dvi \
- ${DOC}/seg.spad.dvi ${DOC}/setorder.spad.dvi ${DOC}/sets.spad.dvi \
- ${DOC}/sex.spad.dvi ${DOC}/sf.spad.dvi ${DOC}/sgcf.spad.dvi \
- ${DOC}/sign.spad.dvi ${DOC}/si.spad.dvi ${DOC}/smith.spad.dvi \
- ${DOC}/solvedio.spad.dvi ${DOC}/solvefor.spad.dvi ${DOC}/solvelin.spad.dvi \
- ${DOC}/solverad.spad.dvi ${DOC}/sortpak.spad.dvi ${DOC}/space.spad.dvi \
- ${DOC}/special.spad.dvi ${DOC}/sregset.spad.dvi ${DOC}/s.spad.dvi \
- ${DOC}/stream.spad.dvi ${DOC}/string.spad.dvi ${DOC}/sttaylor.spad.dvi \
- ${DOC}/sttf.spad.dvi ${DOC}/sturm.spad.dvi ${DOC}/suchthat.spad.dvi \
- ${DOC}/suls.spad.dvi ${DOC}/sum.spad.dvi ${DOC}/sups.spad.dvi \
- ${DOC}/supxs.spad.dvi ${DOC}/suts.spad.dvi ${DOC}/symbol.spad.dvi \
- ${DOC}/syssolp.spad.dvi ${DOC}/system.spad.dvi \
- ${DOC}/tableau.spad.dvi ${DOC}/table.spad.dvi ${DOC}/taylor.spad.dvi \
- ${DOC}/tex.spad.dvi ${DOC}/tools.spad.dvi ${DOC}/transsolve.spad.dvi \
- ${DOC}/tree.spad.dvi ${DOC}/trigcat.spad.dvi ${DOC}/triset.spad.dvi \
- ${DOC}/tube.spad.dvi ${DOC}/twofact.spad.dvi \
- ${DOC}/unifact.spad.dvi ${DOC}/updecomp.spad.dvi ${DOC}/updivp.spad.dvi \
- ${DOC}/utsode.spad.dvi \
- ${DOC}/variable.spad.dvi ${DOC}/vector.spad.dvi ${DOC}/view2D.spad.dvi \
- ${DOC}/view3D.spad.dvi ${DOC}/viewDef.spad.dvi ${DOC}/viewpack.spad.dvi \
- ${DOC}/void.spad.dvi \
- ${DOC}/weier.spad.dvi ${DOC}/wtpol.spad.dvi \
- ${DOC}/xlpoly.spad.dvi ${DOC}/xpoly.spad.dvi \
- ${DOC}/ystream.spad.dvi \
- ${DOC}/zerodim.spad.dvi
-
-@
 
 \section{Test Cases}
 
