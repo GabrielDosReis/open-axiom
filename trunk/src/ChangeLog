@@ -1,5 +1,7 @@
 2009-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/gaussian.spad.pamphlet (ComplexCategory): Reinstate
+	attribute 'complex'.
 	* algebra/Makefile.pamphlet: Tidy.
 
 2009-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
