@@ -75,14 +75,14 @@ LiouvillianFunction(R, F): Exports == Implementation where
 
     dummy := new()$SE :: F
 
-    opint  := operator("integral"::Symbol)$CommonOperators
-    opdint := operator("%defint"::Symbol)$CommonOperators
-    opei   := operator("Ei"::Symbol)$CommonOperators
-    opli   := operator("li"::Symbol)$CommonOperators
-    opsi   := operator("Si"::Symbol)$CommonOperators
-    opci   := operator("Ci"::Symbol)$CommonOperators
-    opli2  := operator("dilog"::Symbol)$CommonOperators
-    operf  := operator("erf"::Symbol)$CommonOperators
+    opint  := operator('integral)$CommonOperators
+    opdint := operator('%defint)$CommonOperators
+    opei   := operator('Ei)$CommonOperators
+    opli   := operator('li)$CommonOperators
+    opsi   := operator('Si)$CommonOperators
+    opci   := operator('Ci)$CommonOperators
+    opli2  := operator('dilog)$CommonOperators
+    operf  := operator('erf)$CommonOperators
 
     Si x                == opsi x
     Ci x                == opci x
@@ -136,23 +136,23 @@ LiouvillianFunction(R, F): Exports == Implementation where
 
     ili x ==
       x = 1 => INV
-      is?(x, "exp"::Symbol) => Ei first argument(retract(x)@K)
+      is?(x,'exp) => Ei first argument(retract(x)@K)
       kernel(opli, x)
 
     iei x ==
       x = 0 => INV
-      is?(x, "log"::Symbol) => li first argument(retract(x)@K)
+      is?(x,'log) => li first argument(retract(x)@K)
       kernel(opei, x)
 
     operator op ==
-      is?(op, "integral"::Symbol)   => opint
-      is?(op, "%defint"::Symbol)    => opdint
-      is?(op, "Ei"::Symbol)         => opei
-      is?(op, "Si"::Symbol)         => opsi
-      is?(op, "Ci"::Symbol)         => opci
-      is?(op, "li"::Symbol)         => opli
-      is?(op, "erf"::Symbol)        => operf
-      is?(op, "dilog"::Symbol)      => opli2
+      is?(op,'integral)   => opint
+      is?(op,'%defint)    => opdint
+      is?(op,'Ei)         => opei
+      is?(op,'Si)         => opsi
+      is?(op,'Ci)         => opci
+      is?(op,'li)         => opli
+      is?(op,'erf)        => operf
+      is?(op,'dilog)      => opli2
       error "Not a Liouvillian operator"
 
     evaluate(opei,   iei)$BasicOperatorFunctions1(F)
@@ -199,6 +199,8 @@ LiouvillianFunction(R, F): Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

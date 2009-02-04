@@ -268,8 +268,8 @@ PatternMatchKernel(S, E): Exports == Implementation where
 
   PAT ==> Pattern S
   PRS ==> PatternMatchResult(S, E)
-  POWER ==> "%power"::Symbol
-  NTHRT ==> "nthRoot"::Symbol
+  POWER ==> '%power
+  NTHRT ==> 'nthRoot
 
   Exports ==> with
     patternMatch: (Kernel E, PAT, PRS) -> PRS
@@ -662,6 +662,8 @@ PatternMatchListAggregate(S, R, L): Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

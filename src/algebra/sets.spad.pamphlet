@@ -71,7 +71,7 @@ Set(S:SetCategory): FiniteSetAggregate S == add
 
    if S has ConvertibleTo InputForm then
      convert(x:%):InputForm ==
-        convert [convert("set"::Symbol)@InputForm,
+        convert [convert('set)@InputForm,
                           convert(parts x)@InputForm]
 
    if S has OrderedSet then
@@ -191,6 +191,8 @@ Set(S:SetCategory): FiniteSetAggregate S == add
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

@@ -60,7 +60,7 @@ LaplaceTransform(R, F): Exports == Implementation where
     aexp         : (F, SE) -> Union(Record(coef:F, coef1:F, coef0:F), "failed")
     algebraic?   : (F, SE) -> Boolean
 
-    oplap := operator("laplace"::Symbol, 3)$BasicOperator
+    oplap := operator('laplace, 3)$BasicOperator
 
     laplace(f,t,s) == locallaplace(complexElementary(f,t),t,t::F,s,s::F)
 
@@ -317,6 +317,8 @@ InverseLaplaceTransform(R, F): Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

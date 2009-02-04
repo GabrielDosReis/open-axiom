@@ -12,11 +12,10 @@
 
 (DEFUN |VECTOR;convert;$If;2| (|x| $)
   (SPADCALL
-      (LIST (SPADCALL (SPADCALL "vector" (|getShellEntry| $ 12))
-                (|getShellEntry| $ 14))
-            (SPADCALL (SPADCALL |x| (|getShellEntry| $ 15))
-                (|getShellEntry| $ 16)))
-      (|getShellEntry| $ 18))) 
+      (LIST (SPADCALL '|vector| (|getShellEntry| $ 12))
+            (SPADCALL (SPADCALL |x| (|getShellEntry| $ 13))
+                      (|getShellEntry| $ 14)))
+      (|getShellEntry| $ 16))) 
 
 (DEFUN |Vector| (#0=#:G1408)
   (PROG ()
@@ -41,7 +40,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|Vector|))
         (LETT |dv$| (LIST '|Vector| |dv$1|) . #0#)
-        (LETT $ (|newShell| 36) . #0#)
+        (LETT $ (|newShell| 35) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -90,23 +89,23 @@
         (|setShellEntry| $ 6 |#1|)
         (COND
           ((|testBitVector| |pv$| 3)
-           (|setShellEntry| $ 19
+           (|setShellEntry| $ 17
                (CONS (|dispatchFunction| |VECTOR;convert;$If;2|) $))))
         $)))) 
 
 (MAKEPROP '|Vector| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|IndexedVector| 6 (NRTEVAL 1))
              (|local| |#1|) (|List| 6) (0 . |construct|)
-             |VECTOR;vector;L$;1| (|String|) (|Symbol|) (5 . |coerce|)
-             (|InputForm|) (10 . |convert|) (15 . |parts|)
-             (20 . |convert|) (|List| $) (25 . |convert|)
-             (30 . |convert|) (|Mapping| 6 6 6) (|Boolean|)
-             (|NonNegativeInteger|) (|Equation| 6) (|List| 23)
-             (|Integer|) (|Mapping| 21 6) (|Mapping| 21 6 6)
-             (|UniversalSegment| 25) (|Void|) (|Mapping| 6 6)
-             (|OutputForm|) (|Matrix| 6) (|SingleInteger|)
-             (|Union| 6 '"failed") (|List| 25))
-          '#(|vector| 35 |parts| 40 |convert| 45 |construct| 50)
+             |VECTOR;vector;L$;1| (|Symbol|) (|InputForm|)
+             (5 . |convert|) (10 . |parts|) (15 . |convert|) (|List| $)
+             (20 . |convert|) (25 . |convert|) (|Mapping| 6 6 6)
+             (|Boolean|) (|NonNegativeInteger|) (|Equation| 6)
+             (|List| 21) (|Integer|) (|Mapping| 19 6)
+             (|Mapping| 19 6 6) (|UniversalSegment| 23) (|Void|)
+             (|Mapping| 6 6) (|OutputForm|) (|Matrix| 6)
+             (|SingleInteger|) (|String|) (|Union| 6 '"failed")
+             (|List| 23))
+          '#(|vector| 30 |parts| 35 |convert| 40 |construct| 45)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 5
                     '(0 0 0 0 0 0 0 5 0 0 1 4 0 0 1 2 3 4))
@@ -122,18 +121,18 @@
                                (|OneDimensionalArrayAggregate| 6)
                                (|FiniteLinearAggregate| 6)
                                (|LinearAggregate| 6)
-                               (|IndexedAggregate| 25 6)
+                               (|IndexedAggregate| 23 6)
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
                                (|OrderedSet|) (|Aggregate|)
-                               (|EltableAggregate| 25 6) (|Evalable| 6)
+                               (|EltableAggregate| 23 6) (|Evalable| 6)
                                (|SetCategory|) (|Type|)
-                               (|Eltable| 25 6) (|InnerEvalable| 6 6)
-                               (|CoercibleTo| 31) (|ConvertibleTo| 13)
+                               (|Eltable| 23 6) (|InnerEvalable| 6 6)
+                               (|CoercibleTo| 29) (|ConvertibleTo| 11)
                                (|BasicType|))
-                            (|makeByteWordVec2| 19
-                                '(1 0 0 7 8 1 11 0 10 12 1 13 0 11 14 1
-                                  0 7 0 15 1 7 13 0 16 1 13 0 17 18 1 0
-                                  13 0 19 1 0 0 7 9 1 0 7 0 15 1 3 13 0
-                                  19 1 0 0 7 8)))))
+                            (|makeByteWordVec2| 17
+                                '(1 0 0 7 8 1 11 0 10 12 1 0 7 0 13 1 7
+                                  11 0 14 1 11 0 15 16 1 0 11 0 17 1 0
+                                  0 7 9 1 0 7 0 13 1 3 11 0 17 1 0 0 7
+                                  8)))))
           '|lookupIncomplete|)) 

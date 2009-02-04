@@ -249,7 +249,7 @@ Matrix(R): Exports == Implementation where
  
     if R has ConvertibleTo InputForm then
       convert(x:$):InputForm ==
-         convert [convert("matrix"::Symbol)@InputForm,
+         convert [convert('matrix)@InputForm,
                   convert listOfLists x]$List(InputForm)
 
 @
@@ -336,7 +336,7 @@ RectangularMatrix(m,n,R): Exports == Implementation where
  
     if R has ConvertibleTo InputForm then
       convert(x:$):InputForm ==
-         convert [convert("rectangularMatrix"::Symbol)@InputForm,
+         convert [convert('rectangularMatrix)@InputForm,
                   convert(x::Matrix(R))]$List(InputForm)
 
 @
@@ -478,7 +478,7 @@ SquareMatrix(ndim,R): Exports == Implementation where
  
     if R has ConvertibleTo InputForm then
       convert(x:$):InputForm ==
-         convert [convert("squareMatrix"::Symbol)@InputForm,
+         convert [convert('squareMatrix)@InputForm,
                   convert(rep x)@InputForm]$List(InputForm)
 
 
@@ -486,6 +486,8 @@ SquareMatrix(ndim,R): Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

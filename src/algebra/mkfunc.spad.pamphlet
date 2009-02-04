@@ -130,7 +130,7 @@ InputForm():
       l := destruct s
       l2 := [flatten0(x, sy, n := n+1) for x in rest l]
       [concat(concat [u.lst for u in l2], conv([convert(
-        "LET"::Symbol)@%, a, conv(concat(first l,
+        "%LET"::Symbol)@%, a, conv(concat(first l,
              [u.symb for u in l2]))@%]$List(%))@%), a]
 
     strsym s ==
@@ -470,6 +470,8 @@ MakeFloatCompiledFunction(S): Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
