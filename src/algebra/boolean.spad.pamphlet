@@ -375,20 +375,18 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
     test: % -> %
       ++ test(b) returns b and is provided for compatibility with the new compiler.
   == add
-    nt: % -> %
-
     test a        == a
 
-    nt b          == (b => false; true)
+    nt(a: %): %   == NOT(a)$Lisp
     true          == 'T pretend %
     false         == NIL$Lisp
     sample()      == true
-    not b         == NOT(b)$Lisp
+    not b         == nt b
     _~ b          == (b => false; true)
     _and(a, b)    == AND(a,b)$Lisp
-    _/_\(a, b)    == (a => b; false)
+    _/_\(a, b)    == AND(a,b)$Lisp
     _or(a, b)     == OR(a,b)$Lisp
-    _\_/(a, b)    == (a => true; b)
+    _\_/(a, b)    == OR(a,b)$Lisp
     xor(a, b)     == (a => nt b; b)
     nor(a, b)     == (a => false; nt b)
     nand(a, b)    == (a => nt b; true)
@@ -409,12 +407,14 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
       true
 
     convert(x:%):InputForm ==
-      x => convert("true"::Symbol)
-      convert("false"::Symbol)
+      convert 
+        x => 'true
+        'false
 
     coerce(x:%):OutputForm ==
-      x => message "true"
-      message "false"
+      outputForm
+        x => 'true
+        'false
 
 @
 
