@@ -158,9 +158,7 @@
   (PROG (#0=#:G1444 |a| #1=#:G1445)
     (RETURN
       (SEQ (SPADCALL
-               (CONS (SPADCALL
-                         (SPADCALL "construct" (|getShellEntry| $ 38))
-                         (|getShellEntry| $ 40))
+               (CONS (SPADCALL '|construct| (|getShellEntry| $ 39))
                      (PROGN
                        (LETT #0# NIL |LIST;convert;$If;13|)
                        (SEQ (LETT |a| NIL |LIST;convert;$If;13|)
@@ -175,12 +173,12 @@
                             (SEQ (EXIT (LETT #0#
                                         (CONS
                                          (SPADCALL |a|
-                                          (|getShellEntry| $ 41))
+                                          (|getShellEntry| $ 40))
                                          #0#)
                                         |LIST;convert;$If;13|)))
                             (LETT #1# (CDR #1#) |LIST;convert;$If;13|)
                             (GO G190) G191 (EXIT (NREVERSE0 #0#)))))
-               (|getShellEntry| $ 43)))))) 
+               (|getShellEntry| $ 42)))))) 
 
 (DEFUN |List| (#0=#:G1446)
   (PROG ()
@@ -205,7 +203,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|List|))
         (LETT |dv$| (LIST '|List| |dv$1|) . #0#)
-        (LETT $ (|newShell| 62) . #0#)
+        (LETT $ (|newShell| 61) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -270,7 +268,7 @@
                        $)))))
         (COND
           ((|testBitVector| |pv$| 3)
-           (|setShellEntry| $ 44
+           (|setShellEntry| $ 43
                (CONS (|dispatchFunction| |LIST;convert;$If;13|) $))))
         $)))) 
 
@@ -287,18 +285,18 @@
              (73 . |concat|) (79 . |removeDuplicates|)
              (84 . |setUnion|) (90 . |member?|)
              (96 . |setIntersection|) (|Integer|) (102 . |elt|)
-             (108 . |setDifference|) (|Symbol|) (114 . |coerce|)
-             (|InputForm|) (119 . |convert|) (124 . |convert|)
-             (|List| $) (129 . |convert|) (134 . |convert|)
-             (|Mapping| 6 6 6) (|NonNegativeInteger|) (|List| 6)
-             (|Equation| 6) (|List| 48) (|Mapping| 8 6)
-             (|Mapping| 8 6 6) (|UniversalSegment| 34) '"last" '"rest"
-             '"first" '"value" (|Mapping| 6 6) (|OutputForm|)
-             (|SingleInteger|) (|List| 34) (|Union| 6 '"failed"))
-          '#(|setUnion| 139 |setIntersection| 145 |setDifference| 151
-             |removeDuplicates| 157 |null| 162 |nil| 167 |member?| 171
-             |elt| 177 |convert| 183 |cons| 188 |concat| 194 |append|
-             200 |OMwrite| 206)
+             (108 . |setDifference|) (|Symbol|) (|InputForm|)
+             (114 . |convert|) (119 . |convert|) (|List| $)
+             (124 . |convert|) (129 . |convert|) (|Mapping| 6 6 6)
+             (|NonNegativeInteger|) (|List| 6) (|Equation| 6)
+             (|List| 47) (|Mapping| 8 6) (|Mapping| 8 6 6)
+             (|UniversalSegment| 34) '"last" '"rest" '"first" '"value"
+             (|Mapping| 6 6) (|OutputForm|) (|SingleInteger|)
+             (|List| 34) (|Union| 6 '"failed"))
+          '#(|setUnion| 134 |setIntersection| 140 |setDifference| 146
+             |removeDuplicates| 152 |null| 157 |nil| 162 |member?| 166
+             |elt| 172 |convert| 178 |cons| 183 |concat| 189 |append|
+             195 |OMwrite| 201)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 6
                     '(0 0 0 0 0 0 0 0 0 0 5 0 0 1 4 0 0 1 2 3 4 6))
@@ -325,9 +323,9 @@
                                (|EltableAggregate| 34 6) (|Evalable| 6)
                                (|SetCategory|) (|Type|)
                                (|Eltable| 34 6) (|InnerEvalable| 6 6)
-                               (|CoercibleTo| 58) (|ConvertibleTo| 39)
+                               (|CoercibleTo| 57) (|ConvertibleTo| 38)
                                (|BasicType|) (|OpenMath|))
-                            (|makeByteWordVec2| 44
+                            (|makeByteWordVec2| 43
                                 '(1 13 12 0 14 3 13 12 0 15 15 16 3 6
                                   12 13 0 8 17 1 13 12 0 18 0 19 0 20 2
                                   13 0 15 19 21 1 13 12 0 22 1 13 12 0
@@ -335,12 +333,12 @@
                                   8 26 2 0 12 13 0 27 3 0 12 13 0 8 28
                                   2 0 0 0 0 29 1 0 0 0 30 2 0 0 0 0 31
                                   2 0 8 6 0 32 2 0 0 0 0 33 2 0 6 0 34
-                                  35 2 0 0 0 0 36 1 37 0 15 38 1 39 0
-                                  37 40 1 6 39 0 41 1 39 0 42 43 1 0 39
-                                  0 44 2 8 0 0 0 31 2 8 0 0 0 33 2 8 0
-                                  0 0 36 1 8 0 0 30 1 0 8 0 9 0 0 0 7 2
-                                  8 8 6 0 32 2 0 6 0 34 35 1 3 39 0 44
-                                  2 0 0 6 0 10 2 0 0 0 0 29 2 0 0 0 0
-                                  11 3 6 12 13 0 8 28 2 6 12 13 0 27 1
-                                  6 15 0 25 2 6 15 0 8 26)))))
+                                  35 2 0 0 0 0 36 1 38 0 37 39 1 6 38 0
+                                  40 1 38 0 41 42 1 0 38 0 43 2 8 0 0 0
+                                  31 2 8 0 0 0 33 2 8 0 0 0 36 1 8 0 0
+                                  30 1 0 8 0 9 0 0 0 7 2 8 8 6 0 32 2 0
+                                  6 0 34 35 1 3 38 0 43 2 0 0 6 0 10 2
+                                  0 0 0 0 29 2 0 0 0 0 11 3 6 12 13 0 8
+                                  28 2 6 12 13 0 27 1 6 15 0 25 2 6 15
+                                  0 8 26)))))
           '|lookupIncomplete|)) 

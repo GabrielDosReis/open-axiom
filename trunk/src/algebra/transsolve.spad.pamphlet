@@ -196,7 +196,7 @@ TransSolvePackage(R) : Exports == Implementation where
      --  This function was suggested by Manuel Bronstein as a simpler 
      --  alternative to normalize.
      simplifyingLog(f:RE):RE ==
-       (u:=isExpt(f,"exp"::Symbol)) case Record(var:Kernel RE,exponent:Integer) =>       
+       (u:=isExpt(f,'exp)) case Record(var:Kernel RE,exponent:Integer) =>       
          rec := u::Record(var:Kernel RE,exponent:Integer)
          rec.exponent * first argument(rec.var)
        log f
@@ -412,46 +412,46 @@ TransSolvePackage(R) : Exports == Implementation where
          error "This should never happen"
 
      funcinv(k:RE,l:RE) : Union(RE,"failed") ==
-       is?(k, "sin"::Symbol)   => asin(l)
-       is?(k, "cos"::Symbol)   => acos(l)
-       is?(k, "tan"::Symbol)   => atan(l)
-       is?(k, "cot"::Symbol)   => acot(l)
-       is?(k, "sec"::Symbol)   =>
+       is?(k,'sin)   => asin(l)
+       is?(k,'cos)   => acos(l)
+       is?(k,'tan)   => atan(l)
+       is?(k,'cot)   => acot(l)
+       is?(k,'sec)   =>
            l = 0 => "failed"
            asec(l)
-       is?(k, "csc"::Symbol)   =>
+       is?(k,'csc)   =>
            l = 0 => "failed"
            acsc(l)
-       is?(k, "sinh"::Symbol)  => asinh(l)
-       is?(k, "cosh"::Symbol)  => acosh(l)
-       is?(k, "tanh"::Symbol)  => atanh(l)
-       is?(k, "coth"::Symbol)  => acoth(l)
-       is?(k, "sech"::Symbol)  => asech(l)
-       is?(k, "csch"::Symbol)  => acsch(l)
-       is?(k, "atan"::Symbol)  => tan(l)
-       is?(k, "acot"::Symbol)  =>
+       is?(k,'sinh)  => asinh(l)
+       is?(k,'cosh)  => acosh(l)
+       is?(k,'tanh)  => atanh(l)
+       is?(k,'coth)  => acoth(l)
+       is?(k,'sech)  => asech(l)
+       is?(k,'csch)  => acsch(l)
+       is?(k,'atan)  => tan(l)
+       is?(k,'acot)  =>
            l = 0 => "failed"
            cot(l)
-       is?(k, "asin"::Symbol)  => sin(l)
-       is?(k, "acos"::Symbol)  => cos(l)
-       is?(k, "asec"::Symbol)  => sec(l)
-       is?(k, "acsc"::Symbol)  =>
+       is?(k,'asin)  => sin(l)
+       is?(k,'acos)  => cos(l)
+       is?(k,'asec)  => sec(l)
+       is?(k,'acsc)  =>
            l = 0 => "failed"
            csc(l)
-       is?(k, "asinh"::Symbol) => sinh(l)
-       is?(k, "acosh"::Symbol) => cosh(l)
-       is?(k, "atanh"::Symbol) => tanh(l)
-       is?(k, "acoth"::Symbol) =>
+       is?(k,'asinh) => sinh(l)
+       is?(k,'acosh) => cosh(l)
+       is?(k,'atanh) => tanh(l)
+       is?(k,'acoth) =>
            l = 0 => "failed"
            coth(l)
-       is?(k, "asech"::Symbol) => sech(l)
-       is?(k, "acsch"::Symbol) =>
+       is?(k,'asech) => sech(l)
+       is?(k,'acsch) =>
            l = 0 => "failed"
            csch(l)
-       is?(k, "exp"::Symbol)   =>
+       is?(k,'exp)   =>
            l = 0 => "failed"
            simplifyingLog l
-       is?(k, "log"::Symbol)   =>
+       is?(k,'log)   =>
          if R has complex and R has ConvertibleTo(C F) then
            -- We will check to see if the imaginary part lies in [-Pi,Pi)
            ze : Expression C INT F
@@ -464,7 +464,7 @@ TransSolvePackage(R) : Exports == Implementation where
            "failed"
          else -- R not Complex or something which doesn't map to Complex Floats
            exp l 
-       is?(k, "%power"::Symbol)   => 
+       is?(k,'%power)   => 
             (t:=normalize(l)) = 0 => "failed"
             log t
        l
@@ -651,6 +651,8 @@ TransSolvePackageService(R) : Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

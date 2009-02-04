@@ -66,7 +66,7 @@ ListMultiDictionary(S:SetCategory): MultiDictionary(S) with
 
    if S has ConvertibleTo InputForm then
      convert(lmd:%):InputForm ==
-       convert [convert("dictionary"::Symbol)@InputForm,
+       convert [convert('dictionary)@InputForm,
         convert(parts lmd)@InputForm]
 
    map(f, s)          == dictionary map(f, parts s)
@@ -158,6 +158,8 @@ ListMultiDictionary(S:SetCategory): MultiDictionary(S) with
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

@@ -573,10 +573,10 @@ InnerTrigonometricManipulations(R,F,FG): Exports == Implementation where
                                     for a in argument k]$List(FG)) => kf
       im := complex(0, 1)$GR :: FG
       z  := first args
-      is?(k, "tan"::Symbol)  =>
+      is?(k,'tan)  =>
         e := (member?(k, l) => exp(im * z) ** 2;  exp(2 * im * z))
         - im * (e - 1) /$FG (e + 1)
-      is?(k, "atan"::Symbol) =>
+      is?(k,'atan) =>
         im * log((1 -$FG im *$FG z)/$FG (1 +$FG im *$FG z))$FG / (2::FG)
       (operator k) args
 
@@ -589,33 +589,33 @@ InnerTrigonometricManipulations(R,F,FG): Exports == Implementation where
       "and"/[zero? imag x for x in arg] =>
         complex(op [real x for x in arg]$List(F), 0)
       a := first arg
-      is?(op, "exp"::Symbol)  => exp a
-      is?(op, "log"::Symbol)  => log a
-      is?(op, "sin"::Symbol)  => sin a
-      is?(op, "cos"::Symbol)  => cos a
-      is?(op, "tan"::Symbol)  => tan a
-      is?(op, "cot"::Symbol)  => cot a
-      is?(op, "sec"::Symbol)  => sec a
-      is?(op, "csc"::Symbol)  => csc a
-      is?(op, "asin"::Symbol)  => asin a
-      is?(op, "acos"::Symbol)  => acos a
-      is?(op, "atan"::Symbol)  => atan a
-      is?(op, "acot"::Symbol)  => acot a
-      is?(op, "asec"::Symbol)  => asec a
-      is?(op, "acsc"::Symbol)  => acsc a
-      is?(op, "sinh"::Symbol)  => sinh a
-      is?(op, "cosh"::Symbol)  => cosh a
-      is?(op, "tanh"::Symbol)  => tanh a
-      is?(op, "coth"::Symbol)  => coth a
-      is?(op, "sech"::Symbol)  => sech a
-      is?(op, "csch"::Symbol)  => csch a
-      is?(op, "asinh"::Symbol)  => asinh a
-      is?(op, "acosh"::Symbol)  => acosh a
-      is?(op, "atanh"::Symbol)  => atanh a
-      is?(op, "acoth"::Symbol)  => acoth a
-      is?(op, "asech"::Symbol)  => asech a
-      is?(op, "acsch"::Symbol)  => acsch a
-      is?(op, "abs"::Symbol)    => sqrt(norm a)::GF
+      is?(op,'exp)  => exp a
+      is?(op,'log)  => log a
+      is?(op,'sin)  => sin a
+      is?(op,'cos)  => cos a
+      is?(op,'tan)  => tan a
+      is?(op,'cot)  => cot a
+      is?(op,'sec)  => sec a
+      is?(op,'csc)  => csc a
+      is?(op,'asin)  => asin a
+      is?(op,'acos)  => acos a
+      is?(op,'atan)  => atan a
+      is?(op,'acot)  => acot a
+      is?(op,'asec)  => asec a
+      is?(op,'acsc)  => acsc a
+      is?(op,'sinh)  => sinh a
+      is?(op,'cosh)  => cosh a
+      is?(op,'tanh)  => tanh a
+      is?(op,'coth)  => coth a
+      is?(op,'sech)  => sech a
+      is?(op,'csch)  => csch a
+      is?(op,'asinh)  => asinh a
+      is?(op,'acosh)  => acosh a
+      is?(op,'atanh)  => atanh a
+      is?(op,'acoth)  => acoth a
+      is?(op,'asech)  => asech a
+      is?(op,'acsch)  => acsch a
+      is?(op,'abs)    => sqrt(norm a)::GF
       nth and is?(op, NTHR) => nthRoot(a, retract(second arg)@Z)
       error "ker2trigs: cannot convert kernel to gaussian function"
 
@@ -633,7 +633,7 @@ InnerTrigonometricManipulations(R,F,FG): Exports == Implementation where
       arg := [explogs2trigs x for x in argument k]
       num := univariate(numer f, k)
       den := univariate(denom f, k)
-      is?(op, "exp"::Symbol) =>
+      is?(op,'exp) =>
         e  := exp real first arg
         y  := imag first arg
         g  := complex(e *  cos y, e * sin y)$GF
@@ -914,6 +914,8 @@ ComplexTrigonometricManipulations(R, F): Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
