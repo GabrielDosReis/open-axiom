@@ -1,5 +1,9 @@
 2009-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/Makefile.pamphlet: Tidy.
+
+2009-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/algfunc.spad.pamphlet: Quote symbols.
 	* algebra/combfunc.spad.pamphlet: Likewise.
 	* algebra/drawopt.spad.pamphlet: Likewise.
