@@ -238,14 +238,27 @@ axiom_algebra_layer_0_objects = \
 
 \subsubsection{Completed spad files}
 
-\begin{verbatim}
-ituple.spad.pamphlet   (ITFUN2 ITFUN3 ITUPLE)
-mkrecord.spad.pamphlet (MKRECORD)
-pcurve.spad.pamphlet   (PPCURVE PSCURVE)
-coerce.spad.pamphlet   (TYPE KOERCE KONVERT RETRACT)
-\end{verbatim}
-
 <<layer1>>=
+
+$(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+
+$(OUT)/HOMOTOP.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/KRCFROM.$(FASLEXT)
+$(OUT)/ITUPLE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
+$(OUT)/PATAB.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
+$(OUT)/PPCURVE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
+$(OUT)/PSCURVE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
+
+$(OUT)/IEVALAB.$(FASLEXT) $(OUT)/IEVALAB-.$(FASLEXT): \
+	$(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/EVALAB.$(FASLEXT) $(OUT)/EVALAB-.$(FASLEXT): \
+	$(OUT)/IEVALAB.$(FASLEXT)
+
+$(OUT)/LOGIC.$(FASLEXT) $(OUT)/LOGIC-.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
+$(OUT)/PROPLOG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+
+$(OUT)/RETRACT.$(FASLEXT) $(OUT)/RETRACT-.$(FASLEXT): $(OUT)/KRCFROM.$(FASLEXT)
+$(OUT)/MAYBE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT)
+
 axiom_algebra_layer_1 = \
   AGG      AGG-     IEVALAB  IEVALAB- FORTCAT   ITUPLE   \
   PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
