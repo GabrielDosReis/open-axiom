@@ -1,3 +1,7 @@
+2009-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (Boolean): Tidy.
+
 2009-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/domain.spad.pamphlet (FunctionDescriptor): New.
