@@ -195,7 +195,7 @@ FunctionSpaceIntegration(R, F): Exports == Implementation where
       not empty? rest rest l
  
     integrate(f, x) ==
-      not real? f => complexIntegrate(f, x)
+      R has complex or not real? f => complexIntegrate(f, x)
       f   := distribute(f, x::F)
       tf  := [k for k in tower f | member?(x, variables(k::F)@List(SE))]$List(K)
       ltf := select(is?(operator #1, "tan"::SE), tf)
