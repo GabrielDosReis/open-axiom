@@ -1,4 +1,8 @@
 2009-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/domain.lisp: Remove.
+
+2009-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	    Waldek Hebisch <hebisch@math.uni.wroc.pl>
 
 	Fix AW/440
