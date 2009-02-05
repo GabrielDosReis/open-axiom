@@ -1,3 +1,11 @@
+2009-02-04  Waldek Hebisch <hebisch@math.uni.wroc.pl>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix AW/441
+	* algebra/defintrf.spad.pamphlet
+	(findRealZero$DefiniteIntegrationTools):  Deal with simple zeros.
+	* testsuite/interpreter/aw-441.input: New.
+
 2009-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/gaussian.spad.pamphlet (ComplexCategory): Reinstate

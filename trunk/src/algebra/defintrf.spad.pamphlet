@@ -170,6 +170,9 @@ DefiniteIntegrationTools(R, F): Exports == Implementation where
       [[q::Q, t::Q]]
 
     findRealZero(p, i, incl?) ==
+      -- Multiplicities of zeros are irrelevant, and in fact
+      -- this functions can handle only simple zeros.
+      p := squareFreePart p
       i case fin =>
         l := realZeros(p, r := i.fin)
         incl? => l
