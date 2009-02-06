@@ -1,3 +1,7 @@
+2009-02-06  Alfredo Portes  <doyenatccny@gmail.com>
+
+	* hyper/presea.in: Fix thinko.
+	
 2009-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	    Alfredo Portes  <doyenatccny@gmail.com>
 
