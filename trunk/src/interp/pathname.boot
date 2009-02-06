@@ -48,8 +48,7 @@ pathname? p ==
   null p or PATHNAMEP p
  
 pathname p ==
-  null p => p
-  PATHNAMEP p => p
+  pathname? p => p
   not PAIRP p => PATHNAME p
   if #p>2 then p:=[p.0,p.1]
   PATHNAME APPLY(FUNCTION MAKE_-FILENAME, p)

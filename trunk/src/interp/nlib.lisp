@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -304,9 +304,6 @@
 (defun make-full-namestring (filearg &optional (filetype nil))
   (namestring (merge-pathnames (make-filename filearg filetype))))
 
-(defun probe-name (file)
-  (if (probe-file file) (namestring file) nil))
-
 (defun get-directory-list (ft)
   (let ((cd (get-current-directory)))
     (cond ((member ft '("NRLIB" "DAASE" "EXPOSED") :test #'string=)
@@ -327,12 +324,11 @@
       (dirs (get-directory-list ft))
       (newfn nil))   
     (if (or (null dirname) (eqcar dirname :relative))
-        (dolist (dir dirs (probe-name filename))
-                (when 
-                 (probe-file 
-                  (setq newfn (concatenate 'string dir filename)))
-                 (return newfn)))
-      (probe-name filename))))
+        (dolist (dir dirs (|probeReadableFile| filename))
+	  (setq newfn (concatenate 'string dir filename))
+	  (when (|probeReadableFile| newfn)
+	    (return newfn)))
+      (|probeReadableFile| filename))))
 
 (defun $FILEP (&rest filearg) (make-full-namestring filearg))
 (define-function '$OUTFILEP #'$FILEP) ;;temporary bogus def
