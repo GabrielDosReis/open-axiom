@@ -49,7 +49,7 @@ readLib(fn,ft) == readLib1(fn,ft,"*")
  
 readLib1(fn,ft,fm) ==
   -- see if it exists first
-  p := pathname [fn,ft,fm]
+  p := pathname [fn,ft,fm] or return nil
   readLibPathFast p
  
 readLibPathFast p ==
@@ -94,7 +94,7 @@ getLisplibNoCache(name,id) ==
  
 getFileProperty(fn,ft,id,cache) ==
   fn in '(DOMAIN SUBDOM MODE) => nil
-  p := pathname [fn,ft,'"*"]
+  p := pathname [fn,ft,'"*"] or return nil
   cache => hasFileProperty(p,id,fn)
   hasFilePropertyNoCache(p,id,fn)
  

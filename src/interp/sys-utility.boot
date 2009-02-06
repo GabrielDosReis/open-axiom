@@ -37,6 +37,9 @@ import sys_-os
 import vmlisp
 namespace BOOT
 
+module sys_-utility where
+  probleReadableFile : %String -> %Maybe %String
+
 --%
 $COMBLOCKLIST := nil
 
@@ -189,6 +192,10 @@ makeAbsoluteFilename name ==
 existingFile? file ==
   PROBE_-FILE file => true
   false
+
+probeReadableFile file ==
+  readablep file > 0 => file
+  nil
 
 ++ original version returned 0 on success, and 1 on failure
 ++ ??? fix that to return -1 on failure.

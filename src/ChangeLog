@@ -1,3 +1,13 @@
+2009-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	    Alfredo Portes  <doyenatccny@gmail.com>
+
+	Fix AW/236, AW/282
+	* interp/sys-utility.boot (probeReadableFile): New.
+	* interp/nlib.lisp (probe-name): Remove.
+	(make-input-filename): Tidy.
+	* interp/lisplib.boot (readLib1): Return nil if path inexistent.
+	(getFileProperty): Likewise.
+
 2009-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/domain.lisp: Remove.
