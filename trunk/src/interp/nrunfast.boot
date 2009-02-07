@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -57,9 +57,11 @@ initNewWorld() ==
   $updateCatTableIfTrue := false
   $doNotCompressHashTableIfTrue := true
  
-isNewWorldDomain domain == INTEGERP domain.3    --see HasCategory/Attribute
+isNewWorldDomain domain == 
+  INTEGERP domain.3    --see HasCategory/Attribute
  
-getDomainByteVector dom == CDDR dom.4
+getDomainByteVector dom == 
+  CDDR dom.4
  
 getOpCode(op,vec,max) ==
 --search Op vector for "op" returning code if found, nil otherwise
@@ -106,7 +108,6 @@ newGoGet(:l) ==
   slot := replaceGoGetSlot env
   APPLY(first slot,[:arglist,rest slot])  --SPADCALL it!
  
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
 replaceGoGetSlot env ==
   [thisDomain,index,:op] := env
   thisDomainForm := devaluate thisDomain
@@ -142,15 +143,12 @@ replaceGoGetSlot env ==
 --=======================================================
 --       Lookup Function in Slot 1 (via SPADCALL)
 --=======================================================
-lookupFF(op,sig,dollar,env) == newLookupInTable(op,sig,dollar,env,nil)
+
+lookupComplete(op,sig,dollar,env) == 
+  newLookupInTable(op,sig,dollar,env,nil)
  
-lookupUF(op,sig,dollar,env) == newLookupInTable(op,sig,dollar,env,true)
- 
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
-lookupComplete(op,sig,dollar,env) == newLookupInTable(op,sig,dollar,env,nil)
- 
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
-lookupIncomplete(op,sig,dollar,env) == newLookupInTable(op,sig,dollar,env,true)
+lookupIncomplete(op,sig,dollar,env) == 
+  newLookupInTable(op,sig,dollar,env,true)
  
 newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   dollar = nil => systemError()
@@ -420,7 +418,6 @@ newCompareSig(sig, numvec, index, dollar, domain) ==
 --=======================================================
 lazyMatchArg(s,a,dollar,domain) == lazyMatchArg2(s,a,dollar,domain,true)
  
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
 lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   if s = '$ then
 --  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
@@ -525,7 +522,6 @@ newExpandTypeSlot(slot, dollar, domain) ==
    newExpandLocalType(sigDomainVal(dollar, domain, slot), dollar,domain)
  
  
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
 newExpandLocalType(lazyt,dollar,domain) ==
   VECP lazyt => lazyt.0
   ATOM lazyt => lazyt
@@ -577,7 +573,6 @@ sigDomainVal(dollar,domain,index) ==
 --          Convert Lazy Domain to Domain Form
 --=======================================================
  
---------------------> NEW DEFINITION (see interop.boot.pamphlet)
 lazyDomainSet(lazyForm,thisDomain,slot) ==
   form :=
     lazyForm is [vec,.,:u] and VECP vec => u        --old style

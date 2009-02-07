@@ -79,6 +79,11 @@ extern "C" {
 #  define OPENAXIOM_HAVE_GRAPHICS 1
 #endif
 
+/* Byte order enumeration.  */
+typedef enum openaxiom_byteorder {
+   oa_unknown_endian, oa_little_endian, oa_big_endian
+} openaxiom_byteorder;
+
 
 /* Return the address of the data buffer `BUF'.  */
 

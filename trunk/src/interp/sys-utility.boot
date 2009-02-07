@@ -47,6 +47,17 @@ $COMBLOCKLIST := nil
 %nothing == KEYWORD::%OpenAxiomNoValue
 
 
+++ Constants describing byte order
+%littleEndian == KEYWORD::%littleEndian
+%bigEndian == KEYWORD::%bigEndian
+%unknownEndian == KEYWORD::%unknownEndian
+
+++ The byte order of the host machine running OpenAxiom.
+%hostByteOrder ==
+  getHostByteOrder() = 1 => %littleEndian
+  getHostByteOrder() = 2 => %bigEndian
+  %unknownEndian
+
 --%
 
 ++ getVMType returns an approximation of the underlying object type

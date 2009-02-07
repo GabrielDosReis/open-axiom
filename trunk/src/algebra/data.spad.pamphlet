@@ -49,6 +49,31 @@ Byte(): Public == Private where
 
 @
 
+<<domain BYTEORD ByteOrder>>=
+)abbrev domain BYTEORD ByteOrder
+++ Author: Gabriel Dos Reis
+++ Date Created: February 06, 2009
+++ Date Last Modified:
+++ Description:
+++   This datatype describes byte order of machine values stored memory.
+ByteOrder(): Public == Private where
+  Public == SetCategory with
+    littleEndian: %   ++ \spad{littleEndian} describes little endian host
+    bigEndian: %      ++ \spad{bigEndian} describes big endian host
+    unknownEndian: %  ++ \spad{unknownEndian} for none of the above.
+  Private == add
+    unknownEndian == %unknownEndian$Lisp
+    littleEndian == %littleEndian$Lisp
+    bigEndian == %bigEndian$Lisp
+    x = y == EQ(x,y)$Lisp
+    coerce(x: %): OutputForm ==
+      outputForm
+        x = littleEndian => 'litteEndian
+        x = bigEndian => 'bigEndian
+        'unknownEndian
+
+@
+
 
 \section{Sized System Integer datatypes}
 

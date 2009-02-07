@@ -234,4 +234,11 @@ minusInfinity() ==
 ++   otherwise 0.
 import  std__stream__is__terminal: int -> int for stdStreamIsTerminal
 
---%
+--% Data layout
+
+++ getHostByteOrder:
+++   returns the byte order of the host machine.
+++   0: unknown
+++   1: little endian
+++   2: big endian
+import oa__get__host__byteorder: () -> int for getHostByteOrder

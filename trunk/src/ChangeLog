@@ -1,3 +1,9 @@
+2009-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/system.spad.pamphlet (hostByteOrder$System): New.
+	* algebra/data.spad.pamphlet (ByteOrder): New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_1): Include BYTEORD.
+
 2009-02-06  Alfredo Portes  <doyenatccny@gmail.com>
 
 	* hyper/presea.in: Fix thinko.
