@@ -105,6 +105,9 @@ AC_OBJEXT
 AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
                    [Extension of executable file.])
 
+## Byte order of the host.
+AC_C_BIGENDIAN
+
 
 AC_PROG_INSTALL
 # AC_PROG_LN_S

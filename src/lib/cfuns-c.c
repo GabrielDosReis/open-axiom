@@ -2,7 +2,7 @@
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
 
-   Copyright (C) 2007-2008, Gabriel Dos Reis.
+   Copyright (C) 2007-2009, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -672,6 +672,17 @@ NANQ(void)
 #ifdef NAN
    return NAN;
 #else
-   return sqrt(-1.0);            /* Juts pick one.  */
+   return sqrt(-1.0);            /* Just pick one.  */
 #endif
+}
+
+
+OPENAXIOM_EXPORT openaxiom_byteorder
+oa_get_host_byteorder(void)
+{
+#ifdef WORDS_BIGENDIAN
+   return oa_big_endian;
+#else
+   return oa_little_endian;
+#endif   
 }

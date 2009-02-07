@@ -1,3 +1,7 @@
+2009-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Check endianness.
+
 2009-01-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* OpenAxiom 1.2.1 Released.
