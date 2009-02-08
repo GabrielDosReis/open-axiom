@@ -194,10 +194,6 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       x quo y == QUOTIENT2(x,y)$Lisp
       x rem y == REMAINDER2(x,y)$Lisp
       shift(x, y) == ASH(x,y)$Lisp
-      x exquo y ==
-         zero? y => "failed"
-         zero?(x rem y) => x quo y
-         "failed"
       recip(x) == if one? x or x=-1 then x else "failed"
       gcd(x,y) == GCD(x,y)$Lisp
       UCA ==> Record(unit:%,canonical:%,associate:%)

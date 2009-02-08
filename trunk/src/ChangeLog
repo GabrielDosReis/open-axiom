@@ -1,5 +1,13 @@
 2009-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix AW/103
+	* algebra/catdef.spad.pamphlet (exquo$EuclideanDomain): Return 0
+	if first argument is 0.
+	* algebra/integer.spad.pamphlet (exquo$Integer): Remove.
+	* testsuite/interpreter/aw-103.input: New.
+
+2009-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix AW/66
 	* algebra/zerodim.spad.pamphlet: Restore use of one? 
 	* algebra/updivp.spad.pamphlet: Likewise.
