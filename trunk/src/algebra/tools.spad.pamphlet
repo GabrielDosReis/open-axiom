@@ -263,8 +263,7 @@ ExpertSystemToolsPackage():E == I where
     isQuotient(expr:EDF):Union(EDF,"failed") ==
       (k := mainKernel expr) case KEDF =>
         (expr = inv(f := k :: KEDF :: EDF)$EDF)$EDF => f
---        one?(numerator expr) => denominator expr
-        (numerator expr) = 1 => denominator expr
+        one?(numerator expr) => denominator expr
         "failed"
       "failed"
 

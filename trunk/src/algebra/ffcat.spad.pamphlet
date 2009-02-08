@@ -618,8 +618,7 @@ FiniteFieldCategory() : Category ==_
       q:=(size()-1)@Integer
       equalone : Boolean := false
       for exp in explist while not equalone repeat
---        equalone := one?(a**(q quo exp.factor))
-        equalone := ((a**(q quo exp.factor)) = 1)
+        equalone := one?(a**(q quo exp.factor))
       not equalone
     order(e: %): PositiveInteger ==
       e = 0 => error "order(0) is not defined "
@@ -628,16 +627,14 @@ FiniteFieldCategory() : Category ==_
       lof:=factorsOfCyclicGroupSize()
       for rec in lof repeat -- run through prime divisors
         a := ord quo (primeDivisor := rec.factor)
---        goon := one?(e**a)
-        goon := ((e**a) = 1)
+        goon := one?(e**a)
         -- run through exponents of the prime divisors
         for j in 0..(rec.exponent)-2 while goon repeat
           -- as long as we get (e**ord = 1) we
           -- continue dividing by primeDivisor
           ord := a
           a := ord quo primeDivisor
---          goon := one?(e**a)
-          goon := ((e**a) = 1)
+          goon := one?(e**a)
         if goon then ord := a
         -- as we do a top down search we have found the
         -- correct exponent of primeDivisor in order e

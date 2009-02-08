@@ -336,7 +336,7 @@
   (INTEGER-LENGTH |a|)) 
 
 (DEFUN |INT;addmod;4$;20| (|a| |b| |p| $)
-  (PROG (|c| #0=#:G1433)
+  (PROG (|c| #0=#:G1434)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ (LETT |c| (+ |a| |b|) |INT;addmod;4$;20|)
                            (EXIT (COND
@@ -464,7 +464,7 @@
   (SPADCALL |p| (|getShellEntry| $ 98))) 
 
 (DEFUN |INT;factorPolynomial| (|p| $)
-  (PROG (|pp| #0=#:G1504)
+  (PROG (|pp| #0=#:G1506)
     (RETURN
       (SEQ (LETT |pp| (SPADCALL |p| (|getShellEntry| $ 99))
                  |INT;factorPolynomial|)
@@ -507,7 +507,7 @@
 (DEFUN |Integer| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1529)
+      (PROG (#0=#:G1531)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Integer|) |Integer|)

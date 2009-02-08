@@ -114,8 +114,7 @@ NewSparseUnivariatePolynomial(R): Exports == Implementation where
 		ground? y =>
 		   error "in monicModulo$NSUP: ground? #2"
                 yy := rep y
---                not one? (yy.first.c) => 
-                not ((yy.first.c) = 1) => 
+                not one? (yy.first.c) => 
 		   error "in monicModulo$NSUP: not monic #2"
                 xx := rep x; empty? xx => x
                 e := yy.first.k; y := per(yy.rest)                
@@ -148,8 +147,7 @@ NewSparseUnivariatePolynomial(R): Exports == Implementation where
 		   error "in lazyPseudoRemainder$NSUP: ground? #2"
 		ground? x => x
                 yy := rep y; co := yy.first.c
---                one? co => monicModulo(x,y)
-                (co = 1) => monicModulo(x,y)
+                one? co => monicModulo(x,y)
                 (co = -1) => - monicModulo(-x,-y)
                 xx:= rep x; e := yy.first.k; y := per(yy.rest)
                 repeat
@@ -633,20 +631,17 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
 
      coerce(p:$):O ==
        ground? (p) => (ground(p))::O
---       if one?((ip := init(p)))
-       if (((ip := init(p))) = 1)
+       if one?((ip := init(p)))
          then
            if zero?((tp := tail(p)))
              then
---               if one?((dp := mdeg(p)))
-               if (((dp := mdeg(p))) = 1)
+               if one?((dp := mdeg(p)))
                  then
                    return((mvar(p))::O)
                  else
                    return(((mvar(p))::O **$O (dp::O)))
              else
---               if one?((dp := mdeg(p)))
-               if (((dp := mdeg(p))) = 1)
+               if one?((dp := mdeg(p)))
                  then
                    return((mvar(p))::O +$O (tp::O))
                  else
@@ -654,15 +649,13 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
           else
            if zero?((tp := tail(p)))
              then
---               if one?((dp := mdeg(p)))
-               if (((dp := mdeg(p))) = 1)
+               if one?((dp := mdeg(p)))
                  then
                    return((ip::O) *$O  (mvar(p))::O)
                  else
                    return((ip::O) *$O ((mvar(p))::O **$O (dp::O)))
              else
---               if one?(mdeg(p))
-               if ((mdeg(p)) = 1)
+               if one?(mdeg(p))
                  then
                    return(((ip::O) *$O  (mvar(p))::O) +$O (tp::O))
        ((ip)::O *$O ((mvar(p))::O **$O ((mdeg(p)::O))) +$O (tail(p)::O))
@@ -1063,8 +1056,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
 
          primitivePart! p ==
            zero? p => p
---           if one?(cp := content(p))
-           if ((cp := content(p)) = 1)
+           if one?(cp := content(p))
              then
                p := unitCanonical p
              else
@@ -1086,8 +1078,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
      then
 
        gcd(r:R,p:$):R ==
---         one? r => r
-         (r = 1) => r
+         one? r => r
          zero? p => r
          ground? p => gcd(r,ground(p))$R
          gcd(gcd(r,init(p)),tail(p))
@@ -1392,13 +1383,11 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
                dpol : NNI := mdeg(pol)
                tpol: $  := tail(pol)
                sipol,svpol,sdpol,stpol : String
---               if one? ipol
-               if (ipol = 1)
+               if one? ipol
                  then 
                    sipol := empty()$String
                  else
---                   if one?(-ipol)
-                   if ((-ipol) = 1)
+                   if one?(-ipol)
                      then 
                        sipol := "-"
                      else
@@ -1409,8 +1398,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
                          else 
                            sipol := concat(sipol,"*")$String
                svpol := string(convert(vpol)@Symbol)
---               if one? dpol
-               if (dpol = 1)
+               if one? dpol
                  then
                    sdpol :=  empty()$String
                  else
@@ -1571,8 +1559,7 @@ NewSparseMultivariatePolynomial(R,VarSet) : Exports == Implementation where
        not ground?(ib)$$ => 
          error"Error in monicModulo from NSMP : #2 is not monic"
        mM : $
---       if not one?(ib)$$
-       if not ((ib) = 1)$$
+       if not one?(ib)$$
          then
            r : R := ground(ib)$$
            rec : Union(R,"failed"):= recip(r)$R
@@ -1703,23 +1690,20 @@ NewSparseMultivariatePolynomial(R,VarSet) : Exports == Implementation where
 
        LazardQuotient(x:$, y:$, n: N):$ == 
          zero?(n) => error("LazardQuotient$NSMP : n = 0")
---         one?(n) => x
-         (n = 1) => x
+         one?(n) => x
          a: N := 1
          while n >= (b := 2*a) repeat a := b
          c: $ := x
          n := (n - a)::N
          repeat       
---           one?(a) => return c
-           (a = 1) => return c
+           one?(a) => return c
            a := a quo 2
            c := exactQuo(c*c,y)
            if n >= a then ( c := exactQuo(c*x,y) ; n := (n - a)::N )
 
        LazardQuotient2(p:$, a:$, b:$, n: N) ==
          zero?(n) => error " in LazardQuotient2$NSMP: bad #4"
---         one?(n) => p
-         (n = 1) => p
+         one?(n) => p
          c: $  := LazardQuotient(a,b,(n-1)::N)
          exactQuo(c*p,b)
 
@@ -1782,14 +1766,12 @@ NewSparseMultivariatePolynomial(R,VarSet) : Exports == Implementation where
        then
 
          exactQuotient (a:$,b:R) ==
---           one? b => a
-           (b = 1) => a
+           one? b => a
            a case R => (a::R quo$R b)::$
            ([a.v, map(exactQuotient(#1,b),a.ts)$SUP2]$VPoly)::Rep
 
          exactQuotient! (a:$,b:R) ==
---           one? b => a
-           (b = 1) => a
+           one? b => a
            a case R => (a::R quo$R b)::$
            a.ts := map(exactQuotient!(#1,b),a.ts)$SUP2
            a
@@ -1797,14 +1779,12 @@ NewSparseMultivariatePolynomial(R,VarSet) : Exports == Implementation where
        else
 
          exactQuotient (a:$,b:R) ==
---           one? b => a
-           (b = 1) => a
+           one? b => a
            a case R => ((a::R exquo$R b)::R)::$
            ([a.v, map(exactQuotient(#1,b),a.ts)$SUP2]$VPoly)::Rep
 
          exactQuotient! (a:$,b:R) == 
---           one? b => a
-           (b = 1) => a
+           one? b => a
            a case R => ((a::R exquo$R b)::R)::$
            a.ts := map(exactQuotient!(#1,b),a.ts)$SUP2
            a
@@ -1817,8 +1797,7 @@ NewSparseMultivariatePolynomial(R,VarSet) : Exports == Implementation where
          gcd(r,content(p))$R         
 
        gcd(r:R,p:$):R ==
---         one? r => r
-         (r = 1) => r
+         one? r => r
          zero? p => r
          localGcd(r,p)
 
@@ -1826,8 +1805,7 @@ NewSparseMultivariatePolynomial(R,VarSet) : Exports == Implementation where
          p case R => p
          up : D := p.ts
          r := 0$R
---         while (not zero? up) and (not one? r) repeat
-         while (not zero? up) and (not (r = 1)) repeat
+         while (not zero? up) and (not one? r) repeat
            r := localGcd(r,leadingCoefficient(up))
            up := reductum up
          r

@@ -363,8 +363,7 @@ UnivariateTaylorSeriesCategory(Coef): Category == Definition where
             positive? r => 0
             zero? r => error "0**0 undefined"
             error "0 raised to a negative power"
---          not one? frst coefs =>
-          not (frst coefs = 1) =>
+          not one? frst coefs =>
             error "**: constant coefficient should be 1"
           coefs := concat(0,rst coefs)
           onePlusX := monom(1,0)$STTA + $STTA monom(1,1)$STTA

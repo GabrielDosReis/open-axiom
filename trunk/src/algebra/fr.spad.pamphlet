@@ -215,8 +215,7 @@ Factored(R: IntegralDomain): Exports == Implementation where
     zero? u              == # u.fct = 1 and
                              (first u.fct).flg case "nil" and
                               zero? (first u.fct).fctr and
---                               one? u.unt
-                               (u.unt = 1)
+                               one? u.unt
     1                    == [1, empty()]
     one? u               == empty? u.fct and u.unt = 1
     mkFF(r, x)           == [r, x]
@@ -277,10 +276,8 @@ Factored(R: IntegralDomain): Exports == Implementation where
 
     u:% * v:% ==
       zero? u or zero? v => 0
---      one? u => v
-      (u = 1) => v
---      one? v => u
-      (v = 1) => u
+      one? u => v
+      one? v => u
       mkFF(unit u * unit v,
           SimplifyFactorization concat(factorList u, copy factorList v))
 
@@ -362,8 +359,7 @@ Factored(R: IntegralDomain): Exports == Implementation where
               unitNormalize(squareFree(r) pretend %)
           else
             coerce(r:R):% ==
---              one? r => 1
-              (r = 1) => 1
+              one? r => 1
               unitNormalize mkFF(1, [["nil", r, 1]$FF])
 
     u = v ==
@@ -472,8 +468,7 @@ which causes wrong results as soon as units are involved, for example in
           else
             un := un * (ucar.unit ** e)
             as := as * (ucar.associate ** e)
---        if not one?(ucar.canonical) then
-        if not ((ucar.canonical) = 1) then
+        if not one?(ucar.canonical) then
           vl := concat([x.flg, ucar.canonical, x.xpnt], vl)
       [mkFF(un, empty()), mkFF(1, reverse_! vl), mkFF(as, empty())]
 
@@ -489,8 +484,7 @@ which causes wrong results as soon as units are involved, for example in
         (expand(u * v1) + expand(v * v1)) * u1
 
       gcd(u, v) ==
---        one? u or one? v => 1
-        (u = 1) or (v = 1) => 1
+        one? u or one? v => 1
         zero? u => v
         zero? v => u
         f1 := empty()$List(Integer)  -- list of used factor indices in x
@@ -531,8 +525,7 @@ which causes wrong results as soon as units are involved, for example in
     if R has UniqueFactorizationDomain then
       prime? u ==
         not(empty?(l := factorList u)) and (empty? rest l) and
---                       one?(l.first.xpnt) and (l.first.flg case "prime")
-                       ((l.first.xpnt) = 1) and (l.first.flg case "prime")
+                       one?(l.first.xpnt) and (l.first.flg case "prime")
 
 @
 \section{package FRUTIL FactoredFunctionUtilities}

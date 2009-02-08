@@ -267,8 +267,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       -- is the function a power with exponent other than 0 or 1?
       (expt := isPower fcn) case "failed" => "failed"
       power := expt :: Record(val:FE,exponent:I)
---      one? power.exponent => "failed"
-      (power.exponent = 1) => "failed"
+      one? power.exponent => "failed"
       power
 
     powerToUPS(fcn,n,posCheck?,atanFlag) ==

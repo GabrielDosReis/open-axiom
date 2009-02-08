@@ -95,8 +95,7 @@ LiouvillianFunction(R, F): Exports == Implementation where
     isi x          == kernel(opsi, x)
     ici x          == kernel(opci, x)
     ierf x         == (zero? x => 0; kernel(operf, x))
---    ili2 x         == (one? x => INV; kernel(opli2, x))
-    ili2 x         == ((x = 1) => INV; kernel(opli2, x))
+    ili2 x         == (one? x => INV; kernel(opli2, x))
     integrand l    == eval(first l, retract(second l)@K, third l)
     integral(f:F, x:SE) == opint [eval(f, k:=kernel(x)$K, dummy), dummy, k::F]
 

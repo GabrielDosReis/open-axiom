@@ -190,8 +190,7 @@ UnivariateFactorize(ZP) : public == private where
      -- and mindeg m = 0
      henselfact1(m: ZP):List(ZP) ==
       zero? degree m =>
---          one? m => []
-          (m = 1) => []
+          one? m => []
           [m]
       selected := choose(m)
       (numFactors(selected.factors) = 1$Z) => [m]

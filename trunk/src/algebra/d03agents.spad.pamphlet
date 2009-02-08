@@ -88,8 +88,7 @@ d03AgentsPackage(): E == I where
       v := variables(e := 4*first(p)*third(p)-(second(p))**2)
       eq := subscriptedVariables(e)
       noa:NOA := 
---        one?(# v) =>
-        (# v) = 1 =>
+        one?(# v) =>
           ((first v) = X@Symbol) => 
             [eq,[xstart],[xs::OCDF],empty()$LEDF,[xf::OCDF]]
           [eq,[ystart],[ys::OCDF],empty()$LEDF,[yf::OCDF]]

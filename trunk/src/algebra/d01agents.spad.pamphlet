@@ -226,8 +226,7 @@ d01AgentsPackage(): E == I where
 
     commaSeparate(l:LST):ST ==
       empty?(l)$LST => ""
---      one?(#(l)) => concat(l)$ST
-      (#(l) = 1) => concat(l)$ST
+      one?(#(l)) => concat(l)$ST
       f := first(l)$LST
       t := [concat([", ",l.i])$ST for i in 2..#(l)]
       concat(f,concat(t)$ST)$ST

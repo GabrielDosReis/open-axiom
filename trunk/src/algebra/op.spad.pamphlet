@@ -125,8 +125,7 @@ BasicOperator(): Exports == Implementation where
     oper(se, n, prop)    == [se, n, prop]
     weight(op, n)        == setProperty(op, WEIGHT, n pretend None)
     nullary? op          == zero?(op.narg)
---    unary? op            == one?(op.narg)
-    unary? op            == ((op.narg) = 1)
+    unary? op            == one?(op.narg)
     nary? op             == negative?(op.narg)
     equality(op, func)   == setProperty(op, EQUAL?, func pretend None)
     comparison(op, func) == setProperty(op, LESS?, func pretend None)

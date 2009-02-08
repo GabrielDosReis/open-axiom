@@ -4,7 +4,7 @@
 (DEFPARAMETER |EuclideanDomain;AL| 'NIL) 
 
 (DEFUN |EuclideanDomain;| ()
-  (PROG (#0=#:G1413)
+  (PROG (#0=#:G1414)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|PrincipalIdealDomain|)

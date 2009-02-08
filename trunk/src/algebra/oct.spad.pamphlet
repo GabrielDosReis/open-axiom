@@ -156,8 +156,7 @@ OctonionCategory(R: CommutativeRing): Category ==
              imagI(x),imagJ(x),imagK(x))
            z :=
              part := 'i::OutputForm
---             one? imagi(x) => part
-             (imagi(x) = 1) => part
+             one? imagi(x) => part
              (imagi(x) :: OutputForm) * part
            zero? y => z
            z + (y :: OutputForm)
@@ -167,8 +166,7 @@ OctonionCategory(R: CommutativeRing): Category ==
              imagI(x),imagJ(x),imagK(x))
            z :=
              part := 'j::OutputForm
---             one? imagj(x) => part
-             (imagj(x) = 1) => part
+             one? imagj(x) => part
              (imagj(x) :: OutputForm) * part
            zero? y => z
            z + (y :: OutputForm)
@@ -178,8 +176,7 @@ OctonionCategory(R: CommutativeRing): Category ==
              imagI(x),imagJ(x),imagK(x))
            z :=
              part := 'k::OutputForm
---             one? imagk(x) => part
-             (imagk(x) = 1) => part
+             one? imagk(x) => part
              (imagk(x) :: OutputForm) * part
            zero? y => z
            z + (y :: OutputForm)
@@ -189,8 +186,7 @@ OctonionCategory(R: CommutativeRing): Category ==
              imagI(x),imagJ(x),imagK(x))
            z :=
              part := 'E::OutputForm
---             one? imagE(x) => part
-             (imagE(x) = 1) => part
+             one? imagE(x) => part
              (imagE(x) :: OutputForm) * part
            zero? y => z
            z + (y :: OutputForm)
@@ -199,8 +195,7 @@ OctonionCategory(R: CommutativeRing): Category ==
            y := octon(0$R,0$R,0$R,0$R,0$R,0$R,imagJ(x),imagK(x))
            z :=
              part := 'I::OutputForm
---             one? imagI(x) => part
-             (imagI(x) = 1) => part
+             one? imagI(x) => part
              (imagI(x) :: OutputForm) * part
            zero? y => z
            z + (y :: OutputForm)
@@ -209,15 +204,13 @@ OctonionCategory(R: CommutativeRing): Category ==
            y := octon(0$R,0$R,0$R,0$R,0$R,0$R,0$R,imagK(x))
            z :=
              part := 'J::OutputForm
---             one? imagJ(x) => part
-             (imagJ(x) = 1) => part
+             one? imagJ(x) => part
              (imagJ(x) :: OutputForm) * part
            zero? y => z
            z + (y :: OutputForm)
          -- we know that the real part,i,j,k,E,I,J parts are 0
          part := 'K::OutputForm
---         one? imagK(x) => part
-         (imagK(x) = 1) => part
+         one? imagK(x) => part
          (imagK(x) :: OutputForm) * part
  
      if R has Field then

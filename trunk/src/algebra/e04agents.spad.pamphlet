@@ -184,10 +184,8 @@ e04AgentsPackage(): E == I where
       p := (retractIfCan(f)@Union(PDF,"failed"))$EDF
       p case PDF =>
         d := totalDegree(p)$PDF
---        one?(n*d) => "simple"
-        (n*d) = 1 => "simple"
---        one?(d) => "linear"
-        (d = 1) => "linear"
+        one?(n*d) => "simple"
+        one?(d) => "linear"
         (d=2)@Boolean => "quadratic"
         "non-linear"
       "non-linear"

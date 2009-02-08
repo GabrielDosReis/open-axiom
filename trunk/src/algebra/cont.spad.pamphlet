@@ -189,8 +189,7 @@ ExpertSystemContinuityPackage(): E == I where
           var:Symbol := first(variables(a))
           c:EDF := w.2
           c1:EDF := w.1
---          entry?(c1,[b::EDF for b in vars]) and (one?(# vars)) =>
-          entry?(c1,[b::EDF for b in vars]) and ((# vars) = 1) =>
+          entry?(c1,[b::EDF for b in vars]) and (one?(# vars)) =>
             c2:DF := edf2df c
             c3 := c2 :: OCDF
             varEdf := var :: EDF
@@ -205,8 +204,7 @@ ExpertSystemContinuityPackage(): E == I where
           entry?(a,[b::EDF for b in vars]) =>   -- finds entries like sqrt(x)
             st := getStream(n,"ones")
             o := edf2df(second(t)$LEDF)
---            one?(o) or one?(-o) =>           -- is it like (f(x) -/+ 1)
-            (o = 1) or (-o = 1) =>           -- is it like (f(x) -/+ 1)
+            one?(o) or one?(-o) =>           -- is it like (f(x) -/+ 1)
               st := map(-#1/o,st)$StreamFunctions2(DF,DF)
               streamInRange(st,range)
             empty()$SDF
@@ -239,8 +237,7 @@ ExpertSystemContinuityPackage(): E == I where
           var:Symbol := first(variables(a))
           c:EDF := w.2
           c1:EDF := w.1
---          entry?(c1,[b::EDF for b in vars]) and (one?(# vars)) =>
-          entry?(c1,[b::EDF for b in vars]) and ((# vars) = 1) =>
+          entry?(c1,[b::EDF for b in vars]) and (one?(# vars)) =>
             c2:DF := edf2df c
             c3 := c2 :: OCDF
             varEdf := var :: EDF

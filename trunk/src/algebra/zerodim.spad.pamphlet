@@ -463,8 +463,7 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
        empty? lp =>
          error "rur$IRURPK: #1 is empty"
        f0 := first lp; lp := rest lp
---       not (one?(init(f0)) and one?(mdeg(f0)) and zero?(tail(f0))) =>
-       not ((init(f0) = 1) and (mdeg(f0) = 1) and zero?(tail(f0))) =>
+       not (one?(init(f0)) and one?(mdeg(f0)) and zero?(tail(f0))) =>
          error "rur$IRURPK: #1 has no generating root."
        empty? lp =>
          error "rur$IRURPK: #1 has a generating root but no indeterminates"
@@ -527,8 +526,7 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
          check? and (zero? degree(s,xi)) and (empty? prs) =>
            error "rur$IRURPK: should never happen !!"
          if zero? degree(s,xi) then s := first prs
---         not one? degree(s,xi) =>            
-         not (degree(s,xi) = 1) =>            
+         not one? degree(s,xi) =>            
            toSee := cons([f0,next(lambda),ts]$WIP,toSee)
          h := init(s)
          r := squareFreePart(r)
@@ -560,8 +558,7 @@ InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implemen
              p := primitivePart stronglyReduce(p,ts)
          ground?(p) or (mvar(p) < xi) =>
            error "rur$IRUROK: should never happen"
---         (one? mdeg(p)) and (ground? init(p)) =>
-         (mdeg(p) = 1) and (ground? init(p)) =>
+         (one? mdeg(p)) and (ground? init(p)) =>
            ts := internalAugment(p,ts)
            wip := [lp,ts]
            toSee := cons(wip,toSee)

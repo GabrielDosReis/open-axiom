@@ -91,8 +91,7 @@ GaloisGroupUtilities(R): Exports == Implementation where
       negative? r => 0
       (d := n-r) < r => pascalTriangle(n,d)
       zero? r => 1$R
---      one? r => n :: R
-      (r = 1) => n :: R
+      one? r => n :: R
       n > rangepascaltriangle => 
        binomial(n,r)$IntegerCombinatoricFunctions(Z) :: R
       n <= ncomputed =>

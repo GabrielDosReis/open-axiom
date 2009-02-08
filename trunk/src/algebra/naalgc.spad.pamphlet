@@ -46,14 +46,12 @@ Monad(): Category == SetCategory with
       import RepeatedSquaring(%)
       x:% ** n:PositiveInteger == expt(x,n)
       rightPower(a,n) ==
---        one? n => a
-        (n = 1) => a
+        one? n => a
         res := a
         for i in 1..(n-1) repeat res := res * a
         res
       leftPower(a,n) ==
---        one? n => a
-        (n = 1) => a
+        one? n => a
         res := a
         for i in 1..(n-1) repeat res := a * res
         res
@@ -223,8 +221,7 @@ NonAssociativeAlgebra(R:CommutativeRing): Category == _
       ++ and \spad{a} for \spad{n=1}.
   add
     plenaryPower(a,n) ==
---      one? n => a
-      ( n = 1 ) => a
+      one? n => a
       n1 : PositiveInteger := (n-1)::NonNegativeInteger::PositiveInteger
       plenaryPower(a,n1) * plenaryPower(a,n1)
 

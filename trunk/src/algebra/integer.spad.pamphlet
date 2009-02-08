@@ -58,9 +58,7 @@ IntegerSolveLinearPolynomialEquation(): C ==T
 
 @
 \section{domain INT Integer}
-The function {\bf one?} has been rewritten back to its original form.
-The NAG version called a lisp primitive that exists only in Codemist
-Common Lisp and is not defined in Common Lisp.
+
 <<domain INT Integer>>=
 )abbrev domain INT Integer
 ++ Author:
@@ -135,7 +133,6 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
           OMputEndObject(dev)
 
       zero? x == ZEROP(x)$Lisp
---      one? x == ONEP(x)$Lisp
       one? x == x = 1
       0 == 0$Lisp
       1 == 1$Lisp
@@ -201,8 +198,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
          zero? y => "failed"
          zero?(x rem y) => x quo y
          "failed"
---      recip(x) == if one? x or x=-1 then x else "failed"
-      recip(x) == if (x = 1) or x=-1 then x else "failed"
+      recip(x) == if one? x or x=-1 then x else "failed"
       gcd(x,y) == GCD(x,y)$Lisp
       UCA ==> Record(unit:%,canonical:%,associate:%)
       unitNormal x ==

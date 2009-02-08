@@ -190,8 +190,7 @@ PointsOfFiniteOrderRational(UP, UPUP, R): Exports == Implementation where
       n   := rat(modulus, d, p := getGoodPrime bad)
 -- if n > 1 then it is cheaper to compute the order modulo a second prime,
 -- since computing n * d could be very expensive
---      one? n => n
-      (n = 1) => n
+      one? n => n
       m   := rat(modulus, d, getGoodPrime(p * bad))
       n = m => n
       0
@@ -203,8 +202,7 @@ PointsOfFiniteOrderRational(UP, UPUP, R): Exports == Implementation where
 
 -- returns the potential order of d, 0 if d is of infinite order
     possibleOrder d ==
---      zero?(genus()) or one?(#(numer ideal d)) => 1
-      zero?(genus()) or (#(numer ideal d) = 1) => 1
+      zero?(genus()) or one?(#(numer ideal d)) => 1
       r := polyred definingPolynomial()$R
       ratcurve(d, r, doubleDisc r)
 
@@ -447,8 +445,7 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
       gf := InnerPrimeField p
       m  := map(retract(#1)@Z :: gf,
                          mm)$SparseUnivariatePolynomialFunctions2(Q, gf)
---      one? degree m =>
-      (degree m = 1) =>
+      one? degree m =>
         alpha := - coefficient(m, 0) / leadingCoefficient m
         order(d, pp,
            (map(numer(#1)::gf / denom(#1)::gf,
@@ -476,8 +473,7 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
       n   := rat(pp, d, p := getGoodPrime bad)
 -- if n > 1 then it is cheaper to compute the order modulo a second prime,
 -- since computing n * d could be very expensive
---      one? n => n
-      (n = 1) => n
+      one? n => n
       m   := rat(pp, d, getGoodPrime(p * bad))
       n = m => n
       0
@@ -490,8 +486,7 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
 
 -- returns the potential order of d, 0 if d is of infinite order
     possibleOrder d ==
---      zero?(genus()) or one?(#(numer ideal d)) => 1
-      zero?(genus()) or (#(numer ideal d) = 1) => 1
+      zero?(genus()) or one?(#(numer ideal d)) => 1
       empty?(la := alglist d) => ratcurve(d, selIntegers())
       not(empty? rest la) =>
            error "PFO::possibleOrder: more than 1 algebraic constant"
@@ -548,8 +543,7 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
       l  := [f.factor for f in factors factor(map(retract(#1)@Z :: gf,
                rec.dfpoly)$SparseUnivariatePolynomialFunctions2(Q,
                  gf))$DistinctDegreeFactorize(gf,
---                   SparseUnivariatePolynomial gf) | one?(f.exponent)]
-                   SparseUnivariatePolynomial gf) | (f.exponent = 1)]
+                   SparseUnivariatePolynomial gf) | one?(f.exponent)]
       empty? l => "failed"
       mdg := first l
       for ff in rest l repeat

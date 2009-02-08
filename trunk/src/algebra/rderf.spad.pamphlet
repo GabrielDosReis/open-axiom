@@ -67,8 +67,7 @@ TranscendentalRischDE(F, UP): Exports == Implementation where
       n:Z
       (u := SPDE(aa, bb, cc, d, derivation)) case "failed" => [[0, true]]
       zero?(u.c) => [[u.beta, false]]
---      baseCase? := one?(dt := derivation monomial(1, 1))
-      baseCase? := ((dt := derivation monomial(1, 1)) = 1)
+      baseCase? := one?(dt := derivation monomial(1, 1))
       n := degree(dt)::Z - 1
       b0? := zero?(u.b)
       (~b0?) and (baseCase? or degree(u.b) > max(0, n)) =>

@@ -149,8 +149,7 @@ PrimitiveRatRicDE(F, UP, L, LQ): Exports == Implementation where
       sort_!(#1.deg > #2.deg, ans)
 
     getPol(rec, c, l, ind) ==
---      one?(rec.deg) => getPol1(ind, c, l)
-      (rec.deg = 1) => getPol1(ind, c, l)
+      one?(rec.deg) => getPol1(ind, c, l)
       +/[monomial(tau0(c, coefficient(l, i::N)), i::N)$UP2 for i in ind]
 
     getPol1(ind, c, l) ==

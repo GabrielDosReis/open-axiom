@@ -187,8 +187,7 @@ ExpressionToOpenMath(R: Join(OpenMath, OrderedSet, Ring)): with
       omOp case "failed" =>
         error concat ["No OpenMath definition for nullary function ", coerce op]
       OMputSymbol(dev, omOp.cd, omOp.name)
---    one? nargs =>
-    (nargs = 1) =>
+    one? nargs =>
       omOp: Union(SymInfo, "failed") := search(op, unaryFunctionAList)
       omOp case "failed" =>
         error concat ["No OpenMath definition for unary function ", coerce op]
@@ -222,8 +221,7 @@ ExpressionToOpenMath(R: Join(OpenMath, OrderedSet, Ring)): with
     -- here but they may be relevent when we integrate this stuff into
     -- the main Expression code.  Note that if we don't check that
     -- the exponent is non-trivial we get thrown into an infinite recursion.
---    not (((x := isExpt ex) case "failed") or one? x.exponent) =>
-    not (((x := isExpt ex) case "failed") or (x.exponent = 1)) =>
+    not (((x := isExpt ex) case "failed") or one? x.exponent) =>
       not((s := symbolIfCan(x.var)@Union(Symbol,"failed")) case "failed") =>
         --outputOMPower(dev, [s::Expression(R), (x.exponent)::Expression(R)])
         OMputApp(dev)
@@ -232,8 +230,7 @@ ExpressionToOpenMath(R: Join(OpenMath, OrderedSet, Ring)): with
         OMputInteger(dev, x.exponent)
         OMputEndApp(dev)
       -- TODO: add error handling code here...
---    not (((z := isPower ex) case "failed") or one? z.exponent) =>
-    not (((z := isPower ex) case "failed") or (z.exponent = 1)) =>
+    not (((z := isPower ex) case "failed") or one? z.exponent) =>
       outputOMPower(dev, [ z.val, z.exponent::Expression R ])
       --OMputApp(dev)
       --OMputSymbol(dev, "arith1", "power")

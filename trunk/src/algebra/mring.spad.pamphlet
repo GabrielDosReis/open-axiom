@@ -175,13 +175,11 @@ MonoidRing(R: Ring, M: Monoid): MRcategory == MRdefinition where
         numberOfMonomials a == #a
 
         retractIfCan(a:%):Union(M, "failed") ==
---          one?(#a) and one?(a.first.Cf) => a.first.Mn
-          ((#a) = 1) and ((a.first.Cf) = 1) => a.first.Mn
+          one?(#a) and one?(a.first.Cf) => a.first.Mn
           "failed"
 
         retractIfCan(a:%):Union(R, "failed") ==
---          one?(#a) and one?(a.first.Mn) => a.first.Cf
-          ((#a) = 1) and ((a.first.Mn) = 1) => a.first.Cf
+          one?(#a) and one?(a.first.Mn) => a.first.Cf
           "failed"
 
         if R has noZeroDivisors then

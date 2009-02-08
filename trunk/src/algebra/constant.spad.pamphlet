@@ -85,8 +85,7 @@ InnerAlgebraicNumber(): Exports == Implementation where
     a,b:%
     differentiate(x:%):% == 0
     zero? a == zero? numer a
---    one? a == one? numer a and one? denom a
-    one? a == (numer a = 1) and (denom a = 1)
+    one? a == one? numer a and one? denom a
     x:% / y:%        == mainRatDenom(x /$Rep y)
     x:% ** n:Integer ==
       n < 0 => mainRatDenom (x **$Rep n)
