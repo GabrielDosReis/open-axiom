@@ -157,8 +157,7 @@ FiniteFieldCyclicGroupExtensionByPolynomial(GF,defpol):_
       (sizeCG quo gcd(sizeCG,x pretend NNI))::PI
 
     primitive?(x:$) ==
---      zero?(x) or one?(x) => false
-      zero?(x) or (x = 1) => false
+      zero?(x) or one?(x) => false
       gcd(x::Rep,sizeCG)$Rep = 1$Rep => true
       false
 
@@ -324,8 +323,7 @@ FiniteFieldCyclicGroupExtensionByPolynomial(GF,defpol):_
 
     inv(x:$)  ==
       zero?(x) => error "inv: not invertible"
---      one?(x) => 1
-      (x = 1) => 1
+      one?(x) => 1
       sizeCG -$Rep x
 
     x:$ ** n:PI == x ** n::I

@@ -313,8 +313,7 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
       empty? x => error "revert should start 0,1,..."
       zero? frst x =>
         empty? rst x => error "revert: should start 0,1,..."
---        one? frst rst x => lagrange(recip(rst x) :: (ST A))
-        (frst rst x) = 1 => lagrange(recip(rst x) :: (ST A))
+        one? frst rst x => lagrange(recip(rst x) :: (ST A))
       error "revert:should start 0,1,..."
 
 --% lambert functions

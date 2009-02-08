@@ -79,8 +79,7 @@ GaloisGroupPolynomialUtilities(R,UP): Exports == Implementation where
     degreePartition(r:Factored UP):Multiset N ==
       multiset([ degree(nthFactor(r,i)) for i in 1..numberOfFactors r ])
 
---    monic?(p:UP):Boolean == one? leadingCoefficient p
-    monic?(p:UP):Boolean == (leadingCoefficient p) = 1
+    monic?(p:UP):Boolean == one? leadingCoefficient p
 
     unvectorise(v:Vector R):UP ==
       p : UP := 0
@@ -94,8 +93,7 @@ GaloisGroupPolynomialUtilities(R,UP): Exports == Implementation where
       r
 
     scaleRoots(p:UP,c:R):UP ==
---      one? c => p
-      (c = 1) => p
+      one? c => p
       n := degree p
       zero? c => monomial(leadingCoefficient p,n)
       r : UP := 0

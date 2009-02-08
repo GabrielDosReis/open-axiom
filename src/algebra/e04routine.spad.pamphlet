@@ -166,8 +166,7 @@ e04fdfAnnaType(): NumericalOptimizationCategory == Result add
     n:NNI := #(variables(args))
     nn:INT := n
     lw:INT := 
---      one?(nn) => 9+5*m
-      (nn = 1) => 9+5*m
+      one?(nn) => 9+5*m
       nn*(7+n+2*m+((nn-1) quo 2)$INT)+3*m
     x := mat(args.init,n)
     ArgsFn := vector([edf2ef(i)$ExpertSystemToolsPackage for i in argsFn])$VEF
@@ -278,8 +277,7 @@ e04gcfAnnaType(): NumericalOptimizationCategory == Result add
     m:NNI := #(argsFn)
     n:NNI := #(variables(args))
     lw:INT := 
---      one?(n) => 11+5*m
-      (n = 1) => 11+5*m
+      one?(n) => 11+5*m
       2*n*(4+n+m)+3*m
     x := mat(args.init,n)
     ArgsFn := vector([edf2ef(i)$ExpertSystemToolsPackage for i in argsFn])$VEF
@@ -339,10 +337,8 @@ e04jafAnnaType(): NumericalOptimizationCategory == Result add
 
   bound(a:LOCDF,b:LOCDF):Integer ==  
     empty?(concat(a,b)) => 1
---    one?(#(removeDuplicates(a))) and  zero?(first(a)) => 2
-    (#(removeDuplicates(a)) = 1) and  zero?(first(a)) => 2
---    one?(#(removeDuplicates(a))) and one?(#(removeDuplicates(b))) => 3
-    (#(removeDuplicates(a)) = 1) and (#(removeDuplicates(b)) = 1) => 3
+    one?(#(removeDuplicates(a))) and  zero?(first(a)) => 2
+    one?(#(removeDuplicates(a))) and one?(#(removeDuplicates(b))) => 3
     0  
 
   measure(R:RoutinesTable,args:NOA) ==

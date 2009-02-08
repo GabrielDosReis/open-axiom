@@ -44,29 +44,25 @@ FreeModule(R:Ring,S:OrderedSet):
        if R has EntireRing then 
          r * x  ==
              zero? r => 0
---             one? r => x
-             (r = 1) => x
+             one? r => x
            --map(r*#1,x)
              [[u.k,r*u.c] for u in x ]
        else
          r * x  ==
              zero? r => 0
---             one? r => x
-             (r = 1) => x
+             one? r => x
            --map(r*#1,x)
              [[u.k,a] for u in x | (a:=r*u.c) ~= 0$R]
        if R has EntireRing then
          x * r  ==
              zero? r => 0
---             one? r => x
-             (r = 1) => x
+             one? r => x
            --map(r*#1,x)
              [[u.k,u.c*r] for u in x ]
        else
          x * r  ==
              zero? r => 0
---             one? r => x
-             (r = 1) => x
+             one? r => x
            --map(r*#1,x)
              [[u.k,a] for u in x | (a:=u.c*r) ~= 0$R]
 
@@ -298,8 +294,7 @@ PolynomialRing(R:Ring,E:OrderedAbelianMonoid): T == C
          p ** nn  ==
             null p => 0
             zero? nn => 1
---            one? nn => p
-            (nn = 1) => p
+            one? nn => p
             empty? p.rest =>
               zero?(cc:=p.first.c ** nn) => 0
               [[nn * p.first.k, cc]]
@@ -438,8 +433,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
          p ** n  ==
             null p => 0
             zero? n => 1
---            one? n => p
-            (n = 1) => p
+            one? n => p
             empty? p.rest =>
               zero?(cc:=p.first.c ** n) => 0
               [[n * p.first.k, cc]]
@@ -465,8 +459,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
 
 
    zero?(p): Boolean == empty?(p)
---   one?(p):Boolean == not empty? p and (empty? rest p and zero? first(p).k and one? first(p).c)
-   one?(p):Boolean == not empty? p and (empty? rest p and zero? first(p).k and (first(p).c = 1))
+   one?(p):Boolean == not empty? p and (empty? rest p and zero? first(p).k and one? first(p).c)
    ground?(p): Boolean == empty? p or (empty? rest p and zero? first(p).k)
    multiplyExponents(p,n) == [ [u.k*n,u.c] for u in p]
    divideExponents(p,n) ==
@@ -720,8 +713,7 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
    if R has Field then
      divide( p1, p2)  ==
        zero? p2 => error "Division by 0"
---       one? p2 => [p1,0]
-       (p2 = 1) => [p1,0]
+       one? p2 => [p1,0]
        ct:=inv(p2.first.c)
        n:=p2.first.k
        p2:=p2.rest

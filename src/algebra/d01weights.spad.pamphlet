@@ -124,8 +124,7 @@ d01WeightsPackage(): E == I where
     functionIsQuotient(expr:EDF):Union(EDF,"failed") ==
       (k := mainKernel expr) case KEDF =>
         expr = inv(f := k :: KEDF :: EDF)$EDF => f
---        one?(numerator expr) => denominator expr
-        (numerator expr = 1) => denominator expr
+        one?(numerator expr) => denominator expr
         "failed"
       "failed"
  
@@ -134,8 +133,7 @@ d01WeightsPackage(): E == I where
  
     functionIsNthRoot?(f:EDF,e:EDF):Boolean ==
       (m := mainKernel f) case "failed" => false
---      (one?(# (kernels f))) 
-      ((# (kernels f)) = 1) 
+      (one?(# (kernels f))) 
         and (name operator m = (nthRoot :: Symbol))@Boolean
           and (((argument m).1 = e)@Boolean)
  
@@ -200,8 +198,7 @@ d01WeightsPackage(): E == I where
  
     exprOfFormCosWXorSinWX(f:EDF,var:Symbol): URBODF ==
       l:LKEDF := kernels(f)$EDF
---      one?((# l)$LKEDF)$INT => 
-      # l = 1 => 
+      one?((# l)$LKEDF)$INT => 
         a:LEDF := argument(e:KEDF := first(l)$LKEDF)$KEDF
         empty?(a) => "failed"
         m:Union(LEDF,"failed") := isTimes(first(a)$LEDF)$EDF 

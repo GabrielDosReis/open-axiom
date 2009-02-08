@@ -143,8 +143,7 @@ IntegerNumberSystem(): Category ==
          r1 := c1-q*d1
          c := d; c1 := d1
          d := r; d1 := r1
---      not one? c => error "inverse does not exist"
-      not (c = 1) => error "inverse does not exist"
+      not one? c => error "inverse does not exist"
       negative? c1 => c1 + b
       c1
 
@@ -162,10 +161,6 @@ IntegerNumberSystem(): Category ==
 @
 
 \section{domain SINT SingleInteger}
-
-The definition of {\bf one?} has been rewritten 
-as it relies on calling {\bf ONEP} which is a function specific
-to Codemist Common Lisp but is not defined in Common Lisp.
 
 <<domain SINT SingleInteger>>=
 )abbrev domain SINT SingleInteger
@@ -307,7 +302,6 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    abs(x)    == QSABSVAL(x)$Lisp
    odd?(x)   == QSODDP(x)$Lisp
    zero?(x)  == QSZEROP(x)$Lisp
---   one?(x)   == ONEP(x)$Lisp
    one?(x)   == x = 1
    max(x,y)  == QSMAX(x,y)$Lisp
    min(x,y)  == QSMIN(x,y)$Lisp

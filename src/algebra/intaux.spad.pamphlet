@@ -94,8 +94,7 @@ IntegrationResult(F:Field): Exports == Implementation where
       integral(f:F, x:Symbol):% == integral(f, x::F)
 
     LOG2O rec ==
---      one? degree rec.coeff =>
-      (degree rec.coeff) = 1 =>
+      one? degree rec.coeff =>
         -- deg 1 minimal poly doesn't get sigma
         lastc := - coefficient(rec.coeff, 0) / coefficient(rec.coeff, 1)
         lg    := (rec.logand) lastc
@@ -145,16 +144,14 @@ IntegrationResult(F:Field): Exports == Implementation where
                + _+/[pNeDeriv(ne, derivation) for ne in notelem u]
 
     pNeDeriv(ne, derivation) ==
---      one? derivation(ne.intvar) => ne.integrand
-      (derivation(ne.intvar) = 1) => ne.integrand
+      one? derivation(ne.intvar) => ne.integrand
       zero? derivation(ne.integrand) => 0
       error "pNeDeriv: cannot differentiate not elementary part into F"
 
     pLogDeriv(log, derivation) ==
       map(derivation, log.coeff) ~= 0 =>
         error "pLogDeriv: can only handle logs with constant coefficients"
---      one?(n := degree(log.coeff)) =>
-      ((n := degree(log.coeff)) = 1) =>
+      one?(n := degree(log.coeff)) =>
         c   := - (leadingCoefficient reductum log.coeff)
                                         / (leadingCoefficient log.coeff)
         ans := (log.logand) c

@@ -134,8 +134,7 @@ UnivariatePuiseuxSeriesConstructor(Coef,ULS):_
 
     laurentIfCan upxs ==
       r := getExpon upxs
---      one? denom r =>
-      (denom r) = 1 =>
+      one? denom r =>
         multiplyExponents(getULS upxs,numer(r) :: PI)
       "failed"
 
@@ -253,8 +252,7 @@ UnivariatePuiseuxSeriesConstructor(Coef,ULS):_
     center   upxs == center   getULS upxs
 
     coefficient(upxs,rn) ==
---      one? denom(n := rn / getExpon upxs) =>
-      (denom(n := rn / getExpon upxs)) = 1 =>
+      one? denom(n := rn / getExpon upxs) =>
         coefficient(getULS upxs,numer n)
       0
 
@@ -368,8 +366,7 @@ UnivariatePuiseuxSeriesConstructor(Coef,ULS):_
       if Coef has Field then
          (upxs:%) ** (q:RN) ==
            num := numer q; den := denom q
---           one? den => upxs ** num
-           den = 1 => upxs ** num
+           one? den => upxs ** num
            r := rationalPower upxs; uls := laurentRep upxs
            deg := degree uls
            if zero?(coef := coefficient(uls,deg)) then

@@ -33,8 +33,7 @@ RepeatedSquaring(S): Exports == Implementation where
      x: S
      n: PositiveInteger
      expt(x, n) ==
---        one? n => x
-        (n = 1) => x
+        one? n => x
         odd?(n)$Integer=> x * expt(x*x,shift(n,-1) pretend PositiveInteger)
         expt(x*x,shift(n,-1) pretend PositiveInteger)
 
@@ -65,8 +64,7 @@ RepeatedDoubling(S):Exports ==Implementation where
      x: S
      n: PositiveInteger
      double(n,x) ==
---        one? n => x
-        (n = 1) => x
+        one? n => x
         odd?(n)$Integer =>
            x + double(shift(n,-1) pretend PositiveInteger,(x+x))
         double(shift(n,-1) pretend PositiveInteger,(x+x))
@@ -148,8 +146,7 @@ FiniteLinearAggregateSort(S, V): Exports == Implementation where
  
     QuickSort(l, r, i, j) ==
       n := j - i
---      if one? n and l(qelt(r, j), qelt(r, i)) then swap_!(r, i, j)
-      if (n = 1) and l(qelt(r, j), qelt(r, i)) then swap_!(r, i, j)
+      if one? n and l(qelt(r, j), qelt(r, i)) then swap_!(r, i, j)
       n < 2 => return r
       -- for the moment split at the middle item
       k := partition(l, r, i, j, i + shift(n,-1))

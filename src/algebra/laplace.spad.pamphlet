@@ -182,8 +182,7 @@ LaplaceTransform(R, F): Exports == Implementation where
     -- or using one of known base cases
     locallaplace(f, t, tt, s, ss) ==
       zero? f => 0
---      one? f  => inv ss
-      (f = 1)  => inv ss
+      one? f  => inv ss
 
       -- laplace(f(t)/t,t,s) 
       --              = integrate(laplace(f(t),t,v), v = s..%plusInfinity)

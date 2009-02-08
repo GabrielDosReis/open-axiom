@@ -153,8 +153,7 @@ Matrix(R): Exports == Implementation where
  
     positivePower:($,Integer,NonNegativeInteger) -> $
     positivePower(x,n,nn) ==
---      one? n => x
-      (n = 1) => x
+      one? n => x
       -- no need to allocate space for 3 additional matrices
       n = 2 => x * x
       n = 3 => x * x * x

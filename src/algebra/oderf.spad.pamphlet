@@ -116,24 +116,21 @@ BoundIntegerRoots(F, UP): Exports == Implementation where
         retract eval(f, t, [random()$Q :: F for k in t])
 
       integerBound p ==
---        one? degree p => zroot1 p
-        (degree p) = 1 => zroot1 p
+        one? degree p => zroot1 p
         q1 := map(bringDown, p)
         q2 := map(bringDown, p)
         qbound(p, gcd(q1, q2))
 
     else
       integerBound p ==
---        one? degree p => zroot1 p
-        (degree p) = 1 => zroot1 p
+        one? degree p => zroot1 p
         qbound(p, map(retract(#1)@Q, p))
 
 -- we can probably do better here (i.e. without factoring)
     qbound(p, q) ==
       bound:Z := 0
       for rec in factors factor q repeat
---        if one?(degree(rec.factor)) and ((r := qzroot1(rec.factor)) < bound)
-        if ((degree(rec.factor)) = 1) and ((r := qzroot1(rec.factor)) < bound)
+        if one?(degree(rec.factor)) and ((r := qzroot1(rec.factor)) < bound)
            and zero? p(r::Q::F) then bound := r
       bound
 
@@ -828,8 +825,7 @@ ConstantLODE(R, F, L): Exports == Implementation where
       l
 
     basisSqfr(p, x) ==
---      one?(d := degree p) =>
-      ((d := degree p) = 1) =>
+      one?(d := degree p) =>
         [exp(- coefficient(p, 0) * x / leadingCoefficient p)]
       d = 2 => quadSol(p, x)
       [exp(a * x) for a in rootsOf p]

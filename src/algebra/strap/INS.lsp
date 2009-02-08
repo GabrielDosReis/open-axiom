@@ -4,12 +4,12 @@
 (DEFPARAMETER |IntegerNumberSystem;AL| 'NIL) 
 
 (DEFUN |IntegerNumberSystem;| ()
-  (PROG (#0=#:G1414)
+  (PROG (#0=#:G1415)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
-                       (PAIR '(#1=#:G1408 #2=#:G1409 #3=#:G1410
-                                  #4=#:G1411 #5=#:G1412 #6=#:G1413)
+                       (PAIR '(#1=#:G1409 #2=#:G1410 #3=#:G1411
+                                  #4=#:G1412 #5=#:G1413 #6=#:G1414)
                              (LIST '(|Integer|) '(|Integer|)
                                    '(|Integer|) '(|InputForm|)
                                    '(|Pattern| (|Integer|))

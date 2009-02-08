@@ -213,8 +213,7 @@ domain.
         if smaller?(cyc.i,min) then
           min  := cyc.i
           minpos := i
---      one? minpos => cyc
-      (minpos = 1) => cyc
+      one? minpos => cyc
       concat(last(cyc,((#cyc-minpos+1)::NNI)),first(cyc,(minpos-1)::NNI))
 
     coerceCycle(lls : L L S): % ==

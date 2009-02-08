@@ -692,8 +692,7 @@ InnerSparseUnivariatePowerSeries(Coef): Exports == Implementation where
       iSincos(f,sinc,cosc,sign) ==
         fp := differentiate f
         fpRef := getRef fp; fpStr := getStream fp
---        fp2 := (one? sign => fp; -fp)
-        fp2 := ((sign = 1) => fp; -fp)
+        fp2 := (one? sign => fp; -fp)
         fpRef2 := getRef fp2; fpStr2 := getStream fp2
         sinRef := ref(0 :: COM); cosRef := ref(0 :: COM)
         sincos :=
@@ -709,8 +708,7 @@ InnerSparseUnivariatePowerSeries(Coef): Exports == Implementation where
         one : % := 1; oneStr := getStream one; oneRef := getRef one
         yRef := ref((-1) :: COM)
         yStr : ST :=
---          one? sign => iPlus1(#1 + #2,oneStr,oneRef,sqStr,sqRef,yRef,0)
-          (sign = 1) => iPlus1(#1 + #2,oneStr,oneRef,sqStr,sqRef,yRef,0)
+          one? sign => iPlus1(#1 + #2,oneStr,oneRef,sqStr,sqRef,yRef,0)
           iPlus1(#1 - #2,oneStr,oneRef,sqStr,sqRef,yRef,0)
         intRef := ref((-1) :: COM)
         lazyInteg(cc,iTimes(yStr,yRef,fpStr,fpRef,intRef,0),intRef,ansRef)
@@ -760,10 +758,8 @@ InnerSparseUnivariatePowerSeries(Coef): Exports == Implementation where
         cc := coefficient(uts,order)
         (ccInv := recip cc) case "failed" => error concat("**: ",NOTINV)
         ccPow :=
---          one? cc => cc
-          (cc = 1) => cc
---          one? denom r =>
-          (denom r) = 1 =>
+          one? cc => cc
+          one? denom r =>
             not negative?(num := numer r) => cc ** (num :: NNI)
             (ccInv :: Coef) ** ((-num) :: NNI)
           RATPOWERS => cc ** r
@@ -780,8 +776,7 @@ InnerSparseUnivariatePowerSeries(Coef): Exports == Implementation where
       cLog uts ==
         zero?(cc := coefficient(uts,0)) =>
           error "log: constant coefficient should not be 0"
---        one? cc => integrate(differentiate(uts) * (iExquo(1,uts,true) :: %))
-        (cc = 1) => integrate(differentiate(uts) * (iExquo(1,uts,true) :: %))
+        one? cc => integrate(differentiate(uts) * (iExquo(1,uts,true) :: %))
         TRANSFCN =>
           y := iExquo(1,uts,true) :: %
           (log(cc) :: %) + integrate(y * differentiate(uts))

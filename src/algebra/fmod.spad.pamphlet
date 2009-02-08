@@ -64,8 +64,7 @@ IntegerMod(p:PositiveInteger):
 
     recip x ==
        (c1, c2, g) := extendedEuclidean(x, q)$Rep
---       not one? g => "failed"
-       not (g = 1) => "failed"
+       not one? g => "failed"
        positiveRemainder(c1, q)
 
   else
@@ -93,8 +92,7 @@ IntegerMod(p:PositiveInteger):
 
     recip x ==
        (c1, c2, g) := extendedEuclidean(x, p)$Rep
---       not one? g => "failed"
-       not (g = 1) => "failed"
+       not one? g => "failed"
        positiveRemainder(c1, p)
 
 @

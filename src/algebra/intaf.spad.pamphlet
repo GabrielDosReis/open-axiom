@@ -436,8 +436,7 @@ PureAlgebraicIntegration(R, F, L): Exports == Implementation where
 -- u^n = y^n = g(x) = a x + b
 -- returns the integral as an integral of a rational function in u
     rationalInt(f, n, g) ==
---      not one? degree g => error "rationalInt: radicand must be linear"
-      not ((degree g) = 1) => error "rationalInt: radicand must be linear"
+      not one? degree g => error "rationalInt: radicand must be linear"
       a := leadingCoefficient g
       integrate(n * monomial(inv a, (n-1)::N)$UP
                   * chv(f, n, a, leadingCoefficient reductum g))
@@ -505,8 +504,7 @@ PureAlgebraicIntegration(R, F, L): Exports == Implementation where
                       * chv0(ug::UPUP, rec.exponent, 1, 0),
                        symbolIfCan(dumk)::SY)) case "failed" => "failed"
           eval(u::F, dumk, k::F)
---      one?(rec.coef) =>
-      ((rec.coef) = 1) =>
+      one?(rec.coef) =>
         curve  := RadicalFunctionField(F, UP, UPUP, q::RF, rec.exponent)
         rc := algDsolve(D()$LDALG + reduce(univariate(nfp, x, k, p))::LDALG,
                          reduce univariate(g, x, k, p))$RDALG

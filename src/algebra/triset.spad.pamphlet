@@ -893,8 +893,7 @@ PolynomialSetUtilitiesPackage (R,E,V,P) : Exports == Implementation where
 
      linear? p ==
        ground? p => false
---       one?(mdeg(p))
-       (mdeg(p) = 1)
+       one?(mdeg(p))
 
      linearPolynomials  ps ==
        selectPolynomials(linear?,ps)
@@ -1032,8 +1031,7 @@ PolynomialSetUtilitiesPackage (R,E,V,P) : Exports == Implementation where
          bs := (rec::RBT).bas        
          rs := (rec::RBT).top
          rs :=  rewriteIdealWithRemainder(rs,bs)$T
---         contradiction := ((not empty? rs) and (one? first(rs)))
-         contradiction := ((not empty? rs) and (first(rs) = 1))
+         contradiction := ((not empty? rs) and (one? first(rs)))
          if not contradiction
            then
              rs := concat(rs,autoRemainder(bs))
@@ -1531,19 +1529,16 @@ WuWenTsunTriangularSet(R,E,V,P) : Exports == Implementation where
              bs := (rec::RBT).bas
              rs := (rec::RBT).top
              rs :=  rewriteIdealWithRemainder(rs,bs)
---             contradiction := ((not empty? rs) and (one? first(rs)))
-             contradiction := ((not empty? rs) and (first(rs) = 1))
+             contradiction := ((not empty? rs) and (one? first(rs)))
              if (not empty? rs) and (not contradiction)
                then
                  rs := rewriteSetWithReduction(rs,bs,redOp,redOp?)
---                 contradiction := ((not empty? rs) and (one? first(rs)))
-                 contradiction := ((not empty? rs) and (first(rs) = 1))
+                 contradiction := ((not empty? rs) and (one? first(rs)))
          if (not empty? rs) and (not contradiction)
            then
              rs := removeDuplicates concat(rs,members(bs)) 
              rs := rewriteIdealWithQuasiMonicGenerators(rs,redOp?,redOp)$pa
---             contradiction := ((not empty? rs) and (one? first(rs)))
-             contradiction := ((not empty? rs) and (first(rs) = 1))
+             contradiction := ((not empty? rs) and (one? first(rs)))
        contradiction => "failed"::Union(RBT,"failed")
        ([bs,qs]$RBT)::Union(RBT,"failed")
 
@@ -1570,13 +1565,11 @@ WuWenTsunTriangularSet(R,E,V,P) : Exports == Implementation where
              ms := (rec::RBT).bas
              qs := (rec::RBT).top
              qs := rewriteIdealWithRemainder(qs,ms)
---             contradiction := ((not empty? qs) and (one? first(qs))) 
-             contradiction := ((not empty? qs) and (first(qs) = 1)) 
+             contradiction := ((not empty? qs) and (one? first(qs))) 
              if not contradiction
                then
                  rs :=  rewriteSetWithReduction(qs,ms,lazyPrem,reduced?)
---                 contradiction := ((not empty? rs) and (one? first(rs)))
-                 contradiction := ((not empty? rs) and (first(rs) = 1))
+                 contradiction := ((not empty? rs) and (one? first(rs)))
              if  (not contradiction) and (not empty? rs)
                then
                  qs := removeDuplicates(concat(rs,concat(members(ms),qs)))

@@ -206,8 +206,7 @@ ChineseRemainderToolsForIntegralBases(K,R,UP): Exports == Implementation where
       fBar : SUP sae := map(convert(#1)@sae,fSUP)$SUP2(R,sae)
       gBar : SUP sae := map(convert(#1)@sae,gSUP)$SUP2(R,sae)
       ee := extendedEuclidean(fBar,gBar)
---      not one?(ee.generator) =>
-      not (ee.generator = 1) =>
+      not one?(ee.generator) =>
         error "polynomials aren't relatively prime"
       ss1 := ee.coef1; tt1 := ee.coef2
       s1 : SUP R := map(convert(#1)@R,ss1)$SUP2(sae,R); s := s1

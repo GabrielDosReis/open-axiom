@@ -326,31 +326,27 @@ PseudoRemainderSequence(R, polR) : Specification == Implementation where
 
     Lazard(x : R, y : R, n : NNI) : R ==
        zero?(n) => error("Lazard$PRS : n = 0")
---       one?(n) => x
-       (n = 1) => x
+       one?(n) => x
        a : NNI := 1
        while n >= (b := 2*a) repeat a := b
        c : R := x
        n := (n - a)::NNI
        repeat                    --  c = x**i / y**(i-1),  i=n_0 quo a,  a=2**?
---          one?(a) => return c
-          (a = 1) => return c
+          one?(a) => return c
           a := a quo 2
           c := ((c * c) exquo y)::R
           if n >= a then ( c := ((c * x) exquo y)::R ; n := (n - a)::NNI )
 
     Lazard2(F : polR, x : R, y : R, n : NNI) : polR ==
        zero?(n) => error("Lazard2$PRS : n = 0")
---       one?(n) => F
-       (n = 1) => F
+       one?(n) => F
        x := Lazard(x, y, (n-1)::NNI)
        return ((x * F) exquo y)::polR
 
     Lazard3(V : Vector(polR), x : R, y : R, n : NNI) : Vector(polR) ==
     -- computes x**(n-1) * V / y**(n-1)
        zero?(n) => error("Lazard2$prs : n = 0")
---       one?(n) => V
-       (n = 1) => V
+       one?(n) => V
        x := Lazard(x, y, (n-1)::NNI)
        return ((x * V) exquo y)
 
@@ -382,8 +378,7 @@ PseudoRemainderSequence(R, polR) : Specification == Implementation where
        (P, Q) := (VP.1, VQ.1)
        (lcP, c) := (LC(P), LC(Q))
        e : NNI := degree(Q)
---       if one?(delta := degree(P) - e) then                   -- algo_new
-       if ((delta := degree(P) - e) = 1) then                   -- algo_new
+       if one?(delta := degree(P) - e) then                   -- algo_new
          VP := c * VP - coefficient(P, e) * VQ
          VP := VP exquo lcP
          VP := c * (VP - X * VQ) + coefficient(Q, (e-1)::NNI) * VQ

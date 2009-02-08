@@ -386,6 +386,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    x:% / y:%        == (x/y)$Lisp
    negative? x      == MINUSP(x)$Lisp
    zero? x          == ZEROP(x)$Lisp
+   one? x           == x = 1
    hash x           == HASHEQ(x)$Lisp
    recip(x)         == (zero? x => "failed"; 1 / x)
    differentiate x  == 0
@@ -483,10 +484,8 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
          zero? r => error "0**0 is undefined"
          negative? r => error "division by 0"
          0
---      zero? r or one? x => 1
-      zero? r or (x = 1) => 1
---      one?  r => x
-      (r = 1) => x
+      zero? r or one? x => 1
+      one?  r => x
       n := numer r
       d := denom r
       negative? x =>

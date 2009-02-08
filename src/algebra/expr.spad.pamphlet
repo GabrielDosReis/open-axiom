@@ -85,8 +85,7 @@ Expression(R:OrderedSet): Exports == Implementation where
       Rep := Fraction MP
       0                == 0$Rep
       1                == 1$Rep
---      one? x           == one?(x)$Rep
-      one? x           == (x = 1)$Rep
+      one? x           == one?(x)$Rep
       zero? x          == zero?(x)$Rep
       - x:%            == -$Rep x
       n:Integer * x:%  == n *$Rep x

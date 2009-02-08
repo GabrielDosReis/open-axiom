@@ -43,7 +43,7 @@
   (PROGN (RPLACA |p| |v|) (QCAR |p|))) 
 
 (DEFUN |REF;coerce;$Of;7| (|p| $)
-  (SPADCALL (SPADCALL "ref" (|getShellEntry| $ 17))
+  (SPADCALL (SPADCALL '|ref| (|getShellEntry| $ 17))
       (LIST (SPADCALL (QCAR |p|) (|getShellEntry| $ 18)))
       (|getShellEntry| $ 20))) 
 
@@ -71,7 +71,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|Reference|))
         (LETT |dv$| (LIST '|Reference| |dv$1|) . #0#)
-        (LETT $ (|newShell| 23) . #0#)
+        (LETT $ (|newShell| 24) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -92,20 +92,20 @@
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) '|Rep| (|Boolean|)
              |REF;=;2$B;1| |REF;ref;S$;2| |REF;elt;$S;3|
              |REF;setelt;$2S;4| |REF;deref;$S;5| |REF;setref;$2S;6|
-             (|String|) (|OutputForm|) (0 . |message|) (5 . |coerce|)
+             (|OutputForm|) (|Symbol|) (0 . |coerce|) (5 . |coerce|)
              (|List| $) (10 . |prefix|) (16 . |coerce|)
-             (|SingleInteger|))
+             (|SingleInteger|) (|String|))
           '#(~= 21 |setref| 27 |setelt| 33 |ref| 39 |latex| 44 |hash|
              49 |elt| 54 |deref| 59 |coerce| 64 = 69)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(1 0 1 1))
                 (CONS '#(|SetCategory&| NIL |BasicType&| NIL)
                       (CONS '#((|SetCategory|) (|Type|) (|BasicType|)
-                               (|CoercibleTo| 16))
-                            (|makeByteWordVec2| 22
-                                '(1 16 0 15 17 1 6 16 0 18 2 16 0 0 19
-                                  20 1 0 16 0 21 2 1 8 0 0 1 2 0 6 0 6
-                                  14 2 0 6 0 6 12 1 0 0 6 10 1 1 15 0 1
+                               (|CoercibleTo| 15))
+                            (|makeByteWordVec2| 23
+                                '(1 16 15 0 17 1 6 15 0 18 2 15 0 0 19
+                                  20 1 0 15 0 21 2 1 8 0 0 1 2 0 6 0 6
+                                  14 2 0 6 0 6 12 1 0 0 6 10 1 1 23 0 1
                                   1 1 22 0 1 1 0 6 0 11 1 0 6 0 13 1 1
-                                  16 0 21 2 0 8 0 0 9)))))
+                                  15 0 21 2 0 8 0 0 9)))))
           '|lookupComplete|)) 

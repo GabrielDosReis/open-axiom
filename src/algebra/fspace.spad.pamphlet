@@ -735,8 +735,7 @@ FunctionSpace(R:OrderedSet): Category == Definition where
         [kernel(op, z), g, l.n]
 
       opderiv(op, n) ==
---        one? n =>
-        (n = 1) =>
+        one? n =>
           g := symsub(gendiff, n)::%
           [kernel(opdiff,[kernel(op, g), g, first #1])]
         [kernel(opdiff, diffArg(#1, op, i)) for i in 1..n]
@@ -842,8 +841,7 @@ FunctionSpace(R:OrderedSet): Category == Definition where
 
       if R has RetractableTo Z then
           smpIsMult p ==
---            (u := mainVariable p) case K and one? degree(q:=univariate(p,u::K))
-            (u := mainVariable p) case K and (degree(q:=univariate(p,u::K))=1)
+            (u := mainVariable p) case K and one? degree(q:=univariate(p,u::K))
               and zero?(leadingCoefficient reductum q)
                 and ((r:=retractIfCan(leadingCoefficient q)@Union(R,"failed"))
                    case R)
@@ -948,8 +946,7 @@ FunctionSpace(R:OrderedSet): Category == Definition where
       retract(x:%):R == (retract(numer x)@R exquo retract(denom x)@R)::R
 
       coerce(x:%):OutputForm ==
---        one?(denom x) => smp2O numer x
-        ((denom x) = 1) => smp2O numer x
+        one?(denom x) => smp2O numer x
         smp2O(numer x) / smp2O(denom x)
 
       retractIfCan(x:%):Union(R, "failed") ==

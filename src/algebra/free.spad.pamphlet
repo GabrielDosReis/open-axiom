@@ -238,10 +238,8 @@ FreeMonoid(S: SetCategory): FMcategory == FMdefinition where
         s:S ** n:NonNegativeInteger == makeTerm(s, n)
 
         f:$ * g:$ ==
---            one? f => g
-            (f = 1) => g
---            one? g => f
-            (g = 1) => f
+            one? f => g
+            one? g => f
             lg := listOfMonoms g
             ls := last(lf := listOfMonoms f)
             ls.gen = lg.first.gen =>
@@ -250,8 +248,7 @@ FreeMonoid(S: SetCategory): FMcategory == FMdefinition where
             makeMulti concat(lf, lg)
 
         overlap(la, ar) ==
---            one? la or one? ar => [la, 1, ar]
-            (la = 1) or (ar = 1) => [la, 1, ar]
+            one? la or one? ar => [la, 1, ar]
             lla := la0 := listOfMonoms la
             lar := listOfMonoms ar
             l:List(REC) := empty()
@@ -278,8 +275,7 @@ FreeMonoid(S: SetCategory): FMcategory == FMdefinition where
             [makeMulti la0, 1, makeMulti lar]
 
         divide(lar, a) ==
---            one? a => [lar, 1]
-            (a = 1) => [lar, 1]
+            one? a => [lar, 1]
             Na   : Integer := #(la := listOfMonoms a)
             Nlar : Integer := #(llar := listOfMonoms lar)
             l:List(REC) := empty()

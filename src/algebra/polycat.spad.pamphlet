@@ -181,8 +181,7 @@ FiniteAbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
           zero? x => 0
           r:=leadingCoefficient x
           x:=reductum x
---          while not zero? x and not one? r repeat
-          while not zero? x and not (r = 1) repeat
+          while not zero? x and not one? r repeat
             r:=gcd(r,leadingCoefficient x)
             x:=reductum x
           r
@@ -375,8 +374,7 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
     isTimes p ==
       empty?(lv := variables p) or not monomial? p => "failed"
       l := [monomial(1, v, degree(p, v)) for v in lv]
---      one?(r := leadingCoefficient p) =>
-      ((r := leadingCoefficient p) = 1) =>
+      one?(r := leadingCoefficient p) =>
         empty? rest lv => "failed"
         l
       concat(r::%, l)

@@ -443,8 +443,7 @@ TranscendentalIntegration(F, UP): Exports == Implementation where
                UP22UPR swap primitivePart(resultvec(term.exponent),term.factor)]
                      for term in factors(rec.special)]
       dlog :=
---           one? derivation x => r.logpart
-           ((derivation x) = 1) => r.logpart
+           one? derivation x => r.logpart
            differentiate(mkAnswer(0, logs, empty()),
                          differentiate(#1, derivation))
       (u := retractIfCan(p := r.logpart - dlog)@Union(UP, "failed")) case UP =>
@@ -526,8 +525,7 @@ TranscendentalIntegration(F, UP): Exports == Implementation where
       num := numer f
       den := denom f
       l1:List Record(logand2:RF, contrib:UP) :=
---        [[u, numer v] for u in lu | one? denom(v := den * logderiv u)]
-        [[u, numer v] for u in lu | (denom(v := den * logderiv u) = 1)]
+        [[u, numer v] for u in lu | one? denom(v := den * logderiv u)]
       rows := max(degree den,
                   1 + reduce(max, [degree(u.contrib) for u in l1], 0)$List(N))
       m:Matrix(F) := zero(rows, cols := 1 + #l1)

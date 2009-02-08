@@ -107,8 +107,7 @@ InputForm():
 
     convert(x:DoubleFloat):% ==
       zero? x => 0
---      one? x => 1
-      (x = 1) => 1
+      one? x => 1
       convert(x)$Rep
 
     flatten s ==
@@ -183,8 +182,7 @@ InputForm():
     s1:% ** n:Integer ==
       s1 = 0 and n > 0 => 0
       s1 = 1 or zero? n => 1
---      one? n => s1
-      (n = 1) => s1
+      one? n => s1
       conv [convert("**"::Symbol), s1, convert n]$List(%)
 
     s1:% ** n:NonNegativeInteger == s1 ** (n::Integer)

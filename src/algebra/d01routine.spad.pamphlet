@@ -234,8 +234,7 @@ d01apfAnnaType(): NumericalIntegrationCategory == Result add
       if  (a.1 > -1) then c := a.1
       if  (a.2 > -1) then d := a.2
     l:INT := exprHasLogarithmicWeights(args)
---    (zero? c) and (zero? d) and (one? l) =>
-    (zero? c) and (zero? d) and (l = 1) =>
+    (zero? c) and (zero? d) and (one? l) =>
         [0.0,"d01apf: A suitable singularity has not been found", ext]
     out:LDF := [c,d,l :: DF]
     outany:Any := coerce(out)$AnyFunctions1(LDF)
@@ -312,8 +311,7 @@ d01aqfAnnaType(): NumericalIntegrationCategory == Result add
   measure(R:RT,args:NIA) ==
     ext:Result := empty()$Result
     Den := denominator(args.fn)
---    one? Den =>
-    (Den = 1) =>
+    one? Den =>
       [0.0,"d01aqf: A suitable weight function has not been found", ext]
     listOfZeros:LDF := problemPoints(args.fn,args.var,args.range)
     numberOfZeros := (#(listOfZeros))$LDF
@@ -399,8 +397,7 @@ d01alfAnnaType(): NumericalIntegrationCategory == Result add
       st:ST := "Recommended is d01alf with the singularities "
                      commaSeparate(listOfZeros)
       m := 
---        one?(numberOfZeros) => 0.4
-        (numberOfZeros = 1) => 0.4
+        one?(numberOfZeros) => 0.4
         getMeasure(R,d01alf@S)$RT
       [m, st, ext]
     [0.0, "d01alf: A list of suitable singularities has not been found", ext]

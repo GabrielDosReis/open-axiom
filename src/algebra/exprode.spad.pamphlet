@@ -116,8 +116,7 @@ ExpressionSpaceODESolver(R, F): Exports == Implementation where
                                                              K, R, P, F)
 
     div2exquo f ==
---      one?(d := denom f) => f
-      ((d := denom f) = 1) => f
+      one?(d := denom f) => f
       opex(smp2exquo numer f, smp2exquo d)
 
 -- if g is of the form a * k + b, then return -b/a

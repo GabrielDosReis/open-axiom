@@ -166,8 +166,7 @@ FunctionFieldCategory(F, UP, UPUP): Category == Definition where
     infOrder f             == (degree denom f)::Z - (degree numer f)::Z
     integral? f            == ground?(integralCoordinates(f).den)
     integral?(f:$, a:F)    == (integralCoordinates(f).den)(a) ~= 0
---    absolutelyIrreducible? == one? numberOfComponents()
-    absolutelyIrreducible? == numberOfComponents() = 1
+    absolutelyIrreducible? == one? numberOfComponents()
     yCoordinates f         == splitDenominator coordinates f
 
     hyperelliptic() ==
@@ -487,8 +486,7 @@ ChangeOfVariable(F, UP, UPUP): Exports == Implementation where
       RPrim(c, a, q)
 
     RPrim(c, a, q) ==
---      one? a => [c::RF, q]
-      (a = 1) => [c::RF, q]
+      one? a => [c::RF, q]
       [(a * c)::RF, clearDenominator q monomial(inv(a::RF), 1)]
 
 -- always makes the algebraic integral, but does not send a point to infinity

@@ -413,8 +413,7 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
        negative? i or i > maxIndex(x) => error "index out of range"
        qsetelt_!(x, i, s)
 
---   else if one? mn then
-   else if (mn = 1) then
+   else if one? mn then
      maxIndex x       == Qsize x
      qelt(x, i)       == Qelt(x, i-1)
      qsetelt_!(x, i, s) == Qsetelt(x, i-1, s)

@@ -255,8 +255,7 @@ SparseUnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
         NPOWERS : SG := "series expansion has terms of negative degree"
 
         (uts:%) ** (r:RN) ==
---          not one? coefficient(uts,0) =>
-          not (coefficient(uts,0) = 1) =>
+          not one? coefficient(uts,0) =>
             error "**: constant coefficient must be one"
           onePlusX : % := monomial(1,0) + monomial(1,1)
           ratPow := cPower(uts,r :: Coef)
@@ -269,8 +268,7 @@ SparseUnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
           error concat("exp: ",ZERO)
 
         log uts ==
---          one? coefficient(uts,0) =>
-          (coefficient(uts,0) = 1) =>
+          one? coefficient(uts,0) =>
             log1PlusX := cLog(monomial(1,0) + monomial(1,1))
             iCompose(log1PlusX,uts - 1)
           error concat("log: ",ONE)
@@ -381,8 +379,7 @@ SparseUnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
       if Coef has Algebra Fraction Integer then
 
         (uts:%) ** (r:Coef) ==
---          not one? coefficient(uts,1) =>
-          not (coefficient(uts,1) = 1) =>
+          not one? coefficient(uts,1) =>
             error "**: constant coefficient should be 1"
           cPower(uts,r)
 
