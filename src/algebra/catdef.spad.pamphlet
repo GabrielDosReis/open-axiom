@@ -525,6 +525,7 @@ EuclideanDomain(): Category == PrincipalIdealDomain with
       x quo y == divide(x,y).quotient --divide must be user-supplied
       x rem y == divide(x,y).remainder
       x exquo y ==
+         zero? x => 0
          zero? y => "failed"
          qr:=divide(x,y)
          zero?(qr.remainder) => qr.quotient
