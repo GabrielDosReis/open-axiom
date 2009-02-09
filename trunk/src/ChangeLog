@@ -1,3 +1,9 @@
+2009-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-spec2.boot (constantInDomain?): Move from i-coerce.boot.
+	(findConstructor$Constructor): Take constant type as argument.
+	(upDollar): Tidy.
+
 2009-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix AW/103

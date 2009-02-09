@@ -326,15 +326,6 @@ retractByFunction(object,u) ==
 -- from a given domain. For example, getConstantFromDomain('(One),S)
 -- returns the representation of 1 in the domain S.
 
-constantInDomain?(form,domainForm) ==
-    opAlist := getOperationAlistFromLisplib first domainForm
-    key := opOf form
-    entryList := LASSOC(key,opAlist)
-    entryList is [[., ., ., type]] and type in '(CONST ASCONST) => true
-    key = "One" => constantInDomain?(["1"], domainForm)
-    key = "Zero" => constantInDomain?(["0"], domainForm)
-    false
-
 getConstantFromDomain(form,domainForm) ==
     isPartialMode domainForm => NIL
     opAlist := getOperationAlistFromLisplib first domainForm
