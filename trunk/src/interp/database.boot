@@ -678,12 +678,22 @@ markUnique x ==
   RPLACD(x,[u,:rest x])
   rest x
 
+
+++ Tail of most function descriptors.
+$FunctionDescriptorTail == '(NIL T ELT)
+
+++ Return the list of overload sets of operations exported by
+++ the constructor `x'.  This function differs from 
+++ getConstructorOperationsFromDB in that it uncompresses the
+++ common tail of most function descriptors.  That compression
+++ was done when the overload sets were saved in the 
+++ operation database.
 getOperationAlistFromLisplib x ==
   u := getConstructorOperationsFromDB x
 --  u := removeZeroOneDestructively u
   null u => u          -- this can happen for Object
   CAAR u = '_$unique => rest u
-  f:= addConsDB '(NIL T ELT)
+  f:= addConsDB $FunctionDescriptorTail
   for [op,:sigList] in u repeat
     for items in tails sigList repeat
       [sig,:r] := first items
