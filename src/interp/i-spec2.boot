@@ -78,15 +78,31 @@ upDEF t ==
 
 --% Handler for package calling and $ constants
 
-++ Constant `c' is referenced from domain `d'; return its value
+++ Return non-nil if `form' designate a constant defined in the
+++ domain designated by `domainForm'.  More specifically, returns:
+++   nil: no such constant 
+++   <%Mode>: the type of the constant.
+++   T: too many constants designated by `form'.
+constantInDomain?(form,domainForm) ==
+    opAlist := getOperationAlistFromLisplib first domainForm
+    key := opOf form
+    entryList := [entry for (entry := [.,.,.,k]) in LASSOC(key,opAlist) 
+                    | k in '(CONST ASCONST)]
+    entryList is [[sig,.,.,.]] => sig.target
+    #entryList > 2 => true
+    key = "One" => constantInDomain?(["1"], domainForm)
+    key = "Zero" => constantInDomain?(["0"], domainForm)
+    nil
+
+++ Constant `c' of `type' is referenced from domain `d'; return its value
 ++ in the VAT `op'.
-findConstantInDomain(op,c,d) ==
+findConstantInDomain(op,c,type,d) ==
   isPartialMode d => throwKeyedMsg("S2IS0020",NIL)
   if $genValue then
     val := wrap getConstantFromDomain([c],d)
   else val := ["getConstantFromDomain",["LIST",MKQ c],MKQ d]
-  putValue(op,objNew(val,d))
-  putModeSet(op,[d])
+  putValue(op,objNew(val,type))
+  putModeSet(op,[type])
 
 upDollar t ==
   -- Puts "dollar" property in atree node, and calls bottom up
@@ -103,13 +119,12 @@ upDollar t ==
   if f = $immediateDataSymbol then
     f := objValUnwrap coerceInteractive(getValue form,$OutputForm)
     if f = '(construct) then f := "nil"
-  -- FIXME: The next two cases should be simplified and merged as
-  --        we move to general constant definitions.
   atom form and (f ^= $immediateDataSymbol) =>
-    constantInDomain?([f],t) => findConstantInDomain(op,f,t)
+    type := constantInDomain?([f],t) =>
+      type ^= true => findConstantInDomain(op,f,type,t)
+      -- Ambiguous constant.  FIXME: try to narrow before giving up.
+      throwKeyedMsg("S2IB0008h",[c,t])
     findUniqueOpInDomain(op,f,t)
-  f in '(One Zero true false nil) and constantInDomain?([f],t) =>
-    findConstantInDomain(op,f,t)
 
   nargs := #rest form
 

@@ -74,6 +74,8 @@ S2IB0008f
  operations.
  Perhaps package-calling the operation or using coercions on the
  arguments will allow you to apply the operation.
+S2IB0008h
+ The constant %1b from domain %2pb is ambiguous.
 S2IB0009
  OpenAxiom will attempt to step through and interpret the code.
 S2IB0010
