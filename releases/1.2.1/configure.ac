@@ -112,22 +112,11 @@ AC_CHECK_PROG([TOUCH], [touch],
               [touch], [AC_MSG_ERROR(['touch' program is missing.])])
 AC_CHECK_PROGS([MKTEMP], [mktemp])
 
-case $build in
-     *-solaris9)
-        AC_CHECK_PROG([AWK], [gawk], 
-                      [gawk], [AC_MSG_ERROR([OpenAxiom needs gawk])])
+AC_PROG_AWK
+AC_PATH_PROGS([HOST_AWK],[gawk mawk nawk awk])
 
-        AC_CHECK_PROG([PATCH], [gpatch],
-                      [gptach], [AC_MSG_ERROR([OpenAxiom needs gpatch])]) 
-        ;;
-
-      *)
-        AC_PROG_AWK
-
-        AC_CHECK_PROGS([PATCH], [gpatch patch], 
-                       [AC_MSG_ERROR([OpenAxiom needs a patch program])])
-        ;;
-esac
+AC_CHECK_PROGS([PATCH], [gpatch patch], 
+   [AC_MSG_ERROR([OpenAxiom needs a patch program])])
 
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 
@@ -663,6 +652,8 @@ AXIOM_MAKEFILE([src/algebra/Makefile])
 AXIOM_MAKEFILE([src/input/Makefile])
 AXIOM_MAKEFILE([src/etc/Makefile])
 AXIOM_MAKEFILE([src/doc/Makefile])
+
+AC_CONFIG_FILES([src/hyper/presea],[chmod +x src/hyper/presea])
 
 
 ## We now generate the "document" script and support files at configure time.

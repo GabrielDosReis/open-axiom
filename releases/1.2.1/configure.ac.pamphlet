@@ -707,32 +707,19 @@ AC_CHECK_PROGS([MKTEMP], [mktemp])
 @
 
 \paragraph{The [[awk]] program}
-The old build machinery needs 'awk'.  Currently, it checks for
-'gawk', 'nawk', and 'awk'.  Autoconf has a predefined test for that
-task.  It checks for 'gawk', 'mawk', 'nawk', and 'awk' in that order.
-That should be OK and match OpenAxiom's need.
 
-The old build system claims that on solaris9, gawk, gtar 
-and gpatch are required (with no much explanation of why).  Notice
-that these programs are needed only to build OpenAxiom; so we do
-check based on the value of [[build]]. 
+The old build machinery needs \Tool{awk} on the build machine for
+extracting algebra definitions.  The same tool is needed on the
+host machine for proper run of HyperDoc utilities.  Note that at
+the moment we do not make a distinction between the build machine
+and the host machine (though that may change in the future).
+
 <<awk and tar program>>=
-case $build in
-     *-solaris9)
-        AC_CHECK_PROG([AWK], [gawk], 
-                      [gawk], [AC_MSG_ERROR([OpenAxiom needs gawk])])
+AC_PROG_AWK
+AC_PATH_PROGS([HOST_AWK],[gawk mawk nawk awk])
 
-        AC_CHECK_PROG([PATCH], [gpatch],
-                      [gptach], [AC_MSG_ERROR([OpenAxiom needs gpatch])]) 
-        ;;
-
-      *)
-        AC_PROG_AWK
-
-        AC_CHECK_PROGS([PATCH], [gpatch patch], 
-                       [AC_MSG_ERROR([OpenAxiom needs a patch program])])
-        ;;
-esac
+AC_CHECK_PROGS([PATCH], [gpatch patch], 
+   [AC_MSG_ERROR([OpenAxiom needs a patch program])])
 @
 
 \paragraph{Binary utils.}
@@ -1218,6 +1205,8 @@ AXIOM_MAKEFILE([src/algebra/Makefile])
 AXIOM_MAKEFILE([src/input/Makefile])
 AXIOM_MAKEFILE([src/etc/Makefile])
 AXIOM_MAKEFILE([src/doc/Makefile])
+
+AC_CONFIG_FILES([src/hyper/presea],[chmod +x src/hyper/presea])
 
 
 ## We now generate the "document" script and support files at configure time.
