@@ -111,7 +111,7 @@ ConstructorCategory(): Category == OperatorCategory Identifier with
     kind x == getConstructorKind(x)$Lisp
     arity x == getConstructorArity(x)$Lisp
     dualSignature x == getDualSignatureFromDB(x)$Lisp
-    operations x == getConstructorOperationsFromDB(x)$Lisp
+    operations x == getOperationAlistFromLisplib(x)$Lisp
 
 @
 
