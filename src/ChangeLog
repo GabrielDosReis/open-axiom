@@ -1,3 +1,9 @@
+2009-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-spec2.boot (upDollar): Fix thinko.
+	* interp/compat.boot (editFile): Tidy.
+	* interp/br-op2.boot (modemap2Sig): Don't update $badStack.xo
+
 2009-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-spec2.boot (constantInDomain?): Move from i-coerce.boot.

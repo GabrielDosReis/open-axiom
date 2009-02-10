@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.3.0-2009-01-28], 
+AC_INIT([OpenAxiom], [1.3.0-2009-02-09], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -67,9 +67,13 @@ axiom_build_sharedir=$axiom_builddir/share
 case $host in
     *mingw*)
         ac_default_prefix="C:/Program Files/OpenAxiom"
+        AC_PATH_PROGS([oa_editor],[notepad.exe])
         ;;
-    *)  ;;
+    *)  
+        AC_PATH_PROGS([oa_editor],[vi])
+        ;;
 esac
+AC_SUBST(oa_editor)
 
 ## Accumulate list of utils needed for the build platform
 ## It is vital that noweb is present in the build environement.

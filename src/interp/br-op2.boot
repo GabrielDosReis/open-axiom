@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -578,7 +578,6 @@ modemap2Sig(op,mm) ==
     pp predList
     pp nsig
     pp mm
-    $badStack := [[op, mm], :$badStack]
 --pause nsig
   [predList, origin, substitute("%", origin, nsig)]
 
