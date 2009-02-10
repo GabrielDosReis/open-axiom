@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -123,7 +123,7 @@ upDollar t ==
     type := constantInDomain?([f],t) =>
       type ^= true => findConstantInDomain(op,f,type,t)
       -- Ambiguous constant.  FIXME: try to narrow before giving up.
-      throwKeyedMsg("S2IB0008h",[c,t])
+      throwKeyedMsg("S2IB0008h",[f,t])
     findUniqueOpInDomain(op,f,t)
 
   nargs := #rest form

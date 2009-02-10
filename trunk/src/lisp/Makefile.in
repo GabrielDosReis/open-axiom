@@ -128,6 +128,8 @@ $(oa_base_lisp_linkset): $(oa_target_lispdir)/core.$(LNKEXT)
 
 axiom_optimize_options = @axiom_optimize_options@
 
+oa_editor = @oa_editor@
+
 void_type = @void_type@
 char_type = @char_type@
 int_type = @int_type@
@@ -138,6 +140,7 @@ string_type = @string_type@
 edit = sed \
 	-e 's|@open_axiom_installdir[@]|$(open_axiom_installdir)|g' \
 	-e 's|@axiom_optimize_options[@]|$(axiom_optimize_options)|g' \
+	-e 's|@oa_editor[@]|$(oa_editor)|g' \
 	-e 's|@host[@]|$(host)|g' \
 	-e 's|@build[@]|$(build)|g' \
 	-e 's|@target[@]|$(target)|g' \

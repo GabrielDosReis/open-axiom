@@ -129,6 +129,7 @@
 ;; Lisp compiler optimization settings.
 (defconstant |$LispOptimizeOptions|
   '(@axiom_optimize_options@))
+
 (proclaim '(optimize @axiom_optimize_options@))
 
 ;; Return true if the full OpenAxiom algebra system is completed
@@ -194,6 +195,8 @@
 (defconstant |$NativeModuleExt|
   (cond (|$useDynamicLink| "@SHREXT@")
 	(t ".@LIBEXT@")))
+
+(defconstant |$EditorProgram| "@oa_editor@")
 
 ;; Base name of the native core runtime library
 (defconstant |$CoreLibName|

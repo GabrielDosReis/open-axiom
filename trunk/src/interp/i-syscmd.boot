@@ -833,8 +833,8 @@ compileSpad2Cmd args ==
         throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
 
     $InteractiveMode : local := nil
-    -- avoid transformations based on syntax only
-    $normalizeTree := false
+    -- avoid Boolean semantics transformations based on syntax only
+    $normalizeTree: local := false
     if translateOldToNew then
         spad2AsTranslatorAutoloadOnceTrigger()
         sayKeyedMsg("S2IZ0085", nil)
@@ -855,8 +855,6 @@ convertSpadToAsFile path ==
     $globalMacroStack : local := nil       -- for spad -> as translator
     $abbreviationStack: local := nil       -- for spad -> as translator
     $macrosAlreadyPrinted: local := nil    -- for spad -> as translator
-    SETQ($badStack, nil)                   --ditto  TEMP to check for bad code
-    $newPaths: local := true               --ditto  TEMP
     $abbreviationsAlreadyPrinted: local := nil    -- for spad -> as translator
     $convertingSpadFile : local := true
     $options: local := '((nolib))      -- translator shouldn't create nrlibs
@@ -1142,8 +1140,8 @@ fixObjectForPrinting(v) ==
     v
 
 displayProperties(option,l) ==
-  $dependentAlist : local
-  $dependeeAlist  : local
+  $dependentAlist : local := nil
+  $dependeeAlist  : local := nil
   [opt,:vl]:= (l or ['properties])
   imacs := getInterpMacroNames()
   pmacs := getParserMacroNames()
@@ -1280,7 +1278,7 @@ editSpad2Cmd l ==
   l:= 
     null l => _/EDITFILE
     CAR l
-  l := pathname l
+  l := pathname STRING l
   oldDir := pathnameDirectory l
   fileTypes :=
     pathnameType l => [pathnameType l]
@@ -1326,7 +1324,7 @@ newHelpSpad2Cmd args ==
   null (helpFile := MAKE_-INPUT_-FILENAME [narg,'HELPSPAD,'_*]) => NIL
 
   $useFullScreenHelp =>
-    runCommand STRCONC('"$AXIOM/lib/SPADEDIT ",namestring helpFile)
+    editFile helpFile
     true
 
   filestream := MAKE_-INSTREAM(helpFile)
@@ -2290,7 +2288,7 @@ reportCount () ==
 --% )library
 library args ==
   origDir := GET_-CURRENT_-DIRECTORY()
-  $newConlist := []
+  $newConlist: local := nil
   -- Users typically specify abbreviations without quotes.  
   LOCALDATABASE([STRING a for a in args],$options)
   extendLocalLibdb $newConlist
@@ -2600,9 +2598,9 @@ spool filename ==
     SETQ(_*TRACE_-OUTPUT_*,_*STANDARD_-OUTPUT_*)
     TERPRI()
     resetHighlight()
-  PROBE_-FILE car filename =>
-    systemError CONCAT('"file ", STRING car filename, '" already exists")
-  DRIBBLE car filename
+  PROBE_-FILE STRING first filename =>
+    systemError CONCAT('"file ", STRING first filename, '" already exists")
+  DRIBBLE STRING first filename
   SETQ(_*TRACE_-OUTPUT_*,_*STANDARD_-OUTPUT_*)
   TERPRI()
   clearHighlight()

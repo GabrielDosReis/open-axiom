@@ -57,9 +57,12 @@ system() ==
   terminateSystemCommand()
 
 editFile file ==
-  MEMQ(INTERN('"WIN32",FIND_-PACKAGE("KEYWORD")),_*FEATURES_*) => 
-    runCommand STRCONC('"notepad ", namestring pathname file)
-  runCommand STRCONC('"$AXIOM/lib/SPADEDIT ",namestring pathname file)
+  editProg := 
+    %hasFeature KEYWORD::WIN32 => '"notepad"
+    prog := getEnv '"EDITOR" => prog
+    # $EditorProgram ^= 0 => $EditorProgram
+    return nil  -- FIXME: Should we not notify user?
+  runCommand STRCONC(editProg,'" ",namestring pathname file)
 
 makeBigFloat(mantissa,expon) ==
   [$BFtag,mantissa,:expon]
