@@ -1,5 +1,10 @@
 2009-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lib/openpty.c: #include <sys/ioctl.h>, <termios.h>, and
+	<libutil.h> where available.
+
+2009-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-spec2.boot (upDollar): Fix thinko.
 	* interp/compat.boot (editFile): Tidy.
 	* interp/br-op2.boot (modemap2Sig): Don't update $badStack.xo

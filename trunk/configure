@@ -23845,7 +23845,10 @@ fi
 ## Does this system have openpty or shall we emulate?
 
 
-for ac_header in pty.h util.h
+
+
+
+for ac_header in sys/ioctl.h pty.h util.h libutil.h termios.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
@@ -24029,6 +24032,15 @@ cat >>conftest.$ac_ext <<_ACEOF
     #endif
     #if HAVE_UTIL_H
     #  include <util.h>
+    #endif
+    #if HAVE_SYS_IOCTL_H
+    #  include <sys/ioctl.h>
+    #endif
+    #if HAVE_TERMIOS_H
+    #  include <termios.h>
+    #endif
+    #if HAVE_LIBTUIL_H
+    #  include <libutil.h>
     #endif
 
 
