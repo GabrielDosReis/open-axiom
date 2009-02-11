@@ -1,5 +1,11 @@
 2009-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet: Check for <sys/ioctl.h>, <termios.h>, and
+	<libutil.h>. 
+	* config/openaxiom-c-macros.h.in: Regenerate.
+
+2009-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* configure.ac.pamphlet: Check path for `vi'.
 
 2009-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>

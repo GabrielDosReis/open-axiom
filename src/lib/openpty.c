@@ -38,12 +38,22 @@
 #include <fcntl.h>
 #include <string.h>
 
+#ifdef HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
 #ifdef HAVE_PTY_H
 #  include <pty.h>
 #endif
 #ifdef HAVE_UTIL_H
 #  include <util.h>
 #endif
+#ifdef HAVE_TERMIOS_H
+#  include <termios.h>
+#endif
+#ifdef HAVE_LIBUTIL_H
+#  include <libutil.h>
+#endif
+
 
 #include "openpty.H1"
 
@@ -136,7 +146,7 @@ extern char* ptsname(int);
   return(fdm);
 #endif
 
-#  error "don't know open to open a pty"
+#  error "don't know how to open a pty"
 #endif
 }
 

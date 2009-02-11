@@ -329,13 +329,22 @@ AC_CHECK_DECLS([fork],
                [#include <unistd.h>])
 
 ## Does this system have openpty or shall we emulate?
-AC_CHECK_HEADERS([pty.h util.h])
+AC_CHECK_HEADERS([sys/ioctl.h pty.h util.h libutil.h termios.h])
 AC_CHECK_DECLS([openpty],[],[],
    [#if HAVE_PTY_H
     #  include <pty.h>
     #endif
     #if HAVE_UTIL_H
     #  include <util.h>
+    #endif
+    #if HAVE_SYS_IOCTL_H
+    #  include <sys/ioctl.h>
+    #endif
+    #if HAVE_TERMIOS_H
+    #  include <termios.h>
+    #endif
+    #if HAVE_LIBTUIL_H
+    #  include <libutil.h>
     #endif
    ])
 if test x"$ac_cv_have_decl_openpty" = xyes; then \
