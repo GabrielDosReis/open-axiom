@@ -214,6 +214,7 @@ import Byte
 )abbrev domain BYTEBUF ByteBuffer
 ++ Author: Gabriel Dos Reis
 ++ Date Created: April 19, 2008
+++ Date Last Modified: February 15, 2009
 ++ Related Constructor:
 ++ Description:
 ++   ByteBuffer provides datatype for buffers of bytes.  This domain
@@ -230,62 +231,67 @@ import Byte
 ++   Note: a value of type ByteBuffer is 0-based indexed, as opposed
 ++         Vector, but not unlike PrimitiveArray Byte.
 ByteBuffer(): Public == Private where
-  Public == Join(OneDimensionalArrayAggregate Byte, CoercibleTo String) with
+  Public == Join(OneDimensionalArrayAggregate Byte,_
+              CoercibleTo PrimitiveArray Byte,CoercibleTo String) with
     byteBuffer: NonNegativeInteger -> %
       ++ byteBuffer(n) creates a buffer of capacity n, and length 0.
-    _#: % -> NonNegativeInteger
-      ++ #buf returns the number of active elements in the buffer.
     capacity: % -> NonNegativeInteger
       ++ capacity(buf) returns the pre-allocated maximum size of `buf'.
     setLength!: (%,NonNegativeInteger) -> NonNegativeInteger
       ++ setLength!(buf,n) sets the number of active bytes in the
       ++ `buf'.  Error if `n' is more than the capacity.
+    finiteAggregate  ++ A ByteBuffer object is a finite aggregate
   Private == add
-    makeByteBuffer(n: NonNegativeInteger): % ==
-      makeByteBuffer(n)$Lisp
+    -- A buffer object is a pair of a simple array, and the count
+    -- of active number in the array.  Note that we cannot use
+    -- Lisp-level fill pointers because that would not guarantee that
+    -- the implementation uses a simple representation, therefore
+    -- complicating FFI interface.
+    Rep == Record(ary: PrimitiveArray Byte, sz: NonNegativeInteger)
 
-    byteBuffer n == 
-      buf := makeByteBuffer n
-      setLength!(buf,0)
-      buf
+    makeByteBuffer(n: NonNegativeInteger): % ==
+      per [makeByteBuffer(n)$Lisp,n]$Rep
+
+    byteBuffer n == makeByteBuffer n
 
     empty() == byteBuffer 0
 
-    new(n,b) == makeByteBuffer(n,b)$Lisp
+    new(n,b) == per [makeByteBuffer(n,b)$Lisp,n]$Rep
 
-    qelt(buf,i) ==
-      AREF(buf,i)$Lisp
+    # buf == rep(buf).sz
+
+    capacity buf == # rep(buf).ary
+
+    qelt(buf,i) == qelt(rep(buf).ary,i)$PrimitiveArray(Byte)
 
     elt(buf: %,i: Integer) == 
-      i >= capacity buf => error "index out of range"
+      i >= # buf => error "index out of range"
       qelt(buf,i)
 
     qsetelt!(buf,i,b) ==
-      SETF(AREF(buf,i)$Lisp,b)$Lisp
+      qsetelt!(rep(buf).ary,i,b)$PrimitiveArray(Byte)
 
     setelt(buf: %,i: Integer, b: Byte) == 
-      i >= capacity buf => error "index out of range"
-      qsetelt!(buf,i,b)
-
-    capacity buf == ARRAY_-DIMENSION(buf,0)$Lisp
+      i >= # buf => error "index out of range"
+      qsetelt!(rep(buf).ary,i,b)
 
     minIndex buf == 0
 
-    maxIndex buf == capacity(buf)::Integer - 1
+    maxIndex buf == (# buf)::Integer - 1
 
-    # buf == LENGTH(buf)$Lisp
-
-    x = y == 
-      EQUAL(x,y)$Lisp
+    x = y == rep x = rep y
 
     setLength!(buf,n) == 
       n > capacity buf => 
         error "attempt to set length higher than capacity"
-      SETF(FILL_-POINTER(buf)$Lisp,n)$Lisp
+      rep(buf).sz := n
+
+    coerce(buf: %): PrimitiveArray Byte ==
+      rep(buf).ary
 
     coerce(buf: %): String == 
       s: String := MAKE_-STRING(#buf)$Lisp
-      for i in 0..(#buf - 1) repeat
+      for i in 0..maxIndex buf repeat
         qsetelt!(s,i + 1,qelt(buf,i)::Character)$String
       s
 
@@ -346,7 +352,7 @@ DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
 
 \section{License}
 <<license>>=
---Copyright (C) 2007-2008, Gabriel Dos Reis.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
