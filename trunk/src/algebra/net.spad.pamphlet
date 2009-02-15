@@ -422,7 +422,8 @@ InetClientStreamSocket(): Public == Private where
     readBytes!(x,b) ==
       not isConnected? x => error "socket is not connected"
       n: NonNegativeInteger := 
-          readFromStreamSocket(rep(x).%sock,b, capacity b)$Lisp
+          readFromStreamSocket(rep(x).%sock,b::PrimitiveArray(Byte),
+                                 capacity b)$Lisp
       setLength!(b,n)
 
     readByte! x ==
@@ -431,7 +432,7 @@ InetClientStreamSocket(): Public == Private where
 
     writeBytes!(x,b) ==
       not isConnected? x => error "socket is not connected"
-      writeToStreamSocket(rep(x).%sock,b, #b)$Lisp
+      writeToStreamSocket(rep(x).%sock,b::PrimitiveArray(Byte), #b)$Lisp
 
     writeByte!(x,b) ==
       not isConnected? x => error "socket is not connected"

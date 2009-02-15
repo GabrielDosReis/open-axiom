@@ -320,8 +320,7 @@ writeByteToStreamSocket(s,b) ==
 
 --%
 makeByteBuffer(n,b == 0) ==
-  MAKE_-ARRAY(n,KEYWORD::ELEMENT_-TYPE,"%Byte",
-    KEYWORD::FILL_-POINTER,true, KEYWORD::INITIAL_-ELEMENT,b)
+  MAKE_-ARRAY(n,KEYWORD::ELEMENT_-TYPE,"%Byte",KEYWORD::INITIAL_-ELEMENT,b)
 
 quoteForm t ==
   ["QUOTE",t]

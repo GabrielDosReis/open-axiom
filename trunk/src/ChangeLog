@@ -1,3 +1,13 @@
+2009-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/data.spad.pamphlet (ByteBuffer): Tidy.  Manage size
+	explicitly. 
+	* algebra/net.spad.pamphlet (writeBytes!$InetClientStreamSocket):
+	Convert buffer to array before calling VM function.
+	(readBytes!$InetClientStreamSocket): Likewise.
+	* interp/sys-utility.boot (makeByteBuffer): Don't ask for fill
+	pointers. 
+
 2009-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lib/openpty.c: #include <sys/ioctl.h>, <termios.h>, and
