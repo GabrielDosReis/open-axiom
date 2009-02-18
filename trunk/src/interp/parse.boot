@@ -211,6 +211,7 @@ parseHas t ==
       kk = "domain" or kk = "category" => [makeNonAtomic y]
       y is ["ATTRIBUTE",:.] => [y]
       y is ["SIGNATURE",:.] => [y]
+      y is [":",op,type] => [["SIGNATURE",op,[type],"constant"]]
       [["ATTRIBUTE",y]]
  
 parseDEF: %ParseForm -> %Form
