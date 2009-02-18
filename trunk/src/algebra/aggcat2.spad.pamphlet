@@ -57,7 +57,7 @@ FiniteLinearAggregateFunctions2(S, A, R, B):
 
   Implementation ==> add
     getRSample(): R ==
-      R has sample: R => sample()$R
+      R has sample: R => sample$R
       R has random: () -> R => random()$R
       NIL$Lisp         -- R got to be non-trivial.
 
