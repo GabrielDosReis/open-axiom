@@ -33,11 +33,11 @@ Byte(): Public == Private where
       ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
     bitior: (%,%) -> %
       ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
-    sample: () -> %
-      ++ sample() returns a sample datum of type Byte.
+    sample: %
+      ++ \spad{sample} gives a sample datum of type Byte.
   Private == SubDomain(NonNegativeInteger, #1 < 256) add
     byte(x: NonNegativeInteger): % == per x
-    sample() = 0$Lisp
+    sample = 0$Lisp
     coerce(c: Character) == per ord c
     coerce(x: %): Character == char rep x
     x = y == byteEqual(x,y)$Lisp
@@ -91,8 +91,10 @@ ByteOrder(): Public == Private where
 ++   for system programming tasks, i.e. interfacting with the hosting
 ++   operating system, reading/writing external binary format files.
 SystemInteger(N: PositiveInteger): Public == Private where
-  Public == OrderedFinite
+  Public == OrderedFinite with
+    sample: % ++ \spad{sample} gives a sample datum of this type.
   Private == SubDomain(Integer, length #1 <= N) add
+    sample == per(0@Integer)
     min == per(-shift(1,N-1))
     max == per(shift(1,N-1)-1)
     size() == (rep max - rep min + 1)::NonNegativeInteger
@@ -159,12 +161,12 @@ SystemNonNegativeInteger(N: PositiveInteger): Public == Private where
       ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
     bitior: (%,%) -> %
       ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
-    sample: () -> %
-      ++ sample() returns a sample datum of type Byte.
+    sample: %
+      ++ \spad{sample} gives a sample datum of type Byte.
   Private == SubDomain(NonNegativeInteger, length #1 <= N) add
     min == per 0
     max == per((shift(1,N)-1)::NonNegativeInteger)
-    sample() == min
+    sample == min
     bitand(x,y) == BOOLE(BOOLE_-AND$Lisp,x,y)$Lisp
     bitior(x,y) == BOOLE(BOOLE_-IOR$Lisp,x,y)$Lisp
 

@@ -1101,6 +1101,7 @@ compElt(form,m,E) ==
     E:= addDomain(aDomain,E)
     mmList:= getModemapListFromDomain(anOp,0,aDomain,E)
     modemap:=
+      -- FIXME: do this only for constants.
       n:=#mmList
       1=n => mmList.(0)
       0=n =>
@@ -1112,7 +1113,6 @@ compElt(form,m,E) ==
       mmList.(0)
     [sig,[pred,val]]:= modemap
     #sig^=2 and ^val is ["elt",:.] => nil --what does the second clause do ????
---+
     val := genDeltaEntry [opOf anOp,:modemap]
     convert([["call",val],first rest sig,E], m) --implies fn calls used to access constants
   compForm(form,m,E)
@@ -1121,9 +1121,7 @@ compElt(form,m,E) ==
 
 compHas: (%Form,%Mode,%Env) -> %Maybe %Triple
 compHas(pred is ["has",a,b],m,$e) ==
-  --b is (":",:.) => (.,.,E):= comp(b,$EmptyMode,E)
   $e:= chaseInferences(pred,$e)
-  --pred':= ("has",a',b') := formatHas(pred)
   predCode:= compHasFormat pred
   coerce([predCode,$Boolean,$e],m)
 
@@ -1136,7 +1134,7 @@ compHasFormat (pred is ["has",olda,b]) ==
   [a,:.] := comp(a,$EmptyMode,$e) or return nil
   a := SUBLISLIS(formals,argl,a)
   b is ["ATTRIBUTE",c] => ["HasAttribute",a,["QUOTE",c]]
-  b is ["SIGNATURE",op,sig] =>
+  b is ["SIGNATURE",op,sig,:.] =>
      ["HasSignature",a,
        mkList [MKQ op,mkList [mkTypeForm type for type in sig]]]
   isCategoryForm(b,$e) => ["HasCategory",a,mkTypeForm b]

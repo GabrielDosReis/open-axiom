@@ -56,6 +56,11 @@ FiniteLinearAggregateFunctions2(S, A, R, B):
                                        ++ \spad{[reduce(f,[a1],r),reduce(f,[a1,a2],r),...]}.
 
   Implementation ==> add
+    getRSample(): R ==
+      R has sample: R => sample()$R
+      R has random: () -> R => random()$R
+      NIL$Lisp         -- R got to be non-trivial.
+
     if A has ListAggregate(S) then         -- A is a list-oid
       reduce(fn, l, ident) ==
         empty? l => ident
@@ -72,12 +77,12 @@ FiniteLinearAggregateFunctions2(S, A, R, B):
 
       else                      -- A is a list-oid, B a mutable array-oid
         map(f, l) ==
-          i := minIndex(w := new(#l,NIL$Lisp)$B)
+          i := minIndex(w := new(#l,getRSample())$B)
           for a in entries l repeat (qsetelt_!(w, i, f a); i := inc i)
           w
 
         scan(fn, l, ident) ==
-          i := minIndex(w := new(#l,NIL$Lisp)$B)
+          i := minIndex(w := new(#l,getRSample())$B)
           vl := ident
           for a in entries l repeat
             vl := qsetelt_!(w, i, fn(a, vl))
@@ -105,13 +110,13 @@ FiniteLinearAggregateFunctions2(S, A, R, B):
       else                             -- A and B are array-oid's
         if B has shallowlyMutable then -- B is also mutable
           map(f, v) ==
-            w := new(#v,NIL$Lisp)$B
+            w := new(#v,getRSample())$B
             for i in minIndex w .. maxIndex w repeat
               qsetelt_!(w, i, f qelt(v, i))
             w
 
           scan(fn, v, ident) ==
-            w   := new(#v,NIL$Lisp)$B
+            w   := new(#v,getRSample())$B
             vl := ident
             for i in minIndex v .. maxIndex v repeat
               vl := qsetelt_!(w, i, fn(qelt(v, i), vl))
@@ -187,6 +192,8 @@ FiniteSetAggregateFunctions2(S, A, R, B): Exports == Implementation where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

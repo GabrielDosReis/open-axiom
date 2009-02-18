@@ -1,3 +1,15 @@
+2009-02-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/parse.boot (parseHas): Constants are not attributes.
+	* interp/compiler.boot (compHasFormat): Handle signature for
+	constants too.
+	* interp/info.boot (actOnInfo): Likewise.
+	* algebra/data.spad.pamphlet (sample$Byte): Make a constant.
+	(SystemInteger): Export constant 'sample'.
+	(SystemNonNegativeInteger): Likewise.
+	* algebra/aggcat2.spad.pamphlet (FiniteLinearAggregateFunctions2):
+	Use 'sample' or 'random' elements when allocating new aggregates.
+
 2009-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/data.spad.pamphlet (ByteBuffer): Tidy.  Manage size

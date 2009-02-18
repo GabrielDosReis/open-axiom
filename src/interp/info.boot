@@ -97,7 +97,7 @@ formatInfo u ==
     b="%noBranch" => ["COND",:liftCond [["not",formatPred a],formatInfo c]]
     ["COND",:liftCond [formatPred a,formatInfo b],:
       liftCond [["not",formatPred a],formatInfo c]]
-  systemError '"formatInfo"
+  systemError ['"formatInfo",u]
  
 liftCond (clause is [ante,conseq]) ==
   conseq is ["COND",:l] =>
@@ -118,7 +118,7 @@ formatPred u ==
     ["has",a,["ATTRIBUTE",b]]
   atom u => u
   u is ["and",:v] => ["and",:[formatPred w for w in v]]
-  systemError '"formatPred"
+  systemError ['"formatPred",u]
  
 chaseInferences(pred,$e) ==
   foo hasToInfo pred where
@@ -220,18 +220,21 @@ actOnInfo(u,$e) ==
     cat:= ["CATEGORY",key,["ATTRIBUTE",att]]
     $e:= put(name,"value",[vval,mkJoin(cat,vmode),venv],$e)
       --there is nowhere %else that this sort of thing exists
-  u is ["SIGNATURE",name,operator,modemap] =>
+  u is ["SIGNATURE",name,operator,modemap,:q] =>
+    kind := 
+      q is ["constant"] => "CONST" 
+      "ELT"
     implem:=
       (implem:=ASSOC([name,:modemap],get(operator,'modemap,$e))) =>
           CADADR implem
-      name = "$" => ['ELT,name,-1]
-      ['ELT,name,substitute('$,name,modemap)]
+      name = "$" => [kind,name,-1]
+      [kind,name,substitute('$,name,modemap)]
     $e:= addModemap(operator,name,modemap,true,implem,$e)
     [vval,vmode,venv]:= GetValue name
     compilerMessage('"augmenting %1: %2p", 
-      [name,["SIGNATURE",operator,modemap]])
+       [name,["SIGNATURE",operator,modemap,:q]])
     key:= if CONTAINED("$",vmode) then "domain" else name
-    cat:= ["CATEGORY",key,["SIGNATURE",operator,modemap]]
+    cat:= ["CATEGORY",key,["SIGNATURE",operator,modemap,:q]]
     $e:= put(name,"value",[vval,mkJoin(cat,vmode),venv],$e)
   u is ["has",name,cat] =>
     [vval,vmode,venv]:= GetValue name
@@ -255,7 +258,7 @@ actOnInfo(u,$e) ==
       $e:= put(name,"value",[vval,mkJoin(cat,vmode),venv],$e)
     SAY("extension of ",vval," to ",cat," ignored")
     $e
-  systemError '"knownInfo"
+  systemError ['"actOnInfo",u]
  
 mkJoin(cat,mode) ==
   mode is ['Join,:cats] => ['Join,cat,:cats]
