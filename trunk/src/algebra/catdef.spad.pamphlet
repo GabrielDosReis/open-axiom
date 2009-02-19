@@ -1529,7 +1529,7 @@ RightModule(R:Rng):Category == AbelianGroup with
 --Ring(): Category == Join(Rng,Monoid,LeftModule(%:Rng)) with
 Ring(): Category == Join(Rng,Monoid,LeftModule(%),CoercibleFrom Integer) with
     --operations
-      characteristic: () -> NonNegativeInteger
+      characteristic: NonNegativeInteger
         ++ characteristic() returns the characteristic of the ring
         ++ this is the smallest positive integer n such that
         ++ \spad{n*x=0} for all x in the ring, or zero if no such n
@@ -1737,6 +1737,8 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
+--All rights reversed.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are
