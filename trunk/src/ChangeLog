@@ -1,5 +1,14 @@
 2009-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-utility.boot (%hostByteOrder): Make a function.
+	* algebra/system.spad.pamphlet (hostByteOrder$System): Adjust call.
+
+2009-02-19  Aleksej Saushev  <asau@inbox.ru>
+
+	* lib/openpty.c: Include <sys/types.h> when testing for openpty.
+
+2009-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (characteristic$Ring): Make a
 	constant. 
 	* algebra/naalgc.spad.pamphlet
