@@ -12,7 +12,8 @@
                                (|CoercibleFrom| '#1#)
                                (|mkCategory| '|package|
                                    '(((|characteristic|
-                                       ((|NonNegativeInteger|)))
+                                       ((|NonNegativeInteger|))
+                                       |constant|)
                                       T))
                                    '((|unitsKnown| T))
                                    '((|NonNegativeInteger|)) NIL)))
