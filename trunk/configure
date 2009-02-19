@@ -26306,8 +26306,7 @@ cat >>confdefs.h <<\_ACEOF
 #define BSDplatform
 _ACEOF
 
-        CCF="-O2 -Wall -D_GNU_SOURCE -I/usr/local/include"
-        LDF="-L/usr/local/lib"
+        CCF="-O2 -Wall"
         ;;
     windows)
 
