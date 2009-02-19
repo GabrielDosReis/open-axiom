@@ -23445,14 +23445,14 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <#if HAVE_SYS_SOCKET_H
-                 #  include <sys/socket.h>
-                 #else
-                 #  include <winsock2.h>
-                 #endif
-                 #ifdef AF_LOCAL
-                   has_af_local
-                 #endif>
+#if HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#else
+#  include <winsock2.h>
+#endif
+#ifdef AF_LOCAL
+   has_af_local
+#endif
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
@@ -23473,14 +23473,14 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <#if HAVE_SYS_SOCKET_H
-                 #  include <sys/socket.h>
-                 #else
-                 #  include <winsock2.h>
-                 #endif
-                 #ifdef AF_UNIX
-                   has_af_unix
-                 #endif>
+#if HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#else
+#  include <winsock2.h>
+#endif
+#ifdef AF_UNIX
+   has_af_unix
+#endif
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
@@ -24028,20 +24028,21 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 #if HAVE_PTY_H
-    #  include <pty.h>
-    #endif
-    #if HAVE_UTIL_H
-    #  include <util.h>
-    #endif
-    #if HAVE_SYS_IOCTL_H
-    #  include <sys/ioctl.h>
-    #endif
-    #if HAVE_TERMIOS_H
-    #  include <termios.h>
-    #endif
-    #if HAVE_LIBTUIL_H
-    #  include <libutil.h>
-    #endif
+#  include <pty.h>
+#endif
+#if HAVE_UTIL_H
+#  include <util.h>
+#endif
+#if HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
+#if HAVE_TERMIOS_H
+#  include <termios.h>
+#endif
+#if HAVE_LIBTUIL_H
+#  include <sys/types.h>
+#  include <libutil.h>
+#endif
 
 
 int

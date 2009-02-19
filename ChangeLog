@@ -1,3 +1,8 @@
+2009-02-19  Aleksej Saushev  <asau@inbox.ru>
+
+	* configure.ac.pamphlet: Fix indention of CPP directives.  Include
+	<sys/types.h> when testing for openpty.
+
 2009-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Check for <sys/ioctl.h>, <termios.h>, and

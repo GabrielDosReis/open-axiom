@@ -46,7 +46,7 @@ System(): Public == Private where
     hostPlatform ==
       _$hostPlatform$Lisp
 
-    hostByteOrder == %hostByteOrder$Lisp
+    hostByteOrder == %hostByteOrder()$Lisp
 
     nativeModuleExtension ==
       _$NativeModuleExt$Lisp

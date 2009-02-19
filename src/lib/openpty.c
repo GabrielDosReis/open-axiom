@@ -51,6 +51,7 @@
 #  include <termios.h>
 #endif
 #ifdef HAVE_LIBUTIL_H
+#  include <sys/types.h>
 #  include <libutil.h>
 #endif
 

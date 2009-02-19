@@ -53,7 +53,7 @@ $COMBLOCKLIST := nil
 %unknownEndian == KEYWORD::%unknownEndian
 
 ++ The byte order of the host machine running OpenAxiom.
-%hostByteOrder ==
+%hostByteOrder() ==
   getHostByteOrder() = 1 => %littleEndian
   getHostByteOrder() = 2 => %bigEndian
   %unknownEndian
