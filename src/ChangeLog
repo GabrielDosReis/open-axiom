@@ -1,3 +1,10 @@
+2009-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (characteristic$Ring): Make a
+	constant. 
+	* algebra/naalgc.spad.pamphlet
+	(characteristic$NonAssociativeRing): Likewise. 
+
 2009-02-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/parse.boot (parseHas): Constants are not attributes.

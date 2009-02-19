@@ -183,7 +183,7 @@ NonAssociativeRng(): Category == Join(AbelianGroup,Monad)  with
 ++  the multiplication is not necessarily commutative or associative.
 NonAssociativeRing(): Category == Join(NonAssociativeRng,MonadWithUnit) with
     --operations
-      characteristic: -> NonNegativeInteger
+      characteristic: NonNegativeInteger
         ++ characteristic() returns the characteristic of the ring.
         --we can not make this a constant, since some domains are mutable
       coerce: Integer -> %
