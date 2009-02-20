@@ -38,11 +38,21 @@
 #include <fcntl.h>
 #include <string.h>
 
+#ifdef HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
 #ifdef HAVE_PTY_H
 #  include <pty.h>
 #endif
 #ifdef HAVE_UTIL_H
 #  include <util.h>
+#endif
+#ifdef HAVE_TERMIOS_H
+#  include <termios.h>
+#endif
+#ifdef HAVE_LIBUTIL_H
+#  include <sys/types.h>
+#  include <libutil.h>
 #endif
 
 #include "openpty.H1"

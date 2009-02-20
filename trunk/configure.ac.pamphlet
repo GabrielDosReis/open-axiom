@@ -345,7 +345,7 @@ AC_CHECK_DECLS([openpty],[],[],
 #if HAVE_TERMIOS_H
 #  include <termios.h>
 #endif
-#if HAVE_LIBTUIL_H
+#if HAVE_LIBUTIL_H
 #  include <sys/types.h>
 #  include <libutil.h>
 #endif

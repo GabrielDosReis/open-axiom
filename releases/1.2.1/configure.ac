@@ -415,28 +415,30 @@ esac
 
 AC_SUBST(axiom_c_runtime_extra)
 
-AC_EGREP_HEADER([has_af_local],
-                [#if HAVE_SYS_SOCKET_H
-                 #  include <sys/socket.h>
-                 #else
-                 #  include <winsock2.h>
-                 #endif
-                 #ifdef AF_LOCAL
-                   has_af_local
-                 #endif],
-                 [AC_DEFINE([HAVE_AF_LOCAL], [1], [Host has AF_LOCAL])])
+AC_EGREP_CPP([has_af_local],
+             [#if HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#else
+#  include <winsock2.h>
+#endif
+#ifdef AF_LOCAL
+   has_af_local
+#endif
+             ],
+             [AC_DEFINE([HAVE_AF_LOCAL], [1], [Host has AF_LOCAL])])
 
 
-AC_EGREP_HEADER([has_af_unix],
-                [#if HAVE_SYS_SOCKET_H
-                 #  include <sys/socket.h>
-                 #else
-                 #  include <winsock2.h>
-                 #endif
-                 #ifdef AF_UNIX
-                   has_af_unix
-                 #endif],
-                 [AC_DEFINE([HAVE_AF_UNIX], [1], [Host has AF_UNIX])])
+AC_EGREP_CPP([has_af_unix],
+             [#if HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#else
+#  include <winsock2.h>
+#endif
+#ifdef AF_UNIX
+   has_af_unix
+#endif
+             ],
+             [AC_DEFINE([HAVE_AF_UNIX], [1], [Host has AF_UNIX])])
 
 AC_CHECK_HEADERS([sys/wait.h])
 
@@ -453,14 +455,24 @@ AC_CHECK_DECLS([fork],
                [#include <unistd.h>])
 
 ## Does this system have openpty or shall we emulate?
-AC_CHECK_HEADERS([pty.h util.h])
+AC_CHECK_HEADERS([sys/ioctl.h pty.h util.h libutil.h termios.h])
 AC_CHECK_DECLS([openpty],[],[],
    [#if HAVE_PTY_H
-    #  include <pty.h>
-    #endif
-    #if HAVE_UTIL_H
-    #  include <util.h>
-    #endif
+#  include <pty.h>
+#endif
+#if HAVE_UTIL_H
+#  include <util.h>
+#endif
+#if HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
+#if HAVE_TERMIOS_H
+#  include <termios.h>
+#endif
+#if HAVE_LIBUTIL_H
+#  include <sys/types.h>
+#  include <libutil.h>
+#endif
    ])
 if test x"$ac_cv_have_decl_openpty" = xyes; then \
    AC_SEARCH_LIBS([openpty],[util])
@@ -560,8 +572,7 @@ LISP=lsp
 case $target in
     *bsd*)
         AC_DEFINE([BSDplatform], [], [BSD flavour])
-        CCF="-O2 -Wall -D_GNU_SOURCE -I/usr/local/include"
-        LDF="-L/usr/local/lib"
+        CCF="-O2 -Wall"
         ;;
     windows)
         AC_DEFINE([MSYSplatform], [], [MS])
