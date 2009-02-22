@@ -1827,7 +1827,7 @@ compRetractAlternative(x,t,stmt,m,s,T) ==
   else return stackAndThrow('"%1 is not retractable to %2bp",[s,t])
   -- 2.  Now declare `x'.
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
-  e := put(x,"value",[genSomeVariable(),t,e],e)
+  e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
   -- 3.  Compile body of the retract pattern.
   stmtT := comp(stmt,m,e) or return 
     stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
@@ -1862,7 +1862,7 @@ compRecoverAlternative(x,t,stmt,m,s,T) ==
   caseCode := ["EQUAL",["devaluate",t],["objMode",y]]
   -- 2. Declare `x'.
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
-  e := put(x,"value",[genSomeVariable(),t,e],e)
+  e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
   -- 3. Compile body of alternative
   stmtT := comp(stmt,m,e) or return 
     stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
@@ -1884,7 +1884,7 @@ compMatch(["%Match",subject,altBlock],m,e) ==
   [se,sm,e] := comp(subject,$EmptyMode,e) or return nil
   sn := GENSYM()
   [.,.,e] := compMakeDeclaration(sn,sm,e) or return nil
-  e := put(sn,"value",[genSomeVariable(),sm,e],e)
+  e := put(sn,"value",[genSomeVariable(),sm,$noEnv],e)
   -- 2. compile alternatives.
   altsCode := nil
   catchAllCount := 0
@@ -2044,7 +2044,7 @@ compIterator(it,e) ==
          stackMessage('"mode: %1pb must be a list of some mode",[m])
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,mUnder,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),mUnder,e],e)
+    e:= put(x,"value",[genSomeVariable(),mUnder,$noEnv],e)
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["IN",x,y''],e]
   it is ["ON",x,y] =>
@@ -2056,7 +2056,7 @@ compIterator(it,e) ==
         stackMessage('"mode: %1pb must be a list of other modes",[m])
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,m,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),m,e],e)
+    e:= put(x,"value",[genSomeVariable(),m,$noEnv],e)
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["ON",x,y''],e]
   it is ["STEP",index,start,inc,:optFinal] =>
@@ -2076,7 +2076,7 @@ compIterator(it,e) ==
             if null get(index,"mode",e) then [.,.,e]:=
               compMakeDeclaration(index,indexmode,
                 (final' => final'.env; inc'.env)) or return nil
-            e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
+            e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
             if final' then optFinal:= [final'.expr]
             [["ISTEP",index,start'.expr,inc'.expr,:optFinal],e]
     [start,.,e]:=
@@ -2095,7 +2095,7 @@ compIterator(it,e) ==
       $Integer
     if null get(index,"mode",e) then [.,.,e]:=
       compMakeDeclaration(index,indexmode,e) or return nil
-    e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
+    e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
     [["STEP",index,start,inc,:optFinal],e]
   it is ["WHILE",p] =>
     [p',m,e]:=
@@ -2160,7 +2160,7 @@ compIteratorV(it,e) ==
 	if null get(index,"mode",e) then [.,.,e]:=
 	  compMakeDeclaration(index,indexmode,final'.env) or
 	    return nil
-	e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
+	e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
 	[["ISTEP",index,start'.expr,inc'.expr,final'.expr],e]
     [start,.,e]:=
       comp(start,$Integer,e) or return
@@ -2177,7 +2177,7 @@ compIteratorV(it,e) ==
       $Integer
     if null get(index,"mode",e) then [.,.,e]:=
       compMakeDeclaration(index,indexmode,e) or return nil
-    e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
+    e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
     [["STEP",index,start,inc,final],e]
   nil
 

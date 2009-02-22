@@ -260,7 +260,7 @@ checkRepresentation(addForm,body,env) ==
       base := compForMode(domainRep,$EmptyMode,env) or 
         stackAndThrow('"1b is not a domain",[domainRep])
       $useRepresentationHack := false
-      env := put("Rep","value",base,env)
+      env := put("Rep","value",removeEnv base,env)
       -- ??? Maybe we should also make Rep available as macro?
   env
 
