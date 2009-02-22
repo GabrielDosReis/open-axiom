@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -245,11 +245,11 @@ addBlanks msg ==
   NREVERSE msg1
 
 
-SETANDFILEQ($msgdbPrims,'( %b %d %l %i %u %U %n %x %ce %rj "%U" "%b" "%d" "%l" "%i" "%u" "%U" "%n" "%x" "%ce" "%rj"))
-SETANDFILEQ($msgdbPunct,'(_. _, _! _: _; _? _] _)  "." "," "!" ":" ";" "?" "]" ")"  ))
-SETANDFILEQ($msgdbNoBlanksBeforeGroup,['" ", " ", '"%", "%",_
-                            :$msgdbPrims, :$msgdbPunct])
-SETANDFILEQ($msgdbListPrims,'(%m %s %ce %rj "%m" "%s" "%ce" "%rj"))
+$msgdbPrims =='( %b %d %l %i %u %U %n %x %ce %rj "%U" "%b" "%d" "%l" "%i" "%u" "%U" "%n" "%x" "%ce" "%rj")
+$msgdbPunct := '(_. _, _! _: _; _? _] _)  "." "," "!" ":" ";" "?" "]" ")"  )
+$msgdbNoBlanksBeforeGroup := ['" ", " ", '"%", "%",_
+                                :$msgdbPrims, :$msgdbPunct]
+$msgdbListPrims == '(%m %s %ce %rj "%m" "%s" "%ce" "%rj")
 
 noBlankBeforeP word==
     INTP word => false
@@ -260,9 +260,8 @@ noBlankBeforeP word==
     (PAIRP word) and member(CAR word,$msgdbListPrims) => true
     false
 
-$msgdbPunct := '(_[ _(  "[" "(" )
-SETANDFILEQ($msgdbNoBlanksAfterGroup,['" ", " ",'"%" ,"%",_
-                          :$msgdbPrims,:$msgdbPunct])
+$msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
+                              "[", "(", '"[", '"(" ]
 
 noBlankAfterP word==
     INTP word => false
