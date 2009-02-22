@@ -1,5 +1,18 @@
 2009-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/util.lisp (MAKESPAD): Remove.
+	(MAKELIB): Likewise.
+	(tr): Likewise.
+	(MAKE-TAGS-FILE): Likewise.
+	(SPADTAGS-FROM-DIRECTORY): Likewise.
+	(SPADTAGS-FROM-FILE): Likewise.
+	(WRITE-TAG-LINE): Likewise.
+	(FINDTAG): Likewise.
+	(MATCH-LISP-TAG): Likewise.
+	(BLANKCHARP): Likewise.
+
+2009-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/msgdb.boot: Avoid SETANDFILEQ.
 
 2009-02-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
