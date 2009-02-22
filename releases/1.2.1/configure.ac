@@ -113,7 +113,7 @@ AC_CHECK_PROG([TOUCH], [touch],
 AC_CHECK_PROGS([MKTEMP], [mktemp])
 
 AC_PROG_AWK
-AC_PATH_PROGS([HOST_AWK],[gawk mawk nawk awk])
+AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 
 AC_CHECK_PROGS([PATCH], [gpatch patch], 
    [AC_MSG_ERROR([OpenAxiom needs a patch program])])
