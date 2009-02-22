@@ -728,7 +728,7 @@ and the host machine (though that may change in the future).
 
 <<awk and tar program>>=
 AC_PROG_AWK
-AC_PATH_PROGS([HOST_AWK],[gawk mawk nawk awk])
+AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 
 AC_CHECK_PROGS([PATCH], [gpatch patch], 
    [AC_MSG_ERROR([OpenAxiom needs a patch program])])
@@ -1140,7 +1140,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.3.0-2009-02-15], 
+AC_INIT([OpenAxiom], [1.3.0-2009-02-22], 
         [open-axiom-bugs@lists.sf.net])
 
 @
