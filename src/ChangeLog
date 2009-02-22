@@ -1,3 +1,7 @@
+2009-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/msgdb.boot: Avoid SETANDFILEQ.
+
 2009-02-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compRetractAlternative): Don't store
