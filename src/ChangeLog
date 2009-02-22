@@ -1,3 +1,14 @@
+2009-02-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compRetractAlternative): Don't store
+	pointers to the environment.
+	(compRecoverAlternative): Likewise.
+	(compMatch): Likewise.
+	(compIterator): Likewise.
+	(compIteratorV): Likewise.
+	* interp/define.boot (checkRepresentation): Likewise.
+	* interp/info.boot (actOnInfo): Likewise.
+
 2009-02-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot (%hostByteOrder): Make a function.
