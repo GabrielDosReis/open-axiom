@@ -1,5 +1,18 @@
 2009-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compAtom): Don't interpret 'nil' as empty
+	vector. 
+	(compSymbol): Don't interpret 'true' and 'false' as Boolean
+	constants if domain Boolean is not in scope.
+	* algebra/any.spad.pamphlet (Property): Tidy.
+	* algebra/asp.spad.pamphlet (Asp34): Likewise.
+	* algebra/functions.spad.pamphlet (BasicFunctions): Likewise.
+	* algebra/lodop.spad.pamphlet (OppositeMonogenicLinearOperator):
+	Likewise. 
+	* algebra/groebsol.spad.pamphlet: Import Boolean.
+
+2009-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/util.lisp (MAKESPAD): Remove.
 	(MAKELIB): Likewise.
 	(tr): Likewise.

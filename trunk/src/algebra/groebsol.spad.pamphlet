@@ -57,6 +57,7 @@ GroebnerSolve(lv,F,R) : C == T
         ++ in general position, for system lp in variables lv.
 
    T == add
+     import Boolean
      import PolToPol(lv,F)
      import GroebnerPackage(F,DP,OV,DPoly)
      import GroebnerInternalPackage(F,DP,OV,DPoly)
