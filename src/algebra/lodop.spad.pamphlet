@@ -91,13 +91,11 @@ OppositeMonogenicLinearOperator(P, R): OPRcat == OPRdef where
         po: $ -> P  ++ po(q) creates a value in P equal to q in $.
 
    OPRdef  == P add
-        Rep := P
-        x, y: $
-        a: P
-        op a == a: $
-        po x == x: P
-        x*y == (y:P) *$P (x:P)
-        coerce(x): OutputForm == prefix(op::OutputForm, [coerce(x:P)$P])
+        Rep == P
+        op a == per a
+        po x == rep x
+        (x: %) * (y: %) == per(rep(y) * rep(x))
+        coerce(x): OutputForm == prefix(op::OutputForm, [coerce rep x])
 
 @
 \section{package NCODIV NonCommutativeOperatorDivision}

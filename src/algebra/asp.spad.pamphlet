@@ -1635,19 +1635,19 @@ Asp34(name): Exports == Implementation where
     real : UFST := ["real"::FST]$UFST
     integer : UFST := ["integer"::FST]$UFST
     syms : SYMTAB := empty()$SYMTAB
-    declare!(IFLAG,fortranInteger(),syms)$SYMTAB
-    declare!(N,fortranInteger(),syms)$SYMTAB
-    xType : FT := construct(real,[N],false)$FT
-    declare!(X,xType,syms)$SYMTAB
-    declare!(Y,xType,syms)$SYMTAB
-    declare!(LRWORK,fortranInteger(),syms)$SYMTAB
-    declare!(LIWORK,fortranInteger(),syms)$SYMTAB
-    rType : FT := construct(real,[LRWORK],false)$FT
-    declare!(RWORK,rType,syms)$SYMTAB
-    iType : FT := construct(integer,[LIWORK],false)$FT
-    declare!(IWORK,iType,syms)$SYMTAB
+    declare!('IFLAG,fortranInteger(),syms)$SYMTAB
+    declare!('N,fortranInteger(),syms)$SYMTAB
+    xType : FT := construct(real,['N],false)$FT
+    declare!('X,xType,syms)$SYMTAB
+    declare!('Y,xType,syms)$SYMTAB
+    declare!('LRWORK,fortranInteger(),syms)$SYMTAB
+    declare!('LIWORK,fortranInteger(),syms)$SYMTAB
+    rType : FT := construct(real,['LRWORK],false)$FT
+    declare!('RWORK,rType,syms)$SYMTAB
+    iType : FT := construct(integer,['LIWORK],false)$FT
+    declare!('IWORK,iType,syms)$SYMTAB
     Rep := FortranProgram(name,["void"]$UFST,
-                          [IFLAG,N,X,Y,RWORK,LRWORK,IWORK,LIWORK],syms)
+                          ['IFLAG,'N,'X,'Y,'RWORK,'LRWORK,'IWORK,'LIWORK],syms)
 
     -- To help the poor old compiler
     localAssign(s:Symbol,u:EXI):FC == assign(s,u)$FC
@@ -1655,15 +1655,15 @@ Asp34(name): Exports == Implementation where
     coerce(u:Matrix MachineFloat):$ == 
       dimension := nrows(u) ::Polynomial Integer
       locals : SYMTAB := empty()$SYMTAB
-      declare!(I,fortranInteger(),syms)$SYMTAB
-      declare!(J,fortranInteger(),syms)$SYMTAB
-      declare!(W1,[real,[dimension],false]$FT,locals)$SYMTAB
-      declare!(W2,[real,[dimension],false]$FT,locals)$SYMTAB
-      declare!(MS,[real,[dimension,dimension],false]$FT,locals)$SYMTAB
-      assign1 : FC := localAssign(IFLAG@Symbol,(-1)@EXI)
+      declare!('I,fortranInteger(),syms)$SYMTAB
+      declare!('J,fortranInteger(),syms)$SYMTAB
+      declare!('W1,[real,[dimension],false]$FT,locals)$SYMTAB
+      declare!('W2,[real,[dimension],false]$FT,locals)$SYMTAB
+      declare!('MS,[real,[dimension,dimension],false]$FT,locals)$SYMTAB
+      assign1 : FC := localAssign('IFLAG,(-1)@EXI)
       call : FC := call("F04ASF(MS,N,X,N,Y,W1,W2,IFLAG)")$FC
-      assign2 : FC := localAssign(IFLAG::Symbol,-(IFLAG@Symbol::EXI))
-      assign3 : FC := assign(MS,u)$FC
+      assign2 : FC := localAssign('IFLAG,-('IFLAG::EXI))
+      assign3 : FC := assign('MS,u)$FC
       code' : List FC := [assign1,assign3,call,assign2,returns()]$List(FC)
       ([locals,code']$RSFC)::$
 

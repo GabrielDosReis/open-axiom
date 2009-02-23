@@ -375,7 +375,6 @@ compAtomWithModemap(x,m,e,v) ==
                                          --accept only monadic operators
         T:= or/[t for (t:= [.,target,.]) in Tl | modeEqual(m,target)] => T
         1=#(Tl:= [y for t in Tl | (y:= convert(t,m))]) => first Tl
-        0<#Tl and m=$NoValueMode => first Tl
         nil
 
 transImplementation(op,map,fn) ==
@@ -387,12 +386,11 @@ compAtom(x,m,e) ==
   T:= compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   x="nil" =>
     T:=
-      modeIsAggregateOf('List,m,e) is [.,R]=> compList(x,['List,R],e)
-      modeIsAggregateOf('Vector,m,e) is [.,R]=> compVector(x,['Vector,R],e)
-    T => convert(T,m)
+      modeIsAggregateOf('List,m,e) is [.,R] => compList(x,['List,R],e)
+      return nil
+    convert(T,m)
   t:=
-    isSymbol x =>
-      compSymbol(x,m,e) or return nil
+    isSymbol x => compSymbol(x,m,e) or return nil
     m = $OutputForm and primitiveType x => [x,m,e]
     STRINGP x => [x,x,e]
     [x,primitiveType x or return nil,e]
@@ -411,11 +409,8 @@ primitiveType x ==
 compSymbol(s,m,e) ==
   s="$NoValue" => ["$NoValue",$NoValueMode,e]
   isFluid s => [s,getmode(s,e) or return nil,e]
-  s="true" => ['(QUOTE T),$Boolean,e]
-  s="false" => [false,$Boolean,e]
   s=m or isLiteral(s,e) => [["QUOTE",s],s,e]
   v := get(s,"value",e) =>
---+
     MEMQ(s,$functorLocalParameters) =>
         NRTgetLocalIndex s
         [s,v.mode,e] --s will be replaced by an ELT form in beforeCompile

@@ -63,11 +63,11 @@ BasicFunctions():  E == I where
       cotEntry:RS := [n1dpi, n3dpi, ndpi]
       logEntry:RS := [construct([1$DF])$SDF,esdf, construct([0$DF])$SDF]
       entryList:List(Record(key:Symbol,entry:RS)) :=
-         [[sin@Symbol, sinEntry], [cos@Symbol, cosEntry],
-           [tan@Symbol, tanEntry], [sec@Symbol, secEntry],
-            [csc@Symbol, cscEntry], [cot@Symbol, cotEntry],
-             [asin@Symbol, asinEntry], [acos@Symbol, acosEntry], 
-              [atan@Symbol, atanEntry], [log@Symbol, logEntry]]
+         [['sin, sinEntry], ['cos, cosEntry],
+           ['tan, tanEntry], ['sec, secEntry],
+            ['csc, cscEntry], ['cot, cotEntry],
+             ['asin, asinEntry], ['acos, acosEntry], 
+              ['atan, atanEntry], ['log, logEntry]]
       construct(entryList)$Rep
 
     bfKeys():List Symbol == keys(bf())$Rep

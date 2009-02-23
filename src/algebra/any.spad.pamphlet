@@ -268,7 +268,7 @@ import SExpression
 ++ Date Last Modified: January 18, 2008.
 ++ An `Property' is a pair of name and value.  
 Property(): Public == Private where
-  Public ==> CoercibleTo(OutputForm) with
+  Public == CoercibleTo(OutputForm) with
     name: % -> Symbol         
       ++ name(p) returns the name of property p
     value: % -> SExpression   
@@ -277,12 +277,9 @@ Property(): Public == Private where
       ++ property(n,val) constructs a property with name `n' and
       ++ value `val'.
   
-  Private ==> add
-    rep(x: %): SExpression ==
-      x pretend SExpression
-
-    per(x: SExpression): % ==
-      x pretend %
+  Private == add
+    import Boolean
+    Rep == SExpression
 
     name x == 
       -- Note: It is always well defined to take the `car' here
@@ -298,11 +295,10 @@ Property(): Public == Private where
  
     coerce x ==
       v := value x
-      val: OutputForm
-      if null? v then val := false::OutputForm
-      else if EQ(v, true)$Lisp : Boolean
-           then val := true::OutputForm
-           else val := v::OutputForm
+      val := 
+         null? v => false::OutputForm
+         EQ(v,'T)$Lisp => true::OutputForm
+         v::OutputForm
       
       bracket(infix(outputForm '_=_>, outputForm name x, 
                 val)$OutputForm)$OutputForm
@@ -523,7 +519,7 @@ Environment(): Public == Private where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2008, Gabriel Dos Reis.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

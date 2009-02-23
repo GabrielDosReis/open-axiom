@@ -607,7 +607,7 @@ d01gbfAnnaType(): NumericalIntegrationCategory == Result add
       nia:NIA := [vars.i,args.fn,segs.i,args.abserr,rel]
       not rangeIsFinite(nia) case finite => return
         [0.0,"d01gbf is not a suitable routine for infinite integrals",ext]
-    [getMeasure(R,d01gbf@S)$RT, "Recommended is d01gbf", ext]
+    [getMeasure(R,'d01gbf)$RT, "Recommended is d01gbf", ext]
 
   numericalIntegration(args:MDNIA,hints:Result) ==
     import Integer
