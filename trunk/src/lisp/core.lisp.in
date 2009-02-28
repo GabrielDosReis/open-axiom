@@ -231,10 +231,9 @@
 ;; versions as poor man safeguard to portability chaos.
 (defconstant |$ECLVersionNumber|
   #-:ecl -1
-  #+:ecl (cond ((find-symbol "+ECL-VERSION-NUMBER+" "EXT")
-		ext:+ecl-version-number+)
-	       (t -1)))
-  
+  #+:ecl (let ((ver (find-symbol "+ECL-VERSION-NUMBER+" "EXT")))
+	   (cond (ver (symbol-value ver))
+		 (t -1))))
 
 ;; 
 ;; -*- OpenAxiom filesystem -*-
