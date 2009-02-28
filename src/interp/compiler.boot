@@ -1208,14 +1208,6 @@ compPredicate(p,E) ==
   [p',m,getSuccessEnvironment(p,E),getInverseEnvironment(p,E)]
 
 getSuccessEnvironment(a,e) ==
-  a is ["is",id,m] =>
-    IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
-         e:=put(id,"specialCase",m,e)
-         currentProplist:= getProplist(id,e)
-         [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
-         newProplist:= consProplistOf(id,currentProplist,"value",[m,:rest removeEnv T])
-         addBinding(id,newProplist,e)
-    e
   a is ["case",x,m] and IDENTP x =>
     put(x,"condition",[a,:get(x,"condition",e)],e)
   e
