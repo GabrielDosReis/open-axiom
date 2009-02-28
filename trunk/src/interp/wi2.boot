@@ -42,8 +42,6 @@ $NRTopt := false
 compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     ['DEF,form,signature,$functorSpecialCases,body] := df
     signature := markKillAll signature
-    if NRTPARSE = true then
-      [lineNumber,:$functorSpecialCases] := $functorSpecialCases
 --  1. bind global variables
     $addForm: local := nil
     $functionStats: local:= [0,0]

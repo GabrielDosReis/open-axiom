@@ -1,3 +1,11 @@
+2009-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (NRTPARSE): Remove.
+	(mkCategoryPackage): Remove dead code.
+	(compDefineFunctor1): Tidy.
+	(compDefineCapsuleFunction): Likewise.
+	(compileCases): Likewise.
+
 2009-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in ($ECLVersionNumber): New.

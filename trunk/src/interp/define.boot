@@ -49,7 +49,6 @@ module define where
 
 --%
 
-NRTPARSE := false
 $newCompCompare := false
 
 ++ List of mutable domains.
@@ -440,15 +439,10 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
     atom x => oplist
     x is ['DEF,y,:.] => [y,:oplist]
     fn(rest x,fn(first x,oplist))
-  explicitCatPart := gn cat where gn cat ==
-    cat is ['CATEGORY,:.] => rest rest cat
-    cat is ['Join,:u] => gn last u
-    nil
   catvec := eval mkEvalableCategoryForm form
   fullCatOpList:=(JoinInner([catvec],$e)).1
   catOpList :=
     [['SIGNATURE,op1,sig] for [[op1,sig],:.] in fullCatOpList
-         --above line calls the category constructor just compiled
         | assoc(op1,capsuleDefAlist)]
   null catOpList => nil
   packageCategory := ['CATEGORY,'domain,
@@ -590,10 +584,8 @@ compDefineFunctor(df,m,e,prefix,fal) ==
     compDefineFunctor1(df,m,e,prefix,fal)
   compDefineLisplib(df,m,e,prefix,fal,'compDefineFunctor1)
  
-compDefineFunctor1(df is ['DEF,form,signature,$functorSpecialCases,body],
+compDefineFunctor1(df is ['DEF,form,signature,nils,body],
   m,$e,$prefix,$formalArgList) ==
-    if NRTPARSE = true then
-      [lineNumber,:$functorSpecialCases] := $functorSpecialCases
 --  1. bind global variables
     $addForm: local := nil
     $subdomain: local := false
@@ -962,9 +954,9 @@ orderByDependency(vl,dl) ==
   REMDUP NREVERSE orderedVarList --ordered so ith is indep. of jth if i < j
  
 compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
-  m,oldE,$prefix,$formalArgList) ==
+  m,$e,$prefix,$formalArgList) ==
     [lineNumber,:specialCases] := specialCases
-    e := oldE
+    e := $e
     --1. bind global variables
     $form: local := nil
     $op: local := nil
@@ -996,7 +988,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     argModeList:= stripOffSubdomainConditions(argModeList,argl)
     signature':= [first signature,:argModeList]
     if null identSig then  --make $op a local function
-      oldE := put($op,'mode,['Mapping,:signature'],oldE)
+      $e := put($op,'mode,['Mapping,:signature'],$e)
  
     --obtain target type if not given
     if null first signature' then signature':=
@@ -1031,7 +1023,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     $compileOnlyCertainItems and _
       not member($op, $compileOnlyCertainItems) =>
         sayBrightly ['"   skipping ", localOrExported,:bright $op]
-        [nil,['Mapping,:signature'],oldE]
+        [nil,['Mapping,:signature'],$e]
     sayBrightly ['"   compiling ",localOrExported,
       :bright $op,'": ",:formattedSig]
  
@@ -1049,13 +1041,12 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
       body':= replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body':= addArgumentConditions(body',$op)
       finalBody:= ["CATCH",catchTag,body']
-      compileCases([$op,["LAM",[:argl,'_$],finalBody]],oldE)
+      compile [$op,["LAM",[:argl,'_$],finalBody]]
     $functorStats:= addStats($functorStats,$functionStats)
- 
  
 --  7. give operator a 'value property
     val:= [fun,signature',e]
-    [fun,['Mapping,:signature'],oldE] -- oldE:= put($op,'value,removeEnv val,e)
+    [fun,['Mapping,:signature'],$e]
  
 getSignatureFromMode(form,e) ==
   getmode(opOf form,e) is ['Mapping,:signature] =>
@@ -1210,39 +1201,6 @@ canCacheLocalDomain(dom,elt)==
        and/[domargsglobal(arg) for arg in rest dom]
  
  
-compileCases(x,$e) == -- $e is referenced in compile
-  $specialCaseKeyList: local := nil
-  not ($insideFunctorIfTrue=true) => compile x
-  specialCaseAssoc:=
-    [y for y in getSpecialCaseAssoc() | not get(first y,"specialCase",$e) and
-          ([R,R']:= y) and isEltArgumentIn(FindNamesFor(R,R'),x)] where
-        FindNamesFor(R,R') ==
-          [R,:
-            [v
-              for ["%LET",v,u,:.] in $getDomainCode | CADR u=R and
-                eval substitute(R',R,u)]]
-        isEltArgumentIn(Rlist,x) ==
-          atom x => nil
-          x is [op,R,.] and op in '(getShellEntry ELT QREFELT) => 
-            MEMQ(R,Rlist) or isEltArgumentIn(Rlist,rest x)
-          isEltArgumentIn(Rlist,first x) or isEltArgumentIn(Rlist,rest x)
-  null specialCaseAssoc => compile x
-  listOfDomains:= ASSOCLEFT specialCaseAssoc
-  listOfAllCases:= outerProduct ASSOCRIGHT specialCaseAssoc
-  cl:=
-    [u for l in listOfAllCases] where
-      u() ==
-        $specialCaseKeyList:= [[D,:C] for D in listOfDomains for C in l]
-        [MKPF([["EQUAL",D,C] for D in listOfDomains for C in l],"AND"),
-          compile COPY x]
-  $specialCaseKeyList:= nil
-  ["COND",:cl,[$true,compile x]]
- 
-getSpecialCaseAssoc() ==
-  [[R,:l] for R in rest $functorForm
-    for l in rest $functorSpecialCases | l]
-
-
 $savableItems := nil
  
 compile u ==
