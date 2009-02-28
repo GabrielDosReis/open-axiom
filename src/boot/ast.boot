@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1424,7 +1424,10 @@ genECLnativeTranslation(op,s,t,op') ==
 	    isSimpleNativeType x => '""
 	    [.,[c,y]] := x
             c = "buffer" => 
-	      y = "char" or y = "byte" => '"->vector.self.ch"
+	      y = "char" or y = "byte" => 
+                AxiomCore::$ECLVersionNumber < 90100 => '"->vector.self.ch"
+                y = "char" => '"->vector.self.i8"
+                '"->vector.self.b8"
 	      y = "int" => '"->vector.self.fix"
 	      y = "float" => '"->vector.self.sf"
 	      y = "double" => '"->vector.self.df"
