@@ -140,43 +140,43 @@
 
 (DEFUN |CLAGG-;find;MAU;5| (|f| |c| $)
   (SPADCALL |f| (SPADCALL |c| (|getShellEntry| $ 9))
-      (|getShellEntry| $ 18))) 
+      (|getShellEntry| $ 24))) 
 
 (DEFUN |CLAGG-;reduce;MAS;6| (|f| |x| $)
   (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
-      (|getShellEntry| $ 21))) 
+      (|getShellEntry| $ 27))) 
 
 (DEFUN |CLAGG-;reduce;MA2S;7| (|f| |x| |s| $)
   (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9)) |s|
-      (|getShellEntry| $ 23))) 
+      (|getShellEntry| $ 29))) 
 
 (DEFUN |CLAGG-;remove;M2A;8| (|f| |x| $)
   (SPADCALL (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
-                (|getShellEntry| $ 25))
-            (|getShellEntry| $ 26))) 
+                (|getShellEntry| $ 31))
+            (|getShellEntry| $ 32))) 
 
 (DEFUN |CLAGG-;select;M2A;9| (|f| |x| $)
   (SPADCALL (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
-                (|getShellEntry| $ 28))
-            (|getShellEntry| $ 26))) 
+                (|getShellEntry| $ 34))
+            (|getShellEntry| $ 32))) 
 
 (DEFUN |CLAGG-;remove;S2A;10| (|s| |x| $)
   (SPADCALL (CONS #'|CLAGG-;remove;S2A;10!0| (VECTOR $ |s|)) |x|
-      (|getShellEntry| $ 31))) 
+      (|getShellEntry| $ 37))) 
 
 (DEFUN |CLAGG-;remove;S2A;10!0| (|#1| $$)
   (SPADCALL |#1| (|getShellEntry| $$ 1)
-      (|getShellEntry| (|getShellEntry| $$ 0) 30))) 
+      (|getShellEntry| (|getShellEntry| $$ 0) 36))) 
 
 (DEFUN |CLAGG-;reduce;MA3S;11| (|f| |x| |s1| |s2| $)
   (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9)) |s1| |s2|
-      (|getShellEntry| $ 33))) 
+      (|getShellEntry| $ 39))) 
 
 (DEFUN |CLAGG-;removeDuplicates;2A;12| (|x| $)
   (SPADCALL
       (SPADCALL (SPADCALL |x| (|getShellEntry| $ 9))
-          (|getShellEntry| $ 35))
-      (|getShellEntry| $ 26))) 
+          (|getShellEntry| $ 41))
+      (|getShellEntry| $ 32))) 
 
 (DEFUN |Collection&| (|#1| |#2|)
   (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
@@ -185,7 +185,7 @@
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|Collection&|))
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$| (LIST '|Collection&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 37) . #0#)
+        (LETT $ (|newShell| 43) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -200,35 +200,35 @@
         (COND
           ((|testBitVector| |pv$| 3)
            (PROGN
-             (|setShellEntry| $ 11
+             (|setShellEntry| $ 12
                  (CONS (|dispatchFunction| |CLAGG-;#;ANni;1|) $))
-             (|setShellEntry| $ 14
+             (|setShellEntry| $ 18
                  (CONS (|dispatchFunction| |CLAGG-;count;MANni;2|) $))
-             (|setShellEntry| $ 15
+             (|setShellEntry| $ 21
                  (CONS (|dispatchFunction| |CLAGG-;any?;MAB;3|) $))
-             (|setShellEntry| $ 16
-                 (CONS (|dispatchFunction| |CLAGG-;every?;MAB;4|) $))
-             (|setShellEntry| $ 19
-                 (CONS (|dispatchFunction| |CLAGG-;find;MAU;5|) $))
              (|setShellEntry| $ 22
+                 (CONS (|dispatchFunction| |CLAGG-;every?;MAB;4|) $))
+             (|setShellEntry| $ 25
+                 (CONS (|dispatchFunction| |CLAGG-;find;MAU;5|) $))
+             (|setShellEntry| $ 28
                  (CONS (|dispatchFunction| |CLAGG-;reduce;MAS;6|) $))
-             (|setShellEntry| $ 24
+             (|setShellEntry| $ 30
                  (CONS (|dispatchFunction| |CLAGG-;reduce;MA2S;7|) $))
-             (|setShellEntry| $ 27
+             (|setShellEntry| $ 33
                  (CONS (|dispatchFunction| |CLAGG-;remove;M2A;8|) $))
-             (|setShellEntry| $ 29
+             (|setShellEntry| $ 35
                  (CONS (|dispatchFunction| |CLAGG-;select;M2A;9|) $))
              (COND
                ((|testBitVector| |pv$| 2)
                 (PROGN
-                  (|setShellEntry| $ 32
+                  (|setShellEntry| $ 38
                       (CONS (|dispatchFunction| |CLAGG-;remove;S2A;10|)
                             $))
-                  (|setShellEntry| $ 34
+                  (|setShellEntry| $ 40
                       (CONS (|dispatchFunction|
                                 |CLAGG-;reduce;MA3S;11|)
                             $))
-                  (|setShellEntry| $ 36
+                  (|setShellEntry| $ 42
                       (CONS (|dispatchFunction|
                                 |CLAGG-;removeDuplicates;2A;12|)
                             $))))))))
@@ -237,34 +237,38 @@
 (MAKEPROP '|Collection&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)
              (|List| 7) (0 . |parts|) (|NonNegativeInteger|) (5 . |#|)
-             (|Boolean|) (|Mapping| 12 7) (10 . |count|) (16 . |any?|)
-             (22 . |every?|) (|Union| 7 '"failed") (28 . |find|)
-             (34 . |find|) (|Mapping| 7 7 7) (40 . |reduce|)
-             (46 . |reduce|) (52 . |reduce|) (59 . |reduce|)
-             (66 . |remove|) (72 . |construct|) (77 . |remove|)
-             (83 . |select|) (89 . |select|) (95 . =) (101 . |remove|)
-             (107 . |remove|) (113 . |reduce|) (121 . |reduce|)
-             (129 . |removeDuplicates|) (134 . |removeDuplicates|))
-          '#(|select| 139 |removeDuplicates| 145 |remove| 150 |reduce|
-             162 |find| 183 |every?| 189 |count| 195 |any?| 201 |#|
-             207)
+             (10 . |#|) (15 . |One|) (19 . +) (25 . |Zero|) (|Boolean|)
+             (|Mapping| 16 7) (29 . |count|) (35 . |true|)
+             (39 . |false|) (43 . |any?|) (49 . |every?|)
+             (|Union| 7 '"failed") (55 . |find|) (61 . |find|)
+             (|Mapping| 7 7 7) (67 . |reduce|) (73 . |reduce|)
+             (79 . |reduce|) (86 . |reduce|) (93 . |remove|)
+             (99 . |construct|) (104 . |remove|) (110 . |select|)
+             (116 . |select|) (122 . =) (128 . |remove|)
+             (134 . |remove|) (140 . |reduce|) (148 . |reduce|)
+             (156 . |removeDuplicates|) (161 . |removeDuplicates|))
+          '#(|select| 166 |removeDuplicates| 172 |remove| 177 |reduce|
+             189 |find| 210 |every?| 216 |count| 222 |any?| 228 |#|
+             234)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 36
-                                '(1 6 8 0 9 1 0 10 0 11 2 0 10 13 0 14
-                                  2 0 12 13 0 15 2 0 12 13 0 16 2 8 17
-                                  13 0 18 2 0 17 13 0 19 2 8 7 20 0 21
-                                  2 0 7 20 0 22 3 8 7 20 0 7 23 3 0 7
-                                  20 0 7 24 2 8 0 13 0 25 1 6 0 8 26 2
-                                  0 0 13 0 27 2 8 0 13 0 28 2 0 0 13 0
-                                  29 2 7 12 0 0 30 2 6 0 13 0 31 2 0 0
-                                  7 0 32 4 8 7 20 0 7 7 33 4 0 7 20 0 7
-                                  7 34 1 8 0 0 35 1 0 0 0 36 2 0 0 13 0
-                                  29 1 0 0 0 36 2 0 0 7 0 32 2 0 0 13 0
-                                  27 4 0 7 20 0 7 7 34 3 0 7 20 0 7 24
-                                  2 0 7 20 0 22 2 0 17 13 0 19 2 0 12
-                                  13 0 16 2 0 10 13 0 14 2 0 12 13 0 15
-                                  1 0 10 0 11)))))
+                            (|makeByteWordVec2| 42
+                                '(1 6 8 0 9 1 8 10 0 11 1 0 10 0 12 0
+                                  10 0 13 2 10 0 0 0 14 0 10 0 15 2 0
+                                  10 17 0 18 0 16 0 19 0 16 0 20 2 0 16
+                                  17 0 21 2 0 16 17 0 22 2 8 23 17 0 24
+                                  2 0 23 17 0 25 2 8 7 26 0 27 2 0 7 26
+                                  0 28 3 8 7 26 0 7 29 3 0 7 26 0 7 30
+                                  2 8 0 17 0 31 1 6 0 8 32 2 0 0 17 0
+                                  33 2 8 0 17 0 34 2 0 0 17 0 35 2 7 16
+                                  0 0 36 2 6 0 17 0 37 2 0 0 7 0 38 4 8
+                                  7 26 0 7 7 39 4 0 7 26 0 7 7 40 1 8 0
+                                  0 41 1 0 0 0 42 2 0 0 17 0 35 1 0 0 0
+                                  42 2 0 0 7 0 38 2 0 0 17 0 33 4 0 7
+                                  26 0 7 7 40 3 0 7 26 0 7 30 2 0 7 26
+                                  0 28 2 0 23 17 0 25 2 0 16 17 0 22 2
+                                  0 10 17 0 18 2 0 16 17 0 21 1 0 10 0
+                                  12)))))
           '|lookupComplete|)) 

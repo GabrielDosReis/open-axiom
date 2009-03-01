@@ -60,7 +60,7 @@
         (LETT |dv$1| (|devaluate| |#1|)
               . #0=(|UniqueFactorizationDomain&|))
         (LETT |dv$| (LIST '|UniqueFactorizationDomain&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 25) . #0#)
+        (LETT $ (|newShell| 29) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -76,14 +76,16 @@
              |UFD-;squareFreePart;2S;1| (25 . |factor|)
              (|Union| '"nil" '"sqfr" '"irred" '"prime")
              (|Record| (|:| |flg| 19) (|:| |fctr| 6) (|:| |xpnt| 11))
-             (|List| 20) (30 . |factorList|) (|Boolean|)
+             (|List| 20) (30 . |factorList|) (|NonNegativeInteger|)
+             (35 . |#|) (40 . |One|) (|Boolean|) (44 . =)
              |UFD-;prime?;SB;2|)
-          '#(|squareFreePart| 35 |prime?| 40) 'NIL
+          '#(|squareFreePart| 50 |prime?| 55) 'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 24
+                            (|makeByteWordVec2| 28
                                 '(1 6 7 0 8 1 9 6 0 10 1 9 13 0 14 2 6
                                   0 0 0 15 0 6 0 16 1 6 7 0 18 1 9 21 0
-                                  22 1 0 0 0 17 1 0 23 0 24)))))
+                                  22 1 21 23 0 24 0 23 0 25 2 23 26 0 0
+                                  27 1 0 0 0 17 1 0 26 0 28)))))
           '|lookupComplete|)) 

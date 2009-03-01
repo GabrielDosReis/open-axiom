@@ -38,7 +38,7 @@
 (DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
   (SPADCALL (QVELT (SPADCALL |x| (|getShellEntry| $ 10)) 1)
       (QVELT (SPADCALL |y| (|getShellEntry| $ 10)) 1)
-      (|getShellEntry| $ 19))) 
+      (|getShellEntry| $ 21))) 
 
 (DEFUN |INTDOM-;associates?;2SB;6| (|x| |y| $)
   (COND
@@ -56,7 +56,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|IntegralDomain&|))
         (LETT |dv$| (LIST '|IntegralDomain&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 21) . #0#)
+        (LETT $ (|newShell| 23) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -69,11 +69,11 @@
                (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
         (COND
           ((|HasAttribute| |#1| '|canonicalUnitNormal|)
-           (|setShellEntry| $ 20
+           (|setShellEntry| $ 22
                (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|)
                      $)))
           ('T
-           (|setShellEntry| $ 20
+           (|setShellEntry| $ 22
                (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|)
                      $))))
         $)))) 
@@ -85,18 +85,18 @@
              (4 . |unitNormal|) (9 . |unitNormal|)
              |INTDOM-;unitCanonical;2S;2| (|Boolean|) (14 . |zero?|)
              (|Union| $ '"failed") (19 . |exquo|) |INTDOM-;recip;SU;3|
-             (25 . |recip|) |INTDOM-;unit?;SB;4| (30 . =)
-             (36 . |associates?|))
-          '#(|unitNormal| 42 |unitCanonical| 47 |unit?| 52 |recip| 57
-             |associates?| 62)
+             (25 . |recip|) (30 . |false|) (34 . |true|)
+             |INTDOM-;unit?;SB;4| (38 . =) (44 . |associates?|))
+          '#(|unitNormal| 50 |unitCanonical| 55 |unit?| 60 |recip| 65
+             |associates?| 70)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 20
+                            (|makeByteWordVec2| 22
                                 '(0 6 0 7 1 0 8 0 9 1 6 8 0 10 1 6 12 0
-                                  13 2 6 14 0 0 15 1 6 14 0 17 2 6 12 0
-                                  0 19 2 0 12 0 0 20 1 0 8 0 9 1 0 0 0
-                                  11 1 0 12 0 18 1 0 14 0 16 2 0 12 0 0
-                                  20)))))
+                                  13 2 6 14 0 0 15 1 6 14 0 17 0 12 0
+                                  18 0 12 0 19 2 6 12 0 0 21 2 0 12 0 0
+                                  22 1 0 8 0 9 1 0 0 0 11 1 0 12 0 20 1
+                                  0 14 0 16 2 0 12 0 0 22)))))
           '|lookupComplete|)) 

@@ -192,13 +192,13 @@ genDeltaEntry opMmPair ==
   if eltOrConst = 'Subsumed then eltOrConst := 'ELT
   if atom dc then
     dc = "$" => nsig := sig
-    if NUMBERP nsig then nsig := MSUBST('$,dc,substitute("$$","$",sig))
-  newimp := optDeltaEntry(op,nsig,dc,eltOrConst) => newimp
+    if NUMBERP nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
   setDifference(listOfBoundVars dc,$functorLocalParameters) ^= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(nsig,dc),consDomainForm(dc,nil)]]
   odc := dc
-  if not atom dc then dc := substitute("$$",'$,dc)
+  if not atom dc then 
+    dc := substitute("$$","$",dc)
   opModemapPair :=
     [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and
@@ -217,6 +217,7 @@ genDeltaEntry opMmPair ==
       $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
       0
+  impl := optDeltaEntry(op,nsig,odc,eltOrConst) => impl
   u
 
 ++ Return the slot number (within the template vector of the functor

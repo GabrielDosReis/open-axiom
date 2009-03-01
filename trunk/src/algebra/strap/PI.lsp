@@ -30,7 +30,7 @@
     (RETURN
       (PROGN
         (LETT |dv$| '(|PositiveInteger|) . #0=(|PositiveInteger|))
-        (LETT $ (|newShell| 12) . #0#)
+        (LETT $ (|newShell| 16) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -40,12 +40,13 @@
         $)))) 
 
 (MAKEPROP '|PositiveInteger| '|infovec|
-    (LIST '#(NIL NIL NIL NIL NIL (|NonNegativeInteger|)
-             (|PositiveInteger|) (|Boolean|) (|Union| $ '"failed")
+    (LIST '#(NIL NIL NIL NIL NIL (|NonNegativeInteger|) (0 . |Zero|)
+             (|Integer|) (4 . |Zero|) (|Boolean|) (8 . <)
+             (|PositiveInteger|) (|Union| $ '"failed")
              (|SingleInteger|) (|String|) (|OutputForm|))
-          '#(~= 0 |sample| 6 |recip| 10 |one?| 15 |min| 20 |max| 26
-             |latex| 32 |hash| 37 |gcd| 42 |coerce| 48 |One| 53 >= 57 >
-             63 = 69 <= 75 < 81 + 87 ** 93 * 105)
+          '#(~= 14 |sample| 20 |recip| 24 |one?| 29 |min| 34 |max| 40
+             |latex| 46 |hash| 51 |gcd| 56 |coerce| 62 |One| 67 >= 71 >
+             77 = 83 <= 89 < 95 + 101 ** 107 * 119)
           '(((|commutative| "*") . 0))
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
                 (CONS '#(NIL |Monoid&| |OrderedSet&| |SemiGroup&|
@@ -54,15 +55,16 @@
                       (CONS '#((|OrderedAbelianSemiGroup|) (|Monoid|)
                                (|OrderedSet|) (|SemiGroup|)
                                (|AbelianSemiGroup|) (|SetCategory|)
-                               (|BasicType|) (|CoercibleTo| 11))
-                            (|makeByteWordVec2| 11
-                                '(2 0 7 0 0 1 0 0 0 1 1 0 8 0 1 1 0 7 0
-                                  1 2 0 0 0 0 1 2 0 0 0 0 1 1 0 10 0 1
-                                  1 0 9 0 1 2 0 0 0 0 1 1 0 11 0 1 0 0
-                                  0 1 2 0 7 0 0 1 2 0 7 0 0 1 2 0 7 0 0
-                                  1 2 0 7 0 0 1 2 0 7 0 0 1 2 0 0 0 0 1
-                                  2 0 0 0 6 1 2 0 0 0 5 1 2 0 0 0 0 1 2
-                                  0 0 6 0 1)))))
+                               (|BasicType|) (|CoercibleTo| 15))
+                            (|makeByteWordVec2| 15
+                                '(0 5 0 6 0 7 0 8 2 5 9 0 0 10 2 0 9 0
+                                  0 1 0 0 0 1 1 0 12 0 1 1 0 9 0 1 2 0
+                                  0 0 0 1 2 0 0 0 0 1 1 0 14 0 1 1 0 13
+                                  0 1 2 0 0 0 0 1 1 0 15 0 1 0 0 0 1 2
+                                  0 9 0 0 1 2 0 9 0 0 1 2 0 9 0 0 1 2 0
+                                  9 0 0 1 2 0 9 0 0 1 2 0 0 0 0 1 2 0 0
+                                  0 11 1 2 0 0 0 5 1 2 0 0 0 0 1 2 0 0
+                                  11 0 1)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|PositiveInteger| 'NILADIC T) 

@@ -70,7 +70,7 @@
       (PROGN
         (LETT |dv$| '(|NonNegativeInteger|)
               . #0=(|NonNegativeInteger|))
-        (LETT $ (|newShell| 17) . #0#)
+        (LETT $ (|newShell| 23) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -80,17 +80,18 @@
         $)))) 
 
 (MAKEPROP '|NonNegativeInteger| '|infovec|
-    (LIST '#(NIL NIL NIL NIL NIL (|Integer|) |NNI;sup;3$;1|
-             |NNI;shift;$I$;2| (|Union| $ '"failed")
-             |NNI;subtractIfCan;2$U;3|
+    (LIST '#(NIL NIL NIL NIL NIL (|Integer|) (0 . |Zero|) (4 . |Zero|)
+             (|Boolean|) (8 . <) (14 . |false|) (18 . |true|)
+             |NNI;sup;3$;1| |NNI;shift;$I$;2| (22 . -)
+             (|Union| $ '"failed") |NNI;subtractIfCan;2$U;3|
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
-             (|PositiveInteger|) (|NonNegativeInteger|) (|Boolean|)
-             (|String|) (|OutputForm|) (|SingleInteger|))
-          '#(~= 0 |zero?| 6 |sup| 11 |subtractIfCan| 17 |shift| 23
-             |sample| 29 |rem| 33 |recip| 39 |random| 44 |quo| 49
-             |one?| 55 |min| 60 |max| 66 |latex| 72 |hash| 77 |gcd| 82
-             |exquo| 88 |divide| 94 |coerce| 100 |Zero| 105 |One| 109
-             >= 113 > 119 = 125 <= 131 < 137 + 143 ** 149 * 161)
+             (|PositiveInteger|) (|NonNegativeInteger|) (|String|)
+             (|OutputForm|) (|SingleInteger|))
+          '#(~= 28 |zero?| 34 |sup| 39 |subtractIfCan| 45 |shift| 51
+             |sample| 57 |rem| 61 |recip| 67 |random| 72 |quo| 77
+             |one?| 83 |min| 88 |max| 94 |latex| 100 |hash| 105 |gcd|
+             110 |exquo| 116 |divide| 122 |coerce| 128 |Zero| 133 |One|
+             137 >= 141 > 147 = 153 <= 159 < 165 + 171 ** 177 * 189)
           '(((|commutative| "*") . 0))
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(NIL NIL NIL NIL NIL |Monoid&| |AbelianMonoid&|
@@ -104,18 +105,20 @@
                                (|AbelianMonoid|) (|OrderedSet|)
                                (|SemiGroup|) (|AbelianSemiGroup|)
                                (|SetCategory|) (|BasicType|)
-                               (|CoercibleTo| 15))
-                            (|makeByteWordVec2| 16
-                                '(2 0 13 0 0 1 1 0 13 0 1 2 0 0 0 0 6 2
-                                  0 8 0 0 9 2 0 0 0 5 7 0 0 0 1 2 0 0 0
-                                  0 1 1 0 8 0 1 1 0 0 0 1 2 0 0 0 0 1 1
-                                  0 13 0 1 2 0 0 0 0 1 2 0 0 0 0 1 1 0
-                                  14 0 1 1 0 16 0 1 2 0 0 0 0 1 2 0 8 0
-                                  0 1 2 0 10 0 0 1 1 0 15 0 1 0 0 0 1 0
-                                  0 0 1 2 0 13 0 0 1 2 0 13 0 0 1 2 0
-                                  13 0 0 1 2 0 13 0 0 1 2 0 13 0 0 1 2
-                                  0 0 0 0 1 2 0 0 0 11 1 2 0 0 0 12 1 2
-                                  0 0 0 0 1 2 0 0 12 0 1 2 0 0 11 0 1)))))
+                               (|CoercibleTo| 21))
+                            (|makeByteWordVec2| 22
+                                '(0 0 0 6 0 5 0 7 2 5 8 0 0 9 0 8 0 10
+                                  0 8 0 11 2 5 0 0 0 14 2 0 8 0 0 1 1 0
+                                  8 0 1 2 0 0 0 0 12 2 0 15 0 0 16 2 0
+                                  0 0 5 13 0 0 0 1 2 0 0 0 0 1 1 0 15 0
+                                  1 1 0 0 0 1 2 0 0 0 0 1 1 0 8 0 1 2 0
+                                  0 0 0 1 2 0 0 0 0 1 1 0 20 0 1 1 0 22
+                                  0 1 2 0 0 0 0 1 2 0 15 0 0 1 2 0 17 0
+                                  0 1 1 0 21 0 1 0 0 0 6 0 0 0 1 2 0 8
+                                  0 0 1 2 0 8 0 0 1 2 0 8 0 0 1 2 0 8 0
+                                  0 1 2 0 8 0 0 1 2 0 0 0 0 1 2 0 0 0
+                                  18 1 2 0 0 0 19 1 2 0 0 0 0 1 2 0 0
+                                  19 0 1 2 0 0 18 0 1)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|NonNegativeInteger| 'NILADIC T) 

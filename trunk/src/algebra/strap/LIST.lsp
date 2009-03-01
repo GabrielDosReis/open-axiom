@@ -61,14 +61,14 @@
   (APPEND |l| |t|)) 
 
 (DEFUN |LIST;writeOMList| (|dev| |x| $)
-  (SEQ (SPADCALL |dev| (|getShellEntry| $ 14))
-       (SPADCALL |dev| "list1" "list" (|getShellEntry| $ 16))
+  (SEQ (SPADCALL |dev| (|getShellEntry| $ 16))
+       (SPADCALL |dev| "list1" "list" (|getShellEntry| $ 18))
        (SEQ G190 (COND ((NULL (NOT (NULL |x|))) (GO G191)))
             (SEQ (SPADCALL |dev| (|SPADfirst| |x|) 'NIL
-                     (|getShellEntry| $ 17))
+                     (|getShellEntry| $ 21))
                  (EXIT (LETT |x| (CDR |x|) |LIST;writeOMList|)))
             NIL (GO G190) G191 (EXIT NIL))
-       (EXIT (SPADCALL |dev| (|getShellEntry| $ 18))))) 
+       (EXIT (SPADCALL |dev| (|getShellEntry| $ 23))))) 
 
 (DEFUN |LIST;OMwrite;$S;6| (|x| $)
   (PROG (|sp| |dev| |s|)
@@ -76,13 +76,13 @@
       (SEQ (LETT |s| "" |LIST;OMwrite;$S;6|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |LIST;OMwrite;$S;6|)
            (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 20))
-                     (|getShellEntry| $ 21))
+                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 25))
+                     (|getShellEntry| $ 26))
                  |LIST;OMwrite;$S;6|)
-           (SPADCALL |dev| (|getShellEntry| $ 22))
+           (SPADCALL |dev| (|getShellEntry| $ 27))
            (|LIST;writeOMList| |dev| |x| $)
-           (SPADCALL |dev| (|getShellEntry| $ 23))
-           (SPADCALL |dev| (|getShellEntry| $ 24))
+           (SPADCALL |dev| (|getShellEntry| $ 28))
+           (SPADCALL |dev| (|getShellEntry| $ 29))
            (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |LIST;OMwrite;$S;6|)
            (EXIT |s|))))) 
 
@@ -92,41 +92,41 @@
       (SEQ (LETT |s| "" |LIST;OMwrite;$BS;7|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |LIST;OMwrite;$BS;7|)
            (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 20))
-                     (|getShellEntry| $ 21))
+                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 25))
+                     (|getShellEntry| $ 26))
                  |LIST;OMwrite;$BS;7|)
-           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 22))))
+           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 27))))
            (|LIST;writeOMList| |dev| |x| $)
-           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 23))))
-           (SPADCALL |dev| (|getShellEntry| $ 24))
+           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 28))))
+           (SPADCALL |dev| (|getShellEntry| $ 29))
            (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |LIST;OMwrite;$BS;7|)
            (EXIT |s|))))) 
 
 (DEFUN |LIST;OMwrite;Omd$V;8| (|dev| |x| $)
-  (SEQ (SPADCALL |dev| (|getShellEntry| $ 22))
+  (SEQ (SPADCALL |dev| (|getShellEntry| $ 27))
        (|LIST;writeOMList| |dev| |x| $)
-       (EXIT (SPADCALL |dev| (|getShellEntry| $ 23))))) 
+       (EXIT (SPADCALL |dev| (|getShellEntry| $ 28))))) 
 
 (DEFUN |LIST;OMwrite;Omd$BV;9| (|dev| |x| |wholeObj| $)
-  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 22))))
+  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 27))))
        (|LIST;writeOMList| |dev| |x| $)
        (EXIT (COND
-               (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 23))))))) 
+               (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 28))))))) 
 
 (DEFUN |LIST;setUnion;3$;10| (|l1| |l2| $)
-  (SPADCALL (SPADCALL |l1| |l2| (|getShellEntry| $ 29))
-            (|getShellEntry| $ 30))) 
+  (SPADCALL (SPADCALL |l1| |l2| (|getShellEntry| $ 34))
+            (|getShellEntry| $ 35))) 
 
 (DEFUN |LIST;setIntersection;3$;11| (|l1| |l2| $)
   (PROG (|u|)
     (RETURN
       (SEQ (LETT |u| NIL |LIST;setIntersection;3$;11|)
-           (LETT |l1| (SPADCALL |l1| (|getShellEntry| $ 30))
+           (LETT |l1| (SPADCALL |l1| (|getShellEntry| $ 35))
                  |LIST;setIntersection;3$;11|)
            (SEQ G190 (COND ((NULL (NOT (NULL |l1|))) (GO G191)))
                 (SEQ (COND
                        ((SPADCALL (|SPADfirst| |l1|) |l2|
-                            (|getShellEntry| $ 32))
+                            (|getShellEntry| $ 39))
                         (LETT |u| (CONS (|SPADfirst| |l1|) |u|)
                               |LIST;setIntersection;3$;11|)))
                      (EXIT (LETT |l1| (CDR |l1|)
@@ -137,16 +137,16 @@
 (DEFUN |LIST;setDifference;3$;12| (|l1| |l2| $)
   (PROG (|l11| |lu|)
     (RETURN
-      (SEQ (LETT |l1| (SPADCALL |l1| (|getShellEntry| $ 30))
+      (SEQ (LETT |l1| (SPADCALL |l1| (|getShellEntry| $ 35))
                  |LIST;setDifference;3$;12|)
            (LETT |lu| NIL |LIST;setDifference;3$;12|)
            (SEQ G190 (COND ((NULL (NOT (NULL |l1|))) (GO G191)))
                 (SEQ (LETT |l11|
-                           (SPADCALL |l1| 1 (|getShellEntry| $ 35))
+                           (SPADCALL |l1| 1 (|getShellEntry| $ 41))
                            |LIST;setDifference;3$;12|)
                      (COND
                        ((NULL (SPADCALL |l11| |l2|
-                                  (|getShellEntry| $ 32)))
+                                  (|getShellEntry| $ 39)))
                         (LETT |lu| (CONS |l11| |lu|)
                               |LIST;setDifference;3$;12|)))
                      (EXIT (LETT |l1| (CDR |l1|)
@@ -158,7 +158,7 @@
   (PROG (#0=#:G1444 |a| #1=#:G1445)
     (RETURN
       (SEQ (SPADCALL
-               (CONS (SPADCALL '|construct| (|getShellEntry| $ 39))
+               (CONS (SPADCALL '|construct| (|getShellEntry| $ 46))
                      (PROGN
                        (LETT #0# NIL |LIST;convert;$If;13|)
                        (SEQ (LETT |a| NIL |LIST;convert;$If;13|)
@@ -173,12 +173,12 @@
                             (SEQ (EXIT (LETT #0#
                                         (CONS
                                          (SPADCALL |a|
-                                          (|getShellEntry| $ 40))
+                                          (|getShellEntry| $ 47))
                                          #0#)
                                         |LIST;convert;$If;13|)))
                             (LETT #1# (CDR #1#) |LIST;convert;$If;13|)
                             (GO G190) G191 (EXIT (NREVERSE0 #0#)))))
-               (|getShellEntry| $ 42)))))) 
+               (|getShellEntry| $ 51)))))) 
 
 (DEFUN |List| (#0=#:G1446)
   (PROG ()
@@ -203,7 +203,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|List|))
         (LETT |dv$| (LIST '|List| |dv$1|) . #0#)
-        (LETT $ (|newShell| 61) . #0#)
+        (LETT $ (|newShell| 70) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -246,57 +246,60 @@
         (COND
           ((|testBitVector| |pv$| 6)
            (PROGN
-             (|setShellEntry| $ 25
+             (|setShellEntry| $ 30
                  (CONS (|dispatchFunction| |LIST;OMwrite;$S;6|) $))
-             (|setShellEntry| $ 26
+             (|setShellEntry| $ 31
                  (CONS (|dispatchFunction| |LIST;OMwrite;$BS;7|) $))
-             (|setShellEntry| $ 27
+             (|setShellEntry| $ 32
                  (CONS (|dispatchFunction| |LIST;OMwrite;Omd$V;8|) $))
-             (|setShellEntry| $ 28
+             (|setShellEntry| $ 33
                  (CONS (|dispatchFunction| |LIST;OMwrite;Omd$BV;9|) $)))))
         (COND
           ((|testBitVector| |pv$| 8)
            (PROGN
-             (|setShellEntry| $ 31
+             (|setShellEntry| $ 36
                  (CONS (|dispatchFunction| |LIST;setUnion;3$;10|) $))
-             (|setShellEntry| $ 33
+             (|setShellEntry| $ 40
                  (CONS (|dispatchFunction|
                            |LIST;setIntersection;3$;11|)
                        $))
-             (|setShellEntry| $ 36
+             (|setShellEntry| $ 43
                  (CONS (|dispatchFunction| |LIST;setDifference;3$;12|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 3)
-           (|setShellEntry| $ 43
+           (|setShellEntry| $ 52
                (CONS (|dispatchFunction| |LIST;convert;$If;13|) $))))
         $)))) 
 
 (MAKEPROP '|List| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|IndexedList| 6 (NRTEVAL 1))
-             (|local| |#1|) |LIST;nil;$;1| (|Boolean|) |LIST;null;$B;2|
-             |LIST;cons;S2$;3| |LIST;append;3$;4| (|Void|)
-             (|OpenMathDevice|) (0 . |OMputApp|) (|String|)
-             (5 . |OMputSymbol|) (12 . |OMwrite|) (19 . |OMputEndApp|)
-             (|OpenMathEncoding|) (24 . |OMencodingXML|)
-             (28 . |OMopenString|) (34 . |OMputObject|)
-             (39 . |OMputEndObject|) (44 . |OMclose|) (49 . |OMwrite|)
-             (54 . |OMwrite|) (60 . |OMwrite|) (66 . |OMwrite|)
-             (73 . |concat|) (79 . |removeDuplicates|)
-             (84 . |setUnion|) (90 . |member?|)
-             (96 . |setIntersection|) (|Integer|) (102 . |elt|)
-             (108 . |setDifference|) (|Symbol|) (|InputForm|)
-             (114 . |convert|) (119 . |convert|) (|List| $)
-             (124 . |convert|) (129 . |convert|) (|Mapping| 6 6 6)
-             (|NonNegativeInteger|) (|List| 6) (|Equation| 6)
-             (|List| 47) (|Mapping| 8 6) (|Mapping| 8 6 6)
-             (|UniversalSegment| 34) '"last" '"rest" '"first" '"value"
-             (|Mapping| 6 6) (|OutputForm|) (|SingleInteger|)
-             (|List| 34) (|Union| 6 '"failed"))
-          '#(|setUnion| 134 |setIntersection| 140 |setDifference| 146
-             |removeDuplicates| 152 |null| 157 |nil| 162 |member?| 166
-             |elt| 172 |convert| 178 |cons| 183 |concat| 189 |append|
-             195 |OMwrite| 201)
+             (|local| |#1|) (|Integer|) (0 . |One|) |LIST;nil;$;1|
+             (|Boolean|) |LIST;null;$B;2| |LIST;cons;S2$;3|
+             |LIST;append;3$;4| (|Void|) (|OpenMathDevice|)
+             (4 . |OMputApp|) (|String|) (9 . |OMputSymbol|)
+             (16 . |first|) (21 . |false|) (25 . |OMwrite|)
+             (32 . |rest|) (37 . |OMputEndApp|) (|OpenMathEncoding|)
+             (42 . |OMencodingXML|) (46 . |OMopenString|)
+             (52 . |OMputObject|) (57 . |OMputEndObject|)
+             (62 . |OMclose|) (67 . |OMwrite|) (72 . |OMwrite|)
+             (78 . |OMwrite|) (84 . |OMwrite|) (91 . |concat|)
+             (97 . |removeDuplicates|) (102 . |setUnion|)
+             (108 . |empty|) (112 . |empty?|) (117 . |member?|)
+             (123 . |setIntersection|) (129 . |elt|) (135 . |concat|)
+             (141 . |setDifference|) (|Symbol|) (|InputForm|)
+             (147 . |convert|) (152 . |convert|) (|List| 45)
+             (157 . |concat|) (|List| $) (163 . |convert|)
+             (168 . |convert|) (|Mapping| 6 6 6) (|NonNegativeInteger|)
+             (|List| 6) (|Equation| 6) (|List| 56) (|Mapping| 10 6)
+             (|Mapping| 10 6 6) (|UniversalSegment| 7) '"last" '"rest"
+             '"first" '"value" (|Mapping| 6 6) (|OutputForm|)
+             (|SingleInteger|) (|List| 7) (|Union| 6 '"failed"))
+          '#(|setUnion| 173 |setIntersection| 179 |setDifference| 185
+             |rest| 191 |removeDuplicates| 196 |null| 201 |nil| 206
+             |member?| 210 |first| 216 |empty?| 221 |empty| 226 |elt|
+             230 |convert| 236 |cons| 241 |concat| 247 |append| 259
+             |OMwrite| 265)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 6
                     '(0 0 0 0 0 0 0 0 0 0 5 0 0 1 4 0 0 1 2 3 4 6))
@@ -316,29 +319,33 @@
                                (|UnaryRecursiveAggregate| 6)
                                (|LinearAggregate| 6)
                                (|RecursiveAggregate| 6)
-                               (|IndexedAggregate| 34 6)
+                               (|IndexedAggregate| 7 6)
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
                                (|OrderedSet|) (|Aggregate|)
-                               (|EltableAggregate| 34 6) (|Evalable| 6)
-                               (|SetCategory|) (|Type|)
-                               (|Eltable| 34 6) (|InnerEvalable| 6 6)
-                               (|CoercibleTo| 57) (|ConvertibleTo| 38)
-                               (|BasicType|) (|OpenMath|))
-                            (|makeByteWordVec2| 43
-                                '(1 13 12 0 14 3 13 12 0 15 15 16 3 6
-                                  12 13 0 8 17 1 13 12 0 18 0 19 0 20 2
-                                  13 0 15 19 21 1 13 12 0 22 1 13 12 0
-                                  23 1 13 12 0 24 1 0 15 0 25 2 0 15 0
-                                  8 26 2 0 12 13 0 27 3 0 12 13 0 8 28
-                                  2 0 0 0 0 29 1 0 0 0 30 2 0 0 0 0 31
-                                  2 0 8 6 0 32 2 0 0 0 0 33 2 0 6 0 34
-                                  35 2 0 0 0 0 36 1 38 0 37 39 1 6 38 0
-                                  40 1 38 0 41 42 1 0 38 0 43 2 8 0 0 0
-                                  31 2 8 0 0 0 33 2 8 0 0 0 36 1 8 0 0
-                                  30 1 0 8 0 9 0 0 0 7 2 8 8 6 0 32 2 0
-                                  6 0 34 35 1 3 38 0 43 2 0 0 6 0 10 2
-                                  0 0 0 0 29 2 0 0 0 0 11 3 6 12 13 0 8
-                                  28 2 6 12 13 0 27 1 6 15 0 25 2 6 15
-                                  0 8 26)))))
+                               (|EltableAggregate| 7 6) (|Evalable| 6)
+                               (|SetCategory|) (|Type|) (|Eltable| 7 6)
+                               (|InnerEvalable| 6 6) (|CoercibleTo| 66)
+                               (|ConvertibleTo| 45) (|BasicType|)
+                               (|OpenMath|))
+                            (|makeByteWordVec2| 52
+                                '(0 7 0 8 1 15 14 0 16 3 15 14 0 17 17
+                                  18 1 0 6 0 19 0 10 0 20 3 6 14 15 0
+                                  10 21 1 0 0 0 22 1 15 14 0 23 0 24 0
+                                  25 2 15 0 17 24 26 1 15 14 0 27 1 15
+                                  14 0 28 1 15 14 0 29 1 0 17 0 30 2 0
+                                  17 0 10 31 2 0 14 15 0 32 3 0 14 15 0
+                                  10 33 2 0 0 0 0 34 1 0 0 0 35 2 0 0 0
+                                  0 36 0 0 0 37 1 0 10 0 38 2 0 10 6 0
+                                  39 2 0 0 0 0 40 2 0 6 0 7 41 2 0 0 6
+                                  0 42 2 0 0 0 0 43 1 45 0 44 46 1 6 45
+                                  0 47 2 48 0 45 0 49 1 45 0 50 51 1 0
+                                  45 0 52 2 8 0 0 0 36 2 8 0 0 0 40 2 8
+                                  0 0 0 43 1 0 0 0 22 1 8 0 0 35 1 0 10
+                                  0 11 0 0 0 9 2 8 10 6 0 39 1 0 6 0 19
+                                  1 0 10 0 38 0 0 0 37 2 0 6 0 7 41 1 3
+                                  45 0 52 2 0 0 6 0 12 2 0 0 6 0 42 2 0
+                                  0 0 0 34 2 0 0 0 0 13 3 6 14 15 0 10
+                                  33 2 6 14 15 0 32 1 6 17 0 30 2 6 17
+                                  0 10 31)))))
           '|lookupIncomplete|)) 
