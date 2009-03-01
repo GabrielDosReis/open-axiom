@@ -134,6 +134,7 @@
           (|until| 130 190 (|PARSE-Loop|))
           (|repeat| 130 190 (|PARSE-Loop|))
           (|import| 120 0 (|PARSE-Import|) )
+          (|inline| 120 0 (|PARSE-Inline|) )
           (|unless|)
           (|add| 900 120)
           (|with| 1000 300 (|PARSE-With|))

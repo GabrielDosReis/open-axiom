@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -454,6 +454,14 @@
            (CONS '|import|
                  (CONS (POP-STACK-2) (APPEND (POP-STACK-1) NIL)))))) 
 
+;; domain inlining.  Same syntax as import directive; except
+;; deliberate restriction on naming one type at a time.
+;; -- gdr, 2009-02-28.
+(DEFUN |PARSE-Inline| ()
+  (AND (MATCH-ADVANCE-STRING "inline")
+       (MUST (|PARSE-Expr| 1000))
+       (PUSH-REDUCTION '|PARSE-Inline|
+           (CONS '|%Inline| (CONS (POP-STACK-1) NIL)))))
 
 (DEFUN |PARSE-Infix| ()
   (AND (PUSH-REDUCTION '|PARSE-Infix| (CURRENT-SYMBOL))

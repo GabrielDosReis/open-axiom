@@ -93,10 +93,12 @@ $compileOnlyCertainItems := []
 
 compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
---+ signals that target is derived from lhs-- see NRTmakeSlot1Info
+  -- signals that target is derived from lhs-- see NRTmakeSlot1Info
   $NRTderivedTargetIfTrue: local := false
   $killOptimizeIfTrue: local:= false
   $forceAdd: local:= false
+  -- start with a base list of domains we may inline.
+  $optimizableConstructorNames: local := $SystemInlinableConstructorNames
   x is ["DEF",:.] or x is ["where",["DEF",:.],:.] =>
     ([val,mode,.]:= compOrCroak(x,m,e); [val,mode,e])
         --keep old environment after top level function defs
@@ -829,7 +831,7 @@ setqSingle(id,val,m,E) ==
     addBinding(id,newProplist,e')
   if isDomainForm(val,e') then
     if isDomainInScope(id,e') then
-      stackWarning("domain valued variable %1b has been reassigned within its scope",[id])
+      stackWarning('"domain valued variable %1b has been reassigned within its scope",[id])
     e':= augModemapsFromDomain1(id,val,e')
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
@@ -1908,6 +1910,27 @@ compMatch(["%Match",subject,altBlock],m,e) ==
     stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
   code := ["LET",[[sn,se]],["COND",:nreverse altsCode]]
   [code,m,savedEnv]
+
+
+--%
+--% Inline Requests
+--%
+
+++ We are processing a capsule and `t is nominated in an inline
+++ directive.  This means that the compiler can `bypass' the usual 
+++ indirect call through domain interface and attempt to resolve
+++ modemap references.  
+++ Concretely, this means that `t is evaluated.
+processInlineRequest(t,e) ==
+  T := compOrCroak(t,$EmptyMode,e)
+  not isCategoryForm(T.mode,e) =>
+    stackAndThrow('"%1b does not designate a domain",[t])
+  atom T.expr =>
+    stackWarning('"inline request for type variable %1bp is meaningless",[t])
+  T.expr is [ctor] =>
+    $optimizableConstructorNames := [ctor,:$optimizableConstructorNames]
+  -- Don't try too hard; the current domain evaluation is insane.
+  stackWarning('"Ignoring inline arequest for non-niladic type %1bp",[t])
 
 
 --%

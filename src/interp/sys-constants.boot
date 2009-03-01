@@ -553,7 +553,7 @@ $SpecialDomainNames ==
     SubDomain)
 
 
-$optimizableConstructorNames ==
+$SystemInlinableConstructorNames ==
   '(List               _
     Integer            _ 
     PositiveInteger    _

@@ -1,3 +1,14 @@
+2009-03-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compTopLevel): Initialize list of
+	optimizable domain constructors.
+	(processInlineRequest): New.
+	* interp/define.boot (spadCompileOrSetq): Tidy.
+	(mutateToNothing): New.
+	(doIt): Use it.  Add support for inline directives.
+	* interp/fnewmeta.lisp (PARSE-Inline): New.
+	* interp/metalex.lisp (KEYWORDS): Include 'inline'.
+
 2009-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (genDeltaEntry): Return optimized
