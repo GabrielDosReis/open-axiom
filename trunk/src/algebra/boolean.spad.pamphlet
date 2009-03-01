@@ -523,8 +523,8 @@ KleeneTrivalentLogic(): Public == Private where
       ++ s case true holds if the value of `x' is `true'.
   Private == add
     Rep == Byte    -- We need only 3 bits, in fact.
-    false == per(0::NonNegativeInteger::Byte)
-    unknown == per(1::NonNegativeInteger::Byte)
+    false == per(0::Byte)
+    unknown == per(1::Byte)
     true == per(2::Byte)
     x = y == rep x = rep y
     x case true == x = true

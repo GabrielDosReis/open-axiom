@@ -1,5 +1,13 @@
 2009-03-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optimize): Remove non-qualified
+	interpretation of 'false' and 'true'.
+	(optCond): Emit 'NOT', not 'NULL'.
+	(optIF2COND): Likewise.
+	(EqualBarGensym): Tidy.
+
+2009-03-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compTopLevel): Initialize list of
 	optimizable domain constructors.
 	(processInlineRequest): New.
