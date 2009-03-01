@@ -83,8 +83,6 @@ optimize x ==
         RPLAC(first x,optimize optXLAMCond SUBLIS(pairList(argl,a),body))
       atom y =>
         optimize rest x
-        y="true" => RPLAC(first x,'(QUOTE (QUOTE T)))
-        y="false" => RPLAC(first x,nil)
       if first y="IF" then (RPLAC(first x,optIF2COND y); y:= first x)
       op:= GETL(subrname first y,"OPTIMIZE") =>
         (optimize rest x; RPLAC(first x,FUNCALL(op,optimize first x)))
@@ -228,15 +226,15 @@ optCond (x is ['COND,:l]) ==
   if l is [a,[aa,b]] and TruthP aa and b is ["COND",:c] then
     RPLACD(rest x,c)
   if l is [[p1,:c1],[p2,:c2],:.] then
-    if (p1 is ['NULL,p1'] and p1' = p2) or (p2 is ['NULL,p2'] and p2' = p1) then
+    if (p1 is ["NOT",=p2]) or (p2 is ["NOT",=p1]) then
       l:=[[p1,:c1],['(QUOTE T),:c2]]
       RPLACD( x,l)
     c1 is ['NIL] and p2 = '(QUOTE T) and first c2 = '(QUOTE T) =>
-      p1 is ['NULL,p1']=> return p1'
-      return ['NULL,p1]
+      p1 is ["NOT",p1']=> return p1'
+      return ["NOT",p1]
   l is [[p1,:c1],[p2,:c2],[p3,:c3]] and TruthP p3 =>
     EqualBarGensym(c1,c3) =>
-      ["COND",[["OR",p1,["NULL",p2]],:c1],[['QUOTE,true],:c2]]
+      ["COND",[["OR",p1,["NOT",p2]],:c1],[['QUOTE,true],:c2]]
     EqualBarGensym(c1,c2) => ["COND",[["OR",p1,p2],:c1],[['QUOTE,true],:c3]]
     x
   for y in tails l repeat
@@ -257,7 +255,7 @@ EqualBarGensym(x,y) ==
     fn(x,y) ==
       x=y => true
       GENSYMP x and GENSYMP y =>
-        z:= assoc(x,$GensymAssoc) => (y=rest z => true; false)
+        z:= assoc(x,$GensymAssoc) => y=rest z
         $GensymAssoc:= [[x,:y],:$GensymAssoc]
         true
       null x => y is [g] and GENSYMP g
@@ -268,7 +266,7 @@ EqualBarGensym(x,y) ==
 --Called early, to change IF to COND
  
 optIF2COND ["IF",a,b,c] ==
-  b is "%noBranch" => ["COND",[["NULL",a],c]]
+  b is "%noBranch" => ["COND",[["NOT",a],c]]
   c is "%noBranch" => ["COND",[a,b]]
   c is ["IF",:.] => ["COND",[a,b],:rest optIF2COND c]
   c is ["COND",:p] => ["COND",[a,b],:p]
