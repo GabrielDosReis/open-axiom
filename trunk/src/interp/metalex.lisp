@@ -575,7 +575,7 @@ empty (if File-Closed (return nil))
     |has| |with| |add| |case| |in| |by| |pretend| |mod|
     |exquo| |div| |quo| |else| |rem| |then| |suchthat|
     |if| |yield| |iterate| |from| |exit| |leave| |return|
-    |not| |unless| |repeat| |until| |while| |for| |import|)
+    |not| |unless| |repeat| |until| |while| |for| |import| |inline|)
 
 "Alphabetic literal strings occurring in the New Meta code constitute
 keywords.   These are recognized specifically by the AnyId production,

@@ -1287,10 +1287,9 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
            LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
 
-  if GET(nam,"SPADreplace") then
-    form := [nam,[lam,vl,["DECLARE",["IGNORE",E]],body]]
-  else
-    form := [nam,[lam,vl,body]]
+  form := 
+    GET(nam,"SPADreplace") => [nam,[lam,vl,["DECLARE",["IGNORE",E]],body]]
+    [nam,[lam,vl,body]]
 
   $insideCapsuleFunctionIfTrue => 
     $optExportedFunctionReference =>
@@ -1439,6 +1438,12 @@ compSingleCapsuleItem(item,$predl,$e) ==
   doIt(macroExpandInPlace(item,$e),$predl)
   $e
  
+
+++ subroutine of doIt.  Called to generate runtime noop insn.
+mutateToNothing item ==
+  RPLACA(item,'PROGN)
+  RPLACD(item,NIL)
+
 doIt(item,$predl) ==
   $GENNO: local:= 0
   item is ['SEQ,:l,['exit,1,x]] =>
@@ -1483,8 +1488,10 @@ doIt(item,$predl) ==
      for dom in doms repeat
        sayBrightly ['"   importing ",:formatUnabbreviated dom]
      [.,.,$e] := compOrCroak(item,$EmptyMode,$e)
-     RPLACA(item,'PROGN)
-     RPLACD(item,NIL) -- creates a no-op
+     mutateToNothing item
+  item is ["%Inline",type] =>
+    processInlineRequest(type,$e)
+    mutateToNothing item
   item is ["IF",:.] => doItIf(item,$predl,$e)
   item is ["where",b,:l] => compOrCroak(item,$EmptyMode,$e)
   item is ["MDEF",:.] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
