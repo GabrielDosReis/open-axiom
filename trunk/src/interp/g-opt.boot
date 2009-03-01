@@ -35,6 +35,10 @@
 import def
 namespace BOOT
 
+--% 
+
+$optimizableConstructorNames := $SystemInlinableConstructorNames
+
 --% OPTIMIZER
  
 optimizeFunctionDef(def) ==
