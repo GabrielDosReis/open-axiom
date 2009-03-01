@@ -556,7 +556,7 @@
       (SEQ (LETT |c| 'CONCATB |OUTFORM;blankSeparate;L$;35|)
            (LETT |l1| NIL |OUTFORM;blankSeparate;L$;35|)
            (SEQ (LETT |u| NIL |OUTFORM;blankSeparate;L$;35|)
-                (LETT #0# (SPADCALL |l| (|getShellEntry| $ 55))
+                (LETT #0# (SPADCALL |l| (|getShellEntry| $ 64))
                       |OUTFORM;blankSeparate;L$;35|)
                 G190
                 (COND
@@ -570,7 +570,7 @@
                              ((EQCAR |u| |c|)
                               (LETT |l1|
                                     (SPADCALL (CDR |u|) |l1|
-                                     (|getShellEntry| $ 56))
+                                     (|getShellEntry| $ 65))
                                     |OUTFORM;blankSeparate;L$;35|))
                              ('T
                               (LETT |l1| (CONS |u| |l1|)
@@ -606,18 +606,18 @@
 
 (DEFUN |OUTFORM;scripts;$L$;46| (|a| |l| $)
   (COND
-    ((SPADCALL |l| (|getShellEntry| $ 68)) |a|)
-    ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 69))
-         (|getShellEntry| $ 68))
-     (|OUTFORM;sub;3$;42| |a| (SPADCALL |l| (|getShellEntry| $ 70)) $))
+    ((SPADCALL |l| (|getShellEntry| $ 77)) |a|)
+    ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 78))
+         (|getShellEntry| $ 77))
+     (|OUTFORM;sub;3$;42| |a| (SPADCALL |l| (|getShellEntry| $ 79)) $))
     ('T (CONS 'SUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
-         ((ODDP (SPADCALL |l| (|getShellEntry| $ 73)))
+         ((ODDP (SPADCALL |l| (|getShellEntry| $ 81)))
           (LETT |l|
                 (SPADCALL |l| (LIST (|OUTFORM;empty;$;73| $))
-                    (|getShellEntry| $ 56))
+                    (|getShellEntry| $ 65))
                 |OUTFORM;supersub;$L$;47|)))
        (EXIT (CONS 'ALTSUPERSUB (CONS |a| |l|))))) 
 
@@ -737,16 +737,16 @@
 
 (DEFUN |OUTFORM;infix;$L$;77| (|a| |l| $)
   (COND
-    ((SPADCALL |l| (|getShellEntry| $ 68)) (|OUTFORM;empty;$;73| $))
-    ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 69))
-         (|getShellEntry| $ 68))
-     (SPADCALL |l| (|getShellEntry| $ 70)))
+    ((SPADCALL |l| (|getShellEntry| $ 77)) (|OUTFORM;empty;$;73| $))
+    ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 78))
+         (|getShellEntry| $ 77))
+     (SPADCALL |l| (|getShellEntry| $ 79)))
     ((|OUTFORM;infix?;$B;74| |a| $) (CONS |a| |l|))
     ('T
      (|OUTFORM;hconcat;L$;49|
-         (LIST (SPADCALL |l| (|getShellEntry| $ 70)) |a|
+         (LIST (SPADCALL |l| (|getShellEntry| $ 79)) |a|
                (|OUTFORM;infix;$L$;77| |a|
-                   (SPADCALL |l| (|getShellEntry| $ 69)) $))
+                   (SPADCALL |l| (|getShellEntry| $ 78)) $))
          $)))) 
 
 (DEFUN |OUTFORM;infix;4$;78| (|a| |b| |c| $)
@@ -773,7 +773,7 @@
     (RETURN
       (SEQ (LETT |s|
                  (MAKE-FULL-CVEC |nn|
-                     (SPADCALL "." (|getShellEntry| $ 109)))
+                     (SPADCALL "." (|getShellEntry| $ 120)))
                  |OUTFORM;dot;$Nni$;85|)
            (EXIT (|OUTFORM;super;3$;43| |a| |s| $)))))) 
 
@@ -782,7 +782,7 @@
     (RETURN
       (SEQ (LETT |s|
                  (MAKE-FULL-CVEC |nn|
-                     (SPADCALL "," (|getShellEntry| $ 109)))
+                     (SPADCALL "," (|getShellEntry| $ 120)))
                  |OUTFORM;prime;$Nni$;86|)
            (EXIT (|OUTFORM;super;3$;43| |a| |s| $)))))) 
 
@@ -819,9 +819,9 @@
                              (PROG1 |nn|
                                (|check-subtype| (< 0 |nn|)
                                    '(|PositiveInteger|) |nn|))
-                             (|getShellEntry| $ 124))
+                             (|getShellEntry| $ 138))
                          |OUTFORM;differentiate;$Nni$;97|)
-                   (LETT |s| (SPADCALL |r| (|getShellEntry| $ 125))
+                   (LETT |s| (SPADCALL |r| (|getShellEntry| $ 139))
                          |OUTFORM;differentiate;$Nni$;97|)
                    (EXIT (|OUTFORM;super;3$;43| |a|
                              (|OUTFORM;paren;2$;40| |s| $) $))))))))) 
@@ -873,7 +873,7 @@
     (RETURN
       (PROGN
         (LETT |dv$| '(|OutputForm|) . #0=(|OutputForm|))
-        (LETT $ (|newShell| 137) . #0#)
+        (LETT $ (|newShell| 151) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -895,118 +895,127 @@
              (9 . |concat|) (15 . |concat|) |OUTFORM;outputForm;S$;15|
              |OUTFORM;width;$I;16| |OUTFORM;height;$I;17|
              |OUTFORM;subHeight;$I;18| |OUTFORM;superHeight;$I;19|
-             |OUTFORM;height;I;20| |OUTFORM;width;I;21|
-             |OUTFORM;hspace;I$;29| |OUTFORM;hconcat;3$;48|
-             |OUTFORM;center;$I$;22| |OUTFORM;left;$I$;23|
-             |OUTFORM;right;$I$;24| |OUTFORM;center;2$;25|
-             |OUTFORM;left;2$;26| |OUTFORM;right;2$;27|
-             |OUTFORM;vspace;I$;28| |OUTFORM;vconcat;3$;50|
-             |OUTFORM;rspace;2I$;30| (|List| $) (|List| 48)
-             |OUTFORM;matrix;L$;31| |OUTFORM;pile;L$;32|
+             |OUTFORM;height;I;20| |OUTFORM;width;I;21| (21 . -)
+             (27 . |quo|) |OUTFORM;hspace;I$;29|
+             |OUTFORM;hconcat;3$;48| |OUTFORM;center;$I$;22|
+             |OUTFORM;left;$I$;23| |OUTFORM;right;$I$;24|
+             |OUTFORM;center;2$;25| |OUTFORM;left;2$;26|
+             |OUTFORM;right;2$;27| (|NonNegativeInteger|) (33 . |Zero|)
+             (37 . |Zero|) (41 . |Zero|) (45 . <) (51 . |One|)
+             (55 . |One|) |OUTFORM;vspace;I$;28|
+             |OUTFORM;vconcat;3$;50| |OUTFORM;rspace;2I$;30| (|List| $)
+             (|List| 57) |OUTFORM;matrix;L$;31| |OUTFORM;pile;L$;32|
              |OUTFORM;commaSeparate;L$;33|
              |OUTFORM;semicolonSeparate;L$;34| (|List| $$)
-             (21 . |reverse|) (26 . |append|)
+             (59 . |reverse|) (64 . |append|)
              |OUTFORM;blankSeparate;L$;35| |OUTFORM;brace;2$;36|
              |OUTFORM;brace;L$;37| |OUTFORM;bracket;2$;38|
              |OUTFORM;bracket;L$;39| |OUTFORM;paren;2$;40|
              |OUTFORM;paren;L$;41| |OUTFORM;sub;3$;42|
              |OUTFORM;super;3$;43| |OUTFORM;presub;3$;44|
-             |OUTFORM;presuper;3$;45| (32 . |null|) (37 . |rest|)
-             (42 . |first|) |OUTFORM;scripts;$L$;46|
-             (|NonNegativeInteger|) (47 . |#|)
-             |OUTFORM;supersub;$L$;47| |OUTFORM;hconcat;L$;49|
-             |OUTFORM;vconcat;L$;51| |OUTFORM;~=;3$;52|
-             |OUTFORM;<;3$;53| |OUTFORM;>;3$;54| |OUTFORM;<=;3$;55|
-             |OUTFORM;>=;3$;56| |OUTFORM;+;3$;57| |OUTFORM;-;3$;58|
-             |OUTFORM;-;2$;59| |OUTFORM;*;3$;60| |OUTFORM;/;3$;61|
-             |OUTFORM;**;3$;62| |OUTFORM;div;3$;63| |OUTFORM;rem;3$;64|
-             |OUTFORM;quo;3$;65| |OUTFORM;exquo;3$;66|
-             |OUTFORM;and;3$;67| |OUTFORM;or;3$;68| |OUTFORM;not;2$;69|
+             |OUTFORM;presuper;3$;45| (70 . |null|) (75 . |rest|)
+             (80 . |first|) |OUTFORM;scripts;$L$;46| (85 . |#|)
+             (90 . |odd?|) |OUTFORM;supersub;$L$;47|
+             |OUTFORM;hconcat;L$;49| |OUTFORM;vconcat;L$;51|
+             |OUTFORM;~=;3$;52| |OUTFORM;<;3$;53| |OUTFORM;>;3$;54|
+             |OUTFORM;<=;3$;55| |OUTFORM;>=;3$;56| |OUTFORM;+;3$;57|
+             |OUTFORM;-;3$;58| |OUTFORM;-;2$;59| |OUTFORM;*;3$;60|
+             |OUTFORM;/;3$;61| |OUTFORM;**;3$;62| |OUTFORM;div;3$;63|
+             |OUTFORM;rem;3$;64| |OUTFORM;quo;3$;65|
+             |OUTFORM;exquo;3$;66| |OUTFORM;and;3$;67|
+             |OUTFORM;or;3$;68| |OUTFORM;not;2$;69|
              |OUTFORM;SEGMENT;3$;70| |OUTFORM;SEGMENT;2$;71|
-             |OUTFORM;binomial;3$;72| |OUTFORM;infix?;$B;74|
-             |OUTFORM;elt;$L$;75| |OUTFORM;prefix;$L$;76|
-             |OUTFORM;infix;$L$;77| |OUTFORM;infix;4$;78|
-             |OUTFORM;postfix;3$;79| |OUTFORM;string;2$;80|
-             |OUTFORM;quote;2$;81| |OUTFORM;overbar;2$;82|
-             |OUTFORM;dot;2$;83| |OUTFORM;prime;2$;84| (52 . |char|)
+             |OUTFORM;binomial;3$;72| (95 . |false|) (99 . |true|)
+             |OUTFORM;infix?;$B;74| |OUTFORM;elt;$L$;75|
+             |OUTFORM;prefix;$L$;76| |OUTFORM;infix;$L$;77|
+             |OUTFORM;infix;4$;78| |OUTFORM;postfix;3$;79|
+             |OUTFORM;string;2$;80| |OUTFORM;quote;2$;81|
+             |OUTFORM;overbar;2$;82| |OUTFORM;dot;2$;83|
+             |OUTFORM;prime;2$;84| (103 . |char|) (108 . |new|)
              |OUTFORM;dot;$Nni$;85| |OUTFORM;prime;$Nni$;86|
              |OUTFORM;overlabel;3$;87| |OUTFORM;box;2$;88|
              |OUTFORM;zag;3$;89| |OUTFORM;root;2$;90|
              |OUTFORM;root;3$;91| |OUTFORM;over;3$;92|
              |OUTFORM;slash;3$;93| |OUTFORM;assign;3$;94|
              |OUTFORM;label;3$;95| |OUTFORM;rarrow;3$;96|
-             (|PositiveInteger|) (|NumberFormats|) (57 . |FormatRoman|)
-             (62 . |lowerCase|) |OUTFORM;differentiate;$Nni$;97|
+             (114 . |zero?|) (119 . <) (|PositiveInteger|)
+             (|NumberFormats|) (125 . |FormatRoman|)
+             (130 . |lowerCase|) |OUTFORM;differentiate;$Nni$;97|
              |OUTFORM;sum;2$;98| |OUTFORM;sum;3$;99|
              |OUTFORM;sum;4$;100| |OUTFORM;prod;2$;101|
              |OUTFORM;prod;3$;102| |OUTFORM;prod;4$;103|
              |OUTFORM;int;2$;104| |OUTFORM;int;3$;105|
              |OUTFORM;int;4$;106| (|SingleInteger|))
-          '#(~= 67 |zag| 79 |width| 85 |vspace| 94 |vconcat| 99
-             |supersub| 110 |superHeight| 116 |super| 121 |sum| 127
-             |subHeight| 145 |sub| 150 |string| 156 |slash| 161
-             |semicolonSeparate| 167 |scripts| 172 |rspace| 178 |root|
-             184 |right| 195 |rem| 206 |rarrow| 212 |quote| 218 |quo|
-             223 |prod| 229 |print| 247 |prime| 252 |presuper| 263
-             |presub| 269 |prefix| 275 |postfix| 281 |pile| 287 |paren|
-             292 |overlabel| 302 |overbar| 308 |over| 313 |outputForm|
-             319 |or| 339 |not| 345 |messagePrint| 350 |message| 355
-             |matrix| 360 |left| 365 |latex| 376 |label| 381 |int| 387
-             |infix?| 405 |infix| 410 |hspace| 423 |height| 428
-             |hconcat| 437 |hash| 448 |exquo| 453 |empty| 459 |elt| 463
-             |doubleFloatFormat| 469 |dot| 474 |div| 485
-             |differentiate| 491 |commaSeparate| 497 |coerce| 502
-             |center| 507 |bracket| 518 |brace| 528 |box| 538
-             |blankSeparate| 543 |binomial| 548 |assign| 554 |and| 560
-             SEGMENT 566 >= 577 > 583 = 589 <= 601 < 607 / 613 - 619 +
-             630 ** 636 * 642)
+          '#(~= 135 |zag| 147 |width| 153 |vspace| 162 |vconcat| 167
+             |supersub| 178 |superHeight| 184 |super| 189 |sum| 195
+             |subHeight| 213 |sub| 218 |string| 224 |slash| 229
+             |semicolonSeparate| 235 |scripts| 240 |rspace| 246 |root|
+             252 |right| 263 |rem| 274 |rarrow| 280 |quote| 286 |quo|
+             291 |prod| 297 |print| 315 |prime| 320 |presuper| 331
+             |presub| 337 |prefix| 343 |postfix| 349 |pile| 355 |paren|
+             360 |overlabel| 370 |overbar| 376 |over| 381 |outputForm|
+             387 |or| 407 |not| 413 |messagePrint| 418 |message| 423
+             |matrix| 428 |left| 433 |latex| 444 |label| 449 |int| 455
+             |infix?| 473 |infix| 478 |hspace| 491 |height| 496
+             |hconcat| 505 |hash| 516 |exquo| 521 |empty| 527 |elt| 531
+             |doubleFloatFormat| 537 |dot| 542 |div| 553
+             |differentiate| 559 |commaSeparate| 565 |coerce| 570
+             |center| 575 |bracket| 586 |brace| 596 |box| 606
+             |blankSeparate| 611 |binomial| 616 |assign| 622 |and| 628
+             SEGMENT 634 >= 645 > 651 = 657 <= 669 < 675 / 681 - 687 +
+             698 ** 704 * 710)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0))
                 (CONS '#(|SetCategory&| |BasicType&| NIL)
                       (CONS '#((|SetCategory|) (|BasicType|)
                                (|CoercibleTo| 18))
-                            (|makeByteWordVec2| 136
+                            (|makeByteWordVec2| 150
                                 '(1 7 11 0 12 0 26 0 27 2 7 0 0 26 28 2
-                                  7 0 26 0 29 1 54 0 0 55 2 54 0 0 0 56
-                                  1 54 11 0 68 1 54 0 0 69 1 54 2 0 70
-                                  1 54 72 0 73 1 26 0 7 109 1 123 7 122
-                                  124 1 7 0 0 125 2 0 0 0 0 77 2 0 11 0
-                                  0 1 2 0 0 0 0 114 0 0 20 36 1 0 20 0
-                                  31 1 0 0 20 45 1 0 0 48 76 2 0 0 0 0
-                                  46 2 0 0 0 48 74 1 0 20 0 34 2 0 0 0
-                                  0 65 2 0 0 0 0 128 3 0 0 0 0 0 129 1
-                                  0 0 0 127 1 0 20 0 33 2 0 0 0 0 64 1
-                                  0 0 0 104 2 0 0 0 0 118 1 0 0 48 53 2
-                                  0 0 0 48 71 2 0 0 20 20 47 1 0 0 0
-                                  115 2 0 0 0 0 116 1 0 0 0 44 2 0 0 0
-                                  20 41 2 0 0 0 0 89 2 0 0 0 0 121 1 0
-                                  0 0 105 2 0 0 0 0 90 3 0 0 0 0 0 132
-                                  1 0 0 0 130 2 0 0 0 0 131 1 0 9 0 10
-                                  2 0 0 0 72 111 1 0 0 0 108 2 0 0 0 0
-                                  67 2 0 0 0 0 66 2 0 0 0 48 100 2 0 0
-                                  0 0 103 1 0 0 48 51 1 0 0 48 63 1 0 0
-                                  0 62 2 0 0 0 0 112 1 0 0 0 106 2 0 0
-                                  0 0 117 1 0 0 24 25 1 0 0 22 23 1 0 0
-                                  7 30 1 0 0 20 21 2 0 0 0 0 93 1 0 0 0
-                                  94 1 0 9 7 15 1 0 0 7 14 1 0 0 49 50
-                                  1 0 0 0 43 2 0 0 0 20 40 1 0 7 0 1 2
-                                  0 0 0 0 120 3 0 0 0 0 0 135 2 0 0 0 0
-                                  134 1 0 0 0 133 1 0 11 0 98 2 0 0 0
-                                  48 101 3 0 0 0 0 0 102 1 0 0 20 37 0
-                                  0 20 35 1 0 20 0 32 1 0 0 48 75 2 0 0
-                                  0 0 38 1 0 136 0 1 2 0 0 0 0 91 0 0 0
-                                  13 2 0 0 0 48 99 1 0 7 7 8 2 0 0 0 72
-                                  110 1 0 0 0 107 2 0 0 0 0 88 2 0 0 0
-                                  72 126 1 0 0 48 52 1 0 18 0 19 1 0 0
-                                  0 42 2 0 0 0 20 39 1 0 0 0 60 1 0 0
-                                  48 61 1 0 0 48 59 1 0 0 0 58 1 0 0 0
-                                  113 1 0 0 48 57 2 0 0 0 0 97 2 0 0 0
-                                  0 119 2 0 0 0 0 92 1 0 0 0 96 2 0 0 0
-                                  0 95 2 0 0 0 0 81 2 0 0 0 0 79 2 0 0
-                                  0 0 17 2 0 11 0 0 16 2 0 0 0 0 80 2 0
-                                  0 0 0 78 2 0 0 0 0 86 1 0 0 0 84 2 0
-                                  0 0 0 83 2 0 0 0 0 82 2 0 0 0 0 87 2
-                                  0 0 0 0 85)))))
+                                  7 0 26 0 29 2 20 0 0 0 37 2 20 0 0 0
+                                  38 0 47 0 48 0 20 0 49 0 24 0 50 2 20
+                                  11 0 0 51 0 47 0 52 0 20 0 53 1 63 0
+                                  0 64 2 63 0 0 0 65 1 63 11 0 77 1 63
+                                  0 0 78 1 63 2 0 79 1 63 47 0 81 1 20
+                                  11 0 82 0 11 0 107 0 11 0 108 1 26 0
+                                  7 120 2 7 0 47 26 121 1 47 11 0 134 2
+                                  47 11 0 0 135 1 137 7 136 138 1 7 0 0
+                                  139 2 0 0 0 0 86 2 0 11 0 0 1 2 0 0 0
+                                  0 126 0 0 20 36 1 0 20 0 31 1 0 0 20
+                                  54 1 0 0 57 85 2 0 0 0 0 55 2 0 0 0
+                                  57 83 1 0 20 0 34 2 0 0 0 0 74 2 0 0
+                                  0 0 142 3 0 0 0 0 0 143 1 0 0 0 141 1
+                                  0 20 0 33 2 0 0 0 0 73 1 0 0 0 115 2
+                                  0 0 0 0 130 1 0 0 57 62 2 0 0 0 57 80
+                                  2 0 0 20 20 56 1 0 0 0 127 2 0 0 0 0
+                                  128 1 0 0 0 46 2 0 0 0 20 43 2 0 0 0
+                                  0 98 2 0 0 0 0 133 1 0 0 0 116 2 0 0
+                                  0 0 99 3 0 0 0 0 0 146 1 0 0 0 144 2
+                                  0 0 0 0 145 1 0 9 0 10 2 0 0 0 47 123
+                                  1 0 0 0 119 2 0 0 0 0 76 2 0 0 0 0 75
+                                  2 0 0 0 57 111 2 0 0 0 0 114 1 0 0 57
+                                  60 1 0 0 57 72 1 0 0 0 71 2 0 0 0 0
+                                  124 1 0 0 0 117 2 0 0 0 0 129 1 0 0
+                                  24 25 1 0 0 22 23 1 0 0 7 30 1 0 0 20
+                                  21 2 0 0 0 0 102 1 0 0 0 103 1 0 9 7
+                                  15 1 0 0 7 14 1 0 0 58 59 1 0 0 0 45
+                                  2 0 0 0 20 42 1 0 7 0 1 2 0 0 0 0 132
+                                  3 0 0 0 0 0 149 2 0 0 0 0 148 1 0 0 0
+                                  147 1 0 11 0 109 2 0 0 0 57 112 3 0 0
+                                  0 0 0 113 1 0 0 20 39 0 0 20 35 1 0
+                                  20 0 32 1 0 0 57 84 2 0 0 0 0 40 1 0
+                                  150 0 1 2 0 0 0 0 100 0 0 0 13 2 0 0
+                                  0 57 110 1 0 7 7 8 2 0 0 0 47 122 1 0
+                                  0 0 118 2 0 0 0 0 97 2 0 0 0 47 140 1
+                                  0 0 57 61 1 0 18 0 19 1 0 0 0 44 2 0
+                                  0 0 20 41 1 0 0 0 69 1 0 0 57 70 1 0
+                                  0 57 68 1 0 0 0 67 1 0 0 0 125 1 0 0
+                                  57 66 2 0 0 0 0 106 2 0 0 0 0 131 2 0
+                                  0 0 0 101 1 0 0 0 105 2 0 0 0 0 104 2
+                                  0 0 0 0 90 2 0 0 0 0 88 2 0 0 0 0 17
+                                  2 0 11 0 0 16 2 0 0 0 0 89 2 0 0 0 0
+                                  87 2 0 0 0 0 95 1 0 0 0 93 2 0 0 0 0
+                                  92 2 0 0 0 0 91 2 0 0 0 0 96 2 0 0 0
+                                  0 94)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|OutputForm| 'NILADIC T) 

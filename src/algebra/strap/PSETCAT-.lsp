@@ -173,7 +173,7 @@
                             (NOT (SPADCALL
                                      (SPADCALL (|SPADfirst| |lp|)
                                       (|getShellEntry| $ 22))
-                                     |v| (|getShellEntry| $ 28))))))
+                                     |v| (|getShellEntry| $ 31))))))
                    (GO G191)))
                 (SEQ (EXIT (LETT |lp| (CDR |lp|)
                                  |PSETCAT-;mainVariable?;VarSetSB;6|)))
@@ -200,7 +200,7 @@
                               (LETT |lq| (CONS |p| |lq|)
                                     |PSETCAT-;collectUnder;SVarSetS;7|)))))
                 NIL (GO G190) G191 (EXIT NIL))
-           (EXIT (SPADCALL |lq| (|getShellEntry| $ 30))))))) 
+           (EXIT (SPADCALL |lq| (|getShellEntry| $ 35))))))) 
 
 (DEFUN |PSETCAT-;collectUpper;SVarSetS;8| (|ps| |v| $)
   (PROG (|p| |lp| |lq|)
@@ -224,7 +224,7 @@
                                  (LETT |lq| (CONS |p| |lq|)
                                        |PSETCAT-;collectUpper;SVarSetS;8|)))))))
                 NIL (GO G190) G191 (EXIT NIL))
-           (EXIT (SPADCALL |lq| (|getShellEntry| $ 30))))))) 
+           (EXIT (SPADCALL |lq| (|getShellEntry| $ 35))))))) 
 
 (DEFUN |PSETCAT-;collect;SVarSetS;9| (|ps| |v| $)
   (PROG (|p| |lp| |lq|)
@@ -244,11 +244,11 @@
                                 ((SPADCALL
                                      (SPADCALL |p|
                                       (|getShellEntry| $ 22))
-                                     |v| (|getShellEntry| $ 28))
+                                     |v| (|getShellEntry| $ 31))
                                  (LETT |lq| (CONS |p| |lq|)
                                        |PSETCAT-;collect;SVarSetS;9|)))))))
                 NIL (GO G190) G191 (EXIT NIL))
-           (EXIT (SPADCALL |lq| (|getShellEntry| $ 30))))))) 
+           (EXIT (SPADCALL |lq| (|getShellEntry| $ 35))))))) 
 
 (DEFUN |PSETCAT-;sort;SVarSetR;10| (|ps| |v| $)
   (PROG (|p| |lp| |us| |vs| |ws|)
@@ -272,16 +272,16 @@
                                     |PSETCAT-;sort;SVarSetR;10|))
                              ((SPADCALL
                                   (SPADCALL |p| (|getShellEntry| $ 22))
-                                  |v| (|getShellEntry| $ 28))
+                                  |v| (|getShellEntry| $ 31))
                               (LETT |vs| (CONS |p| |vs|)
                                     |PSETCAT-;sort;SVarSetR;10|))
                              ('T
                               (LETT |ws| (CONS |p| |ws|)
                                     |PSETCAT-;sort;SVarSetR;10|)))))
                 NIL (GO G190) G191 (EXIT NIL))
-           (EXIT (VECTOR (SPADCALL |us| (|getShellEntry| $ 30))
-                         (SPADCALL |vs| (|getShellEntry| $ 30))
-                         (SPADCALL |ws| (|getShellEntry| $ 30)))))))) 
+           (EXIT (VECTOR (SPADCALL |us| (|getShellEntry| $ 35))
+                         (SPADCALL |vs| (|getShellEntry| $ 35))
+                         (SPADCALL |ws| (|getShellEntry| $ 35)))))))) 
 
 (DEFUN |PSETCAT-;=;2SB;11| (|ps1| |ps2| $)
   (PROG (#0=#:G1564 #1=#:G1565 #2=#:G1566 |p| #3=#:G1567)
@@ -305,7 +305,7 @@
                                       |PSETCAT-;=;2SB;11|)))
                           (LETT #1# (CDR #1#) |PSETCAT-;=;2SB;11|)
                           (GO G190) G191 (EXIT (NREVERSE0 #0#))))
-                   (|getShellEntry| $ 37))
+                   (|getShellEntry| $ 42))
                (SPADCALL
                    (PROGN
                      (LETT #2# NIL |PSETCAT-;=;2SB;11|)
@@ -324,28 +324,28 @@
                                       |PSETCAT-;=;2SB;11|)))
                           (LETT #3# (CDR #3#) |PSETCAT-;=;2SB;11|)
                           (GO G190) G191 (EXIT (NREVERSE0 #2#))))
-                   (|getShellEntry| $ 37))
-               (|getShellEntry| $ 38)))))) 
+                   (|getShellEntry| $ 42))
+               (|getShellEntry| $ 43)))))) 
 
 (DEFUN |PSETCAT-;localInf?| (|p| |q| $)
-  (SPADCALL (SPADCALL |p| (|getShellEntry| $ 40))
-      (SPADCALL |q| (|getShellEntry| $ 40)) (|getShellEntry| $ 41))) 
+  (SPADCALL (SPADCALL |p| (|getShellEntry| $ 45))
+      (SPADCALL |q| (|getShellEntry| $ 45)) (|getShellEntry| $ 46))) 
 
 (DEFUN |PSETCAT-;localTriangular?| (|lp| $)
   (PROG (|q| |p|)
     (RETURN
-      (SEQ (LETT |lp| (SPADCALL (ELT $ 42) |lp| (|getShellEntry| $ 26))
+      (SEQ (LETT |lp| (SPADCALL (ELT $ 47) |lp| (|getShellEntry| $ 26))
                  |PSETCAT-;localTriangular?|)
            (EXIT (COND
                    ((NULL |lp|) 'T)
-                   ((SPADCALL (ELT $ 24) |lp| (|getShellEntry| $ 43))
+                   ((SPADCALL (ELT $ 24) |lp| (|getShellEntry| $ 49))
                     'NIL)
                    ('T
                     (SEQ (LETT |lp|
                                (SPADCALL
                                    (CONS
                                     #'|PSETCAT-;localTriangular?!0| $)
-                                   |lp| (|getShellEntry| $ 45))
+                                   |lp| (|getShellEntry| $ 51))
                                |PSETCAT-;localTriangular?|)
                          (LETT |p| (|SPADfirst| |lp|)
                                |PSETCAT-;localTriangular?|)
@@ -382,31 +382,31 @@
   (|PSETCAT-;localTriangular?| (|PSETCAT-;elements| |ps| $) $)) 
 
 (DEFUN |PSETCAT-;trivialIdeal?;SB;15| (|ps| $)
-  (NULL (SPADCALL (ELT $ 42) (|PSETCAT-;elements| |ps| $)
+  (NULL (SPADCALL (ELT $ 47) (|PSETCAT-;elements| |ps| $)
             (|getShellEntry| $ 26)))) 
 
 (DEFUN |PSETCAT-;roughUnitIdeal?;SB;16| (|ps| $)
   (SPADCALL (ELT $ 24)
-      (SPADCALL (ELT $ 42) (|PSETCAT-;elements| |ps| $)
+      (SPADCALL (ELT $ 47) (|PSETCAT-;elements| |ps| $)
           (|getShellEntry| $ 26))
-      (|getShellEntry| $ 43))) 
+      (|getShellEntry| $ 49))) 
 
 (DEFUN |PSETCAT-;relativelyPrimeLeadingMonomials?| (|p| |q| $)
   (PROG (|dp| |dq|)
     (RETURN
-      (SEQ (LETT |dp| (SPADCALL |p| (|getShellEntry| $ 40))
+      (SEQ (LETT |dp| (SPADCALL |p| (|getShellEntry| $ 45))
                  |PSETCAT-;relativelyPrimeLeadingMonomials?|)
-           (LETT |dq| (SPADCALL |q| (|getShellEntry| $ 40))
+           (LETT |dq| (SPADCALL |q| (|getShellEntry| $ 45))
                  |PSETCAT-;relativelyPrimeLeadingMonomials?|)
-           (EXIT (SPADCALL (SPADCALL |dp| |dq| (|getShellEntry| $ 49))
-                     (SPADCALL |dp| |dq| (|getShellEntry| $ 50))
-                     (|getShellEntry| $ 51))))))) 
+           (EXIT (SPADCALL (SPADCALL |dp| |dq| (|getShellEntry| $ 55))
+                     (SPADCALL |dp| |dq| (|getShellEntry| $ 56))
+                     (|getShellEntry| $ 57))))))) 
 
 (DEFUN |PSETCAT-;roughBase?;SB;18| (|ps| $)
   (PROG (|p| |lp| |rB?| |copylp|)
     (RETURN
       (SEQ (LETT |lp|
-                 (SPADCALL (ELT $ 42) (|PSETCAT-;elements| |ps| $)
+                 (SPADCALL (ELT $ 47) (|PSETCAT-;elements| |ps| $)
                      (|getShellEntry| $ 26))
                  |PSETCAT-;roughBase?;SB;18|)
            (EXIT (COND
@@ -450,16 +450,16 @@
     (RETURN
       (SEQ (LETT |lp|
                  (SPADCALL (|PSETCAT-;elements| |ps1| $) |ps2|
-                     (|getShellEntry| $ 53))
+                     (|getShellEntry| $ 59))
                  |PSETCAT-;roughSubIdeal?;2SB;19|)
-           (EXIT (NULL (SPADCALL (ELT $ 42) |lp|
+           (EXIT (NULL (SPADCALL (ELT $ 47) |lp|
                            (|getShellEntry| $ 26)))))))) 
 
 (DEFUN |PSETCAT-;roughEqualIdeals?;2SB;20| (|ps1| |ps2| $)
   (COND
-    ((SPADCALL |ps1| |ps2| (|getShellEntry| $ 55)) 'T)
-    ((SPADCALL |ps1| |ps2| (|getShellEntry| $ 56))
-     (SPADCALL |ps2| |ps1| (|getShellEntry| $ 56)))
+    ((SPADCALL |ps1| |ps2| (|getShellEntry| $ 61)) 'T)
+    ((SPADCALL |ps1| |ps2| (|getShellEntry| $ 62))
+     (SPADCALL |ps2| |ps1| (|getShellEntry| $ 62)))
     ('T 'NIL))) 
 
 (DEFUN |PSETCAT-;exactQuo| (|r| |s| $)
@@ -467,9 +467,9 @@
     (RETURN
       (COND
         ((|HasCategory| (|getShellEntry| $ 7) '(|EuclideanDomain|))
-         (SPADCALL |r| |s| (|getShellEntry| $ 58)))
+         (SPADCALL |r| |s| (|getShellEntry| $ 64)))
         ('T
-         (PROG2 (LETT #0# (SPADCALL |r| |s| (|getShellEntry| $ 60))
+         (PROG2 (LETT #0# (SPADCALL |r| |s| (|getShellEntry| $ 66))
                       |PSETCAT-;exactQuo|)
                 (QCDR #0#)
            (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 7) #0#))))))) 
@@ -478,16 +478,16 @@
   (PROG (|lp1| |p| |e| |g| |#G45| |#G46| |lca| |lcp| |r| |lp2|)
     (RETURN
       (SEQ (LETT |lp1|
-                 (SPADCALL (ELT $ 42) (|PSETCAT-;elements| |ps| $)
+                 (SPADCALL (ELT $ 47) (|PSETCAT-;elements| |ps| $)
                      (|getShellEntry| $ 26))
                  |PSETCAT-;headRemainder;PSR;22|)
            (EXIT (COND
-                   ((NULL |lp1|) (CONS |a| (|spadConstant| $ 61)))
-                   ((SPADCALL (ELT $ 24) |lp1| (|getShellEntry| $ 43))
-                    (CONS (SPADCALL |a| (|getShellEntry| $ 62))
-                          (|spadConstant| $ 61)))
+                   ((NULL |lp1|) (CONS |a| (|spadConstant| $ 67)))
+                   ((SPADCALL (ELT $ 24) |lp1| (|getShellEntry| $ 49))
+                    (CONS (SPADCALL |a| (|getShellEntry| $ 68))
+                          (|spadConstant| $ 67)))
                    ('T
-                    (SEQ (LETT |r| (|spadConstant| $ 61)
+                    (SEQ (LETT |r| (|spadConstant| $ 67)
                                |PSETCAT-;headRemainder;PSR;22|)
                          (LETT |lp1|
                                (SPADCALL
@@ -496,7 +496,7 @@
                                     $)
                                    (REVERSE
                                     (|PSETCAT-;elements| |ps| $))
-                                   (|getShellEntry| $ 45))
+                                   (|getShellEntry| $ 51))
                                |PSETCAT-;headRemainder;PSR;22|)
                          (LETT |lp2| |lp1|
                                |PSETCAT-;headRemainder;PSR;22|)
@@ -504,7 +504,7 @@
                               (COND
                                 ((NULL (COND
                                          ((SPADCALL |a|
-                                           (|getShellEntry| $ 42))
+                                           (|getShellEntry| $ 47))
                                           'NIL)
                                          ('T (NOT (NULL |lp2|)))))
                                  (GO G191)))
@@ -513,10 +513,10 @@
                                    (LETT |e|
                                     (SPADCALL
                                      (SPADCALL |a|
-                                      (|getShellEntry| $ 40))
+                                      (|getShellEntry| $ 45))
                                      (SPADCALL |p|
-                                      (|getShellEntry| $ 40))
-                                     (|getShellEntry| $ 63))
+                                      (|getShellEntry| $ 45))
+                                     (|getShellEntry| $ 70))
                                     |PSETCAT-;headRemainder;PSR;22|)
                                    (EXIT
                                     (COND
@@ -526,13 +526,13 @@
                                          (SPADCALL
                                           (LETT |lca|
                                            (SPADCALL |a|
-                                            (|getShellEntry| $ 64))
+                                            (|getShellEntry| $ 71))
                                            |PSETCAT-;headRemainder;PSR;22|)
                                           (LETT |lcp|
                                            (SPADCALL |p|
-                                            (|getShellEntry| $ 64))
+                                            (|getShellEntry| $ 71))
                                            |PSETCAT-;headRemainder;PSR;22|)
-                                          (|getShellEntry| $ 65))
+                                          (|getShellEntry| $ 72))
                                          |PSETCAT-;headRemainder;PSR;22|)
                                         (PROGN
                                           (LETT |#G45|
@@ -551,19 +551,19 @@
                                          (SPADCALL
                                           (SPADCALL |lcp|
                                            (SPADCALL |a|
-                                            (|getShellEntry| $ 62))
-                                           (|getShellEntry| $ 66))
+                                            (|getShellEntry| $ 68))
+                                           (|getShellEntry| $ 73))
                                           (SPADCALL
                                            (SPADCALL |lca| (QCDR |e|)
-                                            (|getShellEntry| $ 67))
+                                            (|getShellEntry| $ 74))
                                            (SPADCALL |p|
-                                            (|getShellEntry| $ 62))
-                                           (|getShellEntry| $ 68))
-                                          (|getShellEntry| $ 69))
+                                            (|getShellEntry| $ 68))
+                                           (|getShellEntry| $ 75))
+                                          (|getShellEntry| $ 76))
                                          |PSETCAT-;headRemainder;PSR;22|)
                                         (LETT |r|
                                          (SPADCALL |r| |lcp|
-                                          (|getShellEntry| $ 70))
+                                          (|getShellEntry| $ 77))
                                          |PSETCAT-;headRemainder;PSR;22|)
                                         (EXIT
                                          (LETT |lp2| |lp1|
@@ -579,15 +579,15 @@
     (RETURN
       (SEQ (LETT |g|
                  (SPADCALL (QCDR |frac|) (QCAR |frac|)
-                     (|getShellEntry| $ 73))
+                     (|getShellEntry| $ 80))
                  |PSETCAT-;makeIrreducible!|)
            (EXIT (COND
-                   ((SPADCALL |g| (|getShellEntry| $ 74)) |frac|)
+                   ((SPADCALL |g| (|getShellEntry| $ 81)) |frac|)
                    ('T
                     (SEQ (PROGN
                            (RPLACA |frac|
                                    (SPADCALL (QCAR |frac|) |g|
-                                    (|getShellEntry| $ 75)))
+                                    (|getShellEntry| $ 82)))
                            (QCAR |frac|))
                          (PROGN
                            (RPLACD |frac|
@@ -601,22 +601,22 @@
     (RETURN
       (SEQ (LETT |hRa|
                  (|PSETCAT-;makeIrreducible!|
-                     (SPADCALL |a| |ps| (|getShellEntry| $ 76)) $)
+                     (SPADCALL |a| |ps| (|getShellEntry| $ 83)) $)
                  |PSETCAT-;remainder;PSR;24|)
            (LETT |a| (QCAR |hRa|) |PSETCAT-;remainder;PSR;24|)
            (LETT |r| (QCDR |hRa|) |PSETCAT-;remainder;PSR;24|)
            (EXIT (COND
-                   ((SPADCALL |a| (|getShellEntry| $ 42))
-                    (VECTOR (|spadConstant| $ 61) |a| |r|))
+                   ((SPADCALL |a| (|getShellEntry| $ 47))
+                    (VECTOR (|spadConstant| $ 67) |a| |r|))
                    ('T
                     (SEQ (LETT |b|
-                               (SPADCALL (|spadConstant| $ 61)
+                               (SPADCALL (|spadConstant| $ 67)
                                    (SPADCALL |a|
-                                    (|getShellEntry| $ 40))
-                                   (|getShellEntry| $ 67))
+                                    (|getShellEntry| $ 45))
+                                   (|getShellEntry| $ 74))
                                |PSETCAT-;remainder;PSR;24|)
                          (LETT |c|
-                               (SPADCALL |a| (|getShellEntry| $ 64))
+                               (SPADCALL |a| (|getShellEntry| $ 71))
                                |PSETCAT-;remainder;PSR;24|)
                          (SEQ G190
                               (COND
@@ -624,43 +624,43 @@
                                         (SPADCALL
                                          (LETT |a|
                                           (SPADCALL |a|
-                                           (|getShellEntry| $ 62))
+                                           (|getShellEntry| $ 68))
                                           |PSETCAT-;remainder;PSR;24|)
-                                         (|getShellEntry| $ 42))))
+                                         (|getShellEntry| $ 47))))
                                  (GO G191)))
                               (SEQ (LETT |hRa|
                                     (|PSETCAT-;makeIrreducible!|
                                      (SPADCALL |a| |ps|
-                                      (|getShellEntry| $ 76))
+                                      (|getShellEntry| $ 83))
                                      $)
                                     |PSETCAT-;remainder;PSR;24|)
                                    (LETT |a| (QCAR |hRa|)
                                     |PSETCAT-;remainder;PSR;24|)
                                    (LETT |r|
                                     (SPADCALL |r| (QCDR |hRa|)
-                                     (|getShellEntry| $ 70))
+                                     (|getShellEntry| $ 77))
                                     |PSETCAT-;remainder;PSR;24|)
                                    (LETT |g|
                                     (SPADCALL |c|
                                      (LETT |lca|
                                       (SPADCALL |a|
-                                       (|getShellEntry| $ 64))
+                                       (|getShellEntry| $ 71))
                                       |PSETCAT-;remainder;PSR;24|)
-                                     (|getShellEntry| $ 65))
+                                     (|getShellEntry| $ 72))
                                     |PSETCAT-;remainder;PSR;24|)
                                    (LETT |b|
                                     (SPADCALL
                                      (SPADCALL
                                       (SPADCALL (QCDR |hRa|)
                                        (|PSETCAT-;exactQuo| |c| |g| $)
-                                       (|getShellEntry| $ 70))
-                                      |b| (|getShellEntry| $ 66))
+                                       (|getShellEntry| $ 77))
+                                      |b| (|getShellEntry| $ 73))
                                      (SPADCALL
                                       (|PSETCAT-;exactQuo| |lca| |g| $)
                                       (SPADCALL |a|
-                                       (|getShellEntry| $ 40))
-                                      (|getShellEntry| $ 67))
-                                     (|getShellEntry| $ 77))
+                                       (|getShellEntry| $ 45))
+                                      (|getShellEntry| $ 74))
+                                     (|getShellEntry| $ 84))
                                     |PSETCAT-;remainder;PSR;24|)
                                    (EXIT
                                     (LETT |c| |g|
@@ -672,19 +672,19 @@
   (PROG (|p| |rs|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |cs| (|getShellEntry| $ 80)) |ps|)
-             ((SPADCALL |cs| (|getShellEntry| $ 81))
-              (LIST (|spadConstant| $ 82)))
+             ((SPADCALL |cs| (|getShellEntry| $ 87)) |ps|)
+             ((SPADCALL |cs| (|getShellEntry| $ 88))
+              (LIST (|spadConstant| $ 89)))
              ('T
               (SEQ (LETT |ps|
-                         (SPADCALL (ELT $ 42) |ps|
+                         (SPADCALL (ELT $ 47) |ps|
                              (|getShellEntry| $ 26))
                          |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                    (EXIT (COND
                            ((NULL |ps|) |ps|)
                            ((SPADCALL (ELT $ 24) |ps|
-                                (|getShellEntry| $ 43))
-                            (LIST (|spadConstant| $ 83)))
+                                (|getShellEntry| $ 49))
+                            (LIST (|spadConstant| $ 90)))
                            ('T
                             (SEQ (LETT |rs| NIL
                                        |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
@@ -700,13 +700,13 @@
                                        (LETT |p|
                                         (QCAR
                                          (SPADCALL |p| |cs|
-                                          (|getShellEntry| $ 76)))
+                                          (|getShellEntry| $ 83)))
                                         |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                                        (EXIT
                                         (COND
                                           ((NULL
                                             (SPADCALL |p|
-                                             (|getShellEntry| $ 42)))
+                                             (|getShellEntry| $ 47)))
                                            (COND
                                              ((SPADCALL |p|
                                                (|getShellEntry| $ 24))
@@ -716,37 +716,37 @@
                                                (EXIT
                                                 (LETT |rs|
                                                  (LIST
-                                                  (|spadConstant| $ 83))
+                                                  (|spadConstant| $ 90))
                                                  |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|))))
                                              ('T
                                               (SEQ
                                                (SPADCALL |p|
-                                                (|getShellEntry| $ 84))
+                                                (|getShellEntry| $ 91))
                                                (EXIT
                                                 (LETT |rs|
                                                  (CONS |p| |rs|)
                                                  |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)))))))))
                                       NIL (GO G190) G191 (EXIT NIL))
                                  (EXIT (SPADCALL |rs|
-                                        (|getShellEntry| $ 85)))))))))))))) 
+                                        (|getShellEntry| $ 92)))))))))))))) 
 
 (DEFUN |PSETCAT-;rewriteIdealWithRemainder;LSL;26| (|ps| |cs| $)
   (PROG (|p| |rs|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |cs| (|getShellEntry| $ 80)) |ps|)
-             ((SPADCALL |cs| (|getShellEntry| $ 81))
-              (LIST (|spadConstant| $ 82)))
+             ((SPADCALL |cs| (|getShellEntry| $ 87)) |ps|)
+             ((SPADCALL |cs| (|getShellEntry| $ 88))
+              (LIST (|spadConstant| $ 89)))
              ('T
               (SEQ (LETT |ps|
-                         (SPADCALL (ELT $ 42) |ps|
+                         (SPADCALL (ELT $ 47) |ps|
                              (|getShellEntry| $ 26))
                          |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                    (EXIT (COND
                            ((NULL |ps|) |ps|)
                            ((SPADCALL (ELT $ 24) |ps|
-                                (|getShellEntry| $ 43))
-                            (LIST (|spadConstant| $ 83)))
+                                (|getShellEntry| $ 49))
+                            (LIST (|spadConstant| $ 90)))
                            ('T
                             (SEQ (LETT |rs| NIL
                                        |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
@@ -762,14 +762,14 @@
                                        (LETT |p|
                                         (QVELT
                                          (SPADCALL |p| |cs|
-                                          (|getShellEntry| $ 87))
+                                          (|getShellEntry| $ 94))
                                          1)
                                         |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                                        (EXIT
                                         (COND
                                           ((NULL
                                             (SPADCALL |p|
-                                             (|getShellEntry| $ 42)))
+                                             (|getShellEntry| $ 47)))
                                            (COND
                                              ((SPADCALL |p|
                                                (|getShellEntry| $ 24))
@@ -779,18 +779,18 @@
                                                (EXIT
                                                 (LETT |rs|
                                                  (LIST
-                                                  (|spadConstant| $ 83))
+                                                  (|spadConstant| $ 90))
                                                  |PSETCAT-;rewriteIdealWithRemainder;LSL;26|))))
                                              ('T
                                               (LETT |rs|
                                                (CONS
                                                 (SPADCALL |p|
-                                                 (|getShellEntry| $ 88))
+                                                 (|getShellEntry| $ 95))
                                                 |rs|)
                                                |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)))))))
                                       NIL (GO G190) G191 (EXIT NIL))
                                  (EXIT (SPADCALL |rs|
-                                        (|getShellEntry| $ 85)))))))))))))) 
+                                        (|getShellEntry| $ 92)))))))))))))) 
 
 (DEFUN |PolynomialSetCategory&| (|#1| |#2| |#3| |#4| |#5|)
   (PROG (|dv$1| |dv$2| |dv$3| |dv$4| |dv$5| |dv$| $ |pv$|)
@@ -805,7 +805,7 @@
         (LETT |dv$|
               (LIST '|PolynomialSetCategory&| |dv$1| |dv$2| |dv$3|
                     |dv$4| |dv$5|) . #0#)
-        (LETT $ (|newShell| 90) . #0#)
+        (LETT $ (|newShell| 97) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -820,18 +820,18 @@
         (COND
           ((|testBitVector| |pv$| 1)
            (PROGN
-             (|setShellEntry| $ 48
+             (|setShellEntry| $ 54
                  (CONS (|dispatchFunction|
                            |PSETCAT-;roughUnitIdeal?;SB;16|)
                        $))
-             (|setShellEntry| $ 52
+             (|setShellEntry| $ 58
                  (CONS (|dispatchFunction| |PSETCAT-;roughBase?;SB;18|)
                        $))
-             (|setShellEntry| $ 54
+             (|setShellEntry| $ 60
                  (CONS (|dispatchFunction|
                            |PSETCAT-;roughSubIdeal?;2SB;19|)
                        $))
-             (|setShellEntry| $ 57
+             (|setShellEntry| $ 63
                  (CONS (|dispatchFunction|
                            |PSETCAT-;roughEqualIdeals?;2SB;20|)
                        $)))))
@@ -840,19 +840,19 @@
            (COND
              ((|HasCategory| |#4| '(|ConvertibleTo| (|Symbol|)))
               (PROGN
-                (|setShellEntry| $ 72
+                (|setShellEntry| $ 79
                     (CONS (|dispatchFunction|
                               |PSETCAT-;headRemainder;PSR;22|)
                           $))
-                (|setShellEntry| $ 79
+                (|setShellEntry| $ 86
                     (CONS (|dispatchFunction|
                               |PSETCAT-;remainder;PSR;24|)
                           $))
-                (|setShellEntry| $ 86
+                (|setShellEntry| $ 93
                     (CONS (|dispatchFunction|
                               |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                           $))
-                (|setShellEntry| $ 89
+                (|setShellEntry| $ 96
                     (CONS (|dispatchFunction|
                               |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                           $)))))))
@@ -866,73 +866,79 @@
              (21 . |removeDuplicates|) (|Mapping| 15 9 9) (26 . |sort|)
              (32 . |mvar|) |PSETCAT-;variables;SL;4| (37 . |ground?|)
              (|Mapping| 15 10) (42 . |remove|)
-             |PSETCAT-;mainVariables;SL;5| (48 . =)
-             |PSETCAT-;mainVariable?;VarSetSB;6| (54 . |construct|)
-             |PSETCAT-;collectUnder;SVarSetS;7|
+             |PSETCAT-;mainVariables;SL;5| (48 . |empty?|)
+             (53 . |false|) (57 . |first|) (62 . =) (68 . |rest|)
+             |PSETCAT-;mainVariable?;VarSetSB;6| (73 . |cons|)
+             (79 . |construct|) |PSETCAT-;collectUnder;SVarSetS;7|
              |PSETCAT-;collectUpper;SVarSetS;8|
              |PSETCAT-;collect;SVarSetS;9|
              (|Record| (|:| |under| $) (|:| |floor| $) (|:| |upper| $))
-             |PSETCAT-;sort;SVarSetR;10| (|Set| 10) (59 . |brace|)
-             (64 . =) |PSETCAT-;=;2SB;11| (70 . |degree|) (75 . <)
-             (81 . |zero?|) (86 . |any?|) (|Mapping| 15 10 10)
-             (92 . |sort|) |PSETCAT-;triangular?;SB;14|
-             |PSETCAT-;trivialIdeal?;SB;15| (98 . |roughUnitIdeal?|)
-             (103 . |sup|) (109 . +) (115 . =) (121 . |roughBase?|)
-             (126 . |rewriteIdealWithRemainder|)
-             (132 . |roughSubIdeal?|) (138 . =)
-             (144 . |roughSubIdeal?|) (150 . |roughEqualIdeals?|)
-             (156 . |quo|) (|Union| $ '"failed") (162 . |exquo|)
-             (168 . |One|) (172 . |reductum|) (177 . |subtractIfCan|)
-             (183 . |leadingCoefficient|) (188 . |gcd|) (194 . *)
-             (200 . |monomial|) (206 . *) (212 . -) (218 . *)
+             |PSETCAT-;sort;SVarSetR;10| (|Set| 10) (84 . |brace|)
+             (89 . =) |PSETCAT-;=;2SB;11| (95 . |degree|) (100 . <)
+             (106 . |zero?|) (111 . |true|) (115 . |any?|)
+             (|Mapping| 15 10 10) (121 . |sort|)
+             |PSETCAT-;triangular?;SB;14|
+             |PSETCAT-;trivialIdeal?;SB;15| (127 . |roughUnitIdeal?|)
+             (132 . |sup|) (138 . +) (144 . =) (150 . |roughBase?|)
+             (155 . |rewriteIdealWithRemainder|)
+             (161 . |roughSubIdeal?|) (167 . =)
+             (173 . |roughSubIdeal?|) (179 . |roughEqualIdeals?|)
+             (185 . |quo|) (|Union| $ '"failed") (191 . |exquo|)
+             (197 . |One|) (201 . |reductum|) (206 . |reverse|)
+             (211 . |subtractIfCan|) (217 . |leadingCoefficient|)
+             (222 . |gcd|) (228 . *) (234 . |monomial|) (240 . *)
+             (246 . -) (252 . *)
              (|Record| (|:| |num| 10) (|:| |den| 7))
-             (224 . |headRemainder|) (230 . |gcd|) (236 . |one?|)
-             (241 . |exactQuotient!|) (247 . |headRemainder|) (253 . +)
+             (258 . |headRemainder|) (264 . |gcd|) (270 . |one?|)
+             (275 . |exactQuotient!|) (281 . |headRemainder|) (287 . +)
              (|Record| (|:| |rnum| 7) (|:| |polnum| 10) (|:| |den| 7))
-             (259 . |remainder|) (265 . |trivialIdeal?|)
-             (270 . |roughUnitIdeal?|) (275 . |Zero|) (279 . |One|)
-             (283 . |primitivePart!|) (288 . |removeDuplicates|)
-             (293 . |rewriteIdealWithHeadRemainder|)
-             (299 . |remainder|) (305 . |unitCanonical|)
-             (310 . |rewriteIdealWithRemainder|))
-          '#(|variables| 316 |trivialIdeal?| 321 |triangular?| 326
-             |sort| 331 |roughUnitIdeal?| 337 |roughSubIdeal?| 342
-             |roughEqualIdeals?| 348 |roughBase?| 354
-             |rewriteIdealWithRemainder| 359
-             |rewriteIdealWithHeadRemainder| 365 |remainder| 371
-             |mainVariables| 377 |mainVariable?| 382 |headRemainder|
-             388 |collectUpper| 394 |collectUnder| 400 |collect| 406 =
-             412)
+             (293 . |remainder|) (299 . |trivialIdeal?|)
+             (304 . |roughUnitIdeal?|) (309 . |Zero|) (313 . |One|)
+             (317 . |primitivePart!|) (322 . |removeDuplicates|)
+             (327 . |rewriteIdealWithHeadRemainder|)
+             (333 . |remainder|) (339 . |unitCanonical|)
+             (344 . |rewriteIdealWithRemainder|))
+          '#(|variables| 350 |trivialIdeal?| 355 |triangular?| 360
+             |sort| 365 |roughUnitIdeal?| 371 |roughSubIdeal?| 376
+             |roughEqualIdeals?| 382 |roughBase?| 388
+             |rewriteIdealWithRemainder| 393
+             |rewriteIdealWithHeadRemainder| 399 |remainder| 405
+             |mainVariables| 411 |mainVariable?| 416 |headRemainder|
+             422 |collectUpper| 428 |collectUnder| 434 |collect| 440 =
+             446)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 89
+                            (|makeByteWordVec2| 96
                                 '(1 6 11 0 12 1 10 13 0 14 2 9 15 0 0
                                   16 1 13 0 17 18 1 13 0 0 19 2 13 0 20
                                   0 21 1 10 9 0 22 1 10 15 0 24 2 11 0
-                                  25 0 26 2 9 15 0 0 28 1 6 0 11 30 1
-                                  36 0 11 37 2 36 15 0 0 38 1 10 8 0 40
-                                  2 8 15 0 0 41 1 10 15 0 42 2 11 15 25
-                                  0 43 2 11 0 44 0 45 1 0 15 0 48 2 8 0
-                                  0 0 49 2 8 0 0 0 50 2 8 15 0 0 51 1 0
-                                  15 0 52 2 6 11 11 0 53 2 0 15 0 0 54
-                                  2 6 15 0 0 55 2 6 15 0 0 56 2 0 15 0
-                                  0 57 2 7 0 0 0 58 2 7 59 0 0 60 0 7 0
-                                  61 1 10 0 0 62 2 8 59 0 0 63 1 10 7 0
-                                  64 2 7 0 0 0 65 2 10 0 7 0 66 2 10 0
-                                  7 8 67 2 10 0 0 0 68 2 10 0 0 0 69 2
-                                  7 0 0 0 70 2 0 71 10 0 72 2 10 7 7 0
-                                  73 1 7 15 0 74 2 10 0 0 7 75 2 6 71
-                                  10 0 76 2 10 0 0 0 77 2 0 78 10 0 79
-                                  1 6 15 0 80 1 6 15 0 81 0 10 0 82 0
-                                  10 0 83 1 10 0 0 84 1 11 0 0 85 2 0
-                                  11 11 0 86 2 6 78 10 0 87 1 10 0 0 88
-                                  2 0 11 11 0 89 1 0 13 0 23 1 0 15 0
-                                  47 1 0 15 0 46 2 0 34 0 9 35 1 0 15 0
-                                  48 2 0 15 0 0 54 2 0 15 0 0 57 1 0 15
-                                  0 52 2 0 11 11 0 89 2 0 11 11 0 86 2
-                                  0 78 10 0 79 1 0 13 0 27 2 0 15 9 0
-                                  29 2 0 71 10 0 72 2 0 0 0 9 32 2 0 0
-                                  0 9 31 2 0 0 0 9 33 2 0 15 0 0 39)))))
+                                  25 0 26 1 11 15 0 28 0 15 0 29 1 11
+                                  10 0 30 2 9 15 0 0 31 1 11 0 0 32 2
+                                  11 0 10 0 34 1 6 0 11 35 1 41 0 11 42
+                                  2 41 15 0 0 43 1 10 8 0 45 2 8 15 0 0
+                                  46 1 10 15 0 47 0 15 0 48 2 11 15 25
+                                  0 49 2 11 0 50 0 51 1 0 15 0 54 2 8 0
+                                  0 0 55 2 8 0 0 0 56 2 8 15 0 0 57 1 0
+                                  15 0 58 2 6 11 11 0 59 2 0 15 0 0 60
+                                  2 6 15 0 0 61 2 6 15 0 0 62 2 0 15 0
+                                  0 63 2 7 0 0 0 64 2 7 65 0 0 66 0 7 0
+                                  67 1 10 0 0 68 1 11 0 0 69 2 8 65 0 0
+                                  70 1 10 7 0 71 2 7 0 0 0 72 2 10 0 7
+                                  0 73 2 10 0 7 8 74 2 10 0 0 0 75 2 10
+                                  0 0 0 76 2 7 0 0 0 77 2 0 78 10 0 79
+                                  2 10 7 7 0 80 1 7 15 0 81 2 10 0 0 7
+                                  82 2 6 78 10 0 83 2 10 0 0 0 84 2 0
+                                  85 10 0 86 1 6 15 0 87 1 6 15 0 88 0
+                                  10 0 89 0 10 0 90 1 10 0 0 91 1 11 0
+                                  0 92 2 0 11 11 0 93 2 6 85 10 0 94 1
+                                  10 0 0 95 2 0 11 11 0 96 1 0 13 0 23
+                                  1 0 15 0 53 1 0 15 0 52 2 0 39 0 9 40
+                                  1 0 15 0 54 2 0 15 0 0 60 2 0 15 0 0
+                                  63 1 0 15 0 58 2 0 11 11 0 96 2 0 11
+                                  11 0 93 2 0 85 10 0 86 1 0 13 0 27 2
+                                  0 15 9 0 33 2 0 78 10 0 79 2 0 0 0 9
+                                  37 2 0 0 0 9 36 2 0 0 0 9 38 2 0 15 0
+                                  0 44)))))
           '|lookupComplete|)) 

@@ -1,5 +1,12 @@
 2009-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (genDeltaEntry): Return optimized
+	implementation after slot allocation.
+	* share/algebra: Update databases.
+	* algebra/strap: Update cached Lisp translation.
+
+2009-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (NRTPARSE): Remove.
 	(mkCategoryPackage): Remove dead code.
 	(compDefineFunctor1): Tidy.

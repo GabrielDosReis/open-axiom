@@ -9,23 +9,23 @@
 
 (DEFUN |DIVRING-;**;SIS;1| (|x| |n| $)
   (COND
-    ((ZEROP |n|) (|spadConstant| $ 7))
-    ((SPADCALL |x| (|getShellEntry| $ 9))
+    ((ZEROP |n|) (|spadConstant| $ 10))
+    ((SPADCALL |x| (|getShellEntry| $ 11))
      (COND ((< |n| 0) (|error| "division by zero")) ('T |x|)))
     ((< |n| 0)
-     (SPADCALL (SPADCALL |x| (|getShellEntry| $ 11)) (- |n|)
-         (|getShellEntry| $ 14)))
-    ('T (SPADCALL |x| |n| (|getShellEntry| $ 14))))) 
+     (SPADCALL (SPADCALL |x| (|getShellEntry| $ 15)) (- |n|)
+         (|getShellEntry| $ 19)))
+    ('T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
 
 (DEFUN |DIVRING-;*;F2S;2| (|q| |x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |q| (|getShellEntry| $ 18))
+      (SPADCALL (SPADCALL |q| (|getShellEntry| $ 22))
           (SPADCALL
-              (SPADCALL (SPADCALL |q| (|getShellEntry| $ 19))
-                  (|getShellEntry| $ 20))
-              (|getShellEntry| $ 11))
-          (|getShellEntry| $ 21))
-      |x| (|getShellEntry| $ 22))) 
+              (SPADCALL (SPADCALL |q| (|getShellEntry| $ 23))
+                  (|getShellEntry| $ 24))
+              (|getShellEntry| $ 15))
+          (|getShellEntry| $ 25))
+      |x| (|getShellEntry| $ 26))) 
 
 (DEFUN |DivisionRing&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -33,7 +33,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|DivisionRing&|))
         (LETT |dv$| (LIST '|DivisionRing&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 25) . #0#)
+        (LETT $ (|newShell| 29) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -42,19 +42,21 @@
         $)))) 
 
 (MAKEPROP '|DivisionRing&| '|infovec|
-    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |One|)
-             (|Boolean|) (4 . |zero?|) (9 . |Zero|) (13 . |inv|)
-             (|PositiveInteger|) (|RepeatedSquaring| 6) (18 . |expt|)
-             (|Integer|) |DIVRING-;**;SIS;1| (|Fraction| 15)
-             (24 . |numer|) (29 . |denom|) (34 . |coerce|) (39 . *)
-             (45 . *) |DIVRING-;*;F2S;2| (|NonNegativeInteger|))
-          '#(** 51 * 57) 'NIL
+    (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|Boolean|)
+             (|Integer|) (0 . |zero?|) (5 . |One|) (9 . |zero?|)
+             (14 . |Zero|) (18 . |Zero|) (22 . <) (28 . |inv|) (33 . -)
+             (|PositiveInteger|) (|RepeatedSquaring| 6) (38 . |expt|)
+             |DIVRING-;**;SIS;1| (|Fraction| 8) (44 . |numer|)
+             (49 . |denom|) (54 . |coerce|) (59 . *) (65 . *)
+             |DIVRING-;*;F2S;2| (|NonNegativeInteger|))
+          '#(** 71 * 77) 'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 23
-                                '(0 6 0 7 1 6 8 0 9 0 6 0 10 1 6 0 0 11
-                                  2 13 6 6 12 14 1 17 15 0 18 1 17 15 0
-                                  19 1 6 0 15 20 2 6 0 15 0 21 2 6 0 0
-                                  0 22 2 0 0 0 15 16 2 0 0 17 0 23)))))
+                            (|makeByteWordVec2| 27
+                                '(1 8 7 0 9 0 6 0 10 1 6 7 0 11 0 6 0
+                                  12 0 8 0 13 2 8 7 0 0 14 1 6 0 0 15 1
+                                  8 0 0 16 2 18 6 6 17 19 1 21 8 0 22 1
+                                  21 8 0 23 1 6 0 8 24 2 6 0 8 0 25 2 6
+                                  0 0 0 26 2 0 0 0 8 20 2 0 0 21 0 27)))))
           '|lookupComplete|)) 

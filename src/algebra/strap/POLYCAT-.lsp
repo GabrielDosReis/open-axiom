@@ -164,8 +164,8 @@
                                        ((QEQCAR
                                          (SPADCALL
                                           (SPADCALL |e|
-                                           (|getShellEntry| $ 11))
-                                          (|getShellEntry| $ 13))
+                                           (|getShellEntry| $ 14))
+                                          (|getShellEntry| $ 16))
                                          1)
                                         (PROGN
                                           (LETT #1#
@@ -195,8 +195,8 @@
                                        (CONS
                                         (SPADCALL
                                          (SPADCALL |e|
-                                          (|getShellEntry| $ 11))
-                                         (|getShellEntry| $ 14))
+                                          (|getShellEntry| $ 14))
+                                         (|getShellEntry| $ 17))
                                         #2#)
                                        |POLYCAT-;eval;SLS;1|)))
                                 (LETT #3# (CDR #3#)
@@ -223,14 +223,14 @@
                                       (LETT #4#
                                        (CONS
                                         (SPADCALL |e|
-                                         (|getShellEntry| $ 15))
+                                         (|getShellEntry| $ 18))
                                         #4#)
                                        |POLYCAT-;eval;SLS;1|)))
                                     (LETT #5# (CDR #5#)
                                      |POLYCAT-;eval;SLS;1|)
                                     (GO G190) G191
                                     (EXIT (NREVERSE0 #4#))))
-                             (|getShellEntry| $ 18)))))))))) 
+                             (|getShellEntry| $ 21)))))))))) 
 
 (DEFUN |POLYCAT-;monomials;SL;2| (|p| $)
   (PROG (|ml|)
@@ -238,15 +238,15 @@
       (SEQ (LETT |ml| NIL |POLYCAT-;monomials;SL;2|)
            (SEQ G190
                 (COND
-                  ((NULL (SPADCALL |p| (|spadConstant| $ 22)
-                             (|getShellEntry| $ 25)))
+                  ((NULL (SPADCALL |p| (|spadConstant| $ 27)
+                             (|getShellEntry| $ 29)))
                    (GO G191)))
                 (SEQ (LETT |ml|
-                           (CONS (SPADCALL |p| (|getShellEntry| $ 26))
+                           (CONS (SPADCALL |p| (|getShellEntry| $ 30))
                                  |ml|)
                            |POLYCAT-;monomials;SL;2|)
                      (EXIT (LETT |p|
-                                 (SPADCALL |p| (|getShellEntry| $ 27))
+                                 (SPADCALL |p| (|getShellEntry| $ 32))
                                  |POLYCAT-;monomials;SL;2|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (REVERSE |ml|)))))) 
@@ -255,7 +255,7 @@
   (PROG (|l|)
     (RETURN
       (COND
-        ((NULL (CDR (LETT |l| (SPADCALL |p| (|getShellEntry| $ 29))
+        ((NULL (CDR (LETT |l| (SPADCALL |p| (|getShellEntry| $ 35))
                           |POLYCAT-;isPlus;SU;3|)))
          (CONS 1 "failed"))
         ('T (CONS 0 |l|)))))) 
@@ -265,9 +265,9 @@
     (RETURN
       (SEQ (COND
              ((OR (NULL (LETT |lv|
-                              (SPADCALL |p| (|getShellEntry| $ 32))
+                              (SPADCALL |p| (|getShellEntry| $ 40))
                               |POLYCAT-;isTimes;SU;4|))
-                  (NULL (SPADCALL |p| (|getShellEntry| $ 33))))
+                  (NULL (SPADCALL |p| (|getShellEntry| $ 42))))
               (CONS 1 "failed"))
              ('T
               (SEQ (LETT |l|
@@ -286,11 +286,11 @@
                                 (SEQ (EXIT
                                       (LETT #0#
                                        (CONS
-                                        (SPADCALL (|spadConstant| $ 34)
+                                        (SPADCALL (|spadConstant| $ 43)
                                          |v|
                                          (SPADCALL |p| |v|
-                                          (|getShellEntry| $ 37))
-                                         (|getShellEntry| $ 38))
+                                          (|getShellEntry| $ 46))
+                                         (|getShellEntry| $ 47))
                                         #0#)
                                        |POLYCAT-;isTimes;SU;4|)))
                                 (LETT #1# (CDR #1#)
@@ -301,40 +301,40 @@
                            ((SPADCALL
                                 (LETT |r|
                                       (SPADCALL |p|
-                                       (|getShellEntry| $ 39))
+                                       (|getShellEntry| $ 48))
                                       |POLYCAT-;isTimes;SU;4|)
-                                (|getShellEntry| $ 40))
+                                (|getShellEntry| $ 49))
                             (COND
                               ((NULL (CDR |lv|)) (CONS 1 "failed"))
                               ('T (CONS 0 |l|))))
                            ('T
                             (CONS 0
                                   (CONS (SPADCALL |r|
-                                         (|getShellEntry| $ 41))
+                                         (|getShellEntry| $ 51))
                                         |l|)))))))))))) 
 
 (DEFUN |POLYCAT-;isExpt;SU;5| (|p| $)
   (PROG (|u| |d|)
     (RETURN
-      (SEQ (LETT |u| (SPADCALL |p| (|getShellEntry| $ 43))
+      (SEQ (LETT |u| (SPADCALL |p| (|getShellEntry| $ 53))
                  |POLYCAT-;isExpt;SU;5|)
            (EXIT (COND
                    ((OR (QEQCAR |u| 1)
                         (NULL (SPADCALL |p|
-                                  (SPADCALL (|spadConstant| $ 34)
+                                  (SPADCALL (|spadConstant| $ 43)
                                       (QCDR |u|)
                                       (LETT |d|
                                        (SPADCALL |p| (QCDR |u|)
-                                        (|getShellEntry| $ 37))
+                                        (|getShellEntry| $ 46))
                                        |POLYCAT-;isExpt;SU;5|)
-                                      (|getShellEntry| $ 38))
-                                  (|getShellEntry| $ 44))))
+                                      (|getShellEntry| $ 47))
+                                  (|getShellEntry| $ 54))))
                     (CONS 1 "failed"))
                    ('T (CONS 0 (CONS (QCDR |u|) |d|))))))))) 
 
 (DEFUN |POLYCAT-;coefficient;SVarSetNniS;6| (|p| |v| |n| $)
-  (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 49)) |n|
-      (|getShellEntry| $ 51))) 
+  (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 59)) |n|
+      (|getShellEntry| $ 61))) 
 
 (DEFUN |POLYCAT-;coefficient;SLLS;7| (|p| |lv| |ln| $)
   (COND
@@ -346,9 +346,9 @@
     ('T
      (SPADCALL
          (SPADCALL
-             (SPADCALL |p| (|SPADfirst| |lv|) (|getShellEntry| $ 49))
-             (|SPADfirst| |ln|) (|getShellEntry| $ 51))
-         (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 54))))) 
+             (SPADCALL |p| (|SPADfirst| |lv|) (|getShellEntry| $ 59))
+             (|SPADfirst| |ln|) (|getShellEntry| $ 61))
+         (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 68))))) 
 
 (DEFUN |POLYCAT-;monomial;SLLS;8| (|p| |lv| |ln| $)
   (COND
@@ -360,22 +360,22 @@
     ('T
      (SPADCALL
          (SPADCALL |p| (|SPADfirst| |lv|) (|SPADfirst| |ln|)
-             (|getShellEntry| $ 38))
-         (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 56))))) 
+             (|getShellEntry| $ 47))
+         (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 70))))) 
 
 (DEFUN |POLYCAT-;retract;SVarSet;9| (|p| $)
   (PROG (#0=#:G1479 |q|)
     (RETURN
       (SEQ (LETT |q|
-                 (PROG2 (LETT #0# (SPADCALL |p| (|getShellEntry| $ 43))
+                 (PROG2 (LETT #0# (SPADCALL |p| (|getShellEntry| $ 53))
                               |POLYCAT-;retract;SVarSet;9|)
                         (QCDR #0#)
                    (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 9)
                        #0#))
                  |POLYCAT-;retract;SVarSet;9|)
            (EXIT (COND
-                   ((SPADCALL (SPADCALL |q| (|getShellEntry| $ 58)) |p|
-                        (|getShellEntry| $ 44))
+                   ((SPADCALL (SPADCALL |q| (|getShellEntry| $ 72)) |p|
+                        (|getShellEntry| $ 54))
                     |q|)
                    ('T (|error| "Polynomial is not a single variable")))))))) 
 
@@ -383,15 +383,15 @@
   (PROG (|q| #0=#:G1487)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ (LETT |q|
-                                 (SPADCALL |p| (|getShellEntry| $ 43))
+                                 (SPADCALL |p| (|getShellEntry| $ 53))
                                  |POLYCAT-;retractIfCan;SU;10|)
                            (EXIT (COND
                                    ((QEQCAR |q| 0)
                                     (COND
                                       ((SPADCALL
                                         (SPADCALL (QCDR |q|)
-                                         (|getShellEntry| $ 58))
-                                        |p| (|getShellEntry| $ 44))
+                                         (|getShellEntry| $ 72))
+                                        |p| (|getShellEntry| $ 54))
                                        (PROGN
                                          (LETT #0# |q|
                                           |POLYCAT-;retractIfCan;SU;10|)
@@ -400,8 +400,8 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |POLYCAT-;mkPrim| (|p| $)
-  (SPADCALL (|spadConstant| $ 35) (SPADCALL |p| (|getShellEntry| $ 61))
-      (|getShellEntry| $ 62))) 
+  (SPADCALL (|spadConstant| $ 44) (SPADCALL |p| (|getShellEntry| $ 75))
+      (|getShellEntry| $ 76))) 
 
 (DEFUN |POLYCAT-;primitiveMonomials;SL;12| (|p| $)
   (PROG (#0=#:G1697 |q| #1=#:G1698)
@@ -409,7 +409,7 @@
       (SEQ (PROGN
              (LETT #0# NIL |POLYCAT-;primitiveMonomials;SL;12|)
              (SEQ (LETT |q| NIL |POLYCAT-;primitiveMonomials;SL;12|)
-                  (LETT #1# (SPADCALL |p| (|getShellEntry| $ 29))
+                  (LETT #1# (SPADCALL |p| (|getShellEntry| $ 35))
                         |POLYCAT-;primitiveMonomials;SL;12|)
                   G190
                   (COND
@@ -430,38 +430,38 @@
   (PROG (#0=#:G1493 |d| |u|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |p| (|getShellEntry| $ 64)) 0)
+             ((SPADCALL |p| (|getShellEntry| $ 78)) 0)
              ('T
               (SEQ (LETT |u|
                          (SPADCALL |p|
                              (PROG2 (LETT #0#
                                      (SPADCALL |p|
-                                      (|getShellEntry| $ 43))
+                                      (|getShellEntry| $ 53))
                                      |POLYCAT-;totalDegree;SNni;13|)
                                     (QCDR #0#)
                                (|check-union| (QEQCAR #0# 0)
                                    (|getShellEntry| $ 9) #0#))
-                             (|getShellEntry| $ 49))
+                             (|getShellEntry| $ 59))
                          |POLYCAT-;totalDegree;SNni;13|)
                    (LETT |d| 0 |POLYCAT-;totalDegree;SNni;13|)
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL |u| (|spadConstant| $ 65)
-                                     (|getShellEntry| $ 66)))
+                          ((NULL (SPADCALL |u| (|spadConstant| $ 80)
+                                     (|getShellEntry| $ 81)))
                            (GO G191)))
                         (SEQ (LETT |d|
                                    (MAX |d|
                                     (+
                                      (SPADCALL |u|
-                                      (|getShellEntry| $ 67))
+                                      (|getShellEntry| $ 82))
                                      (SPADCALL
                                       (SPADCALL |u|
-                                       (|getShellEntry| $ 68))
-                                      (|getShellEntry| $ 69))))
+                                       (|getShellEntry| $ 83))
+                                      (|getShellEntry| $ 84))))
                                    |POLYCAT-;totalDegree;SNni;13|)
                              (EXIT (LETT |u|
                                     (SPADCALL |u|
-                                     (|getShellEntry| $ 70))
+                                     (|getShellEntry| $ 87))
                                     |POLYCAT-;totalDegree;SNni;13|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT |d|)))))))) 
@@ -470,7 +470,7 @@
   (PROG (#0=#:G1501 |v| |w| |d| |u|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |p| (|getShellEntry| $ 64)) 0)
+             ((SPADCALL |p| (|getShellEntry| $ 78)) 0)
              ('T
               (SEQ (LETT |u|
                          (SPADCALL |p|
@@ -478,50 +478,50 @@
                                    (PROG2
                                     (LETT #0#
                                      (SPADCALL |p|
-                                      (|getShellEntry| $ 43))
+                                      (|getShellEntry| $ 53))
                                      |POLYCAT-;totalDegree;SLNni;14|)
                                     (QCDR #0#)
                                      (|check-union| (QEQCAR #0# 0)
                                       (|getShellEntry| $ 9) #0#))
                                    |POLYCAT-;totalDegree;SLNni;14|)
-                             (|getShellEntry| $ 49))
+                             (|getShellEntry| $ 59))
                          |POLYCAT-;totalDegree;SLNni;14|)
                    (LETT |d| 0 |POLYCAT-;totalDegree;SLNni;14|)
                    (LETT |w| 0 |POLYCAT-;totalDegree;SLNni;14|)
                    (COND
-                     ((SPADCALL |v| |lv| (|getShellEntry| $ 72))
+                     ((SPADCALL |v| |lv| (|getShellEntry| $ 89))
                       (LETT |w| 1 |POLYCAT-;totalDegree;SLNni;14|)))
                    (SEQ G190
                         (COND
-                          ((NULL (SPADCALL |u| (|spadConstant| $ 65)
-                                     (|getShellEntry| $ 66)))
+                          ((NULL (SPADCALL |u| (|spadConstant| $ 80)
+                                     (|getShellEntry| $ 81)))
                            (GO G191)))
                         (SEQ (LETT |d|
                                    (MAX |d|
                                     (+
                                      (* |w|
                                       (SPADCALL |u|
-                                       (|getShellEntry| $ 67)))
+                                       (|getShellEntry| $ 82)))
                                      (SPADCALL
                                       (SPADCALL |u|
-                                       (|getShellEntry| $ 68))
-                                      |lv| (|getShellEntry| $ 73))))
+                                       (|getShellEntry| $ 83))
+                                      |lv| (|getShellEntry| $ 92))))
                                    |POLYCAT-;totalDegree;SLNni;14|)
                              (EXIT (LETT |u|
                                     (SPADCALL |u|
-                                     (|getShellEntry| $ 70))
+                                     (|getShellEntry| $ 87))
                                     |POLYCAT-;totalDegree;SLNni;14|)))
                         NIL (GO G190) G191 (EXIT NIL))
                    (EXIT |d|)))))))) 
 
 (DEFUN |POLYCAT-;resultant;2SVarSetS;15| (|p1| |p2| |mvar| $)
-  (SPADCALL (SPADCALL |p1| |mvar| (|getShellEntry| $ 49))
-      (SPADCALL |p2| |mvar| (|getShellEntry| $ 49))
-      (|getShellEntry| $ 75))) 
+  (SPADCALL (SPADCALL |p1| |mvar| (|getShellEntry| $ 59))
+      (SPADCALL |p2| |mvar| (|getShellEntry| $ 59))
+      (|getShellEntry| $ 94))) 
 
 (DEFUN |POLYCAT-;discriminant;SVarSetS;16| (|p| |var| $)
-  (SPADCALL (SPADCALL |p| |var| (|getShellEntry| $ 49))
-      (|getShellEntry| $ 77))) 
+  (SPADCALL (SPADCALL |p| |var| (|getShellEntry| $ 59))
+      (|getShellEntry| $ 96))) 
 
 (DEFUN |POLYCAT-;allMonoms| (|l| $)
   (PROG (#0=#:G1699 |p| #1=#:G1700)
@@ -542,24 +542,24 @@
                           (SEQ (EXIT (LETT #0#
                                       (CONS
                                        (SPADCALL |p|
-                                        (|getShellEntry| $ 79))
+                                        (|getShellEntry| $ 98))
                                        #0#)
                                       |POLYCAT-;allMonoms|)))
                           (LETT #1# (CDR #1#) |POLYCAT-;allMonoms|)
                           (GO G190) G191 (EXIT (NREVERSE0 #0#))))
-                   (|getShellEntry| $ 81))
-               (|getShellEntry| $ 82)))))) 
+                   (|getShellEntry| $ 99))
+               (|getShellEntry| $ 100)))))) 
 
 (DEFUN |POLYCAT-;P2R| (|p| |b| |n| $)
   (PROG (|w| |bj| #0=#:G1702 |i| #1=#:G1701)
     (RETURN
       (SEQ (LETT |w|
-                 (SPADCALL |n| (|spadConstant| $ 23)
-                     (|getShellEntry| $ 84))
+                 (SPADCALL |n| (|spadConstant| $ 28)
+                     (|getShellEntry| $ 102))
                  |POLYCAT-;P2R|)
            (SEQ (LETT |bj| NIL |POLYCAT-;P2R|)
                 (LETT #0# |b| |POLYCAT-;P2R|)
-                (LETT |i| (SPADCALL |w| (|getShellEntry| $ 86))
+                (LETT |i| (SPADCALL |w| (|getShellEntry| $ 104))
                       |POLYCAT-;P2R|)
                 (LETT #1# (QVSIZE |w|) |POLYCAT-;P2R|) G190
                 (COND
@@ -570,8 +570,8 @@
                    (GO G191)))
                 (SEQ (EXIT (SPADCALL |w| |i|
                                (SPADCALL |p| |bj|
-                                   (|getShellEntry| $ 87))
-                               (|getShellEntry| $ 88))))
+                                   (|getShellEntry| $ 106))
+                               (|getShellEntry| $ 107))))
                 (LETT |i|
                       (PROG1 (+ |i| 1)
                         (LETT #0# (CDR #0#) |POLYCAT-;P2R|))
@@ -616,7 +616,7 @@
                                              (LETT #2#
                                               (CONS
                                                (SPADCALL |p| |bj|
-                                                (|getShellEntry| $ 87))
+                                                (|getShellEntry| $ 106))
                                                #2#)
                                               |POLYCAT-;eq2R|)))
                                            (LETT #3# (CDR #3#)
@@ -627,13 +627,13 @@
                                        |POLYCAT-;eq2R|)))
                       (LETT #1# (CDR #1#) |POLYCAT-;eq2R|) (GO G190)
                       G191 (EXIT (NREVERSE0 #0#))))
-               (|getShellEntry| $ 92)))))) 
+               (|getShellEntry| $ 111)))))) 
 
 (DEFUN |POLYCAT-;reducedSystem;MM;20| (|m| $)
   (PROG (#0=#:G1707 |r| #1=#:G1708 |b| #2=#:G1709 |bj| #3=#:G1710 |d|
             |mm| |l|)
     (RETURN
-      (SEQ (LETT |l| (SPADCALL |m| (|getShellEntry| $ 95))
+      (SEQ (LETT |l| (SPADCALL |m| (|getShellEntry| $ 114))
                  |POLYCAT-;reducedSystem;MM;20|)
            (LETT |b|
                  (SPADCALL
@@ -662,8 +662,8 @@
                                 (LETT #1# (CDR #1#)
                                       |POLYCAT-;reducedSystem;MM;20|)
                                 (GO G190) G191 (EXIT (NREVERSE0 #0#))))
-                         (|getShellEntry| $ 81))
-                     (|getShellEntry| $ 82))
+                         (|getShellEntry| $ 99))
+                     (|getShellEntry| $ 100))
                  |POLYCAT-;reducedSystem;MM;20|)
            (LETT |d|
                  (PROGN
@@ -681,7 +681,7 @@
                         (SEQ (EXIT (LETT #2#
                                     (CONS
                                      (SPADCALL |bj|
-                                      (|getShellEntry| $ 61))
+                                      (|getShellEntry| $ 75))
                                      #2#)
                                     |POLYCAT-;reducedSystem;MM;20|)))
                         (LETT #3# (CDR #3#)
@@ -696,7 +696,7 @@
                            (SPADCALL |mm|
                                (|POLYCAT-;eq2R| (|SPADfirst| |l|) |d|
                                    $)
-                               (|getShellEntry| $ 96))
+                               (|getShellEntry| $ 118))
                            |POLYCAT-;reducedSystem;MM;20|)
                      (EXIT (LETT |l| (CDR |l|)
                                  |POLYCAT-;reducedSystem;MM;20|)))
@@ -707,9 +707,9 @@
   (PROG (#0=#:G1711 |s| #1=#:G1712 |b| #2=#:G1713 |bj| #3=#:G1714 |d|
             |n| |mm| |w| |l| |r|)
     (RETURN
-      (SEQ (LETT |l| (SPADCALL |m| (|getShellEntry| $ 95))
+      (SEQ (LETT |l| (SPADCALL |m| (|getShellEntry| $ 114))
                  |POLYCAT-;reducedSystem;MVR;21|)
-           (LETT |r| (SPADCALL |v| (|getShellEntry| $ 100))
+           (LETT |r| (SPADCALL |v| (|getShellEntry| $ 122))
                  |POLYCAT-;reducedSystem;MVR;21|)
            (LETT |b|
                  (SPADCALL
@@ -741,9 +741,9 @@
                                      |POLYCAT-;reducedSystem;MVR;21|)
                                     (GO G190) G191
                                     (EXIT (NREVERSE0 #0#))))
-                             (|getShellEntry| $ 81))
-                         (|getShellEntry| $ 101))
-                     (|getShellEntry| $ 82))
+                             (|getShellEntry| $ 99))
+                         (|getShellEntry| $ 123))
+                     (|getShellEntry| $ 100))
                  |POLYCAT-;reducedSystem;MVR;21|)
            (LETT |d|
                  (PROGN
@@ -761,7 +761,7 @@
                         (SEQ (EXIT (LETT #2#
                                     (CONS
                                      (SPADCALL |bj|
-                                      (|getShellEntry| $ 61))
+                                      (|getShellEntry| $ 75))
                                      #2#)
                                     |POLYCAT-;reducedSystem;MVR;21|)))
                         (LETT #3# (CDR #3#)
@@ -780,13 +780,13 @@
                            (SPADCALL |mm|
                                (|POLYCAT-;eq2R| (|SPADfirst| |l|) |d|
                                    $)
-                               (|getShellEntry| $ 96))
+                               (|getShellEntry| $ 118))
                            |POLYCAT-;reducedSystem;MVR;21|)
                      (LETT |w|
                            (SPADCALL |w|
                                (|POLYCAT-;P2R| (|SPADfirst| |r|) |d|
                                    |n| $)
-                               (|getShellEntry| $ 102))
+                               (|getShellEntry| $ 127))
                            |POLYCAT-;reducedSystem;MVR;21|)
                      (LETT |l| (CDR |l|)
                            |POLYCAT-;reducedSystem;MVR;21|)
@@ -796,36 +796,36 @@
            (EXIT (CONS |mm| |w|)))))) 
 
 (DEFUN |POLYCAT-;gcdPolynomial;3Sup;22| (|pp| |qq| $)
-  (SPADCALL |pp| |qq| (|getShellEntry| $ 107))) 
+  (SPADCALL |pp| |qq| (|getShellEntry| $ 132))) 
 
 (DEFUN |POLYCAT-;solveLinearPolynomialEquation;LSupU;23| (|lpp| |pp| $)
-  (SPADCALL |lpp| |pp| (|getShellEntry| $ 112))) 
+  (SPADCALL |lpp| |pp| (|getShellEntry| $ 137))) 
 
 (DEFUN |POLYCAT-;factorPolynomial;SupF;24| (|pp| $)
-  (SPADCALL |pp| (|getShellEntry| $ 117))) 
+  (SPADCALL |pp| (|getShellEntry| $ 142))) 
 
 (DEFUN |POLYCAT-;factorSquareFreePolynomial;SupF;25| (|pp| $)
-  (SPADCALL |pp| (|getShellEntry| $ 120))) 
+  (SPADCALL |pp| (|getShellEntry| $ 145))) 
 
 (DEFUN |POLYCAT-;factor;SF;26| (|p| $)
   (PROG (|v| |ansR| #0=#:G1715 |w| #1=#:G1716 |up| |ansSUP| #2=#:G1717
              |ww| #3=#:G1718)
     (RETURN
-      (SEQ (LETT |v| (SPADCALL |p| (|getShellEntry| $ 43))
+      (SEQ (LETT |v| (SPADCALL |p| (|getShellEntry| $ 53))
                  |POLYCAT-;factor;SF;26|)
            (EXIT (COND
                    ((QEQCAR |v| 1)
                     (SEQ (LETT |ansR|
                                (SPADCALL
                                    (SPADCALL |p|
-                                    (|getShellEntry| $ 39))
-                                   (|getShellEntry| $ 123))
+                                    (|getShellEntry| $ 48))
+                                   (|getShellEntry| $ 148))
                                |POLYCAT-;factor;SF;26|)
                          (EXIT (SPADCALL
                                    (SPADCALL
                                     (SPADCALL |ansR|
-                                     (|getShellEntry| $ 125))
-                                    (|getShellEntry| $ 41))
+                                     (|getShellEntry| $ 150))
+                                    (|getShellEntry| $ 51))
                                    (PROGN
                                      (LETT #0# NIL
                                       |POLYCAT-;factor;SF;26|)
@@ -834,7 +834,7 @@
                                        |POLYCAT-;factor;SF;26|)
                                       (LETT #1#
                                        (SPADCALL |ansR|
-                                        (|getShellEntry| $ 129))
+                                        (|getShellEntry| $ 154))
                                        |POLYCAT-;factor;SF;26|)
                                       G190
                                       (COND
@@ -850,7 +850,7 @@
                                          (CONS
                                           (VECTOR (QVELT |w| 0)
                                            (SPADCALL (QVELT |w| 1)
-                                            (|getShellEntry| $ 41))
+                                            (|getShellEntry| $ 51))
                                            (QVELT |w| 2))
                                           #0#)
                                          |POLYCAT-;factor;SF;26|)))
@@ -858,20 +858,20 @@
                                        |POLYCAT-;factor;SF;26|)
                                       (GO G190) G191
                                       (EXIT (NREVERSE0 #0#))))
-                                   (|getShellEntry| $ 133)))))
+                                   (|getShellEntry| $ 158)))))
                    ('T
                     (SEQ (LETT |up|
                                (SPADCALL |p| (QCDR |v|)
-                                   (|getShellEntry| $ 49))
+                                   (|getShellEntry| $ 59))
                                |POLYCAT-;factor;SF;26|)
                          (LETT |ansSUP|
-                               (SPADCALL |up| (|getShellEntry| $ 117))
+                               (SPADCALL |up| (|getShellEntry| $ 142))
                                |POLYCAT-;factor;SF;26|)
                          (EXIT (SPADCALL
                                    (SPADCALL
                                     (SPADCALL |ansSUP|
-                                     (|getShellEntry| $ 134))
-                                    (QCDR |v|) (|getShellEntry| $ 135))
+                                     (|getShellEntry| $ 159))
+                                    (QCDR |v|) (|getShellEntry| $ 160))
                                    (PROGN
                                      (LETT #2# NIL
                                       |POLYCAT-;factor;SF;26|)
@@ -880,7 +880,7 @@
                                        |POLYCAT-;factor;SF;26|)
                                       (LETT #3#
                                        (SPADCALL |ansSUP|
-                                        (|getShellEntry| $ 138))
+                                        (|getShellEntry| $ 163))
                                        |POLYCAT-;factor;SF;26|)
                                       G190
                                       (COND
@@ -897,7 +897,7 @@
                                           (VECTOR (QVELT |ww| 0)
                                            (SPADCALL (QVELT |ww| 1)
                                             (QCDR |v|)
-                                            (|getShellEntry| $ 135))
+                                            (|getShellEntry| $ 160))
                                            (QVELT |ww| 2))
                                           #2#)
                                          |POLYCAT-;factor;SF;26|)))
@@ -905,7 +905,7 @@
                                        |POLYCAT-;factor;SF;26|)
                                       (GO G190) G191
                                       (EXIT (NREVERSE0 #2#))))
-                                   (|getShellEntry| $ 133))))))))))) 
+                                   (|getShellEntry| $ 158))))))))))) 
 
 (DEFUN |POLYCAT-;conditionP;MU;27| (|mat| $)
   (PROG (|ll| #0=#:G1719 |z| #1=#:G1720 |ch| |l| #2=#:G1721 #3=#:G1722
@@ -919,8 +919,8 @@
       (SEQ (EXIT (SEQ (LETT |ll|
                             (SPADCALL
                                 (SPADCALL |mat|
-                                    (|getShellEntry| $ 140))
-                                (|getShellEntry| $ 95))
+                                    (|getShellEntry| $ 165))
+                                (|getShellEntry| $ 114))
                             |POLYCAT-;conditionP;MU;27|)
                       (LETT |llR|
                             (PROGN
@@ -948,7 +948,7 @@
                                    (EXIT (NREVERSE0 #0#))))
                             |POLYCAT-;conditionP;MU;27|)
                       (LETT |monslist| NIL |POLYCAT-;conditionP;MU;27|)
-                      (LETT |ch| (SPADCALL (|getShellEntry| $ 141))
+                      (LETT |ch| (|spadConstant| $ 168)
                             |POLYCAT-;conditionP;MU;27|)
                       (SEQ (LETT |l| NIL |POLYCAT-;conditionP;MU;27|)
                            (LETT #2# |ll| |POLYCAT-;conditionP;MU;27|)
@@ -982,14 +982,14 @@
                                            (PROGN
                                              (LETT #4#
                                               (SPADCALL |u|
-                                               (|getShellEntry| $ 79))
+                                               (|getShellEntry| $ 98))
                                               |POLYCAT-;conditionP;MU;27|)
                                              (COND
                                                (#6#
                                                 (LETT #5#
                                                  (SPADCALL #5# #4#
                                                   (|getShellEntry| $
-                                                   142))
+                                                   169))
                                                  |POLYCAT-;conditionP;MU;27|))
                                                ('T
                                                 (PROGN
@@ -1023,11 +1023,11 @@
                                      (SEQ
                                       (LETT |vars|
                                        (SPADCALL |m|
-                                        (|getShellEntry| $ 32))
+                                        (|getShellEntry| $ 40))
                                        |POLYCAT-;conditionP;MU;27|)
                                       (LETT |degs|
                                        (SPADCALL |m| |vars|
-                                        (|getShellEntry| $ 143))
+                                        (|getShellEntry| $ 170))
                                        |POLYCAT-;conditionP;MU;27|)
                                       (LETT |deg1|
                                        (PROGN
@@ -1054,7 +1054,7 @@
                                                (LETT |nd|
                                                 (SPADCALL |d| |ch|
                                                  (|getShellEntry| $
-                                                  145))
+                                                  172))
                                                 |POLYCAT-;conditionP;MU;27|)
                                                (EXIT
                                                 (COND
@@ -1085,9 +1085,9 @@
                                        |POLYCAT-;conditionP;MU;27|)
                                       (LETT |redmons|
                                        (CONS
-                                        (SPADCALL (|spadConstant| $ 34)
+                                        (SPADCALL (|spadConstant| $ 43)
                                          |vars| |deg1|
-                                         (|getShellEntry| $ 56))
+                                         (|getShellEntry| $ 70))
                                         |redmons|)
                                        |POLYCAT-;conditionP;MU;27|)
                                       (EXIT
@@ -1126,9 +1126,9 @@
                                                  (SPADCALL |u| |vars|
                                                   |degs|
                                                   (|getShellEntry| $
-                                                   54))
+                                                   68))
                                                  (|getShellEntry| $
-                                                  146))
+                                                  174))
                                                 |v|)
                                                #12#)
                                               |POLYCAT-;conditionP;MU;27|)))
@@ -1153,9 +1153,9 @@
                             (SPADCALL
                                 (SPADCALL
                                     (SPADCALL |llR|
-                                     (|getShellEntry| $ 92))
-                                    (|getShellEntry| $ 147))
-                                (|getShellEntry| $ 149))
+                                     (|getShellEntry| $ 111))
+                                    (|getShellEntry| $ 177))
+                                (|getShellEntry| $ 179))
                             |POLYCAT-;conditionP;MU;27|)
                       (EXIT (COND
                               ((QEQCAR |ans| 1) (CONS 1 "failed"))
@@ -1216,11 +1216,11 @@
                                                          (+ |i| 1)
                                                          |POLYCAT-;conditionP;MU;27|)
                                                         (|getShellEntry|
-                                                         $ 150))
+                                                         $ 180))
                                                        (|getShellEntry|
-                                                        $ 41))
+                                                        $ 51))
                                                       (|getShellEntry|
-                                                       $ 151))
+                                                       $ 181))
                                                      |POLYCAT-;conditionP;MU;27|)
                                                     (COND
                                                       (#21#
@@ -1228,7 +1228,7 @@
                                                         (SPADCALL #20#
                                                          #19#
                                                          (|getShellEntry|
-                                                          $ 152))
+                                                          $ 182))
                                                         |POLYCAT-;conditionP;MU;27|))
                                                       ('T
                                                        (PROGN
@@ -1244,7 +1244,7 @@
                                                (COND
                                                  (#21# #20#)
                                                  ('T
-                                                  (|spadConstant| $ 22)))))))
+                                                  (|spadConstant| $ 27)))))))
                                           (LETT #17#
                                            (PROG1 (CDR #17#)
                                              (LETT #16# (QSADD1 #16#)
@@ -1257,24 +1257,24 @@
 (DEFUN |POLYCAT-;charthRoot;SU;28| (|p| $)
   (PROG (|vars| |ans| |ch|)
     (RETURN
-      (SEQ (LETT |vars| (SPADCALL |p| (|getShellEntry| $ 32))
+      (SEQ (LETT |vars| (SPADCALL |p| (|getShellEntry| $ 40))
                  |POLYCAT-;charthRoot;SU;28|)
            (EXIT (COND
                    ((NULL |vars|)
                     (SEQ (LETT |ans|
                                (SPADCALL
                                    (SPADCALL |p|
-                                    (|getShellEntry| $ 146))
-                                   (|getShellEntry| $ 154))
+                                    (|getShellEntry| $ 174))
+                                   (|getShellEntry| $ 184))
                                |POLYCAT-;charthRoot;SU;28|)
                          (EXIT (COND
                                  ((QEQCAR |ans| 1) (CONS 1 "failed"))
                                  ('T
                                   (CONS 0
                                         (SPADCALL (QCDR |ans|)
-                                         (|getShellEntry| $ 41))))))))
+                                         (|getShellEntry| $ 51))))))))
                    ('T
-                    (SEQ (LETT |ch| (SPADCALL (|getShellEntry| $ 141))
+                    (SEQ (LETT |ch| (|spadConstant| $ 168)
                                |POLYCAT-;charthRoot;SU;28|)
                          (EXIT (|POLYCAT-;charthRootlv| |p| |vars| |ch|
                                    $)))))))))) 
@@ -1287,15 +1287,15 @@
                     (SEQ (LETT |ans|
                                (SPADCALL
                                    (SPADCALL |p|
-                                    (|getShellEntry| $ 146))
-                                   (|getShellEntry| $ 154))
+                                    (|getShellEntry| $ 174))
+                                   (|getShellEntry| $ 184))
                                |POLYCAT-;charthRootlv|)
                          (EXIT (COND
                                  ((QEQCAR |ans| 1) (CONS 1 "failed"))
                                  ('T
                                   (CONS 0
                                         (SPADCALL (QCDR |ans|)
-                                         (|getShellEntry| $ 41))))))))
+                                         (|getShellEntry| $ 51))))))))
                    ('T
                     (SEQ (LETT |v| (|SPADfirst| |vars|)
                                |POLYCAT-;charthRootlv|)
@@ -1303,14 +1303,14 @@
                                |POLYCAT-;charthRootlv|)
                          (LETT |d|
                                (SPADCALL |p| |v|
-                                   (|getShellEntry| $ 37))
+                                   (|getShellEntry| $ 46))
                                |POLYCAT-;charthRootlv|)
-                         (LETT |ans| (|spadConstant| $ 22)
+                         (LETT |ans| (|spadConstant| $ 27)
                                |POLYCAT-;charthRootlv|)
                          (SEQ G190 (COND ((NULL (< 0 |d|)) (GO G191)))
                               (SEQ (LETT |dd|
                                     (SPADCALL |d| |ch|
-                                     (|getShellEntry| $ 145))
+                                     (|getShellEntry| $ 172))
                                     |POLYCAT-;charthRootlv|)
                                    (EXIT
                                     (COND
@@ -1323,13 +1323,13 @@
                                        (SEQ
                                         (LETT |cp|
                                          (SPADCALL |p| |v| |d|
-                                          (|getShellEntry| $ 157))
+                                          (|getShellEntry| $ 189))
                                          |POLYCAT-;charthRootlv|)
                                         (LETT |p|
                                          (SPADCALL |p|
                                           (SPADCALL |cp| |v| |d|
-                                           (|getShellEntry| $ 38))
-                                          (|getShellEntry| $ 158))
+                                           (|getShellEntry| $ 47))
+                                          (|getShellEntry| $ 190))
                                          |POLYCAT-;charthRootlv|)
                                         (LETT |ansx|
                                          (|POLYCAT-;charthRootlv| |cp|
@@ -1347,7 +1347,7 @@
                                             (SEQ
                                              (LETT |d|
                                               (SPADCALL |p| |v|
-                                               (|getShellEntry| $ 37))
+                                               (|getShellEntry| $ 46))
                                               |POLYCAT-;charthRootlv|)
                                              (EXIT
                                               (LETT |ans|
@@ -1363,8 +1363,8 @@
                                                       ('T 'T))
                                                     '(|NonNegativeInteger|)
                                                     #0#))
-                                                 (|getShellEntry| $ 38))
-                                                (|getShellEntry| $ 152))
+                                                 (|getShellEntry| $ 47))
+                                                (|getShellEntry| $ 182))
                                                |POLYCAT-;charthRootlv|)))))))))))
                               NIL (GO G190) G191 (EXIT NIL))
                          (LETT |ansx|
@@ -1382,7 +1382,7 @@
                                     (LETT #1#
                                      (CONS 0
                                       (SPADCALL |ans| (QCDR |ansx|)
-                                       (|getShellEntry| $ 152)))
+                                       (|getShellEntry| $ 182)))
                                      |POLYCAT-;charthRootlv|)
                                     (GO #1#)))))))))
            #1# (EXIT #1#))))) 
@@ -1392,36 +1392,36 @@
     (RETURN
       (SEQ (LETT |result|
                  (SPADCALL
-                     (SPADCALL |p1| |mvar| (|getShellEntry| $ 49))
-                     (SPADCALL |p2| |mvar| (|getShellEntry| $ 49))
-                     (|getShellEntry| $ 160))
+                     (SPADCALL |p1| |mvar| (|getShellEntry| $ 59))
+                     (SPADCALL |p2| |mvar| (|getShellEntry| $ 59))
+                     (|getShellEntry| $ 192))
                  |POLYCAT-;monicDivide;2SVarSetR;30|)
            (EXIT (CONS (SPADCALL (QCAR |result|) |mvar|
-                           (|getShellEntry| $ 135))
+                           (|getShellEntry| $ 160))
                        (SPADCALL (QCDR |result|) |mvar|
-                           (|getShellEntry| $ 135)))))))) 
+                           (|getShellEntry| $ 160)))))))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;31| (|p| $)
-  (SPADCALL |p| (|getShellEntry| $ 163))) 
+  (SPADCALL |p| (|getShellEntry| $ 195))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;32| (|p| $)
-  (SPADCALL |p| (|getShellEntry| $ 166))) 
+  (SPADCALL |p| (|getShellEntry| $ 198))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;33| (|p| $)
-  (SPADCALL |p| (|getShellEntry| $ 166))) 
+  (SPADCALL |p| (|getShellEntry| $ 198))) 
 
 (DEFUN |POLYCAT-;squareFreePart;2S;34| (|p| $)
   (PROG (|s| |f| #0=#:G1733 #1=#:G1653 #2=#:G1651 #3=#:G1652)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL
-                   (LETT |s| (SPADCALL |p| (|getShellEntry| $ 167))
+                   (LETT |s| (SPADCALL |p| (|getShellEntry| $ 199))
                          |POLYCAT-;squareFreePart;2S;34|)
-                   (|getShellEntry| $ 168))
+                   (|getShellEntry| $ 200))
                (PROGN
                  (LETT #3# NIL |POLYCAT-;squareFreePart;2S;34|)
                  (SEQ (LETT |f| NIL |POLYCAT-;squareFreePart;2S;34|)
-                      (LETT #0# (SPADCALL |s| (|getShellEntry| $ 171))
+                      (LETT #0# (SPADCALL |s| (|getShellEntry| $ 203))
                             |POLYCAT-;squareFreePart;2S;34|)
                       G190
                       (COND
@@ -1438,7 +1438,7 @@
                                      (#3#
                                       (LETT #2#
                                        (SPADCALL #2# #1#
-                                        (|getShellEntry| $ 151))
+                                        (|getShellEntry| $ 181))
                                        |POLYCAT-;squareFreePart;2S;34|))
                                      ('T
                                       (PROGN
@@ -1449,12 +1449,12 @@
                       (LETT #0# (CDR #0#)
                             |POLYCAT-;squareFreePart;2S;34|)
                       (GO G190) G191 (EXIT NIL))
-                 (COND (#3# #2#) ('T (|spadConstant| $ 34))))
-               (|getShellEntry| $ 151)))))) 
+                 (COND (#3# #2#) ('T (|spadConstant| $ 43))))
+               (|getShellEntry| $ 181)))))) 
 
 (DEFUN |POLYCAT-;content;SVarSetS;35| (|p| |v| $)
-  (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 49))
-      (|getShellEntry| $ 173))) 
+  (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 59))
+      (|getShellEntry| $ 205))) 
 
 (DEFUN |POLYCAT-;primitivePart;2S;36| (|p| $)
   (PROG (#0=#:G1657)
@@ -1463,13 +1463,13 @@
                  (PROG2 (LETT #0#
                               (SPADCALL |p|
                                   (SPADCALL |p|
-                                      (|getShellEntry| $ 175))
-                                  (|getShellEntry| $ 176))
+                                      (|getShellEntry| $ 207))
+                                  (|getShellEntry| $ 208))
                               |POLYCAT-;primitivePart;2S;36|)
                         (QCDR #0#)
                    (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 6)
                        #0#))
-                 (|getShellEntry| $ 178))
+                 (|getShellEntry| $ 210))
              1)))) 
 
 (DEFUN |POLYCAT-;primitivePart;SVarSetS;37| (|p| |v| $)
@@ -1479,51 +1479,51 @@
                  (PROG2 (LETT #0#
                               (SPADCALL |p|
                                   (SPADCALL |p| |v|
-                                      (|getShellEntry| $ 180))
-                                  (|getShellEntry| $ 181))
+                                      (|getShellEntry| $ 212))
+                                  (|getShellEntry| $ 213))
                               |POLYCAT-;primitivePart;SVarSetS;37|)
                         (QCDR #0#)
                    (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 6)
                        #0#))
-                 (|getShellEntry| $ 178))
+                 (|getShellEntry| $ 210))
              1)))) 
 
 (DEFUN |POLYCAT-;<;2SB;38| (|p| |q| $)
   (PROG (|dp| |dq|)
     (RETURN
-      (SEQ (LETT |dp| (SPADCALL |p| (|getShellEntry| $ 61))
+      (SEQ (LETT |dp| (SPADCALL |p| (|getShellEntry| $ 75))
                  |POLYCAT-;<;2SB;38|)
-           (LETT |dq| (SPADCALL |q| (|getShellEntry| $ 61))
+           (LETT |dq| (SPADCALL |q| (|getShellEntry| $ 75))
                  |POLYCAT-;<;2SB;38|)
            (EXIT (COND
-                   ((SPADCALL |dp| |dq| (|getShellEntry| $ 183))
-                    (SPADCALL (|spadConstant| $ 23)
-                        (SPADCALL |q| (|getShellEntry| $ 39))
-                        (|getShellEntry| $ 184)))
-                   ((SPADCALL |dq| |dp| (|getShellEntry| $ 183))
-                    (SPADCALL (SPADCALL |p| (|getShellEntry| $ 39))
-                        (|spadConstant| $ 23) (|getShellEntry| $ 184)))
+                   ((SPADCALL |dp| |dq| (|getShellEntry| $ 215))
+                    (SPADCALL (|spadConstant| $ 28)
+                        (SPADCALL |q| (|getShellEntry| $ 48))
+                        (|getShellEntry| $ 216)))
+                   ((SPADCALL |dq| |dp| (|getShellEntry| $ 215))
+                    (SPADCALL (SPADCALL |p| (|getShellEntry| $ 48))
+                        (|spadConstant| $ 28) (|getShellEntry| $ 216)))
                    ('T
                     (SPADCALL
                         (SPADCALL (SPADCALL |p| |q|
-                                      (|getShellEntry| $ 158))
-                                  (|getShellEntry| $ 39))
-                        (|spadConstant| $ 23) (|getShellEntry| $ 184))))))))) 
+                                      (|getShellEntry| $ 190))
+                                  (|getShellEntry| $ 48))
+                        (|spadConstant| $ 28) (|getShellEntry| $ 216))))))))) 
 
 (DEFUN |POLYCAT-;patternMatch;SP2Pmr;39| (|p| |pat| |l| $)
-  (SPADCALL |p| |pat| |l| (|getShellEntry| $ 189))) 
+  (SPADCALL |p| |pat| |l| (|getShellEntry| $ 221))) 
 
 (DEFUN |POLYCAT-;patternMatch;SP2Pmr;40| (|p| |pat| |l| $)
-  (SPADCALL |p| |pat| |l| (|getShellEntry| $ 196))) 
+  (SPADCALL |p| |pat| |l| (|getShellEntry| $ 228))) 
 
 (DEFUN |POLYCAT-;convert;SP;41| (|x| $)
-  (SPADCALL (ELT $ 199) (ELT $ 200) |x| (|getShellEntry| $ 204))) 
+  (SPADCALL (ELT $ 231) (ELT $ 232) |x| (|getShellEntry| $ 236))) 
 
 (DEFUN |POLYCAT-;convert;SP;42| (|x| $)
-  (SPADCALL (ELT $ 206) (ELT $ 207) |x| (|getShellEntry| $ 211))) 
+  (SPADCALL (ELT $ 238) (ELT $ 239) |x| (|getShellEntry| $ 243))) 
 
 (DEFUN |POLYCAT-;convert;SIf;43| (|p| $)
-  (SPADCALL (ELT $ 214) (ELT $ 215) |p| (|getShellEntry| $ 219))) 
+  (SPADCALL (ELT $ 246) (ELT $ 247) |p| (|getShellEntry| $ 251))) 
 
 (DEFUN |PolynomialCategory&| (|#1| |#2| |#3| |#4|)
   (PROG (|dv$1| |dv$2| |dv$3| |dv$4| |dv$| $ |pv$|)
@@ -1535,7 +1535,7 @@
         (LETT |dv$4| (|devaluate| |#4|) . #0#)
         (LETT |dv$|
               (LIST '|PolynomialCategory&| |dv$1| |dv$2| |dv$3| |dv$4|) . #0#)
-        (LETT $ (|newShell| 228) . #0#)
+        (LETT $ (|newShell| 260) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -1579,57 +1579,57 @@
         (COND
           ((|testBitVector| |pv$| 4)
            (PROGN
-             (|setShellEntry| $ 76
+             (|setShellEntry| $ 95
                  (CONS (|dispatchFunction|
                            |POLYCAT-;resultant;2SVarSetS;15|)
                        $))
-             (|setShellEntry| $ 78
+             (|setShellEntry| $ 97
                  (CONS (|dispatchFunction|
                            |POLYCAT-;discriminant;SVarSetS;16|)
                        $)))))
         (COND
           ((|HasCategory| |#2| '(|IntegralDomain|))
            (PROGN
-             (|setShellEntry| $ 98
+             (|setShellEntry| $ 120
                  (CONS (|dispatchFunction|
                            |POLYCAT-;reducedSystem;MM;20|)
                        $))
-             (|setShellEntry| $ 105
+             (|setShellEntry| $ 130
                  (CONS (|dispatchFunction|
                            |POLYCAT-;reducedSystem;MVR;21|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 1)
            (PROGN
-             (|setShellEntry| $ 108
+             (|setShellEntry| $ 133
                  (CONS (|dispatchFunction|
                            |POLYCAT-;gcdPolynomial;3Sup;22|)
                        $))
-             (|setShellEntry| $ 115
+             (|setShellEntry| $ 140
                  (CONS (|dispatchFunction|
                            |POLYCAT-;solveLinearPolynomialEquation;LSupU;23|)
                        $))
-             (|setShellEntry| $ 119
+             (|setShellEntry| $ 144
                  (CONS (|dispatchFunction|
                            |POLYCAT-;factorPolynomial;SupF;24|)
                        $))
-             (|setShellEntry| $ 121
+             (|setShellEntry| $ 146
                  (CONS (|dispatchFunction|
                            |POLYCAT-;factorSquareFreePolynomial;SupF;25|)
                        $))
-             (|setShellEntry| $ 139
+             (|setShellEntry| $ 164
                  (CONS (|dispatchFunction| |POLYCAT-;factor;SF;26|) $))
              (COND
                ((|HasCategory| |#2| '(|CharacteristicNonZero|))
                 (PROGN
-                  (|setShellEntry| $ 153
+                  (|setShellEntry| $ 183
                       (CONS (|dispatchFunction|
                                 |POLYCAT-;conditionP;MU;27|)
                             $))))))))
         (COND
           ((|HasCategory| |#2| '(|CharacteristicNonZero|))
            (PROGN
-             (|setShellEntry| $ 155
+             (|setShellEntry| $ 185
                  (CONS (|dispatchFunction| |POLYCAT-;charthRoot;SU;28|)
                        $)))))
         (COND
@@ -1639,46 +1639,46 @@
                ((|HasCategory| |#2| '(|EuclideanDomain|))
                 (COND
                   ((|HasCategory| |#2| '(|CharacteristicZero|))
-                   (|setShellEntry| $ 164
+                   (|setShellEntry| $ 196
                        (CONS (|dispatchFunction|
                                  |POLYCAT-;squareFree;SF;31|)
                              $)))
                   ('T
-                   (|setShellEntry| $ 164
+                   (|setShellEntry| $ 196
                        (CONS (|dispatchFunction|
                                  |POLYCAT-;squareFree;SF;32|)
                              $)))))
                ('T
-                (|setShellEntry| $ 164
+                (|setShellEntry| $ 196
                     (CONS (|dispatchFunction|
                               |POLYCAT-;squareFree;SF;33|)
                           $))))
-             (|setShellEntry| $ 172
+             (|setShellEntry| $ 204
                  (CONS (|dispatchFunction|
                            |POLYCAT-;squareFreePart;2S;34|)
                        $))
-             (|setShellEntry| $ 174
+             (|setShellEntry| $ 206
                  (CONS (|dispatchFunction|
                            |POLYCAT-;content;SVarSetS;35|)
                        $))
-             (|setShellEntry| $ 179
+             (|setShellEntry| $ 211
                  (CONS (|dispatchFunction|
                            |POLYCAT-;primitivePart;2S;36|)
                        $))
-             (|setShellEntry| $ 182
+             (|setShellEntry| $ 214
                  (CONS (|dispatchFunction|
                            |POLYCAT-;primitivePart;SVarSetS;37|)
                        $)))))
         (COND
           ((|testBitVector| |pv$| 15)
            (PROGN
-             (|setShellEntry| $ 185
+             (|setShellEntry| $ 217
                  (CONS (|dispatchFunction| |POLYCAT-;<;2SB;38|) $))
              (COND
                ((|testBitVector| |pv$| 8)
                 (COND
                   ((|testBitVector| |pv$| 7)
-                   (|setShellEntry| $ 191
+                   (|setShellEntry| $ 223
                        (CONS (|dispatchFunction|
                                  |POLYCAT-;patternMatch;SP2Pmr;39|)
                              $))))))
@@ -1686,7 +1686,7 @@
                ((|testBitVector| |pv$| 6)
                 (COND
                   ((|testBitVector| |pv$| 5)
-                   (|setShellEntry| $ 198
+                   (|setShellEntry| $ 230
                        (CONS (|dispatchFunction|
                                  |POLYCAT-;patternMatch;SP2Pmr;40|)
                              $)))))))))
@@ -1694,205 +1694,229 @@
           ((|testBitVector| |pv$| 12)
            (COND
              ((|testBitVector| |pv$| 11)
-              (|setShellEntry| $ 205
+              (|setShellEntry| $ 237
                   (CONS (|dispatchFunction| |POLYCAT-;convert;SP;41|)
                         $))))))
         (COND
           ((|testBitVector| |pv$| 10)
            (COND
              ((|testBitVector| |pv$| 9)
-              (|setShellEntry| $ 212
+              (|setShellEntry| $ 244
                   (CONS (|dispatchFunction| |POLYCAT-;convert;SP;42|)
                         $))))))
         (COND
           ((|testBitVector| |pv$| 14)
            (COND
              ((|testBitVector| |pv$| 13)
-              (|setShellEntry| $ 220
+              (|setShellEntry| $ 252
                   (CONS (|dispatchFunction| |POLYCAT-;convert;SIf;43|)
                         $))))))
         $)))) 
 
 (MAKEPROP '|PolynomialCategory&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)
-             (|local| |#3|) (|local| |#4|) (|Equation| 6) (0 . |lhs|)
-             (|Union| 9 '"failed") (5 . |retractIfCan|)
-             (10 . |retract|) (15 . |rhs|) (|List| 9) (|List| $)
-             (20 . |eval|) (|Equation| $) (|List| 19)
-             |POLYCAT-;eval;SLS;1| (27 . |Zero|) (31 . |Zero|)
-             (|Boolean|) (35 . ~=) (41 . |leadingMonomial|)
-             (46 . |reductum|) |POLYCAT-;monomials;SL;2|
-             (51 . |monomials|) (|Union| 17 '"failed")
-             |POLYCAT-;isPlus;SU;3| (56 . |variables|)
-             (61 . |monomial?|) (66 . |One|) (70 . |One|)
-             (|NonNegativeInteger|) (74 . |degree|) (80 . |monomial|)
-             (87 . |leadingCoefficient|) (92 . |one?|) (97 . |coerce|)
-             |POLYCAT-;isTimes;SU;4| (102 . |mainVariable|) (107 . =)
-             (|Record| (|:| |var| 9) (|:| |exponent| 36))
-             (|Union| 45 '"failed") |POLYCAT-;isExpt;SU;5|
-             (|SparseUnivariatePolynomial| $) (113 . |univariate|)
-             (|SparseUnivariatePolynomial| 6) (119 . |coefficient|)
-             |POLYCAT-;coefficient;SVarSetNniS;6| (|List| 36)
-             (125 . |coefficient|) |POLYCAT-;coefficient;SLLS;7|
-             (132 . |monomial|) |POLYCAT-;monomial;SLLS;8|
-             (139 . |coerce|) |POLYCAT-;retract;SVarSet;9|
-             |POLYCAT-;retractIfCan;SU;10| (144 . |degree|)
-             (149 . |monomial|) |POLYCAT-;primitiveMonomials;SL;12|
-             (155 . |ground?|) (160 . |Zero|) (164 . ~=)
-             (170 . |degree|) (175 . |leadingCoefficient|)
-             (180 . |totalDegree|) (185 . |reductum|)
-             |POLYCAT-;totalDegree;SNni;13| (190 . |member?|)
-             (196 . |totalDegree|) |POLYCAT-;totalDegree;SLNni;14|
-             (202 . |resultant|) (208 . |resultant|)
-             (215 . |discriminant|) (220 . |discriminant|)
-             (226 . |primitiveMonomials|) (|List| 6) (231 . |concat|)
-             (236 . |removeDuplicates!|) (|Vector| 7) (241 . |new|)
-             (|Integer|) (247 . |minIndex|) (252 . |coefficient|)
-             (258 . |qsetelt!|) (|List| 7) (|List| 89) (|Matrix| 7)
-             (265 . |matrix|) (|List| 80) (|Matrix| 6)
-             (270 . |listOfLists|) (275 . |vertConcat|) (|Matrix| $)
-             (281 . |reducedSystem|) (|Vector| 6) (286 . |entries|)
-             (291 . |concat|) (297 . |concat|)
-             (|Record| (|:| |mat| 91) (|:| |vec| 83)) (|Vector| $)
-             (303 . |reducedSystem|)
+             (|local| |#3|) (|local| |#4|) (|Boolean|) (|Equation| 6)
+             (|List| 11) (0 . |empty?|) (5 . |lhs|)
+             (|Union| 9 '"failed") (10 . |retractIfCan|)
+             (15 . |retract|) (20 . |rhs|) (|List| 9) (|List| $)
+             (25 . |eval|) (|Equation| $) (|List| 22)
+             |POLYCAT-;eval;SLS;1| (|List| 6) (32 . |empty|)
+             (36 . |Zero|) (40 . |Zero|) (44 . ~=)
+             (50 . |leadingMonomial|) (55 . |concat|) (61 . |reductum|)
+             (66 . |reverse|) |POLYCAT-;monomials;SL;2|
+             (71 . |monomials|) (76 . |rest|) (81 . |empty?|)
+             (|Union| 20 '"failed") |POLYCAT-;isPlus;SU;3|
+             (86 . |variables|) (91 . |empty?|) (96 . |monomial?|)
+             (101 . |One|) (105 . |One|) (|NonNegativeInteger|)
+             (109 . |degree|) (115 . |monomial|)
+             (122 . |leadingCoefficient|) (127 . |one?|) (132 . |rest|)
+             (137 . |coerce|) |POLYCAT-;isTimes;SU;4|
+             (142 . |mainVariable|) (147 . =)
+             (|Record| (|:| |var| 9) (|:| |exponent| 45))
+             (|Union| 55 '"failed") |POLYCAT-;isExpt;SU;5|
+             (|SparseUnivariatePolynomial| $) (153 . |univariate|)
+             (|SparseUnivariatePolynomial| 6) (159 . |coefficient|)
+             |POLYCAT-;coefficient;SVarSetNniS;6| (|List| 45)
+             (165 . |empty?|) (170 . |first|) (175 . |first|)
+             (180 . |rest|) (185 . |coefficient|)
+             |POLYCAT-;coefficient;SLLS;7| (192 . |monomial|)
+             |POLYCAT-;monomial;SLLS;8| (199 . |coerce|)
+             |POLYCAT-;retract;SVarSet;9| |POLYCAT-;retractIfCan;SU;10|
+             (204 . |degree|) (209 . |monomial|)
+             |POLYCAT-;primitiveMonomials;SL;12| (215 . |ground?|)
+             (220 . |Zero|) (224 . |Zero|) (228 . ~=) (234 . |degree|)
+             (239 . |leadingCoefficient|) (244 . |totalDegree|)
+             (249 . +) (255 . |max|) (261 . |reductum|)
+             |POLYCAT-;totalDegree;SNni;13| (266 . |member?|)
+             (272 . |One|) (276 . *) (282 . |totalDegree|)
+             |POLYCAT-;totalDegree;SLNni;14| (288 . |resultant|)
+             (294 . |resultant|) (301 . |discriminant|)
+             (306 . |discriminant|) (312 . |primitiveMonomials|)
+             (317 . |concat|) (322 . |removeDuplicates!|) (|Vector| 7)
+             (327 . |new|) (|Integer|) (333 . |minIndex|)
+             (338 . |maxIndex|) (343 . |coefficient|)
+             (349 . |qsetelt!|) (|List| 7) (|List| 108) (|Matrix| 7)
+             (356 . |matrix|) (|List| 25) (|Matrix| 6)
+             (361 . |listOfLists|) (366 . |first|) (371 . |rest|)
+             (376 . |empty?|) (381 . |vertConcat|) (|Matrix| $)
+             (387 . |reducedSystem|) (|Vector| 6) (392 . |entries|)
+             (397 . |concat|) (|List| 8) (403 . |#|) (408 . |first|)
+             (413 . |concat|)
+             (|Record| (|:| |mat| 110) (|:| |vec| 101)) (|Vector| $)
+             (419 . |reducedSystem|)
              (|GeneralPolynomialGcdPackage| 8 9 7 6)
-             (309 . |gcdPolynomial|) (315 . |gcdPolynomial|)
-             (|List| 50) (|Union| 109 '"failed")
+             (425 . |gcdPolynomial|) (431 . |gcdPolynomial|)
+             (|List| 60) (|Union| 134 '"failed")
              (|PolynomialFactorizationByRecursion| 7 8 9 6)
-             (321 . |solveLinearPolynomialEquationByRecursion|)
-             (|List| 48) (|Union| 113 '"failed")
-             (327 . |solveLinearPolynomialEquation|) (|Factored| 50)
-             (333 . |factorByRecursion|) (|Factored| 48)
-             (338 . |factorPolynomial|)
-             (343 . |factorSquareFreeByRecursion|)
-             (348 . |factorSquareFreePolynomial|) (|Factored| $)
-             (353 . |factor|) (|Factored| 7) (358 . |unit|)
+             (437 . |solveLinearPolynomialEquationByRecursion|)
+             (|List| 58) (|Union| 138 '"failed")
+             (443 . |solveLinearPolynomialEquation|) (|Factored| 60)
+             (449 . |factorByRecursion|) (|Factored| 58)
+             (454 . |factorPolynomial|)
+             (459 . |factorSquareFreeByRecursion|)
+             (464 . |factorSquareFreePolynomial|) (|Factored| $)
+             (469 . |factor|) (|Factored| 7) (474 . |unit|)
              (|Union| '"nil" '"sqfr" '"irred" '"prime")
-             (|Record| (|:| |flg| 126) (|:| |fctr| 7) (|:| |xpnt| 85))
-             (|List| 127) (363 . |factorList|)
-             (|Record| (|:| |flg| 126) (|:| |fctr| 6) (|:| |xpnt| 85))
-             (|List| 130) (|Factored| 6) (368 . |makeFR|)
-             (374 . |unit|) (379 . |multivariate|)
-             (|Record| (|:| |flg| 126) (|:| |fctr| 50) (|:| |xpnt| 85))
-             (|List| 136) (385 . |factorList|) (390 . |factor|)
-             (395 . |transpose|) (400 . |characteristic|)
-             (404 . |setUnion|) (410 . |degree|) (|Union| $ '"failed")
-             (416 . |exquo|) (422 . |ground|) (427 . |transpose|)
-             (|Union| 104 '"failed") (432 . |conditionP|) (437 . |elt|)
-             (443 . *) (449 . +) (455 . |conditionP|)
-             (460 . |charthRoot|) (465 . |charthRoot|) (470 . |Zero|)
-             (474 . |coefficient|) (481 . -)
+             (|Record| (|:| |flg| 151) (|:| |fctr| 7) (|:| |xpnt| 103))
+             (|List| 152) (479 . |factorList|)
+             (|Record| (|:| |flg| 151) (|:| |fctr| 6) (|:| |xpnt| 103))
+             (|List| 155) (|Factored| 6) (484 . |makeFR|)
+             (490 . |unit|) (495 . |multivariate|)
+             (|Record| (|:| |flg| 151) (|:| |fctr| 60)
+                 (|:| |xpnt| 103))
+             (|List| 161) (501 . |factorList|) (506 . |factor|)
+             (511 . |transpose|) (516 . |empty|) (520 . |empty|)
+             (524 . |characteristic|) (528 . |setUnion|)
+             (534 . |degree|) (|Union| $ '"failed") (540 . |exquo|)
+             (546 . |cons|) (552 . |ground|) (557 . |cons|)
+             (563 . |cons|) (569 . |transpose|) (|Union| 129 '"failed")
+             (574 . |conditionP|) (579 . |elt|) (585 . *) (591 . +)
+             (597 . |conditionP|) (602 . |charthRoot|)
+             (607 . |charthRoot|) (612 . |Zero|) (616 . |Zero|)
+             (620 . <) (626 . |coefficient|) (633 . -)
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
-             (487 . |monicDivide|) |POLYCAT-;monicDivide;2SVarSetR;30|
-             (|MultivariateSquareFree| 8 9 7 6) (493 . |squareFree|)
-             (498 . |squareFree|) (|PolynomialSquareFree| 9 8 7 6)
-             (503 . |squareFree|) (508 . |squareFree|) (513 . |unit|)
-             (|Record| (|:| |factor| 6) (|:| |exponent| 85))
-             (|List| 169) (518 . |factors|) (523 . |squareFreePart|)
-             (528 . |content|) (533 . |content|) (539 . |content|)
-             (544 . |exquo|)
+             (639 . |monicDivide|) |POLYCAT-;monicDivide;2SVarSetR;30|
+             (|MultivariateSquareFree| 8 9 7 6) (645 . |squareFree|)
+             (650 . |squareFree|) (|PolynomialSquareFree| 9 8 7 6)
+             (655 . |squareFree|) (660 . |squareFree|) (665 . |unit|)
+             (|Record| (|:| |factor| 6) (|:| |exponent| 103))
+             (|List| 201) (670 . |factors|) (675 . |squareFreePart|)
+             (680 . |content|) (685 . |content|) (691 . |content|)
+             (696 . |exquo|)
              (|Record| (|:| |unit| $) (|:| |canonical| $)
                  (|:| |associate| $))
-             (550 . |unitNormal|) (555 . |primitivePart|)
-             (560 . |content|) (566 . |exquo|) (572 . |primitivePart|)
-             (578 . <) (584 . <) (590 . <) (|PatternMatchResult| 85 6)
-             (|Pattern| 85)
-             (|PatternMatchPolynomialCategory| 85 8 9 7 6)
-             (596 . |patternMatch|) (|PatternMatchResult| 85 $)
-             (603 . |patternMatch|) (|Float|)
-             (|PatternMatchResult| 192 6) (|Pattern| 192)
-             (|PatternMatchPolynomialCategory| 192 8 9 7 6)
-             (610 . |patternMatch|) (|PatternMatchResult| 192 $)
-             (617 . |patternMatch|) (624 . |convert|) (629 . |convert|)
-             (|Mapping| 187 9) (|Mapping| 187 7)
-             (|PolynomialCategoryLifting| 8 9 7 6 187) (634 . |map|)
-             (641 . |convert|) (646 . |convert|) (651 . |convert|)
-             (|Mapping| 194 9) (|Mapping| 194 7)
-             (|PolynomialCategoryLifting| 8 9 7 6 194) (656 . |map|)
-             (663 . |convert|) (|InputForm|) (668 . |convert|)
-             (673 . |convert|) (|Mapping| 213 9) (|Mapping| 213 7)
-             (|PolynomialCategoryLifting| 8 9 7 6 213) (678 . |map|)
-             (685 . |convert|) (|Matrix| 85) (|Vector| 85)
-             (|Record| (|:| |mat| 221) (|:| |vec| 222))
-             (|Union| 85 '"failed") (|Fraction| 85)
-             (|Union| 225 '"failed") (|Union| 7 '"failed"))
-          '#(|totalDegree| 690 |squareFreePart| 701 |squareFree| 706
-             |solveLinearPolynomialEquation| 711 |retractIfCan| 717
-             |retract| 722 |resultant| 727 |reducedSystem| 734
-             |primitivePart| 745 |primitiveMonomials| 756
-             |patternMatch| 761 |monomials| 775 |monomial| 780
-             |monicDivide| 787 |isTimes| 794 |isPlus| 799 |isExpt| 804
-             |gcdPolynomial| 809 |factorSquareFreePolynomial| 815
-             |factorPolynomial| 820 |factor| 825 |eval| 830
-             |discriminant| 836 |convert| 842 |content| 857
-             |conditionP| 863 |coefficient| 868 |charthRoot| 882 < 887)
+             (702 . |unitNormal|) (707 . |primitivePart|)
+             (712 . |content|) (718 . |exquo|) (724 . |primitivePart|)
+             (730 . <) (736 . <) (742 . <) (|PatternMatchResult| 103 6)
+             (|Pattern| 103)
+             (|PatternMatchPolynomialCategory| 103 8 9 7 6)
+             (748 . |patternMatch|) (|PatternMatchResult| 103 $)
+             (755 . |patternMatch|) (|Float|)
+             (|PatternMatchResult| 224 6) (|Pattern| 224)
+             (|PatternMatchPolynomialCategory| 224 8 9 7 6)
+             (762 . |patternMatch|) (|PatternMatchResult| 224 $)
+             (769 . |patternMatch|) (776 . |convert|) (781 . |convert|)
+             (|Mapping| 219 9) (|Mapping| 219 7)
+             (|PolynomialCategoryLifting| 8 9 7 6 219) (786 . |map|)
+             (793 . |convert|) (798 . |convert|) (803 . |convert|)
+             (|Mapping| 226 9) (|Mapping| 226 7)
+             (|PolynomialCategoryLifting| 8 9 7 6 226) (808 . |map|)
+             (815 . |convert|) (|InputForm|) (820 . |convert|)
+             (825 . |convert|) (|Mapping| 245 9) (|Mapping| 245 7)
+             (|PolynomialCategoryLifting| 8 9 7 6 245) (830 . |map|)
+             (837 . |convert|) (|Matrix| 103) (|Vector| 103)
+             (|Record| (|:| |mat| 253) (|:| |vec| 254))
+             (|Union| 103 '"failed") (|Fraction| 103)
+             (|Union| 257 '"failed") (|Union| 7 '"failed"))
+          '#(|totalDegree| 842 |squareFreePart| 853 |squareFree| 858
+             |solveLinearPolynomialEquation| 863 |retractIfCan| 869
+             |retract| 874 |resultant| 879 |reducedSystem| 886
+             |primitivePart| 897 |primitiveMonomials| 908
+             |patternMatch| 913 |monomials| 927 |monomial| 932
+             |monicDivide| 939 |isTimes| 946 |isPlus| 951 |isExpt| 956
+             |gcdPolynomial| 961 |factorSquareFreePolynomial| 967
+             |factorPolynomial| 972 |factor| 977 |eval| 982
+             |discriminant| 988 |convert| 994 |content| 1009
+             |conditionP| 1015 |coefficient| 1020 |charthRoot| 1034 <
+             1039)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 220
-                                '(1 10 6 0 11 1 6 12 0 13 1 6 9 0 14 1
-                                  10 6 0 15 3 6 0 0 16 17 18 0 6 0 22 0
-                                  7 0 23 2 6 24 0 0 25 1 6 0 0 26 1 6 0
-                                  0 27 1 6 17 0 29 1 6 16 0 32 1 6 24 0
-                                  33 0 6 0 34 0 7 0 35 2 6 36 0 9 37 3
-                                  6 0 0 9 36 38 1 6 7 0 39 1 7 24 0 40
-                                  1 6 0 7 41 1 6 12 0 43 2 6 24 0 0 44
-                                  2 6 48 0 9 49 2 50 6 0 36 51 3 6 0 0
-                                  16 53 54 3 6 0 0 16 53 56 1 6 0 9 58
-                                  1 6 8 0 61 2 6 0 7 8 62 1 6 24 0 64 0
-                                  50 0 65 2 50 24 0 0 66 1 50 36 0 67 1
-                                  50 6 0 68 1 6 36 0 69 1 50 0 0 70 2
-                                  16 24 9 0 72 2 6 36 0 16 73 2 50 6 0
-                                  0 75 3 0 0 0 0 9 76 1 50 6 0 77 2 0 0
-                                  0 9 78 1 6 17 0 79 1 80 0 17 81 1 80
-                                  0 0 82 2 83 0 36 7 84 1 83 85 0 86 2
-                                  6 7 0 8 87 3 83 7 0 85 7 88 1 91 0 90
-                                  92 1 94 93 0 95 2 91 0 0 0 96 1 0 91
-                                  97 98 1 99 80 0 100 2 80 0 0 0 101 2
-                                  83 0 0 0 102 2 0 103 97 104 105 2 106
-                                  50 50 50 107 2 0 48 48 48 108 2 111
-                                  110 109 50 112 2 0 114 113 48 115 1
-                                  111 116 50 117 1 0 118 48 119 1 111
-                                  116 50 120 1 0 118 48 121 1 7 122 0
-                                  123 1 124 7 0 125 1 124 128 0 129 2
-                                  132 0 6 131 133 1 116 50 0 134 2 6 0
-                                  48 9 135 1 116 137 0 138 1 0 122 0
-                                  139 1 94 0 0 140 0 6 36 141 2 80 0 0
-                                  0 142 2 6 53 0 16 143 2 85 144 0 0
-                                  145 1 6 7 0 146 1 91 0 0 147 1 7 148
-                                  97 149 2 83 7 0 85 150 2 6 0 0 0 151
-                                  2 6 0 0 0 152 1 0 148 97 153 1 7 144
-                                  0 154 1 0 144 0 155 0 8 0 156 3 6 0 0
-                                  9 36 157 2 6 0 0 0 158 2 50 159 0 0
-                                  160 1 162 132 6 163 1 0 122 0 164 1
-                                  165 132 6 166 1 6 122 0 167 1 132 6 0
-                                  168 1 132 170 0 171 1 0 0 0 172 1 50
-                                  6 0 173 2 0 0 0 9 174 1 6 7 0 175 2 6
-                                  144 0 7 176 1 6 177 0 178 1 0 0 0 179
-                                  2 6 0 0 9 180 2 6 144 0 0 181 2 0 0 0
-                                  9 182 2 8 24 0 0 183 2 7 24 0 0 184 2
-                                  0 24 0 0 185 3 188 186 6 187 186 189
-                                  3 0 190 0 187 190 191 3 195 193 6 194
-                                  193 196 3 0 197 0 194 197 198 1 9 187
-                                  0 199 1 7 187 0 200 3 203 187 201 202
-                                  6 204 1 0 187 0 205 1 9 194 0 206 1 7
-                                  194 0 207 3 210 194 208 209 6 211 1 0
-                                  194 0 212 1 9 213 0 214 1 7 213 0 215
-                                  3 218 213 216 217 6 219 1 0 213 0 220
-                                  2 0 36 0 16 74 1 0 36 0 71 1 0 0 0
-                                  172 1 0 122 0 164 2 0 114 113 48 115
-                                  1 0 12 0 60 1 0 9 0 59 3 0 0 0 0 9 76
-                                  1 0 91 97 98 2 0 103 97 104 105 2 0 0
-                                  0 9 182 1 0 0 0 179 1 0 17 0 63 3 0
-                                  190 0 187 190 191 3 0 197 0 194 197
-                                  198 1 0 17 0 28 3 0 0 0 16 53 57 3 0
-                                  159 0 0 9 161 1 0 30 0 42 1 0 30 0 31
-                                  1 0 46 0 47 2 0 48 48 48 108 1 0 118
-                                  48 121 1 0 118 48 119 1 0 122 0 139 2
-                                  0 0 0 20 21 2 0 0 0 9 78 1 0 213 0
-                                  220 1 0 187 0 205 1 0 194 0 212 2 0 0
-                                  0 9 174 1 0 148 97 153 3 0 0 0 16 53
-                                  55 3 0 0 0 9 36 52 1 0 144 0 155 2 0
-                                  24 0 0 185)))))
+                            (|makeByteWordVec2| 252
+                                '(1 12 10 0 13 1 11 6 0 14 1 6 15 0 16
+                                  1 6 9 0 17 1 11 6 0 18 3 6 0 0 19 20
+                                  21 0 25 0 26 0 6 0 27 0 7 0 28 2 6 10
+                                  0 0 29 1 6 0 0 30 2 25 0 6 0 31 1 6 0
+                                  0 32 1 25 0 0 33 1 6 20 0 35 1 25 0 0
+                                  36 1 25 10 0 37 1 6 19 0 40 1 19 10 0
+                                  41 1 6 10 0 42 0 6 0 43 0 7 0 44 2 6
+                                  45 0 9 46 3 6 0 0 9 45 47 1 6 7 0 48
+                                  1 7 10 0 49 1 19 0 0 50 1 6 0 7 51 1
+                                  6 15 0 53 2 6 10 0 0 54 2 6 58 0 9 59
+                                  2 60 6 0 45 61 1 63 10 0 64 1 19 9 0
+                                  65 1 63 45 0 66 1 63 0 0 67 3 6 0 0
+                                  19 63 68 3 6 0 0 19 63 70 1 6 0 9 72
+                                  1 6 8 0 75 2 6 0 7 8 76 1 6 10 0 78 0
+                                  45 0 79 0 60 0 80 2 60 10 0 0 81 1 60
+                                  45 0 82 1 60 6 0 83 1 6 45 0 84 2 45
+                                  0 0 0 85 2 45 0 0 0 86 1 60 0 0 87 2
+                                  19 10 9 0 89 0 45 0 90 2 45 0 45 0 91
+                                  2 6 45 0 19 92 2 60 6 0 0 94 3 0 0 0
+                                  0 9 95 1 60 6 0 96 2 0 0 0 9 97 1 6
+                                  20 0 98 1 25 0 20 99 1 25 0 0 100 2
+                                  101 0 45 7 102 1 101 103 0 104 1 101
+                                  103 0 105 2 6 7 0 8 106 3 101 7 0 103
+                                  7 107 1 110 0 109 111 1 113 112 0 114
+                                  1 112 25 0 115 1 112 0 0 116 1 112 10
+                                  0 117 2 110 0 0 0 118 1 0 110 119 120
+                                  1 121 25 0 122 2 25 0 0 0 123 1 124
+                                  45 0 125 1 25 6 0 126 2 101 0 0 0 127
+                                  2 0 128 119 129 130 2 131 60 60 60
+                                  132 2 0 58 58 58 133 2 136 135 134 60
+                                  137 2 0 139 138 58 140 1 136 141 60
+                                  142 1 0 143 58 144 1 136 141 60 145 1
+                                  0 143 58 146 1 7 147 0 148 1 149 7 0
+                                  150 1 149 153 0 154 2 157 0 6 156 158
+                                  1 141 60 0 159 2 6 0 58 9 160 1 141
+                                  162 0 163 1 0 147 0 164 1 113 0 0 165
+                                  0 108 0 166 0 112 0 167 0 6 45 168 2
+                                  25 0 0 0 169 2 6 63 0 19 170 2 103
+                                  171 0 0 172 2 25 0 6 0 173 1 6 7 0
+                                  174 2 108 0 7 0 175 2 112 0 25 0 176
+                                  1 110 0 0 177 1 7 178 119 179 2 101 7
+                                  0 103 180 2 6 0 0 0 181 2 6 0 0 0 182
+                                  1 0 178 119 183 1 7 171 0 184 1 0 171
+                                  0 185 0 8 0 186 0 103 0 187 2 45 10 0
+                                  0 188 3 6 0 0 9 45 189 2 6 0 0 0 190
+                                  2 60 191 0 0 192 1 194 157 6 195 1 0
+                                  147 0 196 1 197 157 6 198 1 6 147 0
+                                  199 1 157 6 0 200 1 157 202 0 203 1 0
+                                  0 0 204 1 60 6 0 205 2 0 0 0 9 206 1
+                                  6 7 0 207 2 6 171 0 7 208 1 6 209 0
+                                  210 1 0 0 0 211 2 6 0 0 9 212 2 6 171
+                                  0 0 213 2 0 0 0 9 214 2 8 10 0 0 215
+                                  2 7 10 0 0 216 2 0 10 0 0 217 3 220
+                                  218 6 219 218 221 3 0 222 0 219 222
+                                  223 3 227 225 6 226 225 228 3 0 229 0
+                                  226 229 230 1 9 219 0 231 1 7 219 0
+                                  232 3 235 219 233 234 6 236 1 0 219 0
+                                  237 1 9 226 0 238 1 7 226 0 239 3 242
+                                  226 240 241 6 243 1 0 226 0 244 1 9
+                                  245 0 246 1 7 245 0 247 3 250 245 248
+                                  249 6 251 1 0 245 0 252 2 0 45 0 19
+                                  93 1 0 45 0 88 1 0 0 0 204 1 0 147 0
+                                  196 2 0 139 138 58 140 1 0 15 0 74 1
+                                  0 9 0 73 3 0 0 0 0 9 95 1 0 110 119
+                                  120 2 0 128 119 129 130 2 0 0 0 9 214
+                                  1 0 0 0 211 1 0 20 0 77 3 0 222 0 219
+                                  222 223 3 0 229 0 226 229 230 1 0 20
+                                  0 34 3 0 0 0 19 63 71 3 0 191 0 0 9
+                                  193 1 0 38 0 52 1 0 38 0 39 1 0 56 0
+                                  57 2 0 58 58 58 133 1 0 143 58 146 1
+                                  0 143 58 144 1 0 147 0 164 2 0 0 0 23
+                                  24 2 0 0 0 9 97 1 0 245 0 252 1 0 219
+                                  0 237 1 0 226 0 244 2 0 0 0 9 206 1 0
+                                  178 119 183 3 0 0 0 19 63 69 3 0 0 0
+                                  9 45 62 1 0 171 0 185 2 0 10 0 0 217)))))
           '|lookupComplete|)) 
