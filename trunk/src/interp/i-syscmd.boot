@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -783,7 +783,8 @@ compileSpad2Cmd args ==
       vartrace _
       quiet _
       translate _
-      optimize
+      optimize _
+      report
         )
 
     translateOldToNew        := nil
@@ -830,6 +831,10 @@ compileSpad2Cmd args ==
             fun.0       := 'c
             constructor := [unabbrev o for o in optargs]
         fullopt = "optimize" => setCompilerOptimizations first optargs
+        fullopt = "report" =>
+           null optargs => throwKeyedMsg("S2IZ0037",['")report"])
+           if MEMQ("insn",optargs) then
+             $reportOptimization := true
         throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
 
     $InteractiveMode : local := nil

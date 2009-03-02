@@ -1,6 +1,4 @@
--- Copyright (C) 2007-2008 Gabriel Dos Reis
--- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -192,6 +190,7 @@ initializeGlobalState() ==
   $bootStrapMode := getOptionValue "bootstrap"
   $compileExportsOnly := getOptionValue "exports-only"
   $compileDefaultsOnly := getOptionValue "defaults-only"
+  $reportOptimization := getOptionValue "show-insn"
   GCMSG(NIL)
   if have_to then
     $superHash := MAKE_-HASHTABLE('UEQUAL)
