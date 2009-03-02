@@ -1,3 +1,10 @@
+2009-03-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (modeIsAggregateOf): Use RepIfRepHack.
+	* interp/g-opt.boot (optimizeFunctionDef): Tidy.
+	* interp/i-syscmd.boot (compileSpad2Cmd): Support ')report' option.
+	* interp/sys-driver.boot (initializeGlobalState): Likewise.
+
 2009-03-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optimize): Remove non-qualified

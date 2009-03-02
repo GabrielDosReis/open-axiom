@@ -51,7 +51,7 @@ optimizeFunctionDef(def) ==
   if $reportOptimization then
     sayBrightlyI bright '"Optimized LISP code:"
     pp def'
-    sayBrightlyI bright '"Final LISP code:"
+
   [name,[slamOrLam,args,body]] := def'
  
   body':=
