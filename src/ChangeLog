@@ -1,3 +1,26 @@
+2009-03-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/fnewmeta.lisp (PARSE-Import): Parse extern entity
+	signature import. 
+	* interp/functor.boot (encodeLocalFunctionName): New.
+	* interp/define.boot (compDefine1): Avoid getAbbreviation.
+	(doIt): Handle %SignatureImport nodes.
+	* interp/compiler.boot (emitLocalCallInsn): New.
+	(applyMapping): Use it.
+	(compApplication): Likewise.
+	(bootDenotation): New.
+	(getBasicFFIType): Likewise.
+	(getFFIDatatype): Likewise.
+	(getBootType): Likewise.
+	(checkExternalEntityType): Likewise.
+	(checkExternalEntity): Likewise.
+	(removeModifiers): Likewise.
+	(compSignatureImport): Likewise.
+	* interp/vmlisp.lisp (|compileLispDefinition|): New.
+	* interp/boot-pkg.lisp: Import genImportDeclaration.
+	* boot/initial-env.lisp: Export genImportDeclaration.
+	* boot/ast.boot: Tidy.  Accept `readwrite' modifier.
+
 2009-03-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (modeIsAggregateOf): Use RepIfRepHack.

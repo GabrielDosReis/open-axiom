@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,8 @@
   (:export "loadNativeModule"
 	   "loadSystemRuntimeCore"
            "$InteractiveMode"
-	   "string2BootTree"))
+	   "string2BootTree"
+	   "genImportDeclaration"))
 
 (in-package "BOOTTRAN")
 

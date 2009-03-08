@@ -1249,9 +1249,9 @@ genTypeAlias(head,body) ==
 --            This is used to communicate data between native
 --            functions and OpenAxiom functions.  The `buffer' type
 --            constructor must be used in conjunction with one of the 
---            modifier `readonly' or `writeonly', and instantiated
---            with one of `char', `byte', `int', `float', and `double'.
---            It cannot be used a function return type.
+--            modifiers `readonly', `writeonly', or `readwrite', and 
+--            instantiated with one of `char', `byte', `int', `float',
+--            and `double'.  It cannot be used as function return type.
 --            Note that the length of the array is not stored as 
 --            part of the data being transmitted.
 
@@ -1327,7 +1327,7 @@ nativeArgumentType t ==
      coreError '"invalid argument type for a native function"
   [m,[c,t']] := t
   -- Require a modifier.
-  not (m in '(readonly writeonly)) =>
+  not (m in '(readonly writeonly readwrite)) =>
     coreError '"missing modifier for argument type for a native function"
   -- Only 'pointer' and 'buffer' can be instantiated.
   not (c in '(buffer pointer)) =>
@@ -1339,7 +1339,7 @@ nativeArgumentType t ==
 
 ++ True if objects of type native type `t' are sensible to GC.
 needsStableReference? t ==
-  not atom t and first t in '(readonly writeonly)
+  not atom t and first t in '(readonly writeonly readwrite)
 
 ++ coerce argument `a' to native type `t', in preparation for
 ++ a call to a native functions.
@@ -1471,9 +1471,9 @@ genCLISPnativeTranslation(op,s,t,op') ==
 	      [KEYWORD::LANGUAGE,KEYWORD::STDC]]
 
   -- The forwarding function.  We have to introduce local foreign
-  -- variables to hold the address of converted Lisp obejcts.  Then
-  -- we have to copy back those that are `writeonly' to simulate
-  -- the reference semantics.  Don't try ever try to pass around
+  -- variables to hold the address of converted Lisp objects.  Then
+  -- we have to copy back those that are `writeonly' or `readwrite' to
+  -- simulate the reference semantics.  Don't ever try to pass around
   -- gigantic buffer, you might find out that it is insanely inefficient.
   forwardingFun := 
     null unstableArgs => ["DEFUN",op,parms, [n,:parms]]
@@ -1483,11 +1483,11 @@ genCLISPnativeTranslation(op,s,t,op') ==
 	    actualArg(p,pairs) ==
 	      a' := rest ASSOC(p,pairs) => rest rest a'
 	      p
-    -- Fix up the call if there is any `writeonly' parameter.
+    -- Fix up the call if there is any `write' parameter.
     call := 
       fixups := [q | not null (q := copyBack p) for p in localPairs] where
                   copyBack [p,x,y,:a] ==
-                    x isnt ["writeonly",:.] => nil
+                    x is ["readonly",:.] => nil
                     ["SETF", p, [bfColonColon("FFI","FOREIGN-VALUE"), a]]
       null fixups => [call]
       [["PROG1",call, :fixups]]

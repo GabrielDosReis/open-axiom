@@ -540,7 +540,8 @@
           (reduce #'(lambda (x y)
                       (concatenate 'string x y))
                   msg :initial-value ""))
-         (t msg))))
+         (t msg)))
+  nil)
 
 (defun |warn| (msg)
   (|diagnosticMessage| "warning"

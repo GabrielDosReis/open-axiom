@@ -202,6 +202,17 @@ compTypeOf(x:=[op,:argl],m,e) ==
   e:= put(op,'modemap,newModemap,e)
   comp3(x,m,e)
 
+++ We just determined that `op' is called with argument list `args', where
+++  `op' is either a local capsule function, or an external function 
+++ with a local signature-import declaration.  Emit insn for the call.
+emitLocalCallInsn: (%Symbol,%List,%Env) -> %Code
+emitLocalCallInsn(op,args,e) ==
+  op' :=          -- Find out the linkage name for `op'.
+    linkName := get(op,"%Link",e) => linkName
+    encodeLocalFunctionName op
+  get(op,"%Lang",e) => [op',:args]  -- non-Spad calling convention
+  [op',:args,"$"]   
+
 applyMapping([op,:argl],m,e,ml) ==
   #argl^=#ml-1 => nil
   isCategoryForm(first ml,e) =>
@@ -220,11 +231,7 @@ applyMapping([op,:argl],m,e,ml) ==
   if argl'="failed" then return nil
   form:=
     atom op and not(op in $formalArgList) and null (u := get(op,"value",e)) =>
-      nprefix := $prefix or
-      -- following needed for referencing local funs at capsule level
-        getAbbreviation($op,#rest $form)
-      [op',:argl',"$"] where
-        op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
+      emitLocalCallInsn(op,argl',e)
     -- Compiler synthetized operators are inline.
     u ^= nil and u.expr is ["XLAM",:.] => ["call",u.expr,:argl']
     ['call,['applyFun,op],:argl']
@@ -694,11 +701,7 @@ compApplication(op,argl,m,T) ==
     argTl = "failed" => nil
     form:=
       atom T.expr and not (MEMQ(op,$formalArgList) or MEMQ(T.expr,$formalArgList)) =>
-        nprefix := $prefix or
-        -- following needed for referencing local funs at capsule level
-           getAbbreviation($op,#rest $form)
-        [op',:[a.expr for a in argTl],"$"] where
-          op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem T.expr)
+        emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
       ['call, ['applyFun, T.expr], :[a.expr for a in argTl]]
     coerce([form, retm, e],resolve(retm,m))
   op = 'elt => nil
@@ -1253,10 +1256,116 @@ compFromIf(a,m,E) ==
   a="%noBranch" => ["%noBranch",m,E]
   comp(a,m,E)
 
-compImport: (%Form,%Mode,%Env) -> %Maybe %Triple
+compImport: (%Form,%Mode,%Env) -> %Triple
 compImport(["import",:doms],m,e) ==
   for dom in doms repeat e:=addDomain(dom,e)
   ["/throwAway",$NoValueMode,e]
+
+--% Foreign Function Interface
+
+bootDenotation: %Symbol -> %Symbol
+bootDenotation s == 
+  INTERN(SYMBOL_-NAME s,"BOOTTRAN")
+
+++ Return the Boot denotation of a basic FFI type.
+getBasicFFIType: %Mode -> %Symbol
+getBasicFFIType t ==
+  t = $Byte => bootDenotation "byte"
+  t = $Int32 => bootDenotation "int32"
+  t = $Int64 => bootDenotation "int64"
+  t = $SingleInteger => bootDenotation "int"
+  t = $SingleFloat =>  bootDenotation "float"
+  t = $DoubleFloat => bootDenotation "double"
+  t = $String => bootDenotation "string"
+  nil
+
+++ Return the Boot denotation of an FFI datatype.  This is either
+++ a basic VM type, or a simple array of sized integer or floating
+++ point type.
+getFFIDatatype: %Mode -> %Form
+getFFIDatatype t ==
+  x := getBasicFFIType t => x
+  t is [m,["PrimitiveArray",t']] and m in '(ReadOnly WriteOnly) and
+    member(t',[$Byte,$Int32,$Int64,$SingleFloat,$DoubleFloat]) =>
+      m' := 
+        m = "ReadOnly" => bootDenotation "readonly"
+        bootDenotation "writeonly"
+      [m',[bootDenotation "buffer",getBasicFFIType t']]
+  nil
+
+++ Return the Boot denotation of a type that is valid in a external entity
+++ signature.  
+getBootType: %Mode -> %Form
+getBootType t ==
+  x := getFFIDatatype t => x
+  t is ["Mapping",ret,:args] =>
+    ret' := 
+      ret = $Void => bootDenotation "void"
+      getBasicFFIType ret or return nil
+    args' := [getFFIDatatype arg or return "failed" for arg in args]
+    args' = "failed" => return nil
+    [bootDenotation "Mapping",ret',args']
+  nil
+
+++ Verify that mode `t' is admissible in an external entity signature
+++ specification, and return its Boot denotation.
+checkExternalEntityType(t,e) ==
+  atom t => 
+    stackAndThrow('"Type variable not allowed in import of external entity",nil)
+  t' := getBootType t => t'
+  stackAndThrow('"Type %1bp is invalid in a foreign signature",[t])
+
+
+++ An external entity named `id' is being imported under signature
+++ `type' from a foreign language `lang'.  Check that the import
+++ is valid, and if so return the linkage name of the entity.
+checkExternalEntity(id,type,lang,e) ==
+  checkVariableName id
+  -- An external entity name shall be unique in scope.
+  getmode(id,e) =>
+    stackAndThrow('"%1b is already in scope",[id])
+  -- In particular, an external entity name cannot be overloaded
+  -- with exported operators.
+  get(id,"modemap",e) =>
+    stackAndThrow('"%1b already names exported operations in scope",[id])
+  -- Only functions are accepted at the moment.  And all mentioned
+  --  types must be those that are supported by the FFI.
+  type' := checkExternalEntityType(type,e) 
+  type' isnt [=bootDenotation "Mapping",:.] =>
+    stackAndThrow('"Signature for external entity must be a Mapping type",nil)
+  id' := encodeLocalFunctionName id
+  [def] := genImportDeclaration(id',[bootDenotation "Signature",id,type'])
+  compileLispDefinition(id,def)
+  id'
+
+
+++ Remove possible modifiers in the FFI type expression `t'.
+removeModifiers t ==
+  for (ts := [x,:.]) in tails t repeat
+     x is [m,t'] and m in '(ReadOnly WriteOnly) =>
+       rplac(first ts,t')
+  t
+
+++ Compile external entity signature import.
+compSignatureImport: (%Form,%Mode,%Env) -> %Maybe %Triple
+compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
+  -- 1. Make sure we have the right syntax.
+  home isnt ["Foreign",:args] =>
+    stackAndThrow('"signature import from be from a %1bp domain",["Foreign"])
+  args isnt [lang] =>
+    stackAndThrow('"%1bp takes exactly one argument",["Foreign"])
+  not IDENTP lang =>
+    stackAndThrow('"Argument to %1bp must be an identifier",["Foreign"])
+  lang ^= "C" =>
+    stackAndThrow('"Sorry: Only %1bp is valid at the moment",["Foreign C"])
+  -- 2. Make sure this import is not subverting anything we know
+  id' := checkExternalEntity(id,type,lang,e)
+  -- 3. Make a local declaration for it.
+  T := compMakeDeclaration(id,removeModifiers type,e) or return nil
+  T.env := put(id,"%Lang",lang,T.env)
+  T.env:= put(id,"%Link",id',T.env)
+  convert(T,m)
+
 
 --% Compilation of logical operators that may have a pre-defined
 --% meaning, or may need special handling because or short-circuiting
@@ -2321,5 +2430,6 @@ for x in [["|", :"compSuchthat"],_
           ["rep",:"compRep"],_
           ["%Comma",:"compComma"],_
           ["%Match",:"compMatch"],_
+          ["%SignatureImport",:"compSignatureImport"],_
           ["[||]", :"compileQuasiquote"]] repeat
   MAKEPROP(first x, "SPECIAL", rest x)

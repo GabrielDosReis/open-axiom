@@ -363,6 +363,10 @@ $Syntax ==
 $Boolean ==
   '(Boolean)
 
+$Byte == '(Byte)
+$Int32 == '(Int32)
+$Int64 == '(Int64)
+
 ++ The SmallInteger domain constructor form
 $SmallInteger ==
   '(SingleInteger)
@@ -413,7 +417,6 @@ $DoubleFloat ==
 ++  source codes.  
 $BigFloat ==
   '(Float)
-
 
 ++ The String constructor domain form
 $String ==

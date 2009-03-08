@@ -1006,12 +1006,20 @@ encodeFunctionName(fun,package is [packageName,:arglist],signature,sep,count)
         encodedPair() ==
           n=1 => encodeItem x
           STRCONC(STRINGIMAGE n,encodeItem x)
-    encodedName:= INTERNL(getAbbreviation(packageName,#arglist),";",
+    encodedName:= INTERNL(getConstructorAbbreviationFromDB packageName,";",
         encodeItem fun,";",encodedSig, sep,STRINGIMAGE count)
     if $LISPLIB then
       $lisplibSignatureAlist:=
         [[encodedName,:signature'],:$lisplibSignatureAlist]
     encodedName
+
+++ Return the linkage name of the local operation named `op'.
+encodeLocalFunctionName op ==
+  prefix :=
+    $prefix => $prefix
+    $functorForm => getConstructorAbbreviationFromDB first $functorForm
+    stackAndThrow('"There is no context for local function %1b",[op]) 
+  INTERN strconc(prefix,'";",encodeItem op)
  
 splitEncodedFunctionName(encodedName, sep) ==
     -- [encodedPackage, encodedItem, encodedSig, sequenceNo] or NIL
