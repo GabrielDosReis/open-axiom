@@ -299,7 +299,7 @@ compDefine1(form,m,e) ==
   null $form => stackAndThrow ['"bad == form ",form]
   newPrefix:=
     $prefix => INTERN STRCONC(encodeItem $prefix,'",",encodeItem $op)
-    getAbbreviation($op,#rest $form)
+    getConstructorAbbreviationFromDB $op
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
 
 compDefineAddSignature([op,:argl],signature,e) ==
@@ -1491,6 +1491,9 @@ doIt(item,$predl) ==
      mutateToNothing item
   item is ["%Inline",type] =>
     processInlineRequest(type,$e)
+    mutateToNothing item
+  item is ["%SignatureImport",:.] =>
+    [.,.,$e] := compSignatureImport(item,$EmptyMode,$e)
     mutateToNothing item
   item is ["IF",:.] => doItIf(item,$predl,$e)
   item is ["where",b,:l] => compOrCroak(item,$EmptyMode,$e)

@@ -637,6 +637,10 @@
 
 #+:CCL (proclaim '(special *vars* *decl*)) ;; declare not handled right
 
+(defun |compileLispDefinition| (name def)
+  (when *COMP370-APPLY* 
+    (funcall *COMP370-APPLY* name def)))
+
 (defun COMPILE1 (fn)
   (let* (nargs
          (fname (car fn))
@@ -664,7 +668,7 @@
     (setq body
           (cond ((eq ltype 'lambda) `(defun ,fname ,nargs . ,body))
                 ((eq ltype 'mlambda) `(defmacro ,fname ,nargs . ,body))))
-    (if *COMP370-APPLY* (funcall *COMP370-APPLY* fname body))
+    (|compileLispDefinition| fname body)
 
     body))
 

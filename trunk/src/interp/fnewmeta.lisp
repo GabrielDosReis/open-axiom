@@ -444,15 +444,25 @@
 
 
 (DEFUN |PARSE-Import| ()
-  (AND (MATCH-ADVANCE-STRING "import") (MUST (|PARSE-Expr| 1000))
-       (BANG FIL_TEST
-             (OPTIONAL
-                 (STAR REPEATOR
-                       (AND (MATCH-ADVANCE-STRING ",")
-                            (MUST (|PARSE-Expr| 1000))))))
-       (PUSH-REDUCTION '|PARSE-Import|
-           (CONS '|import|
-                 (CONS (POP-STACK-2) (APPEND (POP-STACK-1) NIL)))))) 
+  (AND (MATCH-ADVANCE-STRING "import") 
+       (MUST (|PARSE-Expr| 1000))
+       (OR (AND (MATCH-ADVANCE-STRING ":")
+                (MUST (|PARSE-Expression|))
+                (MUST (MATCH-ADVANCE-STRING "from"))
+                (MUST (|PARSE-Expr| 1000))
+                (PUSH-REDUCTION '|PARSE-Import|
+		    (CONS '|%SignatureImport|
+			  (CONS (POP-STACK-3)
+				(CONS (POP-STACK-2)
+				      (CONS (POP-STACK-1) NIL))))))
+           (AND (BANG FIL_TEST
+		      (OPTIONAL
+		       (STAR REPEATOR
+			     (AND (MATCH-ADVANCE-STRING ",")
+				  (MUST (|PARSE-Expr| 1000))))))
+		(PUSH-REDUCTION '|PARSE-Import|
+                    (CONS '|import|
+			  (CONS (POP-STACK-2) (APPEND (POP-STACK-1) NIL))))))))
 
 ;; domain inlining.  Same syntax as import directive; except
 ;; deliberate restriction on naming one type at a time.
