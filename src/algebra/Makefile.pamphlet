@@ -410,7 +410,8 @@ axiom_algebra_layer_6_objects = \
 axiom_algebra_layer_7 = \
   BTCAT   BTCAT-  LNAGG    LNAGG-   FMCAT   IDPOAM   \
   IFAMON  GRALG   GRALG-   FLAGG    FLAGG-           \
-  INT8    INT16   INT32    UINT8    UINT16  UINT32 
+  INT8    INT16   INT32    INT64    UINT8   UINT16   \
+  UINT32  UINT64
 
 axiom_algebra_layer_7_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_7))
