@@ -1,3 +1,7 @@
+2009-03-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* clef/edible.c (main): Properly null-terminate varargs call.
+
 2009-03-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/fnewmeta.lisp (PARSE-Import): Parse extern entity
