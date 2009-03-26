@@ -140,6 +140,18 @@ Int32() == SystemInteger 32
 
 @
 
+<<domain INT64 Int64>>=
+)abbrev domain INT64 Int64
+++ Author: Gabriel Dos Reis
+++ Date Created: March 25, 2009
+++ Date Last Modified: March 25, 2009
+++ Description:
+++   This domain is a datatype for (signed) integer values
+++   of precision 64 bits.
+Int64() == SystemInteger 64
+
+@
+
 
 <<domain SYSNNI SystemNonNegativeInteger>>=
 )abbrev domain SYSNNI SystemNonNegativeInteger
@@ -205,6 +217,18 @@ UInt16() == SystemNonNegativeInteger 16
 ++   This domain is a datatype for (unsigned) integer values
 ++   of precision 32 bits.
 UInt32() == SystemNonNegativeInteger 32
+
+@
+
+<<domain UINT64 UInt64>>=
+)abbrev domain UINT64 UInt64
+++ Author: Gabriel Dos Reis
+++ Date Created: March 25, 2009
+++ Date Last Modified: March 25, 2009
+++ Description:
+++   This domain is a datatype for (unsigned) integer values
+++   of precision 64 bits.
+UInt64() == SystemNonNegativeInteger 64
 
 @
 

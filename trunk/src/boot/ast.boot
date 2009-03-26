@@ -1256,7 +1256,7 @@ genTypeAlias(head,body) ==
 --            part of the data being transmitted.
 
 $NativeSimpleDataTypes ==
-  '(char byte int float double)
+  '(char byte int int16 int32 float double)
 
 $NativeSimpleReturnTypes ==
   [:$NativeSimpleDataTypes,:'(void string)]
@@ -1297,6 +1297,14 @@ nativeType t ==
       %hasFeature KEYWORD::ECL => KEYWORD::UNSIGNED_-BYTE
       -- approximate by 'char' for GCL
       nativeType "char"
+    t = "int16" =>
+      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),16]
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT16")
+      unknownNativeTypeError t
+    t = "int32" =>
+      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),32]
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
+      unknownNativeTypeError t
     unknownNativeTypeError t
   -- composite, reference type.
   first t = "buffer" =>
@@ -1339,7 +1347,7 @@ nativeArgumentType t ==
 
 ++ True if objects of type native type `t' are sensible to GC.
 needsStableReference? t ==
-  not atom t and first t in '(readonly writeonly readwrite)
+  t is [m,:.] and m in '(readonly writeonly readwrite)
 
 ++ coerce argument `a' to native type `t', in preparation for
 ++ a call to a native functions.

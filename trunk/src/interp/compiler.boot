@@ -1271,13 +1271,18 @@ bootDenotation s ==
 getBasicFFIType: %Mode -> %Symbol
 getBasicFFIType t ==
   t = $Byte => bootDenotation "byte"
+  t = $Int16 => bootDenotation "int16"
   t = $Int32 => bootDenotation "int32"
-  t = $Int64 => bootDenotation "int64"
+--  t = $Int64 => bootDenotation "int64"
   t = $SingleInteger => bootDenotation "int"
   t = $SingleFloat =>  bootDenotation "float"
   t = $DoubleFloat => bootDenotation "double"
   t = $String => bootDenotation "string"
   nil
+
+
+++ List of admissible type modifiers in an FFI import declaration.
+$FFITypeModifier == '(ReadOnly WriteOnly ReadWrite)
 
 ++ Return the Boot denotation of an FFI datatype.  This is either
 ++ a basic VM type, or a simple array of sized integer or floating
@@ -1285,11 +1290,12 @@ getBasicFFIType t ==
 getFFIDatatype: %Mode -> %Form
 getFFIDatatype t ==
   x := getBasicFFIType t => x
-  t is [m,["PrimitiveArray",t']] and m in '(ReadOnly WriteOnly) and
-    member(t',[$Byte,$Int32,$Int64,$SingleFloat,$DoubleFloat]) =>
+  t is [m,["PrimitiveArray",t']] and m in $FFITypeModifier and
+    member(t',[$Byte,$Int16,$Int32,$SingleFloat,$DoubleFloat]) =>
       m' := 
         m = "ReadOnly" => bootDenotation "readonly"
-        bootDenotation "writeonly"
+        m = "WriteOnly" => bootDenotation "writeonly"
+        bootDenotation "readwrite"
       [m',[bootDenotation "buffer",getBasicFFIType t']]
   nil
 
@@ -1342,7 +1348,7 @@ checkExternalEntity(id,type,lang,e) ==
 ++ Remove possible modifiers in the FFI type expression `t'.
 removeModifiers t ==
   for (ts := [x,:.]) in tails t repeat
-     x is [m,t'] and m in '(ReadOnly WriteOnly) =>
+     x is [m,t'] and m in $FFITypeModifier =>
        rplac(first ts,t')
   t
 
