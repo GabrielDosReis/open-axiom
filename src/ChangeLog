@@ -1,3 +1,7 @@
+2009-04-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: Support more ISO C sized integer type in FFI.
+
 2009-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (nativeType): Accept int16 and int32.
