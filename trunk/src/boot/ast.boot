@@ -1210,26 +1210,37 @@ genTypeAlias(head,body) ==
 --%
 
 -- The Native Interface Translation support the following datatypes
---   void:    No value, useful only as function return type.
+--     void:  No value, useful only as function return type.
 --
---   char:    Character type, corresponds to C type 'char'.
+--     char:  Character type, corresponds to C type 'char'.
 --
---   byte:    8-bit data type for the unit of information; corresponds 
---            to C type 'unsigned char'.  
+--     byte:  8-bit data type for the unit of information; corresponds 
+--            to C type 'unsigned char' on 8-bit char machines.
 --
---    int:    Native integer data type.  Ideally should be wide enough
+--     Note:  We require 2's complement representation.
+--
+--     int8:  8-bit signed integer data type; int8_t in ISO C.
+--    uint8:  8-bit unsigned integer data type; uint8_t in ISO C.
+--    int16:  16-bit signed integer data type; int16_t is ISO C.
+--   uint16:  16-bit unsigned integer data type; uint16_t in ISO C.
+--    int32:  32-bit signed integer data type; int32_t in ISO C.
+--   uint32:  32-bit unsigned integer data type; uint32_t in ISO C.
+--    int64:  64-bit signed integer data type; int64_t in ISO C.
+--   uint64:  64-bit unsigned integer data type; uint64_t in ISO C.
+--
+--      int:  Native integer data type.  Ideally should be wide enough
 --            to represent native address space.  However, only ECL
 --            and GCL seems to give that guarantee at the moment.
 --
---  float:    single precision datatype for floating poing values.
---            Corresponds to C type 'float'.  On most architecture,
+--    float:  single precision datatype for floating poing values.
+--  float32:  Corresponds to C type 'float'.  On most architecture,
 --            this is a 32-bit precision IEEE 756 data type.
 --
--- double:    double precision datatype for floating point values.
---            Corresponds to C type 'double'.  On most architecture,
+--   double:  double precision datatype for floating point values.
+-- double32   Corresponds to C type 'double'.  On most architecture,
 --            this is a 64-bit precision IEEE 756 data type.
 --
--- string:    a data type for strings of characters.  The general
+--   string:  a data type for strings of characters.  The general
 --            semantics is that a string is passed by value (e.g.
 --            copied into a separate storage) to a native
 --            function.  In many cases, that is appropriate (e.g.
@@ -1244,7 +1255,7 @@ genTypeAlias(head,body) ==
 --            stored as separate datum part of the data being
 --            transmitted.
 --
--- buffer:    A data type constructor for array of simple data 
+--   buffer:  A data type constructor for array of simple data 
 --            (e.g. array of bytes, array of float, array of double).
 --            This is used to communicate data between native
 --            functions and OpenAxiom functions.  The `buffer' type
@@ -1256,7 +1267,13 @@ genTypeAlias(head,body) ==
 --            part of the data being transmitted.
 
 $NativeSimpleDataTypes ==
-  '(char byte int int16 int32 float double)
+  '(char   byte   int 
+    int8   uint8
+    int16  uint16
+    int32  uint32
+    int64  uint64
+    float  float32
+    double float64)
 
 $NativeSimpleReturnTypes ==
   [:$NativeSimpleDataTypes,:'(void string)]
@@ -1291,19 +1308,46 @@ nativeType t ==
 	[t',KEYWORD::EXTERNAL_-FORMAT,KEYWORD::ASCII,
 	   KEYWORD::ELEMENT_-TYPE, "BASE-CHAR"]
       t'
-    t = "byte" =>
+    t in '(byte uint8) =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),8]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT8")
       %hasFeature KEYWORD::ECL => KEYWORD::UNSIGNED_-BYTE
-      -- approximate by 'char' for GCL
-      nativeType "char"
+      nativeType "char"           -- approximate by 'char' for GCL
     t = "int16" =>
-      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),16]
+      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),16]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT16")
+      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT16_-T =>
+         KEYWORD::INT16_-T
+      unknownNativeTypeError t
+    t = "uint16" =>
+      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),16]
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT16")
+      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT16_-T =>
+         KEYWORD::UINT16_-T
       unknownNativeTypeError t
     t = "int32" =>
+      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),32]
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
+      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT32_-T =>
+         KEYWORD::INT32_-T
+      unknownNativeTypeError t
+    t = "uint32" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),32]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
+      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT32_-T =>
+         KEYWORD::UINT32_-T
+      unknownNativeTypeError t
+    t = "int64" =>
+      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),64]
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT64")
+      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
+         KEYWORD::INT64_-T
+      unknownNativeTypeError t
+    t = "uint64" =>
+      %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),64]
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT64")
+      %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
+         KEYWORD::UINT64_-T
       unknownNativeTypeError t
     unknownNativeTypeError t
   -- composite, reference type.
