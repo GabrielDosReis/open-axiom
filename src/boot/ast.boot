@@ -1233,11 +1233,11 @@ genTypeAlias(head,body) ==
 --            and GCL seems to give that guarantee at the moment.
 --
 --    float:  single precision datatype for floating poing values.
---  float32:  Corresponds to C type 'float'.  On most architecture,
+--  float32   Corresponds to C type 'float'.  On most architecture,
 --            this is a 32-bit precision IEEE 756 data type.
 --
 --   double:  double precision datatype for floating point values.
--- double32   Corresponds to C type 'double'.  On most architecture,
+--  float64   Corresponds to C type 'double'.  On most architecture,
 --            this is a 64-bit precision IEEE 756 data type.
 --
 --   string:  a data type for strings of characters.  The general
@@ -1265,9 +1265,16 @@ genTypeAlias(head,body) ==
 --            and `double'.  It cannot be used as function return type.
 --            Note that the length of the array is not stored as 
 --            part of the data being transmitted.
+--
+--  pointer:  A data type constructor for pointer to simple data 
+--            This is used to communicate pointer to foreign data 
+--            between native functions and OpenAxiom functions.
+--            The `buffer' type constructor must be used in
+--            conjunction with one of the modifiers `readonly',
+--            `writeonly', or `readwrite'.
 
 $NativeSimpleDataTypes ==
-  '(char   byte   int 
+  '(char   byte    int 
     int8   uint8
     int16  uint16
     int32  uint32
@@ -1349,10 +1356,18 @@ nativeType t ==
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
          KEYWORD::UINT64_-T
       unknownNativeTypeError t
+    t = "float32" => nativeType "float"
+    t = "float64" => nativeType "double"
     unknownNativeTypeError t
   -- composite, reference type.
   first t = "buffer" =>
     %hasFeature KEYWORD::GCL => "OBJECT"
+    %hasFeature KEYWORD::ECL => KEYWORD::OBJECT
+    %hasFeature KEYWORD::SBCL => ["*",nativeType second t]
+    %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
+    unknownNativeTypeError t
+  first t = "buffer" =>
+    %hasFeature KEYWORD::GCL => "fixnum"
     %hasFeature KEYWORD::ECL => KEYWORD::OBJECT
     %hasFeature KEYWORD::SBCL => ["*",nativeType second t]
     %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
@@ -1438,11 +1453,13 @@ genGCLnativeTranslation(op,s,t,op') ==
       x in $NativeSimpleDataTypes => SYMBOL_-NAME x
       x = "void" => '"void"
       x = "string" => '"char*"
+      x is [.,["pointer",.]] => "fixnum"
       '"object" 
     gclArgInC(x,a) ==
       x in $NativeSimpleDataTypes => a
       x = "string" => a   -- GCL takes responsability for the conversion
-      [.,[.,y]] := x
+      [.,[c,y]] := x
+      c = "pointer" => a
       y = "char" => strconc(a,'"->st.st__self")
       y = "byte" => strconc(a,'"->ust.ust__self")
       y = "int" => strconc(a,'"->fixa.fixa__self")
