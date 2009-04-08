@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -585,14 +585,17 @@ spleI1(dig,zro) ==
              bb:=spleI1(dig,zro)-- escape, anyno spaces are ignored
              CONCAT(str,bb)
 
-scanCheckRadix(r,w)==
-       ns:=#w
-       done:=false
-       for i in 0..ns-1  repeat
-         a:=rdigit? w.i
-         if null a or a>=r
-         then  ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n-ns+i),
-                    "S2CN0002", [w.i])
+scanCheckRadix(a,w)==
+  r := PARSE_-INTEGER a
+  ns:=#w
+  ns = 0 => 
+    ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0004",[a])
+  done:=false
+  for i in 0..ns-1  repeat
+    a:=rdigit? w.i
+    if null a or a>=r
+    then  ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n-ns+i),
+	       "S2CN0002", [w.i])
 
 scanNumber() ==
        a := spleI(function digit?)
@@ -615,8 +618,8 @@ scanNumber() ==
            else lfinteger a
          else
              $n:=$n+1
-             w:=spleI1(function rdigit?,true)
-             scanCheckRadix(PARSE_-INTEGER a,w)
+             w:=spleI1(function rdigit?,false)
+             scanCheckRadix(a,w)
              if $n>=$sz
              then
                 lfrinteger(a,w)
@@ -631,7 +634,7 @@ scanNumber() ==
                     else
                     --$n:=$n+1
                       v:=spleI1(function rdigit?,true)
-                      scanCheckRadix(PARSE_-INTEGER a,v)
+                      scanCheckRadix(a,v)
                       scanExponent(CONCAT(a,'"r",w),v)
                   else lfrinteger(a,w)
 

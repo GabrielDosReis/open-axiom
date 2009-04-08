@@ -1,3 +1,13 @@
+2009-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/scan.boot (scanCheckRadix): Take the radix in string form.
+	Croak on missing digit after radix.
+	(scanNumber): Don't ask for implicit 0 completion for explicit
+	radix integers.
+	* interp/int-top.boot (phInterpret): Don't bother evaluating
+	expressions if earlier phases saw errors.
+	* interp/msg.boot (getStFromMsg): Fix typo.
+
 2009-04-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot: Support more ISO C sized integer type in FFI.
