@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -349,8 +349,7 @@ getStFromMsg msg ==
     setOptKeyBlanks()
     preStL := getPreStL getMsgPrefix? msg
     getMsgTag  msg = 'line =>
-          [$optKeyBlanks, '"%1" , :preStL,_
-           getMsgText msg]
+          [$optKeyBlanks, :preStL, getMsgText msg]
     posStL := getPosStL msg
     optKey :=
         $showKeyNum =>
