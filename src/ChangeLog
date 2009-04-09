@@ -1,5 +1,12 @@
 2009-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2564917
+	* lisp/core.lisp.in: Default the read to DOUBLE-FLOAT for floating
+	point literals.
+	* boot/translator.boot (BOOTTOCLLINES): Don't set it here.
+
+2009-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/scan.boot (scanCheckRadix): Take the radix in string form.
 	Croak on missing digit after radix.
 	(scanNumber): Don't ask for implicit 0 completion for explicit

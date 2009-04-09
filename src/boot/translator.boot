@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -109,8 +109,6 @@ BOOTCLAMLINES(lines, fn, out) ==
    BOOTTOCLLINES(lines, fn, out)
 
 BOOTTOCLLINES(lines, fn, outfn)==
-   -- The default floating point number is double-float.
-   SETQ(_*READ_-DEFAULT_-FLOAT_-FORMAT_*, 'DOUBLE_-FLOAT)
    infn:=shoeAddbootIfNec fn
    shoeOpenInputFile(a,infn, shoeClLines(a,fn,lines,outfn))
  
