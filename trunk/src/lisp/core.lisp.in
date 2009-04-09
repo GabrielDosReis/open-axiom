@@ -155,7 +155,9 @@
 ;;
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-	   (setq *load-verbose* nil))
+	   (progn
+	     (setq *read-default-float-format* 'double-float)
+	     (setq *load-verbose* nil)))
 
 ;; True means that the base Lisp system uses conventional C-style
 ;; program linking model, whereby programs are constructed by linking
