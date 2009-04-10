@@ -549,7 +549,7 @@ Other aspects depend on the platform being considered.
 \Tool{OpenAxiom} source code had developed the appalling and irritating habit
 of testing for
 platforms, when in fact it is interested in functionalities.
-The outcome is an ever-growing pile increasing disgusting hacks.
+The outcome is an ever-growing pile of increasing disgusting hacks.
 For example, most the XXXplatform below really have nothing to
 do with platforms.  
 
@@ -562,7 +562,7 @@ LDF=
 LISP=lsp
 
 case $target in
-    *bsd*)
+    *bsd*|*dragonfly*)
         AC_DEFINE([BSDplatform], [], [BSD flavour])
 	CCF="-O2 -Wall"
 	;;
@@ -1131,7 +1131,7 @@ information:
 <<Autoconf init>>=
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.3.0-2009-04-08], 
+AC_INIT([OpenAxiom], [1.3.0-2009-04-10], 
         [open-axiom-bugs@lists.sf.net])
 
 @
