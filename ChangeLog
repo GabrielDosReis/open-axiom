@@ -1,3 +1,7 @@
+2009-04-10  Aleksej Saushev  <asau@inbox.ru>
+
+	* configure.ac.pamphlet: Recognize dragonfly triplet as BSD-flavour.
+
 2009-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: ECL-9.3.0 and higher no longer needs

@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.3.0-2009-04-08], 
+AC_INIT([OpenAxiom], [1.3.0-2009-04-10], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -567,7 +567,7 @@ LDF=
 LISP=lsp
 
 case $target in
-    *bsd*)
+    *bsd*|*dragonfly*)
         AC_DEFINE([BSDplatform], [], [BSD flavour])
         CCF="-O2 -Wall"
         ;;
