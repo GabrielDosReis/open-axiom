@@ -207,7 +207,7 @@ import NANQ: () -> double for NaNQ
 
 $plusInfinity := plusInfinity()
 $minusInfinity := minusInfinity()
-$NaNValue := NaNQ()
+$NaNvalue := NaNQ()
 
 )elseif %hasFeature KEYWORD::SBCL
 $plusInfinity == SB_-EXT::DOUBLE_-FLOAT_-POSITIVE_-INFINITY

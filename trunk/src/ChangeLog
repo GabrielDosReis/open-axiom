@@ -1,3 +1,9 @@
+2009-04-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2749682
+	* interp/sys-os.boot ($NaNvalue): Fix typo.
+	* testsuite/interpreter/sf-2749682.input: New.
+
 2009-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2564917
