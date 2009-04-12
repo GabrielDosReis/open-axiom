@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1193,6 +1193,7 @@ setOutputFortran arg ==
       $fortranOutputFile := '"CONSOLE"
 
   (arg is [fn,ft]) or (arg is [fn,ft,fm]) => -- aha, a file
+    fn := STRING fn
     if (ptype := pathnameType fn) then
       fn := STRCONC(pathnameDirectory fn,pathnameName fn)
       ft := ptype

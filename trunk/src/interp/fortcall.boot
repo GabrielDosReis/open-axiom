@@ -35,6 +35,9 @@
 import sys_-macros
 namespace BOOT
 
+--%
+$nagMessages := nil
+
 makeVector(elts, t) ==
   MAKE_-ARRAY(#elts, KEYWORD::ELEMENT_-TYPE, t or true,
               KEYWORD::INITIAL_-CONTENTS, elts)
