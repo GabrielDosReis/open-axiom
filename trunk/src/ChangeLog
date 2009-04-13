@@ -1,3 +1,9 @@
+2009-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2757748
+	* hyper/Makefile.in (${OUTLIB}/htsearch): Insist on execution bit.
+	(${OUTLIB}/presea): Likewise.
+
 2009-04-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2754400
