@@ -78,6 +78,7 @@ spad() ==
   $inLispVM : local := nil
   setOutputAlgebra "%initialize%"
   runspad()
+  %hasFeature KEYWORD::SBCL => 0
   'EndOfSpad
 
 runspad() ==

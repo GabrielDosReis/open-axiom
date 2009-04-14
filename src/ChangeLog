@@ -1,5 +1,12 @@
 2009-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2760823 
+	* interp/int-top.boot (spad): Return 0 for when SBCL is base Lisp
+	runtime. 
+	* interp/i-toplev.boot (start): Likewise.
+
+2009-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2760560
 	* driver/utils.h (openaxiom_driver): Add openaxiom_null_driver.
 	Document all of them.
