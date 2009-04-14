@@ -1,7 +1,7 @@
 /*
   Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2009, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -157,21 +157,25 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
       start_clef = 0;
     else if (strcmp(argv[arg], "-clef")        == 0)
       start_clef = 1;
-    else if (strcmp(argv[arg], "-gr")          == 0) {
+    else if (strcmp(argv[arg], "-gr") == 0
+             || strcmp(argv[arg], "--graph") == 0 ) {
       if (!OPENAXIOM_HAVE_GRAPHICS)
         fprintf(stderr, "OpenAxiom was not build with Graphics support.\n");
       else
         start_graphics = 1;
     }
-    else if (strcmp(argv[arg], "-nogr")        == 0)
+    else if (strcmp(argv[arg], "-nogr") == 0
+             || strcmp(argv[arg], "--no-graph") == 0)
       start_graphics = 0;
-    else if (strcmp(argv[arg], "-ht")          == 0) {
+    else if (strcmp(argv[arg], "-ht") == 0
+             || strcmp(argv[arg], "--hyperdoc") == 0) {
       if (!OPENAXIOM_HAVE_GRAPHICS)
         fprintf(stderr, "OpenAxiom was not build with HyperDoc support.\n");
       else
         start_ht = 1;
     }
-    else if (strcmp(argv[arg], "-noht")        == 0)
+    else if (strcmp(argv[arg], "-noht") == 0
+             || strcmp(argv[arg], "--no-hyperdoc") == 0)
       start_ht = 0;
     else if (strcmp(argv[arg], "-iw")          == 0)
       start_spadclient = 1;
@@ -183,7 +187,8 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
       start_spadclient = 0;
     else if (strcmp(argv[arg], "-comp")        == 0)
       ws_path = "$AXIOM/etc/images/comp";
-    else if (strcmp(argv[arg], "-nox")         == 0) {
+    else if (strcmp(argv[arg], "-nox") == 0
+             || strcmp(argv[arg], "--no-gui") == 0) {
         use_X = 0;
         start_local_spadclient = 1;
         start_spadclient = 0;

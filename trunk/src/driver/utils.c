@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008, Gabriel Dos Reis.
+   Copyright (C) 2008-2009, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -167,6 +167,53 @@ openaxiom_build_rts_options(openaxiom_command* command,
 #endif
 
 
+static void print_line(const char* line) {
+   fputs(line, stdout);
+   fputc('\n', stdout);
+}
+
+/* Print OpenAxiom version information.  */
+static void print_version(void) {
+   print_line(PACKAGE_STRING);
+}
+
+/* Print OpenAxiom invokation syntax (e.g. options) on standard
+   output stream.  */
+
+static void print_usage(void) {
+   print_line("Usage: open-axiom [options] [file]");
+   print_line("General options:");
+   print_line("  --help           Print this information and exit.");
+   print_line("  --version        Print OpenAxiom version and exit.");
+   print_line("  --script         Execute the file argument as a Spad script.");
+   print_line("                   If specified, this option should be last before file argument.");
+   print_line("  --compile        Invoke the compiler on the file argument.");
+   print_line("                   If specified, this option should be last before file argument.");
+   print_line("  --server         Start the Superman as master process.");
+   print_line("  --no-server      Do not start Superman as master process.");
+   print_line("");
+   print_line("Superman options:");
+   print_line("  --no-gui         Do not start the Graphics or HyperDoc components.");
+   print_line("  --graph          Start the Graphics component.  This option is meaningful");
+   print_line("                   only if OpenAxiom was built with graphics support.");
+   print_line("  --no-graph       Do not start the Graphics component.");
+   print_line("  --hyperdoc       Start the HyperDoc component.  This option is meaningful");
+   print_line("                   only if OpenAxiom was built with graphics support.");
+   print_line("  --no-hyperdoc    Do not start the HyperDoc component.");
+              
+   print_line("");
+   print_line("Compiler options:");
+   print_line("  --optimize=<n>   Set compiler optimization level to <n>, a natural number.");
+   print_line("");
+   print_line("If invoked without options and without an input file "
+              "OpenAxiom will start as an interative program with Superman"
+              " as the master process, the majority of uses.  If invoked "
+              "with a file as single argument, OpenAxiom assumes the file is a Spad "
+              "script and will attempt to execute it as such.");
+   print_line("");
+   print_line("Submit bug report to " PACKAGE_BUGREPORT);
+}
+
 /* Determine driver to be used for executing `command'.  */
 openaxiom_driver
 openaxiom_preprocess_arguments(openaxiom_command* command,
@@ -188,6 +235,16 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
             driver = openaxiom_script_driver;
          else if(strcmp(argv[i], "--compile") == 0)
             driver = openaxiom_compiler_driver;
+         else if (strcmp(argv[i], "--help") == 0) {
+            print_usage();
+            driver = openaxiom_null_driver;
+            break;
+         }
+         else if (strcmp(argv[i], "--version") == 0) {
+            print_version();
+            driver = openaxiom_null_driver;
+            break;
+         }
          else {
             if (argv[i][0] == '-')
                /* Maybe option for the driver.  */
@@ -205,30 +262,32 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
    command->core_argc = other;
    command->core_argv = argv;
 
-   /* If we have a file but not instructed to compiler, assume
-      we are asked to interpret a script.  */
-   if (files > 0)
-      switch (driver) {
-      case openaxiom_unknown_driver:
-      case openaxiom_sman_driver:
-         command->core_argc += 1;
-         command->core_argv =
-            (char**) malloc((other + 2) * sizeof(char*));
-         command->core_argv[0] = argv[0];
-         command->core_argv[1] = "--script";
-         for (i = 0; i < other; ++i)
-            command->core_argv[2 + i] = argv[1 + i];
-         driver = openaxiom_script_driver;
-         break;
-      default:
-         /* Driver specified by user.  */
-         break;
+   if (driver != openaxiom_null_driver) {
+      /* If we have a file but not instructed to compiler, assume
+         we are asked to interpret a script.  */
+      if (files > 0)
+         switch (driver) {
+         case openaxiom_unknown_driver:
+         case openaxiom_sman_driver:
+            command->core_argc += 1;
+            command->core_argv =
+               (char**) malloc((other + 2) * sizeof(char*));
+            command->core_argv[0] = argv[0];
+            command->core_argv[1] = "--script";
+            for (i = 0; i < other; ++i)
+               command->core_argv[2 + i] = argv[1 + i];
+            driver = openaxiom_script_driver;
+            break;
+         default:
+            /* Driver specified by user.  */
+            break;
+         }
+      else if (driver == openaxiom_unknown_driver)
+         driver = OPENAXIOM_DEFAULT_DRIVER;
+      command->core_argv[command->core_argc] = NULL;
+      
+      openaxiom_build_rts_options(command, driver);
    }
-   else if (driver == openaxiom_unknown_driver)
-      driver = OPENAXIOM_DEFAULT_DRIVER;
-   command->core_argv[command->core_argc] = NULL;
-
-   openaxiom_build_rts_options(command, driver);
    return driver;
 }
 

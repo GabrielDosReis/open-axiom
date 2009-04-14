@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008, Gabriel Dos Reis.
+   Copyright (C) 2008-2009, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -76,6 +76,8 @@ main(int argc, char* argv[])
       openaxiom_preprocess_arguments(&command, argc, argv);
 
    switch (driver) {
+   case openaxiom_null_driver:
+      return 0;                 /* Bye.  */
    case openaxiom_core_driver:
    case openaxiom_script_driver:
    case openaxiom_compiler_driver:
