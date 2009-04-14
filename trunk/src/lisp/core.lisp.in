@@ -107,6 +107,7 @@
            "IMPORT-MODULE"
 	   "BOOT-IMPORT"
 	   "CONCAT"
+	   "$EditorProgram"
            ))
 
 (in-package "AxiomCore")
@@ -331,7 +332,7 @@
   ;; We don't allow overriding at the moment.
   (let ((key (cons request file-type)))
     (unless (|useFileType?| request)
-      (setf (get request 'use-file-type) t))
+      (setf (get request 'use-file-type) file-type))
     (|installDriver| key driver)))
 
 
@@ -382,7 +383,7 @@
 ;; a non-option form is encountered. OPTIONS-SO-FAR accumulates the
 ;; the list of processed options.
 (defun |processCommandLine| (argv options-so-far)
-  (if (and argv
+  (if (and argv (>= (length (car argv)) 2)
            (equal "--" (subseq (car argv) 0 2)))
       (let ((option (|parseOption| (car argv))))
         (cond ((symbolp option)
@@ -663,7 +664,7 @@
     (when (null driver) 
       (|fatalError| (format nil "invalid option `--~a'" (string request))))
     (funcall driver prog-name options args)))
-  
+
 (defun |hasHandler?| (request)
   (|getDriver| request))
 
@@ -683,8 +684,9 @@
 	     (|coreError| "missing input files")
 	     (return t))
            (dolist (f args)
-             (let* ((file-type (|getFileType| f))
-                    (opt-name (car opt))
+             (let* ((opt-name (car opt))
+		    (file-type (or (|getFileType| f) 
+				   (|useFileType?| opt-name)))
                     (request (cons opt-name file-type)))
                (unless (|handleRequest| prog-name request options f)
 		 (return nil))))
