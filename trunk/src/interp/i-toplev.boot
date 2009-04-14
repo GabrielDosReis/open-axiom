@@ -108,6 +108,7 @@ start(:l) ==
     $OLDLINE := NIL
   $superHash := MAKE_-HASHTABLE('UEQUAL)
   if null l then runspad()
+  %hasFeature KEYWORD::SBCL => 0
   'EndOfSpad
 
 readSpadProfileIfThere() ==
