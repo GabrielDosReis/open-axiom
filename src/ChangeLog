@@ -1,5 +1,17 @@
 2009-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2760560
+	* driver/utils.h (openaxiom_driver): Add openaxiom_null_driver.
+	Document all of them.
+	* driver/utils.c (print_line): New.
+	(print_version): Print version information.
+	(print_usage): Print option documentation.
+	(openaxiom_preprocess_arguments): Handle --help and --version.
+	* driver/main.c (main): Do nothing for the null driver.
+	* sman/sman.c (process_arguments): Accept long form of options.
+
+2009-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2757748
 	* hyper/Makefile.in (${OUTLIB}/htsearch): Insist on execution bit.
 	(${OUTLIB}/presea): Likewise.
