@@ -1,3 +1,11 @@
+2009-04-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2760553
+	* lisp/core.lisp.in (associateRequestWithFileType): Remember
+	FILE-TYPE as default value for REQUEST.
+	(|processCommandLine|): Standard options have length at least 2.
+	(|handleCommandLine|): Use default file type if non is present.
+
 2009-04-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2760823 
