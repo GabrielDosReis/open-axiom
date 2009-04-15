@@ -78,7 +78,6 @@ spad() ==
   $inLispVM : local := nil
   setOutputAlgebra "%initialize%"
   runspad()
-  %hasFeature KEYWORD::SBCL => 0
   'EndOfSpad
 
 runspad() ==
@@ -110,12 +109,10 @@ intloop () ==
     mode := $intRestart
     while mode = $intRestart repeat
       resetStackLimits()
-      mode := CATCH($intTopLevel,
-                    SpadInterpretStream(1, ["TIM", "DALY", "?"], true))
+      mode := CATCH($intTopLevel, SpadInterpretStream(1, nil, true))
 
 
 SpadInterpretStream(str, source, interactive?) ==
-    $fn              : local := source
     pile?                    := not interactive?
     $libQuiet        : local := not interactive?
  

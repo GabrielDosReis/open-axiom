@@ -1,3 +1,14 @@
+2009-04-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2760823
+	* interp/sys-driver.boot (systemMain): Explicitly call toplevel
+	REPL for SBCL- and ECL-based builds.
+	* interp/i-toplev.boot (start): Don't special case SBCL here.
+	* interp/int-top.boot (spad): Likewise.
+	(intloop): Tidy call to SpadInterpretStream.
+	(SpadInterpretStream): Don't store to $fn.
+	* interp/msg.boot (toFile?): Don't check for $fn.
+
 2009-04-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2760553

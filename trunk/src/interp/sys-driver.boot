@@ -288,7 +288,7 @@ installDriver(Option '"build-databases",function buildDatabasesHandler)
 
 --%
 
-++ Main entry point to the system.
+++ Main entry point to the interactive system.
 systemMain() ==
   IN_-PACKAGE '"BOOT"      -- ??? is this still necessary?
   -- ??? Ideally, we should not be calling AxiomCore::topLevel.
@@ -301,5 +301,12 @@ systemMain() ==
   if $StandardLinking then 
     initializeGlobalState()
   $leanMode := getOptionValue "mode" = '"lean"
-  %basicSystemIsComplete() => restart()
+  %basicSystemIsComplete() => 
+    restart()
+)if %hasFeature KEYWORD::ECL
+    SI::_*LISP_-INITIALIZED_* : local := true
+    apply($originalLispTopLevel,nil)
+)elseif %hasFeature KEYWORD::SBCL 
+    apply($originalLispTopLevel,nil)
+)endif
   fatalError '"fell off systemMain"
