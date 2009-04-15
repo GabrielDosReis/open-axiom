@@ -337,7 +337,6 @@ msgOutputter msg  ==
         
 toScreen? msg ==  getMsgToWhere msg ^= 'fileOnly
 toFile? msg   ==
-     PAIRP $fn and _
      getMsgToWhere msg ^= 'screenOnly
  
  
