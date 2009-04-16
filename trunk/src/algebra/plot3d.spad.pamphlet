@@ -192,11 +192,11 @@ Plot3D(): Exports == Implementation where
  
     select(l,f,g) ==
       m := f first l
-      if (EQL(m, _$NaNvalue$Lisp)$Lisp) then m := 0
+      if (EQL(m, quietDoubleNaN()$Lisp)$Lisp) then m := 0
 --      for p in rest l repeat m := g(m,fp)
       for p in rest l repeat
         fp : F := f p
-        if (EQL(fp, _$NaNvalue$Lisp)$Lisp) then fp := 0
+        if (EQL(fp, quietDoubleNaN()$Lisp)$Lisp) then fp := 0
         m := g(m,fp)
       m
  
@@ -447,7 +447,7 @@ Plot3D(): Exports == Implementation where
     myTrap(ff:F-> F, f:F):F ==
       s := trapNumericErrors(ff(f))$Lisp :: Union(F, "failed")
       if (s) case "failed" then
-        r:F := _$NaNvalue$Lisp
+        r:F := quietDoubleNaN()$Lisp
       else
         r:F := s
       r
