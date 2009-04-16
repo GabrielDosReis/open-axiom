@@ -1,3 +1,14 @@
+2009-04-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2763053
+	* interp/sys-os.boot ($NaNvalue): Remove.
+	(quietDoubleNaN): Import.
+	* include/cfuns.h (quiet_double_NaN): Rename from NANQ.
+	* lib/cfuns-c.c (quiet_double_NaN): Likewise.
+	* algebra/draw.spad.pamphlet: Replace $NaNvalue with quietDoubleNaN.
+	* algebra/plot.spad.pamphlet: Likewise.
+	* algebra/plot3d.spad.pamphlet: Likewise.
+
 2009-04-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2760823

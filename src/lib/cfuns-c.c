@@ -667,7 +667,7 @@ minus_infinity(void)
 }
 
 OPENAXIOM_EXPORT double 
-NANQ(void)
+quiet_double_NaN(void)
 {
 #ifdef NAN
    return NAN;

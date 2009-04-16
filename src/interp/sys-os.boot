@@ -198,16 +198,16 @@ runProgram(prog,args) ==
 
   
 ++ numeric limits
+
+import quiet__double__NaN: () -> double for quietDoubleNaN
+
 )if %hasFeature KEYWORD::GCL
 import plus__infinity: () -> double for plusInfinity
 
 import minus__infinity: () -> double for minusInfinity
 
-import NANQ: () -> double for NaNQ
-
 $plusInfinity := plusInfinity()
 $minusInfinity := minusInfinity()
-$NaNvalue := NaNQ()
 
 )elseif %hasFeature KEYWORD::SBCL
 $plusInfinity == SB_-EXT::DOUBLE_-FLOAT_-POSITIVE_-INFINITY

@@ -64,7 +64,7 @@ OPENAXIOM_EXPORT int oa_copy_file(const char*, const char*);
 
 OPENAXIOM_EXPORT double plus_infinity(void);
 OPENAXIOM_EXPORT double minus_infinity(void);
-OPENAXIOM_EXPORT double NANQ(void);
+OPENAXIOM_EXPORT double quiet_double_NaN(void);
 OPENAXIOM_EXPORT openaxiom_byteorder oa_get_host_byteorder(void);
 
 

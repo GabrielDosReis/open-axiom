@@ -284,7 +284,7 @@ Plot(): Exports == Implementation where
       xDiff = 0 or yDiff = 0 => curve
       l := lo tRange; h := hi tRange
       (tDiff := h-l) = 0 => curve
---      if (EQL(yDiff, _$NaNvalue$Lisp)$Lisp) then yDiff := 1::F
+--      if (EQL(yDiff, quietDoubleNaN()$Lisp)$Lisp) then yDiff := 1::F
       t := curve.knots
       #t < 3 => curve
       p := curve.points; f := curve.source
@@ -477,9 +477,9 @@ Plot(): Exports == Implementation where
     myTrap: (F-> F, F) -> F
     myTrap(ff:F-> F, f:F):F ==
       s := trapNumericErrors(ff(f))$Lisp :: Union(F, "failed")
-      s case "failed" => _$NaNvalue$Lisp
+      s case "failed" => quietDoubleNaN()$Lisp
       r:F:=s::F
-      r > max()$F or r < min()$F => _$NaNvalue$Lisp
+      r > max()$F or r < min()$F => quietDoubleNaN()$Lisp
       r
 
     plot(f:F -> F,xRange:R) ==
