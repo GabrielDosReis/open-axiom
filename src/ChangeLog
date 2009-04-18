@@ -1,3 +1,11 @@
+2009-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2757715
+	* Makefile.pamphlet (all-input): Make all-doc a requirement.
+	(all-doc): Tidy.
+	* doc/Makefile.in: Likewise.  Install help files.
+	* doc/help: New.  Home for help files.
+
 2009-04-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2763053

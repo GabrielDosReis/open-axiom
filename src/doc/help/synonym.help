@@ -1,0 +1,52 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.24.  )synonym
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )synonym
+  - )synonym synonym fullCommand
+  - )what synonyms
+ 
+Command Description: 
+ 
+This command is used to create short synonyms for system command expressions.
+For example, the following synonyms might simplify commands you often use.
+ 
+)synonym save         history )save
+)synonym restore      history )restore
+)synonym mail         system mail
+)synonym ls           system ls
+)synonym fortran      set output fortran
+ 
+Once defined, synonyms can be used in place of the longer command
+expressions. Thus
+ 
+)fortran on
+ 
+is the same as the longer
+ 
+)set fortran output on
+ 
+To list all defined synonyms, issue either of
+ 
+)synonyms
+)what synonyms
+ 
+To list, say, all synonyms that contain the substring ``ap'', issue
+ 
+)what synonyms ap
+ 
+Also See: 
+o )set
+o )what
+ 

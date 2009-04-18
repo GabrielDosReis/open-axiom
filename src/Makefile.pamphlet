@@ -199,7 +199,7 @@ test input files are compared against known good results to ensure
 that nothing has been broken in the process of fixing bugs.
 
 <<inputdir>>=
-all-input: all-axiomsys
+all-input: all-axiomsys all-doc
 	cd input && ${MAKE}
 @
 
@@ -227,7 +227,7 @@ The \File{doc/} directory contains code used for documenting Axiom.
 
 <<docdir>>=
 all-doc:
-	cd doc && $(MAKE) $@
+	$(mkdir_p) "$(axiom_target_docdir)"/help && cd doc && $(MAKE) $@
 @
 
 \subsection{The \File{graph/} directory}
