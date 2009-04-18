@@ -572,7 +572,7 @@
 
 (DEFUN |ES-;kernel;BoLS;31| (|op| |args| $)
   (COND
-    ((NULL (SPADCALL |op| (|getShellEntry| $ 108)))
+    ((NOT (SPADCALL |op| (|getShellEntry| $ 108)))
      (|error| "Unknown operator"))
     ('T (|ES-;okkernel| |op| |args| $)))) 
 
@@ -611,7 +611,7 @@
   (PROG (|u| #0=#:G1522 |v|)
     (RETURN
       (SEQ (EXIT (COND
-                   ((NULL (SPADCALL |op| (|getShellEntry| $ 108)))
+                   ((NOT (SPADCALL |op| (|getShellEntry| $ 108)))
                     (|error| "Unknown operator"))
                    ('T
                     (SEQ (SEQ (LETT |u|
@@ -780,8 +780,8 @@
                      (EXIT (COND
                              ((QEQCAR |k| 1)
                               (|error| "left hand side must be a single kernel"))
-                             ((NULL (SPADCALL (QCDR |k|) |lk|
-                                     (|getShellEntry| $ 59)))
+                             ((NOT (SPADCALL (QCDR |k|) |lk|
+                                    (|getShellEntry| $ 59)))
                               (SEQ (LETT |lk| (CONS (QCDR |k|) |lk|)
                                     |ES-;mkKerLists|)
                                    (EXIT

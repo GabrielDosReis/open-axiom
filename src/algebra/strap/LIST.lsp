@@ -145,8 +145,8 @@
                            (SPADCALL |l1| 1 (|getShellEntry| $ 41))
                            |LIST;setDifference;3$;12|)
                      (COND
-                       ((NULL (SPADCALL |l11| |l2|
-                                  (|getShellEntry| $ 39)))
+                       ((NOT (SPADCALL |l11| |l2|
+                                 (|getShellEntry| $ 39)))
                         (LETT |lu| (CONS |l11| |lu|)
                               |LIST;setDifference;3$;12|)))
                      (EXIT (LETT |l1| (CDR |l1|)

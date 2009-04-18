@@ -267,7 +267,7 @@
              ((OR (NULL (LETT |lv|
                               (SPADCALL |p| (|getShellEntry| $ 40))
                               |POLYCAT-;isTimes;SU;4|))
-                  (NULL (SPADCALL |p| (|getShellEntry| $ 42))))
+                  (NOT (SPADCALL |p| (|getShellEntry| $ 42))))
               (CONS 1 "failed"))
              ('T
               (SEQ (LETT |l|
@@ -320,15 +320,15 @@
                  |POLYCAT-;isExpt;SU;5|)
            (EXIT (COND
                    ((OR (QEQCAR |u| 1)
-                        (NULL (SPADCALL |p|
-                                  (SPADCALL (|spadConstant| $ 43)
-                                      (QCDR |u|)
-                                      (LETT |d|
-                                       (SPADCALL |p| (QCDR |u|)
-                                        (|getShellEntry| $ 46))
-                                       |POLYCAT-;isExpt;SU;5|)
-                                      (|getShellEntry| $ 47))
-                                  (|getShellEntry| $ 54))))
+                        (NOT (SPADCALL |p|
+                                 (SPADCALL (|spadConstant| $ 43)
+                                     (QCDR |u|)
+                                     (LETT |d|
+                                      (SPADCALL |p| (QCDR |u|)
+                                       (|getShellEntry| $ 46))
+                                      |POLYCAT-;isExpt;SU;5|)
+                                     (|getShellEntry| $ 47))
+                                 (|getShellEntry| $ 54))))
                     (CONS 1 "failed"))
                    ('T (CONS 0 (CONS (QCDR |u|) |d|))))))))) 
 

@@ -337,7 +337,7 @@
     (RETURN
       (SEQ (EXIT (SEQ (SEQ (LETT |c| (+ |a| |b|) |INT;addmod;4$;20|)
                            (EXIT (COND
-                                   ((NULL (< |c| |p|))
+                                   ((NOT (< |c| |p|))
                                     (PROGN
                                       (LETT #0# (- |c| |p|)
                                        |INT;addmod;4$;20|)

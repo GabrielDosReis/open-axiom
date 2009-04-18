@@ -226,12 +226,12 @@
                                      (SPADCALL |r| |n|
                                       (|getShellEntry| $ 65)))
                                     ('T |r|)))
-                                 ((NULL (SPADCALL (|spadConstant| $ 10)
-                                         (SPADCALL
-                                          (SPADCALL 2 |r|
-                                           (|getShellEntry| $ 80))
-                                          |n| (|getShellEntry| $ 81))
-                                         (|getShellEntry| $ 15)))
+                                 ((NOT (SPADCALL (|spadConstant| $ 10)
+                                        (SPADCALL
+                                         (SPADCALL 2 |r|
+                                          (|getShellEntry| $ 80))
+                                         |n| (|getShellEntry| $ 81))
+                                        (|getShellEntry| $ 15)))
                                   (SPADCALL |r| |n|
                                       (|getShellEntry| $ 81)))
                                  ('T |r|))))))))))) 
@@ -272,7 +272,7 @@
                      (EXIT (LETT |d1| |r1| |INS-;invmod;3S;28|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (COND
-             ((NULL (SPADCALL |c| (|getShellEntry| $ 87)))
+             ((NOT (SPADCALL |c| (|getShellEntry| $ 87)))
               (EXIT (|error| "inverse does not exist"))))
            (EXIT (COND
                    ((SPADCALL |c1| (|getShellEntry| $ 83))

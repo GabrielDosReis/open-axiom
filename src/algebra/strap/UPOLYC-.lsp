@@ -195,7 +195,7 @@
 (DEFUN |UPOLYC-;eval;SLLS;5| (|p| |lv| |lq| $)
   (COND
     ((NULL |lv|) |p|)
-    ((NULL (NULL (CDR |lv|)))
+    ((NOT (NULL (CDR |lv|)))
      (|error| "can only eval a univariate polynomial once"))
     ('T
      (SPADCALL |p| (|SPADfirst| |lv|) (|SPADfirst| |lq|)
@@ -207,7 +207,7 @@
 (DEFUN |UPOLYC-;eval;SLLS;7| (|p| |lv| |lr| $)
   (COND
     ((NULL |lv|) |p|)
-    ((NULL (NULL (CDR |lv|)))
+    ((NOT (NULL (CDR |lv|)))
      (|error| "can only eval a univariate polynomial once"))
     ('T
      (SPADCALL |p| (|SPADfirst| |lv|) (|SPADfirst| |lr|)
@@ -220,7 +220,7 @@
 (DEFUN |UPOLYC-;eval;SLS;9| (|p| |le| $)
   (COND
     ((NULL |le|) |p|)
-    ((NULL (NULL (CDR |le|)))
+    ((NOT (NULL (CDR |le|)))
      (|error| "can only eval a univariate polynomial once"))
     ('T
      (COND

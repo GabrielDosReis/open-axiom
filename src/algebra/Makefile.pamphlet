@@ -2221,7 +2221,7 @@ check:
 all-algstrap: $(addsuffix .NRLIB/code.lsp,$(axiom_algebra_bootstrap))
 	for a in $(axiom_algebra_bootstrap); do \
 	  old=$(srcdir)/strap/$$a.lsp; new=$$a.NRLIB/code.lsp; \
-	  if cmp -s $$new $$old; then cp -p $$new $$old || exit 1; fi; \
+	  cmp -s $$new $$old || cp -p $$new $$old || exit 1; \
 	done
 
 mostlyclean-local:
