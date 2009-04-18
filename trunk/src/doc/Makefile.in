@@ -1,4 +1,4 @@
-# Copyright (C) 2007, Gabriel Dos Reis.
+# Copyright (C) 2007-2009, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,24 +31,14 @@
 
 
 IN=$(axiom_src_srcdir)/doc
-MID=./$(top_builddir)/int/doc
-OUT=$(axiom_target_bindir)
+OUT=$(axiom_target_docdir)
 STY=${OUT}/tex
-DVI=$(axiom_target_docdir)
-DOC=./$(top_builddir)/int/doc
 
 subdir = src/doc/
 
-pamphlets = axiom.sty.pamphlet \
-	axiom.bib.pamphlet \
-	DeveloperNotes.pamphlet \
-	Rosetta.pamphlet \
-	$(booklet_SOURCES)
+pamphlets = 
 
-FILES= ${MID}/axiom.bib ${STY}/axiom.sty \
-       ${DVI}/book.dvi ${DVI}/bookvol1.dvi ${DVI}/endpaper.dvi
-
-CMDS=$(axiom_target_bindir)/booklet
+HELPFILES = $(wildcard $(IN)/help/*.help)
 
 .PHONY: all all-doc
 all: all-ax
@@ -56,17 +46,17 @@ all: all-ax
 all-ax all-doc: stamp
 	@echo 9 finished $(builddir)
 
-stamp: ${CMDS}
+$(OUT)/help/%.help: $(IN)/help/%.help
+	cp -p $< $@
+
+stamp:  $(patsubst $(IN)/help/%.help,$(OUT)/help/%.help,$(HELPFILES))
 	-rm -f stamp
 	$(STAMP) stamp
 
-dvi-local: $(FILES)
+dvi-local:
 
 mostlyclean-local:
-	-rm -f $(booklet_objects)
 
 clean-local: mostlyclean-local
-	-rm -f $(axiom_target_bindir)/booklet
-	-rm -f $(booklet_sources)
 
 distclean-local: clean-local

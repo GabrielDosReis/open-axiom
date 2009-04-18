@@ -243,7 +243,7 @@
     "/share/msgs/"
     "/../../src/algebra/"
     "/../../src/interp/"  ; for boot and lisp  files (helps fd)
-    "/doc/spadhelp/" ))
+    "/doc/help/" ))
 
 ;; The relative directory list specifies how to find the algebra
 ;; directory from the current {\bf AXIOM} shell variable.

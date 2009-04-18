@@ -1,0 +1,41 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.4.  )cd
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  -  )cd directory
+ 
+Command Description: 
+ 
+This command sets the OpenAxiom working current directory. The current
+directory is used for looking for input files (for )read), OpenAxiom
+library source files (for )compile), saved history environment files
+(for )history )restore), compiled OpenAxiom library files (for
+)library), and files to edit (for )edit).  It is also used for writing
+spool files (via )spool), writing history input files (via )history
+)write) and history environment files (via )history )save), and
+compiled OpenAxiom library files (via )compile). 
+ 
+If issued with no argument, this command sets the OpenAxiom current
+directory to your home directory. If an argument is used, it must be a
+valid directory name. Except for the ``)'' at the beginning of the
+command, this has the same syntax as the operating system cd command.
+ 
+Also See: 
+o )compile
+o )edit
+o )history
+o )library
+o )read
+o )spool
+ 

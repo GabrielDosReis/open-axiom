@@ -34,7 +34,7 @@ all-share:
 	$(mkdir_p) "$(axiom_target_libdir)"
 	cd share && $(MAKE) $@
 all-doc:
-	cd doc && $(MAKE) $@
+	$(mkdir_p) "$(axiom_target_docdir)"/help && cd doc && $(MAKE) $@
 all-lib:
 	@cd lib && $(MAKE) $@
 all-lisp: all-lib
@@ -52,7 +52,7 @@ all-algebra: all-interpsys all-share all-hyper-pre
 
 all-hyper-pre: all-lib
 	cd hyper && $(MAKE) all-hyper-pre
-all-input: all-axiomsys
+all-input: all-axiomsys all-doc
 	cd input && ${MAKE}
 all-asq: all-hyper-post
 	cd etc && $(MAKE) $@
