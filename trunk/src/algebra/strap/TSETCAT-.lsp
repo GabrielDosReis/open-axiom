@@ -129,22 +129,22 @@
         ((SPADCALL |ts| (|getShellEntry| $ 12))
          (SPADCALL |us| (|getShellEntry| $ 12)))
         ((OR (SPADCALL |us| (|getShellEntry| $ 12))
-             (NULL (SPADCALL
-                       (PROG2 (LETT #0#
-                                    (SPADCALL |ts|
-                                     (|getShellEntry| $ 15))
-                                    |TSETCAT-;=;2SB;1|)
-                              (QCDR #0#)
-                         (|check-union| (QEQCAR #0# 0)
-                             (|getShellEntry| $ 10) #0#))
-                       (PROG2 (LETT #0#
-                                    (SPADCALL |us|
-                                     (|getShellEntry| $ 15))
-                                    |TSETCAT-;=;2SB;1|)
-                              (QCDR #0#)
-                         (|check-union| (QEQCAR #0# 0)
-                             (|getShellEntry| $ 10) #0#))
-                       (|getShellEntry| $ 16))))
+             (NOT (SPADCALL
+                      (PROG2 (LETT #0#
+                                   (SPADCALL |ts|
+                                    (|getShellEntry| $ 15))
+                                   |TSETCAT-;=;2SB;1|)
+                             (QCDR #0#)
+                        (|check-union| (QEQCAR #0# 0)
+                            (|getShellEntry| $ 10) #0#))
+                      (PROG2 (LETT #0#
+                                   (SPADCALL |us|
+                                    (|getShellEntry| $ 15))
+                                   |TSETCAT-;=;2SB;1|)
+                             (QCDR #0#)
+                        (|check-union| (QEQCAR #0# 0)
+                            (|getShellEntry| $ 10) #0#))
+                      (|getShellEntry| $ 16))))
          'NIL)
         ('T
          (SPADCALL
@@ -362,7 +362,7 @@
                               (SEQ (LETT |p| (|SPADfirst| |lp|)
                                     |TSETCAT-;initials;SL;6|)
                                    (COND
-                                     ((NULL
+                                     ((NOT
                                        (SPADCALL
                                         (LETT |ip|
                                          (SPADCALL |p|
@@ -453,7 +453,7 @@
                                       |TSETCAT-;initiallyReduced?;PSB;12|)))
                           NIL (GO G190) G191 (EXIT NIL))
                      (EXIT (COND
-                             ((NULL (NULL |lp|))
+                             ((NOT (NULL |lp|))
                               (COND
                                 ((SPADCALL
                                      (SPADCALL (|SPADfirst| |lp|)
@@ -524,7 +524,7 @@
                                       (|getShellEntry| $ 6) #1#))
                                    |TSETCAT-;reduce;PSMMP;13|)
                              (EXIT (COND
-                                     ((NULL
+                                     ((NOT
                                        (SPADCALL |p| |reductor|
                                         |redOp?|))
                                       (SEQ
@@ -575,7 +575,7 @@
                                         |TSETCAT-;rewriteSetWithReduction;LSMML;14|)
                                        (EXIT
                                         (COND
-                                          ((NULL
+                                          ((NOT
                                             (SPADCALL |p|
                                              (|getShellEntry| $ 36)))
                                            (COND

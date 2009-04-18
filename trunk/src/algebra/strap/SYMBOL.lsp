@@ -270,23 +270,23 @@
       (SEQ (LETT |sc| (VECTOR NIL NIL NIL NIL NIL)
                  |SYMBOL;script;$L$;22|)
            (COND
-             ((NULL (NULL |ls|))
+             ((NOT (NULL |ls|))
               (SEQ (QSETVELT |sc| 0 (|SPADfirst| |ls|))
                    (EXIT (LETT |ls| (CDR |ls|) |SYMBOL;script;$L$;22|)))))
            (COND
-             ((NULL (NULL |ls|))
+             ((NOT (NULL |ls|))
               (SEQ (QSETVELT |sc| 1 (|SPADfirst| |ls|))
                    (EXIT (LETT |ls| (CDR |ls|) |SYMBOL;script;$L$;22|)))))
            (COND
-             ((NULL (NULL |ls|))
+             ((NOT (NULL |ls|))
               (SEQ (QSETVELT |sc| 2 (|SPADfirst| |ls|))
                    (EXIT (LETT |ls| (CDR |ls|) |SYMBOL;script;$L$;22|)))))
            (COND
-             ((NULL (NULL |ls|))
+             ((NOT (NULL |ls|))
               (SEQ (QSETVELT |sc| 3 (|SPADfirst| |ls|))
                    (EXIT (LETT |ls| (CDR |ls|) |SYMBOL;script;$L$;22|)))))
            (COND
-             ((NULL (NULL |ls|))
+             ((NOT (NULL |ls|))
               (SEQ (QSETVELT |sc| 4 (|SPADfirst| |ls|))
                    (EXIT (LETT |ls| (CDR |ls|) |SYMBOL;script;$L$;22|)))))
            (EXIT (|SYMBOL;script;$R$;23| |sy| |sc| $)))))) 
@@ -307,7 +307,7 @@
 
 (DEFUN |SYMBOL;string;$S;24| (|e| $)
   (COND
-    ((NULL (|SYMBOL;scripted?;$B;30| |e| $)) (PNAME |e|))
+    ((NOT (|SYMBOL;scripted?;$B;30| |e| $)) (PNAME |e|))
     ('T (|error| "Cannot form string from non-atomic symbols.")))) 
 
 (DEFUN |SYMBOL;latex;$S;25| (|e| $)
@@ -323,12 +323,12 @@
                      (|getShellEntry| $ 108))
                  (LETT |s| (STRCONC "\\mbox{\\it " (STRCONC |s| "}"))
                        |SYMBOL;latex;$S;25|)))))
-           (COND ((NULL (|SYMBOL;scripted?;$B;30| |e| $)) (EXIT |s|)))
+           (COND ((NOT (|SYMBOL;scripted?;$B;30| |e| $)) (EXIT |s|)))
            (LETT |ss| (|SYMBOL;scripts;$R;32| |e| $)
                  |SYMBOL;latex;$S;25|)
            (LETT |lo| (QVELT |ss| 0) |SYMBOL;latex;$S;25|)
            (COND
-             ((NULL (NULL |lo|))
+             ((NOT (NULL |lo|))
               (SEQ (LETT |sc| "_{" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND ((NULL (NOT (NULL |lo|))) (GO G191)))
@@ -340,7 +340,7 @@
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
                              (EXIT (COND
-                                     ((NULL (NULL |lo|))
+                                     ((NOT (NULL |lo|))
                                       (LETT |sc| (STRCONC |sc| ", ")
                                        |SYMBOL;latex;$S;25|)))))
                         NIL (GO G190) G191 (EXIT NIL))
@@ -349,7 +349,7 @@
                                |SYMBOL;latex;$S;25|)))))
            (LETT |lo| (QVELT |ss| 1) |SYMBOL;latex;$S;25|)
            (COND
-             ((NULL (NULL |lo|))
+             ((NOT (NULL |lo|))
               (SEQ (LETT |sc| "^{" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND ((NULL (NOT (NULL |lo|))) (GO G191)))
@@ -361,7 +361,7 @@
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
                              (EXIT (COND
-                                     ((NULL (NULL |lo|))
+                                     ((NOT (NULL |lo|))
                                       (LETT |sc| (STRCONC |sc| ", ")
                                        |SYMBOL;latex;$S;25|)))))
                         NIL (GO G190) G191 (EXIT NIL))
@@ -370,7 +370,7 @@
                                |SYMBOL;latex;$S;25|)))))
            (LETT |lo| (QVELT |ss| 2) |SYMBOL;latex;$S;25|)
            (COND
-             ((NULL (NULL |lo|))
+             ((NOT (NULL |lo|))
               (SEQ (LETT |sc| "{}^{" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND ((NULL (NOT (NULL |lo|))) (GO G191)))
@@ -382,7 +382,7 @@
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
                              (EXIT (COND
-                                     ((NULL (NULL |lo|))
+                                     ((NOT (NULL |lo|))
                                       (LETT |sc| (STRCONC |sc| ", ")
                                        |SYMBOL;latex;$S;25|)))))
                         NIL (GO G190) G191 (EXIT NIL))
@@ -391,7 +391,7 @@
                                |SYMBOL;latex;$S;25|)))))
            (LETT |lo| (QVELT |ss| 3) |SYMBOL;latex;$S;25|)
            (COND
-             ((NULL (NULL |lo|))
+             ((NOT (NULL |lo|))
               (SEQ (LETT |sc| "{}_{" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND ((NULL (NOT (NULL |lo|))) (GO G191)))
@@ -403,7 +403,7 @@
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
                              (EXIT (COND
-                                     ((NULL (NULL |lo|))
+                                     ((NOT (NULL |lo|))
                                       (LETT |sc| (STRCONC |sc| ", ")
                                        |SYMBOL;latex;$S;25|)))))
                         NIL (GO G190) G191 (EXIT NIL))
@@ -412,7 +412,7 @@
                                |SYMBOL;latex;$S;25|)))))
            (LETT |lo| (QVELT |ss| 4) |SYMBOL;latex;$S;25|)
            (COND
-             ((NULL (NULL |lo|))
+             ((NOT (NULL |lo|))
               (SEQ (LETT |sc| "\\left( {" |SYMBOL;latex;$S;25|)
                    (SEQ G190
                         (COND ((NULL (NOT (NULL |lo|))) (GO G191)))
@@ -424,7 +424,7 @@
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
                              (EXIT (COND
-                                     ((NULL (NULL |lo|))
+                                     ((NOT (NULL |lo|))
                                       (LETT |sc| (STRCONC |sc| ", ")
                                        |SYMBOL;latex;$S;25|)))))
                         NIL (GO G190) G191 (EXIT NIL))
@@ -495,7 +495,7 @@
                (|getShellEntry| $ 127))
            (LETT |xx|
                  (COND
-                   ((NULL (|SYMBOL;scripted?;$B;30| |x| $))
+                   ((NOT (|SYMBOL;scripted?;$B;30| |x| $))
                     (|SYMBOL;string;$S;24| |x| $))
                    ('T
                     (|SYMBOL;string;$S;24| (|SYMBOL;name;2$;31| |x| $)
@@ -504,15 +504,15 @@
            (LETT |xx| (STRCONC "%" |xx|) |SYMBOL;new;2$;28|)
            (LETT |xx|
                  (COND
-                   ((NULL (< (SPADCALL
-                                 (SPADCALL |xx|
-                                     (SPADCALL |xx|
-                                      (|getShellEntry| $ 128))
-                                     (|getShellEntry| $ 107))
-                                 (|getShellEntry| $ 19)
-                                 (|getShellEntry| $ 129))
-                             (SPADCALL (|getShellEntry| $ 19)
-                                 (|getShellEntry| $ 117))))
+                   ((NOT (< (SPADCALL
+                                (SPADCALL |xx|
+                                    (SPADCALL |xx|
+                                     (|getShellEntry| $ 128))
+                                    (|getShellEntry| $ 107))
+                                (|getShellEntry| $ 19)
+                                (|getShellEntry| $ 129))
+                            (SPADCALL (|getShellEntry| $ 19)
+                                (|getShellEntry| $ 117))))
                     (STRCONC |xx|
                              (|SYMBOL;anyRadix| |n|
                                  (|getShellEntry| $ 21) $)))
@@ -522,7 +522,7 @@
                                  (|getShellEntry| $ 19) $))))
                  |SYMBOL;new;2$;28|)
            (COND
-             ((NULL (|SYMBOL;scripted?;$B;30| |x| $))
+             ((NOT (|SYMBOL;scripted?;$B;30| |x| $))
               (EXIT (|SYMBOL;coerce;S$;8| |xx| $))))
            (EXIT (|SYMBOL;script;$R$;23| (|SYMBOL;coerce;S$;8| |xx| $)
                      (|SYMBOL;scripts;$R;32| |x| $) $)))))) 
@@ -555,7 +555,7 @@
   (PROG (|str| |i| #0=#:G1553 #1=#:G1533 #2=#:G1531)
     (RETURN
       (SEQ (EXIT (COND
-                   ((NULL (|SYMBOL;scripted?;$B;30| |sy| $)) |sy|)
+                   ((NOT (|SYMBOL;scripted?;$B;30| |sy| $)) |sy|)
                    ('T
                     (SEQ (LETT |str|
                                (|SYMBOL;string;$S;24|
@@ -575,7 +575,7 @@
                                      (SEQ
                                       (EXIT
                                        (COND
-                                         ((NULL
+                                         ((NOT
                                            (SPADCALL
                                             (SPADCALL |str| |i|
                                              (|getShellEntry| $ 107))
@@ -609,7 +609,7 @@
             #1=#:G1554 |i| #2=#:G1555 |a| #3=#:G1556 |allscripts|)
     (RETURN
       (SEQ (COND
-             ((NULL (|SYMBOL;scripted?;$B;30| |sy| $))
+             ((NOT (|SYMBOL;scripted?;$B;30| |sy| $))
               (VECTOR NIL NIL NIL NIL NIL))
              ('T
               (SEQ (LETT |nscripts| (LIST 0 0 0 0 0)
@@ -748,7 +748,7 @@
 
 (DEFUN |SYMBOL;list;$L;34| (|sy| $)
   (COND
-    ((NULL (|SYMBOL;scripted?;$B;30| |sy| $))
+    ((NOT (|SYMBOL;scripted?;$B;30| |sy| $))
      (|error| "Cannot convert a symbol to a list if it is not subscripted"))
     ('T |sy|))) 
 

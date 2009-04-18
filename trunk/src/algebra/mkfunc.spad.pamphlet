@@ -84,7 +84,6 @@ InputForm():
       ++ Error: if f was not defined beforehand in the interpreter,
       ++ or if the ti's are not valid types, or if the compiler fails.
  == SExpression add
-    Rep := SExpression
 
     strsym    : % -> String
     tuplify   : List Symbol -> %
@@ -93,11 +92,11 @@ InputForm():
 
     0                        == convert(0::Integer)
     1                        == convert(1::Integer)
-    convert(x:%):SExpression == x pretend SExpression
-    convert(x:SExpression):% == x
+    convert(x:%):SExpression == rep x
+    convert(x:SExpression):% == per x
 
     conv(ll : List %): % ==
-      convert(ll pretend List SExpression)$SExpression pretend %
+      per convert(ll pretend List SExpression)$SExpression
 
     lambda(f,l) == conv([convert("+->"::Symbol),tuplify l,f]$List(%))
 
@@ -108,7 +107,7 @@ InputForm():
     convert(x:DoubleFloat):% ==
       zero? x => 0
       one? x => 1
-      convert(x)$Rep
+      convert(x)
 
     flatten s ==
       -- will not compile if I use 'or'

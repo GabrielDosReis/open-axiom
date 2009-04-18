@@ -104,7 +104,7 @@
                  |STAGG-;elt;AUsA;6|)
            (EXIT (COND
                    ((< |l| 0) (|error| "index out of range"))
-                   ((NULL (SPADCALL |i| (|getShellEntry| $ 31)))
+                   ((NOT (SPADCALL |i| (|getShellEntry| $ 31)))
                     (SPADCALL
                         (SPADCALL |x|
                             (PROG1 |l|

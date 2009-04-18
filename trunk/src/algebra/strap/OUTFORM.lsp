@@ -517,7 +517,7 @@
 (DEFUN |OUTFORM;rspace;2I$;30| (|n| |m| $)
   (SEQ (COND
          ((< 0 |n|)
-          (COND ((NULL (< 0 |m|)) (EXIT (|OUTFORM;empty;$;73| $)))))
+          (COND ((NOT (< 0 |m|)) (EXIT (|OUTFORM;empty;$;73| $)))))
          ('T (EXIT (|OUTFORM;empty;$;73| $))))
        (EXIT (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
@@ -728,7 +728,7 @@
 
 (DEFUN |OUTFORM;prefix;$L$;76| (|a| |l| $)
   (COND
-    ((NULL (|OUTFORM;infix?;$B;74| |a| $)) (CONS |a| |l|))
+    ((NOT (|OUTFORM;infix?;$B;74| |a| $)) (CONS |a| |l|))
     ('T
      (|OUTFORM;hconcat;3$;48| |a|
          (|OUTFORM;paren;2$;40| (|OUTFORM;commaSeparate;L$;33| |l| $)

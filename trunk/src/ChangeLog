@@ -1,5 +1,11 @@
 2009-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/mkfunc.spad.pamphlet (InputForm): Remove assignment to Rep.
+	(convert): Use per and rep operators.
+	* algebra/stap: Updated cached Lisp translation.
+
+2009-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2757715
 	* Makefile.pamphlet (all-input): Make all-doc a requirement.
 	(all-doc): Tidy.

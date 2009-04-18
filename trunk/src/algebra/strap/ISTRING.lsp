@@ -200,7 +200,7 @@
                        (|getShellEntry| $ 6))))
                  |ISTRING;replace;$Us2$;15|)
            (COND
-             ((OR (OR (< |l| 0) (NULL (< |h| |m|))) (< |h| (- |l| 1)))
+             ((OR (OR (< |l| 0) (NOT (< |h| |m|))) (< |h| (- |l| 1)))
               (EXIT (|error| "index out of range"))))
            (LETT |r|
                  (MAKE-FULL-CVEC
@@ -284,7 +284,7 @@
                                        (SEQ
                                         (EXIT
                                          (COND
-                                           ((NULL
+                                           ((NOT
                                              (CHAR= (CHAR |part| |ip|)
                                               (CHAR |whole| |iw|)))
                                             (PROGN
@@ -312,7 +312,7 @@
                  |ISTRING;position;2$2I;18|)
            (EXIT (COND
                    ((< |startpos| 0) (|error| "index out of bounds"))
-                   ((NULL (< |startpos| (QCSIZE |t|)))
+                   ((NOT (< |startpos| (QCSIZE |t|)))
                     (- (|getShellEntry| $ 6) 1))
                    ('T
                     (SEQ (LETT |r| (STRPOS |s| |t| |startpos| NIL)
@@ -331,7 +331,7 @@
                       (EXIT (COND
                               ((< |startpos| 0)
                                (|error| "index out of bounds"))
-                              ((NULL (< |startpos| (QCSIZE |t|)))
+                              ((NOT (< |startpos| (QCSIZE |t|)))
                                (- (|getShellEntry| $ 6) 1))
                               ('T
                                (SEQ (SEQ
@@ -367,7 +367,7 @@
                       (EXIT (COND
                               ((< |startpos| 0)
                                (|error| "index out of bounds"))
-                              ((NULL (< |startpos| (QCSIZE |t|)))
+                              ((NOT (< |startpos| (QCSIZE |t|)))
                                (- (|getShellEntry| $ 6) 1))
                               ('T
                                (SEQ (SEQ
@@ -459,7 +459,7 @@
                                 (GO G190) G191 (EXIT NIL))))
                 NIL (GO G190) G191 (EXIT NIL))
            (COND
-             ((NULL (< |n| |i|))
+             ((NOT (< |n| |i|))
               (LETT |l|
                     (SPADCALL
                         (|ISTRING;elt;$Us$;31| |s|
@@ -521,7 +521,7 @@
                                 (GO G190) G191 (EXIT NIL))))
                 NIL (GO G190) G191 (EXIT NIL))
            (COND
-             ((NULL (< |n| |i|))
+             ((NOT (< |n| |i|))
               (LETT |l|
                     (SPADCALL
                         (|ISTRING;elt;$Us$;31| |s|
@@ -698,7 +698,7 @@
                        (|getShellEntry| $ 6))))
                  |ISTRING;elt;$Us$;31|)
            (COND
-             ((OR (< |l| 0) (NULL (< |h| (QCSIZE |s|))))
+             ((OR (< |l| 0) (NOT (< |h| (QCSIZE |s|))))
               (EXIT (|error| "index out of bound"))))
            (EXIT (SUBSTRING |s| |l| (MAX 0 (+ (- |h| |l|) 1)))))))) 
 
@@ -762,7 +762,7 @@
                                       ((SPADCALL |p| |m|
                                         (|getShellEntry| $ 92))
                                        (COND
-                                         ((NULL
+                                         ((NOT
                                            (SPADCALL
                                             (|ISTRING;elt;$Us$;31|
                                              |pattern|
@@ -846,7 +846,7 @@
                                       ((SPADCALL |p| |n|
                                         (|getShellEntry| $ 92))
                                        (COND
-                                         ((NULL
+                                         ((NOT
                                            (|ISTRING;suffix?;2$B;21|
                                             (|ISTRING;elt;$Us$;31|
                                              |pattern|

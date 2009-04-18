@@ -214,8 +214,8 @@
                      (LETT |lp| (CDR |lp|)
                            |PSETCAT-;collectUpper;SVarSetS;8|)
                      (EXIT (COND
-                             ((NULL (SPADCALL |p|
-                                     (|getShellEntry| $ 24)))
+                             ((NOT (SPADCALL |p|
+                                    (|getShellEntry| $ 24)))
                               (COND
                                 ((SPADCALL |v|
                                      (SPADCALL |p|
@@ -238,8 +238,8 @@
                      (LETT |lp| (CDR |lp|)
                            |PSETCAT-;collect;SVarSetS;9|)
                      (EXIT (COND
-                             ((NULL (SPADCALL |p|
-                                     (|getShellEntry| $ 24)))
+                             ((NOT (SPADCALL |p|
+                                    (|getShellEntry| $ 24)))
                               (COND
                                 ((SPADCALL
                                      (SPADCALL |p|
@@ -704,7 +704,7 @@
                                         |PSETCAT-;rewriteIdealWithHeadRemainder;LSL;25|)
                                        (EXIT
                                         (COND
-                                          ((NULL
+                                          ((NOT
                                             (SPADCALL |p|
                                              (|getShellEntry| $ 47)))
                                            (COND
@@ -767,7 +767,7 @@
                                         |PSETCAT-;rewriteIdealWithRemainder;LSL;26|)
                                        (EXIT
                                         (COND
-                                          ((NULL
+                                          ((NOT
                                             (SPADCALL |p|
                                              (|getShellEntry| $ 47)))
                                            (COND

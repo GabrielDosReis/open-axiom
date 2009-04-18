@@ -524,7 +524,7 @@
                                  (GO G191)))
                               (SEQ (EXIT
                                     (COND
-                                      ((NULL
+                                      ((NOT
                                         (SPADCALL
                                          (SPADCALL |l|
                                           (|getShellEntry| $ 18))

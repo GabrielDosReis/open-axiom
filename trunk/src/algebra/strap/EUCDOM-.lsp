@@ -165,11 +165,11 @@
                                      |EUCDOM-;extendedEuclidean;2SR;7|)))
                               NIL (GO G190) G191 (EXIT NIL))
                          (COND
-                           ((NULL (SPADCALL (QVELT |s1| 0)
-                                      (|getShellEntry| $ 8)))
+                           ((NOT (SPADCALL (QVELT |s1| 0)
+                                     (|getShellEntry| $ 8)))
                             (COND
-                              ((NULL (SPADCALL (QVELT |s1| 0) |y|
-                                      (|getShellEntry| $ 31)))
+                              ((NOT (SPADCALL (QVELT |s1| 0) |y|
+                                     (|getShellEntry| $ 31)))
                                (SEQ (LETT |qr|
                                      (SPADCALL (QVELT |s1| 0) |y|
                                       (|getShellEntry| $ 16))

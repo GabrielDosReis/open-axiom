@@ -302,7 +302,7 @@
                            |ILIST;latex;$S;23|)
                      (LETT |x| (QCDR |x|) |ILIST;latex;$S;23|)
                      (EXIT (COND
-                             ((NULL (NULL |x|))
+                             ((NOT (NULL |x|))
                               (LETT |s| (STRCONC |s| ", ")
                                     |ILIST;latex;$S;23|)))))
                 NIL (GO G190) G191 (EXIT NIL))
