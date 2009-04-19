@@ -317,7 +317,7 @@ import List Property
 ++ Date Last Modified: January 18, 2008.
 ++ A `Binding' is a name asosciated with a collection of properties.
 Binding(): Public == Private where
-  Public ==> CoercibleTo(OutputForm) with
+  Public == CoercibleTo(OutputForm) with
     name: % -> Symbol               
       ++ name(b) returns the name of binding b
     properties: % -> List Property  
@@ -326,12 +326,8 @@ Binding(): Public == Private where
       ++ binding(n,props) constructs a binding with name `n' and 
       ++ property list `props'.
 
-  Private ==> add
-    rep(x: %): SExpression ==
-      x pretend SExpression
-
-    per(x: SExpression): % ==
-      x pretend %
+  Private == add
+    Rep == SExpression
 
     name b ==
       -- this is well defined because there is no way one could
@@ -362,23 +358,23 @@ import List Binding
 ++ Date Last Modified: January 18, 2008.
 ++ A `Contour' a list of bindings making up a `virtual scope'.
 Contour(): Public == Private where
-  Public ==> CoercibleTo(OutputForm) with
+  Public == CoercibleTo(OutputForm) with
     bindings: % -> List Binding     
       ++ bindings(c) returns the list of bindings in countour c.
     push: (Binding,%) -> %
       ++ push(c,b) augments the contour with binding `b'.
-    findBinding: (Symbol,%) -> Union(Binding, "failed")
+    findBinding: (Symbol,%) -> Maybe Binding
       ++ findBinding(c,n) returns the first binding associated with `n'.
-      ++ Otherwise `failed'.
+      ++ Otherwise `nothing.
 
-  Private ==> add
+  Private == add
     bindings c ==
       c pretend List(Binding)
 
     findBinding(n,c) ==
       for b in bindings c repeat
-        EQ(n, name b)$Lisp => return b
-      "failed"
+        EQ(n, name b)$Lisp => return just b
+      nothing
 
     push(b,c) ==
       CONS(b,c)$Lisp pretend %
@@ -399,14 +395,14 @@ import List Contour
 ++ Date Last Modified: January 18, 2008.
 ++ A `Scope' is a sequence of contours.
 Scope(): Public == Private where
-  Public ==> CoercibleTo(OutputForm) with
+  Public == CoercibleTo(OutputForm) with
     empty: () -> %
       ++ empty() returns an empty scope.
     contours: % -> List Contour     
       ++ contours(s) returns the list of contours in scope s.
-    findBinding: (Symbol,%) -> Union(Binding, "failed")
+    findBinding: (Symbol,%) -> Maybe Binding
       ++ findBinding(n,s) returns the first binding of `n' in `s'; 
-      ++ otherwise `failed'.
+      ++ otherwise `nothing'.
     pushNewContour: (Binding,%) -> %
       ++ pushNewContour(b,s) pushs a new contour with sole binding `b'.
     currentScope: () -> %
@@ -415,7 +411,7 @@ Scope(): Public == Private where
       ++ currentCategoryFrame() returns the category frame currently
       ++ in effect.
 
-  Private ==> add
+  Private == add
     import Contour
     Rep == List Contour
     empty() ==
@@ -427,18 +423,17 @@ Scope(): Public == Private where
     findBinding(n,s) ==
       for c in contours s repeat
         b := findBinding(n,c)$Contour
-        not b case "failed" => return b
-      "failed"
+        b case Binding => return b
+      nothing
 
     pushNewContour(b,s) ==
-      c := LIST(b)$Lisp
-      CONS(c,s)$Lisp @ %
+      CONS(LIST(b)$Lisp,s)$Lisp
 
     currentScope() ==
-      CAR(_$e$Lisp)$Lisp @ %
+      CAR(_$e$Lisp)$Lisp
 
     currentCategoryFrame() ==
-      CAR(_$CategoryFrame$Lisp)$Lisp @ %
+      CAR(_$CategoryFrame$Lisp)$Lisp
 
     coerce s ==
       (contours s)::OutputForm
@@ -457,29 +452,30 @@ import List Property
 ++ Date Last Modified: January 19, 2008.
 ++ An `Environment' is a stack of scope.
 Environment(): Public == Private where
-  Public ==> CoercibleTo(OutputForm) with
+  Public == CoercibleTo(OutputForm) with
     empty: () -> %
       ++ empty() constructs an empty environment
     scopes: % -> List Scope     
       ++ scopes(e) returns the stack of scopes in environment e.
-    getProperty: (Symbol, Symbol, %) -> Union(SExpression, "failed")
+    getProperty: (Symbol, Symbol, %) -> Maybe SExpression
       ++ getProperty(n,p,e) returns the value of property with name `p'
-      ++ for the symbol `n' in environment `e'. Otherwise, `failed'.
+      ++ for the symbol `n' in environment `e'. Otherwise, `nothing.
     setProperty!: (Symbol, Symbol, SExpression, %) -> %
       ++ setProperty!(n,p,v,e) binds the property `(p,v)' to `n'
       ++ in the topmost scope of `e'.
-    getProperties: (Symbol, %) -> Union(List Property, "failed")
-      ++ getBinding(n,e) returns the list of properties of `n' in
-      ++ e; otherwise `failed'.
+    getProperties: (Symbol, %) -> List Property
+      ++ getBinding(n,e) returns the list of properties of `n' in e.
     setProperties!: (Symbol, List Property, %) -> %
       ++ setBinding!(n,props,e) set the list of properties of `n' 
       ++ to `props' in `e'.
     currentEnv: () -> %        
       ++ the current normal environment in effect.
+    interactiveEnv: () -> %        
+      ++ the current interactive environment in effect.
     categoryFrame: () -> %  
        ++ the current category environment in the interpreter.
 
-  Private ==> add
+  Private == add
     Rep == List Scope
     empty() ==
       per NIL$Lisp
@@ -488,26 +484,27 @@ Environment(): Public == Private where
       rep e
 
     getProperty(n,p,e) ==
-      v := get(n,p,e)$Lisp
-      null? v => "failed"
-      v 
+      v: SExpression := get(n,p,e)$Lisp
+      null? v => nothing
+      just v 
 
     setProperty!(n,p,v,e) ==
-      put(n,p,v,e)$Lisp @ %
+      put(n,p,v,e)$Lisp
 
     getProperties(n,e) ==
-      b: SExpression := getProplist(n,e)$Lisp
-      null? b => "failed"
-      b pretend List(Property)
+      getProplist(n,e)$Lisp
 
     setProperties!(n,b,e) ==
-      addBinding(n,b,e)$Lisp @ %
+      addBinding(n,b,e)$Lisp
 
     currentEnv() ==
-      _$e$Lisp @ %
+      _$e$Lisp
+
+    interactiveEnv() ==
+      _$InteractiveFrame$Lisp
 
     categoryFrame() ==
-      _$CategoryFrame$Lisp @ %
+      _$CategoryFrame$Lisp
 
     coerce e ==
       (scopes e)::OutputForm
