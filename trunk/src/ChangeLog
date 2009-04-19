@@ -1,3 +1,9 @@
+2009-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/mkfunc.spad.pamphlet (tuplify$InputForm): Tidy.
+	* interp/i-output.boot (parms2String): New.
+	(inputForm2String): Handle anonymous functions.
+
 2009-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/mkfunc.spad.pamphlet (InputForm): Remove assignment to Rep.

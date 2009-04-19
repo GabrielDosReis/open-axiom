@@ -158,6 +158,7 @@ InputForm():
       convert([op, first args, binary(op, rest args)]$List(%))
 
     tuplify l ==
+      empty? l => convert(nil$List(%))
       empty? rest l => convert first l
       conv
         concat(convert("tuple"::Symbol), [convert x for x in l]$List(%))
