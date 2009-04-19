@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -2666,6 +2666,17 @@ minusForm2String x ==
   x isnt ["-",lhs,rhs] => plusForm2String x
   strconc(minusForm2String lhs,'" - ", minusForm2String rhs)
 
+parms2String x ==
+  null x => "()"
+  IDENTP x => x
+  x is [var] => var
+  if x is ["tuple",:.] then x := rest x
+  paren [parm xs for xs in tails x] where
+    paren l == "strconc"/["(",:l,")"]
+    parm xs == 
+      null rest xs => first xs
+      strconc(first xs, ", ")
+
 inputForm2String x ==
   atom x => primaryForm2String x
   [op,:args] := x
@@ -2680,6 +2691,9 @@ inputForm2String x ==
     op = "-" => minusForm2String x
     op in '(_@ _:_: pretend) =>
       typedForm2String(op, first args, second args)
+    op = "+->" =>
+       strconc(parms2String second x, " ", first x, " ",
+          inputForm2String third x)
     callForm2String x
   callForm2String x
 
