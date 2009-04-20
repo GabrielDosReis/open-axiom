@@ -1476,11 +1476,10 @@ genECLnativeTranslation(op,s,t,op') ==
   for x in s repeat
      argtypes := [nativeArgumentType x,:argtypes]
      args := [GENSYM(),:args]
-  argtypes := nreverse argtypes
-  args := nreverse args
+  args := reverse args
   rettype := nativeReturnType t
   [["DEFUN",op, args,
-    [bfColonColon("FFI","C-INLINE"),args,argtypes,
+    [bfColonColon("FFI","C-INLINE"),args, nreverse argtypes,
       rettype, callTemplate(op',#args,s), 
         KEYWORD::ONE_-LINER, true]]] where
 	  callTemplate(op,n,s) ==
@@ -1587,8 +1586,6 @@ genSBCLnativeTranslation(op,s,t,op') ==
     newArgs := [coerceToNativeType(a,x), :newArgs]
     if needsStableReference? x then
       unstableArgs := [a,:unstableArgs]
-  newArgs := nreverse newArgs
-  unstableArgs = nreverse unstableArgs
     
   null unstableArgs =>
     [["DEFUN",op,args,
@@ -1596,10 +1593,10 @@ genSBCLnativeTranslation(op,s,t,op') ==
 	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
 	  ["FUNCTION",rettype,:argtypes]], :args]]]
   [["DEFUN",op,args,
-    [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"),unstableArgs,       
+    [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"), nreverse unstableArgs,
       [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
 	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
-	  ["FUNCTION",rettype,:argtypes]], :newArgs]]]]
+	  ["FUNCTION",rettype,:argtypes]], :nreverse newArgs]]]]
 
 
 ++ Generate an import declaration for `op' as equivalent of the

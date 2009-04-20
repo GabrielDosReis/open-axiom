@@ -55,6 +55,8 @@
 === DONE ===
 ============
 
+* FFI support for Spad
+
 * Revisit the underlying definition of the types DFlo in foam
   interface, and DoubleFloat in OpenAxiom.  Now, we ensure that
   SingleFloat is 32-bit, and DoubleFloat is 64-bit.
