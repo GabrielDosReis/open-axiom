@@ -57,12 +57,7 @@ system() ==
   terminateSystemCommand()
 
 editFile file ==
-  editProg := 
-    %hasFeature KEYWORD::WIN32 => '"notepad"
-    prog := getEnv '"EDITOR" => prog
-    # $EditorProgram ^= 0 => $EditorProgram
-    return nil  -- FIXME: Should we not notify user?
-  runCommand STRCONC(editProg,'" ",namestring pathname file)
+  runCommand strconc(textEditor(),'" ",namestring pathname file)
 
 makeBigFloat(mantissa,expon) ==
   [$BFtag,mantissa,:expon]

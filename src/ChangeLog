@@ -1,5 +1,13 @@
 2009-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-con.boot: Use textEditor() to get editor program.
+	* interp/br-saturn.boot: Likewise.
+	* interp/compat.boot: Likewise.
+	* interp/i-util.boot (textEditor): Define here.
+	* interp/g-util.boot: Likewise.
+
+2009-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/msgdb.boot (substituteSegmentedMsg): Handle %x specifier.
 
 2009-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
