@@ -208,8 +208,7 @@ compTypeOf(x:=[op,:argl],m,e) ==
 emitLocalCallInsn: (%Symbol,%List,%Env) -> %Code
 emitLocalCallInsn(op,args,e) ==
   op' :=          -- Find out the linkage name for `op'.
-    linkName := get(op,"%Link",e) => linkName
-    encodeLocalFunctionName op
+    get(op,"%Link",e) or encodeLocalFunctionName op
   get(op,"%Lang",e) => [op',:args]  -- non-Spad calling convention
   [op',:args,"$"]   
 
@@ -500,6 +499,7 @@ compForm1(form is [op,:argl],m,e) ==
       --op'='QUOTE and null rest argl => [first argl,m,e]
       [[op',:[([.,.,e]:= compOrCroak(x,$EmptyMode,e)).expr for x in argl]],m,e]
     domain=$Expression and op'="construct" => compExpressionList(argl,m,e)
+    domain is ["Foreign",lang] => compForeignPackageCall(lang,op',argl,m,e)
     (op'="COLLECT") and coerceable(domain,m,e) =>
       (T:= comp([op',:argl],domain,e) or return nil; coerce(T,m))
     -- Next clause added JHD 8/Feb/94: the clause after doesn't work
@@ -507,7 +507,6 @@ compForm1(form is [op,:argl],m,e) ==
     (domain is ['Mapping,:.]) and
       (ans := compForm2([op',:argl],m,e:= augModemapsFromDomain1(domain,domain,e),
         [x for x in getFormModemaps([op',:argl],e) | x is [[ =domain,:.],:.]]))             => ans
-
     ans := compForm2([op',:argl],m,e:= addDomain(domain,e),
       [x for x in getFormModemaps([op',:argl],e) | x is [[ =domain,:.],:.]])             => ans
     (op'="construct") and coerceable(domain,m,e) =>
@@ -1092,11 +1091,25 @@ compReturn(["return",level,x],m,e) ==
 
 --% ELT
 
+++ `op' supposedly designate an external entity with language linkage
+++ `lang'.  Return the mode of its local declaration (import).
+getExternalSymbolMode(op,lang,e) ==
+  lang = "Builtin" => "%Thing"      -- for the time being
+  lang ^= "C" =>
+    stackAndThrow('"Sorry: %b Foreign %1b %d is invalid at the moment",[lang])
+  get(op,"%Lang",e) ^= lang =>
+    stackAndThrow('"%1bp is not known to have language linkage %2bp",[op,lang])
+  getmode(op,e) or stackAndThrow('"Operator %1bp is not in scope",[op])
+
 compElt: (%Form,%Mode,%Env) -> %Maybe %Triple
 compElt(form,m,E) ==
   form isnt ["elt",aDomain,anOp] => compForm(form,m,E)
-  aDomain="Lisp" =>
-    [anOp',m,E] where anOp'() == (anOp=$Zero => 0; anOp=$One => 1; anOp)
+  aDomain="Lisp" or (aDomain is ["Foreign",lang] and lang="Builtin") =>
+    [anOp,m,E]
+  lang ^= nil =>
+    opMode := getExternalSymbolMode(anOp,lang,E)
+    op := get(anOp,"%Link",E) or anOp
+    convert([op,opMode,E],m)
   isDomainForm(aDomain,E) =>
     E:= addDomain(aDomain,E)
     mmList:= getModemapListFromDomain(anOp,0,aDomain,E)
@@ -1372,6 +1385,21 @@ compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
   T.env:= put(id,"%Link",id',T.env)
   convert(T,m)
 
+
+++ Compile package call to an external function.  
+++ `lang' is the language calling convention
+++ `op' is the operator name
+++ `args' is the list of arguments
+++ `m' is the context mode.
+++ `e' is the compilation environment in effect.
+compForeignPackageCall(lang,op,args,m,e) ==
+  lang = "Builtin" =>
+    -- Note: We don't rename builtin functions.
+    [[op,:[([.,.,e]:= compOrCroak(x,$EmptyMode,e)).expr
+             for x in args]],m,e]
+  getExternalSymbolMode(op,lang,e) is ["Mapping",:argModes]
+    and (#argModes = #args + 1) => applyMapping([op,:args],m,e,argModes)
+  stackAndThrow('"OpenAxiom could not determine the meaning of %1bp",[op])
 
 --% Compilation of logical operators that may have a pre-defined
 --% meaning, or may need special handling because or short-circuiting
