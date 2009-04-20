@@ -217,6 +217,8 @@ substituteSegmentedMsg(msg,args) ==
       for ch in '(_. _, _! _: _; _?) repeat
         if MEMQ(char ch,q) then l := cons(ch,l)
 
+    c = char "%" and n > 1 and x.1 = char "x" and DIGITP x.2 =>
+      l := [fillerSpaces(DIG2FIX x.2, '" "),:l]
     --x is a plain word
     l := cons(x,l)
   addBlanks NREVERSE l

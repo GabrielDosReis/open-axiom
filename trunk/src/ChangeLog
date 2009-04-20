@@ -1,3 +1,7 @@
+2009-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/msgdb.boot (substituteSegmentedMsg): Handle %x specifier.
+
 2009-04-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (genECLnativeTranslation): Tidy.
