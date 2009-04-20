@@ -810,6 +810,7 @@ upQUOTE t ==
     m:= getBasicMode expr => m
     IDENTP expr =>
 --    $useSymbolNotVariable => $Symbol
+      getTarget t = $Identifier => $Identifier
       ['Variable,expr]
     $InputForm
   evalQUOTE(op,[expr],ms)

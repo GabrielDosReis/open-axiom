@@ -91,10 +91,11 @@ FunctionCalled(f:Symbol): SetCategory with
 \section{domain ANON AnonymousFunction}
 <<domain ANON AnonymousFunction>>=
 )abbrev domain ANON AnonymousFunction
+++ Date Last Modified: April 20, 2009
 ++ Description:
-++ This domain implements anonymous functions
+++   This domain implements anonymous functions
 AnonymousFunction():SetCategory with
-    parameters: % -> List Symbol
+    parameters: % -> List Identifier
       ++ parameters(f) returns the list of parameters bound by `f'.
     body: % -> Syntax
       ++ body(f) returns the body of the unnamed function `f'.
@@ -105,8 +106,8 @@ AnonymousFunction():SetCategory with
 
     parameters f ==
       ps := CADR(f)$Lisp : Syntax
-      ps case Symbol => [ps]$List(Symbol)
-      getOperands(ps) pretend List(Symbol)
+      ps case Identifier => [ps]$List(Identifier)
+      getOperands(ps) pretend List(Identifier)
 
     body f ==
       CADDR(f)$Lisp : Syntax

@@ -1,5 +1,12 @@
 2009-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-constants.boot ($Identifier): New.
+	* interp/compiler.boot (compQuote): Use the target mode if appropriate.
+	* interp/i-spec2.boot (upQUOTE): Likewise.
+	* algebra/syntax.spad.pamphlet: Use Identifier in lieu of Symbol.
+
+2009-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-con.boot: Use textEditor() to get editor program.
 	* interp/br-saturn.boot: Likewise.
 	* interp/compat.boot: Likewise.
