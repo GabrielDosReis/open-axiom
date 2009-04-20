@@ -308,6 +308,8 @@ axiom_algebra_layer_2 = \
   CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC FNCAT   \
            IDENT
 
+$(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
+
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))
 

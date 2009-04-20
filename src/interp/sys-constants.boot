@@ -427,6 +427,9 @@ $String ==
 $Symbol ==
   '(Symbol)
 
+++ The Identifier domain form
+$Identifier ==
+  '(Identifier)
 
 ++ The 'wildcar' for a type -- "?" in Spad syntax.  This stands for 
 ++ an unspecified type.

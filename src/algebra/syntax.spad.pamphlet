@@ -19,27 +19,28 @@ import SetCategory
 import Boolean
 import Integer
 import DoubleFloat
-import Symbol
+import Identifier
 import SExpression
 )abbrev domain SYNTAX Syntax
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Updated: October 18, 2008
+++ Date Last Updated: April 20, 2009
 ++ Description:  This domain provides a simple domain, general enough for
 ++   building complete representation of Spad programs as objects 
 ++   of a term algebra built from ground terms of type integers, foats, 
-++   symbols, and strings.  
+++   identifiers, and strings.  
 ++   This domain differs from InputForm in that it represents
 ++   any entity in a Spad program, not just expressions.  Furthermore,
 ++   while InputForm may contain atoms like vectors and other Lisp
 ++   objects, the Syntax domain is supposed to contain only that
 ++   initial algebra build from the primitives listed above.
-++ Related Constructors: Integer, DoubleFloat, Symbol, String, SExpression.
-++ See Also: SExpression.
+++ Related Constructors: 
+++   Integer, DoubleFloat, Identifier, String, SExpression.
+++ See Also: SExpression, InputForm.
 ++ The equality supported by this domain is structural.
 Syntax(): Public == Private where
   Public == Join(UnionType, SetCategory, RetractableTo Integer,
-              RetractableTo DoubleFloat, RetractableTo Symbol,
+              RetractableTo DoubleFloat, RetractableTo Identifier,
                 RetractableTo String, CoercibleTo InputForm) with
     convert: % -> SExpression
       ++ convert(s) returns the s-expression representation of a syntax.
@@ -63,10 +64,10 @@ Syntax(): Public == Private where
       ++ no check performed.  To be called only at the discretion of
       ++ the compiler
 
-    coerce: % -> Symbol
-      ++ coerce(s) extracts a symbol from the syntax `s'.
-    autoCoerce: % -> Symbol
-      ++ autoCoerce(s) forcibly extracts a symbo from the Syntax
+    coerce: % -> Identifier
+      ++ coerce(s) extracts an identifier from the syntax `s'.
+    autoCoerce: % -> Identifier
+      ++ autoCoerce(s) forcibly extracts an identifier from the Syntax
       ++ domain `s'; no check performed.  To be called only at
       ++ at the discretion of the compiler.
 
@@ -77,7 +78,7 @@ Syntax(): Public == Private where
       ++ the syntax `s'; no check performed.  To be called only at
       ++ the discretion of the compiler.
 
-    buildSyntax: (Symbol, List %) -> %
+    buildSyntax: (Identifier, List %) -> %
       ++ buildSyntax(op, [a1, ..., an]) builds a syntax object 
       ++ for op(a1,...,an).
   
@@ -88,7 +89,7 @@ Syntax(): Public == Private where
     nil?: % -> Boolean
       ++ nil?(s) is true when `s' is a syntax for the constant nil.
 
-    getOperator: % -> Union(Integer, DoubleFloat, Symbol, String, %)
+    getOperator: % -> Union(Integer, DoubleFloat, Identifier, String, %)
       ++ getOperator(x) returns the operator, or tag, of the syntax `x'.
       ++ The value returned is itself a syntax if `x' really is an 
       ++ application of a function symbol as opposed to being an
@@ -106,8 +107,8 @@ Syntax(): Public == Private where
     _case: (%, [|DoubleFloat|]) -> Boolean
       ++ x case DoubleFloat is true if `x' really is a DoubleFloat
 
-    _case: (%, [|Symbol|]) -> Boolean
-      ++ x case Symbol is true if `x' really is a Symbol
+    _case: (%, [|Identifier|]) -> Boolean
+      ++ x case Identifier is true if `x' really is an Identifier
 
     _case: (%, [|String|]) -> Boolean
       ++ x case String is true if `x' really is a String
@@ -125,7 +126,7 @@ Syntax(): Public == Private where
     s case String ==
       STRINGP(s)$Lisp
 
-    s case Symbol ==
+    s case Identifier ==
       IDENTP(s)$Lisp
 
     coerce(x: %): OutputForm ==
@@ -139,6 +140,7 @@ Syntax(): Public == Private where
     convert(x: SExpression): % ==
       x pretend %
 
+    --% Integer 
     coerce(i: Integer): % ==
       i pretend %
 
@@ -151,7 +153,8 @@ Syntax(): Public == Private where
 
     coerce(i: %): Integer == 
       retract(i)@Integer
-
+  
+    --% DoubleFloat
     coerce(f: DoubleFloat): % ==
       f pretend %
 
@@ -165,19 +168,21 @@ Syntax(): Public == Private where
     coerce(f: %): DoubleFloat ==
       retract(f)@DoubleFloat
 
-    coerce(s: Symbol): % ==
+    --% Identifier
+    coerce(s: Identifier): % ==
       s pretend %
 
-    autoCoerce(s: %): Symbol ==                 -- used for hard coercion
-      s : Symbol
+    autoCoerce(s: %): Identifier ==            -- used for hard coercion
+      s : Identifier
 
-    retractIfCan(x: %): Union(Symbol,"failed") ==
-      x case Symbol => x@Symbol
+    coerce(s: %): Identifier ==
+      retract(s)@Identifier
+
+    retractIfCan(x: %): Union(Identifier,"failed") ==
+      x case Identifier => x@Identifier
       "failed"
 
-    coerce(s: %): Symbol ==
-      retract(s)@Symbol
-
+    --% String
     coerce(s: String): % ==
       s pretend %
 
@@ -191,7 +196,8 @@ Syntax(): Public == Private where
     coerce(s: %): String ==
       retract(s)@String
 
-    buildSyntax(s: Symbol, l: List %): % ==
+    --% syntax construction
+    buildSyntax(s: Identifier, l: List %): % ==
       CONS(s,l)$Lisp
 
     buildSyntax(op: %, l: List %): % ==
@@ -206,10 +212,10 @@ Syntax(): Public == Private where
     getOperator x ==
       atom? x => userError "atom as operand to getOperator"
       op: % := CAR(x)$Lisp
-      op case Symbol => op pretend Symbol
-      op case Integer => op pretend Integer
-      op case DoubleFloat => op pretend DoubleFloat
-      op case String => op pretend String
+      op case Identifier => op@Identifier
+      op case Integer => op@Integer
+      op case DoubleFloat => op@DoubleFloat
+      op case String => op@String
       op
    
     compound? x ==
@@ -229,14 +235,14 @@ Syntax(): Public == Private where
 
 <<domain ELABEXPR ElaboratedExpression>>=
 import Boolean
-import Symbol
+import Identifier
 import ConstructorCall
 import List
 import SExpression
 )abbrev domain ELABEXPR ElaboratedExpression
 ++ Author: Gabriel Dos Reis
 ++ Date Created: January 19, 2008
-++ Date Last Updated: January 20, 2008
+++ Date Last Updated: April 20, 2009
 ++ Description: This domains an expresion as elaborated by the interpreter.
 ++ See Also: 
 ElaboratedExpression(): Public == Private where
@@ -250,11 +256,11 @@ ElaboratedExpression(): Public == Private where
       ++ getConstant(e) retrieves the constant value of `e'e.
     variable?: % -> Boolean
       ++ variable?(e) returns true if `e' is a variable.
-    getIdentifier: % -> Union(Symbol,"failed")
+    getIdentifier: % -> Union(Identifier,"failed")
       ++ getIdentifier(e) retrieves the name of the variable `e'.
     callForm?: % -> Boolean
       ++ callForm?(e) is true when `e' is a call expression.
-    getOperator: % -> Union(Symbol, "failed")
+    getOperator: % -> Union(Identifier, "failed")
       ++ getOperator(e) retrieves the operator being invoked in `e',
       ++ when `e' is an expression.  
     getOperands: % -> Union(List %, "failed")
@@ -263,18 +269,18 @@ ElaboratedExpression(): Public == Private where
 
   Private ==> add
     isAtomic(x: %): Boolean ==
-      ATOM(x)$Lisp @ Boolean
+      ATOM(x)$Lisp
 
     type x ==
-      getMode(x)$Lisp @ ConstructorCall
+      getMode(x)$Lisp
 
     callForm? x ==
-      CONSP(x)$Lisp @ Boolean
+      CONSP(x)$Lisp
 
     getOperator x ==
       op: SExpression := getUnnameIfCan(x)$Lisp
       null? op => "failed"
-      op pretend Symbol
+      op pretend Identifier
 
     constant? x ==
       isAtomic x and 
@@ -288,7 +294,7 @@ ElaboratedExpression(): Public == Private where
       isAtomic x and not constant? x
    
     getIdentifier x ==
-      variable? x => symbol (getUnname(x)$Lisp@SExpression)
+      variable? x =>  (getUnname(x)$Lisp@Identifier)
       "failed"
 @
 
@@ -547,7 +553,7 @@ Literal(T: SetCategory): Public == Private where
 <<domain IDENT Identifier>>=
 ++ Author: Gabriel Dos Reis
 ++ Date Created: July 5, 2008
-++ Date Last Modified: December 17, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: 
 ++   This domain represents identifer AST.
 ++   This domain differs from Symbol in that it does not  support
@@ -569,8 +575,8 @@ Identifier(): Public == Private where
 
 <<domain HEADAST HeadAst>>=
 import AbstractSyntaxCategory
-import Symbol
-import List Symbol
+import Identifier
+import List Identifier
 )abbrev domain HEADAST HeadAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
@@ -624,7 +630,7 @@ import TypeAst
 )abbrev domain TYPEAST TypeAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents an `import' of types.
 ImportAst(): Public == Private where
   Public == SpadSyntaxCategory with
@@ -634,7 +640,7 @@ ImportAst(): Public == Private where
       ++ imports(x) returns the list of imported types.
   Private == add
     import Pair
-    Rep == Pair(Symbol, List TypeAst)
+    Rep == Pair(Identifier, List TypeAst)
     coerce(ts: List TypeAst): % == per pair('import,ts)
     imports x == second rep x
     coerce(x: %): OutputForm ==
@@ -649,7 +655,7 @@ ImportAst(): Public == Private where
 )abbrev domain MAPPAST MappingAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents a mapping type AST.  A mapping AST
 ++   is a syntactic description of a function type, e.g. its result 
 ++   type and the list of its argument types.
@@ -665,7 +671,7 @@ MappingAst(): Public == Private where
       ++ target(s) returns the result type AST for `s'.
   Private == add
     import Pair
-    Rep == Pair(Symbol,Signature)
+    Rep == Pair(Identifier,Signature)
     coerce(sig: Signature): % == per pair('Mapping,sig)
     mappingAst(s,t) == 
       per pair('Mapping,cons(t,s) : Signature)
@@ -685,7 +691,7 @@ MappingAst(): Public == Private where
 )abbrev domain SIGAST SignatureAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents a signature AST.  A signature AST
 ++   is a description of an exported operation, e.g. its name, result
 ++   type, and the list of its argument types.
@@ -699,7 +705,7 @@ SignatureAst(): Public == Private where
       ++ signature(s) returns AST of the declared signature for `s'.
   Private == add
     import List
-    Rep == Pair(Symbol, Pair(Identifier,List Signature))
+    Rep == Pair(Identifier, Pair(Identifier,List Signature))
     signatureAst(n,sig) == 
       per pair('SIGNATURE,pair(n,[sig]))
     name x == first second rep x
@@ -720,7 +726,7 @@ SpadAst(): SpadAstExports
 )abbrev domain ATTRAST AttributeAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the syntax of an attribute in
 ++   a category expression.
 AttributeAst(): Public == Private where
@@ -729,7 +735,7 @@ AttributeAst(): Public == Private where
       ++ name(a) returns the name of the attribute `a'.  Note, this
       ++ name may be domain name, not just an identifier. 
   Private == add
-    Rep == Pair(Symbol,SpadAst)
+    Rep == Pair(Identifier,SpadAst)
     name x == second rep x
     coerce(x: %): OutputForm ==
       elt('AttributeAst::OutputForm,
@@ -742,7 +748,7 @@ AttributeAst(): Public == Private where
 )abbrev domain JOINAST JoinAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the join of categories ASTs.
 JoinAst(): Public == Private where
   Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
@@ -751,7 +757,7 @@ JoinAst(): Public == Private where
     categories: % -> List TypeAst
       ++ catehories(x) returns the types in the join `x'.
   Private == add
-    Rep == Pair(Symbol, List TypeAst)
+    Rep == Pair(Identifier, List TypeAst)
     categories x == second rep x
     coerce(cats: List TypeAst): % == per pair('Join,cats)
     coerce(x: %): TypeAst == x : TypeAst
@@ -827,14 +833,14 @@ SpadAst(): SpadAstExports
 )abbrev domain WHILEAST WhileAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the `while' iterator syntax.
 WhileAst(): Public == Private where
   Public == SpadSyntaxCategory with
     condition: % -> SpadAst
       ++ condition(i) returns the condition of the while iterator `i'.
   Private == add
-    Rep == Pair(Symbol,SpadAst)
+    Rep == Pair(Identifier,SpadAst)
     condition x == second rep x
     coerce(x: %): OutputForm ==
       elt('WhileAst::OutputForm,
@@ -850,11 +856,11 @@ SpadAst(): SpadAstExports
 )abbrev domain INAST InAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the `in' iterator syntax.
 InAst(): Public == Private where
   Public == SpadSyntaxCategory with
-    iterationVar: % -> Symbol
+    iterationVar: % -> Identifier
       ++ iterationVar(i) returns the name of the iterating 
       ++ variable of the `in' iterator 'i'
     sequence: % -> SpadAst
@@ -862,7 +868,7 @@ InAst(): Public == Private where
       ++ iterated over by `i'.
   Private == add
     Rep == List Syntax
-    iterationVar x == (second rep x)::Symbol
+    iterationVar x == (second rep x)::Identifier
     sequence x == (last rep x) : SpadAst
     coerce(x: %): OutputForm ==
       elt('InAst::OutputForm,
@@ -934,7 +940,7 @@ SpadAst(): SpadAstExports
 )abbrev domain LSTAST ConstructAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents `literal sequence' syntax.
 ConstructAst(): Public == Private where
   Public == SpadSyntaxCategory with
@@ -943,7 +949,7 @@ ConstructAst(): Public == Private where
       ++ `literal' list `e'.
   Private == add
     import Pair
-    Rep == Pair(Symbol, List SpadAst)
+    Rep == Pair(Identifier, List SpadAst)
     elements x == second rep x
     coerce(x: %): OutputForm ==
       elt('ConstructAst::OutputForm,
@@ -987,7 +993,7 @@ SpadAst(): SpadAstExports
 )abbrev domain RETAST ReturnAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents `return' expressions.
 ReturnAst(): Public == Private where
   Public == SpadSyntaxCategory with
@@ -995,7 +1001,7 @@ ReturnAst(): Public == Private where
       ++ expression(e) returns the expression returned by `e'.
   Private == add
     import Pair
-    Rep == Pair(Symbol,SpadAst)
+    Rep == Pair(Identifier,SpadAst)
     expression x == second rep x
     coerce(x: %): OutputForm ==
       elt('ReturnAst::OutputForm,
@@ -1011,7 +1017,7 @@ SpadAst(): SpadAstExports
 )abbrev domain SEQAST SequenceAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents a block of expressions.
 SequenceAst(): Public == Private where
   Public == SpadSyntaxCategory with
@@ -1022,7 +1028,7 @@ SequenceAst(): Public == Private where
       ++ last(e) returns the last instruction in `e'.
   Private == add
     import Pair
-    Rep == Pair(Symbol,List SpadAst)
+    Rep == Pair(Identifier,List SpadAst)
     body x == second rep x
     last x == last(second rep x)$List(SpadAst)
     coerce(x: %): OutputForm ==
@@ -1278,14 +1284,14 @@ SpadAst(): SpadAstExports
 )abbrev domain CAPSLAST CapsuleAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the capsule of a domain definition.
 CapsuleAst(): Public == Private where
   Public == SpadSyntaxCategory with
     body: % -> List SpadAst
       ++ body(c) returns the list of top level expressions appearing in `c'.
   Private == add
-    Rep == Pair(Symbol, List SpadAst)
+    Rep == Pair(Identifier, List SpadAst)
     body x == second rep x
     coerce(x: %): OutputForm ==
       elt('CapsuleAst::OutputForm,
@@ -1379,19 +1385,19 @@ SpadAst(): SpadAstExports
 )abbrev domain CATAST CategoryAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents the unnamed category defined
 ++   by a list of exported signatures
 CategoryAst(): Public == Private where
   Public == SpadSyntaxCategory with
-    kind: % -> Symbol
+    kind: % -> ConstructorKind
       ++ kind(c) returns the kind of unnamed category, either
       ++ 'domain' or 'package'.
     body: % -> List SpadAst
       ++ body(c) returns the list of exports in category syntax `c'.
   Private == add
     Rep == List SpadAst
-    kind x == (second rep x) : Symbol
+    kind x == (second rep x) : ConstructorKind
     body x == rest rest rep x
     coerce(x: %): OutputForm ==
       elt('CategoryAst::OutputForm,
@@ -1544,14 +1550,14 @@ MacroAst(): Public == Private where
 )abbrev domain SPADAST SpadAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: September 21, 2008
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: April 20, 2009
 ++ Description: This domain represents a kind of base domain
 ++   for Spad syntax domain.  It merely exists as a kind of
 ++   of abstract base in object-oriented programming language.
 ++   However, this is not an abstract class.  
 SpadAst(): SpadAstExports() == add
-  isAst(x: %, tag: Symbol): Boolean ==
-    (op := getOperator(x::Syntax)) case Symbol and op = tag
+  isAst(x: %, tag: Identifier): Boolean ==
+    (op := getOperator(x::Syntax)) case Identifier and op = tag
 
   x case ImportAst == isAst(x,'import)
   autoCoerce(x: %): ImportAst == x : ImportAst
@@ -1637,7 +1643,7 @@ SpadAst(): SpadAstExports() == add
   x case IsAst == isAst(x,'_is)
   autoCoerce(x: %): IsAst == x : IsAst
 
-  x case Identifier == (x::Syntax) case Symbol
+  x case Identifier == (x::Syntax) case Identifier
   autoCoerce(x: %): Identifier == x:Identifier
 
   x case String == (x::Syntax) case String
@@ -1648,7 +1654,7 @@ SpadAst(): SpadAstExports() == add
 
   coerce(x: %): OutputForm ==
     x' := x : Syntax
-    compound? x' and ((op := getOperator x') case Symbol) =>
+    compound? x' and ((op := getOperator x') case Identifier) =>
       op = 'IF => x:IfAst::OutputForm
       op = 'REPEAT => x:RepeatAst::OutputForm
       op = 'WHILE => x:WhileAst::OutputForm

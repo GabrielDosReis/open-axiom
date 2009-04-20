@@ -954,7 +954,11 @@ compConstruct(form is ["construct",:l],m,e) ==
 ++ Compile a literal (quoted) symbol.
 compQuote: (%Form,%Mode,%Env) -> %Maybe %Triple
 compQuote(expr,m,e) == 
-  expr is ["QUOTE",x] and IDENTP x => convert([expr,$Symbol,e],m)
+  expr is ["QUOTE",x] and IDENTP x => 
+    -- Ideally, Identifier should be the default type.  However, for
+    -- historical reasons we cannot afford that luxury yet.
+    m = $Identifier => [expr,$Identifier,e]
+    convert([expr,$Symbol,e],m)
   stackAndThrow('"%1b is not a literal symbol.",[x])
 
 compList: (%Form,%Mode,%Env) -> %Maybe %Triple
