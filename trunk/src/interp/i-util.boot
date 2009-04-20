@@ -82,6 +82,13 @@ printPrompt(flush? == false) ==
   if flush? then
     FORCE_-OUTPUT $OutputStream
 
+++ Return the name of a text editor, if possible.
+textEditor() ==
+  prog := getEnv '"EDITOR" => prog
+  # $EditorProgram ^= 0 => $EditorProgram
+  %hasFeature KEYWORD::WIN32 => '"notepad"
+  throwKeyedMsg("S2IZ0091",nil)
+
 --% Miscellaneous
  
 $ZeroVecCache := nil

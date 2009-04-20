@@ -533,7 +533,7 @@ isLetter c ==
 
 update() ==
   runCommand
-    STRCONC('"SPADEDIT ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
+    STRCONC(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
   _/UPDATE()
 
 --% Inplace Merge Sort for Lists

@@ -182,7 +182,7 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
   if filename ^= '"" then
     htSayStandard '"\newline{}"
     htSay('"The source code for the constructor is found in ")
-  htMakePage [['text,'"\unixcommand{",filename,'"}{_\$AXIOM/lib/SPADEDIT ",
+  htMakePage [['text,'"\unixcommand{",filename,'"}{",textEditor(), '" ",
               sourceFileName, '" ", name, '"}"]]
   if nargs ^= 0 then htSay '"."
   htSaturnBreak()
@@ -1145,7 +1145,8 @@ bcUnixTable(u) ==
       isAsharpFileName? x => '("AS")
       '("SPAD")
     filename := NAMESTRING $FINDFILE(STRINGIMAGE x, ft)
-    htMakePage [['text, '"\unixcommand{",PATHNAME_-NAME x, '"}{$AXIOM/lib/SPADEDIT ", filename, '"} "]]
+    htMakePage [['text, '"\unixcommand{",PATHNAME_-NAME x, '"}{",
+                   textEditor(), '" ", filename, '"} "]]
     htSay '"}"
   htEndTable()
 

@@ -1401,7 +1401,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
 htSaySourceFile conname ==
   sourceFileName := (getConstructorSourceFileFromDB conname or '"none")
   filename :=  extractFileNameFromPath sourceFileName
-  htMakePage [['text,'"\unixcommand{",filename,'"}{_\$AXIOM/lib/SPADEDIT ",
+  htMakePage [['text,'"\unixcommand{",filename,'"}{", textEditor(), '" ",
               sourceFileName, '" ", conname, '"}"]]
 
 htSayIndentRel(n,:options) ==
