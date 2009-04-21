@@ -165,17 +165,6 @@ axiom_algebra_bootstrap_objects = \
 
 \subsection{Layer 0}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-attreg.spad.pamphlet  (ATTREG)
-dhmatrix.spad.pamphlet (DHMATRIX)
-omcat.spad.pamphlet   (OM)
-print.spad.pamphlet   (PRINT)
-ptranfn.spad.pamphlet (PTRANFN)
-system.spad.pamphlet  (MSYSCMD)
-\end{verbatim}
-
 <<layer0>>=
 
 $(OUT)/UTYPE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
@@ -236,8 +225,6 @@ axiom_algebra_layer_0_objects = \
 
 \subsection{Layer 1}
 
-\subsubsection{Completed spad files}
-
 <<layer1>>=
 
 $(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
@@ -278,15 +265,15 @@ axiom_algebra_layer_1_objects = \
 
 \subsection{Layer 2}
 
-\subsubsection{Completed spad files}
-
 <<layer2>>=
 axiom_algebra_layer_2 = \
-  ELTAGG   ELTAGG- FMC      FMFUN   FORTFN   FVC     \
-  SYNTAX   FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
+  ELTAGG   ELTAGG-                                   \
+  SYNTAX           INTRET   IXAGG   IXAGG-   SEGXCAT \
   CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC FNCAT   \
            IDENT
 
+$(OUT)/ELTAGG.$(FASLEXT): $(OUT)/AGG.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/IXAGG.$(FASLEXT): $(OUT)/ELTAGG.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
 
 axiom_algebra_layer_2_nrlibs = \
@@ -298,12 +285,6 @@ axiom_algebra_layer_2_objects = \
 @
 
 \subsection{Layer 3}
-
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-grdef.spad.pamphlet (GRDEF)
-\end{verbatim}
 
 <<layer3>>=
 axiom_algebra_layer_3 = \
@@ -321,16 +302,6 @@ axiom_algebra_layer_3_objects = \
 @
 
 \subsubsection{Completed spad files}
-
-\begin{verbatim}
-annacat.spad.pamphlet (NIPROB ODEPROB PDEPROB OPTPROB NUMINT ODECAT PDECAT
-                       OPTCAT)
-color.spad.pamphlet (COLOR PALETTE)
-mappkg.spad.pamphlet (MAPHACK1 MAPHACK2 MAPHACK3 MAPPKG1 MAPPKG2 MAPPKG3)
-paramete.spad.pamphlet (PARPCURV PARPC2 PARSCURV PARSC2 PARSURF PARSU2
-suchthat.spad.pamphlet (SUCH)
-ystream.spad.pamphlet (YSTREAM)
-\end{verbatim}
 
 <<layer4>>=
 axiom_algebra_layer_4 = \
@@ -376,13 +347,6 @@ axiom_algebra_layer_5_objects = \
 
 \subsection{Layer6}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-fmod.spad.pamphlet (ZMOD)
-sortpak.spad.pamphlet (SORTPAK)
-\end{verbatim}
-
 <<layer6>>=
 
 $(OUT)/CHARPOL.$(FASLEXT): $(OUT)/SETCAT-.$(FASLEXT)
@@ -402,8 +366,6 @@ axiom_algebra_layer_6_objects = \
 @
 
 \subsection{Layer7}
-
-\subsubsection{Completed spad files}
 
 \begin{verbatim}
 \end{verbatim}
@@ -425,13 +387,6 @@ axiom_algebra_layer_7_objects = \
 
 \subsection{Layer8}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-card.spad.pamphlet (CARD)
-fortcat.spad.pamphlet (FORTFN FMC FORTCAT FVC FMTC FMFUN FVFUN)
-\end{verbatim}
-
 <<layer8>>=
 axiom_algebra_layer_8 = \
   BSTREE  BTOURN   CARD     DRAWHACK  FACTFUNC FMTC  \
@@ -448,16 +403,6 @@ axiom_algebra_layer_8_objects = \
 @
 
 \subsection{Layer9}
-
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-degred.spad.pamphlet (DEGRED)
-indexedp.spad.pamphlet (IDPC IDPO IDPAM IDPOAM  IDPOAMS IDPAG)
-product.spad.pamphlet (PRODUCT)
-retract.spad.pamphlet (RETRACT FRETRCT RATRET)
-sf.spad.pamphlet (REAL RADCAT RNS FPS DFLOAT)
-\end{verbatim}
 
 <<layer9>>=
 axiom_algebra_layer_9 = \
@@ -481,32 +426,9 @@ axiom_algebra_layer_9_objects = \
 
 \subsection{Layer10}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-complet.spad.pamphlet (ORDCOMP ORDCOMP2 ONECOMP ONECOMP2 INFINITY)
-cra.spad.pamphlet (CRAPACK)
-defaults.spad.pamphlet (REPSQ REPDB FLASORT)
-drawpak.spad.pamphlet (DRAWCX)
-free.spad.pamphlet (LMOPS FMONOID FGROUP FAMONC IFAMON FAMONOID FAGROUP)
-fourier.spad.pamphlet (FCOMP FSERIES)
-functions.spad.pamphlet (BFUNCT)
-mesh.spad.pamphlet (MESH)
-moebius.spad.pamphlet (MOEBIUS)
-mring.spad.pamphlet (MRING MRF2)
-opalg.spad.pamphlet (MODOP OP)
-partperm.spad.pamphlet (PARTPERM)
-pgrobner.spad.pamphlet (PGROEB)
-plottool.spad.pamphlet (PLOTTOOL)
-setorder.spad.pamphlet (UDPO UDVO)
-sttaylor.spad.pamphlet (STTAYLOR)
-tableau.spad.pamphlet (TABLBUMP TABLEAU)
-viewpack.spad.pamphlet (VIEW)
-\end{verbatim}
-
 <<layer10>>=
 axiom_algebra_layer_10 = \
-  ASP34    BFUNCT   BPADIC   \
+           BFUNCT   BPADIC   \
   BTREE    CRAPACK  DEQUEUE  DLIST    \
   DRAWCX   D01GBFA  D02EJFA  D03FAFA  \
   DRAWPT   FAMR     FAMR-    FLASORT  \
@@ -542,28 +464,6 @@ axiom_algebra_layer_10_objects = \
 
 \subsection{Layer11}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-array1.spad.pamphlet (PRIMARR PRIMARR2 TUPLE IFARRAY FARRAY IARRAY1 ARRAY1
-                      ARRAY12)
-bags.spad.pamphlet (STACK ASTACK QUEUE DEQUEUE HEAP)
-combinat.spad.pamphlet (COMBINAT)
-ffx.spad.pamphlet (IRREDFFX)
-galutil.spad.pamphlet (GALUTIL)
-matstor.spad.pamphlet (MATSTOR)
-ore.spad.pamphlet (OREPCAT APPLYORE AUTOMOR OREPCTO ORESUP OREUP)
-plot3d.spad.pamphlet (PLOT3D)
-prtition.spad.pamphlet (PRTITION SYMPOLY)
-stream.spad.pamphlet (LZSTAGG CSTTOOLS STREAM STREAM1 STREAM2 STREAM3)
-trigcat.spad.pamphlet (ELEMFUN AHYP ATRIG HYPCAT TRANFUN TRIGCAT PRIMCAT
-                       LFCAT CFCAT SPFCAT)
-xlpoly.spad.pamphlet (MAGMA LWORD LIECAT FLALG XEXPPKG LPOLY PBWLB XPBWPOLY
-                      LEXP)
-xpoly.spad.pamphlet (OFMONOID FMCAT FM1 XALG XFALG XPOLYC XPR XDPOLY XRPOLY
-                     XPOLY)
-\end{verbatim}
-
 <<layer11>>=
 axiom_algebra_layer_11 = \
   STRING   \
@@ -592,11 +492,6 @@ axiom_algebra_layer_11_objects = \
 
 \subsection{Layer12}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-\end{verbatim}
-
 <<layer12>>=
 axiom_algebra_layer_12 = \
   DIOPS    DIOPS-  DIAGG   DIAGG-  BITS     DIRPROD2 IMATRIX \
@@ -612,32 +507,6 @@ axiom_algebra_layer_12_objects = \
 @
 
 \subsection{Layer13}
-
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-carten.spad.pamphlet (GRMOD GRALG CARTEN CARTEN2)
-catdef.spad.pamphlet (ABELGRP ABELMON ABELSG ALGEBRA BASTYPE BMODULE CABMON
-                      CHARNZ CHARZ COMRING DIFRING DIFEXT DIVRING ENTIRER
-                      EUCDOM FIELD FINITE FLINEXP GCDDOM GROUP INTDOM LMODULE
-                      LINEXP MODULE MONOID OAGROUP OAMON OAMONS OASGP OCAMON
-                      ORDFIN OINTDOM ORDMON ORDRING ORDSET PDRING PFECAT PID
-                      RMODULE RING RNG SGROUP SETCAT STEP UFD VSPACE)
-clifford.spad.pamphlet (QFORM CLIF)
-clip.spad.pamphlet (CLIP)
-coordsys.spad.pamphlet (COORDSYS)
-dhmatrix.spad.pamphlet (DHMATRIX)
-d02routine.spad.pamphlet (D02BBFA D02BHFA D02CJFA D02EJFA)
-ffpoly2.spad.pamphlet (FFPOLY2)
-irsn.spad.pamphlet (IRSN)
-numode.spad.pamphlet (NUMODE)
-numquad.spad.pamphlet (NUMQUAD)
-perman.spad.pamphlet (GRAY PERMAN)
-pseudolin.spad.pamphlet (PSEUDLIN)
-rep2.spad.pamphlet (REP2)
-sex.spad.pamphlet (SEXCAT SEXOF SEX)
-solvedio.spad.pamphlet (DIOSP)
-\end{verbatim}
 
 <<layer13>>=
 axiom_algebra_layer_13 = \
@@ -664,105 +533,10 @@ axiom_algebra_layer_13_objects = \
 
 \subsection{Layer14}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-allfact.spad.pamphlet (MRATFAC MPRFF MPCPF GENMFACT RFFACTOR SUPFRACF)
-array2.spad.pamphlet (ARR2CAT IIARRAY2 IARRAY2 ARRAY2)
-bezout.spad.pamphlet (BEZOUT)
-boolean.spad.pamphlet (REF LOGIC BOOLEAN IBITS BITS)
-brill.spad.pamphlet (BRILL)
-cden.spad.pamphlet (ICDEN CDEN UPCDEN MCDEN)
-contfrac.spad.pamphlet (CONTFRAC NCNTFRAC)
-cycles.spad.pamphlet (CYCLES EVALCYC)
-cyclotom.spad.pamphlet (CYCLOTOM)
-ddfact.spad.pamphlet (DDFACT)
-equation2.spad.pamphlet (EQ EQ2 FEVALAB)
-error.spad.pamphlet (ERROR)
-facutil.spad.pamphlet (FACUTIL PUSHVAR)
-ffcat.spad.pamphlet (FPC XF FAXF DLP FFIELDC FFSLPE)
-fff.spad.pamphlet (FFF)
-ffhom.spad.pamphlet (FFHOM)
-ffpoly.spad.pamphlet (FFPOLY)
-fname.spad.pamphlet (FNCAT FNAME)
-formula.spad.pamphlet (FORMULA FORMULA1)
-fraction.spad.pamphlet (LO LA QFCAT QFCAT2 FRAC LPEFRAC FRAC2)
-galfactu.spad.pamphlet (GALFACTU)
-galpolyu.spad.pamphlet (GALPOLYU)
-gb.spad.pamphlet (GB)
-gbeuclid.spad.pamphlet (GBEUCLID)
-gbintern.spad.pamphlet (GBINTERN)
-gdirprod.spad.pamphlet (ORDFUNS ODP HDP SHDP)
-geneez.spad.pamphlet (GENEEZ)
-ghensel.spad.pamphlet (GHENSEL)
-gpgcd.spad.pamphlet (GENPGCD)
-gpol.spad.pamphlet (LAUPOL)
-groebf.spad.pamphlet (GBF)
-groebsol.spad.pamphlet (GROEBSOL)
-intrf.spad.pamphlet (SUBRESP MONOTOOL INTHERTR INTTR INTRAT INTRF)
-idecomp.spad.pamphlet (IDECOMP)
-leadcdet.spad.pamphlet (LEADCDET)
-lindep.spad.pamphlet (LINDEP ZLINDEP)
-lingrob.spad.pamphlet (LGROBP)
-listgcd.spad.pamphlet (HEUGCD)
-matfuns.spad.pamphlet (IMATLIN MATCAT2 RMCAT2 IMATQF MATLIN)
-mfinfact.spad.pamphlet (MFINFACT)
-mlift.spad.pamphlet (MLIST)
-moddfact.spad.pamphlet (MDDFACT)
-modmon.spad.pamphlet (MODMON)
-modring.spad.pamphlet (MODRING EMR MODFIELD)
-mts.spad.pamphlet (SMTS TS)
-multsqfr.spad.pamphlet (MULTSQFR)
-newpoint.spad.pamphlet (PTCAT POINT COMPPROP SUBSPACE PTPACK PTFUNC2)
-numtheor.spad.pamphlet (INTHEORY PNTHEORY)
-npcoef.spad.pamphlet (NPCOEF)
-omdev.spad.pamphlet (OMENC OMDEV OMCONN OMPKG)
-omserver.spad.pamphlet (OMSERVER)
-padic.spad.pamphlet (PADICCT IPADIC PADIC BPADIC PADICRC PADICRAT BPADICRT)
-pdecomp.spad.pamphlet (PCOMP PDECOMP)
-pfbr.spad.pamphlet (PFBRU PFBR)
-pfr.spad.pamphlet (PFR PFRPAC)
-pgcd.spad.pamphlet (PGCD)
-pinterp.spad.pamphlet (PINTERPA PINTERP)
-pleqn.spad.pamphlet (PLEQN)
-poltopol.spad.pamphlet (MPC2 MPC3 POLTOPOL)
-poly.spad.pamphlet (FM PR SUP SUP2 UP UP2 POLY2UP UPSQFREE PSQFR UPMP)
-polycat.spad.pamphlet (AMR FAMR POLYCAT POLYLIFT UPOLYC UPOLYC2 COMMUPC)
-prs.spad.pamphlet (PRS)
-radix.spad.pamphlet (RADIX BINARY DECIMAL HEXADEC RADUTIL)
-ratfact.spad.pamphlet (RATFACT)
-rderf.spad.pamphlet (RDETR)
-realzero.spad.pamphlet (REAL0)
-real0q.spad.pamphlet (REAL0Q)
-resring.spad.pamphlet (RESRING)
-rf.spad.pamphlet (POLYCATQ RF)
-solvefor.spad.pamphlet (SOLVEFOR)
-solvelin.spad.pamphlet (LSMP LSMP1 LSPP)
-smith.spad.pamphlet (SMITH)
-sttf.spad.pamphlet (STTF STTFNC)
-sturm.spad.pamphlet (SHP)
-sum.spad.pamphlet (ISUMP GOSPER SUMRF)
-tex.spad.pamphlet (TEX)
-tree.spad.pamphlet (TREE BTCAT BTREE BSTREE BTOURN BBTREE PENDTREE)
-twofact.spad.pamphlet (NORMRETR TWOFACT)
-unifact.spad.pamphlet (UNIFACT)
-updecomp.spad.pamphlet (UPDECOMP)
-updivp.spad.pamphlet (UPDIVP)
-viewDef.spad.pamphlet (VIEWDEF)
-vector.spad.pamphlet (VECTCAT IVECTOR VECTOR VECTOR2 DIRPCAT DIRPROD DIRPROD2)
-view2D.spad.pamphlet (GRIMAGE VIEW2D)
-void.spad.pamphlet (VOID EXIT)
-weier.spad.pamphlet (WEIER)
-wtpol.spad.pamphlet (WP OWP)
-\end{verbatim}
-
 <<layer14>>=
 axiom_algebra_layer_14 = \
   TBAGG   TBAGG-   ALIST    FS       FS-      ACF      ACF-     \
-  ACFS     ACFS-    \
-  ASP1     ASP10    ASP24    ASP4     \
-  ASP50    ASP6     ASP73    BALFACT  \
-  BEZOUT   BINARY   BINFILE  BOUNDZRO \
+  ACFS    ACFS-    BALFACT  BEZOUT   BINARY   BINFILE  BOUNDZRO \
   BPADICRT BRILL    CDEN     CHVAR    \
   COMMUPC  CONTFRAC CVMP     CYCLOTOM \
   CYCLES   DDFACT   DECIMAL  DIRPROD  DISPLAY  DMP      \
@@ -830,14 +604,6 @@ axiom_algebra_layer_14_objects = \
 
 \subsection{Layer15}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-dpolcat.spad.pamphlet (DVARCAT ODVAR SDVAR DPOLCAT DSMP ODPOL SDPOL)
-matcat.spad.pamphlet (MATCAT RMATCAT SMATCAT)
-plot.spad.pamphlet (PLOT PLOT1)
-\end{verbatim}
-
 <<layer15>>=
 axiom_algebra_layer_15 = \
   DSMP     EXPUPXS  ARITY            \
@@ -855,14 +621,6 @@ axiom_algebra_layer_15_objects = \
 @
 
 \subsection{Layer16}
-
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-efupxs.spad.pamphlet (EFUPXS)
-lodop.spad.pamphlet (MLO OMLO NCODIV ODR DPMO DPMM)
-space.spad.pamphlet (SPACEC SPACE3 TOPSP)
-\end{verbatim}
 
 <<layer16>>=
 axiom_algebra_layer_16 = \
@@ -882,27 +640,6 @@ axiom_algebra_layer_16_objects = \
 
 \subsection{Layer17}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-algext.spad.pamphlet (SAE)
-aggcat.spad.pamphlet (AGG HOAGG CLAGG BGAGG SKAGG QUAGG DQAGG PRQAGG DIOPS
-                      DIAGG MDAGG SETAGG FSAGG MSETAGG OMSAGG KDAGG ELTAB
-                      ELTAGG ISAGG TBAGG RCAGG BRAGG DLAGG URAGG STAGG LNAGG
-                      FLAGG A1AGG ELAGG LSAGG ALAGG SRAGG BTAGG ITAGG) 
-aggcat2.spad.pamphlet (FLAGG2 FSAGG2)
-galfact.spad.pamphlet (GALFACT)
-intfact.spad.pamphlet (PRIMES IROOT INTFACT)
-mathml.spad.pamphlet (MMLFORM)
-padiclib.spad.pamphlet (IBPTOOLS IBACHIN PWFFINTB)
-perm.spad.pamphlet (PERMCAT PERM)
-permgrps.spad.pamphlet (PERMGRP PGE)
-random.spad.pamphlet (RANDSRC RDIST INTBIT RIDIST RFDIST)
-sgcf.spad.pamphlet (SGCF)
-string.spad.pamphlet (CHAR CCLASS ISTRING STRING STRICAT)
-view3D.spad.pamphlet (VIEW3D)
-\end{verbatim}
-
 <<layer17>>=
 axiom_algebra_layer_17 = \
   CCLASS  FSAGG2  GALFACT IALGFACT CTORCAT  CTORCAT- \
@@ -921,15 +658,6 @@ axiom_algebra_layer_17_objects = \
 
 \subsection{Layer18}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-d01Package.spad.pamphlet (INTPACK)
-list.spad.pamphlet (ILIST LIST LIST2 LIST3 LIST2MAP ALIST)
-pf.spad.pamphlet (IPF PF)
-table.spad.pamphlet (HASHTBL INTABL TABLE EQTBL STRTBL GSTBL STBL)
-\end{verbatim}
-
 <<layer18>>=
 axiom_algebra_layer_18 = \
 	INTPACK IPF     CATCTOR DOMCTOR   CTORCALL \
@@ -945,79 +673,9 @@ axiom_algebra_layer_18_objects = \
 
 \subsection{Layer19}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-acplot.spad.pamphlet (REALSOLV ACPLOT)
-alql.spad.pamphlet (DLIST ICARD DBASE QEQUAT MTHING OPQUERY)
-any.spad.pamphlet (NONE NONE1 ANY ANY1)
-c02.spad.pamphlet (NAGC02)
-c05.spad.pamphlet (NAGC05)
-c06.spad.pamphlet (NAGC06)
-d01routine.spad.pamphlet (D01AJFA D01AKFA D01AMFA D01APFA D01AQFA D01ALFA 
-                          D01ANFA D01ASFA D01GBFA D01FCFA)
-d02Package.spad.pamphlet (ODEPACK)
-d03agents.spad.pamphlet (D03AGNT)
-d03Package.spad.pamphlet (PDEPACK)
-drawopt.spad.pamphlet (DROPT DROPT1 DROPT0)
-eigen.spad.pamphlet (EP CHARPOL)
-e01.spad.pamphlet (NAGE01)
-e02.spad.pamphlet (NAGE02)
-e04.spad.pamphlet (NAGE04)
-e04agents.spad.pamphlet (E04AGNT)
-e04Package.spad.pamphlet (OPTPACK)
-ffcg.spad.pamphlet (FFCGP FFCGX FFCG)
-ffp.spad.pamphlet (FFP FFX IFF FF)
-files.spad.pamphlet (FILECAT FILE TEXTFILE BINFILE KAFILE LIB)
-float.spad.pamphlet (FLOAT)
-fnla.spad.pamphlet (OSI COMM HB FNLA)
-fortpak.spad.pamphlet (FCPAK1 NAGSP FORT FOP TEMUTL MCALCFN)
-forttyp.spad.pamphlet (FST FT SYMTAB SYMS)
-fparfrac.spad.pamphlet (FPARFRAC)
-fr.spad.pamphlet (FR FRUTIL FR2)
-f07.spad.pamphlet (NAGF07)
-gdpoly.spad.pamphlet (GDMP DMP HDMP)
-ideal.spad.pamphlet (IDEAL)
-intaux.spad.pamphlet (IR IR2)
-intclos.spad.pamphlet (TRIMAT IBATOOL FFINTBAS WFFINTBS NFINTBAS)
-integer.spad.pamphlet (INTSLPE INT NNI PI ROMAN)
-kl.spad.pamphlet (CACHSET SCACHE MKCHSET KERNEL KERNEL2)
-lmdict.spad.pamphlet (LMDICT)
-matrix.spad.pamphlet (IMATRIX MATRIX RMATRIX SQMATRIX)
-misc.spad.pamphlet (SAOS)
-mkfunc.spad.pamphlet (INFORM INFORM1 MKFUNC MKUCFUNC MKBCFUNC MKFLCFN)
-modgcd.spad.pamphlet (INMODGCD)
-mset.spad.pamphlet (MSET)
-multpoly.spad.pamphlet (POLY POLY2 MPOLY SMP INDE)
-naalgc.spad.pamphlet (MONAD MONADWU NARNG NASRING NAALG FINAALG FRNAALG)
-newdata.spad.pamphlet (IPRNTPK TBCMPPK SPLNODE SPLTREE)
-omerror.spad.pamphlet (OMERRK OMERR)
-op.spad.pamphlet (BOP BOP1 COMMONOP)
-out.spad.pamphlet (OUT SPECOUT DISPLAY)
-outform.spad.pamphlet (NUMFMT OUTFORM)
-patmatch1.spad.pamphlet (PATRES PATRES2 PATLRES PATMAB FPATMAB PMSYM PMKERNEL
-                         PMDOWN PMTOOLS PMLSAGG)
-pattern.spad.pamphlet (PATTERN PATTERN1 PATTERN2 PATAB)
-pscat.spad.pamphlet (PSCAT UPSCAT UTSCAT ULSCAT UPXSCAT MTSCAT)
-qalgset.spad.pamphlet (QALGSET QALGSET2)
-reclos.spad.pamphlet (POLUTIL RRCC RCFIELD ROIRC RECLOS)
-rep1.spad.pamphlet (REP1)
-routines.spad.pamphlet (ROUTINE ATTRBUT)
-s.spad.pamphlet (NAGS)
-seg.spad.pamphlet (SEGCAT SEGXCAT SEG SEG2 SEGBIND SETBIND2 UNISEG UNISEG2
-                   INCRMAPS)
-sets.spad.pamphlet (SET)
-sups.spad.pamphlet (ISUPS)
-syssolp.spad.pamphlet (SYSSOLP)
-variable.spad.pamphlet (OVAR VARIABLE RULECOLD FUNCTION ANON)
-\end{verbatim}
-
 <<layer19>>=
 axiom_algebra_layer_19 = \
-  ACPLOT   ANTISYM \
-  ANY               ASP27    ASP28   \
-  ASP33    ASP49             ASP7    \
-  ASP78             ASP9     ATTRBUT \
+  ACPLOT   ANTISYM  ANY      ATTRBUT \
   BOP      BOP1     COMMONOP COMPCAT \
   COMPCAT- DRAW     DRAWCFUN DROPT   \
   DROPT0   D01ANFA  D01ASFA  D03AGNT \
@@ -1055,89 +713,10 @@ axiom_algebra_layer_19_objects = \
 
 \subsection{Layer20}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-algfact.spad.pamphlet (IALGFACT SAEFACT RFFACT SAERFFC ALGFACT)
-algfunc.spad.pamphlet (ACF ACFS AF)
-asp.spad.pamphlet (ASP1 ASP10 ASP12 ASP19 ASP20 ASP24 ASP27 ASP28 ASP29 ASP30
-                   ASP31 ASP33 ASP34 ASP35 ASP4 ASP41 ASP42 ASP49 ASP50 ASP55
-                   ASP6 ASP7 ASP73 ASP74 ASP77 ASP78 ASP8 ASP80 ASP9)
-constant.spad.pamphlet (IAN AN)
-cmplxrt.spad.pamphlet (CMPLXRT)
-crfp.spad.pamphlet (CRFP)
-curve.spad.pamphlet (FFCAT MMAP FFCAT2 CHAVAR RDFF ALGFF)
-derham.spad.pamphlet (LALG EAB ANTISYM DERHAM)
-draw.spad.pamphlet (DRAWCFUN DRAW DRAWCURV DRAWPT)
-d01.spad.pamphlet (NAGD01)
-efstruc.spad.pamphlet (SYMFUNC TANEXP EFSTRUC ITRIGMNP TRIGMNIP CTRIGMNP)
-elemntry.spad.pamphlet (EF)
-elfuts.spad.pamphlet (ELFUTS)
-expexpan.spad.pamphlet (EXPUPXS UPXSSING EXPEXPAN)
-exprode.spad.pamphlet (EXPRODE)
-e04routine.spad.pamphlet (E04DFGA E04FDFA E04GCFA E04JAFA E04MBFA E04NAFA 
-                          E04UCFA)
-f01.spad.pamphlet (NAGF01)
-f02.spad.pamphlet (NAGF02)
-f04.spad.pamphlet (NAGF04)
-fortmac.spad.pamphlet (MINT MFLOAT MCMPLX)
-fortran.spad.pamphlet (RESULT FC FORTRAN M3D SFORT SWITCH FTEM FEXPR)
-fspace.spad.pamphlet (ES ES1 ES2 FS FS2)
-fs2ups.spad.pamphlet (FS2UPS)
-funcpkgs.spad.pamphlet (FSUPFACT)
-gaussfac.spad.pamphlet (GAUSSFAC)
-gaussian.spad.pamphlet (COMPCAT COMPLPAT CPMATCH COMPLEX COMPLEX2 COMPFACT
-                        CINTSLPE)
-generic.spad.pamphlet (GCNAALG CVMP)
-genufact.spad.pamphlet (GENUFACT)
-genups.spad.pamphlet (GENUPS)
-infprod.spad.pamphlet (STINPROD INFPROD0 INPRODPF INPRODFF)
-intaf.spad.pamphlet (INTG0 INTPAF INTAF)
-intalg.spad.pamphlet (DBLRESP INTHERAL INTALG)
-intef.spad.pamphlet (INTEF)
-intpm.spad.pamphlet (INTPM)
-kovacic.spad.pamphlet (KOVACIC)
-lie.spad.pamphlet (LIE JORDAN LSQM)
-liouv.spad.pamphlet (LF)
-lodof.spad.pamphlet (SETMN PREASSOC ASSOCEQ LODOF)
-manip.spad.pamphlet (FACTFUNC POLYROOT ALGMANIP SIMPAN TRMANIP)
-multfact.spad.pamphlet (INNMFACT MULTFACT ALGMFACT)
-naalg.spad.pamphlet (ALGSC SCPKG ALGPKG FRNAAF2)
-newpoly.spad.pamphlet (NSUP NSUP2 RPOLCAT NSMP)
-nlinsol.spad.pamphlet (RETSOL NLINSOL)
-numeigen.spad.pamphlet (IFSPRMELT.oNEP NREP NCEP)
-numeric.spad.pamphlet (NUMERIC DRAWHACK)
-numsolve.spad.pamphlet (INFSP FLOATRP FLOATCP)
-oct.spad.pamphlet (OC OCT OCTCT2)
-odealg.spad.pamphlet (ODESYS ODERED ODEPAL)
-openmath.spad.pamphlet (OMEXPR)
-pade.spad.pamphlet (PADEPAC PADE)
-patmatch2.spad.pamphlet (PMINS PMQFCAT PMPLCT PMFS PATMATCH)
-pfo.spad.pamphlet (FORDER RDIV PFOTOOLS PFOQ FSRED PFO)
-polset.spad.pamphlet (PSETCAT GPOLSET)
-primelt.spad.pamphlet (PRIMELT FSPRMELT)
-quat.spad.pamphlet (QUATCAT QUAT QUATCT2)
-rdeef.spad.pamphlet (INTTOOLS RDEEF)
-rdesys.spad.pamphlet (RDETRS RDEEFS)
-riccati.spad.pamphlet (ODEPRRIC ODERTRIC)
-rule.spad.pamphlet (RULE APPRULE RULESET)
-sign.spad.pamphlet (TOOLSIGN INPSIGN SIGNRF LIMITRF)
-special.spad.pamphlet (DFSFUN ORTHPOL NTPOLFN)
-suts.spad.pamphlet (SUTS)
-tools.spad.pamphlet (ESTOOLS ESTOOLS1 ESTOOLS2)
-triset.spad.pamphlet (TSETCAT GTSET PSETPK)
-tube.spad.pamphlet (TUBE TUBETOOL EXPRTUBE NUMTUBE)
-utsode.spad.pamphlet (UTSODE)
-\end{verbatim}
-
 <<layer20>>=
 axiom_algebra_layer_20 = \
-  AF       ALGFACT  ASP12    ASP55    ASP8 \
-  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
-  ALGSC    AN       APPRULE  ASP19    \
-  ASP20    ASP30    ASP31    ASP35    \
-  ASP41    ASP42    ASP74    ASP77    \
-  ASP80    CINTSLPE COMPFACT COMPLEX  \
+  AF       ALGFACT  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
+  ALGSC    AN       APPRULE  CINTSLPE COMPFACT COMPLEX  \
   COMPLPAT CMPLXRT  CPMATCH  CRFP     \
   CTRIGMNP D01WGTS  D02AGNT  D03EEFA  \
   DBLRESP  DERHAM   DFSFUN   DRAWCURV \
@@ -1178,37 +757,6 @@ axiom_algebra_layer_20_objects = \
 
 \subsection{Layer21}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-cont.spad.pamphlet (ESCONT ESCONT1)
-ddfact.spad.pamphlet (DDFACT)
-defintef.spad.pamphlet (DEFINTEF)
-defintrf.spad.pamphlet (DFINTTLS DEFINTRF)
-divisor.spad.pamphlet (FRIDEAL FRIDEAL2 MHROWRED FRMOD FDIVCAT HELLFDIV FDIV
-                       FDIV2)
-d01transform.spad.pamphlet (D01TRNS)
-efuls.spad.pamphlet (EFULS)
-expr.spad.pamphlet (EXPR PAN2EXPR EXPR2 PMPREDFS PMASSFS PMPRED PMASS HACKPI
-                    PICOERCE)
-expr2ups.spad.pamphlet (EXPR2UPS)
-fs2expxp.spad.pamphlet (FS2EXPXP)
-gseries.spad.pamphlet (GSERIES)
-integrat.spad.pamphlet (FSCINT FSINT)
-irexpand.spad.pamphlet (IR2F IRRF2F)
-laplace.spad.pamphlet (LAPLACE INVLAPLA)
-laurent.spad.pamphlet (ULSCCAT ULSCONS ULS USL2)
-nlode.spad.pamphlet (NODE1)
-oderf.spad.pamphlet (BALFACT BOUNDZRO ODEPRIM UTSODETL ODERAT ODETOOLS ODEINT
-                     ODECONST)
-puiseux.spad.pamphlet (UPXSCCA UPXSCONS UPXS UPXS2)
-radeigen.spad.pamphlet (REP)
-solverad.spad.pamphlet (SOLVERAD)
-suls.spad.pamphlet (SULS)
-supxs.spad.pamphlet (SUPXS)
-taylor.spad.pamphlet (ITAYLOR UTS UTS2)
-\end{verbatim}
-
 <<layer21>>=
 axiom_algebra_layer_21 = \
   DEFINTEF DFINTTLS DEFINTRF D01TRNS  \
@@ -1230,28 +778,9 @@ axiom_algebra_layer_21_objects = \
 
 \subsection{Layer22}
 
-\subsubsection{Completed spad files}
-
-\begin{verbatim}
-asp.spad.pamphlet (ASP29)
-combfunc.spad.pamphlet (COMBF)
-d01agents.spad.pamphlet (D01AGNT SNTSCAT)
-ffnb.spad.pamphlet (INBFF)
-limitps.spad.pamphlet (SIGNEF)
-lodo.spad.pamphlet (LODO LODO1 LODO2)
-newpoint.spad.pamphlet (SUBSPACE)
-nregset.spad.pamphlet (NTSCAT)
-primelt.spad.pamphlet (FSPRMELT)
-regset.spad.pamphlet (REGSET RSETGCD RSDCMPK)
-sregset.spad.pamphlet (SFRTCAT SRDCMPK SREGSET)
-sttf.spad.pamphlet (STTF)
-transsolve.spad.pamphlet (SOLVETRA)
-zerodim.spad.pamphlet (RGCHAIN ZDSOLVE)
-\end{verbatim}
-\subsection{Layer21}
 <<layer22>>=
 axiom_algebra_layer_22 = \
-  ASP29    COMBF    D01AGNT  FSPRMELT \
+           COMBF    D01AGNT  FSPRMELT \
   INBFF    LODO     LODO1    LODO2    \
   NTSCAT   REGSET   RGCHAIN  RSETGCD  \
   RSDCMPK  SFRTCAT  SIGNEF   SNTSCAT  \
@@ -1267,20 +796,6 @@ axiom_algebra_layer_22_objects = \
 @
 
 \subsection{Final layer spad files}
-
-These files have not yet been fully analyzed for dependencies but
-have added in alphabetical order in this final layer. This
-ordering is apparently adequate.
-
-These files all depend on layer22.
-\begin{verbatim}
-algcat.spad.pamphlet (CPIMA)
-nregset.spad.pamphlet (NORMPK)
-nsregset.spad.pamphlet (LAZM3PK)
-regset.spad.pamphlet (QCMPACK)
-sregset.spad.pamphlet (SFRGCD SFQCMPK)
-zerodim.spad.pamphlet (LEXTRIPK IRURPK RURPK)
-\end{verbatim}
 
 <<layer23>>=
 axiom_algebra_layer_23 = \
@@ -1310,7 +825,13 @@ axiom_algebra_layer_user =  \
 	CASEAST  HASAST   ISAST    CATAST   WHEREAST COMMAAST \
 	QQUTAST  DEFAST   MACROAST SPADXPT  SPADAST           \
 	INBFILE  OUTBFILE IOBFILE  RGBCMDL  RGBCSPC           \
-        CTOR     IP4ADDR  NETCLT   INETCLTS
+        CTOR     IP4ADDR  NETCLT   INETCLTS                   \
+	FMC      FMFUN    FORTFN   FVC      FVFUN    ASP34    \
+        ASP1     ASP10    ASP24    ASP4     ASP50    ASP6     \
+	ASP73    ASP27    ASP28    ASP33    ASP49    ASP7     \
+        ASP78    ASP9     ASP12    ASP55    ASP8     ASP19    \
+        ASP20    ASP30    ASP31    ASP35    ASP41    ASP42    \
+	ASP74    ASP77    ASP80    ASP29
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -1377,6 +898,10 @@ $(OUT)/CTOR.$(FASLEXT): $(OUT)/CTORKIND.$(FASLEXT) \
 
 $(OUT)/NETCLT.$(FASLEXT): $(OUT)/IOBCON.$(FASLEXT)
 $(OUT)/INETCLTS.$(FASLEXT): $(OUT)/NETCLT.$(FASLEXT)
+
+
+$(OUT)/ASP34.$(FASLEXT): $(OUT)/FMC.$(FASLEXT)
+
 @
 
 \section{Broken Files}
