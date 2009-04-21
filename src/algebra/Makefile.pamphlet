@@ -167,13 +167,26 @@ axiom_algebra_bootstrap_objects = \
 
 <<layer0>>=
 
+$(OUT)/IEVALAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/EVALAB.$(FASLEXT): $(OUT)/IEVALAB.$(FASLEXT)
+$(OUT)/ELTAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+
 $(OUT)/UTYPE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/AHYP.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/PRIMCAT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/ATTREG.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/CONDUIT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/CFCAT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
-$(OUT)/ELTAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+
+
+$(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/ELTAGG.$(FASLEXT): $(OUT)/AGG.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/IXAGG.$(FASLEXT): $(OUT)/ELTAGG.$(FASLEXT) $(OUT)/EVALAB.$(FASLEXT)
+$(OUT)/QUAGG.$(FASLEXT): $(OUT)/BGAGG.$(FASLEXT)
+$(OUT)/SKAGG.$(FASLEXT): $(OUT)/BGAGG.$(FASLEXT)
+$(OUT)/DQAGG.$(FASLEXT): $(OUT)/QUAGG.$(FASLEXT) $(OUT)/SKAGG.$(FASLEXT)
+$(OUT)/PRQAGG.$(FASLEXT): $(OUT)/BGAGG.$(FASLEXT)
+
 $(OUT)/MSYSCMD.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 $(OUT)/KOERCE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
@@ -205,7 +218,7 @@ $(OUT)/PRINT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
-  KRCFROM  KVTFROM                                      \
+  KRCFROM  KVTFROM  IEVALAB  IEVALAB- EVALAB   EVALAB-  \
   MSYSCMD           OM       OMCONN   OMDEV    OUT      \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
            PROPERTY BASTYPE  BASTYPE-          LMODULE  \
@@ -213,7 +226,10 @@ axiom_algebra_layer_0 = \
   ABELSG-  ORDSET   ORDSET-           FILECAT  SEXCAT   \
   MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
   ITFUN3   STREAM1  STREAM2  STREAM3  ANY1     SEGBIND2 \
-  COMBOPC  EQ2      NONE1    CONDUIT  IOMODE   CTORKIND
+  COMBOPC  EQ2      NONE1    CONDUIT  IOMODE   CTORKIND \
+  AGG      AGG-     ELTAGG   ELTAGG-  IXAGG    IXAGG-   \
+  BGAGG    BGAGG-   BRAGG    BRAGG-   ELAGG    ELAGG-   \
+  DLAGG    DQAGG    QUAGG    SKAGG    PRQAGG
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -226,8 +242,6 @@ axiom_algebra_layer_0_objects = \
 \subsection{Layer 1}
 
 <<layer1>>=
-
-$(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 $(OUT)/HOMOTOP.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/KRCFROM.$(FASLEXT)
 $(OUT)/ITUPLE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
@@ -249,10 +263,10 @@ $(OUT)/MAYBE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT)
 $(OUT)/BYTEORD.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
 axiom_algebra_layer_1 = \
-  AGG      AGG-     IEVALAB  IEVALAB- FORTCAT   ITUPLE   \
+                                      FORTCAT   ITUPLE   \
   PATAB    PPCURVE  PSCURVE  REAL     RESLATC   RETRACT  \
   RETRACT- SEGCAT   BINDING           BMODULE   LOGIC    \
-  LOGIC-   EVALAB   EVALAB-  FEVALAB  FEVALAB-           \
+  LOGIC-                     FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD
 
 axiom_algebra_layer_1_nrlibs = \
@@ -267,14 +281,13 @@ axiom_algebra_layer_1_objects = \
 
 <<layer2>>=
 axiom_algebra_layer_2 = \
-  ELTAGG   ELTAGG-                                   \
-  SYNTAX           INTRET   IXAGG   IXAGG-   SEGXCAT \
-  CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC FNCAT   \
-           IDENT
+  SYNTAX  INTRET   SEGXCAT CONTOUR  LIST3   MKFUNC   \
+  OASGP   KTVLOGIC FNCAT   IDENT
 
-$(OUT)/ELTAGG.$(FASLEXT): $(OUT)/AGG.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
-$(OUT)/IXAGG.$(FASLEXT): $(OUT)/ELTAGG.$(FASLEXT)
+$(OUT)/FNCAT.$(FASLEXT): $(OUT)/HOMOTOP.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/OASGP.$(FASLEXT): $(OUT)/ORDSET.$(FASLEXT) $(OUT)/ABELSG.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
+$(OUT/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))
@@ -292,6 +305,8 @@ axiom_algebra_layer_3 = \
    MAPPKG2   MAPPKG3  INTBIT   MONAD    MONAD-   
 
 
+$(OUT)/MONAD.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/SCOPE.$(FASLEXT): $(OUT)/BINDING.$(FASLEXT)
 
 axiom_algebra_layer_3_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_3))
@@ -313,8 +328,7 @@ axiom_algebra_layer_4 = \
   REPSQ    REPDB    RFDIST   RIDIST   SPACEC   SPLNODE  \
   SUCH     TEX1     UDVO     YSTREAM  PAIR     ENV      \
   ATRIG    ATRIG-   GROUP    GROUP-   LALG     LALG-    \
-  OAMON    BGAGG    BGAGG-   BRAGG    BRAGG-   ELAGG    \
-  ELAGG-  DLAGG     MODULE  MODULE-  
+  OAMON    MODULE   MODULE-  
 
 
 axiom_algebra_layer_4_nrlibs = \
@@ -355,7 +369,7 @@ axiom_algebra_layer_6 = \
   ALGEBRA ALGEBRA- AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
   DIFEXT  DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
   HYPCAT  HYPCAT-  MKCHSET  MODRING NASRING  NASRING- \
-  SORTPAK ZMOD     PRQAGG   QUAGG   SKAGG    DQAGG    \
+  SORTPAK ZMOD                                        \
   PID     OAGROUP  OAMONS   BYTE    SYSINT   SYSNNI
 
 axiom_algebra_layer_6_nrlibs = \
