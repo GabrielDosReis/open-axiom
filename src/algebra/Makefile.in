@@ -303,11 +303,13 @@ axiom_algebra_layer_1_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_1)))
 axiom_algebra_layer_2 = \
-  ELTAGG   ELTAGG- FMC      FMFUN   FORTFN   FVC     \
-  SYNTAX   FVFUN   INTRET   IXAGG   IXAGG-   SEGXCAT \
+  ELTAGG   ELTAGG-                                   \
+  SYNTAX           INTRET   IXAGG   IXAGG-   SEGXCAT \
   CONTOUR  LIST3   MKFUNC   OASGP   KTVLOGIC FNCAT   \
            IDENT
 
+$(OUT)/ELTAGG.$(FASLEXT): $(OUT)/AGG.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/IXAGG.$(FASLEXT): $(OUT)/ELTAGG.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
 
 axiom_algebra_layer_2_nrlibs = \
@@ -419,7 +421,7 @@ axiom_algebra_layer_9_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_9)))
 axiom_algebra_layer_10 = \
-  ASP34    BFUNCT   BPADIC   \
+           BFUNCT   BPADIC   \
   BTREE    CRAPACK  DEQUEUE  DLIST    \
   DRAWCX   D01GBFA  D02EJFA  D03FAFA  \
   DRAWPT   FAMR     FAMR-    FLASORT  \
@@ -507,10 +509,7 @@ axiom_algebra_layer_13_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_13)))
 axiom_algebra_layer_14 = \
   TBAGG   TBAGG-   ALIST    FS       FS-      ACF      ACF-     \
-  ACFS     ACFS-    \
-  ASP1     ASP10    ASP24    ASP4     \
-  ASP50    ASP6     ASP73    BALFACT  \
-  BEZOUT   BINARY   BINFILE  BOUNDZRO \
+  ACFS    ACFS-    BALFACT  BEZOUT   BINARY   BINFILE  BOUNDZRO \
   BPADICRT BRILL    CDEN     CHVAR    \
   COMMUPC  CONTFRAC CVMP     CYCLOTOM \
   CYCLES   DDFACT   DECIMAL  DIRPROD  DISPLAY  DMP      \
@@ -624,10 +623,7 @@ axiom_algebra_layer_18_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_18)))
 axiom_algebra_layer_19 = \
-  ACPLOT   ANTISYM \
-  ANY               ASP27    ASP28   \
-  ASP33    ASP49             ASP7    \
-  ASP78             ASP9     ATTRBUT \
+  ACPLOT   ANTISYM  ANY      ATTRBUT \
   BOP      BOP1     COMMONOP COMPCAT \
   COMPCAT- DRAW     DRAWCFUN DROPT   \
   DROPT0   D01ANFA  D01ASFA  D03AGNT \
@@ -662,12 +658,8 @@ axiom_algebra_layer_19_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_19)))
 axiom_algebra_layer_20 = \
-  AF       ALGFACT  ASP12    ASP55    ASP8 \
-  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
-  ALGSC    AN       APPRULE  ASP19    \
-  ASP20    ASP30    ASP31    ASP35    \
-  ASP41    ASP42    ASP74    ASP77    \
-  ASP80    CINTSLPE COMPFACT COMPLEX  \
+  AF       ALGFACT  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
+  ALGSC    AN       APPRULE  CINTSLPE COMPFACT COMPLEX  \
   COMPLPAT CMPLXRT  CPMATCH  CRFP     \
   CTRIGMNP D01WGTS  D02AGNT  D03EEFA  \
   DBLRESP  DERHAM   DFSFUN   DRAWCURV \
@@ -721,7 +713,7 @@ axiom_algebra_layer_21_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_21)))
 axiom_algebra_layer_22 = \
-  ASP29    COMBF    D01AGNT  FSPRMELT \
+           COMBF    D01AGNT  FSPRMELT \
   INBFF    LODO     LODO1    LODO2    \
   NTSCAT   REGSET   RGCHAIN  RSETGCD  \
   RSDCMPK  SFRTCAT  SIGNEF   SNTSCAT  \
@@ -754,7 +746,13 @@ axiom_algebra_layer_user =  \
 	CASEAST  HASAST   ISAST    CATAST   WHEREAST COMMAAST \
 	QQUTAST  DEFAST   MACROAST SPADXPT  SPADAST           \
 	INBFILE  OUTBFILE IOBFILE  RGBCMDL  RGBCSPC           \
-        CTOR     IP4ADDR  NETCLT   INETCLTS
+        CTOR     IP4ADDR  NETCLT   INETCLTS                   \
+	FMC      FMFUN    FORTFN   FVC      FVFUN    ASP34    \
+        ASP1     ASP10    ASP24    ASP4     ASP50    ASP6     \
+	ASP73    ASP27    ASP28    ASP33    ASP49    ASP7     \
+        ASP78    ASP9     ASP12    ASP55    ASP8     ASP19    \
+        ASP20    ASP30    ASP31    ASP35    ASP41    ASP42    \
+	ASP74    ASP77    ASP80    ASP29
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -821,6 +819,10 @@ $(OUT)/CTOR.$(FASLEXT): $(OUT)/CTORKIND.$(FASLEXT) \
 
 $(OUT)/NETCLT.$(FASLEXT): $(OUT)/IOBCON.$(FASLEXT)
 $(OUT)/INETCLTS.$(FASLEXT): $(OUT)/NETCLT.$(FASLEXT)
+
+
+$(OUT)/ASP34.$(FASLEXT): $(OUT)/FMC.$(FASLEXT)
+
 
 .PHONY: all all-algebra mkdir-output-directory
 all: all-ax

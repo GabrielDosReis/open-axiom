@@ -1,5 +1,9 @@
 2009-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/Makefile.pamphlet: Move Fortran domains to user layer.
+
+2009-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-constants.boot ($Identifier): New.
 	* interp/compiler.boot (compQuote): Use the target mode if appropriate.
 	* interp/i-spec2.boot (upQUOTE): Likewise.
