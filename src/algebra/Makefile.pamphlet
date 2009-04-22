@@ -156,26 +156,21 @@ axiom_algebra_bootstrap = \
   VECTOR
 
 axiom_algebra_bootstrap_last_layer = \
-  ABELGRP  ABELGRP- ABELMON  ABELMON- \
-                    ALAGG    BOOLEAN  \
-  CABMON                              \
-  COMRING  DFLOAT   DIFRING  DIFRING- \
-  DIVRING  DIVRING- ENTIRER  ES       \
+                             BOOLEAN  \
+           DFLOAT                     \
+  DIVRING  DIVRING-          ES       \
   ES-      EUCDOM   EUCDOM-  FFIELDC  \
-  FFIELDC- FPS      FPS-     GCDDOM   \
-  GCDDOM-                    ILIST    \
-  INS      INS-     INT      INTDOM   \
-  INTDOM-  ISTRING  LIST              \
-                             MONOID   \
-  MONOID-  MTSCAT   NNI      OINTDOM  \
-  ORDRING  ORDRING- OUTFORM  PI       \
+  FFIELDC- FPS      FPS-              \
+  INS      INS-     INT               \
+           MTSCAT   NNI               \
+                    OUTFORM  PI       \
   PRIMARR  POLYCAT  POLYCAT- PSETCAT  \
   PSETCAT- QFCAT    QFCAT-            \
-           REF      RING     RING-    \
+           REF                        \
            RNS      RNS-              \
                              SINT     \
                     SYMBOL   TSETCAT  \
-  TSETCAT- UFD      UFD-     ULSCAT   \
+  TSETCAT-                   ULSCAT   \
   UPOLYC   UPOLYC-                    \
   VECTOR
 
@@ -225,17 +220,18 @@ $(OUT)/FLAGG.$(FASLEXT): $(OUT)/BMODULE.$(FASLEXT) $(OUT)/PID.$(FASLEXT) \
 $(OUT)/A1AGG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/LOGIC.$(FASLEXT) \
 	$(OUT)/FLAGG.$(FASLEXT) $(OUT)/LOGIC-.$(FASLEXT)
 $(OUT)/SRAGG.$(FASLEXT): $(OUT)/A1AGG.$(FASLEXT)
+$(OUT)/ISTRING.$(FASLEXT): $(OUT)/SRAGG.$(FASLEXT)
 $(OUT)/STAGG.$(FASLEXT): $(OUT)/URAGG.$(FASLEXT) $(OUT)/LNAGG.$(FASLEXT)
 $(OUT)/SETAGG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/CLAGG.$(FASLEXT)
 $(OUT)/STRICAT.$(FASLEXT): $(OUT)/SRAGG.$(FASLEXT)
-$(OUT)/STRING.$(FASLEXT): $(OUT)/STRICAT.$(FASLEXT)
+$(OUT)/STRING.$(FASLEXT): $(OUT)/STRICAT.$(FASLEXT) $(OUT)/ORDFIN.$(FASLEXT)
 $(OUT)/DIOPS.$(FASLEXT): $(OUT)/STRING.$(FASLEXT)
 $(OUT)/DIAGG.$(FASLEXT): $(OUT)/DIOPS.$(FASLEXT)
 $(OUT)/KDAGG.$(FASLEXT): $(OUT)/DIAGG.$(FASLEXT)
 $(OUT)/TBAGG.$(FASLEXT): $(OUT)/KDAGG.$(FASLEXT)
 $(OUT)/ALAGG.$(FASLEXT): $(OUT)/TBAGG.$(FASLEXT)
-$(OUT)/STRING.$(FASLEXT): $(OUT)/ORDFIN.$(FASLEXT)
-
+$(OUT)/ILIST.$(FASLEXT): $(OUT)/LSAGG.$(FASLEXT)
+$(OUT)/LIST.$(FASLEXT): $(OUT)/ILIST.$(FASLEXT)
 
 $(OUT)/MSYSCMD.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
@@ -301,8 +297,9 @@ axiom_algebra_layer_0 = \
   A1AGG    A1AGG-   LSAGG    LSAGG-   SRAGG    SRAGG-   \
   FSAGG    FSAGG-   STAGG    STAGG-   CLAGG    CLAGG-   \
   RCAGG    RCAGG-   SETAGG   SETAGG-  HOAGG    HOAGG-   \
-  TBAGG    TBAGG-   KDAGG    KDAGG-   DIAGG   DIAGG-    \
-  DIOPS    DIOPS-   STRING   STRICAT                    \
+  TBAGG    TBAGG-   KDAGG    KDAGG-   DIAGG    DIAGG-   \
+  DIOPS    DIOPS-   STRING   STRICAT  ISTRING  ILIST    \
+  LIST                                                  \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-
 
 axiom_algebra_layer_0_nrlibs = \
@@ -334,11 +331,31 @@ $(OUT)/MAYBE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT)
 
 $(OUT)/BYTEORD.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
+$(OUT)/RING.$(FASLEXT): $(OUT)/RNG.$(FASLEXT) $(OUT)/MONOID.$(FASLEXT) \
+	$(OUT)/LMODULE.$(FASLEXT) $(OUT)/KOERCE.$(FASLEXT)
+$(OUT)/MONOID.$(FASLEXT): $(OUT)/SGROUP.$(FASLEXT)
+$(OUT)/ABELGRP.$(FASLEXT): $(OUT)/CABMON.$(FASLEXT)
+$(OUT)/ABELMON.$(FASLEXT): $(OUT)/ABELSG.$(FASLEXT)
+$(OUT)/ORDRING.$(FASLEXT): $(OUT)/OAGROUP.$(FASLEXT) $(OUT)/RING.$(FASLEXT) \
+	$(OUT)/MONOID.$(FASLEXT)
+$(OUT)/COMRING.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/BMODULE.$(FASLEXT)
+$(OUT)/DIFRING.$(FASLEXT): $(OUT)/RING.$(FASLEXT)
+$(OUT)/ENTIRER.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/BMODULE.$(FASLEXT)
+$(OUT)/INTDOM.$(FASLEXT): $(OUT)/COMRING.$(FASLEXT) $(OUT)/ALGEBRA.$(FASLEXT) \
+	$(OUT)/ENTIRER.$(FASLEXT) $(OUT)/FIELD.$(FASLEXT)
+$(OUT)/OINTDOM.$(FASLEXT): $(OUT)/INTDOM.$(FASLEXT) $(OUT)/ORDRING.$(FASLEXT)
+$(OUT)/GCDDOM.$(FASLEXT): $(OUT)/INTDOM.$(FASLEXT)
+$(OUT)/UFD.$(FASLEXT): $(OUT)/GCDDOM.$(FASLEXT)
+
+
 axiom_algebra_layer_1 = \
-                                      FORTCAT   ITUPLE   \
+  ABELGRP  ABELGRP- ABELMON  ABELMON- FORTCAT   ITUPLE   \
+  CABMON   MONOID   MONOID-  RING     RING-     COMRING  \
+  DIFRING  DIFRING- ENTIRER  INTDOM   INTDOM-   OINTDOM  \
+  GCDDOM   GCDDOM-  UFD      UFD-                        \
   PATAB    PPCURVE  PSCURVE           RESLATC            \
            SEGCAT   BINDING                              \
-                             FEVALAB  FEVALAB-           \
+  ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD   FIELD-
 
