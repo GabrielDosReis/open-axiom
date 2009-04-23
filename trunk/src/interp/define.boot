@@ -461,7 +461,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $form: local := nil
     $op: local := nil
     $extraParms: local := nil
-             --Set in DomainSubstitutionFunction, used further down
+    -- Remember the body for checking the current instantiation.
+    $currentCategoryBody : local := body
+         --Set in DomainSubstitutionFunction, used further down
 --  1.1  augment e to add declaration $: <form>
     [$op,:argl] := $definition
     e:= addBinding("$",[['mode,:$definition]],e)
@@ -478,7 +480,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     aList:= [[a,:sa] for a in argl for sa in sargl]
-    $currentCategoryBody : local := formalBody:= SUBLIS(aList,body)
+    formalBody:= SUBLIS(aList,body)
     signature' := SUBLIS(aList,signature')
 --Begin lines for category default definitions
     $functionStats: local:= [0,0]
