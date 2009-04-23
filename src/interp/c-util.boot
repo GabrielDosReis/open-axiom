@@ -54,6 +54,8 @@ $Representation := nil
 
 $formalArgList := []
 
+++ The formal body of the category being currently compiled.
+$currentCategoryBody := nil
 
 $compErrorMessageStack := nil
 
@@ -735,6 +737,11 @@ extendsCategoryForm(domain,form,form') ==
   form is ["CATEGORY",.,:l] =>
     member(form',l) or
       stackWarning('"not known that %1 is of mode %2p",[form',form]) or true
+  -- if we are compiling the category `form', then we should look at
+  -- the body as provided in the current definition, not a version
+  -- possibly compiled previously that may have changed.
+  form = $functorForm => 
+    extendsCategoryForm(domain, $currentCategoryBody, form')
   isCategoryForm(form,$EmptyEnvironment) =>
           --Constructs the associated vector
     formVec:=(compMakeCategoryObject(form,$e)).expr
