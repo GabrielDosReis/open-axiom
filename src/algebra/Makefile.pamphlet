@@ -147,7 +147,7 @@ axiom_algebra_bootstrap = \
   ORDRING  ORDRING- OUTFORM  PI       \
   PRIMARR  POLYCAT  POLYCAT- PSETCAT  \
   PSETCAT- QFCAT    QFCAT-   RCAGG    \
-  RCAGG-   REF      RING     RING-    \
+  RCAGG-            RING     RING-    \
   RNG      RNS      RNS-     SETAGG   \
   SETAGG-                    SINT     \
   STAGG    STAGG-   SYMBOL   TSETCAT  \
@@ -166,7 +166,6 @@ axiom_algebra_bootstrap_last_layer = \
                     OUTFORM  PI       \
   PRIMARR  POLYCAT  POLYCAT- PSETCAT  \
   PSETCAT- QFCAT    QFCAT-            \
-           REF                        \
            RNS      RNS-              \
                              SINT     \
                     SYMBOL   TSETCAT  \
@@ -274,6 +273,7 @@ $(OUT)/RNG.$(FASLEXT): $(OUT)/SGROUP.$(FASLEXT)
 $(OUT)/CTORKIND.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/IOMODE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
+$(OUT)/REF.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/PRINT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 axiom_algebra_layer_0 = \
@@ -354,7 +354,7 @@ axiom_algebra_layer_1 = \
   DIFRING  DIFRING- ENTIRER  INTDOM   INTDOM-   OINTDOM  \
   GCDDOM   GCDDOM-  UFD      UFD-                        \
   PATAB    PPCURVE  PSCURVE           RESLATC            \
-           SEGCAT   BINDING                              \
+  IDENT    SEGCAT   BINDING                              \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD   FIELD-
@@ -372,7 +372,7 @@ axiom_algebra_layer_1_objects = \
 <<layer2>>=
 axiom_algebra_layer_2 = \
   SYNTAX  INTRET   SEGXCAT CONTOUR  LIST3   MKFUNC   \
-          KTVLOGIC FNCAT   IDENT    
+  REF     KTVLOGIC FNCAT
 
 $(OUT)/FNCAT.$(FASLEXT): $(OUT)/HOMOTOP.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
