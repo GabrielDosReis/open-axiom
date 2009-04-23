@@ -201,8 +201,8 @@
              |BOOLEAN;size;Nni;18| (|Integer|) (8 . |even?|)
              (|PositiveInteger|) |BOOLEAN;index;Pi$;19| (13 . |One|)
              |BOOLEAN;lookup;$Pi;20| (17 . |random|)
-             |BOOLEAN;random;$;21| (|Symbol|) (|InputForm|)
-             (21 . |convert|) |BOOLEAN;convert;$If;22| (|OutputForm|)
+             |BOOLEAN;random;$;21| (|OutputForm|) (|InputForm|)
+             (21 . |convert|) |BOOLEAN;convert;$If;22| (|Symbol|)
              (26 . |outputForm|) |BOOLEAN;coerce;$Of;23| (|String|)
              (|SingleInteger|))
           '#(~= 31 ~ 37 |xor| 42 |true| 48 |test| 52 |size| 57 |random|
@@ -219,10 +219,10 @@
                                (|PropositionalLogic|) (|Finite|)
                                (|Logic|) (|SetCategory|)
                                (|ConvertibleTo| 36) (|BasicType|)
-                               (|CoercibleTo| 39))
+                               (|CoercibleTo| 35))
                             (|makeByteWordVec2| 43
                                 '(0 10 0 11 0 10 0 12 1 27 10 0 28 0 29
-                                  0 31 0 27 0 33 1 36 0 35 37 1 39 0 35
+                                  0 31 0 27 0 33 1 36 0 35 37 1 35 0 39
                                   40 2 0 10 0 0 1 1 0 0 0 13 2 0 0 0 0
                                   18 0 0 0 7 1 0 0 0 6 0 0 25 26 0 0 0
                                   34 2 0 0 0 0 16 1 0 0 0 9 2 0 0 0 0
@@ -230,7 +230,7 @@
                                   0 0 1 2 0 0 0 0 1 1 0 29 0 32 1 0 42
                                   0 1 1 0 0 29 30 2 0 0 0 0 22 1 0 43 0
                                   1 0 0 0 8 2 0 0 0 0 23 1 0 36 0 38 1
-                                  0 39 0 41 2 0 0 0 0 14 2 0 0 0 0 17 2
+                                  0 35 0 41 2 0 0 0 0 14 2 0 0 0 0 17 2
                                   0 10 0 0 1 2 0 10 0 0 1 2 0 10 0 0 21
                                   2 0 10 0 0 1 2 0 10 0 0 24 2 0 0 0 0
                                   15)))))

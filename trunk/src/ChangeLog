@@ -1,3 +1,13 @@
+2009-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot ($IOFormDomains): New.
+	(compAtom): Allow implicit coercion to IO forms for values of
+	fundamental types.
+	(compSymbol): Likewise.
+	(compQuote): Likewise.
+	* algebra/aggcat.spad.pamphlet (coerce$BinaryRecursiveAggregate):
+	Don't hard code empty bracket.
+
 2009-04-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-constants.boot ($SystemInlinableConstructorNames):

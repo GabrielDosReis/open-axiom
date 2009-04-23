@@ -40,7 +40,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|Vector|))
         (LETT |dv$| (LIST '|Vector| |dv$1|) . #0#)
-        (LETT $ (|newShell| 36) . #0#)
+        (LETT $ (|newShell| 35) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -96,15 +96,14 @@
 (MAKEPROP '|Vector| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|IndexedVector| 6 (NRTEVAL 1))
              (|local| |#1|) (|Integer|) (0 . |One|) (|List| 6)
-             (4 . |construct|) |VECTOR;vector;L$;1| (|Symbol|)
+             (4 . |construct|) |VECTOR;vector;L$;1| (|OutputForm|)
              (|InputForm|) (9 . |convert|) (14 . |parts|)
              (19 . |convert|) (|List| $) (24 . |convert|)
              (29 . |convert|) (|Mapping| 6 6 6) (|Boolean|)
              (|NonNegativeInteger|) (|Equation| 6) (|List| 23)
              (|Mapping| 21 6) (|Mapping| 21 6 6) (|UniversalSegment| 7)
-             (|Void|) (|Mapping| 6 6) (|OutputForm|) (|Matrix| 6)
-             (|SingleInteger|) (|String|) (|Union| 6 '"failed")
-             (|List| 7))
+             (|Void|) (|Mapping| 6 6) (|Matrix| 6) (|SingleInteger|)
+             (|String|) (|Union| 6 '"failed") (|List| 7))
           '#(|vector| 34 |parts| 39 |convert| 44 |construct| 49)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 5
@@ -127,7 +126,7 @@
                                (|OrderedSet|) (|Aggregate|)
                                (|EltableAggregate| 7 6) (|Evalable| 6)
                                (|SetCategory|) (|Type|) (|Eltable| 7 6)
-                               (|InnerEvalable| 6 6) (|CoercibleTo| 30)
+                               (|InnerEvalable| 6 6) (|CoercibleTo| 12)
                                (|ConvertibleTo| 13) (|BasicType|))
                             (|makeByteWordVec2| 19
                                 '(0 7 0 8 1 0 0 9 10 1 13 0 12 14 1 0 9

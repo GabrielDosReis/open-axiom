@@ -88,8 +88,14 @@ applyMapping: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
 $coreDiagnosticFunctions == 
   '(error userError systemError)
 
+$IOFormDomains == 
+  [$InputForm,$OutputForm,$Syntax]
+
 ++ list of functions to compile
 $compileOnlyCertainItems := []
+
+
+--%
 
 compTopLevel: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTopLevel(x,m,e) ==
@@ -399,7 +405,7 @@ compAtom(x,m,e) ==
     convert(T,m)
   t:=
     isSymbol x => compSymbol(x,m,e) or return nil
-    m = $OutputForm and primitiveType x => [x,m,e]
+    member(m,$IOFormDomains) and primitiveType x => [x,m,e]
     STRINGP x => [x,x,e]
     [x,primitiveType x or return nil,e]
   convert(t,m)
@@ -430,7 +436,8 @@ compSymbol(s,m,e) ==
     [s,m',e] --s is a declared argument
   MEMQ(s,$FormalMapVariableList) => 
     stackMessage('"no mode found for %1b",[s])
-  m = $OutputForm or m = $Symbol => [['QUOTE,s],m,e]
+  member(m,$IOFormDomains) or member(m,[$Identifier,$Symbol]) =>
+    [['QUOTE,s],m,e]
   not isFunction(s,e) => errorRef s
 
 ++ Return true if `m' is the most recent unique type case assumption 
@@ -957,7 +964,7 @@ compQuote(expr,m,e) ==
   expr is ["QUOTE",x] and IDENTP x => 
     -- Ideally, Identifier should be the default type.  However, for
     -- historical reasons we cannot afford that luxury yet.
-    m = $Identifier => [expr,$Identifier,e]
+    m = $Identifier or member(m,$IOFormDomains) => [expr,m,e]
     convert([expr,$Symbol,e],m)
   stackAndThrow('"%1b is not a literal symbol.",[x])
 
