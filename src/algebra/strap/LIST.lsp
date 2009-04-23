@@ -203,7 +203,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|List|))
         (LETT |dv$| (LIST '|List| |dv$1|) . #0#)
-        (LETT $ (|newShell| 70) . #0#)
+        (LETT $ (|newShell| 69) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -287,14 +287,14 @@
              (97 . |removeDuplicates|) (102 . |setUnion|)
              (108 . |empty|) (112 . |empty?|) (117 . |member?|)
              (123 . |setIntersection|) (129 . |elt|) (135 . |concat|)
-             (141 . |setDifference|) (|Symbol|) (|InputForm|)
+             (141 . |setDifference|) (|OutputForm|) (|InputForm|)
              (147 . |convert|) (152 . |convert|) (|List| 45)
              (157 . |concat|) (|List| $) (163 . |convert|)
              (168 . |convert|) (|Mapping| 6 6 6) (|NonNegativeInteger|)
              (|List| 6) (|Equation| 6) (|List| 56) (|Mapping| 10 6)
              (|Mapping| 10 6 6) (|UniversalSegment| 7) '"last" '"rest"
-             '"first" '"value" (|Mapping| 6 6) (|OutputForm|)
-             (|SingleInteger|) (|List| 7) (|Union| 6 '"failed"))
+             '"first" '"value" (|Mapping| 6 6) (|SingleInteger|)
+             (|List| 7) (|Union| 6 '"failed"))
           '#(|setUnion| 173 |setIntersection| 179 |setDifference| 185
              |rest| 191 |removeDuplicates| 196 |null| 201 |nil| 206
              |member?| 210 |first| 216 |empty?| 221 |empty| 226 |elt|
@@ -325,7 +325,7 @@
                                (|OrderedSet|) (|Aggregate|)
                                (|EltableAggregate| 7 6) (|Evalable| 6)
                                (|SetCategory|) (|Type|) (|Eltable| 7 6)
-                               (|InnerEvalable| 6 6) (|CoercibleTo| 66)
+                               (|InnerEvalable| 6 6) (|CoercibleTo| 44)
                                (|ConvertibleTo| 45) (|BasicType|)
                                (|OpenMath|))
                             (|makeByteWordVec2| 52

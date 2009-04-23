@@ -1326,7 +1326,7 @@ BinaryRecursiveAggregate(S:Type):Category == RecursiveAggregate S with
 
    if S has CoercibleTo(OutputForm) then
      coerce(t:%): OutputForm ==
-       empty? t =>  "[]"::OutputForm
+       empty? t =>  bracket(empty()$OutputForm)
        v := value(t):: OutputForm
        empty? left t =>
 	 empty? right t => v
