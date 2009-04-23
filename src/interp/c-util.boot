@@ -740,7 +740,9 @@ extendsCategoryForm(domain,form,form') ==
   -- if we are compiling the category `form', then we should look at
   -- the body as provided in the current definition, not a version
   -- possibly compiled previously that may have changed.
-  form = $functorForm => 
+  -- FIXME: should not we go all the way down and implement
+  --        polynormic recursion?
+  domain = "$" and form = $definition => 
     extendsCategoryForm(domain, $currentCategoryBody, form')
   isCategoryForm(form,$EmptyEnvironment) =>
           --Constructs the associated vector

@@ -150,8 +150,8 @@ axiom_algebra_bootstrap = \
   RCAGG-            RING     RING-    \
   RNG      RNS      RNS-     SETAGG   \
   SETAGG-                    SINT     \
-  STAGG    STAGG-   SYMBOL   TSETCAT  \
-  TSETCAT- UFD      UFD-     ULSCAT   \
+  STAGG    STAGG-   SYMBOL            \
+           UFD      UFD-     ULSCAT   \
   UPOLYC   UPOLYC-  URAGG    URAGG-   \
   VECTOR
 
@@ -168,8 +168,8 @@ axiom_algebra_bootstrap_last_layer = \
   PSETCAT- QFCAT    QFCAT-            \
            RNS      RNS-              \
                              SINT     \
-                    SYMBOL   TSETCAT  \
-  TSETCAT-                   ULSCAT   \
+                    SYMBOL            \
+                             ULSCAT   \
   UPOLYC   UPOLYC-                    \
   VECTOR
 
@@ -807,7 +807,7 @@ axiom_algebra_layer_19 = \
   SET      SPECOUT  SQMATRIX SWITCH  \
                     SYSSOLP  UTSCAT  \
   UTSCAT-  VARIABLE WFFINTBS SPADPRSR \
-  PARSER   PROPFRML
+  PARSER   PROPFRML TSETCAT  TSETCAT-
 
 axiom_algebra_layer_19_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_19))

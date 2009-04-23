@@ -1,5 +1,10 @@
 2009-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/strap/TSETCAT.lsp: Remove.
+	* algebra/strap/TSETCAT-.lsp: Likewise.
+
+2009-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (extendsCategoryForm): Use current category
 	body instead of previous previous version of it.
 	* algebra/Makefile.pamphlet: Remove ES from bootstrap layer.
