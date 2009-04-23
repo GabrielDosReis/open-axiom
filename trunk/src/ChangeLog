@@ -1,5 +1,15 @@
 2009-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (extendsCategoryForm): Use current category
+	body instead of previous previous version of it.
+	* algebra/Makefile.pamphlet: Remove ES from bootstrap layer.
+	Build it (and dependencies) at layer 1.
+	* algebra/strap/ES.lsp: Remove.
+	* algebra/strap/ES-.lsp: Likewise.
+	* algebra/boolean.spad.pamphlet (Boolean): Don't use outputForm.
+
+2009-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot ($IOFormDomains): New.
 	(compAtom): Allow implicit coercion to IO forms for values of
 	fundamental types.

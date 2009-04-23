@@ -187,8 +187,8 @@ axiom_algebra_bootstrap = \
   ABELSG   ABELSG-  ALAGG    BOOLEAN  \
   CABMON   CHAR     CLAGG    CLAGG-   \
   COMRING  DFLOAT   DIFRING  DIFRING- \
-  DIVRING  DIVRING- ENTIRER  ES       \
-  ES-      EUCDOM   EUCDOM-  FFIELDC  \
+  DIVRING  DIVRING- ENTIRER           \
+           EUCDOM   EUCDOM-  FFIELDC  \
   FFIELDC- FPS      FPS-     GCDDOM   \
   GCDDOM-  HOAGG    HOAGG-   ILIST    \
   INS      INS-     INT      INTDOM   \
@@ -209,8 +209,8 @@ axiom_algebra_bootstrap = \
 axiom_algebra_bootstrap_last_layer = \
                              BOOLEAN  \
            DFLOAT                     \
-  DIVRING  DIVRING-          ES       \
-  ES-      EUCDOM   EUCDOM-  FFIELDC  \
+  DIVRING  DIVRING-                   \
+           EUCDOM   EUCDOM-  FFIELDC  \
   FFIELDC- FPS      FPS-              \
   INS      INS-     INT               \
            MTSCAT   NNI               \
@@ -319,7 +319,7 @@ $(OUT)/RNG.$(FASLEXT): $(OUT)/SGROUP.$(FASLEXT)
 $(OUT)/CTORKIND.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/IOMODE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
-$(OUT)/REF.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/REF.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/IDENT.$(FASLEXT)
 $(OUT)/PRINT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 axiom_algebra_layer_0 = \
@@ -386,16 +386,21 @@ $(OUT)/INTDOM.$(FASLEXT): $(OUT)/COMRING.$(FASLEXT) $(OUT)/ALGEBRA.$(FASLEXT) \
 	$(OUT)/ENTIRER.$(FASLEXT) $(OUT)/FIELD.$(FASLEXT)
 $(OUT)/OINTDOM.$(FASLEXT): $(OUT)/INTDOM.$(FASLEXT) $(OUT)/ORDRING.$(FASLEXT)
 $(OUT)/GCDDOM.$(FASLEXT): $(OUT)/INTDOM.$(FASLEXT)
-$(OUT)/UFD.$(FASLEXT): $(OUT)/GCDDOM.$(FASLEXT)
-
+$(OUT)/UFD.$(FASLEXT): $(OUT)/GCDDOM.$(FASLEXT) $(OUT)/ES.$(FASLEXT)
+$(OUT)/ES.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/CACHSET.$(FASLEXT) \
+	$(OUT)/REF.$(FASLEXT) $(OUT)/ALIST.$(FASLEXT) \
+	$(OUT)/PATAB.$(FASLEXT)
+$(OUT)/CACHSET.$(FASLEXT): $(OUT)/ORDSET.$(FASLEXT)
+$(OUT)/ALIST.$(FASLEXT): $(OUT)/ALAGG.$(FASLEXT)
+$(OUT)/PATAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 axiom_algebra_layer_1 = \
   ABELGRP  ABELGRP- ABELMON  ABELMON- FORTCAT   ITUPLE   \
   CABMON   MONOID   MONOID-  RING     RING-     COMRING  \
   DIFRING  DIFRING- ENTIRER  INTDOM   INTDOM-   OINTDOM  \
-  GCDDOM   GCDDOM-  UFD      UFD-                        \
-  PATAB    PPCURVE  PSCURVE           RESLATC            \
-  IDENT    SEGCAT   BINDING                              \
+  GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
+  PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC   REF      \
+  IDENT    SEGCAT   BINDING  ALIST                       \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD   FIELD-
@@ -408,7 +413,7 @@ axiom_algebra_layer_1_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_1)))
 axiom_algebra_layer_2 = \
   SYNTAX  INTRET   SEGXCAT CONTOUR  LIST3   MKFUNC   \
-  REF     KTVLOGIC FNCAT
+          KTVLOGIC FNCAT
 
 $(OUT)/FNCAT.$(FASLEXT): $(OUT)/HOMOTOP.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
@@ -453,7 +458,7 @@ axiom_algebra_layer_4_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_4)))
 axiom_algebra_layer_5 = \
-  CACHSET  CHARNZ            DVARCAT  DVARCAT- ELEMFUN  \
+           CHARNZ            DVARCAT  DVARCAT- ELEMFUN  \
   ELEMFUN- ESTOOLS2 FCOMP    FPATMAB  IDPAM    IDPO     \
   INCRMAPS KERNEL2           MODMONOM MONADWU  MONADWU- \
   MRF2     NARNG    NARNG-   NSUP2    ODVAR    OPQUERY  \
@@ -609,7 +614,7 @@ axiom_algebra_layer_13_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_13)))
 axiom_algebra_layer_14 = \
-                   ALIST    FS       FS-      ACF      ACF-     \
+  FS       FS-      ACF      ACF-     \
   ACFS    ACFS-    BALFACT  BEZOUT   BINARY   BINFILE  BOUNDZRO \
   BPADICRT BRILL    CDEN     CHVAR    \
   COMMUPC  CONTFRAC CVMP     CYCLOTOM \

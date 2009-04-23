@@ -407,14 +407,12 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
       true
 
     convert(x:%):InputForm ==
-      convert 
-        x => 'true
-        'false
+      x => 'true
+      'false
 
     coerce(x:%):OutputForm ==
-      outputForm
-        x => 'true
-        'false
+      x => 'true
+      'false
 
 @
 

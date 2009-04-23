@@ -478,7 +478,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     aList:= [[a,:sa] for a in argl for sa in sargl]
-    formalBody:= SUBLIS(aList,body)
+    $currentCategoryBody : local := formalBody:= SUBLIS(aList,body)
     signature' := SUBLIS(aList,signature')
 --Begin lines for category default definitions
     $functionStats: local:= [0,0]
