@@ -568,6 +568,7 @@ $SystemInlinableConstructorNames ==
     SingleInteger      _
     String             _
     Boolean            _
+    Identifier         _
     Symbol             _
     DoubleFloat        _
     PrimitiveArray     _

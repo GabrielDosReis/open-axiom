@@ -1109,7 +1109,7 @@ compElt: (%Form,%Mode,%Env) -> %Maybe %Triple
 compElt(form,m,E) ==
   form isnt ["elt",aDomain,anOp] => compForm(form,m,E)
   aDomain="Lisp" or (aDomain is ["Foreign",lang] and lang="Builtin") =>
-    [anOp,m,E]
+    [anOp',m,E] where anOp'() == (anOp = $Zero => 0; anOp = $One => 1; anOp)
   lang ^= nil =>
     opMode := getExternalSymbolMode(anOp,lang,E)
     op := get(anOp,"%Link",E) or anOp

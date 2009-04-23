@@ -1,3 +1,13 @@
+2009-04-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-constants.boot ($SystemInlinableConstructorNames):
+	Include Identifier.
+	* interp/compiler.boot (compElt): Fix up 0 and 1 shenannigan.
+	* algebra/boolean.spad.pamphlet (Reference): Use Identifier.
+	* algebra/Makefile.pamphlet (axiom_algebra_bootstrap): Remove REF.
+	(axiom_algebra_bootstrap_last_layer): Likewise.
+	* algebra/strap/REF.lsp: Remove.
+
 2009-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/Makefile.pamphlet: Move aggregates to layer 0.
