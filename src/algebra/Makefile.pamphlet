@@ -151,7 +151,7 @@ axiom_algebra_bootstrap = \
   RNG      RNS      RNS-     SETAGG   \
   SETAGG-                    SINT     \
   STAGG    STAGG-   SYMBOL            \
-           UFD      UFD-     ULSCAT   \
+           UFD      UFD-              \
                     URAGG    URAGG-   \
   VECTOR
 
@@ -169,7 +169,6 @@ axiom_algebra_bootstrap_last_layer = \
            RNS      RNS-              \
                              SINT     \
                     SYMBOL            \
-                             ULSCAT   \
   VECTOR
 
 
@@ -600,7 +599,7 @@ axiom_algebra_layer_11_objects = \
 
 <<layer12>>=
 axiom_algebra_layer_12 = \
-                                   BITS     DIRPROD2 IMATRIX \
+  ULSCAT                           BITS     DIRPROD2 IMATRIX \
   IVECTOR  LPOLY   LSMP    LSMP1   MATCAT2  PTCAT    TRIMAT  \
                    SYSTEM  HOSTNAME PORTNUM
 

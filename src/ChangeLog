@@ -1,5 +1,9 @@
 2009-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/strap/ULSCAT.lsp: Remove.
+
+2009-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/strap/UPOLYC.lsp: Remove.
 	* algebra/strap/UPOLYC-.lsp: Likewise.
 
