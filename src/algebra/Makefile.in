@@ -203,7 +203,7 @@ axiom_algebra_bootstrap = \
   SETAGG-                    SINT     \
   STAGG    STAGG-   SYMBOL            \
            UFD      UFD-     ULSCAT   \
-  UPOLYC   UPOLYC-  URAGG    URAGG-   \
+                    URAGG    URAGG-   \
   VECTOR
 
 axiom_algebra_bootstrap_last_layer = \
@@ -221,7 +221,6 @@ axiom_algebra_bootstrap_last_layer = \
                              SINT     \
                     SYMBOL            \
                              ULSCAT   \
-  UPOLYC   UPOLYC-                    \
   VECTOR
 
 
@@ -594,8 +593,12 @@ axiom_algebra_layer_12_nrlibs = \
 axiom_algebra_layer_12_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_12)))
+
+$(OUT)/UPOLYC.$(FASLEXT): $(OUT)/PFECAT.$(FASLEXT)
+
 axiom_algebra_layer_13 = \
   ASSOCEQ  CARTEN   CLIF     CLIP     \
+  UPOLYC   UPOLYC-                    \
   COORDSYS DBASE    DHMATRIX DIOSP    \
   DIRPCAT  DIRPCAT- D02BBFA  D02BHFA  \
   D02CJFA  FAXF     FAXF-    FFPOLY2  \
@@ -613,6 +616,8 @@ axiom_algebra_layer_13_nrlibs = \
 axiom_algebra_layer_13_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_13)))
+$(OUT)/FS.$(FASLEXT): $(OUT)/UPOLYC.$(FASLEXT)
+
 axiom_algebra_layer_14 = \
   FS       FS-      ACF      ACF-     \
   ACFS    ACFS-    BALFACT  BEZOUT   BINARY   BINFILE  BOUNDZRO \
