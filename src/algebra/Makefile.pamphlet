@@ -145,8 +145,8 @@ axiom_algebra_bootstrap = \
   LNAGG-   LSAGG    LSAGG-   MONOID   \
   MONOID-  MTSCAT   NNI      OINTDOM  \
   ORDRING  ORDRING- OUTFORM  PI       \
-  PRIMARR  POLYCAT  POLYCAT- PSETCAT  \
-  PSETCAT- QFCAT    QFCAT-   RCAGG    \
+  PRIMARR  POLYCAT  POLYCAT-          \
+           QFCAT    QFCAT-   RCAGG    \
   RCAGG-            RING     RING-    \
   RNG      RNS      RNS-     SETAGG   \
   SETAGG-                    SINT     \
@@ -164,8 +164,8 @@ axiom_algebra_bootstrap_last_layer = \
   INS      INS-     INT               \
            MTSCAT   NNI               \
                     OUTFORM  PI       \
-  PRIMARR  POLYCAT  POLYCAT- PSETCAT  \
-  PSETCAT- QFCAT    QFCAT-            \
+  PRIMARR  POLYCAT  POLYCAT-          \
+           QFCAT    QFCAT-            \
            RNS      RNS-              \
                              SINT     \
                     SYMBOL            \
@@ -765,9 +765,12 @@ axiom_algebra_layer_17_objects = \
 \subsection{Layer18}
 
 <<layer18>>=
+$(OUT)/PSETCAT.$(FASLEXT): $(OUT)/RPOLCAT.$(FASLEXT)
+
 axiom_algebra_layer_18 = \
 	INTPACK IPF     CATCTOR DOMCTOR   CTORCALL \
-  KAFILE  PATRES TBCMPPK 
+  KAFILE  PATRES TBCMPPK PSETCAT    PSETCAT-  \
+  RPOLCAT  RPOLCAT-
 
 axiom_algebra_layer_18_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_18))
@@ -780,6 +783,8 @@ axiom_algebra_layer_18_objects = \
 \subsection{Layer19}
 
 <<layer19>>=
+$(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
+
 axiom_algebra_layer_19 = \
   ACPLOT   ANTISYM  ANY      ATTRBUT \
   BOP      BOP1     COMMONOP COMPCAT \
@@ -802,8 +807,8 @@ axiom_algebra_layer_19 = \
   PMKERNEL PMSYM             PRIMELT \
   QALGSET2 QEQUAT   RECLOS   REP1    \
   RESULT   QUATCAT  QUATCAT- RFFACT  \
-  RMATRIX  ROMAN    ROUTINE  RPOLCAT \
-  RPOLCAT- RULECOLD SAOS     SEGBIND \
+  RMATRIX  ROMAN    ROUTINE          \
+           RULECOLD SAOS     SEGBIND \
   SET      SPECOUT  SQMATRIX SWITCH  \
                     SYSSOLP  UTSCAT  \
   UTSCAT-  VARIABLE WFFINTBS SPADPRSR \

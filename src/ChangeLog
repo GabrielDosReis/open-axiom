@@ -1,5 +1,10 @@
 2009-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/strap/PSETCAT-.lsp: Remove.
+	* algebra/strap/PSETCAT.lsp: Likewise.
+
+2009-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/strap/TSETCAT.lsp: Remove.
 	* algebra/strap/TSETCAT-.lsp: Likewise.
 
