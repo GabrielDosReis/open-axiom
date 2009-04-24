@@ -1,3 +1,8 @@
+2009-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/strap/UPOLYC.lsp: Remove.
+	* algebra/strap/UPOLYC-.lsp: Likewise.
+
 2009-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/strap/PSETCAT-.lsp: Remove.
