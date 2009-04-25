@@ -1026,7 +1026,8 @@ replaceSimpleFunctions form ==
     optLET mutateLETFormWithUnaryFunction(form,"replaceSimpleFunctions")
   form is ["spadConstant","$",n] =>
     null(op := getCapsuleDirectoryEntry n) => form
-    getFunctionReplacement op is ["XLAM",=nil,body] and atom body => body
+    getFunctionReplacement op is ["XLAM",=nil,body] 
+      and isAtomicForm body => body
     -- Conservatively preserve object identity and storage 
     -- consumption by not folding non-atomic constant forms.
     form

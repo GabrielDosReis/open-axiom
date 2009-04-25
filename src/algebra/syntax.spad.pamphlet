@@ -563,10 +563,11 @@ Literal(T: SetCategory): Public == Private where
 )abbrev domain IDENT Identifier
 Identifier(): Public == Private where
   Public == Join(SetCategory, CoercibleTo Symbol) with
-    new: () -> %  ++ returns a new identifier, different from 
-                  ++ any other identifier in the running system
+    gensym: () -> %  
+      ++ \spad{gensym()} returns a new identifier, different from 
+      ++ any other identifier in the running system
   Private == add
-    new() == GENSYM()$Foreign(Builtin)
+    gensym() == GENSYM()$Foreign(Builtin)
     x = y == EQ(x,y)$Lisp
     coerce(x: %): Symbol == x : Symbol
     coerce(x: %): OutputForm == x : OutputForm
