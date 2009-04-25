@@ -1,3 +1,7 @@
+2009-04-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/strap/PRIMARR.lsp: Remove.
+
 2009-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/syntax.spad.pamphlet (new$Identifier): New.

@@ -196,7 +196,7 @@ axiom_algebra_bootstrap = \
   LNAGG-   LSAGG    LSAGG-   MONOID   \
   MONOID-  MTSCAT   NNI      OINTDOM  \
   ORDRING  ORDRING- OUTFORM  PI       \
-  PRIMARR  POLYCAT  POLYCAT-          \
+           POLYCAT  POLYCAT-          \
            QFCAT    QFCAT-   RCAGG    \
   RCAGG-            RING     RING-    \
   RNG      RNS      RNS-     SETAGG   \
@@ -214,7 +214,7 @@ axiom_algebra_bootstrap_last_layer = \
   INS      INS-     INT               \
            MTSCAT   NNI               \
                     OUTFORM  PI       \
-  PRIMARR  POLYCAT  POLYCAT-          \
+           POLYCAT  POLYCAT-          \
            QFCAT    QFCAT-            \
            RNS      RNS-              \
                              SINT     \
@@ -391,6 +391,9 @@ $(OUT)/CACHSET.$(FASLEXT): $(OUT)/ORDSET.$(FASLEXT)
 $(OUT)/ALIST.$(FASLEXT): $(OUT)/ALAGG.$(FASLEXT)
 $(OUT)/PATAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/BOOLEAN.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
+$(OUT)/ES.$(FASLEXT): $(OUT)/PRIMARR.$(FASLEXT)
+$(OUT)/VECTCAT.$(FASLEXT): $(OUT)/RADCAT.$(FASLEXT)
+
 
 axiom_algebra_layer_1 = \
   ABELGRP  ABELGRP- ABELMON  ABELMON- FORTCAT   ITUPLE   \
@@ -398,10 +401,10 @@ axiom_algebra_layer_1 = \
   DIFRING  DIFRING- ENTIRER  INTDOM   INTDOM-   OINTDOM  \
   GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
   PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC   REF      \
-  IDENT    SEGCAT   BINDING  ALIST    BOOLEAN            \
+  IDENT    SEGCAT   BINDING  ALIST    BOOLEAN   PRIMARR  \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
-  FIELD   FIELD-
+  FIELD   FIELD-    VECTCAT  VECTCAT-
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -571,7 +574,7 @@ axiom_algebra_layer_11 = \
   PR       PREASSOC PRIMARR2 REDORDER \
   STREAM   SYMPOLY  \
   TS       TUPLE    UPSCAT   UPSCAT-  \
-  VECTCAT  VECTCAT- XDPOLY   XEXPPKG  \
+                    XDPOLY   XEXPPKG  \
   XF       XF-      XPBWPOLY XPOLY    \
   XRPOLY   
 

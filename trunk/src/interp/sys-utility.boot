@@ -70,7 +70,7 @@ getVMType d ==
   STRINGP d => "%Thing"            -- literal flag parameter
   case (d' := devaluate d) of
     Void => "%Void"
-    Identiifier => "%Symbol"
+    Identifier => "%Symbol"
     Boolean => "%Boolean"
     Byte => "%Byte"
     Character => "%Char"
