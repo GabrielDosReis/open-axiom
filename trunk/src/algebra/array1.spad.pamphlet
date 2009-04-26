@@ -40,9 +40,7 @@ PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
      setSimpleArrayEntry(x,i,s)$Lisp
      
    fill!(x, s) == 
-     for i in 0..maxIndexOfSimpleArray(x)$Lisp repeat 
-       setSimpleArrayEntry(x, i, s)$Lisp
-     x
+     FILL(x,s)$Foreign(Builtin)
 
 @
 

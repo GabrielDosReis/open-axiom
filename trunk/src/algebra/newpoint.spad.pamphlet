@@ -56,10 +56,7 @@ Point(R:Ring) : Exports == Implementation where
     PI   ==> PositiveInteger
 
     point(l:List R):% ==
-      pt := new(#l,R)
-      for x in l for i in minIndex(pt).. repeat
-        pt.i := x
-      pt
+      per vector l
     dimension p == (# p)::PI  -- Vector returns NonNegativeInteger...?
     convert(l:List R):% == point(l)
     cross(p0, p1) ==
