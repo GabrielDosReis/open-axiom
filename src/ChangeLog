@@ -1,3 +1,9 @@
+2009-04-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/newpoint.spad.pamphlet (point$Point): Call vector$Vector.
+	* algebra/array1.spad.pamphlet (fill!$PrimitiveArray): Use builtin
+	operation. 
+
 2009-04-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/strap/PRIMARR.lsp: Remove.
