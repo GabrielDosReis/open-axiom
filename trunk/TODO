@@ -2,6 +2,7 @@
 === TODO ===
 ============
 
+* Improve efficiency of array operations.
 * Rework subsumption.
 * Finish network communication support.
 * Finish Bemol backend.

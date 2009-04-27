@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -146,9 +146,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
   grepForm := mkGrepPattern(filter,'none)
   $key: local := 'none
   results := applyGrep(grepForm,'gloss)
-  --pathname := STRCONC('"/tmp/",PNAME resultFile,'".text.", getEnv '"SPADNUM")
-  --instream := MAKE_-INSTREAM pathname
-  defstream := MAKE_-INSTREAM STRCONC(systemRootDirectory(),'"/algebra/glossdef.text")
+  defstream := MAKE_-INSTREAM STRCONC(systemRootDirectory(),'"doc/glossdef.text")
   lines := gatherGlossLines(results,defstream)
   -- removeFile pathname 
   --SHUT instream

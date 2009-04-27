@@ -49,7 +49,11 @@ all-ax all-doc: stamp
 $(OUT)/help/%.help: $(IN)/help/%.help
 	cp -p $< $@
 
-stamp:  $(patsubst $(IN)/help/%.help,$(OUT)/help/%.help,$(HELPFILES))
+$(OUT)/gloss.text: $(IN)/gloss.text
+	cp -p $< $@
+
+stamp:  $(patsubst $(IN)/help/%.help,$(OUT)/help/%.help,$(HELPFILES)) \
+		$(OUT)/gloss.text
 	-rm -f stamp
 	$(STAMP) stamp
 

@@ -1326,7 +1326,7 @@
   (|saveUsersHashTable|)
   (|mkDependentsHashTable|)
   (|saveDependentsHashTable|)
-; (|buildGloss|)
+  (|buildGloss|)
   (write-compress)
   (write-browsedb)
   (write-operationdb)
