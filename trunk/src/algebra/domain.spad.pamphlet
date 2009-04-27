@@ -126,7 +126,7 @@ ConstructorCategory(): Category == OperatorCategory Identifier with
 ++ Description:
 ++   This domain provides implementations for constructors.
 Constructor(): ConstructorCategory with
-     findConstructor: Symbol -> Maybe %
+     findConstructor: Identifier -> Maybe %
        ++ \spad{findConstructor(s)} attempts to find a constructor
        ++ named \spad{s}.  If successful, returns that constructor;
        ++ otherwise, returns \spad{nothing}.
@@ -146,7 +146,6 @@ Constructor(): ConstructorCategory with
 
 <<domain CTORCALL ConstructorCall>>=
 import SetCategory
-import Symbol
 import List Syntax
 )abbrev domain CTORCALL ConstructorCall
 ++ Author: Gabriel Dos Reis
