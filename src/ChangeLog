@@ -1,5 +1,13 @@
 2009-04-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>>
 
+	* interp/sys-macros.lisp (makeSimpleArrayFromList): New.
+	* algebra/array1.spad.pamphlet (construct$PrimitiveArray): Implement.
+	(copy$PrimitiveArray): Likewise.
+	(IndexedOneDimensionalArray): Rework.  Explicitly use
+	PrimitiveArray(S) as representation domain.
+
+2009-04-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>>
+
 	* algebra/domain.spad.pamphlet (Constructor): Use Identifier.
 
 2009-04-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>

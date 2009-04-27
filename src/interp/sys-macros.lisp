@@ -334,6 +334,9 @@
 (defmacro |makeFilledSimpleArray| (|t| |n| |v|)
   `(make-array ,|n| :element-type ,|t| :initial-element ,|v|))
 
+(defmacro |makeSimpleArrayFromList| (|t| |l|)
+  `(make-array (list-length ,|l|) :element-type ,|t| :initial-contents ,|l|))
+
 (defmacro |getSimpleArrayEntry| (|a| |i|)
   `(aref (the simple-array ,|a|) (the fixnum ,|i|)))
 
