@@ -39,6 +39,10 @@ openaxiom_databases = \
 		operation.daase libdb.text comb.text \
 		USERS.DAASE/index.KAF  DEPENDENTS.DAASE/index.KAF)
 
+openaxiom_glossfiles = \
+	$(addprefix $(axiom_targetdir)/algebra/, \
+		glosskey.text gloss.ht glossdef.text)
+
 subdir = src/etc/
 
 pamphlets = Makefile.pamphlet $(asq_SOURCES)
@@ -65,7 +69,7 @@ stamp: stamp-databases $(axiom_target_bindir)/asq$(EXEEXT) \
 .PHONY: all-databases
 all-databases:  stamp-databases
 
-stamp-databases: ../algebra/*.NRLIB/code.$(FASLEXT)
+stamp-databases: ../algebra/*.NRLIB/code.$(FASLEXT) ../doc/gloss.text
 	@ echo rebuilding databases...
 	rm -f stamp-databases
 	rm -f ../algebra/topics.data
@@ -85,6 +89,8 @@ stamp-databases: ../algebra/*.NRLIB/code.$(FASLEXT)
 	mkdir -p $(axiom_targetdir)/algebra/DEPENDENTS.DAASE
 	cp -p ../algebra/DEPENDENTS.DAASE/index.KAF \
 		$(axiom_targetdir)/algebra/DEPENDENTS.DAASE
+	cp -p ../algebra/glosskey.text $(axiom_target_docdir)
+	cp -p ../algebra/glossdef.text $(axiom_target_docdir)
 
 bin_PROGRAMS = asq$(EXEEXT)
 asq_sources = asq.c
@@ -106,10 +112,13 @@ $(axiom_target_libdir)/summary: $(srcdir)/summary
 $(axiom_target_libdir)/copyright: $(srcdir)/copyright
 	cp -p $< $@ 
 
+../doc/gloss.text: $(axiom_src_docdir)/gloss.text
+	cp $< cp $@
 
 mostlyclean-local:
 	rm -f $(asq_sources) $(asq_objects)
 	rm -f $(openaxiom_databases)
+	rm -f $(openaxiom_glossfiles)
 	rm -f stamp
 
 clean-local: mostlyclean-local

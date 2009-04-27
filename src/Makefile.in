@@ -58,10 +58,10 @@ all-asq: all-hyper-post
 	cd etc && $(MAKE) $@
 
 .PHONY: all-databases
-all-databases:  all-interpsys
+all-databases:  all-interpsys all-doc
 	cd etc && $(MAKE) $@
 
-all-hyper-post: all-algebra
+all-hyper-post: all-algebra  all-doc
 	cd hyper && $(MAKE) all-hyper-post
 all-graph: all-lib
 	cd graph && $(MAKE) $@

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -952,7 +952,7 @@ dbGetCommentOrigin line ==
 
 grepSource key ==
   key = 'libdb   => STRCONC(systemRootDirectory(),'"/algebra/libdb.text")
-  key = 'gloss   => STRCONC(systemRootDirectory(),'"/algebra/glosskey.text")
+  key = 'gloss   => STRCONC(systemRootDirectory(),'"doc/glosskey.text")
   key = $localLibdb => $localLibdb
   mkGrepTextfile
     MEMQ(key, '(_. a c d k o p x)) => 'libdb

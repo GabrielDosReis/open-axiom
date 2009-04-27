@@ -1,5 +1,21 @@
 2009-04-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>>
 
+	Fix SF/2781848
+	* interp/daase.lisp (make-databases): Build glossary files too.
+	* interp/br-data.boot (buildGloss): gloss.text now lives in doc/.
+	* interp/br-search.boot (grepSource): Likewise.
+	* interp/ht-root.boot (htGlossPage): Likewise.
+	* etc/Makefile.in (openaxiom_glossfiles): New.
+	(mostlyclean-local): Remove them too.
+	(stamp-databases): Now copy glossary files too.
+	* doc/Makefile.in ($(OUT)/gloss.text): New rule.
+	(stamp): Make it a prerequisite.
+	* Makefile.pamphlet (all-databases): Make all-doc a prerequisite.
+	(all-hyper-post): Likewise.
+	* doc/gloss.text: Resurect.
+
+2009-04-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>>
+
 	* interp/sys-macros.lisp (makeSimpleArrayFromList): New.
 	* algebra/array1.spad.pamphlet (construct$PrimitiveArray): Implement.
 	(copy$PrimitiveArray): Likewise.
