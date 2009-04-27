@@ -20,9 +20,12 @@ PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
 
    minIndex x == 
      0
-
+ 
    empty() == 
      makeSimpleArray(getVMType(S)$Lisp,0$Lisp)$Lisp
+
+   construct l ==
+     makeSimpleArrayFromList(getVMType(S)$Foreign(Builtin),l)$Foreign(Builtin)
 
    new(n, x) == 
      makeFilledSimpleArray(getVMType(S)$Lisp,n,x)$Lisp
@@ -41,6 +44,9 @@ PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
      
    fill!(x, s) == 
      FILL(x,s)$Foreign(Builtin)
+
+   copy x ==
+     COPY_-SEQ(x)$Foreign(Builtin)
 
 @
 
@@ -362,24 +368,27 @@ FlexibleArray(S: Type) == Implementation where
 
 IndexedOneDimensionalArray(S:Type, mn:Integer):
  OneDimensionalArrayAggregate S == add
-   Qmax ==> QVMAXINDEX$Lisp
-   Qsize ==> QVSIZE$Lisp
-   Qelt ==> QVELT$Lisp
-   Qsetelt ==> QSETVELT$Lisp
---   Qelt1 ==> QVELT_-1$Lisp
---   Qsetelt1 ==> QSETVELT_-1$Lisp
-   Qnew ==> GETREFV$Lisp
-   I ==> Integer
+   macro Qmax == maxIndexOfSimpleArray$Foreign(Builtin)
+   macro Qsize == sizeOfSimpleArray$Foreign(Builtin)
+   macro Qelt == getSimpleArrayEntry$Foreign(Builtin)
+   macro Qsetelt == setSimpleArrayEntry$Foreign(Builtin)
+   macro I == Integer
+   Rep == PrimitiveArray S
 
-   #x               == Qsize x
-   fill_!(x, s)     == (for i in 0..Qmax x repeat Qsetelt(x, i, s); x)
-   minIndex x       == mn
+   newArray(n: Integer): % ==
+     makeSimpleArray(getVMType(S)$Foreign(Builtin),n)$Foreign(Builtin)
 
-   empty()          == Qnew(0$Lisp)
-   new(n, s)        == fill_!(Qnew n,s)
+   #x == # rep x
+   copy x == per copy rep x
+   fill!(x, s) == per fill!(rep x, s)
+   minIndex x == mn
 
-   map_!(f, s1)  ==
-      n:Integer := Qmax(s1)
+   empty() == per empty()$Rep
+   new(n, s) == per new(n,s)$Rep
+   construct l == per construct(l)$Rep
+
+   map!(f, s1)  ==
+      n: Integer := Qmax(s1)
       n < 0 => s1
       for i in 0..n repeat Qsetelt(s1, i, f(Qelt(s1,i)))
       s1
@@ -387,14 +396,14 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
    map(f, s1)       ==
       n:Integer := Qmax(s1)
       n < 0 => s1
-      ss2:% := Qnew(n+1)
+      ss2:% := newArray(n+1)
       for i in 0..n repeat Qsetelt(ss2, i, f(Qelt(s1,i)))
       ss2
 
    map(f, a, b)   ==
       maxind:Integer := min(Qmax a, Qmax b)
       maxind < 0 => empty()
-      c:% := Qnew(maxind+1)
+      c:% := newArray(maxind+1)
       for i in 0..maxind repeat
         Qsetelt(c, i, f(Qelt(a,i),Qelt(b,i)))
       c
@@ -452,12 +461,7 @@ OneDimensionalArray(S:Type): Exports == Implementation where
     oneDimensionalArray: (NonNegativeInteger, S) -> %
 	++ oneDimensionalArray(n,s) creates an array from n copies of element s
   Implementation == IndexedOneDimensionalArray(S, ARRAYMININDEX) add
-    oneDimensionalArray(u) ==
-      n := #u
-      n = 0 => empty()
-      a := new(n, first u)
-      for i in 2..n for x in rest u repeat a.i := x
-      a
+    oneDimensionalArray(u) == construct u
     oneDimensionalArray(n,s) == new(n,s)
 
 @

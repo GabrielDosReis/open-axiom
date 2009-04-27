@@ -561,7 +561,8 @@
                 (LETT #0# |b| |POLYCAT-;P2R|)
                 (LETT |i| (SPADCALL |w| (|getShellEntry| $ 104))
                       |POLYCAT-;P2R|)
-                (LETT #1# (QVSIZE |w|) |POLYCAT-;P2R|) G190
+                (LETT #1# (|sizeOfSimpleArray| |w|) |POLYCAT-;P2R|)
+                G190
                 (COND
                   ((OR (> |i| #1#) (ATOM #0#)
                        (PROGN
