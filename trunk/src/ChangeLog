@@ -1,5 +1,9 @@
 2009-04-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (canCacheLocalDomain): Remove dead code.
+
+2009-04-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compComma): Supply element type for tuple
 	construction. 
 	* interp/i-coerfn.boot (L2Tuple): Likewise.
