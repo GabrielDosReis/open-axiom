@@ -1,3 +1,17 @@
+2009-04-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compComma): Supply element type for tuple
+	construction. 
+	* interp/i-coerfn.boot (L2Tuple): Likewise.
+	* interp/i-object.boot (asTupleNew): Likewise.
+	(asTupleNew0): Likewise.
+	(asTupleNewCode): Likewise.
+	(asTupleNewCode0): Likewise.
+	* interp/i-spec1.boot (evalCOLLECT): Likewise.
+	(interpCOLLECT): Likewise.
+	* interp/i-spec2.boot (evalTuple): Likewise.
+	(upNullTuple): Likewise.
+
 2009-04-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>>
 
 	Fix SF/2781848

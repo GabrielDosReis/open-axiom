@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -542,7 +542,7 @@ evalCOLLECT(op,[:itrl,body],m) ==
   iters := [evalLoopIter itr for itr in itrl]
   bod := getArgValue(body,computedMode body)
   if bod isnt ['SPADCALL,:.] then bode := ['unwrap,bod]
-  code := timedOptimization asTupleNewCode0 ['COLLECT,:iters,bod]
+  code := timedOptimization asTupleNewCode0(second m, ['COLLECT,:iters,bod])
   if $genValue then code := wrap timedEVALFUN code
   putValue(op,objNew(code,m))
 
@@ -580,7 +580,7 @@ interpCOLLECT(op,itrl,body) ==
   rm := ['Tuple,t]
   value := [objValUnwrap coerceInteractive(objNewWrap(v,m),t)
     for v in value for m in $collectTypeList]
-  putValue(op,objNewWrap(asTupleNew(#value, value),rm))
+  putValue(op,objNewWrap(asTupleNew(getVMType t, #value, value),rm))
   putModeSet(op,[rm])
 
 interpIter itr ==

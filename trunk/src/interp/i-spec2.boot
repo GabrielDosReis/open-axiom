@@ -1091,7 +1091,7 @@ uptuple t ==
 
 evalTuple(op,l,m,tar) ==
   [agg,:.,underMode]:= m
-  code := asTupleNewCode(#l,
+  code := asTupleNewCode(underMode, #l,
     [(getArgValue(x,underMode) or throwKeyedMsg("S2IC0007",[underMode])) for x in l])
   val :=
     $genValue => objNewWrap(timedEVALFUN code,m)
@@ -1110,7 +1110,7 @@ upNullTuple(op,l,tar) ==
     tar and tar is [a,b] and (a in '(Stream Vector List)) and
       not isPartialMode(b) => ['Tuple,b]
     '(Tuple (None))
-  val := objNewWrap(asTupleNew(0,NIL), defMode)
+  val := objNewWrap(asTupleNew(getVMType second defMode,0,NIL), defMode)
   tar and not isPartialMode(tar) =>
     null (val' := coerceInteractive(val,tar)) =>
       throwKeyedMsg("S2IS0013",[tar])

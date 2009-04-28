@@ -1793,7 +1793,7 @@ compComma(form,m,e) ==
   m is ["Tuple",t] =>
     Tl' := [convert(T,t) or return "failed" for T in Tl]
     Tl' = "failed" => nil
-    [["asTupleNew0", [T.expr for T in Tl']], m, e]
+    [["asTupleNew0", ["getVMType",t], [T.expr for T in Tl']], m, e]
   T := [["LIST2VEC", [T.expr for T in Tl]], 
         ["Cross",:[T.mode for T in Tl]], e]
   convert(T,m)
