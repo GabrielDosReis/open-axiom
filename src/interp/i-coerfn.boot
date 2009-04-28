@@ -563,7 +563,7 @@ L2Tuple(val, source is [.,S], target is [.,T]) ==
     val = '_$fromCoerceable_$ => canCoerce(S,T)
     null (object := coerceInt1(objNewWrap(val,source), ['List, T])) =>
       coercionFailure()
-    asTupleNew0 objValUnwrap object
+    asTupleNew0(getVMType T, objValUnwrap object)
 
 L2DP(l, source is [.,S], target is [.,n,T]) ==
   -- need to know size of the list

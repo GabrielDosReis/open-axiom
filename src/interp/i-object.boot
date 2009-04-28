@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -132,11 +132,17 @@ instantiationNormalForm(op,argl) ==
 
 -- Tuples and Crosses
 
-asTupleNew(size, listOfElts) == CONS(size, LIST2VEC listOfElts)
-asTupleNew0(listOfElts) == CONS(#listOfElts, LIST2VEC listOfElts)
+asTupleNew(eltType,size,listOfElts) == 
+  CONS(size, makeSimpleArrayFromList(eltType,listOfElts))
 
-asTupleNewCode(size, listOfElts) == ["asTupleNew", size, ["LIST", :listOfElts]]
-asTupleNewCode0(listForm) == ["asTupleNew0", listForm]
+asTupleNew0(eltType,listOfElts) == 
+  CONS(#listOfElts, makeSimpleArrayFromList(eltType,listOfElts))
+
+asTupleNewCode(eltType, size, listOfElts) == 
+  ["asTupleNew", quoteForm getVMType eltType, size, ["LIST", :listOfElts]]
+
+asTupleNewCode0(eltType,listForm) == 
+  ["asTupleNew0", quoteForm getVMType eltType, listForm]
 
 asTupleSize(at) == CAR at
 asTupleAsVector(at) == CDR at
