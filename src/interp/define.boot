@@ -1188,21 +1188,6 @@ putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
   def
  
  
-canCacheLocalDomain(dom,elt)==
-   dom is [op,'_$,n] and MEMQ(op,'(getShellEntry ELT QREFELT)) => nil
-   domargsglobal(dom) =>
-        $functorLocalParameters:= [:$functorLocalParameters,dom]
-        PUSH([dom,GENVAR(),[elt,$selector,$funcLocLen]],$usedDomList)
-        $funcLocLen:= $funcLocLen+1
-   nil
-  where
-     domargsglobal(dom) ==
-       dom='_$ => true
-       IDENTP dom => MEMQ(dom,$functorLocalParameters)
-       ATOM dom => true
-       and/[domargsglobal(arg) for arg in rest dom]
- 
- 
 $savableItems := nil
  
 compile u ==
