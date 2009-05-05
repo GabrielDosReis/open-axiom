@@ -738,7 +738,7 @@ conOpPage1(conform,:options) ==
 --constructors    Cname\#\E\sig \args   \abb \comments (C is C, D, P, X)
   bindingsAlist := IFCAR options
   conname       := opOf conform
-  MEMQ(conname,$Primitives) =>
+  MEMQ(conname,$DomainNames) =>
      dbSpecialOperations conname
   domname         :=                        --> !!note!! <--
     null atom conform => conform
@@ -1055,7 +1055,7 @@ dbShowConsDoc(htPage,conlist) ==
 
 dbShowConsDoc1(htPage,conform,indexOrNil) ==
   [conname,:conargs] := conform
-  MEMQ(conname,$Primitives) =>
+  MEMQ(conname,$DomainNames) =>
     conname := htpProperty(htPage,'conname)
     [["constructor",["NIL",doc]],:.] := GETL(conname,'documentation)
     sig := '((CATEGORY domain) (SetCategory) (SetCategory))

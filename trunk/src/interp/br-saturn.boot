@@ -1245,7 +1245,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   $conargs   : local := rest conform
   if which = '"operation" then
     $signature : local :=
-      MEMQ(conname,$Primitives) => nil
+      MEMQ(conname,$DomainNames) => nil
       CDAR getConstructorModemapFromDB conname
     --RDJ: this next line is necessary until compiler bug is fixed
     --that forgets to substitute #variables for t#variables;
@@ -1629,14 +1629,18 @@ bcConform1 form == main where
     hd form
   hd form ==
     atom form =>
-      not MEMQ(form,$Primitives) and null constructor? form =>
-        s := STRINGIMAGE form
+      -- string literals, e.g. "failed", are constructor arguments
+      -- too, until we fix that.
+      STRINGP form or not isConstructorName form =>
+        s := 
+          STRINGP form => strconc("_"",form,"_"")
+          STRINGIMAGE form
         (s.0 = char '_#) =>
            (n := POSN1(form, $FormalFunctionParameterList)) =>
               htSay form2HtString ($FormalMapVariableList . n)
            htSay '"\"
            htSay form
-        htSay escapeSpecialChars STRINGIMAGE form
+        htSay escapeSpecialChars s
       s := STRINGIMAGE form
       $italicHead? => htSayItalics s
       $bcMultipleNames =>
