@@ -1,3 +1,15 @@
+2009-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2785271
+	* interp/sys-constants.boot ($Primitives): Remove.
+	* interp/br-con.boot (conOpPage1): Replace $Primitives by
+	$DomainNames. 
+	(dbShowConsDoc1): Likewise.
+	* interp/buildom.boot ($nonLisplibDomains): Likewise.
+	* interp/br-op2.boot (kFormatSlotDomain): isConstructorName.
+	* interp/br-saturn.boot (bfConform1): Handle string literals as
+	constructor arguments.
+
 2009-04-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (canCacheLocalDomain): Remove dead code.

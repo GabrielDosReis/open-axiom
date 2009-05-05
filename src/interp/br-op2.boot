@@ -424,8 +424,7 @@ kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   (op := CAR x) = '_$ => '_$
   op = 'local => CADR x
   op = ":" => [":",CADR x,fn CADDR x]
-  MEMQ(op,$Primitives) or constructor? op =>
-    [fn y for y in x]
+  isConstructorName op => [fn y for y in x]
   INTEGERP op => op
   op = 'QUOTE and atom CADR x => CADR x
   x
