@@ -96,13 +96,24 @@ BasicOperator(): Exports == Implementation where
     deleteProperty_!: ($, String) -> $
       ++ deleteProperty!(op, s) unattaches property s from op.
       ++ Argument op is modified "in place", i.e. no copy is made.
+    deleteProperty!: ($, Identifier) -> $
+      ++ \spad{deleteProperty!(op, p)} unattaches property \spad{p} from
+      ++ \spad{op}. Argument \spad}op} is modified "in place", 
+      ++ i.e. no copy is made.
     property      : ($, String) -> Union(None, "failed")
       ++ property(op, s) returns the value of property s if
       ++ it is attached to op, and "failed" otherwise.
+    property : (%, Identifier) -> Maybe None
+      ++ \spad{property(op, p)} returns the value of property \spad{p} if
+      ++ it is attached to \spad{op}, otherwise \spad{nothing}.
     setProperty   : ($, String, None) -> $
       ++ setProperty(op, s, v) attaches property s to op,
       ++ and sets its value to v.
       ++ Argument op is modified "in place", i.e. no copy is made.
+    setProperty   : ($, Identifier, None) -> $
+      ++ \spad{setProperty(op, p, v)} attaches property \spad{p} to \spad{op},
+      ++ and sets its value to \spad{v}.
+      ++ Argument \spad{op} is modified "in place", i.e. no copy is made.
     setProperties : ($, P) -> $
       ++ setProperties(op, l) sets the property list of op to l.
       ++ Argument op is modified "in place", i.e. no copy is made.
@@ -119,7 +130,11 @@ BasicOperator(): Exports == Implementation where
     setProperties(op, l) == (op.props := l; op)
     operator s           == oper(s, -1::SingleInteger, table())
     operator(s, n)       == oper(s, n::Integer::SingleInteger, table())
-    property(op, name)   == search(name, op.props)
+    property(op: %, name: String)   == search(name, op.props)
+    property(op: %, p: Identifier) == 
+      case search(STRING(p)$Lisp, op.props) is
+        val@None => just val
+        otherwise => nothing
     assert(op, s)        == setProperty(op, s, NIL$Lisp)
     has?(op, name)       == key?(name, op.props)
     oper(se, n, prop)    == [se, n, prop]
@@ -130,8 +145,14 @@ BasicOperator(): Exports == Implementation where
     equality(op, func)   == setProperty(op, EQUAL?, func pretend None)
     comparison(op, func) == setProperty(op, LESS?, func pretend None)
     display(op:$, f:O -> O)        == display(op, f first #1)
-    deleteProperty_!(op, name)     == (remove_!(name, properties op); op)
-    setProperty(op, name, valu)    == (op.props.name := valu; op)
+    deleteProperty_!(op: %, name: String) == (remove_!(name, properties op); op)
+    deleteProperty!(op: %, p: Identifier) == 
+      remove!(STRING(p)$Foreign(Builtin), properties op)
+      op
+    setProperty(op: %, name: String, valu: None) == (op.props.name := valu; op)
+    setProperty(op: %, p: Identifier, valu: None) == 
+      op.props.(STRING(p)$Foreign(Builtin)@String) := valu
+      op
     coerce(op:$):OutputForm        == name(op)::OutputForm
     input(op:$, f:List SEX -> SEX) == setProperty(op, SEXPR, f pretend None)
     display(op:$, f:List O -> O)   == setProperty(op, DISPLAY, f pretend None)

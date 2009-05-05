@@ -1,5 +1,12 @@
 2009-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/op.spad.pamphlet (property$BasicOperator): Overload with
+	a version that takes an identifier.
+	(deleteProperty$BasicOpetrator): Likewise.
+	(setProperty$BasicOperator): Likewise.
+
+2009-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2785271
 	* interp/sys-constants.boot ($Primitives): Remove.
 	* interp/br-con.boot (conOpPage1): Replace $Primitives by
