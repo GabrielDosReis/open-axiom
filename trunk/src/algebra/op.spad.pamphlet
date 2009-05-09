@@ -2,20 +2,20 @@
 \usepackage{axiom}
 \begin{document}
 \title{\$SPAD/src/algebra op.spad}
-\author{Manuel Bronstein}
+\author{Manuel Bronstein \and Gabriel Dos~Reis}
 \maketitle
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
 \section{domain BOP BasicOperator}
 <<domain BOP BasicOperator>>=
 )abbrev domain BOP BasicOperator
 ++ Basic system operators
-++ Author: Manuel Bronstein
+++ Author: Manuel Bronstein, Gabriel Dos Reis
 ++ Date Created: 22 March 1988
-++ Date Last Updated: 11 October 1993
+++ Date Last Updated: May 09, 2009
 ++ Description:
 ++   A basic operator is an object that can be applied to a list of
 ++   arguments from a set, the result being a kernel over that set.
@@ -32,9 +32,7 @@ BasicOperator(): Exports == Implementation where
   DISPLAY ==> "%display"
   SEXPR   ==> "%input"
 
-  Exports ==> OrderedSet with
-    name      : $ -> Symbol
-      ++ name(op) returns the name of op.
+  Exports == Join(OrderedSet, OperatorCategory Symbol) with
     properties: $ -> P
       ++ properties(op) returns the list of all the properties
       ++ currently attached to op.
@@ -44,9 +42,9 @@ BasicOperator(): Exports == Implementation where
       ++ operator(f) makes f into an operator with arbitrary arity.
     operator  : (Symbol, NonNegativeInteger) -> $
       ++ operator(f, n) makes f into an n-ary operator.
-    arity     : $ -> Union(NonNegativeInteger, "failed")
-      ++ arity(op) returns n if op is n-ary, and
-      ++ "failed" if op has arbitrary arity.
+    operator  : (Symbol, Arity) -> $
+      ++ \spad{operator(f, a)} makes \spad{f} into an operator
+      ++ of arity \spad{a}.
     nullary?  : $ -> Boolean
       ++ nullary?(op) tests if op is nullary.
     unary?    : $ -> Boolean
@@ -119,29 +117,30 @@ BasicOperator(): Exports == Implementation where
       ++ Argument op is modified "in place", i.e. no copy is made.
 
   Implementation ==> add
+    import Arity
     -- if narg < 0 then the operator ahs variable arity.
-    Rep := Record(opname:Symbol, narg:SingleInteger, props:P)
-
-    oper: (Symbol, SingleInteger, P) -> $
+    Rep == Record(opname:Symbol, narg: Arity, props:P)
 
     is?(op, s)           == name(op) = s
-    name op              == op.opname
-    properties op        == op.props
-    setProperties(op, l) == (op.props := l; op)
-    operator s           == oper(s, -1::SingleInteger, table())
-    operator(s, n)       == oper(s, n::Integer::SingleInteger, table())
-    property(op: %, name: String)   == search(name, op.props)
+    name op              == rep(op).opname
+    properties op        == rep(op).props
+    setProperties(op, l) == 
+      rep(op).props := l
+      op
+    operator(s: Symbol)  == per [s, arbitrary(), table()]
+    operator(s: Symbol, n: NonNegativeInteger) == per [s, n::Arity, table()]
+    operator(s: Symbol, a: Arity) == per [s, a, table()]
+    property(op: %, name: String)   == search(name, rep(op).props)
     property(op: %, p: Identifier) == 
-      case search(STRING(p)$Lisp, op.props) is
+      case search(STRING(p)$Lisp, rep(op).props) is
         val@None => just val
         otherwise => nothing
     assert(op, s)        == setProperty(op, s, NIL$Lisp)
-    has?(op, name)       == key?(name, op.props)
-    oper(se, n, prop)    == [se, n, prop]
+    has?(op, name)       == key?(name, rep(op).props)
     weight(op, n)        == setProperty(op, WEIGHT, n pretend None)
-    nullary? op          == zero?(op.narg)
-    unary? op            == one?(op.narg)
-    nary? op             == negative?(op.narg)
+    nullary? op          == zero? rep(op).narg
+    unary? op            == one? rep(op).narg
+    nary? op             == arbitrary() = rep(op).narg
     equality(op, func)   == setProperty(op, EQUAL?, func pretend None)
     comparison(op, func) == setProperty(op, LESS?, func pretend None)
     display(op:$, f:O -> O)        == display(op, f first #1)
@@ -149,9 +148,11 @@ BasicOperator(): Exports == Implementation where
     deleteProperty!(op: %, p: Identifier) == 
       remove!(STRING(p)$Foreign(Builtin), properties op)
       op
-    setProperty(op: %, name: String, valu: None) == (op.props.name := valu; op)
+    setProperty(op: %, name: String, valu: None) == 
+      rep(op).props.name := valu
+      op
     setProperty(op: %, p: Identifier, valu: None) == 
-      op.props.(STRING(p)$Foreign(Builtin)@String) := valu
+      rep(op).props.(STRING(p)$Foreign(Builtin)@String) := valu
       op
     coerce(op:$):OutputForm        == name(op)::OutputForm
     input(op:$, f:List SEX -> SEX) == setProperty(op, SEXPR, f pretend None)
@@ -165,19 +166,17 @@ BasicOperator(): Exports == Implementation where
       (u := property(op, SEXPR)) case "failed" => "failed"
       (u::None) pretend (List SEX -> SEX)
 
-    arity op ==
-      negative?(n := op.narg) => "failed"
-      convert(n)@Integer :: NonNegativeInteger
+    arity op == rep(op).narg
 
     copy op ==
-      oper(name op, op.narg,
-          table([[r.key, r.entry] for r in entries(properties op)@L]$L))
+      per [name op, rep(op).narg,
+            table([[r.key, r.entry] for r in entries(properties op)@L]$L)]
 
 -- property EQUAL? contains a function f: (BOP, BOP) -> Boolean
 -- such that f(o1, o2) is true iff o1 = o2
     op1 = op2 ==
       name(op1) ~= name(op2) => false
-      op1.narg ~= op2.narg => false
+      rep(op1).narg ~= rep(op2).narg => false
       brace(keys properties op1)~=$Set(String) brace(keys properties op2) => false
       (func := property(op1, EQUAL?)) case None =>
                    ((func::None) pretend (($, $) -> Boolean)) (op1, op2)
@@ -193,7 +192,9 @@ BasicOperator(): Exports == Implementation where
 -- such that f(o1, o2) is true iff o1 < o2
     op1 < op2 ==
       (w1 := weight op1) ~= (w2 := weight op2) => w1 < w2
-      op1.narg ~= op2.narg => op1.narg < op2.narg
+      rep(op1).narg ~= rep(op2).narg => 
+        -- FIXME: Horrible.
+        (rep(op1).narg pretend SingleInteger) < (rep(op2).narg pretend SingleInteger)
       name(op1) ~= name(op2) => name(op1) < name(op2)
       n1 := #(k1 := brace(keys(properties op1))$Set(String))
       n2 := #(k2 := brace(keys(properties op2))$Set(String))

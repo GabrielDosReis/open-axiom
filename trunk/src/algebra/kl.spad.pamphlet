@@ -147,7 +147,7 @@ MakeCachableSet(S:SetCategory): Exports == Implementation where
 ++ Operators applied to elements of a set
 ++ Author: Manuel Bronstein
 ++ Date Created: 22 March 1988
-++ Date Last Updated: 10 August 1994
+++ Date Last Updated: May 09, 2009
 ++ Description:
 ++ A kernel over a set S is an operator applied to a given list
 ++ of arguments from S.
@@ -230,8 +230,7 @@ Kernel(S:OrderedSet): Exports == Implementation where
       k1.posit < k2.posit
 
     kernel(fn, x, n) ==
-      ((u := arity fn) case N) and (#x ~= u::N)
-                                    => error "Wrong number of arguments"
+      (#x)::Arity ~= arity fn => error "Wrong number of arguments"
       enterInCache([fn, x, n, 0]$Rep, triage)
 
     -- SPECIALDISP contains a map List S -> OutputForm
@@ -307,6 +306,8 @@ KernelFunctions2(R:OrderedSet, S:OrderedSet): with
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

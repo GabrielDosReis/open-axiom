@@ -1,5 +1,16 @@
 2009-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/term.spad.pamphlet (zero?$Arity): New.
+	(one?$Arity): Likewise.
+	* algebra/op.spad.pamphlet (BasicOperator): Now belongs to
+	OperatorCategory(Symbol).
+	(operator$BasicOperator): One more overload.
+	* algebra/expr.spad.pamphlet (operator$Expression): Tidy.
+	* algebra/fspace.spad.pamphlet (elt$ExpressionSpace): Likewise.
+	* algebra/kl.spad.pamphlet (kernel$Kernel): Likewise.
+
+2009-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compApplication): Tidy.
 
 2009-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>

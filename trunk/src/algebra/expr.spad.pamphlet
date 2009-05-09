@@ -231,8 +231,7 @@ Expression(R:OrderedSet): Exports == Implementation where
         belong?(op)$FSD => operator(op)$FSD
         belong?(op)$ESD => operator(op)$ESD
         nullary? op and has?(op, SYMBOL) => operator(kernel(name op)$K)
-        (n := arity op) case "failed" => operator name op
-        operator(name op, n::NonNegativeInteger)
+        operator(name op, arity op)
 
       reduc(x, l) ==
         for k in l repeat
@@ -365,8 +364,7 @@ Expression(R:OrderedSet): Exports == Implementation where
         belong?(op)$FSD => operator(op)$FSD
         belong?(op)$ESD => operator(op)$ESD
         nullary? op and has?(op, SYMBOL) => operator(kernel(name op)$K)
-        (n := arity op) case "failed" => operator name op
-        operator(name op, n::NonNegativeInteger)
+        operator(name op, arity op)
 
       if R has Ring then
         Rep := MP
