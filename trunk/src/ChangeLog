@@ -1,3 +1,7 @@
+2009-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compApplication): Tidy.
+
 2009-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/op.spad.pamphlet (property$BasicOperator): Overload with
