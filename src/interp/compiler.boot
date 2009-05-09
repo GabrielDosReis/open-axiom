@@ -706,8 +706,10 @@ compApplication(op,argl,m,T) ==
               for x in argl for m in argml]
     argTl = "failed" => nil
     form:=
-      atom T.expr and not (MEMQ(op,$formalArgList) or MEMQ(T.expr,$formalArgList)) =>
-        emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
+      atom T.expr and 
+        not (MEMQ(op,$formalArgList) or MEMQ(T.expr,$formalArgList)) and
+          null get(T.expr,"value",e) =>
+            emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
       ['call, ['applyFun, T.expr], :[a.expr for a in argTl]]
     coerce([form, retm, e],resolve(retm,m))
   op = 'elt => nil
