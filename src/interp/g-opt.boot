@@ -39,6 +39,22 @@ namespace BOOT
 
 $optimizableConstructorNames := $SystemInlinableConstructorNames
 
+--%
+
+++ return the template of the instantiating functor for
+++ the domain form `dom'.
+getDomainTemplate dom ==
+  atom dom => nil
+  getInfovec first dom
+
+++ Emit code for an indirect call to domain-wide Spad function.  
+++ This is usually the case for exported functions.
+emitIndirectCall(fn,args,x) ==
+  rplac(first x, "SPADCALL")
+  rplac(first fn,"getShellEntry")
+  rplac(rest x, [:args,fn])
+  x
+
 --% OPTIMIZER
  
 optimizeFunctionDef(def) ==
@@ -133,10 +149,8 @@ optCatch (x is ["CATCH",g,a]) ==
 optSPADCALL(form is ['SPADCALL,:argl]) ==
   null $InteractiveMode => form
   -- last arg is function/env, but may be a form
-  argl is [:argl,fun] =>
-    fun is ['ELT,dom,slot] =>
-      optCall ['call,['ELT,dom,slot],:argl]
-    form
+  argl is [:argl,fun] and fun is ["ELT",dom,slot] =>
+    optCall ['call,['ELT,dom,slot],:argl]
   form
  
 optCall (x is ["call",:u]) ==
@@ -150,14 +164,8 @@ optCall (x is ["call",:u]) ==
     (RPLAC(first x,"SPADCALL"); RPLAC(rest x,[:a,name]); x)
   fn is [q,R,n] and MEMQ(q,'(getShellEntry ELT QREFELT CONST)) =>
     not $bootStrapMode and (w:= optCallSpecially(q,x,n,R)) => w
-    q="CONST" =>
---+
-      ["spadConstant",R,n]
-    --putInLocalDomainReferences will change this to ELT or QREFELT
-    RPLAC(first x,"SPADCALL")
-    RPLACA(fn,"getShellEntry")
-    RPLAC(rest x,[:a,fn])
-    x
+    q="CONST" => ["spadConstant",R,n]
+    emitIndirectCall(fn,a,x)
   systemErrorHere ["optCall",x]
  
 optCallSpecially(q,x,n,R) ==
@@ -211,10 +219,7 @@ optSpecialCall(x,y,n) ==
                 --DEF-EQUAL is really an optimiser
     x
   [fn,:a]:= first x
-  RPLAC(first x,"SPADCALL")
-  RPLACA(fn,"getShellEntry")
-  RPLAC(rest x,[:a,fn])
-  x
+  emitIndirectCall(fn,a,x)
  
 compileTimeBindingOf u ==
   NULL(name:= BPINAME u)  => keyedSystemError("S2OO0001",[u])
