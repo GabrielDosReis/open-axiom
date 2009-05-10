@@ -1,3 +1,4 @@
+(PROCLAIM '(OPTIMIZE SPEED))
 (IMPORT-MODULE "includer")
 
 (IMPORT-MODULE "scanner")
