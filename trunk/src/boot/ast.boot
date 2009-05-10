@@ -47,6 +47,14 @@ module ast
 ++ translated with the obvious semantics, e.g. no caching.
 $bfClamming := false
 
+++ List of identifiers defined as constants in the current
+++ translation unit.
+$constantIdentifiers := nil
+
+++ When non-nil holds the scope nominated  in the most recent
+++ namespace definition.
+$activeNamespace := nil
+
 --% Basic types used in Boot codes.
 
 %Thing <=> true
@@ -193,7 +201,17 @@ bfColonAppend(x,y) ==
 bfDefinition: (%Thing,%Thing,%Thing) -> %List 
 bfDefinition(bflhsitems, bfrhs,body) ==
        ['DEF,bflhsitems,bfrhs,body]
+
+bfSimpleDefinition: (%Thing,%Thing) -> %Thing
+bfSimpleDefinition(lhs,rhs) ==
+  if atom lhs then
+    $constantIdentifiers := [lhs,:$constantIdentifiers]
+  else if lhs is ["%Signature",id,.] then
+    $constantIdentifiers := [id,:$constantIdentifiers]
+  ConstantDefinition(lhs,rhs)
  
+
+
 bfMDefinition: (%Thing,%Thing,%Thing) -> %List 
 bfMDefinition(bflhsitems, bfrhs,body) ==
        bfMDef('MDEF,bflhsitems,bfrhs,body)
@@ -946,14 +964,25 @@ shoeATOMs x==
          else if atom x
               then [x]
               else append(shoeATOMs first x,shoeATOMs rest x)
+
+++ Return true if `x' is an identifier name that designates a
+++ dynamic (e.g. Lisp special) variable.  
+isDynamicVariable x ==
+  IDENTP x and bfBeginsDollar x =>
+    MEMQ(x,$constantIdentifiers) => false
+    CONSTANTP x => false
+    BOUNDP x or null $activeNamespace => true
+    y := FIND_-SYMBOL(STRING x,$activeNamespace) => not CONSTANTP y
+    true
+  false
  
 shoeCompTran1 x==
     atom x=>
-                IDENTP x and bfBeginsDollar x=>
-                    $dollarVars:=
-                          MEMQ(x,$dollarVars)=>$dollarVars
-                          cons(x,$dollarVars)
-                nil
+      isDynamicVariable x =>
+	$dollarVars:=
+	   MEMQ(x,$dollarVars)=>$dollarVars
+	   cons(x,$dollarVars)
+      nil
     U:=car x
     EQ(U,"QUOTE")=>nil
     x is ["L%T",l,r]=>

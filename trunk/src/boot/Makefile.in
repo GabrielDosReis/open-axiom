@@ -148,7 +148,7 @@ stage1/bootsys$(EXEEXT): $(stage1_boot_objects)
 		 --output=$@ --load-directory=stage1 $(stage1_boot_objects)
 
 stage1/%.clisp: %.boot strap/stamp stage1/.started
-	strap/bootsys -- --translate --output=$@ $<
+	strap/bootsys -- --translate --load-directory=stage1 --output=$@ $<
 
 
 ##
@@ -175,7 +175,7 @@ stage2/bootsys$(EXEEXT): $(stage2_boot_objects)
 		--output=$@ --load-directory=stage2 $(stage2_boot_objects)
 
 stage2/%.clisp: %.boot stage1/stamp stage2/.started
-	stage1/bootsys -- --translate --output=$@ $<
+	stage1/bootsys -- --translate --load-directory=stage2 --output=$@ $<
 
 ##
 ## Generic rules for compiling FASLs

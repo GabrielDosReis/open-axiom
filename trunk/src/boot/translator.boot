@@ -91,11 +91,14 @@ shoeCOMPILE_-FILE lspFileName ==
 
  
 BOOTTOCL(fn, out) ==
-  callingPackage := _*PACKAGE_*
-  IN_-PACKAGE '"BOOTTRAN"
-  result := BOOTTOCLLINES(nil,fn, out)
-  setCurrentPackage callingPackage
-  result
+  UNWIND_-PROTECT(
+    PROGN(startCompileDuration(),
+      callingPackage := _*PACKAGE_*,
+      IN_-PACKAGE '"BOOTTRAN",
+      result := BOOTTOCLLINES(nil,fn, out),
+      setCurrentPackage callingPackage,
+      result),
+    endCompileDuration())
  
 ++ (bootclam "filename") translates the file "filename.boot" to
 ++ the common lisp file "filename.clisp" , producing, for each function
@@ -126,11 +129,14 @@ shoeClLines(a,fn,lines,outfn)==
 ++ the common lisp file "filename.clisp" with the original boot
 ++ code as comments
 BOOTTOCLC(fn, out)==
-  callingPackage := _*PACKAGE_*
-  IN_-PACKAGE '"BOOTTRAN"
-  result := BOOTTOCLCLINES(nil, fn, out)
-  setCurrentPackage callingPackage
-  result
+  UNWIND_-PROTECT(
+    PROGN(startCompileDuration(),
+      callingPackage := _*PACKAGE_*,
+      IN_-PACKAGE '"BOOTTRAN",
+      result := BOOTTOCLCLINES(nil, fn, out),
+      setCurrentPackage callingPackage,
+      result),
+    endCompileDuration())
  
 BOOTTOCLCLINES(lines, fn, outfn)==
   infn:=shoeAddbootIfNec fn
@@ -421,6 +427,7 @@ translateToplevel(b,export?) ==
         :[first translateToplevel(d,true) for d in ds]]
 
     Import(m) => 
+      bootImport STRING m
       [["IMPORT-MODULE", STRING m]]
 
     ImportSignature(x, sig) =>
@@ -445,6 +452,7 @@ translateToplevel(b,export?) ==
       [maybeExportDecl(["DEFPARAMETER",lhs,rhs],export?)]
 
     namespace(n) =>
+      $activeNamespace := STRING n
       [["IN-PACKAGE",STRING n]]
 
     otherwise =>
