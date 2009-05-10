@@ -1,5 +1,12 @@
 2009-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nrunopt.boot (makeGoGetSlot): Adjust call to
+	makeCompactSigCode.
+	(makeCompactDirect1): Likewise.
+	(makeCompactSigCode): Drop second parameter.
+
+2009-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (emitIndirectCall): New.
 	(optCall): Use it.
 	(optSpecialCall): Likewise.
