@@ -1,3 +1,4 @@
+(PROCLAIM '(OPTIMIZE SPEED))
 (IMPORT-MODULE "initial-env")
 
 (IN-PACKAGE "BOOTTRAN")
@@ -181,8 +182,9 @@
   (LET ((|bfVar#8|
             (LIST (LIST '+ 0) (LIST '|gcd| 0) (LIST '|lcm| 1)
                   (LIST 'STRCONC "") (LIST '|strconc| "")
-                  (LIST 'MAX (- 999999)) (LIST 'MIN 999999) (LIST '* 1)
-                  (LIST '|times| 1) (LIST 'CONS NIL) (LIST 'APPEND NIL)
+                  (LIST 'CONCAT "") (LIST 'MAX (- 999999))
+                  (LIST 'MIN 999999) (LIST '* 1) (LIST '|times| 1)
+                  (LIST 'CONS NIL) (LIST 'APPEND NIL)
                   (LIST '|append| NIL) (LIST 'UNION NIL)
                   (LIST 'UNIONQ NIL) (LIST '|union| NIL)
                   (LIST 'NCONC NIL) (LIST '|and| 'T) (LIST '|or| NIL)

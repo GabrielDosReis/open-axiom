@@ -1,3 +1,4 @@
+(PROCLAIM '(OPTIMIZE SPEED))
 (IMPORT-MODULE "includer")
 
 (IMPORT-MODULE "scanner")
@@ -519,8 +520,10 @@
        T))
     ('T NIL)))
 
+(DEFUN |bpArgtypeList| () (|bpTuple| #'|bpApplication|))
+
 (DEFUN |bpMapping| ()
-  (OR (AND (|bpParenthesized| #'|bpIdList|) (|bpEqKey| 'ARROW)
+  (OR (AND (|bpParenthesized| #'|bpArgtypeList|) (|bpEqKey| 'ARROW)
            (|bpApplication|)
            (|bpPush| (|Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|)))))
       (|bpSimpleMapping|)))
