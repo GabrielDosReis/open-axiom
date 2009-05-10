@@ -558,6 +558,8 @@ dcOpPrint(op,index) ==
     slotNumber = 1 => '"missing"
     name := $infovec.0.slotNumber
     atom name => name
+    name is ["CONS","IDENTITY",
+              ["FUNCALL", ["dispatchFunction", impl],"$"]] => impl
     '"looked up"
   sayBrightly [:formatOpSignature(op,signumList),:namePart, :suffix]
   index + 1

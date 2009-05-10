@@ -920,7 +920,7 @@
 
 (DEFUN |bpSimpleDefinitionTail| ()
   (AND (|bpEqKey| 'DEF) (OR (|bpWhere|) (|bpTrap|))
-       (|bpPush| (|ConstantDefinition| (|bpPop2|) (|bpPop1|)))))
+       (|bpPush| (|bfSimpleDefinition| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpCompoundDefinitionTail| ()
   (AND (|bpVariable|) (|bpReturnType|) (|bpEqKey| 'DEF)

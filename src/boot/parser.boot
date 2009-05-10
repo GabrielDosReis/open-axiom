@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -883,7 +883,7 @@ bpDDef() ==  bpName() and bpDefTail()
 bpSimpleDefinitionTail() ==
   bpEqKey "DEF" and
     (bpWhere() or bpTrap())
-      and bpPush ConstantDefinition(bpPop2(), bpPop1())
+      and bpPush bfSimpleDefinition(bpPop2(), bpPop1())
 
 ++ Parse the remaining of a compound definition.
 bpCompoundDefinitionTail() ==

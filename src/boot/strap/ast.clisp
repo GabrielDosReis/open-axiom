@@ -7,6 +7,10 @@
 
 (DEFPARAMETER |$bfClamming| NIL)
 
+(DEFPARAMETER |$constantIdentifiers| NIL)
+
+(DEFPARAMETER |$activeNamespace| NIL)
+
 (DEFTYPE |%Thing| () 'T)
 
 (DEFTYPE |%Boolean| () 'BOOLEAN)
@@ -213,6 +217,31 @@
 
 (DEFUN |bfDefinition| (|bflhsitems| |bfrhs| |body|)
   (LIST 'DEF |bflhsitems| |bfrhs| |body|))
+
+(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing|) |%Thing|)
+                |bfSimpleDefinition|))
+
+(DEFUN |bfSimpleDefinition| (|lhs| |rhs|)
+  (PROG (|ISTMP#2| |id| |ISTMP#1|)
+    (DECLARE (SPECIAL |$constantIdentifiers|))
+    (RETURN
+      (PROGN
+        (COND
+          ((ATOM |lhs|)
+           (SETQ |$constantIdentifiers|
+                 (CONS |lhs| |$constantIdentifiers|)))
+          ((AND (CONSP |lhs|) (EQ (CAR |lhs|) '|%Signature|)
+                (PROGN
+                  (SETQ |ISTMP#1| (CDR |lhs|))
+                  (AND (CONSP |ISTMP#1|)
+                       (PROGN
+                         (SETQ |id| (CAR |ISTMP#1|))
+                         (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                         (AND (CONSP |ISTMP#2|)
+                              (EQ (CDR |ISTMP#2|) NIL))))))
+           (SETQ |$constantIdentifiers|
+                 (CONS |id| |$constantIdentifiers|))))
+        (|ConstantDefinition| |lhs| |rhs|)))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
                 |bfMDefinition|))
@@ -1622,6 +1651,21 @@
     ((ATOM |x|) (LIST |x|))
     ('T (APPEND (|shoeATOMs| (CAR |x|)) (|shoeATOMs| (CDR |x|))))))
 
+(DEFUN |isDynamicVariable| (|x|)
+  (PROG (|y|)
+    (DECLARE (SPECIAL |$activeNamespace| |$constantIdentifiers|))
+    (RETURN
+      (COND
+        ((AND (IDENTP |x|) (|bfBeginsDollar| |x|))
+         (COND
+           ((MEMQ |x| |$constantIdentifiers|) NIL)
+           ((CONSTANTP |x|) NIL)
+           ((OR (BOUNDP |x|) (NULL |$activeNamespace|)) T)
+           ((SETQ |y| (FIND-SYMBOL (STRING |x|) |$activeNamespace|))
+            (NOT (CONSTANTP |y|)))
+           (#0='T T)))
+        (#0# NIL)))))
+
 (DEFUN |shoeCompTran1| (|x|)
   (PROG (|res| |newbindings| |r| |ISTMP#2| |l| |ISTMP#1| U)
     (DECLARE (SPECIAL |$fluidVars| |$locVars| |$dollarVars|))
@@ -1629,7 +1673,7 @@
       (COND
         ((ATOM |x|)
          (COND
-           ((AND (IDENTP |x|) (|bfBeginsDollar| |x|))
+           ((|isDynamicVariable| |x|)
             (SETQ |$dollarVars|
                   (COND
                     ((MEMQ |x| |$dollarVars|) |$dollarVars|)
@@ -2203,7 +2247,6 @@
     (APPEND |$NativeSimpleDataTypes| '(|void| |string|)))
 
 (DEFUN |isSimpleNativeType| (|t|)
-  (DECLARE (SPECIAL |$NativeSimpleReturnTypes|))
   (MEMBER |t| |$NativeSimpleReturnTypes|))
 
 (DECLAIM (FTYPE (FUNCTION (|%Symbol|) |%Symbol|) |coreSymbol|))
@@ -2219,7 +2262,6 @@
 
 (DEFUN |nativeType| (|t|)
   (PROG (|t'|)
-    (DECLARE (SPECIAL |$NativeTypeTable|))
     (RETURN
       (COND
         ((NULL |t|) |t|)
@@ -2315,7 +2357,6 @@
         (#0# (|unknownNativeTypeError| |t|))))))
 
 (DEFUN |nativeReturnType| (|t|)
-  (DECLARE (SPECIAL |$NativeSimpleReturnTypes|))
   (COND
     ((MEMBER |t| |$NativeSimpleReturnTypes|) (|nativeType| |t|))
     ('T
@@ -2325,7 +2366,6 @@
 
 (DEFUN |nativeArgumentType| (|t|)
   (PROG (|t'| |c| |m|)
-    (DECLARE (SPECIAL |$NativeSimpleDataTypes|))
     (RETURN
       (COND
         ((MEMBER |t| |$NativeSimpleDataTypes|) (|nativeType| |t|))
@@ -2508,7 +2548,6 @@
 
 (DEFUN |genGCLnativeTranslation,gclTypeInC| (|x|)
   (PROG (|ISTMP#3| |ISTMP#2| |ISTMP#1|)
-    (DECLARE (SPECIAL |$NativeSimpleDataTypes|))
     (RETURN
       (COND
         ((MEMBER |x| |$NativeSimpleDataTypes|) (SYMBOL-NAME |x|))
@@ -2531,7 +2570,6 @@
 
 (DEFUN |genGCLnativeTranslation,gclArgInC| (|x| |a|)
   (PROG (|y| |c|)
-    (DECLARE (SPECIAL |$NativeSimpleDataTypes|))
     (RETURN
       (COND
         ((MEMBER |x| |$NativeSimpleDataTypes|) |a|)
@@ -2625,7 +2663,6 @@
 
 (DEFUN |genECLnativeTranslation,selectDatum| (|x|)
   (PROG (|y| |c|)
-    (DECLARE (SPECIAL |$ECLVersionNumber|))
     (RETURN
       (COND
         ((|isSimpleNativeType| |x|) "")

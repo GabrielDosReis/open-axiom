@@ -84,7 +84,6 @@
         (#0# NIL)))))
 
 (DEFUN |genOptimizeOptions| (|stream|)
-  (DECLARE (SPECIAL |$LispOptimizeOptions|))
   (REALLYPRETTYPRINT
       (LIST 'PROCLAIM
             (LIST 'QUOTE (CONS 'OPTIMIZE |$LispOptimizeOptions|)))
@@ -124,12 +123,15 @@
 (DEFUN BOOTTOCL (|fn| |out|)
   (PROG (|result| |callingPackage|)
     (RETURN
-      (PROGN
-        (SETQ |callingPackage| *PACKAGE*)
-        (IN-PACKAGE "BOOTTRAN")
-        (SETQ |result| (BOOTTOCLLINES NIL |fn| |out|))
-        (|setCurrentPackage| |callingPackage|)
-        |result|))))
+      (UNWIND-PROTECT
+        (PROGN
+          (|startCompileDuration|)
+          (SETQ |callingPackage| *PACKAGE*)
+          (IN-PACKAGE "BOOTTRAN")
+          (SETQ |result| (BOOTTOCLLINES NIL |fn| |out|))
+          (|setCurrentPackage| |callingPackage|)
+          |result|)
+        (|endCompileDuration|)))))
 
 (DEFUN BOOTCLAM (|fn| |out|)
   (DECLARE (SPECIAL |$bfClamming|))
@@ -171,12 +173,15 @@
 (DEFUN BOOTTOCLC (|fn| |out|)
   (PROG (|result| |callingPackage|)
     (RETURN
-      (PROGN
-        (SETQ |callingPackage| *PACKAGE*)
-        (IN-PACKAGE "BOOTTRAN")
-        (SETQ |result| (BOOTTOCLCLINES NIL |fn| |out|))
-        (|setCurrentPackage| |callingPackage|)
-        |result|))))
+      (UNWIND-PROTECT
+        (PROGN
+          (|startCompileDuration|)
+          (SETQ |callingPackage| *PACKAGE*)
+          (IN-PACKAGE "BOOTTRAN")
+          (SETQ |result| (BOOTTOCLCLINES NIL |fn| |out|))
+          (|setCurrentPackage| |callingPackage|)
+          |result|)
+        (|endCompileDuration|)))))
 
 (DEFUN BOOTTOCLCLINES (|lines| |fn| |outfn|)
   (PROG (|infn|)
@@ -602,8 +607,8 @@
 (DEFUN |translateToplevel| (|b| |export?|)
   (PROG (|lhs| |t| |ISTMP#2| |n| |ISTMP#1| |sig| |bfVar#17| |bfVar#16|
                |xs|)
-    (DECLARE (SPECIAL |$InteractiveMode| |$foreignsDefsForCLisp|
-                      |$currentModuleName|))
+    (DECLARE (SPECIAL |$activeNamespace| |$InteractiveMode|
+                      |$foreignsDefsForCLisp| |$currentModuleName|))
     (RETURN
       (COND
         ((ATOM |b|) (LIST |b|))
@@ -653,7 +658,9 @@
                                (SETQ |bfVar#14| (CDR |bfVar#14|))))))))
              (|Import|
                  (LET ((|m| (CAR |bfVar#17|)))
-                   (LIST (LIST 'IMPORT-MODULE (STRING |m|)))))
+                   (PROGN
+                     (|bootImport| (STRING |m|))
+                     (LIST (LIST 'IMPORT-MODULE (STRING |m|))))))
              (|ImportSignature|
                  (LET ((|x| (CAR |bfVar#17|))
                        (|sig| (CADR |bfVar#17|)))
@@ -721,7 +728,9 @@
                                   |export?|)))))))
              (|namespace|
                  (LET ((|n| (CAR |bfVar#17|)))
-                   (LIST (LIST 'IN-PACKAGE (STRING |n|)))))
+                   (PROGN
+                     (SETQ |$activeNamespace| (STRING |n|))
+                     (LIST (LIST 'IN-PACKAGE (STRING |n|))))))
              (T (LIST (|translateToplevelExpression| |b|))))))))))
 
 (DEFUN |bpOutItem| ()
@@ -1343,7 +1352,6 @@
 
 (DEFUN |getIntermediateLispFile| (|file| |options|)
   (PROG (|out|)
-    (DECLARE (SPECIAL |$effectiveFaslType|))
     (RETURN
       (PROGN
         (SETQ |out| (NAMESTRING (|getOutputPathname| |options|)))
@@ -1401,7 +1409,6 @@
      (|coreError| "don't know how to load a dynamically linked module"))))
 
 (DEFUN |loadSystemRuntimeCore| ()
-  (DECLARE (SPECIAL |$NativeModuleExt|))
   (COND
     ((OR (|%hasFeature| :ECL) (|%hasFeature| :GCL)) NIL)
     ('T

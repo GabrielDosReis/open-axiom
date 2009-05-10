@@ -61,6 +61,8 @@
            "countError"
 	   "resetErrorCount"
            "warn"
+	   "startCompileDuration"
+	   "endCompileDuration"
            
 	   "%ByteArray"
 	   "makeByteArray"
@@ -105,7 +107,7 @@
 	   "pathBasename"
 
            "IMPORT-MODULE"
-	   "BOOT-IMPORT"
+	   "bootImport"
 	   "CONCAT"
 	   "$EditorProgram"
            ))
@@ -819,7 +821,7 @@
                                :directory (list (|currentDirectoryName|)))))
   (unwind-protect
       (progn
-	(begin-compile-time)
+	(|startCompileDuration|)
 	(multiple-value-bind (result warning-p failure-p) 
 	 #-:ecl (compile-file file :output-file out-file)
 	 #+:ecl (compile-file file :output-file out-file :system-p t)
@@ -840,7 +842,7 @@
 	       (warning-p
 		(|warn| "Lisp code contained warnings")))
 	 result))
-    (end-compile-time)))
+    (|endCompileDuration|)))
 
 (defun |compileLispHandler| (prog-name options in-file)
   (declare (ignore prog-name))
@@ -979,9 +981,8 @@
 	   (if (compile-time-p)
 	       (|importModule| ,module)))))
 
-(defmacro boot-import (module)
-  `(eval-when (:compile-toplevel)
-	      (|importModule| ,module)))
+(defmacro |bootImport| (module)
+  `(|importModule| ,module))
 
 ;; 
 ;; -*- Feature Tests in Boot -*-
@@ -990,11 +991,11 @@
 (defun |%hasFeature| (f)
   (member f *features* :test #'eq))
 
-(defun begin-compile-time nil
+(defun |startCompileDuration| nil
   (push :open-axiom-compile-time *features*))
 
-(defun end-compile-time nil
-  (pop *features*))
+(defun |endCompileDuration| nil
+  (delete :open-axiom-compile-time *features*))
 
 (defun compile-time-p nil
   (member :open-axiom-compile-time *features*))

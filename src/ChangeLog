@@ -1,5 +1,20 @@
 2009-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Cope with SBCL-1.0.28 improvements.
+	* boot/translator.boot (translateToplevel): Load imported modules.
+	* boot/ast.boot ($constantIdentifiers): New.
+	($activeNamespace): Likewise.
+	(bfSimpleDefinition): Likewise.
+	(isDynamicVariable): Likewise.
+	(shoeCompTran1): Tidy.  Use it.
+	* boot/parser.boot (bpSimpleDefinitionTail): Use bfSimpleDefinition.
+	* boot/Makefile.in (stage1/%.clisp): Specify load directory.
+	(stage2/%.clisp): Likewise.
+	* lisp/core.lisp.in (startCompileDuration): Export.
+	(endCompileDuration): Likewise.
+
+2009-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nrunopt.boot (makeGoGetSlot): Adjust call to
 	makeCompactSigCode.
 	(makeCompactDirect1): Likewise.
