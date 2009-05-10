@@ -230,7 +230,8 @@ Kernel(S:OrderedSet): Exports == Implementation where
       k1.posit < k2.posit
 
     kernel(fn, x, n) ==
-      (#x)::Arity ~= arity fn => error "Wrong number of arguments"
+      (#x)::Arity ~= arity fn and (arity fn ~= arbitrary()) => 
+        error "Wrong number of arguments"
       enterInCache([fn, x, n, 0]$Rep, triage)
 
     -- SPECIALDISP contains a map List S -> OutputForm
