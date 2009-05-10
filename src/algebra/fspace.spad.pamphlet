@@ -256,7 +256,8 @@ ExpressionSpace(): Category == Defn where
 
     elt(op:OP, args:List %) ==
       not belong? op => error "Unknown operator"
-      (#args)::Arity ~= arity op => error "Wrong number of arguments"
+      (#args)::Arity ~= arity op and (arity op ~= arbitrary()) =>
+        error "Wrong number of arguments"
       (v := evaluate(op,args)$BasicOperatorFunctions1(%)) case % => v::%
       okkernel(op, args)
 
