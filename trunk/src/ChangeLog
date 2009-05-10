@@ -1,3 +1,10 @@
+2009-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (emitIndirectCall): New.
+	(optCall): Use it.
+	(optSpecialCall): Likewise.
+	(optSPADCALL): Tidy.
+
 2009-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/term.spad.pamphlet (zero?$Arity): New.
