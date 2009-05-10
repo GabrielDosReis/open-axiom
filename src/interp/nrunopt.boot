@@ -69,7 +69,7 @@ makeGoGetSlot(item,index) ==
 --these parts of the $byteVec are created first; see also makeCompactDirect
   [sig,whereToGo,op,:flag] := item
   n := #sig - 1
-  newcode := [n,whereToGo,:makeCompactSigCode(sig,nil),index]
+  newcode := [n,whereToGo,:makeCompactSigCode sig,index]
   $byteVec := [newcode,:$byteVec]
   curAddress := $byteAddress
   $byteAddress := $byteAddress + n + 4
@@ -101,7 +101,7 @@ makeCompactDirect1(op,items) ==
   r = ['Subsumed] =>
     n := #sig - 1
     $byteAddress := $byteAddress + n + 4
-    [n,0,:makeCompactSigCode(sig,$isOpPackageName),0]  --always followed by subsuming signature
+    [n,0,:makeCompactSigCode sig,0]  --always followed by subsuming signature
     --identified by a 0 in slot position
   if r is [n,:s] then
     slot :=
@@ -118,7 +118,7 @@ makeCompactDirect1(op,items) ==
      slot := 1   --signals that operation is not present
   n := #sig - 1
   $byteAddress := $byteAddress + n + 4
-  res := [n,predCode,:makeCompactSigCode(sig,$isOpPackageName),slot]
+  res := [n,predCode,:makeCompactSigCode sig,slot]
   res
  
 orderBySubsumption items ==
@@ -137,14 +137,12 @@ orderBySubsumption items ==
     z := insert(b,z)  --mark a signature as already present
   [:y,:[w for (w := [c,:.]) in acc | not member(c,z)]] --add those not subsuming
  
-makeCompactSigCode(sig,$isOpPackageName) == [fn for x in sig] where 
---$isOpPackageName = true only for an exported operation of a default package
+makeCompactSigCode sig == [fn for x in sig] where 
   fn() == 
-    x = '_$_$ => 2
-    x = '$ => 0
+    x = "$$" => 2
+    x = "$" => 0
     not INTEGERP x => 
       systemError ['"code vector slot is ",x,'"; must be number"]
---  x = 6 and $isOpPackageName => 0  --treat slot 6 as $ for default packages
     x
   
 --=======================================================================
@@ -194,9 +192,8 @@ stuffSlot(dollar,i,item) ==
       sayBrightlyNT '"Unexpected constant environment!!"
       pp devaluate b
       nil
---  [dollar,i,:item]    --old form
---  $isOpPackageName = 'T => SUBST(0,6,item)
-    item                --new form
+    item
+
 --=======================================================================
 --                Generate Slot 2 Attribute Alist
 --=======================================================================
