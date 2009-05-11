@@ -659,7 +659,10 @@
              (|Import|
                  (LET ((|m| (CAR |bfVar#17|)))
                    (PROGN
-                     (|bootImport| (STRING |m|))
+                     (COND
+                       ((NOT (EQUAL (|getOptionValue| '|import|)
+                                    "skip"))
+                        (|bootImport| (STRING |m|))))
                      (LIST (LIST 'IMPORT-MODULE (STRING |m|))))))
              (|ImportSignature|
                  (LET ((|x| (CAR |bfVar#17|))

@@ -1,5 +1,10 @@
 2009-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/translator.boot: Don't load imported modules when
+	bootstrapping. 
+
+2009-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Cope with SBCL-1.0.28 improvements.
 	* boot/translator.boot (translateToplevel): Load imported modules.
 	* boot/ast.boot ($constantIdentifiers): New.
