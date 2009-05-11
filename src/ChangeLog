@@ -1,3 +1,10 @@
+2009-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/property.lisp: "not" is prefix operator with "not " for
+	rendering.
+	* interp/i-output.boot ($allClassicOps): Include not.
+	* algebra/boolean.spad.pamphlet (PropositionalFormula): Rework.
+
 2009-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/translator.boot: Don't load imported modules when

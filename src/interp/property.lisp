@@ -112,7 +112,7 @@
 (REPEAT (IN X '(
   (= "=")
   (|:| ":")
-  (|not| "^ ")
+  (|not| "not ")
   (\| " \| ")
   (SEGMENT "..")  ;" 0.. is represented by (SEGMENT 0)"
  )) (MAKEPROP (CAR X) 'PREFIXOP (CADR X)))
