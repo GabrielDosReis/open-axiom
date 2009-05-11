@@ -427,7 +427,8 @@ translateToplevel(b,export?) ==
         :[first translateToplevel(d,true) for d in ds]]
 
     Import(m) => 
-      bootImport STRING m
+      if getOptionValue "import" ^= '"skip" then
+        bootImport STRING m
       [["IMPORT-MODULE", STRING m]]
 
     ImportSignature(x, sig) =>
