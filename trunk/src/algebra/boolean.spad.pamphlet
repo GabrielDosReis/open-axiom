@@ -39,73 +39,47 @@ PropositionalLogic(): Category == SetCategory with
 )abbrev domain PROPFRML PropositionalFormula
 ++ Author: Gabriel Dos Reis
 ++ Date Created: Januray 14, 2008
-++ Date Last Modified: January 16, 2008
+++ Date Last Modified: May 11, 2009
 ++ Description: This domain implements propositional formula build
 ++ over a term domain, that itself belongs to PropositionalLogic
-PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
-    coerce: T -> %
-      ++ coerce(t) turns the term `t' into a propositional formula
-    coerce: Symbol -> %
-      ++ coerce(t) turns the term `t' into a propositional variable.
-    variables: % -> Set Symbol
-      ++ variables(p) returns the set of propositional variables
-      ++ appearing in the proposition `p'.
+PropositionalFormula(T: SetCategory): Public == Private where
+  Public == Join(PropositionalLogic, CoercibleFrom T) with
+    isTerm : % -> Maybe T
+      ++ \spad{isTerm f} returns a value \spad{v} such that
+      ++ \spad{v case T} holds if the formula \spad{f} is a term.
 
-    term?: % -> Boolean
-      ++ term? p returns true when `p' really is a term
-    term: % -> T
-      ++ term p extracts the term value from `p'; otherwise errors.
-   
-    variable?: % -> Boolean
-      ++ variables? p returns true when `p' really is a variable.
-    variable: % -> Symbol
-      ++ variable p extracts the variable name from `p'; otherwise errors.
+    isNot : % -> Maybe %
+      ++ \spad{isNot f} returns a value \spad{v} such that
+      ++ \spad{v case %} holds if the formula \spad{f} is a negation.
 
-    not?: % -> Boolean
-      ++ not? p is true when `p' is a logical negation
-    notOperand: % -> %
-      ++ notOperand returns the operand to the logical `not' operator; 
-      ++ otherwise errors.
+    isAnd : % -> Maybe Pair(%,%)
+      ++ \spad{isAnd f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is a conjunction formula.
 
-    and?: % -> Boolean
-      ++ and? p is true when `p' is a logical conjunction.
-    andOperands: % -> Pair(%, %)
-      ++ andOperands p extracts the operands of the logical conjunction;
-      ++ otherwise errors.
+    isOr : % -> Maybe Pair(%,%)
+      ++ \spad{isOr f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is a disjunction formula.
 
-    or?: % -> Boolean
-      ++ or? p is true when `p' is a logical disjunction.
-    orOperands: % -> Pair(%,%)
-      ++ orOperands p extracts the operands to the logical disjunction;
-      ++ otherwise errors.
+    isImplies : % -> Maybe Pair(%,%)
+      ++ \spad{isImplies f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is an implication formula.
 
-    implies?: % -> Boolean
-      ++ implies? p is true when `p' is a logical implication.
-    impliesOperands: % -> Pair(%,%)
-      ++ impliesOperands p extracts the operands to the logical
-      ++ implication; otherwise errors.
+    isEquiv : % -> Maybe Pair(%,%)
+      ++ \spad{isEquiv f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is an equivalence formula.
 
-    equiv?: % -> Boolean
-      ++ equiv? p is true when `p' is a logical equivalence.
-    equivOperands: % -> Pair(%,%)
-      ++ equivOperands p extracts the operands to the logical equivalence;
-      ++ otherwise errors.
-
-  == add
-    FORMULA ==> Union(base: T, var: Symbol, unForm: %,
+  Private == add
+    FORMULA ==> Union(base: T, unForm: %,
                   binForm: Record(op: Symbol, lhs: %, rhs: %))
 
-    per(f: FORMULA): % ==
-      f pretend %
-
-    rep(p: %): FORMULA ==
-      p pretend FORMULA
+    Rep == FORMULA
 
     coerce(t: T): % ==
       per [t]$FORMULA
-
-    coerce(s: Symbol): % ==
-      per [s]$FORMULA
 
     not p ==
       per [p]$FORMULA
@@ -125,14 +99,6 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
     equiv(p,q) ==
       binaryForm('equiv, p, q)
 
-    variables p ==
-      p' := rep p
-      p' case base => empty()$Set(Symbol)
-      p' case var => { p'.var }
-      p' case unForm => variables(p'.unForm)
-      p'' := p'.binForm
-      union(variables(p''.lhs), variables(p''.rhs))$Set(Symbol)
-
     -- returns true if the proposition `p' is a formula of kind
     -- indicated by `o'.
     isBinaryNode?(p: %, o: Symbol): Boolean ==
@@ -144,54 +110,29 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
       p' := (rep p).binForm
       pair(p'.lhs,p'.rhs)$Pair(%,%)
 
-    term? p ==
-      rep p case base
+    isTerm f ==
+      rep f case base => just rep(f).base
+      nothing
 
-    term p ==
-      term? p => (rep p).base
-      userError "formula is not a term"
+    isNot f ==
+      rep f case unForm => just rep(f).unForm
+      nothing
 
-    variable? p ==
-      rep p case var
+    isAnd f ==
+      isBinaryNode?(f,'_and) => just binaryOperands f
+      nothing
 
-    variable p ==
-      variable? p => (rep p).var
-      userError "formula is not a variable"
+    isOr f ==
+      isBinaryNode?(f,'_or) => just binaryOperands f
+      nothing
 
-    not? p ==
-      rep p case unForm
+    isImplies f ==
+      isBinaryNode?(f, 'implies) => just binaryOperands f
+      nothing
 
-    notOperand p ==
-      not? p => (rep p).unForm
-      userError "formula is not a logical negation"
-
-    and? p ==
-      isBinaryNode?(p,'_and)
-
-    andOperands p ==
-      and? p => binaryOperands p
-      userError "formula is not a conjunction formula"
-
-    or? p ==
-      isBinaryNode?(p,'_or)
-
-    orOperands p ==
-      or? p => binaryOperands p
-      userError "formula is not a disjunction formula"
-
-    implies? p ==
-      isBinaryNode?(p, 'implies)
-
-    impliesOperands p ==
-      implies? p => binaryOperands p
-      userError "formula is not an implication formula"
-
-    equiv? p ==
-      isBinaryNode?(p,'equiv)
-
-    equivOperands p ==
-      equiv? p =>  binaryOperands p
-      userError "formula is not an equivalence equivalence"
+    isEquiv f ==
+      isBinaryNode?(f,'equiv) => just binaryOperands f
+      nothing
 
     -- Unparsing grammar.
     --
@@ -240,8 +181,7 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
       formula p
 
     primaryFormula(p: %): OutputForm ==
-      term? p => term(p)::OutputForm
-      variable? p => variable(p)::OutputForm
+      (t := isTerm p) case T => t@T::OutputForm
       if rep p case binForm then
 	 p' := (rep p).binForm
 	 p'.op = 'implies or p'.op = 'equiv =>
@@ -250,12 +190,12 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
       paren(formula p)$OutputForm
 
     notFormula(p: %): OutputForm ==
-      not? p =>
+      isNot p case % =>
 	elt(outputForm '_not, [notFormula((rep p).unForm)])$OutputForm
       primaryFormula p
 
     andFormula(p: %): OutputForm ==
-      and? p =>
+      isAnd p case Pair(%,%) =>
 	p' := (rep p).binForm
 	-- ??? idealy, we should be using `and$OutputForm' but
 	-- ??? a bug in the compiler currently prevents that.
@@ -264,7 +204,7 @@ PropositionalFormula(T: PropositionalLogic): PropositionalLogic with
       notFormula p
 
     orFormula(p: %): OutputForm ==
-      or? p =>
+      isOr p case Pair(%,%) =>
 	p' := (rep p).binForm
 	-- ??? idealy, we should be using `or$OutputForm' but
 	-- ??? a bug in the compiler currently prevents that.

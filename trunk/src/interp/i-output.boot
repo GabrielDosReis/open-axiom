@@ -2592,10 +2592,10 @@ maPrin u ==
 --% Rendering of InputForm
 
 $allClassicOps == 
-  ["~","#","**","^","*","/","rem","quo","+","-","@","::", "pretend"]
+  ["~","#","not","**","^","*","/","rem","quo","+","-","@","::", "pretend"]
 
 isUnaryPrefix op ==
-  op in '(_~ _# _-)
+  op in '(_~ _# _- _not)
 
 primaryForm2String x ==
   x = nil => '""
