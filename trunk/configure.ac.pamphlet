@@ -1251,8 +1251,6 @@ oa_shrobj_flags=
 oa_shrlib_flags=
 # Tell Libtool to assume `dlopen' so that it does not have to
 # emulate it.
-AC_LIBTOOL_DLOPEN
-AC_LIBTOOL_WIN32_DLL
 LT_INIT([pic-only dlopen win32-dll shared])
 AC_SUBST([LIBTOOL_DEPS])
 # Give me extension of libraries
