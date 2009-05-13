@@ -43,6 +43,9 @@ stamp-rootdirs: $(axiom_build_document)
 	@$(STAMP) stamp-rootdirs
 
 
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
+
 .PHONY: all-noweb
 all-noweb: $(axiom_build_bindir)/notangle
 

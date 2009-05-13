@@ -463,7 +463,7 @@ $(OUT)/CHARPOL.$(FASLEXT): $(OUT)/SETCAT-.$(FASLEXT)
 axiom_algebra_layer_6 = \
                    AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
   DIFEXT  DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
-  HYPCAT  HYPCAT-  MKCHSET  MODRING NASRING  NASRING- \
+  HYPCAT  HYPCAT-           MODRING NASRING  NASRING- \
   SORTPAK ZMOD                                        \
                    OAMONS   BYTE    SYSINT   SYSNNI
 

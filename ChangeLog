@@ -1,3 +1,9 @@
+2009-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Disable use of libtool to build shared
+	libraries. 
+	* config: Update autotools to newer versions.
+
 2009-04-10  Aleksej Saushev  <asau@inbox.ru>
 
 	* configure.ac.pamphlet: Recognize dragonfly triplet as BSD-flavour.

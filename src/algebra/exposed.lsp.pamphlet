@@ -986,7 +986,6 @@
   (|LyndonWord| . LWORD)
   (|Magma| . MAGMA)
   (|MakeBinaryCompiledFunction| . MKBCFUNC)
-  (|MakeCachableSet| . MKCHSET)
   (|MakeUnaryCompiledFunction| . MKUCFUNC)
   (|MappingPackageInternalHacks1| . MAPHACK1)
   (|MappingPackageInternalHacks2| . MAPHACK2)
