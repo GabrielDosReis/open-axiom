@@ -46,6 +46,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <locale.h>
 #include "cfuns.h"
 
 
@@ -266,6 +267,7 @@ main(int argc, char **argv)
 {
     int i;
 
+    setlocale(LC_ALL, "");
     if (argc == 1) {
         fprintf(stderr, "usage: %s exfile.ht ...\n", argv[0]);
         return (-1);

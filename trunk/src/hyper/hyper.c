@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2009, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -56,6 +56,7 @@
 #include <sys/wait.h>
 #include <setjmp.h>
 #include <X11/cursorfont.h>
+#include <locale.h>
 
 #include "keyin.h"
 #include "initx.h"
@@ -194,6 +195,7 @@ main(int argc, char **argv)
 
     /* Initialize some global values */
 /*    fprintf(stderr,"hyper:main:entered\n");*/
+    setlocale(LC_ALL, "");
     gArgc = argc;
     gArgv = argv;
     gIsEndOfOutput = 1;

@@ -41,6 +41,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <locale.h>
 
 #include "utils.h"
 
@@ -75,6 +76,7 @@ main(int argc, char* argv[])
    openaxiom_driver driver =
       openaxiom_preprocess_arguments(&command, argc, argv);
 
+   setlocale(LC_ALL, "");
    switch (driver) {
    case openaxiom_null_driver:
       return 0;                 /* Bye.  */

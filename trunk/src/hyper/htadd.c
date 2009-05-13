@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2009, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@
 #include <setjmp.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <locale.h>
 
 #include "cfuns.h"
 #include "hash.h"
@@ -95,6 +96,7 @@ main(int argc, char **argv)
     char **fnames = filenames;
     short flag;                 /* flag for deleting or adding */
 
+    setlocale(LC_ALL, "");
     parse_args(argv, db_dir, filenames, &flag);
 
     if (!filenames[0]) {

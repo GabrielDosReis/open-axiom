@@ -44,6 +44,7 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <locale.h>
 
 #include "open-axiom.h"
 #include "sockio.h"
@@ -782,6 +783,7 @@ main(int argc, char *argv[],char *envp[])
    command.root_dir = openaxiom_get_systemdir(argc, argv);
    process_options(&command, argc, argv);
 
+  setlocale(LC_ALL, "");
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   init_term_io();
   init_spad_process_list();
