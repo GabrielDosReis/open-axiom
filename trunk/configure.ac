@@ -18,16 +18,19 @@ oa_shrlib_flags=
 # emulate it.
 AC_LIBTOOL_DLOPEN
 AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
-AC_SUBST(LIBTOOL_DEPS)
+LT_INIT([pic-only dlopen win32-dll shared])
+AC_SUBST([LIBTOOL_DEPS])
 # Give me extension of libraries
 eval shared_ext=\"$shrext_cmds\"
 AC_SUBST(shared_ext)
 AC_SUBST(libext)
-# Don't use Libtool for building actual DLLs on MinGW and Cygwin
+## Don't use Libtool for building actual DLLs on MinGW and Cygwin
+## Libool has been improved to the point of being useless
+## for building in-place shared libraries.
+oa_use_libtool_for_shared_lib=no
 case $host in
     *mingw*|*cygwin*)
-       oa_use_libtool_for_shared_lib=no
+       # oa_use_libtool_for_shared_lib=no
        oa_shrobj_flags='-prefer-pic'
        oa_shrlib_flags="-shared --export-all-symbols"
        ;;
@@ -37,7 +40,7 @@ case $host in
        ;;
     *)
        oa_shrobj_flags='-prefer-pic'
-       oa_shrlib_flags='-shared -module'
+       oa_shrlib_flags='-shared'
        ;;
 esac
 AC_SUBST(oa_use_libtool_for_shared_lib)

@@ -1,3 +1,8 @@
+2009-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/kl.spad.pamphlet (MakeCachableSet): Remove.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_6): Don't build it.
+
 2009-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/property.lisp: "not" is prefix operator with "not " for
