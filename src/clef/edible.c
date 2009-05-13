@@ -1,7 +1,7 @@
 /*
     Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2008, Gabriel Dos Reis.
+    Copyright (C) 2007-2009, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <signal.h>
+#include <locale.h>
 
 #include "open-axiom.h"
 #include "sockio.h"
@@ -127,7 +128,8 @@ main(int argc, char *argv[])
   int not_command = 1;          /* a flag while parsing the command line */
   
   
-  
+
+  setlocale(LC_ALL, "");
   /* try to get a pseudoterminal to play with */
   if (ptyopen(&contNum, &serverNum, serverPath) == -1) {
     perror("ptyopen failed");

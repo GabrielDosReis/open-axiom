@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2009, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <regex.h>
+#include <locale.h>
 
 #include "cfuns.h"
 
@@ -412,6 +413,7 @@ cmdline(int argc, char** argv)
 int
 main(int argc, char** argv)
 {
+    setlocale(LC_ALL, "");
     cmdline(argc, argv);
     regcomp(&reg_pattern, pattern, REG_NEWLINE);
     handleHtdb();

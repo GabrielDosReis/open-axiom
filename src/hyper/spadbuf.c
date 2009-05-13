@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2008, Gabriel Dos Reis.
+   Copyright (C) 2007-2009, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <signal.h>
+#include <locale.h>
 #include "halloc.h"
 #include "bsdsignal.h"
 #include "sockio.h"
@@ -212,10 +213,6 @@ init_parent(void)
 int
 main(int argc,char **  argv)
 {
-    /*int name_found;*/
-    /*FILE *junk;*/
-    FILE *fopen();
-
     /*
      * Modified on 6/13/90 for the command line completion abiltities of
      * Since I am only calling this program from within spadint, I decided
@@ -224,6 +221,7 @@ main(int argc,char **  argv)
      * spadbuf page_name [completion_ files]
      *
      */
+    setlocale(LC_ALL, "");
     if (argc < 2) {
         fprintf(stderr, "Usage : spadbuf page_name [completion_files] \n");
         exit(-1);

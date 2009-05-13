@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2009, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,7 @@
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
+#include <locale.h>
 
 #include "sockio.h"
 
@@ -59,6 +60,7 @@ inter_handler(int sig)
 int 
 main(void)
 {
+  setlocale(LC_ALL, "");
   sock = connect_to_local_server(SessionServer, InterpWindow, Forever);
   bsdSignal(SIGINT, inter_handler,RestartSystemCalls); 
   remote_stdio(sock);

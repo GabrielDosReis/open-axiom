@@ -2,7 +2,7 @@
   Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
 
-  Copyright (C) 2007, Gabriel Dos Reis.
+  Copyright (C) 2007-2009, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
+#include <locale.h>
 
 #include "open-axiom.h"
 #include "sockio.h"
@@ -469,6 +470,7 @@ main(void)
    openaxiom_sleep(30);
 #endif
 
+  setlocale(LC_ALL, "");
  /* spad_server connects to Lisp server socket         
     read_SpadServer_command handles requests */
   spad_server = connect_to_local_server(SpadServer, SessionManager, Forever);
