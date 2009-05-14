@@ -1,5 +1,9 @@
 2009-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* configure.ac.pamphlet: Tidy.
+
+2009-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* configure.ac.pamphlet: Disable use of libtool to build shared
 	libraries. 
 	* config: Update autotools to newer versions.

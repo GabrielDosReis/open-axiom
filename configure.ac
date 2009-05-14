@@ -230,31 +230,31 @@ case $axiom_include_gcl,$axiom_lisp in
        ;;
     *)
        ## As of this writting, the Lisp systems ECL, GCL, SBCL, and CLisp all
-       ## understands the command line option --help, though they do
-       ## behave very differently.  Some of them just print out the
-       ## help information and exits.  Others, such as GCL, think they
-       ## must enter a read-eval-print loop (which isn't very helpful).
+       ## exist at the end of standard input.
        AC_MSG_CHECKING([which flavor of Lisp])
-       what=`echo '(quit)' | $axiom_lisp --help`
+       what=`echo '(lisp-implementation-type)' | $axiom_lisp`
        case $what in
            *GCL*) 
                axiom_lisp_flavor=gcl
                ;;
-           *ecl*) 
+           *"ECL"*) 
                axiom_lisp_flavor=ecl 
                oa_standard_linking=yes
                ;;
-           *sbcl*) 
+           *"SBCL"*) 
                axiom_lisp_flavor=sbcl 
                ;;
-           *CLISP*)
+           *"CLISP"*)
                ## Not all variants of CLisp have FFI support.  FFI is used
                ## internally used by OpenAxiom in essential way.
-               if ! $axiom_lisp -q -x '*features*' | grep ':FFI' 2>/dev/null
+               if ! $axiom_lisp -q -x '*features*' | grep ':FFI' > /dev/null
                then
                  AC_MSG_ERROR([$axiom_lisp does not support Foreign Function Interface.  Please upgrade to a better version of CLisp or install SBCL.])
                fi
                axiom_lisp_flavor=clisp
+               ;;
+           *"Armed Bear Common Lisp"*) 
+               axiom_lisp_flavor=abcl 
                ;;
        esac
        AC_MSG_RESULT([$axiom_lisp_flavor])
