@@ -1615,16 +1615,20 @@ genSBCLnativeTranslation(op,s,t,op') ==
     newArgs := [coerceToNativeType(a,x), :newArgs]
     if needsStableReference? x then
       unstableArgs := [a,:unstableArgs]
+  
+  op' :=
+    %hasFeature KEYWORD::WIN32 => strconc('"__",SYMBOL_-NAME op')
+    SYMBOL_-NAME op'
     
   null unstableArgs =>
     [["DEFUN",op,args,
       [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
-	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
+	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"), op',
 	  ["FUNCTION",rettype,:argtypes]], :args]]]
   [["DEFUN",op,args,
     [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"), nreverse unstableArgs,
       [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
-	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"),SYMBOL_-NAME op',
+	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"), op',
 	  ["FUNCTION",rettype,:argtypes]], :nreverse newArgs]]]]
 
 

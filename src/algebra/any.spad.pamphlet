@@ -38,6 +38,25 @@ None():SetCategory == add
 @
 
 
+\section{domain RTVALUE RuntimeValue}
+
+<<domain RTVALUE RuntimeValue>>=
+)abbrev domain RTVALUE RuntimeValue
+++ Author: Gabriel Dos Reis
+++ Date Created: May 14, 2009
+++ Date Last Changed: May 14, 2009
+++ Description:
+++   This is the datatype of OpenAxiom runtime values.  It exists
+++   solely for internal purposes.
+RuntimeValue(): Type with
+    eq: (%,%) -> Boolean
+      ++ \spad{eq(x,y)} holds if both values \spad{x} and \spad{y}
+      ++ resides at the same address in memory.
+  == add
+    eq(x,y) == EQ(x,y)$Foreign(Builtin)
+@
+
+
 \section{The Maybe domain}
 
 <<domain MAYBE Maybe>>=
@@ -556,6 +575,7 @@ Environment(): Public == Private where
 -- may be Any.
 
 <<domain NONE None>>
+<<domain RTVALUE RuntimeValue>>
 <<domain MAYBE Maybe>>
 <<package NONE1 NoneFunctions1>>
 <<domain ANY Any>>
