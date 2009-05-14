@@ -1,3 +1,17 @@
+2009-05-14  Michael Becker  <Michael.Becker@coconet.de>
+
+	Fix SF/2790725 (take 2)
+	* driver/main.c (main): Set LC_ALL to C.
+	* hyper/ex2ht.c (main): Likewise.
+	* hyper/htadd.c (main): Likewise.
+	* hyper/hthits.c (main): Likewise.
+	* hyper/hyper.c (main): Likewise.
+	* hyper/spadbuf.c (main): Likewise.
+	* clef/edible.c (main): Likewise.
+	* sman/session.c (main): Likewise.
+	* sman/sman.c (main): Likewise.
+	* sman/spadclient.c (main): Likewise.
+
 2009-05-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/kl.spad.pamphlet (SortedCache): Use Reference List S.

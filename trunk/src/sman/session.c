@@ -470,6 +470,7 @@ main(void)
    openaxiom_sleep(30);
 #endif
 
+  putenv("LC_ALL=C");
   setlocale(LC_ALL, "");
  /* spad_server connects to Lisp server socket         
     read_SpadServer_command handles requests */

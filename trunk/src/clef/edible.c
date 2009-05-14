@@ -129,6 +129,7 @@ main(int argc, char *argv[])
   
   
 
+  putenv("LC_ALL=C");
   setlocale(LC_ALL, "");
   /* try to get a pseudoterminal to play with */
   if (ptyopen(&contNum, &serverNum, serverPath) == -1) {

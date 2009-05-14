@@ -43,6 +43,7 @@
 #include <setjmp.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 #include <locale.h>
 
 #include "cfuns.h"
@@ -96,6 +97,7 @@ main(int argc, char **argv)
     char **fnames = filenames;
     short flag;                 /* flag for deleting or adding */
 
+    putenv("LC_ALL=C");
     setlocale(LC_ALL, "");
     parse_args(argv, db_dir, filenames, &flag);
 

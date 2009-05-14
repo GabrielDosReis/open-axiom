@@ -783,6 +783,7 @@ main(int argc, char *argv[],char *envp[])
    command.root_dir = openaxiom_get_systemdir(argc, argv);
    process_options(&command, argc, argv);
 
+  putenv("LC_ALL=C");
   setlocale(LC_ALL, "");
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   init_term_io();
