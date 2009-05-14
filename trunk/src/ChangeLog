@@ -1,3 +1,8 @@
+2009-05-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/any.spad.pamphlet (RuntimeValue): New domain.
+	* algebra/Makefile.pamphlet ($(OUT)/RTVALUE.$(FASLEXT)): New rule.
+
 2009-05-14  Michael Becker  <Michael.Becker@coconet.de>
 
 	Fix SF/2790725 (take 2)
