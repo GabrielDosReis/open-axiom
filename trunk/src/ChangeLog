@@ -1,3 +1,7 @@
+2009-05-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/kl.spad.pamphlet (SortedCache): Use Reference List S.
+
 2009-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2790725
