@@ -56,6 +56,7 @@
 #include <sys/wait.h>
 #include <setjmp.h>
 #include <X11/cursorfont.h>
+#include <stdlib.h>
 #include <locale.h>
 
 #include "keyin.h"
@@ -195,6 +196,7 @@ main(int argc, char **argv)
 
     /* Initialize some global values */
 /*    fprintf(stderr,"hyper:main:entered\n");*/
+    putenv("LC_ALL=C");
     setlocale(LC_ALL, "");
     gArgc = argc;
     gArgv = argv;

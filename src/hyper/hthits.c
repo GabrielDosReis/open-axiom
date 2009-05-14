@@ -413,6 +413,7 @@ cmdline(int argc, char** argv)
 int
 main(int argc, char** argv)
 {
+    putenv("LC_ALL=C");
     setlocale(LC_ALL, "");
     cmdline(argc, argv);
     regcomp(&reg_pattern, pattern, REG_NEWLINE);

@@ -221,6 +221,7 @@ main(int argc,char **  argv)
      * spadbuf page_name [completion_ files]
      *
      */
+    putenv("LC_ALL=C");
     setlocale(LC_ALL, "");
     if (argc < 2) {
         fprintf(stderr, "Usage : spadbuf page_name [completion_files] \n");

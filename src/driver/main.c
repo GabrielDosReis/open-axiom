@@ -76,6 +76,7 @@ main(int argc, char* argv[])
    openaxiom_driver driver =
       openaxiom_preprocess_arguments(&command, argc, argv);
 
+   putenv("LC_ALL=C");
    setlocale(LC_ALL, "");
    switch (driver) {
    case openaxiom_null_driver:

@@ -267,6 +267,7 @@ main(int argc, char **argv)
 {
     int i;
 
+    putenv("LC_ALL=C");
     setlocale(LC_ALL, "");
     if (argc == 1) {
         fprintf(stderr, "usage: %s exfile.ht ...\n", argv[0]);
