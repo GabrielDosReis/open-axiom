@@ -210,7 +210,7 @@ caused nested products and summations to fail. (Issue~\#72)
         oppow [expr.val, (expr.exponent)*y]
       oppow [x, y]
 
-    belong? op           == has?(op, "comb")
+    belong? op           == has?(op, 'comb)
     fourth l             == third rest l
     dvpow1 l             == second(l) * first(l) ** (second l - 1)
     factorials x         == facts(x, variables x)
@@ -690,7 +690,7 @@ FunctionalSpecialFunction(R, F): Exports == Implementation where
     airyAi(x)     == opAiryAi(x)
     airyBi(x)     == opAiryBi(x)
 
-    belong? op == has?(op, "special")
+    belong? op == has?(op, 'special)
 
     operator op ==
       is?(op,'abs)      => opabs

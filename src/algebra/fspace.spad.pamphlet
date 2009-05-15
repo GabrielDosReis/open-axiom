@@ -394,14 +394,6 @@ FunctionSpace(R:OrderedSet): Category == Definition where
   MP ==> SparseMultivariatePolynomial(R, K)
   QF==> PolynomialCategoryQuotientFunctions(IndexedExponents K,K,R,MP,%)
 
-  ODD  ==> "odd"
-  EVEN ==> "even"
-
-  SPECIALDIFF  ==> "%specialDiff"
-  SPECIALDISP  ==> "%specialDisp"
-  SPECIALEQUAL ==> "%specialEqual"
-  SPECIALINPUT ==> "%specialInput"
-
   Definition ==> Join(ExpressionSpace, RetractableTo SY, Patternable R,
                      FullyPatternMatchable R, FullyRetractableTo R) with
        ground?   : % -> Boolean
@@ -522,6 +514,14 @@ FunctionSpace(R:OrderedSet): Category == Definition where
            ++ univariate(f, k) returns f viewed as a univariate fraction in k.
          if R has RetractableTo Z then RetractableTo Fraction Z
    add
+    macro ODD  == 'odd
+    macro EVEN == 'even
+
+    macro SPECIALDIFF  == '%specialDiff
+    macro SPECIALDISP  == '%specialDisp
+    macro SPECIALEQUAL == '%specialEqual
+    macro SPECIALINPUT == '%specialInput
+
     import BasicOperatorFunctions1(%)
 
     -- these are needed in Ring only, but need to be declared here
@@ -757,7 +757,7 @@ FunctionSpace(R:OrderedSet): Category == Definition where
           v::SY = x => 1
           0
         (fn := property(operator k, SPECIALDIFF)) case None =>
-           ((fn::None) pretend ((List %, SY) -> %)) (argument k, x)
+           ((fn@None) pretend ((List %, SY) -> %)) (argument k, x)
         +/[g * differentiate(y,x) for g in kderiv k for y in argument k]
 
       smpderiv(p, x) ==

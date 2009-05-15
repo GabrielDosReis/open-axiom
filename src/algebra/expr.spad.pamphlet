@@ -31,9 +31,6 @@ Expression(R:OrderedSet): Exports == Implementation where
   FSF ==> FunctionalSpecialFunction(R, %)
   ESD ==> ExpressionSpace_&(%)
   FSD ==> FunctionSpace_&(%, R)
-  SYMBOL ==> "%symbol"
-  ALGOP  ==> "%alg"
-  POWER  ==> '%power
   SUP    ==> SparseUnivariatePolynomial
 
   Exports ==> FunctionSpace R with
@@ -58,6 +55,9 @@ Expression(R:OrderedSet): Exports == Implementation where
       if R has RetractableTo Integer then RetractableTo AN
 
   Implementation ==> add
+    macro SYMBOL == '%symbol
+    macro ALGOP == '%alg
+    macro POWER == '%power
     import KernelFunctions2(R, %)
 
     retNotUnit     : % -> R
@@ -134,7 +134,7 @@ Expression(R:OrderedSet): Exports == Implementation where
       coerce(p:MP):%   == coerce(p)$Rep
       reduce x         == reduc(x, algkernels kernels x)
       commonk(x, y)    == commonk0(algkernels kernels x, algkernels kernels y)
-      algkernels l     == select_!(has?(operator #1, ALGOP), l)
+      algkernels l     == select!(has?(operator #1, ALGOP), l)
       toprat f == ratDenom(f, algkernels kernels f)$AlgebraicManipulations(R, %)
 
       x:MP / y:MP ==
@@ -739,7 +739,7 @@ PatternMatchAssertions(): Exports == Implementation where
   FE ==> Expression Integer
 
   Exports ==> with
-    assert  : (Symbol, String) -> FE
+    assert  : (Symbol, Identifier) -> FE
       ++ assert(x, s) makes the assertion s about x.
     constant: Symbol -> FE
       ++ constant(x) tells the pattern matcher that x should

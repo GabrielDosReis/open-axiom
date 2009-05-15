@@ -25,7 +25,6 @@ IntegrationTools(R:OrderedSet, F:FunctionSpace R): Exp == Impl where
   IR  ==> IntegrationResult F
   ANS ==> Record(special:F, integrand:F)
   U   ==> Union(ANS, "failed")
-  ALGOP ==> "%alg"
 
   Exp ==> with
     varselect: (List K, SE) -> List K
@@ -57,6 +56,7 @@ IntegrationTools(R:OrderedSet, F:FunctionSpace R): Exp == Impl where
             ++ on any remaining unintegrable part.
 
   Impl ==> add
+    macro ALGOP == '%alg
     better?: (K, K) -> Boolean
 
     union(l1, l2)   == setUnion(l1, l2)
@@ -179,7 +179,6 @@ ElementaryRischDE(R, F): Exports == Implementation where
   UEX ==> Union(Record(ratpart:F,  coeff:F), "failed")
   PSOL==> Record(ans:F, right:F, sol?:Boolean)
   FAIL==> error("Function not supported by Risch d.e.")
-  ALGOP ==> "%alg"
 
   Exports ==> with
     rischDE: (Z, F, F, SE, (F, LF) -> U, (F, F) -> UEX) -> PSOL
@@ -191,6 +190,7 @@ ElementaryRischDE(R, F): Exports == Implementation where
          ++ ext is an extended integration function.
 
   Implementation ==> add
+    macro ALGOP == '%alg
     import IntegrationTools(R, F)
     import TranscendentalRischDE(F, UP)
     import TranscendentalIntegration(F, UP)
