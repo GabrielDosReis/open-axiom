@@ -91,7 +91,7 @@ LiouvillianFunction(R, F): Exports == Implementation where
     li  x               == opli x
     dilog x             == opli2 x
 
-    belong? op     == has?(op, "prim")
+    belong? op     == has?(op, 'prim)
     isi x          == kernel(opsi, x)
     ici x          == kernel(opci, x)
     ierf x         == (zero? x => 0; kernel(operf, x))

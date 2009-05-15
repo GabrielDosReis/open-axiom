@@ -279,7 +279,7 @@ ElementaryFunction(R, F): Exports == Implementation where
 
     posrem(n, m)    == ((r := n rem m) < 0 => r + m; r)
     valueOrPole rec == (rec.pole => INV; rec.func)
-    belong? op      == has?(op, "elem")
+    belong? op      == has?(op, 'elem)
 
     operator op ==
       is?(op,'pi)    => oppi

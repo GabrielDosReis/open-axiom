@@ -30,8 +30,6 @@ LaplaceTransform(R, F): Exports == Implementation where
   OFE ==> OrderedCompletion F
   EQ  ==> Equation OFE
 
-  ALGOP       ==> "%alg"
-  SPECIALDIFF ==> "%specialDiff"
 
   Exports ==> with
     laplace: (F, SE, SE) -> F
@@ -42,6 +40,8 @@ LaplaceTransform(R, F): Exports == Implementation where
       ++ compute the transform.
 
   Implementation ==> add
+    macro ALGOP == '%alg
+    macro SPECIALDIFF == '%specialDiff
     import IntegrationTools(R, F)
     import ElementaryIntegration(R, F)
     import PatternMatchIntegration(R, F)

@@ -40,8 +40,6 @@ ElementaryIntegration(R, F): Exports == Implementation where
   U3  ==> Union(Record(mainpart:F, limitedlogs:LLG), "failed")
   ANS ==> Record(special:F, integrand:F)
   FAIL==> error "failed - cannot handle that integrand"
-  ALGOP  ==> "%alg"
-  OPDIFF ==> "%diff"::SE
 
   Exports ==> with
     lfextendedint: (F, SE, F) -> U2
@@ -62,6 +60,8 @@ ElementaryIntegration(R, F): Exports == Implementation where
        ++ containing f and k1,...,kn (the ki's must be logs).
 
   Implementation ==> add
+    macro ALGOP == '%alg
+    macro OPDIFF == '%diff
     import IntegrationTools(R, F)
     import ElementaryRischDE(R, F)
     import RationalIntegration(F, UP)
@@ -99,7 +99,7 @@ ElementaryIntegration(R, F): Exports == Implementation where
     tryChangeVar: (F, K, SE) -> Union(IR, "failed")
     droponex    : (F, F, K, F) -> Union(F, "failed")
 
-    prim?(k, x)      == is?(k, "log"::SE) or has?(operator k, "prim")
+    prim?(k, x)      == is?(k, "log"::SE) or has?(operator k, 'prim)
 
     tanint(f, x, k) ==
       eta' := differentiate(eta := first argument k, x)

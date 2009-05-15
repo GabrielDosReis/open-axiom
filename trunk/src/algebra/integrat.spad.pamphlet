@@ -72,7 +72,7 @@ FunctionSpaceComplexIntegration(R, F): Exports == Implementation where
     internalIntegrate(f, x) ==
       f := distribute(f, x::F)
       g : F
-      any?(has?(operator #1, "rtrig"),
+      any?(has?(operator #1, 'rtrig),
        [k for k in tower(g := realElementary(f, x))
         | member?(x, variables(k::F))]$List(Kernel F))$List(Kernel F) =>
           h := trigs2explogs(F2FG g, [K2KG k for k in tower f
@@ -110,8 +110,6 @@ FunctionSpaceIntegration(R, F): Exports == Implementation where
   SE  ==> Symbol
   IR  ==> IntegrationResult F
   FG  ==> Expression G
-  ALGOP ==> "%alg"
-  TANTEMP ==> "%temptan"::SE
  
   Exports ==> with
     integrate: (F, SE) -> Union(F, List F)
@@ -119,6 +117,8 @@ FunctionSpaceIntegration(R, F): Exports == Implementation where
         ++ where x is viewed as a real variable.
  
   Implementation ==> add
+    macro ALGOP == '%alg
+    macro TANTEMP == '%temptan
     import IntegrationTools(R, F)
     import ElementaryIntegration(R, F)
     import ElementaryIntegration(G, FG)
@@ -199,13 +199,13 @@ FunctionSpaceIntegration(R, F): Exports == Implementation where
       f   := distribute(f, x::F)
       tf  := [k for k in tower f | member?(x, variables(k::F)@List(SE))]$List(K)
       ltf := select(is?(operator #1, "tan"::SE), tf)
-      ht  := any?(has?(operator #1, "htrig"), tf)
+      ht  := any?(has?(operator #1, 'htrig), tf)
       rec := rischNormalize(realElementary(f, x), x)
       g   := rootSimp(rec.func)
       tg  := [k for k in tower g | member?(x, variables(k::F))]$List(K)
       ltg := select(is?(operator #1, "tan"::SE), tg)
-      rtg := any?(has?(operator #1, "rtrig"), tg)
-      el  := any?(has?(operator #1, "elem"), tg)
+      rtg := any?(has?(operator #1, 'rtrig), tg)
+      el  := any?(has?(operator #1, 'elem), tg)
       i:IR
       if (comp := goComplex?(rtg, tg, ltg)) then
         i := map(FG2F, lfintegrate(trigs2explogs(F2FG g,

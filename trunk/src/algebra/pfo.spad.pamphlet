@@ -237,7 +237,6 @@ FunctionSpaceReduce(R, F): Exports == Implementation where
   Q   ==> Fraction Integer
   UP  ==> SparseUnivariatePolynomial Q
   K   ==> Kernel F
-  ALGOP  ==> "%alg"
 
   Exports ==> with
     bringDown: F -> Q
@@ -248,6 +247,7 @@ FunctionSpaceReduce(R, F): Exports == Implementation where
 	++ newReduc() \undocumented
 
   Implementation ==> add
+    macro ALGOP  == '%alg
     import SparseUnivariatePolynomialFunctions2(F, Q)
     import PolynomialCategoryQuotientFunctions(IndexedExponents K,
                          K, R, SparseMultivariatePolynomial(R, K), F)
@@ -312,7 +312,6 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
   RC0 ==> Record(ncurve:UPUPQ, disc:Z)
   ID  ==> FractionalIdeal(UP, QF, UPUP, R)
   SMP ==> SparseMultivariatePolynomial(R0,K)
-  ALGOP  ==> "%alg"
 
   Exports ==> with
     order        : FD -> Union(N, "failed")
@@ -323,6 +322,7 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
 	++ torsionIfCan(f)\ undocumented
 
   Implementation ==> add
+    macro ALGOP == '%alg
     import IntegerPrimesPackage(Z)
     import PointsOfFiniteOrderTools(UPQ, UPUPQ)
     import UnivariatePolynomialCommonDenominator(Z, Q, UPQ)

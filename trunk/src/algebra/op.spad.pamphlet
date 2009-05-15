@@ -86,8 +86,6 @@ BasicOperator(): Exports == Implementation where
       ++ it has one attached, "failed" otherwise.
     is?        : ($, Symbol) -> Boolean
       ++ is?(op, s) tests if the name of op is s.
-    has?       : ($, String) -> Boolean
-      ++ has?(op, s) tests if property s is attached to op.
     has?       : (%, Identifier) -> Boolean
       ++ \spad{has?(op,p)} tests if property \spad{s} is attached to \spad{op}.
     assert     : ($, String) -> $
@@ -142,7 +140,6 @@ BasicOperator(): Exports == Implementation where
         otherwise => nothing
     assert(op: %, s: String) == setProperty(op, s, NIL$Lisp)
     assert(op: %, p: Identifier) == setProperty(op, p, NIL$Lisp)
-    has?(op: %, name: String) == key?(name, rep(op).props)
     has?(op: %, name: Identifier) == key?(STRING(name)$Lisp, rep(op).props)
     weight(op, n)        == setProperty(op, WEIGHT, n pretend None)
     nullary? op          == zero? rep(op).narg
@@ -229,9 +226,6 @@ BasicOperator(): Exports == Implementation where
 ++ Keywords: operator.
 BasicOperatorFunctions1(A:SetCategory): Exports == Implementation where
   OP   ==> BasicOperator
-  EVAL    ==> "%eval"
-  CONST   ==> "%constant"
-  DIFF    ==> "%diff"
 
   Exports ==> with
     evaluate        : (OP, List A)      -> Union(A, "failed")
@@ -270,22 +264,25 @@ BasicOperatorFunctions1(A:SetCategory): Exports == Implementation where
         ++ nullary operator always returning \spad{a}, "failed" otherwise.
 
   Implementation ==> add
+    macro EVAL == '%eval
+    macro CONST == '%constant
+    macro DIFF == '%diff
     evaluate(op:OP, func:A -> A) == evaluate(op, func first #1)
 
     evaluate op ==
-      (func := property(op, EVAL)) case "failed" => "failed"
-      (func::None) pretend (List A -> A)
+      (func := property(op, EVAL)) case nothing => "failed"
+      (func@None) pretend (List A -> A)
 
     evaluate(op:OP, args:List A) ==
-      (func := property(op, EVAL)) case "failed" => "failed"
-      ((func::None) pretend (List A -> A)) args
+      (func := property(op, EVAL)) case nothing => "failed"
+      ((func@None) pretend (List A -> A)) args
 
     evaluate(op:OP, func:List A -> A) ==
       setProperty(op, EVAL, func pretend None)
 
     derivative op ==
-      (func := property(op, DIFF)) case "failed" => "failed"
-      ((func::None) pretend List(List A -> A))
+      (func := property(op, DIFF)) case nothing => "failed"
+      ((func@None) pretend List(List A -> A))
 
     derivative(op:OP, grad:List(List A -> A)) ==
       setProperty(op, DIFF, grad pretend None)
@@ -310,14 +307,14 @@ BasicOperatorFunctions1(A:SetCategory): Exports == Implementation where
       csex(a, l)  == a
 
       eqconst?(a, b) ==
-        (va := property(a, CONST)) case "failed" => not has?(b, CONST)
+        (va := property(a, CONST)) case nothing => not has?(b, CONST)
         ((vb := property(b, CONST)) case None) and
-           ((va::None) pretend A) = ((vb::None) pretend A)
+           ((va@None) pretend A) = ((vb@None) pretend A)
 
       ltconst?(a, b) ==
-        (va := property(a, CONST)) case "failed" => has?(b, CONST)
+        (va := property(a, CONST)) case nothing => has?(b, CONST)
         ((vb := property(b, CONST)) case None) and
-           ((va::None) pretend A) < ((vb::None) pretend A)
+           ((va@None) pretend A) < ((vb@None) pretend A)
 
       constOp a ==
         setProperty(display(copy opconst, cdisp(a::OutputForm, #1)),
@@ -325,7 +322,7 @@ BasicOperatorFunctions1(A:SetCategory): Exports == Implementation where
 
       constantOpIfCan op ==
         is?(op,'constant) and
-          ((u := property(op, CONST)) case None) => (u::None) pretend A
+          ((u := property(op, CONST)) case None) => (u@None) pretend A
         "failed"
 
       if A has ConvertibleTo InputForm then

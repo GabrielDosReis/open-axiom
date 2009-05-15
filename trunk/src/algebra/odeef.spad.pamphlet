@@ -105,7 +105,6 @@ ElementaryFunctionLODESolver(R, F, L): Exports == Implementation where
   LQ  ==> LinearOrdinaryDifferentialOperator1 RF
   REC ==> Record(particular: F, basis: List F)
   U   ==> Union(REC, "failed")
-  ALGOP  ==> "%alg"
 
   Exports ==> with
     solve: (L, F, SY) -> U
@@ -125,6 +124,7 @@ ElementaryFunctionLODESolver(R, F, L): Exports == Implementation where
       ++ \spad{x} is the dependent variable.
 
   Implementation ==> add
+    macro ALGOP == '%alg
     import Kovacic(F, UP)
     import ODETools(F, L)
     import RationalLODE(F, UP)

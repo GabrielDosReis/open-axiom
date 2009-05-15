@@ -123,14 +123,6 @@ Kernel(S:OrderedSet): Exports == Implementation where
   N  ==> NonNegativeInteger
   OP ==> BasicOperator
 
-  SYMBOL  ==> "%symbol"
-  PMPRED  ==> "%pmpredicate"
-  PMOPT   ==> "%pmoptional"
-  PMMULT  ==> "%pmmultiple"
-  PMCONST ==> "%pmconstant"
-  SPECIALDISP  ==> "%specialDisp"
-  SPECIALEQUAL ==> "%specialEqual"
-  SPECIALINPUT ==> "%specialInput"
 
   Exports ==> Join(CachableSet, Patternable S) with
     name    : % -> Symbol
@@ -157,6 +149,14 @@ Kernel(S:OrderedSet): Exports == Implementation where
     if S has ConvertibleTo InputForm then ConvertibleTo InputForm
 
   Implementation ==> add
+    macro SYMBOL == '%symbol
+    macro PMPRED == '%pmpredicate
+    macro PMOPT == '%pmoptional
+    macro PMMULT == '%pmmultiple
+    macro PMCONST == '%pmconstant
+    macro SPECIALDISP == '%specialDisp
+    macro SPECIALEQUAL == '%specialEqual
+    macro SPECIALINPUT == '%specialInput
     import SortedCache(%)
 
     Rep := Record(op:OP, arg:List S, nest:N, posit:N)
@@ -179,8 +179,8 @@ Kernel(S:OrderedSet): Exports == Implementation where
     kernel s           == kernel(assert(operator(s,0),SYMBOL), nil(), 1)
 
     preds o ==
-      (u := property(o, PMPRED)) case "failed" => nil()
-      (u::None) pretend List(Any)
+      (u := property(o, PMPRED)) case nothing => nil()
+      (u@None) pretend List(Any)
 
     symbolIfCan k ==
       has?(operator k, SYMBOL) => name operator k
@@ -207,7 +207,7 @@ Kernel(S:OrderedSet): Exports == Implementation where
     coerce(k:%):OutputForm ==
       (v := symbolIfCan k) case Symbol => v::Symbol::OutputForm
       (f := property(o := operator k, SPECIALDISP)) case None =>
-        ((f::None) pretend (List S -> OutputForm)) (argument k)
+        ((f@None) pretend (List S -> OutputForm)) (argument k)
       l := [x::OutputForm for x in argument k]$List(OutputForm)
       (u := display o) case "failed" => prefix(name(o)::OutputForm, l)
       (u::(List OutputForm -> OutputForm)) l
@@ -217,7 +217,7 @@ Kernel(S:OrderedSet): Exports == Implementation where
       k1.op ~= k2.op => B2Z(k1.op < k2.op)
       (n1 := #(argument k1)) ~= (n2 := #(argument k2)) => B2Z(n1 < n2)
       ((func := property(operator k1, SPECIALEQUAL)) case None) and
-        (((func::None) pretend ((%, %) -> Boolean)) (k1, k2)) => 0
+        (((func@None) pretend ((%, %) -> Boolean)) (k1, k2)) => 0
       for x1 in argument(k1) for x2 in argument(k2) repeat
         x1 ~= x2 => return B2Z(x1 < x2)
       0
@@ -226,7 +226,7 @@ Kernel(S:OrderedSet): Exports == Implementation where
       convert(k:%):InputForm ==
         (v := symbolIfCan k) case Symbol => convert(v::Symbol)@InputForm
         (f := property(o := operator k, SPECIALINPUT)) case None =>
-          ((f::None) pretend (List S -> InputForm)) (argument k)
+          ((f@None) pretend (List S -> InputForm)) (argument k)
         l := [convert x for x in argument k]$List(InputForm)
         (u := input operator k) case "failed" =>
           convert concat(convert name operator k, l)
