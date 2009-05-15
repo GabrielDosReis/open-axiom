@@ -594,7 +594,6 @@ FunctionSpaceAttachPredicates(R, F, D): Exports == Implementation where
   D: Type
 
   K  ==> Kernel F
-  PMPRED  ==> "%pmpredicate"
 
   Exports ==> with
     suchThat: (F, D -> Boolean) -> F
@@ -606,6 +605,7 @@ FunctionSpaceAttachPredicates(R, F, D): Exports == Implementation where
       ++ Error: if x is not a symbol.
 
   Implementation ==> add
+    macro PMPRED  == '%pmpredicate
     import AnyFunctions1(D -> Boolean)
 
     st   : (K, List Any) -> F
@@ -616,8 +616,8 @@ FunctionSpaceAttachPredicates(R, F, D): Exports == Implementation where
     mkk op                        == kernel(op, empty()$List(F))
 
     preds k ==
-      (u := property(operator k, PMPRED)) case "failed" => empty()
-      (u::None) pretend List(Any)
+      (u := property(operator k, PMPRED)) case nothing => empty()
+      (u@None) pretend List(Any)
 
     st(k, l) ==
       mkk assert(setProperty(copy operator k, PMPRED,
@@ -643,12 +643,9 @@ FunctionSpaceAssertions(R, F): Exports == Implementation where
   F: FunctionSpace R
 
   K  ==> Kernel F
-  PMOPT   ==> "%pmoptional"
-  PMMULT  ==> "%pmmultiple"
-  PMCONST ==> "%pmconstant"
 
   Exports ==> with
-    assert  : (F, String) -> F
+    assert  : (F, Identifier) -> F
       ++ assert(x, s) makes the assertion s about x.
       ++ Error: if x is not a symbol.
     constant: F -> F
@@ -667,17 +664,18 @@ FunctionSpaceAssertions(R, F): Exports == Implementation where
       ++ Error: if x is not a symbol.
 
   Implementation ==> add
-    ass  : (K, String) -> F
-    asst : (K, String) -> F
+    macro PMOPT == '%pmoptional
+    macro PMMULT == '%pmmultiple
+    macro PMCONST == '%pmconstant
     mkk  : BasicOperator -> F
 
     mkk op == kernel(op, empty()$List(F))
 
-    ass(k, s) ==
+    ass(k: K, s: Identifier): F ==
       has?(op := operator k, s) => k::F
       mkk assert(copy op, s)
 
-    asst(k, s) ==
+    asst(k: K, s: Identifier): F ==
       has?(op := operator k, s) => k::F
       mkk assert(op, s)
 
