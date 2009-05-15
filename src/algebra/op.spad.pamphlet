@@ -91,6 +91,9 @@ BasicOperator(): Exports == Implementation where
     assert     : ($, String) -> $
       ++ assert(op, s) attaches property s to op.
       ++ Argument op is modified "in place", i.e. no copy is made.
+    assert     : (%, Identifier) -> $
+      ++ \spad{assert(op, p)} attaches property \spad{p} to \spad{op}.
+      ++ Argument op is modified "in place", i.e. no copy is made.
     deleteProperty_!: ($, String) -> $
       ++ deleteProperty!(op, s) unattaches property s from op.
       ++ Argument op is modified "in place", i.e. no copy is made.
@@ -135,7 +138,8 @@ BasicOperator(): Exports == Implementation where
       case search(STRING(p)$Lisp, rep(op).props) is
         val@None => just val
         otherwise => nothing
-    assert(op, s)        == setProperty(op, s, NIL$Lisp)
+    assert(op: %, s: String) == setProperty(op, s, NIL$Lisp)
+    assert(op: %, p: Identifier) == setProperty(op, p, NIL$Lisp)
     has?(op, name)       == key?(name, rep(op).props)
     weight(op, n)        == setProperty(op, WEIGHT, n pretend None)
     nullary? op          == zero? rep(op).narg
