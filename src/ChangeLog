@@ -1,5 +1,12 @@
 2009-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/expr.spad.pamphlet (FunctionSpaceAttachPredicates): Tidy.
+	(FunctionSpaceAssertions): Likewise.
+	* algebra/op.spad.pamphlet (BasicOperator): Tidy.
+	(CommonOperators): Likewise.
+
+2009-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/op.spad.pamphlet (assert$BasicOperator): Overload for
 	Identifier. 
 
