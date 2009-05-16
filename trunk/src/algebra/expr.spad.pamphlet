@@ -621,7 +621,7 @@ FunctionSpaceAttachPredicates(R, F, D): Exports == Implementation where
 
     st(k, l) ==
       mkk assert(setProperty(copy operator k, PMPRED,
-                 concat(preds k, l) pretend None), string(new()$Symbol))
+                 concat(preds k, l) pretend None), gensym()$Identifier)
 
     suchThat(p:F, l:List(D -> Boolean)) ==
       retractIfCan(p)@Union(Symbol, "failed") case Symbol =>
