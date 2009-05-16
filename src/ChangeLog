@@ -1,5 +1,9 @@
 2009-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/any.spad.pamphlet: Tidy.  Redeuce Lisp usage.
+
+2009-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/algfunc.spad.pamphlet (AlgebraicFunction): User
 	Identifiers for property names.
 	* algebra/combfunc.spad.pamphlet: Likewise.

@@ -278,8 +278,7 @@ AnyFunctions1(S:Type): with
 \section{domain PROPERTY Property}
 
 <<domain PROPERTY Property>>=
-import CoercibleTo OutputForm
-import Symbol
+import Identifier
 import SExpression
 )abbrev domain PROPERTY Property
 ++ Author: Gabriel Dos Reis
@@ -288,29 +287,26 @@ import SExpression
 ++ An `Property' is a pair of name and value.  
 Property(): Public == Private where
   Public == CoercibleTo(OutputForm) with
-    name: % -> Symbol         
+    name: % -> Identifier         
       ++ name(p) returns the name of property p
     value: % -> SExpression   
       ++ value(p) returns value of property p
-    property: (Symbol, SExpression) -> %
+    property: (Identifier, SExpression) -> %
       ++ property(n,val) constructs a property with name `n' and
       ++ value `val'.
   
   Private == add
     import Boolean
-    Rep == SExpression
+    Rep == Pair(Identifier,SExpression)
 
     name x == 
-      -- Note: It is always well defined to take the `car' here
-      -- because there is no way we could have type safely 
-      -- constructed a null property.
-      symbol car rep x
+      first rep x
 
     value x ==
-      cdr rep x
+      second rep x
 
     property(n,val) ==
-      per CONS(n,val)$Lisp
+      per pair(n,val)
  
     coerce x ==
       v := value x
@@ -319,7 +315,7 @@ Property(): Public == Private where
          EQ(v,'T)$Lisp => true::OutputForm
          v::OutputForm
       
-      bracket(infix(outputForm '_=_>, outputForm name x, 
+      bracket(infix(outputForm '_=_>, name(x)::OutputForm, 
                 val)$OutputForm)$OutputForm
 
 @
@@ -337,31 +333,28 @@ import List Property
 ++ A `Binding' is a name asosciated with a collection of properties.
 Binding(): Public == Private where
   Public == CoercibleTo(OutputForm) with
-    name: % -> Symbol               
+    name: % -> Identifier               
       ++ name(b) returns the name of binding b
     properties: % -> List Property  
       ++ properties(b) returns the properties associated with binding b.
-    binding: (Symbol, List Property) -> %
+    binding: (Identifier, List Property) -> %
       ++ binding(n,props) constructs a binding with name `n' and 
       ++ property list `props'.
 
   Private == add
-    Rep == SExpression
+    Rep == Pair(Identifier, List Property)
 
     name b ==
-      -- this is well defined because there is no way one could
-      -- type safely ask the name of an inexisting binding.
-      symbol car rep b
+      first rep b
 
     properties b ==
-      (cdr rep b) pretend List(Property)
+      second rep b
 
     binding(n,props) ==
-      per CONS(n,props)$Lisp
+      per pair(n,props)
 
     coerce b ==
-      null? rep b => empty()$OutputForm
-      rarrow(outputForm name b, (properties b)::OutputForm)$OutputForm
+      rarrow(name(b)::OutputForm, (properties b)::OutputForm)$OutputForm
 @
 
 \section{domain CONTOUR Contour}
@@ -382,7 +375,7 @@ Contour(): Public == Private where
       ++ bindings(c) returns the list of bindings in countour c.
     push: (Binding,%) -> %
       ++ push(c,b) augments the contour with binding `b'.
-    findBinding: (Symbol,%) -> Maybe Binding
+    findBinding: (Identifier,%) -> Maybe Binding
       ++ findBinding(c,n) returns the first binding associated with `n'.
       ++ Otherwise `nothing.
 
@@ -419,7 +412,7 @@ Scope(): Public == Private where
       ++ empty() returns an empty scope.
     contours: % -> List Contour     
       ++ contours(s) returns the list of contours in scope s.
-    findBinding: (Symbol,%) -> Maybe Binding
+    findBinding: (Identifier,%) -> Maybe Binding
       ++ findBinding(n,s) returns the first binding of `n' in `s'; 
       ++ otherwise `nothing'.
     pushNewContour: (Binding,%) -> %
@@ -476,15 +469,15 @@ Environment(): Public == Private where
       ++ empty() constructs an empty environment
     scopes: % -> List Scope     
       ++ scopes(e) returns the stack of scopes in environment e.
-    getProperty: (Symbol, Symbol, %) -> Maybe SExpression
+    getProperty: (Identifier, Identifier, %) -> Maybe SExpression
       ++ getProperty(n,p,e) returns the value of property with name `p'
       ++ for the symbol `n' in environment `e'. Otherwise, `nothing.
-    setProperty!: (Symbol, Symbol, SExpression, %) -> %
+    setProperty!: (Identifier, Identifier, SExpression, %) -> %
       ++ setProperty!(n,p,v,e) binds the property `(p,v)' to `n'
       ++ in the topmost scope of `e'.
-    getProperties: (Symbol, %) -> List Property
+    getProperties: (Identifier, %) -> List Property
       ++ getBinding(n,e) returns the list of properties of `n' in e.
-    setProperties!: (Symbol, List Property, %) -> %
+    setProperties!: (Identifier, List Property, %) -> %
       ++ setBinding!(n,props,e) set the list of properties of `n' 
       ++ to `props' in `e'.
     currentEnv: () -> %        

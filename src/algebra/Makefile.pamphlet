@@ -280,7 +280,7 @@ axiom_algebra_layer_0 = \
   RETRACT  RETRACT- SETCAT   SETCAT-                    \
   MSYSCMD  FINITE   OM       OMCONN   OMDEV    OUT      \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
-  BMODULE  PROPERTY BASTYPE  BASTYPE- STEP     LMODULE  \
+  BMODULE           BASTYPE  BASTYPE- STEP     LMODULE  \
   RMODULE  ALGEBRA  ALGEBRA- SGROUP   SGROUP-  ABELSG   \
   ABELSG-  ORDSET   ORDSET-  OASGP    FILECAT  SEXCAT   \
   MODULE   MODULE-  PID      OAGROUP  OCAMON   OAMON    \
@@ -355,6 +355,8 @@ $(OUT)/BOOLEAN.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
 $(OUT)/ES.$(FASLEXT): $(OUT)/PRIMARR.$(FASLEXT)
 $(OUT)/VECTCAT.$(FASLEXT): $(OUT)/RADCAT.$(FASLEXT)
 $(OUT)/IARRAY1.$(FASLEXT): $(OUT)/PRIMARR.$(FASLEXT)
+$(OUT)/PROPERTY.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
+$(OUT)/BINDING.$(FASLEXT): $(OUT)/PROPERTY.$(FASLEXT)
 
 axiom_algebra_layer_1 = \
   ABELGRP  ABELGRP- ABELMON  ABELMON- FORTCAT   ITUPLE   \
@@ -365,7 +367,8 @@ axiom_algebra_layer_1 = \
   IDENT    SEGCAT   BINDING  ALIST    BOOLEAN   PRIMARR  \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
-  FIELD   FIELD-    VECTCAT  VECTCAT- IARRAY1
+  FIELD    FIELD-   VECTCAT  VECTCAT- IARRAY1            \
+  PROPERTY
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -417,6 +420,10 @@ axiom_algebra_layer_3_objects = \
 \subsubsection{Completed spad files}
 
 <<layer4>>=
+
+$(OUT)/ENV.$(FASLEXT): $(OUT)/SCOPE.$(FASLEXT)
+
+
 axiom_algebra_layer_4 = \
   ANON              COMM     COMPPROP ESCONT1  EXIT     \
   FAMONC   FORMULA1 IDPC              NONE     NUMINT   \

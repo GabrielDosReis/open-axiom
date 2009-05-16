@@ -2,6 +2,7 @@
 === TODO ===
 ============
 
+* Cleanup commuting coercion facility.
 * Improve efficiency of array operations.
 * Rework subsumption.
 * Finish network communication support.
