@@ -1,5 +1,9 @@
 2009-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/op.spad.pamphlet: Use symbol literals for property names.
+
+2009-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/cparse.boot (npTyping): Remove.
 	(npDefaultItemlist): Likewise.
 	(npSDefaultItem): Likewise.
