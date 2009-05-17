@@ -141,7 +141,7 @@ openaxiom_build_rts_options(openaxiom_command* command,
          break;
 
       case openaxiom_sbcl_runtime:
-         command->rt_argc = 3;
+         command->rt_argc = 4;
          command->rt_argv = (char **)
             malloc(command->rt_argc * sizeof (char*));
          command->rt_argv[0] = "--noinform";

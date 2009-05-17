@@ -957,7 +957,7 @@ case $axiom_lisp_flavor in
        ;;
     ecl) 
        axiom_quiet_flags=
-       axiom_eval_flags='-eval'
+       axiom_eval_flags='-norc -eval'
        oa_use_dynamic_lib=no  
        ;;
     sbcl) 
@@ -966,7 +966,7 @@ case $axiom_lisp_flavor in
        ;;
     clisp) 
        axiom_quiet_flags='--quiet'
-       axiom_eval_flags='-x'
+       axiom_eval_flags='-norc -x'
        ;;
     *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $axiom_lisp]) ;;
 esac
