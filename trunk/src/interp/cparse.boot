@@ -599,7 +599,6 @@ npStatement()==
         npInline() or
         npLocal() or
         npExport() or
-        npTyping() or
         npVoid()
 
 npBackTrack(p1,p2,p3)==
@@ -869,21 +868,6 @@ npTypeVariable()== npParenthesized function npTypeVariablelist or
 
 npTypeVariablelist()== npListing function npSignatureDefinee
 
-npTyping()==
-      npEqKey "DEFAULT" and  (npDefaultItemlist() or npTrap())
-                and npPush pfTyping npPop1()
-
-npDefaultItemlist()== npPC function npSDefaultItem
-                             and npPush pfUnSequence npPop1 ()
-
-npDefaultDecl()== npEqKey "COLON" and (npType() or npTrap()) and
-           npPush pfSpread (pfParts npPop2(),npPop1())
-
-npDefaultItem()==npTypeVariable() and (npDefaultDecl() or npTrap())
-
-npSDefaultItem()== npListing function npDefaultItem
-        and npPush pfAppend pfParts npPop1()
-
 npBPileDefinition()==
      npPileBracketed function npPileDefinitionlist
        and npPush pfSequence pfListOf npPop1 ()
@@ -928,7 +912,6 @@ npSingleRule()==
     false
 
 npDefinitionItem()==
-   npTyping() or
       npImport()  or
           a:=npState()
           npStatement() =>
