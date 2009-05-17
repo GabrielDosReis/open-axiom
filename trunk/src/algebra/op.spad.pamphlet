@@ -25,12 +25,6 @@ BasicOperator(): Exports == Implementation where
   P   ==> AssociationList(String, None)
   L   ==> List Record(key:String, entry:None)
   SEX ==> InputForm
--- some internal properties
-  LESS?   ==> "%less?"
-  EQUAL?  ==> "%equal?"
-  WEIGHT  ==> "%weight"
-  DISPLAY ==> "%display"
-  SEXPR   ==> "%input"
 
   Exports == Join(OrderedSet, OperatorCategory Symbol) with
     properties: $ -> P
@@ -117,6 +111,12 @@ BasicOperator(): Exports == Implementation where
       ++ Argument op is modified "in place", i.e. no copy is made.
 
   Implementation ==> add
+    -- some internal properties
+    macro LESS? == '%less?
+    macro EQUAL? == '%equal?
+    macro WEIGHT == '%weight
+    macro DISPLAY == '%display
+    macro SEXPR == '%input
     import Arity
     -- if narg < 0 then the operator ahs variable arity.
     Rep == Record(opname:Symbol, narg: Arity, props:P)
@@ -159,12 +159,12 @@ BasicOperator(): Exports == Implementation where
     display(op:$, f:List O -> O)   == setProperty(op, DISPLAY, f pretend None)
 
     display op ==
-      (u := property(op, DISPLAY)) case "failed" => "failed"
-      (u::None) pretend (List O -> O)
+      (u := property(op, DISPLAY)) case nothing => "failed"
+      (u@None) pretend (List O -> O)
 
     input op ==
-      (u := property(op, SEXPR)) case "failed" => "failed"
-      (u::None) pretend (List SEX -> SEX)
+      (u := property(op, SEXPR)) case nothing => "failed"
+      (u@None) pretend (List SEX -> SEX)
 
     arity op == rep(op).narg
 
@@ -179,14 +179,14 @@ BasicOperator(): Exports == Implementation where
       rep(op1).narg ~= rep(op2).narg => false
       brace(keys properties op1)~=$Set(String) brace(keys properties op2) => false
       (func := property(op1, EQUAL?)) case None =>
-                   ((func::None) pretend (($, $) -> Boolean)) (op1, op2)
+                   ((func@None) pretend (($, $) -> Boolean)) (op1, op2)
       true
 
 -- property WEIGHT allows one to change the ordering around
 -- by default, every operator has weigth 1
     weight op ==
-      (w := property(op, WEIGHT)) case "failed" => 1
-      (w::None) pretend NonNegativeInteger
+      (w := property(op, WEIGHT)) case nothing => 1
+      (w@None) pretend NonNegativeInteger
 
 -- property LESS? contains a function f: (BOP, BOP) -> Boolean
 -- such that f(o1, o2) is true iff o1 < o2
@@ -203,9 +203,9 @@ BasicOperator(): Exports == Implementation where
         n1 ~= (n2 := #(d2 := difference(k2, k1))) => n1 < n2
         inspect(d1) < inspect(d2)
       (func := property(op1, LESS?)) case None =>
-                   ((func::None) pretend (($, $) -> Boolean)) (op1, op2)
+                   ((func@None) pretend (($, $) -> Boolean)) (op1, op2)
       (func := property(op1, EQUAL?)) case None =>
-              not(((func::None) pretend (($, $) -> Boolean)) (op1, op2))
+              not(((func@None) pretend (($, $) -> Boolean)) (op1, op2))
       false
 
 @
