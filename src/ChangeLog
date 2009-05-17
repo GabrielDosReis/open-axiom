@@ -1,4 +1,14 @@
-2009-05-16  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2009-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cparse.boot (npTyping): Remove.
+	(npDefaultItemlist): Likewise.
+	(npSDefaultItem): Likewise.
+	(npDefaultItem): Likewise.
+	(npDefaultDecl): Likewise.
+	(npStatement): Don't call npTyping.
+	(npDefinitionItem): Likewise.
+
+2009-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/op.spad.pamphlet (assert$BasicOperator): Remove overload
 	with String parameter,
