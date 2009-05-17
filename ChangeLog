@@ -1,3 +1,7 @@
+2009-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Tidy Lisp systems invocation options.
+
 2009-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Tidy.
