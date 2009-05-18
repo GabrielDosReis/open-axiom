@@ -360,7 +360,6 @@ ElementaryFunctionODESolver(R, F): Exports == Implementation where
   SYS ==> Record(mat:M, vec: V)
   U   ==> Union(REC, F, "failed")
   UU  ==> Union(F, "failed")
-  OPDIFF ==> "%diff"::SY
 
   Exports ==> with
     solve: (M, V, SY) -> Union(VEC, "failed")
@@ -426,6 +425,7 @@ ElementaryFunctionODESolver(R, F): Exports == Implementation where
       ++ \spad{dy/dx = f(x,y)};
 
   Implementation ==> add
+    macro OPDIFF == '%diff
     import ODEIntegration(R, F)
     import IntegrationTools(R, F)
     import NonLinearFirstOrderODESolver(R, F)

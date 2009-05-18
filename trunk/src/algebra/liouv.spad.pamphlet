@@ -104,7 +104,7 @@ LiouvillianFunction(R, F): Exports == Implementation where
       kernel(opint, l)
 
     ddint l ==
-      int(integrand(l)::O * hconcat("d"::SE::O, third(l)::O),
+      int(integrand(l)::O * hconcat('d::O, third(l)::O),
                                     third(rest l)::O, third(rest rest l)::O)
 
     eqint(k1,k2) == 
@@ -178,7 +178,7 @@ LiouvillianFunction(R, F): Exports == Implementation where
       pint  : List INP -> INP
 
 
-      pint l  == convert concat(convert("integral"::SE)@INP, l)
+      pint l  == convert concat(convert('integral)@INP, l)
       inint l == 
         r2:= convert([convert("::"::SE)@INP,convert(third l)@INP,convert("Symbol"::SE)@INP]@List INP)@INP
         pint [convert(integrand l)@INP, r2]

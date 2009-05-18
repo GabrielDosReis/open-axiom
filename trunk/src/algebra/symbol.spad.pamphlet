@@ -314,7 +314,7 @@ Symbol(): Exports == Implementation where
          error "Cannot convert a symbol to a list if it is not subscripted"
       sy pretend List(%)
 
-    sample() == "aSymbol"::%
+    sample() == 'aSymbol
 
 @
 

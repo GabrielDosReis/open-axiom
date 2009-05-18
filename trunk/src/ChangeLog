@@ -1,3 +1,25 @@
+2009-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/curve.spad.pamphlet: Use literal symbols.
+	* algebra/defintef.spad.pamphlet: Likewise.
+	* algebra/defintrf.spad.pamphlet: Likewise.
+	* algebra/divisor.spad.pamphlet: Likewise.
+	* algebra/efstruc.spad.pamphlet: Likewise.
+	* algebra/exprode.spad.pamphlet: Likewise.
+	* algebra/fspace.spad.pamphlet: Likewise.
+	* algebra/intaf.spad.pamphlet: Likewise.
+	* algebra/intef.spad.pamphlet: Likewise.
+	* algebra/integrat.spad.pamphlet: Likewise.
+	* algebra/intpm.spad.pamphlet: Likewise.
+	* algebra/laplace.spad.pamphlet: Likewise.
+	* algebra/limitps.spad.pamphlet: Likewise.
+	* algebra/liouv.spad.pamphlet: Likewise.
+	* algebra/odeef.spad.pamphlet: Likewise.
+	* algebra/oderf.spad.pamphlet: Likewise.
+	* algebra/rdeef.spad.pamphlet: Likewise.
+	* algebra/symbol.spad.pamphlet: Likewise.
+	* algebra/transsolve.spad.pamphlet: Likewise.
+
 2009-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/op.spad.pamphlet: Use symbol literals for property names.
