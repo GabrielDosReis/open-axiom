@@ -113,6 +113,8 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |SYMBOL;sample;$;35|)) 
 
+(PUT '|SYMBOL;sample;$;35| '|SPADreplace| '(XLAM NIL '|aSymbol|)) 
+
 (DEFUN |SYMBOL;writeOMSym| (|dev| |x| $)
   (COND
     ((|SYMBOL;scripted?;$B;30| |x| $)
@@ -752,7 +754,7 @@
      (|error| "Cannot convert a symbol to a list if it is not subscripted"))
     ('T |sy|))) 
 
-(DEFUN |SYMBOL;sample;$;35| ($) (|SYMBOL;coerce;S$;8| "aSymbol" $)) 
+(DEFUN |SYMBOL;sample;$;35| ($) (DECLARE (IGNORE $)) '|aSymbol|) 
 
 (DEFUN |Symbol| ()
   (PROG ()

@@ -211,8 +211,8 @@ FunctionFieldCategory(F, UP, UPUP): Category == Definition where
         d    := commonDenominator(coordinates(w := integralBasis()))::RF
         n := #w
         vars := [concat(string u, string i)::SY for i in 1..n]
-        x    := "%%dummy1"::SY
-        y    := "%%dummy2"::SY
+        x    := '%%dummy1
+        y    := '%%dummy2
         select_!(zero?(degree(#1, x)) and zero?(degree(#1, y)),
                  lexGroebner([v::P - UPUP2P(lift(d * w.i), x::P, y::P)
                     for v in vars for i in 1..n], concat([x, y], vars)))

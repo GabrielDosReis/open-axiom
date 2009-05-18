@@ -283,7 +283,7 @@ TransSolvePackage(R) : Exports == Implementation where
        while testRootk(var1,y) repeat
          varlistk1:=tableXkernels(var1,y)
          for i in varlistk1 repeat
-            if is?(i, "nthRoot"::S) then
+            if is?(i, 'nthRoot) then
               var1:=eliminateKernRoot(var1,first kernels(i::RE))
        var1
 

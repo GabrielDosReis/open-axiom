@@ -155,7 +155,7 @@ ExpressionSpaceODESolver(R, F): Exports == Implementation where
 
     checkSystem(diffeq, yx, lv) ==
       for k in kernels diffeq repeat
-        is?(k, "%diff"::SY) =>
+        is?(k, '%diff) =>
           return div2exquo subst(diffRhsK(k, diffeq), yx, lv)
       0
 

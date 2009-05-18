@@ -24,9 +24,6 @@ ExpressionSpace(): Category == Defn where
   K   ==> Kernel %
   OP  ==> BasicOperator
   SY  ==> Symbol
-  PAREN  ==> "%paren"::SY
-  BOX    ==> "%box"::SY
-  DUMMYVAR ==> "%dummyVar"
 
   Defn ==> Join(OrderedSet, RetractableTo K,
                 InnerEvalable(K, %), Evalable %) with
@@ -168,6 +165,9 @@ ExpressionSpace(): Category == Defn where
 --        subst:(%, List K, List %) -> %
 --        eval:(%, List Symbol, List(List % -> %)) -> %
 
+    macro PAREN  == '%paren
+    macro BOX == '%box
+    macro DUMMYVAR == '%dummyVar
     allKernels: %      -> Set K
     listk     : %      -> List K
     allk      : List % -> Set K
@@ -287,7 +287,7 @@ ExpressionSpace(): Category == Defn where
     distribute(x, y) ==
       ky := retract y
       unwrap([k for k in listk x |
-              is?(k, "%paren"::SY) and member?(ky, listk(k::%))], x)
+              is?(k, '%paren) and member?(ky, listk(k::%))], x)
 
     -- in case of conflicting substitutions e.g. [x = a, x = b],
     -- the first one prevails.
@@ -556,8 +556,8 @@ FunctionSpace(R:OrderedSet): Category == Definition where
 
     equaldiff : (K,K)->Boolean
     debugA: (List % ,List %,Boolean) -> Boolean
-    opdiff := operator("%diff"::SY)$CommonOperators()
-    opquote := operator("applyQuote"::SY)$CommonOperators
+    opdiff := operator('%diff)$CommonOperators()
+    opquote := operator('applyQuote)$CommonOperators
 
     ground? x                == retractIfCan(x)@Union(R,"failed") case R
     ground  x                == retract x
@@ -572,8 +572,8 @@ FunctionSpace(R:OrderedSet): Category == Definition where
     subs(fn, k) == kernel(operator k,[fn x for x in argument k]$List(%))
 
     operator op ==
-      is?(op, "%diff"::SY) => opdiff
-      is?(op, "%quote"::SY) => opquote
+      is?(op, '%diff) => opdiff
+      is?(op, '%quote) => opquote
       error "Unknown operator"
 
     if R has ConvertibleTo InputForm then
