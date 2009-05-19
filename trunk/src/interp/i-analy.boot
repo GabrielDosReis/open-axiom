@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -429,6 +429,14 @@ bottomUpDefaultEval(t,id,defaultMode,target,isSub) ==
       (val := coerceInteractive(objNewWrap(id,['Variable,id]),m)) =>
         putValue(t,val)
         [m]
+
+    -- Hmm, assume it is a symbolic variable with a user-supplied type.
+    m' := ["Expression",m]
+    val := coerceInteractive(objNewWrap(id,$Symbol),m') =>
+      putValue(t,val)
+      putMode(t, m')
+      [m']
+
     -- give up
     throwKeyedMsg('"S2IB0004",[id,m])
 
