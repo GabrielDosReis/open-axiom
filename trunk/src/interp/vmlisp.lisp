@@ -962,14 +962,8 @@
 
 (defun LIST2VEC (list)
  (if (consp list)
-  (let* ((len (length list))
-         (vec (make-array len)))
-    (dotimes (i len)
-     (setf (aref vec i) (pop list)))
-    vec)
-  (coerce list 'vector)))
-
-(define-function 'LIST2REFVEC #'LIST2VEC)
+     (make-array (list-length list) :initial-contents list)
+   (coerce list 'vector)))
 
 ; 16.2 Accessing
 

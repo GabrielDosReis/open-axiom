@@ -1,4 +1,8 @@
-2009-05-18  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2009-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (LIST2VEC): Tidy.
+
+2009-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-analy.boot (bottomUpDefaultEval): A declared variable
 	with no definition may be a symbolic variable with a specified type.

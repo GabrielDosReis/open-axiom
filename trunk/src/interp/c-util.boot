@@ -800,8 +800,7 @@ sublisV(p,e) ==
     suba(p,e) ==
       STRINGP e => e
       -- no need to descend vectors unless they are categories
-      --REFVECP e => LIST2REFVEC [suba(p,e.i) for i in 0..MAXINDEX e]
-      isCategory e => LIST2REFVEC [suba(p,e.i) for i in 0..MAXINDEX e]
+      isCategory e => LIST2VEC [suba(p,e.i) for i in 0..MAXINDEX e]
       atom e => (y:= ASSQ(e,p) => rest y; e)
       u:= suba(p,QCAR e)
       v:= suba(p,QCDR e)

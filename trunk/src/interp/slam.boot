@@ -45,7 +45,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   $compiledOpNameList := [nam]
   minivectorName := makeInternalMapMinivectorName(nam)
   body := substitute(minivectorName,"$$$",body)
-  setDynamicBinding(minivectorName,LIST2REFVEC $minivector)
+  setDynamicBinding(minivectorName,LIST2VEC $minivector)
   argl := COPY argl     -- play it safe for optimization
   init :=
     not(isRecursive and $compileRecurrence and #argl = 1) => nil
