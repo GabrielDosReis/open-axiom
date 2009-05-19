@@ -1,3 +1,8 @@
+2009-05-18  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/i-analy.boot (bottomUpDefaultEval): A declared variable
+	with no definition may be a symbolic variable with a specified type.
+
 2009-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/curve.spad.pamphlet: Use literal symbols.
