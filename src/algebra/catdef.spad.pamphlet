@@ -1286,9 +1286,7 @@ OrderedSet(): Category == SetCategory with
     min: (%,%) -> %
       ++ min(x,y) returns the minimum of x and y relative to "<".
   add
-  --declarations
-    x,y: %
-  --definitions
+    before?(x,y) == x < y
   -- These really ought to become some sort of macro
     max(x,y) ==
       x > y => x
@@ -1613,6 +1611,7 @@ SemiGroup(): Category == SetCategory with
 ++ Date Created:
 ++ Date Last Updated:
 ++   09/09/92   RSS   added latex and hash
+++   May 21, 2009: added before? -- gdr
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1630,6 +1629,9 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
       hash: % -> SingleInteger  ++ hash(s) calculates a hash code for s.
       latex: % -> String       ++ latex(s) returns a LaTeX-printable output
                                ++ representation of s.
+      before?: (%,%) -> Boolean
+        ++ spad{before?(x,y)} holds if \spad{x} comes before \spad{y}
+        ++ in the internal total ordering used by OpenAxiom.
   add
       hash(s : %):  SingleInteger == SXHASH(s)$Lisp
       latex(s : %): String       == "\mbox{\bf Unimplemented}"

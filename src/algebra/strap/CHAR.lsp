@@ -215,8 +215,9 @@
              108 |random| 112 |quote| 116 |ord| 120 |min| 125 |max| 135
              |lowerCase?| 145 |lowerCase| 150 |lookup| 155 |latex| 160
              |index| 165 |hexDigit?| 170 |hash| 175 |escape| 180
-             |digit?| 184 |coerce| 189 |char| 194 |alphanumeric?| 204
-             |alphabetic?| 209 >= 214 > 220 = 226 <= 232 < 238)
+             |digit?| 184 |coerce| 189 |char| 194 |before?| 204
+             |alphanumeric?| 210 |alphabetic?| 215 >= 220 > 226 = 232
+             <= 238 < 244)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0))
                 (CONS '#(NIL |OrderedSet&| NIL |SetCategory&|
@@ -237,9 +238,10 @@
                                   0 6 0 38 1 0 0 0 53 1 0 11 0 20 1 0
                                   43 0 46 1 0 0 11 17 1 0 6 0 34 1 0 54
                                   0 1 0 0 0 25 1 0 6 0 32 1 0 26 0 27 1
-                                  0 0 9 16 1 0 0 43 51 1 0 6 0 42 1 0 6
-                                  0 40 2 0 6 0 0 1 2 0 6 0 0 1 2 0 6 0
-                                  0 7 2 0 6 0 0 1 2 0 6 0 0 8)))))
+                                  0 0 43 51 1 0 0 9 16 2 0 6 0 0 1 1 0
+                                  6 0 42 1 0 6 0 40 2 0 6 0 0 1 2 0 6 0
+                                  0 1 2 0 6 0 0 7 2 0 6 0 0 1 2 0 6 0 0
+                                  8)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Character| 'NILADIC T) 

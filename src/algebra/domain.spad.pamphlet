@@ -16,7 +16,7 @@
 <<domain CTORKIND ConstructorKinid>>=
 )abbrev domain CTORKIND ConstructorKind
 ++ Author: Gabriel Dos Reis
-++ Date Create: October 07, 2008.
+++ Date Created: October 07, 2008.
 ++ Date Last Updated: October 07, 2008.
 ++ Related Constructors: 
 ++ Description:

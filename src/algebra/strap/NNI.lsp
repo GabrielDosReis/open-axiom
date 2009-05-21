@@ -85,13 +85,14 @@
              |NNI;sup;3$;1| |NNI;shift;$I$;2| (22 . -)
              (|Union| $ '"failed") |NNI;subtractIfCan;2$U;3|
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
-             (|PositiveInteger|) (|NonNegativeInteger|) (|String|)
-             (|OutputForm|) (|SingleInteger|))
+             (|PositiveInteger|) (|NonNegativeInteger|)
+             (|SingleInteger|) (|String|) (|OutputForm|))
           '#(~= 28 |zero?| 34 |sup| 39 |subtractIfCan| 45 |shift| 51
              |sample| 57 |rem| 61 |recip| 67 |random| 72 |quo| 77
              |one?| 83 |min| 88 |max| 94 |latex| 100 |hash| 105 |gcd|
-             110 |exquo| 116 |divide| 122 |coerce| 128 |Zero| 133 |One|
-             137 >= 141 > 147 = 153 <= 159 < 165 + 171 ** 177 * 189)
+             110 |exquo| 116 |divide| 122 |coerce| 128 |before?| 133
+             |Zero| 139 |One| 143 >= 147 > 153 = 159 <= 165 < 171 + 177
+             ** 183 * 195)
           '(((|commutative| "*") . 0))
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(NIL NIL NIL NIL NIL |Monoid&| |AbelianMonoid&|
@@ -105,20 +106,20 @@
                                (|AbelianMonoid|) (|OrderedSet|)
                                (|SemiGroup|) (|AbelianSemiGroup|)
                                (|SetCategory|) (|BasicType|)
-                               (|CoercibleTo| 21))
+                               (|CoercibleTo| 22))
                             (|makeByteWordVec2| 22
                                 '(0 0 0 6 0 5 0 7 2 5 8 0 0 9 0 8 0 10
                                   0 8 0 11 2 5 0 0 0 14 2 0 8 0 0 1 1 0
                                   8 0 1 2 0 0 0 0 12 2 0 15 0 0 16 2 0
                                   0 0 5 13 0 0 0 1 2 0 0 0 0 1 1 0 15 0
                                   1 1 0 0 0 1 2 0 0 0 0 1 1 0 8 0 1 2 0
-                                  0 0 0 1 2 0 0 0 0 1 1 0 20 0 1 1 0 22
+                                  0 0 0 1 2 0 0 0 0 1 1 0 21 0 1 1 0 20
                                   0 1 2 0 0 0 0 1 2 0 15 0 0 1 2 0 17 0
-                                  0 1 1 0 21 0 1 0 0 0 6 0 0 0 1 2 0 8
+                                  0 1 1 0 22 0 1 2 0 8 0 0 1 0 0 0 6 0
                                   0 0 1 2 0 8 0 0 1 2 0 8 0 0 1 2 0 8 0
-                                  0 1 2 0 8 0 0 1 2 0 0 0 0 1 2 0 0 0
-                                  18 1 2 0 0 0 19 1 2 0 0 0 0 1 2 0 0
-                                  19 0 1 2 0 0 18 0 1)))))
+                                  0 1 2 0 8 0 0 1 2 0 8 0 0 1 2 0 0 0 0
+                                  1 2 0 0 0 18 1 2 0 0 0 19 1 2 0 0 0 0
+                                  1 2 0 0 19 0 1 2 0 0 18 0 1)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|NonNegativeInteger| 'NILADIC T) 

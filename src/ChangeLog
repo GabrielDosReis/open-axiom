@@ -1,3 +1,7 @@
+2009-05-21  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (before?$SetCategory): New.
+
 2009-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/cparse.boot (npQuantified): New.
