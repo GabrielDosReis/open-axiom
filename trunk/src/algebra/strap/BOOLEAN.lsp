@@ -203,13 +203,13 @@
              |BOOLEAN;lookup;$Pi;20| (17 . |random|)
              |BOOLEAN;random;$;21| (|InputForm|)
              |BOOLEAN;convert;$If;22| (|OutputForm|)
-             |BOOLEAN;coerce;$Of;23| (|String|) (|SingleInteger|))
+             |BOOLEAN;coerce;$Of;23| (|SingleInteger|) (|String|))
           '#(~= 21 ~ 27 |xor| 32 |true| 38 |test| 42 |size| 47 |random|
              51 |or| 55 |not| 61 |nor| 66 |nand| 72 |min| 78 |max| 88
              |lookup| 98 |latex| 103 |index| 108 |implies| 113 |hash|
              119 |false| 124 |equiv| 128 |convert| 134 |coerce| 139
-             |and| 144 |\\/| 150 >= 156 > 162 = 168 <= 174 < 180 |/\\|
-             186)
+             |before?| 144 |and| 150 |\\/| 156 >= 162 > 168 = 174 <=
+             180 < 186 |/\\| 192)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0))
                 (CONS '#(NIL |OrderedSet&| NIL NIL |Logic&|
@@ -226,12 +226,12 @@
                                   25 26 0 0 0 34 2 0 0 0 0 16 1 0 0 0 9
                                   2 0 0 0 0 19 2 0 0 0 0 20 0 0 0 1 2 0
                                   0 0 0 1 0 0 0 1 2 0 0 0 0 1 1 0 29 0
-                                  32 1 0 39 0 1 1 0 0 29 30 2 0 0 0 0
-                                  22 1 0 40 0 1 0 0 0 8 2 0 0 0 0 23 1
-                                  0 35 0 36 1 0 37 0 38 2 0 0 0 0 14 2
-                                  0 0 0 0 17 2 0 10 0 0 1 2 0 10 0 0 1
-                                  2 0 10 0 0 21 2 0 10 0 0 1 2 0 10 0 0
-                                  24 2 0 0 0 0 15)))))
+                                  32 1 0 40 0 1 1 0 0 29 30 2 0 0 0 0
+                                  22 1 0 39 0 1 0 0 0 8 2 0 0 0 0 23 1
+                                  0 35 0 36 1 0 37 0 38 2 0 10 0 0 1 2
+                                  0 0 0 0 14 2 0 0 0 0 17 2 0 10 0 0 1
+                                  2 0 10 0 0 1 2 0 10 0 0 21 2 0 10 0 0
+                                  1 2 0 10 0 0 24 2 0 0 0 0 15)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Boolean| 'NILADIC T) 
