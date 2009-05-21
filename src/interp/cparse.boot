@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -330,6 +330,15 @@ npWConditional f==
     then npPush pfTweakIf npPop1()
     else false
 
+npQuantified f ==
+  npEqPeek "FORALL" =>
+    npQuantifierVariable "FORALL" and npQuantified f and
+      npPush %Forall(npPop2(), npPop1())
+  npEqPeek "EXIST" =>
+    npQuantifierVariable "EXIST" and npQuantified f and
+      npPush %Exist(npPop2(), npPop1())
+  apply(f,nil)  
+
 -- Parsing functions
 
 -- peek for keyword s, no advance of token stream
@@ -516,28 +525,22 @@ npRelation()==
             function npSynthetic)
 
 npQuiver()  ==    npRightAssoc('(ARROW LARROW),function npRelation)
-npDiscrim() ==    npLeftAssoc ('(CASE HAS), function npQuiver)
+npDiscrim() == 
+  npLeftAssoc ('(CASE HAS IS ISNT), function npQuiver)
 
 npDisjand() ==    npLeftAssoc('(AND ),function npDiscrim)
 
 npLogical()   ==  npLeftAssoc('(OR ),function npDisjand)
 npSuch() == npLeftAssoc( '(BAR),function npLogical)
-npMatch()   ==    npLeftAssoc ('(IS ISNT ), function npSuch)
 
 ++ Parse a type expression
 ++   Type:
 ++     MonoType
 ++     QuantifiedVariable Type
 npType() ==
-  npEqPeek "FORALL" =>
-    npQuantifierVariable "FORALL" and npType() and
-      npPush %Forall(npPop2(), npPop1())
-  npEqPeek "EXIST" =>
-    npQuantifierVariable "EXIST" and npType() and
-      npPush %Exist(npPop2(), npPop1())
-  npMonoType()
+  npQuantified function npMonoType
 
-npMonoType() ==  npMatch()  and
+npMonoType() ==  npSuch()  and
                 a:=npPop1()
                 npWith(a) or npPush a
 
@@ -643,7 +646,9 @@ npPileExit()==
 npGives()== npBackTrack(function npExit,"GIVES",function npLambda)
 
 npDefinitionOrStatement()==
-            npBackTrack(function npGives,"DEF",function npDef)
+  npQuantified 
+    function LAMBDA(nil, npBackTrack(function npGives,
+                            "DEF",function npDef))
 
 npVoid()== npAndOr("DO",function npStatement,function pfNovalue)
 
@@ -884,7 +889,7 @@ npLambda()==
                   npPush pfReturnTyped(npPop2(),npPop1())
 
 npDef()==
-    npMatch() =>
+    npSuch() =>
          [op,arg,rt]:=  pfCheckItOut(npPop1())
          npDefTail "DEF" or npTrap()
          body:=npPop1()
