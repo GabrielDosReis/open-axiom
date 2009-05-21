@@ -1,3 +1,13 @@
+2009-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cparse.boot (npQuantified): New.
+	(npType): Use it.
+	(npDefinitionOrStatement): Likewise.  Accept quantified expressions.
+	(npMatch): Remove.
+	(npDef): Adjust.
+	(npMonoType): Likewise.
+	(npDiscrim): Recognize 'is' and 'isnt' patterns.
+
 2009-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp (LIST2VEC): Tidy.
