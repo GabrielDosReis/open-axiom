@@ -357,6 +357,7 @@ $(OUT)/VECTCAT.$(FASLEXT): $(OUT)/RADCAT.$(FASLEXT)
 $(OUT)/IARRAY1.$(FASLEXT): $(OUT)/PRIMARR.$(FASLEXT)
 $(OUT)/PROPERTY.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
 $(OUT)/BINDING.$(FASLEXT): $(OUT)/PROPERTY.$(FASLEXT)
+$(OUT)/OPERCAT.$(FASLEXT): $(OUT)/ARITY.$(FASLEXT)
 
 axiom_algebra_layer_1 = \
   ABELGRP  ABELGRP- ABELMON  ABELMON- FORTCAT   ITUPLE   \
@@ -368,7 +369,7 @@ axiom_algebra_layer_1 = \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD    FIELD-   VECTCAT  VECTCAT- IARRAY1            \
-  PROPERTY
+  PROPERTY ARITY    OPERCAT  OPERCAT-
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -382,13 +383,13 @@ axiom_algebra_layer_1_objects = \
 
 <<layer2>>=
 axiom_algebra_layer_2 = \
-  SYNTAX  INTRET   SEGXCAT CONTOUR  LIST3   MKFUNC   \
-          KTVLOGIC FNCAT
+  SYNTAX   INTRET   SEGXCAT CONTOUR  LIST3   MKFUNC   \
+  COMMONOP KTVLOGIC FNCAT   SCACHE   BOP     BOP1
 
 $(OUT)/FNCAT.$(FASLEXT): $(OUT)/HOMOTOP.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
 $(OUT/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
-
+$(OUT)/COMMONOP.$(FASLEXT): $(OUT)/BOP.$(FASLEXT)
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))
@@ -564,7 +565,7 @@ axiom_algebra_layer_10 = \
   PINTERP  PLOTTOOL PFR      PMDOWN   \
   PRTITION PMINS    PMLSAGG  PMTOOLS  \
   PSCAT    PSCAT-   QFORM    QUEUE    \
-  SCACHE   SEG      SEG2     SEXOF    \
+           SEG      SEG2     SEXOF    \
   STACK    STTAYLOR TABLBUMP TABLEAU  \
   TOPSP    TRANFUN  TRANFUN- TUBE     \
   UDPO     UNISEG   VIEW     VSPACE   \
@@ -728,7 +729,7 @@ axiom_algebra_layer_14_objects = \
 
 <<layer15>>=
 axiom_algebra_layer_15 = \
-  DSMP     EXPUPXS  ARITY            \
+  DSMP     EXPUPXS                   \
   FRAMALG  FRAMALG- MDAGG    ODPOL   \
   PLOT     RMCAT2   ROIRC    SDPOL   \
   SMATCAT  SMATCAT- TUBETOOL UPXSCCA \
@@ -746,7 +747,7 @@ axiom_algebra_layer_15_objects = \
 
 <<layer16>>=
 axiom_algebra_layer_16 = \
-  DPMM     EFUPXS  FFINTBAS FRIDEAL  OPERCAT  OPERCAT- \
+  DPMM     EFUPXS  FFINTBAS FRIDEAL                    \
   FRIDEAL2 FRMOD   \
   IBATOOL  INTFACT \
   MSETAGG  MONOGEN MONOGEN- NFINTBAS \
@@ -803,7 +804,7 @@ $(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
 
 axiom_algebra_layer_19 = \
   ACPLOT   ANTISYM  ANY      ATTRBUT \
-  BOP      BOP1     COMMONOP COMPCAT \
+                             COMPCAT \
   COMPCAT- DRAW     DRAWCFUN DROPT   \
   DROPT0   D01ANFA  D01ASFA  D03AGNT \
   EP       E04AGNT  FCPAK1   FEXPR   \
