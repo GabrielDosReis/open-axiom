@@ -1,5 +1,11 @@
 2009-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/kl.spad.pamphlet (KernelFunctions2): Remove OrderedSet
+	requirements. 
+	* algebra/op.spad.pamphlet (BasicOperatorFunctions1): Likewise.
+
+2009-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Partial fix for AW/193 and AW/334.
 	* algebra/algfunc.spad.pamphlet: Remove OrderedSet requirements.
 	* algebra/combfunc.spad.pamphlet: Likewise.
