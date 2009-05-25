@@ -151,10 +151,7 @@
                                             (|has| |t#1| (|GcdDomain|)))
                                            ((|squareFreePart| ($ $))
                                             (|has| |t#1| (|GcdDomain|))))
-                                         '(((|OrderedSet|)
-                                            (|has| |t#1|
-                                             (|OrderedSet|)))
-                                           ((|ConvertibleTo|
+                                         '(((|ConvertibleTo|
                                              (|InputForm|))
                                             (AND
                                              (|has| |t#3|

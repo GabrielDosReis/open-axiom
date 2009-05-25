@@ -290,7 +290,6 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
         ++ primitiveMonomials(p) gives the list of monomials of the
         ++ polynomial p with their coefficients removed.
         ++ Note: \spad{primitiveMonomials(sum(a_(i) X^(i))) = [X^(1),...,X^(n)]}.
-    if R has OrderedSet  then OrderedSet
     -- OrderedRing view removed to allow EXPR to define abs
     --if R has OrderedRing then OrderedRing
     if (R has ConvertibleTo InputForm) and
@@ -573,23 +572,24 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
         unitNormal((p exquo content p) ::%).canonical
       primitivePart(p,v) ==
         unitNormal((p exquo content(p,v)) ::%).canonical
-    if R has OrderedSet then
-      p:% < q:% ==
-        (dp:= degree p) < (dq := degree q) => (leadingCoefficient q) > 0
-        dq < dp => (leadingCoefficient p) < 0
-        leadingCoefficient(p - q) < 0
-      if (R has PatternMatchable Integer) and
-         (VarSet has PatternMatchable Integer) then
-           patternMatch(p:%, pat:Pattern Integer,
-            l:PatternMatchResult(Integer, %)) ==
-              patternMatch(p, pat,
-                l)$PatternMatchPolynomialCategory(Integer,E,VarSet,R,%)
-      if (R has PatternMatchable Float) and
-         (VarSet has PatternMatchable Float) then
-           patternMatch(p:%, pat:Pattern Float,
-            l:PatternMatchResult(Float, %)) ==
-              patternMatch(p, pat,
-                l)$PatternMatchPolynomialCategory(Float,E,VarSet,R,%)
+
+    before?(p:%, q:%) ==
+      (dp:= degree p) < (dq := degree q) => before?(0, leadingCoefficient q)
+      dq < dp => before?(leadingCoefficient p,0)
+      before?(leadingCoefficient(p - q),0)
+
+    if (R has PatternMatchable Integer) and
+       (VarSet has PatternMatchable Integer) then
+	 patternMatch(p:%, pat:Pattern Integer,
+	  l:PatternMatchResult(Integer, %)) ==
+	    patternMatch(p, pat,
+	      l)$PatternMatchPolynomialCategory(Integer,E,VarSet,R,%)
+    if (R has PatternMatchable Float) and
+       (VarSet has PatternMatchable Float) then
+	 patternMatch(p:%, pat:Pattern Float,
+	  l:PatternMatchResult(Float, %)) ==
+	    patternMatch(p, pat,
+	      l)$PatternMatchPolynomialCategory(Float,E,VarSet,R,%)
 
     if (R has ConvertibleTo Pattern Integer) and
        (VarSet has ConvertibleTo Pattern Integer) then

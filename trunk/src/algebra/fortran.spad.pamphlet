@@ -1176,7 +1176,7 @@ ThreeDimensionalMatrix(R) : Exports == Implementation where
 ++ domains into a FORTRAN subprogram called \axiom{f}.
 ++ These can then be translated into legal FORTRAN code.
 SimpleFortranProgram(R,FS): Exports == Implementation where
-  R  : OrderedSet
+  R  : SetCategory
   FS : FunctionSpace(R)
 
   FST ==> FortranScalarType

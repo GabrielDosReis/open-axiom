@@ -20,7 +20,7 @@
 ++ the pattern matcher to find some indefinite and definite integrals
 ++ involving special functions and found in the litterature.
 PatternMatchIntegration(R, F): Exports == Implementation where
-  R : Join(OrderedSet, RetractableTo Integer, GcdDomain,
+  R : Join(RetractableTo Integer, GcdDomain,
            LinearlyExplicitRingOver Integer)
   F : Join(AlgebraicallyClosedField, TranscendentalFunctionCategory,
            FunctionSpace R)
@@ -87,7 +87,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
     w := suchThat(optional(pmw::F), empty? variables #1)
     s := suchThat(optional(pms::F), empty? variables #1 and real? #1)
     m := suchThat(optional(pmm::F),
-                    (retractIfCan(#1)@Union(Z,"failed") case Z) and #1 >= 0)
+           (retractIfCan(#1)@Union(Z,"failed") case Z) and not before?(#1,0))
 
     spi := sqrt(pi()$F)
 
@@ -125,7 +125,6 @@ PatternMatchIntegration(R, F): Exports == Implementation where
     if R has ConvertibleTo Pattern Integer and
        R has PatternMatchable Integer then
          if F has LiouvillianFunctionCategory then
-           import ElementaryFunctionSign(R, F)
 
            insqrt     : F -> F
            matchei    : (F, SY) -> REC
