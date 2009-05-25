@@ -731,3 +731,12 @@ $KillLispSystem == 14
 
 $SpadReaderTag ==
   "SPAD__READER"
+
+--%
+
+++ List of operator names that can be overloaded in libraries.
+$OperatorFunctionNames ==
+  ["**", "^", "*", "/", "rem", "quo", "mod", "div", "exquo",
+    "+", "-", ">", ">=", "=", "~=", "<", "<=", "~", "not",
+     "case", "and", "or", "<<", ">>" ]
+

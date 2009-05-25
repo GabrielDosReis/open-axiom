@@ -636,6 +636,13 @@ as keywords.")
 (defun-parse-token KEYWORD)
 (defun-parse-token ARGUMENT-DESIGNATOR)
 
+(defun |PARSE-OperatorFunctionName| ()
+  (let ((tok (match-current-token 'keyword)))
+    (when (and tok (member (token-symbol tok) |$OperatorFunctionNames|))
+      (Push-Reduction 'IDENTIFIER-TOKEN
+		      (copy-tree (token-symbol tok)))
+      (action (advance-token)))))
+
 ; Meta tokens fall into the following categories:
 ;
 ;               Number

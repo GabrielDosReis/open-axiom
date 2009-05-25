@@ -420,7 +420,8 @@
                          (CONS (POP-STACK-2)
                                (APPEND (POP-STACK-1) NIL)))))
           (AND (ACTION (SETQ G1 (LINE-NUMBER CURRENT-LINE)))
-               (|PARSE-Application|)
+               (OR (|PARSE-Application|)
+		   (|PARSE-OperatorFunctionName|))
                (MUST (OR (AND (MATCH-ADVANCE-STRING ":")
                               (MUST (|PARSE-Expression|))
                               (PUSH-REDUCTION '|PARSE-Category|
