@@ -454,7 +454,7 @@ axiom_algebra_layer_5 = \
   MRF2     NARNG    NARNG-   NSUP2    ODVAR    OPQUERY  \
            ORDMON   PATMATCH PERMCAT  PDRING   PDRING-  \
   SDVAR    SUP2     TRIGCAT  TRIGCAT- ULS2     UP2      \
-  ELABEXPR 
+  ELABEXPR KERNEL
 
 axiom_algebra_layer_5_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_5))
@@ -813,7 +813,7 @@ axiom_algebra_layer_19 = \
   FRNAALG  FRNAALG- \
            FUNCTION GDMP     HACKPI  \
   IDEAL    INFORM   INFORM1  IPRNTPK \
-  IR       ISUPS    KERNEL   LIB     \
+  IR       ISUPS             LIB     \
   LMDICT   LODOOPS  MATRIX   MKFLCFN \
   MSET     M3D      NAGC02   NAGC05  \
   NAGC06   NAGD03   NAGE01   NAGE02  \
