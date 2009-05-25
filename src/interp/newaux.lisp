@@ -205,7 +205,7 @@
 ;; is `+' for Integers.
  
 (mapcar #'(lambda (x) (MAKEPROP X 'GENERIC 'TRUE))
-        '(- = * |rem| |mod| |quo| |div| / ** |exquo| + - < > <= >= ^= ))
+        '(- = * |rem| |mod| |quo| |div| / ** |exquo| + - < > <= >= ~= ))
 
 (defun SPECIALCASESYNTAX () (OR (AND (char= TOK '#\#) (DIGITP CHR))))
  

@@ -1,5 +1,12 @@
 2009-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-constants.boot ($OperatorFunctionNames): New.
+	* interp/metalex.lisp (|PARSE-OperatorFunctionName|): New. Use it.
+	* interp/fnewmeta.lisp (|PARSE-Category|): Handle operator
+	function names.
+
+2009-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/kl.spad.pamphlet (KernelFunctions2): Remove OrderedSet
 	requirements. 
 	* algebra/op.spad.pamphlet (BasicOperatorFunctions1): Likewise.
