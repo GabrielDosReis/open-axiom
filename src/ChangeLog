@@ -1,3 +1,53 @@
+2009-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Partial fix for AW/193 and AW/334.
+	* algebra/algfunc.spad.pamphlet: Remove OrderedSet requirements.
+	* algebra/combfunc.spad.pamphlet: Likewise.
+	* algebra/defintef.spad.pamphlet: Likewise.
+	* algebra/defintrf.spad.pamphlet: Likewise.
+	* algebra/degred.spad.pamphlet: Likewise.
+	* algebra/efstruc.spad.pamphlet: Likewise.
+	* algebra/elemntry.spad.pamphlet: Likewise.
+	* algebra/expexpan.spad.pamphlet: Likewise.
+	* algebra/expr.spad.pamphlet: Likewise.
+	* algebra/expr2ups.spad.pamphlet: Likewise.
+	* algebra/exprode.spad.pamphlet: Likewise.
+	* algebra/fortran.spad.pamphlet: Likewise.
+	* algebra/fr.spad.pamphlet: Likewise.
+	* algebra/fraction.spad.pamphlet: Likewise.
+	* algebra/fs2expxp.spad.pamphlet: Likewise.
+	* algebra/fspace.spad.pamphlet: Likewise.
+	* algebra/funcpkgs.spad.pamphlet: Likewise.
+	* algebra/gaussian.spad.pamphlet: Likewise.
+	* algebra/genups.spad.pamphlet: Likewise.
+	* algebra/intalg.spad.pamphlet: Likewise.
+	* algebra/intef.spad.pamphlet: Likewise.
+	* algebra/integrat.spad.pamphlet: Likewise.
+	* algebra/intpm.spad.pamphlet: Likewise.
+	* algebra/irexpand.spad.pamphlet: Likewise.
+	* algebra/kl.spad.pamphlet: Likewise.
+	* algebra/laplace.spad.pamphlet: Likewise.
+	* algebra/limitps.spad.pamphlet: Likewise.
+	* algebra/liouv.spad.pamphlet: Likewise.
+	* algebra/manip.spad.pamphlet: Likewise.
+	* algebra/nlode.spad.pamphlet: Likewise.
+	* algebra/odeef.spad.pamphlet: Likewise.
+	* algebra/oderf.spad.pamphlet: Likewise.
+	* algebra/openmath.spad.pamphlet: Likewise.
+	* algebra/patmatch1.spad.pamphlet: Likewise.
+	* algebra/patmatch2.spad.pamphlet: Likewise.
+	* algebra/pfo.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/primelt.spad.pamphlet: Likewise.
+	* algebra/rdeef.spad.pamphlet: Likewise.
+	* algebra/rdesys.spad.pamphlet: Likewise.
+	* algebra/rule.spad.pamphlet: Likewise.
+	* algebra/solverad.spad.pamphlet: Likewise.
+	* algebra/sum.spad.pamphlet: Likewise.
+	* algebra/transsolve.spad.pamphlet: Likewise.
+	* testsuite/interpreter/aw-193.input: New.
+	* testsuite/interpreter/aw-334.input: Likewise.
+
 2009-05-21  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (before?$SetCategory): New.

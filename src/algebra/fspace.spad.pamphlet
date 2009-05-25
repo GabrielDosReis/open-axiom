@@ -25,7 +25,7 @@ ExpressionSpace(): Category == Defn where
   OP  ==> BasicOperator
   SY  ==> Symbol
 
-  Defn ==> Join(OrderedSet, RetractableTo K,
+  Defn ==> Join(SetCategory, RetractableTo K,
                 InnerEvalable(K, %), Evalable %) with
     elt          : (OP, %) -> %
       ++ elt(op,x) or op(x) applies the unary operator op to x.
@@ -168,9 +168,8 @@ ExpressionSpace(): Category == Defn where
     macro PAREN  == '%paren
     macro BOX == '%box
     macro DUMMYVAR == '%dummyVar
-    allKernels: %      -> Set K
-    listk     : %      -> List K
-    allk      : List % -> Set K
+    allKernels: %      -> List K
+    allk      : List % -> List K
     unwrap    : (List K, %) -> %
     okkernel  : (OP, List %) -> %
     mkKerLists: List Equation % -> Record(lstk: List K, lstv:List %)
@@ -181,16 +180,15 @@ ExpressionSpace(): Category == Defn where
     box(x:%)     == box [x]
     paren(x:%)   == paren [x]
     belong? op   == op = oppren or op = opbox
-    listk f      == parts allKernels f
-    tower f      == sort_! listk f
-    allk l       == reduce("union", [allKernels f for f in l], {})
-    operators f  == [operator k for k in listk f]
+    tower f      == sort! allKernels f
+    allk l       == reduce("setUnion", [allKernels f for f in l], nil$List(K))
+    operators f  == [operator k for k in allKernels f]
     height f     == reduce("max", [height k for k in kernels f], 0)
-    freeOf?(x:%, s:SY)       == not member?(s, [name k for k in listk x])
-    distribute x == unwrap([k for k in listk x | is?(k, oppren)], x)
+    freeOf?(x:%, s:SY)       == not member?(s, [name k for k in allKernels x])
+    distribute x == unwrap([k for k in allKernels x | is?(k, oppren)], x)
     box(l:List %)                  == opbox l
     paren(l:List %)                == oppren l
-    freeOf?(x:%, k:%)              == not member?(retract k, listk x)
+    freeOf?(x:%, k:%)              == not member?(retract k, allKernels x)
     kernel(op:OP, arg:%)           == kernel(op, [arg])
     elt(op:OP, x:%)                == op [x]
     elt(op:OP, x:%, y:%)           == op [x, y]
@@ -233,18 +231,18 @@ ExpressionSpace(): Category == Defn where
 -- arguments of rootOf's, integrals, sums and products which appear only in
 -- their first arguments
     allKernels f ==
-      s := brace(l := kernels f)
+      s := removeDuplicates(l := kernels f)
       for k in l repeat
           t :=
               (u := property(operator k, DUMMYVAR)) case None =>
                   arg := argument k
-                  s0  := remove_!(retract(second arg)@K, allKernels first arg)
+                  s0  := remove!(retract(second arg)@K, allKernels first arg)
                   arg := rest rest arg
                   n   := (u::None) pretend N
                   if n > 1 then arg := rest arg
-                  union(s0, allk arg)
+                  setUnion(s0, allk arg)
               allk argument k
-          s := union(s, t)
+          s := setUnion(s, t)
       s
 
     kernel(op:OP, args:List %) ==
@@ -286,8 +284,8 @@ ExpressionSpace(): Category == Defn where
 
     distribute(x, y) ==
       ky := retract y
-      unwrap([k for k in listk x |
-              is?(k, '%paren) and member?(ky, listk(k::%))], x)
+      unwrap([k for k in allKernels x |
+              is?(k, '%paren) and member?(ky, allKernels(k::%))], x)
 
     -- in case of conflicting substitutions e.g. [x = a, x = b],
     -- the first one prevails.
@@ -382,7 +380,7 @@ ExpressionSpaceFunctions2(E:ExpressionSpace, F:ExpressionSpace): with
 ++   A space of formal functions with arguments in an arbitrary
 ++   ordered set.
 ++ Keywords: operator, kernel, function.
-FunctionSpace(R:OrderedSet): Category == Definition where
+FunctionSpace(R: SetCategory): Category == Definition where
   OP ==> BasicOperator
   O  ==> OutputForm
   SY ==> Symbol
@@ -622,7 +620,7 @@ FunctionSpace(R:OrderedSet): Category == Definition where
 
       elt(op:OP, args:List %) ==
         unary? op and ((od? := has?(op, ODD)) or has?(op, EVEN)) and
-          leadingCoefficient(numer first args) < 0 =>
+          before?(leadingCoefficient(numer first args),0) =>
             x := op(- first args)
             od? => -x
             x
@@ -1029,7 +1027,7 @@ FunctionSpace(R:OrderedSet): Category == Definition where
 ++   This package allows a mapping R -> S to be lifted to a mapping
 ++   from a function space over R to a function space over S;
 FunctionSpaceFunctions2(R, A, S, B): Exports == Implementation where
-  R, S: Join(Ring, OrderedSet)
+  R, S: Ring
   A   : FunctionSpace R
   B   : FunctionSpace S
 

@@ -51,6 +51,7 @@ Localize(M:Module R,
       zero? x == zero? (x.num)
       -x== [-x.num,x.den]
       x=y == y.den*x.num = x.den*y.num
+      before?(x,y) == before?(y.den*x.num, x.den*y.num)
       numer x == x.num
       denom x == x.den
       if M has OrderedAbelianGroup then

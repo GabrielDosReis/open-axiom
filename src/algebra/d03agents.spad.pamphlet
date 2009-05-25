@@ -55,6 +55,10 @@ d03AgentsPackage(): E == I where
 
     sum(a:EDF,b:EDF):EDF == a+b
 
+    greater(x: EDF, y: EDF): EDF ==
+      before?(x,y) => y
+      x
+
     varList(s:Symbol,n:NonNegativeInteger):LS ==
       [subscript(s,[t::OutputForm]) for t in expand([1..n])$Segment(Integer)]
 
@@ -69,7 +73,7 @@ d03AgentsPackage(): E == I where
       ls := variables(reduce(sum,p))
       le := [equation(u::EDF,v)$EEDF for u in ls for v in [x::EDF,y::EDF]]
       l := [eval(u,le)$EDF for u in p]
-      max(l.4,l.5) < 20 * max(l.1,max(l.2,l.3))
+      before?(greater(l.4,l.5), 20 * greater(l.1,greater(l.2,l.3)))
 
     elliptic?(args:PDEB):Boolean ==
       (args.st)="elliptic" => true

@@ -228,7 +228,7 @@ AlgebraicManipulations(R, F): Exports == Implementation where
     ratPoly  : F -> SparseUnivariatePolynomial F
       ++ ratPoly(f) returns a polynomial p such that p has no
       ++ algebraic coefficients, and \spad{p(f) = 0}.
-    if R has Join(OrderedSet, GcdDomain, RetractableTo Integer)
+    if R has Join(GcdDomain, RetractableTo Integer)
       and F has FunctionSpace(R) then
         rootPower  : F -> F
           ++ rootPower(f) transforms every radical power of the form
@@ -294,7 +294,7 @@ AlgebraicManipulations(R, F): Exports == Implementation where
                  [map(innerRF(#1, ll), kk) for kk in lk]), k, minPoly k)
       map(innerRF(#1, ll), q) (map(innerRF(#1, ll), k))
 
-    if R has Join(OrderedSet, GcdDomain, RetractableTo Integer)
+    if R has Join(GcdDomain, RetractableTo Integer)
      and F has FunctionSpace(R) then
       import PolynomialRoots(IndexedExponents K, K, R, P, F)
 
@@ -407,7 +407,7 @@ SimplifyAlgebraicNumberConvertPackage(): with
 ++   expand expressions involving transcendental operators.
 ++ Keywords: transcendental, manipulation.
 TranscendentalManipulations(R, F): Exports == Implementation where
-  R : Join(OrderedSet, GcdDomain)
+  R : GcdDomain
   F : Join(FunctionSpace R, TranscendentalFunctionCategory)
 
   Z       ==> Integer

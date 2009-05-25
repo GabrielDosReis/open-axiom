@@ -60,7 +60,7 @@ to reduce to zero.
 
 
 CombinatorialFunction(R, F): Exports == Implementation where
-  R: Join(OrderedSet, IntegralDomain)
+  R: IntegralDomain
   F: FunctionSpace R
 
   OP  ==> BasicOperator
@@ -518,7 +518,7 @@ dummy variable is introduced to make the indexing variable \lq local\rq.
       if R has RetractableTo(Z) and F has Algebra(Fraction(Z)) then
          iibinom l ==
            (s:=retractIfCan(first l-second l)@Union(R,"failed")) case R and
-             (t:=retractIfCan(s)@Union(Z,"failed")) case Z and s>0=>
+             (t:=retractIfCan(s)@Union(Z,"failed")) case Z and t > 0 =>
               ans:=1::F
               for i in 1..t repeat
                   ans:=ans*(second l+i::R::F)
@@ -616,7 +616,7 @@ equality.
 ++ Description: Provides some special functions over an integral domain.
 ++ Keywords: special, function.
 FunctionalSpecialFunction(R, F): Exports == Implementation where
-  R: Join(OrderedSet, IntegralDomain)
+  R: IntegralDomain
   F: FunctionSpace R
 
   OP  ==> BasicOperator
@@ -716,7 +716,7 @@ FunctionalSpecialFunction(R, F): Exports == Implementation where
     iabs x ==
       zero? x => 0
       is?(x, opabs) => x
-      x < 0 => kernel(opabs, -x)
+      before?(x,0) => kernel(opabs, -x)
       kernel(opabs, x)
 
     -- Could put more conditional special rules for other functions here
@@ -805,7 +805,7 @@ FunctionalSpecialFunction(R, F): Exports == Implementation where
 ++ Date Last Updated: 19 April 1991
 ++ Description: computes sums of top-level expressions;
 FunctionSpaceSum(R, F): Exports == Implementation where
-  R: Join(IntegralDomain, OrderedSet,
+  R: Join(IntegralDomain,
           RetractableTo Integer, LinearlyExplicitRingOver Integer)
   F: Join(FunctionSpace R, CombinatorialOpsCategory,
           AlgebraicallyClosedField, TranscendentalFunctionCategory)

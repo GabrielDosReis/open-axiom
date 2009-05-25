@@ -23,7 +23,7 @@
 ++ References:
 ++ Description: \spadtype{ExpressionToOpenMath} provides support for
 ++ converting objects of type \spadtype{Expression} into OpenMath.
-ExpressionToOpenMath(R: Join(OpenMath, OrderedSet, Ring)): with
+ExpressionToOpenMath(R: Join(OpenMath, Ring)): with
   OMwrite  : Expression R -> String
   OMwrite  : (Expression R, Boolean) -> String
   OMwrite  : (OpenMathDevice, Expression R) -> Void

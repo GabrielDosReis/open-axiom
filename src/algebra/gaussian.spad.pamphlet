@@ -35,7 +35,6 @@ ComplexCategory(R:CommutativeRing): Category ==
      imag     :   % -> R           ++ imag(x) returns imaginary part of x.
      real     :   % -> R           ++ real(x) returns real part of x.
      norm     :   % -> R           ++ norm(x) returns x * conjugate(x)
-     if R has OrderedSet then OrderedSet
      if R has IntegralDomain then
        IntegralDomain
        _exquo : (%,R) -> Union(%,"failed")
@@ -77,6 +76,10 @@ ComplexCategory(R:CommutativeRing): Category ==
        import MatrixCategoryFunctions2(%, Vector %, Vector %, Matrix %,
                                        R, Vector R, Vector R, Matrix R)
        SUP ==> SparseUnivariatePolynomial
+       before?(x,y) ==
+	 real x = real y => before?(imag x,imag y)
+	 before?(real x,real y)
+
        characteristicPolynomial x ==
           v := monomial(1,1)$SUP(R)
           v**2 - trace(x)*v**1 + norm(x)*v**0
@@ -229,11 +232,6 @@ ComplexCategory(R:CommutativeRing): Category ==
           l:PatternMatchResult(Float, %)) ==
            patternMatch(x, p, l)$ComplexPatternMatch(Float, R, %)
 
-
-       if R has OrderedSet then
-         x < y ==
-           real x = real y => imag x < imag y
-           real x < real y
 
        if R has IntegerNumberSystem then
          rational? x == zero? imag x
