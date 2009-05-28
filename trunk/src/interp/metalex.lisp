@@ -637,9 +637,10 @@ as keywords.")
 (defun-parse-token ARGUMENT-DESIGNATOR)
 
 (defun |PARSE-OperatorFunctionName| ()
-  (let ((tok (match-current-token 'keyword)))
+  (let ((tok (or (match-current-token 'keyword)
+		 (match-current-token 'gliph))))
     (when (and tok (member (token-symbol tok) |$OperatorFunctionNames|))
-      (Push-Reduction 'IDENTIFIER-TOKEN
+      (Push-Reduction '|PARSE-OperatorFunctionName|
 		      (copy-tree (token-symbol tok)))
       (action (advance-token)))))
 

@@ -17,15 +17,15 @@
 )abbrev category PROPLOG PropositionalLogic
 ++ Author: Gabriel Dos Reis
 ++ Date Created: Januray 14, 2008
-++ Date Last Modified: September 20, 2008
+++ Date Last Modified: May 27, 2009
 ++ Description: This category declares the connectives of
 ++ Propositional Logic.
 PropositionalLogic(): Category == SetCategory with
-  "not": % -> %
+  not: % -> %
     ++ not p returns the logical negation of `p'.
-  "and": (%, %) -> %
+  and: (%, %) -> %
     ++ p and q returns the logical conjunction of `p', `q'.
-  "or": (%, %) -> %
+  or: (%, %) -> %
     ++ p or q returns the logical disjunction of `p', `q'.
   implies: (%,%) -> %
     ++ implies(p,q) returns the logical implication of `q' by `p'.
@@ -223,7 +223,7 @@ PropositionalFormula(T: SetCategory): Public == Private where
 )abbrev domain REF Reference
 ++ Author: Stephen M. Watt
 ++ Date Created:
-++ Change History:
+++ Date Last Changed: May 27, 2009
 ++ Basic Operations: deref, elt, ref, setelt, setref, =
 ++ Related Constructors:
 ++ Keywords:  reference
@@ -242,7 +242,7 @@ Reference(S:Type): Type with
           ++ deref(n) is equivalent to \spad{elt(n)}.
         setref: (%, S) -> S
           ++ setref(n,m) same as \spad{setelt(n,m)}.
-        _=   : (%, %) -> Boolean
+        =   : (%, %) -> Boolean
           ++ a=b tests if \spad{a} and b are equal.
         if S has SetCategory then SetCategory
 
@@ -268,7 +268,7 @@ Reference(S:Type): Type with
 )abbrev category LOGIC Logic
 ++ Author: 
 ++ Date Created:
-++ Change History:
+++ Date Last Changed: May 27, 2009
 ++ Basic Operations: ~, /\, \/
 ++ Related Constructors:
 ++ Keywords: boolean
@@ -278,14 +278,14 @@ Reference(S:Type): Type with
 
 
 Logic: Category == BasicType with
-       _~:        % -> %
+       ~:        % -> %
 	++ ~(x) returns the logical complement of x.
-       _/_\:       (%, %) -> %
+       /\:       (%, %) -> %
 	++ \spadignore { /\ }returns the logical `meet', e.g. `and'.
-       _\_/:       (%, %) -> %
+       \/:       (%, %) -> %
 	++ \spadignore{ \/ } returns the logical `join', e.g. `or'.
   add
-    _\_/(x: %,y: %) == _~( _/_\(_~(x), _~(y)))
+    x \/ y == ~(~x /\ ~y)
 
 @
 \section{domain BOOLEAN Boolean}
@@ -293,7 +293,7 @@ Logic: Category == BasicType with
 )abbrev domain BOOLEAN Boolean
 ++ Author: Stephen M. Watt
 ++ Date Created:
-++ Date Last Changed: September 20, 2008
+++ Date Last Changed: May 27, 2009
 ++ Basic Operations: true, false, not, and, or, xor, nand, nor, implies
 ++ Related Constructors:
 ++ Keywords: boolean
@@ -322,11 +322,11 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
     false         == NIL$Lisp
     sample()      == true
     not b         == nt b
-    _~ b          == (b => false; true)
-    _and(a, b)    == AND(a,b)$Lisp
-    _/_\(a, b)    == AND(a,b)$Lisp
-    _or(a, b)     == OR(a,b)$Lisp
-    _\_/(a, b)    == OR(a,b)$Lisp
+    ~ b           == (b => false; true)
+    a and b       == AND(a,b)$Lisp
+    a /\ b        == AND(a,b)$Lisp
+    a or b        == OR(a,b)$Lisp
+    a \/ b        == OR(a,b)$Lisp
     xor(a, b)     == (a => nt b; b)
     nor(a, b)     == (a => false; nt b)
     nand(a, b)    == (a => nt b; true)
@@ -405,8 +405,8 @@ IndexedBits(mn:Integer): BitAggregate() with
         #v              == BVEC_-SIZE(v)$Lisp
         v = u           == BVEC_-EQUAL(v, u)$Lisp
         v < u           == BVEC_-GREATER(u, v)$Lisp
-        _and(u, v)      == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
-        _or(u, v)       == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
+        u and v         == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
+        u or v          == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
         xor(v,u)        == (#v=#u => BVEC_-XOR(v,u)$Lisp; map("xor",v,u))
         setelt(v:%, i:Integer, f:Boolean) ==
           BIT_-TO_-TRUTH(BVEC_-SETELT(v, range(v, i-mn), 
@@ -445,7 +445,7 @@ Bits(): Exports == Implementation where
 )abbrev domain KTVLOGIC KleeneTrivalentLogic
 ++ Author: Gabriel Dos Reis
 ++ Date Created: September 20, 2008
-++ Date Last Modified: September 20, 2008
+++ Date Last Modified: May 27, 2009
 ++ Description: 
 ++   This domain implements Kleene's 3-valued propositional logic.
 KleeneTrivalentLogic(): Public == Private where
@@ -453,11 +453,11 @@ KleeneTrivalentLogic(): Public == Private where
     false: %       ++ the definite falsehood value
     unknown: %     ++ the indefinite `unknown' 
     true: %        ++ the definite truth value
-    _case: (%,[| false |]) -> Boolean
+    case: (%,[| false |]) -> Boolean
       ++ x case false holds if the value of `x' is `false'
-    _case: (%,[| unknown |]) -> Boolean
+    case: (%,[| unknown |]) -> Boolean
       ++ x case unknown holds if the value of `x' is `unknown'
-    _case: (%,[| true |]) -> Boolean
+    case: (%,[| true |]) -> Boolean
       ++ s case true holds if the value of `x' is `true'.
   Private == add
     Rep == Byte    -- We need only 3 bits, in fact.
