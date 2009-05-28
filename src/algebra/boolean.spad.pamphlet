@@ -21,6 +21,10 @@
 ++ Description: This category declares the connectives of
 ++ Propositional Logic.
 PropositionalLogic(): Category == SetCategory with
+  true: %
+    ++ true is a logical constant.
+  false: %
+    ++ false is a logical constant.
   not: % -> %
     ++ not p returns the logical negation of `p'.
   and: (%, %) -> %
@@ -301,10 +305,6 @@ Logic: Category == BasicType with
 ++ true and false
 
 Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputForm) with
-    true: %
-      ++ true is a logical constant.
-    false: %
-      ++ false is a logical constant.
     xor    : (%, %) -> %
       ++ xor(a,b) returns the logical exclusive {\em or}
       ++ of Boolean \spad{a} and b.
