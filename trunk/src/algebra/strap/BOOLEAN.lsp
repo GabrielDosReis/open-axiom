@@ -6,160 +6,153 @@
 
 (PUT '|BOOLEAN;test;2$;1| '|SPADreplace| '(XLAM (|a|) |a|)) 
 
-(DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;nt|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;true;$;2|)) 
 
-(PUT '|BOOLEAN;nt| '|SPADreplace| 'NOT) 
+(PUT '|BOOLEAN;true;$;2| '|SPADreplace| '(XLAM NIL 'T)) 
 
-(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;true;$;3|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;false;$;3|)) 
 
-(PUT '|BOOLEAN;true;$;3| '|SPADreplace| '(XLAM NIL 'T)) 
-
-(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;false;$;4|)) 
-
-(PUT '|BOOLEAN;false;$;4| '|SPADreplace| '(XLAM NIL NIL)) 
+(PUT '|BOOLEAN;false;$;3| '|SPADreplace| '(XLAM NIL NIL)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;not;2$;5|)) 
+                |BOOLEAN;not;2$;4|)) 
 
-(PUT '|BOOLEAN;not;2$;5| '|SPADreplace| 'NOT) 
+(PUT '|BOOLEAN;not;2$;4| '|SPADreplace| 'NOT) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;~;2$;6|)) 
+                |BOOLEAN;~;2$;5|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;and;3$;7|)) 
+                |BOOLEAN;and;3$;6|)) 
 
-(PUT '|BOOLEAN;and;3$;7| '|SPADreplace| 'AND) 
-
-(DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;/\\;3$;8|)) 
-
-(PUT '|BOOLEAN;/\\;3$;8| '|SPADreplace| 'AND) 
+(PUT '|BOOLEAN;and;3$;6| '|SPADreplace| 'AND) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;or;3$;9|)) 
+                |BOOLEAN;/\\;3$;7|)) 
 
-(PUT '|BOOLEAN;or;3$;9| '|SPADreplace| 'OR) 
-
-(DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;\\/;3$;10|)) 
-
-(PUT '|BOOLEAN;\\/;3$;10| '|SPADreplace| 'OR) 
+(PUT '|BOOLEAN;/\\;3$;7| '|SPADreplace| 'AND) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;xor;3$;11|)) 
+                |BOOLEAN;or;3$;8|)) 
+
+(PUT '|BOOLEAN;or;3$;8| '|SPADreplace| 'OR) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;nor;3$;12|)) 
+                |BOOLEAN;\\/;3$;9|)) 
+
+(PUT '|BOOLEAN;\\/;3$;9| '|SPADreplace| 'OR) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;nand;3$;13|)) 
+                |BOOLEAN;xor;3$;10|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;=;3$;14|)) 
-
-(PUT '|BOOLEAN;=;3$;14| '|SPADreplace| 'EQ) 
+                |BOOLEAN;nor;3$;11|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;implies;3$;15|)) 
+                |BOOLEAN;nand;3$;12|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;equiv;3$;16|)) 
+                |BOOLEAN;=;3$;13|)) 
 
-(PUT '|BOOLEAN;equiv;3$;16| '|SPADreplace| 'EQ) 
+(PUT '|BOOLEAN;=;3$;13| '|SPADreplace| 'EQ) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
-                |BOOLEAN;<;3$;17|)) 
+                |BOOLEAN;implies;3$;14|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
+                |BOOLEAN;equiv;3$;15|)) 
+
+(PUT '|BOOLEAN;equiv;3$;15| '|SPADreplace| 'EQ) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
+                |BOOLEAN;<;3$;16|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
-                |BOOLEAN;size;Nni;18|)) 
+                |BOOLEAN;size;Nni;17|)) 
 
-(PUT '|BOOLEAN;size;Nni;18| '|SPADreplace| '(XLAM NIL 2)) 
+(PUT '|BOOLEAN;size;Nni;17| '|SPADreplace| '(XLAM NIL 2)) 
 
 (DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 1) |%Shell|) |%Boolean|)
-                |BOOLEAN;index;Pi$;19|)) 
+                |BOOLEAN;index;Pi$;18|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) (|%IntegerSection| 1))
-                |BOOLEAN;lookup;$Pi;20|)) 
+                |BOOLEAN;lookup;$Pi;19|)) 
 
-(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;random;$;21|)) 
-
-(DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Thing|)
-                |BOOLEAN;convert;$If;22|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;random;$;20|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Thing|)
-                |BOOLEAN;coerce;$Of;23|)) 
+                |BOOLEAN;convert;$If;21|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Thing|)
+                |BOOLEAN;coerce;$Of;22|)) 
 
 (DEFUN |BOOLEAN;test;2$;1| (|a| $) (DECLARE (IGNORE $)) |a|) 
 
-(DEFUN |BOOLEAN;nt| (|a| $) (DECLARE (IGNORE $)) (NOT |a|)) 
+(DEFUN |BOOLEAN;true;$;2| ($) (DECLARE (IGNORE $)) 'T) 
 
-(DEFUN |BOOLEAN;true;$;3| ($) (DECLARE (IGNORE $)) 'T) 
+(DEFUN |BOOLEAN;false;$;3| ($) (DECLARE (IGNORE $)) NIL) 
 
-(DEFUN |BOOLEAN;false;$;4| ($) (DECLARE (IGNORE $)) NIL) 
+(DEFUN |BOOLEAN;not;2$;4| (|b| $) (DECLARE (IGNORE $)) (NOT |b|)) 
 
-(DEFUN |BOOLEAN;not;2$;5| (|b| $) (DECLARE (IGNORE $)) (NOT |b|)) 
+(DEFUN |BOOLEAN;~;2$;5| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
 
-(DEFUN |BOOLEAN;~;2$;6| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
-
-(DEFUN |BOOLEAN;and;3$;7| (|a| |b| $)
+(DEFUN |BOOLEAN;and;3$;6| (|a| |b| $)
   (DECLARE (IGNORE $))
   (AND |a| |b|)) 
 
-(DEFUN |BOOLEAN;/\\;3$;8| (|a| |b| $)
+(DEFUN |BOOLEAN;/\\;3$;7| (|a| |b| $)
   (DECLARE (IGNORE $))
   (AND |a| |b|)) 
 
-(DEFUN |BOOLEAN;or;3$;9| (|a| |b| $)
+(DEFUN |BOOLEAN;or;3$;8| (|a| |b| $)
   (DECLARE (IGNORE $))
   (OR |a| |b|)) 
 
-(DEFUN |BOOLEAN;\\/;3$;10| (|a| |b| $)
+(DEFUN |BOOLEAN;\\/;3$;9| (|a| |b| $)
   (DECLARE (IGNORE $))
   (OR |a| |b|)) 
 
-(DEFUN |BOOLEAN;xor;3$;11| (|a| |b| $)
+(DEFUN |BOOLEAN;xor;3$;10| (|a| |b| $)
   (COND (|a| (NOT |b|)) ('T |b|))) 
 
-(DEFUN |BOOLEAN;nor;3$;12| (|a| |b| $)
+(DEFUN |BOOLEAN;nor;3$;11| (|a| |b| $)
   (COND (|a| 'NIL) ('T (NOT |b|)))) 
 
-(DEFUN |BOOLEAN;nand;3$;13| (|a| |b| $)
+(DEFUN |BOOLEAN;nand;3$;12| (|a| |b| $)
   (COND (|a| (NOT |b|)) ('T 'T))) 
 
-(DEFUN |BOOLEAN;=;3$;14| (|a| |b| $)
+(DEFUN |BOOLEAN;=;3$;13| (|a| |b| $)
   (DECLARE (IGNORE $))
   (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;implies;3$;15| (|a| |b| $) (COND (|a| |b|) ('T 'T))) 
+(DEFUN |BOOLEAN;implies;3$;14| (|a| |b| $) (COND (|a| |b|) ('T 'T))) 
 
-(DEFUN |BOOLEAN;equiv;3$;16| (|a| |b| $)
+(DEFUN |BOOLEAN;equiv;3$;15| (|a| |b| $)
   (DECLARE (IGNORE $))
   (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;<;3$;17| (|a| |b| $) (COND (|b| (NOT |a|)) ('T 'NIL))) 
+(DEFUN |BOOLEAN;<;3$;16| (|a| |b| $) (COND (|b| (NOT |a|)) ('T 'NIL))) 
 
-(DEFUN |BOOLEAN;size;Nni;18| ($) (DECLARE (IGNORE $)) 2) 
+(DEFUN |BOOLEAN;size;Nni;17| ($) (DECLARE (IGNORE $)) 2) 
 
-(DEFUN |BOOLEAN;index;Pi$;19| (|i| $)
+(DEFUN |BOOLEAN;index;Pi$;18| (|i| $)
   (COND ((SPADCALL |i| (|getShellEntry| $ 28)) 'NIL) ('T 'T))) 
 
-(DEFUN |BOOLEAN;lookup;$Pi;20| (|a| $) (COND (|a| 1) ('T 2))) 
+(DEFUN |BOOLEAN;lookup;$Pi;19| (|a| $) (COND (|a| 1) ('T 2))) 
 
-(DEFUN |BOOLEAN;random;$;21| ($)
+(DEFUN |BOOLEAN;random;$;20| ($)
   (COND ((SPADCALL (|random|) (|getShellEntry| $ 28)) 'NIL) ('T 'T))) 
 
-(DEFUN |BOOLEAN;convert;$If;22| (|x| $)
+(DEFUN |BOOLEAN;convert;$If;21| (|x| $)
   (COND (|x| '|true|) ('T '|false|))) 
 
-(DEFUN |BOOLEAN;coerce;$Of;23| (|x| $)
+(DEFUN |BOOLEAN;coerce;$Of;22| (|x| $)
   (COND (|x| '|true|) ('T '|false|))) 
 
 (DEFUN |Boolean| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1426)
+      (PROG (#0=#:G1425)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Boolean|) |Boolean|)
@@ -189,21 +182,21 @@
 (MAKEPROP '|Boolean| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL |BOOLEAN;test;2$;1|
              (CONS IDENTITY
-                   (FUNCALL (|dispatchFunction| |BOOLEAN;true;$;3|) $))
+                   (FUNCALL (|dispatchFunction| |BOOLEAN;true;$;2|) $))
              (CONS IDENTITY
-                   (FUNCALL (|dispatchFunction| |BOOLEAN;false;$;4|) $))
-             |BOOLEAN;not;2$;5| (|Boolean|) (0 . |false|) (4 . |true|)
-             |BOOLEAN;~;2$;6| |BOOLEAN;and;3$;7| |BOOLEAN;/\\;3$;8|
-             |BOOLEAN;or;3$;9| |BOOLEAN;\\/;3$;10| |BOOLEAN;xor;3$;11|
-             |BOOLEAN;nor;3$;12| |BOOLEAN;nand;3$;13| |BOOLEAN;=;3$;14|
-             |BOOLEAN;implies;3$;15| |BOOLEAN;equiv;3$;16|
-             |BOOLEAN;<;3$;17| (|NonNegativeInteger|)
-             |BOOLEAN;size;Nni;18| (|Integer|) (8 . |even?|)
-             (|PositiveInteger|) |BOOLEAN;index;Pi$;19| (13 . |One|)
-             |BOOLEAN;lookup;$Pi;20| (17 . |random|)
-             |BOOLEAN;random;$;21| (|InputForm|)
-             |BOOLEAN;convert;$If;22| (|OutputForm|)
-             |BOOLEAN;coerce;$Of;23| (|SingleInteger|) (|String|))
+                   (FUNCALL (|dispatchFunction| |BOOLEAN;false;$;3|) $))
+             |BOOLEAN;not;2$;4| (|Boolean|) (0 . |false|) (4 . |true|)
+             |BOOLEAN;~;2$;5| |BOOLEAN;and;3$;6| |BOOLEAN;/\\;3$;7|
+             |BOOLEAN;or;3$;8| |BOOLEAN;\\/;3$;9| |BOOLEAN;xor;3$;10|
+             |BOOLEAN;nor;3$;11| |BOOLEAN;nand;3$;12| |BOOLEAN;=;3$;13|
+             |BOOLEAN;implies;3$;14| |BOOLEAN;equiv;3$;15|
+             |BOOLEAN;<;3$;16| (|NonNegativeInteger|)
+             |BOOLEAN;size;Nni;17| (|Integer|) (8 . |even?|)
+             (|PositiveInteger|) |BOOLEAN;index;Pi$;18| (13 . |One|)
+             |BOOLEAN;lookup;$Pi;19| (17 . |random|)
+             |BOOLEAN;random;$;20| (|InputForm|)
+             |BOOLEAN;convert;$If;21| (|OutputForm|)
+             |BOOLEAN;coerce;$Of;22| (|SingleInteger|) (|String|))
           '#(~= 21 ~ 27 |xor| 32 |true| 38 |test| 42 |size| 47 |random|
              51 |or| 55 |not| 61 |nor| 66 |nand| 72 |min| 78 |max| 88
              |lookup| 98 |latex| 103 |index| 108 |implies| 113 |hash|

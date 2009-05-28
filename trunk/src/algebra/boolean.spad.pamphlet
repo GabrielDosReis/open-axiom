@@ -315,25 +315,29 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
     test: % -> %
       ++ test(b) returns b and is provided for compatibility with the new compiler.
   == add
+    import EQ: (%,%) -> Boolean from Foreign Builtin
+    import AND: (%,%) -> % from Foreign Builtin
+    import OR: (%,%) -> % from Foreign Builtin
+    import NOT: % -> % from Foreign Builtin
+
     test a        == a
 
-    nt(a: %): %   == NOT(a)$Lisp
     true          == 'T pretend %
-    false         == NIL$Lisp
+    false         == NIL$Foreign(Builtin)
     sample()      == true
-    not b         == nt b
+    not b         == NOT b
     ~ b           == (b => false; true)
-    a and b       == AND(a,b)$Lisp
-    a /\ b        == AND(a,b)$Lisp
-    a or b        == OR(a,b)$Lisp
-    a \/ b        == OR(a,b)$Lisp
-    xor(a, b)     == (a => nt b; b)
-    nor(a, b)     == (a => false; nt b)
-    nand(a, b)    == (a => nt b; true)
-    a = b         == EQ(a, b)$Lisp
+    a and b       == AND(a,b)
+    a /\ b        == AND(a,b)
+    a or b        == OR(a,b)
+    a \/ b        == OR(a,b)
+    xor(a, b)     == (a => NOT b; b)
+    nor(a, b)     == (a => false; NOT b)
+    nand(a, b)    == (a => NOT b; true)
+    a = b         == EQ(a, b)
     implies(a, b) == (a => b; true)
-    equiv(a,b)    == EQ(a, b)$Lisp
-    a < b         == (b => nt a; false)
+    equiv(a,b)    == EQ(a, b)
+    a < b         == (b => NOT a; false)
 
     size()        == 2
     index i       ==
@@ -450,9 +454,7 @@ Bits(): Exports == Implementation where
 ++   This domain implements Kleene's 3-valued propositional logic.
 KleeneTrivalentLogic(): Public == Private where
   Public == PropositionalLogic with
-    false: %       ++ the definite falsehood value
     unknown: %     ++ the indefinite `unknown' 
-    true: %        ++ the definite truth value
     case: (%,[| false |]) -> Boolean
       ++ x case false holds if the value of `x' is `false'
     case: (%,[| unknown |]) -> Boolean

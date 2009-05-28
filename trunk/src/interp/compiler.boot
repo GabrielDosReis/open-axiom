@@ -979,10 +979,10 @@ compList(l,m is ["List",mUnder],e) ==
 
 compVector: (%Form,%Mode,%Env) -> %Maybe %Triple
 compVector(l,m is ["Vector",mUnder],e) ==
-  null l => [$EmptyVector,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl="failed" => nil
-  [["VECTOR",:[T.expr for T in Tl]],m,e]
+  [["MAKE-ARRAY", #Tl, KEYWORD::ELEMENT_-TYPE, quoteForm getVMType mUnder,
+     KEYWORD::INITIAL_-CONTENTS, ["LIST", :[T.expr for T in Tl]]],m,e]
 
 --% MACROS
 
@@ -1360,6 +1360,8 @@ checkExternalEntity(id,type,lang,e) ==
   -- with exported operators.
   get(id,"modemap",e) =>
     stackAndThrow('"%1b already names exported operations in scope",[id])
+  -- We don't type check builtin declarations at the moment.
+  lang = "Builtin" => id
   -- Only functions are accepted at the moment.  And all mentioned
   --  types must be those that are supported by the FFI.
   type' := checkExternalEntityType(type,e) 
@@ -1388,7 +1390,7 @@ compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
     stackAndThrow('"%1bp takes exactly one argument",["Foreign"])
   not IDENTP lang =>
     stackAndThrow('"Argument to %1bp must be an identifier",["Foreign"])
-  lang ^= "C" =>
+  not MEMQ(lang, '(Builtin C)) =>
     stackAndThrow('"Sorry: Only %1bp is valid at the moment",["Foreign C"])
   -- 2. Make sure this import is not subverting anything we know
   id' := checkExternalEntity(id,type,lang,e)
