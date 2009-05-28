@@ -1241,11 +1241,11 @@ compPredicate(p,E) ==
 getSuccessEnvironment(a,e) ==
   a is ["is",id,m] =>
     IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
-         e:=put(id,"specialCase",m,e)
-         currentProplist:= getProplist(id,e)
-         [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
-         newProplist:= consProplistOf(id,currentProplist,"value",[m,:rest removeEnv T])
-         addBinding(id,newProplist,e)
+      e:=put(id,"specialCase",m,e)
+      currentProplist:= getProplist(id,e)
+      [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
+      newProplist:= consProplistOf(id,currentProplist,"value",[m,:rest removeEnv T])
+      addBinding(id,newProplist,e)
     e
   a is ["case",x,m] and IDENTP x =>
     put(x,"condition",[a,:get(x,"condition",e)],e)
@@ -1253,8 +1253,8 @@ getSuccessEnvironment(a,e) ==
 
 getInverseEnvironment(a,E) ==
   a is ["case",x,m] and IDENTP x =>
-           --the next two lines are necessary to get 3-branched Unions to work
-           -- old-style unions, that is
+    --the next two lines are necessary to get 3-branched Unions to work
+    -- old-style unions, that is
     (get(x,"condition",E) is [["OR",:oldpred]]) and member(a,oldpred) =>
       put(x,"condition",LIST MKPF(delete(a,oldpred),"OR"),E)
     getUnionMode(x,E) is ["Union",:l]
