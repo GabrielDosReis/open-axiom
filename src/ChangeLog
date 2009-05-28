@@ -1,3 +1,16 @@
+2009-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/newaux.lisp: Bot / and /\ are gliphs.
+	* interp/sys-constants.boot ($OperatorFunctionNames): Include /\
+	and \/.
+	* interp/fnewmeta.lisp (|PARSE-ReductionOp|): Tidy.
+	* interp/metalex.lisp (|PARSE-OperatorFunctionName|): Likewise.
+	* algebra/boolean.spad.pamphlet (PropositionalLogic): Use plain
+	syntax for operators.
+	(Logic): Likewise.
+	(Boolean): Likewise.
+	(KleeneTrivalentLogic): Likewise.
+
 2009-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-constants.boot ($OperatorFunctionNames): New.
@@ -61,7 +74,7 @@
 	* testsuite/interpreter/aw-193.input: New.
 	* testsuite/interpreter/aw-334.input: Likewise.
 
-2009-05-21  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2009-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (before?$SetCategory): New.
 

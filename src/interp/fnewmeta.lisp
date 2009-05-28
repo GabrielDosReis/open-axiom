@@ -168,7 +168,7 @@
 ;; Reduction:      ReductionOp Expr{1000} +(Reduce #2 #1) ;
 
 ;; ReductionOp:    ?(AND (GETL (CURRENT-SYMBOL) "Led)
-;;                       (MATCH-NEXT-TOKEN "SPECIAL-CHAR (CODE-CHAR 47))) % Forgive me!
+;;                       (MATCH-NEXT-TOKEN "GLIPH "/)) % Forgive me!
 ;;                 +=(CURRENT-SYMBOL) .(ADVANCE-TOKEN) .(ADVANCE-TOKEN) ;
 
 ;; Form:           'iterate' < 'from' Label +(#1) >! +(iterate -#1)
@@ -695,7 +695,7 @@
 
 (DEFUN |PARSE-ReductionOp| ()
   (AND (GETL (CURRENT-SYMBOL) '|Led|)
-       (MATCH-NEXT-TOKEN 'SPECIAL-CHAR (CODE-CHAR 47))
+       (MATCH-NEXT-TOKEN 'GLIPH '/)
        (PUSH-REDUCTION '|PARSE-ReductionOp| (CURRENT-SYMBOL))
        (ACTION (ADVANCE-TOKEN)) (ACTION (ADVANCE-TOKEN)))) 
 
