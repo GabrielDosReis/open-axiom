@@ -266,7 +266,7 @@ AntiSymm(R:Ring, lVar:List Symbol): Export == Implement where
         m = 0 => 0
         [ [Nul(dim), m::R] ]
 
-      characteristic() == characteristic()$R
+      characteristic == characteristic$R
 
       generator(j) == 
         -- j < 1 or j > dim => error "your subscript is out of range"

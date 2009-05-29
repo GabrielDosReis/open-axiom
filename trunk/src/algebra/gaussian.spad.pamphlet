@@ -132,7 +132,7 @@ ComplexCategory(R:CommutativeRing): Category ==
        trace x          == 2 * real x
        imaginary()      == complex(0, 1)
        conjugate x      == complex(real x, - imag x)
-       characteristic() == characteristic()$R
+       characteristic == characteristic$R
        map(fn, x)       == complex(fn real x, fn imag x)
        x = y            == real(x) = real(y) and imag(x) = imag(y)
        x + y            == complex(real x + real y, imag x + imag y)

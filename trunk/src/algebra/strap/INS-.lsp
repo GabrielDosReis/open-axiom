@@ -128,13 +128,13 @@
         ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 16))
          (PROG1 (LETT #0# (- (SPADCALL |x| (|getShellEntry| $ 29)))
                       |INS-;euclideanSize;SNni;9|)
-           (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
-               '(|NonNegativeInteger|) #0#)))
+           (|check-subtype| (NOT (< #0# 0)) '(|NonNegativeInteger|)
+               #0#)))
         ('T
          (PROG1 (LETT #1# (SPADCALL |x| (|getShellEntry| $ 29))
                       |INS-;euclideanSize;SNni;9|)
-           (|check-subtype| (COND ((< #1# 0) 'NIL) ('T 'T))
-               '(|NonNegativeInteger|) #1#))))))) 
+           (|check-subtype| (NOT (< #1# 0)) '(|NonNegativeInteger|)
+               #1#))))))) 
 
 (DEFUN |INS-;convert;SF;10| (|x| $)
   (SPADCALL (SPADCALL |x| (|getShellEntry| $ 29))

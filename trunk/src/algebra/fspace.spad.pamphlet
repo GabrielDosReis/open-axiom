@@ -610,7 +610,7 @@ FunctionSpace(R: SetCategory): Category == Definition where
 -- cannot use new()$Symbol because of possible re-instantiation
       gendiff := "%%0"::SY
 
-      characteristic()    == characteristic()$R
+      characteristic == characteristic$R
       coerce(k:K):%       == k::MP::%
       symsub(sy, i)       == concat(string sy, convert(i)@String)::SY
       numerator x         == numer(x)::%

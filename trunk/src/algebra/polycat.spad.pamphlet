@@ -501,7 +501,7 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
                                             -- column, i.e. to one variable
             llR:List List R := [ empty() for z in first ll]
             monslist:List List % := empty()
-            ch:=characteristic()$%
+            ch:=characteristic$%
             for l in ll repeat
                 mons:= "setUnion"/[primitiveMonomials u for u in l]
                 redmons:List % :=[]
@@ -530,7 +530,7 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
               ans := charthRoot ground p
               ans case "failed" => "failed"
               ans::R::%
-            ch:=characteristic()$%
+            ch:=characteristic$%
             charthRootlv(p,vars,ch)
           charthRootlv(p,vars,ch) ==
             empty? vars =>

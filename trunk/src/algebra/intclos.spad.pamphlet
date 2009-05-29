@@ -322,7 +322,7 @@ FunctionFieldIntegralBasis(R,UP,F): Exports == Implementation where
         tfm := ((rb * tfm0 * transpose rb) exquo (rbden * rbden)) :: Mat
 
     integralBasis() ==
-      n := rank()$F; p := characteristic()$F
+      n := rank()$F; p := characteristic$F
       (not zero? p) and (n >= p) =>
         error "integralBasis: possible wild ramification"
       tfm := traceMatrix()$F; disc := determinant tfm
@@ -330,7 +330,7 @@ FunctionFieldIntegralBasis(R,UP,F): Exports == Implementation where
       iIntegralBasis(tfm,disc,sing)
 
     localIntegralBasis prime ==
-      n := rank()$F; p := characteristic()$F
+      n := rank()$F; p := characteristic$F
       (not zero? p) and (n >= p) =>
         error "integralBasis: possible wild ramification"
       tfm := traceMatrix()$F; disc := determinant tfm
@@ -428,7 +428,7 @@ WildFunctionFieldIntegralBasis(K,R,UP,F): Exports == Implementation where
       -- 'standardBasis' is the basis for F as a FramedAlgebra;
       -- usually this is [1,y,y**2,...,y**(n-1)]
       p2 := prime * prime; sae := SAE(K,R,prime)
-      p := characteristic()$F; q := size()$sae
+      p := characteristic$F; q := size()$sae
       lp := leastPower(q,n)
       rb := scalarMatrix(n,1); rbinv := scalarMatrix(n,1)
       -- rb    = basis matrix of current order

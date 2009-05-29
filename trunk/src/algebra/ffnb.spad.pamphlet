@@ -665,7 +665,7 @@ divisor of the order of the multiplicative group"
         erg:=concat(erg,v)$Rep
       erg
 
-    characteristic() == characteristic()$GF
+    characteristic == characteristic$GF
 
     random() == random(extdeg)$INBFF
 

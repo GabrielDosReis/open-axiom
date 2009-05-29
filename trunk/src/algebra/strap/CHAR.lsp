@@ -100,8 +100,8 @@
     (RETURN
       (CODE-CHAR
           (PROG1 (LETT #0# (- |n| 1) |CHAR;index;Pi$;4|)
-            (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
-                '(|NonNegativeInteger|) #0#)))))) 
+            (|check-subtype| (NOT (< #0# 0)) '(|NonNegativeInteger|)
+                #0#)))))) 
 
 (DEFUN |CHAR;lookup;$Pi;5| (|c| $)
   (PROG (#0=#:G1404)

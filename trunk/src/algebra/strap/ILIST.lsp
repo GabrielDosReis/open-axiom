@@ -437,8 +437,7 @@
                          (|ILIST;rest;$Nni$;19| |p|
                              (PROG1 (LETT #0# (- |n| 1)
                                      |ILIST;split!;$I$;29|)
-                               (|check-subtype|
-                                   (COND ((< #0# 0) 'NIL) ('T 'T))
+                               (|check-subtype| (NOT (< #0# 0))
                                    '(|NonNegativeInteger|) #0#))
                              $)
                          |ILIST;split!;$I$;29|)
@@ -460,8 +459,7 @@
                     (SEQ (LETT |l|
                                (PROG1 (LETT #0# (QUOTIENT2 |n| 2)
                                        |ILIST;mergeSort|)
-                                 (|check-subtype|
-                                     (COND ((< #0# 0) 'NIL) ('T 'T))
+                                 (|check-subtype| (NOT (< #0# 0))
                                      '(|NonNegativeInteger|) #0#))
                                |ILIST;mergeSort|)
                          (LETT |q| (|ILIST;split!;$I$;29| |p| |l| $)

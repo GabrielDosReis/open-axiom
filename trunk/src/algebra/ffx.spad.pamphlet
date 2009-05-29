@@ -36,7 +36,7 @@ IrredPolyOverFiniteField(GF:FiniteFieldCategory): Exports == Impl where
     getIrredPoly  : (Z, N) -> SUP
     qAdicExpansion: Z -> SUP
 
-    p := characteristic()$GF :: N
+    p := characteristic$GF :: N
     q := size()$GF :: N
 
     qAdicExpansion(z : Z): SUP ==

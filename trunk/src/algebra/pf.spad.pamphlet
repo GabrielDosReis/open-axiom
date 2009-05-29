@@ -103,7 +103,7 @@ InnerPrimeField(p:PositiveInteger): Exports == Implementation where
 
     createNormalElement() == 1
 
-    characteristic() == p
+    characteristic == p
 
     factorsOfCyclicGroupSize() ==
       p=2 => facOfGroupSize -- this fixes an infinite loop of functions

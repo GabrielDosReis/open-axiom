@@ -404,7 +404,7 @@ SquareMatrix(ndim,R): Exports == Implementation where
     ONE  := scalarMatrix 1
     1    == ONE
 
-    characteristic() == characteristic()$R
+    characteristic == characteristic$R
 
     new c == per new(ndim,ndim,c)$Rep
  

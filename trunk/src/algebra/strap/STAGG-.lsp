@@ -86,8 +86,7 @@
                   (LETT |x|
                         (SPADCALL |x|
                             (PROG1 |i|
-                              (|check-subtype|
-                                  (COND ((< |i| 0) 'NIL) ('T 'T))
+                              (|check-subtype| (NOT (< |i| 0))
                                   '(|NonNegativeInteger|) |i|))
                             (|getShellEntry| $ 28))
                         |STAGG-;elt;AIS;5|)
@@ -108,8 +107,7 @@
                     (SPADCALL
                         (SPADCALL |x|
                             (PROG1 |l|
-                              (|check-subtype|
-                                  (COND ((< |l| 0) 'NIL) ('T 'T))
+                              (|check-subtype| (NOT (< |l| 0))
                                   '(|NonNegativeInteger|) |l|))
                             (|getShellEntry| $ 28))
                         (|getShellEntry| $ 33)))
@@ -126,18 +124,14 @@
                                       (SPADCALL |x|
                                        (PROG1 |l|
                                          (|check-subtype|
-                                          (COND
-                                            ((< |l| 0) 'NIL)
-                                            ('T 'T))
+                                          (NOT (< |l| 0))
                                           '(|NonNegativeInteger|) |l|))
                                        (|getShellEntry| $ 28))
                                       (PROG1
                                        (LETT #0# (+ (- |h| |l|) 1)
                                         |STAGG-;elt;AUsA;6|)
                                         (|check-subtype|
-                                         (COND
-                                           ((< #0# 0) 'NIL)
-                                           ('T 'T))
+                                         (NOT (< #0# 0))
                                          '(|NonNegativeInteger|) #0#))
                                       (|getShellEntry| $ 37))))))))))))) 
 
@@ -195,8 +189,7 @@
                   (LETT |x|
                         (SPADCALL |x|
                             (PROG1 |i|
-                              (|check-subtype|
-                                  (COND ((< |i| 0) 'NIL) ('T 'T))
+                              (|check-subtype| (NOT (< |i| 0))
                                   '(|NonNegativeInteger|) |i|))
                             (|getShellEntry| $ 28))
                         |STAGG-;setelt;AI2S;11|)
@@ -231,9 +224,7 @@
                                         (SPADCALL |x|
                                          (PROG1 |l|
                                            (|check-subtype|
-                                            (COND
-                                              ((< |l| 0) 'NIL)
-                                              ('T 'T))
+                                            (NOT (< |l| 0))
                                             '(|NonNegativeInteger|)
                                             |l|))
                                          (|getShellEntry| $ 28))
@@ -244,9 +235,7 @@
                                           (LETT #0# (+ (- |h| |l|) 1)
                                            |STAGG-;setelt;AUs2S;12|)
                                            (|check-subtype|
-                                            (COND
-                                              ((< #0# 0) 'NIL)
-                                              ('T 'T))
+                                            (NOT (< #0# 0))
                                             '(|NonNegativeInteger|)
                                             #0#))
                                          (|getShellEntry| $ 28))

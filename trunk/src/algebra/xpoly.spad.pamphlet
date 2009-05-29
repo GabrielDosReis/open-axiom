@@ -1063,7 +1063,7 @@ XRecursivePolynomial(VarSet:OrderedSet,R:Ring):  Xcat == Xdef where
          p case R => 0$%
          [0$R,p.reg]$VPOLY
 
-       characteristic == characteristic()$R
+       characteristic == characteristic$R
        recip p ==
          p case R => recip(p::R)
          "failed"

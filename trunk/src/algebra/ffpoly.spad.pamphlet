@@ -275,7 +275,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
 
 --    qEulerPhiCyclotomic n ==
 --      n = 1 => (sizeGF - 1) pretend PI
---      p : PI := characteristic()$GF :: PI
+--      p : PI := characteristic$GF :: PI
 --      (n rem p) = 0 => error
 --        "cyclotomic polynomial not defined for this argument value"
 --      q  : PI := sizeGF
@@ -332,7 +332,7 @@ FiniteFieldPolynomialPackage GF : Exports == Implementation where
       -- such that d divides q**k - 1 ([LN] p.65, Th. 2.47)
       n = 1 => (sizeGF - 1) :: NNI :: PI
       m : PI := n
-      p : PI := characteristic()$GF :: PI
+      p : PI := characteristic$GF :: PI
       q : PI := sizeGF
       while (m rem p) = 0 repeat   -- find m such that
         m := (m quo p) :: PI       -- n = m * p**r and gcd(m,p) = 1

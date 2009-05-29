@@ -62,7 +62,7 @@ ModularRing(R,Mod,reduction:(R,Mod) -> R,
       coerce(x):OutputForm == (x.val)::OutputForm
       reduce (a:R,m:Mod) == [reduction(a,m),m]$Rep
 
-      characteristic():NonNegativeInteger == characteristic()$R
+      characteristic:NonNegativeInteger == characteristic$R
       0 == [0$R,0$Mod]$Rep
       1 == [1$R,0$Mod]$Rep
       zero? x == zero? x.val

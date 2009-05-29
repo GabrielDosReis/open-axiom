@@ -361,7 +361,7 @@ MachineFloat(): Exports == Implementation where
       sign(m1) = 0 and sign(m2) = -1 => false
       true
 
-    characteristic():NNI == 0
+    characteristic:NNI == 0
 
 @
 \section{domain MCMPLX MachineComplex}

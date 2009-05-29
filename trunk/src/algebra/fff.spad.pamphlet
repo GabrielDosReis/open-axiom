@@ -112,7 +112,7 @@ FiniteFieldFunctions(GF): Exports == Implementation where
     createLowComplexityTable(n) ==
       q:=size()$GF
       -- this algorithm works only for prime fields
-      p:=characteristic()$GF
+      p:=characteristic$GF
       -- search of a suitable parameter k
       k:NNI:=0
       a:NNI
@@ -240,7 +240,7 @@ FiniteFieldFunctions(GF): Exports == Implementation where
         helparr.(lookup(a -$SAE(GF,SUP,f) 1$SAE(GF,SUP,f)_
            )$SAE(GF,SUP,f)):=i::SI
         a:=a * primElement
-      characteristic() = 2 =>
+      characteristic$GF = 2 =>
         a:=primElement
         for i in 1..(qm1 quo 2) repeat
           zechlog.i:=helparr.lookup(a)$SAE(GF,SUP,f)

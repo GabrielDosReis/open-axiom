@@ -298,7 +298,7 @@ UnivariatePuiseuxSeriesConstructor(Coef,ULS):_
 
     map(fcn,upxs) == puiseux(getExpon upxs,map(fcn,getULS upxs))
 
-    characteristic() == characteristic()$Coef
+    characteristic == characteristic$Coef
 
     -- multiplyCoefficients(f,upxs) ==
       -- r := getExpon upxs

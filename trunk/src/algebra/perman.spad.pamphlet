@@ -229,7 +229,7 @@ Permanent(n : PositiveInteger, R : Ring with commutative("*")):
       c : R := 0
       sgn : R := 1
       if (not (R has IntegralDomain))
-        -- or (characteristic()$R = (2:NNI))
+        -- or (characteristic$R = (2:NNI))
         -- compiler refuses to compile the line above !!
         or  (sgn + sgn = c)
       then return permanent3(x)

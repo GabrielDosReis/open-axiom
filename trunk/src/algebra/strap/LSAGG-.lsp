@@ -252,8 +252,7 @@
                                    (PROG1
                                     (LETT #0# (- (- |i| 1) |m|)
                                      |LSAGG-;insert!;SAIA;7|)
-                                     (|check-subtype|
-                                      (COND ((< #0# 0) 'NIL) ('T 'T))
+                                     (|check-subtype| (NOT (< #0# 0))
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
                                |LSAGG-;insert!;SAIA;7|)
@@ -280,8 +279,7 @@
                                    (PROG1
                                     (LETT #0# (- (- |i| 1) |m|)
                                      |LSAGG-;insert!;2AIA;8|)
-                                     (|check-subtype|
-                                      (COND ((< #0# 0) 'NIL) ('T 'T))
+                                     (|check-subtype| (NOT (< #0# 0))
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
                                |LSAGG-;insert!;2AIA;8|)
@@ -360,8 +358,7 @@
                                    (PROG1
                                     (LETT #0# (- (- |i| 1) |m|)
                                      |LSAGG-;delete!;AIA;10|)
-                                     (|check-subtype|
-                                      (COND ((< #0# 0) 'NIL) ('T 'T))
+                                     (|check-subtype| (NOT (< #0# 0))
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
                                |LSAGG-;delete!;AIA;10|)
@@ -395,9 +392,7 @@
                                        (LETT #0# (- (+ |h| 1) |m|)
                                         |LSAGG-;delete!;AUsA;11|)
                                         (|check-subtype|
-                                         (COND
-                                           ((< #0# 0) 'NIL)
-                                           ('T 'T))
+                                         (NOT (< #0# 0))
                                          '(|NonNegativeInteger|) #0#))
                                       (|getShellEntry| $ 39)))
                                  ('T
@@ -407,9 +402,7 @@
                                           (LETT #1# (- (- |l| 1) |m|)
                                            |LSAGG-;delete!;AUsA;11|)
                                            (|check-subtype|
-                                            (COND
-                                              ((< #1# 0) 'NIL)
-                                              ('T 'T))
+                                            (NOT (< #1# 0))
                                             '(|NonNegativeInteger|)
                                             #1#))
                                          (|getShellEntry| $ 39))
@@ -420,9 +413,7 @@
                                           (LETT #2# (+ (- |h| |l|) 2)
                                            |LSAGG-;delete!;AUsA;11|)
                                            (|check-subtype|
-                                            (COND
-                                              ((< #2# 0) 'NIL)
-                                              ('T 'T))
+                                            (NOT (< #2# 0))
                                             '(|NonNegativeInteger|)
                                             #2#))
                                          (|getShellEntry| $ 39))
@@ -490,8 +481,7 @@
                     (SEQ (LETT |l|
                                (PROG1 (LETT #0# (QUOTIENT2 |n| 2)
                                        |LSAGG-;mergeSort|)
-                                 (|check-subtype|
-                                     (COND ((< #0# 0) 'NIL) ('T 'T))
+                                 (|check-subtype| (NOT (< #0# 0))
                                      '(|NonNegativeInteger|) #0#))
                                |LSAGG-;mergeSort|)
                          (LETT |q|
@@ -700,8 +690,7 @@
                                    (PROG1
                                     (LETT #0# (- |s| |m|)
                                      |LSAGG-;copyInto!;2AIA;22|)
-                                     (|check-subtype|
-                                      (COND ((< #0# 0) 'NIL) ('T 'T))
+                                     (|check-subtype| (NOT (< #0# 0))
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
                                |LSAGG-;copyInto!;2AIA;22|)
@@ -745,8 +734,7 @@
                                    (PROG1
                                     (LETT #0# (- |s| |m|)
                                      |LSAGG-;position;SA2I;23|)
-                                     (|check-subtype|
-                                      (COND ((< #0# 0) 'NIL) ('T 'T))
+                                     (|check-subtype| (NOT (< #0# 0))
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
                                |LSAGG-;position;SA2I;23|)

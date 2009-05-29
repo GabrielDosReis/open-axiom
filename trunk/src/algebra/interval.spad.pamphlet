@@ -242,7 +242,7 @@ Interval(R:Join(FloatingPointSystem,TranscendentalFunctionCategory)): IntervalCa
   coerce(u:%):OutputForm ==
     bracket([coerce inf(u), coerce sup(u)]$List(OutputForm))
 
-  characteristic():NonNegativeInteger == 0
+  characteristic:NonNegativeInteger == 0
 
 
   -- Explicit export from TranscendentalFunctionCategory

@@ -105,7 +105,7 @@ LocalAlgebra(A: Algebra R,
  == Localize(A, R, S) add
         1 == 1$A / 1$S
         x:% * y:% == (numer(x) * numer(y)) / (denom(x) * denom(y))
-        characteristic() == characteristic()$A
+        characteristic == characteristic$A
 
 @
 \section{category QFCAT QuotientFieldCategory}
@@ -180,7 +180,7 @@ QuotientFieldCategory(S: IntegralDomain): Category ==
 
     map(fn, x)                         == (fn numer x) / (fn denom x)
     reducedSystem(m:Matrix %):Matrix S == clearDenominator m
-    characteristic()                   == characteristic()$S
+    characteristic == characteristic$S
 
     differentiate(x:%, deriv:S -> S) ==
         n := numer x
@@ -560,7 +560,7 @@ Fraction(S: IntegralDomain): QuotientFieldCategory S with
                -- to find x = p-th root of n/d
                -- observe that xd is p-th root of n*d**(p-1)
                ans:=charthRoot(x.num *
-                      (x.den)**(characteristic()$%-1)::NonNegativeInteger)
+                      (x.den)**(characteristic$%-1)::NonNegativeInteger)
                ans case "failed" => "failed"
                ans / x.den
           clear: List % -> List S

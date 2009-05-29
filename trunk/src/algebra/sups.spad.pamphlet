@@ -234,7 +234,7 @@ InnerSparseUnivariatePowerSeries(Coef): Exports == Implementation where
 
 --% values
 
-    characteristic() == characteristic()$Coef
+    characteristic == characteristic$Coef
 
     0 == monomial(0,0)
     1 == monomial(1,0)

@@ -450,8 +450,7 @@
                                    $)
                                (|getShellEntry| $ 35)))
                       |DFLOAT;bits;Pi;10|)
-           (|check-subtype|
-               (AND (COND ((< #0# 0) 'NIL) ('T 'T)) (< 0 #0#))
+           (|check-subtype| (AND (NOT (< #0# 0)) (< 0 #0#))
                '(|PositiveInteger|) #0#))))))) 
 
 (DEFUN |DFLOAT;max;$;11| ($)
@@ -641,8 +640,8 @@
       (|DFLOAT;rationalApproximation;$2NniF;84| |x|
           (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
                        |DFLOAT;retract;$F;77|)
-            (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
-                '(|NonNegativeInteger|) #0#))
+            (|check-subtype| (NOT (< #0# 0)) '(|NonNegativeInteger|)
+                #0#))
           (FLOAT-RADIX 0.0) $)))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;78| (|x| $)
@@ -652,7 +651,7 @@
             (|DFLOAT;rationalApproximation;$2NniF;84| |x|
                 (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
                              |DFLOAT;retractIfCan;$U;78|)
-                  (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
+                  (|check-subtype| (NOT (< #0# 0))
                       '(|NonNegativeInteger|) #0#))
                 (FLOAT-RADIX 0.0) $))))) 
 
@@ -737,9 +736,7 @@
                                        (LETT #0# (- |ex|)
                                         |DFLOAT;rationalApproximation;$2NniF;84|)
                                         (|check-subtype|
-                                         (COND
-                                           ((< #0# 0) 'NIL)
-                                           ('T 'T))
+                                         (NOT (< #0# 0))
                                          '(|NonNegativeInteger|) #0#)))
                                      |DFLOAT;rationalApproximation;$2NniF;84|)
                                     (EXIT
@@ -834,9 +831,7 @@
                                     (EXPT BASE
                                      (PROG1 |ex|
                                        (|check-subtype|
-                                        (COND
-                                          ((< |ex| 0) 'NIL)
-                                          ('T 'T))
+                                        (NOT (< |ex| 0))
                                         '(|NonNegativeInteger|) |ex|))))
                                    (|getShellEntry| $ 142)))))))
            #1# (EXIT #1#))))) 

@@ -231,7 +231,7 @@ PartialFraction(R: EuclideanDomain): Cat == Capsule where
 
     0 == [0$R, nil()$LfTerm]
     1 == [1$R, nil()$LfTerm]
-    characteristic() == characteristic()$R
+    characteristic == characteristic$R
 
     coerce(r): % == [r, nil()$LfTerm]
     coerce(n): % == [(n :: R), nil()$LfTerm]

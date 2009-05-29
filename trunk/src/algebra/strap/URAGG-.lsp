@@ -452,8 +452,7 @@
                         (SPADCALL |x|
                             (PROG1 (LETT #0# (- |m| |n|)
                                     |URAGG-;last;ANniA;22|)
-                              (|check-subtype|
-                                  (COND ((< #0# 0) 'NIL) ('T 'T))
+                              (|check-subtype| (NOT (< #0# 0))
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 62))
                         (|getShellEntry| $ 63))))))))) 
@@ -590,8 +589,7 @@
                          (SPADCALL |p|
                              (PROG1 (LETT #0# (- |n| 1)
                                      |URAGG-;split!;AIA;32|)
-                               (|check-subtype|
-                                   (COND ((< #0# 0) 'NIL) ('T 'T))
+                               (|check-subtype| (NOT (< #0# 0))
                                    '(|NonNegativeInteger|) #0#))
                              (|getShellEntry| $ 62))
                          |URAGG-;split!;AIA;32|)

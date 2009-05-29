@@ -89,8 +89,8 @@ OctonionCategory(R: CommutativeRing): Category ==
        inv : % -> % 
          ++ inv(o) returns the inverse of o if it exists.
  add
-     characteristic() == 
-       characteristic()$R
+     characteristic == 
+       characteristic$R
      conjugate x ==
        octon(real x, - imagi x, - imagj x, - imagk x, - imagE x,_
        - imagI x, - imagJ x, - imagK x)
