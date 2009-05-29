@@ -103,19 +103,19 @@
   (NOT (SPADCALL |x| (|getShellEntry| $ 13)))) 
 
 (DEFUN |INS-;positive?;SB;4| (|x| $)
-  (SPADCALL (|spadConstant| $ 10) |x| (|getShellEntry| $ 15))) 
+  (SPADCALL (|spadConstant| $ 10) |x| (|getShellEntry| $ 16))) 
 
 (DEFUN |INS-;copy;2S;5| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
 (DEFUN |INS-;bit?;2SB;6| (|x| |i| $)
   (SPADCALL
-      (SPADCALL |x| (SPADCALL |i| (|getShellEntry| $ 18))
-          (|getShellEntry| $ 19))
+      (SPADCALL |x| (SPADCALL |i| (|getShellEntry| $ 19))
+          (|getShellEntry| $ 20))
       (|getShellEntry| $ 13))) 
 
 (DEFUN |INS-;mask;2S;7| (|n| $)
-  (SPADCALL (SPADCALL (|spadConstant| $ 21) |n| (|getShellEntry| $ 19))
-      (|getShellEntry| $ 22))) 
+  (SPADCALL (SPADCALL (|spadConstant| $ 22) |n| (|getShellEntry| $ 20))
+      (|getShellEntry| $ 23))) 
 
 (DEFUN |INS-;rational?;SB;8| (|x| $) (DECLARE (IGNORE $)) 'T) 
 
@@ -123,148 +123,148 @@
   (PROG (#0=#:G1426 #1=#:G1427)
     (RETURN
       (COND
-        ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 26))
+        ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 27))
          (|error| "euclideanSize called on zero"))
-        ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 15))
-         (PROG1 (LETT #0# (- (SPADCALL |x| (|getShellEntry| $ 28)))
+        ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 16))
+         (PROG1 (LETT #0# (- (SPADCALL |x| (|getShellEntry| $ 29)))
                       |INS-;euclideanSize;SNni;9|)
            (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
                '(|NonNegativeInteger|) #0#)))
         ('T
-         (PROG1 (LETT #1# (SPADCALL |x| (|getShellEntry| $ 28))
+         (PROG1 (LETT #1# (SPADCALL |x| (|getShellEntry| $ 29))
                       |INS-;euclideanSize;SNni;9|)
            (|check-subtype| (COND ((< #1# 0) 'NIL) ('T 'T))
                '(|NonNegativeInteger|) #1#))))))) 
 
 (DEFUN |INS-;convert;SF;10| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 28))
-      (|getShellEntry| $ 32))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 29))
+      (|getShellEntry| $ 33))) 
 
 (DEFUN |INS-;convert;SDf;11| (|x| $)
-  (FLOAT (SPADCALL |x| (|getShellEntry| $ 28)) |$DoubleFloatMaximum|)) 
+  (FLOAT (SPADCALL |x| (|getShellEntry| $ 29)) |$DoubleFloatMaximum|)) 
 
 (DEFUN |INS-;convert;SIf;12| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 28))
-      (|getShellEntry| $ 38))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 29))
+      (|getShellEntry| $ 39))) 
 
 (DEFUN |INS-;retract;SI;13| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 28))) 
+  (SPADCALL |x| (|getShellEntry| $ 29))) 
 
 (DEFUN |INS-;convert;SP;14| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 28))
-      (|getShellEntry| $ 42))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 29))
+      (|getShellEntry| $ 43))) 
 
 (DEFUN |INS-;factor;SF;15| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 46))) 
+  (SPADCALL |x| (|getShellEntry| $ 47))) 
 
 (DEFUN |INS-;squareFree;SF;16| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 49))) 
+  (SPADCALL |x| (|getShellEntry| $ 50))) 
 
 (DEFUN |INS-;prime?;SB;17| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 52))) 
+  (SPADCALL |x| (|getShellEntry| $ 53))) 
 
 (DEFUN |INS-;factorial;2S;18| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 55))) 
+  (SPADCALL |x| (|getShellEntry| $ 56))) 
 
 (DEFUN |INS-;binomial;3S;19| (|n| |m| $)
-  (SPADCALL |n| |m| (|getShellEntry| $ 57))) 
+  (SPADCALL |n| |m| (|getShellEntry| $ 58))) 
 
 (DEFUN |INS-;permutation;3S;20| (|n| |m| $)
-  (SPADCALL |n| |m| (|getShellEntry| $ 59))) 
+  (SPADCALL |n| |m| (|getShellEntry| $ 60))) 
 
 (DEFUN |INS-;retractIfCan;SU;21| (|x| $)
-  (CONS 0 (SPADCALL |x| (|getShellEntry| $ 28)))) 
+  (CONS 0 (SPADCALL |x| (|getShellEntry| $ 29)))) 
 
 (DEFUN |INS-;init;S;22| ($) (|spadConstant| $ 10)) 
 
 (DEFUN |INS-;nextItem;SU;23| (|n| $)
   (COND
-    ((SPADCALL |n| (|getShellEntry| $ 64))
-     (CONS 0 (|spadConstant| $ 21)))
-    ((SPADCALL (|spadConstant| $ 10) |n| (|getShellEntry| $ 15))
-     (CONS 0 (SPADCALL |n| (|getShellEntry| $ 18))))
+    ((SPADCALL |n| (|getShellEntry| $ 65))
+     (CONS 0 (|spadConstant| $ 22)))
+    ((SPADCALL (|spadConstant| $ 10) |n| (|getShellEntry| $ 16))
+     (CONS 0 (SPADCALL |n| (|getShellEntry| $ 19))))
     ('T
      (CONS 0
-           (SPADCALL (|spadConstant| $ 21) |n| (|getShellEntry| $ 65)))))) 
+           (SPADCALL (|spadConstant| $ 22) |n| (|getShellEntry| $ 66)))))) 
 
 (DEFUN |INS-;patternMatch;SP2Pmr;24| (|x| |p| |l| $)
-  (SPADCALL |x| |p| |l| (|getShellEntry| $ 70))) 
+  (SPADCALL |x| |p| |l| (|getShellEntry| $ 71))) 
 
 (DEFUN |INS-;rational;SF;25| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 28))
-      (|getShellEntry| $ 74))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 29))
+      (|getShellEntry| $ 75))) 
 
 (DEFUN |INS-;rationalIfCan;SU;26| (|x| $)
   (CONS 0
-        (SPADCALL (SPADCALL |x| (|getShellEntry| $ 28))
-            (|getShellEntry| $ 74)))) 
+        (SPADCALL (SPADCALL |x| (|getShellEntry| $ 29))
+            (|getShellEntry| $ 75)))) 
 
 (DEFUN |INS-;symmetricRemainder;3S;27| (|x| |n| $)
   (PROG (|r|)
     (RETURN
-      (SEQ (LETT |r| (SPADCALL |x| |n| (|getShellEntry| $ 78))
+      (SEQ (LETT |r| (SPADCALL |x| |n| (|getShellEntry| $ 79))
                  |INS-;symmetricRemainder;3S;27|)
            (EXIT (COND
                    ((SPADCALL |r| (|spadConstant| $ 10)
-                        (|getShellEntry| $ 26))
+                        (|getShellEntry| $ 27))
                     |r|)
                    ('T
                     (SEQ (COND
                            ((SPADCALL |n| (|spadConstant| $ 10)
-                                (|getShellEntry| $ 15))
+                                (|getShellEntry| $ 16))
                             (LETT |n|
-                                  (SPADCALL |n| (|getShellEntry| $ 18))
+                                  (SPADCALL |n| (|getShellEntry| $ 19))
                                   |INS-;symmetricRemainder;3S;27|)))
                          (EXIT (COND
                                  ((SPADCALL (|spadConstant| $ 10) |r|
-                                      (|getShellEntry| $ 15))
+                                      (|getShellEntry| $ 16))
                                   (COND
                                     ((SPADCALL |n|
                                       (SPADCALL 2 |r|
-                                       (|getShellEntry| $ 80))
-                                      (|getShellEntry| $ 15))
+                                       (|getShellEntry| $ 81))
+                                      (|getShellEntry| $ 16))
                                      (SPADCALL |r| |n|
-                                      (|getShellEntry| $ 65)))
+                                      (|getShellEntry| $ 66)))
                                     ('T |r|)))
                                  ((NOT (SPADCALL (|spadConstant| $ 10)
                                         (SPADCALL
                                          (SPADCALL 2 |r|
-                                          (|getShellEntry| $ 80))
-                                         |n| (|getShellEntry| $ 81))
-                                        (|getShellEntry| $ 15)))
+                                          (|getShellEntry| $ 81))
+                                         |n| (|getShellEntry| $ 82))
+                                        (|getShellEntry| $ 16)))
                                   (SPADCALL |r| |n|
-                                      (|getShellEntry| $ 81)))
+                                      (|getShellEntry| $ 82)))
                                  ('T |r|))))))))))) 
 
 (DEFUN |INS-;invmod;3S;28| (|a| |b| $)
   (PROG (|q| |r| |r1| |c| |c1| |d| |d1|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |a| (|getShellEntry| $ 83))
-              (LETT |a| (SPADCALL |a| |b| (|getShellEntry| $ 84))
+             ((SPADCALL |a| (|getShellEntry| $ 84))
+              (LETT |a| (SPADCALL |a| |b| (|getShellEntry| $ 85))
                     |INS-;invmod;3S;28|)))
            (LETT |c| |a| |INS-;invmod;3S;28|)
-           (LETT |c1| (|spadConstant| $ 21) |INS-;invmod;3S;28|)
+           (LETT |c1| (|spadConstant| $ 22) |INS-;invmod;3S;28|)
            (LETT |d| |b| |INS-;invmod;3S;28|)
            (LETT |d1| (|spadConstant| $ 10) |INS-;invmod;3S;28|)
            (SEQ G190
                 (COND
-                  ((NULL (NOT (SPADCALL |d| (|getShellEntry| $ 64))))
+                  ((NULL (NOT (SPADCALL |d| (|getShellEntry| $ 65))))
                    (GO G191)))
                 (SEQ (LETT |q|
-                           (SPADCALL |c| |d| (|getShellEntry| $ 85))
+                           (SPADCALL |c| |d| (|getShellEntry| $ 86))
                            |INS-;invmod;3S;28|)
                      (LETT |r|
                            (SPADCALL |c|
                                (SPADCALL |q| |d|
-                                   (|getShellEntry| $ 86))
-                               (|getShellEntry| $ 65))
+                                   (|getShellEntry| $ 87))
+                               (|getShellEntry| $ 66))
                            |INS-;invmod;3S;28|)
                      (LETT |r1|
                            (SPADCALL |c1|
                                (SPADCALL |q| |d1|
-                                   (|getShellEntry| $ 86))
-                               (|getShellEntry| $ 65))
+                                   (|getShellEntry| $ 87))
+                               (|getShellEntry| $ 66))
                            |INS-;invmod;3S;28|)
                      (LETT |c| |d| |INS-;invmod;3S;28|)
                      (LETT |c1| |d1| |INS-;invmod;3S;28|)
@@ -272,29 +272,29 @@
                      (EXIT (LETT |d1| |r1| |INS-;invmod;3S;28|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (COND
-             ((NOT (SPADCALL |c| (|getShellEntry| $ 87)))
+             ((NOT (SPADCALL |c| (|getShellEntry| $ 88)))
               (EXIT (|error| "inverse does not exist"))))
            (EXIT (COND
-                   ((SPADCALL |c1| (|getShellEntry| $ 83))
-                    (SPADCALL |c1| |b| (|getShellEntry| $ 81)))
+                   ((SPADCALL |c1| (|getShellEntry| $ 84))
+                    (SPADCALL |c1| |b| (|getShellEntry| $ 82)))
                    ('T |c1|))))))) 
 
 (DEFUN |INS-;powmod;4S;29| (|x| |n| |p| $)
   (PROG (|y| #0=#:G1484 |z|)
     (RETURN
       (SEQ (EXIT (SEQ (COND
-                        ((SPADCALL |x| (|getShellEntry| $ 83))
+                        ((SPADCALL |x| (|getShellEntry| $ 84))
                          (LETT |x|
                                (SPADCALL |x| |p|
-                                   (|getShellEntry| $ 84))
+                                   (|getShellEntry| $ 85))
                                |INS-;powmod;4S;29|)))
                       (EXIT (COND
-                              ((SPADCALL |x| (|getShellEntry| $ 64))
+                              ((SPADCALL |x| (|getShellEntry| $ 65))
                                (|spadConstant| $ 10))
-                              ((SPADCALL |n| (|getShellEntry| $ 64))
-                               (|spadConstant| $ 21))
+                              ((SPADCALL |n| (|getShellEntry| $ 65))
+                               (|spadConstant| $ 22))
                               ('T
-                               (SEQ (LETT |y| (|spadConstant| $ 21)
+                               (SEQ (LETT |y| (|spadConstant| $ 22)
                                      |INS-;powmod;4S;29|)
                                     (LETT |z| |x| |INS-;powmod;4S;29|)
                                     (EXIT
@@ -305,7 +305,7 @@
                                            (|getShellEntry| $ 13))
                                           (LETT |y|
                                            (SPADCALL |y| |z| |p|
-                                            (|getShellEntry| $ 89))
+                                            (|getShellEntry| $ 90))
                                            |INS-;powmod;4S;29|)))
                                        (EXIT
                                         (COND
@@ -313,11 +313,11 @@
                                             (LETT |n|
                                              (SPADCALL |n|
                                               (SPADCALL
-                                               (|spadConstant| $ 21)
-                                               (|getShellEntry| $ 18))
-                                              (|getShellEntry| $ 19))
+                                               (|spadConstant| $ 22)
+                                               (|getShellEntry| $ 19))
+                                              (|getShellEntry| $ 20))
                                              |INS-;powmod;4S;29|)
-                                            (|getShellEntry| $ 64))
+                                            (|getShellEntry| $ 65))
                                            (PROGN
                                              (LETT #0# |y|
                                               |INS-;powmod;4S;29|)
@@ -325,7 +325,7 @@
                                           ('T
                                            (LETT |z|
                                             (SPADCALL |z| |z| |p|
-                                             (|getShellEntry| $ 89))
+                                             (|getShellEntry| $ 90))
                                             |INS-;powmod;4S;29|)))))
                                       NIL (GO G190) G191 (EXIT NIL)))))))))
            #0# (EXIT #0#))))) 
@@ -336,7 +336,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|IntegerNumberSystem&|))
         (LETT |dv$| (LIST '|IntegerNumberSystem&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 91) . #0#)
+        (LETT $ (|newShell| 92) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -349,70 +349,70 @@
              (|NonNegativeInteger|) (0 . |Zero|)
              |INS-;characteristic;Nni;1| (4 . |Zero|)
              |INS-;differentiate;2S;2| (|Boolean|) (8 . |odd?|)
-             |INS-;even?;SB;3| (13 . <) |INS-;positive?;SB;4|
-             |INS-;copy;2S;5| (19 . -) (24 . |shift|) |INS-;bit?;2SB;6|
-             (30 . |One|) (34 . |dec|) |INS-;mask;2S;7| (39 . |true|)
-             |INS-;rational?;SB;8| (43 . =) (|Integer|)
-             (49 . |convert|) (54 . -) |INS-;euclideanSize;SNni;9|
-             (|Float|) (59 . |coerce|) |INS-;convert;SF;10|
-             (|DoubleFloat|) (64 . |coerce|) |INS-;convert;SDf;11|
-             (|InputForm|) (69 . |convert|) |INS-;convert;SIf;12|
-             |INS-;retract;SI;13| (|Pattern| 27) (74 . |coerce|)
-             |INS-;convert;SP;14| (|Factored| 6)
-             (|IntegerFactorizationPackage| 6) (79 . |factor|)
-             (|Factored| $) |INS-;factor;SF;15| (84 . |squareFree|)
+             (13 . |not|) |INS-;even?;SB;3| (18 . <)
+             |INS-;positive?;SB;4| |INS-;copy;2S;5| (24 . -)
+             (29 . |shift|) |INS-;bit?;2SB;6| (35 . |One|) (39 . |dec|)
+             |INS-;mask;2S;7| (44 . |true|) |INS-;rational?;SB;8|
+             (48 . =) (|Integer|) (54 . |convert|) (59 . -)
+             |INS-;euclideanSize;SNni;9| (|Float|) (64 . |coerce|)
+             |INS-;convert;SF;10| (|DoubleFloat|) (69 . |coerce|)
+             |INS-;convert;SDf;11| (|InputForm|) (74 . |convert|)
+             |INS-;convert;SIf;12| |INS-;retract;SI;13| (|Pattern| 28)
+             (79 . |coerce|) |INS-;convert;SP;14| (|Factored| 6)
+             (|IntegerFactorizationPackage| 6) (84 . |factor|)
+             (|Factored| $) |INS-;factor;SF;15| (89 . |squareFree|)
              |INS-;squareFree;SF;16| (|IntegerPrimesPackage| 6)
-             (89 . |prime?|) |INS-;prime?;SB;17|
-             (|IntegerCombinatoricFunctions| 6) (94 . |factorial|)
-             |INS-;factorial;2S;18| (99 . |binomial|)
-             |INS-;binomial;3S;19| (105 . |permutation|)
-             |INS-;permutation;3S;20| (|Union| 27 '"failed")
-             |INS-;retractIfCan;SU;21| |INS-;init;S;22| (111 . |zero?|)
-             (116 . -) (|Union| $ '"failed") |INS-;nextItem;SU;23|
-             (|PatternMatchResult| 27 6)
+             (94 . |prime?|) |INS-;prime?;SB;17|
+             (|IntegerCombinatoricFunctions| 6) (99 . |factorial|)
+             |INS-;factorial;2S;18| (104 . |binomial|)
+             |INS-;binomial;3S;19| (110 . |permutation|)
+             |INS-;permutation;3S;20| (|Union| 28 '"failed")
+             |INS-;retractIfCan;SU;21| |INS-;init;S;22| (116 . |zero?|)
+             (121 . -) (|Union| $ '"failed") |INS-;nextItem;SU;23|
+             (|PatternMatchResult| 28 6)
              (|PatternMatchIntegerNumberSystem| 6)
-             (122 . |patternMatch|) (|PatternMatchResult| 27 $)
-             |INS-;patternMatch;SP2Pmr;24| (|Fraction| 27)
-             (129 . |coerce|) |INS-;rational;SF;25|
-             (|Union| 73 '"failed") |INS-;rationalIfCan;SU;26|
-             (134 . |rem|) (|PositiveInteger|) (140 . *) (146 . +)
-             |INS-;symmetricRemainder;3S;27| (152 . |negative?|)
-             (157 . |positiveRemainder|) (163 . |quo|) (169 . *)
-             (175 . |one?|) |INS-;invmod;3S;28| (180 . |mulmod|)
+             (127 . |patternMatch|) (|PatternMatchResult| 28 $)
+             |INS-;patternMatch;SP2Pmr;24| (|Fraction| 28)
+             (134 . |coerce|) |INS-;rational;SF;25|
+             (|Union| 74 '"failed") |INS-;rationalIfCan;SU;26|
+             (139 . |rem|) (|PositiveInteger|) (145 . *) (151 . +)
+             |INS-;symmetricRemainder;3S;27| (157 . |negative?|)
+             (162 . |positiveRemainder|) (168 . |quo|) (174 . *)
+             (180 . |one?|) |INS-;invmod;3S;28| (185 . |mulmod|)
              |INS-;powmod;4S;29|)
-          '#(|symmetricRemainder| 187 |squareFree| 193 |retractIfCan|
-             198 |retract| 203 |rationalIfCan| 208 |rational?| 213
-             |rational| 218 |prime?| 223 |powmod| 228 |positive?| 235
-             |permutation| 240 |patternMatch| 246 |nextItem| 253 |mask|
-             258 |invmod| 263 |init| 269 |factorial| 273 |factor| 278
-             |even?| 283 |euclideanSize| 288 |differentiate| 293 |copy|
-             298 |convert| 303 |characteristic| 323 |bit?| 327
-             |binomial| 333)
+          '#(|symmetricRemainder| 192 |squareFree| 198 |retractIfCan|
+             203 |retract| 208 |rationalIfCan| 213 |rational?| 218
+             |rational| 223 |prime?| 228 |powmod| 233 |positive?| 240
+             |permutation| 245 |patternMatch| 251 |nextItem| 258 |mask|
+             263 |invmod| 268 |init| 274 |factorial| 278 |factor| 283
+             |even?| 288 |euclideanSize| 293 |differentiate| 298 |copy|
+             303 |convert| 308 |characteristic| 328 |bit?| 332
+             |binomial| 338)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 90
-                                '(0 7 0 8 0 6 0 10 1 6 12 0 13 2 6 12 0
-                                  0 15 1 6 0 0 18 2 6 0 0 0 19 0 6 0 21
-                                  1 6 0 0 22 0 12 0 24 2 6 12 0 0 26 1
-                                  6 27 0 28 1 27 0 0 29 1 31 0 27 32 1
-                                  34 0 27 35 1 37 0 27 38 1 41 0 27 42
-                                  1 45 44 6 46 1 45 44 6 49 1 51 12 6
-                                  52 1 54 6 6 55 2 54 6 6 6 57 2 54 6 6
-                                  6 59 1 6 12 0 64 2 6 0 0 0 65 3 69 68
-                                  6 41 68 70 1 73 0 27 74 2 6 0 0 0 78
-                                  2 6 0 79 0 80 2 6 0 0 0 81 1 6 12 0
-                                  83 2 6 0 0 0 84 2 6 0 0 0 85 2 6 0 0
-                                  0 86 1 6 12 0 87 3 6 0 0 0 0 89 2 0 0
-                                  0 0 82 1 0 47 0 50 1 0 61 0 62 1 0 27
-                                  0 40 1 0 76 0 77 1 0 12 0 25 1 0 73 0
-                                  75 1 0 12 0 53 3 0 0 0 0 0 90 1 0 12
-                                  0 16 2 0 0 0 0 60 3 0 71 0 41 71 72 1
-                                  0 66 0 67 1 0 0 0 23 2 0 0 0 0 88 0 0
-                                  0 63 1 0 0 0 56 1 0 47 0 48 1 0 12 0
-                                  14 1 0 7 0 30 1 0 0 0 11 1 0 0 0 17 1
-                                  0 34 0 36 1 0 31 0 33 1 0 41 0 43 1 0
-                                  37 0 39 0 0 7 9 2 0 12 0 0 20 2 0 0 0
-                                  0 58)))))
+                            (|makeByteWordVec2| 91
+                                '(0 7 0 8 0 6 0 10 1 6 12 0 13 1 12 0 0
+                                  14 2 6 12 0 0 16 1 6 0 0 19 2 6 0 0 0
+                                  20 0 6 0 22 1 6 0 0 23 0 12 0 25 2 6
+                                  12 0 0 27 1 6 28 0 29 1 28 0 0 30 1
+                                  32 0 28 33 1 35 0 28 36 1 38 0 28 39
+                                  1 42 0 28 43 1 46 45 6 47 1 46 45 6
+                                  50 1 52 12 6 53 1 55 6 6 56 2 55 6 6
+                                  6 58 2 55 6 6 6 60 1 6 12 0 65 2 6 0
+                                  0 0 66 3 70 69 6 42 69 71 1 74 0 28
+                                  75 2 6 0 0 0 79 2 6 0 80 0 81 2 6 0 0
+                                  0 82 1 6 12 0 84 2 6 0 0 0 85 2 6 0 0
+                                  0 86 2 6 0 0 0 87 1 6 12 0 88 3 6 0 0
+                                  0 0 90 2 0 0 0 0 83 1 0 48 0 51 1 0
+                                  62 0 63 1 0 28 0 41 1 0 77 0 78 1 0
+                                  12 0 26 1 0 74 0 76 1 0 12 0 54 3 0 0
+                                  0 0 0 91 1 0 12 0 17 2 0 0 0 0 61 3 0
+                                  72 0 42 72 73 1 0 67 0 68 1 0 0 0 24
+                                  2 0 0 0 0 89 0 0 0 64 1 0 0 0 57 1 0
+                                  48 0 49 1 0 12 0 15 1 0 7 0 31 1 0 0
+                                  0 11 1 0 0 0 18 1 0 35 0 37 1 0 32 0
+                                  34 1 0 42 0 44 1 0 38 0 40 0 0 7 9 2
+                                  0 12 0 0 21 2 0 0 0 0 59)))))
           '|lookupComplete|)) 

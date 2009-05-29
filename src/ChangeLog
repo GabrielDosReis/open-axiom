@@ -1,5 +1,11 @@
 2009-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (getSuccessEnvironment): Tidy.
+	(getInverseEnvironment): Likewise.
+	(compLogicalNot): Don't normalize to if-statement.
+
+2009-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compVector): Tidy code generation.
 	(checkExternalEntity): Handle Builtin external entities.
 	(compSignatureImport): Likewise.
