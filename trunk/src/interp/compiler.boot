@@ -1249,21 +1249,28 @@ getSuccessEnvironment(a,e) ==
     e
   a is ["case",x,m] and IDENTP x =>
     put(x,"condition",[a,:get(x,"condition",e)],e)
+  a is ["and",:args] =>
+    for form in args repeat
+      e := getSuccessEnvironment(form,e)
+    e
+  a is ["not",a'] => getInverseEnvironment(a',e)
   e
 
-getInverseEnvironment(a,E) ==
+getInverseEnvironment(a,e) ==
   a is ["case",x,m] and IDENTP x =>
     --the next two lines are necessary to get 3-branched Unions to work
     -- old-style unions, that is
-    (get(x,"condition",E) is [["OR",:oldpred]]) and member(a,oldpred) =>
-      put(x,"condition",LIST MKPF(delete(a,oldpred),"OR"),E)
-    getUnionMode(x,E) is ["Union",:l]
-    l':= delete(m,l)
-    for u in l' repeat
-       if u is ['_:,=m,:.] then l':= delete(u,l')
-    newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
-    put(x,"condition",[newpred,:get(x,"condition",E)],E)
-  E
+    (get(x,"condition",e) is [["OR",:oldpred]]) and member(a,oldpred) =>
+      put(x,"condition",LIST MKPF(delete(a,oldpred),"OR"),e)
+    getUnionMode(x,e) is ["Union",:l] =>
+      l':= delete(m,l)
+      for u in l' repeat
+	 if u is ['_:,=m,:.] then l':= delete(u,l')
+      newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
+      put(x,"condition",[newpred,:get(x,"condition",e)],e)
+    e
+  a is ["not",a'] => getSuccessEnvironment(a',e)
+  e
 
 getUnionMode(x,e) ==
   m:=
@@ -1428,11 +1435,11 @@ compLogicalNot(x,m,e) ==
   -- ??? selected through general modemaps, and their semantics
   -- ??? are quite hardwired with their syntax.
   -- ??? Eventually, we should not need to do this.
-  $normalizeTree => compIf(["IF",y,"false","true"],m,e)
-  yT := comp(y,$EmptyMode,e) or return nil
-  yT.mode = $Boolean =>
-    e := getInverseEnvironment(y,yT.env)
-    convert([["NOT",yT.expr],$Boolean,e],m)
+  yTarget :=
+    $normalizeTree and resolve(m,$Boolean) = $Boolean => $Boolean
+    $EmptyMode
+  yT := comp(y,yTarget,e) or return nil
+  yTarget = $Boolean => (rplac(first yT, ["NOT",yT.expr]); yT)
   compResolveCall("not",[yT],m,yT.env)
 
 

@@ -337,7 +337,7 @@
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (|getShellEntry| $ 112)))
+                                     (|getShellEntry| $ 113)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -358,7 +358,7 @@
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (|getShellEntry| $ 112)))
+                                     (|getShellEntry| $ 113)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -379,7 +379,7 @@
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (|getShellEntry| $ 112)))
+                                     (|getShellEntry| $ 113)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -400,7 +400,7 @@
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (|getShellEntry| $ 112)))
+                                     (|getShellEntry| $ 113)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -421,7 +421,7 @@
                         (SEQ (LETT |sc|
                                    (STRCONC |sc|
                                     (SPADCALL (|SPADfirst| |lo|)
-                                     (|getShellEntry| $ 112)))
+                                     (|getShellEntry| $ 113)))
                                    |SYMBOL;latex;$S;25|)
                              (LETT |lo| (CDR |lo|)
                                    |SYMBOL;latex;$S;25|)
@@ -451,9 +451,9 @@
                                         (SPADCALL |s|
                                          (+ (QCDR |qr|)
                                           (SPADCALL |s|
-                                           (|getShellEntry| $ 117)))
+                                           (|getShellEntry| $ 118)))
                                          (|getShellEntry| $ 107))
-                                        |ns| (|getShellEntry| $ 119))
+                                        |ns| (|getShellEntry| $ 120))
                                        |SYMBOL;anyRadix|)
                                       (EXIT
                                        (COND
@@ -471,14 +471,14 @@
       (SEQ (LETT |sym|
                  (|SYMBOL;anyRadix|
                      (SPADCALL (|getShellEntry| $ 10)
-                         (|getShellEntry| $ 120))
+                         (|getShellEntry| $ 121))
                      (|getShellEntry| $ 20) $)
                  |SYMBOL;new;$;27|)
            (SPADCALL (|getShellEntry| $ 10)
                (+ (SPADCALL (|getShellEntry| $ 10)
-                      (|getShellEntry| $ 120))
+                      (|getShellEntry| $ 121))
                   1)
-               (|getShellEntry| $ 121))
+               (|getShellEntry| $ 122))
            (EXIT (|SYMBOL;coerce;S$;8| (STRCONC "%" |sym|) $)))))) 
 
 (DEFUN |SYMBOL;new;2$;28| (|x| $)
@@ -487,14 +487,14 @@
       (SEQ (LETT |n|
                  (SEQ (LETT |u|
                             (SPADCALL |x| (|getShellEntry| $ 13)
-                                (|getShellEntry| $ 124))
+                                (|getShellEntry| $ 125))
                             |SYMBOL;new;2$;28|)
                       (EXIT (COND
                               ((QEQCAR |u| 1) 0)
                               ('T (+ (QCDR |u|) 1)))))
                  |SYMBOL;new;2$;28|)
            (SPADCALL (|getShellEntry| $ 13) |x| |n|
-               (|getShellEntry| $ 127))
+               (|getShellEntry| $ 128))
            (LETT |xx|
                  (COND
                    ((NOT (|SYMBOL;scripted?;$B;30| |x| $))
@@ -509,12 +509,12 @@
                    ((NOT (< (SPADCALL
                                 (SPADCALL |xx|
                                     (SPADCALL |xx|
-                                     (|getShellEntry| $ 128))
+                                     (|getShellEntry| $ 129))
                                     (|getShellEntry| $ 107))
                                 (|getShellEntry| $ 19)
-                                (|getShellEntry| $ 129))
+                                (|getShellEntry| $ 130))
                             (SPADCALL (|getShellEntry| $ 19)
-                                (|getShellEntry| $ 117))))
+                                (|getShellEntry| $ 118))))
                     (STRCONC |xx|
                              (|SYMBOL;anyRadix| |n|
                                  (|getShellEntry| $ 21) $)))
@@ -532,11 +532,11 @@
 (DEFUN |SYMBOL;resetNew;V;29| ($)
   (PROG (|k| #0=#:G1552)
     (RETURN
-      (SEQ (SPADCALL (|getShellEntry| $ 10) 0 (|getShellEntry| $ 121))
+      (SEQ (SPADCALL (|getShellEntry| $ 10) 0 (|getShellEntry| $ 122))
            (SEQ (LETT |k| NIL |SYMBOL;resetNew;V;29|)
                 (LETT #0#
                       (SPADCALL (|getShellEntry| $ 13)
-                          (|getShellEntry| $ 133))
+                          (|getShellEntry| $ 134))
                       |SYMBOL;resetNew;V;29|)
                 G190
                 (COND
@@ -546,10 +546,10 @@
                          NIL))
                    (GO G191)))
                 (SEQ (EXIT (SPADCALL |k| (|getShellEntry| $ 13)
-                               (|getShellEntry| $ 134))))
+                               (|getShellEntry| $ 135))))
                 (LETT #0# (CDR #0#) |SYMBOL;resetNew;V;29|) (GO G190)
                 G191 (EXIT NIL))
-           (EXIT (SPADCALL (|getShellEntry| $ 135))))))) 
+           (EXIT (SPADCALL (|getShellEntry| $ 136))))))) 
 
 (DEFUN |SYMBOL;scripted?;$B;30| (|sy| $) (NOT (ATOM |sy|))) 
 
@@ -648,8 +648,7 @@
                                         (|getShellEntry| $ 44))
                                        (|getShellEntry| $ 45))
                                       |SYMBOL;scripts;$R;32|)
-                                      (|check-subtype|
-                                       (COND ((< #0# 0) 'NIL) ('T 'T))
+                                      (|check-subtype| (NOT (< #0# 0))
                                        '(|NonNegativeInteger|) #0#))
                                     (|getShellEntry| $ 150))))
                         (LETT |i|
@@ -840,18 +839,19 @@
              |SYMBOL;script;$R$;23| |SYMBOL;name;2$;31|
              |SYMBOL;string;$S;24| (188 . |concat|) (194 . |One|)
              (198 . |One|) (202 . |elt|) (208 . ~=)
-             |SYMBOL;scripts;$R;32| (214 . |empty?|) (219 . |first|)
-             (224 . |latex|) (229 . |rest|) |SYMBOL;latex;$S;25|
+             |SYMBOL;scripts;$R;32| (214 . |empty?|) (219 . |not|)
+             (224 . |first|) (229 . |latex|) (234 . |rest|)
+             |SYMBOL;latex;$S;25|
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
-             (234 . |divide|) (240 . |minIndex|) (245 . +)
-             (251 . |concat|) (257 . |elt|) (262 . |setelt|)
-             |SYMBOL;new;$;27| (|Union| 6 '"failed") (268 . |search|)
-             (274 . |Zero|) (278 . |inc|) (283 . |setelt|)
-             (290 . |maxIndex|) (295 . |position|) (301 . <)
-             |SYMBOL;new;2$;28| (|List| $$) (307 . |keys|)
-             (312 . |remove!|) (318 . |void|) |SYMBOL;resetNew;V;29|
-             (322 . |not|) |SYMBOL;list;$L;34| (327 . |first|)
-             (|SingleInteger|) (332 . |One|) (336 . +) (342 . |digit?|)
+             (239 . |divide|) (245 . |minIndex|) (250 . +)
+             (256 . |concat|) (262 . |elt|) (267 . |setelt|)
+             |SYMBOL;new;$;27| (|Union| 6 '"failed") (273 . |search|)
+             (279 . |Zero|) (283 . |inc|) (288 . |setelt|)
+             (295 . |maxIndex|) (300 . |position|) (306 . <)
+             |SYMBOL;new;2$;28| (|List| $$) (312 . |keys|)
+             (317 . |remove!|) (323 . |void|) |SYMBOL;resetNew;V;29|
+             |SYMBOL;list;$L;34| (327 . |first|) (|SingleInteger|)
+             (332 . |One|) (336 . +) (342 . |digit?|)
              (|UniversalSegment| 6) (347 . SEGMENT) (353 . |elt|)
              (|List| 39) (359 . |minIndex|) (364 . -) (370 . |setelt|)
              (377 . |rest|) (382 . |first|) (387 . |concat|)
@@ -895,29 +895,29 @@
                                   0 97 1 59 57 0 98 1 59 0 0 99 2 57 0
                                   53 0 104 0 39 0 105 0 6 0 106 2 14 42
                                   0 6 107 2 42 22 0 0 108 1 57 22 0 110
-                                  1 57 53 0 111 1 53 14 0 112 1 57 0 0
-                                  113 2 6 115 0 0 116 1 14 6 0 117 2 6
-                                  0 0 0 118 2 14 0 42 0 119 1 8 6 0 120
-                                  2 8 6 0 6 121 2 11 123 2 0 124 0 39 0
-                                  125 1 6 0 0 126 3 11 6 0 2 6 127 1 14
-                                  6 0 128 2 14 6 42 0 129 2 6 22 0 0
-                                  130 1 11 132 0 133 2 11 123 2 0 134 0
-                                  24 0 135 1 22 0 0 137 1 132 2 0 139 0
-                                  140 0 141 2 39 0 0 0 142 1 42 22 0
+                                  1 22 0 0 111 1 57 53 0 112 1 53 14 0
+                                  113 1 57 0 0 114 2 6 116 0 0 117 1 14
+                                  6 0 118 2 6 0 0 0 119 2 14 0 42 0 120
+                                  1 8 6 0 121 2 8 6 0 6 122 2 11 124 2
+                                  0 125 0 39 0 126 1 6 0 0 127 3 11 6 0
+                                  2 6 128 1 14 6 0 129 2 14 6 42 0 130
+                                  2 6 22 0 0 131 1 11 133 0 134 2 11
+                                  124 2 0 135 0 24 0 136 1 133 2 0 139
+                                  0 140 0 141 2 39 0 0 0 142 1 42 22 0
                                   143 2 144 0 6 6 145 2 14 0 0 144 146
                                   1 147 6 0 148 2 6 0 0 0 149 3 147 39
                                   0 6 39 150 1 147 0 0 151 1 147 39 0
-                                  152 2 147 0 0 39 153 1 132 0 0 154 1
-                                  59 6 0 155 1 132 39 0 156 2 132 0 0
-                                  39 157 3 59 57 0 6 57 158 2 132 0 0
+                                  152 2 147 0 0 39 153 1 133 0 0 154 1
+                                  59 6 0 155 1 133 39 0 156 2 133 0 0
+                                  39 157 3 59 57 0 6 57 158 2 133 0 0
                                   39 159 2 59 57 0 6 160 1 16 6 0 161 2
                                   16 14 0 6 162 2 0 22 0 0 1 2 0 0 0 57
                                   64 2 0 0 0 57 62 1 0 14 0 103 1 0 100
                                   0 109 1 0 22 0 23 2 0 0 0 59 61 2 0 0
-                                  0 100 101 0 0 0 163 0 0 24 136 3 0 77
+                                  0 100 101 0 0 0 163 0 0 24 137 3 0 77
                                   0 74 77 78 3 0 70 0 67 70 71 1 0 0 0
-                                  131 0 0 0 122 1 0 0 0 102 2 0 0 0 0 1
-                                  2 0 0 0 0 1 1 0 94 0 138 1 0 14 0 114
+                                  132 0 0 0 123 1 0 0 0 102 2 0 0 0 0 1
+                                  2 0 0 0 0 1 1 0 94 0 138 1 0 14 0 115
                                   1 0 140 0 1 2 0 0 0 57 63 1 0 67 0 82
                                   1 0 74 0 80 1 0 25 0 49 1 0 46 0 48 1
                                   0 0 14 50 1 0 53 0 55 2 0 22 0 0 1 2

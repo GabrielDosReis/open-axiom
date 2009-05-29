@@ -79,7 +79,7 @@
                 (SEQ (PROGN
                        (LETT |#G13| |y| |EUCDOM-;gcd;3S;5|)
                        (LETT |#G14|
-                             (SPADCALL |x| |y| (|getShellEntry| $ 23))
+                             (SPADCALL |x| |y| (|getShellEntry| $ 24))
                              |EUCDOM-;gcd;3S;5|)
                        (LETT |x| |#G13| |EUCDOM-;gcd;3S;5|)
                        (LETT |y| |#G14| |EUCDOM-;gcd;3S;5|))
@@ -94,7 +94,7 @@
     (RETURN
       (SEQ (PROGN
              (LETT |#G16|
-                   (SPADCALL (QVELT |s| 2) (|getShellEntry| $ 26))
+                   (SPADCALL (QVELT |s| 2) (|getShellEntry| $ 27))
                    |EUCDOM-;unitNormalizeIdealElt|)
              (LETT |u| (QVELT |#G16| 0)
                    |EUCDOM-;unitNormalizeIdealElt|)
@@ -104,12 +104,12 @@
                    |EUCDOM-;unitNormalizeIdealElt|)
              |#G16|)
            (EXIT (COND
-                   ((SPADCALL |a| (|getShellEntry| $ 27)) |s|)
+                   ((SPADCALL |a| (|getShellEntry| $ 28)) |s|)
                    ('T
                     (VECTOR (SPADCALL |a| (QVELT |s| 0)
-                                (|getShellEntry| $ 28))
+                                (|getShellEntry| $ 29))
                             (SPADCALL |a| (QVELT |s| 1)
-                                      (|getShellEntry| $ 28))
+                                      (|getShellEntry| $ 29))
                             |c|)))))))) 
 
 (DEFUN |EUCDOM-;extendedEuclidean;2SR;7| (|x| |y| $)
@@ -117,14 +117,14 @@
     (RETURN
       (SEQ (LETT |s1|
                  (|EUCDOM-;unitNormalizeIdealElt|
-                     (VECTOR (|spadConstant| $ 29)
+                     (VECTOR (|spadConstant| $ 30)
                              (|spadConstant| $ 19) |x|)
                      $)
                  |EUCDOM-;extendedEuclidean;2SR;7|)
            (LETT |s2|
                  (|EUCDOM-;unitNormalizeIdealElt|
                      (VECTOR (|spadConstant| $ 19)
-                             (|spadConstant| $ 29) |y|)
+                             (|spadConstant| $ 30) |y|)
                      $)
                  |EUCDOM-;extendedEuclidean;2SR;7|)
            (EXIT (COND
@@ -147,13 +147,13 @@
                                      (SPADCALL (QVELT |s1| 0)
                                       (SPADCALL (QCAR |qr|)
                                        (QVELT |s2| 0)
-                                       (|getShellEntry| $ 28))
-                                      (|getShellEntry| $ 30))
+                                       (|getShellEntry| $ 29))
+                                      (|getShellEntry| $ 31))
                                      (SPADCALL (QVELT |s1| 1)
                                       (SPADCALL (QCAR |qr|)
                                        (QVELT |s2| 1)
-                                       (|getShellEntry| $ 28))
-                                      (|getShellEntry| $ 30))
+                                       (|getShellEntry| $ 29))
+                                      (|getShellEntry| $ 31))
                                      (QCDR |qr|))
                                     |EUCDOM-;extendedEuclidean;2SR;7|)
                                    (LETT |s1| |s2|
@@ -169,7 +169,7 @@
                                      (|getShellEntry| $ 8)))
                             (COND
                               ((NOT (SPADCALL (QVELT |s1| 0) |y|
-                                     (|getShellEntry| $ 31)))
+                                     (|getShellEntry| $ 32)))
                                (SEQ (LETT |qr|
                                      (SPADCALL (QVELT |s1| 0) |y|
                                       (|getShellEntry| $ 16))
@@ -178,8 +178,8 @@
                                     (QSETVELT |s1| 1
                                      (SPADCALL (QVELT |s1| 1)
                                       (SPADCALL (QCAR |qr|) |x|
-                                       (|getShellEntry| $ 28))
-                                      (|getShellEntry| $ 32)))
+                                       (|getShellEntry| $ 29))
+                                      (|getShellEntry| $ 33)))
                                     (EXIT
                                      (LETT |s1|
                                       (|EUCDOM-;unitNormalizeIdealElt|
@@ -195,11 +195,11 @@
               (CONS 0
                     (CONS (|spadConstant| $ 19) (|spadConstant| $ 19))))
              ('T
-              (SEQ (LETT |s| (SPADCALL |x| |y| (|getShellEntry| $ 35))
+              (SEQ (LETT |s| (SPADCALL |x| |y| (|getShellEntry| $ 36))
                          |EUCDOM-;extendedEuclidean;3SU;8|)
                    (LETT |w|
                          (SPADCALL |z| (QVELT |s| 2)
-                             (|getShellEntry| $ 36))
+                             (|getShellEntry| $ 37))
                          |EUCDOM-;extendedEuclidean;3SU;8|)
                    (EXIT (COND
                            ((QEQCAR |w| 1) (CONS 1 "failed"))
@@ -207,16 +207,16 @@
                             (CONS 0
                                   (CONS (SPADCALL (QVELT |s| 0)
                                          (QCDR |w|)
-                                         (|getShellEntry| $ 28))
+                                         (|getShellEntry| $ 29))
                                         (SPADCALL (QVELT |s| 1)
                                          (QCDR |w|)
-                                         (|getShellEntry| $ 28)))))
+                                         (|getShellEntry| $ 29)))))
                            ('T
                             (SEQ (LETT |qr|
                                        (SPADCALL
                                         (SPADCALL (QVELT |s| 0)
                                          (QCDR |w|)
-                                         (|getShellEntry| $ 28))
+                                         (|getShellEntry| $ 29))
                                         |y| (|getShellEntry| $ 16))
                                        |EUCDOM-;extendedEuclidean;3SU;8|)
                                  (EXIT (CONS 0
@@ -224,38 +224,38 @@
                                          (SPADCALL
                                           (SPADCALL (QVELT |s| 1)
                                            (QCDR |w|)
-                                           (|getShellEntry| $ 28))
+                                           (|getShellEntry| $ 29))
                                           (SPADCALL (QCAR |qr|) |x|
-                                           (|getShellEntry| $ 28))
-                                          (|getShellEntry| $ 32)))))))))))))))) 
+                                           (|getShellEntry| $ 29))
+                                          (|getShellEntry| $ 33)))))))))))))))) 
 
 (DEFUN |EUCDOM-;principalIdeal;LR;9| (|l| $)
   (PROG (|uca| |v| |u| #0=#:G1519 |vv| #1=#:G1520)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |l| NIL (|getShellEntry| $ 41))
+             ((SPADCALL |l| NIL (|getShellEntry| $ 42))
               (|error| "empty list passed to principalIdeal"))
-             ((SPADCALL (CDR |l|) NIL (|getShellEntry| $ 41))
+             ((SPADCALL (CDR |l|) NIL (|getShellEntry| $ 42))
               (SEQ (LETT |uca|
                          (SPADCALL (|SPADfirst| |l|)
-                             (|getShellEntry| $ 26))
+                             (|getShellEntry| $ 27))
                          |EUCDOM-;principalIdeal;LR;9|)
                    (EXIT (CONS (LIST (QVELT |uca| 0)) (QVELT |uca| 1)))))
-             ((SPADCALL (CDR (CDR |l|)) NIL (|getShellEntry| $ 41))
+             ((SPADCALL (CDR (CDR |l|)) NIL (|getShellEntry| $ 42))
               (SEQ (LETT |u|
                          (SPADCALL (|SPADfirst| |l|)
-                             (SPADCALL |l| (|getShellEntry| $ 44))
-                             (|getShellEntry| $ 35))
+                             (SPADCALL |l| (|getShellEntry| $ 45))
+                             (|getShellEntry| $ 36))
                          |EUCDOM-;principalIdeal;LR;9|)
                    (EXIT (CONS (LIST (QVELT |u| 0) (QVELT |u| 1))
                                (QVELT |u| 2)))))
              ('T
               (SEQ (LETT |v|
-                         (SPADCALL (CDR |l|) (|getShellEntry| $ 47))
+                         (SPADCALL (CDR |l|) (|getShellEntry| $ 48))
                          |EUCDOM-;principalIdeal;LR;9|)
                    (LETT |u|
                          (SPADCALL (|SPADfirst| |l|) (QCDR |v|)
-                             (|getShellEntry| $ 35))
+                             (|getShellEntry| $ 36))
                          |EUCDOM-;principalIdeal;LR;9|)
                    (EXIT (CONS (CONS (QVELT |u| 0)
                                      (PROGN
@@ -280,7 +280,7 @@
                                            (CONS
                                             (SPADCALL (QVELT |u| 1)
                                              |vv|
-                                             (|getShellEntry| $ 28))
+                                             (|getShellEntry| $ 29))
                                             #0#)
                                            |EUCDOM-;principalIdeal;LR;9|)))
                                         (LETT #1# (CDR #1#)
@@ -294,7 +294,7 @@
     (RETURN
       (SEQ (COND
              ((SPADCALL |z| (|spadConstant| $ 19)
-                  (|getShellEntry| $ 50))
+                  (|getShellEntry| $ 51))
               (CONS 0
                     (PROGN
                       (LETT #0# NIL
@@ -318,11 +318,11 @@
                                  |EUCDOM-;expressIdealMember;LSU;10|)
                            (GO G190) G191 (EXIT (NREVERSE0 #0#))))))
              ('T
-              (SEQ (LETT |pid| (SPADCALL |l| (|getShellEntry| $ 47))
+              (SEQ (LETT |pid| (SPADCALL |l| (|getShellEntry| $ 48))
                          |EUCDOM-;expressIdealMember;LSU;10|)
                    (LETT |q|
                          (SPADCALL |z| (QCDR |pid|)
-                             (|getShellEntry| $ 36))
+                             (|getShellEntry| $ 37))
                          |EUCDOM-;expressIdealMember;LSU;10|)
                    (EXIT (COND
                            ((QEQCAR |q| 1) (CONS 1 "failed"))
@@ -349,7 +349,7 @@
                                        (LETT #2#
                                         (CONS
                                          (SPADCALL (QCDR |q|) |v|
-                                          (|getShellEntry| $ 28))
+                                          (|getShellEntry| $ 29))
                                          #2#)
                                         |EUCDOM-;expressIdealMember;LSU;10|)))
                                      (LETT #3# (CDR #3#)
@@ -369,11 +369,11 @@
                    ((EQL |n| 1) (CONS 0 (LIST |z|)))
                    ('T
                     (SEQ (LETT |l1|
-                               (SPADCALL |l| (|getShellEntry| $ 57))
+                               (SPADCALL |l| (|getShellEntry| $ 58))
                                |EUCDOM-;multiEuclidean;LSU;11|)
                          (LETT |l2|
                                (SPADCALL |l1| (QUOTIENT2 |n| 2)
-                                   (|getShellEntry| $ 60))
+                                   (|getShellEntry| $ 61))
                                |EUCDOM-;multiEuclidean;LSU;11|)
                          (LETT |u|
                                (SPADCALL
@@ -402,7 +402,7 @@
                                             (#4#
                                              (LETT #3#
                                               (SPADCALL #3# #2#
-                                               (|getShellEntry| $ 28))
+                                               (|getShellEntry| $ 29))
                                               |EUCDOM-;multiEuclidean;LSU;11|))
                                             ('T
                                              (PROGN
@@ -415,7 +415,7 @@
                                       (GO G190) G191 (EXIT NIL))
                                      (COND
                                        (#4# #3#)
-                                       ('T (|spadConstant| $ 29))))
+                                       ('T (|spadConstant| $ 30))))
                                    (PROGN
                                      (LETT #9# NIL
                                       |EUCDOM-;multiEuclidean;LSU;11|)
@@ -441,7 +441,7 @@
                                             (#9#
                                              (LETT #8#
                                               (SPADCALL #8# #7#
-                                               (|getShellEntry| $ 28))
+                                               (|getShellEntry| $ 29))
                                               |EUCDOM-;multiEuclidean;LSU;11|))
                                             ('T
                                              (PROGN
@@ -454,8 +454,8 @@
                                       (GO G190) G191 (EXIT NIL))
                                      (COND
                                        (#9# #8#)
-                                       ('T (|spadConstant| $ 29))))
-                                   |z| (|getShellEntry| $ 61))
+                                       ('T (|spadConstant| $ 30))))
+                                   |z| (|getShellEntry| $ 62))
                                |EUCDOM-;multiEuclidean;LSU;11|)
                          (EXIT (COND
                                  ((QEQCAR |u| 1) (CONS 1 "failed"))
@@ -463,7 +463,7 @@
                                   (SEQ (LETT |v1|
                                         (SPADCALL |l1|
                                          (QCDR (QCDR |u|))
-                                         (|getShellEntry| $ 62))
+                                         (|getShellEntry| $ 63))
                                         |EUCDOM-;multiEuclidean;LSU;11|)
                                        (EXIT
                                         (COND
@@ -474,7 +474,7 @@
                                             (LETT |v2|
                                              (SPADCALL |l2|
                                               (QCAR (QCDR |u|))
-                                              (|getShellEntry| $ 62))
+                                              (|getShellEntry| $ 63))
                                              |EUCDOM-;multiEuclidean;LSU;11|)
                                             (EXIT
                                              (COND
@@ -485,7 +485,7 @@
                                                  (SPADCALL (QCDR |v1|)
                                                   (QCDR |v2|)
                                                   (|getShellEntry| $
-                                                   63)))))))))))))))))))))) 
+                                                   64)))))))))))))))))))))) 
 
 (DEFUN |EuclideanDomain&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -493,7 +493,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|EuclideanDomain&|))
         (LETT |dv$| (LIST '|EuclideanDomain&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 65) . #0#)
+        (LETT $ (|newShell| 66) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -509,49 +509,50 @@
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
              (24 . |divide|) |EUCDOM-;quo;3S;2| |EUCDOM-;rem;3S;3|
              (30 . |Zero|) (|Union| $ '"failed") |EUCDOM-;exquo;2SU;4|
-             (34 . |unitCanonical|) (39 . |rem|) |EUCDOM-;gcd;3S;5|
+             (34 . |unitCanonical|) (39 . |not|) (44 . |rem|)
+             |EUCDOM-;gcd;3S;5|
              (|Record| (|:| |unit| $) (|:| |canonical| $)
                  (|:| |associate| $))
-             (45 . |unitNormal|) (50 . |one?|) (55 . *) (61 . |One|)
-             (65 . -) (71 . |sizeLess?|) (77 . +)
+             (50 . |unitNormal|) (55 . |one?|) (60 . *) (66 . |One|)
+             (70 . -) (76 . |sizeLess?|) (82 . +)
              (|Record| (|:| |coef1| $) (|:| |coef2| $)
                  (|:| |generator| $))
              |EUCDOM-;extendedEuclidean;2SR;7|
-             (83 . |extendedEuclidean|) (89 . |exquo|)
+             (88 . |extendedEuclidean|) (94 . |exquo|)
              (|Record| (|:| |coef1| $) (|:| |coef2| $))
-             (|Union| 37 '"failed") |EUCDOM-;extendedEuclidean;3SU;8|
-             (|List| 6) (95 . =) (101 . |rest|) (106 . |first|)
-             (111 . |second|) (|List| $)
-             (|Record| (|:| |coef| 45) (|:| |generator| $))
-             (116 . |principalIdeal|) (121 . |cons|)
-             |EUCDOM-;principalIdeal;LR;9| (127 . =)
-             (|Union| 45 '"failed") |EUCDOM-;expressIdealMember;LSU;10|
-             (133 . |#|) (138 . |zero?|) (143 . |One|) (147 . =)
-             (153 . |copy|) (158 . |quo|) (|Integer|) (164 . |split!|)
-             (170 . |extendedEuclidean|) (177 . |multiEuclidean|)
-             (183 . |concat|) |EUCDOM-;multiEuclidean;LSU;11|)
-          '#(|sizeLess?| 189 |rem| 195 |quo| 201 |principalIdeal| 207
-             |multiEuclidean| 212 |gcd| 218 |extendedEuclidean| 224
-             |exquo| 237 |expressIdealMember| 243)
+             (|Union| 38 '"failed") |EUCDOM-;extendedEuclidean;3SU;8|
+             (|List| 6) (100 . =) (106 . |rest|) (111 . |first|)
+             (116 . |second|) (|List| $)
+             (|Record| (|:| |coef| 46) (|:| |generator| $))
+             (121 . |principalIdeal|) (126 . |cons|)
+             |EUCDOM-;principalIdeal;LR;9| (132 . =)
+             (|Union| 46 '"failed") |EUCDOM-;expressIdealMember;LSU;10|
+             (138 . |#|) (143 . |zero?|) (148 . |One|) (152 . =)
+             (158 . |copy|) (163 . |quo|) (|Integer|) (169 . |split!|)
+             (175 . |extendedEuclidean|) (182 . |multiEuclidean|)
+             (188 . |concat|) |EUCDOM-;multiEuclidean;LSU;11|)
+          '#(|sizeLess?| 194 |rem| 200 |quo| 206 |principalIdeal| 212
+             |multiEuclidean| 217 |gcd| 223 |extendedEuclidean| 229
+             |exquo| 242 |expressIdealMember| 248)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 64
+                            (|makeByteWordVec2| 65
                                 '(1 6 7 0 8 0 7 0 9 0 7 0 10 1 6 11 0
                                   12 2 11 7 0 0 13 2 6 15 0 0 16 0 6 0
-                                  19 1 6 0 0 22 2 6 0 0 0 23 1 6 25 0
-                                  26 1 6 7 0 27 2 6 0 0 0 28 0 6 0 29 2
-                                  6 0 0 0 30 2 6 7 0 0 31 2 6 0 0 0 32
-                                  2 6 33 0 0 35 2 6 20 0 0 36 2 40 7 0
-                                  0 41 1 40 0 0 42 1 40 6 0 43 1 40 6 0
-                                  44 1 6 46 45 47 2 40 0 6 0 48 2 6 7 0
-                                  0 50 1 40 11 0 53 1 11 7 0 54 0 11 0
-                                  55 2 11 7 0 0 56 1 40 0 0 57 2 11 0 0
-                                  0 58 2 40 0 0 59 60 3 6 38 0 0 0 61 2
-                                  6 51 45 0 62 2 40 0 0 0 63 2 0 7 0 0
-                                  14 2 0 0 0 0 18 2 0 0 0 0 17 1 0 46
-                                  45 49 2 0 51 45 0 64 2 0 0 0 0 24 3 0
-                                  38 0 0 0 39 2 0 33 0 0 34 2 0 20 0 0
-                                  21 2 0 51 45 0 52)))))
+                                  19 1 6 0 0 22 1 7 0 0 23 2 6 0 0 0 24
+                                  1 6 26 0 27 1 6 7 0 28 2 6 0 0 0 29 0
+                                  6 0 30 2 6 0 0 0 31 2 6 7 0 0 32 2 6
+                                  0 0 0 33 2 6 34 0 0 36 2 6 20 0 0 37
+                                  2 41 7 0 0 42 1 41 0 0 43 1 41 6 0 44
+                                  1 41 6 0 45 1 6 47 46 48 2 41 0 6 0
+                                  49 2 6 7 0 0 51 1 41 11 0 54 1 11 7 0
+                                  55 0 11 0 56 2 11 7 0 0 57 1 41 0 0
+                                  58 2 11 0 0 0 59 2 41 0 0 60 61 3 6
+                                  39 0 0 0 62 2 6 52 46 0 63 2 41 0 0 0
+                                  64 2 0 7 0 0 14 2 0 0 0 0 18 2 0 0 0
+                                  0 17 1 0 47 46 50 2 0 52 46 0 65 2 0
+                                  0 0 0 25 3 0 39 0 0 0 40 2 0 34 0 0
+                                  35 2 0 20 0 0 21 2 0 52 46 0 53)))))
           '|lookupComplete|)) 
