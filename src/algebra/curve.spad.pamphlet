@@ -698,8 +698,8 @@ RadicalFunctionField(F, UP, UPUP, radicnd, n): Exports == Impl where
 
     startUp b ==
       brandNew?() := b
-      if zero?(p := characteristic()$F) or p > n then char0StartUp()
-                                                 else charPStartUp()
+      if zero?(p := characteristic$F) or p > n then char0StartUp()
+                                               else charPStartUp()
       dsc:RF := ((-1)$Z ** ((n *$N n1) quo 2::N) * (n::Z)**n)$Z *
                radicnd ** n1 *
                   */[qelt(ibasis, i) ** 2 for i in mini..maxIndex ibasis]

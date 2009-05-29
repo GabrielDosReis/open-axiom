@@ -292,7 +292,7 @@ CliffordAlgebra(n, K, Q): T == Impl where
         c: K
         m: Integer
  
-        characteristic() == characteristic()$K
+        characteristic   == characteristic$K
         dimension()      == dim::CardinalNumber
  
         x = y ==

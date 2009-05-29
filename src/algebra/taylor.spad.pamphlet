@@ -126,7 +126,7 @@ InnerTaylorSeries(Coef): Exports == Implementation where
       n = 0 => 1
       expt(x,n :: PositiveInteger)$RepeatedSquaring(%)
 
-    characteristic() == characteristic()$Coef
+    characteristic == characteristic$Coef
     pole? x == false
 
     iOrder: (ST,NNI,NNI) -> NNI

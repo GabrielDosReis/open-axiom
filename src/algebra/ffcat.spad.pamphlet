@@ -57,8 +57,8 @@ FieldOfPrimeCharacteristic:Category == _
       ++ primeFrobenius(a,s) returns \spad{a**(p**s)} where p
       ++ is the characteristic.
   add
-    primeFrobenius(a) == a ** characteristic()
-    primeFrobenius(a,s) == a ** (characteristic()**s)
+    primeFrobenius(a) == a ** characteristic$%
+    primeFrobenius(a,s) == a ** (characteristic$%**s)
 
 @
 \section{category XF ExtensionField}
@@ -379,7 +379,7 @@ FiniteAlgebraicExtensionField(F : Field) : Category == _
         error "trace: second argument must divide degree of extension"
       size() == size()$F ** extensionDegree()
       createNormalElement() ==
-        characteristic() = size() => 1
+        characteristic$% = size() => 1
         res : $
         for i in 1.. repeat
           res := index(i :: PI)
@@ -595,15 +595,15 @@ FiniteFieldCategory() : Category ==_
       l:=nullSpace mat
       empty? l or every?(zero?, first l) => "failed"
       map(charthRoot,first l)
-    charthRoot(x:$):$ == x**(size() quo characteristic())
+    charthRoot(x:$):$ == x**(size()$% quo characteristic$%)
     charthRoot(x:%):Union($,"failed") ==
         (charthRoot(x)@$)::Union($,"failed")
     createPrimitiveElement() ==
-      sm1  : PositiveInteger := (size()$$-1) pretend PositiveInteger
+      sm1  : PositiveInteger := (size()$%-1) pretend PositiveInteger
       start : Integer :=
         -- in the polynomial case, index from 1 to characteristic-1
         -- gives prime field elements
-        representationType = "polynomial" => characteristic()::Integer
+        representationType = "polynomial" => characteristic$%
         1
       found : Boolean := false
       e : $
@@ -615,15 +615,14 @@ FiniteFieldCategory() : Category ==_
       -- add special implementation for prime field case
       zero?(a) => false
       explist := factorsOfCyclicGroupSize()
-      q:=(size()-1)@Integer
+      q:=(size()$%-1)@Integer
       equalone : Boolean := false
       for exp in explist while not equalone repeat
         equalone := one?(a**(q quo exp.factor))
       not equalone
     order(e: %): PositiveInteger ==
       e = 0 => error "order(0) is not defined "
-      ord:Integer:= size()-1 -- order e divides ord
-      a:Integer:= 0
+      ord:Integer:= size()$%-1 -- order e divides ord
       lof:=factorsOfCyclicGroupSize()
       for rec in lof repeat -- run through prime divisors
         a := ord quo (primeDivisor := rec.factor)
@@ -649,7 +648,7 @@ FiniteFieldCategory() : Category ==_
       b = gen => 1
       disclog:Integer:=0
       mult:Integer:=1
-      groupord := (size() - 1)@Integer
+      groupord := (size()$% - 1)@Integer
       exp:Integer:=groupord
       for f in faclist repeat
         fac:=f.factor

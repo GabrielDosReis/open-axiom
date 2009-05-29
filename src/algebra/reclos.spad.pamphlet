@@ -380,7 +380,7 @@ RealClosedField : Category == PUB where
 
         sqrt(a:Z):$ == sqrt(a::$,2)
 
-        characteristic() == 0
+        characteristic == 0
 
         rootOf(pol,n,o) == 
           r := rootOf(pol,n)

@@ -28,7 +28,7 @@
 IntegerMod(p:PositiveInteger):
  Join(CommutativeRing, Finite, ConvertibleTo Integer, StepThrough) == add
   size()           == p
-  characteristic() == p
+  characteristic == p
   lookup x == (zero? x => p; (convert(x)@Integer) :: PositiveInteger)
 
 -- Code is duplicated for the optimizer to kick in.

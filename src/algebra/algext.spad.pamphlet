@@ -75,7 +75,7 @@ SimpleAlgebraicExtension(R:CommutativeRing,
     coordinates(x) == [coefficient(lift(x),i) for i in 0..d1]
     represents(vect) == +/[monomial(vect.(i+1),i) for i in 0..d1]
     definingPolynomial()  == M
-    characteristic()      == characteristic()$R
+    characteristic        == characteristic$R
     rank()                == d::PositiveInteger
     basis()               == copy(bsis@Vector(Rep) pretend Vector($))
     --!! I inserted 'copy' in the definition of 'basis'  -- cjw 7/19/91

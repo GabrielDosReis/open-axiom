@@ -261,7 +261,7 @@ FiniteFieldExtensionByPolynomial(GF:FiniteFieldCategory,_
       retractIfCan(x) = "failed" => false
       true
 
-    characteristic() == characteristic()$GF
+    characteristic == characteristic$GF
 
     before?(x,y) == before?(x,y)$Rep
 @

@@ -71,7 +71,7 @@ LaurentPolynomial(R, UP): Exports == Implementation where
     coerce(p:UP):%   == mkgpol(0, p)
     reductum p       == check0(order p, reductum poly p)
     n:Z * p:%        == check0(order p, n * poly p)
-    characteristic() == characteristic()$R
+    characteristic == characteristic$R
     coerce(n:Z):%    == n::R::%
     degree p         == degree(poly p)::Z + order p
     monomial? p      == monomial? poly p

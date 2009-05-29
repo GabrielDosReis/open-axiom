@@ -22,8 +22,7 @@
                                 (|getShellEntry| $ 16))
                             13301))
                    |FPS-;digits;Pi;2|)
-        (|check-subtype|
-            (AND (COND ((< #0# 0) 'NIL) ('T 'T)) (< 0 #0#))
+        (|check-subtype| (AND (NOT (< #0# 0)) (< 0 #0#))
             '(|PositiveInteger|) #0#))))) 
 
 (DEFUN |FloatingPointSystem&| (|#1|)

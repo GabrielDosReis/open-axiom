@@ -60,7 +60,7 @@ ResidueRing(F,Expon,VarSet,FPol,LFPol) : Dom  == Body
       (n : Integer) * x == n *$Rep x
       (a : F) * x == a *$Rep x
       x = y == x =$Rep y
-      characteristic()      == characteristic()$F
+      characteristic == characteristic$F
       coerce(x) : OutputForm == coerce(x)$Rep
 
 @

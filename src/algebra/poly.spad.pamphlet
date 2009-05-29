@@ -438,11 +438,11 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
               zero?(cc:=p.first.c ** n) => 0
               [[n * p.first.k, cc]]
             -- not worth doing special trick if characteristic is too small 
-            if characteristic()$R < 3 then return expt(p,n pretend PositiveInteger)$RepeatedSquaring(%)
+            if characteristic$R < 3 then return expt(p,n pretend PositiveInteger)$RepeatedSquaring(%)
             y:%:=1
             -- break up exponent in qn * characteristic + rn
             -- exponentiating by the characteristic is fast
-            rec := divide(n, characteristic()$R)
+            rec := divide(n, characteristic$R)
 	    qn:= rec.quotient
             rn:= rec.remainder
             repeat 
@@ -450,8 +450,8 @@ SparseUnivariatePolynomial(R:Ring): UnivariatePolynomialCategory(R) with
                 if rn > 1 then y:= y * binomThmExpt([p.first], p.rest, rn)
                 zero? qn => return y
                 -- raise to the characteristic power
-                p:= [[t.k * characteristic()$R , primeFrobenius(t.c)$R ]$Term for t in p]
-		rec := divide(qn, characteristic()$R)
+                p:= [[t.k * characteristic$R , primeFrobenius(t.c)$R ]$Term for t in p]
+		rec := divide(qn, characteristic$R)
 		qn:= rec.quotient 
                 rn:= rec.remainder
             y 

@@ -76,8 +76,8 @@ QuaternionCategory(R: CommutativeRing): Category ==
  
  add
  
-       characteristic() ==
-         characteristic()$R
+       characteristic ==
+         characteristic$R
        conjugate x      ==
          quatern(real x, - imagI x, - imagJ x, - imagK x)
        map(fn, x)       ==

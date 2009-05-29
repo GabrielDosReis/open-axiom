@@ -87,7 +87,7 @@ RealNumberSystem(): Category ==
       ++ abs x returns the absolute value of x.
 
  add
-   characteristic() == 0
+   characteristic == 0
    fractionPart x           == x - truncate x
    truncate x          == (negative? x => -floor(-x); floor x)
    round x          == (negative? x => truncate(x-1/2::%); truncate(x+1/2::%))

@@ -274,7 +274,7 @@ DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
         equation2R: Vector % -> Matrix R
  
         coerce(n:Integer):%          == n::R::%
-        characteristic()             == characteristic()$R
+        characteristic == characteristic$R
         differentiate(z:%, d:R -> R) == map(d, z)
  
         equation2R v ==

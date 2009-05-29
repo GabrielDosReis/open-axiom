@@ -370,7 +370,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
         (s = variable(x)) => differentiate x
         map(differentiate(#1,s),x) - differentiate(center x,s)*differentiate(x)
 
-    characteristic() == characteristic()$Coef
+    characteristic == characteristic$Coef
 
     if Coef has Field then
 

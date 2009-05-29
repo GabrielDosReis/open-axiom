@@ -91,7 +91,7 @@ RadixExpansion(bb): Exports == Implementation where
     checkRagits: List I    -> Boolean
 
     -- Arithmetic operations
-    characteristic() == 0
+    characteristic == 0
     differentiate a == 0
 
     0     == [1, nil(),  nil(), nil()]

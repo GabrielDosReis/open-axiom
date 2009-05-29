@@ -1,5 +1,55 @@
 2009-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/algext.spad.pamphlet: Qualify `characteristic'.
+	* algebra/clifford.spad.pamphlet: Likewise.
+	* algebra/complet.spad.pamphlet: Likewise.
+	* algebra/contfrac.spad.pamphlet: Likewise.
+	* algebra/curve.spad.pamphlet: Likewise.
+	* algebra/ddfact.spad.pamphlet: Likewise.
+	* algebra/derham.spad.pamphlet: Likewise.
+	* algebra/equation2.spad.pamphlet: Likewise.
+	* algebra/ffcat.spad.pamphlet: Likewise.
+	* algebra/ffcg.spad.pamphlet: Likewise.
+	* algebra/fff.spad.pamphlet: Likewise.
+	* algebra/ffnb.spad.pamphlet: Likewise.
+	* algebra/ffp.spad.pamphlet: Likewise.
+	* algebra/ffpoly.spad.pamphlet: Likewise.
+	* algebra/ffx.spad.pamphlet: Likewise.
+	* algebra/fmod.spad.pamphlet: Likewise.
+	* algebra/fortmac.spad.pamphlet: Likewise.
+	* algebra/fr.spad.pamphlet: Likewise.
+	* algebra/fraction.spad.pamphlet: Likewise.
+	* algebra/fspace.spad.pamphlet: Likewise.
+	* algebra/gaussian.spad.pamphlet: Likewise.
+	* algebra/gpol.spad.pamphlet: Likewise.
+	* algebra/intclos.spad.pamphlet: Likewise.
+	* algebra/interval.spad.pamphlet: Likewise.
+	* algebra/laurent.spad.pamphlet: Likewise.
+	* algebra/matrix.spad.pamphlet: Likewise.
+	* algebra/modring.spad.pamphlet: Likewise.
+	* algebra/oct.spad.pamphlet: Likewise.
+	* algebra/opalg.spad.pamphlet: Likewise.
+	* algebra/padic.spad.pamphlet: Likewise.
+	* algebra/perman.spad.pamphlet: Likewise.
+	* algebra/pf.spad.pamphlet: Likewise.
+	* algebra/pfr.spad.pamphlet: Likewise.
+	* algebra/poly.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/puiseux.spad.pamphlet: Likewise.
+	* algebra/quat.spad.pamphlet: Likewise.
+	* algebra/radix.spad.pamphlet: Likewise.
+	* algebra/reclos.spad.pamphlet: Likewise.
+	* algebra/resring.spad.pamphlet: Likewise.
+	* algebra/sf.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+	* algebra/solvefor.spad.pamphlet: Likewise.
+	* algebra/sups.spad.pamphlet: Likewise.
+	* algebra/taylor.spad.pamphlet: Likewise.
+	* algebra/vector.spad.pamphlet: Likewise.
+	* algebra/xpoly.spad.pamphlet: Likewise.
+
+2009-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2798220
 	* algebra/fmod.spad.pamphlet (IntegerMod): Define before?
 	* algebra/ffp.spad.pamphlet (FiniteFieldExtensionByPolynomial):

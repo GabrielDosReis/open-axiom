@@ -100,7 +100,7 @@ OrderedCompletion(R:SetCategory): Exports == Implementation where
       fininf: (B, R) -> %
 
       1                == [1$R]
-      characteristic() == characteristic()$R
+      characteristic   == characteristic$R
 
       fininf(b, r) ==
         r > 0 => [b]
@@ -242,7 +242,7 @@ OnePointCompletion(R:SetCategory): Exports == Implementation where
       fininf: R -> %
 
       1                == 1$R
-      characteristic() == characteristic()$R
+      characteristic   == characteristic$R
 
       fininf r ==
         zero? r => error "Undefined product"

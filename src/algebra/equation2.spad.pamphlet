@@ -206,7 +206,7 @@ Equation(S: Type): public == private where
         leftOne eq == 1 = rhs eq * inv rhs eq
         rightOne eq == lhs eq * inv rhs eq = 1
     if S has Ring then
-        characteristic() == characteristic()$S
+        characteristic == characteristic$S
         i:Integer * eq:$ == (i::S) * eq
     if S has IntegralDomain then
         factorAndSplit eq ==

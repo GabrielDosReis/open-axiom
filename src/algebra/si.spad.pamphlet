@@ -81,7 +81,7 @@ IntegerNumberSystem(): Category ==
 --   commutative("*")    -- follows from the above
 
  add
-   characteristic()         == 0
+   characteristic == 0
    differentiate x          == 0
    even? x                  == not odd? x
    positive? x              == x > 0

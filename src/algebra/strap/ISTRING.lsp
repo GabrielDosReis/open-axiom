@@ -206,7 +206,7 @@
                  (MAKE-FULL-CVEC
                      (PROG1 (LETT #0# (+ (- |m| (+ (- |h| |l|) 1)) |n|)
                                   |ISTRING;replace;$Us2$;15|)
-                       (|check-subtype| (COND ((< #0# 0) 'NIL) ('T 'T))
+                       (|check-subtype| (NOT (< #0# 0))
                            '(|NonNegativeInteger|) #0#))
                      (SPADCALL (|getShellEntry| $ 52)))
                  |ISTRING;replace;$Us2$;15|)
@@ -750,8 +750,7 @@
                                       |ISTRING;match?;2$CB;34|)
                                      $)
                                     |ISTRING;match?;2$CB;34|)
-                              (|check-subtype|
-                                  (COND ((< #0# 0) 'NIL) ('T 'T))
+                              (|check-subtype| (NOT (< #0# 0))
                                   '(|NonNegativeInteger|) #0#))
                             |ISTRING;match?;2$CB;34|)
                       (EXIT (COND
@@ -781,10 +780,7 @@
                                         |dontcare| |pattern| (+ |p| 1)
                                         $)
                                        |ISTRING;match?;2$CB;34|)
-                                       (|check-subtype|
-                                        (COND
-                                          ((< #1# 0) 'NIL)
-                                          ('T 'T))
+                                       (|check-subtype| (NOT (< #1# 0))
                                         '(|NonNegativeInteger|) #1#))
                                      |ISTRING;match?;2$CB;34|)
                                     (SEQ G190
@@ -807,9 +803,7 @@
                                           |s| |target| |i| $)
                                          |ISTRING;match?;2$CB;34|)
                                          (|check-subtype|
-                                          (COND
-                                            ((< #2# 0) 'NIL)
-                                            ('T 'T))
+                                          (NOT (< #2# 0))
                                           '(|NonNegativeInteger|) #2#))
                                        |ISTRING;match?;2$CB;34|)
                                       (EXIT
@@ -835,9 +829,7 @@
                                                 (+ |q| 1) $)
                                                |ISTRING;match?;2$CB;34|)
                                                (|check-subtype|
-                                                (COND
-                                                  ((< #4# 0) 'NIL)
-                                                  ('T 'T))
+                                                (NOT (< #4# 0))
                                                 '(|NonNegativeInteger|)
                                                 #4#))
                                              |ISTRING;match?;2$CB;34|)))))))

@@ -218,7 +218,7 @@ Factored(R: IntegralDomain): Exports == Implementation where
     one? u               == empty? u.fct and u.unt = 1
     mkFF(r, x)           == [r, x]
     coerce(j:Integer):%  == (j::R)::%
-    characteristic()     == characteristic()$R
+    characteristic == characteristic$R
     i:Integer * u:%      == (i :: %) * u
     r:R * u:%            == (r :: %) * u
     factors u            == [[fe.fctr, fe.xpnt] for fe in factorList u]

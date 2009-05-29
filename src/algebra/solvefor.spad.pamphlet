@@ -135,7 +135,7 @@ PolynomialSolveByFormulas(UP, F): PSFcat == PSFdef where
             error "Leading coefficient must not be 0."
 
         needChar0(): Boolean ==
-            characteristic()$F = 0 => true
+            characteristic$F = 0 => true
             error "Formula defined only for fields of characteristic 0."
 
         linear u ==

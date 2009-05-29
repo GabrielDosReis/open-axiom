@@ -82,7 +82,7 @@ DistinctDegreeFactorize(F,FP): C == T
       ddffact1 : (FP,Boolean) -> List fact
       ranpol :         NNI       -> FP
       
-      charF : Boolean := characteristic()$F = 2
+      charF : Boolean := characteristic$F = 2
 
       --construct a random polynomial of random degree < d
       ranpol(d:NNI):FP ==

@@ -87,7 +87,7 @@ ModuleOperator(R: Ring, M:LeftModule(R)): Exports == Implementation where
     elt(x:$, r:M)       == +/[t.exp * termeval(t.gen, r) for t in terms x]
     rmeval(t, r)        == t.coef * monomeval(t.monom, r)
     termcopy t          == [[rm.coef, rm.monom] for rm in t]
-    characteristic()    == characteristic()$R
+    characteristic == characteristic$R
     mkop(r, fg)         == [[r, fg]$RM]$TERM :: $
     evaluate(f, g)   == nocopy setProperty(retract(f)@OP,OPEVAL,g pretend None)
 

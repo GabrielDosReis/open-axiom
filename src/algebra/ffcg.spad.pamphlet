@@ -264,7 +264,7 @@ FiniteFieldCyclicGroupExtensionByPolynomial(GF,defpol):_
 
     - x:$ ==
         zero? x => 0
-        characteristic() =$I 2 => x
+        characteristic$% =$I 2 => x
         addmod(x,shift(sizeCG,-1)$SI pretend Rep,sizeCG)
 
     generator() == 1$SI
@@ -287,7 +287,7 @@ FiniteFieldCyclicGroupExtensionByPolynomial(GF,defpol):_
 
     extensionDegree(): PositiveInteger == extdeg pretend PI
 
-    characteristic() == characteristic()$GF
+    characteristic == characteristic$GF
 
     lookup(x:$) ==
       x =$Rep (-$Rep 1$Rep) => sizeFF pretend PI

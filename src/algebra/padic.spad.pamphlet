@@ -94,7 +94,7 @@ InnerPAdicInteger(p,unBalanced?): Exports == Implementation where
 
     Rep := ST I
 
-    characteristic() == 0
+    characteristic == 0
     euclideanSize(x) == order(x)
 
     stream(x:%):ST I == x pretend ST(I)
