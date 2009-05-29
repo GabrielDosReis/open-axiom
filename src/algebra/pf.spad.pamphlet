@@ -16,7 +16,7 @@
 -- This domain does not check, PrimeField does.
 ++ Authors: N.N., J.Grabmeier, A.Scheerhorn
 ++ Date Created: ?, November 1990, 26.03.1991
-++ Date Last Updated: 12 April 1991
+++ Date Last Updated: May 29, 2009
 ++ Basic Operations:
 ++ Related Constructors: PrimeField
 ++ Also See:
@@ -191,6 +191,7 @@ InnerPrimeField(p:PositiveInteger): Exports == Implementation where
 
     charthRoot(x: %): % == x
 
+    before?(x,y) == before?(convert x, convert y)$I
 @
 \section{domain PF PrimeField}
 <<domain PF PrimeField>>=
