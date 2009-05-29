@@ -35,7 +35,7 @@
 )abbrev domain FFP FiniteFieldExtensionByPolynomial
 ++ Authors: R.Sutor, J. Grabmeier, O. Gschnitzer, A. Scheerhorn
 ++ Date Created:
-++ Date Last Updated: 31 March 1991
+++ Date Last Updated: May 29, 2009
 ++ Basic Operations:
 ++ Related Constructors:
 ++ Also See: FiniteFieldCyclicGroupExtensionByPolynomial,
@@ -263,6 +263,7 @@ FiniteFieldExtensionByPolynomial(GF:FiniteFieldCategory,_
 
     characteristic() == characteristic()$GF
 
+    before?(x,y) == before?(x,y)$Rep
 @
 \section{domain FFX FiniteFieldExtension}
 <<domain FFX FiniteFieldExtension>>=

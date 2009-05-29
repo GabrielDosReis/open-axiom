@@ -1,3 +1,12 @@
+2009-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2798220
+	* algebra/fmod.spad.pamphlet (IntegerMod): Define before?
+	* algebra/ffp.spad.pamphlet (FiniteFieldExtensionByPolynomial):
+	Likewise. 
+	* algebra/pf.spad.pamphlet (InnerPrimeField): Likewise.
+	* testsuite/interpreter/sf-2798220.input: New.
+
 2009-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (getSuccessEnvironment): Tidy.

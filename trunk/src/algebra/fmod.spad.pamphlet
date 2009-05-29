@@ -14,7 +14,7 @@
 )abbrev domain ZMOD IntegerMod
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: May 29, 2009
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -66,6 +66,8 @@ IntegerMod(p:PositiveInteger):
        (c1, c2, g) := extendedEuclidean(x, q)$Rep
        not one? g => "failed"
        positiveRemainder(c1, q)
+    
+    before?(x,y) == before?(x,y)$Rep
 
   else
     Rep:= Integer
@@ -94,6 +96,8 @@ IntegerMod(p:PositiveInteger):
        (c1, c2, g) := extendedEuclidean(x, p)$Rep
        not one? g => "failed"
        positiveRemainder(c1, p)
+    
+    before?(x,y) == before?(x,y)$Rep
 
 @
 \section{License}
