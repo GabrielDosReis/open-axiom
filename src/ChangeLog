@@ -1,5 +1,9 @@
 2009-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/complet.spad.pamphlet (OnePointCompletion): Define before?.
+
+2009-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/algext.spad.pamphlet: Qualify `characteristic'.
 	* algebra/clifford.spad.pamphlet: Likewise.
 	* algebra/complet.spad.pamphlet: Likewise.
