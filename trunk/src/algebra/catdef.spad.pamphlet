@@ -1635,7 +1635,7 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
   add
       hash(s : %):  SingleInteger == SXHASH(s)$Lisp
       latex(s : %): String       == "\mbox{\bf Unimplemented}"
-
+      before?(x,y) == GGREATERP(y,x)$Foreign(Builtin)
 @
 
 \section{category STEP StepThrough}
