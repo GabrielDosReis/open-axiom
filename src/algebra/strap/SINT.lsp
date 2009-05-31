@@ -599,19 +599,19 @@
             (|leftUnitary| . 0) (|unitsKnown| . 0))
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+                      0 0 0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
                          NIL |DifferentialRing&| |OrderedRing&| NIL NIL
                          |Module&| NIL |Ring&| NIL NIL NIL NIL NIL
-                         |AbelianGroup&| NIL NIL NIL NIL
+                         |AbelianGroup&| NIL NIL NIL NIL NIL
                          |AbelianMonoid&| |Monoid&| NIL NIL NIL
-                         |OrderedSet&| |AbelianSemiGroup&| |SemiGroup&|
-                         |Logic&| NIL |RetractableTo&| |SetCategory&|
-                         NIL NIL NIL NIL NIL NIL NIL NIL NIL
-                         |BasicType&| NIL)
+                         |OrderedSet&| NIL NIL |AbelianSemiGroup&|
+                         |SemiGroup&| NIL |Logic&| NIL |RetractableTo&|
+                         |SetCategory&| NIL NIL NIL NIL NIL NIL NIL NIL
+                         NIL |BasicType&| NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -632,12 +632,16 @@
                                (|CancellationAbelianMonoid|)
                                (|OrderedFinite|)
                                (|OrderedAbelianSemiGroup|)
-                               (|AbelianMonoid|) (|Monoid|) (|Finite|)
-                               (|StepThrough|) (|PatternMatchable| 5)
-                               (|OrderedSet|) (|AbelianSemiGroup|)
-                               (|SemiGroup|) (|Logic|) (|RealConstant|)
-                               (|RetractableTo| 5) (|SetCategory|)
-                               (|OpenMath|) (|ConvertibleTo| 98)
+                               (|LinearSet| $$) (|AbelianMonoid|)
+                               (|Monoid|) (|Finite|) (|StepThrough|)
+                               (|PatternMatchable| 5) (|OrderedSet|)
+                               (|LeftLinearSet| $$)
+                               (|RightLinearSet| $$)
+                               (|AbelianSemiGroup|) (|SemiGroup|)
+                               (|LeftLinearSet| 5) (|Logic|)
+                               (|RealConstant|) (|RetractableTo| 5)
+                               (|SetCategory|) (|OpenMath|)
+                               (|ConvertibleTo| 98)
                                (|ConvertibleTo| 96)
                                (|CombinatorialFunctionCategory|)
                                (|ConvertibleTo| 100)

@@ -623,17 +623,19 @@
             (|unitsKnown| . 0))
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+                      0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
                          NIL |DifferentialRing&| |OrderedRing&| NIL NIL
                          |Module&| NIL |Ring&| NIL NIL NIL NIL NIL
-                         |AbelianGroup&| NIL NIL NIL |AbelianMonoid&|
-                         |Monoid&| NIL NIL |OrderedSet&|
-                         |AbelianSemiGroup&| |SemiGroup&| NIL
-                         |RetractableTo&| |SetCategory&| NIL NIL NIL
-                         NIL NIL NIL NIL NIL NIL NIL |BasicType&| NIL)
+                         |AbelianGroup&| NIL NIL NIL NIL
+                         |AbelianMonoid&| |Monoid&| NIL NIL
+                         |OrderedSet&| NIL NIL |AbelianSemiGroup&|
+                         |SemiGroup&| NIL NIL |RetractableTo&|
+                         |SetCategory&| NIL NIL NIL NIL NIL NIL NIL NIL
+                         NIL NIL |BasicType&| NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -653,10 +655,13 @@
                                (|OrderedAbelianMonoid|)
                                (|CancellationAbelianMonoid|)
                                (|OrderedAbelianSemiGroup|)
-                               (|AbelianMonoid|) (|Monoid|)
-                               (|StepThrough|) (|PatternMatchable| 17)
-                               (|OrderedSet|) (|AbelianSemiGroup|)
-                               (|SemiGroup|) (|RealConstant|)
+                               (|LinearSet| $$) (|AbelianMonoid|)
+                               (|Monoid|) (|StepThrough|)
+                               (|PatternMatchable| 17) (|OrderedSet|)
+                               (|LeftLinearSet| $$)
+                               (|RightLinearSet| $$)
+                               (|AbelianSemiGroup|) (|SemiGroup|)
+                               (|LeftLinearSet| 17) (|RealConstant|)
                                (|RetractableTo| 17) (|SetCategory|)
                                (|OpenMath|) (|ConvertibleTo| 14)
                                (|ConvertibleTo| 55)
@@ -713,7 +718,7 @@
                                   0 9 27 2 0 11 12 0 28 1 0 14 0 26 1 0
                                   0 0 1 2 0 0 0 7 1 2 0 9 0 0 1 2 0 9 0
                                   0 1 2 0 9 0 0 33 2 0 9 0 0 1 2 0 9 0
-                                  0 10 2 0 0 0 0 39 1 0 0 0 16 2 0 0 0
+                                  0 10 1 0 0 0 16 2 0 0 0 0 39 2 0 0 0
                                   0 37 2 0 0 0 7 81 2 0 0 0 137 1 2 0 0
                                   0 0 52 2 0 0 17 0 80 2 0 0 7 0 1 2 0
                                   0 137 0 1)))))

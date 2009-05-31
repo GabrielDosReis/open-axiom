@@ -1,14 +1,77 @@
 \documentclass{article}
 \usepackage{axiom}
-\begin{document}
+
 \title{\$SPAD/src/algebra catdef.spad}
-\author{James Davenport, Lalo Gonzalez-Vega}
+\author{James Davenport, Lalo Gonzalez-Vega, Gabriel Dos~Reis}
+
+\begin{document}
+
 \maketitle
 \begin{abstract}
 \end{abstract}
-\eject
 \tableofcontents
 \eject
+
+\section{Linear sets}
+
+<<category LLINSET LeftLinearSet>>=
+)abbrev category LLINSET LeftLinearSet
+++ Author: Gabriel Dos Reis
+++ Date Created: May 31, 2009
+++ Date Last Modified: May 31, 2009
+++ Description:
+++   A set is an \spad{R}-left linear set if it is stable by left-dilation
+++   by elements in the ring \spad{R}.  This category differs from
+++   \spad{LeftModule} in that no other assumption (such as addition)
+++   is made about the underlying set.
+++ See Also: RightLinearSet.
+LeftLinearSet(R: Rng): Category == SetCategory with
+   0: %                
+     ++ \spad{0} represents the origin of the linear set
+   zero?: % -> Boolean 
+     ++ \spad{zero? x} holds is \spad{x} is the origin.
+   *: (R,%) -> %       
+     ++ \spad{r*x} is the left-dilation of \spad{x} by \spad{r}.
+
+@
+
+<<category RLINSET RightLinearSet>>=
+)abbrev category RLINSET RightLinearSet
+++ Author: Gabriel Dos Reis
+++ Date Created: May 31, 2009
+++ Date Last Modified: May 31, 2009
+++ Description:
+++   A set is an \spad{R}-right linear set if it is stable by right-dilation
+++   by elements in the ring \spad{R}.  This category differs from
+++   \spad{RightModule} in that no other assumption (such as addition)
+++   is made about the underlying set.
+++ See Also: LeftLinearSet.
+RightLinearSet(R: Rng): Category == SetCategory with
+   0: %                
+     ++ \spad{0} represents the origin of the linear set
+   zero?: % -> Boolean 
+     ++ \spad{zero? x} holds is \spad{x} is the origin.
+   *: (%,R) -> %       
+     ++ \spad{r*x} is the left-dilation of \spad{x} by \spad{r}.
+
+@
+
+<<category LINSET LinearSet>>=
+)abbrev category LINSET LinearSet
+++ Author: Gabriel Dos Reis
+++ Date Created: May 31, 2009
+++ Date Last Modified: May 31, 2009
+++ Description:
+++   A set is an \spad{R}-linear set if it is stable by dilation
+++   by elements in the ring \spad{R}.  This category differs from
+++   \spad{Module} in that no other assumption (such as addition)
+++   is made about the underlying set.
+++ See Also: LeftLinearSet, RightLinearSet.
+LinearSet(R: Rng): Category == Join(LeftLinearSet R, RightLinearSet R)
+
+@
+
+
 \section{category ABELGRP AbelianGroup}
 <<category ABELGRP AbelianGroup>>=
 )abbrev category ABELGRP AbelianGroup
@@ -29,13 +92,10 @@
 ++   \spad{-(-x) = x}
 ++   \spad{x+(-x) = 0}
 -- following domain must be compiled with subsumption disabled
-AbelianGroup(): Category == CancellationAbelianMonoid with
-    --operations
-      "-": % -> %                      ++ -x is the additive inverse of x.
-      "-": (%,%) -> %                  ++ x-y is the difference of x and y
-                                       ++ i.e. \spad{x + (-y)}.
-                       -- subsumes the partial subtraction from previous
-      "*": (Integer,%) -> %            ++ n*x is the product of x by the integer n.
+AbelianGroup(): Category == Join(CancellationAbelianMonoid, LeftLinearSet Integer) with
+      -: % -> %           ++ \spad{-x} is the additive inverse of \spad{x}    
+      "-": (%,%) -> %     ++ \spad{x-y} is the difference of \spad{x} 
+                          ++ and \spad{y} i.e. \spad{x + (-y)}.
     add
       (x:% - y:%):% == x+(-y)
       subtractIfCan(x:%, y:%):Union(%, "failed") == (x-y) :: Union(%,"failed")
@@ -923,12 +983,10 @@ IntegralDomain(): Category ==
 ++   \spad{ (a*b)*x = a*(b*x) }
 ++   \spad{ (a+b)*x = (a*x)+(b*x) }
 ++   \spad{ a*(x+y) = (a*x)+(a*y) }
-LeftModule(R:Rng):Category == AbelianGroup with
-    --operations
-      "*": (R,%) -> %     ++ r*x returns the left multiplication of the module element x
-                          ++ by the ring element r.
+LeftModule(R:Rng):Category == Join(AbelianGroup, LeftLinearSet R)
 
 @
+
 \section{category LINEXP LinearlyExplicitRingOver}
 <<category LINEXP LinearlyExplicitRingOver>>=
 )abbrev category LINEXP LinearlyExplicitRingOver
@@ -972,7 +1030,7 @@ LinearlyExplicitRingOver(R:Ring): Category == Ring with
 ++   \spad{(a*b)*x = a*(b*x)}
 ++   \spad{(a+b)*x = (a*x)+(b*x)}
 ++   \spad{a*(x+y) = (a*x)+(a*y)}
-Module(R:CommutativeRing): Category == BiModule(R,R)
+Module(R:CommutativeRing): Category == Join(BiModule(R,R), LinearSet R)
   add
     if not(R is %) then x:%*r:R == r*x
 
@@ -1502,12 +1560,10 @@ PrincipalIdealDomain(): Category == GcdDomain with
 ++   \spad{ x*(a*b) = (x*a)*b }
 ++   \spad{ x*(a+b) = (x*a)+(x*b) }
 ++   \spad{ (x+y)*x = (x*a)+(y*a) }
-RightModule(R:Rng):Category == AbelianGroup with
-    --operations
-      "*": (%,R) -> %  ++ x*r returns the right multiplication of the module element x
-                       ++ by the ring element r.
+RightModule(R:Rng):Category == Join(AbelianGroup, RightLinearSet R)
 
 @
+
 \section{category RING Ring}
 <<category RING Ring>>=
 )abbrev category RING Ring
@@ -1524,7 +1580,6 @@ RightModule(R:Rng):Category == AbelianGroup with
 ++ The category of rings with unity, always associative, but
 ++ not necessarily commutative.
 
---Ring(): Category == Join(Rng,Monoid,LeftModule(%:Rng)) with
 Ring(): Category == Join(Rng,Monoid,LeftModule(%),CoercibleFrom Integer) with
     --operations
       characteristic: NonNegativeInteger
@@ -1784,6 +1839,9 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<category CABMON CancellationAbelianMonoid>>
 <<category ABELGRP AbelianGroup>>
 <<category RNG Rng>>
+<<category LLINSET LeftLinearSet>>
+<<category RLINSET RightLinearSet>>
+<<category LINSET LinearSet>>
 <<category LMODULE LeftModule>>
 <<category RMODULE RightModule>>
 <<category RING Ring>>

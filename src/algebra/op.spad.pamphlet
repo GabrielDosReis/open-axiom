@@ -78,8 +78,6 @@ BasicOperator(): Exports == Implementation where
     input      : $ -> Union(List SEX -> SEX, "failed")
       ++ input(op) returns the "%input" property of op if
       ++ it has one attached, "failed" otherwise.
-    is?        : ($, Symbol) -> Boolean
-      ++ is?(op, s) tests if the name of op is s.
     has?       : (%, Identifier) -> Boolean
       ++ \spad{has?(op,p)} tests if property \spad{s} is attached to \spad{op}.
     assert     : (%, Identifier) -> $
