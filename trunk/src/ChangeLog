@@ -1,3 +1,19 @@
+2009-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/term.spad.pamphlet (is?$OperatorCategory): New.
+	* algebra/op.spad.pamphlet (BasicOperator): Don't export is? here.
+	Inherit it from OperatorCategory Symbol.
+	* algebra/catdef.spad.pamphlet (LeftLinearSet): New category.
+	(RightLinearSet): Likewise.
+	(LinearSet): Likewise.
+	(AbelianGroup): Extend LeftLinearSet Integer.
+	(LeftModule): Extend LeftLinearSet R.
+	(Module): Extend LinearSet R.
+	(RightModule): Extend RightLinearSet R.
+	* algebra/exposed.lsp.pamphlet: Expose LeftLinearSet,
+	RightLinearSet, and LinearSet.
+	* algebra/Makefile.pamphlet: Tidy.
+
 2009-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (SetCategory): Provide default

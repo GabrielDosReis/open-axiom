@@ -1031,7 +1031,7 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|FloatingPointSystem&| |RealNumberSystem&|
                          |Field&| |EuclideanDomain&| NIL
                          |UniqueFactorizationDomain&| |GcdDomain&|
@@ -1039,9 +1039,10 @@
                          |Algebra&| |DifferentialRing&| NIL
                          |OrderedRing&| |Module&| NIL NIL |Module&| NIL
                          NIL |Ring&| NIL NIL NIL NIL NIL NIL NIL
-                         |AbelianGroup&| NIL NIL NIL |AbelianMonoid&|
-                         |Monoid&| NIL |OrderedSet&|
-                         |AbelianSemiGroup&| |SemiGroup&|
+                         |AbelianGroup&| NIL NIL NIL NIL NIL
+                         |AbelianMonoid&| |Monoid&| NIL |OrderedSet&|
+                         NIL NIL NIL NIL |AbelianSemiGroup&|
+                         |SemiGroup&| NIL
                          |TranscendentalFunctionCategory&|
                          |RetractableTo&| |RetractableTo&| NIL
                          |SetCategory&| NIL
@@ -1072,9 +1073,15 @@
                                (|OrderedAbelianMonoid|)
                                (|CancellationAbelianMonoid|)
                                (|OrderedAbelianSemiGroup|)
+                               (|LinearSet| 112) (|LinearSet| $$)
                                (|AbelianMonoid|) (|Monoid|)
                                (|PatternMatchable| 109) (|OrderedSet|)
+                               (|LeftLinearSet| 112)
+                               (|RightLinearSet| 112)
+                               (|LeftLinearSet| $$)
+                               (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
+                               (|LeftLinearSet| 26)
                                (|TranscendentalFunctionCategory|)
                                (|RetractableTo| 112)
                                (|RetractableTo| 26) (|RealConstant|)
@@ -1150,8 +1157,8 @@
                                   20 1 0 0 0 105 1 0 0 0 1 2 0 0 0 113
                                   1 2 0 0 0 0 107 2 0 19 0 0 1 2 0 19 0
                                   0 1 2 0 19 0 0 62 2 0 19 0 0 1 2 0 19
-                                  0 0 54 2 0 0 0 26 63 2 0 0 0 0 45 1 0
-                                  0 0 55 2 0 0 0 0 57 2 0 0 0 0 56 2 0
+                                  0 0 54 2 0 0 0 26 63 2 0 0 0 0 45 2 0
+                                  0 0 0 57 1 0 0 0 55 2 0 0 0 0 56 2 0
                                   0 0 0 67 2 0 0 0 112 149 2 0 0 0 26
                                   66 2 0 0 0 113 1 2 0 0 0 24 1 2 0 0
                                   112 0 1 2 0 0 0 112 1 2 0 0 0 0 58 2

@@ -4,14 +4,15 @@
 (DEFPARAMETER |AbelianGroup;AL| 'NIL) 
 
 (DEFUN |AbelianGroup;| ()
-  (PROG (#0=#:G1399)
+  (PROG (#0=#:G1400)
     (RETURN
       (PROG1 (LETT #0#
-                   (|Join| (|CancellationAbelianMonoid|)
-                           (|mkCategory| '|domain|
-                               '(((- ($ $)) T) ((- ($ $ $)) T)
-                                 ((* ($ (|Integer|) $)) T))
-                               NIL '((|Integer|)) NIL))
+                   (|sublisV| (PAIR '(#1=#:G1399) (LIST '(|Integer|)))
+                       (|Join| (|CancellationAbelianMonoid|)
+                               (|LeftLinearSet| '#1#)
+                               (|mkCategory| '|domain|
+                                   '(((- ($ $)) T) ((- ($ $ $)) T)) NIL
+                                   'NIL NIL)))
                    |AbelianGroup|)
         (|setShellEntry| #0# 0 '(|AbelianGroup|)))))) 
 

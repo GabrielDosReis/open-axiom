@@ -72,12 +72,15 @@ Arity(): Public == Private where
 OperatorCategory(S: SetCategory): Category ==
     SetCategory with
       name: % -> S
-        ++ name(op) returns the externam name of `op'.
+        ++ \spad{name(op)} returns the externam name of \spad{op}.
       arity: % -> Arity
-        ++ arity(op) returns the arity of the operator `op'.
+        ++ \spad{arity(op)} returns the arity of the operator \spad{op}.
+      is?: (%,S) -> Boolean
+        ++ \spad{is?(op,n)} holds if the name of the operator \spad{op}
+        ++ is \spad{n}.
   add
     coerce(op: %): OutputForm == name(op)::OutputForm
-
+    is?(op,n) == name op = n
 @
 
 
