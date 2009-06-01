@@ -315,15 +315,6 @@ parseLeave t ==
   ["leave",1,a]
  
 
-parseReturn: %ParseForm -> %Form
-parseReturn t ==
-  t isnt ["return",a,:b] => systemErrorHere ["parseReturn",t]
-  a:= parseTran a
-  b:= parseTran b
-  b =>
-    (if a^=1 then MOAN '"multiple-level 'return' not allowed"; ["return",1,:b])
-  ["return",1,a]
- 
 parseJoin: %ParseForm -> %Form
 parseJoin t ==
   t isnt ["Join",:l] => systemErrorHere ["parseJoin",t]
@@ -496,7 +487,6 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["or", :"parseOr"],_
 	  ["pretend", :"parsePretend"],_
           ["@@",:"parseAtAt"],_
-	  ["return", :"parseReturn"],_
 	  ["SEGMENT", :"parseSegment"],_
 	  ["SEQ", :"parseSeq"],_
 	  ["VCONS", :"parseVCONS"],_

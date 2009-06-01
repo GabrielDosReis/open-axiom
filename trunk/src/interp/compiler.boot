@@ -1088,11 +1088,10 @@ compLeave(["leave",level,x],m,e) ==
 --% return
 
 compReturn: (%Form,%Mode,%Env) -> %Maybe %Triple
-compReturn(["return",level,x],m,e) ==
+compReturn(["return",x],m,e) ==
   null $exitModeStack =>
     stackAndThrow('"the return before %1b is unneccessary",[x])
     nil
-  level^=1 => userError '"multi-level returns not supported"
   index:= MAX(0,#$exitModeStack-1)
   if index >= 0 then 
     $returnMode:= resolve($exitModeStack.index,$returnMode)

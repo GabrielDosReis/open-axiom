@@ -1,5 +1,11 @@
 2009-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Simplify compiler ast for `return' expressions.
+	* interp/parse.boot (parseReturn): Remove.
+	* interp/compiler.boot (compReturn): Tidy.
+
+2009-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2799238
 	* algebra/syntax.spad.pamphlet (SpadAst): Fix typo.
 
