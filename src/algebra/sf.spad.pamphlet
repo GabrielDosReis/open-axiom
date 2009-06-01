@@ -342,6 +342,9 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    coerce(x:%):OutputForm == outputForm x
    convert(x:%):InputForm == convert(x pretend DoubleFloat)$InputForm
    x < y            == (x<y)$Lisp
+   x > y            == (x > y)$Lisp        -- help inliner
+   x <= y           == (x <= y)$Lisp       -- ditto
+   x >= y           == (x >= y)$Lisp       -- ditto
    - x              == (-x)$Lisp
    x + y            == (x+y)$Lisp
    x:% - y:%        == (x-y)$Lisp

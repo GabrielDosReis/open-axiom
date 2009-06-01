@@ -42,6 +42,9 @@ Byte(): Public == Private where
     coerce(x: %): Character == char rep x
     x = y == byteEqual(x,y)$Lisp
     x < y ==  byteLessThan(x,y)$Lisp
+    x > y ==  byteGreaterThan(x,y)$Lisp
+    x <= y ==  byteLessEqual(x,y)$Lisp
+    x >= y ==  byteGreaterEqual(x,y)$Lisp
     min() == per 0
     max() == per 255
     bitand(x,y) == bitand(x,y)$Lisp

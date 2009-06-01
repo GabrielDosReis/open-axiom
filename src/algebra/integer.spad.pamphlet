@@ -181,6 +181,9 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       random(x) == RANDOM(x)$Lisp
       x = y == EQL(x,y)$Lisp
       x < y == (x<y)$Lisp
+      x > y == (x > y)$Lisp       -- Don't rely on default; help the inliner
+      x <= y == (x <= y)$Lisp     -- Ditto
+      x >= y == (x >= y)$Lisp     -- Ditto
       - x == (-x)$Lisp
       x + y == (x+y)$Lisp
       x - y == (x-y)$Lisp

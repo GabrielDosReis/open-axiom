@@ -288,6 +288,9 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    Or(x,y)   == LOGIOR(x,y)$Lisp
    xor(x,y)  == LOGXOR(x,y)$Lisp
    x < y     == QSLESSP(x,y)$Lisp
+   x > y     == QSGREATERP(x,y)$Lisp
+   x <= y    == (x <= y)$Lisp
+   x >= y    == (x >= y)$Lisp
    inc x     == QSADD1(x)$Lisp
    dec x     == QSSUB1(x)$Lisp
    - x       == QSMINUS(x)$Lisp
