@@ -1,5 +1,10 @@
 2009-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2799238
+	* algebra/syntax.spad.pamphlet (SpadAst): Fix typo.
+
+2009-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compGreaterThan): Remove.
 	* interp/parse.boot (parseGreaterEqual): Likewise.
 
