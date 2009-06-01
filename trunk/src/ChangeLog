@@ -1,3 +1,15 @@
+2009-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compGreaterThan): New.  Compile
+	greater-than expressions.
+	* interp/parse.boot (parseGreaterThan): Remove.
+	* algebra/data.spad.pamphlet (Byte): Implement all comparison
+	functions. 
+	* algebra/integer.spad.pamphlet (Integer): Likewise.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Likewise.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* algebra/string.spad.pamphlet (Character): Likewise.
+
 2009-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/term.spad.pamphlet (is?$OperatorCategory): New.

@@ -71,6 +71,9 @@
 (defmacro |byteGreaterEqual| (|x| |y|)
   `(>= (the |%Byte| ,|x|) (the |%Byte| ,|y|)))
 
+(defmacro |byteGreaterThan| (|x| |y|)
+  `(> (the |%Byte| ,|x|) (the |%Byte| ,|y|)))
+
 ;; 
 ;; -*- BigFloat Constructors -*-
 ;; 

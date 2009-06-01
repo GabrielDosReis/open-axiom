@@ -1454,6 +1454,11 @@ compExclusiveOr(x,m,e) ==
   bT := comp(b,$EmptyMode,e) or return nil
   compResolveCall("xor",[aT,bT],m,bT.env)
 
+compGreaterThan: (%Form, %Mode, %Env) -> %Maybe %Triple
+compGreaterThan(x,m,e) ==
+  x isnt [">", a, b] => nil
+  $normalizeTree and resolve(m,$Boolean) = $Boolean => comp(["<",b,a],m,e)
+  compForm(x,m,e)
 
 --% Case
 compCase: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -2445,6 +2450,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["@", :"compAtSign"],_
 	  [":", :"compColon"],_
 	  ["::", :"compCoerce"],_
+          [">", :"compGreaterThan"],_
 	  ["QUOTE", :"compQuote"],_
 	  ["add", :"compAdd"],_
 	  ["CAPSULE", :"compCapsule"],_

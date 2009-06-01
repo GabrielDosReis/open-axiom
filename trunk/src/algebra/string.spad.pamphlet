@@ -82,6 +82,9 @@ Character: OrderedFinite() with
 
 	a = b		       == CHAR_=(a,b)$Lisp
 	a < b		       == CHAR_<(a,b)$Lisp
+	a > b		       == CHAR_>(a,b)$Lisp
+	a <= b		       == CHAR_<_=(a,b)$Lisp
+	a >= b		       == CHAR_>_=(a,b)$Lisp
 	size()		       == 256
 	index n		       == char((n - 1)::NNI)
 	lookup c	       == (1 + ord c)::PositiveInteger
