@@ -1611,7 +1611,7 @@ SpadAst(): SpadAstExports() == add
   x case ExitAst == isAst(x,'exit)
   autoCoerce(x: %): ExitAst == x : ExitAst
 
-  x case ReturnAst == isAst(x,'RETURN)
+  x case ReturnAst == isAst(x,'_return)
   autoCoerce(x: %): ReturnAst == x : ReturnAst
 
   x case CoerceAst == isAst(x,'_:_:)
