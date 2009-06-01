@@ -27,7 +27,7 @@
 (DEFUN |ABELGRP-;*;I2S;4| (|n| |x| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 19))
-    ((< 0 |n|) (SPADCALL |n| |x| (|getShellEntry| $ 24)))
+    ((> |n| 0) (SPADCALL |n| |x| (|getShellEntry| $ 24)))
     ('T
      (SPADCALL (- |n|) (SPADCALL |x| (|getShellEntry| $ 7))
          (|getShellEntry| $ 24))))) 
@@ -56,7 +56,7 @@
              |ABELGRP-;-;3S;1| (11 . -) (|Union| $ '"failed")
              |ABELGRP-;subtractIfCan;2SU;2| (|Integer|) (17 . *)
              (|NonNegativeInteger|) |ABELGRP-;*;Nni2S;3| (|Boolean|)
-             (23 . |zero?|) (28 . |Zero|) (32 . |Zero|) (36 . <)
+             (23 . |zero?|) (28 . |Zero|) (32 . |Zero|) (36 . >)
              (|PositiveInteger|) (|RepeatedDoubling| 6) (42 . |double|)
              (48 . -) (53 . *))
           '#(|subtractIfCan| 59 - 65 * 71) 'NIL

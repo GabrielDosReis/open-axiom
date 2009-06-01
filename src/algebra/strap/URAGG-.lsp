@@ -177,7 +177,7 @@
            (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((< 0 |i|)
+                           ((> |i| 0)
                             (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
                            ('T 'NIL)))
                    (GO G191)))
@@ -185,7 +185,7 @@
                            |URAGG-;less?;ANniB;12|)
                      (EXIT (LETT |i| (- |i| 1) |URAGG-;less?;ANniB;12|)))
                 NIL (GO G190) G191 (EXIT NIL))
-           (EXIT (< 0 |i|)))))) 
+           (EXIT (> |i| 0)))))) 
 
 (DEFUN |URAGG-;more?;ANniB;13| (|l| |n| $)
   (PROG (|i|)
@@ -194,7 +194,7 @@
            (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((< 0 |i|)
+                           ((> |i| 0)
                             (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
                            ('T 'NIL)))
                    (GO G191)))
@@ -215,7 +215,7 @@
                 (COND
                   ((NULL (COND
                            ((SPADCALL |l| (|getShellEntry| $ 20)) 'NIL)
-                           ('T (< 0 |i|))))
+                           ('T (> |i| 0))))
                    (GO G191)))
                 (SEQ (LETT |l| (SPADCALL |l| (|getShellEntry| $ 14))
                            |URAGG-;size?;ANniB;14|)
@@ -446,13 +446,13 @@
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 60))
                  |URAGG-;last;ANniA;22|)
            (EXIT (COND
-                   ((< |m| |n|) (|error| "index out of range"))
+                   ((> |n| |m|) (|error| "index out of range"))
                    ('T
                     (SPADCALL
                         (SPADCALL |x|
                             (PROG1 (LETT #0# (- |m| |n|)
                                     |URAGG-;last;ANniA;22|)
-                              (|check-subtype| (NOT (< #0# 0))
+                              (|check-subtype| (>= #0# 0)
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 62))
                         (|getShellEntry| $ 63))))))))) 
@@ -589,13 +589,13 @@
                          (SPADCALL |p|
                              (PROG1 (LETT #0# (- |n| 1)
                                      |URAGG-;split!;AIA;32|)
-                               (|check-subtype| (NOT (< #0# 0))
+                               (|check-subtype| (>= #0# 0)
                                    '(|NonNegativeInteger|) #0#))
                              (|getShellEntry| $ 62))
                          |URAGG-;split!;AIA;32|)
                    (LETT |q| (SPADCALL |p| (|getShellEntry| $ 14))
                          |URAGG-;split!;AIA;32|)
-                   (SPADCALL |p| (SPADCALL (|getShellEntry| $ 83))
+                   (SPADCALL |p| (SPADCALL (|getShellEntry| $ 84))
                        (|getShellEntry| $ 74))
                    (EXIT |q|)))))))) 
 
@@ -623,7 +623,7 @@
                                      (|getShellEntry| $ 14))
                                     |URAGG-;cycleSplit!;2A;33|)))
                         NIL (GO G190) G191 (EXIT NIL))
-                   (SPADCALL |x| (SPADCALL (|getShellEntry| $ 83))
+                   (SPADCALL |x| (SPADCALL (|getShellEntry| $ 84))
                        (|getShellEntry| $ 74))
                    (EXIT |y|)))))))) 
 
@@ -636,7 +636,7 @@
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$|
               (LIST '|UnaryRecursiveAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 87) . #0#)
+        (LETT $ (|newShell| 88) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -679,9 +679,9 @@
              (|setShellEntry| $ 82
                  (CONS (|dispatchFunction| |URAGG-;setvalue!;A2S;31|)
                        $))
-             (|setShellEntry| $ 84
-                 (CONS (|dispatchFunction| |URAGG-;split!;AIA;32|) $))
              (|setShellEntry| $ 85
+                 (CONS (|dispatchFunction| |URAGG-;split!;AIA;32|) $))
+             (|setShellEntry| $ 86
                  (CONS (|dispatchFunction| |URAGG-;cycleSplit!;2A;33|)
                        $)))))
         $)))) 
@@ -698,7 +698,7 @@
              |URAGG-;nodes;AL;8| |URAGG-;children;AL;9|
              |URAGG-;leaf?;AB;10| |URAGG-;value;AS;11|
              (|NonNegativeInteger|) (49 . |Zero|) (|Integer|)
-             (53 . |Zero|) (57 . <) (63 . |One|) (67 . |One|) (71 . -)
+             (53 . |Zero|) (57 . >) (63 . |One|) (67 . |One|) (71 . -)
              |URAGG-;less?;ANniB;12| (77 . |zero?|)
              |URAGG-;more?;ANniB;13| |URAGG-;size?;ANniB;14|
              (|SingleInteger|) (82 . |Zero|) (86 . =) (92 . |cyclic?|)
@@ -706,27 +706,27 @@
              (103 . |cycleEntry|) |URAGG-;cycleTail;2A;18|
              (108 . |One|) |URAGG-;cycleEntry;2A;19|
              |URAGG-;cycleLength;ANni;20| |URAGG-;rest;ANniA;21|
-             (112 . |#|) (117 . <) (123 . |rest|) (129 . |copy|)
+             (112 . |#|) (117 . >) (123 . |rest|) (129 . |copy|)
              (134 . |last|) (140 . |true|) (144 . ~=) (150 . =)
              (156 . =) (162 . |node?|) (168 . |setfirst!|)
              (174 . |setelt|) (181 . |setlast!|) (187 . |setelt|)
              (194 . |setrest!|) (200 . |setelt|) (207 . |concat!|)
              (213 . |concat|) (219 . |setlast!|) (225 . |#|)
              (230 . |first|) (235 . |setchildren!|) (241 . |setvalue!|)
-             (247 . |empty|) (251 . |split!|) (257 . |cycleSplit!|)
-             '"value")
-          '#(|value| 262 |third| 267 |tail| 272 |split!| 277 |size?|
-             283 |setvalue!| 289 |setlast!| 295 |setelt| 301
-             |setchildren!| 322 |second| 328 |rest| 333 |nodes| 339
-             |node?| 344 |more?| 350 |less?| 356 |leaf?| 362 |last| 367
-             |elt| 378 |cyclic?| 396 |cycleTail| 401 |cycleSplit!| 406
-             |cycleLength| 411 |cycleEntry| 416 |concat| 421 |children|
-             427 = 432 |#| 438)
+             (247 . <) (253 . |empty|) (257 . |split!|)
+             (263 . |cycleSplit!|) '"value")
+          '#(|value| 268 |third| 273 |tail| 278 |split!| 283 |size?|
+             289 |setvalue!| 295 |setlast!| 301 |setelt| 307
+             |setchildren!| 328 |second| 334 |rest| 339 |nodes| 345
+             |node?| 350 |more?| 356 |less?| 362 |leaf?| 368 |last| 373
+             |elt| 384 |cyclic?| 402 |cycleTail| 407 |cycleSplit!| 412
+             |cycleLength| 417 |cycleEntry| 422 |concat| 427 |children|
+             433 = 438 |#| 444)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 85
+                            (|makeByteWordVec2| 86
                                 '(1 6 7 0 8 1 6 7 0 11 1 6 0 0 14 1 6
                                   19 0 20 0 19 0 21 1 19 0 0 22 1 6 0 0
                                   24 0 26 0 27 2 26 0 6 0 28 1 26 0 0
@@ -742,17 +742,17 @@
                                   0 12 7 73 2 6 0 0 0 74 3 0 0 0 15 0
                                   75 2 6 0 0 0 76 2 0 0 0 0 77 2 0 7 0
                                   7 78 1 26 35 0 79 1 26 6 0 80 2 0 0 0
-                                  30 81 2 0 7 0 7 82 0 6 0 83 2 0 0 0
-                                  37 84 1 0 0 0 85 1 0 7 0 34 1 0 7 0
-                                  18 1 0 0 0 52 2 0 0 0 37 84 2 0 19 0
-                                  35 46 2 0 7 0 7 82 2 0 7 0 7 78 3 0 7
-                                  0 12 7 73 3 0 0 0 15 0 75 3 0 7 0 9 7
-                                  71 2 0 0 0 30 81 1 0 7 0 17 2 0 0 0
-                                  35 59 1 0 30 0 31 2 0 19 0 0 69 2 0
-                                  19 0 35 45 2 0 19 0 35 43 1 0 19 0 33
-                                  2 0 0 0 35 64 1 0 7 0 25 2 0 7 0 12
-                                  13 2 0 0 0 15 16 2 0 7 0 9 10 1 0 19
-                                  0 23 1 0 0 0 55 1 0 0 0 85 1 0 35 0
-                                  58 1 0 0 0 57 2 0 0 0 0 77 1 0 30 0
-                                  32 2 0 19 0 0 67 1 0 35 0 51)))))
+                                  30 81 2 0 7 0 7 82 2 37 19 0 0 83 0 6
+                                  0 84 2 0 0 0 37 85 1 0 0 0 86 1 0 7 0
+                                  34 1 0 7 0 18 1 0 0 0 52 2 0 0 0 37
+                                  85 2 0 19 0 35 46 2 0 7 0 7 82 2 0 7
+                                  0 7 78 3 0 7 0 12 7 73 3 0 0 0 15 0
+                                  75 3 0 7 0 9 7 71 2 0 0 0 30 81 1 0 7
+                                  0 17 2 0 0 0 35 59 1 0 30 0 31 2 0 19
+                                  0 0 69 2 0 19 0 35 45 2 0 19 0 35 43
+                                  1 0 19 0 33 2 0 0 0 35 64 1 0 7 0 25
+                                  2 0 7 0 12 13 2 0 0 0 15 16 2 0 7 0 9
+                                  10 1 0 19 0 23 1 0 0 0 55 1 0 0 0 86
+                                  1 0 35 0 58 1 0 0 0 57 2 0 0 0 0 77 1
+                                  0 30 0 32 2 0 19 0 0 67 1 0 35 0 51)))))
           '|lookupComplete|)) 

@@ -115,6 +115,8 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
                 |SINT;>=;2$B;27|)) 
 
+(PUT '|SINT;>=;2$B;27| '|SPADreplace| '>=) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
                 |SINT;inc;2$;28|)) 
 
@@ -375,7 +377,7 @@
 
 (DEFUN |SINT;<=;2$B;26| (|x| |y| $) (NOT (> |x| |y|))) 
 
-(DEFUN |SINT;>=;2$B;27| (|x| |y| $) (NOT (< |x| |y|))) 
+(DEFUN |SINT;>=;2$B;27| (|x| |y| $) (DECLARE (IGNORE $)) (>= |x| |y|)) 
 
 (DEFUN |SINT;inc;2$;28| (|x| $) (DECLARE (IGNORE $)) (QSADD1 |x|)) 
 

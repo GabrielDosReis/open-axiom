@@ -1,5 +1,10 @@
 2009-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compGreaterThan): Remove.
+	* interp/parse.boot (parseGreaterEqual): Likewise.
+
+2009-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compGreaterThan): New.  Compile
 	greater-than expressions.
 	* interp/parse.boot (parseGreaterThan): Remove.

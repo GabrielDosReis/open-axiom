@@ -81,15 +81,15 @@
                               (SPADCALL |p1| (|getShellEntry| $ 29))
                               |GCDDOM-;gcdPolynomial;3Sup;4|)
                         (EXIT (COND
-                                ((< 0 |e1|)
+                                ((> |e1| 0)
                                  (LETT |p1|
                                        (PROG2
                                         (LETT #0#
                                          (SPADCALL |p1|
                                           (SPADCALL
                                            (|spadConstant| $ 16) |e1|
-                                           (|getShellEntry| $ 36))
-                                          (|getShellEntry| $ 37))
+                                           (|getShellEntry| $ 34))
+                                          (|getShellEntry| $ 35))
                                          |GCDDOM-;gcdPolynomial;3Sup;4|)
                                         (QCDR #0#)
                                          (|check-union| (QEQCAR #0# 0)
@@ -101,15 +101,15 @@
                               (SPADCALL |p2| (|getShellEntry| $ 29))
                               |GCDDOM-;gcdPolynomial;3Sup;4|)
                         (EXIT (COND
-                                ((< 0 |e2|)
+                                ((> |e2| 0)
                                  (LETT |p2|
                                        (PROG2
                                         (LETT #0#
                                          (SPADCALL |p2|
                                           (SPADCALL
                                            (|spadConstant| $ 16) |e2|
-                                           (|getShellEntry| $ 36))
-                                          (|getShellEntry| $ 37))
+                                           (|getShellEntry| $ 34))
+                                          (|getShellEntry| $ 35))
                                          |GCDDOM-;gcdPolynomial;3Sup;4|)
                                         (QCDR #0#)
                                          (|check-union| (QEQCAR #0# 0)
@@ -125,32 +125,32 @@
                    (LETT |p1|
                          (COND
                            ((OR (EQL (SPADCALL |p1|
-                                      (|getShellEntry| $ 39))
+                                      (|getShellEntry| $ 37))
                                      0)
                                 (EQL (SPADCALL |p2|
-                                      (|getShellEntry| $ 39))
+                                      (|getShellEntry| $ 37))
                                      0))
-                            (SPADCALL |c1| 0 (|getShellEntry| $ 36)))
+                            (SPADCALL |c1| 0 (|getShellEntry| $ 34)))
                            ('T
                             (SEQ (LETT |p|
                                        (SPADCALL |p1| |p2|
-                                        (|getShellEntry| $ 41))
+                                        (|getShellEntry| $ 39))
                                        |GCDDOM-;gcdPolynomial;3Sup;4|)
                                  (EXIT (COND
                                          ((EQL
                                            (SPADCALL |p|
-                                            (|getShellEntry| $ 39))
+                                            (|getShellEntry| $ 37))
                                            0)
                                           (SPADCALL |c1| 0
-                                           (|getShellEntry| $ 36)))
+                                           (|getShellEntry| $ 34)))
                                          ('T
                                           (SEQ
                                            (LETT |c2|
                                             (SPADCALL
                                              (SPADCALL |p1|
-                                              (|getShellEntry| $ 42))
+                                              (|getShellEntry| $ 40))
                                              (SPADCALL |p2|
-                                              (|getShellEntry| $ 42))
+                                              (|getShellEntry| $ 40))
                                              (|getShellEntry| $ 10))
                                             |GCDDOM-;gcdPolynomial;3Sup;4|)
                                            (EXIT
@@ -162,10 +162,10 @@
                                                  (SPADCALL
                                                   (SPADCALL |c2| |p|
                                                    (|getShellEntry| $
-                                                    43))
+                                                    41))
                                                   (SPADCALL |p|
                                                    (|getShellEntry| $
-                                                    42))
+                                                    40))
                                                   (|getShellEntry| $
                                                    27))
                                                  |GCDDOM-;gcdPolynomial;3Sup;4|)
@@ -176,8 +176,8 @@
                                                    (|getShellEntry| $
                                                     6))
                                                   #0#))
-                                               (|getShellEntry| $ 44))
-                                              (|getShellEntry| $ 43))
+                                               (|getShellEntry| $ 42))
+                                              (|getShellEntry| $ 41))
                                              (|getShellEntry| $ 25))))))))))
                          |GCDDOM-;gcdPolynomial;3Sup;4|)
                    (EXIT (COND
@@ -185,8 +185,8 @@
                            ('T
                             (SPADCALL
                                 (SPADCALL (|spadConstant| $ 16) |e1|
-                                    (|getShellEntry| $ 36))
-                                |p1| (|getShellEntry| $ 46)))))))))))) 
+                                    (|getShellEntry| $ 34))
+                                |p1| (|getShellEntry| $ 44)))))))))))) 
 
 (DEFUN |GcdDomain&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -194,7 +194,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|GcdDomain&|))
         (LETT |dv$| (LIST '|GcdDomain&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 49) . #0#)
+        (LETT $ (|newShell| 47) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -211,28 +211,27 @@
              (|SparseUnivariatePolynomial| 6) (46 . |zero?|)
              (51 . |unitCanonical|) (56 . |content|) (61 . |exquo|)
              (|NonNegativeInteger|) (67 . |minimumDegree|)
-             (72 . |Zero|) (76 . |Zero|) (|Integer|) (80 . |Zero|)
-             (84 . <) (90 . |One|) (94 . |monomial|) (100 . |exquo|)
-             (106 . |min|) (112 . |degree|) (117 . =)
-             (123 . |subResultantGcd|) (129 . |leadingCoefficient|)
-             (134 . *) (140 . |primitivePart|) (145 . |zero?|)
-             (150 . *) (|SparseUnivariatePolynomial| $)
+             (72 . |Zero|) (76 . |Zero|) (80 . >) (86 . |One|)
+             (90 . |monomial|) (96 . |exquo|) (102 . |min|)
+             (108 . |degree|) (113 . =) (119 . |subResultantGcd|)
+             (125 . |leadingCoefficient|) (130 . *)
+             (136 . |primitivePart|) (141 . |zero?|) (146 . *)
+             (|SparseUnivariatePolynomial| $)
              |GCDDOM-;gcdPolynomial;3Sup;4|)
-          '#(|lcm| 156 |gcdPolynomial| 167 |gcd| 173) 'NIL
+          '#(|lcm| 152 |gcdPolynomial| 163 |gcd| 169) 'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 48
+                            (|makeByteWordVec2| 46
                                 '(0 6 0 7 2 6 8 0 0 9 2 6 0 0 0 10 2 6
                                   11 0 0 12 2 6 0 0 0 13 2 6 0 0 0 15 0
                                   6 0 16 4 18 6 17 0 6 6 19 1 23 8 0 24
                                   1 23 0 0 25 1 23 6 0 26 2 23 11 0 6
-                                  27 1 23 28 0 29 0 23 0 30 0 28 0 31 0
-                                  32 0 33 2 28 8 0 0 34 0 23 0 35 2 23
-                                  0 6 28 36 2 23 11 0 0 37 2 28 0 0 0
-                                  38 1 23 28 0 39 2 28 8 0 0 40 2 23 0
-                                  0 0 41 1 23 6 0 42 2 23 0 6 0 43 1 23
-                                  0 0 44 1 28 8 0 45 2 23 0 0 0 46 1 0
-                                  0 20 21 2 0 0 0 0 14 2 0 47 47 47 48
-                                  1 0 0 20 22)))))
+                                  27 1 23 28 0 29 0 23 0 30 0 28 0 31 2
+                                  28 8 0 0 32 0 23 0 33 2 23 0 6 28 34
+                                  2 23 11 0 0 35 2 28 0 0 0 36 1 23 28
+                                  0 37 2 28 8 0 0 38 2 23 0 0 0 39 1 23
+                                  6 0 40 2 23 0 6 0 41 1 23 0 0 42 1 28
+                                  8 0 43 2 23 0 0 0 44 1 0 0 20 21 2 0
+                                  0 0 0 14 2 0 45 45 45 46 1 0 0 20 22)))))
           '|lookupComplete|)) 

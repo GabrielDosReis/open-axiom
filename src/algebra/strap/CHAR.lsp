@@ -127,8 +127,7 @@
     (RETURN
       (CODE-CHAR
           (PROG1 (LETT #0# (- |n| 1) |CHAR;index;Pi$;7|)
-            (|check-subtype| (NOT (< #0# 0)) '(|NonNegativeInteger|)
-                #0#)))))) 
+            (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))))) 
 
 (DEFUN |CHAR;lookup;$Pi;8| (|c| $)
   (PROG (#0=#:G1407)
