@@ -262,10 +262,6 @@ parseDropAssertions x ==
     [y,:parseDropAssertions r]
   x
  
-parseGreaterEqual: %ParseForm -> %Form
-parseGreaterEqual u == 
-  parseTran ["not",[substitute("<",">=",first u),:rest u]]
-
 parseLessEqual: %ParseForm -> %Form
 parseLessEqual u == 
   parseTran ["not",[substitute(">","<=",first u),:rest u]]
@@ -477,7 +473,6 @@ parseVCONS l ==
 --% Register special parsers.
 
 for x in [["<=", :"parseLessEqual"],_
-	  [">=", :"parseGreaterEqual"],_
 	  ["^=", :"parseNotEqual"],_
 	  [":", :"parseColon"],_
 	  ["::", :"parseCoerce"],_

@@ -2,7 +2,7 @@
 (/VERSIONCHECK 2) 
 
 (|noteSubDomainInfo| '|PositiveInteger| '(|NonNegativeInteger|)
-    '(< 0 |#1|)) 
+    '(> |#1| 0)) 
 
 (DEFUN |PositiveInteger| ()
   (PROG ()
@@ -41,7 +41,7 @@
 
 (MAKEPROP '|PositiveInteger| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|NonNegativeInteger|) (0 . |Zero|)
-             (|Integer|) (4 . |Zero|) (|Boolean|) (8 . <)
+             (|Integer|) (4 . |Zero|) (|Boolean|) (8 . >)
              (|PositiveInteger|) (|Union| $ '"failed")
              (|SingleInteger|) (|String|) (|OutputForm|))
           '#(~= 14 |sample| 20 |recip| 24 |one?| 29 |min| 34 |max| 40
