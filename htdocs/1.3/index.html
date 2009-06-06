@@ -116,6 +116,27 @@
           </li>
     </ul>
 
+  <h4 name="1.3.0-changes-interp">2.1.3. Interpreter</h4>
+
+  <ul>
+     <li>Declared variable with no specified values are now handled
+         as if symbolic value with a specified type.</li>
+
+     <li>The interpreter now parses a disjunctive expression
+         involving the 'is' operator the obvious way.  E.g. Now
+         <pre>
+            T is Integer or T has Ring
+         </pre>
+         is now understood as
+         <pre>
+            (T is Integer) or (T has Ring)
+         </pre>
+     </li>
+
+     <li>The interpreter now handles existentially quantified or
+         universally quantified expressions</li>
+  </ul>
+
   <h4 name="1.3.0-changes-alg">2.1.3. Algebra</h4>
  
   The following types have been added to OpenAxiom-1.3.0
