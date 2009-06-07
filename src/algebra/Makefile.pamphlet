@@ -387,12 +387,15 @@ axiom_algebra_layer_1_objects = \
 <<layer2>>=
 axiom_algebra_layer_2 = \
   SYNTAX   INTRET   SEGXCAT CONTOUR  LIST3   MKFUNC   \
-  COMMONOP KTVLOGIC FNCAT   SCACHE   BOP     BOP1
+  COMMONOP KTVLOGIC FNCAT   SCACHE   BOP     BOP1     \
+  DOMTMPLT FCTRDATA
 
 $(OUT)/FNCAT.$(FASLEXT): $(OUT)/HOMOTOP.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
 $(OUT/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
 $(OUT)/COMMONOP.$(FASLEXT): $(OUT)/BOP.$(FASLEXT)
+$(OUT)/DOMTMPLT.$(FASLEXT): $(OUT)/SYNTAX.$(FASLEXT)
+$(OUT)/FCTRDATA.$(FASLEXT): $(OUT)/DOMTMPLT.$(FASLEXT)
 
 axiom_algebra_layer_2_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_2))

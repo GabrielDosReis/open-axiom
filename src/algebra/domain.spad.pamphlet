@@ -194,17 +194,87 @@ CategoryConstructor(): Public == Private where
 
 @
 
+<<domain DOMTMPLT DomainTemplate>>=
+)abbrev domain DOMTMPLT DomainTemplate
+++ Author: Gabriel Dos Reis
+++ Date Created: June 06, 2009
+++ Date Last Updated: June 06, 2009
+++ Description:
+++   Represntation of domain templates resulting from
+++   compiling a domain constructor
+DomainTemplate(): Public == Private where
+  Public == SetCategory with
+    #: % -> NonNegativeInteger
+      ++ \spad{# x} returns the length of the domain template \spad{x}.
+    elt: (%,NonNegativeInteger) -> Syntax
+      ++ \spad{x.i} yields the entry at slot \spad{i} in \spad{x}.
+  Private == add
+    Rep == PrimitiveArray Syntax
+    #x == # rep x
+    elt(x,i) == rep(x).i
+    x = y == rep x = rep y
+    coerce(x: %): OutputForm ==
+      rep(x)::OutputForm
+
+@
+
+
+<<domain FCTRDATA FunctorData>>=
+)abbrev domain FCTRDATA FunctorData
+++ Author: Gabriel Dos Reis
+++ Date Created: June 06, 2009
+++ Date Last Updated: June 06, 2009
+++ Description:
+++   Represntation of data needed to instantiate a domain constructor.
+FunctorData(): Public == Private where
+  Public == SetCategory with
+    domainTemplate: % -> DomainTemplate
+      ++ \spad{domainTemplate x} returns the domain template vector
+      ++ associated with the functor data \spad{x}.
+    attributeData: % -> List Pair(Syntax, NonNegativeInteger)
+      ++ \spad{attributeData x} returns the list of attribute-predicate
+      ++ bit vector index pair associated with the functor data \spad{x}.
+    encodingDirectory: % -> PrimitiveArray NonNegativeInteger
+      ++ \spad{encodintDirectory x} returns the directory of domain-wide
+      ++ entity description.
+    categories: % -> PrimitiveArray ConstructorCall
+      ++ \spad{categories x} returns the list of categories forms
+      ++ each domain object obtained from the domain data \spad{x}
+      ++ belongs to.
+    lookupFunction: % -> Identifier
+      ++ \spad{lookupFunction x} returns the name of the lookup
+      ++ function associated with the functor data \spad{x}.
+  Private == add
+    domainTemplate x == CAR(x)$Foreign(Builtin)
+    attributeData x == CADDR(x)$Foreign(Builtin)
+   
+    part3Data(x: %): SExpression == CADDDR(x)$Foreign(Builtin)
+
+    categories x == CADDR(part3Data x)$Foreign(Builtin)
+    encodingDirectory x == CDDDR(part3Data x)$Foreign(Builtin)
+    lookupFunction x == CADDDDR(x)$Foreign(Builtin)
+
+    x = y == EQUAL(x,y)$Foreign(Builtin)
+    coerce(x: %): OutputForm ==
+      import SExpression
+      (x pretend SExpression)::OutputForm
+@
+
 <<domain DOMCTOR DomainConstructor>>=
 )abbrev domain DOMCTOR DomainConstructor
 ++ Author: Gabriel Dos Reis
 ++ Date Create: December 17, 2008.
-++ Date Last Updated: December 20, 2008.
+++ Date Last Updated: June 06, 2009.
 ++ Related Constructors: Domain, Category
 ++ Description:
 ++   This domain provides representations for domains constructors.
 DomainConstructor(): Public == Private where
-  Public == Join(ConstructorCategory, CoercibleTo Constructor)
+  Public == Join(ConstructorCategory, CoercibleTo Constructor) with
+    functorData: % -> FunctorData
+      ++ \spad{functorData x} returns the functor data associated
+      ++ with the domain constructor \spad{x}.      
   Private == Constructor add
+    functorData x == GET(x,'infovec)$Foreign(Builtin)
     coerce(x: %): Constructor == rep x
 
 @
@@ -435,6 +505,9 @@ Domain(): Public == Private where
 
 <<domain SIG Signature>>
 <<domain OPSIG OperatorSignature>>
+
+<<domain DOMTMPLT DomainTemplate>>
+<<domain FCTRDATA FunctorData>>
 
 <<domain CATEGORY Category>>
 <<domain DOMAIN Domain>>

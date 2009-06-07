@@ -737,6 +737,6 @@ $SpadReaderTag ==
 ++ List of operator names that can be overloaded in libraries.
 $OperatorFunctionNames ==
   ["**", "^", "*", "/", "rem", "quo", "mod", "div", "exquo",
-    "+", "-", ">", ">=", "=", "~=", "<", "<=", "~", "not",
+    "+", "-", ">", ">=", "=", "~=", "<", "<=", "#", "~", "not",
      "case", "and", "or", "<<", ">>", "/\", "\/" ]
 

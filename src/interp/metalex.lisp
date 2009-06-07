@@ -637,11 +637,11 @@ as keywords.")
 (defun-parse-token ARGUMENT-DESIGNATOR)
 
 (defun |PARSE-OperatorFunctionName| ()
-  (let ((tok (or (match-current-token 'keyword)
-		 (match-current-token 'gliph))))
-    (when (and tok (member (token-symbol tok) |$OperatorFunctionNames|))
-      (Push-Reduction '|PARSE-OperatorFunctionName|
-		      (copy-tree (token-symbol tok)))
+  (let ((id (make-symbol-of (or (match-current-token 'keyword)
+				(match-current-token 'gliph)
+				(match-current-token 'special-char)))))
+    (when (and id (member id |$OperatorFunctionNames|))
+      (Push-Reduction '|PARSE-OperatorFunctionName| id)
       (action (advance-token)))))
 
 ; Meta tokens fall into the following categories:
