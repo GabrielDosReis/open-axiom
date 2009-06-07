@@ -125,8 +125,6 @@ Kernel(S: SetCategory): Exports == Implementation where
 
 
   Exports ==> Join(CachableSet, OrderedSet, Patternable S) with
-    name    : % -> Symbol
-      ++ name(op(a1,...,an)) returns the name of op.
     operator: % -> OP
       ++ operator(op(a1,...,an)) returns the operator op.
     argument: % -> List S
@@ -169,7 +167,6 @@ Kernel(S: SetCategory): Exports == Implementation where
 
     is?(k:%, s:Symbol) == is?(operator k, s)
     is?(k:%, o:OP)     == (operator k) = o
-    name k             == name operator k
     height k           == k.nest
     operator k         == k.op
     argument k         == k.arg

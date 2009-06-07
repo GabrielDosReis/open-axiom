@@ -133,7 +133,7 @@
   (PROG (#0=#:G1407)
     (RETURN
       (PROG1 (LETT #0# (+ 1 (CHAR-CODE |c|)) |CHAR;lookup;$Pi;8|)
-        (|check-subtype| (< 0 #0#) '(|PositiveInteger|) #0#))))) 
+        (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))) 
 
 (DEFUN |CHAR;char;Nni$;9| (|n| $)
   (DECLARE (IGNORE $))

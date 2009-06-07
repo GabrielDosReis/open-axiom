@@ -466,7 +466,7 @@
                                    $)
                                (|getShellEntry| $ 35)))
                       |DFLOAT;bits;Pi;10|)
-           (|check-subtype| (AND (>= #0# 0) (< 0 #0#))
+           (|check-subtype| (AND (>= #0# 0) (> #0# 0))
                '(|PositiveInteger|) #0#))))))) 
 
 (DEFUN |DFLOAT;max;$;11| ($)

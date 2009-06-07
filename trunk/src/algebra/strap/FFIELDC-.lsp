@@ -110,7 +110,7 @@
                            (SPADCALL
                                (PROG1 |i|
                                  (|check-subtype|
-                                     (AND (>= |i| 0) (< 0 |i|))
+                                     (AND (>= |i| 0) (> |i| 0))
                                      '(|PositiveInteger|) |i|))
                                (|getShellEntry| $ 14))
                            |FFIELDC-;createPrimitiveElement;S;8|)

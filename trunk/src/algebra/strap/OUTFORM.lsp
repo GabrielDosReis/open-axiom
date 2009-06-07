@@ -817,7 +817,7 @@
               (SEQ (LETT |r|
                          (SPADCALL
                              (PROG1 |nn|
-                               (|check-subtype| (< 0 |nn|)
+                               (|check-subtype| (> |nn| 0)
                                    '(|PositiveInteger|) |nn|))
                              (|getShellEntry| $ 137))
                          |OUTFORM;differentiate;$Nni$;97|)

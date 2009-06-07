@@ -313,7 +313,7 @@ TransSolvePackage(R) : Exports == Implementation where
        if #kernelofexpr = 0 then
          return false
        for i in kernelofexpr repeat
-          if not member?(name(first kernels(i)),testList) or _
+          if not member?(name operator (first kernels(i)),testList) or _
              not testkernel( (first argument first kernels(i)) ,Z) then
             return false
        true
@@ -369,7 +369,7 @@ TransSolvePackage(R) : Exports == Implementation where
        if #kernelofeqnvar = 0 then
          return false
        for i in kernelofeqnvar repeat
-          if member?(name(first kernels(i)),testList) then
+          if member?(name operator (first kernels(i)),testList) then
             return true
        false
 
@@ -387,7 +387,7 @@ TransSolvePackage(R) : Exports == Implementation where
        if #kernelofeqnvar = 0 then
          return false
        for i in kernelofeqnvar repeat
-          if not member?(name(first kernels(i)),testList) or _
+          if not member?(name operator (first kernels(i)),testList) or _
              not testkernel( (first argument first kernels(i)) ,Z) then
             return false
        true
@@ -399,7 +399,7 @@ TransSolvePackage(R) : Exports == Implementation where
        if #kernelofeqnvar = 0 then
          return false
        for i in kernelofeqnvar repeat
-          if not member?(name(first kernels(i)),testList) or _
+          if not member?(name operator (first kernels(i)),testList) or _
              not testkernel( (first argument first kernels(i)) ,Z) then
             return false
        true
@@ -472,7 +472,7 @@ TransSolvePackage(R) : Exports == Implementation where
      import SystemSolvePackage(RE)
 
      ker2Poly(k:Kernel RE, lvar:L S):Polynomial RE ==
-        member?(nm:=name k, lvar) => nm :: Polynomial RE
+        member?(nm:=name operator k, lvar) => nm :: Polynomial RE
         k :: RE :: Polynomial RE
 
      smp2Poly(pol:SMP(R,Kernel RE), lvar:L S):Polynomial RE ==
