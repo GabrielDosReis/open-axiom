@@ -1,3 +1,9 @@
+2009-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/domain.spad.pamphlet (DomainTemplate): New.
+	(FunctorData): Likewise.
+	(functorData$DomainConstructor): Likewise.  
+
 2009-06-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Simplify compiler ast for `return' expressions.
