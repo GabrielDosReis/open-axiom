@@ -101,7 +101,7 @@ PowerSeriesLimitPackage(R,FE): Exports == Implementation where
       while not empty? list repeat
         ker := first list
         not is?(ker,"log" :: Symbol) and member?(x,variables(ker::FE)) _
-               and not(x = name(ker)) =>
+               and not(x = name operator (ker)) =>
           return list
         list := rest list
       empty()

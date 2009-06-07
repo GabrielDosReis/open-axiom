@@ -1,3 +1,13 @@
+2009-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/kl.spad.pamphlet (name$Kernel): Remove.
+	* algebra/d01weights.spad.pamphlet: Adjust.
+	* algebra/fs2expxp.spad.pamphlet: Likewise.
+	* algebra/fs2ups.spad.pamphlet: Likewise.
+	* algebra/fspace.spad.pamphlet: Likewise.
+	* algebra/limitps.spad.pamphlet: Likewise.
+	* algebra/transsolve.spad.pamphlet: Likewise.
+
 2009-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/domain.spad.pamphlet (DomainTemplate): New.

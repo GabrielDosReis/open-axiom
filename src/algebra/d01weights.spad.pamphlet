@@ -72,7 +72,7 @@ d01WeightsPackage(): E == I where
     voo?:(EDF,EDF)->Boolean
    
     kernelIsLog(k:KEDF):Boolean ==
-      (name k = (log :: Symbol))@Boolean
+      (name operator k = (log :: Symbol))@Boolean
  
     factorIn?(a:EDF,l:LEDF):Boolean ==
       for i in 1..# l repeat
@@ -205,7 +205,7 @@ d01WeightsPackage(): E == I where
         m case LEDF => -- if it is a list, it will have at least two elements
           is?(second(m)$LEDF,var)$EDF =>
             omega:DF := retract(first(m)$LEDF)@DF
-            o:BOP := operator(n:Symbol:=name(e)$KEDF)$BOP
+            o:BOP := operator(n:Symbol:=name operator(e)$KEDF)$BOP
             (n = cos@Symbol)@Boolean => [o,omega]
             (n = sin@Symbol)@Boolean => [o,omega]
             "failed"
@@ -267,6 +267,7 @@ d01WeightsPackage(): E == I where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

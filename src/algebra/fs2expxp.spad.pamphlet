@@ -334,7 +334,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
       is?(ker,"nthRoot" :: Symbol) =>
         n := retract(second args)@I
         nthRootToXXP(first args,n :: NNI,posCheck?)
-      stateProblem(string name ker,"unknown kernel")
+      stateProblem(string name operator ker,"unknown kernel")
 
 --% exponentials and logarithms
 
@@ -508,7 +508,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
         applyIfCan(acscIfCan,arg,"acsc",posCheck?)
       is?(ker,"asinh" :: SY) =>
         applyIfCan(asinhIfCan,arg,"asinh",posCheck?)
-      stateProblem(string name ker,"unknown kernel")
+      stateProblem(string name operator ker,"unknown kernel")
 
     if FE has abs: FE -> FE then
       localAbs fcn == abs fcn
@@ -556,6 +556,7 @@ FunctionSpaceToExponentialExpansion(R,FE,x,cen):_
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

@@ -302,7 +302,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       is?(ker,"nthRoot" :: Symbol) =>
         n := retract(second args)@I
         nthRootToUPS(first args,n :: NNI,posCheck?,atanFlag)
-      stateProblem(string name ker,"unknown kernel")
+      stateProblem(string name operator ker,"unknown kernel")
 
     nthRootToUPS(arg,n,posCheck?,atanFlag) ==
       -- converts an nth root to a power series
@@ -431,7 +431,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
         applyIfCan(asechIfCan,arg,"asech",posCheck?,atanFlag)
       is?(ker,"acsch" :: SY) =>
         applyIfCan(acschIfCan,arg,"acsch",posCheck?,atanFlag)
-      stateProblem(string name ker,"unknown kernel")
+      stateProblem(string name operator ker,"unknown kernel")
 
     powToUPS(args,posCheck?,atanFlag) ==
       -- converts a power f(x) ** g(x) to a power series
@@ -580,7 +580,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
       is?(ker,"nthRoot" :: Symbol) =>
         n := retract(second args)@I
         nthRootToGenUPS(first args,n :: NNI,posCheck?,atanFlag)
-      stateProblem(string name ker,"unknown kernel")
+      stateProblem(string name operator ker,"unknown kernel")
 
     nthRootToGenUPS(arg,n,posCheck?,atanFlag) ==
       -- convert an nth root to a power series
@@ -752,7 +752,7 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
         genUPSApplyIfCan(asechIfCan,arg,"asech",posCheck?,atanFlag)
       is?(ker,"acsch" :: SY) =>
         genUPSApplyIfCan(acschIfCan,arg,"acsch",posCheck?,atanFlag)
-      stateProblem(string name ker,"unknown kernel")
+      stateProblem(string name operator ker,"unknown kernel")
 
     powToGenUPS(args,posCheck?,atanFlag) ==
       -- converts a power f(x) ** g(x) to a generalized power series
@@ -766,6 +766,8 @@ FunctionSpaceToUnivariatePowerSeries(R,FE,Expon,UPS,TRAN,x):_
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
