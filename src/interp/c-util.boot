@@ -40,7 +40,7 @@ module c_-util where
   clearReplacement: %Symbol -> %Thing
   replaceSimpleFunctions: %Form -> %Form
   foldExportedFunctionReferences: %List -> %List
-  diagnoseUknownType: (%Mode,%Env) -> %Form
+  diagnoseUnknownType: (%Mode,%Env) -> %Form
 
 
 --% 
@@ -432,7 +432,7 @@ isKnownCategory(c,e) ==
 --TRACE isKnownCategory
  
 ++ Returns non-nil if `t' is a known type in the environement `e'.
-diagnoseUknownType(t,e) ==
+diagnoseUnknownType(t,e) ==
   atom t =>
     t in '($ constant) => t
     t' := assoc(t,getDomainsInScope e) => t'
@@ -445,21 +445,34 @@ diagnoseUknownType(t,e) ==
                          '"is not known to name a type"],nil)
   [ctor,:args] := t
   ctor = "Mapping" => 
-    for t' in args repeat diagnoseUknownType(t',e)
+    for t' in args repeat diagnoseUnknownType(t',e)
     t
   ctor = "Record" =>
-    for [.,.,t'] in args repeat diagnoseUknownType(t',e)
+    for [[.,n,t'],:fields] in tails args repeat 
+      diagnoseUnknownType(t',e)
+      for [.,=n,.] in fields repeat
+        stackSemanticError(['"Field", :bright n, 
+          '"declared more than once."], nil)
     t
   ctor = "Union" =>
     if args is [[":",:.],:.] then
-      for [.,.,t'] in args repeat diagnoseUknownType(t',e)
+      for [[.,n,t'],:fields] in tails args repeat 
+        diagnoseUnknownType(t',e)
+        for [.,=n,.] in fields repeat
+          stackSemanticError(['"Field", :bright n, 
+            '"declared more than once."], nil)
     else
-      for t' in args repeat diagnoseUknownType(t',e)
+      for t' in args repeat diagnoseUnknownType(t',e)
     t
   ctor = "Enumeration" =>
     for t' in args repeat
       IDENTP t' => nil
       stackSemanticError(['"Enumerators must be symbols."], nil)
+    -- Make sure we don't have repeated symbolic values
+    for [sym,:syms] in tails args repeat
+      MEMQ(sym,syms) => 
+        stackSemanticError(['"Symbolic value ", :bright sym, 
+          '"is listed twice"], nil)
     t
   ctor = "[||]" => t
   ctor in $BuiltinConstructorNames => t -- ??? check Record and Union fields

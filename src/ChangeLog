@@ -1,5 +1,14 @@
 2009-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2799773
+	* interp/c-util.boot (diagnoseUnknownType): Diagnose duplicate
+	fields in Record or Union, or duplicate constants in Enumeration.
+	* interp/i-eval.boot (checkRecordOrUnionFields): New.
+	(evaluateType): Use it.
+	* testsuite/interpreter/sf-2799773.input: New.
+
+2009-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/kl.spad.pamphlet (name$Kernel): Remove.
 	* algebra/d01weights.spad.pamphlet: Adjust.
 	* algebra/fs2expxp.spad.pamphlet: Likewise.
