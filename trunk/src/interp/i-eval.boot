@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -120,6 +122,13 @@ evaluateType0 form ==
   IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
     throwEvalTypeMsg("S2IE0003",[form,form])
 
+++ Check for duplicate fields in a Union or Record domain form.
+checkRecordOrUnionFields body ==
+  for [[.,n,.],:fields] in tails body repeat
+    for field in fields | field is [.,=n,.] repeat
+      throwKeyedMsg("S2IL0030",[n])
+  body
+
 evaluateType form ==
   -- Takes a parsed, unabbreviated type and evaluates it, replacing
   --  type valued variables with their values, and calling bottomUp
@@ -142,11 +151,20 @@ evaluateType form ==
       [op,:[evaluateType arg for arg in argl]]
     op='Union  =>
       argl and first argl is [x,.,.] and member(x,'(_: Declare)) =>
-        [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
+        [op, : checkRecordOrUnionFields
+           [[":",sel,evaluateType type] for ['_:,sel,type] in argl]]
       [op,:[evaluateType arg for arg in argl]]
     op='Record =>
-      [op,:[['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
-    op='Enumeration => form
+      [op, : checkRecordOrUnionFields
+         [['_:,sel,evaluateType type] for ['_:,sel,type] in argl]]
+    op='Enumeration => 
+      -- only symbols, and they must not be repeated.
+      for arg in argl repeat
+        IDENTP arg => nil
+        throwKeyedMsg("S2IL0031",nil)
+      for [arg,:args] in tails argl repeat
+        MEMQ(arg,args) => throwKeyedMsg("S2IL0032",[arg])
+      form
     evaluateFormAsType form
   IDENTP form and niladicConstructorFromDB form => evaluateType [form]
   IDENTP form and (constructor? form or form in $BuiltinConstructorNames) =>
