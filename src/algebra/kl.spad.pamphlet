@@ -157,7 +157,7 @@ Kernel(S: SetCategory): Exports == Implementation where
     macro SPECIALINPUT == '%specialInput
     import SortedCache(%)
 
-    Rep := Record(op:OP, arg:List S, nest:N, posit:N)
+    Rep == Record(op:OP, arg:List S, nest:N, posit:N)
 
     clearCache()
 
@@ -167,11 +167,11 @@ Kernel(S: SetCategory): Exports == Implementation where
 
     is?(k:%, s:Symbol) == is?(operator k, s)
     is?(k:%, o:OP)     == (operator k) = o
-    height k           == k.nest
-    operator k         == k.op
-    argument k         == k.arg
-    position k         == k.posit
-    setPosition(k, n)  == k.posit := n
+    height k           == rep(k).nest
+    operator k         == rep(k).op
+    argument k         == rep(k).arg
+    position k         == rep(k).posit
+    setPosition(k, n)  == rep(k).posit := n
     B2Z flag           == (flag => -1; 1)
     kernel s           == kernel(assert(operator(s,0),SYMBOL), nil(), 1)
 
@@ -184,25 +184,25 @@ Kernel(S: SetCategory): Exports == Implementation where
       "failed"
 
     k1 = k2 ==
-      if k1.posit = 0 then enterInCache(k1, triage)
-      if k2.posit = 0 then enterInCache(k2, triage)
-      k1.posit = k2.posit
+      if rep(k1).posit = 0 then enterInCache(k1, triage)
+      if rep(k2).posit = 0 then enterInCache(k2, triage)
+      rep(k1).posit = rep(k2).posit
 
     k1 < k2 ==
-      if k1.posit = 0 then enterInCache(k1, triage)
-      if k2.posit = 0 then enterInCache(k2, triage)
-      k1.posit < k2.posit
+      if rep(k1).posit = 0 then enterInCache(k1, triage)
+      if rep(k2).posit = 0 then enterInCache(k2, triage)
+      rep(k1).posit < rep(k2).posit
 
     kernel(fn, x, n) ==
       (#x)::Arity ~= arity fn and (arity fn ~= arbitrary()) => 
         error "Wrong number of arguments"
-      enterInCache([fn, x, n, 0]$Rep, triage)
+      enterInCache(per [fn, x, n, 0], triage)
 
     -- SPECIALDISP contains a map List S -> OutputForm
     -- it is used when the converting the arguments first is not good,
     -- for instance with formal derivatives.
     coerce(k:%):OutputForm ==
-      (v := symbolIfCan k) case Symbol => v::Symbol::OutputForm
+      (v := symbolIfCan k) case Symbol => v@Symbol::OutputForm
       (f := property(o := operator k, SPECIALDISP)) case None =>
         ((f@None) pretend (List S -> OutputForm)) (argument k)
       l := [x::OutputForm for x in argument k]$List(OutputForm)
@@ -210,8 +210,8 @@ Kernel(S: SetCategory): Exports == Implementation where
       (u::(List OutputForm -> OutputForm)) l
 
     triage(k1, k2) ==
-      k1.nest   ~= k2.nest   => B2Z(k1.nest   < k2.nest)
-      k1.op ~= k2.op => B2Z(k1.op < k2.op)
+      rep(k1).nest   ~= rep(k2).nest   => B2Z(rep(k1).nest < rep(k2).nest)
+      rep(k1).op ~= rep(k2).op => B2Z(rep(k1).op < rep(k2).op)
       (n1 := #(argument k1)) ~= (n2 := #(argument k2)) => B2Z(n1 < n2)
       ((func := property(operator k1, SPECIALEQUAL)) case None) and
         (((func@None) pretend ((%, %) -> Boolean)) (k1, k2)) => 0
@@ -221,7 +221,7 @@ Kernel(S: SetCategory): Exports == Implementation where
 
     if S has ConvertibleTo InputForm then
       convert(k:%):InputForm ==
-        (v := symbolIfCan k) case Symbol => convert(v::Symbol)@InputForm
+        (v := symbolIfCan k) case Symbol => convert(v@Symbol)@InputForm
         (f := property(o := operator k, SPECIALINPUT)) case None =>
           ((f@None) pretend (List S -> InputForm)) (argument k)
         l := [convert x for x in argument k]$List(InputForm)
@@ -233,21 +233,21 @@ Kernel(S: SetCategory): Exports == Implementation where
       convert(k:%):Pattern(Integer) ==
         o := operator k
         (v := symbolIfCan k) case Symbol =>
-          s  := patternVariable(v::Symbol,
+          s  := patternVariable(v@Symbol,
                       has?(o, PMCONST), has?(o, PMOPT), has?(o, PMMULT))
           empty?(l := preds o) => s
           setPredicates(s, l)
-        o [convert x for x in k.arg]$List(Pattern Integer)
+        o [convert x for x in rep(k).arg]$List(Pattern Integer)
 
     if S has ConvertibleTo Pattern Float then
       convert(k:%):Pattern(Float) ==
         o := operator k
         (v := symbolIfCan k) case Symbol =>
-          s  := patternVariable(v::Symbol,
+          s  := patternVariable(v@Symbol,
                       has?(o, PMCONST), has?(o, PMOPT), has?(o, PMMULT))
           empty?(l := preds o) => s
           setPredicates(s, l)
-        o [convert x for x in k.arg]$List(Pattern Float)
+        o [convert x for x in rep(k).arg]$List(Pattern Float)
 
 @
 \section{package KERNEL2 KernelFunctions2}

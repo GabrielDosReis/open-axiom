@@ -1,5 +1,9 @@
 2009-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/kl.spad.pamphlet (Kernel): Tidy.
+
+2009-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2799773
 	* interp/c-util.boot (diagnoseUnknownType): Diagnose duplicate
 	fields in Record or Union, or duplicate constants in Enumeration.
