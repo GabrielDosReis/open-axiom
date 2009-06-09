@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -242,6 +242,7 @@ for i in [ _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
   ["first",        "CAR"]  , _
+  ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
   ["genvar",    "GENVAR"]  , _
   ["IN",        "MEMBER"]  , _

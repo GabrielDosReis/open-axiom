@@ -1438,7 +1438,8 @@ compLogicalNot(x,m,e) ==
     $normalizeTree and resolve(m,$Boolean) = $Boolean => $Boolean
     $EmptyMode
   yT := comp(y,yTarget,e) or return nil
-  yTarget = $Boolean => (rplac(first yT, ["NOT",yT.expr]); yT)
+  yT.mode = $Boolean and yTarget = $Boolean => 
+    [["NOT",yT.expr],yT.mode,yT.env]
   compResolveCall("not",[yT],m,yT.env)
 
 
