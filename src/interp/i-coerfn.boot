@@ -431,9 +431,12 @@ Expr2Up(u,source is [Expr,S], target is [.,var,T]) ==
     u = '_$fromCoerceable_$ => canCoerce(source, T)
     kernelFunc := getFunctionFromDomain("kernels", source, [source])
     kernelDom  := ['Kernel, source]
-    nameFunc   := getFunctionFromDomain("name", kernelDom, [kernelDom])
+    operatorFunc := getFunctionFromDomain("operator",kernelDom,[kernelDom])
+    bopDom     := ["BasicOperator"]
+    nameFunc   := getFunctionFromDomain("name", bopDom, [bopDom])
     kernels    := SPADCALL(u,kernelFunc)
-    v1         := [SPADCALL(kernel, nameFunc) for kernel in kernels]
+    v1         := [SPADCALL(SPADCALL(kernel, operatorFunc),nameFunc) 
+                     for kernel in kernels]
 
     not member(var, v1) => coercionFailure()
 
