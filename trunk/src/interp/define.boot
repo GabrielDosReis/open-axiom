@@ -1482,7 +1482,13 @@ doIt(item,$predl) ==
   item is ["%SignatureImport",:.] =>
     [.,.,$e] := compSignatureImport(item,$EmptyMode,$e)
     mutateToNothing item
-  item is ["IF",:.] => doItIf(item,$predl,$e)
+  item is ["IF",p,x,y] => 
+    p is ["not",p'] =>
+      rplac(second item,p')
+      rplac(third item,y)
+      rplac(fourth item,x)
+      doIt(item,$predl)
+    doItIf(item,$predl,$e)
   item is ["where",b,:l] => compOrCroak(item,$EmptyMode,$e)
   item is ["MDEF",:.] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
   item is ['DEF,[op,:.],:.] =>
