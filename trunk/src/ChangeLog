@@ -1,5 +1,10 @@
 2009-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-coerfn.boot (Expr2Up): Fix regression introduced by
+	name$Kernel removal.
+
+2009-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compLogicalNot): Tidy.
 	* interp/define.boot (doIt): Tidy conditional case.
 	* boot/tokens.boot: 'fourth' is a now a builtin function. 
