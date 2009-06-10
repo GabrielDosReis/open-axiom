@@ -1,3 +1,11 @@
+2009-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/parse.boot (parseHas): Preserve unnamed category forms.
+	* interp/i-funsel.boot (hasCaty): Recursively look into Joins.
+	* interp/interop.boot (newHasCategory): Likewise.
+	* interp/compiler.boot (compHasFormat): Handle unnamed categories.
+	* interp/info.boot (knownInfo): Likewise.
+
 2009-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-coerfn.boot (Expr2Up): Fix regression introduced by

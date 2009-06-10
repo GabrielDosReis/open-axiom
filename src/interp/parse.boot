@@ -197,22 +197,19 @@ parseAtAt t ==
 parseHas: %ParseForm -> %Form 
 parseHas t ==
   t isnt ["has",x,y] => systemErrorHere ["parseHas",t]
-  mkand [["has",x,u] for u in fn y] where
-    mkand x ==
-      x is [a] => a
-      ["and",:x]
+  ["has",x,fn y] where
     fn y ==
       y is [":" ,op,["Mapping",:map]] =>
          op:= (STRINGP op => INTERN op; op)
-         [["SIGNATURE",op,map]]
-      y is ["Join",:u] => "append"/[fn z for z in u]
-      y is ["CATEGORY",:u] => "append"/[fn z for z in u]
+         ["SIGNATURE",op,map]
+      y is ["Join",:u] => ["Join",:[fn z for z in u]]
+      y is ["CATEGORY",kind,:u] => ["CATEGORY",kind,:[fn z for z in u]]
       kk:= getConstructorKindFromDB opOf y
-      kk = "domain" or kk = "category" => [makeNonAtomic y]
-      y is ["ATTRIBUTE",:.] => [y]
-      y is ["SIGNATURE",:.] => [y]
-      y is [":",op,type] => [["SIGNATURE",op,[type],"constant"]]
-      [["ATTRIBUTE",y]]
+      kk = "domain" or kk = "category" => makeNonAtomic y
+      y is ["ATTRIBUTE",:.] => y
+      y is ["SIGNATURE",:.] => y
+      y is [":",op,type] => ["SIGNATURE",op,[type],"constant"]
+      ["ATTRIBUTE",y]
  
 parseDEF: %ParseForm -> %Form
 parseDEF t ==
