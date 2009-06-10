@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -568,6 +568,8 @@ newHasAttribute(domain,attrib) ==
 
 newHasCategory(domain,catform) ==
   catform = $Type or catform = $Category => true  
+  catform is ["Join",:cats] => 
+    and/[newHasCategory(domain,cat) for cat in cats]
   slot4 := domain.4
   auxvec := CAR slot4
   catvec := CADR slot4

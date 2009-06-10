@@ -174,10 +174,15 @@ knownInfo pred ==
   pred is ["has",name,cat] =>
     cat is ["ATTRIBUTE",:a] => knownInfo ["ATTRIBUTE",name,:a]
     cat is ["SIGNATURE",:a] => knownInfo ["SIGNATURE",name,:a]
+    -- unnamed category expressions imply structural checks.
+    cat is ["Join",:.] => and/[knownInfo ["has",name,c] for c in rest cat]
+    cat is ["CATEGORY",.,:atts] =>
+      and/[knownInfo hasToInfo ["has",name,att] for att in atts]
     name is ['Union,:.] => false
+    -- we have a named category expression
     v:= compForMode(name,$EmptyMode,$e) or return
           stackAndThrow('"can't find category of %1pb",[name])
-    vmode := second v
+    vmode := v.mode
     cat = vmode => true
     vmode is ["Join",:l] and member(cat,l) => true
     [vv,.,.]:= compMakeCategoryObject(vmode,$e) or return

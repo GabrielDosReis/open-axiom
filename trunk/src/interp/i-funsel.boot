@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1477,6 +1477,10 @@ hasCaty(d,cat,SL) ==
   cat is ['SIGNATURE,foo,sig] =>
     hasSig(d,foo,subCopy(sig,constructSubst d),SL)
   cat is ['ATTRIBUTE,a] => hasAtt(d,subCopy(a,constructSubst d),SL)
+  cat is ["Join",:.] =>
+    for c in rest cat while SL ^= "failed" repeat
+      SL := hasCaty(d,c,SL)
+    SL
   x:= hasCat(opOf d,opOf cat) =>
     y:= KDR cat =>
       S  := constructSubst d

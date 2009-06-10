@@ -1162,6 +1162,8 @@ compHasFormat (pred is ["has",olda,b]) ==
   b is ["SIGNATURE",op,sig,:.] =>
      ["HasSignature",a,
        mkList [MKQ op,mkList [mkTypeForm type for type in sig]]]
+  b is ["Join",:l] or b is ["CATEGORY",.,:l] => 
+     ["AND",:[compHasFormat ["has",olda,c] for c in l]]
   isCategoryForm(b,$e) => ["HasCategory",a,mkTypeForm b]
   stackAndThrow('"Second argument to %1b must be a category, or a signature or an attribute",["has"])
 
