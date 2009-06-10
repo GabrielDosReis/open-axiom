@@ -246,7 +246,6 @@ lookupInCategories(op,sig,dom,dollar) ==
 --=======================================================
 lookupPred(pred,dollar,domain) ==
   pred = true => true
-  pred = 'asserted => false
   pred is ['AND,:pl] or pred is ['and,:pl] =>
     and/[lookupPred(p,dollar,domain) for p in pl]
   pred is ['OR,:pl] or pred is ['or,:pl] =>

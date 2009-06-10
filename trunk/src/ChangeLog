@@ -1,5 +1,11 @@
 2009-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/parse.boot (parseDropAssertions): Remove.
+	(parseCategory): Don't call it.
+	* interp/nrungo.boot (lookupPred): Don't check for "asserted".
+
+2009-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/parse.boot (parseHas): Preserve unnamed category forms.
 	* interp/i-funsel.boot (hasCaty): Recursively look into Joins.
 	* interp/interop.boot (newHasCategory): Likewise.
