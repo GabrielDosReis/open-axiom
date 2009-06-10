@@ -244,21 +244,13 @@ parseCategory: %ParseForm -> %Form
 parseCategory t ==
   t isnt ["CATEGORY",:x] => systemErrorHere ["parseCategory",t]
   $parsingType: local := true
-  l:= parseTranList parseDropAssertions x
+  l:= parseTranList x
   key:=
     CONTAINED("$",l) => "domain"
     "package"
   ["CATEGORY",key,:l]
  
 
-parseDropAssertions: %ParseForm -> %Form
-parseDropAssertions x ==
---note: the COPY of this list is necessary-- do not replace by RPLACing version
-  x is [y,:r] =>
-    y is ["IF","asserted",:.] => parseDropAssertions r
-    [y,:parseDropAssertions r]
-  x
- 
 parseLessEqual: %ParseForm -> %Form
 parseLessEqual u == 
   parseTran ["not",[substitute(">","<=",first u),:rest u]]
