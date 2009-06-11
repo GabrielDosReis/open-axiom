@@ -1,5 +1,19 @@
 2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/newaux.lisp: Remove digraphs '(<' and '>) as alternate
+	spelling for '{' and '}'.
+	* interp/fnewmeta.lisp (|PARSE-Primary1|): Use PARSE-Data for
+	quoted forms.
+	(|PARSE-Sexpr1|): Tidy.
+	* interp/parse.boot (washOperatorName): New. Issue deprecation
+	diagnostics for string syntax for operator names in signatures.
+	(parseHas): Use it.
+	(transCategoryItem): Likewise.
+	* interp/metalex.lisp (advance-token): Likewise.
+	* algebra/boolean.spad.pamphlet: Tidy.
+
+2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/info.boot (actOnInfo): Don't remember new domain names if
 	at capsule function scope.
 

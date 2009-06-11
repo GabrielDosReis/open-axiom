@@ -356,10 +356,9 @@ NonBlank is true if the token is not preceded by a blank."
       (try-get-token Next-Token)))
 
 (defun advance-token ()
-  (current-token)                       ;don't know why this is needed
   "Makes the next token be the current token."
   (case Valid-Tokens
-    (0 (try-get-token (Current-Token)))
+    (0 (try-get-token Current-Token))
     (1 (decf Valid-Tokens)
        (setq Prior-Token (copy-token Current-Token))
        (try-get-token Current-Token))

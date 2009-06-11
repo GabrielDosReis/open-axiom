@@ -92,10 +92,10 @@ PropositionalFormula(T: SetCategory): Public == Private where
       per [[o, l, r]$Record(op: Symbol, lhs: %, rhs: %)]$FORMULA
 
     p and q ==
-      binaryForm('_and, p, q)
+      binaryForm('and, p, q)
 
     p or q ==
-      binaryForm('_or, p, q)
+      binaryForm('or, p, q)
 
     implies(p,q) ==
       binaryForm('implies, p, q)
@@ -123,11 +123,11 @@ PropositionalFormula(T: SetCategory): Public == Private where
       nothing
 
     isAnd f ==
-      isBinaryNode?(f,'_and) => just binaryOperands f
+      isBinaryNode?(f,'and) => just binaryOperands f
       nothing
 
     isOr f ==
-      isBinaryNode?(f,'_or) => just binaryOperands f
+      isBinaryNode?(f,'or) => just binaryOperands f
       nothing
 
     isImplies f ==
@@ -195,7 +195,7 @@ PropositionalFormula(T: SetCategory): Public == Private where
 
     notFormula(p: %): OutputForm ==
       isNot p case % =>
-	elt(outputForm '_not, [notFormula((rep p).unForm)])$OutputForm
+	elt(outputForm 'not, [notFormula((rep p).unForm)])$OutputForm
       primaryFormula p
 
     andFormula(p: %): OutputForm ==
@@ -203,7 +203,7 @@ PropositionalFormula(T: SetCategory): Public == Private where
 	p' := (rep p).binForm
 	-- ??? idealy, we should be using `and$OutputForm' but
 	-- ??? a bug in the compiler currently prevents that.
-	infix(outputForm '_and, notFormula p'.lhs, 
+	infix(outputForm 'and, notFormula p'.lhs, 
 	  andFormula p'.rhs)$OutputForm
       notFormula p
 
@@ -212,7 +212,7 @@ PropositionalFormula(T: SetCategory): Public == Private where
 	p' := (rep p).binForm
 	-- ??? idealy, we should be using `or$OutputForm' but
 	-- ??? a bug in the compiler currently prevents that.
-	infix(outputForm '_or, andFormula p'.lhs, 
+	infix(outputForm 'or, andFormula p'.lhs, 
 	  orFormula p'.rhs)$OutputForm
       andFormula p
 
