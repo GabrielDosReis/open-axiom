@@ -119,9 +119,9 @@ Database(S): Exports == Implementation where
       ++ elt(db,q) returns all elements of \axiom{db} which satisfy \axiom{q}.
     elt: (%,Symbol) -> DataList String
       ++ elt(db,s) returns the \axiom{s} field of each element of \axiom{db}.
-    _+: (%,%) -> %
+    +: (%,%) -> %
       ++ db1+db2 returns the merge of databases db1 and db2
-    _-: (%,%) -> %
+    -: (%,%) -> %
       ++ db1-db2 returns the difference of databases db1 and db2 i.e. consisting
       ++ of elements in db1 but not in db2 
     display: % -> Void

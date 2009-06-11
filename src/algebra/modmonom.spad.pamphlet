@@ -74,7 +74,7 @@ GeneralModulePolynomial(vl, R, IS, E, ff, P): public  ==  private where
 		++ build(r,i,e) \undocumented
         multMonom: (R, E, $) -> $
 		++ multMonom(r,e,x) \undocumented
-        "*": (P,$) -> $
+        *: (P,$) -> $
 		++ p*x \undocumented
 
 

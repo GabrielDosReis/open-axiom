@@ -39,7 +39,7 @@ ElementaryFunctionsUnivariatePuiseuxSeries(Coef,ULS,UPXS,EFULS):_
   Exports ==> PartialTranscendentalFunctions(UPXS) with
  
     if Coef has Field then
-      "**": (UPXS,RN) -> UPXS
+      **: (UPXS,RN) -> UPXS
         ++ z ** r raises a Puiseaux series z to a rational power r
  
 --% Exponentials and Logarithms

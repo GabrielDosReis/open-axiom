@@ -80,15 +80,15 @@ Pattern(R:SetCategory): Exports == Implementation where
       ++ "failed" otherwise.
     elt          : (BOP, List %) -> %
       ++ \spad{elt(op, [a1,...,an])} returns \spad{op(a1,...,an)}.
-    "+"          : (%, %) -> %
+    +          : (%, %) -> %
       ++ \spad{a + b} returns the pattern \spad{a + b}.
-    "*"          : (%, %) -> %
+    *          : (%, %) -> %
       ++ \spad{a * b} returns the pattern \spad{a * b}.
-    "**"         : (%, NonNegativeInteger) -> %
+    **         : (%, NonNegativeInteger) -> %
       ++ \spad{a ** n} returns the pattern \spad{a ** n}.
-    "**"         : (%, %) -> %
+    **         : (%, %) -> %
       ++ \spad{a ** b} returns the pattern \spad{a ** b}.
-    "/"          : (%, %) -> %
+    /          : (%, %) -> %
       ++ \spad{a / b} returns the pattern \spad{a / b}.
     depth        : % -> NonNegativeInteger
       ++ depth(p) returns the nesting level of p.

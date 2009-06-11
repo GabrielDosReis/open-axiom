@@ -354,8 +354,8 @@ SystemPredicate(): Public == Private where
   Private == add
     x = y == EQUAL(x,y)$Lisp
     coerce(x: %): OutputForm ==
-      NOT(x)$Lisp => '_false::OutputForm
-      EQ(x,'T)$Lisp => '_true::OutputForm
+      NOT(x)$Lisp => 'false::OutputForm
+      EQ(x,'T)$Lisp => 'true::OutputForm
       EQCAR(x,'NOT)$Lisp => not(CADR(x)$Lisp : % :: OutputForm)
 
 @

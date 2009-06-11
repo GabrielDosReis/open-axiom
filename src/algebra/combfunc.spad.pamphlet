@@ -83,7 +83,7 @@ CombinatorialFunction(R, F): Exports == Implementation where
       ++ operator(op) returns a copy of op with the domain-dependent
       ++ properties appropriate for F;
       ++ error if op is not a combinatorial operator;
-    "**"       : (F, F) -> F
+    **       : (F, F) -> F
       ++ a ** b is the formal exponential a**b;
     binomial   : (F, F) -> F
       ++ binomial(n, r) returns the number of subsets of r objects

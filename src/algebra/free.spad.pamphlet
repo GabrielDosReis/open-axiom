@@ -181,11 +181,11 @@ FreeMonoid(S: SetCategory): FMcategory == FMdefinition where
     Ex  ==> OutputForm
 
     FMcategory ==> Join(Monoid, RetractableTo S) with
-        "*":    (S, $) -> $
+        *:    (S, $) -> $
           ++ s * x returns the product of x by s on the left.
-        "*":    ($, S) -> $
+        *:    ($, S) -> $
           ++ x * s returns the product of x by s on the right.
-        "**":   (S, NonNegativeInteger) -> $
+        **:   (S, NonNegativeInteger) -> $
           ++ s ** n returns the product of s by itself n times.
         hclf:   ($, $) -> $
           ++ hclf(x, y) returns the highest common left factor of x and y,
@@ -355,11 +355,11 @@ FreeMonoid(S: SetCategory): FMcategory == FMdefinition where
 ++ the form \spad{reduce(*,[si ** ni])} where the si's are in S, and the ni's
 ++ are integers. The multiplication is not commutative.
 FreeGroup(S: SetCategory): Join(Group, RetractableTo S) with
-        "*":    (S, $) -> $
+        *:    (S, $) -> $
           ++ s * x returns the product of x by s on the left.
-        "*":    ($, S) -> $
+        *:    ($, S) -> $
           ++ x * s returns the product of x by s on the right.
-        "**"         : (S, Integer) -> $
+        **         : (S, Integer) -> $
           ++ s ** n returns the product of s by itself n times.
         size         : $ -> NonNegativeInteger
           ++ size(x) returns the number of monomials in x.
@@ -418,9 +418,9 @@ FreeGroup(S: SetCategory): Join(Group, RetractableTo S) with
 ++ are in a given abelian monoid. The operation is commutative.
 FreeAbelianMonoidCategory(S: SetCategory, E:CancellationAbelianMonoid): Category ==
   Join(CancellationAbelianMonoid, RetractableTo S) with
-        "+"        : (S, $) -> $
+        +        : (S, $) -> $
           ++ s + x returns the sum of s and x.
-        "*"        : (E, S) -> $
+        *        : (E, S) -> $
           ++ e * s returns e times s.
         size       : $ -> NonNegativeInteger
           ++ size(x) returns the number of terms in x.

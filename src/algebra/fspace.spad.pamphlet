@@ -430,7 +430,7 @@ FunctionSpace(R: SetCategory): Category == Definition where
        if R has SemiGroup then
          Monoid
          -- the following line is necessary because of a compiler bug
-         "**"   : (%, N) -> %
+         **   : (%, N) -> %
            ++ x**n returns x * x * x * ... * x (n times).
          isTimes: % -> Union(List %, "failed")
            ++ isTimes(p) returns \spad{[a1,...,an]}
@@ -501,7 +501,7 @@ FunctionSpace(R: SetCategory): Category == Definition where
            ++ polynomial in the kernels over R.
          denominator : % -> %
            ++ denominator(f) returns the denominator of \spad{f} converted to %.
-         "/"       : (MP, MP) -> %
+         /       : (MP, MP) -> %
            ++ p1/p2 returns the quotient of p1 and p2 as an element of %.
          coerce    : Q  -> %
            ++ coerce(q) returns q as an element of %.

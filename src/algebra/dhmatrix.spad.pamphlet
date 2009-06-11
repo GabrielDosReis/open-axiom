@@ -1648,7 +1648,7 @@ DenavitHartenbergMatrix(R): Exports == Implementation where
   radians ==> pi()/180
 
   Exports ==> MatrixCategory(R,row,col) with
-   "*": (%, Point R) -> Point R
+   *: (%, Point R) -> Point R
      ++ t*p applies the dhmatrix t to point p
    identity: () -> %
      ++ identity() create the identity dhmatrix

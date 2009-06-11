@@ -48,29 +48,29 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
   YS     ==> Y$ParadoxicalCombinatorsForStreams(A)
   UN     ==> Union(ST A,"failed")
   Exports ==> with
-    "+"          : (ST A,ST A) -> ST A
+    +          : (ST A,ST A) -> ST A
       ++ a + b returns the power series sum of \spad{a} and \spad{b}:
       ++ \spad{[a0,a1,..] + [b0,b1,..] = [a0 + b0,a1 + b1,..]}
-    "-"          : (ST A,ST A) -> ST A
+    -          : (ST A,ST A) -> ST A
       ++ a - b returns the power series difference of \spad{a} and
       ++ \spad{b}: \spad{[a0,a1,..] - [b0,b1,..] = [a0 - b0,a1 - b1,..]}
-    "-"          : ST A -> ST A
+    -          : ST A -> ST A
       ++ - a returns the power series negative of \spad{a}:
       ++ \spad{- [a0,a1,...] = [- a0,- a1,...]}
-    "*"          : (ST A,ST A) -> ST A
+    *          : (ST A,ST A) -> ST A
       ++ a * b returns the power series (Cauchy) product of \spad{a} and b:
       ++ \spad{[a0,a1,...] * [b0,b1,...] = [c0,c1,...]} where
       ++ \spad{ck = sum(i + j = k,ai * bk)}.
-    "*"          : (A,ST A) -> ST A
+    *          : (A,ST A) -> ST A
       ++ r * a returns the power series scalar multiplication of r by \spad{a}:
       ++ \spad{r * [a0,a1,...] = [r * a0,r * a1,...]}
-    "*"          : (ST A,A) -> ST A
+    *          : (ST A,A) -> ST A
       ++ a * r returns the power series scalar multiplication of \spad{a} by r:
       ++ \spad{[a0,a1,...] * r = [a0 * r,a1 * r,...]}
-    "exquo"      : (ST A,ST A) -> Union(ST A,"failed")
+    exquo      : (ST A,ST A) -> Union(ST A,"failed")
       ++ exquo(a,b) returns the power series quotient of \spad{a} by b,
       ++ if the quotient exists, and "failed" otherwise
-    "/"          : (ST A,ST A) -> ST A
+    /          : (ST A,ST A) -> ST A
       ++ a / b returns the power series quotient of \spad{a} by b.
       ++ An error message is returned if \spad{b} is not invertible.
       ++ This function is used in fixed point computations.

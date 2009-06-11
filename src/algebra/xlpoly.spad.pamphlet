@@ -36,7 +36,7 @@ Magma(VarSet:OrderedSet):Public == Private where
    EX   ==> OutputForm
 
    Public == Join(OrderedSet,RetractableTo VarSet) with
-      "*"           : ($,$) -> $
+      *           : ($,$) -> $
         ++ \axiom{x*y} returns the tree \axiom{[x,y]}.
       coerce        : $ -> WORD
         ++ \axiom{coerce(x)} returns the element of \axiomType{OrderedFreeMonoid}(VarSet) 
@@ -362,7 +362,7 @@ LieAlgebra(R: CommutativeRing): Category ==  Module(R) with
     construct:  ($,$) -> $
           ++ \axiom{construct(x,y)} returns the Lie bracket of \axiom{x} and \axiom{y}.
     if R has Field then 
-       "/"   :  ($,R) -> $
+       /   :  ($,R) -> $
          ++ \axiom{x/r} returns the division of \axiom{x} by \axiom{r}.
 
 

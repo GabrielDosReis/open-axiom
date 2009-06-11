@@ -88,7 +88,7 @@ IntegrationResult(F:Field): Exports == Implementation where
     timene(r, ne)     == [Q2F(r) * ne.integrand, ne.intvar]
     n:Z * u:%         == (n::Q) * u
     Q2F r             == numer(r)::F / denom(r)::F
-    neselect(l, x)    == _+/[ne.integrand for ne in l | ne.intvar = x]
+    neselect(l, x)    == +/[ne.integrand for ne in l | ne.intvar = x]
 
     if F has RetractableTo Symbol then
       integral(f:F, x:Symbol):% == integral(f, x::F)
@@ -116,7 +116,7 @@ IntegrationResult(F:Field): Exports == Implementation where
       retractIfCan u ==
         empty? logpart u =>
           ratpart u +
-             _+/[integral(ne.integrand, retract(ne.intvar)@Symbol)$F
+             +/[integral(ne.integrand, retract(ne.intvar)@Symbol)$F
                 for ne in notelem u]
         "failed"
 
@@ -140,8 +140,8 @@ IntegrationResult(F:Field): Exports == Implementation where
 
     differentiate(u:%, derivation:F -> F):F ==
       derivation ratpart u +
-          _+/[pLogDeriv(log, derivation) for log in logpart u]
-               + _+/[pNeDeriv(ne, derivation) for ne in notelem u]
+          +/[pLogDeriv(log, derivation) for log in logpart u]
+               + (+/[pNeDeriv(ne, derivation) for ne in notelem u])
 
     pNeDeriv(ne, derivation) ==
       one? derivation(ne.intvar) => ne.integrand

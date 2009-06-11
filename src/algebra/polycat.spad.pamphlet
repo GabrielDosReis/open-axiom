@@ -123,7 +123,7 @@ FiniteAbelianMonoidRing(R:Ring, E:OrderedAbelianMonoid): Category ==
          ++ \spad{binomThmExpt(p,q,n)} returns \spad{(x+y)^n}
          ++ by means of the binomial theorem trick.
     if R has IntegralDomain then
-       "exquo": (%,R) -> Union(%,"failed")
+       exquo: (%,R) -> Union(%,"failed")
        ++ exquo(p,r) returns the exact quotient of polynomial p by r, or "failed"
        ++ if none exists.
     if R has GcdDomain then
@@ -634,9 +634,9 @@ PolynomialCategoryLifting(E,Vars,R,P,S): Exports == Implementation where
   R   : Ring
   P   : PolynomialCategory(R, E, Vars)
   S   : SetCategory with
-           "+" : (%, %) -> %
-           "*" : (%, %) -> %
-           "**": (%, NonNegativeInteger) -> %
+           + : (%, %) -> %
+           * : (%, %) -> %
+           **: (%, NonNegativeInteger) -> %
 
   Exports ==> with
     map: (Vars -> S, R -> S, P) -> S

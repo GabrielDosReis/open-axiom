@@ -20,7 +20,7 @@
 ElementaryFunctionCategory(): Category == with
     log : $ -> $       ++ log(x) returns the natural logarithm of x.
     exp : $ -> $       ++ exp(x) returns %e to the power x.
-    "**": ($, $) -> $  ++ x**y returns x to the power y.
+    **: ($, $) -> $  ++ x**y returns x to the power y.
  add
    if $ has Monoid then
      x ** y == exp(y * log x)

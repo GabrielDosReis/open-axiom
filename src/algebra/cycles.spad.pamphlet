@@ -130,7 +130,7 @@ CycleIndicators: Exports == Implementation where
            else if i<0
                 then 0
                 else
-                  _+/[(spol := trm(partition pt); even? pt => spol; -spol)
+                  +/[(spol := trm(partition pt); even? pt => spol; -spol)
                           for pt in list(partitions i)]
  
     divisors: I -> L I
@@ -149,7 +149,7 @@ CycleIndicators: Exports == Implementation where
  
     cyc n ==
       n = 1 => s 1
-      _+/[(eulerPhi(i) / n) * ss(i,numer(n/i)) for i in divisors n]
+      +/[(eulerPhi(i) / n) * ss(i,numer(n/i)) for i in divisors n]
  
     dih n ==
       k := n quo 2
@@ -175,7 +175,7 @@ CycleIndicators: Exports == Implementation where
         prod := c * prod2 * prod
       xx * prod
  
-    graphs n == _+/[trm2 li for li in list(partitions n)]
+    graphs n == +/[trm2 li for li in list(partitions n)]
  
     cupp: (PTN,SPOL RN) -> SPOL RN
     cupp(pt,spol) ==
@@ -206,7 +206,7 @@ CycleIndicators: Exports == Implementation where
     evspol(fn2,spol) ==
       zero? spol => 0
       lc := leadingCoefficient spol
-      prod := _*/[fn2 i for i in (degree spol)::L(I)]
+      prod := */[fn2 i for i in (degree spol)::L(I)]
       lc * prod + evspol(fn2,reductum spol)
  
     wreath(spol1,spol2) == evspol(mtpol(#1,spol2),spol1)
@@ -269,7 +269,7 @@ EvaluateCycleIndicators(F):T==C where
        pt:PTN
        spol:SPOL RN
        i:I
-       evp(fn, pt)== _*/[fn i for i in pt::(L I)]
+       evp(fn, pt)== */[fn i for i in pt::(L I)]
  
        eval(fn,spol)==
         if spol=0

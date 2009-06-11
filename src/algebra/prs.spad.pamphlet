@@ -191,10 +191,10 @@ PseudoRemainderSequence(R, polR) : Specification == Implementation where
        
        -- sub-routines exported for convenience ----------------------------
 
-       "*" : (R, Vector(polR)) -> Vector(polR)
+       * : (R, Vector(polR)) -> Vector(polR)
          ++ \axiom{r * v} computes the product of \axiom{r} and \axiom{v}
 
-       "exquo" : (Vector(polR), R) -> Vector(polR)
+       exquo : (Vector(polR), R) -> Vector(polR)
          ++ \axiom{v exquo r} computes 
          ++ the exact quotient of \axiom{v} by \axiom{r}
          

@@ -28,9 +28,9 @@ Localize(M:Module R,
          R:CommutativeRing,
          S:SubsetCategory(Monoid, R)): Module R with
       if M has OrderedAbelianGroup then OrderedAbelianGroup
-      _/ :(%,S) -> %
+      / :(%,S) -> %
          ++ x / d divides the element x by d.
-      _/ :(M,S) -> %
+      / :(M,S) -> %
          ++ m / d divides the element m by d.
       numer: % -> M
          ++ numer x returns the numerator of x.
@@ -94,9 +94,9 @@ LocalAlgebra(A: Algebra R,
              R: CommutativeRing,
              S: SubsetCategory(Monoid, R)): Algebra R with
           if A has OrderedRing then OrderedRing
-          _/ : (%,S) -> %
+          / : (%,S) -> %
             ++ x / d divides the element x by d.
-          _/ : (A,S) -> %
+          / : (A,S) -> %
             ++ a / d divides the element \spad{a} by d.
           numer: % -> A
             ++ numer x returns the numerator of x.
@@ -126,7 +126,7 @@ QuotientFieldCategory(S: IntegralDomain): Category ==
   Join(Field, Algebra S, RetractableTo S, FullyEvalableOver S,
          DifferentialExtension S, FullyLinearlyExplicitRingOver S,
            Patternable S, FullyPatternMatchable S) with
-    _/     : (S, S) -> %
+    /     : (S, S) -> %
        ++ d1 / d2 returns the fraction d1 divided by d2.
     numer  : % -> S
        ++ numer(x) returns the numerator of the fraction x.

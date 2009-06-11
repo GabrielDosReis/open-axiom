@@ -37,7 +37,7 @@ ComplexCategory(R:CommutativeRing): Category ==
      norm     :   % -> R           ++ norm(x) returns x * conjugate(x)
      if R has IntegralDomain then
        IntegralDomain
-       _exquo : (%,R) -> Union(%,"failed")
+       exquo : (%,R) -> Union(%,"failed")
          ++ exquo(x, r) returns the exact quotient of x by r, or
          ++ "failed" if r does not divide x exactly.
      if R has EuclideanDomain then EuclideanDomain
@@ -251,13 +251,13 @@ ComplexCategory(R:CommutativeRing): Category ==
            complex(real(x) / r, - imag(x) / r)
 
        if R has IntegralDomain then
-         _exquo(x:%, r:R) ==
+         x:% exquo r:R ==
            one? r => x
            (r1 := real(x) exquo r) case "failed" => "failed"
            (r2 := imag(x) exquo r) case "failed" => "failed"
            complex(r1, r2)
 
-         _exquo(x:%, y:%) ==
+         x:% exquo y:% ==
            zero? imag y => x exquo real y
            x * conjugate(y) exquo norm(y)
 
@@ -612,7 +612,7 @@ Complex(R:CommutativeRing): ComplexCategory(R) with
 
 
        if R has IntegralDomain then
-         _exquo(x:%, y:%) == -- to correct bad defaulting problem
+         x:% exquo y:% == -- to correct bad defaulting problem
            zero? y.imag => x exquo y.real
            x * conjugate(y) exquo norm(y)
 
@@ -763,7 +763,7 @@ ComplexIntegerSolveLinearPolynomialEquation(R,CR): C == T
       solveLinearPolynomialEquation(lp,p) ==
          if (oldlp ~= lp) then
             -- we have to generate a new table
-            deg:= _+/[degree u for u in lp]
+            deg:= +/[degree u for u in lp]
             ans:Union(Vector List CP,"failed"):="failed"
             slpePrime:=67108859::R   -- 2**26 -5 : a prime
                  -- a good test case for this package is

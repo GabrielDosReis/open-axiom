@@ -70,7 +70,7 @@ SExpressionCategory(Str, Sym, Int, Flt, Expr): Category == Decl where
           ++ car((a1,...,an)) returns a1.
         cdr:       % -> %
           ++ cdr((a1,...,an)) returns \spad{(a2,...,an)}.
-        "#":       % -> Integer
+        #:       % -> Integer
           ++ #((a1,...,an)) returns n.
         elt:       (%, Integer)      -> %
           ++ elt((a1,...,an), i) returns \spad{ai}.

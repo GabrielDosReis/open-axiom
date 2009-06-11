@@ -317,7 +317,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
      genPosLastVar(J:FIdeal,truelist:List OV):GenPos ==
        x := last truelist ;lv1:List OV :=remove(x,truelist)
        ranvals:List(Z):=[(random()$Z rem 23) for vv in lv1]
-       val:=_+/[rv*(vv::DPoly)  for vv in lv1 for rv in ranvals]
+       val:=+/[rv*(vv::DPoly)  for vv in lv1 for rv in ranvals]
        val:=val+(x::DPoly)
        [ranvals,groebnerIdeal(groebner([(univariate(p,x)).val
                              for p in generators J]))]$GenPos
@@ -327,7 +327,7 @@ IdealDecompositionPackage(vl,nv) : C == T -- take away nv, now doesn't
      backGenPos(I:FIdeal,lval:List Z,truelist:List OV) : FIdeal ==
        lval=[] => I
        x := last truelist ;lv1:List OV:=remove(x,truelist)
-       val:=-(_+/[rv*(vv::DPoly) for vv in lv1 for rv in lval])
+       val:=-(+/[rv*(vv::DPoly) for vv in lv1 for rv in lval])
        val:=val+(x::DPoly)
        groebnerIdeal
 	   (groebner([(univariate(p,x)).val for p in generators I ]))

@@ -47,7 +47,7 @@ PermutationCategory(S:SetCategory): Category  ==  Group with
       ++ orbit(p, el) returns the orbit of {\em el} under the
       ++ permutation p, i.e. the set which is given by applications of
       ++ the powers of p to {\em el}.
-    "<" : (%,%)             ->  Boolean
+    < : (%,%)             ->  Boolean
       ++ p < q is an order relation on permutations.
       ++ Note: this order is only total if and only if S is totally ordered
       ++ or S is finite.

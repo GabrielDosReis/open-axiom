@@ -431,43 +431,43 @@ OutputForm(): SetCategory with
           ++ blankSeparate(l) creates the form separating the elements of l
           ++ by blanks.
         --% Specific applications
-        "=":     (%, %) -> %
+        =:     (%, %) -> %
           ++ f = g creates the equivalent infix form.
-        "~=":    (%, %) -> %
+        ~=:    (%, %) -> %
           ++ f ~= g creates the equivalent infix form.
-        "<":     (%, %) -> %
+        <:     (%, %) -> %
           ++ f < g creates the equivalent infix form.
-        ">":     (%, %) -> %
+        >:     (%, %) -> %
           ++ f > g creates the equivalent infix form.
-        "<=":    (%, %) -> %
+        <=:    (%, %) -> %
           ++ f <= g creates the equivalent infix form.
-        ">=":    (%, %) -> %
+        >=:    (%, %) -> %
           ++ f >= g creates the equivalent infix form.
-        "+":     (%, %) -> %
+        +:     (%, %) -> %
           ++ f + g creates the equivalent infix form.
-        "-":     (%, %) -> %
+        -:     (%, %) -> %
           ++ f - g creates the equivalent infix form.
-        "-":     (%)    -> %
+        -:     (%)    -> %
           ++ - f creates the equivalent prefix form.
-        "*":     (%, %) -> %
+        *:     (%, %) -> %
           ++ f * g creates the equivalent infix form.
-        "/":     (%, %) -> %
+        /:     (%, %) -> %
           ++ f / g creates the equivalent infix form.
-        "**":    (%, %) -> %
+        **:    (%, %) -> %
           ++ f ** g creates the equivalent infix form.
-        "div":   (%, %) -> %
+        div:   (%, %) -> %
           ++ f div g creates the equivalent infix form.
-        "rem":   (%, %) -> %
+        rem:   (%, %) -> %
           ++ f rem g creates the equivalent infix form.
-        "quo":   (%, %) -> %
+        quo:   (%, %) -> %
           ++ f quo g creates the equivalent infix form.
-        "exquo": (%, %) -> %
+        exquo: (%, %) -> %
           ++ exquo(f,g) creates the equivalent infix form.
-        "and":   (%, %) -> %
+        and:   (%, %) -> %
           ++ f and g creates the equivalent infix form.
-        "or":    (%, %) -> %
+        or:    (%, %) -> %
           ++ f or g creates the equivalent infix form.
-        "not":   (%)    -> %
+        not:   (%)    -> %
           ++ not f creates the equivalent prefix form.
         SEGMENT: (%,%)  -> %
           ++ SEGMENT(x,y) creates the infix form: \spad{x..y}.

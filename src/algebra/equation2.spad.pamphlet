@@ -51,7 +51,7 @@ import List
 Equation(S: Type): public == private where
   Ex ==> OutputForm
   public ==> Type with
-    "=": (S, S) -> $
+    =: (S, S) -> $
         ++ a=b creates an equation.
     equation: (S, S) -> $
         ++ equation(a,b) creates an equation.
@@ -76,10 +76,10 @@ Equation(S: Type): public == private where
                ++ eval(eqn, [x1=v1, ... xn=vn]) replaces xi by vi in equation eqn.
     if S has AbelianSemiGroup then
         AbelianSemiGroup
-        "+": (S, $) -> $
+        +: (S, $) -> $
             ++ x+eqn produces a new equation by adding x to both sides of
             ++ equation eqn.
-        "+": ($, S) -> $
+        +: ($, S) -> $
             ++ eqn+x produces a new equation by adding x to  both sides of
             ++ equation eqn.
     if S has AbelianGroup then
@@ -88,18 +88,18 @@ Equation(S: Type): public == private where
           ++ leftZero(eq) subtracts the left hand side.
         rightZero : $ -> $
           ++ rightZero(eq) subtracts the right hand side.
-        "-": (S, $) -> $
+        -: (S, $) -> $
             ++ x-eqn produces a new equation by subtracting both sides of
             ++ equation eqn from x.
-        "-": ($, S) -> $
+        -: ($, S) -> $
             ++ eqn-x produces a new equation by subtracting x from  both sides of
             ++ equation eqn.
     if S has SemiGroup then
         SemiGroup
-        "*": (S, $) -> $
+        *: (S, $) -> $
             ++ x*eqn produces a new equation by multiplying both sides of
             ++ equation eqn by x.
-        "*": ($, S) -> $
+        *: ($, S) -> $
             ++ eqn*x produces a new equation by multiplying both sides of
             ++ equation eqn by x.
     if S has Monoid then
@@ -129,7 +129,7 @@ Equation(S: Type): public == private where
       PartialDifferentialRing(Symbol)
     if S has Field then
       VectorSpace(S)
-      "/": ($, $) -> $
+      /: ($, $) -> $
           ++ e1/e2 produces a new equation by dividing the left and right
           ++ hand sides of equations e1 and e2.
       inv: $ -> $

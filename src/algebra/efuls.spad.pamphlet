@@ -40,7 +40,7 @@ ElementaryFunctionsUnivariateLaurentSeries(Coef,UTS,ULS):_
   Exports ==> PartialTranscendentalFunctions(ULS) with
  
     if Coef has Field then
-      "**": (ULS,RN) -> ULS
+      **: (ULS,RN) -> ULS
         ++ s ** r raises a Laurent series s to a rational power r
  
 --% Exponentials and Logarithms
