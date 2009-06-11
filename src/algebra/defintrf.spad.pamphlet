@@ -176,7 +176,7 @@ DefiniteIntegrationTools(R, F): Exports == Implementation where
       i case fin =>
         l := realZeros(p, r := i.fin)
         incl? => l
-        select_!(keeprec?(r.left, #1) and keeprec?(r.right, #1), l)
+        select!(keeprec?(r.left, #1) and keeprec?(r.right, #1), l)
       i case all => realZeros p
       i case halfinf =>
         empty?(l := realZeros p) => empty()
@@ -185,7 +185,7 @@ DefiniteIntegrationTools(R, F): Exports == Implementation where
           ["min"/[t.left for t in l], i.halfinf.endpoint]
         l := [u::REC for t in l | (u := refine(p, t, bounds)) case REC]
         incl? => l
-        select_!(keeprec?(i.halfinf.endpoint, #1), l)
+        select!(keeprec?(i.halfinf.endpoint, #1), l)
       error "findRealZero: should not happpen"
 
     checkBudan(p, a, b, incl?) ==
@@ -329,7 +329,7 @@ RationalFunctionDefiniteIntegration(R): Exports == Implementation where
       ans := empty()$List(OFE)
       for g in u::List(FE) repeat
         (v := computeInt(k, g, a, b, true)) case "failed" => return ["failed"]
-        ans := concat_!(ans, [v::OFE])
+        ans := concat!(ans, [v::OFE])
       [ans]
 
     integrate(f:RF, s:SegmentBinding ORF) ==

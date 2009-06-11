@@ -161,7 +161,7 @@ Segment(S:Type): SegmentCategory(S) with
             while l >= h repeat
               lr := concat(l, lr)
               l := l + inc
-        reverse_! lr
+        reverse! lr
 
       expand(s : %) == expand([s]$List(%))$%
       map(f : S->S, s : %): List S ==
@@ -177,7 +177,7 @@ Segment(S:Type): SegmentCategory(S) with
           while l >= h repeat
             lr := concat(f l, lr)
             l := l + inc
-        reverse_! lr
+        reverse! lr
 
 @
 
@@ -233,7 +233,7 @@ SegmentFunctions2(R:Type, S:Type): public == private where
          while l >= h repeat
            lr := concat(f(l), lr)
            l := l + inc
-       reverse_! lr
+       reverse! lr
 
 @
 
@@ -437,7 +437,7 @@ UniversalSegment(S: Type): SegmentCategory(S) with
             s  := first ls
             ls := rest ls
             ns := BY(SEGMENT(lo s, hi s), incr s)$Segment(S)
-            lb := concat_!(lb,ns)
+            lb := concat!(lb,ns)
         if not null ls then
             s := first ls
             st: Stream S := generate(#1 + incr(s)::S, lo s)

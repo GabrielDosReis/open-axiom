@@ -97,7 +97,7 @@ PrimitiveElement(F): Exports == Implementation where
            case "failed" => error "Should not happen"
         ll := concat(map(#1,
                 (- univariate(coefficient(p,0)) * bc.coef1) rem pw), ll)
-      concat(map(#1, pw), reverse_! ll)
+      concat(map(#1, pw), reverse! ll)
 
     primitiveElement(l, vars, uu) ==
       u    := uu::P

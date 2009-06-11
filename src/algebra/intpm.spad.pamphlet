@@ -179,7 +179,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
            matchdilog(f, x) ==
              n := numer f
              df := (d := denom f)::F
-             for k in select_!(gooddilog?(#1, n, d), variables n)$List(K) repeat
+             for k in select!(gooddilog?(#1, n, d), variables n)$List(K) repeat
                not empty?(l := matchdilog0(f, k, x, n, df)) => return l
              empty()
 
@@ -197,7 +197,7 @@ PatternMatchIntegration(R, F): Exports == Implementation where
 -- returns [u,d,v] or []
            matchli(f, x) ==
              d := denom f
-             for k in select_!(goodlilog?(#1, d), variables d)$List(K) repeat
+             for k in select!(goodlilog?(#1, d), variables d)$List(K) repeat
                not empty?(l := matchli0(f, k, x)) => return l
              empty()
 

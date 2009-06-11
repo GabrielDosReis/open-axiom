@@ -279,7 +279,7 @@ ExpressionSpace(): Category == Defn where
       is?(k::K, op)
 
     unwrap(l, x) ==
-      for k in reverse_! l repeat
+      for k in reverse! l repeat
         x := eval(x, k, first argument k)
       x
 
@@ -599,7 +599,7 @@ FunctionSpace(R: SetCategory): Category == Definition where
       l := empty()$List(SY)
       for k in tower x repeat
         if ((s := symbolIfCan k) case SY) then l := concat(s::SY, l)
-      reverse_! l
+      reverse! l
 
     retractIfCan(x:%):Union(SY, "failed") ==
       (k := retractIfCan(x)@Union(K,"failed")) case "failed" => "failed"

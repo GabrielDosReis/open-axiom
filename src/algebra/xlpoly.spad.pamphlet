@@ -86,7 +86,7 @@ Magma(VarSet:OrderedSet):Public == Private where
       varList x == 
         x case VarSet => [x::VarSet]
         lv: List VarSet := setUnion(varList x.left, varList x.right)
-        sort_!(lv)
+        sort!(lv)
 
       left x == 
         x case VarSet => error "x has only one entry"
@@ -322,7 +322,7 @@ LyndonWord(VarSet:OrderedSet):Public == Private where
                      if lexico(a,b) and (lexico(b,right a) or b = right a ) 
                      then lbase1:=cons(a*b,lbase1)
  
-               base(ll):= sort_!(lexico, lbase1)
+               base(ll):= sort!(lexico, lbase1)
             return base
            
        LyndonWordsList (vl,n) ==

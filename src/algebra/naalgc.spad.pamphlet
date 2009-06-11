@@ -864,7 +864,7 @@ FiniteRankNonAssociativeAlgebra(R:CommutativeRing):
     coordinates(v:Vector %, b:Vector %) ==
       m := new(#v, #b, 0)$Matrix(R)
       for i in minIndex v .. maxIndex v for j in minRowIndex m .. repeat
-        setRow_!(m, j, coordinates(qelt(v, i), b))
+        setRow!(m, j, coordinates(qelt(v, i), b))
       m
 
     represents(v, b) ==
@@ -1030,7 +1030,7 @@ FramedNonAssociativeAlgebra(R:CommutativeRing):
         x : M P R := new(1,n,0)
         for i in 1..n repeat
           mo := monomial(1, [symbolsForCoef.i], [1])$(P R)
-          qsetelt_!(x,1,i,mo)
+          qsetelt!(x,1,i,mo)
         y : M P R := copy x
         k  : PositiveInteger := 1
         cond : M P R := copy x
@@ -1063,7 +1063,7 @@ FramedNonAssociativeAlgebra(R:CommutativeRing):
         x : M P R := new(1,n,0)
         for i in 1..n repeat
           mo := monomial(1, [symbolsForCoef.i], [1])$(P R)
-          qsetelt_!(x,1,i,mo)
+          qsetelt!(x,1,i,mo)
         y : M P R := copy x
         k  : PositiveInteger := 1
         cond : M P R := copy x
@@ -1202,7 +1202,7 @@ FramedNonAssociativeAlgebra(R:CommutativeRing):
     coordinates(v:Vector %) ==
       m := new(#v, rank(), 0)$Matrix(R)
       for i in minIndex v .. maxIndex v for j in minRowIndex m .. repeat
-        setRow_!(m, j, coordinates qelt(v, i))
+        setRow!(m, j, coordinates qelt(v, i))
       m
 
 @
