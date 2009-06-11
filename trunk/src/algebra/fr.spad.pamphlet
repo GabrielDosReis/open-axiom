@@ -284,7 +284,7 @@ Factored(R: IntegralDomain): Exports == Implementation where
 
     SimplifyFactorization x ==
       empty? x => empty()
-      x := sort_!(LispLessP, x)
+      x := sort!(LispLessP, x)
       x := SimplifyFactorization1(first x, rest x)
       x := sort!(LispLessP, x)
       x
@@ -466,7 +466,7 @@ which causes wrong results as soon as units are involved, for example in
             as := as * (ucar.associate ** e)
         if not one?(ucar.canonical) then
           vl := concat([x.flg, ucar.canonical, x.xpnt], vl)
-      [mkFF(un, empty()), mkFF(1, reverse_! vl), mkFF(as, empty())]
+      [mkFF(un, empty()), mkFF(1, reverse! vl), mkFF(as, empty())]
 
     unitNormalize u ==
       uca := unitNormal u

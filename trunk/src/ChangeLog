@@ -1,5 +1,9 @@
 2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/: Don't quote '!' at end of names.
+
+2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/: Remove quotes from operator namaes in signatures.
 
 2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>

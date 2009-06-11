@@ -268,7 +268,7 @@ SparseMultivariateTaylorSeries(Coef,Var,SMP):_
         eq?(uu,rst uu) and frst uu = 0 => l
         concat(prefix("O" :: OUT,[n :: OUT]),l)
       empty? l => (0$SMP) :: OUT
-      reduce("+",reverse_! l)
+      reduce("+",reverse! l)
     if Coef has Field then
          stream(x:%):Rep == x pretend Rep
          SF2==> StreamFunctions2

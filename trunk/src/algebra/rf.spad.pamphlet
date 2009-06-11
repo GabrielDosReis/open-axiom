@@ -120,7 +120,7 @@ PolynomialCategoryQuotientFunctions(E, V, R, P, F):
       one? num => "failed"
       d := inv(den::F)
       l case "failed" => [num::F, d]
-      concat_!(l::List(F), d)
+      concat!(l::List(F), d)
 
     isPlus f ==
       denom f ~= 1 => "failed"

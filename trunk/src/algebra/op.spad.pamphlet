@@ -83,7 +83,7 @@ BasicOperator(): Exports == Implementation where
     assert     : (%, Identifier) -> $
       ++ \spad{assert(op, p)} attaches property \spad{p} to \spad{op}.
       ++ Argument op is modified "in place", i.e. no copy is made.
-    deleteProperty_!: ($, String) -> $
+    deleteProperty!: ($, String) -> $
       ++ deleteProperty!(op, s) unattaches property s from op.
       ++ Argument op is modified "in place", i.e. no copy is made.
     deleteProperty!: ($, Identifier) -> $
@@ -142,7 +142,7 @@ BasicOperator(): Exports == Implementation where
     equality(op, func)   == setProperty(op, EQUAL?, func pretend None)
     comparison(op, func) == setProperty(op, LESS?, func pretend None)
     display(op:$, f:O -> O)        == display(op, f first #1)
-    deleteProperty_!(op: %, name: String) == (remove_!(name, properties op); op)
+    deleteProperty!(op: %, name: String) == (remove!(name, properties op); op)
     deleteProperty!(op: %, p: Identifier) == 
       remove!(STRING(p)$Foreign(Builtin), properties op)
       op

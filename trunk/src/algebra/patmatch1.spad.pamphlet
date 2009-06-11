@@ -589,7 +589,7 @@ PatternMatchTools(S, R, P): Exports == Implementation where
       -- l2 = patterns with a predicate attached to them
       l2 := select(hasPredicate? #1 and not constant? #1, lp)
       -- l3 = non-generic patterns without predicates
-      l3 := sort_!(depth(#1) > depth(#2),
+      l3 := sort!(depth(#1) > depth(#2),
         select(not(hasPredicate? #1 or generic? #1 or constant? #1),lp))
       -- l4 = generic patterns with predicates
       l4 := select(generic? #1 and
@@ -650,7 +650,7 @@ PatternMatchListAggregate(S, R, L): Exports == Implementation where
         failed()
       multiple?(p0 := first lp) =>
         empty? rest lp =>
-          if not new? then l := reverse_! l
+          if not new? then l := reverse! l
           makeResult(atoms r, addMatchRestricted(p0,l,lists r,empty()))
         new? => match(reverse l, reverse lp, r, false)
         error "Only one multiple pattern allowed in list"

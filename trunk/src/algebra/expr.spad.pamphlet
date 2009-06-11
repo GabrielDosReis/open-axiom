@@ -158,7 +158,7 @@ Expression(R: SetCategory): Exports == Implementation where
 -- The result MUST be left sorted deepest first   MB 3/90
       commonk0(x, y) ==
         ans := empty()$List(K)
-        for k in reverse_! x repeat if member?(k, y) then ans := concat(k, ans)
+        for k in reverse! x repeat if member?(k, y) then ans := concat(k, ans)
         ans
 
       rootOf(x:SparseUnivariatePolynomial %, v:Symbol) == rootOf(x,v)$AF
@@ -319,7 +319,7 @@ Expression(R: SetCategory): Exports == Implementation where
               if (a := retractIfCan(x)@Union(AN, "failed")) case "failed" then
                 return "failed"
               else arg := concat(a::AN, arg)
-            (operator(op)$AN) reverse_!(arg)
+            (operator(op)$AN) reverse!(arg)
 
           smp2an p ==
             (x1 := mainVariable p) case "failed" => R2AN leadingCoefficient p

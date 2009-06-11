@@ -496,7 +496,7 @@ RationalLODE(F, UP): Exports == Implementation where
         sol.particular case "failed" => "failed"
         makeDot(sol.particular::V, lb) + first(rec.particular)
       [part,
-       concat_!(lsol, [makeDot(v, lb) for v in sol.basis | nzero? v])]
+       concat!(lsol, [makeDot(v, lb) for v in sol.basis | nzero? v])]
 
     indicialEquationAtInfinity(op:LODO2) ==
       rec := infMuLambda op
@@ -649,14 +649,14 @@ ODETools(F, LODO): Exports == Implementation where
       v:V := vector l
       m:M := zero(q, #v)
       for i in minRowIndex m .. maxRowIndex m repeat
-        setRow_!(m, i, v)
-        v := map_!(diff #1, v)
+        setRow!(m, i, v)
+        v := map!(diff #1, v)
       m
 
     variationOfParameters(op, g, b) ==
       empty? b => "failed"
       v:V := new(n := degree op, 0)
-      qsetelt_!(v, maxIndex v, g / leadingCoefficient op)
+      qsetelt!(v, maxIndex v, g / leadingCoefficient op)
       particularSolution(wronskianMatrix(b, n), v)
 
     particularSolution(op, g, b, integration) ==
@@ -811,7 +811,7 @@ ConstantLODE(R, F, L): Exports == Implementation where
           op := reductum op
       b:List(F) := empty()
       for ff in factors ffactor p repeat
-        b := concat_!(b, basisSol(ff.factor, dec(ff.exponent), x))
+        b := concat!(b, basisSol(ff.factor, dec(ff.exponent), x))
       b
 
     basisSol(p, n, x) ==
@@ -820,7 +820,7 @@ ConstantLODE(R, F, L): Exports == Implementation where
       ll := copy l
       xn := x::F
       for i in 1..n repeat
-        l := concat_!(l, [xn * f for f in ll])
+        l := concat!(l, [xn * f for f in ll])
         xn := x * xn
       l
 

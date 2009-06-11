@@ -77,12 +77,12 @@ FileCategory(Name, S): Category == FCdefinition where
           ++ open(s,mode) returns a file s open for operation in the 
           ++ indicated mode: "input" or "output".
 
-        reopen_!: (%, IOMode) -> %
+        reopen!: (%, IOMode) -> %
           ++ reopen!(f,mode) returns a file f reopened for operation in the
           ++ indicated mode: "input" or "output".
           ++ \spad{reopen!(f,"input")} will reopen the file f for input.
 
-        close_!: % -> %
+        close!: % -> %
           ++ close!(f) returns the file f closed to input and output.
  
         name: % -> Name
@@ -92,12 +92,12 @@ FileCategory(Name, S): Category == FCdefinition where
           ++ iomode(f) returns the status of the file f. The input/output 
           ++ status of f may be "input", "output" or "closed" mode.
  
-        read_!: % -> S
+        read!: % -> S
           ++ read!(f) extracts a value from file f.  The state of f is
           ++ modified so a subsequent call to \spadfun{read!} will return
           ++ the next element.
 
-        write_!: (%,S) -> S
+        write!: (%,S) -> S
           ++ write!(f,s) puts the value s into the file f. 
           ++ The state of f is modified so subsequents call to \spad{write!}
           ++ will append one after another.
@@ -121,7 +121,7 @@ FileCategory(Name, S): Category == FCdefinition where
 ++   The operations provide sequential access to the contents.
  
 File(S:SetCategory): FileCategory(FileName, S) with
-        readIfCan_!: % -> Union(S, "failed")
+        readIfCan!: % -> Union(S, "failed")
             ++ readIfCan!(f) returns a value from the file f, if possible.
             ++ If f is not open for reading, or if f is at the end of file
             ++ then \spad{"failed"} is the result.
@@ -152,12 +152,12 @@ File(S:SetCategory): FileCategory(FileName, S) with
         open(fname, mode) ==
             fstream := defstream(fname, mode)
             [fname, fstream, mode]
-        reopen_!(f, mode) ==
+        reopen!(f, mode) ==
             fname := f.fileName
             f.fileState := defstream(fname, mode)
             f.fileIOmode:= mode
             f
-        close_! f ==
+        close! f ==
             SHUT(f.fileState)$Lisp
             f.fileIOmode := "closed"
             f
@@ -165,20 +165,20 @@ File(S:SetCategory): FileCategory(FileName, S) with
             f.fileName
         iomode f ==
             f.fileIOmode
-        read_! f ==
+        read! f ==
             f.fileIOmode ~= "input" =>
                 error "File not in read state"
             x := VMREAD(f.fileState)$Lisp
             PLACEP(x)$Lisp =>
                 error "End of file"
             x
-        readIfCan_! f ==
+        readIfCan! f ==
             f.fileIOmode ~= "input" =>
                 error "File not in read state"
             x: S := VMREAD(f.fileState)$Lisp
             PLACEP(x)$Lisp => "failed"
             x
-        write_!(f, x) ==
+        write!(f, x) ==
             f.fileIOmode ~= "output" =>
                 error "File not in write state"
             z := PRINT_-FULL(x, f.fileState)$Lisp
@@ -206,26 +206,26 @@ TextFile: Cat == Def where
     StreamName ==> Union(FileName, "console")
  
     Cat == FileCategory(FileName, String) with
-        writeLine_!: (%, String) -> String
+        writeLine!: (%, String) -> String
           ++ writeLine!(f,s) writes the contents of the string s 
           ++ and finishes the current line in the file f.
           ++ The value of s is returned.
 
-        writeLine_!: % -> String
+        writeLine!: % -> String
           ++ writeLine!(f) finishes the current line in the file f.
           ++ An empty string is returned.  The call \spad{writeLine!(f)} is
           ++ equivalent to \spad{writeLine!(f,"")}.
 
-        readLine_!: % -> String
+        readLine!: % -> String
           ++ readLine!(f) returns a string of the contents of a line from 
           ++ the file f.
 
-        readLineIfCan_!: % -> Union(String, "failed")
+        readLineIfCan!: % -> Union(String, "failed")
           ++ readLineIfCan!(f) returns a string of the contents of a line from
           ++ file f, if possible.  If f is not readable or if it is 
           ++ positioned at the end of file, then \spad{"failed"} is returned.
 
-        readIfCan_!: % -> Union(String, "failed")
+        readIfCan!: % -> Union(String, "failed")
           ++ readIfCan!(f) returns a string of the contents of a line from
           ++ file f, if possible.  If f is not readable or if it is 
           ++ positioned at the end of file, then \spad{"failed"} is returned.
@@ -242,28 +242,28 @@ TextFile: Cat == Def where
                       fileState:  FileState,   _
                       fileIOmode: String)
  
-        read_! f      == readLine_! f
-        readIfCan_! f == readLineIfCan_! f
+        read! f      == readLine! f
+        readIfCan! f == readLineIfCan! f
  
-        readLine_! f ==
+        readLine! f ==
             f.fileIOmode ~= "input"  => error "File not in read state"
             s: String := read_-line(f.fileState)$Lisp
             PLACEP(s)$Lisp => error "End of file"
             s
-        readLineIfCan_! f ==
+        readLineIfCan! f ==
             f.fileIOmode ~= "input"  => error "File not in read state"
             s: String := read_-line(f.fileState)$Lisp
             PLACEP(s)$Lisp => "failed"
             s
-        write_!(f, x) ==
+        write!(f, x) ==
             f.fileIOmode ~= "output" => error "File not in write state"
             PRINTEXP(x, f.fileState)$Lisp
             x
-        writeLine_! f ==
+        writeLine! f ==
             f.fileIOmode ~= "output" => error "File not in write state"
             TERPRI(f.fileState)$Lisp
             ""
-        writeLine_!(f, x) ==
+        writeLine!(f, x) ==
             f.fileIOmode ~= "output" => error "File not in write state"
             PRINTEXP(x, f.fileState)$Lisp
             TERPRI(f.fileState)$Lisp
@@ -302,7 +302,7 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
         Join(FileCategory(Name, Record(key: Key, entry: Entry)),
              TableAggregate(Key, Entry)) with
                  finiteAggregate
-                 pack_!: % -> %
+                 pack!: % -> %
                      ++ pack!(f) reorganizes the file f on disk to recover 
                      ++ unused space.
  
@@ -341,28 +341,28 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
                 exists? fname =>
                     open(fname, "input")
                 writable? fname =>
-                    reopen_!(open(fname, "output"), "input")
+                    reopen!(open(fname, "output"), "input")
                 error "File does not exist and cannot be created"
             [fname, defstream(fname, mode), mode]
-        reopen_!(f, mode) ==
-            close_! f
+        reopen!(f, mode) ==
+            close! f
             if mode ~= "closed" then
                 f.fileState := defstream(f.fileName, mode)
                 f.fileIOmode  := mode
             f
-        close_! f  ==
+        close! f  ==
             if f.fileIOmode ~= "closed" then
                 RSHUT(f.fileState)$Lisp
                 f.fileIOmode  := "closed"
             f
-        read_! f ==
+        read! f ==
             f.fileIOmode ~= "input" => error ["File not in read state",f]
             ks: List Symbol := RKEYIDS(f.fileName)$Lisp
             null ks => error ["Attempt to read empty file", f]
             ix := random()$Integer rem #ks
             k: String := PNAME(ks.ix)$Lisp
             [k, SPADRREAD(k, f.fileState)$Lisp]
-        write_!(f, pr) ==
+        write!(f, pr) ==
             f.fileIOmode ~= "output" => error ["File not in write state",f]
             SPADRWRITE(pr.key, pr.entry, f.fileState)$Lisp
             pr
@@ -376,32 +376,32 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
             fn := new("", "kaf", "sdata")$Name
             open fn
         keys f ==
-            close_! f
+            close! f
             l: List SExpression := RKEYIDS(f.fileName)$Lisp
             [PNAME(n)$Lisp for n in l]
         # f ==
             # keys f
         elt(f,k) ==
-            reopen_!(f, "input")
+            reopen!(f, "input")
             SPADRREAD(k, f.fileState)$Lisp
         setelt(f,k,e) ==
             -- Leaves f in a safe, closed state.  For speed use "write".
-            reopen_!(f, "output")
-            UNWIND_-PROTECT(write_!(f, [k,e]), close_! f)$Lisp
-            close_! f
+            reopen!(f, "output")
+            UNWIND_-PROTECT(write!(f, [k,e]), close! f)$Lisp
+            close! f
             e
         search(k,f) ==
             not member?(k, keys f) => "failed"   -- can't trap RREAD error
-            reopen_!(f, "input")
+            reopen!(f, "input")
             (SPADRREAD(k, f.fileState)$Lisp)@Entry
-        remove_!(k:String,f:%)  ==
+        remove!(k:String,f:%)  ==
             result := search(k,f)
             result case "failed" => result
-            close_! f
+            close! f
             RDROPITEMS(NAMESTRING(f.fileName)$Lisp, LIST(k)$Lisp)$Lisp
             result
-        pack_! f ==
-            close_! f
+        pack! f ==
+            close! f
             RPACKFILE(f.fileName)$Lisp
             f
 
@@ -424,7 +424,7 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
 Library(): TableAggregate(String, Any) with
          library:  FileName -> %
              ++ library(ln) creates a new library file.
-         pack_!: % -> %
+         pack!: % -> %
              ++ pack!(f) reorganizes the file f on disk to recover 
              ++ unused space.
 
