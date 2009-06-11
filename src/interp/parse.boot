@@ -54,6 +54,14 @@ $normalizeTree := false
 ++ True if we know we are parsing a form supposed to designate a type.
 $parsingType := false
 
+--%
+
+washOperatorName x ==
+  STRINGP x =>
+    stackWarning('"String syntax for %1b in signature is deprecated.",[x])
+    INTERN x
+  x
+
 parseTransform: %ParseForm -> %Form 
 parseTransform x ==
   $defOp: local:= nil
@@ -200,15 +208,14 @@ parseHas t ==
   ["has",x,fn y] where
     fn y ==
       y is [":" ,op,["Mapping",:map]] =>
-         op:= (STRINGP op => INTERN op; op)
-         ["SIGNATURE",op,map]
+         ["SIGNATURE",washOperatorName op,map]
       y is ["Join",:u] => ["Join",:[fn z for z in u]]
       y is ["CATEGORY",kind,:u] => ["CATEGORY",kind,:[fn z for z in u]]
       kk:= getConstructorKindFromDB opOf y
       kk = "domain" or kk = "category" => makeNonAtomic y
       y is ["ATTRIBUTE",:.] => y
       y is ["SIGNATURE",:.] => y
-      y is [":",op,type] => ["SIGNATURE",op,[type],"constant"]
+      y is [":",op,type] => ["SIGNATURE",washOperatorName op,[type],"constant"]
       ["ATTRIBUTE",y]
  
 parseDEF: %ParseForm -> %Form
@@ -407,7 +414,7 @@ transCategoryItem x ==
     lhs is ["LISTOF",:y] =>
       "append" /[transCategoryItem ["SIGNATURE",z,rhs] for z in y]
     atom lhs =>
-      if STRINGP lhs then lhs:= INTERN lhs
+      lhs := washOperatorName lhs
       rhs is ["Mapping",:m] =>
         m is [.,"constant"] => [["SIGNATURE",lhs,[first m],"constant"]]
         [["SIGNATURE",lhs,m]]

@@ -754,11 +754,9 @@
                         (CONS (POP-STACK-2) (CONS (POP-STACK-1) NIL))))))
       (|PARSE-Quad|) (|PARSE-String|) (|PARSE-IntegerTok|)
       (|PARSE-FormalParameter|)
-      (AND (MATCH-STRING "'")
-           (MUST (AND (MATCH-ADVANCE-STRING "'")
-                      (MUST (|PARSE-Expr| 999))
-                      (PUSH-REDUCTION '|PARSE-Primary1|
-                          (CONS 'QUOTE (CONS (POP-STACK-1) NIL))))))
+      (AND (MATCH-ADVANCE-STRING "'")
+           (MUST (AND (MUST (|PARSE-Data|))
+                      (PUSH-REDUCTION '|PARSE-Primary1| (POP-STACK-1)))))
       (|PARSE-Sequence|) (|PARSE-Enclosure|))) 
 
 
@@ -909,7 +907,9 @@
 
 
 (DEFUN |PARSE-Sexpr1| ()
-  (OR (AND (|PARSE-AnyId|)
+  (OR (|PARSE-IntegerTok|)
+      (|PARSE-String|)
+      (AND (|PARSE-AnyId|)
            (OPTIONAL
                (AND (|PARSE-NBGliphTok| '=) (MUST (|PARSE-Sexpr1|))
                     (ACTION (SETQ LABLASOC
@@ -919,13 +919,11 @@
       (AND (MATCH-ADVANCE-STRING "'") (MUST (|PARSE-Sexpr1|))
            (PUSH-REDUCTION '|PARSE-Sexpr1|
                (CONS 'QUOTE (CONS (POP-STACK-1) NIL))))
-      (|PARSE-IntegerTok|)
       (AND (MATCH-ADVANCE-STRING "-") (MUST (|PARSE-IntegerTok|))
            (PUSH-REDUCTION '|PARSE-Sexpr1| (MINUS (POP-STACK-1))))
-      (|PARSE-String|)
-      (AND (MATCH-ADVANCE-STRING "<")
+      (AND (MATCH-ADVANCE-STRING "[")
            (BANG FIL_TEST (OPTIONAL (STAR REPEATOR (|PARSE-Sexpr1|))))
-           (MUST (MATCH-ADVANCE-STRING ">"))
+           (MUST (MATCH-ADVANCE-STRING "]"))
            (PUSH-REDUCTION '|PARSE-Sexpr1| (LIST2VEC (POP-STACK-1))))
       (AND (MATCH-ADVANCE-STRING "(")
            (BANG FIL_TEST
