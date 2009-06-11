@@ -1,3 +1,8 @@
+2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/info.boot (actOnInfo): Don't remember new domain names if
+	at capsule function scope.
+
 2009-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/parse.boot (parseDropAssertions): Remove.

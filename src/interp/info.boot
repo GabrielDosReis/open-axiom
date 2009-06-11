@@ -257,8 +257,10 @@ actOnInfo(u,$e) ==
         then $e:= augModemapsFromCategory(name,name,name,cat,$e)
         else
           genDomainView(name,name,cat,"HasCategory")
-          if not MEMQ(name,$functorLocalParameters) then
-             $functorLocalParameters:=[:$functorLocalParameters,name]
+          -- a domain upgrade at function level is local to that function.
+          if not $insideCapsuleFunctionIfTrue and 
+            not MEMQ(name,$functorLocalParameters) then
+              $functorLocalParameters:=[:$functorLocalParameters,name]
       compilerMessage('"augmenting %1: %2p", [name,cat])
       $e:= put(name,"value",[vval,mkJoin(cat,vmode),$noEnv],$e)
     SAY("extension of ",vval," to ",cat," ignored")
