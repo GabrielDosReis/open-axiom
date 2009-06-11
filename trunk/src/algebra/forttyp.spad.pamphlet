@@ -59,7 +59,7 @@ FortranScalarType() : exports == implementation where
       ++ CHARACTER.
     logical?  : $ -> Boolean
       ++ logical?(t) tests whether t is equivalent to the FORTRAN type LOGICAL.
-    "=" : ($,$) -> Boolean
+    = : ($,$) -> Boolean
       ++ x=y tests for equality
 
   implementation == add

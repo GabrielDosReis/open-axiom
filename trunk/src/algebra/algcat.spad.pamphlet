@@ -83,7 +83,7 @@ FiniteRankAlgebra(R:CommutativeRing, UP:UnivariatePolynomialCategory R):
 
     represents(v, b) ==
       m := minIndex v - 1
-      _+/[v(i+m) * b(i+m) for i in 1..rank()]
+      +/[v(i+m) * b(i+m) for i in 1..rank()]
 
     traceMatrix v ==
       matrix [[trace(v.i*v.j) for j in minIndex v..maxIndex v]$List(R)

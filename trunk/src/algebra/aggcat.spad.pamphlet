@@ -58,7 +58,7 @@ Aggregate: Category == Type with
      ++ size?(u,n) tests if u has exactly n elements.
    sample: constant -> %    ++ sample yields a value of type %
    if % has finiteAggregate then
-     "#": % -> NonNegativeInteger     ++ # u returns the number of items in u.
+     #: % -> NonNegativeInteger     ++ # u returns the number of items in u.
  add
   eq?(a,b) == EQ(a,b)$Lisp
   sample() == empty()
@@ -141,15 +141,15 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
      eval(u:%,l:List Equation S):% == map(eval(#1,l),u)
    if % has finiteAggregate then
      #c			  == # parts c
-     any?(f, c)		  == _or/[f x for x in parts c]
-     every?(f, c)	  == _and/[f x for x in parts c]
-     count(f:S -> Boolean, c:%) == _+/[1 for x in parts c | f x]
+     any?(f, c)		  == or/[f x for x in parts c]
+     every?(f, c)	  == and/[f x for x in parts c]
+     count(f:S -> Boolean, c:%) == +/[1 for x in parts c | f x]
      members x		  == parts x
      if S has SetCategory then
        count(s:S, x:%) == count(s = #1, x)
        member?(e, c)   == any?(e = #1,c)
        x = y ==
-	  size?(x, #y) and _and/[a = b for a in parts x for b in parts y]
+	  size?(x, #y) and (and/[a = b for a in parts x for b in parts y])
      if S has CoercibleTo(OutputForm) then
        coerce(x:%):OutputForm ==
 	 bracket
@@ -227,9 +227,9 @@ Collection(S:Type): Category == HomogeneousAggregate(S) with
  add
    if % has finiteAggregate then
      #c			  == # parts c
-     count(f:S -> Boolean, c:%) == _+/[1 for x in parts c | f x]
-     any?(f, c)		  == _or/[f x for x in parts c]
-     every?(f, c)	  == _and/[f x for x in parts c]
+     count(f:S -> Boolean, c:%) == +/[1 for x in parts c | f x]
+     any?(f, c)		  == or/[f x for x in parts c]
+     every?(f, c)	  == and/[f x for x in parts c]
      find(f:S -> Boolean, c:%) == find(f, parts c)
      reduce(f:(S,S)->S, x:%) == reduce(f, parts x)
      reduce(f:(S,S)->S, x:%, s:S) == reduce(f, parts x, s)
@@ -544,7 +544,7 @@ Dictionary(S:SetCategory): Category ==
      s = t ==
        eq?(s,t) => true
        #s ~= #t => false
-       _and/[member?(x, t) for x in parts s]
+       and/[member?(x, t) for x in parts s]
 
      remove_!(f:S->Boolean, t:%) ==
        for m in parts t repeat if f m then remove_!(m, t)
@@ -718,7 +718,7 @@ FiniteSetAggregate(S:SetCategory): Category ==
    cardinality s   == #s
    construct l	   == (s := set(); for x in l repeat insert_!(x,s); s)
    count(x:S, s:%) == (member?(x, s) => 1; 0)
-   subset?(s, t)   == #s < #t and _and/[member?(x, t) for x in parts s]
+   subset?(s, t)   == #s < #t and (and/[member?(x, t) for x in parts s])
 
    coerce(s:%):OutputForm ==
      brace [x::OutputForm for x in parts s]$List(OutputForm)
@@ -2175,7 +2175,7 @@ OneDimensionalArrayAggregate(S:Type): Category ==
 
     concat l ==
       empty? l => empty()
-      n := _+/[#a for a in l]
+      n := +/[#a for a in l]
       i := minIndex(r := new(n, stupidget l))
       for a in l repeat
 	copyInto_!(r, a, i)
@@ -2683,7 +2683,7 @@ import OneDimensionalArrayAggregate Boolean
 ++ quantities of Boolean data.
 BitAggregate(): Category ==
   Join(OrderedSet, Logic, OneDimensionalArrayAggregate Boolean) with
-    "not": % -> %
+    not: % -> %
       ++ not(b) returns the logical {\em not} of bit aggregate 
       ++ \axiom{b}.
     nand : (%, %) -> %
@@ -2692,10 +2692,10 @@ BitAggregate(): Category ==
     nor	 : (%, %) -> %
       ++ nor(a,b) returns the logical {\em nor} of bit aggregates \axiom{a} and 
       ++ \axiom{b}.
-    _and : (%, %) -> %
+    and : (%, %) -> %
       ++ a and b returns the logical {\em and} of bit aggregates \axiom{a} and 
       ++ \axiom{b}.
-    _or	 : (%, %) -> %
+    or	 : (%, %) -> %
       ++ a or b returns the logical {\em or} of bit aggregates \axiom{a} and 
       ++ \axiom{b}.
     xor	 : (%, %) -> %
@@ -2704,9 +2704,9 @@ BitAggregate(): Category ==
 
  add
    not v      == map(_not, v)
-   _~(v)      == map(_~, v)
-   _/_\(v, u) == map(_/_\, v, u)
-   _\_/(v, u) == map(_\_/, v, u)
+   ~ v        == map(_~, v)
+   v /\ u     == map(_/_\, v, u)
+   v \/ u     == map(_\_/, v, u)
    nand(v, u) == map(nand, v, u)
    nor(v, u)  == map(nor, v, u)
 

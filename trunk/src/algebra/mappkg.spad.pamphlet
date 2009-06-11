@@ -112,7 +112,7 @@ MappingPackage1(A:SetCategory): MPcat == MPdef where
  
         id:    A -> A
           ++\spad{id x} is \spad{x}.
-        "**":  (A->A, NNI)  -> (A->A)
+        **:  (A->A, NNI)  -> (A->A)
           ++\spad{f**n} is the  function which is the n-fold application
           ++ of \spad{f}.
  
@@ -220,7 +220,7 @@ MappingPackage3(A:SetCategory, B:SetCategory, C:SetCategory):_
           ++\spad{twist(f)} is the function \spad{g}
           ++ such that \spad{g (a,b)= f(b,a)}.
  
-        "*":   (B->C, A->B) -> (A->C)
+        *:   (B->C, A->B) -> (A->C)
           ++\spad{f*g} is the function \spad{h}
           ++ such that \spad{h x= f(g x)}.
  

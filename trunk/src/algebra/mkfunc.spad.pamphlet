@@ -43,15 +43,15 @@ InputForm():
       ++ \spad{lambda(code, [x1,...,xn])} returns the input form
       ++ corresponding to \spad{(x1,...,xn) +-> code} if \spad{n > 1},
       ++ or to \spad{x1 +-> code} if \spad{n = 1}.
-    "+"      : (%, %) -> %
+    +      : (%, %) -> %
       ++ \spad{a + b} returns the input form corresponding to \spad{a + b}.
-    "*"      : (%, %) -> %
+    *      : (%, %) -> %
       ++ \spad{a * b} returns the input form corresponding to \spad{a * b}.
-    "/"      : (%, %) -> %
+    /      : (%, %) -> %
       ++ \spad{a / b} returns the input form corresponding to \spad{a / b}.
-    "**"     : (%, NonNegativeInteger) -> %
+    **     : (%, NonNegativeInteger) -> %
       ++ \spad{a ** b} returns the input form corresponding to \spad{a ** b}.
-    "**"     : (%, Integer) -> %
+    **     : (%, Integer) -> %
       ++ \spad{a ** b} returns the input form corresponding to \spad{a ** b}.
     0        : constant -> %
       ++ \spad{0} returns the input form corresponding to 0.

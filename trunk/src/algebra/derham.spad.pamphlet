@@ -207,14 +207,14 @@ AntiSymm(R:Ring, lVar:List Symbol): Export == Implement where
 
       homogeneous? a ==
         null a => true
-        siz := _+/exponents(a.first.base)
+        siz := +/exponents(a.first.base)
         for ta in reductum a repeat
-          _+/exponents(ta.base) ~= siz => return false
+          +/exponents(ta.base) ~= siz => return false
         true
 
       degree a ==
         null a => 0$NNI
-        homogeneous? a => (_+/exponents(a.first.base)) :: NNI
+        homogeneous? a => (+/exponents(a.first.base)) :: NNI
         error "not a homogeneous element"
 
       zo : (I,I) -> L I
@@ -230,7 +230,7 @@ AntiSymm(R:Ring, lVar:List Symbol): Export == Implement where
         yy:L I := exponents y
         for i in 1 .. (dim-1) repeat
           xx  := rest xx
-          sgn := sgn + (_+/xx)*yy.i
+          sgn := sgn + (+/xx)*yy.i
         sgn rem 2 = 0 => 1
         -1
 

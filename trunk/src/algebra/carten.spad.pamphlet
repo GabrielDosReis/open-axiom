@@ -40,19 +40,19 @@ GradedModule(R: CommutativeRing, E: AbelianMonoid): Category ==
             ++ of a given degree form an R-module.
         0: constant -> %
             ++ 0 denotes the zero of degree 0.
-        _*: (R, %) -> %
+        *: (R, %) -> %
             ++ r*g is left module multiplication.
-        _*: (%, R) -> %
+        *: (%, R) -> %
             ++ g*r is right module multiplication.
 
-        _-: % -> %
+        -: % -> %
             ++ -g is the additive inverse of g in the module of elements
             ++ of the same grade as g.
-        _+: (%, %) -> %
+        +: (%, %) -> %
             ++ g+h is the sum of g and h in the module of elements of
             ++ the same degree as g and h.  Error: if g and h
             ++ have different degrees.
-        _-: (%, %) -> %
+        -: (%, %) -> %
             ++ g-h is the difference of g and h in the module of elements of
             ++ the same degree as g and h.  Error: if g and h
             ++ have different degrees.
@@ -171,7 +171,7 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
             ++ then \spad{r} is a rank 4 tensor given by
             ++     \spad{r(i,j,k,l) = s(i,j)*t(k,l)}.
 
-        "*": (%, %) -> %
+        *: (%, %) -> %
             ++ s*t is the inner product of the tensors s and t which contracts
             ++ the last index of s with the first index of t, i.e.
             ++     \spad{t*s = contract(t,rank t, s, 1)}

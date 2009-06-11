@@ -31,24 +31,24 @@
  
 VectorCategory(R:Type): Category == OneDimensionalArrayAggregate R with
     if R has AbelianSemiGroup then
-      _+ : (%, %) -> %
+      + : (%, %) -> %
         ++ x + y returns the component-wise sum of the vectors x and y.
         ++ Error: if x and y are not of the same length.
     if R has AbelianMonoid then
       zero: NonNegativeInteger -> %
         ++ zero(n) creates a zero vector of length n.
     if R has AbelianGroup then
-      _- : % -> %
+      - : % -> %
         ++ -x negates all components of the vector x.
-      _- : (%, %) -> %
+      - : (%, %) -> %
         ++ x - y returns the component-wise difference of the vectors x and y.
         ++ Error: if x and y are not of the same length.
-      _* : (Integer, %) -> %
+      * : (Integer, %) -> %
         ++ n * y multiplies each component of the vector y by the integer n.
     if R has Monoid then
-      _* : (R, %) -> %
+      * : (R, %) -> %
         ++ r * y multiplies the element r times each component of the vector y.
-      _* : (%, R) -> %
+      * : (%, R) -> %
         ++ y * r multiplies each component of the vector y by the element r.
     if R has Ring then
       dot: (%, %) -> R
@@ -86,7 +86,7 @@ VectorCategory(R:Type): Category == OneDimensionalArrayAggregate R with
     if R has Ring then
       dot(u, v) ==
         #u ~= #v => error "Vectors must be of the same length"
-        _+/[qelt(u, i) * qelt(v, i) for i in minIndex u .. maxIndex u]
+        +/[qelt(u, i) * qelt(v, i) for i in minIndex u .. maxIndex u]
       outerProduct(u, v) ==
         matrix [[qelt(u, i) * qelt(v,j) for i in minIndex u .. maxIndex u] _
                 for j in minIndex v .. maxIndex v]
@@ -256,10 +256,10 @@ DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
          if R has CancellationAbelianMonoid then CancellationAbelianMonoid
          if R has Monoid then
            Monoid
-           _* : (R, %) -> %
+           * : (R, %) -> %
              ++ r * y multiplies the element r times each component of the
              ++ vector y.
-           _* : (%, R) -> %
+           * : (%, R) -> %
              ++ y * r multiplies each component of the vector y by the element r.
          if R has Finite then Finite
          if R has CommutativeRing then
@@ -346,7 +346,7 @@ DirectProduct(dim:NonNegativeInteger, R:Type):
         same?: % -> Boolean
         same? z == every?(#1 = z(minIndex z), z)
  
-        x = y == _and/[qelt(x,i)$Rep = qelt(y,i)$Rep for i in 1..dim]
+        x = y == and/[qelt(x,i)$Rep = qelt(y,i)$Rep for i in 1..dim]
  
         retract(z:%):R ==
           same? z => z(minIndex z)

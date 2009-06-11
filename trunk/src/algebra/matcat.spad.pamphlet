@@ -143,40 +143,40 @@ MatrixCategory(R,Row,Col): Category == Definition where
 
 --% Arithmetic
 
-     "+": (%,%) -> %
+     +: (%,%) -> %
        ++ \spad{x + y} is the sum of the matrices x and y.
        ++ Error: if the dimensions are incompatible.
-     "-": (%,%) -> %
+     -: (%,%) -> %
        ++ \spad{x - y} is the difference of the matrices x and y.
        ++ Error: if the dimensions are incompatible.
-     "-":  %    -> %
+     -:  %    -> %
        ++ \spad{-x} returns the negative of the matrix x.
-     "*": (%,%) -> %
+     *: (%,%) -> %
        ++ \spad{x * y} is the product of the matrices x and y.
        ++ Error: if the dimensions are incompatible.
-     "*": (R,%) -> %
+     *: (R,%) -> %
        ++ \spad{r*x} is the left scalar multiple of the scalar r and the
        ++ matrix x.
-     "*": (%,R) -> %
+     *: (%,R) -> %
        ++ \spad{x * r} is the right scalar multiple of the scalar r and the
        ++ matrix x.
-     "*": (Integer,%) -> %
+     *: (Integer,%) -> %
        ++ \spad{n * x} is an integer multiple.
-     "*": (%,Col) -> Col
+     *: (%,Col) -> Col
        ++ \spad{x * c} is the product of the matrix x and the column vector c.
        ++ Error: if the dimensions are incompatible.
-     "*": (Row,%) -> Row
+     *: (Row,%) -> Row
        ++ \spad{r * x} is the product of the row vector r and the matrix x.
        ++ Error: if the dimensions are incompatible.
-     "**": (%,NonNegativeInteger) -> %
+     **: (%,NonNegativeInteger) -> %
        ++ \spad{x ** n} computes a non-negative integral power of the matrix x.
        ++ Error: if the matrix is not square.
      if R has IntegralDomain then
-       "exquo": (%,R) -> Union(%,"failed")
+       exquo: (%,R) -> Union(%,"failed")
          ++ \spad{exquo(m,r)} computes the exact quotient of the elements
          ++ of m by r, returning \axiom{"failed"} if this is not possible.
      if R has Field then
-       "/": (%,R) -> %
+       /: (%,R) -> %
          ++ \spad{m/r} divides the elements of m by r. Error: if \spad{r = 0}.
 
 --% Linear algebra
@@ -205,7 +205,7 @@ MatrixCategory(R,Row,Col): Category == Definition where
          ++ \spad{inverse(m)} returns the inverse of the matrix m.
          ++ If the matrix is not invertible, "failed" is returned.
          ++ Error: if the matrix is not square.
-       "**": (%,Integer) -> %
+       **: (%,Integer) -> %
          ++ \spad{m**n} computes an integral power of the matrix m.
          ++ Error: if matrix is not square or if the matrix
          ++ is square but not invertible.
@@ -651,11 +651,11 @@ RectangularMatrixCategory(m,n,R,Row,Col): Category == Definition where
 --% Arithmetic
 
     if R has IntegralDomain then
-      "exquo": (%,R) -> Union(%,"failed")
+      exquo: (%,R) -> Union(%,"failed")
         ++ \spad{exquo(m,r)} computes the exact quotient of the elements
         ++ of m by r, returning \axiom{"failed"} if this is not possible.
     if R has Field then
-      "/": (%,R) -> %
+      /: (%,R) -> %
         ++ \spad{m/r} divides the elements of m by r. Error: if \spad{r = 0}.
 
 --% Linear algebra
@@ -748,10 +748,10 @@ SquareMatrixCategory(ndim,R,Row,Col): Category == Definition where
     diagonalProduct: % -> R
       ++ \spad{diagonalProduct(m)} returns the product of the elements on the
       ++ diagonal of the matrix m.
-    "*": (%,Col) -> Col
+    *: (%,Col) -> Col
       ++ \spad{x * c} is the product of the matrix x and the column vector c.
       ++ Error: if the dimensions are incompatible.
-    "*": (Row,%) -> Row
+    *: (Row,%) -> Row
       ++ \spad{r * x} is the product of the row vector r and the matrix x.
       ++ Error: if the dimensions are incompatible.
 
@@ -768,7 +768,7 @@ SquareMatrixCategory(ndim,R,Row,Col): Category == Definition where
       inverse: % -> Union(%,"failed")
         ++ \spad{inverse(m)} returns the inverse of the matrix m, if that
         ++ matrix is invertible and returns "failed" otherwise.
-      "**": (%,Integer) -> %
+      **: (%,Integer) -> %
         ++ \spad{m**n} computes an integral power of the matrix m.
         ++ Error: if the matrix is not invertible.
 

@@ -138,7 +138,7 @@ AbelianMonoid(): Category == AbelianSemiGroup with
 	++ sample yields a value of type %
       zero?: % -> Boolean
 	++ zero?(x) tests if x is equal to 0.
-      "*": (NonNegativeInteger,%) -> %
+      *: (NonNegativeInteger,%) -> %
         ++ n * x is left-multiplication by a non negative integer
     add
       import RepeatedDoubling(%)
@@ -176,8 +176,8 @@ import PositiveInteger
 ++   \spad{commutative("+":(%,%)->%)}\tab{30}\spad{ x+y = y+x }
 AbelianSemiGroup(): Category == SetCategory with
     --operations
-      "+": (%,%) -> %                  ++ x+y computes the sum of x and y.
-      "*": (PositiveInteger,%) -> %
+      +: (%,%) -> %                  ++ x+y computes the sum of x and y.
+      *: (PositiveInteger,%) -> %
         ++ n*x computes the left-multiplication of x by the positive integer n.
         ++ This is equivalent to adding x to itself n times.
     add
@@ -234,10 +234,10 @@ import Boolean
 ++ \spadtype{BasicType} is the basic category for describing a collection
 ++ of elements with \spadop{=} (equality).
 BasicType(): Category == with
-      "=": (%,%) -> Boolean    ++ x=y tests if x and y are equal.
-      "~=": (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
+      =: (%,%) -> Boolean    ++ x=y tests if x and y are equal.
+      ~=: (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
    add
-      _~_=(x:%,y:%) : Boolean == not(x=y)
+      x:% ~= y:% == not(x=y)
 
 @
 
@@ -463,7 +463,7 @@ DifferentialExtension(R:Ring): Category == Ring with
 
 DivisionRing(): Category ==
  Join(EntireRing, Algebra Fraction Integer) with
-      "**": (%,Integer) -> %
+      **: (%,Integer) -> %
           ++ x**n returns x raised to the integer power n.
       inv : % -> %
           ++ inv x returns the multiplicative inverse of x.
@@ -548,10 +548,10 @@ EuclideanDomain(): Category == PrincipalIdealDomain with
          ++ \spad{quotient} and \spad{remainder},
          ++ where the remainder is smaller (see \spadfunFrom{sizeLess?}{EuclideanDomain})
          ++ than the divisor y.
-      "quo" : (%,%) -> %
+      quo : (%,%) -> %
          ++ x quo y is the same as \spad{divide(x,y).quotient}.
          ++ See \spadfunFrom{divide}{EuclideanDomain}.
-      "rem": (%,%) -> %
+      rem: (%,%) -> %
          ++ x rem y is the same as \spad{divide(x,y).remainder}.
          ++ See \spadfunFrom{divide}{EuclideanDomain}.
       extendedEuclidean: (%,%) -> Record(coef1:%,coef2:%,generator:%)
@@ -692,7 +692,7 @@ EuclideanDomain(): Category == PrincipalIdealDomain with
 Field(): Category == Join(EuclideanDomain,UniqueFactorizationDomain,
   DivisionRing) with
     --operations
-      "/": (%,%) -> %
+      /: (%,%) -> %
         ++ x/y divides the element x by the element y.
         ++ Error: if y is 0.
       canonicalUnitNormal  ++ either 0 or 1.
@@ -875,9 +875,9 @@ GcdDomain(): Category == IntegralDomain with
 ++   \spad{rightInverse("*":(%,%)->%,inv)}\tab{30}\spad{ x*inv(x) = 1 }
 Group(): Category == Monoid with
     --operations
-      inv: % -> %               ++ inv(x) returns the inverse of x.
-      "/": (%,%) -> %           ++ x/y is the same as x times the inverse of y.
-      "**": (%,Integer) -> %    ++ x**n returns x raised to the integer power n.
+      inv: % -> %             ++ inv(x) returns the inverse of x.
+      /: (%,%) -> %           ++ x/y is the same as x times the inverse of y.
+      **: (%,Integer) -> %    ++ x**n returns x raised to the integer power n.
       unitsKnown                ++ unitsKnown asserts that recip only returns
                                 ++ "failed" for non-units.
       conjugate: (%,%) -> %
@@ -921,7 +921,7 @@ IntegralDomain(): Category ==
 --  Join(CommutativeRing, Algebra(%:CommutativeRing), EntireRing) with
   Join(CommutativeRing, Algebra(%), EntireRing) with
     --operations
-      "exquo": (%,%) -> Union(%,"failed")
+      exquo: (%,%) -> Union(%,"failed")
             ++ exquo(a,b) either returns an element c such that
             ++ \spad{c*b=a} or "failed" if no such element can be found.
       unitNormal: % -> Record(unit:%,canonical:%,associate:%)
@@ -946,7 +946,7 @@ IntegralDomain(): Category ==
       if not (% has Field) then
         unitNormal(x) == [1$%,x,1$%]$UCA -- the non-canonical definition
       unitCanonical(x) == unitNormal(x).canonical -- always true
-      recip(x) == if zero? x then "failed" else _exquo(1$%,x)
+      recip(x) == if zero? x then "failed" else 1$% exquo x
       unit?(x) == (recip x case "failed" => false; true)
       if % has canonicalUnitNormal then
          associates?(x,y) ==
@@ -1062,7 +1062,7 @@ Monoid(): Category == SemiGroup with
       1: constant ->  %                   ++ 1 is the multiplicative identity.
       sample: constant -> %               ++ sample yields a value of type %
       one?: % -> Boolean                  ++ one?(x) tests if x is equal to 1.
-      "**": (%,NonNegativeInteger) -> %   ++ x**n returns the repeated product
+      **: (%,NonNegativeInteger) -> %     ++ x**n returns the repeated product
                                           ++ of x n times, i.e. exponentiation.
       recip: % -> Union(%,"failed")
           ++ recip(x) tries to compute the multiplicative inverse for x
@@ -1330,13 +1330,13 @@ import Boolean
 
 OrderedSet(): Category == SetCategory with
   --operations
-    "<": (%,%) -> Boolean
+    <: (%,%) -> Boolean
       ++ x < y is a strict total ordering on the elements of the set.
-    ">":         (%, %) -> Boolean
+    >:         (%, %) -> Boolean
       ++ x > y is a greater than test.
-    ">=":        (%, %) -> Boolean
+    >=:        (%, %) -> Boolean
       ++ x >= y is a greater than or equal test.
-    "<=":        (%, %) -> Boolean
+    <=:        (%, %) -> Boolean
       ++ x <= y is a less than or equal test.
 
     max: (%,%) -> %
@@ -1651,9 +1651,9 @@ import PositiveInteger
 ++    \spad{commutative("*":(%,%)->%)}\tab{30}\spad{ x*y = y*x }
 SemiGroup(): Category == SetCategory with
     --operations
-      "*": (%,%) -> %                  ++ x*y returns the product of x and y.
-      "**": (%,PositiveInteger) -> %   ++ x**n returns the repeated product
-                                       ++ of x n times, i.e. exponentiation.
+      *: (%,%) -> %                  ++ x*y returns the product of x and y.
+      **: (%,PositiveInteger) -> %   ++ x**n returns the repeated product
+                                     ++ of x n times, i.e. exponentiation.
     add
       import RepeatedSquaring(%)
       x:% ** n:PositiveInteger == expt(x,n)
@@ -1782,7 +1782,7 @@ UniqueFactorizationDomain(): Category == GcdDomain with
 ++ Vector Spaces (not necessarily finite dimensional) over a field.
 
 VectorSpace(S:Field): Category ==  Module(S) with
-    "/"      : (%, S) -> %
+    /      : (%, S) -> %
       ++ x/y divides the vector x by the scalar y.
     dimension: () -> CardinalNumber
       ++ dimension() returns the dimensionality of the vector space.

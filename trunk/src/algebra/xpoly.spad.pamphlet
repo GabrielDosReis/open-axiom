@@ -43,11 +43,11 @@ OrderedFreeMonoid(S: OrderedSet): OFMcategory == OFMdefinition where
     REC ==> Record(gen:S, exp:NNI)
  
     OFMcategory == Join(OrderedMonoid, RetractableTo S) with
-        "*":    (S, %) -> %
+        *:    (S, %) -> %
           ++ \spad{s * x} returns the product of \spad{x} by \spad{s} on the left.
-        "*":    (%, S) -> %
+        *:    (%, S) -> %
           ++ \spad{x * s} returns the product of \spad{x} by \spad{s} on the right.
-        "**":   (S, NNI) -> %
+        **:   (S, NNI) -> %
           ++ \spad{s ** n} returns the product of \spad{s} by itself \spad{n} times.
         first: % -> S
           ++ \spad{first(x)} returns the first letter of \spad{x}.
@@ -80,7 +80,7 @@ OrderedFreeMonoid(S: OrderedSet): OFMcategory == OFMdefinition where
         rquo:   (%, S) -> Union(%, "failed")
           ++ \spad{rquo(x, s)} returns the exact right quotient 
           ++ of \spad{x} by \spad{s}.
-        "div":   (%, %) -> Union(Record(lm: %, rm: %), "failed")
+        div:   (%, %) -> Union(Record(lm: %, rm: %), "failed")
           ++ \spad{x div y} returns the left and right exact quotients of
           ++ \spad{x} by \spad{y}, that is \spad{[l, r]} such that \spad{x = l * y * r}.
           ++ "failed" is returned iff \spad{x} is not of the form \spad{l * y * r}.
@@ -205,7 +205,7 @@ FreeModuleCat(R, Basis):Category == Exports where
    TERM ==> Record(k: Basis, c: R)
    
    Exports == Join(BiModule(R,R), RetractableTo Basis) with
-        "*"                : (R, Basis) -> %
+        *                : (R, Basis) -> %
           ++ \spad{r*b} returns the product of \spad{r} by \spad{b}.
         coefficient        : (%, Basis) -> R
           ++ \spad{coefficient(x,b)} returns the coefficient 
@@ -278,7 +278,7 @@ FreeModule1(R:Ring,S:OrderedSet): FMcat == FMdef where
   TERM ==> Record(k:S,c:R)
 
   FMcat == FreeModuleCat(R,S) with
-    "*":(S,R) -> %
+    *:(S,R) -> %
       ++ \spad{s*r} returns the product \spad{r*s}
       ++ used by \spadtype{XRecursivePolynomial} 
   FMdef == FreeModule(R,S) add
@@ -419,9 +419,9 @@ XFreeAlgebra(vl:OrderedSet,R:Ring):Category == Catdef where
 
    Catdef == Join(Ring, XAlgebra(R), RetractableTo WORD) 
      with
-       "*": (vl,%) -> %
+       *: (vl,%) -> %
          ++ \spad{v * x} returns the product of a variable \spad{x} by \spad{x}.
-       "*": (%, R) -> %                 
+       *: (%, R) -> %                 
          ++ \spad{x * r} returns the product of \spad{x} by \spad{r}.
          ++ Usefull if \spad{R} is a non-commutative Ring.
        mindeg: % -> WORD                
@@ -547,9 +547,9 @@ XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
 
   T == Join(Ring, XAlgebra(R), FreeModuleCat(R,E),CoercibleFrom E) with
     --operations
-      "*": (%,R) -> %
+      *: (%,R) -> %
         ++ \spad{p*r} returns the product of \spad{p} by \spad{r}.
-      "#": % -> NonNegativeInteger
+      #: % -> NonNegativeInteger
         ++ \spad{# p} returns the number of terms in \spad{p}.
       maxdeg: % -> E
         ++ \spad{maxdeg(p)} returns the greatest word occurring in the polynomial \spad{p}
@@ -574,7 +574,7 @@ XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
         ++ \spad{quasiRegular(x)} return \spad{x} minus its constant term.
       map   : (R -> R, %) -> %
         ++ \spad{map(fn,x)} returns \spad{Sum(fn(r_i) w_i)} if \spad{x} writes \spad{Sum(r_i w_i)}.
-      if R has Field then "/" : (%,R) -> %
+      if R has Field then / : (%,R) -> %
         ++ \spad{p/r} returns \spad{p*(1/r)}.
 
     --assertions

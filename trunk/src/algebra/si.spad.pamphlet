@@ -201,9 +201,9 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
       ++ \spad{noetherian} all ideals are finitely generated (in fact principal).
 
    -- bit operations
-   "not":   % -> %
+   not:   % -> %
       ++ not(n) returns the bit-by-bit logical {\em not} of the single integer n.
-   "xor": (%, %) -> %
+   xor: (%, %) -> %
       ++ xor(n,m)  returns the bit-by-bit logical {\em xor} of
       ++ the single integers n and m.
    Not  : % -> %
@@ -281,8 +281,8 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    x = y     == EQL(x,y)$Lisp
    ~ x       == LOGNOT(x)$Lisp
    not(x)    == LOGNOT(x)$Lisp
-   _/_\(x,y) == LOGAND(x,y)$Lisp
-   _\_/(x,y) == LOGIOR(x,y)$Lisp
+   x /\ y    == LOGAND(x,y)$Lisp
+   x \/ y    == LOGIOR(x,y)$Lisp
    Not(x)    == LOGNOT(x)$Lisp
    And(x,y)  == LOGAND(x,y)$Lisp
    Or(x,y)   == LOGIOR(x,y)$Lisp

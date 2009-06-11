@@ -118,10 +118,10 @@ PermutationGroup(S:SetCategory): public == private where
       ++ represented by the indices of the list, given by {\em generators}.
     movedPoints      : %         -> FSET S
       ++ movedPoints(gp) returns the points moved by the group {\em gp}.
-    "<"              : (%,%)     -> B
+    <              : (%,%)     -> B
       ++ gp1 < gp2 returns true if and only if {\em gp1}
       ++ is a proper subgroup of {\em gp2}.
-    "<="             : (%,%)     -> B
+    <=             : (%,%)     -> B
       ++ gp1 <= gp2 returns true if and only if {\em gp1}
       ++ is a subgroup of {\em gp2}.
       ++ Note: because of a bug in the parser you have to call this

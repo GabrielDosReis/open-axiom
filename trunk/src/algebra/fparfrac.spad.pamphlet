@@ -35,7 +35,7 @@ FullPartialFractionExpansion(F, UP): Exports == Implementation where
   FPF ==> Record(polyPart: UP, fracPart: List REC)
 
   Exports ==> Join(SetCategory, ConvertibleTo RF)  with
-    "+":                 (UP, $) -> $
+    +:                 (UP, $) -> $
       ++ p + x returns the sum of p and x
     fullPartialFraction: RF -> $
       ++ fullPartialFraction(f) returns \spad{[p, [[j, Dj, Hj]...]]} such that

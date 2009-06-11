@@ -73,10 +73,10 @@ Maybe(T: CoercibleTo OutputForm): Public == Private where
   Public == Join(UnionType,RetractableTo T, CoercibleTo OutputForm) with
     just: T -> %
       ++ \spad{just x} injects the value `x' into %.
-    _case: (%,[| T |]) -> Boolean
+    case: (%,[| T |]) -> Boolean
       ++ \spad{x case T} returns true if \spad{x} is actually a data of 
       ++ type \spad{T}.
-    _case: (%,[| nothing |]) -> Boolean
+    case: (%,[| nothing |]) -> Boolean
       ++ \spad{x case nothing} holds if the value for \spad{x} is missing.
     autoCoerce: % -> T
       ++ \spad{autoCoerce} is a courtesy coercion function used by the

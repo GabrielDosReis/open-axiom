@@ -43,7 +43,7 @@ IntegerSolveLinearPolynomialEquation(): C ==T
       solveLinearPolynomialEquation(lp,p) ==
          if (oldlp ~= lp) then
             -- we have to generate a new table
-            deg:= _+/[degree u for u in lp]
+            deg:= +/[degree u for u in lp]
             ans:Union(Vector List ZP,"failed"):="failed"
             slpePrime:=2147483647::Integer   -- 2**31 -1 : a prime
                  -- a good test case for this package is
@@ -250,10 +250,10 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
 ++ Description: \spadtype{NonNegativeInteger} provides functions for non
 ++   negative integers.
 NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
-            _quo : (%,%) -> %
+            quo : (%,%) -> %
               ++ a quo b returns the quotient of \spad{a} and b, forgetting
               ++ the remainder.
-            _rem : (%,%) -> %
+            rem : (%,%) -> %
               ++ a rem b returns the remainder of \spad{a} and b.
             gcd  : (%,%) -> %
               ++ gcd(a,b) computes the greatest common divisor of two
@@ -261,7 +261,7 @@ NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
             divide: (%,%) -> Record(quotient:%,remainder:%)
               ++ divide(a,b) returns a record containing both
               ++ remainder and quotient.
-            _exquo: (%,%) -> Union(%,"failed")
+            exquo: (%,%) -> Union(%,"failed")
               ++ exquo(a,b) returns the quotient of \spad{a} and b, or "failed"
               ++ if b is zero or \spad{a} rem b is zero.
             shift: (%, Integer) -> %

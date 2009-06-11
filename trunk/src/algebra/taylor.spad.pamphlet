@@ -59,11 +59,11 @@ InnerTaylorSeries(Coef): Exports == Implementation where
       ++ i.e. the degree of the first non-zero term of the series.
     order: (%,NNI) -> NNI
       ++\spad{order(x,n)} returns the minimum of n and the order of x.
-    "*" : (Coef,%)->%
+    * : (Coef,%)->%
       ++\spad{c*x} returns the product of c and the series x.
-    "*" : (%,Coef)->%
+    * : (%,Coef)->%
       ++\spad{x*c} returns the product of c and the series x.
-    "*" : (%,Integer)->%
+    * : (%,Integer)->%
       ++\spad{x*i} returns the product of integer i and the series x.
     if Coef has IntegralDomain then IntegralDomain
       --++ An IntegralDomain provides 'exquo'

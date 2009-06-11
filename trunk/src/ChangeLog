@@ -1,5 +1,9 @@
 2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/: Remove quotes from operator namaes in signatures.
+
+2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/newaux.lisp: Remove digraphs '(<' and '>) as alternate
 	spelling for '{' and '}'.
 	* interp/fnewmeta.lisp (|PARSE-Primary1|): Use PARSE-Data for

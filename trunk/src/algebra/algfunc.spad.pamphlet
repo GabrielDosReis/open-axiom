@@ -327,7 +327,7 @@ AlgebraicFunction(R, F): Exports == Implementation where
       ++ droot(l) should be a non-exported function.
       -- un-export when the compiler accepts conditional local functions!
     if R has RetractableTo Integer then
-      "**"   : (F, Q) -> F
+      **   : (F, Q) -> F
         ++ x ** q is \spad{x} raised to the rational power \spad{q}.
       minPoly: K  -> UP
         ++ minPoly(k) returns the defining polynomial of \spad{k}.

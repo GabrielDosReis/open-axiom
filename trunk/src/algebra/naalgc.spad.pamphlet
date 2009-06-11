@@ -28,7 +28,7 @@
 ++  with a binary operation.
 Monad(): Category == SetCategory with
     --operations
-      "*": (%,%) -> %
+      *: (%,%) -> %
         ++ a*b is the product of \spad{a} and b in a set with
         ++ a binary operation.
       rightPower: (%,PositiveInteger) -> %
@@ -39,7 +39,7 @@ Monad(): Category == SetCategory with
         ++ leftPower(a,n) returns the \spad{n}-th left power of \spad{a},
         ++ i.e. \spad{leftPower(a,n) := a * leftPower(a,n-1)} and
         ++ \spad{leftPower(a,1) := a}.
-      "**": (%,PositiveInteger) -> %
+      **: (%,PositiveInteger) -> %
         ++ a**n returns the \spad{n}-th power of \spad{a},
         ++ defined by repeated squaring.
     add

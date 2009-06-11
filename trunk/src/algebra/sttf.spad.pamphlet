@@ -42,7 +42,7 @@ StreamTranscendentalFunctions(Coef): Exports == Implementation where
       ++ exp(st) computes the exponential of a power series st.
     log     : ST -> ST
       ++ log(st) computes the log of a power series.
-    "**"    : (ST,ST) -> ST
+    **    : (ST,ST) -> ST
       ++ st1 ** st2 computes the power of a power series st1 by another
       ++ power series st2.
 
@@ -490,7 +490,7 @@ StreamTranscendentalFunctionsNonCommutative(Coef): _
       ++ exp(st) computes the exponential of a power series st.
     log     : ST -> ST
       ++ log(st) computes the log of a power series.
-    "**"    : (ST,ST) -> ST
+    **    : (ST,ST) -> ST
       ++ st1 ** st2 computes the power of a power series st1 by another
       ++ power series st2.
 

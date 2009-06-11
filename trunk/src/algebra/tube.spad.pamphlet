@@ -86,16 +86,16 @@ TubePlotTools(): Exports == Implementation where
       ++ specified coordinates \spad{x1}, \spad{x2}, \spad{x3}, and also
       ++ a fourth coordinate, c, which is generally used to specify the 
       ++ color of the point.
-    "*" : (SF,Pt) -> Pt
+    * : (SF,Pt) -> Pt
       ++ s * p returns a point whose coordinates are the scalar multiple
       ++ of the point p by the scalar s, preserving the color, or fourth
       ++ coordinate, of p.
-    "+" : (Pt,Pt) -> Pt
+    + : (Pt,Pt) -> Pt
       ++ p + q computes and returns a point whose coordinates are the sums
       ++ of the coordinates of the two points \spad{p} and \spad{q}, using
       ++ the color, or fourth coordinate, of the first point \spad{p}
       ++ as the color also of the point \spad{q}.
-    "-" : (Pt,Pt) -> Pt
+    - : (Pt,Pt) -> Pt
       ++ p - q computes and returns a point whose coordinates are the
       ++ differences of the coordinates of two points \spad{p} and \spad{q},
       ++ using the color, or fourth coordinate, of the first point \spad{p}

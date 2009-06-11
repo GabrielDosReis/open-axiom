@@ -72,11 +72,11 @@ Color(): Exports == Implementation where
   SF     ==> DoubleFloat
  
   Exports ==> AbelianSemiGroup with
-    "*"    : (PI, %) -> %
+    *    : (PI, %) -> %
       ++ s * c, returns the color c, whose weighted shade has been scaled by s.
-    "*"    : (SF, %) -> %
+    *    : (SF, %) -> %
       ++ s * c, returns the color c, whose weighted shade has been scaled by s.
-    "+"    : (%, %) -> %
+    +    : (%, %) -> %
       ++ c1 + c2 additively mixes the two colors c1 and c2.
     red    : ()      -> %
       ++ red() returns the position of the red hue from total hues.

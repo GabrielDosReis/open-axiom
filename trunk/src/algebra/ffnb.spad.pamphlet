@@ -111,13 +111,13 @@ InnerNormalBasisFieldFunctions(GF): Exports == Implementation where
 
 -- the semantic of the following functions is obvious from the finite field
 -- context, for description see category FAXF
-      "**"      :(VGF,I)       -> VGF
+      **      :(VGF,I)       -> VGF
 	++ x**n \undocumented{}
 	++ See \axiomFunFrom{**}{DivisionRing}
-      "*"       :(VGF,VGF)     -> VGF
+      *       :(VGF,VGF)     -> VGF
 	++ x*y \undocumented{}
 	++ See \axiomFunFrom{*}{SemiGroup}
-      "/"       :(VGF,VGF)     -> VGF
+      /       :(VGF,VGF)     -> VGF
 	++ x/y \undocumented{}
 	++ See \axiomFunFrom{/}{Field}
       norm      :(VGF,PI)      -> VGF
