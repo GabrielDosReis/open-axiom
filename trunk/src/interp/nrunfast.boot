@@ -62,6 +62,20 @@ isNewWorldDomain domain ==
  
 getDomainByteVector dom == 
   CDDR dom.4
+
+++ Return the sequence of categories `dom' belongs to, as a vector
+++ of lazy category forms.
+getDomainCategoriesVector dom ==
+  second(dom.4)
+
+++ Same as getDomainCategoriesVector except that we return a list of
+++ input forms for the categories.
+getDomainCompleteCategories dom ==
+  vec := getDomainCategoriesVector dom
+  cats := nil
+  for i in 0..MAXINDEX vec repeat
+    cats := [newExpandLocalType(vec.i,dom,dom), :cats]
+  nreverse cats
  
 getOpCode(op,vec,max) ==
 --search Op vector for "op" returning code if found, nil otherwise
@@ -671,7 +685,7 @@ lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
 --    predvec := domain.3
 --    testBitVector(predvec,predIndex)
 --  false
- 
+
 --=======================================================
 --                   Utility Functions
 --=======================================================
