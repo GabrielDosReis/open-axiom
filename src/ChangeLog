@@ -1,3 +1,14 @@
+2009-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Support retract of domains.
+	* interp/i-funsel.boot (findFunctionInDomain): Don't look into
+	categories. 
+	* interp/i-coerce.boot (retract): Retract domain objects too.
+	(retract1): Do it.
+	(coerceInteractive): Likewise.
+	* interp/nrunfast.boot (getDomainCategoriesVector): New.
+	(getDomainCompleteCategories): Likewise.
+
 2009-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/: Don't quote '!' at end of names.
