@@ -1,5 +1,14 @@
 2009-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/any.spad.pamphlet (AnyFunctions1): Remove `pretend'
+	shenanigans.  Use is-case pattern matching.
+	* interp/g-opt.boot (varIsAssigned): New.
+	(canInlineVarDefinition): New.
+	(optLET): Use it to inline functionally used local variables.
+	Register as backend optimizer.
+
+2009-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-constants.boot ($defaultOptimizationLevel): New.
 	* interp/sys-driver.boot (initializeGlobalState): Use it for
 	default initialization level.

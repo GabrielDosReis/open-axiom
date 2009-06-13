@@ -421,6 +421,21 @@ findVMFreeVars form ==
   atom op => vars
   union(findVMFreeVars op,vars)
 
+++ Return true is `var' is the left hand side of an assignment
+++ in `form'.
+varIsAssigned(var,form) ==
+  isAtomicForm form => false
+  form is [op,=var,:.] and MEMQ(op,'(%LET LETT SETQ)) => true
+  or/[varIsAssigned(var,f) for f in form]
+
+++ Subroutine of optLET.  Return true if the variable `var' locally
+++ defined in the LET-form can be safely replaced by its initalization
+++ `expr' in the `body' of the LET-form.
+canInlineVarDefinition(var,expr,body) ==
+  varIsAssigned(var,body) => false
+  numOfOccurencesOf(var,body) < 2 => true
+  atom expr and not varIsAssigned(expr,body)
+
 ++ Implement simple-minded LET-inlining.  It seems we can't count
 ++ on Lisp implementations to do this simple transformation.
 ++ This transformation will probably be more effective when all
@@ -429,6 +444,16 @@ findVMFreeVars form ==
 optLET u ==
   -- Hands off non-simple cases.
   u isnt ["LET",inits,body] => u
+  -- Inline functionally used local variables with their initializers.
+  inits := [:newInit for (init := [var,expr]) in inits] where 
+    newInit() ==
+      canInlineVarDefinition(var,expr,body) =>
+        body := substitute(expr,var,body)
+        nil  -- remove this initialization
+      [init] -- otherwwise keep it.
+  null inits => body
+  rplac(second u,inits)
+  rplac(third u,body)
   -- Avoid initialization forms that may not be floatable.
   not(and/[isFloatableVMForm init for [.,init] in inits]) => u
   -- Identity function.
@@ -473,6 +498,7 @@ lispize x == first optimize [x]
  
 for x in '( (call         optCall) _
            (SEQ          optSEQ)_
+           (LET          optLET)_
            (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
            (_-           opt_-)_
