@@ -231,6 +231,7 @@ import Any
 ++ Date Created:
 ++ Change History:
 ++ Basic Functions:  coerce, retractIfCan, retractable?, retract
+++ Date Last Updated: June 13, 2009.
 ++ Related Constructors: Any
 ++ Also See:
 ++ AMS Classification:
@@ -262,16 +263,22 @@ AnyFunctions1(S:Type): with
 
         Sexpr:SExpression := devaluate(S)$Lisp
 
-        retractable? a  == dom(a) = Sexpr
         coerce(s:S):Any == any(Sexpr, s::None)
 
+        retractable? a ==
+          case a is
+            s: S => true
+            otherwise => false
+
         retractIfCan a ==
-            retractable? a => obj(a) pretend S
-            "failed"
+          case a is
+            s: S => s
+            otherwise => "failed"
 
         retract a ==
-            retractable? a => obj(a) pretend S
-            error "Cannot retract value."
+          case a is
+            s: S => s
+            otherwise => error "Cannot retract value."
 
 @
 
