@@ -1222,6 +1222,9 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom op => and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
   op is ["XLAM",args,bods] =>
     and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
+  op = "LET" or op = "LET*" =>
+    or/[canReturn(init,level,exitCount,false) for [.,init] in second expr]
+       or canReturn(third expr,exitCount,ValueFlag)
   systemErrorHere ['"canReturn",expr] --for the time being
 
 ++ We are compiling a conditional expression, type check and generate
@@ -1940,44 +1943,41 @@ compResolveCall(op,argTs,m,$e) ==
 
 --% %Match
 
-
-++ Subroutine of compMatch, responsible of compiling individual alternative
-++ of the form 
+++ Subroutine of compAlternativeGuardItem, responsible of compiling 
+++ individual alternative of the form 
 ++      x@t => stmt
-++ in environment `e'.  Here `y' is the scrutinee, and `m' is the
-++ exit mode of `stmt'. And `T' is [y,m,e].
-++ Return a quadruple [code,mode,envTrue,envFalse], where
-++   code is a pair [cond, body]
-++   mode is the final mode (equal to m if everything is OK)
-++   envTrue is the environment resulting from compiling `stmt'
-++   envFalse is the environment for failed match.
-compRetractAlternative(x,t,stmt,m,s,T) ==
+++ in environment `e'.  Here `sn' is the temporary holding the
+++ value of the scrutinee, and `sm' is its type.
+++ Return a quadruple [guard,init,envTrue,envFalse], where
+++   `guard' is code that gates the body of the alternative
+++   `init' is list of possible initializations 
+++   `envTrue' is an environment after the guard evaluates to true
+++   `envFalse' is an environment after the guard environment to false.
+compRetractGuard(x,t,sn,sm,e) ==
   -- The retract pattern is compiled by transforming
-  --     x@t => sttmt
+  --     x@t => stmt
   -- into the following program fragment
-  --   y case t => (x := <init>; stmt)
-  -- where <init> is code that compute appropriate initialization
-  -- for `x' under the condition that either `y' may be implicitly
+  --   sn case t => (x := <expr>; stmt)
+  -- where <expr> is code that computes appropriate initialization
+  -- for `x' under the condition that either `sn' may be implicitly
   -- convertible to t (using only courtesy coerciions) or that
-  -- `y' is retractable to t.
+  -- `sn' is retractable to t.
   --
   -- 1.  Evaluate the retract condition, and retract.
-  y := T.expr            -- guaranteed to be a name.
-  e := T.env
   caseCode := nil
   restrictCode := nil
   envFalse := e
   -- 1.1. Try courtesy coercions first.  That way we can use 
   --      optimized versions where available.  That also
   --      makes the scheme work for untagged unions.
-  if testT := compPredicate(["case",y,t],e) then
+  if testT := compPredicate(["case",sn,t],e) then
     [caseCode,.,e,envFalse] := testT
     [restrictCode,.,e] := 
-      tryCourtesyCoercion([y,T.mode,e],t) or
-        comp(["retract",y],t,e) or return 
-          stackAndThrow('"Could not retract %1 to type %2bp",[s,t])
+      tryCourtesyCoercion([sn,sm,e],t) or
+        comp(["retract",sn],t,e) or return 
+          stackAndThrow('"Could not retract from %1bp to %2bp",[sm,t])
   -- 1.2. Otherwise try retractIfCan, for those `% has RetractableTo t'.
-  else if retractT := comp(["retractIfCan",y],["Union",t,'"failed"],e) then
+  else if retractT := comp(["retractIfCan",sn],["Union",t,'"failed"],e) then
     [retractCode,.,e] := retractT
     -- Assign this value to a temporary.  From the backend point of
     -- view, that temporary needs to have a lifetime that covers both
@@ -1987,51 +1987,43 @@ compRetractAlternative(x,t,stmt,m,s,T) ==
     caseCode := ["PROGN",["%LET",z,retractCode],["QEQCAR",z,0]]
     restrictCode := ["QCDR",z]
   -- 1.3. Everything else failed; nice try.
-  else return stackAndThrow('"%1 is not retractable to %2bp",[s,t])
+  else return stackAndThrow('"%1bp is not retractable to %2bp",[sm,t])
   -- 2.  Now declare `x'.
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
   e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
-  -- 3.  Compile body of the retract pattern.
-  stmtT := comp(stmt,m,e) or return 
-    stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
-  -- 4.  Generate code for the whole pattern.
-  code := [caseCode, ["LET",[[x,restrictCode]],stmtT.expr]]
-  [code,stmtT.mode,stmtT.env,envFalse]
+  -- 3.  Assemble result.
+  [caseCode, [[x,restrictCode]],e,envFalse]
 
 
-++ Subroutine of compMatch, responsible for compiling alternative of
-++ of the form
-++    x: t => stmt
-++ in environment `e', where `y' is the scrutinee, and `m' is the
-++ exit mode of `stmt'. And `T' is [y,m,e].
-++ Return a quadruple [code,mode,envTrue,envFalse], where
-++   code is a pair [cond, body]
-++   mode is the final mode (equal to m if everything is OK)
-++   env is the environment resulting from compiling `stmt'
-compRecoverAlternative(x,t,stmt,m,s,T) ==
+++ Subroutine of compAlternativeGuardItem, responsible for 
+++ compiling a guad item of the form
+++    x: t
+++ in environment `e', where `sn' is the temporary holding
+++ the value of the scrutinee, and `sm' is its mode.
+++ Return a quadruple [guard,init,envTrue,envFalse], where
+++   `guard' is code that gates the body of the alternative
+++   `init' is list of possible initializations 
+++   `envTrue' is an environment after the guard evaluates to true
+++   `envFalse' is an environment after the guard environment to false.
+compRecoverGuard(x,t,sn,sm,e) ==
   -- The retract pattern is compiled by transforming
-  --     x: t => sttmt
+  --     x: t => stmt
   -- into the following program fragment
-  --   domainOf y is t => (x := <init>; stmt)
-  -- where <init> is code that compute appropriate initialization
-  -- for `x' under the condition that y if of type Any, and the
+  --   domainOf y is t => (x := <expr>; stmt)
+  -- where <expr> is code that compute appropriate initialization
+  -- for `x' under the condition that sm is Any, and the
   -- underlying type is t.
   --
   -- 1.  Evaluate the recovery condition
-  y := T.expr              -- guaranteed to be a name.
-  e := T.env
-  T.mode ^= $Any =>
+  sm ^= $Any =>
     stackAndThrow('"Scrutinee must be of type %b Any %d in type recovery alternative of case pattern",nil)
-  caseCode := ["EQUAL",["devaluate",t],["objMode",y]]
+  caseCode := ["EQUAL",["devaluate",t],["objMode",sn]]
   -- 2. Declare `x'.
+  originalEnv := e
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
   e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
-  -- 3. Compile body of alternative
-  stmtT := comp(stmt,m,e) or return 
-    stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
-  -- 4.  Assemble code
-  code := [caseCode,["LET",[[x,["objVal",y]]],stmtT.expr]]
-  [code,stmtT.mode,stmtT.env,e]
+  -- 3.  Assemble the result
+  [caseCode,[[x,["objVal",sn]]],e,originalEnv]
 
 warnUnreachableAlternative pat ==
   stackWarning('"Alternative with pattern %1b will not be reached",[pat])
@@ -2039,42 +2031,120 @@ warnUnreachableAlternative pat ==
 warnTooManyOtherwise() ==
   stackWarning('"One too many `otherwise' alternative",nil)
 
-compMatch(["%Match",subject,altBlock],m,e) ==
+
+++ Subroutine of compMatch.  Perform semantics analysis of the scrutinee
+++ in a case-pattern.  Return a triple if everything is OK, otherwise nil.
+compMatchScrutinee(form,e) ==
+  form is ["%Comma",:exprs] =>
+    Xs := Ms := nil
+    for expr in exprs repeat
+      [x,m,e] := compOrCroak(expr,$EmptyMode,e)
+      Xs := [x,:Xs]
+      Ms := [m,:Ms]
+    [["%Comma",:nreverse Xs], ["%Cross",:nreverse Ms],e]
+  compOrCroak(form,$EmptyMode,e)
+
+++ Subroutine of compMatch.  We just finished semantics analysis of
+++ the scrutinee.  Define temporary to hold the resulting value in store.
+++ Returns declared temporaries if everything is fine, otherwise nil.
+defineMatchScrutinee(m,e) ==
+    m is ["%Cross",:.] =>
+      [[t for m' in rest m | [t,e] := defTemp(m',e)], e]
+    defTemp(m,e)
+  where defTemp(m,e) ==
+    t := GENSYM()
+    [.,.,e] := compMakeDeclaration(t,m,e)
+    [t,put(t,"value",[genSomeVariable(),m,$noEnv],e)]
+
+++ Generate code for guard in a simple pattern where
+++ `sn' is the name of the temporary holding the scrutinee value,
+++ `sn' is its mode,
+++ `pat' is the simple pattern being compiled.
+++ On success, return a quadruple of the form [guard,init,eT,eF] where
+++   `guard' is the code for guard alternative
+++   `init' is collateral initialization
+++   `eT' is the environment for successful guard
+++   `eF' is the environment for unsuccessful guard 
+compAlternativeGuardItem(sn,sm,pat,e) ==
+  pat is [op,x,t] and op in '(_: _@) =>
+    not IDENTP x => 
+      stackAndThrow('"pattern %1b must declare a variable",[pat])
+    if $catchAllCount > 0 then
+      warnUnreachableAlternative pat
+    op = ":" => compRecoverGuard(x,t,sn,sm,e)
+    compRetractGuard(x,t,sn,sm,e) or
+       stackAndThrow('"cannot compile %1b",[pat])
+  return stackAndThrow('"invalid pattern %1b",[pat])
+
+++ Subroutine of compMatchAlternative.  The parameters
+++ have the same meaning.
+compAlternativeGuard(sn,sm,pat,e) ==
+  pat = "otherwise" =>
+    if $catchAllCount > 0 then
+      warnTooManyOtherwise()
+    $catchAllCount := $catchAllCount + 1
+    [true,nil,e,e]
+  CONSP sn =>
+    pat isnt ["%Comma",:.] =>
+      stackAndThrow('"Pattern must be a tuple for a tuple scrutinee",nil)
+    #sn ^= #rest pat =>
+      stackAndThrow('"Tuple pattern must match tuple scrutinee in length",nil)
+    inits := nil
+    guards := nil
+    ok := true
+    originalEnv := e
+    for n in sn for m in rest sm for p in rest pat while ok repeat
+      [guard,init,e,.] := compAlternativeGuardItem(n,m,p,e) => 
+        guards := [guard,:guards]
+        inits := [init,:inits]
+      ok := false
+    ok => [["AND",:nreverse guards],append/nreverse inits,e,originalEnv]
+    nil
+  compAlternativeGuardItem(sn,sm,pat,e)
+
+++ Subroutine of compMatch. Analyze an alternative in a case-pattern.
+++ `sn' is a name or a list of name for temporaries holding the
+++      value of the scrutinee.
+++ `sm' is the mode of list of modes for the scrutinee.
+++ `pat' is the pattern of the alternative we are compiling
+++ `stmt' is the body of the alternative we are compiling
+++ `m' is the desired mode for the return value.
+++ `e' is the environment in effect at the start of the environment.
+compMatchAlternative(sn,sm,pat,stmt,m,e) ==
+  [guard,inits,e,eF] := compAlternativeGuard(sn,sm,pat,e) or return nil
+  stmtT := comp(stmt,m,e) or
+            stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
+  body :=
+    null inits => stmtT.expr
+    atom sn => ["LET",inits,stmtT.expr]
+    ["LET*",inits,stmtT.expr]
+  [[guard,body],stmtT.mode,stmtT.env,eF]
+
+++ Analyze and generate code for `is case'-pattern where the
+++ scrutineeis `subject' and the alternatives are `altBlock'.
+-- FIXME: Make sure nobody asks for creating matter out of void.
+compMatch(["%Match",subject,altBlock],m,env) ==
   altBlock isnt ["%Block",:alts] => 
     stackAndThrow('"case pattern must specify block of alternatives",nil)
-  savedEnv := e
+  savedEnv := env
   -- 1.  subjectTmp := subject
-  [se,sm,e] := comp(subject,$EmptyMode,e) or return nil
-  sn := GENSYM()
-  [.,.,e] := compMakeDeclaration(sn,sm,e) or return nil
-  e := put(sn,"value",[genSomeVariable(),sm,$noEnv],e)
+  [se,sm,env] := compMatchScrutinee(subject,env)
+  [sn,env] := defineMatchScrutinee(sm,env)
   -- 2. compile alternatives.
+  $catchAllCount: local := 0
   altsCode := nil
-  catchAllCount := 0
   for alt in alts repeat
-     alt is ["=>",pat,stmt] =>
-       pat is [op,x,t] and op in '(_: _@) =>
-         not IDENTP x => 
-           stackAndThrow('"pattern %1b must declare a variable",[pat])
-         if catchAllCount > 0 then
-           warnUnreachableAlternative pat
-         [code,mode,.,e] :=
-           op = ":" => compRecoverAlternative(x,t,stmt,m,subject,[sn,sm,e])
-           compRetractAlternative(x,t,stmt,m,subject,[sn,sm,e])
-             or return stackAndThrow('"cannot compile %1b",[alt])
-         altsCode := [code,:altsCode]
-       pat = "otherwise" =>
-         if catchAllCount > 0 then
-           warnTooManyOtherwise()
-         catchAllCount := catchAllCount + 1
-         [code,.,e] := comp(stmt,m,e) or return
-                         stackAndThrow('"cannot compile",[stmt])
-         altsCode := [[true,code],:altsCode]
-       return stackAndThrow('"invalid pattern %1b",[pat])
+     alt is ["=>",pat,stmt] => 
+       [block,mode,.,env] := compMatchAlternative(sn,sm,pat,stmt,m,env) or
+             return stackAndThrow('"cannot compile pattern %1b",[pat])
+       altsCode := [block,:altsCode]
      return stackAndThrow('"invalid alternative %1b",[alt])
-  catchAllCount = 0 => 
+  $catchAllCount = 0 => 
     stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
-  code := ["LET",[[sn,se]],["COND",:nreverse altsCode]]
+  code := 
+    atom sn => ["LET",[[sn,se]],["COND",:nreverse altsCode]]
+    ["LET*",[[n,e] for n in sn for e in rest se], 
+       ["COND",:nreverse altsCode]]
   [code,m,savedEnv]
 
 
