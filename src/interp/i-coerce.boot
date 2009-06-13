@@ -91,9 +91,7 @@ retract object ==
   STRINGP type => 'failed
   type = $EmptyMode => 'failed
   val := objVal object
-  if not isWrapped val and val isnt ["%Map",:.] then
-    type ^= $Domain => return "failed"
-    val := wrap eval val
+  not isWrapped val and val isnt ["%Map",:.] => 'failed
   type' := equiType(type)
   (ans := retract1 objNew(val,equiType(type))) = 'failed => ans
   objNew(objVal ans,eqType objMode ans)
@@ -110,8 +108,6 @@ retract1 object ==
   type = $PositiveInteger =>    objNew(val,$NonNegativeInteger)
   type = $NonNegativeInteger => objNew(val,$Integer)
   type = $Integer and SINTP unwrap val => objNew(val, $SingleInteger)
-  type = $Domain => 
-    objNew(val, ["Join",:getDomainCompleteCategories unwrap val])
   type' := equiType(type)
   if not EQ(type,type') then object := objNew(val,type')
   (1 = #type') or (type' is ['Union,:.]) or
@@ -460,7 +456,6 @@ canCoerce1(t1,t2) ==
         canCoerce(t1,t) and canCoerceByFunction(t,t2) and 'T
     ans or member(t1,'((PositiveInteger) (NonNegativeInteger)))
       and canCoerce($Integer,t2)
-  t1 is ["Join",:.] => not null member(t2,rest t1) -- for now, gdr.
 
 canCoerceFrom0(t1,t2) ==
 -- top level test for coercion, which transfers all RN, RF and RR into
@@ -750,9 +745,6 @@ coerceInteractive(triple,t2) ==
   t2 = '$NoValueMode => objNew(val,t2)
   if t2 is ['SubDomain,x,.] then t2:= x
   -- JHD added category Aug 1996 for BasicMath
-  -- Categories are not domain of computations so we have to handle
-  -- them by hand, until we get a better world. -- gdr, 2009-06-12.
-  t1 is ["Join",:.] and canCoerce(t1,t2) => objNew(val,t2)
   member(t1,$LangSupportTypes) =>
     t2 = $OutputForm => objNew(val,t2)
     t1 = $Domain and conceptualType t2 = $Category 
