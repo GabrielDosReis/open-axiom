@@ -734,6 +734,9 @@ $SpadReaderTag ==
 
 --%
 
+++ Default optimization level
+$defaultOptimizationLevel == 2
+
 ++ List of operator names that can be overloaded in libraries.
 $OperatorFunctionNames ==
   ["**", "^", "*", "/", "rem", "quo", "mod", "div", "exquo",
