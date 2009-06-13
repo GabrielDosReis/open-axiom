@@ -191,6 +191,8 @@ initializeGlobalState() ==
   $compileExportsOnly := getOptionValue "exports-only"
   $compileDefaultsOnly := getOptionValue "defaults-only"
   $reportOptimization := getOptionValue "show-insn"
+  setCompilerOptimizations(getOptionValue "optimize" or
+                             $defaultOptimizationLevel)
   GCMSG(NIL)
   if have_to then
     $superHash := MAKE_-HASHTABLE('UEQUAL)
@@ -268,7 +270,6 @@ compileSpadLibrary(progname,options,file) ==
   $verbose := false
   $ProcessInteractiveValue := true
   $PrintCompilerMessageIfTrue := $verbose
-  setCompilerOptimizations getOptionValue "optimize"
   CATCH($intTopLevel,
     CATCH("SpadCompileItem",
      CATCH($SpadReaderTag,compiler [file])))

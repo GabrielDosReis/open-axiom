@@ -1,4 +1,10 @@
 2009-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-constants.boot ($defaultOptimizationLevel): New.
+	* interp/sys-driver.boot (initializeGlobalState): Use it for
+	default initialization level.
+
+2009-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	
 	Support multiple scrutinee in is-case pattern matching.
 	* interp/compiler.boot (compRetractGruard): Rename from
