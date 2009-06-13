@@ -1,4 +1,17 @@
 2009-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	
+	Support multiple scrutinee in is-case pattern matching.
+	* interp/compiler.boot (compRetractGruard): Rename from
+	compRetractAlternative.  Split.
+	(compRecoverGuard): Rename from compRecoverAlternative.  Split.
+	(compAlternativeGuardItem): New.  Use them.
+	(compAlternativeGuard): New.  
+	(compMatchAlternative): New.  Split from compMatch.
+	(compMatchScrutinee): Likewise.
+	(defineMatchScrutinee): Likewise.
+	(compMatch): Rework.
+
+2009-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* driver/utils.c (openaxiom_execute_core): Workaround GCL oddity.
 
