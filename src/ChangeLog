@@ -1,3 +1,7 @@
+2009-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/utils.c (openaxiom_execute_core): Workaround GCL oddity.
+
 2009-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	
 	* interp/i-coerce.boot: Revert previous patch.

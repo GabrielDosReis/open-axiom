@@ -373,12 +373,24 @@ openaxiom_execute_core(const openaxiom_command* command,
    int i;
    char** args = (char**)
       malloc(sizeof (char*) * (command->rt_argc + command->core_argc + 2));
-   args[0] = command->core_argv[0];
+   /* GCL has this oddity that it wants to believe that argv[0] has
+      something to tell about what GCL's own runtime is.  Silly.  */
+   if (OPENAXIOM_BASE_RTS == openaxiom_gcl_runtime)
+      args[0] = "";
+   else
+      args[0] = command->core_argv[0];
+   /* Now, make sure we copy whatever arguments are required by the
+      runtime system.  */
    for (i = 0; i < command->rt_argc; ++i)
       args[i + 1] = command->rt_argv[i];
+
    if (command->core_argc > 1) {
-      /* Insert a doubledash to indicate beginning of arguments.  */
+      /* We do have arguments from the command line.  We want to
+         differentiate this from the base runtime system arguments.
+         We do this by inserting a doubledash to indicate beginning
+         of arguments.  */
       args[command->rt_argc + 1] = "--";
+      /* Then, copy over the arguments received from the command line.  */
       for (i = 1; i < command->core_argc; ++i)
          args[command->rt_argc + i + 1] = command->core_argv[i];
       args[command->rt_argc + command->core_argc + 1] = NULL;
