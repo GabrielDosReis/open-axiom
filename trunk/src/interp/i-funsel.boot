@@ -776,8 +776,6 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   -- tar may be NIL (= unknown)
   null isLegitimateMode(tar, nil, nil) => nil
   dcName:= CAR dc
-  -- A category is not a domain of computation, so get out 
-  categoryForm? dcName => nil
   member(dcName,'(Union Record Mapping Enumeration)) =>
     -- First cut code that ignores args2, $Coerce and $SubDom
     -- When domains no longer have to have Set, the hard coded 6 and 7

@@ -1,4 +1,9 @@
 2009-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	
+	* interp/i-coerce.boot: Revert previous patch.
+	* interp/i-funsel.boot: Likewise.
+
+2009-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Support retract of domains.
 	* interp/i-funsel.boot (findFunctionInDomain): Don't look into
