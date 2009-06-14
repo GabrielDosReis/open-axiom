@@ -1,3 +1,24 @@
+2009-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for existential type recovery.
+	* interp/compiler.boot (compRecoverDomain): New.  Split from
+	compRecoverGuard.
+	(compRecoverGuard): Split.  Handle existential type recovery.
+	(compScheme): New.  Register as compiler.
+	* interp/g-opt.boot (optLET*): New.  Turn into LET-form if
+	appropriate.  Register as backend transformer.
+	* interp/fnewmeta.lisp (|PARSE-Scheme|): New.
+	(|PARSE-Quantifier|): Likewise.
+	(|PARSE-QuantifiedVariableList|): Likewise.
+	(|PARSE-QuantifiedVariable|): Likewise.
+	* interp/metalex.lisp (KEYWORDS): Add 'forall' and 'exist' as new
+	keywords. 
+	* interp/newaux.lisp: Register parser for expression schemes.
+	* algebra/any.spad.pamphlet (=$Any): If the underlying domain has
+	BasicType, use that equality operator.
+	(coerce$Any): If the underlying domain has CoercibleTo OutputForm
+	then use it.
+
 2009-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/any.spad.pamphlet (AnyFunctions1): Remove `pretend'

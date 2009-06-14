@@ -143,6 +143,7 @@ import None
 )abbrev domain ANY Any
 ++ Author: Robert S. Sutor
 ++ Date Created:
+++ Date Last Updated: June 14, 2009.
 ++ Change History:
 ++ Basic Functions: any, domainOf, objectOf, dom, obj, showTypeInOutput
 ++ Related Constructors: AnyFunctions1
@@ -191,7 +192,10 @@ Any(): SetCategory with
      obj x      == x.ob
      dom x      == x.dm
      domainOf x == x.dm pretend OutputForm
-     x = y      == (x.dm = y.dm) and EQ(x.ob, y.ob)$Lisp
+     x = y      == 
+       case (x,y) is 
+         (x': exist(S: BasicType) . S, y': S) => x' = y'
+         otherwise => EQ(x,y)$Foreign(Builtin)
 
      objectOf(x : %) : OutputForm ==
        spad2BootCoerce(x.ob, x.dm,
@@ -203,7 +207,10 @@ Any(): SetCategory with
       "Type of object will not be displayed in output of a member of Any"
 
      coerce(x):OutputForm ==
-       obj1 : OutputForm := objectOf x
+       obj1 : OutputForm :=
+         case x is
+           x': exist(S: CoercibleTo OutputForm) . S => x'::OutputForm
+           otherwise => (x.ob pretend SExpression)::OutputForm
        not deref printTypeInOutputP => obj1
        dom1 :=
          p:Symbol := prefix2String(devaluate(x.dm)$Lisp)$Lisp
