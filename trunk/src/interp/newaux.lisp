@@ -135,6 +135,8 @@
           (|repeat| 130 190 (|PARSE-Loop|))
           (|import| 120 0 (|PARSE-Import|) )
           (|inline| 120 0 (|PARSE-Inline|) )
+	  (|forall| 998 999 (|PARSE-Scheme|))
+	  (|exist| 998 999 (|PARSE-Scheme|))
           (|unless|)
           (|add| 900 120)
           (|with| 1000 300 (|PARSE-With|))

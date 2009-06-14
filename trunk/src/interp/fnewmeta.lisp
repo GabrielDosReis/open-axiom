@@ -474,6 +474,48 @@
        (PUSH-REDUCTION '|PARSE-Inline|
            (CONS '|%Inline| (CONS (POP-STACK-1) NIL)))))
 
+;; quantified types.  At the moment, these are used only in
+;; pattern-mathing cases.
+;; -- gdr, 2009-06-14.
+(DEFUN |PARSE-Scheme| ()
+  (OR (AND (|PARSE-Quantifier|)
+	   (MUST (|PARSE-QuantifiedVariableList|))
+	   (MUST (MATCH-ADVANCE-STRING "."))
+	   (MUST (|PARSE-Application|))
+	   (MUST (PUSH-REDUCTION '|PARSE-Forall|
+				 (CONS (POP-STACK-3)
+				       (CONS (POP-STACK-2)
+					     (CONS (POP-STACK-1) NIL))))))
+      (|PARSE-Application|)))
+
+(DEFUN |PARSE-Quantifier| ()
+  (OR (AND (MATCH-ADVANCE-STRING "forall")
+	   (MUST (PUSH-REDUCTION '|PARSE-Quantifier| '|%Forall|)))
+      (AND (MATCH-ADVANCE-STRING "exist")
+	   (MUST (PUSH-REDUCTION '|PARSE-Quantifier| '|%Exist|)))))
+
+(DEFUN |PARSE-QuantifiedVariableList| ()
+  (AND (MATCH-ADVANCE-STRING "(")
+       (MUST (|PARSE-QuantifiedVariable|))
+       (OPTIONAL 
+	(AND (STAR REPEATOR 
+		   (AND (MATCH-ADVANCE-STRING ",")
+			(MUST (|PARSE-QuantifiedVariable|))))
+	     (PUSH-REDUCTION '|PARSE-QuantifiedVariableList|
+			     (CONS '|%Sequence|
+				   (CONS (POP-STACK-2) 
+					 (APPEND (POP-STACK-1) NIL))))))
+       (MUST (MATCH-ADVANCE-STRING ")"))))
+
+(DEFUN |PARSE-QuantifiedVariable| ()
+  (AND (PARSE-IDENTIFIER)
+       (MUST (MATCH-ADVANCE-STRING ":"))
+       (MUST (|PARSE-Application|))
+       (MUST (PUSH-REDUCTION '|PARSE-QuantifiedVariable|
+			     (CONS '|:| 
+				   (CONS (POP-STACK-2)
+					 (CONS (POP-STACK-1) NIL)))))))
+
 (DEFUN |PARSE-Infix| ()
   (AND (PUSH-REDUCTION '|PARSE-Infix| (CURRENT-SYMBOL))
        (ACTION (ADVANCE-TOKEN)) (OPTIONAL (|PARSE-TokTail|))

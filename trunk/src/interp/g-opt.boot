@@ -492,6 +492,15 @@ optLET u ==
     rplac(rest def, second def)
   SUBLIS(inits,body)
 
+optLET_* form ==
+  form isnt ["LET*",:.] => form
+  ok := true
+  while ok for [[var,.],:inits] in tails second form repeat
+    if CONTAINED(var,inits) then ok := false
+  not ok => form
+  rplac(first form,"LET")
+  optLET form
+
 lispize x == first optimize [x]
  
 --% optimizer hash table
@@ -499,6 +508,7 @@ lispize x == first optimize [x]
 for x in '( (call         optCall) _
            (SEQ          optSEQ)_
            (LET          optLET)_
+           (LET_*        optLET_*)_
            (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
            (_-           opt_-)_

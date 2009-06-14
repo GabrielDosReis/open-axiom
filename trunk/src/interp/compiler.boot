@@ -1995,6 +1995,22 @@ compRetractGuard(x,t,sn,sm,e) ==
   [caseCode, [[x,restrictCode]],e,envFalse]
 
 
+++ Subroutine of compRecoverGuard.  The parameters and the result
+++ have the same meaning as in compRecoverGuard.
+++ Note: a value of type Any is a dotted pair (dom . val) where
+++       `dom' is a devaluated form of the domain of `val'.
+compRecoverDomain(x,t,sn,e) ==
+  -- 1. We recover domains only.
+  not isDomainForm(t,e) =>
+    stackAndThrow('"Form %1b does not designate a domain",[t])
+  caseCode := ["EQUAL",["devaluate",t],["CAR",sn]]
+  -- 2. Declare `x'.
+  originalEnv := e
+  [.,.,e] := compMakeDeclaration(x,t,e) or return nil
+  e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
+  -- 3.  Assemble the result
+  [caseCode,[[x,["CDR",sn]]],e,originalEnv]
+
 ++ Subroutine of compAlternativeGuardItem, responsible for 
 ++ compiling a guad item of the form
 ++    x: t
@@ -2014,16 +2030,35 @@ compRecoverGuard(x,t,sn,sm,e) ==
   -- for `x' under the condition that sm is Any, and the
   -- underlying type is t.
   --
-  -- 1.  Evaluate the recovery condition
-  sm ^= $Any =>
+  -- 0. Type recovery is for expressions of type 'Any'.
+  (sm = "$" => $functorForm; sm) ^= $Any  =>
     stackAndThrow('"Scrutinee must be of type %b Any %d in type recovery alternative of case pattern",nil)
-  caseCode := ["EQUAL",["devaluate",t],["objMode",sn]]
-  -- 2. Declare `x'.
-  originalEnv := e
-  [.,.,e] := compMakeDeclaration(x,t,e) or return nil
-  e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
-  -- 3.  Assemble the result
-  [caseCode,[[x,["objVal",sn]]],e,originalEnv]
+  -- 1. Do some preprocessing if this is existential type recovery.
+  t is ["%Exist",var,t'] =>
+    var isnt [":",var',cat'] =>
+      stackAndThrow('"Sorry: Only univariate type schemes are supported in this context",nil)
+    -- We have a univariate type scheme.  At the moment we insist
+    -- that the body of the type scheme be identical to the type
+    -- variable.  This restriction should be lifted in future work.
+    not IDENTP t' or t' ^= var' =>
+      stackAndThrow('"Sorry: type %1b too complex",[t'])
+    not isCategoryForm(cat',e) =>
+      stackAndThrow('"Expression %1b does not designate a category",[cat'])
+    getmode(var',e) =>
+      stackAndThrow('"You cannot redeclare identifier %1b",[var'])
+    -- Extract the type component.  Here note that we use a wider
+    -- assignment scope (e.g. "%LET") as opposed to local assignment
+    -- because the recovered type may be needed in the body of
+    -- the alternative.
+    varDef := ["%LET",[":",var',$Type],
+                [["elt",["Foreign","Builtin"],"evalDomain"],
+                  [["elt",["Foreign","Builtin"],"CAR"], sn]]]
+    [def,.,e] := compOrCroak(varDef,$EmptyMode,e)
+    [hasTest,.,e] := compOrCroak(["has",var',cat'],$EmptyMode,e)
+    [guard,inits,e,envFalse] := compRecoverDomain(x,var',sn,e)
+    [["PROGN",def,hasTest],inits,e,envFalse]
+  -- 2. Hand it to whoever is in charge.
+  compRecoverDomain(x,t,sn,e)
 
 warnUnreachableAlternative pat ==
   stackWarning('"Alternative with pattern %1b will not be reached",[pat])
@@ -2147,6 +2182,9 @@ compMatch(["%Match",subject,altBlock],m,env) ==
        ["COND",:nreverse altsCode]]
   [code,m,savedEnv]
 
+++ Compile the form scheme `x'.
+compScheme(x,m,e) ==
+  stackSemanticError(["Sorry: Expression schemes are not supported in this context"],nil)
 
 --%
 --% Inline Requests
@@ -2556,6 +2594,8 @@ for x in [["|", :"compSuchthat"],_
           ["per",:"compPer"],_
           ["rep",:"compRep"],_
           ["%Comma",:"compComma"],_
+          ["%Exist", : "compScheme"] , _
+          ["%Forall", : "compSceheme"] , _
           ["%Match",:"compMatch"],_
           ["%SignatureImport",:"compSignatureImport"],_
           ["[||]", :"compileQuasiquote"]] repeat
