@@ -145,7 +145,7 @@ import None
 ++ Date Created:
 ++ Date Last Updated: June 14, 2009.
 ++ Change History:
-++ Basic Functions: any, domainOf, objectOf, dom, obj, showTypeInOutput
+++ Basic Functions: any, dom, obj
 ++ Related Constructors: AnyFunctions1
 ++ Also See: None
 ++ AMS Classification:
@@ -157,19 +157,14 @@ import None
 ++   object will include both the original object and its type. This is
 ++   a way of converting arbitrary objects into a single type without
 ++   losing any of the original information. Any object can be converted
-++   to one of \spadtype{Any}.
+++   to one of \spadtype{Any}.  The original object can be recovered
+++   by `is-case' pattern matching as exemplified here and AnyFunctions1.
 
 Any(): SetCategory with
         any             : (SExpression, None) -> %
           ++ any(type,object) is a technical function for creating
           ++ an object of \spadtype{Any}. Arugment \spad{type} is a \spadgloss{LISP} form
           ++ for the type of \spad{object}.
-        domainOf        : % -> OutputForm
-          ++ domainOf(a) returns a printable form of the type of the
-          ++ original object that was converted to \spadtype{Any}.
-        objectOf        : % -> OutputForm
-          ++ objectOf(a) returns a printable form of the
-          ++ original object that was converted to \spadtype{Any}.
         dom             : % -> SExpression
           ++ dom(a) returns a \spadgloss{LISP} form of the type of the
           ++ original object that was converted to \spadtype{Any}.
@@ -177,52 +172,26 @@ Any(): SetCategory with
           ++ obj(a) essentially returns the original object that was
           ++ converted to \spadtype{Any} except that the type is forced
           ++ to be \spadtype{None}.
-        showTypeInOutput: Boolean -> String
-          ++ showTypeInOutput(bool) affects the way objects of
-          ++ \spadtype{Any} are displayed. If \spad{bool} is true
-          ++ then the type of the original object that was converted
-          ++ to \spadtype{Any} will be printed. If \spad{bool} is
-          ++ false, it will not be printed.
 
  == add
-     Rep := Record(dm: SExpression, ob: None)
+     Rep == Record(dm: SExpression, ob: None)
 
-     printTypeInOutputP:Reference(Boolean) := ref false
-
-     obj x      == x.ob
-     dom x      == x.dm
-     domainOf x == x.dm pretend OutputForm
+     obj x      == rep(x).ob
+     dom x      == rep(x).dm
      x = y      == 
        case (x,y) is 
          (x': exist(S: BasicType) . S, y': S) => x' = y'
          otherwise => EQ(x,y)$Foreign(Builtin)
 
-     objectOf(x : %) : OutputForm ==
-       spad2BootCoerce(x.ob, x.dm,
-          list("OutputForm"::Symbol)$List(Symbol))$Lisp
-
-     showTypeInOutput(b : Boolean) : String ==
-      printTypeInOutputP := ref b
-      b=> "Type of object will be displayed in output of a member of Any"
-      "Type of object will not be displayed in output of a member of Any"
-
      coerce(x):OutputForm ==
-       obj1 : OutputForm :=
-         case x is
-           x': exist(S: CoercibleTo OutputForm) . S => x'::OutputForm
-           otherwise => (x.ob pretend SExpression)::OutputForm
-       not deref printTypeInOutputP => obj1
-       dom1 :=
-         p:Symbol := prefix2String(devaluate(x.dm)$Lisp)$Lisp
-         atom?(p pretend SExpression) => list(p)$List(Symbol)
-         list(p)$Symbol
-       hconcat cons(obj1,
-         cons(":"::OutputForm, [a::OutputForm for a in dom1]))
+       case x is
+         x': exist(S: CoercibleTo OutputForm) . S => x'::OutputForm
+         otherwise => (rep(x).ob pretend SExpression)::OutputForm
 
      any(domain, object) ==
-       (isValidType(domain)$Lisp)@Boolean => [domain, object]
+       (isValidType(domain)$Lisp)@Boolean => per [domain, object]
        domain := devaluate(domain)$Lisp
-       (isValidType(domain)$Lisp)@Boolean => [domain, object]
+       (isValidType(domain)$Lisp)@Boolean => per [domain, object]
        error "function any must have a domain as first argument"
 
 @
