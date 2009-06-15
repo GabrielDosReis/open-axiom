@@ -961,8 +961,9 @@
       (AND (MATCH-ADVANCE-STRING "'") (MUST (|PARSE-Sexpr1|))
            (PUSH-REDUCTION '|PARSE-Sexpr1|
                (CONS 'QUOTE (CONS (POP-STACK-1) NIL))))
-      (AND (MATCH-ADVANCE-STRING "-") (MUST (|PARSE-IntegerTok|))
-           (PUSH-REDUCTION '|PARSE-Sexpr1| (MINUS (POP-STACK-1))))
+      ;; next form disabled -- gdr, 2009-06-15.
+;      (AND (MATCH-ADVANCE-STRING "-") (MUST (|PARSE-IntegerTok|))
+;           (PUSH-REDUCTION '|PARSE-Sexpr1| (MINUS (POP-STACK-1))))
       (AND (MATCH-ADVANCE-STRING "[")
            (BANG FIL_TEST (OPTIONAL (STAR REPEATOR (|PARSE-Sexpr1|))))
            (MUST (MATCH-ADVANCE-STRING "]"))
@@ -995,7 +996,8 @@
       (OR (AND (MATCH-STRING "$")
                (PUSH-REDUCTION '|PARSE-AnyId| (CURRENT-SYMBOL))
                (ACTION (ADVANCE-TOKEN)))
-          (PARSE-KEYWORD)))) 
+          (PARSE-KEYWORD)
+	  (|PARSE-OperatorFunctionName|))))
 
 
 (DEFUN |PARSE-Sequence| ()

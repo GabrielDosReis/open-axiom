@@ -125,6 +125,9 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| (|%Vector| *) |%Shell|) |%Pair|)
                 |INT;reducedSystem;MVR;30|)) 
 
+(PUT '|INT;reducedSystem;MVR;30| '|SPADreplace|
+     '(XLAM (|m| |v|) (CONS |m| '|vec|))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;abs;2$;31|)) 
 
@@ -392,7 +395,9 @@
 
 (DEFUN |INT;reducedSystem;2M;29| (|m| $) (DECLARE (IGNORE $)) |m|) 
 
-(DEFUN |INT;reducedSystem;MVR;30| (|m| |v| $) (CONS |m| '|vec|)) 
+(DEFUN |INT;reducedSystem;MVR;30| (|m| |v| $)
+  (DECLARE (IGNORE $))
+  (CONS |m| '|vec|)) 
 
 (DEFUN |INT;abs;2$;31| (|x| $) (DECLARE (IGNORE $)) (ABS |x|)) 
 
