@@ -481,7 +481,7 @@
   (OR (AND (|PARSE-Quantifier|)
 	   (MUST (|PARSE-QuantifiedVariableList|))
 	   (MUST (MATCH-ADVANCE-STRING "."))
-	   (MUST (|PARSE-Application|))
+	   (MUST (|PARSE-Expr| 200))
 	   (MUST (PUSH-REDUCTION '|PARSE-Forall|
 				 (CONS (POP-STACK-3)
 				       (CONS (POP-STACK-2)

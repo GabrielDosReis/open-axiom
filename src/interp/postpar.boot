@@ -501,8 +501,7 @@ postSignature t ==
 killColons: %ParseTree -> %ParseForm
 killColons x ==
   atom x => x
-  x is ["Record",:.] => x
-  x is ["Union",:.] => x
+  x is [op,:.] and MEMQ(op, '(Record Union %Forall %Exist)) => x
   x is [":",.,y] => killColons y
   [killColons first x,:killColons rest x]
 
