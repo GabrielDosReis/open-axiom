@@ -68,12 +68,12 @@ Result():Exports==Implementation where
     display(v:Any,d:SExpression):O ==
       not list? d => error "Domain form is non-list"
       #d=1 =>
-       showScalarValuesFlag => objectOf v
+       showScalarValuesFlag => v::OutputForm
        cleanUpDomainForm d
       car(d) = convert("Complex"::Symbol)@SExpression =>
-       showScalarValuesFlag => objectOf v
+       showScalarValuesFlag => v::OutputForm
        cleanUpDomainForm d
-      showArrayValuesFlag => objectOf v
+      showArrayValuesFlag => v::OutputForm
       cleanUpDomainForm d
        
     makeEntry(k:Symbol,v:Any):O ==

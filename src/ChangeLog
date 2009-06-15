@@ -1,5 +1,12 @@
 2009-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/any.spad.pamphlet (Any): Remove domainOf, objectOf, and
+	showTypeInOutput.  Tidy.
+	* algebra/fortran.spad.pamphlet: Coerce Any objects to Output;
+	don't use objectOf.
+
+2009-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Add support for existential type recovery.
 	* interp/compiler.boot (compRecoverDomain): New.  Split from
 	compRecoverGuard.
