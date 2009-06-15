@@ -512,7 +512,7 @@ OutputForm(): SetCategory with
         message s            == (empty? s => empty(); s pretend %)
         messagePrint s       == print message s
         (a:% = b:%): Boolean == EQUAL(a, b)$Lisp
-        (a:% = b:%):%        == bless [sform "=",     a, b]
+        (a:% = b:%):%        == bless [eform '=,     a, b]
         coerce(a):OutputForm  == a pretend OutputForm
         outputForm n          == n pretend %
         outputForm e          == e pretend %
@@ -591,25 +591,25 @@ OutputForm(): SetCategory with
         vconcat(a,b)  == bless [eform 'VCONCAT, a, b]
         vconcat l     == cons(eform 'VCONCAT, l)
 
-        (a:% ~= b:%): % == bless [sform "~=",    a, b]
-        a < b       == bless [sform "<",     a, b] 
-        a > b       == bless [sform ">",     a, b]
-        a <= b      == bless [sform "<=",    a, b]
-        a >= b      == bless [sform ">=",    a, b]
+        (a:% ~= b:%): % == bless [eform '~=,    a, b]
+        a < b       == bless [eform '<,     a, b] 
+        a > b       == bless [eform '>,     a, b]
+        a <= b      == bless [eform '<=,    a, b]
+        a >= b      == bless [eform '>=,    a, b]
 
-        a + b       == bless [sform "+",     a, b]
-        a - b       == bless [sform "-",     a, b]
-        - a         == bless [sform "-",     a]
-        a * b       == bless [sform "*",     a, b]
-        a / b       == bless [sform "/",     a, b]
-        a ** b      == bless [sform "**",    a, b]
-        a div b     == bless [sform "div",   a, b]
-        a rem b     == bless [sform "rem",   a, b]
-        a quo b     == bless [sform "quo",   a, b]
-        a exquo b   == bless [sform "exquo", a, b]
-        a and b     == bless [sform "and",   a, b]
-        a or b      == bless [sform "or",    a, b]
-        not a       == bless [sform "not",   a]
+        a + b       == bless [eform '+,     a, b]
+        a - b       == bless [eform '-,     a, b]
+        - a         == bless [eform '-,     a]
+        a * b       == bless [eform '*,     a, b]
+        a / b       == bless [eform '/,     a, b]
+        a ** b      == bless [eform '**,    a, b]
+        a div b     == bless [eform 'div,   a, b]
+        a rem b     == bless [eform 'rem,   a, b]
+        a quo b     == bless [eform 'quo,   a, b]
+        a exquo b   == bless [eform 'exquo, a, b]
+        a and b     == bless [eform 'and,   a, b]
+        a or b      == bless [eform 'or,    a, b]
+        not a       == bless [eform 'not,   a]
         SEGMENT(a,b)== bless [eform 'SEGMENT, a, b]
         SEGMENT(a)  == bless [eform 'SEGMENT, a]
         binomial(a,b)== bless [eform 'BINOMIAL, a, b]
@@ -642,8 +642,8 @@ OutputForm(): SetCategory with
         string a   == bless [eform 'STRING,  a]
         quote  a   == bless [eform 'QUOTE,   a]
         overbar a  == bless [eform 'OVERBAR, a]
-        dot a      == super(a, sform ".")
-        prime a    == super(a, sform ",")
+        dot a      == super(a, eform '_.)
+        prime a    == super(a, eform '_,)
         dot(a,nn)   == (s := new(nn, char "."); super(a, sform s))
         prime(a,nn) == (s := new(nn, char ","); super(a, sform s))
 
