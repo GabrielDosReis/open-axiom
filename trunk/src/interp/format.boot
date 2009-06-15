@@ -291,6 +291,7 @@ dollarPercentTran x ==
         EQ(y, y1) and EQ(z, z1) => x
         [y1, :z1]
     x = "$" or x = '"$" => "%%"
+    x = "T$" or x = '"T$" => "T"
     x
 
 formatSignatureAsTeX sig == 
@@ -632,6 +633,7 @@ application2String(op,argl, linkInfo) ==
   null argl =>
     (op' := isInternalFunctionName(op)) => op'
     app2StringWrap(formWrapId op, linkInfo)
+  op = "[||]" => concat("[|",concat(prefix2String0 argl,"|]"))
   1=#argl =>
     arg := first argl
     arg is ["<",:.] or arg is ["(",:.] => concat(op,arg)

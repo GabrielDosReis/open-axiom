@@ -1,5 +1,12 @@
 2009-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/fnewmeta.lisp (PARSE-Scheme): Tidy.
+	* interp/format.boot (dollarPercentTran): Translate T$ too.
+    	(application2String): Handle quasiquotations.
+	* interp/postpar.boot (killColons): Don't remove quantified variables.
+
+2009-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/any.spad.pamphlet (Any): Remove domainOf, objectOf, and
 	showTypeInOutput.  Tidy.
 	* algebra/fortran.spad.pamphlet: Coerce Any objects to Output;
