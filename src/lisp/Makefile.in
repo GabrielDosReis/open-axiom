@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2009, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -122,7 +122,7 @@ base-lisp$(EXEEXT): core.$(FASLEXT)  $(oa_base_lisp_linkset)
 		$(eval_flags) '(load "core")' \
 		$(eval_flags) '(|AxiomCore|::|link| "$@" (quote $(base_lisp_objects)) "|AxiomCore|::|topLevel|")'
 
-$(oa_base_lisp_linkset): $(oa_target_lispdir)/core.$(LNKEXT)
+$(oa_target_lispdir)/linkset: $(oa_target_lispdir)/core.$(LNKEXT)
 	rm -f $@
 	echo '$(base_lisp_objects)' > $@
 
@@ -173,8 +173,10 @@ endif
 
 
 mostlyclean-local:
-	rm -f *.$(FASLEXT)
-	@rm -f $(OUT)/lisp$(EXEEXT) lisp$(EXEEXT)
+	rm -f core.$(FASLEXT) core.$(OBJEXT) core.lisp 
+	@if test -n "$(oa_base_lisp_linkset)"; then \
+		rm -f $(oa_base_lisp_linkset); fi
+	@rm -f $(OUT)/lisp$(EXEEXT) lisp$(EXEEXT) base-lisp$(EXEEXT)
 	rm -rf $(oa_target_lispdir)
 	@rm -f stamp
 

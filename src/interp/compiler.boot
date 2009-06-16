@@ -1224,7 +1224,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
     and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
   op = "LET" or op = "LET*" =>
     or/[canReturn(init,level,exitCount,false) for [.,init] in second expr]
-       or canReturn(third expr,exitCount,ValueFlag)
+       or canReturn(third expr,level,exitCount,ValueFlag)
   systemErrorHere ['"canReturn",expr] --for the time being
 
 ++ We are compiling a conditional expression, type check and generate

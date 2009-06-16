@@ -10,9 +10,9 @@ autoload_objects =
 
 # Build platform-dependent Lisp image, at the base of other
 # derived Lisp images (interpsys, AXIOMsys)
-LISPSYS= $(axiom_build_bindir)/lisp
+LISPSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
 
-BOOTSYS= $(axiom_target_bindir)/bootsys -- --syslib=$(axiom_target_libdir)
+BOOTSYS= $(axiom_target_bindir)/bootsys$(EXEEXT) -- --syslib=$(axiom_target_libdir)
 
 SAVESYS= interpsys$(EXEEXT)
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)

@@ -62,7 +62,7 @@ build platform sub-directory.
 <<environment>>=
 # Build platform-dependent Lisp image, at the base of other
 # derived Lisp images (interpsys, AXIOMsys)
-LISPSYS= $(axiom_build_bindir)/lisp
+LISPSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
 
 @
 
@@ -76,7 +76,7 @@ itself to bootstrap the system).  This image is assumed to
 have been built (on the build platform) by a previous step in the
 make process.
 <<environment>>=
-BOOTSYS= $(axiom_target_bindir)/bootsys -- --syslib=$(axiom_target_libdir)
+BOOTSYS= $(axiom_target_bindir)/bootsys$(EXEEXT) -- --syslib=$(axiom_target_libdir)
 
 @
 

@@ -1,5 +1,11 @@
 2009-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2806053
+	* lisp/Makefile.in: Remove generated files when cleaning.
+	* interp/Makefile.pamphlet: Add executable extensions if appropriate.
+
+2009-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (spadCompileOrSetq): Tidy.
 	* interp/fnewmeta.lisp (PARSE-Sexpr1): Disable negative integers
 	in data.  A facility not actually used in Spad code.
