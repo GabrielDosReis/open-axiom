@@ -1482,13 +1482,7 @@ doIt(item,$predl) ==
   item is ["%SignatureImport",:.] =>
     [.,.,$e] := compSignatureImport(item,$EmptyMode,$e)
     mutateToNothing item
-  item is ["IF",p,x,y] => 
-    p is ["not",p'] =>
-      rplac(second item,p')
-      rplac(third item,y)
-      rplac(fourth item,x)
-      doIt(item,$predl)
-    doItIf(item,$predl,$e)
+  item is ["IF",p,x,y] => doItConditionally(item,$predl)
   item is ["where",b,:l] => compOrCroak(item,$EmptyMode,$e)
   item is ["MDEF",:.] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
   item is ['DEF,[op,:.],:.] =>
@@ -1503,12 +1497,37 @@ doIt(item,$predl) ==
     RPLACD(CDDR item,nil)
   u:= compOrCroak(item,$EmptyMode,$e) =>
     ([code,.,$e]:= u; RPLACA(item,first code); RPLACD(item,rest code))
-  true => cannotDo()
+  systemErrorHere ["doIt", item]
  
 isMacro(x,e) ==
   x is ['DEF,[op,:args],signature,specialCases,body] and
     null get(op,'modemap,e) and null args and null get(op,'mode,e)
       and signature is [nil] => body
+
+++ Compile capsule-level `item' which is a conditional expression.
+++ OpenAxiom's take on prepositional logical is a constructive
+++ interpretation of logical connectives, in terms of IF-expresions.
+++ In particular, a negation is positively interpretated by swapping
+++ branches, and- and or-expressions are decomposed into nested
+++ IF-expressions.  -- gdr, 2009-06-15.
+doItConditionally(item,predl) ==
+  item isnt ["IF",p,x,y] => systemErrorHere ["doItConditionally",item]
+  p is ["not",p'] =>
+    -- swap branches and recurse for positive interpretation.
+    rplac(second item,p')
+    rplac(third item,y)
+    rplac(fourth item,x)
+    doItConditionally(item,predl)
+  p is ["and",p',p''] =>
+    rplac(second item,p')
+    rplac(third item,["IF",p'',x,COPY y])
+    doItConditionally(item,predl)
+  p is ["or",p',p''] =>
+    rplac(second item, p')
+    rplac(fourth item, ["IF",p'',COPY x,y])
+    doItConditionally(item,predl)
+  doItIf(item,predl,$e)
+    
  
 doItIf(item is [.,p,x,y],$predl,$e) ==
   olde:= $e
@@ -1673,6 +1692,11 @@ compCategoryItem(x,predl,env) ==
       for y in l repeat compCategoryItem(y,predl',env)
     compCategoryItem(e,predl',env)
   x is ["IF",a,b,c] =>
+    a is ["not",p] => compCategoryItem(["IF",p,c,b],predl,env)
+    a is ["and",p,q] =>
+      compCategoryItem(["IF",p,["IF",q,b,c],COPY c],predl,env)
+    a is ["or",p,q] =>
+      compCategoryItem(["IF",p,b,["IF",q,COPY b,c]],predl,env)
     predl':= [a,:predl]
     if b^="%noBranch" then
       b is ["PROGN",:l] => 

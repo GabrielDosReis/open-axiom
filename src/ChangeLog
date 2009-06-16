@@ -1,3 +1,8 @@
+2009-06-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (doItConditionally): New.
+	(doIt): Use it for capsule-level conditional expressions.
+
 2009-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2396945
