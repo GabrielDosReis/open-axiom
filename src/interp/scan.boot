@@ -110,7 +110,6 @@ scanKeyWords == [ _
            ['":","COLON" ],_
            ['":-","COLONDASH" ],_
            ['"@","AT" ],_
-           ['"@@","ATAT" ],_
            ['",","COMMA" ],_
            ['";","SEMICOLON" ],_
            ['"**","POWER" ],_

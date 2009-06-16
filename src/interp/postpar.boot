@@ -143,11 +143,6 @@ postPretend t ==
   t isnt ["pretend",x,y] => systemErrorHere ["postPretend",t]
   ["pretend",postTran x,:postType y]
 
-postAtAt: %ParseTree -> %ParseForm
-postAtAt t ==
-  t isnt ["@@",x,y] => systemErrorHere ["postAtAt",t]
-  ["@@",postTran x,:postType y]
-
 postConstruct: %ParseTree -> %ParseForm
 postConstruct u ==
   u is ["construct",b] =>
@@ -625,7 +620,6 @@ for x in [["with", :"postWith"],_
 	  [":", :"postColon"],_
 	  ["@", :"postAtSign"],_
 	  ["pretend", :"postPretend"],_
-          ["@@",:"postAtAt"],_
 	  ["if", :"postIf"],_
 	  ["Join", :"postJoin"],_
 	  ["%Signature", :"postSignature"],_
