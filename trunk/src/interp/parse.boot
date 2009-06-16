@@ -197,11 +197,6 @@ parsePretend t ==
   t isnt ["pretend",x,typ] => systemErrorHere ["parsePretend",t]
   ["pretend",parseTran x,parseType typ]
  
-parseAtAt: %ParseForm -> %Form
-parseAtAt t ==
-  t isnt ["@@",x,typ] => systemErrorHere ["parseAtAt",t]
-  ["@@",parseTran x,parseType typ]
-
 parseHas: %ParseForm -> %Form 
 parseHas t ==
   t isnt ["has",x,y] => systemErrorHere ["parseHas",t]
@@ -482,7 +477,6 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["MDEF", :"parseMDEF"],_
 	  ["or", :"parseOr"],_
 	  ["pretend", :"parsePretend"],_
-          ["@@",:"parseAtAt"],_
 	  ["SEGMENT", :"parseSegment"],_
 	  ["SEQ", :"parseSeq"],_
 	  ["VCONS", :"parseVCONS"],_

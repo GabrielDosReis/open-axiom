@@ -1,5 +1,13 @@
 2009-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Fix SF/2396945
+	* interp/scan.boot: '@@' is no longer a keyword.
+	* interp/cparse.boot (npColonQuery): Remove.
+	* interp/parse.boot (parseAtAt): Likewise.
+	* interp/postpar.boot (postAtAt): Likewise.
+
+2009-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2806053
 	* lisp/Makefile.in: Remove generated files when cleaning.
 	* interp/Makefile.pamphlet: Add executable extensions if appropriate.

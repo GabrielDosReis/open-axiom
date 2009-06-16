@@ -464,12 +464,10 @@ npRestrict() == npTypedForm("AT",function pfRestrict)
 
 npCoerceTo() == npTypedForm("COERCE",function pfCoerceto)
 
-npColonQuery() == npTypedForm("ATAT",function pfRetractTo)
-
 npPretend() == npTypedForm("PRETEND",function pfPretend)
 
 npTypeStyle()==
- npCoerceTo() or npRestrict() or npPretend() or npColonQuery()
+ npCoerceTo() or npRestrict() or npPretend()
 
 npTypified ()==npApplication() and npAnyNo function npTypeStyle
 
