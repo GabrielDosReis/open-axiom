@@ -154,9 +154,9 @@ import List Syntax
 ++ Description: This domains represents a syntax object that
 ++ designates a category, domain, or a package.
 ++ See Also: Syntax, Domain
-ConstructorCall(): Public == Private where
+ConstructorCall(C: ConstructorCategory): Public == Private where
   Public == SetCategory with
-    constructor: % -> Constructor
+    constructor: % -> C
       ++ constructor(t) returns the name of the constructor used
       ++ to make the call.
     arguments: % -> List Syntax
@@ -237,7 +237,7 @@ FunctorData(): Public == Private where
     encodingDirectory: % -> PrimitiveArray NonNegativeInteger
       ++ \spad{encodintDirectory x} returns the directory of domain-wide
       ++ entity description.
-    categories: % -> PrimitiveArray ConstructorCall
+    categories: % -> PrimitiveArray ConstructorCall CategoryConstructor
       ++ \spad{categories x} returns the list of categories forms
       ++ each domain object obtained from the domain data \spad{x}
       ++ belongs to.
@@ -380,10 +380,10 @@ Category(): Public == Private where
     exportedOperators: % -> List OperatorSignature
       ++ exportedOperators(c) returns the list of all operator signatures
       ++ exported by the category `c', along with their predicates.
-    principalAncestors: % -> List ConstructorCall
+    principalAncestors: % -> List ConstructorCall CategoryConstructor
       ++ principalAncestors(c) returns the list of all category
       ++ forms that are principal ancestors of the the category `c'.
-    parents: % -> List ConstructorCall
+    parents: % -> List ConstructorCall CategoryConstructor
       ++ parents(c) returns the list of all category forms directly
       ++ extended by the category `c'.
   Private == add
@@ -398,7 +398,7 @@ Category(): Public == Private where
       getCategoryPrincipalAncestors(c)$Lisp
 
     parents c ==
-      [CAR(x)$Lisp@ConstructorCall
+      [CAR(x)$Lisp@ConstructorCall(CategoryConstructor)
          for x in getCategoryParents(c)$Lisp@List(Syntax)]
 
     coerce x ==
@@ -422,10 +422,10 @@ Domain(): Public == Private where
     constructor: % -> DomainConstructor
       ++ constructor(d) returns the domain constructor that is
       ++ instantiated to the domain object `d'.
-    reify: % -> ConstructorCall
+    reify: % -> ConstructorCall DomainConstructor
       ++ reify(d) returns the abstract syntax for the domain `x'.
 
-    reflect: ConstructorCall -> %
+    reflect: ConstructorCall DomainConstructor -> %
       ++ reflect cc returns the domain object designated by the
       ++ ConstructorCall syntax `cc'.  The constructor implied 
       ++ by `cc' must be known to the system since it is instantiated.
@@ -442,7 +442,7 @@ Domain(): Public == Private where
       outputDomainConstructor(x)$Lisp
 
     reify x ==
-      devaluate(x)$Lisp @ ConstructorCall
+      devaluate(x)$Lisp @ ConstructorCall(DomainConstructor)
 
     reflect cc ==
       evalDomain(cc)$Lisp @ %

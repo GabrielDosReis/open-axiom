@@ -247,7 +247,7 @@ import SExpression
 ++ See Also: 
 ElaboratedExpression(): Public == Private where
   Public ==> CoercibleTo OutputForm with
-    type: % -> ConstructorCall
+    type: % -> Syntax
       ++ type(e) returns the type of the expression as computed by
       ++ the interpreter.
     constant?: % -> Boolean
