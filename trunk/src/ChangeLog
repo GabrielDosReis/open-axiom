@@ -1,3 +1,8 @@
+2009-06-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/domain.spad.pamphlet: ConstructorCall is now
+	parameterized by the constructor category.
+
 2009-06-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/define.boot (doItConditionally): New.
