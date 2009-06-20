@@ -1127,13 +1127,6 @@ getSignature(op,argModeList,$e) ==
        else for [[dc,:sig],:.] in mmList repeat printSignature("     ",op,sig)
     printSignature("NEED ",op,["?",:argModeList])
     nil
-  for u in sigl repeat
-    for v in sigl | not (u=v) repeat
-      if SourceLevelSubsume(u,v) then sigl:= delete(v,sigl)
-              --before we complain about duplicate signatures, we should
-              --check that we do not have for example, a partial - as
-              --well as a total one.  SourceLevelSubsume (from CATEGORY BOOT)
-              --should do this
   1=#sigl => first sigl
   stackSemanticError(["duplicate signatures for ",op,": ",argModeList],nil)
  

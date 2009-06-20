@@ -165,11 +165,6 @@ IntegerNumberSystem(): Category ==
 <<domain SINT SingleInteger>>=
 )abbrev domain SINT SingleInteger
 
--- following patch needed to deal with *:(I,%) -> %
--- affects behavior of SourceLevelSubset
---)bo $noSubsets := true
--- No longer - JHD !! still needed 5/3/91 BMT
-
 ++ Author:  Michael Monagan
 ++ Date Created:
 ++    January 1988
@@ -343,8 +338,6 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    unitNormal x ==
       x < 0 => [-1,-x,-1]$UCA
       [1,x,1]$UCA
-
-)bo $noSubsets := false
 
 @
 

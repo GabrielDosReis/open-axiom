@@ -300,27 +300,9 @@ SigListOpSubsume([[name1,sig1,:.],:.],list) ==
   lsig1 := #sig1
   ans:=[]
   for (n:=[[name2,sig2,:.],:.]) in list repeat
-    name1=name2 and lsig1 = #sig2 and SourceLevelSubsume(sig1,sig2) =>
+    name1=name2 and lsig1 = #sig2 and sig1 = sig2 =>
       ans:=[n,:ans]
   return ans
- 
-SigOpsubsume([[name1,sig1,:flag1],pred1,:.],[[name2,sig2,:flag2],pred2,:.]) ==
-                    --flag1 = flag2 and :this really should be checked
-  name1=name2 and LENGTH sig1=LENGTH sig2 and SourceLevelSubsume(sig1,sig2)
- 
-SourceLevelSubsume([out1,:in1],[out2,:in2]) ==
-  -- Checks for source-level subsumption in the sense of SYSTEM SCRIPT
-  --   true if the first signature subsumes the second
-  SourceLevelSubset(out1,out2) and
-    (and/[SourceLevelSubset(inarg2,inarg1) for inarg1 in in1 for inarg2 in in2])
- 
-SourceLevelSubset(a,b) ==
-  --true if a is a source-level subset of b
-  a=b => true
-  $noSubsumption=true => false
-  b is ["Union",:blist] and member(a,blist) => true
-  BOUNDP '$noSubsets and $noSubsets => false
-  not null isSubDomain(a,b)
  
 MachineLevelSubsume([name1,[out1,:in1],:flag1],[name2,[out2,:in2],:flag2]) ==
   -- Checks for machine-level subsumption in the sense of SYSTEM SCRIPT
