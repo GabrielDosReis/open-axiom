@@ -200,7 +200,7 @@ knownInfo pred ==
     v:= get(op,"modemap",$e)
     for w in v repeat
       ww:= CDAR w  --the actual signature part
-      #ww = #sig and SourceLevelSubsume(ww,sig) =>
+      ww = sig =>
         CAADR w  = true => return true
         false
         --error '"knownInfo"

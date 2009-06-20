@@ -1,3 +1,20 @@
+2009-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/category.boot (SigOpsubsume): Remove as unused.
+	(SourceLevelSubsume): Remove.
+	(SourceLevelSubset): Likewise.
+	* interp/sys-globals.boot: Likewise.
+	* interp/define.boot: Tidy.
+	* interp/functor.boot: Likewise.
+	* interp/info.boot: Likewise.
+	* algebra/si.spad.pamphlet: Don't set $noSubsets. 
+	* algebra/fortpak.spad.pamphlet: Don't set $noSubsumption.
+	* algebra/fortran.spad.pamphlet: Likewise.
+	* algebra/gdirprod.spad.pamphlet: Likewise.
+	* algebra/mkfunc.spad.pamphlet: Likewise.
+	* algebra/oct.spad.pamphlet: Likewise.
+	* algebra/vector.spad.pamphlet: Likewise.
+
 2009-06-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/domain.spad.pamphlet: ConstructorCall is now

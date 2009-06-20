@@ -374,9 +374,6 @@ $constructorLineNumber := 0
 ++
 $maxSignatureLineNumber := 0
 
-++
-$noSubsumption :=true
-
 SPADERRORSTREAM := _*ERROR_-OUTPUT_*
 
 ++

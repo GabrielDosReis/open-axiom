@@ -734,8 +734,7 @@ SigSlotsMatch(sig,pattern,implem) ==
   sig'=pat' => true
   --If we don't have this next test, then we'll recurse in SetFunctionSlots
   implem is ['Subsumed,:.] => nil
-  SourceLevelSubsume(sig',pat') => true
-  nil
+  sig' = pat'
  
 CheckVector(vec,name,catvecListMaker) ==
   code:= nil
