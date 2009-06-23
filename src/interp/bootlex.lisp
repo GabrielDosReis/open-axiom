@@ -94,10 +94,9 @@
            (*EOF* NIL)
            (File-Closed NIL)
            (/editfile *spad-input-file*)
-           (|$noSubsumption| |$noSubsumption|)
            in-stream out-stream)
   (declare (special echo-meta /editfile *comp370-apply* *EOF*
-                    File-Closed Xcape |$noSubsumption|))
+                    File-Closed Xcape))
   (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
   (progv (if (not |$InteractiveMode|) '(|$InteractiveFrame|))
