@@ -799,10 +799,10 @@ checkForFreeVariables(v,locals) ==
     v="$$$" => v -- Placeholder for mini-vector
     MEMQ(v,$boundVariables) => v
     p := POSITION(v,$freeVariables) =>
-      ["ELT","envArg",positionInVec(p,#($freeVariables))]
+      ["getSimpleArrayEntry","envArg",positionInVec(p,#($freeVariables))]
     (locals = "ALL") or MEMQ(v,locals) =>
       $freeVariables := [v,:$freeVariables]
-      ["ELT","envArg",positionInVec(0,#($freeVariables))]
+      ["getSimpleArrayEntry","envArg",positionInVec(0,#($freeVariables))]
     v
   LISTP v =>
     CDR(LASTTAIL v) => -- Must be a better way to check for a genuine list?
@@ -835,9 +835,9 @@ checkForFreeVariables(v,locals) ==
         -- if we are in a lambda within another lambda.
         newvar := 
           p := POSITION(var,$freeVariables) =>
-            ["ELT","envArg",positionInVec(p,#($freeVariables))]
+            ["getSimpleArrayEntry","envArg",positionInVec(p,#($freeVariables))]
           $freeVariables := [var,:$freeVariables]
-          ["ELT","envArg",positionInVec(0,#($freeVariables))]
+          ["getSimpleArrayEntry","envArg",positionInVec(0,#($freeVariables))]
         ["SETF",newvar,checkForFreeVariables(form,locals)]
       error "Non-simple variable bindings are not currently supported"
     op = "PROG" =>
