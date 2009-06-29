@@ -1,0 +1,7 @@
+++ Contributed by Luke Wagner
+++ Issue: The compiler should allow pretend from Union types.
+)abbrev package TEST Test
+Test() : with
+    foo : Union(Integer, Float) -> SExpression
+  == add
+    foo u == u pretend SExpression

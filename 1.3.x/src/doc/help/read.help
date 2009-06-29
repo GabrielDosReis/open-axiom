@@ -1,0 +1,43 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.20.  )read
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  -  )read [fileName]
+  -  )read [fileName] [)quiet] [)ifthere]
+ 
+Command Description: 
+ 
+This command is used to read .input files into OpenAxiom. The command
+ 
+)read matrix.input
+ 
+will read the contents of the file matrix.input into OpenAxiom. The ``.input''
+file extension is optional. See the OpenAxiom User Guide index for more
+information about .input files.
+ 
+This command remembers the previous file you edited, read or compiled. If you
+do not specify a file name, the previous file will be read.
+ 
+The )ifthere option checks to see whether the .input file exists. If it does
+not, the )read command does nothing. If you do not use this option and the
+file does not exist, you are asked to give the name of an existing .input
+file.
+ 
+The )quiet option suppresses output while the file is being read.
+ 
+Also See: 
+o )compile
+o )edit
+o )history
+ 
