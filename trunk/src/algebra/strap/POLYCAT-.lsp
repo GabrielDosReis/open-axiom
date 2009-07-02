@@ -1184,7 +1184,8 @@
                                              (GO G191)))
                                           (SEQ
                                            (EXIT
-                                            (SETELT #15# #16#
+                                            (|setSimpleArrayEntry| #15#
+                                             #16#
                                              (PROGN
                                                (LETT #21# NIL
                                                 |POLYCAT-;conditionP;MU;27|)

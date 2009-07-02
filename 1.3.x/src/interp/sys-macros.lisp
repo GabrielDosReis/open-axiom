@@ -1240,7 +1240,7 @@
 					       ((CONS 'MIN CONDS)) ) ))
 			     (CONS 'REPEAT 
 				   (NCONC (CDR (REVERSE L))
-					  (LIST (LIST 'SETELT
+					  (LIST (LIST '|setSimpleArrayEntry|
 						      ANS 
 						      COUNTER
 						      BODY))))
