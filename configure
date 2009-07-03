@@ -810,6 +810,7 @@ X_CFLAGS
 XMKMF
 axiom_c_runtime_extra
 axiom_c_runtime
+oa_enable_profiling
 axiom_optimize_options
 axiom_enable_checking
 axiom_all_prerequisites
@@ -936,6 +937,7 @@ enable_libtool_lock
 with_lisp
 enable_gcl
 enable_checking
+enable_profiling
 with_x
 '
       ac_precious_vars='build_alias
@@ -1585,6 +1587,7 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-gcl   build GCL from OpenAxiom source
   --enable-checking  turn runtime checking on
+  --enable-profiling  turn profiling on
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3734,13 +3737,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:3737: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:3740: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:3740: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:3743: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:3743: output\"" >&5)
+  (eval echo "\"\$as_me:3746: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -4943,7 +4946,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4946 "configure"' > conftest.$ac_ext
+  echo '#line 4949 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7091,11 +7094,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7094: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7097: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7098: \$? = $ac_status" >&5
+   echo "$as_me:7101: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7430,11 +7433,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7433: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7436: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7437: \$? = $ac_status" >&5
+   echo "$as_me:7440: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7535,11 +7538,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7538: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7541: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7542: \$? = $ac_status" >&5
+   echo "$as_me:7545: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7590,11 +7593,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7593: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7596: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7597: \$? = $ac_status" >&5
+   echo "$as_me:7600: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10390,7 +10393,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10393 "configure"
+#line 10396 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10486,7 +10489,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10489 "configure"
+#line 10492 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12940,6 +12943,21 @@ if test x"$axiom_enable_checking" = xyes; then
    esac
    { $as_echo "$as_me:$LINENO: runtime checking may increase compilation time" >&5
 $as_echo "$as_me: runtime checking may increase compilation time" >&6;}
+fi
+
+
+
+
+## Parse args for profiling-enabled build.
+oa_enable_profiling=no
+# Check whether --enable-profiling was given.
+if test "${enable_profiling+set}" = set; then
+  enableval=$enable_profiling; case $enableval in
+                  yes|no) oa_enable_profiling=$enableval ;;
+                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-profiling" >&5
+$as_echo "$as_me: error: erroneous value for --enable-profiling" >&2;}
+   { (exit 1); exit 1; }; } ;;
+               esac
 fi
 
 
