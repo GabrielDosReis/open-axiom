@@ -354,6 +354,16 @@ fi
 AC_SUBST(axiom_enable_checking)
 AC_SUBST(axiom_optimize_options)
 
+## Parse args for profiling-enabled build.
+oa_enable_profiling=no
+AC_ARG_ENABLE([profiling], [  --enable-profiling  turn profiling on],
+              [case $enableval in
+                  yes|no) oa_enable_profiling=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-profiling]) ;;
+               esac])
+
+AC_SUBST(oa_enable_profiling)
+
 # FIXME: Move this out of here.  
 axiom_c_runtime=
 AC_SUBST(axiom_c_runtime)

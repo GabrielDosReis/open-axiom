@@ -136,6 +136,9 @@
 
 (proclaim '(optimize @axiom_optimize_options@))
 
+;; Enablig profiling of generated Lisp codes.
+(defconstant |$EnableLispProfiling| @oa_enable_profiling@)
+
 ;; Return true if the full OpenAxiom algebra system is completed
 ;; built.
 (defun |%algebraSystemIsComplete| nil
@@ -824,7 +827,10 @@
 	(|startCompileDuration|)
 	(multiple-value-bind (result warning-p failure-p) 
 	 #-:ecl (compile-file file :output-file out-file)
-	 #+:ecl (compile-file file :output-file out-file :system-p t)
+	 #+:ecl (if |$EnableLispProfiling|
+		    (compile-file file :output-file out-file :system-p t
+				  :c-file t :h-file t)
+		  (compile-file file :output-file out-file :system-p t))
 	 #+:ecl (if (and result (not failure-p)
 			 (null (c::build-fasl (compile-file-pathname out-file)
 					      :lisp-files `(,out-file)

@@ -202,6 +202,12 @@ LDF=@LDF@ -lm
 LISP=@LISP@
 oa_c_runtime_extra = @LIBS@ @axiom_c_runtime_extra@ -lm
 
+oa_yesno_to_lisp_boolean = $(subst yes,t,$(subst no,nil,$(1)))
+
+oa_enable_profiling = @oa_enable_profiling@
+oa_enable_lisp_profiling = \
+	$(call oa_yesno_to_lisp_boolean,$(oa_enable_profiling))
+
 axiom_use_x = @axiom_use_x@
 AXIOM_X11_CFLAGS = @X_CFLAGS@ 
 AXIOM_X11_LDFLAGS = @X_LIBS@ @X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@

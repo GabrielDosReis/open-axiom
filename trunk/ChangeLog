@@ -1,3 +1,10 @@
+2009-07-02  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* configure.ac.pamphlet: Support --enable-profiling.
+	* config/var-def.mk (oa_yesno_to_lisp_boolean): New.
+	(oa_enable_profiling): Likewise.
+	(oa_enable_lisp_profiling): Likewise.
+
 2009-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Tidy Lisp systems invocation options.
