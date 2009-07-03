@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2009, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -1204,15 +1204,6 @@
 (defmacro COLLECT (&rest L)
   (let ((U (REPEAT-TRAN L NIL)))
     (CONS 'THETA (CONS '\, (NCONC (CAR U) (LIST (CDR U)))))))
-
-;; The following was changed to a macro for efficiency in CCL.  To change
-;; it back to a function would require recompilation of a large chunk of
-;; the library.
-(defmacro PRIMVEC2ARR (x) 
-  x) ;redefine to change Array rep
-
-(defmacro COLLECTVEC (&rest L)
-  `(PRIMVEC2ARR (COLLECTV ,@L)))
 
 (defmacro COLLECTV (&rest L)
   (PROG (CONDS BODY ANS COUNTER X Y)

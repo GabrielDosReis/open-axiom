@@ -2217,7 +2217,7 @@ compReduce(form,m,e) ==
 compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   [collectOp,:itl,body]:= collectForm
   if STRINGP op then op:= INTERN op
-  ^MEMQ(collectOp,'(COLLECT COLLECTV COLLECTVEC)) =>
+  not MEMQ(collectOp,'(COLLECT COLLECTV)) =>
         systemError ['"illegal reduction form:",form]
   $sideEffectsList: local := nil
   $until: local := nil
@@ -2269,6 +2269,7 @@ compRepeatOrCollect(form,m,e) ==
       fn(form,$exitModeStack,$leaveLevelStack,$formalArgList,e) ==
         $until: local := nil
         oldEnv := e
+        aggr := nil
         [repeatOrCollect,:itl,body]:= form
         itl':=
           [([x',e]:= compIterator(x,e) or return "failed"; x') for x in itl]
@@ -2276,15 +2277,14 @@ compRepeatOrCollect(form,m,e) ==
         targetMode:= first $exitModeStack
         bodyMode:=
           repeatOrCollect="COLLECT" =>
-            targetMode = '$EmptyMode => '$EmptyMode
-            (u:=modeIsAggregateOf('List,targetMode,e)) =>
-              CADR u
-            (u:=modeIsAggregateOf('PrimitiveArray,targetMode,e)) =>
-              repeatOrCollect:='COLLECTV
-              CADR u
-            (u:=modeIsAggregateOf('Vector,targetMode,e)) =>
-              repeatOrCollect:='COLLECTVEC
-              CADR u
+            targetMode = $EmptyMode => (aggr:=["List",$EmptyMode]; $EmptyMode)
+            [aggr,u] := modeIsAggregateOf('List,targetMode,e) => u
+            [aggr,u] := modeIsAggregateOf('PrimitiveArray,targetMode,e) =>
+              repeatOrCollect := "COLLECTV"
+              u
+            [aggr,u] := modeIsAggregateOf('Vector,targetMode,e) =>
+              repeatOrCollect := "COLLECTV"
+              u
             stackMessage('"Invalid collect bodytype")
             return nil
             -- If we're doing a collect, and the type isn't conformable
@@ -2296,16 +2296,8 @@ compRepeatOrCollect(form,m,e) ==
           [untilCode,.,e']:= comp($until,$Boolean,e')
           itl':= substitute(["UNTIL",untilCode],'$until,itl')
         form':= [repeatOrCollect,:itl',body']
-        m'':=
-          repeatOrCollect="COLLECT" =>
-            (u:=modeIsAggregateOf('List,targetMode,e)) => CAR u
-            ["List",m']
-          repeatOrCollect="COLLECTV" =>
-            (u:=modeIsAggregateOf('PrimitiveArray,targetMode,e)) => CAR u
-            ["PrimitiveArray",m']
-          repeatOrCollect="COLLECTVEC" =>
-            (u:=modeIsAggregateOf('Vector,targetMode,e)) => CAR u
-            ["Vector",m']
+        m'' := 
+          aggr is [c,.] and MEMQ(c,'(List PrimitiveArray Vector)) => [c,m']
           m'
         T := coerceExit([form',m'',e'],targetMode) or return nil
         -- iterator variables and other variables declared in
@@ -2410,16 +2402,15 @@ compIterator(it,e) ==
 --    m
 --  get(name,"value",e) is [c,R] and MEMQ(c,'(Vector List)) => R
  
-modeIsAggregateOf(ListOrVector,m,e) ==
-  m is [ =ListOrVector,R] => [m,R]
---m = '$EmptyMode => [m,m] I don't think this is correct, breaks POLY +
+modeIsAggregateOf(agg,m,e) ==
+  m is [ =agg,R] => [m,R]
   m is ["Union",:l] =>
-    mList:= [pair for m' in l | (pair:= modeIsAggregateOf(ListOrVector,m',e))]
+    mList:= [pair for m' in l | (pair:= modeIsAggregateOf(agg,m',e))]
     1=#mList => first mList
   name:=
     m is [fn,:.] => fn
     RepIfRepHack m
-  get(name,"value",e) is [[ =ListOrVector,R],:.] => [m,R]
+  get(name,"value",e) is [[ =agg,R],:.] => [m,R]
  
 --% VECTOR ITERATORS
  

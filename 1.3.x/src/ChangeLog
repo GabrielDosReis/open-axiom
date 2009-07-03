@@ -1,4 +1,10 @@
-2009-07-02  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2009-07-03  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/sys-macros.lisp (PRIMVEC2ARR): Remove.
+	(COLLECTVEC): Likewise.
+	* interp/compiler.boot (compRepeatOrCollect): Tidy.
+
+2009-07-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-macros.lisp (COLLECTV): Use setSimpleArrayEntry, not
 	SETELT. 

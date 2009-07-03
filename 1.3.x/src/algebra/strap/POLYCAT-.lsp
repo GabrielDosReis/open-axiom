@@ -1162,95 +1162,93 @@
                                      |POLYCAT-;conditionP;MU;27|)
                                     (EXIT
                                      (CONS 0
-                                      (PRIMVEC2ARR
-                                       (PROGN
-                                         (LETT #15#
-                                          (GETREFV (SIZE |monslist|))
+                                      (PROGN
+                                        (LETT #15#
+                                         (GETREFV (SIZE |monslist|))
+                                         |POLYCAT-;conditionP;MU;27|)
+                                        (SEQ
+                                         (LETT #16# 0
                                           |POLYCAT-;conditionP;MU;27|)
-                                         (SEQ
-                                          (LETT #16# 0
-                                           |POLYCAT-;conditionP;MU;27|)
-                                          (LETT |mons| NIL
-                                           |POLYCAT-;conditionP;MU;27|)
-                                          (LETT #17# |monslist|
-                                           |POLYCAT-;conditionP;MU;27|)
-                                          G190
-                                          (COND
-                                            ((OR (ATOM #17#)
-                                              (PROGN
-                                                (LETT |mons| (CAR #17#)
-                                                 |POLYCAT-;conditionP;MU;27|)
-                                                NIL))
-                                             (GO G191)))
-                                          (SEQ
-                                           (EXIT
-                                            (|setSimpleArrayEntry| #15#
-                                             #16#
+                                         (LETT |mons| NIL
+                                          |POLYCAT-;conditionP;MU;27|)
+                                         (LETT #17# |monslist|
+                                          |POLYCAT-;conditionP;MU;27|)
+                                         G190
+                                         (COND
+                                           ((OR (ATOM #17#)
                                              (PROGN
-                                               (LETT #21# NIL
+                                               (LETT |mons| (CAR #17#)
                                                 |POLYCAT-;conditionP;MU;27|)
-                                               (SEQ
-                                                (LETT |m| NIL
-                                                 |POLYCAT-;conditionP;MU;27|)
-                                                (LETT #18# |mons|
-                                                 |POLYCAT-;conditionP;MU;27|)
-                                                G190
-                                                (COND
-                                                  ((OR (ATOM #18#)
-                                                    (PROGN
-                                                      (LETT |m|
-                                                       (CAR #18#)
-                                                       |POLYCAT-;conditionP;MU;27|)
-                                                      NIL))
-                                                   (GO G191)))
-                                                (SEQ
-                                                 (EXIT
-                                                  (PROGN
-                                                    (LETT #19#
-                                                     (SPADCALL |m|
-                                                      (SPADCALL
-                                                       (SPADCALL
-                                                        (QCDR |ans|)
-                                                        (LETT |i|
-                                                         (+ |i| 1)
-                                                         |POLYCAT-;conditionP;MU;27|)
-                                                        (|getShellEntry|
-                                                         $ 181))
-                                                       (|getShellEntry|
-                                                        $ 51))
-                                                      (|getShellEntry|
-                                                       $ 182))
-                                                     |POLYCAT-;conditionP;MU;27|)
-                                                    (COND
-                                                      (#21#
-                                                       (LETT #20#
-                                                        (SPADCALL #20#
-                                                         #19#
-                                                         (|getShellEntry|
-                                                          $ 183))
-                                                        |POLYCAT-;conditionP;MU;27|))
-                                                      ('T
-                                                       (PROGN
-                                                         (LETT #20#
-                                                          #19#
-                                                          |POLYCAT-;conditionP;MU;27|)
-                                                         (LETT #21# 'T
-                                                          |POLYCAT-;conditionP;MU;27|)))))))
-                                                (LETT #18# (CDR #18#)
-                                                 |POLYCAT-;conditionP;MU;27|)
-                                                (GO G190) G191
-                                                (EXIT NIL))
+                                               NIL))
+                                            (GO G191)))
+                                         (SEQ
+                                          (EXIT
+                                           (|setSimpleArrayEntry| #15#
+                                            #16#
+                                            (PROGN
+                                              (LETT #21# NIL
+                                               |POLYCAT-;conditionP;MU;27|)
+                                              (SEQ
+                                               (LETT |m| NIL
+                                                |POLYCAT-;conditionP;MU;27|)
+                                               (LETT #18# |mons|
+                                                |POLYCAT-;conditionP;MU;27|)
+                                               G190
                                                (COND
-                                                 (#21# #20#)
-                                                 ('T
-                                                  (|spadConstant| $ 27)))))))
-                                          (LETT #17#
-                                           (PROG1 (CDR #17#)
-                                             (LETT #16# (QSADD1 #16#)
-                                              |POLYCAT-;conditionP;MU;27|))
-                                           |POLYCAT-;conditionP;MU;27|)
-                                          (GO G190) G191 (EXIT NIL))
-                                         #15#))))))))))
+                                                 ((OR (ATOM #18#)
+                                                   (PROGN
+                                                     (LETT |m|
+                                                      (CAR #18#)
+                                                      |POLYCAT-;conditionP;MU;27|)
+                                                     NIL))
+                                                  (GO G191)))
+                                               (SEQ
+                                                (EXIT
+                                                 (PROGN
+                                                   (LETT #19#
+                                                    (SPADCALL |m|
+                                                     (SPADCALL
+                                                      (SPADCALL
+                                                       (QCDR |ans|)
+                                                       (LETT |i|
+                                                        (+ |i| 1)
+                                                        |POLYCAT-;conditionP;MU;27|)
+                                                       (|getShellEntry|
+                                                        $ 181))
+                                                      (|getShellEntry|
+                                                       $ 51))
+                                                     (|getShellEntry| $
+                                                      182))
+                                                    |POLYCAT-;conditionP;MU;27|)
+                                                   (COND
+                                                     (#21#
+                                                      (LETT #20#
+                                                       (SPADCALL #20#
+                                                        #19#
+                                                        (|getShellEntry|
+                                                         $ 183))
+                                                       |POLYCAT-;conditionP;MU;27|))
+                                                     ('T
+                                                      (PROGN
+                                                        (LETT #20# #19#
+                                                         |POLYCAT-;conditionP;MU;27|)
+                                                        (LETT #21# 'T
+                                                         |POLYCAT-;conditionP;MU;27|)))))))
+                                               (LETT #18# (CDR #18#)
+                                                |POLYCAT-;conditionP;MU;27|)
+                                               (GO G190) G191
+                                               (EXIT NIL))
+                                              (COND
+                                                (#21# #20#)
+                                                ('T
+                                                 (|spadConstant| $ 27)))))))
+                                         (LETT #17#
+                                          (PROG1 (CDR #17#)
+                                            (LETT #16# (QSADD1 #16#)
+                                             |POLYCAT-;conditionP;MU;27|))
+                                          |POLYCAT-;conditionP;MU;27|)
+                                         (GO G190) G191 (EXIT NIL))
+                                        #15#)))))))))
            #10# (EXIT #10#))))) 
 
 (DEFUN |POLYCAT-;charthRoot;SU;28| (|p| $)
