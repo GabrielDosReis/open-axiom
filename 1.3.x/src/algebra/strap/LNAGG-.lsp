@@ -30,8 +30,7 @@
                   (LETT #1# (SPADCALL |a| (|getShellEntry| $ 10))
                         |LNAGG-;indices;AL;1|)
                   G190 (COND ((> |i| #1#) (GO G191)))
-                  (SEQ (EXIT (LETT #0# (CONS |i| #0#)
-                                   |LNAGG-;indices;AL;1|)))
+                  (LETT #0# (CONS |i| #0#) |LNAGG-;indices;AL;1|)
                   (LETT |i| (+ |i| 1) |LNAGG-;indices;AL;1|) (GO G190)
                   G191 (EXIT (NREVERSE0 #0#)))))))) 
 

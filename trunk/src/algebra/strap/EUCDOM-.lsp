@@ -274,15 +274,12 @@
                                                |EUCDOM-;principalIdeal;LR;9|)
                                               NIL))
                                            (GO G191)))
-                                        (SEQ
-                                         (EXIT
-                                          (LETT #0#
-                                           (CONS
-                                            (SPADCALL (QVELT |u| 1)
-                                             |vv|
-                                             (|getShellEntry| $ 29))
-                                            #0#)
-                                           |EUCDOM-;principalIdeal;LR;9|)))
+                                        (LETT #0#
+                                         (CONS
+                                          (SPADCALL (QVELT |u| 1) |vv|
+                                           (|getShellEntry| $ 29))
+                                          #0#)
+                                         |EUCDOM-;principalIdeal;LR;9|)
                                         (LETT #1# (CDR #1#)
                                          |EUCDOM-;principalIdeal;LR;9|)
                                         (GO G190) G191
@@ -311,9 +308,8 @@
                                      |EUCDOM-;expressIdealMember;LSU;10|)
                                     NIL))
                               (GO G191)))
-                           (SEQ (EXIT (LETT #0#
-                                       (CONS (|spadConstant| $ 19) #0#)
-                                       |EUCDOM-;expressIdealMember;LSU;10|)))
+                           (LETT #0# (CONS (|spadConstant| $ 19) #0#)
+                                 |EUCDOM-;expressIdealMember;LSU;10|)
                            (LETT #1# (CDR #1#)
                                  |EUCDOM-;expressIdealMember;LSU;10|)
                            (GO G190) G191 (EXIT (NREVERSE0 #0#))))))
@@ -344,14 +340,12 @@
                                             |EUCDOM-;expressIdealMember;LSU;10|)
                                            NIL))
                                         (GO G191)))
-                                     (SEQ
-                                      (EXIT
-                                       (LETT #2#
-                                        (CONS
-                                         (SPADCALL (QCDR |q|) |v|
-                                          (|getShellEntry| $ 29))
-                                         #2#)
-                                        |EUCDOM-;expressIdealMember;LSU;10|)))
+                                     (LETT #2#
+                                      (CONS
+                                       (SPADCALL (QCDR |q|) |v|
+                                        (|getShellEntry| $ 29))
+                                       #2#)
+                                      |EUCDOM-;expressIdealMember;LSU;10|)
                                      (LETT #3# (CDR #3#)
                                       |EUCDOM-;expressIdealMember;LSU;10|)
                                      (GO G190) G191

@@ -59,17 +59,15 @@
                            (LETT |x| (CAR #0#) |HOAGG-;any?;MAB;3|)
                            NIL))
                      (GO G191)))
-                  (SEQ (EXIT (PROGN
-                               (LETT #1# (SPADCALL |x| |f|)
-                                     |HOAGG-;any?;MAB;3|)
-                               (COND
-                                 (#3# (LETT #2#
-                                       (COND (#2# 'T) ('T #1#))
-                                       |HOAGG-;any?;MAB;3|))
-                                 ('T
-                                  (PROGN
-                                    (LETT #2# #1# |HOAGG-;any?;MAB;3|)
-                                    (LETT #3# 'T |HOAGG-;any?;MAB;3|)))))))
+                  (PROGN
+                    (LETT #1# (SPADCALL |x| |f|) |HOAGG-;any?;MAB;3|)
+                    (COND
+                      (#3# (LETT #2# (COND (#2# 'T) ('T #1#))
+                                 |HOAGG-;any?;MAB;3|))
+                      ('T
+                       (PROGN
+                         (LETT #2# #1# |HOAGG-;any?;MAB;3|)
+                         (LETT #3# 'T |HOAGG-;any?;MAB;3|)))))
                   (LETT #0# (CDR #0#) |HOAGG-;any?;MAB;3|) (GO G190)
                   G191 (EXIT NIL))
              (COND (#3# #2#) ('T 'NIL))))))) 
@@ -89,18 +87,15 @@
                            (LETT |x| (CAR #0#) |HOAGG-;every?;MAB;4|)
                            NIL))
                      (GO G191)))
-                  (SEQ (EXIT (PROGN
-                               (LETT #1# (SPADCALL |x| |f|)
-                                     |HOAGG-;every?;MAB;4|)
-                               (COND
-                                 (#3# (LETT #2#
-                                       (COND (#2# #1#) ('T 'NIL))
-                                       |HOAGG-;every?;MAB;4|))
-                                 ('T
-                                  (PROGN
-                                    (LETT #2# #1#
-                                     |HOAGG-;every?;MAB;4|)
-                                    (LETT #3# 'T |HOAGG-;every?;MAB;4|)))))))
+                  (PROGN
+                    (LETT #1# (SPADCALL |x| |f|) |HOAGG-;every?;MAB;4|)
+                    (COND
+                      (#3# (LETT #2# (COND (#2# #1#) ('T 'NIL))
+                                 |HOAGG-;every?;MAB;4|))
+                      ('T
+                       (PROGN
+                         (LETT #2# #1# |HOAGG-;every?;MAB;4|)
+                         (LETT #3# 'T |HOAGG-;every?;MAB;4|)))))
                   (LETT #0# (CDR #0#) |HOAGG-;every?;MAB;4|) (GO G190)
                   G191 (EXIT NIL))
              (COND (#3# #2#) ('T 'T))))))) 
@@ -120,20 +115,17 @@
                            (LETT |x| (CAR #0#) |HOAGG-;count;MANni;5|)
                            NIL))
                      (GO G191)))
-                  (SEQ (EXIT (COND
-                               ((SPADCALL |x| |f|)
-                                (PROGN
-                                  (LETT #1# 1 |HOAGG-;count;MANni;5|)
-                                  (COND
-                                    (#3#
-                                     (LETT #2# (+ #2# #1#)
-                                      |HOAGG-;count;MANni;5|))
-                                    ('T
-                                     (PROGN
-                                       (LETT #2# #1#
-                                        |HOAGG-;count;MANni;5|)
-                                       (LETT #3# 'T
-                                        |HOAGG-;count;MANni;5|)))))))))
+                  (COND
+                    ((SPADCALL |x| |f|)
+                     (PROGN
+                       (LETT #1# 1 |HOAGG-;count;MANni;5|)
+                       (COND
+                         (#3# (LETT #2# (+ #2# #1#)
+                                    |HOAGG-;count;MANni;5|))
+                         ('T
+                          (PROGN
+                            (LETT #2# #1# |HOAGG-;count;MANni;5|)
+                            (LETT #3# 'T |HOAGG-;count;MANni;5|)))))))
                   (LETT #0# (CDR #0#) |HOAGG-;count;MANni;5|) (GO G190)
                   G191 (EXIT NIL))
              (COND (#3# #2#) ('T 0))))))) 
@@ -183,20 +175,17 @@
                               (LETT |b| (CAR #0#) |HOAGG-;=;2AB;9|)
                               NIL))
                         (GO G191)))
-                     (SEQ (EXIT (PROGN
-                                  (LETT #2#
-                                        (SPADCALL |a| |b|
-                                         (|getShellEntry| $ 30))
-                                        |HOAGG-;=;2AB;9|)
-                                  (COND
-                                    (#4#
-                                     (LETT #3#
-                                      (COND (#3# #2#) ('T 'NIL))
-                                      |HOAGG-;=;2AB;9|))
-                                    ('T
-                                     (PROGN
-                                       (LETT #3# #2# |HOAGG-;=;2AB;9|)
-                                       (LETT #4# 'T |HOAGG-;=;2AB;9|)))))))
+                     (PROGN
+                       (LETT #2#
+                             (SPADCALL |a| |b| (|getShellEntry| $ 30))
+                             |HOAGG-;=;2AB;9|)
+                       (COND
+                         (#4# (LETT #3# (COND (#3# #2#) ('T 'NIL))
+                                    |HOAGG-;=;2AB;9|))
+                         ('T
+                          (PROGN
+                            (LETT #3# #2# |HOAGG-;=;2AB;9|)
+                            (LETT #4# 'T |HOAGG-;=;2AB;9|)))))
                      (LETT #1#
                            (PROG1 (CDR #1#)
                              (LETT #0# (CDR #0#) |HOAGG-;=;2AB;9|))
@@ -224,12 +213,11 @@
                                     |HOAGG-;coerce;AOf;10|)
                                    NIL))
                              (GO G191)))
-                          (SEQ (EXIT (LETT #0#
-                                      (CONS
-                                       (SPADCALL |a|
-                                        (|getShellEntry| $ 39))
-                                       #0#)
-                                      |HOAGG-;coerce;AOf;10|)))
+                          (LETT #0#
+                                (CONS (SPADCALL |a|
+                                       (|getShellEntry| $ 39))
+                                      #0#)
+                                |HOAGG-;coerce;AOf;10|)
                           (LETT #1# (CDR #1#) |HOAGG-;coerce;AOf;10|)
                           (GO G190) G191 (EXIT (NREVERSE0 #0#))))
                    (|getShellEntry| $ 41))

@@ -989,7 +989,7 @@ mutateLETFormWithUnaryFunction(form,fun) ==
 -- element of $middleEndMacroList is actually a macro call
 $middleEndMacroList == 
   '(COLLECT REPEAT SUCHTHATCLAUSE THETA COLLECTV 
-    COLLECTVEC THETA1 SPADREDUCE SPADDO)
+    THETA1 SPADREDUCE SPADDO)
 
 middleEndExpand: %Form -> %Form
 middleEndExpand x ==
@@ -1419,6 +1419,13 @@ declareGlobalVariables: %List -> %List
 declareGlobalVariables vars ==
   ["DECLARE",["SPECIAL",:vars]]
 
+simplifySEQ form ==
+  isAtomicForm form => form
+  form is ["SEQ",[op,a]] and MEMQ(op, '(EXIT RETURN)) => simplifySEQ a
+  for stmts in tails form repeat
+    rplac(first stmts, simplifySEQ first stmts)
+  form
+
 ++ Generate Lisp code by lowering middle end defining form `x'.
 ++ x has the strucrure: <name, parms, stmt1, ...>
 transformToBackendCode: %Form -> %Code
@@ -1435,7 +1442,7 @@ transformToBackendCode x ==
     null rest body and 
       (atom stmt or first stmt = "SEQ" or not CONTAINED("EXIT",stmt)) =>
         body
-    [["SEQ",:body]]
+    [simplifySEQ ["SEQ",:body]]
   $FluidVars := REMDUP nreverse $FluidVars
   $LocalVars := S_-(S_-(REMDUP nreverse $LocalVars,$FluidVars),
                   LISTOFATOMS second x)

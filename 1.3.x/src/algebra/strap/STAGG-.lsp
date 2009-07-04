@@ -57,16 +57,15 @@
                  (LETT #0# NIL |STAGG-;first;ANniA;3|)
                  (SEQ (LETT |i| 1 |STAGG-;first;ANniA;3|) G190
                       (COND ((QSGREATERP |i| |n|) (GO G191)))
-                      (SEQ (EXIT (LETT #0#
-                                       (CONS
-                                        (|STAGG-;c2| |x|
-                                         (LETT |x|
-                                          (SPADCALL |x|
-                                           (|getShellEntry| $ 17))
-                                          |STAGG-;first;ANniA;3|)
-                                         $)
-                                        #0#)
-                                       |STAGG-;first;ANniA;3|)))
+                      (LETT #0#
+                            (CONS (|STAGG-;c2| |x|
+                                      (LETT |x|
+                                       (SPADCALL |x|
+                                        (|getShellEntry| $ 17))
+                                       |STAGG-;first;ANniA;3|)
+                                      $)
+                                  #0#)
+                            |STAGG-;first;ANniA;3|)
                       (LETT |i| (QSADD1 |i|) |STAGG-;first;ANniA;3|)
                       (GO G190) G191 (EXIT (NREVERSE0 #0#))))
                (|getShellEntry| $ 19)))))) 

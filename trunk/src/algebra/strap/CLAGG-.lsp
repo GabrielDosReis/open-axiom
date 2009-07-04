@@ -59,20 +59,17 @@
                            (LETT |x| (CAR #0#) |CLAGG-;count;MANni;2|)
                            NIL))
                      (GO G191)))
-                  (SEQ (EXIT (COND
-                               ((SPADCALL |x| |f|)
-                                (PROGN
-                                  (LETT #1# 1 |CLAGG-;count;MANni;2|)
-                                  (COND
-                                    (#3#
-                                     (LETT #2# (+ #2# #1#)
-                                      |CLAGG-;count;MANni;2|))
-                                    ('T
-                                     (PROGN
-                                       (LETT #2# #1#
-                                        |CLAGG-;count;MANni;2|)
-                                       (LETT #3# 'T
-                                        |CLAGG-;count;MANni;2|)))))))))
+                  (COND
+                    ((SPADCALL |x| |f|)
+                     (PROGN
+                       (LETT #1# 1 |CLAGG-;count;MANni;2|)
+                       (COND
+                         (#3# (LETT #2# (+ #2# #1#)
+                                    |CLAGG-;count;MANni;2|))
+                         ('T
+                          (PROGN
+                            (LETT #2# #1# |CLAGG-;count;MANni;2|)
+                            (LETT #3# 'T |CLAGG-;count;MANni;2|)))))))
                   (LETT #0# (CDR #0#) |CLAGG-;count;MANni;2|) (GO G190)
                   G191 (EXIT NIL))
              (COND (#3# #2#) ('T 0))))))) 
@@ -92,17 +89,15 @@
                            (LETT |x| (CAR #0#) |CLAGG-;any?;MAB;3|)
                            NIL))
                      (GO G191)))
-                  (SEQ (EXIT (PROGN
-                               (LETT #1# (SPADCALL |x| |f|)
-                                     |CLAGG-;any?;MAB;3|)
-                               (COND
-                                 (#3# (LETT #2#
-                                       (COND (#2# 'T) ('T #1#))
-                                       |CLAGG-;any?;MAB;3|))
-                                 ('T
-                                  (PROGN
-                                    (LETT #2# #1# |CLAGG-;any?;MAB;3|)
-                                    (LETT #3# 'T |CLAGG-;any?;MAB;3|)))))))
+                  (PROGN
+                    (LETT #1# (SPADCALL |x| |f|) |CLAGG-;any?;MAB;3|)
+                    (COND
+                      (#3# (LETT #2# (COND (#2# 'T) ('T #1#))
+                                 |CLAGG-;any?;MAB;3|))
+                      ('T
+                       (PROGN
+                         (LETT #2# #1# |CLAGG-;any?;MAB;3|)
+                         (LETT #3# 'T |CLAGG-;any?;MAB;3|)))))
                   (LETT #0# (CDR #0#) |CLAGG-;any?;MAB;3|) (GO G190)
                   G191 (EXIT NIL))
              (COND (#3# #2#) ('T 'NIL))))))) 
@@ -122,18 +117,15 @@
                            (LETT |x| (CAR #0#) |CLAGG-;every?;MAB;4|)
                            NIL))
                      (GO G191)))
-                  (SEQ (EXIT (PROGN
-                               (LETT #1# (SPADCALL |x| |f|)
-                                     |CLAGG-;every?;MAB;4|)
-                               (COND
-                                 (#3# (LETT #2#
-                                       (COND (#2# #1#) ('T 'NIL))
-                                       |CLAGG-;every?;MAB;4|))
-                                 ('T
-                                  (PROGN
-                                    (LETT #2# #1#
-                                     |CLAGG-;every?;MAB;4|)
-                                    (LETT #3# 'T |CLAGG-;every?;MAB;4|)))))))
+                  (PROGN
+                    (LETT #1# (SPADCALL |x| |f|) |CLAGG-;every?;MAB;4|)
+                    (COND
+                      (#3# (LETT #2# (COND (#2# #1#) ('T 'NIL))
+                                 |CLAGG-;every?;MAB;4|))
+                      ('T
+                       (PROGN
+                         (LETT #2# #1# |CLAGG-;every?;MAB;4|)
+                         (LETT #3# 'T |CLAGG-;every?;MAB;4|)))))
                   (LETT #0# (CDR #0#) |CLAGG-;every?;MAB;4|) (GO G190)
                   G191 (EXIT NIL))
              (COND (#3# #2#) ('T 'T))))))) 
