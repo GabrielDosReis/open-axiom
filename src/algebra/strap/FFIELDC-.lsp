@@ -146,13 +146,13 @@
                                  NIL)
                                (NULL (NOT |equalone|)))
                            (GO G191)))
-                        (SEQ (EXIT (LETT |equalone|
-                                    (SPADCALL
-                                     (SPADCALL |a|
+                        (LETT |equalone|
+                              (SPADCALL
+                                  (SPADCALL |a|
                                       (QUOTIENT2 |q| (QCAR |exp|))
                                       (|getShellEntry| $ 58))
-                                     (|getShellEntry| $ 59))
-                                    |FFIELDC-;primitive?;SB;9|)))
+                                  (|getShellEntry| $ 59))
+                              |FFIELDC-;primitive?;SB;9|)
                         (LETT #0# (CDR #0#) |FFIELDC-;primitive?;SB;9|)
                         (GO G190) G191 (EXIT NIL))
                    (EXIT (NOT |equalone|))))))))) 
@@ -535,26 +535,23 @@
                                            |FFIELDC-;factorSquareFreePolynomial|)
                                           NIL))
                                        (GO G191)))
-                                    (SEQ
-                                     (EXIT
-                                      (PROGN
-                                        (LETT #1#
-                                         (SPADCALL (QCAR |u|)
-                                          (QCDR |u|)
-                                          (|getShellEntry| $ 109))
-                                         |FFIELDC-;factorSquareFreePolynomial|)
-                                        (COND
-                                          (#3#
-                                           (LETT #2#
-                                            (SPADCALL #2# #1#
-                                             (|getShellEntry| $ 110))
-                                            |FFIELDC-;factorSquareFreePolynomial|))
-                                          ('T
-                                           (PROGN
-                                             (LETT #2# #1#
-                                              |FFIELDC-;factorSquareFreePolynomial|)
-                                             (LETT #3# 'T
-                                              |FFIELDC-;factorSquareFreePolynomial|)))))))
+                                    (PROGN
+                                      (LETT #1#
+                                       (SPADCALL (QCAR |u|) (QCDR |u|)
+                                        (|getShellEntry| $ 109))
+                                       |FFIELDC-;factorSquareFreePolynomial|)
+                                      (COND
+                                        (#3#
+                                         (LETT #2#
+                                          (SPADCALL #2# #1#
+                                           (|getShellEntry| $ 110))
+                                          |FFIELDC-;factorSquareFreePolynomial|))
+                                        ('T
+                                         (PROGN
+                                           (LETT #2# #1#
+                                            |FFIELDC-;factorSquareFreePolynomial|)
+                                           (LETT #3# 'T
+                                            |FFIELDC-;factorSquareFreePolynomial|)))))
                                     (LETT #0# (CDR #0#)
                                      |FFIELDC-;factorSquareFreePolynomial|)
                                     (GO G190) G191 (EXIT NIL))

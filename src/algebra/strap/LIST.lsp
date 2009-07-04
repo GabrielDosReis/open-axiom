@@ -170,12 +170,11 @@
                                       |LIST;convert;$If;13|)
                                      NIL))
                                (GO G191)))
-                            (SEQ (EXIT (LETT #0#
-                                        (CONS
-                                         (SPADCALL |a|
-                                          (|getShellEntry| $ 48))
-                                         #0#)
-                                        |LIST;convert;$If;13|)))
+                            (LETT #0#
+                                  (CONS (SPADCALL |a|
+                                         (|getShellEntry| $ 48))
+                                        #0#)
+                                  |LIST;convert;$If;13|)
                             (LETT #1# (CDR #1#) |LIST;convert;$If;13|)
                             (GO G190) G191 (EXIT (NREVERSE0 #0#)))))
                (|getShellEntry| $ 52)))))) 

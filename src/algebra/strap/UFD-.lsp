@@ -28,21 +28,18 @@
                                      |UFD-;squareFreePart;2S;1|)
                                NIL))
                          (GO G191)))
-                      (SEQ (EXIT (PROGN
-                                   (LETT #1# (QCAR |f|)
-                                    |UFD-;squareFreePart;2S;1|)
-                                   (COND
-                                     (#3#
-                                      (LETT #2#
-                                       (SPADCALL #2# #1#
-                                        (|getShellEntry| $ 15))
-                                       |UFD-;squareFreePart;2S;1|))
-                                     ('T
-                                      (PROGN
-                                        (LETT #2# #1#
-                                         |UFD-;squareFreePart;2S;1|)
-                                        (LETT #3# 'T
-                                         |UFD-;squareFreePart;2S;1|)))))))
+                      (PROGN
+                        (LETT #1# (QCAR |f|)
+                              |UFD-;squareFreePart;2S;1|)
+                        (COND
+                          (#3# (LETT #2#
+                                     (SPADCALL #2# #1#
+                                      (|getShellEntry| $ 15))
+                                     |UFD-;squareFreePart;2S;1|))
+                          ('T
+                           (PROGN
+                             (LETT #2# #1# |UFD-;squareFreePart;2S;1|)
+                             (LETT #3# 'T |UFD-;squareFreePart;2S;1|)))))
                       (LETT #0# (CDR #0#) |UFD-;squareFreePart;2S;1|)
                       (GO G190) G191 (EXIT NIL))
                  (COND (#3# #2#) ('T (|spadConstant| $ 16))))

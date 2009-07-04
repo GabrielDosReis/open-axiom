@@ -363,20 +363,16 @@
                           ((NULL (NOT (SPADCALL |y| |z|
                                        (|getShellEntry| $ 53))))
                            (GO G191)))
-                        (SEQ (EXIT (LETT |z|
-                                    (SPADCALL |z|
-                                     (|getShellEntry| $ 14))
-                                    |URAGG-;cycleEntry;2A;19|)))
+                        (LETT |z| (SPADCALL |z| (|getShellEntry| $ 14))
+                              |URAGG-;cycleEntry;2A;19|)
                         (LETT |l| (QSADD1 |l|)
                               |URAGG-;cycleEntry;2A;19|)
                         (GO G190) G191 (EXIT NIL))
                    (LETT |y| |x| |URAGG-;cycleEntry;2A;19|)
                    (SEQ (LETT |k| 1 |URAGG-;cycleEntry;2A;19|) G190
                         (COND ((QSGREATERP |k| |l|) (GO G191)))
-                        (SEQ (EXIT (LETT |y|
-                                    (SPADCALL |y|
-                                     (|getShellEntry| $ 14))
-                                    |URAGG-;cycleEntry;2A;19|)))
+                        (LETT |y| (SPADCALL |y| (|getShellEntry| $ 14))
+                              |URAGG-;cycleEntry;2A;19|)
                         (LETT |k| (QSADD1 |k|)
                               |URAGG-;cycleEntry;2A;19|)
                         (GO G190) G191 (EXIT NIL))
@@ -414,10 +410,8 @@
                           ((NULL (NOT (SPADCALL |x| |y|
                                        (|getShellEntry| $ 53))))
                            (GO G191)))
-                        (SEQ (EXIT (LETT |y|
-                                    (SPADCALL |y|
-                                     (|getShellEntry| $ 14))
-                                    |URAGG-;cycleLength;ANni;20|)))
+                        (LETT |y| (SPADCALL |y| (|getShellEntry| $ 14))
+                              |URAGG-;cycleLength;ANni;20|)
                         (LETT |k| (QSADD1 |k|)
                               |URAGG-;cycleLength;ANni;20|)
                         (GO G190) G191 (EXIT NIL))

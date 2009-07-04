@@ -342,9 +342,8 @@
                    (SEQ G190
                         (COND
                           ((NULL (NOT (NULL (QCDR |z|)))) (GO G191)))
-                        (SEQ (EXIT (LETT |z| (QCDR |z|)
-                                    |ILIST;concat!;3$;25|)))
-                        NIL (GO G190) G191 (EXIT NIL))
+                        (LETT |z| (QCDR |z|) |ILIST;concat!;3$;25|) NIL
+                        (GO G190) G191 (EXIT NIL))
                    (QRPLACD |z| |y|) (EXIT |x|)))))))) 
 
 (DEFUN |ILIST;removeDuplicates!;2$;26| (|l| $)
@@ -407,22 +406,17 @@
                                    ((NULL |p|) 'NIL)
                                    ('T (NOT (NULL |q|)))))
                            (GO G191)))
-                        (SEQ (EXIT (COND
-                                     ((SPADCALL (QCAR |p|) (QCAR |q|)
-                                       |f|)
-                                      (SEQ (QRPLACD |t| |p|)
-                                       (LETT |t| |p|
-                                        |ILIST;merge!;M3$;28|)
-                                       (EXIT
-                                        (LETT |p| (QCDR |p|)
-                                         |ILIST;merge!;M3$;28|))))
-                                     ('T
-                                      (SEQ (QRPLACD |t| |q|)
-                                       (LETT |t| |q|
-                                        |ILIST;merge!;M3$;28|)
-                                       (EXIT
-                                        (LETT |q| (QCDR |q|)
-                                         |ILIST;merge!;M3$;28|)))))))
+                        (COND
+                          ((SPADCALL (QCAR |p|) (QCAR |q|) |f|)
+                           (SEQ (QRPLACD |t| |p|)
+                                (LETT |t| |p| |ILIST;merge!;M3$;28|)
+                                (EXIT (LETT |p| (QCDR |p|)
+                                       |ILIST;merge!;M3$;28|))))
+                          ('T
+                           (SEQ (QRPLACD |t| |q|)
+                                (LETT |t| |q| |ILIST;merge!;M3$;28|)
+                                (EXIT (LETT |q| (QCDR |q|)
+                                       |ILIST;merge!;M3$;28|)))))
                         NIL (GO G190) G191 (EXIT NIL))
                    (QRPLACD |t| (COND ((NULL |p|) |q|) ('T |p|)))
                    (EXIT |r|)))))))) 

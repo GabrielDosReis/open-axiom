@@ -201,34 +201,26 @@
                                      (SPADCALL |q|
                                       (|getShellEntry| $ 16))))))
                            (GO G191)))
-                        (SEQ (EXIT (COND
-                                     ((SPADCALL
+                        (COND
+                          ((SPADCALL
+                               (SPADCALL |p| (|getShellEntry| $ 18))
+                               (SPADCALL |q| (|getShellEntry| $ 18))
+                               |f|)
+                           (SEQ (SPADCALL |t| |p|
+                                    (|getShellEntry| $ 27))
+                                (LETT |t| |p| |LSAGG-;merge!;M3A;6|)
+                                (EXIT (LETT |p|
                                        (SPADCALL |p|
-                                        (|getShellEntry| $ 18))
+                                        (|getShellEntry| $ 17))
+                                       |LSAGG-;merge!;M3A;6|))))
+                          ('T
+                           (SEQ (SPADCALL |t| |q|
+                                    (|getShellEntry| $ 27))
+                                (LETT |t| |q| |LSAGG-;merge!;M3A;6|)
+                                (EXIT (LETT |q|
                                        (SPADCALL |q|
-                                        (|getShellEntry| $ 18))
-                                       |f|)
-                                      (SEQ
-                                       (SPADCALL |t| |p|
-                                        (|getShellEntry| $ 27))
-                                       (LETT |t| |p|
-                                        |LSAGG-;merge!;M3A;6|)
-                                       (EXIT
-                                        (LETT |p|
-                                         (SPADCALL |p|
-                                          (|getShellEntry| $ 17))
-                                         |LSAGG-;merge!;M3A;6|))))
-                                     ('T
-                                      (SEQ
-                                       (SPADCALL |t| |q|
-                                        (|getShellEntry| $ 27))
-                                       (LETT |t| |q|
-                                        |LSAGG-;merge!;M3A;6|)
-                                       (EXIT
-                                        (LETT |q|
-                                         (SPADCALL |q|
-                                          (|getShellEntry| $ 17))
-                                         |LSAGG-;merge!;M3A;6|)))))))
+                                        (|getShellEntry| $ 17))
+                                       |LSAGG-;merge!;M3A;6|)))))
                         NIL (GO G190) G191 (EXIT NIL))
                    (SPADCALL |t|
                        (COND
