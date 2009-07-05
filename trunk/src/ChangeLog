@@ -1,5 +1,20 @@
 2009-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot ($middleEndMacroList): Remove COLLECTV.
+	* interp/compiler.boot: Don't register compiler for COLLECTV forms.
+	(compReduce1): Don't test for COLLECTV.
+	(localReferenceIfThere): New.
+	(compRepeatOrCollect): Use it.  Tidy.
+	(compCollectV): Remove.
+	(compIteratorV): Likewise.
+	(computeMaxIndex): Likewise.
+	(exprDifference): Likewise.
+	* interp/g-opt.boot (optCollectVector): New.  Register as
+	back end tranformer.
+	* interp/sys-macros.lisp (COLLECTV): Remove.
+
+2009-07-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (simplifySEQ): New.
 	(transformToBackendCode): Use it.
 

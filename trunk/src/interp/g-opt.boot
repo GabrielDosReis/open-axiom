@@ -501,6 +501,46 @@ optLET_* form ==
   rplac(first form,"LET")
   optLET form
 
+optCollectVector form ==
+  [.,eltType,:iters,body] := form
+  fromList := false      -- are we drawing from a list?
+  vecSize := nil         -- size of vector
+  index := nil           -- loop/vector index.
+  for iter in iters while not fromList repeat
+    [op,:.] := iter
+    MEMQ(op,'(SUCHTHAT WHILE UNTIL)) => fromList := true
+    MEMQ(op,'(IN ON)) => vecSize := [["SIZE",third iter],:vecSize]
+    MEMQ(op,'(STEP ISTEP)) =>
+     -- pick a loop variable that we can use as the loop index.
+     [.,var,lo,inc,:etc] := iter
+     if lo = 0 and inc = 1 then
+       index := var
+     if [hi] := etc then
+       sz :=
+         inc = 1 =>
+           lo = 1 => hi
+           lo = 0 => MKQSADD1 hi
+           MKQSADD1 ["-",hi,lo]
+         lo = 1 => ["/",hi,inc]
+         lo = 0 => ["/",MKQSADD1 hi,inc]
+         ["/",["-",MKQSADD1 hi, lo],inc]
+       vecSize := [sz, :vecSize]
+  -- if we draw from a list, then just build a list and convert to vector.
+  fromList => ["LIST2VEC",["COLLECT",:iters,body]]
+  vecSize = nil => systemErrorHere ["optCollectVector",form]
+  -- get the actual size of the vector.
+  vecSize :=
+    vecSize is [hi] => hi
+    ["MIN",:nreverse vecSize]
+  -- if no suitable loop index was found, introduce one.
+  if index = nil then
+    index := GENSYM()
+    iters := [:iters,["ISTEP",index,0,1]]
+  vec := GENSYM()
+  ["LET",[[vec,["GETREFV",vecSize]]],
+    ["REPEAT",:iters,["setSimpleArrayEntry",vec,index,body]], 
+      vec]
+ 
 lispize x == first optimize [x]
  
 --% optimizer hash table
@@ -517,6 +557,7 @@ for x in '( (call         optCall) _
            (_|           optSuchthat)_
            (CATCH        optCatch)_
            (COND         optCond)_
+           (%CollectV    optCollectVector)_
            (mkRecord     optMkRecord)_
            (RECORDELT    optRECORDELT)_
            (SETRECORDELT optSETRECORDELT)_
