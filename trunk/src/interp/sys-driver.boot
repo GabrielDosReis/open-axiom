@@ -64,7 +64,9 @@ AxiomCore::%sysInit() ==
   loadSystemRuntimeCore()
 )if %hasFeature KEYWORD::CLISP
   -- a goat for CLisp FFI, please.
-  sys_-osInitCLispFFI()    
+  sys_-osInitCLispFFI()
+  -- Tell CLISP to stop being anal retentive, please.
+  SETF(CUSTOM::_*WARN_-ON_-FLOATING_-POINT_-CONTAGION_*,false)
 )endif
 )if %hasFeature KEYWORD::GCL or %hasFeature KEYWORD::ECL
   SETQ(COMPILER::_*COMPILE_-VERBOSE_*,false)
