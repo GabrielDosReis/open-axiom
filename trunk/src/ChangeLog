@@ -1,5 +1,9 @@
 2009-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/matstor.spad.pamphlet (copyCol!): Return Void.
+
+2009-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-driver.boot (AxiomCore::%sysInit): Have CLISP not be
 	overreading on floating point contagion warning.
 
