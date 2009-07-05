@@ -2217,8 +2217,7 @@ compReduce(form,m,e) ==
 compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   [collectOp,:itl,body]:= collectForm
   if STRINGP op then op:= INTERN op
-  not MEMQ(collectOp,'(COLLECT COLLECTV)) =>
-        systemError ['"illegal reduction form:",form]
+  collectOp ^= "COLLECT" => systemError ['"illegal reduction form:",form]
   $sideEffectsList: local := nil
   $until: local := nil
   $initList: local := nil
@@ -2262,7 +2261,14 @@ numberize x ==
   x=$One => 1
   atom x => x
   [numberize first x,:numberize rest x]
- 
+
+++ If there is a local reference to mode `m', return it.  Otherwise
+++ return `m' itself.
+localReferenceIfThere m ==
+  m = "$" => m
+  idx := NRTassocIndex m => ["getShellEntry","$",idx]
+  m
+
 compRepeatOrCollect(form,m,e) ==
   fn(form,[m,:$exitModeStack],[#$exitModeStack,:$leaveLevelStack],$formalArgList
     ,e) where
@@ -2280,10 +2286,10 @@ compRepeatOrCollect(form,m,e) ==
             targetMode = $EmptyMode => (aggr:=["List",$EmptyMode]; $EmptyMode)
             [aggr,u] := modeIsAggregateOf('List,targetMode,e) => u
             [aggr,u] := modeIsAggregateOf('PrimitiveArray,targetMode,e) =>
-              repeatOrCollect := "COLLECTV"
+              repeatOrCollect := "%CollectV"
               u
             [aggr,u] := modeIsAggregateOf('Vector,targetMode,e) =>
-              repeatOrCollect := "COLLECTV"
+              repeatOrCollect := "%CollectV"
               u
             stackMessage('"Invalid collect bodytype")
             return nil
@@ -2295,7 +2301,10 @@ compRepeatOrCollect(form,m,e) ==
         if $until then
           [untilCode,.,e']:= comp($until,$Boolean,e')
           itl':= substitute(["UNTIL",untilCode],'$until,itl')
-        form':= [repeatOrCollect,:itl',body']
+        form':= 
+           repeatOrCollect = "%CollectV" => 
+             ["%CollectV",localReferenceIfThere m',:itl',body']
+           [repeatOrCollect,:itl',body']
         m'' := 
           aggr is [c,.] and MEMQ(c,'(List PrimitiveArray Vector)) => [c,m']
           m'
@@ -2412,67 +2421,6 @@ modeIsAggregateOf(agg,m,e) ==
     RepIfRepHack m
   get(name,"value",e) is [[ =agg,R],:.] => [m,R]
  
---% VECTOR ITERATORS
- 
---the following 4 functions are not currently used
- 
-compCollectV(form,m,e) ==
-  fn(form,[m,:$exitModeStack],[#$exitModeStack,:$leaveLevelStack],e) where
-    fn(form,$exitModeStack,$leaveLevelStack,e) ==
-      [repeatOrCollect,it,body]:= form
-      [it',e]:= compIteratorV(it,e) or return nil
-      m:= first $exitModeStack
-      [mOver,mUnder]:= modeIsAggregateOf("Vector",m,e) or $EmptyMode
-      [body',m',e']:= compOrCroak(body,mUnder,e) or return nil
-      form':= ["COLLECTV",it',body']
-      n:=
-	it' is ["STEP",.,s,i,f] or it' is ["ISTEP",.,s,i,f] =>
-	      computeMaxIndex(s,f,i);
-	return nil
-      coerce([form',mOver,e'],m)
-
-compIteratorV(it,e) ==
-  it is ["STEP",index,start,inc,final] =>
-    (start':= comp(start,$Integer,e)) and
-      (inc':= comp(inc,$NonNegativeInteger,start'.env)) and
-       (final':= comp(final,$Integer,inc'.env)) =>
-	indexmode:=
-	  comp(start,$NonNegativeInteger,e) => $NonNegativeInteger
-	  $Integer
-	if null get(index,"mode",e) then [.,.,e]:=
-	  compMakeDeclaration(index,indexmode,final'.env) or
-	    return nil
-	e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
-	[["ISTEP",index,start'.expr,inc'.expr,final'.expr],e]
-    [start,.,e]:=
-      comp(start,$Integer,e) or return
-	stackMessage('"start value of index: %1b is not an integer",[start])
-    [inc,.,e]:=
-      comp(inc,$NonNegativeInteger,e) or return
-	stackMessage('"index increment: %1b must be a non-negative integer",
-          [inc])
-    [final,.,e]:=
-      comp(final,$Integer,e) or return
-	stackMessage('"final value of index: %1b is not an integer",[final])
-    indexmode:=
-      comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
-      $Integer
-    if null get(index,"mode",e) then [.,.,e]:=
-      compMakeDeclaration(index,indexmode,e) or return nil
-    e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
-    [["STEP",index,start,inc,final],e]
-  nil
-
-computeMaxIndex(s,f,i) ==
-  i^=1 => cannotDo()
-  s=1 => f
-  exprDifference(f,exprDifference(s,1))
-
-exprDifference(x,y) ==
-  y=0 => x
-  FIXP x and FIXP y => DIFFERENCE(x,y)
-  ["DIFFERENCE",x,y]
-
 
 --% rep/per morphisms
 
@@ -2551,7 +2499,6 @@ for x in [["|", :"compSuchthat"],_
 	  ["case", :"compCase"],_
 	  ["CATEGORY", :"compCategory"],_
 	  ["COLLECT", :"compRepeatOrCollect"],_
-	  ["COLLECTV", :"compCollectV"],_
 	  ["CONS", :"compCons"],_
 	  ["construct", :"compConstruct"],_
 	  ["DEF", :"compDefine"],_

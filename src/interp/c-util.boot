@@ -988,8 +988,7 @@ mutateLETFormWithUnaryFunction(form,fun) ==
 -- NOTE: It is potentially dangerous to assume every occurrence of 
 -- element of $middleEndMacroList is actually a macro call
 $middleEndMacroList == 
-  '(COLLECT REPEAT SUCHTHATCLAUSE THETA COLLECTV 
-    THETA1 SPADREDUCE SPADDO)
+  '(COLLECT REPEAT SUCHTHATCLAUSE THETA THETA1 SPADREDUCE SPADDO)
 
 middleEndExpand: %Form -> %Form
 middleEndExpand x ==
