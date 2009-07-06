@@ -153,36 +153,9 @@ PolynomialRing(R:Ring,E:OrderedAbelianMonoid): T == C
        qsetrest!: (Rep, Rep) -> Rep
        qsetrest!(l: Rep, e: Rep): Rep == RPLACD(l, e)$Lisp
 
-       times!: (R,    %) -> %
-       times:  (R, E, %) -> %
-
        entireRing? := R has EntireRing
 
-       times!(r: R, x: %): % == 
-	 res, endcell, newend, xx: Rep
-         if entireRing? then 
-                for tx in x repeat tx.c := r*tx.c
-                x
-         else 
-		xx := x
-		res := empty()
-		while not empty? xx repeat 
-			tx := first xx
-			tx.c := r * tx.c
-			if zero? tx.c then 
-				xx := rest xx
-			else 
-				newend := xx
-				xx := rest xx
-				if empty? res then 
-					res := newend
-					endcell := res
-				else 
-					qsetrest!(endcell, newend)
-					endcell := newend
-		res;
-
-	--- term * polynomial 
+       --- term * polynomial 
        termTimes: (R, E, Term) -> Term
        termTimes(r: R, e: E, tx:Term): Term == [e+tx.k, r*tx.c]
        times(tco: R, tex: E, rx: %): % == 
