@@ -48,6 +48,9 @@ $interpOnly := false
 
 --% Utility Functions of General Use
 
+homogeneousListToVector(t,l) ==
+  makeSimpleArrayFromList(t,l)
+
 
 ++ tests if x is an identifier beginning with #
 isSharpVar x ==

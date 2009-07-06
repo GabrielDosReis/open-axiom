@@ -501,6 +501,7 @@ optLET_* form ==
   rplac(first form,"LET")
   optLET form
 
+
 optCollectVector form ==
   [.,eltType,:iters,body] := form
   fromList := false      -- are we drawing from a list?
@@ -511,22 +512,24 @@ optCollectVector form ==
     MEMQ(op,'(SUCHTHAT WHILE UNTIL)) => fromList := true
     MEMQ(op,'(IN ON)) => vecSize := [["SIZE",third iter],:vecSize]
     MEMQ(op,'(STEP ISTEP)) =>
-     -- pick a loop variable that we can use as the loop index.
-     [.,var,lo,inc,:etc] := iter
-     if lo = 0 and inc = 1 then
-       index := var
-     if [hi] := etc then
-       sz :=
-         inc = 1 =>
-           lo = 1 => hi
-           lo = 0 => MKQSADD1 hi
-           MKQSADD1 ["-",hi,lo]
-         lo = 1 => ["/",hi,inc]
-         lo = 0 => ["/",MKQSADD1 hi,inc]
-         ["/",["-",MKQSADD1 hi, lo],inc]
-       vecSize := [sz, :vecSize]
+      -- pick a loop variable that we can use as the loop index.
+      [.,var,lo,inc,:etc] := iter
+      if lo = 0 and inc = 1 then
+        index := var
+      if [hi] := etc then
+        sz :=
+          inc = 1 =>
+            lo = 1 => hi
+            lo = 0 => MKQSADD1 hi
+            MKQSADD1 ["-",hi,lo]
+          lo = 1 => ["/",hi,inc]
+          lo = 0 => ["/",MKQSADD1 hi,inc]
+          ["/",["-",MKQSADD1 hi, lo],inc]
+        vecSize := [sz, :vecSize]
+    systemErrorHere ["optCollectVector", iter]
   -- if we draw from a list, then just build a list and convert to vector.
-  fromList => ["LIST2VEC",["COLLECT",:iters,body]]
+  fromList => 
+    ["homogeneousListToVector",["getVMType",eltType], ["COLLECT",:iters,body]]
   vecSize = nil => systemErrorHere ["optCollectVector",form]
   -- get the actual size of the vector.
   vecSize :=
@@ -537,7 +540,7 @@ optCollectVector form ==
     index := GENSYM()
     iters := [:iters,["ISTEP",index,0,1]]
   vec := GENSYM()
-  ["LET",[[vec,["GETREFV",vecSize]]],
+  ["LET",[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
     ["REPEAT",:iters,["setSimpleArrayEntry",vec,index,body]], 
       vec]
  

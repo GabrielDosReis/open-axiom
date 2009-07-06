@@ -2261,12 +2261,11 @@ numberize x ==
   atom x => x
   [numberize first x,:numberize rest x]
 
-++ If there is a local reference to mode `m', return it.  Otherwise
-++ return `m' itself.
+++ If there is a local reference to mode `m', return it.  
 localReferenceIfThere m ==
   m = "$" => m
   idx := NRTassocIndex m => ["getShellEntry","$",idx]
-  m
+  quoteForm m
 
 compRepeatOrCollect(form,m,e) ==
   fn(form,[m,:$exitModeStack],[#$exitModeStack,:$leaveLevelStack],$formalArgList
