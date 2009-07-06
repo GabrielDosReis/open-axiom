@@ -393,6 +393,9 @@ MakeFloatCompiledFunction(S): Exports == Implementation where
     streq?(s, st)    == s = convert(st::Symbol)@INF
     gencode(s, l)    == convert(concat(convert(s::Symbol)@INF, l))@INF
     streqlist?(s, l) == member?(string symbol s, l)
+    quote(f: INF): INF == gencode("QUOTE",[f])
+    coerceToSF(f: INF): INF == 
+      gencode("COERCE",[f, quote getVMType(SF)$Foreign(Builtin)])
 
     mkPretend form ==
       convert([convert("pretend"::Symbol), form, lsf]$List(INF))@INF
@@ -408,7 +411,8 @@ MakeFloatCompiledFunction(S): Exports == Implementation where
     mkDefun(s, lv) ==
       name := convert(new()$Symbol)@INF
       fun  := convert([convert("DEFUN"::Symbol), name, convert lv,
-              gencode("DECLARE",[gencode("FLOAT",lv)]),mkCTOR s]$List(INF))@INF
+              gencode("DECLARE",[gencode("FLOAT",lv)]),
+                coerceToSF mkCTOR s]$List(INF))@INF
       EVAL(fun)$Lisp
       if _$compileDontDefineFunctions$Lisp then COMPILE(name)$Lisp
       name

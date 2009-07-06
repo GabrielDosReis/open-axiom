@@ -1,3 +1,8 @@
+2009-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2815437
+	* algebra/mkfunc.spad.pamphlet: 
+
 2009-07-06  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* interp/compiler.boot (localReferenceIfThere): Tidy.
