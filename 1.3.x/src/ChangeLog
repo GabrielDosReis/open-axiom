@@ -1,5 +1,14 @@
 2009-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (coerceEasy): Don't pretend we can make
+	matter our of void.
+	* algebra/indexedp.spad.pamphlet
+	(IndexedDirectProductAbelianMonoid): Tidy. 
+	(IndexedDirectProductAbelianGroup): Likewise.
+	* src/algebra/poly.spad.pamphlet (PolynomialRing): Fix thinko.
+
+2009-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/matstor.spad.pamphlet (copyCol!): Return Void.
 
 2009-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
