@@ -150,8 +150,9 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedSet):
 				else
 					res     := newcell;
 					endcell := res
-		if empty? x then end := y
-		else end := x
+                end := 
+		  empty? x => y
+		  x
 		if empty? res then res := end
 		else qsetrest!(endcell, end)
 		res
@@ -284,8 +285,9 @@ IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedSet):
                                 else
                                         res     := newcell;
                                         endcell := res
-                if empty? x then end := - y
-                else end := x
+                end := 
+                  empty? x => - y
+                  x
                 if empty? res then res := end
                 else qsetrest!(endcell, end)
                 res
