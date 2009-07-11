@@ -1,3 +1,8 @@
+2009-07-10  Alfredo Portes <doyenatccny@gmail.com>
+
+    * lib/cfuns-c.c (writeablep): Use function LocalFree()
+    in Windows instead of free().
+
 2009-07-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2815437

@@ -247,7 +247,11 @@ writeablep(char *path)
           is writable.  */
        char* dir = oa_dirname(path);
        code = stat(dir, &buf);
+#ifdef __WIN32__
+       LocalFree(dir);
+#else
        free(dir);
+#endif
        return (code == 0) && axiom_has_write_access(&buf) ? 2 : -1;
     }
 
