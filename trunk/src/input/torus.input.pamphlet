@@ -12,7 +12,7 @@
 <<*>>=
 )cl all
 f(x:SF):SF == x
-torus : TUBE := tubePlot(sin t,cos t,0,f,0..2*%pi,0.5::SF,12,"closed")
+torus := tubePlot(sin t,cos t,0,f,0..2*%pi,0.5::SF,12,"closed")
 makeViewport3D(torus,"torus")$VIEW3D
 @
 \eject

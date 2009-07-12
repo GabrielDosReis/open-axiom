@@ -1,4 +1,14 @@
-2009-07-10  Alfredo Portes <doyenatccny@gmail.com>
+2009-07-12  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* algebra/mkfunc.spad.pamphlet
+	(mkDefun$MakeFloatCompiledFunction): Tidy. 
+	* interp/c-util.boot (declareUnusedParameters): New.
+	* interp/i-map.boot: Use it.
+	* interp/i-spec1.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* lib/cfuns-c.c (writeablep): Document MinGW/MSYS bug work around.
+
+2009-07-10  Alfredo Portes  <doyenatccny@gmail.com>
 	
 	* lib/cfuns-c.c (writeablep): Use function LocalFree() 
 	in Windows instead of free().

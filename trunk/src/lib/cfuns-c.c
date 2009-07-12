@@ -247,6 +247,13 @@ writeablep(char *path)
           is writable.  */
        char* dir = oa_dirname(path);
        code = stat(dir, &buf);
+       /* FIXME: Work around MinGW/MSYS bug.
+            The string pointed to by `dir' was strdup'd.  According to
+            the C standard, that means the the string was allocated
+            by `malloc', therefore can be disposed of by `free'.  However,
+            the MinGW/MSYS port appears to use MS' StrDup as the real
+            worker.  Consequently, the guarantee that the the string can
+            free'd no longer holds.  We have to use MS's LocalFree.  */
 #ifdef __WIN32__
        LocalFree(dir);
 #else

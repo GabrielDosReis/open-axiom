@@ -41,6 +41,7 @@ module c_-util where
   replaceSimpleFunctions: %Form -> %Form
   foldExportedFunctionReferences: %List -> %List
   diagnoseUnknownType: (%Mode,%Env) -> %Form
+  declareUnusedParameters: (%List,%Code) -> %List
 
 
 --% 
@@ -121,6 +122,13 @@ wantArgumentsAsTuple: (%List,%Signature) -> %Boolean
 wantArgumentsAsTuple(args,sig) ==
   isHomoegenousVarargSignature sig and #args ^= #sig
 
+++ We are about to seal the (Lisp) definition of a function.
+++ Augment the `body' with a declaration for those `parms'
+++ that are unused.
+declareUnusedParameters(parms,body) ==
+  unused := [p for p in parms | not CONTAINED(p,body)]
+  null unused => [body]
+  [["DECLARE",["IGNORE",:unused]],body]
 
 devaluate d ==
   not REFVECP d => d

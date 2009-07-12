@@ -758,10 +758,10 @@ compileCoerceMap(op,argTypes,mm) ==
   parms:= [:parms,'envArg]
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
   minivectorName := makeInternalMapMinivectorName(name)
-  body := substitute(minivectorName,"$$$",body)
+  body := declareUnusedParameters(parms,substitute(minivectorName,"$$$",body))
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
   compileInteractive 
-    [name,['LAMBDA,parms,declareGlobalVariables [minivectorName],body]]
+    [name,['LAMBDA,parms,declareGlobalVariables [minivectorName],:body]]
   CAR sig
 
 depthOfRecursion(opName,body) ==

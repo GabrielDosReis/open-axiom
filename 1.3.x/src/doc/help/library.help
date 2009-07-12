@@ -20,19 +20,20 @@ Command Syntax:
  
 Command Description: 
  
-This command replaces the )load system command that was available in OpenAxiom
-releases before version 2.0. The )library command makes available to OpenAxiom
-the compiled objects in the libraries listed.
+This command replaces the )load system command that was available in previous
+releases. The )library command makes available to OpenAxiom the compiled 
+objects in the libraries listed.
  
-For example, if you )compile dopler.as in your home directory, issue )library
-dopler to have OpenAxiom look at the library, determine the category and domain
-constructors present, update the internal database with various properties of
-the constructors, and arrange for the constructors to be automatically loaded
-when needed. If the )noexpose option has not been given, the constructors
-will be exposed (that is, available) in the current frame.
+For example, if you )compile dopler.spad in your home directory, issue
+)library dopler to have OpenAxiom look at the library, determine the 
+category and domain constructors present, update the internal database 
+with various properties of the constructors, and arrange for the 
+constructors to be automatically loaded when needed. If the )noexpose 
+option has not been given, the constructors will be exposed (that is, 
+available) in the current frame.
  
-If you compiled a file with the old system compiler, you will have an NRLIB
-present, for example, DOPLER.NRLIB, where DOPLER is a constructor
+If you compiled a file with the current system compiler, you will have an
+NRLIB present, for example, DOPLER.NRLIB, where DOPLER is a constructor
 abbreviation. The command )library DOPLER will then do the analysis and
 database updates as above.
  

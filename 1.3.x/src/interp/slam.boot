@@ -53,9 +53,10 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   init => compileRecurrenceRelation(op,nam,argl,body,init)
   cacheCount:= getCacheCount op
   cacheCount = "all" => reportFunctionCacheAll(op,nam,argl,body)
+  parms := [:argl,"envArg"]
   cacheCount = 0 or null argl =>
-    fun:= [nam,["LAMBDA",[:argl,'envArg],
-                 declareGlobalVariables [minivectorName],body]]
+    fun:= [nam,["LAMBDA",parms,declareGlobalVariables [minivectorName],
+                   :declareUnusedParameters(parms,body)]]
     compileInteractive fun
     nam
   num :=
@@ -92,7 +93,8 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   -- of above.
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
-  computeFunction:= [auxfn,["LAMBDA",[:argl, 'envArg],body]]
+  computeFunction:= [auxfn,["LAMBDA",parms,
+                              :declareUnusedParameters(parms,body)]]
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= "function"
@@ -125,7 +127,9 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   codeBody:= ["PROG",[g2],["RETURN",["COND",secondPredPair,thirdPredPair]]]
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
-  computeFunction:= [auxfn,["LAMBDA",[:argl, 'envArg],body]]
+  parms := [:argl, "envArg"]
+  computeFunction:= [auxfn,["LAMBDA",parms,
+                              :declareUnusedParameters(parms,body)]]
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= 'hash_-table
@@ -203,7 +207,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   continueInit:=
     [["%LET",gIndex,["%ELT",stateVar,0]],
       :[["%LET",g,["%ELT",stateVar,i]] for g in gsList for i in 1..]]
-  mainFunction:= [nam,["LAM",margl,mbody]] where
+  mainFunction:= [nam,["LAM",margl,:declareUnusedParameters(margl,mbody)]] where
     margl:= [:argl,'envArg]
     max:= GENSYM()
     tripleCode := ["CONS",n,["LIST",:initCode]]
