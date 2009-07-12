@@ -397,6 +397,11 @@ MakeFloatCompiledFunction(S): Exports == Implementation where
     coerceToSF(f: INF): INF == 
       gencode("COERCE",[f, quote getVMType(SF)$Foreign(Builtin)])
 
+    -- return true if the form `x' is contained in `y'
+    contained?(x: INF, y: INF): Boolean ==
+      atom? y => x = y
+      contained?(x, car y) or contained?(x, cdr y)
+
     mkPretend form ==
       convert([convert("pretend"::Symbol), form, lsf]$List(INF))@INF
 
@@ -410,9 +415,14 @@ MakeFloatCompiledFunction(S): Exports == Implementation where
 
     mkDefun(s, lv) ==
       name := convert(new()$Symbol)@INF
-      fun  := convert([convert("DEFUN"::Symbol), name, convert lv,
-              gencode("DECLARE",[gencode("FLOAT",lv)]),
-                coerceToSF mkCTOR s]$List(INF))@INF
+      body := coerceToSF mkCTOR s
+      unusedParms := [ p for p in lv | not contained?(p,s)]
+      stmts :=
+        null unusedParms => [body]
+        [gencode("DECLARE",[gencode("IGNORE", unusedParms)]),body]
+      stmts := concat(gencode("DECLARE",[gencode("FLOAT",lv)]), stmts)
+      header := [convert("DEFUN"::Symbol), name, convert lv]
+      fun := convert append(header,stmts)
       EVAL(fun)$Lisp
       if _$compileDontDefineFunctions$Lisp then COMPILE(name)$Lisp
       name

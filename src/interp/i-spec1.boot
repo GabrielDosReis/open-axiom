@@ -176,9 +176,11 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   --  Dx: LODO(EXPR INT, f +-> D(f, x)) := D()
   --
   -- MCD 13/3/96
+  parms := [:vars,"envArg"]
   if not $definingMap and ($genValue or $compilingMap) then
-    fun := [$mapName,["LAMBDA",[:vars,'envArg],
-                        declareGlobalVariables [minivectorName],body]]
+    fun := [$mapName,["LAMBDA",parms, 
+                        declareGlobalVariables [minivectorName],
+                          :declareUnusedParameters(parms,body)]]
     code :=  wrap compileInteractive fun
   else
     $freeVariables := []
@@ -186,7 +188,8 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
     -- CCL does not support upwards funargs, so we check for any free variables
     -- and pass them into the lambda as part of envArg.
     body := checkForFreeVariables(body,"ALL")
-    fun := ["function",["LAMBDA",[:vars,'envArg],body]]
+    fun := ["function",["LAMBDA",parms,
+                         :declareUnusedParameters(parms,body)]]
     code := ["CONS", fun, ["VECTOR", :reverse $freeVariables]]
 
   val := objNew(code,rt := ['Mapping,computedResultType,:rest types])
@@ -784,7 +787,8 @@ mkIterFun([index,:s],funBody,$localVars) ==
   -- CCL does not support upwards funargs, so we check for any free variables
   -- and pass them into the lambda as part of envArg.
   body := checkForFreeVariables(getValue funBody,$localVars)
-  val:=['function,['LAMBDA,[index,'envArg],objVal body]]
+  parms := [index,"envArg"]
+  val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,objVal body)]]
   vec := mkAtreeNode GENSYM()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec
@@ -922,7 +926,8 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
   -- and pass them into the lambda as part of envArg.
   body :=
    [checkForFreeVariables(form,$localVars) for form in getValue funBody]
-  val:=['function,['LAMBDA,[$index,'envArg],objVal body]]
+  parms := [$index,'envArg]
+  val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,objVal body)]]
   vec := mkAtreeNode GENSYM()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec
