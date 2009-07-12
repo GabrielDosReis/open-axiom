@@ -33,7 +33,7 @@ maxRange := (odd? l => l * %pi::SF; 2 * l * %pi::SF)
 theRange := 0..maxRange
 
 -- create the knot
-knot:TUBE := tubePlot(sin t * cos(PQ*t),cos t * cos(PQ*t),cos t * sin(PQ*t),
+knot := tubePlot(sin t * cos(PQ*t),cos t * cos(PQ*t),cos t * sin(PQ*t),
                       f, theRange, 0.1::SF, 6, "open" )
 
 -- make a viewport out of it
