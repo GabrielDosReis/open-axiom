@@ -573,7 +573,7 @@ empty (if File-Closed (return nil))
   '(|or| |and| |isnt| |is| |when| |where| |forall| |exist|
     |has| |with| |add| |case| |in| |by| |pretend| |mod|
     |exquo| |div| |quo| |else| |rem| |then| |suchthat|
-    |if| |yield| |iterate| |from| |exit| |leave| |return|
+    |if| |yield| |iterate| |break| |from| |exit| |leave| |return|
     |not| |unless| |repeat| |until| |while| |for| |import| |inline|)
 
 "Alphabetic literal strings occurring in the New Meta code constitute

@@ -1,3 +1,23 @@
+2009-07-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/metalex.lisp: "break" is now a keyword.
+	* interp/fnewmeta.lisp (PARSE-Jump): New.
+	* interp/compiler.boot (compAtom): Dipatch compilation of "break"
+	and "iterate" to...
+	(compBreak): ... here
+	(compIterate): and here.
+	(jumpFromLoop): New.
+	(compRepeatOrCollect): Initialize $lookKind, $iterateCount, and
+	$breakCount.  Set exit point for loop bodies with 'iterate'
+	expressions. 
+	* interp/parse.boot (parseAtom): Remove.
+	(parseTran): Adjust.
+	* algebra/outform.spad.pamphlet: Tidy.
+	* interp/c-util.boot ($loopKind): Declare.
+	($repeatBodyLabel): Likewise.
+	($iterateCount): Likewise.
+	($breakCount): Likewise.
+
 2009-07-12  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* algebra/mkfunc.spad.pamphlet

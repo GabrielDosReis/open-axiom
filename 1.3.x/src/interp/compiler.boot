@@ -397,6 +397,8 @@ transImplementation(op,map,fn) ==
   ["call",fn]
 
 compAtom(x,m,e) ==
+  x = "break" => compBreak(x,m,e)
+  x = "iterate" => compIterate(x,m,e)
   T:= compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   x="nil" =>
     T:=
@@ -1084,6 +1086,31 @@ compLeave(["leave",level,x],m,e) ==
   [x',m',e']:= u:= comp(x,$exitModeStack.index,e) or return nil
   modifyModeStack(m',index)
   [["TAGGEDexit",index,u],m,e]
+
+jumpFromLoop(kind,key) ==
+  null $exitModeStack or kind ^= $loopKind =>
+    stackAndThrow('"You can use %1b only in %2b loop",[key,kind])
+    false
+  true
+
+compBreak: (%Symbol,%Mode,%Env) -> %Maybe %Triple
+compBreak(x,m,e) ==
+  x ^= "break" or not jumpFromLoop("REPEAT",x) => nil
+  index:= #$exitModeStack-1-$leaveLevelStack.0
+  $breakCount := $breakCount + 1
+  u := coerce(["$NoValue",$Void,e],$exitModeStack.index) or return nil
+  u := coerce(u,m) or return nil
+  modifyModeStack(u.mode,index)
+  [["TAGGEDexit",index,u],m,e]
+
+compIterate: (%Symbol,%Mode,%Env) -> %Maybe %Triple
+compIterate(x,m,e) ==
+  x ^= "iterate" or not jumpFromLoop("REPEAT",x) => nil
+  $iterateCount := $iterateCount + 1
+  -- We don't really produce a value; but we cannot adequately convey
+  -- that to the current 'EXIT' structure.  So, pretend we have an 
+  -- undefined value, which is a good enough approximation.
+  [["THROW","$loopBodyTag",nil],m,e]
 
 --% return
 
@@ -2272,6 +2299,9 @@ compRepeatOrCollect(form,m,e) ==
     ,e) where
       fn(form,$exitModeStack,$leaveLevelStack,$formalArgList,e) ==
         $until: local := nil
+        $loopKind: local := nil
+        $iterateCount: local := 0
+        $breakCount: local := 0
         oldEnv := e
         aggr := nil
         [repeatOrCollect,:itl,body]:= form
@@ -2293,9 +2323,15 @@ compRepeatOrCollect(form,m,e) ==
             return nil
             -- If we're doing a collect, and the type isn't conformable
             -- then we've boobed. JHD 26.July.1990
+          -- ??? we hve a plain old loop; the return type should be Void
+          $loopKind := repeatOrCollect
           $NoValueMode
         [body',m',e']:=
             compOrCroak(body,bodyMode,e) or return nil
+        -- Massage the loop body if we have a structured jump.
+        if $iterateCount > 0 then
+           bodyTag := quoteForm GENSYM()
+           body' := ["CATCH",bodyTag,NSUBST(bodyTag,"$loopBodyTag",body')]
         if $until then
           [untilCode,.,e']:= comp($until,$Boolean,e')
           itl':= substitute(["UNTIL",untilCode],'$until,itl')
