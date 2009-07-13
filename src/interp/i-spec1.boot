@@ -45,7 +45,6 @@ $specialOps := '(
      _[_|_|_] %Macro %MLambda %Import %Export %Inline %With %Add %Match)
 
 $repeatLabel := NIL
-$breakCount := 0
 $anonymousMapCounter := 0
 
 ++ List of free variables in the current function

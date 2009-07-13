@@ -156,8 +156,9 @@
           (|return| 202 201 (|PARSE-Return|))
           (|leave| 202 201 (|PARSE-Leave|))
           (|exit| 202 201 (|PARSE-Exit|))
+	  (|break| 202 201 (|PARSE-Jump|))
+	  (|iterate| 202 201 (|PARSE-Jump|))
           (|from|)
-          (|iterate|)
           (|yield|)
           (|if| 130 0 (|PARSE-Conditional|))    ; was 130
           (|case| 130 190 (|PARSE-Match|))

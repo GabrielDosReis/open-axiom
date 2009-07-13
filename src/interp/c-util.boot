@@ -49,6 +49,19 @@ module c_-util where
 $scanIfTrue := false
 
 
+++ If within a loop, which kind? (list comprehension or plain old loop)
+$loopKind := nil
+
+++ If within a loop, the program point for the start of the body.
+$repeatBodyLabel := nil
+
+++ The number of occurrance of `iterate' in a (plain old) loop.
+$iterateCount := nil
+
+++ The number of occurrance of `break' in a (plain old) loop.
+$breakCount := 0
+
+
 +++ If non nil, holds compiled value of 'Rep' of the current domain.
 $Representation := nil
 

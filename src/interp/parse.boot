@@ -70,7 +70,7 @@ parseTransform x ==
 
 parseTran: %ParseForm -> %Form
 parseTran x ==
-  atom x => parseAtom x
+  atom x => x
   [op,:argl]:= x
   u := g(op) where g op == (op is ["elt",op,x] => g x; op)
   u="construct" =>
@@ -87,12 +87,6 @@ parseType t ==
 parseTypeList l ==
   mapInto(l, function parseType) 
 
-parseAtom: %Atom -> %Form
-parseAtom x ==
- -- next line for compatibility with new compiler
-  x = "break" => parseLeave ["leave","$NoValue"]
-  x
- 
 parseTranList: %List -> %List
 parseTranList l ==
   atom l => parseTran l

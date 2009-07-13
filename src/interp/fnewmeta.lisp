@@ -113,7 +113,7 @@
 
 ;; Return:         'return' Expression +(return #1) ;
 
-;; Exit:           'exit' (Expression / +\$NoValue) +(exit #1) ;
+;; Exit:           'exit' Expression +(exit #1) ;
 
 ;; Leave:          'leave' ( Expression / +\$NoValue )
 ;;                 ('from' Label +(leaveFrom #1 #1) / +(leave #1)) ;
@@ -571,13 +571,19 @@
        (PUSH-REDUCTION '|PARSE-Return|
            (CONS '|return| (CONS (POP-STACK-1) NIL))))) 
 
+(DEFUN |PARSE-Jump| ()
+  (LET ((S (CURRENT-SYMBOL)))
+       (AND S 
+	    (ACTION (ADVANCE-TOKEN))
+	    (PUSH-REDUCTION '|PARSE-Jump| S))))
+
 
 (DEFUN |PARSE-Exit| ()
   (AND (MATCH-ADVANCE-STRING "exit")
        (MUST (OR (|PARSE-Expression|)
                  (PUSH-REDUCTION '|PARSE-Exit| '|$NoValue|)))
        (PUSH-REDUCTION '|PARSE-Exit|
-           (CONS '|exit| (CONS (POP-STACK-1) NIL))))) 
+           (CONS '|exit| (CONS (POP-STACK-1) NIL)))))
 
 
 (DEFUN |PARSE-Leave| ()
