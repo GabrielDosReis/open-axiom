@@ -114,36 +114,40 @@ subrname u ==
   COMPILED_-FUNCTION_-P u or MBPIP u => BPINAME u
   nil
  
+changeThrowToExit(s,g) ==
+  atom s or MEMQ(first s,'(QUOTE SEQ REPEAT COLLECT)) => nil
+  s is ["THROW", =g,:u] => (rplac(first s,"EXIT"); rplac(rest s,u))
+  changeThrowToExit(first s,g)
+  changeThrowToExit(rest s,g)
+
+hasNoThrows(a,g) ==
+  a is ["THROW", =g,:.] => false
+  atom a => true
+  hasNoThrows(first a,g) and hasNoThrows(rest a,g)
+
+changeThrowToGo(s,g) ==
+  atom s or first s='QUOTE => nil
+  s is ["THROW", =g,u] =>
+    changeThrowToGo(u,g)
+    rplac(first s,"PROGN")
+    rplac(rest s,[["%LET",second g,u],["GO",second g]])
+  changeThrowToGo(first s,g)
+  changeThrowToGo(rest s,g)
+
 optCatch (x is ["CATCH",g,a]) ==
   $InteractiveMode => x
   atom a => a
   if a is ["SEQ",:s,["THROW", =g,u]] then
-    changeThrowToExit(s,g) where
-      changeThrowToExit(s,g) ==
-        atom s or MEMQ(first s,'(QUOTE SEQ REPEAT COLLECT)) => nil
-        s is ["THROW", =g,:u] => (rplac(first s,"EXIT"); rplac(rest s,u))
-        changeThrowToExit(first s,g)
-        changeThrowToExit(rest s,g)
+    changeThrowToExit(s,g)
     rplac(rest a,[:s,["EXIT",u]])
     ["CATCH",y,a]:= optimize x
-  if hasNoThrows(a,g) where
-       hasNoThrows(a,g) ==
-         a is ["THROW", =g,:.] => false
-         atom a => true
-         hasNoThrows(first a,g) and hasNoThrows(rest a,g)
-     then (rplac(first x,first a); rplac(rest x,rest a))
-   else
-    changeThrowToGo(a,g) where
-      changeThrowToGo(s,g) ==
-        atom s or first s='QUOTE => nil
-        s is ["THROW", =g,u] =>
-          changeThrowToGo(u,g)
-          rplac(first s,"PROGN")
-          rplac(rest s,[["%LET",CADR g,u],["GO",CADR g]])
-        changeThrowToGo(first s,g)
-        changeThrowToGo(rest s,g)
+  if hasNoThrows(a,g) then
+    rplac(first x,first a) 
+    rplac(rest x,rest a)
+  else
+    changeThrowToGo(a,g)
     rplac(first x,"SEQ")
-    rplac(rest x,[["EXIT",a],CADR g,["EXIT",CADR g]])
+    rplac(rest x,[["EXIT",a],second g,["EXIT",second g]])
   x
  
 optSPADCALL(form is ['SPADCALL,:argl]) ==
