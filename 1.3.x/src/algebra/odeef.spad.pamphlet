@@ -434,7 +434,7 @@ ElementaryFunctionODESolver(R, F): Exports == Implementation where
     getfreelincoeff1: (F, K, List F) -> F
     getlincoeff     : (F, K) -> F
     getcoeff        : (F, K) -> UU
-    parseODE        : (F, OP, SY) -> Union(LEQ, NLQ)
+    parseODE        : (F, OP, SY) -> Union(LEQ, NLQ, "failed")
     parseLODE       : (F, List K, UP, SY) -> LEQ
     parseSYS        : (List F, List OP, SY) -> Union(SYS, "failed")
     parseSYSeq      : (F, List K, List K, List F, SY) -> Union(ROW, "failed")
@@ -462,7 +462,9 @@ ElementaryFunctionODESolver(R, F): Exports == Implementation where
     solve(diffeq:F, y:OP, center:EQ, y0:List F) ==
       a := rhs center
       kx:K := kernel(x := retract(lhs(center))@SY)
-      (ur := parseODE(diffeq, y, x)) case NLQ =>
+      ur := parseODE(diffeq, y, x)
+      ur case "failed" => "failed"
+      ur case NLQ =>
         not one?(#y0) => error "solve: more than one initial condition!"
         rc := ur::NLQ
         (u := solve(rc.dx, rc.dy, y, x)) case "failed" => "failed"
@@ -483,7 +485,9 @@ ElementaryFunctionODESolver(R, F): Exports == Implementation where
         error "solve: not a first order linear system"
 
     solve(diffeq:F, y:OP, x:SY) ==
-      (u := parseODE(diffeq, y, x)) case NLQ =>
+      u := parseODE(diffeq, y, x)
+      u case "failed" => "failed"
+      u case NLQ =>
         rc := u::NLQ
         (uu := solve(rc.dx, rc.dy, y, x)) case "failed" => "failed"
         uu::F
@@ -527,28 +531,39 @@ ElementaryFunctionODESolver(R, F): Exports == Implementation where
           eq := eq - ci * y::F
       [n, v, -eq]
 
--- returns either [p, g] where the equation (diffeq) is of the form p(D)(y) = g
--- or [p, q] such that the equation (diffeq) is of the form p dx + q dy = 0
+    -- returns either 
+    --   [p, g] where the equation (diffeq) is of the form 
+    --        p(D)(y) = g
+    -- or
+    --   [p, q] such that the equation (diffeq) is of the form 
+    --        p dx + q dy = 0
     parseODE(diffeq, y, x) ==
-      f := y(x::F)
+      -- FIXME: Assume we don't have a parametric equation.
+      f := y(x::F)   
       l:List(K) := [retract(f)@K]
       n:N := 2
       for k in varselect(kernels diffeq, x) | is?(k, OPDIFF) repeat
         if (m := height k) > n then n := m
       n := (n - 2)::N
--- build a list of kernels in the order [y^(n)(x),...,y''(x),y'(x),y(x)]
+      -- build a list of kernels in the order [y^(n)(x),...,y''(x),y'(x),y(x)]
       for i in 1..n repeat
         l := concat(retract(f := differentiate(f, x))@K, l)
+      -- Determine the order of the equation and its leading coefficient
       k:K   -- #$^#& compiler requires this line and the next one too...
       c:F
-      while not(empty? l) and zero?(c := getlincoeff(diffeq, k := first l))
-        repeat l := rest l
-      empty? l or empty? rest l => error "parseODE: equation has order 0"
+      while not empty? l repeat 
+        c' := getcoeff(diffeq, k := first l)
+        c' case "failed" => return "failed"
+        c := c'::F
+        not zero? c => break
+        l := rest l
+      empty? l or empty? rest l => "failed" -- maybe a functional equation?
       diffeq := diffeq - c * (k::F)
       ny := name y
       l := rest l
       height(k) > 3 => parseLODE(diffeq, l, monomial(c, #l), ny)
-      (u := getcoeff(diffeq, k := first l)) case "failed" => [diffeq, c]
+      u := getcoeff(diffeq, k := first l)
+      u case "failed" => [diffeq, c]
       eqrhs := (d := u::F) * (k::F) - diffeq
       freeOf?(eqrhs, ny) and freeOf?(c, ny) and freeOf?(d, ny) =>
         [monomial(c, 1) + d::UP, eqrhs]

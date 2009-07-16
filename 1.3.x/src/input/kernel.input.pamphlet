@@ -27,7 +27,7 @@ height mainKernel(sin x)
 height mainKernel(sin cos x)
 height mainKernel(sin cos (tan x + sin x))
 operator mainKernel(sin cos (tan x + sin x))
-name mainKernel(sin cos (tan x + sin x))
+name operator mainKernel(sin cos (tan x + sin x))
 f := operator 'f
 e := f(x, y, 10)
 is?(e, f)
