@@ -1,0 +1,3 @@
+f(x: Domain): Integer ==
+  x has IntegralDomain => 1
+  0

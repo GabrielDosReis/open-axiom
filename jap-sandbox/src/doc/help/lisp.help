@@ -1,0 +1,34 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.15.  )lisp
+==============================================================================
+ 
+User Level Required:  development
+ 
+Command Syntax: 
+ 
+  -  )lisp [lispExpression]
+ 
+Command Description: 
+ 
+This command is used by OpenAxiom system developers to have single expressions
+evaluated by the Lisp system on which OpenAxiom is built. The lispExpression is
+read by the Lisp reader and evaluated. If this expression is not complete
+(unbalanced parentheses, say), the reader will wait until a complete
+expression is entered.
+ 
+Since this command is only useful for evaluating single expressions, the )fin
+command may be used to drop out of OpenAxiom into Lisp.  These two
+commands are deprecated.
+ 
+Also See: 
+o )system
+o )boot
+o )fin
+ 

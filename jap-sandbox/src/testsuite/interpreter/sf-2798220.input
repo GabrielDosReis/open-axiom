@@ -1,0 +1,3 @@
+-- Issue SF/2798220: Missing before? (%,%) -> Boolean from PrimeField
+U : POLY(PF(19)) := 3*X**4+2*X**2+15*X+8
+

@@ -1,0 +1,5 @@
+++ Contributed by Yixin Cao
+)co "case.spad"
+b:=convert("b")@Symbol
+c:=b::Syntax
+test c

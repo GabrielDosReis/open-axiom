@@ -1,0 +1,51 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.18.  )pquit
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )pquit
+ 
+Command Description: 
+ 
+This command is used to terminate OpenAxiom and return to the operating system.
+Other than by redoing all your computations or by using the )history )restore
+command to try to restore your working environment, you cannot return to
+OpenAxiom in the same state.
+ 
+)pquit differs from the )quit in that it always asks for confirmation that
+you want to terminate OpenAxiom (the ``p'' is for ``protected''). When
+you enter the )pquit command, OpenAxiom responds
+ 
+      Please enter y or yes if you really want to leave the interactive 
+                environment and return to the operating system:
+ 
+If you respond with y or yes, you will see the message
+ 
+            You are now leaving the OpenAxiom interactive environment. 
+    Issue the command axiom to the operating system to start a new session.
+ 
+and OpenAxiom will terminate and return you to the operating system (or the
+environment from which you invoked the system). If you responded with
+something other than y or yes, then the message
+ 
+        You have chosen to remain in the OpenAxiom interactive environment.
+ 
+will be displayed and, indeed, OpenAxiom would still be running.
+ 
+Also See: 
+o )fin
+o )history
+o )close
+o )quit
+o )system
+ 

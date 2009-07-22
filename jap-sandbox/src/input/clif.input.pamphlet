@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input CLIF.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+-- Input generated from CliffordAlgebraXmpPage
+)clear all
+
+
+-- Input generated from ugxCliffordComplexPage
+)clear all
+
+K := Fraction Polynomial Integer
+m := matrix [[-1]]
+C := CliffordAlgebra(1, K, quadraticForm m)
+i: C := e(1)
+x := a + b * i
+y := c + d * i
+x * y
+
+-- Input generated from ugxCliffordQuaternPage
+)clear all
+
+K := Fraction Polynomial Integer
+m := matrix [[-1,0],[0,-1]]
+H  := CliffordAlgebra(2, K, quadraticForm m)
+i: H  := e(1)
+j: H  := e(2)
+k: H  := i * j
+x := a + b * i + c * j + d * k
+y := e + f * i + g * j + h * k
+x + y
+x * y
+y * x
+
+-- Input generated from ugxCliffordExteriorPage
+)clear all
+
+K := Fraction Polynomial Integer
+Ext := CliffordAlgebra(3, K, quadraticForm 0)
+i: Ext := e(1)
+j: Ext := e(2)
+k: Ext := e(3)
+x := x1*i + x2*j + x3*k
+y := y1*i + y2*j + y3*k
+x + y
+x * y + y * x
+dual2 a == coefficient(a,[2,3]) * i + coefficient(a,[3,1]) * j + coefficient(a,[1,2]) * k
+dual2(x*y)
+
+-- Input generated from ugxCliffordDiracPage
+)clear all
+
+K := Fraction Integer
+g := matrix [[1,0,0,0], [0,-1,0,0], [0,0,-1,0], [0,0,0,-1]]
+D := CliffordAlgebra(4,K, quadraticForm g)
+gam := [e(i)$D for i in 1..4]
+m := 1; n:= 2; r := 3; s := 4;
+lhs := reduce(+, [reduce(+, [ g(l,t)*gam(l)*gam(m)*gam(n)*gam(r)*gam(s)*gam(t) for l in 1..4]) for t in 1..4])
+rhs := 2*(gam s * gam m*gam n*gam r + gam r*gam n*gam m*gam s)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}
