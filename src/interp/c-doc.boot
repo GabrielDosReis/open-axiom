@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -806,7 +806,9 @@ checkDecorate u ==
             acc
       x = char '_$ or x = '"$"  => ['"\$",:acc]
       x = char '_% or x = '"%"  => ['"\%",:acc]
-      x = char '_, or x = '","  => ['",{}",:acc]
+      x = char '_, or x = '","  => 
+        spadflag => ['",",:acc]
+        ['",{}",:acc]
       x = '"\spad" => ['"\spad",:acc]
       STRINGP x and DIGITP x.0 => [x,:acc]
       not spadflag and
