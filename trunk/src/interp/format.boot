@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -782,16 +782,17 @@ form2Fence form ==
 
 form2Fence1 x ==
   x is [op,:argl] =>
-    op = 'QUOTE => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
+    op = "QUOTE" => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
     ['"(", FORMAT(NIL, '"|~a|", op),:"append"/[form2Fence1 y for y in argl],'")"]
+  null x => '""
   IDENTP x => FORMAT(NIL, '"|~a|", x)
---  [x]
   ['"  ", x]
 
 form2FenceQuote x ==
   NUMBERP x => [STRINGIMAGE x]
   SYMBOLP x => [FORMAT(NIL, '"|~a|", x)]
-  atom    x => '"??"   
+  STRINGP x => ['"_"",x,'"_""]
+  atom    x => systemErrorHere ["form2FenceQuote",x]
   ['"(",:form2FenceQuote first x,:form2FenceQuoteTail rest x]
 
 form2FenceQuoteTail x ==

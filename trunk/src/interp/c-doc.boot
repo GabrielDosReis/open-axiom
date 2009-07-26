@@ -53,7 +53,7 @@ getDoc(conName,op,modemap) ==
   sig := MSUBST('$,dc,sig)
   getDocForCategory(conName,op,sig)
 
-++ Given a preidcate `pred' for a modemap, returns the first
+++ Given a predicate `pred' for a modemap, returns the first
 ++ argument to the ofCategory predicate it contains.  Return
 ++ nil otherwise.
 getOfCategoryArgument pred ==
@@ -821,10 +821,10 @@ checkDecorate u ==
         ['"th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
       xcount = 4 and x.1 = char '_- and x.2 = char 't and x.3 = char 'h =>
         ['"-th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
-      xcount = 2 and x.1 = char 'i or              --wrap ei, xi, hi
-        not spadflag and xcount > 0 and xcount < 4 and not member(x,'("th" "rd" "st")) and
-          hasNoVowels x =>                         --wrap words with no vowels
-            [$charRbrace,x,$charLbrace,'"\spad",:acc]
+      not spadflag and (xcount = 2 and x.1 = char 'i or  --wrap ei, xi, hi
+         xcount > 0 and xcount < 4 and not member(x,'("th" "rd" "st")) and
+           hasNoVowels x) =>                    --wrap words with no vowels
+             [$charRbrace,x,$charLbrace,'"\spad",:acc]
       [checkAddBackSlashes x,:acc]
     u := rest u
   NREVERSE acc
