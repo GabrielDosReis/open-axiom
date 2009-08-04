@@ -1898,6 +1898,8 @@ distclean-local: clean-local
 
 include extract-spad.mk
 
+.NOTPARALLEL:
+
 @
 \eject
 \begin{thebibliography}{99}

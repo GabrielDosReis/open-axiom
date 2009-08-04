@@ -1286,3 +1286,5 @@ distclean-local: clean-local
 
 include extract-spad.mk
 
+.NOTPARALLEL:
+
