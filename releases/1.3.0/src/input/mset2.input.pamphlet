@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input MSET.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from MultiSetXmpPage
+)clear all
+
+s := multiset [1,2,3,4,5,4,3,2,3,4,5,6,7,4,10]
+insert!(3,s)
+remove!(3,s,1); s
+remove!(5,s); s
+count(5,s)
+t := multiset [2,2,2,-9]
+U := union(s,t)
+I := intersect(s,t)
+difference(s,t)
+S := symmetricDifference(s,t)
+(U = union(S,I))@Boolean
+t1 := multiset [1,2,2,3]; 
+[part?(t1,t), part?(t1,s), part?(t,s), not part?(s,t1)]
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

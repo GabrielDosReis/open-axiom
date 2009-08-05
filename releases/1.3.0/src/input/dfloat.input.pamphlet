@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input DFLOAT.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from DoubleFloatXmpPage
+)clear all
+
+2.71828
+2.71828@DoubleFloat
+2.71828 :: DoubleFloat
+eApprox : DoubleFloat := 2.71828
+avg : List DoubleFloat -> DoubleFloat
+avg l ==
+  empty? l => 0 :: DoubleFloat
+  reduce(_+,l) / #l
+avg []
+avg [3.4,9.7,-6.8]
+cos(3.1415926)$DoubleFloat
+cos(3.1415926 :: DoubleFloat)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

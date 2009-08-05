@@ -1,0 +1,1 @@
+print(typeOf(1)::OutputForm)
