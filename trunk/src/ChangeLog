@@ -1,3 +1,7 @@
+2009-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* graph/view3D/stuff3d.c (norm_dist): Set third coordinate to zero.
+
 2009-07-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-doc.boot (checkDecorate): Tidy.
