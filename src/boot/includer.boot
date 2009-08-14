@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -285,7 +285,7 @@ shoePrefix?(prefix,whole) ==
  
 shoePlainLine?(s) ==
          #s = 0 =>  true
-         s.0 ^= char ")"
+         s.0 ~= char ")"
  
 shoeSay?          s  == shoePrefix?('")say",         s)
 shoeEval?         s  == shoePrefix?('")eval",        s)

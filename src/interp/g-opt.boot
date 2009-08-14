@@ -398,7 +398,7 @@ isSimpleVMForm form ==
 ++ on the program point where it is evaluated. 
 isFloatableVMForm: %Code -> %Boolean
 isFloatableVMForm form ==
-  atom form => form ^= "$"
+  atom form => form ~= "$"
   form is ["QUOTE",:.] => true
   MEMQ(first form, $simpleVMoperators) and
     "and"/[isFloatableVMForm arg for arg in rest form]

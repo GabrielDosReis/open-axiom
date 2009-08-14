@@ -272,7 +272,7 @@ stackTraceOptionError x ==
   nil
 
 removeOption(op,options) ==
-  [optEntry for (optEntry:=[opt,:.]) in options | opt ^= op]
+  [optEntry for (optEntry:=[opt,:.]) in options | opt ~= op]
 
 domainToGenvar x ==
   $doNotAddEmptyModeIfTrue: local:= true

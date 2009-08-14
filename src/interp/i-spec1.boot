@@ -87,7 +87,7 @@ upADEF t ==
   $compilingMap : local := true
 
   -- if there is a predicate, merge it in with the body
-  if pred ^= true then body := ['IF,pred,body,'%noMapVal]
+  if pred ~= true then body := ['IF,pred,body,'%noMapVal]
 
   tar := getTarget t
   null m and tar is ['Mapping,.,:argTypes] and (#vars = #argTypes) =>
@@ -385,7 +385,7 @@ upTARGET t ==
   $declaredMode:= m
   not atom(lhs) and putTarget(lhs,m)
   ms := bottomUp lhs
-  first ms ^= m =>
+  first ms ~= m =>
     throwKeyedMsg("S2IC0011",[first ms,m])
   putValue(op,getValue lhs)
   putModeSet(op,ms)
@@ -635,7 +635,7 @@ interpCOLLECTbodyIter(exp,indexList,indexVals,indexTypes) ==
     [:$collectTypeList,rm:=resolveTT(m,last $collectTypeList)]
   null rm => throwKeyedMsg("S2IS0010",NIL)
   value:=
-    rm ^= m => coerceInteractive(getValue exp,rm)
+    rm ~= m => coerceInteractive(getValue exp,rm)
     getValue exp
   objValUnwrap(value)
 
@@ -1073,7 +1073,7 @@ upNullList(op,l,tar) ==
 upTaggedUnionConstruct(op,l,tar) ==
   -- special handler for tagged union constructors
   tar isnt [.,:types] => nil
-  #l ^= 1 => throwKeyedMsg("S2IS0051",[#l,tar])
+  #l ~= 1 => throwKeyedMsg("S2IS0051",[#l,tar])
   bottomUp first l
   obj := getValue first l
   (code := coerceInteractive(getValue first l,tar)) or
@@ -1152,7 +1152,7 @@ declare(var,mode) ==
       null margs => 0
       PAIRP margs => -1 + #margs
       1
-    nargs ^= #args => throwKeyedMsg("S2IM0008",[var])
+    nargs ~= #args => throwKeyedMsg("S2IM0008",[var])
   if $compilingMap then mkLocalVar($mapName,var)
   else clearDependencies(var,true)
   isLocalVar(var) => put(var,'mode,mode,$env)

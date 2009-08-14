@@ -133,7 +133,7 @@ enoughArguments(args,sig) ==
 ++ wants its arguments as a Tuple object.
 wantArgumentsAsTuple: (%List,%Signature) -> %Boolean
 wantArgumentsAsTuple(args,sig) ==
-  isHomoegenousVarargSignature sig and #args ^= #sig
+  isHomoegenousVarargSignature sig and #args ~= #sig
 
 ++ We are about to seal the (Lisp) definition of a function.
 ++ Augment the `body' with a declaration for those `parms'
@@ -274,7 +274,7 @@ intersectionEnvironment(e,e') ==
 deltaContour([[c,:cl],:el],[[c',:cl'],:el']) ==
   ^el=el' => systemError '"deltaContour" --a cop out for now
   eliminateDuplicatePropertyLists contourDifference(c,c') where
-    contourDifference(c,c') == [first x for x in tails c while (x^=c')]
+    contourDifference(c,c') == [first x for x in tails c while (x~=c')]
     eliminateDuplicatePropertyLists contour ==
       contour is [[x,:.],:contour'] =>
         LASSOC(x,contour') =>
@@ -354,7 +354,7 @@ addContour(c,E is [cur,:tail]) ==
                      RPLACA(pv,"mode")
                      --check for conflicts with earlier mode
                      if vv:=LASSOC("mode",e) then
-                        if v ^=vv then
+                        if v ~=vv then
                           stackWarning('"The conditional modes %1p and %2p conflict",
                             [v,vv])
         LIST c
@@ -708,7 +708,7 @@ unStackWarning(msg,args) ==
   nil
  
 stackMessage(msg,args == nil) ==
-  if args ^= nil then
+  if args ~= nil then
     msg := buildMessage(msg,args)
   $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   nil
@@ -720,7 +720,7 @@ stackMessageIfNone msg ==
   nil
  
 stackAndThrow(msg, args == nil) ==
-  if args ^= nil then
+  if args ~= nil then
     msg := buildMessage(msg,args)
   $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   THROW("compOrCroak",nil)
@@ -964,7 +964,7 @@ getCapsuleDirectoryEntry slot ==
 ++ Update the current capsule directory with entry controlled by 
 ++ predicate `pred'.
 updateCapsuleDirectory(item,pred) ==
-  pred ^= true => nil
+  pred ~= true => nil
   entry :=
     item is ["$",slot,["CONS",["dispatchFunction",fun],:.],:.] => [slot,:fun]
     item is ["$",slot,["CONS","IDENTITY",
@@ -1107,7 +1107,7 @@ foldSpadcall form ==
     mutateCONDFormWithUnaryFunction(form,"foldSpadcall")
   for args in tails rest form repeat
     foldSpadcall first args
-  first form ^= "SPADCALL" => form
+  first form ~= "SPADCALL" => form
   fun := lastNode form
   fun isnt [["getShellEntry","$",slot]] => form
   null (op := getCapsuleDirectoryEntry slot) => form
@@ -1219,10 +1219,10 @@ backendCompileSLAM(name,args,body) ==
   arg := first u
   app := second u
   codePart1 :=                  -- look up the value if it is already there
-    args ^= nil => [["SETQ", g2, ["assoc",g1,al]], ["CDR",g2]]
+    args ~= nil => [["SETQ", g2, ["assoc",g1,al]], ["CDR",g2]]
     [al]
   codePart2 :=                  -- otherwise, compute it.
-    args ^= nil => [true,["SETQ",g2,app],["SETQ",al,[[g1,:g2],:al]],g2]
+    args ~= nil => [true,["SETQ",g2,app],["SETQ",al,[[g1,:g2],:al]],g2]
     [true,["SETQ",al,app]]
   lamex := ["LAM",arg,["PROG",[g2],
                         ["RETURN",["COND",codePart1,codePart2]]]]
@@ -1275,7 +1275,7 @@ backendCompileSPADSLAM(name,args,body) ==
 
 backendCompile2: %Code -> %Symbol
 backendCompile2 code ==
-  code isnt [name,[type,args,:body],:junk] or junk ^= nil =>
+  code isnt [name,[type,args,:body],:junk] or junk ~= nil =>
     systemError ['"parenthesis error in: ", code]
   type = "SLAM" => backendCompileSLAM(name,args,body)
   LASSQ(name,$clamList) => compClam(name,args,body,$clamList)
@@ -1290,7 +1290,7 @@ backendCompile2 code ==
 ++ returns all fuild variables contained in `x'.  Fuild variables are
 ++ identifiers starting with '$', except domain variable names.
 backendFluidize x ==
-  IDENTP x and x ^= "$" and x ^= "$$" and
+  IDENTP x and x ~= "$" and x ~= "$$" and
     (PNAME x).0 = char "$" and not DIGITP((PNAME x).1) => x
   isAtomicForm x => nil
   first x = "FLUID" => second x
@@ -1308,8 +1308,8 @@ $SpecialVars := []
 ++ push `x' into the list of local variables.
 pushLocalVariable: %Symbol -> %List
 pushLocalVariable x ==
-  x ^= "$" and (p := PNAME x).0 = char "$" and
-    p.1 ^= char "," and not DIGITP p.1 => nil
+  x ~= "$" and (p := PNAME x).0 = char "$" and
+    p.1 ~= char "," and not DIGITP p.1 => nil
   PUSH(x,$LocalVars)
 
 
@@ -1390,7 +1390,7 @@ mutateToBackendCode x ==
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
     RPLACA(x,"MAKEPROP-SAY")
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
-    if u ^= "DCQ" then
+    if u ~= "DCQ" then
       $NEWSPAD or $FUNAME in $traceletFunctions =>
         nconc(x,$FUNNAME__TAIL)
         RPLACA(x,"LETT")
@@ -1403,7 +1403,7 @@ mutateToBackendCode x ==
         PUSH(CADADR x, $FluidVars)
         rplac(second x, CADADR x)
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
-  IDENTP u and GET(u,"ILAM") ^= nil =>
+  IDENTP u and GET(u,"ILAM") ~= nil =>
     RPLACA(x, eval u)
     mutateToBackendCode x
   u in '(PROG LAMBDA) =>
@@ -1469,9 +1469,9 @@ transformToBackendCode x ==
   lvars := [:$FluidVars,:$LocalVars]
   fluids := S_+($FluidVars,$SpecialVars)
   body := 
-    fluids ^= nil =>
+    fluids ~= nil =>
       [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
-    lvars ^= nil or CONTAINED("RETURN",body) =>
+    lvars ~= nil or CONTAINED("RETURN",body) =>
       [["PROG",lvars,["RETURN",:body]]]
     body
   -- add reference parameters to the list of special variables.

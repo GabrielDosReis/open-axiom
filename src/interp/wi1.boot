@@ -351,7 +351,7 @@ compAtom(x,m,e) ==
       compSymbol(x,m,e) or return nil
     m = $Expression and primitiveType x => [x,m,e]
     STRINGP x => 
-      x ^= '"failed" and (member($Symbol, $localImportStack) or
+      x ~= '"failed" and (member($Symbol, $localImportStack) or
         member($Symbol, $globalImportStack)) => markAt [x, '(String), e]
       [x, x, e]
     [x,primitiveType x or return nil,e]
@@ -564,7 +564,7 @@ setqSingle(id,val,m,E) ==
     (trialT and coerce(trialT,m'')) or eval or return nil where
       eval() ==
         T:= comp(val,m'',E) => T
-        not get(id,"mode",E) and m'' ^= (maxm'':=maximalSuperType m'') and
+        not get(id,"mode",E) and m'' ~= (maxm'':=maximalSuperType m'') and
            (T:=comp(val,maxm'',E)) => T
         (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
           assignError(val,T.mode,id,m'')
@@ -619,7 +619,7 @@ setqMultiple(nameList,val,m,e) ==
         comp(t,$EmptyMode,e) is [.,["RecordCategory",:l],.] =>
           [[name,:mode] for [":",name,mode] in l]
         stackMessage ["no multiple assigns to mode: ",t]
-  #nameList^=#selectorModePairs =>
+  #nameList ~= #selectorModePairs =>
     stackMessage [val," must decompose into ",#nameList," components"]
   -- 3.generate code; return
   assignList:=
@@ -629,7 +629,7 @@ setqMultiple(nameList,val,m,e) ==
   else [MKPROGN [x,:assignList,g],m',e]
 
 setqMultipleExplicit(nameList,valList,m,e) ==
-  #nameList^=#valList =>
+  #nameList ~= #valList =>
     stackMessage ["Multiple assignment error; # of items in: ",nameList,
       "must = # in: ",valList]
   gensymList:= [genVariable() for name in nameList]
@@ -796,7 +796,7 @@ resolve(min, mout) ==
   dout=$EmptyMode => din
   STRINGP din and dout = $Symbol => dout   ------> hack 8/14/94
   STRINGP dout and din = $Symbol => din    ------> hack 8/14/94
-  din^=dout and (STRINGP din or STRINGP dout) =>
+  din ~= dout and (STRINGP din or STRINGP dout) =>
     modeEqual(dout,$String) => dout
     modeEqual(din,$String) =>  nil
     mkUnion(din,dout)
@@ -1200,7 +1200,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 --   4. compile body in environment of %type declarations for arguments
     op':= $op
     -- following line causes cats with no with or Join to be fresh copies
-    if opOf(formalBody)^='Join and opOf(formalBody)^='mkCategory then
+    if opOf(formalBody) ~= 'Join and opOf(formalBody) ~= 'mkCategory then
            formalBody := ['Join, formalBody]
     T := compOrCroak(formalBody,signature'.target,e)
 --------------------> new <-------------------

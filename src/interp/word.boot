@@ -164,7 +164,7 @@ pickANumber(word,list) ==
   maxWidth:= 38 - 2*(1+xx)
   [short,long] := say2Split(list,nil,nil,maxWidth)
   extra:=
-    REMAINDER(length := # short,2) ^= 0 => 1
+    REMAINDER(length := # short,2) ~= 0 => 1
     0
   halfLength:= length/2
   firstList:= TAKE(halfLength,short)
@@ -194,7 +194,7 @@ bootSearch word ==
   list :=
     hasWildCard? key =>
       pattern := patternTran key -- converts * to &
-      pattern.0 ^= '_& =>
+      pattern.0 ~= '_& =>
         [x for [x,:.] in HGET($functionTable,UPCASE pattern.0)|
           match?(pattern,COPY x)]
       "append"/[[x for [x,:.] in HGET($functionTable,k)| match?(pattern,COPY x)]

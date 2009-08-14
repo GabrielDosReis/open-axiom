@@ -193,7 +193,7 @@ genDeltaEntry opMmPair ==
   if atom dc then
     dc = "$" => nsig := sig
     if NUMBERP nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
-  setDifference(listOfBoundVars dc,$functorLocalParameters) ^= [] =>
+  setDifference(listOfBoundVars dc,$functorLocalParameters) ~= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(nsig,dc),consDomainForm(dc,nil)]]
   odc := dc
@@ -668,7 +668,7 @@ changeDirectoryInSlot1() ==  --called by buildFunctor
   --    $NRTdeltaList = nil  ===> all slot numbers become nil
   $lisplibOperationAlist := [sigloc entry for entry in $domainShell.1] where
     sigloc [opsig,pred,fnsel] ==
-        if pred ^= 'T then
+        if pred ~= 'T then
           pred := simpBool pred
           $NRTslot1PredicateList := insert(pred,$NRTslot1PredicateList)
         fnsel is [op,a,:.] and (op = 'ELT or op = 'CONST) =>
@@ -682,7 +682,7 @@ changeDirectoryInSlot1() ==  --called by buildFunctor
   $newEnv: local := $e
   $domainShell.1 := [fn entry for entry in sortedOplist] where
     fn [[op,sig],pred,fnsel] ==
-       if $lastPred ^= pred then
+       if $lastPred ~= pred then
             $newEnv := deepChaseInferences(pred,$e)
             $lastPred := pred
        newfnsel :=

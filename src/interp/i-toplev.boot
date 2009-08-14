@@ -98,7 +98,7 @@ start(:l) ==
   if $OLDLINE then
     SAY fillerSpaces($LINELENGTH,'"=")
     sayKeyedMsg("S2IZ0050",[namestring ['axiom,'input]])
-    if $OLDLINE ^= 'END__UNIT
+    if $OLDLINE ~= 'END__UNIT
       then
         centerAndHighlight($OLDLINE,$LINELENGTH,'" ")
         sayKeyedMsg("S2IZ0051",NIL)
@@ -194,7 +194,7 @@ recordAndPrint(x,md) ==
     md' := md
   $outputMode: local := md   --used by DEMO BOOT
   mode:= (md=$EmptyMode => quadSch(); md)
-  if (md ^= $Void) or $printVoidIfTrue then
+  if (md ~= $Void) or $printVoidIfTrue then
     if null $collectOutput then TERPRI $algebraOutputStream
     if $QuietCommand = false then
       output(x',md')
@@ -296,7 +296,7 @@ interpretTopLevel(x, posnForm) ==
   --  for a thrown result
   savedTimerStack := COPY $timedNameStack
   c := CATCH('interpreter,interpret(x, posnForm))
-  while savedTimerStack ^= $timedNameStack repeat
+  while savedTimerStack ~= $timedNameStack repeat
     stopTimingProcess peekTimedName()
   c = 'tryAgain => interpretTopLevel(x, posnForm)
   c

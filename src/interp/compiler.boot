@@ -131,7 +131,7 @@ compOrCroak1(x,m,e,compFn) ==
             [first al,:compactify rest al]
       $level: local := #$s
       errorMessage:=
-        $compErrorMessageStack ^= nil => first $compErrorMessageStack
+        $compErrorMessageStack ~= nil => first $compErrorMessageStack
         "unspecified error"
       $scanIfTrue =>
         stackSemanticError(errorMessage,mkErrorExpr $level)
@@ -174,7 +174,7 @@ comp2(x,m,e) ==
   [y,m',e]:= comp3(x,m,e) or return nil
   --if null atom y and isDomainForm(y,e) then e := addDomain(x,e)
         --line commented out to prevent adding derived domain forms
-  m^=m' and ($bootStrapMode or isDomainForm(m',e))=>[y,m',addDomain(m',e)]
+  m~=m' and ($bootStrapMode or isDomainForm(m',e))=>[y,m',addDomain(m',e)]
         --isDomainForm test needed to prevent error while compiling Ring
         --$bootStrapMode-test necessary for compiling Ring in $bootStrapMode
   [y,m',e]
@@ -219,7 +219,7 @@ emitLocalCallInsn(op,args,e) ==
   [op',:args,"$"]   
 
 applyMapping([op,:argl],m,e,ml) ==
-  #argl^=#ml-1 => nil
+  #argl~=#ml-1 => nil
   isCategoryForm(first ml,e) =>
                                 --is op a functor?
     pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
@@ -238,14 +238,14 @@ applyMapping([op,:argl],m,e,ml) ==
     atom op and not(op in $formalArgList) and null (u := get(op,"value",e)) =>
       emitLocalCallInsn(op,argl',e)
     -- Compiler synthetized operators are inline.
-    u ^= nil and u.expr is ["XLAM",:.] => ["call",u.expr,:argl']
+    u ~= nil and u.expr is ["XLAM",:.] => ["call",u.expr,:argl']
     ['call,['applyFun,op],:argl']
   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
   convert([form,SUBLIS(pairlis,first ml),e],m)
 
 -- This version tends to give problems with #1 and categories
 -- applyMapping([op,:argl],m,e,ml) ==
---   #argl^=#ml-1 => nil
+--   #argl~=#ml-1 => nil
 --   mappingHasCategoryTarget :=
 --     isCategoryForm(first ml,e) => --is op a functor?
 --       form:= [op,:argl']
@@ -282,7 +282,7 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   if STRINGP x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
-  (vl ^= nil) and not hasFormalMapVariable(x, vl) => return
+  (vl ~= nil) and not hasFormalMapVariable(x, vl) => return
     [u,.,.] := comp([x,:vl],m',e) or return nil
     extractCodeAndConstructTriple(u, m, oldE)
   null vl and (t := comp([x], m', e)) => return
@@ -647,7 +647,7 @@ getFormModemaps(form is [op,:argl],e) ==
   -- Within default implementations, modemaps cannot mention the
   -- current domain. 
   if $insideCategoryPackageIfTrue then
-    modemapList := [x for x in modemapList | x is [[dom,:.],:.] and dom ^= '$]
+    modemapList := [x for x in modemapList | x is [[dom,:.],:.] and dom ~= '$]
   if op="elt"
      then modemapList:= eltModemapFilter(LAST argl,modemapList,e) or return nil
      else
@@ -701,7 +701,7 @@ seteltModemapFilter(name,mmList,e) ==
 compApplication(op,argl,m,T) ==
   e := T.env
   T.mode is ['Mapping, retm, :argml] =>
-    #argl ^= #argml => nil
+    #argl ~= #argml => nil
     retm := resolve(m, retm)
     retm = $Category or isCategoryForm(retm,e) => nil  -- not handled
     argTl := [[.,.,e] := comp(x,m,e) or return "failed"
@@ -732,7 +732,7 @@ reshapeArgumentList(form,sig) ==
   form
 
 substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
-  #dc^=#sig =>
+  #dc~=#sig =>
     keyedSystemError("S2GE0016",['"substituteIntoFunctorModemap",
       '"Incompatible maps"])
   #argl=#rest sig =>
@@ -826,7 +826,7 @@ setqSingle(id,val,m,E) ==
     eval or return nil where
       eval() ==
         T:= comp(val,m'',E) => T
-        not get(id,"mode",E) and m'' ^= (maxm'':=maximalSuperType m'') and
+        not get(id,"mode",E) and m'' ~= (maxm'':=maximalSuperType m'') and
            (T:=comp(val,maxm'',E)) => T
         (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
           assignError(val,T.mode,id,m'')
@@ -887,7 +887,7 @@ setqMultiple(nameList,val,m,e) ==
         comp(t,$EmptyMode,e) is [.,["RecordCategory",:l],.] =>
           [[name,:mode] for [":",name,mode] in l]
         stackMessage('"no multiple assigns to mode: %1p",[t])
-  #nameList^=#selectorModePairs =>
+  #nameList~=#selectorModePairs =>
     stackMessage('"%1b must decompose into %2 components",[val,#nameList])
   3 --generate code; return
   assignList:=
@@ -897,7 +897,7 @@ setqMultiple(nameList,val,m,e) ==
   else [MKPROGN [x,:assignList,g],m',e]
 
 setqMultipleExplicit(nameList,valList,m,e) ==
-  #nameList^=#valList =>
+  #nameList~=#valList =>
     stackMessage('"Multiple assignment error; # of items in: %1b must = # in: %2",[nameList,valList])
   gensymList:= [genVariable() for name in nameList]
   assignList:=
@@ -1088,14 +1088,14 @@ compLeave(["leave",level,x],m,e) ==
   [["TAGGEDexit",index,u],m,e]
 
 jumpFromLoop(kind,key) ==
-  null $exitModeStack or kind ^= $loopKind =>
+  null $exitModeStack or kind ~= $loopKind =>
     stackAndThrow('"You can use %1b only in %2b loop",[key,kind])
     false
   true
 
 compBreak: (%Symbol,%Mode,%Env) -> %Maybe %Triple
 compBreak(x,m,e) ==
-  x ^= "break" or not jumpFromLoop("REPEAT",x) => nil
+  x ~= "break" or not jumpFromLoop("REPEAT",x) => nil
   index:= #$exitModeStack-1-$leaveLevelStack.0
   $breakCount := $breakCount + 1
   u := coerce(["$NoValue",$Void,e],$exitModeStack.index) or return nil
@@ -1105,7 +1105,7 @@ compBreak(x,m,e) ==
 
 compIterate: (%Symbol,%Mode,%Env) -> %Maybe %Triple
 compIterate(x,m,e) ==
-  x ^= "iterate" or not jumpFromLoop("REPEAT",x) => nil
+  x ~= "iterate" or not jumpFromLoop("REPEAT",x) => nil
   $iterateCount := $iterateCount + 1
   -- We don't really produce a value; but we cannot adequately convey
   -- that to the current 'EXIT' structure.  So, pretend we have an 
@@ -1134,9 +1134,9 @@ compReturn(["return",x],m,e) ==
 ++ `lang'.  Return the mode of its local declaration (import).
 getExternalSymbolMode(op,lang,e) ==
   lang = "Builtin" => "%Thing"      -- for the time being
-  lang ^= "C" =>
+  lang ~= "C" =>
     stackAndThrow('"Sorry: %b Foreign %1b %d is invalid at the moment",[lang])
-  get(op,"%Lang",e) ^= lang =>
+  get(op,"%Lang",e) ~= lang =>
     stackAndThrow('"%1bp is not known to have language linkage %2bp",[op,lang])
   getmode(op,e) or stackAndThrow('"Operator %1bp is not in scope",[op])
 
@@ -1145,7 +1145,7 @@ compElt(form,m,E) ==
   form isnt ["elt",aDomain,anOp] => compForm(form,m,E)
   aDomain="Lisp" or (aDomain is ["Foreign",lang] and lang="Builtin") =>
     [anOp',m,E] where anOp'() == (anOp = $Zero => 0; anOp = $One => 1; anOp)
-  lang ^= nil =>
+  lang ~= nil =>
     opMode := getExternalSymbolMode(anOp,lang,E)
     op := get(anOp,"%Link",E) or anOp
     convert([op,opMode,E],m)
@@ -1164,7 +1164,7 @@ compElt(form,m,E) ==
         [anOp,aDomain,mmList])
       mmList.(0)
     [sig,[pred,val]]:= modemap
-    #sig^=2 and ^val is ["elt",:.] => nil --what does the second clause do ????
+    #sig~=2 and ^val is ["elt",:.] => nil --what does the second clause do ????
     val := genDeltaEntry [opOf anOp,:modemap]
     convert([["call",val],first rest sig,E], m) --implies fn calls used to access constants
   compForm(form,m,E)
@@ -1647,7 +1647,7 @@ coerceEasy(T,m) ==
 satisfies(val,pred) ==
   pred=false or pred=true => pred
   vars := findVMFreeVars pred
-  vars ^= nil and vars isnt ["#1"] => false
+  vars ~= nil and vars isnt ["#1"] => false
   eval ["LET",[["#1",val]],pred]
 
 
@@ -1656,10 +1656,10 @@ satisfies(val,pred) ==
 ++ in terms of sub-domain relationship).  Otherwise, return nil.
 commonSuperType(m,m') ==
   lineage := [m']
-  while (t := superType m') ^= nil repeat
+  while (t := superType m') ~= nil repeat
     lineage := [t,:lineage]
     m' := t
-  while m ^= nil repeat
+  while m ~= nil repeat
     member(m,lineage) => return m
     m := superType m
 
@@ -1845,7 +1845,7 @@ compComma(form,m,e) ==
 resolve(din,dout) ==
   din=$NoValueMode or dout=$NoValueMode => $NoValueMode
   dout=$EmptyMode => din
-  din^=dout and (STRINGP din or STRINGP dout) =>
+  din~=dout and (STRINGP din or STRINGP dout) =>
     modeEqual(dout,$String) => dout
     modeEqual(din,$String) => nil
     mkUnion(din,dout)
@@ -1855,7 +1855,7 @@ modeEqual(x,y) ==
   -- this is the late modeEqual
   -- orders Unions
   atom x or atom y => x=y
-  #x ^=#y => nil
+  #x ~= #y => nil
   x is ['Union,:xl] and y is ['Union,:yl] =>
     for x1 in xl repeat
       for y1 in yl repeat
@@ -1885,7 +1885,7 @@ compCat(form is [functorName,:argl],m,e) ==
   [funList,e]:= FUNCALL(fn,form,form,e)
   catForm:=
     ["Join",'(SetCategory),["CATEGORY","domain",:
-      [["SIGNATURE",op,sig] for [op,sig,.] in funList | op^="="]]]
+      [["SIGNATURE",op,sig] for [op,sig,.] in funList | op~="="]]]
   --RDJ: for coercion purposes, it necessary to know it's a Set; I'm not
   --sure if it uses any of the other signatures(see extendsCategoryForm)
   [form,catForm,e]
@@ -1920,7 +1920,7 @@ compApplyModemap(form,modemap,$e) ==
   -- $e     is the current environment
 
   -- 0.  fail immediately if #argl=#margl
-  if #argl^=#margl then return nil
+  if #argl~=#margl then return nil
 
   -- 1.  use modemap to evaluate arguments, returning failed if
   --     not possible
@@ -1964,7 +1964,7 @@ compResolveCall(op,argTs,m,$e) ==
          not coerceable(mm.mmTarget,m,$e) =>nil
          compViableModemap(op,argTs,mm) isnt [f,Ts] => nil
          coerce([["call",f,:[T.expr for T in Ts]],mm.mmTarget,$e],m)
-  #outcomes ^= 1 => nil
+  #outcomes ~= 1 => nil
   first outcomes
 
 --% %Match
@@ -2057,7 +2057,7 @@ compRecoverGuard(x,t,sn,sm,e) ==
   -- underlying type is t.
   --
   -- 0. Type recovery is for expressions of type 'Any'.
-  (sm = "$" => $functorForm; sm) ^= $Any  =>
+  (sm = "$" => $functorForm; sm) ~= $Any  =>
     stackAndThrow('"Scrutinee must be of type %b Any %d in type recovery alternative of case pattern",nil)
   -- 1. Do some preprocessing if this is existential type recovery.
   t is ["%Exist",var,t'] =>
@@ -2066,7 +2066,7 @@ compRecoverGuard(x,t,sn,sm,e) ==
     -- We have a univariate type scheme.  At the moment we insist
     -- that the body of the type scheme be identical to the type
     -- variable.  This restriction should be lifted in future work.
-    not IDENTP t' or t' ^= var' =>
+    not IDENTP t' or t' ~= var' =>
       stackAndThrow('"Sorry: type %1b too complex",[t'])
     not isCategoryForm(cat',e) =>
       stackAndThrow('"Expression %1b does not designate a category",[cat'])
@@ -2148,7 +2148,7 @@ compAlternativeGuard(sn,sm,pat,e) ==
   CONSP sn =>
     pat isnt ["%Comma",:.] =>
       stackAndThrow('"Pattern must be a tuple for a tuple scrutinee",nil)
-    #sn ^= #rest pat =>
+    #sn ~= #rest pat =>
       stackAndThrow('"Tuple pattern must match tuple scrutinee in length",nil)
     inits := nil
     guards := nil
@@ -2243,7 +2243,7 @@ compReduce(form,m,e) ==
 compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   [collectOp,:itl,body]:= collectForm
   if STRINGP op then op:= INTERN op
-  collectOp ^= "COLLECT" => systemError ['"illegal reduction form:",form]
+  collectOp ~= "COLLECT" => systemError ['"illegal reduction form:",form]
   $sideEffectsList: local := nil
   $until: local := nil
   $initList: local := nil

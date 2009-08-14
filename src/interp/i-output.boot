@@ -775,7 +775,7 @@ timesApp(u,x,y,d) ==
   d
 
 needBlankForRoot(lastOp,op,arg) ==
-  lastOp ^= "^" and lastOp ^= "**" and not(subspan(arg)>0) => false
+  lastOp ~= "^" and lastOp ~= "**" and not(subspan(arg)>0) => false
   op = "**" and keyp CADR arg = 'ROOT => true
   op = "^" and keyp CADR arg = 'ROOT => true
   op = 'ROOT and CDDR arg => true
@@ -984,7 +984,7 @@ getOpBindingPower(op,LedOrNud,leftOrRight) ==
   bp:=
     leftOrRight="left" => leftBindingPowerOf(op,LedOrNud)
     rightBindingPowerOf(op,LedOrNud)
-  bp^=exception => bp
+  bp ~= exception => bp
   1000
 
 --% Brackets
@@ -1436,7 +1436,7 @@ indefIntegralApp(u,x,y,d) ==
 
 indefIntegralWidth u ==
   -- form is INDEFINTEGRAL(expr,dx)
-  # u ^= 3 => THROW('outputFailure,'outputFailure)
+  # u ~= 3 => THROW('outputFailure,'outputFailure)
   5 + WIDTH u.1 + WIDTH u.2
 
 intSub u ==
@@ -2577,7 +2577,7 @@ maPrin u ==
     $mkTestOutputStack := [COPY u, :$mkTestOutputStack]
   $highlightDelta := 0
   c := CATCH('outputFailure,charybdis(u, $MARGIN, $LINELENGTH))
-  c ^= 'outputFailure => c
+  c ~= 'outputFailure => c
   sayKeyedMsg("S2IX0009",NIL)
   u is ['EQUATNUM,num,form] or u is [['EQUATNUM,:.],num,form] =>
     charybdis(['EQUATNUM,num], $MARGIN, $LINELENGTH)

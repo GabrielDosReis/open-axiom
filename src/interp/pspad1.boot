@@ -551,7 +551,7 @@ pspadOpBindingPower(op,LedOrNud,leftOrRight) ==
   bp:=
     leftOrRight="left" => leftBindingPowerOf(op,LedOrNud)
     rightBindingPowerOf(op,LedOrNud)
-  bp^=exception => bp
+  bp ~= exception => bp
   1000
 
 formatOpBindingPower(op,key,leftOrRight) ==
@@ -572,7 +572,7 @@ formatOpBindingPower(op,key,leftOrRight) ==
 formatInfixOp(op,:options) ==
   qualification := IFCAR options
   qualification or 
-    (op ^= '_$) and ^MEMQ(op,$spadTightList) => format " " and formatQual(op,qualification) and format " "
+    (op ~= '_$) and ^MEMQ(op,$spadTightList) => format " " and formatQual(op,qualification) and format " "
   format op
  
 --======================================================================

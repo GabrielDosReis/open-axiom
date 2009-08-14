@@ -70,7 +70,7 @@ displayPreCompilationErrors() ==
     then sayBrightly ['"   Semantic ",errors,'" detected: "]
     else
       heading:=
-        $topOp ^= '$topOp => ['"   ",$topOp,'" has"]
+        $topOp ~= '$topOp => ['"   ",$topOp,'" has"]
         ['"   You have"]
       sayBrightly [:heading,'%b,n,'%d,'"precompilation ",errors,'":"]
   if 1<n then
@@ -89,7 +89,7 @@ postTran x ==
     [postTran op,:rest u]
   op is ["Scripts",:.] =>
     postScriptsForm(op,"append"/[unComma postTran y for y in rest x])
-  op^=(y:= postOp op) => [y,:postTranList rest x]
+  op ~= (y:= postOp op) => [y,:postTranList rest x]
   postForm x
 
 postTranList: %List -> %List
@@ -159,7 +159,7 @@ postError: %Thing -> %Thing
 postError msg ==
   BUMPERRORCOUNT 'precompilation
   xmsg:=
-    $defOp ^= nil and not $InteractiveMode => [$defOp,'": ",:msg]
+    $defOp ~= nil and not $InteractiveMode => [$defOp,'": ",:msg]
     msg
   $postStack:= [xmsg,:$postStack]
   nil
@@ -220,7 +220,7 @@ postDef t ==
   lhs is ["macro",name] => postMDef ["==>",name,rhs]
 
   recordHeaderDocumentation nil
-  if $maxSignatureLineNumber ^= 0 then
+  if $maxSignatureLineNumber ~= 0 then
     $docList := [["constructor",:$headerDocumentation],:$docList]
     $maxSignatureLineNumber := 0
     --reset this for next constructor; see recordDocumentation
@@ -245,7 +245,7 @@ postDefArgs: %List -> %List
 postDefArgs argl ==
   null argl => argl
   argl is [[":",a],:b] =>
-    b ^= nil => postError
+    b ~= nil => postError
       ['"   Argument",:bright a,'"of indefinite length must be last"]
     atom a or a is ["QUOTE",:.] => a
     postError

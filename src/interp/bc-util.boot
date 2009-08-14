@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ bcvspace() == bcHt '"\vspace{1}\newline "
 bcString2WordList s == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
     i > n => nil
-    k := or/[j for j in i..n | s.j ^= char '_  ]
+    k := or/[j for j in i..n | s.j ~= char '_  ]
     null INTEGERP k => nil
     l := bcFindString(s,k + 1,n,char '_  )
     null INTEGERP l => [SUBSTRING(s,k,nil)]

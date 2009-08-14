@@ -1,3 +1,91 @@
+2009-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+
+	* boot/tokens.boot: Retire "^=".  Introduce "~=".
+	* boot/ast.boot: Use "~=" instead of "^=".
+	* boot/includer.boot: Likewise.
+	* boot/translator.boot: Likewise.
+	* interp/as.boot: Likewise.
+	* interp/bc-misc.boot: Likewise.
+	* interp/bc-solve.boot: Likewise.
+	* interp/bc-util.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/g-timer.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-code.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/intfile.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/macex.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/match.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/msg.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/pathname.boot: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/profile.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/record.boot: Likewise.
+	* interp/scan.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/simpbool.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/word.boot: Likewise.
+	
 2009-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* OpenAxiom-1.3.0 Released.
