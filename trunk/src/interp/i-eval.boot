@@ -190,7 +190,7 @@ evaluateType1 (form is [op,:argl]) ==
      throwEvalTypeMsg("S2IE0005",[form])
   [.,:ml] := sig
   ml := replaceSharps(ml,form)
-  # argl ^= #ml => throwEvalTypeMsg("S2IE0003",[form,form])
+  # argl ~= #ml => throwEvalTypeMsg("S2IE0003",[form,form])
   for x in argl for m in ml for argnum in 1.. repeat
     typeList := [v,:typeList] where v() ==
       categoryForm?(m) =>
@@ -236,7 +236,7 @@ evalForm(op,opName,argl,mmS) ==
   for mm in mmS until form repeat
     [sig,fun,cond]:= mm
     (CAR sig) = 'interpOnly => form := CAR sig
-    #argl ^= #CDDR sig => 'skip ---> RDJ 6/95
+    #argl ~= #CDDR sig => 'skip ---> RDJ 6/95
     form:=
       $genValue or null cond =>
         [getArgValue2(x,t,sideEffectedArg?(t,sig,opName),opName) or return NIL
@@ -287,7 +287,7 @@ evalForm(op,opName,argl,mmS) ==
 
 sideEffectedArg?(t,sig,opName) ==
   opString := SYMBOL_-NAME opName
-  (opName ^= 'setelt) and (ELT(opString, #opString-1) ^= char '_!) => nil
+  (opName ~= 'setelt) and (ELT(opString, #opString-1) ~= char '_!) => nil
   dc := first sig
   t = dc
 
@@ -313,7 +313,7 @@ getArgValue1(a,t) ==
   systemErrorHere '"getArgValue1"
 
 getArgValue2(a,t,se?,opName) ==
-  se? and (objMode(getValue a) ^= t) =>
+  se? and (objMode(getValue a) ~= t) =>
     throwKeyedMsg("S2IE0013", [opName, objMode(getValue a), t])
   getArgValue(a,t)
 
@@ -336,7 +336,7 @@ getMappingArgValue(a,t,m is ['Mapping,:ml]) ==
   NIL
 
 getArgValueComp2(arg, type, cond, se?, opName) ==
-  se? and (objMode(getValue arg) ^= type) =>
+  se? and (objMode(getValue arg) ~= type) =>
     throwKeyedMsg("S2IE0013", [opName, objMode(getValue arg), type])
   getArgValueComp(arg, type, cond)
 

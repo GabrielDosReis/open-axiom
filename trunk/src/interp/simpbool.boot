@@ -64,7 +64,7 @@ simpBoolGiven(x,world) ==
     'false = be mkpf([['NOT,x],:world],'AND) => true
     'false = (y := be mkpf([x,:world],'AND)) => false
     (u := andReduce(dnf2pf y,world)) is ['AND,:v] and
-      (w := SETDIFFERENCE(v,world)) ^= v => simpBool ['AND,:w] 
+      (w := SETDIFFERENCE(v,world)) ~= v => simpBool ['AND,:w] 
     u
   'false = (y := be x) => false
   'true = y => true

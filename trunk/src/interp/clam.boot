@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -168,7 +168,7 @@ compClam(op,argl,body,$clamList) ==
   op
  
 compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
-  --Note: when cacheNameOrNil^=nil, it names a global hashtable
+  --Note: when cacheNameOrNil~=nil, it names a global hashtable
  
 -- cacheNameOrNil => compHashGlobal(op,argl,body,cacheNameOrNil,eqEtc,countFl)
 --   This branch to compHashGlobal is now omitted; as a result,
@@ -176,7 +176,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
 --        (<argument list>, <reference count>,:<value>)
 --   where the reference count is optional
  
-  if cacheNameOrNil and cacheNameOrNil^='_$ConstructorCache then
+  if cacheNameOrNil and cacheNameOrNil~='_$ConstructorCache then
     keyedSystemError("S2GE0010",[op])
     --restriction due to omission of call to hputNewValue (see *** lines below)
  
@@ -225,7 +225,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   getCode:=
     null argl => ['HGET,cacheName,MKQ op]
     cacheNameOrNil =>
-      eqEtc^='EQUAL =>
+      eqEtc ~= 'EQUAL =>
         ['lassocShiftWithFunction,cacheArgKey,
           ['HGET,cacheNameOrNil,MKQ op],MKQ eqEtc]
       ['lassocShift,cacheArgKey,['HGET,cacheNameOrNil,MKQ op]]
@@ -279,7 +279,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   op
  
 compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
-  --Note: when cacheNameOrNil^=nil, it names a global hashtable
+  --Note: when cacheNameOrNil~=nil, it names a global hashtable
  
   if (not MEMQ(eqEtc,'(UEQUAL))) then
     sayBrightly "for hash option, only EQ, CVEC, and UEQUAL are allowed"
@@ -394,7 +394,7 @@ displayCacheFrequency al ==
   TERPRI()
  
 mkCircularCountAlist(cl,len) ==
-  for [x,count,:.] in cl for i in 1..len while x ^= '_$failed repeat
+  for [x,count,:.] in cl for i in 1..len while x ~= '_$failed repeat
     u:= assoc(count,al) => RPLACD(u,1 + CDR u)
     if INTEGERP $reportFavoritesIfNumber and count >= $reportFavoritesIfNumber then
       sayBrightlyNT ["   ",count,"  "]
@@ -490,7 +490,7 @@ clamStats() ==
   for [op,kind,:.] in $clamList repeat
     cacheVec:= GETL(op,'cacheInfo) or systemErrorHere ["clamStats",op]
     prefix:=
-      $reportCounts^= true => nil
+      $reportCounts ~= true => nil
       hitCounter:= INTERNL(op,'";hit")
       callCounter:= INTERNL(op,'";calls")
       res:= ["%b",eval hitCounter,"/",eval callCounter,"%d","calls to "]
@@ -611,7 +611,7 @@ hputNewProp(ht,op,argList,val) ==
 listTruncate(l,n) ==
   u:= l
   n:= QSSUB1 n
-  while n ^= 0 and null atom u repeat
+  while n ~= 0 and null atom u repeat
     n:= QSSUB1 n
     u:= QCDR u
   if null atom u then

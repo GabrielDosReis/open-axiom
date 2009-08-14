@@ -107,7 +107,7 @@ systemCommand [[op,:argl],:options] ==
   $options: local:= options
   $e:local := $CategoryFrame
   fun := selectOptionLC(op,$SYSCOMMANDS,'commandError)
-  argl and (argl.0 = '_?) and fun ^= 'synonym =>
+  argl and (argl.0 = '_?) and fun ~= 'synonym =>
     helpSpad2Cmd [fun]
   fun := selectOption(fun,commandsForUserLevel $systemCommands,
     'commandUserLevelError)
@@ -206,7 +206,7 @@ getSystemCommandLine() ==
   p := STRPOS('")",$currentLine,0,NIL)
   line := if p then SUBSTRING($currentLine,p,NIL) else $currentLine
   maxIndex:= MAXINDEX line
-  for i in 0..maxIndex while (line.i^=" ") repeat index:= i
+  for i in 0..maxIndex while (line.i ~= " ") repeat index:= i
   if index=maxIndex then line := '""
   else line := SUBSTRING(line,index+2,nil)
   line
@@ -510,12 +510,12 @@ compileAsharpCmd args ==
     terminateSystemCommand()
 
 compileAsharpCmd1 args ==
-    -- Assume we entered from the "compiler" function, so args ^= nil
+    -- Assume we entered from the "compiler" function, so args ~= nil
     -- and is a file with file extension .as or .ao
 
     path := pathname args
     pathType := pathnameType path
-    (pathType ^= '"as") and (pathType ^= '"ao") => throwKeyedMsg("S2IZ0083", nil)
+    (pathType ~= '"as") and (pathType ~= '"ao") => throwKeyedMsg("S2IZ0083", nil)
     ^PROBE_-FILE path => throwKeyedMsg("S2IL0003",[namestring args])
 
     SETQ(_/EDITFILE, path)
@@ -611,7 +611,7 @@ compileAsharpCmd1 args ==
       extendLocalLibdb $newConlist
 
 compileAsharpArchiveCmd args ==
-    -- Assume we entered from the "compiler" function, so args ^= nil
+    -- Assume we entered from the "compiler" function, so args ~= nil
     -- and is a file with file extension .al. We also assume that
     -- the name is fully qualified.
 
@@ -630,12 +630,12 @@ compileAsharpArchiveCmd args ==
     dir  := fnameMake('".", pathnameName path, '"axldir")
     exists := PROBE_-FILE dir
     isDir := directoryp namestring dir
-    exists and isDir ^= 1=>
+    exists and isDir ~= 1=>
         throwKeyedMsg("S2IL0027",[namestring dir, namestring args])
 
-    if isDir ^= 1 then
+    if isDir ~= 1 then
         rc   := mkdir namestring dir
-        rc ^= 0 => throwKeyedMsg("S2IL0027",[namestring dir, namestring args])
+        rc ~= 0 => throwKeyedMsg("S2IL0027",[namestring dir, namestring args])
 
     curDir := GET_-CURRENT_-DIRECTORY()
 
@@ -645,7 +645,7 @@ compileAsharpArchiveCmd args ==
 
     cmd := STRCONC( '"ar x ", namestring path )
     rc := runCommand cmd
-    rc ^= 0 =>
+    rc ~= 0 =>
         cd [ object2Identifier namestring curDir ]
         throwKeyedMsg("S2IL0028",[namestring dir, namestring args])
 
@@ -668,7 +668,7 @@ compileAsharpArchiveCmd args ==
     terminateSystemCommand()
 
 compileAsharpLispCmd args ==
-    -- Assume we entered from the "compiler" function, so args ^= nil
+    -- Assume we entered from the "compiler" function, so args ~= nil
     -- and is a file with file extension .lsp
 
     path := pathname args
@@ -712,7 +712,7 @@ compileAsharpLispCmd args ==
     terminateSystemCommand()
 
 compileSpadLispCmd args ==
-    -- Assume we entered from the "compiler" function, so args ^= nil
+    -- Assume we entered from the "compiler" function, so args ~= nil
     -- and is a file with file extension .NRLIB
 
     path := pathname fnameMake(first args, '"code", '"lsp")
@@ -758,11 +758,11 @@ compileSpadLispCmd args ==
 
 compileSpad2Cmd args ==
     -- This is the old compiler
-    -- Assume we entered from the "compiler" function, so args ^= nil
+    -- Assume we entered from the "compiler" function, so args ~= nil
     -- and is a file with file extension .spad.
 
     path := pathname args
-    pathnameType path ^= '"spad" => throwKeyedMsg("S2IZ0082", nil)
+    pathnameType path ~= '"spad" => throwKeyedMsg("S2IZ0082", nil)
     ^PROBE_-FILE path => throwKeyedMsg("S2IL0003",[namestring args])
 
     SETQ(_/EDITFILE, path)
@@ -813,8 +813,8 @@ compileSpad2Cmd args ==
         fullopt = 'nolibrary   => fun.1 := 'nolib
 
         -- Ignore quiet/nonquiet if "constructor" is given.
-        fullopt = 'quiet       => if fun.0 ^= 'c then fun.0 := 'rq
-        fullopt = 'noquiet     => if fun.0 ^= 'c then fun.0 := 'rf
+        fullopt = 'quiet       => if fun.0 ~= 'c then fun.0 := 'rq
+        fullopt = 'noquiet     => if fun.0 ~= 'c then fun.0 := 'rf
         fullopt = 'nobreak     => $scanIfTrue := true
         fullopt = 'break       => $scanIfTrue := nil
         fullopt = 'vartrace      =>
@@ -1008,7 +1008,7 @@ display l == displaySpad2Cmd l
 
 displaySpad2Cmd l ==
   $e: local := $EmptyEnvironment
-  l is [opt,:vl] and opt ^= "?" =>
+  l is [opt,:vl] and opt ~= "?" =>
     option := selectOptionLC(opt,$displayOptions,'optionError) =>
 
       -- the option may be given in the plural but the property in
@@ -1116,7 +1116,7 @@ displayWorkspaceNames() ==
 
 getWorkspaceNames() ==
   NMSORT [n for [n,:.] in CAAR $InteractiveFrame |
-    (n ^= "--macros--" and n^= "--flags--")]
+    (n ~= "--macros--" and n ~= "--flags--")]
 
 displayOperations l ==
   null l =>
@@ -1417,7 +1417,7 @@ emptyInterpreterFrame(name) ==
 closeInterpreterFrame(name) ==
   -- if name = NIL then it means the current frame
   null rest $interpreterFrameRing =>
-    name and (name ^= $interpreterFrameName) =>
+    name and (name ~= $interpreterFrameName) =>
       throwKeyedMsg("S2IZ0020",[$interpreterFrameName])
     throwKeyedMsg("S2IZ0021",NIL)
   if null name then $interpreterFrameRing := rest $interpreterFrameRing
@@ -1425,7 +1425,7 @@ closeInterpreterFrame(name) ==
     found := nil
     ifr := NIL
     for f in $interpreterFrameRing repeat
-      found or (name ^= frameName(f)) => ifr := CONS(f,ifr)
+      found or (name ~= frameName(f)) => ifr := CONS(f,ifr)
       found := true
     not found => throwKeyedMsg("S2IZ0022",[name])
     _$ERASE makeHistFileName(name)
@@ -1653,7 +1653,7 @@ setHistoryCore inCore ==
     sayKeyedMsg("S2IH0031",NIL)
   inCore =>
     $internalHistoryTable := NIL
-    if $IOindex ^= 0 then
+    if $IOindex ~= 0 then
       -- actually put something in there
       l := LENGTH RKEYIDS histFileName()
       for i in 1..l repeat
@@ -1705,7 +1705,7 @@ writeInputLines(fn,initial) ==
   inp:= DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
   for x in removeUndoLines NREVERSE lineList repeat WRITE_-LINE(x,inp)
   -- see file "undo" for definition of removeUndoLines
-  if fn ^= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
+  if fn ~= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
   SHUT inp
   NIL
 
@@ -2172,7 +2172,7 @@ dewritify ob ==
                         SYMBOL_-FUNCTION oname
                     not COMPILED_-FUNCTION_-P f =>
                         error '"A required BPI does not exist."
-                    #ob > 3 and HASHEQ f ^= ob.3 =>
+                    #ob > 3 and HASHEQ f ~= ob.3 =>
                         error '"A required BPI has been redefined."
                     HPUT($seen, ob, f)
                     f
@@ -2319,7 +2319,7 @@ quitSpad2Cmd() ==
     sayErrorly('"Obsolete system command", _
       ['" The )quit system command is obsolete in this version of AXIOM.",
        '" Please select Exit from the File Menu instead."])
-  $quitCommandType ^= 'protected => leaveScratchpad()
+  $quitCommandType ~= 'protected => leaveScratchpad()
   x := UPCASE queryUserKeyedMsg("S2IZ0031",NIL)
   MEMQ(STRING2ID_-N(x,1),'(Y YES)) => leaveScratchpad()
   sayKeyedMsg("S2IZ0032",NIL)
@@ -2374,7 +2374,7 @@ readSpad2Cmd l ==
 
 --% )savesystem
 savesystem l ==
-  #l ^= 1 or not(SYMBOLP first l) => helpSpad2Cmd '(savesystem)
+  #l ~= 1 or not(SYMBOLP first l) => helpSpad2Cmd '(savesystem)
   SETQ($SpadServer,false)
   SETQ($openServerIfTrue,true)
 )if not %hasFeature KEYWORD::ECL
@@ -2519,7 +2519,7 @@ reportOpsFromUnitDirectly unitForm ==
         else
           sigList:= REMDUP MSORT getOplistForConstructorForm unitForm
       say2PerLine [formatOperation(x,unit) for x in sigList]
-      if $commentedOps ^= 0 then
+      if $commentedOps ~= 0 then
         sayBrightly
           ['"Functions that are not yet implemented are preceded by",
             :bright '"--"]
@@ -2633,7 +2633,7 @@ processSynonymLine line ==
       for i in 0..mx repeat
         line.i = " " =>
           return (for j in (i+1)..mx repeat
-            line.j ^= " " => return (SUBSTRING (line, j, nil)))
+            line.j ~= " " => return (SUBSTRING (line, j, nil)))
   [key, :value]
 
 
@@ -2817,7 +2817,7 @@ removeUndoLines u == --called by writeInputLines
     (x := first y).0 = char '_) =>
       stringPrefix?('")undo",s := trimString x) => --parse "undo )option"
         s1 := trimString SUBSTRING(s,5,nil)
-        if s1 ^= '")redo" then
+        if s1 ~= '")redo" then
           m := charPosition(char '_),s1,0)
           code :=
             m < MAXINDEX s1 => s1.(m + 1)
@@ -2825,7 +2825,7 @@ removeUndoLines u == --called by writeInputLines
           s2 := trimString SUBSTRING(s1,0,m)
         n :=
            s1 = '")redo" => 0
-           s2 ^= '"" => undoCount PARSE_-INTEGER s2
+           s2 ~= '"" => undoCount PARSE_-INTEGER s2
            -1
         RPLACA(y,CONCAT('">",code,STRINGIMAGE n))
       nil
@@ -2842,7 +2842,7 @@ removeUndoLines u == --called by writeInputLines
         n = 0 => return nil                              --including undos
         n := n - 1
         y := rest y                                 --kill command
-      y and code^= char 'b => acc := [c,:acc]       --add last unless )before
+      y and code ~= char 'b => acc := [c,:acc]       --add last unless )before
     acc := [x,:acc]
   $IOindex := savedIOindex
   acc
@@ -3089,7 +3089,7 @@ processSynonyms() ==
   null (fun := LASSOC (syn, $CommandSynonymAlist)) => NIL
   fun := eval fun              -- fun may have been a suspension
   to := STRPOS('")",fun,1,NIL)
-  if to and to ^= SIZE(fun)-1 then
+  if to and to ~= SIZE(fun)-1 then
     opt := STRCONC('" ",SUBSTRING(fun,to,NIL))
     fun := SUBSTRING(fun,0,to-1)
   else opt := '" "
@@ -3176,7 +3176,7 @@ stripLisp str ==
   strIndex := 0
   lispStr := '"lisp"
   for c0 in 0..#str-1 for c1 in 0..#lispStr-1 repeat
-    (char str.c0) ^= (char lispStr.c1) =>
+    (char str.c0) ~= (char lispStr.c1) =>
       return nil
     strIndex := c0+1
   SUBSEQ(str, strIndex)

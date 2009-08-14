@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -114,8 +114,8 @@ isValidType form ==
     null (sig := getConstructorSignature op) => nil
     [.,:cl] := sig
     -- following line is needed to deal with mutable domains
-    if # cl ^= # argl and GENSYMP last argl then argl:= DROP(-1,argl)
-    # cl ^= # argl => nil
+    if # cl ~= # argl and GENSYMP last argl then argl:= DROP(-1,argl)
+    # cl ~= # argl => nil
     cl:= replaceSharps(cl,form)
     and/[isValid for x in argl for c in cl] where isValid() ==
       categoryForm?(c) =>
@@ -124,7 +124,7 @@ isValidType form ==
       -- domain constructors are not considered valid arguments (yet).
       x' := opOf x
       not atom x' or not IDENTP x' => true   -- surely not constructors
-      getConstructorKindFromDB x' ^= "domain"
+      getConstructorKindFromDB x' ~= "domain"
 
 selectMms1(op,tar,args1,args2,$Coerce) ==
     -- for new compiler/old world compatibility, sometimes have to look
@@ -175,7 +175,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
 
   t := equiType t
   vl := isPolynomialMode t =>
-    if vl^='all then
+    if vl~='all then
       var:= or/[(x in polyVarList => x;nil) for x in vl] => return false
       listOfDuplicates vl => return false
       polyVarList:= union(vl,polyVarList)

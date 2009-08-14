@@ -190,7 +190,7 @@ pf2Atree1 pf ==
                 ids   := [(pfTaggedTag)(x), :ids]
             ids   := [x, :ids]
         idList := [pf2Atree1 x for x in reverse ids]
-        if #idList ^= 1 then idList :=
+        if #idList ~= 1 then idList :=
             [mkAtreeNodeWithSrcPos("tuple",pf), :idList]
         else idList := first idList
         x := [mkAtreeNodeWithSrcPos("%LET",pf),
@@ -346,7 +346,7 @@ pfApplication2Atree pf ==
 --  --!     ["OPTARG", pf2Atree1 CAR pf0DefinitionLhsItems pf,
 --  --!         pf2Atree1 pfDefinitionRhs pf]
 --      idList := [pf2Atree1 x for x in (pf0DefinitionLhsItems)(pf)]
---      #idList ^= 1 =>
+--      #idList ~= 1 =>
 --          systemError '"lhs of definition must be a single item in the interpreter"
 --      id := first idList
 --      rhs := (pfDefinitionRhs)(pf)
@@ -401,7 +401,7 @@ pfSequence2Atree pf ==
 pfSequence2Atree0(seqList, pf) ==
     null seqList => "%noBranch"
     seqTranList := []
-    while seqList ^= nil repeat
+    while seqList ~= nil repeat
         item := first seqList
         item is [exitVal, cond, value] and getUnname(exitVal) = "exit" =>
             item := [mkAtreeNodeWithSrcPos("IF",pf), cond, value,

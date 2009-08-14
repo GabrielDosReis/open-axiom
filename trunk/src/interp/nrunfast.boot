@@ -191,11 +191,11 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   success := nil
   $isDefaultingPackage: local :=
     -- use special defaulting handler when dollar non-trivial
-    dollar ^= domain and isDefaultPackageForm? devaluate domain
+    dollar ~= domain and isDefaultPackageForm? devaluate domain
   while finish > start repeat
     PROGN
       i := start
-      numArgs ^= (numTableArgs :=numvec.i) => nil
+      numArgs ~= (numTableArgs :=numvec.i) => nil
       predIndex := numvec.(i := QSADD1 i)
       NE(predIndex,0) and null testBitVector(predvec,predIndex) => nil
       loc := newCompareSig(sig,numvec,(i := QSADD1 i),dollar,domain)
@@ -284,7 +284,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
   for i in 0..MAXINDEX packageVec |
-       (entry := packageVec.i) and entry ^= 'T repeat
+       (entry := packageVec.i) and entry ~= 'T repeat
     package :=
       VECP entry =>
          if $monitorNewWorld then
@@ -308,7 +308,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
               opvec.(code+2)
             not nrunNumArgCheck(#(QCDR sig),byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
-            --numOfArgs ^= #(QCDR sig) => nil
+            --numOfArgs ~= #(QCDR sig) => nil
             packageForm := [entry,'$,:CDR cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
@@ -382,7 +382,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
             null code => nil
             byteVector := CDDR infovec.3
             numOfArgs := byteVector.(opvec.code)
-            numOfArgs ^= #(QCDR sig) => nil
+            numOfArgs ~= #(QCDR sig) => nil
             packageForm := [entry,'$,:CDR cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
@@ -484,7 +484,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
 
  
 lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
-  #s ^= #d => nil
+  #s ~= #d => nil
   scoSig := getDualSignatureFromDB opOf s or return nil
   if MEMQ(opOf s, '(Union Mapping Record)) then 
      scoSig := [true for x in s]
@@ -630,7 +630,7 @@ newHasTest(domform,catOrAtt) ==
       b is ["SIGNATURE",:opSig] =>
         HasSignature(evalDomain a,opSig)
       b is ["ATTRIBUTE",attr] => HasAttribute(evalDomain a,attr)
-      hasCaty(a,b,NIL) ^= 'failed
+      hasCaty(a,b,NIL) ~= 'failed
       HasCategory(evalDomain a,b) => true -- for asharp domains: must return Boolean
   op := opOf catOrAtt
   isAtom := atom catOrAtt

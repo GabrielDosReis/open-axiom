@@ -207,11 +207,11 @@ checkRepresentation(addForm,body,env) ==
   -- Locate possible Rep definition
   for [stmt,:.] in tails body repeat
     stmt is ["%LET","Rep",val] =>
-      domainRep ^= nil =>
+      domainRep ~= nil =>
         stackAndThrow('"You cannot assign to constant domain %1b",["Rep"])
       if addForm = val then
         stackWarning('"OpenAxiom suggests removing assignment to %1b",["Rep"])
-      else if addForm ^= nil then
+      else if addForm ~= nil then
         stackWarning('"%1b differs from the base domain",["Rep"])
       return hasAssignRep := true
     stmt is ["MDEF",["Rep",:.],:.] =>
@@ -221,12 +221,12 @@ checkRepresentation(addForm,body,env) ==
       checkRepresentation(nil,l,env)
     stmt isnt ["DEF",[op,:args],sig,.,val] => nil -- skip for now.
     op in '(rep per) =>
-      domainRep ^= nil =>
+      domainRep ~= nil =>
         stackAndThrow('"You cannot define implicitly generated %1b",[op])
       viewFuns := [op,:viewFuns]
-    op ^= "Rep" => nil        -- we are only interested in Rep definition
+    op ~= "Rep" => nil        -- we are only interested in Rep definition
     domainRep := val
-    viewFuns ^= nil =>
+    viewFuns ~= nil =>
       stackAndThrow('"You cannot define both %1b and %2b",["Rep",:viewFuns])
     -- A package has no "%".
     $functorKind = "package" =>
@@ -234,9 +234,9 @@ checkRepresentation(addForm,body,env) ==
     -- It is a mistake to define Rep in category defaults
     $insideCategoryPackageIfTrue =>
       stackAndThrow('"You cannot define %1b in category defaults",["Rep"])
-    if args ^= nil then
+    if args ~= nil then
       stackAndThrow('"%1b does take arguments",["Rep"])
-    if first sig ^= nil then
+    if first sig ~= nil then
       stackAndThrow('"You cannot specify type for %1b",["Rep"])
     -- Now, trick the rest of the compiler into believing that
     -- `Rep' was defined the Old Way, for lookup purpose.
@@ -249,7 +249,7 @@ checkRepresentation(addForm,body,env) ==
     $useRepresentationHack := true
   -- Domain extensions with no explicit Rep definition have the
   -- the base domain as representation (at least operationally).
-  else if null domainRep and addForm ^= nil then
+  else if null domainRep and addForm ~= nil then
     if $functorKind = "domain" and addForm isnt ["%Comma",:.] then
       domainRep :=
         addForm is ["SubDomain",dom,.] => 
@@ -286,7 +286,7 @@ compDefine1(form,m,e) ==
 -- 2. if signature list for arguments is not empty, replace ('DEF,..) by
 --       ('where,('DEF,..),..) with an empty signature list;
 --     otherwise, fill in all NILs in the signature
-  or/[x ^= nil for x in rest signature] => compDefWhereClause(form,m,e)
+  or/[x ~= nil for x in rest signature] => compDefWhereClause(form,m,e)
   signature.target=$Category =>
     compDefineCategory(form,m,e,nil,$formalArgList)
   isDomainForm(rhs,e) and not $insideFunctorIfTrue =>
@@ -314,7 +314,7 @@ compDefineAddSignature([op,:argl],signature,e) ==
 hasFullSignature(argl,[target,:ml],e) ==
   target =>
     u:= [m or get(x,"mode",e) or return 'failed for x in argl for m in ml]
-    u^='failed => [target,:u]
+    u~='failed => [target,:u]
  
 addEmptyCapsuleIfNecessary: (%Form,%Form) -> %Form
 addEmptyCapsuleIfNecessary(target,rhs) ==
@@ -493,7 +493,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 --   4. compile body in environment of %type declarations for arguments
     op':= $op
     -- following line causes cats with no with or Join to be fresh copies
-    if opOf(formalBody)^='Join and opOf(formalBody)^='mkCategory then
+    if opOf(formalBody)~='Join and opOf(formalBody)~='mkCategory then
            formalBody := ['Join, formalBody]
     body:= optFunctorBody (compOrCroak(formalBody,signature'.target,e)).expr
     if $extraParms then
@@ -557,7 +557,7 @@ compDefineCategory(df,m,e,prefix,fal) ==
   -- make sure we do have some minimal internal coherence.
   ctor := opOf second df
   kind := getConstructorKindFromDB ctor
-  kind ^= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
+  kind ~= "category" => throwKeyedMsg("S2IC0016",[ctor,"category",kind])
   $insideFunctorIfTrue or not $LISPLIB or $compileDefaultsOnly =>
     compDefineCategory1(df,m,e,prefix,fal)
   compDefineLisplib(df,m,e,prefix,fal,'compDefineCategory1)
@@ -698,7 +698,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $insideFunctorIfTrue:= false
     if $LISPLIB then
       $lisplibKind:=
-        $functorTarget is ["CATEGORY",key,:.] and key^="domain" => 'package
+        $functorTarget is ["CATEGORY",key,:.] and key~="domain" => 'package
         'domain
       $lisplibForm:= form
       if null $bootStrapMode then
@@ -1052,7 +1052,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
  
 getSignatureFromMode(form,e) ==
   getmode(opOf form,e) is ['Mapping,:signature] =>
-    #form^=#signature => stackAndThrow ["Wrong number of arguments: ",form]
+    #form~=#signature => stackAndThrow ["Wrong number of arguments: ",form]
     EQSUBSTLIST(rest form,take(#rest form,$FormalMapVariableList),signature)
 
 candidateSignatures(op,nmodes,slot1) ==
@@ -1526,11 +1526,11 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   olde:= $e
   [p',.,$e]:= compCompilerPredicate(p,$e) or userError ['"not a Boolean:",p]
   oldFLP:=$functorLocalParameters
-  if x^="%noBranch" then
+  if x~="%noBranch" then
     compSingleCapsuleItem(x,[p,:$predl],getSuccessEnvironment(p,$e))
     x':=localExtras(oldFLP)
   oldFLP:=$functorLocalParameters
-  if y^="%noBranch" then
+  if y~="%noBranch" then
     compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
   RPLACA(item,"COND")
@@ -1627,7 +1627,7 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
   parameters:=
     REMDUP
       ("append"/
-        [[x for x in sig | IDENTP x and x^='_$]
+        [[x for x in sig | IDENTP x and x~='_$]
           for ["QUOTE",[[.,sig,:.],:.]] in sigList])
   wrapDomainSub(parameters,body)
 
@@ -1649,7 +1649,7 @@ DomainSubstitutionFunction(parameters,body) ==
         first body="QUOTE" => body
         PAIRP $definition and
             isFunctor first body and
-              first body ^= first $definition
+              first body ~= first $definition
           =>  ['QUOTE,optimize body]
         [Subst(parameters,u) for u in body]
   not (body is ["Join",:.]) => body
@@ -1691,7 +1691,7 @@ compCategoryItem(x,predl,env) ==
     a is ["or",p,q] =>
       compCategoryItem(["IF",p,b,["IF",q,COPY b,c]],predl,env)
     predl':= [a,:predl]
-    if b^="%noBranch" then
+    if b~="%noBranch" then
       b is ["PROGN",:l] => 
         for y in l repeat compCategoryItem(y,predl',env)
       compCategoryItem(b,predl',env)

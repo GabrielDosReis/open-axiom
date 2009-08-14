@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -358,7 +358,7 @@ asyMakeOperationAlist(con,proplist, key) ==
       y := asyAncestors form
       [attrs, na] := asyFindAttrs y
       y := na
-      if opOf(y)^=con then ancestorAlist := [ [y,:true],:ancestorAlist]
+      if opOf(y) ~= con then ancestorAlist := [ [y,:true],:ancestorAlist]
     idForm   :=
       form is ['Apply,'_-_>,source,target] => [id,:asyArgs source]
   ----------> Constants change <--------------
@@ -368,8 +368,8 @@ asyMakeOperationAlist(con,proplist, key) ==
       nil
     sig := asySignature(asytranForm(form,[idForm],nil),nil)
     entry :=
-      --id ^= "%%" and IDENTP idForm => [[sig],nil,nil,'ASCONST]
-      id ^= "%%" and IDENTP idForm =>
+      --id ~= "%%" and IDENTP idForm => [[sig],nil,nil,'ASCONST]
+      id ~= "%%" and IDENTP idForm =>
           pred => [[sig],nil,asyPredTran pred,'ASCONST]
           [[sig],nil,true,'ASCONST]
       pred => [sig,nil,asyPredTran pred]
@@ -437,7 +437,7 @@ mkNiladics u ==
 asytranDeclaration(dform,levels,predlist,local?) ==
   ['Declare,id,form,r] := dform
   id = 'failed => id
-  KAR dform ^= 'Declare => systemError '"asytranDeclaration"
+  KAR dform ~= 'Declare => systemError '"asytranDeclaration"
   if levels = '(top) then
     if form isnt ['Apply,"->",:.] then HPUT($constantHash,id,true)
   comments := LASSOC('documentation,r) or '""
@@ -528,7 +528,7 @@ asytranForm(form,levels,local?) ==
 
 asytranForm1(form,levels,local?) ==
   form is ['With,left,cat] =>
---  left ^= nil       => error '"WITH cannot take a left argument yet"
+--  left ~= nil       => error '"WITH cannot take a left argument yet"
     asytranCategory(form,levels,nil,local?)
   form is ['Apply,:.]   => asytranApply(form,levels,local?)
   form is ['Declare,:.] => asytranDeclaration(form,levels,nil,local?)
@@ -755,7 +755,7 @@ asySplit(name,end) ==
 createAbbreviation s ==
   if STRINGP s then s := INTERN s
   a := constructor? s
-  a ^= s => a
+  a ~= s => a
   nil
 
 --============================================================================

@@ -134,13 +134,13 @@ constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
   if typ = "category" and siz > 7
     then throwKeyedErrorMsg('precompilation,"S2IL0021",NIL)
   if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",NIL)
-  if s ^= UPCASE s then throwKeyedMsg("S2IL0006",NIL)
+  if s ~= UPCASE s then throwKeyedMsg("S2IL0006",NIL)
   abb := getConstructorAbbreviationFromDB c
   name:= getConstructorFullNameFromDB a
   type := getConstructorKindFromDB c
-  a=abb and c^=name => lisplibError(c,a,typ,abb,name,type,'duplicateAbb)
-  a=name and c^=name => lisplibError(c,a,typ,abb,name,type,'abbIsName)
-  c=name and typ^=type => lisplibError(c,a,typ,abb,name,type,'wrongType)
+  a=abb and c~=name => lisplibError(c,a,typ,abb,name,type,'duplicateAbb)
+  a=name and c~=name => lisplibError(c,a,typ,abb,name,type,'abbIsName)
+  c=name and typ~=type => lisplibError(c,a,typ,abb,name,type,'wrongType)
  
 abbreviationError(c,a,typ,abb,name,type,error) ==
   sayKeyedMsg("S2IL0009",[a,typ,c])
@@ -225,11 +225,11 @@ condAbbrev(arglist,argtypes) ==
   res
  
 condUnabbrev(op,arglist,argtypes,modeIfTrue) ==
-  #arglist ^= #argtypes and argtypes isnt [["Tuple",t]] =>
+  #arglist ~= #argtypes and argtypes isnt [["Tuple",t]] =>
     throwKeyedMsg("S2IL0014",[op,plural(#argtypes,'"argument"),
       bright(#arglist)])
   -- fix up argument list for unary constructor taking tuples.
-  t ^= nil =>
+  t ~= nil =>
     categoryForm? t => 
        [["tuple",:[unabbrev1(arg,modeIfTrue) for arg in arglist]]]
     [["tuple",:arglist]]

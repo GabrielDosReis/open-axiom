@@ -202,7 +202,7 @@ NRTgenInitialAttributeAlist attributeList ==
   alist := [x for x in attributeList | -- throw out constructors
     not MEMQ(opOf first x,allConstructors())]
   $lisplibAttributes := simplifyAttributeAlist
-    [[a,:b] for [a,b] in SUBLIS($pairlis,alist) | a ^= 'nothing]
+    [[a,:b] for [a,b] in SUBLIS($pairlis,alist) | a ~= 'nothing]
 
 simplifyAttributeAlist al ==
   al is [[a,:b],:r] =>
@@ -215,7 +215,7 @@ simplifyAttributeAlist al ==
   nil
  
 NRTgenFinalAttributeAlist() ==
-  [[a,:k] for [a,:b] in $NRTattributeAlist | (k := predicateBitIndex(b)) ^= -1]
+  [[a,:k] for [a,:b] in $NRTattributeAlist | (k := predicateBitIndex(b)) ~= -1]
  
 predicateBitIndex x == 
   pn(x,false) where
@@ -357,7 +357,7 @@ NRTmakeCategoryAlist() ==
   opcAlist := NREVERSE SORTBY(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
   slot1 := [[a,:k] for [a,:b] in SUBLIS($pairlis,opcAlist)
-                   | (k := predicateBitIndex b) ^= -1]
+                   | (k := predicateBitIndex b) ~= -1]
   slot0 := [hasDefaultPackage opOf a for [a,:b] in slot1]
   sixEtc := [5 + i for i in 1..#$pairlis]
   formals := ASSOCRIGHT $pairlis
@@ -807,7 +807,7 @@ NRTgetLookupFunction(domform,exCategory,addForm) ==
     [u,msg,:v] := $why
     SAY '"--------------non extending category----------------------"
     compilerMessage('"%1p of category %2p", [domform,u])
-    if v ^= nil then
+    if v ~= nil then
       compilerMessage('"%1b %2p",[msg,first v])
     else
       compilerMessage('"%1b",[msg])

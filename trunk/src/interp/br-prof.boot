@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -126,7 +126,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
     htSay '"\item"
     if IDENTP con then
         htSay '"\menuitemstyle{} {\em calls to} "
-        if con ^= 'Rep then htSay '"{\em argument} "
+        if con ~= 'Rep then htSay '"{\em argument} "
         htSay con
         if "and"/[fn is ['origin,orig,.] and
           (null origin and (origin := orig) or origin = orig) for fn in fns] then
@@ -233,7 +233,7 @@ dbInfoSig sig ==
 --============================================================================
 dbGetExpandedOpAlist htPage ==
   expand := htpProperty(htPage,'expandOperations)
-  if expand ^= 'fullyExpanded then
+  if expand ~= 'fullyExpanded then
     if null expand then htpSetProperty(htPage,'expandOperations,'lists)
     opAlist := koOps(htpProperty(htPage,'conform),nil)
     htpSetProperty(htPage,'opAlist,opAlist)

@@ -54,7 +54,7 @@ shoeIntern (s)==
 shoeStrings (stream)==
    StreamNull stream => ['"",stream]
    a:=CAR stream
-   if a.0^=char " "
+   if a.0 ~= char " "
    then ['"",stream]
    else
        [h,t]:=shoeStrings(cdr stream)

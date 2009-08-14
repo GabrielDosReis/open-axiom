@@ -427,7 +427,7 @@ translateToplevel(b,export?) ==
         :[first translateToplevel(d,true) for d in ds]]
 
     Import(m) => 
-      if getOptionValue "import" ^= '"skip" then
+      if getOptionValue "import" ~= '"skip" then
         bootImport STRING m
       [["IMPORT-MODULE", STRING m]]
 
@@ -755,7 +755,7 @@ defaultBootToLispFile file ==
 
 getIntermediateLispFile(file,options) ==
   out := NAMESTRING getOutputPathname(options)
-  out ^= nil => 
+  out ~= nil => 
     strconc(shoeRemoveStringIfNec
        (strconc('".",$effectiveFaslType),out),'".clisp")
   defaultBootToLispFile file
@@ -766,7 +766,7 @@ translateBootFile(progname, options, file) ==
 
 compileBootHandler(progname, options, file) ==
   intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
-  errorCount() ^= 0 => nil
+  errorCount() ~= 0 => nil
   intFile => 
     objFile := compileLispHandler(progname, options, intFile)
     DELETE_-FILE intFile

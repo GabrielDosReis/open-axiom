@@ -275,7 +275,7 @@ rotateWordList u ==
 
 deltaWordEntry(word,entry) ==
   word = entry => 0
-  word.0 ^= entry.0 => 1000
+  word.0 ~= entry.0 => 1000
   #word > 2 and stringPrefix?(word,entry) => 1
   ABS(diff := SIZE word - SIZE entry) > 4 => 1000
   canForgeWord(word,entry)
