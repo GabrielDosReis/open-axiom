@@ -1,3 +1,7 @@
+2009-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compElt): Fix thinko.
+
 2009-08-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* OpenAxiom-1.3.0 Released.
