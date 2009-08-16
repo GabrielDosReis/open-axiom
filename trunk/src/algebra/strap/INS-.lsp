@@ -29,7 +29,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
                 |INS-;rational?;SB;8|)) 
 
-(PUT '|INS-;rational?;SB;8| '|SPADreplace| '(XLAM (|x|) 'T)) 
+(PUT '|INS-;rational?;SB;8| '|SPADreplace| '(XLAM (|x|) T)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
                 |INS-;euclideanSize;SNni;9|)) 
@@ -117,7 +117,7 @@
   (SPADCALL (SPADCALL (|spadConstant| $ 22) |n| (|getShellEntry| $ 20))
       (|getShellEntry| $ 23))) 
 
-(DEFUN |INS-;rational?;SB;8| (|x| $) (DECLARE (IGNORE $)) 'T) 
+(DEFUN |INS-;rational?;SB;8| (|x| $) (DECLARE (IGNORE $)) T) 
 
 (DEFUN |INS-;euclideanSize;SNni;9| (|x| $)
   (PROG (#0=#:G1426 #1=#:G1427)

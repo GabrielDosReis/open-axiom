@@ -62,7 +62,7 @@
                   (PROGN
                     (LETT #1# (SPADCALL |x| |f|) |HOAGG-;any?;MAB;3|)
                     (COND
-                      (#3# (LETT #2# (COND (#2# 'T) ('T #1#))
+                      (#3# (LETT #2# (COND (#2# T) ('T #1#))
                                  |HOAGG-;any?;MAB;3|))
                       ('T
                        (PROGN
@@ -70,7 +70,7 @@
                          (LETT #3# 'T |HOAGG-;any?;MAB;3|)))))
                   (LETT #0# (CDR #0#) |HOAGG-;any?;MAB;3|) (GO G190)
                   G191 (EXIT NIL))
-             (COND (#3# #2#) ('T 'NIL))))))) 
+             (COND (#3# #2#) ('T NIL))))))) 
 
 (DEFUN |HOAGG-;every?;MAB;4| (|f| |c| $)
   (PROG (|x| #0=#:G1430 #1=#:G1412 #2=#:G1410 #3=#:G1411)
@@ -90,7 +90,7 @@
                   (PROGN
                     (LETT #1# (SPADCALL |x| |f|) |HOAGG-;every?;MAB;4|)
                     (COND
-                      (#3# (LETT #2# (COND (#2# #1#) ('T 'NIL))
+                      (#3# (LETT #2# (COND (#2# #1#) ('T NIL))
                                  |HOAGG-;every?;MAB;4|))
                       ('T
                        (PROGN
@@ -98,7 +98,7 @@
                          (LETT #3# 'T |HOAGG-;every?;MAB;4|)))))
                   (LETT #0# (CDR #0#) |HOAGG-;every?;MAB;4|) (GO G190)
                   G191 (EXIT NIL))
-             (COND (#3# #2#) ('T 'T))))))) 
+             (COND (#3# #2#) ('T T))))))) 
 
 (DEFUN |HOAGG-;count;MANni;5| (|f| |c| $)
   (PROG (|x| #0=#:G1431 #1=#:G1416 #2=#:G1414 #3=#:G1415)
@@ -180,7 +180,7 @@
                              (SPADCALL |a| |b| (|getShellEntry| $ 30))
                              |HOAGG-;=;2AB;9|)
                        (COND
-                         (#4# (LETT #3# (COND (#3# #2#) ('T 'NIL))
+                         (#4# (LETT #3# (COND (#3# #2#) ('T NIL))
                                     |HOAGG-;=;2AB;9|))
                          ('T
                           (PROGN
@@ -191,8 +191,8 @@
                              (LETT #0# (CDR #0#) |HOAGG-;=;2AB;9|))
                            |HOAGG-;=;2AB;9|)
                      (GO G190) G191 (EXIT NIL))
-                (COND (#4# #3#) ('T 'T))))
-             ('T 'NIL)))))) 
+                (COND (#4# #3#) ('T T))))
+             ('T NIL)))))) 
 
 (DEFUN |HOAGG-;coerce;AOf;10| (|x| $)
   (PROG (#0=#:G1434 |a| #1=#:G1435)

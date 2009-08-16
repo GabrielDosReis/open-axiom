@@ -362,7 +362,7 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
 --    zero? p => empty()
 --    concat(leadingMonomial p, monomials reductum p)
 --    replaced by sequential version for efficiency, by WMSIT, 7/30/90
-      ml:= empty$List(%)
+      ml:= empty()$List(%)
       while p ~= 0 repeat
         ml:=concat(leadingMonomial p, ml)
         p:= reductum p

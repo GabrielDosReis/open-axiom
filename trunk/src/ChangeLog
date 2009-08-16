@@ -1,5 +1,22 @@
-2009-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+2009-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-map.boot (addMap): Fix typo from last commit.
+	* interp/compiler.boot (compElt): Fix thinko, one more time.
+	* interp/nruncomp.boot (optDeltaEntry): Don't overquote VM forms
+	for constants.
+	* algebra/algext.spad.pamphlet: Call niladic functions with empty
+	argument lists.
+	* algebra/ddfact.spad.pamphlet: Likewise.
+	* algebra/gpgcd.spad.pamphlet: Likewise.
+	* algebra/modmon.spad.pamphlet: Likewise.
+	* algebra/pf.spad.pamphlet: Likewise.
+	* algebra/polycat.spad.pamphlet: Likewise.
+	* algebra/twofact.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: "nil" is now a ocnstant.
+	* algebra/string.spad.pamphlet: "space", "quote", "escape" are now
+	constants. 
+
+2009-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: Retire "^=".  Introduce "~=".
 	* boot/ast.boot: Use "~=" instead of "^=".

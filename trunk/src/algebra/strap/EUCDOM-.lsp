@@ -37,8 +37,8 @@
 
 (DEFUN |EUCDOM-;sizeLess?;2SB;1| (|x| |y| $)
   (COND
-    ((SPADCALL |y| (|getShellEntry| $ 8)) 'NIL)
-    ((SPADCALL |x| (|getShellEntry| $ 8)) 'T)
+    ((SPADCALL |y| (|getShellEntry| $ 8)) NIL)
+    ((SPADCALL |x| (|getShellEntry| $ 8)) T)
     ('T
      (< (SPADCALL |x| (|getShellEntry| $ 12))
         (SPADCALL |y| (|getShellEntry| $ 12)))))) 

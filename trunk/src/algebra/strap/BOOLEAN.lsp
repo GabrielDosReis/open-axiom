@@ -94,7 +94,7 @@
 
 (DEFUN |BOOLEAN;not;2$;4| (|b| $) (DECLARE (IGNORE $)) (NOT |b|)) 
 
-(DEFUN |BOOLEAN;~;2$;5| (|b| $) (COND (|b| 'NIL) ('T 'T))) 
+(DEFUN |BOOLEAN;~;2$;5| (|b| $) (COND (|b| NIL) ('T T))) 
 
 (DEFUN |BOOLEAN;and;3$;6| (|a| |b| $)
   (DECLARE (IGNORE $))
@@ -116,32 +116,31 @@
   (COND (|a| (NOT |b|)) ('T |b|))) 
 
 (DEFUN |BOOLEAN;nor;3$;11| (|a| |b| $)
-  (COND (|a| 'NIL) ('T (NOT |b|)))) 
+  (COND (|a| NIL) ('T (NOT |b|)))) 
 
-(DEFUN |BOOLEAN;nand;3$;12| (|a| |b| $)
-  (COND (|a| (NOT |b|)) ('T 'T))) 
+(DEFUN |BOOLEAN;nand;3$;12| (|a| |b| $) (COND (|a| (NOT |b|)) ('T T))) 
 
 (DEFUN |BOOLEAN;=;3$;13| (|a| |b| $)
   (DECLARE (IGNORE $))
   (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;implies;3$;14| (|a| |b| $) (COND (|a| |b|) ('T 'T))) 
+(DEFUN |BOOLEAN;implies;3$;14| (|a| |b| $) (COND (|a| |b|) ('T T))) 
 
 (DEFUN |BOOLEAN;equiv;3$;15| (|a| |b| $)
   (DECLARE (IGNORE $))
   (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;<;3$;16| (|a| |b| $) (COND (|b| (NOT |a|)) ('T 'NIL))) 
+(DEFUN |BOOLEAN;<;3$;16| (|a| |b| $) (COND (|b| (NOT |a|)) ('T NIL))) 
 
 (DEFUN |BOOLEAN;size;Nni;17| ($) (DECLARE (IGNORE $)) 2) 
 
 (DEFUN |BOOLEAN;index;Pi$;18| (|i| $)
-  (COND ((SPADCALL |i| (|getShellEntry| $ 28)) 'NIL) ('T 'T))) 
+  (COND ((SPADCALL |i| (|getShellEntry| $ 28)) NIL) ('T T))) 
 
 (DEFUN |BOOLEAN;lookup;$Pi;19| (|a| $) (COND (|a| 1) ('T 2))) 
 
 (DEFUN |BOOLEAN;random;$;20| ($)
-  (COND ((SPADCALL (|random|) (|getShellEntry| $ 28)) 'NIL) ('T 'T))) 
+  (COND ((SPADCALL (|random|) (|getShellEntry| $ 28)) NIL) ('T T))) 
 
 (DEFUN |BOOLEAN;convert;$If;21| (|x| $)
   (COND (|x| '|true|) ('T '|false|))) 

@@ -261,12 +261,12 @@
   (PROG (#0=#:G1470)
     (RETURN
       (SEQ (EXIT (COND
-                   ((EQ |x| |y|) 'T)
+                   ((EQ |x| |y|) T)
                    ('T
                     (SEQ (SEQ G190
                               (COND
                                 ((NULL (COND
-                                         ((NULL |x|) 'NIL)
+                                         ((NULL |x|) NIL)
                                          ('T (NOT (NULL |y|)))))
                                  (GO G191)))
                               (SEQ (EXIT
@@ -274,7 +274,7 @@
                                       ((SPADCALL (QCAR |x|) (QCAR |y|)
                                         (|getShellEntry| $ 57))
                                        (PROGN
-                                         (LETT #0# 'NIL
+                                         (LETT #0# NIL
                                           |ILIST;=;2$B;22|)
                                          (GO #0#)))
                                       ('T
@@ -285,9 +285,7 @@
                                          (LETT |y| (QCDR |y|)
                                           |ILIST;=;2$B;22|)))))))
                               NIL (GO G190) G191 (EXIT NIL))
-                         (EXIT (COND
-                                 ((NULL |x|) (NULL |y|))
-                                 ('T 'NIL)))))))
+                         (EXIT (COND ((NULL |x|) (NULL |y|)) ('T NIL)))))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |ILIST;latex;$S;23| (|x| $)
@@ -317,14 +315,14 @@
                                         ((SPADCALL |s| (QCAR |x|)
                                           (|getShellEntry| $ 63))
                                          (PROGN
-                                           (LETT #0# 'T
+                                           (LETT #0# T
                                             |ILIST;member?;S$B;24|)
                                            (GO #0#)))
                                         ('T
                                          (LETT |x| (QCDR |x|)
                                           |ILIST;member?;S$B;24|)))))
                            NIL (GO G190) G191 (EXIT NIL))
-                      (EXIT 'NIL)))
+                      (EXIT NIL)))
            #0# (EXIT #0#))))) 
 
 (DEFUN |ILIST;concat!;3$;25| (|x| |y| $)
@@ -403,7 +401,7 @@
                    (SEQ G190
                         (COND
                           ((NULL (COND
-                                   ((NULL |p|) 'NIL)
+                                   ((NULL |p|) NIL)
                                    ('T (NOT (NULL |q|)))))
                            (GO G191)))
                         (COND

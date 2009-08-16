@@ -64,7 +64,7 @@
   (SEQ (SPADCALL |dev| (|getShellEntry| $ 16))
        (SPADCALL |dev| "list1" "list" (|getShellEntry| $ 18))
        (SEQ G190 (COND ((NULL (NOT (NULL |x|))) (GO G191)))
-            (SEQ (SPADCALL |dev| (|SPADfirst| |x|) 'NIL
+            (SEQ (SPADCALL |dev| (|SPADfirst| |x|) NIL
                      (|getShellEntry| $ 22))
                  (EXIT (LETT |x| (CDR |x|) |LIST;writeOMList|)))
             NIL (GO G190) G191 (EXIT NIL))
@@ -273,7 +273,9 @@
 
 (MAKEPROP '|List| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|IndexedList| 6 (NRTEVAL 1))
-             (|local| |#1|) (|Integer|) (0 . |One|) |LIST;nil;$;1|
+             (|local| |#1|) (|Integer|) (0 . |One|)
+             (CONS IDENTITY
+                   (FUNCALL (|dispatchFunction| |LIST;nil;$;1|) $))
              (|Boolean|) |LIST;null;$B;2| |LIST;cons;S2$;3|
              |LIST;append;3$;4| (|Void|) (|OpenMathDevice|)
              (4 . |OMputApp|) (|String|) (9 . |OMputSymbol|)

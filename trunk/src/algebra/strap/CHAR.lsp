@@ -227,17 +227,23 @@
              (|PositiveInteger|) (0 . |One|) (4 . |One|) (|Integer|)
              (8 . -) |CHAR;char;Nni$;9| |CHAR;index;Pi$;7|
              |CHAR;ord;$Nni;10| (14 . +) |CHAR;lookup;$Pi;8|
-             (20 . |random|) |CHAR;random;$;11| |CHAR;space;$;12|
-             |CHAR;quote;$;13| |CHAR;escape;$;14| (|OutputForm|)
-             |CHAR;coerce;$Of;15| (|CharacterClass|) (25 . |digit|)
-             (|Character|) (29 . |member?|) |CHAR;digit?;$B;16|
-             (35 . |hexDigit|) |CHAR;hexDigit?;$B;17|
-             (39 . |upperCase|) |CHAR;upperCase?;$B;18|
-             (43 . |lowerCase|) |CHAR;lowerCase?;$B;19|
-             (47 . |alphabetic|) |CHAR;alphabetic?;$B;20|
-             (51 . |alphanumeric|) |CHAR;alphanumeric?;$B;21|
-             (|String|) (55 . |new|) (61 . |concat|) |CHAR;latex;$S;22|
-             (67 . |#|) (72 . |one?|) (77 . |minIndex|) (82 . |elt|)
+             (20 . |random|) |CHAR;random;$;11|
+             (CONS IDENTITY
+                   (FUNCALL (|dispatchFunction| |CHAR;space;$;12|) $))
+             (CONS IDENTITY
+                   (FUNCALL (|dispatchFunction| |CHAR;quote;$;13|) $))
+             (CONS IDENTITY
+                   (FUNCALL (|dispatchFunction| |CHAR;escape;$;14|) $))
+             (|OutputForm|) |CHAR;coerce;$Of;15| (|CharacterClass|)
+             (25 . |digit|) (|Character|) (29 . |member?|)
+             |CHAR;digit?;$B;16| (35 . |hexDigit|)
+             |CHAR;hexDigit?;$B;17| (39 . |upperCase|)
+             |CHAR;upperCase?;$B;18| (43 . |lowerCase|)
+             |CHAR;lowerCase?;$B;19| (47 . |alphabetic|)
+             |CHAR;alphabetic?;$B;20| (51 . |alphanumeric|)
+             |CHAR;alphanumeric?;$B;21| (|String|) (55 . |new|)
+             (61 . |concat|) |CHAR;latex;$S;22| (67 . |#|)
+             (72 . |one?|) (77 . |minIndex|) (82 . |elt|)
              |CHAR;char;S$;23| |CHAR;upperCase;2$;24|
              |CHAR;lowerCase;2$;25| (|SingleInteger|))
           '#(~= 88 |upperCase?| 94 |upperCase| 99 |space| 104 |size|

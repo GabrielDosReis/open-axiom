@@ -180,7 +180,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
          MKQ x
      fn := compiledLookup(op,nsig,dcval)
      if null fn then return nil
-  eltOrConst="CONST" => ['XLAM,'ignore,MKQ SPADCALL fn]
+  eltOrConst="CONST" => ['XLAM,'ignore, SPADCALL fn]
   GETL(compileTimeBindingOf first fn,'SPADreplace)
 
 genDeltaEntry opMmPair ==
