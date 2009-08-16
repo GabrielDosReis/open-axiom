@@ -92,7 +92,7 @@ ModMonic(R,Rep): C == T
         m
       modulus == m
       if R has Finite then
-         size == d * size$R
+         size == d * size()$R
          random == UnVectorise([random()$R for i in 0..d1])
       0 == 0$Rep
       1 == 1$Rep
@@ -132,7 +132,7 @@ ModMonic(R,Rep): C == T
       if frobenius? then
           computeFrobeniusPowers() ==
             mat : PrimitiveArray(%):= new(d,1)
-            mat.1:= mult := monomial(1, size$R)$%
+            mat.1:= mult := monomial(1, size()$R)$%
             for i in 2..d1 repeat
                mat.i := mult * mat.(i-1)
             mat

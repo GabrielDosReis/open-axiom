@@ -38,7 +38,7 @@
   (COND
     ((>= |i| (SPADCALL |a| (|getShellEntry| $ 9)))
      (NOT (> |i| (SPADCALL |a| (|getShellEntry| $ 10)))))
-    ('T 'NIL))) 
+    ('T NIL))) 
 
 (DEFUN |LNAGG-;concat;ASA;3| (|a| |x| $)
   (SPADCALL |a| (SPADCALL 1 |x| (|getShellEntry| $ 22))

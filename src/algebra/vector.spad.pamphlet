@@ -294,7 +294,7 @@ DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
               column(rh, minColIndex rh)
             [reducedSystem(m)@Matrix(R), vh]
  
-      if R has Finite then size == size$R ** dim
+      if R has Finite then size == size()$R ** dim
  
       if R has Field then
         x / b       == x * inv b

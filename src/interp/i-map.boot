@@ -162,6 +162,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
 addMap(lhs,rhs,pred) ==
   [op,:argl] := lhs
   $sl: local:= nil
+  predList := nil
   formalArgList:= [mkFormalArg(makeArgumentIntoNumber x,s)
     for x in argl for s in $FormalMapVariableList]
   argList:=
@@ -173,7 +174,7 @@ addMap(lhs,rhs,pred) ==
   argPredList:= NREVERSE predList
   finalPred :=
 -- handle g(a,T)==a+T confusion between pred=T and T variable
-    MKPF((pred and (pred = 'T) => [:argPredList,SUBLISNQ($sl,pred)]; argPredList),"and")
+    MKPF((pred and (pred ~= 'T) => [:argPredList,SUBLISNQ($sl,pred)]; argPredList),"and")
   body:= SUBLISNQ($sl,rhs)
   oldMap :=
     (obj := get(op,'value,$InteractiveFrame)) => objVal obj

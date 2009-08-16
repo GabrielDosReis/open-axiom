@@ -560,10 +560,9 @@
   (FORMAT NIL (|getShellEntry| $ 6) |f|)) 
 
 (DEFUN |OUTFORM;outputForm;S$;15| (|s| $)
-  (SPADCALL (SPADCALL (|getShellEntry| $ 27))
-      (SPADCALL |s| (SPADCALL (|getShellEntry| $ 27))
-                (|getShellEntry| $ 28))
-      (|getShellEntry| $ 29))) 
+  (SPADCALL (|spadConstant| $ 27)
+            (SPADCALL |s| (|spadConstant| $ 27) (|getShellEntry| $ 28))
+            (|getShellEntry| $ 29))) 
 
 (DEFUN |OUTFORM;width;$I;16| (|a| $)
   (DECLARE (IGNORE $))
@@ -850,10 +849,10 @@
                               ((STRINGP |a|) (INTERN |a|))
                               ('T
                                (PROGN
-                                 (LETT #0# 'NIL |OUTFORM;infix?;$B;74|)
+                                 (LETT #0# NIL |OUTFORM;infix?;$B;74|)
                                  (GO #0#))))
                             |OUTFORM;infix?;$B;74|)
-                      (EXIT (COND ((GET |e| 'INFIXOP) 'T) ('T 'NIL)))))
+                      (EXIT (COND ((GET |e| 'INFIXOP) T) ('T NIL)))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $)

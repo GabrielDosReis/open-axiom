@@ -34,12 +34,12 @@ Character: OrderedFinite() with
 	    ++ code i.	It is always true that \spad{ord char i = i}.
 	char: String   -> %
 	    ++ char(s) provides a character from a string s of length one.
-	space:	() -> %
-	    ++ space() provides the blank character.
-	quote:	() -> %
-	    ++ quote() provides the string quote character, \spad{"}.
-	escape: () -> %
-	    ++ escape() provides the escape character, \spad{_}, which
+	space: %
+	    ++ \spad{space} provides the blank character.
+	quote: %
+	    ++ \spad{quote} provides the string quote character, \spad{"}.
+	escape: %
+	    ++ \spad{escape} provides the escape character, \spad{_}, which
 	    ++ is used to allow quotes and other characters {\em within}
 	    ++ strings.
 	upperCase: % -> %

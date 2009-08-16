@@ -220,7 +220,7 @@
                   ((NULL (COND
                            ((>= (LENGTH |ns|) 2)
                             (ZEROP (|SPADfirst| |ns|)))
-                           ('T 'NIL)))
+                           ('T NIL)))
                    (GO G191)))
                 (SEQ (EXIT (LETT |ns| (CDR |ns|) |SYMBOL;syprefix|)))
                 NIL (GO G190) G191 (EXIT NIL))

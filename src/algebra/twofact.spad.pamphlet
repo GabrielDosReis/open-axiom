@@ -196,7 +196,7 @@ TwoFactorize(F) : C == T
               -- the polynomial is  inseparable w.r.t. its main variable
               map(differentiate,fac) = 0 =>
                 p:=characteristic$F
-                PthRootPow:=(size$F exquo p)::NonNegativeInteger
+                PthRootPow:=(size()$F exquo p)::NonNegativeInteger
                 m1:=divideExponents(map(pthRoot(#1,p,PthRootPow),fac),p)
                 m1 case "failed" => error "consistency error in TwoFactor"
                 res:=generalTwoFactor m1

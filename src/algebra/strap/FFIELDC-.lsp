@@ -102,7 +102,7 @@
                     (|spadConstant| $ 41))
                    ('T 1))
                  |FFIELDC-;createPrimitiveElement;S;8|)
-           (LETT |found| 'NIL |FFIELDC-;createPrimitiveElement;S;8|)
+           (LETT |found| NIL |FFIELDC-;createPrimitiveElement;S;8|)
            (SEQ (LETT |i| |start|
                       |FFIELDC-;createPrimitiveElement;S;8|)
                 G190 (COND ((NULL (NOT |found|)) (GO G191)))
@@ -128,13 +128,13 @@
   (PROG (|explist| |q| |exp| #0=#:G1514 |equalone|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |a| (|getShellEntry| $ 16)) 'NIL)
+             ((SPADCALL |a| (|getShellEntry| $ 16)) NIL)
              ('T
               (SEQ (LETT |explist| (SPADCALL (|getShellEntry| $ 56))
                          |FFIELDC-;primitive?;SB;9|)
                    (LETT |q| (- (SPADCALL (|getShellEntry| $ 40)) 1)
                          |FFIELDC-;primitive?;SB;9|)
-                   (LETT |equalone| 'NIL |FFIELDC-;primitive?;SB;9|)
+                   (LETT |equalone| NIL |FFIELDC-;primitive?;SB;9|)
                    (SEQ (LETT |exp| NIL |FFIELDC-;primitive?;SB;9|)
                         (LETT #0# |explist| |FFIELDC-;primitive?;SB;9|)
                         G190
@@ -296,7 +296,7 @@
                                           (LETT |end|
                                            (QUOTIENT2 (- |fac| 1) |n|)
                                            |FFIELDC-;discreteLog;SNni;11|)
-                                          (LETT |found| 'NIL
+                                          (LETT |found| NIL
                                            |FFIELDC-;discreteLog;SNni;11|)
                                           (LETT |disc1| 0
                                            |FFIELDC-;discreteLog;SNni;11|)
@@ -321,7 +321,7 @@
                                              (COND
                                                ((QEQCAR |rho| 0)
                                                 (SEQ
-                                                 (LETT |found| 'T
+                                                 (LETT |found| T
                                                   |FFIELDC-;discreteLog;SNni;11|)
                                                  (EXIT
                                                   (LETT |disc1|
@@ -515,7 +515,7 @@
               (|spadConstant| $ 103))
              ('T
               (SEQ (LETT |flist|
-                         (SPADCALL |f| 'T (|getShellEntry| $ 107))
+                         (SPADCALL |f| T (|getShellEntry| $ 107))
                          |FFIELDC-;factorSquareFreePolynomial|)
                    (EXIT (SPADCALL
                              (SPADCALL (QCAR |flist|)
