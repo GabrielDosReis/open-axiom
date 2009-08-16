@@ -31,9 +31,7 @@
     ('T (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 15))))) 
 
 (DEFUN |INTDOM-;unit?;SB;4| (|x| $)
-  (COND
-    ((QEQCAR (SPADCALL |x| (|getShellEntry| $ 17)) 1) 'NIL)
-    ('T 'T))) 
+  (COND ((QEQCAR (SPADCALL |x| (|getShellEntry| $ 17)) 1) NIL) ('T T))) 
 
 (DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
   (SPADCALL (QVELT (SPADCALL |x| (|getShellEntry| $ 10)) 1)
@@ -47,8 +45,8 @@
     ((OR (SPADCALL |y| (|getShellEntry| $ 13))
          (OR (QEQCAR (SPADCALL |x| |y| (|getShellEntry| $ 15)) 1)
              (QEQCAR (SPADCALL |y| |x| (|getShellEntry| $ 15)) 1)))
-     'NIL)
-    ('T 'T))) 
+     NIL)
+    ('T T))) 
 
 (DEFUN |IntegralDomain&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)

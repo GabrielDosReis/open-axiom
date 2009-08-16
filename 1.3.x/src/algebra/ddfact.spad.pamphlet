@@ -144,7 +144,7 @@ DistinctDegreeFactorize(F,FP): C == T
       --terms of equal degree .
       -- if testirr=true the function returns the first factor found
       ddffact1(m:FP,testirr:Boolean):List(fact) ==
-        p:=size$F
+        p:=size()$F
         dg:NNI :=0
         ddfact:List(fact):=empty()
         --evaluation of x**p mod m

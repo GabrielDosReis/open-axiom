@@ -1164,9 +1164,9 @@ compElt(form,m,E) ==
         [anOp,aDomain,mmList])
       mmList.(0)
     [sig,[pred,val]]:= modemap
-    #sig^=2 and val isnt ["CONST",:.] => nil
+    #sig ^= 2 or val isnt ["CONST",:.] => nil
     val := genDeltaEntry [opOf anOp,:modemap]
-    convert([["call",val],first rest sig,E], m)
+    convert([["call",val],second sig,E], m)
   compForm(form,m,E)
 
 --% HAS

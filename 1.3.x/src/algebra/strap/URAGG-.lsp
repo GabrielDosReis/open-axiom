@@ -129,7 +129,7 @@
 
 (DEFUN |URAGG-;cyclic?;AB;6| (|x| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 20)) 'NIL)
+    ((SPADCALL |x| (|getShellEntry| $ 20)) NIL)
     ('T
      (NOT (SPADCALL (|URAGG-;findCycle| |x| $) (|getShellEntry| $ 20)))))) 
 
@@ -179,7 +179,7 @@
                   ((NULL (COND
                            ((> |i| 0)
                             (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
-                           ('T 'NIL)))
+                           ('T NIL)))
                    (GO G191)))
                 (SEQ (LETT |l| (SPADCALL |l| (|getShellEntry| $ 14))
                            |URAGG-;less?;ANniB;12|)
@@ -196,7 +196,7 @@
                   ((NULL (COND
                            ((> |i| 0)
                             (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
-                           ('T 'NIL)))
+                           ('T NIL)))
                    (GO G191)))
                 (SEQ (LETT |l| (SPADCALL |l| (|getShellEntry| $ 14))
                            |URAGG-;more?;ANniB;13|)
@@ -205,7 +205,7 @@
            (EXIT (COND
                    ((ZEROP |i|)
                     (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
-                   ('T 'NIL))))))) 
+                   ('T NIL))))))) 
 
 (DEFUN |URAGG-;size?;ANniB;14| (|l| |n| $)
   (PROG (|i|)
@@ -214,7 +214,7 @@
            (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((SPADCALL |l| (|getShellEntry| $ 20)) 'NIL)
+                           ((SPADCALL |l| (|getShellEntry| $ 20)) NIL)
                            ('T (> |i| 0))))
                    (GO G191)))
                 (SEQ (LETT |l| (SPADCALL |l| (|getShellEntry| $ 14))
@@ -223,7 +223,7 @@
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT (COND
                    ((SPADCALL |l| (|getShellEntry| $ 20)) (ZEROP |i|))
-                   ('T 'NIL))))))) 
+                   ('T NIL))))))) 
 
 (DEFUN |URAGG-;#;ANni;15| (|x| $)
   (PROG (|k|)
@@ -455,14 +455,14 @@
   (PROG (|k| #0=#:G1509)
     (RETURN
       (SEQ (EXIT (COND
-                   ((SPADCALL |x| |y| (|getShellEntry| $ 53)) 'T)
+                   ((SPADCALL |x| |y| (|getShellEntry| $ 53)) T)
                    ('T
                     (SEQ (SEQ (LETT |k| 0 |URAGG-;=;2AB;23|) G190
                               (COND
                                 ((NULL (COND
                                          ((SPADCALL |x|
                                            (|getShellEntry| $ 20))
-                                          'NIL)
+                                          NIL)
                                          ('T
                                           (NOT
                                            (SPADCALL |y|
@@ -483,7 +483,7 @@
                                          (|getShellEntry| $ 8))
                                         (|getShellEntry| $ 66))
                                        (PROGN
-                                         (LETT #0# 'NIL
+                                         (LETT #0# NIL
                                           |URAGG-;=;2AB;23|)
                                          (GO #0#)))
                                       ('T
@@ -502,7 +502,7 @@
                          (EXIT (COND
                                  ((SPADCALL |x| (|getShellEntry| $ 20))
                                   (SPADCALL |y| (|getShellEntry| $ 20)))
-                                 ('T 'NIL)))))))
+                                 ('T NIL)))))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |URAGG-;node?;2AB;24| (|u| |v| $)
@@ -518,7 +518,7 @@
                                         ((SPADCALL |u| |v|
                                           (|getShellEntry| $ 68))
                                          (PROGN
-                                           (LETT #0# 'T
+                                           (LETT #0# T
                                             |URAGG-;node?;2AB;24|)
                                            (GO #0#)))
                                         ('T

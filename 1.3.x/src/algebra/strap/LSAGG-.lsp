@@ -113,7 +113,7 @@
       (SEQ (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((SPADCALL |x| (|getShellEntry| $ 16)) 'NIL)
+                           ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
                            ('T
                             (NOT (SPADCALL
                                      (SPADCALL |x|
@@ -195,7 +195,7 @@
                           ((NULL (COND
                                    ((SPADCALL |p|
                                      (|getShellEntry| $ 16))
-                                    'NIL)
+                                    NIL)
                                    ('T
                                     (NOT
                                      (SPADCALL |q|
@@ -288,7 +288,7 @@
       (SEQ (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((SPADCALL |x| (|getShellEntry| $ 16)) 'NIL)
+                           ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
                            ('T
                             (SPADCALL
                                 (SPADCALL |x| (|getShellEntry| $ 18))
@@ -413,7 +413,7 @@
   (SEQ (SEQ G190
             (COND
               ((NULL (COND
-                       ((SPADCALL |x| (|getShellEntry| $ 16)) 'NIL)
+                       ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
                        ('T
                         (NOT (SPADCALL
                                  (SPADCALL |x| (|getShellEntry| $ 18))
@@ -435,7 +435,7 @@
                 G190
                 (COND
                   ((NULL (COND
-                           ((SPADCALL |x| (|getShellEntry| $ 16)) 'NIL)
+                           ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
                            ('T
                             (NOT (SPADCALL
                                      (SPADCALL |x|
@@ -490,7 +490,7 @@
   (PROG (#0=#:G1517 |p|)
     (RETURN
       (SEQ (EXIT (COND
-                   ((SPADCALL |l| (|getShellEntry| $ 16)) 'T)
+                   ((SPADCALL |l| (|getShellEntry| $ 16)) T)
                    ('T
                     (SEQ (LETT |p|
                                (SPADCALL |l| (|getShellEntry| $ 17))
@@ -511,7 +511,7 @@
                                           (|getShellEntry| $ 18))
                                          |f|))
                                        (PROGN
-                                         (LETT #0# 'NIL
+                                         (LETT #0# NIL
                                           |LSAGG-;sorted?;MAB;15|)
                                          (GO #0#)))
                                       ('T
@@ -522,7 +522,7 @@
                                          (|getShellEntry| $ 17))
                                         |LSAGG-;sorted?;MAB;15|)))))
                               NIL (GO G190) G191 (EXIT NIL))
-                         (EXIT 'T)))))
+                         (EXIT T)))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |LSAGG-;reduce;MA2S;16| (|f| |x| |i| $)
@@ -551,7 +551,7 @@
            (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((SPADCALL |x| (|getShellEntry| $ 16)) 'NIL)
+                           ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
                            ('T
                             (SPADCALL |r| |a| (|getShellEntry| $ 63)))))
                    (GO G191)))
@@ -589,7 +589,7 @@
            (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((SPADCALL |x| (|getShellEntry| $ 16)) 'NIL)
+                           ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
                            ('T
                             (NOT (SPADCALL |y| (|getShellEntry| $ 16))))))
                    (GO G191)))
@@ -688,7 +688,7 @@
                                 ((NULL (COND
                                          ((SPADCALL |z|
                                            (|getShellEntry| $ 16))
-                                          'NIL)
+                                          NIL)
                                          ('T
                                           (NOT
                                            (SPADCALL |x|
@@ -733,7 +733,7 @@
                                 ((NULL (COND
                                          ((SPADCALL |x|
                                            (|getShellEntry| $ 16))
-                                          'NIL)
+                                          NIL)
                                          ('T
                                           (SPADCALL |w|
                                            (SPADCALL |x|
@@ -794,7 +794,7 @@
                              ((NULL (COND
                                       ((SPADCALL |x|
                                         (|getShellEntry| $ 16))
-                                       'NIL)
+                                       NIL)
                                       ('T
                                        (NOT
                                         (SPADCALL |y|
@@ -833,7 +833,7 @@
                               ((SPADCALL |x| (|getShellEntry| $ 16))
                                (NOT (SPADCALL |y|
                                      (|getShellEntry| $ 16))))
-                              ('T 'NIL)))))
+                              ('T NIL)))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |ListAggregate&| (|#1| |#2|)
