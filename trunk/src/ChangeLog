@@ -1,5 +1,9 @@
 2009-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compAtom): Don't single out "nil".
+
+2009-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-map.boot (addMap): Fix typo from last commit.
 	* interp/compiler.boot (compElt): Fix thinko, one more time.
 	* interp/nruncomp.boot (optDeltaEntry): Don't overquote VM forms

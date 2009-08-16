@@ -400,11 +400,6 @@ compAtom(x,m,e) ==
   x = "break" => compBreak(x,m,e)
   x = "iterate" => compIterate(x,m,e)
   T:= compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
-  x="nil" =>
-    T:=
-      modeIsAggregateOf('List,m,e) is [.,R] => compList(x,['List,R],e)
-      return nil
-    convert(T,m)
   t:=
     isSymbol x => compSymbol(x,m,e) or return nil
     member(m,$IOFormDomains) and primitiveType x => [x,m,e]
