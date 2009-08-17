@@ -720,7 +720,7 @@ pred2English x ==
     concat(pred2English a,'" = ",form2String abbreviate b)
   x is [op,:.] and (translation := LASSOC(op,'(
     (_< . " < ") (_<_= . " <= ")
-      (_> . " > ") (_>_= . " >= ") (_=  . " = ") (_^_= . " _^_= ")))) =>
+      (_> . " > ") (_>_= . " >= ") (_=  . " = ") (_~_= . " _~_= ")))) =>
         concat(pred2English a,translation,pred2English b)
   x is ['ATTRIBUTE,form] =>
     concat("attribute: ",form2String form)

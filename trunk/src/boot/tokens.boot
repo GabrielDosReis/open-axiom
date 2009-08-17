@@ -77,7 +77,7 @@ shoeKeyWords == [  _
             ['"<=","LE" ], _
             ['">=","GE" ], _
             ['"=", "SHOEEQ"], _
-            ['"^", "NOT"], _
+            ['"^", "NOTRETIRED"], _
             ['"^=","SHOENERETIRED" ], _
             ['"~=","SHOENE" ], _
             ['"..","SEG" ], _

@@ -974,7 +974,7 @@ coerceUnion2Branch(object) ==
   val' := objValUnwrap object
   predicate := NIL
   targetType:= NIL
-  for typ in doms for pred in predList while ^targetType repeat
+  for typ in doms for pred in predList while null targetType repeat
     thisUnionBranch?(pred,val') =>
       predicate := pred
       targetType := typ
@@ -1027,7 +1027,7 @@ coerceIntByMap(triple,t2) ==
   u1 := deconstructT t1
   1 = #u1 => NIL
   CAAR u1 ~= CAAR u2 => nil  -- constructors not equal
-  ^valueArgsEqual?(t1, t2) => NIL
+  not valueArgsEqual?(t1, t2) => NIL
 --  CAR u1 ~= CAR u2 => NIL
   top := CAAR u1
   u1 := underDomainOf t1
@@ -1282,7 +1282,7 @@ coerceIntTest(t1,t2) ==
 
 coerceByTable(fn,x,t1,t2,isTotalCoerce) ==
   -- catch point for 'failure in boot coercions
-  t2 = $OutputForm and ^(newType? t1) => NIL
+  t2 = $OutputForm and not (newType? t1) => NIL
   isWrapped x =>
     x:= unwrap x
     c:= CATCH('coerceFailure,FUNCALL(fn,x,t1,t2))

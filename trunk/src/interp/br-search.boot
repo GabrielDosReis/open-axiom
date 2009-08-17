@@ -871,8 +871,8 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
     nottick := '"[^`]"
     name := replaceGrepStar name
     firstPart :=
-      $saturn => STRCONC(char '_^,name)
-      STRCONC(char '_^,kind,name)
+      $saturn => STRCONC(char "^",name)
+      STRCONC(char "^",kind,name)
     nargsPart := replaceGrepStar nargs
     exposedPart := char '_.   --always get exposed/unexposed
     patPart := replaceGrepStar argOrSig
@@ -882,7 +882,7 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
     STRCONC(a,$tick,b)
   simp a ==
     m := MAXINDEX a
-    m > 6 and a.(m-5) = char '_[ and a.(m-4) = char '_^
+    m > 6 and a.(m-5) = char '_[ and a.(m-4) = char "^"
       and     a.(m-3) = $tick    and a.(m-2) = char '_]
           and a.(m-1) = char '_* and a.m = $tick
             => simp SUBSTRING(a,0,m-5)

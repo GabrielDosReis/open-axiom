@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -263,7 +263,7 @@ markRepeat(form, T)        ==
   [mkWi("repeat", 'WI,form,CAR T), :CDR T]
   
 markTran(form,form',[dc,:sig],env) ==  --from compElt/compFormWithModemap
-  dc ~= 'Rep or ^MEMQ('_$,sig) => mkWi('markTran,'WI,form,['call,:form'])
+  dc ~= 'Rep or not MEMQ('_$,sig) => mkWi('markTran,'WI,form,['call,:form'])
   argl := [u for t in rest sig for arg in rest form'] where u() ==
     t='_$ => 
       argSource := getSourceWI arg

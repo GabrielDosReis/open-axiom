@@ -135,7 +135,7 @@ escapeString com ==   --this makes changes on single comment lines
 htPred2English(x,:options) ==
   $emList :local := IFCAR options   --list of identifiers to be emphasised
   $precList: local := '((OR 10 . "or") (AND 9 . "and")
-     (_< 5) (_<_= 5) (_> 5) (_>_= 5) (_= 5) (_^_= 5) (or 10) (and 9))
+     (_< 5) (_<_= 5) (_> 5) (_>_= 5) (_= 5) (_~_= 5) (or 10) (and 9))
   fn(x,100) where
     fn(x,prec) ==
       x is [op,:l] =>

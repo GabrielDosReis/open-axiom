@@ -253,7 +253,7 @@ bottomUp t ==
 
     argModeSetList:= [bottomUp x for x in argl]
 
-    if ^tar and opName = "*" and nargs = 2 then
+    if null tar and opName = "*" and nargs = 2 then
         [[t1],[t2]] := argModeSetList
         tar := computeTypeWithVariablesTarget(t1, t2)
         tar =>
@@ -530,7 +530,7 @@ bottomUpForm2(t,op,opName,argl,argModeSetList) ==
   -- modesets are the same
 
   $genValue and
-    ^(opName = "=" and argModeSetList is [[m],[=m]] and m is ['Union,:.]) and
+    not (opName = "=" and argModeSetList is [[m],[=m]] and m is ['Union,:.]) and
       (u := bottomUpFormUntaggedUnionRetract(t,op,opName,argl,argModeSetList)) => u
 
   lookForIt and (u := bottomUpFormTuple(t, op, opName, argl, argModeSetList)) => u
@@ -849,15 +849,15 @@ bottomUpElt (form:=[op,:argl]) ==
     newOps := [mkAtreeNode "elt", mkAtreeNode "apply"]
     u := nil
 
-    while ^u for newOp in newOps repeat
+    while null u for newOp in newOps repeat
         newArgs := [op,:argl]
         if selectMms(newOp, newArgs, target) then
             RPLAC(CDR form, newArgs)
             RPLAC(CAR form, newOp)
             u := bottomUp form
 
-    while ^u and ( "and"/[retractAtree(a) for a in newArgs] ) repeat
-        while ^u for newOp in newOps repeat
+    while null u and ( "and"/[retractAtree(a) for a in newArgs] ) repeat
+        while null u for newOp in newOps repeat
             newArgs := [op,:argl]
             if selectMms(newOp, newArgs, target) then
                 RPLAC(CDR form, newArgs)
