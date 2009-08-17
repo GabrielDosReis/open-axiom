@@ -1,3 +1,7 @@
+2009-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (deltaContour): Fix thinko.
+
 2009-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compAtom): Don't single out "nil".
