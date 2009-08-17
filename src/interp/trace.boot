@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -733,7 +733,7 @@ traceReply() ==
         addTraceItem EVAL x; functionList:= [x,:functionList])
     userError '"bad argument to trace"
   functionList:= "append"/[[rassocSub(x,$mapSubNameAlist),'" "]
-    for x in functionList | ^isSubForRedundantMapName x]
+    for x in functionList | not isSubForRedundantMapName x]
   if functionList then
     2 = #functionList =>
       sayMSG ["   Function traced: ",:functionList]
@@ -792,7 +792,7 @@ tracelet(fn,vars) ==
   if $letAssoc then SETLETPRINTFLAG true
   $TRACELETFLAG : local := true
   $QuickLet : local := false
-  ^MEMQ(fn,$traceletFunctions) and ^IS__GENVAR fn and COMPILED_-FUNCTION_-P SYMBOL_-FUNCTION fn
+  not MEMQ(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P SYMBOL_-FUNCTION fn
     and not stupidIsSpadFunction fn and not GENSYMP fn =>
       ($traceletFunctions:= [fn,:$traceletFunctions]; compileBoot fn ;
        $traceletFunctions:= delete(fn,$traceletFunctions) )
@@ -813,7 +813,7 @@ breaklet(fn,vars) ==
     pair => (RPLACD(pair,vars); $letAssoc)
   if $letAssoc then SETLETPRINTFLAG true
   $QuickLet:local := false
-  ^MEMQ(fn,$traceletFunctions) and not stupidIsSpadFunction fn
+  not MEMQ(fn,$traceletFunctions) and not stupidIsSpadFunction fn
     and not GENSYMP fn =>
       $traceletFunctions:= [fn,:$traceletFunctions]
       compileBoot fn

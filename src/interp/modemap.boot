@@ -285,7 +285,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainView,functorForm,categoryForm,e)
   --  catform:= (isCategory categoryForm => categoryForm.(0); categoryForm)
   -- catform appears not to be used, so why set it?
-  --if ^$InteractiveMode then
+  --if not $InteractiveMode then
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
   $base:= 4

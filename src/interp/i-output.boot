@@ -595,7 +595,7 @@ outputTran x ==
     ['PAREN,["|",['AGGLST,:l],pred]]
   op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
-  IDENTP op and ^(op in '(_* _*_*) ) and char("*") = (PNAME op).0 =>
+  IDENTP op and not (op in '(_* _*_*) ) and char("*") = (PNAME op).0 =>
     mkSuperSub(op,l)
   [outputTran op,:l]
 
@@ -761,7 +761,7 @@ timesApp(u,x,y,d) ==
   firstTime:= true
   for arg in rest u repeat
     op:= keyp arg
-    if ^firstTime and (needBlankForRoot(lastOp,op,arg) or
+    if not firstTime and (needBlankForRoot(lastOp,op,arg) or
        needStar(wasSimple,wasQuotient,wasNumber,arg,op) or
         wasNumber and op = 'ROOT and subspan arg = 1) then
       d:= APP(BLANK,x,y,d)
@@ -862,7 +862,7 @@ needStar(wasSimple,wasQuotient,wasNumber,cur,op) ==
   wasQuotient or isQuotient op => true
   wasSimple =>
     atom cur or keyp cur="SUB" or isRationalNumber cur or op="**" or op = "^" or
-      (atom op and ^NUMBERP op and ^GETL(op,"APP"))
+      (atom op and not NUMBERP op and null GETL(op,"APP"))
   wasNumber =>
     NUMBERP(cur) or isRationalNumber cur or
         ((op="**" or op ="^") and NUMBERP(CADR cur))
@@ -876,7 +876,7 @@ timesWidth u ==
   w:= 0
   for arg in rest u repeat
     op:= keyp arg
-    if ^firstTime and needStar(wasSimple,wasQuotient,wasNumber,arg,op) then
+    if not firstTime and needStar(wasSimple,wasQuotient,wasNumber,arg,op) then
       w:= w+1
     if infixArgNeedsParens(arg, rightPrec, "left") then w:= w+2
     w:= w+WIDTH arg
@@ -1162,20 +1162,20 @@ maprinChk x ==
       -- deleteAssoc no longer exists
       $MatrixList := delete(u,$MatrixList)
       maPrin ['EQUATNUM,n,rest u]
-      if ^$collectOutput then TERPRI $algebraOutputStream
+      if not $collectOutput then TERPRI $algebraOutputStream
     maPrin x
   maPrin x
   -- above line added JHD 13/2/93 since otherwise x gets lost
 
 maprinRows matrixList ==
-  if ^$collectOutput then TERPRI($algebraOutputStream)
+  if not $collectOutput then TERPRI($algebraOutputStream)
   while matrixList repeat
     y:=NREVERSE matrixList
     --Makes the matrices come out in order, since CONSed on backwards
     matrixList:=nil
     firstName := first first y
     for [name,:m] in y for n in 0.. repeat
-      if ^$collectOutput then TERPRI($algebraOutputStream)
+      if not $collectOutput then TERPRI($algebraOutputStream)
       andWhere := (name = firstName => '"where "; '"and ")
       line := STRCONC(andWhere, PNAME name)
       maprinChk ["=",line,m]
@@ -1503,16 +1503,16 @@ splitConcat(list,maxWidth,firstTimeIfTrue) ==
 
 spadPrint(x,m) ==
   m = $NoValueMode => x
-  if ^$collectOutput then TERPRI $algebraOutputStream
+  if not $collectOutput then TERPRI $algebraOutputStream
   output(x,m)
-  if ^$collectOutput then TERPRI $algebraOutputStream
+  if not $collectOutput then TERPRI $algebraOutputStream
 
 formulaFormat expr ==
   sff := '(ScriptFormulaFormat)
   formatFn := getFunctionFromDomain("coerce",sff,[$OutputForm])
   displayFn := getFunctionFromDomain("display",sff,[sff])
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
-  if ^$collectOutput then
+  if not $collectOutput then
     TERPRI $algebraOutputStream
     FORCE_-OUTPUT $formulaOutputStream
   NIL
@@ -1563,7 +1563,7 @@ output(expr,domain) ==
     if $formulaFormat then formulaFormat x
     if $fortranFormat then
       dispfortexp x
-      if ^$collectOutput then TERPRI $fortranOutputStream
+      if not $collectOutput then TERPRI $fortranOutputStream
       FORCE_-OUTPUT $fortranOutputStream
     if $algebraFormat then
       mathprintWithNumber x
@@ -1656,7 +1656,7 @@ printMap u ==
     printMap1(x,initialFlag and x is [[n],:.] and n=1)
     for y in l repeat (printBasic " , "; printMap1(y,initialFlag))
   printBasic specialChar 'rbrk
-  if ^$collectOutput then TERPRI $algebraOutputStream
+  if not $collectOutput then TERPRI $algebraOutputStream
 
 isInitialMap u ==
   u is [[[n],.],:l] and INTEGERP n and
@@ -1676,7 +1676,7 @@ printBasic x ==
   PRIN1(x,$algebraOutputStream)
 
 charybdis(u,start,linelength) ==
-  keyp u='EQUATNUM and ^(CDDR u) =>
+  keyp u='EQUATNUM and null (CDDR u) =>
     charybdis(['PAREN,u.1],start,linelength)
   charyTop(u,start,linelength)
 
@@ -1806,7 +1806,7 @@ charySplit(u,v,start,linelength) ==
   m:= rest v
   WIDTH v.1 > linelength-2 =>
     charybdis(v.1,start+2,linelength-2)
-    ^(CDDR v) => '" "
+    null (CDDR v) => '" "
     dm:= CDDR v
     ddm:= rest dm
     split2(u,dm,ddm,start,linelength)
@@ -1833,7 +1833,7 @@ split2(u,dm,ddm,start,linelength) ==
 
 charyElse(u,v,start,linelength) ==
   charybdis(v.1,start+3,linelength-3)
-  ^(CDDR u) => '" "
+  null (CDDR u) => '" "
   prnd(start,'",")
   charybdis(['ELSE,:CDDR v],start,linelength)
   '" "
@@ -1856,7 +1856,7 @@ keyp(u) ==
 
 absym x ==
   (NUMBERP x) and (MINUSP x) => -x
-  ^(atom x) and (keyp(x) = '_-) => CADR x
+  not (atom x) and (keyp(x) = '_-) => CADR x
   x
 
 agg(n,u) ==
@@ -1924,7 +1924,7 @@ appargs1(u,x,y,d,s) ==
   true => appargs(rest u, 1 + temp, y, temparg2)
 
 apprpar(x, y, y1, y2, d) ==
-  (^(_*TALLPAR) or (y2 - y1 < 2)) => APP('")", x, y, d)
+  (null (_*TALLPAR) or (y2 - y1 < 2)) => APP('")", x, y, d)
   true => APP('")", x, y2, apprpar1(x, y, y1, y2 - 1, d))
 
 apprpar1(x, y, y1, y2, d) ==
@@ -1932,7 +1932,7 @@ apprpar1(x, y, y1, y2, d) ==
   true => APP('")", x, y2, apprpar1(x, y, y1, y2 - 1, d))
 
 applpar(x, y, y1, y2, d) ==
-  (^(_*TALLPAR) or (y2 - y1 < 2)) => APP('"(", x, y, d)
+  (null (_*TALLPAR) or (y2 - y1 < 2)) => APP('"(", x, y, d)
   true => APP('"(", x, y2, applpar1(x, y, y1, y2 - 1, d))
 
 applpar1(x, y, y1, y2, d) ==
@@ -1964,7 +1964,7 @@ appext(u,x,y,d) ==
   temp := 1 + WIDTH agg(2,u) +  WIDTH agg(3,u)
   n := MAX(WIDTH CADR u, WIDTH agg(4,u), temp)
   if EQCAR(first(z := agg(5,u)), 'EXT) and
-   (n=3 or (n > 3 and ^(atom z)) ) then
+   (n=3 or (n > 3 and not (atom z)) ) then
      n := 1 + n
   d := APP(z, x + n, y, d)
 
@@ -1974,7 +1974,7 @@ apphor(x1,x2,y,d,char) ==
 
 syminusp x ==
   NUMBERP x => MINUSP x
-  ^(atom x) and EQ(keyp x,'_-)
+  not (atom x) and EQ(keyp x,'_-)
 
 appsum(u, x, y, d) ==
   null u => d
@@ -2097,7 +2097,7 @@ longext(u, i, n) ==
   y := first x
   u := remWidth(REVERSEWOC(CONS('" ", rest x)))
   charybdis(u, i, n)
-  if ^$collectOutput then TERPRI $algebraOutputStream
+  if not $collectOutput then TERPRI $algebraOutputStream
   charybdis(CONS('ELSE, LIST y), i, n)
   '" "
 
@@ -2386,7 +2386,7 @@ sumWidth u ==
   WIDTH u.1 + sumWidthA CDDR u
 
 sumWidthA u ==
-  ^u => 0
+  null u => 0
   ( member(keyp absym first u,'(_+ _-)) => 5; true => 3) +
     WIDTH absym first u +
       sumWidthA rest u
@@ -2554,7 +2554,7 @@ binomialSuper u == height u.1 + 1
 binomialWidth u == 2 + MAX(WIDTH u.1, WIDTH u.2)
 
 mathPrint u ==
-  if ^$collectOutput then TERPRI $algebraOutputStream
+  if not $collectOutput then TERPRI $algebraOutputStream
   (u := STRINGP mathPrint1(mathPrintTran u, nil) =>
    PSTRING u; nil)
 
@@ -2566,9 +2566,9 @@ mathPrintTran u ==
     u
 
 mathPrint1(x,fg) ==
-  if fg and ^$collectOutput then TERPRI $algebraOutputStream
+  if fg and not $collectOutput then TERPRI $algebraOutputStream
   maPrin x
-  if fg and ^$collectOutput then TERPRI $algebraOutputStream
+  if fg and not $collectOutput then TERPRI $algebraOutputStream
 
 maPrin u ==
   null u => nil
@@ -2581,11 +2581,11 @@ maPrin u ==
   sayKeyedMsg("S2IX0009",NIL)
   u is ['EQUATNUM,num,form] or u is [['EQUATNUM,:.],num,form] =>
     charybdis(['EQUATNUM,num], $MARGIN, $LINELENGTH)
-    if ^$collectOutput then
+    if not $collectOutput then
       TERPRI $algebraOutputStream
       PRETTYPRINT(form,$algebraOutputStream)
     form
-  if ^$collectOutput then PRETTYPRINT(u,$algebraOutputStream)
+  if not $collectOutput then PRETTYPRINT(u,$algebraOutputStream)
   nil
 
 

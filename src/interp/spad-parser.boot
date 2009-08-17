@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ parseSpadFile sourceFile ==
 
   -- gather parse trees for all toplevel expressions in sourceFile.
   asts := []                                   
-  while ^(_*EOF_* or FILE_-CLOSED) repeat
+  while not (_*EOF_* or FILE_-CLOSED) repeat
     BOOT_-LINE_-STACK : local := PREPARSE IN_-STREAM
     LINE : local := CDAR BOOT_-LINE_-STACK
     PARSE_-NewExpr()

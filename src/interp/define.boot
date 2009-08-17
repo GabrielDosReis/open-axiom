@@ -1102,7 +1102,7 @@ checkAndDeclare(argl,form,sig,e) ==
   for a in argl for m in rest sig repeat
     isQuasiquote m => nil	  -- we just built m from a.
     m1:= getArgumentMode(a,e) =>
-      ^modeEqual(m1,m) =>
+      not modeEqual(m1,m) =>
         stack:= ["   ",:bright a,'"must have type ",m,
           '" not ",m1,'%l,:stack]
     e:= put(a,'mode,m,e)
@@ -1303,7 +1303,7 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
  
 constructMacro: %Form -> %Form
 constructMacro (form is [nam,[lam,vl,body]]) ==
-  ^(and/[atom x for x in vl]) =>
+  not (and/[atom x for x in vl]) =>
     stackSemanticError(["illegal parameters for macro: ",vl],nil)
   ["XLAM",vl':= [x for x in vl | IDENTP x],body]
  

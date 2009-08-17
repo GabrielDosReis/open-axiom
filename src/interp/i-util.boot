@@ -129,7 +129,7 @@ Undef(:u) ==
   u':= LAST u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
-  ^EQ(CAR ELT(domain',slot), function Undef) =>
+  not EQ(CAR ELT(domain',slot), function Undef) =>
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then

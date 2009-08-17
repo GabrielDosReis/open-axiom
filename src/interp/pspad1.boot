@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -183,7 +183,7 @@ consBuffer item ==
       consBuffer item
     nil
   $lineFragmentBuffer:=
-    ^item or IDENTP item => [PNAME item,:$lineFragmentBuffer]
+    null item or IDENTP item => [PNAME item,:$lineFragmentBuffer]
     NUMBERP item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
     STRINGP item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
     sayBrightly ['"Unexpected line buffer item: ", STRINGIMAGE item]
@@ -498,7 +498,7 @@ formatPrefix(op,arg,lbp,rbp,:options) ==
 formatPrefixOp(op,:options) ==
   qualification := IFCAR options
   op=char '" " => format " ="
-  qualification or GETL(op,"Nud") and ^MEMQ(op,$spadTightList) => 
+  qualification or GETL(op,"Nud") and not MEMQ(op,$spadTightList) => 
     formatQual(op,qualification) and format " "
   format op
 
@@ -560,7 +560,7 @@ formatOpBindingPower(op,key,leftOrRight) ==
   MEMQ(op,'(_:)) and key = 'Led =>
     leftOrRight = 'left => 195
     196
-  MEMQ(op,'(_^_= _>_=)) => 400
+  MEMQ(op,'(_~_= _>_=)) => 400
   op = "not" and key = "Nud" =>
     leftOrRight = 'left => 1000
     1001
@@ -572,7 +572,7 @@ formatOpBindingPower(op,key,leftOrRight) ==
 formatInfixOp(op,:options) ==
   qualification := IFCAR options
   qualification or 
-    (op ~= '_$) and ^MEMQ(op,$spadTightList) => format " " and formatQual(op,qualification) and format " "
+    (op ~= '_$) and not MEMQ(op,$spadTightList) => format " " and formatQual(op,qualification) and format " "
   format op
  
 --======================================================================

@@ -1,5 +1,33 @@
 2009-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: Retire "^" as negation operator.
+	* interp/br-search.boot: Use "not" instead of "^".
+	* interp/br-util.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/g-error.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/spad-parser.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
+2009-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (deltaContour): Fix thinko.
 
 2009-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
