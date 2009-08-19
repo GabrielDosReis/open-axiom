@@ -1,3 +1,9 @@
+2009-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: Consistently prefix AST names by "%".
+	* boot/translator.boot: Adjust.
+	* boot/parser.boot: Likewise.
+
 2009-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: Retire "^" as negation operator.

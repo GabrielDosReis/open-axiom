@@ -29,104 +29,108 @@
 
 (DEFUN |%Name| #0=(|bfVar#1|) (CONS '|%Name| (LIST . #0#)))
 
-(DEFUN |Command| #0=(|bfVar#2|) (CONS '|Command| (LIST . #0#)))
+(DEFUN |%Command| #0=(|bfVar#2|) (CONS '|%Command| (LIST . #0#)))
 
 (DEFUN |%Module| #0=(|bfVar#3| |bfVar#4|)
   (CONS '|%Module| (LIST . #0#)))
 
-(DEFUN |Import| #0=(|bfVar#5|) (CONS '|Import| (LIST . #0#)))
+(DEFUN |%Import| #0=(|bfVar#5|) (CONS '|%Import| (LIST . #0#)))
 
-(DEFUN |ImportSignature| #0=(|bfVar#6| |bfVar#7|)
-  (CONS '|ImportSignature| (LIST . #0#)))
+(DEFUN |%ImportSignature| #0=(|bfVar#6| |bfVar#7|)
+  (CONS '|%ImportSignature| (LIST . #0#)))
 
 (DEFUN |%TypeAlias| #0=(|bfVar#8| |bfVar#9|)
   (CONS '|%TypeAlias| (LIST . #0#)))
 
-(DEFUN |Signature| #0=(|bfVar#10| |bfVar#11|)
-  (CONS '|Signature| (LIST . #0#)))
+(DEFUN |%Signature| #0=(|bfVar#10| |bfVar#11|)
+  (CONS '|%Signature| (LIST . #0#)))
 
-(DEFUN |Mapping| #0=(|bfVar#12| |bfVar#13|)
-  (CONS '|Mapping| (LIST . #0#)))
+(DEFUN |%Mapping| #0=(|bfVar#12| |bfVar#13|)
+  (CONS '|%Mapping| (LIST . #0#)))
 
-(DEFUN |SuffixDot| #0=(|bfVar#14|) (CONS '|SuffixDot| (LIST . #0#)))
+(DEFUN |%SuffixDot| #0=(|bfVar#14|) (CONS '|%SuffixDot| (LIST . #0#)))
 
-(DEFUN |Quote| #0=(|bfVar#15|) (CONS '|Quote| (LIST . #0#)))
+(DEFUN |%Quote| #0=(|bfVar#15|) (CONS '|%Quote| (LIST . #0#)))
 
-(DEFUN |EqualName| #0=(|bfVar#16|) (CONS '|EqualName| (LIST . #0#)))
+(DEFUN |%EqualName| #0=(|bfVar#16|) (CONS '|%EqualName| (LIST . #0#)))
 
-(DEFUN |Colon| #0=(|bfVar#17|) (CONS '|Colon| (LIST . #0#)))
+(DEFUN |%Colon| #0=(|bfVar#17|) (CONS '|%Colon| (LIST . #0#)))
 
-(DEFUN |QualifiedName| #0=(|bfVar#18| |bfVar#19|)
-  (CONS '|QualifiedName| (LIST . #0#)))
+(DEFUN |%QualifiedName| #0=(|bfVar#18| |bfVar#19|)
+  (CONS '|%QualifiedName| (LIST . #0#)))
 
 (DEFUN |%DefaultValue| #0=(|bfVar#20| |bfVar#21|)
   (CONS '|%DefaultValue| (LIST . #0#)))
 
-(DEFUN |Bracket| #0=(|bfVar#22|) (CONS '|Bracket| (LIST . #0#)))
+(DEFUN |%Bracket| #0=(|bfVar#22|) (CONS '|%Bracket| (LIST . #0#)))
 
-(DEFUN |UnboundedSegment| #0=(|bfVar#23|)
-  (CONS '|UnboundedSegment| (LIST . #0#)))
+(DEFUN |%UnboundedSegment| #0=(|bfVar#23|)
+  (CONS '|%UnboundedSegment| (LIST . #0#)))
 
-(DEFUN |BoundedSgement| #0=(|bfVar#24| |bfVar#25|)
-  (CONS '|BoundedSgement| (LIST . #0#)))
+(DEFUN |%BoundedSgement| #0=(|bfVar#24| |bfVar#25|)
+  (CONS '|%BoundedSgement| (LIST . #0#)))
 
-(DEFUN |Tuple| #0=(|bfVar#26|) (CONS '|Tuple| (LIST . #0#)))
+(DEFUN |%Tuple| #0=(|bfVar#26|) (CONS '|%Tuple| (LIST . #0#)))
 
-(DEFUN |ColonAppend| #0=(|bfVar#27| |bfVar#28|)
-  (CONS '|ColonAppend| (LIST . #0#)))
+(DEFUN |%ColonAppend| #0=(|bfVar#27| |bfVar#28|)
+  (CONS '|%ColonAppend| (LIST . #0#)))
 
-(DEFUN |Is| #0=(|bfVar#29| |bfVar#30|) (CONS '|Is| (LIST . #0#)))
+(DEFUN |%Is| #0=(|bfVar#29| |bfVar#30|) (CONS '|%Is| (LIST . #0#)))
 
-(DEFUN |Isnt| #0=(|bfVar#31| |bfVar#32|) (CONS '|Isnt| (LIST . #0#)))
+(DEFUN |%Isnt| #0=(|bfVar#31| |bfVar#32|)
+  (CONS '|%Isnt| (LIST . #0#)))
 
-(DEFUN |Reduce| #0=(|bfVar#33| |bfVar#34|)
-  (CONS '|Reduce| (LIST . #0#)))
+(DEFUN |%Reduce| #0=(|bfVar#33| |bfVar#34|)
+  (CONS '|%Reduce| (LIST . #0#)))
 
-(DEFUN |PrefixExpr| #0=(|bfVar#35| |bfVar#36|)
-  (CONS '|PrefixExpr| (LIST . #0#)))
+(DEFUN |%PrefixExpr| #0=(|bfVar#35| |bfVar#36|)
+  (CONS '|%PrefixExpr| (LIST . #0#)))
 
-(DEFUN |Call| #0=(|bfVar#37| |bfVar#38|) (CONS '|Call| (LIST . #0#)))
+(DEFUN |%Call| #0=(|bfVar#37| |bfVar#38|)
+  (CONS '|%Call| (LIST . #0#)))
 
-(DEFUN |InfixExpr| #0=(|bfVar#39| |bfVar#40| |bfVar#41|)
-  (CONS '|InfixExpr| (LIST . #0#)))
+(DEFUN |%InfixExpr| #0=(|bfVar#39| |bfVar#40| |bfVar#41|)
+  (CONS '|%InfixExpr| (LIST . #0#)))
 
-(DEFUN |ConstantDefinition| #0=(|bfVar#42| |bfVar#43|)
-  (CONS '|ConstantDefinition| (LIST . #0#)))
+(DEFUN |%ConstantDefinition| #0=(|bfVar#42| |bfVar#43|)
+  (CONS '|%ConstantDefinition| (LIST . #0#)))
 
-(DEFUN |Definition| #0=(|bfVar#44| |bfVar#45| |bfVar#46| |bfVar#47|)
-  (CONS '|Definition| (LIST . #0#)))
+(DEFUN |%Definition| #0=(|bfVar#44| |bfVar#45| |bfVar#46| |bfVar#47|)
+  (CONS '|%Definition| (LIST . #0#)))
 
-(DEFUN |Macro| #0=(|bfVar#48| |bfVar#49| |bfVar#50|)
-  (CONS '|Macro| (LIST . #0#)))
+(DEFUN |%Macro| #0=(|bfVar#48| |bfVar#49| |bfVar#50|)
+  (CONS '|%Macro| (LIST . #0#)))
 
-(DEFUN |SuchThat| #0=(|bfVar#51|) (CONS '|SuchThat| (LIST . #0#)))
+(DEFUN |%SuchThat| #0=(|bfVar#51|) (CONS '|%SuchThat| (LIST . #0#)))
 
 (DEFUN |%Assignment| #0=(|bfVar#52| |bfVar#53|)
   (CONS '|%Assignment| (LIST . #0#)))
 
-(DEFUN |While| #0=(|bfVar#54|) (CONS '|While| (LIST . #0#)))
+(DEFUN |%While| #0=(|bfVar#54|) (CONS '|%While| (LIST . #0#)))
 
-(DEFUN |Until| #0=(|bfVar#55|) (CONS '|Until| (LIST . #0#)))
+(DEFUN |%Until| #0=(|bfVar#55|) (CONS '|%Until| (LIST . #0#)))
 
-(DEFUN |For| #0=(|bfVar#56| |bfVar#57| |bfVar#58|)
-  (CONS '|For| (LIST . #0#)))
+(DEFUN |%For| #0=(|bfVar#56| |bfVar#57| |bfVar#58|)
+  (CONS '|%For| (LIST . #0#)))
 
-(DEFUN |Exit| #0=(|bfVar#59| |bfVar#60|) (CONS '|Exit| (LIST . #0#)))
+(DEFUN |%Implies| #0=(|bfVar#59| |bfVar#60|)
+  (CONS '|%Implies| (LIST . #0#)))
 
-(DEFUN |Iterators| #0=(|bfVar#61|) (CONS '|Iterators| (LIST . #0#)))
+(DEFUN |%Iterators| #0=(|bfVar#61|) (CONS '|%Iterators| (LIST . #0#)))
 
-(DEFUN |Cross| #0=(|bfVar#62|) (CONS '|Cross| (LIST . #0#)))
+(DEFUN |%Cross| #0=(|bfVar#62|) (CONS '|%Cross| (LIST . #0#)))
 
-(DEFUN |Repeat| #0=(|bfVar#63| |bfVar#64|)
-  (CONS '|Repeat| (LIST . #0#)))
+(DEFUN |%Repeat| #0=(|bfVar#63| |bfVar#64|)
+  (CONS '|%Repeat| (LIST . #0#)))
 
-(DEFUN |Pile| #0=(|bfVar#65|) (CONS '|Pile| (LIST . #0#)))
+(DEFUN |%Pile| #0=(|bfVar#65|) (CONS '|%Pile| (LIST . #0#)))
 
-(DEFUN |Append| #0=(|bfVar#66|) (CONS '|Append| (LIST . #0#)))
+(DEFUN |%Append| #0=(|bfVar#66|) (CONS '|%Append| (LIST . #0#)))
 
-(DEFUN |Case| #0=(|bfVar#67| |bfVar#68|) (CONS '|Case| (LIST . #0#)))
+(DEFUN |%Case| #0=(|bfVar#67| |bfVar#68|)
+  (CONS '|%Case| (LIST . #0#)))
 
-(DEFUN |Return| #0=(|bfVar#69|) (CONS '|Return| (LIST . #0#)))
+(DEFUN |%Return| #0=(|bfVar#69|) (CONS '|%Return| (LIST . #0#)))
 
 (DEFUN |%Throw| #0=(|bfVar#70|) (CONS '|%Throw| (LIST . #0#)))
 
@@ -134,11 +138,11 @@
 
 (DEFUN |%Try| #0=(|bfVar#72| |bfVar#73|) (CONS '|%Try| (LIST . #0#)))
 
-(DEFUN |Where| #0=(|bfVar#74| |bfVar#75|)
-  (CONS '|Where| (LIST . #0#)))
+(DEFUN |%Where| #0=(|bfVar#74| |bfVar#75|)
+  (CONS '|%Where| (LIST . #0#)))
 
-(DEFUN |Structure| #0=(|bfVar#76| |bfVar#77|)
-  (CONS '|Structure| (LIST . #0#)))
+(DEFUN |%Structure| #0=(|bfVar#76| |bfVar#77|)
+  (CONS '|%Structure| (LIST . #0#)))
 
 (DEFPARAMETER |$inDefIS| NIL)
 
@@ -241,7 +245,7 @@
                               (EQ (CDR |ISTMP#2|) NIL))))))
            (SETQ |$constantIdentifiers|
                  (CONS |id| |$constantIdentifiers|))))
-        (|ConstantDefinition| |lhs| |rhs|)))))
+        (|%ConstantDefinition| |lhs| |rhs|)))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing|) |%List|)
                 |bfMDefinition|))
@@ -259,7 +263,7 @@
         (SETQ |bfVar#78| |x|)
         (SETQ |bfVar#79| (CDR |bfVar#78|))
         (CASE (CAR |bfVar#78|)
-          (|ConstantDefinition| |x|)
+          (|%ConstantDefinition| |x|)
           (T (COND
                ((AND (CONSP |x|)
                      (PROGN
@@ -1760,7 +1764,7 @@
 (DEFUN |bfTagged| (|a| |b|)
   (DECLARE (SPECIAL |$typings| |$op|))
   (COND
-    ((NULL |$op|) (|Signature| |a| |b|))
+    ((NULL |$op|) (|%Signature| |a| |b|))
     ((IDENTP |a|)
      (COND
        ((EQ |b| 'FLUID) (|bfLET| (|compFluid| |a|) NIL))
@@ -2997,7 +3001,7 @@
   (PROG (|s| |t| |m| |ISTMP#2| |op'| |ISTMP#1|)
     (RETURN
       (COND
-        ((NOT (AND (CONSP |sig|) (EQ (CAR |sig|) '|Signature|)
+        ((NOT (AND (CONSP |sig|) (EQ (CAR |sig|) '|%Signature|)
                    (PROGN
                      (SETQ |ISTMP#1| (CDR |sig|))
                      (AND (CONSP |ISTMP#1|)
@@ -3010,7 +3014,7 @@
                                    (SETQ |m| (CAR |ISTMP#2|))
                                    #0='T)))))))
          (|coreError| "invalid signature"))
-        ((NOT (AND (CONSP |m|) (EQ (CAR |m|) '|Mapping|)
+        ((NOT (AND (CONSP |m|) (EQ (CAR |m|) '|%Mapping|)
                    (PROGN
                      (SETQ |ISTMP#1| (CDR |m|))
                      (AND (CONSP |ISTMP#1|)
