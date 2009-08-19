@@ -380,7 +380,7 @@ shoeOutParse stream ==
  
 ++ Generate a global signature declaration for symbol `n'.
 genDeclaration(n,t) ==
-  t is ["Mapping",valType,argTypes] =>
+  t is ["%Mapping",valType,argTypes] =>
     if bfTupleP argTypes then argTypes := rest argTypes
     if not null argTypes and SYMBOLP argTypes 
     then argTypes := [argTypes]
@@ -391,7 +391,7 @@ genDeclaration(n,t) ==
 ++ Translate the signature declaration `d' to its Lisp equivalent.
 translateSignatureDeclaration d ==
   case d of 
-    Signature(n,t) => genDeclaration(n,t)
+    %Signature(n,t) => genDeclaration(n,t)
     otherwise => coreError '"signature expected"  
 
 ++ A non declarative expression `expr' appears at toplevel and its
@@ -417,7 +417,7 @@ translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.
   b is ["TUPLE",:xs] => [maybeExportDecl(x,export?) for x in xs]
   case b of
-    Signature(op,t) =>
+    %Signature(op,t) =>
       [maybeExportDecl(genDeclaration(op,t),export?)]
 
     %Module(m,ds) =>
@@ -426,18 +426,18 @@ translateToplevel(b,export?) ==
       [["PROVIDE", STRING m],
         :[first translateToplevel(d,true) for d in ds]]
 
-    Import(m) => 
+    %Import(m) => 
       if getOptionValue "import" ~= '"skip" then
         bootImport STRING m
       [["IMPORT-MODULE", STRING m]]
 
-    ImportSignature(x, sig) =>
+    %ImportSignature(x, sig) =>
       genImportDeclaration(x, sig)
 
     %TypeAlias(lhs, rhs) => 
       [maybeExportDecl(genTypeAlias(lhs,rhs),export?)]
 
-    ConstantDefinition(lhs,rhs) =>
+    %ConstantDefinition(lhs,rhs) =>
       sig := nil
       if lhs is ["%Signature",n,t] then
         sig := maybeExportDecl(genDeclaration(n,t),export?)
@@ -713,7 +713,7 @@ PSTTOMC string==
   $GenVarCounter := 0
   shoePCompileTrees shoeTransformString string
  
-BOOTLOOP ()==
+BOOTLOOP() ==
   a:=READ_-LINE()
   #a=0=>
        WRITE_-LINE '"Boot Loop; to exit type ] "
@@ -727,7 +727,7 @@ BOOTLOOP ()==
   PSTTOMC [a]
   BOOTLOOP()
  
-BOOTPO ()==
+BOOTPO() ==
   a:=READ_-LINE()
   #a=0=>
        WRITE_-LINE '"Boot Loop; to exit type ] "

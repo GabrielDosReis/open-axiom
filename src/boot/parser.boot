@@ -469,8 +469,8 @@ bpImport() ==
       (bpSignature() or bpTrap()) and 
         (bpEqKey "FOR" or bpTrap()) and
            (bpName() or bpTrap()) and
-              bpPush ImportSignature(bpPop1(), bpPop1())
-    bpPush Import bpPop1()
+              bpPush %ImportSignature(bpPop1(), bpPop1())
+    bpPush %Import bpPop1()
   false
 
 -- Parse a type alias defnition:
@@ -486,7 +486,7 @@ bpTypeAliasDefition() ==
 ++    Name COLON Mapping
 bpSignature() ==
   bpName() and bpEqKey "COLON" and bpMapping()
-    and bpPush Signature(bpPop2(), bpPop1())
+    and bpPush %Signature(bpPop2(), bpPop1())
 
 ++ SimpleMapping:
 ++   Application
@@ -494,7 +494,7 @@ bpSignature() ==
 bpSimpleMapping() ==
   bpApplication() =>
     bpEqKey "ARROW" and (bpApplication() or bpTrap()) and
-      bpPush Mapping(bpPop1(), bfUntuple bpPop1())
+      bpPush %Mapping(bpPop1(), bfUntuple bpPop1())
     true
   false
 
@@ -513,7 +513,7 @@ bpArgtypeList() ==
 bpMapping() ==
   bpParenthesized function bpArgtypeList and 
      bpEqKey "ARROW" and bpApplication() and 
-       bpPush Mapping(bpPop1(), bfUntuple bpPop1())
+       bpPush %Mapping(bpPop1(), bfUntuple bpPop1())
          or bpSimpleMapping()
 
 bpCancel()==
@@ -610,7 +610,7 @@ bpApplication()==
 bpTyping() ==
   bpApplication() and
     (bpEqKey "ARROW" and (bpApplication() or bpTrap()) and
-      bpPush Mapping(bpPop1(), bfUntuple bpPop1()) or true) or bpMapping()
+      bpPush %Mapping(bpPop1(), bfUntuple bpPop1()) or true) or bpMapping()
 
 ++ Tagged:
 ++   Name : Typing

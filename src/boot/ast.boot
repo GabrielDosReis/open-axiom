@@ -83,51 +83,51 @@ structure %Name ==
   %Name(%Symbol)
 
 structure %Ast ==
-  Command(%String)                      -- includer command
+  %Command(%String)                     -- includer command
   %Module(%Name,%List)                  -- module declaration
-  Import(%String)                       -- import module
-  ImportSignature(Name, Signature)      -- import function declaration
+  %Import(%String)                      -- import module
+  %ImportSignature(%Name,%Signature)    -- import function declaration
   %TypeAlias(%Head, %List)              -- type alias definition
-  Signature(Name, Mapping)              -- op: S -> T
-  Mapping(Ast, %List)                   -- (S1, S2) -> T
-  SuffixDot(Ast)                        -- x . 
-  Quote(Ast)                            -- 'x
-  EqualName(Name)                       -- =x        -- patterns
-  Colon(Name)                           -- :x
-  QualifiedName(Name, Name)             -- m::x
+  %Signature(%Name,%Mapping)            -- op: S -> T
+  %Mapping(%Ast, %List)                 -- (S1, S2) -> T
+  %SuffixDot(%Ast)                      -- x . 
+  %Quote(%Ast)                          -- 'x
+  %EqualName(%Name)                     -- =x        -- patterns
+  %Colon(%Name)                         -- :x
+  %QualifiedName(%Name,%Name)           -- m::x
   %DefaultValue(%Name,%Ast)             -- opt. value for function param.
-  Bracket(Ast)                          -- [x, y]
-  UnboundedSegment(Ast)                 -- 3..
-  BoundedSgement(Ast, Ast)              -- 2..4
-  Tuple(List)                           -- comma-separated expression sequence
-  ColonAppend(Ast, Ast)                 -- [:y] or [x, :y]
-  Is(Ast, Ast)                          -- e is p    -- patterns
-  Isnt(Ast, Ast)                        -- e isnt p  -- patterns
-  Reduce(Ast, Ast)                      -- +/[...]
-  PrefixExpr(Name, Ast)                 -- #v
-  Call(Ast,%Sequence)                   -- f(x, y , z)
-  InfixExpr(Name, Ast, Ast)             -- x + y
-  ConstantDefinition(Name, Ast)         -- x == y
-  Definition(Name, List, Ast, Ast)      -- f x == y
-  Macro(Name, List, Ast)                -- m x ==> y
-  SuchThat(Ast)                         -- | p
-  %Assignment(Ast, Ast)                -- x := y
-  While(Ast)                            -- while p           -- iterator
-  Until(Ast)                            -- until p           -- iterator
-  For(Ast, Ast, Ast)                    -- for x in e by k   -- iterator
-  Exit(Ast, Ast)                        -- p => x
-  Iterators(List)                       -- list of iterators
-  Cross(List)                           -- iterator cross product
-  Repeat(%Sequence,Ast)                 -- while p repeat s
-  Pile(%Sequence)                       -- pile of expression sequence
-  Append(%Sequence)                     -- concatenate lists
-  Case(Ast,%Sequence)                   -- case x of ...
-  Return(Ast)                           -- return x
-  %Throw(Ast)                           -- throw OutOfRange 3
-  %Catch(Ast)                           -- catch OutOfRange
-  %Try(Ast,%Sequence)                   -- try x / y catch DivisionByZero
-  Where(Ast,%Sequence)                  -- e where f x == y
-  Structure(Ast,%Sequence)              -- structure Foo == ...
+  %Bracket(%Ast)                        -- [x, y]
+  %UnboundedSegment(%Ast)               -- 3..
+  %BoundedSgement(%Ast,%Ast)            -- 2..4
+  %Tuple(%List)                         -- comma-separated expression sequence
+  %ColonAppend(%Ast,%Ast)               -- [:y] or [x, :y]
+  %Is(%Ast,%Ast)                        -- e is p    -- patterns
+  %Isnt(%Ast,%Ast)                      -- e isnt p  -- patterns
+  %Reduce(%Ast,%Ast)                    -- +/[...]
+  %PrefixExpr(%Name,%Ast)               -- #v
+  %Call(%Ast,%Sequence)                 -- f(x, y , z)
+  %InfixExpr(%Name,%Ast,%Ast)           -- x + y
+  %ConstantDefinition(%Name,%Ast)       -- x == y
+  %Definition(%Name,%List,%Ast,%Ast)    -- f x == y
+  %Macro(%Name,%List,%Ast)              -- m x ==> y
+  %SuchThat(%Ast)                       -- | p
+  %Assignment(%Ast,%Ast)                -- x := y
+  %While(%Ast)                          -- while p           -- iterator
+  %Until(%Ast)                          -- until p           -- iterator
+  %For(%Ast,%Ast,%Ast)                  -- for x in e by k   -- iterator
+  %Implies(%Ast,%Ast)                   -- p => x
+  %Iterators(%List)                     -- list of iterators
+  %Cross(%List)                         -- iterator cross product
+  %Repeat(%Sequence,%Ast)               -- while p repeat s
+  %Pile(%Sequence)                      -- pile of expression sequence
+  %Append(%Sequence)                    -- concatenate lists
+  %Case(%Ast,%Sequence)                 -- case x of ...
+  %Return(%Ast)                         -- return x
+  %Throw(%Ast)                          -- throw OutOfRange 3
+  %Catch(%Ast)                          -- catch OutOfRange
+  %Try(%Ast,%Sequence)                  -- try x / y catch DivisionByZero
+  %Where(%Ast,%Sequence)                -- e where f x == y
+  %Structure(%Ast,%Sequence)            -- structure Foo == ...
 
 -- TRUE if we are currently building the syntax tree for an 'is' 
 -- expression.
@@ -208,7 +208,7 @@ bfSimpleDefinition(lhs,rhs) ==
     $constantIdentifiers := [lhs,:$constantIdentifiers]
   else if lhs is ["%Signature",id,.] then
     $constantIdentifiers := [id,:$constantIdentifiers]
-  ConstantDefinition(lhs,rhs)
+  %ConstantDefinition(lhs,rhs)
  
 
 
@@ -219,7 +219,7 @@ bfMDefinition(bflhsitems, bfrhs,body) ==
 bfCompDef: %Thing -> %List 
 bfCompDef x ==
   case x of
-    ConstantDefinition(.,.) => x
+    %ConstantDefinition(.,.) => x
     otherwise =>
       x is [def, op, args, body] =>
         bfDef(def,op,args,body)
@@ -1013,7 +1013,7 @@ shoeCompTran1 x==
     shoeCompTran1 rest x
  
 bfTagged(a,b)==
-  null $op => Signature(a,b)        -- surely a toplevel decl
+  null $op => %Signature(a,b)        -- surely a toplevel decl
   IDENTP a =>
     EQ(b,"FLUID") =>  bfLET(compFluid a,NIL)
     EQ(b,"fluid") =>  bfLET(compFluid a,NIL)
@@ -1636,8 +1636,8 @@ genSBCLnativeTranslation(op,s,t,op') ==
 ++ foreign signature `sig'.  Here, `foreign' operationally means that
 ++ the entity is from the C language world. 
 genImportDeclaration(op, sig) ==
-  sig isnt ["Signature", op', m] => coreError '"invalid signature"
-  m isnt ["Mapping", t, s] => coreError '"invalid function type"
+  sig isnt ["%Signature", op', m] => coreError '"invalid signature"
+  m isnt ["%Mapping", t, s] => coreError '"invalid function type"
   if not null s and SYMBOLP s then s := [s]
 
   %hasFeature KEYWORD::GCL => genGCLnativeTranslation(op,s,t,op')
