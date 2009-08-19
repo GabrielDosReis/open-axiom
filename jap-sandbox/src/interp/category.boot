@@ -138,7 +138,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
   v.1 := sigList
   v.2 := attList
   v.3 := $Category
-  if PrincipalAncestor ^= nil then
+  if PrincipalAncestor ~= nil then
     for x in 6..#PrincipalAncestor-1 repeat 
       v.x := PrincipalAncestor.x
     v.4 := [first PrincipalAncestor.4,second PrincipalAncestor.4,OldLocals]
@@ -185,8 +185,8 @@ SigListUnion(extra,original) ==
         return nil -- this exits from the innermost for loop
       original:= delete(x,original)
       [xsig,xpred,:ximplem]:= x
---      if xsig ^= esig then   -- not quite strong enough
-      if CAR xsig ^= CAR esig or CADR xsig ^= CADR esig then
+--      if xsig ~= esig then   -- not quite strong enough
+      if CAR xsig ~= CAR esig or CADR xsig ~= CADR esig then
 -- the new version won't get confused by "constant"markers
          if ximplem is [["Subsumed",:.],:.] then
             original := [x,:original]
@@ -316,7 +316,7 @@ MachineLevelSubset(a,b) ==
   --true if a is a machine-level subset of b
   a=b => true
   b is ["Union",:blist] and member(a,blist) and
-    (and/[STRINGP x for x in blist | x^=a]) => true
+    (and/[STRINGP x for x in blist | x~=a]) => true
            --all other branches must be distinct objects
   not null isSubDomain(a,b)
              --we assume all subsets are true at the machine level

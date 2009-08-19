@@ -234,8 +234,8 @@ List(S:Type): Exports == Implementation where
  LISTMININDEX ==> 1       -- this is the minimum list index
 
  Exports ==> ListAggregate S with
-  nil             : ()     -> %
-    ++ nil() returns the empty list.
+  nil             : %
+    ++ \spad{nil} is the empty list.
   null            : %      -> Boolean
     ++ null(u) tests if list \spad{u} is the
     ++ empty list.
@@ -264,7 +264,7 @@ List(S:Type): Exports == Implementation where
 
  Implementation ==>
    IndexedList(S, LISTMININDEX) add
-      nil()                    == NIL$Lisp
+      nil                      == NIL$Lisp
       null l                   == NULL(l)$Lisp
       cons(s, l)               == CONS(s, l)$Lisp
       append(l:%, t:%)         == APPEND(l, t)$Lisp

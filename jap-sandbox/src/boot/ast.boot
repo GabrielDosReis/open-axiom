@@ -756,7 +756,7 @@ bfReName x==
     x
   $translatingOldBoot and not bfSameMeaning x =>
     oldName := bfGetOldBootName x
-    if newName ^= oldName then
+    if newName ~= oldName then
        warn [PNAME x, '" as `", PNAME newName, _
              '"_' differs from Old Boot `", PNAME oldName,_
              '"_' at ", diagnosticLocation $stok]
@@ -1192,7 +1192,7 @@ bfCI(g,x,y)==
     if null a
     then [first x,y]
     else
-       b:=[[i,bfCARCDR(j,g)] for i in a for j in 0.. | i ^= "DOT"]
+       b:=[[i,bfCARCDR(j,g)] for i in a for j in 0.. | i ~= "DOT"]
        null b => [first x,y]
        [first x,["LET",b,y]]
 
@@ -1419,7 +1419,7 @@ nativeArgumentType t ==
   -- Allow 'string'  for `pass-by-value'
   t = "string" => nativeType t
   -- anything else must use a modified reference type.
-  atom t or #t ^= 2 => 
+  atom t or #t ~= 2 => 
      coreError '"invalid argument type for a native function"
   [m,[c,t']] := t
   -- Require a modifier.
@@ -1469,7 +1469,7 @@ genGCLnativeTranslation(op,s,t,op') ==
     ccode := 
       "strconc"/[gclTypeInC t, '" ", cop, '"(",
 	 :[cparm(x,a) for x in tails s for a in tails cargs],
-	   '") { ", (t ^= "void" => '"return "; ""),
+	   '") { ", (t ~= "void" => '"return "; ""),
 	     SYMBOL_-NAME op', '"(",
 	       :[gclArgsInC(x,a) for x in tails s for a in tails cargs],
 		  '"); }" ]

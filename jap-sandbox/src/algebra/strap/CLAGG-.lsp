@@ -92,7 +92,7 @@
                   (PROGN
                     (LETT #1# (SPADCALL |x| |f|) |CLAGG-;any?;MAB;3|)
                     (COND
-                      (#3# (LETT #2# (COND (#2# 'T) ('T #1#))
+                      (#3# (LETT #2# (COND (#2# T) ('T #1#))
                                  |CLAGG-;any?;MAB;3|))
                       ('T
                        (PROGN
@@ -100,7 +100,7 @@
                          (LETT #3# 'T |CLAGG-;any?;MAB;3|)))))
                   (LETT #0# (CDR #0#) |CLAGG-;any?;MAB;3|) (GO G190)
                   G191 (EXIT NIL))
-             (COND (#3# #2#) ('T 'NIL))))))) 
+             (COND (#3# #2#) ('T NIL))))))) 
 
 (DEFUN |CLAGG-;every?;MAB;4| (|f| |c| $)
   (PROG (|x| #0=#:G1432 #1=#:G1413 #2=#:G1411 #3=#:G1412)
@@ -120,7 +120,7 @@
                   (PROGN
                     (LETT #1# (SPADCALL |x| |f|) |CLAGG-;every?;MAB;4|)
                     (COND
-                      (#3# (LETT #2# (COND (#2# #1#) ('T 'NIL))
+                      (#3# (LETT #2# (COND (#2# #1#) ('T NIL))
                                  |CLAGG-;every?;MAB;4|))
                       ('T
                        (PROGN
@@ -128,7 +128,7 @@
                          (LETT #3# 'T |CLAGG-;every?;MAB;4|)))))
                   (LETT #0# (CDR #0#) |CLAGG-;every?;MAB;4|) (GO G190)
                   G191 (EXIT NIL))
-             (COND (#3# #2#) ('T 'T))))))) 
+             (COND (#3# #2#) ('T T))))))) 
 
 (DEFUN |CLAGG-;find;MAU;5| (|f| |c| $)
   (SPADCALL |f| (SPADCALL |c| (|getShellEntry| $ 9))

@@ -119,9 +119,9 @@ upDollar t ==
   if f = $immediateDataSymbol then
     f := objValUnwrap coerceInteractive(getValue form,$OutputForm)
     if f = '(construct) then f := "nil"
-  atom form and (f ^= $immediateDataSymbol) =>
+  atom form and (f ~= $immediateDataSymbol) =>
     type := constantInDomain?([f],t) =>
-      type ^= true => findConstantInDomain(op,f,type,t)
+      type ~= true => findConstantInDomain(op,f,type,t)
       -- Ambiguous constant.  FIXME: try to narrow before giving up.
       throwKeyedMsg("S2IB0008h",[f,t])
     findUniqueOpInDomain(op,f,t)
@@ -130,7 +130,7 @@ upDollar t ==
 
   (ms := upDollarTuple(op, f, t, t2, rest form, nargs)) => ms
 
-  f ^= "construct" and null isOpInDomain(f,t,nargs) =>
+  f ~= "construct" and null isOpInDomain(f,t,nargs) =>
     throwKeyedMsg("S2IS0023",[f,t])
   if (sig := findCommonSigInDomain(f,t,nargs)) then
     for x in sig for y in form repeat
@@ -156,7 +156,7 @@ upDollarTuple(op, f, t, t2, args, nargs) ==
   newArg := [mkAtreeNode "tuple",:args]
   putTarget(newArg, tuple)
   ms := bottomUp newArg
-  first ms ^= tuple => NIL
+  first ms ~= tuple => NIL
   form := [first form, newArg]
   putAtree(first form,"dollar",t)
   ms := bottomUp form
@@ -185,7 +185,7 @@ upequation tree ==
   -- only handle this if there is a target of Boolean
   -- this should speed things up a bit
   tree isnt [op,lhs,rhs] => NIL
-  $Boolean ^= getTarget(op) => NIL
+  $Boolean ~= getTarget(op) => NIL
   null VECP op => NIL
   -- change equation into '='
   op.0 := "="
@@ -416,7 +416,7 @@ evalIsPredicate(value,pattern,mode) ==
   --if the pattern matches then the bindings given in the pattern
   --are made
   pattern:= removeConstruct pattern
-  ^((valueAlist:=isPatternMatch(value,pattern))='failed) =>
+  not ((valueAlist:=isPatternMatch(value,pattern))='failed) =>
     for [id,:value] in valueAlist repeat
       evalLETchangeValue(id,objNewWrap(value,get(id,'mode,$env)))
     true
@@ -513,7 +513,7 @@ up%LET t ==
   var in '(% %%) =>               -- for history
     throwKeyedMsg("S2IS0027",[var])
   (IDENTP var) and not (var in '(true false elt QUOTE)) =>
-    var ^= (var' := unabbrev(var)) =>  -- constructor abbreviation
+    var ~= (var' := unabbrev(var)) =>  -- constructor abbreviation
       throwKeyedMsg("S2IS0028",[var,var'])
     if get(var,'isInterpreterFunction,$e) then
       putHist(var,'isInterpreterFunction,false,$e)
@@ -623,7 +623,7 @@ evalLETchangeValue(name,value) ==
     val:= (localEnv and get(name,'value,$env)) or get(name,'value,$e)
     null val =>
       not ((localEnv and get(name,'mode,$env)) or get(name,'mode,$e))
-    objMode val ^= objMode(value)
+    objMode val ~= objMode(value)
   if clearCompilationsFlag then
     clearDependencies(name,true)
   if localEnv and isLocalVar(name)
@@ -636,8 +636,8 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
   lhs' := getUnnameIfCan lhs
   rhs' := getUnnameIfCan rhs
   lhs' = "tuple" =>
-    rhs' ^= "tuple" => throwKeyedMsg("S2IS0039",NIL)
-    #(lhs) ^= #(rhs) => throwKeyedMsg("S2IS0038",NIL)
+    rhs' ~= "tuple" => throwKeyedMsg("S2IS0039",NIL)
+    #(lhs) ~= #(rhs) => throwKeyedMsg("S2IS0038",NIL)
     -- generate a sequence of assignments, using local variables
     -- to first hold the assignments so that things like
     -- (t1,t2) := (t2,t1) will work.
@@ -682,12 +682,12 @@ altSeteltable args ==
     form := NIL
 
     -- first look for exact matches for any of the possibilities
-    while ^form for newOp in newOps  repeat
+    while null form for newOp in newOps  repeat
         if selectMms(newOp, args, NIL) then form := [newOp, :args]
 
     -- now try retracting arguments after the first
-    while ^form and ( "and"/[retractAtree(a) for a in rest args] ) repeat
-        while ^form for newOp in newOps  repeat
+    while null form and ( "and"/[retractAtree(a) for a in rest args] ) repeat
+        while null form for newOp in newOps  repeat
             if selectMms(newOp, args, NIL) then form := [newOp, :args]
 
     form
@@ -706,9 +706,9 @@ upSetelt(op,lhs,tree) ==
 
 upTableSetelt(op,lhs is [htOp,:args],rhs) ==
   -- called only for undeclared, uninitialized table setelts
-  ("*" = (PNAME getUnname htOp).0) and (1 ^= # args) =>
+  ("*" = (PNAME getUnname htOp).0) and (1 ~= # args) =>
     throwKeyedMsg("S2IS0040",NIL)
-  # args ^= 1 =>
+  # args ~= 1 =>
     throwKeyedMsg("S2IS0041",[[getUnname htOp,'".[",
       getUnname first args,
         ['",",getUnname arg for arg in rest args],'"]"]])
@@ -729,7 +729,7 @@ unVectorize body ==
   -- transforms from an atree back into a tree
   VECP body =>
     name := getUnname body
-    name ^= $immediateDataSymbol => name
+    name ~= $immediateDataSymbol => name
     objValUnwrap getValue body
   atom body => body
   body is [op,:argl] =>
@@ -1054,8 +1054,8 @@ evalSEQ(op,args,m) ==
     $genValue => getValue last
     bodyCode := nil
     for x in args repeat
-      (m1 := computedMode x) and (m1 ^= '$ThrowAwayMode) =>
-        (av := getArgValue(x,m1)) ^= voidValue() =>
+      (m1 := computedMode x) and (m1 ~= '$ThrowAwayMode) =>
+        (av := getArgValue(x,m1)) ~= voidValue() =>
           bodyCode := [av,:bodyCode]
     code:=
       bodyCode is [c] => c
@@ -1074,7 +1074,7 @@ uptuple t ==
   null l => upNullTuple(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and PAIRP(tar) and ^isPartialMode(tar) then
+  if tar and PAIRP(tar) and not isPartialMode(tar) then
     CAR(tar) in aggs =>
       ud := CADR tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)

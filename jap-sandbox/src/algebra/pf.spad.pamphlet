@@ -132,7 +132,6 @@ InnerPrimeField(p:PositiveInteger): Exports == Implementation where
       primitiveElt:=lookup(createPrimitiveElement())
       -- set initialization flag
       initelt? := false
-      void$Void
 
     initializeLog() ==
       if initelt? then initializeElt()
@@ -160,7 +159,6 @@ InnerPrimeField(p:PositiveInteger): Exports == Implementation where
       --    print("discrete logarithm table initialized"::OUT)
       -- set initialization flag
       initlog? := false
-      void$Void
 
     degree(x):PI == 1::PositiveInteger
     extensionDegree():PI == 1::PositiveInteger

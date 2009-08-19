@@ -179,7 +179,7 @@ posPointers msgList ==
     ftPosList := []
     for msg in msgList repeat
        pos := poCharPosn getMsgPos msg
-       if pos ^= IFCAR posList then
+       if pos ~= IFCAR posList then
          posList := [pos,:posList]
        if getMsgFTTag? msg = 'FROMTO then
          ftPosList := [poCharPosn getMsgPos2 msg,:ftPosList]
@@ -335,9 +335,9 @@ msgOutputter msg  ==
           st := flowSegmentedMsg(st,$LOGLENGTH,0)
        alreadyOpened := alreadyOpened? msg
         
-toScreen? msg ==  getMsgToWhere msg ^= 'fileOnly
+toScreen? msg ==  getMsgToWhere msg ~= 'fileOnly
 toFile? msg   ==
-     getMsgToWhere msg ^= 'screenOnly
+     getMsgToWhere msg ~= 'screenOnly
  
  
 alreadyOpened? msg ==
@@ -408,8 +408,8 @@ decideHowMuch(pos,oldPos) ==
       ((poPosImmediate? pos) and (poPosImmediate? oldPos))  => 'NONE
     (poNopos? pos) or (poPosImmediate? pos) => 'ORG
     (poNopos? oldPos) or (poPosImmediate? oldPos) => 'ALL
-    poFileName oldPos ^= poFileName pos => 'ALL
-    poLinePosn oldPos ^= poLinePosn pos => 'LINE
+    poFileName oldPos ~= poFileName pos => 'ALL
+    poLinePosn oldPos ~= poLinePosn pos => 'LINE
     'NONE
  
 listDecideHowMuch(pos,oldPos) ==

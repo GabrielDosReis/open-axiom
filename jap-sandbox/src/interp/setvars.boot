@@ -763,7 +763,7 @@ setFunctionsCache arg ==
     TERPRI()
     sayAllCacheCounts()
   n := first arg
-  (n ^= 'all) and ((not FIXP n) or (n < 0)) =>
+  (n ~= 'all) and ((not FIXP n) or (n < 0)) =>
     sayMessage ['"Your value of",:bright n,'"is invalid because ..."]
     describeSetFunctionsCache()
     terminateSystemCommand()
@@ -803,7 +803,7 @@ sayAllCacheCounts () ==
   $cacheAlist =>
     TERPRI()
 --    SAY '" However,"
-    for [x,:n] in $cacheAlist | n ^= $cacheCount repeat sayCacheCount(x,n)
+    for [x,:n] in $cacheAlist | n ~= $cacheCount repeat sayCacheCount(x,n)
 
 
 sayCacheCount(fn,n) ==
@@ -1697,7 +1697,7 @@ setStreamsCalculate arg ==
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetStreamsCalculate()
   n := first arg
-  (n ^= 'all) and ((not FIXP n) or (n < 0)) =>
+  (n ~= 'all) and ((not FIXP n) or (n < 0)) =>
     sayMessage ['"Your value of",:bright n,'"is invalid because ..."]
     describeSetStreamsCalculate()
     terminateSystemCommand()

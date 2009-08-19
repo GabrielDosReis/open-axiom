@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -298,8 +298,8 @@ orderPredTran(oldList,sig,skip) ==
   -----  (isDomain *1 ..)
   for pred in oldList repeat
     ((pred is [op,pvar,.] and MEMQ(op,'(isDomain ofCategory))
-       and pvar=first sig and ^(pvar in rest sig)) or
-        (^skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
+       and pvar=first sig and not (pvar in rest sig)) or
+        (not skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
           oldList:=delete(pred,oldList)
           lastPreds:=[pred,:lastPreds]
 --sayBrightlyNT "lastPreds="
@@ -406,7 +406,7 @@ interactiveModemapForm mm ==
   mm := replaceVars(COPY mm,$PatternVariableList,$FormalMapVariableList)
   [pattern:=[dc,:sig],pred] := mm
   pred := [fn x for x in pred] where fn x ==
-    x is [a,b,c] and a ^= 'isFreeFunction and atom c => [a,b,[c]]
+    x is [a,b,c] and a ~= 'isFreeFunction and atom c => [a,b,[c]]
     x
 --pp pred
   [mmpat, patternAlist, partial, patvars] :=
@@ -449,7 +449,7 @@ substVars(pred,patternAlist,patternVarList) ==
     pred := MSUBST(patVar,value,pred)
     patternAlist := nsubst(patVar,value,patternAlist)
     domainPredicates := MSUBST(patVar,value,domainPredicates)
-    if ^MEMQ(value,$FormalMapVariableList) then
+    if not MEMQ(value,$FormalMapVariableList) then
       domainPredicates := [["isDomain",patVar,value],:domainPredicates]
   everything := [pred,patternAlist,domainPredicates]
   for var in $FormalMapVariableList repeat
@@ -466,7 +466,7 @@ fixUpPredicate(predClause, domainPreds, partial, sig) ==
   [predicate, fn, :skip] := predClause
   if first predicate = "AND" then
     predicates := APPEND(domainPreds,rest predicate)
-  else if predicate ^= MKQ "T"
+  else if predicate ~= MKQ "T"
 --was->then predicates:= REVERSE [predicate, :domainPreds]
        then predicates:= [predicate, :domainPreds]
        else predicates := domainPreds or [predicate]
@@ -577,7 +577,7 @@ getSystemModemaps(op,nargs) ==
   mml:= getOperationFromDB op =>
     mms := NIL
     for (x := [[.,:sig],.]) in mml repeat
-      (NUMBERP nargs) and (nargs ^= #QCDR sig) => 'iterate
+      (NUMBERP nargs) and (nargs ~= #QCDR sig) => 'iterate
       $getUnexposedOperations or isFreeFunctionFromMm(x) or
         isExposedConstructor(getDomainFromMm(x)) => mms := [x,:mms]
       'iterate
@@ -718,7 +718,7 @@ getOplistForConstructorForm (form := [op,:argl]) ==
 
 getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
   alist:= nil
-  for [sig,:[slotNumber,pred,kind]] in signatureAlist | kind ^= 'Subsumed repeat
+  for [sig,:[slotNumber,pred,kind]] in signatureAlist | kind ~= 'Subsumed repeat
     alist:= insertAlist(SUBLIS(pairlis,[op,sig]),
                 SUBLIS(pairlis,[pred,[kind,nil,slotNumber]]),
                 alist)

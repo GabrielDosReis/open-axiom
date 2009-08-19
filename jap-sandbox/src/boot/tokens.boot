@@ -77,8 +77,9 @@ shoeKeyWords == [  _
             ['"<=","LE" ], _
             ['">=","GE" ], _
             ['"=", "SHOEEQ"], _
-            ['"^", "NOT"], _
-            ['"^=","SHOENE" ], _
+            ['"^", "NOTRETIRED"], _
+            ['"^=","SHOENERETIRED" ], _
+            ['"~=","SHOENE" ], _
             ['"..","SEG" ], _
             ['"#", "LENGTH"], _
             ['"=>","EXIT" ], _
@@ -194,7 +195,7 @@ for i in [      _
         ["GT"    ,">"], _
         ["LE"   ,"<="], _
         ["GE"   ,">="], _
-        ["SHOENE"  ,"^="] _
+        ["SHOENE"  ,"~="] _
                    ]_
        repeat SETF (GET(first i,'SHOEINF),second i)
  

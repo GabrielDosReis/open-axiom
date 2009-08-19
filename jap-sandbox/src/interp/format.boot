@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -619,7 +619,7 @@ formTuple2String argl ==
 
 isInternalFunctionName(op) ==
   (not IDENTP(op)) or (op = "*") or (op = "**") => NIL
-  (1 = SIZE(op':= PNAME op)) or (char("*") ^= op'.0) => NIL
+  (1 = SIZE(op':= PNAME op)) or (char("*") ~= op'.0) => NIL
   -- if there is a semicolon in the name then it is the name of
   -- a compiled spad function
   null (e := STRPOS('"_;",op',1,NIL)) => NIL
@@ -720,7 +720,7 @@ pred2English x ==
     concat(pred2English a,'" = ",form2String abbreviate b)
   x is [op,:.] and (translation := LASSOC(op,'(
     (_< . " < ") (_<_= . " <= ")
-      (_> . " > ") (_>_= . " >= ") (_=  . " = ") (_^_= . " _^_= ")))) =>
+      (_> . " > ") (_>_= . " >= ") (_=  . " = ") (_~_= . " _~_= ")))) =>
         concat(pred2English a,translation,pred2English b)
   x is ['ATTRIBUTE,form] =>
     concat("attribute: ",form2String form)
@@ -782,16 +782,17 @@ form2Fence form ==
 
 form2Fence1 x ==
   x is [op,:argl] =>
-    op = 'QUOTE => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
+    op = "QUOTE" => ['"(QUOTE ",:form2FenceQuote first argl,'")"]
     ['"(", FORMAT(NIL, '"|~a|", op),:"append"/[form2Fence1 y for y in argl],'")"]
+  null x => '""
   IDENTP x => FORMAT(NIL, '"|~a|", x)
---  [x]
   ['"  ", x]
 
 form2FenceQuote x ==
   NUMBERP x => [STRINGIMAGE x]
   SYMBOLP x => [FORMAT(NIL, '"|~a|", x)]
-  atom    x => '"??"   
+  STRINGP x => ['"_"",x,'"_""]
+  atom    x => systemErrorHere ["form2FenceQuote",x]
   ['"(",:form2FenceQuote first x,:form2FenceQuoteTail rest x]
 
 form2FenceQuoteTail x ==

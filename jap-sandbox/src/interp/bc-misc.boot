@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -287,7 +287,7 @@ bcDraw2DfunGen htPage ==
   from1 := htpLabelInputString(htPage,'from1)
   to1 := htpLabelInputString(htPage,'to1)
   title := htpLabelInputString(htPage,'title)
-  if (title ^= '"") then
+  if (title ~= '"") then
     titlePart := STRCONC('"{}",'"title ==_"",title,'"_"")
     bcFinish('"draw",fun,bcDrawIt2(ind,from1,to1),titlePart)
   else
@@ -334,7 +334,7 @@ bcDraw2DparGen htPage ==
   to1 := htpLabelInputString(htPage,'to1)
   title := htpLabelInputString(htPage,'title)
   curvePart := STRCONC('"curve(",'"{}",fun1,'",{}",fun2,'")")
-  if (title ^= '"") then
+  if (title ~= '"") then
     titlePart := (title = '"" => nil; STRCONC('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",curvePart,bcDrawIt2(ind,from1,to1),titlePart)
   else
@@ -384,7 +384,7 @@ bcDraw2DSolveGen htPage ==
   to2 := htpLabelInputString(htPage,'to2)
   title := htpLabelInputString(htPage,'title)
   clipPart := STRCONC('"{}",'"range==[{}",from1,'"..",to1,",{}",from2,'"..",to2,'"]")
-  if (title ^= '"") then
+  if (title ~= '"") then
     titlePart := (title = '"" => nil; STRCONC('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",STRCONC(fun,'" = 0 "),ind1,ind2,clipPart,titlePart)
   else
@@ -438,7 +438,7 @@ bcDraw3DfunGen htPage ==
   from2 := htpLabelInputString(htPage,'from2)
   to2 := htpLabelInputString(htPage,'to2)
   title := htpLabelInputString(htPage,'title)
-  if (title ^= '"") then
+  if (title ~= '"") then
     titlePart := (title = '"" => nil;STRCONC('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",fun,bcDrawIt2(ind1,from1,to1),bcDrawIt2(ind2,from2,to2),titlePart)
   else
@@ -488,7 +488,7 @@ bcDraw3DparGen htPage ==
   title := htpLabelInputString(htPage,'title)
   curvePart := STRCONC('"curve(",'"{}",fun1,'",{}",fun2,'",{}",fun3,'")")
   tubePart := '"{}tubeRadius==.25,{}tubePoints==16"
-  if (title ^= '"") then
+  if (title ~= '"") then
     titlePart := (title = '"" => nil; STRCONC('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",curvePart,bcDrawIt2(ind,from1,to1),tubePart,titlePart)
   else
@@ -553,7 +553,7 @@ bcDraw3Dpar1Gen htPage ==
   r1 := bcDrawIt2(ind1,from1,to1)
   r2 := bcDrawIt2(ind2,from2,to2)
   surfacePart := STRCONC('"surface(",'"{}",fun1,'",{}",fun2,'",{}",fun3,'")")
-  if (title ^= '"") then
+  if (title ~= '"") then
     titlePart := (title = '"" => nil; STRCONC('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",surfacePart,r1,r2,titlePart)
   else
@@ -844,7 +844,7 @@ bcRealLimit(a,b) ==
   htShowPage()
 
 bcRealLimitGen htPage ==
-  (p := htpButtonValue(htPage,'location)) ^= 'finitePoint =>
+  (p := htpButtonValue(htPage,'location)) ~= 'finitePoint =>
     fun := htpLabelInputString(htPage,'expression)
     var := htpLabelInputString(htPage,'variable)
     loc :=

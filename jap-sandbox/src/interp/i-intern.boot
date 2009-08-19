@@ -223,7 +223,7 @@ mkAtree3(x,op,argl) ==
     r := mkAtreeValueOf r
     v :=
       null arg => VECTOR(NIL,NIL,NIL)
-      PAIRP arg and rest arg and first arg^= "|" =>
+      PAIRP arg and rest arg and first arg ~= "|" =>
         collectDefTypesAndPreds ["tuple",:arg]
       null rest arg => collectDefTypesAndPreds first arg
       collectDefTypesAndPreds arg
@@ -240,7 +240,7 @@ mkAtree3(x,op,argl) ==
     a is [op,:arg] =>
       v :=
         null arg => VECTOR(NIL,NIL,NIL)
-        PAIRP arg and rest arg and first arg^= "|" =>
+        PAIRP arg and rest arg and first arg ~= "|" =>
           collectDefTypesAndPreds ["tuple",:arg]
         null rest arg => collectDefTypesAndPreds first arg
         collectDefTypesAndPreds arg
@@ -374,7 +374,7 @@ mkLessOrEqual(lhs,rhs) == ["not",["<",rhs,lhs]]
 atree2EvaluatedTree x == atree2Tree1(x,true)
 
 atree2Tree1(x,evalIfTrue) ==
-  (triple := getValue x) and objMode(triple) ^= $EmptyMode =>
+  (triple := getValue x) and objMode(triple) ~= $EmptyMode =>
     coerceOrCroak(triple,$OutputForm,$mapName)
   isLeaf x =>
     VECP x => x.0
@@ -384,12 +384,12 @@ atree2Tree1(x,evalIfTrue) ==
 --% Environment Utilities
 
 -- getValueFromEnvironment(x,mode) ==
---   $failure ^= (v := getValueFromSpecificEnvironment(x,mode,$env)) => v
---   $failure ^= (v := getValueFromSpecificEnvironment(x,mode,$e))   => v
+--   $failure ~= (v := getValueFromSpecificEnvironment(x,mode,$env)) => v
+--   $failure ~= (v := getValueFromSpecificEnvironment(x,mode,$e))   => v
 --   throwKeyedMsg("S2IE0001",[x])
 getValueFromEnvironment(x,mode) ==
-  $failure ^= (v := getValueFromSpecificEnvironment(x,mode,$env)) => v
-  $failure ^= (v := getValueFromSpecificEnvironment(x,mode,$e))   => v
+  $failure ~= (v := getValueFromSpecificEnvironment(x,mode,$env)) => v
+  $failure ~= (v := getValueFromSpecificEnvironment(x,mode,$e))   => v
   null(v := coerceInt(objNew(x, ['Variable, x]), mode)) =>
      throwKeyedMsg("S2IE0001",[x])
   objValUnwrap v

@@ -416,7 +416,7 @@ initializeLisplib libName ==
 ++ If compilation produces an error, issue inform user and
 ++ return to toplevel reader.
 leaveIfErrors libName ==
-  errorCount() ^=0 =>
+  errorCount() ~= 0 =>
     sayMSG ['"   Errors in processing ",$lisplibKind,'" ",:bright libName,'":"]
     sayMSG ['"     not replacing ",$spadLibFT,'" for",:bright libName]
     spadThrow()
@@ -721,7 +721,7 @@ compDefineExports(form,ops,sig,e) ==
       fixupSigloc entry where
         fixupSigloc entry ==
           [opsig,pred,funsel] := entry
-          if pred ^= 'T then 
+          if pred ~= 'T then 
             rplac(second entry, simpBool pred)
           funsel is [op,a,:.] and op in '(ELT CONST) =>
             rplac(third entry,[op,a,nil])

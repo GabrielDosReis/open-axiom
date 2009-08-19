@@ -71,7 +71,7 @@ formatDeftran(u,SEQflag) ==
     if b is [:.,c] and c = '(void) then b := DROP(-1, b)
     [:m,y] := [:a,:b]
     ['SEQ,:m,['exit,n,y]]
---  u is ['not,arg] and (op := LASSOC(KAR arg,'((_= . _^_=) (_< . _>_=)))) =>
+--  u is ['not,arg] and (op := LASSOC(KAR arg,'((_= . _~_=) (_< . _>_=)))) =>
 --    formatDeftran([op,:CDR arg],nil)
   u is ["^",a] => formatDeftran(['not,a],SEQflag)
   u is ["exquo",a,b] => formatDeftran(['xquo,a,b],SEQflag)
@@ -579,10 +579,10 @@ isIdentifier x ==
   IDENTP x =>
     s:= PNAME x
     #s = 0 => nil
-    ALPHA_-CHAR_-P s.(0) => and/[s.i^=char '" " for i in 1..MAXINDEX s]
+    ALPHA_-CHAR_-P s.(0) => and/[s.i ~= char '" " for i in 1..MAXINDEX s]
     #s>1 =>
       or/[ALPHA_-CHAR_-P s.i for i in 1..(m:= MAXINDEX s)] =>
-        and/[s.i^=char '" " for i in 1..m] => true
+        and/[s.i ~= char '" " for i in 1..m] => true
  
 isGensym x == 
   s := STRINGIMAGE x

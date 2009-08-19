@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -135,7 +135,7 @@ escapeString com ==   --this makes changes on single comment lines
 htPred2English(x,:options) ==
   $emList :local := IFCAR options   --list of identifiers to be emphasised
   $precList: local := '((OR 10 . "or") (AND 9 . "and")
-     (_< 5) (_<_= 5) (_> 5) (_>_= 5) (_= 5) (_^_= 5) (or 10) (and 9))
+     (_< 5) (_<_= 5) (_> 5) (_>_= 5) (_= 5) (_~_= 5) (or 10) (and 9))
   fn(x,100) where
     fn(x,prec) ==
       x is [op,:l] =>
@@ -387,7 +387,7 @@ bcOpTable(u,fn) ==
   htEndTable()
 
 bcNameConTable u ==
-  $bcMultipleNames: local := (#u ^= 1)
+  $bcMultipleNames: local := (#u ~= 1)
   bcConTable REMDUP u
   -- bcConTable u
 
@@ -432,7 +432,7 @@ bcConPredTable(u,conname,:options) ==
     if extractHasArgs pred is [arglist,:pred] then
       htSay('" {\em of} ")
       bcConform([conname,:arglist],italicList,true)
-    if pred ^= 'etc then bcPred(pred,italicList)
+    if pred ~= 'etc then bcPred(pred,italicList)
     htSay '"}"
   htEndTable()
 
@@ -503,7 +503,7 @@ dbSayItems(countOrPrefix,singular,plural,:options) ==
   else if count = 1 then htSay('"1 ",singular)
   else htSay(count,'" ",plural)
   for x in options repeat bcHt x
-  if count ^= 0 then bcHt '":"
+  if count ~= 0 then bcHt '":"
 
 dbBasicConstructor? conname == member(dbSourceFile conname,'("catdef" "coerce"))
 

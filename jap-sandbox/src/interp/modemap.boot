@@ -180,7 +180,7 @@ mkNewModemapList(mc,sig,pred,fn,curModemapList,e,filenameOrNil) ==
   (oldMap:= assoc(map,curModemapList)) and oldMap is [.,[opred, =fn],:.] =>
     $forceAdd => mergeModemap(entry,curModemapList,e)
     opred=true => curModemapList
-    if pred^=true and pred^=opred then pred:= ["OR",pred,opred]
+    if pred ~= true and pred ~= opred then pred:= ["OR",pred,opred]
     [if x=oldMap then [map,[pred,fn],:filenameOrNil] else x
  
   --if new modemap less general, put at end; otherwise, at front
@@ -285,7 +285,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainView,functorForm,categoryForm,e)
   --  catform:= (isCategory categoryForm => categoryForm.(0); categoryForm)
   -- catform appears not to be used, so why set it?
-  --if ^$InteractiveMode then
+  --if not $InteractiveMode then
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
   $base:= 4

@@ -85,7 +85,7 @@ printPrompt(flush? == false) ==
 ++ Return the name of a text editor, if possible.
 textEditor() ==
   prog := getEnv '"EDITOR" => prog
-  # $EditorProgram ^= 0 => $EditorProgram
+  # $EditorProgram ~= 0 => $EditorProgram
   %hasFeature KEYWORD::WIN32 => '"notepad"
   throwKeyedMsg("S2IZ0091",nil)
 
@@ -129,7 +129,7 @@ Undef(:u) ==
   u':= LAST u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
-  ^EQ(CAR ELT(domain',slot), function Undef) =>
+  not EQ(CAR ELT(domain',slot), function Undef) =>
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then

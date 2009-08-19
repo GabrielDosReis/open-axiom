@@ -2964,17 +2964,22 @@
                     (SETQ |unstableArgs| (CONS |a| |unstableArgs|)))))))
             (SETQ |bfVar#174| (CDR |bfVar#174|))
             (SETQ |bfVar#175| (CDR |bfVar#175|))))
+        (SETQ |op'|
+              (COND
+                ((|%hasFeature| :WIN32)
+                 (CONCAT "_" (SYMBOL-NAME |op'|)))
+                (#1='T (SYMBOL-NAME |op'|))))
         (COND
           ((NULL |unstableArgs|)
            (LIST (LIST 'DEFUN |op| |args|
                        (CONS (INTERN "ALIEN-FUNCALL" "SB-ALIEN")
                              (CONS (LIST
                                     (INTERN "EXTERN-ALIEN" "SB-ALIEN")
-                                    (SYMBOL-NAME |op'|)
+                                    |op'|
                                     (CONS 'FUNCTION
                                      (CONS |rettype| |argtypes|)))
                                    |args|)))))
-          ('T
+          (#1#
            (LIST (LIST 'DEFUN |op| |args|
                        (LIST (|bfColonColon| 'SB-SYS
                                  'WITH-PINNED-OBJECTS)
@@ -2983,7 +2988,7 @@
                                    (CONS
                                     (LIST
                                      (INTERN "EXTERN-ALIEN" "SB-ALIEN")
-                                     (SYMBOL-NAME |op'|)
+                                     |op'|
                                      (CONS 'FUNCTION
                                       (CONS |rettype| |argtypes|)))
                                     (NREVERSE |newArgs|))))))))))))

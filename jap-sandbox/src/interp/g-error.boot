@@ -144,7 +144,7 @@ returnToTopLevel() ==
   TOPLEVEL()
 
 returnToReader() ==
-  ^$ReadingFile => returnToTopLevel()
+  not $ReadingFile => returnToTopLevel()
   sayBrightly ['"   Continuing to read the file...", '%l]
   THROW($SpadReaderTag, nil)
 

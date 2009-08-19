@@ -208,7 +208,7 @@
                                   |ISTRING;replace;$Us2$;15|)
                        (|check-subtype| (>= #0# 0)
                            '(|NonNegativeInteger|) #0#))
-                     (SPADCALL (|getShellEntry| $ 53)))
+                     (|spadConstant| $ 53))
                  |ISTRING;replace;$Us2$;15|)
            (SEQ (LETT |i| 0 |ISTRING;replace;$Us2$;15|)
                 (LETT #1# (- |l| 1) |ISTRING;replace;$Us2$;15|)
@@ -266,7 +266,7 @@
                       (EXIT (COND
                               ((< |startpos| 0)
                                (|error| "index out of bounds"))
-                              ((> |np| (- |nw| |startpos|)) 'NIL)
+                              ((> |np| (- |nw| |startpos|)) NIL)
                               ('T
                                (SEQ (SEQ
                                      (EXIT
@@ -290,7 +290,7 @@
                                             (PROGN
                                               (LETT #2#
                                                (PROGN
-                                                 (LETT #1# 'NIL
+                                                 (LETT #1# NIL
                                                   |ISTRING;substring?;2$IB;17|)
                                                  (GO #1#))
                                                |ISTRING;substring?;2$IB;17|)
@@ -302,7 +302,7 @@
                                         |ISTRING;substring?;2$IB;17|)
                                        (GO G190) G191 (EXIT NIL)))
                                      #2# (EXIT #2#))
-                                    (EXIT 'T)))))))
+                                    (EXIT T)))))))
            #1# (EXIT #1#))))) 
 
 (DEFUN |ISTRING;position;2$2I;18| (|s| |t| |startpos| $)
@@ -403,7 +403,7 @@
            (LETT |n| (SPADCALL |t| (|getShellEntry| $ 47))
                  |ISTRING;suffix?;2$B;21|)
            (EXIT (COND
-                   ((> |m| |n|) 'NIL)
+                   ((> |m| |n|) NIL)
                    ('T
                     (|ISTRING;substring?;2$IB;17| |s| |t|
                         (- (+ (|getShellEntry| $ 6) |n|) |m|) $)))))))) 
@@ -428,7 +428,7 @@
            (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((> |i| |n|) 'NIL)
+                           ((> |i| |n|) NIL)
                            ('T
                             (>= (LETT |j|
                                       (|ISTRING;position;C$2I;19| |c|
@@ -490,7 +490,7 @@
            (SEQ G190
                 (COND
                   ((NULL (COND
-                           ((> |i| |n|) 'NIL)
+                           ((> |i| |n|) NIL)
                            ('T
                             (>= (LETT |j|
                                       (|ISTRING;position;Cc$2I;20| |cc|
@@ -644,7 +644,7 @@
                             (LETT #0# (CDR #0#) |ISTRING;concat;L$;28|)
                             (GO G190) G191 (EXIT NIL))
                        (COND (#3# #2#) ('T 0)))
-                     (SPADCALL (|getShellEntry| $ 53)))
+                     (|spadConstant| $ 53))
                  |ISTRING;concat;L$;28|)
            (LETT |i| (|getShellEntry| $ 6) |ISTRING;concat;L$;28|)
            (SEQ (LETT |s| NIL |ISTRING;concat;L$;28|)
@@ -770,7 +770,7 @@
                                              $)
                                             |target|
                                             (|getShellEntry| $ 95)))
-                                          (EXIT 'NIL)))))
+                                          (EXIT NIL)))))
                                     (LETT |i| |p|
                                      |ISTRING;match?;2$CB;34|)
                                     (LETT |q|
@@ -809,7 +809,7 @@
                                        (COND
                                          ((EQL |i| (- |m| 1))
                                           (PROGN
-                                            (LETT #3# 'NIL
+                                            (LETT #3# NIL
                                              |ISTRING;match?;2$CB;34|)
                                             (GO #3#)))
                                          ('T
@@ -845,8 +845,8 @@
                                               (|getShellEntry| $ 24))
                                              $)
                                             |target| $))
-                                          (EXIT 'NIL)))))
-                                    (EXIT 'T)))))))
+                                          (EXIT NIL)))))
+                                    (EXIT T)))))))
            #3# (EXIT #3#))))) 
 
 (DEFUN |IndexedString| (#0=#:G1547)

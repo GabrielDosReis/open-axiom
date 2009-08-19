@@ -251,11 +251,6 @@ parseLessEqual: %ParseForm -> %Form
 parseLessEqual u == 
   parseTran ["not",[substitute(">","<=",first u),:rest u]]
 
-parseNotEqual: %ParseForm -> %Form 
-parseNotEqual u == 
-  $normalizeTree => parseTran ["not",[substitute("=","^=",first u),:rest u]]
-  u
-
 parseAnd: %ParseForm -> %Form 
 parseAnd t ==
   t isnt ["and",:u] => systemErrorHere ["parseAnd",t]
@@ -449,7 +444,6 @@ parseVCONS l ==
 --% Register special parsers.
 
 for x in [["<=", :"parseLessEqual"],_
-	  ["^=", :"parseNotEqual"],_
 	  [":", :"parseColon"],_
 	  ["::", :"parseCoerce"],_
 	  ["@", :"parseAtSign"],_

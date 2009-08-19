@@ -20,7 +20,8 @@
           (LIST ";" 'SEMICOLON) (LIST "*" 'TIMES) (LIST "**" 'POWER)
           (LIST "/" 'SLASH) (LIST "+" 'PLUS) (LIST "-" 'MINUS)
           (LIST "<" 'LT) (LIST ">" 'GT) (LIST "<=" 'LE) (LIST ">=" 'GE)
-          (LIST "=" 'SHOEEQ) (LIST "^" 'NOT) (LIST "^=" 'SHOENE)
+          (LIST "=" 'SHOEEQ) (LIST "^" 'NOTRETIRED)
+          (LIST "^=" 'SHOENERETIRED) (LIST "~=" 'SHOENE)
           (LIST ".." 'SEG) (LIST "#" 'LENGTH) (LIST "=>" 'EXIT)
           (LIST "->" 'ARROW) (LIST ":=" 'BEC) (LIST "==" 'DEF)
           (LIST "==>" 'MDEF) (LIST "<=>" 'TDEF) (LIST "(" 'OPAREN)
@@ -169,7 +170,7 @@
                          (LIST 'OR '|or|) (LIST 'SLASH '/)
                          (LIST 'POWER '**) (LIST 'MINUS '-)
                          (LIST 'LT '<) (LIST 'GT '>) (LIST 'LE '<=)
-                         (LIST 'GE '>=) (LIST 'SHOENE '^=)))
+                         (LIST 'GE '>=) (LIST 'SHOENE '~=)))
         (|i| NIL))
     (LOOP
       (COND
@@ -204,7 +205,7 @@
                          (LIST '|cons| 'CONS) (LIST '|copy| 'COPY)
                          (LIST '|croak| 'CROAK) (LIST '|drop| 'DROP)
                          (LIST '|exit| 'EXIT) (LIST '|false| 'NIL)
-                         (LIST '|first| 'CAR)
+                         (LIST '|first| 'CAR) (LIST '|fourth| 'CADDDR)
                          (LIST '|function| 'FUNCTION)
                          (LIST '|genvar| 'GENVAR) (LIST 'IN 'MEMBER)
                          (LIST '|is| 'IS) (LIST '|isnt| 'ISNT)
