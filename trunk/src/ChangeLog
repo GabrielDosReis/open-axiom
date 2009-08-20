@@ -1,3 +1,12 @@
+2009-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Discontinue computation of difference between "old" and "new" Boot.
+	* boot/ast.boot (bfGetOldBootName): Remove.
+	(bfSameMeaning): Likewise.
+	(bfReName): Don't compute the diff between old and new Boot.
+	* boot/translator.boot ($translatingOldBoot): Remove.
+	(AxiomCore::%sysInit): Don't set it.
+
 2009-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot: Consistently prefix AST names by "%".

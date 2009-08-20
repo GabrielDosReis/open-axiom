@@ -1182,34 +1182,10 @@
     ((|bfTupleP| |bfarg|) (CONS |bfop| (CDR |bfarg|)))
     ('T (CONS |bfop| (LIST |bfarg|)))))
 
-(DEFUN |bfGetOldBootName| (|x|)
+(DEFUN |bfReName| (|x|)
   (PROG (|a|)
     (RETURN
-      (COND ((SETQ |a| (GET |x| 'OLD-BOOT)) (CAR |a|)) ('T |x|)))))
-
-(DEFUN |bfSameMeaning| (|x|) (GET |x| 'RENAME-OK))
-
-(DEFUN |bfReName| (|x|)
-  (PROG (|oldName| |newName| |a|)
-    (DECLARE (SPECIAL |$stok| |$translatingOldBoot|))
-    (RETURN
-      (PROGN
-        (SETQ |newName|
-              (COND
-                ((SETQ |a| (GET |x| 'SHOERENAME)) (CAR |a|))
-                (#0='T |x|)))
-        (COND
-          ((AND |$translatingOldBoot| (NOT (|bfSameMeaning| |x|)))
-           (PROGN
-             (SETQ |oldName| (|bfGetOldBootName| |x|))
-             (COND
-               ((NOT (EQUAL |newName| |oldName|))
-                (|warn| (LIST (PNAME |x|) " as `" (PNAME |newName|)
-                              "' differs from Old Boot `"
-                              (PNAME |oldName|) "' at "
-                              (|diagnosticLocation| |$stok|)))))
-             |oldName|))
-          (#0# |newName|))))))
+      (COND ((SETQ |a| (GET |x| 'SHOERENAME)) (CAR |a|)) ('T |x|)))))
 
 (DEFUN |bfInfApplication| (|op| |left| |right|)
   (COND

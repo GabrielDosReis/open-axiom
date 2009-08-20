@@ -89,10 +89,7 @@
             (LIST 'QUOTE (CONS 'OPTIMIZE |$LispOptimizeOptions|)))
       |stream|))
 
-(DEFPARAMETER |$translatingOldBoot| NIL)
-
 (DEFUN |AxiomCore|::|%sysInit| ()
-  (DECLARE (SPECIAL |$translatingOldBoot|))
   (PROGN
     (SETQ *LOAD-VERBOSE* NIL)
     (COND
@@ -106,10 +103,7 @@
              NIL)
        (SETF (SYMBOL-VALUE
                  (|bfColonColon| 'COMPILER 'SUPPRESS-COMPILER-NOTES*))
-             T)))
-    (COND
-      ((EQUAL (CDR (ASSOC (|Option| "boot") (|%systemOptions|))) "old")
-       (SETQ |$translatingOldBoot| T)))))
+             T)))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Thing|) |setCurrentPackage|))
 

@@ -726,43 +726,10 @@ bfApplication(bfop, bfarg) ==
          then cons(bfop,rest bfarg)
          else cons(bfop,[bfarg])
  
-
-++ Token renaming.  New Boot and Old Boot differs in the set of
-++ tokens they rename.  When converting code written in Old Boot
-++ to New Boot, it is helpful to have some noise about potential
-++ divergence in semantics.  So, when compiling with --boot=old,
-++ we compute the renaming in both Old Boot and New Boot and compare
-++ the results.  If they differ, we prefer the old meaning, with some
-++ warnings.  Notice that the task is compounded by the fact the
-++ tokens in both language do not always agreee.
-++ However, to minimize the flood of false positive, we
-++ keep a list of symbols which apparently differ in meanings, but
-++ which have been verified to agree.  
-++ This is a valuable automated tool during the transition period.
-
--- return the meaning of the x in Old Boot.
-bfGetOldBootName x ==
-  a := GET(x, "OLD-BOOT") => first a
-  x
-
--- returns true if x has same meaning in both Old Boot and New Boot.
-bfSameMeaning x ==
-  GET(x, 'RENAME_-OK)
- 
 -- returns the meaning of x in the appropriate Boot dialect.
 bfReName x==
-  newName :=
-    a := GET(x,"SHOERENAME") => first a
-    x
-  $translatingOldBoot and not bfSameMeaning x =>
-    oldName := bfGetOldBootName x
-    if newName ~= oldName then
-       warn [PNAME x, '" as `", PNAME newName, _
-             '"_' differs from Old Boot `", PNAME oldName,_
-             '"_' at ", diagnosticLocation $stok]
-    oldName
-  newName
-
+  a := GET(x,"SHOERENAME") => first a
+  x
  
 bfInfApplication(op,left,right)==
    EQ(op,"EQUAL") => bfQ(left,right)

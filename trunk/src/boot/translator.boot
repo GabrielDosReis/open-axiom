@@ -64,9 +64,6 @@ genOptimizeOptions stream ==
   REALLYPRETTYPRINT
     (["PROCLAIM",["QUOTE",["OPTIMIZE",:$LispOptimizeOptions]]],stream)
 
-+++ True if we are translating code written in Old Boot.
-$translatingOldBoot := false
-
 AxiomCore::%sysInit() ==
   SETQ(_*LOAD_-VERBOSE_*,false)
   if %hasFeature KEYWORD::GCL then
@@ -76,8 +73,6 @@ AxiomCore::%sysInit() ==
       bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*"),false)
     SETF(SYMBOL_-VALUE 
       bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*"),true)
-  if rest ASSOC(Option '"boot", %systemOptions()) = '"old"
-  then $translatingOldBoot := true
 
 ++ Make x, the current package
 setCurrentPackage: %Thing -> %Thing
