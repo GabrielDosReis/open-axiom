@@ -749,7 +749,6 @@ OPENAXIOM_EXPORT void oa_insert(char** list, const char* element, int* size)
    *list = temp;
 }
 
-
 OPENAXIOM_EXPORT char** oa_split(const char* sequence, const char** delimiter, int* size)
 {
    int sequence_length;

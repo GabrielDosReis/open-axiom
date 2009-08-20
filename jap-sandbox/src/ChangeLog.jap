@@ -1,0 +1,10 @@
+2009-07-16  Alfredo Portes  <doyenatccny@gmail.com>
+
+    * lib/cfuns-c.c: New string manipulation functions.
+    * include/cfuns.h: Likewise.
+    * hyper/htsearch.c: Add new C replacement for htsearch 
+                        and presea scripts.
+    * hyper/htsearch: Remove.
+    * hyper/presea.in: Remove. 
+    * hyper/Makefile.in: Adjust.
+ 

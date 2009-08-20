@@ -3,6 +3,8 @@
   All rights reserved.
   Copyright (C) 2007-2008, Gabriel Dos Reis.
   All rights reserved.
+  Copyright (C) 2009, Alfredo Portes.
+  All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are
@@ -33,6 +35,12 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/* 
+ * htsearch: is used by Hyperdoc to search for keywords in 
+ * Hyperdoc pages and create a HyperDoc page of the search 
+ * result.
+ */
+
 #include "openaxiom-c-macros.h"
 
 #include <stdlib.h>
@@ -40,127 +48,186 @@
 #include <cfuns.h>
 #include <string.h>
 
-char* htpagedir;
-char* hthitscmd;
-char* htdbfile;
+const char* htpagedir; // Directory containing the hyperdoc pages.
+const char* hthitscmd; // Location of the hthits program.
+const char* htdbfile;  // Database file of the hyperdoc pages.
 
+/*
+ * pages_cmp compares two strings.
+ *
+ * @param str1 string to be compared.
+ * @param str2 string to be compared.
+ *
+ * @returns 0 when the strings are equal, a negative integer 
+ * when str1 is less than str2, or a positive integer if str1 is 
+ * greater than str2, according to the lexicographical order.
+ */
 int 
-pages_cmp(const void *str1, const void *str2)
+pages_cmp(const char **str1, const char **str2)
 {
-    return strcmp(*((char**)str1), *((char**)str2));
+    return strcmp(*str1,*str2);
 }
 
+/*
+ * sort_pages sorts a list of HyperDoc pages links.
+ *
+ * @param links is an array containing the HyperDoc 
+ * links to be sorted.
+ *
+ * @size of the number of elements in the links array.
+ */
 void 
-sort_pages(char** list, int size)
+sort_pages(char** links, int size)
 {
-    qsort(list, size, sizeof(char*), pages_cmp);
+    qsort(links, size, sizeof(char*), pages_cmp);
 }
 
+/*
+ * presea function constructs a HyperDoc
+ * page with the links to HyperDoc pages 
+ * that contain the given pattern.
+ *
+ * @param links array with the links to the matched
+ *        HyperDoc pages.
+ * @param n number of elements in the links array.
+ * @param cases flag indicating if there was any matches.
+ * @param pattern searched in the HyperDoc pages.
+ */
 void 
-presea(char** a, int n, int cases, char* expr)
+presea(char** links, int n, int cases, char* pattern)
 {
     int m = 0, i = 0, j = 0;
-    char** b = NULL;
+    char** tokens = NULL;
+    const char** delimiter = "{";
 
     for (i = 0; i < n; i++) {
 
-        b = oa_split(a[i],"{",&j);
+        tokens = oa_split(links[i],delimiter,&j);
         if (j >= 2)
-            m = m + atol(oa_substr(b[1],0,strlen(b[1])-2));
+            m = m + atol(oa_substr(tokens[1],0,strlen(tokens[1])-2));
     }
 
     if (cases==1)
         printf("\\begin{page}{staticsearchpage}{No matches found}\n");
     else if ( n==0 || m==0 )
-        printf("\\begin{page}{staticsearchpage}{No matches found for {\\em %s}}\n",expr);
+        printf("\\begin{page}{staticsearchpage}{No matches found for {\\em %s}}\n",pattern);
     else
-        printf("\\begin{page}{staticsearchpage}{%d matches found in %d pages for {\\em %s}}\n",m,n,expr);
+        printf("\\begin{page}{staticsearchpage}{%d matches found in %d pages for {\\em %s}}\n",m,n,pattern);
     printf("Matches\\tab{8}in Page\n");
     printf("\\beginscroll\n");
     printf("\\beginmenu\n");
-    for(i = n-1; i >= 0; i--) printf ("%s\n",a[i]);
+    for(i = n-1; i >= 0; i--) printf ("%s\n",links[i]);
     printf("\\endmenu\n");
     printf("\\endscroll\n");
     printf("\\end{page}\n");
 }
 
+/*
+ * Set global variables.
+ */
+void
+setvariables(void) {
+
+    const char* oavariable = oa_getenv("AXIOM");
+
+    if (oavariable == NULL) {
+        printf("%s\n", "OpenAxiom variable is not set.");
+        exit(-1);
+    }
+
+    htpagedir = oa_strcat(oavariable,"/share/hypertex/pages/");
+    hthitscmd = oa_strcat(oavariable,"/lib/hthits");
+    htdbfile = oa_strcat(htpagedir,"ht.db");
+}
+
+/* 
+ * htsearch invokes hthits to search for pattern
+ * in the HyperDoc pages.
+ *
+ * @param pattern string to be searched in the
+ * HyperDoc pages.
+ */
 void 
 htsearch(char* pattern)
 {
+    FILE* hits;
+    char buf[1024];
+    char** sorted_hits;
+    char* matches = "";
+    int size = 0;
+    const char** delimiter = "\n";
 
-   FILE* hits;
-   char buf[1024];
-   char** sorted_hits;
-   char* matches = "";
-   int size = 0;
+    setvariables();
 
-   if (strcmp(pattern,"") == 0)
-      presea(NULL,size,1,pattern);
-   else {
+    if (strcmp(pattern,"") == 0)
+        presea(NULL,size,1,pattern);
+    else {
+        // hthits requires to change directory
+        // to where the HyperDoc pages reside.
+        if (oa_chdir(htpagedir) == -1)
+            exit(-1);
 
+        // Call hthits with: hthits pattern ht.db
+        hthitscmd = oa_strcat(hthitscmd, " ");
+        hthitscmd = oa_strcat(hthitscmd, pattern);
+        hthitscmd = oa_strcat(hthitscmd, " ");
+        hthitscmd = oa_strcat(hthitscmd, htdbfile);
 
-      if (oa_chdir(htpagedir) == -1)
-        exit(-1);
+        if ((hits = popen(hthitscmd, "r")) != NULL) {
+            while (fgets(buf, 1024, hits) != NULL)
+                matches = oa_strcat(matches,buf);
+            pclose(hits);
+        }
+        else {
+            printf("Could not execute %s", hthitscmd);
+            exit(-1);
+        }
 
-      hthitscmd = oa_strcat(hthitscmd, " ");
-      hthitscmd = oa_strcat(hthitscmd, pattern);
-      hthitscmd = oa_strcat(hthitscmd, " ");
-      hthitscmd = oa_strcat(hthitscmd, htdbfile);
-
-      if ((hits = popen(hthitscmd, "r")) != NULL) {
-          while (fgets(buf, 1024, hits) != NULL)
-             matches = oa_strcat(matches,buf);
-          pclose(hits);
-      }
-      else {
-          printf("Could not execute %s", hthitscmd);
-          exit(-1);
-      }
+        printf("matches: %s\n", matches);
  
-      sorted_hits = oa_split(matches,"\n",&size);
-      sort_pages(sorted_hits, size);
-      presea(sorted_hits,size,0,pattern);
-   }
+        sorted_hits = oa_split(matches,delimiter,&size);
+        sort_pages(sorted_hits, size);
+        presea(sorted_hits,size,0,pattern);
+    }
 }
 
-static void
-usage(char* progname)
+/*
+ * Display how to use the htsearch program.  
+ */
+void
+usage(void)
 {
-   fprintf(stderr, "Usage: %s pattern \n", progname);
-   exit(1);
+    fprintf(stderr, "Usage: htsearch pattern \n");
+    exit(1);
 }
 
-static void
+/*
+ * cmdline processes the command line arguments 
+ * passed to htsearch.
+ *
+ * @param argc number of arguments.
+ * @param argv array of command line arguments.
+ */
+void
 cmdline(int argc, char** argv)
 {
-   char* progname = argv[0];
+    if (argc == 1)
+        htsearch("");
+    else if (argc == 2) {
 
-   if (argc == 1)
-      htsearch("");
-   else if (argc == 2) {
-
-      if (!strcmp(argv[1],"--help"))
-         usage(progname);
-      else
-         htsearch(argv[1]);
-   }
-   else
-      usage(progname);
+        if (!strcmp(argv[1],"--help"))
+            usage();
+        else
+            htsearch(argv[1]);
+    }
+    else
+        usage();
 }
 
+/* Main routine */
 int 
 main(int argc, char** argv)
 {
-   const char* oavariable = oa_getenv("AXIOM");
-
-   if (oavariable == NULL) {
-      printf("%s\n", "OpenAxiom variable is not set.");
-      return(-1);
-   }
-
-   htpagedir = oa_strcat(oavariable,"/share/hypertex/pages/");
-   hthitscmd = oa_strcat(oavariable,"/lib/hthits");
-   htdbfile = oa_strcat(htpagedir,"ht.db");
-   cmdline(argc, argv);
-   return(0);
+    cmdline(argc, argv);
+    return(0);
 }

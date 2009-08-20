@@ -29,38 +29,36 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 openaxiom_host_has_regex = @openaxiom_host_has_regex@
 
-bin_PROGRAMS = htadd$(EXEEXT) ex2ht$(EXEEXT) htsearch$(EXEEXT)
+bin_PROGRAMS = htadd$(EXEEXT) ex2ht$(EXEEXT)
 ifeq ($(strip $(openaxiom_host_has_regex)),yes)
-bin_PROGRAMS += hthits$(EXEEXT)
+bin_PROGRAMS += hthits$(EXEEXT) htsearch$(EXEEXT)
 endif
 ifeq ($(strip $(axiom_use_x)),yes)
 bin_PROGRAMS += hypertex$(EXEEXT) spadbuf$(EXEEXT)
 endif
 
 # this is where to put the various commands
-OUTLIB=	$(axiom_target_libdir)
+OUTLIB = $(axiom_target_libdir)
 
 # this is where the include files live
-INC=    $(axiom_src_srcdir)/include
+INC = $(axiom_src_srcdir)/include
 
 # this is where the hypertex documentation files are
 HYPER=$(axiom_target_datadir)/hypertex
 
-HTADD=$(OUTLIB)/htadd
+HTADD = $(OUTLIB)/htadd
 
 BITMAPS = mouse11.bitmap mouse11.mask sdown3d.bitmap sdown3dpr.bitmap \
 	sdown.bitmap sup3d.bitmap sup3dpr.bitmap sup.bitmap ht_icon
 
-BINFILES= $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
+BINFILES = $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
 
 HEADERS = display.h event.h extent.h node.h \
 	group.h hyper.h initx.h keyin.h lex.h \
 	parse.h parse-paste.h parse-types.h scrollbar.h \
 	titlebar.h token.h $(axiom_c_macros_h)
-
 
 build_libdir = $(top_builddir)/src/lib
 
@@ -175,7 +173,7 @@ ${OUTLIB}/hthits$(EXEEXT): $(hthits_objects) $(hthits_DEPENDENCIES)
 	${LINK} -o $@ $(hthits_objects) $(hthits_LDADD)
 
 $(OUTLIB)/hypertex$(EXEEXT): $(hypertex_objects) $(hypertex_DEPENDENCIES)
-	 ${LINK} -o $@ $(hypertex_objects) $(hypertex_LDADD) \
+	${LINK} -o $@ $(hypertex_objects) $(hypertex_LDADD) \
 		$(AXIOM_X11_LDFLAGS) -lm
 
 ${OUTLIB}/spadbuf$(EXEEXT): $(spadbuf_objects) $(spadbuf_DEPENDENCIES)
