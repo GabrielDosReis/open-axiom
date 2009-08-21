@@ -102,6 +102,7 @@ $(axiom_build_bindir)/gcl$(EXEEXT):
 	fi; cd gcl; \
 	./configure --prefix="$(axiom_abs_builddir)" ${GCLOPTS} && \
 		$(MAKE) && $(MAKE) install
+.PHONY: install
 install:
 	@echo Installing OpenAxiom in $(DESTDIR)$(prefix)
 	@$(mkinstalldirs) "$(DESTDIR)$(open_axiom_installdir)"
