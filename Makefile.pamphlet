@@ -568,6 +568,7 @@ $(addprefix $(axiom_build_bindir)/, notangle noweave): maybe-cp-noweb-srcdir
 
 \subsection{install}
 <<install>>=
+.PHONY: install
 install:
 	@echo Installing OpenAxiom in $(DESTDIR)$(prefix)
 	@$(mkinstalldirs) "$(DESTDIR)$(open_axiom_installdir)"
