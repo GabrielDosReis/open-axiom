@@ -503,6 +503,10 @@
              (#0='T (|bpPush| (|%Import| (|bpPop1|)))))))
         (#0# NIL)))))
 
+(DEFUN |bpNamespace| ()
+  (AND (|bpEqKey| 'NAMESPACE) (|bpName|)
+       (|bpPush| (|%Namespace| (|bpPop1|)))))
+
 (DEFUN |bpTypeAliasDefition| ()
   (AND (OR (|bpTerm| #'|bpIdList|) (|bpTrap|)) (|bpEqKey| 'TDEF)
        (|bpLogical|) (|bpPush| (|%TypeAlias| (|bpPop2|) (|bpPop1|)))))
@@ -973,7 +977,8 @@
   (|bpParenthesized| #'|bpSemiColonDefinition|))
 
 (DEFUN |bpComma| ()
-  (OR (|bpModule|) (|bpImport|) (|bpTuple| #'|bpWhere|)))
+  (OR (|bpModule|) (|bpImport|) (|bpNamespace|)
+      (|bpTuple| #'|bpWhere|)))
 
 (DEFUN |bpTuple| (|p|)
   (|bpListofFun| |p| #'|bpCommaBackSet| #'|bfTuple|))

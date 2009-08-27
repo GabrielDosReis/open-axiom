@@ -473,6 +473,13 @@ bpImport() ==
     bpPush %Import bpPop1()
   false
 
+++
+++ Namespace:
+++    NAMESPACE Name
+bpNamespace() ==
+  bpEqKey "NAMESPACE" and bpName() and
+    bpPush %Namespace bpPop1()
+
 -- Parse a type alias defnition:
 --    type-alias-definition: 
 --          identifier <=> logical-expression
@@ -944,7 +951,7 @@ bpSemiColonDefinition()==bpSemiListing
 bpPDefinitionItems()==bpParenthesized function bpSemiColonDefinition
  
 bpComma()== 
-  bpModule() or bpImport() or
+  bpModule() or bpImport() or bpNamespace() or
     bpTuple function bpWhere
  
 bpTuple(p)==bpListofFun(p,function bpCommaBackSet,function bfTuple)
