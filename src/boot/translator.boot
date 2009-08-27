@@ -447,7 +447,7 @@ translateToplevel(b,export?) ==
       $InteractiveMode => [["SETF",lhs,rhs]]
       [maybeExportDecl(["DEFPARAMETER",lhs,rhs],export?)]
 
-    namespace(n) =>
+    %Namespace n =>
       $activeNamespace := STRING n
       [["IN-PACKAGE",STRING n]]
 

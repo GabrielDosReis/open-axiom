@@ -51,6 +51,7 @@ shoeKeyWords == [  _
             ['"is", "IS"], _
             ['"isnt", "ISNT"] , _
             ['"module", "MODULE"], _
+            ['"namespace", "NAMESPACE"], _
             ['"of",   "OF"] , _
             ['"or",   "OR"] , _
             ['"repeat", "REPEAT"] , _

@@ -85,6 +85,7 @@ structure %Name ==
 structure %Ast ==
   %Command(%String)                     -- includer command
   %Module(%Name,%List)                  -- module declaration
+  %Namespace(%Name)                     -- namespace AxiomCore
   %Import(%String)                      -- import module
   %ImportSignature(%Name,%Signature)    -- import function declaration
   %TypeAlias(%Head, %List)              -- type alias definition

@@ -723,7 +723,7 @@
                         (LIST (|maybeExportDecl|
                                   (LIST 'DEFPARAMETER |lhs| |rhs|)
                                   |export?|)))))))
-             (|namespace|
+             (|%Namespace|
                  (LET ((|n| (CAR |bfVar#17|)))
                    (PROGN
                      (SETQ |$activeNamespace| (STRING |n|))
