@@ -1,3 +1,8 @@
+2009-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfCase): Don't  introduce temporary for scrutinee
+	when it is already reduced.
+
 2009-08-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: "namespace" is now a keyword.

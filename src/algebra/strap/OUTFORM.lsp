@@ -624,7 +624,7 @@
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
-  (PROG (#0=#:G1554 |l| #1=#:G1555 |lv|)
+  (PROG (#0=#:G1552 |l| #1=#:G1553 |lv|)
     (RETURN
       (SEQ (LETT |lv|
                  (PROGN
@@ -658,7 +658,7 @@
   (CONS 'AGGSET |l|)) 
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
-  (PROG (|c| |u| #0=#:G1556 |l1|)
+  (PROG (|c| |u| #0=#:G1554 |l1|)
     (RETURN
       (SEQ (LETT |c| 'CONCATB |OUTFORM;blankSeparate;L$;35|)
            (LETT |l1| NIL |OUTFORM;blankSeparate;L$;35|)
@@ -841,7 +841,7 @@
 (DEFUN |OUTFORM;empty;$;73| ($) (DECLARE (IGNORE $)) (LIST 'NOTHING)) 
 
 (DEFUN |OUTFORM;infix?;$B;74| (|a| $)
-  (PROG (#0=#:G1497 |e|)
+  (PROG (#0=#:G1495 |e|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |e|
                             (COND
@@ -1013,7 +1013,7 @@
 (DEFUN |OutputForm| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1558)
+      (PROG (#0=#:G1556)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|OutputForm|)

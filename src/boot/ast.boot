@@ -1143,12 +1143,22 @@ bfCaseItem(x,y) ==
 
 bfCase: (%Thing,%Thing) -> %List
 bfCase(x,y)==
-         g:=bfGenSymbol()
-         g1:=bfGenSymbol()
-         a:=bfLET(g,x)
-         b:=bfLET(g1,["CDR",g])
-         c:=bfCaseItems (g1,y)
-         bfMKPROGN [a,b,["CASE",["CAR", g],:c]]
+  -- Introduce a temporary to hold the value of the scrutinee.
+  -- To minimize the number of GENSYMS and assignments, we want
+  -- to do this only when the scrutinee is not reduced yet.
+  g := 
+    atom x => x 
+    bfGenSymbol()
+  a := 
+    EQ(g,x) => nil
+    [[g,x]]
+  -- We need a temporary for the rest of the structure.
+  g1 := bfGenSymbol()
+  -- locally bind newly introduced temporaries in the alternatives
+  inits := [:a,[g1,["CDR",g]]]
+  body := ["CASE",["CAR", g], :bfCaseItems (g1,y)]
+  #inits = 1 => ["LET",inits,body]
+  ["LET*",inits,body]
 
 bfCaseItems: (%Thing,%List) -> %List 
 bfCaseItems(g,x) ==  

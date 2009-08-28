@@ -4,7 +4,7 @@
 (DEFPARAMETER |CancellationAbelianMonoid;AL| 'NIL) 
 
 (DEFUN |CancellationAbelianMonoid;| ()
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1396)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|AbelianMonoid|)

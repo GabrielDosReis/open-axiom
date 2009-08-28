@@ -472,7 +472,7 @@
   (SPADCALL |p| (|getShellEntry| $ 107))) 
 
 (DEFUN |INT;factorPolynomial| (|p| $)
-  (PROG (|pp| #0=#:G1500)
+  (PROG (|pp| #0=#:G1498)
     (RETURN
       (SEQ (LETT |pp| (SPADCALL |p| (|getShellEntry| $ 108))
                  |INT;factorPolynomial|)
@@ -515,7 +515,7 @@
 (DEFUN |Integer| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1525)
+      (PROG (#0=#:G1523)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Integer|) |Integer|)

@@ -4,7 +4,7 @@
 (DEFPARAMETER |CommutativeRing;AL| 'NIL) 
 
 (DEFUN |CommutativeRing;| ()
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1396)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|Ring|) (|BiModule| '$ '$)

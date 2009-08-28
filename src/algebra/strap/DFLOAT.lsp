@@ -452,7 +452,7 @@
   (FLOAT-DIGITS 0.0)) 
 
 (DEFUN |DFLOAT;bits;Pi;10| ($)
-  (PROG (#0=#:G1425)
+  (PROG (#0=#:G1423)
     (RETURN
       (COND
         ((EQL (FLOAT-RADIX 0.0) 2) (FLOAT-DIGITS 0.0))
@@ -659,7 +659,7 @@
                    (EXIT |theta|)))))))) 
 
 (DEFUN |DFLOAT;retract;$F;80| (|x| $)
-  (PROG (#0=#:G1504)
+  (PROG (#0=#:G1502)
     (RETURN
       (|DFLOAT;rationalApproximation;$2NniF;87| |x|
           (PROG1 (LETT #0# (- (FLOAT-DIGITS 0.0) 1)
@@ -668,7 +668,7 @@
           (FLOAT-RADIX 0.0) $)))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;81| (|x| $)
-  (PROG (#0=#:G1509)
+  (PROG (#0=#:G1507)
     (RETURN
       (CONS 0
             (|DFLOAT;rationalApproximation;$2NniF;87| |x|
@@ -703,7 +703,7 @@
   (FLOAT-SIGN 1.0 |x|)) 
 
 (DEFUN |DFLOAT;manexp| (|x| $)
-  (PROG (|s| #0=#:G1530 |me| |two53|)
+  (PROG (|s| #0=#:G1528 |me| |two53|)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|) (CONS 0 0))
@@ -737,8 +737,8 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;87| (|f| |d| |b| $)
-  (PROG (|#G109| |nu| |ex| BASE #0=#:G1533 |de| |tol| |#G110| |q| |r|
-                 |p2| |q2| #1=#:G1542 |#G111| |#G112| |p0| |p1| |#G113|
+  (PROG (|#G109| |nu| |ex| BASE #0=#:G1531 |de| |tol| |#G110| |q| |r|
+                 |p2| |q2| #1=#:G1540 |#G111| |#G112| |p0| |p1| |#G113|
                  |#G114| |q0| |q1| |#G115| |#G116| |s| |t|)
     (RETURN
       (SEQ (EXIT (SEQ (PROGN
@@ -858,7 +858,7 @@
            #1# (EXIT #1#))))) 
 
 (DEFUN |DFLOAT;**;$F$;88| (|x| |r| $)
-  (PROG (|n| |d| #0=#:G1552)
+  (PROG (|n| |d| #0=#:G1550)
     (RETURN
       (SEQ (EXIT (COND
                    ((ZEROP |x|)
@@ -920,7 +920,7 @@
 (DEFUN |DoubleFloat| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1564)
+      (PROG (#0=#:G1562)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|DoubleFloat|)

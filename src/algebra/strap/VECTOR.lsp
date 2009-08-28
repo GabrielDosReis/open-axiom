@@ -17,10 +17,10 @@
                       (|getShellEntry| $ 16)))
       (|getShellEntry| $ 18))) 
 
-(DEFUN |Vector| (#0=#:G1408)
+(DEFUN |Vector| (#0=#:G1406)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1409)
+      (PROG (#1=#:G1407)
         (RETURN
           (COND
             ((LETT #1#

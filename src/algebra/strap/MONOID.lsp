@@ -4,7 +4,7 @@
 (DEFPARAMETER |Monoid;AL| 'NIL) 
 
 (DEFUN |Monoid;| ()
-  (PROG (#0=#:G1400)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|SemiGroup|)

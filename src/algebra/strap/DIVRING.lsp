@@ -4,11 +4,11 @@
 (DEFPARAMETER |DivisionRing;AL| 'NIL) 
 
 (DEFUN |DivisionRing;| ()
-  (PROG (#0=#:G1401)
+  (PROG (#0=#:G1399)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
-                       (PAIR '(#1=#:G1400)
+                       (PAIR '(#1=#:G1398)
                              (LIST '(|Fraction| (|Integer|))))
                        (|Join| (|EntireRing|) (|Algebra| '#1#)
                                (|mkCategory| '|domain|
