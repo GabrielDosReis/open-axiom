@@ -6,13 +6,13 @@
 (DEFPARAMETER |LinearAggregate;AL| 'NIL) 
 
 (DEFUN |LinearAggregate;| (|t#1|)
-  (PROG (#0=#:G1400)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
                        (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                        (|sublisV|
-                           (PAIR '(#1=#:G1399) (LIST '(|Integer|)))
+                           (PAIR '(#1=#:G1397) (LIST '(|Integer|)))
                            (COND
                              (|LinearAggregate;CAT|)
                              ('T
@@ -70,8 +70,8 @@
         (|setShellEntry| #0# 0
             (LIST '|LinearAggregate| (|devaluate| |t#1|))))))) 
 
-(DEFUN |LinearAggregate| (#0=#:G1401)
-  (LET (#1=#:G1402)
+(DEFUN |LinearAggregate| (#0=#:G1399)
+  (LET (#1=#:G1400)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |LinearAggregate;AL|))
        (CDR #1#))

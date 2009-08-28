@@ -181,8 +181,8 @@
   (STRCONC "\\mbox{``" (STRCONC |s| "''}"))) 
 
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
-  (PROG (|l| |m| |n| |h| #0=#:G1439 |r| #1=#:G1537 #2=#:G1538 |i|
-             #3=#:G1539 |k|)
+  (PROG (|l| |m| |n| |h| #0=#:G1437 |r| #1=#:G1535 #2=#:G1536 |i|
+             #3=#:G1537 |k|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |sg| (|getShellEntry| $ 44))
@@ -254,7 +254,7 @@
                (EXIT |c|)))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)
-  (PROG (|np| |nw| |iw| |ip| #0=#:G1540 #1=#:G1453 #2=#:G1449)
+  (PROG (|np| |nw| |iw| |ip| #0=#:G1538 #1=#:G1451 #2=#:G1447)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |np| (QCSIZE |part|)
                             |ISTRING;substring?;2$IB;17|)
@@ -323,7 +323,7 @@
                                  ('T (+ |r| (|getShellEntry| $ 6))))))))))))) 
 
 (DEFUN |ISTRING;position;C$2I;19| (|c| |t| |startpos| $)
-  (PROG (|r| #0=#:G1541 #1=#:G1463)
+  (PROG (|r| #0=#:G1539 #1=#:G1461)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |startpos|
                             (- |startpos| (|getShellEntry| $ 6))
@@ -359,7 +359,7 @@
            #1# (EXIT #1#))))) 
 
 (DEFUN |ISTRING;position;Cc$2I;20| (|cc| |t| |startpos| $)
-  (PROG (|r| #0=#:G1542 #1=#:G1469)
+  (PROG (|r| #0=#:G1540 #1=#:G1467)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |startpos|
                             (- |startpos| (|getShellEntry| $ 6))
@@ -570,7 +570,7 @@
                      (SPADCALL |i| |n| (|getShellEntry| $ 24)) $)))))) 
 
 (DEFUN |ISTRING;rightTrim;$C$;26| (|s| |c| $)
-  (PROG (|j| #0=#:G1543)
+  (PROG (|j| #0=#:G1541)
     (RETURN
       (SEQ (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 47))
                       |ISTRING;rightTrim;$C$;26|)
@@ -591,7 +591,7 @@
                      $)))))) 
 
 (DEFUN |ISTRING;rightTrim;$Cc$;27| (|s| |cc| $)
-  (PROG (|j| #0=#:G1544)
+  (PROG (|j| #0=#:G1542)
     (RETURN
       (SEQ (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 47))
                       |ISTRING;rightTrim;$Cc$;27|)
@@ -612,7 +612,7 @@
                      $)))))) 
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
-  (PROG (#0=#:G1545 #1=#:G1498 #2=#:G1496 #3=#:G1497 |t| |s| #4=#:G1546
+  (PROG (#0=#:G1543 #1=#:G1496 #2=#:G1494 #3=#:G1495 |t| |s| #4=#:G1544
             |i|)
     (RETURN
       (SEQ (LETT |t|
@@ -734,8 +734,8 @@
   (|stringMatch| |pattern| |target| (CHARACTER |wildcard|))) 
 
 (DEFUN |ISTRING;match?;2$CB;34| (|pattern| |target| |dontcare| $)
-  (PROG (|n| |m| #0=#:G1517 #1=#:G1520 |s| #2=#:G1521 #3=#:G1530 |i|
-             |p| #4=#:G1522 |q|)
+  (PROG (|n| |m| #0=#:G1515 #1=#:G1518 |s| #2=#:G1519 #3=#:G1528 |i|
+             |p| #4=#:G1520 |q|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |n|
                             (SPADCALL |pattern| (|getShellEntry| $ 47))
@@ -849,10 +849,10 @@
                                     (EXIT T)))))))
            #3# (EXIT #3#))))) 
 
-(DEFUN |IndexedString| (#0=#:G1547)
+(DEFUN |IndexedString| (#0=#:G1545)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1548)
+      (PROG (#1=#:G1546)
         (RETURN
           (COND
             ((LETT #1#

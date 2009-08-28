@@ -230,7 +230,7 @@
                    (EXIT |r|)))))))) 
 
 (DEFUN |LSAGG-;insert!;SAIA;7| (|s| |x| |i| $)
-  (PROG (|m| #0=#:G1465 |y| |z|)
+  (PROG (|m| #0=#:G1463 |y| |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
                  |LSAGG-;insert!;SAIA;7|)
@@ -257,7 +257,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;insert!;2AIA;8| (|w| |x| |i| $)
-  (PROG (|m| #0=#:G1469 |y| |z|)
+  (PROG (|m| #0=#:G1467 |y| |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
                  |LSAGG-;insert!;2AIA;8|)
@@ -336,7 +336,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;delete!;AIA;10| (|x| |i| $)
-  (PROG (|m| #0=#:G1481 |y|)
+  (PROG (|m| #0=#:G1479 |y|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
                  |LSAGG-;delete!;AIA;10|)
@@ -360,7 +360,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;delete!;AUsA;11| (|x| |i| $)
-  (PROG (|l| |m| |h| #0=#:G1486 #1=#:G1487 |t| #2=#:G1488)
+  (PROG (|l| |m| |h| #0=#:G1484 #1=#:G1485 |t| #2=#:G1486)
     (RETURN
       (SEQ (LETT |l| (SPADCALL |i| (|getShellEntry| $ 46))
                  |LSAGG-;delete!;AUsA;11|)
@@ -453,7 +453,7 @@
                    ('T |k|))))))) 
 
 (DEFUN |LSAGG-;mergeSort| (|f| |p| |n| $)
-  (PROG (#0=#:G1508 |l| |q|)
+  (PROG (#0=#:G1506 |l| |q|)
     (RETURN
       (SEQ (COND
              ((EQL |n| 2)
@@ -487,7 +487,7 @@
                                    (|getShellEntry| $ 23))))))))))) 
 
 (DEFUN |LSAGG-;sorted?;MAB;15| (|f| |l| $)
-  (PROG (#0=#:G1517 |p|)
+  (PROG (#0=#:G1515 |p|)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |l| (|getShellEntry| $ 16)) T)
@@ -667,7 +667,7 @@
            (EXIT (SPADCALL |y| (|getShellEntry| $ 57))))))) 
 
 (DEFUN |LSAGG-;copyInto!;2AIA;22| (|y| |x| |s| $)
-  (PROG (|m| #0=#:G1546 |z|)
+  (PROG (|m| #0=#:G1544 |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |y| (|getShellEntry| $ 33))
                  |LSAGG-;copyInto!;2AIA;22|)
@@ -711,7 +711,7 @@
                          (EXIT |y|))))))))) 
 
 (DEFUN |LSAGG-;position;SA2I;23| (|w| |x| |s| $)
-  (PROG (|m| #0=#:G1553 |k|)
+  (PROG (|m| #0=#:G1551 |k|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
                  |LSAGG-;position;SA2I;23|)
@@ -787,7 +787,7 @@
             (|getShellEntry| $ 76)))))) 
 
 (DEFUN |LSAGG-;<;2AB;25| (|x| |y| $)
-  (PROG (#0=#:G1567)
+  (PROG (#0=#:G1565)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ G190
                            (COND

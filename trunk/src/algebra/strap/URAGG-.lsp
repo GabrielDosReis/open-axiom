@@ -274,7 +274,7 @@
                    (EXIT |x|)))))))) 
 
 (DEFUN |URAGG-;findCycle| (|x| $)
-  (PROG (#0=#:G1476 |y|)
+  (PROG (#0=#:G1474 |y|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
                             |URAGG-;findCycle|)
@@ -435,7 +435,7 @@
            (EXIT |x|))))) 
 
 (DEFUN |URAGG-;last;ANniA;22| (|x| |n| $)
-  (PROG (|m| #0=#:G1499)
+  (PROG (|m| #0=#:G1497)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 60))
                  |URAGG-;last;ANniA;22|)
@@ -452,7 +452,7 @@
                         (|getShellEntry| $ 63))))))))) 
 
 (DEFUN |URAGG-;=;2AB;23| (|x| |y| $)
-  (PROG (|k| #0=#:G1509)
+  (PROG (|k| #0=#:G1507)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |x| |y| (|getShellEntry| $ 53)) T)
@@ -506,7 +506,7 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |URAGG-;node?;2AB;24| (|u| |v| $)
-  (PROG (|k| #0=#:G1514)
+  (PROG (|k| #0=#:G1512)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ (LETT |k| 0 |URAGG-;node?;2AB;24|) G190
                            (COND
@@ -574,7 +574,7 @@
   (SPADCALL |u| |s| (|getShellEntry| $ 70))) 
 
 (DEFUN |URAGG-;split!;AIA;32| (|p| |n| $)
-  (PROG (#0=#:G1525 |q|)
+  (PROG (#0=#:G1523 |q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))

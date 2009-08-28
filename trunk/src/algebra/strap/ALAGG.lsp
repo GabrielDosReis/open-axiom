@@ -6,7 +6,7 @@
 (DEFPARAMETER |AssociationListAggregate;AL| 'NIL) 
 
 (DEFUN |AssociationListAggregate;| (|t#1| |t#2|)
-  (PROG (#0=#:G1400)
+  (PROG (#0=#:G1398)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
@@ -14,7 +14,7 @@
                              (LIST (|devaluate| |t#1|)
                                    (|devaluate| |t#2|)))
                        (|sublisV|
-                           (PAIR '(#1=#:G1399)
+                           (PAIR '(#1=#:G1397)
                                  (LIST '(|Record| (|:| |key| |t#1|)
                                          (|:| |entry| |t#2|))))
                            (COND
@@ -38,9 +38,9 @@
             (LIST '|AssociationListAggregate| (|devaluate| |t#1|)
                   (|devaluate| |t#2|))))))) 
 
-(DEFUN |AssociationListAggregate| (&REST #0=#:G1403 &AUX #1=#:G1401)
+(DEFUN |AssociationListAggregate| (&REST #0=#:G1401 &AUX #1=#:G1399)
   (DSETQ #1# #0#)
-  (LET (#2=#:G1402)
+  (LET (#2=#:G1400)
     (COND
       ((SETQ #2#
              (|assoc| (|devaluateList| #1#)

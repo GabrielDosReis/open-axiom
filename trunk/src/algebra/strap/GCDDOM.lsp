@@ -4,7 +4,7 @@
 (DEFPARAMETER |GcdDomain;AL| 'NIL) 
 
 (DEFUN |GcdDomain;| ()
-  (PROG (#0=#:G1404)
+  (PROG (#0=#:G1402)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|IntegralDomain|)

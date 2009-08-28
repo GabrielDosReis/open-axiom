@@ -8,7 +8,7 @@
                 |UFD-;prime?;SB;2|)) 
 
 (DEFUN |UFD-;squareFreePart;2S;1| (|x| $)
-  (PROG (|s| |f| #0=#:G1420 #1=#:G1407 #2=#:G1405 #3=#:G1406)
+  (PROG (|s| |f| #0=#:G1418 #1=#:G1405 #2=#:G1403 #3=#:G1404)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL

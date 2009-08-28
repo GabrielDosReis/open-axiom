@@ -151,7 +151,7 @@
 (DEFUN |Boolean| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1425)
+      (PROG (#0=#:G1423)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Boolean|) |Boolean|)

@@ -258,7 +258,7 @@
                                    (|getShellEntry| $ 49))))))))))) 
 
 (DEFUN |ILIST;=;2$B;22| (|x| |y| $)
-  (PROG (#0=#:G1470)
+  (PROG (#0=#:G1468)
     (RETURN
       (SEQ (EXIT (COND
                    ((EQ |x| |y|) T)
@@ -307,7 +307,7 @@
            (EXIT (STRCONC |s| " \\right]")))))) 
 
 (DEFUN |ILIST;member?;S$B;24| (|s| |x| $)
-  (PROG (#0=#:G1478)
+  (PROG (#0=#:G1476)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ G190
                            (COND ((NULL (NOT (NULL |x|))) (GO G191)))
@@ -420,7 +420,7 @@
                    (EXIT |r|)))))))) 
 
 (DEFUN |ILIST;split!;$I$;29| (|p| |n| $)
-  (PROG (#0=#:G1507 |q|)
+  (PROG (#0=#:G1505 |q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))
@@ -437,7 +437,7 @@
                    (QRPLACD |p| NIL) (EXIT |q|)))))))) 
 
 (DEFUN |ILIST;mergeSort| (|f| |p| |n| $)
-  (PROG (#0=#:G1511 |l| |q|)
+  (PROG (#0=#:G1509 |l| |q|)
     (RETURN
       (SEQ (COND
              ((EQL |n| 2)
@@ -464,11 +464,11 @@
                                |ILIST;mergeSort|)
                          (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
 
-(DEFUN |IndexedList| (&REST #0=#:G1523 &AUX #1=#:G1521)
+(DEFUN |IndexedList| (&REST #0=#:G1521 &AUX #1=#:G1519)
   (DSETQ #1# #0#)
   (PROG ()
     (RETURN
-      (PROG (#2=#:G1522)
+      (PROG (#2=#:G1520)
         (RETURN
           (COND
             ((LETT #2#

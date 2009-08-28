@@ -4,7 +4,7 @@
 (DEFPARAMETER |AbelianMonoid;AL| 'NIL) 
 
 (DEFUN |AbelianMonoid;| ()
-  (PROG (#0=#:G1399)
+  (PROG (#0=#:G1397)
     (RETURN
       (PROG1 (LETT #0#
                    (|Join| (|AbelianSemiGroup|)

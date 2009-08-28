@@ -461,7 +461,7 @@
   (+ (- |$ShortMaximum| |$ShortMinimum|) 1)) 
 
 (DEFUN |SINT;index;Pi$;53| (|i| $)
-  (PROG (#0=#:G1459)
+  (PROG (#0=#:G1457)
     (RETURN
       (PROG1 (LETT #0# (- (+ |i| |$ShortMinimum|) 1)
                    |SINT;index;Pi$;53|)
@@ -504,7 +504,7 @@
 (DEFUN |SingleInteger| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1494)
+      (PROG (#0=#:G1492)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|SingleInteger|)
