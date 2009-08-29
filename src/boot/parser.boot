@@ -202,12 +202,12 @@ bpListofFun(f,h,g)==
           $stack:=nil
           while apply(h,nil) and (apply(f,nil) or bpTrap()) repeat 0
           $stack:=[NREVERSE $stack,:a]
-          bpPush FUNCALL(g, bfListOf [bpPop3(),bpPop2(),:bpPop1()])
+          bpPush FUNCALL(g, [bpPop3(),bpPop2(),:bpPop1()])
         else
           true
     else false
  
-bpList(f,str1,g)==
+bpList(f,str1)==
     if apply(f,nil)
     then
         if bpEqKey str1 and (apply(f,nil) or bpTrap())
@@ -216,10 +216,10 @@ bpList(f,str1,g)==
           $stack:=nil
           while bpEqKey str1 and (apply(f,nil) or bpTrap()) repeat 0
           $stack:=[NREVERSE $stack,:a]
-          bpPush FUNCALL(g,  [bpPop3(),bpPop2(),:bpPop1()])
+          bpPush [bpPop3(),bpPop2(),:bpPop1()]
         else
-          bpPush FUNCALL(g, [bpPop1()])
-    else bpPush FUNCALL(g, [])
+          bpPush [bpPop1()]
+    else bpPush nil
  
 bpOneOrMore f==
        apply(f,nil)=>
@@ -1112,8 +1112,7 @@ bpAssignVariable()==
 bpAssignLHS()==
    bpName() and (bpEqKey "COLON" and (bpApplication() or bpTrap())
      and bpPush bfLocal(bpPop2(),bpPop1())
-        or bpEqKey "DOT" and bpList(function bpPrimary,"DOT",
-              function bfListOf)
+        or bpEqKey "DOT" and bpList(function bpPrimary,"DOT")
           and bpChecknull() and
             bpPush bfTuple([bpPop2(),:bpPop1()])
                  or true)

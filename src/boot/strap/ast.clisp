@@ -160,10 +160,6 @@
     (SETQ |$GenVarCounter| (+ |$GenVarCounter| 1))
     (INTERN (CONCAT "bfVar#" (STRINGIMAGE |$GenVarCounter|)))))
 
-(DECLAIM (FTYPE (FUNCTION (|%List|) |%List|) |bfListOf|))
-
-(DEFUN |bfListOf| (|x|) |x|)
-
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfColon|))
 
 (DEFUN |bfColon| (|x|) (LIST 'COLON |x|))

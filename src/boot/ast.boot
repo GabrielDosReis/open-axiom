@@ -147,10 +147,6 @@ bfGenSymbol()==
     $GenVarCounter:=$GenVarCounter+1
     INTERN(CONCAT ('"bfVar#",STRINGIMAGE $GenVarCounter))
 
-bfListOf: %List -> %List 
-bfListOf x==
-  x
- 
 bfColon: %Thing -> %List
 bfColon x== 
   ["COLON",x]

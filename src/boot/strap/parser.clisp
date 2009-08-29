@@ -217,13 +217,11 @@
             (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
             (|bpPush|
                 (FUNCALL |g|
-                         (|bfListOf|
-                             (CONS (|bpPop3|)
-                                   (CONS (|bpPop2|) (|bpPop1|)))))))
+                         (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|))))))
            (#0='T T)))
         (#0# NIL)))))
 
-(DEFUN |bpList| (|f| |str1| |g|)
+(DEFUN |bpList| (|f| |str1|)
   (PROG (|a|)
     (DECLARE (SPECIAL |$stack|))
     (RETURN
@@ -239,11 +237,9 @@
                  (RETURN NIL))
                 ('T 0)))
             (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
-            (|bpPush|
-                (FUNCALL |g|
-                         (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|))))))
-           (#0='T (|bpPush| (FUNCALL |g| (LIST (|bpPop1|)))))))
-        (#0# (|bpPush| (FUNCALL |g| NIL)))))))
+            (|bpPush| (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|)))))
+           (#0='T (|bpPush| (LIST (|bpPop1|))))))
+        (#0# (|bpPush| NIL))))))
 
 (DEFUN |bpOneOrMore| (|f|)
   (PROG (|a|)
@@ -1139,8 +1135,7 @@
   (AND (|bpName|)
        (OR (AND (|bpEqKey| 'COLON) (OR (|bpApplication|) (|bpTrap|))
                 (|bpPush| (|bfLocal| (|bpPop2|) (|bpPop1|))))
-           (AND (|bpEqKey| 'DOT)
-                (|bpList| #'|bpPrimary| 'DOT #'|bfListOf|)
+           (AND (|bpEqKey| 'DOT) (|bpList| #'|bpPrimary| 'DOT)
                 (|bpChecknull|)
                 (|bpPush| (|bfTuple| (CONS (|bpPop2|) (|bpPop1|)))))
            T)))
