@@ -404,16 +404,12 @@ translateToplevelExpression expr ==
   $InteractiveMode => expr'
   shoeEVALANDFILEACTQ expr'
 
-maybeExportDecl(d,export?) ==
-  export? => d
-  d
-
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.
-  b is ["TUPLE",:xs] => [maybeExportDecl(x,export?) for x in xs]
+  b is ["DEF",:.] => rest bfCompDef b
+  b is ["TUPLE",:xs] => coreError '"invalid AST"
   case b of
-    %Signature(op,t) =>
-      [maybeExportDecl(genDeclaration(op,t),export?)]
+    %Signature(op,t) => [genDeclaration(op,t)]
 
     %Module(m,ds) =>
       $currentModuleName := m 
@@ -429,27 +425,32 @@ translateToplevel(b,export?) ==
     %ImportSignature(x, sig) =>
       genImportDeclaration(x, sig)
 
-    %TypeAlias(lhs, rhs) => 
-      [maybeExportDecl(genTypeAlias(lhs,rhs),export?)]
+    %TypeAlias(lhs, rhs) => [genTypeAlias(lhs,rhs)]
 
     %ConstantDefinition(lhs,rhs) =>
       sig := nil
       if lhs is ["%Signature",n,t] then
-        sig := maybeExportDecl(genDeclaration(n,t),export?)
+        sig := genDeclaration(n,t)
         lhs := n
-      [maybeExportDecl(["DEFCONSTANT",lhs,rhs],export?)]
+      [["DEFCONSTANT",lhs,rhs]]
 
     %Assignment(lhs,rhs) =>
       sig := nil
       if lhs is ["%Signature",n,t] then
-        sig := maybeExportDecl(genDeclaration(n,t),export?)
+        sig := genDeclaration(n,t)
         lhs := n
       $InteractiveMode => [["SETF",lhs,rhs]]
-      [maybeExportDecl(["DEFPARAMETER",lhs,rhs],export?)]
+      [["DEFPARAMETER",lhs,rhs]]
+
+    %Macro(op,args,body) => bfMDef(op,args,body)
+
+    %Structure(t,alts) => [bfCreateDef alt for alt in alts]
 
     %Namespace n =>
       $activeNamespace := STRING n
       [["IN-PACKAGE",STRING n]]
+
+    %Lisp s => shoeReadLispString(s,0)
 
     otherwise =>
       [translateToplevelExpression b]
