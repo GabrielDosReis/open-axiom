@@ -1179,7 +1179,7 @@
 (DEFUN |bfApplication| (|bfop| |bfarg|)
   (COND
     ((|bfTupleP| |bfarg|) (CONS |bfop| (CDR |bfarg|)))
-    ('T (CONS |bfop| (LIST |bfarg|)))))
+    ('T (LIST |bfop| |bfarg|))))
 
 (DEFUN |bfReName| (|x|)
   (PROG (|a|)
@@ -1618,8 +1618,8 @@
   (COND
     ((NULL |x|) NIL)
     ((AND (IDENTP |x|) (|bfBeginsDollar| |x|)) (LIST |x|))
-    ((EQCAR |x| 'QUOTE) NIL)
     ((ATOM |x|) NIL)
+    ((EQCAR |x| 'QUOTE) NIL)
     ('T (APPEND (|shoeFluids| (CAR |x|)) (|shoeFluids| (CDR |x|))))))
 
 (DEFUN |shoeATOMs| (|x|)

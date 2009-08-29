@@ -622,7 +622,6 @@ bfLET2(lhs,rhs) ==
  
 bfLET(lhs,rhs) ==
   $letGenVarCounter : local := 1
---  $inbfLet : local := true
   bfLET1(lhs,rhs)
  
 addCARorCDR(acc,expr) ==
@@ -681,10 +680,7 @@ bfIS1(lhs,rhs) ==
     IDENTP a => ['EQ,lhs,rhs]
     ["EQUAL",lhs,rhs]
   rhs is ['L%T,c,d] =>
-    l :=
-      bfLET(c,lhs)
---    $inbfLet => bfLET1(c,lhs)
---    bfLET(c,lhs)
+    l := bfLET(c,lhs)
     bfAND [bfIS1(lhs,d),bfMKPROGN [l,''T]]
   rhs is ["EQUAL",a] =>
     ["EQUAL",lhs,a]
@@ -723,9 +719,8 @@ bfIS1(lhs,rhs) ==
   bpTrap()
  
 bfApplication(bfop, bfarg) ==
-         if bfTupleP bfarg
-         then cons(bfop,rest bfarg)
-         else cons(bfop,[bfarg])
+  bfTupleP bfarg => [bfop,:rest bfarg]
+  [bfop,bfarg]
  
 -- returns the meaning of x in the appropriate Boot dialect.
 bfReName x==
@@ -915,23 +910,16 @@ shoePROG(v,b)==
     [["PROG",v,:blist,["RETURN", blast]]]
 
 shoeFluids x==
-         if null x
-         then nil
-         else if IDENTP x and bfBeginsDollar x
-              then [x]
-              else
-                if EQCAR(x,"QUOTE")
-                then []
-                else
-                  if atom x
-                  then nil
-                  else  append(shoeFluids first x,shoeFluids rest x)
-shoeATOMs x==
-         if null x
-         then nil
-         else if atom x
-              then [x]
-              else append(shoeATOMs first x,shoeATOMs rest x)
+  null x => nil
+  IDENTP x and bfBeginsDollar x => [x]
+  atom x => nil
+  EQCAR(x,"QUOTE") => nil
+  [:shoeFluids first x,:shoeFluids rest x]
+
+shoeATOMs x ==
+  null x => nil
+  atom x => [x]
+  [:shoeATOMs first x,:shoeATOMs rest x]
 
 ++ Return true if `x' is an identifier name that designates a
 ++ dynamic (e.g. Lisp special) variable.  
@@ -991,12 +979,12 @@ bfTagged(a,b)==
   ["THE",b,a]
  
 bfAssign(l,r)==
-   if bfTupleP l then bfSetelt(second l,CDDR l ,r) else bfLET(l,r)
+  bfTupleP l => bfSetelt(second l,CDDR l ,r)
+  bfLET(l,r)
  
 bfSetelt(e,l,r)==
-    if null rest l
-    then defSETELT(e,car l,r)
-    else bfSetelt(bfElt(e,first l),rest l,r)
+  null rest l => defSETELT(e,first l,r)
+  bfSetelt(bfElt(e,first l),rest l,r)
  
 bfElt(expr,sel)==
       y:=SYMBOLP sel and GET(sel,"SHOESELFUNCTION")
@@ -1114,9 +1102,8 @@ bfMain(auxfn,op)==
 
 bfNameOnly: %Thing -> %List 
 bfNameOnly x==
-      if x="t"
-      then ["T"]
-      else  [x]
+  x="t" => ["T"]
+  [x]
 
 bfNameArgs: (%Thing,%Thing) -> %List 
 bfNameArgs (x,y)==
