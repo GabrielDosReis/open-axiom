@@ -1,5 +1,11 @@
 2009-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (bfCase): Don't hold scrutinee's remaining
+	structure in a temporary.
+	(bfCI): Adjust generation of selectors.
+
+2009-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (%Definition): Lose one argument.
 	(bfDefinition): Remove.
 	(bfSimpleDefinition): Likewise.
