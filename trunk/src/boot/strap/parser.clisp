@@ -432,7 +432,7 @@
     ((MEMQ (|shoeTokType| |$stok|) '(INTEGER FLOAT))
      (PROGN (|bpPush| |$ttok|) (|bpNext|)))
     ((EQCAR |$stok| 'LISP)
-     (AND (|bpPush| (|bfReadLisp| |$ttok|)) (|bpNext|)))
+     (AND (|bpPush| (|%Lisp| |$ttok|)) (|bpNext|)))
     ((EQCAR |$stok| 'LISPEXP) (AND (|bpPush| |$ttok|) (|bpNext|)))
     ((EQCAR |$stok| 'LINE)
      (AND (|bpPush| (LIST '+LINE |$ttok|)) (|bpNext|)))
@@ -917,9 +917,7 @@
        T))
     ('T T)))
 
-(DEFUN |bpDef| ()
-  (AND (|bpName|) (|bpStoreName|) (|bpDefTail|)
-       (|bpPush| (|bfCompDef| (|bpPop1|)))))
+(DEFUN |bpDef| () (AND (|bpName|) (|bpStoreName|) (|bpDefTail|)))
 
 (DEFUN |bpDDef| () (AND (|bpName|) (|bpDefTail|)))
 
@@ -938,7 +936,7 @@
 (DEFUN |bpMDefTail| ()
   (AND (OR (|bpVariable|) (|bpTrap|)) (|bpEqKey| 'MDEF)
        (OR (|bpWhere|) (|bpTrap|))
-       (|bpPush| (|bfMDefinition| (|bpPop3|) (|bpPop2|) (|bpPop1|)))))
+       (|bpPush| (|%Macro| (|bpPop3|) (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpMdef| () (AND (|bpName|) (|bpStoreName|) (|bpMDefTail|)))
 
@@ -1157,7 +1155,7 @@
 (DEFUN |bpStruct| ()
   (AND (|bpEqKey| 'STRUCTURE) (OR (|bpName|) (|bpTrap|))
        (OR (|bpEqKey| 'DEF) (|bpTrap|)) (|bpTypeList|)
-       (|bpPush| (|bfStruct| (|bpPop2|) (|bpPop1|)))))
+       (|bpPush| (|%Structure| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpTypeList| ()
   (OR (|bpPileBracketed| #'|bpTypeItemList|)

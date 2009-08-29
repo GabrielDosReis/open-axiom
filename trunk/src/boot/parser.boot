@@ -401,7 +401,7 @@ bpConstTok() ==
      MEMQ(shoeTokType $stok, '(INTEGER FLOAT)) =>
           bpPush $ttok
           bpNext()
-     EQCAR($stok,"LISP")=> bpPush bfReadLisp $ttok and bpNext()
+     EQCAR($stok,"LISP")=> bpPush %Lisp $ttok and bpNext()
      EQCAR($stok,"LISPEXP")=> bpPush $ttok and bpNext()
      EQCAR($stok,"LINE")=> bpPush ["+LINE", $ttok] and bpNext()
      bpEqPeek "QUOTE" =>
@@ -881,8 +881,7 @@ bpReturnType() ==
   true
  
 bpDef() ==  
-  bpName() and bpStoreName() and
-    bpDefTail() and bpPush bfCompDef bpPop1 ()
+  bpName() and bpStoreName() and bpDefTail()
  
 bpDDef() ==  bpName() and bpDefTail()
 
@@ -914,7 +913,7 @@ bpMDefTail()==
  --      or
            (bpVariable() or bpTrap()) and
              bpEqKey "MDEF" and (bpWhere() or bpTrap())
-                 and bpPush bfMDefinition(bpPop3(),bpPop2(),bpPop1())
+                 and bpPush %Macro(bpPop3(),bpPop2(),bpPop1())
  
 bpMdef()== bpName() and bpStoreName() and bpMDefTail()
  
@@ -1128,7 +1127,7 @@ bpStruct()==
    bpEqKey "STRUCTURE" and
       (bpName() or bpTrap()) and
         (bpEqKey "DEF" or bpTrap()) and
-           bpTypeList() and bpPush bfStruct(bpPop2(),bpPop1())
+           bpTypeList() and bpPush %Structure(bpPop2(),bpPop1())
  
 bpTypeList() == bpPileBracketed function bpTypeItemList
        or bpTerm function bpIdList and bpPush [bpPop1()]

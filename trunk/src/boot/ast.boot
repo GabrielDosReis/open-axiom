@@ -84,6 +84,7 @@ structure %Name ==
 
 structure %Ast ==
   %Command(%String)                     -- includer command
+  %Lisp(%String)                        -- )lisp command
   %Module(%Name,%List)                  -- module declaration
   %Namespace(%Name)                     -- namespace AxiomCore
   %Import(%String)                      -- import module
@@ -211,20 +212,10 @@ bfSimpleDefinition(lhs,rhs) ==
     $constantIdentifiers := [id,:$constantIdentifiers]
   %ConstantDefinition(lhs,rhs)
  
-
-
-bfMDefinition: (%Thing,%Thing,%Thing) -> %List 
-bfMDefinition(bflhsitems, bfrhs,body) ==
-       bfMDef('MDEF,bflhsitems,bfrhs,body)
-
 bfCompDef: %Thing -> %List 
 bfCompDef x ==
-  case x of
-    %ConstantDefinition(.,.) => x
-    otherwise =>
-      x is [def, op, args, body] =>
-        bfDef(def,op,args,body)
-      coreError '"invalid AST"
+  x is [def, op, args, body] => bfDef(op,args,body)
+  coreError '"invalid AST"
 
 bfBeginsDollar: %Thing -> %Boolean 
 bfBeginsDollar x ==  
@@ -525,7 +516,7 @@ defSheepAndGoats(x)==
         else
           op1:=INTERN CONCAT(PNAME $op,'",",PNAME op)
           opassoc:=[[op,:op1]]
-          defstack:=[["DEF",op1,args,body]]
+          defstack:=[[op1,args,body]]
           [opassoc,defstack,[]]
     EQCAR (x,"SEQ") =>  defSheepAndGoatsList(rest x)
     [[],[],[x]]
@@ -777,7 +768,7 @@ bfLessp(l,r)==
       then ["MINUSP", l]
       else ["<",l,r]
  
-bfMDef (defOp,op,args,body) ==
+bfMDef (op,args,body) ==
   argl:=if bfTupleP args then cdr args else [args]
   [gargl,sgargl,nargl,largl]:=bfGargl argl
   sb:=[cons(i,j) for i in nargl for j in sgargl]
@@ -786,8 +777,7 @@ bfMDef (defOp,op,args,body) ==
   body := ["SUBLIS",["LIST",:sb2],["QUOTE",body]]
   lamex:= ["MLAMBDA",gargl,body]
   def:= [op,lamex]
-  bfTuple
-     cons(shoeComp def,[:shoeComps bfDef1 d for d in $wheredefs])
+  [shoeComp def,:[:shoeComps bfDef1 d for d in $wheredefs]]
  
 bfGargl argl==
       if null argl
@@ -801,7 +791,7 @@ bfGargl argl==
             f:=bfGenSymbol()
             [cons(f,a),cons(f,b),cons(first argl,c),cons(f,d)]
  
-bfDef1 [defOp,op,args,body] ==
+bfDef1 [op,args,body] ==
   argl:=if bfTupleP args then rest args else [args]
   [quotes,control,arglp,body]:=bfInsertLet (argl,body)
   quotes=>shoeLAM(op,arglp,control,body)
@@ -814,12 +804,12 @@ shoeLAM (op,args,control,body)==
      [op,["MLAMBDA",["&REST",margs],["CONS",["QUOTE", innerfunc],
                     ["WRAP",margs, ["QUOTE", control]]]]]]
  
-bfDef(defOp,op,args,body) ==
+bfDef(op,args,body) ==
  $bfClamming =>
-          [.,op1,arg1,:body1]:=shoeComp first bfDef1 [defOp,op,args,body]
+          [.,op1,arg1,:body1]:=shoeComp first bfDef1 [op,args,body]
           bfCompHash(op1,arg1,body1)
  bfTuple
-  [:shoeComps bfDef1 d for d in  cons([defOp,op,args,body],$wheredefs)]
+  [:shoeComps bfDef1 d for d in  cons([op,args,body],$wheredefs)]
  
 shoeComps  x==
   [shoeComp def for def in x]
@@ -1047,8 +1037,8 @@ bfSequence l ==
  
 bfWhere (context,expr)==
   [opassoc,defs,nondefs] := defSheepAndGoats context
-  a:=[[def,op,args,bfSUBLIS(opassoc,body)]
-               for d in defs  |d is [def,op,args,body]]
+  a:=[[first d,second d,bfSUBLIS(opassoc,third d)]
+               for d in defs]
   $wheredefs:=append(a,$wheredefs)
   bfMKPROGN bfSUBLIS(opassoc,NCONC(nondefs,[expr]))
  
@@ -1058,9 +1048,6 @@ bfWhere (context,expr)==
 --    null exp => nil
 --    cons(exp,shoeReadLispString(s,ind))
  
-bfReadLisp string ==
-  bfTuple shoeReadLispString (string,0)
-
 bfCompHash(op,argl,body) ==
   auxfn:= INTERN CONCAT (PNAME op,'";")
   computeFunction:= ["DEFUN",auxfn,argl,:body]
@@ -1110,10 +1097,6 @@ bfNameArgs (x,y)==
     y:=if EQCAR(y,"TUPLE") then rest y else [y]
     cons(x,y)
  
-bfStruct: (%Thing,%List) -> %List
-bfStruct(name,arglist)==
-  bfTuple [bfCreateDef i for i in arglist]
-
 bfCreateDef: %Thing -> %List
 bfCreateDef x==
      if null rest x
