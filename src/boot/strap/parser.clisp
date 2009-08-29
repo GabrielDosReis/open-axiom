@@ -919,12 +919,12 @@
 
 (DEFUN |bpSimpleDefinitionTail| ()
   (AND (|bpEqKey| 'DEF) (OR (|bpWhere|) (|bpTrap|))
-       (|bpPush| (|bfSimpleDefinition| (|bpPop2|) (|bpPop1|)))))
+       (|bpPush| (|%ConstantDefinition| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpCompoundDefinitionTail| ()
   (AND (|bpVariable|) (|bpReturnType|) (|bpEqKey| 'DEF)
        (OR (|bpWhere|) (|bpTrap|))
-       (|bpPush| (|bfDefinition| (|bpPop3|) (|bpPop2|) (|bpPop1|)))))
+       (|bpPush| (|%Definition| (|bpPop3|) (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpDefTail| ()
   (OR (|bpSimpleDefinitionTail|) (|bpCompoundDefinitionTail|)))
@@ -959,13 +959,13 @@
 
 (DEFUN |bpDefinitionPileItems| ()
   (AND (|bpListAndRecover| #'|bpDefinitionItem|)
-       (|bpPush| (|bfDefSequence| (|bpPop1|)))))
+       (|bpPush| (|%Pile| (|bpPop1|)))))
 
 (DEFUN |bpBDefinitionPileItems| ()
   (|bpPileBracketed| #'|bpDefinitionPileItems|))
 
 (DEFUN |bpSemiColonDefinition| ()
-  (|bpSemiListing| #'|bpDefinitionItem| #'|bfDefSequence|))
+  (|bpSemiListing| #'|bpDefinitionItem| #'|%Pile|))
 
 (DEFUN |bpPDefinitionItems| ()
   (|bpParenthesized| #'|bpSemiColonDefinition|))

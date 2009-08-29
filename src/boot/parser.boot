@@ -889,13 +889,13 @@ bpDDef() ==  bpName() and bpDefTail()
 bpSimpleDefinitionTail() ==
   bpEqKey "DEF" and
     (bpWhere() or bpTrap())
-      and bpPush bfSimpleDefinition(bpPop2(), bpPop1())
+      and bpPush %ConstantDefinition(bpPop2(), bpPop1())
 
 ++ Parse the remaining of a compound definition.
 bpCompoundDefinitionTail() ==
   bpVariable()  and bpReturnType()  and
     bpEqKey "DEF" and (bpWhere() or bpTrap())
-      and bpPush bfDefinition(bpPop3(),bpPop2(),bpPop1())
+      and bpPush %Definition(bpPop3(),bpPop2(),bpPop1())
 
 
 ++ Parse the remainding of a definition.  When we reach this point
@@ -940,12 +940,12 @@ bpDefinitionItem()==
  
 bpDefinitionPileItems()==
     bpListAndRecover function bpDefinitionItem
-           and bpPush bfDefSequence bpPop1()
+           and bpPush %Pile bpPop1()
  
 bpBDefinitionPileItems()== bpPileBracketed function bpDefinitionPileItems
  
 bpSemiColonDefinition()==bpSemiListing
-    (function bpDefinitionItem,function bfDefSequence)
+    (function bpDefinitionItem,function %Pile)
  
 bpPDefinitionItems()==bpParenthesized function bpSemiColonDefinition
  

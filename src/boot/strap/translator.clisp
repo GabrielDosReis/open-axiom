@@ -594,11 +594,11 @@
 (DEFUN |translateToplevel| (|b| |export?|)
   (PROG (|lhs| |t| |ISTMP#2| |n| |ISTMP#1| |sig| |xs|)
     (DECLARE (SPECIAL |$activeNamespace| |$InteractiveMode|
-                      |$foreignsDefsForCLisp| |$currentModuleName|))
+                      |$constantIdentifiers| |$foreignsDefsForCLisp|
+                      |$currentModuleName|))
     (RETURN
       (COND
         ((ATOM |b|) (LIST |b|))
-        ((AND (CONSP |b|) (EQ (CAR |b|) 'DEF)) (CDR (|bfCompDef| |b|)))
         ((AND (CONSP |b|) (EQ (CAR |b|) 'TUPLE)
               (PROGN (SETQ |xs| (CDR |b|)) #0='T))
          (|coreError| "invalid AST"))
@@ -608,6 +608,11 @@
              (|%Signature|
                  (LET ((|op| (CAR |bfVar#15|)) (|t| (CADR |bfVar#15|)))
                    (LIST (|genDeclaration| |op| |t|))))
+             (|%Definition|
+                 (LET ((|op| (CAR |bfVar#15|))
+                       (|args| (CADR |bfVar#15|))
+                       (|body| (CADDR |bfVar#15|)))
+                   (CDR (|bfDef| |op| |args| |body|))))
              (|%Module|
                  (LET ((|m| (CAR |bfVar#15|)) (|ds| (CADR |bfVar#15|)))
                    (PROGN
@@ -667,6 +672,8 @@
                                          #0#))))))
                         (SETQ |sig| (|genDeclaration| |n| |t|))
                         (SETQ |lhs| |n|)))
+                     (SETQ |$constantIdentifiers|
+                           (CONS |lhs| |$constantIdentifiers|))
                      (LIST (LIST 'DEFCONSTANT |lhs| |rhs|)))))
              (|%Assignment|
                  (LET ((|lhs| (CAR |bfVar#15|))

@@ -110,7 +110,7 @@ structure %Ast ==
   %Call(%Ast,%Sequence)                 -- f(x, y , z)
   %InfixExpr(%Name,%Ast,%Ast)           -- x + y
   %ConstantDefinition(%Name,%Ast)       -- x == y
-  %Definition(%Name,%List,%Ast,%Ast)    -- f x == y
+  %Definition(%Name,%Ast,%Ast)          -- f x == y
   %Macro(%Name,%List,%Ast)              -- m x ==> y
   %SuchThat(%Ast)                       -- | p
   %Assignment(%Ast,%Ast)                -- x := y
@@ -196,26 +196,9 @@ bfColonAppend(x,y) ==
       else ["&REST",y]
      else cons(first x,bfColonAppend(rest x,y))
 
-bfDefinition: (%Thing,%Thing,%Thing) -> %List 
-bfDefinition(bflhsitems, bfrhs,body) ==
-       ['DEF,bflhsitems,bfrhs,body]
-
-bfSimpleDefinition: (%Thing,%Thing) -> %Thing
-bfSimpleDefinition(lhs,rhs) ==
-  if atom lhs then
-    $constantIdentifiers := [lhs,:$constantIdentifiers]
-  else if lhs is ["%Signature",id,.] then
-    $constantIdentifiers := [id,:$constantIdentifiers]
-  %ConstantDefinition(lhs,rhs)
- 
-bfCompDef: %Thing -> %List 
-bfCompDef x ==
-  x is [def, op, args, body] => bfDef(op,args,body)
-  coreError '"invalid AST"
-
 bfBeginsDollar: %Thing -> %Boolean 
 bfBeginsDollar x ==  
-  EQL('"$".0,(PNAME x).0)
+  (PNAME x).0 = char "$"
  
 compFluid id == 
   ["FLUID",id]
@@ -477,9 +460,6 @@ bfDrop(n,x)==
      null x or n=0 =>x
      bfDrop(n-1,rest x)
  
-bfDefSequence l ==  
-  ['SEQ,: l]
- 
 bfReturnNoName a ==
       ["RETURN",a]
  
@@ -500,22 +480,22 @@ bfSUBLIS1(p,e)==
    bfSUBLIS1(cdr p,e)
  
 defSheepAndGoats(x)==
-    EQCAR (x,"DEF") =>
-        [def,op,args,body]:=x
-        argl:=if bfTupleP args
-              then rest args
-              else [args]
-        if null argl
-        then
-          opassoc:=[[op,:body]]
-          [opassoc,[],[]]
-        else
-          op1:=INTERN CONCAT(PNAME $op,'",",PNAME op)
-          opassoc:=[[op,:op1]]
-          defstack:=[[op1,args,body]]
-          [opassoc,defstack,[]]
-    EQCAR (x,"SEQ") =>  defSheepAndGoatsList(rest x)
-    [[],[],[x]]
+  case x of 
+    %Definition(op,args,body) =>
+      argl:=if bfTupleP args
+	    then rest args
+	    else [args]
+      if null argl
+      then
+	opassoc:=[[op,:body]]
+	[opassoc,[],[]]
+      else
+	op1:=INTERN CONCAT(PNAME $op,'",",PNAME op)
+	opassoc:=[[op,:op1]]
+	defstack:=[[op1,args,body]]
+	[opassoc,defstack,[]]
+    %Pile defs => defSheepAndGoatsList defs
+    otherwise => [[],[],[x]]
  
 defSheepAndGoatsList(x)==
      if null x
@@ -525,6 +505,7 @@ defSheepAndGoatsList(x)==
        [opassoc1,defs1,nondefs1] := defSheepAndGoatsList rest x
        [append(opassoc,opassoc1),append(defs,defs1),
             append(nondefs,nondefs1)]
+
 --% LET
  
 bfLetForm(lhs,rhs) ==   
