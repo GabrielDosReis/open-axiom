@@ -781,7 +781,7 @@
 
 (DEFUN |bpExceptionTail| ()
   (AND (|bpEqKey| 'EXIT) (OR (|bpAssign|) (|bpTrap|))
-       (|bpPush| (|Exit| (|bpPop2|) (|bpPop1|)))))
+       (|bpPush| (|%Exit| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpException| ()
   (AND (|bpExceptionHead|) (OR (|bpExceptionTail|) T)))
@@ -1195,4 +1195,33 @@
   (AND (OR (|bpTerm| #'|bpCasePatternVarList|) (|bpTrap|))
        (OR (|bpEqKey| 'EXIT) (|bpTrap|)) (OR (|bpWhere|) (|bpTrap|))
        (|bpPush| (|bfCaseItem| (|bpPop2|) (|bpPop1|)))))
+
+(DEFUN |bpOutItem| ()
+  (PROG (|r| |ISTMP#2| |l| |ISTMP#1| |b|)
+    (DECLARE (SPECIAL |$InteractiveMode| |$op|))
+    (RETURN
+      (PROGN
+        (SETQ |$op| NIL)
+        (OR (|bpComma|) (|bpTrap|))
+        (SETQ |b| (|bpPop1|))
+        (|bpPush|
+            (COND
+              ((EQCAR |b| '+LINE) (LIST |b|))
+              ((AND (CONSP |b|) (EQ (CAR |b|) 'L%T)
+                    (PROGN
+                      (SETQ |ISTMP#1| (CDR |b|))
+                      (AND (CONSP |ISTMP#1|)
+                           (PROGN
+                             (SETQ |l| (CAR |ISTMP#1|))
+                             (SETQ |ISTMP#2| (CDR |ISTMP#1|))
+                             (AND (CONSP |ISTMP#2|)
+                                  (EQ (CDR |ISTMP#2|) NIL)
+                                  (PROGN
+                                    (SETQ |r| (CAR |ISTMP#2|))
+                                    'T)))))
+                    (IDENTP |l|))
+               (COND
+                 (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
+                 (#0='T (LIST (LIST 'DEFPARAMETER |l| |r|)))))
+              (#0# (|translateToplevel| |b| NIL))))))))
 

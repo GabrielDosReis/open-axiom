@@ -741,7 +741,7 @@ bpExceptionHead() ==
 
 bpExceptionTail() ==
   bpEqKey "EXIT" and (bpAssign() or bpTrap()) and
-    bpPush Exit(bpPop2(),bpPop1())
+    bpPush %Exit(bpPop2(),bpPop1())
 
 ++ Exception:
 ++   ExpcetionHead
@@ -1173,3 +1173,16 @@ bpCaseItem()==
          (bpWhere() or bpTrap()) and
             bpPush bfCaseItem (bpPop2(),bpPop1())
 
+
+++ Main entry point into the parser module.
+bpOutItem()==
+  $op := nil
+  bpComma() or bpTrap()
+  b:=bpPop1()
+  bpPush 
+    EQCAR(b,"+LINE")=> [ b ]
+    b is ["L%T",l,r] and IDENTP l => 
+      $InteractiveMode => [["SETQ",l,r]]
+      [["DEFPARAMETER",l,r]]
+    translateToplevel(b,false)
+ 

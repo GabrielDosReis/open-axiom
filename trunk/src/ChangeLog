@@ -1,3 +1,9 @@
+2009-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/translator.boot (bpOutItem): Move to parser.boot.
+	* boot/parser.boot (bpExceptionTail): Fix typo.
+	(bpOutItem): Move from translator.boot.
+
 2009-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfCase): Don't  introduce temporary for scrutinee
