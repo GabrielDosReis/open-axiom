@@ -1,5 +1,19 @@
 2009-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (%Definition): Lose one argument.
+	(bfDefinition): Remove.
+	(bfSimpleDefinition): Likewise.
+	(bfCompDef): Likewise.
+	(bfDefSequence): Likewise.
+	(defSheepAndGoats): Tidy.
+	* boot/parser.boot (bpSimpleDefinitionTail): Likewise.
+	(bpCompoundDefinitionTail): Likewise.
+	(bpDefinitionPileItems): Likewise.
+	(bpSemiColonDefinition): Likewise.
+	* boot/translator.boot (translateToplevel): Likewise.
+
+2009-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot: More cleanup.
 	* boot/parser.boot: Likewise.
 	* boot/translator.boot: Likewise.

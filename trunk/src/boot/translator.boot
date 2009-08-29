@@ -406,10 +406,10 @@ translateToplevelExpression expr ==
 
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.
-  b is ["DEF",:.] => rest bfCompDef b
   b is ["TUPLE",:xs] => coreError '"invalid AST"
   case b of
     %Signature(op,t) => [genDeclaration(op,t)]
+    %Definition(op,args,body) => rest bfDef(op,args,body)
 
     %Module(m,ds) =>
       $currentModuleName := m 
@@ -432,6 +432,7 @@ translateToplevel(b,export?) ==
       if lhs is ["%Signature",n,t] then
         sig := genDeclaration(n,t)
         lhs := n
+      $constantIdentifiers := [lhs,:$constantIdentifiers]
       [["DEFCONSTANT",lhs,rhs]]
 
     %Assignment(lhs,rhs) =>
