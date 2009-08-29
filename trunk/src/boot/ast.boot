@@ -1096,16 +1096,9 @@ bfCase(x,y)==
   g := 
     atom x => x 
     bfGenSymbol()
-  a := 
-    EQ(g,x) => nil
-    [[g,x]]
-  -- We need a temporary for the rest of the structure.
-  g1 := bfGenSymbol()
-  -- locally bind newly introduced temporaries in the alternatives
-  inits := [:a,[g1,["CDR",g]]]
-  body := ["CASE",["CAR", g], :bfCaseItems (g1,y)]
-  #inits = 1 => ["LET",inits,body]
-  ["LET*",inits,body]
+  body := ["CASE",["CAR", g], :bfCaseItems(g,y)]
+  EQ(g,x) => body
+  ["LET",[[g,x]],body]
 
 bfCaseItems: (%Thing,%List) -> %List 
 bfCaseItems(g,x) ==  
@@ -1117,7 +1110,7 @@ bfCI(g,x,y)==
     if null a
     then [first x,y]
     else
-       b:=[[i,bfCARCDR(j,g)] for i in a for j in 0.. | i ~= "DOT"]
+       b:=[[i,bfCARCDR(j,g)] for i in a for j in 1.. | i ~= "DOT"]
        null b => [first x,y]
        [first x,["LET",b,y]]
 
