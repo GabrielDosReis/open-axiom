@@ -1,3 +1,7 @@
+2009-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfSequence): Simplify COND branch bodies.
+
 2009-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/parser.boot ($sawParenthesizedHead): Remove.

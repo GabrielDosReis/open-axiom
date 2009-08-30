@@ -995,22 +995,27 @@ bfFlattenSeq x ==
               rest f
       [f]
  
+++ The body of each branch of a COND form is an implicit PROGN.  
+++ For readability purpose, we want to refrain from including
+++ any explicit PROGN.
+bfWashCONDBranchBody x ==
+  x is ["PROGN",:y] => y
+  [x]
+
 bfSequence l ==
       null l=> NIL
-      transform:= [[a,b] for x in l while
+      transform:= [[a,:bfWashCONDBranchBody b] for x in l while
               x is ["COND",[a,["IDENTITY",b]]]]
       no:=#transform
       before:= bfTake(no,l)
       aft   := bfDrop(no,l)
       null before =>
-              null rest l =>
-                   f:=first l
-                   if EQCAR(f,"PROGN")
-                   then bfSequence rest f
-                   else f
+              l is [f] =>
+                   f is ["PROGN",:.] => bfSequence rest f
+                   f
               bfMKPROGN [first l,bfSequence rest l]
       null aft => ["COND",:transform]
-      ["COND",:transform,['(QUOTE T),bfSequence aft]]
+      ["COND",:transform,['(QUOTE T),:bfWashCONDBranchBody bfSequence aft]]
  
 bfWhere (context,expr)==
   [opassoc,defs,nondefs] := defSheepAndGoats context
