@@ -1,5 +1,15 @@
 2009-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/parser.boot ($sawParenthesizedHead): Remove.
+	(bpReturnType): Likewise.
+	(bpBeginParameterList): Likewise.
+	(bpEndParameterList): Likewise.
+	(bpBeginDefinition): Likewise.
+	(bpDefinition): Adjust.
+	(bpVariable): Likewise.
+
+2009-08-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfCase): Don't hold scrutinee's remaining
 	structure in a temporary.
 	(bfCI): Adjust generation of selectors.
