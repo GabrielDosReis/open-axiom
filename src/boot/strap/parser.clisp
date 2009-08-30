@@ -9,8 +9,6 @@
 
 (PROVIDE "parser")
 
-(DEFPARAMETER |$sawParenthesizedHead| NIL)
-
 (DEFUN |bpFirstToken| ()
   (DECLARE (SPECIAL |$ttok| |$stok| |$inputStream|))
   (PROGN
@@ -872,11 +870,6 @@
                 (|bpPush| (|bfExit| (|bpPop2|) (|bpPop1|))))
            T)))
 
-(DEFUN |bpBeginDefinition| ()
-  (DECLARE (SPECIAL |$sawParenthesizedHead|))
-  (OR (|bpEqPeek| 'DEF)
-      (AND |$sawParenthesizedHead| (|bpEqPeek| 'COLON))))
-
 (DEFUN |bpDefinition| ()
   (PROG (|a|)
     (RETURN
@@ -885,8 +878,7 @@
         (COND
           ((|bpExit|)
            (COND
-             ((|bpBeginDefinition|)
-              (PROGN (|bpRestore| |a|) (|bpDef|)))
+             ((|bpEqPeek| 'DEF) (PROGN (|bpRestore| |a|) (|bpDef|)))
              ((|bpEqPeek| 'TDEF)
               (PROGN (|bpRestore| |a|) (|bpTypeAliasDefition|)))
              ((|bpEqPeek| 'MDEF) (PROGN (|bpRestore| |a|) (|bpMdef|)))
@@ -894,24 +886,12 @@
           (#0# (PROGN (|bpRestore| |a|) NIL)))))))
 
 (DEFUN |bpStoreName| ()
-  (DECLARE (SPECIAL |$returnType| |$typings| |$wheredefs| |$op|
-                    |$stack|))
+  (DECLARE (SPECIAL |$typings| |$wheredefs| |$op| |$stack|))
   (PROGN
     (SETQ |$op| (CAR |$stack|))
     (SETQ |$wheredefs| NIL)
     (SETQ |$typings| NIL)
-    (SETQ |$returnType| T)
     T))
-
-(DEFUN |bpReturnType| ()
-  (DECLARE (SPECIAL |$returnType| |$sawParenthesizedHead|))
-  (COND
-    ((AND |$sawParenthesizedHead| (|bpEqKey| 'COLON))
-     (PROGN
-       (OR (|bpApplication|) (|bpTrap|))
-       (SETQ |$returnType| (|bpPop1|))
-       T))
-    ('T T)))
 
 (DEFUN |bpDef| () (AND (|bpName|) (|bpStoreName|) (|bpDefTail|)))
 
@@ -922,8 +902,7 @@
        (|bpPush| (|%ConstantDefinition| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpCompoundDefinitionTail| ()
-  (AND (|bpVariable|) (|bpReturnType|) (|bpEqKey| 'DEF)
-       (OR (|bpWhere|) (|bpTrap|))
+  (AND (|bpVariable|) (|bpEqKey| 'DEF) (OR (|bpWhere|) (|bpTrap|))
        (|bpPush| (|%Definition| (|bpPop3|) (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpDefTail| ()
@@ -1114,18 +1093,9 @@
     ('T
      (AND (|bpColonName|) (|bpPush| (|bfColonAppend| NIL (|bpPop1|)))))))
 
-(DEFUN |bpBeginParameterList| ()
-  (DECLARE (SPECIAL |$sawParenthesizedHead|))
-  (PROGN (SETQ |$sawParenthesizedHead| NIL) T))
-
-(DEFUN |bpEndParameterList| ()
-  (DECLARE (SPECIAL |$sawParenthesizedHead|))
-  (SETQ |$sawParenthesizedHead| T))
-
 (DEFUN |bpVariable| ()
-  (OR (AND (|bpBeginParameterList|)
-           (|bpParenthesized| #'|bpBoundVariablelist|)
-           (|bpPush| (|bfTupleIf| (|bpPop1|))) (|bpEndParameterList|))
+  (OR (AND (|bpParenthesized| #'|bpBoundVariablelist|)
+           (|bpPush| (|bfTupleIf| (|bpPop1|))))
       (|bpBracketConstruct| #'|bpPatternL|) (|bpName|) (|bpConstTok|)))
 
 (DEFUN |bpAssignVariable| ()

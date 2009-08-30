@@ -46,10 +46,6 @@ namespace BOOTTRAN
 module parser
  
 
-++ true when the current function definition has its parameters 
-++ written round parenthesis.
-$sawParenthesizedHead := false
-
 bpFirstToken()==
       $stok:=
           if null $inputStream
@@ -842,15 +838,10 @@ bpExit()==
             bpPush bfExit (bpPop2(),bpPop1()))
               or true)
 
-++ returns true if the next token introduces a definition.
-bpBeginDefinition() ==
-  bpEqPeek "DEF" or 
-    $sawParenthesizedHead and bpEqPeek "COLON"
-
 bpDefinition()==
         a:=bpState()
         bpExit() =>
-             bpBeginDefinition() =>
+             bpEqPeek "DEF" =>
                 bpRestore a
                 bpDef()
              bpEqPeek "TDEF" =>
@@ -867,19 +858,8 @@ bpStoreName()==
   $op := first $stack
   $wheredefs := nil
   $typings := nil
-  $returnType := true           -- assume we may return anything
   true
 
-bpReturnType() ==
-  -- a return type is acceptable for a function definition only
-  -- if its parameters are written in round parenthesis.  
-  -- In particular, we reject the situation `foo x:Integer == ...'
-  $sawParenthesizedHead and bpEqKey "COLON" =>
-    bpApplication() or bpTrap()
-    $returnType := bpPop1()
-    true
-  true
- 
 bpDef() ==  
   bpName() and bpStoreName() and bpDefTail()
  
@@ -893,9 +873,9 @@ bpSimpleDefinitionTail() ==
 
 ++ Parse the remaining of a compound definition.
 bpCompoundDefinitionTail() ==
-  bpVariable()  and bpReturnType()  and
-    bpEqKey "DEF" and (bpWhere() or bpTrap())
-      and bpPush %Definition(bpPop3(),bpPop2(),bpPop1())
+  bpVariable() and 
+    bpEqKey "DEF" and (bpWhere() or bpTrap()) and 
+      bpPush %Definition(bpPop3(),bpPop2(),bpPop1())
 
 
 ++ Parse the remainding of a definition.  When we reach this point
@@ -1090,19 +1070,9 @@ bpBoundVariablelist()==
      else bpColonName() and bpPush bfColonAppend(nil,bpPop1())
  
 
-++ Mark the start of parameter list enclosed in round parenthesis
-bpBeginParameterList() ==
-  $sawParenthesizedHead := false
-  true
-
-++ Mark the end of parameter list enclosed in round parenthesis
-bpEndParameterList() ==
-  $sawParenthesizedHead := true
-
 bpVariable()==
-  bpBeginParameterList() and
     bpParenthesized function bpBoundVariablelist and
-       bpPush bfTupleIf bpPop1() and bpEndParameterList()
+       bpPush bfTupleIf bpPop1()
          or bpBracketConstruct function bpPatternL
                 or bpName() or bpConstTok()
  
