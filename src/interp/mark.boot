@@ -794,8 +794,8 @@ markInsertChanges(code,form,t,loc) ==
     t = $EmptyMode => form
     ["pretend",form,t]
   MEMQ(t,'(rep per)) => 
-    t = 'rep and EQCAR(form,'per) => CADR form
-    t = 'per and EQCAR(form,'rep) => CADR form
+    t = 'rep and form is ["per",:.] => CADR form
+    t = 'per and form is ["rep",:.] => CADR form
     [t,form]
   code is [op,x,t1] and MEMQ(op,'(_@ _: _:_: _pretend)) and t1 = t => form
   FIXP form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]

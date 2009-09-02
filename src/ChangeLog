@@ -1,5 +1,18 @@
 2009-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/cstream.boot: Cleanup.
+	* interp/g-boot.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/posit.boot: Likewise.
+	* interp/sys-constants.boot: Define more constants.
+
+2009-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot: More cleanup.
 	* boot/includer.boot: Likewise.
 	* boot/parser.boot: Likewise.

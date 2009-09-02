@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,12 @@ namespace BOOT
 npNull x== StreamNull x
  
 StreamNull x==
-  null x or EQCAR (x,"nullstream") => true
-  while EQCAR(x,"nonnullstream") repeat
+  null x or x is ["nullstream",:.] => true
+  while x is ["nonnullstream",:.] repeat
           st:=APPLY(CADR x,CDDR x)
           RPLACA(x,CAR st)
           RPLACD(x,CDR st)
-  EQCAR(x,"nullstream")
+  x is ["nullstream",:.]
  
 Delay(f,x)==cons("nonnullstream",[f,:x])
  

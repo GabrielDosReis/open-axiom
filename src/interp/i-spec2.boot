@@ -275,9 +275,9 @@ compileIF(op,cond,a,b,t) ==
     m2=m1 => m1
     m2 = $Exit => m1
     m1 = $Exit => m2
-    if EQCAR(m1,"Symbol") then
+    if m1 = $Symbol then
       m1:=getMinimalVarMode(getUnname a,$declaredMode)
-    if EQCAR(m2,"Symbol") then
+    if m2 = $Symbol then
       m2:=getMinimalVarMode(getUnname b,$declaredMode)
     (r := resolveTTAny(m2,m1)) => r
     rempropI($mapName,'localModemap)
@@ -553,7 +553,7 @@ evalLET(lhs,rhs) ==
       $genValue => v
       objNew(getValueNormalForm v,objMode v)
     if isPartialMode t2 then
-      if EQCAR(t1,'Symbol) and $declaredMode then
+      if t1 = $Symbol and $declaredMode then
         t1:= getMinimalVarMode(objValUnwrap v,$declaredMode)
       t' := t2
       null (t2 := resolveTM(t1,t2)) =>
@@ -1174,7 +1174,7 @@ copyHack(env) ==
   -- (localModemap . something)
   c:= CAAR env
   d:= [fn p for p in c] where fn(p) ==
-    CONS(CAR p,[(EQCAR(q,'localModemap) => q; copy q) for q in CDR p])
+    CONS(CAR p,[(q is ["localModemap",:.] => q; copy q) for q in CDR p])
   [[d]]
 
 

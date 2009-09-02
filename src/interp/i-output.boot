@@ -1963,7 +1963,7 @@ appext(u,x,y,d) ==
   d := APP(agg(4,u), x, yptr, d)
   temp := 1 + WIDTH agg(2,u) +  WIDTH agg(3,u)
   n := MAX(WIDTH CADR u, WIDTH agg(4,u), temp)
-  if EQCAR(first(z := agg(5,u)), 'EXT) and
+  if first(z := agg(5,u)) is ["EXT",:.] and
    (n=3 or (n > 3 and not (atom z)) ) then
      n := 1 + n
   d := APP(z, x + n, y, d)
@@ -2039,7 +2039,7 @@ extwidth(u) ==
            WIDTH agg(4, u),
            1 + WIDTH agg(2, u) + WIDTH agg(3, u) )
   nil or
-         (EQCAR(first(z := agg(5, u)), 'EXT) and _
+         (first(z := agg(5, u)) is ["EXT",:.] and _
           (n=3 or ((n > 3) and null atom z) )  =>
           n := 1 + n)
   true => n + WIDTH agg(5, u)

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -114,13 +114,12 @@ removeEXITFromCOND c ==
     ATOM cl => z := CONS(cl,z)
     cond := QCAR cl
     length1? cl =>
-      PAIRP(cond) and EQCAR(cond,'EXIT) =>
-        z := CONS(QCDR cond,z)
+      cond is ["EXIT",:.] => z := CONS(QCDR cond,z)
       z := CONS(cl,z)
     cl' := REVERSE cl
     lastSE := QCAR cl'
     ATOM lastSE => z := CONS(cl,z)
-    EQCAR(lastSE,'EXIT) =>
+    lastSE is ["EXIT",:.] =>
       z := CONS(REVERSE CONS(CADR lastSE,CDR cl'),z)
     z := CONS(cl,z)
   CONS('COND,NREVERSE z)
@@ -258,21 +257,21 @@ defLET1(lhs,rhs) ==
   IDENTP rhs and not CONTAINED(rhs,lhs) =>
     rhs' := defLET2(lhs,rhs)
     EQCAR(rhs',$LET) => MKPROGN [rhs',rhs]
-    EQCAR(rhs','PROGN) => APPEND(rhs',[rhs])
+    rhs' is ["PROGN",:.] => APPEND(rhs',[rhs])
     if IDENTP CAR rhs' then rhs' := CONS(rhs',NIL)
     MKPROGN [:rhs',rhs]
-  PAIRP(rhs) and EQCAR(rhs, $LET) and IDENTP(name := CADR rhs) =>
+  rhs is [=$LET,:.] and IDENTP(name := CADR rhs) =>
     -- handle things like [a] := x := foo
     l1 := defLET1(name,CADDR rhs)
     l2 := defLET1(lhs,name)
-    EQCAR(l2,'PROGN) => MKPROGN [l1,:CDR l2]
+    l2 is ["PROGN",:.] => MKPROGN [l1,:CDR l2]
     if IDENTP CAR l2 then l2 := cons(l2,nil)
     MKPROGN [l1,:l2,name]
   g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
   rhs' := [$LET,g,rhs]
   let' := defLET1(lhs,g)
-  EQCAR(let','PROGN) => MKPROGN [rhs',:CDR let']
+  let' is ["PROGN",:.] => MKPROGN [rhs',:CDR let']
   if IDENTP CAR let' then let' := CONS(let',NIL)
   MKPROGN [rhs',:let',g]
  
@@ -287,7 +286,7 @@ defLET2(lhs,rhs) ==
     PAIRP QCAR b => CONS(a,b)
     [a,b]
   lhs is ['CONS,var1,var2] =>
-    var1 = "." or (PAIRP(var1) and EQCAR(var1,'QUOTE)) =>
+    var1 = "." or (var1 is ["QUOTE",:.]) =>
       defLET2(var2,addCARorCDR('CDR,rhs))
     l1 := defLET2(var1,addCARorCDR('CAR,rhs))
     MEMQ(var2,'(NIL _.)) => l1
@@ -324,7 +323,7 @@ defLET(lhs,rhs) ==
  
 addCARorCDR(acc,expr) ==
   NULL PAIRP expr => [acc,expr]
-  acc = 'CAR and EQCAR(expr,'REVERSE) =>
+  acc = 'CAR and expr is ["REVERSE",:.] =>
     cons('last,QCDR expr)
   funs := '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
             CDAAR CDDAR CDADR CDDDR)

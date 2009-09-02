@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -165,7 +165,7 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
         someMatch := true
         nil
       slot := domain.loc
-      EQCAR(slot,'goGet) =>
+      slot is ["goGet",:.] =>
         lookupDisplay(op,sig,domain,'" !! goGet found, will ignore")
         lookupInAddChain(op,sig,domain,dollar) or 'failed
       NULL slot =>

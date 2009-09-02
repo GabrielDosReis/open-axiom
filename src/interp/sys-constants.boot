@@ -343,6 +343,15 @@ $SideEffectFreeFunctionList ==
 $Field ==
   '(Field)
 
+$DivisionRing ==
+  '(DivisionRing)
+
+$CombinatorialFunctionCategory ==
+  '(CombinatorialFunctionCategory)
+
+$Group ==
+  '(Group)
+
 ++ The Void domain constructor form
 $Void ==
   '(Void)
