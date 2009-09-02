@@ -123,13 +123,13 @@ shoePileCoagulate(a,b)==
     then [a]
     else
       c:=first b
-      if EQ(shoeTokPart CAAR c,"THEN") or EQ(shoeTokPart CAAR c,"ELSE")
+      if shoeTokPart CAAR c = "THEN" or shoeTokPart CAAR c = "ELSE"
       then shoePileCoagulate (dqAppend(a,c),rest b)
       else
          d:=second a
          e:=shoeTokPart d
-         if EQCAR(d,"KEY") and
-               (GET(e,"SHOEINF") or EQ(e,"COMMA") or EQ(e,"SEMICOLON"))
+         if d is ["KEY",:.] and
+               (GET(e,"SHOEINF") or e = "COMMA" or e = "SEMICOLON")
          then shoePileCoagulate(dqAppend(a,c),rest b)
          else cons(a,shoePileCoagulate(c,rest b))
  

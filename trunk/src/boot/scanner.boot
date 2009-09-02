@@ -310,7 +310,7 @@ shoePunct()==
             shoeKeyTr sss
  
 shoeKeyTr w==
-       if EQ(shoeKeyWord w,"DOT")
+       if shoeKeyWord w = "DOT"
        then if $floatok
             then shoePossFloat(w)
             else shoeLeafKey w

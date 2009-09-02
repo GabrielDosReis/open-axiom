@@ -119,7 +119,7 @@
             (|shoePileCoagulate| (|dqAppend| |a| |c|) (CDR |b|)))
            (#0# (SETQ |d| (CADR |a|)) (SETQ |e| (|shoeTokPart| |d|))
             (COND
-              ((AND (EQCAR |d| 'KEY)
+              ((AND (CONSP |d|) (EQ (CAR |d|) 'KEY)
                     (OR (GET |e| 'SHOEINF) (EQ |e| 'COMMA)
                         (EQ |e| 'SEMICOLON)))
                (|shoePileCoagulate| (|dqAppend| |a| |c|) (CDR |b|)))

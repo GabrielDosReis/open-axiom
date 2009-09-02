@@ -77,9 +77,6 @@ PNAME x ==
 char x ==
   CHAR(PNAME x, 0)
 
-EQCAR(x,y)== 
-  CONSP x and EQ(first x,y)
-
 -- returns the string representation of object X.
 STRINGIMAGE x ==
   WRITE_-TO_-STRING x
@@ -186,12 +183,12 @@ shoeFindLines(fn,name,a)==
 $bStreamNil:=["nullstream"]
  
 bStreamNull x==
-  null x or EQCAR (x,"nullstream") => true
-  while EQCAR(x,"nonnullstream") repeat
+  null x or x is ["nullstream",:.] => true
+  while x is ["nonnullstream",:.] repeat
           st:=apply(second x,CDDR x)
           RPLACA(x,first st)
           RPLACD(x,rest st)
-  EQCAR(x,"nullstream")
+  x is ["nullstream",:.]
  
 bMap(f,x) == 
   bDelay(function bMap1, [f,x])

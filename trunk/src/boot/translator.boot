@@ -330,7 +330,7 @@ shoeFileLine(x, stream) ==
 shoeFileTrees(s,st)==
   while not bStreamNull s repeat
     a:= first s
-    if EQCAR (a,"+LINE")
+    if a is ["+LINE",:.]
     then shoeFileLine(second a,st)
     else 
       REALLYPRETTYPRINT(a,st)

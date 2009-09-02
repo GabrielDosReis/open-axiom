@@ -33,7 +33,8 @@
             ('T (CAR |$inputStream|))))
     (SETQ |$ttok| (|shoeTokPart| |$stok|))
     (COND
-      ((AND (< 0 |$bpParenCount|) (EQCAR |$stok| 'KEY))
+      ((AND (< 0 |$bpParenCount|) (CONSP |$stok|)
+            (EQ (CAR |$stok|) 'KEY))
        (COND
          ((EQ |$ttok| 'SETTAB) (SETQ |$bpCount| (+ |$bpCount| 1))
           (|bpNext|))
@@ -291,15 +292,17 @@
 
 (DEFUN |bpEqPeek| (|s|)
   (DECLARE (SPECIAL |$ttok| |$stok|))
-  (AND (EQCAR |$stok| 'KEY) (EQ |s| |$ttok|)))
+  (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY) (EQ |s| |$ttok|)))
 
 (DEFUN |bpEqKey| (|s|)
   (DECLARE (SPECIAL |$ttok| |$stok|))
-  (AND (EQCAR |$stok| 'KEY) (EQ |s| |$ttok|) (|bpNext|)))
+  (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY) (EQ |s| |$ttok|)
+       (|bpNext|)))
 
 (DEFUN |bpEqKeyNextTok| (|s|)
   (DECLARE (SPECIAL |$ttok| |$stok|))
-  (AND (EQCAR |$stok| 'KEY) (EQ |s| |$ttok|) (|bpNextToken|)))
+  (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY) (EQ |s| |$ttok|)
+       (|bpNextToken|)))
 
 (DEFUN |bpPileTrap| () (|bpMissing| 'BACKTAB))
 
@@ -391,15 +394,15 @@
   (DECLARE (SPECIAL |$stok|))
   (COND
     ((|bpEqPeek| 'COLON-COLON) (|bpNext|)
-     (AND (EQCAR |$stok| 'ID) (|bpPushId|) (|bpNext|)
-          (|bpPush| (|bfColonColon| (|bpPop2|) (|bpPop1|)))))
+     (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'ID) (|bpPushId|)
+          (|bpNext|) (|bpPush| (|bfColonColon| (|bpPop2|) (|bpPop1|)))))
     ('T NIL)))
 
 (DEFUN |bpName| ()
   (DECLARE (SPECIAL |$stok|))
   (COND
-    ((EQCAR |$stok| 'ID) (|bpPushId|) (|bpNext|)
-     (|bpAnyNo| #'|bpQualifiedName|))
+    ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'ID)) (|bpPushId|)
+     (|bpNext|) (|bpAnyNo| #'|bpQualifiedName|))
     ('T NIL)))
 
 (DEFUN |bpConstTok| ()
@@ -407,10 +410,11 @@
   (COND
     ((MEMQ (|shoeTokType| |$stok|) '(INTEGER FLOAT)) (|bpPush| |$ttok|)
      (|bpNext|))
-    ((EQCAR |$stok| 'LISP)
+    ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'LISP))
      (AND (|bpPush| (|%Lisp| |$ttok|)) (|bpNext|)))
-    ((EQCAR |$stok| 'LISPEXP) (AND (|bpPush| |$ttok|) (|bpNext|)))
-    ((EQCAR |$stok| 'LINE)
+    ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'LISPEXP))
+     (AND (|bpPush| |$ttok|) (|bpNext|)))
+    ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'LINE))
      (AND (|bpPush| (LIST '+LINE |$ttok|)) (|bpNext|)))
     ((|bpEqPeek| 'QUOTE) (|bpNext|)
      (AND (OR (|bpSexp|) (|bpTrap|))
@@ -533,7 +537,8 @@
     (DECLARE (SPECIAL |$ttok| |$stok|))
     (RETURN
       (COND
-        ((AND (EQCAR |$stok| 'KEY) (NOT (|bpExceptions|)))
+        ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY)
+              (NOT (|bpExceptions|)))
          (SETQ |a| (GET |$ttok| 'SHOEINF))
          (COND
            ((NULL |a|) (AND (|bpPush| |$ttok|) (|bpNext|)))
@@ -542,7 +547,9 @@
 
 (DEFUN |bpAnyId| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
-  (OR (AND (|bpEqKey| 'MINUS) (OR (EQCAR |$stok| 'INTEGER) (|bpTrap|))
+  (OR (AND (|bpEqKey| 'MINUS)
+           (OR (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'INTEGER))
+               (|bpTrap|))
            (|bpPush| (- |$ttok|)) (|bpNext|))
       (|bpSexpKey|)
       (AND (MEMQ (|shoeTokType| |$stok|) '(ID INTEGER STRING FLOAT))
@@ -573,13 +580,13 @@
 
 (DEFUN |bpPrefixOperator| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
-  (AND (EQCAR |$stok| 'KEY) (GET |$ttok| 'SHOEPRE) (|bpPushId|)
-       (|bpNext|)))
+  (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY) (GET |$ttok| 'SHOEPRE)
+       (|bpPushId|) (|bpNext|)))
 
 (DEFUN |bpInfixOperator| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
-  (AND (EQCAR |$stok| 'KEY) (GET |$ttok| 'SHOEINF) (|bpPushId|)
-       (|bpNext|)))
+  (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY) (GET |$ttok| 'SHOEINF)
+       (|bpPushId|) (|bpNext|)))
 
 (DEFUN |bpSelector| ()
   (AND (|bpEqKey| 'DOT)
@@ -615,8 +622,8 @@
 
 (DEFUN |bpInfKey| (|s|)
   (DECLARE (SPECIAL |$ttok| |$stok|))
-  (AND (EQCAR |$stok| 'KEY) (MEMBER |$ttok| |s|) (|bpPushId|)
-       (|bpNext|)))
+  (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'KEY) (MEMBER |$ttok| |s|)
+       (|bpPushId|) (|bpNext|)))
 
 (DEFUN |bpInfGeneric| (|s|)
   (AND (|bpInfKey| |s|) (OR (|bpEqKey| 'BACKSET) T)))
@@ -662,8 +669,9 @@
 (DEFUN |bpThetaName| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
   (COND
-    ((AND (EQCAR |$stok| 'ID) (GET |$ttok| 'SHOETHETA)) (|bpPushId|)
-     (|bpNext|))
+    ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'ID)
+          (GET |$ttok| 'SHOETHETA))
+     (|bpPushId|) (|bpNext|))
     ('T NIL)))
 
 (DEFUN |bpReduceOperator| ()
@@ -1138,7 +1146,7 @@
         (SETQ |b| (|bpPop1|))
         (|bpPush|
             (COND
-              ((EQCAR |b| '+LINE) (LIST |b|))
+              ((AND (CONSP |b|) (EQ (CAR |b|) '+LINE)) (LIST |b|))
               ((AND (CONSP |b|) (EQ (CAR |b|) 'L%T)
                     (PROGN
                       (SETQ |ISTMP#1| (CDR |b|))
