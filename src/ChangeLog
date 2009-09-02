@@ -1,3 +1,10 @@
+2009-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: More cleanup.
+	* boot/includer.boot: Likewise.
+	* boot/parser.boot: Likewise.
+	* boot/scanner.boot: Likewise.
+
 2009-08-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfSequence): Simplify COND branch bodies.

@@ -470,7 +470,8 @@
            (PROGN
              (SETQ |a| (CAR |s|))
              (COND
-               ((EQCAR |a| '+LINE) (|shoeFileLine| (CADR |a|) |st|))
+               ((AND (CONSP |a|) (EQ (CAR |a|) '+LINE))
+                (|shoeFileLine| (CADR |a|) |st|))
                ('T (REALLYPRETTYPRINT |a| |st|) (TERPRI |st|)))
              (SETQ |s| (CDR |s|)))))))))
 

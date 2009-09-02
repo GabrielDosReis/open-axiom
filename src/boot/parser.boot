@@ -60,14 +60,14 @@ bpFirstTok()==
           then shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
           else first $inputStream
       $ttok:=shoeTokPart $stok
-      $bpParenCount>0 and EQCAR($stok,"KEY") =>
-             EQ($ttok,"SETTAB")=>
+      $bpParenCount>0 and $stok is ["KEY",:.] =>
+             $ttok = "SETTAB" =>
                 $bpCount:=$bpCount+1
                 bpNext()
-             EQ($ttok,"BACKTAB")=>
+             $ttok = "BACKTAB" =>
                 $bpCount:=$bpCount-1
                 bpNext()
-             EQ($ttok,"BACKSET")=>
+             $ttok = "BACKSET" =>
                 bpNext()
              true
       true
@@ -265,11 +265,14 @@ bpBacksetElse()==
     then bpEqKey "ELSE"
     else bpEqKey "ELSE"
  
-bpEqPeek s ==  EQCAR($stok,"KEY") and EQ(s,$ttok)
+bpEqPeek s == 
+  $stok is ["KEY",:.] and EQ(s,$ttok)
  
-bpEqKey s ==   EQCAR($stok,"KEY") and EQ(s,$ttok) and bpNext()
-bpEqKeyNextTok s ==   EQCAR($stok,"KEY") and EQ(s,$ttok) and
-                  bpNextToken()
+bpEqKey s ==
+  $stok is ["KEY",:.] and EQ(s,$ttok) and bpNext()
+
+bpEqKeyNextTok s ==   
+  $stok is ["KEY",:.] and EQ(s,$ttok) and bpNextToken()
  
 bpPileTrap()   == bpMissing  "BACKTAB"
 bpBrackTrap(x) == bpMissingMate("]",x)
@@ -370,7 +373,7 @@ bpMoveTo n==
 bpQualifiedName() ==
   bpEqPeek "COLON-COLON" =>
     bpNext()
-    EQCAR($stok, "ID") and bpPushId() and bpNext()
+    $stok is ["ID",:.] and bpPushId() and bpNext()
       and bpPush bfColonColon(bpPop2(), bpPop1())
   false
 
@@ -378,7 +381,7 @@ bpQualifiedName() ==
 ++   ID
 ++   Name :: ID
 bpName() ==
-  EQCAR( $stok,"ID") =>
+  $stok is ["ID",:.] =>
     bpPushId()
     bpNext()
     bpAnyNo function bpQualifiedName
@@ -397,9 +400,9 @@ bpConstTok() ==
      MEMQ(shoeTokType $stok, '(INTEGER FLOAT)) =>
           bpPush $ttok
           bpNext()
-     EQCAR($stok,"LISP")=> bpPush %Lisp $ttok and bpNext()
-     EQCAR($stok,"LISPEXP")=> bpPush $ttok and bpNext()
-     EQCAR($stok,"LINE")=> bpPush ["+LINE", $ttok] and bpNext()
+     $stok is ["LISP",:.] => bpPush %Lisp $ttok and bpNext()
+     $stok is ["LISPEXP",:.] => bpPush $ttok and bpNext()
+     $stok is ["LINE",:.] => bpPush ["+LINE", $ttok] and bpNext()
      bpEqPeek "QUOTE" =>
           bpNext()
           (bpSexp() or bpTrap()) and
@@ -548,14 +551,14 @@ bpExceptions()==
  
  
 bpSexpKey()==
-      EQCAR( $stok,"KEY") and not bpExceptions()=>
+      $stok is ["KEY",:.] and not bpExceptions()=>
                a:=GET($ttok,"SHOEINF")
                null a=>  bpPush $ttok and bpNext()
                bpPush a and bpNext()
       false
  
 bpAnyId()==
-  bpEqKey "MINUS"  and (EQCAR($stok,"INTEGER") or bpTrap()) and
+  bpEqKey "MINUS"  and ($stok is ["INTEGER",:.] or bpTrap()) and
           bpPush MINUS $ttok and bpNext() or
              bpSexpKey() or
                    MEMQ(shoeTokType $stok, '(ID INTEGER STRING FLOAT))
@@ -588,11 +591,11 @@ bpPrimary()==  bpFirstTok() and (bpPrimary1() or bpPrefixOperator())
 bpDot()== bpEqKey "DOT" and bpPush bfDot ()
  
 bpPrefixOperator()==
-   EQCAR( $stok,"KEY") and
+   $stok is ["KEY",:.] and
      GET($ttok,"SHOEPRE") and bpPushId() and  bpNext()
  
 bpInfixOperator()==
-  EQCAR( $stok,"KEY") and
+  $stok is ["KEY",:.] and
     GET($ttok,"SHOEINF") and bpPushId() and  bpNext()
  
 bpSelector()==
@@ -625,7 +628,7 @@ bpTagged()==
 bpExpt()== bpRightAssoc('(POWER),function bpTagged)
  
 bpInfKey s==
- EQCAR( $stok,"KEY") and
+ $stok is ["KEY",:.] and
    MEMBER($ttok,s) and bpPushId() and bpNext()
  
 bpInfGeneric s== bpInfKey s and  (bpEqKey "BACKSET" or true)
@@ -652,11 +655,11 @@ bpLeftAssoc(operations,parser)==
     else false
  
 bpString()==
-     EQ(shoeTokType $stok,"STRING") and
+     shoeTokType $stok = "STRING" and
          bpPush(["QUOTE",INTERN $ttok]) and bpNext()
  
 bpThetaName() ==
-        if EQCAR( $stok,"ID") and GET($ttok,"SHOETHETA")
+        if $stok is ["ID",:.] and GET($ttok,"SHOETHETA")
         then
            bpPushId()
            bpNext()
@@ -1047,7 +1050,7 @@ bpRegularBVItem() ==
         or bpBracketConstruct function bpPatternL
  
 bpBVString()==
-     EQ(shoeTokType $stok,"STRING") and
+     shoeTokType $stok = "STRING" and
          bpPush(["BVQUOTE",INTERN $ttok]) and bpNext()
  
 bpRegularBVItemL() ==
@@ -1148,7 +1151,7 @@ bpOutItem()==
   bpComma() or bpTrap()
   b:=bpPop1()
   bpPush 
-    EQCAR(b,"+LINE")=> [ b ]
+    b is ["+LINE",:.] => [ b ]
     b is ["L%T",l,r] and IDENTP l => 
       $InteractiveMode => [["SETQ",l,r]]
       [["DEFPARAMETER",l,r]]
