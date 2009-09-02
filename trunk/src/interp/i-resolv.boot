@@ -198,7 +198,7 @@ resolveTTSpecial(t1,t2) ==
     ofCategory(t2,'(Ring)) => resolveTT(['Polynomial,$Integer],t2)
     resolveTT($Symbol,t2)
   t1 is ['Variable,x] =>
-    EQCAR(t2,'SimpleAlgebraicExtension) => resolveTTSpecial(t2,t1)
+    t2 is ["SimpleAlgebraicExtension",:.] => resolveTTSpecial(t2,t1)
     t2 is ['UnivariatePolynomial,y,S] =>
       x = y => t2
       resolveTT1(['UnivariatePolynomial,x,$Integer],t2)
@@ -218,18 +218,15 @@ resolveTTSpecial(t1,t2) ==
     mf ~= mg => NIL
     mf
   t1 is ['UnivariatePolynomial,x,S] =>
-    EQCAR(t2,'Variable) =>
-      resolveTTSpecial(t2,t1)
-    EQCAR(t2,'SimpleAlgebraicExtension) =>
-      resolveTTSpecial(t2,t1)
+    t2 is ["Variable",:.] => resolveTTSpecial(t2,t1)
+    t2 is ["SimpleAlgebraicExtension",:.] => resolveTTSpecial(t2,t1)
     t2 is ['UnivariatePolynomial,y,T] =>
       (x = y) and (U := resolveTT1(S,T)) and ['UnivariatePolynomial,x,U]
     nil
   t1 = '(Pi) =>
     t2 is ['Complex,d] => defaultTargetFE t2
     t2 is ['AlgebraicNumber] => defaultTargetFE t2
-    EQCAR(t2, 'Variable) or t2 = $Symbol =>
-      defaultTargetFE($Symbol)
+    t2 is ["Variable",:.] or t2 = $Symbol => defaultTargetFE($Symbol)
     t2 is ['Polynomial, .] or t2 is ['Fraction, ['Polynomial, .]] =>
       defaultTargetFE(t2)
     nil

@@ -138,7 +138,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   -- if map is declared, check that signature arg count is the
   -- same as what is given.
   if get(op,'mode,$e) is ['Mapping,.,:mapargs] then
-    EQCAR(rhs,'rules) =>
+    rhs is ["rules",:.] =>
       0 ~= (numargs := # rest lhs) =>
         throwKeyedMsg("S2IM0027",[numargs,op])
     # rest lhs ~= # mapargs => throwKeyedMsg("S2IM0008",[op])

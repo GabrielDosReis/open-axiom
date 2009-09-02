@@ -460,7 +460,7 @@ defaultTargetFE(a,:options) ==
   [$FunctionalExpression, a]
 
 altTypeOf(type,val,$declaredMode) ==
-  (EQCAR(type,'Symbol) or EQCAR(type,'Variable)) and
+  (type = $Symbol or type is ["Variable",:.]) and
     (a := getMinimalVarMode(objValUnwrap getValue(val),$declaredMode)) =>
       a
   type is ['OrderedVariableList,vl] and
@@ -1123,19 +1123,19 @@ matchTypes(pm,args1,args2) ==
   for v in pm for t1 in args1 for t2 in args2 until $Subst='failed repeat
     p:= ASSQ(v,$Subst) =>
       t:= CDR p
-      t=t1 => $Coerce and EQCAR(t1,'Symbol) and
+      t=t1 => $Coerce and t1 = $Symbol and
         (q := ASSQ(v,$SymbolType)) and t2 and
           (t3 := resolveTT(CDR q, t2)) and
             RPLACD(q, t3)
       $Coerce =>
-        if EQCAR(t,'Symbol) and (q := ASSQ(v,$SymbolType)) then
+        if t = $Symbol and (q := ASSQ(v,$SymbolType)) then
           t := CDR q
-        if EQCAR(t1,'Symbol) and t2 then t1:= t2
+        if t1 = $Symbol and t2 then t1:= t2
         t0 := resolveTT(t,t1) => RPLACD(p,t0)
         $Subst:= 'failed
       $Subst:= 'failed
     $Subst:= CONS(CONS(v,t1),$Subst)
-    if EQCAR(t1,'Symbol) and t2 then $SymbolType:= CONS(CONS(v,t2),$SymbolType)
+    if t1 = $Symbol and t2 then $SymbolType:= CONS(CONS(v,t2),$SymbolType)
 
 evalMm(op,tar,sig,mmC) ==
   -- evaluates a modemap with signature sig and condition mmC
@@ -1211,7 +1211,7 @@ evalMmCond0(op,sig,st) ==
       t:= CDR p
       t=t1 or
         containsVars t =>
-          if $Coerce and EQCAR(t1,'Symbol) then t1:= getSymbolType CAR p
+          if $Coerce and t1 = $Symbol then t1:= getSymbolType CAR p
           resolveTM1(t1,t)
         $Coerce and
           -- if we are looking at the result of a function, the coerce
@@ -1222,7 +1222,7 @@ evalMmCond0(op,sig,st) ==
             NIL
           canCoerceFrom(t1,t) => 'T
           isSubDomain(t,t1) => RPLACD(p,t1)
-          EQCAR(t1,'Symbol) and canCoerceFrom(getSymbolType CAR p,t)
+          t1 = $Symbol and canCoerceFrom(getSymbolType CAR p,t)
   ( SL and p1 and not b and 'failed ) or evalMmCat(op,sig,st,SL)
 
 fixUpTypeArgs SL ==
@@ -1326,7 +1326,7 @@ evalMmCat(op,sig,stack,SL) ==
   -- evaluates all ofCategory's of stack as soon as possible
   $hope:local:= NIL
   numConds:= #stack
-  stack:= orderMmCatStack [mmC for mmC in stack | EQCAR(mmC,'ofCategory)]
+  stack:= orderMmCatStack [mmC for mmC in stack | mmC is ["ofCategory",:.]]
   while stack until not makingProgress repeat
     st := stack
     stack := NIL
@@ -1349,7 +1349,7 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
   $hope:= NIL
   NSL:= hasCate(d,c,SL)
   NSL='failed and isPatternVar d and $Coerce and ( p:= ASSQ(d,$Subst) )
-    and (EQCAR(CDR p,'Variable) or EQCAR(CDR p,'Symbol)) =>
+    and (rest(p) is ["Variable",:.] or rest(p) = $Symbol) =>
       RPLACD(p,getSymbolType d)
       hasCate(d,c,SL)
   NSL='failed and isPatternVar d =>
@@ -1405,7 +1405,7 @@ hasCateSpecial(v,dom,cat,SL) ==
     SL:= hasCate(arg,'(Ring),augmentSub(v,d,SL))
     SL = 'failed => 'failed
     hasCaty(d,cat,SL)
-  EQCAR(cat,'Field) or EQCAR(cat, 'DivisionRing) =>
+  cat = $Field or cat = $DivisionRing =>
     if isSubDomain(dom,$Integer) then dom := $Integer
     d:= eqType [$QuotientField, dom]
     hasCaty(dom,'(IntegralDomain),augmentSub(v,d,SL))
@@ -1430,15 +1430,15 @@ hasCateSpecialNew(v,dom,cat,SL) ==
            AlgebraicallyClosedFunctionSpace ExpressionSpace
              LiouvillianFunctionCategory FunctionSpace))
   alg := member(QCAR cat, '(RadicalCategory AlgebraicallyClosedField))
-  fefull := fe or alg or EQCAR(cat, 'CombinatorialFunctionCategory)
+  fefull := fe or alg or cat = $CombinatorialFunctionCategory
   partialResult :=
-    EQCAR(dom, 'Variable) or EQCAR(dom, 'Symbol) =>
+    dom is ["Variable",:.] or dom = $Symbol =>
       CAR(cat) in
        '(SemiGroup AbelianSemiGroup Monoid AbelianGroup AbelianMonoid
          PartialDifferentialRing Ring InputForm) =>
                 d := ['Polynomial, $Integer]
                 augmentSub(v, d, SL)
-      EQCAR(cat, 'Group) =>
+      cat = $Group =>
         d := ['Fraction, ['Polynomial, $Integer]]
         augmentSub(v, d, SL)
       fefull =>
