@@ -16,15 +16,15 @@
   (COND
     ((NULL |x|) |y|)
     ((NULL |y|) |x|)
-    ('T (RPLACD (CDR |x|) (CAR |y|)) (RPLACD |x| (CDR |y|)) |x|)))
+    (T (RPLACD (CDR |x|) (CAR |y|)) (RPLACD |x| (CDR |y|)) |x|)))
 
 (DEFUN |dqConcat| (|ld|)
   (COND
     ((NULL |ld|) NIL)
     ((NULL (CDR |ld|)) (CAR |ld|))
-    ('T (|dqAppend| (CAR |ld|) (|dqConcat| (CDR |ld|))))))
+    (T (|dqAppend| (CAR |ld|) (|dqConcat| (CDR |ld|))))))
 
-(DEFUN |dqToList| (|s|) (COND ((NULL |s|) NIL) ('T (CAR |s|))))
+(DEFUN |dqToList| (|s|) (COND ((NULL |s|) NIL) (T (CAR |s|))))
 
 (DEFUN |shoeConstructToken| (|ln| |lp| |b| |n|)
   (CONS (ELT |b| 0) (CONS (ELT |b| 1) (CONS |lp| |n|))))
@@ -43,19 +43,19 @@
     (RETURN
       (COND
         ((|bStreamNull| |s|) NIL)
-        ('T (SETQ |$linepos| |s|) (SETQ |$f| (CAR |s|))
-         (SETQ |$r| (CDR |s|)) (SETQ |$ln| (CAR |$f|))
-         (SETQ |$n| (STRPOSL " " |$ln| 0 T))
-         (SETQ |$sz| (LENGTH |$ln|))
-         (COND
-           ((NULL |$n|) T)
-           ((EQUAL (QENUM |$ln| |$n|) |shoeTAB|)
-            (SETQ |a| (MAKE-FULL-CVEC (- 7 (REM |$n| 8)) " "))
-            (SETF (ELT |$ln| |$n|) (ELT " " 0))
-            (SETQ |$ln| (CONCAT |a| |$ln|))
-            (SETQ |s1| (CONS (CONS |$ln| (CDR |$f|)) |$r|))
-            (|shoeNextLine| |s1|))
-           ('T T)))))))
+        (T (SETQ |$linepos| |s|) (SETQ |$f| (CAR |s|))
+           (SETQ |$r| (CDR |s|)) (SETQ |$ln| (CAR |$f|))
+           (SETQ |$n| (STRPOSL " " |$ln| 0 T))
+           (SETQ |$sz| (LENGTH |$ln|))
+           (COND
+             ((NULL |$n|) T)
+             ((EQUAL (QENUM |$ln| |$n|) |shoeTAB|)
+              (SETQ |a| (MAKE-FULL-CVEC (- 7 (REM |$n| 8)) " "))
+              (SETF (ELT |$ln| |$n|) (ELT " " 0))
+              (SETQ |$ln| (CONCAT |a| |$ln|))
+              (SETQ |s1| (CONS (CONS |$ln| (CDR |$f|)) |$r|))
+              (|shoeNextLine| |s1|))
+             (T T)))))))
 
 (DEFUN |shoeLineToks| (|s|)
   (PROG (|$linepos| |$floatok| |$sz| |$n| |$ln| |$r| |$f| |toks| |a|
@@ -73,34 +73,35 @@
         (COND
           ((NOT (|shoeNextLine| |s|)) (CONS NIL NIL))
           ((NULL |$n|) (|shoeLineToks| |$r|))
-          (#0='T (SETQ |fst| (QENUM |$ln| 0))
-           (COND
-             ((EQL |fst| |shoeCLOSEPAREN|)
-              (COND
-                ((SETQ |command| (|shoeLine?| |$ln|))
-                 (SETQ |dq|
-                       (|dqUnit|
-                           (|shoeConstructToken| |$ln| |$linepos|
-                               (|shoeLeafLine| |command|) 0)))
-                 (CONS (LIST |dq|) |$r|))
-                ((SETQ |command| (|shoeLisp?| |$ln|))
-                 (|shoeLispToken| |$r| |command|))
-                ((SETQ |command| (|shoePackage?| |$ln|))
-                 (SETQ |a| (CONCAT "(IN-PACKAGE " |command| ")"))
-                 (SETQ |dq|
-                       (|dqUnit|
-                           (|shoeConstructToken| |$ln| |$linepos|
-                               (|shoeLeafLisp| |a|) 0)))
-                 (CONS (LIST |dq|) |$r|))
-                (#0# (|shoeLineToks| |$r|))))
-             (#0# (SETQ |toks| NIL)
-              (LOOP
+          (T (SETQ |fst| (QENUM |$ln| 0))
+             (COND
+               ((EQL |fst| |shoeCLOSEPAREN|)
                 (COND
-                  ((NOT (< |$n| |$sz|)) (RETURN NIL))
-                  ('T (SETQ |toks| (|dqAppend| |toks| (|shoeToken|))))))
-              (COND
-                ((NULL |toks|) (|shoeLineToks| |$r|))
-                (#0# (CONS (LIST |toks|) |$r|)))))))))))
+                  ((SETQ |command| (|shoeLine?| |$ln|))
+                   (SETQ |dq|
+                         (|dqUnit|
+                             (|shoeConstructToken| |$ln| |$linepos|
+                                 (|shoeLeafLine| |command|) 0)))
+                   (CONS (LIST |dq|) |$r|))
+                  ((SETQ |command| (|shoeLisp?| |$ln|))
+                   (|shoeLispToken| |$r| |command|))
+                  ((SETQ |command| (|shoePackage?| |$ln|))
+                   (SETQ |a| (CONCAT "(IN-PACKAGE " |command| ")"))
+                   (SETQ |dq|
+                         (|dqUnit|
+                             (|shoeConstructToken| |$ln| |$linepos|
+                                 (|shoeLeafLisp| |a|) 0)))
+                   (CONS (LIST |dq|) |$r|))
+                  (T (|shoeLineToks| |$r|))))
+               (T (SETQ |toks| NIL)
+                  (LOOP
+                    (COND
+                      ((NOT (< |$n| |$sz|)) (RETURN NIL))
+                      (T (SETQ |toks|
+                               (|dqAppend| |toks| (|shoeToken|))))))
+                  (COND
+                    ((NULL |toks|) (|shoeLineToks| |$r|))
+                    (T (CONS (LIST |toks|) |$r|)))))))))))
 
 (DEFUN |shoeLispToken| (|s| |string|)
   (PROG (|dq| |st| |r| |LETTMP#1| |linepos| |ln|)
@@ -112,7 +113,7 @@
                 ((OR (EQL (LENGTH |string|) 0)
                      (EQL (QENUM |string| 0) (QENUM ";" 0)))
                  "")
-                ('T |string|)))
+                (T |string|)))
         (SETQ |ln| |$ln|)
         (SETQ |linepos| |$linepos|)
         (SETQ |LETTMP#1| (|shoeAccumulateLines| |s| |string|))
@@ -132,25 +133,25 @@
         ((NOT (|shoeNextLine| |s|)) (CONS |s| |string|))
         ((NULL |$n|) (|shoeAccumulateLines| |$r| |string|))
         ((EQL (LENGTH |$ln|) 0) (|shoeAccumulateLines| |$r| |string|))
-        (#0='T (SETQ |fst| (QENUM |$ln| 0))
-         (COND
-           ((EQL |fst| |shoeCLOSEPAREN|)
-            (SETQ |command| (|shoeLisp?| |$ln|))
-            (COND
-              ((AND |command| (< 0 (LENGTH |command|)))
-               (COND
-                 ((EQL (QENUM |command| 0) (QENUM ";" 0))
-                  (|shoeAccumulateLines| |$r| |string|))
-                 (#0# (SETQ |a| (STRPOS ";" |command| 0 NIL))
-                  (COND
-                    (|a| (|shoeAccumulateLines| |$r|
-                             (CONCAT |string|
-                                     (SUBSTRING |command| 0 (- |a| 1)))))
-                    (#0#
-                     (|shoeAccumulateLines| |$r|
-                         (CONCAT |string| |command|)))))))
-              (#0# (|shoeAccumulateLines| |$r| |string|))))
-           (#0# (CONS |s| |string|))))))))
+        (T (SETQ |fst| (QENUM |$ln| 0))
+           (COND
+             ((EQL |fst| |shoeCLOSEPAREN|)
+              (SETQ |command| (|shoeLisp?| |$ln|))
+              (COND
+                ((AND |command| (< 0 (LENGTH |command|)))
+                 (COND
+                   ((EQL (QENUM |command| 0) (QENUM ";" 0))
+                    (|shoeAccumulateLines| |$r| |string|))
+                   (T (SETQ |a| (STRPOS ";" |command| 0 NIL))
+                      (COND
+                        (|a| (|shoeAccumulateLines| |$r|
+                                 (CONCAT |string|
+                                         (SUBSTRING |command| 0
+                                          (- |a| 1)))))
+                        (T (|shoeAccumulateLines| |$r|
+                               (CONCAT |string| |command|)))))))
+                (T (|shoeAccumulateLines| |$r| |string|))))
+             (T (CONS |s| |string|))))))))
 
 (DEFUN |shoeCloser| (|t|)
   (MEMBER (|shoeKeyWord| |t|) '(CPAREN CBRACK)))
@@ -177,11 +178,10 @@
                 ((|shoeDigit| |ch|) (|shoeNumber|))
                 ((EQUAL |c| |shoeESCAPE|) (|shoeEscape|))
                 ((EQUAL |c| |shoeTAB|) (SETQ |$n| (+ |$n| 1)) NIL)
-                (#0='T (|shoeError|))))
+                (T (|shoeError|))))
         (COND
           ((NULL |b|) NIL)
-          (#0#
-           (|dqUnit| (|shoeConstructToken| |ln| |linepos| |b| |n|))))))))
+          (T (|dqUnit| (|shoeConstructToken| |ln| |linepos| |b| |n|))))))))
 
 (DEFUN |shoeLeafId| (|x|) (LIST 'ID (INTERN |x|)))
 
@@ -225,17 +225,17 @@
           ((NOT (< |$n| |$sz|))
            (|SoftShoeError| (CONS |$linepos| |$n|) "lisp escape error")
            (|shoeLeafError| (ELT |$ln| |$n|)))
-          ('T (SETQ |a| (|shoeReadLispString| |$ln| |$n|))
-           (COND
-             ((NULL |a|)
-              (|SoftShoeError| (CONS |$linepos| |$n|)
-                  "lisp escape error")
-              (|shoeLeafError| (ELT |$ln| |$n|)))
-             (#0='T (SETQ |exp| (CAR |a|)) (SETQ |n| (CADR |a|))
-              (COND
-                ((NULL |n|) (SETQ |$n| |$sz|)
-                 (|shoeLeafLispExp| |exp|))
-                (#0# (SETQ |$n| |n|) (|shoeLeafLispExp| |exp|)))))))))))
+          (T (SETQ |a| (|shoeReadLispString| |$ln| |$n|))
+             (COND
+               ((NULL |a|)
+                (|SoftShoeError| (CONS |$linepos| |$n|)
+                    "lisp escape error")
+                (|shoeLeafError| (ELT |$ln| |$n|)))
+               (T (SETQ |exp| (CAR |a|)) (SETQ |n| (CADR |a|))
+                  (COND
+                    ((NULL |n|) (SETQ |$n| |$sz|)
+                     (|shoeLeafLispExp| |exp|))
+                    (T (SETQ |$n| |n|) (|shoeLeafLispExp| |exp|)))))))))))
 
 (DEFUN |shoeEscape| ()
   (PROG (|a|)
@@ -244,7 +244,7 @@
       (PROGN
         (SETQ |$n| (+ |$n| 1))
         (SETQ |a| (|shoeEsc|))
-        (COND (|a| (|shoeWord| T)) ('T NIL))))))
+        (COND (|a| (|shoeWord| T)) (T NIL))))))
 
 (DEFUN |shoeEsc| ()
   (PROG (|n1|)
@@ -255,16 +255,16 @@
          (COND
            ((|shoeNextLine| |$r|)
             (LOOP
-              (COND (|$n| (RETURN NIL)) (#0='T (|shoeNextLine| |$r|))))
+              (COND (|$n| (RETURN NIL)) (T (|shoeNextLine| |$r|))))
             (|shoeEsc|) NIL)
-           (#1='T NIL)))
-        (#1# (SETQ |n1| (STRPOSL " " |$ln| |$n| T))
-         (COND
-           ((NULL |n1|) (|shoeNextLine| |$r|)
-            (LOOP
-              (COND (|$n| (RETURN NIL)) (#0# (|shoeNextLine| |$r|))))
-            (|shoeEsc|) NIL)
-           (#1# T)))))))
+           (T NIL)))
+        (T (SETQ |n1| (STRPOSL " " |$ln| |$n| T))
+           (COND
+             ((NULL |n1|) (|shoeNextLine| |$r|)
+              (LOOP
+                (COND (|$n| (RETURN NIL)) (T (|shoeNextLine| |$r|))))
+              (|shoeEsc|) NIL)
+             (T T)))))))
 
 (DEFUN |shoeStartsComment| ()
   (PROG (|www|)
@@ -277,9 +277,9 @@
             (SETQ |www| (+ |$n| 1))
             (COND
               ((NOT (< |www| |$sz|)) NIL)
-              (#0='T (EQUAL (QENUM |$ln| |www|) |shoePLUSCOMMENT|))))
-           (#0# NIL)))
-        (#0# NIL)))))
+              (T (EQUAL (QENUM |$ln| |www|) |shoePLUSCOMMENT|))))
+           (T NIL)))
+        (T NIL)))))
 
 (DEFUN |shoeStartsNegComment| ()
   (PROG (|www|)
@@ -292,9 +292,9 @@
             (SETQ |www| (+ |$n| 1))
             (COND
               ((NOT (< |www| |$sz|)) NIL)
-              (#0='T (EQUAL (QENUM |$ln| |www|) |shoeMINUSCOMMENT|))))
-           (#0# NIL)))
-        (#0# NIL)))))
+              (T (EQUAL (QENUM |$ln| |www|) |shoeMINUSCOMMENT|))))
+           (T NIL)))
+        (T NIL)))))
 
 (DEFUN |shoeNegComment| ()
   (PROG (|n|)
@@ -327,18 +327,15 @@
   (DECLARE (SPECIAL |$floatok|))
   (COND
     ((EQ (|shoeKeyWord| |w|) 'DOT)
-     (COND
-       (|$floatok| (|shoePossFloat| |w|))
-       (#0='T (|shoeLeafKey| |w|))))
-    (#0# (SETQ |$floatok| (NOT (|shoeCloser| |w|)))
-     (|shoeLeafKey| |w|))))
+     (COND (|$floatok| (|shoePossFloat| |w|)) (T (|shoeLeafKey| |w|))))
+    (T (SETQ |$floatok| (NOT (|shoeCloser| |w|))) (|shoeLeafKey| |w|))))
 
 (DEFUN |shoePossFloat| (|w|)
   (DECLARE (SPECIAL |$ln| |$sz| |$n|))
   (COND
     ((OR (NOT (< |$n| |$sz|)) (NOT (|shoeDigit| (ELT |$ln| |$n|))))
      (|shoeLeafKey| |w|))
-    ('T (SETQ |w| (|shoeInteger|)) (|shoeExponent| "0" |w|))))
+    (T (SETQ |w| (|shoeInteger|)) (|shoeExponent| "0" |w|))))
 
 (DEFUN |shoeSpace| ()
   (PROG (|n|)
@@ -350,7 +347,7 @@
         (SETQ |$floatok| T)
         (COND
           ((NULL |$n|) (|shoeLeafSpaces| 0) (SETQ |$n| (LENGTH |$ln|)))
-          ('T (|shoeLeafSpaces| (- |$n| |n|))))))))
+          (T (|shoeLeafSpaces| (- |$n| |n|))))))))
 
 (DEFUN |shoeString| ()
   (DECLARE (SPECIAL |$floatok| |$n|))
@@ -366,24 +363,25 @@
       (COND
         ((NOT (< |$n| |$sz|))
          (|SoftShoeError| (CONS |$linepos| |$n|) "quote added") "")
-        (#0='T (SETQ |n| |$n|)
-         (SETQ |strsym| (OR (STRPOS "\"" |$ln| |$n| NIL) |$sz|))
-         (SETQ |escsym| (OR (STRPOS "_" |$ln| |$n| NIL) |$sz|))
-         (SETQ |mn| (MIN |strsym| |escsym|))
-         (COND
-           ((EQUAL |mn| |$sz|) (SETQ |$n| |$sz|)
-            (|SoftShoeError| (CONS |$linepos| |$n|) "quote added")
-            (SUBSTRING |$ln| |n| NIL))
-           ((EQUAL |mn| |strsym|) (SETQ |$n| (+ |mn| 1))
-            (SUBSTRING |$ln| |n| (- |mn| |n|)))
-           (#0# (SETQ |str| (SUBSTRING |$ln| |n| (- |mn| |n|)))
-            (SETQ |$n| (+ |mn| 1)) (SETQ |a| (|shoeEsc|))
-            (SETQ |b|
-                  (COND
-                    (|a| (SETQ |str| (CONCAT |str| (ELT |$ln| |$n|)))
-                         (SETQ |$n| (+ |$n| 1)) (|shoeS|))
-                    (#0# (|shoeS|))))
-            (CONCAT |str| |b|))))))))
+        (T (SETQ |n| |$n|)
+           (SETQ |strsym| (OR (STRPOS "\"" |$ln| |$n| NIL) |$sz|))
+           (SETQ |escsym| (OR (STRPOS "_" |$ln| |$n| NIL) |$sz|))
+           (SETQ |mn| (MIN |strsym| |escsym|))
+           (COND
+             ((EQUAL |mn| |$sz|) (SETQ |$n| |$sz|)
+              (|SoftShoeError| (CONS |$linepos| |$n|) "quote added")
+              (SUBSTRING |$ln| |n| NIL))
+             ((EQUAL |mn| |strsym|) (SETQ |$n| (+ |mn| 1))
+              (SUBSTRING |$ln| |n| (- |mn| |n|)))
+             (T (SETQ |str| (SUBSTRING |$ln| |n| (- |mn| |n|)))
+                (SETQ |$n| (+ |mn| 1)) (SETQ |a| (|shoeEsc|))
+                (SETQ |b|
+                      (COND
+                        (|a| (SETQ |str|
+                                   (CONCAT |str| (ELT |$ln| |$n|)))
+                             (SETQ |$n| (+ |$n| 1)) (|shoeS|))
+                        (T (|shoeS|))))
+                (CONCAT |str| |b|))))))))
 
 (DEFUN |shoeIdEnd| (|line| |n|)
   (PROGN
@@ -392,7 +390,7 @@
         ((NOT (AND (< |n| (LENGTH |line|))
                    (|shoeIdChar| (ELT |line| |n|))))
          (RETURN NIL))
-        ('T (SETQ |n| (+ |n| 1)))))
+        (T (SETQ |n| (+ |n| 1)))))
     |n|))
 
 (DEFUN |shoeDigit| (|x|) (DIGIT-CHAR-P |x|))
@@ -411,10 +409,10 @@
                (NOT (EQUAL (QENUM |$ln| |endid|) |shoeESCAPE|)))
            (SETQ |$n| |endid|)
            (LIST |b| (SUBSTRING |$ln| |n1| (- |endid| |n1|))))
-          (#0='T (SETQ |str| (SUBSTRING |$ln| |n1| (- |endid| |n1|)))
-           (SETQ |$n| (+ |endid| 1)) (SETQ |a| (|shoeEsc|))
-           (SETQ |bb| (COND (|a| (|shoeW| T)) (#0# (LIST |b| ""))))
-           (LIST (OR (ELT |bb| 0) |b|) (CONCAT |str| (ELT |bb| 1)))))))))
+          (T (SETQ |str| (SUBSTRING |$ln| |n1| (- |endid| |n1|)))
+             (SETQ |$n| (+ |endid| 1)) (SETQ |a| (|shoeEsc|))
+             (SETQ |bb| (COND (|a| (|shoeW| T)) (T (LIST |b| ""))))
+             (LIST (OR (ELT |bb| 0) |b|) (CONCAT |str| (ELT |bb| 1)))))))))
 
 (DEFUN |shoeWord| (|esp|)
   (PROG (|w| |aaa|)
@@ -428,7 +426,7 @@
           ((OR |esp| (ELT |aaa| 0)) (|shoeLeafId| |w|))
           ((|shoeKeyWordP| |w|) (SETQ |$floatok| T)
            (|shoeLeafKey| |w|))
-          ('T (|shoeLeafId| |w|)))))))
+          (T (|shoeLeafId| |w|)))))))
 
 (DEFUN |shoeInteger| () (|shoeInteger1| NIL))
 
@@ -443,16 +441,16 @@
           (COND
             ((NOT (AND (< |$n| |l|) (|shoeDigit| (ELT |$ln| |$n|))))
              (RETURN NIL))
-            ('T (SETQ |$n| (+ |$n| 1)))))
+            (T (SETQ |$n| (+ |$n| 1)))))
         (COND
           ((OR (EQUAL |$n| |l|)
                (NOT (EQUAL (QENUM |$ln| |$n|) |shoeESCAPE|)))
            (COND
              ((AND (EQUAL |n| |$n|) |zro|) "0")
-             (#0='T (SUBSTRING |$ln| |n| (- |$n| |n|)))))
-          (#0# (SETQ |str| (SUBSTRING |$ln| |n| (- |$n| |n|)))
-           (SETQ |$n| (+ |$n| 1)) (SETQ |a| (|shoeEsc|))
-           (SETQ |bb| (|shoeInteger1| |zro|)) (CONCAT |str| |bb|)))))))
+             (T (SUBSTRING |$ln| |n| (- |$n| |n|)))))
+          (T (SETQ |str| (SUBSTRING |$ln| |n| (- |$n| |n|)))
+             (SETQ |$n| (+ |$n| 1)) (SETQ |a| (|shoeEsc|))
+             (SETQ |bb| (|shoeInteger1| |zro|)) (CONCAT |str| |bb|)))))))
 
 (DEFUN |shoeIntValue| (|s|)
   (PROG (|d| |ival| |ns|)
@@ -464,10 +462,9 @@
           (LOOP
             (COND
               ((> |i| |bfVar#1|) (RETURN NIL))
-              ('T
-               (PROGN
-                 (SETQ |d| (|shoeOrdToNum| (ELT |s| |i|)))
-                 (SETQ |ival| (+ (* 10 |ival|) |d|)))))
+              (T (PROGN
+                   (SETQ |d| (|shoeOrdToNum| (ELT |s| |i|)))
+                   (SETQ |ival| (+ (* 10 |ival|) |d|)))))
             (SETQ |i| (+ |i| 1))))
         |ival|))))
 
@@ -484,9 +481,8 @@
            (COND
              ((AND (< |$n| |$sz|) (EQUAL (QENUM |$ln| |$n|) |shoeDOT|))
               (SETQ |$n| |n|) (|shoeLeafInteger| |a|))
-             (#0='T (SETQ |w| (|shoeInteger1| T))
-              (|shoeExponent| |a| |w|))))
-          (#0# (|shoeLeafInteger| |a|)))))))
+             (T (SETQ |w| (|shoeInteger1| T)) (|shoeExponent| |a| |w|))))
+          (T (|shoeLeafInteger| |a|)))))))
 
 (DEFUN |shoeExponent| (|a| |w|)
   (PROG (|c1| |e| |c| |n|)
@@ -494,35 +490,36 @@
     (RETURN
       (COND
         ((NOT (< |$n| |$sz|)) (|shoeLeafFloat| |a| |w| 0))
-        (#0='T (SETQ |n| |$n|) (SETQ |c| (QENUM |$ln| |$n|))
-         (COND
-           ((OR (EQUAL |c| |shoeEXPONENT1|)
-                (EQUAL |c| |shoeEXPONENT2|))
-            (SETQ |$n| (+ |$n| 1))
-            (COND
-              ((NOT (< |$n| |$sz|)) (SETQ |$n| |n|)
-               (|shoeLeafFloat| |a| |w| 0))
-              ((|shoeDigit| (ELT |$ln| |$n|))
-               (SETQ |e| (|shoeInteger|))
-               (SETQ |e| (|shoeIntValue| |e|))
-               (|shoeLeafFloat| |a| |w| |e|))
-              (#0# (SETQ |c1| (QENUM |$ln| |$n|))
-               (COND
-                 ((OR (EQUAL |c1| |shoePLUSCOMMENT|)
-                      (EQUAL |c1| |shoeMINUSCOMMENT|))
-                  (SETQ |$n| (+ |$n| 1))
-                  (COND
-                    ((NOT (< |$n| |$sz|)) (SETQ |$n| |n|)
-                     (|shoeLeafFloat| |a| |w| 0))
-                    ((|shoeDigit| (ELT |$ln| |$n|))
-                     (SETQ |e| (|shoeInteger|))
-                     (SETQ |e| (|shoeIntValue| |e|))
-                     (|shoeLeafFloat| |a| |w|
-                         (COND
-                           ((EQUAL |c1| |shoeMINUSCOMMENT|) (- |e|))
-                           (#0# |e|))))
-                    (#0# (SETQ |$n| |n|) (|shoeLeafFloat| |a| |w| 0))))))))
-           (#0# (|shoeLeafFloat| |a| |w| 0))))))))
+        (T (SETQ |n| |$n|) (SETQ |c| (QENUM |$ln| |$n|))
+           (COND
+             ((OR (EQUAL |c| |shoeEXPONENT1|)
+                  (EQUAL |c| |shoeEXPONENT2|))
+              (SETQ |$n| (+ |$n| 1))
+              (COND
+                ((NOT (< |$n| |$sz|)) (SETQ |$n| |n|)
+                 (|shoeLeafFloat| |a| |w| 0))
+                ((|shoeDigit| (ELT |$ln| |$n|))
+                 (SETQ |e| (|shoeInteger|))
+                 (SETQ |e| (|shoeIntValue| |e|))
+                 (|shoeLeafFloat| |a| |w| |e|))
+                (T (SETQ |c1| (QENUM |$ln| |$n|))
+                   (COND
+                     ((OR (EQUAL |c1| |shoePLUSCOMMENT|)
+                          (EQUAL |c1| |shoeMINUSCOMMENT|))
+                      (SETQ |$n| (+ |$n| 1))
+                      (COND
+                        ((NOT (< |$n| |$sz|)) (SETQ |$n| |n|)
+                         (|shoeLeafFloat| |a| |w| 0))
+                        ((|shoeDigit| (ELT |$ln| |$n|))
+                         (SETQ |e| (|shoeInteger|))
+                         (SETQ |e| (|shoeIntValue| |e|))
+                         (|shoeLeafFloat| |a| |w|
+                             (COND
+                               ((EQUAL |c1| |shoeMINUSCOMMENT|)
+                                (- |e|))
+                               (T |e|))))
+                        (T (SETQ |$n| |n|) (|shoeLeafFloat| |a| |w| 0))))))))
+             (T (|shoeLeafFloat| |a| |w| 0))))))))
 
 (DEFUN |shoeError| ()
   (PROG (|n|)
@@ -560,25 +557,24 @@
           (LOOP
             (COND
               ((OR (> |j| |bfVar#2|) |done|) (RETURN NIL))
-              (#0='T
-               (PROGN
-                 (SETQ |s| (ELT |u| |j|))
-                 (SETQ |ls| (SIZE |s|))
-                 (SETQ |done|
-                       (COND
-                         ((< |ll| (+ |ls| |i|)) NIL)
-                         (#1='T (SETQ |eql| T)
-                          (LET ((|bfVar#3| (- |ls| 1)) (|k| 1))
-                            (LOOP
-                              (COND
-                                ((OR (> |k| |bfVar#3|) (NOT |eql|))
-                                 (RETURN NIL))
-                                (#0#
-                                 (SETQ |eql|
-                                       (EQL (QENUM |s| |k|)
-                                        (QENUM |l| (+ |k| |i|))))))
-                              (SETQ |k| (+ |k| 1))))
-                          (COND (|eql| (SETQ |s1| |s|) T) (#1# NIL))))))))
+              (T (PROGN
+                   (SETQ |s| (ELT |u| |j|))
+                   (SETQ |ls| (SIZE |s|))
+                   (SETQ |done|
+                         (COND
+                           ((< |ll| (+ |ls| |i|)) NIL)
+                           (T (SETQ |eql| T)
+                              (LET ((|bfVar#3| (- |ls| 1)) (|k| 1))
+                                (LOOP
+                                  (COND
+                                    ((OR (> |k| |bfVar#3|) (NOT |eql|))
+                                     (RETURN NIL))
+                                    (T
+                                     (SETQ |eql|
+                                      (EQL (QENUM |s| |k|)
+                                       (QENUM |l| (+ |k| |i|))))))
+                                  (SETQ |k| (+ |k| 1))))
+                              (COND (|eql| (SETQ |s1| |s|) T) (T NIL))))))))
             (SETQ |j| (+ |j| 1))))
         |s1|))))
 

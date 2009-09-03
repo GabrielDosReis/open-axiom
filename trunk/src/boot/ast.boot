@@ -388,8 +388,7 @@ bfLp1(iters,body)==
   [vars,inits,sucs,filters,exits,value] := bfSep bfAppend iters
   nbody := if null filters then body else bfAND [:filters,body]
   value := if null value then "NIL" else first value
-  exits := ["COND",[bfOR exits,["RETURN",value]],
-	      ['(QUOTE T),nbody]]
+  exits := ["COND",[bfOR exits,["RETURN",value]],['T,nbody]]
   loop := ["LOOP",exits,:sucs]
   if vars then loop := 
     ["LET",[[v, i] for v in vars for i in inits], loop]
@@ -958,7 +957,7 @@ bfIf(a,b,c)==
     b1:=if b is ["PROGN",:.] then rest b else [b]
     c is ["COND",:.] => ["COND",[a,:b1],:rest c]
     c1:=if c is ["PROGN",:.] then rest c else [c]
-    ["COND",[a,:b1],['(QUOTE T),:c1]]
+    ["COND",[a,:b1],['T,:c1]]
  
 bfExit(a,b)==  
   ["COND",[a,["IDENTITY",b]]]
@@ -998,7 +997,7 @@ bfSequence l ==
                    f
               bfMKPROGN [first l,bfSequence rest l]
       null aft => ["COND",:transform]
-      ["COND",:transform,['(QUOTE T),:bfWashCONDBranchBody bfSequence aft]]
+      ["COND",:transform,['T,:bfWashCONDBranchBody bfSequence aft]]
  
 bfWhere (context,expr)==
   [opassoc,defs,nondefs] := defSheepAndGoats context
@@ -1033,7 +1032,7 @@ bfMain(auxfn,op)==
   getCode:=   ['GETHASH,g1,cacheName]
   secondPredPair:= [['SETQ,g2,getCode],g2]
   putCode:=   ['SETF ,getCode,computeValue]
-  thirdPredPair:= ['(QUOTE T),putCode]
+  thirdPredPair:= ['T,putCode]
   codeBody:= ['PROG,[g2],
                ['RETURN,['COND,secondPredPair,thirdPredPair]]]
   mainFunction:= ["DEFUN",op,arg,codeBody]

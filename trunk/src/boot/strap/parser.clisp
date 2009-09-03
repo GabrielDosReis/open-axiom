@@ -17,7 +17,7 @@
             ((NULL |$inputStream|)
              (|shoeTokConstruct| 'ERROR 'NOMORE
                  (|shoeTokPosn| |$stok|)))
-            ('T (CAR |$inputStream|))))
+            (T (CAR |$inputStream|))))
     (SETQ |$ttok| (|shoeTokPart| |$stok|))
     T))
 
@@ -30,7 +30,7 @@
             ((NULL |$inputStream|)
              (|shoeTokConstruct| 'ERROR 'NOMORE
                  (|shoeTokPosn| |$stok|)))
-            ('T (CAR |$inputStream|))))
+            (T (CAR |$inputStream|))))
     (SETQ |$ttok| (|shoeTokPart| |$stok|))
     (COND
       ((AND (< 0 |$bpParenCount|) (CONSP |$stok|)
@@ -41,8 +41,8 @@
          ((EQ |$ttok| 'BACKTAB) (SETQ |$bpCount| (- |$bpCount| 1))
           (|bpNext|))
          ((EQ |$ttok| 'BACKSET) (|bpNext|))
-         (#0='T T)))
-      (#0# T))))
+         (T T)))
+      (T T))))
 
 (DEFUN |bpNext| ()
   (DECLARE (SPECIAL |$inputStream|))
@@ -119,19 +119,18 @@
               (|bpNextToken|)
               (COND
                 ((EQL |$bpCount| 0) T)
-                (#0='T
-                 (SETQ |$inputStream|
-                       (APPEND (|bpAddTokens| |$bpCount|)
-                               |$inputStream|))
-                 (|bpFirstToken|)
-                 (COND
-                   ((EQL |$bpParenCount| 0) (|bpCancel|) T)
-                   (#0# T)))))
+                (T (SETQ |$inputStream|
+                         (APPEND (|bpAddTokens| |$bpCount|)
+                                 |$inputStream|))
+                   (|bpFirstToken|)
+                   (COND
+                     ((EQL |$bpParenCount| 0) (|bpCancel|) T)
+                     (T T)))))
              ((|bpEqPeek| 'CPAREN) (|bpPush| (|bfTuple| NIL))
               (SETQ |$bpParenCount| (- |$bpParenCount| 1))
               (|bpNextToken|) T)
-             (#1='T (|bpParenTrap| |a|))))
-          (#1# NIL))))))
+             (T (|bpParenTrap| |a|))))
+          (T NIL))))))
 
 (DEFUN |bpParenthesized| (|f|)
   (PROG (|a|)
@@ -146,8 +145,8 @@
                    (OR (|bpEqKey| 'CPAREN) (|bpParenTrap| |a|)))
               T)
              ((|bpEqKey| 'CPAREN) (|bpPush| (|bfTuple| NIL)) T)
-             (#0='T (|bpParenTrap| |a|))))
-          (#0# NIL))))))
+             (T (|bpParenTrap| |a|))))
+          (T NIL))))))
 
 (DEFUN |bpBracket| (|f|)
   (PROG (|a|)
@@ -162,8 +161,8 @@
                    (OR (|bpEqKey| 'CBRACK) (|bpBrackTrap| |a|)))
               (|bpPush| (|bfBracket| (|bpPop1|))))
              ((|bpEqKey| 'CBRACK) (|bpPush| NIL))
-             (#0='T (|bpBrackTrap| |a|))))
-          (#0# NIL))))))
+             (T (|bpBrackTrap| |a|))))
+          (T NIL))))))
 
 (DEFUN |bpPileBracketed| (|f|)
   (COND
@@ -172,8 +171,8 @@
        ((|bpEqKey| 'BACKTAB) T)
        ((AND (APPLY |f| NIL) (OR (|bpEqKey| 'BACKTAB) (|bpPileTrap|)))
         (|bpPush| (|bfPile| (|bpPop1|))))
-       (#0='T NIL)))
-    (#0# NIL)))
+       (T NIL)))
+    (T NIL)))
 
 (DEFUN |bpListof| (|f| |str1| |g|)
   (PROG (|a|)
@@ -189,13 +188,13 @@
                 ((NOT (AND (|bpEqKey| |str1|)
                            (OR (APPLY |f| NIL) (|bpTrap|))))
                  (RETURN NIL))
-                ('T 0)))
+                (T 0)))
             (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
             (|bpPush|
                 (FUNCALL |g|
                          (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|))))))
-           (#0='T T)))
-        (#0# NIL)))))
+           (T T)))
+        (T NIL)))))
 
 (DEFUN |bpListofFun| (|f| |h| |g|)
   (PROG (|a|)
@@ -211,13 +210,13 @@
                 ((NOT (AND (APPLY |h| NIL)
                            (OR (APPLY |f| NIL) (|bpTrap|))))
                  (RETURN NIL))
-                ('T 0)))
+                (T 0)))
             (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
             (|bpPush|
                 (FUNCALL |g|
                          (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|))))))
-           (#0='T T)))
-        (#0# NIL)))))
+           (T T)))
+        (T NIL)))))
 
 (DEFUN |bpList| (|f| |str1|)
   (PROG (|a|)
@@ -233,11 +232,11 @@
                 ((NOT (AND (|bpEqKey| |str1|)
                            (OR (APPLY |f| NIL) (|bpTrap|))))
                  (RETURN NIL))
-                ('T 0)))
+                (T 0)))
             (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
             (|bpPush| (CONS (|bpPop3|) (CONS (|bpPop2|) (|bpPop1|)))))
-           (#0='T (|bpPush| (LIST (|bpPop1|))))))
-        (#0# (|bpPush| NIL))))))
+           (T (|bpPush| (LIST (|bpPop1|))))))
+        (T (|bpPush| NIL))))))
 
 (DEFUN |bpOneOrMore| (|f|)
   (PROG (|a|)
@@ -245,13 +244,13 @@
     (RETURN
       (COND
         ((APPLY |f| NIL) (SETQ |a| |$stack|) (SETQ |$stack| NIL)
-         (LOOP (COND ((NOT (APPLY |f| NIL)) (RETURN NIL)) ('T 0)))
+         (LOOP (COND ((NOT (APPLY |f| NIL)) (RETURN NIL)) (T 0)))
          (SETQ |$stack| (CONS (NREVERSE |$stack|) |a|))
          (|bpPush| (CONS (|bpPop2|) (|bpPop1|))))
-        ('T NIL)))))
+        (T NIL)))))
 
 (DEFUN |bpAnyNo| (|s|)
-  (PROGN (LOOP (COND ((NOT (APPLY |s| NIL)) (RETURN NIL)) ('T 0))) T))
+  (PROGN (LOOP (COND ((NOT (APPLY |s| NIL)) (RETURN NIL)) (T 0))) T))
 
 (DEFUN |bpAndOr| (|keyword| |p| |f|)
   (AND (|bpEqKey| |keyword|) (OR (APPLY |p| NIL) (|bpTrap|))
@@ -267,11 +266,11 @@
           ((|bpEqKey| 'THEN)
            (AND (OR (APPLY |f| NIL) (|bpTrap|)) (|bpElse| |f|)
                 (|bpEqKey| 'BACKTAB)))
-          (#0='T (|bpMissing| 'THEN))))
+          (T (|bpMissing| 'THEN))))
        ((|bpEqKey| 'THEN)
         (AND (OR (APPLY |f| NIL) (|bpTrap|)) (|bpElse| |f|)))
-       (#0# (|bpMissing| '|then|))))
-    (#0# NIL)))
+       (T (|bpMissing| '|then|))))
+    (T NIL)))
 
 (DEFUN |bpElse| (|f|)
   (PROG (|a|)
@@ -282,13 +281,13 @@
           ((|bpBacksetElse|)
            (AND (OR (APPLY |f| NIL) (|bpTrap|))
                 (|bpPush| (|bfIf| (|bpPop3|) (|bpPop2|) (|bpPop1|)))))
-          ('T (|bpRestore| |a|)
-           (|bpPush| (|bfIfThenOnly| (|bpPop2|) (|bpPop1|)))))))))
+          (T (|bpRestore| |a|)
+             (|bpPush| (|bfIfThenOnly| (|bpPop2|) (|bpPop1|)))))))))
 
 (DEFUN |bpBacksetElse| ()
   (COND
     ((|bpEqKey| 'BACKSET) (|bpEqKey| 'ELSE))
-    ('T (|bpEqKey| 'ELSE))))
+    (T (|bpEqKey| 'ELSE))))
 
 (DEFUN |bpEqPeek| (|s|)
   (DECLARE (SPECIAL |$ttok| |$stok|))
@@ -350,25 +349,25 @@
         (LOOP
           (COND
             (|done| (RETURN NIL))
-            ('T
-             (PROGN
-               (SETQ |found| (CATCH 'TRAPPOINT (APPLY |f| NIL)))
-               (COND
-                 ((EQ |found| 'TRAPPED) (SETQ |$inputStream| |c|)
-                  (|bpRecoverTrap|))
-                 ((NOT |found|) (SETQ |$inputStream| |c|)
-                  (|bpGeneralErrorHere|) (|bpRecoverTrap|)))
-               (COND
-                 ((|bpEqKey| 'BACKSET) (SETQ |c| |$inputStream|))
-                 ((OR (|bpEqPeek| 'BACKTAB) (NULL |$inputStream|))
-                  (SETQ |done| T))
-                 (#0='T (SETQ |$inputStream| |c|)
-                  (|bpGeneralErrorHere|) (|bpRecoverTrap|)
-                  (COND
-                    ((OR (|bpEqPeek| 'BACKTAB) (NULL |$inputStream|))
-                     (SETQ |done| T))
-                    (#0# (|bpNext|) (SETQ |c| |$inputStream|)))))
-               (SETQ |b| (CONS (|bpPop1|) |b|))))))
+            (T (PROGN
+                 (SETQ |found| (CATCH 'TRAPPOINT (APPLY |f| NIL)))
+                 (COND
+                   ((EQ |found| 'TRAPPED) (SETQ |$inputStream| |c|)
+                    (|bpRecoverTrap|))
+                   ((NOT |found|) (SETQ |$inputStream| |c|)
+                    (|bpGeneralErrorHere|) (|bpRecoverTrap|)))
+                 (COND
+                   ((|bpEqKey| 'BACKSET) (SETQ |c| |$inputStream|))
+                   ((OR (|bpEqPeek| 'BACKTAB) (NULL |$inputStream|))
+                    (SETQ |done| T))
+                   (T (SETQ |$inputStream| |c|) (|bpGeneralErrorHere|)
+                      (|bpRecoverTrap|)
+                      (COND
+                        ((OR (|bpEqPeek| 'BACKTAB)
+                             (NULL |$inputStream|))
+                         (SETQ |done| T))
+                        (T (|bpNext|) (SETQ |c| |$inputStream|)))))
+                 (SETQ |b| (CONS (|bpPop1|) |b|))))))
         (SETQ |$stack| |a|)
         (|bpPush| (NREVERSE |b|))))))
 
@@ -379,16 +378,16 @@
     ((|bpEqPeek| 'BACKTAB)
      (COND
        ((EQL |n| 0) T)
-       (#0='T (|bpNextToken|) (SETQ |$bpCount| (- |$bpCount| 1))
-        (|bpMoveTo| (- |n| 1)))))
+       (T (|bpNextToken|) (SETQ |$bpCount| (- |$bpCount| 1))
+          (|bpMoveTo| (- |n| 1)))))
     ((|bpEqPeek| 'BACKSET)
-     (COND ((EQL |n| 0) T) (#0# (|bpNextToken|) (|bpMoveTo| |n|))))
+     (COND ((EQL |n| 0) T) (T (|bpNextToken|) (|bpMoveTo| |n|))))
     ((|bpEqPeek| 'SETTAB) (|bpNextToken|) (|bpMoveTo| (+ |n| 1)))
     ((|bpEqPeek| 'OPAREN) (|bpNextToken|)
      (SETQ |$bpParenCount| (+ |$bpParenCount| 1)) (|bpMoveTo| |n|))
     ((|bpEqPeek| 'CPAREN) (|bpNextToken|)
      (SETQ |$bpParenCount| (- |$bpParenCount| 1)) (|bpMoveTo| |n|))
-    (#0# (|bpNextToken|) (|bpMoveTo| |n|))))
+    (T (|bpNextToken|) (|bpMoveTo| |n|))))
 
 (DEFUN |bpQualifiedName| ()
   (DECLARE (SPECIAL |$stok|))
@@ -396,14 +395,14 @@
     ((|bpEqPeek| 'COLON-COLON) (|bpNext|)
      (AND (CONSP |$stok|) (EQ (CAR |$stok|) 'ID) (|bpPushId|)
           (|bpNext|) (|bpPush| (|bfColonColon| (|bpPop2|) (|bpPop1|)))))
-    ('T NIL)))
+    (T NIL)))
 
 (DEFUN |bpName| ()
   (DECLARE (SPECIAL |$stok|))
   (COND
     ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'ID)) (|bpPushId|)
      (|bpNext|) (|bpAnyNo| #'|bpQualifiedName|))
-    ('T NIL)))
+    (T NIL)))
 
 (DEFUN |bpConstTok| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
@@ -419,7 +418,7 @@
     ((|bpEqPeek| 'QUOTE) (|bpNext|)
      (AND (OR (|bpSexp|) (|bpTrap|))
           (|bpPush| (|bfSymbol| (|bpPop1|)))))
-    ('T (|bpString|))))
+    (T (|bpString|))))
 
 (DEFUN |bpExportItemTail| ()
   (OR (AND (|bpEqKey| 'BEC) (OR (|bpAssign|) (|bpTrap|))
@@ -431,15 +430,15 @@
     (RETURN
       (COND
         ((|bpEqPeek| 'STRUCTURE) (|bpStruct|))
-        (#0='T (SETQ |a| (|bpState|))
-         (COND
-           ((|bpName|)
-            (COND
-              ((|bpEqPeek| 'COLON) (|bpRestore| |a|)
-               (OR (|bpSignature|) (|bpTrap|))
-               (OR (|bpExportItemTail|) T))
-              (#0# (|bpRestore| |a|) (|bpTypeAliasDefition|))))
-           (#0# NIL)))))))
+        (T (SETQ |a| (|bpState|))
+           (COND
+             ((|bpName|)
+              (COND
+                ((|bpEqPeek| 'COLON) (|bpRestore| |a|)
+                 (OR (|bpSignature|) (|bpTrap|))
+                 (OR (|bpExportItemTail|) T))
+                (T (|bpRestore| |a|) (|bpTypeAliasDefition|))))
+             (T NIL)))))))
 
 (DEFUN |bpExportItemList| () (|bpListAndRecover| #'|bpExportItem|))
 
@@ -455,7 +454,7 @@
              ((|bpEqKey| 'WHERE)
               (AND (|bpExports|)
                    (|bpPush| (|%Module| (|bpPop2|) (|bpPop1|)))))
-             ('T (|bpPush| (|%Module| (|bpPop1|) NIL)))))))))
+             (T (|bpPush| (|%Module| (|bpPop1|) NIL)))))))))
 
 (DEFUN |bpImport| ()
   (PROG (|a|)
@@ -469,8 +468,8 @@
                  (OR (|bpEqKey| 'FOR) (|bpTrap|))
                  (OR (|bpName|) (|bpTrap|))
                  (|bpPush| (|%ImportSignature| (|bpPop1|) (|bpPop1|)))))
-           (#0='T (|bpPush| (|%Import| (|bpPop1|))))))
-        (#0# NIL)))))
+           (T (|bpPush| (|%Import| (|bpPop1|))))))
+        (T NIL)))))
 
 (DEFUN |bpNamespace| ()
   (AND (|bpEqKey| 'NAMESPACE) (|bpName|)
@@ -490,7 +489,7 @@
      (AND (|bpEqKey| 'ARROW) (OR (|bpApplication|) (|bpTrap|))
           (|bpPush| (|%Mapping| (|bpPop1|) (|bfUntuple| (|bpPop1|)))))
      T)
-    ('T NIL)))
+    (T NIL)))
 
 (DEFUN |bpArgtypeList| () (|bpTuple| #'|bpApplication|))
 
@@ -511,10 +510,10 @@
              ((|bpCancel|)
               (COND
                 ((|bpEqKeyNextTok| 'BACKTAB) T)
-                (#0='T (|bpRestore| |a|) NIL)))
+                (T (|bpRestore| |a|) NIL)))
              ((|bpEqKeyNextTok| 'BACKTAB) T)
-             (#0# (|bpRestore| |a|) NIL)))
-          (#0# NIL))))))
+             (T (|bpRestore| |a|) NIL)))
+          (T NIL))))))
 
 (DEFUN |bpAddTokens| (|n|)
   (DECLARE (SPECIAL |$stok|))
@@ -523,9 +522,8 @@
     ((< 0 |n|)
      (CONS (|shoeTokConstruct| 'KEY 'SETTAB (|shoeTokPosn| |$stok|))
            (|bpAddTokens| (- |n| 1))))
-    ('T
-     (CONS (|shoeTokConstruct| 'KEY 'BACKTAB (|shoeTokPosn| |$stok|))
-           (|bpAddTokens| (+ |n| 1))))))
+    (T (CONS (|shoeTokConstruct| 'KEY 'BACKTAB (|shoeTokPosn| |$stok|))
+             (|bpAddTokens| (+ |n| 1))))))
 
 (DEFUN |bpExceptions| ()
   (OR (|bpEqPeek| 'DOT) (|bpEqPeek| 'QUOTE) (|bpEqPeek| 'OPAREN)
@@ -542,8 +540,8 @@
          (SETQ |a| (GET |$ttok| 'SHOEINF))
          (COND
            ((NULL |a|) (AND (|bpPush| |$ttok|) (|bpNext|)))
-           (#0='T (AND (|bpPush| |a|) (|bpNext|)))))
-        (#0# NIL)))))
+           (T (AND (|bpPush| |a|) (|bpNext|)))))
+        (T NIL)))))
 
 (DEFUN |bpAnyId| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
@@ -640,12 +638,11 @@
                ((NOT (AND (|bpInfGeneric| |o|)
                           (OR (|bpRightAssoc| |o| |p|) (|bpTrap|))))
                 (RETURN NIL))
-               ('T
-                (|bpPush|
-                    (|bfInfApplication| (|bpPop2|) (|bpPop2|)
-                        (|bpPop1|))))))
+               (T (|bpPush|
+                      (|bfInfApplication| (|bpPop2|) (|bpPop2|)
+                          (|bpPop1|))))))
            T)
-          ('T (|bpRestore| |a|) NIL))))))
+          (T (|bpRestore| |a|) NIL))))))
 
 (DEFUN |bpLeftAssoc| (|operations| |parser|)
   (COND
@@ -655,11 +652,10 @@
          ((NOT (AND (|bpInfGeneric| |operations|)
                     (OR (APPLY |parser| NIL) (|bpTrap|))))
           (RETURN NIL))
-         ('T
-          (|bpPush|
-              (|bfInfApplication| (|bpPop2|) (|bpPop2|) (|bpPop1|))))))
+         (T (|bpPush|
+                (|bfInfApplication| (|bpPop2|) (|bpPop2|) (|bpPop1|))))))
      T)
-    ('T NIL)))
+    (T NIL)))
 
 (DEFUN |bpString| ()
   (DECLARE (SPECIAL |$ttok| |$stok|))
@@ -672,7 +668,7 @@
     ((AND (CONSP |$stok|) (EQ (CAR |$stok|) 'ID)
           (GET |$ttok| 'SHOETHETA))
      (|bpPushId|) (|bpNext|))
-    ('T NIL)))
+    (T NIL)))
 
 (DEFUN |bpReduceOperator| ()
   (OR (|bpInfixOperator|) (|bpString|) (|bpThetaName|)))
@@ -688,10 +684,9 @@
              ((|bpEqPeek| 'OBRACK)
               (AND (OR (|bpDConstruct|) (|bpTrap|))
                    (|bpPush| (|bfReduceCollect| (|bpPop2|) (|bpPop1|)))))
-             ('T
-              (AND (OR (|bpApplication|) (|bpTrap|))
-                   (|bpPush| (|bfReduce| (|bpPop2|) (|bpPop1|)))))))
-          ('T (|bpRestore| |a|) NIL))))))
+             (T (AND (OR (|bpApplication|) (|bpTrap|))
+                     (|bpPush| (|bfReduce| (|bpPop2|) (|bpPop1|)))))))
+          (T (|bpRestore| |a|) NIL))))))
 
 (DEFUN |bpTimes| ()
   (OR (|bpReduce|) (|bpLeftAssoc| '(TIMES SLASH) #'|bpExpt|)))
@@ -833,8 +828,8 @@
            (COND
              ((|bpEqPeek| 'BEC) (|bpRestore| |a|)
               (OR (|bpAssignment|) (|bpTrap|)))
-             (#0='T T)))
-          (#0# (|bpRestore| |a|) NIL))))))
+             (T T)))
+          (T (|bpRestore| |a|) NIL))))))
 
 (DEFUN |bpAssignment| ()
   (AND (|bpAssignVariable|) (|bpEqKey| 'BEC)
@@ -859,8 +854,8 @@
              ((|bpEqPeek| 'TDEF) (|bpRestore| |a|)
               (|bpTypeAliasDefition|))
              ((|bpEqPeek| 'MDEF) (|bpRestore| |a|) (|bpMdef|))
-             (#0='T T)))
-          (#0# (|bpRestore| |a|) NIL))))))
+             (T T)))
+          (T (|bpRestore| |a|) NIL))))))
 
 (DEFUN |bpStoreName| ()
   (DECLARE (SPECIAL |$typings| |$wheredefs| |$op| |$stack|))
@@ -905,13 +900,13 @@
         (SETQ |a| (|bpState|))
         (COND
           ((|bpDDef|) T)
-          (#0='T (|bpRestore| |a|)
-           (COND
-             ((|bpBDefinitionPileItems|) T)
-             (#0# (|bpRestore| |a|)
-              (COND
-                ((|bpPDefinitionItems|) T)
-                (#0# (|bpRestore| |a|) (|bpWhere|)))))))))))
+          (T (|bpRestore| |a|)
+             (COND
+               ((|bpBDefinitionPileItems|) T)
+               (T (|bpRestore| |a|)
+                  (COND
+                    ((|bpPDefinitionItems|) T)
+                    (T (|bpRestore| |a|) (|bpWhere|)))))))))))
 
 (DEFUN |bpDefinitionPileItems| ()
   (AND (|bpListAndRecover| #'|bpDefinitionItem|)
@@ -1014,9 +1009,9 @@
                               (|bpTrap|))
                           NIL))))
           (RETURN NIL))
-         ('T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))
+         (T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))
      T)
-    ('T (|bpPatternTail|))))
+    (T (|bpPatternTail|))))
 
 (DEFUN |bpPatternTail| ()
   (AND (|bpPatternColon|)
@@ -1065,10 +1060,10 @@
                               (|bpTrap|))
                           NIL))))
           (RETURN NIL))
-         ('T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))
+         (T (|bpPush| (APPEND (|bpPop2|) (|bpPop1|))))))
      T)
-    ('T
-     (AND (|bpColonName|) (|bpPush| (|bfColonAppend| NIL (|bpPop1|)))))))
+    (T (AND (|bpColonName|)
+            (|bpPush| (|bfColonAppend| NIL (|bpPop1|)))))))
 
 (DEFUN |bpVariable| ()
   (OR (AND (|bpParenthesized| #'|bpBoundVariablelist|)
@@ -1092,7 +1087,7 @@
     (RETURN
       (PROGN
         (SETQ |a| (|bpPop1|))
-        (COND ((NULL |a|) (|bpTrap|)) ('T (|bpPush| |a|)))))))
+        (COND ((NULL |a|) (|bpTrap|)) (T (|bpPush| |a|)))))))
 
 (DEFUN |bpStruct| ()
   (AND (|bpEqKey| 'STRUCTURE) (OR (|bpName|) (|bpTrap|))
@@ -1162,6 +1157,6 @@
                     (IDENTP |l|))
                (COND
                  (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
-                 (#0='T (LIST (LIST 'DEFPARAMETER |l| |r|)))))
-              (#0# (|translateToplevel| |b| NIL))))))))
+                 (T (LIST (LIST 'DEFPARAMETER |l| |r|)))))
+              (T (|translateToplevel| |b| NIL))))))))
 
