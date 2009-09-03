@@ -40,7 +40,7 @@
               ((OR (ATOM |bfVar#1|)
                    (PROGN (SETQ |st| (CAR |bfVar#1|)) NIL))
                (RETURN NIL))
-              ('T (HPUT |KeyTable| (CAR |st|) (CADR |st|))))
+              (T (HPUT |KeyTable| (CAR |st|) (CADR |st|))))
             (SETQ |bfVar#1| (CDR |bfVar#1|))))
         |KeyTable|))))
 
@@ -80,20 +80,20 @@
         (LOOP
           (COND
             ((< (LENGTH (ELT |u| |k|)) |l|) (RETURN NIL))
-            (#0='T (SETQ |k| (+ |k| 1)))))
+            (T (SETQ |k| (+ |k| 1)))))
         (SETQ |v| (MAKE-VEC (+ |n| 1)))
         (LET ((|bfVar#2| (- |k| 1)) (|i| 0))
           (LOOP
             (COND
               ((> |i| |bfVar#2|) (RETURN NIL))
-              (#0# (VEC-SETELT |v| |i| (ELT |u| |i|))))
+              (T (VEC-SETELT |v| |i| (ELT |u| |i|))))
             (SETQ |i| (+ |i| 1))))
         (VEC-SETELT |v| |k| |s|)
         (LET ((|bfVar#3| (- |n| 1)) (|i| |k|))
           (LOOP
             (COND
               ((> |i| |bfVar#3|) (RETURN NIL))
-              (#0# (VEC-SETELT |v| (+ |i| 1) (ELT |u| |i|))))
+              (T (VEC-SETELT |v| (+ |i| 1) (ELT |u| |i|))))
             (SETQ |i| (+ |i| 1))))
         (VEC-SETELT |d| |h| |v|)
         |s|))))
@@ -112,7 +112,7 @@
                   (LOOP
                     (COND
                       ((> |i| 255) (RETURN NIL))
-                      (#0='T (VEC-SETELT |a| |i| |b|)))
+                      (T (VEC-SETELT |a| |i| |b|)))
                     (SETQ |i| (+ |i| 1))))
                 |a|))
         (LET ((|bfVar#4| |l|) (|s| NIL))
@@ -121,7 +121,7 @@
               ((OR (ATOM |bfVar#4|)
                    (PROGN (SETQ |s| (CAR |bfVar#4|)) NIL))
                (RETURN NIL))
-              (#0# (|shoeInsert| |s| |d|)))
+              (T (|shoeInsert| |s| |d|)))
             (SETQ |bfVar#4| (CDR |bfVar#4|))))
         |d|))))
 
@@ -137,7 +137,7 @@
           (LOOP
             (COND
               ((> |i| 255) (RETURN NIL))
-              (#0='T (BVEC-SETELT |a| |i| 0)))
+              (T (BVEC-SETELT |a| |i| 0)))
             (SETQ |i| (+ |i| 1))))
         (LET ((|bfVar#5| |listing|) (|k| NIL))
           (LOOP
@@ -145,10 +145,9 @@
               ((OR (ATOM |bfVar#5|)
                    (PROGN (SETQ |k| (CAR |bfVar#5|)) NIL))
                (RETURN NIL))
-              (#0#
-               (COND
-                 ((NOT (|shoeStartsId| (ELT |k| 0)))
-                  (BVEC-SETELT |a| (QENUM |k| 0) 1)))))
+              (T (COND
+                   ((NOT (|shoeStartsId| (ELT |k| 0)))
+                    (BVEC-SETELT |a| (QENUM |k| 0) 1)))))
             (SETQ |bfVar#5| (CDR |bfVar#5|))))
         |a|))))
 
@@ -160,7 +159,7 @@
       (COND
         ((OR (ATOM |bfVar#6|) (PROGN (SETQ |i| (CAR |bfVar#6|)) NIL))
          (RETURN NIL))
-        ('T (SETF (GET |i| 'SHOEPRE) 'T)))
+        (T (SETF (GET |i| 'SHOEPRE) 'T)))
       (SETQ |bfVar#6| (CDR |bfVar#6|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
@@ -176,7 +175,7 @@
       (COND
         ((OR (ATOM |bfVar#7|) (PROGN (SETQ |i| (CAR |bfVar#7|)) NIL))
          (RETURN NIL))
-        ('T (SETF (GET (CAR |i|) 'SHOEINF) (CADR |i|))))
+        (T (SETF (GET (CAR |i|) 'SHOEINF) (CADR |i|))))
       (SETQ |bfVar#7| (CDR |bfVar#7|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
@@ -195,7 +194,7 @@
       (COND
         ((OR (ATOM |bfVar#8|) (PROGN (SETQ |i| (CAR |bfVar#8|)) NIL))
          (RETURN NIL))
-        ('T (SETF (GET (CAR |i|) 'SHOETHETA) (CDR |i|))))
+        (T (SETF (GET (CAR |i|) 'SHOETHETA) (CDR |i|))))
       (SETQ |bfVar#8| (CDR |bfVar#8|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
@@ -237,7 +236,7 @@
       (COND
         ((OR (ATOM |bfVar#9|) (PROGN (SETQ |i| (CAR |bfVar#9|)) NIL))
          (RETURN NIL))
-        ('T (SETF (GET (CAR |i|) 'SHOERENAME) (CDR |i|))))
+        (T (SETF (GET (CAR |i|) 'SHOERENAME) (CDR |i|))))
       (SETQ |bfVar#9| (CDR |bfVar#9|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
@@ -271,6 +270,6 @@
       (COND
         ((OR (ATOM |bfVar#10|) (PROGN (SETQ |i| (CAR |bfVar#10|)) NIL))
          (RETURN NIL))
-        ('T (SETF (GET (CAR |i|) 'SHOESELFUNCTION) (CADR |i|))))
+        (T (SETF (GET (CAR |i|) 'SHOESELFUNCTION) (CADR |i|))))
       (SETQ |bfVar#10| (CDR |bfVar#10|)))))
 
