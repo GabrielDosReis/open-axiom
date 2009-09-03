@@ -357,7 +357,7 @@
                             (PROGN
                               (SETQ |bv| (CAR |ISTMP#2|))
                               (SETQ |body| (CDR |ISTMP#2|))
-                              'T))))))
+                              T))))))
          (COMPILE |name| (CONS 'LAMBDA (CONS |bv| |body|))))
         (T (EVAL |fn|))))))
 
@@ -528,7 +528,7 @@
                        (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
                             (PROGN
                               (SETQ |argTypes| (CAR |ISTMP#2|))
-                              'T))))))
+                              T))))))
          (COND
            ((|bfTupleP| |argTypes|) (SETQ |argTypes| (CDR |argTypes|))))
          (COND
@@ -580,7 +580,7 @@
       (COND
         ((ATOM |b|) (LIST |b|))
         ((AND (CONSP |b|) (EQ (CAR |b|) 'TUPLE)
-              (PROGN (SETQ |xs| (CDR |b|)) #0='T))
+              (PROGN (SETQ |xs| (CDR |b|)) T))
          (|coreError| "invalid AST"))
         (T (CASE (CAR |b|)
              (|%Signature|
@@ -641,7 +641,7 @@
                                        (EQ (CDR |ISTMP#2|) NIL)
                                        (PROGN
                                          (SETQ |t| (CAR |ISTMP#2|))
-                                         #0#))))))
+                                         T))))))
                         (SETQ |sig| (|genDeclaration| |n| |t|))
                         (SETQ |lhs| |n|)))
                      (SETQ |$constantIdentifiers|
@@ -664,7 +664,7 @@
                                        (EQ (CDR |ISTMP#2|) NIL)
                                        (PROGN
                                          (SETQ |t| (CAR |ISTMP#2|))
-                                         #0#))))))
+                                         T))))))
                         (SETQ |sig| (|genDeclaration| |n| |t|))
                         (SETQ |lhs| |n|)))
                      (COND
@@ -828,7 +828,7 @@
                                     (PROGN
                                       (SETQ |bv| (CAR |ISTMP#2|))
                                       (SETQ |body| (CDR |ISTMP#2|))
-                                      #0='T))))))
+                                      T))))))
                  (LIST |name| (CONS 'LAMBDA (CONS |bv| |body|))))
                 ((AND (CONSP |x|) (EQ (CAR |x|) 'DEFMACRO)
                       (PROGN
@@ -841,7 +841,7 @@
                                     (PROGN
                                       (SETQ |bv| (CAR |ISTMP#2|))
                                       (SETQ |body| (CDR |ISTMP#2|))
-                                      #0#))))))
+                                      T))))))
                  (LIST |name| (CONS 'LAMBDA (CONS |bv| |body|))))
                 ((AND (CONSP |x|) (EQ (CAR |x|) 'EVAL-WHEN)
                       (PROGN
@@ -868,7 +868,7 @@
                                              (PROGN
                                                (SETQ |exp|
                                                 (CAR |ISTMP#5|))
-                                               #0#))))))))))))
+                                               T))))))))))))
                  (LIST |id| |exp|))
                 ((AND (CONSP |x|) (EQ (CAR |x|) 'SETQ)
                       (PROGN
@@ -881,7 +881,7 @@
                                     (EQ (CDR |ISTMP#2|) NIL)
                                     (PROGN
                                       (SETQ |exp| (CAR |ISTMP#2|))
-                                      #0#))))))
+                                      T))))))
                  (LIST |id| |exp|))
                 (T (LIST 'TOP-LEVEL |x|))))
         (SETQ |nee| (CAR |LETTMP#1|))
@@ -926,7 +926,7 @@
                      (PROGN
                        (SETQ |a| (CAR |ISTMP#1|))
                        (SETQ |b| (CDR |ISTMP#1|))
-                       #0='T))))
+                       T))))
          (|defuse1| (APPEND (|unfluidlist| |a|) |e|) |b|))
         ((AND (CONSP |y|) (EQ (CAR |y|) 'PROG)
               (PROGN
@@ -935,7 +935,7 @@
                      (PROGN
                        (SETQ |a| (CAR |ISTMP#1|))
                        (SETQ |b| (CDR |ISTMP#1|))
-                       #0#))))
+                       T))))
          (SETQ |LETTMP#1| (|defSeparate| |a|))
          (SETQ |dol| (CAR |LETTMP#1|)) (SETQ |ndol| (CADR |LETTMP#1|))
          (LET ((|bfVar#20| |dol|) (|i| NIL))
@@ -948,10 +948,10 @@
              (SETQ |bfVar#20| (CDR |bfVar#20|))))
          (|defuse1| (APPEND |ndol| |e|) |b|))
         ((AND (CONSP |y|) (EQ (CAR |y|) 'QUOTE)
-              (PROGN (SETQ |a| (CDR |y|)) #0#))
+              (PROGN (SETQ |a| (CDR |y|)) T))
          NIL)
         ((AND (CONSP |y|) (EQ (CAR |y|) '+LINE)
-              (PROGN (SETQ |a| (CDR |y|)) #0#))
+              (PROGN (SETQ |a| (CDR |y|)) T))
          NIL)
         (T (LET ((|bfVar#21| |y|) (|i| NIL))
              (LOOP
@@ -984,7 +984,7 @@
               (PROGN
                 (SETQ |ISTMP#1| (CDR |x|))
                 (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
-                     (PROGN (SETQ |y| (CAR |ISTMP#1|)) 'T))))
+                     (PROGN (SETQ |y| (CAR |ISTMP#1|)) T))))
          (LIST |y|))
         (T (CONS (CAR |x|) (|unfluidlist| (CDR |x|))))))))
 
@@ -1166,7 +1166,7 @@
                               (PROGN
                                 (SETQ |bv| (CAR |ISTMP#2|))
                                 (SETQ |body| (CDR |ISTMP#2|))
-                                'T))))))
+                                T))))))
            (COMPILE |name| (CONS 'LAMBDA (CONS |bv| |body|))))
           (T (EVAL |fn|)))))))
 

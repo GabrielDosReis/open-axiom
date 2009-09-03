@@ -138,7 +138,7 @@
              ((EQL |fst| |shoeCLOSEPAREN|)
               (SETQ |command| (|shoeLisp?| |$ln|))
               (COND
-                ((AND |command| (< 0 (LENGTH |command|)))
+                ((AND |command| (PLUSP (LENGTH |command|)))
                  (COND
                    ((EQL (QENUM |command| 0) (QENUM ";" 0))
                     (|shoeAccumulateLines| |$r| |string|))

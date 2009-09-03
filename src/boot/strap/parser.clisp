@@ -33,7 +33,7 @@
             (T (CAR |$inputStream|))))
     (SETQ |$ttok| (|shoeTokPart| |$stok|))
     (COND
-      ((AND (< 0 |$bpParenCount|) (CONSP |$stok|)
+      ((AND (PLUSP |$bpParenCount|) (CONSP |$stok|)
             (EQ (CAR |$stok|) 'KEY))
        (COND
          ((EQ |$ttok| 'SETTAB) (SETQ |$bpCount| (+ |$bpCount| 1))
@@ -519,7 +519,7 @@
   (DECLARE (SPECIAL |$stok|))
   (COND
     ((EQL |n| 0) NIL)
-    ((< 0 |n|)
+    ((PLUSP |n|)
      (CONS (|shoeTokConstruct| 'KEY 'SETTAB (|shoeTokPosn| |$stok|))
            (|bpAddTokens| (- |n| 1))))
     (T (CONS (|shoeTokConstruct| 'KEY 'BACKTAB (|shoeTokPosn| |$stok|))
@@ -1151,9 +1151,7 @@
                              (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                              (AND (CONSP |ISTMP#2|)
                                   (EQ (CDR |ISTMP#2|) NIL)
-                                  (PROGN
-                                    (SETQ |r| (CAR |ISTMP#2|))
-                                    'T)))))
+                                  (PROGN (SETQ |r| (CAR |ISTMP#2|)) T)))))
                     (IDENTP |l|))
                (COND
                  (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
