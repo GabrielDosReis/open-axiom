@@ -619,22 +619,17 @@ bfISReverse(x,a) ==
   bpTrap()
  
 bfIS1(lhs,rhs) ==
-  null rhs =>
-    ['NULL,lhs]
-  STRINGP rhs =>
-    ['EQ,lhs,['QUOTE,INTERN rhs]]
-  NUMBERP rhs =>
-    ["EQUAL",lhs,rhs]
-  atom rhs =>
-    ['PROGN,bfLetForm(rhs,lhs),''T]
+  null rhs => ['NULL,lhs]
+  STRINGP rhs => ['EQ,lhs,['QUOTE,INTERN rhs]]
+  NUMBERP rhs => ["EQUAL",lhs,rhs]
+  atom rhs => ['PROGN,bfLetForm(rhs,lhs),'T]
   rhs is ['QUOTE,a] =>
     IDENTP a => ['EQ,lhs,rhs]
     ["EQUAL",lhs,rhs]
   rhs is ['L%T,c,d] =>
     l := bfLET(c,lhs)
-    bfAND [bfIS1(lhs,d),bfMKPROGN [l,''T]]
-  rhs is ["EQUAL",a] =>
-    ["EQUAL",lhs,a]
+    bfAND [bfIS1(lhs,d),bfMKPROGN [l,'T]]
+  rhs is ["EQUAL",a] => bfQ(lhs,a)
   CONSP lhs =>
     g := INTERN CONCAT('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
@@ -654,18 +649,18 @@ bfIS1(lhs,rhs) ==
       bfAND [['CONSP,lhs],bfIS1(['CAR,lhs],a)]
     a1 := bfIS1(['CAR,lhs],a)
     b1 := bfIS1(['CDR,lhs],b)
-    a1 is ['PROGN,c,''T] and b1 is ['PROGN,:cls] =>
+    a1 is ['PROGN,c,'T] and b1 is ['PROGN,:cls] =>
       bfAND [['CONSP,lhs],bfMKPROGN [c,:cls]]
     bfAND [['CONSP,lhs],a1,b1]
   rhs is ['APPEND,a,b] =>
     patrev := bfISReverse(b,a)
     g := INTERN CONCAT('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
-    rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['REVERSE,lhs]],''T]]
+    rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['REVERSE,lhs]],'T]]
     l2 := bfIS1(g,patrev)
     if CONSP l2 and atom first l2 then l2 := cons(l2,nil)
     a = "DOT" => bfAND [rev,:l2]
-    bfAND [rev,:l2,['PROGN,bfLetForm(a,['NREVERSE,a]),''T]]
+    bfAND [rev,:l2,['PROGN,bfLetForm(a,['NREVERSE,a]),'T]]
   bpSpecificErrorHere '"bad IS code is generated"
   bpTrap()
  
@@ -725,7 +720,8 @@ bfQ(l,r)==
   ["EQUAL",l,r]
  
 bfLessp(l,r)==
-  r=0 => ["MINUSP", l]
+  l = 0 => ["PLUSP",r]
+  r = 0 => ["MINUSP", l]
   ["<",l,r]
  
 bfMDef (op,args,body) ==
