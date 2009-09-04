@@ -121,9 +121,8 @@
              ((|bStreamNull| |b|)
               (|shoeConsole| (CONCAT |name| " not found in " |fn|))
               NIL)
-             (T (COND
-                  ((NULL |lines|) (|shoeConsole| ")package not found")))
-                (APPEND (REVERSE |lines|) (CAR |b|)))))))))
+             ((NULL |lines|) (|shoeConsole| ")package not found"))
+             (T (APPEND (REVERSE |lines|) (CAR |b|)))))))))
 
 (DEFPARAMETER |$bStreamNil| (LIST '|nullstream|))
 

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -49,57 +49,44 @@ shoePileColumn t==
 -- s is a token-dq-stream
  
 shoePileInsert (s)==
-     if bStreamNull s
-     then cons([],s)
-     else
-         toktype:=shoeTokType CAAAR s
-         if toktype ="LISP"  or toktype = "LINE"
-         then cons([first s],rest s)
-         else
-            a:=shoePileTree(-1,s)
-            cons([a.2],a.3)
+  bStreamNull s => cons([],s)
+  toktype := shoeTokType CAAAR s
+  toktype = "LISP"  or toktype = "LINE" => cons([first s],rest s)
+  a:=shoePileTree(-1,s)
+  cons([a.2],a.3)
  
 shoePileTree(n,s)==
-    if bStreamNull s
-    then [false,n,[],s]
-    else
-        [h,t]:=[first s,rest s]
-        hh:=shoePileColumn h
-        if hh > n
-        then shoePileForests(h,hh,t)
-        else [false,n,[],s]
+  bStreamNull s => [false,n,[],s]
+  [h,t] := [first s,rest s]
+  hh := shoePileColumn h
+  hh > n => shoePileForests(h,hh,t)
+  [false,n,[],s]
  
 eqshoePileTree(n,s)==
-    if bStreamNull s
-    then [false,n,[],s]
-    else
-        [h,t]:=[first s,rest s]
-        hh:=shoePileColumn h
-        if hh = n
-        then shoePileForests(h,hh,t)
-        else [false,n,[],s]
+  bStreamNull s => [false,n,[],s]
+  [h,t] := [first s,rest s]
+  hh := shoePileColumn h
+  hh = n => shoePileForests(h,hh,t)
+  [false,n,[],s]
  
 shoePileForest(n,s)==
-     [b,hh,h,t]:= shoePileTree(n,s)
-     if b
-     then
-       [h1,t1]:=shoePileForest1(hh,t)
-       [cons(h,h1),t1]
-     else [[],s]
+  [b,hh,h,t] := shoePileTree(n,s)
+  b => 
+    [h1,t1]:=shoePileForest1(hh,t)
+    [cons(h,h1),t1]
+  [[],s]
  
 shoePileForest1(n,s)==
-     [b,n1,h,t]:= eqshoePileTree(n,s)
-     if b
-     then
-       [h1,t1]:=shoePileForest1(n,t)
-       [cons(h,h1),t1]
-     else [[],s]
+  [b,n1,h,t] := eqshoePileTree(n,s)
+  b => 
+    [h1,t1]:=shoePileForest1(n,t)
+    [cons(h,h1),t1]
+  [[],s]
  
 shoePileForests(h,n,s)==
-      [h1,t1]:=shoePileForest(n,s)
-      if bStreamNull h1
-      then [true,n,h,s]
-      else shoePileForests(shoePileCtree(h,h1),n,t1)
+  [h1,t1] := shoePileForest(n,s)
+  bStreamNull h1 => [true,n,h,s]
+  shoePileForests(shoePileCtree(h,h1),n,t1)
  
 shoePileCtree(x,y) ==
   dqAppend(x,shoePileCforest y)
@@ -107,42 +94,31 @@ shoePileCtree(x,y) ==
 -- only enshoePiles forests with >=2 trees
  
 shoePileCforest x==
-   if null x
-   then []
-   else if null rest x
-        then first x
-        else
-           a:=first x
-           b:=shoePileCoagulate(a,rest x)
-           if null rest b
-           then first b
-           else shoeEnPile shoeSeparatePiles b
+  null x => []
+  null rest x => first x
+  a := first x
+  b := shoePileCoagulate(a,rest x)
+  null rest b => first b
+  shoeEnPile shoeSeparatePiles b
  
 shoePileCoagulate(a,b)==
-    if null b
-    then [a]
-    else
-      c:=first b
-      if shoeTokPart CAAR c = "THEN" or shoeTokPart CAAR c = "ELSE"
-      then shoePileCoagulate (dqAppend(a,c),rest b)
-      else
-         d:=second a
-         e:=shoeTokPart d
-         if d is ["KEY",:.] and
-               (GET(e,"SHOEINF") or e = "COMMA" or e = "SEMICOLON")
-         then shoePileCoagulate(dqAppend(a,c),rest b)
-         else cons(a,shoePileCoagulate(c,rest b))
+  null b => [a]
+  c := first b
+  shoeTokPart CAAR c = "THEN" or shoeTokPart CAAR c = "ELSE" =>
+    shoePileCoagulate (dqAppend(a,c),rest b)
+  d := second a
+  e := shoeTokPart d
+  d is ["KEY",:.] and
+	(GET(e,"SHOEINF") or e = "COMMA" or e = "SEMICOLON") =>
+    shoePileCoagulate(dqAppend(a,c),rest b)
+  cons(a,shoePileCoagulate(c,rest b))
  
 shoeSeparatePiles x==
-  if null x
-  then []
-  else if null rest x
-       then first x
-       else
-         a:=first x
-         semicolon:=dqUnit
-                shoeTokConstruct("KEY", "BACKSET",shoeLastTokPosn a)
-         dqConcat [a,semicolon,shoeSeparatePiles rest x]
+  null x => []
+  null rest x => first x
+  a := first x
+  semicolon := dqUnit shoeTokConstruct("KEY", "BACKSET",shoeLastTokPosn a)
+  dqConcat [a,semicolon,shoeSeparatePiles rest x]
  
 shoeEnPile x==
    dqConcat [dqUnit shoeTokConstruct("KEY","SETTAB",shoeFirstTokPosn x),

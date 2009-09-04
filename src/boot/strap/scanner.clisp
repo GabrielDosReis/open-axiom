@@ -238,13 +238,10 @@
                     (T (SETQ |$n| |n|) (|shoeLeafLispExp| |exp|)))))))))))
 
 (DEFUN |shoeEscape| ()
-  (PROG (|a|)
-    (DECLARE (SPECIAL |$n|))
-    (RETURN
-      (PROGN
-        (SETQ |$n| (+ |$n| 1))
-        (SETQ |a| (|shoeEsc|))
-        (COND (|a| (|shoeWord| T)) (T NIL))))))
+  (DECLARE (SPECIAL |$n|))
+  (PROGN
+    (SETQ |$n| (+ |$n| 1))
+    (COND ((|shoeEsc|) (|shoeWord| T)) (T NIL))))
 
 (DEFUN |shoeEsc| ()
   (PROG (|n1|)
