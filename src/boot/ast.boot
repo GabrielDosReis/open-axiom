@@ -980,9 +980,14 @@ bfWashCONDBranchBody x ==
   x is ["PROGN",:y] => y
   [x]
 
+bfAlternative(a,b) ==
+  a is ["AND",:conds,["PROGN",stmt,='T]] =>
+    [["AND",:conds], :bfWashCONDBranchBody bfMKPROGN [stmt,b]]
+  [a,:bfWashCONDBranchBody b]
+
 bfSequence l ==
       null l=> NIL
-      transform:= [[a,:bfWashCONDBranchBody b] for x in l while
+      transform:= [bfAlternative(a,b) for x in l while
               x is ["COND",[a,["IDENTITY",b]]]]
       no:=#transform
       before:= bfTake(no,l)
@@ -993,7 +998,7 @@ bfSequence l ==
                    f
               bfMKPROGN [first l,bfSequence rest l]
       null aft => ["COND",:transform]
-      ["COND",:transform,['T,:bfWashCONDBranchBody bfSequence aft]]
+      ["COND",:transform,bfAlternative('T,bfSequence aft)]
  
 bfWhere (context,expr)==
   [opassoc,defs,nondefs] := defSheepAndGoats context

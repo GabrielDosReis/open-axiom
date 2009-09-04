@@ -210,9 +210,8 @@
       (COND
         ((NULL |x|)
          (COND
-           ((AND (CONSP |y|) (EQ (CAR |y|) 'BVQUOTE)
-                 (PROGN (SETQ |a| (CDR |y|)) T))
-            (LIST '&REST (CONS 'QUOTE |a|)))
+           ((AND (CONSP |y|) (EQ (CAR |y|) 'BVQUOTE))
+            (SETQ |a| (CDR |y|)) (LIST '&REST (CONS 'QUOTE |a|)))
            (T (LIST '&REST |y|))))
         (T (CONS (CAR |x|) (|bfColonAppend| (CDR |x|) |y|)))))))
 
@@ -282,8 +281,8 @@
                      (PROGN
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                        (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
-                            (PROGN (SETQ |a| (CAR |ISTMP#2|)) T)))))
-              (PROGN (SETQ |l1| (CDR |l|)) T))
+                            (PROGN (SETQ |a| (CAR |ISTMP#2|)) T))))))
+         (SETQ |l1| (CDR |l|))
          (COND (|l1| (LIST 'APPEND |a| (|bfMakeCons| |l1|))) (T |a|)))
         (T (LIST 'CONS (CAR |l|) (|bfMakeCons| (CDR |l|))))))))
 
@@ -1014,8 +1013,8 @@
                                (AND (CONSP |ISTMP#2|)
                                     (EQ (CDR |ISTMP#2|) NIL)
                                     (EQ (CAR |ISTMP#2|) 'T)))))
-                      (CONSP |b1|) (EQ (CAR |b1|) 'PROGN)
-                      (PROGN (SETQ |cls| (CDR |b1|)) T))
+                      (CONSP |b1|) (EQ (CAR |b1|) 'PROGN))
+                 (SETQ |cls| (CDR |b1|))
                  (|bfAND| (LIST (LIST 'CONSP |lhs|)
                                 (|bfMKPROGN| (CONS |c| |cls|)))))
                 (T (|bfAND| (LIST (LIST 'CONSP |lhs|) |a1| |b1|)))))))
@@ -1704,10 +1703,39 @@
   (PROG (|y|)
     (RETURN
       (COND
-        ((AND (CONSP |x|) (EQ (CAR |x|) 'PROGN)
-              (PROGN (SETQ |y| (CDR |x|)) T))
+        ((AND (CONSP |x|) (EQ (CAR |x|) 'PROGN)) (SETQ |y| (CDR |x|))
          |y|)
         (T (LIST |x|))))))
+
+(DEFUN |bfAlternative| (|a| |b|)
+  (PROG (|conds| |ISTMP#5| |stmt| |ISTMP#4| |ISTMP#3| |ISTMP#2|
+                 |ISTMP#1|)
+    (RETURN
+      (COND
+        ((AND (CONSP |a|) (EQ (CAR |a|) 'AND)
+              (PROGN
+                (SETQ |ISTMP#1| (CDR |a|))
+                (AND (CONSP |ISTMP#1|)
+                     (PROGN (SETQ |ISTMP#2| (REVERSE |ISTMP#1|)) T)
+                     (CONSP |ISTMP#2|)
+                     (PROGN
+                       (SETQ |ISTMP#3| (CAR |ISTMP#2|))
+                       (AND (CONSP |ISTMP#3|)
+                            (EQ (CAR |ISTMP#3|) 'PROGN)
+                            (PROGN
+                              (SETQ |ISTMP#4| (CDR |ISTMP#3|))
+                              (AND (CONSP |ISTMP#4|)
+                                   (PROGN
+                                     (SETQ |stmt| (CAR |ISTMP#4|))
+                                     (SETQ |ISTMP#5| (CDR |ISTMP#4|))
+                                     (AND (CONSP |ISTMP#5|)
+                                      (EQ (CDR |ISTMP#5|) NIL)
+                                      (EQ (CAR |ISTMP#5|) 'T)))))))
+                     (PROGN (SETQ |conds| (CDR |ISTMP#2|)) T)
+                     (PROGN (SETQ |conds| (NREVERSE |conds|)) T))))
+         (CONS (CONS 'AND |conds|)
+               (|bfWashCONDBranchBody| (|bfMKPROGN| (LIST |stmt| |b|)))))
+        (T (CONS |a| (|bfWashCONDBranchBody| |b|)))))))
 
 (DEFUN |bfSequence| (|l|)
   (PROG (|f| |aft| |before| |no| |transform| |b| |ISTMP#5| |ISTMP#4|
@@ -1757,8 +1785,7 @@
                                                        T))))))))))))))
                         (RETURN (NREVERSE |bfVar#113|)))
                        (T (SETQ |bfVar#113|
-                                (CONS (CONS |a|
-                                       (|bfWashCONDBranchBody| |b|))
+                                (CONS (|bfAlternative| |a| |b|)
                                       |bfVar#113|))))
                      (SETQ |bfVar#112| (CDR |bfVar#112|)))))
            (SETQ |no| (LENGTH |transform|))
@@ -1767,8 +1794,8 @@
            (COND
              ((NULL |before|)
               (COND
-                ((AND (CONSP |l|) (EQ (CDR |l|) NIL)
-                      (PROGN (SETQ |f| (CAR |l|)) T))
+                ((AND (CONSP |l|) (EQ (CDR |l|) NIL))
+                 (SETQ |f| (CAR |l|))
                  (COND
                    ((AND (CONSP |f|) (EQ (CAR |f|) 'PROGN))
                     (|bfSequence| (CDR |f|)))
@@ -1778,9 +1805,8 @@
              ((NULL |aft|) (CONS 'COND |transform|))
              (T (CONS 'COND
                       (APPEND |transform|
-                              (CONS (CONS 'T
-                                     (|bfWashCONDBranchBody|
-                                      (|bfSequence| |aft|)))
+                              (CONS (|bfAlternative| 'T
+                                     (|bfSequence| |aft|))
                                     NIL))))))))))
 
 (DEFUN |bfWhere| (|context| |expr|)
@@ -1884,8 +1910,7 @@
   (PROG (|a| |f|)
     (RETURN
       (COND
-        ((AND (CONSP |x|) (EQ (CDR |x|) NIL)
-              (PROGN (SETQ |f| (CAR |x|)) T))
+        ((AND (CONSP |x|) (EQ (CDR |x|) NIL)) (SETQ |f| (CAR |x|))
          (LIST 'DEFCONSTANT |f| (LIST 'LIST (LIST 'QUOTE |f|))))
         (T (SETQ |a|
                  (LET ((|bfVar#117| NIL) (|bfVar#116| (CDR |x|))
