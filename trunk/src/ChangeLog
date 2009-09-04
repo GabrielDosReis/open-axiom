@@ -1,5 +1,11 @@
 2009-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (bfAlternative): New.  Move single assignment in
+	pattern matching to the body of the branch.
+	(bfSequence): Use it.
+
+2009-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot: More cleanup.
 
 2009-09-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>

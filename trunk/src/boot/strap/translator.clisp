@@ -579,8 +579,7 @@
     (RETURN
       (COND
         ((ATOM |b|) (LIST |b|))
-        ((AND (CONSP |b|) (EQ (CAR |b|) 'TUPLE)
-              (PROGN (SETQ |xs| (CDR |b|)) T))
+        ((AND (CONSP |b|) (EQ (CAR |b|) 'TUPLE)) (SETQ |xs| (CDR |b|))
          (|coreError| "invalid AST"))
         (T (CASE (CAR |b|)
              (|%Signature|
@@ -947,11 +946,9 @@
                (T (HPUT |$bootDefined| |i| T)))
              (SETQ |bfVar#20| (CDR |bfVar#20|))))
          (|defuse1| (APPEND |ndol| |e|) |b|))
-        ((AND (CONSP |y|) (EQ (CAR |y|) 'QUOTE)
-              (PROGN (SETQ |a| (CDR |y|)) T))
+        ((AND (CONSP |y|) (EQ (CAR |y|) 'QUOTE)) (SETQ |a| (CDR |y|))
          NIL)
-        ((AND (CONSP |y|) (EQ (CAR |y|) '+LINE)
-              (PROGN (SETQ |a| (CDR |y|)) T))
+        ((AND (CONSP |y|) (EQ (CAR |y|) '+LINE)) (SETQ |a| (CDR |y|))
          NIL)
         (T (LET ((|bfVar#21| |y|) (|i| NIL))
              (LOOP
