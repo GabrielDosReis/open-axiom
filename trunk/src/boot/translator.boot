@@ -584,15 +584,12 @@ SSORT l ==
   SORT(l,function CLESSP)
  
 bootOutLines(l,outfn,s)==
-  if null l
-  then shoeFileLine(s,outfn)
-  else
-     a:=PNAME first l
-     if #s +#a > 70
-     then
-          shoeFileLine(s,outfn)
-          bootOutLines(l,outfn,'" ")
-     else bootOutLines(rest l,outfn,CONCAT(s,'" ",a))
+  null l => shoeFileLine(s,outfn)
+  a := PNAME first l
+  #s + #a > 70 =>
+    shoeFileLine(s,outfn)
+    bootOutLines(l,outfn,'" ")
+  bootOutLines(rest l,outfn,CONCAT(s,'" ",a))
  
  
 -- (xref "fn") produces a cross reference listing in "fn.xref"
@@ -604,19 +601,17 @@ XREF fn==
   shoeOpenInputFile(a,infn,shoeXref(a,fn))
  
 shoeXref(a,fn)==
-  if null a
-  then shoeNotFound fn
-  else
-     $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
-     DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
-     $bootDefined  :=MAKE_-HASHTABLE "EQ"
-     $bootUsed  :=MAKE_-HASHTABLE "EQ"
-     $GenVarCounter  :=0
-     $bfClamming :=false
-     shoeDefUse shoeTransformStream a
-     out:=CONCAT(fn,'".xref")
-     shoeOpenOutputFile(stream,out,shoeXReport stream)
-     out
+  null a => shoeNotFound fn
+  $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
+  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
+  $bootDefined  :=MAKE_-HASHTABLE "EQ"
+  $bootUsed  :=MAKE_-HASHTABLE "EQ"
+  $GenVarCounter  :=0
+  $bfClamming :=false
+  shoeDefUse shoeTransformStream a
+  out:=CONCAT(fn,'".xref")
+  shoeOpenOutputFile(stream,out,shoeXReport stream)
+  out
  
  
 shoeXReport stream==
