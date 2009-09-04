@@ -223,16 +223,16 @@ bfTupleIf x==
   bfTuple x
  
 bfTupleConstruct b ==
-  a:= if bfTupleP b
-      then cdr b
-      else [b]
+  a :=
+    bfTupleP b => rest b
+    [b]
   or/[x is ["COLON",.] for x in a] => bfMakeCons a
   ["LIST",:a]
  
 bfConstruct b ==
-  a:= if bfTupleP b
-      then cdr b
-      else [b]
+  a :=
+    bfTupleP b => rest b
+    [b]
   bfMakeCons a
  
 bfMakeCons l ==
@@ -248,9 +248,13 @@ bfFor(bflhs,U,step) ==
   bfForTree('IN, bflhs, U)
  
 bfForTree(OP,lhs,whole)==
-         whole:=if bfTupleP whole then bfMakeCons cdr whole else whole
-         atom lhs =>bfINON [OP,lhs,whole]
-         lhs:=if bfTupleP lhs then second lhs else lhs
+         whole :=
+	   bfTupleP whole => bfMakeCons rest whole
+	   whole
+         atom lhs => bfINON [OP,lhs,whole]
+         lhs :=
+	   bfTupleP lhs => second lhs
+	   lhs
          lhs is ["L%T",:.] =>
              G:=second lhs
              [:bfINON [OP,G,whole],:bfSuchthat bfIS(G,third lhs)]
@@ -259,46 +263,46 @@ bfForTree(OP,lhs,whole)==
  
  
 bfSTEP(id,fst,step,lst)==
-      initvar:=[id]
-      initval:=[fst]
-      inc:=if atom step
-           then step
-           else
-               g1:=bfGenSymbol()
-               initvar:=cons(g1,initvar)
-               initval:=cons(step,initval)
-               g1
-      final:=if atom lst
-             then lst
-             else
-               g2:=bfGenSymbol()
-               initvar:=cons(g2,initvar)
-               initval:=cons(lst,initval)
-               g2
-      ex:=
-          null lst=> []
-          INTEGERP inc =>
-              pred:=if MINUSP inc then "<" else ">"
-              [[pred,id,final]]
-          [['COND,[['MINUSP,inc],
-                ["<",id,final]],['T,[">",id,final]]]]
-      suc:=[['SETQ,id,["+",id,inc]]]
-      [[initvar,initval,suc,[],ex,[]]]
+  initvar := [id]
+  initval := [fst]
+  inc :=
+    atom step => step
+    g1 := bfGenSymbol()
+    initvar := cons(g1,initvar)
+    initval := cons(step,initval)
+    g1
+  final :=
+    atom lst => lst
+    g2 := bfGenSymbol()
+    initvar := cons(g2,initvar)
+    initval := cons(lst,initval)
+    g2
+  ex :=
+     null lst=> []
+     INTEGERP inc =>
+       pred :=
+	 MINUSP inc => "<"
+	 ">"
+       [[pred,id,final]]
+     [['COND,[['MINUSP,inc],
+	   ["<",id,final]],['T,[">",id,final]]]]
+  suc := [['SETQ,id,["+",id,inc]]]
+  [[initvar,initval,suc,[],ex,[]]]
  
  
 bfINON x==
-  [op,id,whole]:=x
+  [op,id,whole] := x
   op = "ON" => bfON(id,whole)
   bfIN(id,whole)
  
 bfIN(x,E)==
-    g:=bfGenSymbol()
-    [[[g,x],[E,nil],[['SETQ,g,['CDR, g]]],[],
-        [['OR,['ATOM,g],['PROGN,['SETQ,x,['CAR,g]] ,'NIL]]],[]]]
+  g := bfGenSymbol()
+  [[[g,x],[E,nil],[['SETQ,g,['CDR, g]]],[],
+      [['OR,['ATOM,g],['PROGN,['SETQ,x,['CAR,g]] ,'NIL]]],[]]]
  
 bfON(x,E)==
-    [[[x],[E],[['SETQ,x,['CDR, x]]],[],
-        [['ATOM,x]],[]]]
+  [[[x],[E],[['SETQ,x,['CDR, x]]],[],
+      [['ATOM,x]],[]]]
  
 bfSuchthat p== [[[],[],[],[p],[],[]]]
  
@@ -327,7 +331,9 @@ bfSep(iters)==
   [append(i,j) for i in f for j in r]
  
 bfReduce(op,y)==
-  a :=if op is ["QUOTE",:.] then second op else op
+  a :=
+    op is ["QUOTE",:.] => second op
+    op
   op := bfReName a
   init := GET(a,"SHOETHETA") or GET(op,"SHOETHETA")
   g := bfGenSymbol()
@@ -347,7 +353,9 @@ bfReduceCollect(op,y)==
   y is ["COLLECT",:.] => 
     body := y.1
     itl := y.2
-    a := if op is ["QUOTE",:.] then second op else op
+    a :=
+      op is ["QUOTE",:.] => second op
+      op
     op := bfReName a
     init := GET(a, "SHOETHETA") or GET(op,"SHOETHETA")
     bfOpReduce(op,init,body,itl)
@@ -386,8 +394,12 @@ bfListReduce(op,y,itl)==
  
 bfLp1(iters,body)==
   [vars,inits,sucs,filters,exits,value] := bfSep bfAppend iters
-  nbody := if null filters then body else bfAND [:filters,body]
-  value := if null value then "NIL" else first value
+  nbody :=
+    null filters => body
+    bfAND [:filters,body]
+  value :=
+    null value => "NIL"
+    first value
   exits := ["COND",[bfOR exits,["RETURN",value]],['T,nbody]]
   loop := ["LOOP",exits,:sucs]
   if vars then loop := 
@@ -461,25 +473,23 @@ bfSUBLIS(p,e)==
 +++ We don't enforce that restriction though.
 bfSUBLIS1(p,e)==
    null p =>e
-   f:=first p
-   EQ(first f,e)=> bfSUBLIS(p, rest f)
+   f := first p
+   EQ(first f,e) => bfSUBLIS(p, rest f)
    bfSUBLIS1(cdr p,e)
  
 defSheepAndGoats(x)==
   case x of 
     %Definition(op,args,body) =>
-      argl:=if bfTupleP args
-	    then rest args
-	    else [args]
-      if null argl
-      then
-	opassoc:=[[op,:body]]
+      argl :=
+        bfTupleP args => rest args
+	[args]
+      null argl =>
+	opassoc := [[op,:body]]
 	[opassoc,[],[]]
-      else
-	op1:=INTERN CONCAT(PNAME $op,'",",PNAME op)
-	opassoc:=[[op,:op1]]
-	defstack:=[[op1,args,body]]
-	[opassoc,defstack,[]]
+      op1 := INTERN CONCAT(PNAME $op,'",",PNAME op)
+      opassoc := [[op,:op1]]
+      defstack := [[op1,args,body]]
+      [opassoc,defstack,[]]
     %Pile defs => defSheepAndGoatsList defs
     otherwise => [[],[],[x]]
  
@@ -495,11 +505,11 @@ bfLetForm(lhs,rhs) ==
   ['L%T,lhs,rhs]
  
 bfLET1(lhs,rhs) ==
-  IDENTP lhs         => bfLetForm(lhs,rhs)
+  IDENTP lhs        => bfLetForm(lhs,rhs)
   lhs is ['FLUID,.] => bfLetForm(lhs,rhs)
   IDENTP rhs and not bfCONTAINED(rhs,lhs) =>
     rhs1 := bfLET2(lhs,rhs)
-    rhs1 is ["L%T",:.] => bfMKPROGN [rhs1,rhs]
+    rhs1 is ["L%T",:.]   => bfMKPROGN [rhs1,rhs]
     rhs1 is ["PROGN",:.] => APPEND(rhs1,[rhs])
     if IDENTP first rhs1 then rhs1 := CONS(rhs1,NIL)
     bfMKPROGN [:rhs1,rhs]
@@ -556,8 +566,7 @@ bfLET2(lhs,rhs) ==
       [['L%T,g,rev],:REVERSE rest REVERSE l2,
        bfLetForm(var1,['NREVERSE,val1])]
     [['L%T,g,rev],:l2,bfLetForm(var1,['NREVERSE,var1])]
-  lhs is ["EQUAL",var1] =>
-    ['COND,[["EQUAL",var1,rhs],var1]]
+  lhs is ["EQUAL",var1] => ['COND,[bfQ(var1,rhs),var1]]
   -- The original expression may be one that involves literals as 
   -- sub-patterns, e.g.
   --      ['SEQ, :l, ['exit, 1, x]] := item
@@ -588,21 +597,21 @@ addCARorCDR(acc,expr) ==
              CAADDR CADAAR CADDAR CADADR CADDDR)
   funsR := '(CDAR CDDR CDAAR CDDAR CDADR CDDDR CDAAAR CDADAR CDAADR
              CDADDR CDDAAR CDDDAR CDDADR CDDDDR)
-  if acc = 'CAR then CONS(funsA.p,rest expr)
-  else               CONS(funsR.p,rest expr)
+  acc = 'CAR => CONS(funsA.p,rest expr)
+  CONS(funsR.p,rest expr)
  
 bfPosition(x,l) ==  bfPosn(x,l,0)
 bfPosn(x,l,n) ==
-      null l => -1
-      x=first l => n
-      bfPosn(x,rest l,n+1)
+  null l => -1
+  x=first l => n
+  bfPosn(x,rest l,n+1)
  
 --% IS
  
 bfISApplication(op,left,right)==
-   op = "IS"      => bfIS(left,right)
-   op = "ISNT"    => bfNOT bfIS(left,right)
-   [op ,left,right]
+  op = "IS"      => bfIS(left,right)
+  op = "ISNT"    => bfNOT bfIS(left,right)
+  [op ,left,right]
  
 bfIS(left,right)==
     $isGenVarCounter:local :=1
@@ -636,17 +645,11 @@ bfIS1(lhs,rhs) ==
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
     a = "DOT" =>
-      NULL b =>
-        bfAND [['CONSP,lhs],
-               ['EQ,['CDR,lhs],'NIL]]
-      bfAND [['CONSP,lhs],
-             bfIS1(['CDR,lhs],b)]
+      NULL b => bfAND [['CONSP,lhs],['NULL,['CDR,lhs]]]
+      bfAND [['CONSP,lhs],bfIS1(['CDR,lhs],b)]
     NULL b =>
-      bfAND [['CONSP,lhs],
-             ['EQ,['CDR,lhs],'NIL],_
-             bfIS1(['CAR,lhs],a)]
-    b = "DOT" =>
-      bfAND [['CONSP,lhs],bfIS1(['CAR,lhs],a)]
+      bfAND [['CONSP,lhs],['NULL,['CDR,lhs]],bfIS1(['CAR,lhs],a)]
+    b = "DOT" => bfAND [['CONSP,lhs],bfIS1(['CAR,lhs],a)]
     a1 := bfIS1(['CAR,lhs],a)
     b1 := bfIS1(['CDR,lhs],b)
     a1 is ['PROGN,c,'T] and b1 is ['PROGN,:cls] =>
@@ -690,26 +693,25 @@ bfNOT x==
    ["NOT",x]
  
 bfFlatten(op, x) ==
-      x is [=op,:.] => rest x
-      [x]
+  x is [=op,:.] => rest x
+  [x]
  
 bfOR l  ==
-       null l => NIL
-       null rest l => first l
-       ["OR",:[:bfFlatten("OR",c) for c in l]]
+  null l => NIL
+  null rest l => first l
+  ["OR",:[:bfFlatten("OR",c) for c in l]]
  
 bfAND l ==
-       null l=> 'T
-       null rest l => first l
-       ["AND",:[:bfFlatten("AND",c) for c in l]]
+  null l=> 'T
+  null rest l => first l
+  ["AND",:[:bfFlatten("AND",c) for c in l]]
  
  
 defQuoteId x==  
   x is ["QUOTE",:.] and IDENTP second x
  
 bfSmintable x==
-  INTEGERP x or CONSP x and
-      first x in '(SIZE LENGTH char)
+  INTEGERP x or CONSP x and first x in '(SIZE LENGTH char)
  
 bfQ(l,r)==
   bfSmintable l or bfSmintable r => ["EQL",l,r]
@@ -725,7 +727,9 @@ bfLessp(l,r)==
   ["<",l,r]
  
 bfMDef (op,args,body) ==
-  argl:=if bfTupleP args then cdr args else [args]
+  argl :=
+    bfTupleP args => rest args
+    [args]
   [gargl,sgargl,nargl,largl]:=bfGargl argl
   sb:=[cons(i,j) for i in nargl for j in sgargl]
   body:= SUBLIS(sb,body)
@@ -736,21 +740,20 @@ bfMDef (op,args,body) ==
   [shoeComp def,:[:shoeComps bfDef1 d for d in $wheredefs]]
  
 bfGargl argl==
-      if null argl
-      then [[],[],[],[]]
-      else
-        [a,b,c,d]:=bfGargl rest argl
-        if first argl="&REST"
-        then [cons(first argl,b),b,c,
-             cons(["CONS",["QUOTE","LIST"],first d],rest d)]
-        else
-            f:=bfGenSymbol()
-            [cons(f,a),cons(f,b),cons(first argl,c),cons(f,d)]
+  null argl => [[],[],[],[]]
+  [a,b,c,d] := bfGargl rest argl
+  first argl="&REST" =>
+    [cons(first argl,b),b,c,
+       cons(["CONS",["QUOTE","LIST"],first d],rest d)]
+  f := bfGenSymbol()
+  [cons(f,a),cons(f,b),cons(first argl,c),cons(f,d)]
  
 bfDef1 [op,args,body] ==
-  argl:=if bfTupleP args then rest args else [args]
+  argl :=
+    bfTupleP args => rest args
+    [args]
   [quotes,control,arglp,body]:=bfInsertLet (argl,body)
-  quotes=>shoeLAM(op,arglp,control,body)
+  quotes => shoeLAM(op,arglp,control,body)
   [[op,["LAMBDA",arglp,body]]]
  
 shoeLAM (op,args,control,body)==
@@ -762,8 +765,8 @@ shoeLAM (op,args,control,body)==
  
 bfDef(op,args,body) ==
  $bfClamming =>
-          [.,op1,arg1,:body1]:=shoeComp first bfDef1 [op,args,body]
-          bfCompHash(op1,arg1,body1)
+   [.,op1,arg1,:body1] := shoeComp first bfDef1 [op,args,body]
+   bfCompHash(op1,arg1,body1)
  bfTuple
   [:shoeComps bfDef1 d for d in  cons([op,args,body],$wheredefs)]
  
@@ -771,9 +774,9 @@ shoeComps  x==
   [shoeComp def for def in x]
 
 shoeComp x==
-     a:=shoeCompTran second x
-     a is ["LAMBDA",:.] => ["DEFUN",first x,second a,:CDDR a]
-     ["DEFMACRO",first x,second a,:CDDR a]
+  a:=shoeCompTran second x
+  a is ["LAMBDA",:.] => ["DEFUN",first x,second a,:CDDR a]
+  ["DEFMACRO",first x,second a,:CDDR a]
 
 
 ++ Translate function parameter list to Lisp.
@@ -792,54 +795,51 @@ bfParameterList(p1,p2) ==
   [p1,:p2]
  
 bfInsertLet(x,body)==
-   if null x
-   then [false,nil,x,body]
-   else
-      if x is ["&REST",a]
-      then if a is ["QUOTE",b]
-           then [true,"QUOTE",["&REST",b],body]
-           else [false,nil,x,body]
-      else
-       [b,norq,name1,body1]:=  bfInsertLet1 (first x,body)
-       [b1,norq1,name2,body2]:=  bfInsertLet (rest x,body1)
-       [b or b1,cons(norq,norq1),bfParameterList(name1,name2),body2]
+  null x => [false,nil,x,body]
+  x is ["&REST",a] =>
+    a is ["QUOTE",b] => [true,"QUOTE",["&REST",b],body]
+    [false,nil,x,body]
+  [b,norq,name1,body1] :=  bfInsertLet1 (first x,body)
+  [b1,norq1,name2,body2] :=  bfInsertLet (rest x,body1)
+  [b or b1,cons(norq,norq1),bfParameterList(name1,name2),body2]
  
 bfInsertLet1(y,body)==
-   y is ["L%T",l,r] => [false,nil,l,bfMKPROGN [bfLET(r,l),body]]
-   IDENTP y => [false,nil,y,body]
-   y is ["BVQUOTE",b] => [true,"QUOTE",b,body]
-   g:=bfGenSymbol()
-   atom y => [false,nil,g,body]
-   case y of
-     %DefaultValue(p,v) => [false,nil,["&OPTIONAL",[p,v]],body]
-     otherwise => [false,nil,g,bfMKPROGN [bfLET(compFluidize y,g),body]]
+  y is ["L%T",l,r] => [false,nil,l,bfMKPROGN [bfLET(r,l),body]]
+  IDENTP y => [false,nil,y,body]
+  y is ["BVQUOTE",b] => [true,"QUOTE",b,body]
+  g:=bfGenSymbol()
+  atom y => [false,nil,g,body]
+  case y of
+    %DefaultValue(p,v) => [false,nil,["&OPTIONAL",[p,v]],body]
+    otherwise => [false,nil,g,bfMKPROGN [bfLET(compFluidize y,g),body]]
  
 shoeCompTran x==
-   lamtype:=first x
-   args   :=second x
-   body   :=CDDR x
-   $fluidVars:local:=nil
-   $locVars:local:=nil
-   $dollarVars:local:=nil
-   shoeCompTran1 body
-   $locVars:=SETDIFFERENCE(SETDIFFERENCE($locVars,
-                                  $fluidVars),shoeATOMs args)
-   body:=
-     lvars:=append($fluidVars,$locVars)
-     $fluidVars:=UNION($fluidVars,$dollarVars)
-     body' := body
-     if $typings then body' := [["DECLARE",:$typings],:body']
-     if $fluidVars then
-       fvars:=["DECLARE",["SPECIAL",:$fluidVars]]
-       body' := [fvars,:body']
-     if lvars or needsPROG body then shoePROG(lvars,body') else body'
-   fl:=shoeFluids args
-   body:=if fl
-         then
-           fvs:=["DECLARE",["SPECIAL",:fl]]
-           cons(fvs,body)
-         else body
-   [lamtype,args, :body]
+  lamtype:=first x
+  args   :=second x
+  body   :=CDDR x
+  $fluidVars:local:=nil
+  $locVars:local:=nil
+  $dollarVars:local:=nil
+  shoeCompTran1 body
+  $locVars:=SETDIFFERENCE(SETDIFFERENCE($locVars,
+				 $fluidVars),shoeATOMs args)
+  body:=
+    lvars:=append($fluidVars,$locVars)
+    $fluidVars:=UNION($fluidVars,$dollarVars)
+    body' := body
+    if $typings then body' := [["DECLARE",:$typings],:body']
+    if $fluidVars then
+      fvars:=["DECLARE",["SPECIAL",:$fluidVars]]
+      body' := [fvars,:body']
+    lvars or needsPROG body => shoePROG(lvars,body')
+    body'
+  fl := shoeFluids args
+  body :=
+    fl =>
+      fvs:=["DECLARE",["SPECIAL",:fl]]
+      cons(fvs,body)
+    body
+  [lamtype,args, :body]
 
 needsPROG body ==
   atom body => false
@@ -850,9 +850,9 @@ needsPROG body ==
   false
 
 shoePROG(v,b)==
-    null b => [["PROG", v]]
-    [:blist,blast] := b
-    [["PROG",v,:blist,["RETURN", blast]]]
+  null b => [["PROG", v]]
+  [:blist,blast] := b
+  [["PROG",v,:blist,["RETURN", blast]]]
 
 shoeFluids x==
   null x => nil
@@ -878,40 +878,40 @@ isDynamicVariable x ==
   false
  
 shoeCompTran1 x==
-    atom x=>
-      isDynamicVariable x =>
-	$dollarVars:=
-	   MEMQ(x,$dollarVars)=>$dollarVars
-	   cons(x,$dollarVars)
-      nil
-    U:=car x
-    U = "QUOTE" => nil
-    x is ["L%T",l,r]=>
-                RPLACA (x,"SETQ")
-                shoeCompTran1 r
-                IDENTP l =>
-                  not bfBeginsDollar l=>
-                    $locVars:=
-                          MEMQ(l,$locVars)=>$locVars
-                          cons(l,$locVars)
-                  $dollarVars:=
-                          MEMQ(l,$dollarVars)=>$dollarVars
-                          cons(l,$dollarVars)
-                l is ["FLUID",:.] =>
-                    $fluidVars:=
-                         MEMQ(second l,$fluidVars)=>$fluidVars
-                         cons(second l,$fluidVars)
-                    RPLACA (rest x,second l)
-    MEMQ(U,'(PROG LAMBDA))=>
-         newbindings:=nil
-         for y in second x repeat
-             not MEMQ(y,$locVars)=>
-                  $locVars:=cons(y,$locVars)
-                  newbindings:=cons(y,newbindings)
-         res:=shoeCompTran1 CDDR x
-         $locVars:=[y for y in $locVars | not MEMQ(y,newbindings)]
-    shoeCompTran1 first x
-    shoeCompTran1 rest x
+  atom x=>
+    isDynamicVariable x =>
+      $dollarVars:=
+	 MEMQ(x,$dollarVars)=>$dollarVars
+	 cons(x,$dollarVars)
+    nil
+  U:=car x
+  U = "QUOTE" => nil
+  x is ["L%T",l,r] =>
+    RPLACA (x,"SETQ")
+    shoeCompTran1 r
+    IDENTP l =>
+      not bfBeginsDollar l=>
+	$locVars:=
+	   MEMQ(l,$locVars)=>$locVars
+	   cons(l,$locVars)
+      $dollarVars:=
+	 MEMQ(l,$dollarVars)=>$dollarVars
+	 cons(l,$dollarVars)
+    l is ["FLUID",:.] =>
+      $fluidVars:=
+	 MEMQ(second l,$fluidVars)=>$fluidVars
+	 cons(second l,$fluidVars)
+      RPLACA (rest x,second l)
+  MEMQ(U,'(PROG LAMBDA))=>
+    newbindings:=nil
+    for y in second x repeat
+      not MEMQ(y,$locVars)=>
+	$locVars:=cons(y,$locVars)
+	newbindings:=cons(y,newbindings)
+    res := shoeCompTran1 CDDR x
+    $locVars := [y for y in $locVars | not MEMQ(y,newbindings)]
+  shoeCompTran1 first x
+  shoeCompTran1 rest x
  
 bfTagged(a,b)==
   null $op => %Signature(a,b)        -- surely a toplevel decl
@@ -932,46 +932,54 @@ bfSetelt(e,l,r)==
   bfSetelt(bfElt(e,first l),rest l,r)
  
 bfElt(expr,sel)==
-      y:=SYMBOLP sel and GET(sel,"SHOESELFUNCTION")
-      y=>
-         INTEGERP y => ["ELT",expr,y]
-         [y,expr]
-      ["ELT",expr,sel]
+  y:=SYMBOLP sel and GET(sel,"SHOESELFUNCTION")
+  y =>
+    INTEGERP y => ["ELT",expr,y]
+    [y,expr]
+  ["ELT",expr,sel]
  
 defSETELT(var,sel,expr)==
-      y:=SYMBOLP sel and GET(sel,"SHOESELFUNCTION")
-      y=>
-         INTEGERP y => ["SETF",["ELT",var,y],expr]
-         ["SETF",[y,var],expr]
-      ["SETF",["ELT",var,sel],expr]
+  y := SYMBOLP sel and GET(sel,"SHOESELFUNCTION")
+  y =>
+    INTEGERP y => ["SETF",["ELT",var,y],expr]
+    ["SETF",[y,var],expr]
+  ["SETF",["ELT",var,sel],expr]
  
 bfIfThenOnly(a,b)==
-    b1:=if b is ["PROGN",:.] then rest b else [b]
-    ["COND",[a,:b1]]
+  b1 :=
+    b is ["PROGN",:.] => rest b
+    [b]
+  ["COND",[a,:b1]]
  
 bfIf(a,b,c)==
-    b1:=if b is ["PROGN",:.] then rest b else [b]
-    c is ["COND",:.] => ["COND",[a,:b1],:rest c]
-    c1:=if c is ["PROGN",:.] then rest c else [c]
-    ["COND",[a,:b1],['T,:c1]]
+  b1 :=
+    b is ["PROGN",:.] => rest b
+    [b]
+  c is ["COND",:.] => ["COND",[a,:b1],:rest c]
+  c1 :=
+    c is ["PROGN",:.] => rest c
+    [c]
+  ["COND",[a,:b1],['T,:c1]]
  
 bfExit(a,b)==  
   ["COND",[a,["IDENTITY",b]]]
  
 bfMKPROGN l==
-    a:=[:bfFlattenSeq c for c in tails l]
-    null a=> nil
-    null rest a=> first a
-    ["PROGN",:a]
+  a := [:bfFlattenSeq c for c in tails l]
+  null a => nil
+  null rest a => first a
+  ["PROGN",:a]
  
 bfFlattenSeq x ==
-      null x=>NIL
-      f:=first x
-      atom f =>if rest x then nil else [f]
-      f is ["PROGN",:.] =>
-              rest x=>  [i for i in rest f| not atom i]
-              rest f
-      [f]
+  null x => NIL
+  f := first x
+  atom f =>
+    rest x => nil
+    [f]
+  f is ["PROGN",:.] =>
+    rest x => [i for i in rest f| not atom i]
+    rest f
+  [f]
  
 ++ The body of each branch of a COND form is an implicit PROGN.  
 ++ For readability purpose, we want to refrain from including
@@ -986,19 +994,19 @@ bfAlternative(a,b) ==
   [a,:bfWashCONDBranchBody b]
 
 bfSequence l ==
-      null l=> NIL
-      transform:= [bfAlternative(a,b) for x in l while
-              x is ["COND",[a,["IDENTITY",b]]]]
-      no:=#transform
-      before:= bfTake(no,l)
-      aft   := bfDrop(no,l)
-      null before =>
-              l is [f] =>
-                   f is ["PROGN",:.] => bfSequence rest f
-                   f
-              bfMKPROGN [first l,bfSequence rest l]
-      null aft => ["COND",:transform]
-      ["COND",:transform,bfAlternative('T,bfSequence aft)]
+  null l => NIL
+  transform := [bfAlternative(a,b) for x in l while
+                  x is ["COND",[a,["IDENTITY",b]]]]
+  no := #transform
+  before := bfTake(no,l)
+  aft := bfDrop(no,l)
+  null before =>
+    l is [f] =>
+      f is ["PROGN",:.] => bfSequence rest f
+      f
+    bfMKPROGN [first l,bfSequence rest l]
+  null aft => ["COND",:transform]
+  ["COND",:transform,bfAlternative('T,bfSequence aft)]
  
 bfWhere (context,expr)==
   [opassoc,defs,nondefs] := defSheepAndGoats context
@@ -1059,8 +1067,10 @@ bfNameOnly x==
 
 bfNameArgs: (%Thing,%Thing) -> %List 
 bfNameArgs (x,y)==
-    y:=if y is ["TUPLE",:.] then rest y else [y]
-    cons(x,y)
+  y :=
+    y is ["TUPLE",:.] => rest y
+    [y]
+  cons(x,y)
  
 bfCreateDef: %Thing -> %List
 bfCreateDef x==
@@ -1090,21 +1100,20 @@ bfCaseItems(g,x) ==
 
 bfCI: (%Thing,%Thing,%Thing) -> %List 
 bfCI(g,x,y)==
-    a:=rest x
-    if null a
-    then [first x,y]
-    else
-       b:=[[i,bfCARCDR(j,g)] for i in a for j in 1.. | i ~= "DOT"]
-       null b => [first x,y]
-       [first x,["LET",b,y]]
+  a := rest x
+  null a => [first x,y]
+  b := [[i,bfCARCDR(j,g)] for i in a for j in 1.. | i ~= "DOT"]
+  null b => [first x,y]
+  [first x,["LET",b,y]]
 
 bfCARCDR: (%Short,%Thing) -> %List 
 bfCARCDR(n,g) ==
   [INTERN CONCAT ('"CA",bfDs n,'"R"),g]
 
 bfDs: %Short -> %String 
-bfDs n== 
-  if n=0 then '"" else CONCAT('"D",bfDs(n-1))
+bfDs n == 
+  n = 0 => '""
+  CONCAT('"D",bfDs(n-1))
 
 
 ++ Generate code for try-catch expressions.

@@ -1150,7 +1150,7 @@
                              (SETQ |l| (CAR |ISTMP#1|))
                              (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                              (AND (CONSP |ISTMP#2|)
-                                  (EQ (CDR |ISTMP#2|) NIL)
+                                  (NULL (CDR |ISTMP#2|))
                                   (PROGN (SETQ |r| (CAR |ISTMP#2|)) T)))))
                     (IDENTP |l|))
                (COND

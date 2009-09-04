@@ -256,7 +256,7 @@
                                  (PROGN
                                    (SETQ |ISTMP#1| (CDR |x|))
                                    (AND (CONSP |ISTMP#1|)
-                                    (EQ (CDR |ISTMP#1|) NIL)))))
+                                    (NULL (CDR |ISTMP#1|))))))
                       (COND (|bfVar#80| (RETURN |bfVar#80|))))))
                (SETQ |bfVar#79| (CDR |bfVar#79|))))
            (|bfMakeCons| |a|))
@@ -280,7 +280,7 @@
                 (AND (CONSP |ISTMP#1|) (EQ (CAR |ISTMP#1|) 'COLON)
                      (PROGN
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                       (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |a| (CAR |ISTMP#2|)) T))))))
          (SETQ |l1| (CDR |l|))
          (COND (|l1| (LIST 'APPEND |a| (|bfMakeCons| |l1|))) (T |a|)))
@@ -482,7 +482,7 @@
         ((AND (CONSP |y|) (EQ (CAR |y|) 'COLON)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |y|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
          (|bf0APPEND| |a| |itl|))
         ((AND (CONSP |y|) (EQ (CAR |y|) 'TUPLE))
@@ -710,7 +710,7 @@
         ((AND (CONSP |lhs|) (EQ (CAR |lhs|) 'FLUID)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |lhs|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL))))
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
          (|bfLetForm| |lhs| |rhs|))
         ((AND (IDENTP |rhs|) (NOT (|bfCONTAINED| |rhs| |lhs|)))
          (SETQ |rhs1| (|bfLET2| |lhs| |rhs|))
@@ -763,7 +763,7 @@
         ((AND (CONSP |lhs|) (EQ (CAR |lhs|) 'FLUID)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |lhs|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL))))
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
          (|bfLetForm| |lhs| |rhs|))
         ((AND (CONSP |lhs|) (EQ (CAR |lhs|) 'L%T)
               (PROGN
@@ -772,7 +772,7 @@
                      (PROGN
                        (SETQ |a| (CAR |ISTMP#1|))
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                       (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |b| (CAR |ISTMP#2|)) T))))))
          (SETQ |a| (|bfLET2| |a| |rhs|))
          (COND
@@ -787,7 +787,7 @@
                      (PROGN
                        (SETQ |var1| (CAR |ISTMP#1|))
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                       (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |var2| (CAR |ISTMP#2|)) T))))))
          (COND
            ((OR (EQ |var1| 'DOT)
@@ -819,7 +819,7 @@
                      (PROGN
                        (SETQ |var1| (CAR |ISTMP#1|))
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                       (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |var2| (CAR |ISTMP#2|)) T))))))
          (SETQ |patrev| (|bfISReverse| |var2| |var1|))
          (SETQ |rev| (LIST 'REVERSE |rhs|))
@@ -843,7 +843,7 @@
                           (PROGN
                             (SETQ |ISTMP#3| (CDR |ISTMP#2|))
                             (AND (CONSP |ISTMP#3|)
-                                 (EQ (CDR |ISTMP#3|) NIL)
+                                 (NULL (CDR |ISTMP#3|))
                                  (PROGN
                                    (SETQ |val1| (CAR |ISTMP#3|))
                                    T)))))))
@@ -860,9 +860,9 @@
         ((AND (CONSP |lhs|) (EQ (CAR |lhs|) 'EQUAL)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |lhs|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |var1| (CAR |ISTMP#1|)) T))))
-         (LIST 'COND (LIST (LIST 'EQUAL |var1| |rhs|) |var1|)))
+         (LIST 'COND (LIST (|bfQ| |var1| |rhs|) |var1|)))
         (T (SETQ |isPred|
                  (COND
                    (|$inDefIS| (|bfIS1| |rhs| |lhs|))
@@ -947,7 +947,7 @@
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'QUOTE)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |rhs|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
          (COND
            ((IDENTP |a|) (LIST 'EQ |lhs| |rhs|))
@@ -959,7 +959,7 @@
                      (PROGN
                        (SETQ |c| (CAR |ISTMP#1|))
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                       (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |d| (CAR |ISTMP#2|)) T))))))
          (SETQ |l| (|bfLET| |c| |lhs|))
          (|bfAND| (LIST (|bfIS1| |lhs| |d|)
@@ -967,7 +967,7 @@
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'EQUAL)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |rhs|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
          (|bfQ| |lhs| |a|))
         ((CONSP |lhs|)
@@ -983,19 +983,19 @@
                      (PROGN
                        (SETQ |a| (CAR |ISTMP#1|))
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                       (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |b| (CAR |ISTMP#2|)) T))))))
          (COND
            ((EQ |a| 'DOT)
             (COND
               ((NULL |b|)
                (|bfAND| (LIST (LIST 'CONSP |lhs|)
-                              (LIST 'EQ (LIST 'CDR |lhs|) 'NIL))))
+                              (LIST 'NULL (LIST 'CDR |lhs|)))))
               (T (|bfAND| (LIST (LIST 'CONSP |lhs|)
                                 (|bfIS1| (LIST 'CDR |lhs|) |b|))))))
            ((NULL |b|)
             (|bfAND| (LIST (LIST 'CONSP |lhs|)
-                           (LIST 'EQ (LIST 'CDR |lhs|) 'NIL)
+                           (LIST 'NULL (LIST 'CDR |lhs|))
                            (|bfIS1| (LIST 'CAR |lhs|) |a|))))
            ((EQ |b| 'DOT)
             (|bfAND| (LIST (LIST 'CONSP |lhs|)
@@ -1011,7 +1011,7 @@
                                (SETQ |c| (CAR |ISTMP#1|))
                                (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                                (AND (CONSP |ISTMP#2|)
-                                    (EQ (CDR |ISTMP#2|) NIL)
+                                    (NULL (CDR |ISTMP#2|))
                                     (EQ (CAR |ISTMP#2|) 'T)))))
                       (CONSP |b1|) (EQ (CAR |b1|) 'PROGN))
                  (SETQ |cls| (CDR |b1|))
@@ -1025,7 +1025,7 @@
                      (PROGN
                        (SETQ |a| (CAR |ISTMP#1|))
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                       (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |b| (CAR |ISTMP#2|)) T))))))
          (SETQ |patrev| (|bfISReverse| |b| |a|))
          (SETQ |g|
@@ -1084,13 +1084,13 @@
         ((AND (CONSP |x|) (EQ (CAR |x|) 'NOT)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |x|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
          |a|)
         ((AND (CONSP |x|) (EQ (CAR |x|) 'NULL)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |x|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
          |a|)
         (T (LIST 'NOT |x|))))))
@@ -1339,13 +1339,13 @@
         ((AND (CONSP |x|) (EQ (CAR |x|) '&REST)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |x|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
          (COND
            ((AND (CONSP |a|) (EQ (CAR |a|) 'QUOTE)
                  (PROGN
                    (SETQ |ISTMP#1| (CDR |a|))
-                   (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                   (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                         (PROGN (SETQ |b| (CAR |ISTMP#1|)) T))))
             (LIST T 'QUOTE (LIST '&REST |b|) |body|))
            (T (LIST NIL NIL |x| |body|))))
@@ -1371,7 +1371,7 @@
                      (PROGN
                        (SETQ |l| (CAR |ISTMP#1|))
                        (SETQ |ISTMP#2| (CDR |ISTMP#1|))
-                       (AND (CONSP |ISTMP#2|) (EQ (CDR |ISTMP#2|) NIL)
+                       (AND (CONSP |ISTMP#2|) (NULL (CDR |ISTMP#2|))
                             (PROGN (SETQ |r| (CAR |ISTMP#2|)) T))))))
          (LIST NIL NIL |l|
                (|bfMKPROGN| (LIST (|bfLET| |r| |l|) |body|))))
@@ -1379,7 +1379,7 @@
         ((AND (CONSP |y|) (EQ (CAR |y|) 'BVQUOTE)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |y|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |b| (CAR |ISTMP#1|)) T))))
          (LIST T 'QUOTE |b| |body|))
         (T (SETQ |g| (|bfGenSymbol|))
@@ -1526,7 +1526,7 @@
                             (SETQ |l| (CAR |ISTMP#1|))
                             (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                             (AND (CONSP |ISTMP#2|)
-                                 (EQ (CDR |ISTMP#2|) NIL)
+                                 (NULL (CDR |ISTMP#2|))
                                  (PROGN (SETQ |r| (CAR |ISTMP#2|)) T))))))
               (RPLACA |x| 'SETQ) (|shoeCompTran1| |r|)
               (COND
@@ -1729,7 +1729,7 @@
                                      (SETQ |stmt| (CAR |ISTMP#4|))
                                      (SETQ |ISTMP#5| (CDR |ISTMP#4|))
                                      (AND (CONSP |ISTMP#5|)
-                                      (EQ (CDR |ISTMP#5|) NIL)
+                                      (NULL (CDR |ISTMP#5|))
                                       (EQ (CAR |ISTMP#5|) 'T)))))))
                      (PROGN (SETQ |conds| (CDR |ISTMP#2|)) T)
                      (PROGN (SETQ |conds| (NREVERSE |conds|)) T))))
@@ -1753,7 +1753,7 @@
                                       (PROGN
                                         (SETQ |ISTMP#1| (CDR |x|))
                                         (AND (CONSP |ISTMP#1|)
-                                         (EQ (CDR |ISTMP#1|) NIL)
+                                         (NULL (CDR |ISTMP#1|))
                                          (PROGN
                                            (SETQ |ISTMP#2|
                                             (CAR |ISTMP#1|))
@@ -1764,7 +1764,7 @@
                                               (SETQ |ISTMP#3|
                                                (CDR |ISTMP#2|))
                                               (AND (CONSP |ISTMP#3|)
-                                               (EQ (CDR |ISTMP#3|) NIL)
+                                               (NULL (CDR |ISTMP#3|))
                                                (PROGN
                                                  (SETQ |ISTMP#4|
                                                   (CAR |ISTMP#3|))
@@ -1776,9 +1776,8 @@
                                                      (CDR |ISTMP#4|))
                                                     (AND
                                                      (CONSP |ISTMP#5|)
-                                                     (EQ
-                                                      (CDR |ISTMP#5|)
-                                                      NIL)
+                                                     (NULL
+                                                      (CDR |ISTMP#5|))
                                                      (PROGN
                                                        (SETQ |b|
                                                         (CAR |ISTMP#5|))
@@ -1794,7 +1793,7 @@
            (COND
              ((NULL |before|)
               (COND
-                ((AND (CONSP |l|) (EQ (CDR |l|) NIL))
+                ((AND (CONSP |l|) (NULL (CDR |l|)))
                  (SETQ |f| (CAR |l|))
                  (COND
                    ((AND (CONSP |f|) (EQ (CAR |f|) 'PROGN))
@@ -1910,7 +1909,7 @@
   (PROG (|a| |f|)
     (RETURN
       (COND
-        ((AND (CONSP |x|) (EQ (CDR |x|) NIL)) (SETQ |f| (CAR |x|))
+        ((AND (CONSP |x|) (NULL (CDR |x|))) (SETQ |f| (CAR |x|))
          (LIST 'DEFCONSTANT |f| (LIST 'LIST (LIST 'QUOTE |f|))))
         (T (SETQ |a|
                  (LET ((|bfVar#117| NIL) (|bfVar#116| (CDR |x|))
@@ -1959,7 +1958,7 @@
                     (PROGN
                       (SETQ |i| (CAR |bfVar#118|))
                       (SETQ |ISTMP#1| (CDR |bfVar#118|))
-                      (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                      (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                            (PROGN (SETQ |j| (CAR |ISTMP#1|)) T)))
                     (SETQ |bfVar#120|
                           (CONS (|bfCI| |g| |i| |j|) |bfVar#120|)))))
@@ -2352,7 +2351,7 @@
         ((AND (CONSP |x|)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |x|))
-                (AND (CONSP |ISTMP#1|) (EQ (CDR |ISTMP#1|) NIL)
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN
                        (SETQ |ISTMP#2| (CAR |ISTMP#1|))
                        (AND (CONSP |ISTMP#2|)
@@ -2360,7 +2359,7 @@
                             (PROGN
                               (SETQ |ISTMP#3| (CDR |ISTMP#2|))
                               (AND (CONSP |ISTMP#3|)
-                                   (EQ (CDR |ISTMP#3|) NIL))))))))
+                                   (NULL (CDR |ISTMP#3|)))))))))
          '|fixnum|)
         (T "object")))))
 
@@ -2779,7 +2778,7 @@
                             (SETQ |op'| (CAR |ISTMP#1|))
                             (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                             (AND (CONSP |ISTMP#2|)
-                                 (EQ (CDR |ISTMP#2|) NIL)
+                                 (NULL (CDR |ISTMP#2|))
                                  (PROGN (SETQ |m| (CAR |ISTMP#2|)) T)))))))
          (|coreError| "invalid signature"))
         ((NOT (AND (CONSP |m|) (EQ (CAR |m|) '|%Mapping|)
@@ -2790,7 +2789,7 @@
                             (SETQ |t| (CAR |ISTMP#1|))
                             (SETQ |ISTMP#2| (CDR |ISTMP#1|))
                             (AND (CONSP |ISTMP#2|)
-                                 (EQ (CDR |ISTMP#2|) NIL)
+                                 (NULL (CDR |ISTMP#2|))
                                  (PROGN (SETQ |s| (CAR |ISTMP#2|)) T)))))))
          (|coreError| "invalid function type"))
         (T (COND
