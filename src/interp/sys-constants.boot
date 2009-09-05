@@ -373,9 +373,16 @@ $Boolean ==
   '(Boolean)
 
 $Byte == '(Byte)
+
+++ Sized integer types, mostly for system-level programming.
 $Int16 == '(Int16)
+$UInt16 == '(UInt16)
+
 $Int32 == '(Int32)
+$UInt32 == '(UInt32)
+
 $Int64 == '(Int64)
+$UInt64 == '(UInt64)
 
 ++ The SmallInteger domain constructor form
 $SmallInteger ==

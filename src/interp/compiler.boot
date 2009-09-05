@@ -1331,8 +1331,11 @@ getBasicFFIType: %Mode -> %Symbol
 getBasicFFIType t ==
   t = $Byte => bootDenotation "byte"
   t = $Int16 => bootDenotation "int16"
+  t = $UInt16 => bootDenotation "uint16"
   t = $Int32 => bootDenotation "int32"
---  t = $Int64 => bootDenotation "int64"
+  t = $UInt32 => bootDenotation "uint32"
+  t = $Int64 => bootDenotation "int64"
+  t = $UInt64 => bootDenotation "uint64"
   t = $SingleInteger => bootDenotation "int"
   t = $SingleFloat =>  bootDenotation "float"
   t = $DoubleFloat => bootDenotation "double"
