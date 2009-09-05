@@ -37,18 +37,18 @@ Byte(): Public == Private where
       ++ \spad{sample} gives a sample datum of type Byte.
   Private == SubDomain(NonNegativeInteger, #1 < 256) add
     byte(x: NonNegativeInteger): % == per x
-    sample = 0$Lisp
+    sample = 0$Foreign(Builtin)
     coerce(c: Character) == per ord c
     coerce(x: %): Character == char rep x
-    x = y == byteEqual(x,y)$Lisp
-    x < y ==  byteLessThan(x,y)$Lisp
-    x > y ==  byteGreaterThan(x,y)$Lisp
-    x <= y ==  byteLessEqual(x,y)$Lisp
-    x >= y ==  byteGreaterEqual(x,y)$Lisp
+    x = y == byteEqual(x,y)$Foreign(Builtin)
+    x < y ==  byteLessThan(x,y)$Foreign(Builtin)
+    x > y ==  byteGreaterThan(x,y)$Foreign(Builtin)
+    x <= y ==  byteLessEqual(x,y)$Foreign(Builtin)
+    x >= y ==  byteGreaterEqual(x,y)$Foreign(Builtin)
     min() == per 0
     max() == per 255
-    bitand(x,y) == bitand(x,y)$Lisp
-    bitior(x,y) == bitior(x,y)$Lisp
+    bitand(x,y) == bitand(x,y)$Foreign(Builtin)
+    bitior(x,y) == bitior(x,y)$Foreign(Builtin)
 
 @
 
@@ -65,10 +65,10 @@ ByteOrder(): Public == Private where
     bigEndian: %      ++ \spad{bigEndian} describes big endian host
     unknownEndian: %  ++ \spad{unknownEndian} for none of the above.
   Private == add
-    unknownEndian == %unknownEndian$Lisp
-    littleEndian == %littleEndian$Lisp
-    bigEndian == %bigEndian$Lisp
-    x = y == EQ(x,y)$Lisp
+    unknownEndian == %unknownEndian$Foreign(Builtin)
+    littleEndian == %littleEndian$Foreign(Builtin)
+    bigEndian == %bigEndian$Foreign(Builtin)
+    x = y == EQ(x,y)$Foreign(Builtin)
     coerce(x: %): OutputForm ==
       outputForm
         x = littleEndian => 'litteEndian
@@ -182,8 +182,8 @@ SystemNonNegativeInteger(N: PositiveInteger): Public == Private where
     min == per 0
     max == per((shift(1,N)-1)::NonNegativeInteger)
     sample == min
-    bitand(x,y) == BOOLE(BOOLE_-AND$Lisp,x,y)$Lisp
-    bitior(x,y) == BOOLE(BOOLE_-IOR$Lisp,x,y)$Lisp
+    bitand(x,y) == BOOLE(BOOLE_-AND$Foreign(Builtin),x,y)$Foreign(Builtin)
+    bitior(x,y) == BOOLE(BOOLE_-IOR$Foreign(Builtin),x,y)$Foreign(Builtin)
 
 @
 
@@ -279,13 +279,13 @@ ByteBuffer(): Public == Private where
     Rep == Record(ary: PrimitiveArray Byte, sz: NonNegativeInteger)
 
     makeByteBuffer(n: NonNegativeInteger): % ==
-      per [makeByteBuffer(n)$Lisp,n]$Rep
+      per [makeByteBuffer(n)$Foreign(Builtin),n]$Rep
 
     byteBuffer n == makeByteBuffer n
 
     empty() == byteBuffer 0
 
-    new(n,b) == per [makeByteBuffer(n,b)$Lisp,n]$Rep
+    new(n,b) == per [makeByteBuffer(n,b)$Foreign(Builtin),n]$Rep
 
     # buf == rep(buf).sz
 
@@ -319,7 +319,7 @@ ByteBuffer(): Public == Private where
       rep(buf).ary
 
     coerce(buf: %): String == 
-      s: String := MAKE_-STRING(#buf)$Lisp
+      s: String := MAKE_-STRING(#buf)$Foreign(Builtin)
       for i in 0..maxIndex buf repeat
         qsetelt!(s,i + 1,qelt(buf,i)::Character)$String
       s
@@ -363,16 +363,16 @@ DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
       ++ Indexing is 0-based.
   Private == add
     new() == 
-      makeSimpleArray(getVMType(T)$Lisp,N)$Lisp
+      makeSimpleArray(getVMType(T)$Foreign(Builtin),N)$Foreign(Builtin)
 
     qelt(b,i) == 
-      getSimpleArrayEntry(b,i)$Lisp
+      getSimpleArrayEntry(b,i)$Foreign(Builtin)
 
     qsetelt(b,i,x) ==
-      setSimpleArrayEntry(b,i,x)$Lisp
+      setSimpleArrayEntry(b,i,x)$Foreign(Builtin)
 
     x = y ==
-      EQUAL(x,y)$Lisp
+      EQUAL(x,y)$Foreign(Builtin)
 
     coerce(b: %): OutputForm ==
       bracket([qelt(b,i)::OutputForm for i in 0..(N-1)])
@@ -424,11 +424,13 @@ DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
 <<domain INT8 Int8>>
 <<domain INT16 Int16>>
 <<domain INT32 Int32>>
+<<domain INT64 Int64>>
 
 <<domain SYSNNI SystemNonNegativeInteger>>
 <<domain UINT8 UInt8>>
 <<domain UINT16 UInt16>>
 <<domain UINT32 UInt32>>
+<<domain UINT64 UInt64>>
 
 @
 

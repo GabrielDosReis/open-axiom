@@ -1,3 +1,8 @@
+2009-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/data.spad.pamphlet: Cleanup.
+	* interp/compiler.boot (getBasicFFIType): Handle 64-bit integer types.
+
 2009-09-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfAlternative): New.  Move single assignment in
