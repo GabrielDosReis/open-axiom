@@ -94,4 +94,62 @@
     (decode-float u)
     (cons (* s f) e)))
 
+;; Format a DoubleFloat value in a reasonable way.  Similar code
+;; has been submitted for inclusion in SBCL.  If and when
+;; that version is integrated, we should remove it from here.
+#- :sbcl
+(defun dfloat-format-general (number)
+  (format nil "~G" number))
+#+ :sbcl
+(defun dfloat-format-general (number)
+  (declare (type double-float number))
+  (cond
+   ((zerop number) "0.")
+   (t
+    (with-output-to-string (stream)
+      (if (or (sb-ext:float-infinity-p number)
+	      (sb-ext:float-nan-p number))
+	  (prin1 number stream)
+	(flet ((dfloat-format-fixed (stream number d)
+		 (declare (type double-float number))
+		 (multiple-value-bind (str len lpoint tpoint)
+		   (sb-impl::flonum-to-string number nil d)
+		   (declare (ignore len))
+		   ;;if caller specifically requested no fraction digits,
+		   ;;suppress the optional trailing zero
+		   (when (and d (zerop d))
+		     (setq tpoint nil))
+		   (when lpoint
+		     (write-char #\0 stream))
+		   (write-string str stream)
+		   nil))
+	       (dfloat-format-exp (stream number)
+		 (declare (type double-float number))
+		 (multiple-value-bind (num expt)
+		   (sb-impl::scale-exponent number)
+		   (let* ((expt (1- expt))
+			  (estr (sb-format::decimal-string (abs expt))))
+		     (multiple-value-bind (fstr flen lpoint tpoint)
+		       (sb-impl::flonum-to-string num nil nil 1)
+		       (declare (ignore tpoint))
+		       (when lpoint (write-char #\0 stream))
+		       (write-string fstr stream)
+		       (when (char= (aref fstr (1- flen)) #\.)
+			 (write-char #\0 stream))
+		       (write-char #\E stream)
+		       (write-char (if (minusp expt) #\- #\+) stream)
+		       (write-string estr stream))
+		     nil))))
+	      (when (minusp number)
+		(setq number (- number))
+		(write-char #\- stream))
+	      (multiple-value-bind (ignore n) (sb-impl::scale-exponent number)
+	      (declare (ignore ignore))
+	      (let* ((q (length
+			 (nth-value 1 (sb-impl::flonum-to-digits number))))
+		     (d (max q (min n 7)))
+		     (dd (- d n)))
+		(if (<= 0 dd d)
+		    (dfloat-format-fixed stream number dd)
+		  (dfloat-format-exp stream number))))))))))
 

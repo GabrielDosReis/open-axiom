@@ -519,7 +519,8 @@ OutputForm(): SetCategory with
         outputForm(f:DoubleFloat) == 
           -- ??? this really should be rendered in as a sequence of
           -- ??? OutputForm bytecodes, not hardcoded here.
-          FORMAT(NIL$Lisp,format,f)$Lisp
+          -- ??? FORMAT(NIL$Lisp,format,f)$Lisp
+          DFLOAT_-FORMAT_-GENERAL(f)$Lisp
 
         outputForm s ==
           sform concat(quote()$Character, concat(s, quote()$Character))
