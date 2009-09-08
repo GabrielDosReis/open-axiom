@@ -1,3 +1,7 @@
+2009-09-08  Anatoly Raportirenko  <ram@sunct1.jinr.ru>
+
+	* interp/boot-pkg.lisp (DFLOAT-FORMAT-GENERAL): New.
+
 2009-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot: Support "pointer" as simple datatype.
