@@ -1340,11 +1340,22 @@ getBasicFFIType t ==
   t = $SingleFloat =>  bootDenotation "float"
   t = $DoubleFloat => bootDenotation "double"
   t = $String => bootDenotation "string"
+  t = $SystemPointer => bootDenotation "pointer"
   nil
 
 
 ++ List of admissible type modifiers in an FFI import declaration.
 $FFITypeModifier == '(ReadOnly WriteOnly ReadWrite)
+
+++ List of admissible element types of contiguously stored
+++ homogeneous FFI aggregate types.
+$FFIAggregableDataType ==
+  [$Byte,
+    $Int16,$UInt16,
+      $Int32,$UInt32,
+        $Int64, $UInt64,
+          $SingleFloat,
+	    $DoubleFloat]
 
 ++ Return the Boot denotation of an FFI datatype.  This is either
 ++ a basic VM type, or a simple array of sized integer or floating
@@ -1353,7 +1364,7 @@ getFFIDatatype: %Mode -> %Form
 getFFIDatatype t ==
   x := getBasicFFIType t => x
   t is [m,["PrimitiveArray",t']] and m in $FFITypeModifier and
-    member(t',[$Byte,$Int16,$Int32,$SingleFloat,$DoubleFloat]) =>
+    member(t',$FFIAggregableDataType) =>
       m' := 
         m = "ReadOnly" => bootDenotation "readonly"
         m = "WriteOnly" => bootDenotation "writeonly"
