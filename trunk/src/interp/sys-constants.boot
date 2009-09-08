@@ -489,6 +489,10 @@ $NoValueMode ==
 $ExitMode ==
   "$ExitMode"
 
+++ A domain form for the OpenAxiom system-level pointer datatype.  
+$SystemPointer ==
+  '(SystemPointer)
+
 --%
   
 ++ Category constructor form
@@ -577,6 +581,7 @@ $SystemInlinableConstructorNames ==
     PositiveInteger    _
     NonNegativeInteger _
     SingleInteger      _
+    SystemPointer      _
     String             _
     Boolean            _
     Identifier         _

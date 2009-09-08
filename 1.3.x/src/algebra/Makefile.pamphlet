@@ -276,6 +276,7 @@ $(OUT)/IOMODE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
 $(OUT)/PRINT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/RTVALUE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/SYSPTR.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 
 axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
@@ -302,7 +303,7 @@ axiom_algebra_layer_0 = \
   DIOPS    DIOPS-   STRING   STRICAT  ISTRING  ILIST    \
   LIST                                                  \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
-  RTVALUE
+  RTVALUE  SYSPTR
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))

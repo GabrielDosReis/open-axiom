@@ -1303,7 +1303,7 @@ genTypeAlias(head,body) ==
 --            `writeonly', or `readwrite'.
 
 $NativeSimpleDataTypes ==
-  '(char   byte    int 
+  '(char   byte    int   pointer
     int8   uint8
     int16  uint16
     int32  uint32
@@ -1387,6 +1387,12 @@ nativeType t ==
       unknownNativeTypeError t
     t = "float32" => nativeType "float"
     t = "float64" => nativeType "double"
+    t = "pointer" =>
+      %hasFeature KEYWORD::GCL => "fixnum"
+      %hasFeature KEYWORD::ECL => KEYWORD::POINTER_-VOID
+      %hasFeature KEYWORD::SBCL => ["*",bfColonColon("SB-ALIEN","VOID")]
+      %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
+      unknownNativeTypeError t
     unknownNativeTypeError t
   -- composite, reference type.
   first t = "buffer" =>
@@ -1395,12 +1401,9 @@ nativeType t ==
     %hasFeature KEYWORD::SBCL => ["*",nativeType second t]
     %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
     unknownNativeTypeError t
-  first t = "buffer" =>
-    %hasFeature KEYWORD::GCL => "fixnum"
-    %hasFeature KEYWORD::ECL => KEYWORD::OBJECT
-    %hasFeature KEYWORD::SBCL => ["*",nativeType second t]
-    %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
-    unknownNativeTypeError t
+  first t = "pointer" =>
+    -- we don't bother looking at what the pointer points to.
+    nativeType "pointer"
   unknownNativeTypeError t
 
 
@@ -1427,7 +1430,7 @@ nativeArgumentType t ==
     coreError '"missing modifier for argument type for a native function"
   -- Only 'pointer' and 'buffer' can be instantiated.
   not (c in '(buffer pointer)) =>
-    coreError '"expect 'buffer' or 'pointer' type instance"
+    coreError '"expected 'buffer' or 'pointer' type instance"
   not (t' in $NativeSimpleDataTypes) =>
     coreError '"expected simple native data type"
   nativeType second t
@@ -1529,7 +1532,7 @@ genECLnativeTranslation(op,s,t,op') ==
 	      y = "float" => '"->vector.self.sf"
 	      y = "double" => '"->vector.self.df"
 	      coreError '"unknown argument to buffer type constructor"
-            c = "pointer" => ""
+            c = "pointer" => '""
             coreError '"unknown type constructor"
 
 genCLISPnativeTranslation(op,s,t,op') ==
@@ -1559,7 +1562,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
       unstableArgs := [[p,x,:y],:unstableArgs]
 
   -- The actual FFI declaration for the native call.  Note that 
-  -- parameter of non-simple datatype are described as being poinyers.
+  -- parameter of non-simple datatype are described as being pointers.
   foreignDecl := 
     [bfColonColon("FFI","DEF-CALL-OUT"),n,
       [KEYWORD::NAME,SYMBOL_-NAME op'],

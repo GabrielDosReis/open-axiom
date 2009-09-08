@@ -235,6 +235,22 @@ UInt64() == SystemNonNegativeInteger 64
 
 @
 
+\section{System-level Pointer Datatype.}
+
+<<domain SYSPTR SystemPointer>>=
+)abbrev domain SYSPTR SystemPointer
+++ Author: Gabriel Dos Reis
+++ Date Created: September 8, 2009
+++ Date Last Modified: September 8, 2009
+++ Description:
+++   This domain is a datatype system-level pointer values.
+SystemPointer(): SetCategory
+  == add
+    x = y == EQL(x,y)$Foreign(Builtin)
+    coerce(x:%): OutputForm ==
+      FORMAT(NIL$Foreign(Builtin),"~A",x)$Foreign(Builtin)
+@
+
 
 \section{The ByteBuffer domain}
 
@@ -431,6 +447,8 @@ DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
 <<domain UINT16 UInt16>>
 <<domain UINT32 UInt32>>
 <<domain UINT64 UInt64>>
+
+<<domain SYSPTR SystemPointer>>
 
 @
 

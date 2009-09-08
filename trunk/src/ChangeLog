@@ -1,3 +1,10 @@
+2009-09-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot: Support "pointer" as simple datatype.
+	* interp/compiler.boot (getBasicFFIType): SystemPointer is an FFI type.
+	* algebra/data.spad.pamphlet (SystemPointer): New.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include SYSPTR.
+
 2009-09-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/data.spad.pamphlet: Cleanup.
