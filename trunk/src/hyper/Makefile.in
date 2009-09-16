@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2009, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -75,30 +75,31 @@ hypertex_SOURCES = addfile.c cond.c dialog.c display.c event.c extent1.c \
 
 libspad_la = -L$(build_libdir) -lspad
 
-openaxiom_c_libs = -lopen-axiom-core @axiom_c_runtime_extra@ -lm
-
 hypertex_objects = $(hypertex_SOURCES:.c=.$(OBJEXT))
-hypertex_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
+hypertex_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs) \
+			$(AXIOM_X11_LDFLAGS) -lm
 hypertex_DEPENDENCIES =
 
 htadd_SOURCES = addfile.c htadd.c lex.c
 htadd_objects = $(htadd_SOURCES:.c=.$(OBJEXT))
-htadd_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
+htadd_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs) \
+		$(AXIOM_X11_LDFLAGS) -lm
 htadd_DEPENDENCIES =
 
 spadbuf_SOURCES = spadbuf.c
 spadbuf_objects = $(spadbuf_SOURCES:.c=.$(OBJEXT))
-spadbuf_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
+spadbuf_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs) \
+			$(AXIOM_X11_LDFLAGS) -lm
 spadbuf_DEPENDENCIES =
 
 hthits_SOURCES = hthits.c
 hthits_objects = $(hthits_SOURCES:.c=.$(OBJEXT))
-hthits_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
+hthits_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
 hthits_DEPENDENCIES =
 
 ex2ht_SOURCES = ex2ht.c
 ex2ht_objects = $(ex2ht_SOURCES:.c=.$(OBJEXT))
-ex2ht_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
+ex2ht_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
 ex2ht_DEPENDENCIES =
 
 subdir = src/hyper/
@@ -178,9 +179,7 @@ ${OUTLIB}/hthits$(EXEEXT): $(hthits_objects) $(hthits_DEPENDENCIES)
 
 
 $(OUTLIB)/hypertex$(EXEEXT): $(hypertex_objects) $(hypertex_DEPENDENCIES)
-	 ${LINK} -o $@ $(hypertex_objects) $(hypertex_LDADD) \
-		$(AXIOM_X11_LDFLAGS) -lm
+	 ${LINK} -o $@ $(hypertex_objects) $(hypertex_LDADD)
 
 ${OUTLIB}/spadbuf$(EXEEXT): $(spadbuf_objects) $(spadbuf_DEPENDENCIES)
-	${LINK} -o $@ $(spadbuf_objects) $(spadbuf_LDADD) \
-		$(AXIOM_X11_LDFLAGS) -lm
+	${LINK} -o $@ $(spadbuf_objects) $(spadbuf_LDADD)

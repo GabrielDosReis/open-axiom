@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2009-09-08], 
+AC_INIT([OpenAxiom], [1.4.0-2009-09-16], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -95,14 +95,6 @@ case $build in
         fi
         ;;
 esac
-
-## Make sure the C compiler is from GCC
-AC_PROG_CC
-if test x$GCC != xyes; then
-    AC_MSG_ERROR([We need a C compiler from GCC])
-fi
-axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
-AC_SUBST(axiom_cflags)
 
 ## What is the extension of object files on this platform?
 AC_OBJEXT
@@ -293,6 +285,21 @@ case $axiom_lisp_flavor,$target in
         ;;
 esac
 AC_SUBST(axiom_gcl_rsym_hack)
+
+
+## If we are using GCL as the base runtime system, then we do really need
+# a C compiler from GNU.  Well, at least for the moment.
+case $axiom_lisp_flavor,$GCC in
+   gcl,yes)
+       axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
+       ;;
+   
+   gcl,*)
+       AC_MSG_ERROR([We need a GNU C compiler])
+       ;;
+esac
+AC_SUBST(axiom_cflags)
+
 ## Can we use dynamically linked libraries?  
 ## Tentatively answer `yes' -- this is modern time.
 oa_use_dynamic_lib=yes
@@ -430,6 +437,7 @@ case $host in
        AC_SEARCH_LIBS([accept], [socket],
            [axiom_c_runtime_extra="-lsocket"],
            [AC_MSG_ERROR([socket library not found])])
+       AC_SEARCH_LIBS([gethostbyname], [nls])
        ;;
     *) ;;
 esac

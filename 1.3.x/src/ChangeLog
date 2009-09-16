@@ -1,3 +1,14 @@
+2009-09-16  Kosta Oikonomou <ko@research.att.com>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* graph/viewAlone/Makefile.in (viewAlone_LDADD): Include 
+	$(AXIOM_X11_LDFLAGS) and $(oa_c_libs).
+	* graph/viewman/Makefile.in (viewman_LDADD): Likewise.
+	* hyper/Makefile.in (htadd_LDADD): Likewise.
+	* sman/Makefile.in (session_LDADD): Include $(oa_c_libs).
+	(spadclient_LDADD): Likewise.
+	(sman_LDADD): Likewise.
+
 2009-09-08  Anatoly Raportirenko  <ram@sunct1.jinr.ru>
 
 	* interp/boot-pkg.lisp (DFLOAT-FORMAT-GENERAL): New.

@@ -201,6 +201,7 @@ CCF=@CCF@
 LDF=@LDF@ -lm
 LISP=@LISP@
 oa_c_runtime_extra = @LIBS@ @axiom_c_runtime_extra@ -lm
+oa_c_libs = -lopen-axiom-core $(oa_c_runtime_extra) -lm
 
 axiom_use_x = @axiom_use_x@
 AXIOM_X11_CFLAGS = @X_CFLAGS@ 
