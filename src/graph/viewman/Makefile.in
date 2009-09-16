@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2009, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ viewman_headers = $(srcdir)/viewman.h \
 
 
 viewman_DEPENDENCIES =
-viewman_LDFLAGS = -L$(build_libdir) -lspad -lopen-axiom-core
+viewman_LDADD = -L$(build_libdir) -lspad $(AXIOM_X11_LDFLAGS) $(oa_c_libs)
 
 subdir = src/graph/viewman/
 
@@ -79,8 +79,7 @@ stamp: $(axiom_target_libdir)/viewman$(EXEEXT)
 	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 $(axiom_target_libdir)/viewman$(EXEEXT): $(viewman_objects) $(viewman_DEPENDENCIES)
-	$(LINK) -o $@ $(viewman_objects) $(viewman_LDFLAGS) \
-		$(AXIOM_X11_LDFLAGS)
+	$(LINK) -o $@ $(viewman_objects) $(viewman_LDADD)
 
 mostlyclean-local:
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2009, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ viewAlone_SOURCES = viewAlone.c spoonComp.c spoon2D.c
 
 viewAlone_objects = $(viewAlone_SOURCES:.c=.lo)
 
-viewAlone_LDADD = -L$(build_libdir) -lspad -lopen-axiom-core
+viewAlone_LDADD = -L$(build_libdir) -lspad $(AXIOM_X11_LDFLAGS) $(oa_c_libs)
 viewAlone_DEPENDENCIES =
 
 subdir = src/graph/viewAlone/
@@ -68,8 +68,7 @@ stamp: $(axiom_target_bindir)/viewAlone$(EXEEXT)
 
 $(axiom_target_bindir)/viewAlone$(EXEEXT): $(viewAlone_objects) \
 		 $(viewAlone_DEPENDENCIES)
-	$(LINK) -o $@ $(viewAlone_objects) $(viewAlone_LDADD) \
-		$(AXIOM_X11_LDFLAGS)
+	$(LINK) -o $@ $(viewAlone_objects) $(viewAlone_LDADD)
 
 .PRECIOUS: %.lo
 
