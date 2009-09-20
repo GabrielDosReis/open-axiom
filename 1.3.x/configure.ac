@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.3.1-2009-09-16], 
+AC_INIT([OpenAxiom], [1.3.1-2009-09-20], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -590,21 +590,17 @@ LISP=lsp
 
 case $target in
     *bsd*|*dragonfly*)
-        AC_DEFINE([BSDplatform], [], [BSD flavour])
         CCF="-O2 -Wall"
         ;;
     windows)
-        AC_DEFINE([MSYSplatform], [], [MS])
         SRCDIRS=bootdir interpdir sharedir algebradir etcdir docdir inputdir
         ;;
     *linux*)
-        AC_DEFINE([LINUXplatform], [], [Linux flavour])
         ;;
     *solaris*)
         AC_DEFINE([SUNplatform], [], [SunOS flavour])
         ;;
     powerpc*darwin*)
-        AC_DEFINE([MACOSXplatform], [], [MACOX flavour])
         CCF="-O2 -Wall -D_GNU_SOURCE \
             -I/usr/include -I/usr/include/sys"
         axiom_gcl_bfd_option="--disable-statsysbfd \

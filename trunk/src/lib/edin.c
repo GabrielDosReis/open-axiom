@@ -1,6 +1,8 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
+    Copyright (C) Gabriel Dos Reis.
+    All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -35,11 +37,7 @@
 
 #include <stdlib.h>
 #include "openaxiom-c-macros.h"
-#if defined(MACOSXplatform)
-#include "/usr/include/unistd.h"
-#else
 #include <unistd.h>
-#endif
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
