@@ -1055,6 +1055,12 @@
         (T (|bpSpecificErrorHere| "bad IS code is generated")
            (|bpTrap|))))))
 
+(DEFUN |bfHas| (|expr| |prop|)
+  (COND
+    ((IDENTP |prop|) (LIST 'GET |expr| (LIST 'QUOTE |prop|)))
+    (T (|bpSpecificErrorAtToken|
+           "expected identifier as property name"))))
+
 (DEFUN |bfApplication| (|bfop| |bfarg|)
   (COND
     ((|bfTupleP| |bfarg|) (CONS |bfop| (CDR |bfarg|)))
@@ -2050,9 +2056,9 @@
         (LIST 'DEFTYPE |op| |args| (|backquote| |body| |args|))))))
 
 (DEFCONSTANT |$NativeSimpleDataTypes|
-    '(|char| |byte| |int| |int8| |uint8| |int16| |uint16| |int32|
-             |uint32| |int64| |uint64| |float| |float32| |double|
-             |float64|))
+    '(|char| |byte| |int| |pointer| |int8| |uint8| |int16| |uint16|
+             |int32| |uint32| |int64| |uint64| |float| |float32|
+             |double| |float64|))
 
 (DEFCONSTANT |$NativeSimpleReturnTypes|
     (APPEND |$NativeSimpleDataTypes| '(|void| |string|)))
@@ -2148,6 +2154,14 @@
               (T (|unknownNativeTypeError| |t|))))
            ((EQ |t| '|float32|) (|nativeType| '|float|))
            ((EQ |t| '|float64|) (|nativeType| '|double|))
+           ((EQ |t| '|pointer|)
+            (COND
+              ((|%hasFeature| :GCL) '|fixnum|)
+              ((|%hasFeature| :ECL) :POINTER-VOID)
+              ((|%hasFeature| :SBCL)
+               (LIST '* (|bfColonColon| 'SB-ALIEN 'VOID)))
+              ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'C-POINTER))
+              (T (|unknownNativeTypeError| |t|))))
            (T (|unknownNativeTypeError| |t|))))
         ((EQ (CAR |t|) '|buffer|)
          (COND
@@ -2156,13 +2170,7 @@
            ((|%hasFeature| :SBCL) (LIST '* (|nativeType| (CADR |t|))))
            ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'C-POINTER))
            (T (|unknownNativeTypeError| |t|))))
-        ((EQ (CAR |t|) '|buffer|)
-         (COND
-           ((|%hasFeature| :GCL) '|fixnum|)
-           ((|%hasFeature| :ECL) :OBJECT)
-           ((|%hasFeature| :SBCL) (LIST '* (|nativeType| (CADR |t|))))
-           ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'C-POINTER))
-           (T (|unknownNativeTypeError| |t|))))
+        ((EQ (CAR |t|) '|pointer|) (|nativeType| '|pointer|))
         (T (|unknownNativeTypeError| |t|))))))
 
 (DEFUN |nativeReturnType| (|t|)
@@ -2188,7 +2196,7 @@
                   "missing modifier for argument type for a native function"))
              ((NOT (MEMBER |c| '(|buffer| |pointer|)))
               (|coreError|
-                  "expect 'buffer' or 'pointer' type instance"))
+                  "expected 'buffer' or 'pointer' type instance"))
              ((NOT (MEMBER |t'| |$NativeSimpleDataTypes|))
               (|coreError| "expected simple native data type"))
              (T (|nativeType| (CADR |t|)))))))))
@@ -2470,7 +2478,7 @@
                 ((EQ |y| '|double|) "->vector.self.df")
                 (T (|coreError|
                        "unknown argument to buffer type constructor"))))
-             ((EQ |c| '|pointer|) '||)
+             ((EQ |c| '|pointer|) "")
              (T (|coreError| "unknown type constructor"))))))))
 
 (DEFUN |genCLISPnativeTranslation| (|op| |s| |t| |op'|)

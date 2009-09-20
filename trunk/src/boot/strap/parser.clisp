@@ -700,11 +700,13 @@
 
 (DEFUN |bpIs| ()
   (AND (|bpArith|)
-       (OR (AND (|bpInfKey| '(IS ISNT)) (OR (|bpPattern|) (|bpTrap|))
-                (|bpPush|
-                    (|bfISApplication| (|bpPop2|) (|bpPop2|)
-                        (|bpPop1|))))
-           T)))
+       (COND
+         ((AND (|bpInfKey| '(IS ISNT)) (OR (|bpPattern|) (|bpTrap|)))
+          (|bpPush|
+              (|bfISApplication| (|bpPop2|) (|bpPop2|) (|bpPop1|))))
+         ((AND (|bpEqKey| 'HAS) (OR (|bpApplication|) (|bpTrap|)))
+          (|bpPush| (|bfHas| (|bpPop2|) (|bpPop1|))))
+         (T T))))
 
 (DEFUN |bpBracketConstruct| (|f|)
   (AND (|bpBracket| |f|) (|bpPush| (|bfConstruct| (|bpPop1|)))))

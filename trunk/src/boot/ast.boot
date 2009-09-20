@@ -335,7 +335,7 @@ bfReduce(op,y)==
     op is ["QUOTE",:.] => second op
     op
   op := bfReName a
-  init := GET(a,"SHOETHETA") or GET(op,"SHOETHETA")
+  init := a has SHOETHETA or op has SHOETHETA
   g := bfGenSymbol()
   g1 := bfGenSymbol()
   body := ['SETQ,g,[op,g,g1]]
@@ -357,7 +357,7 @@ bfReduceCollect(op,y)==
       op is ["QUOTE",:.] => second op
       op
     op := bfReName a
-    init := GET(a, "SHOETHETA") or GET(op,"SHOETHETA")
+    init := a has SHOETHETA or op has SHOETHETA
     bfOpReduce(op,init,body,itl)
   bfReduce(op,bfTupleConstruct (y.1))
  
@@ -666,14 +666,19 @@ bfIS1(lhs,rhs) ==
     bfAND [rev,:l2,['PROGN,bfLetForm(a,['NREVERSE,a]),'T]]
   bpSpecificErrorHere '"bad IS code is generated"
   bpTrap()
- 
+
+
+bfHas(expr,prop) ==
+  IDENTP prop => ["GET",expr,["QUOTE",prop]]
+  bpSpecificErrorAtToken('"expected identifier as property name")
+  
 bfApplication(bfop, bfarg) ==
   bfTupleP bfarg => [bfop,:rest bfarg]
   [bfop,bfarg]
  
 -- returns the meaning of x in the appropriate Boot dialect.
 bfReName x==
-  a := GET(x,"SHOERENAME") => first a
+  a := x has SHOERENAME => first a
   x
  
 bfInfApplication(op,left,right)==
@@ -932,14 +937,14 @@ bfSetelt(e,l,r)==
   bfSetelt(bfElt(e,first l),rest l,r)
  
 bfElt(expr,sel)==
-  y:=SYMBOLP sel and GET(sel,"SHOESELFUNCTION")
+  y:=SYMBOLP sel and sel has SHOESELFUNCTION
   y =>
     INTEGERP y => ["ELT",expr,y]
     [y,expr]
   ["ELT",expr,sel]
  
 defSETELT(var,sel,expr)==
-  y := SYMBOLP sel and GET(sel,"SHOESELFUNCTION")
+  y := SYMBOLP sel and sel has SHOESELFUNCTION
   y =>
     INTEGERP y => ["SETF",["ELT",var,y],expr]
     ["SETF",[y,var],expr]

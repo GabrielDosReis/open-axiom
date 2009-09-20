@@ -273,7 +273,7 @@ domainDescendantsOf(conform,domform) == main where --called by kargPage
     for x in r repeat
       x isnt [op1,:.] and MEMQ(op1,'(ATTRIBUTE SIGNATURE)) => systemError x
       alist := [[item,:npred] for [item,:pred] in alist |
-        (pred1 := simpHasPred ['has,item,x]) and (npred := quickAnd(pred1,pred))]
+        (pred1 := simpHasPred ["has",item,x]) and (npred := quickAnd(pred1,pred))]
     alist
 
 --=======================================================================

@@ -1012,7 +1012,7 @@ asyCattranOp1(op, item, predlist) ==
 asyPredTran p == asyPredTran1 asyJoinPart p
 
 asyPredTran1 p ==
-  p is ['Has,x,y] => ['has,x, simpCattran y]
+  p is ['Has,x,y] => ["has",x, simpCattran y]
   p is ['Test, q] => asyPredTran1 q
   p is [op,:r] and MEMQ(op,'(AND OR NOT)) =>
     [op,:[asyPredTran1 q for q in r]]

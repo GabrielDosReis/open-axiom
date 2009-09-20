@@ -252,7 +252,7 @@ lookupPred(pred,dollar,domain) ==
     or/[lookupPred(p,dollar,domain) for p in pl]
   pred is ['NOT,p] or pred is ['not,p] => not lookupPred(p,dollar,domain)
   pred is ['is,dom1,dom2] => domainEqual(dom1,dom2)
-  pred is ['has,a,b] =>
+  pred is ["has",a,b] =>
     VECP a =>
       keyedSystemError("S2GE0016",['"lookupPred",
         '"vector as  first argument to has"])

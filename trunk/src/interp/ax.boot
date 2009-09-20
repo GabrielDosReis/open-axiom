@@ -265,7 +265,7 @@ axFormatPred pred ==
    atom pred => pred
    [op,:args] := pred
    op = 'IF => axFormatOp pred
-   op = 'has =>
+   op = "has" =>
       [name,type] := args
       if name = '$ then name := '%
       else name := axFormatOp name

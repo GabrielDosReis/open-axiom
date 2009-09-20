@@ -915,7 +915,7 @@ matchMmCond(cond) ==
       and/[matchMmCond c for c in conds]
     cond is ['OR,:conds] or cond is ['or,:conds] =>
       or/[matchMmCond c for c in conds]
-    cond is ['has,dom,x] =>
+    cond is ["has",dom,x] =>
       hasCaty(dom,x,NIL) ~= 'failed
     cond is ['not,cond1] => not matchMmCond cond1
     keyedSystemError("S2GE0016",
@@ -1174,7 +1174,7 @@ evalMmStack(mmC) ==
   mmC is ['ofCategory,pvar,cat] and cat is ['Join,:args] =>
     evalMmStack CONS('AND,[['ofCategory,pvar,c] for c in args])
   mmC is ['ofType,:.] => [NIL]
-  mmC is ['has,pat,x] =>
+  mmC is ["has",pat,x] =>
     MEMQ(x,'(ATTRIBUTE SIGNATURE)) =>
       [[['ofCategory,pat,['CATEGORY,'unknown,x]]]]
     [['ofCategory,pat,x]]
@@ -1189,7 +1189,7 @@ evalMmStackInner(mmC) ==
     [['ofCategory, pvar, c] for c in args]
   mmC is ['ofType,:.] => NIL
   mmC is ['isAsConstant] => NIL
-  mmC is ['has,pat,x] =>
+  mmC is ["has",pat,x] =>
     MEMQ(x,'(ATTRIBUTE SIGNATURE)) =>
       [['ofCategory,pat,['CATEGORY,'unknown,x]]]
     [['ofCategory,pat,x]]
@@ -1495,12 +1495,12 @@ hasCaty(d,cat,SL) ==
         if not (S1='failed) then S1:=
           atom cond => S1
           ncond := subCopy(cond, S)
-          ncond is ['has, =d, =cat] => 'failed
+          ncond is ["has", =d, =cat] => 'failed
           hasCaty1(ncond,S1)
       S1
     atom x => SL
     ncond := subCopy(x, constructSubst d)
-    ncond is ['has, =d, =cat] => 'failed
+    ncond is ["has", =d, =cat] => 'failed
     hasCaty1(ncond, SL)
   'failed
 
@@ -1523,20 +1523,20 @@ hasCaty1(cond,SL) ==
   -- cond is either a (has a b) or an OR clause of such conditions
   -- SL is augmented, if cond is true, otherwise the result is 'failed
   $domPvar: local := NIL
-  cond is ['has,a,b] => hasCate(a,b,SL)
+  cond is ["has",a,b] => hasCate(a,b,SL)
   cond is ['AND,:args] =>
     for x in args while not (S='failed) repeat S:=
-      x is ['has,a,b] => hasCate(a,b, SL)
+      x is ["has",a,b] => hasCate(a,b, SL)
       -- next line is for an obscure bug in the table
-      x is [['has,a,b]] => hasCate(a,b, SL)
+      x is [["has",a,b]] => hasCate(a,b, SL)
       --'failed
       hasCaty1(x, SL)
     S
   cond is ['OR,:args] =>
     for x in args until not (S='failed) repeat S:=
-      x is ['has,a,b] => hasCate(a,b,copy SL)
+      x is ["has",a,b] => hasCate(a,b,copy SL)
       -- next line is for an obscure bug in the table
-      x is [['has,a,b]] => hasCate(a,b,copy SL)
+      x is [["has",a,b]] => hasCate(a,b,copy SL)
       --'failed
       hasCaty1(x, copy SL)
     S
@@ -1559,7 +1559,7 @@ hasSigAnd(andCls, S0, SL) ==
   for cls in andCls while not dead repeat
     SA :=
       atom cls => copy SL
-      cls is ['has,a,b] =>
+      cls is ["has",a,b] =>
         hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
       keyedSystemError("S2GE0016",
         ['"hasSigAnd",'"unexpected condition for signature"])
@@ -1572,7 +1572,7 @@ hasSigOr(orCls, S0, SL) ==
   for cls in orCls until found repeat
     SA :=
       atom cls => copy SL
-      cls is ['has,a,b] =>
+      cls is ["has",a,b] =>
         hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
       cls is ['AND,:andCls] or cls is ['and,:andCls] =>
         hasSigAnd(andCls, S0, SL)
@@ -1591,7 +1591,7 @@ hasSig(dom,foo,sig,SL) ==
       for [x,.,cond,.] in CDR p until not (S='failed) repeat
         S:=
           atom cond => copy SL
-          cond is ['has,a,b] =>
+          cond is ["has",a,b] =>
             hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
           cond is ['AND,:andCls] or cond is ['and,:andCls] =>
             hasSigAnd(andCls, S0, SL)

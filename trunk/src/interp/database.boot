@@ -395,7 +395,7 @@ isDomainSubst u == main where
 
 signatureTran pred ==
   atom pred => pred
-  pred is ['has,D,catForm] and isCategoryForm(catForm,$e) =>
+  pred is ["has",D,catForm] and isCategoryForm(catForm,$e) =>
     ['ofCategory,D,catForm]
   [signatureTran p for p in pred]
 

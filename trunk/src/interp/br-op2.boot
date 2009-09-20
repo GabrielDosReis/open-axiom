@@ -609,7 +609,7 @@ getSigSubst(u, pl, vl, fl) ==
     key = 'isDomain => getSigSubst(r, pl, [v, :vl], [f, :fl])
     key = 'ofCategory => getSigSubst(r, pl, ['D, :vl], [f, :fl])
     key = 'ofType    => getSigSubst(r, pl, vl, fl)
-    key = 'has => getSigSubst(r, [item, :pl], vl, fl)
+    key = "has" => getSigSubst(r, [item, :pl], vl, fl)
     key = 'not => getSigSubst(r, [item, :pl], vl, fl)
     systemError()
   [pl, vl, fl]

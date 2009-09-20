@@ -970,7 +970,7 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
       MEMQ(op,'(AND and)) => ['AND,:[convert(dom,x) for x in argl]]
       MEMQ(op,'(OR or))   => ['OR,:[convert(dom,x) for x in argl]]
       MEMQ(op,'(NOT not)) => ['NOT,convert(dom,first argl)]
-      op = 'has =>
+      op = "has" =>
         [arg,p] := argl
         p is ['ATTRIBUTE,a] => ['HasAttribute,arg,MKQ a]
         ['HasCategory,arg,convertCatArg p]
