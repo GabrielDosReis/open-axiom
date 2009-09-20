@@ -3,9 +3,6 @@
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
-/* BSD flavour */
-#undef BSDplatform
-
 /* Host has AF_LOCAL */
 #undef HAVE_AF_LOCAL
 
@@ -108,18 +105,9 @@
 /* Define to 1 if you have the <winsock2.h> header file. */
 #undef HAVE_WINSOCK2_H
 
-/* Linux flavour */
-#undef LINUXplatform
-
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
-
-/* MACOX flavour */
-#undef MACOSXplatform
-
-/* MS */
-#undef MSYSplatform
 
 /* The kind of base runtime system for this build. */
 #undef OPENAXIOM_BASE_RTS

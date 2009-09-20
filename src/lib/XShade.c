@@ -1,6 +1,8 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
+    Copyright (C) Gabriel Dos Reis.
+    All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -32,7 +34,6 @@
 */
 
 #include "openaxiom-c-macros.h"
-#ifndef MSYSplatform
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -207,5 +208,4 @@ XShadeArcs(Display *display, Drawable drawable, XArc *arcs, int narcs)
     XFillArcs(display, drawable, TileGC, arcs, narcs);
 }
 
-#endif /* MSYSplatform */
 

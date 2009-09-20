@@ -593,28 +593,21 @@ esac
 axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
 axiom_gcl_emacs="--enable-emacs=correct"
 
-PFL=
 CCF="-O2 -Wall -D_GNU_SOURCE"
 LDF=
 LISP=lsp
 
 case $target in
     *bsd*|*dragonfly*)
-        AC_DEFINE([BSDplatform], [], [BSD flavour])
         CCF="-O2 -Wall"
         ;;
     windows)
-        AC_DEFINE([MSYSplatform], [], [MS])
         SRCDIRS=bootdir interpdir sharedir algebradir etcdir docdir inputdir
-        ;;
-    *linux*)
-        AC_DEFINE([LINUXplatform], [], [Linux flavour])
         ;;
     *solaris*)
         AC_DEFINE([SUNplatform], [], [SunOS flavour])
         ;;
     powerpc*darwin*)
-        AC_DEFINE([MACOSXplatform], [], [MACOX flavour])
         CCF="-O2 -Wall -D_GNU_SOURCE \
             -I/usr/include -I/usr/include/sys"
         axiom_gcl_bfd_option="--disable-statsysbfd \
@@ -625,7 +618,6 @@ esac
 
 GCLOPTS="$axiom_gcl_emacs $axiom_gcl_bfd_option $axiom_gcl_mm_option $axiom_gcl_x_option"
 
-AC_SUBST(PLF)
 AC_SUBST(CCF)
 AC_SUBST(LDF)
 AC_SUBST(LISP)
