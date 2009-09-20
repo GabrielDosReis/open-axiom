@@ -1,5 +1,12 @@
 2009-09-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/data.spad.pamphlet (size$Byte): Implement.
+	(index$Byte): Likewise.
+	(lookup$Byte): Likewise.
+	(random$Byte): Likewise.
+
+2009-09-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/XDither.c: Tidy.
 	* lib/XShade.c: Likewise.
 	* lib/XSpadFill.c: Likewise.

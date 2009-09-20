@@ -47,6 +47,10 @@ Byte(): Public == Private where
     x >= y ==  byteGreaterEqual(x,y)$Foreign(Builtin)
     min() == per 0
     max() == per 255
+    size() == 256
+    index n == byte((n - 1) pretend NonNegativeInteger)
+    lookup x == (rep x + 1) pretend PositiveInteger
+    random() == byte random(size())$NonNegativeInteger
     bitand(x,y) == bitand(x,y)$Foreign(Builtin)
     bitior(x,y) == bitior(x,y)$Foreign(Builtin)
 
