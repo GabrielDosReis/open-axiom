@@ -63,6 +63,9 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Thing|)
                 |OUTFORM;outputForm;Df$;14|)) 
 
+(PUT '|OUTFORM;outputForm;Df$;14| '|SPADreplace|
+     'DFLOAT-FORMAT-GENERAL) 
+
 (DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Thing|)
                 |OUTFORM;outputForm;S$;15|)) 
 
@@ -557,7 +560,8 @@
 (DEFUN |OUTFORM;outputForm;S$;13| (|e| $) (DECLARE (IGNORE $)) |e|) 
 
 (DEFUN |OUTFORM;outputForm;Df$;14| (|f| $)
-  (FORMAT NIL (|getShellEntry| $ 6) |f|)) 
+  (DECLARE (IGNORE $))
+  (DFLOAT-FORMAT-GENERAL |f|)) 
 
 (DEFUN |OUTFORM;outputForm;S$;15| (|s| $)
   (SPADCALL (|spadConstant| $ 27)
