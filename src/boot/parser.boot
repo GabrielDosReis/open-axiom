@@ -521,7 +521,7 @@ bpExceptions()==
  
 bpSexpKey()==
       $stok is ["KEY",:.] and not bpExceptions()=>
-               a:=GET($ttok,"SHOEINF")
+               a := $ttok has SHOEINF
                null a=>  bpPush $ttok and bpNext()
                bpPush a and bpNext()
       false
@@ -561,11 +561,11 @@ bpDot()== bpEqKey "DOT" and bpPush bfDot ()
  
 bpPrefixOperator()==
    $stok is ["KEY",:.] and
-     GET($ttok,"SHOEPRE") and bpPushId() and  bpNext()
+     $ttok has SHOEPRE and bpPushId() and  bpNext()
  
 bpInfixOperator()==
   $stok is ["KEY",:.] and
-    GET($ttok,"SHOEINF") and bpPushId() and  bpNext()
+    $ttok has SHOEINF and bpPushId() and  bpNext()
  
 bpSelector()==
   bpEqKey "DOT" and (bpPrimary()
@@ -626,7 +626,7 @@ bpString()==
     bpPush(["QUOTE",INTERN $ttok]) and bpNext()
  
 bpThetaName() ==
-  $stok is ["ID",:.] and GET($ttok,"SHOETHETA") =>
+  $stok is ["ID",:.] and $ttok has SHOETHETA =>
     bpPushId()
     bpNext()
   false
@@ -656,9 +656,12 @@ bpMinus()==
 bpArith()==bpLeftAssoc('(PLUS MINUS),function bpMinus)
  
 bpIs()==
-  bpArith() and (bpInfKey '(IS ISNT) and (bpPattern() or bpTrap())
-     and bpPush bfISApplication(bpPop2(),bpPop2(),bpPop1())
-	or true)
+  bpArith() and
+     bpInfKey '(IS ISNT) and (bpPattern() or bpTrap()) =>
+       bpPush bfISApplication(bpPop2(),bpPop2(),bpPop1())
+     bpEqKey "HAS" and (bpApplication() or bpTrap()) =>
+       bpPush bfHas(bpPop2(), bpPop1())
+     true
  
 bpBracketConstruct(f)==
   bpBracket f and bpPush bfConstruct bpPop1()

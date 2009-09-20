@@ -646,7 +646,7 @@ newHasTest(domform,catOrAtt) ==
            evalCond x ==
              ATOM x => x
              [pred,:l] := x
-             pred = 'has => 
+             pred = "has" => 
                   l is [ w1,['ATTRIBUTE,w2]] => newHasTest(w1,w2) 
                   l is [ w1,['SIGNATURE,:w2]] => compiledLookup(CAR w2,CADR w2, eval mkEvalable w1)
                   newHasTest(first  l ,first rest l) 

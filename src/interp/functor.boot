@@ -368,7 +368,7 @@ sublisProp(subst,props) ==
                         --keep original CONS
       cond is ['or,:x] =>
         (or/[inspect(u,subst) for u in x] => [a,true,:l]; nil)
-      cond is ['has,nam,b] and (val:= ASSQ(nam,subst)) =>
+      cond is ["has",nam,b] and (val:= ASSQ(nam,subst)) =>
         ev:=
           b is ['ATTRIBUTE,c] => HasAttribute(rest val,c)
           b is ['SIGNATURE,c] => HasSignature(rest val,c)
@@ -764,7 +764,7 @@ CheckVector(vec,name,catvecListMaker) ==
 makeMissingFunctionEntry(alist,i) ==
   tran SUBLIS(alist,$MissingFunctionInfo.i) where
     tran x ==
-      x is ["HasCategory",a,["QUOTE",b]] => ['has,a,b]
+      x is ["HasCategory",a,["QUOTE",b]] => ["has",a,b]
       x is [op,:l] and op in '(AND OR NOT) => [op,:[tran y for y in l]]
       x
  
@@ -878,7 +878,7 @@ InvestigateConditions catvecListMaker ==
  
 ICformat u ==
       atom u => u
-      u is ['has,:.] => compHasFormat u
+      u is ["has",:.] => compHasFormat u
       u is ['AND,:l] or u is ['and,:l] =>
         l:= REMDUP [ICformat v for [v,:l'] in tails l | not member(v,l')]
              -- we could have duplicates after, even if not before

@@ -589,8 +589,6 @@ getCatForm(catvec, index, domain) ==
 HasSignature(domain,[op,sig]) ==
   compiledLookup(op,sig,domain)
  
-has(domain,catform') == HasCategory(domain,catform')
-
 HasCategory(domain,catform') ==
   catform' is ['SIGNATURE,:f] => HasSignature(domain,f)
   catform' is ['ATTRIBUTE,f] => HasAttribute(domain,f)

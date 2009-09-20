@@ -109,7 +109,7 @@ shoePileCoagulate(a,b)==
   d := second a
   e := shoeTokPart d
   d is ["KEY",:.] and
-	(GET(e,"SHOEINF") or e = "COMMA" or e = "SEMICOLON") =>
+	(e has SHOEINF or e = "COMMA" or e = "SEMICOLON") =>
     shoePileCoagulate(dqAppend(a,c),rest b)
   cons(a,shoePileCoagulate(c,rest b))
  

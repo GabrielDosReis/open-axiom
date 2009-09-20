@@ -417,7 +417,7 @@ makeCategoryPredicates(form,u) ==
         fn(u,pl) ==
           u is ['Join,:.,a] => fn(a,pl)
           u is ["IF",p,:x] => fnl(x,insert(EQSUBSTLIST($mvl,$tvl,p),pl))
-          u is ['has,:.] => insert(EQSUBSTLIST($mvl,$tvl,u),pl)
+          u is ["has",:.] => insert(EQSUBSTLIST($mvl,$tvl,u),pl)
           u is [op,:.] and MEMQ(op,'(SIGNATURE ATTRIBUTE)) => pl
           atom u => pl
           fnl(u,pl)
@@ -810,7 +810,7 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
               findExtrasP(a,x) ==
                 x is ['AND,:l] => "union"/[findExtrasP(a,y) for y in l]
                 x is ['OR,:l] => "union"/[findExtrasP(a,y) for y in l]
-                x is ['has,=a,y] and y is ['SIGNATURE,:.] => [y]
+                x is ["has",=a,y] and y is ['SIGNATURE,:.] => [y]
                 nil
         nil
     augmentSig(s,ss) ==

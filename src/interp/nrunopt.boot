@@ -231,7 +231,7 @@ predicateBitIndexRemop p==
 --transform attribute predicates taken out by removeAttributePredicates
   p is [op,:argl] and op in '(AND and OR or NOT not) => 
     simpBool makePrefixForm([predicateBitIndexRemop x for x in argl],op)
-  p is ['has,'$,['ATTRIBUTE,a]] => LASSOC(a,$NRTattributeAlist)
+  p is ["has",'$,['ATTRIBUTE,a]] => LASSOC(a,$NRTattributeAlist)
   p
  
 predicateBitRef x ==
@@ -291,7 +291,7 @@ removeAttributePredicates pl ==
     fn p ==
       p is [op,:argl] and op in '(AND and OR or NOT not) => 
           makePrefixForm(fnl argl,op)
-      p is ['has,'$,['ATTRIBUTE,a]] =>
+      p is ["has",'$,['ATTRIBUTE,a]] =>
         sayBrightlyNT '"Predicate: "
         PRINT p
         sayBrightlyNT '"  replaced by: "
@@ -303,7 +303,7 @@ transHasCode x ==
   atom x => x
   op := QCAR x
   MEMQ(op,'(HasCategory HasAttribute)) => x
-  op='has => compHasFormat x
+  op="has" => compHasFormat x
   [transHasCode y for y in x]
  
 mungeAddGensyms(u,gal) ==

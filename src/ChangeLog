@@ -1,3 +1,21 @@
+2009-09-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: "has" is not a keyword.
+	* boot/ast.boot (bfHas): New.
+	(bfReduce): Use "has" instead "has".
+	(bfReduceCollect): Likewise.
+	(bfReName): Likewise.
+	(bfElt): Likewise.
+	(bfSetelt): Likewise.
+	* boot/parser.boot (bpSexpKey): Likewise.
+	(bpPrefixOperator): Likewise.
+	(bpInfixOperator): Likewise.
+	(bpThetaName): Likewise.
+	(bpIs): Parse "has" expressions.
+	* boot/pile.boot (shoePileCoagulate): Likewise.
+	* interp/: Fix unquoted use of "has".
+	* interp/interop.boot (has): Remove.
+
 2009-09-16  Kosta Oikonomou <ko@research.att.com>
 	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
 

@@ -45,6 +45,7 @@ shoeKeyWords == [  _
             ['"cross","CROSS"] , _
             ['"else", "ELSE"] , _
             ['"for",  "FOR"] , _
+            ['"has", "HAS"] , _
             ['"if", "IF"], _
             ['"import", "IMPORT"], _
             ['"in",  "IN" ], _
