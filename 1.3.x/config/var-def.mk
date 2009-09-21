@@ -196,10 +196,7 @@ axiom_optional_srcdir = $(abs_top_srcdir)/zips
 open_axiom_installdir = @open_axiom_installdir@
 
 INC=$(top_srcdir)/src/include
-PLF=@PLF@
 CCF=@CCF@
-LDF=@LDF@ -lm
-LISP=@LISP@
 oa_c_runtime_extra = @LIBS@ @axiom_c_runtime_extra@ -lm
 oa_c_libs = -lopen-axiom-core $(oa_c_runtime_extra) -lm
 

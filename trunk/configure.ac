@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2009-09-19], 
+AC_INIT([OpenAxiom], [1.4.0-2009-09-21], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -593,9 +593,11 @@ esac
 axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
 axiom_gcl_emacs="--enable-emacs=correct"
 
-CCF="-O2 -Wall -D_GNU_SOURCE"
-LDF=
-LISP=lsp
+cae $GCC in
+  yes)
+     CCF="-O2 -Wall -D_GNU_SOURCE"
+     ;;
+esac
 
 case $target in
     *bsd*|*dragonfly*)
@@ -619,8 +621,6 @@ esac
 GCLOPTS="$axiom_gcl_emacs $axiom_gcl_bfd_option $axiom_gcl_mm_option $axiom_gcl_x_option"
 
 AC_SUBST(CCF)
-AC_SUBST(LDF)
-AC_SUBST(LISP)
 AC_SUBST(GCLOPTS)
 case $axiom_lisp_flavor in
    gcl)
