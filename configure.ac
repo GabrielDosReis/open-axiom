@@ -593,7 +593,7 @@ esac
 axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
 axiom_gcl_emacs="--enable-emacs=correct"
 
-cae $GCC in
+case $GCC in
   yes)
      CCF="-O2 -Wall -D_GNU_SOURCE"
      ;;
