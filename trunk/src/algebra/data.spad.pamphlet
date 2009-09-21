@@ -107,7 +107,7 @@ SystemInteger(N: PositiveInteger): Public == Private where
     size() == (rep max - rep min + 1)::NonNegativeInteger
     index i == per (i + rep min - 1)
     lookup x == (rep x - rep min + 1)::PositiveInteger
-    random() == per(random()$Integer rem rep max)
+    random() == per random(rep max())$Integer
 
 @
 
