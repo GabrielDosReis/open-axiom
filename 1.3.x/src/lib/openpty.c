@@ -1,6 +1,8 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
+    Copyright (C) 2007-2009, Gabriel Dos Reis.
+    All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -83,8 +85,7 @@ ptyopen(int *controller,int * server,char * serverPath)
 {
 #if HAVE_DECL_OPENPTY
    return openpty(controller,server, serverPath, NULL, NULL);
-#else   
-#if defined(SUNplatform)
+#elif defined(SUNplatform)
   int looking = 1, i;
   int oflag = O_RDWR;                  /* flag for opening the pty */
   char controllerPath[128];
@@ -106,8 +107,7 @@ ptyopen(int *controller,int * server,char * serverPath)
     exit(-1);
   }
   return (*controller);
-#endif
-#if defined(SUN4OS5platform)
+#elif defined(SUN4OS5platform)
 extern int grantpt(int);
 extern int unlockpt(int);
 extern char* ptsname(int);
@@ -131,22 +131,19 @@ extern char* ptsname(int);
     if ((fds = open(slavename, O_RDWR)) < 0 )
       perror("ptyopen: Failed to open slave");
     else {
-#if defined(SUN4OS5platform)
       /* push ptem */
       if (ioctl(fds, I_PUSH, "ptem") < 0)
         perror("ptyopen: Failed to push ptem");
       /* push ldterm */
       if (ioctl(fds, I_PUSH, "ldterm") < 0)
         perror("ptyopen: Failed to push idterm");
-#endif
       strcpy(serverPath,slavename);
       *controller=fdm;
       *server=fds;
     }
   }
   return(fdm);
-#endif
-
+#else
 #  error "don't know how to open a pty"
 #endif
 }
