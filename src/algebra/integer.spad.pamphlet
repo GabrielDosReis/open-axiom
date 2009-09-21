@@ -71,8 +71,6 @@ IntegerSolveLinearPolynomialEquation(): C ==T
 ++ integers.
 
 Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
-    random   : % -> %
-      ++ random(n) returns a random integer from 0 to \spad{n-1}.
     canonical
       ++ mathematical equality is data structure equality.
     canonicalsClosed
@@ -266,8 +264,6 @@ NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
               ++ if b is zero or \spad{a} rem b is zero.
             shift: (%, Integer) -> %
               ++ shift(a,i) shift \spad{a} by i bits.
-            random   : % -> %
-              ++ random(n) returns a random integer from 0 to \spad{n-1}.
             commutative("*")
               ++ commutative("*") means multiplication is commutative : \spad{x*y = y*x}.
 

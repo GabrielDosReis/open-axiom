@@ -1,5 +1,11 @@
 2009-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/data.spad.pamphlet (SystemInteger): Tidy.
+	* algebra/integer.spad.pamphlet (Integer): Likewise.
+	* algebra/si.spad.pamphlet (IntegerNumberSystem): Likewise.
+
+2009-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-spec2.boot (findConstantInDomain): Substitute into the
 	result domain.
 
