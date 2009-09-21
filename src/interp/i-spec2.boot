@@ -98,9 +98,10 @@ constantInDomain?(form,domainForm) ==
 ++ in the VAT `op'.
 findConstantInDomain(op,c,type,d) ==
   isPartialMode d => throwKeyedMsg("S2IS0020",NIL)
-  if $genValue then
-    val := wrap getConstantFromDomain([c],d)
-  else val := ["getConstantFromDomain",["LIST",MKQ c],MKQ d]
+  val := 
+    $genValue => wrap getConstantFromDomain([c],d)
+    ["getConstantFromDomain",["LIST",MKQ c],MKQ d]
+  type := substitute(d,"$",type)
   putValue(op,objNew(val,type))
   putModeSet(op,[type])
 
