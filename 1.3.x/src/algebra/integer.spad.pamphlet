@@ -264,6 +264,8 @@ NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
               ++ if b is zero or \spad{a} rem b is zero.
             shift: (%, Integer) -> %
               ++ shift(a,i) shift \spad{a} by i bits.
+            random   : % -> %
+              ++ random(n) returns a random integer from 0 to \spad{n-1}.
             commutative("*")
               ++ commutative("*") means multiplication is commutative : \spad{x*y = y*x}.
 
