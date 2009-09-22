@@ -13934,7 +13934,7 @@ $as_echo "$ac_cv_search_accept" >&6; }
 ac_res=$ac_cv_search_accept
 if test "$ac_res" != no; then
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  axiom_c_runtime_extra="-lsocket"
+
 else
   { { $as_echo "$as_me:$LINENO: error: socket library not found" >&5
 $as_echo "$as_me: error: socket library not found" >&2;}
@@ -13969,7 +13969,7 @@ return gethostbyname ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' nls; do
+for ac_lib in '' nsl; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
