@@ -277,9 +277,8 @@ fi
 case $host in
     *solaris*)
        AC_SEARCH_LIBS([accept], [socket],
-	   [axiom_c_runtime_extra="-lsocket"],
-	   [AC_MSG_ERROR([socket library not found])])
-       AC_SEARCH_LIBS([gethostbyname], [nls])
+	   [], [AC_MSG_ERROR([socket library not found])])
+       AC_SEARCH_LIBS([gethostbyname], [nsl])
        ;;
     *) ;;
 esac
