@@ -1,3 +1,11 @@
+2009-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfMember): New.
+	(bfInfApplication): Use it.
+	* boot/tokens.boot: Don't rename IN.
+	* interp/ax.boot (makeAxFile): Fix thinko.
+	(makeAxExportForm): Likewise.
+
 2009-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/data.spad.pamphlet (SystemInteger): Tidy.
