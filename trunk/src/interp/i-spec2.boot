@@ -138,7 +138,7 @@ upDollar t ==
       if x then putTarget(y,x)
   putAtree(first form,"dollar",t)
   ms := bottomUp form
-  f in '(One Zero) and PAIRP(ms) and CAR(ms) = $OutputForm =>
+  f in '(One Zero) and CONSP (ms) and CAR(ms) = $OutputForm =>
     throwKeyedMsg("S2IS0021",[f,t])
   putValue(op,getValue first form)
   putModeSet(op,ms)
@@ -500,7 +500,7 @@ up%LET t ==
   -- binding
   t isnt [op,lhs,rhs] => nil
   $declaredMode: local := NIL
-  PAIRP lhs =>
+  CONSP lhs =>
     var:= getUnname first lhs
     var = "construct" => upLETWithPatternOnLhs t
     var = "QUOTE" => throwKeyedMsg("S2IS0027",['"A quoted form"])
@@ -619,7 +619,7 @@ upLETWithPatternOnLhs(t := [op,pattern,a]) ==
 evalLETchangeValue(name,value) ==
   -- write the value of name into the environment, clearing dependent
   --  maps if its type changes from its last value
-  localEnv := PAIRP $env
+  localEnv := CONSP $env
   clearCompilationsFlag :=
     val:= (localEnv and get(name,'value,$env)) or get(name,'value,$e)
     null val =>
@@ -1075,7 +1075,7 @@ uptuple t ==
   null l => upNullTuple(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and PAIRP(tar) and not isPartialMode(tar) then
+  if tar and CONSP(tar) and not isPartialMode(tar) then
     CAR(tar) in aggs =>
       ud := CADR tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)

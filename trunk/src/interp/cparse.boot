@@ -372,7 +372,7 @@ npSymbolVariable()==
 npName()==npId() or npSymbolVariable()
 
 npConstTok() ==
-     MEMQ(tokType $stok, '(integer string char float command)) =>
+     tokType $stok in '(integer string char float command) =>
           npPush $stok
           npNext()
      npEqPeek "'" =>

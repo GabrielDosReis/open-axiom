@@ -423,7 +423,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
   for x in allConstructors() repeat
     for conform in getImports x repeat
       name := opOf conform
-      if not MEMQ(name,'(QUOTE)) then
+      if not (name in '(QUOTE)) then
         HPUT($usersTb,name,insert(x,HGET($usersTb,name)))
   for k in HKEYS $usersTb repeat
     HPUT($usersTb,k,listSort(function GLESSEQP,HGET($usersTb,k)))
@@ -473,7 +473,7 @@ getImports conname == --called by mkUsersHashTable
   u := [doImport(i,template)
           for i in 5..(MAXINDEX template) | test]  where
     test() == template.i is [op,:.] and IDENTP op
-              and not MEMQ(op,'(Mapping Union Record Enumeration CONS QUOTE local))
+              and not (op in '(Mapping Union Record Enumeration CONS QUOTE local))
     doImport(x,template) ==
       x is [op,:args] =>
         op = 'QUOTE or op = 'NRTEVAL => CAR args
@@ -550,12 +550,12 @@ explodeIfs x == main where  --called by getParents, getParentsForDomain
 
 folks u == --called by getParents and getParentsForDomain
   atom u => nil
-  u is [op,:v] and MEMQ(op,'(Join PROGN))
+  u is [op,:v] and op in '(Join PROGN)
     or u is ['CATEGORY,a,:v] => "append"/[folks x for x in v]
   u is ['SIGNATURE,:.] => nil
   u is ['TYPE,:.] => nil
   u is ['ATTRIBUTE,a] =>
-    PAIRP a and constructor? opOf a => folks a
+    CONSP a and constructor? opOf a => folks a
     nil
   u is ['IF,p,q,r] =>
     q1 := folks q

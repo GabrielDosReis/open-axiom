@@ -290,7 +290,7 @@ unloadOneConstructor(cnam,fn) ==
  
 compileConstructorLib(l,op,editFlag,traceFlag) ==
   --this file corresponds to /C,1
-  MEMQ('_?,l) => return editFile '(_/C TELL _*)
+  '_? in l => return editFile '(_/C TELL _*)
   optionList:= _/OPTIONS l
   funList:= TRUNCLIST(l,optionList) or [_/FN]
   options:= [[UPCASE CAR x,:CDR x] for x in optionList]
@@ -645,9 +645,9 @@ isFunctor x ==
   not IDENTP op => false
   $InteractiveMode =>
     MEMQ(op,$DomainNames) => true
-    MEMQ(getConstructorKindFromDB op,'(domain package))
+    getConstructorKindFromDB op in '(domain package)
   u:= get(op,'isFunctor,$CategoryFrame)
-    or MEMQ(op,'(SubDomain Union Record Enumeration)) => u
+    or op in '(SubDomain Union Record Enumeration) => u
   ab := getConstructorAbbreviationFromDB op =>
     if getConstructorKindFromDB op = "category"
       then updateCategoryFrameForCategory op

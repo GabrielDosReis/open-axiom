@@ -1042,7 +1042,7 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
           rplac(CADR x,tag)
           rplac(CADDR x,(convertOrCroak(t,opMode)).expr)
         true => rplac(CADR x,CADR x-1)
-      x is [key,n,t] and MEMQ(key,'(TAGGEDreturn TAGGEDexit)) =>
+      x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
         rplac(first t,replaceExitEtc(first t,tag,opFlag,opMode))
       replaceExitEtc(first x,tag,opFlag,opMode)
       replaceExitEtc(rest x,tag,opFlag,opMode)
@@ -1437,7 +1437,7 @@ compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
     stackAndThrow('"%1bp takes exactly one argument",["Foreign"])
   not IDENTP lang =>
     stackAndThrow('"Argument to %1bp must be an identifier",["Foreign"])
-  not MEMQ(lang, '(Builtin C)) =>
+  not (lang in '(Builtin C)) =>
     stackAndThrow('"Sorry: Only %1bp is valid at the moment",["Foreign C"])
   -- 2. Make sure this import is not subverting anything we know
   id' := checkExternalEntity(id,type,lang,e)
@@ -1918,7 +1918,7 @@ compViableModemap(op,argTl,mm) ==
   -- an exterior domain (it is calculating the displacement based on view
   -- information which is no longer valid; thus ignore this index and
   -- store the signature instead.
-  f is [op1,.,.] and MEMQ(op1,'(ELT CONST Subsumed)) =>
+  f is [op1,.,.] and op1 in '(ELT CONST Subsumed) =>
     [genDeltaEntry [op,:mm],argTl]
   [f,argTl]
 
@@ -2349,7 +2349,7 @@ compRepeatOrCollect(form,m,e) ==
              ["%CollectV",localReferenceIfThere m',:itl',body']
            [repeatOrCollect,:itl',body']
         m'' := 
-          aggr is [c,.] and MEMQ(c,'(List PrimitiveArray Vector)) => [c,m']
+          aggr is [c,.] and c in '(List PrimitiveArray Vector) => [c,m']
           m'
         T := coerceExit([form',m'',e'],targetMode) or return nil
         -- iterator variables and other variables declared in
@@ -2447,12 +2447,12 @@ compIterator(it,e) ==
   nil
  
 --isAggregateMode(m,e) ==
---  m is [c,R] and MEMQ(c,'(Vector List)) => R
+--  m is [c,R] and c in '(Vector List) => R
 --  name:=
 --    m is [fn,:.] => fn
 --    m="$" => "Rep"
 --    m
---  get(name,"value",e) is [c,R] and MEMQ(c,'(Vector List)) => R
+--  get(name,"value",e) is [c,R] and c in '(Vector List) => R
  
 modeIsAggregateOf(agg,m,e) ==
   m is [ =agg,R] => [m,R]

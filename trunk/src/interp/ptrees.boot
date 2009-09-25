@@ -85,8 +85,7 @@ pfDocument? form         == pfAbSynOp?(form, 'Document)
 pfDocumentText form      == tokPart form
 
 pfLiteral? form ==
-      MEMQ(pfAbSynOp form,'(integer symbol expression
-                    one zero char string float))
+  pfAbSynOp form in '(integer symbol expression one zero char string float)
 
 pfLiteralClass form      == pfAbSynOp form
 pfLiteralString form     == tokPart form

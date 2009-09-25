@@ -266,7 +266,7 @@ htSetNotAvailable(htPage,whatToType) ==
 htDoNothing(htPage,command) == nil
 
 htCheck(checker,value) ==
-  PAIRP checker => htCheckList(checker,parseWord value)
+  CONSP checker => htCheckList(checker,parseWord value)
   FUNCALL(checker,value)
 
 parseWord x ==

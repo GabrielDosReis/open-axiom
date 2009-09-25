@@ -60,8 +60,8 @@ formatDeftran(u,SEQflag) ==
   u is ['Join,:x] => formatDeftranJoin(u,SEQflag)
   u is ['CATEGORY,kind,:l,x] => formatDeftran(['with,['SEQ,:l,['exit,n,x]]],SEQflag)
   u is ['CAPSULE,:l,x] => formatDeftranCapsule(l,x,SEQflag)
-  u is [op,:.] and MEMQ(op,'(rep per)) => formatDeftranRepper(u,SEQflag)
-  u is [op,:.] and MEMQ(op,'(_: _:_: _pretend _@)) => 
+  u is [op,:.] and op in '(rep per) => formatDeftranRepper(u,SEQflag)
+  u is [op,:.] and op in '(_: _:_: _pretend _@) => 
     formatDeftranColon(u,SEQflag)
   u is ['PROGN,:l,x] => formatDeftran(['SEQ,:l,['exit,1,x]],SEQflag)
   u is ['SEQ,:l,[.,n,x]] => 
@@ -86,7 +86,7 @@ formatDeftran(u,SEQflag) ==
   u is ['Union,:argl] => 
     ['Union,:[x for a in argl 
       | x := (STRINGP a => [":",INTERN a,'Branch]; formatDeftran(a,nil))]]
-  u is [op,:itl,body] and MEMQ(op,'(REPEAT COLLECT)) and
+  u is [op,:itl,body] and op in '(REPEAT COLLECT) and
     ([nitl,:nbody] := formatDeftranREPEAT(itl,body)) =>
       formatDeftran([op,:nitl,nbody],SEQflag)
   u is [":",a,b] => [":",formatDeftran(a,nil),formatDeftran(markMacroTran(b),nil)]
@@ -104,7 +104,7 @@ formatDeftranCapsule(l,x,SEQflag) ==
   formatDeftran(['SEQ,:l,['exit,1,x]],SEQflag)
 
 formatDeftranRepper([op,a],SEQflag) ==
-    a is [op1,b] and MEMQ(op1,'(rep per)) =>
+    a is [op1,b] and op1 in '(rep per) =>
         op = op1 => formatDeftran(a,SEQflag)
         formatDeftran(b,SEQflag)
     a is ["::",b,t] =>
@@ -120,7 +120,7 @@ formatDeftranRepper([op,a],SEQflag) ==
     a is ['not,[op,a,b]] and (op1 := LASSOC(op,$pspadRelationAlist)) =>
       formatDeftran([op1,a,b],SEQflag)
     a is ["return",n,r] => 
-      MEMQ(opOf r,'(true false)) => a
+      opOf r in '(true false) => a
       ["return",n,[op,formatDeftran(r,SEQflag)]]
     a is ['error,:.] => a
     [op,formatDeftran(a,SEQflag)]
@@ -129,7 +129,7 @@ formatDeftranColon([op,a,t],SEQflag) ==  --op is one of :  ::  pretend  @
     a := formatDeftran(a,SEQflag)
     t := formatDeftran(t,SEQflag)
     a is ["UNCOERCE",b] => b
-    a is [op1,b,t1] and t1 = t and MEMQ(op,'(_: _:_: _pretend _@)) =>
+    a is [op1,b,t1] and t1 = t and op in '(_: _:_: _pretend _@) =>
       op1 = "pretend" or op = "pretend" => ["pretend",b,t]
       null SEQflag and op1 = ":" or op = ":" => ["pretend",b,t]
       a
@@ -184,7 +184,7 @@ formatDeftranIf(a,b,c) ==
     a is [op,:r] and (al := '((_= . _~_=) (_< . _>_=) (_> . _<_=));
                       iop := LASSOC(op, al) or rassoc(op, al)) =>
       [["=>",[iop, :r],c]]
-    a is [op,r] and MEMQ(op,'(NOT not NULL null)) =>
+    a is [op,r] and op in '(NOT not NULL null) =>
       [["=>", r, c]]
     [["=>", ['not, a], c]]
   post := 
@@ -214,7 +214,7 @@ formatCATEGORY cat ==
   format ["with",formatDeftranCategory cat]
  
 formatSIGNATURE ['SIGNATURE,op,types,:r] ==
-  MEMQ('constant,r) => format op and format ": " and (u := format first types) and 
+  'constant in r => format op and format ": " and (u := format first types) and 
     formatSC() and formatComments(u,op,types)
   format op and format ": " and (u := format ['Mapping,:types]) and formatSC() and
     formatComments(u,op,types) 
@@ -422,7 +422,7 @@ formatIterator u ==
 
 formatStepOne? step ==
   step = 1 or step = '(One) => true
-  step is [op,n,.] and MEMQ(op,'(_:_:  _@)) => n = 1 or n = '(One)
+  step is [op,n,.] and op in '(_:_:  _@) => n = 1 or n = '(One)
   false
  
 formatBy ['by,seg,step] == format seg and format " by " and format step

@@ -210,7 +210,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
 
 underDomainOf t ==
   t = $RationalNumber => $Integer
-  not PAIRP t => NIL
+  atom t => NIL
   d := deconstructT t
   1 = #d => NIL
   u := getUnderModeOf(t) => u

@@ -102,7 +102,7 @@ ncBug (erMsgKey, erArgL,:optAttr) ==
 --          text -- the actual text
  
 msgCreate(tag,posWTag,key,argL,optPre,:optAttr) ==
-    if PAIRP key then tag := 'old
+    if CONSP key then tag := 'old
     msg := [tag,posWTag,key,argL,optPre,NIL]
     if CAR optAttr then
         setMsgForcedAttrList(msg,car optAttr)

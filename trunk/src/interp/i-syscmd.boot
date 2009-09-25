@@ -249,7 +249,7 @@ abbreviationsSpad2Cmd l ==
 
 listConstructorAbbreviations() ==
   x := UPCASE queryUserKeyedMsg("S2IZ0056",NIL)
-  MEMQ(STRING2ID_-N(x,1),'(Y YES)) =>
+  STRING2ID_-N(x,1) in '(Y YES) =>
     whatSpad2Cmd '(categories)
     whatSpad2Cmd '(domains)
     whatSpad2Cmd '(packages)
@@ -362,7 +362,7 @@ clearCmdParts(l is [opt,:vl]) ==
       option='properties =>
         if isMap x then
           (lm := get(x,'localModemap,$InteractiveFrame)) =>
-            PAIRP lm => untraceMapSubNames [CADAR lm]
+            CONSP lm => untraceMapSubNames [CADAR lm]
           NIL
         for p2 in CDR p1 repeat
           prop:= CAR p2
@@ -405,7 +405,7 @@ close args ==
     sockSendInt($SessionManager, $currentFrameNum)
     closeInterpreterFrame(NIL)
   x := UPCASE queryUserKeyedMsg('"S2IZ0072", nil)
-  MEMQ(STRING2ID_-N(x,1), '(YES Y)) =>
+  STRING2ID_-N(x,1) in '(YES Y) =>
     coreQuit()  -- ??? should be coreQuit errorCount()
   nil
 
@@ -833,7 +833,7 @@ compileSpad2Cmd args ==
         fullopt = "optimize" => setCompilerOptimizations first optargs
         fullopt = "report" =>
            null optargs => throwKeyedMsg("S2IZ0037",['")report"])
-           if MEMQ("insn",optargs) then
+           if "insn" in optargs then
              $reportOptimization := true
         throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
 
@@ -1121,7 +1121,7 @@ getWorkspaceNames() ==
 displayOperations l ==
   null l =>
     x := UPCASE queryUserKeyedMsg("S2IZ0058",NIL)
-    if MEMQ(STRING2ID_-N(x,1),'(Y YES))
+    if STRING2ID_-N(x,1) in '(Y YES)
       then for op in allOperations() repeat reportOpSymbol op
       else sayKeyedMsg("S2IZ0059",NIL)
     nil
@@ -1377,13 +1377,13 @@ frameSpad2Cmd args ==
   if args is [a] then args := a
   if ATOM args then args := object2Identifier args
   arg = 'drop  =>
-    args and PAIRP(args) => throwKeyedMsg("S2IZ0017",[args])
+    args and CONSP(args) => throwKeyedMsg("S2IZ0017",[args])
     closeInterpreterFrame(args)
   arg = "import" =>  importFromFrame args
   arg = "last"  =>   previousInterpreterFrame()
   arg = "names" =>   displayFrameNames()
   arg = "new"   =>
-    args and PAIRP(args) => throwKeyedMsg("S2IZ0017",[args])
+    args and CONSP(args) => throwKeyedMsg("S2IZ0017",[args])
     addNewInterpreterFrame(args)
   arg = "next"  =>   nextInterpreterFrame()
 
@@ -1523,7 +1523,7 @@ importFromFrame args ==
   fenv := frameEnvironment fname
   null args =>
     x := UPCASE queryUserKeyedMsg("S2IZ0076",[fname])
-    MEMQ(STRING2ID_-N(x,1),'(Y YES)) =>
+    STRING2ID_-N(x,1) in '(Y YES) =>
       vars := NIL
       for [v,:props] in CAAR fenv repeat
         v = "--macros" =>
@@ -1620,7 +1620,7 @@ historySpad2Cmd() ==
         initHistList()
         sayKeyedMsg("S2IH0008",NIL) 
       x := UPCASE queryUserKeyedMsg("S2IH0009",NIL) 
-      MEMQ(STRING2ID_-N(x,1),'(Y YES)) =>
+      STRING2ID_-N(x,1) in '(Y YES) =>
         histFileErase histFileName()
         $HiFiAccess:= true
         $options := nil
@@ -2054,7 +2054,7 @@ writify ob ==
             null ob                => nil
             (e := HGET($seen, ob)) => e
  
-            PAIRP ob =>
+            CONSP ob =>
                 qcar := QCAR ob
                 qcdr := QCDR ob
                 (name := spadClosure? ob) =>
@@ -2127,7 +2127,7 @@ writify ob ==
 
 
 unwritable? ob ==
-    PAIRP  ob or VECP ob       => false   -- first for speed
+    CONSP  ob or VECP ob       => false   -- first for speed
     COMPILED_-FUNCTION_-P   ob or HASHTABLEP ob => true
     PLACEP ob or READTABLEP ob => true
     FLOATP ob => true
@@ -2161,7 +2161,7 @@ dewritify ob ==
             null ob => nil
             e := HGET($seen, ob) => e
  
-            PAIRP ob and CAR ob = 'WRITIFIED_!_! =>
+            CONSP ob and CAR ob = 'WRITIFIED_!_! =>
                 type := ob.1
                 type = 'SELF =>
                     'WRITIFIED_!_!
@@ -2213,7 +2213,7 @@ dewritify ob ==
                    fval
                 error '"Unknown type to de-writify."
  
-            PAIRP ob =>
+            CONSP ob =>
                 qcar := QCAR ob
                 qcdr := QCDR ob
                 nob  := CONS(qcar, qcdr)
@@ -2321,7 +2321,7 @@ quitSpad2Cmd() ==
        '" Please select Exit from the File Menu instead."])
   $quitCommandType ~= 'protected => leaveScratchpad()
   x := UPCASE queryUserKeyedMsg("S2IZ0031",NIL)
-  MEMQ(STRING2ID_-N(x,1),'(Y YES)) => leaveScratchpad()
+  STRING2ID_-N(x,1) in '(Y YES) => leaveScratchpad()
   sayKeyedMsg("S2IZ0032",NIL)
   TERSYSCOMMAND ()
 
@@ -2867,7 +2867,7 @@ whatSpad2Cmd l ==
       DOWNCASE x
   key = 'things =>
     for opt in $whatOptions repeat
-      not MEMQ(opt,'(things)) => whatSpad2Cmd [opt,:args]
+      not (opt in '(things)) => whatSpad2Cmd [opt,:args]
   key = 'categories =>
     filterAndFormatConstructors('category,'"Categories",args)
   key = 'commands =>

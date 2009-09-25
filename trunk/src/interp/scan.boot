@@ -512,7 +512,7 @@ scanS()==
                   CONCAT(str,b)
 scanTransform x==x
 
---idChar? x== scanLetter x or DIGITP x or MEMQ(x,'(_? _%))
+--idChar? x== scanLetter x or DIGITP x or x in '(_? _%)
 
 --scanLetter x==
 --   if not CHARP x
@@ -527,7 +527,7 @@ posend(line,n)==
 --     while n<#line and digit? line.n repeat n:=n+1
 --     n
 
---startsId? x==  scanLetter x or MEMQ(x,'(_? _%))
+--startsId? x==  scanLetter x or x in '(_? _%)
 digit? x== DIGITP x
 
 scanW(b)==             -- starts pointing to first char

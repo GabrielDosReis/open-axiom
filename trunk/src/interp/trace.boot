@@ -179,7 +179,7 @@ getMapSig(mapName,subName) ==
 getTraceOption (x is [key,:l]) ==
   key:= selectOptionLC(key,$traceOptionList,'traceOptionError)
   x := [key,:l]
-  MEMQ(key,'(nonquietly timer nt)) => x
+  key in '(nonquietly timer nt) => x
   key='break =>
     null l => ['break,'before]
     opts := [selectOptionLC(y,'(before after),NIL) for y in l]
@@ -192,7 +192,7 @@ getTraceOption (x is [key,:l]) ==
   key='within =>
     l is [a] and IDENTP a => x
     stackTraceOptionError ["S2IT0010",['")within"]]
-  MEMQ(key,'(cond before after)) =>
+  key in '(cond before after) =>
     key:=
       key="cond" => "when"
       key
@@ -212,7 +212,7 @@ getTraceOption (x is [key,:l]) ==
           stackTraceOptionError ["S2IT0013",[x]]
         g:= domainToGenvar x => g
         stackTraceOptionError ["S2IT0013",[x]]
-  MEMQ(key,'(local ops vars)) =>
+  key in '(local ops vars) =>
     null l or l is ["all"] => [key,:"all"]
     isListOfIdentifiersOrStrings l => x
     stackTraceOptionError ["S2IT0015",[STRCONC('")",object2String key)]]
@@ -425,7 +425,7 @@ isTraceGensym x == GENSYMP x
 spadTrace(domain,options) ==
   $fromSpadTrace:= true
   $tracedModemap:local:= nil
-  PAIRP domain and REFVECP CAR domain and (CAR domain).0 = 0 =>
+  CONSP domain and REFVECP CAR domain and (CAR domain).0 = 0 =>
       aldorTrace(domain,options)
   not isDomainOrPackage domain => userError '"bad argument to trace"
   listOfOperations:=

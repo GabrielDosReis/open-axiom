@@ -197,7 +197,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     if tar and not isPartialMode tar then
       if xx := underDomainOf(tar) then a := cons(xx,a)
     for x in args1 repeat
-      PAIRP(x) and CAR(x) in '(List Vector Stream FiniteSet Array) =>
+      CONSP(x) and CAR(x) in '(List Vector Stream FiniteSet Array) =>
         xx := underDomainOf(x) => a := cons(xx,a)
 
     -- now extend this list with those from the arguments to
@@ -221,7 +221,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
         (xm := get(name,'mode,$e)) and not isPartialMode xm =>
           a' := cons(xm,a')
     a := append(a,REMDUP a')
-    a := [x for x in a | PAIRP(x)]
+    a := [x for x in a | CONSP(x)]
 
     -- step 1. see if we have one without coercing
     a' := a
@@ -453,7 +453,7 @@ defaultTargetFE(a,:options) ==
           IFCAR options => [$FunctionalExpression, ['Complex, $Integer]]
           [$FunctionalExpression, $Integer]
   a is ['Complex,uD] => defaultTargetFE(uD, true)
-  a is [D,uD] and MEMQ(D, '(Polynomial RationalFunction Fraction)) =>
+  a is [D,uD] and D in '(Polynomial RationalFunction Fraction) =>
      defaultTargetFE(uD, IFCAR options)
   a is [=$FunctionalExpression,.] => a
   IFCAR options => [$FunctionalExpression, ['Complex, a]]
@@ -529,11 +529,11 @@ CONTAINEDisDomain(symbol,cond) ==
 -- looks for [isSubDomain,symbol,[domain]] in cond: returning T or NIL
 -- with domain being one of PositiveInteger and NonNegativeInteger
    ATOM cond => false
-   MEMQ(QCAR cond,'(AND OR and or)) =>
+   QCAR cond in '(AND OR and or) =>
        or/[CONTAINEDisDomain(symbol, u) for u in QCDR cond]
    EQ(QCAR cond,'isDomain) =>
-       EQ(symbol,CADR cond) and PAIRP(dom:=CADDR cond) and
-         MEMQ(dom,'(PositiveInteger NonNegativeInteger))
+       EQ(symbol,CADR cond) and CONSP(dom:=CADDR cond) and
+         dom in '(PositiveInteger NonNegativeInteger)
    false
 
 selectDollarMms(dc,name,types1,types2) ==
@@ -875,7 +875,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   --   in the domain of computation dc
   -- tar may be NIL (= unknown)
   dcName:= CAR dc
-  not MEMQ(dcName,'(Record Union Enumeration)) => NIL
+  not (dcName in '(Record Union Enumeration)) => NIL
   fun:= NIL
  --  cat := constructorCategory dc
   makeFunc := GETL(dcName,"makeFunctionList") or
@@ -887,7 +887,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   for [a,b,d] in funlist repeat
     not EQ(a,op) => nil
     d is ['XLAM,xargs,:.] =>
-      if PAIRP(xargs) then maxargs := MAX(maxargs,#xargs)
+      if CONSP(xargs) then maxargs := MAX(maxargs,#xargs)
       else maxargs := MAX(maxargs,1)
       impls := cons([b,nil,true,d],impls)
     impls := cons([b,d,true,d],impls)
@@ -988,7 +988,7 @@ filterModemapsFromPackages(mms, names, op) ==
     isFreeFunctionFromMm(mm) => bad := cons(mm, bad)
     type := getDomainFromMm mm
     null type => bad := cons(mm,bad)
-    if PAIRP type then type := first type
+    if CONSP type then type := first type
     getConstructorKindFromDB type = "category" => bad := cons(mm,bad)
     name := object2String type
     found := nil
@@ -1004,7 +1004,7 @@ filterModemapsFromPackages(mms, names, op) ==
 
 
 isTowerWithSubdomain(towerType,elem) ==
-  not PAIRP towerType => NIL
+  atom towerType => NIL
   dt := deconstructT towerType
   2 ~= #dt => NIL
   s := underDomainOf(towerType)
@@ -1175,7 +1175,7 @@ evalMmStack(mmC) ==
     evalMmStack CONS('AND,[['ofCategory,pvar,c] for c in args])
   mmC is ['ofType,:.] => [NIL]
   mmC is ["has",pat,x] =>
-    MEMQ(x,'(ATTRIBUTE SIGNATURE)) =>
+    x in '(ATTRIBUTE SIGNATURE) =>
       [[['ofCategory,pat,['CATEGORY,'unknown,x]]]]
     [['ofCategory,pat,x]]
   [[mmC]]
@@ -1190,7 +1190,7 @@ evalMmStackInner(mmC) ==
   mmC is ['ofType,:.] => NIL
   mmC is ['isAsConstant] => NIL
   mmC is ["has",pat,x] =>
-    MEMQ(x,'(ATTRIBUTE SIGNATURE)) =>
+    x in '(ATTRIBUTE SIGNATURE) =>
       [['ofCategory,pat,['CATEGORY,'unknown,x]]]
     [['ofCategory,pat,x]]
   [mmC]
@@ -1244,7 +1244,7 @@ doReplaceSharpCalls t ==
 
 noSharpCallsHere t ==
   t isnt [con, :args] => true
-  MEMQ(con,'(construct _#)) => NIL
+  con in '(construct _#) => NIL
   and/[noSharpCallsHere u for u in args]
 
 coerceTypeArgs(t1, t2, SL) ==
@@ -1610,7 +1610,7 @@ hasAtt(dom,att,SL) ==
   $domPvar: local := nil
   fun:= CAR dom =>
     atts:= subCopy(getConstructorAttributesFromDB fun,constructSubst dom) =>
-      PAIRP (u := getInfovec CAR dom) =>
+      CONSP (u := getInfovec CAR dom) =>
         --UGH! New world has attributes stored as pairs not as lists!!
         for [x,:cond] in atts until not (S='failed) repeat
           S:= unifyStruct(x,att,copy SL)

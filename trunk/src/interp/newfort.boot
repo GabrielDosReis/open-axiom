@@ -204,7 +204,7 @@ beenHere(e,n) ==
       fun = 'CAR =>
         RPLACA(loc,var)
       fun = 'CDR =>
-        if PAIRP QCDR loc
+        if CONSP QCDR loc
           then RPLACD(loc,[var])
           else RPLACD(loc,var)
       SAY '"whoops"

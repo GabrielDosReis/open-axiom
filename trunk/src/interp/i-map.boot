@@ -88,7 +88,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
 
   -- next check is for bad forms on the lhs of the ==, such as
   -- numbers, constants.
-  if not PAIRP lhs then
+  if atom lhs then
     op := lhs
     putHist(op,'isInterpreterRule,true,$e)
     putHist(op,'isInterpreterFunction,false,$e)
@@ -717,7 +717,7 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
     op
   if $verbose then
     if get(op,'isInterpreterRule,$e) then
-      sayKeyedMsg("S2IM0014",[op0,(PAIRP sig =>prefix2String CAR sig;'"?")])
+      sayKeyedMsg("S2IM0014",[op0,(CONSP sig =>prefix2String CAR sig;'"?")])
     else sayKeyedMsg("S2IM0015",[op0,formatSignature sig])
   $whereCacheList := [op,:$whereCacheList]
 
@@ -915,7 +915,7 @@ nonRecursivePart1(opName, funBody) ==
   funBody is [op,:argl] =>
     op=opName => '%noMapVal
     args:= [nonRecursivePart1(opName,arg) for arg in argl]
-    MEMQ('%noMapVal,args) => '%noMapVal
+    '%noMapVal in args => '%noMapVal
     [op,:args]
   funBody
 
@@ -1022,7 +1022,7 @@ findLocalVars1(op,form) ==
   form is ['is,l,pattern] =>
     findLocalVars1(op,l)
     for var in listOfVariables CDR pattern repeat mkLocalVar(op,var)
-  form is [oper,:itrl,body] and MEMQ(oper,'(REPEAT COLLECT)) =>
+  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT) =>
     findLocalsInLoop(op,itrl,body)
   form is [y,:argl] =>
     y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 
@@ -1067,7 +1067,7 @@ listOfVariables pat ==
   IDENTP pat => (pat='_. => nil ; [pat])
   pat is ['_:,var] or pat is ['_=,var] =>
     (var='_. => NIL ; [var])
-  PAIRP pat => REMDUP [:listOfVariables p for p in pat]
+  CONSP pat => REMDUP [:listOfVariables p for p in pat]
   nil
 
 getMapBody(op,mapDef) ==

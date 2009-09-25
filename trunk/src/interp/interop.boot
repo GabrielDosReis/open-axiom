@@ -131,7 +131,7 @@ makeLazyOldAxiomDispatchDomain domform ==
   dd
 
 makeOldAxiomDispatchDomain dom ==
-  PAIRP dom => dom
+  CONSP dom => dom
   [$oldAxiomDomainDispatch,hashTypeForm(dom.0,0),:dom]
 
 closeOldAxiomFunctor(name) ==
@@ -453,7 +453,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   (success ~= 'failed) and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
-        PAIRP success => [first success,:devaluate rest success]
+        CONSP success => [first success,:devaluate rest success]
         success
     success
   subsumptionSig and (u:= basicLookup(op,subsumptionSig,domain,dollar)) => u
@@ -603,7 +603,7 @@ HasCategory(domain,catform') ==
   slot4 := domain.4
   catlist := slot4.1
   member(catform,catlist) or
-   MEMQ(opOf(catform),'(Object Type)) or  --temporary hack
+   opOf(catform) in '(Object Type) or  --temporary hack
     or/[compareSigEqual(catform,cat,domain0,domain) for cat in catlist]
 
 --systemDependentMkAutoload(fn,cnam) ==

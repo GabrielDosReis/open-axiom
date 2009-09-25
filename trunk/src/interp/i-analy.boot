@@ -166,7 +166,7 @@ pushDownTargetInfo(op,target,arglist) ==
 pushDownOnArithmeticVariables(op,target,arglist) ==
   -- tries to push appropriate target information onto variable
   -- occurring in arithmetic expressions
-  PAIRP(target) and CAR(target) = 'Variable => NIL
+  CONSP(target) and CAR(target) = 'Variable => NIL
   not MEMQ(op,'(_+ _- _* _*_* _/)) => NIL
   not containsPolynomial(target)   => NIL
   for x in arglist for i in 1.. repeat
@@ -175,7 +175,7 @@ pushDownOnArithmeticVariables(op,target,arglist) ==
       getValue(x) or (xn = $immediateDataSymbol) => NIL
       t := getMinimalVariableTower(xn,target) or target
       if not getTarget(x) then putTarget(x,t)
-    PAIRP(x) =>  -- node
+    CONSP(x) =>  -- node
       [op',:arglist'] := x
       pushDownOnArithmeticVariables(getUnname op',target,arglist')
   arglist
@@ -754,7 +754,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
     (i = 1) and (opName = "set!") =>
         a := [x,:a]
         ms := [m,:ms]
-    if PAIRP(m) and CAR(m) = $EmptyMode then return NIL
+    if CONSP(m) and CAR(m) = $EmptyMode then return NIL
     object:= retract getValue x
     a:= [x,:a]
     object="failed" =>

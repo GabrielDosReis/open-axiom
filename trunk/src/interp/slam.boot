@@ -220,7 +220,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
         tripleCode
       cacheResetCode := ["SETQ",stateNam,initialValueCode]
       ["COND",[["NULL",["AND",["BOUNDP",MKQ stateNam], _
-                          ["PAIRP",stateNam]]],    _
+                          ["CONSP",stateNam]]],    _
                  ["%LET",stateVar,cacheResetCode]], _
              [''T, ["%LET",stateVar,stateNam]]]
  

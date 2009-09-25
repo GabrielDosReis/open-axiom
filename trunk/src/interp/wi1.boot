@@ -202,7 +202,7 @@ markWhereTran ["where",["DEF",form,sig,clist,body],:tail] ==
       a is ['LISTOF,:r] =>
         for y in r repeat decls := [[":",y,b],:decls]
       decls := [x,:decls]
-    x is [key,fn,p,q,bd] and MEMQ(key,'(DEF MDEF)) and p='(NIL) and q='(NIL) =>
+    x is [key,fn,p,q,bd] and key in '(DEF MDEF) and p='(NIL) and q='(NIL) =>
       fn = target or fn is [=target] => ttype := bd
       fn = body   or fn is [=body]   => body  := bd
       macros := [x,:macros]
@@ -344,7 +344,7 @@ compAtom(x,m,e) ==
       modeIsAggregateOf('Vector,m,e) is [.,R]=> compVector(x,['Vector,R],e)
     T => convert(T,m)
 -->
-  FIXP x and MEMQ(opOf m, '(Integer NonNegativeInteger PositiveInteger SmallInteger)) => markAt [x,m,e]
+  FIXP x and opOf m in '(Integer NonNegativeInteger PositiveInteger SmallInteger) => markAt [x,m,e]
 --  FIXP x and (T := [x, $Integer,e]) and (T' := convert(T,m)) => markAt(T, T')
   t:=
     isSymbol x =>
@@ -479,7 +479,7 @@ compWhere([.,form,:exprList],m,eInit) ==
 --    form is ['DEF,a,osig,:.] and osig is [otarget,:.] =>
 --      exprList is [['SEQ,:l,['exit,n,y]]] and (u := [:l,y]) and
 --        (ntarget := or/[def for x in u | x is [op,a',:.,def] and ([op,a',otarget]) and
---          MEMQ(op,'(DEF MDEF)) and (a' = otarget or a' is [=otarget])]) =>
+--          op in '(DEF MDEF) and (a' = otarget or a' is [=otarget])]) =>
 --            [ntarget,:rest osig]
 --      osig
 --    nil
@@ -576,7 +576,7 @@ setqSingle(id,val,m,E) ==
       'locals
     profileRecord(key,id,T.mode)
   newProplist:= consProplistOf(id,currentProplist,"value",markKillAll removeEnv T)
-  e':= (PAIRP id => e'; addBinding(id,newProplist,e'))
+  e':= (CONSP id => e'; addBinding(id,newProplist,e'))
   x1 := markKillAll x
   if isDomainForm(x1,e') then
     if isDomainInScope(id,e') then
@@ -651,7 +651,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom expr => ValueFlag and level=exitCount
   (op:= first expr)="QUOTE" => ValueFlag and level=exitCount
-  MEMQ(op,'(WI MI)) => canReturn(CADDR expr,level,count,ValueFlag)
+  op in '(WI MI) => canReturn(CADDR expr,level,count,ValueFlag)
   op="TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil
@@ -901,7 +901,7 @@ compCoerce(u := ["::",x,m'],m,e) ==
   T:= compCoerce1(x,m',e) => coerce(T,m)
   T := comp(x,$EmptyMode,e) or return nil
   T.mode = $SmallInteger and
-    MEMQ(opOf m,'(NonNegativeInteger PositiveInteger)) =>
+    opOf m in '(NonNegativeInteger PositiveInteger) =>
       compCoerce(["::",["::",x,$Integer],m'],m,e)
 --------------> new code <-------------------
   getmode(m',e) is ["Mapping",["UnionCategory",:l]] =>

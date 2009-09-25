@@ -164,7 +164,7 @@ resolveTTSpecial(t1,t2) ==
   -- things. (RSS 1/-86)
 
   -- following is just an efficiency hack
-  (t1 = $Symbol or t1 is ['OrderedVariableList,.]) and PAIRP(t2) and
+  (t1 = $Symbol or t1 is ['OrderedVariableList,.]) and CONSP(t2) and
     CAR(t2) in '(Polynomial RationalFunction) => t2
 
   (t1 = $Symbol) and ofCategory(t2, '(IntegerNumberSystem)) =>
@@ -344,7 +344,7 @@ resolveTTRed3(t) ==
       for x in t for cs in getDualSignatureFromDB first t ]
 
 interpOp?(op) ==
-  PAIRP(op) and
+  CONSP(op) and
     CAR(op) in '(Incl SetDiff SetComp SetInter SetUnion VarEqual SetEqual)
 
 --% Resolve Type with Category
@@ -410,7 +410,7 @@ getConditionsForCategoryOnType(t,cat) ==
   getConditionalCategoryOfType(t,[NIL],['ATTRIBUTE,cat])
 
 getConditionalCategoryOfType(t,conditions,match) ==
-  if PAIRP t then t := first t
+  if CONSP t then t := first t
   t in '(Union Mapping Record) => NIL
   conCat := getConstructorCategoryFromDB t
   REMDUP CDR getConditionalCategoryOfType1(conCat,conditions,match,[NIL])
@@ -447,8 +447,8 @@ matchUpToPatternVars(pat,form,patAlist) ==
     (p := assoc(pat,patAlist)) => EQUAL(form,CDR p)
     patAlist := [[pat,:form],:patAlist]
     true
-  PAIRP(pat) =>
-    not (PAIRP form) => NIL
+  CONSP(pat) =>
+    atom form => NIL
     matchUpToPatternVars(CAR pat, CAR form,patAlist) and
       matchUpToPatternVars(CDR pat, CDR form,patAlist)
   NIL
@@ -595,7 +595,7 @@ resolveTMSpecial(t,m) ==
   t = $AnonymousFunction and m is ['Mapping,:.] => m
   t is ['Variable,x] and m is ['OrderedVariableList,le] =>
     isPatternVar le => ['OrderedVariableList,[x]]
-    PAIRP(le) and member(x,le) => le
+    CONSP(le) and member(x,le) => le
     NIL
   t is ['Fraction, ['Complex, t1]] and m is ['Complex, m1] =>
     resolveTM1(['Complex, ['Fraction, t1]], m)
@@ -682,13 +682,13 @@ resolveTMRed1(t) ==
   t is ['Resolve,a,b] =>
     ( a := resolveTMRed1 a ) and ( b := resolveTMRed1 b ) and
       resolveTM1(a,b)
-  t is ['Incl,a,b] => PAIRP b and member(a,b) and b
-  t is ['Diff,a,b] => PAIRP a and member(b,a) and SETDIFFERENCE(a,[b])
-  t is ['SetIncl,a,b] => PAIRP b and "and"/[member(x,b) for x in a] and b
-  t is ['SetDiff,a,b] => PAIRP b and PAIRP b and
+  t is ['Incl,a,b] => CONSP b and member(a,b) and b
+  t is ['Diff,a,b] => CONSP a and member(b,a) and SETDIFFERENCE(a,[b])
+  t is ['SetIncl,a,b] => CONSP b and "and"/[member(x,b) for x in a] and b
+  t is ['SetDiff,a,b] => CONSP b and CONSP b and
                          intersection(a,b) and SETDIFFERENCE(a,b)
   t is ['VarEqual,a,b] => (a = b) and b
-  t is ['SetComp,a,b] => PAIRP a and PAIRP b and
+  t is ['SetComp,a,b] => CONSP a and CONSP b and
     "and"/[member(x,a) for x in b] and SETDIFFERENCE(a,b)
   t is ['SimpleAlgebraicExtension,a,b,p] =>  -- this is a hack. RSS
     ['SimpleAlgebraicExtension, resolveTMRed1 a, resolveTMRed1 b,p]
@@ -711,7 +711,7 @@ equiType(t) ==
   t
 
 getUnderModeOf d ==
-  not PAIRP d => NIL
+  not CONSP d => NIL
 --  n := LASSOC(first d,$underDomainAlist) => d.n ----> $underDomainAlist NOW always NIL
   for a in rest d for m in rest destructT d repeat
     if m then return a

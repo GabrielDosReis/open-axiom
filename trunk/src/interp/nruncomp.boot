@@ -124,7 +124,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
         for [.,a,b] in rest x for [.,=a,c] in rest compForm]]
     (x' := isQuasiquote x) =>
       quasiquote encode(x',isQuasiquote compForm,false)
-    IDENTP op and (constructor? op or MEMQ(op,'(Union Mapping))) =>
+    IDENTP op and (constructor? op or op in '(Union Mapping)) =>
       [op,:[encode(y,z,false) for y in rest x for z in rest compForm]]
     -- enumeration constants are like field names, they do not need
     -- to be encoded.
@@ -144,7 +144,7 @@ listOfBoundVars form ==
   form = '$ => []
   IDENTP form and (u:=get(form,'value,$e)) =>
     u:=u.expr
-    MEMQ(KAR u,'(Union Record)) => listOfBoundVars u
+    KAR u in '(Union Record) => listOfBoundVars u
     [form]
   atom form => []
   first form = 'QUOTE => []
@@ -363,7 +363,7 @@ consDomainForm(x,dc) ==
 NRTdescendCodeTran(u,condList) ==
   null u => nil
   u is ['LIST] => nil
-  u is [op,.,i,a] and MEMQ(op,'(setShellEntry SETELT QSETREFV)) =>
+  u is [op,.,i,a] and op in '(setShellEntry SETELT QSETREFV) =>
     null condList and a is ['CONS,fn,:.] =>
       RPLACA(u,'LIST)
       RPLACD(u,nil)
@@ -720,7 +720,7 @@ NRTsubstDelta(initSig) ==
           u:= $NRTdeltaList.($NRTdeltaLength+5-t)
           first u = 'domain => second u
           error "bad $NRTdeltaList entry"
-        MEMQ(first t,'(Mapping Union Record _:)) =>
+        first t in '(Mapping Union Record _:) =>
            [first t,:[replaceSlotTypes(x) for x in rest t]]
         t
 
@@ -763,7 +763,7 @@ NRTputInHead bod ==
   bod is ['SPADCALL,:args,fn] =>
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
-    fn is [elt,dom,ind] and not (dom='$) and MEMQ(elt,'(getShellEntry ELT QREFELT CONST)) =>
+    fn is [elt,dom,ind] and not (dom='$) and elt in '(getShellEntry ELT QREFELT CONST) =>
       k:= NRTassocIndex dom => RPLACA(LASTNODE bod,[$elt,'_$,k])
       nil
     NRTputInHead fn

@@ -418,7 +418,7 @@ makeCategoryPredicates(form,u) ==
           u is ['Join,:.,a] => fn(a,pl)
           u is ["IF",p,:x] => fnl(x,insert(EQSUBSTLIST($mvl,$tvl,p),pl))
           u is ["has",:.] => insert(EQSUBSTLIST($mvl,$tvl,u),pl)
-          u is [op,:.] and MEMQ(op,'(SIGNATURE ATTRIBUTE)) => pl
+          u is [op,:.] and op in '(SIGNATURE ATTRIBUTE) => pl
           atom u => pl
           fnl(u,pl)
         fnl(u,pl) ==
@@ -748,7 +748,7 @@ compFunctorBody(body,m,e,parForm) ==
   else 
     backendCompile foldExportedFunctionReferences $capsuleFunctionStack
   clearCapsuleDirectory()        -- release storage.
-  body is [op,:.] and MEMQ(op,'(add CAPSULE)) => T
+  body is [op,:.] and op in '(add CAPSULE) => T
   $NRTaddForm :=
     body is ["SubDomain",domainForm,predicate] => domainForm
     body
@@ -1647,7 +1647,7 @@ DomainSubstitutionFunction(parameters,body) ==
            --For categories, bound and used in compDefineCategory
           MKQ g
         first body="QUOTE" => body
-        PAIRP $definition and
+        CONSP $definition and
             isFunctor first body and
               first body ~= first $definition
           =>  ['QUOTE,optimize body]

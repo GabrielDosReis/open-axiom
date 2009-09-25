@@ -57,7 +57,7 @@ nakedEXIT? c ==
   IDENTP a =>
     a = 'EXIT  => true
     a = 'QUOTE => NIL
-    MEMQ(a,'(SEQ PROG LAMBDA MLAMBDA LAM)) => NIL
+    a in '(SEQ PROG LAMBDA MLAMBDA LAM) => NIL
     nakedEXIT?(d)
   nakedEXIT?(a) or nakedEXIT?(d)
  
@@ -68,7 +68,7 @@ mergeableCOND x ==
   ok := true
   while (cls and ok) repeat
     [[p,:r],:cls] := cls
-    PAIRP QCDR r => ok := NIL
+    CONSP QCDR r => ok := NIL
     CAR(r) isnt ['EXIT,.] => ok := NIL
     NULL(cls) and ATOM(p) => ok := NIL
     NULL(cls) and (p = ''T) => ok := NIL
@@ -80,8 +80,8 @@ mergeCONDsWithEXITs l ==
   -- (COND (bar (EXIT b)))
   -- into one COND
   NULL l => NIL
-  ATOM l => l
-  NULL PAIRP QCDR l => l
+  atom l => l
+  atom QCDR l => l
   a := QCAR l
   if a is ['COND,:.] then a := flattenCOND a
   am := mergeableCOND a
@@ -283,18 +283,18 @@ defLET2(lhs,rhs) ==
     a := defLET2(a,rhs)
     null (b := defLET2(b,rhs)) => a
     ATOM b => [a,b]
-    PAIRP QCAR b => CONS(a,b)
+    CONSP QCAR b => CONS(a,b)
     [a,b]
   lhs is ['CONS,var1,var2] =>
     var1 = "." or (var1 is ["QUOTE",:.]) =>
       defLET2(var2,addCARorCDR('CDR,rhs))
     l1 := defLET2(var1,addCARorCDR('CAR,rhs))
-    MEMQ(var2,'(NIL _.)) => l1
-    if PAIRP l1 and ATOM CAR l1 then l1 := cons(l1,nil)
+    var2 in '(NIL _.) => l1
+    if CONSP l1 and ATOM CAR l1 then l1 := cons(l1,nil)
     IDENTP var2 =>
       [:l1,defLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := defLET2(var2,addCARorCDR('CDR,rhs))
-    if PAIRP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
+    if CONSP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
     APPEND(l1,l2)
   lhs is ['APPEND,var1,var2] =>
     patrev := defISReverse(var2,var1)
@@ -302,7 +302,7 @@ defLET2(lhs,rhs) ==
     g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := defLET2(patrev,g)
-    if PAIRP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
+    if CONSP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
     var1 = "." => [[$LET,g,rev],:l2]
     last l2 is [=$LET, =var1, val1] =>
       [[$LET,g,rev],:REVERSE CDR REVERSE l2,
@@ -322,7 +322,7 @@ defLET(lhs,rhs) ==
   defLET1(lhs,rhs)
  
 addCARorCDR(acc,expr) ==
-  NULL PAIRP expr => [acc,expr]
+  atom expr => [acc,expr]
   acc = 'CAR and expr is ["REVERSE",:.] =>
     cons('last,QCDR expr)
   funs := '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
@@ -368,35 +368,35 @@ defIS1(lhs,rhs) ==
     ['AND,defIS1(lhs,d),MKPROGN [l,''T]]
   rhs is ['EQUAL,a] =>
     ['EQUAL,lhs,a]
-  PAIRP lhs =>
+  CONSP lhs =>
     g := INTERN STRCONC('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     MKPROGN [[$LET,g,lhs],defIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
     a = "." =>
       NULL b =>
-        ['AND,['PAIRP,lhs],
+        ['AND,['CONSP,lhs],
               ['EQ,['QCDR,lhs],'NIL]]
-      ['AND,['PAIRP,lhs],
+      ['AND,['CONSP,lhs],
             defIS1(['QCDR,lhs],b)]
     NULL b =>
-      ['AND,['PAIRP,lhs],
+      ['AND,['CONSP,lhs],
             ['EQ,['QCDR,lhs],'NIL],_
             defIS1(['QCAR,lhs],a)]
     b = "." =>
-      ['AND,['PAIRP,lhs],defIS1(['QCAR,lhs],a)]
+      ['AND,['CONSP,lhs],defIS1(['QCAR,lhs],a)]
     a1 := defIS1(['QCAR,lhs],a)
     b1 := defIS1(['QCDR,lhs],b)
     a1 is ['PROGN,c,''T] and b1 is ['PROGN,:cls] =>
-      ['AND,['PAIRP,lhs],MKPROGN [c,:cls]]
-    ['AND,['PAIRP,lhs],a1,b1]
+      ['AND,['CONSP,lhs],MKPROGN [c,:cls]]
+    ['AND,['CONSP,lhs],a1,b1]
   rhs is ['APPEND,a,b] =>
     patrev := defISReverse(b,a)
     g := INTERN STRCONC('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
-    rev := ['AND,['PAIRP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
+    rev := ['AND,['CONSP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
     l2 := defIS1(g,patrev)
-    if PAIRP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
+    if CONSP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
     a = "." => ['AND,rev,:l2]
     ['AND,rev,:l2,['PROGN,defLetForm(a,['NREVERSE,a]),''T]]
   SAY '"WARNING (defIS1): possibly bad IS code being generated"

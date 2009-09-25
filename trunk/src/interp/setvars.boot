@@ -334,7 +334,7 @@ displaySetVariableSettings(setTree,label) ==
       opt :=
         functionp(setData.setVar) => FUNCALL( setData.setVar,"%display%")
         '"unimplemented"
-      if PAIRP opt then opt := [:[o,'" "] for o in opt]
+      if CONSP opt then opt := [:[o,'" "] for o in opt]
       sayBrightly concat(setOption,'%b,opt,'%d)
     st = 'STRING   =>
       opt := object2String eval setData.setVar
@@ -523,7 +523,7 @@ setExposeAddGroup arg ==
     sayAsManyPerLineAsPossible [object2String first x for x in
       $globalExposureGroupAlist]
   for x in arg repeat
-    if PAIRP x then x := QCAR x
+    if CONSP x then x := QCAR x
     x = 'all =>
       $localExposureData.0 :=[first x for x in $globalExposureGroupAlist]
       $localExposureData.1 :=NIL
@@ -551,7 +551,7 @@ setExposeAddConstr arg ==
     displayExposedConstructors()
   for x in arg repeat
     x := unabbrev x
-    if PAIRP x then x := QCAR x
+    if CONSP x then x := QCAR x
     -- if the constructor is known, we know what type it is
     null getConstructorKindFromDB x =>
       sayKeyedMsg("S2IZ0049J",[x])
@@ -587,7 +587,7 @@ setExposeDropGroup arg ==
     sayMSG '" "
     displayExposedGroups()
   for x in arg repeat
-    if PAIRP x then x := QCAR x
+    if CONSP x then x := QCAR x
     x = 'all =>
       $localExposureData.0 := NIL
       $localExposureData.1 := NIL
@@ -618,7 +618,7 @@ setExposeDropConstr arg ==
     displayHiddenConstructors()
   for x in arg repeat
     x := unabbrev x
-    if PAIRP x then x := QCAR x
+    if CONSP x then x := QCAR x
     -- if the constructor is known, we know what type it is
     null getConstructorKindFromDB x =>
       sayKeyedMsg("S2IZ0049J",[x])

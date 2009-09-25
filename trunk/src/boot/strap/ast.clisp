@@ -1098,6 +1098,11 @@
                      (PROGN (SETQ |var'| (CAR |ISTMP#1|)) T)))
               (SYMBOLP |var'|))
          (LIST 'MEMQ |var| |seq|))
+        ((AND (CONSP |var|) (EQ (CAR |var|) '|char|)
+              (PROGN
+                (SETQ |ISTMP#1| (CDR |var|))
+                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
+         (LIST 'MEMBER |var| |seq| :TEST 'EQL))
         (T (LIST 'MEMBER |var| |seq|))))))
 
 (DEFUN |bfInfApplication| (|op| |left| |right|)

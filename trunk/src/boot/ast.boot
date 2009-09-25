@@ -689,6 +689,7 @@ bfMember(var,seq) ==
     ["MEMQ",var,seq]
   var is ["QUOTE",var'] and SYMBOLP var' =>
     ["MEMQ",var,seq]
+  var is ["char",.] => ["MEMBER",var,seq,KEYWORD::TEST,"EQL"]
   ["MEMBER",var,seq]
   
 bfInfApplication(op,left,right)==
@@ -918,7 +919,7 @@ shoeCompTran1 x==
 	 MEMQ(second l,$fluidVars)=>$fluidVars
 	 cons(second l,$fluidVars)
       RPLACA (rest x,second l)
-  MEMQ(U,'(PROG LAMBDA))=>
+  U in '(PROG LAMBDA) =>
     newbindings:=nil
     for y in second x repeat
       not MEMQ(y,$locVars)=>

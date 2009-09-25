@@ -1719,7 +1719,7 @@ $reportCoerceIfTrue := NIL
 
 --%
 printLoadMessages u ==
-  MEMQ(u, '(%display% %describe%)) =>
+  u in '(%display% %describe%) =>
     ($printLoadMsgs => '"on"; '"off")
   $printLoadMsgs := u is ["on"]
 

@@ -261,11 +261,11 @@ asyDisplay(con,alist) ==
 asGetModemaps(opAlist,oform,kind,modemap) ==
   acc:= nil
   rpvl:=
-    MEMQ(kind, '(category function)) => rest $PatternVariableList -- *1 is special for $
+    kind in '(category function) => rest $PatternVariableList -- *1 is special for $
     $PatternVariableList
   form := [opOf oform,:[y for x in KDR oform for y in rpvl]]
   dc :=
-    MEMQ(kind, '(category function)) => "*1"
+    kind in '(category function) => "*1"
     form
   pred1 :=
     kind = 'category => [["*1",form]]
@@ -388,7 +388,7 @@ hackToRemoveAnd p ==
 
 asyAncestors x ==
   x is ['Apply,:r] => asyAncestorList r
-  x is [op,y,:.] and MEMQ(op, '(PretendTo RestrictTo)) => asyAncestors y
+  x is [op,y,:.] and op in '(PretendTo RestrictTo) => asyAncestors y
   atom x =>
     x = '_% => '_$
     MEMQ(x, $niladics)       => [x]
@@ -450,7 +450,7 @@ asytranDeclaration(dform,levels,predlist,local?) ==
   newsig  := asytranForm(form,[idForm,:levels],local?)
   key :=
     levels is ['top,:.] =>
-      MEMQ(id,'(%% Category Type)) => 'constant
+      id in '(%% Category Type) => 'constant
       asyLooksLikeCatForm? form => 'category
       form is ['Apply, '_-_>,.,u] =>
         if u is ['Apply, construc,:.] then u:= construc
@@ -485,10 +485,10 @@ asyLooksLikeCatForm? x ==
 --  comments := LASSOC('documentation,r) or '""
 --  newsig  := asytranForm(form,[idForm,:levels],local?)
 --  key :=
---    MEMQ(id,'(%% Category Type)) => 'constant
+--    id in '(%% Category Type) => 'constant
 --    form is ['Apply,'Third,:.] => 'category
 --    form is ['Apply,.,.,target] and target is ['Apply,name,:.]
---      and MEMQ(name,'(Third Join)) => 'category
+--      and name in '(Third Join) => 'category
 --    'domain
 --  record := [newsig,asyMkpred predlist,key,true,comments,:$asyFile]
 --  if not local? then
@@ -534,7 +534,7 @@ asytranForm1(form,levels,local?) ==
   form is ['Declare,:.] => asytranDeclaration(form,levels,nil,local?)
   form is ['Comma,:r]  => ['Comma,:[asytranForm(x,levels,local?) for x in r]]
 --form is ['_-_>,:s] => asytranMapping(s,levels,local?)
-  form is [op,a,b] and MEMQ(a,'(PretendTo RestrictTo)) =>
+  form is [op,a,b] and a in '(PretendTo RestrictTo) =>
     asytranForm1(a,levels,local?)
   form is ['LitInteger,s] =>
         READ_-FROM_-STRING(s)
@@ -552,7 +552,7 @@ asytranForm1(form,levels,local?) ==
   [asytranForm(x,levels,local?) for x in form]
 
 asytranApply(['Apply,name,:arglist],levels,local?) ==
-  MEMQ(name,'(Record Union)) =>
+  name in '(Record Union) =>
     [name,:[asytranApplySpecial(x, levels, local?) for x in arglist]]
   null arglist => [name]
   name is [ 'RestrictTo, :.] => 
@@ -630,7 +630,7 @@ asytranCategoryItem(x,levels,predlist,local?) ==
       predicate is ['Test,r] => r
       predicate
     asytranCategory(item,levels,[pred,:predlist],local?)
-  MEMQ(KAR x,'(Default Foreign)) => nil
+  KAR x in '(Default Foreign) => nil
   x is ['Declare,:.] => asytranDeclaration(x,levels,predlist,local?)
   x
 
@@ -799,7 +799,7 @@ asySig1(u,name?,target?) ==
     u
   x is [fn,:r] =>
     fn = 'Join => asyTypeJoin r       ---------> jump out to newer code 4/94
-    MEMQ(fn, '(RestrictTo PretendTo)) => asySig(first r,name?)
+    fn in '(RestrictTo PretendTo) => asySig(first r,name?)
     asyComma? fn =>
       u := [asySig(x,name?) for x in r]
       target? =>
@@ -847,7 +847,7 @@ asyMapping([a,b],name?) ==
 asyType x ==
   x is [fn,:r] =>
     fn = 'Join => asyTypeJoin r
-    MEMQ(fn, '(RestrictTo PretendTo)) => asyType first r
+    fn in '(RestrictTo PretendTo) => asyType first r
     asyComma? fn =>
       u := [asyType x for x in r]
       u
@@ -915,7 +915,7 @@ asyTypeMapping([a,b]) ==
 asyTypeUnit x ==
   x is [fn,:r] =>
     fn = 'Join => systemError 'Join ----->asyTypeJoin r
-    MEMQ(fn, '(RestrictTo PretendTo)) => asyTypeUnit first r
+    fn in '(RestrictTo PretendTo) => asyTypeUnit first r
     asyComma? fn =>
       u := [asyTypeUnit x for x in r]
       u
@@ -1014,7 +1014,7 @@ asyPredTran p == asyPredTran1 asyJoinPart p
 asyPredTran1 p ==
   p is ['Has,x,y] => ["has",x, simpCattran y]
   p is ['Test, q] => asyPredTran1 q
-  p is [op,:r] and MEMQ(op,'(AND OR NOT)) =>
+  p is [op,:r] and op in '(AND OR NOT) =>
     [op,:[asyPredTran1 q for q in r]]
   p
 
@@ -1091,7 +1091,7 @@ asyTypeItem x ==
 --============================================================================
 --               Utilities
 --============================================================================
-asyComma? op == MEMQ(op,'(Comma Multi))
+asyComma? op == op in '(Comma Multi)
 
 
 hput(table,name,value) ==

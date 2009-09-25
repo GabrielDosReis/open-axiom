@@ -56,7 +56,7 @@ dbDoesOneOpHaveParameters? opAlist ==
 dbShowOps(htPage,which,key,:options) ==
   --NEXT LINE SHOULD BE REMOVED if we are sure that which is a string
   which := STRINGIMAGE which
-  if MEMQ(key,'(extended basic all)) then
+  if key in '(extended basic all) then
     $groupChoice := key
     key := htpProperty(htPage,'key) or 'names
   opAlist  :=
@@ -84,7 +84,7 @@ dbShowOps(htPage,which,key,:options) ==
       dbResetOpAlistCondition(htPage,which,opAlist)
     dbShowOps(htPage,which,htpProperty(htPage,'exclusion))
   htpSetProperty(htPage,'key,key)
-  if MEMQ(key,'(exposureOn exposureOff)) then
+  if key in '(exposureOn exposureOff) then
     $exposedOnlyIfTrue :=
        key = 'exposureOn => 'T
        nil
@@ -219,7 +219,7 @@ conform2StringList(form,opFn,argFn,exception) ==
   [op1,:args] := form
   op := IFCAR HGET($lowerCaseConTb,op1) or op1
   null args => APPLY(opFn,[op])
-  special := MEMQ(op,'(Union Record Mapping))
+  special := op in '(Union Record Mapping)
   cosig :=
     special => ['T for x in args]
     rest getDualSignatureFromDB op
@@ -424,9 +424,9 @@ dbGatherDataImplementation(htPage,opAlist) ==
 dbSelectData(htPage,opAlist,key) ==
   branch := htpProperty(htPage,'branch)
   data   := htpProperty(htPage,'data)
-  MEMQ(branch,'(signatures parameters)) =>
+  branch in '(signatures parameters) =>
     dbReduceOpAlist(opAlist,data.key,branch)
-  MEMQ(branch,'(origins conditions implementation)) =>
+  branch in '(origins conditions implementation) =>
     key < 8192 => dbReduceOpAlist(opAlist,data.key,branch)
     [newkey,binkey] := DIVIDE(key,8192)  --newkey is 1 too large
     innerData := CDDR data.(newkey - 1)
@@ -784,7 +784,7 @@ dbSetOpAlistCondition(htPage,opAlist,which) ==
 --called whenever a new opAlist is needed
 --property can only be inherited if 'no (a subset says NO if whole says NO)
   condition := htpProperty(htPage,'condition?)
-  MEMQ(condition,'(yes no)) => condition = 'yes
+  condition in '(yes no) => condition = 'yes
   value := dbExpandOpAlistIfNecessary(htPage,opAlist,which,false,true)
   htpSetProperty(htPage,'condition?,(value => 'yes; 'no))
   value
@@ -939,8 +939,8 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
                  for [op,:u] in opAlist] where
     memq(op,ops) ==   --dirty trick to get 0 and 1 instead of Zero and One
       MEMQ(op,ops) => op
-      EQ(op,'One)  => MEMQ(1,ops) and 1
-      EQ(op,'Zero) => MEMQ(0,ops) and 0
+      op = 'One  => MEMQ(1,ops) and 1
+      op = 'Zero => MEMQ(0,ops) and 0
       false
     fn() ==
       sig1 := sublisFormal(rest domname,sig)
@@ -967,9 +967,9 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
     evpred(dom,u)
   convert(dom,pred) ==
     pred is [op,:argl] =>
-      MEMQ(op,'(AND and)) => ['AND,:[convert(dom,x) for x in argl]]
-      MEMQ(op,'(OR or))   => ['OR,:[convert(dom,x) for x in argl]]
-      MEMQ(op,'(NOT not)) => ['NOT,convert(dom,first argl)]
+      op in '(AND and) => ['AND,:[convert(dom,x) for x in argl]]
+      op in '(OR or)   => ['OR,:[convert(dom,x) for x in argl]]
+      op in '(NOT not) => ['NOT,convert(dom,first argl)]
       op = "has" =>
         [arg,p] := argl
         p is ['ATTRIBUTE,a] => ['HasAttribute,arg,MKQ a]
@@ -985,8 +985,8 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
     evpred1(dom,pred)
   evpred1(dom,pred) ==
     pred is [op,:argl] =>
-      MEMQ(op,'(AND and)) => "and"/[evpred1(dom,x) for x in argl]
-      MEMQ(op,'(OR or))   =>  "or"/[evpred1(dom,x) for x in argl]
+      op in '(AND and) => "and"/[evpred1(dom,x) for x in argl]
+      op in '(OR or)   =>  "or"/[evpred1(dom,x) for x in argl]
       op = 'NOT => not evpred1(dom,first argl)
       k := POSN1(pred,$predicateList) => testBitVector(dom.3,k + 1)
       op = 'HasAttribute =>

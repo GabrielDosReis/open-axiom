@@ -193,7 +193,7 @@ showDomainsOp1(u,key) ==
   u
 
 getDomainRefName(dom,nam) ==
-  PAIRP nam => [getDomainRefName(dom,x) for x in nam]
+  CONSP nam => [getDomainRefName(dom,x) for x in nam]
   not FIXP nam => nam
   slot := dom.nam
   VECP slot => slot.0

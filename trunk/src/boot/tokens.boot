@@ -248,8 +248,6 @@ for i in [ _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
   ["genvar",    "GENVAR"]  , _
-  ["is",            "IS"]  , _
-  ["isnt",        "ISNT"]  , _
   ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
@@ -270,7 +268,6 @@ for i in [ _
   ["setIntersection", "INTERSECTION"]  , _
   ["setPart",   "SETELT"]  , _
   ["setUnion",   "UNION"]  , _
-  ["size",        "SIZE"]  , _
   ["strconc",  "CONCAT"]  , _
   ["substitute", "SUBST"]  , _
   ["take",        "TAKE"]  , 

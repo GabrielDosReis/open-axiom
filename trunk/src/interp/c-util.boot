@@ -618,7 +618,7 @@ decExitLevel u ==
  
 adjExitLevel(x,seqnum,inc) ==
   atom x => x
-  x is [op,:l] and MEMQ(op,'(SEQ REPEAT COLLECT)) =>
+  x is [op,:l] and op in '(SEQ REPEAT COLLECT) =>
     for u in l repeat adjExitLevel(u,seqnum+1,inc)
   x is ["exit",n,u] =>
     (adjExitLevel(u,seqnum,inc); seqnum>n => x; rplac(CADR x,n+inc))
@@ -1441,7 +1441,7 @@ declareGlobalVariables vars ==
 
 simplifySEQ form ==
   isAtomicForm form => form
-  form is ["SEQ",[op,a]] and MEMQ(op, '(EXIT RETURN)) => simplifySEQ a
+  form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
   for stmts in tails form repeat
     rplac(first stmts, simplifySEQ first stmts)
   form
