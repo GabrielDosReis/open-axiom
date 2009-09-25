@@ -680,7 +680,17 @@ bfApplication(bfop, bfarg) ==
 bfReName x==
   a := x has SHOERENAME => first a
   x
- 
+
+
+++ Generate code for a membership test `x in seq' where `seq'
+++ is a sequence (e.g. a list)
+bfMember(var,seq) ==
+  seq is ["QUOTE",seq'] and "and"/[SYMBOLP x for x in seq'] =>
+    ["MEMQ",var,seq]
+  var is ["QUOTE",var'] and SYMBOLP var' =>
+    ["MEMQ",var,seq]
+  ["MEMBER",var,seq]
+  
 bfInfApplication(op,left,right)==
    op = "EQUAL" => bfQ(left,right)
    op = "/="    => bfNOT bfQ(left,right)
@@ -690,6 +700,7 @@ bfInfApplication(op,left,right)==
    op = ">="    => bfNOT bfLessp(left,right)
    op = "OR"    => bfOR [left,right]
    op = "AND"   => bfAND [left,right]
+   op = "IN"    => bfMember(left,right)
    [op,left,right]
  
 bfNOT x==

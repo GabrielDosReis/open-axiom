@@ -248,13 +248,11 @@ for i in [ _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
   ["genvar",    "GENVAR"]  , _
-  ["IN",        "MEMBER"]  , _
   ["is",            "IS"]  , _
   ["isnt",        "ISNT"]  , _
   ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
---  ["member",        "MEMBER"]  , _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
   ["nil"           ,NIL ]  , _
