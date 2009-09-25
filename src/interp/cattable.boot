@@ -103,7 +103,7 @@ simpHasPred(pred,:options) == main where
       op = 'HasAttribute =>
         form := ["has",a := CAR r,['ATTRIBUTE,b := simpDevaluate CADR r]]
         simpHasAttribute(form,a,b)
-      MEMQ(op,'(AND OR NOT)) =>
+      op in '(AND OR NOT) =>
         null (u := MKPF([simp p for p in r],op)) => nil
         u is '(QUOTE T) => true
         simpBool u

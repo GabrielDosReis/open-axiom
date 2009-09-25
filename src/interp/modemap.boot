@@ -278,7 +278,7 @@ AMFCR_,redefinedList(op,l) == "OR"/[AMFCR_,redefined(op,u) for u in l]
 AMFCR_,redefined(opname,u) ==
   not(u is [op,:l]) => nil
   op = 'DEF => opname = CAAR l
-  MEMQ(op,'(PROGN SEQ)) => AMFCR_,redefinedList(opname,l)
+  op in '(PROGN SEQ) => AMFCR_,redefinedList(opname,l)
   op = 'COND => "OR"/[AMFCR_,redefinedList(opname,CDR u) for u in l]
  
 augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==

@@ -1,3 +1,10 @@
+2009-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfMember): Improve a bit.
+	* boot/tokens.boot: Don't rename 'is' and 'inst'.
+	* boot/parser.boot: Use 'in' instead of 'MEMQ' where approrpriate.
+	* interp/: Likewise.
+
 2009-09-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfMember): New.

@@ -159,7 +159,7 @@ substituteSegmentedMsg(msg,args) ==
   nargs := #args
   for x in segmentedMsgPreprocess msg repeat
     -- x is a list
-    PAIRP x =>
+    CONSP x =>
       l := cons(substituteSegmentedMsg(x,args),l)
     c := x.0
     n := STRINGLENGTH x
@@ -184,7 +184,7 @@ substituteSegmentedMsg(msg,args) ==
       -- Note 'f processing must come first.
       if MEMQ(char 'f,q) then
           arg :=
-              PAIRP arg => APPLY(first arg, rest arg)
+              CONSP arg => APPLY(first arg, rest arg)
               arg
       if MEMQ(char 'm,q) then arg := [['"%m",:arg]]
       if MEMQ(char 's,q) then arg := [['"%s",:arg]]
@@ -206,7 +206,7 @@ substituteSegmentedMsg(msg,args) ==
       --stifled after the first item in the list until the
       --end of the list. (using %n and %y)
       l :=
-         PAIRP(arg) =>
+         CONSP(arg) =>
            MEMQ(char 'y,q) or (CAR arg = '"%y") or ((LENGTH arg) = 1)  =>
              APPEND(REVERSE arg, l)
            head := first arg
@@ -225,7 +225,7 @@ substituteSegmentedMsg(msg,args) ==
 
 addBlanks msg ==
   -- adds proper blanks
-  null PAIRP msg => msg
+  atom msg => msg
   null msg => msg
   LENGTH msg = 1 => msg
   blanksOff := false
@@ -259,7 +259,7 @@ noBlankBeforeP word==
     if CVECP word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
-    (PAIRP word) and member(CAR word,$msgdbListPrims) => true
+    (CONSP word) and member(CAR word,$msgdbListPrims) => true
     false
 
 $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
@@ -271,13 +271,13 @@ noBlankAfterP word==
     if CVECP word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
-    (PAIRP word) and member(CAR word, $msgdbListPrims) => true
+    (CONSP word) and member(CAR word, $msgdbListPrims) => true
     false
 
 cleanUpSegmentedMsg msg ==
   -- removes any junk like double blanks
   -- takes a reversed msg and puts it in the correct order
-  null PAIRP msg => msg
+  atom msg => msg
   blanks := ['" "," "]
   haveBlank := NIL
   prims :=
@@ -496,7 +496,7 @@ flowSegmentedMsg(msg, len, offset) ==
   off1:= (offset <= 1 => '""; fillerSpaces(offset-1,'" "))
   firstLine := true
 
-  PAIRP msg =>
+  CONSP msg =>
     lnl := offset
     if msg is [a,:.] and member(a,'(%b %d _  "%b" "%d" " ")) then
       nl :=  [off1]
@@ -507,14 +507,14 @@ flowSegmentedMsg(msg, len, offset) ==
         actualMarg := potentialMarg
         if lnl = 99999 then nl := ['%l,:nl]
         lnl := 99999
-      PAIRP(f) and member(CAR(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
+      CONSP(f) and member(CAR(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
         actualMarg := potentialMarg
         nl := [f,'%l,:nl]
         lnl := 199999
       member(f,'("%i" %i )) =>
         potentialMarg := potentialMarg + 3
         nl := [f,:nl]
-      PAIRP(f) and member(CAR(f),'("%t" %t)) =>
+      CONSP(f) and member(CAR(f),'("%t" %t)) =>
         potentialMarg := potentialMarg + CDR f
         nl := [f,:nl]
       sbl := sayBrightlyLength f
@@ -571,11 +571,11 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
 
 --% Some Standard Message Printing Functions
 
-bright x == ['"%b",:(PAIRP(x) and NULL CDR LASTNODE x => x; [x]),'"%d"]
+bright x == ['"%b",:(CONSP(x) and NULL CDR LASTNODE x => x; [x]),'"%d"]
 --bright x == ['%b,:(ATOM x => [x]; x),'%d]
 
 mkMessage msg ==
-  msg and (PAIRP msg) and member((first msg),'(%l "%l"))  and
+  msg and (CONSP msg) and member((first msg),'(%l "%l"))  and
     member((last msg),'(%l "%l")) => concat msg
   concat('%l,msg,'%l)
 
@@ -919,7 +919,7 @@ sayDisplayStringWidth x ==
   sayDisplayWidth x
 
 sayDisplayWidth x ==
-  PAIRP x =>
+  CONSP x =>
     +/[fn y for y in x] where fn y ==
       member(y,'(%b %d "%b" "%d")) or y=$quadSymbol => 1
       k := blankIndicator y => k

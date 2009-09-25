@@ -271,7 +271,7 @@ domainDescendantsOf(conform,domform) == main where --called by kargPage
     listSort(function GLESSEQP, alist)
   catScreen(r,alist) ==
     for x in r repeat
-      x isnt [op1,:.] and MEMQ(op1,'(ATTRIBUTE SIGNATURE)) => systemError x
+      x isnt [op1,:.] and op1 in '(ATTRIBUTE SIGNATURE) => systemError x
       alist := [[item,:npred] for [item,:pred] in alist |
         (pred1 := simpHasPred ["has",item,x]) and (npred := quickAnd(pred1,pred))]
     alist
@@ -945,7 +945,7 @@ dbShowCons(htPage,key,:options) ==
     htPage := htInitPageNoScroll(htCopyProplist htPage)
     htpSetProperty(htPage,'cAlist,u)
     dbShowCons(htPage,htpProperty(htPage,'exclusion))
-  if MEMQ(key,'(exposureOn exposureOff)) then
+  if key in '(exposureOn exposureOff) then
     $exposedOnlyIfTrue :=
       key = 'exposureOn => 'T
       NIL

@@ -750,7 +750,7 @@ multiToUnivariate f ==
   -- Take an AnonymousFunction, replace the bound variables by references to
   -- elements of a vector, and compile it.
   (first f) ~= "+->" => error "in multiToUnivariate: not an AnonymousFunction"
-  if PAIRP CADR f then
+  if CONSP CADR f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]
@@ -767,7 +767,7 @@ functionAndJacobian f ==
   -- Take a mapping into n functions of n variables, produce code which will
   -- evaluate function and jacobian values.
   (first f) ~= "+->" => error "in functionAndJacobian: not an AnonymousFunction"
-  if PAIRP CADR f then
+  if CONSP CADR f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]
@@ -795,7 +795,7 @@ vectorOfFunctions f ==
   -- Take a mapping into n functions of m variables, produce code which will
   -- evaluate function values.
   (first f) ~= "+->" => error "in vectorOfFunctions: not an AnonymousFunction"
-  if PAIRP CADR f then
+  if CONSP CADR f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [CADR f]

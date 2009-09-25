@@ -57,7 +57,7 @@ pfPosOrNopos pf ==
     poNoPosition()
  
 poIsPos? pos ==
-    PAIRP pos and PAIRP first pos and #first pos = 5
+    CONSP pos and CONSP first pos and #first pos = 5
  
 lnCreate(extBl, st, gNo, :optFileStuff) ==
     lNo :=
@@ -141,9 +141,9 @@ pfAbSynOp?(form, op) ==
     EQ(hd, op) or EQCAR(hd, op)
 
 pfLeaf? form ==
-  MEMQ(pfAbSynOp form,
+  pfAbSynOp form in
        '(id idsy symbol string char float expression integer
-          Document error))
+          Document error)
 
 pfLeaf(x,y,:z)      == tokConstruct(x,y, IFCAR z or pfNoPosition())
 pfLeafToken form    == tokPart form

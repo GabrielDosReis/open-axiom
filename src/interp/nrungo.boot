@@ -116,11 +116,11 @@ goGet(:l) ==
   lookupDomain :=
      domainSlot = 0 => thisDomain
      thisDomain.domainSlot -- where we look for the operation
-  if PAIRP lookupDomain then lookupDomain := NRTevalDomain lookupDomain
+  if CONSP lookupDomain then lookupDomain := NRTevalDomain lookupDomain
   dollar :=                             -- what matches $ in signatures
     explicitLookupDomainIfTrue => lookupDomain
     thisDomain
-  if PAIRP dollar then dollar := NRTevalDomain dollar
+  if CONSP dollar then dollar := NRTevalDomain dollar
   fn:= basicLookup(op,sig,lookupDomain,dollar)
   fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
   val:= APPLY(first fn,[:arglist,rest fn])
@@ -131,9 +131,9 @@ NRTreplaceLocalTypes(t,dom) ==
    atom t =>
      not INTEGERP t => t
      t:= dom.t
-     if PAIRP t then t:= NRTevalDomain t
+     if CONSP t then t:= NRTevalDomain t
      t.0
-   MEMQ(CAR t,'(Mapping Union Record _:)) =>
+   CAR t in '(Mapping Union Record _:) =>
       [CAR t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
    t
 
@@ -275,7 +275,7 @@ compareSig(sig,tableSig,dollar,domain) ==
 
 lazyCompareSigEqual(s,tslot,dollar,domain) ==
   tslot = '$ => s = "$" or s = devaluate dollar
-  INTEGERP tslot and PAIRP(lazyt:=domain.tslot) and PAIRP s =>
+  INTEGERP tslot and CONSP(lazyt:=domain.tslot) and CONSP s =>
       lazyt is [.,.,.,[.,item,.]] and
         item is [.,[functorName,:.]] and functorName = CAR s =>
           compareSigEqual(s,(NRTevalDomain lazyt).0,dollar,domain)

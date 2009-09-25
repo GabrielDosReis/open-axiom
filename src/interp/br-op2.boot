@@ -105,14 +105,14 @@ htSayValue t ==
       htSay '" to "
       htSayArgument target
   t = '(Category) => htSay('"a category")
-  t is [op,:.] and MEMQ(op,'(Join CATEGORY)) or constructor? opOf t =>
+  t is [op,:.] and op in '(Join CATEGORY) or constructor? opOf t =>
     htSayConstructor(nil,t)
   htSay('"an element of domain ")
   htSayArgument t                            --continue for operations
 
 htSayArgument t == --called only for operations not for constructors
   null $signature => htSay ['"{\em ",t,'"}"]
-  MEMQ(t, '(_$ _%)) =>
+  t in '(_$ _%) =>
     $conkind = '"category" and $conlength > 20 =>
       $generalSearch? => htSay '"{\em D} of the origin category"
       addWhereList("$",'is,nil)
@@ -464,7 +464,7 @@ koCatAttrsAdd(catform,pred) ==
     exists := HGET($if,name)
     if existingPred := LASSOC(argl,exists)_
         then npred := quickOr(npred,existingPred)
-    if not MEMQ(name,'(nil nothing)) _
+    if not (name in '(nil nothing)) _
         then HPUT($if,name,[[argl,simpHasPred npred],:exists])
 
 --=======================================================================
@@ -592,7 +592,7 @@ hasPatternVar x ==
 
 getDcForm(dc, condlist) ==
   [ofWord,id,cform] := or/[x for x in condlist | x is [k,=dc,:.]
-     and MEMQ(k, '(ofCategory isDomain))] or return nil
+     and k in '(ofCategory isDomain)] or return nil
   conform := getConstructorForm opOf cform
   ofWord = 'ofCategory =>
     [conform, ["*1", :rest cform], ["%", :rest conform]]

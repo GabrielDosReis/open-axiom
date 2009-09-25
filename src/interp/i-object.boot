@@ -288,7 +288,7 @@ getUnname1 x ==
 
 ++ returns the mode-set of VAT node x.
 getModeSet x ==
-  x and PAIRP x => getModeSet first x
+  x and CONSP x => getModeSet first x
   VECP x =>
     y:= x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
@@ -320,7 +320,7 @@ getModeOrFirstModeSetIfThere x ==
   NIL
 
 getModeSetUseSubdomain x ==
-  x and PAIRP x => getModeSetUseSubdomain first x
+  x and CONSP x => getModeSetUseSubdomain first x
   VECP(x) =>
     -- don't play subdomain games with retracted args
     getAtree(x,'retracted) => getModeSet x

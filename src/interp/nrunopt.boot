@@ -124,7 +124,7 @@ makeCompactDirect1(op,items) ==
 orderBySubsumption items ==
   acc := subacc := nil
   for x in items repeat
-    not MEMQ($op,'(Zero One)) and x is [.,.,.,'Subsumed] => subacc := [x,:subacc]
+    not $op in '(Zero One) and x is [.,.,.,'Subsumed] => subacc := [x,:subacc]
     acc := [x,:acc]
   y := z := nil
   for [a,b,:.] in subacc | b repeat   
@@ -276,12 +276,12 @@ augmentPredVector(dollar,value) ==
 
 isHasDollarPred pred ==
   pred is [op,:r] =>
-    MEMQ(op,'(AND and OR or NOT not)) => or/[isHasDollarPred x for x in r]
-    MEMQ(op,'(HasCategory HasAttribute)) => CAR r = '$
+    op in '(AND and OR or NOT not) => or/[isHasDollarPred x for x in r]
+    op in '(HasCategory HasAttribute) => CAR r = '$
   false
 
 stripOutNonDollarPreds pred ==
-  pred is [op,:r] and MEMQ(op,'(AND and OR or NOT not)) => 
+  pred is [op,:r] and op in '(AND and OR or NOT not) => 
     "append"/[stripOutNonDollarPreds x for x in r]
   not isHasDollarPred pred => [pred]
   nil
@@ -302,7 +302,7 @@ removeAttributePredicates pl ==
 transHasCode x ==
   atom x => x
   op := QCAR x
-  MEMQ(op,'(HasCategory HasAttribute)) => x
+  op in '(HasCategory HasAttribute) => x
   op="has" => compHasFormat x
   [transHasCode y for y in x]
  
@@ -424,7 +424,7 @@ listOfCategoryEntries l ==
     firstItemList:=
       op = 'ATTRIBUTE and first u is [f,:.] and constructor? f =>
         [first u]
-      MEMQ(op,'(ATTRIBUTE SIGNATURE)) => nil
+      op in '(ATTRIBUTE SIGNATURE) => nil
       op = 'IF and u is [pred,conseq,alternate] =>
           listOfCategoryEntriesIf(pred,conseq,alternate)
       categoryFormatError()
@@ -632,7 +632,7 @@ dcData con ==
   sayBrightly '"Operation data from slot 1"
   PRINT_-FULL $infovec.1
   vec := getCodeVector()
-  vec := (PAIRP vec => CDR vec; vec)
+  vec := (CONSP vec => CDR vec; vec)
   sayBrightly ['"Information vector has ",SIZE vec,'" entries"]
   dcData1 vec
 
@@ -652,8 +652,8 @@ dcSize(:options) ==
   con := KAR options
   options := rest options
   null con => dcSizeAll()
-  quiet := MEMQ('quiet,options)
-  full := MEMQ('full,options)
+  quiet := 'quiet in options
+  full := 'full in options
   name := abbreviation? con or con
   infovec := getInfovec name
   template := infovec.0
@@ -893,7 +893,7 @@ substSlotNumbers(form,template,domain) ==
 expandType(lazyt,template,domform) ==
   atom lazyt => expandTypeArgs(lazyt,template,domform)
   [functorName,:argl] := lazyt
-  MEMQ(functorName, '(Record Union)) and first argl is [":",:.] =>
+  functorName in '(Record Union) and first argl is [":",:.] =>
      [functorName,:[['_:,tag,expandTypeArgs(dom,template,domform)]
                                  for [.,tag,dom] in argl]]
   lazyt is ['local,x] =>

@@ -125,7 +125,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     --The following loop sees if we can economise on ADDed operations
     --by using those of Rep, if that is the same. Example: DIRPROD
     if not $insideCategoryPackageIfTrue  then
-      if body is ['add,ab:=[fn,:.],['CAPSULE,:cb]] and MEMQ(fn,'(List Vector))
+      if body is ['add,ab:=[fn,:.],['CAPSULE,:cb]] and fn in '(List Vector)
          and FindRep(cb) = ab
                where FindRep cb ==
                  u:=
@@ -459,7 +459,7 @@ unLet x ==
 
 corrupted? u ==
   u is [op,:r] =>
-    MEMQ(op,'(WI MI PART)) => true
+    op in '(WI MI PART) => true
     or/[corrupted? x for x in r]
   false
 
@@ -629,7 +629,7 @@ compApplyModemap(form,modemap,$e) ==
 --+ store the signature instead.
  
 --$NRTflag=true and f is [op1,d,.] and NE(d,'$) and member(op1,'(ELT CONST)) =>
-  f is [op1,d,.] and MEMQ(op1,'(ELT CONST Subsumed)) =>
+  f is [op1,d,.] and op1 in '(ELT CONST Subsumed) =>
     [genDeltaEntry [op,:modemap],lt',$bindings]
   markImport mc
   [f,lt',$bindings]
@@ -638,8 +638,8 @@ compMapCond''(cexpr,dc) ==
   cexpr=true => true
   --cexpr = "true" => true
 ---------------> new <----------------------
-  cexpr is [op,:l] and MEMQ(op,'(_and AND)) => and/[compMapCond''(u,dc) for u in l]
-  cexpr is [op,:l] and MEMQ(op,'(_or OR))   => or/[compMapCond''(u,dc) for u in l]
+  cexpr is [op,:l] and op in '(_and AND) => and/[compMapCond''(u,dc) for u in l]
+  cexpr is [op,:l] and op in '(_or OR)   => or/[compMapCond''(u,dc) for u in l]
 ---------------> new <----------------------
   cexpr is ["not",u] => not compMapCond''(u,dc)
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)

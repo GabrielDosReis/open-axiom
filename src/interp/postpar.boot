@@ -362,7 +362,7 @@ postJoin: %ParseTree -> %ParseForm
 postJoin ["Join",a,:l] ==
   a:= postTran a
   l:= postTranList l
-  if l is [b] and b is [name,:.] and MEMQ(name,'(ATTRIBUTE SIGNATURE)) then l
+  if l is [b] and b is [name,:.] and name in '(ATTRIBUTE SIGNATURE) then l
     := [["CATEGORY",b]]
   al:=
     a is ["%Comma",:c] => c
@@ -496,7 +496,7 @@ postSignature t ==
 killColons: %ParseTree -> %ParseForm
 killColons x ==
   atom x => x
-  x is [op,:.] and MEMQ(op, '(Record Union %Forall %Exist)) => x
+  x is [op,:.] and op in '(Record Union %Forall %Exist) => x
   x is [":",.,y] => killColons y
   [killColons first x,:killColons rest x]
 
@@ -540,7 +540,7 @@ postWith t ==
   t isnt ["with",a] => systemErrorHere ["postWidth",t]
   $insidePostCategoryIfTrue: local := true
   a:= postTran a
-  a is [op,:.] and MEMQ(op,'(SIGNATURE ATTRIBUTE IF)) => ["CATEGORY",a]
+  a is [op,:.] and op in '(SIGNATURE ATTRIBUTE IF) => ["CATEGORY",a]
   a is ["PROGN",:b] => ["CATEGORY",:b]
   a
 

@@ -696,7 +696,7 @@ absolutelyCannotCoerce(t1,t2) ==
   (t1 = QFI) and int2       => true
 
   num2 := int2 or MEMQ(n2,scalars) or (t2 = QFI)
-  isVar1 := MEMQ(n1,'(Variable Symbol))
+  isVar1 := n1 in '(Variable Symbol)
 
   num2 and isVar1 => true
   num2 and MEMQ(n1,$univariateDomains) => true
@@ -902,7 +902,7 @@ coerceInt1(triple,t2) ==
       NIL
     NIL
 
-  EQ(CAR(t1),'Variable) and PAIRP(t2) and
+  EQ(CAR(t1),'Variable) and CONSP(t2) and
     (isEqualOrSubDomain(t2,$Integer) or
       (t2 = [$QuotientField, $Integer]) or MEMQ(CAR(t2),
         '(RationalNumber BigFloat NewFloat Float DoubleFloat))) => NIL

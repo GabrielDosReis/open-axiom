@@ -109,7 +109,7 @@ Record(:args) ==
 
 RecordEqual(x,y,dom) ==
   nargs := #rest(dom.0)
-  PAIRP x =>
+  CONSP x =>
     b:=
        SPADCALL(first x, first y, first(dom.(nargs + 9)) or
          first RPLACA(dom.(nargs + 9),findEqualFun(dom.$FirstParamSlot)))

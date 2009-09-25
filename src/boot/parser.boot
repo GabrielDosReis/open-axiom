@@ -370,7 +370,7 @@ bpName() ==
 ++   QUOTE S-Expression
 ++   STRING
 bpConstTok() ==
-     MEMQ(shoeTokType $stok, '(INTEGER FLOAT)) =>
+     shoeTokType $stok in '(INTEGER FLOAT) =>
           bpPush $ttok
           bpNext()
      $stok is ["LISP",:.] => bpPush %Lisp $ttok and bpNext()
@@ -530,7 +530,7 @@ bpAnyId()==
   bpEqKey "MINUS"  and ($stok is ["INTEGER",:.] or bpTrap()) and
           bpPush MINUS $ttok and bpNext() or
              bpSexpKey() or
-                   MEMQ(shoeTokType $stok, '(ID INTEGER STRING FLOAT))
+                   shoeTokType $stok in '(ID INTEGER STRING FLOAT)
                       and  bpPush $ttok and  bpNext()
  
 bpSexp()==

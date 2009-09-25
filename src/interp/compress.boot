@@ -44,7 +44,7 @@ minimalise x ==
     min x ==
       y:=HGET($hash,x)
       y => y
-      PAIRP x =>
+      CONSP x =>
         x = '(QUOTE T) => '(QUOTE T)
         -- copes with a particular Lucid-ism, God knows why
         -- This circular way of doing things is an attempt to deal with Lucid

@@ -95,7 +95,7 @@ errorSupervisor1(errorType,errorMsg,$BreakMode) ==
       '"Error with unknown classification"
   msg :=
     errorMsg is ['mathprint, :.] => errorMsg
-    not PAIRP errorMsg => ['"   ", errorMsg]
+    atom errorMsg => ['"   ", errorMsg]
     needsToSplitMessage errorMsg => rest [:['%l,'"   ",u] for u in errorMsg]
     ['"   ",:errorMsg]
   sayErrorly(errorLabel, msg)

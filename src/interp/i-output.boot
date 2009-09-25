@@ -494,7 +494,7 @@ outputTran x ==
     x
   x is [c,var,mode] and c in '(_pretend _: _:_: _@) =>
     var := outputTran var
-    if PAIRP var then var := ['PAREN,var]
+    if CONSP var then var := ['PAREN,var]
     ['CONCATB,var,c,obj2String prefix2String mode]
   x is ['ADEF,vars,.,.,body] =>
     vars :=
@@ -1195,7 +1195,7 @@ LargeMatrixp(u,width, dist) ==
   op:=CAAR u
   op = 'MATRIX => largeMatrixAlist u
          --We already know the structure is more than 'width' wide
-  MEMQ(op,'(%LET RARROW SEGMENT _- CONCAT CONCATB PAREN BRACKET BRACE)) =>
+  op in '(%LET RARROW SEGMENT _- CONCAT CONCATB PAREN BRACKET BRACE) =>
       --Each of these prints the arguments in a width 3 smaller
     dist:=dist-3
     width:=width-3
@@ -1206,7 +1206,7 @@ LargeMatrixp(u,width, dist) ==
         dist<0 => return nil
     ans
       --Relying that falling out of a loop gives nil
-  MEMQ(op,'(_+ _* )) =>
+  op in '(_+ _* ) =>
       --Each of these prints the first argument in a width 3 smaller
     (ans:=LargeMatrixp(CADR u,width-3,dist)) => largeMatrixAlist ans
     n:=3+WIDTH CADR u
@@ -1736,7 +1736,7 @@ charyTrouble1(u,v,start,linelength) ==
   NUMBERP u => outputNumber(start,linelength,atom2String u)
   atom u => outputString(start,linelength,atom2String u)
   EQ(x:= keyp u,'_-) => charyMinus(u,v,start,linelength)
-  MEMQ(x,'(_+ _* AGGLST)) => charySplit(u,v,start,linelength)
+  x in '(_+ _* AGGLST) => charySplit(u,v,start,linelength)
   x='EQUATNUM => charyEquatnum(u,v,start,linelength)
   d := GETL(x,'INFIXOP) => charyBinary(d,u,v,start,linelength)
   x = 'OVER  =>

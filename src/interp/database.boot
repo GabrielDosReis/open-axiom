@@ -297,7 +297,7 @@ orderPredTran(oldList,sig,skip) ==
   -----  (op *target ..) when *target does not appear later in sig
   -----  (isDomain *1 ..)
   for pred in oldList repeat
-    ((pred is [op,pvar,.] and MEMQ(op,'(isDomain ofCategory))
+    ((pred is [op,pvar,.] and op in '(isDomain ofCategory)
        and pvar=first sig and not (pvar in rest sig)) or
         (not skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
           oldList:=delete(pred,oldList)
@@ -651,7 +651,7 @@ updateDatabase(fname,cname,systemdir?) ==
 
 REMOVER(lst,item) ==
   --destructively removes item from lst
-  not PAIRP lst =>
+  atom lst =>
     lst=item => nil
     lst
   first lst=item => rest lst
@@ -662,7 +662,7 @@ allLASSOCs(op,alist) ==
 
 loadDependents fn ==
   isExistingFile [fn,$spadLibFT,"*"] =>
-    MEMQ("dependents",RKEYIDS(fn,$spadLibFT)) =>
+    "dependents" in RKEYIDS(fn,$spadLibFT) =>
       stream:= readLib1(fn,$spadLibFT,"*")
       l:= rread('dependents,stream,nil)
       RSHUT stream
@@ -778,7 +778,7 @@ isExposedConstructor name ==
   --   slot 1: list of constructors explicitly exposed
   --   slot 2: list of constructors explicitly hidden
   -- check if it is explicitly hidden
-  MEMQ(name,'(Union Record Mapping)) => true
+  name in '(Union Record Mapping) => true
   MEMQ(name,$localExposureData.2) => false
   -- check if it is explicitly exposed
   MEMQ(name,$localExposureData.1) => true

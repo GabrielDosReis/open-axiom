@@ -57,7 +57,7 @@ getDoc(conName,op,modemap) ==
 ++ argument to the ofCategory predicate it contains.  Return
 ++ nil otherwise.
 getOfCategoryArgument pred ==
-  pred is [fn,:.] and MEMQ(fn,'(AND OR NOT)) =>
+  pred is [fn,:.] and fn in '(AND OR NOT) =>
     or/[getOfCategoryArgument x for x in rest pred]
   pred is ['ofCategory,'_*1,form] => form
   nil

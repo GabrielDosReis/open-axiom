@@ -269,7 +269,7 @@ format(x,:options) ==
       op = 'elt and UPPER_-CASE_-P (STRINGIMAGE opOf CAR argl).0 => 
         formatDollar1(CAR argl,CADR argl)
       fn:= GETL(op,"PSPAD") => formatFn(fn,x,$m,$c)
-      if MEMQ(op,'(AND OR NOT)) then op:= DOWNCASE op
+      if op in '(AND OR NOT) then op:= DOWNCASE op
       n=1 and GETL(op,'Nud) and (lbp:= formatOpBindingPower(op,"Nud","left")) =>
         formatPrefix(op,first argl,lbp,formatOpBindingPower(op,"Nud","right"),qualification)
       n=2 and (op = '_$ or getOp(op,'Led)) and (lbp:= formatOpBindingPower(op,"Led","left")) =>
@@ -283,7 +283,7 @@ format(x,:options) ==
 
 getOp(op,kind) ==
   kind = 'Led =>
-    MEMQ(op,'(_div _exquo)) => nil
+    op in '(_div _exquo) => nil
     GETL(op,'Led)
   GETL(op,'Nud)
 
@@ -301,7 +301,7 @@ formatMacroCheck name ==
   u := or/[x for [x,:y] in $globalMacroStack | y = name] => u
   u := or/[x for [x,:y] in $localMacroStack  | y = name] => u
   [op,:argl] := name
-  MEMQ(op,'(Record Union)) => 
+  op in '(Record Union) => 
     pp ['"Cannot find: ",name]
     name
   [op,:[formatMacroCheck x for x in argl]]
@@ -363,10 +363,10 @@ formatElt(u) ==
  
 formatForm (u) ==
   [op,:argl] := u
-  if MEMQ(op, '(Record Union)) then 
+  if op in '(Record Union) then 
     $fieldNames := union(getFieldNames argl,$fieldNames)
   MEMQ(op,'((QUOTE T) true)) => format "true"
-  MEMQ(op,'(false nil)) => format op
+  op in '(false nil) => format op
   u='(Zero) => format 0
   u='(One) => format 1
   1=#argl => formatApplication u
@@ -428,7 +428,7 @@ formatApplication2 x ==
   leadOp := 
     x is [['elt,.,y],:.] => y
     opOf x
-  MEMQ(leadOp,'(COLLECT LIST construct)) or
+  leadOp in '(COLLECT LIST construct) or
     pspadBindingPowerOf("left",x)<1000 => formatPren x
   format x
 
@@ -542,7 +542,7 @@ pspadBindingPowerOf(key,x) ==
 
 pspadOpBindingPower(op,LedOrNud,leftOrRight) ==
   if op in '(SLASH OVER) then op := "/"
-  MEMQ(op,'(_:)) and LedOrNud = 'Led =>
+  op in '(_:) and LedOrNud = 'Led =>
     leftOrRight = 'left => 195
     196
   exception:=
@@ -557,10 +557,10 @@ pspadOpBindingPower(op,LedOrNud,leftOrRight) ==
 formatOpBindingPower(op,key,leftOrRight) ==
   if op in '(SLASH OVER) then op := "/"
   op = '_$ => 1002
-  MEMQ(op,'(_:)) and key = 'Led =>
+  op in '(_:) and key = 'Led =>
     leftOrRight = 'left => 195
     196
-  MEMQ(op,'(_~_= _>_=)) => 400
+  op in '(_~_= _>_=) => 400
   op = "not" and key = "Nud" =>
     leftOrRight = 'left => 1000
     1001
@@ -582,7 +582,7 @@ formatInfixOp(op,:options) ==
 formatDEF def == formatDEF0(def,$DEFdepth + 1)
 
 formatDEF0(["DEF",form,tlist,sclist,body],$DEFdepth) ==
-  if not MEMQ(KAR form,'(Exports Implementation)) then 
+  if not (KAR form in '(Exports Implementation)) then 
     $form := 
       form is [":",a,:.] => a
       form
@@ -727,7 +727,7 @@ formatImport ["import",a] ==
   format "import from " and formatLocal1 a
 
 addFieldNames a ==
-  a is [op,:r] and MEMQ(op,'(Record Union)) =>
+  a is [op,:r] and op in '(Record Union) =>
         $fieldNames := union(getFieldNames r,$fieldNames)
   a is ['List,:b] => addFieldNames b
   nil

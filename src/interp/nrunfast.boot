@@ -98,7 +98,7 @@ evalSlotDomain(u,dollar) ==
     y is [v,:.] =>
       VECP v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]
       IDENTP v and constructor? v 
-        or MEMQ(v,'(Record Union Mapping Enumeration)) =>
+        or v in '(Record Union Mapping Enumeration) =>
            lazyDomainSet(y,dollar,u)        --new style has lazyt
       y
     y
@@ -131,7 +131,7 @@ replaceGoGetSlot env ==
   goGetDomain :=
      goGetDomainSlotIndex = 0 => thisDomain
      thisDomain.goGetDomainSlotIndex
-  if PAIRP goGetDomain then
+  if CONSP goGetDomain then
      goGetDomain := lazyDomainSet(goGetDomain,thisDomain,goGetDomainSlotIndex)
   sig :=
     [newExpandTypeSlot(bytevec.(index := QSADD1 index),thisDomain,thisDomain)
@@ -228,7 +228,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   NE(success,'failed) and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
-        PAIRP success => [first success,:devaluate rest success]
+        CONSP success => [first success,:devaluate rest success]
         success
     success
   subsumptionSig and (u:= basicLookup(op,subsumptionSig,domain,dollar)) => u
@@ -463,10 +463,10 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
 lazyMatch(source,lazyt,dollar,domain) ==
   lazyt is [op,:argl] and null atom source and op=CAR source
     and #(sargl := CDR source) = #argl =>
-      MEMQ(op,'(Record Union)) and first argl is [":",:.] =>
+      op in '(Record Union) and first argl is [":",:.] =>
         and/[stag = atag and lazyMatchArg(s,a,dollar,domain)
               for [.,stag,s] in sargl for [.,atag,a] in argl]
-      MEMQ(op,'(Union Mapping _[_|_|_] QUOTE Enumeration)) =>
+      op in '(Union Mapping _[_|_|_] QUOTE Enumeration) =>
          and/[lazyMatchArg(s,a,dollar,domain) for s in sargl for a in argl]
       coSig := getDualSignatureFromDB op
       null coSig => error ["bad Constructor op", op]
@@ -486,7 +486,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
 lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
   #s ~= #d => nil
   scoSig := getDualSignatureFromDB opOf s or return nil
-  if MEMQ(opOf s, '(Union Mapping Record)) then 
+  if opOf s in '(Union Mapping Record) then 
      scoSig := [true for x in s]
   and/[fn for x in rest s for arg in rest d for xt in rest scoSig] where
    fn() ==
@@ -544,10 +544,10 @@ newExpandLocalType(lazyt,dollar,domain) ==
   newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
  
 newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
-  MEMQ(functorName, '(Record Union)) and first argl is [":",:.] =>
+  functorName in '(Record Union) and first argl is [":",:.] =>
     [functorName,:[['_:,tag,newExpandLocalTypeArgs(dom,dollar,domain,true)]
                                  for [.,tag,dom] in argl]]
-  MEMQ(functorName, '(Union Mapping _[_|_|_] Enumeration)) =>
+  functorName in '(Union Mapping _[_|_|_] Enumeration) =>
           [functorName,:[newExpandLocalTypeArgs(a,dollar,domain,true) for a in argl]]
   functorName = "QUOTE"  => [functorName,:argl]
   coSig := getDualSignatureFromDB functorName

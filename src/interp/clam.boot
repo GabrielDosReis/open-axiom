@@ -83,8 +83,8 @@ compClam(op,argl,body,$clamList) ==
   $clamList:= nil            --clear to avoid looping
   if u:= S_-(options,'(shift count)) then
     keyedSystemError("S2GE0006",[op,:u])
-  shiftFl := MEMQ('shift,options)
-  countFl := MEMQ('count,options)
+  shiftFl := 'shift in options
+  countFl := 'count in options
   if #argl > 1 and eqEtc= 'EQ then
     keyedSystemError("S2GE0007",[op])
   (not IDENTP kind) and (not INTEGERP kind or kind < 1) =>
@@ -183,7 +183,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if null argl then
     null cacheNameOrNil => keyedSystemError("S2GE0011",[op])
     nil
-  (not cacheNameOrNil) and (not MEMQ(eqEtc,'(EQ CVEC UEQUAL))) =>
+  (not cacheNameOrNil) and not (eqEtc in '(EQ CVEC UEQUAL)) =>
     keyedSystemError("S2GE0012",[op])
 --withWithout := (countFl => "with"; "without")
 --middle:=
@@ -281,7 +281,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
 compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   --Note: when cacheNameOrNil~=nil, it names a global hashtable
  
-  if (not MEMQ(eqEtc,'(UEQUAL))) then
+  if (not (eqEtc in '(UEQUAL))) then
     sayBrightly "for hash option, only EQ, CVEC, and UEQUAL are allowed"
   auxfn:= INTERNL(op,'";")
   g1:= GENSYM()  --argument or argument list
@@ -372,7 +372,7 @@ displayHashtable x ==
  
 cacheStats() ==
   for [fn,kind,:u] in $clamList repeat
-    not MEMQ('count,u) =>
+    not ('count in u) =>
       sayBrightly ["%b",fn,"%d","does not keep reference counts"]
     INTEGERP kind => reportCircularCacheStats(fn,kind)
     kind = 'hash => reportHashCacheStats fn

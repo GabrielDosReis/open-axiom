@@ -223,7 +223,7 @@ mkAtree3(x,op,argl) ==
     r := mkAtreeValueOf r
     v :=
       null arg => VECTOR(NIL,NIL,NIL)
-      PAIRP arg and rest arg and first arg ~= "|" =>
+      CONSP arg and rest arg and first arg ~= "|" =>
         collectDefTypesAndPreds ["tuple",:arg]
       null rest arg => collectDefTypesAndPreds first arg
       collectDefTypesAndPreds arg
@@ -240,7 +240,7 @@ mkAtree3(x,op,argl) ==
     a is [op,:arg] =>
       v :=
         null arg => VECTOR(NIL,NIL,NIL)
-        PAIRP arg and rest arg and first arg ~= "|" =>
+        CONSP arg and rest arg and first arg ~= "|" =>
           collectDefTypesAndPreds ["tuple",:arg]
         null rest arg => collectDefTypesAndPreds first arg
         collectDefTypesAndPreds arg
@@ -395,7 +395,7 @@ getValueFromEnvironment(x,mode) ==
   objValUnwrap v
 
 getValueFromSpecificEnvironment(id,mode,e) ==
-  PAIRP e =>
+  CONSP e =>
     u := get(id,'value,e) =>
       objMode(u) = $EmptyMode =>
         systemErrorHere ["getValueFromSpecificEnvironment",id]

@@ -230,8 +230,8 @@ axFormatType(typeform) ==
           ['Apply, op,
                :[['PretendTo, axFormatType a, axFormatType t]
                      for a in args for t in argtypes]]
-      MEMQ(op, '(SquareMatrix SquareMatrixCategory DirectProduct
-         DirectProductCategory RadixExpansion)) and
+      op in '(SquareMatrix SquareMatrixCategory DirectProduct
+         DirectProductCategory RadixExpansion) and
             getConstructorModemapFromDB op is [[.,target,arg1type,:restargs],.] =>
                ['Apply, op,
                   ['PretendTo, axFormatType first args, axFormatType arg1type],

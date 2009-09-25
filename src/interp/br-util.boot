@@ -153,7 +153,7 @@ htPred2English(x,:options) ==
       IDENTP x and not MEMQ(x,$emList) => htSay escapeSpecialIds PNAME x
       htSay form2HtString(x,$emList)
     gn(x,op,l,prec) ==
-      MEMQ(op,'(NOT not)) =>
+      op in '(NOT not) =>
         htSay('"not ")
         fn(first l,0)
       op = 'HasCategory =>
@@ -164,7 +164,7 @@ htPred2English(x,:options) ==
         bcConform(first l,$emList)
         htSay('" has ")
         fnAttr CADADR l
-      MEMQ(op,'(has ofCategory)) =>
+      op in '(has ofCategory) =>
         bcConform(first l,$emList)
         htSay('" has ")
         [a,b] := l
@@ -446,7 +446,7 @@ extractHasArgs pred ==
   x := find pred or return nil where find x ==
     x is [op,:argl] =>
       op = 'hasArgs => x
-      MEMQ(op,'(AND OR NOT)) => or/[find y for y in argl]
+      op in '(AND OR NOT) => or/[find y for y in argl]
       nil
     nil
   [rest x,:simpBool substitute('T,x,pred)]

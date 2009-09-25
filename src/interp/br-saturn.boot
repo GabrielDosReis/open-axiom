@@ -151,12 +151,12 @@ htSayBind(x, options) ==
 bcHt line ==
   $newPage =>  --this path affects both saturn and old lines
     text :=
-      PAIRP line => [['text, :line]]
+      CONSP line => [['text, :line]]
       STRINGP line => line
       [['text, line]]
     if $saturn then htpAddToPageDescription($saturnPage, text)
     if $standard then htpAddToPageDescription($curPage, text)
-  PAIRP line =>
+  CONSP line =>
     $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
@@ -409,7 +409,7 @@ htMakePage1 itemList ==
     systemError '"unexpected branch"
 
 saturnTran x ==
-  x is [[kind, [s1, s2, :callTail]]] and MEMQ(kind,'(bcLinks bcLispLinks)) =>
+  x is [[kind, [s1, s2, :callTail]]] and kind in '(bcLinks bcLispLinks) =>
     text := saturnTranText s2
     fs :=  getCallBackFn callTail
     y := isMenuItemStyle? s1 =>  ----> y is text for button in 2nd column
@@ -1307,7 +1307,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     htSayIndentRel(-15)
     htSaySaturn '"\\"
   -----------------------------------------------------------
-  if not MEMQ(predicate,'(T ASCONST)) then
+  if not (predicate in '(T ASCONST)) then
     pred := sublisFormal(KDR conform,predicate)
     count := #pred
     htSaySaturn '"{\em Conditions:}"

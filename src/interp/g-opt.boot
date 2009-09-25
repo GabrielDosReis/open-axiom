@@ -115,7 +115,7 @@ subrname u ==
   nil
  
 changeThrowToExit(s,g) ==
-  atom s or MEMQ(first s,'(QUOTE SEQ REPEAT COLLECT)) => nil
+  atom s or first s in '(QUOTE SEQ REPEAT COLLECT) => nil
   s is ["THROW", =g,:u] => (rplac(first s,"EXIT"); rplac(rest s,u))
   changeThrowToExit(first s,g)
   changeThrowToExit(rest s,g)
@@ -166,7 +166,7 @@ optCall (x is ["call",:u]) ==
   atom fn => (RPLAC(rest x,a); RPLAC(first x,fn))
   fn is ["applyFun",name] =>
     (RPLAC(first x,"SPADCALL"); RPLAC(rest x,[:a,name]); x)
-  fn is [q,R,n] and MEMQ(q,'(getShellEntry ELT QREFELT CONST)) =>
+  fn is [q,R,n] and q in '(getShellEntry ELT QREFELT CONST) =>
     not $bootStrapMode and (w:= optCallSpecially(q,x,n,R)) => w
     q="CONST" => ["spadConstant",R,n]
     emitIndirectCall(fn,a,x)
@@ -259,7 +259,7 @@ optCond (x is ['COND,:l]) ==
  
 AssocBarGensym(key,l) ==
   for x in l repeat
-    PAIRP x =>
+    CONSP x =>
       EqualBarGensym(key,CAR x) => return x
  
 EqualBarGensym(x,y) ==
@@ -322,7 +322,7 @@ optSEQ ["SEQ",:l] ==
       null aft => ["COND",:transform,'((QUOTE T) (conderr))]
       true => ["COND",:transform,['(QUOTE T),optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
-      l is ["SEQ",[op,a]] and MEMQ(op,'(EXIT RETURN THROW)) => a
+      l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
  
 optRECORDELT ["RECORDELT",name,ind,len] ==
@@ -429,7 +429,7 @@ findVMFreeVars form ==
 ++ in `form'.
 varIsAssigned(var,form) ==
   isAtomicForm form => false
-  form is [op,=var,:.] and MEMQ(op,'(%LET LETT SETQ)) => true
+  form is [op,=var,:.] and op in '(%LET LETT SETQ) => true
   or/[varIsAssigned(var,f) for f in form]
 
 ++ Subroutine of optLET.  Return true if the variable `var' locally
@@ -513,9 +513,9 @@ optCollectVector form ==
   index := nil           -- loop/vector index.
   for iter in iters while not fromList repeat
     [op,:.] := iter
-    MEMQ(op,'(SUCHTHAT WHILE UNTIL)) => fromList := true
-    MEMQ(op,'(IN ON)) => vecSize := [["SIZE",third iter],:vecSize]
-    MEMQ(op,'(STEP ISTEP)) =>
+    op in '(SUCHTHAT WHILE UNTIL) => fromList := true
+    op in '(IN ON) => vecSize := [["SIZE",third iter],:vecSize]
+    op in '(STEP ISTEP) =>
       -- pick a loop variable that we can use as the loop index.
       [.,var,lo,inc,:etc] := iter
       if lo = 0 and inc = 1 then

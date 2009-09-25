@@ -965,7 +965,7 @@ upconstruct t ==
   tar is ['Record,:types] => upRecordConstruct(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and PAIRP(tar) and not isPartialMode(tar) then
+  if tar and CONSP(tar) and not isPartialMode(tar) then
     CAR(tar) in aggs =>
       ud :=
         (l is [[realOp, :.]]) and (getUnname(realOp) = 'COLLECT) => tar
@@ -1150,7 +1150,7 @@ declare(var,mode) ==
     -- otherwise it looks like (tuple #1 #2 ...)
     nargs :=
       null margs => 0
-      PAIRP margs => -1 + #margs
+      CONSP margs => -1 + #margs
       1
     nargs ~= #args => throwKeyedMsg("S2IM0008",[var])
   if $compilingMap then mkLocalVar($mapName,var)
@@ -1196,8 +1196,8 @@ isDomainValuedVariable form ==
   -- returns the value of form if form is a variable with a type value
   IDENTP form and (val := (
     get(form,'value,$InteractiveFrame) or _
-    (PAIRP($env) and get(form,'value,$env)) or _
-    (PAIRP($e) and get(form,'value,$e)))) and
+    (CONSP($env) and get(form,'value,$env)) or _
+    (CONSP($e) and get(form,'value,$e)))) and
       (member(m := objMode(val),'((Domain) (Category)))
           or conceptualType m = $Category) =>
         objValUnwrap(val)
@@ -1236,25 +1236,25 @@ isPolynomialMode m ==
   --  variables, and nil otherwise
   m is [op,a,:rargs] =>
     a := removeQuote a
-    MEMQ(op,'(Polynomial RationalFunction AlgebraicFunction Expression
+    op in '(Polynomial RationalFunction AlgebraicFunction Expression
       ElementaryFunction LiouvillianFunction FunctionalExpression
-        CombinatorialFunction ))=> 'all
+        CombinatorialFunction) => 'all
     op = 'UnivariatePolynomial => LIST a
     op = 'Variable       => LIST a
-    MEMQ(op,'(MultivariatePolynomial DistributedMultivariatePolynomial
-      HomogeneousDistributedMultivariatePolynomial)) => a
+    op in '(MultivariatePolynomial DistributedMultivariatePolynomial
+      HomogeneousDistributedMultivariatePolynomial) => a
     NIL
   NIL
 
 containsPolynomial m ==
-  not PAIRP(m) => NIL
+  atom m => NIL
   [d,:.] := m
   d in $univariateDomains or d in $multivariateDomains or
     d in '(Polynomial RationalFunction) => true
   (m' := underDomainOf m) and containsPolynomial m'
 
 containsVariables m ==
-  not PAIRP(m) => NIL
+  atom m => NIL
   [d,:.] := m
   d in $univariateDomains or d in $multivariateDomains => true
   (m' := underDomainOf m) and containsVariables m'

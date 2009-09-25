@@ -152,7 +152,7 @@ doYouWant? nam ==
   center80 ['"If so, type",:bright 'y,"or",:bright 'yes]
   center80 ['"Anything else means",:bright 'no]
   x := UPCASE queryUser nil
-  MEMQ(STRING2ID_-N(x,1),'(Y YES)) => nam
+  STRING2ID_-N(x,1) in '(Y YES) => nam
   nil
  
 pickANumber(word,list) ==
