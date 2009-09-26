@@ -123,7 +123,7 @@ patternCheck pattern == main where
     acc := nil
     repeat
       k := charPosition(c,s,i)
-      k > n => return NREVERSE acc
+      k > n => return nreverse acc
       acc := [k,:acc]
       i := k + 1
   equal(p,n,c) ==

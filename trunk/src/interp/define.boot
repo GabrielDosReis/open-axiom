@@ -953,7 +953,7 @@ orderByDependency(vl,dl) ==
     dl':= [setDifference(d,newl) for x in vl for d in dl | member(x,vl')]
     vl:= vl'
     dl:= dl'
-  REMDUP NREVERSE orderedVarList --ordered so ith is indep. of jth if i < j
+  REMDUP nreverse orderedVarList --ordered so ith is indep. of jth if i < j
  
 compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
   m,$e,$prefix,$formalArgList) ==
@@ -1557,8 +1557,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
          ans:=[["%LET",gv,u],:ans]
          nils:=[gv,:nils]
      n:=n+1
-   $functorLocalParameters:=[:oldFLP,:NREVERSE nils]
-   NREVERSE ans
+   $functorLocalParameters:=[:oldFLP,:nreverse nils]
+   nreverse ans
  
 --compSingleCapsuleIf(x,predl,e,$functorLocalParameters) ==
 --  compSingleCapsuleItem(x,predl,e)

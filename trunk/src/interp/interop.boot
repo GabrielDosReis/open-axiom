@@ -268,7 +268,7 @@ orderedDefaults(conform,domform) ==
   ancestors := ancestorsOf(conform,domform)
   for x in conList repeat
     for y in ancestors | x = CAAR y repeat acc := [y,:acc]
-  NREVERSE acc
+  nreverse acc
 
 instantiate domenv ==
    -- following is a patch for a bug in runtime.as

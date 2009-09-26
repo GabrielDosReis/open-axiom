@@ -61,7 +61,7 @@ makeDomainTemplate vec ==
       atom item => item
       null atom first item => makeGoGetSlot(item,index)
       item   
-  $byteVec := "append"/NREVERSE $byteVec
+  $byteVec := "append"/nreverse $byteVec
   newVec
  
 makeGoGetSlot(item,index) ==
@@ -85,7 +85,7 @@ makeCompactDirect u ==
   [nam,[addForm,:opList]] := u
   --pp opList 
   d := [[op,y] for [op,:items] in opList | y := makeCompactDirect1(op,items)]
-  $byteVec := [:$byteVec,:"append"/NREVERSE $byteVecAcc]
+  $byteVec := [:$byteVec,:"append"/nreverse $byteVecAcc]
   LIST2VEC ("append"/d)
  
 makeCompactDirect1(op,items) ==
@@ -257,8 +257,8 @@ makePredicateBitVector pl ==   --called by buildFunctor
       for q in stripOutNonDollarPreds pred repeat firsts := insert(q,firsts)
     else 
       firsts := insert(pred,firsts)
-  firstPl := SUBLIS($pairlis,NREVERSE orderByContainment firsts)
-  lastPl  := SUBLIS($pairlis,NREVERSE orderByContainment lasts)
+  firstPl := SUBLIS($pairlis,nreverse orderByContainment firsts)
+  lastPl  := SUBLIS($pairlis,nreverse orderByContainment lasts)
   firstCode:= 
     ['buildPredVector,0,0,mungeAddGensyms(firstPl,$predGensymAlist)]
   lastCode := augmentPredCode(# firstPl,lastPl)
@@ -326,7 +326,7 @@ orderByContainment pl ==
     if y then max := x
   [max,:orderByContainment delete(max,pl)]
  
-buildBitTable(:l) == fn(REVERSE l,0) where fn(l,n) ==
+buildBitTable(:l) == fn(reverse l,0) where fn(l,n) ==
   null l => n
   n := n + n
   if QCAR l then n := n + 1
@@ -354,7 +354,7 @@ NRTmakeCategoryAlist() ==
   $catAncestorAlist: local := NIL
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
-  opcAlist := NREVERSE SORTBY(function NRTcatCompare,pcAlist)
+  opcAlist := nreverse SORTBY(function NRTcatCompare,pcAlist)
   newPairlis := [[5 + i,:b] for [.,:b] in $pairlis for i in 1..]
   slot1 := [[a,:k] for [a,:b] in SUBLIS($pairlis,opcAlist)
                    | (k := predicateBitIndex b) ~= -1]
@@ -391,7 +391,7 @@ hasDefaultPackage catname ==
 --=======================================================================
 --             Generate Category Level Alist
 --=======================================================================
-orderCatAnc x == NREVERSE ASSOCLEFT SORTBY('CDR,rest depthAssoc x)
+orderCatAnc x == nreverse ASSOCLEFT SORTBY('CDR,rest depthAssoc x)
  
 depthAssocList u == 
   u := delete('DomainSubstitutionMacro,u)  --hack by RDJ 8/90
@@ -785,7 +785,7 @@ dcAll con ==
   'done
 
 dcOps conname ==
-  for [op,:u] in REVERSE getOperationAlistFromLisplib conname repeat
+  for [op,:u] in reverse getOperationAlistFromLisplib conname repeat
     for [sig,slot,pred,key,:.] in u repeat
       suffix := 
         atom pred => nil

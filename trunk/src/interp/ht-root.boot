@@ -67,7 +67,7 @@ htSystemVariables() == main where
     $levels : local := '(compiler development interpreter)
     $heading  : local := nil
     while classlevel ~= first $levels repeat $levels := rest $levels
-    table := NREVERSE fn($setOptions,nil,true)
+    table := nreverse fn($setOptions,nil,true)
     htInitPage('"System Variables",nil)
     htSay '"\beginmenu"
     lastHeading := nil
@@ -191,8 +191,8 @@ gatherGlossLines(results,defstream) ==
       (j := charPosition($tick,x,1)) and (nextPointer := SUBSTRING(x,0,j))
         and (nextPointer = pointer) repeat
           xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
-    acc := [STRCONC(keyAndTick,def, "STRCONC"/NREVERSE xtralines),:acc]
-  REVERSE acc
+    acc := [STRCONC(keyAndTick,def, "STRCONC"/nreverse xtralines),:acc]
+  reverse acc
 
 htGlossSearch(htPage,junk) ==  htGloss htpLabelInputString(htPage,'filter)
 
@@ -209,8 +209,8 @@ htGreekSearch(filter) ==
   for x in names repeat
     superMatch?(filter,PNAME x) => matches := [x,:matches]
     nonmatches := [x,:nonmatches]
-  matches    := NREVERSE matches
-  nonmatches := NREVERSE nonmatches
+  matches    := nreverse matches
+  nonmatches := nreverse nonmatches
   htInitPage('"Greek Names",nil)
   null matches =>
     htInitPage(['"Greek names matching search string {\em ",ss,'"}"],nil)
@@ -242,8 +242,8 @@ htTextSearch(filter) ==
   for x in lines repeat
     superMatch?(filter,x) => matches := [x,:matches]
     nonmatches := [x,:nonmatches]
-  matches    := NREVERSE matches
-  nonmatches := NREVERSE nonmatches
+  matches    := nreverse matches
+  nonmatches := nreverse nonmatches
   htInitPage('"Text Matches",nil)
   null matches =>
     htInitPage(['"Lines matching search string {\em ",s,'"}"],nil)
@@ -280,7 +280,7 @@ htTutorialSearch pattern ==
 
 mkUnixPattern s ==
   u := mkUpDownPattern s
-  starPositions := REVERSE [i for i in 1..(-1 + MAXINDEX u) | u.i = $wild]
+  starPositions := reverse [i for i in 1..(-1 + MAXINDEX u) | u.i = $wild]
   for i in starPositions repeat
     u := STRCONC(SUBSTRING(u,0,i),'".*",SUBSTRING(u,i + 1,nil))
   if u.0 ~= $wild then u := STRCONC('"[^a-zA-Z]",u)

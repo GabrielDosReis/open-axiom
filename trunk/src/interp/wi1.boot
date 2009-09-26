@@ -214,7 +214,7 @@ markWhereTran ["where",["DEF",form,sig,clist,body],:tail] ==
   ntarget := ttype or target
   ndef := ['DEF,nform,[ntarget,:nargtypes],clist,body]
   result :=
-    REVERSE macros is [:m,e] =>
+    reverse macros is [:m,e] =>
       mpart :=
         m => ['SEQ,:m,['exit,1,e]]
         e

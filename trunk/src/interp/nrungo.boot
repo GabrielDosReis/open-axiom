@@ -401,7 +401,7 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
   body:= generalTerm
   for [a,:b] in al repeat
     body:= substitute(b,a,body)
-  result:= [body,sharpArg,n-1,:NREVERSE [LASSOC(i,initList) or
+  result:= [body,sharpArg,n-1,:nreverse [LASSOC(i,initList) or
       systemErrorHere('"NRTisRecurrenceRelation")
         for i in minIndex..(n-1)]]
 

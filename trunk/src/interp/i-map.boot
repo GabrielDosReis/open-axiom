@@ -171,7 +171,7 @@ addMap(lhs,rhs,pred) ==
         if x is ["SUCHTHAT",s,p] then (predList:= [p,:predList]; x:= s)
         x
   mkMapAlias(op,argl)
-  argPredList:= NREVERSE predList
+  argPredList:= nreverse predList
   finalPred :=
 -- handle g(a,T)==a+T confusion between pred=T and T variable
     MKPF((pred and (pred ~= 'T) => [:argPredList,SUBLISNQ($sl,pred)]; argPredList),"and")
@@ -272,7 +272,7 @@ mkMapAlias(op,argl) ==
   $e:= putHist(op,"alias",newAlias,$e)
 
 mkAliasList l == fn(l,nil) where fn(l,acc) ==
-  null l => NREVERSE acc
+  null l => nreverse acc
   not IDENTP first l or first l in acc => fn(rest l,[nil,:acc])
   fn(rest l,[first l,:acc])
 

@@ -148,7 +148,7 @@ bcMatrixGen htPage ==
     STRCONC('"matrix([[",formula,'" for ",colVar,'" in 1..",
       STRINGIMAGE ncols,'"] for ",rowVar,'" in 1..",STRINGIMAGE nrows,'"])")
   mat := htpProperty(htPage,'matrix) =>
-    mat := REVERSE mat
+    mat := reverse mat
     k := -1
     matform := [[mat.(k := k + 1).1
       for j in 0..(ncols-1)] for i in 0..(nrows-1)]

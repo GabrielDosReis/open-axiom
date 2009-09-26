@@ -117,7 +117,7 @@ testPrin(u,w) == --same as maPrin but lines are stored in $testOutputLineList
   $testOutputLineFlag: local := true
   $testOutputLineList: local := nil
   maPrin COPY u
-  res := REVERSE $testOutputLineList
+  res := reverse $testOutputLineList
   for x in res repeat sayBrightly x
   res
  
@@ -130,7 +130,7 @@ hyperize(u,w) ==
   $testOutputLineFlag: local := true
   $testOutputLineList: local := nil
   maPrin COPY u
-  res := REVERSE $testOutputLineList
+  res := reverse $testOutputLineList
   null res => '""
   null rest res => first res
   "STRCONC"/[first res,:[STRCONC("\newline ",x) for x in rest res]]
@@ -174,7 +174,7 @@ testInput2Output(lines,n) ==
   evaluateLines lines
   null n => nil     --return from reading trailing system commands
   typ := $mkTestOutputType
-  output := NREVERSE $mkTestOutputStack
+  output := nreverse $mkTestOutputStack
   [prefix2String typ,:output]
 
 evaluateLines lines ==
@@ -270,7 +270,7 @@ recordAndPrintTest md ==  --called by recordAndPrint
           [STRCONC(SUBSTRING(y,0,k),'" ",first u),:rest u]
         [y,:fn r]
       x
-  output := NREVERSE $mkTestOutputStack -- set by maPrin
+  output := nreverse $mkTestOutputStack -- set by maPrin
   PRINT(writify [input,prefix2String md,:output],$testStream)
   $mkTestInputStack := nil
   $mkTestOutputStack := nil

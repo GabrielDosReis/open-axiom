@@ -268,7 +268,7 @@ dbReadComments(n) ==
       x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
         xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
   SHUT instream
-  STRCONC(line, "STRCONC"/NREVERSE xtralines)
+  STRCONC(line, "STRCONC"/nreverse xtralines)
 
 dbSplitLibdb() ==
   instream := MAKE_-INSTREAM  '"olibdb.text"
@@ -510,7 +510,7 @@ getParentsFor(cname,formalParams,constructorCategory) ==
     x := SUBLISLIS(IFCDR constructorForm,formalParams,x)
     x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
-  NREVERSE acc
+  nreverse acc
 
 $parentsCache := nil
 
@@ -536,7 +536,7 @@ getParentsForDomain domname  == --called by parentsOf
         sublisFormal(IFCDR getConstructorForm domname,x,$TriangleVariableList)
       sublisFormal(IFCDR getConstructorForm domname,x)
     acc := [:explodeIfs x,:acc]
-  NREVERSE acc
+  nreverse acc
 
 explodeIfs x == main where  --called by getParents, getParentsForDomain
   main() ==
@@ -623,7 +623,7 @@ computeAncestorsOf(conform,domform) ==
   acc := nil
   for op in listSort(function GLESSEQP,HKEYS $if) repeat
     for pair in HGET($if,op) repeat acc := [pair,:acc]
-  NREVERSE acc
+  nreverse acc
 
 ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   op      := opOf conform
@@ -694,7 +694,7 @@ transKCatAlist(conform,domname,s) == main where
             null match? => 'skip
             npred := sublisFormal(KDR leftForm,pred)
             acc := [[leftForm,:npred],:acc]
-        NREVERSE acc
+        nreverse acc
       --conform has no arguments so each pair has form [con,:pred]
       for pair in s repeat
         leftForm := getConstructorForm first pair or systemError nil
@@ -717,7 +717,7 @@ transKCatAlist(conform,domname,s) == main where
               ['hasArgs,:subargs]
             npred := quickAnd(hpred,npred)
           acc := [[leftForm,:npred],:acc]
-      NREVERSE acc
+      nreverse acc
     for pair in s repeat --pair has form [con,:pred]
       leftForm := getConstructorForm first pair
       RPLACA(pair,leftForm)
@@ -742,7 +742,7 @@ sublisFormal(args,exp,:options) == main where
       while null atom y repeat
         acc := [sublisFormal1(args,QCAR y,n),:acc]
         y := QCDR y
-      r := NREVERSE acc
+      r := nreverse acc
       if y then
         nd := LASTNODE r
         RPLACD(nd,sublisFormal1(args,y,n))

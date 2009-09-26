@@ -598,7 +598,7 @@ markPath u ==        --u has nested structure: u0 < u1 < u2 ...
   part  := first u
   $path := u
   u is [.] => 0      --means THE WHOLE THING
-  v := REVERSE markPath1 u
+  v := reverse markPath1 u
 --  pp '"======mark path======"
 --  foobar v
 --  pp v
@@ -717,7 +717,7 @@ $hohum := false
 markSpliceInChanges body ==
 --  pp '"before---->"
 --  pp $coerceList
-  $coerceList := REVERSE SORTBY('CDDR,$coerceList)
+  $coerceList := reverse SORTBY('CDDR,$coerceList)
 --  pp '"after----->"
 --  pp $coerceList
   $cl := $coerceList
@@ -870,7 +870,7 @@ markFinish1() ==
      $globalImportStack := delete($categoryNameForDollar,$globalImportStack)
   $commonImports : local := getCommonImports()
   globalImports := 
-    REVERSE orderByContainment REMDUP [:$commonImports,:$globalImportStack]
+    reverse orderByContainment REMDUP [:$commonImports,:$globalImportStack]
   $finalImports: local := SETDIFFERENCE(globalImports,$globalDeclareStack)
   $capsuleStack := 
     [mkNewCapsuleItem(freepart,imports,x) for freepart in $freeStack 
@@ -899,10 +899,10 @@ markFinish1() ==
   nsig :=
     $categoryPart => sig
     ['Type,:rest sig]
-  for x in REVERSE $abbreviationStack |not member(x,$abbreviationsAlreadyPrinted) repeat 
+  for x in reverse $abbreviationStack |not member(x,$abbreviationsAlreadyPrinted) repeat 
      markPrintAbbreviation x
      $abbreviationsAlreadyPrinted := insert(x,$abbreviationsAlreadyPrinted)
-  for x in REVERSE $globalMacroStack|not member(x,$macrosAlreadyPrinted) repeat
+  for x in reverse $globalMacroStack|not member(x,$macrosAlreadyPrinted) repeat
     $def := ['MDEF,first x,'(NIL),'(NIL),rest x]
     markPrint(true)
     $macrosAlreadyPrinted := insert(x,$macrosAlreadyPrinted)
@@ -955,7 +955,7 @@ markRemImportsAndLeadingMacros(leadingMacros,body) ==
 
 mkNewCapsuleItem(frees,i,x) ==
   [originalDef,:ndef] := x
-  imports := REVERSE orderByContainment REMDUP SETDIFFERENCE(i,$finalImports)
+  imports := reverse orderByContainment REMDUP SETDIFFERENCE(i,$finalImports)
   importPart := [["import",d] for d in imports]
   nbody := 
     ndef is ["%LET",.,x] => x
@@ -1309,7 +1309,7 @@ moveLinesAfter(alist, lines) ==
     (p :=  ASSOC(i, alist)) and STRINGP rest p => acc := [rest p, x, :acc]
     (p :=  lookupRight(i, alist)) and (first p) > i => RPLACD(p, x)
     acc := [x, :acc]
-  REVERSE acc  
+  reverse acc  
   
 lookupRight(x, al) == 
   al is [p, :al] =>
@@ -1373,7 +1373,7 @@ mkCheck() ==
     sayBrightlyNT '"old: "
     pp oldRes
 
-reverseDown u == [REVERSE x for x in u]
+reverseDown u == [reverse x for x in u]
 
 mkCheckRun() ==
   for [x, :y] in REMDUP $badStack repeat
@@ -1445,7 +1445,7 @@ combineDefinitions() ==
 --      rplacaSubst(op, opName, def)
         $acc := [[form,:predl], :$acc]
       Xdeflist := [buildNewDefinition(op,sig,$acc),:Xdeflist]
-  REVERSE Xdeflist
+  reverse Xdeflist
                
 rplacaSubst(x, y, u) == (fn(x, y, u); u) where fn(x,y,u) ==
   atom u => nil

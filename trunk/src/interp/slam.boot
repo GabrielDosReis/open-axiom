@@ -182,7 +182,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   decomposeCode:=
     [["%LET",gIndex,["ELT",lastArg,0]],:[["%LET",g,["ELT",lastArg,i]]
       for g in gsList for i in 1..]]
-  gsRev:= REVERSE gsList
+  gsRev:= reverse gsList
   rotateCode:= [["%LET",p,q] for p in gsRev for q in [:rest gsRev,g]]
   advanceCode:= ["%LET",gIndex,['ADD1,gIndex]]
  

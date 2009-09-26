@@ -94,8 +94,8 @@ lisp2Boot x ==
   $numberOfSpills:= 0
   $lineLength:= 80
   format x
-  formatOutput REVERSE $lineFragmentBuffer
-  [fragmentsToLine y for y in REVERSE $lineBuffer]
+  formatOutput reverse $lineFragmentBuffer
+  [fragmentsToLine y for y in reverse $lineBuffer]
  
 fragmentsToLine fragments ==
   string:= lispStringList2String fragments
@@ -112,7 +112,7 @@ lispStringList2String x ==
 --% routines for buffer and margin adjustment
  
 formatOutput x ==
-  for [currentColumn,start,end,stack] in REVERSE $commentsToPrint repeat
+  for [currentColumn,start,end,stack] in reverse $commentsToPrint repeat
     startY:= rest start
     for [loc,comment] in stack repeat
       commentY:= rest loc
@@ -177,7 +177,7 @@ consBuffer item ==
   not isSpecialBufferItem item and (n>columnsLeft or columnsLeft < 0) =>
     $autoLine =>
                    --is true except within try
-      formatOutput REVERSE $lineFragmentBuffer
+      formatOutput reverse $lineFragmentBuffer
       $c:= REMAINDER($m+2*($numberOfSpills:= $numberOfSpills+1), $lineLength)
       $lineFragmentBuffer:= LIST nBlanks $c
       consBuffer item
@@ -204,7 +204,7 @@ isCloseDelimiter item ==   EQ(item,")") or EQ(item,"]") or EQ(item,"}")
 newLine() ==
   null $autoLine => nil
   $newLineWritten := true
-  formatOutput REVERSE $lineFragmentBuffer
+  formatOutput reverse $lineFragmentBuffer
   $lineFragmentBuffer:= LIST nBlanks $m
   $c:= $m
  
@@ -214,7 +214,7 @@ optNewLine() ==
 
 spillLine() ==
   null $autoLine => nil
-  formatOutput REVERSE $lineFragmentBuffer
+  formatOutput reverse $lineFragmentBuffer
   $c:= $m+2*($numberOfSpills:= $numberOfSpills+1)
   $lineFragmentBuffer:= LIST nBlanks $c
   $c

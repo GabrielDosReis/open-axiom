@@ -101,7 +101,7 @@ initializeSystemCommands() ==
   while l repeat
     $SYSCOMMANDS := CONS(CAAR l, $SYSCOMMANDS)
     l := rest l
-  $SYSCOMMANDS := NREVERSE $SYSCOMMANDS
+  $SYSCOMMANDS := nreverse $SYSCOMMANDS
 
 systemCommand [[op,:argl],:options] ==
   $options: local:= options
@@ -1048,7 +1048,7 @@ displayMacros names ==
   imacs := getInterpMacroNames()
   pmacs := getParserMacroNames()
   macros :=
-     null names => APPEND (imacs, pmacs)
+     null names => append (imacs, pmacs)
      names
   macros := REMDUP macros
 
@@ -1703,7 +1703,7 @@ writeInputLines(fn,initial) ==
   file := histInputFileName(fn)
   histFileErase file
   inp:= DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
-  for x in removeUndoLines NREVERSE lineList repeat WRITE_-LINE(x,inp)
+  for x in removeUndoLines nreverse lineList repeat WRITE_-LINE(x,inp)
   -- see file "undo" for definition of removeUndoLines
   if fn ~= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
   SHUT inp
@@ -2698,7 +2698,7 @@ diffAlist(new,old) ==
           deltas := [[prop],:deltas]
         EQ(rest oldPropval,val) => 'skip
         deltas := [oldPropval,:deltas]
-      deltas => acc := [[name,:NREVERSE deltas],:acc]
+      deltas => acc := [[name,:nreverse deltas],:acc]
     acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]
 --record properties absent on new list (say, from a )cl all)
   for (oldPair := [name,:r]) in old repeat
@@ -2710,7 +2710,7 @@ diffAlist(new,old) ==
     --     (b) if the old world does not, record nothing
     -- (2) if the new world has a proplist for that variable, it has
     --     been handled by the first loop.
-  res := NREVERSE acc
+  res := nreverse acc
   if $reportUndo then reportUndo res
   res
 
@@ -2803,7 +2803,7 @@ undoLocalModemapHack changeList ==
 removeUndoLines u == --called by writeInputLines
   xtra :=
     STRINGP $currentLine => [$currentLine]
-    REVERSE $currentLine
+    reverse $currentLine
   xtra := [x for x in xtra | not stringPrefix?('")history",x)]
   u := [:u, :xtra]
   not (or/[stringPrefix?('")undo",x) for x in u])  => u
@@ -2831,7 +2831,7 @@ removeUndoLines u == --called by writeInputLines
       nil
     $IOindex := $IOindex + 1   --referenced by undoCount
   acc := nil
-  for y in tails NREVERSE u repeat
+  for y in tails nreverse u repeat
     (x := first y).0 = char '_> =>
       code := x . 1                                 --code = a,b, or r
       n := PARSE_-INTEGER SUBSTRING(x,2,nil)        --n = number of undo steps
@@ -3041,7 +3041,7 @@ zsystemdevelopment1(l,im) ==
     opt1 = 'from => fromopt := [['FROM,:optargs]]
   for [opt,:optargs] in $options repeat
     if null optargs then optargs := l
-    newopt := APPEND(optargs,fromopt)
+    newopt := append(optargs,fromopt)
     opt1 := selectOptionLC(opt,'(from),nil)
     opt1 = 'from => nil
     opt = "c"   => _/D_,1 (newopt ,_/COMP(),NIL,NIL)

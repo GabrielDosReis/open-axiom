@@ -202,7 +202,7 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
           return modemapList
         TruthP pred => mmtail:=rest mmtail
           --the thing we matched against is useless, by comparison
-      modemapList:= NCONC(NREVERSE newmm,[entry,:mmtail])
+      modemapList:= NCONC(nreverse newmm,[entry,:mmtail])
       entry:= nil
       return modemapList
   if entry then [:modemapList,entry] else modemapList

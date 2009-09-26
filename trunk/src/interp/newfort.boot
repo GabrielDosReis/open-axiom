@@ -170,12 +170,12 @@ exp2FortOptimize e ==
   atom e => [e]
   $fortranOptimizationLevel = 0 =>
     e1 := exp2FortOptimizeArray e
-    NREVERSE [e1,:$exprStack]
+    nreverse [e1,:$exprStack]
   e := minimalise e
   for e1 in exp2FortOptimizeCS  e repeat
     e2 := exp2FortOptimizeArray e1
     $exprStack := [e2,:$exprStack]
-  NREVERSE $exprStack
+  nreverse $exprStack
 
  
 exp2FortOptimizeCS e ==
@@ -184,7 +184,7 @@ exp2FortOptimizeCS e ==
   $fortCsExprStack : local := NIL
   $fortCsFuncStack : local := NIL
   f := exp2FortOptimizeCS1 e
-  NREVERSE [f,:$fortCsList]
+  nreverse [f,:$fortCsList]
  
 -- bug fix to beenHere 
 -- Thu Nov 05 12:01:46 CUT 1992 , Author: TTT
@@ -362,7 +362,7 @@ fortexp0 x ==
   while p < 0 repeat
     [t,:f] := f
     l := [t,:l]
-  NREVERSE ['"...",:l]
+  nreverse ['"...",:l]
 
 ++ This formating routine is essentially used to print
 ++ values/expreions used to instantiate constructors.

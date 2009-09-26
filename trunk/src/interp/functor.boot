@@ -421,7 +421,7 @@ setVector4(catNames,catsig,conditions) ==
     for ["%LET",name,cond,:.] in $getDomainCode repeat
       $HackSlot4:=MSUSBT(name,cond,$HackSlot4)
   code := ["setShellEntry",'$,4,'TrueDomain]
-  code:=['(%LET TrueDomain (NREVERSE TrueDomain)),:$HackSlot4,code]
+  code:=['(%LET TrueDomain (nreverse TrueDomain)),:$HackSlot4,code]
   code:=
     [:
       [setVector4Onecat(u,v,w)
@@ -591,7 +591,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
   code is ['PROGN,:codelist] =>
     ['PROGN,:
             --Two REVERSEs leave original order, but ensure last guy wins
-      NREVERSE [v for u in REVERSE codelist |
+      nreverse [v for u in reverse codelist |
                     (v:= DescendCode(u,flag,viewAssoc,EnvToPass))~=nil]]
   code is ['COND,:condlist] =>
     c:= [[u2:= ProcessCond first u,:q] for u in condlist] where q() ==
@@ -611,7 +611,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
     while (c and (LAST c is [c1] or LAST c is [c1,[]]) and
             (c1 = '(QUOTE T) or c1 is ['HasAttribute,:.])) repeat
                    --strip out some worthless junk at the end
-        c:=NREVERSE rest NREVERSE c
+        c:=nreverse rest nreverse c
     null c => '(LIST)
     ['COND,:c]
   code is ["%LET",name,body,:.] =>

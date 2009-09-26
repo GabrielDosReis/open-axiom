@@ -1054,8 +1054,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
                   nils:=[gv,:nils]
               n:=n+1
 
-            $functorLocalParameters:=[:oldFLP,:REVERSE nils]
-            REVERSE ans
+            $functorLocalParameters:=[:oldFLP,:reverse nils]
+            reverse ans
   oldFLP:=$functorLocalParameters
   if y~="%noBranch" then
 --> new <-----------------------

@@ -1017,7 +1017,7 @@ dbConsExposureMessage() ==
 --    kind = 'domain    => doms := [x,:doms]
 --    kind = 'package   => paks:= [x,:paks]
 --    defs := [x,:defs]
---  lists := [NREVERSE cats,NREVERSE doms,NREVERSE paks,NREVERSE defs]
+--  lists := [nreverse cats,nreverse doms,nreverse paks,nreverse defs]
 --  htBeginMenu(2)
 --  htSayStandard '"\indent{1}"
 --  kinds := +/[1 for x in lists | #x > 0]
