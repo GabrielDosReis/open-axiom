@@ -463,10 +463,10 @@ spadify(l,results,decls,names,actual) ==
           for c in 0..(SECOND(dims) - 1) repeat
             offset := 2*(c*first(dims)+r)
             innerEls := [CONS(ELT(fort,offset),ELT(fort,offset+1)),:innerEls]
-          els := [makeVector(NREVERSE innerEls,nil),:els]
+          els := [makeVector(nreverse innerEls,nil),:els]
       else
          error ['"Can't cope with complex output dimensions higher than 2"]
-      spadForms := [makeResultRecord(name,ty,makeVector(NREVERSE els,nil)),
+      spadForms := [makeResultRecord(name,ty,makeVector(nreverse els,nil)),
                     :spadForms]
     -- Result is a Boolean vector or array
     LISTP(ty) and first(ty)="logical" and #ty=2 =>
@@ -481,10 +481,10 @@ spadify(l,results,decls,names,actual) ==
           innerEls := nil
           for c in 0..(SECOND(dims) - 1) repeat
             innerEls := [int2Bool ELT(fort,c*first(dims)+r),:innerEls]
-          els := [NREVERSE innerEls,:els]
+          els := [nreverse innerEls,:els]
       else
          error ['"Can't cope with logical output dimensions higher than 2"]
-      spadForms := [makeResultRecord(name,ty,NREVERSE els), :spadForms]
+      spadForms := [makeResultRecord(name,ty,nreverse els), :spadForms]
     -- Result is a vector or array
     VECTORP fort =>
       dims := [getVal(u,names,actual) for u in rest ty]
@@ -499,7 +499,7 @@ spadify(l,results,decls,names,actual) ==
           innerEls := nil
           for c in 0..(SECOND(dims) - 1) repeat
             innerEls := [ELT(fort,c*first(dims)+r),:innerEls]
-          els := [makeVector(NREVERSE innerEls,nil),:els]
+          els := [makeVector(nreverse innerEls,nil),:els]
       else if #dims=3 then
         iDim := first(dims)
         jDim := SECOND dims
@@ -511,11 +511,11 @@ spadify(l,results,decls,names,actual) ==
             for p in 0..(kDim - 1) repeat
               offset := p*jDim + c*kDim + r
               innerEls := [ELT(fort,offset),:innerEls]
-            middleEls := [makeVector(NREVERSE innerEls,nil),:middleEls]
-          els := [makeVector(NREVERSE middleEls,nil),:els]
+            middleEls := [makeVector(nreverse innerEls,nil),:middleEls]
+          els := [makeVector(nreverse middleEls,nil),:els]
       else
          error ['"Can't cope with output dimensions higher than 3"]
-      if not MEMQ(0,dims) then els := makeVector(NREVERSE els,nil)
+      if not MEMQ(0,dims) then els := makeVector(nreverse els,nil)
       spadForms := [makeResultRecord(name,ty,els), :spadForms]
     -- Result is a Boolean Scalar
     atom fort and ty="logical" =>
@@ -524,7 +524,7 @@ spadify(l,results,decls,names,actual) ==
     atom fort => 
       spadForms := [makeResultRecord(name,ty,fort),:spadForms]
     error ['"Unrecognised output format: ",fort]
-  NREVERSE spadForms
+  nreverse spadForms
 
 lispType u ==
   -- Return the lisp type equivalent to the given Fortran type.
@@ -588,7 +588,7 @@ prepareResults(results,args,dummies,values,decls) ==
         type = "complex" => makeVector([shortZero,shortZero],"%SingleFloat")
         type = "double complex" => makeVector([longZero,longZero],"%DoubleFloat")
         error ['"Unrecognised Fortran type: ",type]
-  NREVERSE data
+  nreverse data
 
 -- TTT this is dead code now
 --      transposeVector(u,type) ==
@@ -605,7 +605,7 @@ prepareResults(results,args,dummies,values,decls) ==
 --        else
 --          for j in 0..cols repeat for i in 0..rows repeat
 --            els := [ELT(ELT(u,i),j),:els]
---        makeVector(NREVERSE els,type)
+--        makeVector(nreverse els,type)
 
 
 writeData(tmpFile,indata) ==

@@ -124,21 +124,21 @@ parseAndEvalToString str ==
   $IOindex: local := nil
   v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
-  NREVERSE $outputLines
+  nreverse $outputLines
 
 parseAndEvalToStringForHypertex str ==
   $collectOutput:local := true
   $outputLines: local := nil
   v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
-  NREVERSE $outputLines
+  nreverse $outputLines
 
 parseAndEvalToStringEqNum str ==
   $collectOutput:local := true
   $outputLines: local := nil
   v := CATCH($SpadReaderTag, CATCH($intTopLevel, parseAndEvalStr str))
   v = 'restart => ['"error"]
-  NREVERSE $outputLines
+  nreverse $outputLines
 
 parseAndInterpToString str ==
   v := applyWithOutputToString('parseAndEvalStr, [str])

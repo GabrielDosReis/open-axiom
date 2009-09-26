@@ -84,8 +84,8 @@ NRTaddDeltaCode() ==
 --      now must all have slot numbers, represented by (QUOTE <entry>)
 --  (6) constants, like 0 and 1, represented by (CONS .. ) form
   kvec := first $catvecList
-  for i in $NRTbase.. for item in REVERSE $NRTdeltaList
-    for compItem in REVERSE $NRTdeltaListComp
+  for i in $NRTbase.. for item in reverse $NRTdeltaList
+    for compItem in reverse $NRTdeltaListComp
       |null (s:=kvec.i) repeat
         $template.i:= deltaTran(item,compItem)
   $template.5 :=
@@ -537,7 +537,7 @@ NRTsetVector4(siglist,formlist,condlist) ==
                   NRTsetVector4a(sig,form,cond)
 
   $lisplibCategoriesExtended:= [$uncondList,:$condList]
-  code := ['mapConsDB,MKQ REVERSE REMDUP $uncondList]
+  code := ['mapConsDB,MKQ reverse REMDUP $uncondList]
   if $condList then
     localVariable := GENSYM()
     code := [["%LET",localVariable,code]]
@@ -577,7 +577,7 @@ reverseCondlist cl ==
 
 NRTsetVector4Part2(uncondList,condList) ==
   $lisplibCategoriesExtended:= [uncondList,:condList]
-  code := ['mapConsDB,MKQ REVERSE REMDUP uncondList]
+  code := ['mapConsDB,MKQ reverse REMDUP uncondList]
   if condList then
     localVariable := GENSYM()
     code := [["%LET",localVariable,code]]
@@ -607,11 +607,11 @@ NRTsetVector4a(sig,form,cond) ==
   sig = '$ =>
      domainList :=
        [optimize COPY KAR comp(d,$EmptyMode,$e) or d for d in $domainShell.4.0]
-     $uncondList := APPEND(domainList,$uncondList)
+     $uncondList := append(domainList,$uncondList)
      if isCategoryForm(form,$e) then $uncondList := [form,:$uncondList]
      $uncondList
   evalform := eval mkEvalableCategoryForm form
-  cond = true => $uncondList := [form,:APPEND(evalform.4.0,$uncondList)]
+  cond = true => $uncondList := [form,:append(evalform.4.0,$uncondList)]
   $condList := [[cond,[form,:evalform.4.0]],:$condList]
 
 NRTmakeSlot1Info() ==

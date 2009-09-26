@@ -133,7 +133,7 @@ selectMms1(op,tar,args1,args2,$Coerce) ==
     -- NEW COMPILER COMPATIBILITY ON
 
     op = "^" or op = "**" =>
-        APPEND(selectMms2("**",tar,args1,args2,$Coerce),
+        append(selectMms2("**",tar,args1,args2,$Coerce),
                selectMms2("^",tar,args1,args2,$Coerce))
 
     -- NEW COMPILER COMPATIBILITY OFF

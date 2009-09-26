@@ -440,7 +440,7 @@ modemapPattern(mmPattern,sig) ==
     patvars := rest patvars
     mmpat := [patvar,:mmpat]
     patternAlist := [[patvar,:x],:patternAlist]
-  [NREVERSE mmpat,patternAlist,partial,patvars]
+  [nreverse mmpat,patternAlist,partial,patvars]
 
 substVars(pred,patternAlist,patternVarList) ==
   --make pattern variable substitutions
@@ -465,9 +465,9 @@ fixUpPredicate(predClause, domainPreds, partial, sig) ==
   --  single predicate
   [predicate, fn, :skip] := predClause
   if first predicate = "AND" then
-    predicates := APPEND(domainPreds,rest predicate)
+    predicates := append(domainPreds,rest predicate)
   else if predicate ~= MKQ "T"
---was->then predicates:= REVERSE [predicate, :domainPreds]
+--was->then predicates:= reverse [predicate, :domainPreds]
        then predicates:= [predicate, :domainPreds]
        else predicates := domainPreds or [predicate]
   if #predicates > 1 then

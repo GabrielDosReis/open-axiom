@@ -116,13 +116,13 @@ removeEXITFromCOND c ==
     length1? cl =>
       cond is ["EXIT",:.] => z := CONS(QCDR cond,z)
       z := CONS(cl,z)
-    cl' := REVERSE cl
+    cl' := reverse cl
     lastSE := QCAR cl'
     ATOM lastSE => z := CONS(cl,z)
     lastSE is ["EXIT",:.] =>
-      z := CONS(REVERSE CONS(second lastSE,rest cl'),z)
+      z := CONS(reverse CONS(second lastSE,rest cl'),z)
     z := CONS(cl,z)
-  CONS('COND,NREVERSE z)
+  CONS('COND,nreverse z)
  
 flattenCOND body ==
   -- transforms nested COND clauses to flat ones, if possible
@@ -161,11 +161,11 @@ bootCOND c ==
   fcls := bootPushEXITintoCONDclause fcls
   ncls :=
     fcls is [''T,['COND,:mcls]] =>
-      APPEND(REVERSE mcls,ncls)
+      append(reverse mcls,ncls)
     fcls is [''T,['PROGN,:mcls]] =>
       CONS([''T,:mcls],ncls)
     CONS(fcls,ncls)
-  ['COND,:REVERSE ncls]
+  ['COND,:reverse ncls]
  
 bootPushEXITintoCONDclause e ==
   e isnt [''T,['EXIT,['COND,:cls]]] => e
@@ -176,7 +176,7 @@ bootPushEXITintoCONDclause e ==
       r is [['EXIT,:.]] => CONS(cl,ncls)
       r is [r1]           => CONS([p,['EXIT,r1]],ncls)
       CONS([p,['EXIT,bootTran ['PROGN,:r]]],ncls)
-  [''T,['COND,:NREVERSE ncls]]
+  [''T,['COND,:nreverse ncls]]
  
 --% SEQ and PROGN
  
@@ -214,11 +214,11 @@ bootAbsorbSEQsAndPROGNs e ==
       [x]
   while lcl is ['EXIT,f] repeat
     lcl := f
-  lcl is ['PROGN,:pcls] => APPEND(g,pcls)
-  lcl is ['COND,[''T,:pcls]] => APPEND(g,pcls)
+  lcl is ['PROGN,:pcls] => append(g,pcls)
+  lcl is ['COND,[''T,:pcls]] => append(g,pcls)
   lcl is ['COND,[pred,['EXIT,h]]] =>
-    APPEND(g,[['COND,[pred,h]]])
-  APPEND(g,[lcl])
+    append(g,[['COND,[pred,h]]])
+  append(g,[lcl])
  
 bootSEQ e ==
   e := ['SEQ,:mergeCONDsWithEXITs bootAbsorbSEQsAndPROGNs rest e]
@@ -257,7 +257,7 @@ defLET1(lhs,rhs) ==
   IDENTP rhs and not CONTAINED(rhs,lhs) =>
     rhs' := defLET2(lhs,rhs)
     EQCAR(rhs',$LET) => MKPROGN [rhs',rhs]
-    rhs' is ["PROGN",:.] => APPEND(rhs',[rhs])
+    rhs' is ["PROGN",:.] => append(rhs',[rhs])
     if IDENTP first rhs' then rhs' := CONS(rhs',NIL)
     MKPROGN [:rhs',rhs]
   rhs is [=$LET,:.] and IDENTP(name := second rhs) =>
@@ -295,7 +295,7 @@ defLET2(lhs,rhs) ==
       [:l1,defLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := defLET2(var2,addCARorCDR('CDR,rhs))
     if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
-    APPEND(l1,l2)
+    append(l1,l2)
   lhs is ['APPEND,var1,var2] =>
     patrev := defISReverse(var2,var1)
     rev := ['REVERSE,rhs]
@@ -305,7 +305,7 @@ defLET2(lhs,rhs) ==
     if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
     var1 = "." => [[$LET,g,rev],:l2]
     last l2 is [=$LET, =var1, val1] =>
-      [[$LET,g,rev],:REVERSE rest REVERSE l2,
+      [[$LET,g,rev],:reverse rest reverse l2,
        defLetForm(var1,['NREVERSE,val1])]
     [[$LET,g,rev],:l2,defLetForm(var1,['NREVERSE,var1])]
   lhs is ['EQUAL,var1] =>

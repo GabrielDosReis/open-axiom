@@ -44,7 +44,7 @@ import sys_-macros
 namespace BOOT
 
 $noCategoryDomains == '(Mode SubDomain)
-$nonLisplibDomains == APPEND($DomainNames,$noCategoryDomains)
+$nonLisplibDomains == append($DomainNames,$noCategoryDomains)
 
 ++ Category ancestors for Record, Union, Mapping, and Enumeration domains.
 $commonCategoryAncestors ==

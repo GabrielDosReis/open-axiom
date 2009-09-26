@@ -46,7 +46,7 @@ formatDeftranForm(form,tlist) ==
   if form is ['elt,a,b] then    ----> a.b ====> apply(b,a)
     form := 
       isTypeProbably? a =>
-        atypeList := REVERSE atypeList
+        atypeList := reverse atypeList
         ["$$", b, a]
       ["apply",a, b]
   op   := KAR form

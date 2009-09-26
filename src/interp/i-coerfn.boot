@@ -899,7 +899,7 @@ genMpFromDmpTerm(u, oldlen) ==
 Mp2P(u, source is [mp,vl, S], target is [p,R]) ==
   u = '_$fromCoerceable_$ => canCoerce(S,target)
   S is ['Polynomial,.] => MpP2P(u,vl,S,R)
-  vl' := REVERSE MSORT vl
+  vl' := reverse MSORT vl
   -- if Mp2Mp fails, a THROW will occur
   u' := Mp2Mp(u,source,[mp,vl',S])
   u' := translateMpVars2PVars (u',vl')

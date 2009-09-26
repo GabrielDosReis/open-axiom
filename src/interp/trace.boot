@@ -161,7 +161,7 @@ getTraceOptions options ==
       [key,parms] := first $traceErrorStack
       throwKeyedMsg(key,['"",:parms])
     throwListOfKeyedMsgs("S2IT0017",[# $traceErrorStack],
-      NREVERSE $traceErrorStack)
+      nreverse $traceErrorStack)
   optionList
 
 saveMapSig(funNames) ==
@@ -364,7 +364,7 @@ getMapSubNames(l) ==
   subs:= nil
   for mapName in l repeat
     lmm:= get(mapName,'localModemap,$InteractiveFrame) =>
-      subs:= APPEND([[mapName,:second mm] for mm in lmm],subs)
+      subs:= append([[mapName,:second mm] for mm in lmm],subs)
   union(subs,getPreviousMapSubNames UNIONQ(_/TRACENAMES,
     $lastUntraced))
 
@@ -397,7 +397,7 @@ augmentTraceNames(l,mapSubNames) ==
   res:= nil
   for traceName in l repeat
     mml:= get(traceName,'localModemap,$InteractiveFrame) =>
-      res:= APPEND([second mm for mm in mml],res)
+      res:= append([second mm for mm in mml],res)
     res:= [traceName,:res]
   res
 

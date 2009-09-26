@@ -623,7 +623,7 @@ checkArgs(op,tail) ==
       tail := [:rest term,:rest tail]
     head := [term,:head]
     tail := rest tail
-  REVERSE head
+  reverse head
    
 outputTranSEQ ['SEQ,:l,exitform] ==
   if exitform is ['exit,.,a] then exitform := a
@@ -1170,7 +1170,7 @@ maprinChk x ==
 maprinRows matrixList ==
   if not $collectOutput then TERPRI($algebraOutputStream)
   while matrixList repeat
-    y:=NREVERSE matrixList
+    y:=nreverse matrixList
     --Makes the matrices come out in order, since CONSed on backwards
     matrixList:=nil
     firstName := first first y
@@ -2093,7 +2093,7 @@ slashWidth(u) ==
   1 + WIDTH second u + WIDTH second rest u
 
 longext(u, i, n) ==
-  x := REVERSE u
+  x := reverse u
   y := first x
   u := remWidth(REVERSEWOC(CONS('" ", rest x)))
   charybdis(u, i, n)

@@ -175,7 +175,7 @@ npListofFun(f,h,g)==
           a:=$stack
           $stack:=nil
           while APPLY(h,nil) and (APPLY(f,nil) or npTrap()) repeat 0
-          $stack:=cons(NREVERSE $stack,a)
+          $stack:=cons(nreverse $stack,a)
           npPush FUNCALL(g, [npPop3(),npPop2(),:npPop1()])
         else
           true
@@ -191,7 +191,7 @@ npList(f,str1,g)== -- always produces a list, g is applied to it
           $stack:=nil
           while npEqKey str1 and (npEqKey "BACKSET" or true) and
                              (APPLY(f,nil) or npTrap()) repeat 0
-          $stack:=cons(NREVERSE $stack,a)
+          $stack:=cons(nreverse $stack,a)
           npPush FUNCALL(g,  [npPop3(),npPop2(),:npPop1()])
         else
           npPush FUNCALL(g, [npPop1()])
@@ -564,7 +564,7 @@ npZeroOrMore f==
          a:=$stack
          $stack:=nil
          while APPLY(f,nil) repeat 0
-         $stack:=cons(NREVERSE $stack,a)
+         $stack:=cons(nreverse $stack,a)
          npPush cons(npPop2(),npPop1())
        npPush nil
        true
@@ -990,7 +990,7 @@ npListAndRecover(f)==
                 c:=$inputStream
      b:=cons(npPop1(),b)
    $stack:=a
-   npPush NREVERSE b
+   npPush nreverse b
  
 npMoveTo n==
       if null $inputStream

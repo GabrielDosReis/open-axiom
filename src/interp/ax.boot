@@ -68,7 +68,7 @@ makeAxFile(filename, constructors) ==
   if $defaultFlag then
      axForms :=
         [['Foreign, ['Declare, 'dummyDefault, 'Exit], 'Lisp], :axForms]
-  axForms := APPEND(axDoLiterals(), axForms)
+  axForms := append(axDoLiterals(), axForms)
   axForm := ['Sequence, _
                ['Import, [], 'AxiomLib], ['Import, [], 'Boolean], :axForms]
   st := MAKE_-OUTSTREAM(filename)
@@ -88,7 +88,7 @@ makeAxExportForm(filename, constructors) ==
   if $defaultFlag then
      axForms :=
         [['Foreign, ['Declare, 'dummyDefault, 'Exit], 'Lisp], :axForms]
-  axForms := APPEND(axDoLiterals(), axForms)
+  axForms := append(axDoLiterals(), axForms)
   axForm := ['Sequence, _
                ['Import, [], 'AxiomLib], ['Import, [], 'Boolean], :axForms]
   axForm
@@ -127,7 +127,7 @@ modemapToAx(modemap) ==
 --        if not(b is ['Sequence,:withseq]) then withseq := [b]
 --        cosigs := rest getDualSignatureFromDB constructor
 --        exportargs := [['Export, [], arg, []] for arg in args for p in cosigs | p]
---        resultType := ['With,a,['Sequence,:APPEND(exportargs, withseq)]]
+--        resultType := ['With,a,['Sequence,:append(exportargs, withseq)]]
      consdef := ['Define,
         ['Declare, conscat, ['Apply, "->", optcomma argdecls, 'Category]],
           ['Lambda, argdecls, 'Category, ['Label, conscat, resultType]]]
@@ -143,7 +143,7 @@ modemapToAx(modemap) ==
 --     if not(b is ['Sequence,:withseq]) then withseq := [b]
 --     cosigs := rest getDualSignatureFromDB constructor
 --     exportargs := [['Export, [], arg, []] for arg in args for p in cosigs | p]
---     resultType := ['With,a,['Sequence,:APPEND(exportargs, withseq)]]
+--     resultType := ['With,a,['Sequence,:append(exportargs, withseq)]]
   ['Export, ['Declare, constructor, ['Apply, "->", optcomma argdecls, resultType]],[],[]]
 
 optcomma [op,:args] ==
@@ -194,7 +194,7 @@ axFormatType(typeform) ==
       lastcat is ['CATEGORY,type,:ops] =>
          ['With, [],
             makeTypeSequence(
-               APPEND([axFormatType c for c in cats],
+               append([axFormatType c for c in cats],
                         [axFormatOp op for op in ops]))]
       ['With, [], makeTypeSequence([axFormatType c for c in rest typeform])]
   typeform is ['CATEGORY, type, :ops] =>

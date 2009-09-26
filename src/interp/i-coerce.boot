@@ -1230,13 +1230,13 @@ computeTTTranspositions(t1,t2) ==
     towers := CONS(VEC2LIST tower,towers)
   towers := [reassembleTowerIntoType tower for tower in towers]
   if first(towers) ~= t2 then towers := cons(t2,towers)
-  NREVERSE towers
+  nreverse towers
 
 decomposeTypeIntoTower t ==
   ATOM t => [t]
   d := deconstructT t
   NULL rest d => [t]
-  rd := REVERSE t
+  rd := reverse t
   [reverse QCDR rd,:decomposeTypeIntoTower QCAR rd]
 
 reassembleTowerIntoType tower ==
@@ -1267,7 +1267,7 @@ permuteToOrder(p,n,start) ==
     p.stpos := p.x
     p.x := t
     stpos := x
-  APPEND(NREVERSE perms,permuteToOrder(p,n,start+1))
+  append(nreverse perms,permuteToOrder(p,n,start+1))
 
 coerceIntTest(t1,t2) ==
   -- looks whether there exists a table entry or a coercion function

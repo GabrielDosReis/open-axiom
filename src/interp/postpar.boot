@@ -61,7 +61,7 @@ postTransform y ==
   u
 
 displayPreCompilationErrors() ==
-  n:= #($postStack:= REMDUP NREVERSE $postStack)
+  n:= #($postStack:= REMDUP nreverse $postStack)
   n=0 => nil
   errors:=
     1<n => '"errors"

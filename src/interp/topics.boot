@@ -138,7 +138,7 @@ string2OpAlist s ==
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
     acc := [INTERN SUBSTRING(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
-  acc := NREVERSE acc
+  acc := nreverse acc
   --now add defaults 
   if u := getDefaultProps first acc then acc := [first acc,:u,:rest acc]
   acc

@@ -183,7 +183,7 @@ down() == displayComp ($level:= $level+1)
 displaySemanticErrors() ==
   n:= #($semanticErrorStack:= REMDUP $semanticErrorStack)
   n=0 => nil
-  l:= NREVERSE $semanticErrorStack
+  l:= nreverse $semanticErrorStack
   $semanticErrorStack:= nil
   sayBrightly bright '"  Semantic Errors:"
   displaySemanticError(l,$OutputStream)
@@ -198,7 +198,7 @@ displayWarnings() ==
   n:= #($warningStack:= REMDUP $warningStack)
   n=0 => nil
   sayBrightly bright '"  Warnings:"
-  l := NREVERSE $warningStack
+  l := nreverse $warningStack
   displayWarning(l,$OutputStream)
   $warningStack:= nil
   sayBrightly '" "
@@ -434,8 +434,8 @@ TrimCF() ==
       uold:= rest u
       unew:= nil
       for v in uold repeat if not ASSQ(first v,unew) then unew:= [v,:unew]
-      new:= [[first u,:NREVERSE unew],:new]
-  $CategoryFrame:= [[NREVERSE new]]
+      new:= [[first u,:nreverse unew],:new]
+  $CategoryFrame:= [[nreverse new]]
   nil
 
 --%

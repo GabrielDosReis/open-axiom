@@ -125,7 +125,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
         acc := nil
         for x in items | x.3 repeat acc:= [x,:acc]
         null acc => nil
-        [op,:NREVERSE acc]
+        [op,:nreverse acc]
   $conformsAreDomains : local := htpProperty(htPage,'domname)
   opCount := opAlistCount(opAlist, which)
   branch :=
@@ -351,7 +351,7 @@ dbGatherData(htPage,opAlist,which,key) ==
         exposureFlag => op
         [op,nil]
       acc := [node,:acc]
-    NREVERSE acc
+    nreverse acc
   data := nil
   dbExpandOpAlistIfNecessary(htPage,opAlist,which,key in '(origins documentation),false)
   --create data, a list of the form ((entry,exposeFlag,:entries)...)
@@ -406,8 +406,8 @@ dbGatherDataImplementation(htPage,opAlist) ==
     key = 'nowhere => nowheres := [x,:nowheres]
     key = 'constant =>constants := [x,:constants]
     others := [x,:others]   --add chain domains go here
-  fn [nowheres,constants,domexports,SORTBY('CDDR,NREVERSE others),SORTBY('CDDR,
-               NREVERSE defexports),SORTBY('CDDR,NREVERSE unexports)] where
+  fn [nowheres,constants,domexports,SORTBY('CDDR,nreverse others),SORTBY('CDDR,
+               nreverse defexports),SORTBY('CDDR,nreverse unexports)] where
     fn l ==
       alist := nil
       for u in l repeat
@@ -416,7 +416,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
           entries :=
             [[first u,true],:[u and [first u,true] while key = CDDAR (u := rest u)]]
           alist := [[key,gn key,:entries],:alist]
-      NREVERSE alist
+      nreverse alist
     gn key ==
       atom key => true
       isExposedConstructor first key
@@ -449,8 +449,8 @@ dbReduceByOpSignature(opAlist,datalist) ==
   for [op,:alist] in opAlist | MEMQ(op,ops) repeat
     entryList := [entry for (entry := [sig,:.]) in alist | test] where test() ==
       or/[x for x in datalist | x is [[=op,=sig,:.],:.]]
-    entryList => acc := [[op,:NREVERSE entryList],:acc]
-  NREVERSE acc
+    entryList => acc := [[op,:nreverse entryList],:acc]
+  nreverse acc
 
 dbReduceBySignature(opAlist,op,sig) ==
 --reduces opAlist to one with a fixed op and sig
@@ -461,14 +461,14 @@ dbReduceByForm(opAlist,form) ==
   for [op,:alist] in opAlist repeat
     items := [x for x in alist | dbContrivedForm(op,x) = form] =>
       acc := [[op,:items],:acc]
-  NREVERSE acc
+  nreverse acc
 
 dbReduceBySelection(opAlist,key,fn) ==
   acc := nil
   for [op,:alist] in opAlist repeat
     items := [x for x in alist | FUNCALL(fn,x) = key] =>
       acc := [[op,:items],:acc]
-  NREVERSE acc
+  nreverse acc
 
 dbContrivedForm(op,[sig,:.]) ==
   $which = '"attribute" => [op,sig]
@@ -753,8 +753,8 @@ dbShowOperationLines(which,linelist) ==  --branch in with lines
     pile := [x]
     while (lines := rest lines) and name = dbName (x := first lines) repeat
       pile := [x,:pile]
-    opAlist := [[name,:NREVERSE pile],:opAlist]
-  opAlist := listSort(function LEXLESSEQP,NREVERSE opAlist)
+    opAlist := [[name,:nreverse pile],:opAlist]
+  opAlist := listSort(function LEXLESSEQP,nreverse opAlist)
   if which = '"operation"
     then htpSetProperty(htPage,'opAlist,opAlist)
     else htpSetProperty(htPage,'attrAlist,opAlist)
@@ -833,7 +833,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
           exposeFlag := dbExposed?(line,char 'o)
           acc := [[sig,predicate,origin,exposeFlag,comments],:acc]
         --always store the fruits of our labor:
-        RPLACD(pair,NREVERSE acc)             --at least partially expand it
+        RPLACD(pair,nreverse acc)             --at least partially expand it
         condition? and value => return value  --early exit
       value => value
       condition? => nil

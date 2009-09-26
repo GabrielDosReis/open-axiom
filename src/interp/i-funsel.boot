@@ -891,7 +891,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       else maxargs := MAX(maxargs,1)
       impls := cons([b,nil,true,d],impls)
     impls := cons([b,d,true,d],impls)
-  impls := NREVERSE impls
+  impls := nreverse impls
   if maxargs ~= -1 then
     SL:= NIL
     for i in 1..maxargs repeat
@@ -1032,8 +1032,8 @@ selectMmsGen(op,tar,args1,args2) ==
 
   -- get top level constructor names for constructors with parameters
   conNames := nil
-  if op = 'reshape then args := APPEND(rest args1, rest args2)
-  else args := APPEND(args1,args2)
+  if op = 'reshape then args := append(rest args1, rest args2)
+  else args := append(args1,args2)
   if tar then args := [tar,:args]
   -- for common aggregates, use under domain also
   for a in REMDUP args repeat
@@ -1057,7 +1057,7 @@ selectMmsGen(op,tar,args1,args2) ==
   if haves then
     [havesExact,havesInexact] := exact?(haves,tar,args1)
     if $reportBottomUpFlag then
-      for mm in APPEND(havesExact,havesInexact) for i in 1.. repeat
+      for mm in append(havesExact,havesInexact) for i in 1.. repeat
         sayModemapWithNumber(mm,i)
     if havesExact then
       mmS := matchMms(havesExact,op,tar,args1,args2)
@@ -1076,7 +1076,7 @@ selectMmsGen(op,tar,args1,args2) ==
   if havenots then
     [havesNExact,havesNInexact] := exact?(havenots,tar,args1)
     if $reportBottomUpFlag then
-      for mm in APPEND(havesNExact,havesNInexact) for i in 1.. repeat
+      for mm in append(havesNExact,havesNInexact) for i in 1.. repeat
         sayModemapWithNumber(mm,i)
     if havesNExact then
       mmS := matchMms(havesNExact,op,tar,args1,args2)
