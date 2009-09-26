@@ -237,7 +237,7 @@ mkErrorExpr level ==
                 atom a => a
                 a is [ =b,:c] => [$bright,b,$dim,:c]
                 [highlight1(b,first a),:highlight1(b,rest a)]
-      substitute(bracket rest l,first rest l,first l)
+      substitute(bracket rest l,second l,first l)
  
 compAndTrace [x,m,e] ==
   SAY("tracing comp, compFormWithModemap of: ",x)

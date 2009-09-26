@@ -486,7 +486,7 @@ setVector5(catNames,locals) ==
     if w:= assoc(u,generated)
        then RPLACD(w,[uname,:rest w])
        else generated:= [[u,uname],:generated]
-  [(w:= mkVectorWithDeferral(first u,first rest u);
+  [(w:= mkVectorWithDeferral(first u,second u);
       for v in rest u repeat
          w:= ["setShellEntry",v,5,w];
         w)

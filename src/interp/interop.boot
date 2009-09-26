@@ -64,13 +64,13 @@ DNameToSExpr1 dname ==
   NULL dname => error "unexpected domain name"
   first dname = DNameStringID => 
     INTERN(CompStrToString rest dname)
-  name0 := DNameToSExpr1 first rest dname
+  name0 := DNameToSExpr1 second dname
   args  := rest rest dname
   name0 = '_-_> => 
     froms := first args
     froms := MAPCAR(function DNameToSExpr, rest froms)
-    ret   := first rest args -- a tuple
-    ret   := DNameToSExpr first rest ret -- contents
+    ret   := second args -- a tuple
+    ret   := DNameToSExpr second ret -- contents
     CONS('Mapping, CONS(ret, froms))
   name0 = 'Union or name0 = 'Record =>
     sxs := MAPCAR(function DNameToSExpr, rest first args)
@@ -91,7 +91,7 @@ DNameFixEnum arg == CompStrToString rest arg
 SExprToDName(sexpr, cosigVal) == 
   -- is it a non-type valued object?
   NOT cosigVal => [DNameOtherID, :sexpr]
-  if first sexpr = '_: then sexpr := first rest rest sexpr
+  if first sexpr = '_: then sexpr := third sexpr
   first sexpr = 'Mapping =>
     args := [ SExprToDName(sx,true) for sx in rest sexpr]
     [DNameApplyID,

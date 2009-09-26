@@ -649,7 +649,7 @@ newHasTest(domform,catOrAtt) ==
              pred = "has" => 
                   l is [ w1,['ATTRIBUTE,w2]] => newHasTest(w1,w2) 
                   l is [ w1,['SIGNATURE,:w2]] => compiledLookup(first w2,second w2, eval mkEvalable w1)
-                  newHasTest(first  l ,first rest l) 
+                  newHasTest(first  l ,second l) 
              pred = 'OR => or/[evalCond i for i in l]
              pred = 'AND => and/[evalCond i for i in l]
              x  

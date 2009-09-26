@@ -470,7 +470,7 @@ spadify(l,results,decls,names,actual) ==
                     :spadForms]
     -- Result is a Boolean vector or array
     LISTP(ty) and first(ty)="logical" and #ty=2 =>
-      dim := getVal(first rest ty,names,actual)
+      dim := getVal(second ty,names,actual)
       spadForms := [makeResultRecord(name,ty,_
                           [int2Bool ELT(fort,i) for i in 0..dim-1]), :spadForms]
     LISTP(ty) and first(ty)="logical" =>

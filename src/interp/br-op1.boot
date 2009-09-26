@@ -846,7 +846,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
       domform := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
       if isDefaultPackageName opOf domform then
          catname := intern SUBSTRING(s := PNAME opOf domform,0,MAXINDEX s)
-         packageSymbol := first rest domform
+         packageSymbol := second domform
          domform := [catname,:rest rest domform]  --skip first argument ($)
       docTable:= dbDocTable domform
       for [op,:alist] in opAlist repeat

@@ -556,9 +556,9 @@ asytranApply(['Apply,name,:arglist],levels,local?) ==
     [name,:[asytranApplySpecial(x, levels, local?) for x in arglist]]
   null arglist => [name]
   name is [ 'RestrictTo, :.] => 
-    asytranApply(['Apply, first rest name,:arglist], levels, local?)
+    asytranApply(['Apply, second name,:arglist], levels, local?)
   name is [ 'Qualify, :.] => 
-    asytranApply(['Apply, first rest name,:arglist], levels, local?)
+    asytranApply(['Apply, second name,:arglist], levels, local?)
   name is 'string => asytranLiteral first arglist
   name is 'integer => asytranLiteral first arglist
   name is 'float => asytranLiteral first arglist
@@ -569,7 +569,7 @@ asytranApply(['Apply,name,:arglist],levels,local?) ==
           asytranFormSpecial(lastArg,levels,false)]
 
 asytranLiteral(lit) ==
-  first rest lit
+  second lit
 
 asytranEnumItem arg ==
   arg is ['Declare, name, :.] => name

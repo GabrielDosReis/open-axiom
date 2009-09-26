@@ -376,7 +376,7 @@ CondAncestorP(xname,leaves,condition) ==
     u':=first u
     ucond:=
       null rest u => true
-      first rest u
+      second u
     xname = u' or member(xname,first (CatEval u').4) =>
       PredImplies(ucond,condition) => return u'
 
@@ -410,7 +410,7 @@ JoinInner(l,$e) ==
       null isCategoryForm(at2,$e) =>
         $Attributes:=[QCAR at2,:$Attributes]
         nil
-      pred:= first rest at
+      pred:= second at
         -- The predicate under which this category is conditional
       member(pred,get("$Information","special",$e)) => l:= [:l,CatEval at2]
           --It's true, so we add this as unconditional
@@ -534,7 +534,7 @@ JoinInner(l,$e) ==
       S_+(b.2,attl)
     globalDomains:= [:globalDomains,:S_-(b.5,globalDomains)]
   for b in CondList repeat
-    newpred:= first rest b
+    newpred:= second b
     for u in (first b).2 repeat
       v:= assoc(first u,attl)
       null v =>
