@@ -670,7 +670,7 @@ bfIS1(lhs,rhs) ==
 
 bfHas(expr,prop) ==
   IDENTP prop => ["GET",expr,["QUOTE",prop]]
-  bpSpecificErrorAtToken('"expected identifier as property name")
+  bpSpecificErrorHere('"expected identifier as property name")
   
 bfApplication(bfop, bfarg) ==
   bfTupleP bfarg => [bfop,:rest bfarg]

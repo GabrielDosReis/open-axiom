@@ -1058,8 +1058,7 @@
 (DEFUN |bfHas| (|expr| |prop|)
   (COND
     ((IDENTP |prop|) (LIST 'GET |expr| (LIST 'QUOTE |prop|)))
-    (T (|bpSpecificErrorAtToken|
-           "expected identifier as property name"))))
+    (T (|bpSpecificErrorHere| "expected identifier as property name"))))
 
 (DEFUN |bfApplication| (|bfop| |bfarg|)
   (COND
