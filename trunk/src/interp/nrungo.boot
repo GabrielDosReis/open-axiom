@@ -133,8 +133,8 @@ NRTreplaceLocalTypes(t,dom) ==
      t:= dom.t
      if CONSP t then t:= NRTevalDomain t
      t.0
-   CAR t in '(Mapping Union Record _:) =>
-      [CAR t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
+   first t in '(Mapping Union Record _:) =>
+      [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
    t
 
 substDomainArgs(domain,object) ==
@@ -277,7 +277,7 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
   tslot = '$ => s = "$" or s = devaluate dollar
   INTEGERP tslot and CONSP(lazyt:=domain.tslot) and CONSP s =>
       lazyt is [.,.,.,[.,item,.]] and
-        item is [.,[functorName,:.]] and functorName = CAR s =>
+        item is [.,[functorName,:.]] and functorName = first s =>
           compareSigEqual(s,(NRTevalDomain lazyt).0,dollar,domain)
       nil
   compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
@@ -319,8 +319,8 @@ NRTcompiledLookup(op,sig,dom) ==
 
 NRTtypeHack t ==
   ATOM t => t
-  CAR t = '_# => # second t
-  [CAR t,:[NRTtypeHack tt for tt in CDR t]]
+  first t = '_# => # second t
+  [first t,:[NRTtypeHack tt for tt in rest t]]
 
 NRTgetMinivectorIndex(u,op,sig,domVector) ==
   s := # $minivector

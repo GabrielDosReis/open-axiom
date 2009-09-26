@@ -170,7 +170,7 @@ loadLib cname ==
   coSig :=
       u =>
           [[.,:sig],:.] := u
-          CONS(NIL,[categoryForm?(x) for x in CDR sig])
+          CONS(NIL,[categoryForm?(x) for x in rest sig])
       NIL
   -- in following, add property value false or NIL to possibly clear
   -- old value
@@ -293,7 +293,7 @@ compileConstructorLib(l,op,editFlag,traceFlag) ==
   '_? in l => return editFile '(_/C TELL _*)
   optionList:= _/OPTIONS l
   funList:= TRUNCLIST(l,optionList) or [_/FN]
-  options:= [[UPCASE CAR x,:CDR x] for x in optionList]
+  options:= [[UPCASE first x,:rest x] for x in optionList]
   infile:=  _/MKINFILENAM _/GETOPTION(options,'FROM_=)
   outfile:= _/MKINFILENAM _/GETOPTION(options,'TO_=)
   res:= [compConLib1(fn,infile,outfile,op,editFlag,traceFlag)
@@ -321,7 +321,7 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $libFile: local := NIL
   $lisplibVariableAlist: local := NIL
   $lisplibSignatureAlist: local := NIL
-  if null atom fun and null CDR fun then fun:= CAR fun -- unwrap nullary
+  if null atom fun and null rest fun then fun:= first fun -- unwrap nullary
   libName:= getConstructorAbbreviation fun
   infile:= infileOrNil or getFunctionSourceFile fun or
     throwKeyedMsg("S2IL0004",[fun])
@@ -434,14 +434,14 @@ finalizeLisplib libName ==
   lisplibWrite('"modemaps",removeZeroOne $lisplibModemapAlist,$libFile)
   opsAndAtts:= getConstructorOpsAndAtts(
     $lisplibForm,kind,$lisplibModemap)
-  lisplibWrite('"operationAlist",removeZeroOne CAR opsAndAtts,$libFile)
-  --lisplibWrite('"attributes",CDR opsAndAtts,$libFile)
-  --if kind='category then NRTgenInitialAttributeAlist CDR opsAndAtts
+  lisplibWrite('"operationAlist",removeZeroOne first opsAndAtts,$libFile)
+  --lisplibWrite('"attributes",rest opsAndAtts,$libFile)
+  --if kind='category then NRTgenInitialAttributeAlist rest opsAndAtts
   if kind='category then
      $pairlis : local := [[a,:v] for a in rest $lisplibForm
                                  for v in $FormalMapVariableList]
      $NRTslot1PredicateList : local := []
-     NRTgenInitialAttributeAlist CDR opsAndAtts
+     NRTgenInitialAttributeAlist rest opsAndAtts
   lisplibWrite('"superDomain",removeZeroOne $lisplibSuperDomain,$libFile)
   lisplibWrite('"signaturesAndLocals",
     removeZeroOne mergeSignatureAndLocalVarAlists($lisplibSignatureAlist,
@@ -454,8 +454,8 @@ finalizeLisplib libName ==
   lisplibWrite('"documentation",finalizeDocumentation(),$libFile)
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()
-  if $lisplibForm and null CDR $lisplibForm then
-    MAKEPROP(CAR $lisplibForm,'NILADIC,'T)
+  if $lisplibForm and null rest $lisplibForm then
+    MAKEPROP(first $lisplibForm,'NILADIC,'T)
   leaveIfErrors libName
   true
 
@@ -495,7 +495,7 @@ getConstructorOpsAndAtts(form,kind,modemap) ==
   getFunctorOpsAndAtts(form,modemap)
  
 getCategoryOpsAndAtts(catForm) ==
-  -- returns [operations,:attributes] of CAR catForm
+  -- returns [operations,:attributes] of first catForm
   [transformOperationAlist getSlotFromCategoryForm(catForm,1),
     :getSlotFromCategoryForm(catForm,2)]
  
@@ -582,8 +582,8 @@ bustUnion d ==
   d
  
 getSlotNumberFromOperationAlist(domainForm,op,sig) ==
-  constructorName:= CAR domainForm
-  constructorArglist:= CDR domainForm
+  constructorName:= first domainForm
+  constructorArglist:= rest domainForm
   operationAlist:=
     getConstructorOperationsFromDB constructorName or
       keyedSystemError("S2IL0026",[constructorName])
@@ -597,7 +597,7 @@ sigsMatch(sig,sig1,domainForm) ==
   --  sig1 designate corresponding arguments of domainForm
   while sig and sig1 repeat
     partsMatch:=
-      (item:= CAR sig)=(item1:= CAR sig1) => true --ok, go to next iteration
+      (item:= first sig)=(item1:= first sig1) => true --ok, go to next iteration
       FIXP item1 => item = domainForm.item1       --item1=n means nth arg
       isSubset(bustUnion item1,bustUnion item,$CategoryFrame)
     null partsMatch => return nil

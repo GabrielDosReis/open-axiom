@@ -57,7 +57,7 @@ npParse stream ==
                  ncSoftError(tokPosn $stok,'S2CY0009, [])
                  pfWrong(pfDocument ['"stack empty"],pfListOf [])
               else
-                 CAR $stack
+                 first $stack
 
 npItem()==
      npQualDef() =>
@@ -81,19 +81,19 @@ npFirstTok()==
       $stok:=
           if null $inputStream
           then tokConstruct("ERROR","NOMORE",tokPosn $stok)
-          else CAR $inputStream
+          else first $inputStream
       $ttok:=tokPart $stok
 
 npNext() ==
-     $inputStream := CDR($inputStream)
+     $inputStream := rest($inputStream)
      npFirstTok()
 
 npState()==cons($inputStream,$stack)
 
 npRestore(x)==
-      $inputStream:=CAR x
+      $inputStream:=first x
       npFirstTok()
-      $stack:=CDR x
+      $stack:=rest x
       true
 
 npPush x==$stack:=CONS(x,$stack)
@@ -105,8 +105,8 @@ npPushId()==
    npNext()
 
 npPop1()==
-       a:=CAR $stack
-       $stack:=CDR $stack
+       a:=first $stack
+       $stack:=rest $stack
        a
 
 npPop2()==
@@ -116,7 +116,7 @@ npPop2()==
 
 npPop3()==
        a:= third $stack
-       RPLACD(CDR $stack,CDDDR $stack)
+       RPLACD(rest $stack,CDDDR $stack)
        a
 
 npParenthesized f==

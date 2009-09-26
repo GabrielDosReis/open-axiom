@@ -247,7 +247,7 @@ for i in   [ _
    ["LARROW"       ,"<-"], _
    ["BAR"       ,"|"], _
    ["SEG"       ,".."] _
-    ] repeat MAKEPROP(CAR i,'INFGENERIC,second i)
+    ] repeat MAKEPROP(first i,'INFGENERIC,second i)
 
 -- Scanner
 
@@ -269,9 +269,9 @@ nextline(s)==
      if npNull s
      then false
      else
-       $f:= CAR s
-       $r:= CDR s
-       $ln := CDR $f
+       $f:= first s
+       $r:= rest s
+       $ln := rest $f
        $linepos:=CAAR $f
        $n:=STRPOSL('" ",$ln,0,true)-- spaces at beginning
        $sz :=# $ln

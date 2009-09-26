@@ -273,10 +273,10 @@ pfApplication2Atree pf ==
     op := packageTran ((opTran)(pfOp2Sex)(opPf))
     op = "->" =>
         args := (pf0TupleParts)((pfApplicationArg)(pf))
-        if (pfTuple?)(CAR args) then
-            typeList := [pf2Atree1 arg for arg in (pf0TupleParts)(CAR args)]
+        if (pfTuple?)(first args) then
+            typeList := [pf2Atree1 arg for arg in (pf0TupleParts)(first args)]
         else
-            typeList := [pf2Atree1 CAR args]
+            typeList := [pf2Atree1 first args]
         args := [pf2Atree1 second args, :typeList]
         [mkAtreeNodeWithSrcPos("Mapping", opPf), :args]
 
@@ -321,7 +321,7 @@ pfApplication2Atree pf ==
         -- handle package call
         (pfFromdom?)(opPf) =>
             opAtree := pf2Atree1 opPf
-            [CAR opAtree, second opAtree, [third opAtree, :argAtree]]
+            [first opAtree, second opAtree, [third opAtree, :argAtree]]
         -- regular call
         [mkAtreeNodeWithSrcPos(op,opPf), :argAtree]
 
@@ -337,13 +337,13 @@ pfApplication2Atree pf ==
     -- handle package call
     (pfFromdom?)(opPf) =>
         opAtree := pf2Atree1 opPf
-        [CAR opAtree, second opAtree, [third opAtree, pf2Atree1 args]]
+        [first opAtree, second opAtree, [third opAtree, pf2Atree1 args]]
     -- regular call
     [mkAtreeNodeWithSrcPos(op,opPf), pf2Atree1 args]
 
 --  pfDefinition2Atree pf ==
 --  --! $insideApplication =>
---  --!     ["OPTARG", pf2Atree1 CAR pf0DefinitionLhsItems pf,
+--  --!     ["OPTARG", pf2Atree1 first pf0DefinitionLhsItems pf,
 --  --!         pf2Atree1 pfDefinitionRhs pf]
 --      idList := [pf2Atree1 x for x in (pf0DefinitionLhsItems)(pf)]
 --      #idList ~= 1 =>
@@ -489,7 +489,7 @@ pfCollect2Atree pf ==
 --    for pred in $predicateList repeat
 --      [name, predLhs, :predRhs] := pred
 --      vars := patternVarsOf predRhs
---      CDR vars =>  -- if there is more than one patternVariable
+--      rest vars =>  -- if there is more than one patternVariable
 --        ruleLhs := NSUBST(predLhs, name, ruleLhs)
 --        $multiVarPredicateList := [pred, :$multiVarPredicateList]
 --      predicate :=
@@ -503,7 +503,7 @@ pfCollect2Atree pf ==
 --    null $multiVarPredicateList => rule
 --    varList := patternVarsOf [rhs for [.,.,:rhs] in $multiVarPredicateList]
 --    predBody :=
---      CDR $multiVarPredicateList =>
+--      rest $multiVarPredicateList =>
 --        ['AND, :[:pvarPredTran(rhs, varList) for [.,.,:rhs] in
 --          $multiVarPredicateList]]
 --      [[.,.,:rhs],:.] := $multiVarPredicateList
@@ -549,7 +549,7 @@ pfCollect2Atree pf ==
 --  pfSuchThat2Atree args ==
 --    name := GENSYM()
 --    argList := pf0TupleParts args
---    lhsSex := pf2Atree1 CAR argList
+--    lhsSex := pf2Atree1 first argList
 --    rhsSex := pf2Atree second argList
 --    $predicateList := [[name, lhsSex, :rhsSex], :$predicateList]
 --    name

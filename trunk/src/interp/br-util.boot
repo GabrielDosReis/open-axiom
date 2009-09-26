@@ -278,7 +278,7 @@ getConstructorForm name ==
   name = 'Enumeration => '(Enumeration a b)
   getConstructorFormFromDB name
 
-getConstructorArgs conname == CDR getConstructorForm conname
+getConstructorArgs conname == rest getConstructorForm conname
 
 bcComments(comments,:options) ==
   italics? := not IFCAR options

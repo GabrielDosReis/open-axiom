@@ -47,7 +47,7 @@ buildWordTable u ==
   for key in HKEYS table repeat
     HPUT(table,key,
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, HGET(table,key),function CAR),
+        listSort(function GLESSEQP, HGET(table,key),function first),
           function second))
   table
  

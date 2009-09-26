@@ -62,49 +62,49 @@ DNameOtherID  := 3
 
 DNameToSExpr1 dname ==
   NULL dname => error "unexpected domain name"
-  CAR dname = DNameStringID => 
-    INTERN(CompStrToString CDR dname)
-  name0 := DNameToSExpr1 CAR CDR dname
-  args  := CDR CDR dname
+  first dname = DNameStringID => 
+    INTERN(CompStrToString rest dname)
+  name0 := DNameToSExpr1 first rest dname
+  args  := rest rest dname
   name0 = '_-_> => 
-    froms := CAR args
-    froms := MAPCAR(function DNameToSExpr, CDR froms)
-    ret   := CAR CDR args -- a tuple
-    ret   := DNameToSExpr CAR CDR ret -- contents
+    froms := first args
+    froms := MAPCAR(function DNameToSExpr, rest froms)
+    ret   := first rest args -- a tuple
+    ret   := DNameToSExpr first rest ret -- contents
     CONS('Mapping, CONS(ret, froms))
   name0 = 'Union or name0 = 'Record =>
-    sxs := MAPCAR(function DNameToSExpr, CDR CAR args)
+    sxs := MAPCAR(function DNameToSExpr, rest first args)
     CONS(name0, sxs)
   name0 = 'Enumeration =>
-    CONS(name0, MAPCAR(function DNameFixEnum, CDR CAR args))
+    CONS(name0, MAPCAR(function DNameFixEnum, rest first args))
   CONS(name0, MAPCAR(function DNameToSExpr, args))
 
 DNameToSExpr dname ==
-  CAR dname = DNameOtherID  =>
-        CDR dname
+  first dname = DNameOtherID  =>
+        rest dname
   sx := DNameToSExpr1 dname
   CONSP sx => sx
   LIST sx
 
-DNameFixEnum arg == CompStrToString CDR arg
+DNameFixEnum arg == CompStrToString rest arg
   
 SExprToDName(sexpr, cosigVal) == 
   -- is it a non-type valued object?
   NOT cosigVal => [DNameOtherID, :sexpr]
-  if CAR sexpr = '_: then sexpr := CAR CDR CDR sexpr
-  CAR sexpr = 'Mapping =>
-    args := [ SExprToDName(sx,true) for sx in CDR sexpr]
+  if first sexpr = '_: then sexpr := first rest rest sexpr
+  first sexpr = 'Mapping =>
+    args := [ SExprToDName(sx,true) for sx in rest sexpr]
     [DNameApplyID,
          [DNameStringID,: StringToCompStr '"->"],
-              [DNameTupleID, : CDR args],
-                 [DNameTupleID, CAR args]]
-  name0 :=   [DNameStringID, : StringToCompStr SYMBOL_-NAME CAR sexpr]
-  CAR sexpr = 'Union or CAR sexpr = 'Record =>
+              [DNameTupleID, : rest args],
+                 [DNameTupleID, first args]]
+  name0 :=   [DNameStringID, : StringToCompStr SYMBOL_-NAME first sexpr]
+  first sexpr = 'Union or first sexpr = 'Record =>
     [DNameApplyID, name0, 
-        [DNameTupleID,: [ SExprToDName(sx,true) for sx in CDR sexpr]]]
+        [DNameTupleID,: [ SExprToDName(sx,true) for sx in rest sexpr]]]
   newCosig := rest getDualSignatureFromDB first sexpr
   [DNameApplyID, name0,
-   : MAPCAR(function SExprToDName, CDR sexpr, newCosig)]
+   : MAPCAR(function SExprToDName, rest sexpr, newCosig)]
 
 -- local garbage because Compiler strings are null terminated
 StringToCompStr(str) == 
@@ -139,13 +139,13 @@ closeOldAxiomFunctor(name) ==
 
 lazyOldAxiomDomainLookupExport(domenv, self, op, sig, box, skipdefaults, env) ==
   dom := instantiate domenv
-  SPADCALL(CDR dom, self, op, sig, box, skipdefaults, CAR(dom).3)
+  SPADCALL(rest dom, self, op, sig, box, skipdefaults, first(dom).3)
 
-lazyOldAxiomDomainHashCode(domenv, env) == CAR domenv
+lazyOldAxiomDomainHashCode(domenv, env) == first domenv
 
 lazyOldAxiomDomainDevaluate(domenv, env) ==
   dom := instantiate domenv
-  SPADCALL(CDR dom, CAR(dom).1)
+  SPADCALL(rest dom, first(dom).1)
 
 lazyOldAxiomAddChild(domenv, kid, env) ==
   CONS($lazyOldAxiomDomainDispatch,domenv)
@@ -195,7 +195,7 @@ oldAxiomPreCategoryParents(catform,dom) ==
 
 quoteCatOp cat == 
    atom cat => MKQ cat
-   ['LIST, MKQ CAR cat,: CDR cat]
+   ['LIST, MKQ first cat,: rest cat]
 
 
 oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
@@ -273,7 +273,7 @@ orderedDefaults(conform,domform) ==
 instantiate domenv ==
    -- following is a patch for a bug in runtime.as
    -- has a lazy dispatch vector with an instantiated domenv
-  VECTORP CDR domenv => [$oldAxiomDomainDispatch ,: domenv]
+  VECTORP rest domenv => [$oldAxiomDomainDispatch ,: domenv]
   callForm := second domenv
   oldDom := CDDR domenv
   [functor,:args] := callForm
@@ -301,7 +301,7 @@ $hashPercent := hashString '"%"
 
 oldAxiomDomainLookupExport _
   (domenv, self, op, sig, box, skipdefaults, env) ==
-     domainVec := CDR domenv
+     domainVec := rest domenv
      if hashCode? op then
          EQL(op, $hashOp1) => op := 'One
          EQL(op, $hashOp0) => op := 'Zero
@@ -321,14 +321,14 @@ oldAxiomDomainLookupExport _
      RPLACA(box, val)
      box
      
-oldAxiomDomainHashCode(domenv, env) == CAR domenv
+oldAxiomDomainHashCode(domenv, env) == first domenv
 
 oldAxiomDomainHasCategory(domenv, cat, env) ==
-  HasAttribute(domvec := CDR domenv, cat) or
+  HasAttribute(domvec := rest domenv, cat) or
     HasCategory(domvec, devaluate cat)
 
 oldAxiomDomainDevaluate(domenv, env) == 
-   SExprToDName(CDR(domenv).0, 'T)
+   SExprToDName(rest(domenv).0, 'T)
 
 oldAxiomAddChild(domenv, child, env) == CONS($oldAxiomDomainDispatch, domenv)
 
@@ -342,7 +342,7 @@ $oldAxiomDomainDispatch :=
 
 basicLookupCheckDefaults(op,sig,domain,dollar) ==
   box := [nil]
-  not VECP(dispatch := CAR dollar) => error "bad domain format"
+  not VECP(dispatch := first dollar) => error "bad domain format"
   lookupFun := dispatch.3
   dispatch.0 = 0  =>  -- new compiler domain object
        hashPercent :=
@@ -354,8 +354,8 @@ basicLookupCheckDefaults(op,sig,domain,dollar) ==
          hashType( ['Mapping,:sig], hashPercent)
 
        if SYMBOLP op then op := hashString SYMBOL_-NAME op
-       CAR SPADCALL(CDR dollar, dollar, op, hashSig, box, not $lookupDefaults, lookupFun)
-  CAR SPADCALL(CDR dollar, dollar, op, sig, box, not $lookupDefaults, lookupFun)
+       first SPADCALL(rest dollar, dollar, op, hashSig, box, not $lookupDefaults, lookupFun)
+  first SPADCALL(rest dollar, dollar, op, sig, box, not $lookupDefaults, lookupFun)
 
 $hasCatOpHash := hashString '"%%"
 opIsHasCat op ==
@@ -502,7 +502,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
             --not nrunNumArgCheck(#(QCDR sig),byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
             --numOfArgs ~= #(QCDR sig) => nil
-            packageForm := [entry,'$,:CDR cat]
+            packageForm := [entry,'$,:rest cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
             package
@@ -510,7 +510,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
           table := HGET($Slot1DataBase,entry) or systemError nil
           (u := LASSQ(op,table))
             and (v := or/[rest x for x in u]) =>
-              packageForm := [entry,'$,:CDR cat]
+              packageForm := [entry,'$,:rest cat]
               package := evalSlotDomain(packageForm,dom)
               packageVec.i := package
               package
@@ -571,7 +571,7 @@ newHasCategory(domain,catform) ==
   catform is ["Join",:cats] => 
     and/[newHasCategory(domain,cat) for cat in cats]
   slot4 := domain.4
-  auxvec := CAR slot4
+  auxvec := first slot4
   catvec := second slot4
   $isDefaultingPackage: local := isDefaultPackageForm? devaluate domain
   #catvec > 0 and INTEGERP KDR catvec.0 =>              --old style

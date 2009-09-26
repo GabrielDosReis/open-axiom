@@ -302,7 +302,7 @@ interpretTopLevel(x, posnForm) ==
   c
 
 interpret(x, :restargs) ==
-  posnForm := if CONSP restargs then CAR restargs else restargs
+  posnForm := if CONSP restargs then first restargs else restargs
   --type analyzes and evaluates expression x, returns object
   $env:local := [[nil]]
   $eval:local := true           --generate code-- don't just type analyze

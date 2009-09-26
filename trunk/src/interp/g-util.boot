@@ -178,8 +178,8 @@ get(x,prop,e) ==
 
 get0(x,prop,e) ==
   not atom x => get(QCAR x,prop,e)
-  u:= QLASSQ(x,CAR QCAR e) => QLASSQ(prop,u)
-  (tail:= CDR QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
+  u:= QLASSQ(x,first QCAR e) => QLASSQ(prop,u)
+  (tail:= rest QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
     QLASSQ(prop,u)
   nil
 
@@ -339,12 +339,12 @@ length2? l == CONSP l and CONSP (l := QCDR l) and not CONSP QCDR l
 pairList(u,v) == [[x,:y] for x in u for y in v]
 
 -- GETALIST(alist,prop) == IFCDR assoc(prop,alist)
-GETALIST(alist,prop) == CDR assoc(prop,alist)
+GETALIST(alist,prop) == rest assoc(prop,alist)
 
 PUTALIST(alist,prop,val) ==
   null alist => [[prop,:val]]
   pair := assoc(prop,alist) =>
-    CDR pair = val => alist
+    rest pair = val => alist
     -- else we fall over Lucid's read-only storage feature again
     QRPLACD(pair,val)
     alist
@@ -355,8 +355,8 @@ REMALIST(alist,prop) ==
   null alist => alist
   alist is [[ =prop,:.],:r] =>
     null r => NIL
-    QRPLACA(alist,CAR r)
-    QRPLACD(alist,CDR r)
+    QRPLACA(alist,first r)
+    QRPLACD(alist,rest r)
     alist
   null rest alist => alist
   l := alist
@@ -550,7 +550,7 @@ listSort(pred,list,:optional) ==
    NOT functionp pred => error "listSort: first arg must be a function"
    NOT LISTP list => error "listSort: second argument must be a list"
    NULL optional => mergeSort(pred,function Identity,list,LENGTH list)
-   key := CAR optional
+   key := first optional
    NOT functionp key => error "listSort: last arg must be a function"
    mergeSort(pred,key,list,LENGTH list)
 
@@ -804,8 +804,8 @@ intern x ==
   x
 
 isDomain a ==
-  CONSP a and VECP(CAR a) and
-    member(CAR(a).0, $domainTypeTokens)
+  CONSP a and VECP(first a) and
+    member(first(a).0, $domainTypeTokens)
 
 -- variables used by browser
 

@@ -159,8 +159,8 @@ assocCircular(x,al) ==  --like ASSOC except that al is circular
   forwardPointer:= al
   val:= nil
   until EQ(forwardPointer,al) repeat
-    EQUAL(CAAR forwardPointer,x) => return (val:= CAR forwardPointer)
-    forwardPointer:= CDR forwardPointer
+    EQUAL(CAAR forwardPointer,x) => return (val:= first forwardPointer)
+    forwardPointer:= rest forwardPointer
   val
  
 compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==

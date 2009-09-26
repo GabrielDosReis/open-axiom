@@ -73,9 +73,9 @@ objNewCode(val, mode) == ["CONS", MKQ mode,val ]
 objSetVal(obj,val) == RPLACD(obj,val)
 objSetMode(obj,mode) == RPLACA(obj,mode)
 
-objVal obj == CDR obj
-objValUnwrap obj == unwrap CDR obj
-objMode obj == CAR obj
+objVal obj == rest obj
+objValUnwrap obj == unwrap rest obj
+objMode obj == first obj
 objEnv obj == $EmptyEnvironment
 
 objCodeVal obj == third obj
@@ -144,8 +144,8 @@ asTupleNewCode(eltType, size, listOfElts) ==
 asTupleNewCode0(eltType,listForm) == 
   ["asTupleNew0", quoteForm getVMType eltType, listForm]
 
-asTupleSize(at) == CAR at
-asTupleAsVector(at) == CDR at
+asTupleSize(at) == first at
+asTupleAsVector(at) == rest at
 asTupleAsList(at) == VEC2LIST asTupleAsVector at
 
 --% Basic Object Type Identification

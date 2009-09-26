@@ -1,3 +1,7 @@
+2009-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/: More cleanup.
+
 2009-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/as.boot: Clean up.

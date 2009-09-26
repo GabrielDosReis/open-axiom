@@ -151,7 +151,7 @@ replaceGoGetSlot env ==
     sayLooking1(['"goget stuffing slot",:bright thisSlot,'"of "],thisDomain)
   setShellEntry(thisDomain,thisSlot,slot)
   if $monitorNewWorld then
-    sayLooking1('"<------",[CAR slot,:devaluate CDR slot])
+    sayLooking1('"<------",[first slot,:devaluate rest slot])
   slot
  
 --=======================================================
@@ -249,7 +249,7 @@ newLookupInAddChain(op,sig,addFormDomain,dollar) ==
   addFunction =>
     if $monitorNewWorld then
       sayLooking1(concat('"<----add-chain function found for ",
-        form2String devaluate addFormDomain,'"<----"),CDR addFunction)
+        form2String devaluate addFormDomain,'"<----"),rest addFunction)
     addFunction
   nil
  
@@ -309,7 +309,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
             not nrunNumArgCheck(#(QCDR sig),byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
             --numOfArgs ~= #(QCDR sig) => nil
-            packageForm := [entry,'$,:CDR cat]
+            packageForm := [entry,'$,:rest cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
             package
@@ -317,7 +317,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
           table := HGET($Slot1DataBase,entry) or systemError nil
           (u := LASSQ(op,table))
             and (v := or/[rest x for x in u | #sig = #x.0]) =>
-              packageForm := [entry,'$,:CDR cat]
+              packageForm := [entry,'$,:rest cat]
               package := evalSlotDomain(packageForm,dom)
               packageVec.i := package
               package
@@ -355,14 +355,14 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   predvec := dom.3
   slot4 := dom.4
   packageVec := CAR slot4
-  catVec := CAR QCDR slot4
+  catVec := first QCDR slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
   for i in 0..MAXINDEX packageVec | (entry := ELT(packageVec,i))
-      and (VECP entry or (predIndex := CDR (node := ELT(catVec,i))) and
+      and (VECP entry or (predIndex := rest (node := ELT(catVec,i))) and
           (EQ(predIndex,0) or testBitVector(predvec,predIndex))) repeat
     package :=
       VECP entry =>
@@ -383,14 +383,14 @@ newLookupInCategories1(op,sig,dom,dollar) ==
             byteVector := CDDR infovec.3
             numOfArgs := byteVector.(opvec.code)
             numOfArgs ~= #(QCDR sig) => nil
-            packageForm := [entry,'$,:CDR cat]
+            packageForm := [entry,'$,:rest cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
             package
           table := HGET($Slot1DataBase,entry) or systemError nil
           (u := LASSQ(op,table))
             and (v := or/[rest x for x in u | #sig = #x.0]) =>
-              packageForm := [entry,'$,:CDR cat]
+              packageForm := [entry,'$,:rest cat]
               package := evalSlotDomain(packageForm,dom)
               packageVec.i := package
               package
@@ -444,7 +444,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
       domainArg := ($isDefaultingPackage => domain.6.0; domain.0)
       KAR s = QCAR d.0 and
         lazyMatchArgDollarCheck(replaceSharpCalls s,d.0,dollar.0,domainArg)
-    --VECP CAR d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
+    --VECP first d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
     lazyMatch(replaceSharpCalls s,d,dollar,domain)       --new style
   a = '$ => s = devaluate dollar
   a = "$$" => s = devaluate domain
@@ -461,8 +461,8 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
 --s = a
  
 lazyMatch(source,lazyt,dollar,domain) ==
-  lazyt is [op,:argl] and null atom source and op=CAR source
-    and #(sargl := CDR source) = #argl =>
+  lazyt is [op,:argl] and null atom source and op=first source
+    and #(sargl := rest source) = #argl =>
       op in '(Record Union) and first argl is [":",:.] =>
         and/[stag = atag and lazyMatchArg(s,a,dollar,domain)
               for [.,stag,s] in sargl for [.,atag,a] in argl]
@@ -495,7 +495,7 @@ lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
     x = '$ and (arg = dollarName or arg = domainName) => true
     x = dollarName and arg = domainName => true
     ATOM x or ATOM arg => false
-    xt and CAR x = CAR arg =>
+    xt and first x = first arg =>
       lazyMatchArgDollarCheck(x,arg,dollarName,domainName)
     false
 
@@ -521,7 +521,7 @@ lookupInDomainByName(op,domain,arg) ==
     slotIndex := numvec.(i + 2 + numberOfArgs)
     newStart := QSPLUS(start,QSPLUS(numberOfArgs,4))
     slot := domain.slotIndex
-    null atom slot and EQ(CAR slot,CAR arg) and EQ(CDR slot,CDR arg) => return (success := true)
+    null atom slot and EQ(first slot,first arg) and EQ(rest slot,rest arg) => return (success := true)
     start := QSPLUS(start,QSPLUS(numberOfArgs,4))
   success
  
@@ -595,7 +595,7 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
   if $monitorNewWorld then
     sayLooking1(concat(form2String devaluate thisDomain,
       '" activating lazy slot ",slot,'": "),slotDomain)
-  name := CAR form
+  name := first form
   setShellEntry(thisDomain,slot,slotDomain)
  
 
@@ -648,7 +648,7 @@ newHasTest(domform,catOrAtt) ==
              [pred,:l] := x
              pred = "has" => 
                   l is [ w1,['ATTRIBUTE,w2]] => newHasTest(w1,w2) 
-                  l is [ w1,['SIGNATURE,:w2]] => compiledLookup(CAR w2,second w2, eval mkEvalable w1)
+                  l is [ w1,['SIGNATURE,:w2]] => compiledLookup(first w2,second w2, eval mkEvalable w1)
                   newHasTest(first  l ,first rest l) 
              pred = 'OR => or/[evalCond i for i in l]
              pred = 'AND => and/[evalCond i for i in l]
@@ -669,15 +669,15 @@ newHasTest(domform,catOrAtt) ==
  
 lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
   n := MAXINDEX catvec
-  xop := CAR x
+  xop := first x
   or/[ELT(auxvec,i) for i in 0..n |
-    xop = CAR (lazyt := QVELT(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
+    xop = first (lazyt := QVELT(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
   n  := MAXINDEX vec
-  xop := CAR x
+  xop := first x
   or/[QCDR QVELT(vec,i) for i in 0..n |
-    xop = CAR (lazyt := CAR QVELT(vec,i)) and lazyMatch(x,lazyt,domain,domain)]
+    xop = first (lazyt := first QVELT(vec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 --newHasAttribute(domain,attrib) ==
 --  predIndex := LASSOC(attrib,domain.2) =>

@@ -106,8 +106,8 @@ fragmentsToLine fragments ==
 lispStringList2String x ==
   null x => '""
   atom x => STRINGIMAGE x
-  CDR x => APPLY(function STRCONC,MAPCAR(function lispStringList2String,x))
-  lispStringList2String CAR x
+  rest x => APPLY(function STRCONC,MAPCAR(function lispStringList2String,x))
+  lispStringList2String first x
  
 --% routines for buffer and margin adjustment
  
@@ -266,8 +266,8 @@ format(x,:options) ==
       op is ['elt,y,"construct"] => formatDollar(y,'construct,argl)
       op is ['elt,name,p] and UPPER_-CASE_-P (STRINGIMAGE opOf name).0 => 
         formatDollar(name,p,argl)
-      op = 'elt and UPPER_-CASE_-P (STRINGIMAGE opOf CAR argl).0 => 
-        formatDollar1(CAR argl,second argl)
+      op = 'elt and UPPER_-CASE_-P (STRINGIMAGE opOf first argl).0 => 
+        formatDollar1(first argl,second argl)
       fn:= GETL(op,"PSPAD") => formatFn(fn,x,$m,$c)
       if op in '(AND OR NOT) then op:= DOWNCASE op
       n=1 and GETL(op,'Nud) and (lbp:= formatOpBindingPower(op,"Nud","left")) =>

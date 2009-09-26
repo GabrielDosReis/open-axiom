@@ -207,7 +207,7 @@ substituteSegmentedMsg(msg,args) ==
       --end of the list. (using %n and %y)
       l :=
          CONSP(arg) =>
-           MEMQ(char 'y,q) or (CAR arg = '"%y") or ((LENGTH arg) = 1)  =>
+           MEMQ(char 'y,q) or (first arg = '"%y") or ((LENGTH arg) = 1)  =>
              APPEND(REVERSE arg, l)
            head := first arg
            tail := rest arg
@@ -259,7 +259,7 @@ noBlankBeforeP word==
     if CVECP word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
-    (CONSP word) and member(CAR word,$msgdbListPrims) => true
+    (CONSP word) and member(first word,$msgdbListPrims) => true
     false
 
 $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
@@ -271,7 +271,7 @@ noBlankAfterP word==
     if CVECP word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
-    (CONSP word) and member(CAR word, $msgdbListPrims) => true
+    (CONSP word) and member(first word, $msgdbListPrims) => true
     false
 
 cleanUpSegmentedMsg msg ==
@@ -286,7 +286,7 @@ cleanUpSegmentedMsg msg ==
   msg1 := NIL
   for x in msg repeat
     if haveBlank and (member(x,blanks) or member(x,prims)) then
-      msg1 := CDR msg1
+      msg1 := rest msg1
     msg1 := cons(x,msg1)
     haveBlank := (member(x,blanks) => true; NIL)
   msg1
@@ -456,7 +456,7 @@ sayKeyedMsgFromDb(key,args,dbName) ==
 returnStLFromKey(key,argL,:optDbN) ==
     savedDbN := $msgDatabaseName
     if IFCAR optDbN then
-        $msgDatabaseName := pathname CAR optDbN
+        $msgDatabaseName := pathname first optDbN
     text := fetchKeyedMsg(key, false)
     $msgDatabaseName := savedDbN
     text := segmentKeyedMsg text
@@ -507,15 +507,15 @@ flowSegmentedMsg(msg, len, offset) ==
         actualMarg := potentialMarg
         if lnl = 99999 then nl := ['%l,:nl]
         lnl := 99999
-      CONSP(f) and member(CAR(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
+      CONSP(f) and member(first(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
         actualMarg := potentialMarg
         nl := [f,'%l,:nl]
         lnl := 199999
       member(f,'("%i" %i )) =>
         potentialMarg := potentialMarg + 3
         nl := [f,:nl]
-      CONSP(f) and member(CAR(f),'("%t" %t)) =>
-        potentialMarg := potentialMarg + CDR f
+      CONSP(f) and member(first(f),'("%t" %t)) =>
+        potentialMarg := potentialMarg + rest f
         nl := [f,:nl]
       sbl := sayBrightlyLength f
       tot := lnl + offset + sbl + actualMarg
@@ -571,7 +571,7 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
 
 --% Some Standard Message Printing Functions
 
-bright x == ['"%b",:(CONSP(x) and NULL CDR LASTNODE x => x; [x]),'"%d"]
+bright x == ['"%b",:(CONSP(x) and NULL rest LASTNODE x => x; [x]),'"%d"]
 --bright x == ['%b,:(ATOM x => [x]; x),'%d]
 
 mkMessage msg ==
@@ -717,7 +717,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
   sayString('"(",out)
   brightPrint1(key,out)
   if EQ(key,'TAGGEDreturn) then
-    rst:=[CAR rst,second rst,third rst, '"environment (omitted)"]
+    rst:=[first rst,second rst,third rst, '"environment (omitted)"]
   for y in rst repeat
     sayString('" ",out)
     brightPrint1(y,out)
@@ -744,7 +744,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
   sayString('"(",out)
   brightPrint1(key,out)
   if EQ(key,'TAGGEDreturn) then
-    rst:=[CAR rst,second rst,third rst, '"environment (omitted)"]
+    rst:=[first rst,second rst,third rst, '"environment (omitted)"]
   for y in rst repeat
     sayString('" ",out)
     brightPrint1(y,out)
@@ -772,9 +772,9 @@ brightPrintCenter(x,out == $OutputStream) ==
   y := NIL
   ok := true
   while x and ok repeat
-    if member(CAR(x),'(%l "%l")) then ok := NIL
-    else y := cons(CAR x, y)
-    x := CDR x
+    if member(first(x),'(%l "%l")) then ok := NIL
+    else y := cons(first x, y)
+    x := rest x
   y := NREVERSE y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
@@ -794,9 +794,9 @@ brightPrintCenterAsTeX(x, out == $OutputStream) ==
   lst := x
   while lst repeat 
     words := nil
-    while lst and not CAR(lst) = "%l" repeat
-      words := [CAR lst,: words]
-      lst := CDR lst
+    while lst and not first(lst) = "%l" repeat
+      words := [first lst,: words]
+      lst := rest lst
     if lst then lst := cdr lst
     sayString('"\centerline{",out)
     words := nreverse words
@@ -819,9 +819,9 @@ brightPrintRightJustify(x, out == $OutputStream) ==
   y := NIL
   ok := true
   while x and ok repeat
-    if member(CAR(x),'(%l "%l")) then ok := NIL
-    else y := cons(CAR x, y)
-    x := CDR x
+    if member(first(x),'(%l "%l")) then ok := NIL
+    else y := cons(first x, y)
+    x := rest x
   y := NREVERSE y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then

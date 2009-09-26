@@ -279,7 +279,7 @@ AMFCR_,redefined(opname,u) ==
   not(u is [op,:l]) => nil
   op = 'DEF => opname = CAAR l
   op in '(PROGN SEQ) => AMFCR_,redefinedList(opname,l)
-  op = 'COND => "OR"/[AMFCR_,redefinedList(opname,CDR u) for u in l]
+  op = 'COND => "OR"/[AMFCR_,redefinedList(opname,rest u) for u in l]
  
 augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainView,functorForm,categoryForm,e)
@@ -296,7 +296,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
 ---------conditions attached to each modemap being added, takes a very long time
 ---------instead conditions will be checked when maps are actually used
   --v:=ASSOC(cond,condlist) =>
-  --  e:= addModemapKnown(op,domainName,sig,CDR v,fnsel,e)
+  --  e:= addModemapKnown(op,domainName,sig,rest v,fnsel,e)
   --$e:local := e  -- $e is used by knownInfo
   --if knownInfo cond then cond1:=true else cond1:=cond
   --condlist:=[[cond,:cond1],:condlist]

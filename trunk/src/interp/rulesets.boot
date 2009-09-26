@@ -295,7 +295,7 @@ createTypeEquivRules() ==
     ((QF (P t1)) . (RF t1))
       ((QF (I)) . (RN))
         ((RE (RN)) . (RR)) )))
-  $TypeEqui := CONS(CAR $TypeEQ, [[b,:a] for [a,:b] in CDR $TypeEQ])
+  $TypeEqui := CONS(CAR $TypeEQ, [[b,:a] for [a,:b] in rest $TypeEQ])
   true
 
 initializeRuleSets() ==

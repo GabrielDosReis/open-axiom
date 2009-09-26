@@ -421,7 +421,7 @@ zeroOneConvert x ==
 
 kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   atom x => x
-  (op := CAR x) = '_$ => '_$
+  (op := first x) = '_$ => '_$
   op = 'local => second x
   op = ":" => [":",second x,fn third x]
   isConstructorName op => [fn y for y in x]
@@ -459,7 +459,7 @@ hashTable2Alist tb ==
   [[op,:HGET(tb,op)] for op in listSort(function GLESSEQP,HKEYS $if)]
 
 koCatAttrsAdd(catform,pred) ==
-  for [name,argl,:p] in CAR getConstructorExports catform repeat
+  for [name,argl,:p] in first getConstructorExports catform repeat
     npred  := quickAnd(pred,p)
     exists := HGET($if,name)
     if existingPred := LASSOC(argl,exists)_

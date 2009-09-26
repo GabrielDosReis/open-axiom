@@ -72,7 +72,7 @@ formatDeftran(u,SEQflag) ==
     [:m,y] := [:a,:b]
     ['SEQ,:m,['exit,n,y]]
 --  u is ['not,arg] and (op := LASSOC(KAR arg,'((_= . _~_=) (_< . _>_=)))) =>
---    formatDeftran([op,:CDR arg],nil)
+--    formatDeftran([op,:rest arg],nil)
   u is ["^",a] => formatDeftran(['not,a],SEQflag)
   u is ["exquo",a,b] => formatDeftran(['xquo,a,b],SEQflag)
   u is ['IF,a,b,c] => 
@@ -156,7 +156,7 @@ formatDeftranJoin(u,SEQflag) ==
   ['Join,:cats,lastcat] := u
   lastcat is ['CATEGORY,kind,:l,x] =>
     cat := 
-      CDR cats => ['Join,:cats]
+      rest cats => ['Join,:cats]
       first cats
     formatDeftran(['with,cat,['SEQ,:l,['exit,1,x]]],SEQflag)
   u
@@ -189,7 +189,7 @@ formatDeftranIf(a,b,c) ==
     [["=>", ['not, a], c]]
   post := 
     c = '%noBranch => nil
-    c is ['SEQ,:.] => CDR c
+    c is ['SEQ,:.] => rest c
     [c]
   [["=>",a,b],:post]
 
@@ -641,7 +641,7 @@ formatLB() ==
 
 restoreC() == --used by macro "embrace"
   originalC := CAR $braceStack
-  $braceStack := CDR $braceStack
+  $braceStack := rest $braceStack
   formatRB originalC
  
 saveC() ==  --used by macro "embrace"
@@ -652,7 +652,7 @@ saveD() ==  --used by macro "embrace"
 
 restoreD() == --used by macro "indentNB"
   originalC := CAR $braceStack
-  $braceStack := CDR $braceStack
+  $braceStack := rest $braceStack
   originalC
  
 formatRB(originalC) == --called only by restoreC

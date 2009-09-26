@@ -319,12 +319,12 @@ consForHashLookup(a,b) ==
   $hashNode
  
 CDRwithIncrement x ==
-  RPLACA(x,QSADD1 CAR x)
-  CDR x
+  RPLACA(x,QSADD1 first x)
+  rest x
  
 HGETandCount(hashTable,prop) ==
   u:= HGET(hashTable,prop) or return nil
-  RPLACA(u,QSADD1 CAR u)
+  RPLACA(u,QSADD1 first u)
   u
  
 clearClams() ==
@@ -395,7 +395,7 @@ displayCacheFrequency al ==
  
 mkCircularCountAlist(cl,len) ==
   for [x,count,:.] in cl for i in 1..len while x ~= '_$failed repeat
-    u:= assoc(count,al) => RPLACD(u,1 + CDR u)
+    u:= assoc(count,al) => RPLACD(u,1 + rest u)
     if INTEGERP $reportFavoritesIfNumber and count >= $reportFavoritesIfNumber then
       sayBrightlyNT ["   ",count,"  "]
       pp x
@@ -412,7 +412,7 @@ reportHashCacheStats fn ==
  
 mkHashCountAlist vl ==
   for [count,:.] in vl repeat
-    u:= assoc(count,al) => RPLACD(u,1 + CDR u)
+    u:= assoc(count,al) => RPLACD(u,1 + rest u)
     al:= [[count,:1],:al]
   al
  
@@ -425,7 +425,7 @@ clearHashReferenceCounts() ==
  
 remHashEntriesWith0Count $hashTable ==
   MAPHASH(function fn,$hashTable) where fn(key,obj) ==
-    CAR obj = 0 => HREM($hashTable,key)  --free store
+    first obj = 0 => HREM($hashTable,key)  --free store
     nil
  
 initCache n ==
@@ -439,9 +439,9 @@ assocCache(x,cacheName,fn) ==
   forwardPointer:= al
   val:= nil
   until EQ(forwardPointer,al) repeat
-    FUNCALL(fn,CAAR forwardPointer,x) => return (val:= CAR forwardPointer)
+    FUNCALL(fn,CAAR forwardPointer,x) => return (val:= first forwardPointer)
     backPointer:= forwardPointer
-    forwardPointer:= CDR forwardPointer
+    forwardPointer:= rest forwardPointer
   val => val
   setDynamicBinding(cacheName,backPointer)
   nil
@@ -452,13 +452,13 @@ assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
   forwardPointer:= al
   val:= nil
   until EQ(forwardPointer,al) repeat
-    FUNCALL(fn, CAR (y:=CAR forwardPointer),x) =>
+    FUNCALL(fn, first (y:=first forwardPointer),x) =>
       if not EQ(forwardPointer,al) then   --shift referenced entry to front
-        RPLACA(forwardPointer,CAR al)
+        RPLACA(forwardPointer,first al)
         RPLACA(al,y)
       return (val:= y)
     backPointer := forwardPointer      --CAR is slot replaced on failure
-    forwardPointer:= CDR forwardPointer
+    forwardPointer:= rest forwardPointer
   val => val
   setDynamicBinding(cacheName,backPointer)
   nil
@@ -472,17 +472,17 @@ assocCacheShiftCount(x,al,fn) ==
   val:= nil
   minCount:= 10000 --preset minCount but not newFrontPointer here
   until EQ(forwardPointer,al) repeat
-    FUNCALL(fn, CAR (y:=CAR forwardPointer),x) =>
+    FUNCALL(fn, first (y:=first forwardPointer),x) =>
       newFrontPointer := forwardPointer
       RPLAC(second y,QSADD1 second y)         --increment use count
       return (val:= y)
     if QSLESSP(c := second y,minCount) then --initial c is 1 so is true 1st time
       minCount := c
       newFrontPointer := forwardPointer   --CAR is slot replaced on failure
-    forwardPointer:= CDR forwardPointer
+    forwardPointer:= rest forwardPointer
   if not EQ(newFrontPointer,al) then       --shift referenced entry to front
-    temp:= CAR newFrontPointer             --or entry with smallest count
-    RPLACA(newFrontPointer,CAR al)
+    temp:= first newFrontPointer           --or entry with smallest count
+    RPLACA(newFrontPointer,first al)
     RPLACA(al,temp)
   val
  
@@ -530,7 +530,7 @@ haddProp(ht,op,prop,val) ==
     stopTimingProcess 'debug
   u:= HGET(ht,op) =>     --hope that one exists most of the time
     assoc(prop,u) => val     --value is already there--must = val; exit now
-    RPLACD(u,[CAR u,:CDR u])
+    RPLACD(u,[first u,:rest u])
     RPLACA(u,[prop,:val])
     $op: local := op
     listTruncate(u,20)        --save at most 20 instantiations
@@ -559,9 +559,9 @@ recordInstantiation1(op,prop,dropIfTrue) ==
   null $reportInstantiations => nil
   u:= HGET($instantRecord,op) =>     --hope that one exists most of the time
     v := LASSOC(prop,u) =>
-      dropIfTrue => RPLAC(CDR v,1+CDR v)
-      RPLAC(CAR v,1+CAR v)
-    RPLACD(u,[CAR u,:CDR u])
+      dropIfTrue => RPLAC(rest v,1+rest v)
+      RPLAC(first v,1+first v)
+    RPLACD(u,[first u,:rest u])
     val :=
       dropIfTrue => [0,:1]
       [1,:0]
@@ -623,11 +623,11 @@ listTruncate(l,n) ==
 lassocShift(x,l) ==
   y:= l
   while not atom y repeat
-    EQUAL(x,CAR QCAR y) => return (result := QCAR y)
+    EQUAL(x,first QCAR y) => return (result := QCAR y)
     y:= QCDR y
   result =>
     if NEQ(y,l) then
-      QRPLACA(y,CAR l)
+      QRPLACA(y,first l)
       QRPLACA(l,result)
     QCDR result
   nil
@@ -635,11 +635,11 @@ lassocShift(x,l) ==
 lassocShiftWithFunction(x,l,fn) ==
   y:= l
   while not atom y repeat
-    FUNCALL(fn,x,CAR QCAR y) => return (result := QCAR y)
+    FUNCALL(fn,x,first QCAR y) => return (result := QCAR y)
     y:= QCDR y
   result =>
     if NEQ(y,l) then
-      QRPLACA(y,CAR l)
+      QRPLACA(y,first l)
       QRPLACA(l,result)
     QCDR result
   nil
@@ -647,25 +647,25 @@ lassocShiftWithFunction(x,l,fn) ==
 lassocShiftQ(x,l) ==
   y:= l
   while not atom y repeat
-    EQ(x,CAR CAR y) => return (result := CAR y)
+    EQ(x,first first y) => return (result := first y)
     y:= CDR y
   result =>
     if NEQ(y,l) then
-      RPLACA(y,CAR l)
+      RPLACA(y,first l)
       RPLACA(l,result)
-    CDR result
+    rest result
   nil
  
 -- rassocShiftQ(x,l) ==
 --   y:= l
 --   while not atom y repeat
---     EQ(x,CDR CAR y) => return (result := CAR y)
---     y:= CDR y
+--     EQ(x,rest first y) => return (result := first y)
+--     y:= rest y
 --   result =>
 --     if NEQ(y,l) then
---       RPLACA(y,CAR l)
+--       RPLACA(y,first l)
 --       RPLACA(l,result)
---     CAR result
+--     first result
 --   nil
  
 globalHashtableStats(x,sortFn) ==
@@ -694,8 +694,8 @@ rightJustifyString(x,maxWidth) ==
 domainEqualList(argl1,argl2) ==
   --function used to match argument lists of constructors
   while argl1 and argl2 repeat
-    item1:= devaluate CAR argl1
-    item2:= CAR argl2
+    item1:= devaluate first argl1
+    item2:= first argl2
     partsMatch:=
       item1 = item2 => true
       false

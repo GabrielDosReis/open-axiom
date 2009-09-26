@@ -83,7 +83,7 @@ fracpart(x) ==
         second(MULTIPLE_-VALUE_-LIST(FLOOR(x)))
 
 intpart(x) ==
-        CAR(MULTIPLE_-VALUE_-LIST(FLOOR(x)))
+        first(MULTIPLE_-VALUE_-LIST(FLOOR(x)))
 
 negintp(x) ==
         if ZEROP IMAGPART(x) and x<0.0 and ZEROP fracpart(x)
@@ -156,7 +156,7 @@ gammaRatapprox (x) ==
                  else
                         Pi := PI
                         lx := MULTIPLE_-VALUE_-LIST(FLOOR(x))
-                        intpartx := CAR(lx)+1
+                        intpartx := first(lx)+1
                         restx := second(lx)
                         if ZEROP restx  -- case of negative non-integer value
                         then
@@ -812,7 +812,7 @@ besselIback(v,z) ==
         ipv := IMAGPART(v)
         rpv := REALPART(v)
         lm := MULTIPLE_-VALUE_-LIST(FLOOR(rpv))
-        m := CAR(lm)    --- floor of real part of v
+        m := first(lm)    --- floor of real part of v
         n := 2*MAX(20,m+10)  --- how large the back recurrence should be
         tv := second(lm)+(v-rpv) ---  fractional part of real part of v
                         --- plus imaginary part of v

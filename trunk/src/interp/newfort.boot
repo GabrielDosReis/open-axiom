@@ -199,8 +199,8 @@ beenHere(e,n) ==
 -- using COPY-TREE : RPLAC does not smash $fortCsList
 -- which led to inconsistencies in assignment of temp. vars.
       $fortCsList := COPY_-TREE [['"=",var,e],:$fortCsList]
-      loc := CAR exprStk
-      fun := CAR n.3
+      loc := first exprStk
+      fun := first n.3
       fun = 'CAR =>
         RPLACA(loc,var)
       fun = 'CDR =>
@@ -713,7 +713,7 @@ fortFormatCharacterTypes(names) ==
   genuineArrays  := []
   for u in names repeat
     ATOM u => sortedByLength := insertEntry(0,u,sortedByLength)
-    #u=2 => sortedByLength := insertEntry(second u,CAR u,sortedByLength)
+    #u=2 => sortedByLength := insertEntry(second u,first u,sortedByLength)
     genuineArrays := [u,:genuineArrays]
   for u in sortedByLength repeat
     fortFormatTypes1(mkCharName car u, [STRINGIMAGE(s) for s in cdr(u)]) where

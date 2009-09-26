@@ -186,7 +186,7 @@ SigListUnion(extra,original) ==
       original:= delete(x,original)
       [xsig,xpred,:ximplem]:= x
 --      if xsig ~= esig then   -- not quite strong enough
-      if CAR xsig ~= CAR esig or second xsig ~= second esig then
+      if first xsig ~= first esig or second xsig ~= second esig then
 -- the new version won't get confused by "constant"markers
          if ximplem is [["Subsumed",:.],:.] then
             original := [x,:original]
@@ -195,7 +195,7 @@ SigListUnion(extra,original) ==
        else epred:=mkOr(epred,xpred)
 -- this used always to be done, as noted below, but that's not safe
       if not(ximplem is [["Subsumed",:.],:.]) then eimplem:= ximplem
-      if eimplem then esig:=[CAR esig,second esig] 
+      if eimplem then esig:=[first esig,second esig] 
            -- in case there's a constant marker
       e:= [esig,epred,:eimplem]
 --    e:= [esig,mkOr(xpred,epred),:ximplem]
@@ -336,7 +336,7 @@ FindFundAncs l ==
     x:= ASSQ(first u,ans) =>
       ans:= [[first u,mkOr(second x,second u)],:delete(x,ans)]
     ans:= [u,:ans]
-        --testing to see if CAR l is already there
+        --testing to see if first l is already there
   x:= ASSQ(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,second x)],:delete(x,ans)]
   CADAR l=true =>
     for x in first f1.4 repeat if y:= ASSQ(CatEval x,ans) then ans:= delete(y,ans)
@@ -492,7 +492,7 @@ JoinInner(l,$e) ==
              --     SAY("adding a conditional domain ",
              --         bname,
              --         " replacing",
-             --         CAR anc)
+             --         first anc)
                 bCond:= ASSQ(b,CondList)
                 CondList:= delete(bCond,CondList)
              -- value of bCond not used and could be NIL

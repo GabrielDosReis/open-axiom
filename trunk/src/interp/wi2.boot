@@ -132,7 +132,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
                    while cb repeat
                      ATOM cb => return nil
                      cb is [["%LET",'Rep,v,:.],:.] => return (u:=v)
-                     cb:=CDR cb
+                     cb:=rest cb
                  u
       then $e:= augModemapsFromCategoryRep('_$,ab,cb,target,$e)
       else $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
@@ -243,7 +243,7 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
        -- if we find something extra, add it to the signature
       null ss => s
       for u in ss repeat
-        $ConditionalOperators:=[CDR u,:$ConditionalOperators]
+        $ConditionalOperators:=[rest u,:$ConditionalOperators]
       s is ['Join,:sl] =>
         u:=ASSQ('CATEGORY,ss) =>
           SUBST([:u,:ss],u,s)
@@ -539,7 +539,7 @@ compFormWithModemap1(form,m,e,modemap,Rep2Dollar?) ==
         form':= [f,:[t.expr for t in Tl]]
         m'=$Category or isCategoryForm(m',e) => form'
         -- try to deal with new-style Unions where we know the conditions
-        op = "elt" and f is ['XLAM,:.] and IDENTP(z:=CAR argl) and
+        op = "elt" and f is ['XLAM,:.] and IDENTP(z:=first argl) and
           (c:=get(z,'condition,e)) and
             c is [["case",=z,c1]] and
               (c1 is ['_:,=(second argl),=m] or EQ(c1,second argl) ) =>
@@ -768,7 +768,7 @@ makeSimplePredicateOrNil p == nil
 mkUserConstructorAbbreviation(c,a,type) ==
   if $AnalyzeOnly or $convert2NewCompiler then
     $abbreviationStack := [[type,a,:c],:$abbreviationStack]
-  if not atom c then c:= CAR c  --  Existing constructors will be wrapped
+  if not atom c then c:= first c  --  Existing constructors will be wrapped
   constructorAbbreviationErrorCheck(c,a,type,'abbreviationError)
   clearClams()
   clearConstructorCache(c)
@@ -956,10 +956,10 @@ compRepeatOrCollect(form,m,e) ==
         form':= [repeatOrCollect,:itl',body']
         m'':=
           repeatOrCollect="COLLECT" =>
-            (u:=modeIsAggregateOf('List,targetMode,e)) => CAR u
+            (u:=modeIsAggregateOf('List,targetMode,e)) => first u
             ["List",m']
           repeatOrCollect="COLLECTV" =>
-            (u:=modeIsAggregateOf('Vector,targetMode,e)) => CAR u
+            (u:=modeIsAggregateOf('Vector,targetMode,e)) => first u
             ["Vector",m']
           m'
 --------> new <--------------
@@ -1037,8 +1037,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
             oldFLP':=oldFLP
             n:=0
             while oldFLP' repeat
-              oldFLP':=CDR oldFLP'
-              flp1:=CDR flp1
+              oldFLP':=rest oldFLP'
+              flp1:=rest flp1
               n:=n+1
             -- Now we have to add code to compile all the elements
             -- of functorLocalParameters that were added during the
@@ -1162,13 +1162,13 @@ wiReplaceNode(node,ocode,key) ==
   chk(node, key + 1)
 
 replaceNodeInStructureBy(node, x) == 
-  $nodeCopy: local := [CAR node,:CDR node]
+  $nodeCopy: local := [first node,:rest node]
   replaceNodeBy(node, x)
   node
 
 replaceNodeBy(node, x) ==
   atom x => nil
-  for y in tails x | EQCAR(x,node) repeat RPLAC(CAR x, $nodeCopy)
+  for y in tails x | EQCAR(x,node) repeat RPLAC(first x, $nodeCopy)
   nil  
 
 chk(x,key) == fn(x,0,key) where fn(x,cnt,key) ==

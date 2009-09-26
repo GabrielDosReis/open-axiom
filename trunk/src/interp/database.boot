@@ -387,7 +387,7 @@ isDomainSubst u == main where
     atom x =>
       IDENTP x and MEMQ(x,$PatternVariableList) and (s := findSub(x,alist)) => s
       x
-    [CAR x,:[fn(y,alist) for y in CDR x]]
+    [first x,:[fn(y,alist) for y in rest x]]
   findSub(x,alist) ==
     null alist => nil
     alist is [['isDomain,y,z],:.] and x = y => z
@@ -484,7 +484,7 @@ moveORsOutside p ==
   p is ['AND,:q] =>
     q := [moveORsOutside r for r in q]
     x := or/[r for r in q | r is ['OR,:s]] =>
-      moveORsOutside(['OR,:[['AND,:SUBST(t,x,q)] for t in CDR x]])
+      moveORsOutside(['OR,:[['AND,:SUBST(t,x,q)] for t in rest x]])
     ['AND,:q]
   p
 
@@ -586,7 +586,7 @@ getSystemModemaps(op,nargs) ==
 
 getInCoreModemaps(modemapList,op,nargs) ==
   mml:= LASSOC (op,modemapList) =>
-    mml:= CAR mml
+    mml:= first mml
     [x for (x:= [[dc,:sig],.]) in mml |
       (NUMBERP nargs => nargs=#rest sig; true) and
         (cfn := abbreviate (domName := getDomainFromMm x)) and
@@ -703,7 +703,7 @@ getOperationAlistFromLisplib x ==
           else RPLACD(s,QCDDR f)
         else RPLACD(r,QCDR f)
       else RPLACD(first items,f)
-      RPLACA(items,addConsDB CAR items)
+      RPLACA(items,addConsDB first items)
   u and markUnique u
 
 getOplistForConstructorForm (form := [op,:argl]) ==
