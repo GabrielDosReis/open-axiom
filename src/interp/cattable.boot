@@ -96,12 +96,12 @@ simpHasPred(pred,:options) == main where
   simp pred ==
     pred is [op,:r] =>
       op = "has" => simpHas(pred,first r,first rest r)
-      op = 'HasCategory => simp ["has",CAR r,simpDevaluate CADR r]
+      op = 'HasCategory => simp ["has",CAR r,simpDevaluate second r]
       op = 'HasSignature =>
-         [op,sig] := simpDevaluate CADR r
+         [op,sig] := simpDevaluate second r
          ["has",CAR r,['SIGNATURE,op,sig]]
       op = 'HasAttribute =>
-        form := ["has",a := CAR r,['ATTRIBUTE,b := simpDevaluate CADR r]]
+        form := ["has",a := CAR r,['ATTRIBUTE,b := simpDevaluate second r]]
         simpHasAttribute(form,a,b)
       op in '(AND OR NOT) =>
         null (u := MKPF([simp p for p in r],op)) => nil

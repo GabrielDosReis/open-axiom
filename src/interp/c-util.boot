@@ -621,7 +621,7 @@ adjExitLevel(x,seqnum,inc) ==
   x is [op,:l] and op in '(SEQ REPEAT COLLECT) =>
     for u in l repeat adjExitLevel(u,seqnum+1,inc)
   x is ["exit",n,u] =>
-    (adjExitLevel(u,seqnum,inc); seqnum>n => x; rplac(CADR x,n+inc))
+    (adjExitLevel(u,seqnum,inc); seqnum>n => x; rplac(second x,n+inc))
   x is [op,:l] => for u in l repeat adjExitLevel(u,seqnum,inc)
  
 wrapSEQExit l ==
@@ -797,7 +797,7 @@ extendsCategoryForm(domain,form,form') ==
      member(form',SUBSTQ(domain,"$",first catvlist)) or
       (or/
         [extendsCategoryForm(domain,SUBSTQ(domain,"$",cat),form')
-          for [cat,:.] in CADR catvlist])
+          for [cat,:.] in second catvlist])
   nil
  
 getmode(x,e) ==

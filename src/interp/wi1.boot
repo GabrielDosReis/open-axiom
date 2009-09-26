@@ -264,18 +264,18 @@ compNoStacking(xOrig,m,e) ==
 
 markKillAllRecursive x ==
   x is [op,:r] =>
---->op = 'PART => markKillAllRecursive CADR r
-    op = 'PART => ['PART, CAR r, markKillAllRecursive CADR r]
+--->op = 'PART => markKillAllRecursive second r
+    op = 'PART => ['PART, CAR r, markKillAllRecursive second r]
 ----------------------------------------------------------94/10/11
     constructor? op => markKillAll x
     op = 'elt and constructor? opOf CAR r =>
-      ['elt,markKillAllRecursive CAR r,CADR r]
+      ['elt,markKillAllRecursive CAR r,second r]
     x
   x
 
 compNoStackingAux($partExpression,m,e) ==
 -----------------not used---------------------94/10/11
-  x := CADDR $partExpression
+  x := third $partExpression
   T := compNoStacking0(x,m,e) or return nil
   markParts($partExpression,T)
 
@@ -651,7 +651,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom expr => ValueFlag and level=exitCount
   (op:= first expr)="QUOTE" => ValueFlag and level=exitCount
-  op in '(WI MI) => canReturn(CADDR expr,level,count,ValueFlag)
+  op in '(WI MI) => canReturn(third expr,level,count,ValueFlag)
   op="TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil
@@ -740,16 +740,16 @@ compConstruct(form,m,e) == (T := compConstruct1(form,m,e)) and markConstruct(for
   
 compConstruct1(form is ["construct",:l],m,e) ==
   y:= modeIsAggregateOf("List",m,e) =>
-    T:= compList(l,["List",CADR y],e) => convert(T,m)
+    T:= compList(l,["List",second y],e) => convert(T,m)
   y:= modeIsAggregateOf("Vector",m,e) =>
-    T:= compVector(l,["Vector",CADR y],e) => convert(T,m)
+    T:= compVector(l,["Vector",second y],e) => convert(T,m)
   T:= compForm(form,m,e) => T
   for D in getDomainsInScope e repeat
     (y:=modeIsAggregateOf("List",D,e)) and
-      (T:= compList(l,["List",CADR y],e)) and (T':= convert(T,m)) =>
+      (T:= compList(l,["List",second y],e)) and (T':= convert(T,m)) =>
          return T'
     (y:=modeIsAggregateOf("Vector",D,e)) and
-      (T:= compVector(l,["Vector",CADR y],e)) and (T':= convert(T,m)) =>
+      (T:= compVector(l,["Vector",second y],e)) and (T':= convert(T,m)) =>
          return T'
 
 compPretend(u := ["pretend",x,t],m,e) ==
@@ -811,7 +811,7 @@ coerce(T,m) ==
       '"function coerce called from the interpreter."])
 --==================> changes <======================
 --The following line is inappropriate for our needs:::
---rplac(CADR T,substitute("$",$Rep,CADR T))
+--rplac(second T,substitute("$",$Rep,second T))
   T' := coerce0(T,m) => T'
   T := [T.expr,fullSubstitute("$",$Representation,T.mode),T.env]
 --==================> changes <======================

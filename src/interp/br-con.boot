@@ -389,9 +389,9 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
   $predvec:=
     $domain => $domain . 3
     getConstructorPredicatesFromDB name
-  catpredvec := CAR u
-  catinfo    := CADR u
-  catvec     := CADDR u
+  catpredvec := first u
+  catinfo    := second u
+  catvec     := third u
   catforms := [[pakform,:pred] for i in 0..MAXINDEX catvec | test ] where
     test() ==
       pred := simpCatPredicate

@@ -42,7 +42,7 @@ npNull x== StreamNull x
 StreamNull x==
   null x or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
-          st:=APPLY(CADR x,CDDR x)
+          st:=APPLY(second x,CDDR x)
           RPLACA(x,CAR st)
           RPLACD(x,CDR st)
   x is ["nullstream",:.]

@@ -408,10 +408,10 @@ genSearch1(filter,reg,doc) ==
   count = 0 => emptySearchPage('"entry",filter,true)
   count = 1 =>
     alist := (regCount = 1 => regSearchAlist; docSearchAlist)
-    showNamedConstruct(or/[x for x in alist | CADR x])
+    showNamedConstruct(or/[x for x in alist | second x])
   summarize? :=
     docSearchAlist => true
-    nonEmpties := [pair for pair in regSearchAlist | #(CADR pair) > 0]
+    nonEmpties := [pair for pair in regSearchAlist | #(second pair) > 0]
     not(nonEmpties is [pair])
   not summarize? => showNamedConstruct pair
   -----------generate a summary page---------------------------
@@ -553,7 +553,7 @@ docSearch1(filter,doc) ==
   docSearchAlist := searchDropUnexposedLines doc
   count := searchCount docSearchAlist
   count = 0 => emptySearchPage('"entry",filter,true)
-  count = 1 => showNamedConstruct(or/[x for x in docSearchAlist | CADR x])
+  count = 1 => showNamedConstruct(or/[x for x in docSearchAlist | second x])
   prefix := pluralSay(count,'"entry matches",'"entries match")
   emfilter := ['"{\em ",escapeSpecialChars STRINGIMAGE filter,'"}"]
   header := [:prefix,'" ",:emfilter]

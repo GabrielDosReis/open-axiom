@@ -258,7 +258,7 @@ evalForm(op,opName,argl,mmS) ==
           xbody is [['RECORDELT,.,ind,len]] =>
             optRECORDELT([CAAR xbody,rec,ind,len])
           xbody is [['SETRECORDELT,.,ind,len,.]] =>
-            optSETRECORDELT([CAAR xbody,rec,ind,len,CADDR form])
+            optSETRECORDELT([CAAR xbody,rec,ind,len,third form])
           xbody is [['RECORDCOPY,.,len]] =>
             optRECORDCOPY([CAAR xbody,rec,len])
           ['FUNCALL,['function , ['LAMBDA,xargs,:xbody]],:TAKE(#xargs, form)]
@@ -281,7 +281,7 @@ evalForm(op,opName,argl,mmS) ==
   not form => nil
 --  not form => throwKeyedMsg("S2IE0008",[opName])
   form='interpOnly => rewriteMap(op,opName,argl)
-  targetType := CADR sig
+  targetType := second sig
   if CONTAINED('_#,targetType) then targetType := NRTtypeHack targetType
   evalFormMkValue(op,form,targetType)
 

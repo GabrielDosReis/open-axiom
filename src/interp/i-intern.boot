@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -134,7 +134,7 @@ mkAtree2(x,op,argl) ==
       if val = '$NoValue then val := '(void)
       [mkAtreeNode op,mkAtree1 val]
     [mkAtreeNode op,mkAtree1 '(void)]
-  op="exit" => mkAtree1 CADR argl
+  op="exit" => mkAtree1 second argl
   op = "QUOTE" => [mkAtreeNode op,:argl]
   op="SEGMENT" =>
     argl is [a] => [mkAtreeNode op, mkAtree1 a]
@@ -145,7 +145,7 @@ mkAtree2(x,op,argl) ==
   op in '(pretend is isnt) =>
     [mkAtreeNode op,mkAtree1 first argl,:rest argl]
   op =  "::" =>
-    [mkAtreeNode "COERCE",mkAtree1 first argl,CADR argl]
+    [mkAtreeNode "COERCE",mkAtree1 first argl,second argl]
   x is ["@", expr, type] =>
     t := evaluateType unabbrev type
     t = $DoubleFloat and expr is [['_$elt, =$Float, 'float], :args] =>
@@ -160,7 +160,7 @@ mkAtree2(x,op,argl) ==
         mkAtree1 ["::", expr, t]
     [mkAtreeNode 'TARGET,mkAtree1 expr, type]
   (op="case") and (nargl = 2)  =>
-    [mkAtreeNode "case",mkAtree1 first argl,unabbrev CADR argl]
+    [mkAtreeNode "case",mkAtree1 first argl,unabbrev second argl]
   op="REPEAT" => [mkAtreeNode op,:transformREPEAT argl]
   op="%LET" and argl is [['construct,:.],rhs] =>
     [mkAtreeNode "%LET",first argl,mkAtree1 rhs]

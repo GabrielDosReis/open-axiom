@@ -173,7 +173,7 @@ saveMapSig(funNames) ==
 getMapSig(mapName,subName) ==
   lmms:= get(mapName,'localModemap,$InteractiveFrame) =>
     for mm in lmms until sig repeat
-      CADR mm = subName => sig:= CDAR mm
+      second mm = subName => sig:= CDAR mm
     sig
 
 getTraceOption (x is [key,:l]) ==
@@ -364,7 +364,7 @@ getMapSubNames(l) ==
   subs:= nil
   for mapName in l repeat
     lmm:= get(mapName,'localModemap,$InteractiveFrame) =>
-      subs:= APPEND([[mapName,:CADR mm] for mm in lmm],subs)
+      subs:= APPEND([[mapName,:second mm] for mm in lmm],subs)
   union(subs,getPreviousMapSubNames UNIONQ(_/TRACENAMES,
     $lastUntraced))
 
@@ -374,7 +374,7 @@ getPreviousMapSubNames(traceNames) ==
     lmm:= get(mapName,'localModemap,$InteractiveFrame) =>
       MEMQ(CADAR lmm,traceNames) =>
         for mm in lmm repeat
-          subs:= [[mapName,:CADR mm],:subs]
+          subs:= [[mapName,:second mm],:subs]
   subs
 
 lassocSub(x,subs)  ==
@@ -397,7 +397,7 @@ augmentTraceNames(l,mapSubNames) ==
   res:= nil
   for traceName in l repeat
     mml:= get(traceName,'localModemap,$InteractiveFrame) =>
-      res:= APPEND([CADR mm for mm in mml],res)
+      res:= APPEND([second mm for mm in mml],res)
     res:= [traceName,:res]
   res
 

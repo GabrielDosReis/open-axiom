@@ -120,7 +120,7 @@ removeEXITFromCOND c ==
     lastSE := QCAR cl'
     ATOM lastSE => z := CONS(cl,z)
     lastSE is ["EXIT",:.] =>
-      z := CONS(REVERSE CONS(CADR lastSE,CDR cl'),z)
+      z := CONS(REVERSE CONS(second lastSE,CDR cl'),z)
     z := CONS(cl,z)
   CONS('COND,NREVERSE z)
  
@@ -260,9 +260,9 @@ defLET1(lhs,rhs) ==
     rhs' is ["PROGN",:.] => APPEND(rhs',[rhs])
     if IDENTP CAR rhs' then rhs' := CONS(rhs',NIL)
     MKPROGN [:rhs',rhs]
-  rhs is [=$LET,:.] and IDENTP(name := CADR rhs) =>
+  rhs is [=$LET,:.] and IDENTP(name := second rhs) =>
     -- handle things like [a] := x := foo
-    l1 := defLET1(name,CADDR rhs)
+    l1 := defLET1(name,third rhs)
     l2 := defLET1(lhs,name)
     l2 is ["PROGN",:.] => MKPROGN [l1,:CDR l2]
     if IDENTP CAR l2 then l2 := cons(l2,nil)
@@ -343,9 +343,9 @@ defISReverse(x,a) ==
   -- reverses forms coming from APPENDs in patterns
   -- pretty much just a translation of DEF-IS-REV
   x is ['CONS,:.] =>
-    NULL CADDR x => ['CONS,CADR x, a]
-    y := defISReverse(CADDR x, NIL)
-    RPLAC(CADDR y,['CONS,CADR x,a])
+    NULL third x => ['CONS,second x, a]
+    y := defISReverse(third x, NIL)
+    RPLAC(third y,['CONS,second x,a])
     y
   ERRHUH()
  

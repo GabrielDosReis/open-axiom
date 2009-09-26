@@ -245,8 +245,8 @@ formatOpSymbol(op,sig) ==
   quad := specialChar 'quad
   n := #sig
   (op = 'elt) and (n = 3) =>
-    (CADR(sig) = '_$) =>
-      STRINGP (sel := CADDR(sig)) =>
+    (second(sig) = '_$) =>
+      STRINGP (sel := third(sig)) =>
         [quad,".",sel]
       [quad,".",quad]
     op
@@ -754,7 +754,7 @@ pkey keyStuff ==
         keyStuff := IFCDR keyStuff
         next := IFCAR keyStuff
         while CONSP next repeat
-            if CAR next = 'dbN then dbN := CADR next
+            if CAR next = 'dbN then dbN := second next
             else argL := next
             keyStuff  := IFCDR keyStuff
             next      := IFCAR keyStuff

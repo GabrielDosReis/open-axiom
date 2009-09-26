@@ -374,7 +374,7 @@ mkEvalableCategoryForm c ==
         --$extraParms :local
         --catobj := EVAL c -- DomainSubstitutionFunction makes $extraParms
         --mkEvalableCategoryForm sublisV($extraParms, catobj)
-        mkEvalableCategoryForm CADR argl
+        mkEvalableCategoryForm second argl
     op is "mkCategory" => c
     MEMQ(op,$CategoryNames) =>
       ([x,m,$e]:= compOrCroak(c,$EmptyMode,$e); m=$Category => x)
@@ -1147,7 +1147,7 @@ stripOffSubdomainConditions(margl,argl) ==
     f() ==
       x is ['SubDomain,marg,condition] =>
         pair:= assoc(i,$argumentConditionList) =>
-          (RPLAC(CADR pair,MKPF([condition,CADR pair],'AND)); marg)
+          (RPLAC(second pair,MKPF([condition,second pair],'AND)); marg)
         $argumentConditionList:= [[i,arg,condition],:$argumentConditionList]
         marg
       x

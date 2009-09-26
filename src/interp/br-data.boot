@@ -479,13 +479,13 @@ getImports conname == --called by mkUsersHashTable
         op = 'QUOTE or op = 'NRTEVAL => CAR args
         op = 'local => first args
         op = 'Record =>
-          ['Record,:[[":",CADR y,doImport(CADDR y,template)] for y in args]]
+          ['Record,:[[":",second y,doImport(third y,template)] for y in args]]
 
 --TTT next three lines: handles some tagged/untagged Union case.
         op = 'Union=>
           args is [['_:,:x1],:x2] =>
 --          CAAR args = '_: => -- tagged!
-               ['Union,:[[":",CADR y,doImport(CADDR y,template)] for y in args]]
+               ['Union,:[[":",second y,doImport(third y,template)] for y in args]]
           [op,:[doImport(y,template) for y in args]]
 
         [op,:[doImport(y,template) for y in args]]

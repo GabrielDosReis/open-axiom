@@ -297,7 +297,7 @@ ncloopEscaped x==
 
 ncloopDQlines (dq,stream)==
         StreamNull stream
-        a:= poGlobalLinePosn tokPosn CADR dq
+        a:= poGlobalLinePosn tokPosn second dq
         b:= poGlobalLinePosn CAAR stream
         streamChop (a-b+1,stream)
  
@@ -435,6 +435,6 @@ getParserMacros() ==
 displayParserMacro m ==
   m := ASSQ(m, $pfMacros)
   null m => nil
-  pfPrintSrcLines CADDR m
+  pfPrintSrcLines third m
 
 

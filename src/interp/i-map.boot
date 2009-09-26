@@ -579,7 +579,7 @@ rewriteMap0(op,opName,argl) ==
   -- $genValue case of map rewriting
   putBodyInEnv(opName, #argl)
   if (s := get(opName,'mode,$e)) then
-    tar := CADR s
+    tar := second s
     argTypes := CDDR s
   else
     tar:= nil

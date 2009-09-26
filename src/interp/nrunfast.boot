@@ -269,7 +269,7 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
 --=======================================================
 newLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
-  catVec := CADR slot4
+  catVec := second slot4
   SIZE catVec = 0 => nil                      --early exit if no categories
   INTEGERP KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
@@ -454,8 +454,8 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     IDENTP s and PNAME s = a
   atom a =>  a = s
   op := opOf a
-  op  = 'NRTEVAL => s = nrtEval(CADR a,domain)
-  op = 'QUOTE => s = CADR a
+  op  = 'NRTEVAL => s = nrtEval(second a,domain)
+  op = 'QUOTE => s = second a
   lazyMatch(s,a,dollar,domain)
   --above line is temporarily necessary until system is compiled 8/15/90
 --s = a
@@ -648,7 +648,7 @@ newHasTest(domform,catOrAtt) ==
              [pred,:l] := x
              pred = "has" => 
                   l is [ w1,['ATTRIBUTE,w2]] => newHasTest(w1,w2) 
-                  l is [ w1,['SIGNATURE,:w2]] => compiledLookup(CAR w2,CADR w2, eval mkEvalable w1)
+                  l is [ w1,['SIGNATURE,:w2]] => compiledLookup(CAR w2,second w2, eval mkEvalable w1)
                   newHasTest(first  l ,first rest l) 
              pred = 'OR => or/[evalCond i for i in l]
              pred = 'AND => and/[evalCond i for i in l]

@@ -717,7 +717,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
   sayString('"(",out)
   brightPrint1(key,out)
   if EQ(key,'TAGGEDreturn) then
-    rst:=[CAR rst,CADR rst,CADDR rst, '"environment (omitted)"]
+    rst:=[CAR rst,second rst,third rst, '"environment (omitted)"]
   for y in rst repeat
     sayString('" ",out)
     brightPrint1(y,out)
@@ -744,7 +744,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
   sayString('"(",out)
   brightPrint1(key,out)
   if EQ(key,'TAGGEDreturn) then
-    rst:=[CAR rst,CADR rst,CADDR rst, '"environment (omitted)"]
+    rst:=[CAR rst,second rst,third rst, '"environment (omitted)"]
   for y in rst repeat
     sayString('" ",out)
     brightPrint1(y,out)

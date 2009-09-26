@@ -465,7 +465,7 @@ setVector4part3(catNames,catvecList) ==
     --the names are those that will be applied to the various vectors
   generated:= nil
   for u in catvecList for uname in catNames repeat
-    for v in CADDR u.4 repeat
+    for v in third u.4 repeat
       if w:= assoc(first v,generated)
          then RPLACD(w,[[rest v,:uname],:rest w])
          else generated:= [[first v,[rest v,:uname]],:generated]
@@ -552,7 +552,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
     where update(code,copyvec,sofar) ==
       ATOM code =>nil
       QCAR code in '(getShellEntry ELT QREFELT) =>
-          copyvec.(CADDR code):=union(copyvec.(CADDR code), sofar)
+          copyvec.(third code):=union(copyvec.(third code), sofar)
           true
       code is [x,name,number,u'] and x in '(setShellEntry SETELT QSETREFV) =>
         update(u',copyvec,[[name,:number],:sofar])
@@ -719,18 +719,18 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
 LookUpSigSlots(sig,siglist) ==
 --+ must kill any implementations below of the form (ELT $ NIL)
   if $insideCategoryPackageIfTrue then
-           sig := substitute('$,CADR($functorForm),sig)
+           sig := substitute('$,second($functorForm),sig)
   siglist := $lisplibOperationAlist
-  REMDUP [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=CADDR u)
+  REMDUP [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=third u)
               and KADDR implem]
  
 SigSlotsMatch(sig,pattern,implem) ==
   sig=pattern => true
-  not (LENGTH CADR sig=LENGTH CADR pattern) => nil
-                       --CADR sig is the actual signature part
+  not (LENGTH second sig=LENGTH second pattern) => nil
+                       --second sig is the actual signature part
   not (first sig=first pattern) => nil
-  pat' :=SUBSTQ($definition,'$,CADR pattern)
-  sig' :=SUBSTQ($definition,'$,CADR sig)
+  pat' :=SUBSTQ($definition,'$,second pattern)
+  sig' :=SUBSTQ($definition,'$,second sig)
   sig'=pat' => true
   --If we don't have this next test, then we'll recurse in SetFunctionSlots
   implem is ['Subsumed,:.] => nil
@@ -785,8 +785,8 @@ InvestigateConditions catvecListMaker ==
   if $principal is [op,:.] then
     [principal',:.]:=compMakeCategoryObject($principal,$e)
               --Rather like eval, but quotes parameters first
-    for u in CADR principal'.4 repeat
-      if not TruthP(cond:=CADR u) then
+    for u in second principal'.4 repeat
+      if not TruthP(cond:=second u) then
         new:=['CATEGORY,'domain,['IF,cond,['ATTRIBUTE,CAR u], '%noBranch]]
         $principal is ['Join,:l] =>
           not member(new,l) =>
@@ -934,7 +934,7 @@ getPossibleViews u ==
   --returns a list of all the categories that can be views of this one
   [vec,:.]:= compMakeCategoryObject(u,$e) or
     systemErrorHere ["getPossibleViews",u]
-  views:= [first u for u in CADR vec.4]
+  views:= [first u for u in second vec.4]
   null vec.0 => [CAAR vec.4,:views] --*
   [vec.0,:views] --*
       --the two lines marked  ensure that the principal view comes first
@@ -946,7 +946,7 @@ getViewsConditions u ==
   --paired with the condition under which they are such views
   [vec,:.]:= compMakeCategoryObject(u,$e) or
     systemErrorHere ["getViewsConditions",u]
-  views:= [[first u,:CADR u] for u in CADR vec.4]
+  views:= [[first u,:second u] for u in second vec.4]
   null vec.0 =>
     null CAR vec.4 => views
     [[CAAR vec.4,:true],:views] --*

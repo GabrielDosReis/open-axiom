@@ -220,10 +220,10 @@ axFormatType(typeform) ==
                                 for type in args]]
   typeform is ['Dictionary,['Record,:args]] =>
       ['Apply, 'Dictionary,
-          ['PretendTo, axFormatType CADR typeform, 'SetCategory]]
+          ['PretendTo, axFormatType second typeform, 'SetCategory]]
   typeform is ['FileCategory,xx,['Record,:args]] =>
       ['Apply, 'FileCategory, axFormatType xx,
-          ['PretendTo, axFormatType CADDR typeform, 'SetCategory]]
+          ['PretendTo, axFormatType third typeform, 'SetCategory]]
   typeform is [op,:args] =>
       $pretendFlag and constructor? op and
         getConstructorModemapFromDB op is [[.,target,:argtypes],.] =>

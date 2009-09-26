@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ buildWordTable u ==
     HPUT(table,key,
       listSort(function GLESSEQP,removeDupOrderedAlist
         listSort(function GLESSEQP, HGET(table,key),function CAR),
-          function CADR))
+          function second))
   table
 
 measureWordTable u ==
@@ -268,7 +268,7 @@ rotateWordList u ==
   v := u
   p := CAR v
   while QCDR v repeat
-    RPLACA(v,CADR v) 
+    RPLACA(v,second v) 
     v := QCDR v
   RPLACA(v,p)
   u

@@ -491,7 +491,7 @@ canCoerceTopMatching(t1,t2,tt1,tt2) ==
   -- canCoerce will only be true if D1 = D2
   not EQ(tt1,tt2) => 'maybe
   doms := '(Polynomial List Matrix FiniteSet Vector Stream Gaussian)
-  MEMQ(tt1,doms) => canCoerce(CADR t1, CADR t2)
+  MEMQ(tt1,doms) => canCoerce(second t1, second t2)
   not (MEMQ(tt1,$univariateDomains) or MEMQ(tt2,$multivariateDomains)) =>
     'maybe
   u2 := deconstructT t2
@@ -635,7 +635,7 @@ canCoercePermute(t1,t2) ==
   -- as in t2. If length towers = 2 and t2 = last towers, we quit to
   -- avoid an infinte loop.
   NULL towers or NULL CDR towers => NIL
-  NULL CDDR towers and t2 = CADR towers => NIL
+  NULL CDDR towers and t2 = second towers => NIL
   -- do the coercions successively, quitting if any fail
   ok := true
   for t in CDR towers while ok repeat
@@ -661,8 +661,8 @@ canCoerceByFunction1(m1,m2,fun) ==
   for t1 in l1 while not ans repeat
     for t2 in l2 while not ans repeat
       l := selectMms1(fun,t2,[t1],[t1],NIL)
-      ans := [x for x in l | x is [sig,:.] and CADR sig=t2 and
-       CADDR sig=t1 and
+      ans := [x for x in l | x is [sig,:.] and second sig=t2 and
+       third sig=t1 and
         CAR(sig) isnt ['TypeEquivalence,:.]] and true
   ans
 
@@ -1187,7 +1187,7 @@ coerceIntPermute(object,t2) ==
   -- as in t2. If length towers = 2 and t2 = last towers, we quit to
   -- avoid an infinte loop.
   NULL towers or NULL CDR towers => NIL
-  NULL CDDR towers and t2 = CADR towers => NIL
+  NULL CDDR towers and t2 = second towers => NIL
   -- do the coercions successively, quitting if any fail
   ok := true
   for t in CDR towers while ok repeat

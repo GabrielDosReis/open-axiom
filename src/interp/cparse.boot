@@ -110,12 +110,12 @@ npPop1()==
        a
 
 npPop2()==
-       a:=CADR $stack
+       a:= second $stack
        RPLACD($stack,CDDR $stack)
        a
 
 npPop3()==
-       a:=CADDR $stack
+       a:= third $stack
        RPLACD(CDR $stack,CDDDR $stack)
        a
 

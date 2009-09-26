@@ -401,7 +401,7 @@ compileDocumentation libName ==
 
 getLisplibVersion libName ==
   stream := RDEFIOSTREAM [['FILE,libName,$spadLibFT],['MODE, :'I]]
-  version:= CADR rread('VERSION, stream,nil)
+  version:= second rread('VERSION, stream,nil)
   RSHUT(stream)
   version
  

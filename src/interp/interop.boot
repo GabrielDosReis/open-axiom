@@ -274,7 +274,7 @@ instantiate domenv ==
    -- following is a patch for a bug in runtime.as
    -- has a lazy dispatch vector with an instantiated domenv
   VECTORP CDR domenv => [$oldAxiomDomainDispatch ,: domenv]
-  callForm := CADR domenv
+  callForm := second domenv
   oldDom := CDDR domenv
   [functor,:args] := callForm
 --  if null(fn := GETL(functor,'instantiate)) then
@@ -286,7 +286,7 @@ instantiate domenv ==
 --  domvec := APPLY(fn, args)
   domvec := APPLY(functor, args)
   RPLACA(oldDom, $oldAxiomDomainDispatch)
-  RPLACD(oldDom, [CADR oldDom,: domvec])
+  RPLACD(oldDom, [second oldDom,: domvec])
   oldDom
 
 hashTypeForm([fn,: args], percentHash) == 
@@ -462,7 +462,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
 
 hashNewLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
-  catVec := CADR slot4
+  catVec := second slot4
   SIZE catVec = 0 => nil                      --early exit if no categories
   INTEGERP KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
@@ -572,7 +572,7 @@ newHasCategory(domain,catform) ==
     and/[newHasCategory(domain,cat) for cat in cats]
   slot4 := domain.4
   auxvec := CAR slot4
-  catvec := CADR slot4
+  catvec := second slot4
   $isDefaultingPackage: local := isDefaultPackageForm? devaluate domain
   #catvec > 0 and INTEGERP KDR catvec.0 =>              --old style
     predIndex := lazyMatchAssocV1(catform,catvec,domain)

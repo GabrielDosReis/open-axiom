@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -277,7 +277,7 @@ pfApplication2Atree pf ==
             typeList := [pf2Atree1 arg for arg in (pf0TupleParts)(CAR args)]
         else
             typeList := [pf2Atree1 CAR args]
-        args := [pf2Atree1 CADR args, :typeList]
+        args := [pf2Atree1 second args, :typeList]
         [mkAtreeNodeWithSrcPos("Mapping", opPf), :args]
 
     (symEqual)(op, '":") and $insideRule = 'left =>
@@ -321,7 +321,7 @@ pfApplication2Atree pf ==
         -- handle package call
         (pfFromdom?)(opPf) =>
             opAtree := pf2Atree1 opPf
-            [CAR opAtree, CADR opAtree, [CADDR opAtree, :argAtree]]
+            [CAR opAtree, second opAtree, [third opAtree, :argAtree]]
         -- regular call
         [mkAtreeNodeWithSrcPos(op,opPf), :argAtree]
 
@@ -337,7 +337,7 @@ pfApplication2Atree pf ==
     -- handle package call
     (pfFromdom?)(opPf) =>
         opAtree := pf2Atree1 opPf
-        [CAR opAtree, CADR opAtree, [CADDR opAtree, pf2Atree1 args]]
+        [CAR opAtree, second opAtree, [third opAtree, pf2Atree1 args]]
     -- regular call
     [mkAtreeNodeWithSrcPos(op,opPf), pf2Atree1 args]
 
@@ -550,6 +550,6 @@ pfCollect2Atree pf ==
 --    name := GENSYM()
 --    argList := pf0TupleParts args
 --    lhsSex := pf2Atree1 CAR argList
---    rhsSex := pf2Atree CADR argList
+--    rhsSex := pf2Atree second argList
 --    $predicateList := [[name, lhsSex, :rhsSex], :$predicateList]
 --    name

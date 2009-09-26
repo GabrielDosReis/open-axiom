@@ -167,7 +167,7 @@ scanKeyWords == [ _
 scanKeyTableCons()==
    KeyTable:=MAKE_-HASHTABLE("CVEC",true)
    for st in scanKeyWords repeat
-      HPUT(KeyTable,CAR st,CADR st)
+      HPUT(KeyTable,CAR st,second st)
    KeyTable
 
 scanKeyTable:=scanKeyTableCons()
@@ -247,7 +247,7 @@ for i in   [ _
    ["LARROW"       ,"<-"], _
    ["BAR"       ,"|"], _
    ["SEG"       ,".."] _
-    ] repeat MAKEPROP(CAR i,'INFGENERIC,CADR i)
+    ] repeat MAKEPROP(CAR i,'INFGENERIC,second i)
 
 -- Scanner
 

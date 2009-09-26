@@ -137,7 +137,7 @@ pushDownTargetInfo(op,target,arglist) ==
         if not getTarget(x) then putTarget(x,S)
   2 = nargs =>
     op = "*" =>            -- only push down on 1st arg if not immed
-      if not getTarget CADR arglist then putTarget(CADR arglist,target)
+      if not getTarget second arglist then putTarget(second arglist,target)
       getTarget(x := CAR arglist) => NIL
       if getUnname(x) ~= $immediateDataSymbol then putTarget(x,target)
     op = "**" or op = "^" =>           -- push down on base

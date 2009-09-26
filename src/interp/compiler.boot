@@ -647,7 +647,7 @@ getFormModemaps(form is [op,:argl],e) ==
      then modemapList:= eltModemapFilter(LAST argl,modemapList,e) or return nil
      else
       if op="setelt" then modemapList:=
-        seteltModemapFilter(CADR argl,modemapList,e) or return nil
+        seteltModemapFilter(second argl,modemapList,e) or return nil
   nargs:= #argl
   finalModemapList:= [mm for (mm:= [[.,.,:sig],:.]) in modemapList 
                        | enoughArguments(argl,sig)]
@@ -1039,9 +1039,9 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
             $finalEnv => intersectionEnvironment($finalEnv,t.env)
             t.env
           rplac(first x,"THROW")
-          rplac(CADR x,tag)
-          rplac(CADDR x,(convertOrCroak(t,opMode)).expr)
-        true => rplac(CADR x,CADR x-1)
+          rplac(second x,tag)
+          rplac(third x,(convertOrCroak(t,opMode)).expr)
+        true => rplac(second x,second x-1)
       x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
         rplac(first t,replaceExitEtc(first t,tag,opFlag,opMode))
       replaceExitEtc(first x,tag,opFlag,opMode)
@@ -1306,7 +1306,7 @@ getUnionMode(x,e) ==
 
 isUnionMode(m,e) ==
   m is ["Union",:.] => m
-  (m':= getmode(m,e)) is ["Mapping",["UnionCategory",:.]] => CADR m'
+  (m':= getmode(m,e)) is ["Mapping",["UnionCategory",:.]] => second m'
   v:= get(RepIfRepHack m,"value",e) =>
     (v.expr is ["Union",:.] => v.expr; nil)
   nil
@@ -1624,7 +1624,7 @@ tryCourtesyCoercion(T,m) ==
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
   if $useRepresentationHack then
-    rplac(CADR T,MSUBST("$",$Rep,CADR T))
+    rplac(second T,MSUBST("$",$Rep,second T))
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => T'
   T':= coerceHard(T,m) => T'
@@ -2427,7 +2427,7 @@ compIterator(it,e) ==
           stackMessage('"final value of index: %1b must be an integer",[final])
       optFinal:= [final]
     indexmode:=
-      comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
+      comp(third it,$NonNegativeInteger,e) => $NonNegativeInteger
       $Integer
     if null get(index,"mode",e) then [.,.,e]:=
       compMakeDeclaration(index,indexmode,e) or return nil
