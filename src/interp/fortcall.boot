@@ -331,7 +331,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
              [["$elt","Result","construct"],body]]
 
 stripNil u ==
-  [CAR(u), ["construct",:second(u)], if third(u) then "true" else "false"]
+  [first(u), ["construct",:second(u)], if third(u) then "true" else "false"]
 
 makeUnion aspType ==
   -- The argument is the type of the asp to be generated.  We would like to
@@ -595,11 +595,11 @@ prepareResults(results,args,dummies,values,decls) ==
 --        -- Take a vector of vectors and return a single vector which is in column
 --        -- order (i.e. swap from C to Fortran order).
 --        els  := nil
---        rows := CAR ARRAY_-DIMENSIONS(u)-1
---        cols := CAR ARRAY_-DIMENSIONS(ELT(u,0))-1
+--        rows := first ARRAY_-DIMENSIONS(u)-1
+--        cols := first ARRAY_-DIMENSIONS(ELT(u,0))-1
 --        -- Could be a 3D Matrix
 --        if VECTORP ELT(ELT(u,0),0) then
---          planes := CAR ARRAY_-DIMENSIONS(ELT(ELT(u,0),0))-1
+--          planes := first ARRAY_-DIMENSIONS(ELT(ELT(u,0),0))-1
 --          for k in 0..planes repeat for j in 0..cols repeat for i in 0..rows repeat
 --            els := [ELT(ELT(ELT(u,i),j),k),:els]
 --        else
@@ -626,13 +626,13 @@ writeData(tmpFile,indata) ==
                 xdrWrite(xstr,v)
         -- some array
         VECTORP v =>  
-                rows := CAR ARRAY_-DIMENSIONS(v)
+                rows := first ARRAY_-DIMENSIONS(v)
                 -- is it 2d or more (most likely) ?
                 VECTORP ELT(v,0) =>     
-                        cols := CAR ARRAY_-DIMENSIONS(ELT(v,0))
+                        cols := first ARRAY_-DIMENSIONS(ELT(v,0))
                         -- is it 3d ?
                         VECTORP ELT(ELT(v,0),0) =>
-                                planes := CAR ARRAY_-DIMENSIONS(ELT(ELT(v,0),0))
+                                planes := first ARRAY_-DIMENSIONS(ELT(ELT(v,0),0))
                                 -- write 3d array
                                 xdrWrite(xstr,rows*cols*planes)
                                 for k in 0..planes-1 repeat 

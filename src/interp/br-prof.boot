@@ -78,7 +78,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   kind     := getConstructorKindFromDB conname
   honestConform :=
     kind = 'category =>
-      [INTERN STRCONC(PNAME conname,'"&"),"$",:CDR conform]
+      [INTERN STRCONC(PNAME conname,'"&"),"$",:rest conform]
     conform
   faTypes  := CDDAR getConstructorModemapFromDB conname
 

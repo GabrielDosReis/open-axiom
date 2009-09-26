@@ -220,8 +220,8 @@ bcIssueHt line ==
 
 mapStringize l ==
   ATOM l => l
-  RPLACA(l, basicStringize CAR l)
-  RPLACD(l, mapStringize CDR l)
+  RPLACA(l, basicStringize first l)
+  RPLACD(l, mapStringize rest l)
   l
 
 basicStringize s ==
@@ -534,14 +534,14 @@ parseAndEval1 string ==
   syntaxError := false
   pform :=
     v := applyWithOutputToString('ncParseFromString, [string])
-    CAR v => CAR v
+    first v => first v
     syntaxError := true
-    CDR v
+    rest v
   syntaxError =>
      '"Syntax Error "
   pform =>
     val := applyWithOutputToString('processInteractive, [pform, nil])
-    CAR val => CAR val
+    first val => first val
     '"Type Analysis Error"
   nil
 
@@ -582,8 +582,8 @@ unescapeStringsInForm form ==
     str := NSUBSTITUTE(char '_", $funnyQuote, form)
     NSUBSTITUTE(char '_\, $funnyBacks, str)
   CONSP form =>
-    unescapeStringsInForm CAR form
-    unescapeStringsInForm CDR form
+    unescapeStringsInForm first form
+    unescapeStringsInForm rest form
     form
   form
 

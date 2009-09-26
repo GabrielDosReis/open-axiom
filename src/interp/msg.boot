@@ -104,7 +104,7 @@ ncBug (erMsgKey, erArgL,:optAttr) ==
 msgCreate(tag,posWTag,key,argL,optPre,:optAttr) ==
     if CONSP key then tag := 'old
     msg := [tag,posWTag,key,argL,optPre,NIL]
-    if CAR optAttr then
+    if first optAttr then
         setMsgForcedAttrList(msg,car optAttr)
     putDatabaseStuff msg
     initImPr    msg
@@ -145,8 +145,8 @@ getMsgInfoFromKey msg ==
 getErFromDbL (erMsgKey,dbL) ==
     erMsg := NIL
     while null erMsg   repeat
-        dbName := CAR dbL
-        dbL    := CDR dbL
+        dbName := first dbL
+        dbL    := rest dbL
         $msgDatabaseName      := dbName
         lastName := null dbL
 --        fileFound := '"co_-eng.msgs"
@@ -197,16 +197,16 @@ insertPos(newPos,posList) ==
     bot  := [0,:posList]
     top  := []
     while not done repeat
-        top  := [CAR bot,:top]
-        bot  := CDR bot
-        pos  := CAR bot
+        top  := [first bot,:top]
+        bot  := rest bot
+        pos  := first bot
         done :=
           pos < newPos => false
           pos = newPos => true
           pos > newPos =>
             top := [newPos,:top]
             true
-    [CDR reverse top,:bot]
+    [rest reverse top,:bot]
  
 putFTText (msg,chPosList) ==
     tag := getMsgFTTag? msg
@@ -272,8 +272,8 @@ erMsgSep erMsgList ==
           msgWPos  := [msg,:msgWPos]
     [msgWPos,msgWOPos]
  
-getLinePos line  == CAR line
-getLineText line == CDR line
+getLinePos line  == first line
+getLineText line == rest line
  
 queueUpErrors(globalNumOfLine,msgList)==
     thisPosMsgs  := []
@@ -436,14 +436,14 @@ getPreStL optPre ==
 desiredMsg (erMsgKey,:optCatFlag) ==
     isKeyQualityP(erMsgKey,'show)   => true
     isKeyQualityP(erMsgKey,'stifle) => false
-    not null optCatFlag  => CAR optCatFlag
+    not null optCatFlag  => first optCatFlag
     true
  
 isKeyQualityP (key,qual)  ==
     --returns pair if found, else NIL
     found := false
     while not found and (qualPair := assoc(key,$specificMsgTags)) repeat
-        if CDR qualPair = qual then found := true
+        if rest qualPair = qual then found := true
     qualPair
  
 -----------------------------

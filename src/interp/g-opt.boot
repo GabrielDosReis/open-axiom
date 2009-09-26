@@ -260,7 +260,7 @@ optCond (x is ['COND,:l]) ==
 AssocBarGensym(key,l) ==
   for x in l repeat
     CONSP x =>
-      EqualBarGensym(key,CAR x) => return x
+      EqualBarGensym(key,first x) => return x
  
 EqualBarGensym(x,y) ==
   $GensymAssoc: fluid := nil
@@ -569,6 +569,6 @@ for x in '( (call         optCall) _
            (RECORDELT    optRECORDELT)_
            (SETRECORDELT optSETRECORDELT)_
            (RECORDCOPY   optRECORDCOPY)) _
-   repeat MAKEPROP(CAR x,'OPTIMIZE, second x)
+   repeat MAKEPROP(first x,'OPTIMIZE, second x)
        --much quicker to call functions if they have an SBC
 

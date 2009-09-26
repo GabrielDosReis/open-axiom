@@ -1141,12 +1141,12 @@ maprinChk x ==
   null $MatrixList => maPrin x
   ATOM x and (u:= assoc(x,$MatrixList)) =>
     $MatrixList := delete(u,$MatrixList)
-    maPrin deMatrix CDR u
+    maPrin deMatrix rest u
   x is ["=",arg,y]  =>     --case for tracing with )math and printing matrices
     u:=assoc(y,$MatrixList) =>
       -- we don't want to print matrix1 = matrix2 ...
       $MatrixList := delete(u,$MatrixList)
-      maPrin ["=",arg, deMatrix CDR u]
+      maPrin ["=",arg, deMatrix rest u]
     maPrin x
   x is ['EQUATNUM,n,y] =>
     $MatrixList is [[name,:value]] and y=name =>
@@ -1200,7 +1200,7 @@ LargeMatrixp(u,width, dist) ==
     dist:=dist-3
     width:=width-3
     ans:=
-      for v in CDR u repeat
+      for v in rest u repeat
         (ans:=LargeMatrixp(v,width,dist)) => return largeMatrixAlist ans
         dist:=dist - WIDTH v
         dist<0 => return nil
@@ -1219,7 +1219,7 @@ LargeMatrixp(u,width, dist) ==
     ans
       --Relying that falling out of a loop gives nil
   ans:=
-    for v in CDR u repeat
+    for v in rest u repeat
       (ans:=LargeMatrixp(v,width,dist)) => return largeMatrixAlist ans
       dist:=dist - WIDTH v
       dist<0 => return nil
@@ -1236,7 +1236,7 @@ PushMatrix m ==
     --Adds the matrix to the look-aside list, and returns a name for it
   name:=
     for v in $MatrixList repeat
-        EQUAL(m,CDR v) => return CAR v
+        EQUAL(m,rest v) => return first v
   name => name
   name:=INTERNL('"matrix",STRINGIMAGE($MatrixCount:=$MatrixCount+1))
   $MatrixList:=[[name,:m],:$MatrixList]
@@ -1260,9 +1260,9 @@ SubstWhileDesizing(u,m) ==
   -- doesn't work since RASSOC seems to use an EQ test, and returns the
   -- pair anyway. JHD 28/2/93
   op = 'MATRIX =>
-    l':=SubstWhileDesizingList(CDR l,m)
+    l':=SubstWhileDesizingList(rest l,m)
     u :=
-      -- CDR l=l' => u
+      -- rest l=l' => u
       -- this was a CONS-saving optimisation, but it doesn't work JHD 28/2/93
       [op,nil,:l']
     PushMatrix u
@@ -1289,7 +1289,7 @@ SubstWhileDesizingList(u,m) ==
      tail:=res
      for i in b repeat
         if ATOM i then  RPLACD(tail,[i]) else RPLACD(tail,[SubstWhileDesizing(i,m)])
-        tail:=CDR tail
+        tail:=rest tail
      res   
    u  
 
@@ -2166,14 +2166,14 @@ boxSub(x) ==
   subspan x.1+1
 
 boxSuper(x) ==
-  null CDR x => 0
+  null rest x => 0
   hl :=
     null CDDR x => 0
     true => 2 + subspan x.2 + superspan x.2
   true => hl+1 + superspan x.1
 
 boxWidth(x) ==
-  null CDR x => 0
+  null rest x => 0
   wl :=
     null CDDR x => 0
     true => WIDTH x.2
@@ -2718,5 +2718,5 @@ str2Tex s ==
   outf := str2Outform s
   val := coerceInt(objNew(wrap outf, '(OutputForm)), '(TexFormat))
   val := objValUnwrap val
-  CAR val.1
+  first val.1
 

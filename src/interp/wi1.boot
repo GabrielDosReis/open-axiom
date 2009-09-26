@@ -265,11 +265,11 @@ compNoStacking(xOrig,m,e) ==
 markKillAllRecursive x ==
   x is [op,:r] =>
 --->op = 'PART => markKillAllRecursive second r
-    op = 'PART => ['PART, CAR r, markKillAllRecursive second r]
+    op = 'PART => ['PART, first r, markKillAllRecursive second r]
 ----------------------------------------------------------94/10/11
     constructor? op => markKillAll x
-    op = 'elt and constructor? opOf CAR r =>
-      ['elt,markKillAllRecursive CAR r,second r]
+    op = 'elt and constructor? opOf first r =>
+      ['elt,markKillAllRecursive first r,second r]
     x
   x
 
@@ -593,7 +593,7 @@ setqSingle(id,val,m,E) ==
      else form:=
          $QuickLet => ["%LET",id,x]
          ["%LET",id,x,
-            (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
+            (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
   [form,m',e']
 
 setqMultiple(nameList,val,m,e) ==
@@ -1214,7 +1214,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       formals:=actuals:=nil
       for u in $extraParms repeat
         formals:=[CAR u,:formals]
-        actuals:=[MKQ CDR u,:actuals]
+        actuals:=[MKQ rest u,:actuals]
       body := ['sublisV,['PAIR,['QUOTE,formals],['LIST,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:

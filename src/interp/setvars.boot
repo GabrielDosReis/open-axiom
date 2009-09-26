@@ -190,7 +190,7 @@ useFastLinks flag ==
 set1(l,setTree) ==
   null l => displaySetVariableSettings(setTree,"")
   $setOptionNames : local := [x.0 for x in setTree]
-  arg := selectOption(DOWNCASE CAR l,$setOptionNames,'optionError)
+  arg := selectOption(DOWNCASE first l,$setOptionNames,'optionError)
   setData := [arg,:LASSOC(arg,setTree)]
 
   -- check is the user is authorized for the set variable
@@ -664,8 +664,8 @@ setFortTmpDir arg ==
 
 
 validateOutputDirectory x ==
-  AND(PATHNAME_-DIRECTORY(PROBE_-FILE(CAR(x))), NOT PATHNAME_-NAME  (PROBE_-FILE(CAR(x)))) =>
-    CAR(x)
+  AND(PATHNAME_-DIRECTORY(PROBE_-FILE(first(x))), NOT PATHNAME_-NAME  (PROBE_-FILE(first(x)))) =>
+    first(x)
   NIL
 
 

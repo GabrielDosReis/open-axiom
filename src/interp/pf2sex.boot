@@ -427,7 +427,7 @@ ruleLhsTran ruleLhs ==
   for pred in $predicateList repeat
     [name, predLhs, :predRhs] := pred
     vars := patternVarsOf predRhs
-    CDR vars =>  -- if there is more than one patternVariable
+    rest vars =>  -- if there is more than one patternVariable
       ruleLhs := NSUBST(predLhs, name, ruleLhs)
       $multiVarPredicateList := [pred, :$multiVarPredicateList]
     predicate :=
@@ -441,7 +441,7 @@ rulePredicateTran rule ==
   null $multiVarPredicateList => rule
   varList := patternVarsOf [rhs for [.,.,:rhs] in $multiVarPredicateList]
   predBody :=
-    CDR $multiVarPredicateList =>
+    rest $multiVarPredicateList =>
       ['AND, :[:pvarPredTran(rhs, varList) for [.,.,:rhs] in
         $multiVarPredicateList]]
     [[.,.,:rhs],:.] := $multiVarPredicateList

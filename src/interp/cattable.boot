@@ -96,12 +96,12 @@ simpHasPred(pred,:options) == main where
   simp pred ==
     pred is [op,:r] =>
       op = "has" => simpHas(pred,first r,first rest r)
-      op = 'HasCategory => simp ["has",CAR r,simpDevaluate second r]
+      op = 'HasCategory => simp ["has",first r,simpDevaluate second r]
       op = 'HasSignature =>
          [op,sig] := simpDevaluate second r
-         ["has",CAR r,['SIGNATURE,op,sig]]
+         ["has",first r,['SIGNATURE,op,sig]]
       op = 'HasAttribute =>
-        form := ["has",a := CAR r,['ATTRIBUTE,b := simpDevaluate second r]]
+        form := ["has",a := first r,['ATTRIBUTE,b := simpDevaluate second r]]
         simpHasAttribute(form,a,b)
       op in '(AND OR NOT) =>
         null (u := MKPF([simp p for p in r],op)) => nil
@@ -124,8 +124,8 @@ simpHasPred(pred,:options) == main where
     IDENTP npred or null hasIdent npred => npred
     pred
   eval (pred := ["has",d,cat]) ==
-    x := hasCat(CAR d,CAR cat)
-    y := CDR cat =>
+    x := hasCat(first d,first cat)
+    y := rest cat =>
       npred := or/[p for [args,:p] in x | y = args] => simp npred
       false  --if not there, it is false
     x
@@ -360,7 +360,7 @@ makeCatPred(zz, cats, thePred) ==
     ats := if ats is ['PROGN,:atl] then atl else [ats]
     for at in ats repeat
       if at is ['ATTRIBUTE,z3] and not atom z3 and
-        constructor? CAR z3 then
+        constructor? first z3 then
           cats:= CONS(['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],cats)
       at is ['IF, pred, :.] =>
         cats := makeCatPred(at, cats, curPred)
@@ -438,17 +438,17 @@ squeezeList(l) ==
 
 squeeze1(l) ==
 -- recursive version of squeezeList
-  x:= CAR l
+  x:= first l
   y:=
     atom x => x
-    z:= member(x,$found) => CAR z
+    z:= member(x,$found) => first z
     $found:= CONS(x,$found)
     squeeze1 x
   RPLACA(l,y)
-  x:= CDR l
+  x:= rest l
   y:=
     atom x => x
-    z:= member(x,$found) => CAR z
+    z:= member(x,$found) => first z
     $found:= CONS(x,$found)
     squeeze1 x
   RPLACD(l,y)
@@ -483,7 +483,7 @@ clearCategoryTable($cname) ==
   MAPHASH('clearCategoryTable1,_*HASCATEGORY_-HASH_*)
 
 clearCategoryTable1(key,val) ==
-  (CAR key=$cname)=> HREM(_*HASCATEGORY_-HASH_*,key)
+  (first key=$cname)=> HREM(_*HASCATEGORY_-HASH_*,key)
   nil
 
 clearTempCategoryTable(catNames) ==
@@ -492,7 +492,7 @@ clearTempCategoryTable(catNames) ==
     extensions:= nil
     for (extension:= [catForm,:.]) in getConstructorAncestorsFromDB key
       repeat
-        MEMQ(CAR catForm,catNames) => nil
+        MEMQ(first catForm,catNames) => nil
         extensions:= [extension,:extensions]
     HPUT(_*ANCESTORS_-HASH_*,key,extensions)
 

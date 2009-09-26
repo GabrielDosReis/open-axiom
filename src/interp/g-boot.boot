@@ -69,7 +69,7 @@ mergeableCOND x ==
   while (cls and ok) repeat
     [[p,:r],:cls] := cls
     CONSP QCDR r => ok := NIL
-    CAR(r) isnt ['EXIT,.] => ok := NIL
+    first(r) isnt ['EXIT,.] => ok := NIL
     NULL(cls) and ATOM(p) => ok := NIL
     NULL(cls) and (p = ''T) => ok := NIL
   ok
@@ -85,19 +85,19 @@ mergeCONDsWithEXITs l ==
   a := QCAR l
   if a is ['COND,:.] then a := flattenCOND a
   am := mergeableCOND a
-  CDR(l) is [b,:k] and am and mergeableCOND(b) =>
+  rest(l) is [b,:k] and am and mergeableCOND(b) =>
     b:= flattenCOND b
     c := ['COND,:QCDR a,:QCDR b]
     mergeCONDsWithEXITs [flattenCOND c,:k]
-  CDR(l) is [b] and am =>
+  rest(l) is [b] and am =>
     [removeEXITFromCOND flattenCOND ['COND,:QCDR a,[''T,b]]]
-  [a,:mergeCONDsWithEXITs CDR l]
+  [a,:mergeCONDsWithEXITs rest l]
  
 removeEXITFromCOND? c ==
   -- c is '(COND ...)
   -- only can do it if every clause simply EXITs
   ok := true
-  c := CDR c
+  c := rest c
   while ok and c repeat
     [[p,:r],:c] := c
     nakedEXIT? p => ok := NIL
@@ -110,7 +110,7 @@ removeEXITFromCOND? c ==
 removeEXITFromCOND c ==
   -- c is '(COND ...)
   z := NIL
-  for cl in CDR c repeat
+  for cl in rest c repeat
     ATOM cl => z := CONS(cl,z)
     cond := QCAR cl
     length1? cl =>
@@ -120,7 +120,7 @@ removeEXITFromCOND c ==
     lastSE := QCAR cl'
     ATOM lastSE => z := CONS(cl,z)
     lastSE is ["EXIT",:.] =>
-      z := CONS(REVERSE CONS(second lastSE,CDR cl'),z)
+      z := CONS(REVERSE CONS(second lastSE,rest cl'),z)
     z := CONS(cl,z)
   CONS('COND,NREVERSE z)
  
@@ -148,7 +148,7 @@ bootIF c ==
  
 bootCOND c ==
   -- handles COND expressions: c is ['COND,:.]
-  cls := CDR c
+  cls := rest c
   NULL cls => NIL
   cls is [[''T,r],:.] => r
   [:icls,fcls] := cls
@@ -208,7 +208,7 @@ bootAbsorbSEQsAndPROGNs e ==
       ATOM x => NIL
       x is ['PROGN,:pcls,lpcl] =>
         ATOM lpcl => pcls
-        CDR x
+        rest x
       -- next usually comes about from if foo then bar := zap
       x is ['COND,y,[''T,'NIL]] => [['COND,y]]
       [x]
@@ -221,7 +221,7 @@ bootAbsorbSEQsAndPROGNs e ==
   APPEND(g,[lcl])
  
 bootSEQ e ==
-  e := ['SEQ,:mergeCONDsWithEXITs bootAbsorbSEQsAndPROGNs CDR e]
+  e := ['SEQ,:mergeCONDsWithEXITs bootAbsorbSEQsAndPROGNs rest e]
   if e is [.,:cls,lcl] and IDENTP lcl and not MEMQ(lcl,$labelsForGO) then
     e := ['SEQ,:cls,['EXIT,lcl]]
   cls := QCDR e
@@ -238,7 +238,7 @@ bootSEQ e ==
   tryToRemoveSEQ e
  
 bootPROGN e ==
-  e := ['PROGN,:bootAbsorbSEQsAndPROGNs CDR e]
+  e := ['PROGN,:bootAbsorbSEQsAndPROGNs rest e]
   [.,:cls] := e
   NULL cls => NIL
   cls is [body] => body
@@ -258,21 +258,21 @@ defLET1(lhs,rhs) ==
     rhs' := defLET2(lhs,rhs)
     EQCAR(rhs',$LET) => MKPROGN [rhs',rhs]
     rhs' is ["PROGN",:.] => APPEND(rhs',[rhs])
-    if IDENTP CAR rhs' then rhs' := CONS(rhs',NIL)
+    if IDENTP first rhs' then rhs' := CONS(rhs',NIL)
     MKPROGN [:rhs',rhs]
   rhs is [=$LET,:.] and IDENTP(name := second rhs) =>
     -- handle things like [a] := x := foo
     l1 := defLET1(name,third rhs)
     l2 := defLET1(lhs,name)
-    l2 is ["PROGN",:.] => MKPROGN [l1,:CDR l2]
-    if IDENTP CAR l2 then l2 := cons(l2,nil)
+    l2 is ["PROGN",:.] => MKPROGN [l1,:rest l2]
+    if IDENTP first l2 then l2 := cons(l2,nil)
     MKPROGN [l1,:l2,name]
   g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
   rhs' := [$LET,g,rhs]
   let' := defLET1(lhs,g)
-  let' is ["PROGN",:.] => MKPROGN [rhs',:CDR let']
-  if IDENTP CAR let' then let' := CONS(let',NIL)
+  let' is ["PROGN",:.] => MKPROGN [rhs',:rest let']
+  if IDENTP first let' then let' := CONS(let',NIL)
   MKPROGN [rhs',:let',g]
  
 defLET2(lhs,rhs) ==
@@ -290,11 +290,11 @@ defLET2(lhs,rhs) ==
       defLET2(var2,addCARorCDR('CDR,rhs))
     l1 := defLET2(var1,addCARorCDR('CAR,rhs))
     var2 in '(NIL _.) => l1
-    if CONSP l1 and ATOM CAR l1 then l1 := cons(l1,nil)
+    if CONSP l1 and ATOM first l1 then l1 := cons(l1,nil)
     IDENTP var2 =>
       [:l1,defLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := defLET2(var2,addCARorCDR('CDR,rhs))
-    if CONSP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
+    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
     APPEND(l1,l2)
   lhs is ['APPEND,var1,var2] =>
     patrev := defISReverse(var2,var1)
@@ -302,10 +302,10 @@ defLET2(lhs,rhs) ==
     g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := defLET2(patrev,g)
-    if CONSP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
+    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
     var1 = "." => [[$LET,g,rev],:l2]
     last l2 is [=$LET, =var1, val1] =>
-      [[$LET,g,rev],:REVERSE CDR REVERSE l2,
+      [[$LET,g,rev],:REVERSE rest REVERSE l2,
        defLetForm(var1,['NREVERSE,val1])]
     [[$LET,g,rev],:l2,defLetForm(var1,['NREVERSE,var1])]
   lhs is ['EQUAL,var1] =>
@@ -396,7 +396,7 @@ defIS1(lhs,rhs) ==
     $isGenVarCounter := $isGenVarCounter + 1
     rev := ['AND,['CONSP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
     l2 := defIS1(g,patrev)
-    if CONSP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
+    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
     a = "." => ['AND,rev,:l2]
     ['AND,rev,:l2,['PROGN,defLetForm(a,['NREVERSE,a]),''T]]
   SAY '"WARNING (defIS1): possibly bad IS code being generated"
@@ -411,9 +411,9 @@ defIS(lhs,rhs) ==
  
 bootOR e ==
   -- flatten any contained ORs.
-  cls := CDR e
+  cls := rest e
   NULL cls => NIL
-  NULL CDR cls => CAR cls
+  NULL rest cls => first cls
   ncls := [:flatten(c) for c in cls] where
     flatten x ==
       x is ['OR,:.] => QCDR x
@@ -422,9 +422,9 @@ bootOR e ==
  
 bootAND e ==
   -- flatten any contained ANDs.
-  cls := CDR e
+  cls := rest e
   NULL cls => 'T
-  NULL CDR cls => CAR cls
+  NULL rest cls => first cls
   ncls := [:flatten(c) for c in cls] where
     flatten x ==
       x is ['AND,:.] => QCDR x
@@ -437,7 +437,7 @@ bootLabelsForGO e ==
   ATOM e => NIL
   [head,:tail] := e
   IDENTP head =>
-    head = 'GO => $labelsForGO := CONS(CAR tail,$labelsForGO)
+    head = 'GO => $labelsForGO := CONS(first tail,$labelsForGO)
     head = 'QUOTE => NIL
     bootLabelsForGO tail
   bootLabelsForGO head

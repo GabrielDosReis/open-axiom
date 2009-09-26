@@ -179,21 +179,21 @@ intloopPrefix?(prefix,whole) ==
  
 intloopProcess(n,interactive,s)==
      StreamNull s => n
-     [lines,ptree]:=CAR s
+     [lines,ptree]:=first s
      pfAbSynOp?(ptree,"command")=>
             if interactive then setCurrentLine tokPart ptree
             FUNCALL($systemCommandFunction, tokPart ptree)
-            intloopProcess(n ,interactive ,CDR s)
+            intloopProcess(n ,interactive ,rest s)
      intloopProcess(intloopSpadProcess(n,lines,ptree,interactive)
-                 ,interactive ,CDR s)
+                 ,interactive ,rest s)
  
 intloopEchoParse s==
-         [dq,stream]:=CAR s
+         [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,$lines)
          setCurrentLine(mkLineList(lines))
          if $EchoLines then ncloopPrintLines lines
          $lines:=rest
-         cons([[lines,npParse dqToList dq]],CDR s)
+         cons([[lines,npParse dqToList dq]],rest s)
  
 intloopInclude0(st, name, n) ==
     $lines:local:=incStream(st,name)
@@ -265,8 +265,8 @@ phIntReportMsgs(carrier, interactive?) ==
     'OK
  
 mkLineList lines ==
-  l := [CDR line for line in lines | nonBlank CDR line]
-  #l = 1 => CAR l
+  l := [rest line for line in lines | nonBlank rest line]
+  #l = 1 => first l
   l
 
 nonBlank str ==
@@ -309,12 +309,12 @@ streamChop(n,s)==
          else
             [a,b]:= streamChop(n-1,cdr s)
             line:=car s
-            c:=ncloopPrefix?('")command",CDR line)
+            c:=ncloopPrefix?('")command",rest line)
             d:= cons(car line,if c then c else cdr line)
             [cons(d,a),b]
  
 ncloopPrintLines lines ==
-        for line in lines repeat WRITE_-LINE CDR line
+        for line in lines repeat WRITE_-LINE rest line
         WRITE_-LINE '" "
  
 ncloopIncFileName string==
@@ -325,9 +325,9 @@ ncloopIncFileName string==
                 fn
 
 ncloopParse s==
-         [dq,stream]:=CAR s
+         [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,stream)
-         cons([[lines,npParse dqToList dq]],CDR s)
+         cons([[lines,npParse dqToList dq]],rest s)
  
 ncloopInclude0(st, name, n) ==
      $lines:local := incStream(st, name)
@@ -419,8 +419,8 @@ phBegin id ==
     if $ncmPhase then intSayKeyedMsg('S2CTP021,[id])
  
 PullAndExecuteSpadSystemCommand stream ==
-    ExecuteSpadSystemCommand CAR stream
-    CDR stream
+    ExecuteSpadSystemCommand first stream
+    rest stream
 
 ExecuteSpadSystemCommand string ==
   FUNCALL($systemCommandFunction, string)

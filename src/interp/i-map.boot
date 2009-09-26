@@ -373,7 +373,7 @@ clearDep1(x,toDoList,doneList,depList) ==
     a =>
       depList:= delete(a,depList)
       toDoList:= union(toDoList,
-        setDifference(CDR a,doneList))
+        setDifference(rest a,doneList))
   toDoList is [a,:res] => clearDep1(a,res,newDone,depList)
   'done
 
@@ -391,7 +391,7 @@ outputFormat(x,m) ==
   categoryForm?(m) => x
   isMapExpr x => x
   containsVars x => x
-  atom(x) and CAR(m) = 'List => x
+  atom(x) and first(m) = 'List => x
   (x is ['construct,:.]) and m = '(List (Expression)) => x
   T:= coerceInteractive(objNewWrap(x,maximalSuperType(m)),
     $OutputForm) or return x
@@ -444,7 +444,7 @@ simplifyMapConstructorRefs form ==
       --[op,obj,APPLY('CONCAT,dom')]
       dom'' :=
           ATOM dom' => dom'
-          NULL CDR dom' => CAR dom'
+          NULL rest dom' => first dom'
           APPLY('CONCAT, dom')
       [op,obj, dom'']
     form
@@ -560,8 +560,8 @@ rewriteMap(op,opName,argl) ==
           objNewCode(['wrap,getValueNormalForm getValue arg],
             getMode arg)]
     putValue(op,objNew(['rewriteMap1,MKQ opName,arglCode,MKQ sig],
-      CAR sig))
-    putModeSet(op,[CAR sig])
+      first sig))
+    putModeSet(op,[first sig])
   rewriteMap0(op,opName,argl)
 
 putBodyInEnv(opName, numArgs) ==
@@ -589,8 +589,8 @@ rewriteMap0(op,opName,argl) ==
   for arg in argl
     for var in $FormalMapVariableList repeat
       if argTypes then
-        t := CAR argTypes
-        argTypes:= CDR argTypes
+        t := first argTypes
+        argTypes:= rest argTypes
         val :=
           t is ['Mapping,:.] => getValue arg
           coerceInteractive(getValue arg,t)
@@ -609,8 +609,8 @@ rewriteMap1(opName,argl,sig) ==
   -- compiled case of map rewriting
   putBodyInEnv(opName, #argl)
   if sig then
-    tar:= CAR sig
-    argTypes:= CDR sig
+    tar:= first sig
+    argTypes:= rest sig
   else
     tar:= nil
     argTypes:= nil
@@ -622,8 +622,8 @@ rewriteMap1(opName,argl,sig) ==
   for arg in argl for evArg in evArgl
     for var in $FormalMapVariableList repeat
       if argTypes then
-        t:=CAR argTypes
-        argTypes:= CDR argTypes
+        t:=first argTypes
+        argTypes:= rest argTypes
         val :=
           t is ['Mapping,:.] => evArg
           coerceInteractive(evArg,t)
@@ -661,15 +661,15 @@ analyzeDeclaredMap(op,argTypes,sig,mapDef,$mapList) ==
   -- mapDef is the stored form of the map body.
   opName := getUnname op
   $mapList:=[opName,:$mapList]
-  $mapTarget := CAR sig
+  $mapTarget := first sig
   (mmS:= get(opName,'localModemap,$e)) and
     (mm:= or/[mm for (mm:=[[.,:mmSig],:.]) in mmS | mmSig=sig]) =>
       compileCoerceMap(opName,argTypes,mm)
   -- The declared map needs to be compiled
   compileDeclaredMap(opName,sig,mapDef)
-  argTypes ~= CDR sig =>
+  argTypes ~= rest sig =>
     analyzeDeclaredMap(op,argTypes,sig,mapDef,$mapList)
-  CAR sig
+  first sig
 
 compileDeclaredMap(op,sig,mapDef) ==
   -- Type analyzes and compiles a map with a declared signature.
@@ -677,18 +677,18 @@ compileDeclaredMap(op,sig,mapDef) ==
   $localVars: local := nil
   $freeVars: local := nil
   $env:local:= [[nil]]
-  parms:=[var for var in $FormalMapVariableList for m in CDR sig]
-  for m in CDR sig for var in parms repeat
+  parms:=[var for var in $FormalMapVariableList for m in rest sig]
+  for m in rest sig for var in parms repeat
     $env:= put(var,'mode,m,$env)
   body:= getMapBody(op,mapDef)
   for lvar in parms repeat mkLocalVar($mapName,lvar)
   for lvar in getLocalVars(op,body) repeat mkLocalVar($mapName,lvar)
   name := makeLocalModemap(op,sig)
-  val  := compileBody(body,CAR sig)
+  val  := compileBody(body,first sig)
   isRecursive := (depthOfRecursion(op,body) > 0)
   putMapCode(op,objVal val,sig,name,parms,isRecursive)
   genMapCode(op,objVal val,sig,name,parms,isRecursive)
-  CAR sig
+  first sig
 
 putMapCode(op,code,sig,name,parms,isRecursive) ==
   -- saves the generated code and some other information about the
@@ -717,7 +717,7 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
     op
   if $verbose then
     if get(op,'isInterpreterRule,$e) then
-      sayKeyedMsg("S2IM0014",[op0,(CONSP sig =>prefix2String CAR sig;'"?")])
+      sayKeyedMsg("S2IM0014",[op0,(CONSP sig =>prefix2String first sig;'"?")])
     else sayKeyedMsg("S2IM0015",[op0,formatSignature sig])
   $whereCacheList := [op,:$whereCacheList]
 
@@ -750,11 +750,11 @@ compileCoerceMap(op,argTypes,mm) ==
   $insideCompileBodyIfTrue: local := true
   $genValue: local := false
   [[.,:sig],imp,.]:= mm
-  parms:= [var for var in $FormalMapVariableList for t in CDR sig]
-  name:= makeLocalModemap(op,[CAR sig,:argTypes])
+  parms:= [var for var in $FormalMapVariableList for t in rest sig]
+  name:= makeLocalModemap(op,[first sig,:argTypes])
   argCode := [objVal(coerceInteractive(objNew(arg,t1),t2) or
     throwKeyedMsg("S2IC0001",[arg,$mapName,t1,t2]))
-      for t1 in argTypes for t2 in CDR sig for arg in parms]
+      for t1 in argTypes for t2 in rest sig for arg in parms]
   $insideCompileBodyIfTrue := false
   parms:= [:parms,'envArg]
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
@@ -763,7 +763,7 @@ compileCoerceMap(op,argTypes,mm) ==
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
   compileInteractive 
     [name,['LAMBDA,parms,declareGlobalVariables [minivectorName],:body]]
-  CAR sig
+  first sig
 
 depthOfRecursion(opName,body) ==
   -- returns the "depth" of recursive calls of opName in body
@@ -824,7 +824,7 @@ analyzeRecursiveMap(op,argTypes,body,parms,n) ==
   -- analyze and compile a non-recursive map definition
   --  makes guess at signature by analyzing non-recursive part of body
   --  then re-analyzes the entire body until the signature doesn't change
-  localMapInfo := saveDependentMapInfo(op, CDR $mapList)
+  localMapInfo := saveDependentMapInfo(op, rest $mapList)
   tar := CATCH('interpreter,analyzeNonRecur(op,body,$localVars))
   for i in 0..n until not sigChanged repeat
     sigChanged:= false
@@ -833,7 +833,7 @@ analyzeRecursiveMap(op,argTypes,body,parms,n) ==
     objMode(code) ~= tar =>
       sigChanged:= true
       tar := objMode(code)
-      restoreDependentMapInfo(op, CDR $mapList, localMapInfo)
+      restoreDependentMapInfo(op, rest $mapList, localMapInfo)
   sigChanged => throwKeyedMsg("S2IM0011",[op])
   putMapCode(op,objVal code,sig,name,parms,true)
   genMapCode(op,objVal code,sig,name,parms,true)
@@ -935,7 +935,7 @@ notCalled(opName,form) ==
     '"unknown form of function body"])
 
 mapDefsWithCorrectArgCount(n, mapDef) ==
-  [def for def in mapDef | (numArgs CAR def) = n]
+  [def for def in mapDef | (numArgs first def) = n]
 
 numMapArgs(mapDef is [[args,:.],:.]) ==
   -- returns the number of arguemnts to the map whose body is mapDef
@@ -1021,7 +1021,7 @@ findLocalVars1(op,form) ==
     mkLocalVar(op,a)
   form is ['is,l,pattern] =>
     findLocalVars1(op,l)
-    for var in listOfVariables CDR pattern repeat mkLocalVar(op,var)
+    for var in listOfVariables rest pattern repeat mkLocalVar(op,var)
   form is [oper,:itrl,body] and oper in '(REPEAT COLLECT) =>
     findLocalsInLoop(op,itrl,body)
   form is [y,:argl] =>

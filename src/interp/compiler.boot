@@ -539,7 +539,7 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
        (v:=assoc([dc,:nsig],modemapList)) and v is [.,[ncond,:.]] then
            deleteList:=[u,:deleteList]
            if not PredImplies(ncond,cond) then
-             newList := [[CAR u,[cond,['ELT,dc,nil]]],:newList]
+             newList := [[first u,[cond,['ELT,dc,nil]]],:newList]
   if deleteList then 
     modemapList := [u for u in modemapList | not MEMQ(u,deleteList)]
   -- We can use MEMQ since deleteList was built out of members of modemapList
@@ -849,7 +849,7 @@ setqSingle(id,val,m,E) ==
   else form:=
          $QuickLet => ["%LET",id,x]
          ["%LET",id,x,
-            (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
+            (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
   [form,m',e']
 
 assignError(val,m',form,m) ==

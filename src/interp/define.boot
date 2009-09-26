@@ -499,8 +499,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     if $extraParms then
       formals:=actuals:=nil
       for u in $extraParms repeat
-        formals:=[CAR u,:formals]
-        actuals:=[MKQ CDR u,:actuals]
+        formals:=[first u,:formals]
+        actuals:=[MKQ rest u,:actuals]
       body := ['sublisV,['PAIR,['QUOTE,formals],['LIST,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
@@ -817,7 +817,7 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
        -- if we find something extra, add it to the signature
       null ss => s
       for u in ss repeat
-        $ConditionalOperators:=[CDR u,:$ConditionalOperators]
+        $ConditionalOperators:=[rest u,:$ConditionalOperators]
       s is ['Join,:sl] =>
         u:=ASSQ('CATEGORY,ss) =>
           MSUBST([:u,:ss],u,s)
@@ -1326,7 +1326,7 @@ bootStrapError(functorForm,sourceFile) ==
   ['COND, _
     ['$bootStrapMode, _
         ['VECTOR,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
-    [''T, ['systemError,['LIST,''%b,MKQ CAR functorForm,''%d,'"from", _
+    [''T, ['systemError,['LIST,''%b,MKQ first functorForm,''%d,'"from", _
       ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
 
 compAdd(['add,$addForm,capsule],m,e) ==
@@ -1336,7 +1336,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
     [['COND, _
        ['$bootStrapMode, _
            code],_
-       [''T, ['systemError,['LIST,''%b,MKQ CAR $functorForm,''%d,'"from", _
+       [''T, ['systemError,['LIST,''%b,MKQ first $functorForm,''%d,'"from", _
          ''%b,MKQ namestring _/EDITFILE,''%d,'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
@@ -1541,8 +1541,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
    oldFLP':=oldFLP
    n:=0
    while oldFLP' repeat
-     oldFLP':=CDR oldFLP'
-     flp1:=CDR flp1
+     oldFLP':=rest oldFLP'
+     flp1:=rest flp1
      n:=n+1
    -- Now we have to add code to compile all the elements
    -- of functorLocalParameters that were added during the
@@ -1709,7 +1709,7 @@ compCategoryItem(x,predl,env) ==
     noteExport(y,pred)
     PUSH(MKQ [y,pred],$atList)
  
-  --3. it may be a list, with PROGN as the CAR, and some information as the CDR
+  --3. it may be a list, with PROGN as the first, and some information as the CDR
   x is ["PROGN",:l] => 
     for u in l repeat 
       compCategoryItem(u,predl,env)

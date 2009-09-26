@@ -47,7 +47,7 @@ $intTopLevel ==
 inputPrompt str ==
   -- replaces older INPUT-PROMPT
   atom (x := $SCREENSIZE()) => NIL
-  p := CAR(x) - 2
+  p := first(x) - 2
   y := $OLDLINE
   SETQ($OLDLINE,NIL)
   y => _$SHOWLINE(STRCONC(str,EBCDIC 19,y),p)
@@ -117,8 +117,8 @@ variableNumber(x) ==
   null p => 
     $variableNumberAlist := [[x,:0], :$variableNumberAlist]
     0
-  RPLACD(p, 1+CDR p)
-  CDR p
+  RPLACD(p, 1+rest p)
+  rest p
 
 newType? t == nil
 
@@ -129,13 +129,13 @@ Undef(:u) ==
   u':= LAST u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
-  not EQ(CAR ELT(domain',slot), function Undef) =>
+  not EQ(first ELT(domain',slot), function Undef) =>
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then
       sayMessage concat ['"   Retrospective determination of slot",'%b,
         slot,'%d,'"of",'%b,:prefix2String domain,'%d]
-    APPLY(CAR ELT(domain',slot),[:u'',CDR ELT(domain',slot)])
+    APPLY(first ELT(domain',slot),[:u'',rest ELT(domain',slot)])
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  
 makeInitialModemapFrame() == 

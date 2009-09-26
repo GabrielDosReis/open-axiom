@@ -265,9 +265,9 @@ domainDescendantsOf(conform,domform) == main where --called by kargPage
       keepList := nil
       for [item,:pred] in domainsOf(x,IFCAR domlist) repeat
         u := assoc(item,alist) =>
-          keepList := [[item,:quickAnd(CDR u,pred)],:keepList]
+          keepList := [[item,:quickAnd(rest u,pred)],:keepList]
       alist := keepList
-    for pair in alist repeat RPLACD(pair,simpHasPred CDR pair)
+    for pair in alist repeat RPLACD(pair,simpHasPred rest pair)
     listSort(function GLESSEQP, alist)
   catScreen(r,alist) ==
     for x in r repeat
@@ -306,7 +306,7 @@ kePage(htPage,junk) ==
                        getConstructorExports((domname or conform),true))
   [conlist,attrlist,:oplist] := data
   if domname then
-    for x in conlist repeat  RPLAC(CDR x,simpHasPred CDR x)
+    for x in conlist repeat  RPLAC(rest x,simpHasPred rest x)
     for x in attrlist repeat RPLAC(CDDR x,simpHasPred CDDR x)
     for x in oplist   repeat RPLAC(CDDR x,simpHasPred CDDR x)
   prefix := pluralSay(#conlist + #attrlist + #oplist,'"Export",'"Exports")
@@ -510,7 +510,7 @@ kcpPage(htPage,junk) ==
 
 reduceAlistForDomain(alist,domform,conform) == --called from kccPage
   alist := SUBLISLIS(rest domform,rest conform,alist)
-  for pair in alist repeat RPLACD(pair,simpHasPred(CDR pair,domform))
+  for pair in alist repeat RPLACD(pair,simpHasPred(rest pair,domform))
   [pair for (pair := [.,:pred]) in alist | pred]
 
 kcaPage(htPage,junk) ==
@@ -884,10 +884,10 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
       [origin,:doc]
     or/[gn x for x in HGET(docTable,op)]
   gn u ==  --u is [origin,entry1,...,:code]
-    $conform := CAR u              --origin
+    $conform := first u              --origin
     if ATOM $conform then $conform := [$conform]
     code     := LASTATOM u         --optional topic code
-    comments := or/[p for entry in CDR u | p := hn entry] or return nil
+    comments := or/[p for entry in rest u | p := hn entry] or return nil
     [$conform,first comments,:code]
   hn [sig,:doc] ==
     $which = '"attribute" => sig is ['attribute,: =$sig] and doc
@@ -959,7 +959,7 @@ conPageChoose conname ==
 dbShowCons1(htPage,cAlist,key) ==
   conlist := REMDUP [item for x in cAlist | pred] where
     pred() ==
-      item := CAR x
+      item := first x
       $exposedOnlyIfTrue => isExposedConstructor opOf item
       item
 --$searchFirstTime and (conlist is [.]) => conPage first conlist

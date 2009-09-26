@@ -419,8 +419,8 @@ form2String1 u ==
       null argl => [ '":" ]
       null rest argl => [ '":", form2String1 first argl ]
       formDecl2String(argl.0,argl.1)
-  op = "#" and CONSP argl and LISTP CAR argl =>
-    STRINGIMAGE SIZE CAR argl
+  op = "#" and CONSP argl and LISTP first argl =>
+    STRINGIMAGE SIZE first argl
   op = 'Join => formJoin2String argl
   op = "ATTRIBUTE" => form2String1 first argl
   op='Zero => 0
@@ -554,13 +554,13 @@ tuple2String argl ==
  where
   f x ==
     ATOM x => object2String x
-    -- [f CAR x,:f CDR x]
+    -- [f first x,:f rest x]
     [f y for y in x]
 
 script2String s ==
   null s => '""   -- just to be safe
   if atom s then s := [s]
-  linearFormatForm(CAR s, CDR s)
+  linearFormatForm(first s, rest s)
 
 linearFormatName x ==
   atom x => x
@@ -754,7 +754,7 @@ pkey keyStuff ==
         keyStuff := IFCDR keyStuff
         next := IFCAR keyStuff
         while CONSP next repeat
-            if CAR next = 'dbN then dbN := second next
+            if first next = 'dbN then dbN := second next
             else argL := next
             keyStuff  := IFCDR keyStuff
             next      := IFCAR keyStuff
