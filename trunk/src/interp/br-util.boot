@@ -207,10 +207,10 @@ form2HtString(x,:options) ==
         MEMQ(x,$emList) => STRCONC('"{\em ",u,'"}")
         STRINGP x => STRCONC('"_"",u,'"_"")
         u
-      first x = 'QUOTE => STRCONC('"'",sexpr2HtString first rest x)
-      first x = ":" => STRCONC(fn first rest x,'": ",fn first rest rest x)
+      first x = 'QUOTE => STRCONC('"'",sexpr2HtString second x)
+      first x = ":" => STRCONC(fn second x,'": ",fn third x)
       first x = 'Mapping =>
-        STRCONC(fnTail(rest rest x,'"()"),'"->",fn first rest x)
+        STRCONC(fnTail(rest rest x,'"()"),'"->",fn second x)
       first x = 'construct => fnTail(rest x,'"[]")
       tail := fnTail(rest x,'"()")
       head := fn first x

@@ -72,7 +72,7 @@ upADEF t ==
   -- we want everything to be declared or nothing. The exception is that
   -- we do not require a target type since we will compute one anyway.
   if null(m) and rest types then
-    m := first rest types
+    m := second types
     types' := rest rest types
   else
     types' := rest types

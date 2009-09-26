@@ -609,7 +609,7 @@ mmCost0(name, sig,cond,tar,args1,args2) ==
 
   -- try to favor homogeneous multiplication
 
---if name = "*" and 2 = #sigArgs and first sigArgs ~= first rest sigArgs then n := n + 1
+--if name = "*" and 2 = #sigArgs and first sigArgs ~= second sigArgs then n := n + 1
 
   -- because of obscure problem in evalMm, sometimes we will have extra
   -- modemaps with the wrong number of arguments if we want to the one

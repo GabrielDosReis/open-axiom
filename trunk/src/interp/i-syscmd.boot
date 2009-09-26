@@ -2769,7 +2769,7 @@ undoSteps(m,beforeOrAfter) ==
        env := undoSingleStep(systemDelta,env)  --  before command line
     lastTailSeen := framelist
   if beforeOrAfter = 'before then  --do one additional undo for )before
-    env := undoSingleStep(first rest lastTailSeen,env)
+    env := undoSingleStep(second lastTailSeen,env)
   $frameRecord := rest $frameRecord --flush the effect of extra recordFrame
   $InteractiveFrame := LIST LIST env
 
@@ -3279,7 +3279,7 @@ parseFromString(s) ==
    s := next(function ncloopParse,
         next(function lineoftoks,incString s))
    StreamNull s => nil
-   pf2Sex macroExpanded first rest first s
+   pf2Sex macroExpanded second first s
 
 handleTokensizeSystemCommands(unabr, optionList) ==
   optionList := [dumbTokenize opt for opt in optionList]

@@ -95,7 +95,7 @@ simpHasPred(pred,:options) == main where
     simp pred
   simp pred ==
     pred is [op,:r] =>
-      op = "has" => simpHas(pred,first r,first rest r)
+      op = "has" => simpHas(pred,first r,second r)
       op = 'HasCategory => simp ["has",first r,simpDevaluate second r]
       op = 'HasSignature =>
          [op,sig] := simpDevaluate second r

@@ -646,9 +646,9 @@ application2String(op,argl, linkInfo) ==
 --op='MP =>concat("P",concat(argl.0,argl.1))
   op='SEGMENT =>
     null argl => '".."
-    (null rest argl) or (null first rest argl) =>
+    (null rest argl) or (null second argl) =>
       concat(first argl, '"..")
-    concat(first argl, concat('"..", first rest argl))
+    concat(first argl, concat('"..", second argl))
   concat(app2StringWrap(formWrapId op, linkInfo) ,
                         concat("_(",concat(tuple2String argl,"_)")))
 

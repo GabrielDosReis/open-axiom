@@ -130,7 +130,7 @@ exp2Fort2(e,prec,oldOp) ==
   member(op,nonUnaryOps) =>
     if nargs > 0 then arg1 := first args
     nargs = 1 and member(op, '("+" "*")) => exp2Fort2(arg1,prec,op)
-    if nargs > 1 then arg2 := first rest args
+    if nargs > 1 then arg2 := second args
     p := position(op,binaryOps)
     if p = -1
       then
@@ -487,7 +487,7 @@ exp2FortSpecial(op,args,nargs) ==
 
 mkMat(args) ==
   $fortInts2Floats : fluid := nil
-  mkFortFn(first rest args,rest rest args,#(rest rest args))
+  mkFortFn(second args,rest rest args,#(rest rest args))
 
  
 mkFortFn(op,args,nargs) ==
@@ -597,7 +597,7 @@ fortFormatDo(var,lo,hi,incr,lab) ==
 fortFormatIfGoto(switch,label) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
   $fortError : fluid := nil
-  if first(switch) = "NULL" then switch := first rest switch
+  if first(switch) = "NULL" then switch := second switch
   r := nreverse statement2Fortran switch
   changeExprLength(8)
   l := ['")GOTO ",STRINGIMAGE label]
@@ -609,7 +609,7 @@ fortFormatIfGoto(switch,label) ==
 fortFormatLabelledIfGoto(switch,label1,label2) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
   $fortError : fluid := nil
-  if LISTP(switch) and first(switch) = "NULL" then switch := first rest switch
+  if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := nreverse statement2Fortran switch
   changeExprLength(8)
   l := ['")GOTO ",STRINGIMAGE label2]
@@ -625,7 +625,7 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
 fortFormatIf(switch) ==
   changeExprLength(-8) -- Leave room for IF( ... )THEN
   $fortError : fluid := nil
-  if LISTP(switch) and first(switch) = "NULL" then switch := first rest switch
+  if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := nreverse statement2Fortran switch
   changeExprLength(8)
   l := ['")THEN"]
@@ -638,7 +638,7 @@ fortFormatElseIf(switch) ==
   -- Leave room for IF( ... )THEN
   changeExprLength(-12)
   $fortError : fluid := nil
-  if LISTP(switch) and first(switch) = "NULL" then switch := first rest switch
+  if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := nreverse statement2Fortran switch
   changeExprLength(12)
   l := ['")THEN"]
@@ -671,7 +671,7 @@ checkType ty ==
 mkParameterList l ==
   [par2string(u) for u in l] where par2string u ==
       atom(u) => STRINGIMAGE u
-      u := rest first rest u
+      u := rest second u
       apply('STRCONC,[STRINGIMAGE(first u),'"(",_
                :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
@@ -807,7 +807,7 @@ fortPre1 e ==
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>
     #args = 1 => fortPreRoot ["sqrt", first args]
-    [ "**" , fortPreRoot first args , [ "/" , fortPreRoot(1), fortPreRoot first rest args] ]
+    [ "**" , fortPreRoot first args , [ "/" , fortPreRoot(1), fortPreRoot second args] ]
   if member(op,['"OVER", "OVER"]) then op := '"/"
   specialOps  := '(BRACKET BRACE SUB AGGLST SUPERSUB MATRIX SEGMENT ALTSUPERSUB
                    PAREN CONCAT CONCATB QUOTE STRING SIGMA  STEP IN SIGMA2

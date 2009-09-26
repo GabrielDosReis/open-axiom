@@ -585,7 +585,7 @@ compElt(origForm,m,E) ==
 --+
     val := genDeltaEntry [opOf anOp,:modemap]
     x := markTran(origForm,[val],sig,[E])
-    [x,first rest sig,E] --implies fn calls used to access constants
+    [x,second sig,E] --implies fn calls used to access constants
   compForm(origForm,m,E)
  
 pause op == op

@@ -650,7 +650,7 @@ NRToptimizeHas u ==
     a='HasCategory => LASSOC(u,$hasCategoryAlist) or
       $hasCategoryAlist := [[u,:(y:=GENSYM())],:$hasCategoryAlist]
       y
-    a="has" => NRToptimizeHas ['HasCategory,first b,MKQ first rest b]
+    a="has" => NRToptimizeHas ['HasCategory,first b,MKQ second b]
     a = 'QUOTE => u
     [NRToptimizeHas a,:NRToptimizeHas b]
   u

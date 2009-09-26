@@ -695,7 +695,7 @@ parseNoMacroFromString(s) ==
    s := next(function ncloopParse,
         next(function lineoftoks,incString s))
    StreamNull s => nil
-   pf2Sex first rest first s
+   pf2Sex second first s
  
 
 

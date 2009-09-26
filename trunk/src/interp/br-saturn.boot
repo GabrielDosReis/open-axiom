@@ -741,7 +741,7 @@ kPageContextMenuSaturn page ==
 
 saturnExampleLink lname ==
   htSay '"\docLink{\csname "
-  htSay STRCONC(first(rest(lname)), '"\endcsname}{E&xamples}")
+  htSay STRCONC(second lname, '"\endcsname}{E&xamples}")
 
 $exampleConstructors := nil
 
@@ -1380,7 +1380,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
       htSaySaturnAmpersand()
       htSayIndentRel(15)
       htSay '"\spadref{"
-      htSay first(rest(link))
+      htSay second link
       htSay '"}"
       htSayIndentRel(-15)
       htSayStandard('"\newline{}")
