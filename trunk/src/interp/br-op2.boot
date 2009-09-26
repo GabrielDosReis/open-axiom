@@ -422,11 +422,11 @@ zeroOneConvert x ==
 kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   atom x => x
   (op := CAR x) = '_$ => '_$
-  op = 'local => CADR x
-  op = ":" => [":",CADR x,fn CADDR x]
+  op = 'local => second x
+  op = ":" => [":",second x,fn third x]
   isConstructorName op => [fn y for y in x]
   INTEGERP op => op
-  op = 'QUOTE and atom CADR x => CADR x
+  op = 'QUOTE and atom second x => second x
   x
 
 koCatOps(conform,domname) ==

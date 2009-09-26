@@ -319,7 +319,7 @@ NRTcompiledLookup(op,sig,dom) ==
 
 NRTtypeHack t ==
   ATOM t => t
-  CAR t = '_# => # CADR t
+  CAR t = '_# => # second t
   [CAR t,:[NRTtypeHack tt for tt in CDR t]]
 
 NRTgetMinivectorIndex(u,op,sig,domVector) ==

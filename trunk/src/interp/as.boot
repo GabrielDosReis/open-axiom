@@ -151,7 +151,7 @@ asMakeAlist con ==
   opAlist := SUBLISLIS($FormalMapVariableList,KDR form,CDDR alists)
   ancestorAlist:= SUBLISLIS($FormalMapVariableList,KDR form,CAR alists)
   catAttrs := [[x,:true] for x in getAttributesFromCATEGORY $constructorCategory]
-  attributeAlist := REMDUP [:CADR alists,:catAttrs]
+  attributeAlist := REMDUP [:second alists,:catAttrs]
   documentation :=
     SUBLISLIS($FormalMapVariableList,KDR form,LASSOC(con,$docAlist))
   filestring := STRCONC(PATHNAME_-NAME STRINGIMAGE filename,'".as")

@@ -266,7 +266,7 @@ compileIF(op,cond,a,b,t) ==
     -- if this was a return statement, we take the mode to be that
     -- of what is being returned.
     if getUnname a = 'return then
-      ms1 := bottomUp CADR a
+      ms1 := bottomUp second a
       [m1] := ms1
     evalIF(op,rest t,m1)
     putModeSet(op,ms1)
@@ -1077,7 +1077,7 @@ uptuple t ==
   aggs := '(List)
   if tar and CONSP(tar) and not isPartialMode(tar) then
     CAR(tar) in aggs =>
-      ud := CADR tar
+      ud := second tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)
     CAR(tar) in '(Matrix SquareMatrix RectangularMatrix) =>
       vec := ['List,underDomainOf tar]

@@ -267,7 +267,7 @@ format(x,:options) ==
       op is ['elt,name,p] and UPPER_-CASE_-P (STRINGIMAGE opOf name).0 => 
         formatDollar(name,p,argl)
       op = 'elt and UPPER_-CASE_-P (STRINGIMAGE opOf CAR argl).0 => 
-        formatDollar1(CAR argl,CADR argl)
+        formatDollar1(CAR argl,second argl)
       fn:= GETL(op,"PSPAD") => formatFn(fn,x,$m,$c)
       if op in '(AND OR NOT) then op:= DOWNCASE op
       n=1 and GETL(op,'Nud) and (lbp:= formatOpBindingPower(op,"Nud","left")) =>

@@ -1,5 +1,65 @@
 2009-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/as.boot: Clean up.
+	* interp/ax.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/cstream.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-boot.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/g-timer.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/msg.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/pile.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/ptrees.boot: Likewise.
+	* interp/scan.boot: Likewise.
+	* interp/sfsfun.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/word.boot: Likewise.
+
+2009-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfMember): Improve a bit.
 	* boot/tokens.boot: Don't rename 'is' and 'inst'.
 	* boot/parser.boot: Use 'in' instead of 'MEMQ' where approrpriate.

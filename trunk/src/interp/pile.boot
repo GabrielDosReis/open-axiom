@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -137,7 +137,7 @@ pileCforest x==
         else enPile separatePiles x
  
 firstTokPosn t== tokPosn CAAR t
-lastTokPosn  t== tokPosn CADR t
+lastTokPosn  t== tokPosn second t
  
 separatePiles x==
   if null x

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -275,7 +275,7 @@ pfAdd(pfbase, pfaddin,:addon) ==
 pfAdd?(pf) == pfAbSynOp? (pf, 'Add)
 pfAddBase pf == second pf       -- was ==>
 pfAddAddin pf == third pf       -- was ==>
-pfAddAddon pf == CADDDR pf       -- was ==>
+pfAddAddon pf == fourth pf       -- was ==>
 pf0AddBase pf == pfParts pfAddBase pf
 
 
@@ -296,7 +296,7 @@ pfWith(pfbase, pfwithin,pfwithon) ==
 pfWith?(pf) == pfAbSynOp? (pf, 'With)
 pfWithBase pf == second pf       -- was ==>
 pfWithWithin pf == third pf       -- was ==>
-pfWithWithon pf == CADDDR pf       -- was ==>
+pfWithWithon pf == fourth pf       -- was ==>
 pf0WithBase pf == pfParts pfWithBase pf
 pf0WithWithin pf == pfParts pfWithWithin pf
 
@@ -307,7 +307,7 @@ pfWIf(pfcond, pfthen, pfelse) == pfTree('WIf, [pfcond, pfthen, pfelse])
 pfWIf?(pf) == pfAbSynOp? (pf, 'WIf)
 pfWIfCond pf == second pf       -- was ==>
 pfWIfThen pf == third pf       -- was ==>
-pfWIfElse pf == CADDDR pf       -- was ==>
+pfWIfElse pf == fourth pf       -- was ==>
 
 -- WDeclare    := (Signature: Typed, Doc: ? Document)
 
@@ -404,7 +404,7 @@ pfbody])
 pfLambda?(pf) == pfAbSynOp? (pf, 'Lambda)
 pfLambdaArgs pf == second pf       -- was ==>
 pfLambdaRets pf == third pf       -- was ==>
-pfLambdaBody pf == CADDDR pf       -- was ==>
+pfLambdaBody pf == fourth pf       -- was ==>
 pf0LambdaArgs pf == pfParts pfLambdaArgs pf
 pfFix pf== pfApplication(pfId "Y",pf)
 
@@ -415,7 +415,7 @@ pfTLambda(pfargs, pfrets, pfbody) == pfTree('TLambda, [pfargs, pfrets, pfbody])
 pfTLambda?(pf) == pfAbSynOp? (pf, 'TLambda)
 pfTLambdaArgs pf == second pf       -- was ==>
 pfTLambdaRets pf == third pf       -- was ==>
-pfTLambdaBody pf == CADDDR pf       -- was ==>
+pfTLambdaBody pf == fourth pf       -- was ==>
 pf0TLambdaArgs pf == pfParts pfTLambdaArgs pf
 
 
@@ -443,7 +443,7 @@ pfIf(pfcond, pfthen, pfelse) == pfTree('If, [pfcond, pfthen, pfelse])
 pfIf?(pf) == pfAbSynOp? (pf, 'If)
 pfIfCond pf == second pf       -- was ==>
 pfIfThen pf == third pf       -- was ==>
-pfIfElse pf == CADDDR pf       -- was ==>
+pfIfElse pf == fourth pf       -- was ==>
 
 -- %Match := (Expr: Expr, Alts: [Exit])
 

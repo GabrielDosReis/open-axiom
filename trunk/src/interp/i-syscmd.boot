@@ -1364,7 +1364,7 @@ frameEnvironment fname ==
   while ifr repeat
     [f,:ifr] := ifr
     if fname = frameName f   then
-      e := CADR f
+      e := second f
       ifr := NIL
   e
 
@@ -1927,7 +1927,7 @@ showHistory(arg) ==
     if INTEGERP arg1 then
       n := arg1
       nset := true
-      KDR arg => arg1 := CADR arg
+      KDR arg => arg1 := second arg
       arg1 := NIL
     arg1 =>
       arg2 := selectOptionLC(arg1,'(input both),nil)
@@ -2979,7 +2979,7 @@ filterListOfStrings(patterns,names) ==
 
 filterListOfStringsWithFn(patterns,names,fn) ==
   -- names and patterns are lists of strings
-  -- fn is something like CAR or CADR
+  -- fn is something like CAR or second
   -- returns: list of strings in names that contains any of the strings
   -- in patterns
   (null patterns) or (null names) => names

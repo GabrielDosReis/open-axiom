@@ -173,7 +173,7 @@ resolveTTSpecial(t1,t2) ==
   t1 = '(AlgebraicNumber) and (t2 = $Float or t2 = $DoubleFloat) =>
     ['Expression, t2]
   t1 = '(AlgebraicNumber) and (t2 = ['Complex, $Float] or t2 = ['Complex, $DoubleFloat]) =>
-    ['Expression, CADR t2]
+    ['Expression, second t2]
 
   t1 = '(AlgebraicNumber) and t2 is ['Complex,.] =>
     resolveTT1('(Expression (Integer)), t2)
@@ -511,10 +511,10 @@ resolveTMRecord(tr,mr) ==
   tt := NIL
   for ta in tr for ma in mr while ok repeat
     -- element is [':,tag,mode]
-    CADR(ta) ~= CADR(ma) => ok := NIL      -- match tags
-    ra := resolveTM1(CADDR ta, CADDR ma)   -- resolve modes
+    second(ta) ~= second(ma) => ok := NIL      -- match tags
+    ra := resolveTM1(third ta, third ma)   -- resolve modes
     null ra => ok := NIL
-    tt := CONS([CAR ta,CADR ta,ra],tt)
+    tt := CONS([CAR ta,second ta,ra],tt)
   null ok => NIL
   ['Record,nreverse tt]
 
@@ -627,9 +627,9 @@ resolveTMEq1(ct,cm) ==
     xm := CAR cm
     cm := CDR cm
     if not (atom xm) and CAR xm = ":"  --  i.e. Record
-      and CAR xt = ":" and CADR xm = CADR xt then
-        xm := CADDR xm
-        xt := CADDR xt
+      and CAR xt = ":" and second xm = second xt then
+        xm := third xm
+        xt := third xt
     b :=
       xt=xm => 'T
       isPatternVar(xm) and

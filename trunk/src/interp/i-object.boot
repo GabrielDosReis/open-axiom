@@ -78,8 +78,8 @@ objValUnwrap obj == unwrap CDR obj
 objMode obj == CAR obj
 objEnv obj == $EmptyEnvironment
 
-objCodeVal obj == CADDR obj
-objCodeMode obj == CADR obj
+objCodeVal obj == third obj
+objCodeMode obj == second obj
 
 --% Utility Functions Used Only by the Intepreter
  

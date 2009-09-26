@@ -108,7 +108,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $uncondAlist: local := nil
 -->>-- next global initialized here, reset by buildFunctor
     $NRTslot1PredicateList: local :=
-      REMDUP [CADR x for x in attributeList]
+      REMDUP [second x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
     $NRTslot1Info: local := nil --set in NRTmakeSlot1Info
@@ -542,7 +542,7 @@ compFormWithModemap1(form,m,e,modemap,Rep2Dollar?) ==
         op = "elt" and f is ['XLAM,:.] and IDENTP(z:=CAR argl) and
           (c:=get(z,'condition,e)) and
             c is [["case",=z,c1]] and
-              (c1 is ['_:,=(CADR argl),=m] or EQ(c1,CADR argl) ) =>
+              (c1 is ['_:,=(second argl),=m] or EQ(c1,second argl) ) =>
 -- first is a full tag, as placed by getInverseEnvironment
 -- second is what getSuccessEnvironment will place there
                 ["CDR",z]
@@ -855,7 +855,7 @@ compIterator(it,e) ==
           stackMessage ["final value of index: ",final," must be an integer"]
       optFinal:= [final]
     indexmode:=
-      comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
+      comp(third it,$NonNegativeInteger,e) => $NonNegativeInteger
       $Integer
 --  markImport ['Segment,indexmode]
     if null get(index,"mode",e) then [.,.,e]:=
@@ -937,10 +937,10 @@ compRepeatOrCollect(form,m,e) ==
           repeatOrCollect="COLLECT" =>
             targetMode = '$EmptyMode => '$EmptyMode
             (u:=modeIsAggregateOf('List,targetMode,e)) =>
-              CADR u
+              second u
             (u:=modeIsAggregateOf('Vector,targetMode,e)) =>
               repeatOrCollect:='COLLECTV
-              CADR u
+              second u
             stackMessage('"Invalid collect bodytype")
             return nil
             -- If we're doing a collect, and the type isn't conformable
@@ -1073,7 +1073,7 @@ doItSeq item ==
 doItDomain item ==
   -- convert naked top level domains to import
   u:= ["import", [first item,:rest item]]
-  markImport CADR u
+  markImport second u
   stackWarning ["Use: import ", [first item,:rest item]]
 --wiReplaceNode(item, u, 14)
   RPLACA(item, first u)
@@ -1134,7 +1134,7 @@ doItDef item ==
   chk(item,3)
   RPLACA(item,"CodeDefine")
         --Note that DescendCode, in CodeDefine, is looking for this
-  RPLACD(CADR item,[$signatureOfForm])
+  RPLACD(second item,[$signatureOfForm])
   chk(item,4)
       --This is how the signature is updated for buildFunctor to recognise
 --+

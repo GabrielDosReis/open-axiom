@@ -163,25 +163,25 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     -- special case map for the time being
     $Coerce and (op = 'map) and (2 = nargs) and
       (first(args1) is ['Variable,fun]) =>
-        null (ud := underDomainOf CADR args1) => NIL
+        null (ud := underDomainOf second args1) => NIL
         if tar then ut := underDomainOf(tar)
         else ut := nil
         null (mapMms := selectMms1(fun,ut,[ud],[NIL],true)) => NIL
         mapMm := CDAAR mapMms
-        selectMms1(op,tar,[['Mapping,:mapMm],CADR args1],
-          [NIL,CADR args2],$Coerce)
+        selectMms1(op,tar,[['Mapping,:mapMm],second args1],
+          [NIL,second args2],$Coerce)
 
     $Coerce and (op = 'map) and (2 = nargs) and
       (first(args1) is ['FunctionCalled,fun]) =>
-        null (ud := underDomainOf CADR args1) => NIL
+        null (ud := underDomainOf second args1) => NIL
         if tar then ut := underDomainOf(tar)
         else ut := nil
         funNode := mkAtreeNode fun
         transferPropsToNode(fun,funNode)
         null (mapMms := selectLocalMms(funNode,fun,[ud],NIL)) => NIL
         mapMm := CDAAR mapMms
-        selectMms1(op,tar,[['Mapping,:mapMm],CADR args1],
-          [NIL,CADR args2],$Coerce)
+        selectMms1(op,tar,[['Mapping,:mapMm],second args1],
+          [NIL,second args2],$Coerce)
 
     -- get the argument domains and the target
     a := nil
@@ -216,7 +216,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
         a' := append(reverse l,a')
       x is ['Mapping,:l] => a' := append(reverse l,a')
       x is ['Record,:l] =>
-        a' := append(reverse [CADDR s for s in l],a')
+        a' := append(reverse [third s for s in l],a')
       x is ['FunctionCalled,name] =>
         (xm := get(name,'mode,$e)) and not isPartialMode xm =>
           a' := cons(xm,a')
@@ -286,7 +286,7 @@ defaultTarget(opNode,op,nargs,args) ==
       target
     target
 
-  a2 := CADR args
+  a2 := second args
 
   nargs >= 2 and op = "draw" and a1 is ['FunctionCalled,sym] and a2 is ['Segment,.] =>
 
@@ -295,7 +295,7 @@ defaultTarget(opNode,op,nargs,args) ==
     symNode := mkAtreeNode sym
     transferPropsToNode(sym,symNode)
 
-    nargs >= 3 and CADDR args is ['Segment,.] =>
+    nargs >= 3 and third args is ['Segment,.] =>
       selectLocalMms(symNode,sym,[$DoubleFloat, $DoubleFloat],NIL)
       putTarget(opNode, target := '(ThreeDimensionalViewport))
       target
@@ -318,7 +318,7 @@ defaultTarget(opNode,op,nargs,args) ==
     symNode := mkAtreeNode sym
     transferPropsToNode(sym,symNode)
 
-    nargs >= 3 and CADDR args is ['Segment,.] =>
+    nargs >= 3 and third args is ['Segment,.] =>
       selectLocalMms(symNode,sym,[$DoubleFloat, $DoubleFloat],NIL)
       target
 
@@ -428,7 +428,7 @@ defaultTarget(opNode,op,nargs,args) ==
         target
       target
 
-  a3 := CADDR args
+  a3 := third args
   nargs = 3 =>
     op = "eval" =>
         a3 is ['List, a3e] =>
@@ -492,9 +492,9 @@ getOpArgTypes1(opname, args) ==
     [CAR getModeSetUseSubdomain d,CAR getModeSet c]
   opname = 'monom and args is [v,d,c] =>
     [CAR getModeSet v,CAR getModeSetUseSubdomain d,CAR getModeSet c]
-  (opname = 'cons) and (2 = #args) and (CADR(args) = 'nil) =>
+  (opname = 'cons) and (2 = #args) and (second(args) = 'nil) =>
     ms := [CAR getModeSet x for x in args]
-    if CADR(ms) = '(List (None)) then
+    if second(ms) = '(List (None)) then
       ms := [first ms,['List,first ms]]
     ms
   nargs := #args
@@ -532,7 +532,7 @@ CONTAINEDisDomain(symbol,cond) ==
    QCAR cond in '(AND OR and or) =>
        or/[CONTAINEDisDomain(symbol, u) for u in QCDR cond]
    EQ(QCAR cond,'isDomain) =>
-       EQ(symbol,CADR cond) and CONSP(dom:=CADDR cond) and
+       EQ(symbol,second cond) and CONSP(dom:=third cond) and
          dom in '(PositiveInteger NonNegativeInteger)
    false
 
@@ -594,7 +594,7 @@ getLocalMms(name,types,tar) ==
 
 mmCost(name, sig,cond,tar,args1,args2) ==
   cost := mmCost0(name, sig,cond,tar,args1,args2)
-  res := CADR sig
+  res := second sig
   res = $PositiveInteger => cost - 2
   res = $NonNegativeInteger => cost - 1
   res = $DoubleFloat => cost + 1
@@ -626,7 +626,7 @@ mmCost0(name, sig,cond,tar,args1,args2) ==
         4
   else if sigArgs then n := n + 100000000000
 
-  res := CADR sig
+  res := second sig
   res=tar => 10000*n
   10000*n + 1000*domainDepth(res) + hitListOfTarget(res)
 
@@ -1022,7 +1022,7 @@ selectMmsGen(op,tar,args1,args2) ==
 
   if (op = 'map) and (2 = #args1) and
     (CAR(args1) is ['Mapping,., elem]) and
-      (a := isTowerWithSubdomain(CADR args1,elem))
+      (a := isTowerWithSubdomain(second args1,elem))
         then args1 := [CAR args1,a]
 
   -- we first split the modemaps into two groups:
@@ -1106,7 +1106,7 @@ selectMmsGen(op,tar,args1,args2) ==
         tar and not isPartialMode tar =>
           -- throw in the target if it is not the same as one
           -- of the arguments
-          res := CADR sig
+          res := second sig
           member(res,CDDR sig) => NIL
           [[res,:tar]]
         NIL
@@ -1217,7 +1217,7 @@ evalMmCond0(op,sig,st) ==
           -- if we are looking at the result of a function, the coerce
           -- goes the opposite direction
           (t1 = $AnonymousFunction and t is ['Mapping, :.]) => t
-          CAR p = CADR sig and not member(CAR p, CDDR sig) =>
+          CAR p = second sig and not member(CAR p, CDDR sig) =>
             canCoerceFrom(t,t1) => 'T
             NIL
           canCoerceFrom(t1,t) => 'T
@@ -1300,12 +1300,12 @@ orderMmCatStack st ==
   -- tries to reorder stack so that free pattern variables appear
   -- as parameters first
   null(st) or null rest(st) => st
-  vars := DELETE_-DUPLICATES [CADR(s) for s in st | isPatternVar(CADR(s))]
+  vars := DELETE_-DUPLICATES [second(s) for s in st | isPatternVar(second(s))]
   null vars => st
   havevars := nil
   haventvars := nil
   for s in st repeat
-    cat := CADDR s
+    cat := third s
     mem := nil
     for v in vars while not mem repeat
       if MEMQ(v,cat) then
@@ -1317,8 +1317,8 @@ orderMmCatStack st ==
   SORT(st, function mmCatComp)
 
 mmCatComp(c1, c2) ==
-  b1 := ASSQ(CADR c1, $Subst)
-  b2 := ASSQ(CADR c2, $Subst)
+  b1 := ASSQ(second c1, $Subst)
+  b2 := ASSQ(second c2, $Subst)
   b1 and null(b2) => true
   false
 
@@ -1638,8 +1638,8 @@ unifyStruct(s1,s2,SL) ==
   s1=s2 => SL
   if s1 is [":",x,.] then s1:= x
   if s2 is [":",x,.] then s2:= x
-  if not atom s1 and CAR s1 = '_# then s1:= LENGTH CADR s1
-  if not atom s2 and CAR s2 = '_# then s2:= LENGTH CADR s2
+  if not atom s1 and CAR s1 = '_# then s1:= LENGTH second s1
+  if not atom s2 and CAR s2 = '_# then s2:= LENGTH second s2
   s1=s2 => SL
   isPatternVar s1 => unifyStructVar(s1,s2,SL)
   isPatternVar s2 => unifyStructVar(s2,s1,SL)

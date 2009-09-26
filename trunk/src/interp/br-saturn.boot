@@ -1648,15 +1648,15 @@ bcConform1 form == main where
       satTypeDownLink(s, ["(|conPage| '|",s,'"|)"])
     (head := QCAR form) = 'QUOTE =>
       htSay('"'")
-      hd CADR form
+      hd second form
     head = 'SIGNATURE =>
-      htSay(CADR form,'": ")
-      mapping CADDR form
+      htSay(second form,'": ")
+      mapping third form
     head = 'Mapping and rest form => rest form => mapping rest form
     head = ":" =>
-      hd CADR form
+      hd second form
       htSay '": "
-      hd CADDR form
+      hd third form
     QCDR form and dbEvalableConstructor? form
        => bcConstructor(form,head)
     hd head

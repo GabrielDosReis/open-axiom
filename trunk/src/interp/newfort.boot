@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -433,8 +433,8 @@ $symbolTable := nil
 exp2FortSpecial(op,args,nargs) ==
   op = "CONCAT" and first args in ["<",">","<=",">=","~","and","or"] =>
     mkFortFn(first args,CDADAR rest args,#(CDADAR rest args))
-  op = "CONCAT" and CADR(args)="EQ" =>
-    mkFortFn("EQ",[first args, CADDR args],2)
+  op = "CONCAT" and second(args)="EQ" =>
+    mkFortFn("EQ",[first args, third args],2)
   --the next line is NEVER used by FORTRAN code but is needed when
   --  called to get a linearized form for the browser
   op = "QUOTE" =>
@@ -713,7 +713,7 @@ fortFormatCharacterTypes(names) ==
   genuineArrays  := []
   for u in names repeat
     ATOM u => sortedByLength := insertEntry(0,u,sortedByLength)
-    #u=2 => sortedByLength := insertEntry(CADR u,CAR u,sortedByLength)
+    #u=2 => sortedByLength := insertEntry(second u,CAR u,sortedByLength)
     genuineArrays := [u,:genuineArrays]
   for u in sortedByLength repeat
     fortFormatTypes1(mkCharName car u, [STRINGIMAGE(s) for s in cdr(u)]) where

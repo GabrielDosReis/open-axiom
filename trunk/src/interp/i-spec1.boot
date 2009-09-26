@@ -217,7 +217,7 @@ upAlgExtension t ==
     throwKeyedMsgCannotCoerceWithValue(objVal(triple),
       objMode(triple),upmode)
   newmode := objMode T
-  (field := resolveTCat(CADDR newmode,'(Field))) or
+  (field := resolveTCat(third newmode,'(Field))) or
     throwKeyedMsg("S2IS0002",[eq])
   pd:= ['UnivariatePolynomial,a,field]
   null (canonicalAE:= coerceInteractive(T,pd)) =>
@@ -877,8 +877,8 @@ mkZipCode indexList ==
   -- into a stream of nested record types.  returns [form,:recordType]
   #indexList = 2 =>
     [[.,:s2],[.,:s1]] := indexList
-    t1 := CADR objMode getValue s1
-    t2 := CADR objMode getValue s2
+    t1 := second objMode getValue s1
+    t2 := second objMode getValue s2
     zipType := ['Record,['_:,'part1,t1], ['_:,'part2,t2] ]
     zipFun := [mkAtreeNode 'Dollar, ['MakeRecord,mkEvalable t1,
                                      mkEvalable t2],
@@ -887,7 +887,7 @@ mkZipCode indexList ==
     [form,:zipType]
   [form,:zipType] := mkZipCode CDR indexList
   [[.,:s],:.] := indexList
-  t := CADR objMode getValue s
+  t := second objMode getValue s
   zipFun := [mkAtreeNode 'Dollar, ['MakeRecord,mkEvalable t,
                                    mkEvalable zipType],
              mkAtreeNode 'makeRecord]
@@ -969,7 +969,7 @@ upconstruct t ==
     CAR(tar) in aggs =>
       ud :=
         (l is [[realOp, :.]]) and (getUnname(realOp) = 'COLLECT) => tar
-        CADR tar
+        second tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)
     CAR(tar) in '(Matrix SquareMatrix RectangularMatrix) =>
       vec := ['List,underDomainOf tar]

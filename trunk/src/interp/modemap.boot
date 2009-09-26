@@ -268,7 +268,7 @@ augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
     u:=assoc(substitute("Rep",domainName,lhs),repFnAlist)
     u and not AMFCR_,redefinedList(op,functorBody) =>
-      fnsel':=CADDR u
+      fnsel' := third u
       e:= addModemap(op,domainName,sig,cond,fnsel',e)
     e:= addModemap(op,domainName,sig,cond,fnsel,e)
   e
@@ -338,7 +338,7 @@ getOperationAlist(name,functorForm,form) ==
 substNames(domainName,viewName,functorForm,opalist) ==
   functorForm := SUBSTQ("$$","$", functorForm)
   nameForDollar :=
-    isCategoryPackageName functorForm => CADR functorForm
+    isCategoryPackageName functorForm => second functorForm
     domainName
     
        -- following calls to SUBSTQ must copy to save RPLAC's in

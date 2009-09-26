@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -163,7 +163,7 @@ devaluateSlotDomain(u,dollar) ==
  
 getCategoriesOfDomain domain ==
   predkeyVec := domain.4.0
-  catforms := CADR domain.4
+  catforms := second domain.4
   [fn for i in 0..MAXINDEX predkeyVec | test] where 
      test() == predkeyVec.i and 
        (x := catforms . i) isnt ['DomainSubstitutionMacro,:.]

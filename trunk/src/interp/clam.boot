@@ -474,9 +474,9 @@ assocCacheShiftCount(x,al,fn) ==
   until EQ(forwardPointer,al) repeat
     FUNCALL(fn, CAR (y:=CAR forwardPointer),x) =>
       newFrontPointer := forwardPointer
-      RPLAC(CADR y,QSADD1 CADR y)         --increment use count
+      RPLAC(second y,QSADD1 second y)         --increment use count
       return (val:= y)
-    if QSLESSP(c := CADR y,minCount) then --initial c is 1 so is true 1st time
+    if QSLESSP(c := second y,minCount) then --initial c is 1 so is true 1st time
       minCount := c
       newFrontPointer := forwardPointer   --CAR is slot replaced on failure
     forwardPointer:= CDR forwardPointer

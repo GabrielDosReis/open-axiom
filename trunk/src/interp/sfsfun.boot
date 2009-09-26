@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -80,7 +80,7 @@ nangenericcomplex () ==
 
 
 fracpart(x) ==
-        CADR(MULTIPLE_-VALUE_-LIST(FLOOR(x)))
+        second(MULTIPLE_-VALUE_-LIST(FLOOR(x)))
 
 intpart(x) ==
         CAR(MULTIPLE_-VALUE_-LIST(FLOOR(x)))
@@ -157,7 +157,7 @@ gammaRatapprox (x) ==
                         Pi := PI
                         lx := MULTIPLE_-VALUE_-LIST(FLOOR(x))
                         intpartx := CAR(lx)+1
-                        restx := CADR(lx)
+                        restx := second(lx)
                         if ZEROP restx  -- case of negative non-integer value
                         then
                           FloatError ('"Gamma undefined for non-positive integers: ~D",x)
@@ -237,7 +237,7 @@ cgammaG(z1,z2) ==
         LOG(2*PI) + PI*z2 - COMPLEX(0.0,1.0)*PI*(z1-.5)
 
 logH(z1,z2,z) ==
-        z1bar := CADR(MULTIPLE_-VALUE_-LIST(FLOOR(z1))) ---frac part of z1
+        z1bar := second(MULTIPLE_-VALUE_-LIST(FLOOR(z1))) ---frac part of z1
         piz1bar := PI*z1bar
         piz2 := PI*z2
         twopiz2 := 2.0*piz2
@@ -814,7 +814,7 @@ besselIback(v,z) ==
         lm := MULTIPLE_-VALUE_-LIST(FLOOR(rpv))
         m := CAR(lm)    --- floor of real part of v
         n := 2*MAX(20,m+10)  --- how large the back recurrence should be
-        tv := CADR(lm)+(v-rpv) ---  fractional part of real part of v
+        tv := second(lm)+(v-rpv) ---  fractional part of real part of v
                         --- plus imaginary part of v
         vp1 := tv+1.0;
         result := BesselIBackRecur(v,m,tv,z,'"I",n)

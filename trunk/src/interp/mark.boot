@@ -794,8 +794,8 @@ markInsertChanges(code,form,t,loc) ==
     t = $EmptyMode => form
     ["pretend",form,t]
   t in '(rep per) => 
-    t = 'rep and form is ["per",:.] => CADR form
-    t = 'per and form is ["rep",:.] => CADR form
+    t = 'rep and form is ["per",:.] => second form
+    t = 'per and form is ["rep",:.] => second form
     [t,form]
   code is [op,x,t1] and op in '(_@ _: _:_: _pretend) and t1 = t => form
   FIXP form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
@@ -1204,8 +1204,8 @@ markInsertIterator x ==
 
 markKillExpr m ==    --used to kill all but PART information for compilation
   m is [op,:.] =>
-    op in '(MI WI) => markKillExpr CADDR m
-    op in '(AUTOHARD AUTOSUBSET AUTOREP) => markKillExpr CADDDR m
+    op in '(MI WI) => markKillExpr third m
+    op in '(AUTOHARD AUTOSUBSET AUTOREP) => markKillExpr fourth m
     m is ['TAGGEDreturn,a,[x,m,e]] => ['TAGGEDreturn, a, [markKillExpr x,m,e]]
     [markKillExpr x for x in m]
   m
@@ -1213,18 +1213,18 @@ markKillExpr m ==    --used to kill all but PART information for compilation
 markKillButIfs m ==    --used to kill all but PART information for compilation
   m is [op,:.] =>
     op = 'IF => m
-    op = 'PART        => markKillButIfs CADDR m
-    op in '(MI WI) => markKillButIfs CADDR m
-    op in '(AUTOHARD AUTOSUBSET AUTOREP) => markKillButIfs CADDDR m
+    op = 'PART        => markKillButIfs third m
+    op in '(MI WI) => markKillButIfs third m
+    op in '(AUTOHARD AUTOSUBSET AUTOREP) => markKillButIfs fourth m
     m is ['TAGGEDreturn,a,[x,m,e]] => ['TAGGEDreturn, a, [markKillButIfs x,m,e]]
     [markKillButIfs x for x in m]
   m
  
 markKillAll m ==      --used to prepare code for compilation
   m is [op,:.] =>
-    op = 'PART        => markKillAll CADDR m
-    op in '(MI WI) => markKillAll CADDR m
-    op in '(AUTOHARD AUTOSUBSET AUTOREP) => markKillAll CADDDR m
+    op = 'PART        => markKillAll third m
+    op in '(MI WI) => markKillAll third m
+    op in '(AUTOHARD AUTOSUBSET AUTOREP) => markKillAll fourth m
     m is ['TAGGEDreturn,a,[x,m,e]] => ['TAGGEDreturn, a, [markKillAll x,m,e]]
     [markKillAll x for x in m]
   m

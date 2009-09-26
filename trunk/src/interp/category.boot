@@ -70,9 +70,9 @@ CategoryPrint(D,$e) ==
   PRETTYPRINT D.2
   SAY "This is a sub-category of"
   PRETTYPRINT first D.4
-  for u in CADR D.4 repeat
+  for u in second D.4 repeat
     SAY("This has an alternate view: slot ",rest u," corresponds to ",first u)
-  for u in CADDR D.4 repeat
+  for u in third D.4 repeat
     SAY("This has a local domain: slot ",rest u," corresponds to ",first u)
   for j in 6..MAXINDEX D repeat
     u:= D.j
@@ -186,7 +186,7 @@ SigListUnion(extra,original) ==
       original:= delete(x,original)
       [xsig,xpred,:ximplem]:= x
 --      if xsig ~= esig then   -- not quite strong enough
-      if CAR xsig ~= CAR esig or CADR xsig ~= CADR esig then
+      if CAR xsig ~= CAR esig or second xsig ~= second esig then
 -- the new version won't get confused by "constant"markers
          if ximplem is [["Subsumed",:.],:.] then
             original := [x,:original]
@@ -195,7 +195,7 @@ SigListUnion(extra,original) ==
        else epred:=mkOr(epred,xpred)
 -- this used always to be done, as noted below, but that's not safe
       if not(ximplem is [["Subsumed",:.],:.]) then eimplem:= ximplem
-      if eimplem then esig:=[CAR esig,CADR esig] 
+      if eimplem then esig:=[CAR esig,second esig] 
            -- in case there's a constant marker
       e:= [esig,epred,:eimplem]
 --    e:= [esig,mkOr(xpred,epred),:ximplem]
@@ -331,19 +331,19 @@ FindFundAncs l ==
   f1:= CatEval CAAR l
   f1.(0)=nil => FindFundAncs rest l
   ans:= FindFundAncs rest l
-  for u in FindFundAncs [[CatEval first x,mkAnd(CADAR l,CADR x)]
-   for x in CADR f1.4] repeat
+  for u in FindFundAncs [[CatEval first x,mkAnd(CADAR l,second x)]
+   for x in second f1.4] repeat
     x:= ASSQ(first u,ans) =>
-      ans:= [[first u,mkOr(CADR x,CADR u)],:delete(x,ans)]
+      ans:= [[first u,mkOr(second x,second u)],:delete(x,ans)]
     ans:= [u,:ans]
         --testing to see if CAR l is already there
-  x:= ASSQ(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,CADR x)],:delete(x,ans)]
+  x:= ASSQ(CAAR l,ans) => [[CAAR l,mkOr(CADAR l,second x)],:delete(x,ans)]
   CADAR l=true =>
     for x in first f1.4 repeat if y:= ASSQ(CatEval x,ans) then ans:= delete(y,ans)
     [first l,:ans]
   for x in first f1.4 repeat
     if y:= ASSQ(CatEval x,ans) then ans:=
-      [[first y,mkOr(CADAR l,CADR y)],:delete(y,ans)]
+      [[first y,mkOr(CADAR l,second y)],:delete(y,ans)]
   [first l,:ans]
   -- Our new thing may have, as an alternate view, a principal
   -- descendant of something previously added which is therefore
@@ -429,7 +429,7 @@ JoinInner(l,$e) ==
   sigl:= $NewCatVec.(1)
   attl:= $NewCatVec.2
   globalDomains:= $NewCatVec.5
-  FundamentalAncestors:= CADR $NewCatVec.4
+  FundamentalAncestors:= second $NewCatVec.4
   if $NewCatVec.(0) then FundamentalAncestors:=
     [[$NewCatVec.(0)],:FundamentalAncestors]
                     --principal ancestor . all those already included
@@ -456,7 +456,7 @@ JoinInner(l,$e) ==
         if member(first anc,PrinAncb) then
                   --This is the check for "Category Subsumption"
           if rest anc
-             then (anccond:= CADR anc; ancindex:= CADDR anc)
+             then (anccond:= second anc; ancindex:= third anc)
              else (anccond:= true; ancindex:= nil)
           if PredImplies(condition,anccond)
              then FundamentalAncestors:=
@@ -482,7 +482,7 @@ JoinInner(l,$e) ==
               if originalVector and (condition=true) then
                 $NewCatVec:= CatEval bname
                 copied:= nil
-                FundamentalAncestors:= [[bname],:CADR $NewCatVec.4]
+                FundamentalAncestors:= [[bname],:second $NewCatVec.4]
                          --bname is Principal, so comes first
                 reallynew:= nil
                 MEMQ(b,l) =>
@@ -496,7 +496,7 @@ JoinInner(l,$e) ==
                 bCond:= ASSQ(b,CondList)
                 CondList:= delete(bCond,CondList)
              -- value of bCond not used and could be NIL
-             -- bCond:= CADR bCond
+             -- bCond:= second bCond
                 globalDomains:= $NewCatVec.5
                 for u in $NewCatVec.(1) repeat
                   if not member(u,sigl) then
@@ -539,13 +539,13 @@ JoinInner(l,$e) ==
       v:= assoc(first u,attl)
       null v =>
         attl:=
-          CADR u=true => [[first u,newpred],:attl]
-          [[first u,["and",newpred,CADR u]],:attl]
-      CADR v=true => nil
+          second u=true => [[first u,newpred],:attl]
+          [[first u,["and",newpred,second u]],:attl]
+      second v=true => nil
       attl:= delete(v,attl)
       attl:=
-        CADR u=true => [[first u,mkOr(CADR v,newpred)],:attl]
-        [[first u,mkOr(CADR v,mkAnd(newpred,CADR u))],:attl]
+        second u=true => [[first u,mkOr(second v,newpred)],:attl]
+        [[first u,mkOr(second v,mkAnd(newpred,second u))],:attl]
     sigl:=
       SigListUnion(
         [AddPredicate(DropImplementations u,newpred) for u in (first b).(1)],sigl) where
@@ -558,7 +558,7 @@ JoinInner(l,$e) ==
   c:= first $NewCatVec.4
   pName:= $NewCatVec.(0)
   if pName and not member(pName,c) then c:= [pName,:c]
-  $NewCatVec.4:= [c,FundamentalAncestors,CADDR $NewCatVec.4]
+  $NewCatVec.4:= [c,FundamentalAncestors,third $NewCatVec.4]
   mkCategory("domain",sigl,attl,globalDomains,$NewCatVec)
 
 Join(:l) ==

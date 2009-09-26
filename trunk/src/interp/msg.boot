@@ -535,11 +535,11 @@ line?   msg == getMsgTag msg = 'line
 getMsgPosTagOb msg == msg.1
  
 getMsgPos msg ==
-    getMsgFTTag? msg => CADR getMsgPosTagOb msg
+    getMsgFTTag? msg => second getMsgPosTagOb msg
     getMsgPosTagOb msg
  
 getMsgPos2 msg ==
-    getMsgFTTag? msg => CADDR getMsgPosTagOb msg
+    getMsgFTTag? msg => third getMsgPosTagOb msg
     ncBug('"not a from to",[])
  
 getMsgFTTag? msg == IFCAR member (IFCAR getMsgPosTagOb msg,_

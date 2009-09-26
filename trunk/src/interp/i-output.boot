@@ -564,7 +564,7 @@ outputTran x ==
     (op' = '"*") and ((foo3 is ['log,foo4]) or (foo2 is ['log,foo4])) =>
        foo3 is ['log,foo4] =>
          ["**", outputTran foo4, outputTran foo2]
-       foo4 := CADR foo2
+       foo4 := second foo2
        ["**", outputTran foo4, outputTran foo3]
   op = 'IF       => outputTranIf x
   op = 'COLLECT  => outputTranCollect x
@@ -776,8 +776,8 @@ timesApp(u,x,y,d) ==
 
 needBlankForRoot(lastOp,op,arg) ==
   lastOp ~= "^" and lastOp ~= "**" and not(subspan(arg)>0) => false
-  op = "**" and keyp CADR arg = 'ROOT => true
-  op = "^" and keyp CADR arg = 'ROOT => true
+  op = "**" and keyp second arg = 'ROOT => true
+  op = "^" and keyp second arg = 'ROOT => true
   op = 'ROOT and CDDR arg => true
   false
 
@@ -852,7 +852,7 @@ exptNeedsPren a ==
   (key="SUB") or (null GETL(key,"Nud") and null GETL(key,"Led")) => false
   true
 
-exptSub u == subspan CADR u
+exptSub u == subspan second u
 
 exptSuper [.,a,b] == superspan a+height b+(superspan a=0 => 0;-1)
 
@@ -865,7 +865,7 @@ needStar(wasSimple,wasQuotient,wasNumber,cur,op) ==
       (atom op and not NUMBERP op and null GETL(op,"APP"))
   wasNumber =>
     NUMBERP(cur) or isRationalNumber cur or
-        ((op="**" or op ="^") and NUMBERP(CADR cur))
+        ((op="**" or op ="^") and NUMBERP(second cur))
 
 isQuotient op ==
   op="/" or op="OVER"
@@ -1208,8 +1208,8 @@ LargeMatrixp(u,width, dist) ==
       --Relying that falling out of a loop gives nil
   op in '(_+ _* ) =>
       --Each of these prints the first argument in a width 3 smaller
-    (ans:=LargeMatrixp(CADR u,width-3,dist)) => largeMatrixAlist ans
-    n:=3+WIDTH CADR u
+    (ans:=LargeMatrixp(second u,width-3,dist)) => largeMatrixAlist ans
+    n:=3+WIDTH second u
     dist:=dist-n
     ans:=
       for v in CDDR u repeat
@@ -1297,11 +1297,11 @@ SubstWhileDesizingList(u,m) ==
 
 sigmaSub u ==
        --The depth function for sigmas with lower limit only
-  MAX(1 + height CADR u, subspan CADDR u)
+  MAX(1 + height second u, subspan third u)
 
 sigmaSup u ==
        --The height function for sigmas with lower limit only
-  MAX(1, superspan CADDR u)
+  MAX(1, superspan third u)
 
 sigmaApp(u,x,y,d) ==
   u is [.,bot,arg] or THROW('outputFailure,'outputFailure)
@@ -1362,19 +1362,19 @@ sigma2Width [.,bot,top,arg] == bigopWidth(bot,top,arg,'sigma)
 
 sigma2Sub u ==
        --The depth function for sigmas with 2 limits
-  MAX(1 + height CADR u, subspan CADDDR u)
+  MAX(1 + height second u, subspan fourth u)
 
 sigma2Sup u ==
        --The depth function for sigmas with 2 limits
-  MAX(1 + height CADDR u, superspan CADDDR u)
+  MAX(1 + height third u, superspan fourth u)
 
 piSub u ==
        --The depth function for pi's (products)
-  MAX(1 + height CADR u, subspan CADDR u)
+  MAX(1 + height second u, subspan third u)
 
 piSup u ==
        --The height function for pi's (products)
-  MAX(1, superspan CADDR u)
+  MAX(1, superspan third u)
 
 piApp(u,x,y,d) ==
   u is [.,bot,arg] or THROW('outputFailure,'outputFailure)
@@ -1385,11 +1385,11 @@ pi2Width [.,bot,top,arg] == bigopWidth(bot,top,arg,'pi)
 
 pi2Sub u ==
        --The depth function for pi's with 2 limits
-  MAX(1 + height CADR u, subspan CADDDR u)
+  MAX(1 + height second u, subspan fourth u)
 
 pi2Sup u ==
        --The depth function for pi's with 2 limits
-  MAX(1 + height CADDR u, superspan CADDDR u)
+  MAX(1 + height third u, superspan fourth u)
 
 pi2App(u,x,y,d) ==
   [.,bot,top,arg]:=u
@@ -1663,10 +1663,10 @@ isInitialMap u ==
     (and/[x is [[ =i],.] for x in l for i in n+1..])
 
 printMap1(x,initialFlag) ==
-  initialFlag => printBasic CADR x
+  initialFlag => printBasic second x
   if CDAR x then printBasic first x else printBasic CAAR x
   printBasic " E "
-  printBasic CADR x
+  printBasic second x
 
 printBasic x ==
   x='(One) => PRIN1(1,$algebraOutputStream)
@@ -1856,11 +1856,11 @@ keyp(u) ==
 
 absym x ==
   (NUMBERP x) and (MINUSP x) => -x
-  not (atom x) and (keyp(x) = '_-) => CADR x
+  not (atom x) and (keyp(x) = '_-) => second x
   x
 
 agg(n,u) ==
-  (n = 1) => CADR u
+  (n = 1) => second u
   agg(n - 1, rest u)
 
 aggwidth u ==
@@ -1953,16 +1953,16 @@ appelse(u,x,y,d) ==
 
 appext(u,x,y,d) ==
   xptr := x
-  yptr := y - (subspan CADR u + superspan agg(3,u) + 1)
-  d := APP(CADR u,x,y,d)
+  yptr := y - (subspan second u + superspan agg(3,u) + 1)
+  d := APP(second u,x,y,d)
   d := APP(agg(2,u),xptr,yptr,d)
   xptr := xptr + WIDTH agg(2,u)
   d := APP('"=", xptr, yptr,d)
   d := APP(agg(3,u), 1 + xptr, yptr, d)
-  yptr := y + 1 + superspan CADR u + SUBSPAD agg(4,u)
+  yptr := y + 1 + superspan second u + SUBSPAD agg(4,u)
   d := APP(agg(4,u), x, yptr, d)
   temp := 1 + WIDTH agg(2,u) +  WIDTH agg(3,u)
-  n := MAX(WIDTH CADR u, WIDTH agg(4,u), temp)
+  n := MAX(WIDTH second u, WIDTH agg(4,u), temp)
   if first(z := agg(5,u)) is ["EXT",:.] and
    (n=3 or (n > 3 and not (atom z)) ) then
      n := 1 + n
@@ -2006,21 +2006,21 @@ appparu(u, x, y, d) ==
   apprpar(x + 1 + WIDTH u, y, bot, top, temparg2)
 
 appparu1(u, x, y, d) ==
-  appparu(CADR u, x, y, d)
+  appparu(second u, x, y, d)
 
 appsc(u, x, y, d) ==
   appagg1(rest u, x, y, d, '";")
 
 appsetq(u, x, y, d) ==
   w := WIDTH first u
-  temparg1 := APP(CADR u, x, y, d)
+  temparg1 := APP(second u, x, y, d)
   temparg2 := APP('":", x + w, y, temparg1)
-  APP(CADR rest u, x + 2 + w, y, temparg2)
+  APP(second rest u, x + 2 + w, y, temparg2)
 
 appsub(u, x, y, d) ==
-  temparg1 := x + WIDTH CADR u
+  temparg1 := x + WIDTH second u
   temparg2 := y - 1 - superspan CDDR u
-  temparg3 := APP(CADR u, x, y, d)
+  temparg3 := APP(second u, x, y, d)
   appagg(CDDR u, temparg1, temparg2, temparg3)
 
 eq0(u) == 0
@@ -2029,13 +2029,13 @@ height(u) ==
   superspan(u) + 1 + subspan(u)
 
 extsub(u) ==
-  MAX(subspan agg(5, u), height(agg(3, u)), subspan CADR u  )
+  MAX(subspan agg(5, u), height(agg(3, u)), subspan second u  )
 
 extsuper(u) ==
-  MAX(superspan CADR u + height agg(4, u), superspan agg(5, u) )
+  MAX(superspan second u + height agg(4, u), superspan agg(5, u) )
 
 extwidth(u) ==
-  n := MAX(WIDTH CADR u,
+  n := MAX(WIDTH second u,
            WIDTH agg(4, u),
            1 + WIDTH agg(2, u) + WIDTH agg(3, u) )
   nil or
@@ -2049,48 +2049,48 @@ appfrac(u, x, y, d) ==
   -- not possible, expressions are offset to the right rather than left.
   -- MCD 16-8-95
   w := WIDTH u
-  tempx := x + QUOTIENT(1+w - WIDTH CADR rest u, 2)
-  tempy := y - superspan CADR rest u - 1
-  temparg3 := APP(CADR rest u, tempx, tempy, d)
+  tempx := x + QUOTIENT(1+w - WIDTH second rest u, 2)
+  tempy := y - superspan second rest u - 1
+  temparg3 := APP(second rest u, tempx, tempy, d)
   temparg4 := apphor(x, x + w - 1, y, temparg3,specialChar('hbar))
-  APP(CADR u,
-        x + QUOTIENT(1+w - WIDTH CADR u, 2),
-          y + 1 + subspan CADR u,
+  APP(second u,
+        x + QUOTIENT(1+w - WIDTH second u, 2),
+          y + 1 + subspan second u,
             temparg4)
 
-fracsub(u) == height CADR rest u
+fracsub(u) == height second rest u
 
-fracsuper(u) == height CADR u
+fracsuper(u) == height second u
 
 fracwidth(u) ==
-  numw := WIDTH (num := CADR u)
-  denw := WIDTH (den := CADDR u)
+  numw := WIDTH (num := second u)
+  denw := WIDTH (den := third u)
   if num is [[op,:.],:.] and op = 'OVER then numw := numw + 2
   if den is [[op,:.],:.] and op = 'OVER then denw := denw + 2
   MAX(numw,denw)
 
 slashSub u ==
-  MAX(1,subspan(CADR u),subspan(CADR rest u))
+  MAX(1,subspan(second u),subspan(second rest u))
 
 slashSuper u ==
-  MAX(1,superspan(CADR u),superspan(CADR rest u))
+  MAX(1,superspan(second u),superspan(second rest u))
 
 slashApp(u, x, y, d) ==
   -- to print things as a/b as opposed to
   --      a
   --      -
   --      b
-  temparg1 := APP(CADR u, x, y, d)
-  temparg2 := APP('"/", x + WIDTH CADR u, y, temparg1)
-  APP(CADR rest u,
-     x + 1 + WIDTH CADR u, y, temparg2)
+  temparg1 := APP(second u, x, y, d)
+  temparg2 := APP('"/", x + WIDTH second u, y, temparg1)
+  APP(second rest u,
+     x + 1 + WIDTH second u, y, temparg2)
 
 slashWidth(u) ==
   -- to print things as a/b as opposed to
   --      a
   --      -
   --      b
-  1 + WIDTH CADR u + WIDTH CADR rest u
+  1 + WIDTH second u + WIDTH second rest u
 
 longext(u, i, n) ==
   x := REVERSE u
@@ -2190,12 +2190,12 @@ nothingApp(u, x, y, d) ==
 
 zagApp(u, x, y, d) ==
     w := WIDTH u
-    denx := x + QUOTIENT(w - WIDTH CADR rest u, 2)
-    deny := y - superspan CADR rest u - 1
-    d    := APP(CADR rest u, denx, deny, d)
-    numx := x + QUOTIENT(w - WIDTH CADR u, 2)
-    numy := y+1 + subspan CADR u
-    d    := APP(CADR u, numx, numy, d)
+    denx := x + QUOTIENT(w - WIDTH second rest u, 2)
+    deny := y - superspan second rest u - 1
+    d    := APP(second rest u, denx, deny, d)
+    numx := x + QUOTIENT(w - WIDTH second u, 2)
+    numy := y+1 + subspan second u
+    d    := APP(second u, numx, numy, d)
     a := 1 + zagSuper u
     b := 1 + zagSub u
     d := appvertline(specialChar('vbar), x,         y - b, y - 1, d)
@@ -2205,10 +2205,10 @@ zagApp(u, x, y, d) ==
     d := APP(specialChar('lrc), x + w - 1, y, d)
 
 zagSub(u) ==
-    height CADR rest u
+    height second rest u
 
 zagSuper(u) ==
-    height CADR u
+    height second u
 
 zagWidth(x) ==
    #x = 1 => 0
@@ -2235,10 +2235,10 @@ appmat(u, x, y, d) ==
    d := matrixBorder(x, y - q, y + p, d, 'left)
    x := 1 + x
    yc := 1 + y + p
-   w := CADR u
+   w := second u
    wl := CDAR w
-   subl := rest CADR w
-   superl := rest CADR rest w
+   subl := rest second w
+   superl := rest second rest w
    repeat
       null rows => return(matrixBorder(x + WIDTH u - 2,
                                        y - q,
@@ -2358,13 +2358,13 @@ prnd(start, op) ==
   TERPRI $algebraOutputStream
 
 qTSub(u) ==
-  subspan CADR u
+  subspan second u
 
 qTSuper(u) ==
-  superspan CADR u
+  superspan second u
 
 qTWidth(u) ==
-  2 + WIDTH CADR u
+  2 + WIDTH second u
 
 remWidth(x) ==
   atom x => x
@@ -2443,9 +2443,9 @@ binomApp(u,x,y,d) ==
   d := appChar(specialChar 'llc,x,y - hden,d)
   d := appChar(specialChar 'lrc,x + w,y - hden,d)
 
-binomSub u == height CADDR u
-binomSuper u == height CADR u
-binomWidth u == 2 + MAX(WIDTH CADR u, WIDTH CADDR u)
+binomSub u == height third u
+binomSuper u == height second u
+binomWidth u == 2 + MAX(WIDTH second u, WIDTH third u)
 
 altSuperSubApp(u, x, y, di) ==
   a  := first (u := rest u)
@@ -2473,7 +2473,7 @@ everyNth(l, n) ==
 
 
 altSuperSubSub u ==
-  span := subspan CADR u
+  span := subspan second u
   sublist := everyNth(CDDR u, 2)
   for sub in sublist repeat
       h := height sub
@@ -2481,7 +2481,7 @@ altSuperSubSub u ==
   span
 
 altSuperSubSuper u ==
-  span := superspan CADR u
+  span := superspan second u
   suplist := everyNth(IFCDR CDDR u, 2)
   for sup in suplist repeat
       h := height sup
@@ -2489,7 +2489,7 @@ altSuperSubSuper u ==
   span
 
 altSuperSubWidth u ==
-  w := WIDTH CADR u
+  w := WIDTH second u
   suplist := everyNth(IFCDR CDDR u, 2)
   sublist := everyNth(CDDR u, 2)
   for sup in suplist for sub in sublist repeat

@@ -331,7 +331,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
              [["$elt","Result","construct"],body]]
 
 stripNil u ==
-  [CAR(u), ["construct",:CADR(u)], if CADDR(u) then "true" else "false"]
+  [CAR(u), ["construct",:second(u)], if third(u) then "true" else "false"]
 
 makeUnion aspType ==
   -- The argument is the type of the asp to be generated.  We would like to
@@ -348,11 +348,11 @@ axiomType(a,decls,asps,aspInfo) ==
             "construct"]
     makeUnion ["FortranProgram",_
       a,_
-      CADR(entry),_
-      ["construct",:mkQuote CADDR entry], _
+      second(entry),_
+      ["construct",:mkQuote third entry], _
       [ ["$elt", "SymbolTable","symbolTable"],_
           ["construct",_
-            :[[rc,first(v),[ftc,:stripNil rest(v)]] for v in CADDDR entry]]_
+            :[[rc,first(v),[ftc,:stripNil rest(v)]] for v in fourth entry]]_
     ] ]
   spadTypeTTT(getFortranType(a,decls))
 
@@ -402,7 +402,7 @@ vec2Lists u == [vec2Lists1 ELT(u,i) for i in 0..#u-1]
 spad2lisp(u) ==
   -- Turn complexes into arrays of floats
   first first(u)="Complex" =>
-    makeVector([makeVector([CADR u,CDDR u],"%DoubleFloat")],NIL)
+    makeVector([makeVector([second u,CDDR u],"%DoubleFloat")],NIL)
   -- Turn arrays of complexes into arrays of floats so that tarnsposing
   -- them puts them in the correct fortran order
   first first(u)="Matrix" and first SECOND first(u) = "Complex" =>
@@ -750,11 +750,11 @@ multiToUnivariate f ==
   -- Take an AnonymousFunction, replace the bound variables by references to
   -- elements of a vector, and compile it.
   (first f) ~= "+->" => error "in multiToUnivariate: not an AnonymousFunction"
-  if CONSP CADR f then
+  if CONSP second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
-    vars := [CADR f]
-  body := COPY_-TREE CADDR f
+    vars := [second f]
+  body := COPY_-TREE third f
   newVariable := GENSYM()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
@@ -767,10 +767,10 @@ functionAndJacobian f ==
   -- Take a mapping into n functions of n variables, produce code which will
   -- evaluate function and jacobian values.
   (first f) ~= "+->" => error "in functionAndJacobian: not an AnonymousFunction"
-  if CONSP CADR f then
+  if CONSP second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
-    vars := [CADR f]
+    vars := [second f]
   #(vars) ~= #(CDADDR f) => 
     error "number of variables should equal number of functions"
   funBodies := COPY_-TREE CDADDR f
@@ -795,10 +795,10 @@ vectorOfFunctions f ==
   -- Take a mapping into n functions of m variables, produce code which will
   -- evaluate function values.
   (first f) ~= "+->" => error "in vectorOfFunctions: not an AnonymousFunction"
-  if CONSP CADR f then
+  if CONSP second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
-    vars := [CADR f]
+    vars := [second f]
   funBodies := COPY_-TREE CDADDR f
   newVariable := GENSYM()
   for index in 0..#vars-1 repeat

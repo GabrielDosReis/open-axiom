@@ -366,7 +366,7 @@ dbGatherData(htPage,opAlist,which,key) ==
         nil
       newEntry :=
         u := assoc(entry,data) =>           --key seen before? look on DATA
-          RPLACA(CDR u,CADR u or exposeFlag)--yes, expose if any 1 is exposed
+          RPLACA(CDR u,second u or exposeFlag)--yes, expose if any 1 is exposed
           u
         data := [y := [entry,exposeFlag,:tail],:data]
         y                                   --no, create new entry in DATA
@@ -435,8 +435,8 @@ dbSelectData(htPage,opAlist,key) ==
 
 dbReduceOpAlist(opAlist,data,branch) ==
   branch = 'signatures => dbReduceBySignature(opAlist,CAAR data,CADAR data)
-  branch = 'origins => dbReduceBySelection(opAlist,CAR data,function CADDR)
-  branch = 'conditions => dbReduceBySelection(opAlist,CAR data,function CADR)
+  branch = 'origins => dbReduceBySelection(opAlist,CAR data,function third)
+  branch = 'conditions => dbReduceBySelection(opAlist,CAR data,function second)
   branch = 'implementation => dbReduceByOpSignature(opAlist,CDDR data)
   branch = 'parameters => dbReduceByForm(opAlist,CAR data)
   systemError ['"Unexpected branch: ",branch]
@@ -817,7 +817,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
         --Case 1: Already expanded; just cons it onto ACC
           null STRINGP line => --already expanded
             if condition? then --this could have been expanded at a lower level
-              if null atom (pred := CADR line) then value := pred
+              if null atom (pred := second line) then value := pred
             acc := [line,:acc] --this one is already expanded; record it anyway
         --Case 2: unexpanded; expand it then cons it onto ACC
           [name,nargs,xflag,sigs,conname,pred,comments] := dbParts(line,7,1)
@@ -875,7 +875,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
 getRegistry(op,sig) ==
   u := getConstructorDocumentationFromDB "AttributeRegistry"
   v := LASSOC(op,u)
-  match := or/[y for y in v | y is [['attribute,: =sig],:.]] => CADR match
+  match := or/[y for y in v | y is [['attribute,: =sig],:.]] => second match
   '""
 
 evalableConstructor2HtString domform ==

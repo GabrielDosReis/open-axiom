@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -130,9 +130,9 @@ orderBySubsumption items ==
   for [a,b,:.] in subacc | b repeat   
   --NOTE: b = nil means that the signature a will appear in acc, that this
   --  entry is be ignored (e.g. init: -> $ in ULS)
-    while (u := assoc(b,subacc)) repeat b := CADR u
+    while (u := assoc(b,subacc)) repeat b := second u
     u := assoc(b,acc) or systemError nil
-    if null CADR u then u := [CAR u,1] --mark as missing operation
+    if null second u then u := [CAR u,1] --mark as missing operation
     y := [[a,'Subsumed],u,:y] --makes subsuming signature follow one subsumed
     z := insert(b,z)  --mark a signature as already present
   [:y,:[w for (w := [c,:.]) in acc | not member(c,z)]] --add those not subsuming
@@ -166,7 +166,7 @@ stuffDomainSlots dollar ==
     VECP CDDR proto4 => [COPY_-SEQ CAR proto4,:CDR proto4]   --old style
     bitVector := dollar.3
     predvec := CAR proto4
-    packagevec := CADR proto4
+    packagevec := second proto4
     auxvec := LIST2VEC [fn for i in 0..MAXINDEX predvec] where fn() ==
       null testBitVector(bitVector,predvec.i) => nil
       packagevec.i or true
@@ -594,8 +594,8 @@ dcCats con ==
   VECP CDDR u => dcCats1 con    --old style slot4
   $predvec:= getConstructorPredicatesFromDB con
   catpredvec := CAR u
-  catinfo := CADR u
-  catvec := CADDR u
+  catinfo := second u
+  catvec := third u
   for i in 0..MAXINDEX catvec repeat
     sayBrightlyNT bright i
     form := catvec.i
@@ -612,7 +612,7 @@ dcCats con ==
 dcCats1 con ==
   $predvec:= getConstructorPredicatesFromDB con
   u := $infovec.3
-  catvec := CADR u
+  catvec := second u
   catinfo := CAR u
   for i in 0..MAXINDEX catvec repeat
     sayBrightlyNT bright i
@@ -674,8 +674,8 @@ dcSize(:options) ==
   aSize := numberOfNodes infovec.2
   slot4 := infovec.3
   catvec := 
-    VECP CDDR slot4 => CADR slot4
-    CADDR slot4
+    VECP CDDR slot4 => second slot4
+    third slot4
   n := MAXINDEX catvec
   cSize := sum(nodeSize(2),vectorSize(SIZE CAR slot4),vectorSize(n + 1),
                nodeSize(+/[numberOfNodes catvec.i for i in 0..n]))
@@ -849,7 +849,7 @@ extendsCategoryBasic0(dom,u,v) ==
     uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
     null atom c and isCategoryForm(c,nil) =>
       slot4 := uVec.4
-      LASSOC(c,CADR slot4) is [=p,:.]
+      LASSOC(c,second slot4) is [=p,:.]
     slot2 := uVec.2
     LASSOC(c,slot2) is [=p,:.]
   extendsCategoryBasic(dom,u,v)
@@ -879,7 +879,7 @@ catExtendsCat?(u,v,uvec) ==
     PRINT similarForm
     sayBrightlyNT '"   but not "
     PRINT v
-  or/[catExtendsCat?(x,v,nil) for x in ASSOCLEFT CADR slot4]
+  or/[catExtendsCat?(x,v,nil) for x in ASSOCLEFT second slot4]
  
 substSlotNumbers(form,template,domain) ==
   form is [op,:.] and

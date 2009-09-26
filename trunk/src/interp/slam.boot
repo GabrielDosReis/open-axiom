@@ -316,7 +316,7 @@ clearLocalModemaps x ==
 compileInteractive fn ==
   if $InteractiveMode then startTimingProcess 'compilation
   --following not used for common lisp
-  --removeUnnecessaryLastArguments CADR fn
+  --removeUnnecessaryLastArguments second fn
   if $reportCompilation then
     sayBrightlyI bright '"Generated LISP code for function:"
     pp fn

@@ -1533,13 +1533,13 @@ Un2E(x,source,target) ==
 --% Variable
 
 Var2OV(u,source,target is [.,vl]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl)
   member(sym,vl) => position1(sym,vl)
   coercionFailure()
 
 Var2Dmp(u,source,target is [dmp,vl,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
 
   len := #vl
@@ -1550,7 +1550,7 @@ Var2Dmp(u,source,target is [dmp,vl,S]) ==
   [[Zeros len,:objValUnwrap u]]
 
 Var2Gdmp(u,source,target is [dmp,vl,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
 
   len := #vl
@@ -1561,7 +1561,7 @@ Var2Gdmp(u,source,target is [dmp,vl,S]) ==
   [[Zeros len,:objValUnwrap u]]
 
 Var2Mp(u,source,target is [mp,vl,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
   (n:= position1(u,vl)) ~= 0 =>
     [1,n,[1,0,:getConstantFromDomain('(One),S)]]
@@ -1569,7 +1569,7 @@ Var2Mp(u,source,target is [mp,vl,S]) ==
   [0,:objValUnwrap u]
 
 Var2NDmp(u,source,target is [ndmp,vl,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
 
   len:= #vl
@@ -1580,7 +1580,7 @@ Var2NDmp(u,source,target is [ndmp,vl,S]) ==
   [[Zeros len,:objValUnwrap(u)]]
 
 Var2P(u,source,target is [poly,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => true
 
   -- first try to get it into an underdomain
@@ -1594,7 +1594,7 @@ Var2QF(u,source,target is [qf,S]) ==
   u = '_$fromCoerceable_$ => canCoerce(source,S)
 
   S = $Integer => coercionFailure()
-  sym := CADR source
+  sym := second source
   (u' := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [objValUnwrap u',:getConstantFromDomain('(One),S)]
 
@@ -1606,7 +1606,7 @@ Var2FS(u,source,target is [fs,S]) ==
   objValUnwrap v
 
 Var2Up(u,source,target is [up,x,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => (sym = x) or canCoerce(source,S)
 
   x=sym => [[1,:getConstantFromDomain('(One),S)]]
@@ -1614,7 +1614,7 @@ Var2Up(u,source,target is [up,x,S]) ==
   [[0,:objValUnwrap u]]
 
 Var2SUP(u,source,target is [sup,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => (sym = "?") or canCoerce(source,S)
 
   sym = "?" => [[1,:getConstantFromDomain('(One),S)]]
@@ -1622,7 +1622,7 @@ Var2SUP(u,source,target is [sup,S]) ==
   [[0,:objValUnwrap u]]
 
 Var2UpS(u,source,target is [ups,x,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => (sym = x) or canCoerce(source,S)
 
   mid := ['UnivariatePolynomial,x,S]
@@ -1635,7 +1635,7 @@ Var2UpS(u,source,target is [ups,x,S]) ==
   objValUnwrap u
 
 Var2OtherPS(u,source,target is [.,x,S]) ==
-  sym := CADR source
+  sym := second source
   mid := ['UnivariatePowerSeries,x,S]
   u = '_$fromCoerceable_$ =>
     (sym = x) or (canCoerce(source,mid) and canCoerce(mid,target))
