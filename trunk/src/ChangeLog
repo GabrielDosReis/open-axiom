@@ -1,5 +1,11 @@
 2009-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/free.spad.pamphlet (FreeMonoidCategory): New.
+	(FreeModule): Use it.
+	* algebra/xpoly.spad.pamphlet (OrderedFreeMonoid): Likewise.
+
+2009-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/: More cleanup.
 
 2009-09-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>

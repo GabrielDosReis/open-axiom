@@ -537,7 +537,7 @@ axiom_algebra_layer_9 = \
   PTFUNC2  RADCAT   RADCAT-  RATRET   RADUTIL  UPXS2    \
   XFALG    ZLINDEP  BBTREE                              \
                     ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
-  PDEPROB  COLOR    SIG
+  PDEPROB  COLOR    SIG      FMONCAT
 
 
 axiom_algebra_layer_9_nrlibs = \
