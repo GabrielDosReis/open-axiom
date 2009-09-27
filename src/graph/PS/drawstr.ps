@@ -1,0 +1,17 @@
+% operand stack configuration in order to use psDrawStr:
+%		psDrawStr
+%		y
+%		x
+%		string
+%		graphics-context dictionary
+% this function draws a text string at (x,y).
+
+/psDrawStr
+        {	gsave
+		newpath
+                loadFont
+                yVal moveto
+		exch begin installGC show end
+                grestore }
+        def
+

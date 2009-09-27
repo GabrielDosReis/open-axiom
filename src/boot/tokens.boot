@@ -51,6 +51,7 @@ shoeKeyWords == [  _
             ['"in",  "IN" ], _
             ['"is", "IS"], _
             ['"isnt", "ISNT"] , _
+            ['"leave", "LEAVE"], _
             ['"module", "MODULE"], _
             ['"namespace", "NAMESPACE"], _
             ['"of",   "OF"] , _

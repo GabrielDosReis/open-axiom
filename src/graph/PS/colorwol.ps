@@ -1,0 +1,24 @@
+% operand stack configuration in order to use psDrawFilled:
+%		psFillwOL
+%		XPoint[0].y
+%		XPoint[0].x
+%		n
+%		...
+%		XPoint[n].y
+%		XPoint[n].x
+%		graphics-context dictionary
+% this draws lines connecting all the points and fills the
+% region with background color (default: 1, or white).
+
+/psColorwOutline
+        {	gsave
+                newpath
+                yVal moveto
+                1 sub {
+                        yVal lineto
+                } repeat
+		closepath
+		begin gsave fill grestore	%% fills with foreground color
+		0 setgray stroke grestore end }	%% outline it with black
+        def
+

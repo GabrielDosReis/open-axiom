@@ -722,6 +722,12 @@ bpCatchItem() ==
   (bpException() or bpTrap()) and 
     bpPush %Catch bpPop1()
 
+++ Leave:
+++   LEAVE Logical
+bpLeave() ==
+  bpEqKey "LEAVE" and (bpLogical() or bpTrap()) and
+    bpPush %LeaveAst bpPop1()
+
 ++ Return:
 ++   RETURN Assign
 bpReturn()==
