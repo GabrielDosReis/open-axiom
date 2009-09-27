@@ -42,13 +42,7 @@ OrderedFreeMonoid(S: OrderedSet): OFMcategory == OFMdefinition where
     NNI ==> NonNegativeInteger
     REC ==> Record(gen:S, exp:NNI)
  
-    OFMcategory == Join(OrderedMonoid, RetractableTo S) with
-        *:    (S, %) -> %
-          ++ \spad{s * x} returns the product of \spad{x} by \spad{s} on the left.
-        *:    (%, S) -> %
-          ++ \spad{x * s} returns the product of \spad{x} by \spad{s} on the right.
-        **:   (S, NNI) -> %
-          ++ \spad{s ** n} returns the product of \spad{s} by itself \spad{n} times.
+    OFMcategory == Join(FreeMonoidCategory S,OrderedSet) with
         first: % -> S
           ++ \spad{first(x)} returns the first letter of \spad{x}.
         rest:  % -> %
@@ -58,22 +52,6 @@ OrderedFreeMonoid(S: OrderedSet): OFMcategory == OFMdefinition where
         lexico: (%,%) -> Boolean
           ++ \spad{lexico(x,y)} returns \spad{true} iff \spad{x} is smaller than \spad{y}
           ++ w.r.t. the pure lexicographical ordering induced by \spad{S}.
-        hclf:   (%, %) -> %
-          ++ \spad{hclf(x, y)} returns the highest common left factor 
-          ++ of \spad{x} and \spad{y},
-          ++ that is the largest \spad{d} such that \spad{x = d a} and \spad{y = d b}.
-        hcrf:   (%, %) -> %
-          ++ \spad{hcrf(x, y)} returns the highest common right 
-          ++ factor of \spad{x} and \spad{y},
-          ++ that is the largest \spad{d} such that \spad{x = a d} and \spad{y = b d}.
-        lquo:   (%, %) -> Union(%, "failed")
-          ++ \spad{lquo(x, y)} returns the exact left quotient of \spad{x}
-          ++  by \spad{y} that is \spad{q} such that \spad{x = y * q},
-          ++ "failed" if \spad{x} is not of the form \spad{y * q}.
-        rquo:   (%, %) -> Union(%, "failed")
-          ++ \spad{rquo(x, y)} returns the exact right quotient of \spad{x} 
-          ++ by \spad{y} that is \spad{q} such that \spad{x = q * y},
-          ++ "failed" if \spad{x} is not of the form \spad{q * y}.
         lquo:   (%, S) -> Union(%, "failed")
           ++ \spad{lquo(x, s)} returns the exact left quotient of \spad{x} 
           ++ by \spad{s}. 
@@ -84,21 +62,7 @@ OrderedFreeMonoid(S: OrderedSet): OFMcategory == OFMdefinition where
           ++ \spad{x div y} returns the left and right exact quotients of
           ++ \spad{x} by \spad{y}, that is \spad{[l, r]} such that \spad{x = l * y * r}.
           ++ "failed" is returned iff \spad{x} is not of the form \spad{l * y * r}.
-        overlap: (%, %) -> Record(lm: %, mm: %, rm: %)
-          ++ \spad{overlap(x, y)} returns \spad{[l, m, r]} such that
-          ++ \spad{x = l * m} and \spad{y = m * r} hold and such that 
-          ++ \spad{l} and \spad{r} have no overlap,
-          ++ that is \spad{overlap(l, r) = [l, 1, r]}.
-        size:   % -> NNI
-          ++ \spad{size(x)} returns the number of monomials in \spad{x}.
-        nthExpon:  (%, Integer) -> NNI
-          ++ \spad{nthExpon(x, n)} returns the exponent of the 
-          ++ \spad{n-th} monomial of \spad{x}.
-        nthFactor: (%, Integer) -> S
-          ++ \spad{nthFactor(x, n)} returns the factor of the \spad{n-th} 
           ++ monomial of \spad{x}.
-        factors: % -> List REC
-          ++ \spad{factors(a1\^e1,...,an\^en)} returns \spad{[[a1, e1],...,[an, en]]}.
         length: % -> NNI
           ++ \spad{length(x)} returns the length of \spad{x}.
         varList: % -> List S

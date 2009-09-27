@@ -164,6 +164,72 @@ ListMonoidOps(S, E, un): Exports == Implementation where
       g
 
 @
+
+\section{A Category for Free Monoids}
+
+<<category FMONCAT FreeMonoidCategory>>=
+)abbrev category FMONCAT FreeMonoidCategory
+++ Free monoid on any set of generators
+++ Author: Stephen M. Watt, Gabriel Dos Reis
+++ Date Created: September 26, 2009
+++ Date Last Updated: September 26, 2009
+++ Description:
+++   A free monoid on a set S is the monoid of finite products of
+++   the form \spad{reduce(*,[si ** ni])} where the si's are in S, and the ni's
+++   are nonnegative integers. The multiplication is not commutative.
+FreeMonoidCategory(S: SetCategory): Category == Exports where
+  macro NNI == NonNegativeInteger
+  macro REC == Record(gen: S, exp: NonNegativeInteger)
+  macro Ex  == OutputForm
+
+  Exports == Join(Monoid, RetractableTo S) with
+    *:    (S, %) -> %
+      ++ \spad{s * x} returns the product of \spad{x} by \spad{s} on the left.
+    *:    (%, S) -> %
+      ++ \spad{x * s} returns the product of \spad{x} by \spad{s} on the right.
+    **:   (S, NonNegativeInteger) -> %
+      ++ \spad{s ** n} returns the product of \spad{s} by itself \spad{n} times.
+    hclf:   (%, %) -> %
+      ++ \spad{hclf(x, y)} returns the highest common left factor of
+      ++ \spad{x} and \spad{y},
+      ++ i.e. the largest d such that \spad{x = d a} and \spad{y = d b}.
+    hcrf:   (%, %) -> %
+      ++ hcrf(x, y) returns the highest common right factor of x and y,
+      ++ i.e. the largest d such that \spad{x = a d} and \spad{y = b d}.
+    lquo:   (%, %) -> Union(%, "failed")
+      ++ lquo(x, y) returns the exact left quotient of x by y i.e.
+      ++ q such that \spad{x = y * q},
+      ++ "failed" if x is not of the form \spad{y * q}.
+    rquo:   (%, %) -> Union(%, "failed")
+      ++ rquo(x, y) returns the exact right quotient of x by y i.e.
+      ++ q such that \spad{x = q * y},
+      ++ "failed" if x is not of the form \spad{q * y}.
+    divide:   (%, %) -> Union(Record(lm: %, rm: %), "failed")
+      ++ divide(x, y) returns the left and right exact quotients of
+      ++ x by y, i.e. \spad{[l, r]} such that \spad{x = l * y * r},
+      ++ "failed" if x is not of the form \spad{l * y * r}.
+    overlap: (%, %) -> Record(lm: %, mm: %, rm: %)
+      ++ overlap(x, y) returns \spad{[l, m, r]} such that
+      ++ \spad{x = l * m}, \spad{y = m * r} and l and r have no overlap,
+      ++ i.e. \spad{overlap(l, r) = [l, 1, r]}.
+    size         :   % -> NNI
+      ++ size(x) returns the number of monomials in x.
+    factors      : % -> List Record(gen: S, exp: NonNegativeInteger)
+      ++ factors(a1\^e1,...,an\^en) returns \spad{[[a1, e1],...,[an, en]]}.
+    nthExpon     : (%, Integer) -> NonNegativeInteger
+      ++ nthExpon(x, n) returns the exponent of the n^th monomial of x.
+    nthFactor    : (%, Integer) -> S
+      ++ nthFactor(x, n) returns the factor of the n^th monomial of x.
+    mapExpon     : (NNI -> NNI, %) -> %
+      ++ mapExpon(f, a1\^e1 ... an\^en) returns \spad{a1\^f(e1) ... an\^f(en)}.
+    mapGen       : (S -> S, %) -> %
+      ++ mapGen(f, a1\^e1 ... an\^en) returns \spad{f(a1)\^e1 ... f(an)\^en}.
+    if S has OrderedSet then OrderedSet
+
+@
+
+
+
 \section{domain FMONOID FreeMonoid}
 <<domain FMONOID FreeMonoid>>=
 )abbrev domain FMONOID FreeMonoid
@@ -175,55 +241,11 @@ ListMonoidOps(S, E, un): Exports == Implementation where
 ++ The free monoid on a set S is the monoid of finite products of
 ++ the form \spad{reduce(*,[si ** ni])} where the si's are in S, and the ni's
 ++ are nonnegative integers. The multiplication is not commutative.
-FreeMonoid(S: SetCategory): FMcategory == FMdefinition where
-    NNI ==> NonNegativeInteger
-    REC ==> Record(gen: S, exp: NonNegativeInteger)
-    Ex  ==> OutputForm
-
-    FMcategory ==> Join(Monoid, RetractableTo S) with
-        *:    (S, $) -> $
-          ++ s * x returns the product of x by s on the left.
-        *:    ($, S) -> $
-          ++ x * s returns the product of x by s on the right.
-        **:   (S, NonNegativeInteger) -> $
-          ++ s ** n returns the product of s by itself n times.
-        hclf:   ($, $) -> $
-          ++ hclf(x, y) returns the highest common left factor of x and y,
-          ++ i.e. the largest d such that \spad{x = d a} and \spad{y = d b}.
-        hcrf:   ($, $) -> $
-          ++ hcrf(x, y) returns the highest common right factor of x and y,
-          ++ i.e. the largest d such that \spad{x = a d} and \spad{y = b d}.
-        lquo:   ($, $) -> Union($, "failed")
-          ++ lquo(x, y) returns the exact left quotient of x by y i.e.
-          ++ q such that \spad{x = y * q},
-          ++ "failed" if x is not of the form \spad{y * q}.
-        rquo:   ($, $) -> Union($, "failed")
-          ++ rquo(x, y) returns the exact right quotient of x by y i.e.
-          ++ q such that \spad{x = q * y},
-          ++ "failed" if x is not of the form \spad{q * y}.
-        divide:   ($, $) -> Union(Record(lm: $, rm: $), "failed")
-          ++ divide(x, y) returns the left and right exact quotients of
-          ++ x by y, i.e. \spad{[l, r]} such that \spad{x = l * y * r},
-          ++ "failed" if x is not of the form \spad{l * y * r}.
-        overlap: ($, $) -> Record(lm: $, mm: $, rm: $)
-          ++ overlap(x, y) returns \spad{[l, m, r]} such that
-          ++ \spad{x = l * m}, \spad{y = m * r} and l and r have no overlap,
-          ++ i.e. \spad{overlap(l, r) = [l, 1, r]}.
-        size         :   $ -> NNI
-          ++ size(x) returns the number of monomials in x.
-        factors      : $ -> List Record(gen: S, exp: NonNegativeInteger)
-          ++ factors(a1\^e1,...,an\^en) returns \spad{[[a1, e1],...,[an, en]]}.
-        nthExpon     : ($, Integer) -> NonNegativeInteger
-          ++ nthExpon(x, n) returns the exponent of the n^th monomial of x.
-        nthFactor    : ($, Integer) -> S
-          ++ nthFactor(x, n) returns the factor of the n^th monomial of x.
-        mapExpon     : (NNI -> NNI, $) -> $
-          ++ mapExpon(f, a1\^e1 ... an\^en) returns \spad{a1\^f(e1) ... an\^f(en)}.
-        mapGen       : (S -> S, $) -> $
-          ++ mapGen(f, a1\^e1 ... an\^en) returns \spad{f(a1)\^e1 ... f(an)\^en}.
-        if S has OrderedSet then OrderedSet
-
-    FMdefinition ==> ListMonoidOps(S, NonNegativeInteger, 1) add
+FreeMonoid(S: SetCategory): FreeMonoidCategory(S) == FMdefinition where
+    macro NNI == NonNegativeInteger
+    macro REC == Record(gen: S, exp: NonNegativeInteger)
+    macro Ex  == OutputForm
+    FMdefinition == ListMonoidOps(S, NonNegativeInteger, 1) add
         Rep := ListMonoidOps(S, NonNegativeInteger, 1)
 
         1               == makeUnit()
@@ -583,6 +605,7 @@ FreeAbelianGroup(S:SetCategory): Exports == Implementation where
 <<license>>
 
 <<domain LMOPS ListMonoidOps>>
+<<category FMONCAT FreeMonoidCategory>>
 <<domain FMONOID FreeMonoid>>
 <<domain FGROUP FreeGroup>>
 <<category FAMONC FreeAbelianMonoidCategory>>
