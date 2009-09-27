@@ -1,3 +1,8 @@
+2009-09-26  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	Fix SF/2854105
+	* graph/PS/*.ps: New.
+
 2009-09-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/free.spad.pamphlet (FreeMonoidCategory): New.
