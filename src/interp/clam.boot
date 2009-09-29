@@ -457,7 +457,7 @@ assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
         RPLACA(forwardPointer,first al)
         RPLACA(al,y)
       return (val:= y)
-    backPointer := forwardPointer      --CAR is slot replaced on failure
+    backPointer := forwardPointer      --first is slot replaced on failure
     forwardPointer:= rest forwardPointer
   val => val
   setDynamicBinding(cacheName,backPointer)
@@ -648,7 +648,7 @@ lassocShiftQ(x,l) ==
   y:= l
   while not atom y repeat
     EQ(x,first first y) => return (result := first y)
-    y:= CDR y
+    y:= rest y
   result =>
     if NEQ(y,l) then
       RPLACA(y,first l)

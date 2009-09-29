@@ -705,7 +705,7 @@ fortFormatTypes1(typeName,names) ==
 insertEntry(size,el,aList) ==
   entry := assoc(size,aList)
   null entry => CONS(CONS(size,LIST el),aList)
-  RPLACD(entry,CONS(el,CDR entry))
+  RPLACD(entry,CONS(el,rest entry))
   aList
 
 fortFormatCharacterTypes(names) ==

@@ -532,7 +532,7 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
       domOriginAlist := insertAlist(conname,pred,domOriginAlist)
   --the following is similar to "domainsOf" but do not sort immediately
   u := [COPY key for key in HKEYS _*HASCATEGORY_-HASH_*
-          | LASSQ(CDR key,catOriginAlist)]
+          | LASSQ(rest key,catOriginAlist)]
   for pair in u repeat
     [dom,:cat] := pair
     LASSQ(cat,catOriginAlist) = 'etc => RPLACD(pair,'etc)

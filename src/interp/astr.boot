@@ -40,7 +40,7 @@ module astr where
   ncPutQ: (%List,%Thing,%Thing) -> %Thing
 
 --% Attributed Structures (astr)
--- For objects which are pairs where the CAR field is either just a tag
+-- For objects which are pairs where the first field is either just a tag
 -- (an identifier) or a pair which is the tag and an association list.
  
 -- Pick off the tag

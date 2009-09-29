@@ -65,7 +65,7 @@ getCDTEntry(info,isName) ==
  
 putConstructorProperty(name,prop,val) ==
   null (entry := getCDTEntry(name,true)) => NIL
-  RPLACD(CDR entry,PUTALIST(CDDR entry,prop,val))
+  RPLACD(rest entry,PUTALIST(CDDR entry,prop,val))
   true
 
 attribute? name == 

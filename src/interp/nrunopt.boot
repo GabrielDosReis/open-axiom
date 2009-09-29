@@ -105,7 +105,7 @@ makeCompactDirect1(op,items) ==
     --identified by a 0 in slot position
   if r is [n,:s] then
     slot :=
-      n is [p,:.] => p  --the CDR is linenumber of function definition
+      n is [p,:.] => p  --the rest is linenumber of function definition
       n
     predCode :=
       s is [pred,:.] => predicateBitIndex pred

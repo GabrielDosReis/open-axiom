@@ -1213,7 +1213,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     if $extraParms then
       formals:=actuals:=nil
       for u in $extraParms repeat
-        formals:=[CAR u,:formals]
+        formals:=[first u,:formals]
         actuals:=[MKQ rest u,:actuals]
       body := ['sublisV,['PAIR,['QUOTE,formals],['LIST,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
