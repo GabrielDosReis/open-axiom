@@ -1,5 +1,10 @@
 2009-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/xpoly.spad.pamphlet (OrderedFreeMonoid): Really make an
+	OrderedMonoid. 
+
+2009-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/br-util.boot (htPred2English): Espace "has".
 	* interp/format.boot (pred2English): Likewise.
 	* interp/i-spec1.boot ($specialOps): Likewise.
