@@ -56,7 +56,7 @@ term1RW(t,R) ==
   -- tries to reduce t at the top node
   [vars,:varRules]:= R
   for r in varRules until not (SL='failed) repeat
-    SL:= termMatch(CAR r,t,NIL,vars)
+    SL:= termMatch(first r,t,NIL,vars)
     not (SL='failed) =>
       t:= subCopy(copy rest r,SL)
   t

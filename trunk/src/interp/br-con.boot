@@ -992,7 +992,7 @@ dbShowCons1(htPage,cAlist,key) ==
       bcUnixTable(listSort(function GLESSEQP,REMDUP flist))
     key = 'documentation   => dbShowConsDoc(page,conlist)
     if $exposedOnlyIfTrue then
-      cAlist := [x for x in cAlist | isExposedConstructor opOf CAR x]
+      cAlist := [x for x in cAlist | isExposedConstructor opOf first x]
     key = 'conditions =>     dbShowConditions(page,cAlist,kind)
     key = 'parameters => bcConTable REMDUP ASSOCLEFT cAlist
     key = 'kinds => dbShowConsKinds cAlist

@@ -640,7 +640,7 @@ formatLB() ==
   format "{"
 
 restoreC() == --used by macro "embrace"
-  originalC := CAR $braceStack
+  originalC := first $braceStack
   $braceStack := rest $braceStack
   formatRB originalC
  

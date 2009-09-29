@@ -1830,7 +1830,7 @@ undoFromFile(n) ==
       x:= first p1
       for p2 in rest p1 repeat
         $InteractiveFrame:= putHist(x,first p2,rest p2,$InteractiveFrame)
-  val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,rest p) ) and CDR p1
+  val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,rest p) ) and rest p1
   $InteractiveFrame:= putHist('%,'value,val,$InteractiveFrame)
   updateHist()
 

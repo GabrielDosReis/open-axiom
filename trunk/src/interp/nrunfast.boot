@@ -354,7 +354,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := dom.3
   slot4 := dom.4
-  packageVec := CAR slot4
+  packageVec := first slot4
   catVec := first QCDR slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]

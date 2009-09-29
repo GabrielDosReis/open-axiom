@@ -167,7 +167,7 @@ scanKeyWords == [ _
 scanKeyTableCons()==
    KeyTable:=MAKE_-HASHTABLE("CVEC",true)
    for st in scanKeyWords repeat
-      HPUT(KeyTable,CAR st,second st)
+      HPUT(KeyTable,first st,second st)
    KeyTable
 
 scanKeyTable:=scanKeyTableCons()

@@ -928,7 +928,7 @@ matchMmSig(mm,tar,args1,args2) ==
   [sig,:.]:= mm
   if CONTAINED('_#, sig) then
     sig := [replaceSharpCalls COPY t for t in sig]
-  first args1 => matchMmSigTar(tar,first sig)
+  null args1 => matchMmSigTar(tar,first sig)
   a:= rest sig
   arg:= NIL
   for i in 1.. while args1 and args2 and a until not b repeat

@@ -1709,7 +1709,7 @@ compCategoryItem(x,predl,env) ==
     noteExport(y,pred)
     PUSH(MKQ [y,pred],$atList)
  
-  --3. it may be a list, with PROGN as the first, and some information as the CDR
+  --3. it may be a list, with PROGN as the first, and some information as the rest
   x is ["PROGN",:l] => 
     for u in l repeat 
       compCategoryItem(u,predl,env)
