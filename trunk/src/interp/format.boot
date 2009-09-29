@@ -708,7 +708,7 @@ pred2English x ==
     concat(pred2English first l,tail)
   x is ['NOT,l] =>
     concat('"not ",pred2English l)
-  x is [op,a,b] and op in '(has ofCategory) =>
+  x is [op,a,b] and op in '(_has ofCategory) =>
     concat(pred2English a,'%b,'"has",'%d,form2String abbreviate b)
   x is [op,a,b] and op in '(HasSignature HasAttribute HasCategory) =>
     concat(prefix2String0 formatPredParts a,'%b,'"has",'%d,

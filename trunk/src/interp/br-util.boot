@@ -164,7 +164,7 @@ htPred2English(x,:options) ==
         bcConform(first l,$emList)
         htSay('" has ")
         fnAttr CADADR l
-      op in '(has ofCategory) =>
+      op in '(_has ofCategory) =>
         bcConform(first l,$emList)
         htSay('" has ")
         [a,b] := l
