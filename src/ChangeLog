@@ -1,5 +1,11 @@
 2009-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-util.boot (htPred2English): Espace "has".
+	* interp/format.boot (pred2English): Likewise.
+	* interp/i-spec1.boot ($specialOps): Likewise.
+
+2009-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-funsel.boot (matchMmSig): Fix thinko from revision 1297.
 
 2009-09-26  Gabriel Dos Reis  <gdr@cse.tamu.edu>
