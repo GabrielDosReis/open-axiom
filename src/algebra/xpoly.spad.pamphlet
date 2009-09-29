@@ -42,7 +42,7 @@ OrderedFreeMonoid(S: OrderedSet): OFMcategory == OFMdefinition where
     NNI ==> NonNegativeInteger
     REC ==> Record(gen:S, exp:NNI)
  
-    OFMcategory == Join(FreeMonoidCategory S,OrderedSet) with
+    OFMcategory == Join(FreeMonoidCategory S,OrderedMonoid) with
         first: % -> S
           ++ \spad{first(x)} returns the first letter of \spad{x}.
         rest:  % -> %
