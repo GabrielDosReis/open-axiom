@@ -1,3 +1,10 @@
+2009-09-29  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* driver/Makefile.in (open-axiom): Link against core runtime.
+	* driver/main.c (publish_systemdir): Rework.
+	* include/cfuns.h (oa_setenv): Declare.
+	* lib/cfuns-c.c (oa_setenv): Define.
+
 2009-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/xpoly.spad.pamphlet (OrderedFreeMonoid): Really make an
