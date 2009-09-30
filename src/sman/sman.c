@@ -58,7 +58,6 @@
 #include "utils.h"
 
 static void process_arguments(openaxiom_command*, int, char**);
-static int should_I_clef(void);
 static int in_X(void);
 static void set_up_defaults(void);
 static void process_options(openaxiom_command*, int, char**);
@@ -93,7 +92,6 @@ static void monitor_children(void);
 /* System defined pointer to array or environment variables.  */
 extern char** environ;
 
-char *ws_path;                  /* location of the core executable */
 int start_clef;                 /* start clef under spad */
 int start_graphics;             /* start the viewman */
 int start_ht;                   /* start hypertex */
@@ -188,8 +186,6 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
       start_local_spadclient = 0;
     else if (strcmp(argv[arg], "-noiw")        == 0)
       start_spadclient = 0;
-    else if (strcmp(argv[arg], "-comp")        == 0)
-      ws_path = "$AXIOM/etc/images/comp";
     else if (strcmp(argv[arg], "-nox") == 0
              || strcmp(argv[arg], "--no-gui") == 0) {
         use_X = 0;
@@ -231,12 +227,6 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
   }
 }
 
-static int
-should_I_clef(void)
-{
-  return(1);
-}
-
 static int 
 in_X(void)
 {
@@ -247,13 +237,12 @@ in_X(void)
 static  void
 set_up_defaults(void)
 {
-  start_clef = should_I_clef();
+  start_clef = 1;
   start_graphics = 1;
   start_ht = 1;
   start_spadclient = 0;
   start_local_spadclient = 1;
   use_X = isatty(0) && in_X();
-  ws_path = "$AXIOM/bin/AXIOMsys";
 }
 
 static void

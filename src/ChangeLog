@@ -1,3 +1,7 @@
+2009-09-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman/sman.c (should_I_clef): Remove.
+
 2009-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sman/sman.c (fix_env): Simplify.
