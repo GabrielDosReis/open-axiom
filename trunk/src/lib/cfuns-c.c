@@ -552,6 +552,25 @@ oa_getenv(const char* var)
 #endif   
 }
 
+/* Set the value of environment variable VAR to VAL.
+   Return 1 on success, and 0 otherwise.  */
+OPENAXIOM_EXPORT int
+oa_setenv(const char* var, const char* val)
+{
+#ifdef __WIN32__
+   return SetEnvironmentVariable(var, val);
+#else
+   const int var_length = strlen(var);
+   const int val_length = strlen(val);
+   char* str = (char*) malloc(var_length + 1 + val_length + 1);
+   strcpy(str, var);
+   str[var_length] = '=';
+   strcpy(str + var_length + 1, val);
+   str[var_length + 1 + val_length] = '\0';
+   return !putenv(str);
+#endif   
+}
+
 
 OPENAXIOM_EXPORT char*
 oa_getcwd(void)

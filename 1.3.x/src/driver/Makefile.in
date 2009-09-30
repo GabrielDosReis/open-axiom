@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2009, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,8 @@ open_axiom_SOURCES = main.c utils.c
 
 open_axiom_objects = $(open_axiom_SOURCES:.c=.lo)
 
+open_axiom_LDADD = -L$(axiom_target_libdir) $(oa_c_libs)
+
 .PHONY: all all-ax all-driver
 
 all: all-ax
@@ -59,7 +61,7 @@ utils.lo: utils.h
 main.lo: utils.h
 
 open-axiom$(EXEEXT): $(open_axiom_objects)
-	$(LINK) -o $@ $(open_axiom_objects)
+	$(LINK) -o $@ $(open_axiom_objects) $(open_axiom_LDADD)
 
 mostlyclean-local:
 	@rm -f $(axiom_objects)

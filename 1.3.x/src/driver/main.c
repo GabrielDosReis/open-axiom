@@ -51,21 +51,10 @@
 static void
 publish_systemdir(const char* dir)
 {
-#ifdef __WIN32__
-   if (SetEnvironmentVariable(OPENAXIOM_GLOBAL_ENV, dir) == 0) {
-      perror("SetEnvironmentVariable");
+   if (!oa_setenv(OPENAXIOM_GLOBAL_ENV, dir)) {
+      perror("publish_systemdir");
       abort();
    }
-#else  /* __WIN32__ */
-   const int env_length = sizeof (OPENAXIOM_GLOBAL_ENV)
-      + 1                       /* room for '='  */
-      + strlen(dir);
-   char* env = (char*) malloc (env_length);
-   strcpy(env, OPENAXIOM_GLOBAL_ENV);
-   env[sizeof OPENAXIOM_GLOBAL_ENV - 1] = '=';
-   strcpy(env + sizeof(OPENAXIOM_GLOBAL_ENV), dir);
-   if (putenv(env) != 0) abort();
-#endif /* __WIN32__ */
 }
 
 
