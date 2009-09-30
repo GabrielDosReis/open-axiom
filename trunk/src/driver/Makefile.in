@@ -61,7 +61,7 @@ utils.lo: utils.h
 main.lo: utils.h
 
 open-axiom$(EXEEXT): $(open_axiom_objects)
-	$(LINK) -o $@ $(open_axiom_objects) $(open_axiom_LDADD)
+	$(LINK) -all-static -o $@ $(open_axiom_objects) $(open_axiom_LDADD)
 
 mostlyclean-local:
 	@rm -f $(axiom_objects)

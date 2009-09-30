@@ -1,4 +1,17 @@
-2009-09-29  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2009-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* sman/sman.c (fix_env): Simplify.
+	(exec_command_env): Lose second parameter.
+	(fork_Axiom): Take a new parameter.
+	(start_the_Axiom): Adjust.
+	(main): Likewise.
+	* interp/int-top.boot (printFirstPrompt?): New.
+	(SpadInterpretStream): Use it.  
+	* driver/utils.h (openaxiom_allocate_command_argv): Declare.
+	* driver/utils.c (openaxiom_allocate_command_argv): Define.
+	* driver/Makefile.in (open-axiom$(EXEEXT)): Link statically.
+
+2009-09-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* driver/Makefile.in (open-axiom): Link against core runtime.
 	* driver/main.c (publish_systemdir): Rework.

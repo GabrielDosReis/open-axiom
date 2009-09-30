@@ -403,3 +403,13 @@ openaxiom_execute_core(const openaxiom_command* command,
    return -1;
 #endif /* __WIN32__ */
 }
+
+
+/* Allocate a vector for ARGC command line arguments.  */
+void
+openaxiom_allocate_command_argv(openaxiom_command* cmd, int argc)
+{
+   cmd->core_argc = argc;
+   cmd->core_argv = (char**) malloc((1 + argc) * sizeof (char*));
+   cmd->core_argv[argc] = NULL;
+}

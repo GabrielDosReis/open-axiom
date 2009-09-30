@@ -80,4 +80,6 @@ void openaxiom_build_rts_options(openaxiom_command*, openaxiom_driver);
 openaxiom_driver
   openaxiom_preprocess_arguments(openaxiom_command*, int, char**);
 
+void openaxiom_allocate_command_argv(openaxiom_command*, int);
+
 #endif /* OPENAXIOM_UTILS_INCLUDED */

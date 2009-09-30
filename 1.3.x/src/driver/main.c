@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <locale.h>
 
+#include "cfuns.h"
 #include "utils.h"
 
 #define OPENAXIOM_GLOBAL_ENV   "AXIOM"
