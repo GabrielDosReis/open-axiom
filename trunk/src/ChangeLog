@@ -1,3 +1,8 @@
+2009-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/Makefile.in (open_axiom_LDADD): Prefer libraries from build
+	lib/ directory. 
+
 2009-09-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* sman/sman.c (should_I_clef): Remove.
