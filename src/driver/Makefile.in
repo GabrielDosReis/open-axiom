@@ -36,7 +36,7 @@ open_axiom_SOURCES = main.c utils.c
 
 open_axiom_objects = $(open_axiom_SOURCES:.c=.lo)
 
-open_axiom_LDADD = -L$(axiom_target_libdir) $(oa_c_libs)
+open_axiom_LDADD = -L$(builddir)/../lib $(oa_c_libs)
 
 .PHONY: all all-ax all-driver
 
