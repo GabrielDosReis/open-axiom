@@ -71,13 +71,25 @@ pfSemiColon(pfbody) == pfTree('SemiColon, [pfbody])
 pfSemiColon?(pf)    == pfAbSynOp? (pf, 'SemiColon)
 pfSemiColonBody pf   == second pf       -- was ==>
 
+--% Renaming.
+--% We decided that the identifier "^" is syntactically synonymous to "**".
+--% We could have banned the later and support only the former.
+--% However, that would have made all exponentiation examples from
+--% the Jenks&Sutor book invalid.  Which would be infortunate.
+--% Rather, we opt to the renaming here.  This poses the danger that
+--% any other AST scheme would need to do the same work.
+--%     --gdr, 2009-10-08.
+pfRename x ==
+  x = "^" => "**"
+  x
+
 --% LEAVES
 pfId(expr)               == pfLeaf('id, expr)
 pfIdPos(expr,pos)        == pfLeaf('id,expr,pos)
 pfId? form               ==
         pfAbSynOp?(form,'id) or pfAbSynOp?(form,'idsy)
 pfSymbolVariable? form   == pfAbSynOp?(form,'idsy)
-pfIdSymbol form          == tokPart form
+pfIdSymbol form          == pfRename tokPart form
 --pfAmpersand(amptok,name) == name
 
 pfDocument strings       == pfLeaf('Document, strings)
@@ -106,7 +118,8 @@ pfSymb(expr, :optpos) ==
 
 pfSymbol? form          == pfAbSynOp?(form, 'symbol)
 
-pfSymbolSymbol form     == tokPart form
+
+pfSymbolSymbol form     == pfRename tokPart form
 
 --% TREES
 -- parser interface functions
@@ -127,7 +140,7 @@ pfInfApplication(op,left,right)==
        pfWrong(pfDocument ['"infop as argument to infop"],pfListOf [])
    pfIdSymbol op = "and" => pfAnd (left,right)
    pfIdSymbol op = "or" => pfOr (left,right)
-   pfApplication(op,pfTuple pfListOf [left,right])
+   pfApplication(pfRename op,pfTuple pfListOf [left,right])
 
 pfCheckInfop form== false
 
