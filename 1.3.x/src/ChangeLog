@@ -1,3 +1,12 @@
+2009-10-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2875134
+	* interp/ptrees.boot: New.
+	(pfIdSymbol): Use it.
+	(pfSymbolSymbol): Likewise.
+	(pfInfApplication): Likewise.
+	* testsuite/interpreter/sf-2875134.input: New.
+
 2009-10-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* driver/Makefile.in (open_axiom_LDADD): Prefer libraries from build
