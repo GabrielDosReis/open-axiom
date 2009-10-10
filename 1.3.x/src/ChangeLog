@@ -1,3 +1,7 @@
+2009-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/void.spad.pamphlet (Void): Remove Rep definition.
+
 2009-10-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Fix SF/2875134

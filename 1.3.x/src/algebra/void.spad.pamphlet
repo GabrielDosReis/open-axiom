@@ -10,15 +10,16 @@
 \tableofcontents
 \eject
 
+These types act as the top and bottom of the type lattice
+and are known to the compiler and interpreter for type resolution.
+
 \section{domain VOID Void}
 
 <<domain VOID Void>>=
 )abbrev domain VOID Void
--- These types act as the top and bottom of the type lattice
--- and are known to the compiler and interpreter for type resolution.
-++ Author: Stephen M. Watt
+++ Author: Stephen M. Watt, Gabriel Dos Reis
 ++ Date Created: 1986
-++ Date Last Updated: May 30, 1991
+++ Date Last Updated: October 5, 2009
 ++ Basic Operations: 
 ++ Related Domains: ErrorFunctions, ResolveLatticeCompletion, Exit
 ++ Also See:
@@ -35,9 +36,8 @@
 Void: CoercibleTo OutputForm with
         void: () -> %            ++ void() produces a void object.
     == add
-        Rep := String
-        void()      == voidValue()$Lisp
-        coerce(v:%) == coerce(v)$Rep
+        void()      == voidValue()$Foreign(Builtin)
+        coerce(v:%) == empty()$OutputForm
 
 @
 
