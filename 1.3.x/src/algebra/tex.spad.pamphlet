@@ -171,11 +171,30 @@ TexFormat(): public == private where
     specialStrings : L S :=
       ["cos", "cot", "csc", "log", "sec", "sin", "tan",
         "cosh", "coth", "csch", "sech", "sinh", "tanh",
-          "acos","asin","atan","erf","...","$","infinity"]
+          "acos","asin","atan","erf","...","$","infinity",
+            "alpha", "beta", "gamma", "delta", "epsilon", 
+              "zeta", "eta", "theta", "iota", "kappa", "lambda", 
+                "mu", "nu", "xi", "omikron", "pi", "rho", "sigma", 
+                  "tau", "upsilon", "phi", "chi", "psi", "omega" 
+                    "Alpha", "Beta", "Gamma", "Delta", "Epsilon", 
+                      "Zeta", "Eta", "Theta", "Iota", "Kappa", "Lambda", 
+                        "Mu", "Nu", "Xi", "Omikron", "Pi", "Rho", "Sigma", 
+                          "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"]
+
+
     specialStringsInTeX : L S :=
       ["\cos","\cot","\csc","\log","\sec","\sin","\tan",
         "\cosh","\coth","\csch","\sech","\sinh","\tanh",
-          "\arccos","\arcsin","\arctan","\erf","\ldots","\$","\infty"]
+          "\arccos","\arcsin","\arctan","\erf","\ldots","\$","\infty", 
+            "\alpha", "\beta", "\gamma", "\delta", "\epsilon", 
+              "\zeta", "\eta", "\theta", "\iota", "\kappa", "\lambda", 
+                "\mu", "\nu", "\xi", "\omikron", "\pi", "\rho", "\sigma", 
+                  "\tau", "\upsilon", "\phi", "\chi", "\psi", "\omega" 
+                    "\Alpha", "\Beta", "\Gamma", "\Delta", "\Epsilon", 
+                      "\Zeta", "\Eta", "\Theta", "\Iota", "\Kappa", "\Lambda", 
+                        "\Mu", "\Nu", "\Xi", "\Omikron", "\Pi", "\Rho", "\Sigma", 
+                          "\Tau", "\Upsilon", "\Phi", "\Chi", "\Psi", "\Omega"]
+
 
     -- local function signatures
 

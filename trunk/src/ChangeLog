@@ -1,3 +1,7 @@
+2009-10-12  Kostas Oikonomou  <ko@research.att.com>
+
+	* algebra/tex.spad.pamphlet: Update special function list.
+
 2009-10-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/void.spad.pamphlet (Void): Remove Rep definition.

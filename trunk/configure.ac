@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2009-10-08], 
+AC_INIT([OpenAxiom], [1.4.0-2009-10-10], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -118,13 +118,11 @@ AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 
-AC_PATH_PROG([LATEX], [latex])
+AC_PATH_PROG([PDFLATEX], [pdflatex],
+             [AC_PATH_PROG([LATEX], [latex],
+                           [AC_MSG_NOTICE([Documentation is disabled.])])])
+
 AC_CHECK_PROGS([MAKEINDEX], [makeindex])
-if test -n "$LATEX"; then \
-   :
-else
-    AC_MSG_NOTICE([Documentation is disabled.])
-fi
 
 ## ---------------------------------------
 ## Make sure noweb executable is available
