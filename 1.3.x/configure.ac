@@ -118,9 +118,11 @@ AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 
-AC_PATH_PROG([PDFLATEX], [pdflatex],
-             [AC_PATH_PROG([LATEX], [latex],
-                           [AC_MSG_NOTICE([Documentation is disabled.])])])
+AC_PATH_PROG([PDFLATEX], [pdflatex])
+if test -z $PDFLATEX; then
+   AC_PATH_PROG([LATEX], [latex],
+                [AC_MSG_NOTICE([Documentation is disabled.])])
+fi
 
 AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 

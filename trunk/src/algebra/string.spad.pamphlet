@@ -255,11 +255,8 @@ IndexedString(mn:Integer): Export == Implementation where
   N ==> NonNegativeInteger
   U ==> UniversalSegment Integer
 
-  Export ==> StringAggregate() with
-      hash: % -> I
-	++ hash(x) provides a hashing function for strings
-
-  Implementation ==> add
+  Export == StringAggregate()
+  Implementation == add
     -- These assume Character's Rep is Small I
     Qelt    ==> CHAR$Lisp
     Qequal  ==> EQUAL$Lisp
@@ -409,11 +406,8 @@ IndexedString(mn:Integer): Export == Implementation where
 	l < 0 or h >= #s => error "index out of bound"
 	SUBSTRING(s, l, max(0, h-l+1))$Lisp
 
-    hash(s:$):Integer ==
-	n:I := Qsize s
-	zero? n => 0
-	one? n => ord(s.mn)
-	ord(s.mn) * ord s(mn+n-1) * ord s(mn + n quo 2)
+    hash s ==
+        SXHASH(s)$Foreign(Builtin)
 
     match(pattern,target,wildcard) == stringMatch(pattern,target,CHARACTER(wildcard)$Lisp)$Lisp
  
