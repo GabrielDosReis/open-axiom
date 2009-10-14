@@ -785,7 +785,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
         tar and tar ~= $Boolean => NIL
         [[[dc, $Boolean, dc, dc], [$Boolean,'$,'$], [NIL, NIL]]]
     op = 'coerce =>
-        #args1 ~= 1 
+        #args1 ~= 1 => nil
         dcName='Enumeration and (args1.0=$Symbol or tar=dc)=>
            [[[dc, dc, $Symbol], ['$,$Symbol], [NIL, NIL]]]
         args1.0 ~= dc => NIL

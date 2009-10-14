@@ -1,3 +1,7 @@
+2009-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-funsel.boot (findFunctionInDomain): Fix thinko.
+
 2009-10-12  Kostas Oikonomou  <ko@research.att.com>
 
 	* algebra/tex.spad.pamphlet: Update special function list.
