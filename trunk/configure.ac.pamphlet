@@ -737,9 +737,11 @@ files in a directory named \File{noweb/} at the top level.  Normally,
 this works right when one follows the installation instructions.
 %
 <<doc utils>>=
-AC_PATH_PROG([PDFLATEX], [pdflatex],
-             [AC_PATH_PROG([LATEX], [latex],
-                           [AC_MSG_NOTICE([Documentation is disabled.])])])
+AC_PATH_PROG([PDFLATEX], [pdflatex])
+if test -z $PDFLATEX; then
+   AC_PATH_PROG([LATEX], [latex],
+                [AC_MSG_NOTICE([Documentation is disabled.])])
+fi
 
 AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 
