@@ -1,3 +1,7 @@
+2009-10-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Look for SBCL before GCL; look for ECL too.
+
 2009-09-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Don't unconditionally initialize CCF.
