@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2009-10-10], 
+AC_INIT([OpenAxiom], [1.4.0-2009-10-13], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -164,7 +164,7 @@ if test -z $axiom_lisp; then
 fi
 ## We need to build our own GCL if none is avalaible.
 if test -z $axiom_lisp; then
-    AC_CHECK_PROGS([AXIOM_LISP], [gcl sbcl clisp])
+    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp])
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
