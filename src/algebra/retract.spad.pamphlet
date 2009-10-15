@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{src/algebra retract.spad}
 \author{Manuel Bronstein}

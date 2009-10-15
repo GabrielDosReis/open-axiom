@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra lodop.spad}
 \author{Stephen M. Watt, Jean Della Dora}

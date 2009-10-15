@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra radix.spad}
 \author{Stephen M. Watt, Clifton J. Williamson}

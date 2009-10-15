@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \usepackage{amssymb}
 \input{diagrams.tex}
 \begin{document}

@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra real0q.spad}
 \author{Andy Neff, Barry Trager}

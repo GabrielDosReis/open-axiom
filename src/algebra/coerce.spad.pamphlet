@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 
 \title{\$SPAD/src/algebra coerce.spad}
 \author{Richard Jenks, Manuel Bronstein, Gabriel Dos Reis}

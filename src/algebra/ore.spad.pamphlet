@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra ore.spad}
 \author{Manuel Bronstein, Jean Della Dora, Stephen M. Watt}

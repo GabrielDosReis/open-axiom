@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{src/algebra aggcat.spad}
 \author{Michael Monagan, Manuel Bronstein, Richard Jenks, Stephen Watt}

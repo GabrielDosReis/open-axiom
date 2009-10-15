@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra plot3d.spad}
 \author{Clifton J. Williamson, Michael Monagan, Jon Steinbach}

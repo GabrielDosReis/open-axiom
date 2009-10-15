@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra pade.spad}
 \author{Barry Trager, William Burge, Martin Hassner,Stephen M. Watt}
