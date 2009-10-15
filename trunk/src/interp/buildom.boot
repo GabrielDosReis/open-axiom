@@ -89,8 +89,9 @@ Record(:args) ==
   dom.1 :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
-	  ["~=",[[$Boolean,"$","$"],:0]],
-	    ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
+	  ["~=",[[$Boolean,"$","$"],:0]], 
+            ["hash",[[$SingleInteger,"$"],:0]],
+               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
   dom.2 := NIL
   dom.3 := ["RecordCategory",:QCDR dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
@@ -164,7 +165,8 @@ Union(:args) ==
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
-	   ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
+           ["hash", [[$SingleInteger,"$"],:0]],
+              ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
   dom.2 := NIL
   dom.3 := ["UnionCategory",:QCDR dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
@@ -219,7 +221,8 @@ Mapping(:args) ==
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
-	   ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
+           ["hash", [[$SingleInteger,"$"],:0]],
+              ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
   dom.2 := NIL
   dom.3 := '(SetCategory)
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
@@ -254,9 +257,10 @@ Enumeration(:"args") ==
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]],
-	    ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs+1)], 
-	      [["$", $Symbol], :oldSlotCode(nargs+2)]]
-		  ]]
+            ["hash", [[$SingleInteger,"$"],:0]],
+              ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs+1)], 
+                [["$", $Symbol], :oldSlotCode(nargs+2)]]
+                  ]]
   dom.2 := NIL
   dom.3 := ["EnumerationCategory",:QCDR dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
@@ -308,7 +312,9 @@ mkMappingFunList(nam,mapForm,e) ==
   sigFunAlist:=
     [["=",[$Boolean,nam ,nam], ["ELT",dc,$FirstParamSlot + nargs]], 
       ["~=",[$Boolean,nam,nam],["ELT",dc,0]],
-        ["coerce",[$OutputForm,nam], ["ELT",dc,$FirstParamSlot + nargs + 1]]]
+        ["hash",[$SingleInteger,nam],["ELT",dc,0]],
+          ["coerce",[$OutputForm,nam], 
+            ["ELT",dc,$FirstParamSlot + nargs + 1]]]
   [substitute(nam,dc,substituteDollarIfRepHack sigFunAlist),e]
 
 mkRecordFunList(nam,["Record",:Alist],e) ==
@@ -318,6 +324,7 @@ mkRecordFunList(nam,["Record",:Alist],e) ==
     [["construct",[nam,:[A for [.,a,A] in Alist]],"mkRecord"],
       ["=",[$Boolean,nam ,nam],["ELT",dc,$FirstParamSlot + len]],
         ["~=",[$Boolean,nam,nam],["ELT",dc,0]],
+         ["hash",[$SingleInteger,nam],["ELT",dc,0]],
 	  ["coerce",[$OutputForm,nam],["ELT",dc,$FirstParamSlot+len+1]],:
 	   [["elt",[A,nam,PNAME a],["XLAM",["$1","$2"],["RECORDELT","$1",i,len]]]
 	       for i in 0.. for [.,a,A] in Alist],:
@@ -336,6 +343,7 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
   cList:=
     [["=",[$Boolean,name ,name],["ELT",dc,$FirstParamSlot+nargs]],
        ["~=",[$Boolean,name,name],["ELT",dc,0]],
+        ["hash",[$SingleInteger,name],["ELT",dc,0]],
 	 ["coerce",[$OutputForm,name],["ELT",dc,$FirstParamSlot+nargs+1]],:
 	   ("append"/
 	    [[["construct",[name,type],["XLAM",["#1"],["CONS",i,"#1"]]],
@@ -373,6 +381,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
   cList:=
    [["=",[$Boolean,g ,g],["ELT",op,$FirstParamSlot + nargs]],
      ["~=",[$Boolean,g,g],["ELT",op,0]],
+      ["hash",[$SingleInteger,g],["ELT",op,0]],
        ["coerce",[$OutputForm,g],["ELT",op,$FirstParamSlot+nargs+1]],:
 	("append"/
 	 [[["autoCoerce",[g,t],upFun],

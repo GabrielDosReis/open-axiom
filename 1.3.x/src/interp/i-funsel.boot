@@ -890,7 +890,8 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       if PAIRP(xargs) then maxargs := MAX(maxargs,#xargs)
       else maxargs := MAX(maxargs,1)
       impls := cons([b,nil,true,d],impls)
-    impls := cons([b,d,true,d],impls)
+    d isnt [k,"$",n] => systemErrorHere ["findFunctionInCategory",d]
+    impls := [[b,n,true,k],:impls]
   impls := NREVERSE impls
   if maxargs ^= -1 then
     SL:= NIL
