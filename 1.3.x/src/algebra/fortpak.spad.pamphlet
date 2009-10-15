@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra fortpak.spad}
 \author{Grant Keady, Godfrey Nolan, Mike Dewar, Themos Tsikas}

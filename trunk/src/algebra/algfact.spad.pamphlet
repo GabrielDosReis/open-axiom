@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{src/algebra algfact.spad}
 \author{Patrizia Gianni, Manuel Bronstein}

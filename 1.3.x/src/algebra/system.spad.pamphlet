@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 
 \title{\$SPAD/src/algebra system.spad}
 \author{Gabriel Dos~Reis \and Timothy Daly}

@@ -1,6 +1,6 @@
 %% Oh Emacs, this is a -*- Makefile -*-, so give me tabs.
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 
 \title{\$SPAD/src/algebra Makefile}
 \author{Timothy Daly \and Gabriel Dos~Reis}

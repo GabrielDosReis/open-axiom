@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 
 \title{src/algebra boolean.spad}
 \author{Stephen M. Watt, Michael Monagan, Gabriel Dos~Reis}

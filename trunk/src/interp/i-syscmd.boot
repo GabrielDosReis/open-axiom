@@ -2473,7 +2473,7 @@ reportOpsFromLisplib1(unitForm,u)  ==
   editFile showFile
 
 reportOpsFromUnitDirectly unitForm ==
-  isRecordOrUnion := unitForm is [a,:.] and a in '(Record Union)
+  isRecordOrUnion := unitForm is [a,:.] and a in $DomainNames
   unit:= evalDomain unitForm
   top:= first unitForm
   kind:= getConstructorKindFromDB top
@@ -2514,7 +2514,7 @@ reportOpsFromUnitDirectly unitForm ==
             systemErrorHere ["reportOpsFromUnitDirectly",top]
           [funlist,.]:= FUNCALL(constructorFunction,"$",unitForm,
             $CategoryFrame)
-          sigList := REMDUP MSORT [[[a,b],true,[c,0,1]] for
+          sigList := REMDUP MSORT [[[a,b],true,c] for
             [a,b,c] in funlist]
         else
           sigList:= REMDUP MSORT getOplistForConstructorForm unitForm

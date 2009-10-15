@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 
 \title{src/algebra mkfunc.spad}
 \author{Manuel Bronstein}

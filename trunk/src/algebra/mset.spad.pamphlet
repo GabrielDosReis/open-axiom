@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra mset.spad}
 \author{Stephen M. Watt, William H. Burge, Richard D. Jenks, Frederic Lehobey}

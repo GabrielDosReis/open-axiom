@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra permgrps.spad}
 \author{Gerhard Schneider, Holger Gollan, Johannes Grabmeier, M. Weller}

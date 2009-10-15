@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra combinat.spad}
 \author{Martin Brock, Robert Sutor, Michael Monagan}

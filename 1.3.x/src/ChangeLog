@@ -1,3 +1,7 @@
+2009-10-15  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/i-syscmd.boot (reportOpsFromUnitDirectly): Tidy.
+
 2009-10-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/string.spad.pamphlet (hash$IndexedString): Simplify.
