@@ -209,8 +209,8 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
        argv[other++] = argv[arg];
   }
 
-  command->core_argv = argv;
-  command->core_argc = other;
+  command->core.argv = argv;
+  command->core.argc = other;
 
 /* If there were no X libraries
  * at build-time, we proceed to
@@ -251,10 +251,10 @@ process_options(openaxiom_command* command, int argc, char **argv)
   set_up_defaults();
   process_arguments(command, argc, argv);
    /* Complain about command line arguments unknown to Superman.  */
-   if (command->core_argc > 0) {
+   if (command->core.argc > 0) {
       int i;
-      for (i = 0; i < command->core_argc; ++i)
-         fprintf(stderr,"command line error: %s\n", command->core_argv[i]);
+      for (i = 0; i < command->core.argc; ++i)
+         fprintf(stderr,"command line error: %s\n", command->core.argv[i]);
       exit(-1);
    }
 }
@@ -527,10 +527,10 @@ fork_Axiom(openaxiom_command* cmd)
     }
 
     /* Tell the Core that it is being invoked in server mode.   */
-    openaxiom_allocate_command_argv(cmd, 2);
-    cmd->core_argv[0] =
+    oa_allocate_process_argv(&cmd->core, 2);
+    cmd->core.argv[0] =
        openaxiom_make_path_for(cmd->root_dir, openaxiom_core_driver);
-    cmd->core_argv[1] = "--role=server";
+    cmd->core.argv[1] = "--role=server";
     openaxiom_execute_core(cmd, openaxiom_core_driver);
   }
 }

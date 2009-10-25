@@ -101,6 +101,17 @@ typedef enum openaxiom_spawn_flags {
 /* Return the address of the data buffer `BUF'.  */
 #define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
 
+/* Internal field separator character.  */
+#ifdef __WIN32__
+#  define openaxiom_ifs ';'
+#else
+#  define openaxiom_ifs ':'
+#endif   
+
+/* Paths to LaTeX input support file directories.
+   These paths are relative to system directory.  */
+#define OPENAXIOM_TEXINPUTS_PATH   "/share/tex"
+#define OPENAXIOM_BIBINPUTS_PATH   "/share/tex"
 
 /* The function sleep() is not available under Windows.  Instead, they
    have Sleep(); with capital S, please.  Furthermore, it does not
@@ -121,6 +132,7 @@ openaxiom_sleep(int n)
 
 OPENAXIOM_EXPORT void oa_allocate_process_argv(openaxiom_process*, int);
 OPENAXIOM_EXPORT int oa_spawn(openaxiom_process*, openaxiom_spawn_flags);   
+OPENAXIOM_EXPORT const char* oa_concatenate_string(const char*, const char*);
 
 #ifdef __cplusplus
 }

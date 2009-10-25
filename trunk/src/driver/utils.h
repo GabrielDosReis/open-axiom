@@ -34,7 +34,7 @@
 #ifndef OPENAXIOM_UTILS_INCLUDED
 #define OPENAXIOM_UTILS_INCLUDED
 
-#include "openaxiom-c-macros.h"
+#include "open-axiom.h"
 #if HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
@@ -49,7 +49,8 @@ typedef enum openaxiom_driver {
    openaxiom_sman_driver,       /* start Superman as master process */
    openaxiom_core_driver,       /* start the core system as master process */
    openaxiom_script_driver,     /* start the core system in script mode. */
-   openaxiom_compiler_driver    /* start the core system in compiler mode. */
+   openaxiom_compiler_driver,   /* start the core system in compiler mode. */
+   openaxiom_execute_driver     /* Execute a command.  */
 } openaxiom_driver;
 
 /* A list of runtime support systems for OpenAxiom. */
@@ -64,8 +65,7 @@ typedef enum openaxiom_runtime {
 
 /* A description of external command to be executed.  */
 typedef struct openaxiom_command {
-   char** core_argv;            /* arguments for the actual executable. */
-   int core_argc;               /* number of such arguments. */
+   openaxiom_process core;      /* arguments for actual executable.  */
    char** rt_argv;              /* arguments to the base RT, if any.  */
    int rt_argc;                 /* number of such arguments.  */
    const char* root_dir;        /* path to the OpenAxiom system. */
@@ -79,7 +79,5 @@ void openaxiom_build_rts_options(openaxiom_command*, openaxiom_driver);
 
 openaxiom_driver
   openaxiom_preprocess_arguments(openaxiom_command*, int, char**);
-
-void openaxiom_allocate_command_argv(openaxiom_command*, int);
 
 #endif /* OPENAXIOM_UTILS_INCLUDED */

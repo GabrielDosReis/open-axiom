@@ -1,3 +1,18 @@
+2009-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/cfuns-c.c (oa_concatenate_string): Define.
+	* include/open-axiom.h (openaxiom_ifs): New.
+	(OPENAXIOM_TEXINPUTS_PATH): Likewise.
+	(OPENAXIOM_BIBINPUTS_PATH): Likewise.
+	* driver/main.c (augment_variable): New.
+	(upgrade_environment): Likewise.  Call publish_systemdir.
+	(main): Call it instead of publish_systemdir.  Handle 'spawn' driver.
+	* driver/utils.h (openaxiom_execute_driver): New kind of driver.
+	* driver/utils.c (openaxiom_preprocess_arguments): Tidy.
+	(openaxiom_execute_core): Likewise.
+	* sman/sman.c (process_arguments): Likewise.
+	(process_options): Likewise.
+
 2009-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lib/cfuns-c.c (oa_spawn): New.

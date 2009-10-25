@@ -31,12 +31,11 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "openaxiom-c-macros.h"
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "utils.h"
 #include <stdio.h>
+#include "utils.h"
 
 /* The basename of the file holding the OpenAxiom core executable.  */
 #define OPENAXIOM_CORE_EXECUTABLE \
@@ -122,6 +121,7 @@ openaxiom_build_rts_options(openaxiom_command* command,
 {
    switch (driver) {
    case openaxiom_sman_driver:
+   case openaxiom_execute_driver:
    case openaxiom_unknown_driver:
       break;
 
@@ -230,21 +230,27 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
          driver = openaxiom_core_driver;
       else if (strcmp(argv[i], "--server") == 0)
          driver = openaxiom_sman_driver;
+      else if (strcmp(argv[i], "--execute") == 0) {
+         driver = openaxiom_execute_driver;
+         break;
+      }
+      else if (strcmp(argv[i], "--help") == 0) {
+         print_usage();
+         driver = openaxiom_null_driver;
+         break;
+      }
+      else if (strcmp(argv[i], "--version") == 0) {
+         print_version();
+         driver = openaxiom_null_driver;
+         break;
+      }
       else {
+         /* Apparently we will invoke the Core system; we need to
+            pass on this option.  */
          if (strcmp(argv[i], "--script") == 0)
             driver = openaxiom_script_driver;
          else if(strcmp(argv[i], "--compile") == 0)
             driver = openaxiom_compiler_driver;
-         else if (strcmp(argv[i], "--help") == 0) {
-            print_usage();
-            driver = openaxiom_null_driver;
-            break;
-         }
-         else if (strcmp(argv[i], "--version") == 0) {
-            print_version();
-            driver = openaxiom_null_driver;
-            break;
-         }
          else {
             if (argv[i][0] == '-')
                /* Maybe option for the driver.  */
@@ -259,23 +265,31 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
          /* Save it for the core executable.  */
          argv[other++] = argv[i];
       }
-   command->core_argc = other;
-   command->core_argv = argv;
+
+   /* Determine argument vector.  */
+   if (driver == openaxiom_execute_driver) {
+      command->core.argc = argc - i - 1;
+      command->core.argv = argv + i + 1;
+   }
+   else {
+      command->core.argc = other;
+      command->core.argv = argv;
+   }
 
    if (driver != openaxiom_null_driver) {
-      /* If we have a file but not instructed to compiler, assume
+      /* If we have a file but not instructed to compile, assume
          we are asked to interpret a script.  */
       if (files > 0)
          switch (driver) {
          case openaxiom_unknown_driver:
          case openaxiom_sman_driver:
-            command->core_argc += 1;
-            command->core_argv =
+            command->core.argc += 1;
+            command->core.argv =
                (char**) malloc((other + 2) * sizeof(char*));
-            command->core_argv[0] = argv[0];
-            command->core_argv[1] = "--script";
+            command->core.argv[0] = argv[0];
+            command->core.argv[1] = "--script";
             for (i = 0; i < other; ++i)
-               command->core_argv[2 + i] = argv[1 + i];
+               command->core.argv[2 + i] = argv[1 + i];
             driver = openaxiom_script_driver;
             break;
          default:
@@ -284,7 +298,7 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
          }
       else if (driver == openaxiom_unknown_driver)
          driver = OPENAXIOM_DEFAULT_DRIVER;
-      command->core_argv[command->core_argc] = NULL;
+      command->core.argv[command->core.argc] = NULL;
       
       openaxiom_build_rts_options(command, driver);
    }
@@ -305,7 +319,7 @@ openaxiom_execute_core(const openaxiom_command* command,
       openaxiom_make_path_for(command->root_dir, driver);
 #ifdef __WIN32__
    char* command_line;
-   int cur = strlen(command->core_argv[0]);
+   int cur = strlen(command->core.argv[0]);
    int command_line_length = 0;
    int i;
    PROCESS_INFORMATION procInfo;
@@ -322,13 +336,13 @@ openaxiom_execute_core(const openaxiom_command* command,
    /* Don't forget room for the doubledash string.  */
    command_line_length += sizeof("--") - 1;
    /* And arguments to the actual command.  */
-   for (i = 1; i < command->core_argc; ++i)
-      command_line_length += 1 + 2 + strlen(command->core_argv[i]);
+   for (i = 1; i < command->core.argc; ++i)
+      command_line_length += 1 + 2 + strlen(command->core.argv[i]);
 
    /* Now, build the actual command line.  This is done by
       concatenating the arguments into a single string. */
    command_line = (char*) malloc(command_line_length + 1);
-   strcpy(command_line, command->core_argv[0]);
+   strcpy(command_line, command->core.argv[0]);
    for (i = 0; i < command->rt_argc; ++i) {
       const int arg_length = strlen(command->rt_argv[i]);
       command_line[cur++] = ' ';
@@ -340,11 +354,11 @@ openaxiom_execute_core(const openaxiom_command* command,
    command_line[cur++] = ' ';
    command_line[cur++] = '-'; /*  start arguments to the core executable.  */
    command_line[cur++] = '-';
-   for (i = 1; i < command->core_argc; ++i) {
-      const int arg_length = strlen(command->core_argv[i]);
+   for (i = 1; i < command->core.argc; ++i) {
+      const int arg_length = strlen(command->core.argv[i]);
       command_line[cur++] = ' ';
       command_line[cur++] = '"';
-      strcpy(command_line + cur, command->core_argv[i]);
+      strcpy(command_line + cur, command->core.argv[i]);
       cur += arg_length;
       command_line[cur++] = '"';
    }
@@ -372,44 +386,34 @@ openaxiom_execute_core(const openaxiom_command* command,
 #else  /* __WIN32__ */
    int i;
    char** args = (char**)
-      malloc(sizeof (char*) * (command->rt_argc + command->core_argc + 2));
+      malloc(sizeof (char*) * (command->rt_argc + command->core.argc + 2));
    /* GCL has this oddity that it wants to believe that argv[0] has
       something to tell about what GCL's own runtime is.  Silly.  */
    if (OPENAXIOM_BASE_RTS == openaxiom_gcl_runtime)
       args[0] = "";
    else
-      args[0] = command->core_argv[0];
+      args[0] = command->core.argv[0];
    /* Now, make sure we copy whatever arguments are required by the
       runtime system.  */
    for (i = 0; i < command->rt_argc; ++i)
       args[i + 1] = command->rt_argv[i];
 
-   if (command->core_argc > 1) {
+   if (command->core.argc > 1) {
       /* We do have arguments from the command line.  We want to
          differentiate this from the base runtime system arguments.
          We do this by inserting a doubledash to indicate beginning
          of arguments.  */
       args[command->rt_argc + 1] = "--";
       /* Then, copy over the arguments received from the command line.  */
-      for (i = 1; i < command->core_argc; ++i)
-         args[command->rt_argc + i + 1] = command->core_argv[i];
-      args[command->rt_argc + command->core_argc + 1] = NULL;
+      for (i = 1; i < command->core.argc; ++i)
+         args[command->rt_argc + i + 1] = command->core.argv[i];
+      args[command->rt_argc + command->core.argc + 1] = NULL;
    }
    else
-      args[command->rt_argc + command->core_argc] = NULL;
+      args[command->rt_argc + command->core.argc] = NULL;
 
    execv(execpath, args);
    perror(strerror(errno));
    return -1;
 #endif /* __WIN32__ */
-}
-
-
-/* Allocate a vector for ARGC command line arguments.  */
-void
-openaxiom_allocate_command_argv(openaxiom_command* cmd, int argc)
-{
-   cmd->core_argc = argc;
-   cmd->core_argv = (char**) malloc((1 + argc) * sizeof (char*));
-   cmd->core_argv[argc] = NULL;
 }

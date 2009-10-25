@@ -58,6 +58,33 @@ publish_systemdir(const char* dir)
    }
 }
 
+static void
+augment_variable(const char* name, const char* value) {
+   const char* oldval = oa_getenv(name);
+   const int value_length = strlen(value);
+   const int oldval_length = oldval == 0 ? 0 : strlen(oldval);
+   const int newval_length = value_length + 1 + oldval_length;
+   char* newval = (char*) malloc(newval_length + 1);
+
+   strcpy(newval,value);
+   if (oldval != 0) {
+      newval[value_length] = openaxiom_ifs;
+      strcpy(newval + value_length + 1, oldval);
+   }
+
+   if (!oa_setenv(name, newval))
+      perror("oa_augment_environment_variable");
+}
+
+static void
+upgrade_environment(const char* sysdir) {
+   augment_variable("TEXINPUTS",
+                    oa_concatenate_string(sysdir, OPENAXIOM_TEXINPUTS_PATH));
+   augment_variable("BIBINPUTS",
+                    oa_concatenate_string(sysdir, OPENAXIOM_BIBINPUTS_PATH));
+   publish_systemdir(sysdir);
+}
+
 
 int
 main(int argc, char* argv[])
@@ -65,16 +92,21 @@ main(int argc, char* argv[])
    openaxiom_command command = { };
    openaxiom_driver driver =
       openaxiom_preprocess_arguments(&command, argc, argv);
+   upgrade_environment(command.root_dir);
 
-   putenv("LC_ALL=C");
-   setlocale(LC_ALL, "");
    switch (driver) {
    case openaxiom_null_driver:
       return 0;                 /* Bye.  */
    case openaxiom_core_driver:
    case openaxiom_script_driver:
    case openaxiom_compiler_driver:
+      putenv("LC_ALL=C");
+      setlocale(LC_ALL, "");
       return openaxiom_execute_core(&command, driver);
+
+   case openaxiom_execute_driver:
+      return oa_spawn(&command.core,
+                      openaxiom_spawn_search_path | openaxiom_spawn_replace);
 
    case openaxiom_sman_driver:
       break;
@@ -87,7 +119,6 @@ main(int argc, char* argv[])
    /* Should not happen on MS platforms.  */
    abort();
 #else  /* __WIN32__ */
-   publish_systemdir(command.root_dir);
    execv(openaxiom_make_path_for(command.root_dir, openaxiom_sman_driver),
          argv);
    perror(strerror(errno));

@@ -526,6 +526,24 @@ oa_getpid(void)
 #endif
 }
 
+/* Concatenate two strings and return a pointer to the
+   newly allocate resulting string. */
+OPENAXIOM_EXPORT const char*
+oa_concatenate_string(const char* lhs, const char* rhs)
+{
+   if (lhs == NULL)
+      return rhs;
+   else if (rhs == NULL)
+      return lhs;
+   else {
+      const int lhs_length = strlen(lhs);
+      char* result = (char*) malloc(lhs_length + strlen(rhs) + 1);
+      strcpy(result, lhs);
+      strcpy(result + lhs_length, rhs);
+      return result;
+   }
+}
+
 /* Return the value of an environment variable.  */
 OPENAXIOM_EXPORT char*
 oa_getenv(const char* var)
