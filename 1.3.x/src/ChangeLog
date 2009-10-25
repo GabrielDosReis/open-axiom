@@ -1,4 +1,9 @@
-2009-10-15  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2009-10-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/cfuns-c.c (oa_spawn): New.
+	(oa_allocate_process_argv): Likewise.
+
+2009-10-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/buildom.boot: Tidy.  
 

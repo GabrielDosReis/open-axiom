@@ -716,3 +716,80 @@ oa_get_host_byteorder(void)
    return oa_little_endian;
 #endif   
 }
+
+
+OPENAXIOM_EXPORT void
+oa_allocate_process_argv(openaxiom_process* proc, int argc)
+{
+   proc->argc = argc;
+   proc->argv = (char**) malloc((1 + argc) * sizeof (char*));
+   proc->argv[argc] = NULL;
+}
+
+OPENAXIOM_EXPORT int
+oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
+{
+#ifdef __WIN32__
+   cons char* path = NULL;
+   char* cmd_line = NULL;
+   int curpos = strlen(proc->argv[0]);
+   int cmd_line_length = curpos;
+   int i;
+   PROCESS_INFORMATION proc_info;
+   STARTUPINFO startup_info = { 0 };
+   DWORD status;
+
+   for (i = 0; i < proc->argc; ++i)
+      cmd_line_length += 1 + strlen(proc->argv[i]);
+
+   cmd_line = (char*) malloc(cmd_line_length + 1);
+   strcpy(cmd_line, proc->argv[0]);
+   for (i = 0; i < proc->argc; ++i) {
+      cmd_line[curpos++] = ' ';
+      strcpy(cmd_line + curpos, proc->argv[i]);
+      curpos += strlen(proc->argv[i]);
+   }
+   cmd_line[curpos] = '\0';
+
+   if (flags & openaxiom_spawn_search_path == 0)
+      path = proc->argv[0];
+
+   if(CreateProcess(/* lpApplicationName */ path,
+                    /* lpCommandLine */ cmd_line,
+                    /* lpProcessAttributes */ NULL,
+                    /* lpThreadAttributes */ NULL,
+                    /* bInheritHandles */ TRUE,
+                    /* dwCreationFlags */ 0,
+                    /* lpEnvironment */ NULL,
+                    /* lpCurrentDirectory */ NULL,
+                    /* lpstartupInfo */ &startup_info,
+                    /* lpProcessInformation */ &proc_info) == 0) {
+      fprintf(stderr, "oa_spawn: error %d\n", GetLastError());
+      return proc->id = -1;
+   }
+   proc->id = proc_info.dwProcessId;
+   if (flags & openaxiom_spawn_replace == 0)
+      return proc->id;
+   WaitForSingleObject(proc_info.hProcess, INFINITE);
+   GetExitCodeProcess(proc_info.hProcess, &status);
+   CloseHandle(proc_info.hThread);
+   CloseHandle(proc_info.hProcess);
+   return 0;
+
+#else
+   proc->id = 0;
+   if ((flags & openaxiom_spawn_replace) == 0)
+      proc->id = fork();
+   if (proc->id == 0) {
+      if (flags & openaxiom_spawn_search_path)
+         execvp(proc->argv[0], proc->argv);
+      else
+         execv(proc->argv[0], proc->argv);
+      perror(strerror(errno));
+      /* Don't keep useless clones around.  */
+      if ((flags & openaxiom_spawn_replace) == 0)
+         exit(-1);
+   }
+   return proc->id;
+#endif   
+}

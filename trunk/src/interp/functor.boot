@@ -744,21 +744,18 @@ CheckVector(vec,name,catvecListMaker) ==
   for i in 6..MAXINDEX vec repeat
     v:= vec.i
     v=true => nil
-    null v => nil
-            --a domain, which setVector4part3 will fill in
+    null v => nil        --a domain, which setVector4part3 will fill in
     atom v => systemErrorHere ["CheckVector",v]
     atom first v =>
-                  --It's a secondary view of a domain, which we
-                  --must generate code to fill in
+      --It's a secondary view of a domain, which we
+      --must generate code to fill in
       for x in $catNames for y in catvecListMaker repeat
-        if y=v then code:=
-          [["setShellEntry",name,i,x],:code]
+        if y=v then
+          code := [["setShellEntry",name,i,x],:code]
     if name='$ then
       assoc(first v,$CheckVectorList) => nil
       $CheckVectorList:=
         [[first v,:makeMissingFunctionEntry(condAlist,i)],:$CheckVectorList]
---  member(first v,$CheckVectorList) => nil
---  $CheckVectorList:= [first v,:$CheckVectorList]
   code
  
 makeMissingFunctionEntry(alist,i) ==

@@ -588,7 +588,7 @@ compDefineFunctor(df,m,e,prefix,fal) ==
  
 compDefineFunctor1(df is ['DEF,form,signature,nils,body],
   m,$e,$prefix,$formalArgList) ==
---  1. bind global variables
+    --  1. bind global variables
     $addForm: local := nil
     $subdomain: local := false
     $functionStats: local:= [0,0]
@@ -602,8 +602,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $functorForm: local := nil
     $functorLocalParameters: local := nil
     $CheckVectorList: local := nil
-                  --prevents CheckVector from printing out same message twice
-    $getDomainCode: local -- code for getting views
+    $getDomainCode: local := nil -- code for getting views
     $insideFunctorIfTrue: local:= true
     $setelt: local := "setShellEntry"
     $genSDVar: local:= 0
@@ -629,9 +628,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     $compileExportsOnly => compDefineExports(form, ds.1, signature',$e)
     $domainShell:= COPY_-SEQ ds
---+ copy needed since slot1 is reset; compMake.. can return a cached vector
     attributeList := ds.2 --see below under "loadTimeAlist"
---+ 7 lines for $NRT follow
     $condAlist: local := nil
     $uncondAlist: local := nil
     $NRTslot1PredicateList: local := predicatesFromAttributes attributeList
@@ -653,14 +650,14 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     parSignature:= SUBLIS($pairlis,signature')
     parForm:= SUBLIS($pairlis,form)
  
---  (3.1) now make a list of the functor's local parameters; for
---  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
---  in this case, D is replaced by D1,..,Dn (gensyms) which are set
---  to the A1,..,An view of D
+    --  (3.1) now make a list of the functor's local parameters; for
+    --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
+    --  in this case, D is replaced by D1,..,Dn (gensyms) which are set
+    --  to the A1,..,An view of D
     makeFunctorArgumentParameters(argl,rest signature',first signature')
     $functorLocalParameters := argl
 
---  4. compile body in environment of %type declarations for arguments
+    --  4. compile body in environment of %type declarations for arguments
     op':= $op
     rettype:= signature'.target
     -- If this functor is defined as instantiation of a functor
@@ -686,7 +683,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
       augmentLisplibModemapsFromFunctor(parForm,operationAlist,parSignature)
     reportOnFunctorCompilation()
  
---  5. give operator a 'modemap property
+    --  5. give operator a 'modemap property
     if $LISPLIB then
       modemap:= [[parForm,:parSignature],[true,op']]
       $lisplibModemap:= modemap
@@ -771,12 +768,11 @@ reportOnFunctorCompilation() ==
  
 displayMissingFunctions() ==
   null $CheckVectorList => nil
-  loc := nil
-  exp := nil
+  loc := nil              -- list of local operation signatures
+  exp := nil              -- list of exported operation signatures
   for [[op,sig,:.],:pred] in $CheckVectorList  | null pred repeat
-    null member(op,$formalArgList) and
-      getmode(op,$e) is ['Mapping,:.] =>
-        loc := [[op,sig],:loc]
+    not member(op,$formalArgList) and getmode(op,$e) is ['Mapping,:.] =>
+      loc := [[op,sig],:loc]
     exp := [[op,sig],:exp]
   if loc then
     sayBrightly ['%l,:bright '"  Missing Local Functions:"]

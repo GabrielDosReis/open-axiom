@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2009, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -85,8 +85,20 @@ typedef enum openaxiom_byteorder {
 } openaxiom_byteorder;
 
 
-/* Return the address of the data buffer `BUF'.  */
+/* Datatype for packaging information necessary tolaunch a process. */
+typedef struct openaxiom_process {
+   int argc;
+   char** argv;
+   int id;
+} openaxiom_process;
 
+typedef enum openaxiom_spawn_flags {
+   openaxiom_spawn_search_path = 0x01,
+   openaxiom_spawn_replace     = 0x02,
+} openaxiom_spawn_flags;
+
+   
+/* Return the address of the data buffer `BUF'.  */
 #define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
 
 
@@ -106,6 +118,9 @@ openaxiom_sleep(int n)
 #endif   
 }
 
+
+OPENAXIOM_EXPORT void oa_allocate_process_argv(openaxiom_process*, int);
+OPENAXIOM_EXPORT int oa_spawn(openaxiom_process*, openaxiom_spawn_flags);   
 
 #ifdef __cplusplus
 }
