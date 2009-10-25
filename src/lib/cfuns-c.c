@@ -730,7 +730,7 @@ OPENAXIOM_EXPORT int
 oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
 {
 #ifdef __WIN32__
-   cons char* path = NULL;
+   const char* path = NULL;
    char* cmd_line = NULL;
    int curpos = strlen(proc->argv[0]);
    int cmd_line_length = curpos;
@@ -751,7 +751,7 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
    }
    cmd_line[curpos] = '\0';
 
-   if (flags & openaxiom_spawn_search_path == 0)
+   if ((flags & openaxiom_spawn_search_path) == 0)
       path = proc->argv[0];
 
    if(CreateProcess(/* lpApplicationName */ path,
@@ -768,7 +768,7 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
       return proc->id = -1;
    }
    proc->id = proc_info.dwProcessId;
-   if (flags & openaxiom_spawn_replace == 0)
+   if ((flags & openaxiom_spawn_replace) == 0)
       return proc->id;
    WaitForSingleObject(proc_info.hProcess, INFINITE);
    GetExitCodeProcess(proc_info.hProcess, &status);
