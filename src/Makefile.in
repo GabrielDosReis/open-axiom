@@ -16,7 +16,7 @@ stamp: @axiom_src_all@ all-driver
 	-rm -f stamp
 	$(STAMP) stamp
 
-all-driver:
+all-driver: all-lib
 	@cd driver && $(MAKE) $@
 
 all-clef: all-lib
