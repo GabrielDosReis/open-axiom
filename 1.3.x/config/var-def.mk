@@ -242,6 +242,11 @@ else
 LNKEXT = $(FASLEXT)
 endif
 
+
+# Qt utilities
+OA_QT_MOC = @OA_QT_MOC@
+OA_QT_QMAKE = @OA_QT_QMAKE@
+
 ##
 AXIOMXLROOT=${AXIOM}/compiler
 

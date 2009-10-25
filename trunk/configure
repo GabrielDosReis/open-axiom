@@ -799,6 +799,8 @@ CCF
 openaxiom_host_has_regex
 axiom_use_x
 axiom_src_all
+OA_QT_QMAKE
+OA_QT_MOC
 X_CLFAGS
 X_EXTRA_LIBS
 X_LIBS
@@ -3734,13 +3736,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:3737: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:3739: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:3740: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:3742: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:3743: output\"" >&5)
+  (eval echo "\"\$as_me:3745: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -4943,7 +4945,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4946 "configure"' > conftest.$ac_ext
+  echo '#line 4948 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7091,11 +7093,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7094: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7096: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7098: \$? = $ac_status" >&5
+   echo "$as_me:7100: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7430,11 +7432,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7433: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7435: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7437: \$? = $ac_status" >&5
+   echo "$as_me:7439: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7535,11 +7537,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7538: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7540: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7542: \$? = $ac_status" >&5
+   echo "$as_me:7544: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7590,11 +7592,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7593: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7595: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7597: \$? = $ac_status" >&5
+   echo "$as_me:7599: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10390,7 +10392,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10393 "configure"
+#line 10395 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10486,7 +10488,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10489 "configure"
+#line 10491 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -16181,6 +16183,106 @@ X_PRE_LIBS="-lXpm $X_PRE_LIBS"
 
 
 ## If the system supports X11, then build graphics
+
+# Check for Qt utilities.
+for ac_prog in moc
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_prog_OA_QT_MOC+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$OA_QT_MOC"; then
+  ac_cv_prog_OA_QT_MOC="$OA_QT_MOC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_OA_QT_MOC="$ac_prog"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+OA_QT_MOC=$ac_cv_prog_OA_QT_MOC
+if test -n "$OA_QT_MOC"; then
+  { $as_echo "$as_me:$LINENO: result: $OA_QT_MOC" >&5
+$as_echo "$OA_QT_MOC" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$OA_QT_MOC" && break
+done
+
+for ac_prog in qmake
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_prog_OA_QT_QMAKE+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$OA_QT_QMAKE"; then
+  ac_cv_prog_OA_QT_QMAKE="$OA_QT_QMAKE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_OA_QT_QMAKE="$ac_prog"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+OA_QT_QMAKE=$ac_cv_prog_OA_QT_QMAKE
+if test -n "$OA_QT_QMAKE"; then
+  { $as_echo "$as_me:$LINENO: result: $OA_QT_QMAKE" >&5
+$as_echo "$OA_QT_QMAKE" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$OA_QT_QMAKE" && break
+done
+
+if test -n $OA_QT_MOC; then
+  { $as_echo "$as_me:$LINENO: checking Qt version" >&5
+$as_echo_n "checking Qt version... " >&6; }
+  oa_qt_version=`"$OA_QT_MOC" -v 2>&1 | sed -e 's/^.*(\(.*\))$/\1/'`
+  { $as_echo "$as_me:$LINENO: result: $oa_qt_version" >&5
+$as_echo "$oa_qt_version" >&6; }
+  case $oa_qt_version in
+    *1-3\.0-9+\.0-9+)
+       { $as_echo "$as_me:$LINENO: WARNING: This version of Qt is too old for OpenAxiom." >&5
+$as_echo "$as_me: WARNING: This version of Qt is too old for OpenAxiom." >&2;}
+       ;;
+  esac
+fi
+
 axiom_use_x=no
 if test -z $no_x; then
     axiom_use_x=yes

@@ -546,6 +546,21 @@ X_PRE_LIBS="-lXpm $X_PRE_LIBS"
 AC_SUBST(X_PRE_LIBS)
 
 ## If the system supports X11, then build graphics
+
+# Check for Qt utilities.
+AC_CHECK_PROGS([OA_QT_MOC], [moc])
+AC_CHECK_PROGS([OA_QT_QMAKE], [qmake])
+if test -n $OA_QT_MOC; then
+  AC_MSG_CHECKING([Qt version])
+  oa_qt_version=`"$OA_QT_MOC" -v 2>&1 | sed -e 's/^.*(\(.*\))$/\1/'`
+  AC_MSG_RESULT([$oa_qt_version])
+  case $oa_qt_version in
+    *[1-3]\.[0-9]+\.[0-9]+)
+       AC_MSG_WARN([This version of Qt is too old for OpenAxiom.])
+       ;;
+  esac
+fi
+
 axiom_use_x=no
 if test -z $no_x; then
     axiom_use_x=yes
