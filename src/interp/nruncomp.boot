@@ -465,7 +465,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
        :predBitVectorCode2,storeOperationCode]
 
   $CheckVectorList := NRTcheckVector domainShell
---CODE: part 1
+  --CODE: part 1
   codePart1:= [:devaluateCode,createDomainCode,
                 createViewCode,setVector0Code, slot3Code,:slamCode] where
     devaluateCode:= [["%LET",b,['devaluate,a]] for [a,:b] in $devaluateList]
@@ -478,7 +478,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       isCategoryPackageName opOf $definition => nil
       [NRTaddToSlam($definition,'$)]
 
---CODE: part 3
+  --CODE: part 3
   $ConstantAssignments :=
       [NRTputInLocalReferences code for code in $ConstantAssignments]
   codePart3:= [:constantCode1,
@@ -489,7 +489,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
                       -- The above line is needed to get the recursion
                       -- Integer => FontTable => NonNegativeInteger  => Integer
                       -- right.  Otherwise NNI has 'unset' for 0 and 1
---  setVector4c:= setVector4part3($catNames,$catvecList)
+  --  setVector4c:= setVector4part3($catNames,$catvecList)
                       -- In particular, setVector4part3 and setVector5,
                       -- which generate calls to local domain-instantiators,
                       -- must come after operations are set in the vector.
@@ -516,14 +516,13 @@ NRTcheckVector domainShell ==
 -- (b) NIL         -- item is a domain; will be filled in by setVector4part3
 -- (c) categoryForm-- it was a domain view; now irrelevant
 -- (d) op-signature-- store missing function info in $CheckVectorList
-    v:= domainShell.i
+    v := domainShell.i
     v=true => nil  --item is marked; ignore
     v=nil => nil  --a domain, which setVector4part3 will fill in
     atom v => systemErrorHere '"CheckVector"
     atom first v => nil  --category form; ignore
     assoc(first v,alist) => nil
-    alist:=
-      [[first v,:$SetFunctions.i],:alist]
+    alist := [[first v,:$SetFunctions.i],:alist]
   alist
 
 mkDomainCatName id == INTERN STRCONC(id,";CAT")
