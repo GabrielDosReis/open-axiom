@@ -89,6 +89,7 @@ typedef enum openaxiom_byteorder {
 typedef struct openaxiom_process {
    int argc;
    char** argv;
+   int id;
 } openaxiom_process;
 
 typedef enum openaxiom_spawn_flags {
