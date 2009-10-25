@@ -119,7 +119,7 @@ AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 
 AC_PATH_PROG([PDFLATEX], [pdflatex])
-if test -z $PDFLATEX; then
+if test -z "$PDFLATEX"; then
    AC_PATH_PROG([LATEX], [latex],
                 [AC_MSG_NOTICE([Documentation is disabled.])])
 fi
@@ -550,7 +550,7 @@ AC_SUBST(X_PRE_LIBS)
 # Check for Qt utilities.
 AC_CHECK_PROGS([OA_QT_MOC], [moc])
 AC_CHECK_PROGS([OA_QT_QMAKE], [qmake])
-if test -n $OA_QT_MOC; then
+if test -n "$OA_QT_MOC"; then
   AC_MSG_CHECKING([Qt version])
   oa_qt_version=`"$OA_QT_MOC" -v 2>&1 | sed -e 's/^.*(\(.*\))$/\1/'`
   AC_MSG_RESULT([$oa_qt_version])

@@ -11779,7 +11779,7 @@ $as_echo "no" >&6; }
 fi
 
 
-if test -z $PDFLATEX; then
+if test -z "$PDFLATEX"; then
    # Extract the first word of "latex", so it can be a program name with args.
 set dummy latex; ac_word=$2
 { $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -16269,7 +16269,7 @@ fi
   test -n "$OA_QT_QMAKE" && break
 done
 
-if test -n $OA_QT_MOC; then
+if test -n "$OA_QT_MOC"; then
   { $as_echo "$as_me:$LINENO: checking Qt version" >&5
 $as_echo_n "checking Qt version... " >&6; }
   oa_qt_version=`"$OA_QT_MOC" -v 2>&1 | sed -e 's/^.*(\(.*\))$/\1/'`
