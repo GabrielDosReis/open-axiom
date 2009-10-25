@@ -7,9 +7,30 @@ AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
 AC_CONFIG_HEADERS([config/openaxiom-c-macros.h])
 # AM_INIT_AUTOMAKE([foreign])
-AC_PREREQ([2.60])
-
+AC_PREREQ([2.62])
 AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
+AC_CANONICAL_SYSTEM
+
+open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
+AC_SUBST(open_axiom_installdir)
+
+if test $build != $target; then
+   AC_MSG_WARN([Cross build is not supported.])
+   AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
+fi
+## Where tools for the build platform are sequestered
+axiom_build_sharedir=$axiom_builddir/share
+AC_PROG_CC
+AC_PROG_CXX
+
+## What is the extension of object and executable files on this platform?
+AC_OBJEXT
+AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
+                   [Extension of executable file.])
+
+## Byte order of the host.
+AC_C_BIGENDIAN
+
 
 oa_use_libtool_for_shared_lib=yes
 oa_shrobj_flags=
@@ -48,18 +69,6 @@ AC_SUBST(oa_shrlib_flags)
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
-AC_CANONICAL_SYSTEM
-
-open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
-AC_SUBST(open_axiom_installdir)
-
-if test $build != $target; then
-   AC_MSG_WARN([Cross build is not supported.])
-   AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
-fi
-## Where tools for the build platform are sequestered
-axiom_build_sharedir=$axiom_builddir/share
-
 ## On Windows system, we prefer the default installation
 ## location to be 'C:/Program Files/OpenAxiom', following Windows 
 ## convention.  We cannot use AC_PREFIX_DEFAULT directly as it seems 
@@ -95,15 +104,6 @@ case $build in
         fi
         ;;
 esac
-
-## What is the extension of object files on this platform?
-AC_OBJEXT
-
-AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
-                   [Extension of executable file.])
-
-## Byte order of the host.
-AC_C_BIGENDIAN
 
 
 AC_PROG_INSTALL

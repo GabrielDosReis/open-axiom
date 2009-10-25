@@ -633,8 +633,6 @@ axiom_all_prerequisites=
 
 <<find make>>
 
-<<find C compiler>>
-
 <<file utils>>
 
 <<awk and tar program>>
@@ -678,6 +676,7 @@ case $build in
 	fi
 	;;
 esac
+
 @
 
 \paragraph{C compiler}
@@ -685,9 +684,11 @@ First of all, check for a C compiler.  As written, this test is OK
 because currently we support only native builds.  However,
  it needs to be more carefully written when we move to cross-compilation.
 <<find C compiler>>=
-## What is the extension of object files on this platform?
-AC_OBJEXT
+AC_PROG_CC
+AC_PROG_CXX
 
+## What is the extension of object and executable files on this platform?
+AC_OBJEXT
 AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
                    [Extension of executable file.])
 
@@ -1198,13 +1199,13 @@ the Automake subsystem.
 # AM_INIT_AUTOMAKE([foreign])
 @
 
-We require Autoconf $2.60$ or higher from the developer part. Please,
+We require Autoconf $2.62$ or higher from the developer part. Please,
 note that this is no requirement on the user build environment.  All,
 it means is that if someone makes changes to the current \File{configure.ac}
-file, that someone needs to have Autoconf $2.60$ or higher to process this
+file, that someone needs to have Autoconf $2.62$ or higher to process this
 file in order to regenerate \File{configure}.
 <<Autoconf init>>=
-AC_PREREQ([2.60])
+AC_PREREQ([2.62])
 @
 
 
@@ -1320,15 +1321,14 @@ AC_SUBST(oa_shrlib_flags)
 
 <<*>>=
 <<Autoconf init>>
-
 <<sanity check>>
+<<host build target platfoms>>
+<<find C compiler>>
 
 <<initialize shared libraries tool>>
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
-
-<<host build target platfoms>>
 
 ## On Windows system, we prefer the default installation
 ## location to be 'C:/Program Files/OpenAxiom', following Windows 
