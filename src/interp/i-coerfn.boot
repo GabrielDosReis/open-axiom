@@ -2079,7 +2079,7 @@ SETANDFILEQ($CoerceTable,NCONC($CoerceTable,'( _
     (OrderedVariableList                          partial    Sy2OV) _
     (Polynomial                                   total      Sy2P) _
     (UnivariatePolynomial                         indeterm   Sy2Up) _
-    (Variable                                     indeterm   Sy2Var) _
+    (Variable                                     partial    Sy2Var) _
     ) ) _
   (UnivariatePolynomial . ( _
     (DistributedMultivariatePolynomial            indeterm   Up2Dmp) _
