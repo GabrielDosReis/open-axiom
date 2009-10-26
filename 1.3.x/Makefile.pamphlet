@@ -320,7 +320,7 @@ SUBDIRS = src
 
 build_srcdir = $(builddir)/src
 
-AXIOM_SRC_TARGETS = all-algebra all-asq all-axiomsys all-boot \
+AXIOM_SRC_TARGETS = all-algebra all-asq all-axiomsys all-boot all-share \
 	all-clef all-doc all-graph all-hyper all-input all-interpsys \
 	all-lib all-lisp all-sman all-driver all-src  all-databases
 
@@ -463,9 +463,6 @@ stamp-rootdirs: $(axiom_build_document)
 	@mkdir -p "${TMP}"
 	@$(STAMP) stamp-rootdirs
 
-
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status --recheck
 @
 
 \subsection{\File{gcl/}}
