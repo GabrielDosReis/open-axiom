@@ -792,7 +792,7 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
    GetExitCodeProcess(proc_info.hProcess, &status);
    CloseHandle(proc_info.hThread);
    CloseHandle(proc_info.hProcess);
-   return 0;
+   return status;
 
 #else
    proc->id = 0;

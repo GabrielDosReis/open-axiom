@@ -200,6 +200,7 @@ static void print_usage(void) {
    print_line("  --hyperdoc       Start the HyperDoc component.  This option is meaningful");
    print_line("                   only if OpenAxiom was built with graphics support.");
    print_line("  --no-hyperdoc    Do not start the HyperDoc component.");
+   print_line("  --execute cmd args  execute `cmd' with arguments `args'");
               
    print_line("");
    print_line("Compiler options:");

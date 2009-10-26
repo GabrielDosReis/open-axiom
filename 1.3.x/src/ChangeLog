@@ -1,5 +1,16 @@
 2009-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* share/tex/open-axiom.sty: New.
+	* share/Makefile.in (FILES): Update.
+	($(axiom_target_texdir)/open-axiom.sty): New rule.
+	* lib/cfuns-c.c (oa_spawn)[__WIN32__]: Return exit status if in
+	overlay mode.
+	* include/open-axiom.h (OPENAXIOM_TEXINPUTS_PATH): Tidy.
+	(OPENAXIOM_BIBINPUTS_PATH): Likewise.
+	* driver/utils.c (print_usage): Document --execute option.
+
+2009-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/cfuns-c.c (oa_concatenate_string): Define.
 	* include/open-axiom.h (openaxiom_ifs): New.
 	(OPENAXIOM_TEXINPUTS_PATH): Likewise.

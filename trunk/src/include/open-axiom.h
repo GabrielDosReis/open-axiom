@@ -110,8 +110,8 @@ typedef enum openaxiom_spawn_flags {
 
 /* Paths to LaTeX input support file directories.
    These paths are relative to system directory.  */
-#define OPENAXIOM_TEXINPUTS_PATH   "/share/tex"
-#define OPENAXIOM_BIBINPUTS_PATH   "/share/tex"
+#define OPENAXIOM_TEXINPUTS_PATH   "/share/texmf/tex"
+#define OPENAXIOM_BIBINPUTS_PATH   "/share/texmf/tex"
 
 /* The function sleep() is not available under Windows.  Instead, they
    have Sleep(); with capital S, please.  Furthermore, it does not

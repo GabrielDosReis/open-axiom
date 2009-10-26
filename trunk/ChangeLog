@@ -1,3 +1,7 @@
+2009-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (axiom_src_texdir): New.
+
 2009-10-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Look for SBCL before GCL; look for ECL too.

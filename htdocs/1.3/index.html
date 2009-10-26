@@ -148,7 +148,7 @@
          universally quantified expressions</li>
   </ul>
 
-  <h4 name="1.3.0-changes-alg">2.1.3. Algebra</h4>
+  <h4 name="1.3.0-changes-alg">2.1.4. Algebra</h4>
  
   The following types have been added to OpenAxiom-1.3.0
   <ul>
@@ -238,11 +238,30 @@
 
   The Lisp backend now uses type information derived from exports
   and domain representation for code generation purposes.
+  
+  <h3 name="1.3.0-changes-driver">2.2.  Driver </h3>
+
+  Since OpenAxiom-1.3.1, the driver <code>open-axiom</code> understands
+  the option <code--execute</code> for executing commands.  For example,
+  to typeset a LaTeX document containing OpenAxiom codes, you can insert
+  
+     <pre>
+         \usepackage{open-axiom}
+     </pre>
+
+  in the preamble of your LaTeX document and run the command
+
+     <pre>
+        open-axiom --execute pdflatex your-document.tex
+     </pre>
+
+  Obviously you're free to replace <code>pdflatex</code> wih any of your
+  favorite typesetting command.
 
 </div>
 
 <div id="footer">
-  Copyright &copy; 2007-2008 Gabriel Dos Reis
+  Copyright &copy; 2007-2009 Gabriel Dos Reis
 </div>
 
 
