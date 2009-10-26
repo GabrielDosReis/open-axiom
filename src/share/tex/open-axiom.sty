@@ -1,0 +1,76 @@
+%% Copyright (C) 2009, Gabriel Dos Reis
+%% All rights reserved.
+%% Redistribution and use in source and binary forms, with or without
+%% modification, are permitted provided that the following conditions are
+%% met:
+%%
+%%     - Redistributions of source code must retain the above copyright
+%%       notice, this list of conditions and the following disclaimer.
+%%
+%%     - Redistributions in binary form must reproduce the above copyright
+%%      notice, this list of conditions and the following disclaimer in
+%%       the documentation and/or other materials provided with the
+%%       distribution.
+%%
+%%     - Neither the name of The Numerical Algorithms Group Ltd. nor the
+%%       names of its contributors may be used to endorse or promote products
+%%       derived from this software without specific prior written permission.
+%%
+%% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+%% IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+%% TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+%% PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+%% OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+%% EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+%% PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+%% PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+%% LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+%% NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+%% SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{open-axiom}[2009/10/11 OpenAxiom LaTeX package]
+
+%% We build on top of the listings package
+\RequirePackage{listings}
+
+
+%% The base Spad language
+\lstdefinelanguage{Spad}{%
+  keywords={add,and,break,case,else,false,for,has,if,import,%
+    in,is,isnt,iterate,macro,mod,or,pretend,%
+    quot,rem,rule,repeat,return,then,true,with,where,while},%
+  otherkeywords={->,<,<=,>,>=,=,==,~=,=>,\#,::,\@,\$,|},%
+  alsoletter={\%},%
+  comment=[l]{++},%
+  morecomment=[l]{--},%
+  morestring=[b]",%
+  sensitive=true
+}
+
+%% OpenAxiom's Spad
+\lstdefinelanguage[OpenAxiom]{Spad}[]{Spad}{%
+  morecomment=[l][\itshape\bfseries]{++}
+}
+
+\lstdefinestyle{spad}{%
+  language=[OpenAxiom]spad,%
+  basicstyle=\renewcommand{\ttdefault}{txtt}\footnotesize\ttfamily,%
+  columns=flexible,%
+  showstringspaces=false
+}
+
+%% Inline Spad code
+%% FIXME: This definition prohibits '!' as valid identifier
+%% in inline Spad code.  That is unfortunate.
+\newcommand{\OpenAxiomCode}[1]{\lstinline[style=Spad]!#1!}
+
+%% The main inout environment
+\lstnewenvironment{OpenAxiomInput}{\lstset{style=spad}}{}
+
+%% Include a whole Spad file
+\newcommand{\OpenAxiomFile}[1]{\lstinputlisting[style=Spad]{#1}}
+
+%% Some legacy commands
+\newcommand{\spad}[1]{\ensuremath{\mathtt{#1}}}

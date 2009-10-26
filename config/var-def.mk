@@ -149,6 +149,7 @@ axiom_src_srcdir = $(top_srcdir)/src
 axiom_src_docdir = $(axiom_src_srcdir)/doc
 axiom_src_datadir = $(axiom_src_srcdir)/share
 axiom_src_algdir = $(axiom_src_srcdir)/algebra
+axiom_src_texdir =  $(axiom_src_datadir)/tex
 
 ## Where tools for the build machine are built
 # Tools that we occasionally build don't know
