@@ -1,3 +1,9 @@
+2009-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/taylor.spad.pamphlet (InnerTaylorSeries): Now satisfies
+	BiModule(Coef,Coef).  Remove duplicate exports.  Use rep and per
+	operators. 
+
 2009-10-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* share/tex/open-axiom.sty: New.
