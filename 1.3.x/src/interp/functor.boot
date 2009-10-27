@@ -300,35 +300,13 @@ cons5(p,l) ==
   RPLACD(QCDDDDR l,nil)
   [p,:l]
  
--- TrimEnvironment e ==
---   [TrimLocalEnvironment u for u in e] where
---     TrimLocalEnvironment e ==
---       [TrimContour u for u in e] where
---         TrimContour e ==
---           [u for u in e | Interesting u] where Interesting u == nil
---                         --clearly a temporary definition
- 
 setVector0(catNames,definition) ==
           --returns code to set element 0 of the vector
           --to the definition of the category
   definition:= mkTypeForm definition
--- If we call addMutableArg this early, then recurise calls to this domain
--- (e.g. while testing predicates) will generate new domains => trouble
---definition:= addMutableArg mkTypeForm definition
   for u in catNames repeat
     definition:= ["setShellEntry",u,0,definition]
   definition
- 
---presence of GENSYM in arg-list differentiates mutable-domains
--- addMutableArg nameFormer ==
---   $mutableDomain =>
---     nameFormer is ['LIST,:.] => [:nameFormer, '(GENSYM)]
---     ['APPEND,nameFormer,'(LIST (GENSYM))]
---   nameFormer
- 
---getname D ==
---  isDomain D or isCategory D => D.0
---  D
  
 setVector12 args ==
             --The purpose of this function is to replace place holders
