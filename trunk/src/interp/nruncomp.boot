@@ -409,8 +409,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $catNames: local := nil      --list of names n1..nn for each view
   $catsig: local := nil        --target category (used in ProcessCond)
   $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
-  $MissingFunctionInfo: local := nil --now useless
-     --vector marking which functions are assigned
   $ConstantAssignments: local := nil --code for creation of constants
   $epilogue: local := nil     --code to set slot 5, things to be done last
   $HackSlot4: local := nil  --Invention of JHD 13/July/86-set in InvestigateConditions
@@ -439,7 +437,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $catvecList:= [domainShell,:[emptyVector for u in second domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
   $SetFunctions:= newShell SIZE domainShell
-  $MissingFunctionInfo:= newShell SIZE domainShell
   $catNames:= ['$,:[GENVAR() for u in rest catvecListMaker]]
   domname:='dv_$
 

@@ -1,5 +1,13 @@
 2009-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nruncomp.boot (buildFunctor): Remove $MissingFunctionInfo.
+	* interp/functor.boot (SetFunctionSlots): Simplify.
+	(SigSlotsMatch): Likewise.
+	(CheckVector): Remove.
+	(makeMissingFunctionEntry): Refer to $SetFunctions.
+
+2009-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/taylor.spad.pamphlet (InnerTaylorSeries): Now satisfies
 	BiModule(Coef,Coef).  Remove duplicate exports.  Use rep and per
 	operators. 
