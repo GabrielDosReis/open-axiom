@@ -1,3 +1,11 @@
+2009-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/seg.spad.pamphlet (RangeBinding): New.
+	(SegmentBinding): Tidy.
+	* algebra/exposed.lsp.pamphlet (RangeBinding): Expose.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_19): Include
+	RNGBIND. 
+
 2009-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (buildFunctor): Remove $MissingFunctionInfo.

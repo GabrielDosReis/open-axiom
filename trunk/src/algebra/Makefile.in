@@ -779,7 +779,7 @@ axiom_algebra_layer_19 = \
   PMKERNEL PMSYM             PRIMELT \
   QALGSET2 QEQUAT   RECLOS   REP1    \
   RESULT   QUATCAT  QUATCAT- RFFACT  \
-  RMATRIX  ROMAN    ROUTINE          \
+  RMATRIX  ROMAN    ROUTINE  RNGBIND \
            RULECOLD SAOS     SEGBIND \
   SET      SPECOUT  SQMATRIX SWITCH  \
                     SYSSOLP  UTSCAT  \

@@ -237,6 +237,52 @@ SegmentFunctions2(R:Type, S:Type): public == private where
 
 @
 
+\section{General Range Binding}
+
+<<domain RNGBIND RangeBinding>>=
+)abbrev domain RNGBIND RangeBinding
+++ Author: Gabriel Dos Reis
+++ Date Created: October 29, 2009
+++ Date Last Updated: October 29, 2009
+++ Related Constructors: SegmentCategory, SegmentBinding
+++ Description:
+++   This domain represents the notion of binding a variable to range
+++   over a specific segment (either bounded, or half bounded).
+RangeBinding(S, T): Public == Private where
+  T: Type
+  S: SegmentCategory T
+  Public == Type with
+    equation: (Symbol, S) -> %
+      ++ \spad{equation(v,s)} creates a segment binding value with variable
+      ++ \spad{v} and segment \spad{s}.  Note that the interpreter parses
+      ++ \spad{v=s} to this form.
+    variable: % -> Symbol
+      ++ \spad{variable(x)} returns the variable from the left hand side of
+      ++ the \spadtype{RangeBinding}.  For example, if \spad{x} is
+      ++ \spad{v=s}, then \spad{variable(x)} returns \spad{v}.
+    segment: % -> S
+      ++ \spad{segment(x)} returns the segment from the right hand side of
+      ++ the \spadtype{RangeBinding}.  For example, if \spad{x} is
+      ++ \spad{v=s}, then \spad{segment(x)} returns \spad{s}.
+
+    if S has SetCategory then SetCategory
+
+  Private == add
+    Rep == Record(var: Symbol, seg: S)
+    equation(v,s) == per [v,s]
+    variable x == rep(x).var
+    segment x == rep(x).seg
+
+    if S has SetCategory then
+      x = y ==
+        variable x = variable y and segment x = segment y
+
+      coerce(x: %): OutputForm ==
+        variable(x)::OutputForm = segment(x)::OutputForm
+        
+@
+
+
 \section{domain SEGBIND SegmentBinding}
 
 <<domain SEGBIND SegmentBinding>>=
@@ -257,34 +303,7 @@ import Segement
 ++ Description:
 ++   This domain is used to provide the function argument syntax \spad{v=a..b}.
 ++   This is used, for example, by the top-level \spadfun{draw} functions.
-SegmentBinding(S:Type): Type with
-  equation: (Symbol, Segment S) -> %
-      ++ equation(v,a..b) creates a segment binding value with variable
-      ++ \spad{v} and segment \spad{a..b}.  Note that the interpreter parses
-      ++ \spad{v=a..b} to this form.
-  variable: % -> Symbol
-      ++ variable(segb) returns the variable from the left hand side of
-      ++ the \spadtype{SegmentBinding}.  For example, if \spad{segb} is
-      ++ \spad{v=a..b}, then \spad{variable(segb)} returns \spad{v}.
-  segment : % -> Segment S
-      ++ segment(segb) returns the segment from the right hand side of
-      ++ the \spadtype{SegmentBinding}.  For example, if \spad{segb} is
-      ++ \spad{v=a..b}, then \spad{segment(segb)} returns \spad{a..b}.
-
-  if S has SetCategory then SetCategory
- == add
-  Rep := Record(var:Symbol, seg:Segment S)
-  equation(x,s) == [x, s]
-  variable b    == b.var
-  segment b     == b.seg
-
-  if S has SetCategory then
-
-     b1 = b2       == variable b1 = variable b2 and segment b1 = segment b2
-
-     coerce(b:%):OutputForm ==
-       variable(b)::OutputForm = segment(b)::OutputForm
-
+SegmentBinding(S:Type) == RangeBinding(Segment S, S)
 @
 
 \section{package SEGBIND2 SegmentBindingFunctions2}
@@ -528,6 +547,8 @@ IncrementingMaps(R:Join(Monoid, AbelianSemiGroup)): with
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
+--All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are
@@ -562,6 +583,7 @@ IncrementingMaps(R:Join(Monoid, AbelianSemiGroup)): with
 
 <<category SEGCAT SegmentCategory>>
 <<category SEGXCAT SegmentExpansionCategory>>
+<<domain RNGBIND RangeBinding>>
 <<domain SEG Segment>>
 <<package SEG2 SegmentFunctions2>>
 <<domain SEGBIND SegmentBinding>>
