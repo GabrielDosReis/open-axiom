@@ -350,6 +350,7 @@
   (|RadixExpansion| . RADIX)
   (|RadixUtilities| . RADUTIL)
   (|RandomNumberSource| . RANDSRC)
+  (|RangeBinding| . RNGBIND)
   (|RationalFunction| . RF)
   (|RationalFunctionDefiniteIntegration| . DEFINTRF)
   (|RationalFunctionFactor| . RFFACT)
