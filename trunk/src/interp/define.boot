@@ -479,7 +479,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     sargl:= TAKE(# argl, $TriangleVariableList)
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
-    aList:= [[a,:sa] for a in argl for sa in sargl]
+    aList := pairList(argl,sargl)
     formalBody:= SUBLIS(aList,body)
     signature' := SUBLIS(aList,signature')
 --Begin lines for category default definitions
@@ -511,7 +511,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     fun:= compile [op',["LAM",sargl,body]]
  
 --  5. give operator a 'modemap property
-    pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
+    pairlis := pairList(argl,$FormalMapVariableList)
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
     -- If we are only interested in the defaults, there is no point
@@ -609,7 +609,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     originale:= $e
     [$op,:argl]:= form
     $formalArgList:= [:argl,:$formalArgList]
-    $pairlis := [[a,:v] for a in argl for v in $FormalMapVariableList]
+    $pairlis := pairList(argl,$FormalMapVariableList)
     $mutableDomain: local :=
       -- all defaulting packages should have caching turned off
        isCategoryPackageName $op or MEMQ($op,$mutableDomains)
@@ -858,8 +858,7 @@ genDomainViewList(id,catlist) ==
  
 mkOpVec(dom,siglist) ==
   dom:= getPrincipalView dom
-  substargs:= [['$,:dom.0],:
-    [[a,:x] for a in $FormalMapVariableList for x in rest dom.0]]
+  substargs:= [['$,:dom.0],:pairList($FormalMapVariableList,rest dom.0)]
   oplist:= getOperationAlistFromLisplib opOf dom.0
   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
   ops:= MAKE_-VEC (#siglist)

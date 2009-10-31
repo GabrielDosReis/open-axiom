@@ -78,7 +78,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     originale:= $e
     [$op,:argl]:= form
     $formalArgList:= [:argl,:$formalArgList]
-    $pairlis := [[a,:v] for a in argl for v in $FormalMapVariableList]
+    $pairlis := pairList(argl,$FormalMapVariableList)
     $mutableDomain: local :=
       -- all defaulting packages should have caching turned off
        isCategoryPackageName $op or   
@@ -470,7 +470,7 @@ applyMapping([op,:argl],m,e,ml) ==
   #argl~=#ml-1 => nil
   isCategoryForm(first ml,e) =>
                                 --is op a functor?
-    pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
+    pairlis:= pairList(argl,$FormalMapVariableList)
     ml' := SUBLIS(pairlis, ml)
     argl':=
       [T.expr for x in argl for m' in rest ml'] where
@@ -493,7 +493,7 @@ applyMapping([op,:argl],m,e,ml) ==
       [op',:argl',"$"] where
         op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
     ['call,['applyFun,op],:argl']
-  pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
+  pairlis := pairList(argl',$FormalMapVariableList)
   convert([form,SUBLIS(pairlis,first ml),e],m)
  
 compFormWithModemap(form,m,e,modemap) ==

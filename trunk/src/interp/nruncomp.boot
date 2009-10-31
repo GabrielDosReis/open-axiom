@@ -630,7 +630,7 @@ NRTmakeSlot1Info() ==
   [first $form,[addList,:opList]]
 
 mkSlot1sublis argl ==
-  [[a,:b] for a in argl for b in $FormalMapVariableList]
+  pairList(argl,$FormalMapVariableList)
 
 slot1Filter opList ==
 --include only those ops which are defined within the capsule

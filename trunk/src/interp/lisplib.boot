@@ -438,8 +438,7 @@ finalizeLisplib libName ==
   --lisplibWrite('"attributes",rest opsAndAtts,$libFile)
   --if kind='category then NRTgenInitialAttributeAlist rest opsAndAtts
   if kind='category then
-     $pairlis : local := [[a,:v] for a in rest $lisplibForm
-                                 for v in $FormalMapVariableList]
+     $pairlis : local := pairList($lisplibForm,$FormalMapVariableList)
      $NRTslot1PredicateList : local := []
      NRTgenInitialAttributeAlist rest opsAndAtts
   lisplibWrite('"superDomain",removeZeroOne $lisplibSuperDomain,$libFile)
