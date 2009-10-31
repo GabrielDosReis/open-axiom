@@ -568,7 +568,7 @@ modemap2Sig(op,mm) ==
     target := dcSig . 1
     ntarget := ['Union, target, '"failed"]
     dcSig := substitute(ntarget, target, dcSig)
-  alist := findSubstitutionOrder? pairlis(vlist, flist) or systemError()
+  alist := findSubstitutionOrder? pairList(vlist, flist) or systemError()
   predList := substInOrder(alist, predList)
   nsig := substInOrder(alist, sig)
   if hasPatternVar nsig or hasPatternVar predList then
@@ -613,11 +613,3 @@ getSigSubst(u, pl, vl, fl) ==
     key = 'not => getSigSubst(r, [item, :pl], vl, fl)
     systemError()
   [pl, vl, fl]
-
-
-pairlis(u,v) ==
-  null u or null v => nil
-  [[first u,:first v],:pairlis(rest u, rest v)]
-
-
-

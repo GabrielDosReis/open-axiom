@@ -1,3 +1,18 @@
+2009-10-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/br-op2.boot (pairlis): Remove.
+	(modemap2Sig): Use pairList.
+	* interp/compiler.boot (applyMapping): Likewise.
+	* interp/database.boot (augLisplibModemapsFromCategory): Likewise.
+	(getOplistForConstructorForm): Likewise.
+	* interp/define.boot (compDefineCategory2): Likewise.
+	(compDefineFunctor1): Likewise.
+	(mkOpVec): Likewise.
+	* interp/lisplib.boot (finalizeLisplib): Likewise.
+	* interp/nruncomp.boot (mkSlot1sublis): Likewise.
+	* interp/wi1.boot (compDefineCategory2): Likewise.
+	* interp/wi2.boot (compDefineFunctor1): Likewise.
+
 2009-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/seg.spad.pamphlet (RangeBinding): New.

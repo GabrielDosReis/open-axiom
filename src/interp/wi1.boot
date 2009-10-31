@@ -1225,7 +1225,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     fun:= compile [op',['LAM,sargl,body]]
 
 --  5. give operator a 'modemap property
-    pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
+    pairlis:= pairList(argl,$FormalMapVariableList)
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
 ----    lisplibWrite('"compilerInfo",

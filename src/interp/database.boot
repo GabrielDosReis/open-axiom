@@ -171,8 +171,7 @@ getConstructorKind ctor ==
 --% Functions for manipulating MODEMAP DATABASE
 
 augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
-  sl := [["$",:"*1"],:[[a,:p] for a in argl
-    for p in rest $PatternVariableList]]
+  sl := [["$",:"*1"],:pairList(argl,rest $PatternVariableList)]
   form:= SUBLIS(sl,form)
   body:= SUBLIS(sl,body)
   signature:= SUBLIS(sl,signature)
@@ -711,7 +710,7 @@ getOplistForConstructorForm (form := [op,:argl]) ==
   --    where signature-Alist has entries (<signature> . item)
   --      where item has form (<slotNumber> <condition> <kind>)
   --        where <kind> =  ELT | CONST | Subsumed | (XLAM..) ..
-  pairlis:= [[fv,:arg] for fv in $FormalMapVariableList for arg in argl]
+  pairlis := pairList($FormalMapVariableList,argl)
   opAlist := getOperationAlistFromLisplib op
   [:getOplistWithUniqueSignatures(op,pairlis,signatureAlist)
       for [op,:signatureAlist] in opAlist]

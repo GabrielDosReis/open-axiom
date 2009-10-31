@@ -222,7 +222,7 @@ applyMapping([op,:argl],m,e,ml) ==
   #argl~=#ml-1 => nil
   isCategoryForm(first ml,e) =>
                                 --is op a functor?
-    pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
+    pairlis:= pairList($FormalMapVariableList,argl)
     ml' := SUBLIS(pairlis, ml)
     argl':=
       [T.expr for x in argl for m' in rest ml'] where
@@ -240,7 +240,7 @@ applyMapping([op,:argl],m,e,ml) ==
     -- Compiler synthetized operators are inline.
     u ~= nil and u.expr is ["XLAM",:.] => ["call",u.expr,:argl']
     ['call,['applyFun,op],:argl']
-  pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
+  pairlis := pairList($FormalMapVariableList,argl')
   convert([form,SUBLIS(pairlis,first ml),e],m)
 
 -- This version tends to give problems with #1 and categories
