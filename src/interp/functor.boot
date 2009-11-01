@@ -44,7 +44,7 @@ keyItem a ==
   --The item that domain checks on
  
 --Global strategy here is to maintain a list of substitutions
---  ( %in Sublis), of vectors and the names that they have,
+--  ( in $Sublis), of vectors and the names that they have,
 --  which may be either local names ('View1') or global names ('Where1')
 --  The global names are remembered on $Sublis from one
 --  invocation of DomainPrint1 to the next
@@ -803,9 +803,9 @@ InvestigateConditions catvecListMaker ==
         list2
   list:= [[sec,:ICformat u] for u in list for sec in secondaries]
   pv:= getPossibleViews $principal
--- $HackSlot4 is used in SetVector4 to ensure that conditional
--- extensions of the principal view are handles correctly
--- here we build the code necessary to remove spurious extensions
+  -- $HackSlot4 is used in SetVector4 to ensure that conditional
+  -- extensions of the principal view are handles correctly
+  -- here we build the code necessary to remove spurious extensions
   ($HackSlot4:= [reshape u for u in $HackSlot4]) where
     reshape u ==
       ['COND,[TryGDC ICformat rest u],
@@ -906,23 +906,6 @@ DescendCodeVarAdd(base,flag) ==
 resolvePatternVars(p,args) ==
   p := SUBLISLIS(args, $TriangleVariableList, p)
   SUBLISLIS(args, $FormalMapVariableList, p)
-
---resolvePatternVars(p,args) ==
---  atom p =>
---    isSharpVarWithNum p => args.(position(p,$FormalMapVariableList))
---    p
---  [resolvePatternVars(first p,args),:resolvePatternVars(rest p,args)]
- 
--- Mysterious JENKS definition follows:
---DescendCodeVarAdd(base,flag) ==
---  baseops := [(u:=LASSOC([base,:SUBST(base,'$,types)],
---                    get(op,'modemap,$e))) and [sig,:u]
---                       for (sig := [op,types]) in $CheckVectorList]
---  $CheckVectorList := [sig for sig in $CheckVectorList
---                           for op in baseops | null op]
---  [SetFunctionSlots(sig,implem,flag,'adding)
---                   for u in baseops | u is [sig,[pred,implem]]]
- 
 
 --% Code Processing Packages
 

@@ -264,7 +264,6 @@ NRTgetLocalIndex item ==
     -- ??? That we do is likely a bug.
     flag => item  
     (compOrCroak(item,$EmptyMode,$e)).expr
---    item
   RPLACA(saveNRTdeltaListComp,compEntry)
   saveIndex
 
@@ -399,10 +398,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 
   changeDirectoryInSlot1()  --this extends $NRTslot1PredicateList
 
-  --pp '"=================="
-  --for item in $NRTdeltaList repeat pp item
-
---LOCAL BOUND FLUID VARIABLES:
+  --LOCAL BOUND FLUID VARIABLES:
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
   $catvecList: local := nil   --list of vectors v1..vn for each view
   $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
@@ -418,7 +414,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $supplementaries: local := nil
    --set in InvestigateConditions to represent any additional
    --category membership tests that may be needed(see buildFunctor for details)
-------------------------
+
   oldtime:= TEMPUS_-FUGIT()
   [$catsig,:argsig]:= sig
   catvecListMaker:=REMDUP
@@ -440,8 +436,8 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $catNames:= ['$,:[GENVAR() for u in rest catvecListMaker]]
   domname:='dv_$
 
--->  Do this now to create predicate vector; then DescendCode can refer
--->  to predicate vector if it can
+  -- Do this now to create predicate vector; then DescendCode can refer
+  -- to predicate vector if it can
   [$uncondAlist,:$condAlist] :=    --bound in compDefineFunctor1
       NRTsetVector4Part1($catNames,catvecListMaker,condCats)
   [$NRTslot1PredicateList,predBitVectorCode1,:predBitVectorCode2] :=

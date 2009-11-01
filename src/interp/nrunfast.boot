@@ -356,7 +356,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   slot4 := dom.4
   packageVec := first slot4
   catVec := first QCDR slot4
---the next three lines can go away with new category world
+  --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
@@ -434,7 +434,7 @@ lazyMatchArg(s,a,dollar,domain) == lazyMatchArg2(s,a,dollar,domain,true)
  
 lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   if s = '$ then
---  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
+    --  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
     s := devaluate dollar -- calls from HasCategory can have $s
   INTEGERP a =>
     not typeFlag => s = domain.a
@@ -532,7 +532,7 @@ newExpandGoGetTypeSlot(slot,dollar,domain) ==
   newExpandTypeSlot(slot,domain,domain)
  
 newExpandTypeSlot(slot, dollar, domain) ==
---> returns domain form for dollar.slot
+-- returns domain form for dollar.slot
    newExpandLocalType(sigDomainVal(dollar, domain, slot), dollar,domain)
  
  
@@ -679,13 +679,6 @@ lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
   or/[QCDR QVELT(vec,i) for i in 0..n |
     xop = first (lazyt := first QVELT(vec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
---newHasAttribute(domain,attrib) ==
---  predIndex := LASSOC(attrib,domain.2) =>
---    EQ(predIndex,0) => true
---    predvec := domain.3
---    testBitVector(predvec,predIndex)
---  false
-
 --=======================================================
 --                   Utility Functions
 --=======================================================
