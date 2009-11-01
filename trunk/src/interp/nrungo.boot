@@ -340,8 +340,8 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
   -- body should have a conditional expression which
   -- gives k boundary values, one general term plus possibly an
   -- "out of domain" condition
---pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
---  CONTAINED('throwKeyedMsg,mess)) => NIL
+  --pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
+  --  CONTAINED('throwKeyedMsg,mess)) => NIL
   pcl := [x for x in pcl | not (x is [''T,:mess] and
     (CONTAINED('throwMessage,mess) or
       CONTAINED('throwKeyedMsg,mess)))]

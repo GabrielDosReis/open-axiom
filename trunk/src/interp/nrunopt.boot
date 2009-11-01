@@ -384,7 +384,6 @@ NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
 hasDefaultPackage catname ==
   defname := INTERN STRCONC(catname,'"&")
   constructor? defname => defname
---MEMQ(defname,allConstructors()) => defname
   nil
  
  
@@ -911,6 +910,6 @@ expandTypeArgs(u,template,domform) ==
  
 templateVal(template,domform,index) ==
 --returns a domform or a lazy slot
-  index = 0 => harhar() --template
+  index = 0 => BREAK() --template
   template.index
 

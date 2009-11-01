@@ -364,17 +364,11 @@ macroExpandList(l,e) ==
   [macroExpand(x,e) for x in l]
 
 --% constructor evaluation
---  The following functions are used by the compiler but are modified
---  here for use with new LISPLIB scheme
  
 mkEvalableCategoryForm c ==
   c is [op,:argl] =>
     op="Join" => ["Join",:[mkEvalableCategoryForm x for x in argl]]
-    op is "DomainSubstitutionMacro" =>
-        --$extraParms :local
-        --catobj := EVAL c -- DomainSubstitutionFunction makes $extraParms
-        --mkEvalableCategoryForm sublisV($extraParms, catobj)
-        mkEvalableCategoryForm second argl
+    op is "DomainSubstitutionMacro" => mkEvalableCategoryForm second argl
     op is "mkCategory" => c
     MEMQ(op,$CategoryNames) =>
       ([x,m,$e]:= compOrCroak(c,$EmptyMode,$e); m=$Category => x)
@@ -464,25 +458,25 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     -- Remember the body for checking the current instantiation.
     $currentCategoryBody : local := body
          --Set in DomainSubstitutionFunction, used further down
---  1.1  augment e to add declaration $: <form>
+    -- 1.1  augment e to add declaration $: <form>
     [$op,:argl] := $definition
     e:= addBinding("$",[['mode,:$definition]],e)
  
---  2. obtain signature
+    -- 2. obtain signature
     signature':=
       [first signature,
         :[getArgumentModeOrMoan(a,$definition,e) for a in argl]]
     e:= giveFormalParametersValues(argl,e)
  
---   3. replace arguments by $1,..., substitute into body,
---     and introduce declarations into environment
+    -- 3. replace arguments by $1,..., substitute into body,
+    --    and introduce declarations into environment
     sargl:= TAKE(# argl, $TriangleVariableList)
     $functorForm:= $form:= [$op,:sargl]
     $formalArgList:= [:sargl,:$formalArgList]
     aList := pairList(argl,sargl)
     formalBody:= SUBLIS(aList,body)
     signature' := SUBLIS(aList,signature')
---Begin lines for category default definitions
+    --Begin lines for category default definitions
     $functionStats: local:= [0,0]
     $functorStats: local:= [0,0]
     $getDomainCode: local := nil
@@ -490,7 +484,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     for x in sargl for t in rest signature' repeat
       [.,.,e]:= compMakeDeclaration(x,t,e)
  
---   4. compile body in environment of %type declarations for arguments
+    -- 4. compile body in environment of %type declarations for arguments
     op':= $op
     -- following line causes cats with no with or Join to be fresh copies
     if opOf(formalBody)~='Join and opOf(formalBody)~='mkCategory then
@@ -510,13 +504,13 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
          ["setShellEntry",g,0,mkConstructor $form]]
     fun:= compile [op',["LAM",sargl,body]]
  
---  5. give operator a 'modemap property
+    -- 5. give operator a 'modemap property
     pairlis := pairList(argl,$FormalMapVariableList)
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
     -- If we are only interested in the defaults, there is no point
     -- in writing out compiler info and load-time stuff for 
-    --the category which is assumed to have already been translated.
+    -- the category which is assumed to have already been translated.
     if not $compileDefaultsOnly then
       lisplibWrite('"compilerInfo",
         removeZeroOne ['SETQ,'$CategoryFrame,
@@ -528,7 +522,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         evalAndRwriteLispForm('NILADIC,
               ['MAKEPROP,['QUOTE,op'],'(QUOTE NILADIC),true])
  
---   6. put modemaps into InteractiveModemapFrame
+    -- 6. put modemaps into InteractiveModemapFrame
     $domainShell := eval [op',:MAPCAR('MKQ,sargl)]
     $lisplibCategory:= formalBody
     if $LISPLIB then
@@ -609,7 +603,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     originale:= $e
     [$op,:argl]:= form
     $formalArgList:= [:argl,:$formalArgList]
-    $pairlis := pairList(argl,$FormalMapVariableList)
+    $pairlis: local := pairList(argl,$FormalMapVariableList)
     $mutableDomain: local :=
       -- all defaulting packages should have caching turned off
        isCategoryPackageName $op or MEMQ($op,$mutableDomains)
@@ -627,7 +621,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     $compileExportsOnly => compDefineExports(form, ds.1, signature',$e)
-    $domainShell:= COPY_-SEQ ds
+    $domainShell: local := COPY_-SEQ ds
     attributeList := ds.2 --see below under "loadTimeAlist"
     $condAlist: local := nil
     $uncondAlist: local := nil
@@ -866,26 +860,25 @@ mkOpVec(dom,siglist) ==
     u:= ASSQ(op,oplist)
     assoc(sig,u) is [.,n,.,'ELT] => ops.i := dom.n
     noplist:= SUBLIS(substargs,u)
- -- following variation on assoc needed for GENSYMS in Mutable domains
+  -- following variation on assoc needed for GENSYMS in Mutable domains
     AssocBarGensym(substitute(dom.0,'$,sig),noplist) is [.,n,.,'ELT] =>
                    ops.i := dom.n
     ops.i := [function Undef,[dom.0,i],:opSig]
   ops
  
+
+++ form is lhs (f a1 ... an) of definition; body is rhs;
+++ signature is (t0 t1 ... tn) where t0= target type, ti=type of ai, i > 0;
+++ specialCases is (NIL l1 ... ln) where li is list of special cases
+++ which can be given for each ti
+++ removes declarative and assignment information from form and
+++ signature, placing it in list L, replacing form by ("where",form',:L),
+++ signature by a list of NILs (signifying declarations are in e)
 compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
--- form is lhs (f a1 ... an) of definition; body is rhs;
--- signature is (t0 t1 ... tn) where t0= target type, ti=type of ai, i > 0;
--- specialCases is (NIL l1 ... ln) where li is list of special cases
--- which can be given for each ti
- 
--- removes declarative and assignment information from form and
--- signature, placing it in list L, replacing form by ("where",form',:L),
--- signature by a list of NILs (signifying declarations are in e)
   $sigAlist: local := nil
   $predAlist: local := nil
- 
--- 1. create sigList= list of all signatures which have embedded
---    declarations moved into global variable $sigAlist
+  -- 1. create sigList= list of all signatures which have embedded
+  --    declarations moved into global variable $sigAlist
   sigList:=
     [transformType fetchType(a,x,e,form) for a in rest form for x in rest signature]
        where
@@ -900,16 +893,16 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
           x is ['Record,:.] => x --RDJ 8/83
           [first x,:[transformType y for y in rest x]]
  
--- 2. replace each argument of the form (|| x p) by x, recording
---    the given predicate in global variable $predAlist
+  -- 2. replace each argument of the form (|| x p) by x, recording
+  --    the given predicate in global variable $predAlist
   argList:=
     [removeSuchthat a for a in rest form] where
       removeSuchthat x ==
         x is ["|",y,p] => ($predAlist:= [[y,:p],:$predAlist]; y)
         x
  
--- 3. obtain a list of parameter identifiers (x1 .. xn) ordered so that
---       the type of xi is independent of xj if i < j
+  -- 3. obtain a list of parameter identifiers (x1 .. xn) ordered so that
+  --       the type of xi is independent of xj if i < j
   varList:=
     orderByDependency(ASSOCLEFT argDepAlist,ASSOCRIGHT argDepAlist) where
       argDepAlist:=
@@ -919,13 +912,13 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
               delete(x,listOfIdentifiersIn LASSOC(x,$predAlist)))
           argSigAlist:= [:$sigAlist,:pairList(argList,sigList)]
  
--- 4. construct a WhereList which declares and/or defines the xi's in
---    the order constructed in step 3
+  -- 4. construct a WhereList which declares and/or defines the xi's in
+  --    the order constructed in step 3
   (whereList:= [addSuchthat(x,[":",x,LASSOC(x,argSigAlist)]) for x in varList])
      where addSuchthat(x,y) == (p:= LASSOC(x,$predAlist) => ["|",y,p]; y)
  
--- 5. compile new ('DEF,("where",form',:WhereList),:.) where
---    all argument parameters of form' are bound/declared in WhereList
+  -- 5. compile new ('DEF,("where",form',:WhereList),:.) where
+  --    all argument parameters of form' are bound/declared in WhereList
   comp(form',m,e) where
     form':=
       ["where",defform,:whereList] where
@@ -1031,8 +1024,8 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     if $newCompCompare=true then
        SAY '"The old compiler generates:"
        prTriple T
---  A THROW to the above CATCH occurs if too many semantic errors occur
---  see stackSemanticError
+    --  A THROW to the above CATCH occurs if too many semantic errors occur
+    --  see stackSemanticError
     catchTag:= MKQ GENSYM()
     fun:=
       body':= replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
@@ -1041,7 +1034,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
       compile [$op,["LAM",[:argl,'_$],finalBody]]
     $functorStats:= addStats($functorStats,$functionStats)
  
---  7. give operator a 'value property
+    --7. give operator a 'value property
     val:= [fun,signature',e]
     [fun,['Mapping,:signature'],$e]
  
@@ -1202,7 +1195,7 @@ compile u ==
   -- Deduce old sequence number and use it (items have been skipped).
   if $LISPLIB and $compileOnlyCertainItems then
     parts := splitEncodedFunctionName(u.0, ";")
---  Next line JHD/SMWATT 7/17/86 to deal with inner functions
+  --  Next line JHD/SMWATT 7/17/86 to deal with inner functions
     parts='inner => $savableItems:=[u.0,:$savableItems]
     unew  := nil
     for [s,t] in $splitUpItemsAlreadyThere repeat
@@ -1555,9 +1548,6 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
    $functorLocalParameters:=[:oldFLP,:nreverse nils]
    nreverse ans
  
---compSingleCapsuleIf(x,predl,e,$functorLocalParameters) ==
---  compSingleCapsuleItem(x,predl,e)
- 
 --% CATEGORY AND DOMAIN FUNCTIONS
 
 compContained: (%Form, %Mode, %Env) -> %Maybe %Triple
@@ -1649,7 +1639,7 @@ DomainSubstitutionFunction(parameters,body) ==
         [Subst(parameters,u) for u in body]
   not (body is ["Join",:.]) => body
   atom $definition => body
-  null rest $definition => body
+  null rest $definition => body 
            --should not bother if it will only be called once
   name:= INTERN STRCONC(KAR $definition,";CAT")
   SETANDFILE(name,nil)
@@ -1709,9 +1699,9 @@ compCategoryItem(x,predl,env) ==
     for u in l repeat 
       compCategoryItem(u,predl,env)
  
--- 4. otherwise, x gives a signature for a
---    single operator name or a list of names; if a list of names,
---    recurse
+  -- 4. otherwise, x gives a signature for a
+  --    single operator name or a list of names; if a list of names,
+  --    recurse
   x is ["SIGNATURE",:opsig] => compSignature(opsig,pred,env)
   systemErrorHere ["compCategoryItem",x]
 
