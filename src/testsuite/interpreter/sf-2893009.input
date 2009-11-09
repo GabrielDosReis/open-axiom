@@ -1,0 +1,4 @@
+-- Check that flags parameters are represented correctly, e.g.
+-- as literal strings, not symbol.
+s := first parse "sf-2893009.spad"
+s :: DefinitionAst
