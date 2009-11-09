@@ -1,3 +1,11 @@
+2009-11-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2893009
+	* algebra/syntax.spad.pamphlet (ParameterAst): New.
+	(HeadAst): Use it.
+	* testsuite/interpreter/sf-2893009.input: Likewise.
+	* testsuite/interpreter/sf-2893009.spad: New.
+
 2009-10-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/br-op2.boot (pairlis): Remove.

@@ -1,0 +1,7 @@
+-- This is a support file for "f-2893009.input.
+-- Check that flags parameters are represented correctly, e.g.
+-- as literal strings, not symbol.
+
+elt(x,"left") == left x
+
+

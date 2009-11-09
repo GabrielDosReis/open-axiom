@@ -302,6 +302,7 @@
   (|Palette| . PALETTE)
   (|PartialFraction| . PFR)
   (|PatternFunctions2| . PATTERN2)
+  (|ParameterAst| . PARAMAST)
   (|ParametricPlaneCurve| . PARPCURV)
   (|ParametricSpaceCurve| . PARSCURV)
   (|ParametricSurface| . PARSURF)

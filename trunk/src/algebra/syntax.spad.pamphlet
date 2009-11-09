@@ -574,6 +574,55 @@ Identifier(): Public == Private where
 
 @
 
+\subsection{The ParameterAst domain}
+
+<<domain PARAMAST ParameterAst>>=
+)abbrev domain PARAMAST ParameterAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 08, 2009
+++ Date Last Modified: November 08, 2009
+++ Description:
+++   Representation of parameters to functions or constructors.
+++   For the most part, they are Identifiers.  However, in very
+++   cases, they are "flags", e.g. string literals.
+ParameterAst(): Public == Private where
+  Public == Join(SpadSyntaxCategory, UnionType) with
+    case: (%, [| Identifier |]) -> Boolean
+      ++ \spad{x case Identifier} if the parameter AST object
+      ++ \spad{x} designates an \spadtype{Identifier}.
+    autoCoerce: % -> Identifier
+      ++ \spad{autoCoerce(x)@Identifier} implicitly coerce the 
+      ++ object \spad{x} to \spadtype{Identifier}.  This function
+      ++ is left at the discretion of the compiler.
+    case: (%, [| String |]) -> Boolean
+      ++ \spad{x case String} if the parameter AST object
+      ++ \spad{x} designates a flag.
+    autoCoerce: % -> String
+      ++ \spad{autoCoerce(x)@String} implicitly coerce the 
+      ++ object \spad{x} to \spadtype{String}.  This function
+      ++ is left at the discretion of the compiler.
+  Private == add
+    x case Identifier ==
+      SYMBOLP(x)$Foreign(Builtin)
+
+    autoCoerce(x: %): Identifier ==
+      x : Identifier
+
+    x case String ==
+      STRINGP(x)$Foreign(Builtin)
+
+    autoCoerce(x: %): String ==
+      x : String
+
+    x = y ==
+      EQUAL(x,y)$Foreign(Builtin)
+
+    coerce(x: %): OutputForm ==
+      case x is 
+        y@String => y::OutputForm
+        otherwise => x pretend OutputForm
+@
+
 
 \subsection{The HeadAst domain}
 
@@ -584,22 +633,22 @@ import List Identifier
 )abbrev domain HEADAST HeadAst
 ++ Author: Gabriel Dos Reis
 ++ Date Created: November 10, 2007
-++ Date Last Modified: September 21, 2008
+++ Date Last Modified: November 08, 2009
 ++ Description: This domain represents the header of a definition.
 HeadAst(): Public == Private where
   Public == SpadSyntaxCategory with
-    headAst: (Identifier,List Identifier) -> %
+    headAst: (Identifier,List ParameterAst) -> %
       ++ headAst(f,[x1,..,xn]) constructs a function definition header.
     name: % -> Identifier
       ++ name(h) returns the name of the operation defined defined.
-    parameters: % -> List Identifier
+    parameters: % -> List ParameterAst
       ++ parameters(h) gives the parameters specified in the
       ++ definition header `h'.
   Private == add
-    Rep == List Identifier
-    headAst(op,args) == per cons(op,args)
+    Rep == Pair(Identifier, List ParameterAst)
+    headAst(op,args) == per pair(op,args)
     name h == first rep h
-    parameters h == rest rep h
+    parameters h == second rep h
     coerce(x: %): OutputForm ==
       elt('HeadAst::OutputForm,
         ['name::OutputForm = name(x)::OutputForm,
@@ -1699,7 +1748,7 @@ SpadAst(): SpadAstExports() == add
 \section{License}
 
 <<license>>=
---Copyright (C) 2007-2008, Gabriel Dos Reis.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -1742,6 +1791,7 @@ SpadAst(): SpadAstExports() == add
 <<category SPADXPT SpadAstExports>>
 
 <<domain LITERAL Literal>>
+<<domain PARAMAST ParameterAst>>
 <<domain HEADAST HeadAst>>
 <<domain TYPEAST TypeAst>>
 <<domain ATTRAST AttributeAst>>
