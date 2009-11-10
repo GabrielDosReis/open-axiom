@@ -2514,8 +2514,9 @@ reportOpsFromUnitDirectly unitForm ==
             systemErrorHere ["reportOpsFromUnitDirectly",top]
           [funlist,.]:= FUNCALL(constructorFunction,"$",unitForm,
             $CategoryFrame)
-          sigList := REMDUP MSORT [[[a,b],true,c] for
-            [a,b,c] in funlist]
+          sigList := REMDUP MSORT
+                      [[[a,b],true,slot c] for [a,b,c] in funlist]
+                             where slot c == (atom c => [c,0,1]; c)
         else
           sigList:= REMDUP MSORT getOplistForConstructorForm unitForm
       say2PerLine [formatOperation(x,unit) for x in sigList]
