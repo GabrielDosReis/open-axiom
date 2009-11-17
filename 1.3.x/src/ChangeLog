@@ -1,3 +1,9 @@
+2009-11-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/syntax.spad.pamphlet (StepAst): New.
+	(SpadAstExports): Add case for StepAst.
+	(SpadAst): Implement.
+
 2009-11-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-syscmd.boot (reportOpsFromUnitDirectly): Fix thinko.

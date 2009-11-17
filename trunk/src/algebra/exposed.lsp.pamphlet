@@ -403,6 +403,7 @@
   (|SquareFreeRegularTriangularSetGcdPackage| . SFRGCD)
   (|SquareFreeQuasiComponentPackage| . SFQCMPK)
   (|Stack| . STACK)
+  (|StepAst| . STEPAST)
   (|Stream| . STREAM)
   (|StreamFunctions1| . STREAM1)
   (|StreamFunctions2| . STREAM2)
