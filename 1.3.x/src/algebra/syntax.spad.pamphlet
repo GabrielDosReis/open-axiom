@@ -372,6 +372,13 @@ SpadAstExports(): Category == Join(SpadSyntaxCategory, UnionType) with
     ++ autoCoerce(s) returns the CategoryAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
+  case: (%, [|JoinAst|]) -> Boolean
+    ++ \spad{s case JoinAst} holds is the syntax object \spad{s}
+    ++ denotes the join of several categories.
+  autoCoerce: % -> JoinAst
+    ++ \spad{autoCoerce(s)} returns the \spadype{JoinAst} view of of
+    ++ the AST object \spad{s}.  Left at the discretion of the compiler.
+
   case: (%, [|CapsuleAst|]) -> Boolean
     ++ s case CapsuleAst holds if `s' represents a domain capsule.
   autoCoerce: % -> CapsuleAst
@@ -1686,6 +1693,9 @@ SpadAst(): SpadAstExports() == add
   x case CategoryAst == isAst(x,'CATEGORY)
   autoCoerce(x: %): CategoryAst == x : CategoryAst
 
+  x case JoinAst == isAst(x,'Join)
+  autoCoerce(x: %): JoinAst == x : JoinAst
+
   x case CapsuleAst == isAst(x,'CAPSULE)
   autoCoerce(x: %): CapsuleAst == x : CapsuleAst
 
@@ -1709,6 +1719,9 @@ SpadAst(): SpadAstExports() == add
 
   x case InAst == isAst(x,'IN)
   autoCoerce(x: %): InAst == x : InAst
+
+  x case StepAst == isAst(x,'STEP)
+  autoCoerce(x: %): StepAst == x : StepAst
 
   x case CollectAst == isAst(x,'COLLECT)
   autoCoerce(x: %): CollectAst == x : CollectAst
@@ -1755,9 +1768,6 @@ SpadAst(): SpadAstExports() == add
   x case IsAst == isAst(x,'is)
   autoCoerce(x: %): IsAst == x : IsAst
 
-  x case StepAst == isAst(x,'STEP)
-  autoCoerce(x: %): StepAst == x : StepAst
-
   x case Identifier == (x::Syntax) case Identifier
   autoCoerce(x: %): Identifier == x:Identifier
 
@@ -1774,6 +1784,7 @@ SpadAst(): SpadAstExports() == add
       op = 'REPEAT => x:RepeatAst::OutputForm
       op = 'WHILE => x:WhileAst::OutputForm
       op = 'IN => x:InAst::OutputForm
+      op = 'STEP => x:StepAst::OutputForm
       op = 'COLLECT => x:CollectAst::OutputForm
       op = 'construct => x:ConstructAst::OutputForm
       op = 'exit => x:ExitAst::OutputForm
@@ -1798,6 +1809,7 @@ SpadAst(): SpadAstExports() == add
       op = 'SIGNATURE => x:SignatureAst::OutputForm
       op = 'ATTRIBUTE => x:AttributeAst::OutputForm
       op = 'CATEGORY => x:CategoryAst::OutputForm
+      op = 'Join => x:JoinAst::OutputForm
       op = 'CAPSULE => x:CapsuleAst::OutputForm
       op = 'import => x:ImportAst::OutputForm
       x'::OutputForm
