@@ -341,172 +341,179 @@ SpadSyntaxCategory(): Category == AbstractSyntaxCategory
 ++ Description: This category describes the exported
 ++   signatures of the SpadAst domain.
 SpadAstExports(): Category == Join(SpadSyntaxCategory, UnionType) with
-  case: (%, [|ImportAst()|]) -> Boolean
+  case: (%, [|ImportAst|]) -> Boolean
     ++ s case ImportAst holds if `s' represents an `import' statement.
-  autoCoerce: % -> ImportAst()
+  autoCoerce: % -> ImportAst
     ++ autoCoerce(s) returns the ImportAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|DefinitionAst()|]) -> Boolean
+  case: (%, [|DefinitionAst|]) -> Boolean
     ++ s case DefinitionAst holds if `s' represents a definition.
   autoCoerce: % -> DefinitionAst()
     ++ autoCoerce(s) returns the DefinitionAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|MacroAst()|]) -> Boolean
+  case: (%, [|MacroAst|]) -> Boolean
     ++ s case MacroAst holds if `s' represents a macro definition.
-  autoCoerce: % -> MacroAst()
+  autoCoerce: % -> MacroAst
     ++ autoCoerce(s) returns the MacroAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|WhereAst()|]) -> Boolean
+  case: (%, [|WhereAst|]) -> Boolean
     ++ s case WhereAst holds if `s' represents an expression with
     ++ local definitions.
-  autoCoerce: % -> WhereAst()
+  autoCoerce: % -> WhereAst
     ++ autoCoerce(s) returns the WhereAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|CategoryAst()|]) -> Boolean
+  case: (%, [|CategoryAst|]) -> Boolean
     ++ s case CategoryAst holds if `s' represents an unnamed category.
-  autoCoerce: % -> CategoryAst()
+  autoCoerce: % -> CategoryAst
     ++ autoCoerce(s) returns the CategoryAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|CapsuleAst()|]) -> Boolean
+  case: (%, [|CapsuleAst|]) -> Boolean
     ++ s case CapsuleAst holds if `s' represents a domain capsule.
-  autoCoerce: % -> CapsuleAst()
+  autoCoerce: % -> CapsuleAst
     ++ autoCoerce(s) returns the CapsuleAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|SignatureAst()|]) -> Boolean
+  case: (%, [|SignatureAst|]) -> Boolean
     ++ s case SignatureAst holds if `s' represents a signature export.
   autoCoerce: % -> SignatureAst()
     ++ autoCoerce(s) returns the SignatureAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|AttributeAst()|]) -> Boolean
+  case: (%, [|AttributeAst|]) -> Boolean
     ++ s case AttributeAst holds if `s' represents an attribute.
   autoCoerce: % -> AttributeAst()
     ++ autoCoerce(s) returns the AttributeAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|MappingAst()|]) -> Boolean
+  case: (%, [|MappingAst|]) -> Boolean
     ++ s case MappingAst holds if `s' represents a mapping type.
-  autoCoerce: % -> MappingAst()
+  autoCoerce: % -> MappingAst
     ++ autoCoerce(s) returns the MappingAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|IfAst()|]) -> Boolean
+  case: (%, [|IfAst|]) -> Boolean
     ++ s case IfAst holds if `s' represents an if-statement.
-  autoCoerce: % -> IfAst()
+  autoCoerce: % -> IfAst
     ++ autoCoerce(s) returns the IfAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|RepeatAst()|]) -> Boolean
+  case: (%, [|RepeatAst|]) -> Boolean
     ++ s case RepeatAst holds if `s' represents an repeat-loop.
-  autoCoerce: % -> RepeatAst()
+  autoCoerce: % -> RepeatAst
     ++ autoCoerce(s) returns the RepeatAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|WhileAst()|]) -> Boolean
+  case: (%, [|WhileAst|]) -> Boolean
     ++ s case WhileAst holds if `s' represents a while-iterator
-  autoCoerce: % -> WhileAst()
+  autoCoerce: % -> WhileAst
     ++ autoCoerce(s) returns the WhileAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|InAst()|]) -> Boolean
+  case: (%, [|InAst|]) -> Boolean
     ++ s case InAst holds if `s' represents a in-iterator
-  autoCoerce: % -> InAst()
+  autoCoerce: % -> InAst
     ++ autoCoerce(s) returns the InAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|CollectAst()|]) -> Boolean
+  case: (%, [|StepAst|]) -> Boolean
+    ++ \spad{s case StepAst} holds if \spad{s} represents an
+    ++ arithmetic progression iterator.
+  autoCoerce: % -> StepAst
+    ++ \spad{autoCoerce(s)} returns the InAst view of \spad{s}.  Left
+    ++ at the discretion of the compiler.
+
+  case: (%, [|CollectAst|]) -> Boolean
     ++ s case CollectAst holds if `s' represents a list-comprehension.
-  autoCoerce: % -> CollectAst()
+  autoCoerce: % -> CollectAst
     ++ autoCoerce(s) returns the CollectAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|ConstructAst()|]) -> Boolean
+  case: (%, [|ConstructAst|]) -> Boolean
     ++ s case ConstructAst holds if `s' represents a list-expression.
-  autoCoerce: % -> ConstructAst()
+  autoCoerce: % -> ConstructAst
     ++ autoCoerce(s) returns the ConstructAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|ExitAst()|]) -> Boolean
+  case: (%, [|ExitAst|]) -> Boolean
     ++ s case ExitAst holds if `s' represents an exit-expression.
-  autoCoerce: % -> ExitAst()
+  autoCoerce: % -> ExitAst
     ++ autoCoerce(s) returns the ExitAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|ReturnAst()|]) -> Boolean
+  case: (%, [|ReturnAst|]) -> Boolean
     ++ s case ReturnAst holds if `s' represents a return-statement.
-  autoCoerce: % -> ReturnAst()
+  autoCoerce: % -> ReturnAst
     ++ autoCoerce(s) returns the ReturnAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|CoerceAst()|]) -> Boolean
+  case: (%, [|CoerceAst|]) -> Boolean
     ++ s case ReturnAst holds if `s' represents a coerce-expression.
-  autoCoerce: % -> CoerceAst()
+  autoCoerce: % -> CoerceAst
     ++ autoCoerce(s) returns the CoerceAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|PretendAst()|]) -> Boolean
+  case: (%, [|PretendAst|]) -> Boolean
     ++ s case PretendAst holds if `s' represents a pretend-expression.
-  autoCoerce: % -> PretendAst()
+  autoCoerce: % -> PretendAst
     ++ autoCoerce(s) returns the PretendAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|RestrictAst()|]) -> Boolean
+  case: (%, [|RestrictAst|]) -> Boolean
     ++ s case RestrictAst holds if `s' represents a restrict-expression.
-  autoCoerce: % -> RestrictAst()
+  autoCoerce: % -> RestrictAst
     ++ autoCoerce(s) returns the RestrictAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|SegmentAst()|]) -> Boolean
+  case: (%, [|SegmentAst|]) -> Boolean
     ++ s case SegmentAst holds if `s' represents a segment-expression.
-  autoCoerce: % -> SegmentAst()
+  autoCoerce: % -> SegmentAst
     ++ autoCoerce(s) returns the SegmentAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|SequenceAst()|]) -> Boolean
+  case: (%, [|SequenceAst|]) -> Boolean
     ++ s case SequenceAst holds if `s' represents a sequence-of-statements.
-  autoCoerce: % -> SequenceAst()
+  autoCoerce: % -> SequenceAst
     ++ autoCoerce(s) returns the SequenceAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|LetAst()|]) -> Boolean
+  case: (%, [|LetAst|]) -> Boolean
     ++ s case LetAst holds if `s' represents an assignment-expression.
-  autoCoerce: % -> LetAst()
+  autoCoerce: % -> LetAst
     ++ autoCoerce(s) returns the LetAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|SuchThatAst()|]) -> Boolean
+  case: (%, [|SuchThatAst|]) -> Boolean
     ++ s case SuchThatAst holds if `s' represents a qualified-expression.
-  autoCoerce: % -> SuchThatAst()
+  autoCoerce: % -> SuchThatAst
     ++ autoCoerce(s) returns the SuchThatAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
-  case: (%, [|ColonAst()|]) -> Boolean
+  case: (%, [|ColonAst|]) -> Boolean
     ++ s case ColonAst holds if `s' represents a colon-expression.
-  autoCoerce: % -> ColonAst()
+  autoCoerce: % -> ColonAst
     ++ autoCoerce(s) returns the ColoonAst view of `s'.  Left at the
     ++ discretion of the compiler.
  
-  case: (%, [|CaseAst()|]) -> Boolean
+  case: (%, [|CaseAst|]) -> Boolean
     ++ s case CaseAst holds if `s' represents a case-expression.
-  autoCoerce: % -> CaseAst()
+  autoCoerce: % -> CaseAst
     ++ autoCoerce(s) returns the CaseAst view of `s'.  Left at the
     ++ discretion of the compiler.
  
-  case: (%, [|HasAst()|]) -> Boolean
+  case: (%, [|HasAst|]) -> Boolean
     ++ s case HasAst holds if `s' represents a has-expression.
-  autoCoerce: % -> HasAst()
+  autoCoerce: % -> HasAst
     ++ autoCoerce(s) returns the HasAst view of `s'.  Left at the
     ++ discretion of the compiler.
  
-  case: (%, [|IsAst()|]) -> Boolean
+  case: (%, [|IsAst|]) -> Boolean
     ++ s case IsAst holds if `s' represents an is-expression.
-  autoCoerce: % -> IsAst()
+  autoCoerce: % -> IsAst
     ++ autoCoerce(s) returns the IsAst view of `s'.  Left at the
     ++ discretion of the compiler.
 
@@ -929,6 +936,58 @@ InAst(): Public == Private where
            'sequence::OutputForm = sequence(x)::OutputForm])$OutputForm
 
 @
+
+\subection{The StepAst domain}
+
+<<domain STEPAST StepAst>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: November 16, 2009
+++ Date Last Modified: November 16, 2009
+++ Description:
+++   This domain represents an arithmetic progression iterator syntax.
+)abbrev domain STEPAST StepAst
+StepAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterationVar: % -> Identifier
+      ++ \spad{iterationVar(i)} returns the name of the iterating 
+      ++ variable of the arithmetic progression iterator \spad{i}.
+    lowerBound: % -> SpadAst
+      ++ \spad{lowerBound(i)} returns the lower bound on the values
+      ++ assumed by the iteration variable.
+    upperBound: % -> Maybe SpadAst
+      ++ If the set of values assumed by the iteration variable is
+      ++ bounded from above, \spad{upperBound(i)} returns the
+      ++ upper bound.  Otherwise, its returns \spad{nothing}.
+    step: % -> SpadAst
+      ++ \spad{step(i)} returns the Spad AST denoting the step
+      ++ of the arithmetic progression represented by the
+      ++ iterator \spad{i}.
+  Private == add
+    Rep == Pair(Identifier, List SpadAst)
+    import List SpadAst
+    iterationVar x == first(second rep x)::Identifier
+    step x == third second rep x
+    lowerBound x == second second rep x
+    upperBound x ==
+      a := second rep x
+      #a = 3 => nothing$Maybe(SpadAst)
+      just qelt(a, 4)
+    coerce(x: %): OutputForm ==
+      v := iterationVar(x)::OutputForm
+      i := step(x)::OutputForm
+      l := lowerBound(x)::OutputForm
+      u := upperBound x
+      u case nothing =>
+        elt('StepAst::OutputForm,
+            ['iterationVar::OutputForm = v,
+              'step::OutputForm = i, 'lowerBound::OutputForm = l])$OutputForm
+      elt('StepAst::OutputForm,
+         ['iterationVar::OutputForm = v, 'step::OutputForm = i,
+           'lowerBound::OutputForm = l,
+             'upperBound::OutputForm = (u@SpadAst)::OutputForm])$OutputForm
+
+@
+
 
 \subsection{The CollectAst domain}
 
@@ -1651,6 +1710,9 @@ SpadAst(): SpadAstExports() == add
   x case InAst == isAst(x,'IN)
   autoCoerce(x: %): InAst == x : InAst
 
+  x case StepAst == isAst(x,'STEP)
+  autoCoerce(x: %): StepAst == x : StepAst
+
   x case CollectAst == isAst(x,'COLLECT)
   autoCoerce(x: %): CollectAst == x : CollectAst
 
@@ -1712,6 +1774,7 @@ SpadAst(): SpadAstExports() == add
       op = 'REPEAT => x:RepeatAst::OutputForm
       op = 'WHILE => x:WhileAst::OutputForm
       op = 'IN => x:InAst::OutputForm
+      op = 'STEP => x:StepAst::OutputForm
       op = 'COLLECT => x:CollectAst::OutputForm
       op = 'construct => x:ConstructAst::OutputForm
       op = 'exit => x:ExitAst::OutputForm
@@ -1804,6 +1867,7 @@ SpadAst(): SpadAstExports() == add
 <<domain RPTAST RepeatAst>>
 <<domain WHILEAST WhileAst>>
 <<domain INAST InAst>>
+<<domain STEPAST StepAst>>
 <<domain CLLCTAST CollectAst>>
 <<domain LSTAST ConstructAst>>
 <<domain EXITAST ExitAst>>
