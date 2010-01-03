@@ -1,0 +1,4 @@
+2010-01-03  Aleksej Saushev  <asau@inbox.ru>
+
+	* hyper/addfile.c (strpostfix): Simplify.
+
