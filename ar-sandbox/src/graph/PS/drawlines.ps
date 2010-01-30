@@ -1,0 +1,22 @@
+% operand stack configuration in order to use psDrawLines:
+%		psDrawLines
+%		points[0].y
+%		points[0].x
+%		n
+%		...
+%		points[n].y
+%		points[n].x
+%		graphics-context dictionary
+% this draws lines connecting all the points.
+
+/psDrawLines
+        {	gsave
+                newpath
+                yVal moveto
+                1 sub {
+                        yVal lineto
+                } repeat
+		begin installGC stroke end
+		grestore }
+        def
+

@@ -1,0 +1,36 @@
+% =====================================================================
+\begin{page}{releaseNotes}{0. What's New in \Language{}}
+% =====================================================================
+\beginscroll
+\beginmenu
+    \menudownlink{Online information}{onlineInformation}
+    \menudownlink{Januray 2009}{jan2009}
+\endmenu
+\endscroll
+\autobuttons
+\end{page}
+
+% =====================================================================
+\begin{page}{onlineInformation}{Online information}
+% =====================================================================
+\beginscroll
+\Language{} information can be found online at
+{http://www.open-axiom.org/}
+\endscroll
+\autobuttons
+\end{page}
+
+% =====================================================================
+\begin{page}{jan2009}{OpenAxiom 1.2.1 release}
+% =====================================================================
+\beginscroll
+OpenAxiom-1.2.1 was released on Januray 29, 2009.  This is a bug
+fix release of the \Language{} system, in the 1.2.x series.
+
+This release includes the full complement of algebra, the graphics
+subsystem, and the hyperdoc system. 
+
+\endscroll
+\autobuttons
+\end{page}
+

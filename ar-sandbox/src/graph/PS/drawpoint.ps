@@ -1,0 +1,16 @@
+% operand stack configuration in order to use psDrawPoint:
+%		psDrawPoint
+%		y0
+%		x0
+%		graphics-context dictionary
+% this draws a point at (x0, y0).
+
+/psDrawPoint
+        {	gsave
+                newpath
+                yVal moveto
+                yVal lineto
+		begin installGC stroke end       %%fills with foreground color
+		grestore }
+        def
+

@@ -1,0 +1,161 @@
+2008-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (axiom_use_sman): Fix typo.
+
+2008-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (oa_c_runtime_extra): Add @LIBS@.
+	* configure.ac.pamphlet: Check for <pty.h> and <util.h>.  Check
+	for openpty.	
+
+2008-10-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Look for path to `awk'.
+	Instantiate src/hyper/presea.
+
+2008-09-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Simplify native type translation table
+	entries. 
+
+2008-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* OpenAxiom-1.2.0 has been released.
+
+2008-08-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Active safety+debug build for ECL-base system.
+
+2008-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Don't generate rules for extracting
+	algebra bootstrap files.
+
+2008-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (oa_standard_linking): New.  AC-substitute.
+
+2008-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (LNKEXT): New.
+
+2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (oa_use_dynamic_lib): New.  Decide when to
+	use dynamically linked libraries.
+	(axiom_fasl_type): Hold extensions of loadable FASL.
+
+2008-08-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Add 'debug' to Lisp optimize proclamation
+	when --enable-checking.
+
+2008-08-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Use $(mkdir_p) in lieu of $(mkinstalldirs),
+	during build.  Also use 'cp -p' instead of $(INSTALL).
+
+2008-05-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Don't key all of HyperTex on X11.
+
+2008-04-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Check from uint8_t.
+	* config/openaxiom-c-macros.h.in: Rename from
+	config/axiom-c-macros.h.in.
+	* src: Propagate change.
+
+2008-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Add native type translation table
+	for ECL.
+
+2008-04-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet [mingw] (oa_shrlib_flags): Ensure
+	the compiler appreciates we want dynamic link.
+
+2008-04-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (oa_shrlib_flags): Tidy.
+	(oa_shrobj_flags): Likewise.
+	* config/var-def.mk (LINK_SHRLIB): Tidy.
+	* INSTALL: Update.
+	* TODO: Likewise.
+
+2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: When using CLisp, ensure FFI is supported.
+
+2008-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Disable Libtool for building shared
+	libraries on MinGW and Cygwin.
+	* config/var-def.mk (SHREXT): Tidy.
+	(LINK_SHRLIB): New.
+
+2008-04-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Automatically detect SBCL or Clisp.
+	check for BFD only if we're building custom GCL.
+
+2008-03-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (shrext_cmds): Autconf-substitute.
+	(libext): Likewise.
+	* config/var-def.mk (SHREXT): Rename from DLLEXT.
+	(LIBEXT): New.
+
+2008-03-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Add native types translation table for
+	CLisp. 
+
+2008-03-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Check for <dirent.h>
+	* config/axiom-c-macros.h.in: Update.
+
+2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Compute native type translation table.
+
+2008-03-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Tell Libtool to assume `dlopen'.
+	* config/var-def.mk (DLLEXT): New.
+
+2008-03-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet (axiom_c_runtime): Don't include core, as
+	it is always built into libopen-axiom-core.
+
+2008-02-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (install): Tidy.
+
+2008-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* OpenAxiom-1.1.0 has been released.
+
+2008-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for batch processing.
+	* configure.ac.pamphlet (OPENAXIOM_BASE_RTS): Define.
+	* Makefile.pamphlet (install): Tidy.
+	* config/axiom-c-macros.h.in: New.
+
+2008-01-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (LDF): Include -lm.
+
+2008-01-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: For mingw host, default $prefix to 
+	C:/Program Files/OpenAxiom.
+	Don't instantiate src/script/axiom.
+	Instantiate src/driver/Makefile.  Tidy.
+	* Makefile.pamphlet: Tidy.
+	* config/axiom-c-macros.h.in: Update.
+

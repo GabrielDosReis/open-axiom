@@ -1,0 +1,9 @@
+-- Contributed by Luke Wagner
+)abbrev domain TEST Test
+Test() : with
+    foo : INT -> INT
+  == add
+    Rep := Union(blah, INT)
+    foo i ==
+      i
+
